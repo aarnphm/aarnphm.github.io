@@ -55,7 +55,7 @@ function outputName(node: ElementContent): string {
 }
 
 function classNames(node: Element): string[] {
-  const value = node.properties?.className
+  const value: unknown = node.properties?.className
   if (typeof value === 'string') return value.split(/\s+/).filter(Boolean)
   if (!Array.isArray(value)) return []
   return value.filter((item): item is string => typeof item === 'string')

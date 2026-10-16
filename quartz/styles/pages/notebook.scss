@@ -1382,6 +1382,96 @@ article:has(.notebook-runtime),
     padding: 0.5rem 0;
   }
 
+  .lean-infoview {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-family: var(--codeFont);
+    font-size: 0.82rem;
+    line-height: 1.45;
+    padding: 0.25rem 0.75rem;
+  }
+
+  .lean-infoview-goal,
+  .lean-infoview-message {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding-bottom: 0.45rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--lightgray) 70%, transparent);
+
+    &:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+  }
+
+  .lean-infoview-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.72rem;
+    color: var(--gray);
+    text-transform: lowercase;
+  }
+
+  .lean-infoview-badge {
+    font-weight: 600;
+    color: var(--secondary);
+  }
+
+  .lean-infoview-case {
+    color: var(--darkgray);
+  }
+
+  .lean-infoview-pos {
+    margin-left: auto;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .lean-infoview-hypotheses {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+
+  .lean-infoview-hyp-name {
+    color: var(--tertiary);
+    font-weight: 500;
+  }
+
+  .lean-infoview-hyp-sep {
+    color: var(--gray);
+  }
+
+  .lean-infoview-hyp-type,
+  .lean-infoview-target-type {
+    background: transparent;
+    padding: 0;
+    color: var(--dark);
+    white-space: pre-wrap;
+  }
+
+  .lean-infoview-target {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    padding-top: 0.1rem;
+  }
+
+  .lean-infoview-turnstile {
+    color: var(--secondary);
+    font-weight: 700;
+    user-select: none;
+  }
+
+  .lean-infoview-code {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    white-space: pre-wrap;
+  }
+
   .notebook-output-image {
     margin: 0.75rem 0 1rem;
     padding: 0;

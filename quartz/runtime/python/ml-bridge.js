@@ -66,6 +66,47 @@ export async function ensureNotebookMlRuntime() {
   return runtimePromise
 }
 
+function disposeValue(value) {
+  if (!isObject(value) || typeof value.dispose !== 'function') return
+  if (typeof value.refCount === 'number' && value.refCount <= 0) return
+  try {
+    value.dispose()
+  } catch {
+    // Ignore tracer or already-freed disposal errors during cleanup.
+  }
+}
+
+function disposeTree(tree) {
+  if (hasArrayShape(tree)) {
+    disposeValue(tree)
+    return
+  }
+  if (Array.isArray(tree)) {
+    for (const item of tree) disposeTree(item)
+    return
+  }
+  if (isObject(tree)) {
+    for (const item of Object.values(tree)) disposeTree(item)
+  }
+}
+
+export function releaseValue(id) {
+  const key = textOf(id)
+  if (!values.has(key)) return false
+  const value = values.get(key)
+  values.delete(key)
+  disposeValue(value)
+  return true
+}
+
+export function resetValues() {
+  const entries = Array.from(values.values())
+  values.clear()
+  for (const value of entries) {
+    disposeValue(value)
+  }
+}
+
 function storeValue(value) {
   if (!runtimeReady) {
     throw new NotebookMlUnsupportedError('WebGPU is required for browser JAX/Torch notebook cells')
@@ -139,7 +180,7 @@ function scalarTreeFromDescriptor(descriptor) {
     }
     return out
   }
-  if (descriptor.kind === 'tensor') return getValue(descriptor.id).js()
+  if (descriptor.kind === 'tensor') return refValue(getValue(descriptor.id)).js()
   return descriptor
 }
 
@@ -199,14 +240,28 @@ function callPython(fn, args) {
   throw new Error('notebook ML Python callable is unavailable')
 }
 
+function destroyPyProxy(value) {
+  if (value && typeof value.destroy === 'function') {
+    try {
+      value.destroy()
+    } catch {
+      // Ignore already-destroyed PyProxy handles.
+    }
+  }
+}
+
 function pyTreeFunction(fn) {
-  return (...args) =>
-    pythonResultToJsTree(
-      callPython(
-        fn,
-        args.map(arg => wrapJsTree(arg)),
-      ),
-    )
+  return (...args) => {
+    const wrappedArgs = args.map(arg => wrapJsTree(arg))
+    let result
+    try {
+      result = callPython(fn, wrappedArgs)
+      return pythonResultToJsTree(result)
+    } finally {
+      destroyPyProxy(result)
+      for (const wrapped of wrappedArgs) destroyPyProxy(wrapped)
+    }
+  }
 }
 
 function transformOptions(optionsJson) {
@@ -247,7 +302,17 @@ function callValueAndGrad(fn, argsJson, optionsJson) {
 
 function callMakeJaxpr(fn, argsJson) {
   const transformed = makeJaxpr(pyTreeFunction(fn))
-  return textOf(transformed(...argArrayFromDescriptor(argsJson)).jaxpr)
+  const args = argArrayFromDescriptor(argsJson)
+  let traced
+  try {
+    traced = transformed(...args)
+    return textOf(traced.jaxpr)
+  } finally {
+    if (traced && traced.jaxpr && typeof traced.jaxpr.dispose === 'function') {
+      disposeValue(traced.jaxpr)
+    }
+    disposeTree(args)
+  }
 }
 
 function unaryOp(name, valueJson, optionsJson) {
@@ -256,7 +321,7 @@ function unaryOp(name, valueJson, optionsJson) {
   const ops = {
     astype: x => x.astype(dtypeOf(options.dtype)),
     block: x => {
-      if (x && typeof x.dataSync === 'function') x.dataSync()
+      if (x && typeof x.dataSync === 'function') refValue(x).dataSync()
       return x
     },
     cos: x => np.cos(x),
@@ -366,11 +431,11 @@ function arraySize(id) {
 }
 
 function arrayToJson(id) {
-  return JSON.stringify(getValue(id).js())
+  return JSON.stringify(refValue(getValue(id)).js())
 }
 
 function arrayItem(id) {
-  return getValue(id).item()
+  return refValue(getValue(id)).item()
 }
 
 function expandedIndexSpec(shape, spec) {
@@ -495,7 +560,7 @@ function writeSelection(root, axes, replacement, axisIndex, coords, keptCoords) 
 function arrayAtSet(id, specJson, valueJson) {
   const target = getValue(id)
   const replacementValue = leafFromDescriptor(valueJson)
-  const root = target.js()
+  const root = refValue(target).js()
   const replacement = hasArrayShape(replacementValue) ? replacementValue.js() : replacementValue
   writeSelection(root, selectedAxes(target.shape, parseJson(specJson)), replacement, 0, [], [])
   return storeValue(np.array(root, dtypeOptions(target.dtype)))
@@ -564,7 +629,7 @@ function blockTree(argsJson) {
   const tree = treeFromDescriptor(parseJson(argsJson))
   const visit = value => {
     if (hasArrayShape(value)) {
-      if (typeof value.dataSync === 'function') value.dataSync()
+      if (typeof value.dataSync === 'function') refValue(value).dataSync()
       return value
     }
     if (Array.isArray(value)) return value.map(visit)
@@ -595,6 +660,8 @@ export function installNotebookMlBridge(target) {
     wrapPythonTree = wrapTreeCallback
     describePythonTree = describeTreeCallback
   }
+  target.quartz_notebook_ml_release = releaseValue
+  target.quartz_notebook_ml_reset = resetValues
   target.quartz_notebook_ml_array = arrayFromJson
   target.quartz_notebook_ml_full = arrayFull
   target.quartz_notebook_ml_zeros = arrayZeros

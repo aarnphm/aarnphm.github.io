@@ -17,10 +17,10 @@ registerHooks({
 })
 
 const {
-  NotebookViewer,
   affectedNotebookFiles,
   mayAffectNotebookPages,
   notebookPageCacheEntries,
+  parseNotebookPages,
   readNotebookDependencies,
   resetNotebookCaches,
 } = await import('./notebook')
@@ -28,17 +28,6 @@ import { notebookAssetMinBytes } from '../../util/notebook/extract-assets'
 import { getPreservedOutputFiles, resetOutputAssetClaims } from '../../util/output-assets'
 
 function makeTestCtx(root: string, allFiles: FilePath[] = []): BuildCtx {
-  const colors = {
-    light: '#fff',
-    lightgray: '#eee',
-    gray: '#888',
-    darkgray: '#444',
-    dark: '#000',
-    secondary: '#456',
-    tertiary: '#789',
-    highlight: '#abc',
-    textHighlight: '#def',
-  }
   return {
     buildId: 'test-notebook',
     argv: {
@@ -60,12 +49,7 @@ function makeTestCtx(root: string, allFiles: FilePath[] = []): BuildCtx {
         ignorePatterns: [],
         defaultDateType: 'modified',
         locale: 'en-US',
-        theme: {
-          fontOrigin: 'local',
-          cdnCaching: true,
-          typography: { header: 'sans-serif', body: 'sans-serif', code: 'monospace' },
-          colors: { lightMode: colors, darkMode: colors },
-        },
+        theme: {} as BuildCtx['cfg']['configuration']['theme'],
       },
       plugins: { transformers: [], filters: [], emitters: [] },
     },
@@ -168,7 +152,7 @@ test('mayAffectNotebookPages and affectedNotebookFiles use cached dependencies f
   }
 })
 
-test('NotebookViewer persists page cache to disk and hits cache across cold globalThis resets', async () => {
+test('parseNotebookPages persists page cache to disk and hits cache across cold globalThis resets', async () => {
   const root = await mkdtemp(path.join(tmpdir(), 'quartz-notebook-emit-cache-'))
   const relPath = 'notes/__cache_test_probe__.ipynb' as FilePath
   try {
@@ -181,14 +165,10 @@ test('NotebookViewer persists page cache to disk and hits cache across cold glob
     const dataUri = `data:image/png;base64,${Buffer.from(pngBytes).toString('base64')}`
     await writeFile(fullPath, sampleNotebookJson('y = 42', `<img src="${dataUri}">`))
 
-    const emitter = NotebookViewer()
-    const resources = { css: [], js: [], additionalHead: [] }
     const ctx1 = makeTestCtx(root, [relPath])
-    const emitted1: FilePath[] = []
-    for await (const fp of emitter.emit(ctx1, [], resources) as AsyncIterable<FilePath>) {
-      emitted1.push(fp)
-    }
-    assert.equal(emitted1.length, 1)
+    const result1 = await parseNotebookPages(ctx1, [relPath], 1)
+    assert.equal(result1.pages.length, 1)
+    assert.equal(result1.cacheHits, 0)
 
     const entries1 = await notebookPageCacheEntries()
     const entry1 = entries1.get(relPath)
@@ -205,11 +185,9 @@ test('NotebookViewer persists page cache to disk and hits cache across cold glob
 
     const ctx2 = makeTestCtx(root, [relPath])
     ctx2.buildId = 'test-notebook-2'
-    const emitted2: FilePath[] = []
-    for await (const fp of emitter.emit(ctx2, [], resources) as AsyncIterable<FilePath>) {
-      emitted2.push(fp)
-    }
-    assert.equal(emitted2.length, 1)
+    const result2 = await parseNotebookPages(ctx2, [relPath], 1)
+    assert.equal(result2.pages.length, 1)
+    assert.equal(result2.cacheHits, 1)
     const preserved = getPreservedOutputFiles()
     const expectedAssetPath = path.resolve(
       ctx2.argv.output,

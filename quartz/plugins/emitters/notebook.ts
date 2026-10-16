@@ -10,6 +10,7 @@ import { defaultContentPageLayout, sharedPageComponents } from '../../../quartz.
 import { FullPageLayout } from '../../cfg'
 import * as Component from '../../components'
 import HeaderConstructor from '../../components/Header'
+import { pageResources, renderPage } from '../../components/renderPage'
 import { createHtmlProcessor, createMdProcessor, mdastToHastRoot } from '../../processors/parse'
 import '../../runtime/notebook/registry'
 import { backendFor } from '../../runtime/notebook/backend'
@@ -595,12 +596,12 @@ async function parseNotebookQueue(
   return pages
 }
 
-async function parseNotebookPages(
+export async function parseNotebookPages(
   ctx: BuildCtx,
   fps: FilePath[],
   maxWorkers: number,
-  opts: ResolvedOptions,
-  contextFps: FilePath[],
+  opts: ResolvedOptions = defaultOptions,
+  contextFps: FilePath[] = fps,
 ): Promise<{ pages: NotebookPage[]; cacheHits: number }> {
   const pages: NotebookPage[] = []
   let cacheHits = 0
@@ -644,18 +645,12 @@ async function parseNotebookPages(
   return { pages, cacheHits }
 }
 
-let renderPageModule: typeof import('../../components/renderPage') | undefined
-async function getRenderPageModule() {
-  return (renderPageModule ??= await import('../../components/renderPage'))
-}
-
 async function emitNotebookPage(
   ctx: BuildCtx,
   page: NotebookPage,
   allFiles: QuartzPluginData[],
   resources: StaticResources,
 ): Promise<FilePath> {
-  const { pageResources, renderPage } = await getRenderPageModule()
   const [tree, file] = page.content
   const externalResources = pageResources(pathToRoot(page.slug), resources, ctx)
   const componentData = {
