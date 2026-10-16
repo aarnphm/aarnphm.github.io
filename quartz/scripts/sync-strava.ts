@@ -20,6 +20,7 @@ import { reconcileStravaActivities, stravaFetchAfter } from '../util/strava-sync
 import { stravaSyncRefreshDays } from '../util/sync-refresh-window'
 import { refreshTriathlonRouteSource } from '../util/triathlon-cache'
 import { isRecord, readNumber, readString } from '../util/type-guards'
+import { syncRouvyWahooPairs } from './sync-rouvy-wahoo'
 
 const TOKEN_URL = 'https://www.strava.com/oauth/token'
 const DEFAULT_API_BASE_URL = 'https://www.strava.com/api/v3'
@@ -625,6 +626,7 @@ async function main(): Promise<void> {
 
   if (writing) await writing
   await writeCache()
+  await syncRouvyWahooPairs()
   await refreshTriathlonRouteSource()
   if (rateDeferred) {
     const usage =

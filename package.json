@@ -45,6 +45,7 @@
     "wahoo:auth": "tsx --env-file=.env quartz/scripts/auth-wahoo.ts",
     "wahoo:reauth": "tsx --env-file=.env quartz/scripts/auth-wahoo.ts --reauthorize",
     "wahoo:sync": "tsx --env-file=.env quartz/scripts/sync-wahoo.ts",
+    "rouvy-wahoo:sync": "tsx --env-file=.env quartz/scripts/sync-rouvy-wahoo.ts",
     "wahoo:sync-titles": "tsx --env-file=.env quartz/scripts/sync-wahoo-titles.ts",
     "activity-providers:sync": "tsx --env-file=.env quartz/scripts/sync-activity-providers.ts",
     "trainingpeaks:backfill": "tsx --env-file=.env quartz/scripts/backfill-trainingpeaks.ts",

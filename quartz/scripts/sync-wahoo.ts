@@ -22,6 +22,7 @@ import {
   type WahooWorkoutSummaryDto,
 } from '../util/wahoo-cloud'
 import { decodeWahooFit, wahooFitSha256, type WahooFitData } from '../util/wahoo-fit'
+import { syncRouvyWahooPairs } from './sync-rouvy-wahoo'
 
 export const WAHOO_CACHE_FILE = joinSegments(QUARTZ, '.quartz-cache', 'wahoo.json')
 
@@ -276,6 +277,7 @@ async function main(): Promise<void> {
   const client = await wahooCloudClientFromEnv()
   const cache = await fetchWahooCache(client, await readPreviousCache())
   await writeWahooCache(cache)
+  await syncRouvyWahooPairs()
   await refreshTriathlonRouteSource()
   console.log(
     `[wahoo] wrote ${Object.keys(cache.activities).length} activities → ${WAHOO_CACHE_FILE}`,

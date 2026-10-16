@@ -61,6 +61,12 @@ import { parseMyWindsockGraphs, type MyWindsockArchiveReference } from './mywind
 import { projectMyWindsockRoute, type MyWindsockRoute } from './mywindsock-route'
 import { joinSegments, QUARTZ } from './path'
 import { latestProviderSync } from './provider-sync'
+import {
+  pairedActivityTracking,
+  readRouvyWahooPairs,
+  rouvyWahooPairsPath,
+  withoutPairedWahooDuplicates,
+} from './rouvy-wahoo-pairs'
 import { applyStaminaLedger, garminRecoveryReadings } from './stamina-ledger'
 import { readStravaCacheFileSync } from './strava-cache-file'
 import { swimPaceSeconds, swimStrokeRate } from './swim-metrics'
@@ -1010,7 +1016,14 @@ export function loadStravaDataSync(
     sauna: manualTracking?.sauna ?? [],
     analytics: analyticsInputs,
   })
-  const stamps = `${stamp(stravaCachePath)}:${stamp(ouraCachePath)}:${stamp(garminCachePath)}:${stamp(wahooCachePath)}:${stamp(weatherCachePath)}:${stamp(appleCachePath)}:${stamp(coreBodyTemperatureCachePath)}:${wahooTrackingStamp(manualTracking?.activities ?? [], contentDirectory)}:${windArchiveStamp(contentDirectory)}:${swimProvenanceStamp(contentDirectory)}`
+  const pairs = readRouvyWahooPairs(contentDirectory)
+  const pairEntries = pairs.map(pair => ({
+    activityId: pair.canonicalId,
+    garminActivityId: null,
+    virtual: true,
+    wahooFitPath: pair.fitPath,
+  }))
+  const stamps = `${stamp(stravaCachePath)}:${stamp(ouraCachePath)}:${stamp(garminCachePath)}:${stamp(wahooCachePath)}:${stamp(weatherCachePath)}:${stamp(appleCachePath)}:${stamp(coreBodyTemperatureCachePath)}:${stamp(rouvyWahooPairsPath(contentDirectory))}:${wahooTrackingStamp([...pairEntries, ...(manualTracking?.activities ?? [])], contentDirectory)}:${windArchiveStamp(contentDirectory)}:${swimProvenanceStamp(contentDirectory)}`
   const sourceSalt = payloadSourceSalt
   if (payloadMemo.stamps !== stamps || payloadMemo.sourceSalt !== sourceSalt) {
     payloadMemo.entries.clear()
@@ -1045,14 +1058,21 @@ export function buildStravaData(
   analyticsInputs: StravaPayloadAnalyticsInputs = {},
   contentDirectory = 'content',
 ): LoadedStravaData {
-  const { strava, garmin, oura, apple, core, weather } = sources
+  const { garmin, oura, apple, core, weather } = sources
+  const pairs = readRouvyWahooPairs(contentDirectory)
+  const activityTracking = pairedActivityTracking(
+    pairs,
+    manualTracking?.activities ?? [],
+    sources.strava,
+  )
   const swimProvenance = readSwimProvenance(contentDirectory)
   const wahoo = loadTrackedWahooFits(
     sources.wahoo,
-    strava,
-    manualTracking?.activities ?? [],
+    sources.strava,
+    activityTracking,
     contentDirectory,
   )
+  const strava = withoutPairedWahooDuplicates(sources.strava, pairs, activityTracking, wahoo)
   const generatedAt = latestProviderSync(strava, oura, garmin, sources.wahoo, apple, core, weather)
   const labs = parseVo2Lab(analyticsInputs.vo2labs)
   const latestLab = labs.at(-1)
@@ -1069,7 +1089,7 @@ export function buildStravaData(
     ATHLETE.hrMax,
     ATHLETE.lt,
     generatedAt,
-    manualTracking?.activities,
+    activityTracking,
   )
   applyManualActivityTracking(payload, manualTracking, oura, weather, garmin)
   for (const day of analyticsInputs.weights ?? []) {
@@ -1106,12 +1126,7 @@ export function buildStravaData(
     applyHeartRatePhysiology(detail, ATHLETE.hrMax)
     applySwimPhysiology(detail, ATHLETE.hrMax)
   }
-  const trackedCache = applyActivityTracking(
-    strava,
-    garmin,
-    manualTracking?.activities ?? [],
-    wahoo,
-  )
+  const trackedCache = applyActivityTracking(strava, garmin, activityTracking, wahoo)
   const analytics = buildAnalytics(trackedCache, {
     ...analyticsInputs,
     oura,
