@@ -79,7 +79,7 @@ const Node: FunctionalComponent<{ pos: NodePos; isRoot: boolean }> = ({ pos, isR
     data-index={pos.index}
     transform={`translate(${pos.x - NODE_W / 2}, ${pos.y - NODE_H / 2})`}
   >
-    <rect class="tr-node-shape" x="0" y="0" width={NODE_W} height={NODE_H} rx="6" />
+    <rect class="tr-node-shape" x="0" y="0" width={NODE_W} height={NODE_H} />
     <foreignObject x="0" y="0" width={NODE_W} height={NODE_H}>
       <div class={`tr-fo ${isRoot ? 'tr-fo--root' : ''}`} data-tree-value>
         -

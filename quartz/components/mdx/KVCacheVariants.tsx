@@ -75,11 +75,10 @@ const CachedBar: FunctionalComponent<{
   w: number
   h: number
   cls: string
-  rx?: number
-}> = ({ x, y, w, h, cls, rx = 2.5 }) => (
+}> = ({ x, y, w, h, cls }) => (
   <g>
-    <rect class={`kvc-bar ${cls}`} x={x} y={y} width={w} height={h} rx={rx} />
-    <rect class="kvc-hatch-fill" x={x} y={y} width={w} height={h} rx={rx} fill={`url(#${HATCH})`} />
+    <rect class={`kvc-bar ${cls}`} x={x} y={y} width={w} height={h} />
+    <rect class="kvc-hatch-fill" x={x} y={y} width={w} height={h} fill={`url(#${HATCH})`} />
   </g>
 )
 
@@ -135,7 +134,6 @@ const Panel: FunctionalComponent<{ p: number; panel: Panel }> = ({ p, panel }) =
               y={ROW.v}
               width={BAR_W}
               height={BAR_H}
-              rx={2.5}
             />
             <rect
               class="kvc-bar kvc-bar--recompute"
@@ -143,7 +141,6 @@ const Panel: FunctionalComponent<{ p: number; panel: Panel }> = ({ p, panel }) =
               y={ROW.k}
               width={BAR_W}
               height={BAR_H}
-              rx={2.5}
             />
           </>
         )
@@ -156,7 +153,6 @@ const Panel: FunctionalComponent<{ p: number; panel: Panel }> = ({ p, panel }) =
           y={ROW.q}
           width={BAR_W}
           height={BAR_H}
-          rx={2.5}
         />
       ))}
 
@@ -193,7 +189,6 @@ const Panel: FunctionalComponent<{ p: number; panel: Panel }> = ({ p, panel }) =
             w={LAT_W}
             h={LAT_BOT - LAT_TOP}
             cls="kvc-bar--latent"
-            rx={3}
           />
           <foreignObject x={LAT_CX - 70} y={LAT_BOT + 6} width={140} height={28}>
             <div class="kvc-fo kvc-fo--latent">compressed latent KV</div>

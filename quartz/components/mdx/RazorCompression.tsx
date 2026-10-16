@@ -121,7 +121,6 @@ const RazorCompressionImpl: QuartzMdxComponent<Props> = ({ caption }) => (
           y={ROW1_Y}
           width={TRACK_W}
           height={TRACK_H}
-          rx={4}
         />
         <Fo
           x={TRACK_X}
@@ -146,7 +145,6 @@ const RazorCompressionImpl: QuartzMdxComponent<Props> = ({ caption }) => (
           y={ROW2_Y}
           width={SINK_W}
           height={TRACK_H}
-          rx={4}
         />
         <g data-rzc-dropped-group>
           <rect
@@ -156,7 +154,6 @@ const RazorCompressionImpl: QuartzMdxComponent<Props> = ({ caption }) => (
             y={ROW2_Y}
             width={dropW0}
             height={TRACK_H}
-            rx={4}
           />
           <rect
             class="rzc-seg-hatch"
@@ -165,7 +162,6 @@ const RazorCompressionImpl: QuartzMdxComponent<Props> = ({ caption }) => (
             y={ROW2_Y}
             width={dropW0}
             height={TRACK_H}
-            rx={4}
             fill="url(#rzc-hatch)"
           />
           <foreignObject
@@ -188,7 +184,6 @@ const RazorCompressionImpl: QuartzMdxComponent<Props> = ({ caption }) => (
           y={ROW2_Y}
           width={rollW0}
           height={TRACK_H}
-          rx={4}
         />
 
         <path
@@ -204,7 +199,6 @@ const RazorCompressionImpl: QuartzMdxComponent<Props> = ({ caption }) => (
             y={COMP_Y}
             width={COMP_W}
             height={COMP_H}
-            rx={4}
           />
           <Fo
             x={COMP_CX - COMP_W / 2}

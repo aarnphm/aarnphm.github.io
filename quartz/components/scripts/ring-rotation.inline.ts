@@ -73,11 +73,12 @@ const renderNodes = (svg: SVGSVGElement, p: number) => {
     g.setAttribute('class', 'rr-node')
     g.setAttribute('data-rr-node', String(i))
 
-    const disc = document.createElementNS(SVG_NS, 'circle')
+    const disc = document.createElementNS(SVG_NS, 'rect')
     disc.setAttribute('class', 'rr-node-disc')
-    disc.setAttribute('cx', String(x))
-    disc.setAttribute('cy', String(y))
-    disc.setAttribute('r', '22')
+    disc.setAttribute('x', String(x - 22))
+    disc.setAttribute('y', String(y - 22))
+    disc.setAttribute('width', '44')
+    disc.setAttribute('height', '44')
     g.appendChild(disc)
 
     const labelFo = document.createElementNS(SVG_NS, 'foreignObject')
@@ -98,7 +99,6 @@ const renderNodes = (svg: SVGSVGElement, p: number) => {
     chipRect.setAttribute('y', String(chip.y - 13))
     chipRect.setAttribute('width', '52')
     chipRect.setAttribute('height', '26')
-    chipRect.setAttribute('rx', '4')
     chipRect.setAttribute('data-rr-chip', String(i))
     g.appendChild(chipRect)
 

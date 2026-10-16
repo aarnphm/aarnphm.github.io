@@ -61,17 +61,17 @@ const Layer: FunctionalComponent<LayerProps> = ({ k, topY, arrowId, emphasis }) 
         <path class="vw-line" d={topPath} marker-end={`url(#${arrowId})`} />
         <line class="vw-line" x1="55" y1={topY} x2="37" y2={topY} marker-end={`url(#${arrowId})`} />
 
-        <rect class="vw-box vw-box-weight" x="55" y={topY - 12} width="40" height="24" rx="3" />
+        <rect class="vw-box vw-box-weight" x="55" y={topY - 12} width="40" height="24" />
         <MathFO x={55} y={topY - 12} w={40} h={24} tex={`W^{${k}}_O`} />
 
-        <rect class="vw-box vw-box-weight" x="55" y={botY - 12} width="40" height="24" rx="3" />
+        <rect class="vw-box vw-box-weight" x="55" y={botY - 12} width="40" height="24" />
         <MathFO x={55} y={botY - 12} w={40} h={24} tex={`W^{${k}}_I`} />
 
         <circle class="vw-node" cx="30" cy={topY} r="7" />
         <MathFO x={22} y={topY - 8} w={16} h={16} tex="+" cls="vw-fo--node" />
       </g>
 
-      <rect class={dotsClass} x="130" y={midY - 12} width="40" height="24" rx="3" />
+      <rect class={dotsClass} x="130" y={midY - 12} width="40" height="24" />
       <MathFO x={130} y={midY - 12} w={40} h={24} tex="\cdots" cls="vw-fo--dots" />
     </g>
   )
@@ -86,7 +86,7 @@ const VirtualLabel: FunctionalComponent<{
   sub2: string
 }> = ({ x, y, sup1, sub1, sup2, sub2 }) => (
   <g transform={`translate(${x}, ${y})`}>
-    <rect class="vw-vw-bg" x="-36" y="-15" width="72" height="30" rx="3" />
+    <rect class="vw-vw-bg" x="-36" y="-15" width="72" height="30" />
     <MathFO
       x={-36}
       y={-15}

@@ -101,10 +101,10 @@ const FoL = ({
 
 const HBMTier = () => (
   <g class="fdf-hbm">
-    <rect class="fdf-tier fdf-tier--hbm" x={28} y={64} width={130} height={212} rx={7} />
+    <rect class="fdf-tier fdf-tier--hbm" x={28} y={64} width={130} height={212} />
     <Fo cx={93} cy={50} w={70} tex="\mathrm{HBM}" cls="fdf-fo--big" />
     {CELL_CY.map(cy => (
-      <rect class="fdf-cell" x={42} y={cy - 16} width={102} height={32} rx={3} />
+      <rect class="fdf-cell" x={42} y={cy - 16} width={102} height={32} />
     ))}
     {CELLS.map((c, i) => (
       <Fo cx={93} cy={CELL_CY[i]} w={40} tex={c} cls="fdf-fo--cell" />
@@ -114,7 +114,7 @@ const HBMTier = () => (
 
 const Kernel = ({ x, y }: { x: number; y: number }) => (
   <g class="fdf-kernel">
-    <rect class="fdf-chip fdf-chip--mma" x={x} y={y} width={84} height={30} rx={4} />
+    <rect class="fdf-chip fdf-chip--mma" x={x} y={y} width={84} height={30} />
     <Fo cx={x + 42} cy={y + 15} w={80} tex="S = QK^\top" cls="fdf-fo--chip" />
     <line
       class="fdf-flow-line"
@@ -124,7 +124,7 @@ const Kernel = ({ x, y }: { x: number; y: number }) => (
       y2={y + 15}
       marker-end="url(#fdf-ah)"
     />
-    <rect class="fdf-chip fdf-chip--sm" x={x + 106} y={y} width={44} height={30} rx={4} />
+    <rect class="fdf-chip fdf-chip--sm" x={x + 106} y={y} width={44} height={30} />
     <Fo cx={x + 128} cy={y + 15} w={40} tex="P" cls="fdf-fo--chip" />
     <line
       class="fdf-flow-line"
@@ -134,9 +134,9 @@ const Kernel = ({ x, y }: { x: number; y: number }) => (
       y2={y + 15}
       marker-end="url(#fdf-ah)"
     />
-    <rect class="fdf-chip fdf-chip--mma" x={x + 172} y={y} width={96} height={30} rx={4} />
+    <rect class="fdf-chip fdf-chip--mma" x={x + 172} y={y} width={96} height={30} />
     <Fo cx={x + 220} cy={y + 15} w={92} tex="O \mathrel{{+}{=}} PV" cls="fdf-fo--chip" />
-    <rect class="fdf-chip fdf-chip--stat" x={x} y={y + 42} width={84} height={26} rx={4} />
+    <rect class="fdf-chip fdf-chip--stat" x={x} y={y + 42} width={84} height={26} />
     <Fo cx={x + 42} cy={y + 55} w={80} tex="m_i,\,\ell_i" cls="fdf-fo--chip fdf-fo--sm" />
     <Fo cx={x + 150} cy={y + 55} w={70} tex="\mathrm{softmax}" cls="fdf-fo--tiny" />
   </g>
@@ -165,10 +165,9 @@ const SceneFA1 = () => (
         y={132 + s.dy}
         width={296}
         height={96}
-        rx={7}
       />
     ))}
-    <rect class="fdf-tier fdf-tier--chip" x={312} y={132} width={296} height={96} rx={7} />
+    <rect class="fdf-tier fdf-tier--chip" x={312} y={132} width={296} height={96} />
     <FoL
       x={318}
       cy={104}
@@ -221,7 +220,6 @@ const SceneFA2 = () => (
           y={cy - 19}
           width={252}
           height={38}
-          rx={5}
         />
         <Fo cx={398} cy={cy} w={110} tex="Q_i\ \text{resident}" cls="fdf-fo--chip" />
         <rect
@@ -230,7 +228,6 @@ const SceneFA2 = () => (
           y={cy - 13}
           width={104}
           height={26}
-          rx={4}
         />
         <Fo cx={526} cy={cy} w={96} tex="S\,{\cdot}\,P\,{\cdot}\,O" cls="fdf-fo--chip fdf-fo--sm" />
         <g class="fdf-lane fdf-lane--stream">
@@ -258,7 +255,7 @@ const SceneFA3 = () => (
   <g class="fdf-scene fdf-scene--fa3">
     <title>FlashAttention-3 asynchronous dataflow</title>
     <HBMTier />
-    <rect class="fdf-tier fdf-tier--chip" x={296} y={90} width={420} height={156} rx={7} />
+    <rect class="fdf-tier fdf-tier--chip" x={296} y={90} width={420} height={156} />
     <Fo
       cx={236}
       cy={108}
@@ -273,10 +270,10 @@ const SceneFA3 = () => (
     <g class="fdf-lane fdf-lane--tma fdf-lane--tma2">
       <rect class="fdf-pkt fdf-pkt--load" x={158} y={115} width={16} height={14} />
     </g>
-    <rect class="fdf-tier fdf-tier--ring" x={332} y={106} width={70} height={112} rx={6} />
+    <rect class="fdf-tier fdf-tier--ring" x={332} y={106} width={70} height={112} />
     <Fo cx={367} cy={98} w={64} tex="\mathrm{SMEM}" cls="fdf-fo--big fdf-fo--ring" />
     {RING_SLOTS.map((cy, i) => (
-      <rect class={`fdf-slot fdf-slot--${i}`} x={344} y={cy - 11} width={46} height={22} rx={3} />
+      <rect class={`fdf-slot fdf-slot--${i}`} x={344} y={cy - 11} width={46} height={22} />
     ))}
     <line class="fdf-flow-line" x1={402} y1={162} x2={424} y2={162} marker-end="url(#fdf-ah)" />
     <Fo
@@ -295,8 +292,8 @@ const SceneFA4 = () => (
   <g class="fdf-scene fdf-scene--fa4">
     <title>FlashAttention-4 asynchronous-MMA dataflow</title>
     <HBMTier />
-    <rect class="fdf-tier fdf-tier--chip" x={296} y={90} width={400} height={170} rx={7} />
-    <rect class="fdf-chip fdf-chip--sched" x={300} y={98} width={132} height={30} rx={5} />
+    <rect class="fdf-tier fdf-tier--chip" x={296} y={90} width={400} height={170} />
+    <rect class="fdf-chip fdf-chip--sched" x={300} y={98} width={132} height={30} />
     <Fo cx={366} cy={113} w={124} tex="\text{scheduler}" cls="fdf-fo--chip" />
     <line class="fdf-flow-line" x1={158} y1={113} x2={298} y2={113} marker-end="url(#fdf-ah)" />
     <g class="fdf-lane fdf-lane--sched">
@@ -310,14 +307,7 @@ const SceneFA4 = () => (
       y2={160}
       marker-end="url(#fdf-ah)"
     />
-    <rect
-      class="fdf-chip fdf-chip--mma fdf-pulse--mma"
-      x={300}
-      y={162}
-      width={150}
-      height={40}
-      rx={5}
-    />
+    <rect class="fdf-chip fdf-chip--mma fdf-pulse--mma" x={300} y={162} width={150} height={40} />
     <Fo cx={375} cy={176} w={140} tex="\texttt{tcgen05}\ \text{MMA}" cls="fdf-fo--chip" />
     <Fo cx={375} cy={192} w={120} tex="\text{tile }t" cls="fdf-fo--tiny" />
     <rect
@@ -326,7 +316,6 @@ const SceneFA4 = () => (
       y={214}
       width={150}
       height={40}
-      rx={5}
     />
     <Fo cx={362} cy={228} w={130} tex="\text{CUDA cores}" cls="fdf-fo--chip" />
     <Fo
@@ -342,7 +331,6 @@ const SceneFA4 = () => (
       y={220}
       width={112}
       height={28}
-      rx={4}
     />
     <Fo
       cx={526}
@@ -351,7 +339,7 @@ const SceneFA4 = () => (
       tex="\text{poly-exp}\,{\cdot}\,\text{3 FMA}"
       cls="fdf-fo--chip fdf-fo--sm"
     />
-    <rect class="fdf-tier fdf-tier--tmem" x={470} y={150} width={214} height={52} rx={6} />
+    <rect class="fdf-tier fdf-tier--tmem" x={470} y={150} width={214} height={52} />
     <FoL x={478} cy={142} w={90} tex="\mathrm{TMEM}" cls="fdf-fo--label" />
     <Fo
       cx={577}

@@ -175,7 +175,7 @@ const SvgMath: FunctionalComponent<{
 
 const NodeBox: FunctionalComponent<{ label: string }> = ({ label }) => (
   <>
-    <rect class="rpt-node-shape" width={NW} height={NH} rx={5} />
+    <rect class="rpt-node-shape" width={NW} height={NH} />
     <SvgMath x={0} y={0} w={NW} h={NH} t={labelTex(label)} cls="rpt-node-label" />
   </>
 )
@@ -315,7 +315,6 @@ const RadixPrefixTreeImpl: QuartzMdxComponent<Props> = ({ caption }) => (
                   y={VH - 32}
                   width={12}
                   height={12}
-                  rx={2}
                 />
                 <SvgMath
                   x={l.x + 18}

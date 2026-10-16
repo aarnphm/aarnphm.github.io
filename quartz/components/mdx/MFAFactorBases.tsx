@@ -77,14 +77,7 @@ const HeatGrid: FunctionalComponent<{ x: number; y: number; cell: number; attr: 
   attr,
 }) => (
   <g>
-    <rect
-      class="mfa-grid-frame"
-      x={x - 1}
-      y={y - 1}
-      width={L * cell + 2}
-      height={L * cell + 2}
-      rx={2}
-    />
+    <rect class="mfa-grid-frame" x={x - 1} y={y - 1} width={L * cell + 2} height={L * cell + 2} />
     {Array.from({ length: L }, (_, i) =>
       Array.from({ length: L }, (_, j) => (
         <rect
@@ -110,7 +103,6 @@ const FactorStripe: FunctionalComponent<{ idx: number }> = ({ idx }) => {
         y={FROW_Y - 1}
         width={FGRID + 2}
         height={FGRID + 2}
-        rx={2}
       />
       {Array.from({ length: L }, (_, i) =>
         Array.from({ length: L }, (_, j) => (

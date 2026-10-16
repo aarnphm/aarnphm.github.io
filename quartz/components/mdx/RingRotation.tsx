@@ -107,7 +107,7 @@ const RingRotationImpl: QuartzMdxComponent<Props> = ({ caption, devices = DEFAUL
               const chip = polar(deviceAngle(i, initialP), CHIP_R)
               return (
                 <g class="rr-node" data-rr-node={i}>
-                  <circle class="rr-node-disc" cx={x} cy={y} r="22" />
+                  <rect class="rr-node-disc" x={x - 22} y={y - 22} width="44" height="44" />
                   <MathFO x={x - 18} y={y - 12} w={36} h={24} tex={`d_{${i}}`} cls="rr-fo--node" />
                   <rect
                     class="rr-slice-chip"
@@ -115,7 +115,6 @@ const RingRotationImpl: QuartzMdxComponent<Props> = ({ caption, devices = DEFAUL
                     y={chip.y - 13}
                     width="52"
                     height="26"
-                    rx="4"
                     data-rr-chip={i}
                   />
                   <MathFO
