@@ -979,4 +979,33 @@ describe('notebook parser', () => {
     assert.match(markdown, /notebook-language-badge-javascript/)
     assert.match(markdown, /```javascript\nconsole\.log\("hi"\)\n```/)
   })
+
+  test('resolves lean cell magics and .lean writefile targets in notebooks', () => {
+    const notebook = parseNotebook(
+      JSON.stringify({
+        metadata: { language_info: { name: 'python' } },
+        cells: [
+          { cell_type: 'code', source: '%%lean\n#eval 1 + 1' },
+          { cell_type: 'code', source: '%%writefile Basic.lean\n#check Nat' },
+        ],
+      }),
+      'lean-magic.ipynb',
+    )
+
+    const data = notebookRuntimeData(notebook, 'lean-magic.ipynb', {
+      enabled: true,
+      sourcePath: 'lean-magic.ipynb',
+    })
+    assert.deepStrictEqual(
+      data?.cells.map(cell => ({
+        id: cell.id,
+        language: cell.language,
+        displayLanguage: cell.displayLanguage,
+      })),
+      [
+        { id: 'cell-1', language: 'lean', displayLanguage: undefined },
+        { id: 'cell-2', language: 'python', displayLanguage: 'lean' },
+      ],
+    )
+  })
 })
