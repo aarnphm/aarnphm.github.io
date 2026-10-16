@@ -138,6 +138,18 @@ Use the mixins in [figure.scss](../quartz/components/styles/figure.scss) for a t
 
 Triathlon data panels use the same flat frame language with denser charts, tables, and aligned readouts. Use `tabular-nums`; retain units, source, time range, and the date of a reference measurement. Distinguish native measurements, calculated estimates, and model outputs in the label or legend. Missing data stays visibly missing.
 
+Embedded activity comparisons use `--tri-activity-graph-row-height` as their complete panel budget, including the caption, controls, axes, legend, and readout. The default plot height is 112px. A panel spanning multiple rows also includes the `--tri-activity-graph-gap` (0.7rem) gaps between those rows; `tri-graph-span($rows)` in triathlon.scss computes it, and the `$graph-units` map is the one place that assigns rows. Keep each budget stable when changing views or loading archived graphs, and fit the plot into the remaining space with `minmax(0, 1fr)` or a shrinking flex child.
+
+| Embedded panel                                                                                                                                                                                            | Rows |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
+| Ordinary traces, run metric switches, crank torque, cycling switches, electronic shifting in graph or histogram mode, distributions, training effect, one heart rate or power zone chart, each swim trend | 1    |
+| Workout analysis, terrain power/heart-rate cost, power curve, stacked heart rate and power zones                                                                                                          | 2    |
+| Stride by cadence/distance, modeled swim drag power                                                                                                                                                       | 3    |
+| Matched rides/runs (2 rows of chart, 2 rows of similar efforts); myWindsock graph picker, description, selected plots, and credit                                                                         | 4    |
+| Environment: title and summary table (4) plus tabs, readout, selected graph, and credit (1)                                                                                                               | 5    |
+
+Reserve the same caption space for run and swim rows. Terrain plots share the tallest visible legend height within each comparison row so their top and bottom edges align. Keep matched-activity history scrollable within its panel. Environment provider credits follow the small graph. Day pages use the same row counts and the same 112px plot; only the narrow embedded columns drop zone names and compact the run splits.
+
 Triathlon's existing category colors include swim teal `#3aa99f`, bike sage `#cdd597`, run salmon `#fdb2a2`, and Strava orange `#fc4c02`. These are category/provider colors. Encode a series with a label and a second cue where differentiation matters, such as a dashed reference line or marker. Evaluate chart contrast against the plot background; muted gridlines can remain decorative.
 
 The best-efforts panel already demonstrates an Arena-style framed list within an analytics panel. The comparison workspace uses container queries and gives multiple series one inspectable plot surface. Copy those owners' composition when adding a similar analysis.

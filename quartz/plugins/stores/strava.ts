@@ -1349,7 +1349,6 @@ export const calculateActivityTrainingEffect = (
   activity: Pick<
     StravaActivityDetail,
     | 'sport'
-    | 'commute'
     | 'distanceKm'
     | 'movingTimeS'
     | 'sufferScore'
@@ -1363,7 +1362,6 @@ export const calculateActivityTrainingEffect = (
     | 'swimIntervals'
   >,
 ): CalculatedTrainingEffect | null => {
-  if (activity.commute === true) return null
   const garmin = activity.garmin
   if (
     garmin?.aerobicTrainingEffect != null ||

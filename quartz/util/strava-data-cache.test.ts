@@ -17,6 +17,53 @@ import { serializeStravaDetails } from './strava-detail'
 import { loadStravaDataSync, loadStravaPayloadSync } from './strava-payload'
 import { isRecord } from './type-guards'
 
+test('a source edit before the first payload read invalidates the next bundle', async () => {
+  const directory = mkdtempSync(join(tmpdir(), 'quartz-strava-source-'))
+  const originalDirectory = process.cwd()
+  const originalInputs = globalThis.__quartzStravaPayloadSourceInputs
+  const cachePath = join(directory, 'quartz/.quartz-cache/strava.json')
+  const modelPath = join(directory, 'model.ts')
+  mkdirSync(join(directory, 'quartz/.quartz-cache'), { recursive: true })
+  writeFileSync(
+    cachePath,
+    JSON.stringify({
+      athleteId: 1,
+      auth: { refreshToken: '', obtainedAt: 0 },
+      lastSync: 0,
+      lastActivityStart: 0,
+      activities: {},
+    }),
+  )
+  writeFileSync(modelPath, 'export const version = 1\n')
+  const earlier = new Date(Date.now() - 10_000)
+  utimesSync(modelPath, earlier, earlier)
+  try {
+    process.chdir(directory)
+    globalThis.__quartzStravaPayloadSourceInputs = [modelPath]
+    const firstUrl = new URL('./strava-payload.ts', import.meta.url)
+    firstUrl.searchParams.set('bundle', `first-${Date.now()}`)
+    const firstBundle: typeof import('./strava-payload') = await import(firstUrl.href)
+
+    // The watched edit happens during the build, before its first activity embed is rendered.
+    writeFileSync(modelPath, 'export const version = 2\n')
+    const later = new Date(Date.now() + 1_000)
+    utimesSync(modelPath, later, later)
+    const first = firstBundle.loadStravaDataSync('2026-10-07', null)
+    assert.equal(firstBundle.loadStravaDataSync('2026-10-07', null), first)
+
+    const secondUrl = new URL('./strava-payload.ts', import.meta.url)
+    secondUrl.searchParams.set('bundle', `second-${Date.now()}`)
+    const secondBundle: typeof import('./strava-payload') = await import(secondUrl.href)
+    const second = secondBundle.loadStravaDataSync('2026-10-07', null)
+    assert.notEqual(second, first)
+    assert.equal(secondBundle.loadStravaDataSync('2026-10-07', null), second)
+  } finally {
+    process.chdir(originalDirectory)
+    globalThis.__quartzStravaPayloadSourceInputs = originalInputs
+    rmSync(directory, { recursive: true, force: true })
+  }
+})
+
 test('embeds reuse emitter data and invalidate it when tracking or provider files change', () => {
   const directory = mkdtempSync(join(tmpdir(), 'quartz-strava-data-'))
   const originalDirectory = process.cwd()

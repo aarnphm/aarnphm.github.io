@@ -69,6 +69,7 @@ import {
   type SwimChartMetric,
 } from './swim-metrics'
 import { SWIM_POWER_BIN_SIZE, type SwimPowerEstimate } from './swim-power'
+import { DEFAULT_TRI_ACTIVITY_LAYOUT, TRI_ACTIVITY_LAYOUTS } from './triathlon-activity-layout'
 import { triathlonActivityAnchor, triathlonActivityHref } from './triathlon-date-route'
 import { buildGarminHealth, buildGarminRecovery } from './triathlon-garmin-health'
 import { healthTooltip, ouraScoreStatus } from './triathlon-health'
@@ -10463,13 +10464,22 @@ export const activityTrainingEffectLabel = (d: StravaActivityDetail): string => 
       return 'tempo'
   }
 
+  const heartRateSeconds = d.hrZones?.reduce((sum, seconds) => sum + seconds, 0) ?? 0
+  const recoveryHeartRate =
+    d.movingTimeS > 0 &&
+    d.hrZones?.length === 5 &&
+    d.hrZones.every(seconds => Number.isFinite(seconds) && seconds >= 0) &&
+    heartRateSeconds >= d.movingTimeS * 0.8 &&
+    d.hrZones[0] >= heartRateSeconds * 0.9
+  const recoveryIntensity =
+    d.calculatedIntensityFactor?.source !== 'heart-rate' &&
+    d.calculatedIntensityFactor?.value != null &&
+    d.calculatedIntensityFactor.value < 0.65
   if (
     calculated.aerobic >= 1 &&
     calculated.aerobic < 2 &&
     calculated.anaerobic < 1 &&
-    d.calculatedIntensityFactor?.source !== 'heart-rate' &&
-    d.calculatedIntensityFactor?.value != null &&
-    d.calculatedIntensityFactor.value < 0.65
+    (recoveryIntensity || recoveryHeartRate)
   )
     return 'recovery'
   return 'base'
@@ -15377,6 +15387,52 @@ export const buildDayAnalytics = <N>(f: TriNodeFactory<N>, summary: TriathlonDay
   return section
 }
 
+// Server output assumes the default two-up layout; the client pager rewrites the count and pressed
+// mode once it reads the stored layout.
+const buildDayTrackPager = <N>(f: TriNodeFactory<N>, count: number): N => {
+  const locale = f.presentation.locale
+  const pager = f.el('div', 'tri-day-pager', undefined, { 'data-paged': String(count > 2) })
+  const nav = f.el('span', 'tri-day-pager-nav')
+  const step = (direction: -1 | 1, key: string, glyph: string): N =>
+    f.el('button', 'tri-day-pager-step', glyph, {
+      type: 'button',
+      'data-step': String(direction),
+      'aria-label': triText(locale, key),
+      'data-i18n-aria-label': key,
+      ...(direction < 0 || count <= 2 ? { disabled: '' } : {}),
+    })
+  f.add(
+    nav,
+    step(-1, 'previous activities', '‹'),
+    f.el('span', 'tri-day-pager-count', `1–${Math.min(2, count)} / ${count}`, {
+      'aria-live': 'polite',
+    }),
+    step(1, 'next activities', '›'),
+  )
+  const modes = f.el('span', 'tri-day-pager-modes', undefined, {
+    role: 'group',
+    'aria-label': triText(locale, 'activity layout'),
+    'data-i18n-aria-label': 'activity layout',
+  })
+  for (const layout of TRI_ACTIVITY_LAYOUTS)
+    f.add(
+      modes,
+      f.el(
+        'button',
+        'tri-day-pager-mode',
+        layout === 'one' ? '1' : layout === 'two' ? '2' : triText(locale, 'all activities'),
+        {
+          type: 'button',
+          'data-layout': layout,
+          'aria-pressed': String(layout === DEFAULT_TRI_ACTIVITY_LAYOUT),
+          ...(layout === 'all' ? { 'data-i18n': 'all activities' } : {}),
+        },
+      ),
+    )
+  f.add(pager, nav, modes)
+  return pager
+}
+
 export const buildDayCard = <N>(
   f: TriNodeFactory<N>,
   dateIso: string,
@@ -15483,6 +15539,13 @@ export const buildDayCard = <N>(
     } else {
       f.add(card, buildRestStatus(f))
     }
+  } else if (extras.embedded === true && day.length > 1) {
+    f.add(card, buildDayTrackPager(f, day.length))
+    const track = f.el('div', 'tri-day-track', undefined, {
+      style: `--tri-day-count:${day.length}`,
+    })
+    for (const d of day) f.add(track, render(d, sharedFuelingRows > 0))
+    f.add(card, track)
   } else {
     for (const d of day) f.add(card, render(d, sharedFuelingRows > 0))
   }

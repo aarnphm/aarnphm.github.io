@@ -40,7 +40,19 @@ export const TRIATHLON_TRACE_DISPLAY_SETTINGS = Object.freeze({
     'impact-load-factor': false,
     temperature: false,
   }),
+  // Run and swim days have no power meter or core sensor, so these panels would stay empty.
+  'run-swim': Object.freeze({
+    'power-zones': false,
+    'heat-strain-index': false,
+    'core-temperature': false,
+    'skin-temperature': false,
+  }),
 })
+
+type TriathlonTraceDisplay = keyof typeof TRIATHLON_TRACE_DISPLAY_SETTINGS
+
+const isTraceDisplay = (value: string): value is TriathlonTraceDisplay =>
+  Object.hasOwn(TRIATHLON_TRACE_DISPLAY_SETTINGS, value)
 
 export const triathlonTraceName = (value: string): string =>
   value
@@ -55,15 +67,14 @@ export const parseTriathlonTraceSettings = (
   const raw = value?.startsWith('settings=') ? value.slice('settings='.length) : value
   if (!raw) return null
   const settings: Record<string, boolean> = {}
-  let display: keyof typeof TRIATHLON_TRACE_DISPLAY_SETTINGS | undefined
+  let display: TriathlonTraceDisplay | undefined
   for (const entry of raw.split('&')) {
     const separator = entry.lastIndexOf(':')
     if (separator <= 0) return null
     const name = entry.slice(0, separator)
     const enabled = entry.slice(separator + 1)
     if (name === 'display') {
-      if (display || (enabled !== 'detailed' && enabled !== 'simplified' && enabled !== 'focused'))
-        return null
+      if (display || !isTraceDisplay(enabled)) return null
       display = enabled
       continue
     }

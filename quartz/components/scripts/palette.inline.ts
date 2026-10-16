@@ -24,6 +24,11 @@ import {
   resolveRelative,
 } from '../../util/path'
 import { tokenizeTerm } from '../../util/search-text'
+import {
+  setTriActivityLayout,
+  TRI_ACTIVITY_LAYOUTS,
+  type TriActivityLayout,
+} from '../../util/triathlon-activity-layout'
 import { registerEscapeHandler } from './escape-handler'
 import { currentNavSignal } from './nav-lifecycle'
 import { beginSidePanelRequest, disposeSidePanel, getOrCreateSidePanel } from './side-panel'
@@ -661,6 +666,11 @@ document.addEventListener('nav', () => {
     },
   ]
 
+  const TRI_ACTIVITY_LAYOUT_LABELS: Record<TriActivityLayout, string> = {
+    one: 'one activity per view',
+    two: 'two activities per view',
+    all: 'all activities',
+  }
   const pressKit = (tab: 'note' | 'quote' | 'links') => () =>
     document.dispatchEvent(new CustomEvent('presskitopen', { detail: { tab } }))
   const COMMAND_ACTS: Action[] = [
@@ -675,6 +685,16 @@ document.addEventListener('nav', () => {
       onClick: pressKit('quote'),
     },
     { name: 'press kit: links', auxInnerHtml: '<kbd>↵</kbd> share', onClick: pressKit('links') },
+    ...TRI_ACTIVITY_LAYOUTS.map(
+      (layout): Action => ({
+        name: `triathlon: ${TRI_ACTIVITY_LAYOUT_LABELS[layout]}`,
+        auxInnerHtml: '<kbd>↵</kbd> activity layout',
+        onClick: () => {
+          setTriActivityLayout(layout)
+          notifyToast(`activities: ${TRI_ACTIVITY_LAYOUT_LABELS[layout]}`)
+        },
+      }),
+    ),
     {
       name: 'kernels: run all',
       auxInnerHtml: '<kbd>↵</kbd> current page',

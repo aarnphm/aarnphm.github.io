@@ -1,4 +1,4 @@
-import type { Element as HastElement } from 'hast'
+import type { Element as HastElement, RootContent } from 'hast'
 import { slug as slugAnchor } from 'github-slugger'
 import { clone } from './clone'
 
@@ -133,17 +133,20 @@ const _rebaseHastElement = (
   }
 }
 
-export function normalizeHastElement(rawEl: HastElement, curBase: FullSlug, newBase: FullSlug) {
-  const el = clone(rawEl) // clone so we dont modify the original page
-  _rebaseHastElement(el, 'src', curBase, newBase)
-  _rebaseHastElement(el, 'href', curBase, newBase)
-  _rebaseHastElement(el, 'dataCanvasFile', curBase, newBase)
-  if (el.children) {
-    el.children = el.children.map(child =>
-      normalizeHastElement(child as HastElement, curBase, newBase),
-    )
+function rebaseHastTree(node: RootContent, curBase: FullSlug, newBase: FullSlug): void {
+  if (node.type === 'element') {
+    _rebaseHastElement(node, 'src', curBase, newBase)
+    _rebaseHastElement(node, 'href', curBase, newBase)
+    _rebaseHastElement(node, 'dataCanvasFile', curBase, newBase)
   }
+  if ('children' in node) {
+    for (const child of node.children) rebaseHastTree(child, curBase, newBase)
+  }
+}
 
+export function normalizeHastElement(rawEl: HastElement, curBase: FullSlug, newBase: FullSlug) {
+  const el = clone(rawEl)
+  rebaseHastTree(el, curBase, newBase)
   return el
 }
 

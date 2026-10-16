@@ -23,6 +23,7 @@ import { setActivityExpanded } from './comparison'
 import { wireActivityComparison } from './comparison'
 import { detailContextFromPayload } from './data'
 import { mountDaySleepCharts } from './day-sleep'
+import { mountDayTrack } from './day-track'
 import { dayExtrasFromDataset } from './embed-settings'
 import { renderDetail } from './render'
 import { runHeartCostWindow, setRunHeartCostWindow } from './run-heart-cost'
@@ -74,14 +75,55 @@ const ALIGNED_ACTIVITY_SECTIONS: { selector: string; margin: string }[] = [
   { selector: '.tri-act-more > .tri-environment', margin: '--tri-environment-margin' },
 ]
 
+// Multi-activity embeds hold their activities in a paging track.
+const cardActivitySelector = (rest = ''): string =>
+  `:scope > .tri-act${rest}, :scope > .tri-day-track > .tri-act${rest}`
+
 const mountActivitySectionAlignment = (card: HTMLElement): (() => void) => {
-  if (card.querySelectorAll(':scope > .tri-act').length < 2) return () => {}
+  if (card.querySelectorAll(cardActivitySelector()).length < 2) return () => {}
   let frame = 0
   const align = (): void => {
     frame = 0
+    const terrainCaptions: { chart: HTMLElement; activityTop: number; contentHeight: number }[] = []
+    for (const chart of card.querySelectorAll<HTMLElement>(
+      cardActivitySelector(' > .tri-act-more > .tri-cycling-power'),
+    )) {
+      const activity = chart.closest<HTMLElement>('.tri-act')
+      const caption = chart.querySelector<HTMLElement>(':scope > .tri-elev-cap')
+      if (!activity || !caption || chart.getClientRects().length === 0) {
+        chart.style.removeProperty('--tri-terrain-caption-height')
+        continue
+      }
+      const top = caption.getBoundingClientRect().top
+      const contentHeight = Math.max(
+        0,
+        ...Array.from(caption.children)
+          .filter(child => window.getComputedStyle(child).position !== 'absolute')
+          .map(child => child.getBoundingClientRect().bottom - top),
+      )
+      terrainCaptions.push({
+        chart,
+        activityTop: activity.getBoundingClientRect().top,
+        contentHeight,
+      })
+    }
+    for (const target of terrainCaptions) {
+      const height = Math.ceil(
+        Math.max(
+          ...terrainCaptions
+            .filter(other => Math.abs(other.activityTop - target.activityTop) < 1)
+            .map(other => other.contentHeight),
+        ),
+      )
+      const current = Number.parseFloat(
+        target.chart.style.getPropertyValue('--tri-terrain-caption-height'),
+      )
+      if (current !== height)
+        target.chart.style.setProperty('--tri-terrain-caption-height', `${height}px`)
+    }
     for (const { selector, margin: marginProperty } of ALIGNED_ACTIVITY_SECTIONS) {
       const effects = Array.from(
-        card.querySelectorAll<HTMLElement>(`:scope > .tri-act > ${selector}`),
+        card.querySelectorAll<HTMLElement>(cardActivitySelector(` > ${selector}`)),
       )
       const targets: {
         effect: HTMLElement
@@ -118,15 +160,18 @@ const mountActivitySectionAlignment = (card: HTMLElement): (() => void) => {
   }
   const resize = new ResizeObserver(schedule)
   resize.observe(card)
+  for (const legend of card.querySelectorAll('.tri-cycling-power-legend')) resize.observe(legend)
   card.addEventListener('click', schedule)
   schedule()
   return () => {
     if (frame !== 0) window.cancelAnimationFrame(frame)
     resize.disconnect()
     card.removeEventListener('click', schedule)
+    for (const chart of card.querySelectorAll<HTMLElement>('.tri-cycling-power'))
+      chart.style.removeProperty('--tri-terrain-caption-height')
     for (const { selector, margin } of ALIGNED_ACTIVITY_SECTIONS)
       card
-        .querySelectorAll<HTMLElement>(`:scope > .tri-act > ${selector}`)
+        .querySelectorAll<HTMLElement>(cardActivitySelector(` > ${selector}`))
         .forEach(section => section.style.removeProperty(margin))
   }
 }
@@ -165,6 +210,7 @@ export const buildDayCard = (
       const cleanups = [
         setupPowerCurveTicks(card),
         mountActivitySectionAlignment(card),
+        mountDayTrack(card),
         mountDaySleepCharts(card, () => presentation.locale),
         ...activityViews.map(view => view.mount()),
       ]
@@ -748,12 +794,14 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
       }
       ssr.addEventListener('click', onRunCostWindow)
       const cleanupAlignment = mountActivitySectionAlignment(ssr)
+      const cleanupTrack = mountDayTrack(ssr)
       const cleanupPowerTicks = setupPowerCurveTicks(ssr)
       const cleanupDaySleepCharts = mountDaySleepCharts(ssr, () => context.presentation.locale)
       cardCleanup = () => {
         ssr.removeEventListener('click', onCardToggle)
         ssr.removeEventListener('click', onRunCostWindow)
         cleanupAlignment()
+        cleanupTrack()
         cleanupPowerTicks()
         cleanupDaySleepCharts()
       }

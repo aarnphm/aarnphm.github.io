@@ -704,6 +704,8 @@ export const onCardToggle = (event: Event): void => {
   const expanded = !activity.classList.contains('tri-act--expanded')
   const activities = activity
     .closest('.tri-pop-card')
-    ?.querySelectorAll<HTMLElement>(':scope > .tri-act') ?? [activity]
+    ?.querySelectorAll<HTMLElement>(':scope > .tri-act, :scope > .tri-day-track > .tri-act') ?? [
+    activity,
+  ]
   for (const sibling of activities) setActivityExpanded(sibling, expanded)
 }
