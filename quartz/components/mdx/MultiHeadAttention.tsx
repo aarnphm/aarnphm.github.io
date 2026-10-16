@@ -186,14 +186,7 @@ const MultiHeadAttentionImpl: QuartzMdxComponent<Props> = ({ caption, heads = DE
             </marker>
           </defs>
 
-          <rect
-            class="mha-residual"
-            x={PAD_L}
-            y={12}
-            width={VIEW_W - PAD_L - PAD_R}
-            height={20}
-            rx={4}
-          />
+          <rect class="mha-residual" x={PAD_L} y={12} width={VIEW_W - PAD_L - PAD_R} height={20} />
           <MathFO
             x={PAD_L + 8}
             y={13}
@@ -210,7 +203,6 @@ const MultiHeadAttentionImpl: QuartzMdxComponent<Props> = ({ caption, heads = DE
               y={VIEW_H / 2 - 22}
               width={72}
               height={44}
-              rx={5}
             />
             <MathFO
               x={COL_X.input - 36}
@@ -270,7 +262,6 @@ const MultiHeadAttentionImpl: QuartzMdxComponent<Props> = ({ caption, heads = DE
                             y={py}
                             width={PROJ_W}
                             height={PROJ_H}
-                            rx={2}
                           />
                           <MathFO
                             x={COL_X.proj - PROJ_W / 2}
@@ -305,7 +296,6 @@ const MultiHeadAttentionImpl: QuartzMdxComponent<Props> = ({ caption, heads = DE
                       y={scoreY}
                       width={SCORE_BOX}
                       height={SCORE_BOX}
-                      rx={3}
                     />
                     {SCORE_PATTERNS[i].map((row, r) =>
                       row.map((v, c) => {
@@ -335,7 +325,6 @@ const MultiHeadAttentionImpl: QuartzMdxComponent<Props> = ({ caption, heads = DE
                       y={mid - 11}
                       width={SCORE_BOX}
                       height={22}
-                      rx={3}
                     />
                     <MathFO
                       x={COL_X.score - SCORE_BOX / 2}
@@ -363,7 +352,6 @@ const MultiHeadAttentionImpl: QuartzMdxComponent<Props> = ({ caption, heads = DE
                     y={headOutY}
                     width={HEAD_OUT_W}
                     height={HEAD_OUT_H}
-                    rx={3}
                   />
                   <foreignObject
                     x={COL_X.head - HEAD_OUT_W / 2}
@@ -404,7 +392,6 @@ const MultiHeadAttentionImpl: QuartzMdxComponent<Props> = ({ caption, heads = DE
               y={VIEW_H / 2 - 28}
               width={44}
               height={56}
-              rx={4}
             />
             <MathFO
               x={COL_X.concat - 22}
@@ -431,7 +418,6 @@ const MultiHeadAttentionImpl: QuartzMdxComponent<Props> = ({ caption, heads = DE
               y={VIEW_H / 2 - 22}
               width={42}
               height={44}
-              rx={5}
             />
             <MathFO
               x={COL_X.wo - 18}

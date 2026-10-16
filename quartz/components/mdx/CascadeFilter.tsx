@@ -187,14 +187,7 @@ const CascadeFilterImpl: QuartzMdxComponent<Props> = ({ caption, tiles = 16 }) =
                   data-tile-idx={i}
                   transform={`translate(${x}, 0)`}
                 >
-                  <rect
-                    class="cf-tile-frame"
-                    x={0}
-                    y={BAR_TOP}
-                    width={TILE_W}
-                    height={barH}
-                    rx={3}
-                  />
+                  <rect class="cf-tile-frame" x={0} y={BAR_TOP} width={TILE_W} height={barH} />
                   <rect
                     class="cf-tile-bar"
                     data-tile-bar
@@ -202,7 +195,6 @@ const CascadeFilterImpl: QuartzMdxComponent<Props> = ({ caption, tiles = 16 }) =
                     y={BAR_TOP + (barH - h)}
                     width={TILE_W - 6}
                     height={h}
-                    rx={2}
                   />
                   <MathFO
                     x={0}
@@ -269,7 +261,7 @@ const CascadeFilterImpl: QuartzMdxComponent<Props> = ({ caption, tiles = 16 }) =
                   data-fine-idx={i}
                   transform={`translate(${x}, 0)`}
                 >
-                  <rect class="cf-fine-tile" x={0} y={56} width={TILE_W} height={40} rx={3} />
+                  <rect class="cf-fine-tile" x={0} y={56} width={TILE_W} height={40} />
                   <MathFO x={0} y={66} w={TILE_W} h={20} tex={`b_{${i}}`} cls="cf-fo--fine-label" />
                 </g>
               )

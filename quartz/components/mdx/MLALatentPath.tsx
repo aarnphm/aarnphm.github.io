@@ -381,7 +381,7 @@ const MLALatentPathImpl: QuartzMdxComponent<Props> = ({ caption }) => {
             </marker>
           </defs>
 
-          <rect class="mla-cache-box" x={cx} y={cy} width={BW + 20} height={ch} rx={8} />
+          <rect class="mla-cache-box" x={cx} y={cy} width={BW + 20} height={ch} />
           <FO
             x={CX.l - 58}
             y={cy - 22}
@@ -396,14 +396,7 @@ const MLALatentPathImpl: QuartzMdxComponent<Props> = ({ caption }) => {
             const ny = n.cy - n.h / 2
             return (
               <g class={`mla-node mla-node--${n.k}`} data-mla-node={n.id}>
-                <rect
-                  class={`mla-box mla-box--${n.k}`}
-                  x={nx}
-                  y={ny}
-                  width={n.w}
-                  height={n.h}
-                  rx={n.k === 'head' ? 4 : 6}
-                />
+                <rect class={`mla-box mla-box--${n.k}`} x={nx} y={ny} width={n.w} height={n.h} />
                 <FO
                   x={nx}
                   y={ny}

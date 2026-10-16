@@ -69,10 +69,10 @@ const ResidualStreamImpl: QuartzMdxComponent<Props> = ({ caption, markerId }) =>
             </marker>
           </defs>
 
-          <rect class="rs-box rs-box-neutral" x="145" y="20" width="80" height="32" rx="3" />
+          <rect class="rs-box rs-box-neutral" x="145" y="20" width="80" height="32" />
           <MathFO x={145} y={20} w={80} h={32} tex="\text{logits}" />
           <line class="rs-line" x1="185" y1="84" x2="185" y2="54" marker-end={`url(#${arrowId})`} />
-          <rect class="rs-box rs-box-accent" x="145" y="84" width="80" height="32" rx="3" />
+          <rect class="rs-box rs-box-accent" x="145" y="84" width="80" height="32" />
           <MathFO x={145} y={84} w={80} h={32} tex="\text{unembed}" />
           <line
             class="rs-line rs-line--dotted"
@@ -90,7 +90,7 @@ const ResidualStreamImpl: QuartzMdxComponent<Props> = ({ caption, markerId }) =>
             d="M 185 305 L 115 305 Q 110 305 110 300 L 110 205 Q 110 200 115 200 L 178 200"
             marker-end={`url(#${arrowId})`}
           />
-          <rect class="rs-box rs-box-accent" x="50" y="255" width="120" height="30" rx="3" />
+          <rect class="rs-box rs-box-accent" x="50" y="255" width="120" height="30" />
           <MathFO x={50} y={255} w={120} h={30} tex="\text{MLP}\, m" cls="rs-fo--mlp" />
 
           <circle class="rs-node" cx="185" cy="200" r="7" />
@@ -115,11 +115,11 @@ const ResidualStreamImpl: QuartzMdxComponent<Props> = ({ caption, markerId }) =>
           />
           <line class="rs-line" x1="110" y1="448" x2="110" y2="452" />
           <line class="rs-line" x1="110" y1="478" x2="110" y2="474" />
-          <rect class="rs-box rs-box-accent" x="64" y="452" width="28" height="22" rx="3" />
+          <rect class="rs-box rs-box-accent" x="64" y="452" width="28" height="22" />
           <MathFO x={64} y={452} w={28} h={22} tex="h_0" cls="rs-fo--sm" />
-          <rect class="rs-box rs-box-accent" x="96" y="452" width="28" height="22" rx="3" />
+          <rect class="rs-box rs-box-accent" x="96" y="452" width="28" height="22" />
           <MathFO x={96} y={452} w={28} h={22} tex="h_1" cls="rs-fo--sm" />
-          <rect class="rs-box rs-box-accent" x="128" y="452" width="28" height="22" rx="3" />
+          <rect class="rs-box rs-box-accent" x="128" y="452" width="28" height="22" />
           <MathFO x={128} y={452} w={28} h={22} tex="\cdots" cls="rs-fo--sm" />
 
           <circle class="rs-node" cx="185" cy="380" r="7" />
@@ -137,7 +137,7 @@ const ResidualStreamImpl: QuartzMdxComponent<Props> = ({ caption, markerId }) =>
             marker-end={`url(#${arrowId})`}
           />
           <MathFO x={200} y={580} w={40} h={20} tex="x_0" align="start" cls="rs-fo--axis" />
-          <rect class="rs-box rs-box-accent" x="145" y="600" width="80" height="32" rx="3" />
+          <rect class="rs-box rs-box-accent" x="145" y="600" width="80" height="32" />
           <MathFO x={145} y={600} w={80} h={32} tex="\text{embed}" />
           <line
             class="rs-line"
@@ -147,7 +147,7 @@ const ResidualStreamImpl: QuartzMdxComponent<Props> = ({ caption, markerId }) =>
             y2="634"
             marker-end={`url(#${arrowId})`}
           />
-          <rect class="rs-box rs-box-neutral" x="145" y="668" width="80" height="32" rx="3" />
+          <rect class="rs-box rs-box-neutral" x="145" y="668" width="80" height="32" />
           <MathFO x={145} y={668} w={80} h={32} tex="\text{tokens}" />
         </svg>
 

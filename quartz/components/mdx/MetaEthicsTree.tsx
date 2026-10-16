@@ -21,7 +21,6 @@ type Node = {
   y: number
   w: number
   h: number
-  rx: number
   sig?: string
   gloss?: string
   mine?: boolean
@@ -53,7 +52,6 @@ const NODES: Node[] = [
     y: 18,
     w: 172,
     h: 54,
-    rx: 3,
   },
   {
     id: 'cog',
@@ -65,7 +63,6 @@ const NODES: Node[] = [
     y: 128,
     w: 176,
     h: 84,
-    rx: 3,
     sig: 'v(p)\\in\\{\\top,\\bot\\}',
     gloss: 'moral claims express beliefs that can be true or false.',
   },
@@ -79,7 +76,6 @@ const NODES: Node[] = [
     y: 128,
     w: 176,
     h: 84,
-    rx: 3,
     sig: 'v(p)=\\varnothing',
     gloss: 'moral claims voice attitudes, so they are not true or false.',
   },
@@ -93,7 +89,6 @@ const NODES: Node[] = [
     y: 268,
     w: 176,
     h: 84,
-    rx: 3,
     sig: '\\exists\\,p:\\ v(p)=\\top',
     gloss: 'at least some moral claims come out true.',
   },
@@ -105,7 +100,6 @@ const NODES: Node[] = [
     y: 280,
     w: 140,
     h: 40,
-    rx: 5,
     sig: '\\forall\\,p:\\ v(p)=\\bot',
     gloss: 'moral claims are truth-apt yet uniformly false.',
   },
@@ -117,7 +111,6 @@ const NODES: Node[] = [
     y: 280,
     w: 140,
     h: 40,
-    rx: 5,
     sig: 'p\\mapsto\\text{emotion}',
     gloss: 'moral talk vents feeling (boo murder, hooray charity).',
   },
@@ -129,7 +122,6 @@ const NODES: Node[] = [
     y: 278,
     w: 152,
     h: 46,
-    rx: 5,
     sig: 'p\\mapsto\\text{imperative}',
     gloss: 'moral claims are imperatives meant to bind everyone.',
   },
@@ -141,7 +133,6 @@ const NODES: Node[] = [
     y: 430,
     w: 152,
     h: 46,
-    rx: 5,
     sig: 'v(p)\\perp\\text{belief}',
     gloss: 'moral truth holds independently of what anyone believes.',
     mine: true,
@@ -155,7 +146,6 @@ const NODES: Node[] = [
     y: 424,
     w: 172,
     h: 54,
-    rx: 3,
   },
   {
     id: 'subj',
@@ -165,7 +155,6 @@ const NODES: Node[] = [
     y: 540,
     w: 140,
     h: 40,
-    rx: 5,
     sig: 'v(p)=f(\\text{self})',
     gloss: 'each individual’s stance fixes moral truth.',
   },
@@ -177,7 +166,6 @@ const NODES: Node[] = [
     y: 540,
     w: 140,
     h: 40,
-    rx: 5,
     sig: 'v(p)=f(\\text{culture})',
     gloss: 'a society or culture fixes moral truth.',
   },
@@ -189,7 +177,6 @@ const NODES: Node[] = [
     y: 540,
     w: 152,
     h: 46,
-    rx: 5,
     sig: 'v(p)=f(\\text{God})',
     gloss: 'god’s commands fix moral truth.',
   },
@@ -267,7 +254,7 @@ const NodeGroup: FunctionalComponent<{ node: Node }> = ({ node }) => {
       tabindex={selectable ? 0 : undefined}
       aria-label={aria}
     >
-      <rect class="mep-box" width={node.w} height={node.h} rx={node.rx} />
+      <rect class="mep-box" width={node.w} height={node.h} />
       <foreignObject width={node.w} height={node.h}>
         <div class={`mep-fo mep-fo--${node.kind}`}>
           {node.header ? <span class="mep-cat-name">{node.header}</span> : null}

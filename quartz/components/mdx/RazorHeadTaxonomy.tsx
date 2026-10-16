@@ -145,7 +145,7 @@ const RazorHeadTaxonomyImpl: QuartzMdxComponent<Props> = ({ caption }) => (
 
         {CELLS.map(c => (
           <g class={`rht-cell rht-cell--${c.kind}`}>
-            <rect class="rht-cell-box" x={c.x} y={ROW_Y} width={CELL_W} height={CELL_H} rx={4} />
+            <rect class="rht-cell-box" x={c.x} y={ROW_Y} width={CELL_W} height={CELL_H} />
             <Fo x={c.x} y={ROW_Y} w={CELL_W} h={CELL_H} t={c.label} cls="rht-fo--token" />
             {c.sub ? (
               <Fo x={subX(c)} y={ROW_Y + CELL_H + 8} w={SUB_W} h={16} t={c.sub} cls={subCls(c)} />

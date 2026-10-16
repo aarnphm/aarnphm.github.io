@@ -164,7 +164,6 @@ const KVHeadGroupingImpl: QuartzMdxComponent<Props> = ({ caption, heads = DEFAUL
                     y={ROW_Q_Y}
                     width={BOX_W}
                     height={BOX_H}
-                    rx="4"
                   />
                   <MathFO
                     x={x}
@@ -192,14 +191,7 @@ const KVHeadGroupingImpl: QuartzMdxComponent<Props> = ({ caption, heads = DEFAUL
                   data-kvg-kv={String(g)}
                   data-kvg-hidden={visible ? 'false' : 'true'}
                 >
-                  <rect
-                    class="kvg-box kvg-box--kv"
-                    x={x}
-                    y={ROW_KV_Y}
-                    width={w}
-                    height={BOX_H}
-                    rx="4"
-                  />
+                  <rect class="kvg-box kvg-box--kv" x={x} y={ROW_KV_Y} width={w} height={BOX_H} />
                   <MathFO
                     x={x}
                     y={ROW_KV_Y}

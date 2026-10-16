@@ -55,7 +55,7 @@ const Weight: FunctionalComponent<{
   k: string
 }> = ({ x, y, t, circuit, k }) => (
   <g class="acir-weight" data-acir-weight={k} data-acir-circuit={circuit}>
-    <rect class="acir-box acir-box--weight" x={x} y={y} width={56} height={40} rx={4} />
+    <rect class="acir-box acir-box--weight" x={x} y={y} width={56} height={40} />
     <Fo x={x} y={y} w={56} h={40} t={t} />
   </g>
 )
@@ -71,7 +71,7 @@ const StandardPanel: FunctionalComponent = () => {
       aria-label="Standard attention flow: x branches into Q, K, V projections; Q and K feed softmax; weights apply to V; result passes through W_O."
     >
       <ArrowDefs id={STD_ARROW} />
-      <rect class="acir-box acir-box--input" x={6} y={210} width={44} height={40} rx={4} />
+      <rect class="acir-box acir-box--input" x={6} y={210} width={44} height={40} />
       <Fo x={6} y={210} w={44} h={40} t="x" cls="acir-fo--big" />
       <path class="acir-line" d="M 50 230 L 60 230" />
       <path class="acir-line" d="M 60 230 L 60 100 L 88 100" marker-end={arr} />
@@ -88,7 +88,7 @@ const StandardPanel: FunctionalComponent = () => {
           marker-end={arr}
         />
       </g>
-      <rect class="acir-box acir-box--softmax" x={184} y={78} width={64} height={98} rx={4} />
+      <rect class="acir-box acir-box--softmax" x={184} y={78} width={64} height={98} />
       <Fo x={184} y={80} w={64} h={30} t={math`\frac{QK^\top}{\sqrt{d_h}}`} cls="acir-fo--sm" />
       <Fo x={184} y={110} w={64} h={24} t={math`\operatorname{softmax}`} cls="acir-fo--xs" />
       <g class="acir-attn-grid" data-acir-attn-grid>
@@ -100,7 +100,6 @@ const StandardPanel: FunctionalComponent = () => {
               y={140 + r * 7}
               width={11}
               height={5}
-              rx={1}
               style={{ opacity: r >= c ? Math.max(0.15, 1 - (r - c) * 0.22) : 0 }}
             />
           )),
@@ -109,7 +108,7 @@ const StandardPanel: FunctionalComponent = () => {
       <g class="acir-circuit-mark" data-acir-circuit="ov">
         <path class="acir-line acir-line--ov" d="M 148 360 L 186 360" marker-end={arr} />
       </g>
-      <rect class="acir-box acir-box--value" x={190} y={340} width={52} height={40} rx={4} />
+      <rect class="acir-box acir-box--value" x={190} y={340} width={52} height={40} />
       <Fo x={190} y={340} w={52} h={40} t="V" />
       <circle class="acir-node" cx={216} cy={250} r={9} />
       <Fo x={208} y={242} w={16} h={16} t={math`\times`} cls="acir-fo--sm" />
@@ -118,7 +117,7 @@ const StandardPanel: FunctionalComponent = () => {
       <path class="acir-line acir-line--ov" d="M 225 250 L 252 250" marker-end={arr} />
       <Weight x={256} y={230} t="W_O" circuit="ov" k="WO" />
       <path class="acir-line acir-line--ov" d="M 284 270 L 284 412" marker-end={arr} />
-      <rect class="acir-box acir-box--output" x={262} y={412} width={44} height={36} rx={4} />
+      <rect class="acir-box acir-box--output" x={262} y={412} width={44} height={36} />
       <Fo x={262} y={412} w={44} h={36} t={math`\mathrm{out}`} cls="acir-fo--sm" />
     </svg>
   )
@@ -142,7 +141,7 @@ const CircuitPanel: FunctionalComponent = () => {
         { label: 'i', y: 305 },
       ].map(({ label, y }) => (
         <g>
-          <rect class="acir-box acir-box--input" x={18} y={y - 14} width={44} height={28} rx={4} />
+          <rect class="acir-box acir-box--input" x={18} y={y - 14} width={44} height={28} />
           <Fo x={18} y={y - 14} w={44} h={28} t={`x_{${label}}`} cls="acir-fo--sm" />
           <path class="acir-line" d={`M 62 ${y} L 106 ${y}`} marker-end={arr} />
         </g>
@@ -150,7 +149,7 @@ const CircuitPanel: FunctionalComponent = () => {
       <Fo x={18} y={247} w={44} h={16} t={math`\vdots`} cls="acir-fo--label" />
       <g class="acir-aij" data-acir-circuit="qk">
         <Fo x={102} y={56} w={72} h={20} t="a^{l,h}_{ij}" cls="acir-fo--sm" />
-        <rect class="acir-box acir-box--qk-pattern" x={110} y={80} width={56} height={250} rx={4} />
+        <rect class="acir-box acir-box--qk-pattern" x={110} y={80} width={56} height={250} />
         {[91, 141, 191, 291].map((y, idx) => (
           <rect
             class="acir-aij-bar"
@@ -158,7 +157,6 @@ const CircuitPanel: FunctionalComponent = () => {
             y={y}
             width={32}
             height={28}
-            rx={2}
             style={{ opacity: 0.85 - idx * 0.11 }}
           />
         ))}
@@ -174,14 +172,14 @@ const CircuitPanel: FunctionalComponent = () => {
       </g>
       <g data-acir-circuit="ov">
         <g data-acir-ov-split>
-          <rect class="acir-box acir-box--weight" x={200} y={160} width={56} height={36} rx={4} />
+          <rect class="acir-box acir-box--weight" x={200} y={160} width={56} height={36} />
           <Fo x={200} y={160} w={56} h={36} t="W_V" />
           <Fo x={200} y={198} w={56} h={14} t={math`\cdot`} cls="acir-fo--sm" />
-          <rect class="acir-box acir-box--weight" x={200} y={214} width={56} height={36} rx={4} />
+          <rect class="acir-box acir-box--weight" x={200} y={214} width={56} height={36} />
           <Fo x={200} y={214} w={56} h={36} t="W_O" />
         </g>
         <g data-acir-ov-rank hidden>
-          <rect class="acir-box acir-box--ov-rank" x={200} y={170} width={56} height={70} rx={4} />
+          <rect class="acir-box acir-box--ov-rank" x={200} y={170} width={56} height={70} />
           <Fo x={200} y={170} w={56} h={34} t="W_V W_O" cls="acir-fo--xs" />
           <Fo
             x={200}
@@ -203,9 +201,9 @@ const CircuitPanel: FunctionalComponent = () => {
       </g>
       <path class="acir-line" d="M 166 205 L 196 205" marker-end={arr} />
       <path class="acir-line" d="M 256 205 L 276 205" marker-end={arr} />
-      <rect class="acir-box acir-box--output" x={280} y={185} width={36} height={40} rx={4} />
+      <rect class="acir-box acir-box--output" x={280} y={185} width={36} height={40} />
       <Fo x={280} y={185} w={36} h={40} t={math`\mathrm{out}`} cls="acir-fo--sm" />
-      <rect class="acir-sum-bg" x={30} y={380} width={260} height={56} rx={4} />
+      <rect class="acir-sum-bg" x={30} y={380} width={260} height={56} />
       <foreignObject x={30} y={380} width={260} height={56}>
         <div
           class="acir-fo acir-fo--display"

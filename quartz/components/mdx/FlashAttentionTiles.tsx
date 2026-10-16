@@ -127,14 +127,7 @@ const FlashAttentionTilesImpl: QuartzMdxComponent<Props> = ({ caption }) => {
               />
             </foreignObject>
 
-            <rect
-              class="fat-sram-panel"
-              x={SRAM_X}
-              y={PANEL_TOP}
-              width={SRAM_W}
-              height={PANEL_H}
-              rx={6}
-            />
+            <rect class="fat-sram-panel" x={SRAM_X} y={PANEL_TOP} width={SRAM_W} height={PANEL_H} />
 
             {BLOCKS.map((b, idx) => {
               const top = blockTop(idx)
@@ -158,7 +151,6 @@ const FlashAttentionTilesImpl: QuartzMdxComponent<Props> = ({ caption }) => {
                       y={top + i * HBM_CELL}
                       width={HBM_CELL}
                       height={HBM_CELL}
-                      rx={2}
                       {...{ [b.attr]: i }}
                     />
                   ))}
@@ -182,7 +174,6 @@ const FlashAttentionTilesImpl: QuartzMdxComponent<Props> = ({ caption }) => {
                     y={y}
                     width={SRAM_INNER}
                     height={SRAM_TILE_H}
-                    rx={4}
                     aria-label={t.aria}
                   />
                   <foreignObject x={SRAM_LEFT} y={y} width={SRAM_INNER} height={SRAM_TILE_H}>
@@ -203,7 +194,6 @@ const FlashAttentionTilesImpl: QuartzMdxComponent<Props> = ({ caption }) => {
                 y={sramTop(3)}
                 width={SRAM_INNER}
                 height={SRAM_TILE_H}
-                rx={4}
                 aria-label="online-softmax stats in SRAM"
               />
               <foreignObject x={SRAM_LEFT} y={sramTop(3)} width={SRAM_INNER} height={SRAM_TILE_H}>
