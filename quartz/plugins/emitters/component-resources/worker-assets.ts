@@ -9,10 +9,12 @@ import { workerEntryPattern } from '../../../util/workers'
 import { write } from '../helpers'
 import {
   collaborativeCommentsClientEntry,
+  lexicalWorkerEntry,
+  lexicalWorkerPath,
   semanticWorkerEntry,
   staticScriptsDir,
 } from './asset-paths'
-import { writeAssetBundleOutput } from './asset-writer'
+import { writeRawAsset, writeAssetBundleOutput } from './asset-writer'
 
 const speechWorkerEntry = 'quartz/workers/speech.worker.ts'
 export async function writeSpeechRuntimeAssets(ctx: BuildCtx): Promise<FilePath[]> {
@@ -63,6 +65,18 @@ export async function writeSemanticWorkerAssets(ctx: BuildCtx): Promise<FilePath
   return await Promise.all(worker.outputFiles.map(output => writeAssetBundleOutput(ctx, output)))
 }
 
+export async function writeLexicalWorkerAsset(ctx: BuildCtx): Promise<FilePath> {
+  const result = await bundle({
+    entryPoints: [lexicalWorkerEntry],
+    bundle: true,
+    minify: true,
+    platform: 'browser',
+    format: 'esm',
+    write: false,
+  })
+  return writeRawAsset(ctx, lexicalWorkerPath, result.outputFiles[0].text)
+}
+
 async function writeGenericWorkerAsset(ctx: BuildCtx, src: string): Promise<FilePath> {
   const result = await bundle({
     entryPoints: [src],
@@ -79,7 +93,7 @@ async function writeGenericWorkerAsset(ctx: BuildCtx, src: string): Promise<File
 
 export async function* writeGenericWorkerAssets(ctx: BuildCtx): AsyncGenerator<FilePath> {
   const workerFiles = (await globby([workerEntryPattern])).filter(
-    src => src !== semanticWorkerEntry && src !== speechWorkerEntry,
+    src => src !== semanticWorkerEntry && src !== speechWorkerEntry && src !== lexicalWorkerEntry,
   )
   for (const src of workerFiles) {
     yield writeGenericWorkerAsset(ctx, src)

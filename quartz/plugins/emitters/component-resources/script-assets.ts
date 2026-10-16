@@ -28,6 +28,7 @@ import {
 import { write } from '../helpers'
 import {
   collaborativeCommentsClientPath,
+  lexicalWorkerPath,
   notebookNativeRuntimeManifestPath,
   notebookPyrightPackageStubsManifestPath,
   notebookPyrightTypeshedManifestPath,
@@ -71,6 +72,7 @@ export const componentScriptAssetReplacements: ScriptAssetReplacement[] = [
   },
   { placeholder: 'collaborative-comments.client.js', logicalPath: collaborativeCommentsClientPath },
   { placeholder: 'semantic.worker.js', logicalPath: semanticWorkerPath },
+  { placeholder: 'lexical.worker.js', logicalPath: lexicalWorkerPath },
 ]
 
 const inlineScriptNamespace = 'inline-script'
