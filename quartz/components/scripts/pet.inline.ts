@@ -253,13 +253,19 @@ const loadWeather = () =>
     })
     .catch(() => {}))
 
-// The storm's gust flips the umbrella on the wall clock the lightning uses, so on the home page the
-// flash and the flip land together. A CSS animation restarts each time its part shows again, so the
-// clock is set on every animation, not once as a delay.
-const syncStorm = (el: Element) => {
+// A part's animation restarts when it shows again. Align that animation to the lightning's wall
+// clock after style has started it, without flushing the whole pet subtree during each render.
+const syncStorm = (event: AnimationEvent) => {
+  const el = event.target
+  if (
+    !event.animationName.startsWith('pet-storm') ||
+    !(el instanceof Element) ||
+    !(svg?.contains(el) || friendSvg?.contains(el) || trailArt?.contains(el))
+  )
+    return
   const at = Date.now() % (STORM_PERIOD * 1000)
-  for (const a of el.getAnimations({ subtree: true }))
-    if (a instanceof CSSAnimation && a.animationName.startsWith('pet-storm')) {
+  for (const a of el.getAnimations())
+    if ('animationName' in a && a.animationName === event.animationName) {
       const t = Number(a.currentTime ?? 0) % (STORM_PERIOD * 1000)
       if (Math.abs(t - at) > 120) a.currentTime = at
     }
@@ -301,10 +307,6 @@ const render = () => {
   svg.toggleAttribute('data-heat', heat)
   svg.toggleAttribute('data-windy', windy)
   svg.toggleAttribute('data-storm', storm)
-  if (storm) {
-    syncStorm(svg)
-    if (trailArt) syncStorm(trailArt)
-  }
   svg.toggleAttribute('data-beach', beach)
   svg.toggleAttribute('data-reading', document.documentElement.getAttribute('reader-mode') === 'on')
   // On the rail it faces the page, its back to the pole.
@@ -1136,6 +1138,8 @@ const reserveTrailFoot = (path: SVGPathElement, foot: TrailFoot) => {
     trailActor.setAttribute('aria-hidden', 'true')
     trailArt = document.createElementNS('http://www.w3.org/2000/svg', 'g')
     trailArt.setAttribute('class', 'trail-pet-art')
+    // Animation events do not cross the scene's shadow/iframe boundary.
+    trailArt.addEventListener('animationstart', syncStorm, { signal: trailSpaceSignal })
     trailArt.innerHTML = trailPetSprite()
     trailActor.append(trailArt)
     scene.append(trailActor)
@@ -2475,7 +2479,6 @@ function renderFriend() {
   friendSvg.toggleAttribute('data-lantern', lantern)
   friendSvg.toggleAttribute('data-heat', heat)
   friendSvg.toggleAttribute('data-storm', storm)
-  if (storm) syncStorm(friendSvg)
   friendSvg.toggleAttribute('data-beach', beach)
   friendSvg.toggleAttribute(
     'data-reading',
@@ -3007,8 +3010,11 @@ document.addEventListener('petstoggle', event => {
 })
 
 document.addEventListener('nav', () => {
+  // Reading ready can update layout. Do it before syncPets inserts the SVG artwork.
+  const fontsReady = document.fonts?.ready
   const controller = new AbortController()
   const { signal } = controller
+  document.addEventListener('animationstart', syncStorm, { signal })
   trailSpaceSignal = signal
   trailSpaces = new WeakMap()
   const placed = syncPets()
@@ -3393,7 +3399,9 @@ document.addEventListener('nav', () => {
   })
   late.observe(document.body, { childList: true, subtree: true })
   const lateStop = window.setTimeout(() => late.disconnect(), 5000)
-  void document.fonts?.ready.then(() => recheckSoon())
+  void fontsReady?.then(() => {
+    if (!signal.aborted) recheckSoon()
+  })
   // Each slide brings its own text, which may now sit under the presenting pet (or clear it).
   let slideTimer: number | undefined
   const onSlide = () => {

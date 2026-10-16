@@ -470,17 +470,21 @@
     shape-rendering: crispEdges;
     pointer-events: none;
   }
-  .trail-jay-body {
-    fill: #b8907b;
+  // Flexoki blues: the only saturated blue on land, so the eye finds the jay in the crowns.
+  .trail-jay-blue {
+    fill: #4385be;
+  }
+  .trail-jay-bar {
+    fill: #205ea6;
   }
   .trail-jay-ink {
-    fill: #2f2a26;
-  }
-  .trail-jay-blue {
-    fill: #4f7cae;
+    fill: #282726;
   }
   .trail-jay-white {
-    fill: #ece8dc;
+    fill: #f2f0e5;
+  }
+  .trail-jay-belly {
+    fill: #cecdc3;
   }
   .trail-jay-acorn {
     fill: #8a6a3f;

@@ -1455,9 +1455,12 @@ export function mountSceneCompositor(
     if (moved) {
       owner.moved = false
       owner.matrix = ctm(owner.element)
-      owner.screen = multiply(scaling(resolution), owner.matrix)
-      if (owner.mask) owner.mask.placed = null
-      for (const item of owner.items) if (item.kind !== 'group') item.placed = null
+      const screen = multiply(scaling(resolution), owner.matrix)
+      if (screen.some((value, index) => value !== owner.screen[index])) {
+        owner.screen = screen
+        if (owner.mask) owner.mask.placed = null
+        for (const item of owner.items) if (item.kind !== 'group') item.placed = null
+      }
     }
     const scale = scaleOf(owner.matrix) * resolution
     if (owner.mask && stale(owner.mask, scale)) pending.push(owner)
