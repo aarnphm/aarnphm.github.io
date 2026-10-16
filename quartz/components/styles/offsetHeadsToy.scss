@@ -164,33 +164,7 @@
 }
 
 .oht-stats {
-  margin: 0;
-  display: grid;
-  grid-template-columns: max-content auto;
-  gap: 0.5rem 0.9rem;
-  color: var(--oht-note);
-  font-size: 0.85rem;
-  align-content: start;
-}
-
-.oht-stat-row {
-  display: contents;
-
-  dt {
-    color: var(--oht-note);
-    font-weight: 500;
-    .katex {
-      font-size: 1em;
-    }
-  }
-  dd {
-    margin: 0;
-    color: var(--dark);
-    font-variant-numeric: tabular-nums;
-    display: inline-flex;
-    align-items: baseline;
-    gap: 0.35rem;
-  }
+  @include figure-table;
 }
 
 .oht-stat-val {

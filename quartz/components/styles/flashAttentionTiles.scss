@@ -174,22 +174,7 @@
 }
 
 .fat-stats {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 0.3rem 0.9rem;
-  font-family: var(--bodyFont);
-  font-size: 0.88rem;
-  color: var(--dark);
-  dt {
-    color: var(--fat-note-fg);
-  }
-  dd {
-    margin: 0;
-  }
-  .katex {
-    color: inherit;
-    font-size: 0.95em;
-  }
+  @include figure-table;
 }
 
 .fat-recurrence {

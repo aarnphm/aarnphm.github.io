@@ -103,7 +103,7 @@
     fill: none;
 
     &.rs-line--dotted {
-      stroke-dasharray: 3 3;
+      stroke: var(--fig-stroke-soft);
     }
   }
 

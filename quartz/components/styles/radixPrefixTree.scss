@@ -52,40 +52,40 @@
 }
 
 .rpt-prompt-list {
+  @include figure-grid;
   list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+
+  > li {
+    display: flex;
+    min-width: 0;
+    margin: 0;
+  }
 }
 
 .rpt-prompt {
+  @include figure-grid-cell;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 0.18rem;
   padding: 0.55rem 0.7rem;
-  border-radius: var(--radius-none);
-  border: 0;
-  background: color-mix(in srgb, var(--light) 98%, transparent);
   color: var(--dark);
   font-family: var(--bodyFont);
   font-size: 0.82rem;
   text-align: left;
   cursor: pointer;
-  transition:
-    background 160ms ease,
-    transform 120ms ease;
+  transition: background-color 140ms ease;
 
-  &:hover {
-    background: color-mix(in srgb, var(--rpt-match) 14%, var(--light));
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background: var(--fig-grid-selected);
+    }
   }
 
   &:focus-visible {
-    outline: 2px solid var(--tertiary);
-    outline-offset: 2px;
+    outline: 2px solid var(--dark);
+    outline-offset: -2px;
   }
 
   &.is-active {
@@ -140,7 +140,6 @@
     }
     &.is-evicted {
       stroke: var(--rpt-evict-fg);
-      stroke-dasharray: 3 3;
       opacity: 0.5;
     }
   }
@@ -148,7 +147,6 @@
   .rpt-edge--new {
     stroke: var(--rpt-new);
     stroke-width: 1.6;
-    stroke-dasharray: 4 3;
     opacity: 0;
     transition: opacity 200ms ease;
     transition-delay: var(--rpt-delay, 0ms);
@@ -212,7 +210,6 @@
     .rpt-node-shape {
       fill: transparent;
       stroke: var(--rpt-evict-fg);
-      stroke-dasharray: 3 3;
     }
     .rpt-node-label .rpt-fo {
       color: var(--rpt-evict-fg);
@@ -266,7 +263,6 @@
     &.rpt-legend-chip--evict {
       fill: transparent;
       stroke: var(--rpt-evict-fg);
-      stroke-dasharray: 2 2;
     }
   }
 
@@ -338,43 +334,8 @@
 }
 
 .rpt-stats {
-  margin: 0.55rem 0 0;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.32rem;
-
-  & > div {
-    display: flex;
-    justify-content: space-between;
-    gap: 0.4rem;
-    font-family: var(--bodyFont);
-    font-size: 0.78rem;
-    padding-bottom: 0.24rem;
-    &:last-child {
-      padding-bottom: 0;
-    }
-  }
-
-  dt {
-    color: var(--rpt-note-fg);
-
-    .katex {
-      font-size: 1em;
-      color: inherit;
-    }
-  }
-
-  dd {
-    margin: 0;
-    color: var(--dark);
-    font-variant-numeric: tabular-nums;
-    text-align: right;
-
-    .katex {
-      font-size: 1em;
-      color: inherit;
-    }
-  }
+  @include figure-table;
+  margin-top: 0.55rem;
 }
 
 .rpt-math {

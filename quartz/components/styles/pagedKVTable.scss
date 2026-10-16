@@ -177,25 +177,26 @@
 
 .pkt-pt {
   width: 100%;
+  margin: 0;
   border-collapse: collapse;
   font-family: var(--bodyFont);
-  font-size: 0.85rem;
-  background: var(--pkt-card-bg);
-  border: 0;
+  font-size: 0.8rem;
+  background: var(--fig-grid-cell);
+  border: 1px solid var(--fig-grid-line);
   border-radius: var(--radius-none);
-  overflow: hidden;
 
   th,
   td {
     padding: 0.4rem 0.6rem;
+    border: 1px solid var(--fig-grid-line);
     text-align: left;
   }
   thead th {
-    font-size: 0.7rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    color: var(--pkt-note-fg);
-    background: color-mix(in srgb, var(--lightgray) 18%, transparent);
+    font-family: var(--codeFont);
+    font-size: 0.72rem;
+    font-weight: 400;
+    color: var(--fig-note);
+    background: var(--fig-grid-cell);
   }
 }
 
@@ -223,12 +224,9 @@
 }
 
 .pkt-pblocks {
+  @include figure-grid;
   list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.5rem;
 }
 
 .pkt-pblock {
@@ -236,25 +234,18 @@
   grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 0.5rem;
+  @include figure-grid-cell;
   padding: 0.4rem 0.55rem;
-  border-radius: var(--radius-none);
-  border: 0;
-  background: var(--pkt-card-bg);
   font-family: var(--bodyFont);
   font-size: 0.78rem;
-  transition:
-    background 220ms ease,
-    transform 220ms ease;
+  transition: background-color 220ms ease;
 
   &--free {
     background: var(--pkt-free-bg);
     color: var(--pkt-note-fg);
   }
-  &.is-active {
-    transform: translateY(-1px);
-  }
   &.is-landing {
-    animation: pkt-land 360ms cubic-bezier(0.34, 1.4, 0.4, 1);
+    animation: pkt-land 220ms cubic-bezier(0.23, 1, 0.32, 1);
   }
 }
 
@@ -338,32 +329,7 @@
 }
 
 .pkt-readout {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  margin: 0;
-}
-
-.pkt-readout-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: baseline;
-  gap: 0.5rem;
-  font-size: 0.8rem;
-  color: var(--pkt-note-fg);
-
-  dt {
-    margin: 0;
-    font-weight: 500;
-  }
-  dd {
-    margin: 0;
-    color: var(--dark);
-    font-variant-numeric: tabular-nums;
-    display: inline-flex;
-    align-items: baseline;
-    gap: 0.35rem;
-  }
+  @include figure-table;
 }
 
 .pkt-sep {
@@ -446,14 +412,13 @@
 }
 
 @keyframes pkt-land {
-  0% {
-    transform: translateY(-12px) scale(0.94);
+  from {
+    opacity: 0.4;
+    transform: translateY(-4px);
   }
-  60% {
-    transform: translateY(2px) scale(1.02);
-  }
-  100% {
-    transform: translateY(0) scale(1);
+  to {
+    opacity: 1;
+    transform: none;
   }
 }
 
@@ -494,5 +459,11 @@
   .pkt-lblock-meta {
     grid-column: 1 / -1;
     text-align: right;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pkt-pblock.is-landing {
+    animation: none;
   }
 }

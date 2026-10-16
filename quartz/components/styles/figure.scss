@@ -17,6 +17,9 @@
   --fig-tab-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
   --fig-tab-border: color-mix(in srgb, var(--lightgray) 78%, transparent);
   --fig-tab-fg: var(--darkgray);
+  --fig-grid-line: color-mix(in srgb, var(--gray) 24%, transparent);
+  --fig-grid-cell: var(--light);
+  --fig-grid-selected: color-mix(in srgb, var(--fig-sage) 13%, var(--light));
 }
 
 @mixin figure-frame(
@@ -99,4 +102,63 @@
   font-size: $size;
   font-weight: 600;
   color: var(--fig-note);
+}
+
+// Hairline grid of square cells: the triathlon option-grid recipe. The ground shows through
+// the 1px gaps, so every cell edge is one line and the outer edge closes the table.
+@mixin figure-grid {
+  display: grid;
+  gap: 1px;
+  margin: 0;
+  padding: 1px;
+  border: 0;
+  border-radius: var(--radius-none);
+  background: var(--fig-grid-line);
+}
+
+@mixin figure-grid-cell {
+  min-width: 0;
+  margin: 0;
+  border: 0;
+  border-radius: var(--radius-none);
+  background: var(--fig-grid-cell);
+}
+
+// A label/value readout as a two-column grid table. Rows may be bare dt/dd pairs or a div each.
+@mixin figure-table($columns: minmax(0, 1fr) max-content) {
+  @include figure-grid;
+  grid-template-columns: $columns;
+  font-size: 0.78rem;
+  line-height: 1.35;
+
+  > div {
+    display: contents;
+  }
+
+  dt,
+  dd {
+    @include figure-grid-cell;
+    display: flex;
+    align-items: baseline;
+    gap: 0.35rem;
+    padding: 0.4rem 0.55rem;
+  }
+
+  dt {
+    color: var(--fig-note);
+    font-weight: 400;
+  }
+
+  dd {
+    justify-content: flex-end;
+    color: var(--dark);
+    font-family: var(--codeFont);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+
+  .katex {
+    color: inherit;
+    font-size: 1em;
+  }
 }

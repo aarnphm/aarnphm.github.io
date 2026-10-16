@@ -10,7 +10,6 @@
   --rr-note-fg: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
   --rr-salmon: var(--fig-salmon);
   --rr-sage: var(--fig-sage);
-  --rr-cell-empty: color-mix(in srgb, var(--gray) 18%, transparent);
   --rr-cell-fill: color-mix(in srgb, var(--rr-sage) 80%, transparent);
   --rr-cell-pulse: color-mix(in srgb, var(--rr-salmon) 85%, transparent);
   --rr-token-fill: var(--rr-salmon);
@@ -19,7 +18,6 @@
 }
 
 :root[saved-theme='dark'] .ring-rotation {
-  --rr-cell-empty: color-mix(in srgb, var(--lightgray) 28%, transparent);
   --rr-cell-fill: color-mix(in srgb, var(--rr-sage) 55%, var(--lightgray));
   --rr-chip-bg: color-mix(in srgb, var(--rr-sage) 22%, var(--lightgray));
   --rr-chip-bg-active: color-mix(in srgb, var(--rr-salmon) 45%, var(--lightgray));
@@ -43,7 +41,6 @@
     fill: none;
     stroke: var(--rr-stroke-soft);
     stroke-width: 1.2;
-    stroke-dasharray: 4 4;
   }
 
   .rr-ring-flow {
@@ -183,21 +180,17 @@
 }
 
 .rr-matrix-grid {
-  display: grid;
+  @include figure-grid;
   grid-template-columns: repeat(var(--rr-p, 4), minmax(0, 1fr));
-  gap: 4px;
   width: 100%;
   max-width: 220px;
 }
 
 .rr-cell {
+  @include figure-grid-cell;
   display: block;
   aspect-ratio: 1 / 1;
-  border-radius: var(--radius-none);
-  background: var(--rr-cell-empty);
-  transition:
-    background 220ms ease,
-    transform 220ms ease;
+  transition: background-color 220ms ease;
 }
 
 .rr-cell[data-rr-state='filled'] {
@@ -206,48 +199,16 @@
 
 .rr-cell[data-rr-state='pulse'] {
   background: var(--rr-cell-pulse);
-  transform: scale(1.12);
 }
 
 .rr-cell[data-rr-state='diag'] {
   background: var(--rr-cell-fill);
-  outline: 1px solid color-mix(in srgb, var(--rr-stroke) 50%, transparent);
+  outline: 1px solid var(--fig-stroke);
   outline-offset: -1px;
 }
 
 .rr-readout {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  margin: 0;
-  padding: 0.75rem 0.9rem;
-  background: color-mix(in srgb, var(--light) 80%, transparent);
-  border: 0;
-  border-radius: var(--radius-none);
-  font-size: 0.82rem;
-  color: var(--rr-note-fg);
-}
-
-.rr-readout-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: baseline;
-  gap: 0.5rem;
-  margin: 0;
-}
-
-.rr-readout-row > dt {
-  margin: 0;
-  font-weight: 500;
-}
-
-.rr-readout-row > dd {
-  margin: 0;
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0.35rem;
-  color: var(--dark);
-  font-variant-numeric: tabular-nums;
+  @include figure-table;
 }
 
 .rr-readout-eq {
