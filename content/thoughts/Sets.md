@@ -968,6 +968,8 @@ The _closure_ $\overline{A}$ is the smallest closed set containing $A$; the _int
 
 Open and closed are properties of subsets relative to a topology on $X$, not absolute properties of the raw set.
 
+The Lean structure below keeps the assumptions needed to prove that a union of two closed sets is closed. It omits closure under arbitrary unions of open sets, so its `Topology` name describes a weaker structure than the topology defined above. Mathlib's [`TopologicalSpace`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Defs/Basic.html#TopologicalSpace) includes that missing axiom. The proof here uses only complements and the intersection axiom.
+
 ```lean shell
 import Mathlib
 
