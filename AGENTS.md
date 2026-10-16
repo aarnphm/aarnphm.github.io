@@ -9,6 +9,7 @@ This repository powers a Quartz digital garden with custom plugins and a Cloudfl
 - Check `docs` for any additional notes on design patterns as well as relevant information. If possible, always use 80% of ASD-STE100 for description et al.
 - Place course files by the routing in [courses directory](docs/courses.md): vendored files come from `pnpm vendor:ocw`; authored files live in `lectures/`, `psets/` and `statements/`.
 - Keep components modular. Use Preact and the existing SCSS tokens for Quartz UI. NO `box-shadow` and decorative `border-left` styling, unless specified so.
+- Use the `garden-design-system` skill for any UI, chart, figure or mock, and for UI review. It holds the tokens, the reading and tool registers, layout modes, component contracts and the review checklist. Its `references/` are generated from the Claude-app design system; regenerate them after that changes, and never edit them by hand.
 - Keep utility filenames kebab-case. Share a helper in `quartz/util` when multiple owners need it; keep a script-specific helper with its script.
 - Use comments for non-obvious constraints or decisions; omit comments that repeat the code.
 - Keep filesystem access out of Quartz transformers. Emitters own filesystem output.
