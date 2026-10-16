@@ -744,8 +744,10 @@ export type TreePlacement = {
   // Share of full height reached, the forest year's age of the tree, and the fallen trunk under it.
   growth: number
   generation: number
-  // Forest years since the tree rooted, when succession placed it.
+  // Forest years since the tree rooted, and who roots after it, when succession placed it.
   age?: number
+  successor?: TreeKind | null
+  succeeds?: number
   log: number | null
 }
 

@@ -15,13 +15,7 @@ import {
   type ActorSpacing,
 } from './actor-spacing'
 import { campSites, type CampSite } from './camp-layout'
-import {
-  campDeparture,
-  campMayDepart,
-  campMaySleep,
-  campRoutine,
-  type CampRoutine,
-} from './camp-routine'
+import { campMayDepart, campMaySleep, campRoutine, type CampRoutine } from './camp-routine'
 import { campFigure, trailCampsite } from './campsite'
 import { bootImpression, footprintTransform } from './footprints'
 import {
@@ -32,7 +26,7 @@ import {
   type Landscape,
   type Point,
 } from './landscape'
-import { detourTrail, replanOccupiedWaypoints } from './obstacle-route'
+import { createNavigationSlot, type TrailNavigation } from './navigation-workers'
 import { pixels } from './pixels'
 import { sceneSettings, type CampSettings } from './scene-settings'
 import { trailSnowBank } from './winter'
@@ -69,6 +63,9 @@ type Person = {
   stalled: number
   remaining: number
   route: Point[]
+  planning: ReturnType<typeof createNavigationSlot>
+  roadReady: boolean
+  retryRoadAt: number
   look: Point | null
   surpriseUntil: number
 }
@@ -251,6 +248,7 @@ export function mountCampCommunity(
   host: HTMLElement,
   signal: AbortSignal,
   onStructure: () => void,
+  navigation: TrailNavigation,
 ) {
   const document = scene.ownerDocument
   const view = document.defaultView
@@ -422,23 +420,81 @@ export function mountCampCommunity(
           ? `<g transform="translate(8 0) scale(-1 1)">${campFigure(pose, person.carrying)}</g>`
           : campFigure(pose, person.carrying)
   }
+  const routeDistance = (from: Point, points: readonly Point[]) =>
+    points.reduce((length, point, index) => {
+      const previous = index ? points[index - 1] : from
+      return length + Math.hypot(point.x - previous.x, point.y - previous.y)
+    }, 0)
+  const planWalk = (person: Person) => {
+    if (person.phase !== 'walking' || !landscape || person.planning.pending) return
+    const point = person.target
+    const road = [person.position, ...followTerrain([person.position, point], landscape).slice(1)]
+    const ownTent = tents[person.site][person.tent]?.element.dataset.campTent
+    const exitTent = tents[person.site][person.exitTent]?.element.dataset.campTent
+    const solids = [...readTrunks(scene), ...readStationaryActors(scene, person.id)].filter(
+      solid => solid.id !== `tent-${ownTent}` && solid.id !== `tent-${exitTent}`,
+    )
+    person.roadReady = false
+    person.planning.run(
+      request => navigation.plan(road, 12, solids, bounds(), request),
+      planned => {
+        if (person.phase !== 'walking') return
+        if (planned) {
+          const steps = planned.points.slice(1)
+          person.route = steps.length ? steps : [point]
+          person.roadReady = true
+          person.stalled = 0
+          person.remaining = Infinity
+          setPose(person)
+          renderPerson(person, true)
+        } else {
+          person.retryRoadAt = view.performance.now() + 500
+        }
+      },
+    )
+  }
   const travelTo = (person: Person, point: Point) => {
+    person.planning.cancel()
     person.target = point
-    person.route = landscape ? followTerrain([person.position, point], landscape).slice(1) : [point]
-    if (landscape) {
-      const ownTent = tents[person.site][person.tent]?.element.dataset.campTent
-      const exitTent = tents[person.site][person.exitTent]?.element.dataset.campTent
-      const solids = [...readTrunks(scene), ...readStationaryActors(scene, person.id)].filter(
-        solid => solid.id !== `tent-${ownTent}` && solid.id !== `tent-${exitTent}`,
-      )
-      const planned = detourTrail([person.position, ...person.route], 12, solids, bounds())
-      if (planned) person.route = planned.points.slice(1)
-    }
+    person.route = []
+    person.roadReady = false
+    person.retryRoadAt = 0
     person.stalled = 0
     person.remaining = Infinity
+    if (person.phase === 'walking') planWalk(person)
+  }
+  const planDeparture = (person: Person) => {
+    if (person.phase !== 'departing' || !landscape || person.planning.pending) return
+    const current = landscape
+    const ownTent = tents[person.site][person.tent]?.element.dataset.campTent
+    const exitTent = tents[person.site][person.exitTent]?.element.dataset.campTent
+    const solids = [...readTrunks(scene), ...readStationaryActors(scene, person.id)].filter(
+      solid => solid.id !== `tent-${ownTent}` && solid.id !== `tent-${exitTent}`,
+    )
+    person.roadReady = false
+    person.planning.run(
+      request => navigation.departure(person.position, trailRoutes, current, solids, request),
+      points => {
+        if (person.phase !== 'departing') return
+        if (points?.length) {
+          person.route = points
+          person.target = points[points.length - 1] ?? person.position
+          person.departureLength = person.walked + routeDistance(person.position, points)
+          person.roadReady = true
+          person.remaining = Infinity
+          person.stalled = 0
+          setPose(person)
+          renderPerson(person, true)
+        } else {
+          person.retryRoadAt = view.performance.now() + 500
+        }
+      },
+    )
   }
   const placePerson = (person: Person, enterTent = false) => {
     if (!landscape) return
+    person.planning.cancel()
+    person.roadReady = false
     const current = landscape
     const ownTent = enterTent ? tents[person.site][person.tent]?.element.dataset.campTent : null
     placeOnReflow(
@@ -477,9 +533,9 @@ export function mountCampCommunity(
     const index = person.slot
     person.tent = tents[person.site].indexOf(ready[index % ready.length])
     const tent = tents[person.site][person.tent]
-    travelTo(person, { x: tent.position.x, y: tent.position.y + 9 })
     person.phase = 'walking'
     person.element.dataset.destination = 'sleep'
+    travelTo(person, { x: tent.position.x, y: tent.position.y + 9 })
     return true
   }
   const phase = (site: number, next: CampRoutine['phase']) => {
@@ -523,6 +579,9 @@ export function mountCampCommunity(
       tent.element.removeAttribute('data-camp-solid')
     }
     for (const person of people.filter(person => person.site === site)) {
+      person.planning.cancel()
+      person.route = []
+      person.roadReady = false
       person.phase = 'gone'
       renderPerson(person, false)
     }
@@ -568,23 +627,21 @@ export function mountCampCommunity(
     fires[site].dataset.fireState = 'out'
     fires[site].style.setProperty('--trail-fire-strength', '0')
     for (const person of people.filter(person => person.site === site && person.phase !== 'gone')) {
+      person.planning.cancel()
       person.phase = 'departing'
       person.carrying = true
       person.departAt = elapsed + person.slot * 1500
       person.walked = 0
-      person.route = campDeparture(person.position, trailRoutes, landscape, [
-        ...readTrunks(scene),
-        ...readStationaryActors(scene, person.id),
-      ])
-      person.target = person.route[person.route.length - 1] ?? person.position
-      person.departureLength = person.route.reduce((length, point, index) => {
-        const previous = index ? person.route[index - 1] : person.position
-        return length + Math.hypot(point.x - previous.x, point.y - previous.y)
-      }, 0)
+      person.departureLength = 0
+      person.route = []
+      person.roadReady = false
+      person.retryRoadAt = 0
+      person.target = person.position
       person.element.dataset.destination = 'hike'
       person.element.dataset.departureProgress = '0'
       person.remaining = Infinity
       person.stalled = 0
+      planDeparture(person)
       setPose(person)
     }
   }
@@ -684,11 +741,11 @@ export function mountCampCommunity(
           person.phase = 'walking'
           if (person.tent >= 0) {
             const next = tents[person.site][person.tent]
-            travelTo(person, { x: next.position.x, y: next.position.y + 17 })
             person.element.dataset.destination = 'build'
+            travelTo(person, { x: next.position.x, y: next.position.y + 17 })
           } else {
-            travelTo(person, seat(person))
             person.element.dataset.destination = 'fire'
+            travelTo(person, seat(person))
           }
         }
       }
@@ -696,135 +753,152 @@ export function mountCampCommunity(
         person.phase === 'walking' ||
         (person.phase === 'departing' && elapsed >= person.departAt)
       ) {
-        const before = { ...person.position }
-        const ownTent = tents[person.site][person.tent]?.element.dataset.campTent
-        const exit = tents[person.site][person.exitTent]
-        if (
-          exit &&
-          Math.hypot(person.position.x - exit.position.x, person.position.y - exit.position.y) > 34
-        )
-          person.exitTent = -1
-        const leavingTent = tents[person.site][person.exitTent]?.element.dataset.campTent
-        const nearby = obstacles.filter(
-          obstacle =>
-            obstacle.id !== person.id &&
-            obstacle.id !== `tent-${ownTent}` &&
-            obstacle.id !== `tent-${leavingTent}`,
-        )
-        const scale = trailGroundScale(person.position.y, landscape)
-        const replacement = replanOccupiedWaypoints(
-          person.id,
-          person.position,
-          person.route,
-          12 * scale,
-          nearby,
-          bounds(person.phase === 'departing'),
-          person.spacing.yieldingTo,
-        )
-        if (replacement?.length) {
-          person.route = replacement
-          person.target = replacement[replacement.length - 1]
-          person.remaining = Infinity
-          person.stalled = 0
-        }
-        const destinationPoint = person.route[0] ?? person.target
-        const distance = Math.hypot(
-          destinationPoint.x - person.position.x,
-          destinationPoint.y - person.position.y,
-        )
-        const budget = (delta / 1000) * 18
-        person.stalled = distance < person.remaining - 0.15 ? 0 : person.stalled + delta
-        person.remaining = distance
-        const fraction = Math.min(1, budget / Math.max(1, distance))
-        const intended = {
-          x: person.position.x + (destinationPoint.x - person.position.x) * fraction,
-          y: person.position.y + (destinationPoint.y - person.position.y) * fraction,
-        }
-        if (
-          spacedStep(
+        if (!person.roadReady) {
+          if (view.performance.now() >= person.retryRoadAt) {
+            if (person.phase === 'departing') planDeparture(person)
+            else planWalk(person)
+          }
+        } else {
+          const before = { ...person.position }
+          const ownTent = tents[person.site][person.tent]?.element.dataset.campTent
+          const exit = tents[person.site][person.exitTent]
+          if (
+            exit &&
+            Math.hypot(person.position.x - exit.position.x, person.position.y - exit.position.y) >
+              34
+          )
+            person.exitTent = -1
+          const leavingTent = tents[person.site][person.exitTent]?.element.dataset.campTent
+          const nearby = obstacles.filter(
+            obstacle =>
+              obstacle.id !== person.id &&
+              obstacle.id !== `tent-${ownTent}` &&
+              obstacle.id !== `tent-${leavingTent}`,
+          )
+          const scale = trailGroundScale(person.position.y, landscape)
+          const activeBounds = bounds(person.phase === 'departing')
+          person.planning.repair(
+            navigation,
             person.id,
             person.position,
-            intended,
+            person.route,
             12 * scale,
-            budget * 1.5,
-            person.spacing,
             nearby,
-            bounds(person.phase === 'departing'),
-            true,
-            destinationPoint,
-            true,
+            activeBounds,
+            person.spacing.yieldingTo,
+            replacement => {
+              person.route = replacement
+              person.target = replacement[replacement.length - 1] ?? person.target
+              if (person.phase === 'departing')
+                person.departureLength = person.walked + routeDistance(person.position, replacement)
+              person.remaining = Infinity
+              person.stalled = 0
+            },
+            () => person.position,
           )
-        )
-          person.position = intended
-        const current = spacedPosition(person.position, person.spacing)
-        // Campsite walkers steer in world space; they have no path offset to recover.
-        person.position = current
-        person.spacing.lane.x -= person.spacing.offset.x
-        person.spacing.lane.y -= person.spacing.offset.y
-        person.spacing.offset = { x: 0, y: 0 }
-        if (Math.hypot(current.x - person.lastStep.x, current.y - person.lastStep.y) >= 8) {
-          const mark = bootImpression(document)
-          mark.dataset.footprintOwner = person.id
-          mark.setAttribute(
-            'transform',
-            footprintTransform(
-              current.x,
-              current.y,
-              Math.atan2(current.y - person.lastStep.y, current.x - person.lastStep.x),
-              person.stride++ % 2 ? 1 : -1,
-            ) + ` scale(${scale.toFixed(3)})`,
+          const destinationPoint = person.route[0] ?? person.target
+          const distance = Math.hypot(
+            destinationPoint.x - person.position.x,
+            destinationPoint.y - person.position.y,
           )
-          tracks.append(mark)
-          while (tracks.childElementCount > 80) tracks.firstElementChild?.remove()
-          person.lastStep = current
-        }
-        const arrived =
-          Math.hypot(current.x - destinationPoint.x, current.y - destinationPoint.y) < 2
-        const destination = person.element.dataset.destination
-        const clear = nearby.every(
-          other =>
-            Math.hypot(current.x - other.x, current.y - other.y) >= 12 * scale + other.radius + 1.9,
-        )
-        const workTent = tents[person.site][person.tent]
-        const canBuild =
-          (destination === 'build' || destination === 'pack') &&
-          workTent &&
-          distance < 18 &&
-          current.y >= workTent.position.y + 8 &&
-          clear
-        const settled = destination === 'fire' && person.stalled > 1500 && distance < 24 && clear
-        if (arrived && person.route.length > 1) {
-          person.route.shift()
-          person.remaining = Infinity
-        } else if (
-          arrived ||
-          (person.route.length <= 1 &&
-            (canBuild ||
-              settled ||
-              (destination === 'sleep' && distance < 10 && person.spacing.status === 'clear')))
-        ) {
-          person.phase =
-            destination === 'hike'
-              ? 'gone'
-              : destination === 'douse'
-                ? 'dousing'
-                : destination === 'pack'
-                  ? 'packing'
-                  : destination === 'build'
-                    ? 'building'
-                    : destination === 'sleep'
-                      ? 'sleeping'
-                      : 'attending'
-          person.buildTime = 0
-          if (person.phase === 'sleeping')
-            tents[person.site][person.tent].element.dataset.occupied = 'true'
-        }
-        if (destination === 'hike') {
-          person.walked += Math.hypot(current.x - before.x, current.y - before.y)
-          person.element.dataset.departureProgress = Math.min(
-            1,
-            person.walked / Math.max(1, person.departureLength),
-          ).toFixed(4)
+          const budget = (delta / 1000) * 18
+          person.stalled = distance < person.remaining - 0.15 ? 0 : person.stalled + delta
+          person.remaining = distance
+          const fraction = Math.min(1, budget / Math.max(1, distance))
+          const intended = {
+            x: person.position.x + (destinationPoint.x - person.position.x) * fraction,
+            y: person.position.y + (destinationPoint.y - person.position.y) * fraction,
+          }
+          if (
+            spacedStep(
+              person.id,
+              person.position,
+              intended,
+              12 * scale,
+              budget * 1.5,
+              person.spacing,
+              nearby,
+              activeBounds,
+              true,
+              destinationPoint,
+              true,
+            )
+          )
+            person.position = intended
+          const current = spacedPosition(person.position, person.spacing)
+          // Campsite walkers steer in world space; they have no path offset to recover.
+          person.position = current
+          person.spacing.lane.x -= person.spacing.offset.x
+          person.spacing.lane.y -= person.spacing.offset.y
+          person.spacing.offset = { x: 0, y: 0 }
+          if (Math.hypot(current.x - person.lastStep.x, current.y - person.lastStep.y) >= 8) {
+            const mark = bootImpression(document)
+            mark.dataset.footprintOwner = person.id
+            mark.setAttribute(
+              'transform',
+              footprintTransform(
+                current.x,
+                current.y,
+                Math.atan2(current.y - person.lastStep.y, current.x - person.lastStep.x),
+                person.stride++ % 2 ? 1 : -1,
+              ) + ` scale(${scale.toFixed(3)})`,
+            )
+            tracks.append(mark)
+            while (tracks.childElementCount > 80) tracks.firstElementChild?.remove()
+            person.lastStep = current
+          }
+          const arrived =
+            Math.hypot(current.x - destinationPoint.x, current.y - destinationPoint.y) < 2
+          const destination = person.element.dataset.destination
+          const clear = nearby.every(
+            other =>
+              Math.hypot(current.x - other.x, current.y - other.y) >=
+              12 * scale + other.radius + 1.9,
+          )
+          const workTent = tents[person.site][person.tent]
+          const canBuild =
+            (destination === 'build' || destination === 'pack') &&
+            workTent &&
+            distance < 18 &&
+            current.y >= workTent.position.y + 8 &&
+            clear
+          const settled = destination === 'fire' && person.stalled > 1500 && distance < 24 && clear
+          if (arrived && person.route.length > 1) {
+            person.route.shift()
+            person.remaining = Infinity
+          } else if (
+            arrived ||
+            (person.route.length <= 1 &&
+              (canBuild ||
+                settled ||
+                (destination === 'sleep' && distance < 10 && person.spacing.status === 'clear')))
+          ) {
+            person.planning.cancel()
+            person.route = []
+            person.roadReady = false
+            person.phase =
+              destination === 'hike'
+                ? 'gone'
+                : destination === 'douse'
+                  ? 'dousing'
+                  : destination === 'pack'
+                    ? 'packing'
+                    : destination === 'build'
+                      ? 'building'
+                      : destination === 'sleep'
+                        ? 'sleeping'
+                        : 'attending'
+            person.buildTime = 0
+            if (person.phase === 'sleeping')
+              tents[person.site][person.tent].element.dataset.occupied = 'true'
+          }
+          if (destination === 'hike') {
+            person.walked += Math.hypot(current.x - before.x, current.y - before.y)
+            person.element.dataset.departureProgress = Math.min(
+              1,
+              person.walked / Math.max(1, person.departureLength),
+            ).toFixed(4)
+          }
         }
       }
       noticePet(person, glancePet)
@@ -858,13 +932,19 @@ export function mountCampCommunity(
   }
   const pause = () => {
     paused = true
+    for (const person of people) {
+      if (person.planning.pending) person.roadReady = false
+      person.planning.cancel()
+    }
     if (frame) view.cancelAnimationFrame(frame)
     frame = 0
     last = 0
     scene.dataset.campMotion = 'paused'
   }
   const resume = () => {
-    pause()
+    if (frame) view.cancelAnimationFrame(frame)
+    frame = 0
+    last = 0
     paused = false
     updateRoutines()
     lighting()
@@ -884,6 +964,9 @@ export function mountCampCommunity(
           tent.element.style.setProperty('--tent-progress', '1')
         }
       for (const person of people) {
+        person.planning.cancel()
+        person.route = []
+        person.roadReady = false
         if (routines[person.site]?.phase === 'empty') continue
         person.position = seat(person)
         person.spacing = actorSpacing()
@@ -902,6 +985,12 @@ export function mountCampCommunity(
       return
     }
     if (host.hidden || document.hidden || !landscape) return
+    for (const person of people) {
+      if (!person.roadReady && !person.planning.pending) {
+        if (person.phase === 'walking') planWalk(person)
+        else if (person.phase === 'departing') planDeparture(person)
+      }
+    }
     scene.dataset.campMotion = 'running'
     frame = view.requestAnimationFrame(tick)
   }
@@ -937,6 +1026,9 @@ export function mountCampCommunity(
       stalled: 0,
       remaining: Infinity,
       route: [],
+      planning: createNavigationSlot(signal, element),
+      roadReady: false,
+      retryRoadAt: 0,
       look: null,
       surpriseUntil: 0,
     }
@@ -961,11 +1053,14 @@ export function mountCampCommunity(
     setPose(person)
     person.position = spacedPosition(person.position, person.spacing)
     person.spacing.offset = { x: 0, y: 0 }
-    travelTo(person, person.target)
+    if (person.phase === 'walking') travelTo(person, person.target)
     renderPerson(person, person.phase !== 'sleeping')
   }
   const resetCamp = (site: number) => {
-    for (const person of people.filter(person => person.site === site)) person.element.remove()
+    for (const person of people.filter(person => person.site === site)) {
+      person.planning.dispose()
+      person.element.remove()
+    }
     people = people.filter(person => person.site !== site)
     routines[site] = campRoutine(seed, site, Date.now())
     fires[site].dataset.campStay = String(routines[site].stay)
@@ -1013,12 +1108,11 @@ export function mountCampCommunity(
         for (const person of people) {
           if (person.phase === 'walking') travelTo(person, person.target)
           else if (person.phase === 'departing') {
-            person.route = campDeparture(person.position, routes, current, [
-              ...readTrunks(scene),
-              ...readStationaryActors(scene, person.id),
-            ])
-            person.target = person.route[person.route.length - 1] ?? person.position
-            person.remaining = Infinity
+            person.planning.cancel()
+            person.route = []
+            person.roadReady = false
+            person.retryRoadAt = 0
+            planDeparture(person)
           }
         }
       }
@@ -1033,6 +1127,7 @@ export function mountCampCommunity(
     sites = campSites(current, seed, settings)
     layer.replaceChildren()
     tracks.replaceChildren()
+    for (const person of people) person.planning.dispose()
     people = []
     tents = []
     fires = []

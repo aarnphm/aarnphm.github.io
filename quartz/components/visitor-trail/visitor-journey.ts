@@ -14,11 +14,10 @@ import {
   type ActorSpacing,
 } from './actor-spacing'
 import { campSites, type CampSite } from './camp-layout'
-import { campDeparture, campPatrolRoute } from './camp-routine'
 import { campFigure } from './campsite'
 import { bootImpression, footprintTransform } from './footprints'
 import { onDryLand, trailGroundScale, type Landscape, type Point } from './landscape'
-import { detourTrail, replanOccupiedWaypoints } from './obstacle-route'
+import { createNavigationSlot, type TrailNavigation } from './navigation-workers'
 import { anonymousVisitor, visitorHash } from './visitor-name'
 
 export type TrailVisitor = { id: string; camp: number; own: boolean }
@@ -30,6 +29,8 @@ type Visitor = TrailVisitor & {
   tracks: SVGGElement
   button: HTMLButtonElement
   popover: HTMLDivElement
+  planning: ReturnType<typeof createNavigationSlot>
+  retryAt: number
   present: boolean
   site: number
   phase: Phase
@@ -47,6 +48,7 @@ export function mountVisitorJourneys(
   host: HTMLElement,
   signal: AbortSignal,
   onStructure: () => void,
+  navigation: TrailNavigation,
 ) {
   const document = scene.ownerDocument
   const view = document.defaultView
@@ -156,41 +158,100 @@ export function mountVisitorJourneys(
       }
     return false
   }
-  const plan = (visitor: Visitor, points: Point[]) => {
-    const planned = detourTrail([visitor.position, ...points], 12, bodies(visitor), bounds())
-    visitor.road = planned?.points.slice(1) ?? []
-    return visitor.road.length > 0
-  }
   const arrive = (visitor: Visitor) => {
     if (!landscape || !chooseSeat(visitor)) {
+      visitor.planning.cancel()
       visitor.phase = 'waiting'
       visitor.road = []
       return
     }
-    const mountain = visitor.position.y < landscape.treeline ? mountainRoad(visitor.position) : []
+    const terrain = landscape
+    const currentRoutes = routes
+    const from = { ...visitor.position }
+    const goal = { ...visitor.goal }
+    const obstacles = bodies(visitor)
+    const currentBounds = bounds()
+    const mountain = from.y < terrain.treeline ? mountainRoad(from) : []
     let nearest = 0
     let distance = Infinity
     for (const [index, point] of mountain.entries()) {
-      const current = Math.hypot(point.x - visitor.position.x, point.y - visitor.position.y)
+      const current = Math.hypot(point.x - from.x, point.y - from.y)
       if (current < distance) {
         distance = current
         nearest = index
       }
     }
     const descending = mountain.slice(0, nearest + 1).reverse()
-    const start = descending.at(-1) ?? visitor.position
-    const road = campPatrolRoute(start, visitor.goal, routes, landscape, bodies(visitor))
-    visitor.phase = plan(visitor, [...descending, ...road, visitor.goal]) ? 'arriving' : 'waiting'
+    const start = descending.at(-1) ?? from
+    visitor.phase = 'arriving'
+    visitor.road = []
+    visitor.planning.run(
+      async request => {
+        const road = await navigation.patrol(
+          start,
+          goal,
+          currentRoutes,
+          terrain,
+          obstacles,
+          request,
+        )
+        if (request.aborted) return null
+        return navigation.plan(
+          [from, ...descending, ...(road ?? []), goal],
+          12,
+          obstacles,
+          currentBounds,
+          request,
+        )
+      },
+      planned => {
+        if (!visitors.has(visitor.id) || !visitor.present || visitor.phase !== 'arriving') return
+        visitor.road = planned?.points.slice(1) ?? []
+        if (!visitor.road.length) {
+          visitor.phase = 'waiting'
+          visitor.retryAt = view.performance.now() + 500
+        }
+        render(visitor, view.performance.now())
+        schedule()
+      },
+    )
   }
   const leave = (visitor: Visitor) => {
     if (!landscape) return
     if (reduced.matches) return remove(visitor)
-    const road = campDeparture(visitor.position, routes, landscape, bodies(visitor))
-    const mountain = mountainRoad(road.at(-1) ?? visitor.position)
-    visitor.goal = mountain.at(-1) ?? visitor.position
+    const terrain = landscape
+    const currentRoutes = routes
+    const from = { ...visitor.position }
+    const obstacles = bodies(visitor)
+    const currentBounds = bounds()
     visitor.phase = 'departing'
-    plan(visitor, [...road, ...mountain])
+    visitor.road = []
     visitor.element.dataset.leftAt = String(Date.now())
+    visitor.planning.run(
+      async request => {
+        const road = await navigation.departure(from, currentRoutes, terrain, obstacles, request)
+        if (request.aborted) return null
+        const points = road ?? []
+        const mountain = mountainRoad(points.at(-1) ?? from)
+        const goal = mountain.at(-1) ?? from
+        const planned = await navigation.plan(
+          [from, ...points, ...mountain],
+          12,
+          obstacles,
+          currentBounds,
+          request,
+        )
+        return { goal, planned }
+      },
+      result => {
+        if (!visitors.has(visitor.id) || visitor.present || visitor.phase !== 'departing') return
+        visitor.goal = result?.goal ?? visitor.position
+        visitor.road = result?.planned?.points.slice(1) ?? []
+        if (!visitor.road.length) visitor.retryAt = view.performance.now() + 500
+        render(visitor, view.performance.now())
+        schedule()
+      },
+    )
   }
   const positionPopover = (visitor: Visitor) => {
     if (!visitor.popover.matches(':popover-open')) return
@@ -254,6 +315,7 @@ export function mountVisitorJourneys(
     positionPopover(visitor)
   }
   const remove = (visitor: Visitor) => {
+    visitor.planning.dispose()
     visitor.popover.hidePopover()
     visitor.popover.remove()
     visitor.button.remove()
@@ -302,6 +364,8 @@ export function mountVisitorJourneys(
       tracks: ownTracks,
       button,
       popover,
+      planning: createNavigationSlot(signal, element),
+      retryAt: 0,
       present: true,
       site: peer.camp % sites.length,
       phase: 'waiting',
@@ -396,16 +460,24 @@ export function mountVisitorJourneys(
     view.clearTimeout(timer)
     frame = timer = previous = 0
     for (const visitor of visitors.values()) {
+      visitor.planning.cancel()
       visitor.element.dataset.motion = reduced.matches ? 'still' : 'paused'
       visitor.popover.hidePopover()
     }
     scene.dataset.visitorMotion = 'paused'
   }
-  const step = (visitor: Visitor, delta: number) => {
+  const step = (visitor: Visitor, delta: number, time: number) => {
     if (!landscape || !['arriving', 'departing'].includes(visitor.phase)) return
+    if (!visitor.road.length) {
+      if (visitor.planning.pending || time < visitor.retryAt) return
+      if (visitor.present) arrive(visitor)
+      else leave(visitor)
+      return
+    }
     const obstacles = [...readActors(scene), ...readTrunks(scene)]
     const radius = 12 * scaleAt(visitor.position)
-    const replacement = replanOccupiedWaypoints(
+    visitor.planning.repair(
+      navigation,
       visitor.actorId,
       visitor.position,
       visitor.road,
@@ -413,16 +485,12 @@ export function mountVisitorJourneys(
       obstacles,
       bounds(),
       visitor.spacing.yieldingTo,
+      replacement => {
+        visitor.road = replacement
+        visitor.goal = replacement.at(-1) ?? visitor.goal
+      },
+      () => visitor.position,
     )
-    if (replacement?.length) {
-      visitor.road = replacement
-      visitor.goal = replacement.at(-1) ?? visitor.goal
-    }
-    if (!visitor.road.length) {
-      if (visitor.present) arrive(visitor)
-      else leave(visitor)
-      return
-    }
     const target = visitor.road[0]
     const distance = Math.hypot(target.x - visitor.position.x, target.y - visitor.position.y)
     const budget = (28 * scaleAt(visitor.position) * delta) / 1000
@@ -480,6 +548,7 @@ export function mountVisitorJourneys(
       visitor.road.shift()
       if (!visitor.road.length) {
         if (!visitor.present) return remove(visitor)
+        visitor.planning.cancel()
         visitor.phase = 'attending'
         visitor.goal = { ...visitor.position }
         visitor.element.dataset.arrivedAt = String(Date.now())
@@ -493,8 +562,6 @@ export function mountVisitorJourneys(
       host.hidden ||
       document.hidden ||
       reduced.matches ||
-      frame ||
-      timer ||
       !visitors.size
     )
       return
@@ -504,9 +571,15 @@ export function mountVisitorJourneys(
           visitor.road.length > 0 &&
           (visitor.phase === 'arriving' || visitor.phase === 'departing'),
       )
-    )
-      frame = view.requestAnimationFrame(tick)
-    else timer = view.setTimeout(() => tick(view.performance.now()), 2000)
+    ) {
+      if (timer) {
+        view.clearTimeout(timer)
+        timer = 0
+      }
+      if (!frame) frame = view.requestAnimationFrame(tick)
+    } else if (!frame && !timer) {
+      timer = view.setTimeout(() => tick(view.performance.now()), 2000)
+    }
   }
   const tick = (time: number) => {
     frame = timer = 0
@@ -518,10 +591,12 @@ export function mountVisitorJourneys(
     for (const visitor of visitors.values()) {
       if (
         visitor.present &&
+        !visitor.planning.pending &&
+        time >= visitor.retryAt &&
         (visitor.phase === 'waiting' || (visitor.phase === 'attending' && !available(visitor.site)))
       )
         arrive(visitor)
-      step(visitor, delta)
+      step(visitor, delta, time)
       if (visitors.has(visitor.id)) render(visitor, time)
     }
     scene.dataset.visitorMotion = [...visitors.values()].some(visitor =>
@@ -536,6 +611,7 @@ export function mountVisitorJourneys(
     previous = 0
     if (reduced.matches) {
       for (const visitor of visitors.values()) {
+        visitor.planning.cancel()
         if (!visitor.present) {
           remove(visitor)
           continue
@@ -550,6 +626,11 @@ export function mountVisitorJourneys(
       scene.dataset.visitorMotion = 'reduced'
       return
     }
+    for (const visitor of visitors.values())
+      if (!visitor.road.length && !visitor.planning.pending) {
+        if (visitor.phase === 'arriving') arrive(visitor)
+        else if (visitor.phase === 'departing') leave(visitor)
+      }
     schedule()
   }
   host.addEventListener('trail:hide', pause, { signal })

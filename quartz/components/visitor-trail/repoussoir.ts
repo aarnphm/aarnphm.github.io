@@ -77,10 +77,34 @@ const rect = (x: number, y: number) => `M${x} ${y}h${pixel}v${pixel}h${-pixel}Z`
 const cap = (x: number, y: number) =>
   `M${x} ${y}h${pixel}v${Math.max(1, Math.floor(pixel / 2))}h${-pixel}Z`
 
-export function repoussoirTree(seed: number, height: number, lean: number) {
+type RepoussoirShape = {
+  markup: string
+  trunkRadius: number
+  extent: number
+  foliage: { left: number; right: number; top: number; bottom: number }
+}
+
+function finish<T>(search: Generator<void, T, undefined>): T {
+  let step = search.next()
+  while (!step.done) step = search.next()
+  return step.value
+}
+
+export function repoussoirTree(seed: number, height: number, lean: number): RepoussoirShape {
+  return finish(repoussoirTreeSteps(seed, height, lean))
+}
+
+function* repoussoirTreeSteps(
+  seed: number,
+  height: number,
+  lean: number,
+): Generator<void, RepoussoirShape, undefined> {
+  let work = 0
+
   // The 404 grows its pair at width 46 and 36 for a 1500 px span; the shape is set by those
   // absolute widths (the terminal width is 1.6), so grow at the 404's size and scale to height.
   const grown = growTree(seed, lean, 44, 88)
+  yield
   let top = 0
   for (const s of grown.segs) top = Math.min(top, s.y1)
   for (const [, y] of grown.tips) top = Math.min(top, y)
@@ -108,6 +132,7 @@ export function repoussoirTree(seed: number, height: number, lean: number) {
     const j1 = Math.ceil((Math.max(s.y0, s.y1) + pad) / pixel)
     for (let j = j0; j <= j1; j++)
       for (let i = i0; i <= i1; i++) {
+        if (++work % 128 === 0) yield
         const x = (i + 0.5) * pixel
         const y = (j + 0.5) * pixel
         const [dist, w, side] = segHit(s, x, y)
@@ -145,6 +170,7 @@ export function repoussoirTree(seed: number, height: number, lean: number) {
     const jb = Math.min(bh - 1, Math.ceil((ty + radius) / pixel) - j0)
     for (let j = ja; j <= jb; j++)
       for (let i = ia; i <= ib; i++) {
+        if (++work % 128 === 0) yield
         const q = 1 - Math.hypot((i + i0 + 0.5) * pixel - tx, (j + j0 + 0.5) * pixel - ty) / radius
         if (q <= 0) continue
         density[j * bw + i] += q * q
@@ -154,6 +180,7 @@ export function repoussoirTree(seed: number, height: number, lean: number) {
   const cover = new Float32Array(bw * bh)
   const k = 1 / (radius * 1.6)
   for (let p = 0; p < bw * bh; p++) {
+    if (++work % 128 === 0) yield
     if (density[p] < 0.05) continue
     const i = p % bw
     const j = (p - i) / bw
@@ -167,6 +194,7 @@ export function repoussoirTree(seed: number, height: number, lean: number) {
   const side = -1
   for (let j = 1; j < bh - 1; j++)
     for (let i = 1; i < bw - 1; i++) {
+      if (++work % 128 === 0) yield
       const p = j * bw + i
       const t = cover[p]
       if (t <= BAYER[(j & 3) * 4 + (i & 3)]) continue
@@ -195,6 +223,7 @@ export function repoussoirTree(seed: number, height: number, lean: number) {
   const foliage = { left: Infinity, right: -Infinity, top: Infinity, bottom: -Infinity }
   let extent = 1
   for (const { x, y, tone } of cells.values()) {
+    if (++work % 128 === 0) yield
     extent = Math.max(extent, -y)
     if (tone === 'trunk' || tone === 'trunk-lit') {
       paths[tone].push(rect(x, y))
@@ -213,6 +242,7 @@ export function repoussoirTree(seed: number, height: number, lean: number) {
   const binWidth = Math.max(pixel, (foliage.right - foliage.left) / 3)
   const binHeight = Math.max(pixel, (foliage.bottom - foliage.top) / 3)
   for (const { x, y, tone } of cells.values()) {
+    if (++work % 128 === 0) yield
     if (tone === 'trunk' || tone === 'trunk-lit') continue
     const column = Math.min(2, Math.floor((x - foliage.left) / binWidth))
     const row = Math.min(2, Math.floor((y - foliage.top) / binHeight))
@@ -274,11 +304,11 @@ export function repoussoirTree(seed: number, height: number, lean: number) {
 
 const shapes = new Map<string, ReturnType<typeof repoussoirTree>>()
 
-function grow(treeSeed: number, tall: number, lean: number) {
+function* growSteps(treeSeed: number, tall: number, lean: number) {
   const key = `${treeSeed}|${tall}|${lean.toFixed(3)}`
   let shape = shapes.get(key)
   if (!shape) {
-    shape = repoussoirTree(treeSeed, tall, lean)
+    shape = yield* repoussoirTreeSteps(treeSeed, tall, lean)
     if (shapes.size > 12) shapes.clear()
     shapes.set(key, shape)
   }
@@ -297,6 +327,14 @@ export function repoussoirSprites(
   seed: number,
   clearings: Clearing[],
 ): ForestSprite[] {
+  return finish(repoussoirSpriteSteps(landscape, seed, clearings))
+}
+
+export function* repoussoirSpriteSteps(
+  landscape: Landscape,
+  seed: number,
+  clearings: Clearing[],
+): Generator<void, ForestSprite[], undefined> {
   const { width, height } = landscape
   const base = Math.max(160, Math.min(420, height * 0.34))
   const sprites: ForestSprite[] = []
@@ -311,7 +349,7 @@ export function repoussoirSprites(
     const treeSeed = (seed ^ Math.imul(0x404 + side, 0x9e3779b9)) >>> 0
     for (const scale of [1, 0.88, 0.77, 0.67]) {
       const tall = Math.round(base * scale)
-      const { key, shape } = grow(treeSeed, tall, lean)
+      const { key, shape } = yield* growSteps(treeSeed, tall, lean)
       const { foliage, markup, trunkRadius } = shape
       const top = y + foliage.top
       const bottom = y + foliage.bottom

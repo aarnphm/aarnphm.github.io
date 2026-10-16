@@ -8,6 +8,8 @@ export type CollisionActor = Point & {
   radius: number
   bounds?: SpacingBounds
   resting?: boolean
+  yieldingTo?: string
+  yieldingThrough?: string
   element?: SVGGElement
 }
 type SpacingStatus = 'clear' | 'passing' | 'yielding' | 'escaping'
@@ -387,9 +389,10 @@ export function queuedAnimal(
   while (lead) {
     if (seen.has(lead.id)) return null
     seen.add(lead.id)
-    const reason = lead.element?.dataset.yieldingTo
+    const reason = lead.element?.dataset.yieldingTo ?? lead.yieldingTo
     if (!reason) return null
-    const through: string | undefined = lead.element?.dataset.yieldingThrough
+    const through: string | undefined =
+      lead.element?.dataset.yieldingThrough ?? lead.yieldingThrough
     if (!through) {
       const animal = actors.find(actor => actor.kind === 'animal' && actor.id === reason)
       return animal && circleClearance(lead, lead.radius, animal) < lead.radius * 1.5 + 14

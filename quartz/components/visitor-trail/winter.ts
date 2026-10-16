@@ -1,6 +1,6 @@
 import type { TrailWeather } from '../../util/visitor-trail-weather'
 import { visitorPrecipitation } from '../../util/visitor-precipitation'
-import { type Landscape, type Point } from './landscape'
+import { alpineFoot, type Landscape, type Point } from './landscape'
 import { trailRandom } from './random'
 
 export function trailWinter(weather: TrailWeather | null, festiveSnow = false) {
@@ -27,13 +27,13 @@ export function trailSnowBase(
   seed: number,
   region = { left: 0, top: 0, right: landscape.width, bottom: landscape.height },
 ) {
-  const edge = landscape.alpine.base
-  if (Math.max(region.top, edge) >= region.bottom) return ''
+  // The blanket starts at the rolling foot of the ranges, where the backdrop haze meets the valley.
+  if (Math.max(region.top, landscape.alpine.base - 12) >= region.bottom) return ''
   let blanket = ''
   for (let x = region.left; x <= region.right; x += 4) {
     const column = Math.floor(x / 12)
     const random = trailRandom(seed ^ Math.imul(column + 1, 0x45d9f3b))
-    const y = Math.max(region.top, edge + Math.floor(random() * 5) * 2)
+    const y = Math.max(region.top, alpineFoot(x, landscape) + Math.floor(random() * 5) * 2)
     blanket += `${blanket ? 'H' : 'M'}${x}${blanket ? 'V' : ' '}${y}`
   }
   blanket += `H${region.right}V${region.bottom}H${region.left}Z`

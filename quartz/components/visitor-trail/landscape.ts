@@ -39,6 +39,14 @@ export function groundOffset(x: number, landscape: Landscape, y = landscape.mead
   )
 }
 
+// The ranges meet the valley along a rolling foot, up to 12 px either side of the alpine base, so
+// the backdrop haze and the snow blanket share one contact line instead of a level edge.
+export function alpineFoot(x: number, landscape: Landscape) {
+  const { alpine, relief } = landscape
+  const swell = Math.sin(x / 83 + relief.phase) * 8 + Math.sin(x / 29 + relief.phase * 2.3) * 4
+  return alpine.base + Math.round(swell / 2) * 2
+}
+
 // Distance from a point to the creek's centre line.
 export function creekDistance(point: Point, landscape: Landscape) {
   let best = Infinity

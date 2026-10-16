@@ -1,7 +1,7 @@
 import type { JourneyRoute } from './hiker-journey'
 import { circleClearance, type CollisionActor } from './actor-spacing'
 import { followTerrain, trailGroundScale, type Landscape, type Point } from './landscape'
-import { detourTrail, detourTrailSteps, type TrailSearch } from './obstacle-route'
+import { detourTrailSteps, type TrailSearch } from './obstacle-route'
 import { trailRandom } from './random'
 
 export type CampPhase = 'staying' | 'sleeping' | 'packing' | 'extinguishing' | 'departing' | 'empty'
@@ -59,14 +59,14 @@ function clearTrailPoint(
   )
 }
 
-function clearTrailSegments(
+function* clearTrailSegments(
   from: Point,
   points: Point[],
   landscape: Landscape,
   solids: readonly CollisionActor[],
   radius: number,
 ) {
-  const planned = detourTrail([from, ...points], radius, solids, {
+  const planned = yield* detourTrailSteps([from, ...points], radius, solids, {
     left: 18,
     right: landscape.width - 18,
     top: landscape.treeline + 8,
@@ -81,10 +81,23 @@ export function campDeparture(
   landscape: Landscape,
   solids: readonly CollisionActor[],
 ): Point[] {
+  const search = campDepartureSteps(from, routes, landscape, solids)
+  let step = search.next()
+  while (!step.done) step = search.next()
+  return step.value ?? []
+}
+
+export function* campDepartureSteps(
+  from: Point,
+  routes: JourneyRoute[],
+  landscape: Landscape,
+  solids: readonly CollisionActor[],
+): TrailSearch {
   const clear = (point: Point) => clearTrailPoint(point, landscape, solids, 12)
   let nearest: { route: JourneyRoute; distance: number } | null = null
   let gap = Infinity
   for (const route of routes) {
+    yield
     for (let index = 0; index <= 48; index++) {
       const distance = (route.length * index) / 48
       const point = route.point(distance)
@@ -105,7 +118,7 @@ export function campDeparture(
       nearest.route.point(nearest.distance * (1 - (index + 1) / steps)),
     ),
   ].filter(clear)
-  return clearTrailSegments(from, points, landscape, solids, 12)
+  return yield* clearTrailSegments(from, points, landscape, solids, 12)
 }
 
 export function campPatrolRoute(

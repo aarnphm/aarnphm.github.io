@@ -247,10 +247,15 @@ function fogVeil(landscape: Landscape) {
   const cell = width < 700 ? 2 : 4
   const top = alpine.top - 24
   const depth = alpine.base - top + alpine.height * 0.35
+  // Below its densest row the veil thins out over the meadow instead of ending on one level edge.
+  const tail = alpine.height * 0.4
   const runs: string[] = []
-  for (let row = 0; row * cell < depth; row++) {
+  for (let row = 0; row * cell < depth + tail; row++) {
     const y = top + row * cell
-    const level = 0.2 + 0.5 * ((row * cell) / depth) ** 0.8
+    const level =
+      row * cell < depth
+        ? 0.2 + 0.5 * ((row * cell) / depth) ** 0.8
+        : 0.7 * (1 - (row * cell - depth) / tail) ** 1.5
     let start = -1
     for (let column = 0; column * cell <= width; column++) {
       const on = level > bayerThreshold(column, row)

@@ -14,7 +14,7 @@ import {
 } from './actor-spacing'
 import { bootImpression } from './footprints'
 import { trailGroundScale, type Landscape, type Point } from './landscape'
-import { detourTrail, navigableTrail, replanOccupiedWaypoints } from './obstacle-route'
+import { createNavigationSlot, type TrailNavigation } from './navigation-workers'
 import { trailRandom } from './random'
 import { trailMapReader } from './wayfarers'
 
@@ -56,6 +56,9 @@ type Reader = {
   lap: number
   random: () => number
   spacing: ActorSpacing
+  planning: ReturnType<typeof createNavigationSlot>
+  roadReady: boolean
+  retryRoadAt: number
 }
 
 function roadLength(from: Point, points: readonly Point[]) {
@@ -67,7 +70,12 @@ function roadLength(from: Point, points: readonly Point[]) {
   return length
 }
 
-export function mountMapReaderJourneys(scene: HTMLElement, host: HTMLElement, signal: AbortSignal) {
+export function mountMapReaderJourneys(
+  scene: HTMLElement,
+  host: HTMLElement,
+  signal: AbortSignal,
+  navigation: TrailNavigation,
+) {
   const document = scene.ownerDocument
   const view = document.defaultView
   const group = scene.querySelector<SVGGElement>('.trail-wayfarers')
@@ -83,6 +91,8 @@ export function mountMapReaderJourneys(scene: HTMLElement, host: HTMLElement, si
   let timer: number | null = null
   let previousTime: number | null = null
   let renderedAt = -Infinity
+  let revision = 0
+  let routePlanning: AbortController | null = null
 
   const routeFor = (reader: Reader) => reader.routes.find(route => route.id === reader.route)
   const positionAt = (route: JourneyRoute, progress: number) => route.point(progress * route.length)
@@ -97,31 +107,28 @@ export function mountMapReaderJourneys(scene: HTMLElement, host: HTMLElement, si
     ...readStationaryActors(scene, id),
     ...readActors(scene).filter(actor => actor.kind === 'pet'),
   ]
-  const pathsFor = (index: number, id: string) => {
-    if (!landscape) return []
-    const terrain = landscape
-    const bodies = planningBodies(id)
-    return routes.flatMap(route => {
-      const planned = navigableTrail(
-        {
-          ...route,
-          point: distance => {
-            const point = route.point(distance)
-            const approach = Math.max(0, 1 - (route.length - distance) / 110)
-            const blend = approach * approach * (3 - 2 * approach)
-            return {
-              x: point.x + (-14 + index * 34) * blend,
-              y: point.y + (38 + (index % 2) * 6) * blend,
-            }
-          },
+  const pathsFor = (index: number, id: string, request: AbortSignal) => {
+    if (!landscape) return Promise.resolve([])
+    return navigation.prepare(
+      routes.map(route => ({
+        ...route,
+        point: (distance: number) => {
+          const point = route.point(distance)
+          const approach = Math.max(0, 1 - (route.length - distance) / 110)
+          const blend = approach * approach * (3 - 2 * approach)
+          return {
+            x: point.x + (-14 + index * 34) * blend,
+            y: point.y + (38 + (index % 2) * 6) * blend,
+          }
         },
-        terrain,
-        bodies,
-      )
-      return planned ? [planned] : []
-    })
+      })),
+      landscape,
+      planningBodies(id),
+      request,
+    )
   }
   const setRoad = (reader: Reader, points: Point[]) => {
+    reader.roadReady = true
     reader.waypoints = points
     reader.roadStart = reader.progress
     reader.roadEnd = reader.checkAt ?? reader.target
@@ -130,20 +137,28 @@ export function mountMapReaderJourneys(scene: HTMLElement, host: HTMLElement, si
   }
   const planWalk = (reader: Reader) => {
     const route = routeFor(reader)
-    if (!route || !landscape) return
+    if (!route || !landscape || reader.planning.pending) return
     const stop = reader.checkAt ?? reader.target
     const distance = Math.abs(stop - reader.progress) * route.length
     const steps = Math.max(1, Math.ceil(distance / 16))
     const points = Array.from({ length: steps }, (_, index) =>
       positionAt(route, reader.progress + ((stop - reader.progress) * (index + 1)) / steps),
     )
-    const planned = detourTrail(
-      [reader.position, ...points],
-      12,
-      planningBodies(reader.id),
-      bounds(),
+    reader.roadReady = false
+    reader.planning.run(
+      request =>
+        navigation.plan(
+          [reader.position, ...points],
+          12,
+          planningBodies(reader.id),
+          bounds(),
+          request,
+        ),
+      planned => {
+        if (planned) setRoad(reader, planned.points.slice(1))
+        else reader.retryRoadAt = view.performance.now() + 500
+      },
     )
-    setRoad(reader, planned?.points.slice(1) ?? points)
   }
   const placeReader = (reader: Reader, obstacles: CollisionActor[]) => {
     const route = routeFor(reader)
@@ -253,6 +268,13 @@ export function mountMapReaderJourneys(scene: HTMLElement, host: HTMLElement, si
     }
   }
   const pause = () => {
+    revision++
+    routePlanning?.abort()
+    routePlanning = null
+    for (const reader of readers) {
+      if (reader.planning.pending) reader.roadReady = false
+      reader.planning.cancel()
+    }
     if (frame !== null) view.cancelAnimationFrame(frame)
     if (timer !== null) view.clearTimeout(timer)
     frame = timer = previousTime = null
@@ -260,6 +282,7 @@ export function mountMapReaderJourneys(scene: HTMLElement, host: HTMLElement, si
       reader.element.dataset.motion = reducedMotion.matches ? 'still' : 'paused'
   }
   const checkMap = (reader: Reader, stop: Stop) => {
+    reader.planning.cancel()
     reader.phase = 'reading'
     reader.stop = stop
     reader.remaining = (stop === 'camp' ? 2200 : 1800) + reader.random() * 1800
@@ -290,6 +313,7 @@ export function mountMapReaderJourneys(scene: HTMLElement, host: HTMLElement, si
       reader.remaining -= elapsed
       if (reader.remaining <= 0) {
         if (reader.phase === 'waiting') {
+          reader.planning.cancel()
           placeReader(reader, obstacles)
           reader.phase = 'walking'
           planWalk(reader)
@@ -298,9 +322,14 @@ export function mountMapReaderJourneys(scene: HTMLElement, host: HTMLElement, si
       return
     }
     if (!landscape) return
+    if (!reader.roadReady) {
+      if (view.performance.now() >= reader.retryRoadAt) planWalk(reader)
+      return
+    }
     const scale = trailGroundScale(reader.position.y, landscape)
     const radius = 12 * scale
-    const replacement = replanOccupiedWaypoints(
+    reader.planning.repair(
+      navigation,
       reader.id,
       reader.position,
       reader.waypoints,
@@ -308,8 +337,9 @@ export function mountMapReaderJourneys(scene: HTMLElement, host: HTMLElement, si
       obstacles,
       bounds(),
       reader.spacing.yieldingTo,
+      points => setRoad(reader, points),
+      () => reader.position,
     )
-    if (replacement?.length) setRoad(reader, replacement)
     const target = reader.waypoints[0] ?? reader.stopPoint
     const distance = Math.hypot(target.x - reader.position.x, target.y - reader.position.y)
     const budget = (reader.speed * elapsed * scale) / 1000
@@ -416,14 +446,21 @@ export function mountMapReaderJourneys(scene: HTMLElement, host: HTMLElement, si
 
   return {
     pause,
-    update(
+    async update(
       nextRoutes: JourneyRoute[],
       nextLandscape: Landscape,
       nextSeed: number,
       count: number,
       nextSolids: readonly CollisionActor[],
+      renderSignal: AbortSignal,
     ) {
       pause()
+      const current = revision
+      const request = new AbortController()
+      routePlanning = request
+      const cancel = () => request.abort()
+      renderSignal.addEventListener('abort', cancel, { once: true })
+      if (renderSignal.aborted || signal.aborted) request.abort()
       const reflow =
         landscape?.width !== nextLandscape.width ||
         landscape?.height !== nextLandscape.height ||
@@ -436,6 +473,7 @@ export function mountMapReaderJourneys(scene: HTMLElement, host: HTMLElement, si
       solids = nextSolids
       if (seed !== nextSeed) {
         seed = nextSeed
+        for (const reader of readers) reader.planning.dispose()
         readers = []
         group.replaceChildren()
         tracks.replaceChildren()
@@ -443,12 +481,18 @@ export function mountMapReaderJourneys(scene: HTMLElement, host: HTMLElement, si
       }
       if (readers.length > count)
         for (const reader of readers.splice(count)) {
+          reader.planning.dispose()
           reader.element.remove()
           reader.tracks.remove()
         }
-      const plannedRoutes = Array.from({ length: count }, (_, index) =>
-        pathsFor(index, `reader-${index}`),
+      const plannedRoutes = await Promise.all(
+        Array.from({ length: count }, (_, index) =>
+          pathsFor(index, `reader-${index}`, request.signal),
+        ),
       )
+      renderSignal.removeEventListener('abort', cancel)
+      if (request.signal.aborted || current !== revision || signal.aborted) return
+      routePlanning = null
       while (readers.length < count) {
         const index = readers.length
         const random = trailRandom(nextSeed ^ (0x381c72ad + index * 0x27d4eb2d))
@@ -496,13 +540,16 @@ export function mountMapReaderJourneys(scene: HTMLElement, host: HTMLElement, si
           lap: 0,
           random,
           spacing: actorSpacing(),
+          planning: createNavigationSlot(signal, element),
+          roadReady: false,
+          retryRoadAt: 0,
         })
       }
       const obstacles = [...readActors(scene, true), ...readTrunks(scene)]
       for (const [index, reader] of readers.entries()) {
-        reader.routes = plannedRoutes[index]
+        reader.routes = plannedRoutes[index] ?? []
         if (reflow || !existing.has(reader)) placeReader(reader, obstacles)
-        if (reader.phase !== 'reading') planWalk(reader)
+        if (!reducedMotion.matches && reader.phase !== 'reading') planWalk(reader)
         else reader.stopPoint = { ...reader.position }
         for (const stamp of reader.impressions) placeImpression(reader, stamp)
       }

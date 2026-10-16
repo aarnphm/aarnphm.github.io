@@ -59,15 +59,21 @@
   .trail-foothill-near {
     fill: color-mix(in srgb, var(--lightgray) 65%, var(--light));
   }
+  // Air over the range foot takes the paper tone, and the valley floor below takes the first
+  // terrace tone; both turn to snow with the ground blanket.
+  .trail-valley-haze {
+    fill: color-mix(in srgb, var(--trail-snow-ground) var(--trail-snow-mix, 0%), var(--light));
+  }
+  .trail-valley-field {
+    fill: color-mix(
+      in srgb,
+      var(--trail-snow-ground) var(--trail-snow-mix, 0%),
+      var(--trail-field-0)
+    );
+  }
   .trail-mountain-track {
     fill: none;
-    stroke: color-mix(in srgb, var(--gray) 42%, var(--light));
-    stroke-width: 1.15px;
-    stroke-dasharray: 1.5 3.5;
-    stroke-linecap: butt;
-    stroke-linejoin: bevel;
-    vector-effect: non-scaling-stroke;
-    shape-rendering: crispEdges;
+    stroke: none;
   }
   // Alpine routes are benches cut into the slope: a shaded cutbank over a packed tread, spoil
   // shed below, stone steps and walled landings. The route path itself only carries geometry.

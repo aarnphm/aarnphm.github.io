@@ -23,6 +23,7 @@ export function mountSeasonToggle(scene: HTMLElement, signal: AbortSignal) {
   boulder.type = 'button'
   boulder.className = 'trail-scene-toggle'
   boulder.setAttribute('aria-label', 'Scene controls')
+  boulder.innerHTML = `<svg class="trail-scene-mark" viewBox="0 0 10 11" aria-hidden="true" focusable="false"><path class="trail-scene-mark-edge" d="m5 1 4 4-4 4-4-4Z" transform="translate(0 1)"/><path d="m5 1 4 4-4 4-4-4Z"/></svg>`
   boulder.hidden = true
   const panel = document.createElement('div')
   panel.className = 'trail-scene-controls'
@@ -34,9 +35,19 @@ export function mountSeasonToggle(scene: HTMLElement, signal: AbortSignal) {
   const button = document.createElement('button')
   button.type = 'button'
   button.className = 'trail-season-toggle'
+  const seasonLabel = document.createElement('span')
+  seasonLabel.textContent = 'season'
+  const seasonValue = document.createElement('span')
+  seasonValue.className = 'trail-scene-value'
+  button.append(seasonLabel, seasonValue)
   const holidayButton = document.createElement('button')
   holidayButton.type = 'button'
   holidayButton.className = 'trail-holiday-toggle'
+  const holidayLabel = document.createElement('span')
+  holidayLabel.textContent = 'scene'
+  const holidayValue = document.createElement('span')
+  holidayValue.className = 'trail-scene-value'
+  holidayButton.append(holidayLabel, holidayValue)
   panel.append(button, holidayButton)
   const nextHoliday = (): TrailHolidayChoice | null => {
     const chosen = readTrailHolidayChoice(document.defaultView)
@@ -48,7 +59,7 @@ export function mountSeasonToggle(scene: HTMLElement, signal: AbortSignal) {
   const labelHoliday = () => {
     const chosen = readTrailHolidayChoice(document.defaultView)
     const shown = isTrailHoliday(scene.dataset.holiday) ? scene.dataset.holiday : null
-    holidayButton.textContent = `scene · ${shown ? holidayLabels[shown].toLowerCase() : 'no holiday'}`
+    holidayValue.textContent = shown ? holidayLabels[shown].toLowerCase() : 'no holiday'
     holidayButton.dataset.forced = String(!!chosen)
     const title = `Holiday: ${shown ? holidayLabels[shown] : 'none'}${chosen ? '' : ' (calendar)'}. Click for ${holidayName(nextHoliday())}`
     holidayButton.title = title
@@ -67,7 +78,7 @@ export function mountSeasonToggle(scene: HTMLElement, signal: AbortSignal) {
     const shown = isTrailSeason(scene.dataset.foliageSeason)
       ? scene.dataset.foliageSeason
       : (forced ?? forecast())
-    button.textContent = `season · ${shown ?? '·'}`
+    seasonValue.textContent = shown ?? '·'
     button.dataset.forced = String(!!forced)
     const title = `Season: ${shown ?? 'unknown'}${forced ? '' : ' (forecast)'}. Click for ${next() ?? 'the forecast'}`
     button.title = title
@@ -107,6 +118,7 @@ export function mountSeasonToggle(scene: HTMLElement, signal: AbortSignal) {
       const targetHeight = Math.max(44, bounds.height)
       boulder.style.width = `${targetWidth}px`
       boulder.style.height = `${targetHeight}px`
+      boulder.style.setProperty('--scene-mark-offset', `${Math.round(bounds.height * 0.15)}px`)
       boulder.style.left = `${best.x + bounds.x + (bounds.width - targetWidth) / 2}px`
       boulder.style.top = `${best.y + bounds.y + (bounds.height - targetHeight) / 2}px`
       boulder.hidden = false

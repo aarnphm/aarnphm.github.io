@@ -11,7 +11,7 @@ import {
 } from './actor-spacing'
 import { bootImpression } from './footprints'
 import { trailGroundScale, type Landscape, type Point } from './landscape'
-import { detourTrail, replanOccupiedWaypoints } from './obstacle-route'
+import { createNavigationSlot, type TrailNavigation } from './navigation-workers'
 import { trailRandom } from './random'
 
 export type JourneyRoute = {
@@ -19,6 +19,7 @@ export type JourneyRoute = {
   length: number
   readyAfter: number
   point: (distance: number) => Point
+  points?: Point[]
 }
 type Phase = 'waiting' | 'arriving' | 'unpacking' | 'resting' | 'packing' | 'departing' | 'gone'
 type WalkingPhase = 'arriving' | 'departing'
@@ -32,7 +33,12 @@ const phases: Phase[] = [
   'gone',
 ]
 
-export function mountHikerJourney(scene: HTMLElement, host: HTMLElement, signal: AbortSignal) {
+export function mountHikerJourney(
+  scene: HTMLElement,
+  host: HTMLElement,
+  signal: AbortSignal,
+  navigation: TrailNavigation,
+) {
   const document = scene.ownerDocument
   const view = document.defaultView
   const hiker = scene.querySelector<SVGGElement>('.trail-backpacker')
@@ -42,6 +48,7 @@ export function mountHikerJourney(scene: HTMLElement, host: HTMLElement, signal:
   const tracks = scene.querySelector<SVGGElement>('.trail-hiker-tracks')
   if (!view || !hiker || !facing || !pack || !pole || !tracks)
     throw new Error('The backpacker needs the trail scene')
+  const planning = createNavigationSlot(signal, hiker)
   const reducedMotion = view.matchMedia('(prefers-reduced-motion: reduce)')
   let incoming: JourneyRoute | undefined
   let outgoing: JourneyRoute | undefined
@@ -108,7 +115,7 @@ export function mountHikerJourney(scene: HTMLElement, host: HTMLElement, signal:
     roadReady = true
   }
   const planLeg = () => {
-    if (!moving() || !landscape) return
+    if (!moving() || !landscape || planning.pending) return
     const leg: WalkingPhase = phase === 'arriving' ? 'arriving' : 'departing'
     const steps = Math.max(1, Math.ceil(((1 - progress) * legLength(leg)) / 16))
     const road = [
@@ -122,13 +129,16 @@ export function mountHikerJourney(scene: HTMLElement, host: HTMLElement, signal:
       ...readStationaryActors(scene, 'hiker-camp'),
       ...readActors(scene).filter(actor => actor.kind === 'pet'),
     ]
-    const planned = detourTrail(road, 12, obstacles, bounds())
-    if (planned) setRoad(planned.points)
-    else {
-      roadReady = false
-      retryRoadAt = view.performance.now() + 500
-    }
+    roadReady = false
+    planning.run(
+      request => navigation.plan(road, 12, obstacles, bounds(), request),
+      planned => {
+        if (planned) setRoad(planned.points)
+        else retryRoadAt = view.performance.now() + 500
+      },
+    )
   }
+
   const placeHiker = () => {
     if (!landscape || !incoming) return
     const terrain = landscape
@@ -225,6 +235,8 @@ export function mountHikerJourney(scene: HTMLElement, host: HTMLElement, signal:
     hiker.dataset.pack = grounded ? (phase === 'resting' ? 'ground' : 'lifting') : 'shoulder'
   }
   const pause = () => {
+    if (planning.pending && moving()) roadReady = false
+    planning.cancel()
     if (frame !== null) view.cancelAnimationFrame(frame)
     if (timer !== null) view.clearTimeout(timer)
     frame = timer = previousTime = null
@@ -252,6 +264,7 @@ export function mountHikerJourney(scene: HTMLElement, host: HTMLElement, signal:
       )
   }
   const advancePhase = () => {
+    planning.cancel()
     elapsed = 0
     progress = 0
     waypoints = []
@@ -274,7 +287,8 @@ export function mountHikerJourney(scene: HTMLElement, host: HTMLElement, signal:
     const scale = trailGroundScale(position.y, landscape)
     const radius = 12 * scale
     const obstacles = [...readActors(scene), ...readTrunks(scene)]
-    const replacement = replanOccupiedWaypoints(
+    planning.repair(
+      navigation,
       'hiker-camp',
       position,
       waypoints,
@@ -282,8 +296,9 @@ export function mountHikerJourney(scene: HTMLElement, host: HTMLElement, signal:
       obstacles,
       bounds(),
       spacing.yieldingTo,
+      setRoad,
+      () => position,
     )
-    if (replacement?.length) setRoad(replacement)
     const target = waypoints[0]
     if (!target) return advancePhase()
     const before = position
