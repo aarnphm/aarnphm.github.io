@@ -294,7 +294,7 @@ maintenance:
           - end: null
             start: '2026-10-05'
       - reason: null
-modified: 2026-10-14 00:34:03 GMT-04:00
+modified: 2026-10-16 15:25:58 GMT-04:00
 race: Lanzarote
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
@@ -1995,6 +1995,22 @@ garmin: 24747484341
 wahoo: [[triathlon/wahoo/26-10-16.fit]]
 power: wahoo
 virtual: true
+```
+
+```tracking
+title: Free Flow
+date: 2026-10-16
+time: 13:30
+duration: 56 mins
+activity: sauna
+temperature: 202F
+humidity: 11%
+cooldown: cold plunge
+lap-phases: hot sauna | break | cold plunge | break | hot sauna | break | hot sauna | break
+location: Othership Adelaide
+htl: 7.7
+strava: 20611999888
+garmin: 24748304432
 ```
 
 <!-- training plan start
