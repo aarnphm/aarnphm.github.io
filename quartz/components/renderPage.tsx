@@ -1168,15 +1168,28 @@ function updateTocDataFromTree(root: Root, componentData: QuartzComponentProps):
   }
 }
 
+type TransclusionResult = { tree: Root; readingTime: QuartzPluginData['readingTime'] }
+
 export function transcludeFinal(
+  root: Root,
+  componentData: QuartzComponentProps,
+  state: { visited: Set<FullSlug> },
+  userOpts?: Partial<TranscludeOptions>,
+): Root {
+  return resolveTransclusions(root, componentData, state, userOpts).tree
+}
+
+function resolveTransclusions(
   root: Root,
   componentData: QuartzComponentProps,
   { visited }: { visited: Set<FullSlug> },
   userOpts?: Partial<TranscludeOptions>,
-): Root {
+): TransclusionResult {
   const { cfg, allFiles, fileData } = componentData
   // NOTE: return early these cases, we probably don't want to transclude them anw
-  if (fileData.frontmatter?.poem || fileData.frontmatter?.menu) return root
+  if (fileData.frontmatter?.poem || fileData.frontmatter?.menu) {
+    return { tree: root, readingTime: fileData.readingTime }
+  }
 
   // Track total reading stats including transclusions
   const stats: TranscludeStats = {
@@ -1881,12 +1894,13 @@ export function transcludeFinal(
           }
         })
 
-        const filteredFootnotes = transcludeFootnoteBlock.filter(
-          (ref): ref is Element => ref !== undefined && ref !== null,
-        )
-        const filteredBibs = transcludeBibBlock.filter(
-          (ref): ref is Element => ref !== undefined && ref !== null,
-        )
+        // Footer packing rewrites IDs and backlinks, so each host needs private nodes.
+        const filteredFootnotes = transcludeFootnoteBlock
+          .filter((ref): ref is Element => ref !== undefined && ref !== null)
+          .map(ref => clone(ref))
+        const filteredBibs = transcludeBibBlock
+          .filter((ref): ref is Element => ref !== undefined && ref !== null)
+          .map(ref => clone(ref))
 
         if (filteredFootnotes.length !== 0) {
           if (!footnoteSection) {
@@ -2044,10 +2058,9 @@ export function transcludeFinal(
     mergeFootnotes(root)
   }
 
-  // NOTE: Update the file's reading time with transcluded content
-  if (fileData.readingTime) {
-    fileData.readingTime = { ...fileData.readingTime, words: stats.words, minutes: stats.minutes }
-  }
+  const readingTime = fileData.readingTime
+    ? { ...fileData.readingTime, words: stats.words, minutes: stats.minutes }
+    : undefined
 
   if (slug === 'index') {
     visit(root, { tagName: 'a' }, (node: Element) => {
@@ -2055,7 +2068,7 @@ export function transcludeFinal(
     })
   }
 
-  return root
+  return { tree: root, readingTime }
 }
 
 type AliasLinkProp = {
@@ -2522,7 +2535,11 @@ export const CuriusNavigation: QuartzComponent = (props: QuartzComponentProps) =
 }
 type RenderPageOptions = { forEmail?: boolean; skipProtected?: boolean; skipSearch?: boolean }
 
-export function renderPage(
+export function renderPage(...args: Parameters<typeof renderPageWithMetadata>): string {
+  return renderPageWithMetadata(...args).html
+}
+
+export function renderPageWithMetadata(
   ctx: BuildCtx,
   slug: FullSlug,
   componentData: QuartzComponentProps,
@@ -2531,21 +2548,23 @@ export function renderPage(
   isFolderTag?: boolean,
   isBoxy: boolean = false,
   userOptions?: RenderPageOptions,
-): string {
+): { html: string; fileData: QuartzPluginData } {
   const renderPerf = new PerfTimer()
-  componentData = { ...componentData, pageSlug: slug }
+  componentData = { ...componentData, fileData: { ...componentData.fileData }, pageSlug: slug }
   // make a deep copy of the tree so we don't remove the transclusion references
   // for the file cached in contentMap in build.ts
   const root = clone(componentData.tree) as Root
   const visited = new Set<FullSlug>([slug])
   // NOTE: set componentData.tree to the edited html that has transclusions rendered
 
-  let tree = transcludeFinal(
+  const transcluded = resolveTransclusions(
     root,
     componentData,
     { visited },
     componentData.fileData.flashcards ? { dynalist: false } : undefined,
   )
+  let tree = transcluded.tree
+  if (transcluded.readingTime) componentData.fileData.readingTime = transcluded.readingTime
   logBuildSpan(ctx.argv, 'render:transclude', slug, renderPerf.elapsedMs())
   renderBaseEmbeds(tree, componentData)
 
@@ -2917,7 +2936,7 @@ export function renderPage(
 
   logBuildSpan(ctx.argv, 'render:preact', slug, renderPerf.elapsedMs('preact'))
   logBuildSpan(ctx.argv, 'render:total', slug, renderPerf.elapsedMs())
-  return html
+  return { html, fileData: componentData.fileData }
 }
 
 function updateStreamDataFromTree(tree: Root, componentData: QuartzComponentProps): void {
@@ -2950,11 +2969,12 @@ function updateStreamDataFromTree(tree: Root, componentData: QuartzComponentProp
     }
   })
 
-  for (const entry of streamData.entries) {
+  const entries = streamData.entries.map(entry => {
     const bucket = nodeBuckets.get(entry.id)
-    if (!bucket || bucket.length === 0) continue
+    if (!bucket || bucket.length === 0) return entry
 
     bucket.sort((a, b) => a.index - b.index)
-    entry.content = bucket.map(({ node }) => node)
-  }
+    return { ...entry, content: bucket.map(({ node }) => node) }
+  })
+  fileData.streamData = { ...streamData, entries }
 }
