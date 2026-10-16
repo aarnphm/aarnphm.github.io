@@ -151,7 +151,6 @@
   .fdf-tier--chip {
     fill: var(--fdf-chip-bg);
     stroke: var(--fig-stroke-soft);
-    stroke-dasharray: 4 4;
   }
   .fdf-tier--ghost {
     opacity: 0.5;
@@ -204,7 +203,6 @@
   .fdf-flow-line--dispatch,
   .fdf-flow-line--fb {
     stroke: var(--fig-stroke-soft);
-    stroke-dasharray: 3 3;
   }
   .fdf-roundtrip {
     stroke: var(--fdf-warn);
@@ -280,9 +278,6 @@
     color: var(--fdf-note-fg);
   }
 
-  .fdf-pkt {
-    rx: 2;
-  }
   .fdf-pkt--load {
     fill: var(--fdf-load);
   }

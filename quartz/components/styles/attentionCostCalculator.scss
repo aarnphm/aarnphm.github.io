@@ -319,26 +319,7 @@
 }
 
 .acc-summary-table {
-  display: grid;
-  grid-template-columns: auto auto;
-  column-gap: 1.5rem;
-  row-gap: 0.2rem;
-  width: fit-content;
-  margin: 0 0 0.5rem;
-}
-
-.acc-summary-row {
-  display: contents;
-
-  dt {
-    margin: 0;
-    color: var(--acc-note);
-  }
-  dd {
-    margin: 0;
-    font-weight: 600;
-    color: var(--acc-salmon-edge);
-  }
+  @include figure-table;
 }
 
 .acc-summary-hint {

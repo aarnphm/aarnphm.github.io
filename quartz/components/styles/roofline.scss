@@ -47,9 +47,8 @@
   }
 
   .rfl-ridge {
-    stroke: var(--darkgray);
+    stroke: var(--fig-stroke-soft);
     stroke-width: 1;
-    stroke-dasharray: 3 3;
   }
 
   .rfl-trail circle {
@@ -114,19 +113,13 @@
 }
 
 .rfl-readout {
+  @include figure-grid;
   grid-column: 1 / -1;
-  margin: 0;
-  display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  border: 1px solid var(--fig-frame-border);
 
   > div {
+    @include figure-grid-cell;
     padding: 0.45rem 0.6rem;
-    min-width: 0;
-  }
-
-  > div + div {
-    border-inline-start: 1px solid var(--fig-frame-border);
   }
 
   dt {
@@ -178,12 +171,9 @@
   .rfl-readout {
     grid-template-columns: repeat(3, minmax(0, 1fr));
 
-    > div:nth-child(4) {
-      border-inline-start: 0;
-    }
-
-    > div:nth-child(n + 4) {
-      border-top: 1px solid var(--fig-frame-border);
+    // Five cells on three tracks: the last spans the gap so no empty cell shows the grid line colour.
+    > div:last-child {
+      grid-column: span 2;
     }
   }
 }

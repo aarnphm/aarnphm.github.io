@@ -260,29 +260,29 @@
 }
 
 .mep-answers.is-active {
-  display: grid;
-  gap: 0.3rem;
+  @include figure-grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  margin-top: 0.55rem;
 }
 
 .mep-answer {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.5rem;
-  font-size: 0.76rem;
-  padding-bottom: 0.26rem;
+  display: contents;
 
-  &:last-child {
-    padding-bottom: 0;
+  > span {
+    @include figure-grid-cell;
+    padding: 0.35rem 0.5rem;
+    font-size: 0.76rem;
   }
 }
 
 .mep-answer-q {
-  color: var(--mep-note-fg);
+  color: var(--fig-note);
 }
 
 .mep-answer-a {
-  font-weight: 400;
-  color: color-mix(in srgb, var(--mep-active) 72%, var(--dark) 28%);
+  color: var(--dark);
+  font-family: var(--codeFont);
+  text-align: right;
 }
 
 .mep-reset {

@@ -110,13 +110,11 @@
     stroke: var(--kvc-soft);
     stroke-width: 1;
     fill: none;
-    stroke-dasharray: 2 2.5;
   }
 
   .kvc-divider {
     stroke: var(--kvc-div);
     stroke-width: 1;
-    stroke-dasharray: 4 4;
   }
 
   .kvc-proj {
@@ -131,7 +129,6 @@
     stroke: var(--kvc-cached-edge);
     stroke-width: 1;
     fill: none;
-    stroke-dasharray: 2 2.5;
     opacity: 0.6;
   }
 

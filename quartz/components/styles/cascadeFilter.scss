@@ -178,9 +178,8 @@
     }
   }
   .cf-threshold-line {
-    stroke: var(--gray);
+    stroke: var(--fig-stroke);
     stroke-width: 1.4;
-    stroke-dasharray: 4 3;
     transition:
       y1 240ms ease,
       y2 240ms ease;
@@ -201,7 +200,6 @@
     .cf-fine-tile {
       fill: transparent;
       stroke: var(--cf-stroke-soft);
-      stroke-dasharray: 3 3;
       opacity: 0.22;
       transform: scale(0.6);
     }
@@ -268,29 +266,11 @@
 }
 
 .cf-stats {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 0.25rem 0.7rem;
-  font-family: var(--bodyFont);
-  font-size: 0.85rem;
-  margin: 0;
-  dt {
-    color: var(--cf-note-fg);
-  }
-  dd {
-    margin: 0;
-    display: inline-flex;
-    align-items: baseline;
-    gap: 0.3rem;
-    color: var(--dark);
-  }
+  @include figure-table;
+
   .cf-stat-of {
     color: var(--cf-note-fg);
     font-size: 0.9em;
-  }
-  .katex {
-    color: inherit;
-    font-size: 0.95em;
   }
 }
 
