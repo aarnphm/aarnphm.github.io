@@ -1,4 +1,5 @@
 import katex from 'katex'
+import { renderFigureLabel } from '../../util/figure-label'
 
 type AccDType = 'bf16' | 'fp16' | 'fp32' | 'int8' | 'int4'
 type AccNumKey = 'dm' | 'nl' | 'nh' | 'sl' | 'bs'
@@ -145,12 +146,14 @@ const accTex = (v: string): string => {
   const unit = m ? m[2] : ''
   const tex = unit ? `${num}\\text{${unit}}` : num
   try {
-    return katex.renderToString(tex, {
-      displayMode: false,
-      output: 'html',
-      throwOnError: false,
-      strict: false,
-    })
+    return renderFigureLabel(tex, m =>
+      katex.renderToString(m, {
+        displayMode: false,
+        output: 'html',
+        throwOnError: false,
+        strict: false,
+      }),
+    )
   } catch {
     return v
   }

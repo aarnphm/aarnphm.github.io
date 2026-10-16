@@ -1,6 +1,7 @@
 import katex from 'katex'
 import { type FunctionalComponent } from 'preact'
 import { customMacros, katexOptions } from '../../cfg'
+import { renderFigureLabel } from '../../util/figure-label'
 import { MathText } from '../../util/math-text'
 //@ts-ignore
 import script from '../scripts/ring-rotation.inline'
@@ -20,14 +21,16 @@ const TOKEN_R = 16
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max)
 
 const renderMath = (tex: string): string =>
-  katex.renderToString(tex, {
-    ...katexOptions,
-    displayMode: false,
-    output: 'html',
-    macros: customMacros,
-    strict: false,
-    throwOnError: false,
-  })
+  renderFigureLabel(tex, m =>
+    katex.renderToString(m, {
+      ...katexOptions,
+      displayMode: false,
+      output: 'html',
+      macros: customMacros,
+      strict: false,
+      throwOnError: false,
+    }),
+  )
 
 const MathFO: FunctionalComponent<{
   x: number

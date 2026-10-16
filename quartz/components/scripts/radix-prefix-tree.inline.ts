@@ -1,4 +1,5 @@
 import katex from 'katex'
+import { renderFigureLabel } from '../../util/figure-label'
 
 type RptBranch = 'chat_a' | 'chat_b' | 'few_shot' | 'new' | 'root'
 
@@ -194,12 +195,14 @@ const rptFormatPct = (num: number, denom: number): string => {
 
 const rptRenderMath = (tex: string): string => {
   try {
-    return katex.renderToString(tex, {
-      displayMode: false,
-      output: 'html',
-      throwOnError: false,
-      strict: false,
-    })
+    return renderFigureLabel(tex, m =>
+      katex.renderToString(m, {
+        displayMode: false,
+        output: 'html',
+        throwOnError: false,
+        strict: false,
+      }),
+    )
   } catch {
     return tex
   }

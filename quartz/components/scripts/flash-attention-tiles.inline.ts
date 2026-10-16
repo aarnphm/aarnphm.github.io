@@ -1,4 +1,5 @@
 import katex from 'katex'
+import { renderFigureLabel } from '../../util/figure-label'
 
 type Vec = [number, number]
 
@@ -96,12 +97,14 @@ const ALL_STATES = computeAllStates()
 const TOTAL_STEPS = ALL_STATES.length
 
 const fatRenderMath = (t: string): string =>
-  katex.renderToString(t, {
-    displayMode: false,
-    output: 'html',
-    strict: false,
-    throwOnError: false,
-  })
+  renderFigureLabel(t, m =>
+    katex.renderToString(m, {
+      displayMode: false,
+      output: 'html',
+      strict: false,
+      throwOnError: false,
+    }),
+  )
 
 function fmt(v: number, digits = 2): string {
   if (!Number.isFinite(v)) return '-\\infty'

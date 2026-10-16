@@ -1,13 +1,16 @@
 import katex from 'katex'
+import { renderFigureLabel } from '../../util/figure-label'
 
 const pktRenderMath = (tex: string): string => {
   try {
-    return katex.renderToString(tex, {
-      displayMode: false,
-      output: 'html',
-      throwOnError: false,
-      strict: false,
-    })
+    return renderFigureLabel(tex, m =>
+      katex.renderToString(m, {
+        displayMode: false,
+        output: 'html',
+        throwOnError: false,
+        strict: false,
+      }),
+    )
   } catch {
     return tex
   }

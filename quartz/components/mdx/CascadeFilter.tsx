@@ -1,6 +1,7 @@
 import katex from 'katex'
 import { type FunctionalComponent } from 'preact'
 import { customMacros, katexOptions } from '../../cfg'
+import { renderFigureLabel } from '../../util/figure-label'
 import { MathText } from '../../util/math-text'
 //@ts-ignore
 import script from '../scripts/cascade-filter.inline'
@@ -11,14 +12,19 @@ type Props = { caption?: string; tiles?: number }
 type Preset = 'uniform' | 'spiky' | 'longtail'
 
 function renderMath(tex: string, display: boolean): string {
-  return katex.renderToString(tex, {
-    ...katexOptions,
-    displayMode: display,
-    output: 'html',
-    macros: customMacros,
-    strict: false,
-    throwOnError: false,
-  })
+  return renderFigureLabel(
+    tex,
+    m =>
+      katex.renderToString(m, {
+        ...katexOptions,
+        displayMode: display,
+        output: 'html',
+        macros: customMacros,
+        strict: false,
+        throwOnError: false,
+      }),
+    display,
+  )
 }
 
 function mulberry32(seed: number): () => number {

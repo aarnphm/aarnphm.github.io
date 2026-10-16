@@ -1,4 +1,5 @@
 import katex from 'katex'
+import { renderFigureLabel } from '../../util/figure-label'
 
 const mhaViewH = 560
 const mhaBandTop = 36
@@ -40,12 +41,14 @@ const mhaTex = (v: string): string => {
   const unit = m ? m[2] : ''
   const tex = unit ? `${num}\\text{${unit}}` : num
   try {
-    return katex.renderToString(tex, {
-      displayMode: false,
-      output: 'html',
-      throwOnError: false,
-      strict: false,
-    })
+    return renderFigureLabel(tex, m =>
+      katex.renderToString(m, {
+        displayMode: false,
+        output: 'html',
+        throwOnError: false,
+        strict: false,
+      }),
+    )
   } catch {
     return v
   }

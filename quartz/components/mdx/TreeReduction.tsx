@@ -1,6 +1,7 @@
 import katex from 'katex'
 import { type FunctionalComponent } from 'preact'
 import { customMacros, katexOptions } from '../../cfg'
+import { renderFigureLabel } from '../../util/figure-label'
 import { MathText } from '../../util/math-text'
 //@ts-ignore
 import script from '../scripts/tree-reduction.inline'
@@ -41,14 +42,16 @@ const SAMPLE_LEAVES_8: Triple[] = [
 ]
 
 function renderMath(tex: string): string {
-  return katex.renderToString(tex, {
-    ...katexOptions,
-    displayMode: false,
-    output: 'html',
-    macros: customMacros,
-    strict: false,
-    throwOnError: false,
-  })
+  return renderFigureLabel(tex, m =>
+    katex.renderToString(m, {
+      ...katexOptions,
+      displayMode: false,
+      output: 'html',
+      macros: customMacros,
+      strict: false,
+      throwOnError: false,
+    }),
+  )
 }
 
 function buildPositions(leafCount: Leaves): NodePos[][] {

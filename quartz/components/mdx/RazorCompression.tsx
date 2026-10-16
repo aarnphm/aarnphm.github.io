@@ -1,6 +1,7 @@
 import katex from 'katex'
 import { type FunctionalComponent } from 'preact'
 import { customMacros, katexOptions } from '../../cfg'
+import { renderFigureLabel } from '../../util/figure-label'
 import { MathText } from '../../util/math-text'
 //@ts-ignore
 import script from '../scripts/razor-compression.inline'
@@ -31,14 +32,19 @@ const retained = (c: number): number => P_RET + (1 - P_RET) / c
 const compression = (c: number): number => 1 / retained(c)
 
 const tex = (t: string, d = false): string =>
-  katex.renderToString(t, {
-    ...katexOptions,
-    displayMode: d,
-    output: 'html',
-    macros: customMacros,
-    strict: false,
-    throwOnError: false,
-  })
+  renderFigureLabel(
+    t,
+    m =>
+      katex.renderToString(m, {
+        ...katexOptions,
+        displayMode: d,
+        output: 'html',
+        macros: customMacros,
+        strict: false,
+        throwOnError: false,
+      }),
+    d,
+  )
 
 const Fo: FunctionalComponent<{
   x: number
