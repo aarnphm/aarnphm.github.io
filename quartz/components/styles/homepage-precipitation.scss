@@ -24,7 +24,8 @@
   &[data-precipitation='drizzle'] {
     color: color-mix(in srgb, var(--gray) 65%, #82918c);
   }
-  &[data-precipitation='drizzle'] span {
+  &[data-precipitation='drizzle'] span,
+  span[data-drop='drizzle'] {
     opacity: 0.12;
   }
   // Lightning lifts the whole page for two strokes per storm period, on the trail bolt's clock.

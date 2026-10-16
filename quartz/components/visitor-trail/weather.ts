@@ -3,6 +3,7 @@ import { lunarPhase } from '../../util/lunar-phase'
 import { sceneNow } from '../../util/scene-clock'
 import { readTrailSeason, subscribeTrailSeason } from '../../util/trail-season'
 import {
+  readVisitorDaylightCell,
   sampleVisitorDaylight,
   subscribeVisitorDaylight,
   type VisitorDaylight,
@@ -14,7 +15,8 @@ import {
   type TrailSeason,
   type TrailWeather,
 } from '../../util/visitor-trail-weather'
-import { almanac, guessSite, type Body } from '../scripts/404-almanac'
+import { seasonBucket } from '../../util/visitor-world'
+import { almanac, guessSite, type Almanac, type Body, type Site } from '../scripts/404-almanac'
 import { paintLunarDisc, stopLunarTransition } from '../scripts/lunar-disc'
 import { holidaySprite } from './holiday-sprites'
 import { creekDistance, groundOffset, pondDistance, type Landscape } from './landscape'
@@ -26,12 +28,25 @@ import { trailWinter } from './winter'
 const isSeason = (value: unknown): value is TrailSeason =>
   value === 'spring' || value === 'summer' || value === 'autumn' || value === 'winter'
 
-function decoration(weather: TrailWeather | null) {
+function siteFor(weather: TrailWeather | null, doc?: Document): Site {
+  if (weather?.lat !== null && weather?.lat !== undefined && weather.lon !== null) {
+    return { lat: weather.lat, lon: weather.lon, place: null, weather: null }
+  }
+  const cell = doc ? readVisitorDaylightCell(doc) : null
+  if (cell) return { lat: cell.lat, lon: cell.lon, place: null, weather: null }
+  return guessSite()
+}
+
+function decoration(
+  weather: TrailWeather | null,
+  al?: Almanac,
+  seasonOverride?: TrailSeason | null,
+) {
   const precipitation = visitorPrecipitation(weather?.code)
   const rain = wetFall(precipitation.fall) ? precipitation.heavy : 0
   const snow = precipitation.fall === 'snow' ? 1 : 0
   const { fog, storm } = precipitation
-  const snowCover = trailWinter(weather).cover
+  const snowCover = trailWinter(weather, false, al, seasonOverride).cover
   const sun =
     weather?.day && weather.code >= 0 && weather.code <= 2 && !rain && !snow
       ? Math.max(0, (0.85 - weather.cloud) / 0.85)
@@ -67,10 +82,12 @@ function weatherMarks(
   weather: TrailWeather | null,
   festiveSnow: boolean,
   season: TrailSeason | null,
+  al?: Almanac,
+  seasonOverride?: TrailSeason | null,
 ) {
   const random = trailRandom(seed ^ 0x34c4f69b)
   const { width, height, bottom, groves } = landscape
-  const { rain, snow, fog, snowCover, gust, dx, dy } = decoration(weather)
+  const { rain, snow, fog, snowCover, gust, dx, dy } = decoration(weather, al, seasonOverride)
   const marks: string[] = []
   if (fog) marks.push(fogVeil(landscape))
   if (snowCover || festiveSnow) {
@@ -607,9 +624,17 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
     if (view) skyTimer = view.setTimeout(() => renderSky(), 60_000)
   }
   const render = () => {
-    const state = decoration(weather)
+    const now = sceneNow(document)
+    const sky = almanac(new Date(now), siteFor(weather, document))
+    const bucket = seasonBucket(sky.winterDay)
+    const state = decoration(weather, sky, seasonOverride)
     if (state.rain > 0) wetUntil = Date.now() + 2 * 60 * 60 * 1000
-    const { cover, forecastCover, frozen, forecastFrozen, source } = trailWinter(weather, snowy())
+    const { cover, forecastCover, frozen, forecastFrozen, source } = trailWinter(
+      weather,
+      snowy(),
+      sky,
+      seasonOverride,
+    )
     const changedIce = scene.dataset.waterFrozen !== String(frozen)
     scene.dataset.waterFrozen = String(frozen)
     scene.dataset.forecastWaterFrozen = String(forecastFrozen)
@@ -628,15 +653,14 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
     scene.dataset.weatherGust = String(weather?.gustKmh ?? 'unknown')
     scene.dataset.weatherDirection = String(weather?.windFromDegrees ?? 'unknown')
     scene.dataset.weatherWindy = String(state.gust > 0.025)
-    scene.dataset.season = weather?.season ?? 'unknown'
+    scene.dataset.season = seasonOverride ?? bucket.season
     scene.dataset.seasonOverride = seasonOverride ?? 'auto'
     // The winter illustration keeps its snow and ice separate from the local forecast.
     const foliage = snowy() ? 'winter' : (seasonOverride ?? scene.dataset.season)
     scene.dataset.foliageSeason = foliage
-    // Early, mid or late in the season, by the month of the three it is in: leaves come out over
+    // Early, mid or late in the season, by the third of the quarter it is in: leaves come out over
     // the spring and fall over the autumn. A chosen season is shown at its height.
-    const month = new Date().getMonth() + 1 + ((weather?.lat ?? 0) < 0 ? 6 : 0)
-    scene.dataset.seasonPhase = seasonOverride ? 'mid' : ['early', 'mid', 'late'][(month % 12) % 3]
+    scene.dataset.seasonPhase = seasonOverride ? 'mid' : bucket.phase
     scene.dataset.snowCover = cover.toFixed(3)
     scene.style.setProperty('--trail-rain-strength', state.rain.toFixed(3))
     scene.style.setProperty('--trail-wind-strength', state.wind.toFixed(3))
@@ -674,6 +698,8 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
           weather,
           snowy(),
           isSeason(scene.dataset.foliageSeason) ? scene.dataset.foliageSeason : null,
+          sky,
+          seasonOverride,
         )
     }
     renderSky()

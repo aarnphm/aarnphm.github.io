@@ -14,6 +14,7 @@ const INSET = 48
 export { BAYER }
 
 export const hex = (h: string): RGB => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)) as RGB
+export const INK = hex('#100f0f')
 
 export function mulberry(seed: number) {
   let a = seed >>> 0

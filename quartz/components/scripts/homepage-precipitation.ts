@@ -35,9 +35,11 @@ export function mountHomepagePrecipitation(document: Document, signal: AbortSign
     const count = snow
       ? (narrow.matches ? 12 : 20) + Math.round(heavy * (narrow.matches ? 8 : 16))
       : (narrow.matches ? 8 : 14) + Math.round(heavy * (narrow.matches ? 6 : 10))
+    const drizzleShare = drizzle ? 1 : fall === 'rain' ? 0.7 - 0.48 * heavy : 0
+    const drizzleCount = snow ? 0 : Math.round(count * drizzleShare)
     const angle = ((weather?.windFromDegrees ?? 270) * Math.PI) / 180
     const drift = -Math.sin(angle) * Math.min(1, (weather?.windKmh ?? 0) / 55) * 36
-    const next = `${fall}|${storm}|${count}|${drift.toFixed(1)}`
+    const next = `${fall}|${heavy.toFixed(2)}|${storm}|${count}|${drift.toFixed(1)}`
     if (next === signature) return
     signature = next
     layer.style.setProperty('--homepage-storm-delay', stormDelay())
@@ -46,7 +48,9 @@ export function mountHomepagePrecipitation(document: Document, signal: AbortSign
     const random = trailRandom(0x46c27ad5)
     const particles = Array.from({ length: count }, (_, index) => {
       const particle = document.createElement('span')
-      const duration = snow ? 12 + random() * 10 : (drizzle ? 6 : 4.4) + random() * 2.4
+      const isDrizzle = !snow && (drizzle || index < drizzleCount)
+      if (!snow) particle.dataset.drop = isDrizzle ? 'drizzle' : 'rain'
+      const duration = snow ? 12 + random() * 10 : (isDrizzle ? 6 : 4.4) + random() * 2.4
       particle.style.left = `${(random() * 100).toFixed(2)}%`
       particle.style.setProperty('--homepage-weather-duration', `${duration.toFixed(2)}s`)
       particle.style.setProperty(
@@ -55,7 +59,7 @@ export function mountHomepagePrecipitation(document: Document, signal: AbortSign
       )
       particle.style.setProperty(
         '--homepage-weather-size',
-        `${snow ? (index % 4 ? 2 : 3) : drizzle ? 3 + Math.round(random()) : 6 + Math.round(random() * 3)}px`,
+        `${snow ? (index % 4 ? 2 : 3) : isDrizzle ? 3 + Math.round(random()) : 6 + Math.round(random() * 3)}px`,
       )
       return particle
     })
