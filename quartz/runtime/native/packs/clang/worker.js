@@ -1,12 +1,14 @@
 const source = 'quartz-notebook-runtime'
 const decoder = new TextDecoder()
-const clangAssetNames = [
+const clangWasmNames = [
   'llvm.core.wasm',
   'llvm.core2.wasm',
   'llvm.core3.wasm',
   'llvm.core4.wasm',
-  'llvm-resources.tar',
 ]
+const clangAssetNames = [...clangWasmNames, 'llvm-resources.tar']
+const compiledModules = new Map()
+let prefetchedTarResponse = null
 
 let runtimeId = ''
 let language = 'c'
@@ -43,9 +45,14 @@ function readChunkedAssetManifest(value) {
 }
 
 function isChunkedAssetResponse(url, response) {
-  const contentType = response.headers.get('content-type') ?? ''
-  const responseUrl = response.url || url
-  return contentType.includes('json') || responseUrl.includes('.chunks') || url.includes('.chunks')
+  const contentType = response?.headers?.get?.('content-type') ?? ''
+  const responseUrl = response?.url || url
+  return (
+    url.endsWith('.chunks.json') ||
+    contentType.includes('json') ||
+    responseUrl.includes('.chunks') ||
+    url.includes('.chunks')
+  )
 }
 
 function concatChunks(chunks, size, label) {
@@ -79,6 +86,131 @@ async function fetchChunkedBytes(url, manifest, label) {
     }),
   )
   return concatChunks(chunks, manifest.size, label)
+}
+
+async function fetchBytes(url, label = url) {
+  const response = await fetch(url)
+  if (!response.ok) throw new Error(`Clang ${label} request failed with ${response.status}`)
+  if (!isChunkedAssetResponse(url, response)) {
+    post({ type: 'status', text: `fetching Clang ${label}` })
+    return new Uint8Array(await response.arrayBuffer())
+  }
+  const manifest = readChunkedAssetManifest(await response.json())
+  if (!manifest) throw new Error(`Clang ${label} chunk manifest is invalid`)
+  const bytes = await fetchChunkedBytes(url, manifest, label)
+  post({ type: 'status', text: `loaded Clang ${label}` })
+  return bytes
+}
+
+function createChunkedStream(url, manifest, label) {
+  let chunkIndex = 0
+  let activeReader = null
+  let actualSize = 0
+  return new ReadableStream({
+    async pull(controller) {
+      while (true) {
+        if (activeReader) {
+          const { done, value } = await activeReader.read()
+          if (!done) {
+            if (value && value.byteLength > 0) {
+              actualSize += value.byteLength
+              controller.enqueue(value)
+              return
+            }
+            continue
+          }
+          activeReader = null
+          post({
+            type: 'status',
+            text: `loaded Clang ${label} chunk ${chunkIndex}/${manifest.chunks.length}`,
+          })
+        }
+        if (chunkIndex >= manifest.chunks.length) {
+          if (actualSize !== manifest.size) {
+            throw new Error(`Clang ${label} chunk size mismatch`)
+          }
+          post({ type: 'status', text: `loaded Clang ${label}` })
+          controller.close()
+          return
+        }
+        const currentIndex = chunkIndex
+        const chunk = manifest.chunks[currentIndex]
+        chunkIndex += 1
+        const chunkUrl = new URL(chunk, url).href
+        post({
+          type: 'status',
+          text: `fetching Clang ${label} chunk ${currentIndex + 1}/${manifest.chunks.length}`,
+        })
+        const chunkResponse = await fetch(chunkUrl)
+        if (!chunkResponse.ok) {
+          throw new Error(`Clang ${label} chunk request failed with ${chunkResponse.status}`)
+        }
+        if (chunkResponse.body && typeof chunkResponse.body.getReader === 'function') {
+          activeReader = chunkResponse.body.getReader()
+          continue
+        }
+        const bytes = new Uint8Array(await chunkResponse.arrayBuffer())
+        actualSize += bytes.byteLength
+        post({
+          type: 'status',
+          text: `loaded Clang ${label} chunk ${currentIndex + 1}/${manifest.chunks.length}`,
+        })
+        if (bytes.byteLength > 0) {
+          controller.enqueue(bytes)
+          return
+        }
+      }
+    },
+    async cancel(reason) {
+      if (activeReader) {
+        try {
+          await activeReader.cancel(reason)
+        } catch {}
+        activeReader = null
+      }
+    },
+  })
+}
+
+async function fetchStream(url, label = url) {
+  const response = await fetch(url)
+  if (!response.ok) throw new Error(`Clang ${label} request failed with ${response.status}`)
+  if (!isChunkedAssetResponse(url, response)) {
+    post({ type: 'status', text: `fetching Clang ${label}` })
+    if (response.body) return response.body
+    const bytes = new Uint8Array(await response.arrayBuffer())
+    return new ReadableStream({
+      start(controller) {
+        if (bytes.byteLength > 0) controller.enqueue(bytes)
+        controller.close()
+      },
+    })
+  }
+  const manifest = readChunkedAssetManifest(await response.json())
+  if (!manifest) throw new Error(`Clang ${label} chunk manifest is invalid`)
+  return createChunkedStream(url, manifest, label)
+}
+
+async function compileWasm(url, label = url) {
+  if (
+    typeof WebAssembly.compileStreaming === 'function' &&
+    typeof ReadableStream === 'function'
+  ) {
+    try {
+      const stream = await fetchStream(url, label)
+      const response = new Response(stream, {
+        headers: { 'content-type': 'application/wasm' },
+      })
+      return await WebAssembly.compileStreaming(response)
+    } catch (error) {
+      if (error instanceof Error && error.message.startsWith('Clang ')) throw error
+    }
+  }
+  return await WebAssembly.compile(await fetchBytes(url, label))
+}
+
+function getModule(name) {
+  return compiledModules.get(name)
 }
 
 async function fetchText(url, label) {
@@ -130,6 +262,11 @@ function byteAssetResponse(bytes, filename) {
 }
 
 async function assetResponse(url, filename) {
+  if (filename === 'llvm-resources.tar' && prefetchedTarResponse) {
+    const pending = prefetchedTarResponse
+    prefetchedTarResponse = null
+    return await pending
+  }
   const response = await fetch(url)
   if (!response.ok) throw new Error(`Clang ${filename} request failed with ${response.status}`)
   if (!isChunkedAssetResponse(url, response)) {
@@ -140,12 +277,18 @@ async function assetResponse(url, filename) {
   }
   const manifest = readChunkedAssetManifest(await response.json())
   if (!manifest) throw new Error(`Clang ${filename} chunk manifest is invalid`)
+  if (typeof ReadableStream === 'function') {
+    return new Response(createChunkedStream(url, manifest, filename), {
+      headers: assetHeaders(undefined, filename, manifest.size),
+    })
+  }
   const bytes = await fetchChunkedBytes(url, manifest, filename)
   post({ type: 'status', text: `loaded Clang ${filename}` })
   return byteAssetResponse(bytes, filename)
 }
 
 function installClangAssetFetch(assetMap) {
+  globalThis.quartzNativeClangGetModule = getModule
   globalThis.quartzNativeClangFetch = async (input, init) => {
     const url =
       input instanceof URL
@@ -170,19 +313,35 @@ function rewriteClangAssetUrls(sourceText, assetMap) {
     'var fetch_default = fetch2;',
     'var fetch_default = globalThis.quartzNativeClangFetch ?? fetch2;',
   )
+  for (const filename of clangWasmNames) {
+    next = next.replace(
+      `await fetch3(new URL("./${filename}", import.meta.url)).then(compileWasmModule)`,
+      `(globalThis.quartzNativeClangGetModule?.(${JSON.stringify(filename)}) ?? await fetch3(new URL("./${filename}", import.meta.url)).then(compileWasmModule))`,
+    )
+  }
   for (const [url, filename] of assetMap) {
     next = next.replaceAll(JSON.stringify(`./${filename}`), JSON.stringify(url))
   }
   return next
 }
 
-async function importClangModule(assets) {
+async function loadBundleModule(assets) {
   const assetMap = clangAssetMap(assets)
   installClangAssetFetch(assetMap)
   const sourceText = await fetchText(assetFor(assets, 'bundle.js'), 'bundle module')
   const rewritten = rewriteClangAssetUrls(sourceText, assetMap)
+  if (typeof Blob === 'function' && typeof URL?.createObjectURL === 'function') {
+    const objectUrl = URL.createObjectURL(new Blob([rewritten], { type: 'text/javascript' }))
+    try {
+      return await import(objectUrl)
+    } finally {
+      if (typeof URL.revokeObjectURL === 'function') URL.revokeObjectURL(objectUrl)
+    }
+  }
   return await import(`data:text/javascript;charset=utf-8,${encodeURIComponent(rewritten)}`)
 }
+
+const importClangModule = loadBundleModule
 
 function captureBytes() {
   const chunks = []
@@ -329,9 +488,17 @@ async function init(message) {
     ? message.assets.filter(item => typeof item === 'string')
     : []
   post({ type: 'status', text: `loading ${language === 'cpp' ? 'C++' : 'C'} runtime pack` })
+  compiledModules.clear()
+  const tarUrl = assetUrl(assetFor(assets, 'llvm-resources.tar'))
+  prefetchedTarResponse = assetResponse(tarUrl, 'llvm-resources.tar')
   const [clangModule, nextWasiShim] = await Promise.all([
-    importClangModule(assets),
+    loadBundleModule(assets),
     import(assetFor(assets, 'browser-wasi-shim.mjs')),
+    prefetchedTarResponse,
+    ...clangWasmNames.map(async name => {
+      const module = await compileWasm(assetUrl(assetFor(assets, name)), name)
+      compiledModules.set(name, module)
+    }),
   ])
   runClang = clangModule.runClang
   wasiShim = nextWasiShim

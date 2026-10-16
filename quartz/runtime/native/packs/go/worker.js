@@ -55,9 +55,14 @@ function readChunkedAssetManifest(value) {
 }
 
 function isChunkedAssetResponse(url, response) {
-  const contentType = response.headers.get('content-type') ?? ''
-  const responseUrl = response.url || url
-  return contentType.includes('json') || responseUrl.includes('.chunks') || url.includes('.chunks')
+  const contentType = response?.headers?.get?.('content-type') ?? ''
+  const responseUrl = response?.url || url
+  return (
+    url.endsWith('.chunks.json') ||
+    contentType.includes('json') ||
+    responseUrl.includes('.chunks') ||
+    url.includes('.chunks')
+  )
 }
 
 function concatChunks(chunks, size, label) {
@@ -84,7 +89,7 @@ async function fetchChunkedBytes(url, manifest, label) {
   return concatChunks(chunks, manifest.size, label)
 }
 
-async function fetchBytes(url, label) {
+async function fetchBytes(url, label = 'runtime wasm') {
   const response = await fetch(url)
   if (!response.ok) throw new Error(`Go ${label} request failed with ${response.status}`)
   if (!isChunkedAssetResponse(url, response)) return new Uint8Array(await response.arrayBuffer())
@@ -93,9 +98,109 @@ async function fetchBytes(url, label) {
   return await fetchChunkedBytes(url, manifest, label)
 }
 
-async function instantiateGo(wasmUrl, go) {
-  const bytes = await fetchBytes(wasmUrl, 'runtime wasm')
-  return await WebAssembly.instantiate(bytes, go.importObject)
+function createChunkedStream(url, manifest, label) {
+  let chunkIndex = 0
+  let activeReader = null
+  let actualSize = 0
+  return new ReadableStream({
+    async pull(controller) {
+      while (true) {
+        if (activeReader) {
+          const { done, value } = await activeReader.read()
+          if (!done) {
+            if (value && value.byteLength > 0) {
+              actualSize += value.byteLength
+              controller.enqueue(value)
+              return
+            }
+            continue
+          }
+          activeReader = null
+        }
+        if (chunkIndex >= manifest.chunks.length) {
+          if (actualSize !== manifest.size) {
+            throw new Error(`Go ${label} chunk size mismatch`)
+          }
+          controller.close()
+          return
+        }
+        const chunk = manifest.chunks[chunkIndex]
+        chunkIndex += 1
+        const chunkUrl = new URL(chunk, url).href
+        const chunkResponse = await fetch(chunkUrl)
+        if (!chunkResponse.ok) {
+          throw new Error(`Go ${label} chunk request failed with ${chunkResponse.status}`)
+        }
+        if (chunkResponse.body && typeof chunkResponse.body.getReader === 'function') {
+          activeReader = chunkResponse.body.getReader()
+          continue
+        }
+        const bytes = new Uint8Array(await chunkResponse.arrayBuffer())
+        actualSize += bytes.byteLength
+        if (bytes.byteLength > 0) {
+          controller.enqueue(bytes)
+          return
+        }
+      }
+    },
+    async cancel(reason) {
+      if (activeReader) {
+        try {
+          await activeReader.cancel(reason)
+        } catch {}
+        activeReader = null
+      }
+    },
+  })
+}
+
+async function fetchStream(url, label = 'runtime wasm') {
+  const response = await fetch(url)
+  if (!response.ok) throw new Error(`Go ${label} request failed with ${response.status}`)
+  if (!isChunkedAssetResponse(url, response)) {
+    if (response.body) return response.body
+    const bytes = new Uint8Array(await response.arrayBuffer())
+    return new ReadableStream({
+      start(controller) {
+        if (bytes.byteLength > 0) controller.enqueue(bytes)
+        controller.close()
+      },
+    })
+  }
+  const manifest = readChunkedAssetManifest(await response.json())
+  if (!manifest) throw new Error(`Go ${label} chunk manifest is invalid`)
+  return createChunkedStream(url, manifest, label)
+}
+
+async function compileWasm(wasmUrl, label = 'runtime wasm') {
+  if (
+    typeof WebAssembly.compileStreaming === 'function' &&
+    typeof ReadableStream === 'function'
+  ) {
+    try {
+      const stream = await fetchStream(wasmUrl, label)
+      const response = new Response(stream, {
+        headers: { 'content-type': 'application/wasm' },
+      })
+      return await WebAssembly.compileStreaming(response)
+    } catch (error) {
+      if (error instanceof Error && error.message.startsWith('Go ')) throw error
+    }
+  }
+  return await WebAssembly.compile(await fetchBytes(wasmUrl, label))
+}
+
+async function instantiateGo(wasmUrlOrModule, go) {
+  const module =
+    typeof wasmUrlOrModule === 'string'
+      ? await compileWasm(wasmUrlOrModule, 'runtime wasm')
+      : wasmUrlOrModule
+  const instantiated = await WebAssembly.instantiate(module, go.importObject)
+  const instance =
+    instantiated instanceof WebAssembly.Instance || !('instance' in instantiated)
+      ? instantiated
+      : instantiated.instance
+  return { module, instance }
 }
 
 function assetEnding(assets, ending) {
@@ -121,12 +226,15 @@ async function init(message) {
     : []
   const wasmExecUrl = assetEnding(assets, '/wasm_exec')
   const wasmUrl = assetEnding(assets, '/yaegi')
-  await loadScript(wasmExecUrl)
+  const [wasmModule] = await Promise.all([
+    compileWasm(wasmUrl, 'runtime wasm'),
+    loadScript(wasmExecUrl),
+  ])
   installOutputCapture()
   const Go = globalThis.Go
   if (typeof Go !== 'function') throw new Error('wasm_exec.js did not expose Go')
   const go = new Go()
-  const result = await instantiateGo(wasmUrl, go)
+  const result = await instantiateGo(wasmModule, go)
   void go.run(result.instance).catch(error => {
     post({ type: 'status', text: `Go runtime stopped: ${textOf(error)}` })
   })

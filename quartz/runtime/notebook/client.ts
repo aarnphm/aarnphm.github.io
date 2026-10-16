@@ -439,19 +439,67 @@ function lastNotebookOutput(target: HTMLElement): HTMLElement | undefined {
   return tabbed[tabbed.length - 1]
 }
 
-function appendStreamOutput(target: HTMLElement, output: RuntimeStreamOutput) {
+function appendTextInPlace(target: HTMLElement, text: string) {
+  const firstChild = target.firstChild
+  if (
+    firstChild &&
+    firstChild.nodeType === 3 &&
+    firstChild === target.lastChild &&
+    typeof (firstChild as Text).appendData === 'function'
+  ) {
+    ;(firstChild as Text).appendData(text)
+    return
+  }
+  target.textContent = (target.textContent ?? '') + text
+}
+
+function findOutputPanel(container: HTMLElement, groupId: string): HTMLElement | undefined {
+  for (const frame of container.querySelectorAll<HTMLElement>(
+    ':scope > .notebook-output-panels > .notebook-output-panel-frame[data-notebook-output-panel]',
+  )) {
+    if (frame.dataset.notebookOutputPanel !== groupId) continue
+    return frame.querySelector<HTMLElement>(':scope > .notebook-output-panel') ?? undefined
+  }
+}
+
+function appendStreamOutput(target: HTMLElement, output: RuntimeStreamOutput): boolean {
+  const container = target.querySelector<HTMLElement>(':scope > [data-notebook-output-tabs]')
+  const hasDirectOutputs = Array.from(target.children).some(
+    child => child instanceof HTMLElement && child.classList.contains('notebook-output'),
+  )
+  if (container && !hasDirectOutputs) {
+    const label = output.name.trim() || 'output'
+    const groupId = outputTabId(label)
+    const panel = findOutputPanel(container, groupId)
+    if (panel) {
+      const lastInPanel = panel.lastElementChild
+      if (
+        lastInPanel instanceof HTMLPreElement &&
+        lastInPanel.classList.contains('notebook-output-stream') &&
+        lastInPanel.dataset.outputName === output.name
+      ) {
+        const sample = lastInPanel.querySelector<HTMLElement>('samp') ?? lastInPanel
+        appendTextInPlace(sample, output.text)
+        lastInPanel.scrollTop = lastInPanel.scrollHeight
+        panel.scrollTop = panel.scrollHeight
+        syncOutputScrollHints(panel)
+        return true
+      }
+    }
+  }
+
   const previous = lastNotebookOutput(target)
   if (
     previous instanceof HTMLPreElement &&
     previous.classList.contains('notebook-output-stream') &&
     previous.dataset.outputName === output.name
   ) {
-    const sample = previous.querySelector('samp')
+    const sample = previous.querySelector<HTMLElement>('samp')
     if (sample) {
-      sample.textContent += output.text
+      appendTextInPlace(sample, output.text)
       previous.scrollTop = previous.scrollHeight
       syncOutputScrollHints(target)
-      return
+      return container !== null && !hasDirectOutputs
     }
   }
   target.appendChild(
@@ -466,6 +514,7 @@ function appendStreamOutput(target: HTMLElement, output: RuntimeStreamOutput) {
       { trimEnd: false },
     ),
   )
+  return false
 }
 
 function createHtmlOutput(html: string): HTMLDivElement {
@@ -516,6 +565,7 @@ function hasRenderedOutput(target: HTMLElement): boolean {
 }
 
 const outputScrollHintTargets = new WeakSet<HTMLElement>()
+const pendingOutputScrollHints = new WeakSet<HTMLElement>()
 
 function syncOutputScrollHint(output: HTMLElement) {
   const slack = 1
@@ -543,7 +593,13 @@ function syncOutputScrollHints(root: HTMLElement) {
       output.addEventListener('load', () => syncOutputScrollHint(output), { capture: true })
       outputScrollHintTargets.add(output)
     }
-    requestAnimationFrame(() => syncOutputScrollHint(output))
+    if (!pendingOutputScrollHints.has(output)) {
+      pendingOutputScrollHints.add(output)
+      requestAnimationFrame(() => {
+        pendingOutputScrollHints.delete(output)
+        syncOutputScrollHint(output)
+      })
+    }
   }
 }
 
@@ -882,8 +938,7 @@ function appendRuntimeOutput(
   options: { debug?: boolean } = {},
 ) {
   if (output.type === 'stream') {
-    appendStreamOutput(target, output)
-    syncOutputTabs(target)
+    if (!appendStreamOutput(target, output)) syncOutputTabs(target)
     return
   }
 
@@ -2371,6 +2426,10 @@ class NotebookRuntime {
 
   private renderKernelOutput(cellId: string, output: KernelOutput) {
     if ('kind' in output) {
+      if (output.kind === 'stream') {
+        this.renderOutput(cellId, { type: 'stream', name: output.name, text: output.text })
+        return
+      }
       const target = this.queryCell<HTMLElement>(`[data-notebook-output="${CSS.escape(cellId)}"]`)
       if (!target) return
       this.hideSavedOutput(cellId)
