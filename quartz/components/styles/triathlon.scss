@@ -17874,8 +17874,7 @@ a.tri-pop-date:hover {
       1,
     '.tri-workout-analysis, .tri-zone-duo, .tri-cycling-power, .tri-curve-chart': 2,
     '.tri-run-stride-panel, .tri-swim-drag-chart': 3,
-    '.tri-effort-block': 2,
-    '.tri-matched, .tri-mywindsock': 4,
+    '.tri-mywindsock': 4,
     '.tri-environment': 5,
   );
 
@@ -17885,48 +17884,6 @@ a.tri-pop-date:hover {
       height: tri-graph-span($units);
       min-height: 0;
     }
-  }
-
-  // Each best-efforts table scrolls inside its two units under a pinned header. The footnote sits in
-  // the last table's padding, so the list ends on the grid.
-  .tri-efforts {
-    position: relative;
-    gap: var(--tri-activity-graph-gap);
-    padding-top: 0;
-  }
-
-  .tri-effort-block {
-    display: flex;
-    flex-direction: column;
-
-    &:has(+ .tri-effort-note) {
-      padding-bottom: 1.1rem;
-    }
-  }
-
-  .tri-effort-viewport {
-    flex: 1;
-    min-height: 0;
-  }
-
-  .tri-effort-scroll {
-    height: 100%;
-    overflow: auto;
-    overscroll-behavior: contain;
-  }
-
-  .tri-effort-table thead th {
-    position: sticky;
-    top: 0;
-    z-index: 1;
-    background: var(--light);
-  }
-
-  .tri-effort-note {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    margin: 0;
   }
 
   // Stacked, the two zone charts take one unit each; side by side they share one.
@@ -18083,7 +18040,6 @@ a.tri-pop-date:hover {
   }
 
   .tri-curve-chart,
-  .tri-matched-chart,
   .tri-zone:where(:has(> .tri-cax-frame .tri-hist-svg)) {
     > .tri-cax-frame {
       flex: 1;
@@ -18092,41 +18048,11 @@ a.tri-pop-date:hover {
 
       .tri-cax-plot,
       .tri-curve-svg,
-      .tri-matched-svg,
       .tri-hist-svg {
         height: 100%;
         min-height: 0;
         aspect-ratio: auto;
       }
-    }
-  }
-
-  .tri-matched {
-    box-sizing: border-box;
-    display: grid;
-    // Two units of chart above two units of similar efforts.
-    grid-template-rows: auto minmax(0, 1fr) tri-graph-span(2);
-  }
-
-  .tri-matched-chart {
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-    margin-top: 0.65rem;
-  }
-
-  .tri-matched-legend {
-    flex: none;
-  }
-
-  .tri-matched-viewport {
-    display: grid;
-    min-height: 0;
-
-    > .tri-effort-scroll {
-      min-height: 0;
-      overflow: auto;
-      overscroll-behavior: contain;
     }
   }
 
@@ -18227,8 +18153,53 @@ a.tri-pop-date:hover {
     }
   }
 
-  // Narrow embedded columns drop the zone names and compact the run splits.
+  // Embedded columns hold matched activities to four units, drop the zone names and compact the run
+  // splits; day pages show these at their full height.
   :not(.tri-day-page) > & {
+    .tri-matched {
+      box-sizing: border-box;
+      display: grid;
+      // Two units of chart above two units of similar efforts.
+      grid-template-rows: auto minmax(0, 1fr) tri-graph-span(2);
+      height: tri-graph-span(4);
+      min-height: 0;
+    }
+
+    .tri-matched-chart > .tri-cax-frame {
+      flex: 1;
+      min-height: 0;
+      grid-template-rows: minmax(0, 1fr) auto;
+
+      .tri-cax-plot,
+      .tri-matched-svg {
+        height: 100%;
+        min-height: 0;
+        aspect-ratio: auto;
+      }
+    }
+
+    .tri-matched-chart {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      margin-top: 0.65rem;
+    }
+
+    .tri-matched-legend {
+      flex: none;
+    }
+
+    .tri-matched-viewport {
+      display: grid;
+      min-height: 0;
+
+      > .tri-effort-scroll {
+        min-height: 0;
+        overflow: auto;
+        overscroll-behavior: contain;
+      }
+    }
+
     .tri-run-splits {
       height: calc(
         var(--tri-activity-chart-height, $triathlon-row-height) +

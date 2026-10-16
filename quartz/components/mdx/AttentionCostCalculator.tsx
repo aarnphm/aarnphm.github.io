@@ -5,37 +5,30 @@ import { renderFigureLabel } from '../../util/figure-label'
 import { MathText } from '../../util/math-text'
 //@ts-ignore
 import script from '../scripts/attention-cost-calculator.inline'
+import {
+  ACC_DTYPE_BYTES,
+  ACC_INITIAL,
+  ACC_VALUES,
+  accBytesTex,
+  accCompute,
+  accMetricTex,
+  accRatioTex,
+  type AccDType,
+  type AccNumKey,
+} from '../scripts/attention-cost-model'
 import style from '../styles/attentionCostCalculator.scss'
 import { registerMdxComponent, type QuartzMdxComponent } from './registry'
 
 type Props = { caption?: string }
 
-type DType = 'bf16' | 'fp16' | 'fp32' | 'int8' | 'int4'
-
-type SliderSpec = { k: string; tex: string; lbl: string; values: number[]; def: number }
-
-const DM_VALUES = [128, 256, 512, 1024, 2048, 4096, 8192]
-const NL_VALUES = [1, 2, 4, 6, 8, 12, 16, 24, 32, 40, 48, 64, 80, 96]
-const NH_VALUES = [1, 2, 4, 8, 16, 32, 64]
-const L_VALUES = [256, 512, 1024, 2048, 4096, 8192, 16384, 32768]
-const B_VALUES = [1, 2, 4, 8, 16, 32, 64, 128, 256]
-
-const DTYPE_BYTES: Record<DType, number> = { bf16: 2, fp16: 2, fp32: 4, int8: 1, int4: 0.5 }
+type SliderSpec = { k: AccNumKey; tex: string; lbl: string }
 
 const SLIDERS: SliderSpec[] = [
-  { k: 'dm', tex: 'd_{\\text{model}}', lbl: 'model dim', values: DM_VALUES, def: 4096 },
-  { k: 'nl', tex: 'N', lbl: 'layers', values: NL_VALUES, def: 32 },
-  { k: 'nh', tex: 'h', lbl: 'heads', values: NH_VALUES, def: 32 },
-  { k: 'sl', tex: 'L', lbl: 'seq length', values: L_VALUES, def: 4096 },
-  { k: 'bs', tex: 'B', lbl: 'batch', values: B_VALUES, def: 1 },
-]
-
-const DTYPES: { v: DType; lbl: string; bytes: number }[] = [
-  { v: 'bf16', lbl: 'bf16', bytes: 2 },
-  { v: 'fp16', lbl: 'fp16', bytes: 2 },
-  { v: 'fp32', lbl: 'fp32', bytes: 4 },
-  { v: 'int8', lbl: 'int8', bytes: 1 },
-  { v: 'int4', lbl: 'int4', bytes: 0.5 },
+  { k: 'dm', tex: 'd_{\\text{model}}', lbl: 'model dim' },
+  { k: 'nl', tex: 'N', lbl: 'layers' },
+  { k: 'nh', tex: 'h', lbl: 'heads' },
+  { k: 'sl', tex: 'L', lbl: 'seq length' },
+  { k: 'bs', tex: 'B', lbl: 'batch' },
 ]
 
 type ReadoutCard = {
@@ -49,7 +42,11 @@ type ReadoutCard = {
 const READOUTS: ReadoutCard[] = [
   { k: 'dh', label: 'per-head dim', formula: 'd_h = d_{\\text{model}} / h' },
   { k: 'params', label: 'attention params', formula: '4\\,N\\,d_{\\text{model}}^{2}' },
-  { k: 'flops', label: 'attention FLOPs / decoded token', formula: '4\\,L\\,d_{\\text{model}}' },
+  {
+    k: 'flops',
+    label: 'attention FLOPs / decoded token',
+    formula: '8\\,N\\,d_{\\text{model}}^{2} + 4\\,N\\,L\\,d_{\\text{model}}',
+  },
   { k: 'kvtok', label: 'KV / token / layer', formula: '2\\,d_{\\text{model}}\\cdot\\text{bytes}' },
   {
     k: 'kvtotal',
@@ -59,26 +56,24 @@ const READOUTS: ReadoutCard[] = [
   },
   {
     k: 'ratio',
-    label: 'cache / weight memory ratio',
+    label: 'KV cache / attention weights (BF16)',
     formula: '\\frac{B\\,L\\,\\text{bytes}}{4\\,d_{\\text{model}}}',
     accent: 'sage',
   },
 ]
 
-const tex = (t: string, d = false): string =>
-  renderFigureLabel(
-    t,
-    m =>
-      katex.renderToString(m, {
-        ...katexOptions,
-        displayMode: d,
-        output: 'html',
-        macros: customMacros,
-        strict: false,
-        throwOnError: false,
-      }),
-    d,
-  )
+const katexHtml = (m: string, d: boolean): string =>
+  katex.renderToString(m, {
+    ...katexOptions,
+    displayMode: d,
+    output: 'html',
+    macros: customMacros,
+    strict: false,
+    throwOnError: false,
+  })
+
+const tex = (t: string, d = false, whole = false): string =>
+  whole ? katexHtml(t, d) : renderFigureLabel(t, m => katexHtml(m, d), d)
 
 const M: FunctionalComponent<{ t: string; d?: boolean }> = ({ t, d }) => (
   <span
@@ -87,146 +82,94 @@ const M: FunctionalComponent<{ t: string; d?: boolean }> = ({ t, d }) => (
   />
 )
 
+// Numbers are math: KaTeX renders them whole, with no word splitting.
+const Num: FunctionalComponent<{ t: string; class: string; attr: Record<string, string> }> = ({
+  t,
+  class: cls,
+  attr,
+}) => <span class={cls} {...attr} dangerouslySetInnerHTML={{ __html: tex(t, false, true) }} />
+
 const FormulaFO: FunctionalComponent<{ t: string }> = ({ t }) => (
   <span class="acc-card-eq" dangerouslySetInnerHTML={{ __html: tex(t) }} />
 )
 
-const fmtBytes = (n: number): string => {
-  if (n < 1024) return `${n.toFixed(0)} B`
-  const units = ['KB', 'MB', 'GB', 'TB', 'PB']
-  let v = n / 1024
-  let i = 0
-  while (v >= 1024 && i < units.length - 1) {
-    v /= 1024
-    i++
-  }
-  return `${v >= 100 ? v.toFixed(0) : v >= 10 ? v.toFixed(1) : v.toFixed(2)} ${units[i]}`
-}
+const init = accCompute(ACC_INITIAL)
 
-const fmtCount = (n: number): string => {
-  if (n < 1000) return n.toString()
-  const units = ['K', 'M', 'B', 'T', 'P']
-  let v = n / 1000
-  let i = 0
-  while (v >= 1000 && i < units.length - 1) {
-    v /= 1000
-    i++
-  }
-  return `${v >= 100 ? v.toFixed(0) : v >= 10 ? v.toFixed(1) : v.toFixed(2)}${units[i]}`
-}
-
-const initial = { dm: 4096, nl: 32, nh: 32, sl: 4096, bs: 1, dt: 'bf16' as DType }
-
-const WEIGHT_BYTES = 2
-
-const computeInitial = () => {
-  const dh = initial.dm / initial.nh
-  const bytes = DTYPE_BYTES[initial.dt]
-  const params = initial.nl * 4 * initial.dm * initial.dm
-  const flops = 4 * initial.sl * initial.dm
-  const kvtok = 2 * initial.dm * bytes
-  const ffnParams = initial.nl * 8 * initial.dm * initial.dm
-  const kvtotal = initial.bs * initial.sl * initial.nl * 2 * initial.dm * bytes
-  const paramBytes = params * WEIGHT_BYTES
-  const ffnBytes = ffnParams * WEIGHT_BYTES
-  const ratio = paramBytes > 0 ? kvtotal / paramBytes : 0
-  return { dh, params, flops, kvtok, kvtotal, ratio, ffnParams, paramBytes, ffnBytes }
-}
-
-const init = computeInitial()
-
-const readoutValue = (k: string): string => {
-  switch (k) {
-    case 'dh':
-      return init.dh.toString()
-    case 'params':
-      return fmtCount(init.params)
-    case 'flops':
-      return fmtCount(init.flops)
-    case 'kvtok':
-      return fmtBytes(init.kvtok)
-    case 'kvtotal':
-      return fmtBytes(init.kvtotal)
-    case 'ratio':
-      return `${init.ratio.toFixed(init.ratio >= 10 ? 0 : 2)}x`
-    default:
-      return '-'
-  }
-}
+const DTYPE_LABEL = (dt: AccDType): string => `${dt} (${ACC_DTYPE_BYTES[dt]} B)`
 
 const AttentionCostCalculatorImpl: QuartzMdxComponent<Props> = ({ caption }) => {
-  const totalMem = Math.max(1, init.paramBytes + init.ffnBytes + init.kvtotal)
-  const attnFrac = init.paramBytes / totalMem
-  const ffnFrac = init.ffnBytes / totalMem
-  const kvFrac = init.kvtotal / totalMem
+  const totalMem = init.paramBytes + init.ffnBytes + init.kvtotal
+  const bars = [
+    { k: 'attn', tag: 'attn weights', bytes: init.paramBytes, track: '' },
+    { k: 'ffn', tag: 'FFN weights', bytes: init.ffnBytes, track: '' },
+    { k: 'kv', tag: 'KV cache', bytes: init.kvtotal, track: ' acc-bar-track--bytes' },
+  ]
 
   return (
     <figure
       class="attention-cost-calculator"
       data-acc-root
-      data-acc-dm={String(initial.dm)}
-      data-acc-nl={String(initial.nl)}
-      data-acc-nh={String(initial.nh)}
-      data-acc-sl={String(initial.sl)}
-      data-acc-bs={String(initial.bs)}
-      data-acc-dt={initial.dt}
+      data-acc-dm={String(ACC_INITIAL.dm)}
+      data-acc-nl={String(ACC_INITIAL.nl)}
+      data-acc-nh={String(ACC_INITIAL.nh)}
+      data-acc-sl={String(ACC_INITIAL.sl)}
+      data-acc-bs={String(ACC_INITIAL.bs)}
+      data-acc-dt={ACC_INITIAL.dt}
     >
       <div class="acc-stage">
         <aside class="acc-controls" role="group" aria-label="Transformer cost controls">
-          {SLIDERS.map(s => (
-            <div class="acc-control">
-              <label class="acc-label" for={`acc-${s.k}`}>
-                <M t={s.tex} /> <span class="acc-label-lbl">{s.lbl}</span>
-              </label>
-              <input
-                id={`acc-${s.k}`}
-                class="acc-slider"
-                type="range"
-                min={0}
-                max={s.values.length - 1}
-                step={1}
-                value={s.values.indexOf(s.def)}
-                data-acc-input={s.k}
-                aria-valuemin={s.values[0]}
-                aria-valuemax={s.values[s.values.length - 1]}
-                aria-valuenow={s.def}
-                aria-valuetext={`${s.lbl} ${s.def}`}
-              />
-              <span
-                class="acc-value"
-                data-acc-value={s.k}
-                role="button"
-                tabindex={0}
-                title="click to type a value"
-              >
-                {s.def}
-              </span>
-              <input
-                class="acc-value-edit"
-                type="text"
-                inputmode="numeric"
-                data-acc-edit={s.k}
-                aria-label={`${s.lbl} value`}
-                hidden
-              />
-            </div>
-          ))}
+          {SLIDERS.map(s => {
+            const values = ACC_VALUES[s.k]
+            const def = ACC_INITIAL[s.k]
+            return (
+              <div class="acc-control">
+                <label class="acc-label" for={`acc-${s.k}`}>
+                  <M t={s.tex} /> <span class="acc-label-lbl">{s.lbl}</span>
+                </label>
+                <input
+                  id={`acc-${s.k}`}
+                  class="acc-slider"
+                  type="range"
+                  min={0}
+                  max={values.length - 1}
+                  step={1}
+                  value={values.indexOf(def)}
+                  data-acc-input={s.k}
+                  aria-valuemin={values[0]}
+                  aria-valuemax={values[values.length - 1]}
+                  aria-valuenow={def}
+                  aria-valuetext={`${s.lbl} ${def}`}
+                />
+                <button
+                  type="button"
+                  class="acc-value"
+                  data-acc-value={s.k}
+                  aria-label={`${s.lbl} ${def}, type a value`}
+                  dangerouslySetInnerHTML={{ __html: tex(String(def), false, true) }}
+                />
+                <input
+                  class="acc-value-edit"
+                  type="text"
+                  inputmode="numeric"
+                  data-acc-edit={s.k}
+                  aria-label={`${s.lbl} value`}
+                  hidden
+                />
+              </div>
+            )
+          })}
           <div class="acc-control acc-control--dropdown">
-            <label class="acc-label" for="acc-dt">
+            <span class="acc-label" id="acc-dt-label">
               <span class="acc-label-lbl">kv dtype</span>
-            </label>
-            <select
-              id="acc-dt"
-              class="acc-select"
-              data-acc-input="dt"
-              aria-label="numeric precision (bytes per element)"
-            >
-              {DTYPES.map(dt => (
-                <option value={dt.v} selected={dt.v === initial.dt}>
-                  {dt.lbl} ({dt.bytes}B)
-                </option>
-              ))}
-            </select>
+            </span>
+            {/* The inline script mounts the shared select here; this trigger holds its place. */}
+            <div class="acc-dtype" data-acc-dtype>
+              <div class="g-select">
+                <button type="button" class="g-select-trigger" aria-labelledby="acc-dt-label">
+                  <span class="g-select-value">{DTYPE_LABEL(ACC_INITIAL.dt)}</span>
+                </button>
+              </div>
+            </div>
           </div>
           <p class="acc-warning" data-acc-warning hidden>
             <M t="d_{\text{model}} / h" /> not integer, choose <M t="h" /> that divides{' '}
@@ -244,9 +187,11 @@ const AttentionCostCalculatorImpl: QuartzMdxComponent<Props> = ({ caption }) => 
             >
               <span class="acc-card-label">{r.label}</span>
               <div class="acc-card-body">
-                <span class="acc-card-num" data-acc-num={r.k}>
-                  {readoutValue(r.k)}
-                </span>
+                <Num
+                  t={accMetricTex(r.k, init)}
+                  class="acc-card-num"
+                  attr={{ 'data-acc-num': r.k }}
+                />
                 <span class="acc-card-delta" data-acc-delta={r.k} aria-live="polite" />
               </div>
               <FormulaFO t={r.formula} />
@@ -259,60 +204,43 @@ const AttentionCostCalculatorImpl: QuartzMdxComponent<Props> = ({ caption }) => 
         class="acc-bar"
         aria-label="memory footprint: attention weights vs FFN weights vs KV cache"
       >
-        <div class="acc-bar-row">
-          <span class="acc-bar-tag">attn weights</span>
-          <div class="acc-bar-track">
-            <span
-              class="acc-bar-fill acc-bar-fill--attn"
-              data-acc-bar="attn"
-              style={`width:${(attnFrac * 100).toFixed(1)}%`}
-            />
+        {bars.map(b => (
+          <div class="acc-bar-row">
+            <span class="acc-bar-tag">{b.tag}</span>
+            <div class={`acc-bar-track${b.track}`}>
+              <span
+                class={`acc-bar-fill acc-bar-fill--${b.k}`}
+                data-acc-bar={b.k}
+                style={`width:${((b.bytes / totalMem) * 100).toFixed(1)}%`}
+              />
+            </div>
+            <Num t={accBytesTex(b.bytes)} class="acc-bar-val" attr={{ 'data-acc-barval': b.k }} />
           </div>
-          <span class="acc-bar-val" data-acc-barval="attn">
-            {fmtBytes(init.paramBytes)}
-          </span>
-        </div>
-        <div class="acc-bar-row">
-          <span class="acc-bar-tag">FFN weights</span>
-          <div class="acc-bar-track">
-            <span
-              class="acc-bar-fill acc-bar-fill--ffn"
-              data-acc-bar="ffn"
-              style={`width:${(ffnFrac * 100).toFixed(1)}%`}
-            />
-          </div>
-          <span class="acc-bar-val" data-acc-barval="ffn">
-            {fmtBytes(init.ffnBytes)}
-          </span>
-        </div>
-        <div class="acc-bar-row">
-          <span class="acc-bar-tag">KV cache</span>
-          <div class="acc-bar-track acc-bar-track--bytes">
-            <span
-              class="acc-bar-fill acc-bar-fill--kv"
-              data-acc-bar="kv"
-              style={`width:${(kvFrac * 100).toFixed(1)}%`}
-            />
-          </div>
-          <span class="acc-bar-val" data-acc-barval="kv">
-            {fmtBytes(init.kvtotal)}
-          </span>
-        </div>
+        ))}
       </div>
 
       <div class="acc-summary" data-acc-summary>
         <dl class="acc-summary-table">
           <div class="acc-summary-row">
             <dt>KV</dt>
-            <dd data-acc-sumkv>{fmtBytes(init.kvtotal)}</dd>
+            <dd
+              data-acc-sumkv
+              dangerouslySetInnerHTML={{ __html: tex(accBytesTex(init.kvtotal), false, true) }}
+            />
           </div>
           <div class="acc-summary-row">
             <dt>attn weight</dt>
-            <dd data-acc-sumparams>{fmtBytes(init.paramBytes)}</dd>
+            <dd
+              data-acc-sumparams
+              dangerouslySetInnerHTML={{ __html: tex(accBytesTex(init.paramBytes), false, true) }}
+            />
           </div>
           <div class="acc-summary-row">
             <dt>ratio</dt>
-            <dd data-acc-sumratio>{init.ratio.toFixed(init.ratio >= 10 ? 0 : 2)}x</dd>
+            <dd
+              data-acc-sumratio
+              dangerouslySetInnerHTML={{ __html: tex(accRatioTex(init.ratio), false, true) }}
+            />
           </div>
         </dl>
         <p class="acc-summary-hint">

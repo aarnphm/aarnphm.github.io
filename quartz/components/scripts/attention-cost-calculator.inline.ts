@@ -1,91 +1,33 @@
 import katex from 'katex'
-import { renderFigureLabel } from '../../util/figure-label'
+import { buildSelect } from '../controls/select'
+import {
+  ACC_DTYPE_BYTES,
+  ACC_VALUES,
+  accBytesTex,
+  accCompute,
+  accDeltaTex,
+  accMetricTex,
+  accRatioTex,
+  type AccDType,
+  type AccMetrics,
+  type AccNumKey,
+  type AccState,
+} from './attention-cost-model'
 
-type AccDType = 'bf16' | 'fp16' | 'fp32' | 'int8' | 'int4'
-type AccNumKey = 'dm' | 'nl' | 'nh' | 'sl' | 'bs'
 type AccKey = AccNumKey | 'dt'
 
-type AccState = { dm: number; nl: number; nh: number; sl: number; bs: number; dt: AccDType }
-
-const accDmValues = [128, 256, 512, 1024, 2048, 4096, 8192]
-const accNlValues = [1, 2, 4, 6, 8, 12, 16, 24, 32, 40, 48, 64, 80, 96]
-const accNhValues = [1, 2, 4, 8, 16, 32, 64]
-const accSlValues = [256, 512, 1024, 2048, 4096, 8192, 16384, 32768]
-const accBsValues = [1, 2, 4, 8, 16, 32, 64, 128, 256]
-
-const accValueTable: Record<AccNumKey, number[]> = {
-  dm: accDmValues,
-  nl: accNlValues,
-  nh: accNhValues,
-  sl: accSlValues,
-  bs: accBsValues,
-}
-
-const accDtypeBytes: Record<AccDType, number> = { bf16: 2, fp16: 2, fp32: 4, int8: 1, int4: 0.5 }
-
-const accLabels: Record<AccKey, string> = {
+const accLabels: Record<AccNumKey, string> = {
   dm: 'model dim',
   nl: 'layers',
   nh: 'heads',
   sl: 'seq length',
   bs: 'batch',
-  dt: 'dtype',
 }
 
-const accSnap = (value: number, options: number[]): number => {
-  let best = options[0]
-  let bestDiff = Math.abs(value - best)
-  for (const v of options) {
-    const diff = Math.abs(value - v)
-    if (diff < bestDiff) {
-      best = v
-      bestDiff = diff
-    }
-  }
-  return best
-}
+const accDtypes = Object.keys(ACC_DTYPE_BYTES) as AccDType[]
 
-const accFmtBytes = (n: number): string => {
-  if (n < 1024) return `${n.toFixed(0)} B`
-  const units = ['KB', 'MB', 'GB', 'TB', 'PB']
-  let v = n / 1024
-  let i = 0
-  while (v >= 1024 && i < units.length - 1) {
-    v /= 1024
-    i++
-  }
-  return `${v >= 100 ? v.toFixed(0) : v >= 10 ? v.toFixed(1) : v.toFixed(2)} ${units[i]}`
-}
-
-const accFmtCount = (n: number): string => {
-  if (n < 1000) return n.toString()
-  const units = ['K', 'M', 'B', 'T', 'P']
-  let v = n / 1000
-  let i = 0
-  while (v >= 1000 && i < units.length - 1) {
-    v /= 1000
-    i++
-  }
-  return `${v >= 100 ? v.toFixed(0) : v >= 10 ? v.toFixed(1) : v.toFixed(2)}${units[i]}`
-}
-
-const accSignedDelta = (cur: number, prev: number): string => {
-  if (!isFinite(prev) || prev === 0 || prev === cur) return ''
-  const diff = cur - prev
-  if (diff === 0) return ''
-  const abs = Math.abs(diff)
-  const sign = diff > 0 ? '+' : '-'
-  return `${sign}${accFmtBytes(abs)}`
-}
-
-const accSignedCountDelta = (cur: number, prev: number): string => {
-  if (!isFinite(prev) || prev === 0 || prev === cur) return ''
-  const diff = cur - prev
-  if (diff === 0) return ''
-  const abs = Math.abs(diff)
-  const sign = diff > 0 ? '+' : '-'
-  return `${sign}${accFmtCount(abs)}`
-}
+const accSnap = (value: number, options: number[]): number =>
+  options.reduce((best, v) => (Math.abs(value - v) < Math.abs(value - best) ? v : best))
 
 const accReadState = (root: HTMLElement): AccState => ({
   dm: Number(root.dataset.accDm ?? '4096'),
@@ -105,150 +47,76 @@ const accWriteState = (root: HTMLElement, s: AccState) => {
   root.dataset.accDt = s.dt
 }
 
-type AccMetrics = {
-  dh: number
-  dhInteger: boolean
-  params: number
-  flops: number
-  kvtok: number
-  kvtotal: number
-  ratio: number
-  ffnParams: number
-  paramBytes: number
-  ffnBytes: number
-}
+const accTex = (tex: string): string =>
+  tex ? katex.renderToString(tex, { output: 'html', throwOnError: false, strict: false }) : ''
 
-const ACC_WEIGHT_BYTES = 2
-
-const accCompute = (s: AccState): AccMetrics => {
-  const dh = s.dm / s.nh
-  const dhInteger = Number.isInteger(dh)
-  const bytes = accDtypeBytes[s.dt]
-  const params = s.nl * 4 * s.dm * s.dm
-  const ffnParams = s.nl * 8 * s.dm * s.dm
-  const flops = 4 * s.sl * s.dm
-  const kvtok = 2 * s.dm * bytes
-  const kvtotal = s.bs * s.sl * s.nl * 2 * s.dm * bytes
-  const paramBytes = params * ACC_WEIGHT_BYTES
-  const ffnBytes = ffnParams * ACC_WEIGHT_BYTES
-  const ratio = paramBytes > 0 ? kvtotal / paramBytes : 0
-  return { dh, dhInteger, params, flops, kvtok, kvtotal, ratio, ffnParams, paramBytes, ffnBytes }
-}
-
-const accSetText = (root: HTMLElement, sel: string, text: string) => {
+const accSetTex = (root: HTMLElement, sel: string, tex: string) => {
   const el = root.querySelector<HTMLElement>(sel)
-  if (el) el.textContent = text
-}
-
-const accTex = (v: string): string => {
-  const m = v.match(/^([+\-\d.,\s]*)(.*)$/)
-  const num = m ? m[1] : v
-  const unit = m ? m[2] : ''
-  const tex = unit ? `${num}\\text{${unit}}` : num
-  try {
-    return renderFigureLabel(tex, m =>
-      katex.renderToString(m, {
-        displayMode: false,
-        output: 'html',
-        throwOnError: false,
-        strict: false,
-      }),
-    )
-  } catch {
-    return v
-  }
-}
-
-const accSetTex = (root: HTMLElement, sel: string, text: string) => {
-  const el = root.querySelector<HTMLElement>(sel)
-  if (el) el.innerHTML = accTex(text)
+  if (el) el.innerHTML = accTex(tex)
 }
 
 const accUpdateInputs = (root: HTMLElement, s: AccState) => {
-  for (const k of Object.keys(accValueTable) as AccNumKey[]) {
-    const opts = accValueTable[k]
-    const idx = opts.indexOf(s[k])
+  for (const k of Object.keys(ACC_VALUES) as AccNumKey[]) {
+    const idx = ACC_VALUES[k].indexOf(s[k])
     const input = root.querySelector<HTMLInputElement>(`[data-acc-input="${k}"]`)
     if (input && idx >= 0) {
       input.value = String(idx)
       input.setAttribute('aria-valuenow', String(s[k]))
       input.setAttribute('aria-valuetext', `${accLabels[k]} ${s[k]}`)
     }
-    accSetTex(root, `[data-acc-value="${k}"]`, String(s[k]))
+    const value = root.querySelector<HTMLElement>(`[data-acc-value="${k}"]`)
+    if (value) {
+      value.innerHTML = accTex(String(s[k]))
+      value.setAttribute('aria-label', `${accLabels[k]} ${s[k]}, type a value`)
+    }
   }
-  const dtSelect = root.querySelector<HTMLSelectElement>('[data-acc-input="dt"]')
-  if (dtSelect) dtSelect.value = s.dt
 }
 
+const accCards = ['dh', 'params', 'flops', 'kvtok', 'kvtotal', 'ratio']
+
 const accUpdateCards = (root: HTMLElement, m: AccMetrics, prev: AccMetrics | null) => {
-  accSetTex(root, '[data-acc-num="dh"]', m.dhInteger ? m.dh.toString() : m.dh.toFixed(2))
-  accSetTex(root, '[data-acc-num="params"]', accFmtCount(m.params))
-  accSetTex(root, '[data-acc-num="flops"]', accFmtCount(m.flops))
-  accSetTex(root, '[data-acc-num="kvtok"]', accFmtBytes(m.kvtok))
-  accSetTex(root, '[data-acc-num="kvtotal"]', accFmtBytes(m.kvtotal))
-  accSetTex(root, '[data-acc-num="ratio"]', `${m.ratio.toFixed(m.ratio >= 10 ? 0 : 2)}x`)
-
-  if (prev) {
-    accSetText(
-      root,
-      '[data-acc-delta="dh"]',
-      m.dh === prev.dh ? '' : `${m.dh > prev.dh ? '+' : '-'}${Math.abs(m.dh - prev.dh).toFixed(0)}`,
-    )
-    accSetText(root, '[data-acc-delta="params"]', accSignedCountDelta(m.params, prev.params))
-    accSetText(root, '[data-acc-delta="flops"]', accSignedCountDelta(m.flops, prev.flops))
-    accSetText(root, '[data-acc-delta="kvtok"]', accSignedDelta(m.kvtok, prev.kvtok))
-    accSetText(root, '[data-acc-delta="kvtotal"]', accSignedDelta(m.kvtotal, prev.kvtotal))
-    accSetText(
-      root,
-      '[data-acc-delta="ratio"]',
-      m.ratio === prev.ratio
-        ? ''
-        : `${m.ratio > prev.ratio ? '+' : '-'}${Math.abs(m.ratio - prev.ratio).toFixed(2)}x`,
-    )
+  for (const k of accCards) {
+    accSetTex(root, `[data-acc-num="${k}"]`, accMetricTex(k, m))
+    if (prev) accSetTex(root, `[data-acc-delta="${k}"]`, accDeltaTex(k, m, prev))
   }
-
   const warning = root.querySelector<HTMLElement>('[data-acc-warning]')
-  if (warning) warning.hidden = m.dhInteger
+  if (warning) warning.hidden = Number.isInteger(m.dh)
 }
 
 const accFlashCard = (root: HTMLElement, k: AccKey) => {
-  const cardMap: Partial<Record<AccKey, string[]>> = {
+  const cardMap: Record<AccKey, string[]> = {
     dm: ['params', 'flops', 'kvtok', 'kvtotal', 'ratio', 'dh'],
-    nl: ['params', 'kvtotal', 'ratio'],
+    nl: ['params', 'flops', 'kvtotal', 'ratio'],
     nh: ['dh'],
     sl: ['flops', 'kvtotal', 'ratio'],
     bs: ['kvtotal', 'ratio'],
     dt: ['kvtok', 'kvtotal', 'ratio'],
   }
-  const targets = cardMap[k] ?? []
   for (const card of root.querySelectorAll<HTMLElement>('[data-acc-card]')) {
-    const key = card.dataset.accCard ?? ''
-    if (targets.includes(key)) {
-      card.classList.add('acc-card--flash')
-      window.setTimeout(() => card.classList.remove('acc-card--flash'), 480)
-    }
+    if (!cardMap[k].includes(card.dataset.accCard ?? '')) continue
+    card.classList.add('acc-card--flash')
+    window.setTimeout(() => card.classList.remove('acc-card--flash'), 480)
   }
 }
 
 const accUpdateBar = (root: HTMLElement, m: AccMetrics) => {
-  const total = Math.max(1, m.paramBytes + m.ffnBytes + m.kvtotal)
-  const setBar = (k: string, pct: number) => {
+  const total = m.paramBytes + m.ffnBytes + m.kvtotal
+  const parts: [string, number][] = [
+    ['attn', m.paramBytes],
+    ['ffn', m.ffnBytes],
+    ['kv', m.kvtotal],
+  ]
+  for (const [k, bytes] of parts) {
     const el = root.querySelector<HTMLElement>(`[data-acc-bar="${k}"]`)
-    if (el) el.style.width = `${pct.toFixed(1)}%`
+    if (el) el.style.width = `${((bytes / total) * 100).toFixed(1)}%`
+    accSetTex(root, `[data-acc-barval="${k}"]`, accBytesTex(bytes))
   }
-  setBar('attn', (m.paramBytes / total) * 100)
-  setBar('ffn', (m.ffnBytes / total) * 100)
-  setBar('kv', (m.kvtotal / total) * 100)
-
-  accSetTex(root, '[data-acc-barval="attn"]', accFmtBytes(m.paramBytes))
-  accSetTex(root, '[data-acc-barval="ffn"]', accFmtBytes(m.ffnBytes))
-  accSetTex(root, '[data-acc-barval="kv"]', accFmtBytes(m.kvtotal))
 }
 
 const accUpdateSummary = (root: HTMLElement, m: AccMetrics) => {
-  accSetTex(root, '[data-acc-sumkv]', accFmtBytes(m.kvtotal))
-  accSetTex(root, '[data-acc-sumparams]', accFmtBytes(m.paramBytes))
-  accSetTex(root, '[data-acc-sumratio]', `${m.ratio.toFixed(m.ratio >= 10 ? 0 : 2)}x`)
+  accSetTex(root, '[data-acc-sumkv]', accBytesTex(m.kvtotal))
+  accSetTex(root, '[data-acc-sumparams]', accBytesTex(m.paramBytes))
+  accSetTex(root, '[data-acc-sumratio]', accRatioTex(m.ratio))
 }
 
 const accRender = (root: HTMLElement, s: AccState, prev: AccMetrics | null): AccMetrics => {
@@ -273,10 +141,10 @@ const accSetup = () => {
 
     const offHandlers: Array<() => void> = []
 
-    for (const k of Object.keys(accValueTable) as AccNumKey[]) {
+    for (const k of Object.keys(ACC_VALUES) as AccNumKey[]) {
       const input = root.querySelector<HTMLInputElement>(`[data-acc-input="${k}"]`)
       if (!input) continue
-      const opts = accValueTable[k]
+      const opts = ACC_VALUES[k]
       const handler = () => {
         const idx = Math.min(opts.length - 1, Math.max(0, Math.round(Number(input.value))))
         let next = opts[idx]
@@ -319,16 +187,11 @@ const accSetup = () => {
           }
           editEl.hidden = true
           valueEl.hidden = false
+          valueEl.focus({ preventScroll: true })
         }
         const cancelEdit = () => {
           editEl.hidden = true
           valueEl.hidden = false
-        }
-        const onValueKey = (e: KeyboardEvent) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault()
-            startEdit()
-          }
         }
         const onEditKey = (e: KeyboardEvent) => {
           if (e.key === 'Enter') {
@@ -340,30 +203,33 @@ const accSetup = () => {
           }
         }
         valueEl.addEventListener('click', startEdit)
-        valueEl.addEventListener('keydown', onValueKey)
         editEl.addEventListener('keydown', onEditKey)
         editEl.addEventListener('blur', commitEdit)
         offHandlers.push(() => {
           valueEl.removeEventListener('click', startEdit)
-          valueEl.removeEventListener('keydown', onValueKey)
           editEl.removeEventListener('keydown', onEditKey)
           editEl.removeEventListener('blur', commitEdit)
         })
       }
     }
 
-    const dtSelect = root.querySelector<HTMLSelectElement>('[data-acc-input="dt"]')
-    if (dtSelect) {
-      const handler = () => {
-        const v = dtSelect.value as AccDType
-        if (v in accDtypeBytes) {
+    const dtHost = root.querySelector<HTMLElement>('[data-acc-dtype]')
+    if (dtHost) {
+      const select = buildSelect<AccDType>({
+        id: `${root.id || 'acc'}-dtype-menu`,
+        label: 'kv dtype',
+        groups: [
+          { options: accDtypes.map(v => ({ value: v, label: `${v} (${ACC_DTYPE_BYTES[v]} B)` })) },
+        ],
+        selected: state.dt,
+        onSelect: v => {
           state.dt = v
           prev = accRender(root, state, prev)
           accFlashCard(root, 'dt')
-        }
-      }
-      dtSelect.addEventListener('change', handler)
-      offHandlers.push(() => dtSelect.removeEventListener('change', handler))
+        },
+      })
+      dtHost.replaceChildren(select.element)
+      offHandlers.push(select.mount())
     }
 
     window.addCleanup?.(() => {
