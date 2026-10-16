@@ -160,8 +160,17 @@ describe('LeanKernel execution & InfoView rendering', () => {
         const source = [
           'import Mathlib',
           '#eval 21 + 21',
-          'theorem add_zero_right (n : Nat) : n + 0 = n := by',
-          '  rfl',
+          'theorem set_diff_eq {α : Type*} (A B : Set α) : A \\ B = A ∩ Bᶜ := by',
+          '  rw [Set.diff_eq]',
+          'theorem cantor_diag {α : Type*} (f : α → Set α) : ¬ Function.Surjective f := by',
+          '  intro hsurj',
+          '  let D : Set α := {a | a ∉ f a}',
+          '  obtain ⟨d, hd⟩ := hsurj D',
+          '  have hiff : d ∈ f d ↔ d ∉ f d := by',
+          '    conv => lhs; rw [hd]',
+          '    rfl',
+          '  exact (iff_not_self hiff)',
+          '#check @cantor_diag',
         ].join('\n')
 
         const kernel = createLeanKernel({
@@ -180,6 +189,7 @@ describe('LeanKernel execution & InfoView rendering', () => {
         assert.ok(streamEvent)
         assert.match(streamEvent.output.text, /import Mathlib/i)
         assert.match(streamEvent.output.text, /42/)
+        assert.match(streamEvent.output.text, /cantor_diag/)
 
         const doneEvent = events.at(-1)
         assert.deepEqual(doneEvent, { type: 'done', cellId, executionCount: null, failed: false })

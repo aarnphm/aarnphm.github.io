@@ -144,4 +144,146 @@ describe('worker/lean handleLeanVerify', () => {
       })
     }
   })
+
+  test('verifies via live.lean-lang.org WebSocket LSP when LEAN_VERIFY_ORIGIN is unset and caches result', async () => {
+    const { cache, store } = createMemoryCache()
+    const previousCaches = globalThis.caches
+    const previousFetch = globalThis.fetch
+    Object.defineProperty(globalThis, 'caches', {
+      value: { default: cache },
+      configurable: true,
+      writable: true,
+    })
+
+    let wsUpgrades = 0
+    globalThis.fetch = async (input, init) => {
+      wsUpgrades += 1
+      assert.equal(String(input), 'https://live.lean-lang.org/websocket/mathlib-stable')
+      const headers = new Headers(init?.headers)
+      assert.equal(headers.get('Upgrade'), 'websocket')
+
+      const listeners = new Map<string, Array<(ev: { data?: string }) => void>>()
+      const emit = (type: string, data?: string) => {
+        for (const fn of listeners.get(type) ?? []) {
+          fn({ data })
+        }
+      }
+
+      const fakeWs = {
+        accept() {},
+        close() {},
+        addEventListener(type: string, cb: (ev: { data?: string }) => void) {
+          const list = listeners.get(type) ?? []
+          list.push(cb)
+          listeners.set(type, list)
+        },
+        send(raw: string) {
+          const msg = JSON.parse(raw) as { id?: number; method?: string }
+          if (msg.id === 100 && msg.method === 'initialize') {
+            queueMicrotask(() => {
+              emit(
+                'message',
+                JSON.stringify({ jsonrpc: '2.0', id: 100, result: { capabilities: {} } }),
+              )
+            })
+          } else if (msg.id === 200 && msg.method === 'textDocument/waitForDiagnostics') {
+            queueMicrotask(() => {
+              emit(
+                'message',
+                JSON.stringify({
+                  jsonrpc: '2.0',
+                  method: 'textDocument/publishDiagnostics',
+                  params: {
+                    diagnostics: [
+                      {
+                        range: { start: { line: 1, character: 0 }, end: { line: 1, character: 5 } },
+                        severity: 3,
+                        message: '42',
+                      },
+                      {
+                        range: { start: { line: 2, character: 0 }, end: { line: 3, character: 7 } },
+                        severity: 3,
+                        isSilent: true,
+                        message: 'Goals accomplished!',
+                      },
+                    ],
+                  },
+                }),
+              )
+              emit('message', JSON.stringify({ jsonrpc: '2.0', id: 200, result: null }))
+            })
+          } else if (msg.id === 300 && msg.method === '$/lean/rpc/connect') {
+            queueMicrotask(() => {
+              emit(
+                'message',
+                JSON.stringify({ jsonrpc: '2.0', id: 300, result: { sessionId: 's1' } }),
+              )
+            })
+          } else if (msg.id === 400 && msg.method === '$/lean/rpc/call') {
+            queueMicrotask(() => {
+              emit(
+                'message',
+                JSON.stringify({
+                  jsonrpc: '2.0',
+                  id: 400,
+                  result: {
+                    goals: [
+                      {
+                        goalPrefix: '⊢ ',
+                        hyps: [{ names: ['P'], type: { text: 'Prop' } }],
+                        type: { text: 'P → P' },
+                      },
+                    ],
+                  },
+                }),
+              )
+            })
+          }
+        },
+      }
+
+      const resp = new Response(null, { status: 200 })
+      Object.defineProperty(resp, 'webSocket', { value: fakeWs })
+      return resp
+    }
+
+    try {
+      const code = 'import Mathlib\n#eval 21 + 21\ntheorem t (P : Prop) : P → P := by\n  sorry'
+      const req1 = new Request('https://aarnphm.xyz/api/lean/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, imports: 'mathlib' }),
+      })
+      const res1 = await handleLeanVerify(req1, {})
+      assert.equal(res1.status, 200)
+      assert.equal(res1.headers.get('X-Lean-Verify-Cache'), 'MISS')
+      const body1 = (await res1.json()) as {
+        messages: Array<{ severity: string; data: string }>
+        sorries: Array<{ goal?: string }>
+      }
+      assert.equal(body1.messages.length, 1)
+      assert.equal(body1.messages[0].data, '42')
+      assert.equal(body1.sorries.length, 1)
+      assert.match(body1.sorries[0].goal ?? '', /P : Prop\n⊢ P → P/)
+      assert.equal(wsUpgrades, 1)
+      assert.equal(store.size, 1)
+
+      const req2 = new Request('https://aarnphm.xyz/api/lean/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, imports: 'mathlib' }),
+      })
+      const res2 = await handleLeanVerify(req2, {})
+      assert.equal(res2.status, 200)
+      assert.equal(res2.headers.get('X-Lean-Verify-Cache'), 'HIT')
+      assert.equal(wsUpgrades, 1)
+    } finally {
+      globalThis.fetch = previousFetch
+      Object.defineProperty(globalThis, 'caches', {
+        value: previousCaches,
+        configurable: true,
+        writable: true,
+      })
+    }
+  })
 })

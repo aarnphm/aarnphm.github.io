@@ -967,7 +967,10 @@ export default {
         return handleFlashcardsUndo(request, env)
       case '/api/lean/verify': {
         const resp = await handleLeanVerify(request, env)
-        return withHeaders(resp, apiHeaders)
+        return withHeaders(resp, {
+          ...apiHeaders,
+          'Cache-Control': resp.headers.get('Cache-Control') ?? 'no-store',
+        })
       }
       case '/api/arena-embed/capability': {
         const resp = await handleArenaEmbedCapability(request)

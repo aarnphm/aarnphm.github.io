@@ -257,10 +257,356 @@ function renderInfoViewHtml(
   )}</div>`
 }
 
+const LEAN4WEB_WS_URL = 'wss://live.lean-lang.org/websocket/mathlib-stable'
+const LEAN4WEB_PROJECT = 'mathlib-stable'
+const LEAN4WEB_DOC_URI = `file:///${LEAN4WEB_PROJECT}/${LEAN4WEB_PROJECT}.lean`
+
+type LspPos = { line: number; character: number }
+type LspDiag = {
+  range?: { start?: LspPos; end?: LspPos }
+  severity?: number
+  message?: string
+  isSilent?: boolean
+}
+
+function findSorryPositionsInSource(source: string): LspPos[] {
+  const lines = source.split('\n')
+  const out: LspPos[] = []
+  for (let line = 0; line < lines.length; line++) {
+    const clean = lines[line].replace(/--.*$/, '')
+    for (const match of clean.matchAll(/\b(?:sorry|admit)\b/g)) {
+      if (match.index !== undefined) {
+        out.push({ line, character: match.index })
+        if (out.length >= 8) return out
+      }
+    }
+  }
+  return out
+}
+
+function flattenLeanTaggedText(node: unknown): string {
+  if (!isRecord(node)) return ''
+  if (typeof node.text === 'string') return node.text
+  if (Array.isArray(node.append)) return node.append.map(flattenLeanTaggedText).join('')
+  if (Array.isArray(node.tag) && node.tag.length >= 2) return flattenLeanTaggedText(node.tag[1])
+  return ''
+}
+
+function formatLeanInteractiveGoal(goal: unknown): string {
+  if (!isRecord(goal)) return ''
+  const lines: string[] = []
+  const userName = readString(goal, 'userName')?.trim()
+  if (userName) lines.push(`case ${userName}`)
+  if (Array.isArray(goal.hyps)) {
+    for (const hyp of goal.hyps) {
+      if (!isRecord(hyp)) continue
+      const names = Array.isArray(hyp.names)
+        ? hyp.names.filter((n): n is string => typeof n === 'string').join(' ')
+        : ''
+      const typeStr = flattenLeanTaggedText(hyp.type)
+      if (names && typeStr) lines.push(`${names} : ${typeStr}`)
+    }
+  }
+  const prefix = readString(goal, 'goalPrefix') ?? '⊢ '
+  const target = flattenLeanTaggedText(goal.type)
+  if (target) lines.push(`${prefix}${target}`)
+  return lines.join('\n')
+}
+
+class LeanWebSocketSession {
+  private ws: WebSocket | undefined
+  private readyPromise: Promise<boolean> | undefined
+  private isReadyState = false
+  private version = 0
+  private nextRpcId = 1000
+  private rpcSessionId: string | undefined
+  private latestDiagnostics: LspDiag[] = []
+  private pendingReplies = new Map<number, (result: unknown) => void>()
+  private queue: Promise<unknown> = Promise.resolve()
+
+  isWarm(): boolean {
+    return this.isReadyState && this.ws?.readyState === WebSocket.OPEN
+  }
+
+  warm(): Promise<boolean> {
+    if (this.isWarm()) return Promise.resolve(true)
+    if (this.readyPromise) return this.readyPromise
+    if (typeof WebSocket === 'undefined') return Promise.resolve(false)
+
+    this.readyPromise = new Promise<boolean>(resolve => {
+      let ws: WebSocket
+      try {
+        ws = new WebSocket(LEAN4WEB_WS_URL)
+      } catch {
+        this.readyPromise = undefined
+        resolve(false)
+        return
+      }
+      this.ws = ws
+      let settled = false
+      const finish = (ok: boolean) => {
+        if (settled) return
+        settled = true
+        if (!ok) {
+          this.isReadyState = false
+          this.readyPromise = undefined
+        }
+        resolve(ok)
+      }
+
+      ws.addEventListener('open', () => {
+        const initId = this.allocId()
+        this.pendingReplies.set(initId, () => {
+          ws.send(JSON.stringify({ jsonrpc: '2.0', method: 'initialized', params: {} }))
+          this.version = 1
+          ws.send(
+            JSON.stringify({
+              jsonrpc: '2.0',
+              method: 'textDocument/didOpen',
+              params: {
+                textDocument: {
+                  uri: LEAN4WEB_DOC_URI,
+                  languageId: 'lean4',
+                  version: this.version,
+                  text: 'import Mathlib\n',
+                },
+              },
+            }),
+          )
+          const waitId = this.allocId()
+          this.pendingReplies.set(waitId, () => {
+            this.isReadyState = true
+            finish(true)
+          })
+          ws.send(
+            JSON.stringify({
+              jsonrpc: '2.0',
+              id: waitId,
+              method: 'textDocument/waitForDiagnostics',
+              params: { uri: LEAN4WEB_DOC_URI, version: this.version },
+            }),
+          )
+        })
+        ws.send(
+          JSON.stringify({
+            jsonrpc: '2.0',
+            id: initId,
+            method: 'initialize',
+            params: {
+              processId: null,
+              clientInfo: { name: 'quartz-lean-kernel', version: '1.0.0' },
+              rootUri: `file:///${LEAN4WEB_PROJECT}`,
+              capabilities: { lean: { silentDiagnosticSupport: true } },
+              initializationOptions: { editDelay: 50, hasWidgets: true },
+              workspaceFolders: [{ uri: `file:///${LEAN4WEB_PROJECT}`, name: LEAN4WEB_PROJECT }],
+            },
+          }),
+        )
+      })
+
+      ws.addEventListener('message', event => {
+        const raw = typeof event.data === 'string' ? event.data : ''
+        if (!raw) return
+        let msg: Record<string, unknown>
+        try {
+          msg = JSON.parse(raw) as Record<string, unknown>
+        } catch {
+          return
+        }
+        if (typeof msg.method === 'string' && msg.id !== undefined) {
+          ws.send(JSON.stringify({ jsonrpc: '2.0', id: msg.id, result: null }))
+          return
+        }
+        if (msg.method === 'textDocument/publishDiagnostics') {
+          const params = msg.params as { diagnostics?: LspDiag[] } | undefined
+          if (Array.isArray(params?.diagnostics)) {
+            this.latestDiagnostics = params.diagnostics
+          }
+          return
+        }
+        if (!msg.method && typeof msg.id === 'number') {
+          const cb = this.pendingReplies.get(msg.id)
+          if (cb) {
+            this.pendingReplies.delete(msg.id)
+            cb(msg.result)
+          }
+        }
+      })
+
+      const reset = () => {
+        this.isReadyState = false
+        this.readyPromise = undefined
+        this.rpcSessionId = undefined
+        for (const [, cb] of this.pendingReplies) cb(undefined)
+        this.pendingReplies.clear()
+        finish(false)
+      }
+      ws.addEventListener('error', reset)
+      ws.addEventListener('close', reset)
+    })
+
+    return this.readyPromise
+  }
+
+  verify(source: string, signal?: AbortSignal): Promise<Record<string, unknown> | undefined> {
+    const run = async (): Promise<Record<string, unknown> | undefined> => {
+      const ok = await this.warm()
+      if (!ok || !this.ws || this.ws.readyState !== WebSocket.OPEN || signal?.aborted) {
+        return undefined
+      }
+      const ws = this.ws
+      this.version += 1
+      const version = this.version
+      this.latestDiagnostics = []
+
+      ws.send(
+        JSON.stringify({
+          jsonrpc: '2.0',
+          method: 'textDocument/didChange',
+          params: {
+            textDocument: { uri: LEAN4WEB_DOC_URI, version },
+            contentChanges: [{ text: source }],
+          },
+        }),
+      )
+
+      await this.request(
+        ws,
+        'textDocument/waitForDiagnostics',
+        { uri: LEAN4WEB_DOC_URI, version },
+        signal,
+      )
+      if (signal?.aborted) return undefined
+
+      const diagnostics = [...this.latestDiagnostics]
+      const sorryPositions = findSorryPositionsInSource(source)
+      const sorryGoalsByIndex = new Map<number, string[]>()
+
+      if (sorryPositions.length > 0) {
+        if (!this.rpcSessionId) {
+          const connected = await this.request(
+            ws,
+            '$/lean/rpc/connect',
+            { uri: LEAN4WEB_DOC_URI },
+            signal,
+          )
+          if (isRecord(connected) && typeof connected.sessionId === 'string') {
+            this.rpcSessionId = connected.sessionId
+          }
+        }
+        if (this.rpcSessionId) {
+          await Promise.all(
+            sorryPositions.map(async (pos, idx) => {
+              const res = await this.request(
+                ws,
+                '$/lean/rpc/call',
+                {
+                  sessionId: this.rpcSessionId,
+                  method: 'Lean.Widget.getInteractiveGoals',
+                  textDocument: { uri: LEAN4WEB_DOC_URI },
+                  position: pos,
+                  params: { textDocument: { uri: LEAN4WEB_DOC_URI }, position: pos },
+                },
+                signal,
+              )
+              if (isRecord(res) && Array.isArray(res.goals)) {
+                sorryGoalsByIndex.set(idx, res.goals.map(formatLeanInteractiveGoal).filter(Boolean))
+              }
+            }),
+          )
+        }
+      }
+
+      const messages: Array<Record<string, unknown>> = []
+      const sorries: Array<Record<string, unknown>> = []
+      for (const diag of diagnostics) {
+        if (diag.isSilent) continue
+        const text = typeof diag.message === 'string' ? diag.message : ''
+        if (!text) continue
+        const startLine = (diag.range?.start?.line ?? 0) + 1
+        const startCol = diag.range?.start?.character ?? 0
+        const endLine = (diag.range?.end?.line ?? startLine - 1) + 1
+        const endCol = diag.range?.end?.character ?? startCol
+        const severity = diag.severity === 1 ? 'error' : diag.severity === 2 ? 'warning' : 'info'
+        const pos = { line: startLine, column: startCol }
+        const endPos = { line: endLine, column: endCol }
+        messages.push({ severity, pos, endPos, data: text })
+        if (GOAL_STATE_PATTERN.test(text)) {
+          sorries.push({ pos, endPos, goal: text, goals: [text], message: text })
+        }
+      }
+
+      sorryPositions.forEach((pos, idx) => {
+        const goals = sorryGoalsByIndex.get(idx) ?? []
+        const line1 = pos.line + 1
+        const startPos = { line: line1, column: pos.character }
+        const endPos = { line: line1, column: pos.character + 5 }
+        const goalText = goals.join('\n\n')
+        sorries.push({
+          pos: startPos,
+          endPos,
+          ...(goalText ? { goal: goalText, goals } : { goals: [] }),
+        })
+      })
+
+      return { messages, sorries }
+    }
+
+    const next = this.queue.then(run, run)
+    this.queue = next.catch(() => undefined)
+    return next
+  }
+
+  dispose(): void {
+    try {
+      this.ws?.close()
+    } catch {
+      // Ignore close errors
+    }
+    this.ws = undefined
+    this.isReadyState = false
+    this.readyPromise = undefined
+    this.rpcSessionId = undefined
+    for (const [, cb] of this.pendingReplies) cb(undefined)
+    this.pendingReplies.clear()
+  }
+
+  private allocId(): number {
+    this.nextRpcId += 1
+    return this.nextRpcId
+  }
+
+  private request(
+    ws: WebSocket,
+    method: string,
+    params: unknown,
+    signal?: AbortSignal,
+  ): Promise<unknown> {
+    return new Promise<unknown>(resolve => {
+      if (signal?.aborted || ws.readyState !== WebSocket.OPEN) {
+        resolve(undefined)
+        return
+      }
+      const id = this.allocId()
+      const onAbort = () => {
+        this.pendingReplies.delete(id)
+        resolve(undefined)
+      }
+      signal?.addEventListener('abort', onAbort, { once: true })
+      this.pendingReplies.set(id, result => {
+        signal?.removeEventListener('abort', onAbort)
+        resolve(result)
+      })
+      ws.send(JSON.stringify({ jsonrpc: '2.0', id, method, params }))
+    })
+  }
+}
+
 export class LeanKernel implements Kernel {
   readonly language = 'lean'
   private indexUrl: string | undefined
   private controller: AbortController | undefined
+  private wsSession: LeanWebSocketSession | undefined
 
   constructor(opts: KernelFactoryOptions) {
     this.indexUrl = opts.indexUrl?.trim() || undefined
@@ -271,16 +617,36 @@ export class LeanKernel implements Kernel {
     if (configured) this.indexUrl = configured
   }
 
-  private endpoint(): string | undefined {
-    if (!this.indexUrl) return undefined
+  private isRemoteBrowser(): boolean {
+    if (typeof window === 'undefined' || typeof WebSocket === 'undefined') return false
+    const host = window.location?.hostname
+    return Boolean(host && host !== 'localhost' && host !== '127.0.0.1')
+  }
+
+  private ensureWsSession(): LeanWebSocketSession {
+    if (!this.wsSession) {
+      this.wsSession = new LeanWebSocketSession()
+    }
+    return this.wsSession
+  }
+
+  private endpoints(): string[] {
+    if (!this.indexUrl) return []
     try {
-      const base =
-        typeof window !== 'undefined' && window.location?.href
-          ? window.location.href
-          : 'http://localhost'
-      return new URL(this.indexUrl, base).href
+      const hasWindow = typeof window !== 'undefined' && Boolean(window.location?.href)
+      const base = hasWindow ? window.location.href : 'http://localhost'
+      const primary = new URL(this.indexUrl, base).href
+      const list = [primary]
+      if (
+        hasWindow &&
+        (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+      ) {
+        const fallback = 'http://127.0.0.1:8082/api/lean/verify'
+        if (!list.includes(fallback)) list.push(fallback)
+      }
+      return list
     } catch {
-      return undefined
+      return []
     }
   }
 
@@ -291,11 +657,51 @@ export class LeanKernel implements Kernel {
   ): AsyncIterable<RuntimeEvent> {
     yield { type: 'started', cellId }
     this.controller = new AbortController()
-    const endpoint = this.endpoint()
-    if (endpoint) {
-      const handled = yield* this.verifyRemote(cellId, source, endpoint)
-      if (handled) return
+    const endpoints = this.endpoints()
+    const canUseBrowserWs = this.isRemoteBrowser()
+
+    if (canUseBrowserWs && this.wsSession?.isWarm()) {
+      yield { type: 'status', text: 'checking proof against mathlib…' }
+      const payload = await this.wsSession.verify(source, this.controller.signal)
+      if (this.controller.signal.aborted) {
+        yield { type: 'interrupted', cellId }
+        yield { type: 'done', cellId, executionCount: null, failed: false }
+        return
+      }
+      if (payload) {
+        yield* this.emitVerifiedPayload(cellId, payload)
+        return
+      }
     }
+
+    if (canUseBrowserWs) {
+      void this.ensureWsSession().warm()
+    }
+
+    if (endpoints.length > 0) {
+      yield { type: 'status', text: 'checking proof against mathlib…' }
+      for (const endpoint of endpoints) {
+        const handled = yield* this.verifyRemote(cellId, source, endpoint)
+        if (handled) return
+      }
+    }
+
+    if (canUseBrowserWs) {
+      if (endpoints.length === 0) {
+        yield { type: 'status', text: 'checking proof against mathlib…' }
+      }
+      const payload = await this.ensureWsSession().verify(source, this.controller.signal)
+      if (this.controller.signal.aborted) {
+        yield { type: 'interrupted', cellId }
+        yield { type: 'done', cellId, executionCount: null, failed: false }
+        return
+      }
+      if (payload) {
+        yield* this.emitVerifiedPayload(cellId, payload)
+        return
+      }
+    }
+
     yield* this.handoff(cellId, source)
   }
 
@@ -304,7 +710,6 @@ export class LeanKernel implements Kernel {
     source: string,
     endpoint: string,
   ): AsyncGenerator<RuntimeEvent, boolean> {
-    yield { type: 'status', text: 'checking proof against mathlib…' }
     let response: Response
     try {
       response = await fetch(endpoint, {
@@ -334,11 +739,18 @@ export class LeanKernel implements Kernel {
       yield* this.fail(cellId, ['lean verifier returned an unexpected response'])
       return true
     }
+    yield* this.emitVerifiedPayload(cellId, payload)
+    return true
+  }
 
+  private async *emitVerifiedPayload(
+    cellId: CellId,
+    payload: Record<string, unknown>,
+  ): AsyncGenerator<RuntimeEvent> {
     const fatal = readString(payload, 'error')
     if (fatal !== undefined) {
       yield* this.fail(cellId, [fatal])
-      return true
+      return
     }
 
     const messagesField = payload.messages
@@ -350,7 +762,7 @@ export class LeanKernel implements Kernel {
     if (messagesMalformed || sorriesMalformed || !recognized) {
       console.warn('lean verifier returned an unrecognized payload', payload)
       yield* this.fail(cellId, ['lean verifier returned an unrecognized response'])
-      return true
+      return
     }
 
     const rawMessages = Array.isArray(messagesField) ? messagesField : []
@@ -388,11 +800,10 @@ export class LeanKernel implements Kernel {
       const lines =
         failures.length > 0 ? failures : ['lean reported diagnostics that could not be parsed']
       yield* this.fail(cellId, lines)
-      return true
+      return
     }
     yield { type: 'output', cellId, output: { type: 'success' } }
     yield { type: 'done', cellId, executionCount: null, failed: false }
-    return true
   }
 
   private async *fail(cellId: CellId, lines: string[]): AsyncGenerator<RuntimeEvent> {
@@ -426,6 +837,8 @@ export class LeanKernel implements Kernel {
   async dispose(): Promise<void> {
     this.controller?.abort()
     this.controller = undefined
+    this.wsSession?.dispose()
+    this.wsSession = undefined
   }
 }
 
