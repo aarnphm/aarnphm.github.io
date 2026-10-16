@@ -26,6 +26,8 @@ Use `Zoomable` for interactive or large figures. A small static SVG can stand al
 | `figure-inline-math($katex)`                       | Math sizing and inherited color                                          |
 | `figure-fo`                                        | HTML container for KaTeX inside SVG `foreignObject`                      |
 | `figure-card-heading($size)`                       | Sentence-case headings in figure cards                                   |
+| `figure-grid`, `figure-grid-cell`                  | Hairline grid of square cells (1px gaps over `--fig-grid-line`)          |
+| `figure-table($columns)`                           | Label/value `<dl>` as a two-column grid table; rows bare or one div each |
 
 Reuse `--fig-frame-border` for internal cards and readouts. Define component-specific tokens under their own prefix from `--fig-*` and theme variables, deriving fills through `color-mix`; [Palette](palette.md) gives the tone ladder. Let the frame mixin own its theme-dependent border.
 

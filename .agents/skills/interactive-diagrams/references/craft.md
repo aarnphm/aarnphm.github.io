@@ -29,6 +29,8 @@ Each of these makes a figure read as generated filler:
 - **Typed colours.** A hex value in a component stylesheet escapes the theme. It drifts when the palette changes and breaks the dark theme first.
 - **Grey text.** `--gray` and accent-coloured labels read below 3:1 on paper. Inactive tabs, legends and secondary labels use `--fig-tab-fg` or `--darkgray`.
 - **Glow and shadow.** `box-shadow`, `filter: drop-shadow` and inset rings simulate depth the flat grammar does not have. Mark the active node with a heavier stroke or the lit fill.
+- **Rounded pills and dashed edges.** `rx` on node rects and `stroke-dasharray` on edges add a second visual language to a square, solid site. Square the rect; carry the state with tone, opacity or an empty fill.
+- **Tables drawn as loose rows.** Label/value pairs floating in a padded box, separated by spacing alone, make the reader align columns by eye. Use the grid table.
 - **Blueprint furniture.** Floating leader lines, numbered balloons, dimension arrows and hatching for emphasis. Labels belong on the part or in the legend and caption. (Hatching that encodes a state, such as cache-resident blocks in `KVCacheVariants`, is data, and the legend names it.)
 - **Lines that stop in the air.** A connector that ends a few pixels short of its node, or a divider that stops before the frame edge, reads as broken at 2× zoom.
 - **Decorative motion.** Pulses, bounces and looping shimmer with no state behind them. Motion shows a state change or a step of the mechanism.
