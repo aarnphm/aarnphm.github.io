@@ -4,6 +4,13 @@ import type { ForestSettings } from './scene-settings'
 import type { TreePlacement } from './scenery'
 import type { ForegroundTreeInput, TreeWorkerRequest, TreeWorkerMessage } from './tree-worker-types'
 import { repoussoirSpriteSteps } from './repoussoir'
+import { treeGrowthDepth } from './scenery'
+import {
+  readSceneTrees,
+  sceneTreeCacheKey,
+  writeSceneTrees,
+  type CachedSceneTrees,
+} from './tree-cache'
 
 declare const TRAIL_TREE_WORKER_URL: string
 
@@ -60,6 +67,8 @@ export function prepareSceneTrees(
     Math.max(1, trees.length),
   )
   const workers: Worker[] = []
+  const completed: CachedSceneTrees = { trees: [], foreground: [] }
+  let cacheKey: string | null = null
   let finished = false
   const finish = () => {
     if (finished) return
@@ -77,45 +86,114 @@ export function prepareSceneTrees(
     }
   }
   signal.addEventListener('abort', finish, { once: true })
-  try {
-    for (let index = 0; index < count; index++) {
-      const worker = new Worker(TRAIL_TREE_WORKER_URL, { name: `trail-trees-${index}` })
-      workers.push(worker)
-      worker.addEventListener('message', (event: MessageEvent<TreeWorkerMessage>) => {
-        if (finished || signal.aborted) return
-        if ('kind' in event.data) {
-          const resolve = resolveForeground
-          resolveForeground = null
-          resolve?.(
-            event.data.sprites.map(({ markup, ...sprite }) => ({
-              ...sprite,
-              render: () => markup,
-            })),
-          )
-        } else {
-          for (const { id, markup } of event.data) {
-            pending.get(id)?.(markup)
-            pending.delete(id)
+  const startWorkers = () => {
+    try {
+      for (let index = 0; index < count; index++) {
+        const worker = new Worker(TRAIL_TREE_WORKER_URL, { name: `trail-trees-${index}` })
+        workers.push(worker)
+        worker.addEventListener('message', (event: MessageEvent<TreeWorkerMessage>) => {
+          if (finished || signal.aborted) return
+          if ('kind' in event.data) {
+            completed.foreground = event.data.sprites
+            const resolve = resolveForeground
+            resolveForeground = null
+            resolve?.(
+              event.data.sprites.map(({ markup, ...sprite }) => ({
+                ...sprite,
+                render: () => markup,
+              })),
+            )
+          } else {
+            for (const { id, markup } of event.data) {
+              completed.trees.push({ id, markup })
+              pending.get(id)?.(markup)
+              pending.delete(id)
+            }
           }
+          if (!pending.size && !resolveForeground) {
+            finish()
+            if (cacheKey) void writeSceneTrees(cacheKey, completed)
+          }
+        })
+        worker.addEventListener('error', event => {
+          event.preventDefault()
+          finish()
+        })
+        worker.addEventListener('messageerror', finish)
+        const request: TreeWorkerRequest = {
+          landscape,
+          settings,
+          trees: trees.filter((_, tree) => tree % count === index),
+          foreground: index === 0 ? foreground : undefined,
         }
-        if (!pending.size && !resolveForeground) finish()
-      })
-      worker.addEventListener('error', event => {
-        event.preventDefault()
-        finish()
-      })
-      worker.addEventListener('messageerror', finish)
-      const request: TreeWorkerRequest = {
+        worker.postMessage(request)
+      }
+    } catch {
+      finish()
+    }
+  }
+  const restore = async () => {
+    if (!foreground) return startWorkers()
+    let timer = 0
+    const lookupStart = performance.now()
+    try {
+      // Key only the growth values represented in the SVG; fractional forest time keeps moving.
+      cacheKey = await sceneTreeCacheKey([
+        'scene-trees-v1',
+        TRAIL_TREE_WORKER_URL,
         landscape,
         settings,
-        trees: trees.filter((_, tree) => tree % count === index),
-        foreground: index === 0 ? foreground : undefined,
+        foreground,
+        trees.map(tree => ({
+          ...tree,
+          growth: tree.growth.toFixed(2),
+          grown: treeGrowthDepth(tree.growth),
+          age: tree.age === undefined ? null : Math.floor(tree.age),
+          succeeds: undefined,
+          successor: undefined,
+          log: undefined,
+        })),
+      ])
+      const cached = await Promise.race([
+        readSceneTrees(cacheKey),
+        new Promise<null>(resolve => {
+          timer = window.setTimeout(() => resolve(null), 250)
+        }),
+      ])
+      if (finished || signal.aborted) return
+      if (
+        cached &&
+        cached.trees.length === trees.length &&
+        new Set(cached.trees.map(tree => tree.id)).size === trees.length &&
+        cached.trees.every(tree => pending.has(tree.id))
+      ) {
+        for (const tree of cached.trees) pending.get(tree.id)?.(tree.markup)
+        pending.clear()
+        resolveForeground?.(
+          cached.foreground.map(({ markup, ...sprite }) => ({ ...sprite, render: () => markup })),
+        )
+        resolveForeground = null
+        finish()
+        parent.performance.mark('trail:tree-cache-hit', {
+          detail: {
+            trees: cached.trees.length,
+            key: cacheKey,
+            lookupMs: performance.now() - lookupStart,
+          },
+        })
+        return
       }
-      worker.postMessage(request)
+      parent.performance.mark('trail:tree-cache-miss', {
+        detail: { lookupMs: performance.now() - lookupStart, key: cacheKey },
+      })
+    } catch {
+      cacheKey = null
+    } finally {
+      window.clearTimeout(timer)
     }
-  } catch {
-    finish()
+    if (!finished && !signal.aborted) startWorkers()
   }
+  void restore()
   return prepared
 }
 
