@@ -40,6 +40,8 @@ type Surface = {
   placed: Float32Array | null
   texture: WebGLTexture | null
   dirty: boolean
+  // Repainted rects in canvas texels since the last upload; null when the whole surface changed.
+  damage: Box[] | null
 }
 type Group = {
   kind: 'group'
@@ -668,6 +670,7 @@ export function mountSceneCompositor(
           placed: null,
           texture: null,
           dirty: true,
+          damage: null,
         }
         items.push(item)
         kept.add(item)
@@ -1464,8 +1467,12 @@ export function mountSceneCompositor(
         if (!item.dirty && item.texture) continue
         item.dirty = false
         if (item.canvas.width && item.canvas.height) {
+          const damage = item.texture ? item.damage : null
           item.texture = upload(item.texture, item.canvas)
+          const known = repainted.get(item)
+          repainted.set(item, damage && known !== null ? [...(known ?? []), ...damage] : null)
         }
+        item.damage = null
       } else if (stale(item, scale)) pending.push(item)
     }
   }
@@ -1621,6 +1628,8 @@ export function mountSceneCompositor(
     clipTexture: WebGLTexture | null
     clipContent: number
     changed: number
+    // Whether the last change repainted the texture in place, with nothing else altered.
+    repaint: boolean
     // How long the draw must stay unchanged before it joins a cached segment.
     hold: number
   }
@@ -1637,6 +1646,8 @@ export function mountSceneCompositor(
   }
   type Unit = { draw: Draw; rect: Rect } | { segment: Segment; rect: Rect }
   const traces = new WeakMap<Run | Surface, Trace>()
+  // Surfaces uploaded since the last paint, with the canvas-texel rects they repainted.
+  const repainted = new Map<Surface, Box[] | null>()
   const segments = new Map<Run | Surface, Segment>()
   // The scene state the retained canvas shows, so a frame can redraw only what changed.
   let shown = new Map<Run | Surface, { rect: Rect; below: Run | Surface | null }>()
@@ -1689,6 +1700,16 @@ export function mountSceneCompositor(
       clipTexture: draw.clipTexture,
       clipContent,
       changed: clock,
+      repaint:
+        !!known &&
+        known.texture === draw.texture &&
+        known.alpha === draw.alpha &&
+        known.maskTexture === draw.maskTexture &&
+        known.maskContent === maskContent &&
+        known.clipTexture === draw.clipTexture &&
+        known.clipContent === clipContent &&
+        same(known.placed, draw.placed) &&
+        same(known.mask, draw.mask),
       hold,
     }
     traces.set(draw.item, next)
@@ -1705,6 +1726,30 @@ export function mountSceneCompositor(
       Math.ceil(y + Math.abs(p[1]) + Math.abs(p[4])) + 1,
     ]
   }
+  // The canvas pixels a rect of a surface's own texels covers.
+  const texels = (p: Float32Array, surface: Surface, box: Box): Rect => {
+    const { width, height } = surface.canvas
+    let left = Infinity
+    let top = Infinity
+    let right = -Infinity
+    let bottom = -Infinity
+    for (const [x, y] of [
+      [box.left, box.top],
+      [box.right, box.top],
+      [box.left, box.bottom],
+      [box.right, box.bottom],
+    ]) {
+      const u = x / width
+      const v = y / height
+      const px = p[0] * u + p[3] * v + p[6]
+      const py = p[1] * u + p[4] * v + p[7]
+      left = Math.min(left, px)
+      top = Math.min(top, py)
+      right = Math.max(right, px)
+      bottom = Math.max(bottom, py)
+    }
+    return [Math.floor(left) - 1, Math.floor(top) - 1, Math.ceil(right) + 1, Math.ceil(bottom) + 1]
+  }
   const meets = (a: Rect, b: Rect, gap = 0) =>
     a[0] < b[2] + gap && b[0] < a[2] + gap && a[1] < b[3] + gap && b[1] < a[3] + gap
   const dropSegment = (segment: Segment) => {
@@ -1717,30 +1762,35 @@ export function mountSceneCompositor(
   }
   const paintScene = () => {
     const tint = tintAt(clock)
-    gl.uniform3fv(uniforms.solarTint, tint)
-    gl.activeTexture(gl.TEXTURE3)
-    gl.bindTexture(gl.TEXTURE_2D, coverage.texture ?? blank)
-    gl.uniform1f(uniforms.loadActive, Number(!!fade && coverage.active))
-    gl.uniform4f(
-      uniforms.themeReveal,
-      fade && !pageThemeReveal() ? 1 : 0,
-      themeProgress(),
-      fade?.origin ?? 1,
-      trailOpeningCell * resolution,
-    )
-    const origin = opening.origin()
-    gl.uniform3f(
-      uniforms.sweep,
-      origin.x * resolution,
-      origin.y * resolution,
-      opening.radius() * resolution,
-    )
-    gl.uniform3f(
-      uniforms.reveal,
-      resizeFrame && resizeFrame.started !== null ? 1 : 0,
-      resizeProgress(),
-      6 * resolution,
-    )
+    // Frame-wide uniforms are set by the first draw, so a frame with nothing to repaint
+    // makes no WebGL calls.
+    let primed = false
+    const prime = () => {
+      if (primed) return
+      primed = true
+      gl.uniform3fv(uniforms.solarTint, tint)
+      gl.uniform1f(uniforms.loadActive, Number(!!fade && coverage.active))
+      gl.uniform4f(
+        uniforms.themeReveal,
+        fade && !pageThemeReveal() ? 1 : 0,
+        themeProgress(),
+        fade?.origin ?? 1,
+        trailOpeningCell * resolution,
+      )
+      const origin = opening.origin()
+      gl.uniform3f(
+        uniforms.sweep,
+        origin.x * resolution,
+        origin.y * resolution,
+        opening.radius() * resolution,
+      )
+      gl.uniform3f(
+        uniforms.reveal,
+        resizeFrame && resizeFrame.started !== null ? 1 : 0,
+        resizeProgress(),
+        6 * resolution,
+      )
+    }
     const draws: Draw[] = []
     const visit = (
       owner: Group,
@@ -1824,6 +1874,7 @@ export function mountSceneCompositor(
     }
     // Draws a unit quad, or only its share of `first..first + count` rect vertices.
     const paint = (draw: Draw, first = -1, count = 0) => {
+      prime()
       shade(building)
       bind(3, coverage.texture ?? blank)
       bind(1, draw.maskTexture ?? blank)
@@ -1837,6 +1888,7 @@ export function mountSceneCompositor(
       else gl.drawArrays(gl.TRIANGLES, first, count)
     }
     const paintSegment = (segment: Segment, first = -1, count = 0) => {
+      prime()
       shade(false)
       bind(3, coverage.texture ?? blank)
       bind(1, blank)
@@ -1860,15 +1912,14 @@ export function mountSceneCompositor(
     if (!cacheable) {
       shownScene = ''
       shown = new Map()
+      repainted.clear()
       gl.clear(gl.COLOR_BUFFER_BIT)
       for (const draw of draws) paint(draw)
       return
     }
     // A new tint changes every pixel: repaint the whole canvas from the segments that remain.
-    if (key !== shownScene) {
-      shownScene = key
-      shown = new Map()
-    }
+    const retint = key !== shownScene
+    shownScene = key
     // What changed since the retained frame: moved or repainted draws at both positions,
     // removed draws, and draws whose neighbour below changed through depth sorting.
     const rects = draws.map(draw => extent(draw.placed))
@@ -1880,12 +1931,20 @@ export function mountSceneCompositor(
       const below = index ? draws[index - 1].item : null
       const before = shown.get(draw.item)
       next.set(draw.item, { rect, below })
+      // A surface that names its repainted rects dirties only those.
+      const surface = draw.item.kind === 'surface' ? draw.item : null
+      const boxes =
+        surface && known.repaint && before?.below === below ? repainted.get(surface) : undefined
       if (!before) dirty.push(rect)
+      else if (known.changed === clock && surface && boxes)
+        for (const box of boxes) dirty.push(texels(draw.placed, surface, box))
       else if (known.changed === clock || before.below !== below) dirty.push(rect, before.rect)
       return clock - known.changed >= known.hold
     })
     for (const [item, before] of shown) if (!next.has(item)) dirty.push(before.rect)
     shown = next
+    repainted.clear()
+    if (retint) dirty = [[0, 0, canvas.width, canvas.height]]
     // Merge nearby regions: one rect costs a draw per layer it crosses.
     const gap = 8 * resolution
     const regions: Rect[] = []
@@ -1946,6 +2005,11 @@ export function mountSceneCompositor(
         !used.has(known) &&
         known.rect[2] - known.rect[0] === width &&
         known.rect[3] - known.rect[1] === height
+      // A resized segment replaces its old texture, so its old area does not count against the cap.
+      const reclaimed =
+        known && !used.has(known) && !reuse
+          ? (known.rect[2] - known.rect[0]) * (known.rect[3] - known.rect[1])
+          : 0
       const added = reuse ? 0 : width * height
       if (
         to - from < segmentMinimum ||
@@ -1953,7 +2017,7 @@ export function mountSceneCompositor(
         height <= 0 ||
         width > maxTexture ||
         height > maxTexture ||
-        memory + added > 3 * area ||
+        memory - reclaimed + added > 3 * area ||
         rebuilt + width * height > area
       ) {
         for (let index = from; index < to; index++)
@@ -2674,7 +2738,13 @@ export function mountSceneCompositor(
           ?.items.find(
             (item): item is Surface => item.kind === 'surface' && item.frame === frameElement,
           )
-      if (item) item.dirty = true
+      if (!item) return
+      // A painter can name the rects it changed; otherwise the whole surface counts as repainted.
+      const rects = (event as CustomEvent<{ rects?: Box[] } | null>).detail?.rects
+      if (!item.dirty) item.damage = []
+      if (rects && item.damage) item.damage.push(...rects)
+      else item.damage = null
+      item.dirty = true
     },
     { signal },
   )
