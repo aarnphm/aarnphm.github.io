@@ -234,6 +234,17 @@ class JaxArray:
   def __init__(self, value_id):
     self._quartz_ml_id = str(value_id)
 
+  def __del__(self):
+    value_id = getattr(self, '_quartz_ml_id', None)
+    if not value_id:
+      return
+    try:
+      release = getattr(js, 'quartz_notebook_ml_release', None)
+      if release is not None:
+        release(value_id)
+    except Exception:
+      pass
+
   @property
   def shape(self):
     return tuple(
@@ -377,7 +388,9 @@ class JaxArray:
     return _reduce('mean', self, axis, keepdims)
 
   def block_until_ready(self):
-    js.quartz_notebook_ml_unary('block', _leaf_descriptor(self), '{}')
+    _wrap_id(
+      js.quartz_notebook_ml_unary('block', _leaf_descriptor(self), '{}')
+    )
     return self
 
   def addressable_data(self, index):
