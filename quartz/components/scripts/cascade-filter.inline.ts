@@ -1,4 +1,5 @@
 import katex from 'katex'
+import { renderFigureLabel } from '../../util/figure-label'
 
 type Preset = 'uniform' | 'spiky' | 'longtail'
 
@@ -50,12 +51,14 @@ const readScores = (root: HTMLElement): Record<Preset, number[]> | null => {
 }
 
 const cfRenderMath = (tex: string): string =>
-  katex.renderToString(tex, {
-    displayMode: false,
-    output: 'html',
-    strict: false,
-    throwOnError: false,
-  })
+  renderFigureLabel(tex, m =>
+    katex.renderToString(m, {
+      displayMode: false,
+      output: 'html',
+      strict: false,
+      throwOnError: false,
+    }),
+  )
 
 const cfRecallTex = (r: number): string => `${Math.round(r * 100)}\\%`
 const cfSpeedupTex = (s: number): string =>

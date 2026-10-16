@@ -1,6 +1,7 @@
 import katex from 'katex'
 import { type FunctionalComponent } from 'preact'
 import { customMacros, katexOptions } from '../../cfg'
+import { renderFigureLabel } from '../../util/figure-label'
 import { MathText } from '../../util/math-text'
 import style from '../styles/virtualWeights.scss'
 import { registerMdxComponent, type QuartzMdxComponent } from './registry'
@@ -16,14 +17,16 @@ const LAYER_TOPS = [40, 240, 440]
 const CORNER = 5
 
 function renderMath(tex: string): string {
-  return katex.renderToString(tex, {
-    ...katexOptions,
-    displayMode: false,
-    output: 'html',
-    macros: customMacros,
-    strict: false,
-    throwOnError: false,
-  })
+  return renderFigureLabel(tex, m =>
+    katex.renderToString(m, {
+      ...katexOptions,
+      displayMode: false,
+      output: 'html',
+      macros: customMacros,
+      strict: false,
+      throwOnError: false,
+    }),
+  )
 }
 
 const MathFO: FunctionalComponent<{

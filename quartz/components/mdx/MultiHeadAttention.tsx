@@ -1,6 +1,7 @@
 import katex from 'katex'
 import { type FunctionalComponent } from 'preact'
 import { customMacros, katexOptions } from '../../cfg'
+import { renderFigureLabel } from '../../util/figure-label'
 import { MathText } from '../../util/math-text'
 //@ts-ignore
 import script from '../scripts/multi-head-attention.inline'
@@ -83,14 +84,19 @@ const SCORE_PATTERNS: number[][][] = [
 ]
 
 const renderMath = (tex: string, display = false): string =>
-  katex.renderToString(tex, {
-    ...katexOptions,
-    displayMode: display,
-    output: 'html',
-    macros: customMacros,
-    strict: false,
-    throwOnError: false,
-  })
+  renderFigureLabel(
+    tex,
+    m =>
+      katex.renderToString(m, {
+        ...katexOptions,
+        displayMode: display,
+        output: 'html',
+        macros: customMacros,
+        strict: false,
+        throwOnError: false,
+      }),
+    display,
+  )
 
 const MathFO: FunctionalComponent<{
   x: number

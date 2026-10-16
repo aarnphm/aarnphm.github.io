@@ -1,6 +1,7 @@
 import katex from 'katex'
 import { type FunctionalComponent } from 'preact'
 import { customMacros, katexOptions } from '../../cfg'
+import { renderFigureLabel } from '../../util/figure-label'
 import { MathText } from '../../util/math-text'
 //@ts-ignore
 import script from '../scripts/sliding-window-mask.inline'
@@ -20,14 +21,19 @@ const DILATIONS = [1, 2, 4] as const
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max)
 
 const renderMath = (tex: string, display = false): string =>
-  katex.renderToString(tex, {
-    ...katexOptions,
-    displayMode: display,
-    output: 'html',
-    macros: customMacros,
-    strict: false,
-    throwOnError: false,
-  })
+  renderFigureLabel(
+    tex,
+    m =>
+      katex.renderToString(m, {
+        ...katexOptions,
+        displayMode: display,
+        output: 'html',
+        macros: customMacros,
+        strict: false,
+        throwOnError: false,
+      }),
+    display,
+  )
 
 const MathLabel: FunctionalComponent<{ tex: string; display?: boolean }> = ({
   tex,

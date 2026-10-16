@@ -1,6 +1,7 @@
 import katex from 'katex'
 import { type FunctionalComponent } from 'preact'
 import { customMacros, katexOptions } from '../../cfg'
+import { renderFigureLabel } from '../../util/figure-label'
 import { MathText } from '../../util/math-text'
 import style from '../styles/kvCacheVariants.scss'
 import { registerMdxComponent, type QuartzMdxComponent } from './registry'
@@ -53,14 +54,16 @@ const PANELS: Panel[] = [
 ]
 
 const renderMath = (tex: string): string =>
-  katex.renderToString(tex, {
-    ...katexOptions,
-    displayMode: false,
-    output: 'html',
-    macros: customMacros,
-    strict: false,
-    throwOnError: false,
-  })
+  renderFigureLabel(tex, m =>
+    katex.renderToString(m, {
+      ...katexOptions,
+      displayMode: false,
+      output: 'html',
+      macros: customMacros,
+      strict: false,
+      throwOnError: false,
+    }),
+  )
 
 const qCx = (p: number, i: number): number => PX[p] + MARGIN_L + i * PITCH + BAR_W / 2
 const kvCx = (p: number, g: number, nkv: number): number => {

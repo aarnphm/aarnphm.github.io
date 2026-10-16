@@ -1,6 +1,7 @@
 import katex from 'katex'
 import { type FunctionalComponent } from 'preact'
 import { customMacros, katexOptions } from '../../cfg'
+import { renderFigureLabel } from '../../util/figure-label'
 import { MathText } from '../../util/math-text'
 //@ts-ignore
 import script from '../scripts/flash-attention-tiles.inline'
@@ -51,14 +52,19 @@ const RECURRENCE = [
 ]
 
 function tex(t: string, display = false): string {
-  return katex.renderToString(t, {
-    ...katexOptions,
-    displayMode: display,
-    output: 'html',
-    macros: customMacros,
-    strict: false,
-    throwOnError: false,
-  })
+  return renderFigureLabel(
+    t,
+    m =>
+      katex.renderToString(m, {
+        ...katexOptions,
+        displayMode: display,
+        output: 'html',
+        macros: customMacros,
+        strict: false,
+        throwOnError: false,
+      }),
+    display,
+  )
 }
 
 const Math: FunctionalComponent<{ t: string; d?: boolean; cls?: string }> = ({ t, d, cls }) => (

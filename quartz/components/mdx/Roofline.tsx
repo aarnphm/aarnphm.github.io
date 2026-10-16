@@ -1,6 +1,7 @@
 import katex from 'katex'
 import { type FunctionalComponent } from 'preact'
 import { customMacros, katexOptions } from '../../cfg'
+import { renderFigureLabel } from '../../util/figure-label'
 import { MathText } from '../../util/math-text'
 //@ts-ignore
 import script from '../scripts/roofline.inline'
@@ -31,14 +32,16 @@ const fmt = (n: number) => (n < 10 ? n.toFixed(2) : n < 100 ? n.toFixed(1) : n.t
 const pct = (n: number) => (n < 1 ? n.toFixed(2) : n < 10 ? n.toFixed(1) : n.toFixed(0))
 
 const renderMath = (tex: string): string =>
-  katex.renderToString(tex, {
-    ...katexOptions,
-    displayMode: false,
-    output: 'html',
-    macros: customMacros,
-    strict: false,
-    throwOnError: false,
-  })
+  renderFigureLabel(tex, m =>
+    katex.renderToString(m, {
+      ...katexOptions,
+      displayMode: false,
+      output: 'html',
+      macros: customMacros,
+      strict: false,
+      throwOnError: false,
+    }),
+  )
 
 const MathFO: FunctionalComponent<{
   x: number

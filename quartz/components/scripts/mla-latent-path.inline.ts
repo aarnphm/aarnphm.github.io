@@ -1,4 +1,5 @@
 import katex from 'katex'
+import { renderFigureLabel } from '../../util/figure-label'
 
 type MlaKey = 'd' | 'nh' | 'dh' | 'dc' | 'dr'
 type MlaState = Record<MlaKey, number>
@@ -13,12 +14,14 @@ const mlaLabels: Record<MlaKey, string> = {
 }
 
 const mlaRenderMath = (tex: string): string =>
-  katex.renderToString(tex, {
-    displayMode: false,
-    output: 'html',
-    strict: false,
-    throwOnError: false,
-  })
+  renderFigureLabel(tex, m =>
+    katex.renderToString(m, {
+      displayMode: false,
+      output: 'html',
+      strict: false,
+      throwOnError: false,
+    }),
+  )
 
 const mlaFmtTex = (n: number): string => {
   if (n >= 1000) return `${(n / 1000).toFixed(n % 1000 === 0 ? 0 : 1)}\\mathrm{k}`

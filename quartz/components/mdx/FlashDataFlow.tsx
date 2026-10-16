@@ -1,3 +1,4 @@
+import { renderFigureLabel } from '../../util/figure-label'
 import { MathText, renderInlineMath } from '../../util/math-text'
 //@ts-ignore
 import script from '../scripts/flash-data-flow.inline'
@@ -72,7 +73,10 @@ const Fo = ({
   cls?: string
 }) => (
   <foreignObject x={cx - w / 2} y={cy - h / 2} width={w} height={h}>
-    <div class={`fdf-fo ${cls}`} dangerouslySetInnerHTML={{ __html: renderInlineMath(tex) }} />
+    <div
+      class={`fdf-fo ${cls}`}
+      dangerouslySetInnerHTML={{ __html: renderFigureLabel(tex, m => renderInlineMath(m)) }}
+    />
   </foreignObject>
 )
 
@@ -94,7 +98,7 @@ const FoL = ({
   <foreignObject x={x} y={cy - h / 2} width={w} height={h}>
     <div
       class={`fdf-fo fdf-fo--start ${cls}`}
-      dangerouslySetInnerHTML={{ __html: renderInlineMath(tex) }}
+      dangerouslySetInnerHTML={{ __html: renderFigureLabel(tex, m => renderInlineMath(m)) }}
     />
   </foreignObject>
 )

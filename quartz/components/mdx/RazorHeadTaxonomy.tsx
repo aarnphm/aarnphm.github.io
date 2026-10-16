@@ -1,6 +1,7 @@
 import katex from 'katex'
 import { type FunctionalComponent } from 'preact'
 import { customMacros, katexOptions } from '../../cfg'
+import { renderFigureLabel } from '../../util/figure-label'
 import { MathText } from '../../util/math-text'
 import style from '../styles/razorHeadTaxonomy.scss'
 import { registerMdxComponent, type QuartzMdxComponent } from './registry'
@@ -15,14 +16,16 @@ const ROW_Y = 132
 const math = String.raw
 
 const tex = (t: string): string =>
-  katex.renderToString(t, {
-    ...katexOptions,
-    displayMode: false,
-    output: 'html',
-    macros: customMacros,
-    strict: false,
-    throwOnError: false,
-  })
+  renderFigureLabel(t, m =>
+    katex.renderToString(m, {
+      ...katexOptions,
+      displayMode: false,
+      output: 'html',
+      macros: customMacros,
+      strict: false,
+      throwOnError: false,
+    }),
+  )
 
 const Fo: FunctionalComponent<{
   x: number

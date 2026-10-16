@@ -1,6 +1,7 @@
 import katex from 'katex'
 import { type FunctionalComponent } from 'preact'
 import { customMacros, katexOptions } from '../../cfg'
+import { renderFigureLabel } from '../../util/figure-label'
 import { MathText } from '../../util/math-text'
 //@ts-ignore
 import script from '../scripts/attention-circuits.inline'
@@ -10,14 +11,19 @@ import { registerMdxComponent, type QuartzMdxComponent } from './registry'
 type Props = { caption?: string }
 
 const tex = (t: string, d = false) =>
-  katex.renderToString(t, {
-    ...katexOptions,
-    displayMode: d,
-    output: 'html',
-    macros: customMacros,
-    strict: false,
-    throwOnError: false,
-  })
+  renderFigureLabel(
+    t,
+    m =>
+      katex.renderToString(m, {
+        ...katexOptions,
+        displayMode: d,
+        output: 'html',
+        macros: customMacros,
+        strict: false,
+        throwOnError: false,
+      }),
+    d,
+  )
 
 const math = String.raw
 

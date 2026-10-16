@@ -1,6 +1,7 @@
 import katex from 'katex'
 import { type FunctionalComponent } from 'preact'
 import { customMacros, katexOptions } from '../../cfg'
+import { renderFigureLabel } from '../../util/figure-label'
 import { MathText } from '../../util/math-text'
 import {
   mfaDefaultM,
@@ -38,14 +39,19 @@ const STRIPE_W = FGRID + 14
 const STRIPE_OFFSET = LEFT_X + (RIGHT_X - LEFT_X + GRID - MAX_M * STRIPE_W) / 2
 
 const renderMath = (tex: string, display = false): string =>
-  katex.renderToString(tex, {
-    ...katexOptions,
-    displayMode: display,
-    output: 'html',
-    macros: customMacros,
-    strict: false,
-    throwOnError: false,
-  })
+  renderFigureLabel(
+    tex,
+    m =>
+      katex.renderToString(m, {
+        ...katexOptions,
+        displayMode: display,
+        output: 'html',
+        macros: customMacros,
+        strict: false,
+        throwOnError: false,
+      }),
+    display,
+  )
 
 const MathFO: FunctionalComponent<{
   x: number

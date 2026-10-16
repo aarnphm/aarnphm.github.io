@@ -1,6 +1,7 @@
 import katex from 'katex'
 import { type FunctionalComponent } from 'preact'
 import { customMacros, katexOptions } from '../../cfg'
+import { renderFigureLabel } from '../../util/figure-label'
 import { MathText } from '../../util/math-text'
 //@ts-ignore
 import script from '../scripts/meta-ethics-tree.inline'
@@ -27,14 +28,16 @@ type Node = {
 }
 
 const tex = (t: string): string =>
-  katex.renderToString(t, {
-    ...katexOptions,
-    displayMode: false,
-    output: 'html',
-    macros: customMacros,
-    strict: false,
-    throwOnError: false,
-  })
+  renderFigureLabel(t, m =>
+    katex.renderToString(m, {
+      ...katexOptions,
+      displayMode: false,
+      output: 'html',
+      macros: customMacros,
+      strict: false,
+      throwOnError: false,
+    }),
+  )
 
 const M: FunctionalComponent<{ t: string; cls?: string }> = ({ t, cls }) => (
   <span class={cls} dangerouslySetInnerHTML={{ __html: tex(t) }} />

@@ -1,15 +1,18 @@
 import katex from 'katex'
+import { renderFigureLabel } from '../../util/figure-label'
 
 const P_RET_FALLBACK = 0.15
 
 const rzcTex = (t: string): string => {
   try {
-    return katex.renderToString(t, {
-      displayMode: false,
-      output: 'html',
-      throwOnError: false,
-      strict: false,
-    })
+    return renderFigureLabel(t, m =>
+      katex.renderToString(m, {
+        displayMode: false,
+        output: 'html',
+        throwOnError: false,
+        strict: false,
+      }),
+    )
   } catch {
     return t
   }

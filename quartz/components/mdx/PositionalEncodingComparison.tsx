@@ -1,6 +1,7 @@
 import katex from 'katex'
 import { type ComponentChildren, type FunctionalComponent, type VNode } from 'preact'
 import { customMacros, katexOptions } from '../../cfg'
+import { renderFigureLabel } from '../../util/figure-label'
 import { MathText } from '../../util/math-text'
 //@ts-ignore
 import script from '../scripts/positional-encoding-comparison.inline'
@@ -25,14 +26,19 @@ const clampLength = (raw: number): PecLength => {
 }
 
 const renderMath = (tex: string, display = false): string =>
-  katex.renderToString(tex, {
-    ...katexOptions,
-    displayMode: display,
-    output: 'html',
-    macros: customMacros,
-    strict: false,
-    throwOnError: false,
-  })
+  renderFigureLabel(
+    tex,
+    m =>
+      katex.renderToString(m, {
+        ...katexOptions,
+        displayMode: display,
+        output: 'html',
+        macros: customMacros,
+        strict: false,
+        throwOnError: false,
+      }),
+    display,
+  )
 
 const MathLabel: FunctionalComponent<{ tex: string; display?: boolean }> = ({
   tex,
