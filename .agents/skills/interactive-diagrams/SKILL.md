@@ -1,6 +1,6 @@
 ---
 name: interactive-diagrams
-description: "Build, revise or review the SVG and interactive figures embedded in Garden notes (quartz/components/mdx). Covers the mechanism-first craft, the figure tone ladder in Garden tokens, controls, KaTeX readouts and verification. Use it for any explanatory diagram on the site, including isometric figures built with the anatomy kit."
+description: 'Build, revise or review the SVG and interactive figures embedded in Garden notes (quartz/components/mdx). Covers the mechanism-first craft, the figure tone ladder in Garden tokens, controls, KaTeX readouts and verification. Use it for any explanatory diagram on the site, including isometric figures built with the anatomy kit.'
 ---
 
 # Garden figures
@@ -19,23 +19,24 @@ These come from the `anatomy` skill's craft, translated from isometric objects t
 4. **Every colour is a token.** No hex, `rgb()` or `oklch()` in a figure stylesheet. Component tokens (`--kvg-*`, `--fat-*`) are defined from `--fig-*` and theme variables, with fills mixed into `--light` (light) or `--lightgray` (dark).
 5. **Text is ink.** Labels and values use `--dark`; card headings `--fig-note`; captions `--fig-caption-fg`; tab and secondary labels `--fig-tab-fg`. `--gray` and the accents never carry text in the light theme.
 6. **Lines resolve.** Every edge, connector and rule ends on a node, a cell or the frame. No floating leader lines, balloons, dimension arrows or dashed hidden edges. Math labels sit on the part they name.
-7. **Flat and square.** 1px frame, square corners, no `box-shadow`, no `filter: drop-shadow`, no glow, no gradient, no decorative left border. A state change is a fill, a stroke width or ink weight.
+7. **Flat, square and solid.** 1px frame, square corners, no `box-shadow`, no `filter: drop-shadow`, no glow, no gradient, no decorative left border. SVG nodes are `<rect>` with no `rx`; circles stay for true points (sum junctions, data marks, a moving token, a ring track). Every edge is solid: an evicted, predicted or secondary state reads through a softer stroke token, opacity or an empty fill, never a dash pattern. A state change is a fill, a stroke width or ink weight.
 8. **Calm motion.** State changes ease over 120 to 220ms on named properties. Stepped animations run only while visible and stop under `prefers-reduced-motion`, leaving the final state drawn.
-9. **Real controls.** Native buttons, radio groups and tablists with the full keyboard contract; visible focus in `--dark`. Listeners and cleanup register inside the `nav` handler.
-10. **Caption tells the truth.** It states what the figure shows, its assumptions, and what to do. Colour words name the palette (salmon, sage), matching what the reader sees.
+9. **Tables are grids.** Anything with rows and columns (a label/value readout, a page table, a list of requests or answers) is a hairline grid of square cells: `@include figure-table` on a `<dl>`, `figure-grid` with `figure-grid-cell` children for lists, 1px `--fig-grid-line` borders on a `<table>`. This is the triathlon option-grid recipe: 1px gaps over the line colour, `--fig-grid-cell` cells, `--fig-grid-selected` for a selected cell. Values are mono with tabular figures.
+10. **Real controls.** Native buttons, radio groups and tablists with the full keyboard contract; visible focus in `--dark`. Listeners and cleanup register inside the `nav` handler.
+11. **Caption tells the truth.** It states what the figure shows, its assumptions, and what to do. Colour words name the palette (salmon, sage), matching what the reader sees.
 
 ## Read only the reference the change needs
 
-| Work | Reference |
-| --- | --- |
-| Designing a new figure, or a figure that reads as slop | [Craft](references/craft.md) |
-| Any colour, fill, stroke or text ink | [Palette](references/palette.md) |
-| Frame, SCSS mixins, zoom, registration | [Frame and registration](references/frame-and-registration.md) |
-| Tabs, segments, toggles | [Controls](references/controls.md) |
-| KaTeX labels, statistics, sliders | [Math and readouts](references/math-and-readouts.md) |
-| Hover or focus explanations | [Hover details](references/hover-details.md) |
-| A physical-object figure with the anatomy kit | [Isometric](references/isometric.md) |
-| Calling it done | [Verification](references/verification.md) |
+| Work                                                   | Reference                                                      |
+| ------------------------------------------------------ | -------------------------------------------------------------- |
+| Designing a new figure, or a figure that reads as slop | [Craft](references/craft.md)                                   |
+| Any colour, fill, stroke or text ink                   | [Palette](references/palette.md)                               |
+| Frame, SCSS mixins, zoom, registration                 | [Frame and registration](references/frame-and-registration.md) |
+| Tabs, segments, toggles                                | [Controls](references/controls.md)                             |
+| KaTeX labels, statistics, sliders                      | [Math and readouts](references/math-and-readouts.md)           |
+| Hover or focus explanations                            | [Hover details](references/hover-details.md)                   |
+| A physical-object figure with the anatomy kit          | [Isometric](references/isometric.md)                           |
+| Calling it done                                        | [Verification](references/verification.md)                     |
 
 `quartz/components/mdx/KVHeadGrouping.tsx` with `kvHeadGrouping.scss` is the reference figure: model-driven readout, pre-rendered KaTeX states, tokens defined from `--fig-*`.
 

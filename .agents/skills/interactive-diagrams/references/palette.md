@@ -6,16 +6,17 @@ Figures use the Garden theme (`quartz.config.ts` `theme.colors`) through the `--
 
 The `anatomy` skill shades a figure on a ladder of `faint`, `lo`, `mid`, `hi` and one `lit` part. Garden figures use the same ladder with these tokens:
 
-| Step | Token | Use |
-| --- | --- | --- |
-| ground | `--light`, `--fig-surface` | Figure background; fills that hide what is behind them |
-| faint | `--fig-div`, `--fig-line` | Gridlines, cell borders, dividers inside cards |
-| lo | `--fig-stroke-soft` | Quiet structure: inactive edges, empty slots |
-| mid | `--fig-stroke` | Part outlines and active edges |
-| hi | `--dark` | The subject's strokes, labels, math, values |
-| lit | `--fig-salmon` fill, `--dark` stroke | The one part the reader watches now |
-| second state | `--fig-sage` fill | Done, kept, shared, cached |
-| frame | `--fig-frame-border` | The 1px figure frame and readout cards |
+| Step         | Token                                                       | Use                                                          |
+| ------------ | ----------------------------------------------------------- | ------------------------------------------------------------ |
+| ground       | `--light`, `--fig-surface`                                  | Figure background; fills that hide what is behind them       |
+| faint        | `--fig-div`, `--fig-line`                                   | Gridlines, cell borders, dividers inside cards               |
+| lo           | `--fig-stroke-soft`                                         | Quiet structure: inactive edges, empty slots                 |
+| mid          | `--fig-stroke`                                              | Part outlines and active edges                               |
+| hi           | `--dark`                                                    | The subject's strokes, labels, math, values                  |
+| lit          | `--fig-salmon` fill, `--dark` stroke                        | The one part the reader watches now                          |
+| second state | `--fig-sage` fill                                           | Done, kept, shared, cached                                   |
+| frame        | `--fig-frame-border`                                        | The 1px figure frame and readout cards                       |
+| grid         | `--fig-grid-line`, `--fig-grid-cell`, `--fig-grid-selected` | Grid tables: gap line, cell ground, selected cell (sage 13%) |
 
 Text sits on its own scale: `--dark` for labels and values, `--fig-note` for card headings, `--fig-caption-fg` (`--darkgray`) for captions, `--fig-tab-fg` for tab labels.
 

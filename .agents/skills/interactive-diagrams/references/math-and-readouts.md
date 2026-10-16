@@ -9,7 +9,7 @@ Choose the update path from the value set:
 - For a small finite set, pre-render values in TSX and toggle visibility. `KVHeadGrouping.tsx` and `kv-head-grouping.inline.ts` use this approach.
 - For continuous values, update through a local `katex.renderToString` helper with `output: 'html'` and `throwOnError: false`. `cascade-filter.inline.ts` contains the existing pattern. Recompute only when its inputs change.
 
-Use `<dl>` for label/value statistics, the shared frame border for readout cards, and `figure-card-heading` for their headings. Keep readout width stable with tabular numerals and appropriate minimum width.
+Use `<dl>` for label/value statistics with `@include figure-table`, and `figure-card-heading` for their headings. The mixin owns cell layout, label ink, mono tabular values and right alignment; component rules style only value variants (a larger hero value, a separator). Plain-word labels stay as text; reserve KaTeX for labels that hold math. A grid of cells must not leave an empty track, because the line colour shows through it: span the last cell instead.
 
 For native range inputs, reuse `stableRangeControl` from `quartz/styles/mixin.scss`. Update the input value, displayed readout, and component-specific CSS fill variable together. The native input exposes its numeric value; set `aria-valuetext` when a formatted unit or interpretation adds meaning. Custom sliders also need their full keyboard and ARIA contract.
 
