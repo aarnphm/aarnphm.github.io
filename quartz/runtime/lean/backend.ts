@@ -10,6 +10,7 @@ export const leanBackend: ExecutableLanguageBackend = {
   fileExts: ['.lean'],
   aliases: ['lean', 'lean4'],
   shellMagics: ['lean-shell'],
+  defaultIndexUrl: '/api/lean/verify',
   preload: false,
   canExecute: () => ({ ok: true }),
   editor: {

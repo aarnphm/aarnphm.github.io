@@ -337,6 +337,43 @@ describe('code viewer runtime cells', () => {
     assert.strictEqual(collectHtml(tree).length, 0)
   })
 
+  test('gates lean shell fences into interactive runtime cells and keeps ordinary lean fences and transclusions static', async () => {
+    const root = await mkdtemp(nodePath.join(os.tmpdir(), 'quartz-code-viewer-'))
+    await mkdir(nodePath.join(root, 'notes'), { recursive: true })
+    await writeFile(nodePath.join(root, 'notes', 'proof.lean'), '#check Nat\n')
+
+    const tree: Root = {
+      type: 'root',
+      children: [
+        { type: 'code', lang: 'lean', meta: 'shell', value: '#eval 1 + 1' },
+        { type: 'code', lang: 'lean', value: '#check Prop' },
+        {
+          type: 'wikilink',
+          data: { wikilink: { embed: true, target: 'proof.lean' } },
+        } as unknown as RootContent,
+      ],
+    }
+    const file = vfile(root, 'notes/page.md')
+
+    await runCodeViewer(tree, file, buildCtx(root, ['notes/proof.lean' as FilePath]))
+
+    const payload = runtimePayload(tree)
+    assert.strictEqual(payload.language, 'lean')
+    assert.deepStrictEqual(
+      payload.cells.map(cell => ({ id: cell.id, source: cell.source, language: cell.language })),
+      [{ id: 'code-cell-1', source: '#eval 1 + 1', language: 'lean' }],
+    )
+    const codes = collectCode(tree)
+    assert.deepStrictEqual(
+      codes.map(c => ({ lang: c.lang, value: c.value })),
+      [
+        { lang: 'lean', value: '#eval 1 + 1' },
+        { lang: 'lean', value: '#check Prop' },
+        { lang: 'lean', value: '#check Nat\n' },
+      ],
+    )
+  })
+
   test('transcludes GitHub blob wikilinks as whole-file code blocks with line meta', async () => {
     const root = await mkdtemp(nodePath.join(os.tmpdir(), 'quartz-code-viewer-'))
     const sourceUrl = 'https://github.com/aarnphm/garden/blob/main/quartz/util/path.ts#L2-L3'

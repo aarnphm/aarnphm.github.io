@@ -22,6 +22,7 @@ import {
   type ProblemRecord,
   type ProblemState,
 } from '../util/course-study'
+import { handleLocalLeanVerifyNodeRequest } from '../util/lean-local-verify'
 
 const MAX_BODY = 512 * 1024
 const pad = (n: number) => String(n).padStart(2, '0')
@@ -397,6 +398,10 @@ export function startCourseStudyServer(options: {
     const origin = allowedOrigin(req.headers.origin)
     if (req.headers.origin && !origin) return send(res, null, 403, { error: 'origin not allowed' })
     const pathname = new URL(req.url ?? '/', 'http://localhost').pathname
+    if (pathname === '/api/lean/verify') {
+      void handleLocalLeanVerifyNodeRequest(req, res)
+      return
+    }
     const route = Object.hasOwn(routes, pathname) ? routes[pathname] : undefined
     if (req.method === 'OPTIONS') {
       res.writeHead(

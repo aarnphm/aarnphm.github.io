@@ -20,13 +20,15 @@ type LeanMessage = {
   readonly text: string
 }
 
-function escapeHtmlAttr(value: string): string {
+function escapeHtml(value: string): string {
   return value
     .replaceAll('&', '&amp;')
     .replaceAll('"', '&quot;')
     .replaceAll('<', '&lt;')
     .replaceAll('>', '&gt;')
 }
+
+const escapeHtmlAttr = escapeHtml
 
 function playgroundUrl(source: string, imports: string): string {
   const code = encodeURIComponent(source)
@@ -36,6 +38,7 @@ function playgroundUrl(source: string, imports: string): string {
 
 function readSeverity(value: unknown): LeanSeverity {
   if (value === 'error' || value === 'warning' || value === 'info') return value
+  if (value === 'information') return 'info'
   if (value === 1) return 'error'
   if (value === 2) return 'warning'
   if (value === 3 || value === 4) return 'info'
@@ -62,17 +65,196 @@ function formatMessage(message: LeanMessage): string {
 }
 
 const SORRY_PATTERN = /\b(sorry|admit)\b/i
+const GOAL_STATE_PATTERN = /(?:^|\n)\s*unsolved goals\b|⊢/i
 
 function isSorryMessage(message: LeanMessage): boolean {
   return SORRY_PATTERN.test(message.text)
 }
 
-function readSorryGoal(value: unknown): string {
-  if (!isRecord(value)) return 'unsolved goal'
-  const goal = readString(value, 'goal') ?? readString(value, 'data')
+function isGoalMessage(message: LeanMessage): boolean {
+  return GOAL_STATE_PATTERN.test(message.text)
+}
+
+type LeanSorryItem = {
+  readonly line?: number
+  readonly column?: number
+  readonly goals: readonly string[]
+  readonly message?: string
+}
+
+function readSorryGoalsList(value: Record<string, unknown>): string[] {
+  const single = readString(value, 'goal') ?? readString(value, 'data')
+  if (single !== undefined && single.trim().length > 0) return [single.trim()]
+  if (Array.isArray(value.goals)) {
+    return value.goals
+      .filter((item): item is string => typeof item === 'string' && item.trim().length > 0)
+      .map(item => item.trim())
+  }
+  return []
+}
+
+function readSorryItem(value: unknown): LeanSorryItem {
+  if (!isRecord(value)) return { goals: [] }
   const pos = readPosition(value.pos ?? value.position)
-  const at = pos.line !== undefined ? `${pos.line}:${pos.column ?? 0}: ` : ''
-  return `${at}unsolved goal (sorry)${goal ? `\n${goal}` : ''}`
+  const goals = readSorryGoalsList(value)
+  const message = readString(value, 'message')
+  return { line: pos.line, column: pos.column, goals, message }
+}
+
+function formatSorryItem(item: LeanSorryItem, raw: unknown): string {
+  if (!isRecord(raw)) return 'unsolved goal'
+  const goalText = item.goals.join('\n\n')
+  const at = item.line !== undefined ? `${item.line}:${item.column ?? 0}: ` : ''
+  return `${at}unsolved goal (sorry)${goalText ? `\n${goalText}` : ''}`
+}
+
+type ParsedGoalBlock = {
+  readonly caseName?: string
+  readonly hypotheses: ReadonlyArray<{ readonly name: string; readonly type: string }>
+  readonly target: string
+}
+
+function parseGoalBlocks(rawText: string): ParsedGoalBlock[] {
+  const cleaned = rawText.replace(/^\s*unsolved goals\s*\r?\n?/i, '').trim()
+  if (!cleaned) return []
+
+  const lines = cleaned.split(/\r?\n/)
+  const blocks: ParsedGoalBlock[] = []
+  let caseName: string | undefined
+  let hypotheses: Array<{ name: string; type: string }> = []
+  let targetLines: string[] | null = null
+
+  const flushTarget = () => {
+    if (targetLines !== null) {
+      blocks.push({ caseName, hypotheses, target: targetLines.join('\n').trim() })
+      caseName = undefined
+      hypotheses = []
+      targetLines = null
+    }
+  }
+
+  for (const line of lines) {
+    const trimmed = line.trim()
+    if (!trimmed) {
+      flushTarget()
+      continue
+    }
+    const turnstileIndex = line.indexOf('⊢')
+    if (turnstileIndex !== -1) {
+      flushTarget()
+      targetLines = [line.slice(turnstileIndex + 1).trim()]
+      continue
+    }
+    if (targetLines !== null) {
+      if (/^case\s+\S+/.test(trimmed) || /^[^:⊢]+?\s*:\s*.+$/.test(trimmed)) {
+        flushTarget()
+      } else {
+        targetLines.push(trimmed)
+        continue
+      }
+    }
+    const caseMatch = trimmed.match(/^case\s+(.+)$/)
+    if (caseMatch) {
+      caseName = caseMatch[1].trim()
+      continue
+    }
+    const hypMatch = trimmed.match(/^([^:⊢]+?)\s*:\s*(.+)$/)
+    if (hypMatch) {
+      hypotheses.push({ name: hypMatch[1].trim(), type: hypMatch[2].trim() })
+    }
+  }
+  flushTarget()
+
+  if (blocks.length === 0 && cleaned.length > 0) {
+    blocks.push({ hypotheses: [], target: cleaned })
+  }
+  return blocks
+}
+
+function renderGoalSectionHtml(
+  badge: string,
+  pos: { line?: number; column?: number },
+  goal: ParsedGoalBlock,
+): string {
+  const posHtml =
+    pos.line !== undefined
+      ? `<span class="lean-infoview-pos">${pos.line}:${pos.column ?? 0}</span>`
+      : ''
+  const caseHtml = goal.caseName
+    ? `<span class="lean-infoview-case">case ${escapeHtml(goal.caseName)}</span>`
+    : ''
+  const hypsHtml =
+    goal.hypotheses.length > 0
+      ? `<div class="lean-infoview-hypotheses">${goal.hypotheses
+          .map(
+            hyp =>
+              `<div class="lean-infoview-hypothesis"><span class="lean-infoview-hyp-name">${escapeHtml(
+                hyp.name,
+              )}</span><span class="lean-infoview-hyp-sep"> : </span><code class="lean-infoview-hyp-type">${escapeHtml(
+                hyp.type,
+              )}</code></div>`,
+          )
+          .join('')}</div>`
+      : ''
+  return `<section class="lean-infoview-goal" data-lean-infoview-kind="goal"><header class="lean-infoview-header"><span class="lean-infoview-badge">${escapeHtml(
+    badge,
+  )}</span>${caseHtml}${posHtml}</header>${hypsHtml}<div class="lean-infoview-target"><span class="lean-infoview-turnstile" aria-label="turnstile">⊢</span><code class="lean-infoview-target-type">${escapeHtml(
+    goal.target,
+  )}</code></div></section>`
+}
+
+function renderInfoViewHtml(
+  messages: readonly LeanMessage[],
+  sorryItems: readonly LeanSorryItem[],
+): string | undefined {
+  const goalSections: string[] = []
+
+  for (const message of messages) {
+    if (!isGoalMessage(message)) continue
+    const badge = message.severity === 'error' ? 'unsolved goal' : 'tactic state'
+    for (const block of parseGoalBlocks(message.text)) {
+      goalSections.push(
+        renderGoalSectionHtml(badge, { line: message.line, column: message.column }, block),
+      )
+    }
+  }
+
+  for (const item of sorryItems) {
+    for (const rawGoal of item.goals) {
+      for (const block of parseGoalBlocks(rawGoal)) {
+        goalSections.push(
+          renderGoalSectionHtml('sorry goal', { line: item.line, column: item.column }, block),
+        )
+      }
+    }
+  }
+
+  if (goalSections.length === 0) return undefined
+
+  const noteSections = messages
+    .filter(
+      message =>
+        (message.severity === 'info' || message.severity === 'warning') &&
+        !isSorryMessage(message) &&
+        !isGoalMessage(message),
+    )
+    .map(note => {
+      const posHtml =
+        note.line !== undefined
+          ? `<span class="lean-infoview-pos">${note.line}:${note.column ?? 0}</span>`
+          : ''
+      return `<section class="lean-infoview-message" data-lean-infoview-kind="${escapeHtml(
+        note.severity,
+      )}"><header class="lean-infoview-header"><span class="lean-infoview-badge">${escapeHtml(
+        note.severity,
+      )}</span>${posHtml}</header><pre class="lean-infoview-code"><code>${escapeHtml(
+        note.text,
+      )}</code></pre></section>`
+    })
+
+  return `<div class="lean-infoview" data-lean-infoview>${[...goalSections, ...noteSections].join(
+    '',
+  )}</div>`
 }
 
 export class LeanKernel implements Kernel {
@@ -92,7 +274,11 @@ export class LeanKernel implements Kernel {
   private endpoint(): string | undefined {
     if (!this.indexUrl) return undefined
     try {
-      return new URL(this.indexUrl, window.location.href).href
+      const base =
+        typeof window !== 'undefined' && window.location?.href
+          ? window.location.href
+          : 'http://localhost'
+      return new URL(this.indexUrl, base).href
     } catch {
       return undefined
     }
@@ -171,7 +357,9 @@ export class LeanKernel implements Kernel {
     const parsed = rawMessages.map(readLeanMessage)
     const unparsed = parsed.filter(message => message === undefined).length
     const messages = parsed.filter((message): message is LeanMessage => message !== undefined)
-    const sorryGoals = (Array.isArray(sorriesField) ? sorriesField : []).map(readSorryGoal)
+    const rawSorries = Array.isArray(sorriesField) ? sorriesField : []
+    const sorryItems = rawSorries.map(readSorryItem)
+    const sorryGoals = rawSorries.map((raw, index) => formatSorryItem(sorryItems[index], raw))
 
     const blocking = messages.filter(
       message =>
@@ -188,6 +376,11 @@ export class LeanKernel implements Kernel {
         cellId,
         output: { type: 'stream', name: 'stdout', text: notes.map(formatMessage).join('\n') },
       }
+    }
+
+    const infoViewHtml = renderInfoViewHtml(messages, sorryItems)
+    if (infoViewHtml) {
+      yield { type: 'output', cellId, output: { type: 'html', html: infoViewHtml } }
     }
 
     const failures = [...blocking.map(formatMessage), ...sorryGoals]

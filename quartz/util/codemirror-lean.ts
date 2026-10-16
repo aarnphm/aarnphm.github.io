@@ -25,6 +25,7 @@ const keywords = new Set([
   'variables',
   'universe',
   'axiom',
+  'opaque',
   'attribute',
   'macro',
   'macro_rules',
@@ -104,6 +105,7 @@ const tactics = new Set([
   'field_simp',
   'ext',
   'funext',
+  'congr',
   'subst',
   'unfold',
   'change',
@@ -115,6 +117,7 @@ const tactics = new Set([
   'tauto',
 ])
 
+const command = /^#[A-Za-z_][A-Za-z0-9_']*/
 const identifier = /^[A-Za-z_À-ɏͰ-Ͽ℀-⅏][A-Za-z0-9_'!?.À-ɏͰ-Ͽ₀-₉℀-⅏]*/
 const operators = /^[+\-*/=<>|&!~^%@:.,;∀∃→↦λ∧∨¬↔≤≥≠∈∉⊆⊂∪∩×∘⟨⟩⊢⊕⊗∑∏√∂∇·…]+/
 
@@ -161,6 +164,7 @@ export const leanStreamParser: StreamParser<LeanState> = {
       return 'string'
     }
     if (stream.match(/^@\[/)) return 'meta'
+    if (stream.match(command)) return 'keyword'
     if (stream.match(/^0[xX][0-9a-fA-F]+/) || stream.match(/^[0-9]+(\.[0-9]+)?/)) return 'number'
     const word = stream.match(identifier)
     if (word) {

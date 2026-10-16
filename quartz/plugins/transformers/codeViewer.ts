@@ -77,6 +77,7 @@ const DEFAULT_EXTS = new Set<string>([
   '.hs',
   '.rb',
   '.php',
+  '.lean',
 ])
 
 export function languageFromExt(ext: string): string | undefined {
@@ -142,6 +143,8 @@ export function languageFromExt(ext: string): string | undefined {
       return 'php'
     case 'cu':
       return 'cuda'
+    case 'lean':
+      return 'lean'
     default:
       return e
   }
