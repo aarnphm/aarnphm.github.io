@@ -814,3 +814,71 @@ async function check(answer) {
 >
 > - Side k runs from corner k to corner $(k+1) \bmod 2m$ when dir = +1, reversed when dir = -1.
 > - A union-find over the $2m$ corners gives you $V$; you will also have to manually count it.
+
+---
+
+## _TARSKI_ FIXED POINT
+
+_lattice theory, formal verification_, approx: 25 min
+
+On a complete lattice $(\mathcal{P}(X), \subseteq)$, [Knaster–Tarski](https://en.wikipedia.org/wiki/Knaster%E2%80%93Tarski_theorem) guarantees that every monotone endomap $F: \mathcal{P}(X) \to \mathcal{P}(X)$ admits a least fixed point $\mu F = \bigcap \{S \subseteq X \mid F(S) \subseteq S\}$. When $X = \{0, 1, \dots, 15\}$ is finite, ascending Kleene iteration
+
+$$
+S_0 = \emptyset, \qquad S_{k+1} = F(S_k)
+$$
+
+stabilizes in at most $|X| = 16$ steps at the least fixed point $S_k = F(S_k)$.
+
+Your task in Lean 4 has two coupled halves (note that `#eval` refuses to execute any definition whose proof obligations still depend on `sorry`):
+
+1. Prove `monotone_comp`: the composition of two $\subseteq$-monotone operators on `Set α` is monotone.
+2. Implement `lfp (seed : UInt64) : UInt64`, which starts at the empty bitset `0` and iterates `step seed` until reaching the least fixed point $S = \text{step}(\text{seed}, S)$ on the 16-bit lattice `0xFFFF`.
+
+```lean shell
+import Mathlib
+
+def MonotoneSet {α : Type*} (F : Set α → Set α) : Prop :=
+  ∀ ⦃A B : Set α⦄, A ⊆ B → F A ⊆ F B
+
+theorem monotone_comp {α : Type*} {F G : Set α → Set α}
+    (hF : MonotoneSet F) (hG : MonotoneSet G) :
+    MonotoneSet (fun S => F (G S)) := by
+  sorry
+
+def mask16 : UInt64 := 0xFFFF
+
+def step (seed : UInt64) (s : UInt64) : UInt64 :=
+  let expand := (s ||| ((s <<< 1) &&& (s >>> 1)) ||| ((s <<< 3) &&& seed) ||| (seed &&& 0x0005)) &&& mask16
+  let close := if (expand &&& 0x0111) == 0x0111 then expand ||| 0x0888 else expand
+  (s ||| close) &&& mask16
+
+def lfp (_seed : UInt64) : UInt64 :=
+  -- TODO: iterate `step _seed` from 0 until reaching a fixed point (at most 16 steps)
+  0
+
+def seeds : List UInt64 :=
+  [0x0007, 0x001F, 0x003B, 0x0073, 0x00E5, 0x01C9, 0x0393, 0x0725, 0x0E4B, 0x1C95, 0x392B, 0x7255]
+
+def solve : UInt64 :=
+  have _ := @monotone_comp UInt64
+  seeds.foldl (fun acc seed => acc * 131 + lfp seed) 0
+
+def fingerprint (x : UInt64) : String :=
+  Id.run do
+    let mut h : UInt64 := x ^^^ 0x546172736B694650
+    for _ in [0:64] do
+      h := (h ^^^ (h >>> 30)) * 0xBF58476D1CE4E5B9
+      h := (h ^^^ (h >>> 27)) * 0x94D049BB133111EB
+      h := h ^^^ (h >>> 31)
+    return toString h
+
+def check (ans : UInt64) : String :=
+  if fingerprint ans == "18283718361821402938" then "correct" else "nope"
+
+#eval check solve
+```
+
+> [!hint]- hint
+>
+> - Unfold `MonotoneSet`: given `hAB : A ⊆ B`, apply `hG` to obtain `G A ⊆ G B`, then apply `hF`.
+> - Because `step seed` is monotone on a 16-element universe, iterating `for _ in [0:16] do s := step seed s` inside `Id.run do` (or stopping early when `next == s`) is guaranteed to hit $\mu(\text{step}(\text{seed}))$.

@@ -92,6 +92,23 @@ $$
 \end{aligned}
 $$
 
+```lean shell
+import Mathlib
+
+theorem union_empty {α : Type*} (A : Set α) : A ∪ ∅ = A := by
+  apply Set.ext
+  intro x
+  exact ⟨fun h => Or.elim h id False.elim, Or.inl⟩
+
+theorem inter_empty {α : Type*} (A : Set α) : A ∩ ∅ = ∅ := by
+  apply Set.ext
+  intro x
+  exact ⟨fun ⟨_, h⟩ => h, False.elim⟩
+
+#check @union_empty
+#check @inter_empty
+```
+
 ### contrapositive and converse
 
 "if...then" would often concern relation between _statement_, _contrapositive_ or _converse_
@@ -124,6 +141,28 @@ $$
 $$
 \neg(\exists x \in A,\;P(x)) \iff \forall x \in A,\;\neg P(x)
 $$
+
+```lean shell
+import Mathlib
+
+theorem contrapositive_iff (P Q : Prop) : (P → Q) ↔ (¬ Q → ¬ P) := by
+  constructor
+  · intro hpq hnq hp
+    exact hnq (hpq hp)
+  · intro hcontra hp
+    exact Classical.byContradiction (fun hnq => hcontra hnq hp)
+
+theorem not_exists_mem_iff {α : Type*} (A : Set α) (P : α → Prop) :
+    ¬ (∃ x, x ∈ A ∧ P x) ↔ ∀ x, x ∈ A → ¬ P x := by
+  constructor
+  · intro hne x hxa hpx
+    exact hne ⟨x, hxa, hpx⟩
+  · intro hall ⟨x, hxa, hpx⟩
+    exact hall x hxa hpx
+
+#check @contrapositive_iff
+#check @not_exists_mem_iff
+```
 
 ## set operations
 
@@ -212,17 +251,17 @@ $$A \cap (B \cup C) = (A \cap B) \cup (A \cap C)$$
 \begin{tikzpicture}[scale=1.2]
   \begin{scope}
     \clip (90:0.8) circle (1);
+  \begin{scope}
+    \clip (210:0.8) circle (1);
+    \fill[flexokigreen, opacity=0.8] (-3,-3) rectangle (3,3);
+  \end{scope}
+  \begin{scope}[even odd rule]
+    \clip (210:0.8) circle (1) (-3,-3) rectangle (3,3);
     \begin{scope}
-      \clip (210:0.8) circle (1);
+      \clip (330:0.8) circle (1);
       \fill[flexokigreen, opacity=0.8] (-3,-3) rectangle (3,3);
     \end{scope}
-    \begin{scope}[even odd rule]
-      \clip (210:0.8) circle (1) (-3,-3) rectangle (3,3);
-      \begin{scope}
-        \clip (330:0.8) circle (1);
-        \fill[flexokigreen, opacity=0.8] (-3,-3) rectangle (3,3);
-      \end{scope}
-    \end{scope}
+  \end{scope}
   \end{scope}
   \draw[thick] (90:0.8) circle (1) node[above=2] {$A$};
   \draw[thick] (210:0.8) circle (1) node[below left=2] {$B$};
@@ -306,6 +345,31 @@ $$A \cap (B \cup C) = (A \cap B) \cup (A \cap C)$$
 > \end{document}
 > ```
 
+```lean shell
+import Mathlib
+
+theorem inter_distrib_left {α : Type*} (A B C : Set α) :
+    A ∩ (B ∪ C) = (A ∩ B) ∪ (A ∩ C) := by
+  apply Set.ext
+  intro x
+  exact ⟨
+    fun ⟨ha, hbc⟩ => Or.elim hbc (fun hb => Or.inl ⟨ha, hb⟩) (fun hc => Or.inr ⟨ha, hc⟩),
+    fun h => Or.elim h (fun ⟨ha, hb⟩ => ⟨ha, Or.inl hb⟩) (fun ⟨ha, hc⟩ => ⟨ha, Or.inr hc⟩)
+  ⟩
+
+theorem union_distrib_left {α : Type*} (A B C : Set α) :
+    A ∪ (B ∩ C) = (A ∪ B) ∩ (A ∪ C) := by
+  apply Set.ext
+  intro x
+  exact ⟨
+    fun h => Or.elim h (fun ha => ⟨Or.inl ha, Or.inl ha⟩) (fun ⟨hb, hc⟩ => ⟨Or.inr hb, Or.inr hc⟩),
+    fun ⟨hab, hac⟩ => Or.elim hab Or.inl (fun hb => Or.elim hac Or.inl (fun hc => Or.inr ⟨hb, hc⟩))
+  ⟩
+
+#check @inter_distrib_left
+#check @union_distrib_left
+```
+
 ### de Morgan's laws
 
 For sets $A,B,C$:
@@ -368,6 +432,37 @@ $$
 > _The complement of the union equals the intersection of the complements_
 >
 > _The complement of the intersection equals the union of the complements_
+>
+> ```lean shell
+> import Mathlib
+>
+> theorem de_morgan_diff_union {α : Type*} (A B C : Set α) :
+>     A \ (B ∪ C) = (A \ B) ∩ (A \ C) := by
+>   apply Set.ext
+>   intro x
+>   simp only [Set.mem_diff, Set.mem_union, Set.mem_inter_iff]
+>   exact ⟨
+>     fun ⟨ha, hbc⟩ => ⟨⟨ha, fun hb => hbc (Or.inl hb)⟩, ⟨ha, fun hc => hbc (Or.inr hc)⟩⟩,
+>     fun ⟨⟨ha, hnb⟩, ⟨_, hnc⟩⟩ => ⟨ha, fun hbc => Or.elim hbc hnb hnc⟩
+>   ⟩
+>
+> theorem de_morgan_diff_inter {α : Type*} (A B C : Set α) :
+>     A \ (B ∩ C) = (A \ B) ∪ (A \ C) := by
+>   apply Set.ext
+>   intro x
+>   constructor
+>   · intro ⟨ha, hnbc⟩
+>     exact Or.elim (Classical.em (x ∈ B))
+>       (fun hb => Or.inr ⟨ha, fun hc => hnbc ⟨hb, hc⟩⟩)
+>       (fun hnb => Or.inl ⟨ha, hnb⟩)
+>   · intro h
+>     exact Or.elim h
+>       (fun ⟨ha, hnb⟩ => ⟨ha, fun ⟨hb, _⟩ => hnb hb⟩)
+>       (fun ⟨ha, hnc⟩ => ⟨ha, fun ⟨_, hc⟩ => hnc hc⟩)
+>
+> #check @de_morgan_diff_union
+> #check @de_morgan_diff_inter
+> ```
 
 ### sets algebra
 
@@ -412,8 +507,11 @@ $$
 > ```lean shell
 > import Mathlib
 >
-> example {α : Type*} (A B : Set α) : A \ B = A ∩ Bᶜ := by
->   rw [Set.diff_eq]
+> theorem set_diff_eq_inter_compl {α : Type*} (A B : Set α) : A \ B = A ∩ Bᶜ := by
+>   ext x
+>   rfl
+>
+> #check @set_diff_eq_inter_compl
 > ```
 
 The symmetric difference keeps elements that appear in exactly one set:
@@ -427,6 +525,27 @@ Equivalently, membership in $A \triangle B$ is exclusive-or:
 $$
 x \in A\triangle B \iff (x \in A \land x \notin B) \lor (x \notin A \land x \in B)
 $$
+
+```lean shell
+import Mathlib
+
+def setSymmDiff {α : Type*} (A B : Set α) : Set α := (A \ B) ∪ (B \ A)
+
+theorem setSymmDiff_comm {α : Type*} (A B : Set α) :
+    setSymmDiff A B = setSymmDiff B A := by
+  apply Set.ext
+  intro x
+  exact ⟨fun h => Or.elim h Or.inr Or.inl, fun h => Or.elim h Or.inr Or.inl⟩
+
+theorem setSymmDiff_self {α : Type*} (A : Set α) :
+    setSymmDiff A A = ∅ := by
+  apply Set.ext
+  intro x
+  exact ⟨fun h => Or.elim h (fun ⟨ha, hna⟩ => hna ha) (fun ⟨ha, hna⟩ => hna ha), False.elim⟩
+
+#check @setSymmDiff_comm
+#check @setSymmDiff_self
+```
 
 ### power set
 
@@ -475,6 +594,21 @@ If $A$ has $n$ elements, then each subset of $A$ is one binary string in $\{0,1\
 > Since $f$ is surjective, $D = f(d)$ for some $d \in A$. Then $d \in D \iff d \notin f(d) \iff d \notin D$, contradiction.
 >
 > Therefore $\mathcal{P}(A)$ has strictly larger cardinality than $A$.
+>
+> ```lean shell
+> import Mathlib
+>
+> theorem cantor_diagonal {α : Type*} (f : α → Set α) : ¬ Function.Surjective f := by
+>   intro hsurj
+>   let D : Set α := {a | a ∉ f a}
+>   obtain ⟨d, hd⟩ := hsurj D
+>   have hiff : d ∈ f d ↔ d ∉ f d := by
+>     conv => lhs; rw [hd]
+>     rfl
+>   exact (iff_not_self hiff)
+>
+> #check @cantor_diagonal
+> ```
 
 ### arbitrary unions and intersection
 
@@ -513,6 +647,17 @@ $$
 
 The index set $I$ is bookkeeping; the sets $A_i$ are the mathematical objects. Different indices may name the same subset.
 
+```lean shell
+import Mathlib
+
+theorem compl_iUnion {α : Type*} {ι : Type*} (A : ι → Set α) :
+    (⋃ i, A i)ᶜ = ⋂ i, (A i)ᶜ := by
+  ext x
+  simp
+
+#check @compl_iUnion
+```
+
 > [!note]+ repetition value within a family
 >
 > A family can have repeated values because it is a function out of $I$. A set cannot have repeated elements because extensionality deletes repetitions.
@@ -548,6 +693,24 @@ $$
 $$
 
 The quotient set $A/{\sim}$ is the set of all equivalence classes.
+
+```lean shell
+import Mathlib
+
+theorem equiv_class_eq_iff {α : Type*} {r : α → α → Prop} (heq : Equivalence r) (a b : α) :
+    r a b ↔ ({x : α | r x a} : Set α) = {x : α | r x b} := by
+  constructor
+  · intro hab
+    apply Set.ext
+    intro x
+    exact ⟨fun hxa => heq.trans hxa hab, fun hxb => heq.trans hxb (heq.symm hab)⟩
+  · intro hset
+    have haa : a ∈ ({x : α | r x a} : Set α) := heq.refl a
+    rw [hset] at haa
+    exact haa
+
+#check @equiv_class_eq_iff
+```
 
 A _partial order_ is reflexive, antisymmetric, and transitive.
 
@@ -613,9 +776,55 @@ $$
 f(S \cap U) \subseteq f(S) \cap f(U)
 $$
 
+```lean shell
+import Mathlib
+
+theorem preimage_union {α β : Type*} (f : α → β) (T V : Set β) :
+    f ⁻¹' (T ∪ V) = f ⁻¹' T ∪ f ⁻¹' V := by
+  apply Set.ext
+  intro x
+  rfl
+
+theorem image_inter_subset {α β : Type*} (f : α → β) (S U : Set α) :
+    f '' (S ∩ U) ⊆ f '' S ∩ f '' U := by
+  intro y hy
+  obtain ⟨x, ⟨hxs, hxu⟩, rfl⟩ := hy
+  exact ⟨⟨x, hxs, rfl⟩, ⟨x, hxu, rfl⟩⟩
+
+#check @preimage_union
+#check @image_inter_subset
+```
+
 ### surjection, bijection, injection
 
 Equality holds when $f$ is injective.
+
+```lean shell
+import Mathlib
+
+theorem image_inter_eq_of_injective {α β : Type*} {f : α → β}
+    (hinj : Function.Injective f) (S U : Set α) :
+    f '' (S ∩ U) = f '' S ∩ f '' U := by
+  apply Set.ext
+  intro y
+  constructor
+  · rintro ⟨x, ⟨hxs, hxu⟩, rfl⟩
+    exact ⟨⟨x, hxs, rfl⟩, ⟨x, hxu, rfl⟩⟩
+  · rintro ⟨⟨x₁, hx₁, rfl⟩, ⟨x₂, hx₂, heq⟩⟩
+    have hx : x₂ = x₁ := hinj heq
+    exact ⟨x₁, ⟨hx₁, hx ▸ hx₂⟩, rfl⟩
+
+theorem bijective_comp {α β γ : Type*} {g : β → γ} {f : α → β}
+    (hg : Function.Bijective g) (hf : Function.Bijective f) :
+    Function.Bijective (fun x => g (f x)) := by
+  refine ⟨fun a b h => hf.1 (hg.1 h), fun c => ?_⟩
+  obtain ⟨b, rfl⟩ := hg.2 c
+  obtain ⟨a, rfl⟩ := hf.2 b
+  exact ⟨a, rfl⟩
+
+#check @image_inter_eq_of_injective
+#check @bijective_comp
+```
 
 | type       | condition                                   |
 | ---------- | ------------------------------------------- |
@@ -758,6 +967,33 @@ Closed and open are not exclusive. In the discrete topology every set is both. I
 The _closure_ $\overline{A}$ is the smallest closed set containing $A$; the _interior_ $\mathrm{int}(A)$ is the largest open set inside $A$. Their difference $\overline{A} \setminus \mathrm{int}(A)$ is the boundary $\partial A$.
 
 Open and closed are properties of subsets relative to a topology on $X$, not absolute properties of the raw set.
+
+```lean shell
+import Mathlib
+
+structure Topology (α : Type*) where
+  IsOpen : Set α → Prop
+  isOpen_empty : IsOpen ∅
+  isOpen_univ : IsOpen Set.univ
+  isOpen_inter : ∀ ⦃U V : Set α⦄, IsOpen U → IsOpen V → IsOpen (U ∩ V)
+
+def Topology.IsClosed {α : Type*} (τ : Topology α) (C : Set α) : Prop :=
+  τ.IsOpen Cᶜ
+
+theorem Topology.isClosed_union {α : Type*} (τ : Topology α) {C D : Set α}
+    (hC : τ.IsClosed C) (hD : τ.IsClosed D) :
+    τ.IsClosed (C ∪ D) := by
+  unfold Topology.IsClosed at *
+  have hcompl : (C ∪ D)ᶜ = Cᶜ ∩ Dᶜ := by
+    apply Set.ext
+    intro x
+    exact ⟨fun h => ⟨fun hc => h (Or.inl hc), fun hd => h (Or.inr hd)⟩,
+           fun ⟨hnc, hnd⟩ h => Or.elim h hnc hnd⟩
+  rw [hcompl]
+  exact τ.isOpen_inter hC hD
+
+#check @Topology.isClosed_union
+```
 
 ## Zermelo-Fraenkel set theory
 
