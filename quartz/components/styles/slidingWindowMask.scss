@@ -7,9 +7,9 @@
 
   --swm-note: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
   --swm-div: color-mix(in srgb, var(--gray) 28%, transparent);
-  --swm-window: #fdb2a2;
-  --swm-window-bg: color-mix(in srgb, #fdb2a2 78%, var(--light));
-  --swm-global-bg: color-mix(in srgb, #cdd597 78%, var(--light));
+  --swm-window: var(--fig-salmon);
+  --swm-window-bg: color-mix(in srgb, var(--fig-salmon) 78%, var(--light));
+  --swm-global-bg: color-mix(in srgb, var(--fig-sage) 78%, var(--light));
   --swm-masked-bg: color-mix(in srgb, var(--lightgray) 65%, var(--light));
   --swm-grid: color-mix(in srgb, var(--gray) 24%, transparent);
   --swm-tab-surface: var(--fig-tab-surface);
@@ -18,8 +18,8 @@
 }
 
 :root[saved-theme='dark'] .sliding-window-mask {
-  --swm-window-bg: color-mix(in srgb, #fdb2a2 45%, var(--lightgray));
-  --swm-global-bg: color-mix(in srgb, #cdd597 45%, var(--lightgray));
+  --swm-window-bg: color-mix(in srgb, var(--fig-salmon) 45%, var(--lightgray));
+  --swm-global-bg: color-mix(in srgb, var(--fig-sage) 45%, var(--lightgray));
   --swm-grid: color-mix(in srgb, var(--gray) 18%, transparent);
   --swm-tab-active: color-mix(in srgb, var(--swm-window) 18%, var(--swm-tab-surface));
 }

@@ -8,12 +8,11 @@
   --mha-line: color-mix(in srgb, var(--gray) 24%, transparent);
   --mha-surface-shadow:
     0 0 0 1px var(--mha-line) inset, 0 18px 46px color-mix(in srgb, var(--dark) 7%, transparent);
-  --mha-panel-shadow: 0 0 0 1px color-mix(in srgb, var(--gray) 18%, transparent) inset;
   --mha-stroke: color-mix(in srgb, var(--darkgray) 70%, transparent);
   --mha-stroke-soft: color-mix(in srgb, var(--gray) 45%, transparent);
   --mha-note: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
-  --mha-salmon: #fdb2a2;
-  --mha-sage: #cdd597;
+  --mha-salmon: var(--fig-salmon);
+  --mha-sage: var(--fig-sage);
   --mha-input-bg: color-mix(in srgb, var(--lightgray) 50%, var(--light));
   --mha-input-edge: var(--mha-stroke);
   --mha-head-bg: color-mix(in srgb, var(--lightgray) 35%, var(--light));

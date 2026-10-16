@@ -11,15 +11,15 @@
   --fat-note-fg: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
   --fat-bg-cell: color-mix(in srgb, var(--lightgray) 60%, var(--light));
   --fat-bg-faded: color-mix(in srgb, var(--lightgray) 35%, var(--light));
-  --fat-active: #fdb2a2;
-  --fat-active-bg: color-mix(in srgb, #fdb2a2 35%, var(--light));
-  --fat-done: #cdd597;
-  --fat-done-bg: color-mix(in srgb, #cdd597 30%, var(--light));
+  --fat-active: var(--fig-salmon);
+  --fat-active-bg: color-mix(in srgb, var(--fig-salmon) 35%, var(--light));
+  --fat-done: var(--fig-sage);
+  --fat-done-bg: color-mix(in srgb, var(--fig-sage) 30%, var(--light));
 }
 
 :root[saved-theme='dark'] .flash-attention-tiles {
-  --fat-active-bg: color-mix(in srgb, #fdb2a2 20%, var(--lightgray));
-  --fat-done-bg: color-mix(in srgb, #cdd597 18%, var(--lightgray));
+  --fat-active-bg: color-mix(in srgb, var(--fig-salmon) 20%, var(--lightgray));
+  --fat-done-bg: color-mix(in srgb, var(--fig-sage) 18%, var(--lightgray));
 }
 
 .fat-stage {

@@ -7,8 +7,8 @@
   --mla-stroke: color-mix(in srgb, var(--darkgray) 70%, transparent);
   --mla-div: color-mix(in srgb, var(--gray) 28%, transparent);
   --mla-note: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
-  --mla-salmon: #fdb2a2;
-  --mla-sage: #cdd597;
+  --mla-salmon: var(--fig-salmon);
+  --mla-sage: var(--fig-sage);
   --mla-cyan: #bfe8f2;
   --mla-cached-bg: color-mix(in srgb, var(--mla-salmon) 70%, var(--light));
   --mla-cached-edge: color-mix(in srgb, var(--mla-salmon) 90%, var(--dark));

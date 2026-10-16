@@ -10,16 +10,16 @@
   --rpt-divider: color-mix(in srgb, var(--gray) 30%, transparent);
   --rpt-note-fg: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
   --rpt-node-bg: color-mix(in srgb, var(--lightgray) 55%, var(--light));
-  --rpt-match: #fdb2a2;
-  --rpt-match-bg: color-mix(in srgb, #fdb2a2 30%, var(--light));
-  --rpt-new: #cdd597;
-  --rpt-new-bg: color-mix(in srgb, #cdd597 32%, var(--light));
+  --rpt-match: var(--fig-salmon);
+  --rpt-match-bg: color-mix(in srgb, var(--fig-salmon) 30%, var(--light));
+  --rpt-new: var(--fig-sage);
+  --rpt-new-bg: color-mix(in srgb, var(--fig-sage) 32%, var(--light));
   --rpt-evict-fg: color-mix(in srgb, var(--gray) 78%, transparent);
 }
 
 :root[saved-theme='dark'] .radix-prefix-tree {
-  --rpt-match-bg: color-mix(in srgb, #fdb2a2 18%, var(--lightgray));
-  --rpt-new-bg: color-mix(in srgb, #cdd597 20%, var(--lightgray));
+  --rpt-match-bg: color-mix(in srgb, var(--fig-salmon) 18%, var(--lightgray));
+  --rpt-new-bg: color-mix(in srgb, var(--fig-sage) 20%, var(--lightgray));
   --rpt-evict-fg: color-mix(in srgb, var(--gray) 50%, transparent);
 }
 

@@ -8,12 +8,11 @@
   --acc-line: color-mix(in srgb, var(--gray) 24%, transparent);
   --acc-surface-shadow:
     0 0 0 1px var(--acc-line) inset, 0 18px 46px color-mix(in srgb, var(--dark) 7%, transparent);
-  --acc-panel-shadow: 0 0 0 1px color-mix(in srgb, var(--gray) 18%, transparent) inset;
   --acc-stroke: color-mix(in srgb, var(--darkgray) 70%, transparent);
   --acc-div: color-mix(in srgb, var(--gray) 28%, transparent);
   --acc-note: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
-  --acc-salmon: #fdb2a2;
-  --acc-sage: #cdd597;
+  --acc-salmon: var(--fig-salmon);
+  --acc-sage: var(--fig-sage);
   --acc-salmon-edge: color-mix(in srgb, var(--acc-salmon) 90%, var(--dark));
   --acc-sage-edge: color-mix(in srgb, var(--acc-sage) 90%, var(--dark));
   --acc-card-bg: color-mix(in srgb, var(--light) 96%, transparent);
