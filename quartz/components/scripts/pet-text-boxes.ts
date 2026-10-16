@@ -10,10 +10,14 @@ export function visibleTextBoxes(document: Document, exclude: Element | null): T
   const clipOf = (element: Element): TextBox | null => {
     const known = clips.get(element)
     if (known !== undefined) return known
-    const style = view.getComputedStyle(element)
     const parent = element.parentElement
     const inherited = parent && parent !== document.body ? clipOf(parent) : viewport
-    if (!inherited || style.display === 'none' || style.visibility === 'hidden') {
+    if (!inherited) {
+      clips.set(element, null)
+      return null
+    }
+    const style = view.getComputedStyle(element)
+    if (style.display === 'none' || style.visibility === 'hidden') {
       clips.set(element, null)
       return null
     }

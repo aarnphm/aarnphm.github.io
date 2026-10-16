@@ -1700,6 +1700,20 @@ $pet-head-outfits: "[data-outfit='fr'], [data-outfit='legal'], [data-outfit='cou
   .garden-pet.is-speaking & .garden-pet-close {
     display: none;
   }
+
+  // On the trail the pet is drawn in the scene and the root keeps the hidden vector's box: the
+  // bubble sits on the pixel pet's head and undoes the root's ground scale (pet.inline.ts).
+  .garden-pet[data-trail-paint='scene'] & {
+    bottom: var(--pet-trail-top, calc(100% + 0.2rem));
+    transform-origin: 0 100%;
+    scale: var(--pet-trail-unscale, 1);
+  }
+
+  .garden-pet[data-trail-paint='scene'][data-bubble='below'] & {
+    top: var(--pet-trail-foot, calc(100% + 0.2rem));
+    bottom: auto;
+    transform-origin: 0 0;
+  }
 }
 
 .garden-pet-close {

@@ -18,13 +18,14 @@ import {
   type SpacingBounds,
 } from '../visitor-trail/actor-spacing'
 import { clockObstacles, trailClockRegion } from '../visitor-trail/clock-clearance'
+import { footprintTransform, impression } from '../visitor-trail/footprints'
 import { pondDistance, type Pond } from '../visitor-trail/landscape'
 import {
   detourPetTrailSteps,
   type PetTrailFoot,
   type PetTrailSearch,
 } from '../visitor-trail/pet-trail'
-import { TRAIL_PET_RADIUS, trailPetSprite } from '../visitor-trail/trail-pet'
+import { TRAIL_PET_RADIUS, trailPetSprite, trailPetTop } from '../visitor-trail/trail-pet'
 import { visibleTextBoxes } from './pet-text-boxes'
 
 // The garden's pet: the pen-drawn mascot, living on the page's edges. It perches on the nearest box
@@ -255,7 +256,7 @@ const loadWeather = () =>
 // The storm's gust flips the umbrella on the wall clock the lightning uses, so on the home page the
 // flash and the flip land together. A CSS animation restarts each time its part shows again, so the
 // clock is set on every animation, not once as a delay.
-const syncStorm = (el: SVGSVGElement) => {
+const syncStorm = (el: Element) => {
   const at = Date.now() % (STORM_PERIOD * 1000)
   for (const a of el.getAnimations({ subtree: true }))
     if (a instanceof CSSAnimation && a.animationName.startsWith('pet-storm')) {
@@ -300,14 +301,22 @@ const render = () => {
   svg.toggleAttribute('data-heat', heat)
   svg.toggleAttribute('data-windy', windy)
   svg.toggleAttribute('data-storm', storm)
-  if (storm) syncStorm(svg)
+  if (storm) {
+    syncStorm(svg)
+    if (trailArt) syncStorm(trailArt)
+  }
   svg.toggleAttribute('data-beach', beach)
   svg.toggleAttribute('data-reading', document.documentElement.getAttribute('reader-mode') === 'on')
   // On the rail it faces the page, its back to the pole.
   root.style.setProperty('--pet-face', String(carry ? 1 : face))
   syncTrailArt()
-  root.dataset.bubble = center().y - height(perch?.scale) / 2 < 64 ? 'below' : 'above'
-  placeBubble()
+  if (speaking?.playing || chat || reminding) {
+    // On the trail the bubble sits on the pixel pet's head (reserveTrailFoot), not the hidden vector's.
+    const top =
+      trailHeadY === null ? center().y - height(perch?.scale) / 2 : trailHeadY - window.scrollY
+    root.dataset.bubble = top < 64 ? 'below' : 'above'
+    placeBubble()
+  }
   renderFriend()
 }
 
@@ -494,6 +503,7 @@ const petObstacles = () => ({
   camps: campSolids(),
 })
 type PetObstacles = ReturnType<typeof petObstacles>
+type PlacementMeasurements = { obstacles?: PetObstacles }
 
 // A snapshot lasts only for the synchronous search, so scrolling and DOM changes get fresh boxes.
 const coversText = (edge: Edge, obstacles = petObstacles()) => {
@@ -531,9 +541,13 @@ const floorClear = (x: number, y = floorY(), obstacles = petObstacles()) =>
   !coversText({ el: null, kind: 'floor', t: 0, at: { x, y }, score: 0 }, obstacles)
 
 // Scan out both ways, then move up when a line of text blocks the whole floor.
-const floorNear = (x: number, fits?: (p: Perch) => boolean): Perch | null =>
+const floorNear = (
+  x: number,
+  fits?: (p: Perch) => boolean,
+  seen: PlacementMeasurements = {},
+): Perch | null =>
   unseen<Perch | null>(() => {
-    const obstacles = petObstacles()
+    const obstacles = (seen.obstacles ??= petObstacles())
     const lo = margin + width / 2
     const hi = window.innerWidth - margin - width / 2
     const start = clamp(x, lo, hi)
@@ -567,9 +581,14 @@ const floorReach = (from: number, to: number) =>
 
 // The first edge that is actually in view at the point the pet would hold, moves with the page,
 // and leaves the text around it clear.
-function pickEdge(anchor: Point, avoid: Element | null, fits?: (p: Perch) => boolean): Edge | null {
+function pickEdge(
+  anchor: Point,
+  avoid: Element | null,
+  fits?: (p: Perch) => boolean,
+  seen: PlacementMeasurements = {},
+): Edge | null {
   return unseen(() => {
-    const obstacles = petObstacles()
+    const obstacles = (seen.obstacles ??= petObstacles())
     for (const edge of edgesNear(anchor, avoid).slice(0, 20)) {
       const probe = edge.kind === 'hang' ? edge.at.y - 3 : edge.at.y + 3
       const hit = document.elementsFromPoint(edge.at.x, probe).find(e => !root?.contains(e))
@@ -1042,6 +1061,12 @@ let trailPaintFrame = 0
 let trailPlanFrame = 0
 let trailActor: SVGGElement | null = null
 let trailArt: SVGGElement | null = null
+// The top of the trail pet's drawing in document pixels, while it is drawn there.
+let trailHeadY: number | null = null
+// The trail pet's prints go in the visitors' track layer, so moss under them is trampled and snow
+// takes their colour. The last print's place is in that layer's units.
+let trailTracks: SVGGElement | null = null
+let trailPrint: { x: number; y: number; side: number } | null = null
 let trailYieldEpisode = 0
 // Screen pixels per scene unit of a trail's drawing: the trail pet is sized in scene units like the
 // folk there, and the walk planner works in screen pixels.
@@ -1087,7 +1112,11 @@ const clearTrailActor = () => {
   trailActor?.remove()
   trailActor = null
   trailArt = null
+  trailHeadY = null
+  trailPrint = null
   root?.removeAttribute('data-trail-paint')
+  for (const property of ['--pet-trail-top', '--pet-trail-foot', '--pet-trail-unscale'])
+    root?.style.removeProperty(property)
 }
 const reserveTrailFoot = (path: SVGPathElement, foot: TrailFoot) => {
   if (!currentTrailPath(path)) return clearTrailActor()
@@ -1139,6 +1168,62 @@ const reserveTrailFoot = (path: SVGPathElement, foot: TrailFoot) => {
   trailActor.dataset.groundY = String(point.y)
   trailActor.dataset.progress = foot.progress.toFixed(6)
   trailActor.dataset.scale = String(foot.scale)
+  // The speech bubble, in the root's own pixels: the root is scaled by the foot's ground scale with
+  // the hidden vector pet's feet on the trail, so the pixel pet's head is its height in scene units
+  // above them. The bubble undoes the scale to read at the page's size.
+  const head = trailPetTop(rain) * Math.hypot(matrix.a, matrix.b)
+  const feet = (edgeY.stand - viewTop) * unit
+  const gap = 4 / foot.scale
+  trailHeadY = foot.y - head * foot.scale
+  const bubble: [string, string][] = [
+    ['--pet-trail-top', `${((viewBottom - edgeY.stand) * unit + head + gap).toFixed(1)}px`],
+    ['--pet-trail-foot', `${(feet + gap).toFixed(1)}px`],
+    ['--pet-trail-unscale', (1 / foot.scale).toFixed(4)],
+  ]
+  for (const [property, value] of bubble)
+    if (root.style.getPropertyValue(property) !== value) root.style.setProperty(property, value)
+  leaveTrailPrint(scene, foot)
+}
+// One blob print a stride along the walk, on alternating sides; muddy in the rain. A jump longer
+// than a few strides (a hop on, a new perch) starts the line again without a print.
+const leaveTrailPrint = (scene: SVGSVGElement, foot: TrailFoot) => {
+  const layer = scene.querySelector<SVGGElement>('.trail-visitor-tracks')
+  const plane = layer ? trailScreenMatrix(layer) : null
+  const matrix = trailScreenMatrix(scene)
+  if (!layer || !plane || !matrix) return
+  if (trailTracks?.parentNode !== layer) {
+    trailTracks = document.createElementNS('http://www.w3.org/2000/svg', 'g')
+    trailTracks.setAttribute('class', 'trail-pet-tracks')
+    layer.append(trailTracks)
+    trailPrint = null
+  }
+  const at = new DOMPoint(foot.x - window.scrollX, foot.y - window.scrollY).matrixTransform(
+    plane.inverse(),
+  )
+  const size = (foot.scale * Math.hypot(matrix.a, matrix.b)) / Math.hypot(plane.a, plane.b)
+  const stride = 9 * size
+  if (!trailPrint) {
+    trailPrint = { x: at.x, y: at.y, side: 1 }
+    return
+  }
+  const step = Math.hypot(at.x - trailPrint.x, at.y - trailPrint.y)
+  if (step > stride * 4) {
+    trailPrint = { x: at.x, y: at.y, side: trailPrint.side }
+    return
+  }
+  if (step < stride) return
+  const angle = Math.atan2(at.y - trailPrint.y, at.x - trailPrint.x)
+  const mark = impression(document, 'blob')
+  mark.dataset.footprint = 'blob'
+  mark.dataset.footprintOwner = 'pet'
+  if (rain) mark.dataset.wet = ''
+  mark.setAttribute(
+    'transform',
+    `${footprintTransform(at.x, at.y, angle, trailPrint.side, 3 * size)} scale(${(0.9 * size).toFixed(4)})`,
+  )
+  trailTracks.append(mark)
+  while (trailTracks.childElementCount > 48) trailTracks.firstElementChild?.remove()
+  trailPrint = { x: at.x, y: at.y, side: -trailPrint.side }
 }
 const paintTrail = (animation: Animation, path: SVGPathElement) => {
   const paint = () => {
@@ -1957,7 +2042,7 @@ function moveTo(next: Perch, how: 'chute' | 'stroll' | 'fade' | null = null) {
 // presenting, the frame fills the screen and leaves only 2rem above the deck, so the pet keeps its
 // full size and sits over the deck's top-right corner, legs over the side, its seat dropped as far
 // as its head needs. When a slide puts text under it there, it steps out of sight.
-const slidesPerch = (): Perch | 'covered' | null => {
+const slidesPerch = (seen: PlacementMeasurements): Perch | 'covered' | null => {
   if (document.body.dataset.slides !== 'true') return null
   const frame = document.querySelector<HTMLElement>('.slides-root')
   if (!frame) return null
@@ -1972,7 +2057,9 @@ const slidesPerch = (): Perch | 'covered' | null => {
   const drop = Math.max(0, margin + (edgeY.sit - viewTop) * unit - rect.top)
   const p: Perch = { el: deck, kind: 'sit', t: 1 + (0.36 * unit) / rect.width, drop }
   const at = { x: placeOn(p).x - window.scrollX + width / 2, y: rect.top + drop }
-  return unseen(() => coversText({ ...p, at, score: 0 })) ? 'covered' : p
+  return unseen(() => coversText({ ...p, at, score: 0 }, (seen.obstacles ??= petObstacles())))
+    ? 'covered'
+    : p
 }
 
 // The page changed under a perched pet: if its edge went away or text now sits under it, it finds
@@ -1991,19 +2078,28 @@ function recheckPerch() {
 
 function relocate(anchor: Point, avoid: Element | null, how: 'chute' | null = null) {
   if (!root) return
-  const slides = slidesPerch()
   // On the friendship page it lands where the friend fits too, beside it, on its head or along its
   // edge; only when no perch near has that room does it take one the friend has to sit out.
-  const seen = {}
-  const fits =
-    friend && friendPage() ? (p: Perch) => !!friendSpot(p, placeOn(p), false, seen) : undefined
-  const next =
-    slides === 'covered'
-      ? null
-      : (slides ??
-        (fits && (pickEdge(anchor, avoid, fits) ?? floorNear(anchor.x, fits))) ??
-        pickEdge(anchor, avoid) ??
-        floorNear(anchor.x))
+  const before = friend?.style.visibility ?? ''
+  if (friend) friend.style.visibility = 'hidden'
+  let next: Perch | null
+  try {
+    next = unseen(() => {
+      // No page writes occur until a perch is chosen. Every fallback shares this one snapshot.
+      const seen: PlacementMeasurements = {}
+      const slides = slidesPerch(seen)
+      const fits =
+        friend && friendPage() ? (p: Perch) => !!friendSpot(p, placeOn(p), false, seen) : undefined
+      return slides === 'covered'
+        ? null
+        : (slides ??
+            (fits && (pickEdge(anchor, avoid, fits, seen) ?? floorNear(anchor.x, fits, seen))) ??
+            pickEdge(anchor, avoid, undefined, seen) ??
+            floorNear(anchor.x, undefined, seen))
+    })
+  } finally {
+    if (friend) friend.style.visibility = before
+  }
   if (next) moveTo(next, how)
   else {
     root.hidden = true
@@ -2286,6 +2382,7 @@ const onSettle = () => {
   const y = doc ? doc.y - window.scrollY : Infinity
   if (y >= -margin && y + height(perch?.scale) <= window.innerHeight + margin) {
     reanchor()
+    recheckPerch()
     return
   }
   const anchor = pointer ?? { x: window.innerWidth * 0.75, y: window.innerHeight * 0.6 }
@@ -2385,8 +2482,10 @@ function renderFriend() {
     document.documentElement.getAttribute('reader-mode') === 'on',
   )
   friend.style.setProperty('--pet-face', String(friendFace))
-  const c = friendCenter()
-  if (c) friend.dataset.bubble = c.y - height(friendScale()) / 2 < 64 ? 'below' : 'above'
+  if (friend.classList.contains('is-speaking')) {
+    const c = friendCenter()
+    if (c) friend.dataset.bubble = c.y - height(friendScale()) / 2 < 64 ? 'below' : 'above'
+  }
 }
 
 const friendPlay = (next: State, ms: number) => {
@@ -2423,7 +2522,7 @@ function friendSpot(
   p: Perch,
   m: Point,
   far = true,
-  seen: { obstacles?: PetObstacles } = {},
+  seen: PlacementMeasurements = {},
 ): { perch: Perch; doc: Point } | null {
   const covered = (edge: Edge) => coversText(edge, (seen.obstacles ??= petObstacles()))
   const s = p.scale ?? 1
@@ -2522,11 +2621,12 @@ function friendSpot(
       }
     return far ? nearby() : null
   }
+  const before = friend?.style.visibility ?? ''
   if (friend) friend.style.visibility = 'hidden'
   try {
     return unseen(probe)
   } finally {
-    if (friend) friend.style.visibility = ''
+    if (friend) friend.style.visibility = before
   }
 }
 
@@ -2638,6 +2738,7 @@ const showFriendBubble = (text: string, ms: number) => {
     bubble.lang = 'fr'
   }
   friend.classList.add('is-speaking')
+  renderFriend()
   later(() => friend?.classList.remove('is-speaking'), ms)
 }
 
@@ -2768,12 +2869,16 @@ function spawnFriend() {
   el.style.transformOrigin = '0 0'
   el.dataset.petWidget = ''
   el.hidden = true
-  el.innerHTML = `<button type="button" class="garden-pet-button" aria-label="the pet's friend">${friendMarkup}</button><div class="garden-pet-bubble" role="status"><span class="garden-pet-bubble-text"></span></div>`
   document.body.appendChild(el)
   friend = el
-  friendSvg = el.querySelector('svg')
-  requestAnimationFrame(() => el.classList.add('is-visible'))
-  scheduleMeet()
+  friendSvg = null
+  return () => {
+    el.innerHTML = `<button type="button" class="garden-pet-button" aria-label="the pet's friend">${friendMarkup}</button><div class="garden-pet-bubble" role="status"><span class="garden-pet-bubble-text"></span></div>`
+    friendSvg = el.querySelector('svg')
+    renderFriend()
+    requestAnimationFrame(() => el.classList.add('is-visible'))
+    scheduleMeet()
+  }
 }
 
 function removeFriend() {
@@ -2799,18 +2904,22 @@ const spawn = () => {
   el.className = 'garden-pet'
   el.style.transformOrigin = '0 0'
   el.dataset.petWidget = ''
-  el.innerHTML = `<button type="button" class="garden-pet-button" aria-label="garden pet">${markup}</button><div class="garden-pet-bubble" role="status"><span class="garden-pet-bubble-text"></span><button type="button" class="garden-pet-close" aria-label="dismiss reminder">×</button></div>`
   document.body.appendChild(el)
   root = el
-  svg = el.querySelector('svg')
+  svg = null
   // The pet is absolutely positioned in document coordinates, so the window's scroll carries it
   // along its edge for free. The containing block may sit off the document origin; measure it once.
   const rect = el.getBoundingClientRect()
   width = rect.width || 72
   unit = width / viewWidth
   origin = { x: rect.left + window.scrollX, y: rect.top + window.scrollY }
-  showBubble()
-  requestAnimationFrame(() => el.classList.add('is-visible'))
+  // Placement reads the page before the SVG's thousands of nodes need style and layout.
+  return () => {
+    el.innerHTML = `<button type="button" class="garden-pet-button" aria-label="garden pet">${markup}</button><div class="garden-pet-bubble" role="status"><span class="garden-pet-bubble-text"></span><button type="button" class="garden-pet-close" aria-label="dismiss reminder">×</button></div>`
+    svg = el.querySelector('svg')
+    showBubble()
+    requestAnimationFrame(() => el.classList.add('is-visible'))
+  }
 }
 
 const despawn = () => {
@@ -2839,6 +2948,7 @@ const despawn = () => {
 }
 
 const syncPets = () => {
+  let placed = false
   const enabled = readPetsEnabled()
   document.body.dataset.pets = enabled ? 'on' : 'off'
   // The 404 scene paints its own pet into the ruin, starting from where this one stood.
@@ -2864,18 +2974,26 @@ const syncPets = () => {
     trailWalk = null
     trailJourney = null
     afterMove = null
-    spawn()
-    spawnFriend()
+    const mount = spawn()
+    const mountFriend = spawnFriend()
     relocate(before, null)
-  } else if (perch?.el && !perch.el.isConnected) relocate(center(), null)
+    placed = true
+    mount()
+    mountFriend?.()
+  } else if (perch?.el && !perch.el.isConnected) {
+    relocate(center(), null)
+    placed = true
+  }
   if (friendPage() && !friend) {
-    spawnFriend()
+    const mountFriend = spawnFriend()
     if (perch && doc && !hop) friendFollow(perch, doc, 'appear')
+    mountFriend?.()
   }
   if (lastMove === 0) lastMove = performance.now()
   armQuietTimer()
   scheduleWander()
   scheduleReminder()
+  return placed
 }
 
 document.addEventListener('petstoggle', event => {
@@ -2893,7 +3011,7 @@ document.addEventListener('nav', () => {
   const { signal } = controller
   trailSpaceSignal = signal
   trailSpaces = new WeakMap()
-  syncPets()
+  const placed = syncPets()
   document.addEventListener('keydown', onDriveKey, { signal })
   document.addEventListener('keyup', onDriveKeyUp, { signal })
   window.addEventListener('blur', () => driveKeys.clear(), { signal })
@@ -3003,7 +3121,9 @@ document.addEventListener('nav', () => {
     if (next) moveTo(next, 'fade')
     else root.hidden = true
   }
-  clearClock()
+  // Fresh page placement already checked the clock in its obstacle snapshot. Slides have their
+  // own perch policy; retained pets still need the live check after the page changes.
+  if (!placed || document.body.dataset.slides === 'true') clearClock()
   if (scene) {
     const openTrail = () => {
       if (scene.hidden) return
