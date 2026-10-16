@@ -5,8 +5,9 @@
 //   presented  frames the display compositor drew (Display::DrawAndSwap); needs a display (xvfb-run)
 //   verify     E2E scenario on a --verify build; every region-painted frame must match a full repaint
 // CHROMIUM=<path> selects the browser; SOFTWARE_GL=1 forces SwiftShader for GPU-less machines.
-// The homepage opens the trail unless a visitor closed it. Runs start with it closed, so the
-// click opens the prepared scene; --initially-open keeps a first visit's open-on-load path.
+// The homepage keeps the trail closed and generates it when it opens, unless the visitor left it
+// open (garden:trail-open). Runs start closed and click it open, so click-to-reveal includes
+// generation; --initially-open stores the open preference and measures from navigation.
 import { mkdirSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -51,22 +52,36 @@ async function open() {
   const page = await context.newPage()
   // The shared room is a live service; the harness measures the scene without it.
   await page.route(/playhtml\.fun/, route => route.abort())
-  if (!initiallyOpen)
-    await page.addInitScript(() => localStorage.setItem('garden:trail-open', 'false'))
+  await page.addInitScript(
+    open => localStorage.setItem('garden:trail-open', String(open)),
+    initiallyOpen,
+  )
   return { context, page }
 }
-const ready = page =>
+// The opened scene finished its reveal and painted every texture.
+const revealed = page =>
   page.waitForFunction(
     () => {
       const data = document
         .querySelector('.homepage-trail-scene')
         ?.shadowRoot?.querySelector('.trail-scene')?.dataset
-      return data?.trailRendered === 'true' && data.trailPaintReady === 'true'
+      return (
+        data?.trailRendered === 'true' &&
+        data.trailOpening === 'complete' &&
+        data.trailReveal === undefined
+      )
     },
     null,
     { timeout: 120000, polling: 100 },
   )
 const toggle = page => page.click('.homepage-trail-toggle')
+const openTrail = async page => {
+  if (!initiallyOpen) {
+    await page.waitForSelector('.homepage-trail-toggle')
+    await toggle(page)
+  }
+  await revealed(page)
+}
 
 async function frames() {
   const { context, page } = await open()
@@ -90,7 +105,7 @@ async function frames() {
   // An open-on-load visit counts from navigation start; otherwise from the click.
   let clicked = 0
   if (!initiallyOpen) {
-    await ready(page)
+    await page.waitForSelector('.homepage-trail-toggle')
     clicked = await page.evaluate(() => {
       window.__trailFrames.length = 0
       return performance.now()
@@ -147,8 +162,7 @@ async function gl() {
     requestAnimationFrame(loop)
   })
   await page.goto(url)
-  await ready(page)
-  if (!initiallyOpen) await toggle(page)
+  await openTrail(page)
   await page.waitForTimeout(2500)
   await page.evaluate(() => (window.__trailGl.on = true))
   await page.waitForTimeout(3000)
@@ -168,8 +182,7 @@ async function gl() {
 async function presented() {
   const { context, page } = await open()
   await page.goto(url)
-  await ready(page)
-  await page.waitForTimeout(500)
+  await page.waitForSelector('.homepage-trail-toggle')
   await browser.startTracing(page, { categories: ['viz', 'blink.user_timing'] })
   await page.evaluate(() => {
     performance.mark('trail-click')
@@ -177,7 +190,8 @@ async function presented() {
       .querySelector('.homepage-trail-scene')
       .addEventListener('trail:reveal-end', () => performance.mark('trail-reveal-end'))
   })
-  await toggle(page)
+  if (!initiallyOpen) await toggle(page)
+  await revealed(page)
   await page.waitForTimeout(6500)
   const { traceEvents } = JSON.parse((await browser.stopTracing()).toString())
   await context.close()
@@ -217,9 +231,10 @@ async function verify() {
       }
     })
   await page.goto(url)
-  await ready(page)
-  // Let the hidden surface trim and restore its pixels before opening.
-  await page.waitForTimeout(1500)
+  await page.waitForSelector('iframe[data-trail-frame]', { state: 'attached' })
+  await page.waitForFunction(
+    () => document.querySelector('iframe[data-trail-frame]')?.contentWindow?.document.readyState,
+  )
   await page.evaluate(() => {
     document.querySelector('iframe[data-trail-frame]').contentWindow.__trailVerify = true
   })
@@ -229,14 +244,14 @@ async function verify() {
       document.dispatchEvent(new CustomEvent('themechange', { detail: { theme: value } }))
     }, value)
   const steps = [
-    ['open', () => (initiallyOpen ? null : toggle(page)), 3500],
+    ['open', () => openTrail(page), 3500],
     ['scroll', () => page.mouse.wheel(0, 180), 2000],
     ['scroll back', () => page.mouse.wheel(0, -180), 2000],
     ['dark theme', () => theme('dark'), 3500],
     ['light theme', () => theme('light'), 3500],
     ['resize', () => page.setViewportSize({ width: 1200, height: 820 }), 4000],
     ['close', () => toggle(page), 1500],
-    ['reopen', () => toggle(page), 3500],
+    ['reopen', () => openTrail(page), 3500],
   ]
   const results = []
   for (const [name, action, wait] of steps) {

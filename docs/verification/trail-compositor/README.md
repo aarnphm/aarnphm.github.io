@@ -4,13 +4,20 @@ Task: make the homepage trail opening and the motion after it as smooth as possi
 
 ## Change
 
-- `scene-compositor.ts` keeps the WebGL canvas as a retained frame. Each frame records what every draw showed (texture and its upload count, placement, alpha, mask, clip, and the draw below it). Only the regions that changed are cleared and repainted. Each layer that crosses a changed region is drawn once, with geometry limited to those regions.
-- Draws that stay unchanged for 500 ms join cached segments: framebuffer textures that hold a run of consecutive draws composited once. Premultiplied source-over is associative, so the cached run gives the same pixels as the separate draws. A built segment stays while its draws are unchanged. Draws that settle next to it form new segments. A draw that moves again after it joins a segment waits twice as long next time (up to 8 s). Segment textures are limited to 3 canvas areas in total, and to 1 canvas area of rebuilds per frame. Segments hold untinted pixels and receive the daylight tint when drawn to the canvas, so a tint change repaints the canvas from the segments instead of discarding them. With a gain above 1, the per-draw `rgb ≤ a` clamp no longer applies inside a segment: with a forced dusk tint (1.05, 0.98, 0.91), at most 58 pixels per frame differ, by at most 7/255. With a neutral tint the result is exact. During a continuous tint change, draws per frame drop from 1063–1097 to 564–607.
-- The fragment shader gets texture, mask and clip coordinates from `gl_FragCoord` and the inverse placement. Interpolated coordinates selected different nearest texels when a region draw used different geometry than the full quad (about 0.3% of pixels flipped). Now both paths sample the same texels.
-- When hidden, the surface still releases its segment textures, but it keeps the retained frame state, because the restored pixels are identical. Reopening does not repaint everything.
+- `scene-compositor.ts` keeps the WebGL canvas as a retained frame. Each frame records what every draw showed: the texture and its upload count, placement, alpha, mask, clip, and the draw below it. Only the regions that changed are cleared and repainted. Each layer that crosses a changed region is drawn once, with its geometry limited to those regions. A frame with nothing to repaint makes no WebGL calls.
+- Draws that stay unchanged for 500 ms join cached segments. A segment is a framebuffer texture that holds a run of consecutive draws, composited once. Premultiplied source-over is associative, so the cached run gives the same pixels as the separate draws.
+  - A built segment stays while its draws are unchanged. Draws that settle next to it form new segments.
+  - A draw that moves again after it joins a segment waits twice as long next time, up to 8 s.
+  - Segment textures are limited to 3 canvas areas in total. Rebuilds are limited to 1 canvas area per frame.
+  - A resized segment does not count its old texture against the limit.
+- Segments hold untinted pixels and receive the daylight tint when they are drawn to the canvas. A tint change repaints the whole canvas from the cached segments, keeps the segments, and keeps the retained draw positions, so the next frame again repaints only changed regions.
+  - With a gain above 1, the per-draw `rgb ≤ a` clamp no longer applies inside a segment. With a forced dusk tint (1.05, 0.98, 0.91), at most 58 pixels per frame differ, by at most 7/255. With a neutral tint the result is exact.
+- A canvas surface (`<foreignObject>`) can name the rects it repainted in `trail:canopy-paint` (`detail.rects`, in canvas texels). Only those rects are dirtied. Without `detail.rects`, the whole surface is dirtied. Moss sends its clump rects. A moss step dirties about 57k px on average, instead of the whole 1440 × 459 meadow surface, which otherwise covered more than half the canvas and caused a whole repaint on every step.
+- The fragment shader gets texture, mask and clip coordinates from `gl_FragCoord` and the inverse placement. With interpolated coordinates, a region draw selected different nearest texels than the full quad when the geometry differed (about 0.3% of pixels flipped). Now both paths sample the same texels.
+- While the trail is hidden, the surface releases its segment textures but keeps the retained frame state, because the restored pixels are identical. Reopening does not repaint everything.
 - `actor-spacing.ts`: `readActors` matches `[data-trail-collision]` once per frame instead of once per journey call.
 - `crown-wind.ts`: the gust step uses the scroll offset instead of `getBoundingClientRect()`, so it does not force layout after other writes.
-- `scenery-worker.ts` paints the terraces, hinterland, terrain (ravine, puddles, fords, meadow, wayside), mountain backdrop and foreground repoussoir trees off the main thread. It sends each part as soon as it is ready, while the main thread samples routes and plans the forest. If a worker cannot start or fails, `scenery-workers.ts` paints the remaining parts on the main thread when the scene needs them.
+- `scenery-worker.ts` paints the terraces, hinterland, terrain (ravine, puddles, fords, meadow, wayside) and the mountain backdrop off the main thread. It is emitted as `trail-scenery.worker.js`. It sends each part as soon as it is ready, while the main thread samples routes and plans the forest. If the worker cannot start or fails, `scenery-workers.ts` paints the remaining parts on the main thread when the scene needs them. The foreground beeches stay with the tree workers.
 
 ## Replay
 
@@ -29,35 +36,48 @@ node build.mjs site-verify --verify && node serve.mjs site-verify 7377 &
 node measure.mjs verify --port 7377 --label current
 ```
 
-The homepage opens the trail on load unless the visitor closed it (`garden:trail-open`). The runs start with it closed, so the click opens a prepared scene. `--initially-open` keeps the open-on-load path; `frames` then measures from navigation start. The verifier checks frames painted from retained regions and frames repainted whole from cached segments. `CHROMIUM=<path>` selects a browser. `SOFTWARE_GL=1` forces SwiftShader on machines with no GPU. Results are written to `artifacts/`. On a machine with a GPU, leave `SOFTWARE_GL` unset to measure the real presentation path.
+How the runs open the trail:
 
-The harness page (`index.html`) contains the homepage trail markup with a short landing. `build.mjs` bundles `frame.ts` and the homepage script in the same way as `shared-trail-assets.ts`. The live playhtml room is blocked so that runs do not depend on other visitors.
+- The homepage keeps the trail closed and generates the scene when it opens, unless the visitor left it open (`garden:trail-open`).
+- Runs start with the trail closed and click it open, so click-to-reveal includes generation.
+- `--initially-open` stores the open preference and measures from navigation start.
+
+Options and output:
+
+- The verifier checks every frame painted from retained regions, and every whole repaint drawn from cached segments, against a full repaint of the same frame.
+- `CHROMIUM=<path>` selects a browser.
+- `SOFTWARE_GL=1` forces SwiftShader on machines with no GPU. On a machine with a GPU, leave it unset to measure the real presentation path.
+- Results are written to `artifacts/`.
+
+The harness page (`index.html`) contains the homepage trail markup and a short landing. `build.mjs` bundles `frame.ts`, its workers and the homepage script in the same way as `shared-trail-assets.ts`. Workers are served from `static/scripts`; checkouts that embedded worker source still build. The live playhtml room is blocked, so runs do not depend on other visitors.
 
 ## Results
 
-Recorded on 2026-10-15 in a 4-core cloud VM with no GPU (Chromium 141, SwiftShader), 1440×900 at DPR 1, baseline `170eafb`. Medians of three runs unless noted.
+Recorded on 2026-10-16 in a 4-core cloud VM with no GPU (Chromium 141, SwiftShader), at 1440×900 and DPR 1. The baseline is `main` at `4ae6bba`.
 
-| Steady state, 2.5–5.5 s after opening                              | Baseline          | Current                                                         |
-| ------------------------------------------------------------------ | ----------------- | --------------------------------------------------------------- |
-| WebGL calls per frame (median / p95)                               | 3304–4023 / ~4040 | 1596–2156 / 2839–3054                                           |
-| Draws per frame (median)                                           | 929–1150          | 328–461                                                         |
-| Composited fill per frame, canvas areas                            | 3.9–5.6           | 0.25–0.7 for changed regions (plus segment rebuilds, at most 1) |
-| Presented frames per second, Xvfb + SwiftShader                    | 5                 | 8                                                               |
-| Pixel verification (open, scroll, theme ×2, resize, close, reopen) | n/a               | 0 mismatched frames; worst channel difference 2/255             |
+Steady state, 2.5–5.5 s after the reveal (2 runs):
 
-In this VM, software GL is the bottleneck. Display swaps take 200–400 ms, and uncapped `requestAnimationFrame` runs show multi-second backpressure stalls in both builds. Use these numbers as relative GPU and call load, not as expected frame rates on hardware. At DPR 2, SwiftShader presents about 1 frame per second, so changes accumulate between frames and most frames are near-full repaints. Repeat the DPR 2 runs on hardware.
+|                                   | `main`    | Current |
+| --------------------------------- | --------- | ------- |
+| WebGL calls per frame (median)    | 1250–1482 | 728–809 |
+| Draws per frame (median)          | 335–412   | 159–173 |
+| Frames rendered in the 3 s window | 12        | 24–31   |
 
-Page load until the hidden scene is ready, long animation frames (5 runs, median):
+From the click that opens the trail to the end of its reveal (5 runs, median, vsync paced):
 
-|                              | Baseline       | Current |
-| ---------------------------- | -------------- | ------- |
-| Total blocking time          | 509 ms         | 257 ms  |
-| Total long-frame time        | 828 ms         | 559 ms  |
-| Generation slices over 80 ms | 3 (130–180 ms) | 0       |
+|                          | `main`  | Current |
+| ------------------------ | ------- | ------- |
+| Click → scene prepared   | 3.10 s  | 2.96 s  |
+| Long-frame blocking time | 1048 ms | 884 ms  |
+| Long frames              | 12      | 9       |
 
-To check that the worker paints the same scenery, seed `Math.random`, `crypto.randomUUID` and `Date.now` identically in both builds. With live attributes removed (`data-motion-time`, `style`, `transform`, `data-phase`), the ground base, terrain, hinterland, backdrop and repoussoir markup is identical for seeds 1 and 9001. With `Worker` blocked, the fallback renders the scene without errors.
+Pixel verification covered open, scroll, theme ×2, resize, close and reopen. The result was 50 checked frames with 0 mismatches and a worst channel difference of 2/255. A run with a continuously changing tint checked 43 frames with 0 mismatches.
+
+In this VM, software GL is the bottleneck. Treat the numbers as relative call load and main-thread blocking, not as expected frame rates on hardware. Repeat the DPR 2 runs on hardware.
+
+To check that the worker paints the same scenery, seed `Math.random`, `crypto.randomUUID` and `Date.now` identically in both builds. With live attributes removed (`data-motion-time`, `style`, `transform`, `data-phase`), the ground base, terrain, hinterland and backdrop markup matches `main`. The only differences are in live attributes, and they also appear between two runs of `main`. With `Worker` blocked, the fallback renders the scene without errors.
 
 Not changed:
 
-- Chrome 141 does not composite the opening `clip-path: circle()` animation (`compositeFailed`, `unsupportedProperties: ["clip-path"]`). Each opening frame is driven by the main thread and needs a masked pass of the scene layer. Journeys start after the opening, so the main thread is mostly idle during it.
-- The frame script's first evaluation is still one long frame, about 250 ms here. About 150 ms of that is `getContext('webgl2')` in SwiftShader, which is much shorter on a GPU.
+- Between the click and the reveal, one frame of 550–700 ms remains in both builds. It contains the first rasterization of every scene texture and the first full layout of the generated SVG, about 270 ms of forced layout. The layout is paid by whichever geometry read comes first, currently `shared-grove`'s `getBBox`, so deferring that read would only move it.
+- Chrome 141 does not composite the opening `clip-path: circle()` animation (`compositeFailed`, `unsupportedProperties: ["clip-path"]`). Each opening frame is driven by the main thread and needs a masked pass of the scene layer.

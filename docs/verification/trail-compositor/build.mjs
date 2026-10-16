@@ -5,7 +5,7 @@
 // compared against a full repaint of the same frame.
 import { build } from 'esbuild'
 import { Features, transform } from 'lightningcss'
-import { copyFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { compileAsync } from 'sass-embedded'
@@ -64,18 +64,25 @@ const css = transform({
   targets: { chrome: 109 << 16, safari: (15 << 16) | (6 << 8), firefox: 102 << 16 },
   include: Features.MediaQueries,
 }).code.toString()
-const worker = await bundle('quartz/components/visitor-trail/tree-worker.ts')
-const navigation = await bundle('quartz/components/visitor-trail/navigation-worker.ts')
-// Baselines from before the scenery worker never read this define.
-const scenery = await bundle('quartz/components/visitor-trail/scenery-worker.ts').catch(() => null)
+// Trail workers load by URL from static/scripts; checkouts from before that embedded their source.
+const workers = {
+  TREE: ['tree-worker.ts', 'trail-trees'],
+  NAVIGATION: ['navigation-worker.ts', 'trail-navigation'],
+  MOSS: ['moss-worker.ts', 'trail-moss'],
+  SCENERY: ['scenery-worker.ts', 'trail-scenery'],
+}
+const define = { TRAIL_SCENE_STYLES: JSON.stringify(css) }
+mkdirSync(path.join(out, 'static/scripts'), { recursive: true })
+for (const [name, [entry, file]] of Object.entries(workers)) {
+  const entryPath = `quartz/components/visitor-trail/${entry}`
+  const code = existsSync(source(entryPath)) ? (await bundle(entryPath)).outputFiles[0].text : ''
+  if (code) writeFileSync(path.join(out, `static/scripts/${file}.worker.js`), code)
+  define[`TRAIL_${name}_WORKER_URL`] = JSON.stringify(`/static/scripts/${file}.worker.js`)
+  define[`TRAIL_${name}_WORKER_SOURCE`] = JSON.stringify(code)
+}
 const frame = await bundle('quartz/components/visitor-trail/frame.ts', {
   plugins: [patches],
-  define: {
-    TRAIL_TREE_WORKER_SOURCE: JSON.stringify(worker.outputFiles[0].text),
-    TRAIL_NAVIGATION_WORKER_SOURCE: JSON.stringify(navigation.outputFiles[0].text),
-    TRAIL_SCENERY_WORKER_SOURCE: JSON.stringify(scenery?.outputFiles[0].text ?? ''),
-    TRAIL_SCENE_STYLES: JSON.stringify(css),
-  },
+  define,
 })
 writeFileSync(path.join(out, 'shared-trail.js'), frame.outputFiles[0].text)
 const page = await bundle('quartz/components/scripts/homepage-trail.inline.ts', { format: 'esm' })
