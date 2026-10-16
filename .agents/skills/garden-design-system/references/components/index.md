@@ -1,0 +1,75 @@
+# Components
+
+| component | summary |
+| --- | --- |
+| [ArenaBlockGrid](ArenaBlockGrid.md) | A grid of Arena blocks that share 1px borders, under a lowercase mono section header. |
+| [ArenaChannelList](ArenaChannelList.md) | A framed list of Arena channels, each with a header row and up to three preview rows. |
+| [ArenaControls](ArenaControls.md) | The Arena channel control row: a search input that takes the free width, and a mono view toggle. |
+| [ArenaReader](ArenaReader.md) | The Arena reader frame: a mono header bar with a source link and actions, over a long-form reading pane. |
+| [ArticleTitle](ArticleTitle.md) | The note title above the byline, in `title` type at `article-title` size. |
+| [Backlinks](Backlinks.md) | The list of notes that link to this one, at the end of the page. |
+| [BaseToolbar](BaseToolbar.md) | The Base view toolbar: the view menu, sort and filter controls, and search. |
+| [Breadcrumbs](Breadcrumbs.md) | The path from `~` to the current note, separated by `/`, with middle segments folded into an overflow trigger. |
+| [Button](Button.md) | A square toolbar button with a text label and an optional 16px icon. |
+| [Byline](Byline.md) | The block under the title: tags on the left and content metadata (dates, reading time) on the right. |
+| [Calendar](Calendar.md) | A month grid of days with event chips, a preview popover for each event, and a month jump. |
+| [Callout](Callout.md) | An Obsidian callout: a titled block for notes, examples and asides inside prose. |
+| [CalloutCollapsed](CalloutCollapsed.md) | A foldable callout in its collapsed state: only the title row and the fold control show. |
+| [Chart](Chart.md) | A data chart inside a figure frame: mono ticks, worded axis titles, KaTeX annotations and a caption with the key number. |
+| [CodeBlock](CodeBlock.md) | A code block from rehype-pretty-code: an optional title, line numbers and syntax colours in both themes. |
+| [CollectionRow](CollectionRow.md) | A bordered list row that links to one note and shows its title, date and an optional description. |
+| [CourseCollection](CourseCollection.md) | A resource collection page of a course, such as its lecture videos: the strip and one table row per resource. |
+| [CourseHome](CourseHome.md) | The home of one course: a masthead, a rail of course pages, and the schedule table. |
+| [CourseUnit](CourseUnit.md) | The bar above a lecture note and the foot below it. |
+| [CourseWatch](CourseWatch.md) | A lecture video resource: the course strip, the player and the transcript. |
+| [CourseWorkspace](CourseWorkspace.md) | The lecture workspace beside an authored lecture note: source, scratchpad and notes tabs. |
+| [CoursesIndex](CoursesIndex.md) | The list of mirrored courses at `/courses/`: one bordered row per course with its study counts beneath. |
+| [Darkmode](Darkmode.md) | The theme toggle: one button that cycles system, dark and light, shown as three icon states. |
+| [DatePicker](DatePicker.md) | A date field that opens a month grid in the top layer. |
+| [Dropdown](Dropdown.md) | A text button that shows or hides one panel of details, such as gear or pace zones. |
+| [Evergreen](Evergreen.md) | The evergreen aside on a folder page: the folder's most-linked notes with a count. |
+| [ExecutionLegend](ExecutionLegend.md) | The legend that names each training-execution colour and its range. |
+| [Figure](Figure.md) | A square-framed technical figure with KaTeX labels and a caption, used inside notes. |
+| [Flashcards](Flashcards.md) | The flashcard deck view: the deck bar, the current card and the note rail. |
+| [FolderList](FolderList.md) | The note list on a folder page: framed rows with title and date. |
+| [Footer](Footer.md) | The minimal page footer: licence and social links in one row. |
+| [Footnotes](Footnotes.md) | The footnote list at the end of a note, with back-references to each call site. |
+| [HomepageTrail](HomepageTrail.md) | The shared walking trail on the home page: a toggle in the header and a scene of three paths to a campfire around the home text. |
+| [KVHeadGrouping](KVHeadGrouping.md) | Grouped-query attention: query heads sharing KV heads, with a cache-bandwidth readout. |
+| [KeyHint](KeyHint.md) | A small mono chip above a control that shows its keyboard shortcut when hints are on. |
+| [Keybind](Keybind.md) | The keyboard-shortcut help: the shortcut chip and the list of bindings it opens. |
+| [LatexCallout](LatexCallout.md) | A numbered theorem, lemma or proof from a course's converted LaTeX notes. |
+| [License](License.md) | The licence line at the foot of a page that sets `license` in frontmatter. |
+| [Link](Link.md) | A link with one of two hovers: the inverted pair on prose pages, or the hover a tool page sets for itself. |
+| [Math](Math.md) | Inline and display math in prose, and the two ways to write a number. |
+| [MathCallout](MathCallout.md) | A framed box for a definition, theorem, lemma or proof, with an optional two-column proof. |
+| [MetaEthicsTree](MetaEthicsTree.md) | A decision tree of meta-ethical positions, starting from whether moral claims can be true or false. |
+| [NoteTags](NoteTags.md) | The tag summary on a folder page: the tags used in the folder, as tag labels. |
+| [PageListSearch](PageListSearch.md) | The filter field above a folder or tag list. |
+| [Palette](Palette.md) | The command palette: a full-screen search over commands and notes, opened from the keyboard. |
+| [PerformanceDebug](PerformanceDebug.md) | A frame-timing panel that the trail and the triathlon pages share. |
+| [PressKit](PressKit.md) | The share dialog for the current page: an image card in four formats and four themes, a citation and links. |
+| [PressKitCard](PressKitCard.md) | The image card that the press kit draws on its `note` tab. |
+| [RaceMark](RaceMark.md) | A race-series mark for the race calendar: the series fill beside an event name in the series ink. |
+| [Readout](Readout.md) | A bordered grid of labelled numeric readouts for data panels. |
+| [Recommendations](Recommendations.md) | Notes related to this one by embedding similarity, at the end of the page. |
+| [Search](Search.md) | The search button and its open panel: a text field, a lexical or semantic mode toggle and a result list. |
+| [SearchField](SearchField.md) | A square search input that filters the list or grid beside it. |
+| [SeeAlso](SeeAlso.md) | The see-also tree at the end of a note: related notes drawn as a small outline with tree lines. |
+| [SegmentedControl](SegmentedControl.md) | A joined row of square toggles where exactly one view is chosen. |
+| [Select](Select.md) | A single-choice list behind a trigger, with optional groups and a meta value on each option. |
+| [Sidenote](Sidenote.md) | A sidenote: a numbered label in the text whose note sits in the margin on wide screens and expands inline on narrow ones. |
+| [Slides](Slides.md) | The slide deck view of a note inside one framed shell: a rail column of slide titles with the current slide's subsections, the deck, and a control bar with a segmented ruler. |
+| [StackedNotesToggle](StackedNotesToggle.md) | The control that switches a note into stacked-notes mode, where linked notes open as side-by-side columns. |
+| [StreamEntry](StreamEntry.md) | One stream entry: timestamped body, tags and word count, grouped by day. |
+| [StreamSearch](StreamSearch.md) | The filter field on the stream page. |
+| [Table](Table.md) | A Markdown table inside its scroll container. |
+| [TableOfContents](TableOfContents.md) | The minimal table of contents beside the note: a vertical rail of heading links that tracks the reading position. |
+| [Tag](Tag.md) | A square, outlined mono label that links to a tag page. |
+| [TikZ](TikZ.md) | A TikZ diagram rendered at build time to inline SVG, with KaTeX labels and a source button. |
+| [Tractatus](Tractatus.md) | A numbered Tractatus-style proposition outline. |
+| [TrailSettings](TrailSettings.md) | The settings panel of the home page trail. |
+| [TrainingSession](TrainingSession.md) | A training-calendar card for one planned or completed workout, tinted by how closely it matched the plan. |
+| [Transclude](Transclude.md) | A transcluded block: another note's section embedded in place, with a link back to its source. |
+| [TriTabs](TriTabs.md) | A row of small mono tabs for maps, charts and best-effort categories. |
+| [VisitorWeather](VisitorWeather.md) | The home page sun or moon button and its weather panel. |
