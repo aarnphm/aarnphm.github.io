@@ -1633,14 +1633,14 @@ const en: TriDict = {
 const fr: TriDict = {
   ui: {
     'workout notation': 'notation des séances',
-    'Read the set, then the effort and recovery. Examples explain the notation; follow the targets and units in your plan.':
-      'Lisez la série, puis l’effort et la récupération. Les exemples expliquent la notation; suivez les cibles et les unités de votre plan.',
-    'Four 100 m repeats, starting every 1 min 45 s. Swimming and rest share that interval.':
-      'Quatre répétitions de 100 m, avec un départ toutes les 1 min 45 s. Cet intervalle comprend la nage et le repos.',
-    'Finish in 1:30 → rest 15 s → start the next 100.':
-      'Finir en 1:30 → repos de 15 s → départ du prochain 100 m.',
-    'Rest interval: take 20 seconds after each repeat, whatever your swim time.':
-      'Intervalle de repos : prenez 20 secondes après chaque répétition, peu importe le temps de nage.',
+    'Read each workout in order: distance or duration, number of repeats, effort target, then recovery. Swim sets may pair a technique drill with full-stroke swimming; bike sets pair power blocks with easy pedalling; run sets pair pace or heart-rate targets with jog recoveries. Use the sport-specific units and targets written in your plan.':
+      'Lisez chaque séance dans l’ordre : distance ou durée, nombre de répétitions, cible d’effort, puis récupération. En natation, une série peut alterner un exercice technique et la nage complète; à vélo, des blocs de puissance et un pédalage facile; en course, des cibles d’allure ou de fréquence cardiaque et une récupération en jogging. Suivez les unités et les cibles propres à chaque sport dans votre plan.',
+    'Four 100 m repeats, each starting 1 min 45 s after the last. The interval includes both swimming and rest.':
+      'Quatre répétitions de 100 m, avec un départ toutes les 1 min 45 s. L’intervalle comprend la nage et le repos.',
+    'Swim in 1:30, rest 15 s, then start the next 100.':
+      'Nagez en 1:30, reposez-vous 15 s, puis partez pour le 100 m suivant.',
+    'Rest interval: take the full 20 seconds after each repeat, then begin the next one.':
+      'Intervalle de repos : prenez les 20 secondes complètes après chaque répétition, puis commencez la suivante.',
     '4 × 100 m, RI :20 → 400 m of swimming, with 20 s rests.':
       '4 × 100 m, RI :20 → 400 m de nage, avec des repos de 20 s.',
     'Freestyle (usually front crawl), backstroke, breaststroke, butterfly.':
@@ -1651,14 +1651,14 @@ const fr: TriDict = {
       'Quatre nages individuel : papillon, dos, brasse, nage libre. IMO suit cet ordre d’une répétition à l’autre.',
     '100 m IM → 25 m of each stroke. 4 × 100 m IMO → one stroke per 100.':
       '100 m IM → 25 m de chaque nage. 4 × 100 m IMO → une nage par 100 m.',
-    'Descend: each repeat gets faster. Build: increase speed within one repeat.':
-      'Descend : chaque répétition est plus rapide. Build : augmentez la vitesse au cours d’une même répétition.',
-    '4 × 100 desc 1–4 → four successively faster 100s.':
-      '4 × 100 desc 1–4 → quatre 100 m de plus en plus rapides.',
-    'Pull focuses on the arms; kick focuses on the legs; a drill isolates a skill. Use the equipment named by the coach.':
-      'Pull cible les bras; kick cible les jambes; drill désigne un exercice technique. Utilisez le matériel indiqué par votre entraineur.',
-    '4 × 50 m (25 drill / 25 swim) → each 50 combines both.':
-      '4 × 50 m (25 drill / 25 swim) → chaque 50 m combine les deux.',
+    'Descend: make each repeat faster while keeping the stroke controlled. Build: increase speed during one repeat.':
+      'Descend : accélérez à chaque répétition en gardant une nage maîtrisée. Build : augmentez la vitesse au cours d’une même répétition.',
+    '4 × 100 desc 1–4 → finish each 100 faster than the one before.':
+      '4 × 100 desc 1–4 → terminez chaque 100 m plus vite que le précédent.',
+    'Pull work emphasizes the arm stroke; kick work emphasizes the legs. A drill isolates one technique cue, then swimming applies it to the full stroke.':
+      'Le pull met l’accent sur le mouvement des bras; le kick, sur les jambes. Un drill isole un point technique, puis la nage complète permet de l’appliquer.',
+    '4 × 50 m (25 drill / 25 swim) → practice the cue for 25 m, then swim normally for 25 m.':
+      '4 × 50 m (25 drill / 25 swim) → travaillez le point technique sur 25 m, puis nagez normalement sur 25 m.',
     'Repeat the whole bracket twice. Keep the specified rest between repeats and between rounds.':
       'Répétez tout le contenu des parenthèses deux fois. Respectez le repos indiqué entre les répétitions et les séries.',
     '2 × 4 × 50 m = 400 m. The brackets alone do not specify rest.':
@@ -1666,20 +1666,20 @@ const fr: TriDict = {
     'Read the distance unit and pool length. Swim pace is often time per 100 metres or 100 yards.':
       'Vérifiez l’unité de distance et la longueur de la piscine. L’allure de nage s’exprime souvent par 100 mètres ou 100 verges.',
     '1:45/100 m → 105 seconds per 100 metres.': '1:45/100 m → 105 secondes par 100 mètres.',
-    'Repeat eight minutes at the stated power, then four minutes easy, three times.':
-      'Répétez trois fois huit minutes à la puissance indiquée, puis quatre minutes faciles.',
+    'Ride eight minutes at the power target, then pedal easily for four minutes. Repeat the work and recovery three times.':
+      'Roulez huit minutes à la puissance cible, puis pédalez facilement pendant quatre minutes. Répétez trois fois le bloc et sa récupération.',
     '3 × (8 + 4) = 36 min, including the final easy block.':
       '3 × (8 + 4) = 36 min, y compris le dernier bloc facile.',
-    'Watts measure power. Functional threshold power is the reference for percentage-based targets.':
-      'Les watts mesurent la puissance. La puissance au seuil fonctionnel (FTP) sert de référence aux cibles en pourcentage.',
-    '90% of a 250 W FTP = 225 W. Use your current cycling FTP.':
-      '90 % d’une FTP de 250 W = 225 W. Utilisez votre FTP actuelle à vélo.',
+    'Watts measure bike power. FTP is the reference for percentage targets, so use the cycling value specified by your plan.':
+      'Les watts mesurent la puissance à vélo. La FTP sert de référence aux cibles en pourcentage; utilisez la valeur vélo indiquée dans votre plan.',
+    'At 250 W FTP, 90% is 225 W. An estimated FTP makes that a training guide, not a measured threshold.':
+      'Avec une FTP de 250 W, 90 % correspond à 225 W. Si la FTP est estimée, cette cible sert de guide et ne représente pas un seuil mesuré.',
     'Cadence in pedal revolutions per minute, separate from the power target.':
       'Cadence en tours de pédalier par minute, distincte de la cible de puissance.',
     '90 rpm → 90 complete pedal revolutions in one minute.':
       '90 rpm → 90 tours complets de pédalier en une minute.',
-    'Training zones depend on the sport, metric, and zone system in the plan.':
-      'Les zones d’entrainement dépendent du sport, de la mesure et du système utilisé dans le plan.',
+    'Zones are specific to a sport and a measurement. Check whether the workout means power, heart rate, pace, or perceived effort.':
+      'Les zones dépendent du sport et de la mesure. Vérifiez si la séance indique la puissance, la fréquence cardiaque, l’allure ou l’effort perçu.',
     'Z2 power and Z2 heart rate have different units and boundaries.':
       'La Z2 de puissance et la Z2 de fréquence cardiaque ont des unités et des limites différentes.',
     'Warm-up, main set, cool-down, easy. Recovery between efforts may be easy pedalling.':
@@ -1689,8 +1689,8 @@ const fr: TriDict = {
       'Fréquence cardiaque en battements par minute; la perception de l’effort (RPE) utilise l’échelle indiquée dans le plan.',
     'RPE 6/10 uses a different scale from RPE 6–20.':
       'La cote RPE 6/10 utilise une autre échelle que celle de 6 à 20.',
-    'Run 400 metres at the prescribed effort, then jog 200 metres; repeat six times.':
-      'Courez 400 mètres à l’effort prescrit, puis trottinez 200 mètres; répétez six fois.',
+    'Run each 400 m at the prescribed pace or effort, then jog 200 m to recover. Keep the recovery easy enough to run the next repeat well.':
+      'Courez chaque 400 m à l’allure ou à l’effort prescrit, puis trottinez 200 m pour récupérer. Gardez cette récupération assez facile pour bien courir la répétition suivante.',
     '2.4 km of work + 1.2 km of recovery = 3.6 km.':
       '2,4 km d’effort + 1,2 km de récupération = 3,6 km.',
     'Pace is the time to cover one kilometre or mile. Keep the written unit when reading the target.':
@@ -1703,8 +1703,8 @@ const fr: TriDict = {
       'Courtes accélérations contrôlées avec récupération entre les efforts. Suivez la durée et la récupération du plan.',
     '6 × (20 s strides / 60 s easy) → six accelerations.':
       '6 × (20 s strides / 60 s easy) → six accélérations.',
-    'These labels depend on the coach’s system. Use the prescribed pace, heart rate, or effort for this run.':
-      'Ces termes dépendent du système de votre entraineur. Utilisez l’allure, la fréquence cardiaque ou l’effort prescrit pour cette course.',
+    'These labels depend on the plan’s zones. Follow the run’s stated pace or heart-rate target; easy and long runs should stay controlled unless the workout adds a faster finish.':
+      'Ces termes dépendent des zones du plan. Suivez la cible d’allure ou de fréquence cardiaque indiquée; les courses faciles et longues restent maîtrisées, sauf si la séance prévoit une fin plus rapide.',
     '20 min tempo → check the target in the workout details.':
       '20 min tempo → vérifiez la cible dans les détails de la séance.',
     'Warm-up, cool-down, recovery, easy. Recovery can be a jog, walk, or rest as specified.':

@@ -313,7 +313,8 @@ const lactateHeartRatePoints = (
   series: readonly GarminLactateThresholdValue[],
 ): DatedValue[] => {
   if (series.length >= 2) return [...series]
-  if ('date' in heartRate && heartRate.date) return [{ date: heartRate.date, value: heartRate.value }]
+  if ('date' in heartRate && heartRate.date)
+    return [{ date: heartRate.date, value: heartRate.value }]
   return []
 }
 
