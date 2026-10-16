@@ -84,9 +84,14 @@ function readChunkedAssetManifest(value) {
 }
 
 function isChunkedAssetResponse(url, response) {
-  const contentType = response.headers.get('content-type') ?? ''
-  const responseUrl = response.url || url
-  return contentType.includes('json') || responseUrl.includes('.chunks') || url.includes('.chunks')
+  const contentType = response?.headers?.get?.('content-type') ?? ''
+  const responseUrl = response?.url || url
+  return (
+    url.endsWith('.chunks.json') ||
+    contentType.includes('json') ||
+    responseUrl.includes('.chunks') ||
+    url.includes('.chunks')
+  )
 }
 
 function concatChunks(chunks, size, label) {
@@ -114,7 +119,7 @@ async function fetchChunkedBytes(url, manifest, label) {
   return concatChunks(chunks, manifest.size, label)
 }
 
-async function fetchBytes(url, label) {
+async function fetchBytes(url, label = url) {
   const response = await fetch(url)
   if (!response.ok) throw new Error(`Rust ${label} request failed with ${response.status}`)
   if (isChunkedAssetResponse(url, response)) {
@@ -125,13 +130,100 @@ async function fetchBytes(url, label) {
   return new Uint8Array(await response.arrayBuffer())
 }
 
-async function fetchGzipBytes(url, label) {
+function createChunkedStream(url, manifest, label) {
+  let chunkIndex = 0
+  let activeReader = null
+  let actualSize = 0
+  return new ReadableStream({
+    async pull(controller) {
+      while (true) {
+        if (activeReader) {
+          const { done, value } = await activeReader.read()
+          if (!done) {
+            if (value && value.byteLength > 0) {
+              actualSize += value.byteLength
+              controller.enqueue(value)
+              return
+            }
+            continue
+          }
+          activeReader = null
+        }
+        if (chunkIndex >= manifest.chunks.length) {
+          if (actualSize !== manifest.size) {
+            throw new Error(`Rust ${label} chunk size mismatch`)
+          }
+          controller.close()
+          return
+        }
+        const chunk = manifest.chunks[chunkIndex]
+        chunkIndex += 1
+        const chunkUrl = new URL(chunk, url).href
+        const chunkResponse = await fetch(chunkUrl)
+        if (!chunkResponse.ok) {
+          throw new Error(`Rust ${label} chunk request failed with ${chunkResponse.status}`)
+        }
+        if (chunkResponse.body && typeof chunkResponse.body.getReader === 'function') {
+          activeReader = chunkResponse.body.getReader()
+          continue
+        }
+        const bytes = new Uint8Array(await chunkResponse.arrayBuffer())
+        actualSize += bytes.byteLength
+        if (bytes.byteLength > 0) {
+          controller.enqueue(bytes)
+          return
+        }
+      }
+    },
+    async cancel(reason) {
+      if (activeReader) {
+        try {
+          await activeReader.cancel(reason)
+        } catch {}
+        activeReader = null
+      }
+    },
+  })
+}
+
+async function fetchStream(url, label = url) {
+  const response = await fetch(url)
+  if (!response.ok) throw new Error(`Rust ${label} request failed with ${response.status}`)
+  if (!isChunkedAssetResponse(url, response)) return response.body
+  const manifest = readChunkedAssetManifest(await response.json())
+  if (!manifest) throw new Error(`Rust ${label} chunk manifest is invalid`)
+  if (typeof ReadableStream !== 'function') return null
+  return createChunkedStream(url, manifest, label)
+}
+
+async function fetchGzipBytes(url, label = url) {
   const bytes = await fetchBytes(url, label)
   if (typeof DecompressionStream !== 'function') {
     throw new Error('Rust runtime needs DecompressionStream for compressed sysroot assets')
   }
   const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))
   return new Uint8Array(await new Response(stream).arrayBuffer())
+}
+
+async function compileGzipWasm(url, label = 'Miri wasm') {
+  if (
+    typeof WebAssembly.compileStreaming === 'function' &&
+    typeof DecompressionStream === 'function'
+  ) {
+    try {
+      const body = await fetchStream(url, label)
+      if (body && typeof body.pipeThrough === 'function') {
+        const stream = body.pipeThrough(new DecompressionStream('gzip'))
+        const response = new Response(stream, {
+          headers: { 'content-type': 'application/wasm' },
+        })
+        return await WebAssembly.compileStreaming(response)
+      }
+    } catch (error) {
+      if (error instanceof Error && error.message.startsWith('Rust ')) throw error
+    }
+  }
+  return await WebAssembly.compile(await fetchGzipBytes(url, label))
 }
 
 function rustProgram(code) {
@@ -233,11 +325,11 @@ async function init(message) {
     : []
   post({ type: 'status', text: 'loading Rust runtime pack' })
   wasiShim = await import(assetFor(assets, 'browser-wasi-shim.mjs'))
-  const [miriBytes, nextSysroot] = await Promise.all([
-    fetchGzipBytes(assetFor(assets, 'miri.opt.1718474653.wasm.gz'), 'Miri wasm'),
+  const [nextMiriModule, nextSysroot] = await Promise.all([
+    compileGzipWasm(assetFor(assets, 'miri.opt.1718474653.wasm.gz'), 'Miri wasm'),
     buildSysroot(assets, wasiShim),
   ])
-  miriModule = await WebAssembly.compile(miriBytes)
+  miriModule = nextMiriModule
   sysroot = nextSysroot
   post({ type: 'ready' })
 }

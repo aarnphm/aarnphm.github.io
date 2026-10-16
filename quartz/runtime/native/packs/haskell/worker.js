@@ -55,9 +55,14 @@ function readChunkedAssetManifest(value) {
 }
 
 function isChunkedAssetResponse(url, response) {
-  const contentType = response.headers.get('content-type') ?? ''
-  const responseUrl = response.url || url
-  return contentType.includes('json') || responseUrl.includes('.chunks') || url.includes('.chunks')
+  const contentType = response?.headers?.get?.('content-type') ?? ''
+  const responseUrl = response?.url || url
+  return (
+    url.endsWith('.chunks.json') ||
+    contentType.includes('json') ||
+    responseUrl.includes('.chunks') ||
+    url.includes('.chunks')
+  )
 }
 
 function concatChunks(chunks, size, label) {
@@ -86,7 +91,7 @@ async function fetchChunkedBytes(url, manifest, label) {
   return concatChunks(chunks, manifest.size, label)
 }
 
-async function fetchBytes(url, label) {
+async function fetchBytes(url, label = url) {
   const response = await fetch(url)
   if (!response.ok) throw new Error(`Haskell ${label} request failed with ${response.status}`)
   if (isChunkedAssetResponse(url, response)) {
@@ -97,6 +102,98 @@ async function fetchBytes(url, label) {
   return new Uint8Array(await response.arrayBuffer())
 }
 
+function createChunkedStream(url, manifest, label) {
+  let chunkIndex = 0
+  let activeReader = null
+  let actualSize = 0
+  return new ReadableStream({
+    async pull(controller) {
+      while (true) {
+        if (activeReader) {
+          const { done, value } = await activeReader.read()
+          if (!done) {
+            if (value && value.byteLength > 0) {
+              actualSize += value.byteLength
+              controller.enqueue(value)
+              return
+            }
+            continue
+          }
+          activeReader = null
+        }
+        if (chunkIndex >= manifest.chunks.length) {
+          if (actualSize !== manifest.size) {
+            throw new Error(`Haskell ${label} chunk size mismatch`)
+          }
+          controller.close()
+          return
+        }
+        const chunk = manifest.chunks[chunkIndex]
+        chunkIndex += 1
+        const chunkUrl = new URL(chunk, url).href
+        const chunkResponse = await fetch(chunkUrl)
+        if (!chunkResponse.ok) {
+          throw new Error(`Haskell ${label} chunk request failed with ${chunkResponse.status}`)
+        }
+        if (chunkResponse.body && typeof chunkResponse.body.getReader === 'function') {
+          activeReader = chunkResponse.body.getReader()
+          continue
+        }
+        const bytes = new Uint8Array(await chunkResponse.arrayBuffer())
+        actualSize += bytes.byteLength
+        if (bytes.byteLength > 0) {
+          controller.enqueue(bytes)
+          return
+        }
+      }
+    },
+    async cancel(reason) {
+      if (activeReader) {
+        try {
+          await activeReader.cancel(reason)
+        } catch {}
+        activeReader = null
+      }
+    },
+  })
+}
+
+async function fetchStream(url, label = url) {
+  const response = await fetch(url)
+  if (!response.ok) throw new Error(`Haskell ${label} request failed with ${response.status}`)
+  if (!isChunkedAssetResponse(url, response)) {
+    if (response.body) return response.body
+    const bytes = new Uint8Array(await response.arrayBuffer())
+    return new ReadableStream({
+      start(controller) {
+        if (bytes.byteLength > 0) controller.enqueue(bytes)
+        controller.close()
+      },
+    })
+  }
+  const manifest = readChunkedAssetManifest(await response.json())
+  if (!manifest) throw new Error(`Haskell ${label} chunk manifest is invalid`)
+  return createChunkedStream(url, manifest, label)
+}
+
+async function compileWasm(url, label = 'bsdtar wasm') {
+  if (
+    typeof WebAssembly.compileStreaming === 'function' &&
+    typeof ReadableStream === 'function'
+  ) {
+    try {
+      const stream = await fetchStream(url, label)
+      const response = new Response(stream, {
+        headers: { 'content-type': 'application/wasm' },
+      })
+      return await WebAssembly.compileStreaming(response)
+    } catch (error) {
+      if (error instanceof Error && error.message.startsWith('Haskell ')) throw error
+    }
+  }
+  return await WebAssembly.compile(await fetchBytes(url, label))
+}
+
 async function fetchText(url, label) {
   const response = await fetch(url)
   if (!response.ok) throw new Error(`Haskell ${label} request failed with ${response.status}`)
@@ -104,7 +201,25 @@ async function fetchText(url, label) {
 }
 
 async function instantiateWasi(url, imports) {
-  return await WebAssembly.instantiate(await fetchBytes(url, 'bsdtar wasm'), imports)
+  const module = await compileWasm(url, 'bsdtar wasm')
+  const instantiated = await WebAssembly.instantiate(module, imports)
+  const instance =
+    instantiated instanceof WebAssembly.Instance || !('instance' in instantiated)
+      ? instantiated
+      : instantiated.instance
+  return { module, instance }
+}
+
+async function importRewrittenModule(rewritten) {
+  if (typeof Blob === 'function' && typeof URL?.createObjectURL === 'function') {
+    const objectUrl = URL.createObjectURL(new Blob([rewritten], { type: 'text/javascript' }))
+    try {
+      return await import(objectUrl)
+    } finally {
+      if (typeof URL.revokeObjectURL === 'function') URL.revokeObjectURL(objectUrl)
+    }
+  }
+  return await import(`data:text/javascript;charset=utf-8,${encodeURIComponent(rewritten)}`)
 }
 
 async function importDyldModule(assets) {
@@ -116,7 +231,7 @@ async function importDyldModule(assets) {
     .replaceAll('"./prelude.mjs"', JSON.stringify(preludeUrl))
     .replaceAll('"./post-link.mjs"', JSON.stringify(postLinkUrl))
     .replaceAll('"https://esm.sh/gh/haskell-wasm/browser_wasi_shim"', JSON.stringify(wasiShimUrl))
-  return await import(`data:text/javascript;charset=utf-8,${encodeURIComponent(sourceText)}`)
+  return await importRewrittenModule(sourceText)
 }
 
 async function extractRootfs(assets, wasiShim) {

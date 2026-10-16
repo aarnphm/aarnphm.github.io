@@ -2,12 +2,14 @@ const IMMUTABLE_ASSET_CACHE_CONTROL = 'public, max-age=31536000, immutable'
 const MANIFEST_CACHE_CONTROL = 'no-store, no-cache, must-revalidate'
 const VOLATILE_ASSET_CACHE_CONTROL = 'no-store, no-cache, must-revalidate'
 const HASHED_STATIC_ASSET_PATTERN =
-  /(?:^|\/)[^/]+-[0-9a-f]{8}\.(?:css|js|json)$|\/static\/scripts\/chunks\/[^/]+-[a-z0-9_-]{8,}\.js$/i
+  /(?:^|\/)[^/]+-[0-9a-f]{8}\.(?:css|js|mjs|json|wasm|bin|gz|zst|tar)$|\/static\/scripts\/chunks\/[^/]+-[a-z0-9_-]{8,}\.js$/i
+const NOTEBOOK_RUNTIME_BINARY_ASSET_PATTERN =
+  /^\/static\/scripts\/notebook-runtimes\/.+\.(?:wasm|bin|gz|zst|tar|rlib\.gz|so\.gz)$/i
 const FIRST_PARTY_STYLESHEET_PATTERN =
   /^\/index\.css$|^\/static\/(?:component|resource-style(?:-\d+)?)\.css$/i
 const FIRST_PARTY_SCRIPT_PATTERN =
-  /^\/(?:pre|post)script\.js$|^\/static\/resource-after(?:-\d+)?\.js$|^\/static\/scripts\/.+\.js$/i
-const WORKER_SCRIPT_PATTERN = /^\/static\/scripts\/(?:.+\.)?worker(?:-[^/]+)?\.js$/i
+  /^\/(?:pre|post)script\.js$|^\/static\/resource-after(?:-\d+)?\.js$|^\/static\/scripts\/.+\.(?:js|mjs)$/i
+const WORKER_SCRIPT_PATTERN = /^\/static\/scripts\/(?:.+[./-])?worker(?:-[^/]+)?\.(?:js|mjs)$/i
 
 function isHashNamedStaticAsset(pathname: string): boolean {
   return HASHED_STATIC_ASSET_PATTERN.test(pathname)
@@ -16,6 +18,7 @@ function isHashNamedStaticAsset(pathname: string): boolean {
 function isVolatileGeneratedStaticAsset(pathname: string): boolean {
   return (
     !isHashNamedStaticAsset(pathname) &&
+    !NOTEBOOK_RUNTIME_BINARY_ASSET_PATTERN.test(pathname) &&
     (FIRST_PARTY_STYLESHEET_PATTERN.test(pathname) || FIRST_PARTY_SCRIPT_PATTERN.test(pathname))
   )
 }
