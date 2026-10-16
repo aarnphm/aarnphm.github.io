@@ -1,5 +1,7 @@
 import { writePetSpot } from '../../util/pet-spot'
-import { type Weather, fetchSite, guessSite } from './404-almanac'
+import { readVisitorDaylightCell } from '../../util/visitor-daylight'
+import { readStoredTrailWeather } from '../../util/visitor-trail-weather'
+import { type Site, type Weather, fetchSite, guessSite } from './404-almanac'
 import { makeClock } from './404-clock'
 import { setupLandscape, type Landscape } from './404-landscape'
 
@@ -380,7 +382,25 @@ document.addEventListener('nav', () => {
   // font update independently, so their network requests do not hold the route handoff.
   requestAnimationFrame(() => active && scene.classList.add('is-ready'))
 
-  const land: Landscape | null = setupLandscape(scene, reduce, water, hands, guessSite())
+  const cell = readVisitorDaylightCell(document)
+  const cached = readStoredTrailWeather(window)
+  const baseSite = cell
+    ? { lat: cell.lat, lon: cell.lon, place: null, weather: null }
+    : cached?.lat !== null && cached?.lat !== undefined && cached.lon !== null
+      ? { lat: cached.lat, lon: cached.lon, place: null, weather: null }
+      : guessSite()
+  const initialWeather: Weather | null = cached
+    ? {
+        code: cached.code,
+        cloud: cached.cloud,
+        wind: cached.windKmh,
+        temp: cached.temperatureC ?? 12,
+        snow: cached.snowCm,
+      }
+    : null
+  const seededSite: Site = { ...baseSite, weather: initialWeather }
+
+  const land: Landscape | null = setupLandscape(scene, reduce, water, hands, seededSite)
   // The gate's hands read the same time as the board. Without motion they only move once a second.
   const clockEl = scene.querySelector<HTMLElement>('[data-nf-clock]')
   const tick = () => {

@@ -1,18 +1,42 @@
-import type { TrailWeather } from '../../util/visitor-trail-weather'
-import { visitorPrecipitation } from '../../util/visitor-precipitation'
+import type { TrailSeason, TrailWeather } from '../../util/visitor-trail-weather'
+import { season } from '../../util/visitor-world'
+import { almanac, guessSite, readSky, type Almanac } from '../scripts/404-almanac'
 import { alpineFoot, type Landscape, type Point } from './landscape'
 import { trailRandom } from './random'
 
-export function trailWinter(weather: TrailWeather | null, festiveSnow = false) {
-  const snowing = visitorPrecipitation(weather?.code).fall === 'snow'
+export function trailWinter(
+  weather: TrailWeather | null,
+  festiveSnow = false,
+  al?: Almanac,
+  seasonOverride?: TrailSeason | null,
+) {
+  const sky = weather
+    ? {
+        ...readSky({
+          code: weather.code,
+          cloud: weather.cloud,
+          wind: weather.windKmh,
+          temp: weather.temperatureC ?? 0,
+          snow: weather.snowCm,
+        }),
+        temp: weather.temperatureC,
+      }
+    : readSky(null)
+  const resolvedAlmanac =
+    al ??
+    almanac(
+      new Date(),
+      weather?.lat !== null && weather?.lat !== undefined && weather.lon !== null
+        ? { lat: weather.lat, lon: weather.lon, place: null, weather: null }
+        : guessSite(),
+    )
   const temperature = weather?.temperatureC ?? null
   const forecastCover = Math.max(
-    snowing ? (weather?.code === 75 || weather?.code === 86 ? 0.95 : 0.65) : 0,
+    sky.fall === 'snow' ? 0.5 + 0.5 * sky.heavy : 0,
     temperature !== null && temperature <= 2 ? Math.min(1, (weather?.snowCm ?? 0) / 2.5) : 0,
   )
-  // Seasonal ground cover is illustrative; the forecast only supplies recent snowfall.
-  const seasonalCover =
-    weather?.season === 'winter' && (temperature === null || temperature <= 4) ? 0.78 : 0
+  // Seasonal ground cover comes from the shared world model; the forecast adds recent snowfall.
+  const seasonalCover = season(resolvedAlmanac, sky, seasonOverride).ground
   const weatherCover = Math.max(forecastCover, seasonalCover)
   const cover = Math.max(weatherCover, festiveSnow ? 0.9 : 0)
   const forecastFrozen =

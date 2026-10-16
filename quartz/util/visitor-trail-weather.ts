@@ -1,5 +1,7 @@
+import { almanac } from '../components/scripts/404-almanac'
 import { isRecord } from './type-guards'
 import { nextSunEvent, type VisitorForecast } from './visitor-weather'
+import { seasonBucket } from './visitor-world'
 
 export type TrailSeason = 'spring' | 'summer' | 'autumn' | 'winter'
 
@@ -30,14 +32,15 @@ declare global {
 
 const requestEvent = 'visitor-trail-weather:request'
 const changeEvent = 'visitor-trail-weather:change'
+const storageKey = 'visitor-weather:last'
+const maxAgeMs = 15 * 60_000
 const finite = (value: unknown): value is number =>
   typeof value === 'number' && Number.isFinite(value)
 
-function calendarSeason(latitude: number | null, now: number): TrailSeason | null {
+function calendarSeason(latitude: number | null, now: number, longitude = 0): TrailSeason | null {
   if (latitude === null || Math.abs(latitude) < 23.5) return null
-  const month = new Date(now).getMonth()
-  const seasons: readonly TrailSeason[] = ['winter', 'spring', 'summer', 'autumn']
-  return seasons[Math.floor(((month + 1 + (latitude < 0 ? 6 : 0)) % 12) / 3)] ?? null
+  const sky = almanac(new Date(now), { lat: latitude, lon: longitude, place: null, weather: null })
+  return seasonBucket(sky.winterDay).season
 }
 
 function readTrailWeather(value: unknown): TrailWeather | null {
@@ -75,6 +78,23 @@ function readTrailWeather(value: unknown): TrailWeather | null {
   }
 }
 
+export function readStoredTrailWeather(
+  view: Window | null | undefined,
+  now = Date.now(),
+): TrailWeather | null {
+  try {
+    const raw = view?.sessionStorage.getItem(storageKey)
+    if (!raw) return null
+    const parsed: unknown = JSON.parse(raw)
+    if (!isRecord(parsed)) return null
+    const at = finite(parsed.at) ? parsed.at : null
+    if (at === null || now - at > maxAgeMs || now < at - maxAgeMs) return null
+    return readTrailWeather(parsed.weather)
+  } catch {
+    return null
+  }
+}
+
 export function createVisitorTrailWeatherSource(target: Document, signal: AbortSignal) {
   let latest: TrailWeather | null = null
   let signature = 'null'
@@ -102,12 +122,20 @@ export function createVisitorTrailWeatherSource(target: Document, signal: AbortS
             windFromDegrees: weather.windDirection,
             temperatureC: weather.temp,
             snowCm: weather.snow,
-            season: calendarSeason(forecast?.lat ?? null, now),
+            season: calendarSeason(forecast?.lat ?? null, now, forecast?.lon ?? 0),
             day: next ? next.kind === 'sunset' : weather.day,
             lat: forecast?.lat ?? null,
             lon: forecast?.lon ?? null,
           }
         : null
+      if (current) {
+        try {
+          target.defaultView?.sessionStorage.setItem(
+            storageKey,
+            JSON.stringify({ at: now, weather: current }),
+          )
+        } catch {}
+      }
       const value = JSON.stringify(current)
       if (value === signature) return
       latest = current
