@@ -25,7 +25,7 @@ Raconter au passé, supposer au conditionnel — A2 → B1. Les conjugaisons de 
 
 **Accord du participe** :
 
-- avec {{`être`}} : accord avec le sujet — {{`Ils sont partis.`}}
+- avec {{`être`}}, hors verbes pronominaux : accord avec le sujet, {{`Ils sont partis.`}}. Pour les pronominaux, la fonction du pronom compte ; voir les exemples ci-dessous.
 - avec {{`avoir`}} : accord seulement avec un objet direct **avant** le verbe — {{`Les lettres que j'ai écrites.`}}
 - pronominaux : pas d'accord si l'objet direct suit — {{`Elle s'est lavé les mains.`}} (le réfléchi est indirect) ; réciproque indirect pareil — {{`Ils se sont parlé.`}}
 
@@ -33,7 +33,7 @@ Raconter au passé, supposer au conditionnel — A2 → B1. Les conjugaisons de 
 
 Infinitif + {{`-ai, -as, -a, -ons, -ez, -ont`}} (les verbes en {{`-re`}} perdent le _e_ : {{`prendr-`}}). Radicaux irréguliers : {{`ser-`}}, {{`aur-`}}, {{`ir-`}}, {{`fer-`}}, {{`pourr-`}}, {{`voudr-`}}, {{`viendr-`}}, {{`verr-`}}, {{`enverr-`}}, {{`devr-`}}.
 
-Après {{`quand`}} / {{`lorsque`}}, le français met le **futur** là où l'anglais met le présent : {{`Quand je serai grand, je serai médecin.`}} — jamais {{`si j'aurai`}}.
+Dans une proposition temporelle qui situe un événement futur, {{`quand`}} / {{`lorsque`}} prend le **futur** là où l'anglais emploie le présent : {{`Quand je serai grand, je serai médecin.`}} Avec {{`si`}} de condition, on emploie le présent : {{`Si j'ai le temps, je viendrai.`}}
 
 ## Plus-que-parfait et conditionnel passé
 
@@ -48,6 +48,8 @@ Après {{`quand`}} / {{`lorsque`}}, le français met le **futur** là où l'angl
 | {{`si`}} + imparfait        | conditionnel       | {{`Si tu venais, on partirait.`}}         |
 | {{`si`}} + plus-que-parfait | conditionnel passé | {{`Si tu étais venu, on serait partis.`}} |
 
-**Jamais** {{`si`}} + conditionnel. {{`même si`}} + indicatif ({{`Même s'il pleut, on ira.`}}) ≠ {{`bien que`}} + subjonctif — voir [[fr/subjonctif]].
+Ces trois schémas concernent {{`si`}} de condition, qui exclut le futur et le conditionnel dans la proposition introduite par {{`si`}}. Dans une interrogation indirecte, {{`si`}} signifie « est-ce que » et accepte ces temps : {{`Je me demande s'il viendra.`}} · {{`Je voudrais savoir s'il accepterait.`}} {{`Même si`}} de condition prend aussi l'indicatif : {{`Même s'il pleut, on ira.`}} Pour {{`bien que`}} + subjonctif, voir [[fr/subjonctif]].
 
 Conditionnel de politesse : {{`Je voudrais un café.`}}, {{`Voudriez-vous boire quelque chose ?`}}
+
+Références : OQLF, [accord du participe passé avec être](https://vitrinelinguistique.oqlf.gouv.qc.ca/24222/la-grammaire/le-verbe/accord-du-participe-passe/avec-lauxiliaire-etre/synthese-des-regles-daccord-du-participe-passe-employe-avec-etre) et [mode verbal après si](https://vitrinelinguistique.oqlf.gouv.qc.ca/21324/la-grammaire/le-verbe/modes/concordance-des-temps/mode-verbal-apres-si).

@@ -9,17 +9,17 @@ tags:
 title: relatifs
 ---
 
-Relier les idées sans répéter — B2.
+Relier les idées sans répéter (B2).
 
 ## Les relatifs simples
 
-| Relatif                                     | Rôle             | Exemple                                                                    |
-| ------------------------------------------- | ---------------- | -------------------------------------------------------------------------- |
-| {{`qui`}}                                   | sujet            | {{`L'homme qui parle est mon voisin.`}}                                    |
-| {{`que`}}                                   | objet direct     | {{`Le film que j'ai vu était long.`}}                                      |
-| {{`dont`}}                                  | {{`de`}} + chose | {{`la décision dont il se plaint`}} (se plaindre _de_)                     |
-| {{`où`}}                                    | lieu / temps     | {{`la ville où je suis né`}}                                               |
-| {{`ce qui`}} / {{`ce que`}} / {{`ce dont`}} | ce + relatif     | {{`Ce qui me surprend, c'est son calme.`}} (sujet / objet / objet en _de_) |
+| Relatif                                     | Rôle                   | Exemple                                                                    |
+| ------------------------------------------- | ---------------------- | -------------------------------------------------------------------------- |
+| {{`qui`}}                                   | sujet                  | {{`L'homme qui parle est mon voisin.`}}                                    |
+| {{`que`}}                                   | objet direct           | {{`Le film que j'ai vu était long.`}}                                      |
+| {{`dont`}}                                  | complément en {{`de`}} | {{`la décision dont il se plaint`}} (se plaindre _de_)                     |
+| {{`où`}}                                    | lieu / temps           | {{`la ville où je suis né`}}                                               |
+| {{`ce qui`}} / {{`ce que`}} / {{`ce dont`}} | ce + relatif           | {{`Ce qui me surprend, c'est son calme.`}} (sujet / objet / objet en _de_) |
 
 ## Les formes composées
 
@@ -38,6 +38,8 @@ Relier les idées sans répéter — B2.
 
 Placés **avant** le verbe : {{`Je la vois.`}} (COD : {{`me, te, le/la, nous, vous, les`}}) · {{`Je lui parle.`}} (COI en {{`à`}} + personne : {{`lui, leur`}}).
 
-- {{`y`}} remplace {{`à`}} + lieu ou chose : {{`J'y vais.`}} · {{`J'y pense.`}} (penser _à_ quelque chose ; à quelqu'un → {{`lui`}}/{{`leur`}})
+- {{`y`}} reprend notamment un lieu ou un complément en {{`à`}} désignant une chose : {{`J'y vais.`}} · {{`J'y pense.`}} Avec {{`penser à`}} + personne, on garde {{`à`}} et un pronom tonique : {{`Je pense à lui.`}} · {{`Je pense à elle.`}} · {{`Je pense à eux.`}} {{`Je lui pense`}} est incorrect. La construction dépend du verbe : {{`Je parle à Paul`}} devient {{`Je lui parle`}}.
 - {{`en`}} remplace {{`de`}} + nom : {{`J'en ai besoin.`}} · {{`Ils en achètent.`}} (des pommes)
 - {{`y`}} + {{`en`}} coexistent, dans cet ordre : {{`Il y en a beaucoup.`}}
+
+Référence : Académie française, [emploi du pronom y et reprise d'une personne](https://www.dictionnaire-academie.fr/article/A9Y0002).
