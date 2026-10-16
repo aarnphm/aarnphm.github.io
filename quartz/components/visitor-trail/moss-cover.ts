@@ -96,14 +96,25 @@ export function mountMossCover(scene: HTMLElement, host: HTMLElement, signal: Ab
       const message = event.data
       if (message.type !== 'paint') return
       const started = performance.now()
+      const rects = []
       for (const { id, tones: cells } of message.paints) {
         const clump = clumps.get(id)
         if (!clump) continue
         tones.set(id, cells)
         paintClump(clump, cells)
+        const size = mossSize * clump.cell
+        rects.push({
+          left: clump.left,
+          top: clump.top,
+          right: clump.left + size,
+          bottom: clump.top + size,
+        })
       }
-      if (message.paints.length)
-        frame?.dispatchEvent(new Event('trail:canopy-paint', { bubbles: true }))
+      // Name the clumps so the compositor repaints them rather than the whole meadow.
+      if (rects.length)
+        frame?.dispatchEvent(
+          new CustomEvent('trail:canopy-paint', { bubbles: true, detail: { rects } }),
+        )
       cost.steps++
       cost.worker += message.cost
       cost.paint += performance.now() - started
