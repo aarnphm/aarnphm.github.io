@@ -2,6 +2,7 @@ import { Root } from 'hast'
 import { toHtml } from 'hast-util-to-html'
 import crypto from 'node:crypto'
 import fs from 'node:fs/promises'
+import { gzipSync } from 'node:zlib'
 import path from 'path'
 import { ReadTimeResults } from 'reading-time'
 import type { ChangeEvent } from '../../types/plugin'
@@ -10,6 +11,12 @@ import type { StaticResources } from '../../util/resources'
 import { version } from '../../../package.json'
 import { GlobalConfiguration } from '../../cfg'
 import { formatDate, getDate } from '../../components/Date'
+import { prepareLexicalDocument } from '../../components/scripts/lexical-search-document'
+import { createLexicalDocumentIndex } from '../../components/scripts/lexical-search-index'
+import {
+  encodeCompactLexicalIndex,
+  lexicalPrebuiltKind,
+} from '../../components/scripts/lexical-search-prebuilt'
 import { i18n } from '../../i18n'
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import { resolveAsset, resolveExtractedStaticResource } from '../../util/asset-manifest'
@@ -272,9 +279,15 @@ function searchChunkSlug(id: string): FullSlug {
   return joinSegments('static', 'search-index', id) as FullSlug
 }
 
-function searchChunkManifest(): string {
+function searchChunkManifest(lexical: {
+  kind: string
+  path: string
+  fingerprint: string
+  sha256: string
+}): string {
   return JSON.stringify({
     kind: SEARCH_INDEX_KIND,
+    lexical,
     chunks: searchChunkIds().map(id => `search-index/${id}.json`),
   })
 }
@@ -305,13 +318,38 @@ async function writeSearchChunk(
     : write({ ctx, content, slug, ext: '.json' })
 }
 
-async function writeSearchManifest(ctx: BuildCtx): Promise<FilePath> {
-  return write({
+async function writeSearchManifest(
+  ctx: BuildCtx,
+  entries: ReadonlyMap<FullSlug, string>,
+): Promise<FilePath[]> {
+  // Match Object.assign({}, ...chunks) in loadSearchIndex, including its document ID order.
+  const orderedEntries = searchChunkIds().flatMap(id =>
+    Array.from(searchChunkEntries(entries, id)).sort(([a], [b]) => a.localeCompare(b)),
+  )
+  const ordered: Record<string, string> = Object.fromEntries(orderedEntries)
+  const documents = Object.entries(ordered).map(([slug, serialized], id) => {
+    const details: ContentDetails = JSON.parse(serialized)
+    return prepareLexicalDocument(id, slug, details)
+  })
+  const fingerprint = crypto.createHash('sha256').update(JSON.stringify(documents)).digest('hex')
+  const index = createLexicalDocumentIndex()
+  for (const document of documents) index.add(document)
+  const { bytes } = encodeCompactLexicalIndex(index)
+  const sha256 = crypto.createHash('sha256').update(bytes).digest('hex')
+  const asset = `search-lexical/${sha256}/index-${sha256.slice(0, 8)}`
+  const binary = await write({ ctx, content: gzipSync(bytes), slug: `static/${asset}`, ext: '.gz' })
+  const manifest = await write({
     ctx,
-    content: searchChunkManifest(),
-    slug: joinSegments('static', 'searchIndex') as FullSlug,
+    content: searchChunkManifest({
+      kind: lexicalPrebuiltKind,
+      path: `${asset}.gz`,
+      fingerprint,
+      sha256,
+    }),
+    slug: joinSegments('static', 'searchIndex'),
     ext: '.json',
   })
+  return [binary, manifest]
 }
 
 function addFilePageToIndex(ctx: BuildCtx, idx: ContentIndexMap, file: FilePath) {
@@ -1134,12 +1172,12 @@ async function writeSearchIndexJson(
     ? Array.from(new Set(Array.from(changedSlugs, searchChunkId))).sort()
     : searchChunkIds()
   const [manifestFile, chunkFiles] = await Promise.all([
-    previous ? Promise.resolve(undefined) : writeSearchManifest(ctx),
+    writeSearchManifest(ctx, serialized.cache.entries),
     mapConcurrent(chunkIds, defaultIoConcurrency, id =>
       writeSearchChunk(ctx, id, serialized.cache.entries),
     ),
   ])
-  const files = manifestFile ? [manifestFile, ...chunkFiles] : chunkFiles
+  const files = [...manifestFile, ...chunkFiles]
   return { files, cache: serialized.cache }
 }
 
@@ -1170,7 +1208,7 @@ async function writePatchedSearchIndexJson(
   const files = await mapConcurrent(Array.from(changedChunks), defaultIoConcurrency, id =>
     writeSearchChunk(ctx, id, entries, knownChanged),
   )
-  return { files, cache: { entries } }
+  return { files: [...files, ...(await writeSearchManifest(ctx, entries))], cache: { entries } }
 }
 
 async function writePatchedSearchIndexChunks(
@@ -1210,7 +1248,7 @@ async function writePatchedSearchIndexChunks(
     files.push(await writeKnownChanged({ ctx, content, slug, ext: '.json' }))
   }
 
-  return { files, cache: { entries } }
+  return { files: [...files, ...(await writeSearchManifest(ctx, entries))], cache: { entries } }
 }
 
 function isSourcePath(path: FilePath): boolean {

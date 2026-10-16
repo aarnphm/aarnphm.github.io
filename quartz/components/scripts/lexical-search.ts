@@ -33,9 +33,15 @@ export class LexicalSearchClient {
   private indexedData: Record<string, ContentDetails> | null = null
   private indexingPromise: Promise<void> | null = null
   private pendingCommit: PendingCommit | null = null
+  private pendingRestore: {
+    seq: number
+    resolve: (restored: boolean) => void
+    reject: (err: Error) => void
+  } | null = null
   private pendingSearches = new Map<number, PendingSearch>()
   private seq = 0
   private generation = 0
+  private indexAttempt = 0
 
   private fallbackModulePromise: Promise<FallbackModule> | null = null
   private fallbackIndex: LexicalDocumentIndex | null = null
@@ -56,8 +62,9 @@ export class LexicalSearchClient {
       }
       this.indexedData = data
       const generation = this.generation
+      const attempt = ++this.indexAttempt
       const currentAttempt = this.populateWorker(data).catch(async err => {
-        if (generation !== this.generation) throw err
+        if (generation !== this.generation || attempt !== this.indexAttempt) throw err
         if (this.indexingPromise === currentAttempt) {
           this.indexingPromise = null
         }
@@ -133,6 +140,14 @@ export class LexicalSearchClient {
     worker.onmessage = (event: MessageEvent<LexicalWorkerResponse>) => {
       if (worker !== this.worker) return
       const msg = event.data
+      if (msg.type === 'prebuilt') {
+        if (this.pendingRestore?.seq === msg.seq) {
+          const pending = this.pendingRestore
+          this.pendingRestore = null
+          pending.resolve(msg.restored)
+        }
+        return
+      }
       if (msg.type === 'ready') {
         if (this.pendingCommit && this.pendingCommit.seq === msg.seq) {
           const commit = this.pendingCommit
@@ -156,6 +171,8 @@ export class LexicalSearchClient {
           if (this.pendingCommit && this.pendingCommit.seq === msg.seq) {
             const commit = this.pendingCommit
             this.pendingCommit = null
+            this.pendingRestore?.reject(error)
+            this.pendingRestore = null
             commit.reject(error)
             return
           }
@@ -190,6 +207,8 @@ export class LexicalSearchClient {
     const worker = this.ensureWorker()
     const seq = ++this.seq
     this.workerReady = false
+    this.pendingRestore?.reject(new Error('superseded lexical restore'))
+    this.pendingRestore = null
 
     const commitPromise = new Promise<void>((resolve, reject) => {
       if (this.pendingCommit) {
@@ -200,16 +219,15 @@ export class LexicalSearchClient {
 
     // Worker failure can reject the commit while the document stream is still yielding.
     void commitPromise.catch(() => {})
-    this.postToWorker(worker, { type: 'init', seq })
-
     let sliceStart = performance.now()
+    const documents = []
     let id = 0
     for (const [slug, fileData] of Object.entries<ContentDetails>(data)) {
       if (this.worker !== worker || this.pendingCommit?.seq !== seq) {
         throw new Error('lexical worker reset during indexing')
       }
       const item = prepareLexicalDocument(id, slug, fileData)
-      this.postToWorker(worker, { type: 'add', seq, item })
+      documents.push(item)
       id += 1
       if (performance.now() - sliceStart >= STREAM_YIELD_BUDGET_MS) {
         await yieldMainThread()
@@ -219,6 +237,42 @@ export class LexicalSearchClient {
 
     if (this.worker !== worker || this.pendingCommit?.seq !== seq) {
       throw new Error('lexical worker reset before commit')
+    }
+    if (window.crypto?.subtle) {
+      const digest = await crypto.subtle.digest(
+        'SHA-256',
+        new TextEncoder().encode(JSON.stringify(documents)),
+      )
+      if (this.worker !== worker || this.pendingCommit?.seq !== seq)
+        throw new Error('lexical worker reset before restore')
+      const fingerprint = Array.from(new Uint8Array(digest), byte =>
+        byte.toString(16).padStart(2, '0'),
+      ).join('')
+      const restoring = new Promise<boolean>((resolve, reject) => {
+        this.pendingRestore = { seq, resolve, reject }
+      })
+      this.postToWorker(worker, { type: 'init', seq, fingerprint, count: id })
+      if (await restoring) {
+        if (this.worker !== worker || this.pendingCommit?.seq !== seq)
+          throw new Error('lexical worker reset after restore')
+        this.workerReady = true
+        const pending = this.pendingCommit
+        this.pendingCommit = null
+        pending.resolve()
+        return
+      }
+    } else {
+      this.postToWorker(worker, { type: 'init', seq })
+    }
+    sliceStart = performance.now()
+    for (const item of documents) {
+      if (this.worker !== worker || this.pendingCommit?.seq !== seq)
+        throw new Error('lexical worker reset during fallback indexing')
+      this.postToWorker(worker, { type: 'add', seq, item })
+      if (performance.now() - sliceStart >= STREAM_YIELD_BUDGET_MS) {
+        await yieldMainThread()
+        sliceStart = performance.now()
+      }
     }
     this.postToWorker(worker, { type: 'commit', seq, count: id })
     await commitPromise
@@ -237,6 +291,8 @@ export class LexicalSearchClient {
   }
 
   private rejectPending(error: Error): void {
+    this.pendingRestore?.reject(error)
+    this.pendingRestore = null
     if (this.pendingCommit) {
       const commit = this.pendingCommit
       this.pendingCommit = null
