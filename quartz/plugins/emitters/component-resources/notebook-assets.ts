@@ -27,6 +27,8 @@ import {
   notebookPyrightWorkerManifestAsset,
   notebookRuntimeJavascriptWorkerAsset,
 } from '../../../runtime/notebook/assets'
+import { ensureAssetManifest, registerAsset, shouldHashAssets } from '../../../util/asset-manifest'
+import { recordOutputAsset } from '../../../util/output-assets'
 import { isJsonObject } from '../../../util/type-guards'
 import {
   basedpyrightInternalSourcePackageName,
@@ -62,7 +64,11 @@ import {
   writeAssetBundleOutput,
   writeRawAsset,
 } from './asset-writer'
-import { writeChunkedFileAsset } from './chunked-file-assets'
+import {
+  chunkedFileAssetChunkPath,
+  chunkedFileAssetManifestPath,
+  writeChunkedFileAsset,
+} from './chunked-file-assets'
 
 type NativeRuntimePackWrittenFile = {
   readonly filename: string
@@ -71,6 +77,24 @@ type NativeRuntimePackWrittenFile = {
 }
 
 export type NativeRuntimePackGitLfsPointer = { readonly oid: string; readonly size: number }
+
+type CachedRuntimeAssetBundle = {
+  readonly signature: string
+  readonly files: readonly FilePath[]
+  readonly assetEntries: readonly (readonly [string, string])[]
+}
+
+type NativeRuntimePackFileSpec = {
+  readonly filename: string
+  readonly mtimeMs: number
+  readonly size: number
+  readonly resolvedSize: number
+}
+
+declare global {
+  var __quartzNativeRuntimePackAssetCache: Map<string, CachedRuntimeAssetBundle> | undefined
+  var __quartzNotebookPyrightAssetCache: Map<string, CachedRuntimeAssetBundle> | undefined
+}
 
 const requireResolve = createRequire(import.meta.url).resolve
 const notebookPyrightCommonJsEmptyModule = 'module.exports = {}'
@@ -327,13 +351,176 @@ async function writeNotebookPyrightWorkerAssets(ctx: BuildCtx): Promise<FilePath
   return [manifestFile, ...workerFiles]
 }
 
-async function writeNotebookPyrightAssets(ctx: BuildCtx): Promise<FilePath[]> {
+const notebookPyrightWorkerLogicalPath = `${staticScriptsDir}/${notebookPyrightWorkerOutputName}.js`
+const nativeRuntimePacksLogicalPrefix = `${path.posix.dirname(notebookNativeRuntimeManifestPath)}/`
+const notebookPyrightLogicalPrefix = `${staticScriptsDir}/notebook-pyright/`
+
+function isNotebookPyrightLogicalPath(logicalPath: string): boolean {
+  return (
+    logicalPath === notebookPyrightWorkerLogicalPath ||
+    logicalPath.startsWith(notebookPyrightLogicalPrefix)
+  )
+}
+
+function isNativeRuntimePackLogicalPath(logicalPath: string): boolean {
+  return (
+    logicalPath === notebookNativeRuntimeManifestPath ||
+    logicalPath.startsWith(nativeRuntimePacksLogicalPrefix)
+  )
+}
+
+function runtimeAssetCacheKey(ctx: BuildCtx): string {
+  return `${path.resolve(ctx.argv.output)}\0${shouldHashAssets(ctx)}`
+}
+
+async function allFilesExistOnDisk(files: readonly FilePath[]): Promise<boolean> {
+  if (files.length === 0) return false
+  try {
+    const stats = await Promise.all(files.map(file => fs.stat(file)))
+    return stats.every(stat => stat.isFile() && stat.size > 0)
+  } catch {
+    return false
+  }
+}
+
+function applyCachedRuntimeAssetBundle(
+  ctx: BuildCtx,
+  cached: CachedRuntimeAssetBundle,
+): FilePath[] {
+  for (const [logicalPath, emittedPath] of cached.assetEntries) {
+    registerAsset(ctx, logicalPath, emittedPath)
+  }
+  recordOutputAsset('notebook-runtime', cached.files)
+  return [...cached.files]
+}
+
+export function resetNotebookRuntimeAssetCache(): void {
+  globalThis.__quartzNativeRuntimePackAssetCache?.clear()
+  globalThis.__quartzNotebookPyrightAssetCache?.clear()
+}
+
+async function notebookPyrightSourceSignature(
+  ctx: BuildCtx,
+): Promise<{ signature: string; maxMtimeMs: number }> {
+  const sourcePaths = [
+    notebookRuntimePyrightWorkerEntry,
+    notebookRuntimePyrightWorkerGlobalsEntry,
+    notebookRuntimePyrightPyodideLockPath,
+    notebookRuntimePyrightGenericStubPath,
+  ]
+  const stats = await Promise.all(sourcePaths.map(file => fs.stat(file)))
+  let maxMtimeMs = 0
+  const parts = [path.resolve(ctx.argv.output), String(shouldHashAssets(ctx))]
+  for (let i = 0; i < sourcePaths.length; i += 1) {
+    const stat = stats[i]
+    if (stat.mtimeMs > maxMtimeMs) maxMtimeMs = stat.mtimeMs
+    parts.push(`${sourcePaths[i]}:${stat.mtimeMs}:${stat.size}`)
+  }
+  return { signature: parts.join('\0'), maxMtimeMs }
+}
+
+async function tryRecoverUnhashedPyrightAssetBundle(
+  ctx: BuildCtx,
+  signature: string,
+  maxMtimeMs: number,
+): Promise<CachedRuntimeAssetBundle | undefined> {
+  if (shouldHashAssets(ctx)) return undefined
+  try {
+    const outputRoot = path.resolve(ctx.argv.output)
+    const workerManifestLogical = chunkedFileAssetManifestPath({
+      baseDir: `${staticScriptsDir}/notebook-pyright/worker`,
+      manifestName: 'manifest.json',
+      chunkDir: 'chunks',
+      maxBytes: 0,
+    })
+    const typeshedManifestLogical = chunkedFileAssetManifestPath(notebookPyrightTypeshedDescriptor)
+    const stubsManifestLogical = chunkedFileAssetManifestPath(notebookPyrightPackageStubsDescriptor)
+    const workerManifestFile = path.join(outputRoot, workerManifestLogical) as FilePath
+    const typeshedManifestFile = path.join(outputRoot, typeshedManifestLogical) as FilePath
+    const stubsManifestFile = path.join(outputRoot, stubsManifestLogical) as FilePath
+    const workerEntryFile = path.join(outputRoot, notebookPyrightWorkerLogicalPath) as FilePath
+
+    const [workerManifestStat, typeshedStat, stubsStat, workerEntryStat] = await Promise.all([
+      fs.stat(workerManifestFile),
+      fs.stat(typeshedManifestFile),
+      fs.stat(stubsManifestFile),
+      fs.stat(workerEntryFile),
+    ])
+    for (const stat of [workerManifestStat, typeshedStat, stubsStat, workerEntryStat]) {
+      if (!stat.isFile() || stat.size === 0 || stat.mtimeMs < maxMtimeMs) return undefined
+    }
+
+    const [typeshedRaw, stubsRaw] = await Promise.all([
+      fs.readFile(typeshedManifestFile, 'utf8'),
+      fs.readFile(stubsManifestFile, 'utf8'),
+    ])
+    const typeshedParsed: unknown = JSON.parse(typeshedRaw)
+    const stubsParsed: unknown = JSON.parse(stubsRaw)
+    if (
+      !isJsonObject(typeshedParsed) ||
+      !Array.isArray(typeshedParsed.chunks) ||
+      !isJsonObject(stubsParsed) ||
+      !Array.isArray(stubsParsed.chunks)
+    ) {
+      return undefined
+    }
+
+    const assetEntries: Array<readonly [string, string]> = [
+      [notebookPyrightWorkerLogicalPath, notebookPyrightWorkerLogicalPath],
+      [notebookPyrightWorkerManifestPath, notebookPyrightWorkerManifestPath],
+    ]
+    const files: FilePath[] = [workerManifestFile, workerEntryFile]
+
+    for (let index = 0; index < typeshedParsed.chunks.length; index += 1) {
+      const logical = chunkedFileAssetChunkPath(notebookPyrightTypeshedDescriptor, index)
+      assetEntries.push([logical, logical])
+      files.push(path.join(outputRoot, logical) as FilePath)
+    }
+    assetEntries.push([typeshedManifestLogical, typeshedManifestLogical])
+    files.push(typeshedManifestFile)
+
+    for (let index = 0; index < stubsParsed.chunks.length; index += 1) {
+      const logical = chunkedFileAssetChunkPath(notebookPyrightPackageStubsDescriptor, index)
+      assetEntries.push([logical, logical])
+      files.push(path.join(outputRoot, logical) as FilePath)
+    }
+    assetEntries.push([stubsManifestLogical, stubsManifestLogical])
+    files.push(stubsManifestFile)
+
+    if (!(await allFilesExistOnDisk(files))) return undefined
+    return { signature, files, assetEntries }
+  } catch {
+    return undefined
+  }
+}
+
+export async function writeNotebookPyrightAssets(ctx: BuildCtx): Promise<FilePath[]> {
+  const cache = (globalThis.__quartzNotebookPyrightAssetCache ??= new Map())
+  const key = runtimeAssetCacheKey(ctx)
+  const { signature, maxMtimeMs } = await notebookPyrightSourceSignature(ctx)
+  const cached = cache.get(key)
+  if (cached && cached.signature === signature && (await allFilesExistOnDisk(cached.files))) {
+    return applyCachedRuntimeAssetBundle(ctx, cached)
+  }
+
+  const recovered = await tryRecoverUnhashedPyrightAssetBundle(ctx, signature, maxMtimeMs)
+  if (recovered) {
+    cache.set(key, recovered)
+    return applyCachedRuntimeAssetBundle(ctx, recovered)
+  }
+
   const [workerFiles, typeshedFiles, packageStubFiles] = await Promise.all([
     writeNotebookPyrightWorkerAssets(ctx),
     writeNotebookPyrightTypeshedAssets(ctx),
     writeNotebookPyrightPackageStubAssets(ctx),
   ])
-  return [...workerFiles, ...typeshedFiles, ...packageStubFiles]
+  const files = [...workerFiles, ...typeshedFiles, ...packageStubFiles]
+  const assetEntries = [...ensureAssetManifest(ctx).entries()].filter(([logicalPath]) =>
+    isNotebookPyrightLogicalPath(logicalPath),
+  )
+  cache.set(key, { signature, files, assetEntries })
+  recordOutputAsset('notebook-runtime', files)
+  return files
 }
 
 function normalizeNativeRuntimePackPath(value: string): string {
@@ -347,12 +534,15 @@ function normalizeNativeRuntimePackPath(value: string): string {
   return normalized
 }
 
-async function readNativeRuntimePackSourceManifest(): Promise<NativeRuntimePackManifest> {
-  const source = await fs.readFile(notebookNativeRuntimeManifestSourcePath, 'utf8')
-  const value: unknown = JSON.parse(source)
+async function readNativeRuntimePackSourceManifest(): Promise<{
+  raw: string
+  manifest: NativeRuntimePackManifest
+}> {
+  const raw = await fs.readFile(notebookNativeRuntimeManifestSourcePath, 'utf8')
+  const value: unknown = JSON.parse(raw)
   const manifest = readNativeRuntimePackManifest(value)
   if (!manifest) throw new Error('native runtime pack manifest is invalid')
-  return manifest
+  return { raw, manifest }
 }
 
 function nativeRuntimePackFiles(manifest: NativeRuntimePackManifest): readonly string[] {
@@ -363,6 +553,95 @@ function nativeRuntimePackFiles(manifest: NativeRuntimePackManifest): readonly s
     for (const asset of entry.assets) files.add(normalizeNativeRuntimePackPath(asset))
   }
   return Array.from(files).sort()
+}
+
+async function inspectNativeRuntimePackFileSpec(
+  filename: string,
+): Promise<NativeRuntimePackFileSpec> {
+  const sourcePath = path.join(notebookNativeRuntimePacksDir, filename)
+  const stat = await fs.stat(sourcePath)
+  if (stat.size <= 1024) {
+    const content = await fs.readFile(sourcePath)
+    const pointer = readNativeRuntimePackGitLfsPointer(content, filename)
+    if (pointer) {
+      return { filename, mtimeMs: stat.mtimeMs, size: stat.size, resolvedSize: pointer.size }
+    }
+  }
+  return { filename, mtimeMs: stat.mtimeMs, size: stat.size, resolvedSize: stat.size }
+}
+
+async function nativeRuntimePackSignatureAndSpecs(
+  ctx: BuildCtx,
+): Promise<{
+  sourceManifest: NativeRuntimePackManifest
+  specs: readonly NativeRuntimePackFileSpec[]
+  signature: string
+}> {
+  const { raw, manifest: sourceManifest } = await readNativeRuntimePackSourceManifest()
+  const filenames = nativeRuntimePackFiles(sourceManifest)
+  const specs = await Promise.all(filenames.map(inspectNativeRuntimePackFileSpec))
+  const signature = [
+    path.resolve(ctx.argv.output),
+    String(shouldHashAssets(ctx)),
+    raw,
+    ...specs.map(spec => `${spec.filename}:${spec.mtimeMs}:${spec.size}:${spec.resolvedSize}`),
+  ].join('\0')
+  return { sourceManifest, specs, signature }
+}
+
+async function tryRecoverUnhashedNativeRuntimePackBundle(
+  ctx: BuildCtx,
+  specs: readonly NativeRuntimePackFileSpec[],
+  signature: string,
+): Promise<CachedRuntimeAssetBundle | undefined> {
+  if (shouldHashAssets(ctx)) return undefined
+  try {
+    const outputRoot = path.resolve(ctx.argv.output)
+    const manifestFile = path.join(outputRoot, notebookNativeRuntimeManifestPath) as FilePath
+    const manifestStat = await fs.stat(manifestFile)
+    if (!manifestStat.isFile() || manifestStat.size === 0) return undefined
+
+    const files: FilePath[] = [manifestFile]
+    const assetEntries: Array<readonly [string, string]> = []
+    const baseDir = path.posix.dirname(notebookNativeRuntimeManifestPath)
+
+    for (const spec of specs) {
+      const logicalPath = `${baseDir}/${spec.filename}`
+      if (spec.resolvedSize > nativeRuntimePackChunkBytes) {
+        const chunkCount = Math.ceil(spec.resolvedSize / nativeRuntimePackChunkBytes)
+        const manifestLogicalPath = `${logicalPath}.chunks.json`
+        const chunkManifestFile = path.join(outputRoot, manifestLogicalPath) as FilePath
+        const chunkManifestStat = await fs.stat(chunkManifestFile)
+        if (!chunkManifestStat.isFile() || chunkManifestStat.size === 0) return undefined
+        files.push(chunkManifestFile)
+        for (let chunkIndex = 0; chunkIndex < chunkCount; chunkIndex += 1) {
+          const index = chunkIndex.toString().padStart(4, '0')
+          const chunkLogicalPath = `${logicalPath}.chunk-${index}.bin`
+          const expectedSize =
+            chunkIndex === chunkCount - 1
+              ? spec.resolvedSize - chunkIndex * nativeRuntimePackChunkBytes
+              : nativeRuntimePackChunkBytes
+          const chunkFile = path.join(outputRoot, chunkLogicalPath) as FilePath
+          const chunkStat = await fs.stat(chunkFile)
+          if (!chunkStat.isFile() || chunkStat.size !== expectedSize) return undefined
+          assetEntries.push([chunkLogicalPath, chunkLogicalPath])
+          files.push(chunkFile)
+        }
+        assetEntries.push([manifestLogicalPath, manifestLogicalPath])
+      } else {
+        const packFile = path.join(outputRoot, logicalPath) as FilePath
+        const packStat = await fs.stat(packFile)
+        if (!packStat.isFile() || packStat.size !== spec.resolvedSize) return undefined
+        assetEntries.push([logicalPath, logicalPath])
+        files.push(packFile)
+      }
+    }
+
+    assetEntries.push([notebookNativeRuntimeManifestPath, notebookNativeRuntimeManifestPath])
+    return { signature, files, assetEntries }
+  } catch {
+    return undefined
+  }
 }
 
 async function writeNativeRuntimePackFile(
@@ -535,13 +814,22 @@ function rewriteNativeRuntimePackManifest(
   return { version: 1, runtimes }
 }
 
-async function writeNativeRuntimePackAssets(ctx: BuildCtx): Promise<FilePath[]> {
-  const sourceManifest = await readNativeRuntimePackSourceManifest()
-  const files = await Promise.all(
-    nativeRuntimePackFiles(sourceManifest).map(filename =>
-      writeNativeRuntimePackFile(ctx, filename),
-    ),
-  )
+export async function writeNativeRuntimePackAssets(ctx: BuildCtx): Promise<FilePath[]> {
+  const cache = (globalThis.__quartzNativeRuntimePackAssetCache ??= new Map())
+  const key = runtimeAssetCacheKey(ctx)
+  const { sourceManifest, specs, signature } = await nativeRuntimePackSignatureAndSpecs(ctx)
+  const cached = cache.get(key)
+  if (cached && cached.signature === signature && (await allFilesExistOnDisk(cached.files))) {
+    return applyCachedRuntimeAssetBundle(ctx, cached)
+  }
+
+  const recovered = await tryRecoverUnhashedNativeRuntimePackBundle(ctx, specs, signature)
+  if (recovered) {
+    cache.set(key, recovered)
+    return applyCachedRuntimeAssetBundle(ctx, recovered)
+  }
+
+  const files = await Promise.all(specs.map(spec => writeNativeRuntimePackFile(ctx, spec.filename)))
   const references = new Map(files.map(file => [file.filename, file.reference]))
   const manifest = rewriteNativeRuntimePackManifest(sourceManifest, references)
   const manifestFile = await writeRawAsset(
@@ -549,7 +837,13 @@ async function writeNativeRuntimePackAssets(ctx: BuildCtx): Promise<FilePath[]> 
     notebookNativeRuntimeManifestPath,
     JSON.stringify(manifest),
   )
-  return [manifestFile, ...files.flatMap(file => file.files)]
+  const emittedFiles = [manifestFile, ...files.flatMap(file => file.files)]
+  const assetEntries = [...ensureAssetManifest(ctx).entries()].filter(([logicalPath]) =>
+    isNativeRuntimePackLogicalPath(logicalPath),
+  )
+  cache.set(key, { signature, files: emittedFiles, assetEntries })
+  recordOutputAsset('notebook-runtime', emittedFiles)
+  return emittedFiles
 }
 
 function replaceNotebookRuntimeWorkerReference(text: string, fromFile: string, workerPath: string) {
@@ -635,5 +929,7 @@ export async function writeNotebookRuntimeAssets(ctx: BuildCtx): Promise<FilePat
   const clientFiles = await Promise.all(
     clientOutputs.map(output => writeAssetBundleOutput(ctx, output)),
   )
-  return [...workerFiles, ...nativeRuntimeFiles, ...pyrightFiles, ...clientFiles]
+  const allFiles = [...workerFiles, ...nativeRuntimeFiles, ...pyrightFiles, ...clientFiles]
+  recordOutputAsset('notebook-runtime', allFiles)
+  return allFiles
 }

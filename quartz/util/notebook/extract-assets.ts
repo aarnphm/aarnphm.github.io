@@ -5,6 +5,7 @@ import { write } from '../../plugins/emitters/helpers'
 import { hashAssetContent } from '../asset-manifest'
 import { defaultIoConcurrency, mapConcurrent } from '../async-pool'
 import { copyFile } from '../copy-file'
+import { recordOutputAsset } from '../output-assets'
 import { QUARTZ, joinSegments, type FilePath, type FullSlug } from '../path'
 import { logBuildSpan, PerfTimer } from '../perf'
 
@@ -84,6 +85,15 @@ function isExistingFileError(error: unknown): boolean {
   return errorCode(error) === 'EEXIST'
 }
 
+async function outputAssetExists(dest: FilePath, expectedBytes: number): Promise<boolean> {
+  try {
+    const stat = await fs.stat(dest)
+    return stat.isFile() && stat.size === expectedBytes
+  } catch {
+    return false
+  }
+}
+
 async function ensureCachedNotebookAsset(cachePath: FilePath, content: Buffer): Promise<void> {
   await fs.mkdir(path.dirname(cachePath), { recursive: true })
   try {
@@ -110,19 +120,48 @@ async function writeExtractedNotebookAsset(
   hash: string,
   content: Buffer,
 ): Promise<void> {
+  const dest = joinSegments(ctx.argv.output, `${slug}${ext}`) as FilePath
+  recordOutputAsset('notebook-asset', [dest])
+  const cachePath = path.join(NOTEBOOK_ASSET_CACHE_DIR, `${hash}${ext}`) as FilePath
+  if (await outputAssetExists(dest, content.byteLength)) {
+    if (ctx.argv.watch && !(await outputAssetExists(cachePath, content.byteLength))) {
+      await ensureCachedNotebookAsset(cachePath, content).catch(() => undefined)
+    }
+    return
+  }
+
   if (!ctx.argv.watch) {
     await write({ ctx, slug, ext, content })
+    await ensureCachedNotebookAsset(cachePath, content).catch(() => undefined)
     return
   }
 
   const perf = new PerfTimer()
-  const cachePath = path.join(NOTEBOOK_ASSET_CACHE_DIR, `${hash}${ext}`) as FilePath
-  const dest = joinSegments(ctx.argv.output, `${slug}${ext}`) as FilePath
   if (!(await tryCopyCachedNotebookAsset(cachePath, dest))) {
     await ensureCachedNotebookAsset(cachePath, content)
     await copyFile(cachePath, dest)
   }
   logBuildSpan(ctx.argv, 'write:notebook-asset', dest, perf.elapsedMs())
+}
+
+export async function ensureExtractedNotebookAssets(
+  ctx: BuildCtx,
+  extracted: readonly ExtractedAsset[],
+): Promise<boolean> {
+  for (const asset of extracted) {
+    const ext = mimeExtension(asset.mime) ?? (path.extname(asset.url) as `.${string}`)
+    if (!ext) return false
+    const slug = `${NOTEBOOK_ASSETS_DIR}/${asset.hash}` as FullSlug
+    const dest = joinSegments(ctx.argv.output, `${slug}${ext}`) as FilePath
+    recordOutputAsset('notebook-asset', [dest])
+    if (!rememberWritten(ctx, `${slug}${ext}`)) continue
+    if (await outputAssetExists(dest, asset.byteLength)) continue
+    const cachePath = path.join(NOTEBOOK_ASSET_CACHE_DIR, `${asset.hash}${ext}`) as FilePath
+    if (!(await tryCopyCachedNotebookAsset(cachePath, dest))) {
+      return false
+    }
+  }
+  return true
 }
 
 export async function extractInlineNotebookAssets(
@@ -145,6 +184,8 @@ export async function extractInlineNotebookAssets(
       const hash = hashAssetContent(bytes)
       const slug = `${NOTEBOOK_ASSETS_DIR}/${hash}` as FullSlug
       const url = `/${slug}${ext}`
+      const dest = joinSegments(ctx.argv.output, `${slug}${ext}`) as FilePath
+      recordOutputAsset('notebook-asset', [dest])
       if (rememberWritten(ctx, `${slug}${ext}`)) {
         const content = Buffer.from(bytes)
         writes.push(() => writeExtractedNotebookAsset(ctx, slug, ext, hash, content))

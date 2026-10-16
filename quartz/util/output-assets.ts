@@ -7,7 +7,11 @@ import type { FilePath } from './path'
 import { copyFile, resetCopyFileCache } from './copy-file'
 import { isRecord } from './type-guards'
 
-export type OutputAssetOwner = 'content-asset' | 'quartz-static'
+export type OutputAssetOwner =
+  | 'content-asset'
+  | 'quartz-static'
+  | 'notebook-runtime'
+  | 'notebook-asset'
 
 export type OutputAssetClaim = {
   owner: OutputAssetOwner
@@ -19,12 +23,106 @@ export type OutputAssetEntry = OutputAssetClaim & { size: number; mtimeMs: numbe
 
 export type OutputAssetManifest = Map<string, OutputAssetEntry>
 
+type OutputAssetClaimStore = Record<OutputAssetOwner, Set<FilePath>>
+
+declare global {
+  var __quartzOutputAssetClaims: OutputAssetClaimStore | undefined
+}
+
 const manifestPath = path.join('quartz', '.quartz-cache', 'output-assets.json')
 
 type SerializedOutputAssetManifest = { version: 1; assets: OutputAssetEntry[] }
 
 function normalizeFilePath(fp: string): FilePath {
   return path.resolve(fp) as FilePath
+}
+
+function isOutputAssetOwner(value: unknown): value is OutputAssetOwner {
+  return (
+    value === 'content-asset' ||
+    value === 'quartz-static' ||
+    value === 'notebook-runtime' ||
+    value === 'notebook-asset'
+  )
+}
+
+function outputAssetClaimStore(): OutputAssetClaimStore {
+  const existing = globalThis.__quartzOutputAssetClaims
+  if (existing) {
+    existing['content-asset'] ??= new Set()
+    existing['quartz-static'] ??= new Set()
+    existing['notebook-runtime'] ??= new Set()
+    existing['notebook-asset'] ??= new Set()
+    return existing
+  }
+  const created: OutputAssetClaimStore = {
+    'content-asset': new Set(),
+    'quartz-static': new Set(),
+    'notebook-runtime': new Set(),
+    'notebook-asset': new Set(),
+  }
+  globalThis.__quartzOutputAssetClaims = created
+  return created
+}
+
+function normalizeAssetList(files: FilePath | string | Iterable<FilePath | string>): FilePath[] {
+  if (typeof files === 'string') {
+    return [normalizeFilePath(files)]
+  }
+  const result: FilePath[] = []
+  for (const file of files) {
+    result.push(normalizeFilePath(file))
+  }
+  return result
+}
+
+export function recordOutputAsset(
+  owner: OutputAssetOwner,
+  files: FilePath | string | Iterable<FilePath | string>,
+): void {
+  const store = outputAssetClaimStore()[owner]
+  for (const file of normalizeAssetList(files)) {
+    store.add(file)
+  }
+}
+
+export function replaceOutputAssets(
+  owner: OutputAssetOwner,
+  files: Iterable<FilePath | string>,
+): void {
+  const store = outputAssetClaimStore()[owner]
+  store.clear()
+  for (const file of files) {
+    store.add(normalizeFilePath(file))
+  }
+}
+
+export function getPreservedOutputFiles(): Set<FilePath> {
+  const store = outputAssetClaimStore()
+  const preserved = new Set<FilePath>()
+  for (const owner of [
+    'content-asset',
+    'quartz-static',
+    'notebook-runtime',
+    'notebook-asset',
+  ] as const) {
+    for (const file of store[owner]) {
+      preserved.add(file)
+    }
+  }
+  return preserved
+}
+
+export function resetOutputAssetClaims(owner?: OutputAssetOwner): void {
+  const store = outputAssetClaimStore()
+  if (owner) {
+    store[owner].clear()
+    return
+  }
+  store['content-asset'].clear()
+  store['quartz-static'].clear()
+  store['notebook-runtime'].clear()
+  store['notebook-asset'].clear()
 }
 
 function normalizeClaim(claim: OutputAssetClaim): OutputAssetClaim {
@@ -42,7 +140,7 @@ function manifestKey(output: string): string {
 function isOutputAssetEntry(value: unknown): value is OutputAssetEntry {
   if (!isRecord(value)) return false
   return (
-    (value.owner === 'content-asset' || value.owner === 'quartz-static') &&
+    isOutputAssetOwner(value.owner) &&
     typeof value.source === 'string' &&
     typeof value.output === 'string' &&
     typeof value.size === 'number' &&
@@ -152,6 +250,12 @@ export async function preservedOutputAssets(
   const currentClaims = claimMap(claims)
   const preserved = new Set<FilePath>()
   for (const [output, entry] of manifest) {
+    if (entry.owner === 'notebook-runtime' || entry.owner === 'notebook-asset') {
+      if (await outputMatches(entry.output, entry.size)) {
+        preserved.add(normalizeFilePath(entry.output))
+      }
+      continue
+    }
     const claim = currentClaims.get(output)
     if (!claim) continue
     try {
@@ -163,6 +267,17 @@ export async function preservedOutputAssets(
         preserved.add(normalizeFilePath(claim.output))
       }
     } catch {}
+  }
+  const store = outputAssetClaimStore()
+  for (const owner of ['notebook-runtime', 'notebook-asset'] as const) {
+    for (const file of store[owner]) {
+      try {
+        const stat = await fs.stat(file)
+        if (stat.isFile()) {
+          preserved.add(normalizeFilePath(file))
+        }
+      } catch {}
+    }
   }
   return preserved
 }
@@ -214,6 +329,7 @@ async function cleanDirectory(dir: string, preserved: ReadonlySet<FilePath>): Pr
 export async function emitOutputAsset(ctx: BuildCtx, claim: OutputAssetClaim): Promise<FilePath> {
   const manifest = ensureOutputAssetManifest(ctx)
   const normalized = normalizeClaim(claim)
+  recordOutputAsset(normalized.owner, normalized.output)
   if (ctx.outputAssetPreserved?.has(manifestKey(normalized.output) as FilePath)) {
     return normalized.output as FilePath
   }
@@ -232,9 +348,42 @@ export async function emitOutputAsset(ctx: BuildCtx, claim: OutputAssetClaim): P
   return normalized.output as FilePath
 }
 
-export async function removeOutputAsset(ctx: BuildCtx, output: FilePath | string): Promise<void> {
+export async function removeOutputAsset(
+  ctxOrOwner: BuildCtx | OutputAssetOwner | FilePath | string,
+  output?: FilePath | string | Iterable<FilePath | string>,
+): Promise<void> {
+  const store = outputAssetClaimStore()
+  if (isOutputAssetOwner(ctxOrOwner)) {
+    if (output !== undefined) {
+      for (const file of normalizeAssetList(output)) {
+        store[ctxOrOwner].delete(file)
+      }
+    }
+    return
+  }
+  if (typeof ctxOrOwner === 'string') {
+    const normalized = normalizeFilePath(ctxOrOwner)
+    for (const owner of [
+      'content-asset',
+      'quartz-static',
+      'notebook-runtime',
+      'notebook-asset',
+    ] as const) {
+      store[owner].delete(normalized)
+    }
+    return
+  }
+  if (typeof output !== 'string') return
   const normalized = normalizeFilePath(output)
-  ensureOutputAssetManifest(ctx).delete(manifestKey(normalized))
+  for (const owner of [
+    'content-asset',
+    'quartz-static',
+    'notebook-runtime',
+    'notebook-asset',
+  ] as const) {
+    store[owner].delete(normalized)
+  }
+  ensureOutputAssetManifest(ctxOrOwner).delete(manifestKey(normalized))
   await fs.rm(normalized, { force: true })
 }
 
@@ -253,6 +402,21 @@ export function pruneOutputAssetManifest(
 
 export async function writeCurrentOutputAssetManifest(ctx: BuildCtx): Promise<void> {
   if (!ctx.outputAssetManifest) return
-  pruneOutputAssetManifest(ctx.outputAssetManifest, ctx.outputAssetClaims ?? [])
+  const store = outputAssetClaimStore()
+  const dynamicClaims: OutputAssetClaim[] = []
+  for (const owner of ['notebook-runtime', 'notebook-asset'] as const) {
+    for (const output of store[owner]) {
+      try {
+        const fingerprint = await statFingerprint(output)
+        const claim: OutputAssetClaim = { owner, source: output, output }
+        dynamicClaims.push(claim)
+        ctx.outputAssetManifest.set(manifestKey(output), { ...claim, ...fingerprint })
+      } catch {}
+    }
+  }
+  pruneOutputAssetManifest(ctx.outputAssetManifest, [
+    ...(ctx.outputAssetClaims ?? []),
+    ...dynamicClaims,
+  ])
   await writeOutputAssetManifest(ctx.outputAssetManifest)
 }

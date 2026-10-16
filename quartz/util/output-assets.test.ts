@@ -9,8 +9,13 @@ import type { FilePath } from './path'
 import {
   cleanOutputExcept,
   emitOutputAsset,
+  getPreservedOutputFiles,
   preservedOutputAssets,
   pruneOutputAssetManifest,
+  recordOutputAsset,
+  removeOutputAsset,
+  replaceOutputAssets,
+  resetOutputAssetClaims,
   type OutputAssetClaim,
 } from './output-assets'
 
@@ -66,6 +71,7 @@ function claim(buildCtx: BuildCtx, sourcePath: FilePath, outputPath: string): Ou
 test('cleanOutputExcept preserves unchanged claimed assets and removes generated files', async () => {
   const root = await mkdtemp(path.join(tmpdir(), 'quartz-output-assets-clean-'))
   try {
+    resetOutputAssetClaims()
     const buildCtx = ctx(root)
     const imageSource = await source(root, 'media/a.png', 'asset')
     const imageClaim = claim(buildCtx, imageSource, 'media/a.png')
@@ -84,6 +90,7 @@ test('cleanOutputExcept preserves unchanged claimed assets and removes generated
     await assert.rejects(stat(generated))
     await assert.rejects(stat(stale))
   } finally {
+    resetOutputAssetClaims()
     await rm(root, { recursive: true, force: true })
   }
 })
@@ -91,6 +98,7 @@ test('cleanOutputExcept preserves unchanged claimed assets and removes generated
 test('renamed output asset removes the old output and records the new output', async () => {
   const root = await mkdtemp(path.join(tmpdir(), 'quartz-output-assets-rename-'))
   try {
+    resetOutputAssetClaims()
     const buildCtx = ctx(root)
     const oldSource = await source(root, 'media/old.png', 'old')
     const oldClaim = claim(buildCtx, oldSource, 'media/old.png')
@@ -108,6 +116,51 @@ test('renamed output asset removes the old output and records the new output', a
     assert.equal((await stat(newOutput)).size, Buffer.byteLength('new asset'))
     assert.equal(buildCtx.outputAssetManifest!.size, 1)
   } finally {
+    resetOutputAssetClaims()
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+test('preserves notebook-runtime and notebook-asset claims across hard rebuilds', async () => {
+  const root = await mkdtemp(path.join(tmpdir(), 'quartz-output-assets-notebook-'))
+  try {
+    resetOutputAssetClaims()
+    const buildCtx = ctx(root)
+    const runtimeFile = path.join(
+      buildCtx.argv.output,
+      'static/scripts/notebook-runtimes/manifest.json',
+    ) as FilePath
+    const inlineAssetFile = path.join(
+      buildCtx.argv.output,
+      'static/notebook-assets/deadbeef.png',
+    ) as FilePath
+    const htmlFile = path.join(buildCtx.argv.output, 'notes/page.html')
+    await mkdir(path.dirname(runtimeFile), { recursive: true })
+    await mkdir(path.dirname(inlineAssetFile), { recursive: true })
+    await mkdir(path.dirname(htmlFile), { recursive: true })
+    await writeFile(runtimeFile, '{"version":1,"runtimes":{}}')
+    await writeFile(inlineAssetFile, 'png-bytes')
+    await writeFile(htmlFile, '<html></html>')
+
+    recordOutputAsset('notebook-runtime', [runtimeFile])
+    recordOutputAsset('notebook-asset', [inlineAssetFile])
+
+    assert.equal(getPreservedOutputFiles().has(runtimeFile), true)
+    assert.equal(getPreservedOutputFiles().has(inlineAssetFile), true)
+
+    const preserved = await preservedOutputAssets(new Map(), [])
+    await cleanOutputExcept(buildCtx.argv.output, preserved)
+
+    assert.equal((await stat(runtimeFile)).isFile(), true)
+    assert.equal((await stat(inlineAssetFile)).isFile(), true)
+    await assert.rejects(stat(htmlFile))
+
+    replaceOutputAssets('notebook-runtime', [])
+    assert.equal(getPreservedOutputFiles().has(runtimeFile), false)
+    await removeOutputAsset('notebook-asset', [inlineAssetFile])
+    assert.equal(getPreservedOutputFiles().has(inlineAssetFile), false)
+  } finally {
+    resetOutputAssetClaims()
     await rm(root, { recursive: true, force: true })
   }
 })
