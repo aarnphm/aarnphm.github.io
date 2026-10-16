@@ -751,6 +751,12 @@ export type TreePlacement = {
   log: number | null
 }
 
+export function treeGrowthDepth(growth: number) {
+  return Math.round(
+    forestLimits.depth.min + (forestLimits.depth.max - forestLimits.depth.min) * growth ** 0.6,
+  )
+}
+
 export function treeSprite(
   landscape: Landscape,
   placement: TreePlacement,
@@ -761,9 +767,7 @@ export function treeSprite(
   const { meadowTop, camp, treeline, alpine } = landscape
   const { id, x, y, standalone, foothill, cluster, kind, treeSeed, height } = placement
   const { growth, generation } = placement
-  const grown = Math.round(
-    forestLimits.depth.min + (forestLimits.depth.max - forestLimits.depth.min) * growth ** 0.6,
-  )
+  const grown = treeGrowthDepth(growth)
   const { markup, form, tone, extent, trunkRadius } = paint(
     kind,
     treeSeed,

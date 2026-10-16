@@ -64,6 +64,14 @@
   .trail-valley-haze {
     fill: color-mix(in srgb, var(--trail-snow-ground) var(--trail-snow-mix, 0%), var(--light));
   }
+  // The bank face under the moss shelf, the change of level where the grass starts.
+  .trail-valley-bank {
+    fill: color-mix(
+      in srgb,
+      var(--trail-snow-shade) var(--trail-snow-mix, 0%),
+      color-mix(in srgb, var(--darkgray) 30%, var(--light))
+    );
+  }
   .trail-valley-field {
     fill: color-mix(
       in srgb,

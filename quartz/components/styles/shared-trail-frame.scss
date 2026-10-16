@@ -106,48 +106,243 @@
     visibility: hidden;
   }
   // The pet on the trail (visitor-trail/trail-pet.ts), a cream body in an ink keyline in either
-  // theme, as the 404 prints it. pet.inline.ts copies the site pet's data-state onto it: walking, its
-  // legs step between two frames; its eyes blink every few seconds.
+  // theme, as the 404 prints it. pet.inline.ts copies the site pet's data-* attributes onto it, and
+  // its parts show for them as pet.scss shows the site pet's: walking, its legs step between two
+  // frames; its eyes blink, follow the pointer by a pixel and change with its state; the visitor's
+  // weather dresses it.
   .trail-pet-art {
     shape-rendering: crispEdges;
-  }
-  .trail-pet-ink {
-    fill: #1c1b1a;
-  }
-  .trail-pet-body {
-    fill: #f4ecd6;
-  }
-  .trail-pet-hat {
-    fill: #d8c08e;
-  }
-  .trail-pet-band {
-    fill: #e9a090;
-  }
-  .trail-pet-legs:not([data-legs='0']) {
-    display: none;
-  }
-  .trail-pet-art:is([data-state='walk'], [data-state='run']) {
-    .trail-pet-legs[data-legs='0'] {
+
+    .trail-pet-ink,
+    .trail-pet-leg,
+    .trail-pet-boot,
+    .trail-pet-hand {
+      fill: #1c1b1a;
+    }
+    .trail-pet-body {
+      fill: #f4ecd6;
+    }
+    .trail-pet-hat {
+      fill: #d8c08e;
+    }
+    .trail-pet-band,
+    .trail-pet-stripe,
+    .trail-pet-cloth {
+      fill: #e9a090;
+    }
+    .trail-pet-scarf,
+    .trail-pet-panel {
+      fill: #cdd597;
+    }
+    .trail-pet-scarf-shade {
+      fill: #a9b46c;
+    }
+    .trail-pet-flame {
+      fill: #f3a35a;
+    }
+    .trail-pet-glass {
+      fill: #fde7a8;
+    }
+    .trail-pet-brass {
+      fill: #a8834a;
+    }
+    .trail-pet-screen {
+      fill: #cfe0e6;
+    }
+    .trail-pet-air {
+      fill: #9c998f;
+      opacity: 0.7;
+    }
+
+    [data-part],
+    .trail-pet-legs:not([data-legs='0']) {
       display: none;
     }
-    .trail-pet-legs:not([data-legs='0']) {
-      display: inline;
-      animation: trail-pet-step 0.32s step-end infinite;
+    [data-part] > .trail-pet-frame {
+      animation: trail-pet-step var(--trail-pet-swap, 0.4s) step-end infinite;
     }
-    .trail-pet-legs[data-legs='2'] {
-      animation-delay: -0.16s;
+    [data-part] > .trail-pet-frame + .trail-pet-frame {
+      animation-delay: calc(var(--trail-pet-swap, 0.4s) / -2);
+    }
+    [data-part='eyes'] {
+      display: inline;
+      animation: trail-pet-blink 4.2s step-end infinite;
+      translate: calc(clamp(-1, round(var(--pet-lx, 0) / 0.09), 1) * 2px)
+        calc(clamp(-1, round(var(--pet-ly, 0) / 0.08), 1) * 2px);
+    }
+
+    &:is([data-state='walk'], [data-state='run']) {
+      .trail-pet-legs[data-legs='0'] {
+        display: none;
+      }
+      .trail-pet-legs:not([data-legs='0']) {
+        display: inline;
+        animation: trail-pet-step 0.32s step-end infinite;
+      }
+      .trail-pet-legs[data-legs='2'] {
+        animation-delay: -0.16s;
+      }
+    }
+    &:is([data-state='happy'], [data-state='cheer'], [data-state='wave']) {
+      [data-part='eyes'] {
+        display: none;
+      }
+      [data-part='eyes-happy'] {
+        display: inline;
+      }
+    }
+    &[data-state='wave'] [data-part='wave'] {
+      display: inline;
+      --trail-pet-swap: 0.5s;
+    }
+    &:is([data-state='notice'], [data-state='failed']) {
+      [data-part='eyes'] {
+        display: none;
+      }
+      [data-part='eyes-wide'] {
+        display: inline;
+      }
+    }
+    &[data-state='think'] {
+      [data-part='eyes'] {
+        display: none;
+      }
+      [data-part='eyes-up'],
+      [data-part='dots'] {
+        display: inline;
+      }
+    }
+    &[data-state='talk'] [data-part='mouth'] {
+      display: inline;
+      animation: trail-pet-step 0.36s step-end infinite;
+    }
+    &[data-state='work'] {
+      [data-part='eyes'] {
+        display: none;
+      }
+      [data-part='eyes-down'],
+      [data-part='laptop'] {
+        display: inline;
+      }
+    }
+
+    // The visitor's weather, as pet.inline.ts reads it for the site pet.
+    &[data-heat] {
+      [data-part^='eyes'] {
+        display: none;
+      }
+      [data-part='shades'] {
+        display: inline;
+      }
+    }
+    &[data-cold] [data-part='scarf'] {
+      display: inline;
+    }
+    &[data-cold='cold'] [data-part='breath'] {
+      display: inline;
+      > .trail-pet-frame {
+        opacity: 0;
+        animation: trail-pet-puff 2.4s linear infinite;
+      }
+      > .trail-pet-frame + .trail-pet-frame {
+        animation-delay: 0.3s;
+      }
+    }
+    &[data-rain] :is([data-part='umbrella'], [data-part='brolly-open'], [data-part='shaft']) {
+      display: inline;
+    }
+    // A storm blows the umbrella inside out on the lightning's clock; pet.inline.ts sets every
+    // pet-storm animation's time, so these keep the site pet's period and no delay.
+    &[data-rain][data-storm] {
+      [data-part='brolly-open'] {
+        animation: pet-storm-trail-open 11s step-end infinite;
+      }
+      [data-part='brolly-out'] {
+        display: inline;
+        opacity: 0;
+        animation: pet-storm-trail-out 11s step-end infinite;
+      }
+    }
+    &:is([data-windy], [data-storm]) [data-part='gust'] {
+      display: inline;
+    }
+    &[data-windy]:not([data-rain], [data-state='wave']) {
+      [data-part='hold'] {
+        display: inline;
+      }
+      .trail-pet-crown {
+        animation: trail-pet-tug 2.2s step-end infinite;
+      }
+    }
+    &[data-snow] .trail-pet-hand {
+      fill: #fdb2a2;
+    }
+    &[data-snow]:is([data-state='idle'], [data-state='wait']):not([data-rain], [data-windy])
+      [data-part='reach'] {
+      display: inline;
+    }
+    &[data-lantern]:not(
+        [data-state='wave'],
+        [data-state='work'],
+        [data-snow][data-state='idle'],
+        [data-snow][data-state='wait']
+      ) {
+      [data-part='lantern'],
+      [data-part='flame'] {
+        display: inline;
+      }
+      [data-part='flame'] {
+        --trail-pet-swap: 0.3s;
+      }
     }
   }
-  .trail-pet-eyes {
-    animation: trail-pet-blink 4.2s step-end infinite;
+  // Its prints, in the visitors' track layer: the older ones fade, prints made in the rain are mud,
+  // and at night they take its boots' pale tone, as the layer's grey goes into the dark ground.
+  // Snow takes them all in its colour (trail-winter.scss).
+  .trail-pet-tracks path:nth-last-child(n + 17) {
+    opacity: 0.5;
+  }
+  .trail-scene:not([data-foliage-season='winter']) {
+    &:not([data-lighting='moonlit']) .trail-pet-tracks path[data-wet] {
+      fill: color-mix(in srgb, var(--darkgray) 45%, #5e4630);
+    }
+    &[data-lighting='moonlit'] .trail-pet-tracks {
+      fill: #ecd6ac;
+    }
+  }
+  // At night its ink legs would go into the dark ground, so it walks in pale boots.
+  .trail-scene[data-lighting='moonlit'] .trail-pet-art {
+    .trail-pet-leg {
+      fill: #b9a07c;
+    }
+    .trail-pet-boot {
+      fill: #ecd6ac;
+    }
   }
   @media (prefers-reduced-motion: reduce) {
-    .trail-pet-eyes,
-    .trail-pet-legs {
-      animation: none;
-    }
-    .trail-pet-legs[data-legs='2'] {
-      display: none;
+    .trail-pet-art {
+      [data-part],
+      [data-part] > .trail-pet-frame,
+      .trail-pet-legs,
+      .trail-pet-crown {
+        animation: none;
+      }
+      [data-part] > .trail-pet-frame + .trail-pet-frame,
+      .trail-pet-legs[data-legs='2'] {
+        display: none;
+      }
+      [data-part='breath'] > .trail-pet-frame {
+        opacity: 1;
+      }
+      // Without the motion a storm leaves the umbrella inside out, as on the site pet.
+      &[data-rain][data-storm] {
+        [data-part='brolly-open'] {
+          opacity: 0;
+        }
+        [data-part='brolly-out'] {
+          opacity: 1;
+        }
+      }
     }
   }
   .trail-hiker-hat {
@@ -613,6 +808,59 @@
     opacity: 1;
   }
   96% {
+    opacity: 0;
+  }
+}
+
+@keyframes trail-pet-puff {
+  0% {
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  45% {
+    opacity: 0;
+  }
+}
+
+@keyframes trail-pet-tug {
+  0% {
+    translate: 0 0;
+  }
+  70% {
+    translate: 0 -2px;
+  }
+  80% {
+    translate: 0 -1px;
+  }
+  88% {
+    translate: 0 0;
+  }
+}
+
+// The site pet's pet-storm-open and pet-storm-out (pet.scss): the gust lands just after the
+// lightning at 1% of the period.
+@keyframes pet-storm-trail-open {
+  0% {
+    opacity: 1;
+  }
+  1.6% {
+    opacity: 0;
+  }
+  36% {
+    opacity: 1;
+  }
+}
+
+@keyframes pet-storm-trail-out {
+  0% {
+    opacity: 0;
+  }
+  1.6% {
+    opacity: 1;
+  }
+  36% {
     opacity: 0;
   }
 }

@@ -113,7 +113,7 @@ function sedimentary(
 }
 
 const foothillTones: readonly FoothillTone[] = ['far', 'mid', 'near']
-const valleyTones = ['haze', 'field'] as const
+const valleyTones = ['haze', 'bank', 'field'] as const
 
 function coordinate(value: number) {
   return Math.round(value * 100) / 100
@@ -299,35 +299,37 @@ export function trailMountainBackdrop(
   )
 
   // Aerial haze at the foot of the ranges. Above the rolling foot, paper-toned cells cover a growing
-  // share of the rock, so the lower slopes thin into the valley air. Below it the first meadow tone
-  // gathers until it meets the solid first terrace, so the badland apron fades into the field
-  // instead of ending at the terrace edge.
+  // share of the rock, so the lower slopes thin into the valley air. The foot itself is a bank: the
+  // moss shelf and the badland apron stand on a bench, a shaded face drops from its brow, and the
+  // grass starts solid at the face's foot, so the two meet on a change of level instead of a fade.
   const hazeDepth = alpine.height * 0.32
   const firstTerrace = landscape.contours[0] ?? []
-  const valleyColumns = new Map<number, { foot: number; ground: number }>()
+  const valleyColumns = new Map<number, { foot: number; face: number; ground: number }>()
   const valleyAt = (worldX: number, column: number) => {
     const known = valleyColumns.get(column)
     if (known) return known
     const foot = alpineFoot(worldX, landscape)
+    // The face is tallest where the foot swells up, so the bank reads as a lip on the rolling bench.
+    const lift = (foot - alpine.base) / 16
+    const face =
+      foot +
+      8 +
+      Math.round((1 + lift + Math.sin(worldX / 47 + landscape.relief.phase) * 0.5) * 2) * 2
     // The terrace path is a staircase: each point holds its height until the next point's x.
     let ground = firstTerrace[0]?.y ?? landscape.meadowTop
     for (const point of firstTerrace) {
       if (point.x > worldX) break
       ground = point.y
     }
-    const valley = { foot, ground: Math.max(ground, foot + 24) }
+    const valley = { foot, face, ground: Math.max(ground, face + 8) }
     valleyColumns.set(column, valley)
     return valley
   }
   const hazeLevel = (foot: number, worldY: number) => {
     const rise = (foot - worldY) / hazeDepth
-    return rise > 1 ? 0 : 0.85 * (1 - rise) ** 2.5
+    // Capped under half cover: at 0.5 the ordered screen is a checkerboard and reads as a lattice.
+    return rise > 1 ? 0 : 0.3 * (1 - rise) ** 2
   }
-  // The haze and the field gather on hashed noise, not the Bayer screen: a slow ramp through
-  // the ordered screen passes its half-cover checkerboard and reads as a lattice, worst in the
-  // dark theme where the paper is black and the moss stays lit. Noise reads as grain instead.
-  const gatherAt = (column: number, row: number) =>
-    trailRandom(seed ^ Math.imul(column + 11, 374761393) ^ Math.imul(row + 7, 668265263))()
   const lowlands = pixelLayers(
     lowlandBounds,
     lowlandTones,
@@ -373,7 +375,7 @@ export function trailMountainBackdrop(
       const y = 350 + (worldY - range.base) * surface.verticalScale
       const threshold = thresholdAt(column + 2, row + 1, range)
       // The last rows above the foot break up, so the moss meets the valley on a ragged line.
-      const fray = (worldY - foot + 20) / 20
+      const fray = (worldY - foot + 12) / 12
       // Moss hummocks, like an Icelandic lava field: each mound is shaded on its lower right.
       const mound =
         Math.sin(worldX / 9 + Math.sin(worldY / 7) * 1.6) * Math.sin(worldY / 4.5 + worldX / 31)
@@ -392,7 +394,7 @@ export function trailMountainBackdrop(
     'trail-valley',
     (worldX, worldY, column, row) => {
       const { foot } = valleyAt(worldX, column)
-      if (worldY >= foot || hazeLevel(foot, worldY) <= gatherAt(column, row)) return undefined
+      if (worldY >= foot || hazeLevel(foot, worldY) <= bayerThreshold(column, row)) return undefined
       return surfaceAt(worldX, worldY, column, true) ? 'haze' : undefined
     },
     region,
@@ -406,13 +408,15 @@ export function trailMountainBackdrop(
     valleyTones,
     'trail-valley',
     (worldX, worldY, column, row) => {
-      const { foot, ground } = valleyAt(worldX, column)
-      const threshold = gatherAt(column, row)
+      const { foot, face, ground } = valleyAt(worldX, column)
       if (worldY >= foot) {
         if (worldY >= ground) return undefined
-        return ((worldY - foot) / (ground - foot)) ** 0.8 > threshold ? 'field' : undefined
+        if (worldY + 4 <= face) return 'bank'
+        // The last row of the face breaks on scattered cells, so the lip is not a ruled line.
+        if (worldY < face) return scatterAt(column + 5, row + 3, ranges[0]) < 0.5 ? 'bank' : 'field'
+        return 'field'
       }
-      if (hazeLevel(foot, worldY) <= threshold) return undefined
+      if (hazeLevel(foot, worldY) <= bayerThreshold(column, row)) return undefined
       const foreground = rangesInColumn(worldX, column).some(
         surface =>
           surface.geology !== 'alpine' &&

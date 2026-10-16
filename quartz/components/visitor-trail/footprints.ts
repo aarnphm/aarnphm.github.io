@@ -7,8 +7,9 @@ const impressions: Record<FootprintKind, string> = {
   blob: 'M-3 .5Q-3-1.5-1-1.5T1.5-.5Q3 1 1 1.5T-3 .5Z',
 }
 
-export function footprintTransform(x: number, y: number, angle: number, side: number) {
-  const offset = side * 2
+// `spread` is how far each print sits off the line of travel, in scene units.
+export function footprintTransform(x: number, y: number, angle: number, side: number, spread = 2) {
+  const offset = side * spread
   const px = x - Math.sin(angle) * offset
   const py = y + Math.cos(angle) * offset
   return `translate(${px.toFixed(1)} ${py.toFixed(1)}) rotate(${((angle * 180) / Math.PI).toFixed(1)}) scale(1 ${side})`
@@ -18,8 +19,10 @@ export function footprint(kind: FootprintKind, transform: string) {
   return `<path data-footprint="${kind}" d="${impressions[kind]}" transform="${transform}"/>`
 }
 
-export function bootImpression(document: Document) {
+export function impression(document: Document, kind: FootprintKind) {
   const mark = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-  mark.setAttribute('d', impressions.boot)
+  mark.setAttribute('d', impressions[kind])
   return mark
 }
+
+export const bootImpression = (document: Document) => impression(document, 'boot')

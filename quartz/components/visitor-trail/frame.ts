@@ -1,6 +1,7 @@
 import { playhtml } from 'playhtml'
 import type { NavigableTrail } from './obstacle-route'
 import { svgPathGeometry } from '../../util/svg-geometry'
+import { trailSceneSeed } from '../../util/trail-preference'
 import { trailSceneHeight } from '../../util/trail-scene'
 import { readTrunks, type CollisionActor } from './actor-spacing'
 import { mountAlpineJourneys } from './alpine-journey'
@@ -266,7 +267,7 @@ const journeyRoutes = (prepared: { bodies: CollisionActor[]; routes: NavigableTr
   }
   return navigationRoutes
 }
-const sceneSeed = Math.floor(Math.random() * 4294967296)
+const sceneSeed = trailSceneSeed()
 let geometries: TrailGeometry[] = []
 let layoutSignature = ''
 let clearSignature = ''
@@ -597,7 +598,7 @@ const drawScene = async () => {
     forestNow,
     (plannedWater = groveWater),
   )
-  const regularSprites = forestSprites(layout.landscape)
+  const regularSprites = [...forestSprites(layout.landscape)]
   const visibleTrees = new Set(regularSprites.map(sprite => sprite.id))
   const treePreparation = prepareSceneTrees(
     layout.landscape,
