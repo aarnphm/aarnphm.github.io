@@ -20,6 +20,7 @@ import {
 import {
   writeCollaborativeCommentsAssets,
   writeGenericWorkerAssets,
+  writeLexicalWorkerAsset,
   writeSemanticWorkerAssets,
   writeSpeechRuntimeAssets,
 } from './component-resources/worker-assets'
@@ -42,14 +43,16 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
         notebookRuntimeFiles,
         collaborativeCommentsFiles,
         semanticWorkerFiles,
+        lexicalWorkerFile,
         speechRuntimeFiles,
         emojiFiles,
         xsltPolyfillFile,
-        sharedTrailFile,
+        sharedTrailFiles,
       ] = await Promise.all([
         writeNotebookRuntimeAssets(ctx),
         writeCollaborativeCommentsAssets(ctx),
         writeSemanticWorkerAssets(ctx),
+        writeLexicalWorkerAsset(ctx),
         writeSpeechRuntimeAssets(ctx),
         writeEmojiAssets(ctx),
         writeXsltPolyfillAsset(ctx),
@@ -69,10 +72,11 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
       yield* yieldFiles(notebookRuntimeFiles)
       yield* yieldFiles(collaborativeCommentsFiles)
       yield* yieldFiles(semanticWorkerFiles)
+      yield lexicalWorkerFile
       yield* yieldFiles(speechRuntimeFiles)
       yield* yieldFiles(emojiFiles)
       yield xsltPolyfillFile
-      yield sharedTrailFile
+      yield* yieldFiles(sharedTrailFiles)
       yield writeAssetManifest(ctx)
     },
     // Source edits regenerate resources through buildSourceResources; content edits reuse them.

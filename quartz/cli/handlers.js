@@ -12,6 +12,7 @@ import path from 'path'
 import prettyBytes from 'pretty-bytes'
 import serveHandler from 'serve-handler'
 import { WebSocket, WebSocketServer } from 'ws'
+import { handleLocalLeanVerifyNodeRequest } from '../util/lean-local-verify.ts'
 import { version, fp, cacheFile } from './constants.js'
 
 const inlineScriptFilter = /\.inline\.(ts|js)$/
@@ -358,6 +359,11 @@ export function createPreviewServer(argv, buildMutex) {
     }
 
     let fp = normalizeRequestPath(req.url)
+
+    if (fp === '/api/lean/verify') {
+      await handleLocalLeanVerifyNodeRequest(req, res)
+      return
+    }
 
     // handle redirects
     if (fp.endsWith('/')) {

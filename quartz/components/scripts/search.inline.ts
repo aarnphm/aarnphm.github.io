@@ -1,16 +1,16 @@
-import FlexSearch, { DefaultDocumentSearchResults, DocumentData, Id } from 'flexsearch'
-import type { ContentDetails } from '../../plugins'
+import type { LexicalField, LexicalFieldResult, LexicalIndexPriority } from './lexical-search-types'
 import { documentPreviewUrl, readDocumentPreview } from '../../util/document-preview'
 import { escapeHTML } from '../../util/escape'
 import { fetchCanonical } from '../../util/fetch-canonical'
 import { FullSlug, getFullSlug, normalizeRelativeURLs, resolveRelative } from '../../util/path'
-import { encode, highlight, pathSearchText, tokenizeTerm } from '../../util/search-text'
+import { highlight, tokenizeTerm } from '../../util/search-text'
 import { fuseSearchRanks } from '../../util/semantic-search'
 import { renderDocumentPreview } from './document-preview-card'
 import { registerEscapeHandler } from './escape-handler'
+import { getLexicalSearchClient } from './lexical-search'
 import { resetSiteSemantic, siteSemantic, type SiteSemantic } from './site-semantic'
 
-interface Item extends DocumentData {
+type Item = {
   id: number
   slug: FullSlug
   title: string
@@ -20,7 +20,7 @@ interface Item extends DocumentData {
   target: string
   fileName: string
   protected?: boolean
-  [key: string]: any
+  titleMatch?: boolean
 }
 
 type SearchType = 'basic' | 'tags'
@@ -62,21 +62,6 @@ let semanticInitFailed = false
 let searchDataPromise: Promise<ContentIndex> | null = null
 const configuredSearchElements = new WeakSet<HTMLDivElement>()
 type SimilarityResult = { item: Item; similarity: number }
-
-const index = new FlexSearch.Document<Item>({
-  tokenize: 'forward',
-  encode,
-  document: {
-    id: 'id',
-    index: [
-      { field: 'title', tokenize: 'forward' },
-      { field: 'fileName', tokenize: 'forward' },
-      { field: 'content', tokenize: 'forward' },
-      { field: 'tags', tokenize: 'forward' },
-      { field: 'aliases', tokenize: 'forward' },
-    ],
-  },
-})
 
 const p = new DOMParser()
 const fetchContentCache: Map<FullSlug, Element[]> = new Map()
@@ -246,14 +231,10 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   // Publish `data` only after the index is filled: the opener and the first query both call this,
   // and a query against a half-filled index returns whichever folders were added first.
   let searchDataReady: Promise<ContentIndex> | null = null
-  const ensureSearchData = (priority: IndexPriority = 'user-visible') => {
-    if (priority === 'user-visible') {
-      requestedIndexPriority = priority
-      indexTaskController?.setPriority(priority)
-    }
-    searchDataReady ??= (async () => {
+  const ensureSearchData = (priority: LexicalIndexPriority = 'user-visible') => {
+    const baseReady = (searchDataReady ??= (async () => {
       const loaded = await getSearchData()
-      await fillDocument(loaded)
+      await fillDocument(loaded, priority)
       idDataMap = Object.keys(loaded) as FullSlug[]
       slugToIndex = new Map<string, number>()
       idDataMap.forEach((slug, idx) => slugToIndex.set(slug, idx))
@@ -262,8 +243,14 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     })().catch(err => {
       searchDataReady = null
       throw err
-    })
-    return searchDataReady
+    }))
+    if (priority === 'user-visible') {
+      return baseReady.then(async loaded => {
+        await fillDocument(loaded, 'user-visible')
+        return loaded
+      })
+    }
+    return baseReady
   }
   const el = searchSpace.querySelector('ul#helper')
   const modeToggle = searchSpace.querySelector('.search-mode-toggle') as HTMLDivElement | null
@@ -891,7 +878,9 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     let workingType: SearchType = initialType
     let highlightTerm = trimmed
     let tagTerm = ''
-    let searchResults: DefaultDocumentSearchResults<Item> = []
+    let searchResults: LexicalFieldResult[] = []
+    const lexicalClient = getLexicalSearchClient()
+    const loadedData = requireData()
 
     if (initialType === 'tags') {
       tagTerm = trimmed.substring(1).trim()
@@ -899,52 +888,36 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
       if (separatorIndex !== -1) {
         const tag = tagTerm.substring(0, separatorIndex).trim()
         const query = tagTerm.substring(separatorIndex + 1).trim()
-        const results = await index.searchAsync({
+        searchResults = await lexicalClient.search(loadedData, {
           query,
           limit: Math.max(getNumSearchResults(modeForRanking), 10000),
           index: ['title', 'fileName', 'content', 'aliases'],
           tag: { tags: tag },
         })
         if (token !== searchSeq) return
-        searchResults = Object.values(results)
         workingType = 'basic'
         highlightTerm = query
       } else {
-        const results = await index.searchAsync({
+        searchResults = await lexicalClient.search(loadedData, {
           query: tagTerm,
           limit: getNumSearchResults(modeForRanking),
           index: ['tags'],
         })
         if (token !== searchSeq) return
-        searchResults = Object.values(results)
         highlightTerm = tagTerm
       }
     } else {
-      const results = await index.searchAsync({
+      searchResults = await lexicalClient.search(loadedData, {
         query: highlightTerm,
         limit: getNumSearchResults(modeForRanking),
         index: ['title', 'fileName', 'content', 'aliases'],
       })
       if (token !== searchSeq) return
-      searchResults = Object.values(results)
     }
 
-    const coerceIds = (hit?: DefaultDocumentSearchResults<Item>[number]): number[] => {
-      if (!hit) return []
-      return hit.result
-        .map((value: Id) => {
-          if (typeof value === 'number') {
-            return value
-          }
-          const parsed = Number.parseInt(String(value), 10)
-          return Number.isNaN(parsed) ? null : parsed
-        })
-        .filter((value): value is number => value !== null)
-    }
-
-    const getByField = (field: string): number[] => {
+    const getByField = (field: LexicalField): number[] => {
       const hit = searchResults.find(x => x.field === field)
-      return coerceIds(hit)
+      return hit ? [...hit.result] : []
     }
 
     const allIds: Set<number> = new Set([
@@ -1160,59 +1133,26 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   })
 }
 
-type IndexPriority = 'background' | 'user-visible'
-let requestedIndexPriority: IndexPriority = 'background'
-let indexTaskController: TaskController | null = null
-
-let indexFilled: Promise<void> | null = null
-function fillDocument(data: ContentIndex): Promise<void> {
-  indexFilled ??= addDocuments(data).catch(err => {
-    indexFilled = null
-    throw err
-  })
-  return indexFilled
-}
-
-async function addDocuments(data: ContentIndex) {
-  const scheduling =
-    typeof TaskController === 'function' && typeof window.scheduler?.postTask === 'function'
-      ? window.scheduler
-      : null
-  const controller = scheduling ? new TaskController({ priority: requestedIndexPriority }) : null
-  indexTaskController = controller
-  try {
-    if (scheduling && controller) await scheduling.postTask(() => {}, { signal: controller.signal })
-    let slice = performance.now()
-    let id = 0
-    for (const [slug, fileData] of Object.entries<ContentDetails>(data)) {
-      const item = {
-        id,
-        slug: slug as FullSlug,
-        title: fileData.title,
-        fileName: pathSearchText(fileData.fileName),
-        content: fileData.content ?? '',
-        tags: fileData.tags,
-        aliases: fileData.aliases,
-        target: '',
-        protected: fileData.protected,
-      }
-      if (scheduling && controller) {
-        index.add(item)
-        if (performance.now() - slice >= 8) {
-          await scheduling.postTask(() => {}, { signal: controller.signal })
-          slice = performance.now()
-        }
-      } else {
-        await index.addAsync(item)
-      }
-      id++
-    }
-  } finally {
-    if (indexTaskController === controller) indexTaskController = null
-  }
+function fillDocument(
+  data: ContentIndex,
+  priority: LexicalIndexPriority = 'user-visible',
+): Promise<void> {
+  return getLexicalSearchClient().ensureIndexed(data, priority)
 }
 
 document.addEventListener('nav', async () => {
+  const onPagehide = (event: PageTransitionEvent) => {
+    if (!event.persisted) getLexicalSearchClient().disposeForPagehide()
+  }
+  const onPageshow = (event: PageTransitionEvent) => {
+    if (event.persisted) getLexicalSearchClient().recoverFromBfcache()
+  }
+  window.addEventListener('pagehide', onPagehide)
+  window.addEventListener('pageshow', onPageshow)
+  window.addCleanup(() => {
+    window.removeEventListener('pagehide', onPagehide)
+    window.removeEventListener('pageshow', onPageshow)
+  })
   const currentSlug = getFullSlug(window)
   const searchElements = Array.from(
     document.getElementsByClassName('search') as HTMLCollectionOf<HTMLDivElement>,
