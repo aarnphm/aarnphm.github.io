@@ -41,6 +41,9 @@ export type Occupant = {
   generation: number
   // The seed of the fallen trunk this tree grows from, while its log lasts.
   log: number | null
+  // The kind that roots here once this tree falls, and the forest years until then.
+  successor: TreeKind | null
+  succeeds: number
 }
 
 export const shadeTolerance = (kind: TreeKind) => habits[kind].shade
@@ -120,6 +123,7 @@ export function slotOccupant(
     // Heights are whole pixels, so water repaints a tree only when it changes the raster.
     const tall = (age: number) => Math.round(16 + (height - 16) * growth(age))
     const current = log !== null && year < fallen ? log : null
+    const next = successor(pool, previous, open || storm !== undefined, random())
     if (year < death)
       return {
         kind,
@@ -129,6 +133,8 @@ export function slotOccupant(
         age: year - born,
         generation,
         log: current,
+        successor: next,
+        succeeds: fall - year,
         stage: 'living',
       }
     if (year < fall)
@@ -140,9 +146,10 @@ export function slotOccupant(
         age: year - born,
         generation,
         log: current,
+        successor: next,
+        succeeds: fall - year,
         stage: 'snag',
       }
-    const next = successor(pool, previous, open || storm !== undefined, random())
     log = treeSeed
     fallen = fall + rot
     previous = next
@@ -151,5 +158,16 @@ export function slotOccupant(
     height = 30 + random() * 26
     born = fall
   }
-  return { kind, treeSeed, height, growth: 1, age: 0, generation: 64, log: null, stage: 'living' }
+  return {
+    kind,
+    treeSeed,
+    height,
+    growth: 1,
+    age: 0,
+    generation: 64,
+    log: null,
+    successor: null,
+    succeeds: Infinity,
+    stage: 'living',
+  }
 }

@@ -1,12 +1,10 @@
 import type { NavigationWorkerRequest, NavigationWorkerResponse } from './navigation-worker-types'
-import { detourTrail } from './obstacle-route'
+import { navigationSearch } from './navigation-search'
 
 self.addEventListener('message', (event: MessageEvent<NavigationWorkerRequest>) => {
-  for (const { id, road, radius, obstacles, bounds } of event.data) {
-    const response: NavigationWorkerResponse = {
-      id,
-      planned: detourTrail(road, radius, obstacles, bounds),
-    }
-    self.postMessage(response)
-  }
+  const search = navigationSearch(event.data.query)
+  let step = search.next()
+  while (!step.done) step = search.next()
+  const response: NavigationWorkerResponse = { id: event.data.id, planned: step.value }
+  self.postMessage(response)
 })

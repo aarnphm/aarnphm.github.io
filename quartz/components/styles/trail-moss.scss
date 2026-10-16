@@ -1,0 +1,24 @@
+// Moss clumps grown by the cellular automaton. The worker returns tone indices; the canvas takes
+// these colours, so the theme and the season set them like any other fill.
+.homepage-trail-scene {
+  .trail-ground-cover {
+    --trail-moss-1: color-mix(in srgb, #4f5f3a 72%, var(--light));
+    --trail-moss-2: color-mix(in srgb, #6b7d47 66%, var(--light));
+    --trail-moss-3: color-mix(in srgb, #a8b07e 74%, var(--light));
+    pointer-events: none;
+  }
+  .trail-scene[data-foliage-season='autumn'] .trail-ground-cover {
+    --trail-moss-1: color-mix(in srgb, #4a4a12 72%, var(--light));
+    --trail-moss-2: color-mix(in srgb, #7a7f2a 66%, var(--light));
+    --trail-moss-3: color-mix(in srgb, #d0c889 80%, var(--light));
+  }
+  .trail-scene[data-foliage-season='winter'] .trail-ground-cover {
+    --trail-moss-1: color-mix(in srgb, #4b5a3e 62%, var(--light));
+    --trail-moss-2: color-mix(in srgb, #7c8a66 56%, var(--light));
+    --trail-moss-3: color-mix(in srgb, #d6d9c4 78%, var(--light));
+  }
+  .trail-moss {
+    display: block;
+    image-rendering: pixelated;
+  }
+}

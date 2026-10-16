@@ -365,6 +365,7 @@ export function plannedTrail(
   }
   return {
     ...route,
+    points: planned.points,
     length,
     point,
     detours: planned.detours,

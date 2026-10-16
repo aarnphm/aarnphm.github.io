@@ -117,38 +117,82 @@
     cursor: pointer;
     &:hover,
     &:focus-visible {
+      .trail-scene-mark {
+        color: var(--darkgray);
+      }
+    }
+    &:focus-visible {
       outline: 1px dashed var(--darkgray);
       outline-offset: 2px;
+    }
+  }
+  .trail-scene-mark {
+    position: absolute;
+    left: 50%;
+    top: calc(50% + var(--scene-mark-offset));
+    width: 10px;
+    height: 11px;
+    transform: translate(-50%, -50%);
+    color: color-mix(in srgb, var(--darkgray) 65%, var(--lightgray));
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1px;
+    shape-rendering: crispEdges;
+    pointer-events: none;
+  }
+  .trail-scene-mark-edge {
+    stroke: var(--light);
+    opacity: 0.6;
+  }
+  .trail-scene[data-lighting='moonlit'] {
+    .trail-scene-mark {
+      color: color-mix(in srgb, var(--darkgray) 80%, var(--lightgray));
+    }
+    .trail-scene-toggle:is(:hover, :focus-visible) .trail-scene-mark {
+      color: color-mix(in srgb, var(--darkgray) 80%, var(--dark));
     }
   }
   .trail-scene-controls {
     position: fixed;
     inset: auto;
     margin: 0;
+    width: max-content;
+    max-width: calc(100vw - 16px);
     padding: 0;
-    border: 0;
-    background: transparent;
+    border: 1px solid var(--lightgray);
+    border-radius: 0;
+    background: var(--light);
+    color: var(--darkgray);
+    font: 10px/1.6 var(--codeFont);
     pointer-events: auto;
     &:popover-open {
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      grid-template-columns: max-content minmax(0, 1fr);
+      column-gap: 8px;
     }
   }
   // A dotted underline marks a season or scene chosen by the visitor.
   .trail-season-toggle,
   .trail-holiday-toggle {
-    display: block;
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    align-items: baseline;
     min-width: 44px;
     min-height: 24px;
-    padding: 0 4px;
+    padding: 5px 12px;
     border: 0;
+    border-radius: 0;
     background: transparent;
-    color: var(--darkgray);
-    font: 10px/16px var(--codeFont);
+    color: inherit;
+    font: inherit;
     text-align: left;
     pointer-events: auto;
     cursor: pointer;
-    &[data-forced='true'] {
+    & + button {
+      border-top: 1px solid var(--lightgray);
+    }
+    &[data-forced='true'] .trail-scene-value {
       text-decoration: underline dotted;
       text-underline-offset: 2px;
     }
@@ -157,7 +201,7 @@
     }
     &:focus-visible {
       outline: 1px dashed var(--darkgray);
-      outline-offset: 2px;
+      outline-offset: -3px;
     }
   }
   .trail-scene:not([data-trail-opening='complete']) .trail-scene-toggle {

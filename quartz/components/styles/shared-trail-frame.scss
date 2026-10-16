@@ -8,6 +8,7 @@
 @use './trail-ravine.scss';
 @use './trail-wetlands.scss';
 @use './trail-meadow.scss';
+@use './trail-moss.scss';
 @use './trail-sky-band.scss';
 @use './trail-alpine-travelers.scss';
 @use './trail-community.scss';
@@ -268,6 +269,48 @@
   .trail-goose-bill {
     fill: color-mix(in srgb, var(--gray) 40%, #c69b60);
   }
+  // The jay roosts at night, so its tones stay daylight ones in either theme.
+  .trail-jay,
+  .trail-jay-acorn {
+    shape-rendering: crispEdges;
+    pointer-events: none;
+  }
+  .trail-jay-body {
+    fill: #b8907b;
+  }
+  .trail-jay-ink {
+    fill: #2f2a26;
+  }
+  .trail-jay-blue {
+    fill: #4f7cae;
+  }
+  .trail-jay-white {
+    fill: #ece8dc;
+  }
+  .trail-jay-acorn {
+    fill: #8a6a3f;
+  }
+  .trail-jay-up,
+  .trail-jay-down,
+  .trail-scene[data-lighting='moonlit'] .trail-birds {
+    display: none;
+  }
+  .trail-jay[data-pose='flying'] {
+    .trail-jay-perched {
+      display: none;
+    }
+    .trail-jay-up,
+    .trail-jay-down {
+      display: inline;
+      animation: trail-jay-flap 280ms steps(1, end) infinite;
+    }
+    .trail-jay-down {
+      animation-direction: reverse;
+    }
+  }
+  .trail-jay[data-pose='digging'] .trail-jay-peck {
+    animation: trail-jay-dig 400ms steps(1, end) infinite;
+  }
   .trail-animal-shadow {
     fill: var(--gray);
     opacity: 0.25;
@@ -494,6 +537,22 @@
     82%,
     86% {
       transform: translateX(-2px);
+    }
+  }
+  @keyframes trail-jay-flap {
+    0% {
+      visibility: visible;
+    }
+    50% {
+      visibility: hidden;
+    }
+  }
+  @keyframes trail-jay-dig {
+    0% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(2px);
     }
   }
   @keyframes trail-dog-wag {
