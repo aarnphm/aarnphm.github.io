@@ -1,8 +1,8 @@
 ---
 date: '2024-02-07'
-description: criteria for judging right and wrong actions, encompassing deontological ethics, utilitarianism, and virtue ethics.
+description: reasons for moral judgments, three approaches to normative ethics, and the separate questions of moral truth and knowledge.
 id: moral
-modified: 2026-06-05 15:08:05 GMT-04:00
+modified: 2026-10-16 09:01:01 GMT-04:00
 tags:
   - philosophy
 title: Moral
@@ -12,14 +12,22 @@ See also: [[thoughts/Value|Value]]
 
 > [!important] Justification
 >
-> Provide criteria for judging actions. It might be that the criterion is simple, such as right actions maximize the good, or it may be complex, such as the right action is the one that gives adequate weight to each competing duty
+> What makes an action required, permissible, or wrong? Normative ethics asks which reasons justify these judgments. A permissible action is morally allowed. It may also be required; an optional action may be omitted.
 
-Most notable are Kant's [[thoughts/Philosophy and Kant|deontological ethics]], utilitarianism, and virtue ethics.
+Three approaches start from different concerns:
 
-Considering what is right, which provides the account of wrongness, permissibility.important
+- Kant's [[thoughts/Philosophy and Kant|deontological ethics]] asks whether the principle behind an action can be willed as a universal law. His false-promise example tests whether that principle would undermine the practice it relies on. See [_Groundwork_, section II](https://www.earlymoderntexts.com/assets/pdfs/kant1785.pdf).
+- Mill's utilitarianism judges actions by their tendency to promote happiness, counting everyone affected. His account includes differences in the quality of pleasures. See [_Utilitarianism_, chapter II](https://www.earlymoderntexts.com/assets/pdfs/mill1863.pdf).
+- Aristotle's virtue ethics asks what character and judgment enable someone to act well. Habituation matters because repeated actions shape those dispositions. See [_Nicomachean Ethics_, book II](https://classics.mit.edu/Aristotle/nicomachaen.2.ii.html).
 
-One can think moral as the compass encapsulates the "range" of what people ought to or ought not to do, when one's actions can either cause harm or invoke benefits to other [[thoughts/being]]
+Harm and benefit to other [[thoughts/being|beings]] matter in moral deliberation. Whether they settle what we ought to do depends on the account of duties, consequences, and character being defended.
 
 ## skepticism versus objectivism
 
-{{TODO}} [_from Jeffrey Kaplan_](https://www.youtube.com/watch?v=_bEZM3xyDtc)
+These are questions in [metaethics](https://plato.stanford.edu/entries/metaethics/): what moral claims mean, what could make them true, and how we could know them.
+
+Moral objectivism holds that at least some moral claims are true independently of people's approval. Agreement alone would therefore leave their truth unsettled. [Moral realism](https://plato.stanford.edu/entries/moral-realism/) develops accounts of moral facts, with disagreement about what their independence requires.
+
+[Moral skepticism](https://plato.stanford.edu/entries/skepticism-moral/) names several doubts. A skeptic might question our knowledge or justification, or challenge the existence of moral facts themselves. Someone could accept objective moral facts while doubting our access to them, so skepticism and objectivism are not simple opposites.
+
+Further resource: [_Jeffrey Kaplan_](https://www.youtube.com/watch?v=_bEZM3xyDtc).

@@ -1,6 +1,6 @@
 ---
 date: '2024-02-07'
-description: and the backbone of the current language models/ai progress.
+description: Attention, next-token training, decoding, and particle-based steering in transformer language models.
 id: Transformers
 modified: 2026-06-07 01:44:41 GMT-04:00
 seealso:
@@ -20,271 +20,243 @@ tags:
 title: Transformers
 ---
 
-> A multi-layer perceptron (MLP) architecture built on top of a [[thoughts/Attention#Multi-head Attention|multi-head attention]] mechanism [@vaswani2023attentionneed] to signal high entropy tokens to be amplified and less important tokens to be diminished.
+A transformer combines [[thoughts/Attention#Multi-head Attention|attention]] with position-wise feed-forward layers, residual connections, and normalization. Attention lets each position read weighted combinations of other positions' value vectors. The weights come from query–key scores computed from the current representations using learned projections. A high weight says where information enters that computation; it does not identify a high-entropy token or guarantee semantic importance. [@vaswani2023attentionneed]
 
-ELI5: Mom often creates a food list consists of $n$ of items to buy. Your job is to guess what the last item on this list would be.
-
-Most implementations are [[thoughts/Autoregressive models|autoregressive]]. Most major SOTA are decoder-only, given that encoder-decoder are mostly used for machine translation task.
-
-[[thoughts/state-space models|state-space models]] which address transformers' [efficiency issues](https://arxiv.org/abs/2009.06732) in attention layers within information-dense data.
+The architecture and the training objective are separate choices. The original transformer had an encoder and a decoder for translation. Here I focus on a decoder-only [[thoughts/Autoregressive models|autoregressive]] language model: read a prefix, produce a distribution for the next token, append a token, repeat. [Attention Is All You Need, §3](https://arxiv.org/html/1706.03762v7#S3)
 
 ## internals
 
 See also: [transformers from scratch](https://e2eml.school/transformers.html), @geva2021transformerfeedforwardlayerskeyvalue
 
-procedure: tokenization -> positional_embeddings -> input_embeddings -> ffn + attn -> hidden_states -> probability distributions -> sampled (next token)
+Token IDs select rows from an embedding table. Position information enters through positional embeddings or an operation such as rotary position encoding. Each block updates those representations through attention and a feed-forward network. A final projection produces one logit per vocabulary item. [GPT-2 report, §2.3](https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf)
 
 ```mermaid
 flowchart LR
-  A["input_ids (B x T)"] --> B["token + positional embeddings (B x T x d_model)"]
-  B --> C["transformer (×L) {Attn + FFN}"]
-  C --> D["logits (B x T x |V|)"]
-  D --> E["softmax → probs (B x T x |V|)"]
-  E --> F["decode/sample/argmax output_ids (B x T)"]
+  A["token IDs"] --> B["token embeddings + position information"]
+  B --> C["causal transformer blocks"]
+  C --> D["hidden states"]
+  D --> E["vocabulary logits"]
+  E --> F["next-token distribution"]
 ```
 
-Objective (next‑token NLL / cross‑entropy): given logits $L \in R^{B\times T\times \mid V\mid}$ and probabilities `p = softmax(L)`, with gold next tokens $y \in V^{B\times T}$, training minimizes the negative log‑likelihood across tokens:
+For one attention head, with queries $Q$, keys $K$, values $V$, and key width $d_k$:
 
 $$
-\mathcal{L}(\theta) = -\frac{1}{B T_\text{eff}} \sum_{b=1}^B \sum_{t\in\mathcal{M}} \log\, p_\theta\big(y_{b,t}\mid x_{b,\le t}\big),
+\operatorname{Attention}(Q,K,V)
+=\operatorname{softmax}\!\left(\frac{QK^\top}{\sqrt{d_k}}+C\right)V,
+\qquad
+C_{t,j}=\begin{cases}0&j\leq t,\\-\infty&j>t.\end{cases}
 $$
 
-where $\mathcal{M}$ indexes non‑padded, shift‑right targets.
+The softmax runs across key positions. The causal mask $C$ prevents position $t$ from reading future tokens. Multiple heads use separate projections, then combine their outputs. [Vaswani et al., §3.2](https://arxiv.org/html/1706.03762v7#S3.SS2)
 
-> [!note] intuition
->
-> for each position in the batch and sequence (e.g., $5 \times 128$), the model produces a probability distribution over the vocabulary;
->
-> the loss is the sum of the log probabilities assigned to the correct next tokens, averaged over all supervised positions.
+For a batch of $B$ sequences with $T$ input positions and vocabulary $\mathcal V$, logits have shape $B\times T\times |\mathcal V|$. Let $y_{b,t}=x_{b,t+1}$ be the target after input position $t$, and let $m_{b,t}$ equal one exactly where that target should contribute to training. With $N_{\mathrm{sup}}=\sum_{b,t}m_{b,t}>0$:
 
-Let number of tokens $N$, embedding dim to $d$, we have embeddings $E \in R^{N\times d}$
+$$
+\mathcal L(\theta)
+=-\frac{1}{N_{\mathrm{sup}}}
+\sum_{b=1}^{B}\sum_{t=1}^{T}
+ m_{b,t}\log p_\theta(y_{b,t}\mid x_{b,\leq t}).
+$$
+
+A batch can contain padding or targets excluded from supervision, so the denominator counts supervised positions. For example, sequences with three and one supervised targets contribute four terms in total. Using the padded batch size would change the loss scale when padding changes.
+
+Training supplies the actual prefix at every position. The causal mask permits all these next-token predictions in one forward pass. During generation, each sampled token becomes part of the next prefix.
 
 ## memory limitations.
 
-https://arxiv.org/abs/2403.14123
+See also: [[thoughts/state-space models]], [Karpathy’s linked thread](https://x.com/karpathy/status/1691571869051445433).
 
-https://x.com/karpathy/status/1691571869051445433
+A transformer uses memory for weights, temporary activations, and, during cached decoding, previous keys and values. Dense attention over a sequence of length $T$ computes $T^2$ query–key scores per head. Implementations can avoid storing the complete score matrix; that changes memory traffic and storage without removing all those interactions. [Efficient Transformers: A Survey](https://arxiv.org/abs/2009.06732)
+
+For an ordinary uncompressed KV cache with $L$ layers, $B$ sequences of length $T$, $h_{\mathrm{KV}}$ key/value heads, equal key and value width $d_h$, and $s$ bytes per element:
+
+$$
+\operatorname{KVBytes}=2BLTh_{\mathrm{KV}}d_hs.
+$$
+
+The factor of two counts keys and values. Under these assumptions, doubling the context doubles cache storage. Grouped-query attention reduces the number of KV heads; compression and offloading change what is stored or where it lives. The serving bottleneck also depends on how quickly hardware can move those bytes. [AI and Memory Wall](https://arxiv.org/abs/2403.14123)
 
 ## inference.
 
-A common pattern in production are to [[thoughts/PD disaggregated serving#prefill/decode|disaggregate]] prefill and decode nodes such that each deployments are optimized for its own prefill/decode goals/target.
+Prefill processes a prompt and builds its KV cache. Decode extends the sequence, usually one token per iteration. [[thoughts/PD disaggregated serving#prefill/decode|Disaggregated serving]] runs those stages on separate workers, which requires transferring or sharing the cache between them.
 
 ### sampling
 
-![[https://github.com/vllm-project/vllm/blob/main/vllm/v1/sample/sampler.py]]
+Given finite logits $z_i$ over vocabulary $\mathcal V$, the base distribution is
 
-given logits $z_i$ and base distribution $p_i = \text{softmax}(z)_i$, sampling methods modify this distribution before drawing tokens.
+$$
+p_i=\frac{e^{z_i}}{\sum_{j\in\mathcal V}e^{z_j}}.
+$$
+
+A sampler changes this distribution before drawing a token. The following definitions describe individual operations. Their composition needs an explicit order.
 
 #### temperature
 
-rescales logits before softmax: $p_i^{(\tau)} = \text{softmax}(z/\tau)_i$
+For $\tau>0$:
 
 $$
-\lim_{\tau \to 0^+} p_i^{(\tau)} = \mathbf{1}[i = \arg\max z], \quad \lim_{\tau \to \infty} p_i^{(\tau)} = 1/|\mathcal{V}|
+p_i^{(\tau)}=\frac{e^{z_i/\tau}}{\sum_j e^{z_j/\tau}}.
 $$
 
-entropy $H(p^{(\tau)})$ monotonically increases with $\tau$.
+Let $A=\{i:z_i=\max_j z_j\}$ be the set of tied maxima. Then
 
-```python
-def apply_temperature(
-  logits: torch.Tensor, temp: torch.Tensor
-) -> torch.Tensor:
-  temp = torch.where(temp < 1e-5, 1.0, temp)
-  return logits.div_(temp.unsqueeze(dim=1))
-```
+$$
+\lim_{\tau\to0^+}p_i^{(\tau)}=\frac{\mathbf1[i\in A]}{|A|},
+\qquad
+\lim_{\tau\to\infty}p_i^{(\tau)}=\frac{1}{|\mathcal V|}.
+$$
+
+The low-temperature limit is uniform over exact ties. An implementation's greedy mode can choose one tied token through a separate tie-breaking rule.
+
+For fixed finite logits, entropy is nondecreasing with temperature:
+
+$$
+H(p^{(\tau)})=-\sum_i p_i^{(\tau)}\log p_i^{(\tau)},
+\qquad
+\frac{dH}{d\tau}=\frac{\operatorname{Var}_{p^{(\tau)}}(z)}{\tau^3}\geq0.
+$$
+
+This follows by differentiating the softmax partition function. It concerns the next-token distribution before any truncation. It does not establish the quality or diversity of complete answers.
 
 #### top-k
 
-retain $k$ highest-probability tokens, renormalize:
+Choose a deterministic ordering for probability ties, and let $S_k$ contain the first $k$ tokens in descending probability order. Keep those tokens and renormalize:
 
 $$
-p_i^{(k)} = \frac{p_i \cdot \mathbf{1}[i \in \mathcal{V}_k]}{\sum_{j \in \mathcal{V}_k} p_j}, \quad \mathcal{V}_k = \{i : \text{rank}(p_i) \leq k\}
+p_i^{(k)}=\frac{p_i\mathbf1[i\in S_k]}{\sum_{j\in S_k}p_j}.
 $$
 
-fixed $k$ ignores distribution shape—problematic when peaked (includes noise) or flat (truncates options).
-
-```python
-def apply_top_k(logits: torch.Tensor, k: torch.Tensor) -> torch.Tensor:
-  vocab_size = logits.shape[1]
-  k = k.clamp(min=1, max=vocab_size)
-  top_k_values = logits.topk(k.max(), dim=1).values
-  threshold = top_k_values.gather(1, (k - 1).unsqueeze(1))
-  return logits.masked_fill_(logits < threshold, -float('inf'))
-```
+Exactly $k$ candidates survive under this definition. A threshold implementation that keeps every token tied with the $k$th token can retain more. The parameter fixes a count even when probability is distributed unevenly across those candidates.
 
 #### top-p (nucleus)
 
-[@holtzman2020curiouscaseneuraltext]
-
-dynamic vocabulary: smallest set with cumulative probability $\geq p$:
+Write the descending probabilities as $p_{(1)},\ldots,p_{(|\mathcal V|)}$. For a mass threshold $\rho\in(0,1]$, choose
 
 $$
-\mathcal{V}_p = \arg\min_{V \subseteq \mathcal{V}} |V| \quad \text{s.t.} \quad \sum_{i \in V} p_i \geq p
+k_\rho=\min\left\{k:\sum_{j=1}^{k}p_{(j)}\geq\rho\right\}.
 $$
 
-requires sorting: $O(|\mathcal{V}| \log |\mathcal{V}|)$. adapts to distribution—peaked → few tokens, flat → many.
-
-```python
-def apply_top_p(logits: torch.Tensor, p: torch.Tensor) -> torch.Tensor:
-  logits_sort, logits_idx = logits.sort(dim=-1, descending=False)
-  probs_sort = logits_sort.softmax(dim=-1)
-  probs_cumsum = probs_sort.cumsum(dim=-1)
-  mask = probs_cumsum <= (1 - p.unsqueeze(1))
-  mask[:, -1] = False
-  logits_sort.masked_fill_(mask, -float('inf'))
-  return logits_sort.scatter(dim=-1, index=logits_idx, src=logits_sort)
-```
+Retain the first $k_\rho$ tokens, including the token that crosses the threshold, and renormalize. The number retained changes with the distribution. A direct implementation sorts the vocabulary; this is an implementation choice, not a requirement that every sampler use a full sort. [@holtzman2020curiouscaseneuraltext] [Nucleus sampling paper](https://arxiv.org/abs/1904.09751)
 
 #### min-p
 
-[@nguyen2025turningheatminpsampling]
+For a relative threshold $m\in[0,1]$, retain
 
-probability floor relative to maximum: $\mathcal{V}_{\min p} = \{i : p_i \geq \min_p \cdot \max_j p_j\}$
+$$
+S_m=\{i:p_i\geq m\max_j p_j\}.
+$$
 
-scales with model confidence—tighter threshold when confident, looser when uncertain. outperforms top-p at high temperatures ($\tau > 1$). [^minp-iclr]
+Then renormalize on $S_m$. At $m=0$, every token survives; at $m=1$, only the maxima survive. For positive $m$ after temperature scaling, the same condition can be written without computing probabilities:
 
-[^minp-iclr]: ICLR 2025 oral. addresses top-p failure mode: flat distribution includes low-quality tokens.
+$$
+z_i-z_{\max}\geq\tau\log m.
+$$
 
-```python
-def apply_min_p(logits: torch.Tensor, min_p: torch.Tensor) -> torch.Tensor:
-  probs = logits.softmax(dim=-1)
-  max_probs = probs.amax(dim=-1, keepdim=True)
-  threshold = max_probs * min_p.unsqueeze(1)
-  return logits.masked_fill_(probs < threshold, -float('inf'))
-```
+This makes the interaction with temperature explicit. Increasing $\tau$ widens the allowed logit gap for fixed $m$.
+
+Nguyen et al. report gains from min-p, including at high temperatures. [@nguyen2025turningheatminpsampling] A subsequent [reanalysis by Schaeffer et al.](https://arxiv.org/html/2506.13681v1) disputes the claimed advantage after checking the evaluations and matching hyperparameter searches. The relative probability floor defines the method; superiority over top-p remains an empirical claim to evaluate for the model, task, and tuning budget.
 
 #### pipeline order
 
-```mermaid
-flowchart LR
-    A["logits (B×V)"] --> B["temperature τ"]
-    B --> C["min_p filter"]
-    C --> D["top_k ∩ top_p"]
-    D --> E["softmax → probs"]
-    E --> F["multinomial sample"]
-    F --> G["token_id"]
+Filters can change the probabilities that later filters receive. Take
 
-    style B fill:#f9d71c,stroke:#333
-    style C fill:#87ceeb,stroke:#333
-    style D fill:#98fb98,stroke:#333
-```
+$$
+p=(0.60,0.25,0.15),\qquad k=2,\qquad\rho=0.65.
+$$
 
-vLLM applies: **temperature → min_p → top_k/top_p → sample**
+Top-p alone retains the first two tokens. If top-k runs first and its output is renormalized, the first token has probability $0.60/0.85\approx0.706$. Top-p then retains only that token. Reversing these operations retains two tokens.
 
-temperature before truncation means flatter distributions include more tokens in top-p. this order maximizes diversity control.
+A serving library's sampler determines its order, renormalization, and tie rules. Check the deployed version before assuming a pipeline. The [vLLM sampler source](https://github.com/vllm-project/vllm/blob/main/vllm/v1/sample/sampler.py) is an implementation reference whose contents can change.
 
-```python
-def sample(logits: torch.Tensor, params: SamplingParams) -> torch.Tensor:
-  logits = apply_temperature(logits, params.temperature)
-  logits = apply_min_p(logits, params.min_p)
-  logits = apply_top_k(logits, params.top_k)
-  logits = apply_top_p(logits, params.top_p)
-  probs = logits.softmax(dim=-1)
-  return torch.multinomial(probs, num_samples=1)
-```
-
-[[thoughts/Speculative decoding#von Neumann acceptance rejection|see also: speculative decoding]]
+[[thoughts/Speculative decoding#von Neumann acceptance rejection|See also: speculative decoding]].
 
 ### KV
 
-The core "retrieval" bags that contains all previous stored key-value pair or newly added items.
+A KV cache stores the key and value representations from earlier positions at each cached layer. In a causal model, appending a token leaves those earlier representations unchanged, so the next query can reuse them. Caching avoids recomputing the prefix; the query still has to attend over the available keys and values.
 
-[[thoughts/PD disaggregated serving|Prefill disaggregation]] is pretty interesting in a sense that we can separate prefill stage to a separate nodes [@qin2024mooncakekvcachecentricdisaggregatedarchitecture]
+Mooncake organizes serving around this cache and [[thoughts/PD disaggregated serving|prefill and decode disaggregation]]. Its cache transfers and placement policies are system-level choices. [@qin2024mooncakekvcachecentricdisaggregatedarchitecture]
 
 ![[thoughts/images/mooncake-pd.webp|KV-centric optimization]]
 
 ### next-token prediction.
 
-Sampling: we essentially look forward K-tokens, and then we sample from the distribution of the next token.
+Ordinary autoregressive sampling draws one token from the distribution conditioned on the existing prefix:
+
+$$
+x_{t+1}\sim p_\theta(\cdot\mid x_{\leq t}),
+\qquad
+p_\theta(x_{1:T})=\prod_{t=1}^{T}p_\theta(x_t\mid x_{<t}).
+$$
+
+There is no explicit lookahead over future token sequences in this procedure. Beam search and [[thoughts/Speculative decoding]] add different mechanisms for exploring or proposing continuations.
 
 ### multi-token prediction.
 
-@gloeckle2024betterfasterlarge, also used in [[thoughts/Speculative decoding]] for [[thoughts/DeepSeek|DeepSeek-V3 and DeepSeek-R1]]
+Gloeckle et al. train several **output prediction heads** on a shared trunk. Each head predicts a different future offset from the same prefix representation. These heads are distinct from the attention heads inside a transformer block. [@gloeckle2024betterfasterlarge] [Paper, §2](https://arxiv.org/html/2404.19737v1#S2)
+
+For a sequence of length $T$, let $q_{\theta,r}(\cdot\mid x_{\leq t})$ be the distribution from offset head $r$. One token-averaged objective is
+
+$$
+\mathcal L_{\mathrm{MTP}}
+=-\frac{1}{N_{\mathrm{MTP}}}
+\sum_{r=1}^{n}\sum_{t=1}^{T-r}
+\log q_{\theta,r}(x_{t+r}\mid x_{\leq t}),
+\qquad
+N_{\mathrm{MTP}}=\sum_{r=1}^{n}(T-r),\quad 1\leq n<T.
+$$
+
+All heads must contribute gradients to the shared trunk. Write its sequence of hidden states as $h=f_{\theta_{\mathrm{trunk}}}(x)$, and let $\ell_r$ be the loss from head $r$. The chain rule gives
+
+$$
+\nabla_{\theta_{\mathrm{trunk}}}\sum_r\ell_r
+=\left(\frac{\partial h}{\partial\theta_{\mathrm{trunk}}}\right)^\top
+\sum_r\nabla_h\ell_r.
+$$
+
+Detaching the trunk output without returning these accumulated gradients would prevent the head losses from training the trunk.
+
+Ordinary next-token inference can use the first output head. The additional heads can also propose tokens for self-speculative decoding, followed by verification. Predicting future offsets independently does not make their product the model's autoregressive joint distribution.
+
+[[thoughts/DeepSeek|DeepSeek-V3]] uses a different construction: sequential MTP modules incorporate the intervening token embeddings and share the embedding and output layers. The report describes both discarding the auxiliary modules for ordinary inference and using them for speculative decoding. [DeepSeek-V3 report, §2.2](https://arxiv.org/html/2412.19437v2#S2.SS2)
 
 ![[thoughts/images/MTP-deepseek.webp|MTP implementation in DeepSeek, where they keep causal chain for prediction of each token at each depth]]
 
-tl/dr: predict $n$-tokens at once, via shared trunk and ==n dedicated attention heads== [^attention-head]
-
-Note that during inference, we only employ _one attention head_
-
-[^attention-head]:
-    @gloeckle2024betterfasterlarge employs $n=4$. The order of the forward and backward in a n-token prediction model with $n=4$ heads of the shared trunk works as follow:
-
-    ```python
-    z = model.shared(x)
-    d = z.detach()
-    d.requires_grad = False
-
-    for i in range(n):
-      p = model.heads[i](d)
-      loss(p, y[i]).backward()
-    z.backward()
-    ```
-
 ## Byte-Latent Transformer
 
-idea: learn from raw-bytes and skip tokenizer/detokenizer protocol.
+[Byte Latent Transformer](https://arxiv.org/html/2412.09871v1) models raw bytes through three stages: a local encoder groups byte representations into patches, a larger transformer processes the patch sequence, and a local decoder predicts bytes. Patch boundaries depend on a smaller model's next-byte entropy estimates. Predictable stretches can use longer patches, reducing the number of positions processed by the large transformer.
+
+This removes a fixed subword tokenizer. The byte representation, patching rule, and local encoder/decoder still determine how text enters and leaves the model.
 
 ## Feynman-Kac
 
-Let $\mathcal{V}$ be the vocab of given transformers model, and $\mathcal{S} = \mathcal{V}^{*}$ the set of multi-token strings. Assume $\mathcal{V}$ contains token `EOS` and write $\mathcal{F} \subseteq \mathcal{S}$ for the set of `EOS`-terminated strings.
+[Lew et al.](https://arxiv.org/html/2306.03081v1#S2) describe generation as a Markov chain over token strings, reweighted by nonnegative potentials. [@lew2023sequentialmontecarlosteering] The transition proposes a continuation; the potential scores that transition for the target task.
 
-> [!definition] _Feynman-Kac Transformer model_
->
-> is a tuple $(s_{0}, \{M_t\}_{t\ge 1}, \{G_t\}_{t\ge 1})$ where:
->
-> - $s_{0} \in \mathcal{S}$ is an _initial state_, which will take as empty string $\epsilon$
-> - $M_t(s_t \mid s_{t-1}, f_\theta)$ is a _Markov kernel_ from $s_{t-1} \in \mathcal{F}^c$ to $s_t \in \mathcal{S}$, parameterised by a transformer network $f_\theta: \mathcal{F}^c \to \mathbb{R}^{\mid \mathcal{V} \mid}$ mapping non-`EOS`-terminated strings to vectors of logits
-> - $G_t(s_{t-1}, s_t, f_\theta)$ is a _potential function_, mapping a pair $(s_{t-1}, s_t) \in \mathcal{F}^c \times \mathcal{S}$ to a real-valued non-negative score.
-
-Goal: generate from distribution $\mathbb{P}$ that reweights Markov chain $\mathbb{M}$ by potential functions $G_t$. We define ==_step-t filtering posteriors_==:
+Let $s_0$ be the initial string, $M_t(s_t\mid s_{t-1})$ a normalized transition kernel, and $G_t(s_{t-1},s_t)\geq0$ a potential. Use a fixed horizon $H$ here to make termination explicit. An EOS-terminated string is absorbing, with a self-transition and potential one on subsequent steps. The path target is
 
 $$
-P_t(s_t) = \frac{\mathbb{E}_\mathbb{M} \left[ \prod_{i=1}^{t \wedge T} G_i(S_{i-1}, S_i, f_\theta) \cdot [S_t = s_t] \right]}{\mathbb{E}_\mathbb{M} \left[ \prod_{i=1}^{t \wedge T} G_i(S_{i-1}, S_i, f_\theta) \right]}
+\gamma_H(s_{1:H})=\prod_{t=1}^{H}M_t(s_t\mid s_{t-1})G_t(s_{t-1},s_t),
+\qquad
+\pi_H(s_{1:H})=\frac{\gamma_H(s_{1:H})}{Z_H},
+\qquad
+Z_H=\sum_{s_{1:H}}\gamma_H(s_{1:H}).
 $$
 
-_Given that $T$ is mostly finite_ we can then define _overall posterior_ [@lew2023sequentialmontecarlosteering{see 2.2 for examples}]
+This requires $0<Z_H<\infty$. The endpoint distribution is the marginal of $\pi_H$ at $s_H$. Sequences that have not reached EOS by $H$ remain truncated prefixes unless the target explicitly excludes them. An unbounded construction needs assumptions about termination and integrability before taking a limit.
+
+A simple bootstrap particle approximation proceeds as follows. This is the standard with-replacement construction, separate from Lew et al.'s branching and without-replacement algorithm. [Doucet and Johansen's particle-filter tutorial](https://www.stats.ox.ac.uk/~doucet/doucet_johansen_tutorialPF2011.pdf)
+
+1. Start with $N$ copies of $s_0$, each with normalized weight $W_0^{(i)}=1/N$.
+2. At each $t\in\{1,\ldots,H\}$, draw ancestor indices $A_t^{(i)}\sim\operatorname{Categorical}(W_{t-1})$, then propose $S_t^{(i)}\sim M_t(\cdot\mid S_{t-1}^{(A_t^{(i)})})$.
+3. Set $g_t^{(i)}=G_t(S_{t-1}^{(A_t^{(i)})},S_t^{(i)})$, and normalize $W_t^{(i)}=g_t^{(i)}/\sum_jg_t^{(j)}$.
+4. If every weight is zero, this particle population has failed. It cannot be normalized. At the horizon, use $\sum_i W_H^{(i)}\delta_{S_H^{(i)}}$ as the endpoint approximation.
+
+Resampling favors prefixes that have accumulated weight. Finite populations can lose useful continuations, especially when constraints only become informative near the end. The weighted empirical measure is an approximation; its normalized probabilities are not generally unbiased.
+
+With finite integrable potentials, the bootstrap normalizer estimate is
 
 $$
-\mathbb{P}(s) = \lim_{t \to \infty} \mathbb{P}_t(s)
+\widehat Z_H=\prod_{t=1}^{H}\left(\frac1N\sum_{i=1}^{N}g_t^{(i)}\right).
 $$
 
-```pseudo lineNumber=false
-\begin{algorithm}
-\caption{Sequential Monte Carlo Transformer Steering}
-\begin{algorithmic}
-\State \textbf{Input:} $N$ (\# particles), $K$ (factor), Feynman-Kac Transformer model $\{s_0, \{M_t\}_{t \geq 1}, \{G_t\}_{t \geq 1}\}$
-\State \textbf{Output:} Weighted particle approximation $\{(x_i, w_i)\}_{i=1,\ldots,N}$ of the posterior $\mathbb{P}$ \\
-\State \textbf{Output:} Unbiased estimate $\hat{Z}$ of the partition function $Z = \mathbb{E}_\mathbb{M}[\prod_{t=1}^T G_t(s_t, s_{t-1}, f_\theta)]$ \\
-\State Initialize $f_\theta \gets \texttt{CachedTransformer}()$
-\State Initialize $(x_i, w_i) \gets (s_0, 1)$ for $i = 1, \ldots, N$
-\State Initialize $t \gets 1$
-\While{$x_i \not\in \mathcal{F}$ for some $i \in \{1, \ldots, N\}$}
-    \State $K_i \gets K (1 - \mathbb{1}_{\mathcal{F}}(x_i)) + \mathbb{1}_{\mathcal{F}}(x_i)$ for $i = 1, \ldots, N$
-    \State $N' \gets \sum_{i=1}^N K_i$
-    \For{$i \in \{1, \ldots, N\}$}
-        \If{$x_i \in \mathcal{F}$}
-            \State Set $(x_{i,1}, w_{i,1}) \gets (x_i, w_i \cdot \frac{N'}{N})$
-        \Else
-            \State Generate $x_{i,k} \sim M_t(\cdot \mid x_i, f_\theta)$ for $k = 1, \ldots, K$
-            \State Set $w_{i,k} \gets w_i \cdot G_t(x_i, x_{i,k}, f_\theta) \cdot \frac{N'}{K N}$ for $k = 1, \ldots, K$
-        \EndIf
-    \EndFor
-    \State Set normalized weights $\hat{w}_{i,k} \gets \frac{w_{(i,k)}}{\sum_{j=1}^N \sum_{l=1}^{K_j} w_{(j,l)}}$ for $i = 1, \ldots, N$ and $k = 1, \ldots, K_i$
-    \State Set $c^* \gets \inf\{c \in \mathbb{R}_{> 0} \mid \sum_{i=1}^N \sum_{k=1}^{K_i} (\mathbb{1} \wedge c \hat{w}_{(i,k)}) > N\}$
-    \State Set $(I_\text{det}, I_\text{stoch}, I_\text{strat}) \gets (\{(i,k) \mid c^{*} \hat{w}_{i,k} \geq 1\}, \{(i,k) \mid c^{*} \cdot \hat{w}_{i,k} < 1\}, \{\})$
-    \State Set $\alpha \gets \frac{\sum_{i \in I_\text{stoch}} \hat{w}_i}{|I_\text{det}|}$ and generate $U \sim \text{Uniform}([0, \alpha])$
-    \For{$i \in I_\text{stoch}$}
-        \State Set $U \gets U - \hat{w}_i$
-        \If{$U < 0$}
-            \State Set $I_\text{strat} \gets I_\text{strat} \cup \{i\}$
-            \State Set $U \gets U + \alpha$
-        \EndIf
-    \EndFor
-    \State Set particles $\{(x_i, w_i)\}_{i=1,\ldots,|I_\text{det}|} \gets \{(x_j, w_j \cdot \frac{N}{N'}) \mid j \in I_\text{det}\}$
-    \State Set particles $\{(x_i, w_i)\}_{i=|I_\text{det}|+1,\ldots,N} \gets \{(x_j, \frac{N}{c^* N'} \sum_{l=1}^{N} \sum_{k=1}^{K_l} w_{(j,k)}) \mid j \in I_\text{strat}\}$
-\EndWhile
-\State \Return $\left((x_i, w_i)_{i=1,\ldots,N}, \hat{Z} = \frac{1}{N} \sum_{i=1}^N w_i \right)$
-\end{algorithmic}
-\end{algorithm}
-```
+Under the stated multinomial resampling scheme it is unbiased for $Z_H$. A population that reaches zero total weight contributes $\widehat Z_H=0$. This property of the normalizer does not turn a finite particle population into exact posterior samples.
