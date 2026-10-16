@@ -112,20 +112,10 @@ export default ((userOpts?: Options) => {
                   <StreamUnlockIcon />
                 </button>
               )}
-              <a
-                href="/stream/index.xml"
-                class="internal"
-                data-no-popover
-                style="font-style: italic"
-              >
+              <a href="/stream/index.xml" class="internal" data-no-popover>
                 rss
               </a>
-              <a
-                href={isStreamIndex ? '/stream' : '/stream/on'}
-                class="internal"
-                style="font-style: italic"
-                data-no-popover
-              >
+              <a href={isStreamIndex ? '/stream' : '/stream/on'} class="internal" data-no-popover>
                 {isStreamIndex ? 'stream' : 'list'}
               </a>
               <span class="stream-share-actions" role="group" aria-label="partager le stream">
