@@ -164,12 +164,18 @@ function searchChunkPaths(paths: string[]): string[] {
 }
 
 function withoutSearchIndexFiles(paths: string[]): string[] {
-  return paths.filter(file => file !== 'static/searchIndex.json' && !isSearchChunkPath(file))
+  return paths.filter(
+    file =>
+      file !== 'static/searchIndex.json' &&
+      !isSearchChunkPath(file) &&
+      !file.startsWith('static/search-lexical/'),
+  )
 }
 
 function assertSearchIndexFiles(paths: string[]): void {
   assert.ok(paths.includes('static/searchIndex.json'))
   assert.equal(searchChunkPaths(paths).length, 64)
+  assert.equal(paths.filter(file => file.startsWith('static/search-lexical/')).length, 1)
 }
 
 async function loadSearchIndex(ctx: BuildCtx): Promise<Record<string, { content: string }>> {
@@ -435,8 +441,10 @@ test('content index partial emit patches cached search entries for body-only cha
     )
 
     const paths = outputPaths(ctx, emitted)
-    assert.equal(paths.length, 1)
-    assert.ok(isSearchChunkPath(paths[0]))
+    assert.equal(searchChunkPaths(paths).length, 1)
+    assert.equal(paths.length, 3)
+    assert.ok(paths.includes('static/searchIndex.json'))
+    assert.equal(paths.filter(file => file.startsWith('static/search-lexical/')).length, 1)
     const index = await loadSearchIndex(ctx)
     assert.equal(index['thoughts/note']?.content, 'new body')
     assert.equal(index['thoughts/other']?.content, 'stable body')

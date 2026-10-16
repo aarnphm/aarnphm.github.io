@@ -23,7 +23,12 @@ export type LexicalSearchSpec = {
 
 export type LexicalFieldResult = { field?: LexicalField; tag?: LexicalField; result: number[] }
 
-export type LexicalWorkerInitMessage = { type: 'init'; seq: number }
+export type LexicalWorkerInitMessage = {
+  type: 'init'
+  seq: number
+  fingerprint?: string
+  count?: number
+}
 
 export type LexicalWorkerAddMessage = { type: 'add'; seq: number; item: LexicalDocument }
 
@@ -47,7 +52,10 @@ export type LexicalWorkerSearchResultMessage = {
 
 export type LexicalWorkerErrorMessage = { type: 'error'; seq?: number; message: string }
 
+export type LexicalWorkerPrebuiltMessage = { type: 'prebuilt'; seq: number; restored: boolean }
+
 export type LexicalWorkerResponse =
+  | LexicalWorkerPrebuiltMessage
   | LexicalWorkerReadyMessage
   | LexicalWorkerSearchResultMessage
   | LexicalWorkerErrorMessage
