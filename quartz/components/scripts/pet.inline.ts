@@ -1378,7 +1378,8 @@ function trailHopClear(next: Perch, obstacles: PetObstacles) {
 }
 
 // Resume the current alpine descent ahead of its cursor.
-const walkTrail = (obstacles = petObstacles()) => {
+// Entering from the page it appears on the route (a fade); moves within the trail hop.
+const walkTrail = (obstacles = petObstacles(), arrive: 'hop' | 'fade' = 'hop') => {
   if (!root || hop || carry || reducedMotion() || document.hidden) return false
   const best = visibleTrailRun(obstacles)
   if (!best) return false
@@ -1417,7 +1418,7 @@ const walkTrail = (obstacles = petObstacles()) => {
       scale: start.scale,
       progress: start.progress,
     }
-    moveTo(next, trailHopClear(next, obstacles) ? null : 'fade')
+    moveTo(next, arrive === 'fade' || !trailHopClear(next, obstacles) ? 'fade' : null)
   }
   return true
 }
@@ -1494,6 +1495,23 @@ const arrowKeys: Record<string, Point> = {
 }
 const driveStride = 18
 const driveSpeed = 150
+// The step under way, so a held key's repeats leave it to finish; the obstacle scan is shared
+// by the steps of one burst (a fresh scan each step made the page stutter).
+let driving: Animation | null = null
+// A tap that lands while a step is under way still gets its own step after it.
+let driveQueued: Point | null = null
+let driveScan: { at: number; text: PetObstacles; actors: CollisionActor[] } | null = null
+const driveObstacles = (svg: SVGSVGElement) => {
+  const now = performance.now()
+  if (!driveScan || now - driveScan.at > 400) {
+    driveScan = {
+      at: now,
+      text: { ...petObstacles(), camps: [] },
+      actors: [...trailActors(svg), ...campSolids()],
+    }
+  }
+  return driveScan
+}
 const expeditionPath = () => {
   const scene = trailScene(document)
   if (!scene || trailHost(scene)?.hidden !== false || scene.dataset.trailRendered !== 'true')
@@ -1527,9 +1545,23 @@ const nearestTrailProgress = (path: SVGPathElement, point: Point) => {
   }
   return best
 }
-// Hops onto the nearest clear spot of the walking path in view, down in the valley.
-const boardTrail = (path: SVGPathElement) => {
-  if (!root || hop) return
+// Hops onto the nearest clear spot of the walking path in view, down in the valley. A stroll or
+// hop under way is cut where the pet is, so the hop starts from where it stands.
+// Puts the pet on the nearest clear foot of the route and hands over once it stands there.
+// Stops the move under way where it is, so the next move starts from there.
+const dropHop = () => {
+  if (!root || !hop) return
+  const rect = root.getBoundingClientRect()
+  hop.cancel()
+  hop = null
+  override = null
+  afterMove = null
+  doc = { x: rect.left + window.scrollX, y: rect.top + window.scrollY }
+  root.style.transform = transformFor(doc, rect.width / width)
+}
+const landOnTrail = (path: SVGPathElement, then: () => void) => {
+  if (!root) return false
+  dropHop()
   const obstacles = petObstacles()
   const text = { ...obstacles, camps: [] }
   const actors = [...trailActors(path.ownerSVGElement), ...campSolids()]
@@ -1550,14 +1582,15 @@ const boardTrail = (path: SVGPathElement) => {
       }
     }
   }
-  if (!start) return
+  if (!start) return false
   const foot = start
   afterMove = () => {
     trailWalk = { path, geometry: trailGeometry(path), feet: [foot], duration: 0, offsets: [0] }
     trailJourney = { key: trailKey(path), progress: foot.progress }
     reserveTrailFoot(path, foot)
+    settled = performance.now()
     render()
-    driveStep()
+    then()
   }
   const next: Perch = {
     el: path,
@@ -1568,18 +1601,53 @@ const boardTrail = (path: SVGPathElement) => {
     progress: foot.progress,
   }
   moveTo(next, trailHopClear(next, obstacles) ? null : 'fade')
+  return true
+}
+const boardTrail = (path: SVGPathElement) => landOnTrail(path, driveStep)
+// The scene has just opened: the pet appears on the route at once and sets off along it, or, with
+// no walkable run in view, lands on the nearest clear foot and leaves the rest to the wander.
+const enterTrail = (obstacles: PetObstacles) => {
+  dropHop()
+  if (walkTrail(obstacles, 'fade')) return true
+  const path = expeditionPath()
+  if (!path) return false
+  return landOnTrail(path, () => {
+    armQuietTimer()
+    scheduleWander()
+  })
 }
 const driveStep = () => {
   if (!root || carry || reducedMotion() || document.hidden) return
   const path = expeditionPath()
   if (!path) return
-  if (!driveKeys.size) {
-    if (trailWalk) {
+  let dx = 0
+  let dy = 0
+  for (const key of driveKeys) {
+    dx += arrowKeys[key].x
+    dy += arrowKeys[key].y
+  }
+  if (!dx && !dy && driveQueued) {
+    dx = driveQueued.x
+    dy = driveQueued.y
+  }
+  driveQueued = null
+  if (!dx && !dy) {
+    driveScan = null
+    if (trailWalk && perch?.foot && !hop) {
+      // Back on the expedition's clock from the nearest point of its path.
+      const progress = nearestTrailProgress(path, perch.foot)
+      perch.progress = progress
+      trailJourney = { key: trailKey(path), progress }
+      reserveTrailFoot(path, { ...perch.foot, scale: perch.scale ?? 1, progress })
       settled = performance.now()
       armQuietTimer()
       scheduleWander()
       savePosition()
     }
+    return
+  }
+  if (hop && hop === driving) {
+    driveQueued = { x: dx, y: dy }
     return
   }
   // A key mid-stroll takes the walk over from where the pet stands.
@@ -1592,19 +1660,19 @@ const driveStep = () => {
   if (!svg || !matrix || !terrain) return
   const px = Math.hypot(matrix.a, matrix.b)
   const from: TrailFoot = { ...perch.foot, scale: perch.scale ?? 1, progress: perch.progress ?? 0 }
-  let dx = 0
-  let dy = 0
-  for (const key of driveKeys) {
-    dx += arrowKeys[key].x
-    dy += arrowKeys[key].y
-  }
-  if (!dx && !dy) return
   const length = Math.hypot(dx, dy)
-  const text = { ...petObstacles(), camps: [] }
-  const actors = [...trailActors(svg), ...campSolids()]
-  const width = svg.viewBox.baseVal.width || svg.clientWidth
-  const height = svg.viewBox.baseVal.height || svg.clientHeight
+  const { text, actors } = driveObstacles(svg)
+  // The scene's own box, in scene units: the drawing may bleed past it for parallax.
+  const drawing = path.closest<HTMLElement>('.trail-scene')
+  const width = drawing?.clientWidth || svg.viewBox.baseVal.width
+  const height = drawing?.clientHeight || svg.viewBox.baseVal.height
   const inverse = matrix.inverse()
+  // The walk keeps below the treeline; where the route itself put the pet higher (its alpine
+  // stretch) it may go level or down from there.
+  const here = new DOMPoint(from.x - window.scrollX, from.y - window.scrollY).matrixTransform(
+    inverse,
+  )
+  const top = Math.min(terrain.treeline + 6, here.y)
   // The full direction first, then along one axis only, so it slides along what blocks it.
   const tries = [
     { x: dx / length, y: dy / length },
@@ -1622,15 +1690,16 @@ const driveStep = () => {
       inverse,
     )
     if (ground.x < 14 || ground.x > width - 14) continue
-    if (ground.y < terrain.treeline + 6 || ground.y > height - 12) continue
+    if (ground.y < top || ground.y > height - 12) continue
     if (terrain.pond && pondDistance(ground, terrain.pond) < 1.15) continue
     const scale = trailScale(0, ground, [], terrain)
-    const foot: TrailFoot = { ...to, scale, progress: nearestTrailProgress(path, to) }
+    const foot: TrailFoot = { ...to, scale, progress: from.progress }
     if (!trailPointClear(foot, path, text)) continue
     const radius = TRAIL_PET_RADIUS * px * Math.max(from.scale, scale)
     if (!canMove(from, foot, radius, actors)) continue
     lastMove = performance.now()
     follow([from, foot], path, { speed: driveSpeed, done: driveStep })
+    driving = hop
     return
   }
   // Blocked all round: it still turns to face the way it was asked.
@@ -2862,7 +2931,8 @@ document.addEventListener('nav', () => {
     }
     if (trailScene(document)?.dataset.trailRendered !== 'true') return
     if (!trailWanted || carry) return
-    const current = hop
+    // On the trail a move finishes first; from the page the pet comes in at once.
+    const current = trailWalk ? hop : null
     if (current) {
       if (waiting === current) return
       waiting = current
@@ -2874,7 +2944,7 @@ document.addEventListener('nav', () => {
       void current.finished.then(ready, ready)
       return
     }
-    if (walkTrail(obstacles)) {
+    if (trailWalk ? walkTrail(obstacles) : enterTrail(obstacles)) {
       trailWanted = false
       return
     }
