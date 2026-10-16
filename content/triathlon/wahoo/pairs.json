@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "pairs": [
+    {
+      "canonicalId": 20611099208,
+      "canonicalStartDate": "2026-10-16T15:42:03Z",
+      "workoutId": 506980247,
+      "duplicateStravaId": 20611106109,
+      "fitPath": "triathlon/wahoo/26-10-16.fit",
+      "sha256": "bbf7b347b793388fc8b774459a781ef92d77ff80857105900509b7a0a9ffc30d",
+      "startDate": "2026-10-16T15:42:02.000Z",
+      "elapsedTimeS": 4610,
+      "distanceM": 37926.82
+    }
+  ]
+}

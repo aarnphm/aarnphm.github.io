@@ -1989,6 +1989,14 @@ power: wahoo
 virtual: true
 ```
 
+```tracking
+activity: 20611099208
+garmin: 24747484341
+wahoo: [[triathlon/wahoo/26-10-16.fit]]
+power: wahoo
+virtual: true
+```
+
 <!-- training plan start
 meta: IRONMAN Lanzarote
 date: 2026-09-01
@@ -2135,6 +2143,8 @@ The models endpoint accepts `GET` and `HEAD`; other methods return `405`. Produc
 The in-browser pace forecaster first reads `/static/triathlon/data.jsonl`, then gets `/models/pace/latest.json`, its manifest, and its weights. It verifies the weights against the advertised SHA-256, loads WebGPU when available with WASM as the runtime fallback, runs the manifest's golden-parity check, and only then exposes predictions.
 
 ### source precedence
+
+From 2026-10-16, `pnpm strava:sync` and `pnpm wahoo:sync` import unambiguous ROUVY/Wahoo pairs. The original Wahoo FIT is archived under `triathlon/wahoo/`; `pairs.json` records the canonical ROUVY ID, native workout, FIT checksum and duplicate Strava ID. The paired ride uses Wahoo power by default. Explicit tracking selectors still take precedence. A verified pair appears once in the Garden's activity cards and analytics while remote cleanup is pending. Provider caches retain the source records until a later sync confirms their removal. Sync prints the exact Strava duplicate for separately confirmed deletion and never deletes a remote activity itself.
 
 For a ride recorded on both Rouvy and the BOLT, attach the BOLT file with `wahoo: [[triathlon/wahoo/<file>.fit]]` in the ride's tracking block. The Strava activity ID remains canonical. With `virtual: true`, Garmin supplies the virtual course, distance, and elevation when available; Strava supplies the activity timing. The linked FIT supplies recorded power, heart rate, cadence, device temperature, cycling dynamics, shifts, and native Wahoo summary metrics. Telemetry aligns by UTC time, with Strava or Garmin filling missing power, heart-rate, and cadence samples only when the FIT has no value within 2.5 seconds. Gear shifts and cycling dynamics use the virtual course's distance axis. The source caches and FIT stay unchanged, and an existing Wahoo recording is counted once.
 
