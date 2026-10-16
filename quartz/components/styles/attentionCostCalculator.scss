@@ -6,15 +6,11 @@
   @include figure-frame('acc-figure', 34rem);
 
   --acc-line: color-mix(in srgb, var(--gray) 24%, transparent);
-  --acc-surface-shadow:
-    0 0 0 1px var(--acc-line) inset, 0 18px 46px color-mix(in srgb, var(--dark) 7%, transparent);
   --acc-stroke: color-mix(in srgb, var(--darkgray) 70%, transparent);
   --acc-div: color-mix(in srgb, var(--gray) 28%, transparent);
   --acc-note: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
   --acc-salmon: var(--fig-salmon);
   --acc-sage: var(--fig-sage);
-  --acc-salmon-edge: color-mix(in srgb, var(--acc-salmon) 90%, var(--dark));
-  --acc-sage-edge: color-mix(in srgb, var(--acc-sage) 90%, var(--dark));
   --acc-card-bg: color-mix(in srgb, var(--light) 96%, transparent);
   --acc-card-bg-salmon: color-mix(in srgb, var(--acc-salmon) 16%, var(--light));
   --acc-card-bg-sage: color-mix(in srgb, var(--acc-sage) 18%, var(--light));
@@ -87,17 +83,27 @@
 
 .acc-value {
   grid-column: 2 / 3;
-  font-variant-numeric: tabular-nums;
-  font-weight: 600;
+  justify-self: end;
   min-width: 5ch;
+  margin: 0;
+  padding: 0 0.1rem;
+  border: 0;
+  border-radius: var(--radius-none);
+  background: transparent;
+  font: inherit;
   text-align: right;
   color: var(--dark);
-  cursor: pointer;
+  cursor: text;
 
-  &:hover,
+  &[hidden] {
+    display: none;
+  }
+  &:hover {
+    background: var(--fig-grid-selected);
+  }
   &:focus-visible {
-    color: var(--acc-salmon-edge);
-    outline: none;
+    outline: 2px solid var(--dark);
+    outline-offset: 1px;
   }
 
   .katex {
@@ -112,11 +118,9 @@
   width: 5.5ch;
   font-family: var(--codeFont, ui-monospace, monospace);
   font-size: 0.85rem;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
   text-align: right;
   padding: 0.05rem 0.25rem;
-  border: 1px solid var(--acc-salmon-edge);
+  border: 1px solid var(--fig-stroke);
   border-radius: var(--radius-none);
   background: var(--light);
   color: var(--dark);
@@ -125,27 +129,25 @@
     display: none;
   }
   &:focus-visible {
-    outline: 2px solid var(--acc-salmon);
+    outline: 2px solid var(--dark);
     outline-offset: 1px;
   }
 }
 
-.acc-select {
+.acc-dtype {
   grid-column: 2 / 3;
-  font-family: inherit;
-  font-size: 0.82rem;
-  padding: 0.25rem 0.4rem;
-  border: 1px solid var(--lightgray);
-  border-radius: var(--radius-none);
-  background: var(--light);
-  color: var(--dark);
+  min-width: 0;
+
+  .g-select {
+    width: 100%;
+  }
 }
 
 .acc-warning {
   margin: 0.2rem 0 0;
   padding: 0.4rem 0.55rem;
   font-size: 0.74rem;
-  color: var(--acc-salmon-edge);
+  color: var(--dark);
   background: color-mix(in srgb, var(--acc-salmon) 10%, transparent);
   border-radius: var(--radius-none);
   line-height: 1.4;
@@ -209,8 +211,6 @@
 
 .acc-card-num {
   font-size: 1.45rem;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
   color: var(--dark);
   line-height: 1.15;
 
@@ -220,17 +220,9 @@
   }
 }
 
-.acc-card--salmon .acc-card-num {
-  color: var(--acc-salmon-edge);
-}
-.acc-card--sage .acc-card-num {
-  color: var(--acc-sage-edge);
-}
-
 .acc-card-delta {
   font-size: 0.72rem;
   color: var(--acc-note);
-  font-variant-numeric: tabular-nums;
   opacity: 0.85;
   &:empty {
     display: none;
@@ -258,7 +250,6 @@
 
 .acc-bar-tag {
   color: var(--acc-note);
-  font-variant-numeric: tabular-nums;
 }
 
 .acc-bar-track {
@@ -293,9 +284,7 @@
 
 .acc-bar-val {
   text-align: right;
-  font-variant-numeric: tabular-nums;
   color: var(--dark);
-  font-weight: 600;
 
   .katex {
     font-size: 1em;
@@ -310,7 +299,6 @@
   color: var(--dark);
   font-size: 0.85rem;
   line-height: 1.5;
-  font-variant-numeric: tabular-nums;
 
   .katex {
     font-size: 1em;
@@ -320,6 +308,10 @@
 
 .acc-summary-table {
   @include figure-table;
+
+  dd {
+    font-variant-numeric: normal;
+  }
 }
 
 .acc-summary-hint {
@@ -327,7 +319,6 @@
   margin: 0;
   color: var(--acc-note);
   font-size: 0.78rem;
-  font-variant-numeric: normal;
 }
 
 .acc-math {
