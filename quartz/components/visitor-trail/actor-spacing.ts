@@ -33,6 +33,10 @@ const trunkFrames = new WeakMap<
   ParentNode,
   { time: DocumentTimeline['currentTime']; trunks: CollisionActor[] }
 >()
+const actorFrames = new WeakMap<
+  ParentNode,
+  { time: DocumentTimeline['currentTime']; elements: SVGGElement[] }
+>()
 
 function elementDepth(element?: SVGGElement) {
   if (!element) return 0
@@ -54,13 +58,28 @@ function cameraClearance(element: SVGGElement, relativeTo?: SVGGElement) {
   return Math.abs(elementDepth(element) - elementDepth(relativeTo)) * parallaxMovement.scroll
 }
 
+// Every journey reads the bodies each frame. Match the selector across the scene once per
+// frame; positions and phases are still read at each call.
+function collisionElements(scene: ParentNode) {
+  const doc = 'ownerDocument' in scene ? scene.ownerDocument : null
+  const time = doc?.timeline?.currentTime
+  if (typeof time !== 'number' || time <= 0)
+    return scene.querySelectorAll<SVGGElement>('[data-trail-collision]')
+  const known = actorFrames.get(scene)
+  if (known?.time === time && known.elements.every(element => element.isConnected))
+    return known.elements
+  const elements = [...scene.querySelectorAll<SVGGElement>('[data-trail-collision]')]
+  actorFrames.set(scene, { time, elements })
+  return elements
+}
+
 export function readActors(
   scene: ParentNode,
   includeWaiting = false,
   relativeTo?: SVGGElement,
 ): CollisionActor[] {
   const actors: CollisionActor[] = []
-  for (const element of scene.querySelectorAll<SVGGElement>('[data-trail-collision]')) {
+  for (const element of collisionElements(scene)) {
     if (
       element.dataset.enabled === 'false' ||
       (element.dataset.collisionActive === 'false' &&

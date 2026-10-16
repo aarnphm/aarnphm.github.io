@@ -15,14 +15,12 @@ import { mountGroundDepth } from './depth-order'
 import { footprint, footprintTransform, type FootprintKind } from './footprints'
 import { createForestSprites } from './forest-sprites'
 import { mountHikerJourney } from './hiker-journey'
-import { trailHinterland } from './hinterland'
 import { mountTrailHolidays } from './holidays'
 import { mountJay } from './jay'
 import { trailGroundScale, type Landscape, type Point } from './landscape'
 import { trailIds, trailLayout, type TrailId } from './layout'
 import { mountLeafFall } from './leaf-fall'
 import { mountMossCover } from './moss-cover'
-import { trailMountainBackdrop } from './mountain-backdrop'
 import { createTrailNavigation } from './navigation-workers'
 import { mountParkPatrol } from './park-patrol'
 import { trailPasture } from './pasture'
@@ -42,9 +40,9 @@ import {
   trailFoothillWoodland,
   trailTreeSprites,
 } from './scenery'
+import { prepareScenery } from './scenery-workers'
 import { mountSeasonToggle } from './season-toggle'
 import { mountSharedGrove, type Watering } from './shared-grove'
-import { trailTerrain, trailTerraces } from './terrain'
 import { prepareSceneTrees, prepareTreeSprites } from './tree-workers'
 import { mountVisitorJourneys } from './visitor-journey'
 import { mountMapReaderJourneys } from './wayfarer-journey'
@@ -545,6 +543,26 @@ const drawScene = async () => {
   campsite.style.top = `${layout.camp.y}px`
   scene.dataset.campPositioned = 'true'
   scene.dataset.trailVisible = String(!host.hidden)
+  const entrances = trailIds.flatMap(id => {
+    const path = svg.querySelector<SVGPathElement>(`[data-trail-route="${id}"]`)
+    if (!path) return []
+    path.setAttribute('d', layout.routes[id])
+    const { x, y } = svgPathGeometry(path).getPointAtLength(0)
+    return [{ x, y }]
+  })
+  // Terraces, terrain and ranges paint in a worker while routes are sampled here.
+  const scenery = prepareScenery(
+    {
+      landscape: layout.landscape,
+      seed: sceneSeed,
+      width,
+      camp: layout.camp,
+      routes: Object.values(layout.routes),
+      backdropClip: `${clip}-backdrop`,
+      entrances,
+    },
+    renderSignal,
+  )
   geometries = []
   for (const id of trailIds) {
     const path = svg.querySelector<SVGPathElement>(`[data-trail-route="${id}"]`)
@@ -615,32 +633,24 @@ const drawScene = async () => {
     const approach = scene.querySelector('.trail-camp-approach')
     if (approach) approach.innerHTML = marks.join('')
   }
+  const terraces = await scenery.get('terraces')
+  if (terraces === null || renderSignal.aborted) return
   const base = scene.querySelector('.trail-ground-base')
-  if (base) base.innerHTML = trailTerraces(layout.landscape, sceneSeed)
+  if (base) base.innerHTML = terraces
   // Paint the camp before backdrop, route sampling, and forest generation occupy the main thread.
   if (!(await yieldRender(renderSignal, true))) return
+  const hinterlandMarkup = await scenery.get('hinterland')
+  const terrain = await scenery.get('terrain')
+  if (hinterlandMarkup === null || terrain === null || renderSignal.aborted) return
   const hinterland = scene.querySelector('.trail-hinterland')
-  if (hinterland) hinterland.innerHTML = trailHinterland(width, layout.camp, sceneSeed)
+  if (hinterland) hinterland.innerHTML = hinterlandMarkup
   const ground = scene.querySelector('.trail-ground')
-  if (ground)
-    ground.innerHTML = trailTerrain(layout.landscape, sceneSeed, Object.values(layout.routes))
+  if (ground) ground.innerHTML = terrain
   if (!(await yieldRender(renderSignal, true))) return
+  const backdropMarkup = await scenery.get('backdrop')
+  if (backdropMarkup === null || renderSignal.aborted) return
   const backdrop = scene.querySelector('[data-trail-backdrop-container]')
-  if (backdrop) {
-    const entrances = trailIds.flatMap(id => {
-      const path = svg.querySelector<SVGPathElement>(`[data-trail-route="${id}"]`)
-      if (!path) return []
-      path.setAttribute('d', layout.routes[id])
-      const { x, y } = svgPathGeometry(path).getPointAtLength(0)
-      return [{ x, y }]
-    })
-    backdrop.innerHTML = trailMountainBackdrop(
-      layout.landscape,
-      sceneSeed,
-      `${clip}-backdrop`,
-      entrances,
-    )
-  }
+  if (backdrop) backdrop.innerHTML = backdropMarkup
   const readingPaths = svg.querySelector('[data-pet-walk-paths]')
   if (readingPaths)
     readingPaths.innerHTML = layout.readingRoutes
