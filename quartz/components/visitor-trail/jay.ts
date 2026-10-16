@@ -5,10 +5,37 @@ type Point = { x: number; y: number }
 
 // A jay perches on the largest oak and caches acorns where the succession plan roots the next
 // trees. Nothing is stored: a visitor who watched it dig finds the seedling there a week later.
-const perched = ['....PP..', '...PPPKE', 'KKPPPPP.', 'KKBWPPP.', '..KKPP..', '...K.K..']
-const wingsUp = ['...KK...', '..KBW.PP', 'KKPPPPKE', '..PPPP..']
-const wingsDown = ['......PP', 'KKPPPPKE', '..KBWP..', '...KK...']
-const tones = { P: 'trail-jay-body', K: 'trail-jay-ink', B: 'trail-jay-blue', W: 'trail-jay-white' }
+// A blue jay: crest, white face, black necklace and barred blue wings, so it does not read as
+// another brown songbird against the crowns. Flight frames use the grey belly tone for the face and
+// underparts, so the bird keeps its shape against the pale sky. Each frame faces right.
+const perched = [
+  '.......B..',
+  '......BBB.',
+  '.....BWKWK',
+  '....BBWWW.',
+  '...BBBKKK.',
+  '..BDWDBWW.',
+  '.BBDBDBWG.',
+  'BKBBBBGWG.',
+  'K.B...K.K.',
+]
+const wingsUp = ['..WDB.....', '...WDB.B..', '....BBBBB.', 'BDBBBBGKGK', '.W..GGGK..']
+const wingsDown = [
+  '.......B..',
+  '......BBB.',
+  'BDBBBBGKGK',
+  '.W.BBGGK..',
+  '...BDW....',
+  '..BDW.....',
+  '..W.......',
+]
+const tones = {
+  B: 'trail-jay-blue',
+  D: 'trail-jay-bar',
+  K: 'trail-jay-ink',
+  W: 'trail-jay-white',
+  G: 'trail-jay-belly',
+}
 const cell = 2
 // Forest years ahead the jay plants for: two months of real weeks.
 const horizon = 8
@@ -26,9 +53,9 @@ export function mountJay(scene: HTMLElement, host: HTMLElement, signal: AbortSig
   jay.dataset.pose = 'perched'
   const facing = document.createElementNS(svg, 'g')
   facing.innerHTML =
-    `<g class="trail-jay-perched" transform="translate(0 ${-2 * cell})"><g class="trail-jay-peck">${pixels(perched, tones, cell)}</g></g>` +
-    `<g class="trail-jay-up">${pixels(wingsUp, tones, cell)}</g>` +
-    `<g class="trail-jay-down">${pixels(wingsDown, tones, cell)}</g>`
+    `<g class="trail-jay-perched" transform="translate(0 ${-9 * cell})"><g class="trail-jay-peck">${pixels(perched, tones, cell)}</g></g>` +
+    `<g class="trail-jay-up" transform="translate(0 ${-7 * cell})">${pixels(wingsUp, tones, cell)}</g>` +
+    `<g class="trail-jay-down" transform="translate(0 ${-6 * cell})">${pixels(wingsDown, tones, cell)}</g>`
   jay.append(facing)
   const acorns = document.createElementNS(svg, 'g')
   acorns.setAttribute('class', 'trail-jay-acorns')
@@ -43,7 +70,7 @@ export function mountJay(scene: HTMLElement, host: HTMLElement, signal: AbortSig
     jay.setAttribute('transform', `translate(${Math.round(point.x)} ${Math.round(point.y)})`)
   }
   const face = (direction: number) => {
-    facing.setAttribute('transform', `scale(${direction} 1) translate(${-4 * cell} ${-4 * cell})`)
+    facing.setAttribute('transform', `scale(${direction} 1) translate(${-5 * cell} 0)`)
   }
   const stop = () => {
     view.clearTimeout(timer)
