@@ -974,19 +974,18 @@ const payloadMemo = (globalThis.__quartzStravaPayloadMemo ??= {
   stamps: '',
   entries: new Map(),
 })
-let payloadSourceSalt: string | undefined
-
-const payloadMemoSourceSalt = (): string =>
-  (payloadSourceSalt ??= (globalThis.__quartzStravaPayloadSourceInputs ?? [])
-    .map(fp => {
-      try {
-        const info = statSync(fp)
-        return `${fp}:${info.mtimeMs}:${info.size}`
-      } catch {
-        return `${fp}:missing`
-      }
-    })
-    .join('|'))
+// Capture this bundle's inputs before parsing starts; watched edits can arrive before its first
+// payload read. A lazy fingerprint would mark the old calculation as current for the next bundle.
+const payloadSourceSalt = (globalThis.__quartzStravaPayloadSourceInputs ?? [])
+  .map(fp => {
+    try {
+      const info = statSync(fp)
+      return `${fp}:${info.mtimeMs}:${info.size}`
+    } catch {
+      return `${fp}:missing`
+    }
+  })
+  .join('|')
 
 export function loadStravaPayloadSync(
   since: string | undefined,
@@ -1012,7 +1011,7 @@ export function loadStravaDataSync(
     analytics: analyticsInputs,
   })
   const stamps = `${stamp(stravaCachePath)}:${stamp(ouraCachePath)}:${stamp(garminCachePath)}:${stamp(wahooCachePath)}:${stamp(weatherCachePath)}:${stamp(appleCachePath)}:${stamp(coreBodyTemperatureCachePath)}:${wahooTrackingStamp(manualTracking?.activities ?? [], contentDirectory)}:${windArchiveStamp(contentDirectory)}:${swimProvenanceStamp(contentDirectory)}`
-  const sourceSalt = payloadMemoSourceSalt()
+  const sourceSalt = payloadSourceSalt
   if (payloadMemo.stamps !== stamps || payloadMemo.sourceSalt !== sourceSalt) {
     payloadMemo.entries.clear()
     payloadMemo.stamps = stamps

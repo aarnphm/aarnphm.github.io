@@ -14,6 +14,7 @@ import {
   emptyPayload,
   type ActivityThermalSource,
   type GarminVerification,
+  type RawStravaActivity,
   type StravaActivityDetail,
   type StravaPayload,
 } from '../plugins/stores/strava'
@@ -36,6 +37,7 @@ import {
 } from './strava-payload'
 import { swimLengthAverages } from './swim-metrics'
 import { applySwimPhysiology } from './swim-physiology'
+import { activityTrainingEffectLabel } from './triathlon-card'
 
 const detail = (values: Partial<StravaActivityDetail> = {}): StravaActivityDetail => ({
   id: 1,
@@ -1634,6 +1636,89 @@ test('shared Strava data preserves lab zones, manual wind and fueling for embedd
   )
   assert.equal(revised.payload.details['1'].fueling?.caloriesConsumed, 400)
   assert.equal(payload.details['1'].fueling?.caloriesConsumed, 0)
+})
+
+test('calculates commute training effects without adding commutes to training analytics', () => {
+  const date = '2026-10-07'
+  const easy: RawStravaActivity = {
+    id: 1,
+    name: 'Easy commute',
+    sportType: 'Ride',
+    commute: true,
+    distance: 9_100,
+    movingTime: 1_742,
+    elapsedTime: 1_742,
+    totalElevationGain: 55,
+    startDate: `${date}T10:00:00Z`,
+    startDateLocal: `${date}T10:00:00Z`,
+    averageSpeed: 5.2,
+    averageHeartrate: 105,
+    sufferScore: 4,
+    deviceWatts: false,
+  }
+  const hard: RawStravaActivity = {
+    ...easy,
+    id: 2,
+    name: 'Hard commute',
+    startDate: `${date}T18:00:00Z`,
+    startDateLocal: `${date}T18:00:00Z`,
+    averageHeartrate: 160,
+    sufferScore: 30,
+  }
+  const sources: StravaDataSources = {
+    strava: {
+      athleteId: 1,
+      auth: { refreshToken: '', obtainedAt: 0 },
+      lastSync: Date.parse(`${date}T20:00:00Z`),
+      lastActivityStart: 0,
+      activities: { '1': easy, '2': hard },
+      streams: {
+        '1': {
+          time: Array.from({ length: 1_742 }, (_, index) => index),
+          latlng: [],
+          altitude: [],
+          distance: Array.from({ length: 1_742 }, (_, index) => (index / 1_741) * 9_100),
+          heartrate: [
+            ...Array<number>(1_578).fill(105),
+            ...Array<number>(138).fill(130),
+            ...Array<number>(26).fill(149),
+          ],
+        },
+        '2': {
+          time: Array.from({ length: 1_742 }, (_, index) => index),
+          latlng: [],
+          altitude: [],
+          distance: Array.from({ length: 1_742 }, (_, index) => (index / 1_741) * 9_100),
+          heartrate: Array<number>(1_742).fill(160),
+        },
+      },
+      zones: { hr: [120, 140, 160, 180], power: [], ftp: null },
+    },
+    oura: null,
+    garmin: null,
+    wahoo: null,
+    apple: null,
+    core: null,
+    weather: null,
+  }
+  const before = structuredClone(sources)
+  const { payload, analytics } = buildStravaData(sources, date, null)
+  const recovery = payload.details['1']
+  assert.ok(isActivityDetail(recovery))
+  assert.equal(recovery.calculatedTrainingEffect?.aerobic, 1)
+  assert.equal(recovery.calculatedTrainingEffect?.anaerobic, 0)
+  assert.equal(activityTrainingEffectLabel(recovery), 'recovery')
+  assert.equal(payload.details['2'].calculatedTrainingEffect?.aerobic, 3)
+  assert.equal(activityTrainingEffectLabel(payload.details['2']), 'base')
+  for (const activity of Object.values(payload.details)) {
+    assert.equal(activity.commute, true)
+    assert.equal(activity.calculatedIntensityFactor, null)
+    assert.equal(activity.calculatedExerciseLoad, null)
+  }
+  assert.equal(analytics.activities.length, 2)
+  assert.ok(analytics.activities.every(activity => activity.commute && activity.load === 0))
+  assert.equal(analytics.distributions.activities.length, 0)
+  assert.deepEqual(sources, before)
 })
 
 test('builds recovery estimates after Apple HR enrichment', () => {
