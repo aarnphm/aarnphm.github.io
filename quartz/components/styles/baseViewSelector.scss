@@ -153,35 +153,43 @@ $base-control-height: 2.125rem;
         }
       }
 
+      // A square inside the field's border, so its hover fill meets the border without covering it.
       .search-input-clear-button {
         appearance: none;
         position: absolute;
-        right: 1rem;
-        top: 50%;
-        transform: translateY(-50%);
+        inset-block: calc(0.5rem + 1px);
+        right: calc(0.5rem + 1px);
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 20px;
-        height: 20px;
+        aspect-ratio: 1;
+        height: auto;
+        min-height: 0;
         padding: 0;
         background: transparent;
         border: 0;
+        border-radius: var(--radius-none);
         cursor: pointer;
-        opacity: 0.5;
         color: var(--gray);
 
         @media (hover: hover) and (pointer: fine) {
           &:hover {
             color: var(--dark);
-            opacity: 1;
+            background: color-mix(in srgb, var(--lightgray) 60%, transparent);
+
+            svg {
+              opacity: 1;
+            }
           }
         }
 
         &:focus-visible {
           outline: 2px solid var(--secondary);
-          outline-offset: -3px;
-          opacity: 1;
+          outline-offset: -2px;
+
+          svg {
+            opacity: 1;
+          }
         }
 
         &[hidden] {
@@ -191,6 +199,7 @@ $base-control-height: 2.125rem;
         svg {
           width: 14px;
           height: 14px;
+          opacity: 0.5;
           pointer-events: none;
         }
       }

@@ -9,12 +9,13 @@ const CARDS: Record<NotationSport, NotationCard[]> = {
     {
       term: '4 × 100 m @ 1:45',
       meaning:
-        'Four 100 m repeats, starting every 1 min 45 s. Swimming and rest share that interval.',
-      example: 'Finish in 1:30 → rest 15 s → start the next 100.',
+        'Four 100 m repeats, each starting 1 min 45 s after the last. The interval includes both swimming and rest.',
+      example: 'Swim in 1:30, rest 15 s, then start the next 100.',
     },
     {
       term: 'RI :20 · r = 20 s',
-      meaning: 'Rest interval: take 20 seconds after each repeat, whatever your swim time.',
+      meaning:
+        'Rest interval: take the full 20 seconds after each repeat, then begin the next one.',
       example: '4 × 100 m, RI :20 → 400 m of swimming, with 20 s rests.',
     },
     {
@@ -30,14 +31,16 @@ const CARDS: Record<NotationSport, NotationCard[]> = {
     },
     {
       term: 'desc · build',
-      meaning: 'Descend: each repeat gets faster. Build: increase speed within one repeat.',
-      example: '4 × 100 desc 1–4 → four successively faster 100s.',
+      meaning:
+        'Descend: make each repeat faster while keeping the stroke controlled. Build: increase speed during one repeat.',
+      example: '4 × 100 desc 1–4 → finish each 100 faster than the one before.',
     },
     {
       term: 'pull · kick · drill',
       meaning:
-        'Pull focuses on the arms; kick focuses on the legs; a drill isolates a skill. Use the equipment named by the coach.',
-      example: '4 × 50 m (25 drill / 25 swim) → each 50 combines both.',
+        'Pull work emphasizes the arm stroke; kick work emphasizes the legs. A drill isolates one technique cue, then swimming applies it to the full stroke.',
+      example:
+        '4 × 50 m (25 drill / 25 swim) → practice the cue for 25 m, then swim normally for 25 m.',
     },
     {
       term: '2 × (4 × 50 m)',
@@ -55,14 +58,16 @@ const CARDS: Record<NotationSport, NotationCard[]> = {
   bike: [
     {
       term: '3 × (8 min @ 90% FTP / 4 min EZ)',
-      meaning: 'Repeat eight minutes at the stated power, then four minutes easy, three times.',
+      meaning:
+        'Ride eight minutes at the power target, then pedal easily for four minutes. Repeat the work and recovery three times.',
       example: '3 × (8 + 4) = 36 min, including the final easy block.',
     },
     {
       term: 'W · FTP · %FTP',
       meaning:
-        'Watts measure power. Functional threshold power is the reference for percentage-based targets.',
-      example: '90% of a 250 W FTP = 225 W. Use your current cycling FTP.',
+        'Watts measure bike power. FTP is the reference for percentage targets, so use the cycling value specified by your plan.',
+      example:
+        'At 250 W FTP, 90% is 225 W. An estimated FTP makes that a training guide, not a measured threshold.',
     },
     {
       term: 'rpm',
@@ -71,7 +76,8 @@ const CARDS: Record<NotationSport, NotationCard[]> = {
     },
     {
       term: 'Z1 · Z2 · Z3…',
-      meaning: 'Training zones depend on the sport, metric, and zone system in the plan.',
+      meaning:
+        'Zones are specific to a sport and a measurement. Check whether the workout means power, heart rate, pace, or perceived effort.',
       example: 'Z2 power and Z2 heart rate have different units and boundaries.',
     },
     {
@@ -90,7 +96,8 @@ const CARDS: Record<NotationSport, NotationCard[]> = {
   run: [
     {
       term: '6 × (400 m / 200 m jog)',
-      meaning: 'Run 400 metres at the prescribed effort, then jog 200 metres; repeat six times.',
+      meaning:
+        'Run each 400 m at the prescribed pace or effort, then jog 200 m to recover. Keep the recovery easy enough to run the next repeat well.',
       example: '2.4 km of work + 1.2 km of recovery = 3.6 km.',
     },
     {
@@ -114,7 +121,7 @@ const CARDS: Record<NotationSport, NotationCard[]> = {
     {
       term: 'tempo · threshold · Z2',
       meaning:
-        'These labels depend on the coach’s system. Use the prescribed pace, heart rate, or effort for this run.',
+        'These labels depend on the plan’s zones. Follow the run’s stated pace or heart-rate target; easy and long runs should stay controlled unless the workout adds a faster finish.',
       example: '20 min tempo → check the target in the workout details.',
     },
     {
@@ -174,7 +181,7 @@ export const Notation = ({ id, locale = 'en' }: { id: string; locale?: Locale })
         <h2 id={`${id}-title`}>{copy('workout notation')}</h2>
         <p>
           {copy(
-            'Read the set, then the effort and recovery. Examples explain the notation; follow the targets and units in your plan.',
+            'Read each workout in order: distance or duration, number of repeats, effort target, then recovery. Swim sets may pair a technique drill with full-stroke swimming; bike sets pair power blocks with easy pedalling; run sets pair pace or heart-rate targets with jog recoveries. Use the sport-specific units and targets written in your plan.',
           )}
         </p>
       </header>
