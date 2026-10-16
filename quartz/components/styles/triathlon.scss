@@ -17874,6 +17874,7 @@ a.tri-pop-date:hover {
       1,
     '.tri-workout-analysis, .tri-zone-duo, .tri-cycling-power, .tri-curve-chart': 2,
     '.tri-run-stride-panel, .tri-swim-drag-chart': 3,
+    '.tri-effort-block': 2,
     '.tri-matched, .tri-mywindsock': 4,
     '.tri-environment': 5,
   );
@@ -17884,6 +17885,48 @@ a.tri-pop-date:hover {
       height: tri-graph-span($units);
       min-height: 0;
     }
+  }
+
+  // Each best-efforts table scrolls inside its two units under a pinned header. The footnote sits in
+  // the last table's padding, so the list ends on the grid.
+  .tri-efforts {
+    position: relative;
+    gap: var(--tri-activity-graph-gap);
+    padding-top: 0;
+  }
+
+  .tri-effort-block {
+    display: flex;
+    flex-direction: column;
+
+    &:has(+ .tri-effort-note) {
+      padding-bottom: 1.1rem;
+    }
+  }
+
+  .tri-effort-viewport {
+    flex: 1;
+    min-height: 0;
+  }
+
+  .tri-effort-scroll {
+    height: 100%;
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+
+  .tri-effort-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--light);
+  }
+
+  .tri-effort-note {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    margin: 0;
   }
 
   // Stacked, the two zone charts take one unit each; side by side they share one.
@@ -18485,14 +18528,13 @@ a.tri-pop-date:hover {
 
   > .tri-day-pager {
     display: flex;
-    flex: 0 0 auto;
+    flex: 0 1 auto;
+    flex-wrap: wrap;
+    justify-content: flex-end;
     align-items: center;
-    gap: 1rem;
+    gap: 0.4rem 0.8rem;
+    min-width: 0;
     margin-inline-start: auto;
-    font-family: var(--codeFont);
-    font-size: 0.6rem;
-    font-variant-numeric: tabular-nums;
-    color: var(--gray);
   }
 
   > .tri-day-track {
@@ -18520,52 +18562,19 @@ a.tri-pop-date:hover {
   }
 }
 
-.tri-day-pager-nav,
-.tri-day-pager-modes {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.15rem;
+.tri-day-pages {
+  min-width: 0;
 }
 
-.tri-day-pager[data-paged='false'] .tri-day-pager-nav {
-  visibility: hidden;
+.tri-day-pager[data-paged='false'] .tri-day-pages {
+  display: none;
 }
 
-.tri-day-pager-count {
-  min-width: 7ch;
-  text-align: center;
-}
-
-.tri-day-pager-step,
-.tri-day-pager-mode {
-  min-inline-size: 1.5rem;
-  min-block-size: 1.5rem;
-  padding: 0 0.3rem;
-  font: inherit;
-  color: inherit;
-  background: none;
-  border: 0;
-  cursor: pointer;
-
-  &:hover:not(:disabled) {
-    color: var(--dark);
-  }
-
-  &:disabled {
-    opacity: 0.35;
-    cursor: default;
-  }
-
-  &:focus-visible {
-    outline: 1px solid color-mix(in srgb, var(--dark) 42%, transparent);
-    outline-offset: 2px;
-  }
-}
-
-.tri-day-pager-mode[aria-pressed='true'] {
-  color: var(--dark);
-  text-decoration: underline;
-  text-underline-offset: 0.25em;
+// The layout switch is a setting, so it carries aria-pressed and borrows the selected tab fill.
+.tri-day-mode[aria-pressed='true'] {
+  color: var(--light);
+  background: var(--tri-accent);
+  border-color: var(--tri-accent);
 }
 
 .tri-day-embed[data-tri-activity-layout='one'] > .tri-pop-card > .tri-day-track {
@@ -18578,14 +18587,14 @@ a.tri-pop-date:hover {
   }
 
   // One activity per view is the only paged layout at this width, so the choice adds nothing.
-  .tri-day-pager-mode[data-layout='two'] {
+  .tri-day-mode[data-layout='two'] {
     display: none;
   }
 
-  .tri-day-embed:not([data-tri-activity-layout='all']) .tri-day-pager-mode[data-layout='one'] {
-    color: var(--dark);
-    text-decoration: underline;
-    text-underline-offset: 0.25em;
+  .tri-day-embed:not([data-tri-activity-layout='all']) .tri-day-mode[data-layout='one'] {
+    color: var(--light);
+    background: var(--tri-accent);
+    border-color: var(--tri-accent);
   }
 }
 

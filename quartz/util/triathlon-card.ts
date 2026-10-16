@@ -11342,6 +11342,7 @@ export const buildActivity = <N>(
     ...(activityAnchor ? { id: activityAnchor } : {}),
     'data-activity-id': `${d.id}`,
     'data-activity-title': d.name || d.sport,
+    'data-sport': d.sport,
   })
   const head = f.el('div', 'tri-act-head')
   f.add(head, buildActivityIcon(f, d))
@@ -15387,29 +15388,59 @@ export const buildDayAnalytics = <N>(f: TriNodeFactory<N>, summary: TriathlonDay
   return section
 }
 
-// Server output assumes the default two-up layout; the client pager rewrites the count and pressed
-// mode once it reads the stored layout.
-const buildDayTrackPager = <N>(f: TriNodeFactory<N>, count: number): N => {
-  const locale = f.presentation.locale
-  const pager = f.el('div', 'tri-day-pager', undefined, { 'data-paged': String(count > 2) })
-  const nav = f.el('span', 'tri-day-pager-nav')
-  const step = (direction: -1 | 1, key: string, glyph: string): N =>
-    f.el('button', 'tri-day-pager-step', glyph, {
+// Pages hold `perPage` activities; the last page backs up so it stays full, matching the snap
+// positions the track can reach.
+export const dayTrackPages = (
+  count: number,
+  perPage: number,
+): readonly { start: number; end: number }[] =>
+  Array.from({ length: Math.ceil(count / perPage) }, (_, index) => {
+    const start = Math.max(0, Math.min(index * perPage, count - perPage))
+    return { start, end: Math.min(count, start + perPage) }
+  })
+
+export const buildDayPageTabs = <N>(
+  f: TriNodeFactory<N>,
+  sports: readonly ActivityKind[],
+  perPage: number,
+  selected: number,
+): N[] =>
+  dayTrackPages(sports.length, perPage).map(({ start, end }, index) => {
+    const label = sports
+      .slice(start, end)
+      .map(sport => triText(f.presentation.locale, sport))
+      .join(' · ')
+    const shortcut = String(index + 1)
+    const tab = f.el('button', 'tri-map-tab tri-day-page-tab', undefined, {
       type: 'button',
-      'data-step': String(direction),
-      'aria-label': triText(locale, key),
-      'data-i18n-aria-label': key,
-      ...(direction < 0 || count <= 2 ? { disabled: '' } : {}),
+      role: 'tab',
+      tabindex: index === selected ? '0' : '-1',
+      'aria-label': label,
+      'aria-selected': String(index === selected),
+      'data-page': String(index),
+      'data-shortcut': shortcut,
+      style: `--tri-map-tab-shortcut-width:${shortcut.length}ch;--tri-map-tab-label-width:${label.length}ch`,
     })
-  f.add(
-    nav,
-    step(-1, 'previous activities', '‹'),
-    f.el('span', 'tri-day-pager-count', `1–${Math.min(2, count)} / ${count}`, {
-      'aria-live': 'polite',
-    }),
-    step(1, 'next activities', '›'),
-  )
-  const modes = f.el('span', 'tri-day-pager-modes', undefined, {
+    f.add(
+      tab,
+      f.el('span', 'tri-map-tab-shortcut', shortcut, { 'aria-hidden': 'true' }),
+      f.el('span', 'tri-map-tab-label', label, { 'aria-hidden': 'true' }),
+    )
+    return tab
+  })
+
+// Server output assumes the default two-up layout; the client rebuilds the page tabs and the
+// pressed mode once it reads the stored layout and measures the track.
+const buildDayTrackPager = <N>(f: TriNodeFactory<N>, sports: readonly ActivityKind[]): N => {
+  const locale = f.presentation.locale
+  const pager = f.el('div', 'tri-day-pager', undefined, { 'data-paged': String(sports.length > 2) })
+  const pages = f.el('div', 'tri-map-tablist tri-day-pages', undefined, {
+    role: 'tablist',
+    'aria-label': triText(locale, 'activities'),
+    'data-i18n-aria-label': 'activities',
+  })
+  f.add(pages, ...buildDayPageTabs(f, sports, 2, 0))
+  const modes = f.el('div', 'tri-map-tablist tri-day-modes', undefined, {
     role: 'group',
     'aria-label': triText(locale, 'activity layout'),
     'data-i18n-aria-label': 'activity layout',
@@ -15419,7 +15450,7 @@ const buildDayTrackPager = <N>(f: TriNodeFactory<N>, count: number): N => {
       modes,
       f.el(
         'button',
-        'tri-day-pager-mode',
+        'tri-map-tab tri-day-mode',
         layout === 'one' ? '1' : layout === 'two' ? '2' : triText(locale, 'all activities'),
         {
           type: 'button',
@@ -15429,7 +15460,7 @@ const buildDayTrackPager = <N>(f: TriNodeFactory<N>, count: number): N => {
         },
       ),
     )
-  f.add(pager, nav, modes)
+  f.add(pager, pages, modes)
   return pager
 }
 
@@ -15540,7 +15571,13 @@ export const buildDayCard = <N>(
       f.add(card, buildRestStatus(f))
     }
   } else if (extras.embedded === true && day.length > 1) {
-    f.add(card, buildDayTrackPager(f, day.length))
+    f.add(
+      card,
+      buildDayTrackPager(
+        f,
+        day.map(d => d.sport),
+      ),
+    )
     const track = f.el('div', 'tri-day-track', undefined, {
       style: `--tri-day-count:${day.length}`,
     })

@@ -210,7 +210,7 @@ export const buildDayCard = (
       const cleanups = [
         setupPowerCurveTicks(card),
         mountActivitySectionAlignment(card),
-        mountDayTrack(card),
+        mountDayTrack(card, presentation),
         mountDaySleepCharts(card, () => presentation.locale),
         ...activityViews.map(view => view.mount()),
       ]
@@ -794,7 +794,7 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
       }
       ssr.addEventListener('click', onRunCostWindow)
       const cleanupAlignment = mountActivitySectionAlignment(ssr)
-      const cleanupTrack = mountDayTrack(ssr)
+      const cleanupTrack = mountDayTrack(ssr, context.presentation)
       const cleanupPowerTicks = setupPowerCurveTicks(ssr)
       const cleanupDaySleepCharts = mountDaySleepCharts(ssr, () => context.presentation.locale)
       cardCleanup = () => {
