@@ -8,14 +8,14 @@
   --tr-stroke: color-mix(in srgb, var(--darkgray) 70%, transparent);
   --tr-stroke-soft: color-mix(in srgb, var(--gray) 45%, transparent);
   --tr-fill-idle: color-mix(in srgb, var(--lightgray) 80%, transparent);
-  --tr-fill-active-soft: color-mix(in srgb, #cdd597 28%, var(--light));
-  --tr-fill-pulse: #fdb2a2;
+  --tr-fill-active-soft: color-mix(in srgb, var(--fig-sage) 28%, var(--light));
+  --tr-fill-pulse: var(--fig-salmon);
   --tr-note-fg: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
 }
 
 :root[saved-theme='dark'] .tree-reduction {
-  --tr-fill-active-soft: color-mix(in srgb, #cdd597 18%, var(--lightgray));
-  --tr-fill-pulse: color-mix(in srgb, #fdb2a2 20%, var(--lightgray));
+  --tr-fill-active-soft: color-mix(in srgb, var(--fig-sage) 18%, var(--lightgray));
+  --tr-fill-pulse: color-mix(in srgb, var(--fig-salmon) 20%, var(--lightgray));
 }
 
 .tr-toolbar {
@@ -116,12 +116,12 @@
     }
 
     &.tr-settled .tr-node-shape {
-      stroke: color-mix(in srgb, #cdd597 80%, var(--darkgray) 20%);
+      stroke: color-mix(in srgb, var(--fig-sage) 80%, var(--darkgray) 20%);
     }
 
     &.tr-pulse .tr-node-shape {
       fill: var(--tr-fill-pulse);
-      stroke: color-mix(in srgb, #fdb2a2 70%, var(--darkgray) 30%);
+      stroke: color-mix(in srgb, var(--fig-salmon) 70%, var(--darkgray) 30%);
     }
   }
 

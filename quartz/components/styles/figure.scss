@@ -1,21 +1,22 @@
 @use '../../styles/variables.scss' as *;
 @use '../../styles/mixin.scss' as *;
 
+// Accents are fills and series only; both read below 1.7:1 on paper, so text on them uses --dark.
 @mixin figure-palette {
   --fig-salmon: #fdb2a2;
-  --fig-sage: #cdd597;
+  --fig-sage: var(--secondary);
   --fig-frame-border: color-mix(in srgb, var(--gray) 34%, transparent);
   --fig-stroke: color-mix(in srgb, var(--darkgray) 70%, transparent);
   --fig-stroke-soft: color-mix(in srgb, var(--gray) 45%, transparent);
   --fig-div: color-mix(in srgb, var(--gray) 28%, transparent);
   --fig-note: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
   --fig-line: color-mix(in srgb, var(--gray) 24%, transparent);
-  --fig-panel-shadow: 0 0 0 1px color-mix(in srgb, var(--gray) 18%, transparent) inset;
-  --fig-caption-fg: color-mix(in srgb, var(--gray) 70%, var(--dark) 30%);
+  // The source mix (gray 70% + dark) read 3.68:1 at caption size.
+  --fig-caption-fg: var(--darkgray);
   --fig-surface: color-mix(in srgb, var(--light) 96%, transparent);
   --fig-tab-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
   --fig-tab-border: color-mix(in srgb, var(--lightgray) 78%, transparent);
-  --fig-tab-fg: var(--gray);
+  --fig-tab-fg: var(--darkgray);
 }
 
 @mixin figure-frame(

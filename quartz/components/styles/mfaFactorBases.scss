@@ -10,8 +10,8 @@
   --mfa-note-fg: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
   --mfa-cell-bg: color-mix(in srgb, var(--lightgray) 35%, var(--light));
   --mfa-neg: color-mix(in srgb, var(--gray) 70%, var(--dark) 30%);
-  --mfa-salmon: #fdb2a2;
-  --mfa-sage: #cdd597;
+  --mfa-salmon: var(--fig-salmon);
+  --mfa-sage: var(--fig-sage);
 }
 
 :root[saved-theme='dark'] .mfa-factor-bases {

@@ -12,9 +12,9 @@
   --cf-divider: color-mix(in srgb, var(--gray) 30%, transparent);
   --cf-note-fg: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
   --cf-frame-bg: color-mix(in srgb, var(--lightgray) 40%, var(--light));
-  --cf-keep: #fdb2a2;
-  --cf-keep-bg: color-mix(in srgb, #fdb2a2 38%, var(--light));
-  --cf-good: #cdd597;
+  --cf-keep: var(--fig-salmon);
+  --cf-keep-bg: color-mix(in srgb, var(--fig-salmon) 38%, var(--light));
+  --cf-good: var(--fig-sage);
   --cf-drop: color-mix(in srgb, var(--gray) 38%, var(--light));
   --cf-tab-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
   --cf-tab-border: color-mix(in srgb, var(--lightgray) 78%, transparent);
@@ -22,7 +22,7 @@
 }
 :root[saved-theme='dark'] .cascade-filter {
   --cf-frame-bg: color-mix(in srgb, var(--lightgray) 22%, var(--dark));
-  --cf-keep-bg: color-mix(in srgb, #fdb2a2 26%, var(--lightgray));
+  --cf-keep-bg: color-mix(in srgb, var(--fig-salmon) 26%, var(--lightgray));
   --cf-drop: color-mix(in srgb, var(--lightgray) 60%, var(--dark));
   --cf-tab-surface: color-mix(in srgb, var(--lightgray) 18%, var(--dark));
   --cf-tab-border: color-mix(in srgb, var(--lightgray) 30%, transparent);
@@ -62,7 +62,7 @@
   border: 0;
   border-radius: 0;
   background: var(--cf-tab-surface);
-  color: var(--gray);
+  color: var(--darkgray);
   cursor: pointer;
   font-family: var(--codeFont);
   font-size: 0.72rem;

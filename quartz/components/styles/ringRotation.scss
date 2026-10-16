@@ -8,8 +8,8 @@
   --rr-stroke: color-mix(in srgb, var(--darkgray) 70%, transparent);
   --rr-stroke-soft: color-mix(in srgb, var(--gray) 45%, transparent);
   --rr-note-fg: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
-  --rr-salmon: #fdb2a2;
-  --rr-sage: #cdd597;
+  --rr-salmon: var(--fig-salmon);
+  --rr-sage: var(--fig-sage);
   --rr-cell-empty: color-mix(in srgb, var(--gray) 18%, transparent);
   --rr-cell-fill: color-mix(in srgb, var(--rr-sage) 80%, transparent);
   --rr-cell-pulse: color-mix(in srgb, var(--rr-salmon) 85%, transparent);

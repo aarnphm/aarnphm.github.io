@@ -14,10 +14,10 @@
   --acir-input: color-mix(in srgb, var(--gray) 18%, var(--light));
   --acir-output: color-mix(in srgb, var(--tertiary) 30%, var(--light));
   --acir-softmax: color-mix(in srgb, var(--lightgray) 55%, var(--light));
-  --acir-qk: #fdb2a2;
-  --acir-qk-fill: color-mix(in srgb, #fdb2a2 28%, var(--light));
-  --acir-ov: #cdd597;
-  --acir-ov-fill: color-mix(in srgb, #cdd597 32%, var(--light));
+  --acir-qk: var(--fig-salmon);
+  --acir-qk-fill: color-mix(in srgb, var(--fig-salmon) 28%, var(--light));
+  --acir-ov: var(--fig-sage);
+  --acir-ov-fill: color-mix(in srgb, var(--fig-sage) 32%, var(--light));
   --acir-tab-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
   --acir-tab-border: color-mix(in srgb, var(--lightgray) 78%, transparent);
   --acir-tab-neutral: color-mix(in srgb, var(--lightgray) 70%, var(--light));
@@ -29,8 +29,8 @@
   --acir-input: color-mix(in srgb, var(--gray) 22%, var(--lightgray));
   --acir-output: color-mix(in srgb, var(--tertiary) 22%, var(--lightgray));
   --acir-softmax: color-mix(in srgb, var(--lightgray) 65%, var(--dark));
-  --acir-qk-fill: color-mix(in srgb, #fdb2a2 22%, var(--lightgray));
-  --acir-ov-fill: color-mix(in srgb, #cdd597 22%, var(--lightgray));
+  --acir-qk-fill: color-mix(in srgb, var(--fig-salmon) 22%, var(--lightgray));
+  --acir-ov-fill: color-mix(in srgb, var(--fig-sage) 22%, var(--lightgray));
   --acir-tab-surface: color-mix(in srgb, var(--lightgray) 18%, var(--dark));
   --acir-tab-border: color-mix(in srgb, var(--lightgray) 30%, transparent);
   --acir-tab-neutral: color-mix(in srgb, var(--lightgray) 26%, var(--dark));
@@ -84,7 +84,7 @@
   border: 0;
   border-radius: 0;
   background: var(--acir-tab-surface);
-  color: var(--gray);
+  color: var(--darkgray);
   cursor: pointer;
   font-family: var(--codeFont);
   font-size: 0.72rem;

@@ -6,12 +6,11 @@
   @include figure-frame('pec-figure', 38rem);
 
   --pec-line: color-mix(in srgb, var(--gray) 24%, transparent);
-  --pec-panel-shadow: 0 0 0 1px color-mix(in srgb, var(--gray) 18%, transparent) inset;
   --pec-note: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
   --pec-div: color-mix(in srgb, var(--gray) 28%, transparent);
-  --pec-pos: #fdb2a2;
+  --pec-pos: var(--fig-salmon);
   --pec-neg: color-mix(in srgb, var(--gray) 70%, var(--dark) 30%);
-  --pec-neutral: #cdd597;
+  --pec-neutral: var(--fig-sage);
   --pec-grid: color-mix(in srgb, var(--gray) 24%, transparent);
   --pec-panel-bg: color-mix(in srgb, var(--light) 96%, transparent);
   --pec-tab-surface: var(--fig-tab-surface);
@@ -20,8 +19,8 @@
 }
 
 :root[saved-theme='dark'] .positional-encoding-comparison {
-  --pec-pos: color-mix(in srgb, #fdb2a2 65%, var(--lightgray));
-  --pec-neutral: color-mix(in srgb, #cdd597 55%, var(--lightgray));
+  --pec-pos: color-mix(in srgb, var(--fig-salmon) 65%, var(--lightgray));
+  --pec-neutral: color-mix(in srgb, var(--fig-sage) 55%, var(--lightgray));
   --pec-grid: color-mix(in srgb, var(--gray) 18%, transparent);
   --pec-panel-bg: color-mix(in srgb, var(--lightgray) 55%, var(--light));
   --pec-tab-active: color-mix(in srgb, var(--pec-pos) 18%, var(--pec-tab-surface));

@@ -8,8 +8,8 @@
   --kvg-stroke: color-mix(in srgb, var(--darkgray) 70%, transparent);
   --kvg-stroke-soft: color-mix(in srgb, var(--gray) 45%, transparent);
   --kvg-note-fg: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
-  --kvg-salmon: #fdb2a2;
-  --kvg-sage: #cdd597;
+  --kvg-salmon: var(--fig-salmon);
+  --kvg-sage: var(--fig-sage);
   --kvg-query-bg: color-mix(in srgb, var(--kvg-salmon) 60%, var(--light));
   --kvg-query-edge: color-mix(in srgb, var(--kvg-salmon) 90%, var(--dark));
   --kvg-kv-bg: color-mix(in srgb, var(--kvg-sage) 70%, var(--light));

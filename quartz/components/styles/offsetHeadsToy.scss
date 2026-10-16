@@ -8,11 +8,10 @@
   --oht-line: color-mix(in srgb, var(--gray) 24%, transparent);
   --oht-surface-shadow:
     0 0 0 1px var(--oht-line) inset, 0 18px 46px color-mix(in srgb, var(--dark) 7%, transparent);
-  --oht-panel-shadow: none;
   --oht-note: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
   --oht-div: color-mix(in srgb, var(--gray) 28%, transparent);
-  --oht-head1: #fdb2a2;
-  --oht-head2: #cdd597;
+  --oht-head1: var(--fig-salmon);
+  --oht-head2: var(--fig-sage);
   --oht-surrogate: color-mix(in srgb, var(--gray) 70%, var(--darkgray) 30%);
   --oht-grid-bg: color-mix(in srgb, var(--lightgray) 18%, var(--light));
   --oht-grid-stroke: color-mix(in srgb, var(--gray) 32%, transparent);
@@ -22,8 +21,8 @@
 }
 
 :root[saved-theme='dark'] .offset-heads-toy {
-  --oht-head1: color-mix(in srgb, #fdb2a2 78%, var(--lightgray));
-  --oht-head2: color-mix(in srgb, #cdd597 78%, var(--lightgray));
+  --oht-head1: color-mix(in srgb, var(--fig-salmon) 78%, var(--lightgray));
+  --oht-head2: color-mix(in srgb, var(--fig-sage) 78%, var(--lightgray));
   --oht-surrogate: color-mix(in srgb, var(--gray) 50%, var(--lightgray));
   --oht-grid-bg: color-mix(in srgb, var(--lightgray) 22%, var(--dark));
   --oht-grid-stroke: color-mix(in srgb, var(--gray) 22%, transparent);
@@ -296,7 +295,7 @@
   border: 0;
   border-radius: 0;
   background: var(--oht-tab-surface);
-  color: var(--gray);
+  color: var(--darkgray);
   cursor: pointer;
   font-family: var(--codeFont);
   font-size: 0.72rem;

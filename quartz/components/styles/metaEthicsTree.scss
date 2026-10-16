@@ -12,17 +12,17 @@
   --mep-q-bg: color-mix(in srgb, var(--light) 98%, transparent);
   --mep-pos-bg: color-mix(in srgb, var(--fig-sage) 24%, var(--light));
   --mep-pos-stroke: color-mix(in srgb, var(--fig-sage) 66%, var(--darkgray));
-  --mep-active: #fdb2a2;
-  --mep-active-bg: color-mix(in srgb, #fdb2a2 30%, var(--light));
-  --mep-path-bg: color-mix(in srgb, #fdb2a2 15%, var(--light));
+  --mep-active: var(--fig-salmon);
+  --mep-active-bg: color-mix(in srgb, var(--fig-salmon) 30%, var(--light));
+  --mep-path-bg: color-mix(in srgb, var(--fig-salmon) 15%, var(--light));
   --mep-you: color-mix(in srgb, var(--fig-sage) 82%, var(--dark));
 }
 
 :root[saved-theme='dark'] .meta-ethics-tree {
   --mep-q-bg: color-mix(in srgb, var(--lightgray) 26%, var(--dark));
   --mep-pos-bg: color-mix(in srgb, var(--fig-sage) 20%, var(--lightgray));
-  --mep-active-bg: color-mix(in srgb, #fdb2a2 22%, var(--lightgray));
-  --mep-path-bg: color-mix(in srgb, #fdb2a2 12%, var(--lightgray));
+  --mep-active-bg: color-mix(in srgb, var(--fig-salmon) 22%, var(--lightgray));
+  --mep-path-bg: color-mix(in srgb, var(--fig-salmon) 12%, var(--lightgray));
 }
 
 .mep-stage {
@@ -120,7 +120,6 @@
 
   .mep-node.is-active .mep-box {
     stroke-width: 2;
-    filter: drop-shadow(0 0 4px color-mix(in srgb, var(--mep-active) 45%, transparent));
   }
 
   .mep-node--selectable {

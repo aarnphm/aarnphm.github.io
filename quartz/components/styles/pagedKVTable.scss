@@ -9,19 +9,18 @@
   --pkt-note-fg: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
   --pkt-divider: color-mix(in srgb, var(--gray) 25%, transparent);
   --pkt-card-bg: color-mix(in srgb, var(--light) 96%, transparent);
-  --pkt-salmon: #fdb2a2;
-  --pkt-sage: #cdd597;
-  --pkt-salmon-bg: color-mix(in srgb, #fdb2a2 32%, var(--light));
-  --pkt-salmon-edge: color-mix(in srgb, #fdb2a2 88%, var(--dark));
-  --pkt-sage-bg: color-mix(in srgb, #cdd597 32%, var(--light));
-  --pkt-sage-edge: color-mix(in srgb, #cdd597 88%, var(--dark));
+  --pkt-salmon: var(--fig-salmon);
+  --pkt-sage: var(--fig-sage);
+  --pkt-salmon-bg: color-mix(in srgb, var(--fig-salmon) 32%, var(--light));
+  --pkt-salmon-edge: color-mix(in srgb, var(--fig-salmon) 88%, var(--dark));
+  --pkt-sage-bg: color-mix(in srgb, var(--fig-sage) 32%, var(--light));
+  --pkt-sage-edge: color-mix(in srgb, var(--fig-sage) 88%, var(--dark));
   --pkt-free-bg: color-mix(in srgb, var(--lightgray) 45%, var(--light));
-  --pkt-active-glow: color-mix(in srgb, #fdb2a2 55%, transparent);
 }
 
 :root[saved-theme='dark'] .paged-kv-table {
-  --pkt-salmon-bg: color-mix(in srgb, #fdb2a2 18%, var(--lightgray));
-  --pkt-sage-bg: color-mix(in srgb, #cdd597 20%, var(--lightgray));
+  --pkt-salmon-bg: color-mix(in srgb, var(--fig-salmon) 18%, var(--lightgray));
+  --pkt-sage-bg: color-mix(in srgb, var(--fig-sage) 20%, var(--lightgray));
   --pkt-card-bg: color-mix(in srgb, var(--lightgray) 55%, var(--light));
 }
 

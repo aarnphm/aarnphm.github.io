@@ -9,8 +9,8 @@
   --kvc-soft: color-mix(in srgb, var(--gray) 50%, transparent);
   --kvc-div: color-mix(in srgb, var(--gray) 32%, transparent);
   --kvc-note: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
-  --kvc-salmon: #fdb2a2;
-  --kvc-sage: #cdd597;
+  --kvc-salmon: var(--fig-salmon);
+  --kvc-sage: var(--fig-sage);
   --kvc-cached-bg: color-mix(in srgb, var(--kvc-salmon) 26%, var(--light));
   --kvc-cached-edge: color-mix(in srgb, var(--kvc-salmon) 90%, var(--dark));
   --kvc-hatch: color-mix(in srgb, var(--kvc-salmon) 92%, var(--dark));

@@ -27,7 +27,7 @@ Use `Zoomable` for interactive or large figures. A small static SVG can stand al
 | `figure-fo`                                        | HTML container for KaTeX inside SVG `foreignObject`                      |
 | `figure-card-heading($size)`                       | Sentence-case headings in figure cards                                   |
 
-Reuse `--fig-frame-border` for internal cards and readouts, and Flexoki accents such as `--fig-salmon` and `--fig-sage`. Derive fills through `color-mix`. Keep component-specific tokens under their own prefix and let the frame mixin own its theme-dependent border. Existing shadow-named tokens do not require adding a shadow.
+Reuse `--fig-frame-border` for internal cards and readouts. Define component-specific tokens under their own prefix from `--fig-*` and theme variables, deriving fills through `color-mix`; [Palette](palette.md) gives the tone ladder. Let the frame mixin own its theme-dependent border.
 
 The root is the named query container. Place responsive grids and breakpoint-dependent padding on descendants: a container cannot apply its own size query to itself. Select an intrinsic height from the rendered figure rather than copying another component's value.
 
