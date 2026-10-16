@@ -12,7 +12,7 @@ N: One finished event → passé composé with avoir.
 ---
 
 C: Elle [est allée] au marché ce matin. (aller)
-N: DR & MRS VANDERTRAMP verbs (and all pronominals) take être; the past participle agrees with the subject.
+N: {{`aller`}} takes {{`être`}}; its participle agrees with the subject. Pronominal verbs also take {{`être`}}, but their agreement depends on the construction: {{`elle s'est lavée`}}, {{`elle s'est lavé les mains`}}.
 
 ---
 
@@ -151,13 +151,13 @@ N: Full si-pattern: si + PQP → conditionnel passé.
 ---
 
 C: Si j'ai le temps, je [viendrai]. (venir)
-N: si + PRESENT → futur (first conditional). Never {{`si j'aurai`}} — never si + futur.
+N: Conditional {{`si`}} takes the present here, followed by the future in the main clause. Interrogative {{`si`}} can take the future: {{`Je me demande s'il viendra.`}}.
 
 ---
 
 Q: Recite the three si-patterns.
 A: 1) {{`si`}} + présent → futur ({{`Si tu viens, on partira.`}}) 2) {{`si`}} + imparfait → conditionnel ({{`Si tu venais, on partirait.`}}) 3) {{`si`}} + plus-que-parfait → conditionnel passé ({{`Si tu étais venu, on serait partis.`}})
-N: NEVER si + conditionnel.
+N: Conditional {{`si`}} excludes the conditional in its own clause. Interrogative {{`si`}} permits it: {{`Je voudrais savoir s'il accepterait.`}}.
 
 ---
 
