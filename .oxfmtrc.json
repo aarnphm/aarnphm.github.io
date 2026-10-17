@@ -46,6 +46,7 @@
     "quartz/util/emojimap/**/*.json",
     "quartz/runtime/native/packs/**/*.js",
     "quartz/runtime/native/packs/**/*.mjs",
+    "quartz/runtime/**/*.json",
     "content/stream.md",
     "content/are.na.md",
     "content/hinterland/healthexporter/**/*.json",
