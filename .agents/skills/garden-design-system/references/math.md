@@ -4,28 +4,28 @@ The garden renders LaTeX with KaTeX at build time (`Plugin.Latex`, strict mode, 
 
 ## Where math goes
 
-| Context | Style | Rule |
-| --- | --- | --- |
-| Prose | `math` (1.1em) | Inline `$…$` in a sentence. Display `$$…$$` on its own lines, centred, `space-3` above and below. |
-| Wide display | `math` | Scrolls sideways inside `.katex-display`. The page never scrolls. |
-| Headings | `math-heading` (1em) | 0.2em side margins. |
-| Math callouts | `math` | 1px `math-frame`, no fill, square. Display math gets `space-4` above and below. See MathCallout. |
-| Figures | `math-figure` (0.95em) | Symbol labels sit in a `foreignObject` (`figure-fo`). Caption math inherits the caption colour. |
-| TikZ | `math-figure` | A ` ```tikz ` fence renders to inline SVG with KaTeX labels. Raster fallbacks invert in dark: `invert(0.88) hue-rotate(180deg)`. |
-| Pseudocode | `pseudocode` | Keywords at 700, procedure names in small caps, line numbers at 0.8em. |
+| Context       | Style                  | Rule                                                                                                                             |
+| ------------- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| Prose         | `math` (1.1em)         | Inline `$…$` in a sentence. Display `$$…$$` on its own lines, centred, `space-3` above and below.                                |
+| Wide display  | `math`                 | Scrolls sideways inside `.katex-display`. The page never scrolls.                                                                |
+| Headings      | `math-heading` (1em)   | 0.2em side margins.                                                                                                              |
+| Math callouts | `math`                 | 1px `math-frame`, no fill, square. Display math gets `space-4` above and below. See MathCallout.                                 |
+| Figures       | `math-figure` (0.95em) | Symbol labels sit in a `foreignObject` (`figure-fo`). Caption math inherits the caption colour.                                  |
+| TikZ          | `math-figure`          | A ` ```tikz ` fence renders to inline SVG with KaTeX labels. Raster fallbacks invert in dark: `invert(0.88) hue-rotate(180deg)`. |
+| Pseudocode    | `pseudocode`           | Keywords at 700, procedure names in small caps, line numbers at 0.8em.                                                           |
 
 ## Numbers
 
 A number in an argument sets in math, in the same face as the symbols around it. A number that a tool updates, or that a reader scans down a column, sets in `code` with tabular figures so the digits align.
 
-| | Prose and figures | Tools and data |
-| --- | --- | --- |
-| Face | inline math | `meta-mono`, `tabular-nums` |
-| Thousands | `500{,}000` | `500,000` |
-| Units | `28\,\mathrm{mm}`, `3.35\,\mathrm{TB/s}` | `28 mm` |
-| Multiples and shares | `2.3\times`, `80\%` | `2.3×`, `80%` |
-| Powers | `10^{-8}`, `2^{64} - 1` | `1e-8` in code only |
-| Time, pace, dates | rare | `4:27/km`, `2026-10-07` |
+|                      | Prose and figures                        | Tools and data              |
+| -------------------- | ---------------------------------------- | --------------------------- |
+| Face                 | inline math                              | `meta-mono`, `tabular-nums` |
+| Thousands            | `500{,}000`                              | `500,000`                   |
+| Units                | `28\,\mathrm{mm}`, `3.35\,\mathrm{TB/s}` | `28 mm`                     |
+| Multiples and shares | `2.3\times`, `80\%`                      | `2.3×`, `80%`               |
+| Powers               | `10^{-8}`, `2^{64} - 1`                  | `1e-8` in code only         |
+| Time, pace, dates    | rare                                     | `4:27/km`, `2026-10-07`     |
 
 - Units are upright (`\mathrm{}`) and follow a thin space (`\,`). Notes mix `\mathrm{}`, `\text{}` and `\ ` today. New writing uses `\,\mathrm{unit}`.
 - Named quantities use `\text{FLOPs}` or `\operatorname{softmax}`. `quartz/cfg.ts` defines `\argmin`, `\argmax` and `\abs{x}`.

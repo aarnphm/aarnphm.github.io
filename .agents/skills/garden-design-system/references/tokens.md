@@ -9,243 +9,243 @@ writes them with `color-mix()`. `{name}` is an alias. Usage notes give contrast 
 
 ## Color
 
-| name | Light | Dark | Dark (accessible) | usage |
-| --- | --- | --- | --- | --- |
-| `light` | `#fffcf0` | `#100f0f` | `#100f0f` | Page background (paper). In the dark theme it holds the dark value, so read the name as 'background'. |
-| `lightgray` | `#e6e4d9` | `#282726` | `#282726` | Recessed ground and quiet dividers: code-title frames, input borders at rest. Never text. |
-| `gray` | `#b7b5ac` | `#575653` | `#575653` | Faint structure: gridlines, decorative rules, tag borders, inactive icons. Never text, a focus ring or a border that marks a control. On paper: 2.00:1 light (fills and decorative lines only), 2.61:1 dark (fills and decorative lines only). |
-| `darkgray` | `#6f6e69` | `#878580` | `#9f9d96` | Body text, metadata, captions and secondary labels. In dark it reads 3.37:1 on selected, so selected rows set their label in dark. Dark (accessible) raises it to Flexoki base-400 (#9f9d96): 4.58:1 on selected, 7.05:1 on paper, at the cost of a smaller gap to dark ink (1.70:1, down from 2.31:1). On paper: 4.97:1 light (text), 5.19:1 dark (text). |
-| `dark` | `#100f0f` | `#cecdc3` | `#cecdc3` | Ink for headings, key values, emphasis and the collection frame. On paper: 18.62:1 light (text), 11.98:1 dark (text). |
-| `secondary` | `#cdd597` | `#cdd597` | `#cdd597` | Sage. Selected fills (at 18%), the bike series and figure accents. Same value in both themes. Text on a solid sage fill uses on-accent. On paper: 1.51:1 light (fills and decorative lines only), 12.36:1 dark (text). |
-| `tertiary` | `#fcc192` | `#fcc192` | `#fcc192` | Peach. Secondary fills, the telescopic highlight and interaction hints. Text on it uses on-accent. On paper: 1.55:1 light (fills and decorative lines only), 12.01:1 dark (text). |
-| `highlight` | `#dad8ce` | `#879a39` | `#879a39` | Hover and pressed fill for toolbar and menu buttons. Label on it: dark in light (13.4:1); on-accent in dark, where dark ink reads 1.96:1 on the olive fill. |
-| `textHighlight` | `#f1d67e` | `#4385be` | `#4385be` | Ground behind ==highlighted== prose. In dark the fill is blue and dark ink reads 2.46:1, so keep highlighted runs short. |
-| `surface` | `#fcf9ed` | `#131212` | `#131212` | Raised working ground: row hover, toolbars, panels. Source: color-mix(in srgb, var(--light) 86%, var(--lightgray)). |
-| `selected` | `#f4f3de` | `#34352a` | `#34352a` | Fill for a selected or matched row or segment; label in dark (17.1:1 light / 7.8:1 dark). Source: color-mix(in srgb, var(--secondary) 18%, surface). |
-| `line` | `#b7b5ac8c` | `#5756538c` | `#5756538c` | Hairline between rows and around quiet panels. It only groups; a border that marks a control's extent uses dark or darkgray. Source: color-mix(in srgb, var(--gray) 55%, transparent). On paper: 2.00:1 light (fills and decorative lines only), 2.61:1 dark (fills and decorative lines only). |
-| `focus` | `{dark}` | `{dark}` | `{dark}` | Keyboard focus ring: 2px solid, offset 2px, or -2px inside a framed list. The one role that clears 3:1 on every ground in both themes. On paper: 18.62:1 light (text), 11.98:1 dark (text). |
-| `on-accent` | `#100f0f` | `#100f0f` | `#100f0f` | Ink on any solid accent fill (sage, peach, salmon, sport, Flexoki, tri-accent) in both themes. Dark-theme dark ink on sage reads 1.03:1. On paper: 18.62:1 light (text), 1.00:1 dark (fills and decorative lines only). |
-| `salmon` | `#fdb2a2` | `#fdb2a2` | `#fdb2a2` | Salmon. Run series and the figure highlight. Fill only. On paper: 1.69:1 light (fills and decorative lines only), 11.00:1 dark (text). |
-| `rose` | `#d14d41` | `#d14d41` | `#d14d41` | Flexoki red. Errors and destructive cues, always with a word or icon. On paper: 4.21:1 light (large text and marks), 4.42:1 dark (large text and marks). |
-| `love` | `#da702c` | `#da702c` | `#da702c` | Flexoki orange. Warnings and emphasis series. On paper: 3.23:1 light (large text and marks), 5.77:1 dark (text). |
-| `lime` | `#879a39` | `#879a39` | `#879a39` | Flexoki green. Success and on-plan series. On paper: 3.04:1 light (large text and marks), 6.12:1 dark (text). |
-| `gold` | `#d0a215` | `#d0a215` | `#d0a215` | Flexoki yellow. Caution and highlight series. On paper: 2.31:1 light (fills and decorative lines only), 8.08:1 dark (text). |
-| `pine` | `#3aa99f` | `#3aa99f` | `#3aa99f` | Flexoki cyan. Swim series. On paper: 2.78:1 light (fills and decorative lines only), 6.70:1 dark (text). |
-| `foam` | `#4385be` | `#4385be` | `#4385be` | Flexoki blue. Heading anchors on hover, links in data views, info series. On paper: 3.83:1 light (large text and marks), 4.86:1 dark (text). |
-| `iris` | `#8b7ec8` | `#8b7ec8` | `#8b7ec8` | Flexoki purple. Tertiary series and figure tags. On paper: 3.45:1 light (large text and marks), 5.39:1 dark (text). |
-| `link` | `{darkgray}` | `{darkgray}` | `{darkgray}` | Prose link ink, underlined. On paper: 4.97:1 light (text), 5.19:1 dark (text). |
-| `link-hover-bg` | `{dark}` | `{dark}` | `{dark}` | Ground of a hovered prose link (the inverted pair). Prose pages only; tool surfaces set their own hover. |
-| `link-hover-ink` | `{light}` | `{light}` | `{light}` | Ink of a hovered prose link, on link-hover-bg. On paper: 1.00:1 light (fills and decorative lines only), 1.00:1 dark (fills and decorative lines only). |
-| `pdf-line` | `{line}` | `{line}` | `{line}` | PDF reader rules and control borders. High-contrast mode swaps it to dark. On paper: 2.00:1 light (fills and decorative lines only), 2.61:1 dark (fills and decorative lines only). |
-| `pdf-surface` | `#fcfaee` | `#121111` | `#121111` | PDF reader toolbar and rails: light 90% + lightgray, one step closer to paper than surface. |
-| `pdf-selected` | `#f3f3de` | `#343429` | `#343429` | PDF reader pressed and current controls: sage 18% over pdf-surface. |
-| `pdf-page` | `#ffffff` | `#ffffff` | `#ffffff` | PDF raster page: white in both themes. The toolbar and rails follow the site theme. |
-| `pdf-page-ink` | `#100f0f` | `#100f0f` | `#100f0f` | Ink for annotations drawn on the white page. On paper: 18.62:1 light (text), 1.00:1 dark (fills and decorative lines only). |
-| `pdf-mark-fill` | `{secondary}` | `{secondary}` | `{secondary}` | Highlight mark fill, multiplied over the raster so glyphs stay black. |
-| `pdf-mark-ink` | `{lime}` | `{lime}` | `{lime}` | Highlight mark edge and rail marker. On paper: 3.04:1 light (large text and marks), 6.12:1 dark (text). |
-| `pdf-contra-fill` | `{salmon}` | `{salmon}` | `{salmon}` | Disagreement mark fill, multiplied over the raster. |
-| `pdf-contra-ink` | `{rose}` | `{rose}` | `{rose}` | Disagreement mark edge and rail marker. On paper: 4.21:1 light (large text and marks), 4.42:1 dark (large text and marks). |
-| `arena-line` | `{line}` | `{line}` | `{line}` | Arena hairline: channel list frame, block grid cells, toolbar rules, inputs. Scoped to [data-slug*='arena'] and .arena-reader. On paper: 2.00:1 light (fills and decorative lines only), 2.61:1 dark (fills and decorative lines only). |
-| `arena-surface` | `{surface}` | `{surface}` | `{surface}` | Arena raised ground: channel headers, section headers, hovered blocks and buttons. |
-| `arena-selected` | `{selected}` | `{selected}` | `{selected}` | Arena selected fill: active view toggle, pressed, current or expanded reader buttons; label in dark. |
-| `tri-accent` | `#fc4c02` | `#fc4c02` | `#fc4c02` | Strava orange. Provider marks, selected tabs, the 'other' race series. Labels on it use on-accent; the source puts paper text on it. On paper: 3.31:1 light (large text and marks), 5.63:1 dark (text). |
-| `tri-swim` | `#3aa99f` | `#3aa99f` | `#3aa99f` | Swim fills, marks and sport tags. Text on a swim fill uses on-accent. Too light for text on paper in the light theme; use the calendar swim label ink there. On paper: 2.78:1 light (fills and decorative lines only), 6.70:1 dark (text). |
-| `tri-bike` | `#cdd597` | `#cdd597` | `#cdd597` | Bike fills and marks (same value as secondary). Text on a bike fill uses on-accent. Too light for text on paper in the light theme; use the calendar bike label ink there. On paper: 1.51:1 light (fills and decorative lines only), 12.36:1 dark (text). |
-| `tri-run` | `#fdb2a2` | `#fdb2a2` | `#fdb2a2` | Run fills and marks (same value as salmon). Text on a run fill uses on-accent. Too light for text on paper in the light theme; use the calendar run label ink there. On paper: 1.69:1 light (fills and decorative lines only), 11.00:1 dark (text). |
-| `calendar-swim` | `#2e7c75` | `#3aa99f` | `#3aa99f` | Swim label ink in the calendar. Light: the swim fill mixed 71% with ink, the lightest mix that keeps 4.5:1 on paper and on the calendar header (4.56:1). Dark: the swim fill itself. On paper: 4.80:1 light (text), 6.70:1 dark (text). |
-| `calendar-bike` | `#6e7253` | `#cdd597` | `#cdd597` | Bike label ink in the calendar. Light: the bike fill mixed 50% with ink, the lightest mix that keeps 4.5:1 on paper and on the calendar header (4.62:1). Dark: the bike fill itself. On paper: 4.87:1 light (text), 12.36:1 dark (text). |
-| `calendar-run` | `#90675e` | `#fdb2a2` | `#fdb2a2` | Run label ink in the calendar. Light: the run fill mixed 54% with ink, the lightest mix that keeps 4.5:1 on paper and on the calendar header (4.52:1). Dark: the run fill itself. On paper: 4.77:1 light (text), 11.00:1 dark (text). |
-| `calendar-line` | `{line}` | `{line}` | `{line}` | Calendar frame, day separators, session dividers and control borders. On paper: 2.00:1 light (fills and decorative lines only), 2.61:1 dark (fills and decorative lines only). |
-| `calendar-surface` | `#f9f6ea` | `#161515` | `#161515` | Calendar header and empty-day ground (lightgray 24% over light). |
-| `tri-heart-rate` | `{tri-run}` | `{tri-run}` | `{tri-run}` | Heart-rate trace in activity charts. On paper: 1.69:1 light (fills and decorative lines only), 11.00:1 dark (text). |
-| `tri-zone-heart-rate` | `#d14d41` | `#d14d41` | `#d14d41` | Heart-rate zone bars and highlights. On paper: 4.21:1 light (large text and marks), 4.42:1 dark (large text and marks). |
-| `tri-zone-power` | `#8b6fd6` | `#8b6fd6` | `#8b6fd6` | Power zones; also the strength colour in the training calendar. On paper: 3.82:1 light (large text and marks), 4.87:1 dark (text). |
-| `tri-zone-pace` | `#205ea6` | `#205ea6` | `#205ea6` | Pace zones. A fill in dark, never text. On paper: 6.36:1 light (text), 2.93:1 dark (fills and decorative lines only). |
-| `tri-environment-uv-low` | `#66800b` | `#66800b` | `#66800b` | UV index 0 to 2. On paper: 4.39:1 light (large text and marks), 4.24:1 dark (large text and marks). |
-| `tri-environment-uv-moderate` | `#df9f22` | `#df9f22` | `#df9f22` | UV index 3 to 5. On paper: 2.24:1 light (fills and decorative lines only), 8.31:1 dark (text). |
-| `tri-environment-uv-high` | `#da702c` | `#da702c` | `#da702c` | UV index 6 to 7. On paper: 3.23:1 light (large text and marks), 5.77:1 dark (text). |
-| `tri-environment-uv-very-high` | `#af3029` | `#af3029` | `#af3029` | UV index 8 to 10. On paper: 6.23:1 light (text), 2.99:1 dark (fills and decorative lines only). |
-| `tri-environment-uv-extreme` | `#8b6fd6` | `#8b6fd6` | `#8b6fd6` | UV index 11 and above. On paper: 3.82:1 light (large text and marks), 4.87:1 dark (text). |
-| `tri-power-sprint` | `#287dd1` | `#287dd1` | `#287dd1` | Power profile: sprint durations and the power-to-weight band. On paper: 4.13:1 light (large text and marks), 4.51:1 dark (text). |
-| `tri-power-attack` | `#67a82f` | `#67a82f` | `#67a82f` | Power profile: attack durations. On paper: 2.83:1 light (fills and decorative lines only), 6.58:1 dark (text). |
-| `tri-power-climb` | `#f27440` | `#f27440` | `#f27440` | Power profile: climb durations. On paper: 2.78:1 light (fills and decorative lines only), 6.70:1 dark (text). |
-| `tri-power-model` | `#8b7ec8` | `#8b7ec8` | `#8b7ec8` | Power-duration model curve. It is a computed estimate, so it draws dashed. On paper: 3.45:1 light (large text and marks), 5.39:1 dark (text). |
-| `tri-training-effect-anaerobic` | `#5c46df` | `#5c46df` | `#5c46df` | Training effect: anaerobic. On paper: 6.02:1 light (text), 3.10:1 dark (large text and marks). |
-| `tri-training-effect-high-aerobic` | `#e5782e` | `#e5782e` | `#e5782e` | Training effect: high aerobic. On paper: 2.90:1 light (fills and decorative lines only), 6.43:1 dark (text). |
-| `tri-training-effect-low-aerobic` | `#45a078` | `#45a078` | `#45a078` | Training effect: low aerobic. On paper: 3.12:1 light (large text and marks), 5.97:1 dark (text). |
-| `tri-matched-series` | `#22a8df` | `#22a8df` | `#22a8df` | The matched comparison activity in overlaid plots. On paper: 2.64:1 light (fills and decorative lines only), 7.05:1 dark (text). |
-| `tri-compare-better` | `#5d750b` | `#70881d` | `#70881d` | Comparison delta that improved (green 90% + dark). Always with a sign. On paper: 5.09:1 light (text), 4.76:1 dark (text). |
-| `tri-compare-worse` | `#af3029` | `#af3029` | `#af3029` | Comparison delta that regressed. Always with a sign, at weight 500. On paper: 6.23:1 light (text), 2.99:1 dark (fills and decorative lines only). |
-| `tri-health-good` | `#61790b` | `#8b9d41` | `#8b9d41` | Readiness: good (green 94% + dark). On paper: 4.81:1 light (text), 6.38:1 dark (text). |
-| `tri-health-watch` | `#8e6c04` | `#d0ab38` | `#d0ab38` | Readiness: watch (yellow 80% + dark). On paper: 4.76:1 light (text), 8.72:1 dark (text). |
-| `tri-health-alert` | `#a52e27` | `#d15549` | `#d15549` | Readiness: alert (red 94% + dark). On paper: 6.77:1 light (text), 4.65:1 dark (text). |
-| `tri-health-info` | `#205ea6` | `#4385be` | `#4385be` | Readiness: information (blue). On paper: 6.36:1 light (text), 4.86:1 dark (text). |
-| `tri-health-neutral` | `{darkgray}` | `{darkgray}` | `{darkgray}` | Readiness: no signal. |
-| `tri-be-focus` | `#993207` | `#e98253` | `#e98253` | Focus ring inside triathlon panels (tri-accent 58% + dark). The only accent-coloured focus ring that passes. On paper: 7.26:1 light (text), 7.09:1 dark (text). |
-| `exec-on-target` | `#66800b` | `#879a39` | `#879a39` | Execution 80 to 120% of plan (green). Card ground: this at 16% over paper (24% selected). Status ink: this 65% + dark. On paper: 4.39:1 light (large text and marks), 6.12:1 dark (text). |
-| `exec-off-target` | `#ad8301` | `#d0a215` | `#d0a215` | Execution 50 to <80% or >120 to 150% of plan (yellow). On paper: 3.39:1 light (large text and marks), 8.08:1 dark (text). |
-| `exec-far-off-target` | `#bc5215` | `#da702c` | `#da702c` | Execution outside 50 to 150% of plan (orange). On paper: 4.69:1 light (text), 5.77:1 dark (text). |
-| `exec-missed` | `#af3029` | `#d14d41` | `#d14d41` | A past planned session with no recording (red). On paper: 6.23:1 light (text), 4.42:1 dark (large text and marks). |
-| `exec-planned` | `{lightgray}` | `{lightgray}` | `{lightgray}` | Today's or a future plan: neutral ground. |
-| `exec-unplanned` | `{darkgray}` | `{darkgray}` | `{darkgray}` | Completed with no plan or no comparable metric. On paper: 4.97:1 light (text), 5.19:1 dark (text). |
-| `race-ironman` | `#dc2323` | `#dc2323` | `#dc2323` | IRONMAN mark fill. Text on it: white (4.87:1). On paper: 4.74:1 light (text), 3.93:1 dark (large text and marks). |
-| `race-ironman-ink` | `#c01f1f` | `#e66565` | `#e66565` | IRONMAN label ink on paper. On paper: 5.91:1 light (text), 5.85:1 dark (text). |
-| `race-t100` | `#00ffca` | `#00ffca` | `#00ffca` | T100 mark fill. Text on it: #02162d. On paper: 1.26:1 light (fills and decorative lines only), 14.72:1 dark (text). |
-| `race-t100-ink` | `#016f69` | `#00ffca` | `#00ffca` | T100 label ink on paper (light: fill 38% + #02162d). On paper: 5.87:1 light (text), 14.72:1 dark (text). |
-| `race-supertri` | `#12d2ff` | `#12d2ff` | `#12d2ff` | Supertri mark fill. Text on it: #0b1a2b. On paper: 1.75:1 light (fills and decorative lines only), 10.65:1 dark (text). |
-| `race-supertri-ink` | `#0e6d8a` | `#12d2ff` | `#12d2ff` | Supertri label ink on paper. On paper: 5.72:1 light (text), 10.65:1 dark (text). |
-| `race-hyrox` | `#ffed00` | `#ffed00` | `#ffed00` | HYROX mark fill. Text on it: #1a1a1a. On paper: 1.18:1 light (fills and decorative lines only), 15.83:1 dark (text). |
-| `race-hyrox-ink` | `#6a6411` | `#ffed00` | `#ffed00` | HYROX label ink on paper. On paper: 5.93:1 light (text), 15.83:1 dark (text). |
-| `race-tcs` | `#9a3575` | `#9a3575` | `#9a3575` | TCS mark fill. Text on it: white (6.69:1). On paper: 6.51:1 light (text), 2.86:1 dark (fills and decorative lines only). |
-| `race-tcs-ink` | `#9a3575` | `#e9a8d2` | `#e9a8d2` | TCS label ink on paper. On paper: 6.51:1 light (text), 10.02:1 dark (text). |
-| `race-other` | `{tri-accent}` | `{tri-accent}` | `{tri-accent}` | Any other race series, and B4BH. On paper: 3.31:1 light (large text and marks), 5.63:1 dark (text). |
-| `math-ink` | `{dark}` | `{dark}` | `{dark}` | KaTeX, typst and TikZ output in prose. Figure labels inherit their figure's ink instead. On paper: 18.62:1 light (text), 11.98:1 dark (text). |
-| `math-frame` | `{dark}` | `{dark}` | `{dark}` | 1px frame of math callouts: definition, theorem, lemma, proposition, corollary, proof, claim, axiom, conjecture. On paper: 18.62:1 light (text), 11.98:1 dark (text). |
-| `fig-frame` | `#e7e4d9` | `#31302e` | `#31302e` | Figure frame. Source: gray at 34% (light) or 46% (dark) over transparent, stored resolved over paper. On paper: 1.24:1 light (fills and decorative lines only), 1.45:1 dark (fills and decorative lines only). |
-| `fig-note` | `#5a5955` | `#97958f` | `#a9a8a0` | Notes and card headings inside figures (darkgray 78% + dark). On paper: 6.82:1 light (text), 6.39:1 dark (text). |
-| `fig-caption` | `{darkgray}` | `{darkgray}` | `{darkgray}` | Figure caption ink. The source mixes gray 70% + dark, which reads 3.68:1 at 0.78rem. On paper: 4.97:1 light (text), 5.19:1 dark (text). |
+| name                               | Light          | Dark           | Dark (accessible) | usage                                                                                                                                                                                                                                                                                                                                                      |
+| ---------------------------------- | -------------- | -------------- | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `light`                            | `#fffcf0`      | `#100f0f`      | `#100f0f`         | Page background (paper). In the dark theme it holds the dark value, so read the name as 'background'.                                                                                                                                                                                                                                                      |
+| `lightgray`                        | `#e6e4d9`      | `#282726`      | `#282726`         | Recessed ground and quiet dividers: code-title frames, input borders at rest. Never text.                                                                                                                                                                                                                                                                  |
+| `gray`                             | `#b7b5ac`      | `#575653`      | `#575653`         | Faint structure: gridlines, decorative rules, tag borders, inactive icons. Never text, a focus ring or a border that marks a control. On paper: 2.00:1 light (fills and decorative lines only), 2.61:1 dark (fills and decorative lines only).                                                                                                             |
+| `darkgray`                         | `#6f6e69`      | `#878580`      | `#9f9d96`         | Body text, metadata, captions and secondary labels. In dark it reads 3.37:1 on selected, so selected rows set their label in dark. Dark (accessible) raises it to Flexoki base-400 (#9f9d96): 4.58:1 on selected, 7.05:1 on paper, at the cost of a smaller gap to dark ink (1.70:1, down from 2.31:1). On paper: 4.97:1 light (text), 5.19:1 dark (text). |
+| `dark`                             | `#100f0f`      | `#cecdc3`      | `#cecdc3`         | Ink for headings, key values, emphasis and the collection frame. On paper: 18.62:1 light (text), 11.98:1 dark (text).                                                                                                                                                                                                                                      |
+| `secondary`                        | `#cdd597`      | `#cdd597`      | `#cdd597`         | Sage. Selected fills (at 18%), the bike series and figure accents. Same value in both themes. Text on a solid sage fill uses on-accent. On paper: 1.51:1 light (fills and decorative lines only), 12.36:1 dark (text).                                                                                                                                     |
+| `tertiary`                         | `#fcc192`      | `#fcc192`      | `#fcc192`         | Peach. Secondary fills, the telescopic highlight and interaction hints. Text on it uses on-accent. On paper: 1.55:1 light (fills and decorative lines only), 12.01:1 dark (text).                                                                                                                                                                          |
+| `highlight`                        | `#dad8ce`      | `#879a39`      | `#879a39`         | Hover and pressed fill for toolbar and menu buttons. Label on it: dark in light (13.4:1); on-accent in dark, where dark ink reads 1.96:1 on the olive fill.                                                                                                                                                                                                |
+| `textHighlight`                    | `#f1d67e`      | `#4385be`      | `#4385be`         | Ground behind ==highlighted== prose. In dark the fill is blue and dark ink reads 2.46:1, so keep highlighted runs short.                                                                                                                                                                                                                                   |
+| `surface`                          | `#fcf9ed`      | `#131212`      | `#131212`         | Raised working ground: row hover, toolbars, panels. Source: color-mix(in srgb, var(--light) 86%, var(--lightgray)).                                                                                                                                                                                                                                        |
+| `selected`                         | `#f4f3de`      | `#34352a`      | `#34352a`         | Fill for a selected or matched row or segment; label in dark (17.1:1 light / 7.8:1 dark). Source: color-mix(in srgb, var(--secondary) 18%, surface).                                                                                                                                                                                                       |
+| `line`                             | `#b7b5ac8c`    | `#5756538c`    | `#5756538c`       | Hairline between rows and around quiet panels. It only groups; a border that marks a control's extent uses dark or darkgray. Source: color-mix(in srgb, var(--gray) 55%, transparent). On paper: 2.00:1 light (fills and decorative lines only), 2.61:1 dark (fills and decorative lines only).                                                            |
+| `focus`                            | `{dark}`       | `{dark}`       | `{dark}`          | Keyboard focus ring: 2px solid, offset 2px, or -2px inside a framed list. The one role that clears 3:1 on every ground in both themes. On paper: 18.62:1 light (text), 11.98:1 dark (text).                                                                                                                                                                |
+| `on-accent`                        | `#100f0f`      | `#100f0f`      | `#100f0f`         | Ink on any solid accent fill (sage, peach, salmon, sport, Flexoki, tri-accent) in both themes. Dark-theme dark ink on sage reads 1.03:1. On paper: 18.62:1 light (text), 1.00:1 dark (fills and decorative lines only).                                                                                                                                    |
+| `salmon`                           | `#fdb2a2`      | `#fdb2a2`      | `#fdb2a2`         | Salmon. Run series and the figure highlight. Fill only. On paper: 1.69:1 light (fills and decorative lines only), 11.00:1 dark (text).                                                                                                                                                                                                                     |
+| `rose`                             | `#d14d41`      | `#d14d41`      | `#d14d41`         | Flexoki red. Errors and destructive cues, always with a word or icon. On paper: 4.21:1 light (large text and marks), 4.42:1 dark (large text and marks).                                                                                                                                                                                                   |
+| `love`                             | `#da702c`      | `#da702c`      | `#da702c`         | Flexoki orange. Warnings and emphasis series. On paper: 3.23:1 light (large text and marks), 5.77:1 dark (text).                                                                                                                                                                                                                                           |
+| `lime`                             | `#879a39`      | `#879a39`      | `#879a39`         | Flexoki green. Success and on-plan series. On paper: 3.04:1 light (large text and marks), 6.12:1 dark (text).                                                                                                                                                                                                                                              |
+| `gold`                             | `#d0a215`      | `#d0a215`      | `#d0a215`         | Flexoki yellow. Caution and highlight series. On paper: 2.31:1 light (fills and decorative lines only), 8.08:1 dark (text).                                                                                                                                                                                                                                |
+| `pine`                             | `#3aa99f`      | `#3aa99f`      | `#3aa99f`         | Flexoki cyan. Swim series. On paper: 2.78:1 light (fills and decorative lines only), 6.70:1 dark (text).                                                                                                                                                                                                                                                   |
+| `foam`                             | `#4385be`      | `#4385be`      | `#4385be`         | Flexoki blue. Heading anchors on hover, links in data views, info series. On paper: 3.83:1 light (large text and marks), 4.86:1 dark (text).                                                                                                                                                                                                               |
+| `iris`                             | `#8b7ec8`      | `#8b7ec8`      | `#8b7ec8`         | Flexoki purple. Tertiary series and figure tags. On paper: 3.45:1 light (large text and marks), 5.39:1 dark (text).                                                                                                                                                                                                                                        |
+| `link`                             | `{darkgray}`   | `{darkgray}`   | `{darkgray}`      | Prose link ink, underlined. On paper: 4.97:1 light (text), 5.19:1 dark (text).                                                                                                                                                                                                                                                                             |
+| `link-hover-bg`                    | `{dark}`       | `{dark}`       | `{dark}`          | Ground of a hovered prose link (the inverted pair). Prose pages only; tool surfaces set their own hover.                                                                                                                                                                                                                                                   |
+| `link-hover-ink`                   | `{light}`      | `{light}`      | `{light}`         | Ink of a hovered prose link, on link-hover-bg. On paper: 1.00:1 light (fills and decorative lines only), 1.00:1 dark (fills and decorative lines only).                                                                                                                                                                                                    |
+| `pdf-line`                         | `{line}`       | `{line}`       | `{line}`          | PDF reader rules and control borders. High-contrast mode swaps it to dark. On paper: 2.00:1 light (fills and decorative lines only), 2.61:1 dark (fills and decorative lines only).                                                                                                                                                                        |
+| `pdf-surface`                      | `#fcfaee`      | `#121111`      | `#121111`         | PDF reader toolbar and rails: light 90% + lightgray, one step closer to paper than surface.                                                                                                                                                                                                                                                                |
+| `pdf-selected`                     | `#f3f3de`      | `#343429`      | `#343429`         | PDF reader pressed and current controls: sage 18% over pdf-surface.                                                                                                                                                                                                                                                                                        |
+| `pdf-page`                         | `#ffffff`      | `#ffffff`      | `#ffffff`         | PDF raster page: white in both themes. The toolbar and rails follow the site theme.                                                                                                                                                                                                                                                                        |
+| `pdf-page-ink`                     | `#100f0f`      | `#100f0f`      | `#100f0f`         | Ink for annotations drawn on the white page. On paper: 18.62:1 light (text), 1.00:1 dark (fills and decorative lines only).                                                                                                                                                                                                                                |
+| `pdf-mark-fill`                    | `{secondary}`  | `{secondary}`  | `{secondary}`     | Highlight mark fill, multiplied over the raster so glyphs stay black.                                                                                                                                                                                                                                                                                      |
+| `pdf-mark-ink`                     | `{lime}`       | `{lime}`       | `{lime}`          | Highlight mark edge and rail marker. On paper: 3.04:1 light (large text and marks), 6.12:1 dark (text).                                                                                                                                                                                                                                                    |
+| `pdf-contra-fill`                  | `{salmon}`     | `{salmon}`     | `{salmon}`        | Disagreement mark fill, multiplied over the raster.                                                                                                                                                                                                                                                                                                        |
+| `pdf-contra-ink`                   | `{rose}`       | `{rose}`       | `{rose}`          | Disagreement mark edge and rail marker. On paper: 4.21:1 light (large text and marks), 4.42:1 dark (large text and marks).                                                                                                                                                                                                                                 |
+| `arena-line`                       | `{line}`       | `{line}`       | `{line}`          | Arena hairline: channel list frame, block grid cells, toolbar rules, inputs. Scoped to [data-slug*='arena'] and .arena-reader. On paper: 2.00:1 light (fills and decorative lines only), 2.61:1 dark (fills and decorative lines only).                                                                                                                    |
+| `arena-surface`                    | `{surface}`    | `{surface}`    | `{surface}`       | Arena raised ground: channel headers, section headers, hovered blocks and buttons.                                                                                                                                                                                                                                                                         |
+| `arena-selected`                   | `{selected}`   | `{selected}`   | `{selected}`      | Arena selected fill: active view toggle, pressed, current or expanded reader buttons; label in dark.                                                                                                                                                                                                                                                       |
+| `tri-accent`                       | `#fc4c02`      | `#fc4c02`      | `#fc4c02`         | Strava orange. Provider marks, selected tabs, the 'other' race series. Labels on it use on-accent; the source puts paper text on it. On paper: 3.31:1 light (large text and marks), 5.63:1 dark (text).                                                                                                                                                    |
+| `tri-swim`                         | `#3aa99f`      | `#3aa99f`      | `#3aa99f`         | Swim fills, marks and sport tags. Text on a swim fill uses on-accent. Too light for text on paper in the light theme; use the calendar swim label ink there. On paper: 2.78:1 light (fills and decorative lines only), 6.70:1 dark (text).                                                                                                                 |
+| `tri-bike`                         | `#cdd597`      | `#cdd597`      | `#cdd597`         | Bike fills and marks (same value as secondary). Text on a bike fill uses on-accent. Too light for text on paper in the light theme; use the calendar bike label ink there. On paper: 1.51:1 light (fills and decorative lines only), 12.36:1 dark (text).                                                                                                  |
+| `tri-run`                          | `#fdb2a2`      | `#fdb2a2`      | `#fdb2a2`         | Run fills and marks (same value as salmon). Text on a run fill uses on-accent. Too light for text on paper in the light theme; use the calendar run label ink there. On paper: 1.69:1 light (fills and decorative lines only), 11.00:1 dark (text).                                                                                                        |
+| `calendar-swim`                    | `#2e7c75`      | `#3aa99f`      | `#3aa99f`         | Swim label ink in the calendar. Light: the swim fill mixed 71% with ink, the lightest mix that keeps 4.5:1 on paper and on the calendar header (4.56:1). Dark: the swim fill itself. On paper: 4.80:1 light (text), 6.70:1 dark (text).                                                                                                                    |
+| `calendar-bike`                    | `#6e7253`      | `#cdd597`      | `#cdd597`         | Bike label ink in the calendar. Light: the bike fill mixed 50% with ink, the lightest mix that keeps 4.5:1 on paper and on the calendar header (4.62:1). Dark: the bike fill itself. On paper: 4.87:1 light (text), 12.36:1 dark (text).                                                                                                                   |
+| `calendar-run`                     | `#90675e`      | `#fdb2a2`      | `#fdb2a2`         | Run label ink in the calendar. Light: the run fill mixed 54% with ink, the lightest mix that keeps 4.5:1 on paper and on the calendar header (4.52:1). Dark: the run fill itself. On paper: 4.77:1 light (text), 11.00:1 dark (text).                                                                                                                      |
+| `calendar-line`                    | `{line}`       | `{line}`       | `{line}`          | Calendar frame, day separators, session dividers and control borders. On paper: 2.00:1 light (fills and decorative lines only), 2.61:1 dark (fills and decorative lines only).                                                                                                                                                                             |
+| `calendar-surface`                 | `#f9f6ea`      | `#161515`      | `#161515`         | Calendar header and empty-day ground (lightgray 24% over light).                                                                                                                                                                                                                                                                                           |
+| `tri-heart-rate`                   | `{tri-run}`    | `{tri-run}`    | `{tri-run}`       | Heart-rate trace in activity charts. On paper: 1.69:1 light (fills and decorative lines only), 11.00:1 dark (text).                                                                                                                                                                                                                                        |
+| `tri-zone-heart-rate`              | `#d14d41`      | `#d14d41`      | `#d14d41`         | Heart-rate zone bars and highlights. On paper: 4.21:1 light (large text and marks), 4.42:1 dark (large text and marks).                                                                                                                                                                                                                                    |
+| `tri-zone-power`                   | `#8b6fd6`      | `#8b6fd6`      | `#8b6fd6`         | Power zones; also the strength colour in the training calendar. On paper: 3.82:1 light (large text and marks), 4.87:1 dark (text).                                                                                                                                                                                                                         |
+| `tri-zone-pace`                    | `#205ea6`      | `#205ea6`      | `#205ea6`         | Pace zones. A fill in dark, never text. On paper: 6.36:1 light (text), 2.93:1 dark (fills and decorative lines only).                                                                                                                                                                                                                                      |
+| `tri-environment-uv-low`           | `#66800b`      | `#66800b`      | `#66800b`         | UV index 0 to 2. On paper: 4.39:1 light (large text and marks), 4.24:1 dark (large text and marks).                                                                                                                                                                                                                                                        |
+| `tri-environment-uv-moderate`      | `#df9f22`      | `#df9f22`      | `#df9f22`         | UV index 3 to 5. On paper: 2.24:1 light (fills and decorative lines only), 8.31:1 dark (text).                                                                                                                                                                                                                                                             |
+| `tri-environment-uv-high`          | `#da702c`      | `#da702c`      | `#da702c`         | UV index 6 to 7. On paper: 3.23:1 light (large text and marks), 5.77:1 dark (text).                                                                                                                                                                                                                                                                        |
+| `tri-environment-uv-very-high`     | `#af3029`      | `#af3029`      | `#af3029`         | UV index 8 to 10. On paper: 6.23:1 light (text), 2.99:1 dark (fills and decorative lines only).                                                                                                                                                                                                                                                            |
+| `tri-environment-uv-extreme`       | `#8b6fd6`      | `#8b6fd6`      | `#8b6fd6`         | UV index 11 and above. On paper: 3.82:1 light (large text and marks), 4.87:1 dark (text).                                                                                                                                                                                                                                                                  |
+| `tri-power-sprint`                 | `#287dd1`      | `#287dd1`      | `#287dd1`         | Power profile: sprint durations and the power-to-weight band. On paper: 4.13:1 light (large text and marks), 4.51:1 dark (text).                                                                                                                                                                                                                           |
+| `tri-power-attack`                 | `#67a82f`      | `#67a82f`      | `#67a82f`         | Power profile: attack durations. On paper: 2.83:1 light (fills and decorative lines only), 6.58:1 dark (text).                                                                                                                                                                                                                                             |
+| `tri-power-climb`                  | `#f27440`      | `#f27440`      | `#f27440`         | Power profile: climb durations. On paper: 2.78:1 light (fills and decorative lines only), 6.70:1 dark (text).                                                                                                                                                                                                                                              |
+| `tri-power-model`                  | `#8b7ec8`      | `#8b7ec8`      | `#8b7ec8`         | Power-duration model curve. It is a computed estimate, so it draws dashed. On paper: 3.45:1 light (large text and marks), 5.39:1 dark (text).                                                                                                                                                                                                              |
+| `tri-training-effect-anaerobic`    | `#5c46df`      | `#5c46df`      | `#5c46df`         | Training effect: anaerobic. On paper: 6.02:1 light (text), 3.10:1 dark (large text and marks).                                                                                                                                                                                                                                                             |
+| `tri-training-effect-high-aerobic` | `#e5782e`      | `#e5782e`      | `#e5782e`         | Training effect: high aerobic. On paper: 2.90:1 light (fills and decorative lines only), 6.43:1 dark (text).                                                                                                                                                                                                                                               |
+| `tri-training-effect-low-aerobic`  | `#45a078`      | `#45a078`      | `#45a078`         | Training effect: low aerobic. On paper: 3.12:1 light (large text and marks), 5.97:1 dark (text).                                                                                                                                                                                                                                                           |
+| `tri-matched-series`               | `#22a8df`      | `#22a8df`      | `#22a8df`         | The matched comparison activity in overlaid plots. On paper: 2.64:1 light (fills and decorative lines only), 7.05:1 dark (text).                                                                                                                                                                                                                           |
+| `tri-compare-better`               | `#5d750b`      | `#70881d`      | `#70881d`         | Comparison delta that improved (green 90% + dark). Always with a sign. On paper: 5.09:1 light (text), 4.76:1 dark (text).                                                                                                                                                                                                                                  |
+| `tri-compare-worse`                | `#af3029`      | `#af3029`      | `#af3029`         | Comparison delta that regressed. Always with a sign, at weight 500. On paper: 6.23:1 light (text), 2.99:1 dark (fills and decorative lines only).                                                                                                                                                                                                          |
+| `tri-health-good`                  | `#61790b`      | `#8b9d41`      | `#8b9d41`         | Readiness: good (green 94% + dark). On paper: 4.81:1 light (text), 6.38:1 dark (text).                                                                                                                                                                                                                                                                     |
+| `tri-health-watch`                 | `#8e6c04`      | `#d0ab38`      | `#d0ab38`         | Readiness: watch (yellow 80% + dark). On paper: 4.76:1 light (text), 8.72:1 dark (text).                                                                                                                                                                                                                                                                   |
+| `tri-health-alert`                 | `#a52e27`      | `#d15549`      | `#d15549`         | Readiness: alert (red 94% + dark). On paper: 6.77:1 light (text), 4.65:1 dark (text).                                                                                                                                                                                                                                                                      |
+| `tri-health-info`                  | `#205ea6`      | `#4385be`      | `#4385be`         | Readiness: information (blue). On paper: 6.36:1 light (text), 4.86:1 dark (text).                                                                                                                                                                                                                                                                          |
+| `tri-health-neutral`               | `{darkgray}`   | `{darkgray}`   | `{darkgray}`      | Readiness: no signal.                                                                                                                                                                                                                                                                                                                                      |
+| `tri-be-focus`                     | `#993207`      | `#e98253`      | `#e98253`         | Focus ring inside triathlon panels (tri-accent 58% + dark). The only accent-coloured focus ring that passes. On paper: 7.26:1 light (text), 7.09:1 dark (text).                                                                                                                                                                                            |
+| `exec-on-target`                   | `#66800b`      | `#879a39`      | `#879a39`         | Execution 80 to 120% of plan (green). Card ground: this at 16% over paper (24% selected). Status ink: this 65% + dark. On paper: 4.39:1 light (large text and marks), 6.12:1 dark (text).                                                                                                                                                                  |
+| `exec-off-target`                  | `#ad8301`      | `#d0a215`      | `#d0a215`         | Execution 50 to <80% or >120 to 150% of plan (yellow). On paper: 3.39:1 light (large text and marks), 8.08:1 dark (text).                                                                                                                                                                                                                                  |
+| `exec-far-off-target`              | `#bc5215`      | `#da702c`      | `#da702c`         | Execution outside 50 to 150% of plan (orange). On paper: 4.69:1 light (text), 5.77:1 dark (text).                                                                                                                                                                                                                                                          |
+| `exec-missed`                      | `#af3029`      | `#d14d41`      | `#d14d41`         | A past planned session with no recording (red). On paper: 6.23:1 light (text), 4.42:1 dark (large text and marks).                                                                                                                                                                                                                                         |
+| `exec-planned`                     | `{lightgray}`  | `{lightgray}`  | `{lightgray}`     | Today's or a future plan: neutral ground.                                                                                                                                                                                                                                                                                                                  |
+| `exec-unplanned`                   | `{darkgray}`   | `{darkgray}`   | `{darkgray}`      | Completed with no plan or no comparable metric. On paper: 4.97:1 light (text), 5.19:1 dark (text).                                                                                                                                                                                                                                                         |
+| `race-ironman`                     | `#dc2323`      | `#dc2323`      | `#dc2323`         | IRONMAN mark fill. Text on it: white (4.87:1). On paper: 4.74:1 light (text), 3.93:1 dark (large text and marks).                                                                                                                                                                                                                                          |
+| `race-ironman-ink`                 | `#c01f1f`      | `#e66565`      | `#e66565`         | IRONMAN label ink on paper. On paper: 5.91:1 light (text), 5.85:1 dark (text).                                                                                                                                                                                                                                                                             |
+| `race-t100`                        | `#00ffca`      | `#00ffca`      | `#00ffca`         | T100 mark fill. Text on it: #02162d. On paper: 1.26:1 light (fills and decorative lines only), 14.72:1 dark (text).                                                                                                                                                                                                                                        |
+| `race-t100-ink`                    | `#016f69`      | `#00ffca`      | `#00ffca`         | T100 label ink on paper (light: fill 38% + #02162d). On paper: 5.87:1 light (text), 14.72:1 dark (text).                                                                                                                                                                                                                                                   |
+| `race-supertri`                    | `#12d2ff`      | `#12d2ff`      | `#12d2ff`         | Supertri mark fill. Text on it: #0b1a2b. On paper: 1.75:1 light (fills and decorative lines only), 10.65:1 dark (text).                                                                                                                                                                                                                                    |
+| `race-supertri-ink`                | `#0e6d8a`      | `#12d2ff`      | `#12d2ff`         | Supertri label ink on paper. On paper: 5.72:1 light (text), 10.65:1 dark (text).                                                                                                                                                                                                                                                                           |
+| `race-hyrox`                       | `#ffed00`      | `#ffed00`      | `#ffed00`         | HYROX mark fill. Text on it: #1a1a1a. On paper: 1.18:1 light (fills and decorative lines only), 15.83:1 dark (text).                                                                                                                                                                                                                                       |
+| `race-hyrox-ink`                   | `#6a6411`      | `#ffed00`      | `#ffed00`         | HYROX label ink on paper. On paper: 5.93:1 light (text), 15.83:1 dark (text).                                                                                                                                                                                                                                                                              |
+| `race-tcs`                         | `#9a3575`      | `#9a3575`      | `#9a3575`         | TCS mark fill. Text on it: white (6.69:1). On paper: 6.51:1 light (text), 2.86:1 dark (fills and decorative lines only).                                                                                                                                                                                                                                   |
+| `race-tcs-ink`                     | `#9a3575`      | `#e9a8d2`      | `#e9a8d2`         | TCS label ink on paper. On paper: 6.51:1 light (text), 10.02:1 dark (text).                                                                                                                                                                                                                                                                                |
+| `race-other`                       | `{tri-accent}` | `{tri-accent}` | `{tri-accent}`    | Any other race series, and B4BH. On paper: 3.31:1 light (large text and marks), 5.63:1 dark (text).                                                                                                                                                                                                                                                        |
+| `math-ink`                         | `{dark}`       | `{dark}`       | `{dark}`          | KaTeX, typst and TikZ output in prose. Figure labels inherit their figure's ink instead. On paper: 18.62:1 light (text), 11.98:1 dark (text).                                                                                                                                                                                                              |
+| `math-frame`                       | `{dark}`       | `{dark}`       | `{dark}`          | 1px frame of math callouts: definition, theorem, lemma, proposition, corollary, proof, claim, axiom, conjecture. On paper: 18.62:1 light (text), 11.98:1 dark (text).                                                                                                                                                                                      |
+| `fig-frame`                        | `#e7e4d9`      | `#31302e`      | `#31302e`         | Figure frame. Source: gray at 34% (light) or 46% (dark) over transparent, stored resolved over paper. On paper: 1.24:1 light (fills and decorative lines only), 1.45:1 dark (fills and decorative lines only).                                                                                                                                             |
+| `fig-note`                         | `#5a5955`      | `#97958f`      | `#a9a8a0`         | Notes and card headings inside figures (darkgray 78% + dark). On paper: 6.82:1 light (text), 6.39:1 dark (text).                                                                                                                                                                                                                                           |
+| `fig-caption`                      | `{darkgray}`   | `{darkgray}`   | `{darkgray}`      | Figure caption ink. The source mixes gray 70% + dark, which reads 3.68:1 at 0.78rem. On paper: 4.97:1 light (text), 5.19:1 dark (text).                                                                                                                                                                                                                    |
 
 ## Type families
 
-| family | stack |
-| --- | --- |
+| family  | stack                                                                             |
+| ------- | --------------------------------------------------------------------------------- |
 | `title` | `"Space Groteskque", system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif` |
-| `body` | `"PP Neue Montreal", system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif` |
-| `code` | `"Berkeley Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace` |
-| `math` | `KaTeX_Main, "Times New Roman", serif` |
+| `body`  | `"PP Neue Montreal", system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif` |
+| `code`  | `"Berkeley Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace`      |
+| `math`  | `KaTeX_Main, "Times New Roman", serif`                                            |
 
 ## Type: Display
 
-| style | family | size | line height | weight | usage |
-| --- | --- | --- | --- | --- | --- |
-| `article-title` | title | 2.6rem | 1.1 | 700 | The one page title above the byline. Source asks for 800; the variable face tops out at 700. |
+| style           | family | size   | line height | weight | usage                                                                                        |
+| --------------- | ------ | ------ | ----------- | ------ | -------------------------------------------------------------------------------------------- |
+| `article-title` | title  | 2.6rem | 1.1         | 700    | The one page title above the byline. Source asks for 800; the variable face tops out at 700. |
 
 ## Type: Headings
 
-| style | family | size | line height | weight | usage |
-| --- | --- | --- | --- | --- | --- |
-| `h1` | title | 25.5px | 1.4 | 700 | Section heading in notes. Steps descend by 1.0699; margin-top 2.25rem. |
-| `h2` | title | 23.8337px | 1.4 | 700 | margin-top 1.9rem. |
-| `h3` | title | 22.2763px | 1.4 | 700 | margin-top 1.62rem. |
-| `h4` | title | 20.8207px | 1.4 | 700 | margin-top 1.5rem. |
-| `h5` | title | 19.4601px | 1.4 | 700 | margin-top 1.5rem. |
-| `h6` | title | 18.1885px | 1.4 | 700 | margin-top 1.5rem. |
+| style | family | size      | line height | weight | usage                                                                  |
+| ----- | ------ | --------- | ----------- | ------ | ---------------------------------------------------------------------- |
+| `h1`  | title  | 25.5px    | 1.4         | 700    | Section heading in notes. Steps descend by 1.0699; margin-top 2.25rem. |
+| `h2`  | title  | 23.8337px | 1.4         | 700    | margin-top 1.9rem.                                                     |
+| `h3`  | title  | 22.2763px | 1.4         | 700    | margin-top 1.62rem.                                                    |
+| `h4`  | title  | 20.8207px | 1.4         | 700    | margin-top 1.5rem.                                                     |
+| `h5`  | title  | 19.4601px | 1.4         | 700    | margin-top 1.5rem.                                                     |
+| `h6`  | title  | 18.1885px | 1.4         | 700    | margin-top 1.5rem.                                                     |
 
 ## Type: Text
 
-| style | family | size | line height | weight | usage |
-| --- | --- | --- | --- | --- | --- |
-| `body` | body | 16px | 1.4 | 400 | Default prose and UI text, in darkgray. |
-| `reader` | body | 1rem | 1.65 | 400 | Arena reader and other long-form workspaces. |
-| `small` | body | 15.8891px | 1.4 | 400 | <small> in prose. |
-| `ui` | body | 0.875rem | 1.45 | 400 | Collection titles, buttons, menus and toolbar labels (--text-ui). Values at 500. |
-| `meta` | body | 0.75rem | 1.4 | 400 | Dates, counts, captions and secondary descriptions (--text-meta). The smallest size for text a reader needs. |
+| style    | family | size      | line height | weight | usage                                                                                                        |
+| -------- | ------ | --------- | ----------- | ------ | ------------------------------------------------------------------------------------------------------------ |
+| `body`   | body   | 16px      | 1.4         | 400    | Default prose and UI text, in darkgray.                                                                      |
+| `reader` | body   | 1rem      | 1.65        | 400    | Arena reader and other long-form workspaces.                                                                 |
+| `small`  | body   | 15.8891px | 1.4         | 400    | <small> in prose.                                                                                            |
+| `ui`     | body   | 0.875rem  | 1.45        | 400    | Collection titles, buttons, menus and toolbar labels (--text-ui). Values at 500.                             |
+| `meta`   | body   | 0.75rem   | 1.4         | 400    | Dates, counts, captions and secondary descriptions (--text-meta). The smallest size for text a reader needs. |
 
 ## Type: Mono
 
-| style | family | size | line height | weight | usage |
-| --- | --- | --- | --- | --- | --- |
-| `code` | code | 14px | 1.4 | 400 | Inline code and code titles. |
-| `meta-mono` | code | 0.75rem | 1.4 | 400 | Dates, units and readouts in rows and charts. Always tabular-nums. |
+| style       | family | size    | line height | weight | usage                                                              |
+| ----------- | ------ | ------- | ----------- | ------ | ------------------------------------------------------------------ |
+| `code`      | code   | 14px    | 1.4         | 400    | Inline code and code titles.                                       |
+| `meta-mono` | code   | 0.75rem | 1.4         | 400    | Dates, units and readouts in rows and charts. Always tabular-nums. |
 
 ## Type: Arena
 
-| style | family | size | line height | weight | usage |
-| --- | --- | --- | --- | --- | --- |
-| `arena-channel-title` | body | 1.1rem | 1.4 | 600 | Channel name in the channel list row header, dark. |
-| `arena-block-title` | body | 0.85rem | 1.4 | 400 | Block title in the grid; clamps at three lines. |
-| `arena-row` | body | 0.85rem | 1.45 | 400 | Preview rows under a channel header. |
-| `arena-control` | code | 0.66rem | 1.3 | 400 | Mono, lowercase: view toggle, reader buttons, section headers, block meta labels. Below meta; an existing dense exception. |
-| `arena-search` | code | 0.7rem | 1.3 | 400 | Arena search input (mono). Raise to 16px on mobile. |
+| style                 | family | size    | line height | weight | usage                                                                                                                      |
+| --------------------- | ------ | ------- | ----------- | ------ | -------------------------------------------------------------------------------------------------------------------------- |
+| `arena-channel-title` | body   | 1.1rem  | 1.4         | 600    | Channel name in the channel list row header, dark.                                                                         |
+| `arena-block-title`   | body   | 0.85rem | 1.4         | 400    | Block title in the grid; clamps at three lines.                                                                            |
+| `arena-row`           | body   | 0.85rem | 1.45        | 400    | Preview rows under a channel header.                                                                                       |
+| `arena-control`       | code   | 0.66rem | 1.3         | 400    | Mono, lowercase: view toggle, reader buttons, section headers, block meta labels. Below meta; an existing dense exception. |
+| `arena-search`        | code   | 0.7rem  | 1.3         | 400    | Arena search input (mono). Raise to 16px on mobile.                                                                        |
 
 ## Type: Triathlon
 
-| style | family | size | line height | weight | usage |
-| --- | --- | --- | --- | --- | --- |
-| `tri-block-title` | code | 0.6rem | 1.4 | 400 | Uppercase analytics block title, in darkgray (the source uses gray, 2.00:1). Below meta; an existing dense exception. |
-| `tri-tab` | code | 0.62rem | 1.3 | 400 | Map, chart and category tabs (.tri-map-tab). |
-| `tri-kind` | code | 0.6875rem | 1.4 | 400 | Sport tag and status line on a training session card. |
-| `tri-session-title` | body | 0.875rem | 1.45 | 450 | Workout title on a training session card, dark, one line with ellipsis. |
-| `tri-key` | code | 0.68rem | 1.3 | 400 | Keyboard hint chip shown over a control when hints are on. |
-| `tri-value` | code | 1rem | 1.3 | 600 | Primary readout value, dark, tabular. |
+| style               | family | size      | line height | weight | usage                                                                                                                 |
+| ------------------- | ------ | --------- | ----------- | ------ | --------------------------------------------------------------------------------------------------------------------- |
+| `tri-block-title`   | code   | 0.6rem    | 1.4         | 400    | Uppercase analytics block title, in darkgray (the source uses gray, 2.00:1). Below meta; an existing dense exception. |
+| `tri-tab`           | code   | 0.62rem   | 1.3         | 400    | Map, chart and category tabs (.tri-map-tab).                                                                          |
+| `tri-kind`          | code   | 0.6875rem | 1.4         | 400    | Sport tag and status line on a training session card.                                                                 |
+| `tri-session-title` | body   | 0.875rem  | 1.45        | 450    | Workout title on a training session card, dark, one line with ellipsis.                                               |
+| `tri-key`           | code   | 0.68rem   | 1.3         | 400    | Keyboard hint chip shown over a control when hints are on.                                                            |
+| `tri-value`         | code   | 1rem      | 1.3         | 600    | Primary readout value, dark, tabular.                                                                                 |
 
 ## Type: Math
 
-| style | family | size | line height | weight | usage |
-| --- | --- | --- | --- | --- | --- |
-| `math` | math | 1.1em | 1.2 | 400 | Inline and display math in prose. KaTeX_Main at 1.1em of the surrounding text, so its x-height matches PP Neue Montreal. Ink: math-ink. |
-| `math-heading` | math | 1em | 1.2 | 400 | Math inside h1 to h6: 1em with 0.2em side margins, because the heading is already large. |
-| `math-figure` | math | 0.95em | 1 | 400 | Symbol labels inside figures and inline math in figure captions. Colour inherits from the label. |
-| `pseudocode` | math | 1em | 1.2 | 400 | Algorithm blocks (pseudocode.scss). Keywords at 700, procedure names in small caps, line numbers at 0.8em. |
+| style          | family | size   | line height | weight | usage                                                                                                                                   |
+| -------------- | ------ | ------ | ----------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `math`         | math   | 1.1em  | 1.2         | 400    | Inline and display math in prose. KaTeX_Main at 1.1em of the surrounding text, so its x-height matches PP Neue Montreal. Ink: math-ink. |
+| `math-heading` | math   | 1em    | 1.2         | 400    | Math inside h1 to h6: 1em with 0.2em side margins, because the heading is already large.                                                |
+| `math-figure`  | math   | 0.95em | 1           | 400    | Symbol labels inside figures and inline math in figure captions. Colour inherits from the label.                                        |
+| `pseudocode`   | math   | 1em    | 1.2         | 400    | Algorithm blocks (pseudocode.scss). Keywords at 700, procedure names in small caps, line numbers at 0.8em.                              |
 
 ## spacing
 
-| name | value | usage |
-| --- | --- | --- |
-| `space-px` | `1px` | Hairline offsets. |
-| `space-0` | `0` | Reset. |
-| `space-1` | `0.25rem` | Gap inside tag pills and between meta items. |
-| `space-2` | `0.5rem` | Default gap inside a control group; image-grid gap. |
-| `space-3` | `0.75rem` | Row inline padding; control inline padding. |
-| `space-4` | `1rem` | Toolbar margin; blockquote margin. |
-| `space-5` | `1.25rem` | Loose stacks. |
-| `space-6` | `1.5rem` | Figure block padding; h4–h6 top margin. |
-| `space-8` | `2rem` | Between page sections. |
-| `space-10` | `2.5rem` | Large section breaks. |
-| `space-12` | `3rem` | Page-level separation. |
-| `space-16` | `4rem` | Mobile scroll padding top. |
-| `space-20` | `5rem` | Hero offsets on authored pages. |
-| `space-24` | `6rem` | Largest step. |
-| `kern` | `12px` | Shell grid unit: gutters are kern × 5 (desktop), × 3 (tablet), × 1.5 (mobile, 18px a side). Use only for the shell grid. |
+| name       | value     | usage                                                                                                                    |
+| ---------- | --------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `space-px` | `1px`     | Hairline offsets.                                                                                                        |
+| `space-0`  | `0`       | Reset.                                                                                                                   |
+| `space-1`  | `0.25rem` | Gap inside tag pills and between meta items.                                                                             |
+| `space-2`  | `0.5rem`  | Default gap inside a control group; image-grid gap.                                                                      |
+| `space-3`  | `0.75rem` | Row inline padding; control inline padding.                                                                              |
+| `space-4`  | `1rem`    | Toolbar margin; blockquote margin.                                                                                       |
+| `space-5`  | `1.25rem` | Loose stacks.                                                                                                            |
+| `space-6`  | `1.5rem`  | Figure block padding; h4–h6 top margin.                                                                                  |
+| `space-8`  | `2rem`    | Between page sections.                                                                                                   |
+| `space-10` | `2.5rem`  | Large section breaks.                                                                                                    |
+| `space-12` | `3rem`    | Page-level separation.                                                                                                   |
+| `space-16` | `4rem`    | Mobile scroll padding top.                                                                                               |
+| `space-20` | `5rem`    | Hero offsets on authored pages.                                                                                          |
+| `space-24` | `6rem`    | Largest step.                                                                                                            |
+| `kern`     | `12px`    | Shell grid unit: gutters are kern × 5 (desktop), × 3 (tablet), × 1.5 (mobile, 18px a side). Use only for the shell grid. |
 
 ## radius
 
-| name | value | usage |
-| --- | --- | --- |
-| `radius-none` | `0` | Default for every surface, control, input, tag, panel and figure. |
-| `radius-full` | `9999px` | True handles only: range thumbs, toggle knobs. |
-| `radius-circle` | `50%` | Dots, avatars, circular handles. |
-| `radius-sm` | `2px` | Legacy alias of radius-2; do not use on new surfaces. |
-| `radius-md` | `4px` | Legacy; do not use on new surfaces. |
-| `radius-lg` | `8px` | Legacy; do not use on new surfaces. |
-| `radius-xl` | `16px` | Legacy; do not use on new surfaces. |
+| name            | value    | usage                                                             |
+| --------------- | -------- | ----------------------------------------------------------------- |
+| `radius-none`   | `0`      | Default for every surface, control, input, tag, panel and figure. |
+| `radius-full`   | `9999px` | True handles only: range thumbs, toggle knobs.                    |
+| `radius-circle` | `50%`    | Dots, avatars, circular handles.                                  |
+| `radius-sm`     | `2px`    | Legacy alias of radius-2; do not use on new surfaces.             |
+| `radius-md`     | `4px`    | Legacy; do not use on new surfaces.                               |
+| `radius-lg`     | `8px`    | Legacy; do not use on new surfaces.                               |
+| `radius-xl`     | `16px`   | Legacy; do not use on new surfaces.                               |
 
 ## zIndex
 
-| name | value | usage |
-| --- | --- | --- |
-| `z-base` | `1` | Lift a sibling inside a component. |
-| `z-sidenote` | `10` | Sidenotes over prose. |
-| `z-dropdown` | `100` | Menus anchored to a trigger. |
-| `z-sticky` | `500` | Sticky headers and toolbars. The site header still uses 99999 (debt). |
-| `z-popover` | `999` | Link previews and hover cards. |
-| `z-modal` | `1000` | Non-native modal layers. Prefer <dialog> top layer. |
-| `z-overlay` | `1001` | Scrim above a modal. |
-| `z-tooltip` | `9999` | Tooltips. |
-| `z-max` | `10000` | Ceiling for emergencies; never a default. |
+| name         | value   | usage                                                                 |
+| ------------ | ------- | --------------------------------------------------------------------- |
+| `z-base`     | `1`     | Lift a sibling inside a component.                                    |
+| `z-sidenote` | `10`    | Sidenotes over prose.                                                 |
+| `z-dropdown` | `100`   | Menus anchored to a trigger.                                          |
+| `z-sticky`   | `500`   | Sticky headers and toolbars. The site header still uses 99999 (debt). |
+| `z-popover`  | `999`   | Link previews and hover cards.                                        |
+| `z-modal`    | `1000`  | Non-native modal layers. Prefer <dialog> top layer.                   |
+| `z-overlay`  | `1001`  | Scrim above a modal.                                                  |
+| `z-tooltip`  | `9999`  | Tooltips.                                                             |
+| `z-max`      | `10000` | Ceiling for emergencies; never a default.                             |
 
 ## breakpoint
 
-| name | value | usage |
-| --- | --- | --- |
-| `bp-mobile` | `800px` | max-width 800px = mobile: reading column 3 / -3, gutters kern × 1.5. |
+| name         | value    | usage                                                                       |
+| ------------ | -------- | --------------------------------------------------------------------------- |
+| `bp-mobile`  | `800px`  | max-width 800px = mobile: reading column 3 / -3, gutters kern × 1.5.        |
 | `bp-desktop` | `1400px` | min-width 1400px = desktop: reading column 5 / span 3, side panels visible. |
 
 ## size
 
-| name | value | usage |
-| --- | --- | --- |
-| `control-reader` | `1.5rem` | Arena reader buttons and selects (--arena-control-height in .arena-reader). |
-| `control-collection` | `1.75rem` | Arena index/channel controls: view toggle, search (--arena-control-height). |
-| `control-calendar` | `2rem` | Triathlon calendar icon buttons and view controls (--calendar-control-size). |
-| `control-base` | `2.125rem` | Base view toolbar and search. |
-| `control-touch` | `44px` | Every control under pointer: coarse. |
-| `width-arena` | `52rem` | Arena index, channel and reader column (--arena-width). |
-| `width-arena-wide` | `76rem` | Arena reader on wide screens with the rail open. |
-| `width-tri-page` | `980px` | Triathlon page and calendar column (--tri-page-w = min(980px, 92vw)). |
-| `width-tri-modal` | `79rem` | Triathlon activity modal (min(79rem, 94vw) × min(86vh, 1080px); full screen on mobile). |
-| `rail-curius` | `15rem` | Curius browsing rail. |
-| `tri-activity-chart-height` | `104px` | Activity card chart row; 160px in the expanded workspace. |
-| `tri-day-gap` | `6px` | Gap between day cells on the triathlon timeline. |
-| `control-pdf` | `1.5rem` | PDF reader toolbar buttons and page input (--pdf-control-height). |
-| `pdf-side-width` | `22rem` | PDF notes rail: clamp(16rem, 24vw, 22rem). |
+| name                        | value      | usage                                                                                   |
+| --------------------------- | ---------- | --------------------------------------------------------------------------------------- |
+| `control-reader`            | `1.5rem`   | Arena reader buttons and selects (--arena-control-height in .arena-reader).             |
+| `control-collection`        | `1.75rem`  | Arena index/channel controls: view toggle, search (--arena-control-height).             |
+| `control-calendar`          | `2rem`     | Triathlon calendar icon buttons and view controls (--calendar-control-size).            |
+| `control-base`              | `2.125rem` | Base view toolbar and search.                                                           |
+| `control-touch`             | `44px`     | Every control under pointer: coarse.                                                    |
+| `width-arena`               | `52rem`    | Arena index, channel and reader column (--arena-width).                                 |
+| `width-arena-wide`          | `76rem`    | Arena reader on wide screens with the rail open.                                        |
+| `width-tri-page`            | `980px`    | Triathlon page and calendar column (--tri-page-w = min(980px, 92vw)).                   |
+| `width-tri-modal`           | `79rem`    | Triathlon activity modal (min(79rem, 94vw) × min(86vh, 1080px); full screen on mobile). |
+| `rail-curius`               | `15rem`    | Curius browsing rail.                                                                   |
+| `tri-activity-chart-height` | `104px`    | Activity card chart row; 160px in the expanded workspace.                               |
+| `tri-day-gap`               | `6px`      | Gap between day cells on the triathlon timeline.                                        |
+| `control-pdf`               | `1.5rem`   | PDF reader toolbar buttons and page input (--pdf-control-height).                       |
+| `pdf-side-width`            | `22rem`    | PDF notes rail: clamp(16rem, 24vw, 22rem).                                              |

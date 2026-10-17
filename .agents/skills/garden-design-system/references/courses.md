@@ -6,14 +6,14 @@ The course pages use the tool register: mono lowercase labels, the shared `line`
 
 ## Views
 
-| Route | Component | Shape |
-| --- | --- | --- |
-| `/courses/` | CoursesIndex | Bordered rows, one per course, counts beneath |
-| `/courses/<dir>/` | CourseHome | Masthead, rail, schedule table grouped by part |
-| `/courses/<dir>/lectures/<nn>` | CourseUnit, CourseWorkspace | Unit bar, the note, unit foot; the workspace beside it |
-| `/courses/<dir>/notes/<nn>` | CourseUnit, LatexCallout | Converted LaTeX notes with numbered statements |
-| `/courses/<dir>/resources/<slug>/` | CourseCollection, CourseWatch | Course strip over a collection table, a video with transcript, or the PDF reader |
-| `<note>/flashcards`, `/courses/review` | Flashcards | Card with the note rail; the merged drill |
+| Route                                  | Component                     | Shape                                                                            |
+| -------------------------------------- | ----------------------------- | -------------------------------------------------------------------------------- |
+| `/courses/`                            | CoursesIndex                  | Bordered rows, one per course, counts beneath                                    |
+| `/courses/<dir>/`                      | CourseHome                    | Masthead, rail, schedule table grouped by part                                   |
+| `/courses/<dir>/lectures/<nn>`         | CourseUnit, CourseWorkspace   | Unit bar, the note, unit foot; the workspace beside it                           |
+| `/courses/<dir>/notes/<nn>`            | CourseUnit, LatexCallout      | Converted LaTeX notes with numbered statements                                   |
+| `/courses/<dir>/resources/<slug>/`     | CourseCollection, CourseWatch | Course strip over a collection table, a video with transcript, or the PDF reader |
+| `<note>/flashcards`, `/courses/review` | Flashcards                    | Card with the note rail; the merged drill                                        |
 
 The home spans `grid-column: 5 / -3`, wider than the 740px reading column. The strip and stacked views share its 66rem centred column. The site breadcrumbs stay off every page with a course crumb.
 
@@ -21,12 +21,12 @@ The home spans `grid-column: 5 / -3`, wider than the 740px reading column. The s
 
 Course views declare the shared recipe under their own prefix:
 
-| Role | System token | Course name | Value in the code |
-| --- | --- | --- | --- |
-| Hairline | `line` | `--course-line` | `gray` at 55% |
-| Raised ground | `surface` | `--course-surface` | `light` 86% with `lightgray` |
-| Selected ground | `selected` | `--course-selected` | `secondary` at 18% over the surface |
-| Workspace hairline | `line` | `--course-workspace-line` | `gray` at 45% |
+| Role               | System token | Course name               | Value in the code                   |
+| ------------------ | ------------ | ------------------------- | ----------------------------------- |
+| Hairline           | `line`       | `--course-line`           | `gray` at 55%                       |
+| Raised ground      | `surface`    | `--course-surface`        | `light` 86% with `lightgray`        |
+| Selected ground    | `selected`   | `--course-selected`       | `secondary` at 18% over the surface |
+| Workspace hairline | `line`       | `--course-workspace-line` | `gray` at 45%                       |
 
 `--course-control-height` is 1.75rem and rises to 44px under `pointer: coarse`.
 

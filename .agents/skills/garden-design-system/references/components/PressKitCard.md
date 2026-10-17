@@ -26,25 +26,25 @@ Every card except the citation draws the same frame (`chrome`):
 
 ## Page and entry
 
-| | Page | Stream entry |
-| --- | --- | --- |
-| Breadcrumb | `site / …slug` | `site / stream / on / yyyy / mm / dd` (the entry's path; the `?entry=` query is not a segment) |
-| Date | `formatDate` in the site locale, "24 oct. 2025" | the same format from the entry's ISO date, "25 août 2026", read from the string so the visitor's time zone cannot change the day |
-| Title | the page title | the entry heading |
-| Description | the page description; `description` toggles it | the entry's `description` meta; always shown, since an entry has no toggle |
-| Tags | frontmatter `tags`, first 4 | the entry's tags, first 4 |
-| Reading time | the build's reading time | words ÷ 200 (reading-time's rate), rounded up |
+|              | Page                                            | Stream entry                                                                                                                     |
+| ------------ | ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| Breadcrumb   | `site / …slug`                                  | `site / stream / on / yyyy / mm / dd` (the entry's path; the `?entry=` query is not a segment)                                   |
+| Date         | `formatDate` in the site locale, "24 oct. 2025" | the same format from the entry's ISO date, "25 août 2026", read from the string so the visitor's time zone cannot change the day |
+| Title        | the page title                                  | the entry heading                                                                                                                |
+| Description  | the page description; `description` toggles it  | the entry's `description` meta; always shown, since an entry has no toggle                                                       |
+| Tags         | frontmatter `tags`, first 4                     | the entry's tags, first 4                                                                                                        |
+| Reading time | the build's reading time                        | words ÷ 200 (reading-time's rate), rounded up                                                                                    |
 
 ## Training and Strava
 
 A training day entry and a Strava activity draw the training card (`press-kit-training-card.ts`) inside the same frame. The Strava overlays (`grille`, `colonne`, `ticket`, `pastilles`, `bord vertical`, `parcours seul`) are transparent stickers without the frame (`press-kit-sticker.ts`).
 
-| | Training day | Strava activity |
-| --- | --- | --- |
-| Breadcrumb | the entry's path | the activity's path, `site / triathlon / on / yyyy / mm / dd` |
-| Date | the day it trained, which can precede the entry's day | the activity's day |
-| Tags | the entry's tags | the sport |
-| Reading time | none | none |
+|              | Training day                                          | Strava activity                                               |
+| ------------ | ----------------------------------------------------- | ------------------------------------------------------------- |
+| Breadcrumb   | the entry's path                                      | the activity's path, `site / triathlon / on / yyyy / mm / dd` |
+| Date         | the day it trained, which can precede the entry's day | the activity's day                                            |
+| Tags         | the entry's tags                                      | the sport                                                     |
+| Reading time | none                                                  | none                                                          |
 
 Every date on these cards, in the header, on block lines and on the stickers, uses the page format ("10 oct. 2026"), through `cardDate` in `press-kit-text.ts`.
 

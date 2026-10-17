@@ -12,11 +12,11 @@ A copy of the live panel from `/` (selector `.trail-tree-panel`), cut to two for
 
 Every control is a row of one table. Rows are separated by a 1px `lightgray` rule; a section is a `fieldset` whose `legend` is a full-width 9px `gray` band.
 
-| Row | Left | Value cell | Below |
-| --- | --- | --- | --- |
-| Slider | label | `output`, mono, 1px `lightgray` box, right-aligned | range input, 4px track filled to the value |
-| Select | label | `.g-select` at `11em`, trigger 18px high in the same box as `output` | nothing |
-| Action | label | a native button in the same box (`pack`) | nothing |
+| Row    | Left  | Value cell                                                           | Below                                      |
+| ------ | ----- | -------------------------------------------------------------------- | ------------------------------------------ |
+| Slider | label | `output`, mono, 1px `lightgray` box, right-aligned                   | range input, 4px track filled to the value |
+| Select | label | `.g-select` at `11em`, trigger 18px high in the same box as `output` | nothing                                    |
+| Action | label | a native button in the same box (`pack`)                             | nothing                                    |
 
 ## Rules
 
