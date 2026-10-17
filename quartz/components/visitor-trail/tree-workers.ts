@@ -139,7 +139,7 @@ export function prepareSceneTrees(
     try {
       // Key only the growth values represented in the SVG; fractional forest time keeps moving.
       cacheKey = await sceneTreeCacheKey([
-        'scene-trees-v1',
+        'scene-trees-v2',
         TRAIL_TREE_WORKER_URL,
         landscape,
         settings,

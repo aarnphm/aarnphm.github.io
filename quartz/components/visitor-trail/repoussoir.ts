@@ -292,7 +292,7 @@ function* repoussoirTreeSteps(
     .join('')
   const shadow = Math.round(trunkRadius * 2.4)
   const markup =
-    `<path class="trail-tree-shadow" d="M${-shadow} 0h${shadow * 2}v2h-3v2h${-shadow * 2 + 6}V2h-3Z"/>` +
+    `<path class="trail-tree-shadow" data-shadow-radius="${shadow}" d="M${-shadow} 0h${shadow * 2}v2h-3v2h${-shadow * 2 + 6}V2h-3Z"/>` +
     '<g class="trail-tree-motion">' +
     `<path class="trail-tree-trunk" d="${paths.trunk.join('')}"/>` +
     `<path class="trail-tree-trunk-lit" d="${paths['trunk-lit'].join('')}"/>` +

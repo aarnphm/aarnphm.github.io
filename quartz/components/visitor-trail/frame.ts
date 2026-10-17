@@ -194,7 +194,6 @@ const drawWoodland = () => {
 }
 const refreshForest = () => {
   jay.refresh(treePlan ?? [])
-  weather.refreshForest()
   crowns.refresh()
   holidays.refreshTrees()
   pastureJourneys.refreshForest()
@@ -355,6 +354,7 @@ const regrowForest = async () => {
   }
   groundDepth.refresh()
   grove.refresh()
+  weather.refreshForest()
   refreshForest()
 }
 const refreshStructures = () => {
@@ -400,9 +400,9 @@ const prioritizeRendering = (priority: TaskPriority) => {
 host.addEventListener('trail:open', () => prioritizeRendering('user-visible'), { signal })
 host.addEventListener('trail:hide', () => prioritizeRendering('background'), { signal })
 let generationSlice = 0
-const yieldRender = (signal: AbortSignal, paint = false) => {
-  if (!paint && performance.now() - generationSlice < 8) return Promise.resolve(!signal.aborted)
-  if (!paint && generationScheduler)
+const yieldRender = (signal: AbortSignal) => {
+  if (performance.now() - generationSlice < 8) return Promise.resolve(!signal.aborted)
+  if (generationScheduler)
     return generationScheduler
       .postTask(
         () => {
@@ -417,7 +417,6 @@ const yieldRender = (signal: AbortSignal, paint = false) => {
       })
   return new Promise<boolean>(resolve => {
     if (signal.aborted) return resolve(false)
-    let frame = 0
     const task = new MessageChannel()
     const finish = () => {
       task.port1.close()
@@ -426,17 +425,10 @@ const yieldRender = (signal: AbortSignal, paint = false) => {
       generationSlice = performance.now()
       resolve(!signal.aborted)
     }
-    const cancel = () => {
-      parent.cancelAnimationFrame(frame)
-      finish()
-    }
+    const cancel = finish
     signal.addEventListener('abort', cancel, { once: true })
     task.port1.onmessage = finish
-    if (paint)
-      frame = parent.requestAnimationFrame(() => {
-        task.port2.postMessage(null)
-      })
-    else task.port2.postMessage(null)
+    task.port2.postMessage(null)
   })
 }
 const drawScene = async () => {
@@ -641,8 +633,7 @@ const drawScene = async () => {
   if (terraces === null || renderSignal.aborted) return
   const base = scene.querySelector('.trail-ground-base')
   if (base) base.innerHTML = terraces
-  // Paint the camp before backdrop, route sampling, and forest generation occupy the main thread.
-  if (!(await yieldRender(renderSignal, true))) return
+  if (!(await yieldRender(renderSignal))) return
   const hinterlandMarkup = await scenery.get('hinterland')
   const terrain = await scenery.get('terrain')
   if (hinterlandMarkup === null || terrain === null || renderSignal.aborted) return
@@ -650,7 +641,7 @@ const drawScene = async () => {
   if (hinterland) hinterland.innerHTML = hinterlandMarkup
   const ground = scene.querySelector('.trail-ground')
   if (ground) ground.innerHTML = terrain
-  if (!(await yieldRender(renderSignal, true))) return
+  if (!(await yieldRender(renderSignal))) return
   const backdropMarkup = await scenery.get('backdrop')
   if (backdropMarkup === null || renderSignal.aborted) return
   const backdrop = scene.querySelector('[data-trail-backdrop-container]')
@@ -752,6 +743,7 @@ const drawScene = async () => {
     treePlan,
     geometries.map(route => route.samples),
   )
+  weather.refreshForest()
   svg.style.removeProperty('display')
   grove.refresh()
   const bodies = journeyObstacles(layout.landscape)
