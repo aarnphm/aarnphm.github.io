@@ -48,7 +48,7 @@ Dans une proposition temporelle qui situe un événement futur, {{`quand`}} / {{
 | {{`si`}} + imparfait        | conditionnel       | {{`Si tu venais, on partirait.`}}         |
 | {{`si`}} + plus-que-parfait | conditionnel passé | {{`Si tu étais venu, on serait partis.`}} |
 
-Ces trois schémas concernent {{`si`}} de condition, qui exclut le futur et le conditionnel dans la proposition introduite par {{`si`}}. Dans une interrogation indirecte, {{`si`}} signifie « est-ce que » et accepte ces temps : {{`Je me demande s'il viendra.`}} · {{`Je voudrais savoir s'il accepterait.`}} {{`Même si`}} de condition prend aussi l'indicatif : {{`Même s'il pleut, on ira.`}} Pour {{`bien que`}} + subjonctif, voir [[fr/subjonctif]].
+Ces trois schémas concernent les propositions hypothétiques introduites par {{`si`}} de condition : le futur et le conditionnel sont exclus dans cette proposition. Dans une interrogation indirecte, {{`si`}} signifie « est-ce que » ("whether" en anglais) et cette restriction ne s'applique pas : {{`Je me demande s'il viendra.`}} · {{`J'aimerais savoir si vous pourriez venir.`}} {{`Même si`}} de condition prend aussi l'indicatif : {{`Même s'il pleut, on ira.`}} Pour {{`bien que`}} + subjonctif, voir [[fr/subjonctif]].
 
 Conditionnel de politesse : {{`Je voudrais un café.`}}, {{`Voudriez-vous boire quelque chose ?`}}
 
