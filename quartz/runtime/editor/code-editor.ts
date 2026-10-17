@@ -10,6 +10,7 @@ import type { CodeMirror } from '@replit/codemirror-vim'
 import type { LanguageFn } from 'highlight.js'
 import { ensureSyntaxTree, forceParsing, syntaxTreeAvailable } from '@codemirror/language'
 import type { NotebookLspConfig } from '../lsp/pyright'
+import { completionTheme } from '../../util/codemirror-completion-theme'
 import { codemirrorCodeLanguage } from '../../util/codemirror-language'
 import { backendFor } from '../notebook/registry'
 
@@ -132,8 +133,12 @@ const notebookSurroundPairs = new Map<string, readonly [string, string]>([
   ["'", ["'", "'"]],
   ['"', ['"', '"']],
   ['`', ['`', '`']],
+  ['*', ['*', '*']],
+  ['_', ['_', '_']],
+  ['~', ['~', '~']],
+  ['$', ['$', '$']],
 ])
-const notebookSurroundPrefixes = new Set(['y', 'ys', 'ysi', 'ysa', 'c', 'd'])
+const notebookSurroundPrefixes = new Set(['ys', 'ysi', 'ysa', 'cs', 'ds'])
 const notebookLeapPendingDelayMs = 900
 const notebookLeapTraversalDelayMs = 2800
 const notebookLeapSliceSearchMaxLength = 16384
@@ -454,6 +459,7 @@ export function notebookSurroundKeyPlan(
   buffer: string,
   key: string,
   visualMode: boolean,
+  pendingOperator?: string,
 ): NotebookSurroundKeyPlan {
   if (visualMode) {
     if (buffer === '' && key === 'S') return { kind: 'pending', buffer: 'S' }
@@ -466,9 +472,12 @@ export function notebookSurroundKeyPlan(
   }
 
   if (buffer === '') {
-    return key === 'y' || key === 'd' || key === 'c'
-      ? { kind: 'pending', buffer: key }
-      : { kind: 'pass' }
+    if (key === 's') {
+      if (pendingOperator === 'yank') return { kind: 'pending', buffer: 'ys' }
+      if (pendingOperator === 'delete') return { kind: 'pending', buffer: 'ds' }
+      if (pendingOperator === 'change') return { kind: 'pending', buffer: 'cs' }
+    }
+    return { kind: 'pass' }
   }
 
   if (buffer === 'ysiw' || buffer === 'ysw' || buffer === 'ysaw') {
@@ -994,17 +1003,6 @@ export function registerNotebookSurroundBindings(Vim: NotebookVimBindingsApi) {
     context: 'normal',
     isEdit: true,
   })
-  for (const oldToken of notebookSurroundPairs.keys()) {
-    for (const replacementToken of notebookSurroundPairs.keys()) {
-      Vim.mapCommand(
-        `cs${oldToken}${replacementToken}`,
-        'action',
-        'notebookChangeSurround',
-        { oldToken, replacementToken },
-        { context: 'normal', isEdit: true },
-      )
-    }
-  }
 }
 
 function configureNotebookVimBindings(vimApi: NotebookVimModule) {
@@ -1346,6 +1344,31 @@ export async function createNotebookCodeEditor(
   let leapClearTimer: number | undefined
   const statusElement = document.createElement('div')
   statusElement.className = 'cm-notebookStatus'
+  const statusTextNode = document.createTextNode('')
+  statusElement.append(statusTextNode)
+  let fatCursorStabilized = false
+  const stabilizeVimFatCursorText = (root: HTMLElement) => {
+    if (fatCursorStabilized) return
+    const cursor = root.querySelector<HTMLElement>('.cm-fat-cursor')
+    if (!cursor) return
+    fatCursorStabilized = true
+    let textNode = cursor.firstChild
+    if (!(textNode instanceof Text)) {
+      textNode = document.createTextNode(cursor.textContent || ' ')
+      cursor.replaceChildren(textNode)
+    }
+    const node = textNode
+    Object.defineProperty(cursor, 'textContent', {
+      configurable: true,
+      get() {
+        return node.nodeValue ?? ''
+      },
+      set(value: string | null) {
+        const next = value ?? ''
+        if (node.nodeValue !== next) node.nodeValue = next
+      },
+    })
+  }
   const currentLeapStatus = (): NotebookLeapStatus | undefined =>
     leapSession
       ? {
@@ -1357,14 +1380,23 @@ export async function createNotebookCodeEditor(
       : leapPendingMotion
         ? { key: leapPendingMotion.key }
         : undefined
+  let lastStatusText = ''
+  let lastStatusActive = ''
   const updateStatusElement = (state: CodeMirrorEditorState) => {
+    if (vimModeEnabled && !fatCursorStabilized && statusElement.parentElement) {
+      stabilizeVimFatCursorText(statusElement.parentElement)
+    }
     const leap = currentLeapStatus()
-    statusElement.textContent = notebookEditorStatusTextInText(
-      state.doc,
-      state.selection.main.head,
-      leap,
-    )
-    statusElement.dataset.active = leap ? 'true' : 'false'
+    const nextText = notebookEditorStatusTextInText(state.doc, state.selection.main.head, leap)
+    if (nextText !== lastStatusText) {
+      lastStatusText = nextText
+      statusTextNode.nodeValue = nextText
+    }
+    const nextActive = leap ? 'true' : 'false'
+    if (nextActive !== lastStatusActive) {
+      lastStatusActive = nextActive
+      statusElement.dataset.active = nextActive
+    }
   }
   const clearLeapTimer = () => {
     if (leapClearTimer !== undefined) {
@@ -1373,10 +1405,16 @@ export async function createNotebookCodeEditor(
     }
   }
   const clearLeap = () => {
+    const hadPending = leapPendingMotion !== undefined
+    const hadSession = leapSession !== undefined
     leapPendingMotion = undefined
     leapSession = undefined
     clearLeapTimer()
-    view.dispatch({ effects: leapHighlightEffect.of(undefined) })
+    if (hadSession) {
+      view.dispatch({ effects: leapHighlightEffect.of(undefined) })
+    } else if (hadPending) {
+      updateStatusElement(view.state)
+    }
   }
   const scheduleLeapClear = (delayMs: number) => {
     clearLeapTimer()
@@ -1496,19 +1534,9 @@ export async function createNotebookCodeEditor(
       surroundPendingFlushTimer = undefined
     }
   }
-  const replaySurroundPending = (target: CodeMirrorEditorView) => {
-    if (surroundPendingBuffer.length === 0) return
-    const pending = Array.from(surroundPendingBuffer)
-    clearSurroundPending()
-    const cm = vimApi?.getCM(target)
-    if (!cm || !vimApi) return
-    for (const key of pending) {
-      vimApi.Vim.handleKey(cm, key, 'mapping')
-    }
-  }
-  const scheduleSurroundPendingFlush = (target: CodeMirrorEditorView) => {
+  const scheduleSurroundPendingFlush = () => {
     if (surroundPendingFlushTimer !== undefined) window.clearTimeout(surroundPendingFlushTimer)
-    surroundPendingFlushTimer = window.setTimeout(() => replaySurroundPending(target), 900)
+    surroundPendingFlushTimer = window.setTimeout(() => clearSurroundPending(), 900)
   }
   const eventSurroundKey = (event: KeyboardEvent) => {
     if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey) return undefined
@@ -1529,25 +1557,43 @@ export async function createNotebookCodeEditor(
         }
         const key = eventSurroundKey(event)
         if (!key) {
-          replaySurroundPending(target)
+          if (surroundPendingBuffer.length > 0) {
+            clearSurroundPending()
+            if (event.key === 'Escape') {
+              event.preventDefault()
+              event.stopPropagation()
+              return true
+            }
+          }
           return false
         }
+        const wasEmptyBuffer = surroundPendingBuffer === ''
+        const pendingOperator =
+          wasEmptyBuffer && !vimState.visualMode
+            ? (vimState.inputState?.operator ?? undefined)
+            : undefined
         const plan = notebookSurroundKeyPlan(
           surroundPendingBuffer,
           key,
           vimState.visualMode === true,
+          pendingOperator,
         )
         if (plan.kind === 'pass') return false
         if (plan.kind === 'flush') {
-          replaySurroundPending(target)
-          return false
+          clearSurroundPending()
+          event.preventDefault()
+          event.stopPropagation()
+          return true
         }
 
         event.preventDefault()
         event.stopPropagation()
+        if (wasEmptyBuffer && pendingOperator) {
+          vimApi.Vim.handleKey(cm, '<Esc>', 'mapping')
+        }
         if (plan.kind === 'pending') {
           surroundPendingBuffer = plan.buffer
-          scheduleSurroundPendingFlush(target)
+          scheduleSurroundPendingFlush()
           return true
         }
 
@@ -1571,11 +1617,17 @@ export async function createNotebookCodeEditor(
   const initialVimExtension = await vimExtension(initialVimMode)
 
   let suppressChangeNotification = false
+  let lastSyncedContent: string | undefined = config.initialContent ?? ''
   const updateListener = EditorView.updateListener.of(update => {
     const userDocChanged = update.docChanged && !suppressChangeNotification
     if (update.docChanged) {
+      lastSyncedContent = undefined
       if (userDocChanged) config.onEdited?.()
-      if (config.onChange && userDocChanged) config.onChange(update.state.doc.toString())
+      if (config.onChange && userDocChanged) {
+        const nextDoc = update.state.doc.toString()
+        lastSyncedContent = nextDoc
+        config.onChange(nextDoc)
+      }
     }
     const leapChanged = update.transactions.some(transaction =>
       transaction.effects.some(effect => effect.is(leapHighlightEffect)),
@@ -1592,11 +1644,12 @@ export async function createNotebookCodeEditor(
       super()
     }
 
-    eq(other: CodeMirrorWidgetType) {
+    eq(other: CodeMirrorWidgetType): boolean {
       return (
-        other instanceof NotebookWhitespaceWidget &&
-        other.text === this.text &&
-        other.kind === this.kind
+        this === other ||
+        (other instanceof NotebookWhitespaceWidget &&
+          other.text === this.text &&
+          other.kind === this.kind)
       )
     }
 
@@ -1612,6 +1665,38 @@ export async function createNotebookCodeEditor(
       return true
     }
   }
+  const whitespaceDecorationsByKey = {
+    'lead:»': Decoration.replace({
+      widget: new NotebookWhitespaceWidget('»', 'lead'),
+      inclusive: false,
+    }),
+    'lead:·': Decoration.replace({
+      widget: new NotebookWhitespaceWidget('·', 'lead'),
+      inclusive: false,
+    }),
+    'trail:·': Decoration.replace({
+      widget: new NotebookWhitespaceWidget('·', 'trail'),
+      inclusive: false,
+    }),
+    'tab:»·': Decoration.replace({
+      widget: new NotebookWhitespaceWidget('»·', 'tab'),
+      inclusive: false,
+    }),
+    'nbsp:+': Decoration.replace({
+      widget: new NotebookWhitespaceWidget('+', 'nbsp'),
+      inclusive: false,
+    }),
+  } as const
+  const decorationForWhitespaceGlyph = (glyph: NotebookWhitespaceGlyph): CodeMirrorDecoration => {
+    const key = `${glyph.kind}:${glyph.text}` as keyof typeof whitespaceDecorationsByKey
+    return (
+      whitespaceDecorationsByKey[key] ??
+      Decoration.replace({
+        widget: new NotebookWhitespaceWidget(glyph.text, glyph.kind),
+        inclusive: false,
+      })
+    )
+  }
   const notebookWhitespaceDecorations = (targetView: CodeMirrorEditorView) => {
     const builder = new RangeSetBuilder<CodeMirrorDecoration>()
     let lastLineNumber = 0
@@ -1622,14 +1707,7 @@ export async function createNotebookCodeEditor(
       for (let lineNumber = firstLineNumber; lineNumber <= endLine.number; lineNumber += 1) {
         const line = targetView.state.doc.line(lineNumber)
         for (const glyph of notebookWhitespaceGlyphs(line.text, line.from)) {
-          builder.add(
-            glyph.from,
-            glyph.to,
-            Decoration.replace({
-              widget: new NotebookWhitespaceWidget(glyph.text, glyph.kind),
-              inclusive: false,
-            }),
-          )
+          builder.add(glyph.from, glyph.to, decorationForWhitespaceGlyph(glyph))
         }
       }
       lastLineNumber = Math.max(lastLineNumber, endLine.number)
@@ -1644,9 +1722,48 @@ export async function createNotebookCodeEditor(
     }
 
     update(update: CodeMirrorViewUpdate) {
-      if (update.docChanged || update.viewportChanged) {
+      if (update.viewportChanged) {
         this.decorations = notebookWhitespaceDecorations(update.view)
+        return
       }
+      if (!update.docChanged) return
+
+      let mapped = this.decorations.map(update.changes)
+      const doc = update.state.doc
+      const lineSpans: Array<{ from: number; to: number; startLine: number; endLine: number }> = []
+      update.changes.iterChangedRanges((_fromA, _toA, fromB, toB) => {
+        const firstLine = doc.lineAt(fromB)
+        const lastLine = doc.lineAt(toB)
+        const prev = lineSpans[lineSpans.length - 1]
+        if (prev && firstLine.number <= prev.endLine + 1) {
+          prev.to = Math.max(prev.to, lastLine.to)
+          prev.endLine = Math.max(prev.endLine, lastLine.number)
+        } else {
+          lineSpans.push({
+            from: firstLine.from,
+            to: lastLine.to,
+            startLine: firstLine.number,
+            endLine: lastLine.number,
+          })
+        }
+      })
+
+      for (const span of lineSpans) {
+        const add = []
+        for (let lineNum = span.startLine; lineNum <= span.endLine; lineNum += 1) {
+          const line = doc.line(lineNum)
+          for (const glyph of notebookWhitespaceGlyphs(line.text, line.from)) {
+            add.push(decorationForWhitespaceGlyph(glyph).range(glyph.from, glyph.to))
+          }
+        }
+        mapped = mapped.update({
+          filterFrom: span.from,
+          filterTo: span.to,
+          filter: () => false,
+          add,
+        })
+      }
+      this.decorations = mapped
     }
   }
   const whitespaceExtension = ViewPlugin.fromClass(NotebookWhitespaceView, {
@@ -1759,6 +1876,7 @@ export async function createNotebookCodeEditor(
       EditorState.tabSize.of(2),
       whitespaceExtension,
       transparentTheme,
+      completionTheme,
     ],
   })
 
@@ -1774,13 +1892,22 @@ export async function createNotebookCodeEditor(
   if (initialVimMode) await bindVimSave()
 
   return {
-    getValue: () => view.state.doc.toString(),
+    getValue: () => {
+      if (lastSyncedContent === undefined) {
+        lastSyncedContent = view.state.doc.toString()
+      }
+      return lastSyncedContent
+    },
     setValue(content: string) {
-      if (view.state.doc.length === content.length && view.state.doc.sliceString(0) === content)
+      if (lastSyncedContent === content) return
+      if (view.state.doc.length === content.length && view.state.doc.sliceString(0) === content) {
+        lastSyncedContent = content
         return
+      }
       suppressChangeNotification = true
       try {
         view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: content } })
+        lastSyncedContent = content
       } finally {
         suppressChangeNotification = false
       }
@@ -1789,6 +1916,7 @@ export async function createNotebookCodeEditor(
       clearSurroundPending()
       clearLeap()
       vimModeEnabled = enabled
+      fatCursorStabilized = false
       view.dispatch({
         effects: [
           vimCompartment.reconfigure(await vimExtension(enabled)),
@@ -1796,7 +1924,10 @@ export async function createNotebookCodeEditor(
           editorKeymapCompartment.reconfigure(editorKeymap()),
         ],
       })
-      if (enabled) await bindVimSave()
+      if (enabled) {
+        stabilizeVimFatCursorText(view.dom)
+        await bindVimSave()
+      }
     },
     focus: () => view.focus(),
     destroy() {

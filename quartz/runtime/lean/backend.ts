@@ -15,8 +15,12 @@ export const leanBackend: ExecutableLanguageBackend = {
   canExecute: () => ({ ok: true }),
   editor: {
     languageExtension: async () => {
-      const { codemirrorCodeLanguage } = await import('../../util/codemirror-language')
-      return codemirrorCodeLanguage('lean')
+      const { leanLanguageExtension } = await import('../../util/codemirror-lean')
+      return leanLanguageExtension()
+    },
+    lspBridge: async () => {
+      const { leanLspBridge } = await import('../lsp/lean')
+      return leanLspBridge
     },
   },
   kernelFactory: async (opts: KernelFactoryOptions) => createLeanKernel(opts),

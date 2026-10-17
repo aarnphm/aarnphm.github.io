@@ -89,10 +89,22 @@ describe('notebook surround ranges', () => {
 })
 
 describe('notebook surround key planning', () => {
-  test('captures operator-prefixed surround sequences before vim consumes the operator', () => {
-    assert.deepStrictEqual(notebookSurroundKeyPlan('', 'y', false), {
+  test('passes raw y/d/c to vim and captures s only when an operator is pending', () => {
+    assert.deepStrictEqual(notebookSurroundKeyPlan('', 'y', false), { kind: 'pass' })
+    assert.deepStrictEqual(notebookSurroundKeyPlan('', 'd', false), { kind: 'pass' })
+    assert.deepStrictEqual(notebookSurroundKeyPlan('', 'c', false), { kind: 'pass' })
+    assert.deepStrictEqual(notebookSurroundKeyPlan('', 'w', false, 'delete'), { kind: 'pass' })
+    assert.deepStrictEqual(notebookSurroundKeyPlan('', 's', false, 'yank'), {
       kind: 'pending',
-      buffer: 'y',
+      buffer: 'ys',
+    })
+    assert.deepStrictEqual(notebookSurroundKeyPlan('', 's', false, 'delete'), {
+      kind: 'pending',
+      buffer: 'ds',
+    })
+    assert.deepStrictEqual(notebookSurroundKeyPlan('', 's', false, 'change'), {
+      kind: 'pending',
+      buffer: 'cs',
     })
     assert.deepStrictEqual(notebookSurroundKeyPlan('ysi', 'w', false), {
       kind: 'pending',
@@ -117,7 +129,7 @@ describe('notebook surround key planning', () => {
     })
   })
 
-  test('captures visual surround and flushes non-surround continuations', () => {
+  test('captures visual surround and cancels invalid surround continuations without replaying', () => {
     assert.deepStrictEqual(notebookSurroundKeyPlan('', 'S', true), { kind: 'pending', buffer: 'S' })
     assert.deepStrictEqual(notebookSurroundKeyPlan('S', '}', true), {
       kind: 'surroundSelection',
