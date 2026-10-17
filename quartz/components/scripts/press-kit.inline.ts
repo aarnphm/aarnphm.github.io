@@ -614,6 +614,12 @@ function draw() {
   unfurl.hidden = true
   const colors = page.colors as unknown as { light: SiteColors; dark: SiteColors }
   const palette = palettes(colors.light, colors.dark)[theme]
+  if (editor?.textColor && editor.textColor !== 'auto') {
+    const ink = editor.textColor === 'white' ? 'white' : 'black'
+    palette.ink = ink
+    palette.muted = ink
+    palette.hlInk = ink
+  }
   const targetFormat = format
   const targetFonts = fonts
   const targetDialog = dialog
@@ -1277,14 +1283,15 @@ function mountMetricControls() {
   for (const source of subjectActivities()) {
     const activity = localizeActivity(source, shareLocale())
     const previous = selectedMetrics.get(activity.url)
+    const defaults = new Set<string>(ACTIVITY_CARD_STATS)
+    if (activity.sport === 'run') {
+      defaults.delete('power')
+      defaults.add('metric:cadence')
+    }
     selectedMetrics.set(
       activity.url,
       new Set(
-        activity.stats
-          .filter(stat =>
-            previous ? previous.has(stat.key) : isActivityCardStatKey(stat.key) && show[stat.key],
-          )
-          .map(stat => stat.key),
+        activity.stats.filter(stat => (previous ?? defaults).has(stat.key)).map(stat => stat.key),
       ),
     )
     const group = document.createElement('details')

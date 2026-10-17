@@ -48,18 +48,22 @@ function metricGrid(
     const top = y + Math.floor(index / columns) * (rowHeight + spacing)
     const inset = boxed ? size * 0.35 : 0
     const textWidth = cellWidth * (boxed ? 1 : 0.92) - inset * 2
-    if (boxed)
+    if (boxed) {
+      const right = left + cellWidth
+      const bottom = top + rowHeight
+      // Shared edges have one owner, including when metric layers are rasterized separately.
+      const leftEdge = spacing > 0 || index % columns === 0
+      const topEdge = spacing > 0 || index < columns
+      const start = leftEdge ? `M${left} ${top}V${bottom}` : `M${left} ${bottom}`
       metric.append(
-        node('rect', {
-          x: left,
-          y: top,
-          width: cellWidth,
-          height: rowHeight,
+        node('path', {
+          d: `${start}H${right}V${top}${topEdge ? `H${left}` : ''}${leftEdge && topEdge ? 'Z' : ''}`,
           fill: 'none',
           stroke: ink,
           'stroke-width': 1.5,
         }),
       )
+    }
     fitText(metric, stat.label, left + inset, top + size * 1.1, textWidth, size * 0.6, ink, 400)
     const values = boxed ? [stat.value] : lines(stat.value, textWidth, size, 400, fonts.mono)
     values.forEach((value, line) =>
@@ -251,7 +255,7 @@ function paintOverlay(
         'transform',
         `translate(${x + width * 0.92 - (index % 2) * headingSize * 1.8},${y + contentHeight - Math.floor(index / 2) * step}) rotate(-90)`,
       )
-      metricRow(group, stat.label, stat.value, 0, 0, step * 0.9, headingSize * 0.68, ink)
+      metricRow(group, stat.label, stat.value, 0, 0, step * 0.9, headingSize * 0.68, ink, false)
       parent.append(group)
     })
   }

@@ -41,7 +41,7 @@ The repo is the source of truth. When this skill and the code disagree, the code
 | A specific component                                                      | `references/components/index.md`, then `references/components/<Name>.md` |
 | Calling a surface done                                                    | `references/review.md`                                                   |
 
-A component README states what the component is, its tokens, its states and the source files in the repo. The Controls (Dropdown, Select, DatePicker, Calendar) wrap `quartz/components/controls/`; reuse those builders, do not write a new select or calendar. Quartz component READMEs describe what the site renders today; read the named source before changing it.
+A component README states what the component is, its tokens, its states and the source files in the repo. The Controls (Dropdown, Select, DatePicker, Calendar) wrap `quartz/components/controls/`; reuse those builders, do not write a new select or calendar. A CodeMirror completion list takes `completionTheme` from `quartz/util/codemirror-completion-theme.ts` (see Completion); tint it with `--control-accent`, never restyle it from page CSS. Quartz component READMEs describe what the site renders today; read the named source before changing it.
 
 ## Where the values live in the repo
 

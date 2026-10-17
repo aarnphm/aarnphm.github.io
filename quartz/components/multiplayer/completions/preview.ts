@@ -75,8 +75,11 @@ async function render(slug: string) {
 
 let scrollContainer: HTMLElement | null = null
 let scrollHandler: (() => void) | null = null
+let lastLeft = ''
+let lastTop = ''
 
 function positionSync() {
+  rafId = null
   const tooltip = document.querySelector('.cm-tooltip-autocomplete')
   if (!tooltip || !popover) return
 
@@ -95,29 +98,38 @@ function positionSync() {
   }
   if (y < 8) y = 8
 
-  popover.style.left = `${x}px`
-  popover.style.top = `${y}px`
+  const nextLeft = `${x}px`
+  const nextTop = `${y}px`
+  if (nextLeft !== lastLeft) {
+    lastLeft = nextLeft
+    popover.style.left = nextLeft
+  }
+  if (nextTop !== lastTop) {
+    lastTop = nextTop
+    popover.style.top = nextTop
+  }
+}
+
+function schedulePositionSync() {
+  if (rafId !== null) return
+  rafId = requestAnimationFrame(positionSync)
 }
 
 function startTracking() {
   scrollContainer = document.querySelector('.center') ?? document.body
-  scrollHandler = () => positionSync()
+  scrollHandler = () => schedulePositionSync()
 
   scrollContainer.addEventListener('scroll', scrollHandler, { passive: true })
   window.addEventListener('scroll', scrollHandler, { passive: true })
-
-  if (rafId !== null) return
-  const loop = () => {
-    positionSync()
-    rafId = requestAnimationFrame(loop)
-  }
-  rafId = requestAnimationFrame(loop)
+  window.addEventListener('resize', scrollHandler, { passive: true })
+  schedulePositionSync()
 }
 
 function stopTracking() {
   if (scrollHandler) {
     scrollContainer?.removeEventListener('scroll', scrollHandler)
     window.removeEventListener('scroll', scrollHandler)
+    window.removeEventListener('resize', scrollHandler)
     scrollHandler = null
     scrollContainer = null
   }
@@ -135,11 +147,14 @@ async function updateView(view: EditorView) {
   if (slug !== currentSlug) {
     currentSlug = slug
     await render(slug)
+    schedulePositionSync()
   }
 }
 
 export function showPreview(view: EditorView): void {
   ensurePopover()
+  lastLeft = ''
+  lastTop = ''
   positionSync()
   popover!.classList.add('active-popover')
   startTracking()
@@ -169,6 +184,7 @@ export function isPreviewVisible(): boolean {
 export function onEditorUpdate(update: ViewUpdate): void {
   if (!isPreviewVisible()) return
   if (completionStatus(update.state) !== 'active') return hidePreview()
+  schedulePositionSync()
   updateView(update.view)
 }
 

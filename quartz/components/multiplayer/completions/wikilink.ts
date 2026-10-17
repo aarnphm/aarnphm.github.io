@@ -5,7 +5,7 @@ import type { FuzzyMatch } from './types'
 import { isStreamHostname } from '../../../util/stream-host'
 import { getContentIndex } from './data'
 import { frecencyStore } from './frecency'
-import { fuzzyMatch, fuzzyMatchMultiple } from './fuzzy'
+import { fuzzyMatch } from './fuzzy'
 
 function extractNamespace(query: string): { prefix: string; remainder: string } {
   const slashIdx = query.lastIndexOf('/')
@@ -39,13 +39,44 @@ function isInsideWikilink(context: CompletionContext): {
   }
 }
 
+interface IndexedWikilinkEntry {
+  slug: string
+  item: ContentDetails
+  title?: string
+  aliases?: string[]
+}
+
 interface ScoredItem {
+  entry: IndexedWikilinkEntry
   slug: string
   item: ContentDetails
   match: FuzzyMatch
   matchedField: 'slug' | 'title' | 'alias'
   matchedAlias?: string
 }
+
+const indexedContentCache = new WeakMap<object, IndexedWikilinkEntry[]>()
+
+function getIndexedEntries(data: Record<string, ContentDetails>): IndexedWikilinkEntry[] {
+  let entries = indexedContentCache.get(data)
+  if (!entries) {
+    entries = Object.entries(data).map(([slug, item]) => ({
+      slug,
+      item,
+      title: item.title || undefined,
+      aliases: item.aliases && item.aliases.length > 0 ? item.aliases : undefined,
+    }))
+    indexedContentCache.set(data, entries)
+  }
+  return entries
+}
+
+let lastSurvivorCache: {
+  data: object
+  prefix: string
+  remainderLower: string
+  entries: IndexedWikilinkEntry[]
+} | null = null
 
 export async function wikilinkCompletionSource(
   context: CompletionContext,
@@ -54,13 +85,28 @@ export async function wikilinkCompletionSource(
   if (!wikiCtx.inside) return null
 
   const data = await getContentIndex()
+  const allEntries = getIndexedEntries(data)
 
   const query = wikiCtx.query.trim()
   const { prefix, remainder } = extractNamespace(query)
+  const remainderLower = remainder.toLowerCase()
+
+  const candidatePool =
+    remainderLower.length > 0 &&
+    lastSurvivorCache &&
+    lastSurvivorCache.data === data &&
+    lastSurvivorCache.prefix === prefix &&
+    lastSurvivorCache.remainderLower.length > 0 &&
+    remainderLower.startsWith(lastSurvivorCache.remainderLower)
+      ? lastSurvivorCache.entries
+      : allEntries
 
   const scored: ScoredItem[] = []
+  const survivors: IndexedWikilinkEntry[] = []
 
-  for (const [slug, item] of Object.entries(data)) {
+  for (let idx = 0; idx < candidatePool.length; idx++) {
+    const entry = candidatePool[idx]!
+    const { slug, item } = entry
     if (prefix && !slug.startsWith(prefix)) continue
 
     const slugToMatch = prefix ? slug.slice(prefix.length) : slug
@@ -68,23 +114,33 @@ export async function wikilinkCompletionSource(
     if (remainder === '') {
       const frecencyBoost = frecencyStore.getBoost(slug)
       scored.push({
+        entry,
         slug,
         item,
         match: { score: frecencyBoost, positions: [] },
         matchedField: 'slug',
       })
     } else {
-      const targets: string[] = [slugToMatch]
-      if (item.title) targets.push(item.title)
-
-      const best = fuzzyMatchMultiple(remainder, targets)
+      const slugMatch = fuzzyMatch(remainder, slugToMatch)
+      const titleMatch = entry.title
+        ? fuzzyMatch(remainder, entry.title, slugMatch ? slugMatch.score : -Infinity)
+        : null
+      const best =
+        titleMatch && (!slugMatch || titleMatch.score > slugMatch.score)
+          ? { target: entry.title!, match: titleMatch }
+          : slugMatch
+            ? { target: slugToMatch, match: slugMatch }
+            : null
 
       let aliasMatch: { alias: string; match: FuzzyMatch } | null = null
-      if (item.aliases) {
-        for (const alias of item.aliases) {
-          const m = fuzzyMatch(remainder, alias)
+      if (entry.aliases) {
+        let minAliasScore = best ? best.match.score : -Infinity
+        for (let a = 0; a < entry.aliases.length; a++) {
+          const alias = entry.aliases[a]!
+          const m = fuzzyMatch(remainder, alias, minAliasScore)
           if (m && (!aliasMatch || m.score > aliasMatch.match.score)) {
             aliasMatch = { alias, match: m }
+            minAliasScore = m.score
           }
         }
       }
@@ -103,8 +159,10 @@ export async function wikilinkCompletionSource(
       }
 
       if (finalMatch) {
+        survivors.push(entry)
         const frecencyBoost = frecencyStore.getBoost(slug)
         scored.push({
+          entry,
           slug,
           item,
           match: { score: finalMatch.score + frecencyBoost, positions: finalMatch.positions },
@@ -113,6 +171,10 @@ export async function wikilinkCompletionSource(
         })
       }
     }
+  }
+
+  if (remainderLower.length > 0) {
+    lastSurvivorCache = { data, prefix, remainderLower, entries: survivors }
   }
 
   scored.sort((a, b) => b.match.score - a.match.score)

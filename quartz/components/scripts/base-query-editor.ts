@@ -102,7 +102,11 @@ export function createBaseQueryCatalog(
 
   for (const file of files) {
     for (const [key, value] of Object.entries(file.frontmatter ?? {})) collect(`note.${key}`, value)
-    for (const tag of file.frontmatter?.tags ?? []) tags.add(tag)
+    // hasTag("a") also matches a/b, so offer every parent of a nested tag.
+    for (const tag of file.frontmatter?.tags ?? []) {
+      const parts = String(tag).replace(/^#/, '').split('/')
+      for (let index = 1; index <= parts.length; index++) tags.add(parts.slice(0, index).join('/'))
+    }
     const path = String(file.filePath ?? file.slug ?? '')
     const segments = path.split('/')
     segments.pop()
@@ -177,10 +181,12 @@ function completions(catalog: BaseQueryCatalog) {
     const quote = before.match(/(["'])([^"']*)$/)
     if (quote) {
       const prefix = before.slice(0, quote.index)
-      const property = prefix.match(/([\w.]+)\s*(?:[!=<>]=?|\.contains(?:Any|All)?\()\s*$/)?.[1]
-      const observed = /file\.hasTag\(\s*$/.test(prefix)
+      const property = prefix.match(
+        /([\w.]+)\s*(?:[!=<>]=?|\.(?:contains(?:Any|All)?|startsWith)\()\s*$/,
+      )?.[1]
+      const observed = /file\.hasTag\((?:\s*(["'])[^"']*\1\s*,)*\s*$/.test(prefix)
         ? catalog.tags
-        : /file\.inFolder\(\s*$/.test(prefix)
+        : /file\.inFolder\(\s*$/.test(prefix) || /(?:^|\.)file\.folder$/.test(property ?? '')
           ? catalog.folders
           : catalog.values.get(property?.startsWith('note.') ? property : `note.${property}`)
       if (observed?.length) {

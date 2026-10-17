@@ -34,6 +34,7 @@ interface Composition {
 interface Layout {
   formats: Record<string, Composition>
   metricGap: number
+  textColor: 'auto' | 'black' | 'white'
   title?: string
   background?: Background
 }
@@ -45,6 +46,11 @@ interface Draft {
 interface LayerPlacement {
   layer: CardLayer
   placement: Placement
+}
+interface SelectionBand {
+  start: number
+  end: number
+  items: LayerPlacement[]
 }
 interface PointerGesture {
   pointer: number
@@ -74,9 +80,10 @@ interface LayerRaster {
   pending?: Promise<void>
   failed?: { width: number; height: number }
 }
-const empty = (): Layout => ({ formats: {}, metricGap: 0 })
+const empty = (): Layout => ({ formats: {}, metricGap: 0, textColor: 'auto' })
 const copy = (layout: Layout): Layout => ({
   metricGap: layout.metricGap,
+  textColor: layout.textColor,
   title: layout.title,
   formats: Object.fromEntries(
     Object.entries(layout.formats).map(([key, composition]) => [
@@ -177,7 +184,7 @@ export class PressKitEditor {
     help.className = 'press-kit-editor-help'
     help.setAttribute('role', 'tooltip')
     help.textContent =
-      'Glisser dans un espace vide pour sélectionner plusieurs éléments. Maj + clic ajoute ou retire un élément ; Maj + glisser dans le vide ajoute une zone. Glisser un élément sélectionné déplace la sélection ; maintenir Maj verrouille le déplacement horizontal ou vertical. Les poignées règlent sa largeur et sa hauteur ; Maj + glisser un coin conserve les proportions. Flèches : 1 px, Maj : 10 px. Ctrl/Cmd + A : tout sélectionner. Échap annule le geste ou vide la sélection. Modifications conservées sur cette page. Image traitée dans ce navigateur, sans envoi.'
+      'Glisser dans un espace vide pour sélectionner plusieurs éléments. Maj + clic ajoute ou retire un élément ; Maj + glisser dans le vide ajoute une zone. Glisser un élément sélectionné déplace la sélection ; maintenir Maj verrouille le déplacement horizontal ou vertical. Les poignées règlent sa largeur et sa hauteur ; une sélection de mesures change d’espacement en gardant la taille du texte. Maj + glisser un coin conserve les proportions de la sélection. Flèches : 1 px, Maj : 10 px. Ctrl/Cmd + A : tout sélectionner. Échap annule le geste ou vide la sélection. Modifications conservées sur cette page. Image traitée dans ce navigateur, sans envoi.'
     summary.setAttribute('aria-label', label.textContent)
     summary.setAttribute('aria-describedby', help.id)
     summary.append(label, help)
@@ -294,6 +301,10 @@ export class PressKitEditor {
     return this.draft.value.metricGap
   }
 
+  get textColor() {
+    return this.draft.value.textColor
+  }
+
   context(key: string, formatKey: string, available: boolean) {
     this.available = available
     if (key !== this.key) {
@@ -366,7 +377,57 @@ export class PressKitEditor {
     }
   }
 
+  private isMetricSelection(items: LayerPlacement[]) {
+    return items.length > 1 && items.every(({ layer }) => layer.id.includes('/stat/'))
+  }
+
+  private metricAxis(items: LayerPlacement[], axis: 'x' | 'y') {
+    const dimension = axis === 'x' ? 'width' : 'height'
+    const scale = axis === 'x' ? 'scaleX' : 'scaleY'
+    const size = ({ layer, placement }: LayerPlacement) => layer[dimension] * placement[scale]
+    const center = (item: LayerPlacement) => item.placement[axis] + size(item) / 2
+    const bands: SelectionBand[] = []
+    for (const item of [...items].sort((a, b) => center(a) - center(b))) {
+      const start = item.placement[axis]
+      const end = start + size(item)
+      const band = bands.at(-1)
+      const centers = band?.items.map(center).sort((a, b) => a - b) ?? []
+      const middle = centers[Math.floor(centers.length / 2)] ?? center(item)
+      // Align a row by its center, so the small raster padding does not join adjacent rows.
+      if (
+        band &&
+        Math.abs(center(item) - middle) <= Math.min(size(item), ...band.items.map(size)) / 2
+      ) {
+        band.start = Math.min(band.start, start)
+        band.end = Math.max(band.end, end)
+        band.items.push(item)
+      } else bands.push({ start, end, items: [item] })
+    }
+    const gaps = bands.slice(1).map((band, index) => band.start - bands[index].end)
+    const minimum =
+      bands.reduce((total, band) => total + band.end - band.start, 0) +
+      gaps.reduce((total, gap) => total + Math.min(0, gap), 0)
+    return { bands, gaps, minimum }
+  }
+
   private resizeLimits(items: LayerPlacement[]) {
+    const bounds = this.bounds(items)
+    if (this.isMetricSelection(items) && bounds) {
+      const x = this.metricAxis(items, 'x')
+      const y = this.metricAxis(items, 'y')
+      return {
+        minX: x.bands.length > 1 ? x.minimum / bounds.width : 1,
+        minY: y.bands.length > 1 ? y.minimum / bounds.height : 1,
+        maxX:
+          x.bands.length > 1
+            ? Math.max(1, ((this.scene?.width ?? bounds.width) * 5) / bounds.width)
+            : 1,
+        maxY:
+          y.bands.length > 1
+            ? Math.max(1, ((this.scene?.height ?? bounds.height) * 5) / bounds.height)
+            : 1,
+      }
+    }
     return {
       minX: Math.max(
         ...items.map(
@@ -418,6 +479,31 @@ export class PressKitEditor {
   ) {
     const sx = after.width / before.width,
       sy = after.height / before.height
+    if (this.isMetricSelection(items) && (sx !== 1 || sy !== 1)) {
+      const distribute = (axis: 'x' | 'y', start: number, span: number) => {
+        const { bands, gaps, minimum } = this.metricAxis(items, axis)
+        const free = gaps.reduce((total, gap) => total + Math.max(0, gap), 0)
+        const available = Math.max(0, span - minimum)
+        let position = start
+        for (const [index, band] of bands.entries()) {
+          for (const { layer, placement } of band.items)
+            composition.placements[layer.id] = {
+              ...(composition.placements[layer.id] ?? placement),
+              [axis]: placement[axis] + position - band.start,
+              scaleX: placement.scaleX,
+              scaleY: placement.scaleY,
+            }
+          position += band.end - band.start
+          const gap = gaps[index]
+          if (gap !== undefined)
+            position +=
+              Math.min(0, gap) + available * (free > 0 ? Math.max(0, gap) / free : 1 / gaps.length)
+        }
+      }
+      distribute('x', after.x, after.width)
+      distribute('y', after.y, after.height)
+      return
+    }
     for (const { layer, placement } of items)
       composition.placements[layer.id] = {
         ...placement,
@@ -464,7 +550,12 @@ export class PressKitEditor {
     const before = copy(this.draft.value)
     mutate(this.composition, this.draft.value)
     this.remember(before)
-    if (before.metricGap !== this.metricGap || before.title !== this.title) this.requestScene()
+    if (
+      before.metricGap !== this.metricGap ||
+      before.title !== this.title ||
+      before.textColor !== this.textColor
+    )
+      this.requestScene()
     else this.queue()
     this.update()
   }
@@ -478,7 +569,12 @@ export class PressKitEditor {
     const before = copy(this.draft.value)
     to.push(before)
     this.draft.value = value
-    if (before.metricGap !== this.metricGap || before.title !== this.title) this.requestScene()
+    if (
+      before.metricGap !== this.metricGap ||
+      before.title !== this.title ||
+      before.textColor !== this.textColor
+    )
+      this.requestScene()
     else this.queue()
     this.update()
   }
@@ -695,7 +791,7 @@ export class PressKitEditor {
     if (!point || !(event.target instanceof Element)) return
     const target = event.target.closest<HTMLElement>('[data-editor-layer]')
     const layer = this.scene?.layers.find(item => item.id === target?.dataset.editorLayer)
-    const group = event.target.closest('[data-editor-selection]')
+    const group = event.target.closest('[data-editor-selection], .press-kit-editor-group-move')
     const selection = [...this.selected]
     const additive = event.shiftKey || event.metaKey || event.ctrlKey
     event.preventDefault()
@@ -760,7 +856,9 @@ export class PressKitEditor {
       : `[data-editor-layer="${CSS.escape(layer?.id ?? '')}"]`
     this.overlay
       .querySelector<HTMLElement>(
-        `${owner} ${resize ? `[data-editor-resize="${resize}"]` : group ? '.press-kit-editor-group-move' : '.press-kit-editor-select'}`,
+        group && !resize
+          ? '.press-kit-editor-group-move'
+          : `${owner} ${resize ? `[data-editor-resize="${resize}"]` : '.press-kit-editor-select'}`,
       )
       ?.focus({ preventScroll: true })
   }
@@ -1052,6 +1150,7 @@ export class PressKitEditor {
                 layout.order = []
                 document.background = undefined
                 document.metricGap = 0
+                document.textColor = 'auto'
                 document.title = undefined
               })
             }
@@ -1099,6 +1198,25 @@ export class PressKitEditor {
             }}
           />
         </label>
+        <div class="press-kit-editor-field">
+          <span aria-hidden="true">couleur du texte</span>
+          <EditorSelect
+            id="press-kit-editor-text-color"
+            label="couleur du texte"
+            options={[
+              { value: 'auto', label: 'auto' },
+              { value: 'black', label: 'noir' },
+              { value: 'white', label: 'blanc' },
+            ]}
+            selected={this.textColor}
+            onSelect={value => {
+              if (value === 'auto' || value === 'black' || value === 'white')
+                this.edit((_, document) => {
+                  document.textColor = value
+                })
+            }}
+          />
+        </div>
         {this.loading && <p role="status">chargement de l’image…</p>}
         {this.error && <p role="alert">{this.error}</p>}
         {this.redrawFailed && <p role="alert">impossible de redimensionner le graphique</p>}
@@ -1300,12 +1418,15 @@ export class PressKitEditor {
             </div>
           ))}
         {selected.length > 1 && !allHidden && (
-          <div
-            class="press-kit-editor-selection"
-            data-editor-selection=""
-            role="group"
-            aria-label={`sélection de ${label}`}
-          >
+          <>
+            <div
+              class="press-kit-editor-selection"
+              data-editor-selection=""
+              role="group"
+              aria-label={`sélection de ${label}`}
+            >
+              {handles(`sélection de ${label}`)}
+            </div>
             <button
               type="button"
               class="press-kit-editor-group-move"
@@ -1313,8 +1434,7 @@ export class PressKitEditor {
             >
               {label}
             </button>
-            {handles(`sélection de ${label}`)}
-          </div>
+          </>
         )}
         <div
           class="press-kit-editor-marquee"

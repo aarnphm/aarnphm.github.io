@@ -7,6 +7,7 @@ const SYNC_KEY = 'mentions-last-sync'
 const SYNC_INTERVAL = 5 * 60 * 1000
 
 let syncPromise: Promise<void> | null = null
+let cachedUsers: GithubUser[] | null = null
 
 async function syncFromD1() {
   const lastSync = parseInt(localStorage.getItem(SYNC_KEY) || '0')
@@ -24,6 +25,7 @@ async function syncFromD1() {
     if (users.length > 0) {
       await db.insert(githubUsers).values(users)
     }
+    cachedUsers = null
 
     localStorage.setItem(SYNC_KEY, Date.now().toString())
   } catch (err) {
@@ -45,10 +47,13 @@ export async function mentionCompletionSource(
   }
   await syncPromise
 
-  const db = await getDB()
-  if (!db) return null
+  if (!cachedUsers) {
+    const db = await getDB()
+    if (!db) return null
+    cachedUsers = await db.select().from(githubUsers).orderBy(desc(githubUsers.lastSeenAt))
+  }
 
-  const allUsers = await db.select().from(githubUsers).orderBy(desc(githubUsers.lastSeenAt))
+  const allUsers = cachedUsers
   const scored = []
 
   for (const user of allUsers) {
