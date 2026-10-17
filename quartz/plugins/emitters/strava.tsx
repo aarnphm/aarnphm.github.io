@@ -22,7 +22,11 @@ import { hashContent } from '../../util/content-hash'
 import { BuildCtx, contentDataFor } from '../../util/ctx'
 import { FilePath, FullSlug, joinSegments, pathToRoot, QUARTZ } from '../../util/path'
 import { StaticResources } from '../../util/resources'
-import { serializeStravaDetails, type StravaDetailPayload } from '../../util/strava-detail'
+import {
+  serializeStravaDetails,
+  serializeStravaMapPayload,
+  type StravaDetailPayload,
+} from '../../util/strava-detail'
 import { loadStravaDataSync, type LoadedStravaPayload } from '../../util/strava-payload'
 import { sealTrainingCalendar } from '../../util/training-calendar-crypto'
 import { linkTrainingPeaksCalendarActivities } from '../../util/trainingpeaks-activity-links'
@@ -264,6 +268,12 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
           slug: 'static/strava-activity-index' as FullSlug,
           ext: '.json',
           content: JSON.stringify(buildStravaActivityIndex(payload.details)),
+        }),
+        write({
+          ctx,
+          slug: 'static/strava-map' as FullSlug,
+          ext: '.json',
+          content: serializeStravaMapPayload(payload.details),
         }),
         write({
           ctx,

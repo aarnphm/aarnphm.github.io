@@ -113,6 +113,7 @@ export default (() => {
     return (
       <article
         class={classNames(displayClass, 'triathlon', 'main-col', 'popover-hint')}
+        data-map-path={joinSegments(pathToRoot(fileData.slug!), 'static/strava-map.json')}
         data-detail-path={joinSegments(pathToRoot(fileData.slug!), 'static/strava-detail.json')}
         data-analytics-path={joinSegments(pathToRoot(fileData.slug!), 'static/analytics.json')}
         data-oura-detail-path={joinSegments(pathToRoot(fileData.slug!), 'static/oura-detail.json')}

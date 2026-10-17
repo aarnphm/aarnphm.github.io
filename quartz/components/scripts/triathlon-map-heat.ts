@@ -25,14 +25,30 @@ interface ProjectedPoint {
 
 interface TraceEdge {
   activityId: number
-  start: ProjectedPoint
-  end: ProjectedPoint
+  startX: number
+  startY: number
+  dx: number
+  dy: number
   length: number
+  invLenSq: number
+  ux: number
+  uy: number
+}
+
+interface TraceIndex {
+  cells: Map<number, TraceEdge[]>
+  minX: number
+  maxX: number
+  minY: number
+  maxY: number
 }
 
 interface StreetPiece {
+  key: string
   start: GeoCoord
   end: GeoCoord
+  startKey: number
+  endKey: number
   roadClass: string
   activityIds: Set<number>
 }
@@ -57,11 +73,14 @@ export interface StreetMapFeatureCollection {
 export type StreetMapMatcher = (roadFeatures: readonly unknown[]) => StreetMapFeatureCollection
 
 const EARTH_RADIUS_M = 6_378_137
-const GRID_M = 32
+const GRID_M = 128
 const MATCH_RADIUS_M = 16
+const MATCH_RADIUS_SQ = MATCH_RADIUS_M * MATCH_RADIUS_M
 const ROAD_PIECE_M = 24
 const MIN_DIRECTION_M = 8
 const MIN_ALIGNMENT = Math.cos((38 * Math.PI) / 180)
+const KEY_OFFSET = 33_554_432
+const KEY_SCALE = 67_108_864
 const EXCLUDED_ROAD_CLASSES = new Set([
   'major_rail',
   'minor_rail',
@@ -80,81 +99,144 @@ function project(point: GeoCoord): ProjectedPoint {
   }
 }
 
-function gridKey(x: number, y: number): string {
-  return `${Math.floor(x / GRID_M)},${Math.floor(y / GRID_M)}`
+function packPair(ix: number, iy: number): number {
+  return (ix + KEY_OFFSET) * KEY_SCALE + (iy + KEY_OFFSET)
 }
 
-function addIndexedEdge(index: Map<string, TraceEdge[]>, edge: TraceEdge): void {
-  const minX = Math.floor((Math.min(edge.start.x, edge.end.x) - MATCH_RADIUS_M) / GRID_M)
-  const maxX = Math.floor((Math.max(edge.start.x, edge.end.x) + MATCH_RADIUS_M) / GRID_M)
-  const minY = Math.floor((Math.min(edge.start.y, edge.end.y) - MATCH_RADIUS_M) / GRID_M)
-  const maxY = Math.floor((Math.max(edge.start.y, edge.end.y) + MATCH_RADIUS_M) / GRID_M)
-  for (let x = minX; x <= maxX; x++) {
-    for (let y = minY; y <= maxY; y++) {
-      const key = `${x},${y}`
-      const edges = index.get(key)
-      if (edges) edges.push(edge)
-      else index.set(key, [edge])
+function gridKey(x: number, y: number): number {
+  return packPair(Math.floor(x / GRID_M), Math.floor(y / GRID_M))
+}
+
+function projectedPointKey(x: number, y: number): number {
+  return packPair(Math.round(x / 2), Math.round(y / 2))
+}
+
+function pieceKey(startKey: number, endKey: number): string {
+  return startKey < endKey ? `${startKey}|${endKey}` : `${endKey}|${startKey}`
+}
+
+function addCellEdge(cells: Map<number, TraceEdge[]>, key: number, edge: TraceEdge): void {
+  const edges = cells.get(key)
+  if (edges) edges.push(edge)
+  else cells.set(key, [edge])
+}
+
+function addIndexedEdge(cells: Map<number, TraceEdge[]>, edge: TraceEdge): void {
+  const x0 = edge.startX
+  const y0 = edge.startY
+  const x1 = x0 + edge.dx
+  const y1 = y0 + edge.dy
+  const minX = Math.floor((Math.min(x0, x1) - MATCH_RADIUS_M) / GRID_M)
+  const maxX = Math.floor((Math.max(x0, x1) + MATCH_RADIUS_M) / GRID_M)
+  const minY = Math.floor((Math.min(y0, y1) - MATCH_RADIUS_M) / GRID_M)
+  const maxY = Math.floor((Math.max(y0, y1) + MATCH_RADIUS_M) / GRID_M)
+  if (maxX - minX <= 1 || maxY - minY <= 1) {
+    for (let gx = minX; gx <= maxX; gx++) {
+      for (let gy = minY; gy <= maxY; gy++) {
+        addCellEdge(cells, packPair(gx, gy), edge)
+      }
+    }
+    return
+  }
+  const dx = edge.dx
+  const dy = edge.dy
+  for (let gx = minX; gx <= maxX; gx++) {
+    const colMinX = gx * GRID_M - MATCH_RADIUS_M
+    const colMaxX = (gx + 1) * GRID_M + MATCH_RADIUS_M
+    const t0 = (colMinX - x0) / dx
+    const t1 = (colMaxX - x0) / dx
+    const tEnter = Math.max(0, Math.min(t0, t1))
+    const tExit = Math.min(1, Math.max(t0, t1))
+    if (tEnter > tExit) continue
+    const ya = y0 + tEnter * dy
+    const yb = y0 + tExit * dy
+    const gy0 = Math.max(minY, Math.floor((Math.min(ya, yb) - MATCH_RADIUS_M) / GRID_M))
+    const gy1 = Math.min(maxY, Math.floor((Math.max(ya, yb) + MATCH_RADIUS_M) / GRID_M))
+    for (let gy = gy0; gy <= gy1; gy++) {
+      addCellEdge(cells, packPair(gx, gy), edge)
     }
   }
 }
 
-function traceIndex(activities: readonly StreetMapActivity[]): Map<string, TraceEdge[]> {
-  const index = new Map<string, TraceEdge[]>()
+function traceIndex(activities: readonly StreetMapActivity[]): TraceIndex {
+  const cells = new Map<number, TraceEdge[]>()
+  let minX = Infinity
+  let maxX = -Infinity
+  let minY = Infinity
+  let maxY = -Infinity
   for (const activity of activities) {
     for (const segment of activity.segments) {
+      if (segment.length < 2) continue
+      let start = project([segment[0].lng, segment[0].lat])
       for (let pointIndex = 1; pointIndex < segment.length; pointIndex++) {
-        const previous = segment[pointIndex - 1]
         const current = segment[pointIndex]
-        const start = project([previous.lng, previous.lat])
         const end = project([current.lng, current.lat])
-        const length = Math.hypot(end.x - start.x, end.y - start.y)
-        if (length === 0) continue
-        addIndexedEdge(index, { activityId: activity.id, start, end, length })
+        const dx = end.x - start.x
+        const dy = end.y - start.y
+        const lenSq = dx * dx + dy * dy
+        if (lenSq > 0) {
+          const length = Math.sqrt(lenSq)
+          const loX = Math.min(start.x, end.x) - MATCH_RADIUS_M
+          const hiX = Math.max(start.x, end.x) + MATCH_RADIUS_M
+          const loY = Math.min(start.y, end.y) - MATCH_RADIUS_M
+          const hiY = Math.max(start.y, end.y) + MATCH_RADIUS_M
+          if (loX < minX) minX = loX
+          if (hiX > maxX) maxX = hiX
+          if (loY < minY) minY = loY
+          if (hiY > maxY) maxY = hiY
+          addIndexedEdge(cells, {
+            activityId: activity.id,
+            startX: start.x,
+            startY: start.y,
+            dx,
+            dy,
+            length,
+            invLenSq: 1 / lenSq,
+            ux: dx / length,
+            uy: dy / length,
+          })
+        }
+        start = end
       }
     }
   }
-  return index
+  return { cells, minX, maxX, minY, maxY }
 }
 
-function pointSegmentDistance(point: ProjectedPoint, edge: TraceEdge): number {
-  const dx = edge.end.x - edge.start.x
-  const dy = edge.end.y - edge.start.y
+function pointSegmentDistanceSq(px: number, py: number, edge: TraceEdge): number {
   const fraction = Math.max(
     0,
-    Math.min(
-      1,
-      ((point.x - edge.start.x) * dx + (point.y - edge.start.y) * dy) / (edge.length * edge.length),
-    ),
+    Math.min(1, ((px - edge.startX) * edge.dx + (py - edge.startY) * edge.dy) * edge.invLenSq),
   )
-  return Math.hypot(
-    point.x - (edge.start.x + fraction * dx),
-    point.y - (edge.start.y + fraction * dy),
-  )
-}
-
-function aligned(roadStart: ProjectedPoint, roadEnd: ProjectedPoint, edge: TraceEdge): boolean {
-  if (edge.length < MIN_DIRECTION_M) return true
-  const roadDx = roadEnd.x - roadStart.x
-  const roadDy = roadEnd.y - roadStart.y
-  const roadLength = Math.hypot(roadDx, roadDy)
-  if (roadLength < MIN_DIRECTION_M) return true
-  const traceDx = edge.end.x - edge.start.x
-  const traceDy = edge.end.y - edge.start.y
-  const alignment = Math.abs(roadDx * traceDx + roadDy * traceDy) / (roadLength * edge.length)
-  return alignment >= MIN_ALIGNMENT
+  const ex = px - (edge.startX + fraction * edge.dx)
+  const ey = py - (edge.startY + fraction * edge.dy)
+  return ex * ex + ey * ey
 }
 
 function matchingActivities(
-  index: ReadonlyMap<string, readonly TraceEdge[]>,
-  roadStart: ProjectedPoint,
-  roadEnd: ProjectedPoint,
-): Set<number> {
-  const midpoint = { x: (roadStart.x + roadEnd.x) / 2, y: (roadStart.y + roadEnd.y) / 2 }
-  const visits = new Set<number>()
-  for (const edge of index.get(gridKey(midpoint.x, midpoint.y)) ?? []) {
-    if (!aligned(roadStart, roadEnd, edge)) continue
-    if (pointSegmentDistance(midpoint, edge) <= MATCH_RADIUS_M) visits.add(edge.activityId)
+  cells: ReadonlyMap<number, readonly TraceEdge[]>,
+  midX: number,
+  midY: number,
+  pieceLength: number,
+  rux: number,
+  ruy: number,
+): Set<number> | null {
+  const candidates = cells.get(gridKey(midX, midY))
+  if (!candidates || candidates.length === 0) return null
+  const checkDirection = pieceLength >= MIN_DIRECTION_M
+  let visits: Set<number> | null = null
+  for (let i = 0; i < candidates.length; i++) {
+    const edge = candidates[i]
+    if (
+      checkDirection &&
+      edge.length >= MIN_DIRECTION_M &&
+      Math.abs(rux * edge.ux + ruy * edge.uy) < MIN_ALIGNMENT
+    )
+      continue
+    if (pointSegmentDistanceSq(midX, midY, edge) <= MATCH_RADIUS_SQ) {
+      visits ??= new Set<number>()
+      visits.add(edge.activityId)
+    }
   }
   return visits
 }
@@ -204,20 +286,6 @@ function roadLines(feature: unknown): { lines: GeoCoord[][]; roadClass: string }
 
 function interpolate(start: GeoCoord, end: GeoCoord, fraction: number): GeoCoord {
   return [start[0] + (end[0] - start[0]) * fraction, start[1] + (end[1] - start[1]) * fraction]
-}
-
-function pieceKey(start: ProjectedPoint, end: ProjectedPoint): string {
-  const a = projectedPointKey(start)
-  const b = projectedPointKey(end)
-  return a < b ? `${a}|${b}` : `${b}|${a}`
-}
-
-function projectedPointKey(point: ProjectedPoint): string {
-  return `${Math.round(point.x / 2)},${Math.round(point.y / 2)}`
-}
-
-function coordinateKey(point: GeoCoord): string {
-  return projectedPointKey(project(point))
 }
 
 function heatBucket(visits: number, maximum: number): number {
@@ -274,15 +342,17 @@ function streetFeatures(
   activities: ReadonlyMap<number, StreetMetricValues>,
   maximumVisits: number,
 ): StreetMapFeature[] {
+  if (pieces.size === 0) return []
   const properties = new Map<string, StreetMapProperties>()
-  const adjacency = new Map<string, string[]>()
+  const adjacency = new Map<number, StreetPiece[]>()
   for (const [key, piece] of pieces) {
     properties.set(key, streetProperties(piece, activities, maximumVisits))
-    for (const endpoint of [coordinateKey(piece.start), coordinateKey(piece.end)]) {
-      const connected = adjacency.get(endpoint)
-      if (connected) connected.push(key)
-      else adjacency.set(endpoint, [key])
-    }
+    const startConnected = adjacency.get(piece.startKey)
+    if (startConnected) startConnected.push(piece)
+    else adjacency.set(piece.startKey, [piece])
+    const endConnected = adjacency.get(piece.endKey)
+    if (endConnected) endConnected.push(piece)
+    else adjacency.set(piece.endKey, [piece])
   }
   const remaining = new Map(pieces)
   const features: StreetMapFeature[] = []
@@ -292,25 +362,37 @@ function streetFeatures(
     if (!seed || !seedProperties) continue
     remaining.delete(key)
     const coordinates = [seed.start, seed.end]
+    let headKey = seed.startKey
+    let tailKey = seed.endKey
     const extend = (atStart: boolean, initialKey: string): void => {
       let previousKey = initialKey
       while (true) {
-        const endpoint = atStart ? coordinates[0] : coordinates[coordinates.length - 1]
-        const connected = (adjacency.get(coordinateKey(endpoint)) ?? []).filter(candidateKey => {
-          const candidateProperties = properties.get(candidateKey)
-          return candidateProperties && sameStreetProperties(candidateProperties, seedProperties)
-        })
-        if (connected.length !== 2) return
-        const nextKey = connected.find(candidateKey => candidateKey !== previousKey)
-        if (!nextKey) return
-        const next = remaining.get(nextKey)
-        if (!next) return
-        remaining.delete(nextKey)
-        const nextPoint =
-          coordinateKey(next.start) === coordinateKey(endpoint) ? next.end : next.start
-        if (atStart) coordinates.unshift(nextPoint)
-        else coordinates.push(nextPoint)
-        previousKey = nextKey
+        const endpointKey = atStart ? headKey : tailKey
+        const candidates = adjacency.get(endpointKey)
+        if (!candidates) return
+        let matchCount = 0
+        let nextPiece: StreetPiece | null = null
+        for (let i = 0; i < candidates.length; i++) {
+          const candidate = candidates[i]
+          const candidateProperties = properties.get(candidate.key)
+          if (candidateProperties && sameStreetProperties(candidateProperties, seedProperties)) {
+            matchCount++
+            if (candidate.key !== previousKey) nextPiece = candidate
+          }
+        }
+        if (matchCount !== 2 || !nextPiece || !remaining.has(nextPiece.key)) return
+        remaining.delete(nextPiece.key)
+        const connectsAtStart = nextPiece.startKey === endpointKey
+        const nextPoint = connectsAtStart ? nextPiece.end : nextPiece.start
+        const nextEndpointKey = connectsAtStart ? nextPiece.endKey : nextPiece.startKey
+        if (atStart) {
+          coordinates.unshift(nextPoint)
+          headKey = nextEndpointKey
+        } else {
+          coordinates.push(nextPoint)
+          tailKey = nextEndpointKey
+        }
+        previousKey = nextPiece.key
       }
     }
     extend(false, key)
@@ -325,46 +407,74 @@ function streetFeatures(
 }
 
 function matchedStreetFeatures(
-  index: ReadonlyMap<string, readonly TraceEdge[]>,
+  index: TraceIndex,
   activities: ReadonlyMap<number, StreetMetricValues>,
   maximumVisits: number,
   roadFeatures: readonly unknown[],
 ): StreetMapFeatureCollection {
+  if (index.cells.size === 0 || roadFeatures.length === 0)
+    return { type: 'FeatureCollection', features: [] }
   const pieces = new Map<string, StreetPiece>()
+  const { cells, minX, maxX, minY, maxY } = index
   for (const feature of roadFeatures) {
     const road = roadLines(feature)
     if (!road) continue
     for (const line of road.lines) {
+      let projectedStart = project(line[0])
       for (let pointIndex = 1; pointIndex < line.length; pointIndex++) {
         const start = line[pointIndex - 1]
         const end = line[pointIndex]
-        const projectedStart = project(start)
         const projectedEnd = project(end)
-        const length = Math.hypot(
-          projectedEnd.x - projectedStart.x,
-          projectedEnd.y - projectedStart.y,
-        )
+        const segMinX = Math.min(projectedStart.x, projectedEnd.x)
+        const segMaxX = Math.max(projectedStart.x, projectedEnd.x)
+        const segMinY = Math.min(projectedStart.y, projectedEnd.y)
+        const segMaxY = Math.max(projectedStart.y, projectedEnd.y)
+        if (segMaxX < minX || segMinX > maxX || segMaxY < minY || segMinY > maxY) {
+          projectedStart = projectedEnd
+          continue
+        }
+        const rdx = projectedEnd.x - projectedStart.x
+        const rdy = projectedEnd.y - projectedStart.y
+        const length = Math.hypot(rdx, rdy)
+        if (length === 0) {
+          projectedStart = projectedEnd
+          continue
+        }
         const divisions = Math.max(1, Math.ceil(length / ROAD_PIECE_M))
+        const pieceLength = length / divisions
+        const rux = rdx / length
+        const ruy = rdy / length
         for (let division = 0; division < divisions; division++) {
-          const pieceStart = interpolate(start, end, division / divisions)
-          const pieceEnd = interpolate(start, end, (division + 1) / divisions)
-          const projectedPieceStart = project(pieceStart)
-          const projectedPieceEnd = project(pieceEnd)
-          const activityIds = matchingActivities(index, projectedPieceStart, projectedPieceEnd)
-          if (activityIds.size === 0) continue
-          const key = pieceKey(projectedPieceStart, projectedPieceEnd)
+          const f0 = division / divisions
+          const f1 = (division + 1) / divisions
+          const fm = (f0 + f1) * 0.5
+          const midX = projectedStart.x + rdx * fm
+          const midY = projectedStart.y + rdy * fm
+          const activityIds = matchingActivities(cells, midX, midY, pieceLength, rux, ruy)
+          if (!activityIds) continue
+          const p0x = projectedStart.x + rdx * f0
+          const p0y = projectedStart.y + rdy * f0
+          const p1x = projectedStart.x + rdx * f1
+          const p1y = projectedStart.y + rdy * f1
+          const startKey = projectedPointKey(p0x, p0y)
+          const endKey = projectedPointKey(p1x, p1y)
+          const key = pieceKey(startKey, endKey)
           const existing = pieces.get(key)
           if (existing) {
             for (const activityId of activityIds) existing.activityIds.add(activityId)
           } else {
             pieces.set(key, {
-              start: pieceStart,
-              end: pieceEnd,
+              key,
+              start: interpolate(start, end, f0),
+              end: interpolate(start, end, f1),
+              startKey,
+              endKey,
               roadClass: road.roadClass,
               activityIds,
             })
           }
         }
+        projectedStart = projectedEnd
       }
     }
   }

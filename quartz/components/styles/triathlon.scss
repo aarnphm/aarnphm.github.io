@@ -4702,6 +4702,16 @@ $triathlon-row-height: 112px;
     content-visibility 0s;
 }
 
+.tri-map {
+  content-visibility: visible;
+  pointer-events: none;
+}
+
+.tri-map-open .tri-map,
+.tri-map--page {
+  pointer-events: auto;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .tri-analytics,
   .tri-map,
@@ -17868,14 +17878,15 @@ a.tri-pop-date:hover {
 
   // The height of every expanded block, in graph units, including its caption, axes, controls and
   // readout. A distribution counts as one unit, a chart over terrain as two, and the environment as
-  // its four-unit table plus one graph.
+  // its four-unit table plus a three-unit graph stage that every tab, the relative-wind rose included,
+  // shares.
   $graph-units: (
     '.tri-training-effect, .tri-zone[data-tri-trace="heart-rate-zones"], .tri-zone[data-tri-trace="power-zones"], .tri-torque-panel, .tri-run-metric-chart, .tri-cycling-mode-chart, .tri-shift-chart, .tri-swim-trend, .tri-zone:where(:has(> .tri-cax-frame .tri-hist-svg))':
       1,
     '.tri-workout-analysis, .tri-zone-duo, .tri-cycling-power, .tri-curve-chart': 2,
     '.tri-run-stride-panel, .tri-swim-drag-chart': 3,
     '.tri-mywindsock': 4,
-    '.tri-environment': 5,
+    '.tri-environment': 7,
   );
 
   @each $selector, $units in $graph-units {
