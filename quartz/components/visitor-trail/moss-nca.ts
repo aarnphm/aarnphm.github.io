@@ -120,8 +120,11 @@ function liveness(source: Float32Array, alive: Uint8Array) {
     }
 }
 
-// One asynchronous update. Returns the number of cells visited.
-export function stepMoss(grid: MossGrid, model: MossModel, random: () => number) {
+// One asynchronous update. Returns the number of cells visited. `lean` (-1..1) tilts the update
+// chance across the grid, 0.1 on the upwind edge to 0.9 downwind in a gale: wind carries spores
+// and spray to the lee side, so a print regrows from there first. The rule was trained at 0.5 and
+// still heals every print in the same ~25 steps at these rates (sky-world-palette wind-heal.ts).
+export function stepMoss(grid: MossGrid, model: MossModel, random: () => number, lean = 0) {
   const S = mossSize
   const C = mossChannels
   const P = C * 3
@@ -139,7 +142,7 @@ export function stepMoss(grid: MossGrid, model: MossModel, random: () => number)
       if (!alive[cell]) continue
       visited++
       const base = cell * C
-      if (random() >= 0.5) {
+      if (random() >= 0.5 + 0.4 * lean * ((2 * x) / (S - 1) - 1)) {
         for (let channel = 0; channel < C; channel++) next[base + channel] = state[base + channel]
         continue
       }
@@ -231,6 +234,9 @@ export type MossRequest =
   | { type: 'clear' }
   | { type: 'pause' }
   | { type: 'resume' }
+  // Healing speed from the weather, 0 dormant .. 1 a wet, mild day (world-schedule.ts), and the
+  // wind across the clump, -1 blowing left .. 1 blowing right.
+  | { type: 'climate'; growth: number; lean: number }
 export type MossResponse =
   | { type: 'paint'; paints: { id: string; tones: Uint8Array }[]; cost: number; awake: number }
   | { type: 'asleep' }

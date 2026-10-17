@@ -130,7 +130,15 @@ export function mountSceneReveal(scene: HTMLElement, host: HTMLElement, signal: 
   host.addEventListener('trail:open', open, { signal })
   host.addEventListener('trail:close', close, { signal })
   host.addEventListener('trail:hide', finish, { signal })
-  view.addEventListener('resize', finish, { signal })
+  view.addEventListener(
+    'resize',
+    () => {
+      // Layout can settle while the first frame is still preparing. Keep its requested
+      // reveal; drawScene updates the origin and radius for the new viewport.
+      if (scene.dataset.trailOpening === 'complete') finish()
+    },
+    { signal },
+  )
   reduced.addEventListener('change', () => reduced.matches && finish(), { signal })
   signal.addEventListener('abort', finish, { once: true })
   host.addEventListener('trail:ready', () => !compositor && present(), { signal })

@@ -1,4 +1,5 @@
 import { playhtml, type PageDataChannel } from 'playhtml'
+import { sceneMotionReady } from './scene-reveal'
 
 export type Watering = { count: number; at: number }
 type GroveData = Record<string, Watering>
@@ -40,6 +41,7 @@ export function mountSharedGrove(
   let channel: PageDataChannel<GroveData> | null = null
   let visitor = ''
   let data: GroveData = {}
+  let pending = false
   let legacy: PageDataChannel<LegacyGroveData> | null = null
   let unsubscribeLegacy = () => {}
   let unsubscribe = () => {}
@@ -113,6 +115,7 @@ export function mountSharedGrove(
   }
   const apply = () => {
     if (signal.aborted) return
+    pending = false
     if (total && channel) {
       const waters = Object.values(data).reduce(
         (sum, value) => sum + (contribution(value)?.count ?? 0),
@@ -162,6 +165,11 @@ export function mountSharedGrove(
     placeTargets()
     if (changed) onGrowth()
   }
+  const flush = () => {
+    if (pending && scene.dataset.trailRendered === 'true' && sceneMotionReady(scene)) apply()
+  }
+  for (const event of ['trail:prepared', 'trail:reveal-end', 'trail:closed'])
+    host.addEventListener(event, flush, { signal })
   const refresh = () => {
     const retained = new Map(
       [...hits.querySelectorAll<HTMLButtonElement>('[data-water-tree]')].map(button => [
@@ -258,8 +266,9 @@ export function mountSharedGrove(
           if (!watering || !id) continue
           water.set(id, [...(water.get(id) ?? []), watering])
         }
+        pending = true
         onWater(water)
-        apply()
+        flush()
       }
       unsubscribe = current.onUpdate(render)
       render(current.getData())

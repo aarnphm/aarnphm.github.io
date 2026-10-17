@@ -8,9 +8,11 @@
 @use './trail-ravine.scss';
 @use './trail-wetlands.scss';
 @use './trail-meadow.scss';
+@use './trail-sunlight.scss';
 @use './trail-moss.scss';
 @use './trail-sky-band.scss';
 @use './trail-alpine-travelers.scss';
+@use './trail-athletes.scss';
 @use './trail-community.scss';
 @use './trail-visitors.scss';
 @use './trail-winter.scss';
@@ -466,6 +468,7 @@
   }
   // The jay roosts at night, so its tones stay daylight ones in either theme.
   .trail-jay,
+  .trail-jay-roost,
   .trail-jay-acorn {
     shape-rendering: crispEdges;
     pointer-events: none;
@@ -509,6 +512,16 @@
   }
   .trail-jay[data-pose='digging'] .trail-jay-peck {
     animation: trail-jay-dig 400ms steps(1, end) infinite;
+  }
+  // The woodpecker shows only while the jay is away, and drums at the limb while it is there.
+  .trail-woodpecker-nape {
+    fill: #d14d41;
+  }
+  .trail-jay-roost:not([data-guest='woodpecker']) .trail-woodpecker {
+    display: none;
+  }
+  .trail-jay-roost[data-guest='woodpecker'] .trail-woodpecker-drum {
+    animation: trail-woodpecker-drum 160ms steps(1, end) infinite;
   }
   .trail-animal-shadow {
     fill: var(--gray);
@@ -752,6 +765,20 @@
     }
     50% {
       transform: translateY(2px);
+    }
+  }
+  @keyframes trail-woodpecker-drum {
+    0%,
+    40% {
+      transform: translateX(0);
+    }
+    50%,
+    60% {
+      transform: translateX(-2px);
+    }
+    70%,
+    100% {
+      transform: translateX(0);
     }
   }
   @keyframes trail-dog-wag {

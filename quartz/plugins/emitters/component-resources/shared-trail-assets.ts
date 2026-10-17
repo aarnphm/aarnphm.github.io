@@ -1,6 +1,7 @@
 import { build } from 'esbuild'
 import { compileAsync } from 'sass-embedded'
 import type { BuildCtx } from '../../../util/ctx'
+import { hashAssetContent } from '../../../util/asset-manifest'
 import { minifyStylesheet } from '../../../util/minify-stylesheet'
 import { joinSegments } from '../../../util/path'
 import { resolveAssetPath, writeRawAsset } from './asset-writer'
@@ -43,10 +44,8 @@ export async function writeSharedTrailAsset(ctx: BuildCtx) {
     write: false,
   })
   const entries = [
-    { path: 'static/scripts/trail-trees.worker.js', source: worker.outputFiles[0].text },
     { path: 'static/scripts/trail-navigation.worker.js', source: navigation.outputFiles[0].text },
     { path: 'static/scripts/trail-moss.worker.js', source: moss.outputFiles[0].text },
-    { path: 'static/scripts/trail-scenery.worker.js', source: scenery.outputFiles[0].text },
   ]
   const workerFiles = await Promise.all(
     entries.map(entry => writeRawAsset(ctx, entry.path, entry.source)),
@@ -60,10 +59,12 @@ export async function writeSharedTrailAsset(ctx: BuildCtx) {
     format: 'iife',
     write: false,
     define: {
-      TRAIL_TREE_WORKER_URL: reference('static/scripts/trail-trees.worker.js'),
+      TRAIL_TREE_WORKER_SOURCE: JSON.stringify(worker.outputFiles[0].text),
+      TRAIL_TREE_VERSION: JSON.stringify(hashAssetContent(worker.outputFiles[0].text)),
       TRAIL_NAVIGATION_WORKER_URL: reference('static/scripts/trail-navigation.worker.js'),
       TRAIL_MOSS_WORKER_URL: reference('static/scripts/trail-moss.worker.js'),
-      TRAIL_SCENERY_WORKER_URL: reference('static/scripts/trail-scenery.worker.js'),
+      TRAIL_SCENERY_WORKER_SOURCE: JSON.stringify(scenery.outputFiles[0].text),
+      TRAIL_SCENERY_VERSION: JSON.stringify(hashAssetContent(scenery.outputFiles[0].text)),
       TRAIL_SCENE_STYLES: JSON.stringify(minifyStylesheet('trail-surface.css', styles.css)),
     },
   })

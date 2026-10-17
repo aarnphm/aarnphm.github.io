@@ -1,0 +1,84 @@
+// Sun flecks and leaf shade over the groves. Plain alpha, no blend mode: the compositor already
+// carries the scene, and the weather's ground dapples use the same register.
+.homepage-trail-scene {
+  .trail-sunlight {
+    pointer-events: none;
+    shape-rendering: crispEdges;
+  }
+  // The shade is what shows on the pale ground; the fleck is the ground's own light, warmed,
+  // painted back over the shade where the leaves part.
+  .trail-leaf-shade {
+    fill: var(--darkgray);
+    opacity: 0.22;
+  }
+  .trail-sunfleck {
+    fill: color-mix(in srgb, #ffe3a1 45%, var(--light));
+    opacity: 0.85;
+  }
+  // Sun on the top of the canopy: a warm light the crowns and anyone under them catch. Between
+  // the crowns it falls on the paper and is not seen.
+  .trail-crown-fleck {
+    fill: #fff1c2;
+    opacity: 0.45;
+  }
+  // Under the sun the lit side of a crown warms a step further from its shade side, so the
+  // crowns model as volumes; the mix goes through the same haze as the tree's other tones.
+  .trail-scene[data-weather-mode='sun']:not([data-lighting='moonlit']):not(
+      [data-weather-fog='true']
+    )
+    .trail-tree-light {
+    fill: color-mix(
+      in srgb,
+      color-mix(in srgb, var(--trail-tree-light) 82%, #fff1c2)
+        calc(100% - var(--trail-tree-haze, 0%)),
+      var(--light)
+    );
+  }
+  .trail-sunlight-grove {
+    transform-box: view-box;
+  }
+  // No sun through the canopy at night, under cloud, rain or snow, in fog, or under a storm.
+  .trail-scene[data-lighting='moonlit'] .trail-sunlight,
+  .trail-scene:is(
+      [data-weather-mode='cloud'],
+      [data-weather-mode='rain'],
+      [data-weather-mode='snow'],
+      [data-weather-mode='night']
+    )
+    .trail-sunlight,
+  .trail-scene[data-weather-fog='true'] .trail-sunlight,
+  .trail-scene[data-weather-storm='true'] .trail-sunlight {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .homepage-trail-scene {
+    .trail-sunlight {
+      transition: opacity 1200ms ease-in-out;
+    }
+    .trail-sunlight-grove {
+      animation: trail-sunlight-sway 11s ease-in-out infinite;
+      animation-delay: var(--trail-sunlight-delay, 0s);
+    }
+    .trail-scene[data-weather-motion='paused'] .trail-sunlight-grove {
+      animation-play-state: paused;
+    }
+  }
+  // The canopy sways with the wind and the light under it follows, a little behind the leaves.
+  @keyframes trail-sunlight-sway {
+    0%,
+    100% {
+      transform: translate(0, 0);
+    }
+    35% {
+      transform: translate(
+        calc(var(--trail-wind-x, 2px) * 0.4 + 2px * var(--trail-sunlight-phase, 1)),
+        1px
+      );
+    }
+    70% {
+      transform: translate(var(--trail-wind-x, 3px), calc(var(--trail-wind-y, 0px) * 0.5 + 2px));
+    }
+  }
+}

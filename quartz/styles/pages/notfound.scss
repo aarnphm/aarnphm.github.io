@@ -51,6 +51,10 @@ body[data-slug='404'] {
   overflow: hidden;
   background: var(--light);
 
+  &[data-night='true'] {
+    background: var(--dark);
+  }
+
   // The SVG ruin arrives with the HTML while the pixel layers paint from script. Hold the stage and
   // the board, and every animation in them, until the script marks the first paint, so it all lands
   // on one frame.

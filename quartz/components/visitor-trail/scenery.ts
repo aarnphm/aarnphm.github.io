@@ -371,6 +371,7 @@ function tree(
   const curl = (bounded(settings.curl, 'curl') * Math.PI) / (180 * 2 ** depth)
   let turtle: Turtle = { x: 0, y: 0, heading: -Math.PI / 2 + lean, bend: handedness * 0.4 }
   const stack: Turtle[] = []
+  const lengths = Array.from({ length: depth + 2 }, (_, level) => 0.78 ** level)
   // Each segment as five numbers: from x, from y, to x, to y, and its depth in the branching.
   const branches: number[] = []
   const tips: Tip[] = []
@@ -385,7 +386,7 @@ function tree(
           -Math.PI + 0.1,
           Math.min(-0.1, turtle.heading + turtle.bend * curl),
         )
-        const length = 0.78 ** stack.length * (1 + (random() - 0.5) * variation * 0.35)
+        const length = lengths[stack.length] * (1 + (random() - 0.5) * variation * 0.35)
         turtle.x += Math.cos(turtle.heading) * length
         turtle.y += Math.sin(turtle.heading) * length
         top = Math.min(top, turtle.y)
@@ -407,6 +408,9 @@ function tree(
   const size = (bounded(settings.size, 'size') / 100) * (1 + (random() - 0.5) * variation * 0.25)
   const scale = ((height - 8) * size) / Math.max(1, -top)
   const pixel = Math.max(minPixel, Math.ceil((height * size) / 54))
+  const girths = lengths.map((_, level) => Math.max(pixel, 3.4 * size * habit.limb * 0.66 ** level))
+  // Every unscaled step is shorter than 1.2; this conservative bound avoids measuring subpixels.
+  const shortSegments = 1.2 * Math.abs(scale) < pixel / 2
   const cells = new Map<number, { x: number; y: number; tone: Tone }>()
   const mark = (x: number, y: number, tone: Tone) => {
     const cellX = Math.round(x / pixel)
@@ -435,8 +439,10 @@ function tree(
     const toX = branches[index + 2]
     const toY = branches[index + 3]
     const level = branches[index + 4]
-    const steps = Math.max(1, Math.ceil((Math.hypot(toX - fromX, toY - fromY) * scale) / pixel))
-    const girth = Math.max(pixel, 3.4 * size * habit.limb * 0.66 ** level)
+    const steps = shortSegments
+      ? 1
+      : Math.max(1, Math.ceil((Math.hypot(toX - fromX, toY - fromY) * scale) / pixel))
+    const girth = girths[level]
     for (let step = 0; step <= steps; step++) {
       const fraction = step / steps
       const x = (fromX + (toX - fromX) * fraction) * scale

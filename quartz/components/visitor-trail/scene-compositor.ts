@@ -248,15 +248,19 @@ export function mountSceneCompositor(
   })
   if (!gl) return false
   svg.after(canvas)
-  const scratch = document.createElement('canvas')
+  let scratch = document.createElement('canvas')
   // Reuse CPU staging across uploads, then shed a large scene repaint's allocation once
   // recent paints only need small sprites. Durable pixels live in the WebGL textures.
-  const paint = scratch.getContext('2d', { willReadFrequently: true })
-  if (!paint) {
+  const context = scratch.getContext('2d', { willReadFrequently: true })
+  if (!context) {
     gl.getExtension('WEBGL_lose_context')?.loseContext()
     canvas.remove()
     return false
   }
+  let paint = context
+  const largeRaster = { canvas: scratch, paint }
+  const smallCanvas = document.createElement('canvas')
+  const smallPaint = smallCanvas.getContext('2d', { willReadFrequently: true })
   let rasterWidth = 1
   let rasterHeight = 1
   let rasterSince = view.performance.now()
@@ -265,15 +269,23 @@ export function mountSceneCompositor(
     if (!release && now - rasterSince < 1000) return
     const width = release ? 1 : rasterWidth
     const height = release ? 1 : rasterHeight
-    if (release || scratch.width * scratch.height > 2 * width * height) {
-      scratch.width = width
-      scratch.height = height
+    if (release || largeRaster.canvas.width * largeRaster.canvas.height > 2 * width * height) {
+      largeRaster.canvas.width = width
+      largeRaster.canvas.height = height
+    }
+    if (release) {
+      smallCanvas.width = 1
+      smallCanvas.height = 1
     }
     rasterWidth = 1
     rasterHeight = 1
     rasterSince = now
   }
   const clearRaster = (width: number, height: number) => {
+    // Small uploads keep their own staging surface instead of snapshotting the scenery canvas.
+    const small = width <= 512 && height <= 512 && smallPaint !== null
+    scratch = small ? smallCanvas : largeRaster.canvas
+    paint = small && smallPaint ? smallPaint : largeRaster.paint
     const nextWidth = Math.ceil(width / 256) * 256
     const nextHeight = Math.ceil(height / 256) * 256
     rasterWidth = Math.max(rasterWidth, nextWidth)
@@ -1217,6 +1229,7 @@ export function mountSceneCompositor(
 
   // Frame loop
   const pausedAnimations = new Set<Animation>()
+  let initialAnimations: Animation[] | null = null
   const pauseAnimations = (animations: Animation[]) => {
     const running = animations.filter(animation => animation.playState === 'running')
     for (const animation of running) {
@@ -1231,6 +1244,16 @@ export function mountSceneCompositor(
   }
   let frame = 0
   let timer = 0
+  let continuation = 0
+  const uploads = new view.MessageChannel()
+  uploads.port1.onmessage = (event: MessageEvent<number>) => {
+    if (event.data === continuation) tick()
+  }
+  const cancelContinuation = () => {
+    continuation += 1
+    view.clearTimeout(timer)
+    timer = 0
+  }
   let ready = false
   let firstPaint: WebGLSync | null = null
   let surfaceExposed = false
@@ -2425,7 +2448,7 @@ export function mountSceneCompositor(
         return
       }
     }
-    if (scene.dataset.trailRendered !== 'true' && scene.dataset.trailRasterReady !== 'true') return
+    if (scene.dataset.trailRendered !== 'true') return
     // The native reveal can present the retained buffer without resampling the live SVG.
     if (
       scene.dataset.trailReveal !== undefined &&
@@ -2439,35 +2462,36 @@ export function mountSceneCompositor(
     )
       return
     frame = -1
-    // Queue the next frame after this one paints, so it runs after the journeys' frame callbacks
-    // and reads their writes in the one style and layout pass the frame needs anyway.
-    if (!host.hidden || scene.dataset.trailPaintReady !== 'true')
-      timer = view.setTimeout(() => {
-        timer = 0
-        if (scene.dataset.trailOpening === 'complete') frame = view.requestAnimationFrame(tick)
-        else tick()
-      }, 0)
-    else frame = 0
+    // Initial uploads yield without the nested-timer delay. Once motion starts, queue after
+    // this paint so the next frame reads the journeys' writes in one style and layout pass.
+    if (!host.hidden || scene.dataset.trailPaintReady !== 'true') {
+      if (!host.hidden && scene.dataset.trailOpening !== 'complete')
+        uploads.port2.postMessage(++continuation)
+      else
+        timer = view.setTimeout(() => {
+          timer = 0
+          if (scene.dataset.trailOpening === 'complete') frame = view.requestAnimationFrame(tick)
+          else tick()
+        }, 0)
+    } else frame = 0
     clock = view.performance.now()
     record(observer.takeRecords())
-    // Resizes retain their frame. A newly opened scene starts painting as soon as the camp is placed.
-    if (
-      host.dataset.trailResizing === 'true' ||
-      scene.dataset.campPositioned !== 'true' ||
-      (scene.dataset.trailRendered !== 'true' && scene.dataset.trailOpening === 'complete')
-    ) {
-      return
-    }
+    // Resizes retain their frame until camp placement settles.
+    if (host.dataset.trailResizing === 'true' || scene.dataset.campPositioned !== 'true') return
     if (!attributeSelectors) readSelectors()
     resize()
-    const animations = svg.getAnimations({ subtree: true })
+    const animations =
+      scene.dataset.trailOpening === 'complete'
+        ? svg.getAnimations({ subtree: true })
+        : (initialAnimations ??= svg.getAnimations({ subtree: true }))
     if (scene.dataset.trailOpening !== 'complete' || host.hidden) pauseAnimations(animations)
     scan(animations)
     split()
     pending.length = 0
     prepare(root, false)
     // Spend the saved layout work on bounded palette uploads during the shared sweep.
-    const budget = fade || scene.dataset.trailOpening !== 'complete' ? 10 : 6
+    const budget =
+      scene.dataset.trailOpening !== 'complete' ? (host.hidden ? 10 : 64) : fade ? 10 : 6
     const unfinished: (Run | Group)[] = []
     let deferred = 0
     let holes = 0
@@ -2480,15 +2504,19 @@ export function mountSceneCompositor(
     }
     // A scene switch already holds a complete frame. Keep its camp-first order even when
     // winter clothing or crowns introduce new textures higher up the valley.
-    const priorities = new Map(pending.map(target => [target, paintPriority(target)]))
-    pending.sort(
-      (a, b) =>
-        Number(outdated(b)) - Number(outdated(a)) ||
-        (fade ? 0 : Number(unpainted(b)) - Number(unpainted(a))) ||
-        (priorities.get(a) ?? 0) - (priorities.get(b) ?? 0) ||
-        (a.kind === 'group' ? (a.mask?.waiting ?? 0) : a.waiting) -
-          (b.kind === 'group' ? (b.mask?.waiting ?? 0) : b.waiting),
-    )
+    // Initial presentation waits for every texture, so only subsequent updates need a
+    // spatial repaint order. Avoid rescanning the forest's ancestors for each initial batch.
+    if (scene.dataset.trailOpening === 'complete') {
+      const priorities = new Map(pending.map(target => [target, paintPriority(target)]))
+      pending.sort(
+        (a, b) =>
+          Number(outdated(b)) - Number(outdated(a)) ||
+          (fade ? 0 : Number(unpainted(b)) - Number(unpainted(a))) ||
+          (priorities.get(a) ?? 0) - (priorities.get(b) ?? 0) ||
+          (a.kind === 'group' ? (a.mask?.waiting ?? 0) : a.waiting) -
+            (b.kind === 'group' ? (b.mask?.waiting ?? 0) : b.waiting),
+      )
+    }
     const painting = view.performance.now()
     for (const target of pending) {
       const owner = target.kind === 'group' ? target : target.owner
@@ -2546,14 +2574,7 @@ export function mountSceneCompositor(
     )
     if (scene.dataset.trailAmbientReady !== ambient) scene.dataset.trailAmbientReady = ambient
     // The first visible frame uses the finished scene, with every texture at its final scale.
-    if (scene.dataset.trailOpening !== 'complete' && painted !== 'true') {
-      if (!holes && !deferred && !replacements && scene.dataset.trailRendered !== 'true') {
-        view.clearTimeout(timer)
-        timer = 0
-        frame = 0
-      }
-      return
-    }
+    if (scene.dataset.trailOpening !== 'complete' && painted !== 'true') return
     composite()
     overlay()
     overlayResize()
@@ -2573,8 +2594,7 @@ export function mountSceneCompositor(
       firstPaint = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0)
       if (firstPaint) {
         gl.flush()
-        view.clearTimeout(timer)
-        timer = 0
+        cancelContinuation()
         frame = view.requestAnimationFrame(tick)
         return
       }
@@ -2632,7 +2652,7 @@ export function mountSceneCompositor(
     return true
   }
   const record = (records: MutationRecord[]) => {
-    if (scene.dataset.trailRendered !== 'true' && scene.dataset.trailRasterReady !== 'true') {
+    if (scene.dataset.trailRendered !== 'true') {
       generationPending = true
       return
     }
@@ -2737,7 +2757,10 @@ export function mountSceneCompositor(
       }
       touch(target)
     }
-    if (changed) schedule()
+    if (changed) {
+      initialAnimations = null
+      schedule()
+    }
   }
   const observer = new MutationObserver(record)
   observer.observe(svg, {
@@ -2898,7 +2921,9 @@ export function mountSceneCompositor(
     'abort',
     () => {
       view.cancelAnimationFrame(frame)
-      view.clearTimeout(timer)
+      cancelContinuation()
+      uploads.port1.close()
+      uploads.port2.close()
       cancelSurfaceTrim()
       observer.disconnect()
       resizeObserver.disconnect()

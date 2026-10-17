@@ -160,8 +160,9 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   const searchButton = searchElement.querySelector<HTMLButtonElement>('.search-button')
   if (!searchButton) return
 
-  const searchBar = searchElement.querySelector<HTMLInputElement>('.search-bar')
-  if (!searchBar) return
+  const searchBarElement = searchElement.querySelector<HTMLInputElement>('.search-bar')
+  if (!searchBarElement) return
+  const searchBar = searchBarElement
 
   const searchLayoutElement = searchElement.querySelector<HTMLOutputElement>('.search-layout')
   if (!searchLayoutElement) return
@@ -419,11 +420,38 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     }
   }
 
-  let currentHover: HTMLInputElement | null = null
+  let currentHover: HTMLElement | null = null
   let previousFocus: HTMLElement | null = null
+  const pressedKeys = new Set<string>()
+  let composing = false
+  let pendingNavigation: -1 | 1 | null = null
+  let pendingDisplay: { token: number; apply: () => void | Promise<void> } | null = null
+
+  function commitSearchDisplay(token: number, apply: () => void | Promise<void>) {
+    if (token !== searchSeq) return
+    if (pressedKeys.size > 0 || composing) {
+      pendingDisplay = { token, apply }
+      return
+    }
+    pendingDisplay = null
+    searchLayout.classList.toggle('display-results', rawSearchTerm.trim() !== '')
+    searchLayout.removeAttribute('aria-busy')
+    return apply()
+  }
+
+  function flushSearchDisplay() {
+    if (pressedKeys.size > 0 || composing) return
+    const pending = pendingDisplay
+    pendingDisplay = null
+    if (pending) void commitSearchDisplay(pending.token, pending.apply)
+  }
 
   function hideSearch(focusButton = true) {
     searchSeq += 1
+    pressedKeys.clear()
+    composing = false
+    pendingNavigation = null
+    pendingDisplay = null
     if (runSearchTimer !== null) {
       window.clearTimeout(runSearchTimer)
       runSearchTimer = null
@@ -481,6 +509,7 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   async function shortcutHandler(e: HTMLElementEventMap['keydown']) {
     const paletteOpen = document.querySelector('search#palette-container') as HTMLDivElement
     if (paletteOpen && paletteOpen.classList.contains('active')) return
+    if (e.isComposing || composing) return
 
     const isBasePage = document.body?.dataset?.isBase === 'true'
     const key = e.key.toLowerCase()
@@ -501,6 +530,7 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
         }
       }
       e.preventDefault()
+      if (e.repeat) return
       const searchBarOpen = container!.classList.contains('active')
       if (searchBarOpen) {
         hideSearch()
@@ -510,6 +540,7 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
       return
     } else if (e.shiftKey && (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
       e.preventDefault()
+      if (e.repeat) return
       const searchBarOpen = container!.classList.contains('active')
       if (searchBarOpen) {
         hideSearch()
@@ -517,10 +548,6 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
         showSearch('tags')
       }
       return
-    }
-
-    if (currentHover) {
-      currentHover.classList.remove('focus')
     }
 
     if (!container!.classList.contains('active')) return
@@ -544,29 +571,49 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
       (e.ctrlKey && e.key === 'p')
     ) {
       e.preventDefault()
-      if (results.contains(document.activeElement)) {
-        const currentResult = currentHover
-          ? currentHover
-          : (document.activeElement as HTMLInputElement | null)
-        const prevResult = currentResult?.previousElementSibling as HTMLInputElement | null
-        currentResult?.classList.remove('focus')
-        prevResult?.focus()
-        if (prevResult) currentHover = prevResult
-        await displayPreview(prevResult)
-      }
+      pressedKeys.add(e.code || e.key)
+      pendingNavigation = -1
     } else if (e.key === 'ArrowDown' || e.key === 'Tab' || (e.ctrlKey && e.key === 'n')) {
       e.preventDefault()
-      if (document.activeElement === searchBar || currentHover !== null) {
-        const firstResult = currentHover
-          ? currentHover
-          : (document.getElementsByClassName('result-card')[0] as HTMLInputElement | null)
-        const secondResult = firstResult?.nextElementSibling as HTMLInputElement | null
-        firstResult?.classList.remove('focus')
-        secondResult?.focus()
-        if (secondResult) currentHover = secondResult
-        await displayPreview(secondResult)
-      }
+      pressedKeys.add(e.code || e.key)
+      pendingNavigation = 1
+    } else if (
+      e.target === searchBar &&
+      (e.key.length === 1 || e.key === 'Backspace' || e.key === 'Delete')
+    ) {
+      pressedKeys.add(e.code || e.key)
     }
+  }
+
+  function releaseKey(e: HTMLElementEventMap['keyup']) {
+    pressedKeys.delete(e.code || e.key)
+    if (pressedKeys.size > 0 || composing) return
+    flushSearchDisplay()
+    const direction = pendingNavigation
+    pendingNavigation = null
+    if (!container.classList.contains('active')) return
+    if (direction === -1 && results.contains(document.activeElement)) {
+      const currentResult = currentHover ?? document.activeElement
+      void focusResult(currentResult?.previousElementSibling)
+    } else if (direction === 1 && (document.activeElement === searchBar || currentHover !== null)) {
+      const currentResult = currentHover ?? results.querySelector<HTMLElement>('.result-card')
+      void focusResult(currentResult?.nextElementSibling)
+    }
+  }
+
+  function releasePressedKeys() {
+    pressedKeys.clear()
+    pendingNavigation = null
+    flushSearchDisplay()
+  }
+
+  async function focusResult(result: Element | null | undefined) {
+    if (!(result instanceof HTMLElement)) return
+    currentHover?.classList.remove('focus')
+    currentHover = result
+    result.classList.add('focus')
+    result.focus()
+    await displayPreview(result)
   }
 
   const formatForDisplay = (term: string, id: number, renderType: SearchType) => {
@@ -703,9 +750,10 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     if (finalResults.length === 0 && preview) {
       clearPreview()
     } else {
-      const firstChild = results.firstElementChild as HTMLElement
+      const firstChild = results.querySelector<HTMLElement>('.result-card')
+      if (!firstChild) return
       firstChild.classList.add('focus')
-      currentHover = firstChild as HTMLInputElement
+      currentHover = firstChild
       await displayPreview(firstChild)
     }
   }
@@ -850,13 +898,14 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     } catch (error) {
       if (token !== searchSeq) return
       console.warn('[Search] query failed:', error)
-      resetProgressBar()
-      searchLayout.removeAttribute('aria-busy')
-      clearPreview()
-      const message = document.createElement('p')
-      message.setAttribute('role', 'status')
-      message.textContent = 'Search could not load. Reload the page to retry.'
-      results.replaceChildren(message)
+      await commitSearchDisplay(token, () => {
+        resetProgressBar()
+        clearPreview()
+        const message = document.createElement('p')
+        message.setAttribute('role', 'status')
+        message.textContent = 'Search could not load. Reload the page to retry.'
+        results.replaceChildren(message)
+      })
     }
   }
 
@@ -865,11 +914,13 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     if (token !== searchSeq) return
     const trimmed = rawTerm.trim()
     if (trimmed === '') {
-      results.replaceChildren()
-      clearPreview()
-      currentHover = null
-      searchLayout!.classList.remove('display-results')
-      resetProgressBar()
+      await commitSearchDisplay(token, () => {
+        results.replaceChildren()
+        clearPreview()
+        currentHover = null
+        currentSearchTerm = ''
+        resetProgressBar()
+      })
       return
     }
 
@@ -928,8 +979,6 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
       ...getByField('tags'),
     ])
 
-    currentSearchTerm = highlightTerm
-
     const candidateItems = new Map<string, Item>()
     const ensureItem = (id: number): Item | null => {
       const slug = idDataMap[id]
@@ -984,8 +1033,10 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
         displayEntries.push({ item: entry.item, similarity: entry.similarity })
       }
 
-      searchLayout.removeAttribute('aria-busy')
-      await displayResults(displayEntries)
+      await commitSearchDisplay(token, () => {
+        currentSearchTerm = highlightTerm
+        return displayResults(displayEntries)
+      })
     }
 
     await render()
@@ -1045,18 +1096,19 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     await render()
   }
 
-  function onType(e: HTMLElementEventMap['input']) {
+  function onType() {
     previewRequest?.abort()
-    rawSearchTerm = (e.target as HTMLInputElement).value
+    rawSearchTerm = searchBar.value
     const hasQuery = rawSearchTerm.trim() !== ''
-    searchLayout!.classList.toggle('display-results', hasQuery)
     const term = rawSearchTerm
     const token = ++searchSeq
+    pendingDisplay = null
     searchLayout.setAttribute('aria-busy', String(hasQuery))
     if (runSearchTimer !== null) {
       window.clearTimeout(runSearchTimer)
       runSearchTimer = null
     }
+    if (composing) return
     if (!hasQuery || searchMode === 'lexical') {
       void runSearch(term, token)
       return
@@ -1067,8 +1119,23 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     }, 60)
   }
 
+  const startComposition = () => {
+    composing = true
+  }
+  const finishComposition = () => {
+    composing = false
+    pressedKeys.clear()
+    onType()
+  }
+
   document.addEventListener('keydown', shortcutHandler)
-  window.addCleanup(() => document.removeEventListener('keydown', shortcutHandler))
+  document.addEventListener('keyup', releaseKey)
+  window.addEventListener('blur', releasePressedKeys)
+  window.addCleanup(() => {
+    document.removeEventListener('keydown', shortcutHandler)
+    document.removeEventListener('keyup', releaseKey)
+    window.removeEventListener('blur', releasePressedKeys)
+  })
   const warmSearch = () => {
     if (data) return
     void ensureSearchData().catch(error => console.warn('[Search] warm failed:', error))
@@ -1083,7 +1150,13 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     searchButton.removeEventListener('click', openHandler)
   })
   searchBar.addEventListener('input', onType)
-  window.addCleanup(() => searchBar.removeEventListener('input', onType))
+  searchBar.addEventListener('compositionstart', startComposition)
+  searchBar.addEventListener('compositionend', finishComposition)
+  window.addCleanup(() => {
+    searchBar.removeEventListener('input', onType)
+    searchBar.removeEventListener('compositionstart', startComposition)
+    searchBar.removeEventListener('compositionend', finishComposition)
+  })
   window.addCleanup(() => {
     hideSearch(false)
   })

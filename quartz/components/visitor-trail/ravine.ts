@@ -354,13 +354,14 @@ export function contourFaces(landscape: Landscape): Face[][] {
 // The nearest face whose slope contains the point, with how far below its crest the point lies.
 export function faceAt(faces: readonly Face[][], point: Point) {
   let best: (Face & { below: number }) | null = null
-  for (const contour of faces)
-    for (const face of contour) {
-      if (point.x < face.x || point.x >= face.x + face.span) continue
-      const below = point.y - face.y
-      if (below >= 0 && below < face.tall && (!best || below < best.below))
-        best = { ...face, below }
-    }
+  // contourFaces retains the landscape's contiguous four-pixel columns, starting at x = 0.
+  const column = Math.floor(point.x / 4)
+  for (const contour of faces) {
+    const face = contour[column]
+    if (!face || point.x < face.x || point.x >= face.x + face.span) continue
+    const below = point.y - face.y
+    if (below >= 0 && below < face.tall && (!best || below < best.below)) best = { ...face, below }
+  }
   return best
 }
 

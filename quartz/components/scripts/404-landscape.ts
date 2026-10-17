@@ -62,6 +62,7 @@ import {
 import { type CourseInk, nearCourse, paintCourse } from './404-downhill'
 import { GATE, MISSING, TILT, hourAngle, stoneOuter } from './404-gate'
 import { TERRACES, feedHerd, onTerrace } from './404-herd'
+import { type JayInk, makeJay, paintJay, perchJay, stepJay } from './404-jay'
 import {
   GROWN,
   type Greens,
@@ -3048,6 +3049,8 @@ export function setupLandscape(
   let ground: Meadow | null = null
   let stars: SkyStar[] = []
   let canopy: Canopy = { trees: [], roots: [] }
+  // The homepage's jay, in the right-hand tree, and the woodpecker that drums there while it is away.
+  const jay = makeJay()
   let gust = 0
   let wind = 0
   let clock = 0
@@ -3253,6 +3256,7 @@ export function setupLandscape(
     )
     boughs.heads = {}
     if (bough) paintBough(d, leaves.g, bough, workFor(times), boughInk(), clock, boughs.heads)
+    paintJay(d, leaves.g, jay, jayInk(), clock, !night && !weather.storm)
     paintDapple(d, leaves.g, pal, canopy.roots, wind * 0.6, clock, water)
     const streak = dark ? mix(pal.water[2], pal.glint[0], 0.35) : mix(pal.cloud[0], pal.far[0], 0.4)
     paintFall(d, leaves.g, weather, clock, streak, dark ? pal.snow[3] : CREAM)
@@ -3276,6 +3280,15 @@ export function setupLandscape(
     glow: pal.glow[1],
     steam: pal.smoke[1],
     dark,
+  })
+  const jayInk = (): JayInk => ({
+    blue: pal.cornflower,
+    bar: pal.figure.D,
+    ink: pal.figure.K,
+    white: pal.figure.C,
+    belly: pal.smoke[2],
+    nape: pal.poppy,
+    acorn: pal.autumn[0],
   })
   // What comes down out of the trees: the leaves that are left in autumn, blossom in spring, and
   // whatever the arborist shakes loose. It blows off the edge of the view or falls out of the bottom.
@@ -3346,6 +3359,7 @@ export function setupLandscape(
     dark = day < 0.5
     lume = 1 - smooth(0.25, 0.6, day)
     night = al.day < 0.35
+    scene.dataset.night = String(night)
     const sunUp = al.day > 0.2
     const side = (sunUp ? al.sun : al.moon).across >= 0 ? 1 : -1
     const over = smooth(0.55, 1, weather.cover) + (weather.fog ? 0.3 : 0)
@@ -3532,12 +3546,9 @@ export function setupLandscape(
       const [x1, y1] = toScene(vr.right, vr.bottom)
       const board = scene.querySelector('.nf-board')?.getBoundingClientRect()
       const edge = board && toScene(board.right + 4, board.bottom + 4)
-      bough = findBough(
-        canopy.trees[0],
-        g,
-        [x0, y0, x1, y1],
-        (x, y) => !!edge && x < edge[0] && y < edge[1],
-      )
+      const behindBoard = (x: number, y: number) => !!edge && x < edge[0] && y < edge[1]
+      bough = findBough(canopy.trees[0], g, [x0, y0, x1, y1], behindBoard)
+      perchJay(jay, canopy.trees[1], g, [x0, y0, x1, y1], behindBoard)
       if (!litter.leaves.length)
         for (let n = 0; n < 120; n++) stepShed(litter, canopy.trees, shedding(g), 1 / 12)
     }
@@ -3724,6 +3735,17 @@ export function setupLandscape(
       ageBubbles(far, dt)
       ageBubbles(boughs, dt)
       if (leaves) stepShed(litter, canopy.trees, shedding(leaves.g), dt)
+      // The clouds drift left to right, so a positive wind comes from the left.
+      stepJay(jay, dt, {
+        active: !night && !weather.storm,
+        errand:
+          times.autumn > 0.35 && times.bare < 0.45
+            ? 'cache'
+            : times.bare > 0.45 || times.ground > 0.3 || times.blossom > 0.2
+              ? 'retrieve'
+              : 'forage',
+        wind: Math.min(1, weather.wind + gust * 0.2),
+      })
       stepWalker(walker, dt, drawn)
       stepHearth(hearth, air, dt)
       for (let n = splashes.length - 1; n >= 0; n--)

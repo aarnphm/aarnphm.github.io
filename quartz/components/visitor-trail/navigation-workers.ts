@@ -51,8 +51,8 @@ export function createTrailNavigation(lifetime: AbortSignal) {
   const queue: Job[] = []
   const slots: Slot[] = []
   const jobs = new Set<Job>()
-  const fallbackQueue: { job: Job; search: ReturnType<typeof navigationSearch> }[] = []
-  let fallbackTimer = 0
+  const localQueue: { job: Job; search: ReturnType<typeof navigationSearch> }[] = []
+  let localTimer = 0
   const limit = Math.min(3, Math.max(1, (navigator.hardwareConcurrency || 2) - 1))
   const finish = (job: Job, value: PlannedTrail | null) => {
     if (job.done) return
@@ -60,17 +60,17 @@ export function createTrailNavigation(lifetime: AbortSignal) {
     job.signal?.removeEventListener('abort', job.cancel)
     jobs.delete(job)
     if (!jobs.size) {
-      clearTimeout(fallbackTimer)
-      fallbackTimer = 0
-      fallbackQueue.length = 0
+      clearTimeout(localTimer)
+      localTimer = 0
+      localQueue.length = 0
     }
     job.resolve(value)
   }
-  const advanceFallback = () => {
-    fallbackTimer = 0
+  const advanceLocal = () => {
+    localTimer = 0
     const deadline = performance.now() + 6
-    while (fallbackQueue.length && performance.now() < deadline) {
-      const entry = fallbackQueue.shift()
+    while (localQueue.length && performance.now() < deadline) {
+      const entry = localQueue.shift()
       if (!entry || entry.job.done) continue
       if (lifetime.aborted || entry.job.signal?.aborted) {
         finish(entry.job, null)
@@ -80,13 +80,14 @@ export function createTrailNavigation(lifetime: AbortSignal) {
       let step = entry.search.next()
       while (!step.done && performance.now() < slice) step = entry.search.next()
       if (step.done) finish(entry.job, step.value)
-      else fallbackQueue.push(entry)
+      else localQueue.push(entry)
     }
-    if (fallbackQueue.length) fallbackTimer = window.setTimeout(advanceFallback, 0)
+    if (localQueue.length) localTimer = window.setTimeout(advanceLocal, 0)
   }
-  const fallback = (job: Job) => {
-    fallbackQueue.push({ job, search: navigationSearch(job.query) })
-    if (!fallbackTimer) fallbackTimer = window.setTimeout(advanceFallback, 0)
+  const locally = (job: Job) => {
+    if (localQueue.some(entry => entry.job === job)) return
+    localQueue.push({ job, search: navigationSearch(job.query) })
+    if (!localTimer) localTimer = window.setTimeout(advanceLocal, 0)
   }
   const failWorkers = () => {
     if (unavailable) return
@@ -94,7 +95,7 @@ export function createTrailNavigation(lifetime: AbortSignal) {
     for (const slot of slots) slot.worker.terminate()
     slots.length = 0
     queue.length = 0
-    for (const job of jobs) if (!job.done) fallback(job)
+    for (const job of jobs) if (!job.done) locally(job)
   }
   const spawn = (): Slot | null => {
     try {
@@ -140,7 +141,11 @@ export function createTrailNavigation(lifetime: AbortSignal) {
       }
     }
   }
-  const run = (query: NavigationQuery, signal?: AbortSignal): Promise<PlannedTrail | null> => {
+  const run = (
+    query: NavigationQuery,
+    signal?: AbortSignal,
+    execution: 'worker' | 'local' = 'worker',
+  ): Promise<PlannedTrail | null> => {
     if (lifetime.aborted || signal?.aborted) return Promise.resolve(null)
     return new Promise(resolve => {
       const job: Job = {
@@ -163,7 +168,7 @@ export function createTrailNavigation(lifetime: AbortSignal) {
       }
       jobs.add(job)
       signal?.addEventListener('abort', job.cancel, { once: true })
-      if (unavailable) fallback(job)
+      if (unavailable || execution === 'local') locally(job)
       else {
         queue.push(job)
         pump()
@@ -180,9 +185,6 @@ export function createTrailNavigation(lifetime: AbortSignal) {
     { once: true },
   )
   return {
-    warm() {
-      while (!lifetime.aborted && !unavailable && slots.length < limit) if (!spawn()) break
-    },
     plan: (
       road: readonly Point[],
       radius: number,
@@ -271,6 +273,7 @@ export function createTrailNavigation(lifetime: AbortSignal) {
           const result = await run(
             { kind: 'trail', ...input, obstacles: snapshot(obstacles) },
             signal,
+            'local',
           )
           return plannedTrail(route, result)
         }),

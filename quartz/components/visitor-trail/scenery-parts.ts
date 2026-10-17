@@ -19,6 +19,7 @@ export type SceneryParts = {
   backdrop: string
 }
 export type SceneryPart = keyof SceneryParts
+export type SceneryWorkerRequest = SceneryRequest & { parts: SceneryPart[] }
 export type SceneryMessage = {
   [K in SceneryPart]: { part: K; value: SceneryParts[K] }
 }[SceneryPart]

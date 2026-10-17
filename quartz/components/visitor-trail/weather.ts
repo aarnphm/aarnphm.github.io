@@ -17,7 +17,7 @@ import {
   type TrailWeather,
 } from '../../util/visitor-trail-weather'
 import { season, seasonBucket } from '../../util/visitor-world'
-import { campSleeps, fireOut, herd, leafRate, night } from '../../util/world-schedule'
+import { campSleeps, fireOut, herd, leafRate, mossClimate, night } from '../../util/world-schedule'
 import { almanac, guessSite, type Almanac, type Body } from '../scripts/404-almanac'
 import { paintLunarDisc, stopLunarTransition } from '../scripts/lunar-disc'
 import { holidaySprite } from './holiday-sprites'
@@ -608,6 +608,14 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
     const changed = Object.entries(next).some(([key, value]) => scene.dataset[key] !== value)
     Object.assign(scene.dataset, next)
     scene.dataset.leafRate = leafRate(world, sky).toFixed(4)
+    // Moss moisture, growth, snow and rime, and the wind across the clumps (-1 blowing left .. 1
+    // right, the leaves' direction), in tenths so the clumps repaint only on a real change.
+    const moss = mossClimate(al, { ...world, ground: cover }, sky, Date.now() < wetUntil)
+    const lean = -Math.sin(((weather?.windFromDegrees ?? 270) * Math.PI) / 180) * sky.wind
+    const mossState = [moss.moisture, moss.growth, moss.buried, moss.rime, lean]
+      .map(value => (Math.round(value * 10) / 10).toFixed(1))
+      .join(' ')
+    if (scene.dataset.moss !== mossState) scene.dataset.moss = mossState
     return changed
   }
   // The sun and moon move about a pixel a minute on a wide screen.
@@ -783,6 +791,7 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
       delete scene.dataset.campSleeps
       delete scene.dataset.fireWeather
       delete scene.dataset.leafRate
+      delete scene.dataset.moss
       view?.clearTimeout(skyTimer)
       layer?.replaceChildren()
       skyLayer?.replaceChildren()
