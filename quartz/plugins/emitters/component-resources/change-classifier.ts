@@ -2,6 +2,7 @@ export type SourceRebuildScope =
   | { kind: 'full' }
   | { kind: 'partial'; staticFiles: boolean; styles: boolean; scripts: boolean }
   | { kind: 'courses' }
+  | { kind: 'emitters'; emitters: string[] }
 
 const clientScriptRoots = [
   'quartz/components/',
@@ -33,10 +34,12 @@ export function sourceRebuildScope(
   changedPaths: readonly string[],
   serverInputs: ReadonlySet<string>,
   courseInputs: ReadonlySet<string> = new Set(),
+  emitterInputs: ReadonlyMap<string, ReadonlySet<string>> = new Map(),
 ): SourceRebuildScope {
   if (changedPaths.length === 0) return { kind: 'full' }
   const scope = { kind: 'partial' as const, staticFiles: false, styles: false, scripts: false }
   let courses = false
+  const emitters = new Set<string>()
   for (const changePath of changedPaths) {
     if (changePath.startsWith('quartz/static/')) {
       scope.staticFiles = true
@@ -46,9 +49,15 @@ export function sourceRebuildScope(
       scope.scripts = true
     } else if (courseInputs.has(changePath)) {
       courses = true
+    } else if (emitterInputs.get(changePath)?.size) {
+      for (const name of emitterInputs.get(changePath) ?? []) emitters.add(name)
     } else {
       return { kind: 'full' }
     }
+  }
+  if (emitters.size > 0) {
+    if (courses || scope.staticFiles || scope.styles || scope.scripts) return { kind: 'full' }
+    return { kind: 'emitters', emitters: [...emitters].sort() }
   }
   // The course rebuild regenerates the client bundles, but not the static files.
   if (courses) return scope.staticFiles ? { kind: 'full' } : { kind: 'courses' }

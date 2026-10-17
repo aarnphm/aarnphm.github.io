@@ -1,3 +1,4 @@
+import path from 'node:path'
 import { styleText } from 'node:util'
 import type { ChangeEvent, QuartzEmitterPluginInstance } from '../types/plugin'
 import type { FilePath } from '../util/path'
@@ -34,6 +35,7 @@ async function runEmitterOutput(
     if (Symbol.asyncIterator in emitted) {
       for await (const file of emitted) {
         emittedFiles++
+        ctx.emittedFiles?.get(emitter.name)?.add(path.relative(ctx.argv.output, file))
         if (ctx.argv.verbose) {
           console.log(`[emit:${emitter.name}] ${file}`)
         } else {
@@ -43,6 +45,7 @@ async function runEmitterOutput(
     } else {
       emittedFiles += emitted.length
       for (const file of emitted) {
+        ctx.emittedFiles?.get(emitter.name)?.add(path.relative(ctx.argv.output, file))
         if (ctx.argv.verbose) {
           console.log(`[emit:${emitter.name}] ${file}`)
         } else {
@@ -66,6 +69,7 @@ function runEmitter(
   staticResources: ReturnType<typeof getStaticResourcesFromPlugins>,
   log: QuartzLogger,
 ) {
+  ctx.emittedFiles?.set(emitter.name, new Set())
   ctx.decks = deckDataFor(content)
   return runEmitterOutput(emitter, ctx, log, emitter.emit(ctx, content, staticResources))
 }
@@ -116,6 +120,7 @@ export async function emitContent(
   ctx: BuildCtx,
   content: ProcessedContent[],
   inputChangeEvents?: ChangeEvent[],
+  sourceScope?: { emitters: ReadonlySet<string>; resourceSignature: string },
 ) {
   const { argv, cfg } = ctx
   await pruneCitationCaches(content)
@@ -162,8 +167,23 @@ export async function emitContent(
       : await runEmitter(componentResources, ctx, content, staticResources, log)
   }
 
+  const resourceSignature = JSON.stringify([
+    [...(ctx.assetManifest ?? [])].sort(([a], [b]) => a.localeCompare(b)),
+    [...(ctx.extractedStaticResources ?? [])].sort(([a], [b]) => a.localeCompare(b)),
+    ctx.staticLeadingJs,
+    staticResources.css,
+    staticResources.js,
+  ])
+  const changesExternalResources = cfg.plugins.emitters.some(
+    emitter => sourceScope?.emitters.has(emitter.name) && emitter.externalResources,
+  )
+  const scoped =
+    sourceScope && !changesExternalResources && sourceScope.resourceSignature === resourceSignature
+  if (sourceScope && !scoped) console.log('Resource identities changed; emitting all owners')
   const otherEmitters = cfg.plugins.emitters.filter(
-    emitter => emitter.name !== 'ComponentResources',
+    emitter =>
+      emitter.name !== 'ComponentResources' &&
+      (!scoped || emitter.name === 'LazyScripts' || sourceScope.emitters.has(emitter.name)),
   )
   const failures: unknown[] = []
   const counts = await mapConcurrent(otherEmitters, defaultEmitterConcurrency, async emitter => {
@@ -180,4 +200,5 @@ export async function emitContent(
   emittedFiles += counts.reduce((sum, count) => sum + count, 0)
 
   log.end(`Emitted ${emittedFiles} files to \`${argv.output}\` in ${perf.timeSince()}`)
+  return resourceSignature
 }

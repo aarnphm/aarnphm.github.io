@@ -12,6 +12,8 @@ import path from 'path'
 import prettyBytes from 'pretty-bytes'
 import serveHandler from 'serve-handler'
 import { WebSocket, WebSocketServer } from 'ws'
+import { emitterSourceInputs, mergeEmitterSourceInputs } from '../util/source-emission.ts'
+export { emitterSourceInputs } from '../util/source-emission.ts'
 import { handleLocalLeanVerifyNodeRequest } from '../util/lean-local-verify.ts'
 import { version, fp, cacheFile } from './constants.js'
 
@@ -484,6 +486,8 @@ export async function handleBuild(argv) {
   let serverSourceInputs = new Set()
   let previousServerSourceInputs = new Set()
   let courseInputs = new Set()
+  let emissionInputs = new Map()
+  let previousEmissionInputs = new Map()
 
   const disposeActiveBuild = async () => {
     if (!activeBuild) return
@@ -499,6 +503,8 @@ export async function handleBuild(argv) {
       previousServerSourceInputs = serverSourceInputs
       serverSourceInputs = new Set(Object.keys(result.metafile.inputs))
       courseInputs = courseSourceInputs(result.metafile)
+      previousEmissionInputs = emissionInputs
+      emissionInputs = emitterSourceInputs(result.metafile)
       if (argv.bundleInfo) {
         await printBundleInfo(result.metafile)
       }
@@ -533,11 +539,12 @@ export async function handleBuild(argv) {
       )
     ).some(Boolean)
     const scope =
-      activeBuild && !deletedSource
+      activeBuild?.ready && !deletedSource
         ? bundle.sourceRebuildScope(
             changedPaths,
             new Set([...previousServerSourceInputs, ...serverSourceInputs]),
             courseInputs,
+            mergeEmitterSourceInputs(previousEmissionInputs, emissionInputs),
           )
         : { kind: 'full' }
     if (scope.kind === 'partial') {
@@ -555,7 +562,9 @@ export async function handleBuild(argv) {
           'yellow',
           courses
             ? 'Detected a course source change, rebuilding the courses...'
-            : 'Detected a source code change, doing a hard rebuild...',
+            : scope.kind === 'emitters'
+              ? `Detected an emission source change, rebuilding ${scope.emitters.join(', ')}...`
+              : 'Detected a source code change, doing a hard rebuild...',
         ),
       )
       await disposeActiveBuild()
@@ -569,7 +578,7 @@ export async function handleBuild(argv) {
       buildMutex,
       clientRefresh,
       buildReason,
-      courses ? 'courses' : 'site',
+      courses ? 'courses' : scope.kind === 'emitters' ? { emitters: scope.emitters } : 'site',
     )
     if (activeBuild?.ready) clientRefresh()
   }
