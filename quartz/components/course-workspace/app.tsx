@@ -164,9 +164,29 @@ function Workspace(props: WorkspaceProps) {
     }
   }, [props.root])
 
+  const selectionRef = useRef(selection)
+  selectionRef.current = selection
+  const rangeCacheRef = useRef(
+    new Map<string, { signature: string; article: HTMLElement; range: Range | null }>(),
+  )
+  const resolveNoteRange = (note: LectureNote): Range | null => {
+    if (!note.quote) return null
+    const sig = `${note.heading ?? ''}\0${note.quote.prefix}\0${note.quote.exact}\0${note.quote.suffix}`
+    const cached = rangeCacheRef.current.get(note.id)
+    if (cached && cached.article === props.article && cached.signature === sig) {
+      return cached.range
+    }
+    const range = noteRange(props.article, note)
+    rangeCacheRef.current.set(note.id, { signature: sig, article: props.article, range })
+    return range
+  }
+
   useEffect(() => {
     let frame = 0
     const capture = () => {
+      const sel = window.getSelection()
+      if ((!sel || sel.isCollapsed) && selectionRef.current === null) return
+      if (sel?.anchorNode && props.root.contains(sel.anchorNode)) return
       window.cancelAnimationFrame(frame)
       frame = window.requestAnimationFrame(() => setSelection(lectureSelection(props.article)))
     }
@@ -182,19 +202,27 @@ function Workspace(props: WorkspaceProps) {
     }
   }, [props.article, props.root, props.signal])
 
+  const highlightSignature = notes
+    .filter(note => note.deletedAt === null && note.quote !== null)
+    .map(
+      note =>
+        `${note.id}:${note.kind}:${note.heading ?? ''}:${note.quote?.prefix ?? ''}:${note.quote?.exact ?? ''}:${note.quote?.suffix ?? ''}`,
+    )
+    .join('\n')
+
   useLayoutEffect(() => {
     if (!('highlights' in CSS) || typeof Highlight === 'undefined') return
     for (const kind of noteKinds) {
-      const ranges = notes
+      const ranges = notesRef.current
         .filter(note => note.deletedAt === null && note.kind === kind)
-        .map(note => noteRange(props.article, note))
+        .map(note => resolveNoteRange(note))
         .filter((range): range is Range => range !== null)
       CSS.highlights.set(`course-${kind}`, new Highlight(...ranges))
     }
     return () => {
       for (const kind of noteKinds) CSS.highlights.delete(`course-${kind}`)
     }
-  }, [notes, props.article])
+  }, [highlightSignature, props.article])
 
   useEffect(() => {
     if (!isUnitMarkSrc(props.slug)) return
@@ -595,7 +623,7 @@ function Workspace(props: WorkspaceProps) {
               )}
               <ol class="course-notes-list">
                 {visible.map(note => {
-                  const range = noteRange(props.article, note)
+                  const range = resolveNoteRange(note)
                   return (
                     <li
                       key={note.id}

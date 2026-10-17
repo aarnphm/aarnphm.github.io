@@ -82,9 +82,12 @@ body[data-slug='index'] {
     background: transparent;
   }
 
-  &:has(.homepage-trail-toggle[aria-expanded='true']) a:hover {
+  // Home links keep the tool-surface hover with or without the trail scene: ink and underline
+  // darken in place of the site-wide inverted fill.
+  a:hover {
     background: transparent;
     color: var(--dark);
+    text-decoration-color: var(--dark);
   }
 
   .homepage-board-links {
@@ -134,11 +137,6 @@ body[data-slug='index'] {
       min-block-size: 24px;
       padding: 0;
       overflow-wrap: anywhere;
-
-      &:hover {
-        background: transparent;
-        color: var(--dark);
-      }
     }
 
     .boring-legal {

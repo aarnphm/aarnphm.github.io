@@ -49,6 +49,15 @@ export const completionTheme = EditorView.theme({
     textDecoration: 'underline',
     textUnderlineOffset: '0.2em',
   },
+  // Kind icons (LSP hosts keep them; the Base query editor turns them off) read as quiet ink.
+  '.cm-completionIcon': {
+    width: '1.1em',
+    paddingInlineEnd: '0.45em',
+    color: 'var(--darkgray)',
+    opacity: '1',
+  },
+  // The base theme draws keywords as a key emoji; the site has none.
+  '.cm-completionIcon-keyword::after': { content: '"k"' },
   '.cm-completionDetail': { marginInlineStart: '0.6em', color: 'var(--gray)', fontStyle: 'normal' },
   '.cm-tooltip.cm-tooltip-autocomplete > ul > li[aria-selected] .cm-completionDetail': {
     color: 'var(--darkgray)',

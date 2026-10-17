@@ -16,6 +16,7 @@ export function DraftEditor(props: EditorProps) {
   const callbacks = useRef(props)
   callbacks.current = props
   const replacing = useRef(false)
+  const lastEmitted = useRef(props.value)
   useLayoutEffect(() => {
     if (!host.current) return
     const view = new MarkdownEditor({
@@ -24,8 +25,12 @@ export function DraftEditor(props: EditorProps) {
       ariaLabel: callbacks.current.label,
       placeholder: 'Write a thought, question, or proof. Markdown and $math$ work.',
       maxLength: callbacks.current.limit,
+      changeDebounceMs: 120,
       onChange: body => {
-        if (!replacing.current) callbacks.current.onChange(body)
+        if (!replacing.current) {
+          lastEmitted.current = body
+          callbacks.current.onChange(body)
+        }
       },
       onCancel: () => callbacks.current.onExit(),
       onSubmit: () => callbacks.current.onExit(),
@@ -38,6 +43,8 @@ export function DraftEditor(props: EditorProps) {
     }
   }, [])
   useLayoutEffect(() => {
+    if (props.value === lastEmitted.current) return
+    lastEmitted.current = props.value
     replacing.current = true
     editor.current?.setValue(props.value)
     replacing.current = false

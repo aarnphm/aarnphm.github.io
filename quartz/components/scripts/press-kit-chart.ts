@@ -305,15 +305,42 @@ export function paintTrainingChart(
   if (options?.renderers) {
     const id = parent.getAttribute('data-card-layer')
     if (!id) return
-    const typography = { width: referenceWidth, size, labelSize }
+    const lapChart = runLaps || laps
+    const minimumLabel = Math.min(labelSize, 12 / scale)
+    const minimumSize = minimumLabel / (bars ? 0.75 : 0.7)
+    const minimumHeight = bars
+      ? Math.max(minimumSize * 12, minimumLabel * (valid.length + 5) * 2)
+      : minimumSize * 10
     options.renderers.set(id, {
       x,
       y,
       width,
       height,
-      minWidth: Math.min(width, size * (bars ? 24 : 18)) + 6,
-      minHeight: Math.min(height, bars ? size * 5 + valid.length * valueSize * 1.8 : size * 8) + 6,
+      minWidth: Math.min(width, lapChart ? minimumSize * 30 : size * (bars ? 24 : 18)) + 6,
+      minHeight:
+        Math.min(
+          height,
+          lapChart ? minimumHeight : bars ? size * 5 + valid.length * valueSize * 1.8 : size * 8,
+        ) + 6,
       render: (targetWidth, targetHeight) => {
+        const contentWidth = targetWidth - 6
+        const contentHeight = targetHeight - 6
+        const targetSize = lapChart
+          ? Math.min(size, contentWidth / 30, contentHeight / (bars ? 12 : 10))
+          : size
+        const targetLabel = lapChart
+          ? Math.min(
+              labelSize,
+              bars
+                ? Math.min(targetSize * 0.75, (contentHeight / (valid.length + 5)) * 0.5)
+                : targetSize * 0.7,
+            )
+          : labelSize
+        const typography = {
+          width: lapChart ? Math.min(referenceWidth, contentWidth) : referenceWidth,
+          size: targetSize,
+          labelSize: targetLabel,
+        }
         const density = Math.min(scale, 3840 / Math.max(targetWidth, targetHeight))
         const svg = node('svg', {
           xmlns: 'http://www.w3.org/2000/svg',
@@ -326,8 +353,8 @@ export function paintTrainingChart(
           chart,
           3,
           3,
-          targetWidth - 6,
-          targetHeight - 6,
+          contentWidth,
+          contentHeight,
           ink,
           fonts,
           density,

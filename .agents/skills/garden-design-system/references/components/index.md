@@ -18,6 +18,7 @@
 | [Chart](Chart.md)                           | A data chart inside a figure frame: mono ticks, worded axis titles, KaTeX annotations and a caption with the key number.                                                       |
 | [CodeBlock](CodeBlock.md)                   | A code block from rehype-pretty-code: an optional title, line numbers and syntax colours in both themes.                                                                       |
 | [CollectionRow](CollectionRow.md)           | A bordered list row that links to one note and shows its title, date and an optional description.                                                                              |
+| [Completion](Completion.md)                 | The completion list under a code cursor: the Base query editor, the markdown editor and the notebook code editor with its language server (Pyright, Lean).                     |
 | [CourseCollection](CourseCollection.md)     | A resource collection page of a course, such as its lecture videos: the strip and one table row per resource.                                                                  |
 | [CourseHome](CourseHome.md)                 | The home of one course: a masthead, a rail of course pages, and the schedule table.                                                                                            |
 | [CourseUnit](CourseUnit.md)                 | The bar above a lecture note and the foot below it.                                                                                                                            |

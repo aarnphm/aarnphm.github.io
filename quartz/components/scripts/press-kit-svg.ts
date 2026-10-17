@@ -138,14 +138,16 @@ export function createSvgText(fonts: Fonts, scale: number) {
     width: number,
     size: number,
     color: string,
+    ruled = true,
   ): void {
-    parent.append(
-      node('path', {
-        d: `M${x} ${baseline + size * 0.45}H${x + width}`,
-        stroke: color,
-        opacity: 0.12,
-      }),
-    )
+    if (ruled)
+      parent.append(
+        node('path', {
+          d: `M${x} ${baseline + size * 0.45}H${x + width}`,
+          stroke: color,
+          opacity: 0.12,
+        }),
+      )
     fitText(parent, label, x, baseline, width * 0.42, size, color)
     const values = node('g', { 'text-anchor': 'end' })
     fitValue(values, value, x + width, baseline, width * 0.54, size, color)
