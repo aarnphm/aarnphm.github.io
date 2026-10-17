@@ -493,7 +493,6 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
   let skyAt = -Infinity
   let wetUntil = 0
   let daylight: VisitorDaylight = sampleVisitorDaylight(null)
-  const shadowWidths = new WeakMap<SVGPathElement, number>()
   const updateDamp = () => {
     const damp = String(Date.now() < wetUntil)
     if (scene.dataset.groundDamp !== damp) scene.dataset.groundDamp = damp
@@ -537,19 +536,9 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
     const low = automatic ? Math.max(0, Math.min(1, 1 - daylight.altitude / 55)) : 0.15
     const scale = 0.75 + low * 1.85 * Math.abs(dx)
     const shadowSun = sun * (automatic ? Math.max(0, Math.min(1, daylight.altitude / 5)) : 1)
-    // Measure new shadows together. Writing one transform before measuring the next forces
-    // the browser to lay out the forest once per tree during the first opening.
-    const shadows = [...scene.querySelectorAll<SVGPathElement>('.trail-tree-shadow')].map(
-      shadow => {
-        let radius = shadowWidths.get(shadow)
-        if (radius === undefined) {
-          radius = shadow.getBBox().width / 2
-          if (radius > 0) shadowWidths.set(shadow, radius)
-        }
-        return { shadow, radius }
-      },
-    )
-    for (const { shadow, radius } of shadows) {
+    // The generator knows each shadow's radius before the hidden forest enters layout.
+    for (const shadow of scene.querySelectorAll<SVGPathElement>('.trail-tree-shadow')) {
+      const radius = Number(shadow.dataset.shadowRadius)
       const reach = Math.min(36, radius * low * 1.65)
       const skew = dy * low * 0.4
       const shift = dx * reach

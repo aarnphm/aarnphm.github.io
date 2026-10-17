@@ -688,7 +688,7 @@ function tree(
     extent,
     trunkRadius,
     markup:
-      `<path class="trail-tree-shadow" d="M${-shadow} 0h${shadow * 2}v2h-3v2h${-shadow * 2 + 6}V2h-3Z"/>` +
+      `<path class="trail-tree-shadow" data-shadow-radius="${shadow}" d="M${-shadow} 0h${shadow * 2}v2h-3v2h${-shadow * 2 + 6}V2h-3Z"/>` +
       '<g class="trail-tree-motion">' +
       (['trunk', 'bark'] as const)
         .map(tone => `<path class="trail-tree-${tone}" d="${paths[tone].join('')}"/>`)
