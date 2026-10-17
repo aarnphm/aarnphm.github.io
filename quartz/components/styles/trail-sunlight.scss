@@ -9,7 +9,7 @@
   // painted back over the shade where the leaves part.
   .trail-leaf-shade {
     fill: var(--darkgray);
-    opacity: 0.22;
+    opacity: 0.18;
   }
   .trail-sunfleck {
     fill: color-mix(in srgb, #ffe3a1 45%, var(--light));
@@ -19,7 +19,7 @@
   // the crowns it falls on the paper and is not seen.
   .trail-crown-fleck {
     fill: #fff1c2;
-    opacity: 0.45;
+    opacity: 0.6;
   }
   // Under the sun the lit side of a crown warms a step further from its shade side, so the
   // crowns model as volumes; the mix goes through the same haze as the tree's other tones.
@@ -29,7 +29,7 @@
     .trail-tree-light {
     fill: color-mix(
       in srgb,
-      color-mix(in srgb, var(--trail-tree-light) 82%, #fff1c2)
+      color-mix(in srgb, var(--trail-tree-light) 72%, #fff1c2)
         calc(100% - var(--trail-tree-haze, 0%)),
       var(--light)
     );
