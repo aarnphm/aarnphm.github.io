@@ -277,6 +277,194 @@ class VoiceMemoTests(unittest.TestCase):
       with self.assertRaisesRegex(ValueError, 'incomplete or changed'):
         memos.import_recording(recording, destination)
 
+  def test_normalize_display_settings(self) -> None:
+    self.assertEqual(memos.normalize_display_settings(None, None), '')
+    self.assertEqual(
+      memos.normalize_display_settings('simplified'),
+      '#settings=display:simplified',
+    )
+    self.assertEqual(
+      memos.normalize_display_settings('focused'),
+      '#settings=display:focused',
+    )
+    self.assertEqual(
+      memos.normalize_display_settings('run-swim'),
+      '#settings=display:run-swim',
+    )
+    self.assertEqual(
+      memos.normalize_display_settings('run_swim'),
+      '#settings=display:run-swim',
+    )
+    self.assertEqual(
+      memos.normalize_display_settings('detailed'),
+      '#settings=display:detailed',
+    )
+    self.assertEqual(
+      memos.normalize_display_settings('simplified', expanded=True),
+      '#settings=display:simplified&expanded:true',
+    )
+    self.assertEqual(
+      memos.normalize_display_settings('focused', expanded=False),
+      '#settings=display:focused&expanded:false',
+    )
+    self.assertEqual(
+      memos.normalize_display_settings(None, expanded=True),
+      '#settings=expanded:true',
+    )
+    self.assertEqual(
+      memos.normalize_display_settings(None, expanded=False),
+      '#settings=expanded:false',
+    )
+    self.assertEqual(
+      memos.normalize_display_settings('display:focused&expanded:true'),
+      '#settings=display:focused&expanded:true',
+    )
+    self.assertEqual(
+      memos.normalize_display_settings(
+        '#settings=display:run-swim&expanded:true'
+      ),
+      '#settings=display:run-swim&expanded:true',
+    )
+    self.assertEqual(
+      memos.normalize_display_settings('matched-rides:false&stamina:false'),
+      '#settings=matched-rides:false&stamina:false',
+    )
+    with self.assertRaisesRegex(ValueError, 'Invalid display setting'):
+      memos.normalize_display_settings('unknown-preset')
+    with self.assertRaisesRegex(ValueError, 'Unknown display preset'):
+      memos.normalize_display_settings('display:unknown')
+    with self.assertRaisesRegex(ValueError, 'cannot be combined'):
+      memos.normalize_display_settings('display:simplified&matched-rides:false')
+    with self.assertRaisesRegex(ValueError, 'Invalid trace setting name'):
+      memos.normalize_display_settings('not_kebab_name:true')
+
+  def test_update_stream_with_display_settings(self) -> None:
+    # New entry with display options
+    updated = memos.update_stream(
+      STREAM,
+      date(2026, 9, 6),
+      ['memo1'],
+      NOW,
+      display='simplified',
+      expanded=True,
+    )
+    self.assertIn(
+      '![[triathlon#2026-09-06#analytics#settings=display:simplified&expanded:true]]',
+      updated,
+    )
+
+    # Existing entry without display options keeps existing embed
+    untouched = memos.update_stream(
+      STREAM, date(2026, 9, 5), ['20260905'], NOW
+    )
+    self.assertIn('![[triathlon#2026-09-05#analytics]]', untouched)
+
+    # Existing entry updated with display options
+    modified = memos.update_stream(
+      STREAM,
+      date(2026, 9, 5),
+      ['20260905'],
+      NOW,
+      display='run-swim',
+    )
+    self.assertIn(
+      '![[triathlon#2026-09-05#analytics#settings=display:run-swim]]', modified
+    )
+
+    # Existing entry replaced with new display options
+    replaced = memos.update_stream(
+      modified,
+      date(2026, 9, 5),
+      ['20260905'],
+      NOW,
+      display='focused',
+      expanded=True,
+    )
+    self.assertIn(
+      '![[triathlon#2026-09-05#analytics#settings=display:focused&expanded:true]]',
+      replaced,
+    )
+    self.assertNotIn('display:run-swim', replaced)
+
+  def test_cli_display_options_and_expanded(self) -> None:
+    with tempfile.TemporaryDirectory(prefix='memo-cli-display-') as temporary:
+      root = Path(temporary)
+      source = root / 'Recordings'
+      source.mkdir()
+      audio = source / '20260906_active.qta'
+      subprocess.run(
+        [
+          'ffmpeg',
+          '-v',
+          'error',
+          '-f',
+          'lavfi',
+          '-i',
+          'sine=frequency=440:duration=0.2',
+          '-c:a',
+          'aac',
+          '-metadata',
+          'creation_time=2026-09-06T02:00:00Z',
+          '-f',
+          'mov',
+          str(audio),
+        ],
+        check=True,
+        timeout=30,
+      )
+      with sqlite3.connect(source / 'CloudRecordings.db') as db:
+        db.execute(
+          'CREATE TABLE ZCLOUDRECORDING (ZPATH TEXT, ZEVICTIONDATE REAL)'
+        )
+        db.execute(
+          'INSERT INTO ZCLOUDRECORDING VALUES (?, ?)',
+          (audio.name, None),
+        )
+      repo = root / 'repo'
+      repo.mkdir()
+      (repo / 'content').mkdir()
+      stream_path = repo / 'content/stream.md'
+      stream_path.write_text(STREAM)
+
+      base_cmd = [
+        sys.executable,
+        str(Path(memos.__file__)),
+        '--date',
+        '2026-09-05',
+        '--source',
+        str(source),
+        '--repo',
+        str(repo),
+      ]
+
+      # Run with --display-options and --expanded
+      subprocess.run(
+        [*base_cmd, '--display-options', 'focused', '--expanded'],
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=30,
+      )
+      content = stream_path.read_text()
+      self.assertIn(
+        '![[triathlon#2026-09-05#analytics#settings=display:focused&expanded:true]]',
+        content,
+      )
+
+      # Run with typo alias --diplay-options
+      subprocess.run(
+        [*base_cmd, '--diplay-options', 'simplified'],
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=30,
+      )
+      content = stream_path.read_text()
+      self.assertIn(
+        '![[triathlon#2026-09-05#analytics#settings=display:simplified]]',
+        content,
+      )
+
 
 class VoiceMemoBatchTests(unittest.TestCase):
   def setUp(self) -> None:
