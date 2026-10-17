@@ -670,8 +670,7 @@ async function parseNotebookFileToMdast(file: {
   const raw = typeof file.value === 'string' ? file.value : (file.value?.toString() ?? '')
   const parsed = parseNotebookDoc(raw, file.path)
   if (isNotebookParseError(parsed)) {
-    trace(`\nFailed to parse notebook \`${file.path}\``, new Error(parsed.reason))
-    return undefined
+    throw new Error(`Failed to parse notebook ${file.path}: ${parsed.reason}`)
   }
   return notebookDocToFlatMdast(parsed)
 }
@@ -702,6 +701,7 @@ export function createFileParser(ctx: BuildCtx, fps: FilePath[]) {
 
         logBuildSpan(argv, 'markdown', `${fp} -> ${file.data.slug}`, perf.elapsedMs())
       } catch (err) {
+        if (ctx.argv.watch) throw new Error(`Failed to process markdown ${fp}`, { cause: err })
         trace(`\nFailed to process markdown \`${fp}\``, err as Error)
       }
     }
@@ -735,6 +735,8 @@ export function createMarkdownParser(ctx: BuildCtx, mdContent: MarkdownContent[]
 
         logBuildSpan(ctx.argv, 'html', `${file.data.slug}`, perf.elapsedMs())
       } catch (err) {
+        if (ctx.argv.watch)
+          throw new Error(`Failed to process html ${file.data.filePath}`, { cause: err })
         trace(`\nFailed to process html \`${file.data.filePath}\``, err as Error)
       }
     }
@@ -808,11 +810,6 @@ export async function parseMarkdown(
       maxWorkers: concurrency,
       workerType: 'thread',
     })
-    const errorHandler = (err: any) => {
-      console.error(err)
-      process.exit(1)
-    }
-
     const serializableCtx: WorkerSerializableBuildCtx = {
       buildId: ctx.buildId,
       argv: ctx.argv,
@@ -827,19 +824,22 @@ export async function parseMarkdown(
       parsePromises.push(pool.exec('parseFiles', [serializableCtx, chunk]))
     }
 
-    const results: ProcessedContent[][] = await Promise.all(
-      parsePromises.map(async promise => {
-        const result = await promise
-        processedFiles += result.length
-        log.updateText(
-          `markdown->html ${styleText('gray', `${processedFiles}/${fpsToParse.length}`)}`,
-        )
-        return result
-      }),
-    ).catch(errorHandler)
+    try {
+      const results: ProcessedContent[][] = await Promise.all(
+        parsePromises.map(async promise => {
+          const result = await promise
+          processedFiles += result.length
+          log.updateText(
+            `markdown->html ${styleText('gray', `${processedFiles}/${fpsToParse.length}`)}`,
+          )
+          return result
+        }),
+      )
 
-    res = results.flat()
-    await pool.terminate()
+      res = results.flat()
+    } finally {
+      await pool.terminate()
+    }
   }
 
   if (useCache) {

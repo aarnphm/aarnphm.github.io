@@ -343,7 +343,11 @@ export async function emitOutputAsset(ctx: BuildCtx, claim: OutputAssetClaim): P
     return normalized.output as FilePath
   }
 
-  await copyFile(normalized.source as FilePath, normalized.output as FilePath)
+  await copyFile(
+    normalized.source as FilePath,
+    normalized.output as FilePath,
+    ctx.incremental ? ctx.argv.output : undefined,
+  )
   manifest.set(manifestKey(normalized.output), { ...normalized, ...fingerprint })
   return normalized.output as FilePath
 }
@@ -419,4 +423,38 @@ export async function writeCurrentOutputAssetManifest(ctx: BuildCtx): Promise<vo
     ...dynamicClaims,
   ])
   await writeOutputAssetManifest(ctx.outputAssetManifest)
+}
+
+/** Move output identities with a staged build, retaining original source identities. */
+export function relocateOutputAssets(ctx: BuildCtx, from: string, to: string): void {
+  const root = path.resolve(from)
+  const relocate = (file: string): FilePath => {
+    const resolved = path.resolve(file)
+    return (
+      resolved.startsWith(`${root}${path.sep}`)
+        ? path.join(to, path.relative(root, resolved))
+        : resolved
+    ) as FilePath
+  }
+  const claim = (entry: OutputAssetClaim): OutputAssetClaim => ({
+    ...entry,
+    source: relocate(entry.source),
+    output: relocate(entry.output),
+  })
+  if (ctx.outputAssetManifest) {
+    ctx.outputAssetManifest = new Map(
+      [...ctx.outputAssetManifest.values()].map(entry => {
+        const moved = { ...entry, ...claim(entry) }
+        return [manifestKey(moved.output), moved]
+      }),
+    )
+  }
+  ctx.outputAssetClaims = ctx.outputAssetClaims?.map(claim)
+  if (ctx.outputAssetPreserved)
+    ctx.outputAssetPreserved = new Set([...ctx.outputAssetPreserved].map(relocate))
+  for (const files of Object.values(outputAssetClaimStore())) {
+    const moved = [...files].map(relocate)
+    files.clear()
+    for (const file of moved) files.add(file)
+  }
 }

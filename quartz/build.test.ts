@@ -107,7 +107,7 @@ test('a content edit during the initial build is rebuilt before becoming idle', 
   const build = buildQuartz(config, argv, new Mutex(), () => refreshed.resolve())
   try {
     await entered.promise
-    assert.match(await readFile(path.join(output, 'note.html'), 'utf8'), /before initial/)
+    await assert.rejects(readFile(path.join(output, 'note.html')), { code: 'ENOENT' })
     await writeFile(source, 'edited during initial build')
     resume.resolve()
     await build

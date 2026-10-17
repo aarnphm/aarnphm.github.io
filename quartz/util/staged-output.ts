@@ -1,0 +1,158 @@
+import { createHash } from 'node:crypto'
+import { constants, createReadStream, type BigIntStats } from 'node:fs'
+import fs from 'node:fs/promises'
+import path from 'node:path'
+import { defaultIoConcurrency, mapConcurrent } from './async-pool'
+
+async function filesIn(root: string, preserved: ReadonlySet<string>): Promise<string[]> {
+  const files: string[] = []
+  async function walk(dir: string): Promise<void> {
+    const entries = await fs.readdir(path.join(root, dir), { withFileTypes: true }).catch(error => {
+      if (error.code === 'ENOENT') return []
+      throw error
+    })
+    for (const entry of entries) {
+      const relative = path.join(dir, entry.name)
+      if (preserved.has(relative)) continue
+      if (entry.isDirectory()) await walk(relative)
+      else if (entry.isFile()) files.push(relative)
+      else throw new Error(`Unsupported output entry: ${relative}`)
+    }
+  }
+  await walk('')
+  return files
+}
+
+async function fileDigest(file: string): Promise<string> {
+  const hash = createHash('sha256')
+  for await (const chunk of createReadStream(file)) hash.update(chunk)
+  return hash.digest('hex')
+}
+
+type SeededFile = { source: BigIntStats; copy: BigIntStats }
+
+function unchangedFile(before: BigIntStats, after: BigIntStats): boolean {
+  return (
+    before.ino === after.ino &&
+    before.size === after.size &&
+    before.mtimeNs === after.mtimeNs &&
+    before.ctimeNs === after.ctimeNs
+  )
+}
+
+async function equalFiles(left: string, right: string, seed?: SeededFile): Promise<boolean> {
+  const previous = await fs.stat(right, { bigint: true }).catch(error => {
+    if (error.code === 'ENOENT') return undefined
+    throw error
+  })
+  if (!previous) return false
+  if (!previous.isFile()) throw new Error(`Output is not a file: ${right}`)
+  const next = await fs.stat(left, { bigint: true })
+  if (previous.size !== next.size) return false
+  // Unmodified private copies still contain the source bytes. Include ctime and inode so writes
+  // which restore mtime, and file replacements, fall through to the byte comparison.
+  if (seed && unchangedFile(seed.source, previous) && unchangedFile(seed.copy, next)) return true
+  if (next.size <= 1024n * 1024n) {
+    const [a, b] = await Promise.all([fs.readFile(left), fs.readFile(right)])
+    return a.equals(b)
+  }
+  const [a, b] = await Promise.all([fileDigest(left), fileDigest(right)])
+  return a === b
+}
+
+/** Keep public readable while a full watch build works in a private copy. */
+export async function withStagedOutput<T>(
+  output: string,
+  build: (stage: string) => Promise<T>,
+  preserve: readonly string[] = [],
+): Promise<T> {
+  const started = performance.now()
+  const publicRoot = path.resolve(output)
+  // A stable path lets output-keyed runtime bundle caches survive successive rebuilds.
+  const stagingRoot = path.join(path.dirname(publicRoot), '.quartz-cache')
+  await fs.mkdir(stagingRoot, { recursive: true })
+  const stage = path.join(stagingRoot, `output-stage-${path.basename(publicRoot)}-${process.pid}`)
+  const preserved = new Set(preserve)
+  await fs.mkdir(stage)
+  let backup: string | undefined
+  try {
+    const existing = await fs.stat(publicRoot).catch(error => {
+      if (error.code === 'ENOENT') return undefined
+      throw error
+    })
+    const seeded = new Map<string, SeededFile>()
+    if (existing) {
+      const files = await filesIn(publicRoot, preserved)
+      const sources = await mapConcurrent(files, defaultIoConcurrency, file =>
+        fs.stat(path.join(publicRoot, file), { bigint: true }),
+      )
+      await fs.cp(publicRoot, stage, {
+        recursive: true,
+        mode: constants.COPYFILE_FICLONE,
+        preserveTimestamps: true,
+        filter: source => !preserved.has(path.relative(publicRoot, source).split(path.sep)[0]),
+      })
+      await mapConcurrent(files, defaultIoConcurrency, async (file, index) => {
+        const copy = await fs.stat(path.join(stage, file), { bigint: true })
+        seeded.set(file, { source: sources[index], copy })
+      })
+    }
+    console.log(`Prepared staged output in ${Math.round(performance.now() - started)}ms`)
+    const result = await build(stage)
+    const publishStarted = performance.now()
+    const [next, previous] = await Promise.all([
+      filesIn(stage, preserved),
+      filesIn(publicRoot, preserved),
+    ])
+    const nextSet = new Set(next)
+    const removed = previous.filter(file => !nextSet.has(file))
+    const changed = (
+      await mapConcurrent(next, defaultIoConcurrency, async file =>
+        (await equalFiles(path.join(stage, file), path.join(publicRoot, file), seeded.get(file)))
+          ? undefined
+          : file,
+      )
+    ).filter(file => file !== undefined)
+    console.log(
+      `Compared ${next.length} output files in ${Math.round(performance.now() - publishStarted)}ms`,
+    )
+    // Publish assets before the pages which reference them. Temporary files never enter public.
+    changed.sort((a, b) => Number(a.endsWith('.html')) - Number(b.endsWith('.html')))
+    backup = await fs.mkdtemp(path.join(stagingRoot, 'output-previous-'))
+    const previousSet = new Set(previous)
+    for (const file of [...changed, ...removed]) {
+      if (!previousSet.has(file)) continue
+      const saved = path.join(backup, file)
+      await fs.mkdir(path.dirname(saved), { recursive: true })
+      await fs.link(path.join(publicRoot, file), saved)
+    }
+    const published: string[] = []
+    const deleted: string[] = []
+    try {
+      for (const file of changed) {
+        const target = path.join(publicRoot, file)
+        await fs.mkdir(path.dirname(target), { recursive: true })
+        await fs.rename(path.join(stage, file), target)
+        published.push(file)
+      }
+      for (const file of removed) {
+        await fs.unlink(path.join(publicRoot, file))
+        deleted.push(file)
+      }
+    } catch (error) {
+      for (const file of [...published, ...deleted].reverse()) {
+        const target = path.join(publicRoot, file)
+        if (previousSet.has(file)) await fs.rename(path.join(backup, file), target)
+        else await fs.rm(target, { force: true })
+      }
+      throw error
+    }
+    console.log(
+      `Published ${changed.length} changed files, removed ${removed.length}; kept ${next.length - changed.length} unchanged files in ${Math.round(performance.now() - publishStarted)}ms`,
+    )
+    return result
+  } finally {
+    await fs.rm(stage, { recursive: true, force: true })
+    if (backup) await fs.rm(backup, { recursive: true, force: true })
+  }
+}
