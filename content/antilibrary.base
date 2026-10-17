@@ -9,7 +9,7 @@ filters:
     - file.ext == "md"
     - not:
         - file.inFolder("library/posters")
-        - file.name == "index"
+        - file.basename == "index"
         - file.hasTag("evergreen", "meta")
 formulas:
   "2021": note.finished == 2021

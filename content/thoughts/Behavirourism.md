@@ -2,16 +2,16 @@
 date: '2024-02-07'
 description: how behaviourism explains learning, and why prediction leaves questions about attention, love, and responsibility open.
 id: Behavirourism
-modified: 2026-06-05 15:08:27 GMT-04:00
+modified: 2026-10-17 18:19:39 GMT-04:00
 seealso:
-  - '[[thoughts/functionalism]]'
-  - '[[thoughts/hermeneutics]]'
-  - '[[thoughts/Attention|attention]]'
+  - '[[thoughts/functionalism|functionalism]]'
+  - '[[thoughts/hermeneutics|hermeneutics]]'
+  - '[[thoughts/Attention|Attention]]'
 tags:
   - philosophy
   - r/psychology
   - pattern
-title: Behavirourism
+title: Behaviourism
 ---
 
 Behaviourism asks what makes an organism act as it does, and how we could test the explanation. My objection begins when an account of behaviour is treated as a complete account of a person. That objection needs a better target than the claim that behaviourists think nobody has feelings.
