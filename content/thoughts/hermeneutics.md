@@ -1,14 +1,14 @@
 ---
-date: '2025-10-03'
+date: 2025-10-03
 description: the study of interpretation
 id: hermeneutics
 modified: 2026-08-27 09:11:56 GMT-04:00
 seealso:
-  - '[[thoughts/love|love]]'
-  - '[[thoughts/functionalism|functionalism]]'
-  - '[[thoughts/Behavirourism|Behavirourism]]'
-  - '[[thoughts/ethics|ethics]]'
-  - '[[thoughts/Attention|Attention]]'
+  - "[[thoughts/love|love]]"
+  - "[[thoughts/functionalism|functionalism]]"
+  - "[[thoughts/Behaviourism|Behaviourism]]"
+  - "[[thoughts/ethics|ethics]]"
+  - "[[thoughts/Attention|Attention]]"
 socials:
   sep: https://plato.stanford.edu/entries/hermeneutics/
 tags:

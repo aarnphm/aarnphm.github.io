@@ -1435,16 +1435,21 @@ const evalFileMethod = (
     return makeLink(slug, display)
   }
   if (method === 'hasTag') {
-    const tags = args.map(arg => valueToString(arg))
+    const tags = args.map(arg => valueToString(arg).replace(/^#/, ''))
     const rawTags = file.frontmatter?.tags
     const fileTags = Array.isArray(rawTags) ? rawTags : typeof rawTags === 'string' ? [rawTags] : []
-    return makeBoolean(tags.some(tag => fileTags.includes(tag)))
+    // Obsidian matches nested tags: hasTag("a") is true for a/b.
+    return makeBoolean(
+      fileTags.some(raw => {
+        const fileTag = String(raw).replace(/^#/, '')
+        return tags.some(tag => fileTag === tag || fileTag.startsWith(`${tag}/`))
+      }),
+    )
   }
   if (method === 'inFolder') {
-    const folder = args[0] ? valueToString(args[0]) : ''
-    const slug = file.slug ? String(file.slug) : ''
-    const normalized = folder.endsWith('/') ? folder : `${folder}/`
-    return makeBoolean(slug.startsWith(normalized))
+    const folder = (args[0] ? valueToString(args[0]) : '').replace(/^\/+|\/+$/g, '')
+    if (!folder) return makeBoolean(true)
+    return makeBoolean(vaultPath(file).startsWith(`${folder}/`))
   }
   if (method === 'hasProperty') {
     const prop = args[0] ? valueToString(args[0]) : ''
@@ -1501,36 +1506,34 @@ const resolveFormulaProperty = (name: string, ctx: EvalContext): Value => {
   return value
 }
 
+// Obsidian resolves file.path, folder, name and inFolder() against the vault path. A slug can
+// differ from it: spaces become dashes and a flashcard deck `a/b.fc` publishes at a/b/flashcards.
+const vaultPath = (file: QuartzPluginData): string => {
+  for (const path of [file.relativePath, file.filePath]) {
+    if (typeof path === 'string' && path.length > 0) return path.replace(/^content\//, '')
+  }
+  return file.slug ? `${String(file.slug)}.md` : ''
+}
+
 const resolveFileProperty = (file: QuartzPluginData, property: string, ctx: EvalContext): Value => {
   if (property === 'file') return makeFile(file)
   if (property === 'name' || property === 'basename') {
-    const filePath = typeof file.filePath === 'string' ? file.filePath : ''
-    const source = filePath.length > 0 ? filePath : file.slug ? String(file.slug) : ''
-    const segment = source.split('/').pop() || ''
+    const segment = vaultPath(file).split('/').pop() || ''
     if (property === 'name') return makeString(segment)
-    const basename = segment.replace(/\.[^/.]+$/, '')
-    return makeString(basename)
+    return makeString(segment.replace(/\.[^/.]+$/, ''))
   }
   if (property === 'title') {
     const title = typeof file.frontmatter?.title === 'string' ? file.frontmatter.title : ''
     if (title.length > 0) return makeString(title)
     return resolveFileProperty(file, 'basename', ctx)
   }
-  if (property === 'path') {
-    const path = file.filePath || file.slug || ''
-    return makeString(String(path))
-  }
+  if (property === 'path') return makeString(vaultPath(file))
   if (property === 'folder') {
-    const slug = file.slug ? String(file.slug) : ''
-    const parts = slug.split('/')
-    const folder = parts.length > 1 ? parts.slice(0, -1).join('/') : ''
-    return makeString(folder)
+    const parts = vaultPath(file).split('/')
+    return makeString(parts.slice(0, -1).join('/'))
   }
   if (property === 'ext') {
-    const filePath = typeof file.filePath === 'string' ? file.filePath : ''
-    const slug = file.slug ? String(file.slug) : ''
-    const source = filePath.length > 0 ? filePath : slug
-    const match = source.match(/\.([^.]+)$/)
+    const match = vaultPath(file).match(/\.([^./]+)$/)
     return makeString(match ? match[1] : 'md')
   }
   if (property === 'size') {

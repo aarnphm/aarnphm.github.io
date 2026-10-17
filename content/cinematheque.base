@@ -1,8 +1,6 @@
 summaries:
   missing: values.filter(value.isType("null")).length
   watched: values.filter(value == "finished").length
-formulas:
-  primary_studio: "list(note.studio)[0]"
 filters:
   or:
     - file.hasTag("movies")
@@ -12,6 +10,8 @@ filters:
             - file.hasTag("evergreen", "meta")
         - not:
             - file.inFolder("movies/posters")
+formulas:
+  primary_studio: list(note.studio)[0]
 properties:
   file.tags:
     displayName: tags
@@ -255,7 +255,6 @@ views:
         - "!studio.isEmpty()"
         - year > 2000
     groupBy:
-      # The first studio entry is the main production company for this view.
       property: formula.primary_studio
       direction: ASC
     order:
