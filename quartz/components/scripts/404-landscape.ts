@@ -3549,6 +3549,7 @@ export function setupLandscape(
       const behindBoard = (x: number, y: number) => !!edge && x < edge[0] && y < edge[1]
       bough = findBough(canopy.trees[0], g, [x0, y0, x1, y1], behindBoard)
       perchJay(jay, canopy.trees[1], g, [x0, y0, x1, y1], behindBoard)
+      ;(window as any).__nfJay = { jay, tree: canopy.trees[1], px: g.px, view: [x0, y0, x1, y1], sx: [g.sx[0], g.sx[g.bw - 1]], sy: [g.sy[0], g.sy[g.bh - 1]] }
       if (!litter.leaves.length)
         for (let n = 0; n < 120; n++) stepShed(litter, canopy.trees, shedding(g), 1 / 12)
     }

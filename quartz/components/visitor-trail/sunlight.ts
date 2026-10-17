@@ -6,7 +6,8 @@ import { trailRandom } from './random'
 // flecks punched through it where the leaves part. Over the crowns: small warm flecks where the
 // sun catches the top of the canopy. Each is a dithered blob, dense at the centre and thinning
 // to scattered cells at the rim, so the light reads as broken by leaves. The ground is pale, so
-// the shade carries the effect and the flecks read as gaps in it, as they do under a real tree.
+// the shade carries the effect: solid under the canopy's middle, dithering out at its edge, with
+// the flecks painted back over it as gaps, as they are under a real tree.
 // A grove's light sways together with the wind, as the canopy above it would.
 type Blob = Point & { rx: number; ry: number; cover: number }
 
@@ -66,7 +67,7 @@ export function trailSunlight(landscape: Landscape, seed: number) {
             y: grove.y + 8 + (random() - 0.3) * grove.ry * 0.6,
             rx: grove.rx * (0.7 + random() * 0.4),
             ry: grove.ry * (0.55 + random() * 0.3),
-            cover: 0.72,
+            cover: 1,
           },
           pixel,
           i * 2,
@@ -81,18 +82,18 @@ export function trailSunlight(landscape: Landscape, seed: number) {
       const reach = Math.sqrt(random()) * 0.9
       const x = grove.x + 10 + Math.cos(angle) * grove.rx * reach
       const y = grove.y + 8 + Math.sin(angle) * grove.ry * reach
-      const rx = 8 + random() * 18
+      const rx = 8 + random() * 14
       flecks.push(
-        blobRuns({ x, y, rx, ry: rx * (0.4 + random() * 0.2), cover: 0.9 }, pixel, i + 1, land),
+        blobRuns({ x, y, rx, ry: rx * (0.4 + random() * 0.2), cover: 0.95 }, pixel, i + 1, land),
       )
     }
     // Light on the crowns: small flecks across the upper half of the grove, on the sunward side.
-    const lamps = 5 + Math.floor(random() * 4)
+    const lamps = 6 + Math.floor(random() * 4)
     for (let i = 0; i < lamps; i++) {
       const x = grove.x - grove.rx * 0.2 + (random() - 0.5) * grove.rx * 1.6
       const y = grove.y - grove.ry * (0.5 + random() * 1.1)
-      const rx = 6 + random() * 12
-      lit.push(blobRuns({ x, y, rx, ry: rx * (0.5 + random() * 0.3), cover: 0.7 }, pixel, i + 3))
+      const rx = 10 + random() * 12
+      lit.push(blobRuns({ x, y, rx, ry: rx * (0.5 + random() * 0.3), cover: 0.85 }, pixel, i + 3))
     }
     const delay = (-random() * 11).toFixed(2)
     const style = `--trail-sunlight-delay:${delay}s;--trail-sunlight-phase:${(index % 2 ? -1 : 1).toFixed(0)}`
