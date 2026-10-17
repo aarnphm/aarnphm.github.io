@@ -54,6 +54,13 @@ export function creekDistance(point: Point, landscape: Landscape) {
     for (let index = 1; index < line.length; index++) {
       const a = line[index - 1]
       const b = line[index]
+      if (
+        point.x + best <= Math.min(a.x, b.x) ||
+        point.x - best >= Math.max(a.x, b.x) ||
+        point.y + best <= Math.min(a.y, b.y) ||
+        point.y - best >= Math.max(a.y, b.y)
+      )
+        continue
       const dx = b.x - a.x
       const dy = b.y - a.y
       const t = Math.max(
@@ -136,8 +143,8 @@ export function trailLandscape(
     pond: {
       x: width * (0.25 + random() * 0.1),
       y: meadowTop + clearing * 0.64,
-      rx: Math.min(80, width * 0.085),
-      ry: Math.min(28, clearing * 0.068),
+      rx: Math.min(104, width * 0.11),
+      ry: Math.min(36, clearing * 0.088),
     },
     groves: [],
     contours: [],

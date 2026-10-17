@@ -12,7 +12,8 @@ import {
   type CachedSceneTrees,
 } from './tree-cache'
 
-declare const TRAIL_TREE_WORKER_URL: string
+declare const TRAIL_TREE_WORKER_SOURCE: string
+declare const TRAIL_TREE_VERSION: string
 
 function foregroundFallback(
   landscape: Landscape,
@@ -62,18 +63,23 @@ export function prepareSceneTrees(
   const pending = new Map<string, (markup: string | null) => void>()
   for (const { id } of trees) sprites.set(id, new Promise(resolve => pending.set(id, resolve)))
   const count = Math.min(
-    4,
+    foreground ? 5 : 4,
     Math.max(1, (navigator.hardwareConcurrency || 2) - 1),
-    Math.max(1, trees.length),
+    Math.max(1, trees.length + Number(Boolean(foreground))),
   )
+  const separateForeground = Boolean(foreground) && count > 1
+  const treeWorkers = count - Number(separateForeground)
   const workers: Worker[] = []
   const completed: CachedSceneTrees = { trees: [], foreground: [] }
   let cacheKey: string | null = null
+  let workerUrl: string | null = null
   let finished = false
   const finish = () => {
     if (finished) return
     finished = true
     for (const worker of workers) worker.terminate()
+    if (workerUrl) URL.revokeObjectURL(workerUrl)
+    workerUrl = null
     signal.removeEventListener('abort', finish)
     for (const resolve of pending.values()) resolve(null)
     pending.clear()
@@ -88,10 +94,17 @@ export function prepareSceneTrees(
   signal.addEventListener('abort', finish, { once: true })
   const startWorkers = () => {
     try {
+      workerUrl = URL.createObjectURL(
+        new Blob([TRAIL_TREE_WORKER_SOURCE], { type: 'text/javascript' }),
+      )
       for (let index = 0; index < count; index++) {
-        const worker = new Worker(TRAIL_TREE_WORKER_URL, { name: `trail-trees-${index}` })
+        const worker = new Worker(workerUrl, { name: `trail-trees-${index}` })
         workers.push(worker)
         worker.addEventListener('message', (event: MessageEvent<TreeWorkerMessage>) => {
+          if (parent.sessionStorage.getItem('trail:profile') === 'true')
+            parent.performance.mark('trail:tree-worker-response', {
+              detail: { index, kind: 'kind' in event.data ? event.data.kind : 'trees' },
+            })
           if (finished || signal.aborted) return
           if ('kind' in event.data) {
             completed.foreground = event.data.sprites
@@ -123,9 +136,13 @@ export function prepareSceneTrees(
         const request: TreeWorkerRequest = {
           landscape,
           settings,
-          trees: trees.filter((_, tree) => tree % count === index),
+          trees: trees.filter(
+            (_, tree) => tree % treeWorkers === index - Number(separateForeground),
+          ),
           foreground: index === 0 ? foreground : undefined,
         }
+        if (parent.sessionStorage.getItem('trail:profile') === 'true')
+          parent.performance.mark('trail:tree-worker-request', { detail: { index, request } })
         worker.postMessage(request)
       }
     } catch {
@@ -140,7 +157,7 @@ export function prepareSceneTrees(
       // Key only the growth values represented in the SVG; fractional forest time keeps moving.
       cacheKey = await sceneTreeCacheKey([
         'scene-trees-v2',
-        TRAIL_TREE_WORKER_URL,
+        TRAIL_TREE_VERSION,
         landscape,
         settings,
         foreground,

@@ -1,4 +1,5 @@
 import type { TreePlacement } from './scenery'
+import { bayerThreshold } from '../../util/bayer'
 import { creekDistance, type Landscape, type Point, pondDistance } from './landscape'
 import { mossWeights } from './moss-model'
 import { type MossRequest, type MossResponse, mossSize, mossTones } from './moss-nca'
@@ -14,7 +15,7 @@ declare const TRAIL_MOSS_WORKER_URL: string
 const spacing = 52
 const limit = 40
 const trackLayers =
-  '.trail-hiker-tracks, .trail-reader-tracks, .trail-camp-tracks, .trail-visitor-tracks, .trail-ranger-tracks'
+  '.trail-hiker-tracks, .trail-reader-tracks, .trail-camp-tracks, .trail-visitor-tracks, .trail-ranger-tracks, .trail-athlete-tracks'
 
 // `left` and `top` are canvas pixels; `cell` is the pixel size of one automaton cell.
 type Clump = { id: string; left: number; top: number; cell: number }
@@ -47,18 +48,49 @@ export function mountMossCover(scene: HTMLElement, host: HTMLElement, signal: Ab
     worker?.terminate()
     worker = null
   }
+  // The weather's say over the moss (world-schedule.ts mossClimate, stamped by the trail's
+  // weather): snow buries cells, rime whitens them, rain darkens them a tone and drought bleaches
+  // them one, each through the shared Bayer screen in scene pixels so the dither holds still.
+  let climate = { moisture: 0, growth: 1, buried: 0, rime: 0, lean: 0 }
+  const readClimate = () => {
+    const [moisture = 0, growth = 1, buried = 0, rime = 0, lean = 0] = (scene.dataset.moss ?? '')
+      .split(' ')
+      .map(Number)
+      .map(value => (Number.isFinite(value) ? value : undefined))
+    const next = { moisture, growth, buried, rime, lean }
+    const changed = Object.entries(next).some(
+      ([key, value]) => climate[key as keyof typeof climate] !== value,
+    )
+    climate = next
+    return changed
+  }
+  const weathered = (tone: number, column: number, row: number) => {
+    const threshold = bayerThreshold(column, row)
+    if (climate.buried > threshold) return 0
+    if (climate.rime > threshold) return mossTones
+    const shift =
+      climate.moisture > 0
+        ? climate.moisture * 0.7 > threshold
+          ? -1
+          : 0
+        : -climate.moisture * 0.8 > threshold
+          ? 1
+          : 0
+    return Math.max(1, Math.min(mossTones, tone + shift))
+  }
   const paintClump = (clump: Clump, cells: Uint8Array) => {
     if (!context) return
     const image = images[clump.cell - 1]
     const { data } = image
     const stride = mossSize * clump.cell
     for (let index = 0; index < cells.length; index++) {
-      const tone = cells[index]
       const x = (index % mossSize) * clump.cell
       const y = Math.floor(index / mossSize) * clump.cell
       for (let dy = 0; dy < clump.cell; dy++)
         for (let dx = 0; dx < clump.cell; dx++) {
           const offset = ((y + dy) * stride + x + dx) * 4
+          const tone =
+            cells[index] && weathered(cells[index], clump.left + x + dx, clump.top + y + dy)
           if (tone) data.set(palette[tone - 1], offset)
           else data[offset + 3] = 0
         }
@@ -127,6 +159,7 @@ export function mountMossCover(scene: HTMLElement, host: HTMLElement, signal: Ab
       stopWorker()
     })
     send({ type: 'init', weights: mossWeights, seed: Math.floor(Math.random() * 4294967296) })
+    send({ type: 'climate', growth: climate.growth, lean: climate.lean })
   }
   const clear = () => {
     send({ type: 'clear' })
@@ -272,9 +305,17 @@ export function mountMossCover(scene: HTMLElement, host: HTMLElement, signal: Ab
     readPalette()
     repaint()
   }
+  const reweather = () => {
+    if (!readClimate()) return
+    send({ type: 'climate', growth: climate.growth, lean: climate.lean })
+    if (canvas) repaint()
+  }
   document.addEventListener('themechange', restyle, { signal })
   const seasons = new view.MutationObserver(restyle)
   seasons.observe(scene, { attributes: true, attributeFilter: ['data-foliage-season'] })
+  const weather = new view.MutationObserver(reweather)
+  weather.observe(scene, { attributes: true, attributeFilter: ['data-moss'] })
+  readClimate()
   document.addEventListener('visibilitychange', () => (document.hidden ? pause() : resume()), {
     signal,
   })
@@ -283,6 +324,7 @@ export function mountMossCover(scene: HTMLElement, host: HTMLElement, signal: Ab
     () => {
       observer.disconnect()
       seasons.disconnect()
+      weather.disconnect()
       view.clearTimeout(hitFlush)
       stopWorker()
     },

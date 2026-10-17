@@ -3,7 +3,7 @@ import type { NavigableTrail } from './obstacle-route'
 import { svgPathGeometry } from '../../util/svg-geometry'
 import { trailSceneSeed } from '../../util/trail-preference'
 import { trailSceneHeight } from '../../util/trail-scene'
-import { readSolids, type CollisionActor } from './actor-spacing'
+import { invalidateSolids, readSolids, type CollisionActor } from './actor-spacing'
 import { mountAlpineJourneys } from './alpine-journey'
 import { trailBackpacker } from './backpacker'
 import { mountTrailBlazes } from './blazes'
@@ -11,6 +11,7 @@ import { mountCampCommunity } from './camp-community'
 import { campSites } from './camp-layout'
 import { connectCampPresence } from './camp-presence'
 import { trailCampsite } from './campsite'
+import { holdClockGeometry } from './clock-clearance'
 import { mountCrownWind } from './crown-wind'
 import { mountGroundDepth } from './depth-order'
 import { footprint, footprintTransform, type FootprintKind } from './footprints'
@@ -18,7 +19,13 @@ import { createForestSprites } from './forest-sprites'
 import { mountHikerJourney } from './hiker-journey'
 import { mountTrailHolidays } from './holidays'
 import { mountJay } from './jay'
-import { trailGroundScale, type Landscape, type Point } from './landscape'
+import {
+  creekDistance,
+  pondDistance,
+  trailGroundScale,
+  type Landscape,
+  type Point,
+} from './landscape'
 import { trailIds, trailLayout, type TrailId } from './layout'
 import { mountLeafFall } from './leaf-fall'
 import { mountMossCover } from './moss-cover'
@@ -31,7 +38,7 @@ import { petExpedition } from './pet-expedition'
 import { trailRandom } from './random'
 import { mountSceneCompositor } from './scene-compositor'
 import { mountSceneLighting } from './scene-lighting'
-import { mountSceneReveal } from './scene-reveal'
+import { mountSceneReveal, sceneMotionReady } from './scene-reveal'
 import { sceneSettings } from './scene-settings'
 import { mountSceneSurface } from './scene-surface'
 import {
@@ -44,6 +51,8 @@ import {
 import { prepareScenery } from './scenery-workers'
 import { mountSeasonToggle } from './season-toggle'
 import { mountSharedGrove, type Watering } from './shared-grove'
+import { trailSunlight } from './sunlight'
+import { mountTrailAthletes } from './trail-athletes'
 import { prepareSceneTrees, prepareTreeSprites } from './tree-workers'
 import { mountVisitorJourneys } from './visitor-journey'
 import { mountMapReaderJourneys } from './wayfarer-journey'
@@ -100,14 +109,18 @@ scene.innerHTML = `
       <g class="trail-camp-tracks"></g>
       <g class="trail-visitor-tracks"></g>
       <g class="trail-ranger-tracks"></g>
+      <g class="trail-athlete-tracks"></g>
       <g class="trail-park-patrol"></g>
       <g class="trail-landmarks"></g>
       <g class="trail-extension-forest"></g>
+      <g class="trail-sunlight" aria-hidden="true"></g>
       <g class="trail-fauna"></g>
+      <g class="trail-sunlight trail-sunlight-canopy" aria-hidden="true"></g>
       <g class="trail-holidays" aria-hidden="true"></g>
       <g class="trail-wayfarers"></g>
       <g class="trail-community"></g>
       <g class="trail-visitors"></g>
+      <g class="trail-athletes" aria-hidden="true"></g>
       ${trailBackpacker()}
       <g class="trail-depth-objects"></g>
       <g class="trail-birds" aria-hidden="true"></g>
@@ -192,8 +205,22 @@ const drawWoodland = () => {
   if (foothillTrees && landmarks)
     foothillTrees.append(...landmarks.querySelectorAll('[data-tree-depth="foothill"]'))
 }
+// The jay's larder keeps off the pond and the creek, out of the tents and inside the scene.
+const larderClear = (point: Point) => {
+  const landscape = forestLayout
+  if (!landscape) return false
+  if (point.x < 12 || point.x > landscape.width - 12 || point.y > landscape.height - 12)
+    return false
+  if (pondDistance(point, landscape.pond) < 1.35 || creekDistance(point, landscape) < 12)
+    return false
+  return campSites(landscape, sceneSeed, camps).every(
+    site =>
+      Math.hypot(site.x - point.x, site.y - point.y) > 48 &&
+      site.tents.every(tent => Math.hypot(tent.x - point.x, tent.y - point.y) > 30),
+  )
+}
 const refreshForest = () => {
-  jay.refresh(treePlan ?? [])
+  jay.refresh(treePlan ?? [], larderClear)
   crowns.refresh()
   holidays.refreshTrees()
   pastureJourneys.refreshForest()
@@ -209,6 +236,8 @@ let navigationSignature = ''
 let navigationRoutes: NavigableTrail[] = []
 let navigationBodies: CollisionActor[] = []
 const journeyObstacles = (landscape: Landscape) => {
+  // A generation continuation can insert trees after an earlier read in the same frame.
+  invalidateSolids(scene)
   const solids = new Map(
     readSolids(scene)
       .filter(solid => solid.id.startsWith('trunk-'))
@@ -313,13 +342,21 @@ const grove = mountSharedGrove(
 let regrowing: AbortController | null = null
 const regrowForest = async () => {
   const landmarks = scene.querySelector('.trail-landmarks')
-  if (!forestLayout || !treePlan || !landmarks || scene.dataset.trailRendered !== 'true') return
+  if (
+    !forestLayout ||
+    !treePlan ||
+    !landmarks ||
+    scene.dataset.trailRendered !== 'true' ||
+    !sceneMotionReady(scene)
+  )
+    return
   if (plannedWater === groveWater) return
   regrowing?.abort()
   const controller = new AbortController()
   regrowing = controller
   const layout = forestLayout
   const base = treePlan
+  const water = groveWater
   const previous = new Map(base.map(placement => [placement.id, placement]))
   const next = planTrailTrees(
     layout,
@@ -327,7 +364,7 @@ const regrowForest = async () => {
     forestObstacles,
     forestClearings(layout),
     forestNow,
-    (plannedWater = groveWater),
+    water,
   )
   const changed = next.filter(placement => {
     const before = previous.get(placement.id)
@@ -339,12 +376,17 @@ const regrowForest = async () => {
       before.log !== placement.log
     )
   })
-  if (!changed.length) return
+  if (!changed.length) {
+    plannedWater = water
+    return
+  }
   const painting = prepareTreeSprites(layout, changed, forest, controller.signal)
   const markups = new Map<string, string | null>()
   for (const [id, markup] of painting) markups.set(id, await markup)
   // A new layout repaints the whole forest with this water already.
-  if (controller.signal.aborted || signal.aborted || treePlan !== base) return
+  if (controller.signal.aborted || signal.aborted || treePlan !== base || !sceneMotionReady(scene))
+    return
+  plannedWater = water
   treePlan = next
   for (const placement of changed)
     if (placement.log === null) forestNodes.remove(`deadfall-${placement.id}`)
@@ -357,6 +399,8 @@ const regrowForest = async () => {
   weather.refreshForest()
   refreshForest()
 }
+for (const event of ['trail:prepared', 'trail:reveal-end', 'trail:closed'])
+  host.addEventListener(event, () => void regrowForest(), { signal })
 const refreshStructures = () => {
   // Keep generation holders intact until every owner has replaced its previous sprites.
   if (scene.dataset.trailRendered === 'true' && forestLayout) {
@@ -365,6 +409,7 @@ const refreshStructures = () => {
 }
 const community = mountCampCommunity(scene, host, signal, refreshStructures, navigation)
 const parkPatrol = mountParkPatrol(scene, host, signal, navigation)
+const athletes = mountTrailAthletes(scene, host, signal)
 const visitorJourneys = mountVisitorJourneys(scene, host, signal, refreshStructures, navigation)
 const worldPatches = mountWorldPatches(
   scene,
@@ -401,20 +446,23 @@ host.addEventListener('trail:open', () => prioritizeRendering('user-visible'), {
 host.addEventListener('trail:hide', () => prioritizeRendering('background'), { signal })
 let generationSlice = 0
 const yieldRender = (signal: AbortSignal) => {
-  if (performance.now() - generationSlice < 8) return Promise.resolve(!signal.aborted)
-  if (generationScheduler)
-    return generationScheduler
-      .postTask(
-        () => {
-          generationSlice = performance.now()
-          return !signal.aborted
-        },
-        { signal },
-      )
+  if (performance.now() - generationSlice < (host.hidden ? 8 : 16))
+    return Promise.resolve(!signal.aborted)
+  if (generationScheduler) {
+    const continuation =
+      !host.hidden && typeof generationScheduler.yield === 'function'
+        ? generationScheduler.yield()
+        : generationScheduler.postTask(() => undefined, { signal })
+    return continuation
+      .then(() => {
+        generationSlice = performance.now()
+        return !signal.aborted
+      })
       .catch(error => {
         if (signal.aborted) return false
         throw error
       })
+  }
   return new Promise<boolean>(resolve => {
     if (signal.aborted) return resolve(false)
     const task = new MessageChannel()
@@ -506,6 +554,7 @@ const drawScene = async () => {
     ? new TaskController({ priority: host.hidden ? 'background' : 'user-visible' })
     : new AbortController()
   const renderSignal = rendering.signal
+  const releaseClock = holdClockGeometry(svg, renderSignal)
   scene.dataset.trailRendered = 'false'
   scene.dataset.trailRasterReady = 'false'
   // Geometry sampling uses isolated paths. Keep the growing model out of layout until its
@@ -518,6 +567,7 @@ const drawScene = async () => {
   community.pause()
   visitorJourneys.pause()
   parkPatrol.pause()
+  athletes.pause()
   groundDepth.restore()
   if (scene.dataset.trailOpening !== 'complete') {
     for (const holder of svg.querySelectorAll(
@@ -532,8 +582,6 @@ const drawScene = async () => {
   worldPatches.reset(layout.landscape, sceneSeed, `${clip}-backdrop`)
   layoutSignature = signature
   if (host.hidden && !(await yieldRender(renderSignal))) return
-  // Load route workers while scenery is built, before the complete forest needs their plans.
-  navigation.warm()
   weather.update(layout.landscape, sceneSeed)
   campsite.style.left = `${layout.camp.x}px`
   campsite.style.top = `${layout.camp.y}px`
@@ -579,6 +627,13 @@ const drawScene = async () => {
   const pasture = trailPasture(layout.landscape, geometries, sceneSeed, animals)
   const fauna = scene.querySelector('.trail-fauna')
   if (fauna) fauna.innerHTML = pasture.markup
+  const sunlight = scene.querySelector('.trail-sunlight:not(.trail-sunlight-canopy)')
+  const canopyLight = scene.querySelector('.trail-sunlight-canopy')
+  if (sunlight && canopyLight) {
+    const light = trailSunlight(layout.landscape, sceneSeed)
+    sunlight.innerHTML = light.ground
+    canopyLight.innerHTML = light.canopy
+  }
   forestLayout = layout.landscape
   forestObstacles = [
     ...geometries.flatMap(route => route.samples.filter((_, index) => index % 4 === 0)),
@@ -744,13 +799,10 @@ const drawScene = async () => {
     geometries.map(route => route.samples),
   )
   weather.refreshForest()
-  svg.style.removeProperty('display')
   grove.refresh()
   const bodies = journeyObstacles(layout.landscape)
   const routing = navigation.prepare(journeyInputs(), layout.landscape, bodies, renderSignal)
   if (!(await yieldRender(renderSignal))) return
-  // Plan from the complete, grown forest while climate geometry and static textures prepare.
-  refreshForest()
   scene.dataset.trailRasterReady = 'true'
   host.dispatchEvent(new Event('trail:prepare'))
   const preparedRoutes = await routing
@@ -761,6 +813,7 @@ const drawScene = async () => {
   visitorJourneys.update(routes, layout.landscape, sceneSeed, camps)
   if (!(await yieldRender(renderSignal))) return
   parkPatrol.update(layout.landscape, sceneSeed, routes, travelers.rangers)
+  athletes.update(layout.landscape, sceneSeed, routes)
   if (!(await yieldRender(renderSignal))) return
   journey.update(routes, layout.landscape, sceneSeed, travelers.walkers > 0)
   if (!(await yieldRender(renderSignal))) return
@@ -779,6 +832,10 @@ const drawScene = async () => {
   if (!(await yieldRender(renderSignal))) return
   perspective.update()
   groundDepth.refresh()
+  svg.style.removeProperty('display')
+  releaseClock()
+  // Forest measurements include the completed actor layout before the compositor reads it.
+  refreshForest()
   scene.dataset.trailRendered = 'true'
   // Water that arrived while the forest was painting.
   void regrowForest()
@@ -901,6 +958,7 @@ const pauseScene = () => {
   community.pause()
   visitorJourneys.pause()
   parkPatrol.pause()
+  athletes.pause()
   moss.pause()
 }
 host.addEventListener('trail:close', pauseScene, { signal })

@@ -5,6 +5,7 @@ import { svgLocalMatrix } from '../../util/svg-geometry'
 type ClockRegion = { left: number; right: number; top: number; bottom: number }
 type FrameGeometry = {
   time: DocumentTimeline['currentTime']
+  held: boolean
   width: number
   height: number
   clock: Element | null
@@ -21,9 +22,10 @@ function frameGeometry(document: Document) {
   if (!view) return null
   const time = document.timeline.currentTime
   const known = frames.get(document)
-  if (known?.time === time && known.clock?.isConnected) return known
+  if (known?.held || (known?.time === time && known.clock?.isConnected)) return known
   const next: FrameGeometry = {
     time,
+    held: false,
     width: view.innerWidth,
     height: view.innerHeight,
     clock: document.querySelector('.trail-local-time'),
@@ -46,6 +48,27 @@ export function trailClockRegion(document: Document) {
     top: clock.top - 12,
     bottom: frame.height,
   })
+}
+
+// Initial actor placement uses one viewport while its SVG model is outside layout.
+export function holdClockGeometry(svg: SVGSVGElement, signal: AbortSignal) {
+  const document = svg.ownerDocument
+  const frame = frameGeometry(document)
+  if (!frame || signal.aborted) return () => undefined
+  trailClockRegion(document)
+  const native = svg.getScreenCTM()
+  frame.screens.set(
+    svg,
+    native ? new DOMMatrix([native.a, native.b, native.c, native.d, native.e, native.f]) : null,
+  )
+  frame.held = true
+  const release = () => {
+    frame.held = false
+    if (frames.get(document) === frame) frames.delete(document)
+    signal.removeEventListener('abort', release)
+  }
+  signal.addEventListener('abort', release, { once: true })
+  return release
 }
 
 export function clockObstacles(

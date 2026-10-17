@@ -144,7 +144,7 @@
       display: none;
     }
 
-    :is(.trail-tree, .trail-woodland-tree) .trail-tree-trunk {
+    :is(.trail-tree, .trail-woodland-tree, .trail-jay-roost) .trail-tree-trunk {
       fill: color-mix(
         in srgb,
         var(--trail-winter-wood) calc(100% - var(--trail-tree-haze, 0%)),

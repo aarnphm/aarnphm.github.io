@@ -170,6 +170,10 @@ function readBaseTrunks(scene: ParentNode): CollisionActor[] {
   return trunks
 }
 
+export function invalidateSolids(scene: ParentNode) {
+  trunkFrames.delete(scene)
+}
+
 export function readSolids(
   scene: ParentNode,
   relativeTo?: SVGGElement,

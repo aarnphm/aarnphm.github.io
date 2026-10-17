@@ -1,0 +1,63 @@
+.homepage-trail-scene {
+  .trail-athlete,
+  .trail-athlete-tracks {
+    shape-rendering: crispEdges;
+    pointer-events: none;
+  }
+  .trail-athlete-tracks {
+    fill: var(--darkgray);
+    opacity: 0.3;
+  }
+  .trail-athlete-tracks [data-footprint='tyre'] {
+    opacity: 0.7;
+  }
+  .trail-athlete-cap {
+    fill: color-mix(in srgb, var(--lightgray) 35%, #e6e1cf);
+  }
+  .trail-athlete-shirt {
+    fill: color-mix(in srgb, var(--gray) 35%, #8d9aa0);
+  }
+  .trail-athlete-vest {
+    fill: color-mix(in srgb, var(--gray) 20%, #fdb2a2);
+  }
+  .trail-athlete-bib {
+    fill: var(--light);
+  }
+  .trail-athlete-shorts,
+  .trail-athlete-shoe,
+  .trail-athlete-tyre {
+    fill: var(--dark);
+  }
+  .trail-athlete-helmet {
+    fill: color-mix(in srgb, var(--gray) 30%, #6f7f6a);
+  }
+  .trail-athlete-visor,
+  .trail-athlete-bar,
+  .trail-athlete-saddle {
+    fill: var(--darkgray);
+  }
+  .trail-athlete-jersey {
+    fill: color-mix(in srgb, var(--gray) 20%, #cdd597);
+  }
+  .trail-athlete-frame {
+    fill: color-mix(in srgb, var(--darkgray) 30%, #b0543e);
+  }
+  .trail-athlete-hub {
+    fill: var(--gray);
+  }
+  .trail-athlete[data-stride='0'] .trail-athlete-stride[data-stride='1'],
+  .trail-athlete[data-stride='1'] .trail-athlete-stride[data-stride='0'] {
+    display: none;
+  }
+  // The runner's headlamp, lit only after dark.
+  .trail-athlete-lamp {
+    fill: color-mix(in srgb, var(--light) 30%, #f4e7b4);
+  }
+  .trail-athlete-beam {
+    fill: color-mix(in srgb, var(--light) 30%, #f4e7b4);
+    opacity: 0.22;
+  }
+  .trail-scene:not([data-night='true']) :is(.trail-athlete-lamp, .trail-athlete-beam) {
+    display: none;
+  }
+}

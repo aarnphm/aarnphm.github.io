@@ -1068,12 +1068,17 @@ export function contains(x: number, y: number, bounds: Region) {
 }
 
 export function heightAt(profile: Profile, x: number) {
-  for (let index = 1; index < profile.length; index++) {
-    const [ax, ay] = profile[index - 1]
-    const [bx, by] = profile[index]
-    if (x <= bx) return ay + ((by - ay) * (x - ax)) / (bx - ax)
+  let low = 1
+  let high = profile.length
+  while (low < high) {
+    const middle = (low + high) >>> 1
+    if (x <= profile[middle][0]) high = middle
+    else low = middle + 1
   }
-  return profile[profile.length - 1][1]
+  if (low === profile.length) return profile[profile.length - 1][1]
+  const [ax, ay] = profile[low - 1]
+  const [bx, by] = profile[low]
+  return ay + ((by - ay) * (x - ax)) / (bx - ax)
 }
 
 export type MountainRange = {
