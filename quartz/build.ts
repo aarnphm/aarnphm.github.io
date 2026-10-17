@@ -3,6 +3,7 @@ import { Mutex } from 'async-mutex'
 import chokidar from 'chokidar'
 import { GlobbyFilterFunction, isGitIgnored } from 'globby'
 import { minimatch } from 'minimatch'
+import { createHash } from 'node:crypto'
 import { once } from 'node:events'
 import { stat } from 'node:fs/promises'
 import path from 'path'
@@ -18,6 +19,7 @@ import { emitContent, emitPartialEmitter } from './processors/emit'
 import { filterContentResult } from './processors/filter'
 import { parseMarkdown } from './processors/parse'
 import { ChangeEvent } from './types/plugin'
+import { defaultIoConcurrency, mapConcurrent } from './util/async-pool'
 import { courseDirOf } from './util/course'
 import { Argv, BuildCtx } from './util/ctx'
 import { emitQuartzDevEvent } from './util/dev-events'
@@ -77,7 +79,7 @@ async function syncOutputAssetClaims(ctx: BuildCtx, refreshStaticFiles = false):
 
 type BuildReason = 'initial' | 'source'
 /** `courses` keeps `public` and re-renders only the course pages, for a course source edit. */
-type BuildScope = 'site' | 'courses'
+type BuildScope = 'site' | 'courses' | { emitters: string[] }
 type RebuildQueue = { running: boolean; requested: boolean }
 type PendingChanges = Map<FilePath, ChangeEvent['type']>
 type BuildData = {
@@ -91,6 +93,64 @@ type BuildData = {
 }
 
 type WatchRuntime = { ready: boolean; dispose(): Promise<void> }
+
+type SourceEmissionSnapshot = {
+  key: string
+  inputs: string
+  content: ProcessedContent[]
+  emitters: string
+  outputs: Map<string, Set<string>>
+  resources: string
+}
+declare global {
+  var __quartzSourceEmissionSnapshot: SourceEmissionSnapshot | undefined
+}
+
+function emissionKey(ctx: BuildCtx): string {
+  return JSON.stringify([
+    path.resolve(ctx.argv.directory),
+    path.resolve(ctx.argv.output),
+    ctx.gitCommitSha,
+  ])
+}
+
+async function emissionInputs(ctx: BuildCtx): Promise<string | undefined> {
+  const signatures = await mapConcurrent(ctx.allFiles, defaultIoConcurrency, async file => {
+    return stat(path.join(ctx.argv.directory, file), { bigint: true }).then(
+      info => `${file}:${info.size}:${info.mtimeNs}:${info.ctimeNs}`,
+      () => undefined,
+    )
+  })
+  if (signatures.some(signature => signature === undefined)) return undefined
+  return createHash('sha256').update(signatures.sort().join('\n')).digest('hex')
+}
+
+async function matchingEmissionSnapshot(
+  ctx: BuildCtx,
+  content: ProcessedContent[],
+  inputs: string | undefined,
+): Promise<SourceEmissionSnapshot | undefined> {
+  const snapshot = globalThis.__quartzSourceEmissionSnapshot
+  if (
+    !snapshot ||
+    inputs === undefined ||
+    snapshot.key !== emissionKey(ctx) ||
+    snapshot.inputs !== inputs ||
+    snapshot.emitters !== JSON.stringify(ctx.cfg.plugins.emitters.map(emitter => emitter.name)) ||
+    snapshot.content.length !== content.length ||
+    snapshot.content.some((entry, index) => entry !== content[index])
+  )
+    return undefined
+  const files = [...new Set([...snapshot.outputs.values()].flatMap(owned => [...owned]))]
+  const present = await mapConcurrent(files, defaultIoConcurrency, async file => {
+    if (path.isAbsolute(file) || file === '..' || file.startsWith(`..${path.sep}`)) return false
+    return stat(path.join(ctx.argv.output, file)).then(
+      info => info.isFile(),
+      () => false,
+    )
+  })
+  return present.every(Boolean) ? snapshot : undefined
+}
 
 const contentFilePath = (content: ProcessedContent): FilePath | undefined =>
   content[1].data.filePath as FilePath | undefined
@@ -219,16 +279,81 @@ async function emitFullBuild(
   ctx: BuildCtx,
   perf: PerfTimer,
   content: ProcessedContent[],
+  scope: BuildScope = 'site',
 ): Promise<void> {
   const publicArgv = ctx.argv
+  const inputs = publicArgv.watch ? await emissionInputs(ctx) : ''
+  const previous =
+    typeof scope === 'object' ? await matchingEmissionSnapshot(ctx, content, inputs) : undefined
+  let selected =
+    typeof scope === 'object' &&
+    previous &&
+    scope.emitters.length > 0 &&
+    scope.emitters.every(name => previous.outputs.has(name))
+      ? { emitters: new Set(scope.emitters), resourceSignature: previous.resources }
+      : undefined
+  if (selected && previous) {
+    const requested = selected.emitters
+    const selectedPaths = new Set(
+      [...requested].flatMap(name => [...(previous.outputs.get(name) ?? [])]),
+    )
+    const sharesOutput = [...previous.outputs].some(
+      ([name, files]) => !requested.has(name) && [...files].some(file => selectedPaths.has(file)),
+    )
+    if (sharesOutput) selected = undefined
+  }
+  globalThis.__quartzSourceEmissionSnapshot = undefined
+  let resources = ''
+  if (publicArgv.watch) ctx.emittedFiles = new Map()
   if (publicArgv.watch) {
     await withStagedOutput(
       publicArgv.output,
       async stage => {
         ctx.argv = { ...publicArgv, output: stage }
         try {
-          await cleanOutputForBuild(ctx, perf, true, publicArgv.output)
-          await emitContent(ctx, content)
+          if (selected) {
+            console.log(
+              `Reusing output; emitting ${[...selected.emitters].join(', ')} and resources`,
+            )
+            resetGeneratedResourceState(ctx)
+            ctx.outputAssetManifest = await readOutputAssetManifest()
+            relocateOutputAssets(ctx, publicArgv.output, stage)
+            await syncOutputAssetClaims(ctx, true)
+            ctx.outputAssetPreserved = await preservedOutputAssets(
+              ctx.outputAssetManifest,
+              ctx.outputAssetClaims ?? [],
+            )
+            resetWriteCache()
+            ctx.incremental = true
+          } else {
+            await cleanOutputForBuild(ctx, perf, true, publicArgv.output)
+          }
+          resources = await emitContent(ctx, content, undefined, selected)
+          if (selected && previous && ctx.emittedFiles) {
+            const unselectedPaths = new Set(
+              [...previous.outputs]
+                .filter(([name]) => !ctx.emittedFiles?.has(name))
+                .flatMap(([, files]) => [...files]),
+            )
+            const newOverlap = [...selected.emitters].some(name =>
+              [...(ctx.emittedFiles?.get(name) ?? [])].some(file => unselectedPaths.has(file)),
+            )
+            if (newOverlap) {
+              console.log('New output ownership overlaps; emitting all owners')
+              resetGeneratedResourceState(ctx)
+              ctx.emittedFiles.clear()
+              resources = await emitContent(ctx, content)
+            }
+          }
+          if (selected && previous && ctx.emittedFiles) {
+            const owners = new Map([...previous.outputs, ...ctx.emittedFiles])
+            const retained = new Set([...owners.values()].flatMap(files => [...files]))
+            for (const name of ctx.emittedFiles.keys()) {
+              for (const file of previous.outputs.get(name) ?? []) {
+                if (!retained.has(file)) await removeWritten(ctx, file, '')
+              }
+            }
+          }
         } finally {
           relocateOutputAssets(ctx, stage, publicArgv.output)
           ctx.argv = publicArgv
@@ -243,6 +368,17 @@ async function emitFullBuild(
   }
   await writeCurrentOutputAssetManifest(ctx)
   delete ctx.outputAssetPreserved
+  if (publicArgv.watch && ctx.emittedFiles && inputs !== undefined) {
+    globalThis.__quartzSourceEmissionSnapshot = {
+      key: emissionKey(ctx),
+      inputs,
+      content,
+      emitters: JSON.stringify(ctx.cfg.plugins.emitters.map(emitter => emitter.name)),
+      outputs: new Map([...(selected && previous ? previous.outputs : []), ...ctx.emittedFiles]),
+      resources,
+    }
+    delete ctx.emittedFiles
+  }
 }
 
 export async function buildQuartz(
@@ -312,10 +448,11 @@ export async function buildQuartz(
     for (const [fp, content] of indexContent(filteredContent)) initialContent.set(fp, content)
 
     if (scope === 'courses') {
+      globalThis.__quartzSourceEmissionSnapshot = undefined
       ctx.incremental = true
       await emitCourses(ctx, filteredContent)
     } else {
-      await emitFullBuild(ctx, perf, filteredContent)
+      await emitFullBuild(ctx, perf, filteredContent, scope)
     }
     ctx.incremental = argv.watch
     if (watching) watching.ready = true
@@ -329,6 +466,7 @@ export async function buildQuartz(
       elapsedMs: perf.elapsedMs(),
     })
   } catch (err) {
+    globalThis.__quartzSourceEmissionSnapshot = undefined
     emitQuartzDevEvent({
       type: 'build:error',
       epoch: ctx.buildId,
@@ -503,6 +641,7 @@ async function rebuildAgentSkills(
 
   try {
     if (buildData.disposed) return
+    globalThis.__quartzSourceEmissionSnapshot = undefined
     ctx.buildId = buildId
     emitQuartzDevEvent({ type: 'build:start', epoch: buildId, reason: 'content' })
 
@@ -541,6 +680,7 @@ async function rebuild(clientRefresh: () => void, buildData: BuildData, pending:
 
   try {
     if (buildData.disposed) return
+    globalThis.__quartzSourceEmissionSnapshot = undefined
     ctx.buildId = buildId
     emitQuartzDevEvent({ type: 'build:start', epoch: buildId, reason: 'content' })
 
@@ -642,6 +782,7 @@ export async function buildSourceResources(
   const perf = new PerfTimer()
   const release = await mut.acquire()
   try {
+    globalThis.__quartzSourceEmissionSnapshot = undefined
     emitQuartzDevEvent({ type: 'build:start', epoch: ctx.buildId, reason: 'source' })
     syncCtxFiles(ctx, await glob('**', argv.directory, cfg.configuration.ignorePatterns))
     const changeEvents: ChangeEvent[] = await Promise.all(

@@ -42,6 +42,8 @@ export interface BuildCtx {
   allFiles: FilePath[]
   trie?: FileTrieNode<BuildTimeTrieData>
   incremental: boolean
+  /** Complete output ownership for a source emission transaction, relative to argv.output. */
+  emittedFiles?: Map<string, Set<string>>
   gitCommitSha?: string
   assetManifest?: AssetManifest
   extractedStaticResources?: Map<string, string>
