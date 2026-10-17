@@ -1096,6 +1096,14 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     const trail = document.querySelector<HTMLElement>('.homepage-trail-scene')
     const preload = () => {
       if (!searchElement.isConnected) return
+      // A closed scene can finish preparing before the queued idle callback runs.
+      if (
+        trail?.shadowRoot?.querySelector<HTMLElement>('.trail-scene')?.dataset.trailReveal ===
+        'revealing'
+      ) {
+        schedulePreload()
+        return
+      }
       void ensureSearchData('background').catch(error =>
         console.warn('[Search] preload failed:', error),
       )
@@ -1103,7 +1111,7 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     const schedulePreload = () => {
       // Trail textures and search indexing share the main thread on a fresh homepage.
       const scene = trail?.shadowRoot?.querySelector<HTMLElement>('.trail-scene')
-      if (trail && !trail.hidden && scene?.dataset.trailOpening !== 'complete') {
+      if (trail && scene?.dataset.trailOpening !== 'complete') {
         trail.addEventListener('trail:prepared', schedulePreload, { once: true })
         return
       }

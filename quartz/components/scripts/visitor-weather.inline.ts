@@ -16,6 +16,7 @@ import {
   visitorConditionsLabel,
   type VisitorForecast,
 } from '../../util/visitor-weather'
+import { fetchVisitorWeather } from '../../util/visitor-weather-request'
 import { guessSite } from './404-almanac'
 import { registerEscapeHandler } from './escape-handler'
 import { mountHomepagePrecipitation } from './homepage-precipitation'
@@ -253,13 +254,12 @@ document.addEventListener('nav', () => {
       )
   }
 
-  const refresh = async () => {
+  const refresh = async (force = false) => {
     if (pending || signal.aborted) return
     pending = true
     render()
     try {
-      const response = await fetch('/api/weather', { signal, cache: 'no-store' })
-      const body: unknown = response.ok ? await response.json() : null
+      const body = await fetchVisitorWeather({ signal, force })
       if (signal.aborted) return
       forecast = readVisitorForecast(body)
       fetchedAt = Date.now()
@@ -290,12 +290,12 @@ document.addEventListener('nav', () => {
   )
   panel
     .querySelector('[data-weather-retry]')
-    ?.addEventListener('click', () => void refresh(), { signal })
+    ?.addEventListener('click', () => void refresh(true), { signal })
   const tick = () => {
     if (document.hidden) return
     moon.refresh()
     render()
-    if (fetchedAt && Date.now() - fetchedAt >= 900000) void refresh()
+    if (fetchedAt && Date.now() - fetchedAt >= 900000) void refresh(true)
   }
   document.addEventListener('visibilitychange', tick, { signal })
   const timer = window.setInterval(tick, 60000)

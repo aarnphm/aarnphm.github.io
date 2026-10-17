@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
+import { campSleeps } from '../../util/world-schedule'
 import { campMayDepart, campMaySleep, campRoutine } from './camp-routine'
 
 const minute = 60 * 1000
@@ -24,18 +25,20 @@ test('camp schedules use hours and retain different passing and overnight stays'
   }
 })
 
-test('sleep waits for settling, local bedtime, and an overnight camp', () => {
+test('sleep waits for settling, the solar bedtime, and an overnight camp', () => {
+  // The bedtime: two hours past civil dusk (sun near -20°) until civil dawn, by the visitor's sun.
+  const sun = (alt: number, hour: number) => ({ sun: { alt, across: 0, bearing: 0 }, hour })
+  assert.equal(campSleeps(sun(-12, 19)), false)
+  assert.equal(campSleeps(sun(-24, 21)), true)
+  assert.equal(campSleeps(sun(-30, 0.2)), true)
+  assert.equal(campSleeps(sun(-4, 7)), false)
+  assert.equal(campSleeps(sun(5, 21)), false)
+
   const camp = campRoutine(1, 0, new Date(2026, 9, 11, 21).getTime())
   assert.equal(camp.variation, 'overnight')
-  assert.equal(campMaySleep(camp, new Date(2026, 9, 11, 21, 59).getTime(), true), false)
-  assert.equal(campMaySleep(camp, new Date(2026, 9, 11, 22).getTime(), true), true)
-  assert.equal(campMaySleep(camp, new Date(2026, 9, 11, 22).getTime(), false), false)
-  assert.equal(campMaySleep(camp, new Date(2026, 9, 12, 0, 10).getTime(), true), true)
-  assert.equal(campMaySleep(camp, new Date(2026, 9, 12, 7).getTime(), true), false)
-
-  const late = campRoutine(1, 0, new Date(2026, 9, 11, 23).getTime())
-  assert.equal(campMaySleep(late, late.sleepAt - 1, true), false)
-  assert.equal(campMaySleep(late, late.sleepAt, true), true)
+  assert.equal(campMaySleep(camp, camp.sleepAt - 1, true), false)
+  assert.equal(campMaySleep(camp, camp.sleepAt, true), true)
+  assert.equal(campMaySleep(camp, camp.sleepAt, false), false)
   const passing = campRoutine(0, 0, new Date(2026, 9, 11, 21).getTime())
   assert.equal(campMaySleep(passing, new Date(2026, 9, 11, 23).getTime(), true), false)
 })

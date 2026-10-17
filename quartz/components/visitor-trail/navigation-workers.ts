@@ -180,6 +180,9 @@ export function createTrailNavigation(lifetime: AbortSignal) {
     { once: true },
   )
   return {
+    warm() {
+      while (!lifetime.aborted && !unavailable && slots.length < limit) if (!spawn()) break
+    },
     plan: (
       road: readonly Point[],
       radius: number,

@@ -13,6 +13,7 @@ import { bootImpression } from './footprints'
 import { trailGroundScale, type Landscape, type Point } from './landscape'
 import { createNavigationSlot, type TrailNavigation } from './navigation-workers'
 import { trailRandom } from './random'
+import { sceneMotionReady } from './scene-reveal'
 
 export type JourneyRoute = {
   id: TrailId
@@ -244,6 +245,7 @@ export function mountHikerJourney(
   }
   const schedule = () => {
     if (
+      !sceneMotionReady(scene) ||
       signal.aborted ||
       host.hidden ||
       document.hidden ||
@@ -339,7 +341,7 @@ export function mountHikerJourney(
   }
   const tick = (time: number) => {
     frame = timer = null
-    if (host.hidden || document.hidden || signal.aborted) return pause()
+    if (!sceneMotionReady(scene) || host.hidden || document.hidden || signal.aborted) return pause()
     const delta = previousTime === null ? 0 : Math.max(0, time - previousTime)
     if (moving() && time - renderedAt < 1000 / 30) return schedule()
     if (moving()) walk(delta, time)

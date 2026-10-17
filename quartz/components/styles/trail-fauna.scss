@@ -43,6 +43,21 @@
     transform: translateY(calc(4 * var(--trail-animal-step)));
   }
 
+  // A lying cow folds its legs under it (world-schedule.ts herd, set per cow by pasture-wander).
+  [data-trail-animal='cow'][data-herd='lying'] {
+    .trail-animal-leg-front,
+    .trail-animal-leg-back {
+      visibility: hidden;
+    }
+    .trail-cow-body {
+      transform: translateY(calc(2 * var(--trail-animal-step)));
+    }
+    // Head up, chewing: the resting pose above lowers it to graze.
+    .trail-cow-head {
+      transform: none;
+    }
+  }
+
   [data-motion='paused'] :is(.trail-cow-tail, .trail-dog-tail, .trail-cat-tail) {
     animation-play-state: paused;
   }

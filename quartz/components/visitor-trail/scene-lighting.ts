@@ -1,5 +1,82 @@
-import { subscribeVisitorDaylight, type VisitorDaylight } from '../../util/visitor-daylight'
-import { daylightTint, type DaylightTint } from './daylight-palette'
+import { sceneNow, subscribeSceneClock } from '../../util/scene-clock'
+import {
+  cloneGrade,
+  equalGrade,
+  formatGrade,
+  gradeColorMatrixValues,
+  IDENTITY_GRADE,
+  interpolateGrade,
+  isIdentityGrade,
+  sceneGrade,
+  type Grade,
+} from '../../util/scene-grade'
+import { readTrailSeason, subscribeTrailSeason } from '../../util/trail-season'
+import { subscribeVisitorDaylight } from '../../util/visitor-daylight'
+import {
+  readStoredTrailWeather,
+  subscribeVisitorTrailWeather,
+  trailSite,
+  trailSky,
+  type TrailSeason,
+  type TrailWeather,
+} from '../../util/visitor-trail-weather'
+import { season } from '../../util/visitor-world'
+import { almanac } from '../scripts/404-almanac'
+
+export function subscribeSceneGrade(
+  document: Document,
+  receive: (grade: Grade) => void,
+  signal: AbortSignal,
+) {
+  const view = document.defaultView
+  let weather: TrailWeather | null = readStoredTrailWeather(view)
+  let seasonOverride: TrailSeason | null = readTrailSeason(view)
+
+  const evaluate = (): Grade => {
+    if (document.documentElement.dataset.themeMode !== 'daylight') {
+      return cloneGrade(IDENTITY_GRADE)
+    }
+    const al = almanac(new Date(sceneNow(document)), trailSite(weather, document))
+    const sky = trailSky(weather)
+    return sceneGrade(al, season(al, sky, seasonOverride), sky)
+  }
+
+  const emit = () => {
+    if (signal.aborted) return
+    receive(evaluate())
+  }
+
+  document.addEventListener('themechange', emit, { signal })
+  subscribeSceneClock(document, emit, signal)
+  subscribeVisitorDaylight(document, emit, signal)
+  subscribeTrailSeason(
+    document,
+    next => {
+      seasonOverride = next
+      emit()
+    },
+    signal,
+  )
+  subscribeVisitorTrailWeather(
+    document,
+    next => {
+      weather = next
+      emit()
+    },
+    signal,
+  )
+  const timer = view?.setInterval(() => {
+    if (!document.hidden) emit()
+  }, 60_000)
+  signal.addEventListener(
+    'abort',
+    () => {
+      if (timer !== undefined) view?.clearInterval(timer)
+    },
+    { once: true },
+  )
+  emit()
+}
 
 export function mountSceneLighting(scene: HTMLElement, signal: AbortSignal) {
   const document = scene.ownerDocument
@@ -16,19 +93,14 @@ export function mountSceneLighting(scene: HTMLElement, signal: AbortSignal) {
   filter.append(matrix)
   defs.append(filter)
   const reduced = view.matchMedia('(prefers-reduced-motion: reduce)')
-  let solar: VisitorDaylight | null = null
-  let from: DaylightTint = [1, 1, 1]
-  let to: DaylightTint = [1, 1, 1]
+  let from: Grade = cloneGrade(IDENTITY_GRADE)
+  let to: Grade = cloneGrade(IDENTITY_GRADE)
   let started = 0
   let frame = 0
-  const tintAt = (time: number): DaylightTint => {
+  const gradeAt = (time: number): Grade => {
     const progress = reduced.matches ? 1 : Math.min(1, Math.max(0, (time - started) / 1200))
     const share = progress * progress * (3 - 2 * progress)
-    return [
-      from[0] + (to[0] - from[0]) * share,
-      from[1] + (to[1] - from[1]) * share,
-      from[2] + (to[2] - from[2]) * share,
-    ]
+    return interpolateGrade(from, to, share)
   }
   const paint = (time: number) => {
     frame = 0
@@ -36,23 +108,22 @@ export function mountSceneLighting(scene: HTMLElement, signal: AbortSignal) {
       svg.removeAttribute('filter')
       return
     }
-    const [r, g, b] = tintAt(time)
-    if (r === 1 && g === 1 && b === 1) svg.removeAttribute('filter')
+    const current = gradeAt(time)
+    if (isIdentityGrade(current)) svg.removeAttribute('filter')
     else {
-      matrix.setAttribute('values', `${r} 0 0 0 0 0 ${g} 0 0 0 0 0 ${b} 0 0 0 0 0 1 0`)
+      matrix.setAttribute('values', gradeColorMatrixValues(current))
       svg.setAttribute('filter', `url(#${filter.id})`)
     }
     if (!reduced.matches && time - started < 1200 && !document.hidden)
       frame = view.requestAnimationFrame(paint)
   }
-  const update = () => {
-    const next = daylightTint(solar, document.documentElement.dataset.themeMode === 'daylight')
-    if (next.every((value, index) => value === to[index])) return
+  const update = (next: Grade) => {
+    if (equalGrade(next, to)) return
     const now = view.performance.now()
-    from = tintAt(now)
-    to = next
+    from = gradeAt(now)
+    to = cloneGrade(next)
     started = now
-    scene.dataset.solarTint = next.map(value => value.toFixed(4)).join(' ')
+    scene.dataset.sceneGrade = formatGrade(next)
     view.cancelAnimationFrame(frame)
     paint(now)
   }
@@ -60,19 +131,11 @@ export function mountSceneLighting(scene: HTMLElement, signal: AbortSignal) {
     view.cancelAnimationFrame(frame)
     paint(view.performance.now())
   }
-  document.addEventListener('themechange', update, { signal })
   const renderer = new MutationObserver(refresh)
   renderer.observe(scene, { attributes: true, attributeFilter: ['data-trail-renderer'] })
   document.addEventListener('visibilitychange', refresh, { signal })
   reduced.addEventListener('change', refresh, { signal })
-  subscribeVisitorDaylight(
-    document,
-    current => {
-      solar = current
-      update()
-    },
-    signal,
-  )
+  subscribeSceneGrade(document, update, signal)
   signal.addEventListener(
     'abort',
     () => {

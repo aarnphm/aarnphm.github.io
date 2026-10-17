@@ -6,6 +6,7 @@
 
 import { lunarPhase } from '../../util/lunar-phase'
 import { visitorPrecipitation, type VisitorFall } from '../../util/visitor-precipitation'
+import { fetchVisitorWeather } from '../../util/visitor-weather-request'
 
 // Open-Meteo's current conditions, as the worker passes them on.
 export type Weather = {
@@ -162,10 +163,9 @@ export const moonlit = (al: Almanac, sky: Sky) =>
 // Refresh the visitor's place on each visit; the worker caches the forecast for fifteen minutes.
 export async function fetchSite(signal: AbortSignal): Promise<Site | null> {
   try {
-    const res = await fetch('/api/weather', { signal, cache: 'no-store' })
-    if (!res.ok) return null
-    const body = (await res.json()) as Partial<Site>
+    const body = (await fetchVisitorWeather({ signal })) as Partial<Site> | null
     if (
+      !body ||
       typeof body.lat !== 'number' ||
       !Number.isFinite(body.lat) ||
       typeof body.lon !== 'number' ||

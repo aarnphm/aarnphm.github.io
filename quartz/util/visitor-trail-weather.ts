@@ -1,5 +1,6 @@
-import { almanac } from '../components/scripts/404-almanac'
+import { almanac, guessSite, readSky, type Site, type Sky } from '../components/scripts/404-almanac'
 import { isRecord } from './type-guards'
+import { readVisitorDaylightCell } from './visitor-daylight'
 import { nextSunEvent, type VisitorForecast } from './visitor-weather'
 import { seasonBucket } from './visitor-world'
 
@@ -28,6 +29,22 @@ type TrailWeatherEvents = {
 declare global {
   interface CustomEventMap extends TrailWeatherEvents {}
   interface DocumentEventMap extends TrailWeatherEvents {}
+}
+
+// Where the trail stands: the forecast's place, else the worker's cell on <html>, else a guess
+// from the time zone.
+export function trailSite(weather: TrailWeather | null, document: Document): Site {
+  if (weather && weather.lat !== null && weather.lon !== null)
+    return { lat: weather.lat, lon: weather.lon, place: null, weather: null }
+  const cell = readVisitorDaylightCell(document)
+  return cell ? { lat: cell.lat, lon: cell.lon, place: null, weather: null } : guessSite()
+}
+
+// The shared sky reading of a trail forecast; an unknown temperature stays unknown.
+export function trailSky(weather: TrailWeather | null): Sky {
+  if (!weather) return readSky(null)
+  const { code, cloud, windKmh: wind, temperatureC, snowCm: snow } = weather
+  return { ...readSky({ code, cloud, wind, temp: temperatureC ?? 0, snow }), temp: temperatureC }
 }
 
 const requestEvent = 'visitor-trail-weather:request'

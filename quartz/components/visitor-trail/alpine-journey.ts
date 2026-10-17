@@ -16,6 +16,7 @@ import { trailGroundScale, type Landscape, type Point } from './landscape'
 import { buildMountainRanges, mountainCrestAt, type MountainRange } from './mountain-profile'
 import { pixels } from './pixels'
 import { trailRandom } from './random'
+import { sceneMotionReady } from './scene-reveal'
 
 type MovingPhase = 'climbing' | 'descending'
 type Phase = MovingPhase | 'reading' | 'resting'
@@ -355,6 +356,7 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
   }
   const schedule = () => {
     if (
+      !sceneMotionReady(scene) ||
       signal.aborted ||
       host.hidden ||
       document.hidden ||
@@ -376,7 +378,14 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
   }
   const tick = (time: number) => {
     frame = timer = null
-    if (signal.aborted || host.hidden || document.hidden || reducedMotion.matches) return pause()
+    if (
+      !sceneMotionReady(scene) ||
+      signal.aborted ||
+      host.hidden ||
+      document.hidden ||
+      reducedMotion.matches
+    )
+      return pause()
     const elapsed = previousTime === null ? 0 : Math.max(0, time - previousTime)
     if (time - renderedAt < 1000 / 24 && (travelers.some(moving) || faceClimbers.moving()))
       return schedule()

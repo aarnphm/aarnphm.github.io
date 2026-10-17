@@ -21,11 +21,13 @@ const tones = {
 
 export function cowPixels(size: number) {
   return `<path class="trail-cow-shadow" d="M${size} ${size * 8}h${size * 14}v${size}h${-size * 14}Z"/>
-    <path class="trail-cow-tail" d="M0 ${size * 2}h${size}v${size * 4}h${-size}ZM${-size} ${size * 6}h${size * 2}v${size}h${-size * 2}Z"/>
-    ${pixels(body, tones, size)}
     <g transform="translate(0 ${size * 5})">
       <g class="trail-animal-leg-front">${pixels(['...........L....', '...........L....', '...........D....'], tones, size)}</g>
       <g class="trail-animal-leg-back">${pixels(['..L.............', '..L.............', '..D.............'], tones, size)}</g>
     </g>
-    <g transform="translate(${size * 12} ${-size * 2})"><g class="trail-cow-head">${pixels(head, tones, size)}</g></g>`
+    <g class="trail-cow-body">
+      <path class="trail-cow-tail" d="M0 ${size * 2}h${size}v${size * 4}h${-size}ZM${-size} ${size * 6}h${size * 2}v${size}h${-size * 2}Z"/>
+      ${pixels(body, tones, size)}
+      <g transform="translate(${size * 12} ${-size * 2})"><g class="trail-cow-head">${pixels(head, tones, size)}</g></g>
+    </g>`
 }

@@ -3,7 +3,7 @@ import type { NavigableTrail } from './obstacle-route'
 import { svgPathGeometry } from '../../util/svg-geometry'
 import { trailSceneSeed } from '../../util/trail-preference'
 import { trailSceneHeight } from '../../util/trail-scene'
-import { readTrunks, type CollisionActor } from './actor-spacing'
+import { readSolids, type CollisionActor } from './actor-spacing'
 import { mountAlpineJourneys } from './alpine-journey'
 import { trailBackpacker } from './backpacker'
 import { mountTrailBlazes } from './blazes'
@@ -200,7 +200,7 @@ const refreshForest = () => {
   pastureJourneys.refreshForest()
 }
 const holidays = mountTrailHolidays(scene, signal, () => {
-  if (!forestLayout || host.hidden || scene.dataset.trailRendered !== 'true') return
+  if (!forestLayout || scene.dataset.trailRendered !== 'true') return
   holidays.draw(forestLayout, geometries, sceneSeed, camps)
   pastureJourneys.update(forestLayout, sceneSeed)
   groundDepth.refresh()
@@ -211,7 +211,7 @@ let navigationRoutes: NavigableTrail[] = []
 let navigationBodies: CollisionActor[] = []
 const journeyObstacles = (landscape: Landscape) => {
   const solids = new Map(
-    readTrunks(scene)
+    readSolids(scene)
       .filter(solid => solid.id.startsWith('trunk-'))
       .map(solid => [solid.id, solid]),
   )
@@ -441,7 +441,7 @@ const yieldRender = (signal: AbortSignal, paint = false) => {
 }
 const drawScene = async () => {
   await styleReady
-  if (document.hidden || host.hidden || !scene.isConnected) return
+  if (signal.aborted || document.hidden || !scene.isConnected) return
   const mode = scene.clientWidth < 700 ? 'narrow' : 'wide'
   const world =
     retainedSeed === sceneSeed && host.dataset.trailWorld === mode
@@ -529,7 +529,7 @@ const drawScene = async () => {
   groundDepth.restore()
   if (scene.dataset.trailOpening !== 'complete') {
     for (const holder of svg.querySelectorAll(
-      '[data-trail-backdrop-container], .trail-woodland, .trail-ground-base, .trail-ground, .trail-hinterland, .trail-steps, .trail-landmarks, .trail-foothill-trees, .trail-foothill-objects, .trail-depth-objects, .trail-fauna, .trail-wayfarers, .trail-community, .trail-visitors, .trail-park-patrol, .trail-hiker-tracks, .trail-reader-tracks, .trail-camp-tracks, .trail-visitor-tracks, .trail-ranger-tracks',
+      '[data-trail-backdrop-container], .trail-woodland, .trail-ground-base, .trail-ground, .trail-hinterland, .trail-steps, .trail-landmarks, .trail-foothill-trees, .trail-foothill-objects, .trail-depth-objects, .trail-fauna',
     ))
       holder.replaceChildren()
   }
@@ -539,6 +539,9 @@ const drawScene = async () => {
   delete host.dataset.trailWorldHeight
   worldPatches.reset(layout.landscape, sceneSeed, `${clip}-backdrop`)
   layoutSignature = signature
+  if (host.hidden && !(await yieldRender(renderSignal))) return
+  // Load route workers while scenery is built, before the complete forest needs their plans.
+  navigation.warm()
   weather.update(layout.landscape, sceneSeed)
   campsite.style.left = `${layout.camp.x}px`
   campsite.style.top = `${layout.camp.y}px`
@@ -718,7 +721,6 @@ const drawScene = async () => {
   }
   if (!(await yieldRender(renderSignal))) return
   community.update(layout.landscape, sceneSeed, camps, [])
-  holidays.draw(layout.landscape, geometries, sceneSeed, camps)
   if (!(await yieldRender(renderSignal))) return
   forestNodes.clear()
   woodlandNodes.clear()
@@ -742,6 +744,8 @@ const drawScene = async () => {
   // Publish complete batches from camp to ridge, with farther trees behind earlier ones.
   landmarks?.prepend(...forestDraft.childNodes)
   drawWoodland()
+  if (!(await yieldRender(renderSignal))) return
+  holidays.draw(layout.landscape, geometries, sceneSeed, camps)
   groundDepth.refresh()
   moss.plant(
     layout.landscape,
@@ -752,6 +756,7 @@ const drawScene = async () => {
   grove.refresh()
   const bodies = journeyObstacles(layout.landscape)
   const routing = navigation.prepare(journeyInputs(), layout.landscape, bodies, renderSignal)
+  if (!(await yieldRender(renderSignal))) return
   // Plan from the complete, grown forest while climate geometry and static textures prepare.
   refreshForest()
   scene.dataset.trailRasterReady = 'true'
