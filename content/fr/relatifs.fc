@@ -90,7 +90,7 @@ N: COD pronouns: {{`me, te, le/la, nous, vous, les`}}. Placed BEFORE the verb.
 ---
 
 C: Oui, je [lui] parle. (Tu parles à Paul ?)
-N: COI (person with {{`à`}}): {{`me, te, lui, nous, vous, leur`}}. "parler à quelqu'un" → {{`lui/leur`}}.
+N: With {{`parler à`}} + person, use an indirect object pronoun: {{`me, te, lui, nous, vous, leur`}}. {{`penser à`}} + person instead keeps {{`à`}} with a stressed pronoun.
 
 ---
 
@@ -101,6 +101,12 @@ N: {{`y`}} replaces {{`à`}} + place (or {{`à`}} + thing).
 
 C: J'[y] pense. (penser à mes vacances)
 N: {{`penser à`}} (thing) → {{`y`}}. For a person, keep {{`à`}} with a stressed pronoun: {{`Je pense à lui/elle/eux/elles.`}} Compare {{`Je lui parle`}}: the construction depends on the verb.
+
+---
+
+Q: Translate: "I'm thinking about her."
+A: {{`Je pense à elle.`}}
+N: {{`penser à`}} + person → {{`à`}} + stressed pronoun ({{`lui/elle/eux/elles`}}), not {{`Je lui pense`}}.
 
 ---
 

@@ -157,7 +157,13 @@ N: Conditional {{`si`}} takes the present here, followed by the future in the ma
 
 Q: Recite the three si-patterns.
 A: 1) {{`si`}} + présent → futur ({{`Si tu viens, on partira.`}}) 2) {{`si`}} + imparfait → conditionnel ({{`Si tu venais, on partirait.`}}) 3) {{`si`}} + plus-que-parfait → conditionnel passé ({{`Si tu étais venu, on serait partis.`}})
-N: Conditional {{`si`}} excludes the conditional in its own clause. Interrogative {{`si`}} permits it: {{`Je voudrais savoir s'il accepterait.`}}.
+N: In these hypothetical patterns, conditional {{`si`}} excludes the future and conditional in its own clause. Indirect-question {{`si`}} means "whether" and permits both: {{`Je me demande s'il viendra.`}} · {{`J'aimerais savoir si vous pourriez venir.`}}.
+
+---
+
+Q: Translate politely (vous): "I'd like to know whether you could come."
+A: {{`J'aimerais savoir si vous pourriez venir.`}}
+N: Here {{`si`}} introduces an indirect question ("whether"), so the conditional {{`pourriez`}} is valid. Compare a hypothetical condition: {{`Si vous pouviez venir, je serais ravi.`}}.
 
 ---
 
