@@ -11,7 +11,7 @@ import type { CellId } from '../../util/notebook/types'
 import type { RuntimeEvent } from '../notebook/kernel'
 import { leanStreamParser } from '../../util/codemirror-lean'
 import { handleLocalLeanVerifyNodeRequest, resolveLeanBinary } from '../../util/lean-local-verify'
-import { createLeanKernel } from './kernel'
+import { createLeanKernel, getSharedLeanWebSocketSession, LeanWebSocketSession } from './kernel'
 
 const cellId = 'cell-1' as CellId
 
@@ -235,5 +235,29 @@ describe('CodeMirror Lean 4 StreamParser', () => {
     assert.equal(line2.find(t => t.text === 'by')?.token, 'keyword')
     assert.equal(line2.find(t => t.text === 'congr')?.token, 'typeName')
     assert.equal(line2.find(t => t.text === 'sorry')?.token, 'invalid')
+  })
+})
+
+describe('LeanWebSocketSession LSP complete & hover', () => {
+  test('returns shared singleton session and returns immediately without blocking when cold', async () => {
+    const s1 = getSharedLeanWebSocketSession()
+    const s2 = getSharedLeanWebSocketSession()
+    assert.equal(s1, s2)
+
+    const session = new LeanWebSocketSession()
+    let warmTriggered = false
+    session.warm = async () => {
+      warmTriggered = true
+      return false
+    }
+
+    const items = await session.complete('#check Set.mem_', { line: 0, character: 15 }, 50)
+    assert.deepEqual(items, [])
+    assert.equal(warmTriggered, true)
+
+    warmTriggered = false
+    const hover = await session.hover('#check Set.mem_union', { line: 0, character: 12 }, 50)
+    assert.equal(hover, undefined)
+    assert.equal(warmTriggered, true)
   })
 })

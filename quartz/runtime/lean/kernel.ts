@@ -313,11 +313,68 @@ function formatLeanInteractiveGoal(goal: unknown): string {
   return lines.join('\n')
 }
 
-class LeanWebSocketSession {
+export type LeanLspCompletionItem = {
+  readonly label: string
+  readonly detail?: string
+  readonly documentation?: string
+  readonly kind?: number
+}
+
+export type LeanLspHoverResult = { readonly contents?: string; readonly goals?: readonly string[] }
+
+function extractLspDocumentation(doc: unknown): string | undefined {
+  if (typeof doc === 'string') return doc.trim() || undefined
+  if (isRecord(doc) && typeof doc.value === 'string') return doc.value.trim() || undefined
+  return undefined
+}
+
+function parseLspCompletionItems(raw: unknown): LeanLspCompletionItem[] {
+  const list = Array.isArray(raw) ? raw : isRecord(raw) && Array.isArray(raw.items) ? raw.items : []
+  const items: LeanLspCompletionItem[] = []
+  for (const entry of list) {
+    if (!isRecord(entry)) continue
+    const label = readString(entry, 'label')?.trim()
+    if (!label) continue
+    const detail = readString(entry, 'detail')?.trim() || undefined
+    const documentation = extractLspDocumentation(entry.documentation)
+    const kind = readNumber(entry, 'kind')
+    items.push({
+      label,
+      ...(detail ? { detail } : {}),
+      ...(documentation ? { documentation } : {}),
+      ...(kind !== undefined ? { kind } : {}),
+    })
+  }
+  return items
+}
+
+function extractHoverContents(raw: unknown): string | undefined {
+  if (!isRecord(raw)) return undefined
+  const contents = raw.contents
+  const extractPart = (part: unknown): string => {
+    if (typeof part === 'string') return part.trim()
+    if (isRecord(part) && typeof part.value === 'string') {
+      const lang = readString(part, 'language')
+      const val = part.value.trim()
+      if (!val) return ''
+      return lang ? `\`\`\`${lang}\n${val}\n\`\`\`` : val
+    }
+    return ''
+  }
+  if (Array.isArray(contents)) {
+    const joined = contents.map(extractPart).filter(Boolean).join('\n\n')
+    return joined || undefined
+  }
+  const single = extractPart(contents)
+  return single || undefined
+}
+
+export class LeanWebSocketSession {
   private ws: WebSocket | undefined
   private readyPromise: Promise<boolean> | undefined
   private isReadyState = false
   private version = 0
+  private lastSyncedSource = ''
   private nextRpcId = 1000
   private rpcSessionId: string | undefined
   private latestDiagnostics: LspDiag[] = []
@@ -359,6 +416,7 @@ class LeanWebSocketSession {
         this.pendingReplies.set(initId, () => {
           ws.send(JSON.stringify({ jsonrpc: '2.0', method: 'initialized', params: {} }))
           this.version = 1
+          this.lastSyncedSource = 'import Mathlib\n'
           ws.send(
             JSON.stringify({
               jsonrpc: '2.0',
@@ -437,6 +495,7 @@ class LeanWebSocketSession {
         this.isReadyState = false
         this.readyPromise = undefined
         this.rpcSessionId = undefined
+        this.lastSyncedSource = ''
         for (const [, cb] of this.pendingReplies) cb(undefined)
         this.pendingReplies.clear()
         finish(false)
@@ -448,6 +507,101 @@ class LeanWebSocketSession {
     return this.readyPromise
   }
 
+  private syncDocument(ws: WebSocket, source: string): number {
+    if (source !== this.lastSyncedSource) {
+      this.version += 1
+      this.lastSyncedSource = source
+      ws.send(
+        JSON.stringify({
+          jsonrpc: '2.0',
+          method: 'textDocument/didChange',
+          params: {
+            textDocument: { uri: LEAN4WEB_DOC_URI, version: this.version },
+            contentChanges: [{ text: source }],
+          },
+        }),
+      )
+    }
+    return this.version
+  }
+
+  async complete(
+    source: string,
+    position: { line: number; character: number },
+    timeoutMs = 600,
+  ): Promise<ReadonlyArray<LeanLspCompletionItem>> {
+    if (!this.isWarm() || !this.ws || this.ws.readyState !== WebSocket.OPEN) {
+      void this.warm()
+      return []
+    }
+    const ws = this.ws
+    this.syncDocument(ws, source)
+    const result = await this.requestWithTimeout(
+      ws,
+      'textDocument/completion',
+      { textDocument: { uri: LEAN4WEB_DOC_URI }, position },
+      timeoutMs,
+    )
+    return parseLspCompletionItems(result)
+  }
+
+  async hover(
+    source: string,
+    position: { line: number; character: number },
+    timeoutMs = 800,
+  ): Promise<LeanLspHoverResult | undefined> {
+    if (!this.isWarm() || !this.ws || this.ws.readyState !== WebSocket.OPEN) {
+      void this.warm()
+      return undefined
+    }
+    const ws = this.ws
+    this.syncDocument(ws, source)
+
+    const queryGoals = async (): Promise<readonly string[]> => {
+      if (!this.rpcSessionId) {
+        const connected = await this.requestWithTimeout(
+          ws,
+          '$/lean/rpc/connect',
+          { uri: LEAN4WEB_DOC_URI },
+          Math.min(300, timeoutMs),
+        )
+        if (isRecord(connected) && typeof connected.sessionId === 'string') {
+          this.rpcSessionId = connected.sessionId
+        }
+      }
+      if (!this.rpcSessionId) return []
+      const res = await this.requestWithTimeout(
+        ws,
+        '$/lean/rpc/call',
+        {
+          sessionId: this.rpcSessionId,
+          method: 'Lean.Widget.getInteractiveGoals',
+          textDocument: { uri: LEAN4WEB_DOC_URI },
+          position,
+          params: { textDocument: { uri: LEAN4WEB_DOC_URI }, position },
+        },
+        timeoutMs,
+      )
+      if (isRecord(res) && Array.isArray(res.goals)) {
+        return res.goals.map(formatLeanInteractiveGoal).filter(Boolean)
+      }
+      return []
+    }
+
+    const [hoverRaw, goals] = await Promise.all([
+      this.requestWithTimeout(
+        ws,
+        'textDocument/hover',
+        { textDocument: { uri: LEAN4WEB_DOC_URI }, position },
+        timeoutMs,
+      ),
+      queryGoals(),
+    ])
+    const contents = extractHoverContents(hoverRaw)
+    if (!contents && goals.length === 0) return undefined
+    return { ...(contents ? { contents } : {}), ...(goals.length > 0 ? { goals } : {}) }
+  }
+
   verify(source: string, signal?: AbortSignal): Promise<Record<string, unknown> | undefined> {
     const run = async (): Promise<Record<string, unknown> | undefined> => {
       const ok = await this.warm()
@@ -457,6 +611,7 @@ class LeanWebSocketSession {
       const ws = this.ws
       this.version += 1
       const version = this.version
+      this.lastSyncedSource = source
       this.latestDiagnostics = []
 
       ws.send(
@@ -567,6 +722,7 @@ class LeanWebSocketSession {
     this.isReadyState = false
     this.readyPromise = undefined
     this.rpcSessionId = undefined
+    this.lastSyncedSource = ''
     for (const [, cb] of this.pendingReplies) cb(undefined)
     this.pendingReplies.clear()
   }
@@ -574,6 +730,30 @@ class LeanWebSocketSession {
   private allocId(): number {
     this.nextRpcId += 1
     return this.nextRpcId
+  }
+
+  private requestWithTimeout(
+    ws: WebSocket,
+    method: string,
+    params: unknown,
+    timeoutMs: number,
+  ): Promise<unknown> {
+    return new Promise<unknown>(resolve => {
+      if (ws.readyState !== WebSocket.OPEN) {
+        resolve(undefined)
+        return
+      }
+      const id = this.allocId()
+      const timer = setTimeout(() => {
+        this.pendingReplies.delete(id)
+        resolve(undefined)
+      }, timeoutMs)
+      this.pendingReplies.set(id, result => {
+        clearTimeout(timer)
+        resolve(result)
+      })
+      ws.send(JSON.stringify({ jsonrpc: '2.0', id, method, params }))
+    })
   }
 
   private request(
@@ -602,6 +782,15 @@ class LeanWebSocketSession {
   }
 }
 
+let sharedLeanWebSocketSession: LeanWebSocketSession | undefined
+
+export function getSharedLeanWebSocketSession(): LeanWebSocketSession {
+  if (!sharedLeanWebSocketSession) {
+    sharedLeanWebSocketSession = new LeanWebSocketSession()
+  }
+  return sharedLeanWebSocketSession
+}
+
 export class LeanKernel implements Kernel {
   readonly language = 'lean'
   private indexUrl: string | undefined
@@ -625,7 +814,7 @@ export class LeanKernel implements Kernel {
 
   private ensureWsSession(): LeanWebSocketSession {
     if (!this.wsSession) {
-      this.wsSession = new LeanWebSocketSession()
+      this.wsSession = getSharedLeanWebSocketSession()
     }
     return this.wsSession
   }
@@ -660,9 +849,9 @@ export class LeanKernel implements Kernel {
     const endpoints = this.endpoints()
     const canUseBrowserWs = this.isRemoteBrowser()
 
-    if (canUseBrowserWs && this.wsSession?.isWarm()) {
+    if (canUseBrowserWs && this.ensureWsSession().isWarm()) {
       yield { type: 'status', text: 'checking proof against mathlib…' }
-      const payload = await this.wsSession.verify(source, this.controller.signal)
+      const payload = await this.ensureWsSession().verify(source, this.controller.signal)
       if (this.controller.signal.aborted) {
         yield { type: 'interrupted', cellId }
         yield { type: 'done', cellId, executionCount: null, failed: false }

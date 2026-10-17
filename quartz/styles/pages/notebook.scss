@@ -138,6 +138,7 @@ article:has(.notebook-runtime),
     --notebook-inner-radius: var(--radius-none);
     --notebook-shell-radius: calc(var(--notebook-inner-radius) + var(--notebook-shell-padding));
     --notebook-active-green: var(--background-modifier-success, var(--lime));
+    --control-accent: var(--notebook-active-green);
     --notebook-error-red: var(--background-modifier-error, var(--color-red, #af3029));
     --notebook-editor-surface: color-mix(in srgb, var(--light) 84%, var(--lightgray));
     --notebook-code-surface: var(--code-background, var(--notebook-editor-surface));
@@ -253,6 +254,7 @@ article:has(.notebook-runtime),
       grid-column: 2;
       grid-row: 1;
       box-sizing: border-box;
+      contain: layout style;
       width: 100%;
       min-width: 0;
       min-height: calc(1lh + 1.2rem);
@@ -373,50 +375,40 @@ article:has(.notebook-runtime),
         text-underline-offset: 0.18em;
       }
 
-      .cm-tooltip {
+      // The completion list takes the shared completionTheme (util/codemirror-completion-theme);
+      // hover, signature and lint tooltips use the same panel: 1px lightgray, opaque paper.
+      .cm-tooltip:not(.cm-tooltip-autocomplete, .cm-completionInfo) {
         box-sizing: border-box;
         max-width: min(42rem, calc(100vw - 2rem));
         overflow: auto;
-        border: 1px solid color-mix(in srgb, var(--gray) 82%, transparent);
+        border: 1px solid var(--lightgray);
         border-radius: var(--radius-none);
-        background: color-mix(in srgb, var(--notebook-editor-surface) 92%, var(--light));
+        background: var(--light);
         color: var(--dark);
         font-family: var(--codeFont);
-        font-size: 0.76rem;
-        line-height: 1.45;
+        font-size: var(--text-meta, 0.75rem);
+        line-height: 1.5;
       }
 
-      .cm-tooltip-autocomplete > ul {
-        max-height: min(18rem, 45vh);
-        font-family: var(--codeFont);
-      }
-
-      .cm-tooltip-autocomplete ul li[aria-selected] {
-        background: color-mix(in srgb, var(--notebook-active-green) 18%, var(--light));
-        color: var(--dark);
-      }
-
-      .cm-completionLabel,
-      .cm-completionDetail,
-      .cm-completionInfo,
       .cm-tooltip-lint,
       .cm-lsp-documentation,
       .cm-lsp-signature-tooltip {
         font-family: var(--codeFont);
       }
 
-      .cm-completionDetail,
       .cm-lsp-documentation {
-        color: var(--gray);
+        color: var(--darkgray);
       }
 
       .cm-lsp-signature-tooltip {
-        padding: 0.45rem 0.6rem;
+        padding: 0.4rem 0.55rem;
       }
 
       .cm-lsp-active-parameter {
-        color: var(--secondary);
+        color: var(--dark);
         font-weight: 700;
+        text-decoration: underline;
+        text-underline-offset: 0.2em;
       }
 
       &[data-notebook-source-editor] {

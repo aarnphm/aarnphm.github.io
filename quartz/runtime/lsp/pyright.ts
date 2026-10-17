@@ -463,6 +463,7 @@ class NotebookWorkspaceFile implements WorkspaceFile {
     public doc: Text,
     public executionIndex: number | null,
     public view: EditorView | null = null,
+    public lastSource?: string,
   ) {}
 
   getView() {
@@ -498,6 +499,8 @@ class NotebookPythonWorkspace extends Workspace {
   }
 
   override getFile(uri: string) {
+    const cached = this.filesByUri.get(uri)
+    if (cached) return cached
     this.refreshFiles()
     return this.filesByUri.get(uri) ?? null
   }
@@ -512,6 +515,7 @@ class NotebookPythonWorkspace extends Workspace {
     if (!file) return
     file.languageId = languageId
     file.view = view
+    file.lastSource = undefined
     const changed = this.updateFileDoc(file, view.state.doc)
     if (!this.openedUris.has(file.uri)) {
       if (this.client.connected) this.queueOpenFiles()
@@ -525,6 +529,7 @@ class NotebookPythonWorkspace extends Workspace {
     if (!file || file.view !== view) return
     const changed = this.updateFileDoc(file, view.state.doc)
     file.view = null
+    file.lastSource = undefined
     if (changed) this.sendTextChange(file)
   }
 
@@ -535,6 +540,7 @@ class NotebookPythonWorkspace extends Workspace {
       if (!file.view || !plugin || plugin.unsyncedChanges.empty) continue
       updates.push({ file, prevDoc: file.doc, changes: plugin.unsyncedChanges })
       file.doc = file.view.state.doc
+      file.lastSource = undefined
       file.version = this.nextFileVersion(file.uri)
       plugin.clear()
     }
@@ -565,7 +571,8 @@ class NotebookPythonWorkspace extends Workspace {
       if (existing) {
         existing.languageId = cell.language
         existing.executionIndex = cell.executionIndex
-        if (!existing.view) {
+        if (!existing.view && existing.lastSource !== cell.source) {
+          existing.lastSource = cell.source
           const changed = this.updateFileDoc(existing, notebookText(cell.source))
           if (changed) this.sendTextChange(existing)
         }
@@ -580,6 +587,8 @@ class NotebookPythonWorkspace extends Workspace {
         this.nextFileVersion(uri),
         notebookText(cell.source),
         cell.executionIndex,
+        null,
+        cell.source,
       )
       nextFiles.push(file)
       nextByUri.set(uri, file)

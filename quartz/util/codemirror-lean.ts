@@ -1,4 +1,9 @@
-import type { StreamParser, StringStream } from '@codemirror/language'
+import type { Extension } from '@codemirror/state'
+import { autocompletion } from '@codemirror/autocomplete'
+import { StreamLanguage, type StreamParser, type StringStream } from '@codemirror/language'
+import { EditorView } from '@codemirror/view'
+import { leanUnicodeInputExtension } from '../runtime/lean/unicode-input'
+import { leanCompletionSource, leanHoverTooltipExtension } from '../runtime/lsp/lean'
 
 type LeanState = { commentDepth: number }
 
@@ -180,4 +185,25 @@ export const leanStreamParser: StreamParser<LeanState> = {
     return null
   },
   languageData: { commentTokens: { line: '--', block: { open: '/-', close: '-/' } } },
+}
+
+const leanAbbreviationBaseTheme = EditorView.baseTheme({
+  '.cm-leanAbbreviation': {
+    textDecoration: 'underline dashed var(--secondary)',
+    textUnderlineOffset: '3px',
+  },
+})
+
+export function leanLanguageExtension(): Extension {
+  return [
+    StreamLanguage.define(leanStreamParser),
+    leanUnicodeInputExtension(),
+    autocompletion({
+      defaultKeymap: false,
+      activateOnTyping: true,
+      override: [leanCompletionSource],
+    }),
+    leanHoverTooltipExtension(),
+    leanAbbreviationBaseTheme,
+  ]
 }
