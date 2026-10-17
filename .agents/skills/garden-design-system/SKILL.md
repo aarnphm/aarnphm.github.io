@@ -1,6 +1,6 @@
 ---
 name: garden-design-system
-description: "Build, revise or review Garden UI with its design system: tokens, the reading and tool registers, layout modes, component contracts and the review checklist."
+description: 'Build, revise or review Garden UI with its design system: tokens, the reading and tool registers, layout modes, component contracts and the review checklist.'
 ---
 
 # Garden design system
@@ -26,20 +26,20 @@ The repo is the source of truth. When this skill and the code disagree, the code
 
 ## Read only what the task needs
 
-| Task | Read |
-| --- | --- |
-| Anything new, or unsure | `references/brand-book.md` (the full brand book) |
-| A colour, size, space, radius or z-index value | `references/tokens.md` |
-| Page width, grid tracks, page mode | `references/layout.md` |
-| A tool surface (Base views, stream, `/read`, tag or folder lists, Curius) | `references/tool-surfaces.md` |
-| Arena | `references/arena.md` |
-| Triathlon analytics, calendar, charts | `references/triathlon.md` |
-| Courses and flashcards | `references/courses.md` |
-| Home page widgets, trail, press kit | `references/home.md` |
-| Math, numbers in prose, chart labels, TikZ | `references/math.md` |
-| Brand art, mascot, social images | `references/imagery.md` |
-| A specific component | `references/components/index.md`, then `references/components/<Name>.md` |
-| Calling a surface done | `references/review.md` |
+| Task                                                                      | Read                                                                     |
+| ------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| Anything new, or unsure                                                   | `references/brand-book.md` (the full brand book)                         |
+| A colour, size, space, radius or z-index value                            | `references/tokens.md`                                                   |
+| Page width, grid tracks, page mode                                        | `references/layout.md`                                                   |
+| A tool surface (Base views, stream, `/read`, tag or folder lists, Curius) | `references/tool-surfaces.md`                                            |
+| Arena                                                                     | `references/arena.md`                                                    |
+| Triathlon analytics, calendar, charts                                     | `references/triathlon.md`                                                |
+| Courses and flashcards                                                    | `references/courses.md`                                                  |
+| Home page widgets, trail, press kit                                       | `references/home.md`                                                     |
+| Math, numbers in prose, chart labels, TikZ                                | `references/math.md`                                                     |
+| Brand art, mascot, social images                                          | `references/imagery.md`                                                  |
+| A specific component                                                      | `references/components/index.md`, then `references/components/<Name>.md` |
+| Calling a surface done                                                    | `references/review.md`                                                   |
 
 A component README states what the component is, its tokens, its states and the source files in the repo. The Controls (Dropdown, Select, DatePicker, Calendar) wrap `quartz/components/controls/`; reuse those builders, do not write a new select or calendar. Quartz component READMEs describe what the site renders today; read the named source before changing it.
 
@@ -55,11 +55,11 @@ A component README states what the component is, its tokens, its states and the 
 
 These system values depart from the source on purpose, because the source fails contrast. Keep the corrected role in new work and do not revert a rendition to the source:
 
-| Source | Ratio | Use instead |
-| --- | --- | --- |
-| sage focus rings | 1.51:1 | `focus` (`dark`) |
-| `gray` labels and proof reasons | 2.00:1 | `darkgray` |
-| paper text on `tri-accent` tabs | 3.31:1 | `on-accent` |
+| Source                                      | Ratio  | Use instead                |
+| ------------------------------------------- | ------ | -------------------------- |
+| sage focus rings                            | 1.51:1 | `focus` (`dark`)           |
+| `gray` labels and proof reasons             | 2.00:1 | `darkgray`                 |
+| paper text on `tri-accent` tabs             | 3.31:1 | `on-accent`                |
 | figure caption `gray` 70% mixed with `dark` | 3.68:1 | `fig-caption` (`darkgray`) |
 
 Text reaches 4.5:1 in every theme; text at 24px or more, borders, focus rings and icons reach 3:1. Colours that must be told apart differ in lightness, not hue alone. Every status colour also has a word or an icon.

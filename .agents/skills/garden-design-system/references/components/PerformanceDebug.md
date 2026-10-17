@@ -16,15 +16,15 @@ A copy of the live panel from `/` with the trail open (selector `.site-perf-debu
 
 ## Parts
 
-| Part | Content |
-| --- | --- |
-| Head | `performance`, the shortcut `⌥⇧D`, a 20px close button |
-| Primary | frames per second at 1.15rem, and the profile's state (`trail`, `closed`, a triathlon view) |
-| Chart | 5rem high. Orange line: frame interval, with a salmon band for its spread. Sage area: main-thread work. Salmon ticks: long frames. Dashed rules at 15, 30 and 60 fps |
-| Legend | interval, work, long frame, drawn with the same marks as the chart |
-| Metrics | two columns: frame p95, dropped, work p95, rAF p95, render p95, long frames, worst frame, blocked, shift, scroll, cursor p95, heap, DOM nodes |
-| Readings | the profile's own probes. The trail reports scene nodes, animations, canvases and scene writes |
-| Attribution | worst script and worst event, cut with an ellipsis |
+| Part        | Content                                                                                                                                                              |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Head        | `performance`, the shortcut `⌥⇧D`, a 20px close button                                                                                                               |
+| Primary     | frames per second at 1.15rem, and the profile's state (`trail`, `closed`, a triathlon view)                                                                          |
+| Chart       | 5rem high. Orange line: frame interval, with a salmon band for its spread. Sage area: main-thread work. Salmon ticks: long frames. Dashed rules at 15, 30 and 60 fps |
+| Legend      | interval, work, long frame, drawn with the same marks as the chart                                                                                                   |
+| Metrics     | two columns: frame p95, dropped, work p95, rAF p95, render p95, long frames, worst frame, blocked, shift, scroll, cursor p95, heap, DOM nodes                        |
+| Readings    | the profile's own probes. The trail reports scene nodes, animations, canvases and scene writes                                                                       |
+| Attribution | worst script and worst event, cut with an ellipsis                                                                                                                   |
 
 ## Rules
 

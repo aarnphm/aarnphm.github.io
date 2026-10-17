@@ -2,11 +2,11 @@
 
 The shell is one grid with nine content tracks between gutters and outer tracks: `0 | kern × 5 | 9 × 1fr | kern × 5 | 0` on desktop, `kern × 3` gutters on tablet, `kern × 1.5` (18px a side) below `bp-mobile`. Pages place content by named column ranges; components split themselves with container queries.
 
-| Mode | Use it for | Contract | Width |
-| --- | --- | --- | --- |
-| Reading | Essays, technical notes, letters, reference | One column, title and byline, table of contents and sidenotes beside it when space permits. The document owns scrolling. | Desktop column `5 / span 3`; tablet and mobile `3 / -3`. Aim for 60 to 75 characters a line. |
-| Collection | Folder and tag lists, Evergreen, stream, Base views, Arena channels | A bounded list or grid, compact metadata, one stable place for search and view controls. Each row links to a full item. | Arena frames at `52rem`; lists fill the reading column. |
-| Workspace | Arena reader, PDF reader, Curius, triathlon analysis | Stable toolbar, panes that scroll on their own, rails that collapse when content stops fitting. | Arena reader `52rem`; Curius `15rem` rail + `minmax(0, 52rem)`; triathlon `3 / -3`. Full-viewport readers use `100dvh`. |
+| Mode       | Use it for                                                          | Contract                                                                                                                 | Width                                                                                                                   |
+| ---------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| Reading    | Essays, technical notes, letters, reference                         | One column, title and byline, table of contents and sidenotes beside it when space permits. The document owns scrolling. | Desktop column `5 / span 3`; tablet and mobile `3 / -3`. Aim for 60 to 75 characters a line.                            |
+| Collection | Folder and tag lists, Evergreen, stream, Base views, Arena channels | A bounded list or grid, compact metadata, one stable place for search and view controls. Each row links to a full item.  | Arena frames at `52rem`; lists fill the reading column.                                                                 |
+| Workspace  | Arena reader, PDF reader, Curius, triathlon analysis                | Stable toolbar, panes that scroll on their own, rails that collapse when content stops fitting.                          | Arena reader `52rem`; Curius `15rem` rail + `minmax(0, 52rem)`; triathlon `3 / -3`. Full-viewport readers use `100dvh`. |
 
 ## Rules
 
