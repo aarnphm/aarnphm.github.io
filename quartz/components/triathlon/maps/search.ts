@@ -30,6 +30,31 @@ const drawableActivityIds = (details: DetailPayload | null): Set<string> => {
   return ids
 }
 
+const candidateActivities = (
+  analytics: Analytics | null,
+  details: DetailPayload | null,
+  ids: ReadonlySet<string>,
+) => {
+  if (analytics?.activities) {
+    return analytics.activities.filter(activity => ids.has(String(activity.id)))
+  }
+  return Object.values(details?.details ?? {})
+    .filter(detail => ids.has(String(detail.id)))
+    .map(detail => ({
+      id: detail.id,
+      date: detail.date,
+      sport: detail.sport,
+      virtual: detail.virtual,
+      commute: detail.commute,
+      treadmill: detail.sport === 'run' && /\btreadmill\b/i.test(detail.name),
+      name: detail.name,
+      distanceKm: detail.distanceKm,
+      movingTimeS: detail.movingTimeS,
+      cadence: detail.avgCadence,
+    }))
+    .sort((left, right) => right.date.localeCompare(left.date))
+}
+
 export const buildMapSearchView = (
   presentation: TriathlonPresentation,
   query: string,
@@ -45,8 +70,8 @@ export const buildMapSearchView = (
   const hints = activityCommandHints(lastToken, 'routes', ROUTE_SPORTS)
   const ids = drawableActivityIds(details)
   const activities = sortActivitiesBy(
-    (analytics?.activities ?? []).filter(
-      activity => ids.has(String(activity.id)) && matchesActivityQuery(activity, parsed),
+    candidateActivities(analytics, details, ids).filter(activity =>
+      matchesActivityQuery(activity, parsed),
     ),
     sortKey,
   )

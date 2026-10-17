@@ -1,4 +1,5 @@
 import { loadMapbox } from '../../scripts/mapbox-client'
+import { DEFAULT_OVERVIEW_BOUNDS } from './model'
 
 export interface MapboxFeature {
   properties?: Record<string, unknown>
@@ -60,8 +61,13 @@ interface MapboxLibrary {
   Map: new (options: {
     container: HTMLElement
     style: string
-    center: [number, number]
-    zoom: number
+    center?: [number, number]
+    zoom?: number
+    bounds?: [[number, number], [number, number]]
+    fitBoundsOptions?: {
+      padding: number | { top: number; right: number; bottom: number; left: number }
+      maxZoom: number
+    }
     attributionControl: boolean
     pitch: number
   }) => TriathlonMapboxMap
@@ -71,14 +77,15 @@ export const createMapboxMap = async (
   container: HTMLElement,
   style: string,
   threeDimensional: boolean,
+  initialBounds: [[number, number], [number, number]] | null = DEFAULT_OVERVIEW_BOUNDS,
 ): Promise<TriathlonMapboxMap | null> => {
   const library: MapboxLibrary | null = await loadMapbox()
   if (!library) return null
   return new library.Map({
     container,
     style,
-    center: [-79.4, 43.7],
-    zoom: 9,
+    bounds: initialBounds ?? DEFAULT_OVERVIEW_BOUNDS,
+    fitBoundsOptions: { padding: 48, maxZoom: 13 },
     attributionControl: false,
     pitch: threeDimensional ? 55 : 0,
   })

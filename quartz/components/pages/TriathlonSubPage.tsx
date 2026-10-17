@@ -50,6 +50,7 @@ export const TriathlonSubPage = (view: TriView, defaultDistance?: unknown): Quar
       <div
         class={classNames(displayClass, 'triathlon', 'tri-subpage', 'all-col', 'popover-hint')}
         data-tri-view={view}
+        data-map-path={joinSegments(root, 'static/strava-map.json')}
         data-detail-path={joinSegments(root, 'static/strava-detail.json')}
         data-analytics-path={joinSegments(root, 'static/analytics.json')}
         data-oura-detail-path={joinSegments(root, 'static/oura-detail.json')}

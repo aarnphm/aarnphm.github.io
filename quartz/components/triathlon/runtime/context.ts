@@ -3,13 +3,14 @@ import type { OuraDayDetail } from '../../../plugins/stores/oura'
 import type { TrainingPayload } from '../../../plugins/stores/training'
 import type { TriathlonPresentation } from '../../../util/triathlon-presentation'
 import type { TriathlonFormatter } from './formatter'
-import { readDetailPayload, type DetailPayload } from '../activity/data'
+import { readDetailPayload, readMapPayload, type DetailPayload } from '../activity/data'
 import { createPaceRuntime, type PaceRuntime } from '../tools/pace-runtime'
 import { createNavigationResource, type NavigationResource } from './data'
 import { createTriathlonEventBus, type TriathlonEventBus } from './events'
 import { createPreferenceController, type PreferenceController } from './preferences'
 
 export interface TriathlonResources {
+  map: NavigationResource<DetailPayload>
   detail: NavigationResource<DetailPayload>
   analytics: NavigationResource<Analytics>
   oura: NavigationResource<Record<string, OuraDayDetail>>
@@ -50,6 +51,7 @@ export const createTriathlonContext = (signal: AbortSignal): TriathlonContext =>
     events,
     pace: createPaceRuntime(),
     resources: {
+      map: createNavigationResource(signal, response => readMapPayload(response)),
       detail: createNavigationResource(signal, response => readDetailPayload(response, signal)),
       analytics: createNavigationResource(signal, readJson<Analytics>),
       oura: createNavigationResource(signal, readJson<Record<string, OuraDayDetail>>),

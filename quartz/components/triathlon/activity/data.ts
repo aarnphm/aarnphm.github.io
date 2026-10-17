@@ -19,6 +19,7 @@ import {
 } from '../../../util/run-mechanics'
 import { STAMINA_LEDGER_METHOD, STAMINA_LEDGER_OFFSET_METHOD } from '../../../util/stamina-ledger'
 import {
+  hydrateStravaMapPayload,
   isStravaDetailShardPath,
   STRAVA_DETAIL_INDEX_KIND,
   type StravaDetailIndex,
@@ -1050,6 +1051,13 @@ export async function readDetailPayload(
     matchedRuns: value.matchedRuns,
     matchedRides: value.matchedRides,
   }
+}
+
+export async function readMapPayload(response: Response): Promise<DetailPayload> {
+  const value: unknown = await response.json()
+  const payload = hydrateStravaMapPayload(value)
+  if (!payload) throw new Error('invalid Strava map payload')
+  return payload
 }
 
 export const detailContextFromPayload = (payload?: DetailPayload | null): DetailCtx => ({

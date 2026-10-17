@@ -30,6 +30,7 @@ import {
 import { createMapDetailTransition } from './detail'
 import { createMapboxMap, type MapboxLayerEvent, type TriathlonMapboxMap } from './mapbox'
 import {
+  DEFAULT_OVERVIEW_BOUNDS,
   emptyFC,
   fcBounds,
   gpsSegments,
@@ -39,6 +40,7 @@ import {
   heatWidthExpr,
   initialMapModel,
   metricRouteFC,
+  overviewBounds,
   overviewRamp,
   pointFC,
   rangeFC,
@@ -59,6 +61,17 @@ import { createOverviewProvider, createRouteSportFilter } from './overview'
 import { HEAT_RAMP, rampGradient } from './palette'
 import { createMapSearchController } from './search-controller'
 
+const sameBounds = (
+  left: [[number, number], [number, number]] | null,
+  right: [[number, number], [number, number]] | null,
+): boolean =>
+  left != null &&
+  right != null &&
+  Math.abs(left[0][0] - right[0][0]) < 1e-4 &&
+  Math.abs(left[0][1] - right[0][1]) < 1e-4 &&
+  Math.abs(left[1][0] - right[1][0]) < 1e-4 &&
+  Math.abs(left[1][1] - right[1][1]) < 1e-4
+
 export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => void) | null => {
   const domF = createDomFactory(context.presentation)
   const btn = root.querySelector<HTMLElement>('.tri-map-btn')
@@ -76,7 +89,24 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
   const body = root.querySelector<HTMLElement>('.tri-map-body')
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   let data: Analytics | null = null
+  let mapData: DetailPayload | null = null
   let detailData: DetailPayload | null = null
+  let detailPromise: Promise<DetailPayload | null> | null = null
+  const activeDetails = (): DetailPayload | null => detailData ?? mapData
+  const ensureDetailData = (): Promise<DetailPayload | null> => {
+    if (detailData) return Promise.resolve(detailData)
+    if (detailPromise) return detailPromise
+    const detailPath = root.dataset.detailPath
+    if (!detailPath) return Promise.resolve(null)
+    detailPromise = context.resources.detail.load(detailPath).then(result => {
+      detailPromise = null
+      if (!live || context.signal.aborted || result.status !== 'ready') return null
+      detailData = result.value
+      if (!mapData) overview.clear()
+      return detailData
+    })
+    return detailPromise
+  }
   const canvas = root.querySelector<HTMLElement>('.tri-map-canvas')
   const overlay = root.querySelector<HTMLElement>('.tri-map-overlay')
   const selectionOverlay = root.querySelector<HTMLElement>('.tri-map-selection')
@@ -96,7 +126,7 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
   const sportFilter = createRouteSportFilter(sportBtns)
   const overview = createOverviewProvider(
     () => context.presentation,
-    () => detailData,
+    activeDetails,
     () => program.retrieve().enabledSports,
   )
 
@@ -110,8 +140,39 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
     let streetSequence = 0
     let matchedOverview: Overview | null = null
     let streetMapMatcher: StreetMapMatcher | null = null
+    let lastFittedBounds: [[number, number], [number, number]] | null = null
     let selection: { d: StravaActivityDetail; i: number } | null = null
     const readyMap = (): TriathlonMapboxMap | null => (okFlag ? map : null)
+    const ensureMatcher = (): StreetMapMatcher | null => {
+      const currentOverview = overview.current()
+      if (matchedOverview !== currentOverview) {
+        matchedOverview = currentOverview
+        streetMapMatcher = createStreetMapMatcher(
+          currentOverview.streetActivities,
+          currentOverview.maximumVisits,
+        )
+      }
+      return streetMapMatcher
+    }
+    const computeStreetFeatures = (current: TriathlonMapboxMap) => {
+      const roadLayers = current
+        .getStyle()
+        ?.layers?.filter(
+          (layer: { id?: unknown; type?: unknown; 'source-layer'?: unknown }) =>
+            typeof layer.id === 'string' &&
+            layer.type === 'line' &&
+            layer['source-layer'] === 'road' &&
+            !layer.id.includes('rail'),
+        )
+      if (!roadLayers?.length) return null
+      const matcher = ensureMatcher()
+      if (!matcher) return emptyFC()
+      const rendered = current.queryRenderedFeatures({
+        layers: roadLayers.map((layer: { id: string }) => layer.id),
+      })
+      if (!rendered.length) return null
+      return matcher(rendered)
+    }
     const clearHover = () => {
       hoverId = null
       readyMap()?.getSource('tri-hov')?.setData(emptyFC())
@@ -167,7 +228,9 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
     const recolor = (d: StravaActivityDetail, i: number) => {
       const current = readyMap()
       if (!current) return
-      const spec = metricSpecs(context.presentation, d, detailContextFromPayload(detailData))[i]
+      const spec = metricSpecs(context.presentation, d, detailContextFromPayload(activeDetails()))[
+        i
+      ]
       if (spec) current.getSource('tri-sel')?.setData(metricRouteFC(d, spec))
     }
     const addSource = (id: string, source: Record<string, unknown>) => {
@@ -182,38 +245,14 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
     }
     const drawStreetMap = () => {
       const current = readyMap()
-      if (!current) return
-      const roadLayers = current
-        .getStyle()
-        ?.layers?.filter(
-          (layer: { id?: unknown; type?: unknown; 'source-layer'?: unknown }) =>
-            typeof layer.id === 'string' &&
-            layer.type === 'line' &&
-            layer['source-layer'] === 'road' &&
-            !layer.id.includes('rail'),
-        )
-      if (!roadLayers?.length) return
-      const currentOverview = overview.current()
-      if (matchedOverview !== currentOverview) {
-        matchedOverview = currentOverview
-        streetMapMatcher = createStreetMapMatcher(
-          currentOverview.streetActivities,
-          currentOverview.maximumVisits,
-        )
-      }
-      current
-        .getSource('tri-heat')
-        ?.setData(
-          streetMapMatcher?.(
-            current.queryRenderedFeatures({
-              layers: roadLayers.map((layer: { id: string }) => layer.id),
-            }),
-          ) ?? emptyFC(),
-        )
+      if (!current || !activeDetails()) return
+      const features = computeStreetFeatures(current)
+      if (features) current.getSource('tri-heat')?.setData(features)
     }
     const scheduleStreetMap = () => {
       const current = readyMap()
       if (!current) return
+      if (activeDetails()) drawStreetMap()
       const sequence = ++streetSequence
       current.once('idle', () => {
         if (sequence === streetSequence) drawStreetMap()
@@ -229,7 +268,7 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
       const key = String(id)
       if (hoverId !== key) {
         hoverId = key
-        const d = detailData?.details?.[key]
+        const d = activeDetails()?.details?.[key]
         if (!d) return
         current.getSource('tri-hov')?.setData(routeFC(d))
         if (tip)
@@ -277,7 +316,11 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
       const firstLabelId = map.getStyle()?.layers?.find(layer => layer.type === 'symbol')?.id
       applyMapTerrain(map, threeDimensional, style, theme)
       applyElevation()
-      addSource('tri-heat', { type: 'geojson', data: emptyFC() })
+      const hasOverviewData = activeDetails() != null && !selection
+      const initialTraces = hasOverviewData ? overview.current().traces : emptyFC()
+      const initialHeat =
+        hasOverviewData && map ? (computeStreetFeatures(map) ?? emptyFC()) : emptyFC()
+      addSource('tri-heat', { type: 'geojson', data: initialHeat })
       addLayer(
         {
           id: 'tri-heat-casing',
@@ -306,7 +349,7 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
         },
         firstLabelId,
       )
-      addSource('tri-traces', { type: 'geojson', data: emptyFC() })
+      addSource('tri-traces', { type: 'geojson', data: initialTraces })
       addLayer(
         {
           id: 'tri-swim-casing',
@@ -403,7 +446,7 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
       })
       bindEvents()
       okFlag = true
-      applyMode()
+      applyMode(!hasOverviewData || initialHeat.features.length === 0)
     }
     const refreshMapData = (fit: boolean) => {
       if (selection) select(selection.d, selection.i, fit)
@@ -428,10 +471,15 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
       if (!canvas) return
       canvas.classList.remove('tri-map-canvas--down')
       canvas.textContent = ''
+      const initialBounds =
+        (activeDetails() ? overviewBounds(overview.current().traces) : null) ??
+        DEFAULT_OVERVIEW_BOUNDS
+      lastFittedBounds = initialBounds
       const created = await createMapboxMap(
         canvas,
         mapboxStyleUrl(readTriMapStyle(), readTriMapTheme()),
         threeDimensional,
+        initialBounds,
       )
       if (context.signal.aborted || !live) {
         created?.remove()
@@ -452,7 +500,6 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
       if (!current) return
       clearHover()
       const ov = overview.current()
-      if (redrawStreetMap) current.getSource('tri-heat')?.setData(emptyFC())
       current.getSource('tri-traces')?.setData(ov.traces)
       applyMode(redrawStreetMap)
     }
@@ -460,8 +507,11 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
       const current = readyMap()
       if (!current) return
       setOverviewData(redrawStreetMap)
-      const b = fcBounds(overview.current().traces)
-      if (fit && b) current.fitBounds(b, { padding: 48, maxZoom: 13, duration: reduce ? 0 : 600 })
+      const b = overviewBounds(overview.current().traces)
+      if (fit && b && !sameBounds(b, lastFittedBounds)) {
+        lastFittedBounds = b
+        current.fitBounds(b, { padding: 48, maxZoom: 13, duration: reduce ? 0 : 600 })
+      }
     }
     const fitSelection = (
       d: StravaActivityDetail,
@@ -475,12 +525,14 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
         selectionOverlay?.getAttribute('aria-hidden') === 'false'
           ? selectionOverlay.offsetHeight + 56
           : 40
-      if (b)
+      if (b) {
+        lastFittedBounds = null
         current.fitBounds(b, {
           padding: { top: 40, right: 40, bottom, left: 40 },
           maxZoom: range ? 17 : 15,
           duration: reduce ? 0 : duration,
         })
+      }
     }
     const select = (d: StravaActivityDetail, i: number, fit = true) => {
       selection = { d, i }
@@ -530,11 +582,15 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
       eventsBound = false
       matchedOverview = null
       streetMapMatcher = null
+      lastFittedBounds = null
       selection = null
     }
     return {
       init,
       ok: () => readyMap() != null,
+      warmOverview: () => {
+        if (activeDetails()) ensureMatcher()
+      },
       drawOverview,
       applyMode,
       select,
@@ -584,8 +640,12 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
   })
   const closeDetail = detailTransition.close
   const toMain = () => {
-    closeDetail()
-    mapSearch.clear()
+    if (panel.classList.contains('tri-map--detail') || program.retrieve().selectedRouteId != null) {
+      closeDetail()
+    }
+    if (panel.classList.contains('tri-map--searching') || Boolean(search?.value)) {
+      mapSearch.clear()
+    }
   }
   const close = () => {
     const wasOpen = root.classList.contains('tri-map-open')
@@ -602,7 +662,16 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
   const renderRoute = (id: string, initialMetric = 0, selectMap = true) => {
     if (!detail) return
     const d = detailData?.details?.[id]
-    if (!d) return
+    if (!d) {
+      const preview = mapData?.details?.[id]
+      if (preview && selectMap && mapCtl.ok()) mapCtl.select(preview, initialMetric, true)
+      void ensureDetailData().then(loaded => {
+        if (loaded?.details?.[id] && program.retrieve().selectedRouteId === id) {
+          renderRoute(id, program.retrieve().metric, selectMap)
+        }
+      })
+      return
+    }
     cancelDetailFrames()
     detailTransition.cancel()
     detailCleanup?.()
@@ -674,11 +743,19 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
       mapCtl.drawOverview()
     })
   const open = () => {
+    const wasReady =
+      mapCtl.ok() &&
+      program.retrieve().status === 'ready' &&
+      !panel.classList.contains('tri-map--detail')
     toMain()
     root.classList.add('tri-map-open')
     panel.setAttribute('aria-hidden', 'false')
-    load()
-    startMap()
+    if (wasReady) {
+      window.requestAnimationFrame(() => mapCtl.resize())
+    } else {
+      load()
+      startMap()
+    }
     panel.focus({ preventScroll: true })
   }
   const onKey = (event: KeyboardEvent) => {
@@ -760,6 +837,7 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
   }
   const onPowerFilter = () => {
     overview.clear()
+    mapCtl.warmOverview()
     const model = program.retrieve()
     if (model.selectedRouteId) renderRoute(model.selectedRouteId, model.metric, false)
     else mapCtl.drawOverview({ fit: false })
@@ -770,7 +848,7 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
     search,
     results,
     analytics: () => data,
-    details: () => detailData,
+    details: activeDetails,
     detailsReady: () => program.retrieve().status === 'ready',
     setSports: sports => program.dispatch({ type: 'set-sports', sports }),
     selectRoute: id => program.dispatch({ type: 'select-route', id }),
@@ -780,23 +858,44 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
     reduce: updateMap,
     effects: (effect, { dispatch, retrieve }) => {
       if (effect.type === 'load-artifacts') {
-        const analyticsPath = root.dataset.analyticsPath
         const detailPath = root.dataset.detailPath
-        void Promise.all([
-          analyticsPath ? context.resources.analytics.load(analyticsPath) : Promise.resolve(null),
-          detailPath ? context.resources.detail.load(detailPath) : Promise.resolve(null),
-        ]).then(([analyticsResult, detailResult]) => {
+        const mapPath =
+          root.dataset.mapPath ?? detailPath?.replace(/strava-detail\.json$/, 'strava-map.json')
+        const completeLoad = (payload: DetailPayload | null, isFullDetail: boolean) => {
           if (!live || context.signal.aborted) return
-          if (analyticsResult?.status === 'ready') data = analyticsResult.value
-          if (detailResult?.status === 'ready') detailData = detailResult.value
-          if (detailPath && detailResult?.status !== 'ready') {
+          if (isFullDetail) detailData = payload
+          else mapData = payload
+          if ((mapPath || detailPath) && !payload) {
             dispatch({ type: 'failed', request: effect.request })
             return
           }
           overview.clear()
+          mapCtl.warmOverview()
           dispatch({ type: 'loaded', request: effect.request })
           if (search?.value) mapSearch.run()
-        })
+        }
+        if (mapPath && context.resources.map) {
+          void context.resources.map.load(mapPath).then(mapResult => {
+            if (!live || context.signal.aborted) return
+            if (mapResult.status === 'ready') {
+              completeLoad(mapResult.value, false)
+              return
+            }
+            if (!detailPath) {
+              completeLoad(null, false)
+              return
+            }
+            void context.resources.detail.load(detailPath).then(detailResult => {
+              completeLoad(detailResult.status === 'ready' ? detailResult.value : null, true)
+            })
+          })
+          return
+        }
+        void (detailPath ? context.resources.detail.load(detailPath) : Promise.resolve(null)).then(
+          detailResult => {
+            completeLoad(detailResult?.status === 'ready' ? detailResult.value : null, true)
+          },
+        )
         return
       }
       if (effect.type === 'draw-overview') {
@@ -810,13 +909,13 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
         return
       }
       if (effect.type === 'apply-metric') {
-        const activity = detailData?.details?.[effect.id]
+        const activity = activeDetails()?.details?.[effect.id]
         if (activity) mapCtl.recolor(activity, effect.metric)
         return
       }
       if (effect.type === 'draw-range') {
         const id = retrieve().selectedRouteId
-        const activity = id ? detailData?.details?.[id] : null
+        const activity = id ? activeDetails()?.details?.[id] : null
         if (activity) mapCtl.selectRange(activity, effect.range, true)
         return
       }
@@ -838,6 +937,7 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
   syncThreeDimensionalBtn()
   syncElevationBtn()
 
+  let warmupTimer = 0
   if (pageMode) {
     load()
     startMap()
@@ -846,6 +946,12 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
     closeBtn?.addEventListener('click', close)
     title?.addEventListener('click', toMain)
     scrim?.addEventListener('click', close)
+    warmupTimer = window.setTimeout(() => {
+      warmupTimer = 0
+      if (!live || context.signal.aborted) return
+      load()
+      startMap()
+    }, 80)
   }
   panel.addEventListener('click', onPanelClick)
   overlay?.addEventListener('click', onModeClick)
@@ -864,6 +970,7 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
 
   return () => {
     live = false
+    if (warmupTimer) window.clearTimeout(warmupTimer)
     btn?.removeEventListener('click', open)
     closeBtn?.removeEventListener('click', close)
     title?.removeEventListener('click', toMain)

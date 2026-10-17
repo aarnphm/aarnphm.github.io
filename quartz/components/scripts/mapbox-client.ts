@@ -32,11 +32,8 @@ export function getMapboxToken() {
   }))
 }
 
-export async function loadMapbox() {
-  const token = await getMapboxToken()
-  if (!token) return null
-
-  mapboxStylesReady ??= new Promise<boolean>(resolve => {
+function ensureMapboxStyles() {
+  return (mapboxStylesReady ??= new Promise<boolean>(resolve => {
     let link = document.querySelector<HTMLLinkElement>(`link[href="${MAPBOX_STYLESHEET_HREF}"]`)
     if (link?.sheet) {
       resolve(true)
@@ -62,39 +59,41 @@ export async function loadMapbox() {
   }).then(loaded => {
     if (!loaded) mapboxStylesReady = null
     return loaded
-  })
-  if (!(await mapboxStylesReady)) return null
+  }))
+}
 
-  if (window.mapboxgl) {
-    window.mapboxgl.accessToken = token
-    return window.mapboxgl
-  }
+function ensureMapboxScript() {
+  if (window.mapboxgl) return Promise.resolve(window.mapboxgl)
+  return (mapboxReady ??= new Promise<any | null>(resolve => {
+    let script = document.querySelector<HTMLScriptElement>(`script[src="${MAPBOX_SCRIPT_SRC}"]`)
+    if (!script) {
+      script = document.createElement('script')
+      script.src = MAPBOX_SCRIPT_SRC
+      script.async = true
+      script.defer = true
+      document.head.appendChild(script)
+    }
+    script.dataset.persist = 'true'
 
-  if (!mapboxReady) {
-    mapboxReady = new Promise<any | null>(resolve => {
-      let script = document.querySelector<HTMLScriptElement>(`script[src="${MAPBOX_SCRIPT_SRC}"]`)
-      if (!script) {
-        script = document.createElement('script')
-        script.src = MAPBOX_SCRIPT_SRC
-        script.async = true
-        script.defer = true
-        document.head.appendChild(script)
-      }
-      script.dataset.persist = 'true'
+    script.addEventListener('load', () => resolve(window.mapboxgl), { once: true })
+    script.addEventListener('error', () => resolve(null), { once: true })
+  }).then(mapbox => {
+    if (!mapbox) {
+      mapboxReady = null
+      document.querySelector(`script[src="${MAPBOX_SCRIPT_SRC}"]`)?.remove()
+    }
+    return mapbox
+  }))
+}
 
-      script.addEventListener('load', () => resolve(window.mapboxgl), { once: true })
-      script.addEventListener('error', () => resolve(null), { once: true })
-    }).then(mapbox => {
-      if (!mapbox) {
-        mapboxReady = null
-        document.querySelector(`script[src="${MAPBOX_SCRIPT_SRC}"]`)?.remove()
-      }
-      return mapbox
-    })
-  }
-
-  const mapbox = await mapboxReady
-  if (mapbox) mapbox.accessToken = token
+export async function loadMapbox() {
+  const [token, stylesLoaded, mapbox] = await Promise.all([
+    getMapboxToken(),
+    ensureMapboxStyles(),
+    ensureMapboxScript(),
+  ])
+  if (!token || !stylesLoaded || !mapbox) return null
+  mapbox.accessToken = token
   return mapbox
 }
 

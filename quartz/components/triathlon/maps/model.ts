@@ -74,9 +74,15 @@ export interface OverviewDrawOptions {
 export const OVERVIEW_METRICS = ['w', 'hr', 'cad', 'spd'] as const
 
 export const OVERVIEW_CELL = 0.0008
+const OVERVIEW_KEY_OFFSET = 1_048_576
+const OVERVIEW_KEY_SCALE = 2_097_152
 
 export const overviewCellKey = (lng: number, lat: number): string =>
   `${Math.round(lng / OVERVIEW_CELL)},${Math.round(lat / OVERVIEW_CELL)}`
+
+const overviewCellIntKey = (lng: number, lat: number): number =>
+  (Math.round(lng / OVERVIEW_CELL) + OVERVIEW_KEY_OFFSET) * OVERVIEW_KEY_SCALE +
+  (Math.round(lat / OVERVIEW_CELL) + OVERVIEW_KEY_OFFSET)
 
 export const stampSegment = (a: StravaMapPoint, b: StravaMapPoint, into: Set<string>) => {
   const steps = Math.max(
@@ -86,6 +92,20 @@ export const stampSegment = (a: StravaMapPoint, b: StravaMapPoint, into: Set<str
   for (let s = 0; s <= steps; s++) {
     const t = s / steps
     into.add(overviewCellKey(a.lng + (b.lng - a.lng) * t, a.lat + (b.lat - a.lat) * t))
+  }
+}
+
+const stampSegmentInt = (a: StravaMapPoint, b: StravaMapPoint, into: Set<number>) => {
+  const dLng = b.lng - a.lng
+  const dLat = b.lat - a.lat
+  const steps = Math.max(
+    1,
+    Math.ceil(Math.max(Math.abs(dLng), Math.abs(dLat)) / (OVERVIEW_CELL / 2)),
+  )
+  const invSteps = 1 / steps
+  for (let s = 0; s <= steps; s++) {
+    const t = s * invSteps
+    into.add(overviewCellIntKey(a.lng + dLng * t, a.lat + dLat * t))
   }
 }
 
@@ -152,12 +172,12 @@ export const buildOverview = (
     const d = det[k]
     if (!d.virtual && enabled.has(d.sport) && gpsSegments(d).length > 0) acts.push(d)
   }
-  const counts = new Map<string, number>()
+  const counts = new Map<number, number>()
   for (const d of acts) {
     if (d.sport === 'swim') continue
-    const cells = new Set<string>()
+    const cells = new Set<number>()
     for (const r of gpsSegments(d))
-      for (let i = 0; i < r.length - 1; i++) stampSegment(r[i], r[i + 1], cells)
+      for (let i = 0; i < r.length - 1; i++) stampSegmentInt(r[i], r[i + 1], cells)
     for (const c of cells) counts.set(c, (counts.get(c) ?? 0) + 1)
   }
   let maxCount = 1
@@ -222,7 +242,11 @@ export const heatOpacityExpr: unknown[] = [
 ]
 
 const heatWidthExpression = (casing: number): unknown[] => {
-  const w = (base: number, k: number) => ['+', base + casing, ['*', k, ['-', ['get', 'heat'], 1]]]
+  const w = (base: number, k: number) => [
+    '+',
+    base + casing,
+    ['*', k, ['-', ['coalesce', ['get', 'heat'], 1], 1]],
+  ]
   return ['interpolate', ['linear'], ['zoom'], 10, w(0.55, 0.08), 14, w(0.9, 0.14), 16, w(1.3, 0.2)]
 }
 
@@ -377,21 +401,20 @@ export const fcBounds = (fc: GeoFC): [[number, number], [number, number]] | null
   let maxLat = -Infinity
   for (const f of fc.features) {
     if (!isRecord(f) || !isRecord(f.geometry) || !Array.isArray(f.geometry.coordinates)) continue
-    const coords: GeoCoord[] = []
     for (const coordinate of f.geometry.coordinates) {
       if (
         Array.isArray(coordinate) &&
         coordinate.length >= 2 &&
         typeof coordinate[0] === 'number' &&
         typeof coordinate[1] === 'number'
-      )
-        coords.push([coordinate[0], coordinate[1]])
-    }
-    for (const [lng, lat] of coords) {
-      if (lng < minLng) minLng = lng
-      if (lng > maxLng) maxLng = lng
-      if (lat < minLat) minLat = lat
-      if (lat > maxLat) maxLat = lat
+      ) {
+        const lng = coordinate[0]
+        const lat = coordinate[1]
+        if (lng < minLng) minLng = lng
+        if (lng > maxLng) maxLng = lng
+        if (lat < minLat) minLat = lat
+        if (lat > maxLat) maxLat = lat
+      }
     }
   }
   return Number.isFinite(minLng)
@@ -400,6 +423,116 @@ export const fcBounds = (fc: GeoFC): [[number, number], [number, number]] | null
         [maxLng, maxLat],
       ]
     : null
+}
+
+export const DEFAULT_OVERVIEW_CENTER: [number, number] = [-79.4, 43.7]
+
+export const DEFAULT_OVERVIEW_BOUNDS: [[number, number], [number, number]] = [
+  [-80.102531, 43.249998],
+  [-78.292016, 44.606476],
+]
+
+export const OVERVIEW_CLUSTER_RADIUS_DEG = 1.5
+
+interface ActivityBoundsBox {
+  minLng: number
+  minLat: number
+  maxLng: number
+  maxLat: number
+}
+
+export const overviewBounds = (fc: GeoFC): [[number, number], [number, number]] | null => {
+  const byActivity = new Map<string, ActivityBoundsBox>()
+  let anonymousIndex = 0
+  for (const f of fc.features) {
+    if (!isRecord(f) || !isRecord(f.geometry) || !Array.isArray(f.geometry.coordinates)) continue
+    const rawId = isRecord(f.properties) ? f.properties.id : undefined
+    const key =
+      typeof rawId === 'number' || typeof rawId === 'string'
+        ? String(rawId)
+        : `__anon_${anonymousIndex++}`
+    let box = byActivity.get(key)
+    for (const coordinate of f.geometry.coordinates) {
+      if (
+        Array.isArray(coordinate) &&
+        coordinate.length >= 2 &&
+        typeof coordinate[0] === 'number' &&
+        typeof coordinate[1] === 'number' &&
+        Number.isFinite(coordinate[0]) &&
+        Number.isFinite(coordinate[1])
+      ) {
+        const lng = coordinate[0]
+        const lat = coordinate[1]
+        if (!box) {
+          box = { minLng: lng, minLat: lat, maxLng: lng, maxLat: lat }
+          byActivity.set(key, box)
+        } else {
+          if (lng < box.minLng) box.minLng = lng
+          if (lng > box.maxLng) box.maxLng = lng
+          if (lat < box.minLat) box.minLat = lat
+          if (lat > box.maxLat) box.maxLat = lat
+        }
+      }
+    }
+  }
+  const boxes = [...byActivity.values()]
+  if (boxes.length === 0) return null
+  if (boxes.length === 1) {
+    const b = boxes[0]
+    return [
+      [b.minLng, b.minLat],
+      [b.maxLng, b.maxLat],
+    ]
+  }
+  const visited = new Uint8Array(boxes.length)
+  let bestCount = -1
+  let bestCenterDistSq = Infinity
+  let bestBounds: [[number, number], [number, number]] | null = null
+  const radius = OVERVIEW_CLUSTER_RADIUS_DEG
+  for (let i = 0; i < boxes.length; i++) {
+    if (visited[i]) continue
+    visited[i] = 1
+    const queue = [i]
+    let minLng = boxes[i].minLng
+    let minLat = boxes[i].minLat
+    let maxLng = boxes[i].maxLng
+    let maxLat = boxes[i].maxLat
+    for (let head = 0; head < queue.length; head++) {
+      const current = boxes[queue[head]]
+      if (current.minLng < minLng) minLng = current.minLng
+      if (current.maxLng > maxLng) maxLng = current.maxLng
+      if (current.minLat < minLat) minLat = current.minLat
+      if (current.maxLat > maxLat) maxLat = current.maxLat
+      for (let j = 0; j < boxes.length; j++) {
+        if (visited[j]) continue
+        const other = boxes[j]
+        if (
+          current.minLng - radius <= other.maxLng &&
+          other.minLng - radius <= current.maxLng &&
+          current.minLat - radius <= other.maxLat &&
+          other.minLat - radius <= current.maxLat
+        ) {
+          visited[j] = 1
+          queue.push(j)
+        }
+      }
+    }
+    const count = queue.length
+    const centerLng = (minLng + maxLng) * 0.5
+    const centerLat = (minLat + maxLat) * 0.5
+    const dLng = centerLng - DEFAULT_OVERVIEW_CENTER[0]
+    const dLat = centerLat - DEFAULT_OVERVIEW_CENTER[1]
+    const centerDistSq = dLng * dLng + dLat * dLat
+    if (count > bestCount || (count === bestCount && centerDistSq < bestCenterDistSq)) {
+      bestCount = count
+      bestCenterDistSq = centerDistSq
+      bestBounds = [
+        [minLng, minLat],
+        [maxLng, maxLat],
+      ]
+    }
+  }
+  return bestBounds
 }
 
 export type MapLoadStatus = 'idle' | 'loading' | 'ready' | 'failed'
