@@ -51,6 +51,8 @@ async function runEmitterOutput(
       }
     }
   } catch (err) {
+    if (ctx.argv.watch)
+      throw new Error(`Failed to emit from plugin ${emitter.name}`, { cause: err })
     trace(`Failed to emit from plugin \`${emitter.name}\``, err as Error)
   }
   logBuildSpan(ctx.argv, `emit:${emitter.name}`, `${emittedFiles} files`, perf.elapsedMs())
@@ -163,11 +165,18 @@ export async function emitContent(
   const otherEmitters = cfg.plugins.emitters.filter(
     emitter => emitter.name !== 'ComponentResources',
   )
-  const counts = await mapConcurrent(otherEmitters, defaultEmitterConcurrency, emitter => {
-    return partialChanges
-      ? runPartialEmitter(emitter, ctx, content, staticResources, log, partialChanges)
-      : runEmitter(emitter, ctx, content, staticResources, log)
+  const failures: unknown[] = []
+  const counts = await mapConcurrent(otherEmitters, defaultEmitterConcurrency, async emitter => {
+    try {
+      return await (partialChanges
+        ? runPartialEmitter(emitter, ctx, content, staticResources, log, partialChanges)
+        : runEmitter(emitter, ctx, content, staticResources, log))
+    } catch (error) {
+      failures.push(error)
+      return 0
+    }
   })
+  if (failures.length > 0) throw new AggregateError(failures, 'Failed to emit Quartz output')
   emittedFiles += counts.reduce((sum, count) => sum + count, 0)
 
   log.end(`Emitted ${emittedFiles} files to \`${argv.output}\` in ${perf.timeSince()}`)

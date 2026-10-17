@@ -194,7 +194,7 @@ async function processOgImage(
     await ensureCachedOgImage(cachePath, content)
   }
 
-  return copyFile(cachePath, dest)
+  return copyFile(cachePath, dest, ctx.incremental ? ctx.argv.output : undefined)
 }
 
 export async function createOgImageGenerator(

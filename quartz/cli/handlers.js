@@ -3,7 +3,7 @@ import chokidar from 'chokidar'
 import { randomUUID } from 'crypto'
 import esbuild from 'esbuild'
 import { sassPlugin } from 'esbuild-sass-plugin'
-import { promises } from 'fs'
+import { constants, promises } from 'fs'
 import { globby } from 'globby'
 import http from 'http'
 import { once } from 'node:events'
@@ -291,28 +291,85 @@ export function createPreviewServer(argv, buildMutex) {
       return
     }
 
-    const release = await buildMutex.acquire()
-    if (res.destroyed) {
-      release()
-      return
+    // Watch builds stage full output and replace individual files atomically. Requests can keep
+    // reading the last successful output while the build mutex is held.
+    if (!argv.watch) {
+      const release = await buildMutex.acquire()
+      if (res.destroyed) {
+        release()
+        return
+      }
+      res.once('finish', release)
+      res.once('close', release)
     }
-    res.once('finish', release)
-    res.once('close', release)
 
     // strip baseDir prefix
     req.url = req.url?.slice(argv.baseDir.length)
 
     const serve = async () => {
-      await serveHandler(req, res, {
-        public: argv.output,
-        directoryListing: false,
-        headers: [
-          { source: '**/*.*', headers: [{ key: 'Content-Disposition', value: 'inline' }] },
-          { source: '**/*.webp', headers: [{ key: 'Content-Type', value: 'image/webp' }] },
-          // fixes bug where avif images are displayed as text instead of images (future proof)
-          { source: '**/*.avif', headers: [{ key: 'Content-Type', value: 'image/avif' }] },
-        ],
-      })
+      const snapshots = new Map()
+      const handles = new Map()
+      let closed = false
+      const closeReads = () => {
+        if (closed) return
+        closed = true
+        void Promise.allSettled(
+          [...snapshots.values()].map(pending =>
+            pending.then(snapshot => snapshot.handle?.close()),
+          ),
+        )
+      }
+      res.once('finish', closeReads)
+      res.once('close', closeReads)
+      const snapshot = fp => {
+        let pending = snapshots.get(fp)
+        if (!pending) {
+          pending = (async () => {
+            const info = await promises.lstat(fp)
+            if (!info.isFile()) return { info }
+            if (closed) throw new Error('Preview response closed')
+            const handle = await promises.open(fp, constants.O_RDONLY | constants.O_NOFOLLOW)
+            try {
+              const info = await handle.stat()
+              handles.set(fp, handle)
+              return { info, handle }
+            } catch (error) {
+              await handle.close()
+              throw error
+            }
+          })()
+          snapshots.set(fp, pending)
+        }
+        return pending
+      }
+      // Pin metadata and bytes to the same open inode while publication replaces its pathname.
+      const reads = {
+        async lstat(fp) {
+          return (await snapshot(fp)).info
+        },
+        createReadStream(fp, options) {
+          const handle = handles.get(fp)
+          if (!handle) throw new Error(`Missing preview read snapshot: ${fp}`)
+          const stream = handle.createReadStream({ start: 0, ...options })
+          res.once('close', () => stream.destroy())
+          return stream
+        },
+      }
+      await serveHandler(
+        req,
+        res,
+        {
+          public: argv.output,
+          directoryListing: false,
+          headers: [
+            { source: '**/*.*', headers: [{ key: 'Content-Disposition', value: 'inline' }] },
+            { source: '**/*.webp', headers: [{ key: 'Content-Type', value: 'image/webp' }] },
+            // fixes bug where avif images are displayed as text instead of images (future proof)
+            { source: '**/*.avif', headers: [{ key: 'Content-Type', value: 'image/avif' }] },
+          ],
+        },
+        reads,
+      )
       const status = res.statusCode
       const statusString =
         status >= 200 && status < 300
@@ -485,9 +542,9 @@ export async function handleBuild(argv) {
         : { kind: 'full' }
     if (scope.kind === 'partial') {
       release()
-      await bundle.buildSourceResources(argv, buildMutex, changedPaths, scope)
+      const ready = await bundle.buildSourceResources(argv, buildMutex, changedPaths, scope)
       bundle.releaseModuleCaches()
-      clientRefresh()
+      if (ready) clientRefresh()
       return
     }
 
@@ -514,7 +571,7 @@ export async function handleBuild(argv) {
       buildReason,
       courses ? 'courses' : 'site',
     )
-    clientRefresh()
+    if (activeBuild?.ready) clientRefresh()
   }
 
   const reload = argv.watch ? createReloadServer(argv.wsPort) : undefined

@@ -1,6 +1,7 @@
+import { randomUUID } from 'node:crypto'
 import { constants } from 'node:fs'
 import fs from 'node:fs/promises'
-import { dirname } from 'node:path'
+import { dirname, join, resolve } from 'node:path'
 import type { FilePath } from './path'
 
 const ensuredDirs = new Map<string, Promise<void>>()
@@ -23,8 +24,22 @@ export function resetCopyFileCache(): void {
   ensuredDirs.clear()
 }
 
-export async function copyFile(src: FilePath, dest: FilePath): Promise<FilePath> {
+export async function copyFile(
+  src: FilePath,
+  dest: FilePath,
+  outputRoot?: string,
+): Promise<FilePath> {
   await ensureDir(dirname(dest))
-  await fs.copyFile(src, dest, constants.COPYFILE_FICLONE)
+  if (outputRoot) {
+    const temporary = join(dirname(resolve(outputRoot)), `.quartz-copy-${randomUUID()}`)
+    try {
+      await fs.copyFile(src, temporary, constants.COPYFILE_FICLONE)
+      await fs.rename(temporary, dest)
+    } finally {
+      await fs.rm(temporary, { force: true })
+    }
+  } else {
+    await fs.copyFile(src, dest, constants.COPYFILE_FICLONE)
+  }
   return dest
 }

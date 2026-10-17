@@ -27,12 +27,14 @@ import {
   cleanOutputExcept,
   preservedOutputAssets,
   readOutputAssetManifest,
+  relocateOutputAssets,
   writeCurrentOutputAssetManifest,
 } from './util/output-assets'
 import { FilePath, joinSegments, slugifyFilePath } from './util/path'
 import { PerfTimer } from './util/perf'
 import { randomIdNonSecure } from './util/random'
 import { options } from './util/sourcemap'
+import { withStagedOutput } from './util/staged-output'
 import { trace } from './util/trace'
 
 sourceMapSupport.install(options)
@@ -88,7 +90,7 @@ type BuildData = {
   disposed: boolean
 }
 
-type WatchRuntime = { dispose(): Promise<void> }
+type WatchRuntime = { ready: boolean; dispose(): Promise<void> }
 
 const contentFilePath = (content: ProcessedContent): FilePath | undefined =>
   content[1].data.filePath as FilePath | undefined
@@ -197,18 +199,50 @@ async function cleanOutputForBuild(
   ctx: BuildCtx,
   perf: PerfTimer,
   refreshStaticFiles: boolean,
+  publicOutput?: string,
 ): Promise<void> {
   resetGeneratedResourceState(ctx)
   ctx.outputAssetManifest = await readOutputAssetManifest()
+  if (publicOutput) relocateOutputAssets(ctx, publicOutput, ctx.argv.output)
   await syncOutputAssetClaims(ctx, refreshStaticFiles)
   const outputAssetClaims = ctx.outputAssetClaims ?? []
 
   perf.addEvent('clean')
-  emitQuartzDevEvent({ type: 'public:remove:start', epoch: ctx.buildId })
+  if (!publicOutput) emitQuartzDevEvent({ type: 'public:remove:start', epoch: ctx.buildId })
   ctx.outputAssetPreserved = await preservedOutputAssets(ctx.outputAssetManifest, outputAssetClaims)
   await cleanOutputExcept(ctx.argv.output, ctx.outputAssetPreserved)
   resetWriteCache()
   console.log(`Cleaned \`${ctx.argv.output}\` in ${perf.timeSince('clean')}`)
+}
+
+async function emitFullBuild(
+  ctx: BuildCtx,
+  perf: PerfTimer,
+  content: ProcessedContent[],
+): Promise<void> {
+  const publicArgv = ctx.argv
+  if (publicArgv.watch) {
+    await withStagedOutput(
+      publicArgv.output,
+      async stage => {
+        ctx.argv = { ...publicArgv, output: stage }
+        try {
+          await cleanOutputForBuild(ctx, perf, true, publicArgv.output)
+          await emitContent(ctx, content)
+        } finally {
+          relocateOutputAssets(ctx, stage, publicArgv.output)
+          ctx.argv = publicArgv
+          resetWriteCache()
+          delete ctx.outputAssetPreserved
+        }
+      },
+      ['models'],
+    )
+  } else {
+    await emitContent(ctx, content)
+  }
+  await writeCurrentOutputAssetManifest(ctx)
+  delete ctx.outputAssetPreserved
 }
 
 export async function buildQuartz(
@@ -271,7 +305,7 @@ export async function buildQuartz(
 
     const filePaths = markdownPaths.map(fp => joinSegments(argv.directory, fp) as FilePath)
     syncCtxFiles(ctx, allFiles)
-    if (scope === 'site') await cleanOutputForBuild(ctx, perf, true)
+    if (scope === 'site' && !argv.watch) await cleanOutputForBuild(ctx, perf, true)
 
     const parsedFiles = await parseMarkdown(ctx, filePaths)
     const filteredContent = filterContentResult(ctx, parsedFiles).published
@@ -281,11 +315,10 @@ export async function buildQuartz(
       ctx.incremental = true
       await emitCourses(ctx, filteredContent)
     } else {
-      await emitContent(ctx, filteredContent)
-      await writeCurrentOutputAssetManifest(ctx)
-      delete ctx.outputAssetPreserved
+      await emitFullBuild(ctx, perf, filteredContent)
     }
     ctx.incremental = argv.watch
+    if (watching) watching.ready = true
     console.log(
       styleText('green', `Done processing ${markdownPaths.length} files in ${perf.timeSince()}`),
     )
@@ -296,13 +329,13 @@ export async function buildQuartz(
       elapsedMs: perf.elapsedMs(),
     })
   } catch (err) {
-    await watching?.dispose()
     emitQuartzDevEvent({
       type: 'build:error',
       epoch: ctx.buildId,
       message: describeBuildError(err),
     })
-    throw err
+    if (!watching) throw err
+    console.error('Build failed; retaining the last output and watching for changes', err)
   } finally {
     release()
   }
@@ -387,6 +420,7 @@ async function startWatching(
   await Promise.all([once(watcher, 'ready'), once(agentSkillsWatcher, 'ready')])
 
   return {
+    ready: false,
     async dispose() {
       buildData.disposed = true
       buildData.pending.clear()
@@ -486,10 +520,7 @@ async function rebuildAgentSkills(
     shouldRefresh = ctx.buildId === buildId
   } catch (err) {
     emitQuartzDevEvent({ type: 'build:error', epoch: buildId, message: describeBuildError(err) })
-    trace(
-      'Failed to rebuild agent skills',
-      err instanceof Error ? err : new Error(describeBuildError(err)),
-    )
+    console.error('Failed to rebuild agent skills', err)
   } finally {
     release()
   }
@@ -560,12 +591,10 @@ async function rebuild(clientRefresh: () => void, buildData: BuildData, pending:
       )
       await emitContent(ctx, processedFiles, changeEvents)
     } else {
-      await cleanOutputForBuild(ctx, perf, true)
-      await emitContent(ctx, processedFiles)
-      await writeCurrentOutputAssetManifest(ctx)
-      delete ctx.outputAssetPreserved
+      await emitFullBuild(ctx, perf, processedFiles)
     }
     buildData.contentMap = current
+    ctx.incremental = argv.watch
     console.log(styleText('green', `Done rebuilding in ${perf.timeSince()}`))
     emitQuartzDevEvent({
       type: 'build:ready',
@@ -576,7 +605,8 @@ async function rebuild(clientRefresh: () => void, buildData: BuildData, pending:
     shouldRefresh = ctx.buildId === buildId
   } catch (err) {
     emitQuartzDevEvent({ type: 'build:error', epoch: buildId, message: describeBuildError(err) })
-    trace('Failed to rebuild Quartz content', err as Error)
+    ctx.incremental = false
+    console.error('Failed to rebuild Quartz content', err)
   } finally {
     release()
   }
@@ -639,13 +669,15 @@ export async function buildSourceResources(
       files: 0,
       elapsedMs: perf.elapsedMs(),
     })
+    return true
   } catch (err) {
     emitQuartzDevEvent({
       type: 'build:error',
       epoch: ctx.buildId,
       message: describeBuildError(err),
     })
-    trace('Failed to rebuild Quartz source resources', err as Error)
+    console.error('Failed to rebuild Quartz source resources', err)
+    return false
   } finally {
     release()
   }
@@ -662,6 +694,7 @@ export default async (
     const { default: cfg } = await import('../quartz.config')
     return await buildQuartz(cfg, argv, mut, clientRefresh, reason, scope)
   } catch (err) {
-    trace('\nExiting Quartz due to a fatal error', err as Error)
+    if (argv.watch) console.error('Build failed; waiting for the next change', err)
+    else trace('\nExiting Quartz due to a fatal error', err as Error)
   }
 }
