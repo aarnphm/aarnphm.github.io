@@ -170,24 +170,28 @@ function readBaseTrunks(scene: ParentNode): CollisionActor[] {
   return trunks
 }
 
-export function readTrunks(
+export function readSolids(
   scene: ParentNode,
   relativeTo?: SVGGElement,
   reserveCamera = true,
 ): CollisionActor[] {
   const base = readBaseTrunks(scene)
-  const clocks = readClockObstacles(scene, relativeTo)
-  if (!reserveCamera) return [...clocks, ...base]
+  if (!reserveCamera) return base
   const relativeDepth = elementDepth(relativeTo)
-  return [
-    ...clocks,
-    ...base.map(trunk => {
-      const clearance = trunk.element
-        ? Math.abs(elementDepth(trunk.element) - relativeDepth) * parallaxMovement.scroll
-        : 0
-      return clearance ? { ...trunk, radius: trunk.radius + clearance } : trunk
-    }),
-  ]
+  return base.map(trunk => {
+    const clearance = trunk.element
+      ? Math.abs(elementDepth(trunk.element) - relativeDepth) * parallaxMovement.scroll
+      : 0
+    return clearance ? { ...trunk, radius: trunk.radius + clearance } : trunk
+  })
+}
+
+export function readTrunks(
+  scene: ParentNode,
+  relativeTo?: SVGGElement,
+  reserveCamera = true,
+): CollisionActor[] {
+  return [...readClockObstacles(scene, relativeTo), ...readSolids(scene, relativeTo, reserveCamera)]
 }
 
 export function circleClearance(point: Point, radius: number, other: CollisionActor) {

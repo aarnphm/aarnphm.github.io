@@ -12,6 +12,7 @@ import { readPetSpot } from '../../util/pet-spot'
 import { type Ink, LIGHT, type Palette, lighting } from '../../util/scene-palette'
 import { readTrailSeason, subscribeTrailSeason } from '../../util/trail-season'
 import { type Season, season } from '../../util/visitor-world'
+import { fireOut } from '../../util/world-schedule'
 import {
   type Almanac,
   type Body,
@@ -2978,7 +2979,7 @@ export function setupLandscape(
   // lit as a result. Recomputed on every repaint and checked once a minute.
   let al: Almanac = almanac(new Date(), site)
   let weather: Sky = readSky(site.weather)
-  hearth.doused = weather.fall !== 'none'
+  hearth.doused = fireOut(weather)
   let times: Season = season(al, weather, seasonOverride)
   // The bike park's day: who turns up comes from the date, so everyone looking on a given day sees
   // the same riders. With motion it has been open a while by the time anyone looks.
@@ -3331,7 +3332,7 @@ export function setupLandscape(
   const repaint = () => {
     al = almanac(new Date(), site)
     weather = readSky(site.weather)
-    hearth.doused = weather.fall !== 'none'
+    hearth.doused = fireOut(weather)
     times = season(al, weather, seasonOverride)
     park.env = parkEnv(al, weather, weekend())
     slopes.env = hillEnv(al, weather, weekend())
@@ -3363,7 +3364,7 @@ export function setupLandscape(
       color: mix(pal.sun[0], CREAM, 0.5),
       contrast,
       night: !sunUp,
-      fire: weather.fall === 'none',
+      fire: !hearth.doused,
     }
     ranges = layer(back)
     if (ranges) {

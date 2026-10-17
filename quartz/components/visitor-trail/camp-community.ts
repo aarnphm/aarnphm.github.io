@@ -28,6 +28,7 @@ import {
 } from './landscape'
 import { createNavigationSlot, type TrailNavigation } from './navigation-workers'
 import { pixels } from './pixels'
+import { sceneMotionReady } from './scene-reveal'
 import { sceneSettings, type CampSettings } from './scene-settings'
 import { trailSnowBank } from './winter'
 
@@ -276,13 +277,23 @@ export function mountCampCommunity(
   let elapsed = 0
   let paused = true
   let petSample: { at: number; point: Point | null } = { at: -Infinity, point: null }
+  // Night and bedtime come from the shared world schedule, stamped on the scene by the trail's
+  // weather; before the first stamp, the forecast's day flag or the clock decides.
   const night = () =>
     settings.light === 'night' ||
     (settings.light === 'weather' &&
-      (forecastDay === null
-        ? new Date().getHours() < 6 || new Date().getHours() >= 20
-        : !forecastDay))
-  const bedtime = (site: number) => campMaySleep(routines[site], Date.now(), night())
+      (scene.dataset.night !== undefined
+        ? scene.dataset.night === 'true'
+        : forecastDay === null
+          ? new Date().getHours() < 6 || new Date().getHours() >= 20
+          : !forecastDay))
+  const bedtime = (site: number) =>
+    campMaySleep(
+      routines[site],
+      Date.now(),
+      settings.light === 'night' ||
+        (settings.light === 'weather' && scene.dataset.campSleeps === 'true'),
+    )
   const bounds = (departing = false) => ({
     left: 18,
     right: (landscape?.width ?? 36) - 18,
@@ -426,7 +437,13 @@ export function mountCampCommunity(
       return length + Math.hypot(point.x - previous.x, point.y - previous.y)
     }, 0)
   const planWalk = (person: Person) => {
-    if (person.phase !== 'walking' || !landscape || person.planning.pending) return
+    if (
+      !sceneMotionReady(scene) ||
+      person.phase !== 'walking' ||
+      !landscape ||
+      person.planning.pending
+    )
+      return
     const point = person.target
     const road = [person.position, ...followTerrain([person.position, point], landscape).slice(1)]
     const ownTent = tents[person.site][person.tent]?.element.dataset.campTent
@@ -464,7 +481,13 @@ export function mountCampCommunity(
     if (person.phase === 'walking') planWalk(person)
   }
   const planDeparture = (person: Person) => {
-    if (person.phase !== 'departing' || !landscape || person.planning.pending) return
+    if (
+      !sceneMotionReady(scene) ||
+      person.phase !== 'departing' ||
+      !landscape ||
+      person.planning.pending
+    )
+      return
     const current = landscape
     const ownTent = tents[person.site][person.tent]?.element.dataset.campTent
     const exitTent = tents[person.site][person.exitTent]?.element.dataset.campTent
@@ -917,7 +940,15 @@ export function mountCampCommunity(
   }
   const tick = (time: number) => {
     frame = 0
-    if (paused || host.hidden || document.hidden || signal.aborted || reduced.matches) return
+    if (
+      !sceneMotionReady(scene) ||
+      paused ||
+      host.hidden ||
+      document.hidden ||
+      signal.aborted ||
+      reduced.matches
+    )
+      return
     if (!last) last = time
     if (time - last >= 80) {
       const delta = Math.min(160, time - last)
@@ -945,7 +976,7 @@ export function mountCampCommunity(
     if (frame) view.cancelAnimationFrame(frame)
     frame = 0
     last = 0
-    paused = false
+    paused = true
     updateRoutines()
     lighting()
     if (reduced.matches) {
@@ -984,7 +1015,8 @@ export function mountCampCommunity(
       lighting()
       return
     }
-    if (host.hidden || document.hidden || !landscape) return
+    if (!sceneMotionReady(scene) || host.hidden || document.hidden || !landscape) return
+    paused = false
     for (const person of people) {
       if (!person.roadReady && !person.planning.pending) {
         if (person.phase === 'walking') planWalk(person)
@@ -1132,6 +1164,9 @@ export function mountCampCommunity(
     tents = []
     fires = []
     routines = sites.map(site => campRoutine(seed, site.id, Date.now()))
+    // A camp found after bedtime has already turned in; one set up before it settles first.
+    if (scene.dataset.campSleeps === 'true')
+      for (const routine of routines) routine.sleepAt = Math.min(routine.sleepAt, Date.now())
     for (const site of sites) {
       const camp =
         site.id === 0 ? primary : document.createElementNS('http://www.w3.org/2000/svg', 'g')

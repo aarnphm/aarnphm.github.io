@@ -97,6 +97,12 @@ document.addEventListener('nav', () => {
   mountVisitorRegister(root, signal)
   mountTrailClock(clock, signal)
   const disposePerformance = setupPerformanceDebug(trailPerformanceProfile(scene))
+  // Keep reload timings observable before an external profiler can attach to the scene.
+  for (const phase of ['open', 'prepare', 'ready', 'prepared', 'reveal-end', 'show']) {
+    const name = `trail:${phase}`
+    performance.clearMarks(name)
+    scene.addEventListener(name, () => performance.mark(name), { signal })
+  }
   const align = () => {
     const bottom = content.getBoundingClientRect().bottom + window.scrollY
     const height = `${trailSceneHeight(scene, content)}px`

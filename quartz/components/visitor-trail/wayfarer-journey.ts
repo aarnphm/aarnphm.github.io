@@ -16,6 +16,7 @@ import { bootImpression } from './footprints'
 import { trailGroundScale, type Landscape, type Point } from './landscape'
 import { createNavigationSlot, type TrailNavigation } from './navigation-workers'
 import { trailRandom } from './random'
+import { sceneMotionReady } from './scene-reveal'
 import { trailMapReader } from './wayfarers'
 
 type Phase = 'waiting' | 'walking' | 'reading'
@@ -39,6 +40,7 @@ type Reader = {
   step: number
   route: TrailId
   routes: JourneyRoute[]
+  pathsReady: boolean
   phase: Phase
   stop: Stop
   position: Point
@@ -107,10 +109,10 @@ export function mountMapReaderJourneys(
     ...readStationaryActors(scene, id),
     ...readActors(scene).filter(actor => actor.kind === 'pet'),
   ]
-  const pathsFor = (index: number, id: string, request: AbortSignal) => {
+  const pathsFor = (index: number, id: string, request: AbortSignal, selected = routes) => {
     if (!landscape) return Promise.resolve([])
     return navigation.prepare(
-      routes.map(route => ({
+      selected.map(route => ({
         ...route,
         point: (distance: number) => {
           const point = route.point(distance)
@@ -126,6 +128,39 @@ export function mountMapReaderJourneys(
       planningBodies(id),
       request,
     )
+  }
+  const prepareAlternates = () => {
+    if (
+      routePlanning ||
+      scene.dataset.trailOpening !== 'complete' ||
+      scene.dataset.trailReveal !== undefined ||
+      scene.dataset.trailRendered !== 'true'
+    )
+      return
+    const pending = readers.flatMap((reader, index) =>
+      reader.pathsReady ? [] : [{ reader, index }],
+    )
+    if (!pending.length) return
+    const request = new AbortController()
+    const current = revision
+    routePlanning = request
+    void Promise.all(
+      pending.map(async ({ reader, index }) => {
+        const alternatives = await pathsFor(
+          index,
+          reader.id,
+          request.signal,
+          routes.filter(route => !reader.routes.some(known => known.id === route.id)),
+        )
+        if (request.signal.aborted || current !== revision || signal.aborted) return
+        // Keep the route under the reader's feet and add later choices in authored order.
+        const complete = [...reader.routes, ...alternatives]
+        reader.routes = routes.flatMap(route => complete.filter(known => known.id === route.id))
+        reader.pathsReady = true
+      }),
+    ).then(() => {
+      if (routePlanning === request) routePlanning = null
+    })
   }
   const setRoad = (reader: Reader, points: Point[]) => {
     reader.roadReady = true
@@ -293,8 +328,14 @@ export function mountMapReaderJourneys(
     if (!current) return
     if (reader.stop === 'camp') {
       const choices = reader.routes.filter(route => route.id !== reader.route)
-      const next = choices[Math.floor(reader.random() * choices.length)]
-      if (!next) return
+      const next = choices.length
+        ? choices[Math.floor(reader.random() * choices.length)]
+        : undefined
+      if (!next) {
+        reader.phase = 'reading'
+        reader.remaining = 250
+        return
+      }
       reader.route = next.id
       reader.progress = 1
       reader.direction = -1
@@ -388,6 +429,7 @@ export function mountMapReaderJourneys(
   }
   const schedule = () => {
     if (
+      !sceneMotionReady(scene) ||
       signal.aborted ||
       host.hidden ||
       document.hidden ||
@@ -395,6 +437,7 @@ export function mountMapReaderJourneys(
       !readers.length
     )
       return
+    prepareAlternates()
     if (frame !== null || timer !== null) return
     previousTime ??= view.performance.now()
     if (readers.some(reader => reader.phase === 'walking')) frame = view.requestAnimationFrame(tick)
@@ -406,7 +449,14 @@ export function mountMapReaderJourneys(
   }
   const tick = (time: number) => {
     frame = timer = null
-    if (host.hidden || document.hidden || signal.aborted || reducedMotion.matches) return pause()
+    if (
+      !sceneMotionReady(scene) ||
+      host.hidden ||
+      document.hidden ||
+      signal.aborted ||
+      reducedMotion.matches
+    )
+      return pause()
     const delta = previousTime === null ? 0 : Math.max(0, time - previousTime)
     if (time - renderedAt < 1000 / 24 && readers.some(reader => reader.phase === 'walking')) {
       schedule()
@@ -485,10 +535,20 @@ export function mountMapReaderJourneys(
           reader.element.remove()
           reader.tracks.remove()
         }
+      const partialPlans = new Set<number>()
       const plannedRoutes = await Promise.all(
-        Array.from({ length: count }, (_, index) =>
-          pathsFor(index, `reader-${index}`, request.signal),
-        ),
+        Array.from({ length: count }, async (_, index) => {
+          const id = `reader-${index}`
+          const preferred = routes.find(route => route.id === ['grove', 'ridge', 'meadow'][index])
+          if (!readers[index] && preferred) {
+            const first = await pathsFor(index, id, request.signal, [preferred])
+            if (first.length) {
+              partialPlans.add(index)
+              return first
+            }
+          }
+          return pathsFor(index, id, request.signal)
+        }),
       )
       renderSignal.removeEventListener('abort', cancel)
       if (request.signal.aborted || current !== revision || signal.aborted) return
@@ -523,6 +583,7 @@ export function mountMapReaderJourneys(
           step: 0,
           route: route.id,
           routes: readerRoutes,
+          pathsReady: !partialPlans.has(index),
           phase: 'waiting',
           stop: 'middle',
           position,
@@ -548,6 +609,7 @@ export function mountMapReaderJourneys(
       const obstacles = [...readActors(scene, true), ...readTrunks(scene)]
       for (const [index, reader] of readers.entries()) {
         reader.routes = plannedRoutes[index] ?? []
+        reader.pathsReady = !partialPlans.has(index)
         if (reflow || !existing.has(reader)) placeReader(reader, obstacles)
         if (!reducedMotion.matches && reader.phase !== 'reading') planWalk(reader)
         else reader.stopPoint = { ...reader.position }

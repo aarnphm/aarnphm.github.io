@@ -1,6 +1,6 @@
-import type { TrailSeason, TrailWeather } from '../../util/visitor-trail-weather'
+import { trailSky, type TrailSeason, type TrailWeather } from '../../util/visitor-trail-weather'
 import { season } from '../../util/visitor-world'
-import { almanac, guessSite, readSky, type Almanac } from '../scripts/404-almanac'
+import { almanac, guessSite, type Almanac } from '../scripts/404-almanac'
 import { alpineFoot, type Landscape, type Point } from './landscape'
 import { trailRandom } from './random'
 
@@ -10,23 +10,13 @@ export function trailWinter(
   al?: Almanac,
   seasonOverride?: TrailSeason | null,
 ) {
-  const sky = weather
-    ? {
-        ...readSky({
-          code: weather.code,
-          cloud: weather.cloud,
-          wind: weather.windKmh,
-          temp: weather.temperatureC ?? 0,
-          snow: weather.snowCm,
-        }),
-        temp: weather.temperatureC,
-      }
-    : readSky(null)
+  const sky = trailSky(weather)
+  // Callers without a document fall back to the forecast's place or a time-zone guess.
   const resolvedAlmanac =
     al ??
     almanac(
       new Date(),
-      weather?.lat !== null && weather?.lat !== undefined && weather.lon !== null
+      weather && weather.lat !== null && weather.lon !== null
         ? { lat: weather.lat, lon: weather.lon, place: null, weather: null }
         : guessSite(),
     )

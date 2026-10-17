@@ -196,7 +196,7 @@ export function mountTrailHolidays(scene: HTMLElement, signal: AbortSignal, chan
   const refreshTrees = () => {
     const previous = new Set(scene.querySelectorAll<SVGGElement>('[data-holiday-tree]'))
     decorated = []
-    if (trailHost(scene)?.hidden || !scene.isConnected) return
+    if (!scene.isConnected) return
     const holiday = current()
     if (holiday !== 'christmas' && holiday !== 'halloween') {
       for (const ornament of previous) ornament.remove()

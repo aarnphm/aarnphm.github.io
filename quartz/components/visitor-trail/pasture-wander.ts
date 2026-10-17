@@ -9,6 +9,7 @@ import {
 import { readClockObstacles } from './clock-clearance'
 import { pondDistance, trailGroundScale, type Landscape, type Point } from './landscape'
 import { trailRandom } from './random'
+import { sceneMotionReady } from './scene-reveal'
 
 type Phase = 'waiting' | 'wandering' | 'resting' | 'departing' | 'away' | 'returning'
 type WanderPath = { points: Point[]; distances: number[]; length: number }
@@ -181,7 +182,39 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
     animal.phase = outbound ? 'departing' : 'returning'
     animal.direction = outbound ? 1 : -1
   }
-  const updateClimate = () => {
+  // The herd follows the shared world schedule (world-schedule.ts, stamped by the trail's
+  // weather): it lies down at night and in heavy rain, and goes to the barn in snow. The cows
+  // settle one after another, a couple of seconds apart, unless the herd is set up anew.
+  const herdTimers = new Set<number>()
+  const settleHerd = (immediate: boolean) => {
+    for (const timer of herdTimers) view.clearTimeout(timer)
+    herdTimers.clear()
+    const state = scene.dataset.herd ?? 'grazing'
+    let index = 0
+    for (const animal of wanderers) {
+      if (animal.kind !== 'cow' || (animal.element.dataset.herd ?? 'grazing') === state) continue
+      const apply = () => {
+        animal.element.dataset.herd = state
+        animal.path = null
+        animal.yielding = false
+        animal.phase = state === 'away' ? 'away' : 'resting'
+        animal.remaining = habits.cow.rest
+        render()
+        schedule()
+      }
+      if (immediate || reducedMotion.matches) apply()
+      else {
+        const timer = view.setTimeout(() => {
+          herdTimers.delete(timer)
+          apply()
+        }, index * 2400)
+        herdTimers.add(timer)
+      }
+      index++
+    }
+  }
+  const updateClimate = (immediate = false) => {
+    settleHerd(immediate)
     const frozen = scene.dataset.waterFrozen === 'true'
     let index = 0
     for (const animal of wanderers) {
@@ -339,7 +372,7 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
   const render = () => {
     for (const animal of wanderers) {
       const airborne = flying(animal)
-      if (animal.kind === 'goose') {
+      if (animal.kind === 'goose' || animal.kind === 'cow') {
         const visibility = animal.phase === 'away' ? 'hidden' : ''
         if (animal.element.style.visibility !== visibility)
           animal.element.style.visibility = visibility
@@ -405,6 +438,8 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
   }
   const step = (animal: Wanderer, elapsed: number, obstacles: readonly CollisionActor[]) => {
     if (animal.phase === 'away') return
+    // A lying cow stays down until the schedule gets the herd up again.
+    if (animal.kind === 'cow' && animal.element.dataset.herd === 'lying') return
     if (animal.flight) {
       const flight = animal.flight
       flight.elapsed += elapsed
@@ -529,6 +564,7 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
   }
   const schedule = () => {
     if (
+      !sceneMotionReady(scene) ||
       signal.aborted ||
       host.hidden ||
       document.hidden ||
@@ -551,7 +587,14 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
   }
   const tick = (time: number) => {
     frame = null
-    if (signal.aborted || host.hidden || document.hidden || reducedMotion.matches) return pause()
+    if (
+      !sceneMotionReady(scene) ||
+      signal.aborted ||
+      host.hidden ||
+      document.hidden ||
+      reducedMotion.matches
+    )
+      return pause()
     const elapsed = previousTime === null ? 0 : Math.max(0, time - previousTime)
     clock = readClockObstacles(scene)
     let actors = [...readActors(scene), ...trunks, ...clock]
@@ -662,7 +705,14 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
     { signal },
   )
   host.addEventListener('trail:show', schedule, { signal })
-  signal.addEventListener('abort', pause, { once: true })
+  signal.addEventListener(
+    'abort',
+    () => {
+      for (const timer of herdTimers) view.clearTimeout(timer)
+      pause()
+    },
+    { once: true },
+  )
   host.addEventListener(
     'trail:climate',
     () => {
@@ -849,7 +899,7 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
         ]
       })
       wanderers.sort((a, b) => a.id.localeCompare(b.id))
-      updateClimate()
+      updateClimate(true)
       render()
       schedule()
     },

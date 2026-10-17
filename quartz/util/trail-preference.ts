@@ -16,20 +16,14 @@ export function writeTrailPreference(open: boolean) {
   }
 }
 
-// A saved-open trail restores its layout so its generated trees can survive a reload.
+// Keep the forest identity separate from visibility so a closed trail can reuse its trees.
 export function trailSceneSeed(): number {
   const key = 'garden:trail-seed'
   const seed = Math.floor(Math.random() * 4294967296)
   try {
     const stored = localStorage.getItem(key)
     const previous = stored === null ? Number.NaN : Number(stored)
-    if (
-      readTrailPreference() &&
-      Number.isInteger(previous) &&
-      previous >= 0 &&
-      previous <= 0xffffffff
-    )
-      return previous
+    if (Number.isInteger(previous) && previous >= 0 && previous <= 0xffffffff) return previous
     localStorage.setItem(key, String(seed))
   } catch {
     // A blocked store still gives the current page a usable scene.

@@ -49,15 +49,6 @@ const kinds: Record<string, string[]> = {
 }
 const restLife = 24_000
 
-// Leaves fall only in autumn. It peaks around 20 October in the north and 20 April in the south;
-// the season the visitor sees decides which.
-function leafRate(season: string | undefined, now: Date) {
-  if (season !== 'autumn') return 0
-  const day = (now.getTime() - Date.UTC(now.getUTCFullYear(), 0, 1)) / 86_400_000
-  const peak = day > 180 ? 292 : 110
-  return 0.02 + 0.06 * Math.exp(-((day - peak) ** 2) / (2 * 22 ** 2))
-}
-
 // Leaves drop from each broadleaf crown, sway and tumble in whole-pixel steps, race sideways as
 // the scene's gust front passes the tree, and settle on the ground around its trunk before they
 // fade. The pet walking through a drift kicks the leaves up again.
@@ -172,8 +163,8 @@ export function mountLeafFall(scene: HTMLElement, signal: AbortSignal) {
       scene.dataset.weatherMotion !== 'paused'
     canvas.hidden = !visible
     if (!visible) leaves.length = 0
-    const season = scene.dataset.foliageSeason
-    const rate = visible ? leafRate(season, new Date()) : 0
+    // The trail's weather stamps the shared schedule's rate (world-schedule.ts).
+    const rate = visible ? Number(scene.dataset.leafRate) || 0 : 0
     if (rate > 0 && time - measured > 5000) measure(time)
     const air = wind()
     const bounds = scene.getBoundingClientRect()

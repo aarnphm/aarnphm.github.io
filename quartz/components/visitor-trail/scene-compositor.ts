@@ -1,6 +1,13 @@
-import { subscribeVisitorDaylight, type VisitorDaylight } from '../../util/visitor-daylight'
-import { daylightTint, type DaylightTint } from './daylight-palette'
+import {
+  cloneGrade,
+  equalGrade,
+  formatGrade,
+  IDENTITY_GRADE,
+  interpolateGrade,
+  type Grade,
+} from '../../util/scene-grade'
 import { groundObjectSelector } from './depth-order'
+import { subscribeSceneGrade } from './scene-lighting'
 import { trailOpeningCell, trailThemeDuration, type SceneReveal } from './scene-reveal'
 
 // The SVG stays the scene model: journeys, depth order, the pet and camp hints still read and
@@ -153,7 +160,8 @@ uniform vec3 sweep;
 uniform vec4 themeReveal;
 uniform sampler2D loadCoverage;
 uniform float loadActive;
-uniform vec3 solarTint;
+uniform mat3 gradeM;
+uniform vec3 gradeB;
 uniform vec4 target;
 uniform mat3 maskPlace;
 flat in mat3 unplace;
@@ -178,7 +186,7 @@ void main() {
   float mask = texture(maskImage, maskUv).r;
   color = texture(image, uv) * alpha * mask * texture(clipImage, clipUv).r;
   // Textures and the blend target hold premultiplied RGB.
-  color.rgb = min(color.rgb * solarTint, vec3(color.a));
+  color.rgb = clamp(gradeM * color.rgb + gradeB * color.a, vec3(0.0), vec3(color.a));
   float ready = 1.0;
   if (loadActive > 0.0 && themeReveal.x >= 0.0) {
     vec2 cell = floor(clipUv * viewport / themeReveal.w);
@@ -366,14 +374,16 @@ export function mountSceneCompositor(
         'themeReveal',
         'loadCoverage',
         'loadActive',
-        'solarTint',
+        'gradeM',
+        'gradeB',
       ].map(name => [name, gl.getUniformLocation(program, name)]),
     )
     gl.uniform1i(uniforms.image, 0)
     gl.uniform1i(uniforms.maskImage, 1)
     gl.uniform1i(uniforms.clipImage, 2)
     gl.uniform1i(uniforms.loadCoverage, 3)
-    gl.uniform3f(uniforms.solarTint, 1, 1, 1)
+    gl.uniformMatrix3fv(uniforms.gradeM, true, IDENTITY_GRADE.m)
+    gl.uniform3fv(uniforms.gradeB, IDENTITY_GRADE.b)
     vertexBuffer = gl.createBuffer()
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer)
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0, 0, 1, 0, 0, 1, 1, 1]), gl.STATIC_DRAW)
@@ -414,29 +424,20 @@ export function mountSceneCompositor(
     width = source.width,
     height = source.height,
   ) => {
-    const target = texture ?? gl.createTexture()
+    const known = texture ? allocations.get(texture) : undefined
+    const matching = known?.width === width && known.height === height && known.single === single
+    if (texture && !matching) release(texture)
+    const target = matching ? texture : gl.createTexture()
     if (!target) return null
     textures.add(target)
     gl.bindTexture(gl.TEXTURE_2D, target)
-    const known = allocations.get(target)
     const format = single ? gl.RED : gl.RGBA
-    if (known?.width === width && known.height === height && known.single === single)
-      gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, width, height, format, gl.UNSIGNED_BYTE, source)
-    else {
-      gl.texImage2D(
-        gl.TEXTURE_2D,
-        0,
-        single ? gl.R8 : gl.RGBA,
-        width,
-        height,
-        0,
-        format,
-        gl.UNSIGNED_BYTE,
-        source,
-      )
+    if (!matching) {
+      gl.texStorage2D(gl.TEXTURE_2D, 1, single ? gl.R8 : gl.RGBA8, width, height)
       allocations.set(target, { width, height, single })
       filter()
     }
+    gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, width, height, format, gl.UNSIGNED_BYTE, source)
     // A cached segment holding this texture's previous pixels must be rebuilt.
     contents.set(target, (contents.get(target) ?? 0) + 1)
     return target
@@ -1231,6 +1232,7 @@ export function mountSceneCompositor(
   let frame = 0
   let timer = 0
   let ready = false
+  let firstPaint: WebGLSync | null = null
   let surfaceExposed = false
   let surfaceTimer = 0
   let generationPending = true
@@ -1272,36 +1274,30 @@ export function mountSceneCompositor(
   }
   // The current frame's time; one frame counts once however many records it brings.
   let clock = 0
-  let solar: VisitorDaylight | null = null
-  let tintFrom: DaylightTint = [1, 1, 1]
-  let tintTo: DaylightTint = [1, 1, 1]
-  let tintStarted = 0
+  let gradeFrom: Grade = cloneGrade(IDENTITY_GRADE)
+  let gradeTo: Grade = cloneGrade(IDENTITY_GRADE)
+  let gradeStarted = 0
   const preparePresentation = () => {
     if (!host.hidden) return
     scene.dataset.trailOpening = 'pending'
     scene.dataset.trailOpeningProgress = '0'
     scene.dataset.trailPaintReady = 'false'
   }
-  const tintAt = (now: number): DaylightTint => {
+  const gradeAt = (now: number): Grade => {
     const progress = reducedMotion.matches
       ? 1
-      : Math.min(1, Math.max(0, (now - tintStarted) / 1200))
+      : Math.min(1, Math.max(0, (now - gradeStarted) / 1200))
     const share = progress * progress * (3 - 2 * progress)
-    return [
-      tintFrom[0] + (tintTo[0] - tintFrom[0]) * share,
-      tintFrom[1] + (tintTo[1] - tintFrom[1]) * share,
-      tintFrom[2] + (tintTo[2] - tintFrom[2]) * share,
-    ]
+    return interpolateGrade(gradeFrom, gradeTo, share)
   }
-  const updateTint = () => {
-    const next = daylightTint(solar, document.documentElement.dataset.themeMode === 'daylight')
-    if (next.every((value, index) => value === tintTo[index])) return
+  const applyGrade = (next: Grade) => {
+    if (equalGrade(next, gradeTo)) return
     const now = view.performance.now()
-    tintFrom = host.hidden ? next : tintAt(now)
-    tintTo = next
-    tintStarted = host.hidden ? now - 1200 : now
+    gradeFrom = host.hidden ? cloneGrade(next) : gradeAt(now)
+    gradeTo = cloneGrade(next)
+    gradeStarted = host.hidden ? now - 1200 : now
     preparePresentation()
-    scene.dataset.solarTint = next.map(value => value.toFixed(4)).join(' ')
+    scene.dataset.sceneGrade = formatGrade(next)
   }
   let settled = 0
   // Groups stand for their mask here.
@@ -1764,14 +1760,15 @@ export function mountSceneCompositor(
     segments.clear()
   }
   const paintScene = () => {
-    const tint = tintAt(clock)
+    const grade = gradeAt(clock)
     // Frame-wide uniforms are set by the first draw, so a frame with nothing to repaint
     // makes no WebGL calls.
     let primed = false
     const prime = () => {
       if (primed) return
       primed = true
-      gl.uniform3fv(uniforms.solarTint, tint)
+      gl.uniformMatrix3fv(uniforms.gradeM, true, grade.m)
+      gl.uniform3fv(uniforms.gradeB, grade.b)
       gl.uniform1f(uniforms.loadActive, Number(!!fade && coverage.active))
       gl.uniform4f(
         uniforms.themeReveal,
@@ -1868,12 +1865,14 @@ export function mountSceneCompositor(
       if (state.unit !== unit) gl.activeTexture(gl.TEXTURE0 + (state.unit = unit))
       gl.bindTexture(gl.TEXTURE_2D, (state.bound[unit] = texture))
     }
-    // Segment textures hold untinted pixels; the tint applies when they reach the canvas.
+    // Segment textures hold untinted pixels; the grade applies when they reach the canvas.
     let building = false
     const shade = (plain: boolean) => {
       if (state.plain === plain) return
       state.plain = plain
-      gl.uniform3fv(uniforms.solarTint, plain ? [1, 1, 1] : tint)
+      const current = plain ? IDENTITY_GRADE : grade
+      gl.uniformMatrix3fv(uniforms.gradeM, true, current.m)
+      gl.uniform3fv(uniforms.gradeB, current.b)
     }
     // Draws a unit quad, or only its share of `first..first + count` rect vertices.
     const paint = (draw: Draw, first = -1, count = 0) => {
@@ -1906,7 +1905,7 @@ export function mountSceneCompositor(
     // Retained pixels and cached segments hold finished draws, so the theme and resize overlays
     // and the load coverage must be inactive.
     const surfaceKey = `${canvas.width}x${canvas.height}@${resolution}`
-    const key = `${surfaceKey}|${tint.join()}`
+    const key = `${surfaceKey}|${formatGrade(grade)}`
     const cacheable = !fade && !resizeFrame && !coverage.active
     if (!cacheable || surfaceKey !== segmentScene) {
       dropSegments()
@@ -2205,7 +2204,8 @@ export function mountSceneCompositor(
       trailOpeningCell * resolution,
     )
     // Theme and resize copies already contain the lighting of their captured frame.
-    gl.uniform3f(uniforms.solarTint, 1, 1, 1)
+    gl.uniformMatrix3fv(uniforms.gradeM, true, IDENTITY_GRADE.m)
+    gl.uniform3fv(uniforms.gradeB, IDENTITY_GRADE.b)
     gl.uniformMatrix3fv(uniforms.maskPlace, false, none)
     // The copy holds the drawing buffer bottom row first, so the quad is flipped to match.
     gl.uniformMatrix3fv(
@@ -2408,6 +2408,23 @@ export function mountSceneCompositor(
   const tick = () => {
     frame = 0
     if (!active()) return
+    if (firstPaint) {
+      if (gl.clientWaitSync(firstPaint, 0, 0) === gl.TIMEOUT_EXPIRED) {
+        frame = view.requestAnimationFrame(tick)
+        return
+      }
+      gl.deleteSync(firstPaint)
+      firstPaint = null
+      if (!sizeDirty && !flush && !palettePending && !paletteTransition && !generationPending)
+        opening.present()
+      if (scene.dataset.trailOpening === 'complete') {
+        if (!host.hidden && scene.dataset.trailReveal !== 'revealing') resumeAnimations()
+        trimRaster(Boolean(host.hidden))
+        scheduleSurfaceTrim()
+        schedule()
+        return
+      }
+    }
     if (scene.dataset.trailRendered !== 'true' && scene.dataset.trailRasterReady !== 'true') return
     // The native reveal can present the retained buffer without resampling the live SVG.
     if (
@@ -2550,6 +2567,18 @@ export function mountSceneCompositor(
       for (const owner of groups.values()) owner.fresh = false
     }
     const presenting = scene.dataset.trailOpening !== 'complete'
+    if (presenting) {
+      // Uploaded textures can still be queued on the GPU when the native reveal starts.
+      // Poll between frames so its first draw finishes before the 600 ms sweep begins.
+      firstPaint = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0)
+      if (firstPaint) {
+        gl.flush()
+        view.clearTimeout(timer)
+        timer = 0
+        frame = view.requestAnimationFrame(tick)
+        return
+      }
+    }
     opening.present()
     if (presenting && !host.hidden && scene.dataset.trailReveal !== 'revealing') resumeAnimations()
     trimRaster(host.hidden && painted === 'true')
@@ -2758,26 +2787,17 @@ export function mountSceneCompositor(
     () => {
       if (reducedMotion.matches) {
         endFade()
-        tintFrom = [...tintTo]
-        tintStarted = view.performance.now() - 1200
+        gradeFrom = cloneGrade(gradeTo)
+        gradeStarted = view.performance.now() - 1200
       }
       schedule()
     },
     { signal },
   )
-  document.addEventListener(
-    'themechange',
-    () => {
-      updateTint()
-      schedule()
-    },
-    { signal },
-  )
-  subscribeVisitorDaylight(
+  subscribeSceneGrade(
     document,
-    current => {
-      solar = current
-      updateTint()
+    next => {
+      applyGrade(next)
       schedule()
     },
     signal,
@@ -2812,8 +2832,8 @@ export function mountSceneCompositor(
       trimRaster(true)
       endFade()
       endResize()
-      tintFrom = [...tintTo]
-      tintStarted = view.performance.now() - 1200
+      gradeFrom = cloneGrade(gradeTo)
+      gradeStarted = view.performance.now() - 1200
       schedule()
     },
     { signal },
@@ -2835,6 +2855,7 @@ export function mountSceneCompositor(
       delete scene.dataset.trailRenderer
       opening.useFallback()
       ready = false
+      firstPaint = null
       surfaceExposed = false
       endResize()
       fade = null
@@ -2882,6 +2903,8 @@ export function mountSceneCompositor(
       observer.disconnect()
       resizeObserver.disconnect()
       endResize()
+      if (firstPaint) gl.deleteSync(firstPaint)
+      firstPaint = null
       for (const texture of textures) gl.deleteTexture(texture)
       textures.clear()
       groups.clear()

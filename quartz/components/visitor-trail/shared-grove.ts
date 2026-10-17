@@ -45,6 +45,30 @@ export function mountSharedGrove(
   let unsubscribe = () => {}
   let feedbackTimer = 0
   const gusts = new Set<Animation>()
+  let targets: { tree: SVGGElement; button: HTMLButtonElement }[] = []
+  const placeTargets = () => {
+    if (
+      signal.aborted ||
+      host.hidden ||
+      document.hidden ||
+      scene.dataset.trailRendered !== 'true' ||
+      scene.dataset.trailOpening !== 'complete' ||
+      scene.dataset.trailReveal !== undefined
+    )
+      return
+    // The compositor has measured the finished forest before these controls become usable.
+    const bounds = targets.map(({ tree, button }) => ({ tree, button, box: tree.getBBox() }))
+    for (const { tree, button, box } of bounds) {
+      button.style.left = `${Number(tree.dataset.groundX) + box.x + box.width / 2}px`
+      button.style.top = `${Number(tree.dataset.groundY) + box.y + box.height / 2}px`
+      button.style.width = `${Math.max(28, Math.min(54, box.width))}px`
+      button.style.height = `${Math.max(28, Math.min(54, box.height - 6))}px`
+    }
+    hits.inert = false
+  }
+  host.addEventListener('trail:open', () => (hits.inert = true), { signal })
+  host.addEventListener('trail:ready', placeTargets, { signal })
+  host.addEventListener('trail:show', placeTargets, { signal })
 
   const feedback = (message: string) => {
     view.clearTimeout(feedbackTimer)
@@ -102,7 +126,7 @@ export function mountSharedGrove(
       total.hidden = false
     }
     let changed = false
-    const targets: { tree: SVGGElement; button: HTMLButtonElement }[] = []
+    targets = []
     for (const tree of scene.querySelectorAll<SVGGElement>('.trail-tree')) {
       const id = tree.dataset.treeId
       if (!id) continue
@@ -135,14 +159,7 @@ export function mountSharedGrove(
         targets.push({ tree, button })
       }
     }
-    // Read all canopy bounds before writing hit targets to avoid repeated SVG layout.
-    const bounds = targets.map(({ tree, button }) => ({ tree, button, box: tree.getBBox() }))
-    for (const { tree, button, box } of bounds) {
-      button.style.left = `${Number(tree.dataset.groundX) + box.x + box.width / 2}px`
-      button.style.top = `${Number(tree.dataset.groundY) + box.y + box.height / 2}px`
-      button.style.width = `${Math.max(28, Math.min(54, box.width))}px`
-      button.style.height = `${Math.max(28, Math.min(54, box.height - 6))}px`
-    }
+    placeTargets()
     if (changed) onGrowth()
   }
   const refresh = () => {
@@ -211,6 +228,7 @@ export function mountSharedGrove(
     'visibilitychange',
     () => {
       if (document.hidden) pause()
+      else placeTargets()
     },
     { signal },
   )

@@ -34,11 +34,9 @@ export function campMayDepart(routine: CampRoutine, now: number, night: boolean)
   return now >= routine.leaveAt && (routine.variation === 'passing' || !night)
 }
 
-export function campMaySleep(routine: CampRoutine, now: number, night: boolean) {
-  const hour = new Date(now).getHours()
-  return (
-    routine.variation === 'overnight' && now >= routine.sleepAt && night && (hour >= 22 || hour < 7)
-  )
+// bedtime: the shared world schedule's campSleeps for the visitor's sun.
+export function campMaySleep(routine: CampRoutine, now: number, bedtime: boolean) {
+  return routine.variation === 'overnight' && now >= routine.sleepAt && bedtime
 }
 
 function clearTrailPoint(

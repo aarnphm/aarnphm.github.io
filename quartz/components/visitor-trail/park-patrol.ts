@@ -18,6 +18,7 @@ import { footprint, footprintTransform } from './footprints'
 import { pondDistance, trailGroundScale, type Landscape, type Point } from './landscape'
 import { detourNeighbourhood } from './obstacle-route'
 import { pixels } from './pixels'
+import { sceneMotionReady } from './scene-reveal'
 
 type RangerPlan = {
   controller: AbortController
@@ -237,7 +238,15 @@ export function mountParkPatrol(
   }
   const tick = (time: number) => {
     frame = 0
-    if (host.hidden || document.hidden || signal.aborted || reduced.matches || !landscape) return
+    if (
+      !sceneMotionReady(scene) ||
+      host.hidden ||
+      document.hidden ||
+      signal.aborted ||
+      reduced.matches ||
+      !landscape
+    )
+      return
     // The collision step keeps ownership of movement while a worker search is in flight.
     // A sidestep moves the ranger a few pixels each tick, and a search discarded on any
     // movement could never finish while the ranger is sidestepping around geometry the
@@ -438,7 +447,8 @@ export function mountParkPatrol(
   }
   const resume = () => {
     pause()
-    if (host.hidden || document.hidden || signal.aborted || !landscape) return
+    if (!sceneMotionReady(scene) || host.hidden || document.hidden || signal.aborted || !landscape)
+      return
     scene.dataset.parkMotion = reduced.matches ? 'still' : 'running'
     if (!reduced.matches && rangers.length) frame = view.requestAnimationFrame(tick)
   }

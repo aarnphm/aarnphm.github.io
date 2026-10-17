@@ -1,9 +1,8 @@
 import { bayerThreshold } from '../../util/bayer'
 import { lunarPhase } from '../../util/lunar-phase'
-import { sceneNow } from '../../util/scene-clock'
+import { sceneNow, subscribeSceneClock } from '../../util/scene-clock'
 import { readTrailSeason, subscribeTrailSeason } from '../../util/trail-season'
 import {
-  readVisitorDaylightCell,
   sampleVisitorDaylight,
   subscribeVisitorDaylight,
   type VisitorDaylight,
@@ -12,11 +11,14 @@ import { subscribeVisitorMoon, type VisitorMoon } from '../../util/visitor-lunar
 import { stormDelay, visitorPrecipitation, wetFall } from '../../util/visitor-precipitation'
 import {
   subscribeVisitorTrailWeather,
+  trailSite,
+  trailSky,
   type TrailSeason,
   type TrailWeather,
 } from '../../util/visitor-trail-weather'
-import { seasonBucket } from '../../util/visitor-world'
-import { almanac, guessSite, type Almanac, type Body, type Site } from '../scripts/404-almanac'
+import { season, seasonBucket } from '../../util/visitor-world'
+import { campSleeps, fireOut, herd, leafRate, night } from '../../util/world-schedule'
+import { almanac, guessSite, type Almanac, type Body } from '../scripts/404-almanac'
 import { paintLunarDisc, stopLunarTransition } from '../scripts/lunar-disc'
 import { holidaySprite } from './holiday-sprites'
 import { creekDistance, groundOffset, pondDistance, type Landscape } from './landscape'
@@ -27,15 +29,6 @@ import { trailWinter } from './winter'
 
 const isSeason = (value: unknown): value is TrailSeason =>
   value === 'spring' || value === 'summer' || value === 'autumn' || value === 'winter'
-
-function siteFor(weather: TrailWeather | null, doc?: Document): Site {
-  if (weather?.lat !== null && weather?.lat !== undefined && weather.lon !== null) {
-    return { lat: weather.lat, lon: weather.lon, place: null, weather: null }
-  }
-  const cell = doc ? readVisitorDaylightCell(doc) : null
-  if (cell) return { lat: cell.lat, lon: cell.lon, place: null, weather: null }
-  return guessSite()
-}
 
 function decoration(
   weather: TrailWeather | null,
@@ -610,10 +603,29 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
     gateLink.title = label
     gateLink.hidden = false
   }
+  // The shared world schedule decides what the herd, the campers and the trees do; the modules
+  // that draw them read these attributes and listen for trail:climate.
+  const updateSchedule = (now: number) => {
+    const al = almanac(new Date(now), trailSite(weather, document))
+    const sky = trailSky(weather)
+    const cover = trailWinter(weather, snowy(), al, seasonOverride).cover
+    const world = season(al, sky, seasonOverride)
+    const next = {
+      herd: herd(al, { ground: Math.max(world.ground, cover) }, sky),
+      night: String(night(al)),
+      campSleeps: String(campSleeps(al)),
+      fireWeather: fireOut(sky) ? 'wet' : 'dry',
+    }
+    const changed = Object.entries(next).some(([key, value]) => scene.dataset[key] !== value)
+    Object.assign(scene.dataset, next)
+    scene.dataset.leafRate = leafRate(world, sky).toFixed(4)
+    return changed
+  }
   // The sun and moon move about a pixel a minute on a wide screen.
   const renderSky = (now = sceneNow(document)) => {
     view?.clearTimeout(skyTimer)
     updateDamp()
+    if (updateSchedule(now)) host.dispatchEvent(new CustomEvent('trail:climate'))
     if (!skyLayer || !landscape || signal.aborted) return
     skyAt = now
     skyLayer.innerHTML = skyMarks(landscape, ranges, weather, now, seed)
@@ -625,7 +637,7 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
   }
   const render = () => {
     const now = sceneNow(document)
-    const sky = almanac(new Date(now), siteFor(weather, document))
+    const sky = almanac(new Date(now), trailSite(weather, document))
     const bucket = seasonBucket(sky.winterDay)
     const state = decoration(weather, sky, seasonOverride)
     if (state.rain > 0) wetUntil = Date.now() + 2 * 60 * 60 * 1000
@@ -643,7 +655,6 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
     scene.dataset.weatherMode = state.mode
     scene.dataset.weatherFog = String(state.fog)
     scene.dataset.weatherStorm = String(state.storm)
-    scene.dataset.fireWeather = state.rain || state.snow ? 'wet' : 'dry'
     scene.style.setProperty('--trail-storm-delay', stormDelay())
     scene.dataset.snowSource = source
     scene.dataset.festiveSnow = String(festiveSnow)
@@ -702,13 +713,14 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
           seasonOverride,
         )
     }
-    renderSky()
+    renderSky(now)
     updateLighting()
     updateMotion()
     refreshForest()
     if (changedIce) host.dispatchEvent(new CustomEvent('trail:climate'))
   }
   document.addEventListener('themechange', updateLighting, { signal })
+  subscribeSceneClock(document, () => render(), signal)
   subscribeTrailSeason(
     document,
     next => {
@@ -777,6 +789,11 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
       delete scene.dataset.forecastWaterFrozen
       delete scene.dataset.waterFrozen
       delete scene.dataset.groundDamp
+      delete scene.dataset.herd
+      delete scene.dataset.night
+      delete scene.dataset.campSleeps
+      delete scene.dataset.fireWeather
+      delete scene.dataset.leafRate
       view?.clearTimeout(skyTimer)
       layer?.replaceChildren()
       skyLayer?.replaceChildren()

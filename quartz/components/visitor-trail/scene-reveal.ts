@@ -3,6 +3,10 @@ import type { Point } from './landscape'
 export const trailThemeDuration = 600
 export const trailOpeningCell = 6
 
+export function sceneMotionReady(scene: HTMLElement) {
+  return scene.dataset.trailOpening === 'complete' && scene.dataset.trailReveal === undefined
+}
+
 export function trailRevealProgress(elapsed: number) {
   const progress = Math.max(0, Math.min(1, elapsed))
   return progress * progress * (3 - 2 * progress)

@@ -7,6 +7,7 @@ import { easeTrailDepth } from '../../util/trail-depth'
 import { trailHost, trailScene } from '../../util/trail-scene'
 import { STORM_PERIOD, visitorPrecipitation, wetFall } from '../../util/visitor-precipitation'
 import { nextSunEvent, readVisitorForecast } from '../../util/visitor-weather'
+import { fetchVisitorWeather } from '../../util/visitor-weather-request'
 import {
   animalInWay,
   canMove,
@@ -220,11 +221,10 @@ let beach = false
 const tanMs = 120_000
 let tan = 0
 let tanFrom: number | null = null
-let weatherLoad: Promise<void> | null = null
-const loadWeather = () =>
-  (weatherLoad ??= fetch('/api/weather')
-    .then(res => (res.ok ? res.json() : null))
+const loadWeather = (signal: AbortSignal) =>
+  fetchVisitorWeather({ signal })
     .then(body => {
+      if (signal.aborted) return
       const forecast = readVisitorForecast(body)
       const w = forecast?.weather
       if (!w) return
@@ -251,7 +251,7 @@ const loadWeather = () =>
       beach = heat && !lantern && fall === 'none' && w.code <= 2
       render()
     })
-    .catch(() => {}))
+    .catch(() => {})
 
 // A part's animation restarts when it shows again. Align that animation to the lightning's wall
 // clock after style has started it, without flushing the whole pet subtree during each render.
@@ -3021,7 +3021,7 @@ document.addEventListener('nav', () => {
   document.addEventListener('keydown', onDriveKey, { signal })
   document.addEventListener('keyup', onDriveKeyUp, { signal })
   window.addEventListener('blur', () => driveKeys.clear(), { signal })
-  void loadWeather()
+  void loadWeather(signal)
   const scene = document.querySelector<HTMLElement>('.homepage-trail-scene')
   let trailFrame = 0
   let trailWanted = false
@@ -3385,11 +3385,28 @@ document.addEventListener('nav', () => {
   // workspace bar) or text that reflows once the web fonts load can end up under it. For the page's
   // first seconds, the perch is re-checked once the page goes quiet; the pet's own nodes don't count.
   let lateTimer: number | undefined
+  let latePending = false
   // A pet still hopping onto its first edge is checked once it lands.
   const recheckSoon = (ms = 400) => {
     clearTimeout(lateTimer)
-    lateTimer = window.setTimeout(() => (hop ? recheckSoon(200) : recheckPerch()), ms)
+    lateTimer = window.setTimeout(() => {
+      const drawing = trailScene(document)
+      if (
+        drawing &&
+        (drawing.dataset.trailOpening !== 'complete' || drawing.dataset.trailReveal !== undefined)
+      ) {
+        latePending = true
+        return
+      }
+      latePending = false
+      if (hop) recheckSoon(200)
+      else recheckPerch()
+    }, ms)
   }
+  const resumeRecheck = () => latePending && recheckSoon(0)
+  scene?.addEventListener('trail:prepared', resumeRecheck, { signal })
+  scene?.addEventListener('trail:reveal-end', resumeRecheck, { signal })
+  scene?.addEventListener('trail:hide', resumeRecheck, { signal })
   const late = new MutationObserver(records => {
     const outside = records.some(r => {
       const el = r.target instanceof Element ? r.target : r.target.parentElement

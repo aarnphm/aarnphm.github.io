@@ -264,3 +264,17 @@ Check the rendered implementation through the running Quartz watcher after its m
 Inspect the default, hover, keyboard focus, selected, expanded, disabled, loading, empty, and error states that the surface actually supports. Test both themes, a coarse-pointer viewport, `320px` reflow, and `200%` zoom. Check breakpoint boundaries when changing the shell, and container boundaries when changing a component. Two-dimensional plots and tables may scroll within their own surface when the information requires it; surrounding controls and prose must reflow. See [W3C reflow](https://www.w3.org/WAI/WCAG22/Understanding/reflow.html).
 
 Complete the flow using the keyboard, including Escape and focus restoration. Check reduced motion, long titles, missing values, realistic source content, and the site's supported locales. Save the exact route, inputs, theme/viewport, watcher epoch, result, and a screenshot or response artifact. A source inventory, a loaded stylesheet, and a screenshot each prove different parts of the result.
+
+## 11. Scene grammar: one world
+
+The homepage trail (`quartz/components/visitor-trail/*`) and the 404 landscape (`quartz/components/scripts/404*.ts`) show two views of one world. Both scenes read the same DOM-free modules in `quartz/util/` and `quartz/components/scripts/404-almanac.ts`:
+
+- `404-almanac.ts` (`almanac`, `readSky`, `guessSite`): computes solar and lunar position, daylight, twilight, solar hour, and `winterDay` from the visitor clock and location.
+- `visitor-precipitation.ts` (`visitorPrecipitation`, `wetFall`, `stormDelay`): maps WMO 4677 weather codes to precipitation type (`none`, `drizzle`, `rain`, `snow`), intensity, fog, and storm state.
+- `visitor-world.ts` (`season`, `seasonBucket`): computes continuous seasonal scalars (`autumn`, `bare`, `bloom`, `blossom`, `snowline`, `ground`, `frost`, `thaw`) from the almanac and sky reading.
+- `scene-palette.ts` (`LIGHT`, `lighting`): blends the 404 colour ramps across daylight, twilight, moonlight, cloud cover, and season.
+- `scene-grade.ts` (`sceneGrade`): fits an affine sRGB transform (`mat3` and `vec3`) from `LIGHT` to `lighting(al, season, sky)` so the homepage trail grades its SVG and WebGL layers with the same sky light.
+- `world-schedule.ts` (`night`, `campSleeps`, `herd`, `fireOut`, `leafRate`): defines what the world does for a sun, season and sky. The homepage stamps the result on `.trail-scene` (`data-herd`, `data-night`, `data-camp-sleeps`, `data-fire-weather`, `data-leaf-rate`); the camp, pasture and leaf modules read those attributes.
+- `visitor-trail-weather.ts` (`trailSite`, `trailSky`): turns the homepage forecast into the almanac site and the shared sky reading.
+
+The 404 page owns the pixel-canvas island, ruin, downhill course, ski chairlift, angler, and barn-routed cattle in `quartz/components/scripts/404*.ts`. The homepage owns the SVG and WebGL visitor trail, campsites, pasture wanderers, leaf-fall canvas, and alpine hikers in `quartz/components/visitor-trail/*`. Both scenes must derive time-of-day, season, lighting, and actor schedules from the shared modules. Do not read wall-clock hours or duplicate weather thresholds inside a scene module.
