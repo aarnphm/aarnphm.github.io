@@ -36,10 +36,10 @@ Relier les idées sans répéter (B2).
 
 ## Les compagnons : COD, COI, y, en
 
-Placés **avant** le verbe : {{`Je la vois.`}} (COD : {{`me, te, le/la, nous, vous, les`}}) · {{`Je lui parle.`}} (COI en {{`à`}} + personne : {{`lui, leur`}}).
+Placés **avant** le verbe : {{`Je la vois.`}} (COD : {{`me, te, le/la, nous, vous, les`}}) · {{`Je lui parle.`}} (COI avec {{`parler à`}} + personne : {{`lui, leur`}}).
 
-- {{`y`}} reprend notamment un lieu ou un complément en {{`à`}} désignant une chose : {{`J'y vais.`}} · {{`J'y pense.`}} Avec {{`penser à`}} + personne, on garde {{`à`}} et un pronom tonique : {{`Je pense à lui.`}} · {{`Je pense à elle.`}} · {{`Je pense à eux.`}} {{`Je lui pense`}} est incorrect. La construction dépend du verbe : {{`Je parle à Paul`}} devient {{`Je lui parle`}}.
+- {{`y`}} reprend notamment un lieu ou un complément en {{`à`}} désignant une chose : {{`J'y vais.`}} · {{`J'y pense.`}} Avec {{`penser à`}} + personne, on garde {{`à`}} et un pronom tonique : {{`Je pense à lui.`}} · {{`Je pense à elle.`}} · {{`Je pense à eux.`}} · {{`Je pense à elles.`}} {{`Je lui pense`}} est incorrect. La construction dépend du verbe : {{`Je parle à Paul`}} devient {{`Je lui parle`}}.
 - {{`en`}} remplace {{`de`}} + nom : {{`J'en ai besoin.`}} · {{`Ils en achètent.`}} (des pommes)
 - {{`y`}} + {{`en`}} coexistent, dans cet ordre : {{`Il y en a beaucoup.`}}
 
-Référence : Académie française, [emploi du pronom y et reprise d'une personne](https://www.dictionnaire-academie.fr/article/A9Y0002).
+Références : Académie française, [emploi du pronom y et reprise d'une personne](https://www.dictionnaire-academie.fr/article/A9Y0002) ; Tex's French Grammar, [y et les pronoms toniques avec penser à](https://www.laits.utexas.edu/tex/gr/pro6.html).
