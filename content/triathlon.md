@@ -2013,6 +2013,14 @@ strava: 20611999888
 garmin: 24748304432
 ```
 
+```tracking
+activity: 20614294576
+garmin: 24750153909
+wahoo: [[triathlon/wahoo/26-10-16-507050206.fit]]
+power: wahoo
+virtual: true
+```
+
 <!-- training plan start
 meta: IRONMAN Lanzarote
 date: 2026-09-01
