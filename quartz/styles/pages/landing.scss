@@ -83,8 +83,9 @@ body[data-slug='index'] {
   }
 
   // Home links keep the tool-surface hover with or without the trail scene: ink and underline
-  // darken in place of the site-wide inverted fill.
-  a:hover {
+  // darken in place of the site-wide inverted fill. The tag selector outranks the tag chip hover.
+  a:hover,
+  a.internal.tag-link:hover {
     background: transparent;
     color: var(--dark);
     text-decoration-color: var(--dark);
