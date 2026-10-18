@@ -1,11 +1,46 @@
-import { CompletionContext, CompletionResult } from '@codemirror/autocomplete'
-import type { FuzzyMatch } from './types'
+import { type Completion, CompletionContext, CompletionResult } from '@codemirror/autocomplete'
 import { getEmojiEntries, type EmojiEntry } from '../../../util/emoji'
 import { fuzzyMatch } from './fuzzy'
 
+const EMOJI_COMPLETION_LIMIT = 15
+
+interface IndexedEmoji {
+  name: string
+  option: Completion
+}
+
 interface ScoredEmoji {
-  entry: EmojiEntry
-  match: FuzzyMatch
+  option: Completion
+  score: number
+}
+
+interface EmojiCompletionIndex {
+  entries: EmojiEntry[]
+  items: IndexedEmoji[]
+  emptyOptions: Completion[]
+}
+
+let cachedIndex: EmojiCompletionIndex | null = null
+
+function getEmojiCompletionIndex(entries: EmojiEntry[]): EmojiCompletionIndex {
+  if (cachedIndex && cachedIndex.entries === entries) return cachedIndex
+  const items: IndexedEmoji[] = entries.map(entry => ({
+    name: entry.name,
+    option: {
+      label: `:${entry.name}:`,
+      displayLabel: entry.emoji,
+      detail: entry.name,
+      type: 'emoji',
+      apply: entry.emoji,
+      boost: 0,
+    },
+  }))
+  cachedIndex = {
+    entries,
+    items,
+    emptyOptions: items.slice(0, EMOJI_COMPLETION_LIMIT).map(item => item.option),
+  }
+  return cachedIndex
 }
 
 export async function emojiCompletionSource(
@@ -17,40 +52,43 @@ export async function emojiCompletionSource(
   const query = word.text.slice(1)
   if (query.length === 0 && !context.explicit) return null
 
-  const entries = await getEmojiEntries()
+  const index = getEmojiCompletionIndex(await getEmojiEntries())
 
-  const scored: ScoredEmoji[] = []
+  if (query.length === 0) {
+    if (index.emptyOptions.length === 0) return null
+    return { from: word.from, filter: false, options: index.emptyOptions }
+  }
 
-  for (const entry of entries) {
-    if (query.length === 0) {
-      scored.push({ entry, match: { score: 0, positions: [] } })
-      if (scored.length >= 15) break
+  const top: ScoredEmoji[] = []
+  let minScore = -Infinity
+
+  for (let i = 0; i < index.items.length; i++) {
+    const item = index.items[i]!
+    const match = fuzzyMatch(query, item.name, minScore)
+    if (!match) continue
+    const score = match.score
+    let pos = top.length
+    while (pos > 0 && top[pos - 1]!.score < score) {
+      pos -= 1
+    }
+    if (top.length < EMOJI_COMPLETION_LIMIT) {
+      top.splice(pos, 0, { option: item.option, score })
     } else {
-      const match = fuzzyMatch(query, entry.name)
-      if (match) {
-        scored.push({ entry, match })
+      for (let j = EMOJI_COMPLETION_LIMIT - 1; j > pos; j--) {
+        top[j] = top[j - 1]!
       }
+      top[pos] = { option: item.option, score }
+    }
+    if (top.length === EMOJI_COMPLETION_LIMIT) {
+      minScore = top[EMOJI_COMPLETION_LIMIT - 1]!.score
     }
   }
 
-  if (query.length > 0) {
-    scored.sort((a, b) => b.match.score - a.match.score)
-  }
-
-  const limited = scored.slice(0, 15)
-
-  if (limited.length === 0) return null
+  if (top.length === 0) return null
 
   return {
     from: word.from,
     filter: false,
-    options: limited.map(({ entry, match }) => ({
-      label: `:${entry.name}:`,
-      displayLabel: entry.emoji,
-      detail: entry.name,
-      type: 'emoji',
-      apply: entry.emoji,
-      boost: match.score,
-    })),
+    options: top.map(({ option, score }) => ({ ...option, boost: score })),
   }
 }
