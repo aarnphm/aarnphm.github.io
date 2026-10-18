@@ -81,7 +81,12 @@ function boldLeads(file: QuartzPluginData, unit: number): Omit<Statement, 'cards
  * anchor (bold leads: cards in that unit's deck naming the term); `usedBy` lists pset problems
  * whose links reach the anchor.
  */
+const statementsCache = new WeakMap<CourseView, Statement[]>()
+
 export function courseStatements(view: CourseView): Statement[] {
+  const cached = statementsCache.get(view)
+  if (cached) return cached
+
   const found: Omit<Statement, 'cards' | 'usedBy'>[] = view.units.flatMap(unit => [
     ...(unit.text ? calloutStatements(unit.text, unit.record.n) : []),
     ...(unit.note ? boldLeads(unit.note, unit.record.n) : []),
@@ -91,7 +96,7 @@ export function courseStatements(view: CourseView): Statement[] {
     (unit.deck?.rawMarkdownSource ?? '')
       .split(/^---\s*$/m)
       .filter(raw => raw.trim())
-      .map(raw => ({ unit: unit.record.n, raw })),
+      .map(raw => ({ unit: unit.record.n, raw, lower: raw.toLowerCase() })),
   )
   const uses = new Map<string, string[]>()
   for (const [n, text] of view.psetText)
@@ -101,17 +106,16 @@ export function courseStatements(view: CourseView): Statement[] {
         if (use.slug) continue
         uses.set(use.anchor, [...(uses.get(use.anchor) ?? []), `pset ${n} #${problem.n}`])
       }
-  return found.map(statement => {
+  const result = found.map(statement => {
     const anchor = statement.kind === 'term' ? undefined : statement.anchor
+    const needle = anchor ? `${statement.slug}#^${anchor}` : statement.name.toLowerCase()
     const cited = anchor
-      ? cards.filter(card => card.raw.includes(`${statement.slug}#^${anchor}`)).length
-      : cards.filter(
-          card =>
-            card.unit === statement.unit &&
-            card.raw.toLowerCase().includes(statement.name.toLowerCase()),
-        ).length
+      ? cards.filter(card => card.raw.includes(needle)).length
+      : cards.filter(card => card.unit === statement.unit && card.lower.includes(needle)).length
     return { ...statement, cards: cited, usedBy: anchor ? (uses.get(anchor) ?? []) : [] }
   })
+  statementsCache.set(view, result)
+  return result
 }
 
 /** `courses/<dir>/statements/index.md`: the course's statements in lecture order. */

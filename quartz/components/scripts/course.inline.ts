@@ -1,3 +1,4 @@
+import { invalidateCanonicalCache } from '../../util/fetch-canonical'
 import { parsePdfMark, type PdfMark } from '../../util/pdf-marks'
 import { loadNotes, type LectureNote } from '../course-workspace/store'
 import { promoteDrafts, type PromoteSource } from './course-promote'
@@ -40,6 +41,40 @@ interface CountsResponse {
   counts?: Record<string, { mark?: number; question?: number; contra?: number }>
 }
 
+const COURSE_API_FRESH_MS = 10_000
+
+interface CachedStateEntry {
+  login: string | null
+  rows: Map<string, CardState>
+  fetchedAt: number
+}
+
+interface CachedCountsEntry {
+  data: CountsResponse
+  fetchedAt: number
+}
+
+const stateCache = new Map<string, CachedStateEntry>()
+const countsCache = new Map<string, CachedCountsEntry>()
+
+function findCachedState(prefix: string): CachedStateEntry | undefined {
+  const exact = stateCache.get(prefix)
+  if (exact) return exact
+  for (const [cachedPrefix, entry] of stateCache) {
+    if (prefix.startsWith(cachedPrefix)) return entry
+  }
+  return undefined
+}
+
+function findCachedCounts(prefix: string): CachedCountsEntry | undefined {
+  const exact = countsCache.get(prefix)
+  if (exact) return exact
+  for (const [cachedPrefix, entry] of countsCache) {
+    if (prefix.startsWith(cachedPrefix)) return entry
+  }
+  return undefined
+}
+
 const age = (ms: number): string => {
   const minutes = Math.round(ms / 60_000)
   if (minutes < 60) return `${Math.max(minutes, 0)}m`
@@ -60,6 +95,16 @@ document.addEventListener('nav', () => {
 
   const fill = (root: HTMLElement, rows: Map<string, CardState>, login: string | null) => {
     const now = Date.now()
+    const lastByUnit = new Map<string, HTMLElement>()
+    for (const el of root.querySelectorAll<HTMLElement>('[data-last][data-for]')) {
+      const key = el.dataset.for
+      if (key) lastByUnit.set(key, el)
+    }
+    const retentionByUnit = new Map<string, HTMLElement>()
+    for (const el of root.querySelectorAll<HTMLElement>('[data-retention][data-for]')) {
+      const key = el.dataset.for
+      if (key) retentionByUnit.set(key, el)
+    }
     for (const el of root.querySelectorAll<HTMLElement>('[data-cards]')) {
       const ids = (el.dataset.cards ?? '').split(/\s+/).filter(Boolean)
       if (ids.length === 0) continue
@@ -96,9 +141,8 @@ document.addEventListener('nav', () => {
         }
         dueEl.title = `${due} due · ${seen} seen of ${ids.length}`
       }
-      const lastEl = root.querySelector<HTMLElement>(
-        `[data-last][data-for="${el.dataset.unit ?? ''}"]`,
-      )
+      const unitKey = el.dataset.unit ?? ''
+      const lastEl = lastByUnit.get(unitKey)
       if (lastEl) {
         if (last > 0) {
           lastEl.textContent = age(now - last)
@@ -108,9 +152,7 @@ document.addEventListener('nav', () => {
           lastEl.removeAttribute('title')
         }
       }
-      const rEl = root.querySelector<HTMLElement>(
-        `[data-retention][data-for="${el.dataset.unit ?? ''}"]`,
-      )
+      const rEl = retentionByUnit.get(unitKey)
       if (rEl) {
         rEl.textContent = rCount > 0 ? `${Math.round((rSum / rCount) * 100)}%` : '–'
         rEl.title =
@@ -141,7 +183,9 @@ document.addEventListener('nav', () => {
         if (!res.ok) throw new Error(`state ${res.status}`)
         const data = (await res.json()) as StateResponse
         const login = typeof data.login === 'string' ? data.login : null
-        return { login, rows: new Map((data.states ?? []).map(s => [s.cardId, s])) }
+        const rows = new Map((data.states ?? []).map(s => [s.cardId, s]))
+        stateCache.set(prefix, { login, rows, fetchedAt: Date.now() })
+        return { login, rows }
       })
       byPrefix.set(prefix, pending)
     }
@@ -150,12 +194,17 @@ document.addEventListener('nav', () => {
 
   for (const root of roots) {
     const prefix = root.dataset.coursePrefix ?? ''
+    const cached = findCachedState(prefix)
+    if (cached) {
+      fill(root, cached.rows, cached.login)
+      if (Date.now() - cached.fetchedAt < COURSE_API_FRESH_MS) continue
+    }
     void load(prefix)
       .then(({ login, rows }) => {
         if (!signal.aborted) fill(root, rows, login)
       })
       .catch(() => {
-        if (signal.aborted) return
+        if (signal.aborted || cached) return
         for (const el of root.querySelectorAll<HTMLElement>('[data-due]')) {
           el.title = 'could not load review state'
         }
@@ -169,31 +218,41 @@ document.addEventListener('nav', () => {
   const signal = currentNavSignal()
   const roots = Array.from(document.querySelectorAll<HTMLElement>('[data-marks-prefix]'))
   if (roots.length === 0) return
+
+  const fillCounts = (cells: HTMLElement[], data: CountsResponse) => {
+    for (const cell of cells) {
+      const src = cell.dataset.marksSrc ?? ''
+      const counts = data.counts?.[src]
+      const marks = (counts?.mark ?? 0) + (counts?.contra ?? 0)
+      const questions = counts?.question ?? 0
+      if (marks === 0 && questions === 0) continue
+      cell.replaceChildren(
+        document.createTextNode(questions > 0 ? `${marks} · ${questions}?` : String(marks)),
+      )
+      cell.title = `${marks} ${marks === 1 ? 'mark' : 'marks'} · ${questions} open ${questions === 1 ? 'question' : 'questions'}`
+    }
+  }
+
   for (const root of roots) {
     const prefix = root.dataset.marksPrefix ?? ''
     const cells = Array.from(root.querySelectorAll<HTMLElement>('[data-marks-src]'))
     if (!prefix || cells.length === 0) continue
+    const cached = findCachedCounts(prefix)
+    if (cached) {
+      fillCounts(cells, cached.data)
+      if (Date.now() - cached.fetchedAt < COURSE_API_FRESH_MS) continue
+    }
     fetch(`/api/pdf/marks/counts?prefix=${encodeURIComponent(prefix)}`, { signal })
       .then(async res => {
         if (!res.ok) throw new Error(`counts ${res.status}`)
         return (await res.json()) as CountsResponse
       })
       .then(data => {
-        if (signal.aborted) return
-        for (const cell of cells) {
-          const src = cell.dataset.marksSrc ?? ''
-          const counts = data.counts?.[src]
-          const marks = (counts?.mark ?? 0) + (counts?.contra ?? 0)
-          const questions = counts?.question ?? 0
-          if (marks === 0 && questions === 0) continue
-          cell.replaceChildren(
-            document.createTextNode(questions > 0 ? `${marks} · ${questions}?` : String(marks)),
-          )
-          cell.title = `${marks} ${marks === 1 ? 'mark' : 'marks'} · ${questions} open ${questions === 1 ? 'question' : 'questions'}`
-        }
+        countsCache.set(prefix, { data, fetchedAt: Date.now() })
+        if (!signal.aborted) fillCounts(cells, data)
       })
       .catch(() => {
-        if (signal.aborted) return
+        if (signal.aborted || cached) return
         for (const cell of cells) cell.title = 'could not load mark counts'
       })
   }
@@ -630,12 +689,13 @@ document.addEventListener('nav', () => {
           // the watcher rebuilds before the new page exists; wait for it, then open the desk
           button.textContent = 'opening…'
           const href = new URL(button.dataset.deskHref!, location.href)
-          for (let tries = 0; tries < 120; tries++) {
+          for (let tries = 0; tries < 180; tries++) {
             const res = await fetch(href, { method: 'HEAD', cache: 'no-store', signal })
             if (res.ok) break
-            await new Promise(resolve => setTimeout(resolve, 500))
+            await new Promise(resolve => setTimeout(resolve, Math.min(350, 120 + tries * 30)))
           }
           if (signal.aborted) return
+          invalidateCanonicalCache(href)
           if (window.spaNavigate) window.spaNavigate(href)
           else location.assign(href)
         } catch (error) {

@@ -1,5 +1,10 @@
+import { toString } from 'mdast-util-to-string'
 import assert from 'node:assert/strict'
 import test from 'node:test'
+import remarkGfm from 'remark-gfm'
+import remarkMath from 'remark-math'
+import remarkParse from 'remark-parse'
+import { unified } from 'unified'
 import { formatStamp, groupCues, parseVtt, transcriptMarkdown, type VttCue } from './ocw-vtt'
 
 // Failure list written before the parser: each case names a way a real OCW file can break it.
@@ -106,6 +111,23 @@ test('markdown: lectures under an hour use m:ss for every stamp', () => {
   const md = transcriptMarkdown([cue(5, 6, 'a'), cue(3000, 3001, 'b')], 'id', 3001)
   assert.ok(md.startsWith('[0:05]('))
   assert.ok(md.includes('\n\n[50:00]('))
+})
+
+test('transcript serialization preserves literal markup and backslash-dollar sequences', () => {
+  const values = [
+    '\\$x$',
+    '\\\\$x$',
+    '<script>literal</script>',
+    '\\<img src=x>',
+    '$$literal$$',
+    'a | b',
+  ]
+  for (const value of values) {
+    const markdown = transcriptMarkdown([cue(1, 2, value)], 'fixture', 2)
+    const tree = unified().use(remarkParse).use(remarkGfm).use(remarkMath).parse(markdown)
+    assert.equal(toString(tree), `0:01 ${value}`)
+    assert.equal(tree.children[0]?.type, 'paragraph')
+  }
 })
 
 test('markdown: empty input gives an empty string', () => {

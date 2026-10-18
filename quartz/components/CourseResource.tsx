@@ -16,6 +16,7 @@ import {
   courseOf,
   coursePageOf,
   examSolutionOf,
+  fileBySlug,
   formatBytes,
   formatDuration,
   latexOf,
@@ -668,7 +669,7 @@ function CollectionView({ rv, props }: { rv: ResourceView; props: QuartzComponen
   const rows = collectionMembers(rv)
   const description = str(props.fileData.frontmatter?.description)
   const links = (rv.ref.record.links ?? [])
-    .map(slug => props.allFiles.find(file => file.slug === slug.replace(/\/$/, '/index')))
+    .map(slug => fileBySlug(slug.replace(/\/$/, '/index'), props.allFiles))
     .filter((file): file is QuartzPluginData => file !== undefined)
   return (
     <>
