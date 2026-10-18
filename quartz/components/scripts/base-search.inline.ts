@@ -9,11 +9,22 @@ const SEMANTIC_K = 24
 const SEMANTIC_TAIL = 0.12
 const DEBOUNCE_MS = 180
 const MODE_KEY = 'base-search-mode'
+const SEMANTIC_IDLE_MS = 30_000
 
 type SharedSemantic = { manifest: string; client: SemanticClient; ids: Promise<string[]> }
-// The query encoder is ~200 MB, so one worker survives SPA navigations; moving to another base
-// only swaps its vector set.
 let shared: SharedSemantic | null = null
+let releaseTimer: ReturnType<typeof setTimeout> | undefined
+
+function releaseSemantic() {
+  if (!shared || releaseTimer !== undefined) return
+  const current = shared
+  releaseTimer = setTimeout(() => {
+    releaseTimer = undefined
+    if (shared !== current) return
+    shared = null
+    current.client.dispose()
+  }, SEMANTIC_IDLE_MS)
+}
 
 async function manifestIds(manifest: string): Promise<string[]> {
   const res = await fetch(manifest)
@@ -25,6 +36,8 @@ async function manifestIds(manifest: string): Promise<string[]> {
 }
 
 function sharedSemantic(manifest: string): SharedSemantic {
+  clearTimeout(releaseTimer)
+  releaseTimer = undefined
   if (shared?.manifest === manifest) return shared
   const previous = shared
   const client = previous?.client ?? new SemanticClient({ ...semanticCfg, manifestUrl: manifest })
@@ -278,7 +291,7 @@ function setupBaseSearch(): (() => void) | undefined {
     bar.dataset.mode = mode
   }
 
-  const ensureSemantic = async (): Promise<string[] | null> => {
+  const ensureSemantic = async (seq: number): Promise<string[] | null> => {
     if (!manifest || semanticState === 'unavailable') return null
     if (semanticState !== 'ready') setSemanticState('loading')
     try {
@@ -291,7 +304,7 @@ function setupBaseSearch(): (() => void) | undefined {
           })
         })
         const covered = await coverage
-        if (!active) return null
+        if (!active || seq !== searchSeq) return null
         if (!covered) {
           semanticNotice =
             'Using full-text search because this query includes notes outside the semantic index.'
@@ -304,10 +317,11 @@ function setupBaseSearch(): (() => void) | undefined {
       }
       const semantic = sharedSemantic(manifest)
       const ids = await semantic.ids
-      if (!active) return null
+      if (!active || seq !== searchSeq) return null
       setSemanticState('ready')
       return ids
     } catch (err) {
+      if (!active || seq !== searchSeq) return null
       console.warn('[BaseSearch] semantic index unavailable:', err)
       setSemanticState('unavailable')
       return null
@@ -318,10 +332,12 @@ function setupBaseSearch(): (() => void) | undefined {
     const query = searchInput.value.trim()
     const seq = ++searchSeq
     if (query.length === 0) {
+      releaseSemantic()
+      setSemanticState('idle')
       showAll()
       return
     }
-    const ids = await ensureSemantic()
+    const ids = await ensureSemantic(seq)
     if (seq !== searchSeq) return
     if (!ids) {
       mode = 'lexical'
@@ -353,6 +369,8 @@ function setupBaseSearch(): (() => void) | undefined {
       void runSemantic()
     } else {
       searchSeq++
+      releaseSemantic()
+      setSemanticState('idle')
       filterLexical()
     }
   }
@@ -362,7 +380,6 @@ function setupBaseSearch(): (() => void) | undefined {
     mode = next
     storeMode(next)
     updateModeUI()
-    if (next === 'semantic') void ensureSemantic()
     search()
   }
 
@@ -419,7 +436,6 @@ function setupBaseSearch(): (() => void) | undefined {
     if (shared?.manifest === manifest) setSemanticState('ready')
     if (loadStoredMode() === 'semantic') {
       mode = 'semantic'
-      void ensureSemantic()
     }
   }
   updateModeUI()
@@ -429,6 +445,7 @@ function setupBaseSearch(): (() => void) | undefined {
     active = false
     clearTimeout(debounce)
     searchSeq++
+    releaseSemantic()
     for (const item of items) clearScore(item)
     searchInput.removeEventListener('input', handleInput)
     document.removeEventListener('keydown', handleKeydown)

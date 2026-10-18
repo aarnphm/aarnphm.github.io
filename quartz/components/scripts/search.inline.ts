@@ -2,9 +2,16 @@ import type { LexicalField, LexicalFieldResult, LexicalIndexPriority } from './l
 import { documentPreviewUrl, readDocumentPreview } from '../../util/document-preview'
 import { escapeHTML } from '../../util/escape'
 import { fetchCanonical } from '../../util/fetch-canonical'
-import { FullSlug, getFullSlug, normalizeRelativeURLs, resolveRelative } from '../../util/path'
+import {
+  FullSlug,
+  getFullSlug,
+  isFullSlug,
+  normalizeRelativeURLs,
+  resolveRelative,
+} from '../../util/path'
 import { highlight, tokenizeTerm } from '../../util/search-text'
 import { fuseSearchRanks } from '../../util/semantic-search'
+import { renderCoursePreview } from './course-preview-card'
 import { renderDocumentPreview } from './document-preview-card'
 import { registerEscapeHandler } from './escape-handler'
 import { getLexicalSearchClient } from './lexical-search'
@@ -64,7 +71,7 @@ const configuredSearchElements = new WeakSet<HTMLDivElement>()
 type SimilarityResult = { item: Item; similarity: number }
 
 const p = new DOMParser()
-const fetchContentCache: Map<FullSlug, Element[]> = new Map()
+const fetchContentCache: Map<FullSlug, Document> = new Map()
 const numSearchResultsLexical = 10
 const numSearchResultsSemantic = 60
 const numTagResults = 10
@@ -551,6 +558,21 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     }
 
     if (!container!.classList.contains('active')) return
+    if (preview?.contains(document.activeElement)) {
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault()
+        currentHover?.focus()
+      }
+      return
+    }
+    if (e.key === 'ArrowRight' && results.contains(document.activeElement)) {
+      const link = preview?.querySelector<HTMLAnchorElement>('a[href]')
+      if (link?.checkVisibility()) {
+        e.preventDefault()
+        link.focus()
+      }
+      return
+    }
     if (e.key === 'Enter') {
       let anchor: HTMLAnchorElement | undefined
       if (results.contains(document.activeElement)) {
@@ -758,29 +780,23 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     }
   }
 
-  async function fetchContent(slug: FullSlug): Promise<Element[]> {
-    if (fetchContentCache.has(slug)) {
-      return fetchContentCache.get(slug) as Element[]
-    }
+  async function fetchContent(slug: FullSlug, signal: AbortSignal): Promise<Document> {
+    const cached = fetchContentCache.get(slug)
+    if (cached) return cached
 
     const targetUrl = resolveUrl(slug)
-    const contents = await fetchCanonical(targetUrl)
-      .then(res => res.text())
-      .then(contents => {
-        if (contents === undefined) {
-          throw new Error(`Could not fetch ${targetUrl}`)
-        }
-        const html = p.parseFromString(contents ?? '', 'text/html')
-        normalizeRelativeURLs(html, targetUrl)
-        return [...html.getElementsByClassName('popover-hint')]
-      })
-
-    fetchContentCache.set(slug, contents)
-    return contents
+    const response = await fetchCanonical(targetUrl, { signal })
+    if (!response.ok) throw new Error(`Could not fetch ${targetUrl}: ${response.status}`)
+    const page = p.parseFromString(await response.text(), 'text/html')
+    normalizeRelativeURLs(page, targetUrl)
+    fetchContentCache.set(slug, page)
+    return page
   }
 
   async function displayPreview(el: HTMLElement | null) {
     if (!enablePreview || !el || !preview) return
+    const slug = el.id
+    if (!isFullSlug(slug)) return
     clearPreview()
     const request = new AbortController()
     previewRequest = request
@@ -789,7 +805,6 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
       once: true,
     })
     try {
-      const slug = el.id as FullSlug
       const isProtected = el.dataset.protected === 'true' || requireData()[slug]?.protected === true
       if (isProtected) {
         previewInner = document.createElement('div')
@@ -868,10 +883,20 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
         return
       }
 
-      const innerDiv = await fetchContent(slug).then(contents =>
-        contents.flatMap(el => [...highlightHTML(currentSearchTerm, el as HTMLElement).children]),
-      )
+      const page = await fetchContent(slug, request.signal)
       if (request.signal.aborted) return
+      if (page.querySelector('.course-home, [data-course-card]')) {
+        const inner = document.createElement('div')
+        inner.classList.add('preview-inner', 'course-popover', 'search-course-preview')
+        renderCoursePreview(page, resolveUrl(slug), inner)
+        preview.replaceChildren(inner)
+        preview.scrollTop = 0
+        return
+      }
+
+      const innerDiv = Array.from(page.querySelectorAll<HTMLElement>('.popover-hint')).flatMap(
+        el => [...highlightHTML(currentSearchTerm, el).children],
+      )
       previewInner = document.createElement('div')
       previewInner.classList.add('preview-inner')
       previewInner.append(...innerDiv)
@@ -887,6 +912,17 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
         const relativeTop = highlightRect.top - containerRect.top + preview.scrollTop - 20
         preview.scrollTo({ top: relativeTop, behavior: 'smooth' })
       }
+    } catch (error) {
+      if (request.signal.aborted) return
+      console.warn('[Search] preview unavailable:', error)
+      const message = document.createElement('p')
+      message.setAttribute('role', 'status')
+      message.textContent = 'preview unavailable. '
+      const open = document.createElement('a')
+      open.href = resolveUrl(slug).toString()
+      open.textContent = 'open page'
+      message.appendChild(open)
+      preview.replaceChildren(message)
     } finally {
       if (previewRequest === request) completeSearchProgress('preview')
     }
