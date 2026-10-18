@@ -53,6 +53,7 @@ pdfTitles:
   'Edward A. Lee, Pravin Varaiya - Structure and Interpretation of Signals and Systems-Addison-Wesley (2003).pdf': 'Structure and Interpretation of Signals and Systems'
   'Efficient Implementation of the Smalltalk-80 System.pdf': 'Efficient Implementation of the Smalltalk-80 System'
   "Fermat's Last Theorem.pdf": 'Fermat’s Last Theorem: The Story of a Riddle That Confounded the World’s Greatest Minds for 358 Years'
+  'Foucault_on-the-Genealogy-of-Ethics.pdf': 'On the Genealogy of Ethics'
   'fphys-15-1343601.pdf': 'Understanding Optimal Cadence Dynamics: A Systematic Analysis of the Power-Velocity Relationship in Track Cyclists with Increasing Exercise Intensity'
   'fundamentals of digital logic with verilog design.pdf': 'Fundamentals of Digital Logic with Verilog Design, THIRD EDITION'
   'gibbs-variational-principle.pdf': 'Chapter 4: Gibbs Variational Principle'
@@ -130,6 +131,7 @@ pdfTitles:
   'The neurobiology of love.pdf': 'The neurobiology of love'
   'The power of love on the human brain.pdf': 'The power of love on the human brain'
   'The serotonin theory of depression - A systematic umbrella review of the evidence.pdf': 'The serotonin theory of depression: a systematic umbrella review of the evidence'
+  'the-aesthetics-of-existence-late-foucault.pdf': 'The Aesthetics of Existence and the Political in Late Foucault'
   'the visual display of quantitative information.pdf': 'The Visual Display of Quantitative Information, Second Edition'
   'The Wit and Wisdom of Michael Bloomberg.pdf': 'The Portable Bloomberg: The Wit and Wisdom of Michael Bloomberg'
   'Thinking with Type - Ellen Lupton.pdf': 'Thinking with Type: A Critical Guide for Designers, Writers, Editors & Students'
@@ -143,6 +145,7 @@ pdfTitles:
   'Vickers1989TopologyViaLogic.pdf': 'Topology via Logic'
   'Virginia Tufte - Artful Sentences - Syntax as Style.pdf': 'Artful Sentences: Syntax as Style'
   'visions-of-excess-selected-writings-1927-1939-by-georges-bataille.pdf': 'Visions of Excess: Selected Writings, 1927–1939'
+  'what-makes-a-life-signifcant.pdf': 'What Makes a Life Significant?'
   'weisberg_vob.pdf': 'Varieties of Bayesianism'
   'Weiskrantz.pdf': 'The Blackwell Companion to Consciousness'
 ---
