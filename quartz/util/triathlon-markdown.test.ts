@@ -1,5 +1,17 @@
+import type { Element } from 'hast'
+import { toText } from 'hast-util-to-text'
 import assert from 'node:assert/strict'
+import { mkdir, writeFile } from 'node:fs/promises'
+import path from 'node:path'
 import test from 'node:test'
+import { h } from 'preact'
+import { renderToString } from 'preact-render-to-string'
+import rehypeRaw from 'rehype-raw'
+import remarkGfm from 'remark-gfm'
+import remarkParse from 'remark-parse'
+import remarkRehype from 'remark-rehype'
+import { unified } from 'unified'
+import { visit } from 'unist-util-visit'
 import { buildAnalytics } from '../plugins/stores/analytics'
 import { emptyPayload, type StravaActivityDetail } from '../plugins/stores/strava'
 import { isFullSlug, type FullSlug } from './path'
@@ -208,13 +220,7 @@ const options = (
       },
       maintenance: {
         services: [
-          {
-            bike: 'soloist',
-            date: '2026-08-20',
-            distanceMiles: 1721.5,
-            place: 'Racer Sportif',
-            type: 'bike fit',
-          },
+          { bike: 'soloist', date: '2026-08-20', distanceMiles: 1721.5, place: 'Racer Sportif' },
         ],
         components: [
           {
@@ -292,10 +298,7 @@ test('turns generated training HTML and tool constants into markdown', () => {
   assert.match(tools, /units: race distance km, maintenance distance mi/)
   assert.match(tools, /## maintenance/)
   assert.match(tools, /### maintenance\.services/)
-  assert.match(
-    tools,
-    /\| 1 \| "soloist" \| "bike fit" \| "2026-08-20" \| "Racer Sportif" \| 1721\.5 \|/,
-  )
+  assert.match(tools, /\| 1 \| "soloist" \| "2026-08-20" \| "Racer Sportif" \| 1721\.5 \|/)
   assert.match(tools, /### maintenance\.components/)
   assert.match(
     tools,
@@ -321,6 +324,68 @@ test('turns generated training HTML and tool constants into markdown', () => {
   assert.match(tools, /\| 1 \| "bike" \| "Cervelo Soloist" \|/)
   assert.doesNotMatch(training, /```json/)
   assert.doesNotMatch(tools, /```json/)
+})
+
+test('training table cells survive real GFM parsing with pipes and backslashes', async () => {
+  const values = [
+    'plain | pipe',
+    'C:\\data\\ride',
+    '\\|',
+    '\\\\|',
+    '<script>literal</script>',
+    '\\|*literal*',
+    '\\|[x](javascript:alert(1))',
+    '\\|&copy;',
+    '\\|<img src=x onerror=alert(1)>',
+  ]
+  for (const tag of ['span', 'code']) {
+    const opts = options('training', 'triathlon/training')
+    opts.plans[0].html = renderToString(
+      h('table', {}, [
+        h('tr', {}, h('th', {}, 'value')),
+        ...values.map(value => h('tr', {}, h('td', {}, h(tag, {}, value)))),
+      ]),
+    )
+    const markdown = buildTriathlonMarkdown(opts)
+    const parser = unified()
+      .use(remarkParse)
+      .use(remarkGfm)
+      .use(remarkRehype, { allowDangerousHtml: true })
+      .use(rehypeRaw)
+    const tree = parser.runSync(parser.parse(markdown))
+    const tables: Element[] = []
+    visit(tree, 'element', node => {
+      if (node.tagName === 'table') tables.push(node)
+    })
+    const table = tables.at(-1)
+    assert.ok(table)
+    const rows: string[][] = []
+    visit(table, 'element', node => {
+      if (node.tagName !== 'tr') return
+      rows.push(node.children.filter(child => child.type === 'element').map(cell => toText(cell)))
+    })
+    assert.deepEqual(
+      rows.slice(1),
+      values.map(value => [value]),
+      `${tag} cells must retain text and column count`,
+    )
+    const artifacts = path.resolve('docs/verification/code-scanning-remediation/artifacts/tables')
+    await mkdir(artifacts, { recursive: true })
+    await writeFile(
+      path.join(artifacts, `${tag}.json`),
+      JSON.stringify(
+        {
+          command: 'pnpm test quartz/util/triathlon-markdown.test.ts',
+          tag,
+          values,
+          markdown,
+          renderedCells: rows.slice(1),
+        },
+        null,
+        2,
+      ),
+    )
+  }
 })
 
 test('neutralizes authored text in generated training headings', () => {
