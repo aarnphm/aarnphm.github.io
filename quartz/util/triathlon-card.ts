@@ -11257,6 +11257,8 @@ export const activityShareData = (
     })
   if (d.sport === 'run') {
     const laps = runLapSplits(presentation, d)
+    const imperial = isImperial(presentation)
+    const nativeSplits = imperial ? d.runSplitsStandard : d.runSplitsMetric
     if (laps.length)
       charts.push({
         key: 'runLaps',
@@ -11264,12 +11266,27 @@ export const activityShareData = (
         title: triText(presentation.locale, 'lap splits'),
         axis: isImperial(presentation) ? '/mi' : '/km',
         note: '',
-        points: laps.map(lap => ({
-          x: lap.index,
-          y: lap.paceS,
-          label: `lap ${lap.index}`,
-          value: `${clock(lap.paceS)} ${isImperial(presentation) ? '/mi' : '/km'}`,
-        })),
+        points: laps.map(lap => {
+          const native = nativeSplits.find(
+            split => lap.range.id === `split:${imperial ? 'standard' : 'metric'}:${split.split}`,
+          )
+          const heartRate =
+            native?.averageHeartRate != null && native.averageHeartRate > 0
+              ? native.averageHeartRate
+              : null
+          return {
+            x: lap.index,
+            y: lap.paceS,
+            label: `lap ${lap.index}`,
+            value: `${clock(lap.paceS)} ${imperial ? '/mi' : '/km'}`,
+            split: {
+              distanceKm: lap.range.distanceKm,
+              elevationDifferenceM: native?.elevationDifferenceM ?? null,
+              heartRate,
+              heartRateSource: heartRate == null ? null : 'strava',
+            },
+          }
+        }),
       })
   }
   return {

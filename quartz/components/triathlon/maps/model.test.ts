@@ -10,6 +10,7 @@ import {
   heatWidthExpr,
   initialMapModel,
   lineFeatures,
+  metricRouteFC,
   pctRange,
   readOverviewMode,
   readRouteSport,
@@ -18,6 +19,7 @@ import {
   streetMetricWidthExpr,
   updateMap,
 } from './model'
+import { HEAT_RAMP } from './palette'
 
 const mapActivity = (id: number, sportType: string, mapRoute: StravaMapPoint[][]) => {
   const start = '2026-09-04T12:00:00Z'
@@ -184,4 +186,83 @@ test('map reducer rejects stale loads and resets route state', () => {
   assert.equal(reset.model.selectedRouteId, null)
   assert.equal(reset.model.analysisRange, null)
   assert.deepEqual(reset.effects, [{ type: 'draw-overview' }])
+})
+
+test('metricRouteFC renders solid fallback color for map previews and bucketed colors for full routes', () => {
+  const preview = mapActivity(10, 'Ride', [
+    [
+      { lat: 43.65, lng: -79.38, d: 0 },
+      { lat: 43.66, lng: -79.37, d: 0.5 },
+      { lat: 43.67, lng: -79.36, d: 1 },
+    ],
+  ])
+  const spec = {
+    pick: (pt: (typeof preview.route)[number]) => pt.w ?? 0,
+    ramp: HEAT_RAMP,
+    zeroGap: true,
+    valid: (pt: (typeof preview.route)[number]) => typeof pt.w === 'number' && pt.w > 0,
+  }
+  const featureColor = (feature: unknown): unknown =>
+    (feature as { properties?: { color?: unknown } } | undefined)?.properties?.color
+
+  const previewFc = metricRouteFC(preview, spec)
+  assert.equal(previewFc.features.length, 1)
+  assert.equal(featureColor(previewFc.features[0]), HEAT_RAMP[6])
+
+  const basePoint: (typeof preview.route)[number] = {
+    x: 0,
+    y: 0,
+    d: 0,
+    alt: 100,
+    w: 120,
+    hr: 140,
+    cad: 85,
+    stamina: null,
+    potentialStamina: null,
+    resp: null,
+    tempC: null,
+    heatStrainIndex: null,
+    heatStrainSource: null,
+    coreTemperatureC: null,
+    coreTemperatureSource: null,
+    skinTemperatureC: null,
+    skinTemperatureSource: null,
+    lat: 43.65,
+    lng: -79.38,
+    elapsedS: 0,
+    speedKph: 30,
+  }
+  const full = {
+    ...preview,
+    route: [
+      basePoint,
+      {
+        ...basePoint,
+        lat: 43.66,
+        lng: -79.37,
+        d: 0.5,
+        elapsedS: 60,
+        alt: 105,
+        hr: 150,
+        w: 220,
+        cad: 88,
+      },
+      {
+        ...basePoint,
+        lat: 43.67,
+        lng: -79.36,
+        d: 1,
+        elapsedS: 120,
+        alt: 110,
+        hr: 160,
+        w: 320,
+        cad: 90,
+      },
+    ],
+  }
+  const fullFc = metricRouteFC(full, spec)
+  assert.equal(fullFc.features.length, 2)
+  for (const feat of fullFc.features) {
+    assert.notEqual(featureColor(feat), 'rgba(0,0,0,0)')
+  }
 })

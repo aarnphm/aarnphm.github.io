@@ -284,9 +284,9 @@ const streetMetricWidthExpression = (casing: number): unknown[] => [
 export const streetMetricWidthExpr = streetMetricWidthExpression(0)
 export const streetMetricCasingWidthExpr = streetMetricWidthExpression(2.4)
 
-export const routeFC = (d: StravaActivityDetail): GeoFC => ({
+export const routeFC = (d: StravaActivityDetail, color?: string): GeoFC => ({
   type: 'FeatureCollection',
-  features: segmentFeatures(gpsSegments(d)),
+  features: segmentFeatures(gpsSegments(d), color ? { color } : {}),
 })
 
 export interface MapAnalysisRange extends ActivitySelectionSummary {
@@ -346,18 +346,28 @@ export const metricRouteFC = (
     valid?: (point: StravaActivityDetail['route'][number], index: number) => boolean
   },
 ): GeoFC => {
-  if (d.route.length === 0) return emptyFC()
+  const route = d.route
+  const routeLength = route.length
+  const fallbackColor = spec.ramp[6] ?? HEAT_RAMP[6]
+  if (routeLength === 0) return routeFC(d, fallbackColor)
   const pick = spec.pick
-  const vals = d.route.map((p, i) => pick(p, i))
-  const pool = vals.filter((value, index) =>
-    spec.valid && !spec.valid(d.route[index], index) ? false : !spec.zeroGap || value > 0,
-  )
+  const vals = new Float64Array(routeLength)
+  const validFlags = spec.valid ? new Uint8Array(routeLength) : null
   let lo = Infinity
   let hi = -Infinity
-  for (const v of pool.length ? pool : vals) {
-    if (v < lo) lo = v
-    if (v > hi) hi = v
+  let poolCount = 0
+  for (let i = 0; i < routeLength; i++) {
+    const p = route[i]
+    const v = pick(p, i)
+    vals[i] = v
+    const isValid = validFlags ? (validFlags[i] = spec.valid!(p, i) ? 1 : 0) === 1 : true
+    if (isValid && (!spec.zeroGap || v > 0)) {
+      poolCount++
+      if (v < lo) lo = v
+      if (v > hi) hi = v
+    }
   }
+  if (poolCount === 0) return routeFC(d, fallbackColor)
   const range = hi > lo ? hi - lo : 1
   const features: unknown[] = []
   for (const segment of gpsSegments(d)) {
@@ -375,9 +385,22 @@ export const metricRouteFC = (
     for (let index = 1; index < segment.length; index++) {
       const a = segment[index - 1]
       const b = segment[index]
-      const value = metricValueAtDistance(d, pick, (a.d + b.d) / 2)
-      const routeIndex = analysisRouteIndex(d.route, (a.d + b.d) / 2)
-      const valid = spec.valid?.(d.route[routeIndex], routeIndex) ?? true
+      const distanceKm = (a.d + b.d) * 0.5
+      const routeIndex = analysisRouteIndex(route, distanceKm)
+      const point = route[routeIndex]
+      let value = vals[routeIndex]
+      if (point) {
+        const otherIndex =
+          point.d <= distanceKm
+            ? Math.min(routeLength - 1, routeIndex + 1)
+            : Math.max(0, routeIndex - 1)
+        const other = route[otherIndex]
+        if (other && other.d !== point.d) {
+          const fraction = (distanceKm - point.d) / (other.d - point.d)
+          value = value + (vals[otherIndex] - value) * fraction
+        }
+      }
+      const valid = validFlags ? validFlags[routeIndex] === 1 : true
       const bucket = Math.min(6, Math.max(0, Math.floor(((value - lo) / range) * 7)))
       const color = !valid || (spec.zeroGap && value <= 0) ? 'rgba(0,0,0,0)' : spec.ramp[bucket]
       const start: GeoCoord = [a.lng, a.lat]

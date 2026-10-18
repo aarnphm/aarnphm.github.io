@@ -1,5 +1,6 @@
 import type { Analytics } from '../../../plugins/stores/analytics'
 import type { StravaActivityDetail } from '../../../plugins/stores/strava'
+import type { StravaDetailIndex } from '../../../util/strava-detail'
 import type { ActivityAnalysisRange } from '../activity/analysis'
 import type { TriathlonContext } from '../runtime/context'
 import { start } from '../../../functional'
@@ -8,7 +9,14 @@ import { buildAnalysisBar, dist } from '../../../util/triathlon-card'
 import { mapRoutePointAtDistance } from '../../../util/triathlon-map-route'
 import { applyMonochromeMapPalette } from '../../scripts/mapbox-client'
 import { createStreetMapMatcher, type StreetMapMatcher } from '../../scripts/triathlon-map-heat'
-import { detailContextFromPayload, type DetailPayload } from '../activity/data'
+import {
+  detailContextFromPayload,
+  parseActivityDetailFromShardMap,
+  readActivityDetailFromShard,
+  readDetailIndex,
+  warmActivityShard,
+  type DetailPayload,
+} from '../activity/data'
 import { metricSpecs, renderMapDetail } from '../activity/render'
 import { detailHead } from '../analytics/search'
 import { createDomFactory, el, setMath } from '../runtime/dom'
@@ -91,21 +99,128 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
   let data: Analytics | null = null
   let mapData: DetailPayload | null = null
   let detailData: DetailPayload | null = null
-  let detailPromise: Promise<DetailPayload | null> | null = null
+  const loadedDetails = new Map<string, StravaActivityDetail>()
+  const pendingActivityDetails = new Map<string, Promise<StravaActivityDetail | null>>()
+  const shardCache = new Map<string, Promise<Record<string, unknown> | null>>()
+  const resolvedShardCache = new Map<string, Record<string, unknown>>()
+  let detailIndexState: { baseUrl: string; index: StravaDetailIndex } | null = null
+  let detailIndexPromise: Promise<{ baseUrl: string; index: StravaDetailIndex } | null> | null =
+    null
   const activeDetails = (): DetailPayload | null => detailData ?? mapData
-  const ensureDetailData = (): Promise<DetailPayload | null> => {
-    if (detailData) return Promise.resolve(detailData)
-    if (detailPromise) return detailPromise
+  const fullActivityDetail = (id: string): StravaActivityDetail | null => {
+    const fromFull = detailData?.details?.[id]
+    if (fromFull) return fromFull
+    const cached = loadedDetails.get(id)
+    if (cached) return cached
+    for (const shardDetails of resolvedShardCache.values()) {
+      if (!(id in shardDetails)) continue
+      const parsed = parseActivityDetailFromShardMap(shardDetails, id)
+      if (parsed) {
+        loadedDetails.set(id, parsed)
+        if (mapData) mapData.details[id] = parsed
+        return parsed
+      }
+    }
+    return null
+  }
+  const ensureDetailIndex = (): Promise<{ baseUrl: string; index: StravaDetailIndex } | null> => {
+    if (detailIndexState) return Promise.resolve(detailIndexState)
+    if (detailIndexPromise) return detailIndexPromise
     const detailPath = root.dataset.detailPath
     if (!detailPath) return Promise.resolve(null)
-    detailPromise = context.resources.detail.load(detailPath).then(result => {
-      detailPromise = null
-      if (!live || context.signal.aborted || result.status !== 'ready') return null
-      detailData = result.value
-      if (!mapData) overview.clear()
-      return detailData
+    detailIndexPromise = readDetailIndex(
+      new URL(detailPath, window.location.href).toString(),
+      context.signal,
+    ).then(result => {
+      detailIndexPromise = null
+      if (!live || context.signal.aborted || !result) return null
+      detailIndexState = result
+      if (mapData) {
+        const { index } = result
+        mapData.zones = index.zones ?? mapData.zones
+        mapData.powerCurveRef = index.powerCurveRef
+        mapData.powerCurveYearRef = index.powerCurveYearRef
+        mapData.runPowerCurveRef = index.runPowerCurveRef
+        mapData.runPowerCurveYearRef = index.runPowerCurveYearRef
+        mapData.powerCurveYear = index.powerCurveYear ?? mapData.powerCurveYear
+        mapData.criticalPower = index.criticalPower ?? mapData.criticalPower
+        mapData.criticalPowerYear = index.criticalPowerYear ?? mapData.criticalPowerYear
+        mapData.ftp = index.ftp ?? mapData.ftp
+        mapData.goalFtp = index.goalFtp ?? mapData.goalFtp
+        mapData.vt1Hr = index.vt1Hr ?? mapData.vt1Hr
+      }
+      return result
     })
-    return detailPromise
+    return detailIndexPromise
+  }
+  const ensureActivityDetail = (id: string): Promise<StravaActivityDetail | null> => {
+    const existing = fullActivityDetail(id)
+    if (existing) return Promise.resolve(existing)
+    const inflight = pendingActivityDetails.get(id)
+    if (inflight) return inflight
+    const detailPath = root.dataset.detailPath
+    if (!detailPath) return Promise.resolve(null)
+    const baseUrl =
+      detailIndexState?.baseUrl ?? new URL(detailPath, window.location.href).toString()
+    const recordLoaded = (loaded: StravaActivityDetail | null): StravaActivityDetail | null => {
+      if (!live || context.signal.aborted || !loaded) return null
+      loadedDetails.set(id, loaded)
+      if (mapData) mapData.details[id] = loaded
+      return loaded
+    }
+    const load = (async (): Promise<StravaActivityDetail | null> => {
+      const knownShard = mapData?.shardById?.[id]
+      if (knownShard) {
+        const direct = await readActivityDetailFromShard(
+          new URL(knownShard, baseUrl).toString(),
+          id,
+          context.signal,
+          shardCache,
+          resolvedShardCache,
+        )
+        if (direct) return recordLoaded(direct)
+      }
+      const month = mapData?.details?.[id]?.date?.slice(0, 7)
+      if (month && /^\d{4}-\d{2}$/.test(month)) {
+        const primaryShard = `strava-detail/${month}.json`
+        if (primaryShard !== knownShard) {
+          const fromMonth = await readActivityDetailFromShard(
+            new URL(primaryShard, baseUrl).toString(),
+            id,
+            context.signal,
+            shardCache,
+            resolvedShardCache,
+          )
+          if (fromMonth) return recordLoaded(fromMonth)
+        }
+      }
+      const indexResult = await ensureDetailIndex()
+      if (!indexResult) return null
+      const candidates =
+        month && /^\d{4}-\d{2}$/.test(month)
+          ? [
+              ...indexResult.index.shards.filter(path => path.startsWith(`strava-detail/${month}`)),
+              ...indexResult.index.shards.filter(
+                path => !path.startsWith(`strava-detail/${month}`),
+              ),
+            ]
+          : indexResult.index.shards
+      for (const shardPath of candidates) {
+        const found = await readActivityDetailFromShard(
+          new URL(shardPath, indexResult.baseUrl).toString(),
+          id,
+          context.signal,
+          shardCache,
+          resolvedShardCache,
+        )
+        if (found) return recordLoaded(found)
+      }
+      return null
+    })().finally(() => {
+      pendingActivityDetails.delete(id)
+    })
+    pendingActivityDetails.set(id, load)
+    return load
   }
   const canvas = root.querySelector<HTMLElement>('.tri-map-canvas')
   const overlay = root.querySelector<HTMLElement>('.tri-map-overlay')
@@ -228,10 +343,15 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
     const recolor = (d: StravaActivityDetail, i: number) => {
       const current = readyMap()
       if (!current) return
+      if (d.route.length === 0) {
+        current.getSource('tri-sel')?.setData(routeFC(d, HEAT_RAMP[6]))
+        return
+      }
       const spec = metricSpecs(context.presentation, d, detailContextFromPayload(activeDetails()))[
         i
       ]
       if (spec) current.getSource('tri-sel')?.setData(metricRouteFC(d, spec))
+      else current.getSource('tri-sel')?.setData(routeFC(d, HEAT_RAMP[6]))
     }
     const addSource = (id: string, source: Record<string, unknown>) => {
       const current = map
@@ -245,17 +365,17 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
     }
     const drawStreetMap = () => {
       const current = readyMap()
-      if (!current || !activeDetails()) return
+      if (!current || !activeDetails() || selection) return
       const features = computeStreetFeatures(current)
       if (features) current.getSource('tri-heat')?.setData(features)
     }
     const scheduleStreetMap = () => {
       const current = readyMap()
-      if (!current) return
+      if (!current || selection) return
       if (activeDetails()) drawStreetMap()
       const sequence = ++streetSequence
       current.once('idle', () => {
-        if (sequence === streetSequence) drawStreetMap()
+        if (sequence === streetSequence && !selection) drawStreetMap()
       })
     }
     const onTraceMove = (e: MapboxLayerEvent) => {
@@ -273,6 +393,7 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
         current.getSource('tri-hov')?.setData(routeFC(d))
         if (tip)
           tip.textContent = `${d.name || d.sport} · ${context.formatter.shortDate(d.date)} · ${dist(context.presentation, d.distanceKm, d.sport)}`
+        void ensureActivityDetail(key)
       }
       if (tip) {
         tip.classList.add('tri-map-tip--on')
@@ -534,10 +655,17 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
         })
       }
     }
-    const select = (d: StravaActivityDetail, i: number, fit = true) => {
+    const select = (
+      d: StravaActivityDetail,
+      i: number,
+      fit = true,
+      duration = 0,
+      resizeFirst = false,
+    ) => {
       selection = { d, i }
       const current = readyMap()
       if (!current) return
+      if (resizeFirst) current.resize()
       const range = program.retrieve().analysisRange
       clearHover()
       current.getSource('tri-traces')?.setData(emptyFC())
@@ -545,7 +673,7 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
       recolor(d, i)
       current.setPaintProperty('tri-heat', 'line-opacity', 0.06)
       current.setPaintProperty('tri-heat-casing', 'line-opacity', 0)
-      if (fit) fitSelection(d, range, 600)
+      if (fit) fitSelection(d, range, duration)
     }
     const selectRange = (d: StravaActivityDetail, range: MapAnalysisRange | null, fit: boolean) => {
       readyMap()
@@ -613,24 +741,16 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
     if (status === 'idle' || status === 'failed') program.dispatch({ type: 'load' })
   }
   let detailCleanup: (() => void) | null = null
-  let detailLayoutFrame = 0
-  let detailSelectionFrame = 0
-  const cancelDetailFrames = () => {
-    window.cancelAnimationFrame(detailLayoutFrame)
-    window.cancelAnimationFrame(detailSelectionFrame)
-    detailLayoutFrame = 0
-    detailSelectionFrame = 0
-  }
   const finishCloseDetail = () => {
-    cancelDetailFrames()
     detailCleanup?.()
     detailCleanup = null
     panel.classList.remove('tri-map--detail')
     detail?.setAttribute('aria-hidden', 'true')
     detail?.replaceChildren()
     selectionOverlay?.replaceChildren()
+    selectionOverlay?.setAttribute('aria-hidden', 'true')
+    mapCtl.resize()
     program.dispatch({ type: 'clear-route' })
-    requestAnimationFrame(() => mapCtl.resize())
   }
   const detailTransition = createMapDetailTransition({
     detail,
@@ -659,20 +779,18 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
     void button
     return selection
   }
-  const renderRoute = (id: string, initialMetric = 0, selectMap = true) => {
+  const renderRoute = (id: string, initialMetric = 0, selectMap = true, fitMap = selectMap) => {
     if (!detail) return
-    const d = detailData?.details?.[id]
+    const full = fullActivityDetail(id)
+    const d = full ?? mapData?.details?.[id]
     if (!d) {
-      const preview = mapData?.details?.[id]
-      if (preview && selectMap && mapCtl.ok()) mapCtl.select(preview, initialMetric, true)
-      void ensureDetailData().then(loaded => {
-        if (loaded?.details?.[id] && program.retrieve().selectedRouteId === id) {
-          renderRoute(id, program.retrieve().metric, selectMap)
+      void ensureActivityDetail(id).then(loaded => {
+        if (loaded && program.retrieve().selectedRouteId === id) {
+          renderRoute(id, program.retrieve().metric, selectMap, fitMap)
         }
       })
       return
     }
-    cancelDetailFrames()
     detailTransition.cancel()
     detailCleanup?.()
     detailCleanup = null
@@ -684,15 +802,15 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
     )
     card.appendChild(head)
     const mapMode = mapCtl.ok()
-    const analysisNode = mapMode ? buildAnalysisBar(domF, d) : null
+    const analysisNode = mapMode && full ? buildAnalysisBar(domF, d) : null
     const analysis =
       analysisNode instanceof HTMLElement && analysisNode.querySelector('[data-analysis-range]')
         ? analysisNode
         : null
     selectionOverlay?.replaceChildren(...(analysis ? [analysis] : []))
-    selectionOverlay?.setAttribute('aria-hidden', 'true')
+    selectionOverlay?.setAttribute('aria-hidden', analysis ? 'false' : 'true')
     const routeView = renderMapDetail(context.presentation, d, {
-      detailContext: detailContextFromPayload(detailData),
+      detailContext: detailContextFromPayload(activeDetails()),
       mapMode,
       initialMetric,
       onMetric: metric => {
@@ -714,33 +832,62 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
         : undefined,
     })
     card.appendChild(routeView.element)
-    detail.replaceChildren(card)
-    detail.setAttribute('aria-hidden', 'false')
-    detailCleanup = routeView.mount()
+    const enteringDetail = !panel.classList.contains('tri-map--detail')
     panel.classList.add('tri-map--detail')
     panel.classList.remove('tri-map--searching')
     results?.setAttribute('aria-hidden', 'true')
+    detail.replaceChildren(card)
+    detail.setAttribute('aria-hidden', 'false')
     back.addEventListener('click', () => closeDetail(true), { once: true })
     if (mapMode) {
-      detailLayoutFrame = window.requestAnimationFrame(() => {
-        detailLayoutFrame = 0
-        if (program.retrieve().selectedRouteId !== id) return
-        if (analysis) selectionOverlay?.setAttribute('aria-hidden', 'false')
+      if (selectMap) {
+        mapCtl.select(d, initialMetric, fitMap, 0, enteringDetail)
+      } else if (enteringDetail) {
         mapCtl.resize()
-        if (!selectMap) return
-        detailSelectionFrame = window.requestAnimationFrame(() => {
-          detailSelectionFrame = 0
-          if (program.retrieve().selectedRouteId === id) mapCtl.select(d, initialMetric)
-        })
-      })
+      }
     } else {
       body?.scrollTo({ top: 0 })
     }
+    detailCleanup = routeView.mount()
+    if (!full) {
+      void Promise.all([ensureActivityDetail(id), ensureDetailIndex()]).then(([loaded]) => {
+        if (loaded && program.retrieve().selectedRouteId === id) {
+          renderRoute(id, program.retrieve().metric, true, Boolean(loaded.analysisRanges?.length))
+        }
+      })
+    } else if (!detailIndexState && d.sport === 'bike' && d.deviceWatts) {
+      void ensureDetailIndex().then(indexResult => {
+        if (indexResult && program.retrieve().selectedRouteId === id) {
+          renderRoute(id, program.retrieve().metric, false, false)
+        }
+      })
+    }
+  }
+  let detailWarmTimer = 0
+  const scheduleDetailWarmup = () => {
+    if (detailWarmTimer || detailIndexState) return
+    detailWarmTimer = window.setTimeout(() => {
+      detailWarmTimer = 0
+      if (!live || context.signal.aborted) return
+      void ensureDetailIndex().then(res => {
+        if (!live || context.signal.aborted || !res) return
+        const latestShard = res.index.shards[0]
+        if (latestShard) {
+          void warmActivityShard(
+            new URL(latestShard, res.baseUrl).toString(),
+            context.signal,
+            shardCache,
+            resolvedShardCache,
+          )
+        }
+      })
+    }, 150)
   }
   const startMap = () =>
     void mapCtl.init().then(() => {
       mapCtl.resize()
       mapCtl.drawOverview()
+      scheduleDetailWarmup()
     })
   const open = () => {
     const wasReady =
@@ -852,6 +999,9 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
     detailsReady: () => program.retrieve().status === 'ready',
     setSports: sports => program.dispatch({ type: 'set-sports', sports }),
     selectRoute: id => program.dispatch({ type: 'select-route', id }),
+    prefetchRoute: id => {
+      void ensureActivityDetail(id)
+    },
   })
   const program = start({
     init: () => ({ model: initialMapModel(readTriMapStyle()), effects: [] }),
@@ -971,6 +1121,7 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
   return () => {
     live = false
     if (warmupTimer) window.clearTimeout(warmupTimer)
+    if (detailWarmTimer) window.clearTimeout(detailWarmTimer)
     btn?.removeEventListener('click', open)
     closeBtn?.removeEventListener('click', close)
     title?.removeEventListener('click', toMain)
@@ -993,7 +1144,6 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
     program.stop()
     mapCtl.dispose()
     detailTransition.cancel()
-    cancelDetailFrames()
     detailCleanup?.()
     detailCleanup = null
   }

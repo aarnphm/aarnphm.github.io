@@ -22,6 +22,7 @@ export const createMapSearchController = ({
   detailsReady,
   setSports,
   selectRoute,
+  prefetchRoute,
 }: {
   context: TriathlonContext
   panel: HTMLElement
@@ -32,11 +33,16 @@ export const createMapSearchController = ({
   detailsReady: () => boolean
   setSports: (sports: ReadonlySet<ActivityKind>) => void
   selectRoute: (id: string) => void
+  prefetchRoute?: (id: string) => void
 }): MapSearchController => {
   let selectedIndex = -1
   const resultItems = (): HTMLElement[] => activityResultItems(results)
   const setSelection = (index: number): void => {
     selectedIndex = setActivityResultSelection(results, index)
+    const items = resultItems()
+    const id =
+      items[selectedIndex]?.dataset.id ?? items.find(item => Boolean(item.dataset.id))?.dataset.id
+    if (id) prefetchRoute?.(id)
   }
   const run = (): void => {
     if (!search || !results) return
@@ -81,6 +87,11 @@ export const createMapSearchController = ({
         : undefined,
     )
   }
+  const onResultsPointerOver = (event: PointerEvent): void => {
+    const item =
+      event.target instanceof Element ? event.target.closest<HTMLElement>('.tri-ana-ritem') : null
+    if (item?.dataset.id) prefetchRoute?.(item.dataset.id)
+  }
   const onSearchKey = (event: KeyboardEvent): void => {
     if (!panel.classList.contains('tri-map--searching')) return
     if (event.key === 'ArrowDown' || (event.ctrlKey && (event.key === 'n' || event.key === 'N'))) {
@@ -111,6 +122,7 @@ export const createMapSearchController = ({
   search?.addEventListener('focus', run)
   search?.addEventListener('keydown', onSearchKey)
   results?.addEventListener('click', onResultsClick)
+  results?.addEventListener('pointerover', onResultsPointerOver)
   return {
     clear,
     run,
@@ -119,6 +131,7 @@ export const createMapSearchController = ({
       search?.removeEventListener('focus', run)
       search?.removeEventListener('keydown', onSearchKey)
       results?.removeEventListener('click', onResultsClick)
+      results?.removeEventListener('pointerover', onResultsPointerOver)
     },
   }
 }

@@ -59,7 +59,7 @@ export const setupPowerCurveTicks = (root: ParentNode): (() => void) => {
       })
       const visiblePositions = new Set(
         ticks
-          .filter(tick => tick.getBoundingClientRect().width > 0)
+          .filter(tick => !tick.hidden)
           .map(tick => Number.parseFloat(tick.style.left).toFixed(2)),
       )
       for (const line of lines)
