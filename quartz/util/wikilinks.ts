@@ -1,15 +1,5 @@
-import type { Root } from 'mdast'
-import type { Node } from 'unist'
 import isAbsoluteUrl from 'is-absolute-url'
-import { fromMarkdown } from 'mdast-util-from-markdown'
-import { visit } from 'unist-util-visit'
-import {
-  Wikilink,
-  WikilinkData,
-  isWikilink,
-  wikilink,
-  wikilinkFromMarkdown,
-} from '../extensions/micromark-extension-ofm-wikilinks'
+import type { Wikilink, WikilinkData } from '../extensions/micromark-extension-ofm-wikilinks'
 import {
   FilePath,
   FullSlug,
@@ -29,48 +19,399 @@ export interface WikilinkRange {
   end: number
 }
 
+const PARSE_WIKILINK_CACHE_MAX = 4096
+const parseWikilinkCache = new Map<string, WikilinkData | null>()
+
+const unescapeMarkdownString = (str: string): string =>
+  str.replace(/\\([!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~])/g, '$1')
+
+function parseMetadata(raw: string): Record<string, unknown> | undefined {
+  try {
+    return JSON.parse(`{${raw}}`) as Record<string, unknown>
+  } catch {
+    try {
+      const normalized = raw
+        .replace(/(\w+):/g, '"$1":')
+        .replace(/'/g, '"')
+        .replace(/,\s*([}\]])/g, '$1')
+      return JSON.parse(`{${normalized}}`) as Record<string, unknown>
+    } catch {
+      return undefined
+    }
+  }
+}
+
+function applyAnchorSegment(data: WikilinkData, rawChunk: string): void {
+  let anchorText = unescapeMarkdownString(rawChunk)
+  if (anchorText.endsWith('\\')) {
+    anchorText = anchorText.slice(0, -1)
+  }
+  const isBlockRef = anchorText.startsWith('^')
+  let cleanAnchor = isBlockRef ? anchorText.slice(1) : anchorText
+  if (isBlockRef || data.anchorIsBlockRef) {
+    data.anchorIsBlockRef = true
+  }
+  const segments = data.anchorSegments ?? []
+  segments.push(cleanAnchor)
+  data.anchorSegments = segments
+
+  if (cleanAnchor.includes('/') && cleanAnchor.includes(' ')) {
+    const lastSlash = cleanAnchor.lastIndexOf('/')
+    const afterSlash = cleanAnchor.substring(lastSlash + 1)
+    const spaceIndex = afterSlash.indexOf(' ')
+    if (spaceIndex >= 0) {
+      const headingText = afterSlash.substring(spaceIndex + 1).trim()
+      if (headingText) {
+        cleanAnchor = headingText
+      }
+    }
+  }
+
+  cleanAnchor = cleanAnchor
+    .replace(/\$([^$]+)\$/g, (_, content: string) => content.trim())
+    .replace(/\s+/g, ' ')
+    .trim()
+
+  data.anchorText = cleanAnchor
+  const slugifiedAnchor = slugAnchor(cleanAnchor)
+  const blockPrefix = data.anchorIsBlockRef ? '^' : ''
+  data.anchor = `#${blockPrefix}${slugifiedAnchor}`
+}
+
+function isEscapedAt(text: string, index: number): boolean {
+  let backslashes = 0
+  for (let i = index - 1; i >= 0 && text.charCodeAt(i) === 92; i--) {
+    backslashes++
+  }
+  return (backslashes & 1) === 1
+}
+
+function tryParseWikilinkAt(text: string, start: number): WikilinkRange | null {
+  const len = text.length
+  let pos = start
+  let embed = false
+  if (text[pos] === '!') {
+    if (text[pos + 1] !== '[' || text[pos + 2] !== '[') return null
+    embed = true
+    pos += 3
+  } else if (text[pos] === '[' && text[pos + 1] === '[') {
+    pos += 2
+  } else {
+    return null
+  }
+
+  const data: WikilinkData = { raw: '', target: '', embed }
+
+  if (pos >= len) return null
+  let ch = text[pos]
+  if (ch === '\n' || ch === '\r') return null
+
+  let phase: 'anchorMarker' | 'anchorStart' | 'metadataStart' | 'aliasMarker' | 'close' = 'close'
+  if (ch === '#') {
+    phase = 'anchorMarker'
+  } else if (ch === '|') {
+    phase = 'aliasMarker'
+  } else if (ch === ']') {
+    phase = 'close'
+  } else {
+    const targetStartPos = pos
+    let prevBackslash = false
+    let transitioned = false
+    while (pos < len) {
+      ch = text[pos]
+      if (ch === '\n' || ch === '\r') return null
+      if (ch === '\\' && !prevBackslash) {
+        prevBackslash = true
+        pos++
+        continue
+      }
+      if (ch === '#' && !prevBackslash) {
+        let t = unescapeMarkdownString(text.slice(targetStartPos, pos))
+        if (t.endsWith('\\')) t = t.slice(0, -1)
+        data.target = t
+        phase = 'anchorMarker'
+        transitioned = true
+        break
+      }
+      if (ch === '|') {
+        let t = unescapeMarkdownString(text.slice(targetStartPos, pos))
+        if (t.endsWith('\\')) t = t.slice(0, -1)
+        data.target = t
+        phase = 'aliasMarker'
+        transitioned = true
+        break
+      }
+      if (ch === ']' && !prevBackslash) {
+        let t = unescapeMarkdownString(text.slice(targetStartPos, pos))
+        if (t.endsWith('\\')) t = t.slice(0, -1)
+        data.target = t
+        phase = 'close'
+        transitioned = true
+        break
+      }
+      prevBackslash = false
+      pos++
+    }
+    if (!transitioned) return null
+  }
+
+  if (phase === 'anchorMarker') {
+    pos++
+    if (pos >= len) return null
+    if (text[pos] === '{') {
+      pos++
+      phase = 'metadataStart'
+    } else {
+      phase = 'anchorStart'
+    }
+  }
+
+  while (phase === 'anchorStart') {
+    if (pos >= len) return null
+    ch = text[pos]
+    if (ch === '\n' || ch === '\r') return null
+    if (ch === '|') {
+      phase = 'aliasMarker'
+      break
+    }
+    if (ch === ']') {
+      phase = 'close'
+      break
+    }
+    let segStart = pos
+    let prevBackslash = false
+    let transitioned = false
+    while (pos < len) {
+      ch = text[pos]
+      if (ch === '\n' || ch === '\r') return null
+      if (ch === '\\' && !prevBackslash) {
+        prevBackslash = true
+        pos++
+        continue
+      }
+      if (ch === '#' && !prevBackslash) {
+        applyAnchorSegment(data, text.slice(segStart, pos))
+        pos++
+        while (pos < len && text[pos] === '#') pos++
+        if (pos >= len || text[pos] === '\n' || text[pos] === '\r') return null
+        if (text[pos] === '{') {
+          pos++
+          phase = 'metadataStart'
+          transitioned = true
+          break
+        }
+        segStart = pos
+        prevBackslash = false
+        continue
+      }
+      if (ch === '|') {
+        applyAnchorSegment(data, text.slice(segStart, pos))
+        phase = 'aliasMarker'
+        transitioned = true
+        break
+      }
+      if (ch === ']' && !prevBackslash) {
+        applyAnchorSegment(data, text.slice(segStart, pos))
+        phase = 'close'
+        transitioned = true
+        break
+      }
+      prevBackslash = false
+      pos++
+    }
+    if (!transitioned) return null
+  }
+
+  if (phase === 'metadataStart') {
+    if (pos >= len) return null
+    ch = text[pos]
+    if (ch === '\n' || ch === '\r') return null
+    if (ch === '}') {
+      pos++
+      if (pos >= len) return null
+      if (text[pos] === '|') phase = 'aliasMarker'
+      else if (text[pos] === ']') phase = 'close'
+      else return null
+    } else if (ch === '|') {
+      phase = 'aliasMarker'
+    } else if (ch === ']') {
+      phase = 'close'
+    } else {
+      const metaStart = pos
+      let depth = 1
+      let prevBackslash = false
+      let closed = false
+      while (pos < len) {
+        ch = text[pos]
+        if (ch === '\n' || ch === '\r') return null
+        if (ch === '\\' && !prevBackslash) {
+          prevBackslash = true
+          pos++
+          continue
+        }
+        if (ch === '{' && !prevBackslash) {
+          depth++
+          prevBackslash = false
+          pos++
+          continue
+        }
+        if (ch === '}' && !prevBackslash) {
+          depth--
+          if (depth === 0) {
+            const metaContent = unescapeMarkdownString(text.slice(metaStart, pos))
+            data.metadata = `{${metaContent}}`
+            data.metadataParsed = parseMetadata(metaContent)
+            pos++
+            if (pos >= len) return null
+            if (text[pos] === '|') phase = 'aliasMarker'
+            else if (text[pos] === ']') phase = 'close'
+            else return null
+            closed = true
+            break
+          }
+          prevBackslash = false
+          pos++
+          continue
+        }
+        prevBackslash = false
+        pos++
+      }
+      if (!closed) return null
+    }
+  }
+
+  if (phase === 'aliasMarker') {
+    pos++
+    if (pos >= len) return null
+    ch = text[pos]
+    if (ch === '\n' || ch === '\r') return null
+    if (ch === ']') {
+      phase = 'close'
+    } else {
+      const aliasStartPos = pos
+      let prevBackslash = false
+      let closed = false
+      while (pos < len) {
+        ch = text[pos]
+        if (ch === '\n' || ch === '\r') return null
+        if (ch === '\\' && !prevBackslash) {
+          prevBackslash = true
+          pos++
+          continue
+        }
+        if (ch === ']' && !prevBackslash) {
+          data.alias = unescapeMarkdownString(text.slice(aliasStartPos, pos))
+          phase = 'close'
+          closed = true
+          break
+        }
+        prevBackslash = false
+        pos++
+      }
+      if (!closed) return null
+    }
+  }
+
+  if (phase !== 'close' || text[pos] !== ']' || text[pos + 1] !== ']') {
+    return null
+  }
+
+  const end = pos + 2
+  data.raw = text.slice(start, end)
+
+  const targetPath = data.target.trim()
+  const ext = getFileExtension(targetPath as FilePath) ?? ''
+  const displayAnchor = data.anchor?.trim() ?? ''
+  if (ext === '.base' && displayAnchor && !displayAnchor.startsWith('#^')) {
+    const anchorText = data.anchorText?.trim()
+    const viewSegment = sluggify(
+      anchorText && anchorText.length > 0 ? anchorText : displayAnchor.replace(/^#/, ''),
+    )
+    if (viewSegment.length > 0 && !data.alias && anchorText) {
+      data.alias = anchorText
+    }
+  }
+
+  return { wikilink: data, start, end }
+}
+
 export function parseWikilink(raw: string): WikilinkData | null {
   const trimmed = raw.trim()
-  if (!trimmed) {
+  if (
+    !trimmed ||
+    (!trimmed.startsWith('[[') && !trimmed.startsWith('![[')) ||
+    !trimmed.endsWith(']]')
+  ) {
     return null
   }
 
-  const ranges = extractWikilinksWithPositions(trimmed)
-  if (ranges.length !== 1) {
-    return null
+  const cached = parseWikilinkCache.get(trimmed)
+  if (cached !== undefined) {
+    return cached
   }
 
-  const [range] = ranges
-  if (range.start !== 0 || range.end !== trimmed.length) {
-    return null
-  }
+  const parsed = tryParseWikilinkAt(trimmed, 0)
+  const result =
+    parsed && parsed.start === 0 && parsed.end === trimmed.length ? parsed.wikilink : null
 
-  return range.wikilink
+  if (parseWikilinkCache.size >= PARSE_WIKILINK_CACHE_MAX) {
+    const oldestKey = parseWikilinkCache.keys().next().value
+    if (oldestKey !== undefined) {
+      parseWikilinkCache.delete(oldestKey)
+    }
+  }
+  parseWikilinkCache.set(trimmed, result)
+  return result
 }
+
+const EXTRACT_WIKILINKS_CACHE_MAX = 4096
+const extractWikilinksCache = new Map<string, WikilinkRange[]>()
 
 export function extractWikilinksWithPositions(text: string): WikilinkRange[] {
   if (!text || !text.includes('[[')) {
     return []
   }
 
-  const tree: Root = fromMarkdown(text, {
-    extensions: [wikilink()],
-    mdastExtensions: [wikilinkFromMarkdown({ hasSlug: () => false })],
-  })
+  const canCache = text.length <= 256
+  if (canCache) {
+    const cached = extractWikilinksCache.get(text)
+    if (cached !== undefined) {
+      return cached
+    }
+  }
 
   const ranges: WikilinkRange[] = []
+  let i = 0
+  const len = text.length
+  while (i < len) {
+    const nextBracket = text.indexOf('[[', i)
+    if (nextBracket === -1) break
+    if (isEscapedAt(text, nextBracket)) {
+      i = nextBracket + 1
+      continue
+    }
+    const hasBang =
+      nextBracket > 0 && text[nextBracket - 1] === '!' && !isEscapedAt(text, nextBracket - 1)
+    const start = hasBang ? nextBracket - 1 : nextBracket
+    const parsed = tryParseWikilinkAt(text, start)
+    if (parsed) {
+      ranges.push(parsed)
+      i = parsed.end
+    } else {
+      i = nextBracket + 1
+    }
+  }
 
-  visit(tree, (node: Node) => {
-    if (!isWikilink(node)) return
-    const data = node.data?.wikilink
-    if (!data) return
-    const start = node.position?.start?.offset
-    const end = node.position?.end?.offset
-    if (typeof start !== 'number' || typeof end !== 'number') return
-    ranges.push({ wikilink: data, start, end })
-  })
+  if (canCache) {
+    if (extractWikilinksCache.size >= EXTRACT_WIKILINKS_CACHE_MAX) {
+      const oldestKey = extractWikilinksCache.keys().next().value
+      if (oldestKey !== undefined) {
+        extractWikilinksCache.delete(oldestKey)
+      }
+    }
+    extractWikilinksCache.set(text, ranges)
+  }
 
-  ranges.sort((a, b) => a.start - b.start)
   return ranges
 }
 
