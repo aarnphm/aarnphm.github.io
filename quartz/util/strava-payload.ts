@@ -51,7 +51,7 @@ import {
   type StravaPayload,
   type StravaRawCache,
 } from '../plugins/stores/strava'
-import { parseWahooCache, type WahooCache } from '../plugins/stores/wahoo'
+import { parseWahooCache, type WahooCache, type WahooData } from '../plugins/stores/wahoo'
 import { parseWeatherCache, type WeatherCache } from '../plugins/stores/weather'
 import { matchAppleRun } from './apple-run-match'
 import { matchAppleSwims, matchAppleSwimTelemetry } from './apple-swim-match'
@@ -959,6 +959,7 @@ export interface LoadedStravaData {
   analytics: Analytics
   trackedCache: StravaRawCache | null
   sources: StravaDataSources
+  wahooActivities: WahooData['activities']
   generatedAt: number
 }
 
@@ -1160,5 +1161,12 @@ export function buildStravaData(
     ...payload,
     dailyAnalytics: buildTriathlonDailyAnalytics(analytics, ouraDetails, payload.details),
   }
-  return { payload: loaded, analytics, trackedCache, sources, generatedAt }
+  return {
+    payload: loaded,
+    analytics,
+    trackedCache,
+    sources,
+    wahooActivities: wahoo?.activities ?? {},
+    generatedAt,
+  }
 }

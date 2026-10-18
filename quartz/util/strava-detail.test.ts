@@ -28,6 +28,11 @@ test('serializes independently valid monthly JSON shards under the byte limit', 
     'strava-detail/2026-08-2.json',
     'strava-detail/2026-07.json',
   ])
+  assert.deepEqual(serialized.shardById, {
+    '1': 'strava-detail/2026-08.json',
+    '2': 'strava-detail/2026-08-2.json',
+    '3': 'strava-detail/2026-07.json',
+  })
   assert.equal(manifest.ftp, 250)
 
   const reconstructed: Record<string, TestDetail> = {}

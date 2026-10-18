@@ -4929,7 +4929,7 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 .tri-pace-note {
   margin: 0;
   color: var(--darkgray);
-  font-size: 0.58rem;
+  font-size: var(--text-meta);
   line-height: 1.5;
 }
 
@@ -4945,19 +4945,22 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   }
 }
 
+// A readout table: one mono family at meta size, a single rule under the header, and the row
+// hover as the only fill.
 .tri-pace-table {
   width: 100%;
   min-width: 44rem;
   margin: 0;
   border-collapse: collapse;
-  font-size: 0.66rem;
+  font-family: var(--codeFont);
+  font-size: var(--text-meta);
+  font-variant-numeric: tabular-nums;
   line-height: 1.5;
   color: var(--dark);
 
   caption {
     padding: 0 0 var(--space-2);
     color: var(--dark);
-    font-size: 0.58rem;
     text-align: left;
   }
 
@@ -4966,6 +4969,7 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
     padding: var(--space-2) var(--space-3);
     border-bottom: 1px solid color-mix(in srgb, var(--gray) 22%, transparent);
     text-align: right;
+    vertical-align: middle;
     white-space: nowrap;
     font-weight: 400;
 
@@ -4974,14 +4978,22 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
     }
   }
 
-  thead th {
-    font-size: 0.58rem;
-    color: var(--darkgray);
-    background: color-mix(in srgb, var(--lightgray) 28%, var(--light));
+  // Base styles set thead in the header font; the labels belong to the readout.
+  thead {
+    font-family: var(--codeFont);
   }
 
+  thead th {
+    color: var(--darkgray);
+    border-bottom-color: var(--gray);
+  }
+
+  // The unit toggle sits in a header cell: centre its label like the plain labels beside it.
   .tri-pace-unit {
+    display: inline-flex;
+    align-items: center;
     min-height: 1.5rem;
+    vertical-align: middle;
     color: var(--darkgray);
 
     &:focus-visible {
@@ -4991,14 +5003,19 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   }
 
   .tri-pace-spd {
+    position: relative;
     color: var(--darkgray);
   }
 
-  .tri-pace-split {
-    background: color-mix(in srgb, var(--lightgray) 12%, transparent);
+  // The reference tag hangs past the number so the mph digits keep one right edge.
+  .tri-pace-ref {
+    position: absolute;
+    inset-inline-start: 100%;
+    margin-inline-start: 0.4em;
+    font-size: inherit;
   }
 
-  @media (hover: hover) {
+  @media (hover: hover) and (pointer: fine) {
     tbody tr:hover {
       background: color-mix(in srgb, var(--tri-accent) 6%, var(--light));
     }

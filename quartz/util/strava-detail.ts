@@ -37,9 +37,10 @@ export type StravaDetailPayload<TDetail extends { date: string } = StravaActivit
   vt1Hr?: number | null
   matchedRuns?: MatchedRunsBlock
   matchedRides?: MatchedRidesBlock
+  shardById?: Record<string, string>
 }
 
-export type StravaDetailIndex = Omit<StravaDetailPayload, 'details'> & {
+export type StravaDetailIndex = Omit<StravaDetailPayload, 'details' | 'shardById'> & {
   kind: typeof STRAVA_DETAIL_INDEX_KIND
   shards: string[]
 }
@@ -55,7 +56,11 @@ export type SerializedStravaDetailShard = {
   bytes: number
 }
 
-export type SerializedStravaDetails = { manifest: string; shards: SerializedStravaDetailShard[] }
+export type SerializedStravaDetails = {
+  manifest: string
+  shards: SerializedStravaDetailShard[]
+  shardById: Record<string, string>
+}
 
 const jsonBytes = (value: string): number => textEncoder.encode(value).byteLength
 
@@ -69,7 +74,7 @@ export function serializeStravaDetails<TDetail extends { date: string }>(
   if (!Number.isInteger(maxShardBytes) || maxShardBytes <= jsonBytes(SHARD_PREFIX + SHARD_SUFFIX))
     throw new Error('Strava detail shard byte limit must fit a JSON object')
 
-  const entriesByMonth = new Map<string, string[]>()
+  const entriesByMonth = new Map<string, { id: string; entry: string }[]>()
   for (const [id, detail] of Object.entries(payload.details)) {
     const month = STRAVA_DETAIL_DATE.exec(detail.date)?.[1]
     if (!month) throw new Error(`Strava detail ${id} has invalid date ${detail.date}`)
@@ -79,15 +84,16 @@ export function serializeStravaDetails<TDetail extends { date: string }>(
     if (jsonBytes(SHARD_PREFIX + entry + SHARD_SUFFIX) > maxShardBytes)
       throw new Error(`Strava detail ${id} exceeds the shard byte limit`)
     const entries = entriesByMonth.get(month) ?? []
-    entries.push(entry)
+    entries.push({ id, entry })
     entriesByMonth.set(month, entries)
   }
 
   const shards: SerializedStravaDetailShard[] = []
+  const shardById: Record<string, string> = {}
   for (const [month, entries] of [...entriesByMonth].sort(([left], [right]) =>
     right.localeCompare(left),
   )) {
-    let chunk: string[] = []
+    let chunk: { id: string; entry: string }[] = []
     let chunkBytes = jsonBytes(SHARD_PREFIX + SHARD_SUFFIX)
     const flush = (): void => {
       if (chunk.length === 0) return
@@ -95,17 +101,19 @@ export function serializeStravaDetails<TDetail extends { date: string }>(
         shard => shard.name === month || shard.name.startsWith(`${month}-`),
       ).length
       const name = index === 0 ? month : `${month}-${index + 1}`
-      const content = SHARD_PREFIX + chunk.join(',') + SHARD_SUFFIX
-      shards.push({ name, path: `strava-detail/${name}.json`, content, bytes: jsonBytes(content) })
+      const path = `strava-detail/${name}.json`
+      const content = SHARD_PREFIX + chunk.map(item => item.entry).join(',') + SHARD_SUFFIX
+      for (const item of chunk) shardById[item.id] = path
+      shards.push({ name, path, content, bytes: jsonBytes(content) })
       chunk = []
       chunkBytes = jsonBytes(SHARD_PREFIX + SHARD_SUFFIX)
     }
 
-    for (const entry of entries) {
-      const entryBytes = jsonBytes(entry) + (chunk.length > 0 ? 1 : 0)
+    for (const item of entries) {
+      const entryBytes = jsonBytes(item.entry) + (chunk.length > 0 ? 1 : 0)
       if (chunkBytes + entryBytes > maxShardBytes) flush()
-      chunk.push(entry)
-      chunkBytes += jsonBytes(entry) + (chunk.length > 1 ? 1 : 0)
+      chunk.push(item)
+      chunkBytes += jsonBytes(item.entry) + (chunk.length > 1 ? 1 : 0)
     }
     flush()
   }
@@ -130,7 +138,7 @@ export function serializeStravaDetails<TDetail extends { date: string }>(
     matchedRuns: payload.matchedRuns,
     matchedRides: payload.matchedRides,
   }
-  return { manifest: JSON.stringify(manifest), shards }
+  return { manifest: JSON.stringify(manifest), shards, shardById }
 }
 
 export const STRAVA_MAP_PAYLOAD_KIND = 'strava-map-v1'
@@ -159,15 +167,37 @@ export interface StravaMapActivityEntry {
   location: string | null
   device: StravaActivityDetail['device']
   avgWattsNoZero: number | null
+  shard?: string
   segs: number[][]
+}
+
+export interface StravaMapPayloadOptions {
+  shardById?: Readonly<Record<string, string>>
+  zones?: StravaZones
+  powerCurveYear?: number | null
+  criticalPower?: CriticalPowerEstimate | null
+  criticalPowerYear?: CriticalPowerEstimate | null
+  ftp?: number | null
+  goalFtp?: number | null
+  vt1Hr?: number | null
 }
 
 export interface StravaMapPayload {
   kind: typeof STRAVA_MAP_PAYLOAD_KIND
   activities: StravaMapActivityEntry[]
+  zones?: StravaZones
+  powerCurveYear?: number | null
+  criticalPower?: CriticalPowerEstimate | null
+  criticalPowerYear?: CriticalPowerEstimate | null
+  ftp?: number | null
+  goalFtp?: number | null
+  vt1Hr?: number | null
 }
 
-export function serializeStravaMapPayload(details: Record<string, StravaActivityDetail>): string {
+export function serializeStravaMapPayload(
+  details: Record<string, StravaActivityDetail>,
+  options?: StravaMapPayloadOptions,
+): string {
   const activities: StravaMapActivityEntry[] = []
   for (const detail of Object.values(details)) {
     const rawSegments = detail.mapRoute.some(seg => seg.length >= 2)
@@ -192,6 +222,7 @@ export function serializeStravaMapPayload(details: Record<string, StravaActivity
       }
       return flat
     })
+    const shard = options?.shardById?.[String(detail.id)]
     activities.push({
       id: detail.id,
       name: detail.name,
@@ -219,10 +250,21 @@ export function serializeStravaMapPayload(details: Record<string, StravaActivity
       location: detail.location,
       device: detail.device,
       avgWattsNoZero: detail.powerWithoutZeros?.avgWatts ?? null,
+      ...(shard ? { shard } : {}),
       segs,
     })
   }
-  const payload: StravaMapPayload = { kind: STRAVA_MAP_PAYLOAD_KIND, activities }
+  const payload: StravaMapPayload = {
+    kind: STRAVA_MAP_PAYLOAD_KIND,
+    activities,
+    zones: options?.zones,
+    powerCurveYear: options?.powerCurveYear,
+    criticalPower: options?.criticalPower,
+    criticalPowerYear: options?.criticalPowerYear,
+    ftp: options?.ftp,
+    goalFtp: options?.goalFtp,
+    vt1Hr: options?.vt1Hr,
+  }
   return JSON.stringify(payload)
 }
 
@@ -234,9 +276,12 @@ export function hydrateStravaMapPayload(value: unknown): StravaDetailPayload | n
     !Array.isArray((value as { activities?: unknown }).activities)
   )
     return null
+  const mapPayload = value as StravaMapPayload
   const details: Record<string, StravaActivityDetail> = {}
-  for (const raw of (value as StravaMapPayload).activities) {
+  const shardById: Record<string, string> = {}
+  for (const raw of mapPayload.activities) {
     if (!raw || typeof raw.id !== 'number' || !Array.isArray(raw.segs)) continue
+    if (isStravaDetailShardPath(raw.shard)) shardById[String(raw.id)] = raw.shard
     const mapRoute = raw.segs.map(flat => {
       const length = Math.floor(flat.length / 3) * 3
       const segment: { lat: number; lng: number; d: number }[] = []
@@ -332,5 +377,16 @@ export function hydrateStravaMapPayload(value: unknown): StravaDetailPayload | n
       },
     }
   }
-  return { details, health: {} }
+  return {
+    details,
+    health: {},
+    shardById,
+    zones: mapPayload.zones,
+    powerCurveYear: mapPayload.powerCurveYear,
+    criticalPower: mapPayload.criticalPower,
+    criticalPowerYear: mapPayload.criticalPowerYear,
+    ftp: mapPayload.ftp,
+    goalFtp: mapPayload.goalFtp,
+    vt1Hr: mapPayload.vt1Hr,
+  }
 }

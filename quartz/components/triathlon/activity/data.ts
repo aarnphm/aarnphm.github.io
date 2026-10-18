@@ -1060,6 +1060,63 @@ export async function readMapPayload(response: Response): Promise<DetailPayload>
   return payload
 }
 
+export async function readDetailIndex(
+  detailUrl: string,
+  signal: AbortSignal,
+): Promise<{ baseUrl: string; index: StravaDetailIndex } | null> {
+  const response = await fetch(detailUrl, { signal })
+  if (!response.ok) return null
+  const value: unknown = await response.json()
+  if (!isDetailIndex(value)) return null
+  return { baseUrl: response.url || detailUrl, index: value }
+}
+
+export function parseActivityDetailFromShardMap(
+  details: Record<string, unknown> | null | undefined,
+  id: string,
+): StravaActivityDetail | null {
+  const candidate = details?.[id]
+  if (!candidate || !isActivityDetail(candidate) || String(candidate.id) !== id) return null
+  return candidate
+}
+
+export function warmActivityShard(
+  shardUrl: string,
+  signal: AbortSignal,
+  shardCache: Map<string, Promise<Record<string, unknown> | null>>,
+  resolvedShardCache?: Map<string, Record<string, unknown>>,
+): Promise<Record<string, unknown> | null> {
+  const resolved = resolvedShardCache?.get(shardUrl)
+  if (resolved) return Promise.resolve(resolved)
+  const cached = shardCache.get(shardUrl)
+  if (cached) return cached
+  const pending = fetch(shardUrl, { signal })
+    .then(async response => {
+      if (!response.ok) return null
+      const shard: unknown = await response.json()
+      const details = isRecord(shard) && isRecord(shard.details) ? shard.details : null
+      if (details) resolvedShardCache?.set(shardUrl, details)
+      return details
+    })
+    .catch(() => {
+      shardCache.delete(shardUrl)
+      return null
+    })
+  shardCache.set(shardUrl, pending)
+  return pending
+}
+
+export async function readActivityDetailFromShard(
+  shardUrl: string,
+  id: string,
+  signal: AbortSignal,
+  shardCache: Map<string, Promise<Record<string, unknown> | null>>,
+  resolvedShardCache?: Map<string, Record<string, unknown>>,
+): Promise<StravaActivityDetail | null> {
+  const details = await warmActivityShard(shardUrl, signal, shardCache, resolvedShardCache)
+  return parseActivityDetailFromShardMap(details, id)
+}
+
 export const detailContextFromPayload = (payload?: DetailPayload | null): DetailCtx => ({
   zones: payload?.zones ?? null,
   curveRef: payload?.powerCurveRef ?? [],

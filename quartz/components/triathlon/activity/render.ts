@@ -434,13 +434,18 @@ const environmentValueAtElapsed = (
   pick: (sample: GardenEnvironmentSample) => number | null,
   stepped = false,
 ): number | null => {
-  if (samples.length === 0 || elapsedS < samples[0].elapsedS) return null
-  const exact = samples.find(sample => sample.elapsedS === elapsedS)
-  if (exact) return pick(exact)
-  let rightIndex = samples.findIndex(sample => sample.elapsedS > elapsedS)
-  if (rightIndex < 0) rightIndex = samples.length
-  const left = samples[rightIndex - 1]
-  const right = samples[rightIndex]
+  const length = samples.length
+  if (length === 0 || elapsedS < samples[0].elapsedS) return null
+  let low = 0
+  let high = length
+  while (low < high) {
+    const mid = (low + high) >>> 1
+    if (samples[mid].elapsedS < elapsedS) low = mid + 1
+    else high = mid
+  }
+  if (low < length && samples[low].elapsedS === elapsedS) return pick(samples[low])
+  const left = samples[low - 1]
+  const right = samples[low]
   if (!left) return null
   const leftValue = pick(left)
   if (!right) return leftValue
@@ -472,11 +477,16 @@ export interface MapMetric {
   extra?: () => (HTMLElement | null)[]
 }
 
+const metricSpecsCache = new WeakMap<StravaActivityDetail, { key: string; specs: MapMetric[] }>()
+
 export const metricSpecs = (
   presentation: TriathlonPresentation,
   d: StravaActivityDetail,
   detailContext: DetailCtx,
 ): MapMetric[] => {
+  const cacheKey = `${presentation.locale}:${presentation.distance}:${presentation.powerSamples}:${detailContext.criticalPower?.criticalPowerWatts ?? ''}:${detailContext.ftp ?? ''}:${detailContext.vt1 ?? ''}:${detailContext.curveRef.length}:${detailContext.runCurveRef.length}`
+  const cached = metricSpecsCache.get(d)
+  if (cached && cached.key === cacheKey) return cached.specs
   const domF = createDomFactory(presentation)
   const route = d.route
   const staminaPoints = new Map(
@@ -1099,6 +1109,7 @@ export const metricSpecs = (
   }
   if (hasUv) specs.push(uvSpec)
   if (hasWind) specs.push(windSpec)
+  metricSpecsCache.set(d, { key: cacheKey, specs })
   return specs
 }
 

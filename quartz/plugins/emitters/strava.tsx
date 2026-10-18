@@ -150,17 +150,18 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
       const calendar = calendars.at(-1) ?? null
       const importedTrainingCalendar = await readTrainingPeaksCalendar()
       const tracking = file.data.tracking
-      const { payload, analytics, trackedCache, sources, generatedAt } = loadStravaDataSync(
-        typeof since === 'string' ? since : undefined,
-        tracking,
-        {
-          weights: tracking?.days,
-          events: tracking?.races,
-          dexa: file.data.frontmatter?.['dexa'],
-          vo2labs: file.data.frontmatter?.['vo2max'],
-        },
-        ctx.argv.directory,
-      )
+      const { payload, analytics, trackedCache, sources, wahooActivities, generatedAt } =
+        loadStravaDataSync(
+          typeof since === 'string' ? since : undefined,
+          tracking,
+          {
+            weights: tracking?.days,
+            events: tracking?.races,
+            dexa: file.data.frontmatter?.['dexa'],
+            vo2labs: file.data.frontmatter?.['vo2max'],
+          },
+          ctx.argv.directory,
+        )
       const { strava: cache, oura, apple, garmin, weather } = sources
       const vo2labs = parseVo2Lab(file.data.frontmatter?.['vo2max'])
       const latestVo2 = vo2labs.at(-1)
@@ -181,6 +182,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
                       ...activity,
                       sport: detail.sport,
                       garmin: detail.garmin,
+                      wahoo: detail.wahoo ? wahooActivities[detail.wahoo.activityId] : undefined,
                       peaks: trainingPeaksActivityPeaks({
                         strava: cache?.streams?.[String(activity.id)],
                         garmin: detail.garmin
@@ -273,7 +275,16 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
           ctx,
           slug: 'static/strava-map' as FullSlug,
           ext: '.json',
-          content: serializeStravaMapPayload(payload.details),
+          content: serializeStravaMapPayload(payload.details, {
+            shardById: detailArtifacts.shardById,
+            zones: detailPayload.zones,
+            powerCurveYear: detailPayload.powerCurveYear,
+            criticalPower: detailPayload.criticalPower,
+            criticalPowerYear: detailPayload.criticalPowerYear,
+            ftp: detailPayload.ftp,
+            goalFtp: detailPayload.goalFtp,
+            vt1Hr: detailPayload.vt1Hr,
+          }),
         }),
         write({
           ctx,

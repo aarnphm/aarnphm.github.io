@@ -151,7 +151,7 @@ const PaceTable = ({ section }: { section: PaceSection }) => (
               <PaceSpeed row={row} />
             </td>
             {section.distances.map(distance => (
-              <td class="tri-pace-split">{formatDurationClock((distance.km / row.kmh) * 3600)}</td>
+              <td>{formatDurationClock((distance.km / row.kmh) * 3600)}</td>
             ))}
           </tr>
         ))}
@@ -181,7 +181,7 @@ export const PacePanel = ({ page }: { page?: boolean }) => (
       {page ? (
         <>
           <p class="tri-pace-note" data-i18n="pace chart assumption">
-            Split times at constant pace. Excludes stops, transitions, terrain, and fatigue.
+            splits at a constant pace, with no stops, transitions, terrain or fatigue.
           </p>
           {SECTIONS.map(section => (
             <PaceTable section={section} />

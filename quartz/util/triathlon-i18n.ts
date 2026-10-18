@@ -916,7 +916,7 @@ const en: TriDict = {
     tools: 'tools',
     'pace chart': 'pace chart',
     'pace chart assumption':
-      'Split times at constant pace. Excludes stops, transitions, terrain, and fatigue.',
+      'splits at a constant pace, with no stops, transitions, terrain or fatigue.',
     'gear · pace · fuel · calculator': 'gear · pace · fuel · calculator',
     analytics: 'analytics',
     'charts · search': 'charts · search',
@@ -2636,7 +2636,7 @@ const fr: TriDict = {
     tools: 'outils',
     'pace chart': 'tableau des allures',
     'pace chart assumption':
-      'Temps de passage à allure constante. Sans arrêts, transitions, effets du terrain ni fatigue.',
+      'temps de passage à allure constante, sans arrêts, transitions, terrain ni fatigue.',
     'gear · pace · fuel · calculator': 'matériel · allure · nutrition · calculateur',
     analytics: 'analyses',
     'charts · search': 'graphiques · recherche',
