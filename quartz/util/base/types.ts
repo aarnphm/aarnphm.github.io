@@ -83,6 +83,22 @@ export interface BaseView {
   shelfWidth?: number
   scrollStep?: number
   pageContent?: boolean
+  /** Bookcase style: straight (default), corner, spine, wall, zigzag or ladder. */
+  shelfStyle?: string
+  /** Main material; the style keeps its per-part exceptions. Unset keeps the style's own. */
+  shelfMaterial?: string
+  /**
+   * Per-topic cabinet and tab name: `{ style, material, displayNames, showTags }`. A key is a groupBy value or
+   * a tag; a tag key adds a tab for the books that carry it.
+   */
+  topicShelves?: Record<
+    string,
+    { style?: string; material?: string; displayNames?: string; showTags?: boolean }
+  >
+  /** False hides the label plates on every shelf; a topicShelves entry may override it. */
+  showTags?: boolean
+  /** Property that groups the shelves inside one topic (default `subcategory`). */
+  topicGroupBy?: string
 }
 
 /** Bookcase view keys that name a property, with the property used when the key is absent. */

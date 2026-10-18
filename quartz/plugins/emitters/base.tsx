@@ -28,6 +28,7 @@ import { buildBasePreview } from '../../util/base/preview'
 import { BaseMetadata } from '../../util/base/render'
 import { BuildCtx } from '../../util/ctx'
 import { documentPreviewSlug } from '../../util/document-preview'
+import { onModuleRelease } from '../../util/module-caches'
 import { FilePath, pathToRoot, FullSlug, joinSegments, simplifySlug } from '../../util/path'
 import { StaticResources } from '../../util/resources'
 import { QuartzPluginData } from '../vfile'
@@ -167,6 +168,9 @@ export const BasePage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts =
 
   const { head: Head, header, beforeBody, pageBody, afterBody, sidebar, footer: Footer } = opts
   let partialState: BaseViewPartialState | undefined
+  onModuleRelease(() => {
+    partialState = undefined
+  })
 
   return {
     name: 'BaseViewPage',
