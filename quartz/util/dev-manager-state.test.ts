@@ -3,6 +3,7 @@ import test from 'node:test'
 import {
   applyQuartzDevEvent,
   createQuartzManagerState,
+  resetQuartzManagerState,
   type QuartzManagerState,
 } from './dev-manager-state'
 
@@ -113,4 +114,31 @@ test('build error leaves wrangler stopped when public was removed', () => {
   )
   assert.equal(state.quartz, 'failed')
   assert.equal(state.publicAvailable, false)
+})
+
+test('builder retry preserves published availability and the serving child', () => {
+  const state = readyState('old')
+  resetQuartzManagerState(state)
+  assert.equal(state.currentEpoch, null)
+  assert.equal(state.quartz, 'stopped')
+  assert.equal(state.publicAvailable, true)
+  assert.equal(state.wrangler, 'ready')
+  applyQuartzDevEvent(state, { type: 'build:start', epoch: 'new', reason: 'initial' }, delayMs)
+  applyQuartzDevEvent(
+    state,
+    { type: 'build:error', epoch: 'new', message: 'warmup failed' },
+    delayMs,
+  )
+  assert.equal(state.quartz, 'failed')
+  assert.equal(state.publicAvailable, true)
+  assert.equal(state.wrangler, 'ready')
+  assert.deepEqual(
+    applyQuartzDevEvent(
+      state,
+      { type: 'build:ready', epoch: 'old', files: 1, elapsedMs: 1 },
+      delayMs,
+    ),
+    [],
+  )
+  assert.equal(state.quartz, 'failed')
 })

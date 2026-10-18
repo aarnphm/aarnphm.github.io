@@ -158,6 +158,7 @@ minimumReleaseAgeExclude:
   - oxfmt@0.54.0
   - oxlint@1.69.0
   - '@chenglou/freerange@0.0.2'
+  - pele@1.6.0
 
 onlyBuiltDependencies:
   - '@parcel/watcher'

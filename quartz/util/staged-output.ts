@@ -86,6 +86,7 @@ export async function withStagedOutput<T>(
   output: string,
   build: (stage: string) => Promise<T>,
   preserve: readonly string[] = [],
+  onTiming?: (stage: string, elapsedMs: number) => void,
 ): Promise<T> {
   const started = performance.now()
   const publicRoot = path.resolve(output)
@@ -127,7 +128,10 @@ export async function withStagedOutput<T>(
       )
     }
     console.log(`Prepared staged output in ${Math.round(performance.now() - started)}ms`)
+    onTiming?.('stage.prepare', performance.now() - started)
+    const buildStarted = performance.now()
     const result = await build(stage)
+    onTiming?.('stage.build', performance.now() - buildStarted)
     const publishStarted = performance.now()
     const [{ files: next }, { files: previous }] = await Promise.all([
       entriesIn(stage, preserved),
@@ -145,6 +149,8 @@ export async function withStagedOutput<T>(
     console.log(
       `Compared ${next.length} output files in ${Math.round(performance.now() - publishStarted)}ms`,
     )
+    onTiming?.('stage.compare', performance.now() - publishStarted)
+    const backupStarted = performance.now()
     // Publish assets before the pages which reference them. Temporary files never enter public.
     changed.sort((a, b) => Number(a.endsWith('.html')) - Number(b.endsWith('.html')))
     backup = await fs.mkdtemp(path.join(stagingRoot, 'output-previous-'))
@@ -157,6 +163,8 @@ export async function withStagedOutput<T>(
     }
     const published: string[] = []
     const deleted: string[] = []
+    onTiming?.('stage.backup', performance.now() - backupStarted)
+    const replaceStarted = performance.now()
     try {
       for (const file of changed) {
         const target = path.join(publicRoot, file)
@@ -179,9 +187,12 @@ export async function withStagedOutput<T>(
     console.log(
       `Published ${changed.length} changed files, removed ${removed.length}; kept ${next.length - changed.length} unchanged files in ${Math.round(performance.now() - publishStarted)}ms`,
     )
+    onTiming?.('stage.publish', performance.now() - replaceStarted)
     return result
   } finally {
+    const cleanupStarted = performance.now()
     await fs.rm(stage, { recursive: true, force: true })
     if (backup) await fs.rm(backup, { recursive: true, force: true })
+    onTiming?.('stage.cleanup', performance.now() - cleanupStarted)
   }
 }
