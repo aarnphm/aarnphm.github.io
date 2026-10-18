@@ -214,6 +214,7 @@ export default (() => {
       const prefix = segments.join('') + branchGlyph
 
       const nextAncestors = [...ancestorHasSibling, !isLast]
+      const targetFile = node.targetSlug ? renderData.bySlug.get(node.targetSlug) : undefined
 
       lines.push(
         <div class="seealso-tree-line" key={node.uniqueId}>
@@ -227,6 +228,9 @@ export default (() => {
             data-bib={node.isCitation && !node.arxivId ? '' : undefined}
             data-arxiv-id={node.arxivId}
             data-slug={node.targetSlug}
+            data-document-preview={
+              targetFile?.bases ? 'base' : targetFile?.jsonCanvas ? 'canvas' : undefined
+            }
           >
             {node.title}
           </a>
