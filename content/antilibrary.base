@@ -33,6 +33,52 @@ properties:
   formula.year_num:
     displayName: year
 views:
+  - type: bookcase
+    name: bookcase
+    groupBy:
+      property: category
+      direction: ASC
+    order:
+      - author
+      - year
+      - status
+      - subcategory
+      - tags
+    sort:
+      - property: date
+        direction: DESC
+    image: note.posters
+    spineTitle: note.title
+    spineAuthor: note.author
+    bookHeight: 220
+    shelfWidth: 600
+    shelfStyle: spine
+    shelfMaterial: walnut
+    topicShelves:
+      philosophy:
+        style: zigzag
+        showTags: false
+        material: black-lacquer
+      p/fiction:
+        displayNames: fiction
+        style: spine
+        material: walnut
+        showTags: false
+      p/nf:
+        displayNames: non fiction
+        style: ladder
+        material: birch-ply
+        showTags: false
+      p/scifi:
+        displayNames: sci-fi
+        style: corner
+        material: steel
+      technology:
+        style: wall
+        material: steel
+      poetry:
+        style: straight
+        material: paper
   - type: cards
     name: gallery
     order:
@@ -56,25 +102,6 @@ views:
       note.date: 147
     cardSize: 320
     image: note.posters
-  - type: bookcase
-    name: bookcase
-    groupBy:
-      property: category
-      direction: ASC
-    order:
-      - author
-      - year
-      - status
-      - subcategory
-      - tags
-    sort:
-      - property: date
-        direction: DESC
-    image: note.posters
-    spineTitle: note.title
-    spineAuthor: note.author
-    bookHeight: 220
-    shelfWidth: 600
   - type: table
     name: philosophy
     filters:
