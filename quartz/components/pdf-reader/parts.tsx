@@ -343,7 +343,7 @@ export function Margin({
     const element = container.current
     if (!element || hidden) return
     layoutMargin(element, activeKey)
-  })
+  }, [layoutKey, activeKey, hidden])
 
   useEffect(() => {
     const element = container.current
