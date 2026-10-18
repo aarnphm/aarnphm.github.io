@@ -176,7 +176,7 @@ const height = (scale = 1) => (viewBottom - viewTop) * unit * scale
 // On unless the reader turned pets off from the palette.
 const readPetsEnabled = () => localStorage.getItem(petsEnabledKey) !== 'false'
 
-// The pet's centre in viewport coordinates, from its cached document position: no layout read.
+// The pet's centre in viewport coordinates, from its cached document position.
 const railY = (rail: Rail) =>
   rail.from + (rail.to - rail.from) * clamp(window.scrollY / rail.span, 0, 1)
 
@@ -2357,14 +2357,13 @@ const onPointerMove = (event: PointerEvent) => {
     const speed =
       (Math.hypot(pointer.x - lastPointer.x, pointer.y - lastPointer.y) / (now - lastPointer.t)) *
       1000
-    const c = center()
-    if (
-      speed > startleSpeed &&
-      now > startleReadyAt &&
-      Math.hypot(pointer.x - c.x, pointer.y - c.y) < startleRadius
-    ) {
-      startleReadyAt = now + 5000
-      play('failed', 1600)
+    if (speed > startleSpeed && now > startleReadyAt) {
+      // The scroll offsets in center() can flush pending page layout.
+      const c = center()
+      if (Math.hypot(pointer.x - c.x, pointer.y - c.y) < startleRadius) {
+        startleReadyAt = now + 5000
+        play('failed', 1600)
+      }
     }
   }
   lastPointer = { ...pointer, t: now }

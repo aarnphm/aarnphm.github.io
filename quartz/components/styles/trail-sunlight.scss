@@ -11,14 +11,18 @@
   // painted back over the shade where the leaves part.
   .trail-leaf-shade {
     fill: var(--darkgray);
-    opacity: 0.13;
+    opacity: 0.22;
   }
   .trail-leaf-shade-deep {
-    opacity: 0.11;
+    opacity: 0.18;
+  }
+  .trail-sunfringe {
+    fill: color-mix(in srgb, #ffe3a1 65%, var(--light));
+    opacity: 0.24;
   }
   .trail-sunfleck {
     fill: color-mix(in srgb, #ffe3a1 45%, var(--light));
-    opacity: 0.85;
+    opacity: 0.78;
   }
   // Sun on the top of the canopy: a warm light the crowns and anyone under them catch. Between
   // the crowns it falls on the paper and is not seen.
