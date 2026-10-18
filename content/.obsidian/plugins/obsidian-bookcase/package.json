@@ -1,0 +1,17 @@
+{
+  "name": "obsidian-bookcase",
+  "version": "1.0.0",
+  "private": true,
+  "description": "An isometric bookcase view for Bases",
+  "license": "MIT",
+  "scripts": {
+    "dev": "node esbuild.config.mjs",
+    "build": "tsc --noEmit --skipLibCheck && node esbuild.config.mjs production"
+  },
+  "devDependencies": {
+    "@types/node": "^16.11.6",
+    "esbuild": "0.28.1",
+    "obsidian": "1.14.4",
+    "typescript": "5.3.3"
+  }
+}

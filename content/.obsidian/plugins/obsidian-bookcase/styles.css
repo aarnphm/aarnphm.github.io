@@ -1,0 +1,671 @@
+.bookcase-view {
+  /* the anatomy ladder on Obsidian's paper: --text-faint mixed into the background at 45/32/20/9% */
+  --bc-card: color-mix(in srgb, var(--text-faint) 16%, var(--background-primary));
+  --bc-face: var(--background-primary);
+  --bc-top: var(--background-primary);
+  --bc-s0: color-mix(in srgb, var(--text-faint) 45%, var(--background-primary));
+  --bc-s1: color-mix(in srgb, var(--text-faint) 32%, var(--background-primary));
+  --bc-s2: color-mix(in srgb, var(--text-faint) 20%, var(--background-primary));
+  --bc-s3: color-mix(in srgb, var(--text-faint) 9%, var(--background-primary));
+  --bc-hi: var(--text-normal);
+  --bc-mid: var(--text-muted);
+  --bc-lo: color-mix(in srgb, var(--text-faint) 80%, var(--background-primary));
+  --bc-faint: color-mix(in srgb, var(--text-faint) 62%, var(--background-primary));
+  --bc-halo: var(--text-normal);
+  --bc-weight: 0.75px;
+  /* spine ink (--bc-ink-dark, --bc-ink-light) and fallback spine colours are literals shared
+     with the garden (5.3), set in JS */
+  --bc-stage-height: 520px;
+  --bc-scene-height: 520px;
+  --bc-stage-width: 64%;
+
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  container: bookcase / inline-size;
+}
+
+.theme-dark .bookcase-view {
+  /* in dark mode faces must still get darker away from the light: mix toward black, not toward text */
+  --bc-top: color-mix(in srgb, var(--text-faint) 14%, var(--background-primary));
+  --bc-face: color-mix(in srgb, var(--text-faint) 9%, var(--background-primary));
+  --bc-s3: var(--background-primary);
+  --bc-s2: color-mix(in srgb, black 12%, var(--background-primary));
+  --bc-s1: color-mix(in srgb, black 22%, var(--background-primary));
+  --bc-s0: color-mix(in srgb, black 34%, var(--background-primary));
+  --bc-halo: black;
+}
+
+.bookcase-view[data-layout='wide'] {
+  /* the stage is as wide as the case; the page panel takes the rest */
+  grid-template-columns: var(--bc-stage-width) minmax(0, 1fr);
+}
+
+.bookcase-view.is-own-scroller {
+  height: 520px;
+  overflow-y: auto;
+}
+
+.bookcase-track {
+  position: relative;
+  grid-row: 1;
+  grid-column: 1;
+}
+
+.bookcase-stage {
+  position: sticky;
+  top: 0;
+  height: var(--bc-scene-height);
+  overflow: hidden;
+  background: var(--bc-card);
+}
+
+/* camera buttons, and under them a right-aligned column of topic tabs or tag toggles, as the
+   garden's; the column stops 5.5rem above the stage bottom and scrolls on a short stage */
+.bookcase-controls {
+  --bc-control: 2.125rem;
+
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  bottom: 5.5rem;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+  max-width: calc(100% - 1.5rem);
+  pointer-events: none;
+}
+
+.bookcase-camera-controls,
+.bookcase-panel {
+  pointer-events: auto;
+}
+
+.bookcase-camera-controls {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+}
+
+.bookcase-controls button {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  height: auto;
+  margin: 0;
+  border: 1px solid var(--bc-mid);
+  border-radius: 0;
+  background: var(--background-primary);
+  box-shadow: none;
+  color: var(--bc-hi);
+  font-family: var(--font-monospace);
+  font-size: var(--font-ui-smaller);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.bookcase-controls button:focus-visible {
+  position: relative;
+  z-index: 1;
+  outline: 2px solid var(--bc-hi);
+  outline-offset: 1px;
+}
+
+/* direct children only: the tabs must not take the square size, or the open tab is clipped */
+.bookcase-camera-controls > button {
+  width: var(--bc-control);
+  height: var(--bc-control);
+  padding: 0;
+}
+
+.bookcase-camera-controls > button + button {
+  border-top: 0;
+}
+
+.bookcase-camera-controls > button:disabled {
+  color: var(--bc-lo);
+  cursor: default;
+}
+
+.bookcase-camera-controls svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+.bookcase-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+  min-height: 0;
+  max-width: 100%;
+}
+
+.bookcase-panel.is-hidden,
+.bookcase-panel .is-hidden {
+  display: none;
+}
+
+/* the switch at the column's head: two segments */
+.bookcase-panel-tabs {
+  display: flex;
+  flex: none;
+}
+
+.bookcase-controls .bookcase-panel-tab {
+  height: var(--bc-control);
+  padding: 0 0.5rem;
+  color: var(--bc-mid);
+}
+
+.bookcase-panel-tab + .bookcase-panel-tab {
+  border-left: 0;
+}
+
+.bookcase-panel-tab[aria-selected='true'] {
+  background: var(--bc-card);
+  color: var(--bc-hi);
+}
+
+.bookcase-panel-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  min-height: 0;
+  max-width: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+
+.bookcase-topics,
+.bookcase-tags {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+/* a collapsed tab is a square with its shortcut; the chosen one is filled and opens leftward */
+.bookcase-controls .bookcase-tab {
+  min-width: var(--bc-control);
+  height: var(--bc-control);
+  padding: 0 0.25rem;
+}
+
+/* inside the scrolling column an outer ring would be cut off */
+.bookcase-controls .bookcase-tab:focus-visible {
+  outline-offset: -4px;
+}
+
+.bookcase-controls .bookcase-topic[aria-selected='true'],
+.bookcase-controls .bookcase-tag[aria-pressed='true'] {
+  padding: 0 0.5rem;
+}
+
+.bookcase-topic[aria-selected='true']:focus-visible,
+.bookcase-tag[aria-pressed='true']:focus-visible {
+  outline-color: var(--background-primary);
+}
+
+.bookcase-tab + .bookcase-tab {
+  border-top: 0;
+}
+
+.bookcase-topic[aria-selected='true'],
+.bookcase-tag[aria-pressed='true'] {
+  border-color: var(--bc-hi);
+  background: var(--bc-hi);
+  color: var(--background-primary);
+}
+
+.bookcase-tab-shortcut,
+.bookcase-tab-label {
+  display: block;
+  flex: none;
+  overflow: hidden;
+  transition:
+    inline-size 180ms cubic-bezier(0.2, 0, 0, 1),
+    opacity 120ms linear;
+}
+
+.bookcase-tab-shortcut {
+  inline-size: var(--bc-tab-short);
+}
+
+.bookcase-tab-label {
+  inline-size: 0;
+  opacity: 0;
+}
+
+.bookcase-topic[aria-selected='true'] .bookcase-tab-shortcut,
+.bookcase-tag[aria-pressed='true'] .bookcase-tab-shortcut {
+  inline-size: 0;
+  opacity: 0;
+}
+
+.bookcase-topic[aria-selected='true'] .bookcase-tab-label,
+.bookcase-tag[aria-pressed='true'] .bookcase-tab-label {
+  inline-size: var(--bc-tab-label);
+  opacity: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .bookcase-panel-tab:not([aria-selected='true']):hover,
+  .bookcase-topic:not([aria-selected='true']):hover,
+  .bookcase-tag:not([aria-pressed='true']):hover {
+    color: var(--bc-hi);
+  }
+}
+
+@media (pointer: coarse) {
+  .bookcase-controls {
+    --bc-control: 44px;
+  }
+}
+
+/* a narrow view: the zoom buttons sit in a row and the column goes under them */
+@container bookcase (max-width: 599.98px) {
+  .bookcase-camera-controls {
+    flex-direction: row;
+  }
+
+  .bookcase-camera-controls > button + button {
+    border-top: 1px solid var(--bc-mid);
+    border-left: 0;
+  }
+}
+
+/* a drag pans the camera; the books stay clickable */
+.bookcase-stage {
+  cursor: grab;
+  user-select: none;
+}
+
+.bookcase-stage[data-dragging],
+.bookcase-stage[data-dragging] [data-book] {
+  cursor: grabbing;
+}
+
+/* in full screen the view is the screen and scrolls itself */
+.bookcase-view:fullscreen {
+  overflow-y: auto;
+  background: var(--background-primary);
+}
+
+.bookcase-world {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
+/* a zoomed world is painted at its zoom, not scaled from a layer drawn at 1 */
+.bookcase-view.is-zoomed .bookcase-world {
+  will-change: auto;
+}
+
+.bookcase-world svg {
+  position: absolute;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.bookcase-world [data-book] {
+  pointer-events: visiblePainted;
+  cursor: pointer;
+}
+
+.bookcase-empty {
+  display: none;
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  right: 16px;
+  color: var(--text-muted);
+  font-family: var(--font-interface);
+}
+
+.bookcase-view.is-empty {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.bookcase-view.is-empty .bookcase-empty {
+  display: block;
+}
+
+.bookcase-view.is-empty .bookcase-page {
+  display: none;
+}
+
+/* page panel: a sheet of paper next to the case */
+.bookcase-page {
+  grid-row: 1;
+  grid-column: 2;
+  position: sticky;
+  top: 0;
+  box-sizing: border-box;
+  height: var(--bc-stage-height);
+  overflow-y: auto;
+  padding: 20px;
+  background: var(--background-primary);
+  border: 1px solid var(--background-modifier-border);
+  font-family: var(--font-text);
+}
+
+/* a wide pane gives the panel room; its text keeps a reading measure */
+.bookcase-page > * {
+  max-width: var(--file-line-width, 700px);
+}
+
+.bookcase-view[data-layout='narrow'] .bookcase-page {
+  grid-column: 1;
+  top: var(--bc-scene-height);
+  height: calc(var(--bc-stage-height) - var(--bc-scene-height));
+  margin-top: var(--bc-scene-height);
+}
+
+.bookcase-page-title {
+  margin: 0 0 4px;
+  font-size: var(--h3-size);
+}
+
+.bookcase-page-byline {
+  margin: 0 0 12px;
+  color: var(--text-muted);
+}
+
+.bookcase-page-properties {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 4px 12px;
+  margin: 0 0 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--background-modifier-border);
+  font-size: var(--font-ui-small);
+}
+
+.bookcase-page-properties dt {
+  color: var(--text-muted);
+}
+
+.bookcase-page-properties dd {
+  margin: 0;
+}
+
+.bookcase-page-description {
+  margin: 0 0 12px;
+}
+
+/* visually hidden, and sticky so that focusing a button never scrolls the track */
+.bookcase-index {
+  position: sticky;
+  top: 0;
+  grid-row: 1;
+  grid-column: 1;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  list-style: none;
+}
+
+/* lines: one weight, tone carries the hierarchy */
+.bookcase-world path,
+.bookcase-world .bc-edge,
+.bookcase-world .bc-plate,
+.bookcase-world .bc-screws ellipse {
+  fill: none;
+  stroke-width: var(--bc-weight);
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.bookcase-world .bc-edge {
+  stroke: var(--bc-mid);
+}
+
+.bookcase-world .bc-crease,
+.bookcase-world .bc-bevel,
+.bookcase-world .bc-page-crease {
+  stroke: var(--bc-faint);
+}
+
+.bookcase-world .bc-plate {
+  fill: var(--bc-s3);
+  stroke: var(--bc-mid);
+}
+
+.bookcase-world .bc-plate-ticks,
+.bookcase-world .bc-screws ellipse {
+  stroke: var(--bc-lo);
+}
+
+.bookcase-world .bc-plate-label {
+  /* the geometry fits labels at 4.2 units a character: 5.4px Berkeley Mono with 0.9px tracking */
+  font-family: 'Berkeley Mono', var(--font-monospace);
+  font-size: 5.4px;
+  letter-spacing: 0.9px;
+  fill: var(--bc-mid);
+}
+
+/* case faces: flat fills on the tone ladder; a material swaps the ladder on [data-material] */
+.bookcase-world .bc-tone-top {
+  fill: var(--bc-top);
+}
+
+.bookcase-world .bc-tone-face {
+  fill: var(--bc-face);
+}
+
+.bookcase-world .bc-tone-s3 {
+  fill: var(--bc-s3);
+}
+
+.bookcase-world .bc-tone-s2 {
+  fill: var(--bc-s2);
+}
+
+.bookcase-world .bc-tone-s1 {
+  fill: var(--bc-s1);
+}
+
+.bookcase-world .bc-tone-s0 {
+  fill: var(--bc-s0);
+}
+
+/* materials: the view sets each ladder's values for the theme from the shared tables */
+.bookcase-world [data-material='walnut'] {
+  --bc-top: var(--bc-walnut-top);
+  --bc-face: var(--bc-walnut-face);
+  --bc-s3: var(--bc-walnut-s3);
+  --bc-s2: var(--bc-walnut-s2);
+  --bc-s1: var(--bc-walnut-s1);
+  --bc-s0: var(--bc-walnut-s0);
+  --bc-mid: var(--bc-walnut-mid);
+  --bc-faint: var(--bc-walnut-faint);
+  --bc-lo: var(--bc-walnut-lo);
+  --bc-hi: var(--bc-walnut-hi);
+  --bc-halo: var(--bc-walnut-halo);
+}
+
+.bookcase-world [data-material='birch-ply'] {
+  --bc-top: var(--bc-birch-ply-top);
+  --bc-face: var(--bc-birch-ply-face);
+  --bc-s3: var(--bc-birch-ply-s3);
+  --bc-s2: var(--bc-birch-ply-s2);
+  --bc-s1: var(--bc-birch-ply-s1);
+  --bc-s0: var(--bc-birch-ply-s0);
+  --bc-mid: var(--bc-birch-ply-mid);
+  --bc-faint: var(--bc-birch-ply-faint);
+  --bc-lo: var(--bc-birch-ply-lo);
+  --bc-hi: var(--bc-birch-ply-hi);
+  --bc-halo: var(--bc-birch-ply-halo);
+  --bc-ply: var(--bc-birch-ply-ply);
+}
+
+.bookcase-world [data-material='black-lacquer'] {
+  --bc-top: var(--bc-black-lacquer-top);
+  --bc-face: var(--bc-black-lacquer-face);
+  --bc-s3: var(--bc-black-lacquer-s3);
+  --bc-s2: var(--bc-black-lacquer-s2);
+  --bc-s1: var(--bc-black-lacquer-s1);
+  --bc-s0: var(--bc-black-lacquer-s0);
+  --bc-mid: var(--bc-black-lacquer-mid);
+  --bc-faint: var(--bc-black-lacquer-faint);
+  --bc-lo: var(--bc-black-lacquer-lo);
+  --bc-hi: var(--bc-black-lacquer-hi);
+  --bc-halo: var(--bc-black-lacquer-halo);
+}
+
+.bookcase-world [data-material='steel'] {
+  --bc-top: var(--bc-steel-top);
+  --bc-face: var(--bc-steel-face);
+  --bc-s3: var(--bc-steel-s3);
+  --bc-s2: var(--bc-steel-s2);
+  --bc-s1: var(--bc-steel-s1);
+  --bc-s0: var(--bc-steel-s0);
+  --bc-mid: var(--bc-steel-mid);
+  --bc-faint: var(--bc-steel-faint);
+  --bc-lo: var(--bc-steel-lo);
+  --bc-hi: var(--bc-steel-hi);
+  --bc-halo: var(--bc-steel-halo);
+}
+
+/* the darkest spines barely separate from these boards, so their tops take the light step */
+.bookcase-world [data-part='board'][data-material='walnut'] .bc-tone-s3,
+.bookcase-world [data-part='board'][data-material='black-lacquer'] .bc-tone-s3 {
+  fill: var(--bc-top);
+}
+
+.bookcase-world .bc-ply {
+  stroke: var(--bc-ply, var(--bc-faint));
+}
+
+.bookcase-world .bc-highlight {
+  stroke: var(--bc-top);
+}
+
+/* halos: the only blurred elements */
+.bookcase-world .bc-halo {
+  fill: var(--bc-halo);
+}
+
+.bookcase-world .bc-halo-case {
+  opacity: 0.16;
+  filter: blur(9px);
+  transform: translateY(3px);
+}
+
+.bookcase-world .bc-halo-contact {
+  opacity: 0.12;
+  filter: blur(4px);
+}
+
+/* books: shelf copies sit 22% toward the card so the case reads first; the lifted book is lit */
+.bookcase-world .bc-book {
+  --c: color-mix(in srgb, var(--spine) 78%, var(--bc-card));
+}
+
+.bookcase-world .bc-book.is-lit {
+  --c: var(--spine);
+}
+
+.bookcase-world .bc-book .bc-face-spine {
+  fill: var(--c);
+}
+
+.bookcase-world .bc-book .bc-face-cover {
+  fill: color-mix(in srgb, var(--c) 70%, var(--bc-ink-dark));
+}
+
+.bookcase-world .bc-book .bc-face-end {
+  fill: color-mix(in srgb, var(--c) 88%, var(--bc-ink-dark));
+}
+
+.bookcase-world .bc-book .bc-pages {
+  fill: var(--bc-s3);
+}
+
+.bookcase-world .bc-book.is-lit .bc-pages {
+  fill: var(--bc-top);
+}
+
+.bookcase-world .bc-book .bc-round-lit {
+  stroke: color-mix(in srgb, var(--c) 65%, var(--bc-ink-light));
+}
+
+.bookcase-world .bc-book .bc-round-shade {
+  stroke: color-mix(in srgb, var(--c) 75%, var(--bc-ink-dark));
+}
+
+.bookcase-world .bc-book .bc-board-rim,
+.bookcase-world .bc-book .bc-jacket-rim {
+  fill: color-mix(in srgb, var(--c) 86%, var(--bc-ink-dark));
+}
+
+.bookcase-world .bc-book .bc-jacket-fold {
+  fill: none;
+  stroke: color-mix(in srgb, var(--c) 72%, var(--bc-ink-dark));
+  stroke-width: var(--bc-weight);
+}
+
+.bookcase-world .bc-book.is-lit .bc-edge {
+  stroke: var(--bc-hi);
+}
+
+.bookcase-world .bc-spine-title {
+  font-family: var(--font-text);
+  fill: var(--spine-ink);
+}
+
+.bookcase-world .bc-spine-author {
+  font-family: var(--font-interface);
+  fill: var(--spine-ink);
+}
+
+.bookcase-world .bc-cover-title {
+  font-family: var(--font-text);
+}
+
+/* the pulled-out book */
+.bookcase-lift {
+  transition: transform 220ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  will-change: transform;
+}
+
+.bookcase-lift.is-instant {
+  transition: none;
+}
+
+.bookcase-lift.is-focus-visible .bc-face-spine,
+.bookcase-lift.is-focus-visible .bc-face-cover {
+  stroke: var(--interactive-accent);
+  stroke-width: 2px;
+  vector-effect: non-scaling-stroke;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bookcase-lift,
+  .bookcase-tab-shortcut,
+  .bookcase-tab-label {
+    transition: none;
+  }
+}

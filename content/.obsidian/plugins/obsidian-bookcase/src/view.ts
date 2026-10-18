@@ -1,0 +1,1146 @@
+import {
+  type BasesEntry,
+  type BasesPropertyId,
+  BasesView,
+  type HoverPopover,
+  Keymap,
+  type QueryController,
+} from 'obsidian'
+import type BookcasePlugin from '../main'
+import { type FilterPanel, Preload, type ViewFilter } from './covers'
+import { Drag } from './drag'
+import { Lift, type LiftRequest, coverLines, liftContent } from './lift'
+import { type BookModel, ModelReader, authorLabel } from './model'
+import { type BookcaseConfig, readConfig } from './options'
+import { Page } from './page'
+import { type CameraAction, Panel } from './panel'
+import { type Point, type Scene, buildScene } from './scene-model'
+import { type Frame, LayerStack, Stage, cameraTarget, toPx } from './stage'
+import {
+  type BookPaint,
+  bookStyle,
+  fillText,
+  materialTokens,
+  paintBook,
+  partsSignature,
+  spineLabels,
+  shelfBox,
+  shelfMarkup,
+  solidsBox,
+  solidsMarkup,
+} from './svg'
+import {
+  ALL,
+  type TopicTab,
+  lookupTopic,
+  readTopicConfig,
+  tagChips,
+  topicMembers,
+  topicTabs,
+} from './topics'
+
+export const BOOKCASE_VIEW = 'bookcase'
+
+const PRELOAD_RADIUS = 3
+/** The tags a book carries, for the tag filter. */
+const TAGS = 'file.tags' as BasesPropertyId
+/** Books either side of the focus whose shelves mount ahead of the camera. */
+const LOOKAHEAD = 12
+/** Idle work waits until the scroll has rested this long. */
+const QUIET_MS = 160
+/** One zoom step, as the garden's buttons. */
+const ZOOM = 1.35
+/** A released pan closes about 95% of the way back in three of these. */
+const GLIDE_MS = 90
+
+const clamp = (n: number, min: number, max: number) => Math.min(max, Math.max(min, n))
+
+/** Runs `work` in idle time with the time it has left; returns a cancel function. */
+function idle(work: (remaining: () => number) => void, timeout: number): () => void {
+  if (typeof window.requestIdleCallback === 'function') {
+    const id = window.requestIdleCallback(deadline => work(() => deadline.timeRemaining()), {
+      timeout,
+    })
+    return () => window.cancelIdleCallback(id)
+  }
+  const id = window.setTimeout(() => work(() => 8), 0)
+  return () => window.clearTimeout(id)
+}
+
+export class BookcaseView extends BasesView {
+  type = BOOKCASE_VIEW
+  hoverPopover: HoverPopover | null = null
+
+  private root: HTMLElement
+  private track: HTMLElement
+  private stageEl: HTMLElement
+  private world: HTMLElement
+  private pageEl: HTMLElement
+  private indexEl: HTMLOListElement
+  private emptyEl: HTMLElement
+  private panel: Panel
+  private drag: Drag
+  private tabs: TopicTab[] = []
+  private chips: TopicTab[] = []
+  /** Topic, tags and panel tab on show; null until read from plugin data. */
+  private filter: ViewFilter | null = null
+  /** Set by a new filter: the rebuild starts at the first book it shows. */
+  private filterChanged = false
+  private filterKey: string | null = null
+  private observer: ResizeObserver | null = null
+  private stage: Stage
+  private layers: LayerStack
+  private lift: Lift
+  private page: Page
+  private reader: ModelReader
+  private preload = new Preload()
+
+  private settings: BookcaseConfig | null = null
+  private scene: Scene<BookModel> | null = null
+  /** Paint and camera point of each book, filled on first use. */
+  private paints: (BookPaint | undefined)[] = []
+  private centres: (Point | undefined)[] = []
+  /** Left and right edges of each book when pulled out, in world px. */
+  private reaches: (Point | undefined)[] = []
+  /** Stage px the control column takes from the right edge. */
+  private reserve = 0
+  private frame: Frame = { minX: 0, minY: 0, scale: 1 }
+  /** World translation the camera last wrote. */
+  private offset: Point = [0, 0]
+  /** Translation the scroll camera asks for, before zoom and pan. */
+  private base: Point = [0, 0]
+  /** World size in px at zoom 1. */
+  private size: Point = [0, 0]
+  /** Scale on top of the fitted one, from 1 to `maxZoom()`; zoom keeps the anchor in place. */
+  private zoom = 1
+  /** Drag offset in stage px; it eases back to zero on the next focus change. */
+  private pan: Point = [0, 0]
+  private releasing = false
+  private releaseAt = 0
+  private placeRaf: number | null = null
+  private fullscreen = false
+  /** Set when the scroller changes: the next rebuild scrolls the new one to the focused book. */
+  private restoreFocus = false
+  private scrollers = new Set<HTMLElement>()
+  private dark = false
+  private theme: string | null = null
+  private focus = -1
+  /** Rebuild count, part of each lift key. */
+  private version = 0
+  /** Direction of the last focus change, for the book that lifts next. */
+  private heading = 1
+  /** Index of the button that holds tabindex 0. */
+  private roving = -1
+  private dataChanged = true
+  private focusPath: string | null = null
+  private hidden = new Set<number>()
+  private buttons: HTMLButtonElement[] = []
+  /** Layer index of each shelf. */
+  private shelfLayer = new Map<number, number>()
+  /** Place of each book's `<g>` counted from the end of its shelf `<svg>`, where books come last. */
+  private fromEnd: number[] = []
+  /** Books that show each vault cover. */
+  private coverBooks = new Map<string, number[]>()
+  /** Books whose cover finished since the last idle pass. */
+  private recolour = new Set<number>()
+  private rebuildRaf: number | null = null
+  private scrollRaf: number | null = null
+  private lastScroll = 0
+  private settleTimer: number | null = null
+  private settleIdle: (() => void) | null = null
+  private preloadIdle: (() => void) | null = null
+  private liftIdle: (() => void) | null = null
+  private liftRaf: number | null = null
+  /** Focus for which windowing last spent its one mount. */
+  private focusMounts = -1
+  private indexPending = false
+
+  constructor(
+    controller: QueryController,
+    private containerEl: HTMLElement,
+    private plugin: BookcasePlugin,
+  ) {
+    super(controller)
+    this.reader = new ModelReader(this.app)
+    this.root = containerEl.createDiv({ cls: 'bookcase-view', attr: { 'data-layout': 'wide' } })
+    this.track = this.root.createDiv({ cls: 'bookcase-track' })
+    this.stageEl = this.track.createDiv({ cls: 'bookcase-stage' })
+    this.world = this.stageEl.createDiv({ cls: 'bookcase-world' })
+    this.emptyEl = this.stageEl.createDiv({
+      cls: 'bookcase-empty',
+      text: 'No books match this view.',
+    })
+    this.panel = this.addChild(
+      new Panel(this.stageEl, {
+        camera: action => this.onCamera(action),
+        topic: id => this.selectTopic(id),
+        tag: id => this.toggleTag(id),
+        panel: tab => this.selectPanel(tab),
+      }),
+    )
+    this.drag = this.addChild(
+      new Drag(this.stageEl, '.bookcase-controls', {
+        pan: () => this.pan,
+        start: () => (this.releasing = false),
+        move: pan => {
+          this.pan = pan
+          this.requestPlace()
+        },
+      }),
+    )
+    this.pageEl = this.root.createEl('aside', { cls: 'bookcase-page' })
+    this.indexEl = this.root.createEl('ol', {
+      cls: 'bookcase-index',
+      attr: { 'aria-label': 'Books' },
+    })
+    this.stage = new Stage(containerEl, this.root, this.track, this.stageEl)
+    this.lift = this.addChild(
+      new Lift(this.world, (index, hidden) => this.setHidden(index, hidden)),
+    )
+    // Lifts are created first, so every layer is inserted before them and they paint last.
+    this.layers = new LayerStack(this.world, this.world.firstElementChild!, {
+      render: layer => this.render(layer),
+      prepare: (layer, markup) => this.prepare(layer, markup),
+      mounted: (_, el) => fillText(el, key => this.text(key)),
+    })
+    this.page = new Page(this, this.pageEl, this.reader)
+    // The ink pair and fallback hues are literals shared with the garden, so they live in JS.
+    this.root.style.setProperty('--bc-ink-dark', '#100F0F')
+    this.root.style.setProperty('--bc-ink-light', '#FFFCF0')
+  }
+
+  onload(): void {
+    this.registerEvent(this.app.workspace.on('css-change', () => this.schedule()))
+    this.registerEvent(
+      // A finished cover patches only its books, in the next idle pass (SPEC 7).
+      this.plugin.covers.on('cover', path => {
+        const books = this.coverBooks.get(path)
+        if (!books) return
+        for (const i of books) this.recolour.add(i)
+        this.requestSettle()
+      }),
+    )
+    // The track height set by a rebuild resizes the container too; only a new width, or a new
+    // scroller height, rebuilds. The scroller is observed once it is found.
+    const observer = new ResizeObserver(() => {
+      if (this.stage.resized()) this.schedule()
+    })
+    observer.observe(this.containerEl)
+    this.observer = observer
+    this.register(() => observer.disconnect())
+    // Plus and minus zoom while focus is inside the view.
+    this.registerDomEvent(this.root, 'keydown', evt => {
+      if (evt.defaultPrevented || evt.ctrlKey || evt.metaKey || evt.altKey) return
+      if (evt.key === '+' || evt.key === '=') this.zoomBy(ZOOM)
+      else if (evt.key === '-') this.zoomBy(1 / ZOOM)
+      else return
+      evt.preventDefault()
+    })
+    this.registerDomEvent(document, 'fullscreenchange', () => this.onFullscreen())
+
+    this.registerDomEvent(this.world, 'click', evt => this.onWorldClick(evt))
+    this.registerDomEvent(this.world, 'mouseover', evt => {
+      const el = (evt.target as Element).closest<HTMLElement>('.bookcase-lift')
+      const book = this.bookAt(evt.target)
+      // Moving between faces of the same lifted book is not a new hover.
+      if (!el || !book || (evt.relatedTarget instanceof Node && el.contains(evt.relatedTarget)))
+        return
+      this.hover(evt, el, book.path)
+    })
+    this.registerDomEvent(this.pageEl, 'click', evt => {
+      const link = (evt.target as Element).closest<HTMLElement>('a.internal-link')
+      const href = link?.dataset.href
+      if (!href) return
+      evt.preventDefault()
+      void this.app.workspace.openLinkText(href, this.page.sourcePath, Keymap.isModEvent(evt))
+    })
+    this.registerDomEvent(this.pageEl, 'mouseover', evt => {
+      const link = (evt.target as Element).closest<HTMLElement>('a.internal-link')
+      const href = link?.dataset.href
+      if (link && href) this.hover(evt, link, href)
+    })
+    this.registerDomEvent(this.indexEl, 'keydown', evt => this.onKey(evt))
+    this.registerDomEvent(this.indexEl, 'click', evt => {
+      const i = this.buttonIndex(evt.target)
+      if (i !== null) this.moveTo(i, false)
+    })
+    this.registerDomEvent(this.indexEl, 'focusin', evt => {
+      this.lift.setFocusVisible((evt.target as Element).matches(':focus-visible'))
+    })
+    this.registerDomEvent(this.indexEl, 'focusout', () => this.lift.setFocusVisible(false))
+    this.schedule()
+  }
+
+  onunload(): void {
+    if (this.rebuildRaf !== null) cancelAnimationFrame(this.rebuildRaf)
+    if (this.scrollRaf !== null) cancelAnimationFrame(this.scrollRaf)
+    if (this.placeRaf !== null) cancelAnimationFrame(this.placeRaf)
+    this.rebuildRaf = this.scrollRaf = this.placeRaf = null
+    if (this.stage.fullscreen) void document.exitFullscreen().catch(() => undefined)
+    this.cancelSettle()
+    this.page.unload()
+    this.plugin.covers.release(this)
+    this.preload.clear()
+    this.layers.clear()
+    this.containerEl.empty()
+  }
+
+  onDataUpdated(): void {
+    this.dataChanged = true
+    this.schedule()
+  }
+
+  private schedule(): void {
+    if (this.rebuildRaf !== null) return
+    this.rebuildRaf = requestAnimationFrame(() => {
+      this.rebuildRaf = null
+      this.rebuild()
+    })
+  }
+
+  private rebuild(): void {
+    if (!this.data) return
+    // Until the view has a box there is nothing to measure; the resize observer calls again.
+    const scroller = this.stage.scroller ?? this.stage.discover()
+    if (!scroller) return
+    if (!this.scrollers.has(scroller)) {
+      // A view that went full screen and back has two scrollers; only the current one counts.
+      this.scrollers.add(scroller)
+      this.registerDomEvent(scroller, 'scroll', evt => this.onScroll(evt), { passive: true })
+      if (scroller !== this.root) this.observer?.observe(scroller)
+    }
+
+    const settings = readConfig(this.config)
+    this.settings = settings
+    this.dark = document.body.hasClass('theme-dark')
+    const theme = this.dark ? 'dark' : 'light'
+    if (theme !== this.theme) {
+      this.theme = theme
+      this.root.setCssProps(materialTokens(theme))
+    }
+    const { groups, style, material, continuous, showTags } = this.filtered(settings)
+    const scene = buildScene(
+      groups,
+      {
+        bookHeight: settings.bookHeight,
+        shelfWidth: settings.shelfWidth,
+        continuous,
+        style,
+        material,
+        showTags,
+      },
+      model => ({ title: model.spine, author: authorLabel(model.authors) || undefined }),
+    )
+    const count = scene.books.length
+    this.root.toggleClass('is-empty', count === 0)
+
+    const [minX, minY, maxX, maxY] = scene.bounds
+    const metrics = this.stage.measure(count, settings.scrollStep, scene.fit, scene.span, minX)
+    const { scale } = metrics
+    this.frame = { minX, minY, scale }
+    this.size = [(maxX - minX) * scale, (maxY - minY) * scale]
+    this.world.style.width = `${this.size[0]}px`
+    this.world.style.height = `${this.size[1]}px`
+    this.zoom = Math.min(this.zoom, this.maxZoom())
+
+    const previous = this.paints
+    this.scene = scene
+    this.version++
+    this.paints = []
+    this.centres = []
+    this.reaches = []
+    this.shelfLayer.clear()
+    this.fromEnd = []
+    for (const [i, layer] of scene.layers.entries()) {
+      if (layer.kind !== 'shelf') continue
+      this.shelfLayer.set(layer.shelf, i)
+      for (const [p, index] of layer.books.entries()) this.fromEnd[index] = layer.books.length - p
+    }
+    this.coverBooks.clear()
+    this.recolour.clear()
+    const files = scene.books.map(book => {
+      const cover = book.item.cover
+      if (cover?.kind !== 'vault') return null
+      const list = this.coverBooks.get(cover.file.path)
+      if (list) list.push(book.index)
+      else this.coverBooks.set(cover.file.path, [book.index])
+      return cover.file
+    })
+    this.paintLayers(scene, previous)
+    // The first index waits for the idle pass; later ones follow the data at once.
+    if (this.buttons.length > 0) this.updateIndex(scene)
+    else this.indexPending = true
+
+    // Keep the focused book by path; when it is gone, keep its index. Only a shift moves the
+    // scroll position, so a rebuild never cancels a smooth scroll in progress.
+    let focus = this.focus
+    let top: number | undefined = metrics.scrollTop
+    if (this.filterChanged) {
+      // A new topic or tag starts at its first book, from the top, with the whole case in view.
+      this.filterChanged = false
+      this.focus = focus = -1
+      this.focusPath = null
+      this.zoom = 1
+      this.pan = [0, 0]
+      this.releasing = false
+      scroller.scrollTop = 0
+      top = 0
+    }
+    if (this.restoreFocus) {
+      this.restoreFocus = false
+      if (focus >= 0) {
+        scroller.scrollTop = metrics.trackTop + Math.min(focus, count - 1) * settings.scrollStep
+        top = undefined
+      }
+    }
+    if (count > 0 && focus >= 0) {
+      focus = Math.min(focus, count - 1)
+      if (this.focusPath && scene.books[focus]?.path !== this.focusPath) {
+        let best = -1
+        for (const book of scene.books)
+          if (
+            book.path === this.focusPath &&
+            (best < 0 || Math.abs(book.index - this.focus) < Math.abs(best - this.focus))
+          )
+            best = book.index
+        if (best >= 0) focus = best
+      }
+      if (focus !== this.focus) {
+        // The browser may clamp the offset, so the camera reads it back (a rare layout read).
+        scroller.scrollTop = metrics.trackTop + focus * settings.scrollStep
+        top = undefined
+      }
+    }
+    this.plugin.covers.need(this, files, Math.max(0, focus))
+    this.camera(true, top)
+    this.setControls()
+    this.dataChanged = false
+    // Shelves outside the stage, and the markup of the others, are left to idle time.
+    this.requestSettle()
+  }
+
+  /**
+   * The books on show and their shelf layout. "all" is the view as Bases groups it, in the view's
+   * own style; a topic keeps its books, shelved by `topicGroupBy`. Pressed tags narrow either one:
+   * a book shows when it is in the topic and carries every pressed tag.
+   */
+  private filtered(settings: BookcaseConfig) {
+    const data = this.data
+    const config = readTopicConfig(this.config)
+    const entries = data.data
+    const tagsOf = new Map(
+      entries.map(e => [
+        e.file.path,
+        this.reader.strings(e, TAGS).map(tag => tag.replace(/^#/, '')),
+      ]),
+    )
+    const tags = (path: string) => tagsOf.get(path) ?? []
+    const pairs: [string | null, string][] = []
+    let total = 0
+    for (const group of data.groupedData) {
+      const key = group.hasKey() && group.key ? group.key.toString() : null
+      for (const entry of group.entries) pairs.push([key, entry.file.path])
+      total += group.entries.length
+    }
+    const members = topicMembers(pairs, tags, config)
+    const tabs = topicTabs(members, total, config)
+    this.filterKey ??= this.baseKey()
+    const saved = this.filter ?? this.plugin.covers.filter(this.filterKey)
+    const topic = saved && tabs.some(tab => tab.id === saved.topic) ? saved.topic : ALL
+    const set = topic === ALL ? null : members.get(topic)
+    const inShow = (path: string) => !set || set.has(path)
+    const chips = tagChips(
+      entries.map(e => tags(e.file.path)),
+      i => inShow(entries[i].file.path),
+      config,
+    )
+    const pressed = (saved?.tags ?? []).filter(tag => chips.some(chip => chip.id === tag))
+    this.filter = { topic, tags: pressed, panel: saved?.panel ?? 'topics' }
+    this.tabs = tabs
+    this.chips = chips
+    this.panel.render(tabs, chips, this.filter)
+    this.reserve = this.panel.reserve()
+
+    const shelf = topic === ALL ? undefined : lookupTopic(topic, config).shelf
+    const style = shelf?.style ?? settings.shelfStyle
+    // As the garden: a topic's shelf brings its own material, or the style's own when it names none.
+    const material = shelf ? (shelf.material ?? null) : settings.shelfMaterial
+    const showTags = shelf?.showTags ?? settings.showTags
+    if (this.root.dataset.topic !== topic) this.root.dataset.topic = topic
+    if (this.root.dataset.shelfStyle !== style) this.root.dataset.shelfStyle = style
+    const keep = (entry: BasesEntry) => {
+      const path = entry.file.path
+      return inShow(path) && pressed.every(tag => tags(path).includes(tag))
+    }
+    // A topic's shelves group by small subcategories, so they share runs, as in the garden.
+    const continuous = topic !== ALL
+    let groups
+    if (continuous)
+      groups = this.reader.topicGroups(entries.filter(keep), config.shelvesBy, settings)
+    else if (pressed.length === 0) groups = this.reader.groups(data.groupedData, settings)
+    else groups = this.reader.groups(data.groupedData, settings, keep)
+    return { groups, style, material, continuous, showTags }
+  }
+
+  /** Where the filter choice is kept: the .base file and the view name. */
+  private baseKey(): string {
+    let path = ''
+    const embed = this.containerEl.closest('.internal-embed, .bases-embed')
+    const src = embed?.getAttribute('src')
+    if (src) {
+      const link = src.split('#')[0]
+      path = this.app.metadataCache.getFirstLinkpathDest(link, '')?.path ?? link
+    } else
+      for (const leaf of this.app.workspace.getLeavesOfType('bases')) {
+        const view = leaf.view as { containerEl?: HTMLElement; file?: { path: string } | null }
+        if (view.containerEl?.contains(this.containerEl)) path = view.file?.path ?? ''
+      }
+    return `${path}#${this.config.name}`
+  }
+
+  private setFilter(filter: ViewFilter): void {
+    this.filter = filter
+    this.filterChanged = true
+    if (this.filterKey !== null) this.plugin.covers.setFilter(this.filterKey, filter)
+    this.lift.clear()
+    this.dataChanged = true
+    this.schedule()
+  }
+
+  /** A new topic drops the pressed tags, which belong to the old one. */
+  private selectTopic(id: string): void {
+    const filter = this.filter
+    if (filter && id !== filter.topic) this.setFilter({ ...filter, topic: id, tags: [] })
+  }
+
+  private toggleTag(id: string): void {
+    const filter = this.filter
+    if (!filter) return
+    const tags = filter.tags.includes(id)
+      ? filter.tags.filter(tag => tag !== id)
+      : [...filter.tags, id]
+    this.setFilter({ ...filter, tags })
+  }
+
+  /** The panel tab changes what the panel lists, not what the case shows. */
+  private selectPanel(panel: FilterPanel): void {
+    const filter = this.filter
+    if (!filter || filter.panel === panel) return
+    this.filter = { ...filter, panel }
+    if (this.filterKey !== null) this.plugin.covers.setFilter(this.filterKey, this.filter)
+    this.panel.render(this.tabs, this.chips, this.filter)
+    this.reserve = this.panel.reserve()
+    this.camera()
+  }
+
+  private onCamera(action: CameraAction): void {
+    if (action === 'in') this.zoomBy(ZOOM)
+    else if (action === 'out') this.zoomBy(1 / ZOOM)
+    else if (action === 'fullscreen') {
+      if (this.stage.fullscreen) void document.exitFullscreen().catch(() => undefined)
+      else void this.root.requestFullscreen().catch(() => undefined)
+    } else {
+      this.zoom = 1
+      this.pan = [0, 0]
+      this.releasing = false
+      this.requestPlace()
+    }
+  }
+
+  /** Zoom limits as the garden's: from the fitted scale to max(2, 4 × fitted). */
+  private maxZoom(): number {
+    const { scale } = this.frame
+    return Math.max(2, scale * 4) / scale
+  }
+
+  private zoomBy(factor: number): void {
+    const zoom = clamp(this.zoom * factor, 1, this.maxZoom())
+    if (zoom === this.zoom) return
+    const ratio = zoom / this.zoom
+    this.zoom = zoom
+    this.pan = [this.pan[0] * ratio, this.pan[1] * ratio]
+    this.requestPlace()
+  }
+
+  private setControls(): void {
+    this.panel.setCamera({
+      canIn: this.zoom < this.maxZoom() - 0.001,
+      canOut: this.zoom > 1.001,
+      fullscreen: this.stage.fullscreen,
+    })
+  }
+
+  private onFullscreen(): void {
+    const full = this.stage.fullscreen
+    if (full === this.fullscreen) return
+    this.fullscreen = full
+    this.root.toggleClass('is-fullscreen', full)
+    if (full) this.observer?.observe(this.root)
+    else this.observer?.unobserve(this.root)
+    this.stage.reset()
+    this.restoreFocus = true
+    this.setControls()
+    this.schedule()
+  }
+
+  /**
+   * Writes the world transform: the scroll camera's `base`, zoomed about the anchor, then the pan.
+   * Zoomed or panned, the case keeps at least 30% of the stage, as in the garden.
+   */
+  private place(): void {
+    const [ax, ay] = this.stage.anchor()
+    const z = this.zoom
+    const x = ax + z * (this.base[0] - ax)
+    const y = ay + z * (this.base[1] - ay)
+    if (z !== 1 || this.pan[0] !== 0 || this.pan[1] !== 0) {
+      const { stageWidth, sceneHeight } = this.stage.metrics
+      const w = this.size[0] * z
+      const h = this.size[1] * z
+      const ix = Math.min(stageWidth, w) * 0.3
+      const iy = Math.min(sceneHeight, h) * 0.3
+      this.pan = [
+        clamp(x + this.pan[0], ix - w, stageWidth - ix) - x,
+        clamp(y + this.pan[1], iy - h, sceneHeight - iy) - y,
+      ]
+    }
+    const offset: Point = [x + this.pan[0], y + this.pan[1]]
+    this.offset = offset
+    const move = `translate3d(${offset[0]}px, ${offset[1]}px, 0)`
+    this.world.style.transform = z === 1 ? move : `${move} scale(${z})`
+    this.root.toggleClass('is-zoomed', z !== 1)
+  }
+
+  private band(): [number, number] {
+    return this.stage.band(this.offset, this.zoom)
+  }
+
+  /** Pan and zoom frames: a drag, a zoom step, or a released pan easing home. */
+  private requestPlace(): void {
+    this.placeRaf ??= requestAnimationFrame(now => {
+      this.placeRaf = null
+      if (this.releasing) {
+        const k = 1 - Math.exp(-Math.min(64, Math.max(0, now - this.releaseAt)) / GLIDE_MS)
+        this.releaseAt = now
+        this.pan = [this.pan[0] * (1 - k), this.pan[1] * (1 - k)]
+        if (Math.hypot(this.pan[0], this.pan[1]) < 0.5) {
+          this.pan = [0, 0]
+          this.releasing = false
+        }
+      }
+      this.place()
+      this.layers.check(this.band(), this.stage.span(this.offset, this.zoom))
+      this.setControls()
+      this.requestSettle()
+      if (this.releasing) this.requestPlace()
+    })
+  }
+
+  /** A new focus brings the camera back onto it: the pan eases to zero, the zoom stays. */
+  private releasePan(): void {
+    if (this.drag.dragging || this.releasing || (this.pan[0] === 0 && this.pan[1] === 0)) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      this.pan = [0, 0]
+      return
+    }
+    this.releasing = true
+    this.releaseAt = performance.now()
+    this.requestPlace()
+  }
+
+  private render(index: number): string {
+    const scene = this.scene
+    const layer = scene?.layers[index]
+    if (!scene || !layer) return ''
+    return layer.kind === 'solids'
+      ? solidsMarkup(layer)
+      : shelfMarkup(layer, scene.books, book => this.paint(book.index))
+  }
+
+  /** Writes the hidden state of a lifted book into its shelf's markup, so a mount sets no attribute. */
+  private prepare(index: number, markup: string): string {
+    const layer = this.scene?.layers[index]
+    if (layer?.kind !== 'shelf' || this.hidden.size === 0) return markup
+    for (const i of layer.books)
+      if (this.hidden.has(i))
+        markup = markup.replace(`data-book="${i}" `, `data-book="${i}" visibility="hidden" `)
+    return markup
+  }
+
+  /**
+   * Signatures as SPEC 5.6, without the colours: a book whose colour alone changed is patched in
+   * place, so a theme switch or a finished cover never rewrites a shelf.
+   */
+  private paintLayers(scene: Scene<BookModel>, previous: (BookPaint | undefined)[]): void {
+    this.layers.reshape(scene.layers.map(layer => layer.kind))
+    const { scale } = this.frame
+    for (const [i, layer] of scene.layers.entries()) {
+      if (layer.kind === 'solids') {
+        const signature = `${scale}|${partsSignature(layer.halos, layer.solids)}`
+        this.layers.update(i, signature, solidsBox(layer), this.frame)
+        continue
+      }
+      const parts: unknown[] = [
+        scale,
+        layer.origin,
+        layer.plate?.label,
+        layer.plate?.face[0],
+        layer.contact.points[0],
+        partsSignature(layer.halos, layer.solids),
+      ]
+      for (const index of layer.books) {
+        const book = scene.books[index]
+        parts.push(
+          index,
+          book.path,
+          book.label.title,
+          book.label.author,
+          spineLabels(book, scale),
+          book.thickness,
+          book.height,
+          book.depth,
+          book.faces.edge[0],
+        )
+      }
+      if (this.layers.update(i, parts.join('|'), shelfBox(layer, scene.books), this.frame)) continue
+      for (const index of layer.books) {
+        // A paint never computed was never drawn.
+        const old = previous[index]
+        if (!old) continue
+        const paint = this.paint(index)
+        if (old.spine !== paint.spine || old.ink !== paint.ink) this.patchBook(i, index)
+      }
+    }
+  }
+
+  /** Writes a book's new colour into its mounted shelf; an unmounted shelf renders it on mount. */
+  private patchBook(layer: number, index: number): void {
+    this.layers.invalidate(layer)
+    this.bookElement(index)?.setAttribute('style', bookStyle(this.paint(index)))
+  }
+
+  private paint(index: number): BookPaint {
+    let paint = this.paints[index]
+    if (!paint) {
+      const book = this.scene!.books[index]
+      paint = paintBook(
+        book,
+        this.plugin.covers.spineColour(book.item, this.dark),
+        this.frame.scale,
+      )
+      this.paints[index] = paint
+    }
+    return paint
+  }
+
+  private centre(index: number): Point {
+    return (this.centres[index] ??= toPx(this.frame, this.scene!.books[index].centre))
+  }
+
+  private reach(index: number): Point {
+    let reach = this.reaches[index]
+    if (reach === undefined) {
+      const book = this.scene!.books[index]
+      let left = Infinity
+      let right = -Infinity
+      for (const [x] of book.faces.edge) {
+        left = Math.min(left, x)
+        right = Math.max(right, x)
+      }
+      const px = (x: number) => (x + book.pull[0] - this.frame.minX) * this.frame.scale
+      reach = [px(left), px(right)]
+      this.reaches[index] = reach
+    }
+    return reach
+  }
+
+  /** The shelf copy of a book, when its shelf is mounted. */
+  private bookElement(index: number): Element | null {
+    const book = this.scene?.books[index]
+    const layer = book ? this.shelfLayer.get(book.shelf) : undefined
+    if (layer === undefined || !this.layers.isMounted(layer)) return null
+    const children = this.layers.element(layer)?.children
+    return children?.[children.length - this.fromEnd[index]] ?? null
+  }
+
+  /** Colours of books whose cover finished, and the lifted book's cover URL. */
+  private applyColours(): void {
+    const scene = this.scene
+    if (!scene) return
+    for (const index of this.recolour) {
+      const book = scene.books[index]
+      if (!book) continue
+      const old = this.paints[index]
+      this.paints[index] = undefined
+      if (!old) continue
+      const paint = this.paint(index)
+      const layer = this.shelfLayer.get(book.shelf)
+      if (layer !== undefined && (old.spine !== paint.spine || old.ink !== paint.ink))
+        this.patchBook(layer, index)
+    }
+    const lifted = this.lift.index
+    if (lifted !== null && this.recolour.has(lifted)) this.syncLift(lifted)
+    this.recolour.clear()
+  }
+
+  private requestSettle(): void {
+    if (this.settleTimer !== null || this.settleIdle !== null) return
+    const wait = this.lastScroll + QUIET_MS - performance.now()
+    if (wait > 0) {
+      this.settleTimer = window.setTimeout(() => {
+        this.settleTimer = null
+        this.requestSettle()
+      }, wait)
+      return
+    }
+    this.settleIdle = idle(remaining => {
+      this.settleIdle = null
+      if (this.settle(remaining)) this.requestSettle()
+    }, 1000)
+  }
+
+  private cancelSettle(): void {
+    if (this.settleTimer !== null) window.clearTimeout(this.settleTimer)
+    this.settleIdle?.()
+    this.preloadIdle?.()
+    this.settleTimer = this.settleIdle = this.preloadIdle = null
+    this.cancelLift()
+  }
+
+  /** Idle pass: finished covers, then windowing and markup. Returns true when work is left. */
+  private settle(remaining: () => number): boolean {
+    if (!this.scene) return false
+    // A scroll whose event has not fired yet counts as motion too.
+    if (performance.now() - this.lastScroll < QUIET_MS || this.stage.moved()) return true
+    if (this.indexPending) {
+      this.indexPending = false
+      this.updateIndex(this.scene)
+    }
+    if (this.recolour.size > 0) this.applyColours()
+    return this.layers.settle(
+      this.band(),
+      this.stage.metrics.stageHeight,
+      new Set(this.ahead()),
+      remaining,
+    )
+  }
+
+  private text(key: string): string | string[] {
+    const scene = this.scene
+    if (!scene) return ''
+    const n = Number(key.slice(1))
+    switch (key[0]) {
+      case 't':
+        return scene.books[n]?.text.title?.text ?? ''
+      case 'a':
+        return scene.books[n]?.text.author?.text ?? ''
+      case 'p':
+        for (const layer of scene.layers)
+          if (layer.kind === 'shelf' && layer.shelf === n) return layer.plate?.label ?? ''
+        return ''
+      case 'c': {
+        const book = scene.books[n]
+        return book ? coverLines(book) : ''
+      }
+    }
+    return ''
+  }
+
+  private setHidden(index: number, hidden: boolean): void {
+    if (this.hidden.has(index) === hidden) return
+    if (hidden) this.hidden.add(index)
+    else this.hidden.delete(index)
+    const g = this.bookElement(index)
+    if (hidden) g?.setAttribute('visibility', 'hidden')
+    else g?.removeAttribute('visibility')
+  }
+
+  private onScroll(evt: Event): void {
+    if (evt.currentTarget !== this.stage.scroller || this.scrollRaf !== null) return
+    this.lastScroll = performance.now()
+    this.scrollRaf = requestAnimationFrame(() => {
+      this.scrollRaf = null
+      this.camera()
+    })
+  }
+
+  /**
+   * Camera, focus and windowing for the current scroll position (SPEC 6.2). After a rebuild
+   * (`sync`) the focused book is brought up to date even when the focus did not move.
+   */
+  private camera(sync = false, scrollTop?: number): void {
+    const scene = this.scene
+    const settings = this.settings
+    if (!scene || !settings) return
+    const count = scene.books.length
+    const t = this.stage.progress(count, settings.scrollStep, scrollTop)
+    // An empty case sits in the middle of the stage; otherwise the focused spine holds the anchor.
+    const target = count > 0 ? cameraTarget(i => this.centre(i), count, t) : this.emptyTarget()
+    let offset: Point
+    if (count > 0) {
+      const a = this.reach(Math.floor(t))
+      const b = Math.ceil(t) < count ? this.reach(Math.ceil(t)) : a
+      const k = t - Math.floor(t)
+      const lift: Point = [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k]
+      offset = this.stage.offset(target, lift, this.reserve)
+    } else {
+      const { stageWidth, sceneHeight } = this.stage.metrics
+      offset = [stageWidth / 2 - target[0], sceneHeight / 2 - target[1]]
+    }
+    this.base = offset
+    const focus = count > 0 ? Math.round(t) : -1
+    if (focus !== this.focus) this.releasePan()
+    this.place()
+    if (focus !== this.focus) this.setFocus(focus, sync)
+    else if (sync) this.syncFocus()
+    // A rebuild mounts only the shelves on the stage; the idle pass mounts the rest.
+    const urgent = this.layers.check(
+      this.band(),
+      sync ? this.stage.span(this.offset, this.zoom) : undefined,
+    )
+    // One shelf mount per focus change: the ones the camera needs now, else one ahead of it.
+    // Shelf markup is rendered in idle time, so a mount here only parses it.
+    if (focus !== this.focusMounts) {
+      this.focusMounts = focus
+      if (urgent === 0 && !sync)
+        this.layers.mountNext(this.ahead(), this.band(), this.stage.metrics.stageHeight)
+    }
+    this.requestSettle()
+  }
+
+  /** Layers of the books within LOOKAHEAD of the focus, nearest first, the heading first. */
+  private ahead(): number[] {
+    const books = this.scene?.books ?? []
+    const order: number[] = []
+    for (let d = 1; d <= LOOKAHEAD; d++)
+      for (const i of [this.focus + this.heading * d, this.focus - this.heading * d]) {
+        const layer = books[i] ? this.shelfLayer.get(books[i].shelf) : undefined
+        if (layer !== undefined) order.push(layer)
+      }
+    return order
+  }
+
+  /** Middle of the case, for a view with no books. */
+  private emptyTarget(): Point {
+    const [minX, minY, maxX, maxY] = this.scene?.bounds ?? [0, 0, 0, 0]
+    return toPx(this.frame, [(minX + maxX) / 2, (minY + maxY) / 2])
+  }
+
+  /** `later`, after a rebuild: the lift is written in idle time and shown on the next frame. */
+  private setFocus(focus: number, later = false): void {
+    const scene = this.scene
+    const settings = this.settings
+    if (!scene || !settings) return
+    if (this.focus >= 0 && focus >= 0) this.heading = focus < this.focus ? -1 : 1
+    this.focus = focus
+    const book = scene.books[focus]
+    if (book) this.focusPath = book.path
+    this.rove(focus)
+
+    if (!book) {
+      this.lift.show(null, this.frame)
+      this.page.schedule(null, settings)
+      this.preload.clear()
+      return
+    }
+    this.cancelLift()
+    if (later) {
+      this.lift.show(null, this.frame)
+      this.liftIdle = idle(() => {
+        this.liftIdle = null
+        const request = this.liftBook(this.focus)
+        if (request) this.lift.prepare(request, this.frame)
+        this.liftRaf = requestAnimationFrame(() => {
+          this.liftRaf = null
+          this.lift.show(this.liftBook(this.focus), this.frame)
+        })
+      }, 100)
+    } else this.lift.show(this.liftBook(focus), this.frame)
+    this.page.schedule(book.item, settings)
+    this.preloadAround()
+    this.plugin.covers.focus(this, focus)
+  }
+
+  private cancelLift(): void {
+    this.liftIdle?.()
+    if (this.liftRaf !== null) cancelAnimationFrame(this.liftRaf)
+    this.liftIdle = null
+    this.liftRaf = null
+  }
+
+  /** The focus did not move but the data or the layout did. */
+  private syncFocus(): void {
+    const book = this.scene?.books[this.focus]
+    if (!book || !this.settings) return
+    this.focusPath = book.path
+    this.rove(this.focus)
+    this.syncLift(this.focus)
+    this.page.schedule(book.item, this.settings, this.dataChanged)
+    this.preloadAround()
+  }
+
+  private syncLift(index: number): void {
+    const lifted = this.liftBook(index)
+    if (!lifted) return
+    if (this.lift.index === index) this.lift.update(lifted, this.frame)
+    else this.lift.show(lifted, this.frame)
+  }
+
+  private liftBook(index: number): LiftRequest | null {
+    const book = this.scene?.books[index]
+    if (!book) return null
+    const paint = this.paint(index)
+    const image = this.plugin.covers.image(book.item, this.app)
+    return {
+      index,
+      key: [this.version, index, paint.spine, paint.ink, image, this.frame.scale].join('|'),
+      build: () => liftContent(book, paint, image, key => this.text(key)),
+    }
+  }
+
+  /**
+   * In idle time, decodes the thumbnails of focus ± 3 and writes the book the scroll reaches
+   * next into the spare lift.
+   */
+  private preloadAround(): void {
+    this.preloadIdle ??= idle(() => {
+      this.preloadIdle = null
+      const books = this.scene?.books ?? []
+      const focus = this.focus
+      const next = this.liftBook(focus + this.heading)
+      if (next) this.lift.prepare(next, this.frame)
+      const urls: string[] = []
+      for (let d = 0; d <= PRELOAD_RADIUS; d++)
+        for (const i of d === 0 ? [focus] : [focus - d, focus + d]) {
+          const near = books[i]
+          const url =
+            near?.item.cover?.kind === 'vault' ? this.plugin.covers.thumb(near.item) : null
+          if (url) urls.push(url)
+        }
+      this.preload.set(urls)
+    }, 500)
+  }
+
+  /** Roving tabindex and aria-current on the index buttons. */
+  private rove(index: number): void {
+    if (index === this.roving) return
+    const old = this.buttons[this.roving]
+    old?.setAttribute('tabindex', '-1')
+    old?.removeAttribute('aria-current')
+    this.roving = index
+    const button = this.buttons[index]
+    button?.setAttribute('tabindex', '0')
+    button?.setAttribute('aria-current', 'true')
+  }
+
+  private updateIndex(scene: Scene<BookModel>): void {
+    const books = scene.books
+    while (this.buttons.length > books.length) this.buttons.pop()?.parentElement?.remove()
+    while (this.buttons.length < books.length) {
+      const i = this.buttons.length
+      const current = i === this.roving
+      const button = this.indexEl
+        .createEl('li')
+        .createEl('button', {
+          attr: { type: 'button', tabindex: current ? '0' : '-1', 'data-index': String(i) },
+        })
+      if (current) button.setAttribute('aria-current', 'true')
+      this.buttons.push(button)
+    }
+    for (const [i, book] of books.entries()) {
+      const button = this.buttons[i]
+      const label = [book.item.title, book.item.authors.join(', ')].filter(Boolean).join(', ')
+      if (button.getAttribute('aria-label') !== label) {
+        button.setAttribute('aria-label', label)
+        button.textContent = book.item.title
+      }
+    }
+    if (this.roving >= books.length) this.roving = -1
+  }
+
+  private buttonIndex(target: EventTarget | null): number | null {
+    const button = (target as Element | null)?.closest<HTMLElement>('button[data-index]')
+    const i = Number(button?.dataset.index)
+    return button && Number.isInteger(i) ? i : null
+  }
+
+  private onKey(evt: KeyboardEvent): void {
+    const scene = this.scene
+    const i = this.buttonIndex(evt.target)
+    if (!scene || i === null) return
+    const books = scene.books
+    const last = books.length - 1
+    const shelfStart = (shelf: number) => books.findIndex(b => b.shelf === shelf)
+    let next: number | null = null
+    switch (evt.key) {
+      case 'ArrowRight':
+      case 'ArrowDown':
+        next = Math.min(last, i + 1)
+        break
+      case 'ArrowLeft':
+      case 'ArrowUp':
+        next = Math.max(0, i - 1)
+        break
+      case 'PageDown': {
+        const start = shelfStart(books[i].shelf + 1)
+        next = start >= 0 ? start : last
+        break
+      }
+      case 'PageUp': {
+        const start = shelfStart(books[i].shelf - 1)
+        next = start >= 0 ? start : 0
+        break
+      }
+      case 'Home':
+        next = 0
+        break
+      case 'End':
+        next = last
+        break
+      case 'Enter':
+        evt.preventDefault()
+        void this.app.workspace.openLinkText(books[i].path, '', Keymap.isModEvent(evt))
+        return
+      default:
+        return
+    }
+    evt.preventDefault()
+    this.moveTo(next, true)
+  }
+
+  private moveTo(index: number, focusButton: boolean): void {
+    const settings = this.settings
+    if (!settings) return
+    if (focusButton) {
+      this.rove(index)
+      // The index sits at the top of the view; focusing it must not scroll the track back.
+      this.buttons[index]?.focus({ preventScroll: true })
+    }
+    this.stage.scrollTo(index, settings.scrollStep)
+  }
+
+  private bookAt(target: EventTarget | null) {
+    const g = (target as Element | null)?.closest<SVGGElement>('[data-book]')
+    const index = Number(g?.dataset.book)
+    return g && Number.isInteger(index) ? (this.scene?.books[index] ?? null) : null
+  }
+
+  private onWorldClick(evt: MouseEvent): void {
+    const book = this.bookAt(evt.target)
+    if (!book) return
+    if ((evt.target as Element).closest('.bookcase-lift')) {
+      void this.app.workspace.openLinkText(book.path, '', Keymap.isModEvent(evt))
+      return
+    }
+    this.moveTo(book.index, false)
+  }
+
+  private hover(event: MouseEvent, targetEl: HTMLElement, linktext: string): void {
+    this.app.workspace.trigger('hover-link', {
+      event,
+      source: 'bases',
+      hoverParent: this,
+      targetEl,
+      linktext,
+    })
+  }
+}
