@@ -147,9 +147,11 @@ export function renderDataFor(ctx: BuildCtx, allFiles: QuartzPluginData[]): Rend
   return renderData
 }
 
+import { ReloadableWeakMap } from './module-caches'
+
 export type WorkerSerializableBuildCtx = Omit<BuildCtx, 'cfg' | 'trie' | 'renderData'>
 
-const contentDataCache = new WeakMap<ProcessedContent[], QuartzPluginData[]>()
+const contentDataCache = new ReloadableWeakMap<ProcessedContent[], QuartzPluginData[]>()
 
 export function contentDataFor(content: ProcessedContent[]): QuartzPluginData[] {
   const cached = contentDataCache.get(content)
@@ -161,7 +163,7 @@ export function contentDataFor(content: ProcessedContent[]): QuartzPluginData[] 
   return data
 }
 
-const deckDataCache = new WeakMap<ProcessedContent[], QuartzPluginData[]>()
+const deckDataCache = new ReloadableWeakMap<ProcessedContent[], QuartzPluginData[]>()
 
 export function deckDataFor(content: ProcessedContent[]): QuartzPluginData[] {
   const cached = deckDataCache.get(content)

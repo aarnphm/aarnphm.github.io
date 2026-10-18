@@ -17,9 +17,14 @@ import { resetStaticFileCache, staticAssetClaims } from './plugins/emitters/stat
 import { ProcessedContent } from './plugins/vfile'
 import { emitContent, emitPartialEmitter } from './processors/emit'
 import { filterContentResult } from './processors/filter'
-import { parseMarkdown } from './processors/parse'
+import {
+  parseMarkdown,
+  restoredProcessedContent,
+  snapshotProcessedContentCache,
+} from './processors/parse'
 import { ChangeEvent } from './types/plugin'
 import { defaultIoConcurrency, mapConcurrent } from './util/async-pool'
+import { resetCopyFileCache } from './util/copy-file'
 import { courseDirOf } from './util/course'
 import { Argv, BuildCtx } from './util/ctx'
 import { emitQuartzDevEvent } from './util/dev-events'
@@ -34,6 +39,13 @@ import {
 } from './util/output-assets'
 import { FilePath, joinSegments, slugifyFilePath } from './util/path'
 import { logBuildStage, PerfTimer } from './util/perf'
+import {
+  captureBuildInputs,
+  commitBuildCache,
+  commitResourceBuildCache,
+  resourceBuildCheckpoint,
+  restoreBuildCache,
+} from './util/persistent-build-cache'
 import { randomIdNonSecure } from './util/random'
 import { options } from './util/sourcemap'
 import { withStagedOutput } from './util/staged-output'
@@ -413,14 +425,32 @@ async function emitFullBuild(
   )
 }
 
-export async function buildQuartz(
-  config: QuartzConfig,
-  argv: Argv,
-  mut: Mutex,
-  clientRefresh: () => void,
-  reason: BuildReason = 'initial',
-  scope: BuildScope = 'site',
-) {
+async function emitStagedChanges(ctx: BuildCtx, emit: () => Promise<void>): Promise<void> {
+  const argv = ctx.argv
+  ctx.outputAssetManifest ??= await readOutputAssetManifest()
+  await withStagedOutput(
+    argv.output,
+    async stage => {
+      ctx.argv = { ...argv, output: stage }
+      relocateOutputAssets(ctx, argv.output, stage)
+      resetWriteCache()
+      resetCopyFileCache()
+      try {
+        await emit()
+      } finally {
+        relocateOutputAssets(ctx, stage, argv.output)
+        ctx.argv = argv
+        resetWriteCache()
+        resetCopyFileCache()
+      }
+    },
+    ['models'],
+    (stage, elapsedMs) => logBuildStage(argv, ctx.buildId, stage, elapsedMs),
+  )
+  await writeCurrentOutputAssetManifest(ctx)
+}
+
+function gitCommitShaFor(argv: Argv): string | undefined {
   let gitCommitSha: string | undefined
 
   if (argv.serve || argv.watch) {
@@ -435,6 +465,19 @@ export async function buildQuartz(
       }
     }
   }
+
+  return gitCommitSha
+}
+
+export async function buildQuartz(
+  config: QuartzConfig,
+  argv: Argv,
+  mut: Mutex,
+  clientRefresh: () => void,
+  reason: BuildReason = 'initial',
+  scope: BuildScope = 'site',
+) {
+  const gitCommitSha = gitCommitShaFor(argv)
 
   const ctx: BuildCtx = {
     buildId: randomIdNonSecure(),
@@ -479,14 +522,41 @@ export async function buildQuartz(
     if (scope === 'site' && !argv.watch) await cleanOutputForBuild(ctx, perf, true)
 
     logBuildStage(argv, ctx.buildId, 'build.glob-and-context', perf.elapsedMs('glob'))
+    perf.addEvent('restore')
+    const persistentInputs = scope !== 'courses' ? await captureBuildInputs(ctx) : undefined
+    const restored =
+      reason === 'initial' ? await restoreBuildCache(ctx, persistentInputs) : undefined
+    logBuildStage(argv, ctx.buildId, 'build.cache-restore', perf.elapsedMs('restore'))
+    if (restored?.unchanged) {
+      const published = new Set(restored.published)
+      for (const [fp, content] of indexContent(restoredProcessedContent(filePaths))) {
+        if (published.has(fp)) initialContent.set(fp, content)
+      }
+      ctx.outputAssetManifest = await readOutputAssetManifest()
+      ctx.incremental = true
+      if (watching) watching.ready = true
+      console.log(
+        `Restored ${initialContent.size} published files; 0 parsed, 0 rendered, 0 output writes`,
+      )
+      emitQuartzDevEvent({
+        type: 'build:ready',
+        epoch: ctx.buildId,
+        files: markdownPaths.length,
+        elapsedMs: perf.elapsedMs(),
+      })
+      return watching
+    }
     perf.addEvent('parse')
     const parsedFiles = await parseMarkdown(ctx, filePaths)
     logBuildStage(argv, ctx.buildId, 'build.parse', perf.elapsedMs('parse'))
     perf.addEvent('filter-index')
     const filteredContent = filterContentResult(ctx, parsedFiles).published
     for (const [fp, content] of indexContent(filteredContent)) initialContent.set(fp, content)
-
     logBuildStage(argv, ctx.buildId, 'build.filter-index', perf.elapsedMs('filter-index'))
+    perf.addEvent('cache-snapshot')
+    const parseSnapshot = persistentInputs ? snapshotProcessedContentCache(filePaths) : undefined
+    logBuildStage(argv, ctx.buildId, 'build.cache-snapshot', perf.elapsedMs('cache-snapshot'))
+
     perf.addEvent('emission')
     if (scope === 'courses') {
       globalThis.__quartzSourceEmissionSnapshot = undefined
@@ -496,6 +566,9 @@ export async function buildQuartz(
       await emitFullBuild(ctx, perf, filteredContent, scope)
     }
     logBuildStage(argv, ctx.buildId, 'build.emission', perf.elapsedMs('emission'))
+    perf.addEvent('cache-commit')
+    await commitBuildCache(ctx, persistentInputs, parseSnapshot, [...initialContent.keys()])
+    logBuildStage(argv, ctx.buildId, 'build.cache-commit', perf.elapsedMs('cache-commit'))
     ctx.incremental = argv.watch
     if (watching) watching.ready = true
     console.log(
@@ -755,6 +828,7 @@ async function rebuild(clientRefresh: () => void, buildData: BuildData, pending:
 
     syncCtxFiles(ctx, allFiles)
 
+    const persistentInputs = await captureBuildInputs(ctx)
     const dirtyPaths = incremental
       ? new Set(
           [...pending.keys()].map(relPath => joinSegments(argv.directory, relPath) as FilePath),
@@ -763,6 +837,7 @@ async function rebuild(clientRefresh: () => void, buildData: BuildData, pending:
     const parsedFiles = await parseMarkdown(ctx, filePaths, dirtyPaths)
     const processedFiles = filterContentResult(ctx, parsedFiles).published
     const current = indexContent(processedFiles)
+    const parseSnapshot = persistentInputs ? snapshotProcessedContentCache(filePaths) : undefined
     const changeEvents = incremental ? buildChangeEvents(ctx, pending, contentMap, current) : []
     // Partial emit does not remove every output a deleted page derived, so a delete cleans `public`
     // and emits the site again. Course pages are leaves whose outputs sit at their own slug: remove
@@ -772,20 +847,23 @@ async function rebuild(clientRefresh: () => void, buildData: BuildData, pending:
       .map(deletedCourseOutputSlugs)
 
     if (incremental && droppedOutputs.every(slugs => slugs !== undefined)) {
-      await Promise.all(
-        droppedOutputs
-          .flat()
-          .flatMap(slug => [
-            removeWritten(ctx, slug, '.html'),
-            removeWritten(ctx, slug, '.md'),
-            removeWritten(ctx, `${slug}-og-image`, '.webp'),
-          ]),
-      )
-      await emitContent(ctx, processedFiles, changeEvents)
+      await emitStagedChanges(ctx, async () => {
+        await Promise.all(
+          droppedOutputs
+            .flat()
+            .flatMap(slug => [
+              removeWritten(ctx, slug, '.html'),
+              removeWritten(ctx, slug, '.md'),
+              removeWritten(ctx, `${slug}-og-image`, '.webp'),
+            ]),
+        )
+        await emitContent(ctx, processedFiles, changeEvents)
+      })
     } else {
       await emitFullBuild(ctx, perf, processedFiles)
     }
     buildData.contentMap = current
+    await commitBuildCache(ctx, persistentInputs, parseSnapshot, [...current.keys()])
     ctx.incremental = argv.watch
     console.log(styleText('green', `Done rebuilding in ${perf.timeSince()}`))
     emitQuartzDevEvent({
@@ -830,6 +908,7 @@ export async function buildSourceResources(
     allSlugs: [],
     allFiles: [],
     incremental: true,
+    gitCommitSha: gitCommitShaFor(argv),
   }
   const perf = new PerfTimer()
   const release = await mut.acquire()
@@ -837,6 +916,8 @@ export async function buildSourceResources(
     globalThis.__quartzSourceEmissionSnapshot = undefined
     emitQuartzDevEvent({ type: 'build:start', epoch: ctx.buildId, reason: 'source' })
     syncCtxFiles(ctx, await glob('**', argv.directory, cfg.configuration.ignorePatterns))
+    const persistentInputs = await captureBuildInputs(ctx)
+    const checkpoint = await resourceBuildCheckpoint(ctx, persistentInputs)
     const changeEvents: ChangeEvent[] = await Promise.all(
       changedPaths.map(async fp => ({
         type: (await stat(fp).then(
@@ -848,13 +929,16 @@ export async function buildSourceResources(
         path: fp,
       })),
     )
-    if (scope.staticFiles) await emitPartialEmitter(ctx, [], changeEvents, 'Static')
-    if (scope.scripts || scope.styles) {
-      await emitPartialEmitter(ctx, [], undefined, 'ComponentResources')
-    }
-    if (scope.scripts) {
-      await emitPartialEmitter(ctx, [], undefined, 'LazyScripts')
-    }
+    await emitStagedChanges(ctx, async () => {
+      if (scope.staticFiles) await emitPartialEmitter(ctx, [], changeEvents, 'Static')
+      if (scope.scripts || scope.styles) {
+        await emitPartialEmitter(ctx, [], undefined, 'ComponentResources')
+      }
+      if (scope.scripts) {
+        await emitPartialEmitter(ctx, [], undefined, 'LazyScripts')
+      }
+    })
+    await commitResourceBuildCache(ctx, persistentInputs, checkpoint)
     console.log(styleText('green', `Rebuilt source resources in ${perf.timeSince()}`))
     emitQuartzDevEvent({
       type: 'build:ready',

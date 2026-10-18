@@ -81,6 +81,72 @@ async function equalFiles(left: string, right: string, seed?: SeededFile): Promi
   return a === b
 }
 
+function hasErrorCode(error: unknown, code: string): boolean {
+  return typeof error === 'object' && error !== null && 'code' in error && error.code === code
+}
+
+function stageOwnerExited(pid: number): boolean {
+  try {
+    process.kill(pid, 0)
+    return false
+  } catch (error) {
+    return hasErrorCode(error, 'ESRCH')
+  }
+}
+
+/** Private stages are disposable once their owner exits; published output supplies restart state. */
+export async function pruneStaleOutputStages(output: string): Promise<string[]> {
+  const publicRoot = path.resolve(output)
+  const index = path.join(publicRoot, 'index.html')
+  const publishedIndex = await fs.stat(index).catch(() => undefined)
+  if (!publishedIndex?.isFile() || publishedIndex.size === 0) return []
+  const readable = await fs.access(index, constants.R_OK).then(
+    () => true,
+    () => false,
+  )
+  if (!readable) return []
+  const stagingRoot = path.join(path.dirname(publicRoot), '.quartz-cache')
+  const cache = await fs.lstat(stagingRoot).catch((error: unknown) => {
+    if (hasErrorCode(error, 'ENOENT')) return undefined
+    throw error
+  })
+  if (!cache?.isDirectory()) return []
+  const [cacheRoot, publishedRoot, publishedIndexPath] = await Promise.all([
+    fs.realpath(stagingRoot),
+    fs.realpath(publicRoot),
+    fs.realpath(index),
+  ])
+  const entries = await fs.readdir(cacheRoot, { withFileTypes: true }).catch((error: unknown) => {
+    if (hasErrorCode(error, 'ENOENT')) return []
+    throw error
+  })
+  const prefix = `output-stage-${path.basename(publicRoot)}-`
+  const removed: string[] = []
+  for (const entry of entries) {
+    if (!entry.isDirectory() || !entry.name.startsWith(prefix)) continue
+    const owner = entry.name.slice(prefix.length)
+    if (!/^[1-9]\d*$/.test(owner)) continue
+    const pid = Number(owner)
+    if (!Number.isSafeInteger(pid) || pid > 2147483647 || pid === process.pid) continue
+    if (!stageOwnerExited(pid)) continue
+    const stage = path.join(cacheRoot, entry.name)
+    if (
+      [publishedRoot, publishedIndexPath].some(
+        published => published === stage || published.startsWith(`${stage}${path.sep}`),
+      )
+    )
+      continue
+    const current = await fs.lstat(stage).catch((error: unknown) => {
+      if (hasErrorCode(error, 'ENOENT')) return undefined
+      throw error
+    })
+    if (!current?.isDirectory() || !stageOwnerExited(pid)) continue
+    await fs.rm(stage, { recursive: true, force: true })
+    removed.push(stage)
+  }
+  return removed
+}
+
 /** Keep public readable while a full watch build works in a private copy. */
 export async function withStagedOutput<T>(
   output: string,
@@ -194,5 +260,9 @@ export async function withStagedOutput<T>(
     await fs.rm(stage, { recursive: true, force: true })
     if (backup) await fs.rm(backup, { recursive: true, force: true })
     onTiming?.('stage.cleanup', performance.now() - cleanupStarted)
+    // Orphan removal must not hold up publication readiness or invalidate restart caches.
+    void pruneStaleOutputStages(output).catch(error => {
+      console.warn('Could not prune abandoned output stages:', error)
+    })
   }
 }

@@ -499,6 +499,7 @@ export async function handleBuild(argv) {
     try {
       const result = await ctx.rebuild()
       globalThis.__quartzParseSourceInputs = parseSourceInputs(result.metafile)
+      globalThis.__quartzBuildSourceInputs = Object.keys(result.metafile.inputs)
       globalThis.__quartzStravaPayloadSourceInputs = stravaPayloadSourceInputs(result.metafile)
       previousServerSourceInputs = serverSourceInputs
       serverSourceInputs = new Set(Object.keys(result.metafile.inputs))

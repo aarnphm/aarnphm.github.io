@@ -2,7 +2,7 @@
 import type { ChildProcessByStdio } from 'node:child_process'
 import type { Readable } from 'node:stream'
 import { spawn } from 'node:child_process'
-import { watch, type FSWatcher } from 'node:fs'
+import { mkdirSync, watch, type FSWatcher } from 'node:fs'
 import { open, readFile, rm, writeFile } from 'node:fs/promises'
 import { createServer } from 'node:net'
 import path from 'node:path'
@@ -61,6 +61,7 @@ const ANSI_ESCAPE_PATTERN = new RegExp(String.raw`\u001b\[[0-9;]*m`, 'g')
 const modelArchiveRoot = path.join(gitRoot, '.models-archive')
 const publicRoot = path.join(gitRoot, 'public')
 const crashReportDir = path.join(gitRoot, '.quartz-cache', 'crash-reports')
+mkdirSync(crashReportDir, { recursive: true })
 const quartzChildNodeOptions = [
   '--max-old-space-size=16384',
   '--report-on-fatalerror',
