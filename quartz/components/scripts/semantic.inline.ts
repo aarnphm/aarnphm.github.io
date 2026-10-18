@@ -149,6 +149,7 @@ export class SemanticClient {
 
   async ensureReady() {
     await this.ready
+    if (this.disposed) throw new Error('semantic client has been disposed')
     if (!this.configured) {
       throw this.lastError ?? new Error('semantic search unavailable')
     }
@@ -188,6 +189,7 @@ export class SemanticClient {
   dispose() {
     if (this.disposed) return
     this.disposed = true
+    this.resolveReady()
     this.rejectAll(new Error('semantic client disposed'))
     if (this.worker) {
       this.worker.terminate()

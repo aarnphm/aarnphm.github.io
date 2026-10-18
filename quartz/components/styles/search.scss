@@ -292,14 +292,18 @@
             overflow: hidden auto;
             white-space: normal;
 
-            &.search-document-preview {
+            &.search-document-preview,
+            &.search-course-preview {
               padding-top: 1rem;
               box-sizing: border-box;
 
-              .document-popover-card {
+              .document-popover-card,
+              .course-popover-card {
                 padding: 0;
               }
+            }
 
+            &.search-document-preview {
               .document-popover-label {
                 font-size: 0.65rem;
               }
