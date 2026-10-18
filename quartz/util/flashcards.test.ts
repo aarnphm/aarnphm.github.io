@@ -284,3 +284,109 @@ describe('ID: pins', () => {
     assert.match(deck.errors[0].message, /duplicate card id/)
   })
 })
+
+describe('flashcardPages copy-on-write routing and cache release', async () => {
+  const { h } = await import('hastscript')
+  const { VFile } = await import('vfile')
+  const { flashcardPages } = await import('./flashcards-routing')
+  const { releaseModuleCaches } = await import('./module-caches')
+
+  test('reuses uncloned [tree, file] for unaffected notes when a default deck exists and rewrites affected links without mutating input', () => {
+    const wordTree = { type: 'root' as const, children: [h('p', 'Vocabulary note')] }
+    const wordFile = new VFile({
+      path: 'content/word.md',
+      value: 'Vocabulary note',
+      data: {
+        slug: 'word' as import('./path').FullSlug,
+        frontmatter: { title: 'word', pageLayout: 'default', flashcards: { default: true } },
+        links: [],
+      },
+    })
+    const deckTree = {
+      type: 'root' as const,
+      children: [h('div', { dataCardId: '0123abcd' }, 'card')],
+    }
+    const deckFile = new VFile({
+      path: 'content/word.fc',
+      value: 'Q: a\nA: b',
+      data: {
+        slug: 'word/flashcards' as import('./path').FullSlug,
+        flashcards: { sourceSlug: 'word' as import('./path').FullSlug, cards: [] },
+        links: [],
+      },
+    })
+    const unaffectedTree = {
+      type: 'root' as const,
+      children: [
+        h('p', [h('a', { href: './other', dataSlug: 'thoughts/other' }, 'Unrelated link')]),
+      ],
+    }
+    const unaffectedFile = new VFile({
+      path: 'content/thoughts/note.md',
+      value: 'See [[thoughts/other]]',
+      data: {
+        slug: 'thoughts/note' as import('./path').FullSlug,
+        frontmatter: { title: 'note', pageLayout: 'default' },
+        links: ['thoughts/other' as import('./path').SimpleSlug],
+        llmsText: 'See <ref slug="thoughts/other">',
+      },
+    })
+    const anchorLinkNode = h('a', { href: '../word#entry', dataSlug: 'word' }, 'Anchored word ref')
+    const affectedTree = { type: 'root' as const, children: [h('p', [anchorLinkNode])] }
+    const affectedFile = new VFile({
+      path: 'content/thoughts/referencing.md',
+      value: 'See [[word#entry]]',
+      data: {
+        slug: 'thoughts/referencing' as import('./path').FullSlug,
+        frontmatter: { title: 'referencing', pageLayout: 'default' },
+        links: ['word' as import('./path').SimpleSlug],
+        llmsText: 'See <ref slug="word#entry">',
+      },
+    })
+
+    const projected = flashcardPages(
+      [
+        [wordTree, wordFile],
+        [deckTree, deckFile],
+        [unaffectedTree, unaffectedFile],
+        [affectedTree, affectedFile],
+      ],
+      'aarnphm.xyz',
+    )
+
+    // Unaffected note must reuse the exact input tuple and HAST/VFile references.
+    assert.strictEqual(projected[2][0], unaffectedTree)
+    assert.strictEqual(projected[2][1], unaffectedFile)
+
+    // Affected note with anchor link to default-routed note must be cloned and rewritten to word/source.
+    assert.notStrictEqual(projected[3][0], affectedTree)
+    assert.notStrictEqual(projected[3][1], affectedFile)
+    assert.equal(anchorLinkNode.properties.dataSlug, 'word')
+    assert.equal(projected[3][1].data.llmsText, 'See <ref slug="word/source#entry">')
+    assert.deepEqual(projected[3][1].data.links, ['word/source'])
+
+    // Subsequent call hits pageCache for the rewritten page until releaseModuleCaches() is called.
+    const secondPass = flashcardPages(
+      [
+        [wordTree, wordFile],
+        [deckTree, deckFile],
+        [unaffectedTree, unaffectedFile],
+        [affectedTree, affectedFile],
+      ],
+      'aarnphm.xyz',
+    )
+    assert.strictEqual(secondPass[3], projected[3])
+
+    releaseModuleCaches()
+    const afterRelease = flashcardPages(
+      [
+        [wordTree, wordFile],
+        [deckTree, deckFile],
+        [unaffectedTree, unaffectedFile],
+        [affectedTree, affectedFile],
+      ],
+      'aarnphm.xyz',
+    )
+    assert.notStrictEqual(afterRelease[3], projected[3])
+  })
+})

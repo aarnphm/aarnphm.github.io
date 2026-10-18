@@ -450,8 +450,10 @@ interface CourseFilesIndex {
   allViewsByDeckList: WeakMap<QuartzPluginData[], CourseView[]>
 }
 
-const courseFilesIndexCache = new WeakMap<QuartzPluginData[], CourseFilesIndex>()
-const deckMapCache = new WeakMap<QuartzPluginData[], Map<string, QuartzPluginData>>()
+import { ReloadableWeakMap } from './module-caches'
+
+const courseFilesIndexCache = new ReloadableWeakMap<QuartzPluginData[], CourseFilesIndex>()
+const deckMapCache = new ReloadableWeakMap<QuartzPluginData[], Map<string, QuartzPluginData>>()
 
 function getDeckMap(deckFiles: QuartzPluginData[]): Map<string, QuartzPluginData> {
   let map = deckMapCache.get(deckFiles)
@@ -721,7 +723,10 @@ export function pdfResourceOf(data: QuartzPluginData | undefined): CourseResourc
   return ref && ref.record.file && /\.pdf$/i.test(ref.record.file) ? ref : null
 }
 
-const resourceCache = new WeakMap<QuartzPluginData[], Map<string, Map<string, CourseResourceRef>>>()
+const resourceCache = new ReloadableWeakMap<
+  QuartzPluginData[],
+  Map<string, Map<string, CourseResourceRef>>
+>()
 
 /** Every resource page of a course by id, memoised on the `allFiles` list identity. */
 export function courseResources(
