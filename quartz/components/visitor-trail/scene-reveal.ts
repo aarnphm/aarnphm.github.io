@@ -76,24 +76,32 @@ export function mountSceneReveal(scene: HTMLElement, host: HTMLElement, signal: 
     if (phase === 'closing') host.dispatchEvent(new Event('trail:closed'))
     else if (phase === 'revealing') host.dispatchEvent(new Event('trail:reveal-end'))
   }
+  // Which way the running sweep goes. Read from here, not from `playbackRate`: a reversal is
+  // pending until the animation is ready, and the getter reports the old rate until then.
+  let forward = true
   const animate = (open: boolean) => {
     scene.dataset.trailReveal = open ? 'revealing' : 'closing'
-    if (!animation) {
-      const center = `${origin.x}px ${origin.y}px`
-      animation = host.animate(
-        [
-          { clipPath: `circle(0px at ${center})` },
-          { clipPath: `circle(${Math.ceil(radius)}px at ${center})` },
-        ],
-        { duration: trailThemeDuration, easing: 'ease-out', fill: 'both' },
-      )
-      if (!open) animation.currentTime = trailThemeDuration
-      animation.onfinish = () => {
-        if (animation?.playState === 'finished') finish()
+    if (animation) {
+      // An interrupted sweep turns round from where it is.
+      if (forward !== open) {
+        animation.reverse()
+        forward = open
       }
+      return
     }
-    // Synchronize the current position before reversing an interrupted sweep.
-    animation.updatePlaybackRate(open ? 1 : -1)
+    // A closing sweep is its own animation, played forward from the full circle. Starting a
+    // forward animation at its end and reversing it left a frame in which the animation was
+    // "finished" with the reversal still pending, and its finish event closed the scene at once.
+    const center = `${origin.x}px ${origin.y}px`
+    const shut = { clipPath: `circle(0px at ${center})` }
+    const full = { clipPath: `circle(${Math.ceil(radius)}px at ${center})` }
+    forward = open
+    animation = host.animate(open ? [shut, full] : [full, shut], {
+      duration: trailThemeDuration,
+      easing: open ? 'ease-out' : 'ease-in',
+      fill: 'both',
+    })
+    animation.onfinish = () => finish()
   }
   const reveal = () => {
     if (!requested || host.hidden || scene.dataset.trailOpening !== 'complete') return

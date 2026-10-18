@@ -1,12 +1,32 @@
 @use 'sass:list';
 
+// A night plane: `$tone` (the moon, `--dark`, or the paper, `--light`) mixed into the field the
+// plane stands on. relief.ts and terrain.ts set `--trail-landform-field` on every group.
+@mixin night($tone, $share) {
+  fill: color-mix(
+    in srgb,
+    var(--#{$tone}) calc(#{$share} * var(--trail-relief-strength, 1)),
+    var(--trail-landform-field, var(--light))
+  );
+}
+
 // Rolling ground, the creek's cut and the stream off the ridge. Relief follows the paper; rock and
 // water keep fixed hues lightly mixed with it, so light and shade read the same in both themes.
 .homepage-trail-scene {
   .trail-relief,
+  .trail-landform,
   .trail-ravine,
   .trail-ravine-stream {
     shape-rendering: crispEdges;
+  }
+  // A landform's opaque body: the strip of ground hidden behind its crest. The lit top surface
+  // sits halfway between the field it rises from and the paper; below the rim the body takes the
+  // field's own tone, so only what it hides changes. relief.ts sets both custom properties.
+  .trail-landform-top {
+    fill: color-mix(in srgb, var(--trail-landform-field, var(--light)) 50%, var(--light));
+  }
+  .trail-landform-ground {
+    fill: var(--trail-landform-field, var(--light));
   }
   .trail-ravine-body {
     fill: color-mix(in srgb, var(--gray) 17%, var(--light));
@@ -23,31 +43,94 @@
   .trail-ravine-rock-lit {
     fill: color-mix(in srgb, #cfcabd 66%, var(--light));
   }
-  // The slope ramp, light to dark: a landform's top, the flank toward the light, the flank away
-  // from it, and the shadow it throws past its foot. Slopes are dithered between these stops.
+  // The ledge planes, light to dark: a landform's top, the riser toward the light, the riser
+  // away from it, the rim, and the line of shadow under each ledge. `--trail-relief-strength`
+  // (1 on the near contour, 0.7 on the far one) compresses the far planes toward the paper, so
+  // the ground loses contrast with distance. The planes stand on fields darker than the paper,
+  // so each is darker than the nearest field, or it would read as a lit step, not a face.
   .trail-ravine-top {
     fill: color-mix(in srgb, var(--lightgray) 26%, var(--light));
   }
   .trail-ravine-face-lit {
-    fill: color-mix(in srgb, var(--gray) 30%, var(--light));
+    fill: color-mix(in srgb, var(--gray) calc(58% * var(--trail-relief-strength, 1)), var(--light));
   }
   .trail-ravine-face {
-    fill: color-mix(in srgb, var(--gray) 46%, var(--light));
+    fill: color-mix(
+      in srgb,
+      var(--darkgray) calc(42% * var(--trail-relief-strength, 1)),
+      var(--light)
+    );
   }
   .trail-ravine-face-dark {
-    fill: color-mix(in srgb, var(--darkgray) 34%, var(--light));
+    fill: color-mix(
+      in srgb,
+      var(--darkgray) calc(60% * var(--trail-relief-strength, 1)),
+      var(--light)
+    );
   }
   .trail-ravine-outline {
-    fill: color-mix(in srgb, var(--darkgray) 38%, var(--light));
+    fill: color-mix(
+      in srgb,
+      var(--darkgray) calc(64% * var(--trail-relief-strength, 1)),
+      var(--light)
+    );
   }
   .trail-ravine-crest {
-    fill: color-mix(in srgb, #fffdf6 34%, var(--light));
+    fill: color-mix(in srgb, #fffdf6 calc(34% * var(--trail-relief-strength, 1)), var(--light));
   }
   .trail-ravine-lip {
-    fill: color-mix(in srgb, var(--darkgray) 45%, var(--light));
+    fill: color-mix(
+      in srgb,
+      var(--darkgray) calc(72% * var(--trail-relief-strength, 1)),
+      var(--light)
+    );
   }
   .trail-ravine-shadow {
-    fill: color-mix(in srgb, var(--darkgray) 42%, var(--light));
+    fill: color-mix(
+      in srgb,
+      var(--darkgray) calc(68% * var(--trail-relief-strength, 1)),
+      var(--light)
+    );
+  }
+  // Night turns the paper near-black and `--darkgray` pale, so the day planes would invert: the
+  // lit cap darker than its field, the shadow line the brightest mark on the ground. The dark
+  // theme (the only state that sets moonlit lighting) reads every plane off its field instead,
+  // lightest to darkest: rim, cap, risers lit to dark, the field, then the shadow toward the paper.
+  // The moon lights the tops, so no plane is darker than the field except the shadow and outline.
+  :where(:root[saved-theme='dark']) & {
+    .trail-landform-top {
+      @include night(dark, 8%);
+    }
+    .trail-ravine-crest {
+      @include night(dark, 12%);
+    }
+    .trail-ravine-face-lit {
+      @include night(dark, 6%);
+    }
+    .trail-ravine-face,
+    .trail-ravine-rock {
+      @include night(dark, 4%);
+    }
+    .trail-ravine-face-dark {
+      @include night(dark, 2%);
+    }
+    .trail-ravine-rock-lit {
+      @include night(dark, 8%);
+    }
+    .trail-ravine-shadow,
+    .trail-ravine-lip {
+      @include night(light, 40%);
+    }
+    .trail-ravine-outline {
+      @include night(light, 60%);
+    }
+    .trail-ravine-strata {
+      fill: color-mix(
+        in srgb,
+        #a8744f calc(14% * var(--trail-relief-strength, 1)),
+        var(--trail-landform-field, var(--light))
+      );
+    }
   }
   .trail-ravine-hollow {
     fill: color-mix(in srgb, var(--gray) 48%, var(--light));
@@ -109,6 +192,12 @@
   }
   .trail-ravine-mist {
     opacity: 0.8;
+  }
+  // Foam stays under the snow caps at night: they are the brightest surface of the scene.
+  :where(:root[saved-theme='dark']) & {
+    :is(.trail-ravine-foam, .trail-ravine-mist) {
+      fill: color-mix(in srgb, #eef4f3 66%, var(--light));
+    }
   }
   .trail-ravine-stone-lit {
     fill: color-mix(in srgb, #cfcabd 80%, var(--light));

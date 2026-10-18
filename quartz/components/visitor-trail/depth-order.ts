@@ -1,5 +1,6 @@
+// Landforms (`.trail-landform`) sort by the last hidden row behind their crest; see relief.ts.
 export const groundObjectSelector =
-  '.trail-tree, .trail-understory, [data-trail-wander], [data-wetland-animal], .trail-river-bear, .trail-river-fish, [data-holiday-decoration], .trail-map-reader, .trail-backpacker, [data-alpine-traveler], [data-camp-person], [data-camp-tent], .trail-extra-camp, [data-park-ranger], [data-trail-visitor], [data-trail-pet], [data-trail-athlete]'
+  '.trail-landform, .trail-tree, .trail-understory, [data-trail-wander], [data-wetland-animal], .trail-river-bear, .trail-river-fish, [data-holiday-decoration], .trail-map-reader, .trail-backpacker, [data-alpine-traveler], [data-camp-person], [data-camp-tent], .trail-extra-camp, [data-park-ranger], [data-trail-visitor], [data-trail-pet], [data-trail-athlete]'
 
 type GroundObject = {
   element: SVGGElement

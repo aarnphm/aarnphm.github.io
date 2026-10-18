@@ -1,4 +1,8 @@
-import { readTrailPreference, writeTrailPreference } from '../../util/trail-preference'
+import {
+  readTrailPreference,
+  trailSupported,
+  writeTrailPreference,
+} from '../../util/trail-preference'
 import { trailScene, trailSceneHeight } from '../../util/trail-scene'
 import {
   holidayLabels,
@@ -51,6 +55,9 @@ document.addEventListener('nav', () => {
 
   const controller = new AbortController()
   const { signal } = controller
+  const supported = trailSupported()
+  // Other browsers keep the clock and almanac, without a way to open the scene.
+  toggle.hidden = !supported
   mountTrailGateNavigation(scene, signal)
   let isOpen = false
   const holidayMarker = toggle.querySelector<HTMLElement>('[data-holiday-marker]')
@@ -193,6 +200,7 @@ document.addEventListener('nav', () => {
   }
   scene.addEventListener('trail:closed', finishClose, { signal })
   const setOpen = (open: boolean, remember = true) => {
+    if (open && !supported) return
     if (!open) {
       const shadowActive = scene.shadowRoot?.activeElement
       if (shadowActive instanceof HTMLElement || shadowActive instanceof SVGElement)

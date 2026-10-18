@@ -1,6 +1,7 @@
 import { bearPixels, catPixels, dogPixels, goosePixels, type TrailAnimalKind } from './animals'
 import { cowPixels } from './cows'
 import { onDryLand, type Landscape, type Point } from './landscape'
+import { trailPondLife } from './pond-life'
 import { trailRandom } from './random'
 import { riverBear, riverClearing, riverFish, riverFishingSites } from './river-life'
 import { sceneSettings, type AnimalSettings } from './scene-settings'
@@ -131,6 +132,9 @@ export function trailPasture(
       markup: animal('bear', index, point, 2, random() < 0.5 ? -1 : 1, bearPixels(2), 9),
     })
   }
+  // The heron's shore spot is kept clear before the frogs and the otter take theirs.
+  const life = trailPondLife(landscape, seed)
+  occupied.push(...life.sites)
   const bank = trailBankWildlife(
     landscape,
     routes.flatMap(route => route.samples),
@@ -141,7 +145,7 @@ export function trailPasture(
     markup: `<g class="trail-pasture">${animals
       .sort((a, b) => a.y - b.y)
       .map(animal => animal.markup)
-      .join('')}${geese}${bank.markup}</g>`,
+      .join('')}${geese}${life.shore}${bank.markup}</g>`,
     sites: [...occupied, ...bank.sites],
   }
 }

@@ -33,6 +33,57 @@
   .trail-mountain-snow {
     fill: color-mix(in srgb, #edf2eb var(--trail-snow-mix, 0%), var(--light));
   }
+  // Under moonlit lighting (the dark theme, or a real night) the snow stays lit in every season:
+  // the summit caps show whatever the ground cover, and the snow fields of the rock take the lit
+  // snow tone instead of the paper, which is near-black at night. The caps keep their lit and
+  // shaded sides (`--trail-snow-lit`, `--trail-snow-shade`, set in trail-winter.scss).
+  .trail-scene[data-lighting='moonlit'] {
+    .trail-summit-snow {
+      opacity: 1;
+    }
+    .trail-mountain-snow {
+      fill: var(--trail-snow-lit);
+    }
+    .trail-skylight {
+      display: inline;
+    }
+  }
+  // Sky-light on the range, shown at night only: cool light on the upper faces, thinning with
+  // depth, a warm tint on the far range's crest and a band of horizon glow in the sky above the
+  // skyline, the tone the meteors use. The cells are translucent, so rock, snow and stars read
+  // through them; the snow caps paint over the wash and stay the brightest surface.
+  .trail-skylight {
+    display: none;
+    pointer-events: none;
+  }
+  .trail-skylight-rim {
+    fill: var(--trail-snow-lit);
+    opacity: 0.3;
+  }
+  .trail-skylight-cool {
+    fill: var(--trail-snow-ground);
+    opacity: 0.6;
+  }
+  .trail-skylight-ember {
+    fill: #fdb2a2;
+    opacity: 0.16;
+  }
+  .trail-skylight-glow-0 {
+    fill: #fdb2a2;
+    opacity: 0.17;
+  }
+  .trail-skylight-glow-1 {
+    fill: #fdb2a2;
+    opacity: 0.12;
+  }
+  .trail-skylight-glow-2 {
+    fill: #fdb2a2;
+    opacity: 0.075;
+  }
+  .trail-skylight-glow-3 {
+    fill: #fdb2a2;
+    opacity: 0.04;
+  }
   .trail-scene[data-holiday='christmas'] [data-formation='bernese-alps'] {
     .trail-mountain-rock {
       fill: color-mix(in srgb, #e5eae4 55%, color-mix(in srgb, var(--gray) 24%, var(--light)));

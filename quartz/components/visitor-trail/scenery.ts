@@ -10,7 +10,7 @@ import {
   type Landscape,
 } from './landscape'
 import { trailRandom } from './random'
-import { contourFaces, onSteepGround } from './relief'
+import { behindCrest, contourFaces, onSteepGround } from './relief'
 import { forestLimits, sceneSettings, type ForestSettings } from './scene-settings'
 import { trailDeadfall, trailUnderstory } from './understory'
 import { trailSnowBank } from './winter'
@@ -920,6 +920,7 @@ export function planTrailTrees(
       }
     } else {
       let bestClearance = -Infinity
+      let open: Point | null = null
       for (let attempt = 0; attempt < 140; attempt++) {
         const angle = Math.floor(index / groves.length) * 2.399963 + (random() - 0.5) * 1.8
         const radius = Math.sqrt(random()) * (standalone ? 1 : 0.65) * (attempt < 70 ? 1 : 1.8)
@@ -965,10 +966,17 @@ export function planTrailTrees(
           walkDistance > (attempt < 70 ? 15 : 6) &&
           groveDistance > (attempt < 70 ? 1.1 : 0.9)
         ) {
-          root = candidate
-          break
+          // A lone tree looks forty times for open ground just behind a crest, where the hill
+          // hides its foot and the crown above the crest line gives the ground its depth, before
+          // it settles for the first open ground it found.
+          if (!standalone || attempt >= 40 || behindCrest(faces, candidate)) {
+            open = candidate
+            break
+          }
+          open ??= candidate
         }
       }
+      if (open) root = open
     }
     roots.push(root)
     const identity = trailRandom(0x777034b3 ^ Math.imul(index + 1, 16807))

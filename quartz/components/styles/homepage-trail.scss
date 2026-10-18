@@ -5,10 +5,13 @@
 
 .homepage-trail,
 .homepage-trail-scene {
-  --trail-field-0: color-mix(in srgb, var(--lightgray) 18%, var(--light));
-  --trail-field-1: color-mix(in srgb, var(--lightgray) 24%, var(--light));
-  --trail-field-2: color-mix(in srgb, var(--gray) 9%, var(--light));
-  --trail-field-3: color-mix(in srgb, var(--gray) 14%, var(--light));
+  // The four terraces step from the far field to the near one as a painter separates planes:
+  // the far ground is light and cool, each nearer field darker and warmer, so the meadow recedes
+  // before any object is drawn on it. Fixed hues mixed with the paper hold in both themes.
+  --trail-field-0: color-mix(in srgb, #9fb0c2 9%, var(--light));
+  --trail-field-1: color-mix(in srgb, #a9afa6 19%, var(--light));
+  --trail-field-2: color-mix(in srgb, #9c9a82 27%, var(--light));
+  --trail-field-3: color-mix(in srgb, #8a846a 30%, var(--light));
 }
 
 .trail-local-time {
@@ -22,6 +25,11 @@
   font: 10px/1 var(--codeFont);
   font-variant-numeric: tabular-nums;
   pointer-events: none;
+}
+
+// Browsers without the trail hide its toggle.
+.homepage-trail-toggle[hidden] {
+  display: none;
 }
 
 .homepage-trail-toggle {

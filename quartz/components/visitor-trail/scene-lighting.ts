@@ -7,6 +7,7 @@ import {
   IDENTITY_GRADE,
   interpolateGrade,
   isIdentityGrade,
+  moonGrade,
   sceneGrade,
   type Grade,
 } from '../../util/scene-grade'
@@ -33,12 +34,15 @@ export function subscribeSceneGrade(
   let seasonOverride: TrailSeason | null = readTrailSeason(view)
 
   const evaluate = (): Grade => {
-    if (document.documentElement.dataset.themeMode !== 'daylight') {
+    const root = document.documentElement
+    const daylight = root.dataset.themeMode === 'daylight'
+    // The dark theme is moonlit lighting, so it takes the moon's tint at night in any mode.
+    if (!daylight && root.getAttribute('saved-theme') !== 'dark') {
       return cloneGrade(IDENTITY_GRADE)
     }
     const al = almanac(new Date(sceneNow(document)), trailSite(weather, document))
     const sky = trailSky(weather)
-    return sceneGrade(al, season(al, sky, seasonOverride), sky)
+    return daylight ? sceneGrade(al, season(al, sky, seasonOverride), sky) : moonGrade(al, sky)
   }
 
   const emit = () => {

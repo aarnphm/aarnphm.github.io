@@ -83,14 +83,22 @@ body[data-slug='index'] {
   }
 
   // Home links keep the tool-surface hover with or without the trail scene: ink and underline
-  // darken in place of the site-wide inverted fill. The tag selector outranks the tag chip hover.
-  // A link that lights a trail keeps that trail's blaze colour on its underline (blazes.ts sets
-  // --trail-blaze on the link while the open scene paints the blaze).
+  // darken in place of the site-wide inverted fill, and keyboard focus shows the same. The tag
+  // selector outranks the tag chip hover. A link that lights a trail keeps that trail's blaze
+  // colour on its underline (blazes.ts sets --trail-blaze on the link on pointer or focus).
   a:hover,
-  a.internal.tag-link:hover {
+  a:focus-visible,
+  a.internal.tag-link:hover,
+  a.internal.tag-link:focus-visible {
     background: transparent;
     color: var(--dark);
     text-decoration-color: var(--trail-blaze, var(--dark));
+  }
+
+  // A tag chip has no underline of its own; while it lights a trail it takes the board links'
+  // blaze underline.
+  a.internal.tag-link[data-trail-blaze] {
+    text-decoration: underline 2px var(--trail-blaze);
   }
 
   .homepage-board-links {

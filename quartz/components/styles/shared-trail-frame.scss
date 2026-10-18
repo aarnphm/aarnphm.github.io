@@ -7,6 +7,7 @@
 @use './trail-mountains.scss';
 @use './trail-ravine.scss';
 @use './trail-wetlands.scss';
+@use './trail-pond-life.scss';
 @use './trail-meadow.scss';
 @use './trail-sunlight.scss';
 @use './trail-moss.scss';
@@ -416,8 +417,33 @@
   .trail-terrace-3 {
     fill: var(--trail-field-3);
   }
+  // Contour lines darken toward the viewer with the fields they edge.
   .trail-terrace-riser {
-    fill: color-mix(in srgb, var(--darkgray) 24%, var(--light));
+    fill: color-mix(in srgb, var(--darkgray) 12%, var(--light));
+  }
+  .trail-terrace-riser-1 {
+    fill: color-mix(in srgb, var(--darkgray) 17%, var(--light));
+  }
+  .trail-terrace-riser-2 {
+    fill: color-mix(in srgb, var(--darkgray) 22%, var(--light));
+  }
+  .trail-terrace-riser-3 {
+    fill: color-mix(in srgb, var(--darkgray) 28%, var(--light));
+  }
+  // At night the contour line is the rim of its ledge, a step above the field it edges.
+  :where(:root[saved-theme='dark']) & {
+    :is(
+      .trail-terrace-riser,
+      .trail-terrace-riser-1,
+      .trail-terrace-riser-2,
+      .trail-terrace-riser-3
+    ) {
+      fill: color-mix(
+        in srgb,
+        var(--dark) calc(8% * var(--trail-relief-strength, 1)),
+        var(--trail-landform-field, var(--light))
+      );
+    }
   }
   .trail-meadow-tuft {
     fill: color-mix(in srgb, var(--gray) 36%, var(--light));

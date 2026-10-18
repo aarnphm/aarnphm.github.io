@@ -650,8 +650,10 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
     const changedIce = scene.dataset.waterFrozen !== String(frozen)
     scene.dataset.waterFrozen = String(frozen)
     scene.dataset.forecastWaterFrozen = String(forecastFrozen)
-    for (const frog of scene.querySelectorAll<SVGGElement>('[data-wetland-animal="frog"]'))
-      frog.dataset.collisionActive = String(!frozen)
+    for (const wader of scene.querySelectorAll<SVGGElement>(
+      '[data-wetland-animal="frog"], [data-wetland-animal="heron"]',
+    ))
+      wader.dataset.collisionActive = String(!frozen)
     scene.dataset.weatherMode = state.mode
     scene.dataset.weatherFog = String(state.fog)
     scene.dataset.weatherStorm = String(state.storm)
