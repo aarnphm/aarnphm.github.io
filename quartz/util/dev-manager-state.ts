@@ -18,8 +18,6 @@ export function createQuartzManagerState(): QuartzManagerState {
 export function resetQuartzManagerState(state: QuartzManagerState): void {
   state.currentEpoch = null
   state.quartz = 'stopped'
-  state.wrangler = 'stopped'
-  state.publicAvailable = false
 }
 
 export function applyQuartzDevEvent(

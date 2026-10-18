@@ -319,6 +319,13 @@ async function main(): Promise<void> {
     await startDaemon()
     return
   }
+  managerState.publicAvailable = await readFile(path.join(publicRoot, 'index.html')).then(
+    content => content.length > 0,
+    () => false,
+  )
+  if (managerState.publicAvailable) {
+    log('main', 'found published output; starting wrangler while quartz warms')
+  }
   log('main', `launching pnpm dev (attempt 1/${totalPnpmDevAttempts})`)
   watchModelArchive()
   startCourseStudyServer({
@@ -446,7 +453,6 @@ function launchPnpmDev(): void {
   quartzOutputBuffer = ''
   wranglerStartNotBefore = 0
   wranglerBackoffUntil = 0
-  void stopWrangler('stopping wrangler while quartz restarts')
   const attempt = runtimeConfig.pnpmDevRetryLimit - pnpmDevRetriesRemaining + 1
   pnpmDev = startProcess(
     runtimeConfig.pnpmDevArgs,
@@ -534,7 +540,6 @@ async function manageWranglerLoop(): Promise<void> {
     const canStart =
       wrangler === null &&
       managerState.publicAvailable &&
-      managerState.quartz === 'ready' &&
       managerState.wrangler !== 'stopping' &&
       now >= wranglerStartNotBefore &&
       now >= wranglerBackoffUntil
@@ -568,7 +573,7 @@ async function manageWranglerLoop(): Promise<void> {
           managerState.wrangler = 'stopped'
           return
         }
-        if (managerState.publicAvailable && managerState.quartz === 'ready') {
+        if (managerState.publicAvailable) {
           managerState.wrangler = 'backoff'
           wranglerBackoffUntil = Date.now() + WRANGLER_EXIT_BACKOFF_MS
           return

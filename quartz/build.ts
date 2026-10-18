@@ -33,7 +33,7 @@ import {
   writeCurrentOutputAssetManifest,
 } from './util/output-assets'
 import { FilePath, joinSegments, slugifyFilePath } from './util/path'
-import { PerfTimer } from './util/perf'
+import { logBuildStage, PerfTimer } from './util/perf'
 import { randomIdNonSecure } from './util/random'
 import { options } from './util/sourcemap'
 import { withStagedOutput } from './util/staged-output'
@@ -98,6 +98,8 @@ type SourceEmissionSnapshot = {
   key: string
   inputs: string
   content: ProcessedContent[]
+  projectedContent: ProcessedContent[]
+  baseUrl: string | undefined
   emitters: string
   outputs: Map<string, Set<string>>
   resources: string
@@ -136,6 +138,7 @@ async function matchingEmissionSnapshot(
     inputs === undefined ||
     snapshot.key !== emissionKey(ctx) ||
     snapshot.inputs !== inputs ||
+    snapshot.baseUrl !== ctx.cfg.configuration.baseUrl ||
     snapshot.emitters !== JSON.stringify(ctx.cfg.plugins.emitters.map(emitter => emitter.name)) ||
     snapshot.content.length !== content.length ||
     snapshot.content.some((entry, index) => entry !== content[index])
@@ -282,7 +285,10 @@ async function emitFullBuild(
   scope: BuildScope = 'site',
 ): Promise<void> {
   const publicArgv = ctx.argv
+  const stages = new PerfTimer()
   const inputs = publicArgv.watch ? await emissionInputs(ctx) : ''
+  logBuildStage(publicArgv, ctx.buildId, 'emission.inputs', stages.elapsedMs())
+  stages.addEvent('snapshot')
   const previous =
     typeof scope === 'object' ? await matchingEmissionSnapshot(ctx, content, inputs) : undefined
   let selected =
@@ -290,7 +296,11 @@ async function emitFullBuild(
     previous &&
     scope.emitters.length > 0 &&
     scope.emitters.every(name => previous.outputs.has(name))
-      ? { emitters: new Set(scope.emitters), resourceSignature: previous.resources }
+      ? {
+          emitters: new Set(scope.emitters),
+          resourceSignature: previous.resources,
+          projectedContent: previous.projectedContent,
+        }
       : undefined
   if (selected && previous) {
     const requested = selected.emitters
@@ -302,14 +312,18 @@ async function emitFullBuild(
     )
     if (sharesOutput) selected = undefined
   }
+  logBuildStage(publicArgv, ctx.buildId, 'emission.snapshot', stages.elapsedMs('snapshot'))
   globalThis.__quartzSourceEmissionSnapshot = undefined
   let resources = ''
+  let projectedContent: ProcessedContent[] | undefined
+  stages.addEvent('transaction')
   if (publicArgv.watch) ctx.emittedFiles = new Map()
   if (publicArgv.watch) {
     await withStagedOutput(
       publicArgv.output,
       async stage => {
         ctx.argv = { ...publicArgv, output: stage }
+        const setup = new PerfTimer()
         try {
           if (selected) {
             console.log(
@@ -328,7 +342,10 @@ async function emitFullBuild(
           } else {
             await cleanOutputForBuild(ctx, perf, true, publicArgv.output)
           }
-          resources = await emitContent(ctx, content, undefined, selected)
+          logBuildStage(publicArgv, ctx.buildId, 'emission.setup', setup.elapsedMs())
+          const emitted = await emitContent(ctx, content, undefined, selected)
+          resources = emitted.resources
+          projectedContent = emitted.projectedContent
           if (selected && previous && ctx.emittedFiles) {
             const unselectedPaths = new Set(
               [...previous.outputs]
@@ -342,7 +359,9 @@ async function emitFullBuild(
               console.log('New output ownership overlaps; emitting all owners')
               resetGeneratedResourceState(ctx)
               ctx.emittedFiles.clear()
-              resources = await emitContent(ctx, content)
+              const emitted = await emitContent(ctx, content)
+              resources = emitted.resources
+              projectedContent = emitted.projectedContent
             }
           }
           if (selected && previous && ctx.emittedFiles) {
@@ -362,23 +381,36 @@ async function emitFullBuild(
         }
       },
       ['models'],
+      (stage, elapsedMs) => logBuildStage(publicArgv, ctx.buildId, stage, elapsedMs),
     )
   } else {
     await emitContent(ctx, content)
   }
+  logBuildStage(publicArgv, ctx.buildId, 'emission.transaction', stages.elapsedMs('transaction'))
+  stages.addEvent('manifest')
   await writeCurrentOutputAssetManifest(ctx)
+  logBuildStage(publicArgv, ctx.buildId, 'emission.manifest', stages.elapsedMs('manifest'))
+  stages.addEvent('save-snapshot')
   delete ctx.outputAssetPreserved
-  if (publicArgv.watch && ctx.emittedFiles && inputs !== undefined) {
+  if (publicArgv.watch && ctx.emittedFiles && inputs !== undefined && projectedContent) {
     globalThis.__quartzSourceEmissionSnapshot = {
       key: emissionKey(ctx),
       inputs,
       content,
+      projectedContent,
+      baseUrl: ctx.cfg.configuration.baseUrl,
       emitters: JSON.stringify(ctx.cfg.plugins.emitters.map(emitter => emitter.name)),
       outputs: new Map([...(selected && previous ? previous.outputs : []), ...ctx.emittedFiles]),
       resources,
     }
     delete ctx.emittedFiles
   }
+  logBuildStage(
+    publicArgv,
+    ctx.buildId,
+    'emission.save-snapshot',
+    stages.elapsedMs('save-snapshot'),
+  )
 }
 
 export async function buildQuartz(
@@ -431,7 +463,10 @@ export async function buildQuartz(
   const release = await mut.acquire()
   try {
     emitQuartzDevEvent({ type: 'build:start', epoch: ctx.buildId, reason })
+    logBuildStage(argv, ctx.buildId, 'build.lock', perf.elapsedMs())
+    perf.addEvent('watchers')
     if (argv.watch) watching = await startWatching(ctx, mut, clientRefresh, initialContent)
+    logBuildStage(argv, ctx.buildId, 'build.watchers', perf.elapsedMs('watchers'))
     perf.addEvent('glob')
     const allFiles = await glob('**', argv.directory, config.configuration.ignorePatterns)
     const markdownPaths = allFiles.filter(isMarkdownPath).sort()
@@ -443,10 +478,16 @@ export async function buildQuartz(
     syncCtxFiles(ctx, allFiles)
     if (scope === 'site' && !argv.watch) await cleanOutputForBuild(ctx, perf, true)
 
+    logBuildStage(argv, ctx.buildId, 'build.glob-and-context', perf.elapsedMs('glob'))
+    perf.addEvent('parse')
     const parsedFiles = await parseMarkdown(ctx, filePaths)
+    logBuildStage(argv, ctx.buildId, 'build.parse', perf.elapsedMs('parse'))
+    perf.addEvent('filter-index')
     const filteredContent = filterContentResult(ctx, parsedFiles).published
     for (const [fp, content] of indexContent(filteredContent)) initialContent.set(fp, content)
 
+    logBuildStage(argv, ctx.buildId, 'build.filter-index', perf.elapsedMs('filter-index'))
+    perf.addEvent('emission')
     if (scope === 'courses') {
       globalThis.__quartzSourceEmissionSnapshot = undefined
       ctx.incremental = true
@@ -454,6 +495,7 @@ export async function buildQuartz(
     } else {
       await emitFullBuild(ctx, perf, filteredContent, scope)
     }
+    logBuildStage(argv, ctx.buildId, 'build.emission', perf.elapsedMs('emission'))
     ctx.incremental = argv.watch
     if (watching) watching.ready = true
     console.log(
@@ -488,7 +530,10 @@ async function startWatching(
   contentMap: Map<FilePath, ProcessedContent>,
 ): Promise<WatchRuntime> {
   const { argv } = ctx
+  const stages = new PerfTimer()
   const ignored = await createIgnoredFilter(ctx)
+  logBuildStage(argv, ctx.buildId, 'watch.ignore-filter', stages.elapsedMs())
+  stages.addEvent('ready')
   const buildData: BuildData = {
     ctx,
     mut,
@@ -555,7 +600,14 @@ async function startWatching(
     .on('change', fp => enqueueAgentSkills(fp, 'change'))
     .on('unlink', fp => enqueueAgentSkills(fp, 'delete'))
 
-  await Promise.all([once(watcher, 'ready'), once(agentSkillsWatcher, 'ready')])
+  await Promise.all([
+    once(watcher, 'ready').then(() =>
+      logBuildStage(argv, ctx.buildId, 'watch.content-ready', stages.elapsedMs('ready')),
+    ),
+    once(agentSkillsWatcher, 'ready').then(() =>
+      logBuildStage(argv, ctx.buildId, 'watch.skills-ready', stages.elapsedMs('ready')),
+    ),
+  ])
 
   return {
     ready: false,

@@ -9,7 +9,7 @@ import { defaultEmitterConcurrency, mapConcurrent } from '../util/async-pool'
 import { BuildCtx, deckDataFor } from '../util/ctx'
 import { flashcardPages, flashcardPageChanges } from '../util/flashcards-routing'
 import { QuartzLogger } from '../util/log'
-import { logBuildSpan, PerfTimer } from '../util/perf'
+import { logBuildSpan, logBuildStage, PerfTimer } from '../util/perf'
 import { getStaticResourcesFromPlugins } from '../util/static-resources'
 import { trace } from '../util/trace'
 import { transclusionChangeEvents } from '../util/transclusion-dependencies'
@@ -121,10 +121,17 @@ export async function emitContent(
   ctx: BuildCtx,
   content: ProcessedContent[],
   inputChangeEvents?: ChangeEvent[],
-  sourceScope?: { emitters: ReadonlySet<string>; resourceSignature: string },
+  sourceScope?: {
+    emitters: ReadonlySet<string>
+    resourceSignature: string
+    projectedContent?: ProcessedContent[]
+  },
 ) {
   const { argv, cfg } = ctx
+  const stages = new PerfTimer()
   await pruneCitationCaches(content)
+  logBuildStage(argv, ctx.buildId, 'emit.citation-pruning', stages.elapsedMs())
+  stages.addEvent('dependencies')
   let changeEvents =
     inputChangeEvents &&
     transclusionChangeEvents(
@@ -132,6 +139,8 @@ export async function emitContent(
       trackedWahooChangeEvents(content, inputChangeEvents, argv.directory),
       argv.directory,
     )
+  logBuildStage(argv, ctx.buildId, 'emit.change-dependencies', stages.elapsedMs('dependencies'))
+  stages.addEvent('projection')
   if (changeEvents) {
     const projected = flashcardPageChanges(content, changeEvents, cfg.configuration.baseUrl)
     content = projected.content
@@ -142,10 +151,11 @@ export async function emitContent(
       await removeWritten(ctx, `${slug}-og-image`, '.webp')
     }
   } else {
-    content = flashcardPages(content, cfg.configuration.baseUrl)
+    content = sourceScope?.projectedContent ?? flashcardPages(content, cfg.configuration.baseUrl)
   }
   const perf = new PerfTimer()
   const log = new QuartzLogger(ctx.argv.verbose)
+  logBuildStage(argv, ctx.buildId, 'emit.flashcard-projection', stages.elapsedMs('projection'))
   const partialChanges = ctx.incremental ? changeEvents : undefined
 
   log.start(``)
@@ -168,6 +178,8 @@ export async function emitContent(
       : await runEmitter(componentResources, ctx, content, staticResources, log)
   }
 
+  logBuildStage(argv, ctx.buildId, 'emit.component-resources', perf.elapsedMs())
+  stages.addEvent('other-emitters')
   const resourceSignature = JSON.stringify([
     [...(ctx.assetManifest ?? [])].sort(([a], [b]) => a.localeCompare(b)),
     [...(ctx.extractedStaticResources ?? [])].sort(([a], [b]) => a.localeCompare(b)),
@@ -199,7 +211,8 @@ export async function emitContent(
   })
   if (failures.length > 0) throw new AggregateError(failures, 'Failed to emit Quartz output')
   emittedFiles += counts.reduce((sum, count) => sum + count, 0)
+  logBuildStage(argv, ctx.buildId, 'emit.other-owners', stages.elapsedMs('other-emitters'))
 
   log.end(`Emitted ${emittedFiles} files to \`${argv.output}\` in ${perf.timeSince()}`)
-  return resourceSignature
+  return { resources: resourceSignature, projectedContent: content }
 }

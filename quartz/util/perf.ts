@@ -1,3 +1,4 @@
+import { performance } from 'node:perf_hooks'
 import { styleText } from 'node:util'
 import pretty from 'pretty-time'
 
@@ -52,4 +53,17 @@ export function logBuildSpan(
 ): void {
   if (!shouldLogBuildSpan(argv, elapsedMs)) return
   console.log(`[${label}] ${subject} (${formatDurationMs(elapsedMs)})`)
+}
+
+/** Fixed stage receipts stay complete even when individual span logs use a slow threshold. */
+export function logBuildStage(
+  argv: BuildSpanArgv,
+  epoch: string,
+  stage: string,
+  elapsedMs: number,
+): void {
+  if (!argv.verbose && slowBuildThresholdMs(argv) === undefined) return
+  console.log(
+    `__QUARTZ_BUILD_STAGE__${JSON.stringify({ epoch, stage, elapsedMs, atMs: performance.now(), cpu: process.cpuUsage(), elu: performance.eventLoopUtilization() })}`,
+  )
 }
