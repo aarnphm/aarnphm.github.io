@@ -58,7 +58,12 @@ interface IdentityEntry {
   bytes: number
 }
 
+import { onModuleRelease } from '../../util/module-caches'
+
 let identityCache: Map<string, IdentityEntry> | undefined
+onModuleRelease(() => {
+  identityCache = undefined
+})
 
 async function loadIdentityCache(): Promise<Map<string, IdentityEntry>> {
   if (identityCache) return identityCache

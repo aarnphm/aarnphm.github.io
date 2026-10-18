@@ -7,7 +7,7 @@ import path from 'node:path'
 import { Cite, rehypeCitationGenerator } from 'rehype-citation'
 import type { BuildCtx } from '../../util/ctx'
 import type { ProcessedContent } from '../vfile'
-import { releasedOnReload } from '../../util/module-caches'
+import { ReloadableWeakMap, releasedOnReload } from '../../util/module-caches'
 import { isRecord } from '../../util/type-guards'
 import '@citation-js/plugin-bibtex'
 import '@citation-js/plugin-doi'
@@ -101,7 +101,7 @@ function citationDataCacheKey(data: unknown): string | undefined {
   return citationDataCacheKeyFromParts(data)
 }
 
-const bibliographySnapshots = new WeakMap<
+const bibliographySnapshots = new ReloadableWeakMap<
   BuildCtx,
   { buildId: string; keys: Map<string, Promise<{ bibliography: string; data: string }>> }
 >()

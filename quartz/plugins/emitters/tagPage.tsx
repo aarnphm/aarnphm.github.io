@@ -12,6 +12,7 @@ import { defaultIoConcurrency, mapConcurrent } from '../../util/async-pool'
 import { BuildCtx, contentDataFor } from '../../util/ctx'
 import { escapeHTML } from '../../util/escape'
 import { pageListingChanged } from '../../util/listing-signature'
+import { onModuleRelease } from '../../util/module-caches'
 import {
   FilePath,
   FullSlug,
@@ -365,6 +366,9 @@ export const TagPage: QuartzEmitterPlugin<Partial<TagPageOptions>> = userOpts =>
   const { head: Head, header, beforeBody, pageBody, afterBody, sidebar, footer: Footer } = opts
   const Header = HeaderConstructor()
   let cachedTagInfo: TagInfo | undefined
+  onModuleRelease(() => {
+    cachedTagInfo = undefined
+  })
 
   return {
     name: 'TagPage',

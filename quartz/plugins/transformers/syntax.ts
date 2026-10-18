@@ -209,6 +209,7 @@ function cachedPrettyCode(opts: CodeOptions) {
     const highlight = rehypePrettyCode.call(this, opts)
     return async (tree: HastRoot, file: VFile) => {
       const state = file.data.syntaxHighlightingCache
+      delete file.data.syntaxHighlightingCache
       if (state?.hit) return
 
       const result = highlight ? highlight(tree, file, () => undefined) : undefined

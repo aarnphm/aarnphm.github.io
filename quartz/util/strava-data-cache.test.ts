@@ -201,3 +201,143 @@ test('emitter data follows health-cache symlinks and reloads replaced targets', 
     rmSync(directory, { recursive: true, force: true })
   }
 })
+
+test('loadStravaDataSync compacts unused raw telemetry streams after enriching payload and analytics', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'quartz-strava-compact-'))
+  const originalDirectory = process.cwd()
+  const cacheDir = join(directory, 'quartz/.quartz-cache')
+  mkdirSync(cacheDir, { recursive: true })
+  writeFileSync(
+    join(cacheDir, 'strava.json'),
+    JSON.stringify({
+      athleteId: 1,
+      auth: { refreshToken: '', obtainedAt: 0 },
+      lastSync: 1000,
+      lastActivityStart: 0,
+      activities: {
+        '1': {
+          id: 1,
+          name: 'Morning Run',
+          sportType: 'Run',
+          distance: 5000,
+          movingTime: 1500,
+          elapsedTime: 1500,
+          totalElevationGain: 25,
+          startDate: `${date}T12:00:00Z`,
+          startDateLocal: `${date}T08:00:00`,
+          averageSpeed: 5000 / 1500,
+        },
+      },
+      geo: {
+        '1': {
+          latlng: [
+            [43.65, -79.38],
+            [43.66, -79.39],
+          ],
+          time: [0, 1500],
+          distance: [0, 5000],
+          altitude: [80, 105],
+        },
+      },
+      activityDetails: {
+        '1': {
+          fetchedAt: 1000,
+          calories: 320,
+          description: null,
+          privateNote: null,
+          deviceName: 'Forerunner 965',
+          gearId: null,
+          gearName: null,
+          perceivedExertion: null,
+          workoutType: null,
+          splitsMetric: [],
+          laps: [],
+          bestEfforts: [],
+        },
+      },
+    }),
+  )
+  writeFileSync(
+    join(cacheDir, 'apple-health.json'),
+    JSON.stringify({
+      version: 5,
+      lastSync: 1000,
+      days: {
+        [date]: {
+          date,
+          activeKcal: 600,
+          basalKcal: 1800,
+          burnKcal: 2400,
+          intakeKcal: 2500,
+          weightKg: 68,
+        },
+      },
+      workouts: {
+        'apple-1': {
+          id: 'apple-1',
+          sport: 'run',
+          startDate: `${date}T12:00:00Z`,
+          endDate: `${date}T12:25:00Z`,
+          durationS: 1500,
+          distanceM: 5000,
+          activeKcal: 320,
+          sourceName: 'Apple Watch',
+          deviceName: 'Apple Watch',
+          heartRate: [{ t: 0, bpm: 150 }],
+          runDynamics: {
+            powerW: [250],
+            cadenceSpm: [176],
+            strideLengthM: [1.15],
+            verticalOscillationCm: [8.2],
+            groundContactTimeMs: [225],
+            speedMps: [3.33],
+          },
+        },
+      },
+      swims: {},
+    }),
+  )
+  writeFileSync(
+    join(cacheDir, 'oura.json'),
+    JSON.stringify({
+      version: 2,
+      auth: { refreshToken: '', obtainedAt: 0 },
+      lastSync: 1000,
+      days: {
+        [date]: {
+          date,
+          readiness: 85,
+          sleepScore: 88,
+          hrv: 65,
+          rhr: 46,
+          sleepDurationS: 28800,
+          tempDeviationC: 0.1,
+          totalCalories: 2400,
+          activeCalories: 600,
+        },
+      },
+      details: {},
+      heartRate: [{ timestamp: `${date}T12:00:00Z`, bpm: 52, source: 'awake' }],
+    }),
+  )
+  try {
+    process.chdir(directory)
+    const loaded = loadStravaDataSync(date, null)
+    // Enriched detail retains device & dynamics while raw heavy provider collections are released.
+    assert.equal(loaded.payload.details['1']?.calories, 320)
+    assert.equal(loaded.sources.apple?.days?.[date]?.burnKcal, 2400)
+    assert.equal(loaded.sources.oura?.days?.[date]?.readiness, 85)
+    assert.equal(loaded.sources.wahoo, null)
+    assert.equal(loaded.sources.core, null)
+    assert.deepEqual(loaded.sources.apple?.workouts, {})
+    assert.deepEqual(loaded.sources.apple?.swims, {})
+    assert.equal(loaded.sources.oura?.heartRate, undefined)
+    assert.equal(loaded.sources.strava?.geo, undefined)
+    assert.equal(loaded.sources.strava?.activityDetails, undefined)
+    assert.equal(loaded.trackedCache?.geo, undefined)
+    assert.equal(loaded.trackedCache?.activityDetails, undefined)
+  } finally {
+    process.chdir(originalDirectory)
+    rmSync(directory, { recursive: true, force: true })
+  }
+})

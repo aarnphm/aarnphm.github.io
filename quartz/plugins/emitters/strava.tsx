@@ -20,6 +20,7 @@ import {
 import { isDevelopmentBuild } from '../../util/build-mode'
 import { hashContent } from '../../util/content-hash'
 import { BuildCtx, contentDataFor } from '../../util/ctx'
+import { onModuleRelease, releasedOnReload } from '../../util/module-caches'
 import { FilePath, FullSlug, joinSegments, pathToRoot, QUARTZ } from '../../util/path'
 import { StaticResources } from '../../util/resources'
 import {
@@ -120,7 +121,10 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
   const Header = HeaderConstructor()
   const DayPage = TriathlonDayPage()
   let emittedTemporalSlugs = new Set<FullSlug>()
-  const dayRenderCache = new Map<FullSlug, string>()
+  const dayRenderCache = releasedOnReload(new Map<FullSlug, string>())
+  onModuleRelease(() => {
+    emittedTemporalSlugs.clear()
+  })
 
   async function* emitAll(
     ctx: BuildCtx,

@@ -1161,12 +1161,33 @@ export function buildStravaData(
     ...payload,
     dailyAnalytics: buildTriathlonDailyAnalytics(analytics, ouraDetails, payload.details),
   }
+  const compactStrava = strava ? { ...strava, geo: undefined, activityDetails: undefined } : null
+  const compactTrackedCache = trackedCache
+    ? { ...trackedCache, geo: undefined, activityDetails: undefined }
+    : null
+  const compactSources: StravaDataSources = {
+    strava: compactStrava,
+    oura: oura ? { ...oura, heartRate: undefined } : null,
+    garmin,
+    wahoo: null,
+    apple: apple ? { ...apple, workouts: {}, swims: {} } : null,
+    core: null,
+    weather,
+  }
+  const compactWahooActivities: WahooData['activities'] = {}
+  for (const [id, activity] of Object.entries(wahoo?.activities ?? {})) {
+    const nextActivity = { ...activity, laps: undefined } as WahooData['activities'][string] & {
+      stream?: unknown
+    }
+    delete nextActivity.stream
+    compactWahooActivities[id] = nextActivity
+  }
   return {
     payload: loaded,
     analytics,
-    trackedCache,
-    sources,
-    wahooActivities: wahoo?.activities ?? {},
+    trackedCache: compactTrackedCache,
+    sources: compactSources,
+    wahooActivities: compactWahooActivities,
     generatedAt,
   }
 }

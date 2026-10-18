@@ -12,6 +12,7 @@ import { pdfResourceOf } from '../../util/course'
 import { BuildCtx, contentDataFor } from '../../util/ctx'
 import { folderPageSourceSlug, isFolderPageSourcePath } from '../../util/folder-page'
 import { pageListingChanged } from '../../util/listing-signature'
+import { onModuleRelease } from '../../util/module-caches'
 import {
   FilePath,
   FullSlug,
@@ -138,6 +139,9 @@ export const FolderPage: QuartzEmitterPlugin<Partial<FolderPageOptions>> = userO
   const { head: Head, header, beforeBody, pageBody, afterBody, sidebar, footer: Footer } = opts
   const Header = HeaderConstructor()
   let previousPdfTitles = new Map<string, string>()
+  onModuleRelease(() => {
+    previousPdfTitles.clear()
+  })
 
   return {
     name: 'FolderPage',

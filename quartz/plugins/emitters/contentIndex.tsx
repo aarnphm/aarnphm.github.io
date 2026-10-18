@@ -844,6 +844,7 @@ function buildLinkIndex(
     }
   }
 
+  const includeRichContent = Boolean(opts.enableAtom && !ctx.argv.watch)
   for (const [tree, file] of content) {
     const slug = normalizedContentSlug(file.data)
     if (!slug) continue
@@ -856,7 +857,7 @@ function buildLinkIndex(
       file,
       opts,
       contentBySlug,
-      true,
+      includeRichContent,
       reusableDetails.get(slug),
     )
   }
@@ -1532,6 +1533,8 @@ Sitemap: https://${joinSegments(baseUrl, 'sitemap.xml')}
 `
 }
 
+import { onModuleRelease } from '../../util/module-caches'
+
 export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = userOpts => {
   const opts: Options = { ...defaultOptions, ...userOpts }
   const folderFeedSlugs = new Set<string>()
@@ -1539,6 +1542,13 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = userOpts => {
   let cachedContentIndexJson: SerializedIndexCache | undefined
   let cachedRootAtomFeed: AtomFeedCache | undefined
   let cachedSearchIndexJson: SerializedIndexCache | undefined
+  onModuleRelease(() => {
+    folderFeedSlugs.clear()
+    cachedLinkIndex = undefined
+    cachedContentIndexJson = undefined
+    cachedRootAtomFeed = undefined
+    cachedSearchIndexJson = undefined
+  })
 
   return {
     name: 'ContentIndex',
