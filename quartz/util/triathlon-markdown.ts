@@ -4,6 +4,7 @@ import type { StravaActivityDetail, StravaPayload } from '../plugins/stores/stra
 import type { TrainingPlan } from '../plugins/stores/training'
 import type { FullSlug } from './path'
 import type { TriathlonEquipmentUsage } from './triathlon-equipment'
+import { escapeHTML } from './escape'
 import { TRI_RACE_DISTANCES } from './triathlon-calculator'
 import {
   calendarScheduleDates,
@@ -60,20 +61,41 @@ const turndown = new TurndownService({
   codeBlockStyle: 'fenced',
 })
 
-const tableCellMarkdown = (cell: Element): string =>
+const escapeMarkdownText = turndown.escape.bind(turndown)
+turndown.escape = value => escapeMarkdownText(escapeHTML(value))
+
+const tableCellMarkdown = (cell: HTMLElement): string =>
   turndown
-    .turndown(cell.innerHTML)
+    .turndown(cell)
     .trim()
     .replace(/\n+/g, '<br>')
     .replace(/\s*<br>\s*/g, '<br>')
     .replace(/\|/g, '\\|')
+
+turndown.addRule('table-code-with-backslash-pipe', {
+  filter: node =>
+    node.nodeName === 'CODE' &&
+    node.closest('td, th') !== null &&
+    node.textContent?.includes('\\|') === true,
+  replacement: (_content, node) => {
+    // GFM consumes a pipe escape before parsing code spans. HTML entities retain
+    // literal backslashes without exposing a table delimiter to that first pass.
+    const text = (node.textContent ?? '').replace(
+      /[!-/:-@[-`{-~]/g,
+      character => `&#${character.charCodeAt(0)};`,
+    )
+    return `<code>${text}</code>`
+  },
+})
 
 turndown.addRule('table', {
   filter: 'table',
   replacement: (_content, node) => {
     const rows = Array.from(node.querySelectorAll('tr'))
       .map(row =>
-        Array.from(row.children).filter(cell => cell.tagName === 'TH' || cell.tagName === 'TD'),
+        Array.from(row.children).filter(
+          (cell): cell is HTMLTableCellElement => cell.tagName === 'TH' || cell.tagName === 'TD',
+        ),
       )
       .filter(row => row.length > 0)
     if (rows.length === 0) return ''
