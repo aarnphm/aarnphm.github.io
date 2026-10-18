@@ -31,9 +31,8 @@ import checkboxScript from '../../components/scripts/checkbox.inline'
 // @ts-ignore
 import embedScript from '../../components/scripts/embed.inline'
 // @ts-ignore
-import mermaidScript from '../../components/scripts/mermaid.inline'
-import mermaidStyle from '../../components/styles/mermaid.inline.scss'
-import { svgOptions } from '../../components/svg'
+import peleScript from '../../components/scripts/pele.inline'
+import peleStyle from '../../components/styles/pele.inline.scss'
 import { remarkSidenote } from '../../extensions/micromark-extension-ofm-sidenotes'
 import {
   remarkWikilink,
@@ -1098,43 +1097,61 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
       if (opts.mermaid) {
         plugins.push(() => {
           return tree => {
-            visit(
-              tree,
-              node => checkMermaidCode(node as Element),
-              (node: Element, _, parent: HtmlRoot) => {
-                parent.children = [
-                  h(
-                    'span.expand-button',
-                    {
-                      type: 'button',
-                      ariaLabel: 'Expand mermaid diagram',
-                      'data-view-component': true,
-                    },
-                    [
-                      s('svg', { ...svgOptions, viewbox: '0 -8 24 24', tabindex: -1 }, [
-                        s('use', { href: '#expand-e-w' }),
-                      ]),
-                    ],
+            const control = (
+              className: string,
+              label: string,
+              paths: readonly string[],
+              properties: Properties = {},
+            ) =>
+              h(
+                `button.${className}`,
+                { type: 'button', ariaLabel: label, title: label, ...properties },
+                [
+                  s(
+                    'svg',
+                    { viewBox: '0 0 24 24', ariaHidden: true },
+                    paths.map(d => s('path', { d })),
                   ),
-                  h(
-                    'span.clipboard-button',
-                    { type: 'button', ariaLabel: 'copy source', 'data-view-component': true },
-                    [
-                      s('svg', { ...svgOptions, viewbox: '0 -8 24 24', class: 'copy-icon' }, [
-                        s('use', { href: '#github-copy' }),
+                ],
+              )
+            visit(tree, 'element', (node, _, parent) => {
+              if (!checkMermaidCode(node) || parent?.type !== 'element' || parent.tagName !== 'pre')
+                return
+              parent.tagName = 'figure'
+              parent.properties = { ...parent.properties, className: ['pele-figure'] }
+              parent.children = [
+                h('button.pele-trigger', {
+                  type: 'button',
+                  ariaLabel: 'expand diagram',
+                  ariaHasPopup: 'dialog',
+                  disabled: true,
+                }),
+                h(
+                  '.pele-diagram',
+                  { 'data-clipboard': node.properties['data-clipboard'] },
+                  node.children,
+                ),
+                h('dialog.pele-dialog', { ariaLabel: 'expanded diagram' }, [
+                  h('.pele-controls', { role: 'group', ariaLabel: 'diagram controls' }, [
+                    control('pele-close', 'close diagram', ['M6 6l12 12M6 18 18 6'], {
+                      autofocus: true,
+                    }),
+                    control('pele-fold', 'collapse diagram controls', ['M6 9l6 6 6-6'], {
+                      ariaExpanded: 'true',
+                    }),
+                    h('.pele-controls-body', [
+                      control('pele-zoom-in', 'zoom in', ['M12 5v14M5 12h14']),
+                      control('pele-zoom-out', 'zoom out', ['M5 12h14']),
+                      control('pele-reset', 'fit diagram', [
+                        'M8 3H3v5M16 3h5v5M3 16v5h5M21 16v5h-5',
                       ]),
-                      s('svg', { ...svgOptions, viewbox: '0 -8 24 24', class: 'check-icon' }, [
-                        s('use', { href: '#github-check' }),
-                      ]),
-                    ],
-                  ),
-                  node,
-                  h('#mermaid-container', { role: 'dialog' }, [
-                    h('#mermaid-space', [h('.mermaid-content')]),
+                      control('pele-copy', 'copy source', ['M9 9h11v11H9zM5 15H3V3h12v2']),
+                    ]),
                   ]),
-                ]
-              },
-            )
+                  h('.pele-dialog-content'),
+                ]),
+              ]
+            })
           }
         })
       }
@@ -1266,12 +1283,12 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
       }
       if (opts.mermaid) {
         js.push({
-          script: mermaidScript,
+          script: peleScript,
           loadTime: 'afterDOMReady',
           contentType: 'inline',
           moduleType: 'module',
         })
-        css.push({ content: mermaidStyle, inline: true })
+        css.push({ content: peleStyle, inline: true })
       }
 
       return { js, css }

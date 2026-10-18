@@ -454,10 +454,6 @@ pre {
   border: 1px solid var(--lightgray);
   position: relative;
 
-  &:has(> code.mermaid) {
-    border: none;
-  }
-
   & > code {
     font-size: 13px;
     counter-reset: line;
@@ -468,12 +464,6 @@ pre {
     &:not(.reader-content *) {
       background: none;
       padding: 0.5rem 0;
-    }
-
-    &.mermaid {
-      p {
-        margin: 0;
-      }
     }
 
     & [data-highlighted-chars] {

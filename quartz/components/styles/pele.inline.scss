@@ -1,0 +1,195 @@
+.pele-figure {
+  --pele-bg: var(--light);
+  --pele-fg: var(--dark);
+  --pele-muted: var(--darkgray);
+  --pele-line: var(--darkgray);
+  --pele-surface: color-mix(in srgb, var(--lightgray) 35%, var(--light));
+  --pele-surface-alt: color-mix(in srgb, var(--lightgray) 65%, var(--light));
+  --pele-border: var(--darkgray);
+  --pele-accent: var(--dark);
+  --pele-critical: var(--dark);
+  --pele-error: var(--dark);
+  --pele-font: var(--bodyFont);
+  --pele-font-mono: var(--codeFont);
+  --pele-radius: 0px;
+
+  position: relative;
+  min-width: 0;
+  margin: 1rem 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+
+  > .pele-trigger {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-none);
+    background: transparent;
+    cursor: zoom-in;
+
+    &:focus-visible {
+      outline: 2px solid var(--dark);
+      outline-offset: 2px;
+    }
+
+    &:disabled {
+      cursor: wait;
+    }
+  }
+
+  > .pele-diagram {
+    position: relative;
+    display: block;
+    min-width: 0;
+    pointer-events: none;
+
+    &:not([data-renderer]) {
+      white-space: pre-wrap;
+    }
+
+    > svg.pele {
+      display: block;
+      margin-inline: auto;
+    }
+
+    svg a {
+      pointer-events: auto;
+    }
+  }
+}
+
+.pele-dialog {
+  box-sizing: border-box;
+  width: 94vw;
+  max-width: 94vw;
+  height: 90dvh;
+  max-height: 90dvh;
+  margin: auto;
+  padding: 1rem;
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radius-none);
+  background: var(--light);
+  color: var(--dark);
+
+  &::backdrop {
+    background: color-mix(in srgb, var(--lightgray) 65%, transparent);
+  }
+
+  &[open] {
+    display: grid;
+    grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+  }
+
+  .pele-dialog-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    min-height: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+
+    > svg.pele {
+      display: block;
+      width: auto;
+      height: auto;
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    > svg:focus-visible {
+      outline: 2px solid var(--dark);
+      outline-offset: -2px;
+    }
+  }
+}
+
+.pele-controls {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--darkgray);
+  background: var(--light);
+
+  .pele-controls-body {
+    display: flex;
+    flex-direction: column;
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 2rem;
+    height: 2rem;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-none);
+    background: transparent;
+    color: var(--dark);
+    cursor: pointer;
+    transition: background-color 120ms ease;
+
+    > svg {
+      width: 1rem;
+      height: 1rem;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--dark);
+      outline-offset: -2px;
+    }
+
+    &:disabled {
+      color: var(--gray);
+      cursor: default;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover:not(:disabled) {
+        background: var(--pele-surface-alt);
+      }
+    }
+
+    @media (pointer: coarse) {
+      width: 44px;
+      height: 44px;
+    }
+  }
+
+  .pele-fold[aria-expanded='true'] svg {
+    transform: rotate(180deg);
+  }
+
+  .pele-copy.check {
+    background: var(--pele-surface-alt);
+  }
+}
+
+.pele-load-error {
+  color: var(--dark);
+  font-family: var(--bodyFont);
+  font-size: 0.875rem;
+  white-space: normal;
+}
