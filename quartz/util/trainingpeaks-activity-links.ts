@@ -1,4 +1,5 @@
 import type { ActivityKind, GarminVerification, RawStravaActivity } from '../plugins/stores/strava'
+import type { WahooActivitySource } from '../plugins/stores/wahoo'
 import {
   isTrainingPeaksCalendarDay,
   type TrainingPeaksCalendar,
@@ -15,6 +16,10 @@ export type TrainingPeaksLinkActivity = Pick<
   peaks?: TrainingPeaksCalendarPeak[]
   garmin?: Pick<
     GarminVerification,
+    'startDate' | 'distanceM' | 'movingTimeS' | 'elapsedTimeS'
+  > | null
+  wahoo?: Pick<
+    WahooActivitySource,
     'startDate' | 'distanceM' | 'movingTimeS' | 'elapsedTimeS'
   > | null
 }
@@ -74,16 +79,17 @@ function candidate(activity: TrainingPeaksLinkActivity): Candidate | null {
       durations: [activity.movingTime, activity.elapsedTime].filter(positive),
     },
   ]
-  if (activity.garmin) {
-    const offset = Date.parse(activity.garmin.startDate) - Date.parse(activity.startDate)
+  for (const source of [activity.garmin, activity.wahoo]) {
+    if (!source) continue
+    const offset = Date.parse(source.startDate) - Date.parse(activity.startDate)
     if (Number.isFinite(offset)) {
       // Preserve the source's wall-clock offset, including recordings made while travelling.
-      const garminLocal = localStart(new Date(local.localStartMs + offset).toISOString())
-      if (garminLocal)
+      const sourceLocal = localStart(new Date(local.localStartMs + offset).toISOString())
+      if (sourceLocal)
         recordings.push({
-          ...garminLocal,
-          distance: nonnegative(activity.garmin.distanceM),
-          durations: [activity.garmin.movingTimeS, activity.garmin.elapsedTimeS].filter(positive),
+          ...sourceLocal,
+          distance: nonnegative(source.distanceM),
+          durations: [source.movingTimeS, source.elapsedTimeS].filter(positive),
         })
     }
   }

@@ -79,6 +79,7 @@ test('normalizes Strava run splits and derives missing average speed', () => {
         moving_time: 300,
         average_speed: 10 / 3,
         elevation_difference: 4.2,
+        average_heartrate: 143.276,
         pace_zone: 2,
       },
       { split: 2, distance: 800, elapsed_time: 250, moving_time: 240, elevation_difference: -3 },
@@ -92,6 +93,7 @@ test('normalizes Strava run splits and derives missing average speed', () => {
         movingTime: 300,
         averageSpeed: 10 / 3,
         elevationDifference: 4.2,
+        averageHeartrate: 143.276,
         paceZone: 2,
       },
       {
@@ -101,6 +103,7 @@ test('normalizes Strava run splits and derives missing average speed', () => {
         movingTime: 240,
         averageSpeed: 10 / 3,
         elevationDifference: -3,
+        averageHeartrate: null,
         paceZone: null,
       },
     ],

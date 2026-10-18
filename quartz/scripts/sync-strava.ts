@@ -419,6 +419,7 @@ function parseRunSplit(value: unknown, index: number): RawStravaRunSplit | null 
     elapsedTime,
     movingTime,
     averageSpeed,
+    averageHeartrate: nullableNumber(value, 'average_heartrate'),
     elevationDifference: nullableNumber(value, 'elevation_difference'),
     paceZone: nullableNumber(value, 'pace_zone'),
   }
@@ -477,8 +478,34 @@ function progress(label: string, done: number, total: number): void {
 async function main(): Promise<void> {
   const prev = await readCache()
   const gearOnly = process.argv.includes('--gear-only')
+  const detailArgument = process.argv.indexOf('--activity-detail')
+  const detailId = detailArgument < 0 ? null : Number(process.argv[detailArgument + 1])
+  if (
+    detailId != null &&
+    (!prev ||
+      !Number.isSafeInteger(detailId) ||
+      detailId <= 0 ||
+      !prev.activities[String(detailId)])
+  )
+    throw new Error('--activity-detail requires one existing cached activity ID')
+  if (gearOnly && detailId != null) throw new Error('choose --gear-only or --activity-detail')
   if (gearOnly && !prev) throw new Error('--gear-only needs an existing Strava cache')
   const { access, refreshToken } = await resolveToken(prev)
+  if (detailId != null && prev) {
+    const detail = await fetchActivityDetail(access, detailId)
+    if (!detail) throw new Error(`activity detail ${detailId} unavailable; cache preserved`)
+    const current = await readCache()
+    if (!current || current.athleteId !== prev.athleteId || !current.activities[String(detailId)])
+      throw new Error('Strava cache identity changed during detail refresh; cache preserved')
+    await writeStravaCacheFile(cacheFile, {
+      ...current,
+      auth: { refreshToken, obtainedAt: Date.now() },
+      activityDetails: { ...current.activityDetails, [String(detailId)]: detail },
+    })
+    await refreshTriathlonRouteSource()
+    console.log(`[strava] refreshed activity detail ${detailId} → ${cacheFile}`)
+    return
+  }
   if (gearOnly && prev) {
     const gear: Record<string, StravaGear> = { ...prev.gear }
     await fetchAthleteFtp(access, gear)

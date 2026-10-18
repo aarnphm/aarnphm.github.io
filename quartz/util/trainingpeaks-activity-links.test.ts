@@ -250,6 +250,63 @@ test('allows device timer differences within one verified recording and never mi
   )
 })
 
+test('links a paired Wahoo recording to its canonical virtual ride without mixing provider metrics', () => {
+  const completed = workout({
+    sport: 'bike',
+    workoutTypeId: 2,
+    startTime: '18:04:57',
+    actual: { durationSeconds: 4857, distanceMeters: 40905.94921875, tss: 126.26 },
+  })
+  const rouvy = activity({
+    sport: 'bike',
+    startDate: '2026-10-05T22:04:58Z',
+    startDateLocal: '2026-10-05T18:04:58Z',
+    distance: 39234.9,
+    movingTime: 4803,
+    elapsedTime: 4855,
+  })
+  const wahoo = {
+    startDate: '2026-10-05T22:04:57Z',
+    distanceM: 40919.35,
+    movingTimeS: 4857,
+    elapsedTimeS: 4859,
+  }
+  const input = calendar([completed])
+  const snapshot = structuredClone(input)
+  assert.equal(linkTrainingPeaksCalendarActivities(input, [rouvy]).workouts[0].activity, undefined)
+  const linked = linkTrainingPeaksCalendarActivities(input, [{ ...rouvy, wahoo }])
+  assert.equal(linked.workouts[0].activity?.id, rouvy.id)
+  assert.equal(linked.workouts[0].activity?.match, 'recording')
+  assert.deepEqual(linked.workouts[0].actual, completed.actual)
+  assert.deepEqual(input, snapshot)
+
+  for (const invalid of [
+    { ...wahoo, startDate: '2026-10-05T20:04:57Z' },
+    { ...wahoo, distanceM: 60000 },
+    { ...wahoo, movingTimeS: 7000, elapsedTimeS: 7000 },
+  ])
+    assert.equal(
+      linkTrainingPeaksCalendarActivities(input, [{ ...rouvy, wahoo: invalid }]).workouts[0]
+        .activity,
+      undefined,
+    )
+  assert.equal(
+    linkTrainingPeaksCalendarActivities(input, [
+      {
+        ...rouvy,
+        wahoo: { ...wahoo, distanceM: 39234.9 },
+        garmin: { ...wahoo, movingTimeS: 7000, elapsedTimeS: 7000 },
+      },
+    ]).workouts[0].activity,
+    undefined,
+  )
+  assert.ok(
+    linkTrainingPeaksCalendarActivities(calendar([completed, { ...completed, id: '43' }]), [
+      { ...rouvy, wahoo },
+    ]).workouts.every(item => !item.activity),
+  )
+})
+
 test('matches ancillary sessions without treating zero distance as independent recording evidence', () => {
   const sauna = workout({
     sport: 'other',
