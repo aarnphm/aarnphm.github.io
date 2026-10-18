@@ -3510,6 +3510,7 @@ test('emits exact elapsed time and bounded local speed at forced analysis bounda
             movingTime: 300,
             averageSpeed: 10 / 3,
             elevationDifference: 4.2,
+            averageHeartrate: 149.276,
             paceZone: 2,
           },
         ],
@@ -3521,6 +3522,7 @@ test('emits exact elapsed time and bounded local speed at forced analysis bounda
             movingTime: 480,
             averageSpeed: 3.3528,
             elevationDifference: -2.3,
+            averageHeartrate: 143.276,
             paceZone: 3,
           },
         ],
@@ -3591,6 +3593,7 @@ test('emits exact elapsed time and bounded local speed at forced analysis bounda
       movingTimeS: 300,
       averageSpeedKph: 12,
       elevationDifferenceM: 4.2,
+      averageHeartRate: 149.276,
       paceZone: 2,
     },
   ])
@@ -3602,6 +3605,7 @@ test('emits exact elapsed time and bounded local speed at forced analysis bounda
       movingTimeS: 480,
       averageSpeedKph: 12.07,
       elevationDifferenceM: -2.3,
+      averageHeartRate: 143.276,
       paceZone: 3,
     },
   ])

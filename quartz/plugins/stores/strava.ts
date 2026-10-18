@@ -240,6 +240,7 @@ export interface RawStravaRunSplit {
   elapsedTime: number
   movingTime: number
   averageSpeed: number
+  averageHeartrate?: number | null
   elevationDifference: number | null
   paceZone: number | null
 }
@@ -264,7 +265,10 @@ export const hasFetchedActivityDetail = (
   Array.isArray(detail.laps) &&
   Array.isArray(detail.segmentEfforts) &&
   Array.isArray(detail.splitsMetric) &&
-  Array.isArray(detail.splitsStandard)
+  Array.isArray(detail.splitsStandard) &&
+  [...detail.splitsMetric, ...detail.splitsStandard].every(split =>
+    Object.hasOwn(split, 'averageHeartrate'),
+  )
 
 export interface StravaStreams {
   time?: number[]
@@ -475,6 +479,7 @@ export interface ActivityRunSplit {
   elapsedTimeS: number
   movingTimeS: number
   averageSpeedKph: number
+  averageHeartRate?: number | null
   elevationDifferenceM: number | null
   paceZone: number | null
 }
@@ -3594,6 +3599,7 @@ function projectRunSplits(splits: RawStravaRunSplit[] | undefined): ActivityRunS
     elapsedTimeS: split.elapsedTime,
     movingTimeS: split.movingTime,
     averageSpeedKph: round(split.averageSpeed * 3.6, 2),
+    averageHeartRate: split.averageHeartrate ?? null,
     elevationDifferenceM: nullableRound(split.elevationDifference),
     paceZone: nullableRound(split.paceZone, 0),
   }))
