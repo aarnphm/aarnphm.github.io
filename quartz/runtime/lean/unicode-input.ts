@@ -12,7 +12,6 @@ import {
   StateEffect,
   StateField,
   type Extension,
-  type Transaction,
 } from '@codemirror/state'
 import { Decoration, EditorView, keymap, type Command } from '@codemirror/view'
 import abbreviationsData from './abbreviations.json'
@@ -109,101 +108,211 @@ function formatAbbreviationListMarkdown(
   return `${mainText} (auto-close ${autoClosingNotes.join(', ')})`
 }
 
+const EMPTY_STRINGS: readonly string[] = []
+const EMPTY_ABBREV_MATCHES: ReadonlyArray<LeanAbbreviationMatch> = []
+const EMPTY_COMPLETIONS: readonly Completion[] = []
+
+type CompiledAbbreviationCore = {
+  readonly sortedAbbreviations: readonly string[]
+  readonly abbreviationsByPrefix: Map<string, readonly string[]>
+  readonly validPrefixSet: Set<string>
+  readonly uniqueCompleteSet: Set<string>
+  readonly reverseSymbols: Map<string, readonly string[]>
+  readonly autoClosingByOpening: Map<string, ReadonlyArray<readonly [string, string]>>
+  readonly reverseFirstChars: Set<number>
+  readonly maxReverseSymbolLength: number
+}
+
+const compiledCoreCache = new WeakMap<Readonly<Record<string, string>>, CompiledAbbreviationCore>()
+
+function compileAbbreviationCore(
+  rawAbbreviations: Readonly<Record<string, string>>,
+): CompiledAbbreviationCore {
+  const cached = compiledCoreCache.get(rawAbbreviations)
+  if (cached) return cached
+
+  const keys = Object.keys(rawAbbreviations).sort(compareAbbreviations)
+  const prefixBuckets = new Map<string, string[]>()
+  const validPrefixSet = new Set<string>()
+  const uniqueCompleteSet = new Set<string>()
+  const reverseBuckets = new Map<string, string[]>()
+  const autoClosingBuckets = new Map<string, Array<readonly [string, string]>>()
+  const firstChars = new Set<number>()
+  let maxSymbolLen = 0
+
+  for (const abbrev of keys) {
+    for (let i = 1; i <= abbrev.length; i += 1) {
+      const prefix = i === abbrev.length ? abbrev : abbrev.slice(0, i)
+      let bucket = prefixBuckets.get(prefix)
+      if (!bucket) {
+        bucket = []
+        prefixBuckets.set(prefix, bucket)
+        validPrefixSet.add(prefix)
+      }
+      bucket.push(abbrev)
+    }
+
+    const rawSymbol = rawAbbreviations[abbrev]
+    if (!rawSymbol) continue
+
+    const cursorIdx = rawSymbol.indexOf(CURSOR_PLACEHOLDER)
+    if (cursorIdx !== -1) {
+      const opening = rawSymbol.slice(0, cursorIdx)
+      const closing = rawSymbol.slice(cursorIdx + CURSOR_PLACEHOLDER.length)
+      if (opening.length > 0) {
+        let pairs = autoClosingBuckets.get(opening)
+        if (!pairs) {
+          pairs = []
+          autoClosingBuckets.set(opening, pairs)
+          firstChars.add(opening.charCodeAt(0))
+        }
+        pairs.push([abbrev, closing] as const)
+        if (opening.length > maxSymbolLen) {
+          maxSymbolLen = opening.length
+        }
+      }
+      continue
+    }
+
+    if (!hasNonAsciiCodeUnit(rawSymbol)) continue
+
+    let revList = reverseBuckets.get(rawSymbol)
+    if (!revList) {
+      revList = []
+      reverseBuckets.set(rawSymbol, revList)
+      firstChars.add(rawSymbol.charCodeAt(0))
+    }
+    revList.push(abbrev)
+    if (rawSymbol.length > maxSymbolLen) {
+      maxSymbolLen = rawSymbol.length
+    }
+  }
+
+  for (const abbrev of keys) {
+    const bucket = prefixBuckets.get(abbrev)
+    if (bucket && bucket.length === 1 && rawAbbreviations[abbrev]) {
+      uniqueCompleteSet.add(abbrev)
+    }
+  }
+
+  const core: CompiledAbbreviationCore = {
+    sortedAbbreviations: keys,
+    abbreviationsByPrefix: prefixBuckets,
+    validPrefixSet,
+    uniqueCompleteSet,
+    reverseSymbols: reverseBuckets,
+    autoClosingByOpening: autoClosingBuckets,
+    reverseFirstChars: firstChars,
+    maxReverseSymbolLength: maxSymbolLen,
+  }
+  compiledCoreCache.set(rawAbbreviations, core)
+  return core
+}
+
 export class LeanAbbreviationIndex {
   readonly symbolsByAbbreviation: Readonly<Record<string, string>>
-  readonly strictPrefixCount: Map<string, number>
   readonly validPrefixSet: Set<string>
   readonly reverseSymbols: Map<string, readonly string[]>
   readonly autoClosingByOpening: Map<string, ReadonlyArray<readonly [string, string]>>
 
   private readonly sortedAbbreviations: readonly string[]
   private readonly abbreviationsByPrefix: Map<string, readonly string[]>
+  private readonly uniqueCompleteSet: Set<string>
   private readonly maxReverseSymbolLength: number
+  private readonly reverseFirstChars: Set<number>
+  private readonly parsedReplacements = new Map<string, LeanAbbreviationReplacement>()
+  private readonly matchByAbbrev = new Map<string, LeanAbbreviationMatch>()
+  private readonly completionByAbbrev = new Map<string, Completion>()
+  private readonly matchSliceCache = new Map<string, ReadonlyArray<LeanAbbreviationMatch>>()
+  private readonly completionSliceCache = new Map<string, readonly Completion[]>()
+  private readonly hoverMarkdownCache = new Map<string, string>()
+  private _strictPrefixCount: Map<string, number> | undefined
 
   constructor(rawAbbreviations: Readonly<Record<string, string>> = abbreviationsData) {
+    const core = compileAbbreviationCore(rawAbbreviations)
     this.symbolsByAbbreviation = rawAbbreviations
-    this.strictPrefixCount = new Map<string, number>()
-    this.validPrefixSet = new Set<string>()
+    this.sortedAbbreviations = core.sortedAbbreviations
+    this.abbreviationsByPrefix = core.abbreviationsByPrefix
+    this.validPrefixSet = core.validPrefixSet
+    this.uniqueCompleteSet = core.uniqueCompleteSet
+    this.reverseSymbols = core.reverseSymbols
+    this.autoClosingByOpening = core.autoClosingByOpening
+    this.reverseFirstChars = core.reverseFirstChars
+    this.maxReverseSymbolLength = core.maxReverseSymbolLength
+  }
 
-    const keys = Object.keys(rawAbbreviations).sort(compareAbbreviations)
-    this.sortedAbbreviations = keys
-
-    const prefixBuckets = new Map<string, string[]>()
-    const reverseBuckets = new Map<string, string[]>()
-    const autoClosingBuckets = new Map<string, Array<readonly [string, string]>>()
-    let maxSymbolLen = 0
-
-    for (const abbrev of keys) {
-      for (let i = 1; i <= abbrev.length; i += 1) {
-        const prefix = abbrev.slice(0, i)
-        this.validPrefixSet.add(prefix)
-        if (i < abbrev.length) {
-          this.strictPrefixCount.set(prefix, (this.strictPrefixCount.get(prefix) ?? 0) + 1)
+  get strictPrefixCount(): Map<string, number> {
+    if (!this._strictPrefixCount) {
+      const map = new Map<string, number>()
+      for (const [prefix, bucket] of this.abbreviationsByPrefix) {
+        const exact = Object.hasOwn(this.symbolsByAbbreviation, prefix) ? 1 : 0
+        const strictCount = bucket.length - exact
+        if (strictCount > 0) {
+          map.set(prefix, strictCount)
         }
-        let bucket = prefixBuckets.get(prefix)
-        if (!bucket) {
-          bucket = []
-          prefixBuckets.set(prefix, bucket)
-        }
-        bucket.push(abbrev)
       }
-
-      const rawSymbol = rawAbbreviations[abbrev]
-      if (!rawSymbol) continue
-
-      const cursorIdx = rawSymbol.indexOf(CURSOR_PLACEHOLDER)
-      if (cursorIdx !== -1) {
-        const opening = rawSymbol.slice(0, cursorIdx)
-        const closing = rawSymbol.slice(cursorIdx + CURSOR_PLACEHOLDER.length)
-        if (opening.length > 0) {
-          let pairs = autoClosingBuckets.get(opening)
-          if (!pairs) {
-            pairs = []
-            autoClosingBuckets.set(opening, pairs)
-          }
-          pairs.push([abbrev, closing] as const)
-          if (opening.length > maxSymbolLen) {
-            maxSymbolLen = opening.length
-          }
-        }
-        continue
-      }
-
-      // Skip pure ASCII control/escape sequences (such as "\\" or "\n") in reverse symbol hover
-      if (!hasNonAsciiCodeUnit(rawSymbol)) continue
-
-      let revList = reverseBuckets.get(rawSymbol)
-      if (!revList) {
-        revList = []
-        reverseBuckets.set(rawSymbol, revList)
-      }
-      revList.push(abbrev)
-      if (rawSymbol.length > maxSymbolLen) {
-        maxSymbolLen = rawSymbol.length
-      }
+      this._strictPrefixCount = map
     }
-
-    this.abbreviationsByPrefix = prefixBuckets
-    this.reverseSymbols = reverseBuckets
-    this.autoClosingByOpening = autoClosingBuckets
-    this.maxReverseSymbolLength = maxSymbolLen
+    return this._strictPrefixCount
   }
 
   private normalizeAbbrevKey(abbrev: string): string {
-    if (
-      abbrev.length > 1 &&
-      abbrev.startsWith('\\') &&
-      !Object.hasOwn(this.symbolsByAbbreviation, abbrev)
-    ) {
+    if (abbrev.length > 1 && abbrev.charCodeAt(0) === 92 && !this.validPrefixSet.has(abbrev)) {
       return abbrev.slice(1)
     }
     return abbrev
   }
 
+  private getParsedReplacementForKey(key: string): LeanAbbreviationReplacement {
+    let parsed = this.parsedReplacements.get(key)
+    if (!parsed) {
+      parsed = parseSymbolReplacement(this.symbolsByAbbreviation[key])
+      this.parsedReplacements.set(key, parsed)
+    }
+    return parsed
+  }
+
+  private getMatchForKey(abbrev: string): LeanAbbreviationMatch {
+    let match = this.matchByAbbrev.get(abbrev)
+    if (!match) {
+      const parsed = this.getParsedReplacementForKey(abbrev)
+      match =
+        parsed.cursorOffset !== undefined
+          ? { abbrev, symbol: parsed.text, cursorOffset: parsed.cursorOffset }
+          : { abbrev, symbol: parsed.text }
+      this.matchByAbbrev.set(abbrev, match)
+    }
+    return match
+  }
+
+  private getCompletionForKey(abbrev: string): Completion {
+    let completion = this.completionByAbbrev.get(abbrev)
+    if (!completion) {
+      const item = this.getMatchForKey(abbrev)
+      const insertText = item.symbol
+      const cursorOffset = item.cursorOffset ?? insertText.length
+      completion = {
+        label: `\\${item.abbrev}`,
+        detail: insertText,
+        type: 'constant',
+        apply(view: EditorView, _completion: Completion, applyFrom: number, applyTo: number) {
+          view.dispatch({
+            changes: { from: applyFrom, to: applyTo, insert: insertText },
+            selection: { anchor: applyFrom + cursorOffset },
+            effects: setLeanAbbreviationEffect.of(null),
+            annotations: leanAbbreviationRewriteAnnotation.of(true),
+          })
+        },
+      }
+      this.completionByAbbrev.set(abbrev, completion)
+    }
+    return completion
+  }
+
   getSymbol(abbrev: string): string | undefined {
     const key = this.normalizeAbbrevKey(abbrev)
     if (!Object.hasOwn(this.symbolsByAbbreviation, key)) return undefined
-    return parseSymbolReplacement(this.symbolsByAbbreviation[key]).text
+    return this.getParsedReplacementForKey(key).text
   }
 
   hasPrefix(prefix: string): boolean {
@@ -217,11 +326,7 @@ export class LeanAbbreviationIndex {
 
   isUniqueAndComplete(abbrev: string): boolean {
     const key = this.normalizeAbbrevKey(abbrev)
-    return (
-      Object.hasOwn(this.symbolsByAbbreviation, key) &&
-      Boolean(this.symbolsByAbbreviation[key]) &&
-      (this.strictPrefixCount.get(key) ?? 0) === 0
-    )
+    return this.uniqueCompleteSet.has(key)
   }
 
   isUniqueCompleteAbbreviation(abbrev: string): boolean {
@@ -245,33 +350,70 @@ export class LeanAbbreviationIndex {
   resolveReplacement(abbrev: string): LeanAbbreviationReplacement | undefined {
     const key = this.normalizeAbbrevKey(abbrev)
     if (key.length === 0) return undefined
+    if (Object.hasOwn(this.symbolsByAbbreviation, key)) {
+      return this.getParsedReplacementForKey(key)
+    }
+    const matching = this.abbreviationsByPrefix.get(key)
+    if (matching && matching.length > 0) {
+      return this.getParsedReplacementForKey(matching[0])
+    }
     const raw = this.findRawReplacementText(key)
     if (raw === undefined) return undefined
     return parseSymbolReplacement(raw)
   }
 
   matchPrefix(prefix: string, limit = 60): ReadonlyArray<LeanAbbreviationMatch> {
-    if (limit <= 0) return []
+    if (limit <= 0) return EMPTY_ABBREV_MATCHES
     const normalized =
-      prefix.length > 1 && prefix.startsWith('\\') && !this.validPrefixSet.has(prefix)
+      prefix.length > 1 && prefix.charCodeAt(0) === 92 && !this.abbreviationsByPrefix.has(prefix)
         ? prefix.slice(1)
         : prefix
+    const cacheKey = limit === 60 ? normalized : `${normalized}\0${limit}`
+    const cached = this.matchSliceCache.get(cacheKey)
+    if (cached !== undefined) return cached
+
     const sourceKeys =
       normalized.length === 0
         ? this.sortedAbbreviations
-        : (this.abbreviationsByPrefix.get(normalized) ?? [])
+        : (this.abbreviationsByPrefix.get(normalized) ?? EMPTY_STRINGS)
+    if (sourceKeys.length === 0) {
+      this.matchSliceCache.set(cacheKey, EMPTY_ABBREV_MATCHES)
+      return EMPTY_ABBREV_MATCHES
+    }
     const count = Math.min(sourceKeys.length, limit)
     const results: LeanAbbreviationMatch[] = []
     for (let i = 0; i < count; i += 1) {
-      const abbrev = sourceKeys[i]
-      const parsed = parseSymbolReplacement(this.symbolsByAbbreviation[abbrev])
-      if (parsed.cursorOffset !== undefined) {
-        results.push({ abbrev, symbol: parsed.text, cursorOffset: parsed.cursorOffset })
-      } else {
-        results.push({ abbrev, symbol: parsed.text })
-      }
+      results.push(this.getMatchForKey(sourceKeys[i]))
     }
+    this.matchSliceCache.set(cacheKey, results)
     return results
+  }
+
+  matchCompletionOptions(prefix: string, limit = 48): readonly Completion[] {
+    if (limit <= 0) return EMPTY_COMPLETIONS
+    const normalized =
+      prefix.length > 1 && prefix.charCodeAt(0) === 92 && !this.abbreviationsByPrefix.has(prefix)
+        ? prefix.slice(1)
+        : prefix
+    const cacheKey = limit === 48 ? normalized : `${normalized}\0${limit}`
+    const cached = this.completionSliceCache.get(cacheKey)
+    if (cached !== undefined) return cached
+
+    const sourceKeys =
+      normalized.length === 0
+        ? this.sortedAbbreviations
+        : (this.abbreviationsByPrefix.get(normalized) ?? EMPTY_STRINGS)
+    if (sourceKeys.length === 0) {
+      this.completionSliceCache.set(cacheKey, EMPTY_COMPLETIONS)
+      return EMPTY_COMPLETIONS
+    }
+    const count = Math.min(sourceKeys.length, limit)
+    const options: Completion[] = []
+    for (let i = 0; i < count; i += 1) {
+      options.push(this.getCompletionForKey(sourceKeys[i]))
+    }
+    this.completionSliceCache.set(cacheKey, options)
+    return options
   }
 
   hoverInfoForTextAt(lineText: string, column: number): LeanSymbolHoverInfo | undefined {
@@ -285,6 +427,7 @@ export class LeanAbbreviationIndex {
     let bestTo = -1
 
     for (let start = column; start >= minStart; start -= 1) {
+      if (!this.reverseFirstChars.has(lineText.charCodeAt(start))) continue
       const maxLen = Math.min(this.maxReverseSymbolLength, lineText.length - start)
       for (let len = maxLen; len >= 1; len -= 1) {
         const end = start + len
@@ -306,9 +449,15 @@ export class LeanAbbreviationIndex {
 
     if (!bestSymbol || bestFrom === -1) return undefined
 
-    const abbreviations = this.reverseSymbols.get(bestSymbol) ?? []
+    const abbreviations = this.reverseSymbols.get(bestSymbol) ?? EMPTY_STRINGS
     const autoClosing = this.autoClosingByOpening.get(bestSymbol) ?? []
     if (abbreviations.length === 0 && autoClosing.length === 0) return undefined
+
+    let markdown = this.hoverMarkdownCache.get(bestSymbol)
+    if (markdown === undefined) {
+      markdown = formatAbbreviationListMarkdown(bestSymbol, abbreviations, autoClosing)
+      this.hoverMarkdownCache.set(bestSymbol, markdown)
+    }
 
     return {
       symbol: bestSymbol,
@@ -316,7 +465,7 @@ export class LeanAbbreviationIndex {
       toCol: bestTo,
       abbreviations,
       autoClosing,
-      markdown: formatAbbreviationListMarkdown(bestSymbol, abbreviations, autoClosing),
+      markdown,
     }
   }
 }
@@ -482,31 +631,6 @@ const leanAbbreviationRewriteAnnotation = Annotation.define<boolean>()
 const setLeanAbbreviationEffect = StateEffect.define<LeanAbbreviationState | null>()
 const pendingAbbreviationMark = Decoration.mark({ class: 'cm-leanAbbreviation' })
 
-function extractSingleChangeEnd(tr: Transaction): {
-  fromA: number
-  toA: number
-  fromB: number
-  toB: number
-  insertedText: string
-  changeCount: number
-} {
-  let fromA = 0
-  let toA = 0
-  let fromB = 0
-  let toB = 0
-  let insertedText = ''
-  let changeCount = 0
-  tr.changes.iterChanges((fA, tA, fB, tB, inserted) => {
-    changeCount += 1
-    fromA = fA
-    toA = tA
-    fromB = fB
-    toB = tB
-    insertedText = inserted.toString()
-  })
-  return { fromA, toA, fromB, toB, insertedText, changeCount }
-}
-
 function initialAbbreviationState(state: EditorState): LeanAbbreviationState | null {
   const index = getLeanAbbreviationIndex()
   const head = state.selection.main.head
@@ -606,12 +730,36 @@ const leanAbbreviationTransactionFilter = EditorState.transactionFilter.of(tr =>
     return tr
   }
 
-  const index = getLeanAbbreviationIndex()
   const prevActive = tr.startState.field(leanAbbreviationField, false) ?? null
-  const { fromA, toA, fromB, toB, insertedText, changeCount } = extractSingleChangeEnd(tr)
+
+  let fromA = 0
+  let toA = 0
+  let fromB = 0
+  let toB = 0
+  let changeCount = 0
+  let insertedHasBackslash = false
+
+  tr.changes.iterChanges((fA, tA, fB, tB, inserted) => {
+    changeCount += 1
+    if (changeCount === 1) {
+      fromA = fA
+      toA = tA
+      fromB = fB
+      toB = tB
+      if (inserted.length > 0) {
+        insertedHasBackslash = inserted.toString().indexOf('\\') !== -1
+      }
+    }
+  })
 
   if (changeCount !== 1) {
-    return [tr, { effects: setLeanAbbreviationEffect.of(null), sequential: true }]
+    return prevActive !== null
+      ? [tr, { effects: setLeanAbbreviationEffect.of(null), sequential: true }]
+      : tr
+  }
+
+  if (prevActive === null && !insertedHasBackslash) {
+    return tr
   }
 
   // Determine the effective cursor position after the edit
@@ -627,17 +775,16 @@ const leanAbbreviationTransactionFilter = EditorState.transactionFilter.of(tr =>
       effectiveHead >= prevActive.from + 1
     ) {
       trackedFrom = prevActive.from
-    } else if (fromA <= prevActive.from && toA >= prevActive.to && insertedText.includes('\\')) {
+    } else if (fromA <= prevActive.from && toA >= prevActive.to && insertedHasBackslash) {
       allowUntracked = true
     } else {
       return [tr, { effects: setLeanAbbreviationEffect.of(null), sequential: true }]
     }
-  } else if (insertedText.includes('\\')) {
-    allowUntracked = true
   } else {
-    return tr
+    allowUntracked = true
   }
 
+  const index = getLeanAbbreviationIndex()
   const windowStart =
     trackedFrom !== null
       ? Math.max(0, trackedFrom - 1)
@@ -713,35 +860,22 @@ export const leanUnicodeCompletionSource: CompletionSource = (
   context: CompletionContext,
 ): CompletionResult | null => {
   const line = context.state.doc.lineAt(context.pos)
-  const textBefore = line.text.slice(0, context.pos - line.from)
+  const col = context.pos - line.from
+  if (col <= 0 || line.text.lastIndexOf('\\', col - 1) === -1) return null
+
+  const textBefore = line.text.slice(0, col)
   const match = COMPLETION_PREFIX_REGEX.exec(textBefore)
   if (!match) return null
 
   const matchIndex = match.index
-  if (matchIndex > 0 && textBefore[matchIndex - 1] === '\\') {
+  if (matchIndex > 0 && textBefore.charCodeAt(matchIndex - 1) === 92) {
     return null
   }
 
   const from = line.from + matchIndex
   const prefixWithoutSlash = match[0].slice(1)
-  const index = getLeanAbbreviationIndex()
-  const matches = index.matchPrefix(prefixWithoutSlash, 48)
-  if (matches.length === 0) return null
-
-  const options: Completion[] = matches.map(item => ({
-    label: `\\${item.abbrev}`,
-    detail: item.symbol,
-    type: 'constant',
-    apply(view: EditorView, _completion: Completion, applyFrom: number, applyTo: number) {
-      const cursorOffset = item.cursorOffset ?? item.symbol.length
-      view.dispatch({
-        changes: { from: applyFrom, to: applyTo, insert: item.symbol },
-        selection: { anchor: applyFrom + cursorOffset },
-        effects: setLeanAbbreviationEffect.of(null),
-        annotations: leanAbbreviationRewriteAnnotation.of(true),
-      })
-    },
-  }))
+  const options = getLeanAbbreviationIndex().matchCompletionOptions(prefixWithoutSlash, 48)
+  if (options.length === 0) return null
 
   return { from, to: context.pos, filter: false, options }
 }
