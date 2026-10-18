@@ -81,6 +81,7 @@ function bookNode(book: PlacedBook<SceneBook>): Element {
       'data-cx': r1(cx),
       'data-cy': r1(cy),
       'data-cover': item.cover,
+      'data-full-cover': item.cover,
       'data-bookcase-cover': item.coverSlug,
       'data-spine-sampled': item.sampleSpine && item.coverSlug ? '' : undefined,
       'data-cover-transform': toMatrix(coverMatrix(book)),

@@ -4,9 +4,7 @@
   container: bookcase / inline-size;
 }
 
-// Bookcase base view: an isometric case in the anatomy idiom (flat fills on a five-step tone
-// ladder, one hairline weight, tone as hierarchy, blur only on halos) beside an index list that
-// is the scroll track. Token names match the Obsidian plugin's.
+// The workspace owns its camera and index scrolling; the page header stays reachable.
 .bookcase {
   --bc-card: color-mix(in srgb, var(--gray) 16%, var(--light));
   --bc-face: var(--light);
@@ -32,7 +30,49 @@
   display: grid;
   grid-template-areas: 'stage' 'index';
   grid-template-columns: minmax(0, 1fr);
-  margin: 1.5rem 0;
+  grid-template-rows: minmax(0, 2fr) minmax(0, 1fr);
+  height: calc(100dvh - 8rem);
+  min-height: 0;
+  gap: 0;
+  margin: 1.5rem 0 0;
+  border: 1px solid var(--bc-line);
+
+  &[data-index-collapsed] {
+    grid-template-areas: 'stage';
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+  }
+
+  &[data-empty] .bookcase-page {
+    visibility: hidden;
+  }
+}
+
+body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='bookcase']) {
+  #quartz-root {
+    height: 100dvh;
+    min-height: 0;
+  }
+  .page-content {
+    margin-block-end: 0;
+  }
+  .page-content > .main-col {
+    min-height: 0;
+  }
+
+  .main-col > .base-view[data-base-view-type='bookcase'] {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+
+    > .bookcase {
+      flex: 1;
+      height: auto;
+      min-height: 0;
+      margin-block-end: 1rem;
+    }
+  }
 }
 
 :root[saved-theme='dark'] .bookcase {
@@ -48,22 +88,20 @@
 
 .bookcase-stage {
   grid-area: stage;
-  position: sticky;
-  top: 0;
+  position: relative;
   z-index: 1;
   display: grid;
-  grid-template-rows: minmax(0, 58fr) minmax(0, 42fr);
-  height: 62svh;
+  grid-template-rows: minmax(0, 1fr) auto;
   min-width: 0;
+  min-height: 0;
   background: var(--light);
-  border-bottom: 1px solid var(--bc-line);
 }
 
 .bookcase-plate {
   position: relative;
   min-height: 0;
   overflow: hidden;
-  border: 1px solid var(--bc-line);
+  border: 0;
   background: var(--light);
 }
 
@@ -83,12 +121,6 @@
   // The camera moves the case under the labels; the plate colour keeps them legible.
   padding: 0.2rem 0.3rem;
   background: var(--light);
-
-  &[data-corner='fig'] {
-    top: 0.75rem;
-    left: 0.75rem;
-    color: var(--dark);
-  }
 
   &[data-corner='title'] {
     top: 0.75rem;
@@ -111,42 +143,49 @@
   position: absolute;
   inset: 0;
   overflow: hidden;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+
+  &:focus-visible {
+    outline: none;
+  }
+
+  &[data-dragging] {
+    cursor: grabbing;
+
+    .bc-book,
+    .bc-lift {
+      cursor: grabbing;
+    }
+  }
+}
+
+.bookcase-plate:has(.bookcase-viewport:focus-visible) [data-corner='title'] {
+  outline: 2px solid var(--dark);
+  outline-offset: 2px;
 }
 
 .bookcase-world {
   position: absolute;
   top: 0;
   left: 0;
+  width: 100%;
+  height: 100%;
   transform-origin: 0 0;
 }
 
 .bookcase-scene {
   display: block;
   width: 100%;
-  height: auto;
-  overflow: visible;
-
-  .bookcase[data-bookcase-ready] & {
-    width: var(--bc-scene-width);
-    height: var(--bc-scene-height);
-  }
-}
-
-.bookcase-world {
-  .bookcase[data-bookcase-ready] & {
-    will-change: transform;
-  }
+  height: 100%;
+  overflow: hidden;
 }
 
 .bc-lift {
   position: absolute;
   overflow: visible;
-  transition: transform 220ms cubic-bezier(0.2, 0.7, 0.2, 1);
   cursor: pointer;
-
-  @media (prefers-reduced-motion: reduce) {
-    transition: none;
-  }
 }
 
 .bookcase-scene,
@@ -357,14 +396,26 @@
   gap: 0.75rem;
   min-height: 0;
   padding: 0.75rem;
+  max-height: 9rem;
   overflow: auto;
-  border: 1px solid var(--bc-line);
-  border-top: 0;
+  border: 0;
+  border-top: 1px solid var(--bc-line);
   background: var(--light);
   overscroll-behavior: contain;
 }
 
 .bookcase-page-cover {
+  min-width: 0;
+
+  button {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
   img {
     display: block;
     width: 100%;
@@ -386,7 +437,7 @@
 .bookcase-page-title {
   color: var(--dark);
   font-family: var(--titleFont);
-  font-size: 1.05rem;
+  font-size: var(--text-ui, 0.875rem);
   line-height: 1.25;
   text-decoration: none;
   text-wrap: balance;
@@ -419,6 +470,7 @@
 }
 
 .bookcase-page-detail,
+.bookcase-preview-detail,
 .bookcase-entry-detail {
   .bookcase-props {
     display: grid;
@@ -449,12 +501,11 @@
   .bookcase-description {
     margin: 0.5rem 0 0;
     color: var(--darkgray);
-    font-size: 0.85rem;
+    font-size: var(--text-meta, 0.75rem);
     line-height: 1.5;
   }
 }
 
-// Under the sticky stage the panel has three or four lines; the full detail is one tap away.
 .bookcase-page-detail {
   .bookcase-props {
     display: none;
@@ -470,9 +521,13 @@
 
 .bookcase-index {
   grid-area: index;
+  position: relative;
   min-width: 0;
-  // Lets the last book reach the reading line.
-  padding-bottom: 50svh;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  border-block-start: 1px solid var(--bc-line);
 }
 
 .bookcase-index-group {
@@ -481,17 +536,32 @@
   }
 
   .base-list-group-header {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 0.75rem minmax(0, 1fr) auto;
+    align-items: center;
     gap: 0.75rem;
     margin: 0;
-    padding: 1rem 0.75rem 0.4rem;
+    min-height: 2.125rem;
+    padding: 0.5rem 0.75rem;
+    list-style: none;
+    cursor: pointer;
     border-bottom: 1px solid var(--bc-line);
     color: var(--darkgray);
     font-family: var(--codeFont);
     font-size: var(--text-meta, 0.75rem);
     font-weight: 400;
     line-height: 1.4;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+    &::before {
+      content: '+';
+    }
+  }
+
+  &[open] > summary::before {
+    content: '−';
   }
 }
 
@@ -501,43 +571,67 @@
 
 .bookcase .bookcase-index-list > li {
   display: grid;
-  align-content: center;
-  height: var(--bookcase-step);
-  padding: 0 0.75rem;
+  content-visibility: auto;
+  contain-intrinsic-block-size: auto var(--bookcase-step);
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+  min-height: var(--bookcase-step);
+  padding: 0;
   overflow: hidden;
+  border-block-end: 1px solid var(--bc-line);
+
+  &:last-child {
+    border-block-end: 1px solid var(--bc-line);
+  }
 
   &[data-current] {
     background: var(--bc-selected);
   }
 }
 
+.bookcase-index-group:last-child .bookcase-index-list > li:last-child {
+  border-block-end: 0;
+}
+
 .bookcase-entry-link {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  box-sizing: border-box;
   gap: 0.1rem;
+  width: 100%;
   min-width: 0;
+  padding: 0.6rem 0.75rem;
+  border: 0;
   color: var(--dark);
-  text-decoration: none;
   background: transparent;
+  text-align: start;
+  text-decoration: none;
+  cursor: pointer;
+}
 
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      background: transparent;
+.bookcase .base-semantic-score {
+  padding-inline: 0.75rem;
+}
 
-      .bookcase-entry-title {
-        text-decoration: underline;
-        text-underline-offset: 0.15em;
-      }
-    }
+.bookcase :is(button, summary, a):focus-visible {
+  outline: 2px solid var(--dark);
+  outline-offset: -2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .bookcase :is(summary, .bookcase-entry-link):hover {
+    background: var(--bc-surface);
+    color: var(--dark);
   }
 
-  &:focus-visible {
-    outline: 2px solid var(--dark);
-    outline-offset: -2px;
+  .bookcase-entry-link:hover .bookcase-entry-title {
+    text-decoration: underline;
   }
 }
 
 .bookcase-entry-title,
 .bookcase-entry-byline {
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -578,34 +672,380 @@
 @container bookcase (min-width: 880px) {
   .bookcase {
     grid-template-areas: 'index stage';
-    grid-template-columns: minmax(14rem, 19rem) minmax(0, 1fr);
-    gap: 0 1.25rem;
+    grid-template-columns: minmax(14rem, 20rem) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    gap: 0;
   }
 
   .bookcase-stage {
-    align-self: start;
-    top: 1rem;
-    grid-template-rows: minmax(0, 1fr) auto;
-    height: calc(100svh - 2rem);
     border-bottom: 0;
   }
 
-  .bookcase-page {
-    grid-template-columns: 5.5rem minmax(0, 1fr);
-    max-height: 38svh;
+  .bookcase-index {
+    border-block-start: 0;
+    border-inline-end: 1px solid var(--bc-line);
   }
 
-  .bookcase-page-title {
+  .bookcase-page {
+    grid-template-columns: 4rem minmax(0, 1fr);
+  }
+}
+
+.bookcase-camera-controls {
+  position: absolute;
+  z-index: 2;
+  inset-inline-end: 0.75rem;
+  inset-block-start: 2.75rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.bookcase-no-results {
+  display: none;
+  position: absolute;
+  inset: 40% 1rem auto;
+  margin: 0;
+  padding: 0.75rem;
+  color: var(--dark);
+  background: var(--light);
+  font: 0.75rem var(--codeFont);
+  text-align: center;
+
+  .bookcase[data-empty] & {
     display: block;
   }
+}
 
-  .bookcase-page-detail {
-    .bookcase-props {
-      display: grid;
-    }
+.bookcase-camera-controls button,
+.bookcase-sidebar-toggle,
+.bookcase-preview button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.125rem;
+  min-height: 2.125rem;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid var(--darkgray);
+  border-radius: 0;
+  color: var(--dark);
+  background: var(--light);
+  font: 0.75rem var(--codeFont);
+  text-decoration: none;
+  cursor: pointer;
 
-    .bookcase-description {
-      display: block;
+  &:disabled {
+    opacity: 1;
+    color: var(--darkgray);
+    cursor: default;
+
+    svg {
+      opacity: 0.4;
     }
   }
+}
+
+.bookcase-sidebar-toggle {
+  position: absolute;
+  z-index: 2;
+  inset-block-start: 0.75rem;
+  inset-inline-start: 0.75rem;
+}
+
+.bookcase-camera-controls button,
+.bookcase-sidebar-toggle,
+.bookcase-preview button {
+  width: 2.125rem;
+  padding: 0;
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    pointer-events: none;
+  }
+}
+
+.bookcase-camera-controls button + button {
+  border-block-start: 0;
+}
+
+.bookcase-preview {
+  width: min(78rem, calc(100vw - 2rem));
+  height: min(50rem, calc(100dvh - 2rem));
+  max-width: none;
+  max-height: calc(100dvh - 2rem);
+  padding: 0;
+  overflow: auto;
+  border: 1px solid var(--bc-line);
+  border-radius: 0;
+  color: var(--dark);
+  background: var(--light);
+  overscroll-behavior: contain;
+
+  &::backdrop {
+    background: color-mix(in srgb, var(--light) 88%, transparent);
+  }
+
+  &[open] {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    animation: bookcase-preview-in 220ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+}
+
+.bookcase-preview-toolbar,
+.bookcase-preview-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  color: var(--darkgray);
+  font: 0.75rem var(--codeFont);
+  font-variant-numeric: tabular-nums;
+}
+
+.bookcase-preview-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  min-height: 0;
+  gap: 1.25rem;
+  padding: 0.75rem 1.5rem;
+}
+
+.bookcase-preview-art {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: clip;
+  perspective: 1200px;
+  touch-action: none;
+  user-select: none;
+  cursor: grab;
+
+  &[data-turning] {
+    cursor: grabbing;
+  }
+}
+
+.bookcase-hardcover {
+  position: relative;
+  transform-style: preserve-3d;
+  transform: rotateX(-12deg) rotateY(32deg) rotateZ(-2deg);
+
+  > div {
+    position: absolute;
+    box-sizing: border-box;
+    backface-visibility: hidden;
+  }
+}
+
+.bookcase-hardcover-front,
+.bookcase-hardcover-back {
+  inset: 0;
+  background: var(--bc-book-cloth);
+  border: 2px solid color-mix(in srgb, var(--bc-book-cloth) 85%, var(--bc-ink-dark));
+}
+
+.bookcase-hardcover-front {
+  transform: translateZ(calc(var(--bc-book-depth) / 2));
+
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+    content-visibility: visible;
+  }
+  span {
+    display: grid;
+    height: 100%;
+    padding: 1rem;
+    place-content: center;
+    color: var(--bc-book-ink);
+    font-family: var(--titleFont);
+    text-align: center;
+  }
+  [hidden] {
+    display: none;
+  }
+}
+
+.bookcase-hardcover-back {
+  transform: rotateY(180deg) translateZ(calc(var(--bc-book-depth) / 2));
+}
+
+.bookcase-hardcover-spine {
+  inset: 0 auto 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: var(--bc-book-depth);
+  padding-block: 0.75rem;
+  background: color-mix(in srgb, var(--bc-book-cloth) 88%, var(--bc-ink-dark));
+  color: var(--bc-book-ink);
+  transform-origin: left center;
+  transform: translateZ(calc(var(--bc-book-depth) / -2)) rotateY(-90deg);
+
+  span {
+    writing-mode: vertical-rl;
+    overflow: hidden;
+    max-height: 70%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font:
+      12px 'ITCGaramondStdLtCond',
+      var(--titleFont);
+  }
+  span + span {
+    max-height: 25%;
+    font: 8px var(--bodyFont);
+  }
+}
+
+.bookcase-hardcover-top,
+.bookcase-hardcover-bottom,
+.bookcase-hardcover-fore-edge {
+  background: var(--bc-ink-light);
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  path {
+    fill: none;
+    stroke: var(--bc-ink-dark);
+    stroke-width: 0.3px;
+    stroke-opacity: 0.25;
+  }
+}
+
+.bookcase-hardcover-top,
+.bookcase-hardcover-bottom {
+  inset-inline-start: 3px;
+  width: calc(100% - 6px);
+  height: calc(var(--bc-book-depth) - 4px);
+  transform-origin: center top;
+}
+
+.bookcase-hardcover-top {
+  inset-block-start: 3px;
+  transform: translateZ(calc(var(--bc-book-depth) / -2 + 2px)) rotateX(90deg);
+}
+
+.bookcase-hardcover-bottom {
+  inset-block-end: 3px;
+  transform: translateZ(calc(var(--bc-book-depth) / -2 + 2px)) rotateX(-90deg);
+  transform-origin: center bottom;
+}
+
+.bookcase-hardcover-fore-edge {
+  inset-block-start: 3px;
+  inset-inline-start: calc(100% - 3px);
+  width: calc(var(--bc-book-depth) - 4px);
+  height: calc(100% - 6px);
+  transform-origin: left center;
+  transform: translateZ(calc(var(--bc-book-depth) / 2 - 2px)) rotateY(90deg);
+}
+
+.bookcase-preview-body {
+  min-width: 0;
+  min-height: 0;
+  max-height: 100%;
+  overflow: auto;
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: 0.75rem;
+}
+
+.bookcase-preview-title {
+  margin: 0;
+  color: var(--dark);
+  font-family: var(--titleFont);
+  font-size: var(--text-ui, 0.875rem);
+  font-weight: 500;
+  line-height: 1.2;
+  text-wrap: balance;
+  text-decoration: none;
+  background: transparent;
+}
+
+.bookcase-preview-body h2 {
+  margin: 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .bookcase-preview-title:hover {
+    background: transparent;
+    color: var(--dark);
+    text-decoration: underline;
+  }
+}
+
+.bookcase-preview-byline {
+  margin: 0;
+  color: var(--darkgray);
+  font: 0.75rem/1.5 var(--codeFont);
+}
+
+@keyframes bookcase-preview-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 600px) {
+  .bookcase-preview {
+    width: calc(100vw - 1rem);
+    max-height: calc(100dvh - 1rem);
+  }
+
+  .bookcase-preview-content {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 3fr) minmax(0, 2fr);
+    gap: 0.75rem;
+    padding: 0.75rem;
+  }
+
+  .bookcase-preview-detail .bookcase-props {
+    display: none;
+  }
+}
+
+@media (pointer: coarse) {
+  .bookcase :is(button, summary, .bookcase-entry-link) {
+    min-height: 44px;
+  }
+  .bookcase-camera-controls button,
+  .bookcase-sidebar-toggle,
+  .bookcase-preview button {
+    min-width: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bookcase-preview[open] {
+    animation: none;
+  }
+}
+
+.bookcase-preview .bookcase-description {
+  font-size: var(--text-meta, 0.75rem);
 }

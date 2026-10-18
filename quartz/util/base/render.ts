@@ -1,5 +1,5 @@
 import { Root } from 'hast'
-import { h } from 'hastscript'
+import { h, s } from 'hastscript'
 import type { MarkerData } from '../../components/scripts/base-map-data'
 import { QuartzPluginData } from '../../plugins/vfile'
 import {
@@ -1445,9 +1445,9 @@ function buildBookcase(
     const list = h('ul.base-list.bookcase-index-list', rows)
     return label === null
       ? list
-      : h('div.base-list-group.bookcase-index-group', [
-          h('h3.base-list-group-header', [
-            h('span', label),
+      : h('details.base-list-group.bookcase-index-group', { open: true }, [
+          h('summary.base-list-group-header', [
+            h('span.bookcase-index-label', label),
             h('span.bookcase-index-count', String(entries.length)),
           ]),
           list,
@@ -1458,13 +1458,20 @@ function buildBookcase(
   const page = first
     ? [
         h('div.bookcase-page-cover', [
-          h('img', {
-            src: first.cover,
-            alt: '',
-            hidden: first.cover ? undefined : true,
-            decoding: 'async',
-            'data-bookcase-cover': first.coverSlug,
-          }),
+          h(
+            'button.bookcase-preview-open',
+            { type: 'button', 'aria-label': 'Preview selected book' },
+            [
+              h('img', {
+                src: first.cover,
+                alt: '',
+                hidden: first.cover ? undefined : true,
+                decoding: 'async',
+                'data-no-popover': '',
+                'data-bookcase-cover': first.coverSlug,
+              }),
+            ],
+          ),
         ]),
         h('div.bookcase-page-body', [
           h(
@@ -1479,27 +1486,78 @@ function buildBookcase(
     : [h('p.bookcase-empty', 'No books in this view.')]
 
   const pad = (n: number) => String(n).padStart(String(total).length, '0')
+  const controlIcon = (paths: string[]) =>
+    s(
+      'svg',
+      { viewBox: '0 0 24 24', 'aria-hidden': 'true' },
+      paths.map(d => s('path', { d })),
+    )
   return h(
     'div.bookcase',
     { style: `--bookcase-step: ${scrollStep}px;`, 'data-scroll-step': scrollStep },
     [
       h('div.bookcase-stage', [
         h('div.bookcase-plate', [
-          h('span.bookcase-corner', { 'data-corner': 'fig' }, `${view.name}`),
+          h(
+            'button.bookcase-sidebar-toggle',
+            {
+              type: 'button',
+              'aria-expanded': 'true',
+              'aria-label': 'Hide list',
+              title: 'Hide list',
+            },
+            controlIcon(['M9 5h12M9 12h12M9 19h12M3 5h1M3 12h1M3 19h1']),
+          ),
           h(
             'span.bookcase-corner',
             { 'data-corner': 'title', 'data-bookcase-shelf': '' },
             entryGroups[0]?.label ?? '',
           ),
-          h('div.bookcase-viewport', [
-            h('div.bookcase-world', [
-              bookcaseScene(
-                layout,
-                `${view.name}: ${total} books on ${layout.shelves.length} shelves`,
-              ),
-            ]),
+          h(
+            'div.bookcase-viewport',
+            {
+              tabindex: 0,
+              role: 'group',
+              'aria-label':
+                'Bookcase drawing. Arrow keys pan, plus and minus zoom, Home fits all books, Enter previews the selected book.',
+            },
+            [
+              h('div.bookcase-world', [
+                bookcaseScene(
+                  layout,
+                  `${view.name}: ${total} books on ${layout.shelves.length} shelves`,
+                ),
+              ]),
+            ],
+          ),
+          h('div.bookcase-camera-controls', { role: 'group', 'aria-label': 'Bookcase controls' }, [
+            h(
+              'button',
+              { type: 'button', 'data-camera': 'in', 'aria-label': 'Zoom in', title: 'Zoom in' },
+              controlIcon(['M12 5v14M5 12h14']),
+            ),
+            h(
+              'button',
+              { type: 'button', 'data-camera': 'out', 'aria-label': 'Zoom out', title: 'Zoom out' },
+              controlIcon(['M5 12h14']),
+            ),
+            h(
+              'button',
+              {
+                type: 'button',
+                'data-camera': 'fit',
+                'aria-label': 'Fit bookcase',
+                title: 'Fit bookcase',
+              },
+              controlIcon(['M8 3H3v5M16 3h5v5M21 16v5h-5M3 16v5h5']),
+            ),
           ]),
-          h('span.bookcase-corner', { 'data-corner': 'hint' }, 'scroll to pull a book'),
+          h('p.bookcase-no-results', 'no books match this search'),
+          h(
+            'span.bookcase-corner',
+            { 'data-corner': 'hint' },
+            'drag to explore · click to preview',
+          ),
           h(
             'span.bookcase-corner',
             { 'data-corner': 'readout', 'data-bookcase-readout': '' },
@@ -1509,6 +1567,52 @@ function buildBookcase(
         h('div.bookcase-page', page),
       ]),
       h('div.bookcase-index', indexGroups),
+      h('dialog.bookcase-preview', { 'aria-label': 'Book preview' }, [
+        h('div.bookcase-preview-toolbar', [
+          h('span.bookcase-preview-position'),
+          h(
+            'button',
+            {
+              type: 'button',
+              'data-preview': 'close',
+              'aria-label': 'Close preview',
+              title: 'Close preview',
+              autofocus: true,
+            },
+            controlIcon(['M6 6l12 12M18 6 6 18']),
+          ),
+        ]),
+        h('div.bookcase-preview-content', [
+          h('div.bookcase-preview-art', { 'aria-hidden': 'true' }),
+          h('div.bookcase-preview-body', [
+            h('h2', [h('a.bookcase-preview-title.bookcase-preview-link')]),
+            h('p.bookcase-preview-byline'),
+            h('div.bookcase-preview-detail'),
+          ]),
+        ]),
+        h('div.bookcase-preview-navigation', [
+          h(
+            'button',
+            {
+              type: 'button',
+              'data-preview': 'previous',
+              'aria-label': 'Previous book',
+              title: 'Previous book',
+            },
+            controlIcon(['M15 5l-7 7 7 7']),
+          ),
+          h(
+            'button',
+            {
+              type: 'button',
+              'data-preview': 'next',
+              'aria-label': 'Next book',
+              title: 'Next book',
+            },
+            controlIcon(['M9 5l7 7-7 7']),
+          ),
+        ]),
+      ]),
     ],
   )
 }
