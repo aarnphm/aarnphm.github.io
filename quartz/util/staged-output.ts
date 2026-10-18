@@ -4,13 +4,18 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import { defaultIoConcurrency, mapConcurrent } from './async-pool'
 
-async function filesIn(root: string, preserved: ReadonlySet<string>): Promise<string[]> {
+async function entriesIn(
+  root: string,
+  preserved: ReadonlySet<string>,
+): Promise<{ files: string[]; directories: string[] }> {
   const files: string[] = []
+  const directories: string[] = []
   async function walk(dir: string): Promise<void> {
     const entries = await fs.readdir(path.join(root, dir), { withFileTypes: true }).catch(error => {
       if (error.code === 'ENOENT') return []
       throw error
     })
+    directories.push(dir)
     for (const entry of entries) {
       const relative = path.join(dir, entry.name)
       if (preserved.has(relative)) continue
@@ -20,7 +25,7 @@ async function filesIn(root: string, preserved: ReadonlySet<string>): Promise<st
     }
   }
   await walk('')
-  return files
+  return { files, directories }
 }
 
 async function fileDigest(file: string): Promise<string> {
@@ -30,6 +35,22 @@ async function fileDigest(file: string): Promise<string> {
 }
 
 type SeededFile = { source: BigIntStats; copy: BigIntStats }
+
+async function stageEntries<T>(
+  entries: readonly T[],
+  action: (entry: T, index: number) => Promise<unknown>,
+): Promise<void> {
+  const failures: unknown[] = []
+  await mapConcurrent(entries, defaultIoConcurrency, async (entry, index) => {
+    try {
+      await action(entry, index)
+    } catch (error) {
+      failures.push(error)
+    }
+  })
+  // Cleanup must wait for every operation that can still write into the private stage.
+  if (failures.length > 0) throw failures[0]
+}
 
 function unchangedFile(before: BigIntStats, after: BigIntStats): boolean {
   return (
@@ -82,27 +103,35 @@ export async function withStagedOutput<T>(
     })
     const seeded = new Map<string, SeededFile>()
     if (existing) {
-      const files = await filesIn(publicRoot, preserved)
-      const sources = await mapConcurrent(files, defaultIoConcurrency, file =>
-        fs.stat(path.join(publicRoot, file), { bigint: true }),
+      const { files, directories } = await entriesIn(publicRoot, preserved)
+      const [sources, directoryStats] = await Promise.all([
+        mapConcurrent(files, defaultIoConcurrency, file =>
+          fs.stat(path.join(publicRoot, file), { bigint: true }),
+        ),
+        mapConcurrent(directories, defaultIoConcurrency, directory =>
+          fs.stat(path.join(publicRoot, directory)),
+        ),
+      ])
+      await stageEntries(directories, directory =>
+        fs.mkdir(path.join(stage, directory), { recursive: true }),
       )
-      await fs.cp(publicRoot, stage, {
-        recursive: true,
-        mode: constants.COPYFILE_FICLONE,
-        preserveTimestamps: true,
-        filter: source => !preserved.has(path.relative(publicRoot, source).split(path.sep)[0]),
-      })
-      await mapConcurrent(files, defaultIoConcurrency, async (file, index) => {
-        const copy = await fs.stat(path.join(stage, file), { bigint: true })
+      await stageEntries(files, async (file, index) => {
+        const target = path.join(stage, file)
+        await fs.copyFile(path.join(publicRoot, file), target, constants.COPYFILE_FICLONE)
+        await fs.utimes(target, sources[index].atime, sources[index].mtime)
+        const copy = await fs.stat(target, { bigint: true })
         seeded.set(file, { source: sources[index], copy })
       })
+      await stageEntries(directories, (directory, index) =>
+        fs.chmod(path.join(stage, directory), directoryStats[index].mode & 0o7777),
+      )
     }
     console.log(`Prepared staged output in ${Math.round(performance.now() - started)}ms`)
     const result = await build(stage)
     const publishStarted = performance.now()
-    const [next, previous] = await Promise.all([
-      filesIn(stage, preserved),
-      filesIn(publicRoot, preserved),
+    const [{ files: next }, { files: previous }] = await Promise.all([
+      entriesIn(stage, preserved),
+      entriesIn(publicRoot, preserved),
     ])
     const nextSet = new Set(next)
     const removed = previous.filter(file => !nextSet.has(file))
