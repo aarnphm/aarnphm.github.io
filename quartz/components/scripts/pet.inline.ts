@@ -27,6 +27,7 @@ import {
   type PetTrailSearch,
 } from '../visitor-trail/pet-trail'
 import { TRAIL_PET_RADIUS, trailPetSprite, trailPetTop } from '../visitor-trail/trail-pet'
+import { createPetGaze } from './pet-gaze'
 import { visibleTextBoxes } from './pet-text-boxes'
 
 // The garden's pet: the pen-drawn mascot, living on the page's edges. It perches on the nearest box
@@ -120,6 +121,7 @@ const trailScreenMatrix = (element: SVGGraphicsElement) => {
   return space.matrix(element)
 }
 let svg: SVGSVGElement | null = null
+let gazeArt: ReturnType<typeof createPetGaze> | null = null
 let markup = ''
 let width = 72
 let unit = width / viewWidth
@@ -310,7 +312,7 @@ const render = () => {
   svg.toggleAttribute('data-beach', beach)
   svg.toggleAttribute('data-reading', document.documentElement.getAttribute('reader-mode') === 'on')
   // On the rail it faces the page, its back to the pole.
-  root.style.setProperty('--pet-face', String(carry ? 1 : face))
+  gazeArt?.face(carry ? 1 : face)
   syncTrailArt()
   if (speaking?.playing || chat || reminding) {
     // On the trail the bubble sits on the pixel pet's head (reserveTrailFoot), not the hidden vector's.
@@ -685,7 +687,19 @@ const wander = () => {
     (Math.random() < 0.25 && !perch.el?.matches(triWindowSelector))
   )
     return relocate(center(), perch?.el ?? null)
-  if (perch.kind === 'sit') return moveTo({ ...perch, kind: 'stand' })
+  const wanderTo = (next: Perch, how: 'stroll' | null = null) => {
+    if (next.el && !petTrail(next.el)) {
+      const target = placeOn(next)
+      const scale = next.scale ?? 1
+      const at = {
+        x: target.x - window.scrollX + (width * scale) / 2,
+        y: target.y - window.scrollY + (edgeY[next.kind] - viewTop) * unit * scale,
+      }
+      if (unseen(() => coversText({ ...next, at, score: 0 }))) return
+    }
+    moveTo(next, how)
+  }
+  if (perch.kind === 'sit') return wanderTo({ ...perch, kind: 'stand' })
   const span = perch.el ? boxOf(perch.el).width : window.innerWidth
   let dir = Math.random() < 0.5 ? -1 : 1
   const step = (70 + Math.random() * 170) / Math.max(span, 1)
@@ -698,7 +712,7 @@ const wander = () => {
     t = floorReach(here, t * span) / span
   }
   if (Math.abs(t - perch.t) * span < 30) return
-  moveTo({ ...perch, t }, 'stroll')
+  wanderTo({ ...perch, t }, 'stroll')
 }
 
 // A sidenote out in the margin and well inside the view, for the pet to go and read.
@@ -1087,11 +1101,7 @@ const syncTrailArt = () => {
       trailArt.getAttribute(attribute.name) !== attribute.value
     )
       trailArt.setAttribute(attribute.name, attribute.value)
-  for (const property of ['--pet-lx', '--pet-ly', '--pet-tilt']) {
-    const value = root?.style.getPropertyValue(property) ?? ''
-    if (trailArt.style.getPropertyValue(property) !== value)
-      trailArt.style.setProperty(property, value)
-  }
+  gazeArt?.syncTrail(trailArt)
 }
 const stopTrailGuard = () => {
   window.clearTimeout(trailGuardTimer)
@@ -1240,7 +1250,7 @@ const paintTrail = (animation: Animation, path: SVGPathElement) => {
     const dx = ahead.x - foot.x
     if (Math.abs(dx) > 0.25 * foot.scale) {
       face = dx > 0 ? -1 : 1
-      root.style.setProperty('--pet-face', String(face))
+      gazeArt?.face(face)
     }
     reserveTrailFoot(path, foot)
     trailPaintFrame = requestAnimationFrame(paint)
@@ -1794,7 +1804,7 @@ const driveStep = () => {
   // Blocked all round: it still turns to face the way it was asked.
   if (dx) {
     face = dx > 0 ? -1 : 1
-    root.style.setProperty('--pet-face', String(face))
+    gazeArt?.face(face)
     syncTrailArt()
   }
 }
@@ -2252,10 +2262,8 @@ const watch = () => {
   if (look === gaze) return
   gaze = look
   const [f, lx, ly, tilt] = look.split(' ')
-  root.style.setProperty('--pet-face', f)
-  root.style.setProperty('--pet-lx', lx)
-  root.style.setProperty('--pet-ly', ly)
-  root.style.setProperty('--pet-tilt', tilt)
+  gazeArt?.face(Number(f))
+  gazeArt?.look(lx, ly, tilt)
   syncTrailArt()
   if (trailWalk && perch?.foot && !hop)
     reserveTrailFoot(trailWalk.path, {
@@ -2422,6 +2430,7 @@ const scheduleReminder = () => {
 // Clicking it makes it cheer, and the pet turns to wave back.
 let friend: HTMLElement | null = null
 let friendSvg: SVGSVGElement | null = null
+let friendGaze: ReturnType<typeof createPetGaze> | null = null
 let friendMarkup = ''
 let friendPerch: Perch | null = null
 let friendDoc: Point | null = null
@@ -2484,7 +2493,7 @@ function renderFriend() {
     'data-reading',
     document.documentElement.getAttribute('reader-mode') === 'on',
   )
-  friend.style.setProperty('--pet-face', String(friendFace))
+  friendGaze?.face(friendFace)
   if (friend.classList.contains('is-speaking')) {
     const c = friendCenter()
     if (c) friend.dataset.bubble = c.y - height(friendScale()) / 2 < 64 ? 'below' : 'above'
@@ -2511,10 +2520,12 @@ function friendWatch() {
   const k = Math.min(1, r / (3 * unit)) / Math.max(r, 1)
   const ux = friendFace * dx * k
   const uy = dy * k
-  friend.style.setProperty('--pet-face', String(friendFace))
-  friend.style.setProperty('--pet-lx', (ux * 0.18).toFixed(2))
-  friend.style.setProperty('--pet-ly', (uy * (uy < 0 ? 0.11 : 0.16)).toFixed(2))
-  friend.style.setProperty('--pet-tilt', (ux * 7).toFixed(1))
+  friendGaze?.face(friendFace)
+  friendGaze?.look(
+    (ux * 0.18).toFixed(2),
+    (uy * (uy < 0 ? 0.11 : 0.16)).toFixed(2),
+    (ux * 7).toFixed(1),
+  )
 }
 
 // Where the friend goes when the pet holds `p` from `m` (its top-left in document coordinates):
@@ -2878,6 +2889,7 @@ function spawnFriend() {
   return () => {
     el.innerHTML = `<button type="button" class="garden-pet-button" aria-label="the pet's friend">${friendMarkup}</button><div class="garden-pet-bubble" role="status"><span class="garden-pet-bubble-text"></span></div>`
     friendSvg = el.querySelector('svg')
+    friendGaze = friendSvg ? createPetGaze(friendSvg) : null
     renderFriend()
     requestAnimationFrame(() => el.classList.add('is-visible'))
     scheduleMeet()
@@ -2895,6 +2907,7 @@ function removeFriend() {
   friend?.remove()
   friend = null
   friendSvg = null
+  friendGaze = null
   friendDoc = null
   friendPerch = null
   friendHovering = false
@@ -2910,6 +2923,7 @@ const spawn = () => {
   document.body.appendChild(el)
   root = el
   svg = null
+  gazeArt = null
   // The pet is absolutely positioned in document coordinates, so the window's scroll carries it
   // along its edge for free. The containing block may sit off the document origin; measure it once.
   const rect = el.getBoundingClientRect()
@@ -2920,6 +2934,7 @@ const spawn = () => {
   return () => {
     el.innerHTML = `<button type="button" class="garden-pet-button" aria-label="garden pet">${markup}</button><div class="garden-pet-bubble" role="status"><span class="garden-pet-bubble-text"></span><button type="button" class="garden-pet-close" aria-label="dismiss reminder">×</button></div>`
     svg = el.querySelector('svg')
+    gazeArt = svg ? createPetGaze(svg) : null
     showBubble()
     requestAnimationFrame(() => el.classList.add('is-visible'))
   }
@@ -2945,6 +2960,7 @@ const despawn = () => {
   root?.remove()
   root = null
   svg = null
+  gazeArt = null
   doc = null
   perch = null
   removeFriend()
