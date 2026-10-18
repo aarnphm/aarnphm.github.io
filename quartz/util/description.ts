@@ -66,6 +66,7 @@ function wikilinkDisplayText(link: WikilinkData, fallback = ''): string {
 }
 
 export function processWikilinksToHtml(text: string, currentSlug: FullSlug): string {
+  if (!text.includes('[[')) return text
   const wikilinks = extractWikilinks(text)
   let result = text
 
@@ -116,6 +117,7 @@ export function renderDescriptionHtml(text: string, currentSlug: FullSlug): stri
 }
 
 function processWikilinksToText(text: string, currentSlug?: FullSlug | string): string {
+  if (!text.includes('[[')) return text
   const wikilinks = extractWikilinks(text)
   let result = text
   const resolvedSlug =
@@ -159,6 +161,14 @@ export function descriptionToPlainText(
   currentSlug?: FullSlug | string,
 ) {
   if (!description) return ''
+  if (
+    !description.includes('[') &&
+    !description.includes('$') &&
+    !description.includes('<') &&
+    !description.includes('&')
+  ) {
+    return description.replace(/\s+/g, ' ').trim()
+  }
   // Escape math before parsing HTML so comparisons remain text rather than becoming tags.
   const text = processWikilinksToText(processMarkdownLinksToHtml(description), currentSlug)
     .replace(/\$\$([\s\S]*?)\$\$/g, (_match, math: string) => escapeHTML(latexToText(math)))
