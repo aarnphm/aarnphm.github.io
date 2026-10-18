@@ -369,6 +369,41 @@ function extractHoverContents(raw: unknown): string | undefined {
   return single || undefined
 }
 
+const WS_OPEN = typeof WebSocket !== 'undefined' ? WebSocket.OPEN : 1
+const LEAN_STEM_MEMBER_CHAR_RE =
+  /[A-Za-z0-9_'!?\u00c0-\u024f\u0370-\u03ff\u2080-\u2089\u2100-\u214f]/
+const MAX_COMPLETION_STEM_CACHE = 32
+const MAX_HOVER_CACHE = 64
+
+function computeCompletionStemKey(
+  source: string,
+  position: { line: number; character: number },
+): string {
+  let lineStart = 0
+  let currentLine = 0
+  while (currentLine < position.line && lineStart < source.length) {
+    const nextNl = source.indexOf('\n', lineStart)
+    if (nextNl === -1) {
+      lineStart = source.length
+      break
+    }
+    lineStart = nextNl + 1
+    currentLine += 1
+  }
+  const lineEndIdx = source.indexOf('\n', lineStart)
+  const lineEnd = lineEndIdx === -1 ? source.length : lineEndIdx
+  const clampedChar = Math.max(0, Math.min(position.character, lineEnd - lineStart))
+  const cursorAbs = lineStart + clampedChar
+  let stemAbs = cursorAbs
+  while (stemAbs > lineStart && LEAN_STEM_MEMBER_CHAR_RE.test(source[stemAbs - 1]!)) {
+    stemAbs -= 1
+  }
+  const stemCol = stemAbs - lineStart
+  const stemSource =
+    stemAbs === cursorAbs ? source : source.slice(0, stemAbs) + source.slice(cursorAbs)
+  return `${position.line}:${stemCol}:${stemSource}`
+}
+
 export class LeanWebSocketSession {
   private ws: WebSocket | undefined
   private readyPromise: Promise<boolean> | undefined
@@ -379,10 +414,20 @@ export class LeanWebSocketSession {
   private rpcSessionId: string | undefined
   private latestDiagnostics: LspDiag[] = []
   private pendingReplies = new Map<number, (result: unknown) => void>()
+  private completionStemCache = new Map<string, ReadonlyArray<LeanLspCompletionItem>>()
+  private hoverCache = new Map<string, LeanLspHoverResult | null>()
+  private inFlightCompletion:
+    | {
+        stemKey: string
+        rpcId: number
+        promise: Promise<ReadonlyArray<LeanLspCompletionItem>>
+        cancel: () => void
+      }
+    | undefined
   private queue: Promise<unknown> = Promise.resolve()
 
   isWarm(): boolean {
-    return this.isReadyState && this.ws?.readyState === WebSocket.OPEN
+    return this.isReadyState && this.ws?.readyState === WS_OPEN
   }
 
   warm(): Promise<boolean> {
@@ -434,6 +479,22 @@ export class LeanWebSocketSession {
           const waitId = this.allocId()
           this.pendingReplies.set(waitId, () => {
             this.isReadyState = true
+            if (!this.rpcSessionId && ws.readyState === WS_OPEN) {
+              const rpcConnectId = this.allocId()
+              this.pendingReplies.set(rpcConnectId, connected => {
+                if (isRecord(connected) && typeof connected.sessionId === 'string') {
+                  this.rpcSessionId = connected.sessionId
+                }
+              })
+              ws.send(
+                JSON.stringify({
+                  jsonrpc: '2.0',
+                  id: rpcConnectId,
+                  method: '$/lean/rpc/connect',
+                  params: { uri: LEAN4WEB_DOC_URI },
+                }),
+              )
+            }
             finish(true)
           })
           ws.send(
@@ -496,6 +557,9 @@ export class LeanWebSocketSession {
         this.readyPromise = undefined
         this.rpcSessionId = undefined
         this.lastSyncedSource = ''
+        this.inFlightCompletion = undefined
+        this.completionStemCache.clear()
+        this.hoverCache.clear()
         for (const [, cb] of this.pendingReplies) cb(undefined)
         this.pendingReplies.clear()
         finish(false)
@@ -530,19 +594,89 @@ export class LeanWebSocketSession {
     position: { line: number; character: number },
     timeoutMs = 600,
   ): Promise<ReadonlyArray<LeanLspCompletionItem>> {
-    if (!this.isWarm() || !this.ws || this.ws.readyState !== WebSocket.OPEN) {
+    if (!this.isWarm() || !this.ws || this.ws.readyState !== WS_OPEN) {
       void this.warm()
       return []
     }
+
+    const stemKey = computeCompletionStemKey(source, position)
+    const cached = this.completionStemCache.get(stemKey)
+    if (cached !== undefined) {
+      return cached
+    }
+
+    if (this.inFlightCompletion) {
+      if (this.inFlightCompletion.stemKey === stemKey) {
+        return this.inFlightCompletion.promise
+      }
+      this.inFlightCompletion.cancel()
+    }
+
     const ws = this.ws
     this.syncDocument(ws, source)
-    const result = await this.requestWithTimeout(
-      ws,
-      'textDocument/completion',
-      { textDocument: { uri: LEAN4WEB_DOC_URI }, position },
-      timeoutMs,
-    )
-    return parseLspCompletionItems(result)
+
+    const id = this.allocId()
+    let cancelFn = () => {}
+    const promise = new Promise<ReadonlyArray<LeanLspCompletionItem>>(resolve => {
+      let settled = false
+      const timer = setTimeout(() => {
+        if (settled) return
+        settled = true
+        this.pendingReplies.delete(id)
+        if (this.inFlightCompletion?.rpcId === id) {
+          this.inFlightCompletion = undefined
+        }
+        resolve([])
+      }, timeoutMs)
+
+      cancelFn = () => {
+        if (settled) return
+        settled = true
+        clearTimeout(timer)
+        this.pendingReplies.delete(id)
+        if (this.inFlightCompletion?.rpcId === id) {
+          this.inFlightCompletion = undefined
+        }
+        if (ws.readyState === WS_OPEN) {
+          ws.send(JSON.stringify({ jsonrpc: '2.0', method: '$/cancelRequest', params: { id } }))
+        }
+        resolve([])
+      }
+
+      this.pendingReplies.set(id, result => {
+        if (settled) return
+        settled = true
+        clearTimeout(timer)
+        if (this.inFlightCompletion?.rpcId === id) {
+          this.inFlightCompletion = undefined
+        }
+        if (result === undefined) {
+          resolve([])
+          return
+        }
+        const items = parseLspCompletionItems(result)
+        if (this.completionStemCache.size >= MAX_COMPLETION_STEM_CACHE) {
+          const oldestKey = this.completionStemCache.keys().next().value
+          if (oldestKey !== undefined) {
+            this.completionStemCache.delete(oldestKey)
+          }
+        }
+        this.completionStemCache.set(stemKey, items)
+        resolve(items)
+      })
+
+      ws.send(
+        JSON.stringify({
+          jsonrpc: '2.0',
+          id,
+          method: 'textDocument/completion',
+          params: { textDocument: { uri: LEAN4WEB_DOC_URI }, position },
+        }),
+      )
+    })
+
+    this.inFlightCompletion = { stemKey, rpcId: id, promise, cancel: cancelFn }
+    return promise
   }
 
   async hover(
@@ -550,10 +684,16 @@ export class LeanWebSocketSession {
     position: { line: number; character: number },
     timeoutMs = 800,
   ): Promise<LeanLspHoverResult | undefined> {
-    if (!this.isWarm() || !this.ws || this.ws.readyState !== WebSocket.OPEN) {
+    if (!this.isWarm() || !this.ws || this.ws.readyState !== WS_OPEN) {
       void this.warm()
       return undefined
     }
+
+    const cacheKey = `${position.line}:${position.character}:${source}`
+    if (this.hoverCache.has(cacheKey)) {
+      return this.hoverCache.get(cacheKey) ?? undefined
+    }
+
     const ws = this.ws
     this.syncDocument(ws, source)
 
@@ -598,14 +738,26 @@ export class LeanWebSocketSession {
       queryGoals(),
     ])
     const contents = extractHoverContents(hoverRaw)
-    if (!contents && goals.length === 0) return undefined
-    return { ...(contents ? { contents } : {}), ...(goals.length > 0 ? { goals } : {}) }
+    const resolved: LeanLspHoverResult | null =
+      !contents && goals.length === 0
+        ? null
+        : { ...(contents ? { contents } : {}), ...(goals.length > 0 ? { goals } : {}) }
+    if (hoverRaw !== undefined || goals.length > 0) {
+      if (this.hoverCache.size >= MAX_HOVER_CACHE) {
+        const oldestKey = this.hoverCache.keys().next().value
+        if (oldestKey !== undefined) {
+          this.hoverCache.delete(oldestKey)
+        }
+      }
+      this.hoverCache.set(cacheKey, resolved)
+    }
+    return resolved ?? undefined
   }
 
   verify(source: string, signal?: AbortSignal): Promise<Record<string, unknown> | undefined> {
     const run = async (): Promise<Record<string, unknown> | undefined> => {
       const ok = await this.warm()
-      if (!ok || !this.ws || this.ws.readyState !== WebSocket.OPEN || signal?.aborted) {
+      if (!ok || !this.ws || this.ws.readyState !== WS_OPEN || signal?.aborted) {
         return undefined
       }
       const ws = this.ws
@@ -723,6 +875,9 @@ export class LeanWebSocketSession {
     this.readyPromise = undefined
     this.rpcSessionId = undefined
     this.lastSyncedSource = ''
+    this.inFlightCompletion = undefined
+    this.completionStemCache.clear()
+    this.hoverCache.clear()
     for (const [, cb] of this.pendingReplies) cb(undefined)
     this.pendingReplies.clear()
   }
@@ -739,7 +894,7 @@ export class LeanWebSocketSession {
     timeoutMs: number,
   ): Promise<unknown> {
     return new Promise<unknown>(resolve => {
-      if (ws.readyState !== WebSocket.OPEN) {
+      if (ws.readyState !== WS_OPEN) {
         resolve(undefined)
         return
       }
@@ -763,7 +918,7 @@ export class LeanWebSocketSession {
     signal?: AbortSignal,
   ): Promise<unknown> {
     return new Promise<unknown>(resolve => {
-      if (signal?.aborted || ws.readyState !== WebSocket.OPEN) {
+      if (signal?.aborted || ws.readyState !== WS_OPEN) {
         resolve(undefined)
         return
       }

@@ -196,9 +196,109 @@ describe('Lean 4 CompletionSource & Mathlib/Tactic Index', () => {
       const html = renderLeanHoverHtml(liveHover)
       assert.match(html, /cm-lean-hover-goals/)
       assert.match(html, /⊢ A ∩ B = B ∩ A/)
+
+      let hoverCalledOnWhitespace = false
+      session.hover = async () => {
+        hoverCalledOnWhitespace = true
+        return { contents: 'should not be called' }
+      }
+      const spaceCol = line.indexOf(' : ') + 1
+      const spaceHover = await resolveLeanHoverAt(line, 0, line, spaceCol)
+      assert.equal(spaceHover, undefined)
+      assert.equal(hoverCalledOnWhitespace, false)
     } finally {
       session.isWarm = origIsWarm
       session.hover = origHover
+    }
+  })
+
+  test('caches completion stem across continuation keystrokes (Set.m -> Set.me -> Set.mem) with a single WebSocket request', async () => {
+    const session = getSharedLeanWebSocketSession()
+    const origWebSocket = globalThis.WebSocket
+    const sentMethods: string[] = []
+
+    class FakeLeanWebSocket {
+      static readonly OPEN = 1
+      readonly readyState = 1
+      private listeners = new Map<string, Array<(ev: { data?: string }) => void>>()
+
+      addEventListener(type: string, listener: (ev: { data?: string }) => void) {
+        const list = this.listeners.get(type) ?? []
+        list.push(listener)
+        this.listeners.set(type, list)
+        if (type === 'open') {
+          queueMicrotask(() => listener({}))
+        }
+      }
+
+      send(raw: string) {
+        const msg = JSON.parse(raw) as { id?: number; method?: string }
+        if (msg.method) {
+          sentMethods.push(msg.method)
+        }
+        if (msg.method === 'initialize' && msg.id !== undefined) {
+          this.emitMessage({ jsonrpc: '2.0', id: msg.id, result: { capabilities: {} } })
+        } else if (msg.method === 'textDocument/waitForDiagnostics' && msg.id !== undefined) {
+          this.emitMessage({ jsonrpc: '2.0', id: msg.id, result: {} })
+        } else if (msg.method === '$/lean/rpc/connect' && msg.id !== undefined) {
+          this.emitMessage({
+            jsonrpc: '2.0',
+            id: msg.id,
+            result: { sessionId: 'session-preconnected' },
+          })
+        } else if (msg.method === 'textDocument/completion' && msg.id !== undefined) {
+          this.emitMessage({
+            jsonrpc: '2.0',
+            id: msg.id,
+            result: {
+              items: [
+                {
+                  label: 'mem_singleton_iff',
+                  detail: 'x ∈ {a} ↔ x = a',
+                  documentation: 'Membership in a singleton set.',
+                  kind: 3,
+                },
+                { label: 'not_mem_empty', detail: 'x ∉ ∅', kind: 3 },
+              ],
+            },
+          })
+        }
+      }
+
+      close() {}
+
+      private emitMessage(payload: unknown) {
+        const data = JSON.stringify(payload)
+        queueMicrotask(() => {
+          for (const fn of this.listeners.get('message') ?? []) {
+            fn({ data })
+          }
+        })
+      }
+    }
+
+    session.dispose()
+    globalThis.WebSocket = FakeLeanWebSocket as unknown as typeof WebSocket
+    try {
+      const warmed = await session.warm()
+      assert.equal(warmed, true)
+      assert.ok(sentMethods.includes('$/lean/rpc/connect'))
+
+      const res1 = await runCompletion('#check Set.m')
+      const res2 = await runCompletion('#check Set.me')
+      const res3 = await runCompletion('#check Set.mem')
+      const res4 = await runCompletion('#check Set.mem_')
+
+      assert.ok(res1?.options.some(opt => opt.label === 'Set.mem_singleton_iff'))
+      assert.ok(res2?.options.some(opt => opt.label === 'Set.mem_singleton_iff'))
+      assert.ok(res3?.options.some(opt => opt.label === 'Set.mem_singleton_iff'))
+      assert.ok(res4?.options.some(opt => opt.label === 'Set.mem_singleton_iff'))
+
+      const completionRequests = sentMethods.filter(m => m === 'textDocument/completion')
+      assert.equal(completionRequests.length, 1)
+    } finally {
+      session.dispose()
+      globalThis.WebSocket = origWebSocket
     }
   })
 

@@ -4,7 +4,7 @@ import {
   type CompletionResult,
   type CompletionSource,
 } from '@codemirror/autocomplete'
-import { Facet, type Extension } from '@codemirror/state'
+import { Facet, type Extension, type Text } from '@codemirror/state'
 import { hoverTooltip, type Tooltip } from '@codemirror/view'
 import type { LspBridge, LspConfig } from './bridge'
 import { escapeHTML } from '../../util/escape'
@@ -24,11 +24,6 @@ export type LeanCatalogEntry = {
 export const leanLspConfigFacet = Facet.define<LspConfig, LspConfig | undefined>({
   combine: values => values.at(-1),
 })
-
-const LEAN_IDENTIFIER_BEFORE_RE =
-  /(?:#[A-Za-z_][A-Za-z0-9_']*|[A-Za-z_À-ɏͰ-Ͽ℀-⅏][A-Za-z0-9_.'!?\u00c0-\u024f\u0370-\u03ff\u2080-\u2089\u2100-\u214f]*)$/
-
-const LEAN_TOKEN_CHAR_RE = /[A-Za-z0-9_.'!?#\u00c0-\u024f\u0370-\u03ff\u2080-\u2089\u2100-\u214f]/
 
 const LEAN_STATIC_CATALOG: readonly LeanCatalogEntry[] = [
   // Tactics
@@ -980,9 +975,84 @@ const LEAN_STATIC_CATALOG: readonly LeanCatalogEntry[] = [
   },
 ]
 
-const LEAN_CATALOG_BY_LABEL = new Map<string, LeanCatalogEntry>(
-  LEAN_STATIC_CATALOG.map(entry => [entry.label, entry]),
-)
+type IndexedCatalogEntry = {
+  readonly entry: LeanCatalogEntry
+  readonly label: string
+  readonly labelLower: string
+  readonly hasDot: boolean
+  readonly namespacePrefix: string
+  readonly memberLower: string
+  readonly isCommand: boolean
+  readonly isLocal: boolean
+  readonly boost45: Completion
+  readonly boost40: Completion
+  readonly boost30: Completion
+  readonly boost25: Completion
+  readonly boost18: Completion
+  readonly boost10: Completion
+  readonly boost5: Completion
+}
+
+function createCompletionWithBoost(entry: LeanCatalogEntry, boost: number): Completion {
+  return {
+    label: entry.label,
+    type: entry.type,
+    detail: entry.detail,
+    info: entry.documentation,
+    boost,
+  }
+}
+
+function indexCatalogEntry(entry: LeanCatalogEntry): IndexedCatalogEntry {
+  const label = entry.label
+  const labelLower = label.toLowerCase()
+  const dotIndex = label.lastIndexOf('.')
+  const hasDot = dotIndex !== -1
+  const namespacePrefix = hasDot ? label.slice(0, dotIndex + 1) : ''
+  const memberLower = hasDot ? labelLower.slice(dotIndex + 1) : labelLower
+  const isCommand = label.charCodeAt(0) === 35
+  const isLocal = entry.category === 'local'
+  return {
+    entry,
+    label,
+    labelLower,
+    hasDot,
+    namespacePrefix,
+    memberLower,
+    isCommand,
+    isLocal,
+    boost45: createCompletionWithBoost(entry, 45),
+    boost40: createCompletionWithBoost(entry, 40),
+    boost30: createCompletionWithBoost(entry, 30),
+    boost25: createCompletionWithBoost(entry, 25),
+    boost18: createCompletionWithBoost(entry, 18),
+    boost10: createCompletionWithBoost(entry, 10),
+    boost5: createCompletionWithBoost(entry, 5),
+  }
+}
+
+const LEAN_CATALOG_BY_LABEL = new Map<string, LeanCatalogEntry>()
+const STATIC_COMMANDS: IndexedCatalogEntry[] = []
+const STATIC_NON_COMMANDS: IndexedCatalogEntry[] = []
+const STATIC_BY_NAMESPACE = new Map<string, IndexedCatalogEntry[]>()
+
+for (const entry of LEAN_STATIC_CATALOG) {
+  LEAN_CATALOG_BY_LABEL.set(entry.label, entry)
+  const indexed = indexCatalogEntry(entry)
+  if (indexed.isCommand) {
+    STATIC_COMMANDS.push(indexed)
+  } else {
+    STATIC_NON_COMMANDS.push(indexed)
+    if (indexed.hasDot) {
+      let bucket = STATIC_BY_NAMESPACE.get(indexed.namespacePrefix)
+      if (!bucket) {
+        bucket = []
+        STATIC_BY_NAMESPACE.set(indexed.namespacePrefix, bucket)
+      }
+      bucket.push(indexed)
+    }
+  }
+}
 
 const RESERVED_SKIP_NAMES = new Set([
   'by',
@@ -1001,36 +1071,97 @@ const RESERVED_SKIP_NAMES = new Set([
   'admit',
 ])
 
-export function extractLeanDocumentSymbols(sources: readonly string[]): LeanCatalogEntry[] {
-  const seen = new Set<string>(LEAN_CATALOG_BY_LABEL.keys())
-  const out: LeanCatalogEntry[] = []
+const DECL_START_WORDS = new Set([
+  'theorem',
+  'lemma',
+  'def',
+  'abbrev',
+  'structure',
+  'class',
+  'inductive',
+  'axiom',
+  'opaque',
+  'noncomputable',
+  'private',
+  'protected',
+  'scoped',
+  'local',
+  'partial',
+  'unsafe',
+])
 
-  const addSymbol = (label: string, type: string, detail: string, documentation: string) => {
-    const clean = label.trim()
-    if (
-      !clean ||
-      clean === '_' ||
-      RESERVED_SKIP_NAMES.has(clean) ||
-      seen.has(clean) ||
-      !/^[A-Za-z_À-ɏͰ-Ͽ℀-⅏][A-Za-z0-9_.'!?\u00c0-\u024f\u0370-\u03ff\u2080-\u2089\u2100-\u214f]*$/.test(
-        clean,
-      )
-    ) {
-      return
-    }
-    seen.add(clean)
-    out.push({ label: clean, category: 'local', type, detail, documentation })
-  }
+const VALID_SYMBOL_NAME_RE =
+  /^[A-Za-z_À-ɏͰ-Ͽ℀-⅏][A-Za-z0-9_.'!?\u00c0-\u024f\u0370-\u03ff\u2080-\u2089\u2100-\u214f]*$/
+const DECL_LINE_RE =
+  /^(?:(?:noncomputable|private|protected|scoped|local|partial|unsafe)\s+)*(theorem|lemma|def|abbrev|structure|class|inductive|axiom|opaque)\s+([A-Za-z_À-ɏͰ-Ͽ℀-⅏][A-Za-z0-9_.'!?\u00c0-\u024f\u0370-\u03ff\u2080-\u2089\u2100-\u214f]*)(.*)$/
+const BINDER_GROUP_RE = /[(⦃{]\s*([^():⦃⦄{}]+?)\s*:\s*([^()⦃⦄{}]+?)[)⦄}]/g
+const HAVE_LET_LINE_RE =
+  /\b(have|let)\s+([A-Za-z_À-ɏͰ-Ͽ℀-⅏][A-Za-z0-9_'!?\u00c0-\u024f\u0370-\u03ff\u2080-\u2089\u2100-\u214f]*)\s*(?::\s*([^:=]+?))?\s*:=/
+const OBTAIN_RCASES_LINE_RE = /\b(?:obtain|rcases)\b[^⟨]*⟨([^⟩]+)⟩/g
+const INTRO_LINE_RE =
+  /\b(?:intro|intros)\s+([A-Za-z0-9_'!?\s\u00c0-\u024f\u0370-\u03ff\u2080-\u2089]+)/
 
-  for (const source of sources) {
-    const lines = source.split(/\r?\n/)
-    for (const rawLine of lines) {
-      const line = rawLine.replace(/--.*$/, '').trim()
-      if (!line) continue
+const LEAN_ASCII_TOKEN_LUT = new Uint8Array(128)
+for (let c = 48; c <= 57; c += 1) LEAN_ASCII_TOKEN_LUT[c] = 1 // 0-9
+for (let c = 65; c <= 90; c += 1) LEAN_ASCII_TOKEN_LUT[c] = 2 // A-Z
+for (let c = 97; c <= 122; c += 1) LEAN_ASCII_TOKEN_LUT[c] = 2 // a-z
+LEAN_ASCII_TOKEN_LUT[95] = 2 // _
+LEAN_ASCII_TOKEN_LUT[35] = 3 // #
+LEAN_ASCII_TOKEN_LUT[39] = 1 // '
+LEAN_ASCII_TOKEN_LUT[33] = 1 // !
+LEAN_ASCII_TOKEN_LUT[63] = 1 // ?
+LEAN_ASCII_TOKEN_LUT[46] = 1 // .
 
-      const declMatch = line.match(
-        /^(?:(?:noncomputable|private|protected|scoped|local|partial|unsafe)\s+)*(theorem|lemma|def|abbrev|structure|class|inductive|axiom|opaque)\s+([A-Za-z_À-ɏͰ-Ͽ℀-⅏][A-Za-z0-9_.'!?\u00c0-\u024f\u0370-\u03ff\u2080-\u2089\u2100-\u214f]*)(.*)$/,
-      )
+function isLeanTokenCharCode(code: number): boolean {
+  if (code < 128) return LEAN_ASCII_TOKEN_LUT[code] !== 0
+  return (
+    (code >= 0x00c0 && code <= 0x024f) ||
+    (code >= 0x0370 && code <= 0x03ff) ||
+    (code >= 0x2080 && code <= 0x2089) ||
+    (code >= 0x2100 && code <= 0x214f)
+  )
+}
+
+function isLeanIdentStartCharCode(code: number): boolean {
+  if (code < 128) return LEAN_ASCII_TOKEN_LUT[code] === 2
+  return (
+    (code >= 0x00c0 && code <= 0x024f) ||
+    (code >= 0x0370 && code <= 0x03ff) ||
+    (code >= 0x2100 && code <= 0x214f)
+  )
+}
+
+type LeanDocumentSymbolCache = {
+  readonly entries: readonly LeanCatalogEntry[]
+  readonly indexed: readonly IndexedCatalogEntry[]
+  readonly byLabel: ReadonlyMap<string, LeanCatalogEntry>
+  readonly completionCache: Map<string, readonly Completion[]>
+}
+
+const EMPTY_INDEXED_ENTRIES: readonly IndexedCatalogEntry[] = []
+const docSymbolCacheByText = new WeakMap<Text, LeanDocumentSymbolCache>()
+const docSymbolCacheBySource = new Map<string, LeanDocumentSymbolCache>()
+const MAX_DOC_SYMBOL_CACHE = 64
+
+function scanSourceIntoSymbols(
+  source: string,
+  addSymbol: (label: string, type: string, detail: string, documentation: string) => void,
+): void {
+  let lineStart = 0
+  const len = source.length
+  while (lineStart < len) {
+    const nlIdx = source.indexOf('\n', lineStart)
+    const lineEnd = nlIdx === -1 ? len : nlIdx
+    const rawLine = source.slice(lineStart, lineEnd)
+    lineStart = nlIdx === -1 ? len : nlIdx + 1
+
+    const commentIdx = rawLine.indexOf('--')
+    const line = (commentIdx !== -1 ? rawLine.slice(0, commentIdx) : rawLine).trim()
+    if (!line) continue
+
+    const firstSpace = line.indexOf(' ')
+    if (firstSpace !== -1 && DECL_START_WORDS.has(line.slice(0, firstSpace))) {
+      const declMatch = line.match(DECL_LINE_RE)
       if (declMatch) {
         const kind = declMatch[1]
         const name = declMatch[2]
@@ -1047,23 +1178,28 @@ export function extractLeanDocumentSymbols(sources: readonly string[]): LeanCata
           `Document-local ${kind} \`${name}\`.`,
         )
 
-        for (const binder of rest.matchAll(/[(⦃{]\s*([^():⦃⦄{}]+?)\s*:\s*([^()⦃⦄{}]+?)[)⦄}]/g)) {
-          const namesPart = binder[1].trim()
-          const typePart = binder[2].trim()
-          for (const param of namesPart.split(/\s+/)) {
-            addSymbol(
-              param,
-              'variable',
-              `${param} : ${typePart}`,
-              `Parameter \`${param} : ${typePart}\` of \`${name}\`.`,
-            )
+        if (rest.indexOf(':') !== -1) {
+          for (const binder of rest.matchAll(BINDER_GROUP_RE)) {
+            const namesPart = binder[1].trim()
+            const typePart = binder[2].trim()
+            for (const param of namesPart.split(/\s+/)) {
+              addSymbol(
+                param,
+                'variable',
+                `${param} : ${typePart}`,
+                `Parameter \`${param} : ${typePart}\` of \`${name}\`.`,
+              )
+            }
           }
         }
       }
+    }
 
-      const haveLetMatch = line.match(
-        /\b(have|let)\s+([A-Za-z_À-ɏͰ-Ͽ℀-⅏][A-Za-z0-9_'!?\u00c0-\u024f\u0370-\u03ff\u2080-\u2089\u2100-\u214f]*)\s*(?::\s*([^:=]+?))?\s*:=/,
-      )
+    if (
+      line.indexOf(':=') !== -1 &&
+      (line.indexOf('have ') !== -1 || line.indexOf('let ') !== -1)
+    ) {
+      const haveLetMatch = line.match(HAVE_LET_LINE_RE)
       if (haveLetMatch) {
         const kind = haveLetMatch[1]
         const name = haveLetMatch[2]
@@ -1077,8 +1213,13 @@ export function extractLeanDocumentSymbols(sources: readonly string[]): LeanCata
           }.`,
         )
       }
+    }
 
-      for (const tupleMatch of line.matchAll(/\b(?:obtain|rcases)\b[^⟨]*⟨([^⟩]+)⟩/g)) {
+    if (
+      line.indexOf('⟨') !== -1 &&
+      (line.indexOf('obtain') !== -1 || line.indexOf('rcases') !== -1)
+    ) {
+      for (const tupleMatch of line.matchAll(OBTAIN_RCASES_LINE_RE)) {
         for (const part of tupleMatch[1].split(/[,\s|⟨⟩]+/)) {
           addSymbol(
             part,
@@ -1088,10 +1229,10 @@ export function extractLeanDocumentSymbols(sources: readonly string[]): LeanCata
           )
         }
       }
+    }
 
-      const introMatch = line.match(
-        /\b(?:intro|intros)\s+([A-Za-z0-9_'!?\s\u00c0-\u024f\u0370-\u03ff\u2080-\u2089]+)/,
-      )
+    if (line.indexOf('intro') !== -1) {
+      const introMatch = line.match(INTRO_LINE_RE)
       if (introMatch) {
         for (const ident of introMatch[1].split(/\s+/)) {
           addSymbol(ident, 'variable', `hypothesis ${ident}`, `Local hypothesis \`${ident}\`.`)
@@ -1099,8 +1240,86 @@ export function extractLeanDocumentSymbols(sources: readonly string[]): LeanCata
       }
     }
   }
+}
+
+export function extractLeanDocumentSymbols(sources: readonly string[]): LeanCatalogEntry[] {
+  if (sources.length === 1) {
+    return [...getDocumentSymbolsForSource(sources[0]!).entries]
+  }
+  const seen = new Set<string>()
+  const out: LeanCatalogEntry[] = []
+
+  const addSymbol = (label: string, type: string, detail: string, documentation: string) => {
+    const clean = label.trim()
+    if (
+      !clean ||
+      clean === '_' ||
+      RESERVED_SKIP_NAMES.has(clean) ||
+      LEAN_CATALOG_BY_LABEL.has(clean) ||
+      seen.has(clean) ||
+      !VALID_SYMBOL_NAME_RE.test(clean)
+    ) {
+      return
+    }
+    seen.add(clean)
+    out.push({ label: clean, category: 'local', type, detail, documentation })
+  }
+
+  for (const source of sources) {
+    scanSourceIntoSymbols(source, addSymbol)
+  }
 
   return out
+}
+
+function getDocumentSymbolsForSource(source: string): LeanDocumentSymbolCache {
+  const existing = docSymbolCacheBySource.get(source)
+  if (existing) return existing
+
+  const byLabel = new Map<string, LeanCatalogEntry>()
+  const entries: LeanCatalogEntry[] = []
+  const indexed: IndexedCatalogEntry[] = []
+
+  scanSourceIntoSymbols(source, (label, type, detail, documentation) => {
+    const clean = label.trim()
+    if (
+      !clean ||
+      clean === '_' ||
+      RESERVED_SKIP_NAMES.has(clean) ||
+      LEAN_CATALOG_BY_LABEL.has(clean) ||
+      byLabel.has(clean) ||
+      !VALID_SYMBOL_NAME_RE.test(clean)
+    ) {
+      return
+    }
+    const entry: LeanCatalogEntry = { label: clean, category: 'local', type, detail, documentation }
+    byLabel.set(clean, entry)
+    entries.push(entry)
+    indexed.push(indexCatalogEntry(entry))
+  })
+
+  const record: LeanDocumentSymbolCache = {
+    entries,
+    indexed,
+    byLabel,
+    completionCache: new Map<string, readonly Completion[]>(),
+  }
+  if (docSymbolCacheBySource.size >= MAX_DOC_SYMBOL_CACHE) {
+    const oldestKey = docSymbolCacheBySource.keys().next().value
+    if (oldestKey !== undefined) {
+      docSymbolCacheBySource.delete(oldestKey)
+    }
+  }
+  docSymbolCacheBySource.set(source, record)
+  return record
+}
+
+function getDocumentSymbolsForText(doc: Text): LeanDocumentSymbolCache {
+  const existing = docSymbolCacheByText.get(doc)
+  if (existing) return existing
+  const record = getDocumentSymbolsForSource(doc.toString())
+  docSymbolCacheByText.set(doc, record)
+  return record
 }
 
 function isRemoteBrowser(): boolean {
@@ -1129,74 +1348,102 @@ function lspKindToCompletionType(kind: number | undefined): string {
   }
 }
 
-function matchCatalogCandidates(
+const staticCompletionCache = new Map<string, readonly Completion[]>()
+const MAX_STATIC_COMPLETION_CACHE = 128
+
+function matchIndexedCatalogCandidates(
   prefix: string,
-  entries: readonly LeanCatalogEntry[],
-): Completion[] {
+  localIndexed: readonly IndexedCatalogEntry[],
+  cacheMap?: Map<string, readonly Completion[]>,
+): readonly Completion[] {
   const query = prefix.trim()
+  const targetCache = cacheMap ?? (localIndexed.length === 0 ? staticCompletionCache : undefined)
+  if (targetCache) {
+    const cached = targetCache.get(query)
+    if (cached !== undefined) return cached
+  }
+
   const lower = query.toLowerCase()
   const dotIndex = query.lastIndexOf('.')
   const hasDot = dotIndex !== -1
-  const namespacePrefix = hasDot ? query.slice(0, dotIndex + 1) : ''
-  const memberQuery = hasDot ? query.slice(dotIndex + 1).toLowerCase() : ''
 
   const results: Completion[] = []
-  for (const entry of entries) {
-    if (hasDot) {
-      if (!entry.label.startsWith(namespacePrefix)) continue
-      const member = entry.label.slice(namespacePrefix.length)
-      const memberLower = member.toLowerCase()
-      if (
-        memberQuery.length > 0 &&
-        !memberLower.startsWith(memberQuery) &&
-        !memberLower.includes(memberQuery)
-      ) {
-        continue
+
+  if (hasDot) {
+    const namespacePrefix = query.slice(0, dotIndex + 1)
+    const memberQuery = lower.slice(dotIndex + 1)
+
+    for (let i = 0; i < localIndexed.length; i += 1) {
+      const item = localIndexed[i]
+      if (!item.label.startsWith(namespacePrefix)) continue
+      const memberLower =
+        item.namespacePrefix === namespacePrefix
+          ? item.memberLower
+          : item.labelLower.slice(namespacePrefix.length)
+      if (memberQuery.length === 0 || memberLower.startsWith(memberQuery)) {
+        results.push(item.boost25)
+      } else if (memberLower.includes(memberQuery)) {
+        results.push(item.boost10)
       }
-      const startsWith = memberLower.startsWith(memberQuery)
-      results.push({
-        label: entry.label,
-        type: entry.type,
-        detail: entry.detail,
-        info: entry.documentation,
-        boost: startsWith ? 25 : 10,
-      })
-      continue
     }
 
-    if (query.startsWith('#')) {
-      if (!entry.label.startsWith('#') || !entry.label.toLowerCase().startsWith(lower)) continue
-      results.push({
-        label: entry.label,
-        type: entry.type,
-        detail: entry.detail,
-        info: entry.documentation,
-        boost: entry.label === query ? 40 : 25,
-      })
-      continue
+    const staticBucket = STATIC_BY_NAMESPACE.get(namespacePrefix)
+    if (staticBucket) {
+      for (let i = 0; i < staticBucket.length; i += 1) {
+        const item = staticBucket[i]
+        const memberLower = item.memberLower
+        if (memberQuery.length === 0 || memberLower.startsWith(memberQuery)) {
+          results.push(item.boost25)
+        } else if (memberLower.includes(memberQuery)) {
+          results.push(item.boost10)
+        }
+      }
+    }
+  } else if (query.charCodeAt(0) === 35) {
+    for (let i = 0; i < STATIC_COMMANDS.length; i += 1) {
+      const item = STATIC_COMMANDS[i]
+      if (item.labelLower.startsWith(lower)) {
+        results.push(item.label === query ? item.boost40 : item.boost25)
+      }
+    }
+  } else {
+    const allowSubstring = lower.length >= 2
+    for (let i = 0; i < localIndexed.length; i += 1) {
+      const item = localIndexed[i]
+      const labelLower = item.labelLower
+      const startsWith = labelLower.startsWith(lower)
+      const includes = allowSubstring && !startsWith && labelLower.includes(lower)
+      if (query.length > 0 && !startsWith && !includes) continue
+
+      if (item.label === query) results.push(item.boost45)
+      else if (labelLower === lower) results.push(item.boost40)
+      else if (startsWith) results.push(item.boost30)
+      else results.push(item.boost5)
     }
 
-    if (entry.label.startsWith('#')) continue
+    for (let i = 0; i < STATIC_NON_COMMANDS.length; i += 1) {
+      const item = STATIC_NON_COMMANDS[i]
+      const labelLower = item.labelLower
+      const startsWith = labelLower.startsWith(lower)
+      const includes = allowSubstring && !startsWith && labelLower.includes(lower)
+      if (query.length > 0 && !startsWith && !includes) continue
 
-    const labelLower = entry.label.toLowerCase()
-    const startsWith = labelLower.startsWith(lower)
-    const includes = lower.length >= 2 && labelLower.includes(lower)
-    if (query.length > 0 && !startsWith && !includes) continue
+      if (item.label === query) results.push(item.boost45)
+      else if (labelLower === lower) results.push(item.boost40)
+      else if (startsWith && !item.hasDot) results.push(item.boost25)
+      else if (startsWith) results.push(item.boost18)
+      else results.push(item.boost5)
+    }
+  }
 
-    let boost = 5
-    if (entry.label === query) boost = 45
-    else if (labelLower === lower) boost = 40
-    else if (startsWith && entry.category === 'local') boost = 30
-    else if (startsWith && !entry.label.includes('.')) boost = 25
-    else if (startsWith) boost = 18
-
-    results.push({
-      label: entry.label,
-      type: entry.type,
-      detail: entry.detail,
-      info: entry.documentation,
-      boost,
-    })
+  if (targetCache) {
+    if (targetCache.size >= MAX_STATIC_COMPLETION_CACHE) {
+      const oldestKey = targetCache.keys().next().value
+      if (oldestKey !== undefined) {
+        targetCache.delete(oldestKey)
+      }
+    }
+    targetCache.set(query, results)
   }
 
   return results
@@ -1206,8 +1453,8 @@ function mergeRemoteCompletions(
   prefix: string,
   localOptions: readonly Completion[],
   remoteItems: readonly LeanLspCompletionItem[],
-): Completion[] {
-  if (remoteItems.length === 0) return [...localOptions]
+): readonly Completion[] {
+  if (remoteItems.length === 0) return localOptions
   const dotIndex = prefix.lastIndexOf('.')
   const namespacePrefix = dotIndex !== -1 ? prefix.slice(0, dotIndex + 1) : ''
   const memberQuery =
@@ -1260,34 +1507,93 @@ function mergeRemoteCompletions(
   return Array.from(byLabel.values())
 }
 
-function collectSourcesForCompletion(context: CompletionContext): string[] {
-  const currentDoc = context.state.doc.toString()
+function collectLocalIndexedForCompletion(
+  context: CompletionContext,
+  prefix: string,
+): {
+  readonly indexed: readonly IndexedCatalogEntry[]
+  readonly cacheMap?: Map<string, readonly Completion[]>
+} {
+  if (prefix.charCodeAt(0) === 35) {
+    return { indexed: EMPTY_INDEXED_ENTRIES, cacheMap: staticCompletionCache }
+  }
+  const currentCache = getDocumentSymbolsForText(context.state.doc)
   const config = context.state.facet(leanLspConfigFacet)
-  const siblingCells = config?.cells?.() ?? []
-  const sources = [currentDoc]
+  const siblingCells = config?.cells?.()
+  if (!siblingCells || siblingCells.length === 0) {
+    return { indexed: currentCache.indexed, cacheMap: currentCache.completionCache }
+  }
+
+  const combined: IndexedCatalogEntry[] = [...currentCache.indexed]
+  const seen = new Set<string>(currentCache.byLabel.keys())
   for (const cell of siblingCells) {
+    if (cell.id === config?.cellId) continue
     const lang = cell.language.trim().toLowerCase()
-    if ((lang === 'lean' || lang === 'lean4') && cell.source !== currentDoc) {
-      sources.push(cell.source)
+    if (lang === 'lean' || lang === 'lean4') {
+      const siblingCache = getDocumentSymbolsForSource(cell.source)
+      for (const item of siblingCache.indexed) {
+        if (!seen.has(item.label)) {
+          seen.add(item.label)
+          combined.push(item)
+        }
+      }
     }
   }
-  return sources
+  return { indexed: combined }
+}
+
+function scanLeanPrefixBeforeColumn(
+  lineText: string,
+  col: number,
+):
+  | { readonly kind: 'backslash' }
+  | { readonly kind: 'ident'; readonly fromCol: number; readonly prefix: string }
+  | null {
+  if (col <= 0) return null
+  // Fast check for backslash token `\\[^\s\\]*` before `col`
+  for (let i = col - 1; i >= 0; i -= 1) {
+    const code = lineText.charCodeAt(i)
+    if (code <= 32) break
+    if (code === 92) {
+      return { kind: 'backslash' }
+    }
+  }
+
+  let start = col
+  while (start > 0 && isLeanTokenCharCode(lineText.charCodeAt(start - 1))) {
+    start -= 1
+  }
+  if (start === col) return null
+
+  const firstCode = lineText.charCodeAt(start)
+  if (firstCode === 35) {
+    if (start + 1 >= col || !isLeanIdentStartCharCode(lineText.charCodeAt(start + 1))) {
+      return null
+    }
+    return { kind: 'ident', fromCol: start, prefix: lineText.slice(start, col) }
+  }
+
+  while (start < col && !isLeanIdentStartCharCode(lineText.charCodeAt(start))) {
+    start += 1
+  }
+  if (start >= col) return null
+  return { kind: 'ident', fromCol: start, prefix: lineText.slice(start, col) }
 }
 
 export const leanCompletionSource: CompletionSource = context => {
-  const backslashMatch = context.matchBefore(/\\[^\s\\]*/)
-  if (backslashMatch) {
+  const line = context.state.doc.lineAt(context.pos)
+  const col = context.pos - line.from
+  const token = scanLeanPrefixBeforeColumn(line.text, col)
+  if (token?.kind === 'backslash') {
     return leanUnicodeCompletionSource(context)
   }
 
-  const identMatch = context.matchBefore(LEAN_IDENTIFIER_BEFORE_RE)
-  if (!identMatch && !context.explicit) return null
+  if (!token && !context.explicit) return null
 
-  const from = identMatch ? identMatch.from : context.pos
-  const prefix = identMatch ? identMatch.text : ''
-  const sources = collectSourcesForCompletion(context)
-  const localEntries = extractLeanDocumentSymbols(sources)
-  const localOptions = matchCatalogCandidates(prefix, [...localEntries, ...LEAN_STATIC_CATALOG])
+  const from = token ? line.from + token.fromCol : context.pos
+  const prefix = token ? token.prefix : ''
+  const { indexed, cacheMap } = collectLocalIndexedForCompletion(context, prefix)
+  const localOptions = matchIndexedCatalogCandidates(prefix, indexed, cacheMap)
 
   const session = getSharedLeanWebSocketSession()
   if (!session.isWarm()) {
@@ -1298,9 +1604,8 @@ export const leanCompletionSource: CompletionSource = context => {
     return { from, options: localOptions } satisfies CompletionResult
   }
 
-  const docText = sources[0] ?? ''
-  const line = context.state.doc.lineAt(context.pos)
-  const position = { line: line.number - 1, character: context.pos - line.from }
+  const docText = context.state.doc.toString()
+  const position = { line: line.number - 1, character: col }
 
   return session.complete(docText, position).then(remoteItems => {
     const merged = mergeRemoteCompletions(prefix, localOptions, remoteItems)
@@ -1313,26 +1618,29 @@ export function extractLeanIdentAtColumn(
   lineText: string,
   col: number,
 ): { readonly token: string; readonly startCol: number; readonly endCol: number } | undefined {
-  if (col < 0 || col > lineText.length || lineText.length === 0) return undefined
+  const len = lineText.length
+  if (col < 0 || col > len || len === 0) return undefined
   let probe = col
-  if (probe === lineText.length || !LEAN_TOKEN_CHAR_RE.test(lineText[probe] ?? '')) {
-    if (probe > 0 && LEAN_TOKEN_CHAR_RE.test(lineText[probe - 1] ?? '')) {
+  if (probe === len || !isLeanTokenCharCode(lineText.charCodeAt(probe))) {
+    if (probe > 0 && isLeanTokenCharCode(lineText.charCodeAt(probe - 1))) {
       probe -= 1
     } else {
       return undefined
     }
   }
   let start = probe
-  while (start > 0 && LEAN_TOKEN_CHAR_RE.test(lineText[start - 1] ?? '')) {
+  while (start > 0 && isLeanTokenCharCode(lineText.charCodeAt(start - 1))) {
     start -= 1
   }
   let end = probe + 1
-  while (end < lineText.length && LEAN_TOKEN_CHAR_RE.test(lineText[end] ?? '')) {
+  while (end < len && isLeanTokenCharCode(lineText.charCodeAt(end))) {
     end += 1
   }
-  const token = lineText.slice(start, end).replace(/\.+$/, '')
-  if (!token) return undefined
-  return { token, startCol: start, endCol: start + token.length }
+  while (end > start && lineText.charCodeAt(end - 1) === 46) {
+    end -= 1
+  }
+  if (end <= start) return undefined
+  return { token: lineText.slice(start, end), startCol: start, endCol: end }
 }
 
 export type LeanHoverSummary = {
@@ -1344,27 +1652,50 @@ export type LeanHoverSummary = {
   readonly goals?: readonly string[]
 }
 
+const offlineLineHoverCache = new Map<string, LeanHoverSummary | null>()
+const MAX_OFFLINE_HOVER_CACHE = 128
+
 export async function resolveLeanHoverAt(
   docText: string,
   lineNumber0: number,
   lineText: string,
   col: number,
 ): Promise<LeanHoverSummary | undefined> {
-  const symbolHover = getLeanAbbreviationIndex().hoverInfoForTextAt(lineText, col)
-  const unicodeHint = symbolHover ? symbolHover.markdown.replaceAll('`', '') : undefined
+  const session = getSharedLeanWebSocketSession()
+  const warm = session.isWarm()
+  const lineKey = !warm ? `${lineText}\0${col}` : ''
+  if (!warm) {
+    const cached = offlineLineHoverCache.get(lineKey)
+    if (cached !== undefined) {
+      if (isRemoteBrowser()) void session.warm()
+      return cached ?? undefined
+    }
+  }
 
+  const symbolHover = getLeanAbbreviationIndex().hoverInfoForTextAt(lineText, col)
   const ident = extractLeanIdentAtColumn(lineText, col)
-  const localCatalog = ident
-    ? (LEAN_CATALOG_BY_LABEL.get(ident.token) ??
-      extractLeanDocumentSymbols([docText]).find(entry => entry.label === ident.token))
-    : undefined
+  if (!symbolHover && !ident) {
+    if (!warm) {
+      if (offlineLineHoverCache.size >= MAX_OFFLINE_HOVER_CACHE) {
+        const oldest = offlineLineHoverCache.keys().next().value
+        if (oldest !== undefined) offlineLineHoverCache.delete(oldest)
+      }
+      offlineLineHoverCache.set(lineKey, null)
+    }
+    return undefined
+  }
+
+  const unicodeHint = symbolHover ? symbolHover.markdown.replaceAll('`', '') : undefined
+  const staticCatalog = ident ? LEAN_CATALOG_BY_LABEL.get(ident.token) : undefined
+  const localCatalog =
+    staticCatalog ??
+    (ident ? getDocumentSymbolsForSource(docText).byLabel.get(ident.token) : undefined)
 
   const signature = localCatalog ? `${localCatalog.label} : ${localCatalog.detail}` : undefined
   let documentation = localCatalog?.documentation
   let goals: readonly string[] | undefined
 
-  const session = getSharedLeanWebSocketSession()
-  if (session.isWarm()) {
+  if (warm) {
     const liveHover = await session.hover(docText, { line: lineNumber0, character: col })
     if (liveHover?.contents) {
       documentation = liveHover.contents
@@ -1391,7 +1722,7 @@ export async function resolveLeanHoverAt(
       ? symbolHover.toCol
       : Math.min(col + 1, lineText.length)
 
-  return {
+  const summary: LeanHoverSummary = {
     startCol,
     endCol,
     ...(unicodeHint ? { unicodeHint } : {}),
@@ -1399,6 +1730,16 @@ export async function resolveLeanHoverAt(
     ...(documentation ? { documentation } : {}),
     ...(goals ? { goals } : {}),
   }
+
+  if (!warm && (staticCatalog !== undefined || !ident)) {
+    if (offlineLineHoverCache.size >= MAX_OFFLINE_HOVER_CACHE) {
+      const oldest = offlineLineHoverCache.keys().next().value
+      if (oldest !== undefined) offlineLineHoverCache.delete(oldest)
+    }
+    offlineLineHoverCache.set(lineKey, summary)
+  }
+
+  return summary
 }
 
 export function renderLeanHoverHtml(summary: LeanHoverSummary): string {
@@ -1429,8 +1770,16 @@ export function leanHoverTooltipExtension(hoverTime = 220): Extension {
     async (view, pos): Promise<Tooltip | null> => {
       const line = view.state.doc.lineAt(pos)
       const col = pos - line.from
+      const lineText = line.text
+      if (
+        !getLeanAbbreviationIndex().hoverInfoForTextAt(lineText, col) &&
+        !extractLeanIdentAtColumn(lineText, col)
+      ) {
+        return null
+      }
+
       const docText = view.state.doc.toString()
-      const summary = await resolveLeanHoverAt(docText, line.number - 1, line.text, col)
+      const summary = await resolveLeanHoverAt(docText, line.number - 1, lineText, col)
       if (!summary) return null
 
       return {
