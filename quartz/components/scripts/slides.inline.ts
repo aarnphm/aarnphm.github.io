@@ -223,11 +223,11 @@ document.addEventListener('nav', () => {
   const plainClick = (e: MouseEvent) =>
     e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey
 
-  // announce: tell listeners such as mermaid the visible slide changed. A freshly
+  // announce: tell diagram listeners the visible slide changed. A freshly
   // mounted slide is announced as new content instead, so it initialises once.
   const update = (announce = true) => {
-    const activePopups = document.querySelectorAll('#mermaid-container.active')
-    activePopups.forEach(popup => popup.classList.remove('active'))
+    const activePopups = document.querySelectorAll<HTMLDialogElement>('dialog.pele-dialog[open]')
+    activePopups.forEach(popup => popup.close())
 
     slides.forEach((el, i) => {
       el.classList.toggle('active', i === idx)
@@ -298,7 +298,7 @@ document.addEventListener('nav', () => {
   }
 
   // Fragment text is fetched ahead for the neighbours but parsed into the deck only
-  // when shown, so scripts that measure, like mermaid, run on a visible slide.
+  // when shown, so diagram scripts measure a visible slide.
   const fragments = new Map<number, Promise<string>>()
   const fetchFragment = (i: number) => {
     let text = fragments.get(i)

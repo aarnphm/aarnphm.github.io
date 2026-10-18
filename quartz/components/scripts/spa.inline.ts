@@ -1,5 +1,5 @@
 import micromorph from 'micromorph'
-import { fetchCanonical } from '../../util/fetch-canonical'
+import { fetchCanonical, prefetchCanonical } from '../../util/fetch-canonical'
 import {
   FullSlug,
   RelativeURL,
@@ -982,6 +982,7 @@ function normalizeStreamPath(raw: string): { path: string; streamRoute: boolean 
 function transformHostInternalLinks(root: Document | Element) {
   if (typeof window === 'undefined') return
   const host = window.location.hostname
+  if (host !== STREAM_HOSTNAME && host !== TRIATHLON_HOSTNAME && host !== NOTES_HOSTNAME) return
 
   const anchors = root.querySelectorAll<HTMLAnchorElement>('a.internal')
   anchors.forEach(anchor => {
@@ -1110,7 +1111,6 @@ async function navigate(
   // morph body
   const update = () => {
     micromorph(document.body, html.body)
-    transformHostInternalLinks(document)
 
     // scroll into place and add history
     if (!isBack) {
@@ -1148,12 +1148,25 @@ document.addEventListener('nav', () => {
   transformHostInternalLinks(document)
   const controller = new AbortController()
   let warmingHome = false
-  const warmHome = (event: Event) => {
-    if (warmingHome || getFullSlug(window) === 'index' || !readTrailPreference()) return
+  let hoverPrefetchTimer = 0
+  const clearHoverPrefetch = () => {
+    if (hoverPrefetchTimer !== 0) {
+      window.clearTimeout(hoverPrefetchTimer)
+      hoverPrefetchTimer = 0
+    }
+  }
+  const warmRoute = (event: Event) => {
     const options = getOpts(event)
-    if (!options || !['/', '/index', '/index.html'].includes(options.url.pathname)) return
-    warmingHome = true
+    if (!options || isSamePage(options.url)) return
     const url = options.url
+    clearHoverPrefetch()
+    hoverPrefetchTimer = window.setTimeout(() => {
+      hoverPrefetchTimer = 0
+      prefetchCanonical(url)
+    }, 45)
+    if (warmingHome || getFullSlug(window) === 'index' || !readTrailPreference()) return
+    if (!['/', '/index', '/index.html'].includes(url.pathname)) return
+    warmingHome = true
     void fetchCanonical(url, { signal: controller.signal })
       .then(response => response.text())
       .then(contents => {
@@ -1165,9 +1178,29 @@ document.addEventListener('nav', () => {
         warmingHome = false
       })
   }
-  document.addEventListener('pointerover', warmHome, { signal: controller.signal })
-  document.addEventListener('focusin', warmHome, { signal: controller.signal })
-  window.addCleanup(() => controller.abort())
+  const onPointerDown = (event: PointerEvent) => {
+    if (event.button !== 0 || event.ctrlKey || event.metaKey || event.altKey || event.shiftKey) {
+      return
+    }
+    const options = getOpts(event)
+    if (!options || isSamePage(options.url)) return
+    clearHoverPrefetch()
+    prefetchCanonical(options.url)
+  }
+  document.addEventListener('pointerover', warmRoute, { signal: controller.signal, passive: true })
+  document.addEventListener('pointerout', clearHoverPrefetch, {
+    signal: controller.signal,
+    passive: true,
+  })
+  document.addEventListener('focusin', warmRoute, { signal: controller.signal })
+  document.addEventListener('pointerdown', onPointerDown as EventListener, {
+    signal: controller.signal,
+    passive: true,
+  })
+  window.addCleanup(() => {
+    clearHoverPrefetch()
+    controller.abort()
+  })
   window.addCleanup(() => stacked.release())
   queueMicrotask(() => stacked.restore(new URL(window.location.href)))
   const onContentMounted = (event: CustomEventMap['contentdecrypted']) => {

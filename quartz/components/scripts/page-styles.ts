@@ -34,12 +34,24 @@ function load(href: string): Promise<void> {
 
 export const pageStylesPending = () => styles.some(({ href }) => !loads.has(href))
 
+const RESOLVED_PROMISE = Promise.resolve()
+
 /** Links each page-scoped sheet that markup under `root` uses; resolves once they apply. */
 export function loadPageStyles(root: ParentNode): Promise<void> {
+  if (styles.length === 0 || loads.size === styles.length) return RESOLVED_PROMISE
+  if (
+    root instanceof Element &&
+    !root.hasAttribute('class') &&
+    (root.childElementCount === 0 || root.querySelector('[class]') === null)
+  ) {
+    return RESOLVED_PROMISE
+  }
   const pending = styles.filter(
     ({ href, selector }) =>
       !loads.has(href) &&
-      ((root instanceof Element && root.matches(selector)) || root.querySelector(selector)),
+      ((root instanceof Element && root.matches(selector)) ||
+        root.querySelector(selector) !== null),
   )
+  if (pending.length === 0) return RESOLVED_PROMISE
   return Promise.all(pending.map(({ href }) => load(href))).then(() => {})
 }

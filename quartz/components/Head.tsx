@@ -68,23 +68,44 @@ export default (() => {
     return (
       <head>
         <title>{title}</title>
-        <meta charSet="utf-8" />
+        <meta charSet="utf-8" data-persist="" />
         {preloadFonts.map(font => (
-          <link rel="preload" as="font" type={font.type} href={font.href} crossOrigin="anonymous" />
+          <link
+            rel="preload"
+            as="font"
+            type={font.type}
+            href={font.href}
+            crossOrigin="anonymous"
+            data-persist=""
+          />
         ))}
         {cfg.theme.cdnCaching && cfg.theme.fontOrigin === 'googleFonts' && (
           <>
-            <link rel="preconnect" href="https://fonts.googleapis.com" />
-            <link rel="preconnect" href="https://fonts.gstatic.com" />
-            <link rel="stylesheet" href={googleFontHref(cfg.theme)} />
+            <link rel="preconnect" href="https://fonts.googleapis.com" data-persist="" />
+            <link rel="preconnect" href="https://fonts.gstatic.com" data-persist="" />
+            <link rel="stylesheet" href={googleFontHref(cfg.theme)} data-persist="" />
             {cfg.theme.typography.title && (
-              <link rel="stylesheet" href={googleFontSubsetHref(cfg.theme, cfg.pageTitle)} />
+              <link
+                rel="stylesheet"
+                href={googleFontSubsetHref(cfg.theme, cfg.pageTitle)}
+                data-persist=""
+              />
             )}
           </>
         )}
-        <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="anonymous" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link
+          rel="preconnect"
+          href="https://cdnjs.cloudflare.com"
+          crossOrigin="anonymous"
+          data-persist=""
+        />
+        <link
+          rel="preconnect"
+          href="https://cdn.jsdelivr.net"
+          crossOrigin="anonymous"
+          data-persist=""
+        />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" data-persist="" />
 
         <meta name="og:site_name" content={cfg.pageTitle}></meta>
         <meta property="og:title" content={title} />

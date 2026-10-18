@@ -8,8 +8,6 @@
   "translucency": false,
   "showViewHeader": false,
   "enabledCssSnippets": [
-    "snippet",
-    "gallery",
     "plugin-ui"
   ],
   "baseFontSizeAction": true,

@@ -165,6 +165,10 @@ li.section-li {
 // below desktop the aside follows the list in the reading column; the folder prose,
 // count and tag filters stay reachable, only the permanent-notes grid is dropped
 @media all and ($mobile), all and ($tablet) {
+  .page-content:has(> .notes-list, > .folder-layout) {
+    align-content: start;
+  }
+
   .notes-evergreen {
     grid-column: var(--layout-reading-column);
     padding-left: 0;
