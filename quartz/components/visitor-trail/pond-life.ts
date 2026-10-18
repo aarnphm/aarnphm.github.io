@@ -36,8 +36,9 @@ const fishTones = {
   S: 'trail-river-fish-silver',
   F: 'trail-river-fish-flank',
   D: 'trail-river-fish-fin',
+  E: 'trail-animal-eye',
 }
-const fish = ['.SSS.D', 'FSSSSD', '.SSF..']
+const fish = ['.SSS..D', 'EFFFSDD', '.SSS..D']
 const ring = ['..WWWW..', '.W....W.', 'W......W', '.W....W.', '..WWWW..']
 const shade = ['..DDDD..', 'DDDDDDDD', '..DDDD..']
 
@@ -52,9 +53,9 @@ const heronTones = {
 const heronStand = [
   '.....KKAA....',
   '.....AAAEYYYY',
-  '.....WAA.....',
-  '....WAA......',
-  '....WA.......',
+  '.....AAW.....',
+  '....AAW......',
+  '....AW.......',
   '...AAA.......',
   '..AAAAAA.....',
   '.AAAAAAAA....',
@@ -107,7 +108,7 @@ function duck(
 }
 
 function jumper(point: Point, cycle: number, delay: number) {
-  return `<g class="trail-pond-fish" transform="${at(point.x, point.y)}" style="--pond-cycle:${cycle.toFixed(1)}s;--pond-delay:${delay.toFixed(1)}s"><g class="trail-pond-fish-ring" transform="translate(${-4 * cell} ${-2.5 * cell})">${pixels(ring, { W: 'trail-pond-ripple' }, cell)}</g><g class="trail-pond-fish-jump"><g transform="translate(${-3 * cell} ${-3 * cell})">${pixels(fish, fishTones, cell)}</g></g></g>`
+  return `<g class="trail-pond-fish" transform="${at(point.x, point.y)}" style="--pond-cycle:${cycle.toFixed(1)}s;--pond-delay:${delay.toFixed(1)}s"><g class="trail-pond-fish-ring" transform="translate(${-4 * cell} ${-2.5 * cell})">${pixels(ring, { W: 'trail-pond-ripple' }, cell)}</g><g class="trail-pond-fish-jump"><g transform="translate(${-3.5 * cell} ${-3 * cell})">${pixels(fish, fishTones, cell)}</g></g></g>`
 }
 
 function glider(point: Point, dx: number, dy: number, cycle: number, delay: number) {
