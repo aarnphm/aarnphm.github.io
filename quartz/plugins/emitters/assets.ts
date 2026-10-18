@@ -26,7 +26,11 @@ function pdfTargetKey(target: string): string | undefined {
   return slugifyFilePath(pathOnly as FilePath)
 }
 
-const pdfReferenceCache = new Map<FilePath, { signature: string; keys: string[] }>()
+declare global {
+  var __quartzPdfReferenceCache: Map<FilePath, { signature: string; keys: string[] }> | undefined
+}
+
+const pdfReferenceCache = (globalThis.__quartzPdfReferenceCache ??= new Map())
 let copiedReferencedPdfs: ReadonlySet<FilePath> = new Set()
 
 async function pdfReferenceKeys(ctx: BuildCtx, fp: FilePath): Promise<string[]> {
@@ -102,6 +106,7 @@ function shouldIgnoreAssetFile(
 
 async function contentAssetFilesFrom(ctx: BuildCtx, files: FilePath[]): Promise<FilePath[]> {
   const referencedPdfs = await referencedPdfFiles(ctx, files)
+  copiedReferencedPdfs = referencedPdfs
   return files.filter(fp => !shouldIgnoreAssetFile(ctx.argv, fp, referencedPdfs))
 }
 
@@ -155,11 +160,11 @@ export const Assets: QuartzEmitterPlugin = () => {
         emitOutputAsset(ctx, contentAssetClaim(argv, fp)),
       )
       logBuildSpan(argv, 'assets:copy', `${fps.length} files`, perf.elapsedMs())
-      copiedReferencedPdfs = await referencedPdfFiles(ctx, ctx.allFiles)
       for (const file of files) {
         yield file
       }
     },
+
     async *partialEmit(ctx, _content, _resources, changeEvents) {
       const changedSources = changeEvents
         .filter(changeEvent => isMarkdownReferenceSource(changeEvent.path))

@@ -18,7 +18,9 @@ const TIKZ_CACHE_DIR = path.join(QUARTZ, '.quartz-cache', 'tikz')
 const texPackages = { pgfplots: '', amsmath: 'intlimits', amssymb: '' }
 const tikzLibraries = 'arrows.meta,calc,positioning'
 const addToPreamble = '% comment'
-const tikzFailureCache = new Map<string, { message: string; expiresAt: number }>()
+import { releasedOnReload } from '../../util/module-caches'
+
+const tikzFailureCache = releasedOnReload(new Map<string, { message: string; expiresAt: number }>())
 
 const cmMathItalicGlyphs = new Map([
   ['£', 'Γ'],

@@ -15,7 +15,7 @@ import { createHtmlProcessor, createMdProcessor, mdastToHastRoot } from '../../p
 import '../../runtime/notebook/registry'
 import { backendFor } from '../../runtime/notebook/backend'
 import { ChangeEvent, QuartzEmitterPlugin } from '../../types/plugin'
-import { defaultIoConcurrency, mapConcurrent } from '../../util/async-pool'
+import { mapConcurrent } from '../../util/async-pool'
 import { BuildCtx, contentDataFor } from '../../util/ctx'
 import {
   ensureExtractedNotebookAssets,
@@ -67,6 +67,7 @@ export type NotebookPageCacheEntry = {
   blob: FilePath
   htmlBlobPath: FilePath
   extractedAssets: ExtractedAsset[]
+  data?: QuartzPluginData
 }
 type NotebookPageCacheOptions = {
   salt: string | undefined
@@ -104,6 +105,30 @@ function isExtractedAsset(value: unknown): value is ExtractedAsset {
   )
 }
 
+function compactNotebookPluginData(data: QuartzPluginData): QuartzPluginData {
+  return {
+    filePath: data.filePath,
+    relativePath: data.relativePath,
+    slug: data.slug,
+    frontmatter: data.frontmatter,
+    description: data.description,
+    links: data.links,
+    dates: data.dates,
+  }
+}
+
+function parseNotebookCachedData(value: unknown): QuartzPluginData | undefined {
+  if (!isRecord(value) || typeof value.slug !== 'string') return undefined
+  const dates = isRecord(value.dates)
+    ? {
+        created: new Date(String(value.dates.created)),
+        modified: new Date(String(value.dates.modified)),
+        published: new Date(String(value.dates.published)),
+      }
+    : undefined
+  return { ...(value as QuartzPluginData), ...(dates ? { dates } : {}) }
+}
+
 function parseNotebookPageCacheEntry(value: unknown): NotebookPageCacheEntry | undefined {
   if (!isRecord(value)) return undefined
   const fp = typeof value.fp === 'string' ? (value.fp as FilePath) : undefined
@@ -124,7 +149,17 @@ function parseNotebookPageCacheEntry(value: unknown): NotebookPageCacheEntry | u
   const extractedAssets = Array.isArray(value.extractedAssets)
     ? value.extractedAssets.filter(isExtractedAsset)
     : []
-  return { fp, slug, key, cacheKey: key, blob, htmlBlobPath: blob, extractedAssets }
+  const data = parseNotebookCachedData(value.data)
+  return {
+    fp,
+    slug,
+    key,
+    cacheKey: key,
+    blob,
+    htmlBlobPath: blob,
+    extractedAssets,
+    ...(data ? { data } : {}),
+  }
 }
 
 async function loadNotebookPageCacheFromDisk(): Promise<Map<FilePath, NotebookPageCacheEntry>> {
@@ -204,7 +239,10 @@ async function readNotebookPageBlob(
     if (!(await ensureExtractedNotebookAssets(ctx, extractedAssets))) {
       return undefined
     }
-    const file = new VFile({ path: src, value: blob.value })
+    delete blob.data.syntaxHighlightingCache
+    delete blob.data.htmlAst
+    entry.data ??= compactNotebookPluginData(blob.data)
+    const file = new VFile({ path: src, value: '' })
     file.data = blob.data
     return { fp, slug, content: [blob.tree, file] }
   } catch {
@@ -219,17 +257,14 @@ async function writeNotebookPageBlob(
   extractedAssets: ExtractedAsset[],
 ): Promise<void> {
   const [tree, file] = page.content
+  delete file.data.syntaxHighlightingCache
+  delete file.data.htmlAst
   const name = createHash('sha256').update(page.fp).digest('hex').slice(0, 24)
   const blob = joinSegments(notebookPageBlobDir, `${name}.bin`) as FilePath
   const meta = joinSegments(notebookPageBlobDir, `${name}.meta.json`) as FilePath
   try {
     await fs.mkdir(notebookPageBlobDir, { recursive: true })
-    const value: NotebookPageBlob = {
-      tree,
-      data: file.data,
-      value: String(file.value),
-      extractedAssets,
-    }
+    const value: NotebookPageBlob = { tree, data: file.data, value: '', extractedAssets }
     const entry: NotebookPageCacheEntry = {
       fp: page.fp,
       slug: page.slug,
@@ -238,6 +273,7 @@ async function writeNotebookPageBlob(
       blob,
       htmlBlobPath: blob,
       extractedAssets,
+      data: compactNotebookPluginData(file.data),
     }
     await Promise.all([
       fs.writeFile(blob, v8.serialize(value)),
@@ -249,6 +285,7 @@ async function writeNotebookPageBlob(
     console.warn(styleText('yellow', `[emit:NotebookViewer] page cache skipped ${page.fp}`), error)
   }
 }
+
 const notebookCacheSourcePaths: FilePath[] = [
   'quartz/plugins/emitters/notebook.ts' as FilePath,
   'quartz/processors/parse.ts' as FilePath,
@@ -674,6 +711,15 @@ async function emitNotebookPage(
   return write({ ctx, content: html, slug: page.slug, ext: '.html' })
 }
 
+type PreparedNotebookEmitItem = {
+  fp: FilePath
+  src: FilePath
+  slug: FullSlug
+  data: QuartzPluginData
+  cached?: NotebookPageCacheEntry
+  page?: NotebookPage
+}
+
 async function* emitNotebookPages(
   ctx: BuildCtx,
   content: ProcessedContent[],
@@ -702,24 +748,122 @@ async function* emitNotebookPages(
 
   const maxWorkers = Math.max(1, Math.min(resolveWorkerLimit(), fps.length))
   const localCtx = notebookContext(ctx, contextFps)
-  const { pages, cacheHits } = await parseNotebookPages(localCtx, fps, maxWorkers, opts, contextFps)
+  const salt = await notebookPageCacheSalt(localCtx)
+  const cacheOptions: NotebookPageCacheOptions = {
+    salt,
+    read: Boolean(salt && !localCtx.argv.force),
+    write: Boolean(salt),
+    entries: salt ? await notebookPageCacheEntries() : new Map<FilePath, NotebookPageCacheEntry>(),
+  }
+
+  let cacheHits = 0
+  let cacheWrites = 0
+  let cacheMetadataDirty = false
+  let processorCache: NotebookProcessors | undefined
+  const processors = () => {
+    processorCache ??= { md: createMdProcessor(localCtx), html: createHtmlProcessor(localCtx) }
+    return processorCache
+  }
+
+  const preparedResults = await mapConcurrent(
+    fps,
+    maxWorkers,
+    async (fp): Promise<PreparedNotebookEmitItem | undefined> => {
+      try {
+        const src = joinSegments(localCtx.argv.directory, fp) as FilePath
+        const slug = slugifyFilePath(fp, true)
+        const importableModules = importableNotebookModules(fp, contextFps)
+        const sourceSignature = await notebookSourceSignature(src)
+        const cacheKey = cacheOptions.salt
+          ? notebookPageCacheKey(sourceSignature, opts, cacheOptions.salt, importableModules)
+          : undefined
+
+        if (cacheKey && cacheOptions.read) {
+          const cached = cacheOptions.entries.get(fp)
+          if (cached?.key === cacheKey) {
+            if (
+              cached.data &&
+              (await ensureExtractedNotebookAssets(localCtx, cached.extractedAssets))
+            ) {
+              cacheHits += 1
+              return { fp, src, slug, data: cached.data, cached }
+            }
+            const page = await readNotebookPageBlob(localCtx, cached, fp, src, slug)
+            if (page && cached.data) {
+              cacheHits += 1
+              cacheMetadataDirty = true
+              ;(page.content as unknown[])[0] = undefined
+              return { fp, src, slug, data: cached.data, cached }
+            }
+          }
+        }
+
+        const result = await notebookProcessedContent(
+          localCtx,
+          fp,
+          opts,
+          contextFps,
+          { ...cacheOptions, read: false },
+          processors,
+        )
+        cacheWrites += 1
+        const cached = cacheOptions.entries.get(fp)
+        const data = cached?.data ?? compactNotebookPluginData(result.page.content[1].data)
+        if (cached) {
+          ;(result.page.content as unknown[])[0] = undefined
+          return { fp, src, slug, data, cached }
+        }
+        return { fp, src, slug, data, page: result.page }
+      } catch (error) {
+        console.error(styleText('red', `\n[emit:NotebookViewer] Error processing ${fp}:`), error)
+        return undefined
+      }
+    },
+  )
+
+  if (cacheOptions.write && (cacheWrites > 0 || cacheMetadataDirty)) {
+    await writeNotebookPageCacheIndex(cacheOptions.entries)
+  }
+
+  const prepared = preparedResults.filter(
+    (item): item is PreparedNotebookEmitItem => item !== undefined,
+  )
   logBuildSpan(
     ctx.argv,
     'notebook:parse',
-    `${pages.length} pages, ${cacheHits} cache hits`,
+    `${prepared.length} pages, ${cacheHits} cache hits`,
     perf.elapsedMs(),
   )
-  const allFiles = [...contentDataFor(content), ...pages.map(page => page.content[1].data)]
+  const allFiles = [...contentDataFor(content), ...prepared.map(item => item.data)]
   perf.addEvent('render')
-  const files = await mapConcurrent(pages, defaultIoConcurrency, async page => {
+  const files = await mapConcurrent(prepared, maxWorkers, async item => {
     try {
-      return await emitNotebookPage(localCtx, page, allFiles, resources)
+      let page = item.page
+      if (!page && item.cached) {
+        page = await readNotebookPageBlob(localCtx, item.cached, item.fp, item.src, item.slug)
+      }
+      if (!page) {
+        const fallback = await notebookProcessedContent(
+          localCtx,
+          item.fp,
+          opts,
+          contextFps,
+          { ...cacheOptions, read: false },
+          processors,
+        )
+        page = fallback.page
+      }
+      const out = await emitNotebookPage(localCtx, page, allFiles, resources)
+      ;(page.content as unknown[])[0] = undefined
+      delete page.content[1].data.htmlAst
+      item.page = undefined
+      return out
     } catch (error) {
-      console.error(styleText('red', `\n[emit:NotebookViewer] Error processing ${page.fp}:`), error)
+      console.error(styleText('red', `\n[emit:NotebookViewer] Error processing ${item.fp}:`), error)
       return undefined
     }
   })
-  logBuildSpan(ctx.argv, 'notebook:render', `${pages.length} pages`, perf.elapsedMs('render'))
+  logBuildSpan(ctx.argv, 'notebook:render', `${prepared.length} pages`, perf.elapsedMs('render'))
 
   for (const file of files) {
     if (file) yield file
