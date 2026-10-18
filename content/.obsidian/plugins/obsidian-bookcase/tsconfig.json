@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "module": "ESNext",
+    "target": "ES2022",
+    "moduleResolution": "node",
+    "strict": true,
+    "isolatedModules": true,
+    "lib": ["DOM", "ES2022"]
+  },
+  "include": [
+    "main.ts",
+    "src/**/*.ts",
+    "../../../../quartz/util/base/bookcase/geometry.ts",
+    "../../../../quartz/util/base/bookcase/styles.ts"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "obsidian-bookcase",
+  "name": "Garden Bookcase",
+  "version": "1.0.0",
+  "minAppVersion": "1.10.0",
+  "description": "An isometric bookcase view for Bases.",
+  "author": "aarnphm",
+  "authorUrl": "https://aarnphm.xyz",
+  "isDesktopOnly": false
+}
