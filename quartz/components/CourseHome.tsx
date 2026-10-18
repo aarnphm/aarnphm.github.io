@@ -13,6 +13,7 @@ import {
   courseLinks,
   courseResources,
   courseView,
+  fileBySlug,
   formatCount,
   formatDuration,
   psetNumber,
@@ -446,7 +447,7 @@ export default (() => {
       { title: 'all resources', slug: `courses/${view.dir}/resources/index` as FullSlug },
     ]
     // the authored study pages: the dated log and the statement index
-    const statementsPage = allFiles.find(file => file.slug === statementsSlug(view.dir))
+    const statementsPage = fileBySlug(statementsSlug(view.dir), allFiles)
     const railStudy: CourseLink[] = [
       ...(view.log ? [{ title: 'study log', slug: view.log.slug as FullSlug, count: read }] : []),
       ...(statementsPage
