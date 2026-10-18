@@ -2,11 +2,11 @@
 date: '2026-01-09'
 description: spots around this rock we call Earth
 id: index
-modified: 2026-06-05 15:08:03 GMT-04:00
+modified: 2026-10-17 18:47:05 GMT-04:00
+seealso:
+  - '[[places to go.base|base view]]'
 tags:
   - evergreen
   - meta
-title: places to go
+title: lieux à visiter
 ---
-
-see also: [[places to go.base|base view]]
