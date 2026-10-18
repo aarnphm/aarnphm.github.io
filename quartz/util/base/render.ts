@@ -12,7 +12,15 @@ import {
   isAbsoluteURL,
 } from '../../util/path'
 import { extractWikilinksWithPositions, resolveWikilinkTarget } from '../../util/wikilinks'
-import { descriptionToPlainText } from '../description'
+import {
+  BOOKCASE_DEFAULTS,
+  BOOKCASE_LIMITS,
+  clampOption,
+  fallbackSpine,
+  packShelves,
+  spineInk,
+} from './bookcase/geometry'
+import { bookcaseScene, type SceneBook } from './bookcase/scene'
 import { isPublicBaseFile } from './browser-data'
 import {
   BaseExpressionDiagnostic,
@@ -34,6 +42,7 @@ import {
   PropertyConfig,
   ViewSummaryConfig,
   parseViewSummaries,
+  BOOKCASE_PROPERTY_DEFAULTS,
 } from './types'
 
 type RenderElement = ReturnType<typeof h>
@@ -103,12 +112,43 @@ function fallbackNameFromSlug(slug: FullSlug): string {
   return base.replace(/-/g, ' ')
 }
 
+const fileLookupCache = new WeakMap<
+  QuartzPluginData[],
+  { bySimple: Map<string, QuartzPluginData>; byExact: Map<string, QuartzPluginData> }
+>()
+
+function getFileLookup(allFiles: QuartzPluginData[]): {
+  bySimple: Map<string, QuartzPluginData>
+  byExact: Map<string, QuartzPluginData>
+} {
+  let index = fileLookupCache.get(allFiles)
+  if (!index) {
+    const bySimple = new Map<string, QuartzPluginData>()
+    const byExact = new Map<string, QuartzPluginData>()
+    for (const entry of allFiles) {
+      if (!entry.slug) continue
+      const exact = String(entry.slug)
+      if (!byExact.has(exact)) {
+        byExact.set(exact, entry)
+      }
+      const simple = simplifySlug(entry.slug as FullSlug)
+      if (!bySimple.has(simple)) {
+        bySimple.set(simple, entry)
+      }
+    }
+    index = { bySimple, byExact }
+    fileLookupCache.set(allFiles, index)
+  }
+  return index
+}
+
 function findFileBySlug(
   allFiles: QuartzPluginData[],
   targetSlug: FullSlug,
 ): QuartzPluginData | undefined {
+  const index = getFileLookup(allFiles)
   const targetSimple = simplifySlug(targetSlug)
-  return allFiles.find(entry => entry.slug && simplifySlug(entry.slug as FullSlug) === targetSimple)
+  return index.bySimple.get(targetSimple) ?? index.byExact.get(targetSlug)
 }
 
 function renderInternalLinkNode(
@@ -327,6 +367,19 @@ type EvalContextFactory = (file: QuartzPluginData) => EvalContext
 
 type PropertyExprGetter = (property: string) => ProgramIR | null
 
+const unknownPropertyCache = new WeakMap<Map<string, Value>, Map<string, unknown>>()
+const diagnosticSourceCache = new Map<string, string>()
+const sortCollator = new Intl.Collator()
+
+function getDiagnosticSource(property: string): string {
+  let src = diagnosticSourceCache.get(property)
+  if (src === undefined) {
+    src = buildPropertyExpressionSource(property) ?? property
+    diagnosticSourceCache.set(property, src)
+  }
+  return src
+}
+
 function resolveValueWithFormulas(
   file: QuartzPluginData,
   property: string,
@@ -337,15 +390,31 @@ function resolveValueWithFormulas(
   if (!expr) return undefined
   const ctx = getContext(file)
   const cacheKey = property.trim()
-  if (cacheKey.length > 0 && ctx.propertyCache?.has(cacheKey)) {
-    return valueToUnknown(ctx.propertyCache.get(cacheKey)!)
+  if (cacheKey.length > 0 && ctx.propertyCache) {
+    let unknownMap = unknownPropertyCache.get(ctx.propertyCache)
+    if (!unknownMap) {
+      unknownMap = new Map()
+      unknownPropertyCache.set(ctx.propertyCache, unknownMap)
+    }
+    if (unknownMap.has(cacheKey)) {
+      return unknownMap.get(cacheKey)
+    }
+    if (ctx.propertyCache.has(cacheKey)) {
+      const converted = valueToUnknown(ctx.propertyCache.get(cacheKey)!)
+      unknownMap.set(cacheKey, converted)
+      return converted
+    }
+    ctx.diagnosticContext = `property.${property}`
+    ctx.diagnosticSource = getDiagnosticSource(property)
+    const value = evaluateExpression(expr, ctx)
+    ctx.propertyCache.set(cacheKey, value)
+    const converted = valueToUnknown(value)
+    unknownMap.set(cacheKey, converted)
+    return converted
   }
   ctx.diagnosticContext = `property.${property}`
-  ctx.diagnosticSource = buildPropertyExpressionSource(property) ?? property
+  ctx.diagnosticSource = getDiagnosticSource(property)
   const value = evaluateExpression(expr, ctx)
-  if (cacheKey.length > 0 && ctx.propertyCache) {
-    ctx.propertyCache.set(cacheKey, value)
-  }
   return valueToUnknown(value)
 }
 
@@ -358,10 +427,6 @@ function buildTableCell(
   getPropertyExpr: PropertyExprGetter,
 ): RenderElement {
   const slug = (file.slug || '') as FullSlug
-  const fallbackSlugSegment = file.slug?.split('/').pop() || ''
-  const fallbackTitle =
-    getFileBaseName(file.filePath as string | undefined) ||
-    fallbackSlugSegment.replace(/\.[^/.]+$/, '').replace(/-/g, ' ')
 
   const linkProperty =
     column === 'file.name'
@@ -372,8 +437,15 @@ function buildTableCell(
 
   if (linkProperty) {
     const rawValue = resolveValueWithFormulas(file, linkProperty, getContext, getPropertyExpr)
-    const resolvedValue =
-      typeof rawValue === 'string' && rawValue.length > 0 ? rawValue : fallbackTitle
+    let resolvedValue: string
+    if (typeof rawValue === 'string' && rawValue.length > 0) {
+      resolvedValue = rawValue
+    } else {
+      const fallbackSlugSegment = file.slug?.split('/').pop() || ''
+      resolvedValue =
+        getFileBaseName(file.filePath as string | undefined) ||
+        fallbackSlugSegment.replace(/\.[^/.]+$/, '').replace(/-/g, ' ')
+    }
     return wrapTableCellContent(buildFileLinkNode(slug, currentSlug, resolvedValue))
   }
 
@@ -458,7 +530,7 @@ function applySorting(
   getContext: EvalContextFactory,
   getPropertyExpr: PropertyExprGetter,
 ): QuartzPluginData[] {
-  if (sortConfig.length === 0) return files
+  if (sortConfig.length === 0 || files.length <= 1) return files
 
   const normalizeSortValue = (val: unknown): string | number | null | undefined => {
     if (isIconToken(val)) {
@@ -482,13 +554,38 @@ function applySorting(
     return String(val)
   }
 
-  return [...files].sort((a, b) => {
-    for (const { property, direction } of sortConfig) {
-      const aRaw = resolveValueWithFormulas(a, property, getContext, getPropertyExpr)
-      const bRaw = resolveValueWithFormulas(b, property, getContext, getPropertyExpr)
+  type SortKey = string | number | null | undefined
+  const numRules = sortConfig.length
+  const firstProp = sortConfig[0].property
 
-      const aVal = normalizeSortValue(aRaw)
-      const bVal = normalizeSortValue(bRaw)
+  const decorated = files.map((file, index) => {
+    const keys: SortKey[] = [
+      normalizeSortValue(resolveValueWithFormulas(file, firstProp, getContext, getPropertyExpr)),
+    ]
+    const computed: boolean[] = [true]
+    return { file, index, keys, computed }
+  })
+
+  const getKey = (entry: (typeof decorated)[number], ruleIdx: number): SortKey => {
+    if (!entry.computed[ruleIdx]) {
+      entry.keys[ruleIdx] = normalizeSortValue(
+        resolveValueWithFormulas(
+          entry.file,
+          sortConfig[ruleIdx].property,
+          getContext,
+          getPropertyExpr,
+        ),
+      )
+      entry.computed[ruleIdx] = true
+    }
+    return entry.keys[ruleIdx]
+  }
+
+  decorated.sort((a, b) => {
+    for (let i = 0; i < numRules; i++) {
+      const direction = sortConfig[i].direction
+      const aVal = getKey(a, i)
+      const bVal = getKey(b, i)
 
       let comparison = 0
       if (aVal === undefined || aVal === null || aVal === '') {
@@ -500,14 +597,14 @@ function applySorting(
       } else if (bVal === undefined || bVal === null || bVal === '') {
         comparison = -1
       } else if (typeof aVal === 'string' && typeof bVal === 'string') {
-        comparison = aVal.localeCompare(bVal)
+        comparison = sortCollator.compare(aVal, bVal)
       } else {
         const aNumber = typeof aVal === 'number' ? aVal : Number(aVal)
         const bNumber = typeof bVal === 'number' ? bVal : Number(bVal)
         if (Number.isFinite(aNumber) && Number.isFinite(bNumber)) {
           comparison = aNumber > bNumber ? 1 : aNumber < bNumber ? -1 : 0
         } else {
-          comparison = String(aVal).localeCompare(String(bVal))
+          comparison = sortCollator.compare(String(aVal), String(bVal))
         }
       }
 
@@ -515,8 +612,10 @@ function applySorting(
         return direction === 'ASC' ? comparison : -comparison
       }
     }
-    return 0
+    return a.index - b.index
   })
+
+  return decorated.map(entry => entry.file)
 }
 
 function groupValue(value: unknown): BaseGroupValue {
@@ -949,7 +1048,10 @@ function buildCalendar(
   return h('div.base-calendar-container', groupElements)
 }
 
-function resolveCardImageUrl(imageValue: unknown, currentSlug: FullSlug): string | undefined {
+function resolveCardImage(
+  imageValue: unknown,
+  currentSlug: FullSlug,
+): { url: string; slug?: FullSlug } | undefined {
   const source =
     typeof imageValue === 'string'
       ? imageValue
@@ -962,21 +1064,21 @@ function resolveCardImageUrl(imageValue: unknown, currentSlug: FullSlug): string
   const trimmed = source.trim()
   if (!trimmed) return undefined
 
-  const toRelativeFromSlug = (target: string): string => {
-    if (isAbsoluteURL(target)) return target
-    const imgSlug = slugifyFilePath(target as FilePath)
-    return resolveRelative(currentSlug, imgSlug)
-  }
-
   const wl = trimmed.match(/^\[\[(.+?)\]\]$/)
   if (wl) {
     const inner = wl[1]
     const { target } = splitTargetAndAlias(inner)
     const { slug } = normalizeTargetSlug(target, currentSlug)
-    return resolveRelative(currentSlug, slug)
+    return { url: resolveRelative(currentSlug, slug), slug }
   }
 
-  return toRelativeFromSlug(trimmed)
+  if (isAbsoluteURL(trimmed)) return { url: trimmed }
+  const slug = slugifyFilePath(trimmed as FilePath)
+  return { url: resolveRelative(currentSlug, slug), slug }
+}
+
+function resolveCardImageUrl(imageValue: unknown, currentSlug: FullSlug): string | undefined {
+  return resolveCardImage(imageValue, currentSlug)?.url
 }
 
 function buildCards(
@@ -1130,6 +1232,287 @@ function buildCards(
   return h('div.base-card-grid', varStyle ? { style: varStyle } : {}, cards)
 }
 
+const mapLatexCommandText: Record<string, string> = {
+  cdot: '*',
+  ge: '>=',
+  geq: '>=',
+  infty: 'infinity',
+  le: '<=',
+  leq: '<=',
+  left: '',
+  right: '',
+  mathcal: '',
+  mathbb: '',
+  mathbf: '',
+  mathit: '',
+  mathrm: '',
+  operatorname: '',
+  text: '',
+  times: 'x',
+  top: '^T',
+}
+
+function latexToPlainText(math: string): string {
+  let text = math.trim()
+  let previous = ''
+  while (text !== previous) {
+    previous = text
+    text = text.replace(
+      /\\(mathcal|mathbb|mathbf|mathit|mathrm|operatorname|text)\s*\{([^{}]*)\}/g,
+      '$2',
+    )
+    text = text.replace(/\\frac\s*\{([^{}]*)\}\s*\{([^{}]*)\}/g, '($1)/($2)')
+    text = text.replace(/\\sqrt\s*\{([^{}]*)\}/g, 'sqrt($1)')
+  }
+  return text
+    .replace(/\\([A-Za-z]+)/g, (_match, command: string) => mapLatexCommandText[command] ?? command)
+    .replace(/\\([{}])/g, '$1')
+    .replace(/[{}]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+function plainTextDescription(description: string | undefined, currentSlug: FullSlug): string {
+  if (!description) return ''
+  let text = description
+  if (text.includes('[[')) {
+    const ranges = extractWikilinksWithPositions(text)
+    for (let i = ranges.length - 1; i >= 0; i--) {
+      const { wikilink: link, start, end } = ranges[i]
+      const resolved = resolveWikilinkTarget(link, currentSlug)
+      const display = link.alias || link.anchorText || link.target || resolved?.slug || ''
+      text = text.slice(0, start) + display + text.slice(end)
+    }
+  }
+  if (text.includes('[')) {
+    text = text.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+  }
+  if (text.includes('$')) {
+    text = text
+      .replace(/\$\$([\s\S]*?)\$\$/g, (_m, math: string) => latexToPlainText(math))
+      .replace(/(?<!\$)\$([^$\n]+?)\$(?!\$)/g, (_m, math: string) => latexToPlainText(math))
+  }
+  if (text.includes('<')) {
+    text = text.replace(/<((?:https?:|mailto:)[^>]+)>/gi, '$1').replace(/<[^>]+>/g, '')
+  }
+  return text.replace(/\s+/g, ' ').trim()
+}
+
+const SPINE_HEX = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i
+
+function expandHex(hex: string): string {
+  return hex.length === 4 ? `#${Array.from(hex.slice(1), c => c + c).join('')}` : hex
+}
+
+// Spines carry the surname, as a shelf does; the index keeps the full credit.
+function spineSurname(author: string): string {
+  const first = author.split(/,|&| and /)[0].trim()
+  return first.split(/\s+/).pop() ?? first
+}
+
+function buildBookcase(
+  files: QuartzPluginData[],
+  view: BaseView,
+  currentSlug: FullSlug,
+  allFiles: QuartzPluginData[],
+  getContext: EvalContextFactory,
+  getPropertyExpr: PropertyExprGetter,
+  properties?: Record<string, PropertyConfig>,
+): RenderElement {
+  const bookHeight = clampOption(
+    view.bookHeight,
+    BOOKCASE_DEFAULTS.bookHeight,
+    BOOKCASE_LIMITS.bookHeight,
+  )
+  const shelfWidth = clampOption(
+    view.shelfWidth,
+    BOOKCASE_DEFAULTS.shelfWidth,
+    BOOKCASE_LIMITS.shelfWidth,
+  )
+  const scrollStep = clampOption(
+    view.scrollStep,
+    BOOKCASE_DEFAULTS.scrollStep,
+    BOOKCASE_LIMITS.scrollStep,
+  )
+  const [imageField, titleField, authorField, colorField] = BOOKCASE_PROPERTY_DEFAULTS.map(
+    ([key, fallback]) => {
+      const value = view[key]
+      return typeof value === 'string' ? value : fallback
+    },
+  )
+  const pageContent = view.pageContent !== false
+  // `author` in `order` and `note.author` in `spineAuthor` name the same property.
+  const bare = (field: string | undefined) => field?.replace(/^note\./, '')
+  const shown = new Set([titleField, authorField, imageField].map(bare))
+  const order = (view.order ?? []).filter(field => !shown.has(bare(field)))
+  const resolve = (file: QuartzPluginData, field: string | undefined) =>
+    field ? resolveValueWithFormulas(file, field, getContext, getPropertyExpr) : undefined
+
+  const grouped: [string | null, QuartzPluginData[]][] = view.groupBy
+    ? [...groupFiles(files, view.groupBy, getContext, getPropertyExpr, view.groupOrder)].map(
+        ([value, members]) => [value === null ? 'none' : groupLabel(value), members],
+      )
+    : [[null, files]]
+  const groups = grouped.filter(([, members]) => members.length > 0)
+
+  type Entry = SceneBook & { file: QuartzPluginData; fullTitle: string; byline: string }
+  const toEntry = (file: QuartzPluginData): Entry => {
+    const slug = (file.slug || '') as FullSlug
+    const fullTitle =
+      listValueToPlainText(resolve(file, titleField)) ??
+      getFileDisplayName(file) ??
+      fallbackNameFromSlug(slug)
+    const author = listValueToPlainText(resolve(file, authorField))
+    const cover = resolveCardImage(resolve(file, imageField), currentSlug)
+    const explicit = listValueToPlainText(resolve(file, colorField))
+    const path = String(file.relativePath ?? file.filePath ?? slug)
+    const spine = explicit && SPINE_HEX.test(explicit) ? expandHex(explicit) : fallbackSpine(path)
+    const lead = order[0] ? listValueToPlainText(resolve(file, order[0])) : undefined
+    return {
+      file,
+      slug,
+      fullTitle,
+      title: fullTitle.split(':')[0].trim(),
+      author: author ? spineSurname(author) : undefined,
+      byline: [author, lead].filter(Boolean).join(' · '),
+      spine,
+      ink: spineInk(spine),
+      cover: cover?.url,
+      coverSlug: cover?.slug,
+      sampleSpine: !(explicit && SPINE_HEX.test(explicit)),
+    }
+  }
+
+  const entryGroups = groups.map(([label, members]) => ({ label, entries: members.map(toEntry) }))
+  const layout = packShelves(
+    entryGroups.map(({ label, entries }) => ({
+      label,
+      books: entries.map(entry => ({
+        path: String(entry.file.relativePath ?? entry.file.filePath ?? entry.slug),
+        item: entry,
+      })),
+    })),
+    { bookHeight, shelfWidth },
+  )
+  const total = layout.books.length
+
+  const detailOf = (entry: Entry): RenderElement[] => {
+    const rows: RenderElement[] = []
+    for (const field of order) {
+      const value = resolve(entry.file, field)
+      if (!hasRenderableValue(value)) continue
+      const rendered = renderPropertyValueNodes(value, currentSlug, allFiles)
+      if (rendered.length === 0) continue
+      rows.push(
+        h('div.bookcase-prop', [
+          h('dt', getPropertyDisplayName(field, properties)),
+          h('dd', rendered),
+        ]),
+      )
+    }
+    const nodes: RenderElement[] = []
+    if (rows.length > 0) nodes.push(h('dl.bookcase-props', rows))
+    const description = entry.file.frontmatter?.description
+    if (pageContent && typeof description === 'string' && description.trim()) {
+      nodes.push(
+        h('p.bookcase-description', plainTextDescription(description, entry.slug as FullSlug)),
+      )
+    }
+    return nodes
+  }
+
+  let index = 0
+  const indexGroups = entryGroups.map(({ label, entries }) => {
+    const rows = entries.map(entry => {
+      const href = resolveRelative(currentSlug, entry.slug as FullSlug)
+      return h(
+        'li.bookcase-entry',
+        {
+          'data-base-slug': entry.slug,
+          'data-book-index': index++,
+          'data-cover': entry.cover,
+          'data-bookcase-cover': entry.coverSlug,
+        },
+        [
+          h('a.bookcase-entry-link', { href, 'data-slug': entry.slug }, [
+            h('span.bookcase-entry-title', entry.fullTitle),
+            entry.byline ? h('span.bookcase-entry-byline', entry.byline) : '',
+          ]),
+          h('div.bookcase-entry-detail', detailOf(entry)),
+        ],
+      )
+    })
+    const list = h('ul.base-list.bookcase-index-list', rows)
+    return label === null
+      ? list
+      : h('div.base-list-group.bookcase-index-group', [
+          h('h3.base-list-group-header', [
+            h('span', label),
+            h('span.bookcase-index-count', String(entries.length)),
+          ]),
+          list,
+        ])
+  })
+
+  const first = entryGroups[0]?.entries[0]
+  const page = first
+    ? [
+        h('div.bookcase-page-cover', [
+          h('img', {
+            src: first.cover,
+            alt: '',
+            hidden: first.cover ? undefined : true,
+            decoding: 'async',
+            'data-bookcase-cover': first.coverSlug,
+          }),
+        ]),
+        h('div.bookcase-page-body', [
+          h(
+            'a.bookcase-page-title',
+            { href: resolveRelative(currentSlug, first.slug as FullSlug), 'data-slug': first.slug },
+            first.fullTitle,
+          ),
+          h('p.bookcase-page-byline', first.byline),
+          h('div.bookcase-page-detail', detailOf(first)),
+        ]),
+      ]
+    : [h('p.bookcase-empty', 'No books in this view.')]
+
+  const pad = (n: number) => String(n).padStart(String(total).length, '0')
+  return h(
+    'div.bookcase',
+    { style: `--bookcase-step: ${scrollStep}px;`, 'data-scroll-step': scrollStep },
+    [
+      h('div.bookcase-stage', [
+        h('div.bookcase-plate', [
+          h('span.bookcase-corner', { 'data-corner': 'fig' }, `${view.name}`),
+          h(
+            'span.bookcase-corner',
+            { 'data-corner': 'title', 'data-bookcase-shelf': '' },
+            entryGroups[0]?.label ?? '',
+          ),
+          h('div.bookcase-viewport', [
+            h('div.bookcase-world', [
+              bookcaseScene(
+                layout,
+                `${view.name}: ${total} books on ${layout.shelves.length} shelves`,
+              ),
+            ]),
+          ]),
+          h('span.bookcase-corner', { 'data-corner': 'hint' }, 'scroll to pull a book'),
+          h(
+            'span.bookcase-corner',
+            { 'data-corner': 'readout', 'data-bookcase-readout': '' },
+            total > 0 ? `${pad(1)} / ${total}` : '–',
+          ),
+        ]),
+        h('div.bookcase-page', page),
+      ]),
+      h('div.bookcase-index', indexGroups),
+    ],
+  )
+}
+
 function buildMap(
   files: QuartzPluginData[],
   view: BaseView,
@@ -1207,8 +1590,10 @@ function buildMap(
       color: color ? String(color) : undefined,
       description:
         typeof file.frontmatter?.description === 'string'
-          ? descriptionToPlainText(file.frontmatter.description, slug)
-          : undefined,
+          ? plainTextDescription(file.frontmatter.description, slug)
+          : typeof file.description === 'string'
+            ? file.description
+            : undefined,
       address: typeof file.frontmatter?.address === 'string' ? file.frontmatter.address : undefined,
       categories: Array.isArray(file.frontmatter?.type)
         ? file.frontmatter.type.filter((value): value is string => typeof value === 'string')
@@ -1288,6 +1673,17 @@ export type RenderedBaseView = {
 
 export type BaseMetadata = { baseSlug: FullSlug; currentView: string; allViews: BaseViewMeta[] }
 
+const publicFilesCache = new WeakMap<QuartzPluginData[], QuartzPluginData[]>()
+
+function getPublicBaseFiles(allFiles: QuartzPluginData[]): QuartzPluginData[] {
+  let filtered = publicFilesCache.get(allFiles)
+  if (!filtered) {
+    filtered = allFiles.filter(isPublicBaseFile)
+    publicFilesCache.set(allFiles, filtered)
+  }
+  return filtered
+}
+
 export function renderBaseViewsForFile(
   baseFileData: QuartzPluginData,
   allFiles: QuartzPluginData[],
@@ -1297,7 +1693,7 @@ export function renderBaseViewsForFile(
   if (!config || !baseFileData.slug) {
     return { views: [], allViews: [] }
   }
-  allFiles = allFiles.filter(isPublicBaseFile)
+  allFiles = getPublicBaseFiles(allFiles)
 
   const baseSlug = baseFileData.slug as FullSlug
   const expressions = baseFileData.basesExpressions
@@ -1310,31 +1706,7 @@ export function renderBaseViewsForFile(
   const runtimeDiagnosticSet = new Set<string>()
   const propertyExpressions = expressions?.propertyExpressions ?? {}
 
-  const fileIndex = new Map<string, QuartzPluginData>()
-  for (const entry of allFiles) {
-    if (!entry.slug) continue
-    fileIndex.set(simplifySlug(entry.slug as FullSlug), entry)
-  }
-
-  const backlinkSets = new Map<string, Set<string>>()
-  for (const entry of allFiles) {
-    if (!entry.slug) continue
-    const sourceSlug = simplifySlug(entry.slug as FullSlug)
-    const links = Array.isArray(entry.links) ? entry.links.map(link => String(link)) : []
-    for (const link of links) {
-      if (!link) continue
-      let set = backlinkSets.get(link)
-      if (!set) {
-        set = new Set()
-        backlinkSets.set(link, set)
-      }
-      set.add(sourceSlug)
-    }
-  }
-  const backlinksIndex = new Map<string, string[]>()
-  for (const [key, set] of backlinkSets) {
-    backlinksIndex.set(key, [...set])
-  }
+  const fileIndex = getFileLookup(allFiles).bySimple
 
   const getPropertyExpr: PropertyExprGetter = property => {
     const key = property.trim()
@@ -1343,33 +1715,38 @@ export function renderBaseViewsForFile(
   }
 
   const baseThisFile = thisFile ?? baseFileData
+  const evalContexts = new Map<QuartzPluginData, EvalContext>()
 
   const getEvalContext: EvalContextFactory = file => {
-    const slug = file.slug ? String(file.slug) : file.filePath ? String(file.filePath) : ''
-    let cache = formulaCaches.get(slug)
-    if (!cache) {
-      cache = new Map()
-      formulaCaches.set(slug, cache)
+    let ctx = evalContexts.get(file)
+    if (!ctx) {
+      const slug = file.slug ? String(file.slug) : file.filePath ? String(file.filePath) : ''
+      let cache = formulaCaches.get(slug)
+      if (!cache) {
+        cache = new Map()
+        formulaCaches.set(slug, cache)
+      }
+      let propertyCache = propertyCaches.get(slug)
+      if (!propertyCache) {
+        propertyCache = new Map()
+        propertyCaches.set(slug, propertyCache)
+      }
+      ctx = {
+        file,
+        thisFile: baseThisFile,
+        allFiles,
+        fileIndex,
+        formulas: formulaExpressions,
+        formulaSources: config.formulas,
+        formulaCache: cache,
+        formulaStack: new Set(),
+        propertyCache,
+        diagnostics: runtimeDiagnostics,
+        diagnosticSet: runtimeDiagnosticSet,
+      }
+      evalContexts.set(file, ctx)
     }
-    let propertyCache = propertyCaches.get(slug)
-    if (!propertyCache) {
-      propertyCache = new Map()
-      propertyCaches.set(slug, propertyCache)
-    }
-    return {
-      file,
-      thisFile: baseThisFile,
-      allFiles,
-      fileIndex,
-      backlinksIndex,
-      formulas: formulaExpressions,
-      formulaSources: config.formulas,
-      formulaCache: cache,
-      formulaStack: new Set(),
-      propertyCache,
-      diagnostics: runtimeDiagnostics,
-      diagnosticSet: runtimeDiagnosticSet,
-    }
+    return ctx
   }
 
   const allViews = config.views.map((view, idx) => ({
@@ -1459,6 +1836,17 @@ export function renderBaseViewsForFile(
       case 'board':
       case 'kanban':
         viewNode = buildCards(
+          limitedFiles,
+          view,
+          slug,
+          allFiles,
+          getEvalContext,
+          getPropertyExpr,
+          config.properties,
+        )
+        break
+      case 'bookcase':
+        viewNode = buildBookcase(
           limitedFiles,
           view,
           slug,

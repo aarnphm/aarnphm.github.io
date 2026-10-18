@@ -67,61 +67,121 @@ const queryHighlightStyle = HighlightStyle.define(
   })),
 )
 
-export function createBaseQueryCatalog(
-  files: QuartzPluginData[],
-  config: BaseFile,
-): BaseQueryCatalog {
-  const properties = new Set([
+interface CorpusCatalogSummary {
+  noteProps: Set<string>
+  values: Map<string, string[]>
+  tags: string[]
+  folders: string[]
+}
+
+const corpusCatalogCache = new WeakMap<QuartzPluginData[], CorpusCatalogSummary>()
+
+function getCorpusCatalogSummary(files: QuartzPluginData[]): CorpusCatalogSummary {
+  const cached = corpusCatalogCache.get(files)
+  if (cached) return cached
+
+  const noteProps = new Set([
     ...fileProperties,
     ...fileProperties.map(property => `this.${property}`),
   ])
   const values = new Map<string, Set<string>>()
   const tags = new Set<string>()
   const folders = new Set<string>()
-  const collect = (property: string, value: unknown): void => {
-    properties.add(property)
+  const seenDirs = new Set<string>()
+  const collect = (property: string, value: unknown, depth: number): void => {
+    noteProps.add(property)
     if (Array.isArray(value)) {
-      for (const item of value) collect(property, item)
+      for (let i = 0; i < value.length; i++) collect(property, value[i], depth)
       return
     }
     if (isRecord(value) && !(value instanceof Date)) {
-      if (property.split('.').length < 4) {
-        for (const [key, item] of Object.entries(value)) collect(`${property}.${key}`, item)
+      if (depth < 3) {
+        for (const key in value) {
+          if (Object.prototype.hasOwnProperty.call(value, key)) {
+            collect(`${property}.${key}`, value[key], depth + 1)
+          }
+        }
       }
       return
     }
+    let observed = values.get(property)
+    if (observed && observed.size >= 80) return
     const scalar = value instanceof Date ? value.toISOString().slice(0, 10) : value
     if (typeof scalar !== 'string' && typeof scalar !== 'number' && typeof scalar !== 'boolean')
       return
-    const text = String(scalar)
+    const text = typeof scalar === 'string' ? scalar : String(scalar)
     if (text.length === 0 || text.length > 100 || text.includes('\n')) return
-    const observed = values.get(property) ?? new Set<string>()
-    if (observed.size < 80) observed.add(text)
-    values.set(property, observed)
+    if (!observed) {
+      observed = new Set<string>()
+      values.set(property, observed)
+    }
+    observed.add(text)
   }
 
-  for (const file of files) {
-    for (const [key, value] of Object.entries(file.frontmatter ?? {})) collect(`note.${key}`, value)
-    // hasTag("a") also matches a/b, so offer every parent of a nested tag.
-    for (const tag of file.frontmatter?.tags ?? []) {
-      const parts = String(tag).replace(/^#/, '').split('/')
-      for (let index = 1; index <= parts.length; index++) tags.add(parts.slice(0, index).join('/'))
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i]
+    const fm = file.frontmatter as Record<string, unknown> | undefined
+    if (fm) {
+      for (const key in fm) {
+        if (Object.prototype.hasOwnProperty.call(fm, key)) {
+          collect(`note.${key}`, fm[key], 1)
+        }
+      }
+      // hasTag("a") also matches a/b, so offer every parent of a nested tag.
+      const fmTags = file.frontmatter?.tags
+      if (Array.isArray(fmTags)) {
+        for (let t = 0; t < fmTags.length; t++) {
+          const rawTag = String(fmTags[t])
+          const cleanTag = rawTag.startsWith('#') ? rawTag.slice(1) : rawTag
+          if (!cleanTag.includes('/')) {
+            tags.add(cleanTag)
+          } else {
+            const parts = cleanTag.split('/')
+            for (let index = 1; index <= parts.length; index++)
+              tags.add(parts.slice(0, index).join('/'))
+          }
+        }
+      }
     }
     const path = String(file.filePath ?? file.slug ?? '')
-    const segments = path.split('/')
-    segments.pop()
-    for (let index = 1; index <= segments.length; index++)
-      folders.add(segments.slice(0, index).join('/'))
+    const lastSlash = path.lastIndexOf('/')
+    if (lastSlash > 0) {
+      const dir = path.slice(0, lastSlash)
+      if (!seenDirs.has(dir)) {
+        seenDirs.add(dir)
+        const segments = dir.split('/')
+        for (let index = 1; index <= segments.length; index++) {
+          folders.add(segments.slice(0, index).join('/'))
+        }
+      }
+    }
   }
+
+  const summary: CorpusCatalogSummary = {
+    noteProps,
+    values: new Map([...values].map(([key, entries]) => [key, [...entries].sort()])),
+    tags: [...tags].sort(),
+    folders: [...folders].filter(Boolean).sort(),
+  }
+  corpusCatalogCache.set(files, summary)
+  return summary
+}
+
+export function createBaseQueryCatalog(
+  files: QuartzPluginData[],
+  config: BaseFile,
+): BaseQueryCatalog {
+  const summary = getCorpusCatalogSummary(files)
+  const properties = new Set(summary.noteProps)
   for (const key of Object.keys(config.properties ?? {})) {
     properties.add(/^(?:note|file|formula)\./.test(key) ? key : `note.${key}`)
   }
   for (const key of Object.keys(config.formulas ?? {})) properties.add(`formula.${key}`)
   return {
     properties: [...properties].sort(),
-    values: new Map([...values].map(([key, entries]) => [key, [...entries].sort()])),
-    tags: [...tags].sort(),
-    folders: [...folders].filter(Boolean).sort(),
+    values: summary.values,
+    tags: summary.tags,
+    folders: summary.folders,
   }
 }
 
@@ -230,6 +290,7 @@ function completions(catalog: BaseQueryCatalog) {
 
 export interface BaseQueryEditor {
   value(): string
+  setValue(source: string): void
   destroy(): void
 }
 
@@ -241,6 +302,7 @@ export function createBaseQueryEditor(options: {
   onApply: () => void
   onClose: () => void
 }): BaseQueryEditor {
+  let syncing = false
   const view = new EditorView({
     parent: options.parent,
     state: EditorState.create({
@@ -275,10 +337,23 @@ export function createBaseQueryEditor(options: {
         ),
         keymap.of([...completionKeymap, ...defaultKeymap, ...historyKeymap]),
         EditorView.updateListener.of(update => {
-          if (update.docChanged) options.onChange()
+          if (update.docChanged && !syncing) options.onChange()
         }),
       ],
     }),
   })
-  return { value: () => view.state.doc.toString(), destroy: () => view.destroy() }
+  return {
+    value: () => view.state.doc.toString(),
+    setValue: (nextSource: string) => {
+      const current = view.state.doc.toString()
+      if (current === nextSource) return
+      syncing = true
+      try {
+        view.dispatch({ changes: { from: 0, to: current.length, insert: nextSource } })
+      } finally {
+        syncing = false
+      }
+    },
+    destroy: () => view.destroy(),
+  }
 }

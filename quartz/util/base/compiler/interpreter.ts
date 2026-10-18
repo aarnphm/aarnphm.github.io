@@ -601,6 +601,45 @@ const literalToValue = (expr: Literal): Value => {
   return makeNull()
 }
 
+type FrontmatterValueCache = { full?: ObjectValue; props: Map<string, Value> }
+
+const frontmatterValueCache = new WeakMap<Record<string, unknown>, FrontmatterValueCache>()
+
+const getFrontmatterCacheEntry = (frontmatter: Record<string, unknown>): FrontmatterValueCache => {
+  let entry = frontmatterValueCache.get(frontmatter)
+  if (!entry) {
+    entry = { props: new Map() }
+    frontmatterValueCache.set(frontmatter, entry)
+  }
+  return entry
+}
+
+const getFrontmatterPropValue = (
+  frontmatter: Record<string, unknown> | undefined,
+  prop: string,
+): Value => {
+  if (!frontmatter || !isRecord(frontmatter)) return makeNull()
+  const entry = getFrontmatterCacheEntry(frontmatter)
+  const cached = entry.props.get(prop)
+  if (cached !== undefined) return cached
+  const converted = toValue(frontmatter[prop])
+  entry.props.set(prop, converted)
+  return converted
+}
+
+const getFrontmatterObjectValue = (frontmatter: Record<string, unknown> | undefined): Value => {
+  if (!frontmatter || !isRecord(frontmatter)) return makeNull()
+  const entry = getFrontmatterCacheEntry(frontmatter)
+  if (entry.full) return entry.full
+  const obj: Record<string, Value> = {}
+  for (const key of Object.keys(frontmatter)) {
+    obj[key] = getFrontmatterPropValue(frontmatter, key)
+  }
+  const full = makeObject(obj)
+  entry.full = full
+  return full
+}
+
 const evaluateProgram = (program: ProgramIR, ctx: EvalContext): Value => {
   const stack: Value[] = []
   const instructions = program.instructions
@@ -619,9 +658,47 @@ const evaluateProgram = (program: ProgramIR, ctx: EvalContext): Value => {
       case 'const':
         stack.push(literalToValue(instr.literal))
         break
-      case 'ident':
+      case 'ident': {
+        if (
+          instr.name === 'note' &&
+          !(ctx.locals && 'note' in ctx.locals) &&
+          instructions[ip + 1]?.op === 'member'
+        ) {
+          const memberInstr = instructions[ip + 1] as { op: 'member'; property: string }
+          stack.push(
+            getFrontmatterPropValue(
+              ctx.file.frontmatter as Record<string, unknown> | undefined,
+              memberInstr.property,
+            ),
+          )
+          ip += 2
+          continue
+        }
+        if (
+          instr.name === 'note' &&
+          !(ctx.locals && 'note' in ctx.locals) &&
+          instructions[ip + 1]?.op === 'const' &&
+          (instructions[ip + 1] as { op: 'const'; literal: Literal }).literal.kind === 'string' &&
+          instructions[ip + 2]?.op === 'index'
+        ) {
+          const key = (
+            (instructions[ip + 1] as { op: 'const'; literal: Literal }).literal as {
+              kind: 'string'
+              value: string
+            }
+          ).value
+          stack.push(
+            getFrontmatterPropValue(
+              ctx.file.frontmatter as Record<string, unknown> | undefined,
+              key,
+            ),
+          )
+          ip += 3
+          continue
+        }
         stack.push(resolveIdentifier(instr.name, ctx))
         break
+      }
       case 'load_formula':
         stack.push(resolveFormulaProperty(instr.name, ctx))
         break
@@ -636,6 +713,21 @@ const evaluateProgram = (program: ProgramIR, ctx: EvalContext): Value => {
       }
       case 'member': {
         const objectValue = popValue()
+        if (
+          instr.property === 'properties' &&
+          isFileValue(objectValue) &&
+          instructions[ip + 1]?.op === 'member'
+        ) {
+          const nextMember = instructions[ip + 1] as { op: 'member'; property: string }
+          stack.push(
+            getFrontmatterPropValue(
+              objectValue.value.frontmatter as Record<string, unknown> | undefined,
+              nextMember.property,
+            ),
+          )
+          ip += 2
+          continue
+        }
         stack.push(accessProperty(objectValue, instr.property, ctx))
         break
       }
@@ -752,8 +844,7 @@ const resolveIdentifier = (name: string, ctx: EvalContext): Value => {
   }
   if (name === 'file') return makeFile(ctx.file)
   if (name === 'note') {
-    const fm = ctx.file.frontmatter
-    return toValue(fm)
+    return getFrontmatterObjectValue(ctx.file.frontmatter as Record<string, unknown> | undefined)
   }
   if (name === 'values' && ctx.values) {
     return makeList(ctx.values)
@@ -764,8 +855,7 @@ const resolveIdentifier = (name: string, ctx: EvalContext): Value => {
   if (name === 'formula') {
     return makeObject({})
   }
-  const raw: unknown = ctx.file.frontmatter ? ctx.file.frontmatter[name] : undefined
-  return toValue(raw)
+  return getFrontmatterPropValue(ctx.file.frontmatter as Record<string, unknown> | undefined, name)
 }
 
 const applyUnary = (operator: '!' | '-', value: Value): Value => {
@@ -1459,9 +1549,11 @@ const evalFileMethod = (
   if (method === 'hasLink') {
     const arg = args[0] ?? makeNull()
     const targetSlug = resolveLinkSlugFromValue(arg, ctx)
-    if (!targetSlug) return makeBoolean(false)
-    const links = Array.isArray(file.links) ? file.links.map(link => String(link)) : []
-    return makeBoolean(links.includes(targetSlug))
+    if (!targetSlug || !Array.isArray(file.links)) return makeBoolean(false)
+    for (let i = 0; i < file.links.length; i++) {
+      if (String(file.links[i]) === targetSlug) return makeBoolean(true)
+    }
+    return makeBoolean(false)
   }
   return makeNull()
 }
@@ -1513,6 +1605,36 @@ const vaultPath = (file: QuartzPluginData): string => {
     if (typeof path === 'string' && path.length > 0) return path.replace(/^content\//, '')
   }
   return file.slug ? `${String(file.slug)}.md` : ''
+}
+
+const backlinksIndexCache = new WeakMap<QuartzPluginData[], Map<string, string[]>>()
+
+const getBacklinksIndex = (allFiles: QuartzPluginData[]): Map<string, string[]> => {
+  let index = backlinksIndexCache.get(allFiles)
+  if (!index) {
+    const backlinkSets = new Map<string, Set<string>>()
+    for (const entry of allFiles) {
+      if (!entry.slug) continue
+      const sourceSlug = simplifySlug(entry.slug as FullSlug)
+      const links = Array.isArray(entry.links) ? entry.links : []
+      for (const rawLink of links) {
+        const link = String(rawLink)
+        if (!link) continue
+        let set = backlinkSets.get(link)
+        if (!set) {
+          set = new Set()
+          backlinkSets.set(link, set)
+        }
+        set.add(sourceSlug)
+      }
+    }
+    index = new Map<string, string[]>()
+    for (const [key, set] of backlinkSets) {
+      index.set(key, [...set])
+    }
+    backlinksIndexCache.set(allFiles, index)
+  }
+  return index
 }
 
 const resolveFileProperty = (file: QuartzPluginData, property: string, ctx: EvalContext): Value => {
@@ -1570,15 +1692,8 @@ const resolveFileProperty = (file: QuartzPluginData, property: string, ctx: Eval
   if (property === 'backlinks' || property === 'inlinks') {
     const slug = file.slug ? String(file.slug) : ''
     const key = simplifySlug(slug as FullSlug)
-    const backlinks =
-      ctx.backlinksIndex?.get(key) ??
-      ctx.allFiles
-        .filter(entry => {
-          const links = Array.isArray(entry.links) ? entry.links.map(link => String(link)) : []
-          return key.length > 0 && links.includes(key)
-        })
-        .map(entry => (entry.slug ? simplifySlug(entry.slug as FullSlug) : ''))
-        .filter(entry => entry.length > 0)
+    const index = ctx.backlinksIndex ?? getBacklinksIndex(ctx.allFiles)
+    const backlinks = index.get(key) ?? []
     return makeList(backlinks.map(link => makeLink(String(link))))
   }
   if (property === 'embeds') {
@@ -1586,14 +1701,13 @@ const resolveFileProperty = (file: QuartzPluginData, property: string, ctx: Eval
     return makeList(embeds.map(entry => makeString(String(entry))))
   }
   if (property === 'properties') {
-    return toValue(file.frontmatter)
+    return getFrontmatterObjectValue(file.frontmatter as Record<string, unknown> | undefined)
   }
   if (property === 'link') {
     const slug = file.slug ? String(file.slug) : ''
     return makeLink(slug)
   }
-  const raw: unknown = file.frontmatter ? file.frontmatter[property] : undefined
-  return toValue(raw)
+  return getFrontmatterPropValue(file.frontmatter as Record<string, unknown> | undefined, property)
 }
 
 const accessProperty = (value: Value, property: string, ctx: EvalContext): Value => {
@@ -1641,15 +1755,14 @@ const resolveFileSlug = (file: QuartzPluginData): string | undefined => {
 
 const normalizeLinkText = (value: string): string => value.trim()
 
-const resolveLinkSlugFromText = (raw: string, ctx: EvalContext): string | undefined => {
-  const trimmed = raw.trim()
-  if (!trimmed) return undefined
+const LINK_SLUG_CACHE_MAX = 4096
+const linkSlugCache = new Map<string, string | null>()
+
+const computeLinkSlugFromTrimmed = (
+  trimmed: string,
+  currentSlug: string | undefined,
+): string | undefined => {
   if (/^[a-z][a-z0-9+.-]*:/.test(trimmed)) return undefined
-  const currentSlug = ctx.file.slug
-    ? String(ctx.file.slug)
-    : ctx.thisFile?.slug
-      ? String(ctx.thisFile.slug)
-      : undefined
   const parsed = parseWikilink(trimmed)
   if (parsed) {
     if (/^[a-z][a-z0-9+.-]*:/.test(parsed.target)) return undefined
@@ -1681,6 +1794,36 @@ const resolveLinkSlugFromText = (raw: string, ctx: EvalContext): string | undefi
   if (!normalized) return undefined
   const slug = slugifyFilePath(normalized as FilePath)
   return simplifySlug(slug)
+}
+
+const resolveLinkSlugFromText = (raw: string, ctx: EvalContext): string | undefined => {
+  const trimmed = raw.trim()
+  if (!trimmed) return undefined
+  const currentSlug = ctx.file.slug
+    ? String(ctx.file.slug)
+    : ctx.thisFile?.slug
+      ? String(ctx.thisFile.slug)
+      : undefined
+  const needsCurrentSlug =
+    trimmed.startsWith('#') ||
+    trimmed.startsWith('[[#') ||
+    trimmed.startsWith('![[#') ||
+    trimmed === '[[]]' ||
+    trimmed === '![[]]'
+  const cacheKey = needsCurrentSlug ? `${currentSlug ?? ''}\0${trimmed}` : trimmed
+  const cached = linkSlugCache.get(cacheKey)
+  if (cached !== undefined) {
+    return cached ?? undefined
+  }
+  const result = computeLinkSlugFromTrimmed(trimmed, currentSlug)
+  if (linkSlugCache.size >= LINK_SLUG_CACHE_MAX) {
+    const oldestKey = linkSlugCache.keys().next().value
+    if (oldestKey !== undefined) {
+      linkSlugCache.delete(oldestKey)
+    }
+  }
+  linkSlugCache.set(cacheKey, result ?? null)
+  return result
 }
 
 const resolveLinkSlugFromValue = (value: Value, ctx: EvalContext): string | undefined => {

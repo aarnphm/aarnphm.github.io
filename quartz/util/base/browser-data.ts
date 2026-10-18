@@ -42,8 +42,16 @@ const sensitiveKeys = new Set([
   'cookie',
 ])
 
-const isSensitiveKey = (key: string): boolean =>
-  sensitiveKeys.has(key.replace(/[-_]/g, '').toLowerCase())
+const sensitiveKeyCache = new Map<string, boolean>()
+
+const isSensitiveKey = (key: string): boolean => {
+  let cached = sensitiveKeyCache.get(key)
+  if (cached === undefined) {
+    cached = sensitiveKeys.has(key.replace(/[-_]/g, '').toLowerCase())
+    sensitiveKeyCache.set(key, cached)
+  }
+  return cached
+}
 
 export const isPublicBaseFile = (file: QuartzPluginData): boolean =>
   !file.frontmatter?.draft &&
@@ -174,7 +182,12 @@ const strings = (value: unknown): value is string[] =>
   Array.isArray(value) && value.every(entry => typeof entry === 'string')
 
 const validDate = (value: unknown): value is string =>
-  typeof value === 'string' && Number.isFinite(new Date(value).getTime())
+  typeof value === 'string' && Number.isFinite(Date.parse(value))
+
+const parsedDates = new WeakMap<
+  NonNullable<BrowserBaseRecord['dates']>,
+  NonNullable<QuartzPluginData['dates']>
+>()
 
 function readRecord(value: unknown): BrowserBaseRecord | undefined {
   if (
@@ -196,9 +209,18 @@ function readRecord(value: unknown): BrowserBaseRecord | undefined {
   if (rawDates !== undefined) {
     if (
       !isRecord(rawDates) ||
-      !validDate(rawDates.created) ||
-      !validDate(rawDates.modified) ||
-      !validDate(rawDates.published)
+      typeof rawDates.created !== 'string' ||
+      typeof rawDates.modified !== 'string' ||
+      typeof rawDates.published !== 'string'
+    )
+      return undefined
+    const created = new Date(rawDates.created)
+    const modified = new Date(rawDates.modified)
+    const published = new Date(rawDates.published)
+    if (
+      !Number.isFinite(created.getTime()) ||
+      !Number.isFinite(modified.getTime()) ||
+      !Number.isFinite(published.getTime())
     )
       return undefined
     dates = {
@@ -206,14 +228,13 @@ function readRecord(value: unknown): BrowserBaseRecord | undefined {
       modified: rawDates.modified,
       published: rawDates.published,
     }
+    parsedDates.set(dates, { created, modified, published })
   }
-  if (
-    value.frontmatter.draft ||
-    value.frontmatter.private ||
-    value.frontmatter.protected ||
-    Object.keys(value.frontmatter).some(isSensitiveKey)
-  )
+  if (value.frontmatter.draft || value.frontmatter.private || value.frontmatter.protected)
     return undefined
+  for (const key in value.frontmatter) {
+    if (isSensitiveKey(key)) return undefined
+  }
   return {
     slug: value.slug,
     filePath: value.filePath,
@@ -253,25 +274,40 @@ export function hydrateBaseQueryRecord(record: BrowserBaseRecord): QuartzPluginD
   const slug = record.slug
   const filePath = record.filePath
   if (!isFullSlug(slug) || !isFilePath(filePath)) throw new Error('Invalid base record path')
-  const frontmatter: QuartzPluginData['frontmatter'] = { title: slug, pageLayout: 'default' }
-  const revived = reviveValue(
-    record.frontmatter,
-    [],
-    new Set(record.datePaths.map(path => JSON.stringify(path))),
-  )
-  if (isRecord(revived)) Object.assign(frontmatter, revived)
+  let frontmatter: QuartzPluginData['frontmatter']
+  if (record.datePaths.length === 0) {
+    frontmatter = {
+      title: slug,
+      pageLayout: 'default',
+      ...record.frontmatter,
+    } as QuartzPluginData['frontmatter']
+  } else {
+    frontmatter = { title: slug, pageLayout: 'default' }
+    const revived = reviveValue(
+      record.frontmatter,
+      [],
+      new Set(record.datePaths.map(path => JSON.stringify(path))),
+    )
+    if (isRecord(revived)) Object.assign(frontmatter, revived)
+  }
+  let dates: QuartzPluginData['dates']
+  if (record.dates) {
+    dates = parsedDates.get(record.dates)
+    if (!dates) {
+      dates = {
+        created: new Date(record.dates.created),
+        modified: new Date(record.dates.modified),
+        published: new Date(record.dates.published),
+      }
+      parsedDates.set(record.dates, dates)
+    }
+  }
   return {
     slug,
     filePath,
     relativePath: filePath,
     frontmatter,
-    dates: record.dates
-      ? {
-          created: new Date(record.dates.created),
-          modified: new Date(record.dates.modified),
-          published: new Date(record.dates.published),
-        }
-      : undefined,
+    dates,
     links: record.links.filter(isSimpleSlug),
     embeds: record.embeds,
     size: record.size,

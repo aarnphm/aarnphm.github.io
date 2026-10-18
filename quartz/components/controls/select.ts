@@ -80,42 +80,80 @@ export const buildSelect = <T>(options: SelectOptions<T>): Select<T> => {
   menu.hidden = true
   if (options.floating) menu.setAttribute('popover', 'manual')
 
-  const items: { button: HTMLButtonElement; option: SelectOption<T> }[] = []
-  const addOption = (parent: HTMLElement, option: SelectOption<T>): void => {
-    const button = document.createElement('button')
-    button.type = 'button'
-    button.className = 'g-select-option'
-    button.setAttribute('role', 'option')
-    button.append(span('g-select-check', '✓'), span('g-select-label', option.label))
-    button.firstElementChild?.setAttribute('aria-hidden', 'true')
-    items.push({ button, option })
-    parent.append(button)
-  }
-  for (const group of options.groups) {
-    if (!group.label) {
-      for (const option of group.options) addOption(menu, option)
-      continue
+  const flatOptions: SelectOption<T>[] =
+    options.groups.length === 1
+      ? options.groups[0].options
+      : options.groups.flatMap(group => group.options)
+  const items: { button: HTMLButtonElement; option: SelectOption<T>; lowerLabel: string }[] = []
+  let selectedIndex = -1
+  let focusedIndex = -1
+  let menuMaterialized = false
+
+  const ensureMenuMaterialized = (): void => {
+    if (menuMaterialized) return
+    menuMaterialized = true
+    const fragment = document.createDocumentFragment()
+    const addOption = (parent: ParentNode, option: SelectOption<T>): void => {
+      const idx = items.length
+      const isSelected = idx === selectedIndex
+      const button = document.createElement('button')
+      button.type = 'button'
+      button.className = 'g-select-option'
+      button.dataset.selectIndex = String(idx)
+      button.setAttribute('role', 'option')
+      button.setAttribute('aria-selected', isSelected ? 'true' : 'false')
+      button.tabIndex = isSelected ? 0 : -1
+      const check = span('g-select-check', '✓')
+      check.setAttribute('aria-hidden', 'true')
+      button.append(check, span('g-select-label', option.label))
+      items.push({ button, option, lowerLabel: option.label.toLocaleLowerCase() })
+      parent.append(button)
     }
-    const node = document.createElement('div')
-    node.className = 'g-select-group'
-    node.setAttribute('role', 'group')
-    node.setAttribute('aria-label', group.label)
-    const heading = span('g-select-heading', group.label)
-    heading.setAttribute('aria-hidden', 'true')
-    node.append(heading)
-    for (const option of group.options) addOption(node, option)
-    menu.append(node)
+    for (const group of options.groups) {
+      if (!group.label) {
+        for (const option of group.options) addOption(fragment, option)
+        continue
+      }
+      const node = document.createElement('div')
+      node.className = 'g-select-group'
+      node.setAttribute('role', 'group')
+      node.setAttribute('aria-label', group.label)
+      const heading = span('g-select-heading', group.label)
+      heading.setAttribute('aria-hidden', 'true')
+      node.append(heading)
+      for (const option of group.options) addOption(node, option)
+      fragment.append(node)
+    }
+    focusedIndex = selectedIndex
+    menu.append(fragment)
   }
+
   root.append(trigger, menu)
 
   const setSelected = (selected: T): void => {
-    const chosen = items.find(item => item.option.value === selected) ?? items[0]
-    if (!chosen) return
-    value.textContent = chosen.option.label
-    trigger.setAttribute('aria-label', `${options.label}: ${chosen.option.label}`)
-    for (const item of items) {
-      item.button.setAttribute('aria-selected', String(item === chosen))
-      item.button.tabIndex = item === chosen ? 0 : -1
+    if (flatOptions.length === 0) return
+    let nextIndex = flatOptions.findIndex(option => option.value === selected)
+    if (nextIndex === -1) nextIndex = 0
+    const chosen = flatOptions[nextIndex]
+    const prevSelected = selectedIndex
+    selectedIndex = nextIndex
+    value.textContent = chosen.label
+    const currentLabel = menu.getAttribute('aria-label') || options.label
+    trigger.setAttribute('aria-label', `${currentLabel}: ${chosen.label}`)
+    if (items.length > 0) {
+      if (prevSelected >= 0 && prevSelected !== nextIndex && items[prevSelected]) {
+        items[prevSelected].button.setAttribute('aria-selected', 'false')
+        items[prevSelected].button.tabIndex = -1
+      }
+      if (focusedIndex >= 0 && focusedIndex !== nextIndex && items[focusedIndex]) {
+        items[focusedIndex].button.tabIndex = -1
+      }
+      const nextItem = items[nextIndex]
+      if (nextItem) {
+        nextItem.button.setAttribute('aria-selected', 'true')
+        nextItem.button.tabIndex = 0
+      }
+      focusedIndex = nextIndex
     }
   }
   setSelected(options.selected)
@@ -132,11 +170,18 @@ export const buildSelect = <T>(options: SelectOptions<T>): Select<T> => {
   const focusItem = (index: number): void => {
     const target = items[index]
     if (!target) return
-    for (const item of items) item.button.tabIndex = item === target ? 0 : -1
+    if (focusedIndex !== index) {
+      if (focusedIndex >= 0 && items[focusedIndex]) {
+        items[focusedIndex].button.tabIndex = -1
+      }
+      target.button.tabIndex = 0
+      focusedIndex = index
+    }
     target.button.focus({ preventScroll: true })
     target.button.scrollIntoView({ block: 'nearest' })
   }
   const open = (): void => {
+    ensureMenuMaterialized()
     menu.hidden = false
     trigger.setAttribute('aria-expanded', 'true')
     if (options.floating && !menu.matches(':popover-open')) {
@@ -163,7 +208,7 @@ export const buildSelect = <T>(options: SelectOptions<T>): Select<T> => {
         menu.style.top = `${y}px`
       })
     }
-    focusItem(items.findIndex(item => item.button.getAttribute('aria-selected') === 'true'))
+    focusItem(selectedIndex >= 0 ? selectedIndex : 0)
   }
 
   // Listeners read the root's document and skip realm-bound instanceof checks: the homepage trail
@@ -176,7 +221,12 @@ export const buildSelect = <T>(options: SelectOptions<T>): Select<T> => {
       else close()
       return
     }
-    const chosen = items.find(item => item.button.contains(target))
+    const optionButton = (target as Element).closest?.(
+      '.g-select-option',
+    ) as HTMLButtonElement | null
+    if (!optionButton || !menu.contains(optionButton)) return
+    const idx = Number(optionButton.dataset.selectIndex)
+    const chosen = items[idx]
     if (!chosen) return
     setSelected(chosen.option.value)
     options.onSelect(chosen.option.value)
@@ -196,8 +246,10 @@ export const buildSelect = <T>(options: SelectOptions<T>): Select<T> => {
       open()
       return
     }
-    if (menu.hidden) return
-    const index = items.findIndex(item => item.button === event.target)
+    if (menu.hidden || items.length === 0) return
+    const targetIndex = Number((event.target as HTMLElement | null)?.dataset?.selectIndex)
+    const index =
+      Number.isInteger(targetIndex) && targetIndex >= 0 ? targetIndex : Math.max(0, focusedIndex)
     const next =
       event.key === 'Home'
         ? 0
@@ -225,12 +277,15 @@ export const buildSelect = <T>(options: SelectOptions<T>): Select<T> => {
     const now = performance.now()
     search = `${now - lastSearch < TYPEAHEAD_RESET_MS ? search : ''}${event.key.toLocaleLowerCase()}`
     lastSearch = now
-    const match = items
-      .map((_, offset) => (index + offset + 1) % items.length)
-      .find(candidate => items[candidate].option.label.toLocaleLowerCase().startsWith(search))
-    if (match === undefined) return
-    event.preventDefault()
-    focusItem(match)
+    const count = items.length
+    for (let offset = 1; offset <= count; offset++) {
+      const candidate = (index + offset) % count
+      if (items[candidate].lowerLabel.startsWith(search)) {
+        event.preventDefault()
+        focusItem(candidate)
+        return
+      }
+    }
   }
   const onFocusout = (event: FocusEvent): void => {
     const next = event.relatedTarget as Node | null

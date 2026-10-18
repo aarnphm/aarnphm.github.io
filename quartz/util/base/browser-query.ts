@@ -251,9 +251,20 @@ export function runBaseQuery(request: BaseQueryRequest): BaseQueryResult {
   }
 }
 
-export async function loadBaseQueryData(url = BASE_QUERY_DATA_PATH): Promise<QuartzPluginData[]> {
-  const response = await fetch(url, { cache: 'no-cache' })
-  if (!response.ok) throw new Error(`Base data could not be loaded (${response.status}).`)
-  const value: unknown = await response.json()
-  return readBaseQueryData(value)
+const dataCache = new Map<string, Promise<QuartzPluginData[]>>()
+
+export function loadBaseQueryData(url = BASE_QUERY_DATA_PATH): Promise<QuartzPluginData[]> {
+  const cached = dataCache.get(url)
+  if (cached) return cached
+  const pending = (async () => {
+    const response = await fetch(url)
+    if (!response.ok) throw new Error(`Base data could not be loaded (${response.status}).`)
+    const value: unknown = await response.json()
+    return readBaseQueryData(value)
+  })().catch(cause => {
+    dataCache.delete(url)
+    throw cause
+  })
+  dataCache.set(url, pending)
+  return pending
 }

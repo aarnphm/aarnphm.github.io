@@ -23,6 +23,7 @@ const BASE_VIEW_TYPES = [
   'cards',
   'map',
   'kanban',
+  'bookcase',
 ] as const
 
 type BaseViewType = (typeof BASE_VIEW_TYPES)[number]
@@ -75,7 +76,22 @@ export interface BaseView {
   clustering?: boolean
   groupSizes?: Record<string, number>
   groupAspects?: Record<string, number>
+  spineTitle?: string
+  spineAuthor?: string
+  spineColor?: string
+  bookHeight?: number
+  shelfWidth?: number
+  scrollStep?: number
+  pageContent?: boolean
 }
+
+/** Bookcase view keys that name a property, with the property used when the key is absent. */
+export const BOOKCASE_PROPERTY_DEFAULTS = [
+  ['image', 'note.posters'],
+  ['spineTitle', 'note.title'],
+  ['spineAuthor', 'note.author'],
+  ['spineColor', undefined],
+] as const satisfies readonly (readonly [keyof BaseView, string | undefined])[]
 
 export interface BaseSortConfig {
   property: string

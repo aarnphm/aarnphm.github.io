@@ -1,0 +1,611 @@
+@use '../variables.scss' as *;
+
+.base-view[data-base-view-type='bookcase'] {
+  container: bookcase / inline-size;
+}
+
+// Bookcase base view: an isometric case in the anatomy idiom (flat fills on a five-step tone
+// ladder, one hairline weight, tone as hierarchy, blur only on halos) beside an index list that
+// is the scroll track. Token names match the Obsidian plugin's.
+.bookcase {
+  --bc-card: color-mix(in srgb, var(--gray) 16%, var(--light));
+  --bc-face: var(--light);
+  --bc-top: var(--light);
+  --bc-s0: color-mix(in srgb, var(--gray) 45%, var(--light));
+  --bc-s1: color-mix(in srgb, var(--gray) 32%, var(--light));
+  --bc-s2: color-mix(in srgb, var(--gray) 20%, var(--light));
+  --bc-s3: color-mix(in srgb, var(--gray) 9%, var(--light));
+  --bc-hi: var(--dark);
+  --bc-mid: var(--darkgray);
+  --bc-lo: color-mix(in srgb, var(--gray) 80%, var(--light));
+  --bc-faint: color-mix(in srgb, var(--gray) 62%, var(--light));
+  --bc-halo: var(--dark);
+  --bc-weight: 0.75px;
+  // Spine inks are data shared with the plugin (geometry.ts), not theme roles.
+  --bc-ink-dark: #100f0f;
+  --bc-ink-light: #fffcf0;
+  --bc-dim: 1;
+  --bc-line: color-mix(in srgb, var(--gray) 55%, transparent);
+  --bc-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+  --bc-selected: color-mix(in srgb, var(--secondary) 18%, var(--bc-surface));
+
+  display: grid;
+  grid-template-areas: 'stage' 'index';
+  grid-template-columns: minmax(0, 1fr);
+  margin: 1.5rem 0;
+}
+
+:root[saved-theme='dark'] .bookcase {
+  // Faces still darken away from the light: mix toward black, not toward the ink.
+  --bc-top: color-mix(in srgb, var(--gray) 14%, var(--light));
+  --bc-face: color-mix(in srgb, var(--gray) 9%, var(--light));
+  --bc-s3: var(--light);
+  --bc-s2: color-mix(in srgb, black 12%, var(--light));
+  --bc-s1: color-mix(in srgb, black 22%, var(--light));
+  --bc-s0: color-mix(in srgb, black 34%, var(--light));
+  --bc-halo: black;
+}
+
+.bookcase-stage {
+  grid-area: stage;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: grid;
+  grid-template-rows: minmax(0, 58fr) minmax(0, 42fr);
+  height: 62svh;
+  min-width: 0;
+  background: var(--light);
+  border-bottom: 1px solid var(--bc-line);
+}
+
+.bookcase-plate {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid var(--bc-line);
+  background: var(--light);
+}
+
+.bookcase-corner {
+  position: absolute;
+  z-index: 2;
+  max-width: 48%;
+  overflow: hidden;
+  color: var(--darkgray);
+  font-family: var(--codeFont);
+  font-size: var(--text-meta, 0.75rem);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  pointer-events: none;
+  // The camera moves the case under the labels; the plate colour keeps them legible.
+  padding: 0.2rem 0.3rem;
+  background: var(--light);
+
+  &[data-corner='fig'] {
+    top: 0.75rem;
+    left: 0.75rem;
+    color: var(--dark);
+  }
+
+  &[data-corner='title'] {
+    top: 0.75rem;
+    right: 0.75rem;
+  }
+
+  &[data-corner='hint'] {
+    bottom: 0.75rem;
+    left: 0.75rem;
+  }
+
+  &[data-corner='readout'] {
+    right: 0.75rem;
+    bottom: 0.75rem;
+    color: var(--dark);
+  }
+}
+
+.bookcase-viewport {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.bookcase-world {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+}
+
+.bookcase-scene {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+
+  .bookcase[data-bookcase-ready] & {
+    width: var(--bc-scene-width);
+    height: var(--bc-scene-height);
+  }
+}
+
+.bookcase-world {
+  .bookcase[data-bookcase-ready] & {
+    will-change: transform;
+  }
+}
+
+.bc-lift {
+  position: absolute;
+  overflow: visible;
+  transition: transform 220ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  cursor: pointer;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.bookcase-scene,
+.bc-lift {
+  polygon,
+  path,
+  ellipse {
+    vector-effect: non-scaling-stroke;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .bc-front,
+  .bc-wall-front {
+    fill: var(--bc-face);
+  }
+
+  .bc-side {
+    fill: var(--bc-s2);
+  }
+
+  .bc-top {
+    fill: var(--bc-top);
+  }
+
+  .bc-board .bc-top {
+    fill: var(--bc-s3);
+  }
+
+  .bc-plinth {
+    .bc-front {
+      fill: var(--bc-s1);
+    }
+
+    .bc-side {
+      fill: var(--bc-s0);
+    }
+  }
+
+  .bc-back {
+    fill: var(--bc-s0);
+  }
+
+  .bc-wall-inner {
+    fill: var(--bc-s1);
+  }
+
+  .bc-crease,
+  .bc-bevel,
+  .bc-page-crease,
+  .bc-inset {
+    fill: none;
+    stroke: var(--bc-faint);
+    stroke-width: var(--bc-weight);
+  }
+
+  .bc-edge {
+    fill: none;
+    stroke: var(--bc-mid);
+    stroke-width: var(--bc-weight);
+  }
+
+  .bc-screws ellipse {
+    fill: var(--bc-top);
+    stroke: var(--bc-lo);
+    stroke-width: var(--bc-weight);
+  }
+
+  .bc-plate {
+    fill: var(--bc-s3);
+    stroke: var(--bc-mid);
+    stroke-width: var(--bc-weight);
+  }
+
+  .bc-plate-ticks {
+    stroke: var(--bc-lo);
+    stroke-width: var(--bc-weight);
+  }
+
+  .bc-plate-label {
+    fill: var(--bc-mid);
+    font-family: var(--codeFont);
+    font-size: 5.4px;
+    letter-spacing: 0.9px;
+  }
+
+  .bc-halo {
+    fill: var(--bc-halo);
+    stroke: none;
+  }
+
+  .bc-halo-case {
+    opacity: 0.16;
+    filter: blur(9px);
+    transform: translateY(3px);
+  }
+
+  .bc-halo-contact {
+    opacity: 0.12;
+    filter: blur(4px);
+  }
+
+  // Books: shelf copies lean 22% toward the card so the case reads first; the lifted copy is
+  // the one lit part and carries its spine colour at full value.
+  .bc-book {
+    --c: color-mix(in srgb, var(--spine) 78%, var(--bc-card));
+
+    cursor: pointer;
+    opacity: var(--bc-dim);
+    transition: opacity 150ms ease;
+
+    &[data-dim] {
+      --bc-dim: 0.28;
+    }
+
+    &[data-lifted] {
+      visibility: hidden;
+    }
+
+    .bc-front {
+      fill: var(--c);
+    }
+
+    .bc-side {
+      fill: color-mix(in srgb, var(--c) 70%, var(--bc-ink-dark));
+    }
+
+    .bc-top {
+      fill: color-mix(in srgb, var(--c) 88%, var(--bc-ink-dark));
+    }
+
+    .bc-pages {
+      fill: var(--bc-s3);
+    }
+
+    .bc-round-lit,
+    .bc-round-shade,
+    .bc-band {
+      fill: none;
+      stroke-width: var(--bc-weight);
+    }
+
+    .bc-round-lit {
+      stroke: color-mix(in srgb, var(--c) 65%, var(--bc-ink-light));
+    }
+
+    .bc-round-shade {
+      stroke: color-mix(in srgb, var(--c) 75%, var(--bc-ink-dark));
+    }
+
+    .bc-band {
+      stroke: var(--spine-ink);
+      stroke-opacity: 0.4;
+      stroke-width: calc(var(--bc-weight) * 0.8);
+    }
+
+    .bc-spine-title,
+    .bc-spine-author {
+      fill: var(--spine-ink);
+    }
+
+    .bc-spine-title {
+      font-family: 'ITCGaramondStdLtCond', 'GT Sectra Book', var(--titleFont), serif;
+    }
+
+    .bc-spine-author {
+      font-family: var(--bodyFont);
+      fill-opacity: 0.85;
+    }
+  }
+}
+
+:root[saved-theme='dark'] .bc-book {
+  --c: color-mix(in srgb, color-mix(in srgb, var(--spine) 88%, black) 78%, var(--bc-card));
+
+  // Paper stays lighter than the case in both themes.
+  .bc-pages {
+    fill: color-mix(in srgb, var(--dark) 34%, var(--light));
+  }
+}
+
+.bc-lift .bc-book {
+  --c: var(--spine);
+
+  visibility: visible;
+  opacity: 1;
+
+  .bc-pages {
+    fill: var(--bc-top);
+  }
+
+  .bc-edge {
+    stroke: var(--bc-hi);
+  }
+}
+
+:root[saved-theme='dark'] .bc-lift .bc-book {
+  --c: color-mix(in srgb, var(--spine) 88%, black);
+
+  .bc-pages {
+    fill: color-mix(in srgb, var(--dark) 48%, var(--light));
+  }
+}
+
+.bookcase-page {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr);
+  gap: 0.75rem;
+  min-height: 0;
+  padding: 0.75rem;
+  overflow: auto;
+  border: 1px solid var(--bc-line);
+  border-top: 0;
+  background: var(--light);
+  overscroll-behavior: contain;
+}
+
+.bookcase-page-cover {
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1.53;
+    object-fit: cover;
+    border: 1px solid var(--bc-line);
+    background: var(--bc-surface);
+  }
+}
+
+.bookcase-page-body {
+  display: grid;
+  align-content: start;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.bookcase-page-title {
+  color: var(--dark);
+  font-family: var(--titleFont);
+  font-size: 1.05rem;
+  line-height: 1.25;
+  text-decoration: none;
+  text-wrap: balance;
+  background: transparent;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background: transparent;
+      text-decoration: underline;
+      text-underline-offset: 0.15em;
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
+}
+
+.bookcase-page-byline {
+  margin: 0;
+  color: var(--darkgray);
+  font-family: var(--codeFont);
+  font-size: var(--text-meta, 0.75rem);
+  line-height: 1.4;
+}
+
+.bookcase-page-detail,
+.bookcase-entry-detail {
+  .bookcase-props {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: 0.15rem 0.75rem;
+    margin: 0.25rem 0 0;
+    font-size: var(--text-meta, 0.75rem);
+    line-height: 1.4;
+  }
+
+  .bookcase-prop {
+    display: contents;
+  }
+
+  dt {
+    margin: 0;
+    color: var(--darkgray);
+    font-family: var(--codeFont);
+  }
+
+  dd {
+    margin: 0;
+    min-width: 0;
+    color: var(--dark);
+    overflow-wrap: anywhere;
+  }
+
+  .bookcase-description {
+    margin: 0.5rem 0 0;
+    color: var(--darkgray);
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+}
+
+// Under the sticky stage the panel has three or four lines; the full detail is one tap away.
+.bookcase-page-detail {
+  .bookcase-props {
+    display: none;
+  }
+
+  .bookcase-description {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+}
+
+.bookcase-index {
+  grid-area: index;
+  min-width: 0;
+  // Lets the last book reach the reading line.
+  padding-bottom: 50svh;
+}
+
+.bookcase-index-group {
+  &[hidden] {
+    display: none;
+  }
+
+  .base-list-group-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 1rem 0.75rem 0.4rem;
+    border-bottom: 1px solid var(--bc-line);
+    color: var(--darkgray);
+    font-family: var(--codeFont);
+    font-size: var(--text-meta, 0.75rem);
+    font-weight: 400;
+    line-height: 1.4;
+  }
+}
+
+.bookcase-index-count {
+  font-variant-numeric: tabular-nums;
+}
+
+.bookcase .bookcase-index-list > li {
+  display: grid;
+  align-content: center;
+  height: var(--bookcase-step);
+  padding: 0 0.75rem;
+  overflow: hidden;
+
+  &[data-current] {
+    background: var(--bc-selected);
+  }
+}
+
+.bookcase-entry-link {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+  color: var(--dark);
+  text-decoration: none;
+  background: transparent;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background: transparent;
+
+      .bookcase-entry-title {
+        text-decoration: underline;
+        text-underline-offset: 0.15em;
+      }
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: -2px;
+  }
+}
+
+.bookcase-entry-title,
+.bookcase-entry-byline {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bookcase-entry-title {
+  font-size: var(--text-ui, 0.875rem);
+  line-height: 1.3;
+}
+
+.bookcase-entry-byline {
+  color: var(--darkgray);
+  font-family: var(--codeFont);
+  font-size: var(--text-meta, 0.75rem);
+  line-height: 1.3;
+}
+
+// The page panel shows the current book's detail; the row keeps it for search and assistive tech.
+.bookcase-entry-detail {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .bookcase-page {
+    grid-template-columns: 3.25rem minmax(0, 1fr);
+  }
+
+  .bookcase-corner[data-corner='hint'] {
+    display: none;
+  }
+}
+
+@container bookcase (min-width: 880px) {
+  .bookcase {
+    grid-template-areas: 'index stage';
+    grid-template-columns: minmax(14rem, 19rem) minmax(0, 1fr);
+    gap: 0 1.25rem;
+  }
+
+  .bookcase-stage {
+    align-self: start;
+    top: 1rem;
+    grid-template-rows: minmax(0, 1fr) auto;
+    height: calc(100svh - 2rem);
+    border-bottom: 0;
+  }
+
+  .bookcase-page {
+    grid-template-columns: 5.5rem minmax(0, 1fr);
+    max-height: 38svh;
+  }
+
+  .bookcase-page-title {
+    display: block;
+  }
+
+  .bookcase-page-detail {
+    .bookcase-props {
+      display: grid;
+    }
+
+    .bookcase-description {
+      display: block;
+    }
+  }
+}
