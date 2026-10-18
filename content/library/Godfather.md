@@ -7,7 +7,7 @@ description: crime saga of the Corleone family, tracing power, loyalty, and corr
 finished: 2021
 id: Godfather
 modified: 2026-06-05 15:08:00 GMT-04:00
-posters: '[[library/posters/godfather.jpg]]'
+posters: '[[library/posters/godfather-cover.avif]]'
 status: finished
 subcategory: life
 tags:

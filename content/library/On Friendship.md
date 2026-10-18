@@ -8,7 +8,7 @@ external: https://www.gutenberg.org/files/3600/3600-h/3600-h.htm
 finished: 2025
 id: On Friendship
 modified: 2026-06-05 15:08:02 GMT-04:00
-posters: '[[library/posters/on-friendship.jpg]]'
+posters: '[[library/posters/on-friendship-cover.avif]]'
 status: finished
 tags:
   - philosophy

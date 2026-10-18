@@ -6,7 +6,7 @@ description: a hands on book that builds a language and bytecode interpreter ste
 external: https://craftinginterpreters.com/
 id: Crafting Interpreters
 modified: 2026-06-05 15:07:57 GMT-04:00
-posters: '[[library/posters/crafting-interpreter.png]]'
+posters: '[[library/posters/crafting-interpreters-cover.avif]]'
 status: to read
 subcategory:
   - compilers
