@@ -10,6 +10,7 @@ import {
   type Landscape,
 } from './landscape'
 import { trailRandom } from './random'
+import { contourFaces, onSteepGround } from './relief'
 import { forestLimits, sceneSettings, type ForestSettings } from './scene-settings'
 import { trailDeadfall, trailUnderstory } from './understory'
 import { trailSnowBank } from './winter'
@@ -902,6 +903,7 @@ export function planTrailTrees(
   // changes select stable positions without rerolling edge trees or the ground cover.
   const count = Math.round(forestLimits.density.max * Math.min(1.5, Math.max(1, width / 1280)))
   const roots: Point[] = []
+  const faces = contourFaces(landscape)
   const placements = Array.from({ length: count }, (_, index) => {
     // One tree in four stands alone; the rest fill the groves, so more trees thicken the stands.
     const standalone = index % 4 === 3
@@ -934,6 +936,7 @@ export function planTrailTrees(
           creekDistance(candidate, landscape) <=
             Math.max(16, creekSection(candidate, landscape).waterHalf + 12) ||
           Math.hypot(candidate.x - camp.x, candidate.y - camp.y) <= 102 ||
+          onSteepGround(faces, candidate) ||
           clearings.some(
             site => Math.hypot(candidate.x - site.x, candidate.y - site.y) < site.radius,
           )
@@ -1024,6 +1027,7 @@ export function planTrailTrees(
           creekDistance(candidate, landscape) <=
             Math.max(16, creekSection(candidate, landscape).waterHalf + 12) ||
           Math.hypot(candidate.x - camp.x, candidate.y - camp.y) <= 102 ||
+          onSteepGround(faces, candidate) ||
           clearings.some(
             site => Math.hypot(candidate.x - site.x, candidate.y - site.y) < site.radius,
           ) ||

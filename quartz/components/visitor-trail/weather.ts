@@ -545,6 +545,9 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
       shadow.style.transform = `matrix(${scale.toFixed(3)}, ${skew.toFixed(3)}, 0, 1, ${shift.toFixed(2)}, ${((skew * shift) / scale).toFixed(2)})`
       shadow.style.opacity = (shadowSun * (0.28 + low * 0.24)).toFixed(3)
     }
+    // The canopy shade under the groves is cast from the same sun; the frame rebuilds its cells.
+    scene.style.setProperty('--trail-sunlight-strength', shadowSun.toFixed(3))
+    host.dispatchEvent(new CustomEvent('trail:sun', { detail: { dx, dy, low } }))
   }
   const updateMotion = () => {
     scene.dataset.weatherMotion =
