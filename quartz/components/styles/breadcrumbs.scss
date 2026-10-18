@@ -9,12 +9,11 @@
 
   margin: 0;
   padding: 0;
-  // the header row must be able to shrink the trail below the 320px title cap on phones
+  // Let the current page title yield space to the path and header controls.
   min-width: 0;
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  flex-wrap: nowrap;
   gap: 0.25rem;
   font-weight: 300;
   font-style: normal;
@@ -35,11 +34,17 @@
 
 .breadcrumb-element {
   display: flex;
+  flex-shrink: 0;
   min-width: 0;
+  max-width: 100%;
   flex-direction: row;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   text-transform: lowercase;
+
+  &:last-child {
+    flex-shrink: 1;
+  }
 
   & > a {
     text-decoration: none;
@@ -60,11 +65,15 @@
 }
 
 a[data-breadcrumbs] {
-  max-width: min(320px, 100%);
+  max-width: 320px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   display: inline-block;
+
+  &[aria-current='page'] {
+    max-width: none;
+  }
 }
 
 .breadcrumb-overflow {
