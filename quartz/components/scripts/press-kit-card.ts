@@ -205,6 +205,7 @@ export interface CardModel {
   trainingLayers?: Map<string, LayerRenderer>
   overlay?: OverlayKey
   metricGap?: number
+  railTextScale?: number
   powerWindow?: PowerWindow
   powerCurveScale?: 'linear' | 'log'
   metricKeys?: Record<string, string[]>

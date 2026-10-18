@@ -45,6 +45,12 @@ export interface ActivityCardChartPoint {
   range?: string
   end?: number
   detail?: string
+  split?: {
+    distanceKm: number
+    elevationDifferenceM: number | null
+    heartRate: number | null
+    heartRateSource: 'strava' | null
+  }
 }
 export interface ActivityCardChart {
   key: ActivityCardChartKey
@@ -123,6 +129,19 @@ const isChartPoint = (point: unknown): point is ActivityCardChartPoint =>
   (point.y === null || (typeof point.y === 'number' && Number.isFinite(point.y))) &&
   typeof point.label === 'string' &&
   typeof point.value === 'string' &&
+  (point.split === undefined ||
+    (isRecord(point.split) &&
+      typeof point.split.distanceKm === 'number' &&
+      Number.isFinite(point.split.distanceKm) &&
+      point.split.distanceKm > 0 &&
+      (point.split.elevationDifferenceM === null ||
+        (typeof point.split.elevationDifferenceM === 'number' &&
+          Number.isFinite(point.split.elevationDifferenceM))) &&
+      (point.split.heartRate === null ||
+        (typeof point.split.heartRate === 'number' &&
+          Number.isFinite(point.split.heartRate) &&
+          point.split.heartRate > 0)) &&
+      (point.split.heartRateSource === null || point.split.heartRateSource === 'strava'))) &&
   (point.range === undefined || typeof point.range === 'string') &&
   (point.detail === undefined || typeof point.detail === 'string') &&
   (point.end === undefined ||

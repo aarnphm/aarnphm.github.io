@@ -568,6 +568,7 @@ function model(): CardModel {
     calendar: s.calendar,
     overlay,
     metricGap: editor?.metricGap ?? 0,
+    railTextScale: editor?.railTextScale ?? 1,
     powerWindow,
     powerCurveScale,
     metricKeys: Object.fromEntries(Array.from(selectedMetrics, ([url, keys]) => [url, [...keys]])),
