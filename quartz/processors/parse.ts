@@ -7,6 +7,7 @@ import yaml from 'js-yaml'
 import { toHast } from 'mdast-util-to-hast'
 import { createHash } from 'node:crypto'
 import fs from 'node:fs/promises'
+import { deserialize, serialize } from 'node:v8'
 import path from 'path'
 import remarkParse from 'remark-parse'
 import { read } from 'to-vfile'
@@ -296,7 +297,10 @@ type ProcessedContentCacheState = {
   content: Map<FilePath, ProcessedContentCacheEntry>
 }
 
-const processorCache = new WeakMap<BuildCtx, ProcessorCache>()
+import { ReloadableWeakMap } from '../util/module-caches'
+
+const processorCache = new ReloadableWeakMap<BuildCtx, ProcessorCache>()
+
 declare global {
   var __quartzProcessedContentCache: ProcessedContentCacheState | undefined
   var __quartzParseSourceInputs: string[] | undefined
@@ -307,9 +311,162 @@ const processedContentCache = (globalThis.__quartzProcessedContentCache ??= {
   content: new Map<FilePath, ProcessedContentCacheEntry>(),
 })
 
+type CachedError = {
+  value: Error
+  vfileMessage: boolean
+  properties: { key: string; value: unknown; enumerable: boolean }[]
+}
+const vfileMessagePrototype: object | null = Object.getPrototypeOf(new VFile().message(''))
+const errorPrototypes = new Set<unknown>([
+  Error.prototype,
+  EvalError.prototype,
+  RangeError.prototype,
+  ReferenceError.prototype,
+  SyntaxError.prototype,
+  TypeError.prototype,
+  URIError.prototype,
+  vfileMessagePrototype,
+])
+
 export function resetProcessedContentCache(): void {
   processedContentCache.sourceSalt = undefined
   processedContentCache.content.clear()
+}
+
+// V8 preserves Dates, Maps, Sets and shared references between OFM blocks and their HAST.
+// Restore the VFile prototype after deserialization, before any filter or emitter sees it.
+export function restoreProcessedContentCache(bytes: Uint8Array): boolean {
+  const state: unknown = deserialize(bytes)
+  if (
+    !isRecord(state) ||
+    typeof state.sourceSalt !== 'string' ||
+    !(state.content instanceof Map) ||
+    !Array.isArray(state.errors)
+  )
+    return false
+  for (const error of state.errors) {
+    if (
+      !isRecord(error) ||
+      !(error.value instanceof Error) ||
+      typeof error.vfileMessage !== 'boolean' ||
+      !Array.isArray(error.properties)
+    )
+      return false
+    for (const property of error.properties) {
+      if (
+        !isRecord(property) ||
+        typeof property.key !== 'string' ||
+        typeof property.enumerable !== 'boolean'
+      )
+        return false
+      Object.defineProperty(error.value, property.key, {
+        value: property.value,
+        enumerable: property.enumerable,
+        configurable: true,
+        writable: true,
+      })
+    }
+    if (error.vfileMessage) Object.setPrototypeOf(error.value, vfileMessagePrototype)
+  }
+  for (const [fp, entry] of state.content) {
+    if (
+      typeof fp !== 'string' ||
+      !isRecord(entry) ||
+      typeof entry.signature !== 'string' ||
+      !Array.isArray(entry.content) ||
+      entry.content.length !== 2 ||
+      !isRecord(entry.content[0]) ||
+      entry.content[0].type !== 'root' ||
+      !Array.isArray(entry.content[0].children) ||
+      !isRecord(entry.content[1]) ||
+      !isRecord(entry.content[1].data) ||
+      !Array.isArray(entry.content[1].history) ||
+      typeof entry.content[1].cwd !== 'string'
+    )
+      return false
+    Object.setPrototypeOf(entry.content[1], VFile.prototype)
+  }
+  processedContentCache.sourceSalt = state.sourceSalt
+  processedContentCache.content = state.content
+  return true
+}
+
+export function snapshotProcessedContentCache(fps: FilePath[]): Buffer | undefined {
+  try {
+    const errors: CachedError[] = []
+    const snapshot = {
+      sourceSalt: processedContentCache.sourceSalt,
+      content: new Map(
+        fps.flatMap(fp => {
+          const entry = processedContentCache.content.get(fp)
+          return entry ? [[fp, entry] as const] : []
+        }),
+      ),
+    }
+    assertPersistable(snapshot, new WeakSet(), errors)
+    return serialize({ ...snapshot, errors })
+  } catch (error) {
+    console.warn('Unable to serialize persistent parse cache', error)
+    return undefined
+  }
+}
+
+function assertPersistable(
+  value: unknown,
+  seen: WeakSet<object>,
+  errors: CachedError[],
+  location = 'snapshot',
+): void {
+  if (value === null || typeof value !== 'object' || seen.has(value)) return
+  seen.add(value)
+  const prototype: unknown = Object.getPrototypeOf(value)
+  if (ArrayBuffer.isView(value) || value instanceof ArrayBuffer || value instanceof Date) return
+  if (value instanceof Error && errorPrototypes.has(prototype)) {
+    // V8 retains Error identity and causes, but drops custom diagnostic fields and subclasses.
+    const properties: CachedError['properties'] = Object.getOwnPropertyNames(value).map(key => ({
+      key,
+      value: Reflect.get(value, key),
+      enumerable: Object.prototype.propertyIsEnumerable.call(value, key),
+    }))
+    errors.push({ value, properties, vfileMessage: prototype === vfileMessagePrototype })
+    for (const property of properties)
+      assertPersistable(property.value, seen, errors, `${location}.${property.key}`)
+    return
+  }
+  if (
+    prototype !== null &&
+    prototype !== Object.prototype &&
+    prototype !== Array.prototype &&
+    prototype !== Map.prototype &&
+    prototype !== Set.prototype &&
+    prototype !== VFile.prototype
+  )
+    throw new Error(
+      `Plugin metadata contains a prototype the parse cache cannot restore at ${location}: ${isRecord(prototype) && typeof prototype.constructor === 'function' ? prototype.constructor.name : 'unknown'}`,
+    )
+  if (value instanceof Map) {
+    for (const [key, item] of value) {
+      assertPersistable(key, seen, errors, `${location}.key`)
+      assertPersistable(
+        item,
+        seen,
+        errors,
+        `${location}[${typeof key === 'string' ? key : 'entry'}]`,
+      )
+    }
+  } else if (value instanceof Set) {
+    for (const item of value) assertPersistable(item, seen, errors, `${location}.item`)
+  } else {
+    for (const [key, item] of Object.entries(value))
+      assertPersistable(item, seen, errors, `${location}.${key}`)
+  }
+}
+
+export function restoredProcessedContent(fps: FilePath[]): ProcessedContent[] {
+  return fps.flatMap(fp => {
+    const entry = processedContentCache.content.get(fp)
+    return entry ? [entry.content] : []
+  })
 }
 
 export function transformMarkdownSource(ctx: BuildCtx, value: string): string {
@@ -501,22 +658,17 @@ function* chunks<T>(arr: T[], n: number) {
   }
 }
 
-async function fileStatSignature(fp: FilePath): Promise<string> {
+async function fileStatSignature(fp: string): Promise<string> {
   try {
-    const stat = await fs.stat(fp)
-    return `${stat.mtimeMs}:${stat.size}`
+    const stat = await fs.stat(fp, { bigint: true })
+    return `${stat.mtimeNs}:${stat.ctimeNs}:${stat.size}:${stat.ino}`
   } catch {
     return 'missing'
   }
 }
 
 async function sourceFileSignature(fp: string): Promise<string> {
-  try {
-    const stat = await fs.stat(fp)
-    return `${fp}:${stat.mtimeMs}:${stat.size}`
-  } catch {
-    return `${fp}:missing`
-  }
+  return `${fp}:${await fileStatSignature(fp)}`
 }
 
 async function processedContentCacheSourceSalt(): Promise<string> {
@@ -526,12 +678,14 @@ async function processedContentCacheSourceSalt(): Promise<string> {
   return signatures.join('|')
 }
 
-async function syncProcessedContentCacheSource(
-  ctx: BuildCtx,
-  dirtyPaths?: ReadonlySet<FilePath>,
-): Promise<void> {
-  if (dirtyPaths !== undefined && processedContentCache.sourceSalt !== undefined) return
-  const sourceSalt = ctx.argv.watch ? await processedContentCacheSourceSalt() : undefined
+async function syncProcessedContentCacheSource(ctx: BuildCtx): Promise<void> {
+  const sourceSalt = ctx.argv.watch
+    ? JSON.stringify([
+        await processedContentCacheSourceSalt(),
+        path.resolve(ctx.argv.directory),
+        ctx.allSlugs.slice().sort(),
+      ])
+    : undefined
   if (processedContentCache.sourceSalt === sourceSalt) return
   processedContentCache.sourceSalt = sourceSalt
   processedContentCache.content.clear()
@@ -759,7 +913,7 @@ export async function parseMarkdown(
   const perf = new PerfTimer()
   const log = new QuartzLogger(argv.verbose)
   const useCache = argv.watch
-  await syncProcessedContentCacheSource(ctx, dirtyPaths)
+  await syncProcessedContentCacheSource(ctx)
   const fileDependencies = new Map<string, Promise<string>>()
   const cached = useCache
     ? await Promise.all(

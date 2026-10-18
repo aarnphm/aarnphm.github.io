@@ -3,6 +3,8 @@ import sourceMapSupport from 'source-map-support'
 import { fileURLToPath } from 'url'
 
 export const options: sourceMapSupport.Options = {
+  overrideRetrieveSourceMap: true,
+  emptyCacheBetweenOperations: true,
   // source map hack to get around query param
   // import cache busting
   retrieveSourceMap(source) {
