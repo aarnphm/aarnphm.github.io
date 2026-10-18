@@ -4,12 +4,17 @@
   .trail-sunlight {
     pointer-events: none;
     shape-rendering: crispEdges;
+    // The sun clock fades the shade out toward dusk, as it does the foot shadows.
+    opacity: var(--trail-sunlight-strength, 1);
   }
   // The shade is what shows on the pale ground; the fleck is the ground's own light, warmed,
   // painted back over the shade where the leaves part.
   .trail-leaf-shade {
     fill: var(--darkgray);
-    opacity: 0.18;
+    opacity: 0.13;
+  }
+  .trail-leaf-shade-deep {
+    opacity: 0.11;
   }
   .trail-sunfleck {
     fill: color-mix(in srgb, #ffe3a1 45%, var(--light));

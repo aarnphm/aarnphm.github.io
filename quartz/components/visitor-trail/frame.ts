@@ -51,7 +51,7 @@ import {
 import { prepareScenery } from './scenery-workers'
 import { mountSeasonToggle } from './season-toggle'
 import { mountSharedGrove, type Watering } from './shared-grove'
-import { trailSunlight } from './sunlight'
+import { defaultSun, trailSunlight, type SunCast } from './sunlight'
 import { mountTrailAthletes } from './trail-athletes'
 import { prepareSceneTrees, prepareTreeSprites } from './tree-workers'
 import { mountVisitorJourneys } from './visitor-journey'
@@ -140,6 +140,29 @@ const opening = mountSceneReveal(scene, host, signal)
 
 const { forest, animals, travelers, camps } = sceneSettings
 let forestLayout: Landscape | undefined
+// The sun the canopy shade is cast from; the weather's sun clock updates it through `trail:sun`.
+let sunCast: SunCast = defaultSun
+const paintSunlight = () => {
+  const sunlight = scene.querySelector('.trail-sunlight:not(.trail-sunlight-canopy)')
+  const canopyLight = scene.querySelector('.trail-sunlight-canopy')
+  if (!forestLayout || !sunlight || !canopyLight) return
+  const light = trailSunlight(forestLayout, sceneSeed, sunCast)
+  sunlight.innerHTML = light.ground
+  canopyLight.innerHTML = light.canopy
+}
+host.addEventListener(
+  'trail:sun',
+  event => {
+    const next = (event as CustomEvent<SunCast>).detail
+    const moved =
+      Math.abs(next.dx - sunCast.dx) > 0.02 ||
+      Math.abs(next.dy - sunCast.dy) > 0.02 ||
+      Math.abs(next.low - sunCast.low) > 0.03
+    sunCast = next
+    if (moved) paintSunlight()
+  },
+  { signal },
+)
 let forestObstacles: Point[] = []
 const paintTree = createTreePainter()
 const paintWoodland = createTreePainter()
@@ -627,14 +650,8 @@ const drawScene = async () => {
   const pasture = trailPasture(layout.landscape, geometries, sceneSeed, animals)
   const fauna = scene.querySelector('.trail-fauna')
   if (fauna) fauna.innerHTML = pasture.markup
-  const sunlight = scene.querySelector('.trail-sunlight:not(.trail-sunlight-canopy)')
-  const canopyLight = scene.querySelector('.trail-sunlight-canopy')
-  if (sunlight && canopyLight) {
-    const light = trailSunlight(layout.landscape, sceneSeed)
-    sunlight.innerHTML = light.ground
-    canopyLight.innerHTML = light.canopy
-  }
   forestLayout = layout.landscape
+  paintSunlight()
   forestObstacles = [
     ...geometries.flatMap(route => route.samples.filter((_, index) => index % 4 === 0)),
     ...pasture.sites,

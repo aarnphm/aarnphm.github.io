@@ -109,7 +109,13 @@
     ) {
       fill: color-mix(in srgb, var(--trail-snow-ground) var(--trail-snow-mix, 0%), var(--light));
     }
-    :is(.trail-ravine-face-dark, .trail-ravine-shade, .trail-ravine-hollow, .trail-upland-edge) {
+    :is(
+      .trail-ravine-face-dark,
+      .trail-ravine-shadow,
+      .trail-ravine-shade,
+      .trail-ravine-hollow,
+      .trail-upland-edge
+    ) {
       fill: color-mix(in srgb, var(--trail-snow-shade) var(--trail-snow-mix, 0%), var(--light));
     }
     .trail-ravine-face {

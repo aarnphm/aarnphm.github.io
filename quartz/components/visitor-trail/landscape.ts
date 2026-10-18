@@ -266,17 +266,17 @@ function trailRises(landscape: Landscape, seed: number) {
   const clearing = camp.y - meadowTop
   const random = trailRandom(seed ^ 0x3c6ef372)
   const shapes: Record<RiseKind, { half: [number, number]; tall: [number, number] }> = {
-    ridge: { half: [180, 320], tall: [22, 44] },
-    hill: { half: [80, 160], tall: [20, 40] },
-    butte: { half: [70, 130], tall: [28, 50] },
-    knob: { half: [36, 64], tall: [22, 40] },
+    ridge: { half: [180, 320], tall: [32, 60] },
+    hill: { half: [90, 170], tall: [28, 54] },
+    butte: { half: [70, 130], tall: [34, 60] },
+    knob: { half: [36, 64], tall: [26, 46] },
   }
   const order: RiseKind[] = ['ridge', 'hill', 'butte', 'hill', 'knob', 'ridge', 'hill', 'knob']
   const within = ([low, high]: [number, number]) => low + random() * (high - low)
   const levels = [0.16, 0.39, 0.64, 0.91]
   let next = Math.floor(random() * order.length)
   return levels.map((level, index) => {
-    const count = width < 700 ? 1 : 1 + Math.floor(random() * 2)
+    const count = width < 700 ? 1 : 2 + Math.floor(random() * 2)
     const swells = Array.from({ length: count }, (_, k) => {
       const kind = order[next++ % order.length]
       return {
@@ -324,7 +324,7 @@ function trailRises(landscape: Landscape, seed: number) {
         Math.max(0, Math.hypot((x - camp.x) / 2, base - camp.y) - 70) / 90,
         Math.max(0, creekDistance({ x, y: base }, landscape) - 16) / 48,
       )
-      height *= calm * (0.42 + depth * 0.38)
+      height *= calm * (0.5 + depth * 0.4)
       const below = height * 0.12
       const y = Math.round((base - height) / 2) * 2
       const foot = Math.round((base + below) / 2) * 2

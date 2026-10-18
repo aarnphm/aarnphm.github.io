@@ -9,6 +9,9 @@ import {
 import { pixels } from './pixels'
 import { trailRandom } from './random'
 import { ravineArt } from './ravine-art'
+import { trailRelief } from './relief'
+
+export { contourFaces, faceAt, onSteepGround, type Face } from './relief'
 
 type Runs = Map<string, string[]>
 
@@ -333,114 +336,6 @@ export function trailBeavers(landscape: Landscape, seed: number) {
   return lodgeMarkup + beaver
 }
 
-export type Face = { x: number; y: number; span: number; tall: number; turn: number }
-
-// One face per crest column of each landform, from its crest down to its foot. `turn` > 0 where
-// the crest drops to the right, so the face looks away from the light.
-export function contourFaces(landscape: Landscape): Face[][] {
-  return landscape.rises.map(({ crest }) => {
-    const yAt = (k: number) => crest[Math.max(0, Math.min(crest.length - 1, k))].y
-    return crest.map(({ x, y, foot }, k) => ({
-      x,
-      y,
-      span: 4,
-      tall: foot - y,
-      // The slope over a few columns, so one jagged step does not flip a column's shade.
-      turn: Math.max(-0.6, Math.min(0.6, (yAt(k + 6) - yAt(k - 6)) / 48)),
-    }))
-  })
-}
-
-// The nearest face whose slope contains the point, with how far below its crest the point lies.
-export function faceAt(faces: readonly Face[][], point: Point) {
-  let best: (Face & { below: number }) | null = null
-  // contourFaces retains the landscape's contiguous four-pixel columns, starting at x = 0.
-  const column = Math.floor(point.x / 4)
-  for (const contour of faces) {
-    const face = contour[column]
-    if (!face || point.x < face.x || point.x >= face.x + face.span) continue
-    const below = point.y - face.y
-    if (below >= 0 && below < face.tall && (!best || below < best.below)) best = { ...face, below }
-  }
-  return best
-}
-
-// Individual hills paint back to front. Flat columns have no wall; broken rims and sparse shade
-// let the upper slopes meet the surrounding meadow without a continuous shelf.
-function relief(landscape: Landscape, random: () => number) {
-  const faces = contourFaces(landscape)
-  return landscape.rises
-    .map(({ crest }, index) => {
-      const runs: Runs = new Map()
-      let side = 'face'
-      faces[index].forEach(({ x, y, tall, turn }, k) => {
-        if (tall <= 0) return
-        const { form, brow } = crest[k]
-        const next = faces[index][k + 1]
-        const nextBrow = crest[k + 1]?.brow
-        // Three flat planes, as in isometric pixel art: the top is lightest, a face turned left
-        // toward the light is mid tone, and a face turned right is darkest.
-        // A plane keeps its tone until the slope clearly turns, so faces do not flicker.
-        if (turn < -0.1) side = 'face-lit'
-        else if (turn > 0.1) side = 'face-dark'
-        else if (Math.abs(turn) < 0.03) side = 'face'
-        run(runs, side, x, brow, 4, tall - (brow - y))
-        if (brow > y) run(runs, 'top', x, y, 4, brow - y)
-        const rim = threshold(x / 4, y / 2) < 0.25
-        if (rim && form) run(runs, 'outline', x, y, 4)
-        if (rim && form && next && next.y !== y) {
-          const top = Math.min(y, next.y)
-          run(runs, 'outline', x + 4 - (next.y > y ? 2 : 0), top, 2, Math.abs(next.y - y) + 2)
-        }
-        // A highlight runs along the brow, the edge where the top turns down into the face.
-        if (brow > y) {
-          run(runs, 'crest', x, brow, 4)
-          if (nextBrow !== undefined && nextBrow !== brow && nextBrow > (next?.y ?? 0)) {
-            const top = Math.min(brow, nextBrow)
-            run(
-              runs,
-              'crest',
-              x + 4 - (nextBrow > brow ? 2 : 0),
-              top,
-              2,
-              Math.abs(nextBrow - brow) + 2,
-            )
-          }
-        }
-        const face = tall - (brow - y)
-        for (let row = 4; row < face; row += 2) {
-          const fall = row / face
-          const at = brow + row
-          if (form === 'butte' && fall < 0.6 && row % 6 === 4) {
-            if (threshold(x / 4, row / 6) < 0.9) run(runs, 'strata', x, at, 4)
-            continue
-          }
-          if (form === 'knob' && fall < 0.55) {
-            if (threshold(x / 2, at / 2) < 0.18) run(runs, 'lip', x, at, 4)
-            else if (turn < -0.06) run(runs, 'rock-lit', x, at, 4)
-            else run(runs, 'rock', x, at, 4)
-            continue
-          }
-        }
-      })
-      // A few boulders rest on the taller faces.
-      for (let boulder = 0; boulder < 4; boulder++) {
-        const column = crest[Math.floor(random() * crest.length)]
-        const tall = column.foot - column.y
-        if (tall < 24 || !column.form) continue
-        const size = random() < 0.5 ? 8 : 6
-        const x = column.x
-        const y = Math.round((column.y + 8 + random() * (tall - 16)) / 2) * 2
-        run(runs, 'rock-lit', x + 2, y, size - 4)
-        run(runs, 'rock', x, y + 2, size, 2)
-        run(runs, 'rock', x + size / 2, y, size / 2)
-        run(runs, 'lip', x, y + 4, size)
-      }
-      return paths(runs)
-    })
-    .join('')
-}
-
 function bankDetails(landscape: Landscape, random: () => number, routes: readonly string[]) {
   const walks = routes.flatMap(routePoints)
   const tones = {
@@ -492,7 +387,7 @@ export function trailCreek(landscape: Landscape, seed: number) {
 export function trailRavine(landscape: Landscape, seed: number, routes: readonly string[] = []) {
   const random = trailRandom(seed ^ 0x1b873593)
   return (
-    `<g class="trail-relief" aria-hidden="true">${relief(landscape, random)}</g>` +
+    trailRelief(landscape, seed) +
     `<g class="trail-ravine" aria-hidden="true">${creekBed(landscape, random)}${bankDetails(landscape, random, routes)}${creekCurrent(landscape)}${creekRocks(landscape, routes)}</g>` +
     mountainStream(landscape)
   )

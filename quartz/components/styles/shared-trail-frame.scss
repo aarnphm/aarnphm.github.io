@@ -416,6 +416,9 @@
   .trail-terrace-3 {
     fill: var(--trail-field-3);
   }
+  .trail-terrace-riser {
+    fill: color-mix(in srgb, var(--darkgray) 24%, var(--light));
+  }
   .trail-meadow-tuft {
     fill: color-mix(in srgb, var(--gray) 36%, var(--light));
   }

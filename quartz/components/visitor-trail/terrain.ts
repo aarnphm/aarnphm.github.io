@@ -17,6 +17,33 @@ function oval(pond: Pond, margin: number, grid: number) {
   return pixels(rows, { W: 'trail-water' }, grid)
 }
 
+// Each terrace steps down toward the viewer along its contour. The step's riser shows as broken
+// strokes of shade under the edge, like the terracettes a herd treads into a slope: a stroke runs
+// a few cells and is kept or dropped whole, thick where the ground swells, gone where it levels.
+function terraceRisers(landscape: Landscape, seed: number) {
+  const random = trailRandom(seed ^ 0x27d4eb2f)
+  const runs: string[] = []
+  for (const points of landscape.contours) {
+    const phase = random() * Math.PI * 2
+    const cover = (x: number) =>
+      0.46 + 0.3 * Math.sin(x / 71 + phase) + 0.14 * Math.sin(x / 23 - phase)
+    for (let p = 0; p + 1 < points.length; p++) {
+      const a = points[p]
+      const b = points[p + 1]
+      for (let x = a.x; x < b.x; ) {
+        const length = Math.min(b.x - x, 8 + Math.floor(random() * 8) * 4)
+        if (random() < cover(x + length / 2)) runs.push(`M${x} ${a.y}h${length}v2h-${length}Z`)
+        x += length
+      }
+      if (b.y !== a.y && random() < cover(b.x))
+        runs.push(
+          `M${b.x - (b.y > a.y ? 2 : 0)} ${Math.min(a.y, b.y)}h2v${Math.abs(b.y - a.y) + 2}h-2Z`,
+        )
+    }
+  }
+  return runs.length ? `<path class="trail-terrace-riser" d="${runs.join('')}"/>` : ''
+}
+
 export function trailTerraces(landscape: Landscape, seed: number) {
   const { height, contours } = landscape
   const terraces = contours
@@ -26,7 +53,7 @@ export function trailTerraces(landscape: Landscape, seed: number) {
       return `<path class="trail-terrace trail-terrace-${index}" d="${path}"/>`
     })
     .join('')
-  return terraces + trailSnowBase(landscape, seed)
+  return terraces + terraceRisers(landscape, seed) + trailSnowBase(landscape, seed)
 }
 
 export function trailTerrain(landscape: Landscape, seed: number, routes: readonly string[] = []) {

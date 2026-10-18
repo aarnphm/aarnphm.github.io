@@ -23,18 +23,19 @@
   .trail-ravine-rock-lit {
     fill: color-mix(in srgb, #cfcabd 66%, var(--light));
   }
-  // Isometric planes: top lightest, the face toward the light mid tone, the face away darkest.
+  // The slope ramp, light to dark: a landform's top, the flank toward the light, the flank away
+  // from it, and the shadow it throws past its foot. Slopes are dithered between these stops.
   .trail-ravine-top {
-    fill: color-mix(in srgb, var(--lightgray) 22%, var(--light));
+    fill: color-mix(in srgb, var(--lightgray) 26%, var(--light));
   }
   .trail-ravine-face-lit {
-    fill: color-mix(in srgb, var(--gray) 26%, var(--light));
+    fill: color-mix(in srgb, var(--gray) 30%, var(--light));
   }
   .trail-ravine-face {
-    fill: color-mix(in srgb, var(--gray) 36%, var(--light));
+    fill: color-mix(in srgb, var(--gray) 46%, var(--light));
   }
   .trail-ravine-face-dark {
-    fill: color-mix(in srgb, var(--darkgray) 28%, var(--light));
+    fill: color-mix(in srgb, var(--darkgray) 34%, var(--light));
   }
   .trail-ravine-outline {
     fill: color-mix(in srgb, var(--darkgray) 38%, var(--light));
@@ -46,7 +47,7 @@
     fill: color-mix(in srgb, var(--darkgray) 45%, var(--light));
   }
   .trail-ravine-shadow {
-    fill: color-mix(in srgb, var(--darkgray) 38%, var(--light));
+    fill: color-mix(in srgb, var(--darkgray) 42%, var(--light));
   }
   .trail-ravine-hollow {
     fill: color-mix(in srgb, var(--gray) 48%, var(--light));
