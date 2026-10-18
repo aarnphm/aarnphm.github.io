@@ -103,6 +103,34 @@ function createNotebookFileSystem() {
 
 const notebookTypeshedFiles = new Map()
 const notebookPackageStubFiles = new Map()
+const notebookBaseVfsCache = new Map()
+
+function prefetchManifestFiles(cache, manifestUrl, label) {
+  if (!manifestUrl) return undefined
+  const pending = cachedManifestFiles(cache, manifestUrl, label)
+  void pending.catch(() => {})
+  return pending
+}
+
+function loadBaseVfsFiles(typeshedManifestUrl, packageStubsManifestUrl) {
+  const cacheKey = `${typeshedManifestUrl ?? ''}\0${packageStubsManifestUrl ?? ''}`
+  const cached = notebookBaseVfsCache.get(cacheKey)
+  if (cached) return cached
+  const pending = Promise.all([
+    typeshedManifestUrl
+      ? cachedManifestFiles(notebookTypeshedFiles, typeshedManifestUrl, 'notebook pyright typeshed')
+      : undefined,
+    packageStubsManifestUrl
+      ? cachedManifestFiles(
+          notebookPackageStubFiles,
+          packageStubsManifestUrl,
+          'notebook pyright package stubs',
+        )
+      : undefined,
+  ]).then(([typeshed, packageStubs]) => Object.assign({}, typeshed, packageStubs))
+  notebookBaseVfsCache.set(cacheKey, pending)
+  return pending
+}
 
 class NotebookPyrightBrowserServer extends RealLanguageServer {
   #initialFiles
@@ -167,21 +195,8 @@ class NotebookPyrightBrowserServer extends RealLanguageServer {
     this.#extraPaths = extraPathsFromOptions(options)
     const typeshedManifestUrl = typeshedManifestUrlFromOptions(options)
     const packageStubsManifestUrl = packageStubsManifestUrlFromOptions(options)
-    const typeshedFiles = typeshedManifestUrl
-      ? cachedManifestFiles(notebookTypeshedFiles, typeshedManifestUrl, 'notebook pyright typeshed')
-      : undefined
-    const packageStubFiles = packageStubsManifestUrl
-      ? cachedManifestFiles(
-          notebookPackageStubFiles,
-          packageStubsManifestUrl,
-          'notebook pyright package stubs',
-        )
-      : undefined
-    const files = {
-      ...(typeshedFiles ? await typeshedFiles : {}),
-      ...(packageStubFiles ? await packageStubFiles : {}),
-      ...initialFiles,
-    }
+    const baseFiles = await loadBaseVfsFiles(typeshedManifestUrl, packageStubsManifestUrl)
+    const files = Object.assign({}, baseFiles, initialFiles)
     this.#initialFiles = files
     this.serverOptions.serviceProvider.fs().apply(files)
     return super.initialize(params, supportedCommands, supportedCodeActions)
@@ -318,9 +333,20 @@ function wrapOnReceive(value) {
   )
 }
 
-function bootForeground(port) {
+function bootForeground(port, eventData) {
   if (!(port instanceof MessagePort))
     throw new Error('notebook pyright foreground boot has invalid port')
+  const typeshedManifestUrl = typeshedManifestUrlFromOptions(eventData)
+  const packageStubsManifestUrl = packageStubsManifestUrlFromOptions(eventData)
+  prefetchManifestFiles(notebookTypeshedFiles, typeshedManifestUrl, 'notebook pyright typeshed')
+  prefetchManifestFiles(
+    notebookPackageStubFiles,
+    packageStubsManifestUrl,
+    'notebook pyright package stubs',
+  )
+  if (typeshedManifestUrl || packageStubsManifestUrl) {
+    void loadBaseVfsFiles(typeshedManifestUrl, packageStubsManifestUrl).catch(() => {})
+  }
   initializeWorkersHost(new NotebookPyrightWorkersHost())
   port.start()
   workerScope.notebookPyrightApp = new NotebookPyrightBrowserServer(
@@ -342,7 +368,7 @@ workerScope.addEventListener('message', event => {
   if (!isRecord(event.data) || event.data.type !== 'browser/boot') return
   try {
     if (event.data.mode === 'foreground') {
-      bootForeground(event.data.port)
+      bootForeground(event.data.port, event.data)
       return
     }
     if (event.data.mode === 'background') {
