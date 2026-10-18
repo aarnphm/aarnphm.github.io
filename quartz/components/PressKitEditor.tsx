@@ -34,6 +34,7 @@ interface Composition {
 interface Layout {
   formats: Record<string, Composition>
   metricGap: number
+  railTextScale: number
   textColor: 'auto' | 'black' | 'white'
   title?: string
   background?: Background
@@ -80,9 +81,10 @@ interface LayerRaster {
   pending?: Promise<void>
   failed?: { width: number; height: number }
 }
-const empty = (): Layout => ({ formats: {}, metricGap: 0, textColor: 'auto' })
+const empty = (): Layout => ({ formats: {}, metricGap: 0, railTextScale: 1, textColor: 'auto' })
 const copy = (layout: Layout): Layout => ({
   metricGap: layout.metricGap,
+  railTextScale: layout.railTextScale,
   textColor: layout.textColor,
   title: layout.title,
   formats: Object.fromEntries(
@@ -146,6 +148,7 @@ export class PressKitEditor {
   private overlay = document.createElement('div')
   private rulers = document.createElement('div')
   private showRulers = false
+  private rulerToggle: HTMLButtonElement | null
   private pointer?: RulerPoint
   private file = document.createElement('input')
   private drafts = new Map<string, Draft>()
@@ -159,6 +162,7 @@ export class PressKitEditor {
   private pendingImage?: Promise<void>
   private key = ''
   private formatKey = ''
+  private railAnchors = new Map<string, { right: number; bottom: number }>()
   private available = false
   private enabled = false
   private loading = false
@@ -173,6 +177,19 @@ export class PressKitEditor {
     private requestScene: () => void,
     private defaultTitle: () => string,
   ) {
+    this.rulerToggle =
+      controls.closest('dialog')?.querySelector<HTMLButtonElement>('button[data-editor-rulers]') ??
+      null
+    this.rulerToggle?.addEventListener(
+      'click',
+      () => {
+        if (!this.available) return
+        this.showRulers = this.rulers.hidden !== false
+        if (this.showRulers) this.details.open = true
+        this.update()
+      },
+      { signal },
+    )
     this.details.className = 'press-kit-editor'
     this.details.dataset.for = 'image'
     const summary = document.createElement('summary')
@@ -301,12 +318,17 @@ export class PressKitEditor {
     return this.draft.value.metricGap
   }
 
+  get railTextScale() {
+    return this.draft.value.railTextScale
+  }
+
   get textColor() {
     return this.draft.value.textColor
   }
 
   context(key: string, formatKey: string, available: boolean) {
     this.available = available
+    if (this.rulerToggle) this.rulerToggle.disabled = !available
     if (key !== this.key) {
       this.cancelGesture()
       this.revision++
@@ -316,12 +338,14 @@ export class PressKitEditor {
       this.draft = this.drafts.get(key) ?? { value: empty(), past: [], future: [] }
       this.drafts.set(key, this.draft)
       this.selected.clear()
+      this.railAnchors.clear()
       this.scene = undefined
     }
     if (formatKey !== this.formatKey) {
       this.cancelGesture()
       this.formatKey = formatKey
       this.selected.clear()
+      this.railAnchors.clear()
       this.scene = undefined
     }
     this.overlay.hidden = true
@@ -332,6 +356,24 @@ export class PressKitEditor {
   setScene(scene: CardScene) {
     this.cancelGesture()
     this.scene = scene
+    // Reflow enlarged text around a manually placed rail's bottom-right corner.
+    for (const [block, anchor] of this.railAnchors) {
+      const layers = scene.layers.filter(
+        layer => layer.id.startsWith(`${block}/stat/`) && !this.placement(layer).hidden,
+      )
+      if (!layers.length) continue
+      const right = Math.max(...layers.map(layer => layer.x + layer.width))
+      const bottom = Math.max(...layers.map(layer => layer.y + layer.height))
+      for (const layer of layers)
+        this.composition.placements[layer.id] = {
+          ...this.placement(layer),
+          x: layer.x + anchor.right - right,
+          y: layer.y + anchor.bottom - bottom,
+          scaleX: 1,
+          scaleY: 1,
+        }
+    }
+    this.railAnchors.clear()
     this.rasters.clear()
     this.compose()
     this.update()
@@ -540,6 +582,31 @@ export class PressKitEditor {
     })
   }
 
+  private resizeRailText(scale: number) {
+    if (scale === this.railTextScale) return
+    this.railAnchors.clear()
+    const blocks = new Set(
+      this.layers()
+        .filter(layer => layer.id.includes('/stat/'))
+        .map(layer => layer.id.split('/stat/')[0]),
+    )
+    for (const block of blocks) {
+      const items = this.layers()
+        .filter(layer => layer.id.startsWith(`${block}/stat/`) && !this.placement(layer).hidden)
+        .map(layer => ({ layer, placement: this.placement(layer) }))
+      if (!items.some(({ layer }) => this.composition.placements[layer.id])) continue
+      const bounds = this.bounds(items)
+      if (bounds)
+        this.railAnchors.set(block, {
+          right: bounds.x + bounds.width,
+          bottom: bounds.y + bounds.height,
+        })
+    }
+    this.edit((_, document) => {
+      document.railTextScale = scale
+    })
+  }
+
   private remember(before: Layout) {
     this.draft.past.push(before)
     if (this.draft.past.length > 30) this.draft.past.shift()
@@ -552,6 +619,7 @@ export class PressKitEditor {
     this.remember(before)
     if (
       before.metricGap !== this.metricGap ||
+      before.railTextScale !== this.railTextScale ||
       before.title !== this.title ||
       before.textColor !== this.textColor
     )
@@ -562,6 +630,7 @@ export class PressKitEditor {
 
   private history(redo: boolean) {
     this.cancelGesture()
+    this.railAnchors.clear()
     const from = redo ? this.draft.future : this.draft.past
     const to = redo ? this.draft.past : this.draft.future
     const value = from.pop()
@@ -571,6 +640,7 @@ export class PressKitEditor {
     this.draft.value = value
     if (
       before.metricGap !== this.metricGap ||
+      before.railTextScale !== this.railTextScale ||
       before.title !== this.title ||
       before.textColor !== this.textColor
     )
@@ -1079,6 +1149,7 @@ export class PressKitEditor {
     if (this.signal.aborted) return
     this.overlay.hidden = !this.details.open || !this.available || !this.scene
     this.rulers.hidden = this.overlay.hidden || !this.showRulers
+    this.rulerToggle?.setAttribute('aria-pressed', String(!this.rulers.hidden))
     this.canvas.parentElement?.toggleAttribute('data-editor-rulers', !this.rulers.hidden)
     const layers = this.layers()
     const selected = this.selection()
@@ -1150,6 +1221,7 @@ export class PressKitEditor {
                 layout.order = []
                 document.background = undefined
                 document.metricGap = 0
+                document.railTextScale = 1
                 document.textColor = 'auto'
                 document.title = undefined
               })
@@ -1168,20 +1240,11 @@ export class PressKitEditor {
             fond…
           </button>
         </div>
-        <div class="press-kit-editor-view">
-          <button
-            type="button"
-            class="g-button"
-            aria-pressed={this.showRulers}
-            onClick={() => {
-              this.showRulers = !this.showRulers
-              this.update()
-            }}
-          >
-            règles
-          </button>
-          {this.showRulers && <output aria-label="position sur la carte" />}
-        </div>
+        {this.showRulers && (
+          <div class="press-kit-editor-view">
+            <output aria-label="position sur la carte" />
+          </div>
+        )}
         <label class="press-kit-editor-field">
           titre de l’image
           <input
@@ -1225,6 +1288,10 @@ export class PressKitEditor {
             this.edit((_, document) => {
               document.metricGap = value
             }),
+          )}
+        {this.formatKey.endsWith(':rail') &&
+          number('taille du texte (%)', this.railTextScale * 100, 50, 250, value =>
+            this.resizeRailText(value / 100),
           )}
         {bg && (
           <fieldset>

@@ -86,7 +86,7 @@ function paintOverlay(
   scale: number,
   renderers?: Map<string, LayerRenderer>,
 ): void {
-  const { text, fitText, fitValue, metricRow, titleRow } = createSvgText(fonts, scale)
+  const { text, fitText, fitValue, titleRow } = createSvgText(fonts, scale)
   const stats = display.metrics
     ? activity.stats.filter(stat => metricShown(model, activity, stat))
     : []
@@ -247,16 +247,76 @@ function paintOverlay(
       true,
       model.metricGap,
     )
-  else if (layout === 'rail') {
-    const step = contentHeight / Math.max(1, Math.ceil(stats.length / 2))
-    stats.forEach((stat, index) => {
-      const group = svgLayer(parent, `stat/${stat.key}`, stat.label)
-      group.setAttribute(
-        'transform',
-        `translate(${x + width * 0.92 - (index % 2) * headingSize * 1.8},${y + contentHeight - Math.floor(index / 2) * step}) rotate(-90)`,
-      )
-      metricRow(group, stat.label, stat.value, 0, 0, step * 0.9, headingSize * 0.68, ink, false)
-      parent.append(group)
+  else if (layout === 'rail' && stats.length) {
+    const { measure, lines } = createSvgText(fonts, scale)
+    const size = headingSize * 0.68 * (model.railTextScale ?? 1)
+    const gap = size * 1.5
+    const rowGap = size * 0.75
+    const measuredWidth = (value: string, family = fonts.body) =>
+      measure(value, size, 400, family)?.width ?? value.length * size * 0.6
+    const metrics = stats.map(stat => ({
+      stat,
+      valueWidth: measuredWidth(stat.value, fonts.mono),
+      labelWidth: measuredWidth(stat.label),
+    }))
+    const rows = Math.ceil(metrics.length / 2)
+    const natural = Array.from({ length: rows }, (_, row) =>
+      Math.max(
+        ...metrics
+          .slice(row * 2, row * 2 + 2)
+          .map(metric => metric.labelWidth + gap + metric.valueWidth),
+      ),
+    )
+    const available = contentHeight - rowGap * (rows - 1)
+    const total = natural.reduce((sum, length) => sum + length, 0)
+    const inline = total <= available
+    const lengths = natural.map(length =>
+      inline ? length + (available - total) / rows : available / rows,
+    )
+    const blocks = metrics.map((metric, index) => {
+      const span = lengths[Math.floor(index / 2)]
+      const labelLimit = Math.max(size, inline ? span - metric.valueWidth - gap : span)
+      const labelLines = lines(metric.stat.label, labelLimit, size).flatMap(line => {
+        if (measuredWidth(line) <= labelLimit) return [line]
+        const parts = ['']
+        for (const character of line) {
+          const index = parts.length - 1
+          if (parts[index] && measuredWidth(parts[index] + character) > labelLimit)
+            parts.push(character)
+          else parts[index] += character
+        }
+        return parts
+      })
+      return { ...metric, labelLines }
+    })
+    const columnGap = Math.max(
+      headingSize * 1.8 * (model.railTextScale ?? 1),
+      (Math.max(...blocks.map(block => block.labelLines.length + (inline ? 0 : 1))) * 1.2 + 0.8) *
+        size,
+    )
+    let bottom = y + contentHeight
+    lengths.forEach((span, row) => {
+      blocks.slice(row * 2, row * 2 + 2).forEach(({ stat, labelLines }, column) => {
+        const group = svgLayer(parent, `stat/${stat.key}`, stat.label)
+        group.setAttribute(
+          'transform',
+          `translate(${x + width * 0.92 - column * columnGap},${bottom}) rotate(-90)`,
+        )
+        labelLines.forEach((line, index) => text(group, line, 0, -index * size * 1.2, size, ink))
+        const value = node('g', { 'text-anchor': 'end' })
+        text(
+          value,
+          stat.value,
+          span,
+          inline ? 0 : -labelLines.length * size * 1.2,
+          size,
+          ink,
+          400,
+          fonts.mono,
+        )
+        group.append(value)
+      })
+      bottom -= span + rowGap
     })
   }
   let chartTop = y + contentHeight

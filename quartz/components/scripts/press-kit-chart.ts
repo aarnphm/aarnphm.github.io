@@ -57,7 +57,9 @@ export function paintTrainingChart(
   locale: Locale = cardLocale(),
   options?: ChartRenderOptions,
 ): void {
-  const valid = chart.points.filter(point => point.y != null)
+  const valid = chart.points.filter(
+    point => point.y != null && (chart.key !== 'runLaps' || point.y > 0),
+  )
   if (!valid.length || width <= 0 || height <= 0) return
   const { text, fitText, fitValue, measure } = createSvgText(fonts, scale)
   const bars = chart.kind === 'bars'
@@ -71,7 +73,6 @@ export function paintTrainingChart(
     options?.typography?.labelSize ??
     (bars ? Math.min(size * 0.75, (height / (valid.length + 5)) * 0.5) : size * 0.7)
   const referenceWidth = options?.typography?.width ?? width
-  const valueSize = runLaps ? labelSize * 1.4 : labelSize
   const appearance =
     document.querySelector('.tri-training-zone-grid--pace, .tri-day-embed, .triathlon') ??
     document.documentElement
@@ -89,7 +90,11 @@ export function paintTrainingChart(
   })
   parent.append(group)
   const title =
-    triLabel(locale, chart.title) +
+    (runLaps
+      ? locale === 'fr'
+        ? 'temps intermédiaires'
+        : 'splits'
+      : triLabel(locale, chart.title)) +
     (chart.window ? ` · ${chart.window === 30 ? '30 s' : '5 min'}` : '')
   fitText(group, title, x, y + size, referenceWidth * 0.78, size, ink, 500)
   const label = (value: string, px: number, py: number, anchor = 'start', fontSize = labelSize) => {
@@ -140,7 +145,98 @@ export function paintTrainingChart(
     })
   }
 
-  if (bars) {
+  if (runLaps) {
+    const imperial = chart.axis === '/mi'
+    const headers = {
+      distance: imperial ? 'Mi' : 'Km',
+      pace: locale === 'fr' ? 'Allure' : 'Pace',
+      elevation: `${locale === 'fr' ? 'Élév.' : 'Elev.'} (${imperial ? 'ft' : 'm'})`,
+      heartRate: locale === 'fr' ? 'FC' : 'HR',
+    }
+    const rows = valid.map(point => {
+      const distance = (point.split?.distanceKm ?? 0) / (imperial ? 1.609344 : 1)
+      const elevation = point.split?.elevationDifferenceM
+      return {
+        point,
+        distance:
+          distance > 0 && distance < 0.95
+            ? distance.toLocaleString(locale, { maximumFractionDigits: distance < 0.1 ? 2 : 1 })
+            : String(point.x),
+        pace: clock(point.y ?? 0),
+        elevation:
+          elevation == null ? '—' : String(Math.round(elevation / (imperial ? 0.3048 : 1))),
+        heartRate: point.split?.heartRate == null ? '—' : String(Math.round(point.split.heartRate)),
+      }
+    })
+    const columnWidth = (header: string, values: string[], fraction: number) =>
+      Math.max(
+        width * fraction,
+        Math.max(labelWidth(header), ...values.map(labelWidth)) + labelSize * 1.2,
+      )
+    const distanceWidth = columnWidth(
+      headers.distance,
+      rows.map(row => row.distance),
+      0.075,
+    )
+    const paceWidth = columnWidth(
+      headers.pace,
+      rows.map(row => row.pace),
+      0.125,
+    )
+    const elevationWidth = columnWidth(
+      headers.elevation,
+      rows.map(row => row.elevation),
+      0.13,
+    )
+    const heartRateWidth = columnWidth(
+      headers.heartRate,
+      rows.map(row => row.heartRate),
+      0.07,
+    )
+    const paceX = x + distanceWidth
+    const left = paceX + paceWidth
+    const right = x + width - elevationWidth - heartRateWidth
+    const elevationX = x + width - heartRateWidth
+    const headerY = y + size * 2.6
+    const ruleY = headerY + labelSize * 0.8
+    const rowsTop = ruleY + labelSize * 0.6
+    const rowsBottom = y + height - labelSize * 0.3
+    const rowHeight = (rowsBottom - rowsTop) / rows.length
+    const speeds = rows.map(row => 1 / (row.point.y ?? 1))
+    const minimum = Math.min(...speeds)
+    const maximum = Math.max(...speeds)
+    // A local speed range makes the pace differences visible, with faster splits extending farther.
+    const barWidth = scaleLinear()
+      .domain([minimum, maximum])
+      .range([Math.max(0, right - left) * 0.25, Math.max(0, right - left)])
+    label(headers.distance, x, headerY)
+    label(headers.pace, paceX, headerY)
+    label(headers.elevation, elevationX, headerY, 'end')
+    label(headers.heartRate, x + width, headerY, 'end')
+    line(x, ruleY, x + width, ruleY)
+    rows.forEach((row, index) => {
+      const middle = rowsTop + (index + 0.5) * rowHeight
+      const baseline = middle + labelSize * 0.35
+      const holder = node('g', {
+        'aria-label': `${row.distance} ${headers.distance}, ${row.pace} ${chart.axis}, ${row.elevation} ${imperial ? 'ft' : 'm'}, ${row.heartRate} bpm`,
+      })
+      group.append(holder)
+      const barHeight = rowHeight * 0.78
+      holder.append(
+        node('rect', {
+          x: left,
+          y: middle - barHeight / 2,
+          width: barWidth(speeds[index]),
+          height: barHeight,
+          fill: color,
+        }),
+      )
+      label(row.distance, x, baseline)
+      label(row.pace, paceX, baseline)
+      label(row.elevation, elevationX, baseline, 'end')
+      label(row.heartRate, x + width, baseline, 'end')
+    })
+  } else if (bars) {
     const left = x + width * (zones ? 0.1 : 0.15)
     const right = x + width * (zones ? 0.58 : 0.73)
     const rowHeight = (bottom - top) / valid.length
@@ -206,9 +302,9 @@ export function paintTrainingChart(
         value,
         zones ? (point.range ?? '—') : point.value,
         x + width,
-        middle + valueSize * 0.35,
+        middle + labelSize * 0.35,
         referenceWidth * 0.25,
-        valueSize,
+        labelSize,
         ink,
       )
     })
@@ -320,7 +416,7 @@ export function paintTrainingChart(
       minHeight:
         Math.min(
           height,
-          lapChart ? minimumHeight : bars ? size * 5 + valid.length * valueSize * 1.8 : size * 8,
+          lapChart ? minimumHeight : bars ? size * 5 + valid.length * labelSize * 1.8 : size * 8,
         ) + 6,
       render: (targetWidth, targetHeight) => {
         const contentWidth = targetWidth - 6
