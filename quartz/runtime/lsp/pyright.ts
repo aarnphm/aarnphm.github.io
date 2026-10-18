@@ -4,6 +4,7 @@ import type {
   MarkedString,
   MarkupContent,
   Position,
+  Range,
 } from 'vscode-languageserver-protocol'
 import { autocompletion, type CompletionSource } from '@codemirror/autocomplete'
 import {
@@ -288,6 +289,85 @@ function notebookServerCompletion(serverCompletionSource: CompletionSource): Ext
   ]
 }
 
+const notebookSanitizedHtmlCache = new Map<string, string>()
+const notebookSanitizedHtmlCacheLimit = 256
+
+export function sanitizeNotebookHtml(html: string): string {
+  const cached = notebookSanitizedHtmlCache.get(html)
+  if (cached !== undefined) return cached
+  const sanitized = typeof DOMPurify.sanitize === 'function' ? DOMPurify.sanitize(html) : html
+  if (notebookSanitizedHtmlCache.size >= notebookSanitizedHtmlCacheLimit) {
+    const oldestKey = notebookSanitizedHtmlCache.keys().next().value
+    if (oldestKey !== undefined) notebookSanitizedHtmlCache.delete(oldestKey)
+  }
+  notebookSanitizedHtmlCache.set(html, sanitized)
+  return sanitized
+}
+
+function isPythonIdentifierChar(code: number): boolean {
+  return (
+    (code >= 48 && code <= 57) ||
+    (code >= 65 && code <= 90) ||
+    code === 95 ||
+    (code >= 97 && code <= 122)
+  )
+}
+
+type PythonHoverTokenSpan = { lineNumber: number; startCol: number; endCol: number }
+
+function pythonHoverTokenSpanAt(doc: Text, pos: number): PythonHoverTokenSpan | null {
+  if (pos < 0 || pos > doc.length) return null
+  const line = doc.lineAt(pos)
+  const text = line.text
+  if (text.length === 0) return null
+  const col = pos - line.from
+  const atCurrent = col < text.length && isPythonIdentifierChar(text.charCodeAt(col))
+  const atPrevious = col > 0 && isPythonIdentifierChar(text.charCodeAt(col - 1))
+  if (!atCurrent && !atPrevious) return null
+
+  const anchor = atCurrent ? col : col - 1
+  let startCol = anchor
+  while (startCol > 0 && isPythonIdentifierChar(text.charCodeAt(startCol - 1))) {
+    startCol -= 1
+  }
+  let endCol = anchor + 1
+  while (endCol < text.length && isPythonIdentifierChar(text.charCodeAt(endCol))) {
+    endCol += 1
+  }
+
+  let quote = 0
+  for (let i = 0; i <= startCol; i++) {
+    const ch = text.charCodeAt(i)
+    if (quote === 0) {
+      if (ch === 35) return null
+      if (ch === 39 || ch === 34) {
+        if (text.charCodeAt(i + 1) === ch && text.charCodeAt(i + 2) === ch) {
+          quote = ch + 100
+          i += 2
+        } else {
+          quote = ch
+        }
+      }
+    } else if (ch === 92) {
+      i += 1
+    } else if (quote > 100) {
+      const q = quote - 100
+      if (ch === q && text.charCodeAt(i + 1) === q && text.charCodeAt(i + 2) === q) {
+        quote = 0
+        i += 2
+      }
+    } else if (ch === quote) {
+      quote = 0
+    }
+  }
+
+  return { lineNumber: line.number, startCol, endCol }
+}
+
+export function hasPythonHoverTokenAt(doc: Text, pos: number): boolean {
+  return pythonHoverTokenSpanAt(doc, pos) !== null
+}
+
 function renderNotebookMarkedString(plugin: LSPPlugin, value: MarkedString): string {
   if (typeof value === 'string') return plugin.docToHTML(value, 'markdown')
   return `<pre><code>${escapeHTML(value.value)}</code></pre>`
@@ -306,32 +386,68 @@ function renderNotebookHoverContent(
   return plugin.docToHTML(value)
 }
 
+type CachedHoverEntry = { html: string; range?: Range }
+
+const notebookHoverCacheLimit = 256
+
+function createCachedHoverTooltip(doc: Text, pos: number, entry: CachedHoverEntry): Tooltip {
+  return {
+    pos: entry.range ? notebookPositionOffset(doc, entry.range.start) : pos,
+    end: entry.range ? notebookPositionOffset(doc, entry.range.end) : pos,
+    create() {
+      const element = document.createElement('div')
+      element.className = 'cm-lsp-hover-tooltip cm-lsp-documentation'
+      element.innerHTML = entry.html
+      return { dom: element }
+    },
+    above: true,
+  }
+}
+
 function notebookHoverTooltips(hoverTime: number): Extension {
+  const hoverCache = new Map<string, CachedHoverEntry | null>()
+
+  const cacheHoverEntry = (key: string, value: CachedHoverEntry | null) => {
+    if (!hoverCache.has(key) && hoverCache.size >= notebookHoverCacheLimit) {
+      const oldestKey = hoverCache.keys().next().value
+      if (oldestKey !== undefined) hoverCache.delete(oldestKey)
+    }
+    hoverCache.set(key, value)
+  }
+
   return hoverTooltip(
     (view, pos): Promise<Tooltip | null> => {
+      const token = pythonHoverTokenSpanAt(view.state.doc, pos)
+      if (!token) return Promise.resolve(null)
       const plugin = LSPPlugin.get(view)
       if (!plugin || plugin.client.serverCapabilities?.hoverProvider === false) {
         return Promise.resolve(null)
       }
       plugin.client.sync()
+      const fileVersion = plugin.client.workspace.getFile(plugin.uri)?.version ?? 0
+      const cacheKey = `${plugin.uri}:${fileVersion}:${token.lineNumber}:${token.startCol}:${token.endCol}`
+      if (hoverCache.has(cacheKey)) {
+        const cached = hoverCache.get(cacheKey) ?? null
+        return Promise.resolve(
+          cached ? createCachedHoverTooltip(view.state.doc, pos, cached) : null,
+        )
+      }
       return plugin.client
         .request<HoverParams, Hover | null>('textDocument/hover', {
           position: plugin.toPosition(pos),
           textDocument: { uri: plugin.uri },
         })
         .then(result => {
-          if (!result) return null
-          return {
-            pos: result.range ? notebookPositionOffset(view.state.doc, result.range.start) : pos,
-            end: result.range ? notebookPositionOffset(view.state.doc, result.range.end) : pos,
-            create() {
-              const element = document.createElement('div')
-              element.className = 'cm-lsp-hover-tooltip cm-lsp-documentation'
-              element.innerHTML = renderNotebookHoverContent(plugin, result.contents)
-              return { dom: element }
-            },
-            above: true,
+          if (!result) {
+            cacheHoverEntry(cacheKey, null)
+            return null
           }
+          const entry: CachedHoverEntry = {
+            html: renderNotebookHoverContent(plugin, result.contents),
+            range: result.range,
+          }
+          cacheHoverEntry(cacheKey, entry)
+          return createCachedHoverTooltip(view.state.doc, pos, entry)
         })
         .catch(error => {
           if (notebookIgnoredLspError(error)) return null
@@ -422,9 +538,16 @@ function createPyrightTransport(
     console.warn(`notebook pyright foreground ${serviceId} message failed`)
   })
   foregroundPort.start()
-  foreground.postMessage({ type: 'browser/boot', mode: 'foreground', port: channel.port1 }, [
-    channel.port1,
-  ])
+  foreground.postMessage(
+    {
+      type: 'browser/boot',
+      mode: 'foreground',
+      port: channel.port1,
+      typeshedManifestUrl,
+      packageStubsManifestUrl,
+    },
+    [channel.port1],
+  )
 
   return {
     send(message: string) {
@@ -454,7 +577,7 @@ function createPyrightTransport(
   }
 }
 
-class NotebookWorkspaceFile implements WorkspaceFile {
+export class NotebookWorkspaceFile implements WorkspaceFile {
   constructor(
     readonly id: string,
     readonly uri: string,
@@ -471,7 +594,7 @@ class NotebookWorkspaceFile implements WorkspaceFile {
   }
 }
 
-class NotebookPythonWorkspace extends Workspace {
+export class NotebookPythonWorkspace extends Workspace {
   files: NotebookWorkspaceFile[] = []
 
   private readonly filesByUri = new Map<string, NotebookWorkspaceFile>()
@@ -515,8 +638,8 @@ class NotebookPythonWorkspace extends Workspace {
     if (!file) return
     file.languageId = languageId
     file.view = view
-    file.lastSource = undefined
     const changed = this.updateFileDoc(file, view.state.doc)
+    if (changed) file.lastSource = undefined
     if (!this.openedUris.has(file.uri)) {
       if (this.client.connected) this.queueOpenFiles()
       return
@@ -529,7 +652,9 @@ class NotebookPythonWorkspace extends Workspace {
     if (!file || file.view !== view) return
     const changed = this.updateFileDoc(file, view.state.doc)
     file.view = null
-    file.lastSource = undefined
+    if (changed || file.lastSource === undefined) {
+      file.lastSource = file.doc.toString()
+    }
     if (changed) this.sendTextChange(file)
   }
 
@@ -563,9 +688,36 @@ class NotebookPythonWorkspace extends Workspace {
   }
 
   private refreshFiles() {
+    const cells = this.cells()
+    if (cells.length === this.files.length) {
+      let sameOrder = true
+      for (let i = 0; i < cells.length; i++) {
+        if (this.files[i].id !== cells[i].id) {
+          sameOrder = false
+          break
+        }
+      }
+      if (sameOrder) {
+        for (let i = 0; i < cells.length; i++) {
+          const cell = cells[i]
+          const existing = this.files[i]
+          if (existing.languageId !== cell.language) existing.languageId = cell.language
+          if (existing.executionIndex !== cell.executionIndex) {
+            existing.executionIndex = cell.executionIndex
+          }
+          if (!existing.view && existing.lastSource !== cell.source) {
+            existing.lastSource = cell.source
+            const changed = this.updateFileDoc(existing, notebookText(cell.source))
+            if (changed) this.sendTextChange(existing)
+          }
+        }
+        return
+      }
+    }
+
     const nextFiles: NotebookWorkspaceFile[] = []
     const nextByUri = new Map<string, NotebookWorkspaceFile>()
-    for (const cell of this.cells()) {
+    for (const cell of cells) {
       const uri = notebookCellUri(this.rootUri, this.sourcePath, cell.id)
       const existing = this.filesByUri.get(uri)
       if (existing) {
@@ -673,11 +825,11 @@ class NotebookPythonLspService {
       workspace: client =>
         new NotebookPythonWorkspace(client, this.rootUri, this.sourcePath, () => this.cells()),
       timeout: 20000,
-      sanitizeHTML: html => DOMPurify.sanitize(html),
+      sanitizeHTML: sanitizeNotebookHtml,
       extensions: [
         { clientCapabilities: notebookClientCapabilities },
         notebookServerCompletion(serverCompletionSource),
-        notebookHoverTooltips(300),
+        notebookHoverTooltips(180),
         signatureHelp({ keymap: false }),
         serverDiagnostics(),
       ],
