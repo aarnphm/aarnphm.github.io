@@ -8,7 +8,7 @@ finished: 2024
 id: The Three-Body Problem
 language: chinese
 modified: 2026-06-05 15:07:56 GMT-04:00
-posters: '[[library/posters/the-three-body-problem.jpg]]'
+posters: '[[library/posters/the-three-body-problem-cover.avif]]'
 status: finished
 subcategory: progress
 tags:

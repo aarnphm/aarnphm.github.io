@@ -7,7 +7,7 @@ description: a psychological novel about guilt, moral law, and redemption as a y
 finished: 2025
 id: Crime and Punishment
 modified: 2026-06-05 15:07:57 GMT-04:00
-posters: '[[library/posters/crime-and-punishment.jpg]]'
+posters: '[[library/posters/crime-and-punishment-cover.avif]]'
 status: evergreen
 subcategory: Dostoevsky
 tags:

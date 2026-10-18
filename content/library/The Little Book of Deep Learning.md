@@ -9,7 +9,7 @@ finished: 2024
 id: The Little Book of Deep Learning
 modified: 2026-06-05 15:07:59 GMT-04:00
 notebook: '[[thoughts/deep learning|omnipotent]]'
-posters: '[[library/posters/the-little-book-of-deep-learning.jpg]]'
+posters: '[[library/posters/the-little-book-of-deep-learning-cover.avif]]'
 status: finished
 subcategory: ml
 tags:
