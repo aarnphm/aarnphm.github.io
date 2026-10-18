@@ -1,15 +1,14 @@
 import { spawn } from 'node:child_process'
-import http from 'node:http'
 import path from 'node:path'
 import readline from 'node:readline/promises'
 import { pathToFileURL } from 'node:url'
 import { upsertEnvLine } from '../util/env-file'
+import { isLoopbackRedirect, listenForOAuthCallback } from './oauth-callback'
 
 const REDIRECT = process.env.OURA_REDIRECT_URI ?? 'https://aarnphm.xyz'
 const SCOPE =
   process.env.OURA_SCOPE ??
   'email personal daily heartrate tag workout session spo2 ring_configuration stress heart_health'
-const LOCAL_PORT = 8722
 const ENV_FILE = '.env'
 
 interface TokenResponse {
@@ -38,27 +37,10 @@ function openBrowser(url: string): void {
   child.unref()
 }
 
-const isLocal = (uri: string): boolean => uri.startsWith('http://localhost')
-
 function catchCodeOnLocalhost(): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const server = http.createServer((req, res) => {
-      const url = new URL(req.url ?? '', REDIRECT)
-      const code = url.searchParams.get('code')
-      const error = url.searchParams.get('error')
-      res.end(
-        error
-          ? `Oura authorization failed: ${error}`
-          : 'Oura authorized. Close this tab and return to the terminal.',
-      )
-      server.close()
-      if (error) reject(new Error(error))
-      else if (code) resolve(code)
-      else reject(new Error('no authorization code in redirect'))
-    })
-    const port = Number(new URL(REDIRECT).port) || LOCAL_PORT
-    server.listen(port, () => console.log(`[oura] waiting for redirect on ${REDIRECT} ...`))
-  })
+  const { server, grant } = listenForOAuthCallback({ provider: 'Oura', redirectUri: REDIRECT })
+  server.once('listening', () => console.log(`[oura] waiting for redirect on ${REDIRECT} ...`))
+  return grant.then(({ code }) => code)
 }
 
 function extractCode(input: string): string {
@@ -119,7 +101,7 @@ async function main(): Promise<void> {
   console.log(`if it does not open, visit:\n${url}\n`)
   openBrowser(url)
 
-  const code = isLocal(REDIRECT) ? await catchCodeOnLocalhost() : await promptForCode()
+  const code = isLoopbackRedirect(REDIRECT) ? await catchCodeOnLocalhost() : await promptForCode()
   const token = await exchange(clientId, clientSecret, code)
   if (!token.refresh_token)
     throw new Error(`no refresh_token in Oura response: ${JSON.stringify(token)}`)

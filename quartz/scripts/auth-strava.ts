@@ -1,9 +1,9 @@
 import { spawn } from 'node:child_process'
 import fs from 'node:fs/promises'
-import http from 'node:http'
 import { upsertEnvLine, removeEnvKeys } from '../util/env-file'
 import { joinSegments, QUARTZ } from '../util/path'
 import { isRecord, readString } from '../util/type-guards'
+import { listenForOAuthCallback } from './oauth-callback'
 
 const PORT = 8721
 const REDIRECT = `http://localhost:${PORT}`
@@ -52,24 +52,9 @@ function openBrowser(url: string): void {
 }
 
 function waitForCode(): Promise<AuthorizationGrant> {
-  return new Promise((resolve, reject) => {
-    const server = http.createServer((req, res) => {
-      const url = new URL(req.url ?? '', REDIRECT)
-      const code = url.searchParams.get('code')
-      const scope = url.searchParams.get('scope') ?? ''
-      const error = url.searchParams.get('error')
-      res.end(
-        error
-          ? `Strava authorization failed: ${error}`
-          : 'Strava authorized. Close this tab and return to the terminal.',
-      )
-      server.close()
-      if (error) reject(new Error(error))
-      else if (code) resolve({ code, scope })
-      else reject(new Error('no authorization code in redirect'))
-    })
-    server.listen(PORT, () => console.log(`[strava] waiting for redirect on ${REDIRECT} ...`))
-  })
+  const { server, grant } = listenForOAuthCallback({ provider: 'Strava', redirectUri: REDIRECT })
+  server.once('listening', () => console.log(`[strava] waiting for redirect on ${REDIRECT} ...`))
+  return grant
 }
 
 function assertGrantedScope(requested: string, granted: string): void {
