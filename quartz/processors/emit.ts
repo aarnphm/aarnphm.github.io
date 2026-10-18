@@ -25,10 +25,11 @@ async function runEmitterOutput(
 ) {
   let emittedFiles = 0
   const perf = new PerfTimer()
+  const spanArgv = ctx.emittedFiles ? { verbose: true } : ctx.argv
   try {
     const emitted = await output
     if (emitted === null) {
-      logBuildSpan(ctx.argv, `emit:${emitter.name}`, `${emittedFiles} files`, perf.elapsedMs())
+      logBuildSpan(spanArgv, `emit:${emitter.name}`, `${emittedFiles} files`, perf.elapsedMs())
       return emittedFiles
     }
 
@@ -58,7 +59,7 @@ async function runEmitterOutput(
       throw new Error(`Failed to emit from plugin ${emitter.name}`, { cause: err })
     trace(`Failed to emit from plugin \`${emitter.name}\``, err as Error)
   }
-  logBuildSpan(ctx.argv, `emit:${emitter.name}`, `${emittedFiles} files`, perf.elapsedMs())
+  logBuildSpan(spanArgv, `emit:${emitter.name}`, `${emittedFiles} files`, perf.elapsedMs())
   return emittedFiles
 }
 
