@@ -708,7 +708,19 @@ function DocumentReader({ data, signal }: { data: DocumentData; signal: AbortSig
     }
     window.addEventListener('keydown', onKey, true)
     return () => window.removeEventListener('keydown', onKey, true)
-  })
+  }, [activeId, compact, label, page, tool])
+
+  useEffect(() => {
+    if (phase !== 'ready') return
+    const viewer = viewerRef.current
+    if (!viewer) return
+    const needed = new Set<number>()
+    for (const entry of entries) needed.add(entry.mark.target.page)
+    for (const citation of record.citedBy) {
+      if (citation.page) needed.add(citation.page)
+    }
+    if (needed.size > 0) viewer.ensurePageViewports(needed)
+  }, [phase, entries, record.citedBy])
 
   const copyMarkQuote = async (id: string): Promise<boolean> => {
     const entry = book.entries.get(id)
@@ -1132,7 +1144,7 @@ function DocumentReader({ data, signal }: { data: DocumentData; signal: AbortSig
                 <Margin
                   items={marginItems}
                   activeKey={activeId}
-                  layoutKey={`${marginItems.map(item => item.key).join()}|${layoutTick}|${viewportTick}`}
+                  layoutKey={`${marginItems.map(item => `${item.key}:${Math.round(item.top)}`).join()}|${layoutTick}|${viewportTick}`}
                   hidden={view !== 'margin'}
                 />
                 {marksState === 'error' && (

@@ -2060,14 +2060,13 @@ function setupPdfEvents(state: PdfState) {
     if (state.scrollFrame) return
     state.scrollFrame = window.requestAnimationFrame(() => {
       state.scrollFrame = 0
-      if (!syncingAnnotationScroll) {
+      if (state.root.dataset.pdfAnnotations === 'true' && !syncingAnnotationScroll) {
         syncingAnnotationScroll = true
         state.annotationRail.scrollTop = state.scroller.scrollTop
         window.requestAnimationFrame(() => {
           syncingAnnotationScroll = false
         })
       }
-      positionPdfAnnotationCards(state)
       const page = currentPageFromScroll(state)
       if (page !== state.currentPage) {
         state.currentPage = page

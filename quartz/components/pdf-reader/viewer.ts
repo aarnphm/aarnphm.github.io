@@ -215,6 +215,88 @@ function firstPageTitle(content: PdfTextContent, viewport: PdfViewport): string 
     : null
 }
 
+const MAX_CACHED_DOCS = 4
+const DOC_CACHE_TTL_MS = 120_000
+const EAGER_VIEWPORT_LIMIT = 32
+
+interface CachedPdfDocument {
+  src: string
+  task: PdfLoadingTask
+  promise: Promise<PdfDocumentProxy>
+  viewports: Map<number, PdfViewport>
+  refs: number
+  evictTimer: number
+}
+
+const cachedPdfDocs = new Map<string, CachedPdfDocument>()
+
+function acquirePdfDocument(module: PdfJsModule, src: string): CachedPdfDocument {
+  const existing = cachedPdfDocs.get(src)
+  if (existing) {
+    if (existing.evictTimer !== 0) {
+      window.clearTimeout(existing.evictTimer)
+      existing.evictTimer = 0
+    }
+    existing.refs++
+    cachedPdfDocs.delete(src)
+    cachedPdfDocs.set(src, existing)
+    return existing
+  }
+
+  while (cachedPdfDocs.size >= MAX_CACHED_DOCS) {
+    let victimKey: string | undefined
+    for (const [key, entry] of cachedPdfDocs) {
+      if (entry.refs <= 0) {
+        victimKey = key
+        break
+      }
+    }
+    if (!victimKey) break
+    const victim = cachedPdfDocs.get(victimKey)!
+    if (victim.evictTimer !== 0) window.clearTimeout(victim.evictTimer)
+    cachedPdfDocs.delete(victimKey)
+    void victim.task.destroy().catch(() => undefined)
+  }
+
+  const task = module.getDocument({
+    url: src,
+    cMapUrl: '/static/pdfjs/cmaps/',
+    cMapPacked: true,
+    standardFontDataUrl: '/static/pdfjs/standard_fonts/',
+    wasmUrl: '/static/pdfjs/wasm/',
+  })
+  const entry: CachedPdfDocument = {
+    src,
+    task,
+    promise: task.promise,
+    viewports: new Map(),
+    refs: 1,
+    evictTimer: 0,
+  }
+  cachedPdfDocs.set(src, entry)
+  void task.promise.catch(() => {
+    if (cachedPdfDocs.get(src) === entry) {
+      if (entry.evictTimer !== 0) window.clearTimeout(entry.evictTimer)
+      cachedPdfDocs.delete(src)
+    }
+  })
+  return entry
+}
+
+function releasePdfDocument(entry: CachedPdfDocument | undefined): void {
+  if (!entry) return
+  entry.refs = Math.max(0, entry.refs - 1)
+  if (entry.refs > 0) return
+  if (entry.evictTimer !== 0) window.clearTimeout(entry.evictTimer)
+  entry.evictTimer = window.setTimeout(() => {
+    entry.evictTimer = 0
+    if (entry.refs <= 0 && cachedPdfDocs.get(entry.src) === entry) {
+      cachedPdfDocs.delete(entry.src)
+      void entry.task.destroy().catch(() => undefined)
+    }
+  }, DOC_CACHE_TTL_MS)
+}
+
 export class PdfViewer {
   readonly pages: ViewerPage[] = []
   zoom = 1
@@ -223,7 +305,7 @@ export class PdfViewer {
   pageCount = 0
 
   private module?: PdfJsModule
-  private task?: PdfLoadingTask
+  private cachedDoc?: CachedPdfDocument
   private document?: PdfDocumentProxy
   private renderObserver?: IntersectionObserver
   private textObserver?: IntersectionObserver
@@ -249,28 +331,29 @@ export class PdfViewer {
   async load(): Promise<void> {
     this.module = await loadPdfJs()
     if (this.destroyed) return
-    this.task = this.module.getDocument({
-      url: this.src,
-      cMapUrl: '/static/pdfjs/cmaps/',
-      cMapPacked: true,
-      standardFontDataUrl: '/static/pdfjs/standard_fonts/',
-      wasmUrl: '/static/pdfjs/wasm/',
-    })
-    this.document = await this.task.promise
+    const cachedDoc = acquirePdfDocument(this.module, this.src)
+    this.cachedDoc = cachedDoc
+    this.document = await cachedDoc.promise
     if (this.destroyed) return
     this.pageCount = this.document.numPages
 
     const first = await this.document.getPage(1)
-    const firstBase = first.getViewport({ scale: 1 })
+    const firstBase = cachedDoc.viewports.get(1) ?? first.getViewport({ scale: 1 })
+    cachedDoc.viewports.set(1, firstBase)
+    const fragment = document.createDocumentFragment()
     for (let number = 1; number <= this.pageCount; number++) {
       const page = this.createPage(number)
       if (number === 1) {
         page.proxy = first
         page.base = firstBase
+      } else {
+        const cachedBase = cachedDoc.viewports.get(number)
+        if (cachedBase) page.base = cachedBase
       }
       this.pages.push(page)
-      this.column.append(page.element)
+      fragment.append(page.element)
     }
+    this.column.append(fragment)
     this.zoom = this.fitZoom()
     this.layoutPages()
 
@@ -298,7 +381,10 @@ export class PdfViewer {
     this.lastWidth = this.scroller.clientWidth
     this.scroller.addEventListener('scroll', this.onScroll, { passive: true })
     this.events.onPageViewport(1)
-    this.fetchViewports(2)
+    for (let number = 2; number <= this.pageCount; number++) {
+      if (this.pages[number - 1].base) this.events.onPageViewport(number)
+    }
+    this.fetchViewports(2, Math.min(this.pageCount, EAGER_VIEWPORT_LIMIT))
   }
 
   destroy() {
@@ -313,7 +399,62 @@ export class PdfViewer {
       page.renderTask?.cancel()
       page.textTask?.cancel()
     }
-    void this.task?.destroy().catch(() => undefined)
+    releasePdfDocument(this.cachedDoc)
+    this.cachedDoc = undefined
+  }
+
+  /** Ensures scale-1 viewports are loaded for specific pages (e.g. pages containing saved marks). */
+  ensurePageViewports(pageNumbers: Iterable<number>) {
+    if (this.destroyed || !this.document) return
+    const document = this.document
+    const missing: number[] = []
+    for (const number of pageNumbers) {
+      if (number >= 1 && number <= this.pageCount && !this.pages[number - 1]?.base) {
+        missing.push(number)
+      }
+    }
+    if (missing.length === 0) return
+    void Promise.all(
+      missing.map(number =>
+        document.getPage(number).then(proxy => {
+          const page = this.pages[number - 1]
+          if (!page) return
+          page.proxy = proxy
+          if (!page.base) {
+            page.base = proxy.getViewport({ scale: 1 })
+            this.cachedDoc?.viewports.set(number, page.base)
+          }
+        }),
+      ),
+    )
+      .then(() => {
+        if (this.destroyed) return
+        let resized = false
+        for (const number of missing) {
+          const page = this.pages[number - 1]
+          if (page && this.sizePageDirty(page)) {
+            resized = true
+          }
+        }
+        if (resized) {
+          this.preservingAnchor(() => {
+            for (const number of missing) {
+              const page = this.pages[number - 1]
+              if (page) this.sizePage(page)
+            }
+          })
+          this.events.onLayout()
+        } else {
+          for (const number of missing) {
+            const page = this.pages[number - 1]
+            if (page) this.sizePage(page)
+          }
+        }
+        for (const number of missing) this.events.onPageViewport(number)
+      })
+      .catch(error => {
+        if (!this.destroyed) console.error(error)
+      })
   }
 
   private createPage(number: number): ViewerPage {
@@ -357,18 +498,33 @@ export class PdfViewer {
     return clampZoom(Math.max(1, this.availableWidth()) / (base.width * CSS_UNITS))
   }
 
-  private sizePage(page: ViewerPage) {
+  private sizePageDirty(page: ViewerPage): boolean {
     const base = page.base ?? this.defaultBase()
-    if (!base) return
+    if (!base) return false
+    const scale = this.zoom * CSS_UNITS
+    const width = `${Math.round(base.width * scale)}px`
+    const height = `${Math.round(base.height * scale)}px`
+    return page.element.style.width !== width || page.element.style.height !== height
+  }
+
+  private sizePage(page: ViewerPage): boolean {
+    const base = page.base ?? this.defaultBase()
+    if (!base) return false
     const scale = this.zoom * CSS_UNITS
     const width = Math.round(base.width * scale)
-    page.element.style.width = `${width}px`
-    page.element.style.height = `${Math.round(base.height * scale)}px`
+    const widthPx = `${width}px`
+    const heightPx = `${Math.round(base.height * scale)}px`
+    const changed = page.element.style.width !== widthPx || page.element.style.height !== heightPx
+    if (changed) {
+      page.element.style.width = widthPx
+      page.element.style.height = heightPx
+    }
     page.element.toggleAttribute(
       'data-fits-width',
       this.fit === 'width' && width <= Math.round(this.availableWidth()),
     )
     page.element.style.setProperty('--total-scale-factor', String(scale * (base.userUnit ?? 1)))
+    return changed
   }
 
   /** Keeps the reading position while page boxes change size underneath it. */
@@ -425,12 +581,16 @@ export class PdfViewer {
     }
   }
 
-  private fetchViewports(from: number) {
-    if (this.destroyed || !this.document || from > this.pageCount) return
+  private fetchViewports(from: number, maxPage: number = this.pageCount) {
+    if (this.destroyed || !this.document || from > maxPage) return
     idle(() => {
       const document = this.document
       if (this.destroyed || !document) return
-      const to = Math.min(this.pageCount, from + VIEWPORT_BATCH - 1)
+      if (this.draining || this.scrollFrame !== 0) {
+        this.fetchViewports(from, maxPage)
+        return
+      }
+      const to = Math.min(maxPage, from + VIEWPORT_BATCH - 1)
       const pending: Promise<void>[] = []
       for (let number = from; number <= to; number++) {
         const page = this.pages[number - 1]
@@ -439,6 +599,7 @@ export class PdfViewer {
           document.getPage(number).then(proxy => {
             page.proxy = proxy
             page.base = proxy.getViewport({ scale: 1 })
+            this.cachedDoc?.viewports.set(number, page.base)
           }),
         )
       }
@@ -446,18 +607,26 @@ export class PdfViewer {
         .then(() => {
           if (this.destroyed) return
           let resized = false
-          this.preservingAnchor(() => {
-            for (let number = from; number <= to; number++) {
-              const page = this.pages[number - 1]
-              const width = page.element.style.width
-              const height = page.element.style.height
-              this.sizePage(page)
-              resized ||= width !== page.element.style.width || height !== page.element.style.height
+          for (let number = from; number <= to; number++) {
+            if (this.sizePageDirty(this.pages[number - 1])) {
+              resized = true
+              break
             }
-          })
-          if (resized) this.events.onLayout()
+          }
+          if (resized) {
+            this.preservingAnchor(() => {
+              for (let number = from; number <= to; number++) {
+                this.sizePage(this.pages[number - 1])
+              }
+            })
+            this.events.onLayout()
+          } else {
+            for (let number = from; number <= to; number++) {
+              this.sizePage(this.pages[number - 1])
+            }
+          }
           for (let number = from; number <= to; number++) this.events.onPageViewport(number)
-          this.fetchViewports(to + 1)
+          this.fetchViewports(to + 1, maxPage)
         })
         .catch(error => {
           if (!this.destroyed) console.error(error)
@@ -471,8 +640,15 @@ export class PdfViewer {
     page.proxy = await this.document.getPage(page.number)
     if (!page.base) {
       page.base = page.proxy.getViewport({ scale: 1 })
-      this.preservingAnchor(() => this.sizePage(page))
-      this.events.onLayout()
+      this.cachedDoc?.viewports.set(page.number, page.base)
+      if (this.sizePageDirty(page)) {
+        this.preservingAnchor(() => {
+          this.sizePage(page)
+        })
+        this.events.onLayout()
+      } else {
+        this.sizePage(page)
+      }
       this.events.onPageViewport(page.number)
     }
     return page.proxy
@@ -481,8 +657,13 @@ export class PdfViewer {
   private onRenderIntersect(entries: IntersectionObserverEntry[]) {
     for (const entry of entries) {
       const number = Number((entry.target as HTMLElement).dataset.pageNumber)
-      if (entry.isIntersecting) this.nearPages.add(number)
-      else this.nearPages.delete(number)
+      if (entry.isIntersecting) {
+        this.nearPages.add(number)
+      } else {
+        this.nearPages.delete(number)
+        this.renderQueue.delete(number)
+        this.pages[number - 1]?.renderTask?.cancel()
+      }
     }
     this.enqueueNear()
   }
@@ -490,8 +671,12 @@ export class PdfViewer {
   private onTextIntersect(entries: IntersectionObserverEntry[]) {
     for (const entry of entries) {
       const number = Number((entry.target as HTMLElement).dataset.pageNumber)
-      if (entry.isIntersecting) this.visiblePages.add(number)
-      else this.visiblePages.delete(number)
+      if (entry.isIntersecting) {
+        this.visiblePages.add(number)
+      } else {
+        this.visiblePages.delete(number)
+        this.pages[number - 1]?.textTask?.cancel()
+      }
     }
     this.scheduleText()
   }
