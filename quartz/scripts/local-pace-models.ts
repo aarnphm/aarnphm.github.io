@@ -24,14 +24,17 @@ export interface LocalModelSelection {
 }
 
 function atomicCopy(source: string, destination: string): void {
+  if (existsSync(destination) && readFileSync(source).equals(readFileSync(destination))) return
   const temporary = `${destination}.${process.pid}.tmp`
   copyFileSync(source, temporary)
   renameSync(temporary, destination)
 }
 
 function atomicJson(destination: string, value: unknown): void {
+  const content = `${JSON.stringify(value, null, 2)}\n`
+  if (existsSync(destination) && readFileSync(destination, 'utf8') === content) return
   const temporary = `${destination}.${process.pid}.tmp`
-  writeFileSync(temporary, `${JSON.stringify(value, null, 2)}\n`)
+  writeFileSync(temporary, content)
   renameSync(temporary, destination)
 }
 
