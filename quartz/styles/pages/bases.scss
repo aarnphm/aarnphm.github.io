@@ -775,6 +775,9 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='kanban
 }
 
 .base-map {
+  --base-map-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+  --base-map-selected: color-mix(in srgb, var(--secondary) 18%, var(--base-map-surface));
+  --base-map-text-color: var(--darkgray);
   --base-map-meta-color: color-mix(in srgb, var(--darkgray) 90%, var(--dark));
 
   display: grid;
@@ -825,7 +828,7 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='kanban
     border: 0;
     border-radius: var(--radius-none);
     background: none;
-    color: var(--gray);
+    color: var(--darkgray);
     cursor: pointer;
 
     &[aria-pressed='true'],
@@ -888,7 +891,7 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='kanban
 .base-map-kicker,
 .base-map-count {
   display: block;
-  color: var(--gray);
+  color: var(--base-map-meta-color);
   font-family: var(--codeFont);
   font-size: 0.65rem;
   line-height: 1.5;
@@ -924,7 +927,7 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='kanban
 
     &[aria-pressed='true'] {
       border-color: var(--darkgray);
-      background: var(--highlight);
+      background: var(--base-map-selected);
       color: var(--dark);
     }
   }
@@ -963,7 +966,7 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='kanban
   background: transparent;
   border: 0;
   border-bottom: 1px solid var(--lightgray);
-  color: var(--darkgray);
+  color: var(--base-map-text-color);
   cursor: pointer;
 
   > .base-map-swatch {
@@ -984,9 +987,17 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='kanban
     overflow-wrap: anywhere;
   }
 
-  &:hover,
   &[aria-pressed='true'] {
-    background: var(--highlight);
+    --base-map-text-color: var(--dark);
+    --base-map-meta-color: var(--dark);
+
+    background: var(--base-map-selected);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not([aria-pressed='true']) {
+      background: var(--base-map-surface);
+    }
   }
 }
 
@@ -1010,9 +1021,13 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='kanban
 }
 
 .base-map-selection {
+  --base-map-text-color: var(--dark);
+  --base-map-meta-color: var(--dark);
+
   position: relative;
   border-top: 1px solid var(--lightgray);
-  background: color-mix(in srgb, var(--highlight) 50%, var(--light));
+  background: var(--base-map-selected);
+  color: var(--base-map-text-color);
 
   &[hidden] {
     display: none;
@@ -1045,7 +1060,7 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='kanban
   padding: 0;
   border: 0;
   background: transparent;
-  color: var(--gray);
+  color: var(--dark);
   font-size: 1.25rem;
   line-height: 1;
   cursor: pointer;
@@ -1067,7 +1082,7 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='kanban
     border: 0;
     border-bottom: 1px solid var(--lightgray);
     background: transparent;
-    color: var(--darkgray);
+    color: var(--base-map-text-color);
     text-align: start;
     font-family: var(--bodyFont);
     font-size: 0.72rem;
@@ -1089,12 +1104,12 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='kanban
 .base-map-no-results {
   padding: 0.75rem 1rem;
   font-size: 0.85rem;
-  color: var(--gray);
+  color: var(--darkgray);
 }
 
 .base-map button:focus-visible,
 .base-map a:focus-visible {
-  outline: 2px solid var(--secondary);
+  outline: 2px solid var(--dark);
   outline-offset: -2px;
 }
 
@@ -1130,27 +1145,29 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='kanban
   }
 }
 
-// mapbox popup overrides to match site aesthetic
+// Mapbox loads its stylesheet after site CSS, so popup overrides need a scoped selector.
 .mapboxgl-popup {
   font-family: var(--bodyFont);
   max-width: 300px;
 }
 
-.mapboxgl-popup-content {
+.mapboxgl-popup .mapboxgl-popup-content {
   padding: 0;
   border-radius: var(--radius-none);
   background-color: var(--light);
+  color: var(--darkgray);
   border: 1px solid var(--lightgray);
+  box-shadow: none;
 }
 
-.mapboxgl-popup-close-button {
+.mapboxgl-popup .mapboxgl-popup-close-button {
   display: none;
   font-size: 20px;
   padding: 4px 8px;
   color: var(--darkgray);
 }
 
-.mapboxgl-popup-tip {
+.mapboxgl-popup .mapboxgl-popup-tip {
   border-top-color: var(--light);
   border-bottom-color: var(--light);
 }
@@ -1199,12 +1216,12 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='kanban
   margin: 0.5rem 0;
   font-size: 0.8rem;
   line-height: 1.5;
-  color: var(--darkgray);
+  color: var(--base-map-text-color, var(--darkgray));
 }
 
 .base-map-popup-address {
   font-size: 0.7rem;
-  color: var(--gray);
+  color: var(--base-map-meta-color, var(--darkgray));
 }
 
 .base-map-popup-actions {
@@ -1216,6 +1233,17 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='kanban
   border-top: 1px solid var(--lightgray);
   font-family: var(--codeFont);
   font-size: 0.65rem;
+
+  a {
+    color: var(--base-map-text-color, var(--darkgray));
+
+    &:hover,
+    &:focus-visible {
+      background: transparent;
+      color: var(--dark);
+      text-decoration: underline;
+    }
+  }
 }
 
 .base-map-spot-popup {
@@ -1225,7 +1253,6 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='kanban
   --map-popup-tip-corner-inset: 0px;
 
   .mapboxgl-popup-content {
-    box-shadow: none;
     border-width: var(--map-popup-border);
   }
 
@@ -1315,7 +1342,7 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='kanban
   flex-direction: column;
   gap: 0.25rem;
   font-size: 13px;
-  color: var(--darkgray);
+  color: var(--base-map-text-color, var(--darkgray));
 }
 
 .base-map-popup-field {
@@ -1326,7 +1353,7 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='kanban
 .base-map-popup-label {
   font-weight: 500;
   margin-right: 0.25rem;
-  color: var(--gray);
+  color: var(--base-map-meta-color, var(--darkgray));
   min-width: fit-content;
 
   &::after {
