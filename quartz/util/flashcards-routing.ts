@@ -5,6 +5,7 @@ import type { ProcessedContent, QuartzPluginData } from '../plugins/vfile'
 import type { ChangeEvent } from '../types/plugin'
 import { clone } from './clone'
 import { flashcardsSlug, isFlashcardPath, sourceSlugForDeck } from './flashcards-path'
+import { ReloadableWeakMap } from './module-caches'
 import {
   FilePath,
   FullSlug,
@@ -75,6 +76,14 @@ function targetSlug(slug: string, routes: Map<FullSlug, FlashcardRoute>, source:
   return slug
 }
 
+function linksMatch(left: readonly SimpleSlug[], right: readonly SimpleSlug[]): boolean {
+  if (left.length !== right.length) return false
+  for (let i = 0; i < left.length; i += 1) {
+    if (left[i] !== right[i]) return false
+  }
+  return true
+}
+
 function routeTree(
   tree: Root,
   from: FullSlug,
@@ -83,8 +92,11 @@ function routeTree(
   links: readonly SimpleSlug[],
   baseUrl?: string,
   deck = false,
+  mutate = false,
 ): { tree: Root; links: SimpleSlug[] } {
-  const result: Root = clone(tree)
+  const canShareTree = !mutate && from === to && !deck
+  const result: Root = canShareTree ? tree : mutate ? tree : clone(tree)
+  let needsClone = false
   const targets = new Map<SimpleSlug, Set<SimpleSlug>>()
   const origin = `https://${baseUrl ?? 'example.com'}`
   const base = new URL(`/${from}`, origin)
@@ -102,7 +114,11 @@ function routeTree(
         continue
       }
       if (deck && !['http:', 'https:', 'mailto:', 'tel:', 'data:'].includes(url.protocol)) {
-        node.properties[attr] = ''
+        if (canShareTree) {
+          needsClone = true
+        } else {
+          node.properties[attr] = ''
+        }
         continue
       }
       if (url.origin !== base.origin) continue
@@ -117,11 +133,18 @@ function routeTree(
       const mapped = targetSlug(slug, routes, Boolean(url.hash) || transclude)
       if (mapped === slug && from === to) continue
       const destination = `${mapped}${extension}${url.search}${url.hash}`
-      node.properties[attr] = value.startsWith('/')
+      const nextValue = value.startsWith('/')
         ? `/${destination}`
         : /^https?:/.test(value)
           ? `${base.origin}/${destination}`
           : joinSegments(pathToRoot(to), destination)
+      if (nextValue !== value) {
+        if (canShareTree) {
+          needsClone = true
+        } else {
+          node.properties[attr] = nextValue
+        }
+      }
     }
     for (const attr of ['dataSlug', 'data-slug', 'dataUrl', 'data-url']) {
       const value = node.properties[attr]
@@ -132,7 +155,13 @@ function routeTree(
         transclude ||
           (typeof node.properties.href === 'string' && node.properties.href.includes('#')),
       )
-      node.properties[attr] = mapped
+      if (mapped !== value) {
+        if (canShareTree) {
+          needsClone = true
+        } else {
+          node.properties[attr] = mapped
+        }
+      }
       if (
         (attr === 'dataSlug' || attr === 'data-slug') &&
         isFullSlug(value) &&
@@ -145,6 +174,9 @@ function routeTree(
       }
     }
   })
+  if (needsClone) {
+    return routeTree(clone(tree), from, to, routes, links, baseUrl, deck, true)
+  }
   return {
     tree: result,
     links: [
@@ -186,7 +218,7 @@ function routeMarkdown(
   )
 }
 
-const pageCache = new WeakMap<
+const pageCache = new ReloadableWeakMap<
   VFile,
   { signature: string; tree: Root; note?: QuartzPluginData; page: ProcessedContent }
 >()
@@ -202,9 +234,10 @@ export function flashcardPages(content: ProcessedContent[], baseUrl?: string): P
   )
   const hasDefaults = [...routes.values()].some(route => route.default)
   const signature = `${baseUrl}:${JSON.stringify([...routes].sort(([a], [b]) => a.localeCompare(b)))}`
-  return content.map(([tree, file]): ProcessedContent => {
+  return content.map((entry): ProcessedContent => {
+    const [tree, file] = entry
     const original = file.data.slug
-    if (!original) return [tree, file]
+    if (!original) return entry
     const deck = file.data.flashcards
     const route = routes.get(deck?.sourceSlug ?? original)
     const slug = route
@@ -214,11 +247,47 @@ export function flashcardPages(content: ProcessedContent[], baseUrl?: string): P
           : route.deckSlug
         : route.sourceSlug
       : original
-    if (!route && !hasDefaults) return [tree, file]
+    if (!route && !hasDefaults) return entry
     const note = route ? notes.get(route.noteSlug) : undefined
     const cached = pageCache.get(file)
     if (cached?.signature === signature && cached.tree === tree && cached.note === note)
       return cached.page
+    if (!route) {
+      const originalLinks = file.data.links ?? []
+      const originalLlmsText =
+        typeof file.data.llmsText === 'string' ? file.data.llmsText : undefined
+      const nextLlmsText = routeMarkdown(originalLlmsText, routes, original)
+      const { tree: nextTree, links } = routeTree(
+        tree,
+        original,
+        slug,
+        routes,
+        originalLinks,
+        baseUrl,
+        false,
+      )
+      if (
+        nextTree === tree &&
+        nextLlmsText === originalLlmsText &&
+        linksMatch(links, originalLinks)
+      ) {
+        pageCache.set(file, { signature, tree, note, page: entry })
+        return entry
+      }
+      const data: QuartzPluginData = {
+        ...file.data,
+        slug,
+        llmsText: nextLlmsText,
+        links,
+        htmlAst: nextTree,
+      }
+      const page: ProcessedContent = [
+        nextTree,
+        new VFile({ path: file.path, value: file.value, data }),
+      ]
+      pageCache.set(file, { signature, tree, note, page })
+      return page
+    }
     const data: QuartzPluginData = { ...file.data, slug }
     if (route) data.flashcardRoute = route
     if (deck && route) {
