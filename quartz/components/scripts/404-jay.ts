@@ -1,5 +1,5 @@
-// The homepage trail's blue jay (visitor-trail/jay.ts) lives here too, in the tree at the right
-// edge of the view, at the size of the folk in the left-hand tree. It stands on the level limbs and
+// The homepage trail's blue jay (visitor-trail/jay.ts) lives here too, in one of the edge trees, at
+// the size of the tree folk. It stands on the level limbs and
 // moves between them, and now and then flies out of view on an errand that goes with the season:
 // in autumn it picks an acorn and carries it off to cache, in winter and spring it comes back with
 // one and eats it on the limb, and in summer it goes out and comes back with nothing to show. On a
@@ -86,14 +86,17 @@ export function makeJay(): Jay {
   }
 }
 
-// Up to three level limbs that are seen, a jay's length apart, and the lowest upright limb or trunk
-// in view for the woodpecker. Returns false when the tree shows no limb to stand on.
+// Up to three limbs no steeper than 50° that are seen, a jay's length apart, and the highest thick
+// upright limb or trunk in view for the woodpecker. The jay takes whichever crown shows more such limbs, the
+// first on a tie: a wide view crops the right-hand tree to its trunk. It keeps clear of `avoid`, the
+// tree folk's seat and rope. Returns false when neither tree shows a limb to stand on.
 export function perchJay(
   jay: Jay,
-  tree: Crown,
+  trees: Crown[],
   g: Grid,
   view: [number, number, number, number],
   hidden: (x: number, y: number) => boolean,
+  avoid: Pt[] = [],
 ) {
   const px = g.px
   const seen = (x: number, y: number) =>
@@ -102,36 +105,48 @@ export function perchJay(
     y > view[1] + 8 * px &&
     y < view[3] - 12 * px &&
     !hidden(x, y)
-  const limbs: { at: Pt; score: number }[] = []
-  for (const s of tree.segs) {
-    const dx = s.x1 - s.x0
-    const dy = s.y1 - s.y0
-    const len = Math.hypot(dx, dy)
-    if (s.w0 < px || s.w0 > 6 * px || Math.abs(dy) > Math.abs(dx) * 0.8 || len < 4 * px) continue
-    const at: Pt = [(s.x0 + s.x1) / 2, (s.y0 + s.y1) / 2 - (s.w0 + s.w1) / 4]
-    if (!seen(at[0], at[1] - 6 * px)) continue
-    limbs.push({ at, score: len / px - (Math.abs(dy) / Math.abs(dx)) * 6 })
+  const clear = (at: Pt) => avoid.every(p => Math.hypot(p[0] - at[0], p[1] - at[1]) > 14 * px)
+  const perchesOf = (tree: Crown) => {
+    const limbs: { at: Pt; score: number }[] = []
+    for (const s of tree.segs) {
+      const dx = s.x1 - s.x0
+      const dy = s.y1 - s.y0
+      const len = Math.hypot(dx, dy)
+      if (s.w0 < 0.9 * px || s.w0 > 6 * px || Math.abs(dy) > Math.abs(dx) * 1.2 || len < 4 * px)
+        continue
+      const at: Pt = [(s.x0 + s.x1) / 2, (s.y0 + s.y1) / 2 - (s.w0 + s.w1) / 4]
+      if (!seen(at[0], at[1] - 6 * px) || !clear(at)) continue
+      limbs.push({ at, score: len / px - (Math.abs(dy) / Math.abs(dx)) * 6 })
+    }
+    limbs.sort((a, b) => b.score - a.score)
+    const picked: Pt[] = []
+    for (const { at } of limbs) {
+      if (picked.every(p => Math.hypot(p[0] - at[0], p[1] - at[1]) > 9 * px)) picked.push(at)
+      if (picked.length === 3) break
+    }
+    return picked
   }
-  limbs.sort((a, b) => b.score - a.score)
+  let tree = trees[0]
   jay.perches = []
-  for (const { at } of limbs) {
-    if (jay.perches.every(p => Math.hypot(p[0] - at[0], p[1] - at[1]) > 12 * px))
-      jay.perches.push(at)
-    if (jay.perches.length === 3) break
+  for (const t of trees) {
+    const picked = perchesOf(t)
+    if (picked.length > jay.perches.length) {
+      tree = t
+      jay.perches = picked
+    }
   }
-  let trunk: Limb | null = null
-  for (const s of tree.segs) {
-    const mx = (s.x0 + s.x1) / 2
-    const my = (s.y0 + s.y1) / 2
-    if (s.w0 < 3 * px || Math.abs(s.y1 - s.y0) < Math.abs(s.x1 - s.x0) || !seen(mx, my)) continue
-    if (!trunk || my > (trunk.y0 + trunk.y1) / 2) trunk = s
+  // The woodpecker clings to the side of the bark that faces into the view, so a trunk standing
+  // half out of the view still has a seen face, and as high as the bark is thick: the trunk's foot
+  // may stand in the lake.
+  jay.trunk = null
+  for (const s of tree?.segs ?? []) {
+    if (s.w0 < 3 * px || Math.abs(s.y1 - s.y0) < Math.abs(s.x1 - s.x0)) continue
+    const face: 1 | -1 = (s.x0 + s.x1) / 2 > (view[0] + view[2]) / 2 ? 1 : -1
+    // Half a pixel off the bark: the sprite's empty column on the trunk side lies over the edge.
+    const at: Pt = [(s.x0 + s.x1) / 2 - face * ((s.w0 + s.w1) / 4 + 0.5 * px), (s.y0 + s.y1) / 2]
+    if (!seen(at[0], at[1]) || !clear(at)) continue
+    if (!jay.trunk || at[1] < jay.trunk.at[1]) jay.trunk = { at, face }
   }
-  if (trunk) {
-    // The side that faces into the view, so the bird is not behind the bark.
-    const face: 1 | -1 = (trunk.x0 + trunk.x1) / 2 > (view[0] + view[2]) / 2 ? 1 : -1
-    const x = (trunk.x0 + trunk.x1) / 2 - face * ((trunk.w0 + trunk.w1) / 4 + 2 * px)
-    jay.trunk = { at: [x, (trunk.y0 + trunk.y1) / 2], face }
-  } else jay.trunk = null
   if (!jay.perches.length) return false
   const outward = (tree.segs[0]?.x0 ?? view[2]) > (view[0] + view[2]) / 2 ? 1 : -1
   jay.exit = [outward > 0 ? view[2] + 12 * px : view[0] - 12 * px, jay.perches[0][1] + 30 * px]
