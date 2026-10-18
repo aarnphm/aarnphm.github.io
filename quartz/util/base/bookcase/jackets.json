@@ -1,0 +1,1739 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "id": "scientific-freedom",
+      "title": "Scientific Freedom",
+      "publisher": "Stripe Press",
+      "isbn": "9780578675916",
+      "editionEvidence": "Stored front design matches the publisher wrap; ISBN is from the publisher purchase links.",
+      "page": "https://press.stripe.com/",
+      "source": "https://images.ctfassets.net/fzn2n1nzq965/5x3yOcmVNMssgNJbAkl2jY/426a20f158a4682cd3ff44d566de4da8/SF_diffuse.png",
+      "sourceSha256": "989566ee61143e533875dd91f2853c9c6a6a7e753cdb674f7c156a01b127a051",
+      "poster": "library/posters/scientific-freedom.jpg",
+      "posterSha256": "2ff0d156ab1d2f547990b75998fd8e2c89622a86187a3ae1f21815dc1f29350c",
+      "crop": { "left": 869, "top": 348, "width": 182, "height": 1227 },
+      "artwork": "scientific-freedom-989566ee6114.webp",
+      "height": 320,
+      "artworkSha256": "dbeec4e0cfb68c0ba39f7ae8f55e769c8ae97c4d7ca51e5ff740ae56d30793ce"
+    },
+    {
+      "id": "the-dream-machine",
+      "title": "The Dream Machine",
+      "publisher": "Stripe Press",
+      "isbn": "9781732265110",
+      "editionEvidence": "Stored front design matches the publisher wrap; ISBN is from the publisher purchase links.",
+      "page": "https://press.stripe.com/",
+      "source": "https://images.ctfassets.net/fzn2n1nzq965/7itLc708oUSntS10BARYE/c086759323b20781959feecf13808ab5/TDM_diffuse.jpg",
+      "sourceSha256": "a9a23a09cbb107decc56a4cbb281b3a607b8cf601318de056d3f681c5532c943",
+      "poster": "library/posters/the-dream-machine.jpg",
+      "posterSha256": "ce980a6dfb854fc812fbc4d40a0084372ce7145d246c1bbdf082f7ab36ed95ec",
+      "crop": { "left": 869, "top": 348, "width": 182, "height": 1227 },
+      "artwork": "the-dream-machine-a9a23a09cbb1.webp",
+      "height": 320,
+      "artworkSha256": "8179cfdbd8947e1066944f1c3ad33f5f6bc13328601f34831531cd35f7534f68"
+    },
+    {
+      "id": "working-in-public",
+      "title": "Working in Public",
+      "publisher": "Stripe Press",
+      "isbn": "9780578675862",
+      "editionEvidence": "Stored front design matches the publisher wrap; ISBN is from the publisher purchase links.",
+      "page": "https://press.stripe.com/",
+      "source": "https://images.ctfassets.net/fzn2n1nzq965/4yQnbUm2Lwj3uYDuSn2grX/1b65d40af95583e1f7487a84306e13a3/WIP_diffuse.png",
+      "sourceSha256": "834c7ead2058710bef178e360f917cab40eaa0e6ce31895c30548c63cc76c9fd",
+      "poster": "library/posters/working-in-public.jpg",
+      "posterSha256": "0f126e4560d4a3e2a80307afd106d50d4a00ed2b8a6600c8dc0dff48afa0ceb9",
+      "crop": { "left": 869, "top": 348, "width": 182, "height": 1227 },
+      "artwork": "working-in-public-834c7ead2058.webp",
+      "height": 320,
+      "artworkSha256": "654cae3b271998e3a55ecfd606014ce9e119bb296eeade34fef01ea7745e0a77"
+    },
+    {
+      "id": "pretentiousness",
+      "title": "Pretentiousness: Why it Matters",
+      "publisher": "Coffee House Press",
+      "isbn": "9781566894289",
+      "editionEvidence": "Patti Capaldi’s published portfolio shows the flat full wrap, matching the stored giant white P, title, edge circle and author placement; ISBN is printed on its back panel.",
+      "page": "https://www.ithaca.edu/faculty/pcapaldi",
+      "source": "https://www.ithaca.edu/sites/default/files/2024-03/capaldi_design_2023.pdf",
+      "sourceSha256": "1f8a4d52ea47fff031df995c0de025823d7376dacc79a0403a5925453842878c",
+      "poster": "library/posters/pretentiousness.jpg",
+      "posterSha256": "8659ff033d6f89fc1e20ba0695f9afeb936ad100382aec4a314bbd7f8a00a2c2",
+      "render": { "page": 18, "dpi": 200 },
+      "crop": { "left": 2384, "top": 1140, "width": 53, "height": 988 },
+      "artwork": "pretentiousness-1f8a4d52ea47.webp",
+      "height": 320,
+      "artworkSha256": "45b20f3a97ee99ec5b277202cb732143397a3b6555c822ba33075ad536e93780"
+    },
+    {
+      "id": "the-creative-act",
+      "title": "The Creative Act: A Way of Being",
+      "isbn": "9780593652886",
+      "publisher": "Penguin Press",
+      "page": "https://www.pentagram.com/news/working-with-rick-rubin-on-the-creative-act-a-way-of-being",
+      "source": "https://pentagram-production.imgix.net/861621f1-efeb-439c-9bcb-dfd9e96d1dba/TheCreativeAct_design-process_67.jpg?auto=compress%2Cformat&fit=min&fm=jpg&q=80&rect=0%2C0%2C4000%2C2250&w=1500&crop=1&fit=crop&h=844&s=ab5a2a4b7b6f28c2076faf0077a617b0",
+      "sourceSha256": "23d1df57f465963e80d8718cc4a6d97b2f488ce736cb825490081b5c54d96715",
+      "posterSha256": "4824508c8ef89c99df192c41ad5c13bd58b96fd882d56d50bc473445cbe29cc3",
+      "crop": { "left": 681, "top": 49, "width": 107, "height": 728 },
+      "editionEvidence": "Pentagram production article by Paula Scher and Rick Rubin shows this clothbound Penguin Press book, ring/dot motif, stacked front title and vertical author exactly matching saved front. PRH hardcover page confirms ISBN9780593652886. Original photograph has slight spine curvature and uneven lighting; crop is interior to the binding edges and retains title, circular motif, author, Penguin mark. No typography reconstructed.",
+      "sourceKind": "designer-production-photograph",
+      "artwork": "the-creative-act-23d1df57f465.webp",
+      "height": 320,
+      "poster": "library/posters/the-creative-act.jpg",
+      "artworkSha256": "5f2a6c6ec278f50425e649fbca6cd1c1b1a4ad34c5f5fb981e74bc5743879cc8"
+    },
+    {
+      "id": "catch-22",
+      "title": "Catch-22",
+      "poster": "library/posters/catch-22.jpg",
+      "isbn": null,
+      "publisher": "Simon & Schuster",
+      "page": "https://historical.ha.com/itm/books/literature-1900-up/joseph-heller-catch-22/a/6278-45170.s",
+      "source": "https://upload.wikimedia.org/wikipedia/commons/6/66/Catch-22_%281961%29_dust_jacket%2C_first_edition.jpg",
+      "sourceSha256": "3d7c8c22f0bd9cecc89392331788a206e208cecf32af0040b19ee358bd1c8f98",
+      "posterSha256": "c65bfbd4d6493d494b2124e350becc4fad42fbf36aff883170aab413c5657d4b",
+      "crop": { "left": 1314, "top": 30, "width": 257, "height": 1270 },
+      "editionEvidence": "Heritage Auctions lot6278-45170 describes1961 first edition with original Paul Bacon jacket. Saved front visually matches all lettering/art composition; specific physical copy/printing not otherwise identified. Source flattened photo includes full spine; mild paper curvature/aged wear remains, no reconstructed pixels.",
+      "sourceKind": "historical-jacket-photograph",
+      "artwork": "catch-22-3d7c8c22f0bd.webp",
+      "height": 320,
+      "artworkSha256": "0019479b409b1dca3edec290edf1acea10582f8f83d8f397143c20d37c63e9da"
+    },
+    {
+      "id": "the-ai-anarchies-book",
+      "title": "The AI Anarchies Book",
+      "poster": "library/posters/ai-anarchies-cover.avif",
+      "isbn": "9783883312613",
+      "publisher": "Akademie der Künste",
+      "page": "https://basics09.de/projekte/the-ai-anarchies-book",
+      "source": "https://basics09.de/media/pages/projekte/the-ai-anarchies-book/75d1ab5b57-1742561458/250129_basics09_theaianarchiesbook_c_waldemarsalesski_13-2048x-q80.webp",
+      "sourceSha256": "8e9f569519265743d62597f81ff2394076b4a3b86f7d0242194817cd0f12dcb6",
+      "posterSha256": "14b180f299cc5bb650428b1242c35c90143d51014bd253530a0e8cae0bd7267a",
+      "perspective": {
+        "width": 80,
+        "height": 1000,
+        "points": [
+          { "source": [402, 896], "target": [0, 0] },
+          { "source": [409, 816], "target": [79, 0] },
+          { "source": [973, 1541], "target": [79, 999] },
+          { "source": [950, 1620], "target": [0, 999] }
+        ]
+      },
+      "crop": { "left": 0, "top": 8, "width": 80, "height": 976 },
+      "editionEvidence": "Designer Basics09 project photograph has identical black front, stacked title, generated grey blob image, editors and layout. Official Akademie der Künste publication announcement confirms designers and ISBN9783883312613. Genuine diagonal spine photograph rectified via homography; no text redrawn. Retains original light falloff and rounded binding edges. Root must support recorded perspective step before extract. Decorative photographed board lip at very bottom cropped out. Front normalized in cover audit: Crop grey promotional canvas and shadow outside actual flat black front. Printed artwork and verified spine edition remain identical.",
+      "sourceKind": "designer-photograph-rectified",
+      "artwork": "the-ai-anarchies-book-8e9f56951926.webp",
+      "height": 320,
+      "artworkSha256": "763a2e540c34d09d15b437be7d581417a7f6250b9d41c68e07cdd9af00743286"
+    },
+    {
+      "id": "what-we-can-know",
+      "title": "What We Can Know",
+      "publisher": "Jonathan Cape",
+      "isbn": "9781787335738",
+      "editionEvidence": "2025 hardback, publisher ISBN and dimensions; saved front visually matches Louise Body artist source. Artist promotional render contains mild baked crease shading; source four-corner perspective correction preserves actual letters and imprint. No added marks.",
+      "page": "https://www.louisebody.com/news/cover-story-my-collaboration-with-penguin-vintage-on-ian-mcewans-latest-novel/",
+      "corroboration": [
+        "https://www.penguin.co.uk/books/471294/what-we-can-know-by-mcewan-ian/9781787335738"
+      ],
+      "source": "https://www.louisebody.com/wp-content/uploads/2025/09/What-we-can-know-open-book-1.jpg",
+      "sourceSha256": "7d08b03cbd52334ff5e36e1df6a8b89b9858ebbc4d5a9f194302b557a738fce8",
+      "poster": "library/posters/what-we-can-know.jpg",
+      "posterSha256": "25a2e3e33755a86937638cecc4ca89ba4185479bc4d9391a3e4afd7b429d4f4a",
+      "perspective": {
+        "width": 112,
+        "height": 906,
+        "points": [
+          { "source": [615, 130], "target": [0, 0] },
+          { "source": [681, 106], "target": [111, 0] },
+          { "source": [681, 1012], "target": [111, 905] },
+          { "source": [615, 989], "target": [0, 905] }
+        ]
+      },
+      "crop": { "left": 0, "top": 0, "width": 112, "height": 906 },
+      "height": 320,
+      "sourceKind": "artist-promotional-render-rectified",
+      "artwork": "what-we-can-know-7d08b03cbd52.webp",
+      "artworkSha256": "e65f1986ac9cff677ec8abc197c31a424f9bd8df8073ff479900a8f35c851e47"
+    },
+    {
+      "id": "leaving-the-twentieth-century",
+      "title": "Leaving the Twentieth Century: Situationist Revolutions",
+      "poster": "library/posters/leaving-the-twentieth-century-cover.avif",
+      "isbn": "9781804294864",
+      "publisher": "Verso Books",
+      "page": "https://www.versobooks.com/products/3097-leaving-the-twentieth-century",
+      "source": "https://cdn.shopify.com/s/files/1/0569/3869/2669/files/getimage_a300874b-d70e-45be-985a-fb4621852e07.jpg?v=1791779478",
+      "sourceSha256": "35dfe63c701811727eed8b66564bd20cec64d81ff22ce9a1d709854a9502b598",
+      "posterSha256": "292c68bdc18edf96f1b4d71bd76d386094e853136a2812e8db816e6fd05ec8f3",
+      "crop": { "left": 1, "top": 0, "width": 44, "height": 650 },
+      "sourceKind": "publisher-packshot",
+      "editionEvidence": "Official product JSON SKU and barcode 9781804294864 for paperback. Publisher packshot matches orange brick texture and white black-lettered spine in existing saved poster. Publisher crop retains full title, McKenzie Wark, Verso logo; crop is genuine packshot pixels and has mild perspective shear. Original source has650px height, final22x320 WebP inspected. This is a visual design match, not verification of a particular owned physical printing. Front normalized in cover audit: Replace clipped angled packshot with publisher flat front for same edition. White space belongs to printed brick design.",
+      "qualityLimit": "Publisher packshot rather than flat press wrap. Mild shear and22px width at320height; root must approve visual quality. No missing artwork filled or invented.",
+      "artwork": "leaving-the-twentieth-century-35dfe63c7018.webp",
+      "height": 320,
+      "artworkSha256": "c45de7c77e244d2ddbb0fd346a96e802512f4f845496a09ee4c60c19663a46a4"
+    },
+    {
+      "id": "beyond-good-and-evil",
+      "title": "Beyond Good and Evil",
+      "publisher": "Penguin Books",
+      "isbn": "9780140449235",
+      "editionEvidence": "The owner’s original front and spine scans identify Penguin Books2003, R.J.Hollingdale translation, ISBN9780140449235. Stored front matches the painting crop, white Penguin Classics strip, orange spaced author name and italic title. Flat spine scan retains physical wear; printing and owned copy remain unverified.",
+      "page": "https://hermiene.net/literature/library/book/beyond-good-and-evil--nietzsche",
+      "source": "https://hermiene.net/images/books/hi-res/beyond-good-and-evil--nietzsche_spine.png",
+      "sourceSha256": "32bc3352a156b89325eb0c2320c127fac2c2d2fa27433fcb6d4f77ba8bc53272",
+      "poster": "library/posters/beyond-good-and-evil.jpg",
+      "posterSha256": "da7b1a754d425a048e327273df4d47b54d6b1bf195f215fcd6cb35185a34a4ad",
+      "crop": { "left": 0, "top": 0, "width": 293, "height": 4579 },
+      "height": 320,
+      "sourceKind": "owner-flat-scan",
+      "artwork": "beyond-good-and-evil-32bc3352a156.webp",
+      "artworkSha256": "3c70e23cb324070c357789ce11fd7b492530c0c99cd0d770ad0a8fa9818bcc09"
+    },
+    {
+      "id": "structure-and-interpretation-of-computer-programs",
+      "title": "Structure and Interpretation of Computer Programs",
+      "isbn": "9780262510363",
+      "publisher": "MIT Press",
+      "page": "https://bookbot.at/g/3988034",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/53101295.webp",
+      "sourceSha256": "0f64b3af7a77f7c48a1c97e3af37f5636885826d36d3d809e2f30c5a3bd811a4",
+      "posterSha256": "c5666e58fa25a261354bcb1e0b677c509f15d5ddfc9de1a9f5eaaafad741914a",
+      "corroboration": ["https://rezised-images.knhbt.cz/1920x1920/53101296.webp"],
+      "perspective": {
+        "width": 130,
+        "height": 1500,
+        "points": [
+          { "source": [510, 205], "target": [0, 0] },
+          { "source": [640, 205], "target": [129, 0] },
+          { "source": [640, 1719], "target": [129, 1499] },
+          { "source": [511, 1687], "target": [0, 1499] }
+        ]
+      },
+      "crop": { "left": 0, "top": 0, "width": 130, "height": 1500 },
+      "height": 320,
+      "editionEvidence": "First-edition paperback matches saved purple front with red floor, red top rule, title and author block above fullwidth wizard scene. Seller paired back photo prints0-262-51036-7, equivalent ISBN13 9780262510363. Genuine burgundy spine is faded and scraped; retain original title/author/MIT logo, no invented marks. Source quad rectified by magick with alphaoff, virtualpixel edge and viewport130x1500. Specific physical printing unknown.",
+      "sourceKind": "seller-original-photograph-rectified",
+      "poster": "library/posters/structure-and-interpretation-of-computer-programs.jpg",
+      "artwork": "structure-and-interpretation-of-computer-programs-0f64b3af7a77.webp",
+      "artworkSha256": "0699e6443073bf7f6f27ab3bc8e6016e7721bb0a69876a7820b83858c41558e5"
+    },
+    {
+      "id": "tcp-ip-illustrated",
+      "title": "TCP/IP Illustrated, Volume 1: The Protocols",
+      "isbn": "9780201633467",
+      "publisher": "Addison-Wesley",
+      "page": "https://bookbot.de/g/8335312",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/53363488.jpg",
+      "sourceSha256": "8b3e02bad5b47f06d4d79eb6e34e0490f6335db9a2a03f80c9a19ee1cae29736",
+      "posterSha256": "297fd1bb126b500ed5e53c55d6b2b2edce85dd78195282ff472f2b4a986e6b51",
+      "corroboration": [
+        "https://rezised-images.knhbt.cz/1920x1920/53363489.webp",
+        "https://www.oreilly.com/library/view/tcp-ip-illustrated-volume/0201633469/pr01.html"
+      ],
+      "perspective": {
+        "width": 200,
+        "height": 1500,
+        "points": [
+          { "source": [548, 232], "target": [0, 0] },
+          { "source": [749, 207], "target": [199, 0] },
+          { "source": [751, 1729], "target": [199, 1499] },
+          { "source": [539, 1692], "target": [0, 1499] }
+        ]
+      },
+      "crop": { "left": 0, "top": 0, "width": 200, "height": 1500 },
+      "height": 320,
+      "editionEvidence": "Saved first-edition front matches seller photograph in serif title, red brushstroke, globe/rainbow scene, W.Richard Stevens and blue series strip at right. Back photograph barcode prints9780201633467 and ISBN0-201-63346-9. Actual white/red spine at left carries globe, TCP/IP Illustrated Volume1, Stevens and AddisonWesley mark, all unobscured. Slight curved binding/photographic shading retained after homography, no reconstructed pixels. Specific printing unknown.",
+      "sourceKind": "seller-original-photograph-rectified",
+      "poster": "library/posters/TCP-IP-Illustrated.jpg",
+      "artwork": "tcp-ip-illustrated-8b3e02bad5b4.webp",
+      "artworkSha256": "5bc1a501a6e58dbf034a10ff5a267fa43d30498619772b7cb595460a099c2fea"
+    },
+    {
+      "id": "mindset",
+      "title": "Mindset",
+      "publisher": "Robinson",
+      "isbn": "9781472139955",
+      "editionEvidence": "Bookbot seller photograph shows exact white/cyan saved front, UPDATED EDITION and MILLION-COPY BESTSELLER lines, cyan Matthew Syed quote bubble, same subtitle and author placement, alongside complete blue spine. Product metadata and pairedback barcode identify ISBN9781472139955. Genuine photo pixels rectified via homography; no artwork redrawn. Particular owned printing remains unverified.",
+      "page": "https://bookbot.com/g/3540938/b/21940984?fallbackStrategy=mother",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/80884657.jpg",
+      "sourceSha256": "021ea6b4617fa5d308f6a4d9f4915df7cf31bc045086ed6b51c757785ef241d4",
+      "poster": "library/posters/mindset.jpg",
+      "posterSha256": "7ea6abf8f942c5c347b278b4d3a039d39ad4ab6e433d40839f56d21988cf9974",
+      "crop": { "left": 0, "top": 0, "width": 72, "height": 1500 },
+      "artwork": "mindset-021ea6b4617f.webp",
+      "height": 320,
+      "perspective": {
+        "width": 72,
+        "height": 1500,
+        "points": [
+          { "source": [520, 218], "target": [0, 0] },
+          { "source": [593, 208], "target": [71, 0] },
+          { "source": [588, 1727], "target": [71, 1499] },
+          { "source": [520, 1703], "target": [0, 1499] }
+        ]
+      },
+      "sourceKind": "bookseller-photograph-rectified",
+      "corroboration": ["https://rezised-images.knhbt.cz/1920x1920/80884658.jpg"],
+      "artworkSha256": "923b57968bbe6a80e848666deb29b0d09498b1318b62a52b204d0c284114dbb6"
+    },
+    {
+      "id": "the-fall",
+      "title": "The Fall",
+      "publisher": "Vintage",
+      "isbn": "9780679720225",
+      "editionEvidence": "Primary publisher front matches saved art. Genuine photographed spine matches title, author, unique geometric motif and Vintage imprint for the same Yentus edition design; printing and personal copy identity remain unknown. ISBN basis: publisher front image https://images3.penguinrandomhouse.com/cover/9780679720225 visually matches existing front; photographed spine has same distinctive Yentus-series pattern. No claim to printing number.",
+      "page": "https://www.penguinrandomhouse.com/books/23468/the-fall-by-albert-camus/",
+      "source": "https://casacarlini.com/cdn/shop/articles/Albert-Camus-Books_7319c56c-7186-4182-a068-0361b14deebf.jpg?v=1788615528",
+      "sourceSha256": "003627ae287250716bd4338f1e0b26cf407b6963c95d062ce546a789a75db1ec",
+      "poster": "library/posters/the-fall.jpg",
+      "posterSha256": "4b4fd7ce77d3826a673ea5d8cac2b125589df03972cd61f52c8a17d5e3cd722f",
+      "crop": { "left": 0, "top": 0, "width": 1753, "height": 78 },
+      "artwork": "the-fall-003627ae2872.webp",
+      "height": 320,
+      "perspective": {
+        "width": 1753,
+        "height": 78,
+        "points": [
+          { "source": [148, 1133], "target": [0, 0] },
+          { "source": [1901, 1142], "target": [1752, 0] },
+          { "source": [1901, 1221], "target": [1752, 77] },
+          { "source": [149, 1210], "target": [0, 77] }
+        ]
+      },
+      "sourceKind": "original-photograph-rectified",
+      "rotation": 90,
+      "artworkSha256": "c5ed57d3cc097f5817c846888118ea0ead5a5ad723b8f78334e1461af19431bb",
+      "corroboration": ["https://images3.penguinrandomhouse.com/cover/9780679720225"]
+    },
+    {
+      "id": "the-myth-of-sisyphus",
+      "title": "The Myth of Sisyphus",
+      "publisher": "Vintage",
+      "isbn": "9780525564454",
+      "editionEvidence": "Primary publisher front matches saved art. Genuine photographed spine matches title, author, unique geometric motif and Vintage imprint for the same Yentus edition design; printing and personal copy identity remain unknown. ISBN basis: publisher front image https://images3.penguinrandomhouse.com/cover/9780525564454 visually matches existing front; photographed spine has same distinctive Yentus-series pattern. No claim to printing number.",
+      "page": "https://www.penguinrandomhouse.com/books/23470/the-myth-of-sisyphus-by-albert-camus/",
+      "source": "https://casacarlini.com/cdn/shop/articles/Albert-Camus-Books_7319c56c-7186-4182-a068-0361b14deebf.jpg?v=1788615528",
+      "sourceSha256": "003627ae287250716bd4338f1e0b26cf407b6963c95d062ce546a789a75db1ec",
+      "poster": "library/posters/the-myth-of-sisyphus.jpg",
+      "posterSha256": "b880bccdb1e9f66c7b63656a4c4a34d6345348b22487a6672baa16f5b3e82f35",
+      "crop": { "left": 0, "top": 0, "width": 1738, "height": 90 },
+      "artwork": "the-myth-of-sisyphus-003627ae2872.webp",
+      "height": 320,
+      "perspective": {
+        "width": 1738,
+        "height": 90,
+        "points": [
+          { "source": [157, 724], "target": [0, 0] },
+          { "source": [1896, 736], "target": [1737, 0] },
+          { "source": [1893, 828], "target": [1737, 89] },
+          { "source": [157, 812], "target": [0, 89] }
+        ]
+      },
+      "sourceKind": "original-photograph-rectified",
+      "rotation": 90,
+      "artworkSha256": "7110194c92c4f540cf35ec50c465fd3f41000b6b343057cca4ce1c46f4288c8d",
+      "corroboration": ["https://images3.penguinrandomhouse.com/cover/9780525564454"]
+    },
+    {
+      "id": "the-plague",
+      "title": "The Plague",
+      "publisher": "Vintage",
+      "isbn": "9780679720218",
+      "editionEvidence": "Primary publisher front matches saved art. Genuine photographed spine matches title, author, unique geometric motif and Vintage imprint for the same Yentus edition design; printing and personal copy identity remain unknown. ISBN basis: publisher front image https://images3.penguinrandomhouse.com/cover/9780679720218 visually matches existing front; photographed spine has same distinctive Yentus-series pattern. No claim to printing number.",
+      "page": "https://images3.penguinrandomhouse.com/cover/9780679720218",
+      "source": "https://casacarlini.com/cdn/shop/articles/Albert-Camus-Books_7319c56c-7186-4182-a068-0361b14deebf.jpg?v=1788615528",
+      "sourceSha256": "003627ae287250716bd4338f1e0b26cf407b6963c95d062ce546a789a75db1ec",
+      "poster": "library/posters/the-plague.jpg",
+      "posterSha256": "16122f212330b443bf40eaddf114649fd4cc8e9d7dcfb0d6e225bf70071b03be",
+      "crop": { "left": 0, "top": 0, "width": 1743, "height": 137 },
+      "artwork": "the-plague-003627ae2872.webp",
+      "height": 320,
+      "perspective": {
+        "width": 1743,
+        "height": 137,
+        "points": [
+          { "source": [157, 564], "target": [0, 0] },
+          { "source": [1902, 573], "target": [1742, 0] },
+          { "source": [1898, 713], "target": [1742, 136] },
+          { "source": [157, 698], "target": [0, 136] }
+        ]
+      },
+      "sourceKind": "original-photograph-rectified",
+      "rotation": 90,
+      "artworkSha256": "2c23147f3641fb639dd0a44fb870e428be50744a05d8dffc419bc1d3faacc8ec",
+      "corroboration": ["https://images3.penguinrandomhouse.com/cover/9780679720218"]
+    },
+    {
+      "id": "the-rebel",
+      "title": "The Rebel",
+      "publisher": "Vintage",
+      "isbn": "9780679733843",
+      "editionEvidence": "Primary publisher front matches saved art. Genuine photographed spine matches title, author, unique geometric motif and Vintage imprint for the same Yentus edition design; printing and personal copy identity remain unknown. ISBN basis: publisher front image https://images3.penguinrandomhouse.com/cover/9780679733843 visually matches existing front; photographed spine has same distinctive Yentus-series pattern. No claim to printing number.",
+      "page": "https://www.penguinrandomhouse.com/books/23475/the-rebel-by-albert-camus/",
+      "source": "https://casacarlini.com/cdn/shop/articles/Albert-Camus-Books_7319c56c-7186-4182-a068-0361b14deebf.jpg?v=1788615528",
+      "sourceSha256": "003627ae287250716bd4338f1e0b26cf407b6963c95d062ce546a789a75db1ec",
+      "poster": "library/posters/the-rebel.jpg",
+      "posterSha256": "bf053c6d05cd7524a9733abc0a2d0cf45b40740f7d198f000aca80c45d4b6030",
+      "crop": { "left": 0, "top": 0, "width": 1751, "height": 129 },
+      "artwork": "the-rebel-003627ae2872.webp",
+      "height": 320,
+      "perspective": {
+        "width": 1751,
+        "height": 129,
+        "points": [
+          { "source": [154, 405], "target": [0, 0] },
+          { "source": [1906, 423], "target": [1750, 0] },
+          { "source": [1904, 552], "target": [1750, 128] },
+          { "source": [155, 533], "target": [0, 128] }
+        ]
+      },
+      "sourceKind": "original-photograph-rectified",
+      "rotation": 90,
+      "artworkSha256": "d74db2daa7c3c01922fa8d5e9d3c183c58dfaf801101bdeaa0c4105926616059",
+      "corroboration": ["https://images3.penguinrandomhouse.com/cover/9780679733843"]
+    },
+    {
+      "id": "the-stranger",
+      "title": "The Stranger",
+      "publisher": "Vintage",
+      "isbn": "9780679720201",
+      "editionEvidence": "Primary publisher front matches saved art. Genuine photographed spine matches title, author, unique geometric motif and Vintage imprint for the same Yentus edition design; printing and personal copy identity remain unknown. ISBN basis: publisher front image https://images3.penguinrandomhouse.com/cover/9780679720201 visually matches existing front; photographed spine has same distinctive Yentus-series pattern. No claim to printing number.",
+      "page": "https://www.penguinrandomhouse.com/books/23477/the-stranger-by-albert-camus-translated-by-matthew-ward-introduction-by-keith-gore/9780679720201/",
+      "source": "https://casacarlini.com/cdn/shop/articles/Albert-Camus-Books_7319c56c-7186-4182-a068-0361b14deebf.jpg?v=1788615528",
+      "sourceSha256": "003627ae287250716bd4338f1e0b26cf407b6963c95d062ce546a789a75db1ec",
+      "poster": "library/posters/the-stranger.jpg",
+      "posterSha256": "789e8c3d6fcbf495a98f8d383d58751fa857c9b678269ab63e54e58f0cbad4bc",
+      "crop": { "left": 0, "top": 0, "width": 1765, "height": 76 },
+      "artwork": "the-stranger-003627ae2872.webp",
+      "height": 320,
+      "perspective": {
+        "width": 1765,
+        "height": 76,
+        "points": [
+          { "source": [150, 156], "target": [0, 0] },
+          { "source": [1918, 182], "target": [1764, 0] },
+          { "source": [1913, 255], "target": [1764, 75] },
+          { "source": [152, 234], "target": [0, 75] }
+        ]
+      },
+      "sourceKind": "original-photograph-rectified",
+      "rotation": 90,
+      "artworkSha256": "09e04bc3891c42dd9bb59e85fcaaf3ebe433993ca9f533e84146566db7ae964a",
+      "corroboration": ["https://images3.penguinrandomhouse.com/cover/9780679720201"]
+    },
+    {
+      "id": "resistance-rebellion-and-death",
+      "title": "Resistance, Rebellion, and Death",
+      "publisher": "Vintage",
+      "isbn": "9780679764014",
+      "editionEvidence": "Primary publisher front matches saved art. Genuine photographed spine matches title, author, unique geometric motif and Vintage imprint for the same Yentus edition design; printing and personal copy identity remain unknown. ISBN basis: publisher front image https://images3.penguinrandomhouse.com/cover/9780679764014 visually matches existing front; photographed spine has same distinctive Yentus-series pattern. No claim to printing number.",
+      "page": "https://www.penguinrandomhouse.com/books/23465/resistance-rebellion-and-death-by-albert-camus/",
+      "source": "https://casacarlini.com/cdn/shop/articles/Albert-Camus-Books_7319c56c-7186-4182-a068-0361b14deebf.jpg?v=1788615528",
+      "sourceSha256": "003627ae287250716bd4338f1e0b26cf407b6963c95d062ce546a789a75db1ec",
+      "poster": "library/posters/resistance-rebellion-and-death.jpg",
+      "posterSha256": "a0477476d915b66dbce7538adde76264a7fa830964d1df8e8283be4985c296da",
+      "crop": { "left": 0, "top": 0, "width": 1770, "height": 121 },
+      "artwork": "resistance-rebellion-and-death-003627ae2872.webp",
+      "height": 320,
+      "perspective": {
+        "width": 1770,
+        "height": 121,
+        "points": [
+          { "source": [146, 255], "target": [0, 0] },
+          { "source": [1917, 277], "target": [1769, 0] },
+          { "source": [1915, 393], "target": [1769, 120] },
+          { "source": [147, 380], "target": [0, 120] }
+        ]
+      },
+      "sourceKind": "original-photograph-rectified",
+      "rotation": 90,
+      "artworkSha256": "2256048d867e6ed1fed666b7cd33de4863672273c08d2e77220771f73eba4e40",
+      "corroboration": ["https://images3.penguinrandomhouse.com/cover/9780679764014"]
+    },
+    {
+      "id": "the-world-as-will-and-representation",
+      "title": "The World as Will and Representation",
+      "publisher": "Dover Publications",
+      "isbn": null,
+      "editionEvidence": "Dealer original photograph simultaneously shows exact saved blue front portrait/bands, E.F.J.Payne translation and VolumeI, plus complete spine. Dealer identifies Dover paperback1969. ISBN/actualprinting not independently shown. Genuine spine has Schopenhauer, fulltitle,VOLUMEI,DOVER; preserve photo lighting and small edge wear.",
+      "page": "https://www.minotavrosbooks.com/pages/books/009406/arthur-schopenhauer/the-world-as-will-and-representation-in-two-volumes-volume-i",
+      "source": "https://minotavrosbooks.cdn.bibliopolis.com/pictures/009406.jpg",
+      "sourceSha256": "bfac48750538e6e91817cc358ccce4e5777ec086d276c5f1abf49fc30e665346",
+      "poster": "library/posters/the-world-as-will-and-representation.jpg",
+      "posterSha256": "9e931cb5058fa7654bd5c51a5527987e30a67e10b4c97058ffdc60e35021cd30",
+      "crop": { "left": 0, "top": 0, "width": 192, "height": 1685 },
+      "artwork": "the-world-as-will-and-representation-bfac48750538.webp",
+      "height": 320,
+      "perspective": {
+        "width": 192,
+        "height": 1685,
+        "points": [
+          { "source": [210, 215], "target": [0, 0] },
+          { "source": [285, 191], "target": [191, 0] },
+          { "source": [316, 1876], "target": [191, 1684] },
+          { "source": [229, 1825], "target": [0, 1684] }
+        ]
+      },
+      "sourceKind": "original-photograph-rectified",
+      "artworkSha256": "ed7f3c8c6f250e6809d26a74e0d3ca1da57abdaaf30a50cb95f6af0163623f35"
+    },
+    {
+      "id": "think",
+      "title": "Think",
+      "publisher": "Oxford University Press",
+      "isbn": null,
+      "editionEvidence": "One photograph shows matching white front with orange leaf/stone/blue box design and whole printed spine. Oxford imprint and author Blackburn visible. Jacketed hardcover, exact ISBN/printing unverified; listing now404. Store nullISBN. Spine retains all letters, leaf/stone illustration and OXFORD, with original paper toning and crease shading.",
+      "page": "https://pangobooks.com/titles/think-2/ebaa48db-01ca-406a-89e5-9312df23c95a-usXMfg0BqVdHc3htOxyUx7sWPX53",
+      "source": "https://images.pangobooks.com/images/68293030-4c1c-4dcf-a68d-8faee85c1ce6?crop=1%3A1&quality=85&width=800",
+      "sourceSha256": "aa26c848bada6eaf1d627a6ad83ece463c75ae07c7cf8232febd4a6fc3458fbf",
+      "poster": "library/posters/think.jpg",
+      "posterSha256": "1a34620ff991c8cc29a4f55a9e6d2b3cad6baeaf0536ceb34a10fe41d34b0f47",
+      "crop": { "left": 0, "top": 0, "width": 90, "height": 740 },
+      "artwork": "think-aa26c848bada.webp",
+      "height": 320,
+      "perspective": {
+        "width": 90,
+        "height": 740,
+        "points": [
+          { "source": [296, 31], "target": [0, 0] },
+          { "source": [429, 38], "target": [89, 0] },
+          { "source": [405, 765], "target": [89, 739] },
+          { "source": [307, 771], "target": [0, 739] }
+        ]
+      },
+      "sourceKind": "original-photograph-rectified",
+      "artworkSha256": "ff523266d3e8bcf61366d60657c86dc2e8290abe749fcae34f34751ba84662b8"
+    },
+    {
+      "id": "tomorrow-and-tomorrow-and-tomorrow",
+      "title": "Tomorrow, and Tomorrow, and Tomorrow",
+      "publisher": "Alfred A. Knopf",
+      "isbn": "9780593321201",
+      "editionEvidence": "One photo shows saved JohnGall GreatWave front and full spine together: exact title/author typography, bottom bestselling-author line, blue/cream wave field. Knopf dog logo intact. Search-indexed seller page identifies Knopf2022 hardcoverISBN9780593321201; direct pagefetch403 but rawphoto200. BOTMlogo variant from Pango rejected. Photo spine has mild shading/rounded binding, no glyphs redrawn.",
+      "page": "https://www.ebay.com/itm/256131365500",
+      "source": "https://i.ebayimg.com/images/g/XucAAOSw5ORkpNWV/s-l1600.jpg",
+      "sourceSha256": "d9623cea570d487300c8a884d0457a2023516ca1801e4692f6b48ece362018e0",
+      "poster": "library/posters/tomorrow-and-tomorrow-and-tomorrow.jpg",
+      "posterSha256": "f6376f04b042609c877c777aa84642043a678f3f6dc829934fda55344ea45e21",
+      "crop": { "left": 0, "top": 0, "width": 1280, "height": 185 },
+      "artwork": "tomorrow-and-tomorrow-and-tomorrow-d9623cea570d.webp",
+      "height": 320,
+      "perspective": {
+        "width": 1280,
+        "height": 185,
+        "points": [
+          { "source": [208, 1012], "target": [0, 0] },
+          { "source": [1485, 1031], "target": [1279, 0] },
+          { "source": [1482, 1202], "target": [1279, 184] },
+          { "source": [215, 1184], "target": [0, 184] }
+        ]
+      },
+      "sourceKind": "original-photograph-rectified",
+      "rotation": 90,
+      "artworkSha256": "8b9afd8d64a7418d21ecaa1d88aa9f5fafa4dae7e501efe7120a86d92c3fff85"
+    },
+    {
+      "id": "anti-oedipus",
+      "title": "Anti-Oedipus",
+      "publisher": "Les Éditions de Minuit",
+      "isbn": "9782707300676",
+      "editionEvidence": "Paired physical front matches corrected French Minuit front with blue Critique monogram, Deleuze/Guattari, Capitalisme et schizophrénie 1, blue star and Minuit imprint. Product mother pins ISBN. Horizontal spine author/title/imprint. Used-copy discolouration and slight edge wear retained.",
+      "page": "https://bookbot.com/g/5574706/m/5594670",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/80383457.webp",
+      "sourceSha256": "dddc776ddbcff9f894d66ec66330660b3207699cc7407cb055c83909aa38c911",
+      "poster": "library/posters/anti-oedipus-cover.avif",
+      "posterSha256": "699a65d88d49cd0d830c5773497dd76671889403ff55b0d5eaeef1a19b4812a1",
+      "crop": { "left": 0, "top": 0, "width": 31, "height": 320 },
+      "artwork": "anti-oedipus-dddc776ddbcf.webp",
+      "height": 320,
+      "perspective": {
+        "width": 31,
+        "height": 320,
+        "points": [
+          { "source": [539, 211], "target": [0, 0] },
+          { "source": [679, 191], "target": [30, 0] },
+          { "source": [674, 1721], "target": [30, 319] },
+          { "source": [527, 1686], "target": [0, 319] }
+        ]
+      },
+      "sourceKind": "original-photograph-rectified",
+      "artworkSha256": "9c43e2317293ec4ad3196eeee316c7acf0df0d5e5cd684786869c34122fdae4b"
+    },
+    {
+      "id": "crafting-interpreters",
+      "title": "Crafting Interpreters",
+      "publisher": "Genever Benning",
+      "isbn": "9780990582939",
+      "editionEvidence": "Paired physical front matches corrected cream printed cover with blue title, black author, mountain-map diagram and gb mark. Product mother pins ISBN. Entire clean spine shows blue title, Nystrom and gb.",
+      "page": "https://bookbot.com/g/9344444/m/9312166",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/81599899.webp",
+      "sourceSha256": "8bc6f6301e426ae463b29c2983f60837e9d031dbc2148c68befa87d11335059b",
+      "poster": "library/posters/crafting-interpreters-cover.avif",
+      "posterSha256": "5439a3ea4ac116dbb47552147f44db49d9e45c86560f1f0bf2f58db11843860b",
+      "crop": { "left": 0, "top": 0, "width": 39, "height": 320 },
+      "artwork": "crafting-interpreters-8bc6f6301e42.webp",
+      "height": 320,
+      "perspective": {
+        "width": 39,
+        "height": 320,
+        "points": [
+          { "source": [478, 230], "target": [0, 0] },
+          { "source": [624, 192], "target": [38, 0] },
+          { "source": [667, 1735], "target": [38, 319] },
+          { "source": [523, 1703], "target": [0, 319] }
+        ]
+      },
+      "sourceKind": "original-photograph-rectified",
+      "artworkSha256": "e2d374b42b3d412c4c419c71f83c7fef0c44d66945438bda72474132621bc492"
+    },
+    {
+      "id": "crime-and-punishment",
+      "title": "Crime and Punishment",
+      "publisher": "Signet",
+      "isbn": "9780451530066",
+      "editionEvidence": "Paired physical front matches replacement orange torn-paper Signet front including typography and Robin Feuer Miller afterword credit. Product mother identifies same ISBN. Entire clean spine with title, author and imprint visible.",
+      "page": "https://bookbot.com/g/3714186/m/4069543",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/54564307.webp",
+      "sourceSha256": "d2dba58756bd649d77b553f4bef5fd6a52857d17695d5ee9d8b3f4675dcf2080",
+      "poster": "library/posters/crime-and-punishment-cover.avif",
+      "posterSha256": "b78e888bc167d99fd4a3a537fa212e742fe80dad446381f8abc2bc2b39c5fc07",
+      "crop": { "left": 0, "top": 0, "width": 38, "height": 320 },
+      "artwork": "crime-and-punishment-d2dba58756bd.webp",
+      "height": 320,
+      "perspective": {
+        "width": 38,
+        "height": 320,
+        "points": [
+          { "source": [612, 265], "target": [0, 0] },
+          { "source": [780, 263], "target": [37, 0] },
+          { "source": [772, 1730], "target": [37, 319] },
+          { "source": [595, 1698], "target": [0, 319] }
+        ]
+      },
+      "sourceKind": "original-photograph-rectified",
+      "artworkSha256": "a76c7de15f71bbf62fd0c3f152ad41950ec40db4355670ed2d32eb81664a61f7"
+    },
+    {
+      "id": "deep-work",
+      "title": "Deep Work",
+      "publisher": "Grand Central Publishing",
+      "isbn": "9781455563869",
+      "editionEvidence": "Primary retailer’s photograph pairs matching yellow/black front and complete spine. Product page identifies Grand Central Publishing ISBN9781455563869. Source spine has title,three-line middle subtitle,Cal Newport,and GCP emblem. YES24 photo for sameISBN shows a different subtitle layout; keep Panamericana impression provenance, do not mix the two spines.",
+      "page": "https://www.panamericana.com.co/deep-work-rules-for-focused-success-in-a-distracted-world-495383/p",
+      "source": "https://panamericana.vtexassets.com/arquivos/ids/497690/deep-work-rules-for-focused-success-in-a-distracted-world-2-9781455563869.jpg?v=638210840514670000",
+      "sourceSha256": "66aebf293e949ed66914255584f2bbdc8ad07331853727a15818d747eea9b964",
+      "poster": "library/posters/deep-work.jpg",
+      "posterSha256": "e0a038b0e6a100b359ae5094a1780f2687296943443ffe244a2d453ce0e6017c",
+      "crop": { "left": 0, "top": 0, "width": 30, "height": 320 },
+      "artwork": "deep-work-66aebf293e94.webp",
+      "height": 320,
+      "perspective": {
+        "width": 30,
+        "height": 320,
+        "points": [
+          { "source": [546, 245], "target": [0, 0] },
+          { "source": [616, 228], "target": [29, 0] },
+          { "source": [600, 1384], "target": [29, 319] },
+          { "source": [529, 1380], "target": [0, 319] }
+        ]
+      },
+      "sourceKind": "original-photograph-rectified",
+      "artworkSha256": "e10e85c22f026c0df617febad8d45dd2e363766be9775995a6d6f2cbec9f1185"
+    },
+    {
+      "id": "dune",
+      "title": "Dune",
+      "publisher": "Ace",
+      "isbn": "9780441013593",
+      "editionEvidence": "Designer portfolio confirms Ace2018–2019 Tierney design family. Paired front photograph6JCu7vx.jpeg confirms same orange dune/vertical title artwork. PRH selected paperback ISBN9780441013593 supplies identical saved front,704pages5.5×8.25. Exact impression of photographed copy remains unknown; movie sticker differs on front. Entire spine image is authentic pixels; no retyped lettering.",
+      "page": "https://imgur.com/gallery/dune-paperback-cover-spine-art-by-jim-tierney-mUWZbcS",
+      "source": "https://i.imgur.com/SMTmt6A.jpeg",
+      "sourceSha256": "a563338da49573c67bcd4fa1e140792cc83277e2b98ffa80f1fcae9de84a116a",
+      "poster": "library/posters/dune.jpg",
+      "posterSha256": "953994d0422cacd91ae97ada740c2d6d5b95c86634d8f6e15115dadbf71b9018",
+      "crop": { "left": 0, "top": 0, "width": 52, "height": 320 },
+      "artwork": "dune-a563338da495.webp",
+      "height": 320,
+      "perspective": {
+        "width": 52,
+        "height": 320,
+        "points": [
+          { "source": [205, 90], "target": [0, 0] },
+          { "source": [623, 91], "target": [51, 0] },
+          { "source": [709, 2732], "target": [51, 319] },
+          { "source": [343, 2748], "target": [0, 319] }
+        ]
+      },
+      "sourceKind": "original-photograph-rectified",
+      "artworkSha256": "e9bcd633ef22db411b0564bcfb49974d36e0f65e0db6a94c3d3c4b07085d8f10"
+    },
+    {
+      "id": "fear-and-trembling",
+      "title": "Fear and Trembling",
+      "publisher": "Penguin Classics",
+      "isbn": "9780140444490",
+      "editionEvidence": "Paired original seller photographs match the saved front and show complete matching spine. Seller identifies ISBN9780140444490. Specific printing remains unknown. Photographic shading, edge wear and slight curved binding remain; no letters redrawn or art invented.",
+      "page": "https://pangobooks.com/titles/fear-and-trembling/86bc678c-a7ce-4c63-ae1d-8318aa98328c-gIC9BWEOu4VQ7wfK7Q6coUiLHw83",
+      "source": "https://images.pangobooks.com/images/9bd6c799-cae3-4678-a1b3-055fb294fd79?width=1400&quality=95",
+      "sourceSha256": "3d36724c10be57f16a29cc880101b743705de9fd8e4796d62ab8384e8ed789b4",
+      "poster": "library/posters/fear-and-trembling.jpg",
+      "posterSha256": "b23f31cfa9b220be69049047c208c63d5cbc175e63e5e6d4b1a2f8c9db494292",
+      "crop": { "left": 0, "top": 0, "width": 76, "height": 1334 },
+      "artwork": "fear-and-trembling-3d36724c10be.webp",
+      "height": 320,
+      "perspective": {
+        "width": 76,
+        "height": 1334,
+        "points": [
+          { "source": [681, 48], "target": [0, 0] },
+          { "source": [776, 47], "target": [75, 0] },
+          { "source": [711, 1380], "target": [75, 1333] },
+          { "source": [655, 1380], "target": [0, 1333] }
+        ]
+      },
+      "sourceKind": "seller-photograph",
+      "artworkSha256": "42ee7929b304045195fcb5482be49aa16cfd755409e02932272075070295db06",
+      "corroboration": [
+        "https://images.pangobooks.com/images/42cb9d13-cff1-42f0-bd60-204697d60c83?width=1400&quality=95",
+        null
+      ]
+    },
+    {
+      "id": "grokking-algorithm",
+      "title": "Grokking Algorithms",
+      "publisher": "Manning Publications",
+      "isbn": "9781617292231",
+      "editionEvidence": "Bookbot original photograph pairs matching complete front and spine. Product22257001 metadata identifies Manning2016 ISBN9781617292231. Current corrected front from official S&S distributor is same design. Specific printing unknown. Narrow oblique original plane retains physical lighting/curved binding. No art redrawn or invented. Front replaced with complete Manning first-edition publisher image in cover audit; same title, author, illustration and ISBN.",
+      "page": "https://bookbot.de/g/3628783/b/22257001",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/82077495.jpg",
+      "sourceSha256": "6ae76994d224c378d45899fbb5c4f067827b6f47fff2dcfd1f91d682dda3e938",
+      "poster": "library/posters/grokking-algorithms-cover.avif",
+      "posterSha256": "0fe943af4a37a02fb4b2e0d52b5b40cbb03b4cf27b35582f15084c16248411be",
+      "crop": { "left": 0, "top": 0, "width": 64, "height": 1508 },
+      "artwork": "grokking-algorithm-6ae76994d224.webp",
+      "height": 320,
+      "perspective": {
+        "width": 64,
+        "height": 1508,
+        "points": [
+          { "source": [602, 214], "target": [0, 0] },
+          { "source": [656, 203], "target": [63, 0] },
+          { "source": [750, 1719], "target": [63, 1507] },
+          { "source": [677, 1715], "target": [0, 1507] }
+        ]
+      },
+      "sourceKind": "seller-photograph",
+      "artworkSha256": "43520a2056af74638ef30da72b4dc9b9d7f6304ee36148a6b5219a6ec4d9c493",
+      "corroboration": ["https://rezised-images.knhbt.cz/1920x1920/82077496.jpg", null]
+    },
+    {
+      "id": "men-without-women",
+      "title": "Men without women",
+      "publisher": "Alfred A. Knopf",
+      "isbn": "9780451494627",
+      "editionEvidence": "Seller original photo shows the exact yellow saved front, red spaced author name, blue title layout, black man silhouette with jigsaw hole and floating piece, and green STORIES label, together with yellow spine. Bookbot metadata identifies Knopf2017 hardcover ISBN9780451494627. Rounded photographed binding introduces local curvature that a homography does not remove; source lighting and slight physical wear remain. No text redrawn; actual owned printing unverified.",
+      "page": "https://bookbot.com/g/8101151/m/4683796",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/33642943.jpg",
+      "sourceSha256": "c94ec11d3b661ceda80b11e2f1d7938df2534c23ed4de0c2db64dcea90af5843",
+      "poster": "library/posters/men-without-women.png",
+      "posterSha256": "66cd2cd27478b8f99333e560d4d396a3379f3d05459df34972af20a283400261",
+      "crop": { "left": 0, "top": 0, "width": 84, "height": 1518 },
+      "artwork": "men-without-women-c94ec11d3b66.webp",
+      "height": 320,
+      "perspective": {
+        "width": 84,
+        "height": 1518,
+        "points": [
+          { "source": [571, 214], "target": [0, 0] },
+          { "source": [650, 210], "target": [83, 0] },
+          { "source": [699, 1728], "target": [83, 1517] },
+          { "source": [620, 1718], "target": [0, 1517] }
+        ]
+      },
+      "sourceKind": "bookseller-photograph-rectified",
+      "corroboration": ["https://rezised-images.knhbt.cz/1920x1920/33642944.jpg"],
+      "artworkSha256": "ca6a8be2e6622f71d76627e4e09e36e190616ffe1d5fd5813bfa1e5fec61d090"
+    },
+    {
+      "id": "my-friends",
+      "title": "My Friends",
+      "publisher": "Atria Books",
+      "isbn": "9781982112820",
+      "editionEvidence": "Seller original photo shows same saved waterfront illustration, white author lettering, yellow title, exact #1 NEW YORK TIMES BESTSELLING AUTHOR OF A MAN CALLED OVE header and A NOVEL at bottom. Other Bookbot UK and later paperback variants were rejected for header/subtitle differences. Atria2025 hardcover mother9281033 metadata confirms ISBN9781982112820, with Atria Books yellow mark visible on complete blue spine. Genuine physical source rectified without invented artwork. Particular owned printing unverified.",
+      "page": "https://bookbot.com/g/8670230/m/9281033",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/80702255.jpg",
+      "sourceSha256": "0f2194404890c5cd3dcab990c3eff6f7b5e5b6bc8e6a15dbdc80ba4d30f04967",
+      "poster": "library/posters/my-friends.avif",
+      "posterSha256": "171493dd61c7121103507662dcc9332ccb9927df361a53e034e4f15fca515346",
+      "crop": { "left": 0, "top": 0, "width": 136, "height": 1520 },
+      "artwork": "my-friends-0f2194404890.webp",
+      "height": 320,
+      "perspective": {
+        "width": 136,
+        "height": 1520,
+        "points": [
+          { "source": [598, 211], "target": [0, 0] },
+          { "source": [735, 198], "target": [135, 0] },
+          { "source": [732, 1726], "target": [135, 1519] },
+          { "source": [598, 1700], "target": [0, 1519] }
+        ]
+      },
+      "sourceKind": "bookseller-photograph-rectified",
+      "corroboration": ["https://rezised-images.knhbt.cz/1920x1920/80702256.jpg"],
+      "artworkSha256": "afa0d69fe1c7e97b0493eedbef73f3da2731be85c37d5f061593861dd87d19a8"
+    },
+    {
+      "id": "radically-human",
+      "title": "Radically Human: How New Technology Is Transforming Business and Shaping Our Future",
+      "publisher": "Harvard Business Review Press",
+      "isbn": "9781647821081",
+      "editionEvidence": "Paired original front/spine photograph matches the saved white graph-paper design, large black RADICALLY, orange handwritten HUMAN, and Daugherty/Wilson block. Back photograph 22146746 visibly prints ISBN 9781647821081 and Harvard Business Review Press. Genuine white spine has complete title, author names and press crest; physical printing unknown, photographed wear and shading retained.",
+      "page": "https://bookbot.com/g/3594946",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/22146745.webp",
+      "sourceSha256": "c3f597ec12fcbdd8126932f294ecf315c0756faa0f50e2c708d0da40567bf6c3",
+      "poster": "library/posters/radically-human.jpg",
+      "posterSha256": "a7603463f15b4bd76b769ab050b455400987f683a412962788a656c04742d996",
+      "crop": { "left": 0, "top": 0, "width": 100, "height": 1540 },
+      "artwork": "radically-human-c3f597ec12fc.webp",
+      "height": 320,
+      "perspective": {
+        "width": 100,
+        "height": 1540,
+        "points": [
+          { "source": [559, 243], "target": [0, 0] },
+          { "source": [650, 224], "target": [99, 0] },
+          { "source": [653, 1756], "target": [99, 1539] },
+          { "source": [553, 1740], "target": [0, 1539] }
+        ]
+      },
+      "sourceKind": "seller-original-photograph-rectified",
+      "corroboration": [
+        "https://store.hbr.org/product/radically-human-how-new-technology-is-transforming-business-and-shaping-our-future/10483"
+      ],
+      "artworkSha256": "1fd941a9bee41cae3f9adfdad2d61ce3bbfebbb645afd547a721af500365e961"
+    },
+    {
+      "id": "repetition",
+      "title": "Repetition",
+      "publisher": "Princeton University Press",
+      "isbn": "9780691020266",
+      "editionEvidence": "Paired original front/spine photograph matches saved red and black Fear and Trembling/Repetition Princeton cover, including title layout and Kierkegaard author. Back photograph 38490980 visibly prints 0-691-02026-4 (9780691020266) and Princeton University Press. Note Repetition is contained in this printed two-work volume. Full title, author, Princeton mark and imprint remain in rectified spine. Physical printing unknown; original shading and wear retained.",
+      "page": "https://bookbot.com/g/5204468",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/38490979.webp",
+      "sourceSha256": "e82f6571a531600ad0aad7c27c45a99e4860e9605e388170d8b1299a625b539a",
+      "poster": "library/posters/repetition.jpg",
+      "posterSha256": "38b842017c555fce66785fd8a6a12bb247f53f730e9e9f9dbeff53ae6dcfc00d",
+      "crop": { "left": 0, "top": 0, "width": 120, "height": 1525 },
+      "artwork": "repetition-e82f6571a531.webp",
+      "height": 320,
+      "perspective": {
+        "width": 120,
+        "height": 1525,
+        "points": [
+          { "source": [560, 213], "target": [0, 0] },
+          { "source": [680, 205], "target": [119, 0] },
+          { "source": [724, 1728], "target": [119, 1524] },
+          { "source": [605, 1705], "target": [0, 1524] }
+        ]
+      },
+      "sourceKind": "seller-original-photograph-rectified",
+      "corroboration": ["https://bookbot.com/g/5204468"],
+      "artworkSha256": "21c7529015e499f728776d11dbbb4c772db5d9a1474f0775dacd0c01ecc445ce"
+    },
+    {
+      "id": "stay-true",
+      "title": "Stay True",
+      "publisher": "Doubleday",
+      "isbn": "9780385547772",
+      "editionEvidence": "Paired original front/spine photograph matches saved orange/yellow hardcover, centered camera portrait, Pulitzer badge and printed A Memoir label. Publisher identifies 9780385547772 as Doubleday hardcover; Bookbot selected product is that ISBN. Yellow spine preserves complete STAY TRUE, HUA HSU, the printed A Memoir tape motif and Doubleday 125 crest. Specific physical printing unknown; photographed jacket shading retained.",
+      "page": "https://bookbot.com/g/4152596",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/91200604.webp",
+      "sourceSha256": "4d03c24a77185ce7082fd33ebd9c6ba0836f996e1ac8bcfab5ce601bdd71d5f2",
+      "poster": "library/posters/stay true.jpg",
+      "posterSha256": "3b9bd715863def43174f9f1ca5d831e75b4e1e5e87f15258247875514237adee",
+      "crop": { "left": 0, "top": 0, "width": 115, "height": 1525 },
+      "artwork": "stay-true-4d03c24a7718.webp",
+      "height": 320,
+      "perspective": {
+        "width": 115,
+        "height": 1525,
+        "points": [
+          { "source": [540, 221], "target": [0, 0] },
+          { "source": [651, 198], "target": [114, 0] },
+          { "source": [744, 1723], "target": [114, 1524] },
+          { "source": [628, 1722], "target": [0, 1524] }
+        ]
+      },
+      "sourceKind": "seller-original-photograph-rectified",
+      "corroboration": ["https://prhinternationalsales.com/book/?isbn=9780385547772"],
+      "artworkSha256": "1f8f4fe77284d2c373cea4ebd177adf161b0bdb9ae5dbe8b1b70fdd0a6efee2d"
+    },
+    {
+      "id": "the-gay-science",
+      "title": "The Gay Science",
+      "publisher": "Vintage",
+      "isbn": "9780394719856",
+      "editionEvidence": "Physical listing shows the matching black, orange and yellow Kaufmann front and the actual spine in one photograph; a second photograph prints ISBN 9780394719856 on the back. Publisher front confirms this Vintage edition design. Printing and personal copy identity remain unknown. ISBN basis: publisher front image https://images3.penguinrandomhouse.com/cover/9780394719856 visually matches existing front. The paired physical front/spine image and readable ISBN back establish this edition linkage. No claim to printing number.",
+      "page": "https://www.penguinrandomhouse.com/books/121942/the-gay-science-by-friedrich-nietzsche-translated-with-commentary-by-walter-kaufmann/",
+      "source": "https://images2.pangobooks.com/images/aae626a5-6cd9-40a0-a3e3-8b73759941f0?width=1600",
+      "sourceSha256": "d261c3cb03f2551d0854f380bddc34837f668e8dcdbb757a4b81b1bbcc4daa18",
+      "poster": "library/posters/the-gay-science.jpg",
+      "posterSha256": "7ed981e3b6d4a9aced324cad53154a609021faa77b7f2e32ce87ccf8c15bf775",
+      "crop": { "left": 0, "top": 0, "width": 1366, "height": 154 },
+      "artwork": "the-gay-science-d261c3cb03f2.webp",
+      "height": 320,
+      "perspective": {
+        "width": 1366,
+        "height": 154,
+        "points": [
+          { "source": [23, 350], "target": [0, 0] },
+          { "source": [1300, 866], "target": [1365, 0] },
+          { "source": [1290, 1030], "target": [1365, 153] },
+          { "source": [46, 492], "target": [0, 153] }
+        ]
+      },
+      "sourceKind": "original-photograph-rectified",
+      "rotation": 90,
+      "artworkSha256": "8b452906ca1c4b3c3b178d6db7803c4b6acb9340ebbc55dda7131ef07387b7b3",
+      "corroboration": ["https://images3.penguinrandomhouse.com/cover/9780394719856"]
+    },
+    {
+      "id": "the-midnight-library",
+      "title": "The Midnight Library",
+      "publisher": "Viking",
+      "isbn": "9780525559474",
+      "editionEvidence": "Physical listing gallery has matching orange/teal capsule front and GMA badge, a readable back ISBN 9780525559474, and a full dust-jacket spine photograph. Publisher confirms Viking hardcover ISBN. Warm photographic lighting and gentle jacket curvature remain; printing and personal copy identity are unknown.",
+      "page": "https://www.penguinrandomhouse.com/books/575653/the-midnight-library-a-gma-book-club-pick-by-matt-haig/9780525559474/",
+      "source": "https://images2.pangobooks.com/images/d5e20c6a-4e3b-4bf7-8a36-6c9c9fcee096?width=1600",
+      "sourceSha256": "74d398ee702ffe76df43f5c7a699b7e05bbc322b746f8c1b5b8c6c297020bfb8",
+      "poster": "library/posters/the-midnight-library.jpg",
+      "posterSha256": "a99fe0eb27581deb2bf1773b3bd3689099d2155121fa257e8856c89e94cb076c",
+      "crop": { "left": 0, "top": 0, "width": 147, "height": 1174 },
+      "artwork": "the-midnight-library-74d398ee702f.webp",
+      "height": 320,
+      "perspective": {
+        "width": 147,
+        "height": 1174,
+        "points": [
+          { "source": [776, 211], "target": [0, 0] },
+          { "source": [907, 218], "target": [146, 0] },
+          { "source": [929, 1390], "target": [146, 1173] },
+          { "source": [767, 1386], "target": [0, 1173] }
+        ]
+      },
+      "sourceKind": "original-photograph-rectified",
+      "artworkSha256": "463044121d9d073f15f7de04c777ea48afc3647c1bb0717fe187c9d97eb40413",
+      "corroboration": ["https://images3.penguinrandomhouse.com/cover/9780525559474"]
+    },
+    {
+      "id": "21-lessons-for-the-21st-century",
+      "title": "21 Lessons for the 21st Century",
+      "publisher": "Random House",
+      "isbn": "9780525512196",
+      "editionEvidence": "Publisher ISBN-specific paperback image9780525512196 matches saved cream ground, orange author, iris, black/red title layout and Bill Gates 5 Books quote. Saved front says International Bestseller; current publisher image and photographed same-ISBN US Random House paperback say #1 New York Times Bestseller. Only bestseller strapline differs; full genuine spine visible. Artwork/format edition family confirmed, exact printing unconfirmed.",
+      "page": "https://bookbot.com/g/3926306/m/3627464",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/30164449.webp",
+      "sourceSha256": "170ef0f2b442339cea66116fc5720d9475cc3d7e565502e4e6d7fc42beb2cdf2",
+      "poster": "library/posters/21-lessons-for-the-21st-century.jpg",
+      "posterSha256": "1134393c41652d18dd8e3fce2d1bfb62788a0057219c42ad96ba72cc80553e17",
+      "crop": { "left": 0, "top": 0, "width": 23, "height": 320 },
+      "artwork": "21-lessons-for-the-21st-century-170ef0f2b442.webp",
+      "height": 320,
+      "perspective": {
+        "width": 23,
+        "height": 320,
+        "points": [
+          { "source": [542, 209], "target": [0, 0] },
+          { "source": [643, 209], "target": [22, 0] },
+          { "source": [662, 1722], "target": [22, 319] },
+          { "source": [560, 1681], "target": [0, 319] }
+        ]
+      },
+      "sourceKind": "original-photograph-rectified",
+      "artworkSha256": "28978c5ec6277b7e252b163ad99ca4e05fe49f3d7abec6d84f266ee55b6675f0"
+    },
+    {
+      "id": "a-thousand-plateaus",
+      "title": "A Thousand Plateaus",
+      "publisher": "University of Minnesota Press",
+      "isbn": "9780816614028",
+      "editionEvidence": "Paired photographed front exactly matches saved white fern/blue-and-green author artwork, typography and Massumi credit. Reverse photograph72056547 visibly pins ISBN9780816614028 and University of Minnesota Press; publisher record metadata independently agrees. Entire authentic printed spine visible with authors, title and Minnesota mark.",
+      "page": "https://bookbot.com/g/600902/m/8918984",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/72056546.webp",
+      "sourceSha256": "e6ee9cd03388e8f7c987c79aca56d9c87c3e37e64541d99d3bbcc12b13aad899",
+      "poster": "library/posters/a-thousand-plateaus.jpg",
+      "posterSha256": "d3467d3cf12a660f3e33eed5b7bf0cbef72ba80b4b125056f09f392eb9d56d59",
+      "crop": { "left": 0, "top": 0, "width": 29, "height": 320 },
+      "artwork": "a-thousand-plateaus-e6ee9cd03388.webp",
+      "height": 320,
+      "perspective": {
+        "width": 29,
+        "height": 320,
+        "points": [
+          { "source": [403, 228], "target": [0, 0] },
+          { "source": [522, 222], "target": [28, 0] },
+          { "source": [592, 1688], "target": [28, 319] },
+          { "source": [466, 1645], "target": [0, 319] }
+        ]
+      },
+      "sourceKind": "original-photograph-rectified",
+      "artworkSha256": "e2aba78b0985ff1c1402edb52faea4155315fdf255c703048b1996e942b226ae"
+    },
+    {
+      "id": "digital-minimalism",
+      "title": "Digital Minimalism",
+      "publisher": "Portfolio",
+      "isbn": "9780525536512",
+      "editionEvidence": "Publisher ISBN-specific front9780525536512 exactly matches saved yellow stripe/ring artwork, navy title/author, blue subtitle and NYTimes bestseller banner. Photographed physical edition mother9350315 identifies SAME ISBN9780525536512 and hardcover format, US Portfolio. Its earlier printing omits only bestseller banner. Artwork/typography/layout otherwise matches. Authentic complete spine retained; exact printing unconfirmed.",
+      "page": "https://bookbot.com/g/273492/m/9350315",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/61549805.webp",
+      "sourceSha256": "507d887482ffd2e9b7bf5bd3e158e7c61642a470f564b1274c780c3dea778e71",
+      "poster": "library/posters/digital-minimalism.jpg",
+      "posterSha256": "28528d04638350e2d9986df9c0997786ef699789df43971cdc401dc9309c408c",
+      "crop": { "left": 0, "top": 0, "width": 25, "height": 320 },
+      "artwork": "digital-minimalism-507d887482ff.webp",
+      "height": 320,
+      "perspective": {
+        "width": 25,
+        "height": 320,
+        "points": [
+          { "source": [530, 216], "target": [0, 0] },
+          { "source": [642, 217], "target": [24, 0] },
+          { "source": [763, 1718], "target": [24, 319] },
+          { "source": [616, 1704], "target": [0, 319] }
+        ]
+      },
+      "sourceKind": "original-photograph-rectified",
+      "artworkSha256": "6cc8036519231f85a1061f384256c3f0866b2ce476fa8025a9257c08b2d08694"
+    },
+    {
+      "id": "dopamine-nation",
+      "title": "Dopamine Nation",
+      "publisher": "Dutton",
+      "isbn": "9781524746728",
+      "editionEvidence": "Publisher ISBN-specific front9781524746728 matches saved flower, title/subtitle, author typography and layout, with added NYTimes banner. Physical mother840356 pins SAME ISBN9781524746728 US Dutton hardcover. Photograph adds NYTimes banner and bottom LoriGottlieb endorsement to underlying saved artwork. Complete real spine captured. Exact printing unconfirmed; no type or art reconstructed.",
+      "page": "https://bookbot.com/g/751067/m/840356",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/30204094.webp",
+      "sourceSha256": "49f2e4d1ff7db72c539360c131b5e0a5418df082c6fcf3b89736df8603d12f38",
+      "poster": "library/posters/dopamine-nation.jpg",
+      "posterSha256": "928340d5720791f0c16cbd71e1699ccacb732132cd1f2129b31068e268a0bdb9",
+      "crop": { "left": 0, "top": 0, "width": 18, "height": 320 },
+      "artwork": "dopamine-nation-49f2e4d1ff7d.webp",
+      "height": 320,
+      "perspective": {
+        "width": 18,
+        "height": 320,
+        "points": [
+          { "source": [476, 209], "target": [0, 0] },
+          { "source": [557, 204], "target": [17, 0] },
+          { "source": [562, 1729], "target": [17, 319] },
+          { "source": [481, 1699], "target": [0, 319] }
+        ]
+      },
+      "sourceKind": "original-photograph-rectified",
+      "artworkSha256": "ce5959780edaf1ee2f11e87cd462f9a5e9504ecdf9119403d128c45d8dd42723"
+    },
+    {
+      "id": "either-or",
+      "title": "Either/Or",
+      "publisher": "Penguin Classics",
+      "isbn": "9780140445770",
+      "editionEvidence": "Black Penguin Classics paperback, orange Kierkegaard line, identical Caravaggio Cardsharps painting and A Fragment of Life subtitle. Source pairs matching front and entire spine with orange author, white title and Penguin crest. Bookbot edition metadata specifies ISBN9780140445770. Specific impression remains unknown; actual binding curvature, light falloff and wear remain. No text redrawn or pixels invented.",
+      "page": "https://bookbot.com/g/3519904/m/3612093",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/82298585.jpg",
+      "sourceSha256": "82b6eb869f7fad5e6d6fad87a93b512bf142c88cd1f1f328f78d1a90f671484f",
+      "poster": "library/posters/either-or.jpg",
+      "posterSha256": "d474560b8f2f1224c7c3082513dda9de1f0df3ed1381d74f01e3724f62d173f4",
+      "crop": { "left": 0, "top": 0, "width": 109, "height": 1490 },
+      "artwork": "either-or-82b6eb869f7f.webp",
+      "height": 320,
+      "perspective": {
+        "width": 109,
+        "height": 1490,
+        "points": [
+          { "source": [532, 215], "target": [0, 0] },
+          { "source": [641, 208], "target": [108, 0] },
+          { "source": [656, 1719], "target": [108, 1489] },
+          { "source": [553, 1683], "target": [0, 1489] }
+        ]
+      },
+      "sourceKind": "seller-photograph",
+      "artworkSha256": "bd4d6d629a54569e424d85d5adc36df52ab74886e3f1e699a87093afbb3e5d9f"
+    },
+    {
+      "id": "godfather",
+      "title": "Godfather",
+      "publisher": "Arrow Books",
+      "isbn": "9780099429289",
+      "editionEvidence": "Matching large red outlined MARIO PUZO over window silhouette, THE CLASSIC BESTSELLER right, white title at bottom. Entire black spine with white Godfather, red Mario Puzo and Arrow round mark appears alongside. Personal-copy sticker on saved front is absent in seller photo. Bookbot edition metadata specifies ISBN9780099429289. Specific impression remains unknown; actual binding curvature, light falloff and wear remain. No text redrawn or pixels invented. Saved stickered front normalized to clean matching Arrow catalogue front, ISBN9780099429289; title, author and grey window artwork match the same physical source.",
+      "page": "https://bookbot.com/g/261824/b/24042437",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/88484140.jpg",
+      "sourceSha256": "a5d4c8bfcbca4b0d44b1f95ec2d1396a4eb48dded2027503b911f94da72201f3",
+      "poster": "library/posters/godfather-cover.avif",
+      "posterSha256": "de3669433f4bb2c775ace01d57ebdc4c14ad89653b99cb7e671e1707c30b7fdc",
+      "crop": { "left": 0, "top": 0, "width": 233, "height": 1536 },
+      "artwork": "godfather-a5d4c8bfcbca.webp",
+      "height": 320,
+      "perspective": {
+        "width": 233,
+        "height": 1536,
+        "points": [
+          { "source": [530, 181], "target": [0, 0] },
+          { "source": [755, 192], "target": [232, 0] },
+          { "source": [743, 1757], "target": [232, 1535] },
+          { "source": [513, 1687], "target": [0, 1535] }
+        ]
+      },
+      "sourceKind": "seller-photograph",
+      "artworkSha256": "13e11e9e7800ea31232ac2c0cd52a35130d6f389a370d39b7acf315b96da1e21"
+    },
+    {
+      "id": "groundwork-of-the-metaphysics-of-morals",
+      "title": "Groundwork of the Metaphysics of Morals",
+      "publisher": "Cambridge University Press",
+      "isbn": null,
+      "editionEvidence": "Exact green Cambridge Texts front with red title, Revised Edition label, Mary Gregor/Jens Timmermann editors and Christine M. Korsgaard introduction. Same physical photograph shows complete green spine with white Kant/title and red Cambridge imprint. Bookbot lists hardbackISBN9781107008519, while photographed binding appears paperback; authoritative Cambridge distinguishes paperback9781107401068. ISBN therefore left null because printing/binding identity is unconfirmed. Specific impression remains unknown; actual binding curvature, light falloff and wear remain. No text redrawn or pixels invented. Primary Cambridge evidence: https://assets.cambridge.org/97811070/08519/frontmatter/9781107008519_frontmatter.pdf distinguishes hardback9781107008519 and paperback9781107401068. Cover design is verified, binding-specific ISBN remains unverified.",
+      "page": "https://bookbot.com/g/9783904/m/9753588",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/93380540.jpg",
+      "sourceSha256": "69262ceb8551fb6f1ab205d569548f181fcbb2eb14197651a71a60a2ea9db141",
+      "poster": "library/posters/groundwork-of-the-metaphysics-of-morals.jpg",
+      "posterSha256": "2e94793b5272046b1a5eda2f42ebcdbbce05d3cdc736af4c2d9dd3887fe6819c",
+      "crop": { "left": 0, "top": 0, "width": 41, "height": 1522 },
+      "artwork": "groundwork-of-the-metaphysics-of-morals-69262ceb8551.webp",
+      "height": 320,
+      "perspective": {
+        "width": 41,
+        "height": 1522,
+        "points": [
+          { "source": [627, 198], "target": [0, 0] },
+          { "source": [663, 195], "target": [40, 0] },
+          { "source": [634, 1725], "target": [40, 1521] },
+          { "source": [590, 1712], "target": [0, 1521] }
+        ]
+      },
+      "sourceKind": "seller-photograph",
+      "artworkSha256": "d09b74d597cbb175fea79453583bdda5f026ca73656ea36c14f420e58f60e8eb"
+    },
+    {
+      "id": "homage-to-catalonia",
+      "title": "Homage to Catalonia",
+      "publisher": "Beacon Press",
+      "isbn": null,
+      "editionEvidence": "Matching black Beacon BP5 front with republican red/yellow/purple flag, ivory title and Lionel Trilling introduction, $1.25 price and quote strip at top. Entire black spine with gold title/George Orwell and Beacon imprint beside it. Bookbot identifies Beacon1957; no ISBN printed/listed, retained null. Saved front has different price at top, so design family matches while price/impression differs. Specific impression remains unknown; actual binding curvature, light falloff and wear remain. No text redrawn or pixels invented.",
+      "page": "https://bookbot.com/g/449013/m/8365234",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/55674343.jpg",
+      "sourceSha256": "509d11841c52528c7ef5050149a92f12fe1b98b2aaf24d70c581e0b7e01c7395",
+      "poster": "library/posters/homage-to-catalonia.jpg",
+      "posterSha256": "bd1c88ced932a616ed6f961230f349fd01c5bef182be3ddfe04377ea24d0ff86",
+      "crop": { "left": 0, "top": 0, "width": 77, "height": 1492 },
+      "artwork": "homage-to-catalonia-509d11841c52.webp",
+      "height": 320,
+      "perspective": {
+        "width": 77,
+        "height": 1492,
+        "points": [
+          { "source": [563, 222], "target": [0, 0] },
+          { "source": [642, 214], "target": [76, 0] },
+          { "source": [675, 1713], "target": [76, 1491] },
+          { "source": [601, 1707], "target": [0, 1491] }
+        ]
+      },
+      "sourceKind": "seller-photograph",
+      "artworkSha256": "b81e126525d974708c2006874e8942ed5f1d83ad37af4cf1ae334aa41c0abcd2"
+    },
+    {
+      "id": "intuition-pumps-and-other-tools-for-thinking",
+      "title": "Intuition Pumps and Other Tools for Thinking",
+      "publisher": "W. W. Norton & Company",
+      "isbn": "9780393348781",
+      "editionEvidence": "Matching white front, large grey engraved serif title and red Daniel C. Dennett line. Entire red spine appears beside it with white full title, black author and Norton bird mark. Bookbot edition metadata identifies Norton2014 paperback. Bookbot edition metadata specifies ISBN9780393348781. Specific impression remains unknown; actual binding curvature, light falloff and wear remain. No text redrawn or pixels invented.",
+      "page": "https://bookbot.com/g/527284/m/605031",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/42999005.jpg",
+      "sourceSha256": "50098d6599733b27c3c4371d4054536c25fbbde69eaa1500702c4a41936437fa",
+      "poster": "library/posters/intuition-pumps-and-other-tools-for-thinking.jpg",
+      "posterSha256": "82e5af083a9e047aeec6c4677f98322559c7444bc243cc4753fcb8216dedf9bd",
+      "crop": { "left": 0, "top": 0, "width": 135, "height": 1558 },
+      "artwork": "intuition-pumps-and-other-tools-for-thinking-50098d659973.webp",
+      "height": 320,
+      "perspective": {
+        "width": 135,
+        "height": 1558,
+        "points": [
+          { "source": [728, 181], "target": [0, 0] },
+          { "source": [866, 180], "target": [134, 0] },
+          { "source": [893, 1742], "target": [134, 1557] },
+          { "source": [761, 1735], "target": [0, 1557] }
+        ]
+      },
+      "sourceKind": "seller-photograph",
+      "artworkSha256": "56281e893ebc3ba30d209a311fa3b2821f2e2e6a4f94e4690a0ebe5fca6ec64a"
+    },
+    {
+      "id": "naked-lunch",
+      "title": "Naked Lunch",
+      "publisher": "Grove Press",
+      "isbn": "9780802140180",
+      "editionEvidence": "Exact restored-text Grove front: yellow NAKED, red LUNCH, LA Times quotation above, lowercase william s. burroughs and Grauerholz/Miles editor credits below. Same photographed book exposes full black spine with yellow/red title, white restored text, colored author and Grove logo. Edition-specific metadata identifies Grove Press2004 ISBN9780802140180.",
+      "page": "https://bookbot.com/g/391601/m/8497123",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/59083077.jpg",
+      "sourceSha256": "07c24d672b4cd3249122014a9946bcf9431595fd084b386fb176affea944bfa1",
+      "poster": "library/posters/naked-lunch.jpg",
+      "posterSha256": "b0951879a1321e9be3f20c62bf3a3a17374fe2bc6a2db2c18a0a5253e95f2d7b",
+      "crop": { "left": 0, "top": 0, "width": 88, "height": 1520 },
+      "artwork": "naked-lunch-07c24d672b4c.webp",
+      "height": 320,
+      "perspective": {
+        "width": 88,
+        "height": 1520,
+        "points": [
+          { "source": [569, 207], "target": [0, 0] },
+          { "source": [654, 203], "target": [87, 0] },
+          { "source": [654, 1726], "target": [87, 1519] },
+          { "source": [566, 1709], "target": [0, 1519] }
+        ]
+      },
+      "sourceKind": "bookseller-photograph-rectified",
+      "corroboration": [
+        "https://rezised-images.knhbt.cz/1920x1920/59083078.jpg",
+        "https://rezised-images.knhbt.cz/1920x1920/59083079.jpg"
+      ],
+      "artworkSha256": "00c3fd848eb6455df4546d943eceb3942bea09bbd8cf75d8588a57d16f5b8cbc"
+    },
+    {
+      "id": "oblivion",
+      "title": "Oblivion",
+      "publisher": "Little, Brown and Company",
+      "isbn": "9780316919814",
+      "editionEvidence": "White jacket with large green obliv and purple vion, small stories, and David Foster Wallace credit matches the saved front. Same photograph exposes author, multicolor Oblivion and Little Brown on the spine. Rounded jacket and folded front artwork leave a large purple V visible in its middle; physical wrap is retained as photographed. Edition-specific Bookbot metadata identifies Little, Brown and Company, 2004, ISBN 9780316919814.",
+      "page": "https://bookbot.com/g/640925/m/8686262",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/65340094.jpg",
+      "sourceSha256": "36234c5318e14bd943015119c1f149e505d33c8ec7c478fda00cf28b4f35d1ab",
+      "poster": "library/posters/oblivion.jpg",
+      "posterSha256": "7c24de718073b2216e0bd923b711367cbc8d5602993d10ff5ba622f0f92aa7da",
+      "crop": { "left": 0, "top": 0, "width": 104, "height": 1500 },
+      "artwork": "oblivion-36234c5318e1.webp",
+      "height": 320,
+      "perspective": {
+        "width": 104,
+        "height": 1500,
+        "points": [
+          { "source": [531, 241], "target": [0, 0] },
+          { "source": [636, 228], "target": [103, 0] },
+          { "source": [675, 1737], "target": [103, 1499] },
+          { "source": [580, 1725], "target": [0, 1499] }
+        ]
+      },
+      "sourceKind": "bookseller-photograph-rectified",
+      "corroboration": [
+        "https://rezised-images.knhbt.cz/1920x1920/65340095.jpg",
+        "https://rezised-images.knhbt.cz/1920x1920/65340096.jpg",
+        "https://dancingelephant.shop/products/oblivion-by-david-foster-wallace-first-edition"
+      ],
+      "artworkSha256": "6efc90030a7d42fa54121acb3794632a5a9604a58d5d782fba60d1879af6a850"
+    },
+    {
+      "id": "our-man-in-havana",
+      "title": "Our Man in Havana",
+      "publisher": "Vintage",
+      "isbn": "9780099577881",
+      "editionEvidence": "Cream Vintage front with Graham Greene at top, black and white car photograph, and stacked OUR MAN IN HAVANA at lower right matches saved front. Same physical book exposes complete red spine and white author/title/Vintage imprint. Narrow photographed spine limits final text resolution. Edition-specific Bookbot metadata identifies Vintage, 2019, ISBN 9780099577881.",
+      "page": "https://bookbot.com/g/257312/m/9366575",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/83214129.jpg",
+      "sourceSha256": "fe05f7001845e4c73b57b57673f104290fe21a598fa6645ac6fd5e2b17dc8963",
+      "poster": "library/posters/our-man-in-havana.jpg",
+      "posterSha256": "9b1d9010e33c22e923b34808fb52b30a52e0e23771534edcb9ee6fbd6282cf7d",
+      "crop": { "left": 0, "top": 0, "width": 42, "height": 1470 },
+      "artwork": "our-man-in-havana-fe05f7001845.webp",
+      "height": 320,
+      "perspective": {
+        "width": 42,
+        "height": 1470,
+        "points": [
+          { "source": [448, 243], "target": [0, 0] },
+          { "source": [484, 236], "target": [41, 0] },
+          { "source": [497, 1709], "target": [41, 1469] },
+          { "source": [455, 1693], "target": [0, 1469] }
+        ]
+      },
+      "sourceKind": "bookseller-photograph-rectified",
+      "corroboration": [
+        "https://rezised-images.knhbt.cz/1920x1920/83214130.jpg",
+        "https://rezised-images.knhbt.cz/1920x1920/83214131.jpg",
+        "https://rezised-images.knhbt.cz/1920x1920/83214132.jpg"
+      ],
+      "artworkSha256": "d7231931627a56af7940cecb800778bb8c406522d15645bcf285acfd0d92b6c7"
+    },
+    {
+      "id": "pillow-thoughts-iv",
+      "title": "Pillow Thoughts IV",
+      "publisher": "Andrews McMeel Publishing",
+      "isbn": "9781524854522",
+      "editionEvidence": "Dark green jellyfish front, cream serif title and Courtney Peppernell credit match the saved front. Same physical book shows unobscured dark green spine, full title and author and publisher mark. Edition-specific Bookbot metadata identifies Andrews McMeel Publishing, 2020, ISBN 9781524854522.",
+      "page": "https://bookbot.com/g/597081/m/680311",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/75003465.jpg",
+      "sourceSha256": "5af298254c73a3a169cd00fe62e97e1eb69e53263f868a036c4cdac5114f46b5",
+      "poster": "library/posters/pillow-thoughts-iv.jpg",
+      "posterSha256": "add2fb9f5d0a309c6754e53114fc0671c7bfc179f51b8ae3f5d30b8a0ba04a3f",
+      "crop": { "left": 0, "top": 0, "width": 108, "height": 1530 },
+      "artwork": "pillow-thoughts-iv-5af298254c73.webp",
+      "height": 320,
+      "perspective": {
+        "width": 108,
+        "height": 1530,
+        "points": [
+          { "source": [618, 198], "target": [0, 0] },
+          { "source": [717, 198], "target": [107, 0] },
+          { "source": [750, 1728], "target": [107, 1529] },
+          { "source": [641, 1707], "target": [0, 1529] }
+        ]
+      },
+      "sourceKind": "bookseller-photograph-rectified",
+      "corroboration": [
+        "https://rezised-images.knhbt.cz/1920x1920/75003466.jpg",
+        "https://rezised-images.knhbt.cz/1920x1920/75003467.jpg"
+      ],
+      "artworkSha256": "9b60d13b4abc970407894ae8062a0b91eb93ff45df7db001e08460a58f4f9ffc"
+    },
+    {
+      "id": "seduction-and-betrayal",
+      "title": "Seduction and Betrayal",
+      "publisher": "New York Review of Books",
+      "isbn": "9780940322783",
+      "editionEvidence": "Paired physical front/spine photograph matches saved NYRB cover painting and red title panel, Elizabeth Hardwick and Joan Didion introduction. Back prints 0-940322-78-1 and barcode 9780940322783, NYRB Classics. Red spine retains complete title, author and NYRB mark; exact printing unknown, photographic shading retained.",
+      "page": "https://bookbot.com/m/3811861",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/25211410.webp",
+      "sourceSha256": "a779176f10443b913d4586c27caed23e96ba32d58d974fe5395301282e67c848",
+      "poster": "library/posters/seduction-and-betrayal.jpg",
+      "posterSha256": "bc8c165ccff0f6db86b9a8f4354df9eef24bbc530b9367ae93b1b624c16b7d87",
+      "crop": { "left": 0, "top": 0, "width": 90, "height": 1540 },
+      "artwork": "seduction-and-betrayal-a779176f1044.webp",
+      "height": 320,
+      "perspective": {
+        "width": 90,
+        "height": 1540,
+        "points": [
+          { "source": [657, 204], "target": [0, 0] },
+          { "source": [739, 202], "target": [89, 0] },
+          { "source": [749, 1740], "target": [89, 1539] },
+          { "source": [661, 1721], "target": [0, 1539] }
+        ]
+      },
+      "sourceKind": "seller-original-photograph-rectified",
+      "corroboration": ["https://rezised-images.knhbt.cz/1920x1920/25211414.webp"],
+      "artworkSha256": "54b515ea4a582285cb6d8c1a5e3ee0af202936924ac8d6f1ce605d9c7ebb1a1d"
+    },
+    {
+      "id": "swe-books",
+      "title": "Software Engineering at Google: Lessons Learned from Programming Over Time",
+      "publisher": "O'Reilly Media",
+      "isbn": "9781492082798",
+      "editionEvidence": "Original front/spine photo matches stored 2020 flamingo edition, same O’Reilly mark and curated author list. Seller product 9781492082798 matches official O’Reilly first-edition print identifier. Back photo corroboration saved. Original spine displays complete Software Engineering at Google, three authors and both O’Reilly marks. Strong edge-on perspective leaves about 40 source pixels across spine, so fine text is softer; physical printing unknown. No hand obscures printed spine artwork.",
+      "page": "https://bookbot.com/m/9751926",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/93336404.webp",
+      "sourceSha256": "591efd4eee37890544a8e19c74286971d40f063978d2450ca5f44676854320e2",
+      "poster": "library/posters/swe-books.jpeg",
+      "posterSha256": "1c73e039e8d309dd2896662f40505961cccdc2d740ef2bbe85dbf95bbfb11cc2",
+      "crop": { "left": 0, "top": 0, "width": 150, "height": 1565 },
+      "artwork": "swe-books-591efd4eee37.webp",
+      "height": 320,
+      "perspective": {
+        "width": 150,
+        "height": 1565,
+        "points": [
+          { "source": [419, 198], "target": [0, 0] },
+          { "source": [459, 167], "target": [149, 0] },
+          { "source": [503, 1735], "target": [149, 1564] },
+          { "source": [467, 1675], "target": [0, 1564] }
+        ]
+      },
+      "sourceKind": "seller-original-photograph-rectified",
+      "corroboration": [
+        "https://rezised-images.knhbt.cz/1920x1920/93336405.webp",
+        "https://www.oreilly.com/library/view/software-engineering-at/9781492082781/copyright-page01.html"
+      ],
+      "artworkSha256": "112908bdb9991344b546771c1c94ce9f2dfcb6f811f6ad6f3fc08ccb563d9bfe"
+    },
+    {
+      "id": "the-birth-of-tragedy",
+      "title": "The Birth of Tragedy",
+      "publisher": "Penguin Books",
+      "isbn": "9780140433395",
+      "editionEvidence": "Paired physical front/spine photograph matches saved cosmic blue painting, white Penguin Classics band and orange Nietzsche typography. The photographed back prints ISBN 9780140433395. Complete author, title, Penguin logo and PENGUIN CLASSICS imprint retained; physical printing unknown. Original edge wear, creases and shading remain.",
+      "page": "https://bookbot.com/m/2916141",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/56684448.webp",
+      "sourceSha256": "59c865111127ac57ea0836350c7a26f18c517883dc9be5cc382f4887042348b7",
+      "poster": "library/posters/the-birth-of-tragedy.jpg",
+      "posterSha256": "11862b33ae736ac1074309daad7c3539201fca22044e7d7f7cc8f6a3ff7c14d5",
+      "crop": { "left": 0, "top": 0, "width": 50, "height": 1520 },
+      "artwork": "the-birth-of-tragedy-59c865111127.webp",
+      "height": 320,
+      "perspective": {
+        "width": 50,
+        "height": 1520,
+        "points": [
+          { "source": [508, 206], "target": [0, 0] },
+          { "source": [557, 199], "target": [49, 0] },
+          { "source": [623, 1716], "target": [49, 1519] },
+          { "source": [580, 1717], "target": [0, 1519] }
+        ]
+      },
+      "sourceKind": "seller-original-photograph-rectified",
+      "corroboration": ["https://rezised-images.knhbt.cz/1920x1920/56684449.webp"],
+      "artworkSha256": "468cce065c299370f037e5879a726e6b9335d581dd245630250c3f26740a7289"
+    },
+    {
+      "id": "the-subtle-art-of-not-giving-a-fuck",
+      "title": "The Subtle Art of Not Giving a Fuck",
+      "publisher": "Harper",
+      "isbn": "9780062457714",
+      "editionEvidence": "Same physical photograph pairs authentic Harper dust-jacket spine with matching orange front, pale bestseller stripe and white Everything Is F*cked author badge. Seller identifies hardcover ISBN 9780062457714; this is an edition-design match, without a readable ISBN on the physical image or known printing. Curvature and warm light remain visible.",
+      "page": "https://www.ebay.com/itm/116117430722",
+      "source": "https://i.ebayimg.com/images/g/u24AAOSwPcZl~8r6/s-l960.jpg",
+      "sourceSha256": "d366d12175ceec539b4f5f8711eb7eeb3677c4adae4aa2ff832fabb79d874b81",
+      "poster": "library/posters/the-subtle-art-of-not-giving-a-fuck.jpg",
+      "posterSha256": "10eb49a35aeef9378e7344d7868705c1093920c7b6855a27be66bf51cca7d0f4",
+      "crop": { "left": 0, "top": 0, "width": 70, "height": 816 },
+      "artwork": "the-subtle-art-of-not-giving-a-fuck-d366d12175ce.webp",
+      "height": 320,
+      "perspective": {
+        "width": 70,
+        "height": 816,
+        "points": [
+          { "source": [200, 76], "target": [0, 0] },
+          { "source": [276, 78], "target": [69, 0] },
+          { "source": [277, 893], "target": [69, 815] },
+          { "source": [214, 893], "target": [0, 815] }
+        ]
+      },
+      "sourceKind": "original-photograph-rectified",
+      "artworkSha256": "62a9f1f383e5d450ceb6253090e7f5946738f907d87ab2946e9e36c901b94b8e"
+    },
+    {
+      "id": "the-uninhabitable-earth",
+      "title": "The Uninhabitable Earth",
+      "publisher": "Tim Duggan Books",
+      "isbn": "9780525576709",
+      "editionEvidence": "Same seller gallery shows exact saved beige bee cover, whole cream jacket spine and copyright page. Copyright explicitly confirms ISBN9780525576709, Tim Duggan Books2019, First Edition, numberline10...1; jacket design Richard Green. Full title, author and publisher imprint preserved. Perspective correction retains mild original lighting/paper wear.",
+      "page": "https://www.ebay.com/itm/227160267727",
+      "source": "https://i.ebayimg.com/images/g/g3sAAeSwd4BpWsm9/s-l1600.jpg",
+      "sourceSha256": "df56c4c2f4bdb646e5ee511bb527c6c7e53f12a54e7fe24da0b87e8360cb63c2",
+      "poster": "library/posters/the-uninhabitable-earth.jpg",
+      "posterSha256": "cb634be244a36cfc44fe6cde572e2eb3a9c03d9fbfc02db387111b25528ff1ff",
+      "crop": { "left": 0, "top": 0, "width": 1480, "height": 126 },
+      "artwork": "the-uninhabitable-earth-df56c4c2f4bd.webp",
+      "height": 320,
+      "perspective": {
+        "width": 1480,
+        "height": 126,
+        "points": [
+          { "source": [18, 591], "target": [0, 0] },
+          { "source": [1506, 606], "target": [1479, 0] },
+          { "source": [1477, 721], "target": [1479, 125] },
+          { "source": [49, 713], "target": [0, 125] }
+        ]
+      },
+      "sourceKind": "original-photograph-rectified",
+      "rotation": 90,
+      "artworkSha256": "c7cf3e566e9be085576b6b42482dcf854b331eac73b8bc34c788f5a80457ab3f"
+    },
+    {
+      "id": "anti-memetic-warfare",
+      "title": "There is No Antimemetics Division",
+      "publisher": "qntm (self-published original edition)",
+      "isbn": "9798721503788",
+      "editionEvidence": "Same seller gallery shows exact saved ORIGINAL monolith front with simple qntm upper-right and white bottom title, complete spine and copyright page. Copyright explicitly confirms ISBN9798721503788 and copyright2008,2015-2021qntm, Christopher Balaskas/Xerol cover. Saved design predates revised2025US large-angular-foil-title edition. Earlier report2025 attribution was incorrect and is corrected here. Preserve original edition; reject revised2025spines. Book head touches image edge, all printed marks/title remain intact; minor source wear and lighting retained.",
+      "page": "https://www.ebay.com/itm/278174244040",
+      "source": "https://i.ebayimg.com/images/g/TwMAAeSwRydqUmUa/s-l1600.jpg",
+      "sourceSha256": "d93673cf29a4875e29a25f77cc2351ce14cf7974b40fe07eb18cc1f5e129f8cb",
+      "poster": "library/posters/anti-memetic-warfare.jpeg",
+      "posterSha256": "dd7e09741726dabf3083a38af88a6a1199671d7bf5e93526b0bbc64da55a8db4",
+      "crop": { "left": 0, "top": 0, "width": 1540, "height": 85 },
+      "artwork": "anti-memetic-warfare-d93673cf29a4.webp",
+      "height": 320,
+      "perspective": {
+        "width": 1540,
+        "height": 85,
+        "points": [
+          { "source": [0, 500], "target": [0, 0] },
+          { "source": [1540, 818], "target": [1539, 0] },
+          { "source": [1484, 890], "target": [1539, 84] },
+          { "source": [35, 582], "target": [0, 84] }
+        ]
+      },
+      "sourceKind": "original-photograph-rectified",
+      "rotation": 90,
+      "artworkSha256": "1187977b832abeeeac6fbf4de6f866b1b0c070aa3b8e89c30bac4b940c82ea2c"
+    },
+    {
+      "id": "till-we-have-faces",
+      "title": "Till We Have Faces",
+      "publisher": "HarperOne",
+      "isbn": "9780062565419",
+      "editionEvidence": "Same seller gallery shows exact saved2017HarperOne red/turquoise woman and lantern front, rear barcode9780062565419 and complete printed spine. All C.S.Lewis/title/HarperOne imprint retained. Hand behind book does not cover spine.",
+      "page": "https://www.ebay.com/p/222141408?iid=134206415839",
+      "source": "https://i.ebayimg.com/images/g/qzUAAOSw9YFjAZsr/s-l1600.jpg",
+      "sourceSha256": "9267c9b9a013a5ca3a014e6cd78dbc5dd9e309ed8c4271f965d153178175af57",
+      "poster": "library/posters/till-we-have-faces.jpg",
+      "posterSha256": "9eabbf73dd27fbfb29278f5012cec4fbfc334624a740636d2281a07235a19e13",
+      "crop": { "left": 0, "top": 0, "width": 140, "height": 1420 },
+      "artwork": "till-we-have-faces-9267c9b9a013.webp",
+      "height": 320,
+      "perspective": {
+        "width": 140,
+        "height": 1420,
+        "points": [
+          { "source": [531, 79], "target": [0, 0] },
+          { "source": [665, 82], "target": [139, 0] },
+          { "source": [656, 1500], "target": [139, 1419] },
+          { "source": [494, 1507], "target": [0, 1419] }
+        ]
+      },
+      "sourceKind": "original-photograph-rectified",
+      "artworkSha256": "e225fd7810f61aa778f81d6a30a2a1c630669e89aa558245b6900641f84cf74f"
+    },
+    {
+      "id": "the-year-of-magical-thinking",
+      "title": "The year of magical thinking",
+      "source": "https://i.ebayimg.com/images/g/E0wAAeSwL7dpbToM/s-l1600.jpg",
+      "page": "https://www.ebay.com/p/54371237?iid=136960182086",
+      "publisher": "Vintage International",
+      "isbn": "9781400078431",
+      "sourceSha256": "ab2408d47c8ce25804890004ecacd74f18bacb3dbde2b2eadb8ccec5e54447ef",
+      "poster": "library/posters/the-year-of-magical-thinking.jpg",
+      "posterSha256": "f19a615493bc1eeb82146f2a07d462ed9ccf0dd997da263f9d3c5fa7e8bba6fa",
+      "crop": { "left": 0, "top": 0, "width": 1000, "height": 44 },
+      "perspective": {
+        "width": 1000,
+        "height": 44,
+        "points": [
+          { "source": [312, 880], "target": [0, 0] },
+          { "source": [1024, 404], "target": [999, 0] },
+          { "source": [1017, 444], "target": [999, 43] },
+          { "source": [328, 905], "target": [0, 43] }
+        ]
+      },
+      "rotation": 90,
+      "height": 320,
+      "artwork": "the-year-of-magical-thinking-ab2408d47c8c.webp",
+      "artworkSha256": "880ab5b50e13e9e56cf10037368d3788984b43ecc5e363c7d29d6c5dfe6d71c9",
+      "editionEvidence": "Same seller gallery shows exact saved2007Vintage International cream front: National Bestseller, Michiko Kakutani quote, gold National Book Award seal, colored letters J/O/H/N. Same photo shows complete turquoise printed spine. Back barcode confirms9781400078431. Full JOAN DIDION/title/Vintage oval/VINTAGE marks retained; source slight binding wear and lighting preserved. Source gallery alt text wrongly calls this hardcover; physical photo and ISBN identify paperback.",
+      "sourceKind": "seller-original-photograph-rectified",
+      "corroboration": [
+        "https://i.ebayimg.com/images/g/IOMAAeSwAUhpbToM/s-l1600.jpg",
+        "https://i.ebayimg.com/images/g/E5wAAeSwSoJpbToN/s-l1600.jpg"
+      ]
+    },
+    {
+      "id": "memoirs-of-a-dutiful-daughter",
+      "title": "Memoirs of a Dutiful Daughter",
+      "publisher": "Penguin Books Ltd",
+      "isbn": "9780141185330",
+      "editionEvidence": "Exact Penguin Modern Classics front matches saved white field, pale cyan Simone de Beauvoir, black title, and same child portrait/crop. Same physical copy exposes complete cyan spine with black author/title and Penguin Modern Classics mark, white caps at both ends. Edition-specific metadata identifies Penguin Books2001 ISBN9780141185330.",
+      "page": "https://bookbot.com/g/4047931/m/4065992",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/87589108.jpg",
+      "sourceSha256": "4fc54c72cf8ec9ae2f982dcfac514aaf610d119beae63fdab40bbc885903e5bb",
+      "poster": "library/posters/memoirs-of-a-dutiful-daughter.jpg",
+      "posterSha256": "485032d2df0b632b23592a5291068158d086c60c6b7bc9fd63c136391c26020c",
+      "crop": { "left": 0, "top": 0, "width": 102, "height": 1530 },
+      "artwork": "memoirs-of-a-dutiful-daughter-4fc54c72cf8e.webp",
+      "height": 320,
+      "perspective": {
+        "width": 102,
+        "height": 1530,
+        "points": [
+          { "source": [497, 207], "target": [0, 0] },
+          { "source": [595, 194], "target": [101, 0] },
+          { "source": [685, 1728], "target": [101, 1529] },
+          { "source": [584, 1709], "target": [0, 1529] }
+        ]
+      },
+      "sourceKind": "bookseller-photograph-rectified",
+      "corroboration": [
+        "https://rezised-images.knhbt.cz/1920x1920/87589109.jpg",
+        "https://rezised-images.knhbt.cz/1920x1920/87589110.jpg"
+      ],
+      "artworkSha256": "7b8c4facfebf89fc81a20f965e5f4be83484fa3e4157090cea5cd9a045822bfe"
+    },
+    {
+      "id": "slouching-towards-bethlehem",
+      "title": "On Keeping a Notebook",
+      "publisher": "Farrar, Straus and Giroux",
+      "isbn": "9780374531386",
+      "editionEvidence": "The note intentionally uses its containing collection Slouching Towards Bethlehem. Exact FSG Classics front matches saved cream artwork, arched Joan Didion, pink/orange/yellow slanted title ribbons and lower-left FSG CLASSICS logo. Paired photograph exposes white spine with original title ribbons, Joan Didion and pink FSG mark. Edition-specific metadata identifies Farrar, Straus and Giroux, 2008, ISBN 9780374531386.",
+      "page": "https://bookbot.com/g/3523961/m/3814412",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/88202101.jpg",
+      "sourceSha256": "f65e1ab03c9f0b7a058476c49fb9b7be876855d3d15ea7eb60115e35b6f5926e",
+      "poster": "library/posters/Slouching Towards Bethlehem.jpg",
+      "posterSha256": "40c635fc0bcbebb3f047d45593a3360c433f9847ff2d3c93c80fc1280c903d33",
+      "crop": { "left": 0, "top": 0, "width": 78, "height": 1520 },
+      "artwork": "slouching-towards-bethlehem-f65e1ab03c9f.webp",
+      "height": 320,
+      "perspective": {
+        "width": 78,
+        "height": 1520,
+        "points": [
+          { "source": [577, 208], "target": [0, 0] },
+          { "source": [648, 203], "target": [77, 0] },
+          { "source": [664, 1725], "target": [77, 1519] },
+          { "source": [585, 1709], "target": [0, 1519] }
+        ]
+      },
+      "sourceKind": "bookseller-photograph-rectified",
+      "corroboration": [
+        "https://rezised-images.knhbt.cz/1920x1920/88202102.jpg",
+        "https://rezised-images.knhbt.cz/1920x1920/88202103.jpg"
+      ],
+      "artworkSha256": "05cc2f6c8dfcb08d748a79ebc4a0196b4f635cc6b5fb8fc593e2d444f66f4bd1"
+    },
+    {
+      "id": "play-it-as-it-lays",
+      "title": "Play It as It Lays",
+      "publisher": "Macmillan",
+      "isbn": "9780374529949",
+      "editionEvidence": "Exact FSG Classics front with pink title/Joan Didion band, orange and yellow sun, black snake on cream and FSG CLASSICS lower-right mark. Paired same-book photograph exposes complete orange spine with black title, Joan Didion and FSG logo. Edition-specific metadata identifies Macmillan, 2005, ISBN 9780374529949.",
+      "page": "https://bookbot.com/g/3772835/m/3950344",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/82249260.jpg",
+      "sourceSha256": "15e0c3b129b9c47383dae5a56e904b0b77b8e188486af75c66db1382d09af615",
+      "poster": "library/posters/play-it-as-it-lays.jpg",
+      "posterSha256": "79aa491ce8f9dbb706ae0ccd47ff03448f4bd5666e2102d80f0855de7e66916a",
+      "crop": { "left": 0, "top": 0, "width": 82, "height": 1520 },
+      "artwork": "play-it-as-it-lays-15e0c3b129b9.webp",
+      "height": 320,
+      "perspective": {
+        "width": 82,
+        "height": 1520,
+        "points": [
+          { "source": [571, 204], "target": [0, 0] },
+          { "source": [648, 204], "target": [81, 0] },
+          { "source": [624, 1720], "target": [81, 1519] },
+          { "source": [542, 1707], "target": [0, 1519] }
+        ]
+      },
+      "sourceKind": "bookseller-photograph-rectified",
+      "corroboration": [
+        "https://rezised-images.knhbt.cz/1920x1920/82249261.jpg",
+        "https://rezised-images.knhbt.cz/1920x1920/82249262.jpg"
+      ],
+      "artworkSha256": "22497a467a3bd04e555ef2fec1280627b065100467ae7d311b93beb625232bb9"
+    },
+    {
+      "id": "risibles-amours",
+      "title": "RISIBLES AMOURS",
+      "publisher": "Folio",
+      "isbn": "9782072892707",
+      "editionEvidence": "Paired original front/spine photograph matches saved 2020 Folio hand-drawn purple eyes, pink lips, Kundera signature and handwritten title. Back photo 79006330 visibly has barcode 9782072892707; Folio 1702 number appears at spine head. Complete title, brown Kundera name and Folio watermark/imprint retained. Physical printing unknown; natural off-white photographic shading retained. Trimmed 3 blank edge pixels after rectification to exclude background.",
+      "page": "https://bookbot.com/m/5345740",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/79006329.webp",
+      "sourceSha256": "003728753e3379a083841eb862a030b23794b19a9da797f3c08b11464b91819f",
+      "poster": "library/posters/risibles-amours.jpg",
+      "posterSha256": "b7c389d1d06088dda354e4fa718cb7ef1fb599e8a133ce321380cef4335db17c",
+      "crop": { "left": 3, "top": 0, "width": 77, "height": 1510 },
+      "artwork": "risibles-amours-003728753e33.webp",
+      "height": 320,
+      "perspective": {
+        "width": 80,
+        "height": 1510,
+        "points": [
+          { "source": [613, 211], "target": [0, 0] },
+          { "source": [668, 211], "target": [79, 0] },
+          { "source": [650, 1721], "target": [79, 1509] },
+          { "source": [595, 1700], "target": [0, 1509] }
+        ]
+      },
+      "sourceKind": "seller-original-photograph-rectified",
+      "corroboration": ["https://rezised-images.knhbt.cz/1920x1920/79006330.webp"],
+      "artworkSha256": "c3e0ad3869958664e300e6d19ce3836d13cba66d6e69f9f9fba6db4853590547"
+    },
+    {
+      "id": "reimagining-capitalism-in-a-world-on-fire",
+      "title": "Reimagining Capitalism in a World on Fire",
+      "publisher": "PublicAffairs",
+      "isbn": "9781541757134",
+      "editionEvidence": "Original paired front/spine photo matches saved white PublicAffairs design, gray widely spaced author, gray diamond rule, condensed black title and red IN A WORLD ON FIRE. Selected seller publication metadata identifies international paperback 9781541757134; no back ISBN photo available for this copy, so exact physical printing remains unverified. Same flat front is shared by hardcover 9781541730151, whose separate paired photo is recorded but has stronger spine curvature. This selected photo preserves full title, author, gray diamond rule and vertical PUBLICAFFAIRS mark unobscured. Original wear/shading retained; binding/printing of saved flat poster cannot be proven from front alone.",
+      "page": "https://bookbot.com/m/5323179",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/75306059.webp",
+      "sourceSha256": "3ea978d4a5fa129d4829d08599421df50a759f4f8cce0a6f26d43876748bf1c0",
+      "poster": "library/posters/reimagining-capitalism-in-a-world-on-fire.jpg",
+      "posterSha256": "777b1ce6c610456551037e1acb4fa0a284156b7037811b2ca41fb19498d0deac",
+      "crop": { "left": 0, "top": 0, "width": 140, "height": 1520 },
+      "artwork": "reimagining-capitalism-in-a-world-on-fire-3ea978d4a5fa.webp",
+      "height": 320,
+      "perspective": {
+        "width": 140,
+        "height": 1520,
+        "points": [
+          { "source": [573, 208], "target": [0, 0] },
+          { "source": [674, 205], "target": [139, 0] },
+          { "source": [697, 1723], "target": [139, 1519] },
+          { "source": [616, 1694], "target": [0, 1519] }
+        ]
+      },
+      "sourceKind": "seller-original-photograph-rectified",
+      "corroboration": [
+        "https://reimaginingcapitalism.org/",
+        "https://bookbot.com/m/8112593",
+        "https://ci.nii.ac.jp/ncid/BC07740626"
+      ],
+      "artworkSha256": "4041b63806f588f2bfc2ae96d435067c0281b2b1560dba04f8b3205bc1b674db"
+    },
+    {
+      "id": "on-certainty",
+      "title": "Über Gewißheit (OC)",
+      "publisher": "Harper Torchbooks",
+      "isbn": "9780061316869",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/47970051.jpg",
+      "page": "https://bookbot.com/g/5186419/m/8170961",
+      "sourceSha256": "bd0116ceff00fca1d7ce1785ad51603647f791d8531a9beb3ff64828387af44f",
+      "poster": "library/posters/on-certainty.jpg",
+      "posterSha256": "e81089636fd4643c08c50d005b90a7c9294013c2c1b9663c22d318ddb2279ea7",
+      "perspective": {
+        "width": 65,
+        "height": 1506,
+        "points": [
+          { "source": [570, 223], "target": [0, 0] },
+          { "source": [634, 221], "target": [64, 0] },
+          { "source": [682, 1726], "target": [64, 1505] },
+          { "source": [618, 1707], "target": [0, 1505] }
+        ]
+      },
+      "crop": { "left": 0, "top": 0, "width": 65, "height": 1506 },
+      "rotation": 0,
+      "height": 320,
+      "artwork": "on-certainty-bd0116ceff00.webp",
+      "editionEvidence": "Exact saved English On Certainty Harper Torchbooks TB1686 front matches black outlined hands over red rectangle, author and editor credits. Same physical copy exposes full grey-white spine with black Wittgenstein, On Certainty, Harper Torchbooks and TB1686. Edition-specific metadata identifies Harper Collins1972 ISBN9780061316869.",
+      "sourceKind": "bookseller-photograph-rectified",
+      "artworkSha256": "3028ae45613c9579e45c124a6a5df1a97e3b6ef62331d9be586a7ef8830af19d"
+    },
+    {
+      "id": "philosophical-investigations",
+      "title": "Philosophical Investigations",
+      "publisher": "Wiley-Blackwell",
+      "isbn": "9781405159296",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/93380358.jpg",
+      "page": "https://bookbot.com/g/2886326/m/5387043",
+      "sourceSha256": "da018d75815d673005575a3b615a6bae20a303b19b50d0984555d75f9a89b26a",
+      "poster": "library/posters/philosophical-investigations.jpg",
+      "posterSha256": "fd3a1f6b28a4ce54b80f43135b1bc2756f50ecd0bfa4b1edca87a4ec98eed3f4",
+      "perspective": {
+        "width": 115,
+        "height": 1530,
+        "points": [
+          { "source": [540, 219], "target": [0, 0] },
+          { "source": [653, 198], "target": [114, 0] },
+          { "source": [685, 1728], "target": [114, 1529] },
+          { "source": [574, 1690], "target": [0, 1529] }
+        ]
+      },
+      "crop": { "left": 0, "top": 0, "width": 115, "height": 1530 },
+      "rotation": 0,
+      "height": 320,
+      "artwork": "philosophical-investigations-da018d75815d.webp",
+      "editionEvidence": "Same Wiley-Blackwell revised4th edition front, including German/English text statement, Anscombe/Hacker/Schulte translator credit, grey oversized lower author and red type, matches saved artwork. Same paperback physical copy exposes full spine: title, red Wittgenstein, lower grey letter fragment and Wiley-Blackwell mark. Edition-specific metadata pins paperback ISBN9781405159296 (the photographed hardback57754394 is a separate ISBN and not used).",
+      "sourceKind": "bookseller-photograph-rectified",
+      "artworkSha256": "1d380d0d7903e7967135aa7603bbf9c320e3096c5b851453cd4fcb1533d90503"
+    }
+  ]
+}
