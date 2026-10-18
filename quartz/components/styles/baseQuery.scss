@@ -152,8 +152,21 @@ body[data-is-base='true'] #quartz-root > .page-body-grid > .page-header {
     }
   }
 
+  // A changed view marks the group with a small square in ink, the same in both themes. A
+  // recoloured bottom border read as a stray rule, and as a white line in the dark theme.
   &[data-base-query-modified='true'] .base-query-actions {
-    border-block-end-color: var(--dark);
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset-block-start: 3px;
+      inset-inline-end: 3px;
+      inline-size: 4px;
+      block-size: 4px;
+      background: var(--dark);
+      pointer-events: none;
+    }
   }
 
   .base-query-panel {

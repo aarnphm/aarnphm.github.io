@@ -26,6 +26,13 @@ document.addEventListener('nav', () => {
       for (const tab of tabs) tab.setAttribute('aria-expanded', 'false')
       if (restoreFocus) tabs.find(tab => tab.dataset.baseQueryToggle === requestedMode)?.focus()
     }
+    const warm = (): void => {
+      void loadQueryEditor().catch(() => undefined)
+    }
+    for (const tab of tabs) {
+      tab.addEventListener('pointerenter', warm, { signal, once: true })
+      tab.addEventListener('focusin', warm, { signal, once: true })
+    }
     const open = async (event: MouseEvent): Promise<void> => {
       if (!(event.target instanceof Element) || root.dataset.baseQueryInitialized !== undefined)
         return
@@ -60,7 +67,7 @@ document.addEventListener('nav', () => {
         const editor = await loadQueryEditor()
         if (signal.aborted || panel?.hidden) return
         root.removeEventListener('click', open)
-        editor.mountBaseQuery(root, requestedMode)
+        await editor.mountBaseQuery(root, requestedMode)
       } catch (cause) {
         if (!signal.aborted && status) {
           status.textContent = `${cause instanceof Error ? cause.message : 'The editor could not load.'} Select a control to retry.`

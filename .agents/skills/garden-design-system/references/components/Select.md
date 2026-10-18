@@ -30,3 +30,4 @@ An option has no meta slot. Put a meta value in its label ("lap 1 · 12:00"); ty
 - Choosing an option marks it, calls `onSelect`, closes the menu and returns focus to the trigger.
 - The selected option has a `selected` ground, `dark` text and a check mark. Other options are `darkgray`.
 - Under `pointer: coarse` the trigger and options are 44px tall.
+- A Select has no modified state. A Base view marks a changed query on its filter and sort tabs instead; see BaseToolbar.

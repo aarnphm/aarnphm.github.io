@@ -31,6 +31,7 @@ import { documentPreviewSlug } from '../../util/document-preview'
 import { FilePath, pathToRoot, FullSlug, joinSegments, simplifySlug } from '../../util/path'
 import { StaticResources } from '../../util/resources'
 import { QuartzPluginData } from '../vfile'
+import { emitBookcaseCovers } from './bookcase-covers'
 import { write } from './helpers'
 
 type BaseViewRender = BaseRenderPlan['rendered']['views'][number]
@@ -125,7 +126,10 @@ async function emitBaseViewsForPlan(
   resources: StaticResources,
   layout: FullPageLayout,
 ): Promise<FilePath[]> {
-  const semanticManifest = await baseSemanticManifest(ctx, baseSlug)
+  const [semanticManifest, covers] = await Promise.all([
+    baseSemanticManifest(ctx, baseSlug),
+    emitBookcaseCovers(ctx, plan.rendered.views),
+  ])
   const [views, preview, embeddingText] = await Promise.all([
     mapConcurrent(plan.rendered.views, defaultIoConcurrency, renderedView =>
       emitBaseView(
@@ -147,7 +151,7 @@ async function emitBaseViewsForPlan(
     }),
     emitBaseEmbeddingText(ctx, baseSlug, plan.memberSlugs, allFiles),
   ])
-  return [...views, preview, embeddingText]
+  return [...views, preview, embeddingText, ...covers]
 }
 
 export const BasePage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => {

@@ -10,7 +10,7 @@ import {
 } from './compiler'
 import { Expr, LogicalExpr, UnaryExpr, spanFrom } from './compiler/ast'
 import { BUILTIN_SUMMARY_TYPES } from './compiler/schema'
-import { parseViews, BaseFile, PropertyConfig } from './types'
+import { parseViews, BaseFile, PropertyConfig, BOOKCASE_PROPERTY_DEFAULTS } from './types'
 
 const normalizeProperties = (raw: unknown): Record<string, PropertyConfig> | undefined => {
   if (!isRecord(raw)) return undefined
@@ -250,6 +250,14 @@ export function compileBaseConfig(source: string, path?: string): CompileBaseRes
       const hasOrder = Array.isArray(view.order) && view.order.length > 0
       if (!hasOrder) {
         addPropertyExpression('title', `${viewContext}.order`)
+      }
+    }
+
+    if (view.type === 'bookcase') {
+      for (const [key, fallback] of BOOKCASE_PROPERTY_DEFAULTS) {
+        const raw = view[key]
+        const prop = typeof raw === 'string' ? raw : fallback
+        if (prop) addPropertyExpression(prop, `${viewContext}.${key}`)
       }
     }
 

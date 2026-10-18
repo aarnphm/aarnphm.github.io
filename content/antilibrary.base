@@ -56,6 +56,25 @@ views:
       note.date: 147
     cardSize: 320
     image: note.posters
+  - type: bookcase
+    name: bookcase
+    groupBy:
+      property: category
+      direction: ASC
+    order:
+      - author
+      - year
+      - status
+      - subcategory
+      - tags
+    sort:
+      - property: date
+        direction: DESC
+    image: note.posters
+    spineTitle: note.title
+    spineAuthor: note.author
+    bookHeight: 220
+    shelfWidth: 600
   - type: table
     name: philosophy
     filters:

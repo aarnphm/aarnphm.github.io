@@ -173,7 +173,7 @@
       }
 
       .base-checkbox {
-        --checkbox-size: 15px;
+        --checkbox-size: 12px;
         --checkbox-radius: var(--radius-none);
         --checkbox-border-color: var(--gray);
         --checkbox-border-color-hover: var(--darkgray);
@@ -192,6 +192,7 @@
         height: var(--checkbox-size);
         position: relative;
         vertical-align: middle;
+        transform: none;
         cursor: default;
 
         &[disabled] {

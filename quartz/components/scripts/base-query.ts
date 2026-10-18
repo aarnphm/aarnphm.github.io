@@ -1,6 +1,7 @@
 import type { QuartzPluginData } from '../../plugins/vfile'
 import type { BaseQueryDocument } from '../../util/base/browser-data'
 import type { BaseFile, BaseFileFilter, BaseSortConfig } from '../../util/base/types'
+import type { Select, SelectGroup, SelectOption } from '../controls/select'
 import type { BaseQueryCatalog, BaseQueryEditor } from './base-query-editor'
 import { getFullSlug } from '../../util/path'
 import { buildSelect } from '../controls/select'
@@ -9,6 +10,45 @@ import { cleanupHydratedRoot, rootNavSignal } from './root-lifecycle'
 type QueryMode = 'filter' | 'sort'
 type QueryRuntime = typeof import('../../util/base/browser-query')
 type EditorModule = typeof import('./base-query-editor')
+type DataModule = typeof import('../../util/base/browser-data')
+type PurifierModule = typeof import('dompurify')
+type Dependencies = [QueryRuntime, EditorModule, DataModule, PurifierModule]
+
+let dependenciesPromise: Promise<Dependencies> | undefined
+
+function loadDependencies(): Promise<Dependencies> {
+  if (!dependenciesPromise) {
+    dependenciesPromise = Promise.all([
+      import('../../util/base/browser-query'),
+      import('./base-query-editor'),
+      import('../../util/base/browser-data'),
+      import('dompurify'),
+    ]).catch(cause => {
+      dependenciesPromise = undefined
+      throw cause
+    })
+  }
+  return dependenciesPromise
+}
+
+const directionGroups: SelectGroup<BaseSortConfig['direction']>[] = [
+  {
+    options: [
+      { value: 'ASC', label: 'ascending' },
+      { value: 'DESC', label: 'descending' },
+    ],
+  },
+]
+
+interface SortRowState {
+  row: HTMLTableRowElement
+  rank: HTMLTableCellElement
+  propertySelect: Select<string>
+  directionSelect: Select<BaseSortConfig['direction']>
+  removeButton: HTMLButtonElement
+  cleanup: () => void
+  sort: BaseSortConfig
+}
 
 function filterSource(filter: BaseFileFilter | undefined): string {
   if (!filter) return ''
@@ -42,7 +82,10 @@ function queryMode(value: string | undefined): QueryMode | undefined {
   return value === 'filter' || value === 'sort' ? value : undefined
 }
 
-export function mountBaseQuery(root: HTMLElement, initialMode: QueryMode = 'filter'): void {
+export async function mountBaseQuery(
+  root: HTMLElement,
+  initialMode: QueryMode = 'filter',
+): Promise<void> {
   if (root.dataset.baseQueryInitialized !== undefined) return
   const panelElement = root.querySelector<HTMLElement>('#base-query-panel')
   const surfaceElement = root.querySelector<HTMLElement>('[data-base-query-surface]')
@@ -73,6 +116,12 @@ export function mountBaseQuery(root: HTMLElement, initialMode: QueryMode = 'filt
   root.dataset.baseQueryInitialized = ''
   const signal = rootNavSignal(root)
   const toggles = [...root.querySelectorAll<HTMLButtonElement>('[data-base-query-toggle]')]
+  const filterSurface = document.createElement('div')
+  const sortSurface = document.createElement('div')
+  filterSurface.hidden = true
+  sortSurface.hidden = true
+  surface.replaceChildren(filterSurface, sortSurface)
+
   let runtime: QueryRuntime | undefined
   let editorModule: EditorModule | undefined
   let queryDocument: BaseQueryDocument | undefined
@@ -81,14 +130,22 @@ export function mountBaseQuery(root: HTMLElement, initialMode: QueryMode = 'filt
   let source = ''
   let selectedView = 0
   let catalog: BaseQueryCatalog | undefined
+  let cachedCatalogForOptions: BaseQueryCatalog | undefined
+  let catalogPropertySet = new Set<string>()
+  let catalogPropertyOptions: SelectOption<string>[] = []
+  let catalogPropertyGroup: SelectGroup<string> = { options: [] }
   let editor: BaseQueryEditor | undefined
   let editorSource = ''
+  let scopeElement: HTMLDetailsElement | undefined
+  let scopeCode: HTMLElement | undefined
+  let sortBody: HTMLTableSectionElement | undefined
+  let addSortButton: HTMLButtonElement | undefined
+  let sortRows: SortRowState[] = []
   let mode: QueryMode = 'filter'
+  let initialized = false
   let initialization: Promise<void> | undefined
   let sanitize: ((html: string) => string) | undefined
   let draftDirty = false
-  let surfaceController = new AbortController()
-  let surfaceCleanups: (() => void)[] = []
 
   const setError = (messages: string[]): void => {
     error.textContent = messages.join('\n')
@@ -107,17 +164,26 @@ export function mountBaseQuery(root: HTMLElement, initialMode: QueryMode = 'filt
   }
   const currentView = () => config?.views[selectedView]
 
+  function getPropertyGroups(propertyName: string): SelectGroup<string>[] {
+    if (catalog && catalog !== cachedCatalogForOptions) {
+      cachedCatalogForOptions = catalog
+      catalogPropertySet = new Set(catalog.properties)
+      catalogPropertyOptions = catalog.properties.map(value => ({ value, label: value }))
+      catalogPropertyGroup = { options: catalogPropertyOptions }
+    }
+    if (catalogPropertySet.has(propertyName)) {
+      return [catalogPropertyGroup]
+    }
+    return [{ options: [{ value: propertyName, label: propertyName }, ...catalogPropertyOptions] }]
+  }
+
   async function initialize(): Promise<void> {
+    if (initialized) return
     if (initialization) return initialization
     status.textContent = 'Loading base editor…'
     panel.setAttribute('aria-busy', 'true')
     initialization = (async () => {
-      const [query, editors, data, purifier] = await Promise.all([
-        import('../../util/base/browser-query'),
-        import('./base-query-editor'),
-        import('../../util/base/browser-data'),
-        import('dompurify'),
-      ])
+      const [query, editors, data, purifier] = await loadDependencies()
       const raw: unknown = JSON.parse(root.dataset.baseQuery ?? 'null')
       const documentData = data.parseBaseQueryDocument(raw)
       if (!documentData) throw new Error('The source for this base is unavailable.')
@@ -137,6 +203,7 @@ export function mountBaseQuery(root: HTMLElement, initialMode: QueryMode = 'filt
       )
       catalog = editors.createBaseQueryCatalog(files, config)
       sanitize = html => purifier.default.sanitize(html)
+      initialized = true
       status.textContent = `${files.length.toLocaleString()} published notes available.`
       ready(true)
     })()
@@ -194,9 +261,140 @@ export function mountBaseQuery(root: HTMLElement, initialMode: QueryMode = 'filt
     changed()
   }
 
-  function sortControls(): void {
-    const view = currentView()
-    if (!view || !catalog) return
+  function reindexSortRows(startIndex = 0): void {
+    for (let index = startIndex; index < sortRows.length; index++) {
+      const item = sortRows[index]
+      item.rank.textContent = String(index + 1)
+
+      const propId = `base-query-property-${index}`
+      const propLabel = `Sort property ${index + 1}`
+      const propMenu = item.propertySelect.element.querySelector<HTMLElement>('.g-select-menu')
+      if (propMenu) {
+        propMenu.id = propId
+        propMenu.setAttribute('aria-label', propLabel)
+      }
+      item.propertySelect.trigger.setAttribute('aria-controls', propId)
+      item.propertySelect.trigger.setAttribute('aria-label', `${propLabel}: ${item.sort.property}`)
+
+      const dirId = `base-query-direction-${index}`
+      const dirLabel = `Sort direction ${index + 1}`
+      const dirText = item.sort.direction === 'ASC' ? 'ascending' : 'descending'
+      const dirMenu = item.directionSelect.element.querySelector<HTMLElement>('.g-select-menu')
+      if (dirMenu) {
+        dirMenu.id = dirId
+        dirMenu.setAttribute('aria-label', dirLabel)
+      }
+      item.directionSelect.trigger.setAttribute('aria-controls', dirId)
+      item.directionSelect.trigger.setAttribute('aria-label', `${dirLabel}: ${dirText}`)
+
+      item.removeButton.setAttribute('aria-label', `Remove sort ${index + 1}`)
+      item.removeButton.title = `Remove sort ${index + 1}`
+    }
+  }
+
+  function createSortRow(sort: BaseSortConfig, index: number): SortRowState {
+    const row = document.createElement('tr')
+    row.className = 'base-query-sort'
+    row.dataset.baseQuerySort = ''
+    const rank = document.createElement('td')
+    rank.className = 'base-query-sort-rank'
+    rank.textContent = String(index + 1)
+    rank.setAttribute('aria-hidden', 'true')
+
+    const rowController = new AbortController()
+    const propertySelect = buildSelect({
+      id: `base-query-property-${index}`,
+      label: `Sort property ${index + 1}`,
+      groups: getPropertyGroups(sort.property),
+      selected: sort.property,
+      className: 'base-query-select',
+      floating: true,
+      onSelect: property => {
+        rowState.sort = { ...rowState.sort, property }
+        updateSort(sortRows.map(item => item.sort))
+      },
+    })
+    const directionSelect = buildSelect<BaseSortConfig['direction']>({
+      id: `base-query-direction-${index}`,
+      label: `Sort direction ${index + 1}`,
+      groups: directionGroups,
+      selected: sort.direction,
+      className: 'base-query-direction',
+      floating: true,
+      onSelect: direction => {
+        rowState.sort = { ...rowState.sort, direction }
+        updateSort(sortRows.map(item => item.sort))
+      },
+    })
+    const removeButton = document.createElement('button')
+    removeButton.type = 'button'
+    removeButton.innerHTML =
+      '<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="m4 4 8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>'
+    removeButton.setAttribute('aria-label', `Remove sort ${index + 1}`)
+    removeButton.title = `Remove sort ${index + 1}`
+
+    const unmountProperty = propertySelect.mount()
+    const unmountDirection = directionSelect.mount()
+    const rowState: SortRowState = {
+      row,
+      rank,
+      propertySelect,
+      directionSelect,
+      removeButton,
+      sort: { ...sort },
+      cleanup: () => {
+        rowController.abort()
+        unmountProperty()
+        unmountDirection()
+      },
+    }
+
+    removeButton.addEventListener(
+      'click',
+      () => {
+        const currentIndex = sortRows.indexOf(rowState)
+        if (currentIndex === -1) return
+        addSortButton?.focus({ preventScroll: true })
+        rowState.cleanup()
+        rowState.row.remove()
+        sortRows.splice(currentIndex, 1)
+        reindexSortRows(currentIndex)
+        updateSort(sortRows.map(item => item.sort))
+      },
+      { signal: rowController.signal },
+    )
+
+    row.append(rank)
+    for (const control of [propertySelect.element, directionSelect.element, removeButton]) {
+      const cell = document.createElement('td')
+      cell.append(control)
+      row.append(cell)
+    }
+    return rowState
+  }
+
+  function clearSortRows(): void {
+    for (const item of sortRows) item.cleanup()
+    sortRows = []
+    sortBody?.replaceChildren()
+  }
+
+  function rebuildSortRows(): void {
+    if (!sortBody || !catalog) return
+    clearSortRows()
+    const sorts = currentView()?.sort ?? []
+    const fragment = document.createDocumentFragment()
+    for (const [index, sort] of sorts.entries()) {
+      const rowState = createSortRow(sort, index)
+      sortRows.push(rowState)
+      fragment.append(rowState.row)
+    }
+    sortBody.append(fragment)
+  }
+
+  function ensureSortSurface(): void {
+    if (!catalog) return
+    if (sortBody) return
     const list = document.createElement('table')
     list.className = 'base-query-sorts'
     list.setAttribute('aria-label', 'Sort order')
@@ -207,88 +405,28 @@ export function mountBaseQuery(root: HTMLElement, initialMode: QueryMode = 'filt
       columns.append(column)
     }
     const body = document.createElement('tbody')
+    sortBody = body
     list.append(columns, body)
-    const sorts = view.sort ?? []
-    for (const [index, sort] of sorts.entries()) {
-      const row = document.createElement('tr')
-      row.className = 'base-query-sort'
-      row.dataset.baseQuerySort = ''
-      const rank = document.createElement('td')
-      rank.className = 'base-query-sort-rank'
-      rank.textContent = String(index + 1)
-      rank.setAttribute('aria-hidden', 'true')
-      const propertyNames = new Set([sort.property, ...catalog.properties])
-      const update = (patch: Partial<BaseSortConfig>): void =>
-        updateSort(
-          (currentView()?.sort ?? []).map((entry, entryIndex) =>
-            entryIndex === index ? { ...entry, ...patch } : entry,
-          ),
-        )
-      const property = buildSelect({
-        id: `base-query-property-${index}`,
-        label: `Sort property ${index + 1}`,
-        groups: [{ options: [...propertyNames].map(value => ({ value, label: value })) }],
-        selected: sort.property,
-        className: 'base-query-select',
-        floating: true,
-        onSelect: property => update({ property }),
-      })
-      const direction = buildSelect<BaseSortConfig['direction']>({
-        id: `base-query-direction-${index}`,
-        label: `Sort direction ${index + 1}`,
-        groups: [
-          {
-            options: [
-              { value: 'ASC', label: 'ascending' },
-              { value: 'DESC', label: 'descending' },
-            ],
-          },
-        ],
-        selected: sort.direction,
-        className: 'base-query-direction',
-        floating: true,
-        onSelect: direction => update({ direction }),
-      })
-      const remove = document.createElement('button')
-      remove.type = 'button'
-      remove.innerHTML =
-        '<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="m4 4 8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>'
-      remove.setAttribute('aria-label', `Remove sort ${index + 1}`)
-      remove.title = `Remove sort ${index + 1}`
-      remove.addEventListener(
-        'click',
-        () => {
-          updateSort((currentView()?.sort ?? []).filter((_, entryIndex) => entryIndex !== index))
-          renderSurface()
-          surface.querySelector<HTMLButtonElement>('[data-base-query-add-sort]')?.focus()
-        },
-        { signal: surfaceController.signal },
-      )
-      row.append(rank)
-      for (const control of [property.element, direction.element, remove]) {
-        const cell = document.createElement('td')
-        cell.append(control)
-        row.append(cell)
-      }
-      body.append(row)
-      surfaceCleanups.push(property.mount(), direction.mount())
-    }
+
     const add = document.createElement('button')
     add.type = 'button'
     add.dataset.baseQueryAddSort = ''
     add.textContent = 'add sort'
+    addSortButton = add
     add.addEventListener(
       'click',
       () => {
-        const existing = currentView()?.sort ?? []
-        updateSort([...existing, { property: 'file.name', direction: 'ASC' }])
-        renderSurface()
-        const fields = surface.querySelectorAll<HTMLButtonElement>(
-          '.base-query-select .g-select-trigger',
-        )
-        fields.item(fields.length - 1)?.focus()
+        if (!sortBody) return
+        const newSort: BaseSortConfig = { property: 'file.name', direction: 'ASC' }
+        const rowState = createSortRow(newSort, sortRows.length)
+        sortRows.push(rowState)
+        sortBody.append(rowState.row)
+        updateSort(sortRows.map(item => item.sort))
+        requestAnimationFrame(() => {
+          rowState.propertySelect.trigger.focus({ preventScroll: true })
+        })
       },
-      { signal: surfaceController.signal },
+      { signal },
     )
     const footer = document.createElement('tfoot')
     const addRow = document.createElement('tr')
@@ -300,48 +438,60 @@ export function mountBaseQuery(root: HTMLElement, initialMode: QueryMode = 'filt
     addRow.append(spacer, addCell)
     footer.append(addRow)
     list.append(footer)
-    surface.append(list)
+    sortSurface.append(list)
+    rebuildSortRows()
   }
 
-  function renderSurface(): void {
-    surfaceController.abort()
-    surfaceController = new AbortController()
-    for (const cleanup of surfaceCleanups) cleanup()
-    surfaceCleanups = []
-    editor?.destroy()
-    editor = undefined
-    surface.replaceChildren()
+  function ensureFilterSurface(): void {
+    if (!config || !editorModule || !catalog) return
+    const view = currentView()
+    const nextFilterSource = filterSource(view?.filters)
+    if (!editor) {
+      const editorHost = document.createElement('div')
+      editorHost.className = 'base-query-editor base-query-editor-filter'
+      filterSurface.prepend(editorHost)
+      editor = editorModule.createBaseQueryEditor({
+        parent: editorHost,
+        source: nextFilterSource,
+        catalog,
+        onChange: changed,
+        onApply: () => {
+          void apply()
+        },
+        onClose: close,
+      })
+      editorSource = editor.value()
+    } else if (editor.value() !== nextFilterSource && editor.value() === editorSource) {
+      editor.setValue(nextFilterSource)
+      editorSource = editor.value()
+    }
+    if (config.filters) {
+      if (!scopeElement || !scopeCode) {
+        scopeElement = document.createElement('details')
+        scopeElement.className = 'base-query-scope'
+        const summary = document.createElement('summary')
+        summary.textContent = 'Base filters'
+        scopeCode = document.createElement('code')
+        scopeElement.append(summary, scopeCode)
+        filterSurface.append(scopeElement)
+      }
+      scopeCode.textContent = filterSource(config.filters)
+      scopeElement.hidden = false
+    } else if (scopeElement) {
+      scopeElement.hidden = true
+    }
+  }
+
+  function showActiveSurface(): void {
     if (!config || !editorModule) return
-    catalog = editorModule.createBaseQueryCatalog(files, config)
     const view = currentView()
     heading.textContent = `${mode === 'filter' ? 'Filter' : 'Sort'} · ${view?.name ?? 'this view'}`
+    filterSurface.hidden = mode !== 'filter'
+    sortSurface.hidden = mode !== 'sort'
     if (mode === 'sort') {
-      sortControls()
-      return
-    }
-    const editorHost = document.createElement('div')
-    editorHost.className = `base-query-editor base-query-editor-${mode}`
-    surface.append(editorHost)
-    editor = editorModule.createBaseQueryEditor({
-      parent: editorHost,
-      source: filterSource(view?.filters),
-      catalog,
-      onChange: changed,
-      onApply: () => {
-        void apply()
-      },
-      onClose: close,
-    })
-    editorSource = editor.value()
-    if (mode === 'filter' && config.filters) {
-      const scope = document.createElement('details')
-      scope.className = 'base-query-scope'
-      const summary = document.createElement('summary')
-      summary.textContent = 'Base filters'
-      const expression = document.createElement('code')
-      expression.textContent = filterSource(config.filters)
-      scope.append(summary, expression)
-      surface.append(scope)
+      ensureSortSurface()
+    } else {
+      ensureFilterSurface()
     }
   }
 
@@ -350,7 +500,6 @@ export function mountBaseQuery(root: HTMLElement, initialMode: QueryMode = 'filt
       panel.hidden = false
       return
     }
-    const switching = mode !== nextMode
     mode = nextMode
     panel.hidden = false
     for (const toggle of toggles) {
@@ -360,10 +509,14 @@ export function mountBaseQuery(root: HTMLElement, initialMode: QueryMode = 'filt
       toggle.tabIndex = selected ? 0 : -1
     }
     panel.setAttribute('aria-labelledby', `base-query-tab-${mode}`)
+    if (initialized) {
+      showActiveSurface()
+      return
+    }
     try {
       await initialize()
       if (signal.aborted || panel.hidden || mode !== nextMode) return
-      if (!editor || switching) renderSurface()
+      showActiveSurface()
     } catch (cause) {
       if (!signal.aborted) {
         status.textContent = 'The editor could not load. Close and reopen it to retry.'
@@ -373,7 +526,7 @@ export function mountBaseQuery(root: HTMLElement, initialMode: QueryMode = 'filt
   }
 
   async function apply(reset = false): Promise<void> {
-    if (!runtime || !queryDocument || !sanitize || !config) return
+    if (!runtime || !queryDocument || !sanitize || !config || !editorModule) return
     if (!reset && !syncSource()) return
     const nextSource = reset ? queryDocument.source : source
     const viewName = reset ? (root.dataset.baseQueryView ?? '') : (currentView()?.name ?? '')
@@ -411,12 +564,23 @@ export function mountBaseQuery(root: HTMLElement, initialMode: QueryMode = 'filt
         0,
         config.views.findIndex(view => view.name === result.view.name),
       )
+      catalog = editorModule.createBaseQueryCatalog(files, config)
       setError([])
       status.textContent = `${result.resultCount.toLocaleString()} of ${result.totalCount.toLocaleString()} matching notes${reset ? ' · source restored' : ''}.`
       root.dataset.baseQueryModified = String(source !== queryDocument.source)
       document.dispatchEvent(new CustomEvent('contentdecrypted', { detail: { content: next } }))
       document.dispatchEvent(new CustomEvent<void>('base-content-changed'))
-      if (reset) renderSurface()
+      if (reset) {
+        if (editor) {
+          const restoredFilter = filterSource(currentView()?.filters)
+          editor.setValue(restoredFilter)
+          editorSource = editor.value()
+        }
+        if (sortBody) {
+          rebuildSortRows()
+        }
+        showActiveSurface()
+      }
     } catch (cause) {
       setError([messageOf(cause)])
       status.textContent = 'The previous results are unchanged.'
@@ -515,11 +679,10 @@ export function mountBaseQuery(root: HTMLElement, initialMode: QueryMode = 'filt
     'abort',
     () => {
       editor?.destroy()
-      surfaceController.abort()
-      for (const cleanup of surfaceCleanups) cleanup()
+      clearSortRows()
       delete root.dataset.baseQueryInitialized
     },
     { once: true },
   )
-  void open(initialMode)
+  await open(initialMode)
 }
