@@ -42,7 +42,9 @@ const sensitiveKeys = new Set([
   'cookie',
 ])
 
-const sensitiveKeyCache = new Map<string, boolean>()
+import { ReloadableWeakMap, releasedOnReload } from '../module-caches'
+
+const sensitiveKeyCache = releasedOnReload(new Map<string, boolean>())
 
 const isSensitiveKey = (key: string): boolean => {
   let cached = sensitiveKeyCache.get(key)
@@ -184,7 +186,7 @@ const strings = (value: unknown): value is string[] =>
 const validDate = (value: unknown): value is string =>
   typeof value === 'string' && Number.isFinite(Date.parse(value))
 
-const parsedDates = new WeakMap<
+const parsedDates = new ReloadableWeakMap<
   NonNullable<BrowserBaseRecord['dates']>,
   NonNullable<QuartzPluginData['dates']>
 >()

@@ -21,6 +21,18 @@ import {
   spineInk,
 } from './bookcase/geometry'
 import { bookcaseScene, type SceneBook } from './bookcase/scene'
+import {
+  BOOKCASE_STYLES,
+  SHELF_MATERIALS,
+  type TopicShelf,
+  hasTopicTag,
+  placeShelves,
+  stylePackOptions,
+  topicKeys,
+  topicLabel,
+  topicShelf,
+  topicShortcuts,
+} from './bookcase/styles'
 import { isPublicBaseFile } from './browser-data'
 import {
   BaseExpressionDiagnostic,
@@ -112,7 +124,9 @@ function fallbackNameFromSlug(slug: FullSlug): string {
   return base.replace(/-/g, ' ')
 }
 
-const fileLookupCache = new WeakMap<
+import { ReloadableWeakMap } from '../module-caches'
+
+const fileLookupCache = new ReloadableWeakMap<
   QuartzPluginData[],
   { bySimple: Map<string, QuartzPluginData>; byExact: Map<string, QuartzPluginData> }
 >()
@@ -1383,16 +1397,101 @@ function buildBookcase(
     }
   }
 
-  const entryGroups = groups.map(([label, members]) => ({ label, entries: members.map(toEntry) }))
-  const layout = packShelves(
-    entryGroups.map(({ label, entries }) => ({
-      label,
-      books: entries.map(entry => ({
-        path: String(entry.file.relativePath ?? entry.file.filePath ?? entry.slug),
-        item: entry,
+  const entryGroups = groups.map(([topic, members]) => ({
+    topic,
+    label: topic === null ? null : topicLabel(topic, view.topicShelves),
+    entries: members.map(toEntry),
+  }))
+  const style = BOOKCASE_STYLES.find(name => name === view.shelfStyle) ?? 'straight'
+  const material = SHELF_MATERIALS.find(name => name === view.shelfMaterial)
+  const count = entryGroups.reduce((n, group) => n + group.entries.length, 0)
+  // A topic is a group, or a topicShelves key that names a tag. It holds each book once.
+  const topicGroupBy = typeof view.topicGroupBy === 'string' ? view.topicGroupBy : 'subcategory'
+  const declared = topicKeys(view.topicShelves)
+  const members = new Map<string, Entry[]>()
+  const join = (topic: string, entry: Entry) => {
+    const list = members.get(topic) ?? []
+    if (!list.some(other => other.slug === entry.slug)) list.push(entry)
+    members.set(topic, list)
+  }
+  for (const { topic, entries } of entryGroups)
+    for (const entry of entries) {
+      if (topic !== null) join(topic, entry)
+      for (const key of declared)
+        if (key !== topic && hasTopicTag(entry.file.frontmatter?.tags, key)) join(key, entry)
+    }
+  // Topics with one book or fewer share an "other" tab.
+  for (const [topic, list] of Array.from(members))
+    if (list.length <= 1) {
+      members.delete(topic)
+      for (const entry of list) join('other', entry)
+    }
+  const topicsOf = new Map<Entry, string[]>()
+  for (const [topic, list] of members)
+    for (const entry of list) topicsOf.set(entry, [...(topicsOf.get(entry) ?? []), topic])
+  const topicShelves: Record<string, TopicShelf> = {}
+  for (const topic of members.keys()) {
+    const shelf = topicShelf(topic, view.topicShelves)
+    if (shelf) topicShelves[topic] = shelf
+  }
+  // Collapsed tabs show a shortcut; the chosen tab opens to its name, as the triathlon map tabs do.
+  const tabs = [
+    { key: '', label: 'all', books: count },
+    ...[...members]
+      .filter(([topic]) => topic !== 'other')
+      .sort(([, a], [, b]) => b.length - a.length)
+      .map(([topic, list]) => ({
+        key: topic,
+        label: topicLabel(topic, view.topicShelves),
+        books: list.length,
       })),
-    })),
-    { bookHeight, shelfWidth },
+    ...(members.has('other')
+      ? [{ key: 'other', label: 'other', books: members.get('other')!.length }]
+      : []),
+  ]
+  const shortcuts = topicShortcuts(tabs.map(tab => tab.label))
+  shortcuts[0] = 'ALL'
+  const topicBar =
+    members.size > 1
+      ? h(
+          'div.bookcase-topics',
+          { role: 'tablist', 'aria-label': 'Topics', 'aria-orientation': 'vertical' },
+          tabs.map(({ key, label, books }, i) => {
+            const name = `${label} ${books}`
+            return h(
+              'button.bookcase-topic',
+              {
+                type: 'button',
+                role: 'tab',
+                'data-topic': key,
+                'data-shortcut': shortcuts[i][0].toLowerCase(),
+                'aria-selected': String(i === 0),
+                'aria-label': `${label}, ${books} books`,
+                tabindex: i === 0 ? 0 : -1,
+                style: `--bc-tab-short:${shortcuts[i].length}ch;--bc-tab-label:${name.length}ch`,
+              },
+              [
+                h('span.bookcase-topic-shortcut', { 'aria-hidden': 'true' }, shortcuts[i]),
+                h('span.bookcase-topic-label', { 'aria-hidden': 'true' }, name),
+              ],
+            )
+          }),
+        )
+      : null
+  const layout = placeShelves(
+    packShelves(
+      entryGroups.map(({ label, entries }) => ({
+        label,
+        books: entries.map(entry => ({
+          path: String(entry.file.relativePath ?? entry.file.filePath ?? entry.slug),
+          item: entry,
+        })),
+      })),
+      stylePackOptions(style, { bookHeight, shelfWidth }, count),
+    ),
+    style,
+    material,
+    { showTags: view.showTags !== false },
   )
   const total = layout.books.length
 
@@ -1432,6 +1531,9 @@ function buildBookcase(
           'data-book-index': index++,
           'data-cover': entry.cover,
           'data-bookcase-cover': entry.coverSlug,
+          // A book with several values sits on the shelf of its first one.
+          'data-topic-shelf': listValueToPlainText([resolve(entry.file, topicGroupBy)].flat()[0]),
+          'data-topics': topicsOf.has(entry) ? JSON.stringify(topicsOf.get(entry)) : undefined,
         },
         [
           h('a.bookcase-entry-link', { href, 'data-slug': entry.slug }, [
@@ -1454,38 +1556,6 @@ function buildBookcase(
         ])
   })
 
-  const first = entryGroups[0]?.entries[0]
-  const page = first
-    ? [
-        h('div.bookcase-page-cover', [
-          h(
-            'button.bookcase-preview-open',
-            { type: 'button', 'aria-label': 'Preview selected book' },
-            [
-              h('img', {
-                src: first.cover,
-                alt: '',
-                hidden: first.cover ? undefined : true,
-                decoding: 'async',
-                'data-no-popover': '',
-                'data-bookcase-cover': first.coverSlug,
-              }),
-            ],
-          ),
-        ]),
-        h('div.bookcase-page-body', [
-          h(
-            'a.bookcase-page-title',
-            { href: resolveRelative(currentSlug, first.slug as FullSlug), 'data-slug': first.slug },
-            first.fullTitle,
-          ),
-          h('p.bookcase-page-byline', first.byline),
-          h('div.bookcase-page-detail', detailOf(first)),
-        ]),
-      ]
-    : [h('p.bookcase-empty', 'No books in this view.')]
-
-  const pad = (n: number) => String(n).padStart(String(total).length, '0')
   const controlIcon = (paths: string[]) =>
     s(
       'svg',
@@ -1494,25 +1564,20 @@ function buildBookcase(
     )
   return h(
     'div.bookcase',
-    { style: `--bookcase-step: ${scrollStep}px;`, 'data-scroll-step': scrollStep },
+    {
+      style: `--bookcase-step: ${scrollStep}px;`,
+      'data-scroll-step': scrollStep,
+      'data-book-height': bookHeight,
+      'data-shelf-width': shelfWidth,
+      'data-shelf-style': style,
+      'data-shelf-material': material,
+      'data-show-tags': view.showTags === false ? 'false' : undefined,
+      'data-topic-shelves': topicBar ? JSON.stringify(topicShelves) : undefined,
+    },
     [
       h('div.bookcase-stage', [
         h('div.bookcase-plate', [
-          h(
-            'button.bookcase-sidebar-toggle',
-            {
-              type: 'button',
-              'aria-expanded': 'true',
-              'aria-label': 'Hide list',
-              title: 'Hide list',
-            },
-            controlIcon(['M9 5h12M9 12h12M9 19h12M3 5h1M3 12h1M3 19h1']),
-          ),
-          h(
-            'span.bookcase-corner',
-            { 'data-corner': 'title', 'data-bookcase-shelf': '' },
-            entryGroups[0]?.label ?? '',
-          ),
+          h('span.bookcase-corner', { 'data-corner': 'title', 'data-bookcase-shelf': '' }, ''),
           h(
             'div.bookcase-viewport',
             {
@@ -1551,6 +1616,7 @@ function buildBookcase(
               },
               controlIcon(['M8 3H3v5M16 3h5v5M21 16v5h-5M3 16v5h5']),
             ),
+            ...(topicBar ? [topicBar] : []),
           ]),
           h('p.bookcase-no-results', 'no books match this search'),
           h(
@@ -1561,10 +1627,9 @@ function buildBookcase(
           h(
             'span.bookcase-corner',
             { 'data-corner': 'readout', 'data-bookcase-readout': '' },
-            total > 0 ? `${pad(1)} / ${total}` : '–',
+            `– / ${total}`,
           ),
         ]),
-        h('div.bookcase-page', page),
       ]),
       h('div.bookcase-index', indexGroups),
       h('dialog.bookcase-preview', { 'aria-label': 'Book preview' }, [
@@ -1777,7 +1842,7 @@ export type RenderedBaseView = {
 
 export type BaseMetadata = { baseSlug: FullSlug; currentView: string; allViews: BaseViewMeta[] }
 
-const publicFilesCache = new WeakMap<QuartzPluginData[], QuartzPluginData[]>()
+const publicFilesCache = new ReloadableWeakMap<QuartzPluginData[], QuartzPluginData[]>()
 
 function getPublicBaseFiles(allFiles: QuartzPluginData[]): QuartzPluginData[] {
   let filtered = publicFilesCache.get(allFiles)

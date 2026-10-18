@@ -6,6 +6,7 @@ import sharp from 'sharp'
 import { visit } from 'unist-util-visit'
 import { mapConcurrent, defaultIoConcurrency } from '../../util/async-pool'
 import { rgbToHex, spineInk } from '../../util/base/bookcase/geometry'
+import jackets from '../../util/base/bookcase/jackets.json'
 import { BuildCtx } from '../../util/ctx'
 import {
   FilePath,
@@ -13,16 +14,17 @@ import {
   QUARTZ,
   joinSegments,
   resolveRelative,
+  isFullSlug,
   slugifyFilePath,
 } from '../../util/path'
 import { write } from './helpers'
 
 // 320 px covers the pulled cover face and the page panel at 2x.
 const COVER_WIDTH = 320
-const CACHE_VERSION = 1
+const CACHE_VERSION = 2
 const CACHE_DIR = joinSegments(QUARTZ, '.quartz-cache', 'bookcase-covers')
 
-type Cover = { key: string; color: string; data: Buffer }
+type Cover = { key: string; color: string; data: Buffer; spine?: FullSlug }
 
 const pending = new Map<string, Promise<Cover | null>>()
 let slugIndex: { source: FilePath[]; map: Map<string, FilePath> } | undefined
@@ -51,18 +53,36 @@ async function readCache(key: string): Promise<Cover | null> {
 
 async function processCover(file: string, relative: string): Promise<Cover | null> {
   const stat = await fs.stat(file)
+  const match = jackets.entries.find(entry => entry.poster === relative)
+  let spine: { url: FullSlug; data: Buffer } | undefined
+  if (match) {
+    const poster = await fs.readFile(file)
+    if (createHash('sha256').update(poster).digest('hex') === match.posterSha256) {
+      const data = await fs
+        .readFile(joinSegments(QUARTZ, 'static', 'bookcase-spines', match.artwork))
+        .catch(() => undefined)
+      const url = `static/bookcase-spines/${match.artwork}`
+      if (
+        data &&
+        createHash('sha256').update(data).digest('hex') === match.artworkSha256 &&
+        isFullSlug(url)
+      )
+        spine = { url, data }
+    }
+  }
   const key = createHash('sha1')
-    .update(`${CACHE_VERSION}:${relative}:${stat.size}:${stat.mtimeMs}`)
+    .update(`${CACHE_VERSION}:${relative}:${stat.size}:${stat.mtimeMs}:${spine?.url ?? ''}`)
     .digest('hex')
     .slice(0, 16)
   const cached = await readCache(key)
-  if (cached) return cached
+  if (cached) return { ...cached, spine: spine?.url }
 
-  const { width = 0, height = 0 } = await sharp(file, { failOn: 'none' }).metadata()
+  const sample = spine?.data ?? file
+  const { width = 0, height = 0 } = await sharp(sample, { failOn: 'none' }).metadata()
   if (width === 0 || height === 0) return null
   // The left edge of a cover scan sits next to the spine, so it is the closest colour to it.
   const strip = Math.max(1, Math.round(width * 0.06))
-  const { channels } = await sharp(file, { failOn: 'none' })
+  const { channels } = await sharp(sample, { failOn: 'none' })
     .extract({ left: 0, top: 0, width: strip, height })
     .stats()
   const [r, g = r, b = r] = channels.map(channel => channel.mean)
@@ -77,7 +97,7 @@ async function processCover(file: string, relative: string): Promise<Cover | nul
     fs.writeFile(path.join(CACHE_DIR, `${key}.webp`), data),
     fs.writeFile(path.join(CACHE_DIR, `${key}.json`), JSON.stringify({ color })),
   ])
-  return { key, color, data }
+  return { key, color, data, spine: spine?.url }
 }
 
 function coverFor(ctx: BuildCtx, slug: string): Promise<Cover | null> {
@@ -126,6 +146,7 @@ export async function emitBookcaseCovers(
     const properties = node.properties
     if (node.tagName === 'img') properties.src = url
     else properties.dataCover = url
+    if (result.spine) properties.dataSpineArt = resolveRelative(slug, result.spine)
     if (properties.dataSpineSampled !== undefined && typeof properties.style === 'string') {
       properties.style = properties.style.replace(
         /--spine:[^;]*;--spine-ink:[^;]*/,

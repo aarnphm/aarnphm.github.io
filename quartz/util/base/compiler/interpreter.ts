@@ -601,9 +601,14 @@ const literalToValue = (expr: Literal): Value => {
   return makeNull()
 }
 
+import { ReloadableWeakMap } from '../../module-caches'
+
 type FrontmatterValueCache = { full?: ObjectValue; props: Map<string, Value> }
 
-const frontmatterValueCache = new WeakMap<Record<string, unknown>, FrontmatterValueCache>()
+const frontmatterValueCache = new ReloadableWeakMap<
+  Record<string, unknown>,
+  FrontmatterValueCache
+>()
 
 const getFrontmatterCacheEntry = (frontmatter: Record<string, unknown>): FrontmatterValueCache => {
   let entry = frontmatterValueCache.get(frontmatter)
@@ -1607,7 +1612,7 @@ const vaultPath = (file: QuartzPluginData): string => {
   return file.slug ? `${String(file.slug)}.md` : ''
 }
 
-const backlinksIndexCache = new WeakMap<QuartzPluginData[], Map<string, string[]>>()
+const backlinksIndexCache = new ReloadableWeakMap<QuartzPluginData[], Map<string, string[]>>()
 
 const getBacklinksIndex = (allFiles: QuartzPluginData[]): Map<string, string[]> => {
   let index = backlinksIndexCache.get(allFiles)
