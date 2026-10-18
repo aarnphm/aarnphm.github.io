@@ -100,6 +100,20 @@
     :is(.trail-ravine-top, .trail-ravine-lit, .trail-ravine-shoulder, .trail-ravine-crest) {
       fill: color-mix(in srgb, var(--trail-snow-lit) var(--trail-snow-mix, 0%), var(--light));
     }
+    .trail-landform-top {
+      fill: color-mix(
+        in srgb,
+        var(--trail-snow-lit) var(--trail-snow-mix, 0%),
+        color-mix(in srgb, var(--trail-landform-field, var(--light)) 50%, var(--light))
+      );
+    }
+    .trail-landform-ground {
+      fill: color-mix(
+        in srgb,
+        var(--trail-snow-ground) var(--trail-snow-mix, 0%),
+        var(--trail-landform-field, var(--light))
+      );
+    }
     :is(
       .trail-ravine-body,
       .trail-ravine-face-lit,

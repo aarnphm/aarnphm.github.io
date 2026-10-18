@@ -44,7 +44,10 @@ export function mountTrailBlazes(scene: HTMLElement, signal: AbortSignal) {
     }
     const route = trailIds[blaze]
     link.dataset.trailBlaze = String(blaze)
-    // The link's underline takes the blaze colour the scene paints.
+    // The link's underline takes the blaze colour the scene paints. A lit post blinks its fill, so
+    // the post is unlit before the read: moving from a focused link to a hovered one on the same
+    // trail would otherwise copy the blink's pale frame.
+    delete scene.dataset.trailLitBlaze
     const post = scene.querySelector(`.trail-wayside-blaze-${blaze}`)
     if (post) link.style.setProperty('--trail-blaze', getComputedStyle(post).fill)
     steps(route)

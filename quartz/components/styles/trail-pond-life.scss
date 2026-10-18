@@ -1,0 +1,344 @@
+// Pond inhabitants (pond-life.ts): ducks, rising fish, a heron, a blackbird, a basking turtle and
+// summer dragonflies. Ice, night and the weather hide what would not be out.
+.homepage-trail-scene {
+  :is(
+    .trail-duck,
+    .trail-pond-fish,
+    .trail-pond-fish-shade,
+    .trail-pond-log,
+    .trail-dragonfly,
+    .trail-heron,
+    .trail-pond-blackbird
+  ) {
+    shape-rendering: crispEdges;
+    pointer-events: none;
+  }
+  .trail-duck-head {
+    fill: color-mix(in srgb, #3a7a4e 86%, var(--light));
+  }
+  .trail-duck-white {
+    fill: var(--lightgray);
+  }
+  .trail-duck-breast {
+    fill: color-mix(in srgb, #8c5a44 82%, var(--light));
+  }
+  .trail-duck-flank {
+    fill: color-mix(in srgb, var(--gray) 52%, #b9b4a3);
+  }
+  .trail-duck-dark {
+    fill: var(--darkgray);
+  }
+  .trail-duck-hen {
+    fill: color-mix(in srgb, #8c7651 84%, var(--light));
+  }
+  .trail-duck-mottle {
+    fill: color-mix(in srgb, #5c4b36 86%, var(--light));
+  }
+  .trail-pond-wake {
+    fill: color-mix(in srgb, var(--light) 80%, #829a9f);
+  }
+  .trail-pond-shade {
+    fill: var(--darkgray);
+    opacity: 0.16;
+  }
+  .trail-heron-plume {
+    fill: color-mix(in srgb, #6f8591 86%, var(--light));
+  }
+  .trail-heron-bill {
+    fill: color-mix(in srgb, #c9a34a 80%, var(--light));
+  }
+  .trail-heron-leg,
+  .trail-turtle-skin {
+    fill: color-mix(in srgb, #5d6a46 88%, var(--light));
+  }
+  .trail-turtle-shell {
+    fill: color-mix(in srgb, #4d5c38 88%, var(--light));
+  }
+  .trail-dragonfly-body {
+    fill: #4385be;
+  }
+  .trail-dragonfly-wing {
+    fill: var(--light);
+    opacity: 0.55;
+  }
+  // Frames the animations swap in; without motion the first frame stands.
+  :is(.trail-duck-tip, .trail-heron-strike, .trail-pond-fish-jump, .trail-pond-fish-ring) {
+    opacity: 0;
+  }
+  .trail-turtle {
+    opacity: 0;
+    transition: opacity 1200ms ease;
+  }
+  .trail-scene:is([data-weather-mode='sun'], [data-weather-mode='quiet']):not(
+      [data-weather-fog='true']
+    ):not([data-weather-storm='true']):not([data-water-frozen='true']):not(
+      [data-lighting='moonlit']
+    )
+    .trail-turtle {
+    opacity: 1;
+  }
+  .trail-scene[data-lighting='moonlit'] :is(.trail-heron, .trail-pond-blackbird, .trail-dragonfly) {
+    display: none;
+  }
+  .trail-scene:not([data-foliage-season='summer']) .trail-dragonfly,
+  .trail-scene:is(
+      [data-weather-mode='rain'],
+      [data-weather-mode='snow'],
+      [data-weather-mode='night'],
+      [data-weather-fog='true'],
+      [data-weather-storm='true']
+    )
+    .trail-dragonfly {
+    display: none;
+  }
+  .trail-scene[data-water-frozen='true']
+    :is(
+      .trail-duck,
+      .trail-pond-fish,
+      .trail-pond-fish-shade,
+      .trail-heron,
+      .trail-pond-blackbird,
+      .trail-dragonfly
+    ) {
+    display: none;
+  }
+  .trail-pond-fish-ring {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .trail-scene:not([data-water-frozen='true']) {
+      .trail-pond-cruise {
+        animation: trail-pond-cruise var(--pond-cycle) ease-in-out var(--pond-delay) infinite;
+      }
+      :is(.trail-duck, .trail-pond-fish-shade) .trail-pond-facing {
+        animation: trail-pond-turn var(--pond-cycle) steps(1, end) var(--pond-delay) infinite;
+      }
+      .trail-duck-up,
+      .trail-pond-wake {
+        animation: trail-duck-up var(--pond-cycle) steps(1, end) var(--pond-delay) infinite;
+      }
+      .trail-duck-tip {
+        animation: trail-duck-tip var(--pond-cycle) steps(1, end) var(--pond-delay) infinite;
+      }
+      .trail-pond-fish-jump {
+        animation: trail-river-jump var(--pond-cycle) linear var(--pond-delay) infinite;
+      }
+      .trail-pond-fish-ring {
+        animation: trail-pond-ring var(--pond-cycle) steps(1, end) var(--pond-delay) infinite;
+      }
+      .trail-heron .trail-pond-facing {
+        animation: trail-heron-turn var(--pond-cycle) steps(1, end) var(--pond-delay) infinite;
+      }
+      .trail-heron-stand {
+        animation: trail-heron-stand var(--pond-cycle) steps(1, end) var(--pond-delay) infinite;
+      }
+      .trail-heron-strike {
+        animation: trail-heron-strike var(--pond-cycle) steps(1, end) var(--pond-delay) infinite;
+      }
+      .trail-heron-splash {
+        animation: trail-heron-splash var(--pond-cycle) steps(1, end) var(--pond-delay) infinite;
+      }
+      .trail-pond-hop {
+        animation: trail-pond-hop var(--pond-cycle) steps(1, end) var(--pond-delay) infinite;
+      }
+      .trail-pond-blackbird .trail-pond-facing {
+        animation: trail-heron-turn var(--pond-cycle) steps(1, end) var(--pond-delay) infinite;
+      }
+      .trail-turtle-head {
+        animation: trail-turtle-head var(--pond-cycle) steps(1, end) var(--pond-delay) infinite;
+      }
+      .trail-dragonfly-dart {
+        animation: trail-dragonfly-dart var(--pond-cycle) linear var(--pond-delay) infinite;
+      }
+      .trail-dragonfly-wing {
+        animation: trail-dragonfly-wing 140ms steps(1, end) infinite;
+      }
+    }
+    .trail-scene[data-weather-motion='paused']
+      :is(
+        .trail-pond-cruise,
+        .trail-pond-facing,
+        .trail-duck-up,
+        .trail-duck-tip,
+        .trail-pond-wake,
+        .trail-pond-fish-jump,
+        .trail-pond-fish-ring,
+        .trail-heron-stand,
+        .trail-heron-strike,
+        .trail-heron-splash,
+        .trail-pond-hop,
+        .trail-turtle-head,
+        .trail-dragonfly-dart,
+        .trail-dragonfly-wing
+      ) {
+      animation-play-state: paused;
+    }
+  }
+}
+
+// Out along the chord, a pause at the far end, and home; the ducks dabble at the pause.
+@keyframes trail-pond-cruise {
+  0%,
+  94%,
+  100% {
+    transform: translate(0, 0);
+  }
+  44%,
+  52% {
+    transform: translate(var(--pond-dx), var(--pond-dy));
+  }
+}
+@keyframes trail-pond-turn {
+  0%,
+  47%,
+  100% {
+    transform: scale(var(--pond-face), 1);
+  }
+  48%,
+  99% {
+    transform: scale(calc(-1 * var(--pond-face)), 1);
+  }
+}
+@keyframes trail-duck-up {
+  0%,
+  51%,
+  100% {
+    opacity: 1;
+  }
+  45%,
+  50% {
+    opacity: 0;
+  }
+}
+@keyframes trail-duck-tip {
+  0%,
+  51%,
+  100% {
+    opacity: 0;
+  }
+  45%,
+  50% {
+    opacity: 1;
+  }
+}
+// The ring spreads in three steps after the fish falls back (the jump peaks at 73%).
+@keyframes trail-pond-ring {
+  0%,
+  75.9%,
+  91%,
+  100% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  76% {
+    opacity: 0.8;
+    transform: scale(0.45);
+  }
+  82% {
+    opacity: 0.5;
+    transform: scale(0.75);
+  }
+  87% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+}
+@keyframes trail-heron-turn {
+  0%,
+  39%,
+  100% {
+    transform: scale(var(--pond-face), 1);
+  }
+  40%,
+  99% {
+    transform: scale(calc(-1 * var(--pond-face)), 1);
+  }
+}
+@keyframes trail-heron-stand {
+  0%,
+  85%,
+  100% {
+    opacity: 1;
+  }
+  78%,
+  84% {
+    opacity: 0;
+  }
+}
+@keyframes trail-heron-strike {
+  0%,
+  85%,
+  100% {
+    opacity: 0;
+  }
+  78%,
+  84% {
+    opacity: 1;
+  }
+}
+@keyframes trail-heron-splash {
+  0%,
+  81%,
+  100% {
+    opacity: 0;
+  }
+  78.5%,
+  80% {
+    opacity: 0.8;
+  }
+}
+@keyframes trail-pond-hop {
+  0%,
+  62%,
+  100% {
+    transform: translate(0, 0);
+  }
+  60%,
+  61% {
+    transform: translate(0, -2px);
+  }
+}
+@keyframes trail-turtle-head {
+  0%,
+  82%,
+  100% {
+    transform: translate(0, 0);
+  }
+  70%,
+  81% {
+    transform: translate(2px, 0);
+  }
+}
+@keyframes trail-dragonfly-dart {
+  0%,
+  18%,
+  100% {
+    transform: translate(0, 0);
+  }
+  21%,
+  38% {
+    transform: translate(14px, -6px);
+  }
+  41%,
+  55% {
+    transform: translate(6px, -13px);
+  }
+  58%,
+  75% {
+    transform: translate(-12px, -4px);
+  }
+  78%,
+  95% {
+    transform: translate(-4px, 4px);
+  }
+}
+@keyframes trail-dragonfly-wing {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}

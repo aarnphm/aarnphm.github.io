@@ -114,6 +114,9 @@ function sedimentary(
 
 const foothillTones: readonly FoothillTone[] = ['far', 'mid', 'near']
 const valleyTones = ['haze', 'bank', 'field'] as const
+// Night sky-light: a rim and a dithered wash of cool light on the faces under each crest, a warm tint on
+// the far range's crest, and four rows of horizon glow in the sky above the skyline.
+const skylightTones = ['rim', 'cool', 'ember', 'glow-0', 'glow-1', 'glow-2', 'glow-3'] as const
 
 function coordinate(value: number) {
   return Math.round(value * 100) / 100
@@ -298,6 +301,47 @@ export function trailMountainBackdrop(
     region,
   )
 
+  // Sky-light at night, painted always: the moonlit stylesheet shows it, so day and winter pay no
+  // paint for it. The first row under a crest takes the rim of cool light (warm on the far range,
+  // where the horizon glows behind it), and the wash below dithers out over the upper half of the
+  // face, under half cover so the screen never reads as a lattice. The glow fills the sky rows
+  // just above the skyline, the highest crest in the column. One paint layer per tone, no gradients.
+  const pixel = alpine.width < 700 ? 2 : 4
+  const glowRows = 4
+  const glowReach = glowRows * pixel
+  const crestOf = (surface: MountainColumn) =>
+    surface.range.base + (surface.crest - 350) / surface.verticalScale
+  const skylines = new Map<number, number>()
+  const skylineAt = (worldX: number, column: number) => {
+    const known = skylines.get(column)
+    if (known !== undefined) return known
+    let top = Infinity
+    for (const surface of rangesInColumn(worldX, column))
+      if (surface.geology === 'alpine') top = Math.min(top, crestOf(surface))
+    skylines.set(column, top)
+    return top
+  }
+  const skylight = pixelLayers(
+    { ...alpine, top: alpine.top - glowReach, height: alpine.height + glowReach },
+    skylightTones,
+    'trail-skylight',
+    (worldX, worldY, column, row) => {
+      const surface = surfaceAt(worldX, worldY, column, true)
+      if (!surface) {
+        const gap = skylineAt(worldX, column) - worldY
+        if (!(gap > 0 && gap <= glowReach)) return undefined
+        return skylightTones[3 + Math.min(glowRows - 1, Math.floor((gap - 1e-6) / pixel))]
+      }
+      const { range, crest, floor, verticalScale } = surface
+      const y = 350 + (worldY - range.base) * verticalScale
+      if (y - crest < pixel * verticalScale) return range.tier === 'background' ? 'ember' : 'rim'
+      const depth = (y - crest) / Math.max(1, floor - crest)
+      const cover = 0.9 * (1 - depth / 0.5) ** 1.3
+      return depth < 0.5 && Math.min(0.45, cover) > bayerThreshold(column, row) ? 'cool' : undefined
+    },
+    region,
+  )
+
   // Aerial haze at the foot of the ranges. Above the rolling foot, paper-toned cells cover a growing
   // share of the rock, so the lower slopes thin into the valley air. The foot itself is a bank: the
   // moss shelf and the badland apron stand on a bench, a shaded face drops from its brow, and the
@@ -452,6 +496,7 @@ export function trailMountainBackdrop(
       <g data-trail-depth="alpine">
         <g data-trail-layer="alpine-rock" data-formation="bernese-alps" data-peaks="eiger monch jungfrau" data-mountain-ranges="${ranges.length}" data-mountain-atlas='${JSON.stringify(atlas)}' transform="${placement}">
           ${ridge}
+          <g class="trail-skylight" transform="translate(0 ${-glowReach})">${skylight}</g>
           <g class="trail-summit-snow">${snowcaps}</g>
           ${alpineHaze}
         </g>

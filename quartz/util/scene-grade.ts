@@ -60,10 +60,35 @@ export function sceneGrade(al: Almanac, s: Season, sky: Sky, strength = GRADE_ST
       (input === channel ? 1 : 0) +
         (aug[input][4 + channel] - (input === channel ? 1 : 0)) * strength,
     )
-  return {
+  const fit: Grade = {
     m: [0, 1, 2].flatMap(c => [0, 1, 2].map(i => coefficient(i, c))) as GradeMatrix,
     b: [0, 1, 2].map(c => round6(aug[3][4 + c] * strength)) as GradeOffset,
   }
+  // The fit maps the paper's colours onto the 404's night palette, but the homepage's own night is
+  // already dark, so a fit toward it would darken the scene twice. Through the night the moon's
+  // grade stands in for it, and the fit returns with the sun.
+  return al.day >= 1 ? fit : interpolateGrade(moonGrade(al, sky), fit, al.day)
+}
+
+const MOON_LOSS = 0.2
+const LUMA = [0.2126, 0.7152, 0.0722]
+const MOON_TINT = [-0.06, -0.01, 0.05]
+
+// Night over a scene whose palette is already dark, so the grade only tints. A moon above the
+// horizon cools the scene and takes up to a fifth of its colour, by how full the moon is, how high
+// it stands and how clear the sky is; with the moon down, or the sun up, it is the identity.
+export function moonGrade(al: Almanac, sky: Sky): Grade {
+  const up = Math.min(1, Math.max(0, al.moon.alt / 25))
+  const full = 1 - Math.abs(al.moon.phase - 0.5) * 2
+  const lit = up * up * (3 - 2 * up) * full * (1 - al.day) * (1 - Math.min(1, sky.cover) * 0.7)
+  if (lit < 1e-3) return cloneGrade(IDENTITY_GRADE)
+  const keep = 1 - MOON_LOSS * lit
+  const m = [0, 1, 2].flatMap(row =>
+    [0, 1, 2].map(col =>
+      round6((1 + MOON_TINT[row] * lit) * ((row === col ? keep : 0) + (1 - keep) * LUMA[col])),
+    ),
+  )
+  return { m: m as GradeMatrix, b: [0, 0, 0] }
 }
 
 export function cloneGrade(grade: Grade): Grade {

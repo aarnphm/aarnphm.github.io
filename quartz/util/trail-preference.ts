@@ -1,6 +1,15 @@
 const TRAIL_PREFERENCE_KEY = 'garden:trail-open'
 
+// The scene relies on Chromium-only rendering and scheduling. User-Agent Client Hints exist only in
+// Chromium browsers, and their brand list names Chromium even where the UA string is spoofed.
+export function trailSupported(): boolean {
+  const hints = (navigator as Navigator & { userAgentData?: { brands?: { brand: string }[] } })
+    .userAgentData
+  return hints?.brands?.some(({ brand }) => brand === 'Chromium') ?? false
+}
+
 export function readTrailPreference(): boolean {
+  if (!trailSupported()) return false
   try {
     return localStorage.getItem(TRAIL_PREFERENCE_KEY) === 'true'
   } catch {

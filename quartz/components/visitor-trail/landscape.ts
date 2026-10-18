@@ -143,8 +143,8 @@ export function trailLandscape(
     pond: {
       x: width * (0.25 + random() * 0.1),
       y: meadowTop + clearing * 0.64,
-      rx: Math.min(104, width * 0.11),
-      ry: Math.min(36, clearing * 0.088),
+      rx: Math.min(170, width * 0.11),
+      ry: Math.min(58, clearing * 0.088),
     },
     groves: [],
     contours: [],

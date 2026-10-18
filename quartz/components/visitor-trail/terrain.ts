@@ -1,8 +1,10 @@
 import { grassGrows, type Landscape, type Pond } from './landscape'
 import { trailMeadow } from './meadow'
 import { pixels } from './pixels'
+import { pondBlackbird, trailPondLife } from './pond-life'
 import { trailRandom } from './random'
 import { trailBeavers, trailFords, trailRavine } from './ravine'
+import { reliefStrengths } from './relief'
 import { trailWayside } from './wayside'
 import { trailPuddles } from './wetlands'
 import { trailSnowBase } from './winter'
@@ -17,31 +19,49 @@ function oval(pond: Pond, margin: number, grid: number) {
   return pixels(rows, { W: 'trail-water' }, grid)
 }
 
-// Each terrace steps down toward the viewer along its contour. The step's riser shows as broken
-// strokes of shade under the edge, like the terracettes a herd treads into a slope: a stroke runs
-// a few cells and is kept or dropped whole, thick where the ground swells, gone where it levels.
+// Each terrace steps down toward the viewer along its contour, and the step shows as a ledge under
+// the edge, the way a top-down pixel map draws a drop: a line of riser, and on the two near
+// contours a face of two or four pixels with a line of shadow on the field below, in the same
+// planes as the landforms. The ledge fades out and in over long stretches, so it reads as a
+// contour that the flats swallow, never as a rule across the page. Each contour is its own group,
+// so the far ledges are fainter and thinner than the near ones.
 function terraceRisers(landscape: Landscape, seed: number) {
   const random = trailRandom(seed ^ 0x27d4eb2f)
-  const runs: string[] = []
-  for (const points of landscape.contours) {
+  const groups: string[] = []
+  landscape.contours.forEach((points, level) => {
+    const rims: string[] = []
+    const faces: string[] = []
+    const shadows: string[] = []
+    const drop = level < 2 ? 0 : level === 2 ? 2 : 4
     const phase = random() * Math.PI * 2
-    const cover = (x: number) =>
-      0.46 + 0.3 * Math.sin(x / 71 + phase) + 0.14 * Math.sin(x / 23 - phase)
+    const cover = (x: number) => 0.72 + 0.26 * Math.sin(x / 131 + phase)
     for (let p = 0; p + 1 < points.length; p++) {
       const a = points[p]
       const b = points[p + 1]
       for (let x = a.x; x < b.x; ) {
-        const length = Math.min(b.x - x, 8 + Math.floor(random() * 8) * 4)
-        if (random() < cover(x + length / 2)) runs.push(`M${x} ${a.y}h${length}v2h-${length}Z`)
+        const length = Math.min(b.x - x, 32 + Math.floor(random() * 16) * 4)
+        if (random() < cover(x + length / 2)) {
+          rims.push(`M${x} ${a.y}h${length}v2h-${length}Z`)
+          if (drop) {
+            faces.push(`M${x} ${a.y + 2}h${length}v${drop}h-${length}Z`)
+            shadows.push(`M${x} ${a.y + 2 + drop}h${length}v2h-${length}Z`)
+          }
+        }
         x += length
       }
-      if (b.y !== a.y && random() < cover(b.x))
-        runs.push(
-          `M${b.x - (b.y > a.y ? 2 : 0)} ${Math.min(a.y, b.y)}h2v${Math.abs(b.y - a.y) + 2}h-2Z`,
+      if (b.y !== a.y)
+        rims.push(
+          `M${b.x - (b.y > a.y ? 2 : 0)} ${Math.min(a.y, b.y)}h2v${Math.abs(b.y - a.y) + 2 + drop}h-2Z`,
         )
     }
-  }
-  return runs.length ? `<path class="trail-terrace-riser" d="${runs.join('')}"/>` : ''
+    if (!rims.length) return
+    const path = (tone: string, runs: string[]) =>
+      runs.length ? `<path class="${tone}" d="${runs.join('')}"/>` : ''
+    groups.push(
+      `<g class="trail-terrace-ledge" style="--trail-landform-field:var(--trail-field-${level});--trail-relief-strength:${reliefStrengths[level] ?? 1}">${path(`trail-terrace-riser trail-terrace-riser-${level}`, rims)}${path('trail-ravine-face', faces)}${path('trail-ravine-shadow', shadows)}</g>`,
+    )
+  })
+  return groups.join('')
 }
 
 export function trailTerraces(landscape: Landscape, seed: number) {
@@ -77,12 +97,14 @@ export function trailTerrain(landscape: Landscape, seed: number, routes: readonl
     const length = 6 + Math.round(random() * 8)
     return `<path class="trail-pond-ripple" d="M${Math.round(x)} ${Math.round(y)}h${length}v2h-${length}Z"/>`
   }).join('')
+  // A red-winged blackbird keeps the fourth reed, a tall one on the near right shore.
   const reeds = Array.from({ length: 10 }, (_, index) => {
     const angle = index * 2.399963 + random() * 0.24
     const x = Math.round(pond.x + Math.cos(angle) * pond.rx * 1.08)
     const y = Math.round(pond.y + Math.sin(angle) * pond.ry * 1.08)
     const size = index % 3 ? 1 : 2
-    return `<g class="trail-pond-reeds" data-pond-plant="reeds" data-ground-x="${x}" data-ground-y="${y}" transform="translate(${x - size * 3} ${y - size * 6})">${pixels(['..L...', '.LL.C.', '.LL.C.', 'L.L.C.', 'L.L.D.', '..L.D.'], { L: 'trail-meadow-reed', C: 'trail-reed-head', D: 'trail-tree-trunk' }, size)}</g>`
+    const guest = index === 3 ? pondBlackbird(size, 14 + random() * 6, -random() * 20) : ''
+    return `<g class="trail-pond-reeds" data-pond-plant="reeds" data-ground-x="${x}" data-ground-y="${y}" transform="translate(${x - size * 3} ${y - size * 6})">${pixels(['..L...', '.LL.C.', '.LL.C.', 'L.L.C.', 'L.L.D.', '..L.D.'], { L: 'trail-meadow-reed', C: 'trail-reed-head', D: 'trail-tree-trunk' }, size)}${guest}</g>`
   }).join('')
   const bankPlants = Array.from({ length: 14 }, (_, index) => {
     const angle = index * 2.399963 + 0.8
@@ -109,6 +131,7 @@ export function trailTerrain(landscape: Landscape, seed: number, routes: readonl
     return `M${x} ${y}h8l4 -2h6m-10 2l4 4h5`
   }).join('')
   const grid = width < 700 ? 3 : 4
+  const life = trailPondLife(landscape, seed)
   // The pet's keyboard walk keeps to this ground and off the pond.
   const bounds = {
     alpine: landscape.alpine,
@@ -121,7 +144,7 @@ export function trailTerrain(landscape: Landscape, seed: number, routes: readonl
       <g class="trail-pond-bank" transform="translate(${pond.x - pond.rx - 8} ${pond.y - pond.ry - 8})">${oval(pond, 8, grid)}</g>
       <g transform="translate(${pond.x - pond.rx} ${pond.y - pond.ry})">${oval(pond, 0, grid)}</g>
       <path class="trail-pond-ice" d="${ice}"/>
-      ${ripples}${lilyPads}${reeds}${bankPlants}
-      ${trailBeavers(landscape, seed)}
+      ${life.under}${ripples}${lilyPads}${reeds}${bankPlants}
+      ${trailBeavers(landscape, seed)}${life.water}
     </g>`
 }
