@@ -102,6 +102,7 @@ export default ((userOpts?: Options) => {
           const date = getDate(cfg, page) ?? new Date(0)
           const isPdf = /\.pdf$/i.test(page.slug ?? '')
           const isFolder = tags.includes('folder')
+          const previewType = page.bases ? 'base' : page.jsonCanvas ? 'canvas' : undefined
 
           return (
             <li
@@ -111,10 +112,12 @@ export default ((userOpts?: Options) => {
               data-tags={JSON.stringify(tags)}
             >
               <a
-                class="note-link"
+                class={`note-link${previewType ? ' internal' : ''}`}
                 href={resolveRelative(fileData.slug!, page.slug!)}
                 data-list={true}
                 data-tags={tags.join(',')}
+                data-slug={page.slug}
+                data-document-preview={previewType}
               >
                 <div class="note-grid">
                   <div class="desc">
