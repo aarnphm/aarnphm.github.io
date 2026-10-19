@@ -1,14 +1,15 @@
 import {
-  type BasesEntry,
   type BasesPropertyId,
   BasesView,
   type HoverPopover,
   Keymap,
   type QueryController,
+  type WorkspaceLeaf,
 } from 'obsidian'
 import type BookcasePlugin from '../main'
-import { type FilterPanel, Preload, type ViewFilter } from './covers'
+import { Preload, type ViewFilter } from './covers'
 import { Drag } from './drag'
+import { EditorPane } from './editor-pane'
 import { Lift, type LiftRequest, coverLines, liftContent } from './lift'
 import { type BookModel, ModelReader, authorLabel } from './model'
 import { type BookcaseConfig, readConfig } from './options'
@@ -29,20 +30,12 @@ import {
   solidsBox,
   solidsMarkup,
 } from './svg'
-import {
-  ALL,
-  type TopicTab,
-  lookupTopic,
-  readTopicConfig,
-  tagChips,
-  topicMembers,
-  topicTabs,
-} from './topics'
+import { ALL, type TopicTab, lookupTopic, readTopicConfig, topicMembers, topicTabs } from './topics'
 
 export const BOOKCASE_VIEW = 'bookcase'
 
 const PRELOAD_RADIUS = 3
-/** The tags a book carries, for the tag filter. */
+/** The tags a book carries, for tag topics. */
 const TAGS = 'file.tags' as BasesPropertyId
 /** Books either side of the focus whose shelves mount ahead of the camera. */
 const LOOKAHEAD = 12
@@ -52,8 +45,42 @@ const QUIET_MS = 160
 const ZOOM = 1.35
 /** A released pan closes about 95% of the way back in three of these. */
 const GLIDE_MS = 90
+/** A scroll this soon after a wheel or touch move is the user's, and selects. */
+const USER_SCROLL_MS = 250
+/** A book the scroll selected opens in the editor pane once the scroll rests this long. */
+const SCROLL_OPEN_MS = 300
 
 const clamp = (n: number, min: number, max: number) => Math.min(max, Math.max(min, n))
+
+/** The area a convex outline sweeps when it moves by `d`: the hull of both positions. */
+function sweep(points: readonly Point[], [dx, dy]: Point): Point[] {
+  const all = [...points, ...points.map(([x, y]): Point => [x + dx, y + dy])].sort(
+    (a, b) => a[0] - b[0] || a[1] - b[1],
+  )
+  const cross = (o: Point, a: Point, b: Point) =>
+    (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+  const half = (list: Point[]) => {
+    const out: Point[] = []
+    for (const p of list) {
+      while (out.length >= 2 && cross(out[out.length - 2], out[out.length - 1], p) <= 0) out.pop()
+      out.push(p)
+    }
+    out.pop()
+    return out
+  }
+  return [...half(all), ...half([...all].reverse())]
+}
+
+/** Even-odd test of a point against a closed polygon. */
+function contains(points: readonly Point[], x: number, y: number): boolean {
+  let inside = false
+  for (let i = 0, j = points.length - 1; i < points.length; j = i++) {
+    const [xi, yi] = points[i]
+    const [xj, yj] = points[j]
+    if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) inside = !inside
+  }
+  return inside
+}
 
 /** Runs `work` in idle time with the time it has left; returns a cancel function. */
 function idle(work: (remaining: () => number) => void, timeout: number): () => void {
@@ -81,8 +108,7 @@ export class BookcaseView extends BasesView {
   private panel: Panel
   private drag: Drag
   private tabs: TopicTab[] = []
-  private chips: TopicTab[] = []
-  /** Topic, tags and panel tab on show; null until read from plugin data. */
+  /** Topic on show; null until read from plugin data. */
   private filter: ViewFilter | null = null
   /** Set by a new filter: the rebuild starts at the first book it shows. */
   private filterChanged = false
@@ -124,13 +150,40 @@ export class BookcaseView extends BasesView {
   private scrollers = new Set<HTMLElement>()
   private dark = false
   private theme: string | null = null
+  /** Book at the reading position: it moves the camera and the roving tabindex, not the selection. */
   private focus = -1
+  /**
+   * Book chosen by a click, a key, keyboard focus, or a wheel or touch scroll (the book at the
+   * reading position); -1 for none. A scroll the view makes itself never selects.
+   */
+  private selected = -1
+  private selectedPath: string | null = null
+  /** The selected book is pulled out. A pointer leaving it, a blur or Escape puts it back. */
+  private lifted = false
+  /** A moving pointer was over the lifted book or the slot it left; leaving both puts it back. */
+  private near = false
+  /** The area the lifted book sweeps from its slot, in screen units. */
+  private swept: { index: number; version: number; area: Point[] } | null = null
+  /** Lifted book hover-link fired for, once per lift; -1 for none. */
+  private hovering = -1
+  private editor: EditorPane
+  /** The editor pane shows the selection, so the page panel is hidden. */
+  private linked = false
+  /** Time of the last wheel or touch move over the view. */
+  private userScroll = Number.NEGATIVE_INFINITY
+  private openTimer: number | null = null
   /** Rebuild count, part of each lift key. */
   private version = 0
   /** Direction of the last focus change, for the book that lifts next. */
   private heading = 1
   /** Index of the button that holds tabindex 0. */
   private roving = -1
+  /** Index of the button that holds aria-current. */
+  private marked = -1
+  /** Last pointer position over the world, to tell a real move from a scroll's. */
+  private pointerAt: Point = [Number.NaN, Number.NaN]
+  /** Where the last press on the stage went down; a click acts on it. */
+  private pressed: Element | null = null
   private dataChanged = true
   private focusPath: string | null = null
   private hidden = new Set<number>()
@@ -149,8 +202,6 @@ export class BookcaseView extends BasesView {
   private settleTimer: number | null = null
   private settleIdle: (() => void) | null = null
   private preloadIdle: (() => void) | null = null
-  private liftIdle: (() => void) | null = null
-  private liftRaf: number | null = null
   /** Focus for which windowing last spent its one mount. */
   private focusMounts = -1
   private indexPending = false
@@ -162,6 +213,7 @@ export class BookcaseView extends BasesView {
   ) {
     super(controller)
     this.reader = new ModelReader(this.app)
+    this.editor = new EditorPane(this.app)
     this.root = containerEl.createDiv({ cls: 'bookcase-view', attr: { 'data-layout': 'wide' } })
     this.track = this.root.createDiv({ cls: 'bookcase-track' })
     this.stageEl = this.track.createDiv({ cls: 'bookcase-stage' })
@@ -174,8 +226,6 @@ export class BookcaseView extends BasesView {
       new Panel(this.stageEl, {
         camera: action => this.onCamera(action),
         topic: id => this.selectTopic(id),
-        tag: id => this.toggleTag(id),
-        panel: tab => this.selectPanel(tab),
       }),
     )
     this.drag = this.addChild(
@@ -228,6 +278,12 @@ export class BookcaseView extends BasesView {
     observer.observe(this.containerEl)
     this.observer = observer
     this.register(() => observer.disconnect())
+    // A closed editor pane hands the selection back to the page panel.
+    this.registerEvent(
+      this.app.workspace.on('layout-change', () => {
+        if (this.linked && !this.editor.alive()) this.setLinked(false)
+      }),
+    )
     // Plus and minus zoom while focus is inside the view.
     this.registerDomEvent(this.root, 'keydown', evt => {
       if (evt.defaultPrevented || evt.ctrlKey || evt.metaKey || evt.altKey) return
@@ -236,16 +292,37 @@ export class BookcaseView extends BasesView {
       else return
       evt.preventDefault()
     })
+    // Escape clears the selection while focus is in the view, or the pointer is over it: a wheel
+    // selects without moving focus.
+    const doc = this.root.ownerDocument
+    this.registerDomEvent(doc, 'keydown', evt => {
+      if (evt.key !== 'Escape' || evt.defaultPrevented || this.selected < 0) return
+      if (!this.root.contains(doc.activeElement) && !this.root.matches(':hover')) return
+      evt.preventDefault()
+      this.deselect()
+    })
+    // Focus that leaves the view puts the lifted book back; the selection stays. A press on the
+    // stage drops focus to nothing, with the pointer still over the view: that is not a blur.
+    this.registerDomEvent(this.root, 'focusout', evt => {
+      const next = evt.relatedTarget
+      if (next instanceof Node ? this.root.contains(next) : this.root.matches(':hover')) return
+      this.putBack()
+    })
     this.registerDomEvent(document, 'fullscreenchange', () => this.onFullscreen())
+    // Only a scroll the user makes selects: one that follows a wheel or a touch move.
+    const user = () => (this.userScroll = performance.now())
+    this.registerDomEvent(this.root, 'wheel', user, { passive: true })
+    this.registerDomEvent(this.root, 'touchmove', user, { passive: true })
 
-    this.registerDomEvent(this.world, 'click', evt => this.onWorldClick(evt))
-    this.registerDomEvent(this.world, 'mouseover', evt => {
-      const el = (evt.target as Element).closest<HTMLElement>('.bookcase-lift')
-      const book = this.bookAt(evt.target)
-      // Moving between faces of the same lifted book is not a new hover.
-      if (!el || !book || (evt.relatedTarget instanceof Node && el.contains(evt.relatedTarget)))
-        return
-      this.hover(evt, el, book.path)
+    this.registerDomEvent(
+      this.stageEl,
+      'pointerdown',
+      evt => (this.pressed = evt.target as Element),
+    )
+    this.registerDomEvent(this.stageEl, 'click', evt => this.onStageClick(evt))
+    this.registerDomEvent(this.stageEl, 'pointermove', evt => this.onPointerMove(evt))
+    this.registerDomEvent(this.stageEl, 'pointerleave', evt => {
+      if (evt.pointerType !== 'touch' && this.near) this.putBack()
     })
     this.registerDomEvent(this.pageEl, 'click', evt => {
       const link = (evt.target as Element).closest<HTMLElement>('a.internal-link')
@@ -262,10 +339,18 @@ export class BookcaseView extends BasesView {
     this.registerDomEvent(this.indexEl, 'keydown', evt => this.onKey(evt))
     this.registerDomEvent(this.indexEl, 'click', evt => {
       const i = this.buttonIndex(evt.target)
-      if (i !== null) this.moveTo(i, false)
+      if (i === null) return
+      this.select(i)
+      this.moveTo(i, false)
     })
     this.registerDomEvent(this.indexEl, 'focusin', evt => {
-      this.lift.setFocusVisible((evt.target as Element).matches(':focus-visible'))
+      const visible = (evt.target as Element).matches(':focus-visible')
+      this.lift.setFocusVisible(visible)
+      // Keyboard focus is a choice; the focus a click gives its button selected already.
+      const i = this.buttonIndex(evt.target)
+      if (!visible || i === null || i === this.selected) return
+      this.select(i)
+      this.moveTo(i, false)
     })
     this.registerDomEvent(this.indexEl, 'focusout', () => this.lift.setFocusVisible(false))
     this.schedule()
@@ -276,6 +361,11 @@ export class BookcaseView extends BasesView {
     if (this.scrollRaf !== null) cancelAnimationFrame(this.scrollRaf)
     if (this.placeRaf !== null) cancelAnimationFrame(this.placeRaf)
     this.rebuildRaf = this.scrollRaf = this.placeRaf = null
+    if (this.openTimer !== null) window.clearTimeout(this.openTimer)
+    this.openTimer = null
+    this.closeHover()
+    // The pane may hold unsaved edits: the view lets go of it and never closes it.
+    this.editor.forget()
     if (this.stage.fullscreen) void document.exitFullscreen().catch(() => undefined)
     this.cancelSettle()
     this.page.unload()
@@ -312,6 +402,10 @@ export class BookcaseView extends BasesView {
 
     const settings = readConfig(this.config)
     this.settings = settings
+    if (this.linked && !settings.editorPane) {
+      this.editor.forget()
+      this.setLinked(false, false)
+    }
     this.dark = document.body.hasClass('theme-dark')
     const theme = this.dark ? 'dark' : 'light'
     if (theme !== this.theme) {
@@ -335,7 +429,16 @@ export class BookcaseView extends BasesView {
     this.root.toggleClass('is-empty', count === 0)
 
     const [minX, minY, maxX, maxY] = scene.bounds
-    const metrics = this.stage.measure(count, settings.scrollStep, scene.fit, scene.span, minX)
+    const metrics = this.stage.measure(
+      count,
+      settings.scrollStep,
+      scene.fit,
+      scene.span,
+      minX,
+      maxX - minX,
+      this.panel.inset(),
+      !this.linked,
+    )
     const { scale } = metrics
     this.frame = { minX, minY, scale }
     this.size = [(maxX - minX) * scale, (maxY - minY) * scale]
@@ -376,10 +479,11 @@ export class BookcaseView extends BasesView {
     let focus = this.focus
     let top: number | undefined = metrics.scrollTop
     if (this.filterChanged) {
-      // A new topic or tag starts at its first book, from the top, with the whole case in view.
+      // A new topic starts at its first book, from the top, with the whole case in view.
       this.filterChanged = false
       this.focus = focus = -1
       this.focusPath = null
+      this.clearSelection()
       this.zoom = 1
       this.pan = [0, 0]
       this.releasing = false
@@ -412,6 +516,7 @@ export class BookcaseView extends BasesView {
       }
     }
     this.plugin.covers.need(this, files, Math.max(0, focus))
+    this.resolveSelection(scene)
     this.camera(true, top)
     this.setControls()
     this.dataChanged = false
@@ -421,8 +526,7 @@ export class BookcaseView extends BasesView {
 
   /**
    * The books on show and their shelf layout. "all" is the view as Bases groups it, in the view's
-   * own style; a topic keeps its books, shelved by `topicGroupBy`. Pressed tags narrow either one:
-   * a book shows when it is in the topic and carries every pressed tag.
+   * own style; a topic keeps its books, shelved by `topicGroupBy`.
    */
   private filtered(settings: BookcaseConfig) {
     const data = this.data
@@ -447,38 +551,28 @@ export class BookcaseView extends BasesView {
     this.filterKey ??= this.baseKey()
     const saved = this.filter ?? this.plugin.covers.filter(this.filterKey)
     const topic = saved && tabs.some(tab => tab.id === saved.topic) ? saved.topic : ALL
-    const set = topic === ALL ? null : members.get(topic)
-    const inShow = (path: string) => !set || set.has(path)
-    const chips = tagChips(
-      entries.map(e => tags(e.file.path)),
-      i => inShow(entries[i].file.path),
-      config,
-    )
-    const pressed = (saved?.tags ?? []).filter(tag => chips.some(chip => chip.id === tag))
-    this.filter = { topic, tags: pressed, panel: saved?.panel ?? 'topics' }
+    this.filter = { topic }
     this.tabs = tabs
-    this.chips = chips
-    this.panel.render(tabs, chips, this.filter)
+    this.panel.render(tabs, topic)
     this.reserve = this.panel.reserve()
 
-    const shelf = topic === ALL ? undefined : lookupTopic(topic, config).shelf
+    const shelf = lookupTopic(topic, config).shelf
     const style = shelf?.style ?? settings.shelfStyle
-    // As the garden: a topic's shelf brings its own material, or the style's own when it names none.
-    const material = shelf ? (shelf.material ?? null) : settings.shelfMaterial
+    // As the garden: the topic's shelf, else the view's options, which also style "all".
+    const material = shelf?.material ?? settings.shelfMaterial
     const showTags = shelf?.showTags ?? settings.showTags
     if (this.root.dataset.topic !== topic) this.root.dataset.topic = topic
     if (this.root.dataset.shelfStyle !== style) this.root.dataset.shelfStyle = style
-    const keep = (entry: BasesEntry) => {
-      const path = entry.file.path
-      return inShow(path) && pressed.every(tag => tags(path).includes(tag))
-    }
     // A topic's shelves group by small subcategories, so they share runs, as in the garden.
     const continuous = topic !== ALL
-    let groups
-    if (continuous)
-      groups = this.reader.topicGroups(entries.filter(keep), config.shelvesBy, settings)
-    else if (pressed.length === 0) groups = this.reader.groups(data.groupedData, settings)
-    else groups = this.reader.groups(data.groupedData, settings, keep)
+    const set = members.get(topic)
+    const groups = continuous
+      ? this.reader.topicGroups(
+          entries.filter(entry => !set || set.has(entry.file.path)),
+          config.shelvesBy,
+          settings,
+        )
+      : this.reader.groups(data.groupedData, settings)
     return { groups, style, material, continuous, showTags }
   }
 
@@ -507,30 +601,8 @@ export class BookcaseView extends BasesView {
     this.schedule()
   }
 
-  /** A new topic drops the pressed tags, which belong to the old one. */
   private selectTopic(id: string): void {
-    const filter = this.filter
-    if (filter && id !== filter.topic) this.setFilter({ ...filter, topic: id, tags: [] })
-  }
-
-  private toggleTag(id: string): void {
-    const filter = this.filter
-    if (!filter) return
-    const tags = filter.tags.includes(id)
-      ? filter.tags.filter(tag => tag !== id)
-      : [...filter.tags, id]
-    this.setFilter({ ...filter, tags })
-  }
-
-  /** The panel tab changes what the panel lists, not what the case shows. */
-  private selectPanel(panel: FilterPanel): void {
-    const filter = this.filter
-    if (!filter || filter.panel === panel) return
-    this.filter = { ...filter, panel }
-    if (this.filterKey !== null) this.plugin.covers.setFilter(this.filterKey, this.filter)
-    this.panel.render(this.tabs, this.chips, this.filter)
-    this.reserve = this.panel.reserve()
-    this.camera()
+    if (this.filter && id !== this.filter.topic) this.setFilter({ topic: id })
   }
 
   private onCamera(action: CameraAction): void {
@@ -803,7 +875,6 @@ export class BookcaseView extends BasesView {
     this.settleIdle?.()
     this.preloadIdle?.()
     this.settleTimer = this.settleIdle = this.preloadIdle = null
-    this.cancelLift()
   }
 
   /** Idle pass: finished covers, then windowing and markup. Returns true when work is left. */
@@ -857,9 +928,10 @@ export class BookcaseView extends BasesView {
   private onScroll(evt: Event): void {
     if (evt.currentTarget !== this.stage.scroller || this.scrollRaf !== null) return
     this.lastScroll = performance.now()
+    const user = this.lastScroll - this.userScroll < USER_SCROLL_MS
     this.scrollRaf = requestAnimationFrame(() => {
       this.scrollRaf = null
-      this.camera()
+      this.camera(false, undefined, user)
     })
   }
 
@@ -867,7 +939,7 @@ export class BookcaseView extends BasesView {
    * Camera, focus and windowing for the current scroll position (SPEC 6.2). After a rebuild
    * (`sync`) the focused book is brought up to date even when the focus did not move.
    */
-  private camera(sync = false, scrollTop?: number): void {
+  private camera(sync = false, scrollTop?: number, user = false): void {
     const scene = this.scene
     const settings = this.settings
     if (!scene || !settings) return
@@ -890,8 +962,11 @@ export class BookcaseView extends BasesView {
     const focus = count > 0 ? Math.round(t) : -1
     if (focus !== this.focus) this.releasePan()
     this.place()
-    if (focus !== this.focus) this.setFocus(focus, sync)
-    else if (sync) this.syncFocus()
+    if (focus !== this.focus) this.setFocus(focus)
+    if (sync) this.syncSelection()
+    // A user's scroll selects the book at the reading position, and slides it out again.
+    else if (user && focus >= 0 && (focus !== this.selected || !this.lifted))
+      this.select(focus, true)
     // A rebuild mounts only the shelves on the stage; the idle pass mounts the rest.
     const urgent = this.layers.check(
       this.band(),
@@ -925,57 +1000,171 @@ export class BookcaseView extends BasesView {
     return toPx(this.frame, [(minX + maxX) / 2, (minY + maxY) / 2])
   }
 
-  /** `later`, after a rebuild: the lift is written in idle time and shown on the next frame. */
-  private setFocus(focus: number, later = false): void {
-    const scene = this.scene
-    const settings = this.settings
-    if (!scene || !settings) return
+  /** The reading position moved: the roving tabindex, the covers to decode next, the heading. */
+  private setFocus(focus: number): void {
     if (this.focus >= 0 && focus >= 0) this.heading = focus < this.focus ? -1 : 1
     this.focus = focus
-    const book = scene.books[focus]
+    const book = this.scene?.books[focus]
     if (book) this.focusPath = book.path
     this.rove(focus)
-
     if (!book) {
-      this.lift.show(null, this.frame)
-      this.page.schedule(null, settings)
       this.preload.clear()
       return
     }
-    this.cancelLift()
-    if (later) {
-      this.lift.show(null, this.frame)
-      this.liftIdle = idle(() => {
-        this.liftIdle = null
-        const request = this.liftBook(this.focus)
-        if (request) this.lift.prepare(request, this.frame)
-        this.liftRaf = requestAnimationFrame(() => {
-          this.liftRaf = null
-          this.lift.show(this.liftBook(this.focus), this.frame)
-        })
-      }, 100)
-    } else this.lift.show(this.liftBook(focus), this.frame)
-    this.page.schedule(book.item, settings)
     this.preloadAround()
     this.plugin.covers.focus(this, focus)
   }
 
-  private cancelLift(): void {
-    this.liftIdle?.()
-    if (this.liftRaf !== null) cancelAnimationFrame(this.liftRaf)
-    this.liftIdle = null
-    this.liftRaf = null
+  /** After a rebuild: the reading position's tabindex, and the selection's lift and page. */
+  private syncSelection(): void {
+    const settings = this.settings
+    if (!settings) return
+    this.rove(this.focus)
+    if (this.focus >= 0) this.preloadAround()
+    const book = this.scene?.books[this.selected]
+    this.markSelected(book ? this.selected : -1)
+    if (book && this.lifted) this.syncLift(this.selected)
+    if (!this.linked)
+      this.page.schedule(book?.item ?? null, settings, this.dataChanged, this.summary())
   }
 
-  /** The focus did not move but the data or the layout did. */
-  private syncFocus(): void {
-    const book = this.scene?.books[this.focus]
-    if (!book || !this.settings) return
-    this.focusPath = book.path
-    this.rove(this.focus)
-    this.syncLift(this.focus)
-    this.page.schedule(book.item, this.settings, this.dataChanged)
+  /**
+   * Selects a book: it lifts, and the page panel or the editor pane shows it. A selection the
+   * scroll made (`scrolled`) does not split off the editor pane, and moves an open one only once
+   * the scroll rests.
+   */
+  private select(index: number, scrolled = false): void {
+    const book = this.scene?.books[index]
+    const settings = this.settings
+    if (!book || !settings) return
+    const changed = index !== this.selected
+    this.selected = index
+    this.selectedPath = book.path
+    this.markSelected(index)
+    if (!this.lifted || this.lift.index !== index) {
+      this.lift.show(this.liftBook(index), this.frame)
+      // A book that slides out from under a still pointer was not hovered.
+      this.near = false
+      this.hovering = -1
+      this.closeHover()
+    }
+    this.lifted = true
+    if (!changed) return
     this.preloadAround()
+    if (this.openTimer !== null) window.clearTimeout(this.openTimer)
+    this.openTimer = null
+    if (scrolled && this.linked) {
+      this.openTimer = window.setTimeout(() => {
+        this.openTimer = null
+        if (this.selectedPath === book.path) this.openEditor(book.path)
+      }, SCROLL_OPEN_MS)
+      return
+    }
+    const inEditor = !scrolled && this.openEditor(book.path)
+    if (!inEditor && !this.linked) this.page.schedule(book.item, settings, false, this.summary())
+  }
+
+  /** Clears the selection: the book goes back and the page shows the topic and its count. */
+  private deselect(): void {
+    if (this.openTimer !== null) window.clearTimeout(this.openTimer)
+    this.openTimer = null
+    if (this.selected < 0) {
+      this.putBack()
+      return
+    }
+    this.clearSelection()
+    const settings = this.settings
+    if (settings && !this.linked) this.page.schedule(null, settings, false, this.summary())
+  }
+
+  /** Forgets the selection; the caller updates the page. */
+  private clearSelection(): void {
+    this.selected = -1
+    this.selectedPath = null
+    this.putBack()
+    this.markSelected(-1)
+  }
+
+  /** The selection follows its path through a rebuild; a book gone from the view clears it. */
+  private resolveSelection(scene: Scene<BookModel>): void {
+    if (this.selectedPath === null) return
+    let best = -1
+    for (const book of scene.books)
+      if (
+        book.path === this.selectedPath &&
+        (best < 0 || Math.abs(book.index - this.selected) < Math.abs(best - this.selected))
+      )
+        best = book.index
+    if (best < 0) this.clearSelection()
+    else this.selected = best
+  }
+
+  /** The lifted book goes back to its shelf and its preview closes; the selection stays. */
+  private putBack(): void {
+    this.near = false
+    this.hovering = -1
+    this.closeHover()
+    if (!this.lifted) return
+    this.lifted = false
+    this.lift.show(null, this.frame)
+  }
+
+  /** The page panel with nothing selected: the topic on show and its count. */
+  private summary(): string {
+    const count = this.scene?.books.length ?? 0
+    const books = `${count} ${count === 1 ? 'book' : 'books'}`
+    const topic = this.tabs.find(tab => tab.id === this.filter?.topic)
+    return topic ? `${topic.label} · ${books}` : books
+  }
+
+  /** This view's own leaf in the main area or a popout; null in an embed or a sidebar. */
+  private hostLeaf(): WorkspaceLeaf | null {
+    if (this.containerEl.closest('.internal-embed, .markdown-embed, .bases-embed')) return null
+    const { workspace } = this.app
+    const hosts: WorkspaceLeaf[] = []
+    workspace.iterateAllLeaves(leaf => {
+      if (leaf.view.containerEl.contains(this.containerEl)) hosts.push(leaf)
+    })
+    const host = hosts[0]
+    if (!host) return null
+    const root = host.getRoot()
+    return root === workspace.leftSplit || root === workspace.rightSplit ? null : host
+  }
+
+  /** Opens `path` in the editor pane, splitting this view's leaf the first time (wide layout). */
+  private openEditor(path: string): boolean {
+    if (!this.settings?.editorPane) return false
+    if (this.linked) {
+      if (this.editor.show(null, path)) return true
+      this.setLinked(false)
+      return false
+    }
+    const host = this.stage.metrics.mode === 'wide' ? this.hostLeaf() : null
+    if (!host || !this.editor.show(host, path)) return false
+    this.setLinked(true)
+    return true
+  }
+
+  /** While the editor pane lives, the page panel is hidden and the stage takes the width. */
+  private setLinked(on: boolean, rebuild = true): void {
+    if (this.linked === on) return
+    this.linked = on
+    this.root.toggleClass('is-linked', on)
+    const settings = this.settings
+    if (!on && settings) {
+      const book = this.scene?.books[this.selected]
+      this.page.schedule(book?.item ?? null, settings, true, this.summary())
+    }
+    if (rebuild) this.schedule()
+  }
+
+  /** Closes the page preview the view opened, so none is left behind. */
+  private closeHover(): void {
+    const popover = this.hoverPopover
+    if (!popover) return
+    this.hoverPopover = null
+    popover.hoverEl.detach()
+    popover.unload()
   }
 
   private syncLift(index: number): void {
@@ -998,15 +1187,15 @@ export class BookcaseView extends BasesView {
   }
 
   /**
-   * In idle time, decodes the thumbnails of focus ± 3 and writes the book the scroll reaches
-   * next into the spare lift.
+   * In idle time, decodes the thumbnails of focus ± 3 and writes the book a key selects next into
+   * the spare lift.
    */
   private preloadAround(): void {
     this.preloadIdle ??= idle(() => {
       this.preloadIdle = null
       const books = this.scene?.books ?? []
       const focus = this.focus
-      const next = this.liftBook(focus + this.heading)
+      const next = this.selected >= 0 ? this.liftBook(this.selected + this.heading) : null
       if (next) this.lift.prepare(next, this.frame)
       const urls: string[] = []
       for (let d = 0; d <= PRELOAD_RADIUS; d++)
@@ -1020,16 +1209,20 @@ export class BookcaseView extends BasesView {
     }, 500)
   }
 
-  /** Roving tabindex and aria-current on the index buttons. */
+  /** Roving tabindex on the index: the button of the book at the reading position. */
   private rove(index: number): void {
     if (index === this.roving) return
-    const old = this.buttons[this.roving]
-    old?.setAttribute('tabindex', '-1')
-    old?.removeAttribute('aria-current')
+    this.buttons[this.roving]?.setAttribute('tabindex', '-1')
     this.roving = index
-    const button = this.buttons[index]
-    button?.setAttribute('tabindex', '0')
-    button?.setAttribute('aria-current', 'true')
+    this.buttons[index]?.setAttribute('tabindex', '0')
+  }
+
+  /** aria-current on the index button of the selected book. */
+  private markSelected(index: number): void {
+    if (index === this.marked) return
+    this.buttons[this.marked]?.removeAttribute('aria-current')
+    this.marked = index
+    this.buttons[index]?.setAttribute('aria-current', 'true')
   }
 
   private updateIndex(scene: Scene<BookModel>): void {
@@ -1037,13 +1230,16 @@ export class BookcaseView extends BasesView {
     while (this.buttons.length > books.length) this.buttons.pop()?.parentElement?.remove()
     while (this.buttons.length < books.length) {
       const i = this.buttons.length
-      const current = i === this.roving
       const button = this.indexEl
         .createEl('li')
         .createEl('button', {
-          attr: { type: 'button', tabindex: current ? '0' : '-1', 'data-index': String(i) },
+          attr: {
+            type: 'button',
+            tabindex: i === this.roving ? '0' : '-1',
+            'data-index': String(i),
+          },
         })
-      if (current) button.setAttribute('aria-current', 'true')
+      if (i === this.marked) button.setAttribute('aria-current', 'true')
       this.buttons.push(button)
     }
     for (const [i, book] of books.entries()) {
@@ -1055,6 +1251,7 @@ export class BookcaseView extends BasesView {
       }
     }
     if (this.roving >= books.length) this.roving = -1
+    if (this.marked >= books.length) this.marked = -1
   }
 
   private buttonIndex(target: EventTarget | null): number | null {
@@ -1098,12 +1295,14 @@ export class BookcaseView extends BasesView {
         break
       case 'Enter':
         evt.preventDefault()
-        void this.app.workspace.openLinkText(books[i].path, '', Keymap.isModEvent(evt))
+        this.select(i)
+        this.openNote(books[i].path, evt)
         return
       default:
         return
     }
     evt.preventDefault()
+    this.select(next)
     this.moveTo(next, true)
   }
 
@@ -1124,14 +1323,79 @@ export class BookcaseView extends BasesView {
     return g && Number.isInteger(index) ? (this.scene?.books[index] ?? null) : null
   }
 
-  private onWorldClick(evt: MouseEvent): void {
-    const book = this.bookAt(evt.target)
-    if (!book) return
-    if ((evt.target as Element).closest('.bookcase-lift')) {
-      void this.app.workspace.openLinkText(book.path, '', Keymap.isModEvent(evt))
+  /** A book selects it, the lifted book opens its note, the empty stage clears the selection. */
+  private onStageClick(evt: MouseEvent): void {
+    // A press that moves a few px off a book ends on another element; the click then goes to
+    // their common ancestor. It is still a click on what was pressed.
+    const pressed = this.pressed
+    this.pressed = null
+    const target =
+      pressed && (evt.target as Element).contains(pressed) ? pressed : (evt.target as Element)
+    if (target.closest('.bookcase-controls')) return
+    const book = this.bookAt(target)
+    if (!book) {
+      this.deselect()
       return
     }
-    this.moveTo(book.index, false)
+    if (target.closest('.bookcase-lift')) {
+      this.openNote(book.path, evt)
+      return
+    }
+    this.select(book.index)
+    // Keys go on from the clicked book, and Escape and a blur reach the view.
+    this.moveTo(book.index, true)
+  }
+
+  /** Opens the note: in the editor pane when there is one, else as Obsidian opens a link. */
+  private openNote(path: string, evt: MouseEvent | KeyboardEvent): void {
+    const mod = Keymap.isModEvent(evt)
+    if (!mod && this.linked && this.editor.focus()) return
+    void this.app.workspace.openLinkText(path, '', mod)
+  }
+
+  /**
+   * A pointer moving onto the lifted book opens its page preview, once per lift. A pointer that
+   * was over the lifted book or its slot and leaves both puts the book back and closes the
+   * preview; the selection stays. A scroll that slides the book under a still pointer makes the
+   * browser send moves at the same point; those do not count.
+   */
+  private onPointerMove(evt: PointerEvent): void {
+    // Touch has no hover; a held button is a press or a drag.
+    if (evt.pointerType === 'touch' || evt.buttons !== 0) return
+    const [x, y] = this.pointerAt
+    this.pointerAt = [evt.clientX, evt.clientY]
+    if (evt.clientX === x && evt.clientY === y) return
+    if (!this.lifted) return
+    if (this.overLift(evt.clientX, evt.clientY)) this.near = true
+    else if (this.near) {
+      this.putBack()
+      return
+    }
+    const el = (evt.target as Element).closest<HTMLElement>('.bookcase-lift')
+    const book = el ? this.bookAt(evt.target) : null
+    if (!el || !book || book.index !== this.selected || book.index === this.hovering) return
+    this.hovering = book.index
+    this.hover(evt, el, book.path)
+  }
+
+  /**
+   * True when a client point is on the lifted book: pulled out, in the slot it left, or on the
+   * way between them, so a pointer can follow the book out.
+   */
+  private overLift(x: number, y: number): boolean {
+    const book = this.lifted ? this.scene?.books[this.selected] : undefined
+    if (!book) return false
+    if (this.swept?.index !== book.index || this.swept.version !== this.version)
+      this.swept = {
+        index: book.index,
+        version: this.version,
+        area: sweep(book.faces.edge, book.pull),
+      }
+    const box = this.world.getBoundingClientRect()
+    const { minX, minY, scale } = this.frame
+    const u = (x - box.left) / (this.zoom * scale) + minX
+    const v = (y - box.top) / (this.zoom * scale) + minY
+    return contains(this.swept.area, u, v)
   }
 
   private hover(event: MouseEvent, targetEl: HTMLElement, linktext: string): void {

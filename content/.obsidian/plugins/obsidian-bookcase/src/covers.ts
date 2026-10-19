@@ -19,13 +19,9 @@ export interface CoverEntry {
   thumb: string
 }
 
-export type FilterPanel = 'topics' | 'tags'
-
-/** What one view shows to this viewer: a topic, the tags that narrow it, and the open panel tab. */
+/** What one view shows to this viewer: a topic. */
 export interface ViewFilter {
   topic: string
-  tags: string[]
-  panel: FilterPanel
 }
 
 /** Plugin data: the cover index, and each view's filter for this viewer. */
@@ -36,17 +32,10 @@ interface CoverIndex {
   views?: Record<string, ViewFilter>
 }
 
-const isFilter = (value: unknown): value is ViewFilter =>
-  typeof value === 'object' &&
-  value !== null &&
-  typeof (value as ViewFilter).topic === 'string' &&
-  Array.isArray((value as ViewFilter).tags) &&
-  (value as ViewFilter).tags.every(tag => typeof tag === 'string')
-
-/** A saved filter, with the panel tab that older data lacks. */
+/** A saved filter's topic; older data also holds tags and a panel tab, which are dropped. */
 const readFilter = (value: unknown): ViewFilter | null =>
-  isFilter(value)
-    ? { topic: value.topic, tags: value.tags, panel: value.panel === 'tags' ? 'tags' : 'topics' }
+  typeof value === 'object' && value !== null && typeof (value as ViewFilter).topic === 'string'
+    ? { topic: (value as ViewFilter).topic }
     : null
 
 interface Need {
@@ -129,10 +118,7 @@ export class CoverCache extends Component {
   }
 
   setFilter(key: string, filter: ViewFilter): void {
-    this.index.views = {
-      ...this.index.views,
-      [key]: { topic: filter.topic, tags: [...filter.tags], panel: filter.panel },
-    }
+    this.index.views = { ...this.index.views, [key]: { topic: filter.topic } }
     this.save()
   }
 

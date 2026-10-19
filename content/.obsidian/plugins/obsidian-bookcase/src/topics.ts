@@ -44,8 +44,8 @@ export function readTopicConfig(config: BasesViewConfig): TopicConfig {
 }
 
 /**
- * Label and shelf layout of a topic, by the garden's shared rule. With no shelf, or no material,
- * the view's own style and material apply.
+ * Label and shelf layout of a topic, by the garden's shared rule. What the shelf leaves out, the
+ * view's own style, material and labels supply; "all" and "other" have no shelf.
  */
 export function lookupTopic(
   topic: string,
@@ -53,11 +53,6 @@ export function lookupTopic(
 ): { label: string; shelf?: TopicShelf } {
   if (topic === ALL || topic === OTHER) return { label: topic }
   return { label: topicLabel(topic, config.shelves), shelf: topicShelf(topic, config.shelves) }
-}
-
-/** Display name of a tag: its `topicShelves` entry's `displayNames`, as for a topic. */
-export function lookupTag(tag: string, config: TopicConfig): string {
-  return topicLabel(tag, config.shelves)
 }
 
 /**
@@ -108,30 +103,4 @@ export function topicTabs(
   const shortcuts = topicShortcuts(tabs.map(tab => tab.label))
   shortcuts[0] = 'ALL'
   return tabs.map((tab, i) => ({ ...tab, shortcut: shortcuts[i] }))
-}
-
-/**
- * Tags of the books on show (`tags[i]` for book `i` where `keep(i)`), most books first, with
- * shortcuts as the topic tabs have. A tag every one of those books carries narrows nothing and is
- * left out.
- */
-export function tagChips(
-  tags: string[][],
-  keep: (index: number) => boolean,
-  config: TopicConfig,
-): TopicTab[] {
-  const counts = new Map<string, number>()
-  let books = 0
-  for (const [i, list] of tags.entries()) {
-    if (!keep(i)) continue
-    books++
-    for (const tag of new Set(list)) counts.set(tag, (counts.get(tag) ?? 0) + 1)
-  }
-  const chips = [...counts]
-    .filter(([, n]) => n < books)
-    .sort(([a, x], [b, y]) => y - x || a.localeCompare(b))
-    .map(([id, count]) => ({ id, label: lookupTag(id, config), count }))
-  // Many tags share a prefix; three letters keep a collapsed toggle square. Its title names it.
-  const shortcuts = topicShortcuts(chips.map(chip => chip.label))
-  return chips.map((chip, i) => ({ ...chip, shortcut: shortcuts[i].slice(0, 3) }))
 }

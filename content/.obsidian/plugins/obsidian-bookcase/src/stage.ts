@@ -3,10 +3,8 @@ import { type Box, viewBox } from './svg'
 
 export type LayoutMode = 'wide' | 'narrow'
 
-const WIDE_MIN = 760
+const WIDE_MIN = 600
 const OWN_HEIGHT = 520
-/** Share of the view's width the stage may take next to the page panel. */
-const STAGE_SHARE = 0.64
 const MIN_SCALE = 0.55
 /** Room kept between the stage's left edge and a pulled book. */
 const LIFT_PAD = 8
@@ -26,13 +24,25 @@ export const toPx = (f: Frame, [x, y]: Point): Point => [
   (y - f.minY) * f.scale,
 ]
 
-/** Positions an `<svg>` over a screen box: viewBox in screen units, size in world px. */
+/**
+ * Positions an `<svg>` over a screen box: viewBox in screen units, size in world px. The box is
+ * grown to whole pixels and the viewBox keeps full precision, so every layer maps screen units to
+ * the same pixels: the browser snaps a fractional box, and layers would meet a fraction apart.
+ */
 export function placeSvg(el: SVGSVGElement, box: Box, f: Frame): void {
-  el.setAttribute('viewBox', viewBox(box))
-  el.setAttribute('width', String(Math.max(0, box.w * f.scale)))
-  el.setAttribute('height', String(Math.max(0, box.h * f.scale)))
-  el.style.left = `${(box.x - f.minX) * f.scale}px`
-  el.style.top = `${(box.y - f.minY) * f.scale}px`
+  const left = Math.floor((box.x - f.minX) * f.scale)
+  const top = Math.floor((box.y - f.minY) * f.scale)
+  const width = Math.max(0, Math.ceil((box.x + box.w - f.minX) * f.scale) - left)
+  const height = Math.max(0, Math.ceil((box.y + box.h - f.minY) * f.scale) - top)
+  const unit = (px: number) => px / f.scale
+  el.setAttribute(
+    'viewBox',
+    `${f.minX + unit(left)} ${f.minY + unit(top)} ${unit(width)} ${unit(height)}`,
+  )
+  el.setAttribute('width', String(width))
+  el.setAttribute('height', String(height))
+  el.style.left = `${left}px`
+  el.style.top = `${top}px`
 }
 
 export function createSvgLayer(parent: HTMLElement, cls: string): SVGSVGElement {
@@ -59,6 +69,8 @@ export interface Metrics {
   /** Left edge and width of the drawn case in world px. */
   caseLeft: number
   caseWidth: number
+  /** Width of the case with every pulled position in world px; the world starts at its left. */
+  boxWidth: number
 }
 
 /** The scroll container, the scroll track and the camera. */
@@ -79,6 +91,7 @@ export class Stage {
     scale: 1,
     caseLeft: 0,
     caseWidth: 0,
+    boxWidth: 0,
   }
 
   constructor(
@@ -137,9 +150,11 @@ export class Stage {
 
   /**
    * Lays out the stage and the track for `count` books, and records the measurements the camera
-   * needs. The scale fits `fit` screen units to the stage (SPEC 4.3, with the garden's fit width).
-   * The stage fills the scroller's height and is as wide as the drawn case, `span` in screen units
-   * from the frame's left edge `minX`, so no empty column is left before the page panel.
+   * needs. The stage fills the scroller's height; the grid in styles.css gives it its width (80% of
+   * a wide view), and the scale fits `fit` screen units to that width (SPEC 4.3, with the garden's
+   * fit width). In a wide view the scale also fits `reach`, the case with every pulled book, beside
+   * the `inset` px the control column always takes, as the garden fits its whole box. `span` is
+   * the drawn case in screen units from the frame's left edge `minX`.
    */
   measure(
     count: number,
@@ -147,6 +162,9 @@ export class Stage {
     fit: number,
     span: readonly [number, number],
     minX: number,
+    reach: number,
+    inset: number,
+    paged: boolean,
   ): Metrics {
     const scroller = this.scroller
     if (!scroller) return this.metrics
@@ -155,14 +173,17 @@ export class Stage {
     this.root.dataset.layout = mode
     const viewportHeight = scroller.clientHeight || OWN_HEIGHT
     const stageHeight = viewportHeight
-    const sceneHeight = mode === 'wide' ? stageHeight : Math.round(stageHeight * 0.58)
-    const room = mode === 'wide' ? Math.floor(width * STAGE_SHARE) : width
-    const scale = Math.min(1, Math.max(MIN_SCALE, room / (fit || 1)))
+    // Narrow, the page panel sits under the stage; with the editor pane there is no page panel.
+    const sceneHeight = mode === 'wide' || !paged ? stageHeight : Math.round(stageHeight * 0.58)
+    // A layout read, once per measure: the grid follows the pane, and real themes may pad the view.
+    const stageWidth = this.stage.clientWidth || width
+    let fitted = stageWidth / (fit || 1)
+    if (mode === 'wide')
+      fitted = Math.min(fitted, (stageWidth - inset - 2 * LIFT_PAD) / (reach || 1))
+    const scale = Math.min(1, Math.max(MIN_SCALE, fitted))
     const caseWidth = (span[1] - span[0]) * scale
-    const stageWidth = Math.min(room, Math.ceil(caseWidth))
     this.root.style.setProperty('--bc-stage-height', `${stageHeight}px`)
     this.root.style.setProperty('--bc-scene-height', `${sceneHeight}px`)
-    this.root.style.setProperty('--bc-stage-width', `${stageWidth}px`)
     // As SPEC 6.1, but never short of the room that brings the last book to the reading line.
     const height = Math.max(
       count * step + stageHeight,
@@ -178,7 +199,7 @@ export class Stage {
     this.metrics = {
       mode,
       stageHeight,
-      stageWidth: mode === 'wide' ? stageWidth : this.stage.clientWidth,
+      stageWidth,
       sceneHeight,
       viewportHeight,
       trackTop,
@@ -187,6 +208,7 @@ export class Stage {
       scale,
       caseLeft: (span[0] - minX) * scale,
       caseWidth,
+      boxWidth: reach * scale,
     }
     return this.metrics
   }
@@ -238,11 +260,18 @@ export class Stage {
    * empty: a case narrower than the stage is centred, a wider one stops at its walls. The pulled
    * book (`lift`, its left and right edges in world px) gives way: near the right wall it stays
    * clear of the `reserve` px the control column takes, near the left wall it stays on the stage,
-   * which wins when both cannot hold.
+   * which wins when both cannot hold. In a wide view whose stage holds the whole box beside the
+   * column, the case stays still across: centred, or moved left of the column, with every pulled
+   * book on the stage.
    */
   offset(target: Point, lift: Point, reserve: number): Point {
-    const { stageWidth, caseLeft, caseWidth } = this.metrics
+    const { mode, stageWidth, caseLeft, caseWidth, boxWidth } = this.metrics
     const [ax, ay] = this.anchor()
+    const room = stageWidth - reserve - LIFT_PAD - boxWidth
+    if (mode === 'wide' && room >= LIFT_PAD) {
+      const centred = (stageWidth - caseWidth) / 2 - caseLeft
+      return [Math.min(room, Math.max(LIFT_PAD, centred)), ay - target[1]]
+    }
     let x =
       caseWidth <= stageWidth
         ? (stageWidth - caseWidth) / 2 - caseLeft
