@@ -31,6 +31,10 @@ export interface SceneBook {
   sampleSpine: boolean
   /** Verified local edition spine derivative. */
   spineArt?: string
+  /** Larger verified derivative, loaded only for the selected book. */
+  spineArtDetail?: string
+  spineArtDetailWidth?: number
+  spineArtDetailHeight?: number
 }
 
 const r1 = (n: number) => Math.round(n * 10) / 10
@@ -126,6 +130,9 @@ function bookNode(placed: PlacedBook<SceneBook>, world: WorldBook): Element {
       'data-cover-transform': cover ? toMatrix(cover) : undefined,
       'data-cover-size': `${world.depth} ${world.height}`,
       'data-spine-art': book.spineArt,
+      'data-spine-art-detail': book.spineArtDetail,
+      'data-spine-art-detail-width': book.spineArtDetailWidth,
+      'data-spine-art-detail-height': book.spineArtDetailHeight,
       'data-spine-transform': toMatrix(spineMatrixW(world)),
       'data-spine-size': `${world.thickness} ${world.height}`,
       style: `--spine:${book.spine};--spine-ink:${book.ink};--pull-x:${r1(px)}px;--pull-y:${r1(py)}px`,

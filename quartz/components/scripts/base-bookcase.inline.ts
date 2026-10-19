@@ -15,6 +15,9 @@ import { rootNavSignal } from './root-lifecycle'
 const SVG_NS = 'http://www.w3.org/2000/svg'
 const PRELOAD = 3
 const MAX_SHELF_COVERS = 32
+const MAX_DETAIL_SPINES = 4
+const DETAIL_ENTER_PX = 360
+const DETAIL_LEAVE_PX = 280
 const COVER_MARGIN = 120
 
 type Camera = { x: number; y: number; scale: number }
@@ -27,7 +30,15 @@ const PULL_MS = 280
 const PULL_DELAY_MS = 160
 const SETTLE_MS = 180
 type Drag = { id: number; x: number; y: number; camera: Camera; book: number; moved: boolean }
-type Cover = { url: string; spine?: string; ink?: string; art?: string }
+type Cover = {
+  url: string
+  spine?: string
+  ink?: string
+  art?: string
+  artDetail?: string
+  artDetailWidth?: string
+  artDetailHeight?: string
+}
 
 function retainCovers(root: HTMLElement, covers: Map<string, Cover>): void {
   const nodes = root.querySelectorAll<HTMLElement | SVGElement>('[data-bookcase-cover]')
@@ -40,6 +51,11 @@ function retainCovers(root: HTMLElement, covers: Map<string, Cover>): void {
       cover.spine = node.style.getPropertyValue('--spine')
       cover.ink = node.style.getPropertyValue('--spine-ink')
       if (node.dataset.spineArt) cover.art = node.dataset.spineArt
+      if (node.dataset.spineArtDetail) {
+        cover.artDetail = node.dataset.spineArtDetail
+        cover.artDetailWidth = node.dataset.spineArtDetailWidth
+        cover.artDetailHeight = node.dataset.spineArtDetailHeight
+      }
     }
     covers.set(slug, cover)
   }
@@ -50,6 +66,11 @@ function retainCovers(root: HTMLElement, covers: Map<string, Cover>): void {
     if (node instanceof HTMLImageElement) node.src = cover.url
     else node.dataset.cover = cover.url
     if (cover.art) node.dataset.spineArt = cover.art
+    if (cover.artDetail) {
+      node.dataset.spineArtDetail = cover.artDetail
+      node.dataset.spineArtDetailWidth = cover.artDetailWidth ?? ''
+      node.dataset.spineArtDetailHeight = cover.artDetailHeight ?? ''
+    }
     if (node.hasAttribute('data-spine-sampled')) {
       if (cover.spine) node.style.setProperty('--spine', cover.spine)
       if (cover.ink) node.style.setProperty('--spine-ink', cover.ink)
@@ -59,10 +80,63 @@ function retainCovers(root: HTMLElement, covers: Map<string, Cover>): void {
 
 type ArtworkFace = 'cover' | 'spine'
 
+// Each resident face has one SVG image. A temporary decoder keeps its low texture visible
+// until the detail is ready; eviction or a new tier request cancels that decoder.
+const spineDecoders = new WeakMap<SVGImageElement, HTMLImageElement>()
+function cancelSpineDetail(image: SVGImageElement): void {
+  delete image.dataset.spineResolutionPending
+  const decoder = spineDecoders.get(image)
+  if (!decoder) return
+  spineDecoders.delete(image)
+  decoder.removeAttribute('src')
+}
+
+function setSpineResolution(image: SVGImageElement, detail: boolean): void {
+  const book = image.closest<SVGGElement>('.bc-book')
+  const low = book?.dataset.spineArt
+  const url = detail ? book?.dataset.spineArtDetail : low
+  if (!book || !low || !url) return
+  if (detail && book.dataset.spineArtDetailFailed === url) return
+  const pending = spineDecoders.get(image)
+  if (pending?.getAttribute('src') === url) return
+  cancelSpineDetail(image)
+  if (image.getAttribute('href') === url) return
+  if (!detail) {
+    image.setAttribute('href', low)
+    image.dataset.spineResolution = 'low'
+    return
+  }
+  const decoder = new Image()
+  decoder.decoding = 'async'
+  spineDecoders.set(image, decoder)
+  image.dataset.spineResolutionPending = 'detail'
+  decoder.src = url
+  void decoder.decode().then(
+    () => {
+      if (spineDecoders.get(image) !== decoder) return
+      spineDecoders.delete(image)
+      delete image.dataset.spineResolutionPending
+      if (image.isConnected) {
+        image.setAttribute('href', url)
+        image.dataset.spineResolution = 'detail'
+      }
+      decoder.removeAttribute('src')
+    },
+    () => {
+      if (spineDecoders.get(image) !== decoder) return
+      spineDecoders.delete(image)
+      delete image.dataset.spineResolutionPending
+      book.dataset.spineArtDetailFailed = url
+      decoder.removeAttribute('src')
+    },
+  )
+}
+
 function removeArtwork(image: SVGImageElement): void {
   if (image.classList.contains('bc-spine-art')) {
     const book = image.closest<SVGGElement>('.bc-book')
     if (book) delete book.dataset.spineArtReady
+    cancelSpineDetail(image)
   }
   image.remove()
 }
@@ -99,23 +173,22 @@ function addArtwork(
   image.setAttribute('preserveAspectRatio', spine ? 'none' : 'xMidYMid meet')
   image.setAttribute('decoding', 'async')
   image.setAttribute('transform', transform)
-  if (spine)
-    image.addEventListener(
-      'load',
-      () => {
-        if (image.isConnected) book.dataset.spineArtReady = ''
-      },
-      { once: true },
-    )
-  image.addEventListener(
-    'error',
-    () => {
-      if (spine) book.dataset.spineArtFailed = cover
-      else book.dataset.coverFailed = cover
-      removeArtwork(image)
-    },
-    { once: true },
-  )
+  if (spine) {
+    image.dataset.spineResolution = 'low'
+    image.addEventListener('load', () => {
+      if (image.isConnected) book.dataset.spineArtReady = ''
+    })
+  }
+  image.addEventListener('error', () => {
+    if (spine && image.dataset.spineResolution === 'detail') {
+      book.dataset.spineArtDetailFailed = book.dataset.spineArtDetail
+      setSpineResolution(image, false)
+      return
+    }
+    if (spine) book.dataset.spineArtFailed = cover
+    else book.dataset.coverFailed = cover
+    removeArtwork(image)
+  })
   side.after(image)
   return image
 }
@@ -143,6 +216,26 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
   const groups = [...root.querySelectorAll<HTMLDetailsElement>('.bookcase-index-group')]
   const books = new Map<number, SVGGElement>()
   const bookBounds = new Map<number, DOMRect>()
+  const spineLengths = new Map<number, number>()
+  const spineBounds = new Map<number, { x: number; y: number; width: number; height: number }>()
+  const cacheBookGeometry = (index: number, book: SVGGElement) => {
+    bookBounds.set(index, book.getBBox())
+    const transform = book.dataset.spineTransform
+    const [width, height] = (book.dataset.spineSize ?? '').split(' ').map(Number)
+    if (!transform || !Number.isFinite(width) || !Number.isFinite(height)) return
+    const values = transform.slice(7, -1).trim().split(/[ ,]+/).map(Number)
+    if (values.length !== 6 || !values.every(Number.isFinite)) return
+    const [a, b, c, d, e, f] = values
+    spineLengths.set(index, Math.hypot(c, d) * height)
+    const xs = [0, a * width, c * height, a * width + c * height]
+    const ys = [0, b * width, d * height, b * width + d * height]
+    spineBounds.set(index, {
+      x: e + Math.min(...xs),
+      y: f + Math.min(...ys),
+      width: Math.max(...xs) - Math.min(...xs),
+      height: Math.max(...ys) - Math.min(...ys),
+    })
+  }
   const entryByIndex = new Map(entries.map(entry => [Number(entry.dataset.bookIndex), entry]))
   for (const book of scene.querySelectorAll<SVGGElement>('.bc-book'))
     books.set(Number(book.dataset.bookIndex), book)
@@ -150,7 +243,7 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
   let coverWindow = ''
   let [originX, originY] = (scene.dataset.origin ?? '0 0').split(' ').map(Number)
   let box = scene.viewBox.baseVal
-  for (const [index, book] of books) bookBounds.set(index, book.getBBox())
+  for (const [index, book] of books) cacheBookGeometry(index, book)
   const inventory = new Map(
     [...books].map(([index, book]) => [
       index,
@@ -168,6 +261,9 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
           coverSlug: book.dataset.bookcaseCover,
           sampleSpine: false,
           spineArt: book.dataset.spineArt,
+          spineArtDetail: book.dataset.spineArtDetail,
+          spineArtDetailWidth: Number(book.dataset.spineArtDetailWidth) || undefined,
+          spineArtDetailHeight: Number(book.dataset.spineArtDetailHeight) || undefined,
         },
       },
     ]),
@@ -234,12 +330,15 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
     const next = template.content.querySelector('svg')
     if (!next) return false
     dropLift()
+    for (const image of residentCovers.values()) removeArtwork(image)
     for (const attribute of next.attributes) scene.setAttribute(attribute.name, attribute.value)
     scene.replaceChildren(...next.childNodes)
     ;[originX, originY] = (scene.dataset.origin ?? '0 0').split(' ').map(Number)
     box = scene.viewBox.baseVal
     books.clear()
     bookBounds.clear()
+    spineLengths.clear()
+    spineBounds.clear()
     residentCovers.clear()
     coverWindow = ''
     for (const book of scene.querySelectorAll<SVGGElement>('.bc-book')) {
@@ -247,7 +346,7 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
       const fullCover = inventory.get(index)?.fullCover
       if (fullCover) book.dataset.fullCover = fullCover
       books.set(index, book)
-      bookBounds.set(index, book.getBBox())
+      cacheBookGeometry(index, book)
     }
     fitted = true
     resize()
@@ -343,10 +442,17 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
     if (zoomIn) zoomIn.disabled = camera.scale >= maxScale() - 0.001
   }
   function refreshShelfCovers(): void {
-    const key = `${focus}:${Math.round(camera.x / 64)}:${Math.round(camera.y / 64)}:${Math.round(camera.scale * 32)}:${viewportWidth}:${viewportHeight}`
+    const pixelRatio = Math.min(2, window.devicePixelRatio || 1)
+    const key = `${focus}:${Math.round(camera.x / 64)}:${Math.round(camera.y / 64)}:${Math.round(camera.scale * 32)}:${viewportWidth}:${viewportHeight}:${pixelRatio}`
     if (key === coverWindow) return
     coverWindow = key
-    const candidates: { index: number; face: ArtworkFace; key: string; score: number }[] = []
+    const candidates: {
+      index: number
+      face: ArtworkFace
+      key: string
+      score: number
+      detail?: boolean
+    }[] = []
     for (const [index, book] of books) {
       const bounds = bookBounds.get(index)
       if (!bounds || book.hasAttribute('data-lifted')) continue
@@ -373,8 +479,35 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
           key: `${index}:cover`,
           score: distance * (end ? 0.25 : 1),
         })
-      if (book.dataset.spineArt)
-        candidates.push({ index, face: 'spine', key: `${index}:spine`, score: distance * 0.5 })
+      if (book.dataset.spineArt) {
+        const key = `${index}:spine`
+        const resident = residentCovers.get(key)
+        const detailed =
+          resident?.dataset.spineResolution === 'detail' ||
+          Boolean(resident && spineDecoders.has(resident))
+        const length = (spineLengths.get(index) ?? 0) * camera.scale * pixelRatio
+        const spine = spineBounds.get(index)
+        const sx = spine ? (spine.x - originX) * camera.scale + camera.x : -Infinity
+        const sy = spine ? (spine.y - originY) * camera.scale + camera.y : -Infinity
+        const visible =
+          spine &&
+          sx + spine.width * camera.scale >= 0 &&
+          sx <= viewportWidth &&
+          sy + spine.height * camera.scale >= 0 &&
+          sy <= viewportHeight
+        candidates.push({
+          index,
+          face: 'spine',
+          key,
+          score: distance * 0.5,
+          detail: Boolean(
+            visible &&
+            book.dataset.spineArtDetail &&
+            book.dataset.spineArtDetailFailed !== book.dataset.spineArtDetail &&
+            length > (detailed ? DETAIL_LEAVE_PX : DETAIL_ENTER_PX),
+          ),
+        })
+      }
     }
     const wanted = candidates.sort((a, b) => a.score - b.score).slice(0, MAX_SHELF_COVERS)
     const keys = new Set(wanted.map(candidate => candidate.key))
@@ -383,14 +516,28 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
       removeArtwork(image)
       residentCovers.delete(key)
     }
+    // Downgrade outgoing detail slots before decoding replacements, including pending loads.
+    const detailed = new Set(
+      wanted
+        .filter(candidate => candidate.detail)
+        .slice(0, MAX_DETAIL_SPINES)
+        .map(candidate => candidate.key),
+    )
+    for (const [key, image] of residentCovers) {
+      if (image.classList.contains('bc-spine-art') && !detailed.has(key))
+        setSpineResolution(image, false)
+    }
     for (const { index, face, key } of wanted) {
-      if (residentCovers.has(key)) continue
       const book = books.get(index)
-      const image = book && addArtwork(book, face)
-      if (image) {
-        image.dataset.shelfResident = ''
-        residentCovers.set(key, image)
+      let image = residentCovers.get(key)
+      if (!image && book) {
+        image = addArtwork(book, face)
+        if (image) {
+          image.dataset.shelfResident = ''
+          residentCovers.set(key, image)
+        }
       }
+      if (image && face === 'spine') setSpineResolution(image, detailed.has(key))
     }
   }
   const schedule = () => {
@@ -444,10 +591,14 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
     pull = undefined
     reveal = undefined
     for (const { svg, cover } of settling) {
+      for (const image of svg.querySelectorAll<SVGImageElement>('.bc-spine-art'))
+        cancelSpineDetail(image)
       svg.remove()
       removeExposedCover(cover)
     }
     settling.clear()
+    const spine = lifted?.querySelector<SVGImageElement>('.bc-spine-art')
+    if (spine) cancelSpineDetail(spine)
     lifted?.remove()
     removeExposedCover(exposedCover)
     lifted = undefined
@@ -464,6 +615,8 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
     cover: SVGImageElement | undefined,
   ) => {
     const home = books.get(liftedIndex(previous))
+    const spine = previous.querySelector<SVGImageElement>('.bc-spine-art')
+    if (spine) setSpineResolution(spine, false)
     const settle = { svg: previous, cover }
     const done = () => {
       settling.delete(settle)
@@ -524,6 +677,8 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
     if (previous && previousGeometry)
       sendHome(previous, previousGeometry, kept ? undefined : previousCover)
     world.append(svg)
+    const liftedSpine = svg.querySelector<SVGImageElement>('.bc-spine-art')
+    if (liftedSpine) setSpineResolution(liftedSpine, true)
     book.setAttribute('data-lifted', '')
     if (kept) exposedCover = kept
     else if (neighbor && !neighbor.querySelector('.bc-cover')) {
@@ -703,6 +858,9 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
           title,
           author: row.querySelector('.bookcase-entry-byline')?.textContent ?? '',
           spineArt: book.dataset.spineArt,
+          spineArtDetail: book.dataset.spineArtDetail,
+          spineArtDetailWidth: Number(book.dataset.spineArtDetailWidth) || undefined,
+          spineArtDetailHeight: Number(book.dataset.spineArtDetailHeight) || undefined,
         })
         .then(ready => {
           if (ready && dialog.open) hardcover?.reveal()
