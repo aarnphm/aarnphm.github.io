@@ -64,7 +64,15 @@ Design preference at the time: prioritize backend performance, then justify the 
 
 ## proposal
 
-![[thoughts/images/constrained-proposal-scheduler.webp|scheduler broadcast bitmask]]
+```jsx imports={Zoomable,GrammarBitmaskBatch}
+<Zoomable label="Scheduler broadcast bitmask">
+  <GrammarBitmaskBatch
+    request="r2"
+    workers={2}
+    caption="Scheduler broadcast bitmask, as vLLM v0.8.0 implements this proposal. One engine step has four running requests and one request whose grammar is still compiling. The scheduler fills one int32 bitmask row per structured request: 4,740 words for the 151,669-token Qwen3 vocabulary. Each strip cell covers 40 words and is sage where a word has an allowed bit. SchedulerOutput carries the bitmask to every GPU worker. Each worker gathers the full logits, applies the rows with apply_token_bitmask_inplace and samples; rank 0 returns the tokens, and accept_tokens advances each grammar. The allowed sets and probabilities are computed with Qwen/Qwen3-0.6B-Base on the four-string JSON language of the appendix, with greedy sampling. Salmon marks the selected request's row. Select a request or a worker count."
+  />
+</Zoomable>
+```
 
 Split responsibilities between the scheduler and workers:
 
@@ -85,7 +93,14 @@ The working-group notes rejected a worker-local logit-processor abstraction as t
 
 ## background
 
-![[thoughts/images/vllm/pre-optimized-logit-processor-handling.webp|watergraph of current logit processor stack]]
+```jsx imports={Zoomable,LogitsProcessorTrace}
+<Zoomable label="Watergraph of current logit processor stack">
+  <LogitsProcessorTrace
+    guided={2}
+    caption="Watergraph of the V0 logit processor stack, after the sequence diagram in vllm-project/vllm#5329, with each call and line checked against the vLLM v0.5.0 source. Each column is one call: the small square marks the caller, the larger square the callee, and a lone square a call inside one class. Sage marks where the guided processor joins the request and each per-row processor call; salmon is the selected call. In a batch of 4, every guided row adds one Python call between the forward pass and sampling, and each such call builds a full-vocabulary mask. Move the slider or use the arrow keys to walk the calls, and change the guided rows to watch the loop grow."
+  />
+</Zoomable>
+```
 
 _reference: [vllm-project/vllm#5329](https://github.com/vllm-project/vllm/pull/5329)_
 
@@ -284,8 +299,15 @@ This accepts four strings: either name paired with either age. There are two bra
 > [!important]- difference in sampling distribution
 >
 > All eight paths spell `name`. Their token sequences can differ in length, positions and embeddings, which changes the model state used for the next prediction. Choosing a segmentation merely because it reaches the same grammar state can change later output probabilities.
->
-> ![[thoughts/images/vllm/json-difference-in-sampling-distribution.webp|Variance in sampling distribution for compressed states]]
+
+```jsx imports={Zoomable,TokenBoundaryShift}
+<Zoomable label="Variance in sampling distribution for compressed states">
+  <TokenBoundaryShift
+    boundary="n|a|m|e"
+    caption='Variance in sampling distribution for compressed states, computed with Qwen/Qwen3-0.6B-Base (float32, CPU). The prompt asks for a JSON object with a name (Paul or John) and an age (20 or 30); the compressed FSM then forces the text {"name":" to state 9. The sage tape and bars use the tokenizer&apos;s own split of the forced text; the salmon tape and bars use the selected segmentation of name, or one token per character. Bars show the next-token distribution at state 9 over the six tokens the grammar allows, renormalized after the mask; the table lists every value. Both tapes reach the same grammar state, yet the Paul branch, 21.2% under the natural split, ranges from 20.3% to 40.4% across the other splits. The numbers come from content/thoughts/scripts/jump_forward_boundaries.py. Select a segmentation to compare.'
+  />
+</Zoomable>
+```
 
 ### Guided generations with FSM.
 

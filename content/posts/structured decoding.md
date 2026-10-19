@@ -182,6 +182,15 @@ There are few limitations with current vLLM's support of the Outlines backend:
 3. **Performance issues with CFG mode**: With outlines integrations, while JSON mode is relatively fast, the CFG mode runs significantly slower, and can occasionally [crashes](https://github.com/vllm-project/vllm/issues/10081) the engine.
 4. **Limited advanced feature support**: Techniques like [jump-forward decoding](https://lmsys.org/blog/2024-02-05-compressed-fsm/) are currently not possible with logit-processor approach. It requires prefilling a set of k-next tokens, whereas for logit processors we can only deal with the next-token.
 
+```jsx imports={Zoomable,LogitsProcessorTrace}
+<Zoomable label="Waterfall of sampling process in vLLM">
+  <LogitsProcessorTrace
+    guided={2}
+    caption="Waterfall of the sampling process in vLLM, after the sequence diagram in vllm-project/vllm#5329, with each call and line checked against the vLLM v0.5.0 source. Each column is one call: the small square marks the caller, the larger square the callee, and a lone square a call inside one class. Sage marks where the guided processor joins the request and each per-row processor call; salmon is the selected call. In a batch of 4, every guided row adds one Python call between the forward pass and sampling, and each such call builds a full-vocabulary mask. Move the slider or use the arrow keys to walk the calls, and change the guided rows to watch the loop grow."
+  />
+</Zoomable>
+```
+
 [^logit-processor]: See this [blog post](https://huggingface.co/blog/logits-processor-zoo) from Transformers for using logit processors to control generations process.
 
 ### integrations with XGrammar
@@ -266,10 +275,7 @@ With the release of [v1](https://github.com/vllm-project/vllm/issues/8779) on th
 
 _NOTE: if you have any more suggestions we are more than happy to take it into consideration. Consider joining [vLLM slack](slack.vllm.ai) via `#feat-structured-output`_
 
-[^sampling]:
-    _The following was excerpt from [vllm-project/vllm#5329](https://github.com/vllm-project/vllm/pull/5329)_:
-
-    ![[thoughts/images/vllm/pre-optimized-logit-processor-handling.webp|waterfall of sampling process in vLLM]]
+[^sampling]: _The waterfall of the sampling process below the limitations follows [vllm-project/vllm#5329](https://github.com/vllm-project/vllm/pull/5329)._
 
 ## acknowledgement
 
