@@ -192,7 +192,8 @@
 }
 
 .prs-plane {
-  touch-action: none;
+  // Vertical swipes still scroll the page on touch; the handle itself captures every gesture.
+  touch-action: pan-y;
   cursor: crosshair;
 
   .prs-region--stable {
@@ -258,6 +259,7 @@
   }
 
   .prs-handle {
+    touch-action: none;
     cursor: grab;
     outline: none;
 
