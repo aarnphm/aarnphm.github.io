@@ -78,9 +78,10 @@
       animation: trail-sky-flock var(--trail-flock-period, 46s) linear infinite;
       animation-delay: var(--trail-flock-delay, 0s);
     }
+    // Each kind beats its wings at its own rate; the flock sets it, the birds inherit it.
     .trail-sky-bird-up,
     .trail-sky-bird-down {
-      animation: trail-sky-flap 0.5s steps(1, end) infinite;
+      animation: trail-sky-flap var(--trail-bird-flap, 0.5s) steps(1, end) infinite;
       animation-delay: var(--trail-bird-delay, 0s);
     }
     .trail-sky-bird-down {

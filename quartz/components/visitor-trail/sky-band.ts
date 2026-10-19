@@ -20,7 +20,59 @@ const clouds = [
   ['....LLL.....', '..LLLLLL.L..', '.LLLLLLLLLL.', 'LLLLLLLLLLLL', '..SSSSSSSS..'],
   ['..LL.LL.', '.LLLLLLL', 'LLLLLLLL', '.SSSSSS.'],
 ]
-const wings = { up: ['B...B', '.B.B.', '..B..'], down: ['..B..', '.B.B.', 'B...B'] }
+// The birds that cross the band, each with its wings up and down, how fast it beats them, how
+// long one crossing takes, where in the band it keeps (0 the top, 1 just over the ranges), how
+// many fly together and how far apart they hold in the V. A hawk soars on set wings, alone.
+type BirdKind = 'gull' | 'songbird' | 'goose' | 'hawk'
+const birds: Record<
+  BirdKind,
+  {
+    up: string[]
+    down: string[] | null
+    flap: number
+    period: [number, number]
+    band: [number, number]
+    count: [number, number]
+    gap: [number, number]
+  }
+> = {
+  gull: {
+    up: ['B...B', '.B.B.', '..B..'],
+    down: ['..B..', '.B.B.', 'B...B'],
+    flap: 0.5,
+    period: [44, 62],
+    band: [0.3, 0.75],
+    count: [4, 6],
+    gap: [12, 6],
+  },
+  songbird: {
+    up: ['B.B', '.B.'],
+    down: ['.B.', 'B.B'],
+    flap: 0.24,
+    period: [26, 36],
+    band: [0.6, 1],
+    count: [5, 7],
+    gap: [7, 4],
+  },
+  goose: {
+    up: ['B.....B', '.B...B.', '..BBB..'],
+    down: ['..BBB..', '.B...B.', 'B.....B'],
+    flap: 0.8,
+    period: [70, 90],
+    band: [0, 0.35],
+    count: [6, 8],
+    gap: [16, 7],
+  },
+  hawk: {
+    up: ['B.......B', '.BB...BB.', '...BBB...', '....B....'],
+    down: null,
+    flap: 0,
+    period: [96, 120],
+    band: [0.05, 0.4],
+    count: [1, 1],
+    gap: [0, 0],
+  },
+}
 
 // Seconds into a loop of `period` at `now`, as a negative delay: the sky is drawn again every
 // minute, and each loop picks up where it was rather than starting over.
@@ -113,27 +165,41 @@ export function skyBand(
   )
 
   // Birds fly while the sun is up and the weather holds: one flock under cloud, two on a clear
-  // day, each a loose V of four to seven at its own height, pace and heading.
+  // day, each of its own kind, at its own height, pace and heading. Geese need the room of a
+  // wide band; a wide screen on a clear day also gets a third flock and a hawk soaring over the
+  // ranges. Every bird is two frames and two animations, so the counts stay small.
   if (!rain && !snow && sunAltitude > -3) {
-    const flocks = clear > 0.5 ? 2 : 1
-    const span = Math.max(1, floor - top - 60)
-    const dayMarks: string[] = []
+    const wide = width >= 700
+    const bag: BirdKind[] = wide ? ['gull', 'songbird', 'goose'] : ['gull', 'songbird']
+    const plan: BirdKind[] = []
+    const flocks = (clear > 0.5 ? 2 : 1) + (clear > 0.5 && width >= 1280 ? 1 : 0)
     for (let flock = 0; flock < flocks; flock++) {
-      const period = flock ? 61 : 46
-      const y = Math.round(top + 20 + ((flock + random()) / flocks) * span)
+      const left = bag.filter(kind => !plan.includes(kind))
+      plan.push(left[Math.floor(random() * left.length)] ?? 'gull')
+    }
+    if (clear > 0.5 && width >= 1280) plan.push('hawk')
+    const span = Math.max(1, floor - top - 60)
+    const dayMarks = plan.map((kind, flock) => {
+      const bird = birds[kind]
+      const period = Math.round(bird.period[0] + random() * (bird.period[1] - bird.period[0]))
+      const y = Math.round(
+        top + 20 + (bird.band[0] + random() * (bird.band[1] - bird.band[0])) * span,
+      )
       const heading = random() < 0.5 ? -1 : 1
-      const birds = Array.from({ length: 4 + Math.floor(random() * 4) }, (_, index) => {
+      const count = bird.count[0] + Math.floor(random() * (bird.count[1] - bird.count[0] + 1))
+      const members = Array.from({ length: count }, (_, index) => {
         // A loose V: each bird behind and to one side of the one ahead.
         const rank = Math.ceil(index / 2)
         const side = index % 2 ? 1 : -1
-        const bx = -heading * rank * 12
-        const by = side * rank * 6 + Math.round(random() * 2) * 2
-        return `<g class="trail-sky-bird" transform="translate(${bx} ${by})" style="--trail-bird-delay:${(-random()).toFixed(2)}s"><g class="trail-sky-bird-up">${pixels(wings.up, { B: 'trail-sky-bird-body' }, 2)}</g><g class="trail-sky-bird-down">${pixels(wings.down, { B: 'trail-sky-bird-body' }, 2)}</g></g>`
+        const bx = -heading * rank * bird.gap[0]
+        const by = side * rank * bird.gap[1] + Math.round(random() * 2) * 2
+        const up = pixels(bird.up, { B: 'trail-sky-bird-body' }, 2)
+        if (!bird.down)
+          return `<g class="trail-sky-bird" data-bird="${kind}" transform="translate(${bx} ${by})">${up}</g>`
+        return `<g class="trail-sky-bird" data-bird="${kind}" transform="translate(${bx} ${by})" style="--trail-bird-delay:${(-random() * bird.flap).toFixed(2)}s"><g class="trail-sky-bird-up">${up}</g><g class="trail-sky-bird-down">${pixels(bird.down, { B: 'trail-sky-bird-body' }, 2)}</g></g>`
       }).join('')
-      dayMarks.push(
-        `<g transform="translate(0 ${y})"><g class="trail-sky-flock" style="--trail-flock-from:${heading > 0 ? -60 : width + 60}px;--trail-flock-to:${heading > 0 ? width + 60 : -60}px;--trail-flock-period:${period}s;--trail-flock-delay:${since(now, period, 11 + flock * 29)}">${birds}</g></g>`,
-      )
-    }
+      return `<g transform="translate(0 ${y})"><g class="trail-sky-flock" data-bird="${kind}" style="--trail-flock-from:${heading > 0 ? -60 : width + 60}px;--trail-flock-to:${heading > 0 ? width + 60 : -60}px;--trail-flock-period:${period}s;--trail-flock-delay:${since(now, period, 11 + flock * 29)};--trail-bird-flap:${bird.flap || 0.5}s">${members}</g></g>`
+    })
     marks.push(`<g class="trail-sky-day">${dayMarks.join('')}</g>`)
   }
   return `<g class="trail-sky-band">${marks.join('')}</g>`

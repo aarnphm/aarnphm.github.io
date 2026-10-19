@@ -31,6 +31,8 @@ type Athlete = {
   lastMark: Point | null
   stride: number
   cadence: number
+  // Milliseconds held up behind someone with no way round.
+  held: number
 }
 
 const runnerTones = {
@@ -143,6 +145,7 @@ export function mountTrailAthletes(scene: HTMLElement, host: HTMLElement, signal
       lastMark: null,
       stride: 0,
       cadence: 0,
+      held: 0,
     }
   }
   // Whether the weather lets this athlete out now.
@@ -174,6 +177,7 @@ export function mountTrailAthletes(scene: HTMLElement, host: HTMLElement, signal
     athlete.leg = 0
     athlete.distance = 0
     athlete.lane = 0
+    athlete.held = 0
     athlete.lastMark = null
     return true
   }
@@ -237,10 +241,11 @@ export function mountTrailAthletes(scene: HTMLElement, host: HTMLElement, signal
     // Anyone ahead is passed with room to spare. The look ahead is about a second at full pace, so
     // a descending rider sees people in time to swing out. The lane is the offset from the trail,
     // within the verge, that clears every body in reach and is nearest the current one; until the
-    // athlete is out in it they brake, down to a stop behind whoever they would hit.
+    // athlete is out in it they brake, down to a stop behind whoever they would hit. Held up
+    // there, they widen the verge until they find a way round on the grass.
     const own = (athlete.kind === 'runner' ? 8 : 14) * scale
     const look = (24 + leg.pace * 0.9) * scale
-    const verge = 60 * scale
+    const verge = (60 + Math.min(100, athlete.held / 40)) * scale
     const blocks: { along: number; across: number; clear: number }[] = []
     for (const body of bodies) {
       const rx = body.x - here.x
@@ -270,6 +275,7 @@ export function mountTrailAthletes(scene: HTMLElement, host: HTMLElement, signal
           ? leg.pace * 0.6
           : leg.pace * Math.max(0, Math.min(0.4, (gap - 4 * scale) / look))
     }
+    athlete.held = blocks.length && pace < leg.pace * 0.05 ? athlete.held + delta : 0
     const seconds = delta / 1000
     const swing = 60 * scale * seconds
     athlete.lane += Math.max(-swing, Math.min(swing, (lane ?? athlete.lane) - athlete.lane))

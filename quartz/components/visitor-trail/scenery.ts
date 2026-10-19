@@ -211,6 +211,12 @@ const stands: readonly TreeKind[][] = [
   ['sequoia', 'pine', 'cypress', 'sequoia'],
 ]
 const foothillKinds: readonly TreeKind[] = ['pine', 'spruce', 'fir', 'larch']
+// The stand a wide meadow adds in front: white pine with hemlock and spruce under it.
+const standKinds: Record<'pine', readonly TreeKind[]> = {
+  pine: ['pine', 'pine', 'hemlock', 'spruce'],
+}
+// Trees planned for an added stand, on top of the home groves' count.
+const standSize = 12
 // Broadleaves and the larch drop their leaves for the winter.
 const bareInWinter = new Set<TreeKind>(['maple', 'oak', 'aspen', 'birch', 'larch', 'willow'])
 const woodlandKinds: readonly TreeKind[] = [
@@ -902,13 +908,20 @@ export function planTrailTrees(
   // trees to keep the stands as thick. Plan the maximum population once so density
   // changes select stable positions without rerolling edge trees or the ground cover.
   const count = Math.round(forestLimits.density.max * Math.min(1.5, Math.max(1, width / 1280)))
+  // The home groves share the count; a stand the wide meadow adds is planned after them, from
+  // the same generator, so the home trees keep their draws and the stand only adds its own.
+  const home = groves.filter(grove => !grove.stand)
+  const added = groves.filter(grove => grove.stand)
   const roots: Point[] = []
   const faces = contourFaces(landscape)
-  const placements = Array.from({ length: count }, (_, index) => {
+  const placements = Array.from({ length: count + added.length * standSize }, (_, index) => {
+    const stand = index >= count ? added[Math.floor((index - count) / standSize)] : null
     // One tree in four stands alone; the rest fill the groves, so more trees thicken the stands.
-    const standalone = index % 4 === 3
+    const standalone = !stand && index % 4 === 3
     const foothill = standalone && index < 24
-    const cluster = (index - Math.floor(index / 4)) % groves.length
+    const cluster = stand
+      ? groves.indexOf(stand)
+      : (index - Math.floor(index / 4)) % Math.max(1, home.length)
     const grove = groves[cluster]
     let root: Point = grove
     if (foothill) {
@@ -922,7 +935,9 @@ export function planTrailTrees(
       let bestClearance = -Infinity
       let open: Point | null = null
       for (let attempt = 0; attempt < 140; attempt++) {
-        const angle = Math.floor(index / groves.length) * 2.399963 + (random() - 0.5) * 1.8
+        const angle =
+          Math.floor((stand ? index - count : index) / Math.max(1, home.length)) * 2.399963 +
+          (random() - 0.5) * 1.8
         const radius = Math.sqrt(random()) * (standalone ? 1 : 0.65) * (attempt < 70 ? 1 : 1.8)
         const spread = standalone || attempt >= 100
         const x = spread
@@ -984,15 +999,17 @@ export function planTrailTrees(
     // Willows take the pond shore; groves keep to their stand; the foothills are montane conifer.
     // One lone tree in eight is a snag left standing after a burn.
     const upland = kinds.filter(kind => kind !== 'willow' && kind !== 'snag')
+    const standPool = stand?.stand ? standKinds[stand.stand] : stands[cluster % stands.length]
+    // An added stand keeps to its own kinds even near the pond shore.
     const kind: TreeKind = foothill
       ? foothillKinds[Math.floor(pick * foothillKinds.length)]
-      : pondDistance(root, pond) < 2.8 && pick < 0.7
+      : !stand && pondDistance(root, pond) < 2.8 && pick < 0.7
         ? 'willow'
         : standalone
           ? pick < 0.125
             ? 'snag'
             : upland[Math.floor(((pick - 0.125) / 0.875) * upland.length)]
-          : stands[cluster % stands.length][Math.floor(pick * 4)]
+          : standPool[Math.floor(pick * 4)]
     const treeSeed = Math.floor(identity() * 4294967296)
     const height = foothill ? 20 + identity() * 10 : 30 + identity() * 26
     return {
@@ -1002,8 +1019,8 @@ export function planTrailTrees(
           ? waterside
           : standalone || kind === 'snag'
             ? upland
-            : stands[cluster % stands.length],
-      id: `tree-${index + 1}`,
+            : standPool,
+      id: stand ? `tree-stand-${cluster}-${index - count + 1}` : `tree-${index + 1}`,
       x: Math.round(root.x),
       y: foothill
         ? Math.min(Math.floor(alpine.base), Math.max(Math.ceil(treeline), Math.round(root.y)))
@@ -1123,8 +1140,11 @@ export function* trailTreeSprites(
     bounded(settings.density, 'density') * Math.min(1.5, Math.max(1, landscape.width / 1280)),
   )
   const shape = forestShape(settings)
+  // Edge conifers and an added stand are drawn whole; the density setting thins the home groves.
   const wanted = (placement: TreePlacement) =>
-    placement.id.startsWith('tree-edge-') || Number(placement.id.slice(5)) <= count
+    placement.id.startsWith('tree-edge-') ||
+    placement.id.startsWith('tree-stand-') ||
+    Number(placement.id.slice(5)) <= count
   const sprites: ForestSprite[] = placements
     .filter(wanted)
     .map(placement => ({

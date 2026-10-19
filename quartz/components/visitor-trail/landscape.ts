@@ -3,7 +3,9 @@ import { trailRandom } from './random'
 
 export type Point = { x: number; y: number }
 export type Pond = Point & { rx: number; ry: number }
-export type Grove = Point & { rx: number; ry: number }
+// A grove with a `stand` is one a wide meadow adds past the four home groves; the planner fills
+// it from that stand's kinds on top of the usual count instead of thinning the home groves.
+export type Grove = Point & { rx: number; ry: number; stand?: 'pine' }
 export type Alpine = { left: number; top: number; width: number; height: number; base: number }
 export type Landscape = {
   width: number
@@ -164,6 +166,19 @@ export function trailLandscape(
     const y = meadowTop + 64 + Math.max(1, clearing - 100) * point.y
     return { x, y, rx: Math.min(112, width * 0.1), ry: Math.min(70, clearing * 0.13) }
   })
+  // The groves keep their size on a wide meadow, so from 1500 px the front middle, between the
+  // pond and the camp, lies open. A pine stand takes it, drawn from its own generator so the
+  // narrower layouts keep every draw they make.
+  if (width >= 1500) {
+    const wide = trailRandom(seed ^ 0x3c6ef372)
+    landscape.groves.push({
+      x: width * (0.56 + (wide() - 0.5) * 0.04),
+      y: meadowTop + 64 + Math.max(1, clearing - 100) * (0.78 + wide() * 0.06),
+      rx: Math.min(96, width * 0.05),
+      ry: Math.min(56, clearing * 0.1),
+      stand: 'pine',
+    })
+  }
   landscape.contours = [0.16, 0.39, 0.64, 0.91].map((level, index) => {
     const points: Point[] = []
     const step = width < 700 ? 8 : 16
