@@ -117,6 +117,9 @@ export class SemanticClient {
         }
       }
     }
+    this.worker.onerror = (event: ErrorEvent) => {
+      this.handleFatal(event.error ?? (event.message || 'semantic worker error'))
+    }
   }
 
   private rejectAll(err: Error, fatal = false) {
