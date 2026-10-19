@@ -637,8 +637,10 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='bookca
     color: var(--dark);
   }
 
+  // Only the title underlines; the byline stays plain.
   .bookcase-entry-link:hover {
     color: var(--dark);
+    text-decoration: none;
   }
 
   .bookcase-entry-link:hover .bookcase-entry-title {

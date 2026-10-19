@@ -405,6 +405,8 @@
             &:hover,
             &:focus,
             &.focus {
+              text-decoration: none;
+
               h3 {
                 text-decoration: underline;
                 text-underline-offset: 0.15em;
