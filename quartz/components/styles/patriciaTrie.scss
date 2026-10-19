@@ -1,0 +1,175 @@
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
+@use './figure.scss' as *;
+
+.patricia-trie {
+  @include figure-frame('ptr-figure', 30rem);
+
+  --ptr-lit: var(--fig-salmon);
+  --ptr-path: color-mix(in srgb, var(--fig-sage) 90%, var(--light));
+  --ptr-segment-on: var(--fig-grid-selected);
+}
+
+:root[saved-theme='dark'] .patricia-trie {
+  --ptr-lit: color-mix(in srgb, var(--fig-salmon) 46%, var(--lightgray));
+  --ptr-path: color-mix(in srgb, var(--fig-sage) 26%, var(--lightgray));
+  --ptr-segment-on: color-mix(in srgb, var(--fig-sage) 22%, var(--lightgray));
+}
+
+.ptr-segments {
+  @include figure-grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  position: relative;
+  min-width: 0;
+  margin-top: 1.1rem;
+}
+
+.ptr-legend {
+  position: absolute;
+  top: -1.15rem;
+  left: 0;
+  padding: 0;
+  color: var(--fig-note);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.ptr-segment {
+  @include figure-grid-cell;
+  display: flex;
+  align-items: center;
+  padding: 0.28rem 0.5rem;
+  color: var(--fig-tab-fg);
+  cursor: pointer;
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition:
+    background-color 140ms ease,
+    color 140ms ease;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    pointer-events: none;
+  }
+
+  &:has(input:checked) {
+    background: var(--ptr-segment-on);
+    color: var(--dark);
+  }
+
+  &:has(input:focus-visible) {
+    outline: 2px solid var(--dark);
+    outline-offset: -2px;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ptr-segment:hover {
+    color: var(--dark);
+  }
+}
+
+.ptr-state[hidden] {
+  display: none;
+}
+
+.ptr-svg {
+  display: block;
+  width: 100%;
+  max-width: 34rem;
+  margin: 0.9rem auto 0;
+  overflow: visible;
+
+  text {
+    font-family: var(--codeFont);
+    font-size: 10.5px;
+  }
+
+  .ptr-edge {
+    stroke: var(--fig-stroke);
+    stroke-width: 1.2;
+  }
+
+  .ptr-edge[data-state='path'],
+  .ptr-edge[data-state='lit'] {
+    stroke: var(--dark);
+    stroke-width: 2;
+  }
+
+  .ptr-node {
+    fill: var(--dark);
+  }
+
+  .ptr-node--root {
+    fill: var(--light);
+    stroke: var(--dark);
+    stroke-width: 1.4;
+  }
+
+  .ptr-root-label {
+    fill: var(--fig-note);
+    font-size: 9.5px;
+  }
+
+  .ptr-key rect,
+  .ptr-label rect {
+    fill: var(--light);
+    stroke: var(--dark);
+    stroke-width: 1.1;
+  }
+
+  .ptr-key text,
+  .ptr-label text {
+    fill: var(--dark);
+  }
+
+  .ptr-label[data-state='path'] rect {
+    fill: var(--ptr-path);
+  }
+
+  .ptr-label[data-state='lit'] rect,
+  .ptr-key[data-state='lit'] rect {
+    fill: var(--ptr-lit);
+  }
+}
+
+.ptr-say {
+  min-height: 2.3em;
+  margin: 0.6rem 0 0;
+  color: var(--dark);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.ptr-readout {
+  @include figure-table;
+  margin-top: 0.5rem;
+}
+
+.ptr-math {
+  @include figure-inline-math;
+}
+
+.ptr-caption {
+  @include figure-caption;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ptr-segment {
+    transition: none;
+  }
+}
+
+@container ptr-figure (max-width: 460px) {
+  .ptr-segments {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
