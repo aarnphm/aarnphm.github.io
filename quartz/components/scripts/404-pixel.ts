@@ -68,8 +68,11 @@ export const smooth = (a: number, b: number, t: number) => {
 }
 export const frac = (t: number) => t - Math.floor(t)
 export const mul = (c: RGB, k: number): RGB => [c[0] * k, c[1] * k, c[2] * k]
-export const mix = (a: RGB, b: RGB, k: number): RGB =>
-  [0, 1, 2].map(i => a[i] + (b[i] - a[i]) * k) as RGB
+export const mix = (a: RGB, b: RGB, k: number): RGB => [
+  a[0] + (b[0] - a[0]) * k,
+  a[1] + (b[1] - a[1]) * k,
+  a[2] + (b[2] - a[2]) * k,
+]
 // Whether a coverage of `a` lights this pixel under the 4×4 ordered dither.
 export const dither = (a: number, i: number, j: number) => a > BAYER[(j & 3) * 4 + (i & 3)]
 
@@ -110,7 +113,7 @@ export type Grid = {
 }
 
 // Buffer pixel centres mapped into scene units with the same xMidYMid-slice fit as the SVG layers.
-export function grid(canvas: HTMLCanvasElement): Grid | null {
+export function grid(canvas: HTMLCanvasElement, prev?: Grid | null): Grid | null {
   const cw = canvas.clientWidth
   const ch = canvas.clientHeight
   if (!cw || !ch) return null
@@ -120,14 +123,19 @@ export function grid(canvas: HTMLCanvasElement): Grid | null {
   const scale = Math.max(cw / W, ch / H)
   const ox = (cw - W * scale) / 2
   const oy = (ch - H * scale) / 2
+  const unitPx = px / scale
+  const bottom = (ch - INSET - oy) / scale
+  if (canvas.width !== bw) canvas.width = bw
+  if (canvas.height !== bh) canvas.height = bh
+  if (prev && prev.bw === bw && prev.bh === bh && prev.px === unitPx && prev.bottom === bottom) {
+    return prev
+  }
   const sx = new Float32Array(bw)
   const sy = new Float32Array(bh)
   for (let i = 0; i < bw; i++) sx[i] = ((i + 0.5) * px - ox) / scale
   for (let j = 0; j < bh; j++) sy[j] = ((j + 0.5) * px - oy) / scale
-  canvas.width = bw
-  canvas.height = bh
   const toBuffer = new DOMMatrix([scale / px, 0, 0, scale / px, ox / px, oy / px])
-  return { bw, bh, sx, sy, px: px / scale, toBuffer, bottom: (ch - INSET - oy) / scale }
+  return { bw, bh, sx, sy, px: unitPx, toBuffer, bottom }
 }
 
 export const col = (g: Grid, x: number) => Math.round((x - g.sx[0]) / g.px)
@@ -138,6 +146,36 @@ export function put(data: Uint8ClampedArray, k: number, c: RGB | readonly number
   data[k] = c[0]
   data[k + 1] = c[1]
   data[k + 2] = c[2]
+  data[k + 3] = a
+}
+
+export function putRgb(
+  data: Uint8ClampedArray,
+  k: number,
+  r: number,
+  g: number,
+  b: number,
+  a = 255,
+) {
+  data[k] = r
+  data[k + 1] = g
+  data[k + 2] = b
+  data[k + 3] = a
+}
+
+export function putMix(
+  data: Uint8ClampedArray,
+  k: number,
+  r0: number,
+  g0: number,
+  b0: number,
+  b: RGB | readonly number[],
+  t: number,
+  a = 255,
+) {
+  data[k] = r0 + (b[0] - r0) * t
+  data[k + 1] = g0 + (b[1] - g0) * t
+  data[k + 2] = b0 + (b[2] - b0) * t
   data[k + 3] = a
 }
 
@@ -171,18 +209,21 @@ export function stamp(
   ink: (ch: string) => RGB | null,
 ) {
   const w = rows[0].length
-  rows.forEach((text, r) => {
+  for (let r = 0; r < rows.length; r++) {
+    const text = rows[r]
     for (let c = 0; c < w; c++) {
       const ch = text[flip ? w - 1 - c : c]
       if (ch === '.') continue
       const color = ink(ch)
       if (color) dot(d, g, i0 + c, j0 + r, color)
     }
-  })
+  }
 }
 
 export type Tones = { ink: RGB; light: RGB; plate: RGB; shade: RGB }
 export type Blob = { i0: number; j0: number; w: number; h: number; mask: Uint8Array }
+
+let blobMask = new Uint8Array(0)
 
 // A shape from a signed distance field (negative inside), printed the way the ruin is: an ink
 // keyline wherever it meets anything that is not itself, a two-pixel rim of light on the edges
@@ -203,7 +244,10 @@ export function paintBlob(
   if (i1 < i0 || j1 < j0) return null
   const w = i1 - i0 + 1
   const h = j1 - j0 + 1
-  const mask = new Uint8Array(w * h)
+  const len = w * h
+  if (blobMask.length < len) blobMask = new Uint8Array(len)
+  else blobMask.fill(0, 0, len)
+  const mask = blobMask
   let any = false
   for (let j = j0; j <= j1; j++)
     for (let i = i0; i <= i1; i++) {

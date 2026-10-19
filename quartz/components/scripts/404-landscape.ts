@@ -106,6 +106,8 @@ import {
   noise,
   pick,
   put,
+  putMix,
+  putRgb,
   ramp,
   row,
   smooth,
@@ -320,10 +322,15 @@ export function hillTop(x: number, water: number) {
 // An animated canvas keeps one ImageData and repaints into it every tick.
 type Layer = { g: Grid; ctx: CanvasRenderingContext2D; img: ImageData }
 
-function layer(canvas: HTMLCanvasElement): Layer | null {
-  const g = grid(canvas)
+function layer(canvas: HTMLCanvasElement, prev?: Layer | null): Layer | null {
+  const g = grid(canvas, prev?.g)
   if (!g) return null
-  const ctx = canvas.getContext('2d')!
+  if (prev && prev.g.bw === g.bw && prev.g.bh === g.bh) {
+    prev.g = g
+    prev.img.data.fill(0)
+    return prev
+  }
+  const ctx = prev?.ctx ?? canvas.getContext('2d')!
   return { g, ctx, img: ctx.createImageData(g.bw, g.bh) }
 }
 
@@ -616,7 +623,7 @@ function paintBolt(d: Uint8ClampedArray, g: Grid, clock: number, ridge: Float32A
   const t = clock - n * 6.5 - hash(n, 1, 89) * 4
   if (t < 0 || t > 0.22) return
   for (let k = 0; k < d.length; k += 4)
-    if (d[k + 3]) put(d, k, mix([d[k], d[k + 1], d[k + 2]], CREAM, 0.22))
+    if (d[k + 3]) putMix(d, k, d[k], d[k + 1], d[k + 2], CREAM, 0.22)
   const fork = (i: number, j: number, seed: number, reach: number) => {
     for (let s = 0; s < reach; s++) {
       const floor = row(g, ridge[clampCol(g, i)])
@@ -1520,6 +1527,11 @@ const NONE = 6
 const contoured = (a: number, b: number) =>
   a !== b && a !== FIGURES && b !== FIGURES && a !== WELL && b !== WELL && (a > 1 || b > 1)
 
+let waterMid = new Float32Array(0)
+let waterMidSx: Float32Array | null = null
+let waterAbove = new Uint8Array(0)
+let waterHere = new Uint8Array(0)
+
 function paintWater(
   d: Uint8ClampedArray,
   g: Grid,
@@ -1539,9 +1551,21 @@ function paintWater(
   const knee = reach * 0.25
   const bend = Math.max(0, (LIFT - reach / 0.62) / (reach - knee) ** 2)
   const contour = mix(pal.water[0], ink, dark ? 0.5 : 0.45)
-  const mid = Float32Array.from(sx, midRidge)
-  let above = new Uint8Array(bw)
-  let here = new Uint8Array(bw)
+  if (waterMidSx !== sx || waterMid.length < bw) {
+    if (waterMid.length < bw) waterMid = new Float32Array(bw)
+    for (let i = 0; i < bw; i++) waterMid[i] = midRidge(sx[i])
+    waterMidSx = sx
+  }
+  const mid = waterMid
+  if (waterAbove.length < bw) {
+    waterAbove = new Uint8Array(bw)
+    waterHere = new Uint8Array(bw)
+  } else {
+    waterAbove.fill(0, 0, bw)
+    waterHere.fill(0, 0, bw)
+  }
+  let above = waterAbove
+  let here = waterHere
   for (let j = Math.max(0, shore + 1); j < bh; j++) {
     const depth = sy[j] - water
     const ys = water - depth / 0.62 - bend * Math.max(0, depth - knee) ** 2
@@ -1561,7 +1585,7 @@ function paintWater(
           const s = layers[n]
           if (!s || s[q + 3] !== 255) continue
           id = n === RANGES && ys < mid[si] ? FAR : n
-          put(d, k, mix([s[q], s[q + 1], s[q + 2]], plate, pale))
+          putMix(d, k, s[q], s[q + 1], s[q + 2], plate, pale)
           break
         }
       }
@@ -1607,6 +1631,8 @@ function paintWater(
 
 type Splash = { x: number; y: number; size: number; age: number }
 
+const splashSeen = new Set<number>()
+
 // Where a letter lands: two flat rings that widen in five steps, darkening the water under them
 // less at every step until they dither away.
 function paintSplashes(d: Uint8ClampedArray, g: Grid, splashes: Splash[], ink: RGB) {
@@ -1620,15 +1646,15 @@ function paintSplashes(d: Uint8ClampedArray, g: Grid, splashes: Splash[], ink: R
       const ry = Math.max(1, rx * 0.2)
       const cx = (s.x - g.sx[0]) / g.px
       const cy = (s.y - g.sy[0]) / g.px
-      const seen = new Set<number>()
+      splashSeen.clear()
       const steps = Math.ceil(2 * Math.PI * rx)
       for (let k = 0; k < steps; k++) {
         const a = (k / steps) * 2 * Math.PI
         const i = Math.round(cx + Math.cos(a) * rx)
         const j = Math.round(cy + Math.sin(a) * ry)
         const p = j * bw + i
-        if (i < 0 || j < 0 || i >= bw || j >= bh || seen.has(p)) continue
-        seen.add(p)
+        if (i < 0 || j < 0 || i >= bw || j >= bh || splashSeen.has(p)) continue
+        splashSeen.add(p)
         if (1 - f <= BAYER[(j & 3) * 4 + (i & 3)]) continue
         for (let c = 0; c < 3; c++) d[p * 4 + c] += (ink[c] - d[p * 4 + c]) * 0.5
       }
@@ -1726,9 +1752,8 @@ function relight(d: Uint8ClampedArray, g: Grid, rim: Rim, heat: number) {
       const toward = open(p + side)
       const away = open(p - side)
       if (toward && away) continue
-      const c: RGB = [d[k], d[k + 1], d[k + 2]]
-      if (toward || (open(p - bw) && !away)) put(d, k, mix(c, color, strength))
-      else if (away) put(d, k, mix(c, INK, 0.28 * rim.contrast))
+      if (toward || (open(p - bw) && !away)) putMix(d, k, d[k], d[k + 1], d[k + 2], color, strength)
+      else if (away) putMix(d, k, d[k], d[k + 1], d[k + 2], INK, 0.28 * rim.contrast)
     }
 }
 
@@ -1942,7 +1967,9 @@ function stepHearth(h: Hearth, air: Air, dt: number) {
     })
   }
   const ease = Math.min(1, dt * 1.5)
-  for (const p of h.smoke) {
+  let sw = 0
+  for (let i = 0; i < h.smoke.length; i++) {
+    const p = h.smoke[i]
     const a = airAngle(air, p.x, p.y)
     // A doused fire sends up a slow column of wet smoke that stands straight for a couple of
     // seconds before the wind takes it; drifting from the start, it reads as a smear on the grass.
@@ -1953,16 +1980,20 @@ function stepHearth(h: Hearth, air: Air, dt: number) {
     p.x += p.vx * dt
     p.y += p.vy * dt
     p.age += dt
+    if (p.age < p.life) h.smoke[sw++] = p
   }
-  for (const p of h.embers) {
+  h.smoke.length = sw
+  let ew = 0
+  for (let i = 0; i < h.embers.length; i++) {
+    const p = h.embers[i]
     p.vy += 30 * dt
     p.vx += (Math.random() - 0.5) * 80 * dt
     p.x += p.vx * dt
     p.y += p.vy * dt
     p.age += dt
+    if (p.age < p.life) h.embers[ew++] = p
   }
-  h.smoke = h.smoke.filter(p => p.age < p.life)
-  h.embers = h.embers.filter(p => p.age < p.life)
+  h.embers.length = ew
 }
 
 // Smoke as short strokes along its own motion that lengthen, widen, pale and thin as they age.
@@ -2020,7 +2051,12 @@ function stoneTone(x: number, y: number, side: number) {
 const probe = (() => {
   let ctx: CanvasRenderingContext2D | null = null
   return (css: string): RGB => {
-    ctx ??= document.createElement('canvas').getContext('2d', { willReadFrequently: true })!
+    if (!ctx) {
+      const c = document.createElement('canvas')
+      c.width = 1
+      c.height = 1
+      ctx = c.getContext('2d', { willReadFrequently: true })!
+    }
     ctx.clearRect(0, 0, 1, 1)
     ctx.fillStyle = css
     ctx.fillRect(0, 0, 1, 1)
@@ -2144,6 +2180,10 @@ function run(chains: number[][], m: DOMMatrix) {
   return out
 }
 
+let ruinOwner = new Uint8Array(0)
+let ruinVoided = new Uint8Array(0)
+let ruinFrame = new Uint8Array(0)
+
 // Prints the ruin from the hidden SVG geometry: plates dithered through the stone's lighting,
 // keylines one pixel thick, dial marks wherever they cover half a pixel, and chips bitten out
 // wherever an `nf-void` says, inked where they break into stone. Every stone is lit in its own
@@ -2186,10 +2226,20 @@ function rasterRuin(
   // Which paint owns each pixel, stacked in document order as the SVG would stack them: 1..3 a
   // material plate, 4 ink, 0 bare. Later elements cover earlier ones, keylines included.
   const INK = 4
-  const owner = new Uint8Array(bw * bh)
-  const voided = new Uint8Array(bw * bh)
+  const total = bw * bh
+  if (ruinOwner.length < total) {
+    ruinOwner = new Uint8Array(total)
+    ruinVoided = new Uint8Array(total)
+    ruinFrame = new Uint8Array(total)
+  } else {
+    ruinOwner.fill(0, 0, total)
+    ruinVoided.fill(0, 0, total)
+    ruinFrame.fill(0, 0, total)
+  }
+  const owner = ruinOwner
+  const voided = ruinVoided
   // Which frame lights each plate pixel: 0 the scene, n a stone's upright place in the ring.
-  const frame = new Uint8Array(bw * bh)
+  const frame = ruinFrame
   const frames: DOMMatrix[] = [new DOMMatrix()]
   const frameOf = new Map<Element, number>()
   const frameFor = (el: Element) => {
@@ -2253,6 +2303,8 @@ function rasterRuin(
     } else if (cls.includes('nf-ink')) cover(el, m, INK, 110)
     else if (cls.includes('nf-void')) cover(el, m, 0, 128)
   }
+  sheet.width = 0
+  sheet.height = 0
   ink ??= [16, 15, 15]
   for (let j = 1; j < bh - 1; j++)
     for (let i = 1; i < bw - 1; i++) {
@@ -2380,6 +2432,14 @@ function segHit(s: Seg, x: number, y: number): [number, number, number] {
 
 type Canopy = { trees: Tree[]; roots: number[] }
 
+let canopyWood = new Uint8Array(0)
+let canopyDensity = new Float32Array(0)
+let canopyDepth = new Float32Array(0)
+let canopyCover = new Float32Array(0)
+let dappleFloor = new Float32Array(0)
+let dappleFloorSx: Float32Array | null = null
+let dappleFloorWater = NaN
+
 // Leaves: each tip splats density and depth; noise dragged by per-octave wind thresholds it into
 // masses. Depth follows the limbs: near leaves are denser, lighter and crisp-edged, far leaves
 // darker with a wider penumbra, and that penumbra is what the ordered dither renders.
@@ -2407,10 +2467,25 @@ function paintCanopy(
   )
   const wet = sky.fall === 'rain' || sky.fall === 'drizzle' ? 0.4 + 0.6 * sky.heavy : 0
   const petal = mix(pal.snow[3], pal.poppy, 0.25)
-  const wood = snow + rime > 0.05 ? new Uint8Array(bw * bh) : null
+  const total = bw * bh
+  let wood: Uint8Array | null = null
+  if (snow + rime > 0.05) {
+    if (canopyWood.length < total) canopyWood = new Uint8Array(total)
+    else canopyWood.fill(0, 0, total)
+    wood = canopyWood
+  }
   const radius = 40
-  const density = new Float32Array(bw * bh)
-  const depth = new Float32Array(bw * bh)
+  if (canopyDensity.length < total) {
+    canopyDensity = new Float32Array(total)
+    canopyDepth = new Float32Array(total)
+    canopyCover = new Float32Array(total)
+  } else {
+    canopyDensity.fill(0, 0, total)
+    canopyDepth.fill(0, 0, total)
+    canopyCover.fill(0, 0, total)
+  }
+  const density = canopyDensity
+  const depth = canopyDepth
   const toI = (x: number) => Math.floor((x - sx[0]) / g.px + 0.5)
   const toJ = (y: number) => Math.floor((y - sy[0]) / g.px + 0.5)
 
@@ -2464,9 +2539,9 @@ function paintCanopy(
       }
 
   // Continuous coverage T: 0.5 is the leaf edge, the slope is the penumbra width.
-  const cover = new Float32Array(bw * bh)
+  const cover = canopyCover
   const scale = 1 / (radius * 1.6)
-  for (let p = 0; p < bw * bh; p++) {
+  for (let p = 0; p < total; p++) {
     if (density[p] < 0.05) continue
     const i = p % bw
     const j = (p - i) / bw
@@ -2529,7 +2604,15 @@ function paintDapple(
   const [fr, fg, fb, fa] = pal.fringe
   const focal = 0.09
   // Shade lands only on the near ground, the hill.
-  const floor = Float32Array.from(sx, x => hillTop(x, water) - 6)
+  if (dappleFloorSx !== sx || dappleFloorWater !== water || dappleFloor.length < bw) {
+    if (dappleFloor.length < bw) dappleFloor = new Float32Array(bw)
+    for (let i = 0; i < bw; i++) dappleFloor[i] = hillTop(sx[i], water) - 6
+    dappleFloorSx = sx
+    dappleFloorWater = water
+  }
+  const floor = dappleFloor
+  const fa255 = fa * 255
+  const sa255 = sa * 255
   for (let j = 0; j < bh; j++) {
     const y = sy[j]
     const ground = 1 - smooth(water - 20, water, y)
@@ -2537,7 +2620,12 @@ function paintDapple(
     for (let i = 0; i < bw; i++) {
       const x = sx[i]
       if (y < floor[i]) continue
-      const b = Math.min(1, Math.min(...roots.map(r => Math.abs(x - r))) / 640)
+      let rMin = Infinity
+      for (let r = 0; r < roots.length; r++) {
+        const dist = Math.abs(x - roots[r])
+        if (dist < rMin) rMin = dist
+      }
+      const b = Math.min(1, rMin / 640)
       const cover = ground * (1 - smooth(0.25, 0.85, b))
       if (cover < 0.06) continue
       const k = (j * bw + i) * 4
@@ -2546,8 +2634,8 @@ function paintDapple(
       const cut = 1 - cover * 0.6
       const u = 0.012 + focal * b
       const shade = smooth(cut - u, cut + u, n)
-      if (shade >= GOLD_START && shade <= GOLD_END && u < 0.035) put(d, k, [fr, fg, fb], fa * 255)
-      else if (shade > BAYER[(j & 3) * 4 + (i & 3)]) put(d, k, [sr, sg, sb], sa * 255)
+      if (shade >= GOLD_START && shade <= GOLD_END && u < 0.035) putRgb(d, k, fr, fg, fb, fa255)
+      else if (shade > BAYER[(j & 3) * 4 + (i & 3)]) putRgb(d, k, sr, sg, sb, sa255)
     }
   }
 }
@@ -2864,7 +2952,9 @@ function stepRift(rift: Rift, dt: number) {
   // Inverse-square pull toward the pole bends every path into a conic; the inflow adds drag, so
   // on hover the comets spiral in and the pole flares as it swallows them.
   const drag = Math.exp(-rift.inflow * 1.4 * dt)
-  for (const c of rift.comets) {
+  let cw = 0
+  for (let i = 0; i < rift.comets.length; i++) {
+    const c = rift.comets[i]
     const dx = c.x - rift.pole[0]
     const dy = c.y - rift.pole[1]
     const r2 = dx * dx + dy * dy + 300
@@ -2884,9 +2974,20 @@ function stepRift(rift: Rift, dt: number) {
       c.age = 99
       rift.flare = 1
     } else if (r2 > 520 * 520) c.age = 99
+    if (c.age < 3.2) rift.comets[cw++] = c
   }
-  rift.comets = rift.comets.filter(c => c.age < 3.2)
+  rift.comets.length = cw
 }
+
+const sameWeather = (a: Site['weather'], b: Site['weather']) =>
+  a === b ||
+  (!!a &&
+    !!b &&
+    a.code === b.code &&
+    a.cloud === b.cloud &&
+    a.wind === b.wind &&
+    a.temp === b.temp &&
+    a.snow === b.snow)
 
 export function setupLandscape(
   scene: HTMLElement,
@@ -3049,6 +3150,7 @@ export function setupLandscape(
   let ground: Meadow | null = null
   let stars: SkyStar[] = []
   let canopy: Canopy = { trees: [], roots: [] }
+  let canopyKey = ''
   // The homepage's jay, in an edge tree, and the woodpecker that drums there while it is away.
   const jay = makeJay()
   let gust = 0
@@ -3210,7 +3312,7 @@ export function setupLandscape(
       (anglerInk && paintAngler(people, g, angler, anglerInk, clock, bank)) ?? undefined
     relight(people, g, rim, rift.heat)
     for (let k = 3; k < people.length; k += 4)
-      if (people[k] === 255) put(figures, k - 3, [people[k - 3], people[k - 2], people[k - 1]])
+      if (people[k] === 255) putRgb(figures, k - 3, people[k - 3], people[k - 2], people[k - 1])
     d.fill(0)
     paintPool(d, g, pal, water, clock, dark, hearth.doused)
     const layers = [figures, same(ruin), same(field), same(well), same(ranges)]
@@ -3219,7 +3321,7 @@ export function setupLandscape(
     paintRings(d, g, water, weather, clock, mix(pal.water[2], pal.glint[0], 0.6))
     paintSplashes(d, g, splashes, ink)
     for (let k = 3; k < d.length; k += 4)
-      if (figures[k] === 255) put(d, k - 3, [figures[k - 3], figures[k - 2], figures[k - 1]])
+      if (figures[k] === 255) putRgb(d, k - 3, figures[k - 3], figures[k - 2], figures[k - 1])
     paintCamp(d, g, pal, water, walker, clock, dark, hearth.doused)
     paintHearth(d, g, pal, hearth, clock)
     // Everyone else on the bank can be spoken to as well.
@@ -3336,7 +3438,9 @@ export function setupLandscape(
     hung = at
     let floor = 0
     for (const y of ridge) floor = Math.max(floor, y)
-    skyBase = new Uint8ClampedArray(sky.img.data.length)
+    const len = sky.img.data.length
+    if (skyBase.length !== len) skyBase = new Uint8ClampedArray(len)
+    else skyBase.fill(0)
     paintSkyBase(skyBase, sky.g, pal, floor + 30, b)
     stars = night ? makeStars(b, weather.cover) : []
     return true
@@ -3380,16 +3484,20 @@ export function setupLandscape(
       night: !sunUp,
       fire: !hearth.doused,
     }
-    ranges = layer(back)
+    ranges = layer(back, ranges)
     if (ranges) {
       paintLand(ranges.img.data, ranges.g, pal, pines, relief)
-      landBase = ranges.img.data.slice()
+      if (landBase.length !== ranges.img.data.length) landBase = ranges.img.data.slice()
+      else landBase.set(ranges.img.data)
     }
-    ruin = layer(grain)
+    ruin = layer(grain, ruin)
     // The stones stay paper-coloured by day and go grey under the moon.
     const stone = 0.5 + 0.5 * day
     masonry = ruin && rasterRuin(ruin.img.data, ruin.g, temple, bank, side, stone)
-    if (ruin) ruinBase = ruin.img.data.slice()
+    if (ruin) {
+      if (ruinBase.length !== ruin.img.data.length) ruinBase = ruin.img.data.slice()
+      else ruinBase.set(ruin.img.data)
+    }
     if (masonry) {
       const { print } = masonry
       const tones = (stops: RGB[]): Tones => ({
@@ -3491,46 +3599,57 @@ export function setupLandscape(
       strobe: CREAM,
     }
     lastGlow = lastGrowth = -1
-    sky = layer(skyCanvas)
+    sky = layer(skyCanvas, sky)
     if (sky) {
-      ridge = Float32Array.from(sky.g.sx, skyline)
+      const sx = sky.g.sx
+      if (ridge.length !== sx.length) ridge = Float32Array.from(sx, skyline)
+      else for (let i = 0; i < sx.length; i++) ridge[i] = skyline(sx[i])
       hangBody(true)
     }
-    field = layer(hill)
+    field = layer(hill, field)
     if (field) {
       ground = meadow(field.g, water, relief, times)
-      hillBase = new Uint8ClampedArray(field.img.data.length)
+      const len = field.img.data.length
+      if (hillBase.length !== len) hillBase = new Uint8ClampedArray(len)
+      else hillBase.fill(0)
       paintHillBase(hillBase, field.g, pal, water, ground)
     }
-    glint = layer(near)
+    glint = layer(near, glint)
     if (glint) {
-      figures = new Uint8ClampedArray(glint.img.data.length)
-      people = new Uint8ClampedArray(glint.img.data.length)
+      const len = glint.img.data.length
+      if (figures.length !== len) {
+        figures = new Uint8ClampedArray(len)
+        people = new Uint8ClampedArray(len)
+      }
       // The mountain legs run only when the flag on the crest is on screen.
       const { g } = glint
       camp = campSpan(g.px)
       layCourse(tri, g, water, camp, TRAIL[TRAIL.length - 1][0] + 8 * g.px < g.sx[g.bw - 1] - 48)
       layAngler(angler, g, water)
     }
-    well = layer(riftCanvas)
+    well = layer(riftCanvas, well)
     // The tree folk's heads and speech are in the old grid's pixels, and a resize may leave no one
     // in the tree to hail.
     bough = null
     boughs.heads = {}
     boughs.bubbles = []
-    leaves = layer(front)
+    leaves = layer(front, leaves)
     if (leaves) {
       // Repoussoir trees hug whatever edges the slice fit leaves visible.
       const left = leaves.g.sx[0]
       const span = leaves.g.sx[leaves.g.bw - 1] - left
-      const roots = [left + span * 0.04, left + span * 0.97]
-      const k = Math.max(0.45, Math.min(1, span / 1500))
-      canopy = {
-        roots,
-        trees: [
-          growTree(4040, roots[0], 1080, -0.04, 46 * k, 90 * k),
-          growTree(4041, roots[1], 1080, 0.02, 36 * k, 80 * k),
-        ],
+      const nextCanopyKey = `${leaves.g.bw}x${leaves.g.bh}:${left.toFixed(1)}:${span.toFixed(1)}`
+      if (canopyKey !== nextCanopyKey) {
+        canopyKey = nextCanopyKey
+        const roots = [left + span * 0.04, left + span * 0.97]
+        const k = Math.max(0.45, Math.min(1, span / 1500))
+        canopy = {
+          roots,
+          trees: [
+            growTree(4040, roots[0], 1080, -0.04, 46 * k, 90 * k),
+            growTree(4041, roots[1], 1080, 0.02, 36 * k, 80 * k),
+          ],
+        }
       }
       // The layers bleed past the viewport for the parallax, so the tree folk are placed within
       // what the viewport shows; and the departures board sits over the top-left corner, so nobody
@@ -3641,12 +3760,15 @@ export function setupLandscape(
       }
       lastX = inside ? pointer.x : NaN
       lastY = inside ? pointer.y : NaN
-      for (const v of air.vortices) {
+      let vw = 0
+      for (let i = 0; i < air.vortices.length; i++) {
+        const v = air.vortices[i]
         v.age += dt
         v.gamma *= Math.exp(-dt / 2.4)
         v.x += 10 * dt
+        if (Math.abs(v.gamma) > 600) air.vortices[vw++] = v
       }
-      air.vortices = air.vortices.filter(v => Math.abs(v.gamma) > 600)
+      air.vortices.length = vw
       air.drift += 10 * dt * (0.6 + 1.6 * weather.wind)
       air.time = now
       air.pull += (pullTarget - air.pull) * Math.min(1, dt * 1.5)
@@ -3771,7 +3893,10 @@ export function setupLandscape(
       pet.hot = mode !== 'idle'
       if (mode === 'hot' && pet.mode === 'sit' && pets()) say(crew, 'pet', '!')
       if (mode === 'enter') {
-        crew.bubbles = crew.bubbles.filter(b => b.who !== 'pet')
+        let bw = 0
+        for (let i = 0; i < crew.bubbles.length; i++)
+          if (crew.bubbles[i].who !== 'pet') crew.bubbles[bw++] = crew.bubbles[i]
+        crew.bubbles.length = bw
         dive(pet)
       }
       rift.target = mode === 'enter' ? 90 : mode === 'hot' ? 26 : 1.1
@@ -3809,10 +3934,35 @@ export function setupLandscape(
       paintShore()
     },
     place(next) {
+      if (next.lat === site.lat && next.lon === site.lon && sameWeather(next.weather, site.weather))
+        return
+      const prevLon = site.lon
       site = next
       al = almanac(new Date(), site)
       weather = readSky(site.weather)
-      ;({ park, slopes } = day())
+      const nextPark = parkEnv(al, weather, weekend())
+      const nextHill = hillEnv(al, weather, weekend())
+      if (
+        daySeed(new Date(), site.lon) !== daySeed(new Date(), prevLon) ||
+        nextPark.open !== park.env.open ||
+        nextPark.crowd !== park.env.crowd ||
+        nextPark.grip !== park.env.grip ||
+        nextPark.loose !== park.env.loose ||
+        nextPark.herd.out !== park.env.herd.out ||
+        nextHill.open !== slopes.env.open ||
+        nextHill.crowd !== slopes.env.crowd ||
+        nextHill.groom !== slopes.env.groom ||
+        nextHill.fresh !== slopes.env.fresh ||
+        nextHill.tour !== slopes.env.tour ||
+        nextHill.control !== slopes.env.control ||
+        nextHill.camp !== slopes.env.camp ||
+        nextHill.hold !== slopes.env.hold
+      ) {
+        ;({ park, slopes } = day())
+      } else {
+        park.env = nextPark
+        slopes.env = nextHill
+      }
       repaint()
     },
     hail(x, y) {
@@ -3884,6 +4034,11 @@ export function setupLandscape(
       window.clearTimeout(hush)
       window.clearTimeout(purring)
       window.removeEventListener('resize', repaint)
+      ranges = ruin = sky = field = glint = well = leaves = null
+      masonry = null
+      ground = null
+      figures = people = landBase = ruinBase = skyBase = hillBase = new Uint8ClampedArray(0)
+      ridge = new Float32Array(0)
     },
   }
 }

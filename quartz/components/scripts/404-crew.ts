@@ -117,7 +117,11 @@ export function makeCrew(): Crew {
 }
 
 export function say(v: Voices, who: string, glyph: Glyph) {
-  v.bubbles = v.bubbles.filter(b => b.who !== who)
+  let write = 0
+  for (let i = 0; i < v.bubbles.length; i++) {
+    if (v.bubbles[i].who !== who) v.bubbles[write++] = v.bubbles[i]
+  }
+  v.bubbles.length = write
   if (v.bubbles.length >= 3) v.bubbles.shift()
   v.bubbles.push({ who, glyph, age: 0 })
 }
@@ -145,8 +149,13 @@ export function heard(v: Voices, i: number, j: number, reach: number, tall: numb
 export const ask = (v: Voices, who: string) => say(v, who, '?')
 
 export function ageBubbles(v: Voices, dt: number) {
-  for (const b of v.bubbles) b.age += dt
-  v.bubbles = v.bubbles.filter(b => b.age < 1.8)
+  let write = 0
+  for (let i = 0; i < v.bubbles.length; i++) {
+    const b = v.bubbles[i]
+    b.age += dt
+    if (b.age < 1.8) v.bubbles[write++] = b
+  }
+  v.bubbles.length = write
 }
 
 // Without motion the party holds one pose per state of the portal: open, the child has lost the
