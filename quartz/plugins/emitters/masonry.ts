@@ -103,21 +103,20 @@ export const Masonry: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts =>
         }
       }
 
-      for (const [tree, file] of content) {
-        const slug = file.data.slug!
-        if (!changedSlugs.has(slug)) continue
-        if (file.data.frontmatter?.layout !== 'masonry') continue
-
-        yield processMasonry(ctx, tree, file, allFiles, opts, resources)
-      }
+      const targets = content.filter(
+        ([, file]) =>
+          changedSlugs.has(file.data.slug!) && file.data.frontmatter?.layout === 'masonry',
+      )
+      yield* await mapConcurrent(targets, defaultIoConcurrency, ([tree, file]) =>
+        processMasonry(ctx, tree, file, allFiles, opts, resources),
+      )
     },
     async *emit(ctx, content, resources) {
       const allFiles = contentDataFor(content)
-
-      for (const [tree, file] of content) {
-        if (file.data.frontmatter?.layout !== 'masonry') continue
-        yield processMasonry(ctx, tree, file, allFiles, opts, resources)
-      }
+      const targets = content.filter(([, file]) => file.data.frontmatter?.layout === 'masonry')
+      yield* await mapConcurrent(targets, defaultIoConcurrency, ([tree, file]) =>
+        processMasonry(ctx, tree, file, allFiles, opts, resources),
+      )
     },
   }
 }

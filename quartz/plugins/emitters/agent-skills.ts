@@ -166,44 +166,43 @@ async function readSkillFiles(
   relativeDirectory = '',
 ): Promise<AgentSkillFile[]> {
   const entries = await fs.readdir(path.join(directory, relativeDirectory), { withFileTypes: true })
-  const files: AgentSkillFile[] = []
-
-  for (const entry of entries.sort((left, right) => left.name.localeCompare(right.name))) {
-    const relativePath = path.posix.join(relativeDirectory, entry.name)
-    const absolutePath = path.join(directory, relativePath)
-    if (entry.isSymbolicLink()) {
-      throw new Error(`agent skill archives cannot contain symbolic links: ${relativePath}`)
-    }
-    if (entry.isDirectory()) {
-      files.push(...(await readSkillFiles(directory, relativePath)))
-      continue
-    }
-    if (!entry.isFile()) {
-      throw new Error(`agent skill archives require regular files: ${relativePath}`)
-    }
-    const [content, stat] = await Promise.all([fs.readFile(absolutePath), fs.stat(absolutePath)])
-    files.push({ path: relativePath, content, mode: stat.mode })
-  }
-
-  return files
+  const sorted = entries.sort((left, right) => left.name.localeCompare(right.name))
+  const nested = await Promise.all(
+    sorted.map(async entry => {
+      const relativePath = path.posix.join(relativeDirectory, entry.name)
+      const absolutePath = path.join(directory, relativePath)
+      if (entry.isSymbolicLink()) {
+        throw new Error(`agent skill archives cannot contain symbolic links: ${relativePath}`)
+      }
+      if (entry.isDirectory()) {
+        return readSkillFiles(directory, relativePath)
+      }
+      if (!entry.isFile()) {
+        throw new Error(`agent skill archives require regular files: ${relativePath}`)
+      }
+      const [content, stat] = await Promise.all([fs.readFile(absolutePath), fs.stat(absolutePath)])
+      return [{ path: relativePath, content, mode: stat.mode }]
+    }),
+  )
+  return nested.flat()
 }
 
 export async function loadAgentSkillSources(directory: string): Promise<AgentSkillSource[]> {
   const entries = await fs.readdir(directory, { withFileTypes: true })
-  const sources: AgentSkillSource[] = []
-
-  for (const entry of entries.sort((left, right) => left.name.localeCompare(right.name))) {
-    if (entry.isSymbolicLink()) {
-      throw new Error(`agent skill directories cannot be symbolic links: ${entry.name}`)
-    }
-    if (!entry.isDirectory()) continue
-    sources.push({
-      directoryName: entry.name,
-      files: await readSkillFiles(path.join(directory, entry.name)),
-    })
-  }
-
-  return sources
+  const sorted = entries.sort((left, right) => left.name.localeCompare(right.name))
+  const sources = await Promise.all(
+    sorted.map(async entry => {
+      if (entry.isSymbolicLink()) {
+        throw new Error(`agent skill directories cannot be symbolic links: ${entry.name}`)
+      }
+      if (!entry.isDirectory()) return null
+      return {
+        directoryName: entry.name,
+        files: await readSkillFiles(path.join(directory, entry.name)),
+      }
+    }),
+  )
+  return sources.filter((source): source is AgentSkillSource => source !== null)
 }
 
 function hasAgentSkillChanges(changeEvents: readonly ChangeEvent[], directory: string): boolean {
@@ -214,15 +213,15 @@ function hasAgentSkillChanges(changeEvents: readonly ChangeEvent[], directory: s
 }
 
 async function* writeAgentSkillsPublication(ctx: BuildCtx, publication: AgentSkillsPublication) {
-  for (const artifact of publication.artifacts) {
-    yield write({ ctx, ...artifact })
-  }
-  yield write({
-    ctx,
-    slug: `${DISCOVERY_ROOT}/index`,
-    ext: '.json',
-    content: `${JSON.stringify(publication.index, null, 2)}\n`,
-  })
+  yield* await Promise.all([
+    ...publication.artifacts.map(artifact => write({ ctx, ...artifact })),
+    write({
+      ctx,
+      slug: `${DISCOVERY_ROOT}/index`,
+      ext: '.json',
+      content: `${JSON.stringify(publication.index, null, 2)}\n`,
+    }),
+  ])
 }
 
 export const AgentSkills: QuartzEmitterPlugin<AgentSkillsOptions> = options => ({

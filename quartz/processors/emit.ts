@@ -117,6 +117,70 @@ export async function emitPartialEmitter(
   log.end(`Emitted ${emittedFiles} files to \`${ctx.argv.output}\` in ${perf.timeSince()}`)
 }
 
+const RESOURCE_INDEPENDENT_EMITTERS = new Set<string>([
+  'CustomOgImages',
+  'LazyScripts',
+  'LLMText',
+  'Assets',
+  'Static',
+  'AgentSkills',
+  'AliasRedirects',
+  'Bibliography',
+  'SemanticIndex',
+  'Favicon',
+  'NotebookPagesManifest',
+  'CNAME',
+])
+
+const EMITTER_PRIORITY = new Map<string, number>(
+  [
+    'CustomOgImages',
+    'LazyScripts',
+    'LLMText',
+    'Assets',
+    'Static',
+    'AgentSkills',
+    'AliasRedirects',
+    'Bibliography',
+    'SemanticIndex',
+    'Favicon',
+    'NotebookPagesManifest',
+    'CNAME',
+    'ArenaPage',
+    'NotebookViewer',
+    'Strava',
+    'ContentPage',
+    'ContentIndex',
+    'StreamIndex',
+    'FolderPage',
+    'TagPage',
+    'BaseViewPage',
+    'FlashcardsPage',
+    'PdfReader',
+    'SlidesPage',
+    'Masonry',
+    'CanvasPage',
+    'CourseReviewPage',
+    'StreamPage',
+    'NotFoundPage',
+    'DisabledPage',
+    'EmailEmitter',
+  ].map((name, index) => [name, index]),
+)
+
+function sortEmittersByPriority(
+  emitters: readonly QuartzEmitterPluginInstance[],
+): QuartzEmitterPluginInstance[] {
+  return emitters
+    .map((emitter, index) => ({
+      emitter,
+      index,
+      priority: EMITTER_PRIORITY.get(emitter.name) ?? EMITTER_PRIORITY.size + index,
+    }))
+    .sort((left, right) => left.priority - right.priority || left.index - right.index)
+    .map(entry => entry.emitter)
+}
+
 export async function emitContent(
   ctx: BuildCtx,
   content: ProcessedContent[],
@@ -161,57 +225,101 @@ export async function emitContent(
   log.start(``)
 
   let emittedFiles = 0
+  const failures: unknown[] = []
   const staticResources = getStaticResourcesFromPlugins(ctx)
   const componentResources = cfg.plugins.emitters.find(
     emitter => emitter.name === 'ComponentResources',
   )
-  if (componentResources) {
-    emittedFiles += partialChanges
-      ? await runPartialEmitter(
-          componentResources,
-          ctx,
-          content,
-          staticResources,
-          log,
-          partialChanges,
-        )
-      : await runEmitter(componentResources, ctx, content, staticResources, log)
-  }
-
-  logBuildStage(argv, ctx.buildId, 'emit.component-resources', perf.elapsedMs())
-  stages.addEvent('other-emitters')
-  const resourceSignature = JSON.stringify([
-    [...(ctx.assetManifest ?? [])].sort(([a], [b]) => a.localeCompare(b)),
-    [...(ctx.extractedStaticResources ?? [])].sort(([a], [b]) => a.localeCompare(b)),
-    ctx.staticLeadingJs,
-    staticResources.css,
-    staticResources.js,
-  ])
-  const changesExternalResources = cfg.plugins.emitters.some(
-    emitter => sourceScope?.emitters.has(emitter.name) && emitter.externalResources,
-  )
-  const scoped =
-    sourceScope && !changesExternalResources && sourceScope.resourceSignature === resourceSignature
-  if (sourceScope && !scoped) console.log('Resource identities changed; emitting all owners')
-  const otherEmitters = cfg.plugins.emitters.filter(
-    emitter =>
-      emitter.name !== 'ComponentResources' &&
-      (!scoped || emitter.name === 'LazyScripts' || sourceScope.emitters.has(emitter.name)),
-  )
-  const failures: unknown[] = []
-  const counts = await mapConcurrent(otherEmitters, defaultEmitterConcurrency, async emitter => {
+  let componentResourcesFailed = false
+  const runComponentResources = async () => {
     try {
-      return await (partialChanges
-        ? runPartialEmitter(emitter, ctx, content, staticResources, log, partialChanges)
-        : runEmitter(emitter, ctx, content, staticResources, log))
+      const count = componentResources
+        ? partialChanges
+          ? await runPartialEmitter(
+              componentResources,
+              ctx,
+              content,
+              staticResources,
+              log,
+              partialChanges,
+            )
+          : await runEmitter(componentResources, ctx, content, staticResources, log)
+        : 0
+      logBuildStage(argv, ctx.buildId, 'emit.component-resources', perf.elapsedMs())
+      return count
     } catch (error) {
+      componentResourcesFailed = true
       failures.push(error)
       return 0
     }
-  })
-  if (failures.length > 0) throw new AggregateError(failures, 'Failed to emit Quartz output')
-  emittedFiles += counts.reduce((sum, count) => sum + count, 0)
-  logBuildStage(argv, ctx.buildId, 'emit.other-owners', stages.elapsedMs('other-emitters'))
+  }
+
+  const computeResourceSignature = () =>
+    JSON.stringify([
+      [...(ctx.assetManifest ?? [])].sort(([a], [b]) => a.localeCompare(b)),
+      [...(ctx.extractedStaticResources ?? [])].sort(([a], [b]) => a.localeCompare(b)),
+      ctx.staticLeadingJs,
+      staticResources.css,
+      staticResources.js,
+    ])
+
+  let resourceSignature = ''
+  if (sourceScope) {
+    emittedFiles += await runComponentResources()
+    stages.addEvent('other-emitters')
+    resourceSignature = computeResourceSignature()
+    const changesExternalResources = cfg.plugins.emitters.some(
+      emitter => sourceScope.emitters.has(emitter.name) && emitter.externalResources,
+    )
+    const scoped = !changesExternalResources && sourceScope.resourceSignature === resourceSignature
+    if (!scoped) console.log('Resource identities changed; emitting all owners')
+    const otherEmitters = sortEmittersByPriority(
+      cfg.plugins.emitters.filter(
+        emitter =>
+          emitter.name !== 'ComponentResources' &&
+          (!scoped || emitter.name === 'LazyScripts' || sourceScope.emitters.has(emitter.name)),
+      ),
+    )
+    const counts = await mapConcurrent(otherEmitters, defaultEmitterConcurrency, async emitter => {
+      if (componentResourcesFailed) return 0
+      try {
+        return await (partialChanges
+          ? runPartialEmitter(emitter, ctx, content, staticResources, log, partialChanges)
+          : runEmitter(emitter, ctx, content, staticResources, log))
+      } catch (error) {
+        failures.push(error)
+        return 0
+      }
+    })
+    if (failures.length > 0) throw new AggregateError(failures, 'Failed to emit Quartz output')
+    emittedFiles += counts.reduce((sum, count) => sum + count, 0)
+    logBuildStage(argv, ctx.buildId, 'emit.other-owners', stages.elapsedMs('other-emitters'))
+  } else {
+    stages.addEvent('other-emitters')
+    const componentResourcesPromise = runComponentResources()
+    const otherEmitters = sortEmittersByPriority(
+      cfg.plugins.emitters.filter(emitter => emitter.name !== 'ComponentResources'),
+    )
+    const counts = await mapConcurrent(otherEmitters, defaultEmitterConcurrency, async emitter => {
+      if (!RESOURCE_INDEPENDENT_EMITTERS.has(emitter.name)) {
+        await componentResourcesPromise
+        if (componentResourcesFailed) return 0
+      }
+      try {
+        return await (partialChanges
+          ? runPartialEmitter(emitter, ctx, content, staticResources, log, partialChanges)
+          : runEmitter(emitter, ctx, content, staticResources, log))
+      } catch (error) {
+        failures.push(error)
+        return 0
+      }
+    })
+    const componentResourcesCount = await componentResourcesPromise
+    if (failures.length > 0) throw new AggregateError(failures, 'Failed to emit Quartz output')
+    emittedFiles += componentResourcesCount + counts.reduce((sum, count) => sum + count, 0)
+    resourceSignature = computeResourceSignature()
+    logBuildStage(argv, ctx.buildId, 'emit.other-owners', stages.elapsedMs('other-emitters'))
+  }
 
   log.end(`Emitted ${emittedFiles} files to \`${argv.output}\` in ${perf.timeSince()}`)
   return { resources: resourceSignature, projectedContent: content }

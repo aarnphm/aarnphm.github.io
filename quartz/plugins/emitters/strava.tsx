@@ -133,14 +133,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
   ): AsyncGenerator<FilePath> {
     const nextTemporalSlugs = new Set<FullSlug>()
     const generateOgImage = isDevelopmentBuild(ctx.argv) ? null : await createOgImageGenerator(ctx)
-    let ogImageQueue = Promise.resolve()
-    const queueOgImage = generateOgImage
-      ? (data: QuartzPluginData) => {
-          const output = ogImageQueue.then(() => generateOgImage(data))
-          ogImageQueue = output.then(() => undefined)
-          return output
-        }
-      : null
+    const queueOgImage = generateOgImage ? (data: QuartzPluginData) => generateOgImage(data) : null
 
     const allFiles = contentDataFor(content)
     for (const [tree, file] of content) {
@@ -442,6 +435,27 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
       const location = file.data.frontmatter?.['location']
       const activityLoads = new Map(analytics.activities.map(activity => [activity.id, activity]))
       const dailyLoads = new Map(analytics.daily.map(day => [day.date, day]))
+      const detailEntriesByDate = new Map<
+        string,
+        Array<[string, (typeof payload.details)[string]]>
+      >()
+      const detailsByDate = new Map<string, Array<(typeof payload.details)[string]>>()
+      for (const entry of Object.entries(payload.details)) {
+        const [, detail] = entry
+        let entries = detailEntriesByDate.get(detail.date)
+        if (!entries) {
+          entries = []
+          detailEntriesByDate.set(detail.date, entries)
+        }
+        entries.push(entry)
+        let details = detailsByDate.get(detail.date)
+        if (!details) {
+          details = []
+          detailsByDate.set(detail.date, details)
+        }
+        details.push(detail)
+      }
+      const trackingByDate = new Map(tracking?.days?.map(day => [day.date, day]) ?? [])
       const dayRenderCacheEligible = ctx.argv.watch
       const globalDayKey = dayRenderCacheEligible
         ? hashContent({
@@ -458,10 +472,10 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
           async ({ date, slug: daySlug }) => {
             if (dayRenderCacheEligible) {
               const dayKey = hashContent({
-                activities: Object.entries(payload.details).filter(([, d]) => d.date === date),
+                activities: detailEntriesByDate.get(date) ?? [],
                 health: payload.health[date] ?? null,
                 dailyAnalytics: dailyAnalytics[date] ?? null,
-                tracking: tracking?.days?.find(t => t.date === date) ?? null,
+                tracking: trackingByDate.get(date) ?? null,
                 global: globalDayKey,
               })
               if (dayRenderCache.get(daySlug) === dayKey) return []
@@ -482,10 +496,10 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
               plans,
               tools: { conversions: CONVERSIONS, gear: GEAR, maintenance, equipment },
             })
-            const track = tracking?.days?.find(t => t.date === date)
+            const track = trackingByDate.get(date)
             const preview = buildTriathlonPreview({
               date,
-              details: Object.values(payload.details).filter(d => d.date === date),
+              details: detailsByDate.get(date) ?? [],
               activities: activityLoads,
               daily: dailyLoads.get(date) ?? null,
               event: track?.event ?? (track?.race ? 'race' : null),

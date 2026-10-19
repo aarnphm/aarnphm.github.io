@@ -347,7 +347,7 @@ async function* processStreamIndex(
   // `<slug>-og-image.webp`. The watcher skips social images, as CustomOgImages does.
   if (!isDevelopmentBuild(ctx.argv)) {
     const generateOgImage = await createOgImageGenerator(ctx)
-    for (const page of socialPages) yield await generateOgImage(page)
+    yield* await mapConcurrent(socialPages, defaultIoConcurrency, page => generateOgImage(page))
   }
 
   const nextRoutes = new Set([

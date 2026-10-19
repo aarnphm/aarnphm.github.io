@@ -1,6 +1,7 @@
 import yaml from 'js-yaml'
 import { version } from '../../../package.json'
 import { QuartzEmitterPlugin, QuartzEmitterPluginInstance } from '../../types/plugin'
+import { defaultIoConcurrency, mapConcurrent } from '../../util/async-pool'
 import { isDevelopmentBuild } from '../../util/build-mode'
 import { BuildCtx } from '../../util/ctx'
 import { isWatchMarkdownSlug } from '../../util/llm'
@@ -129,18 +130,30 @@ export const LLMText: QuartzEmitterPlugin = () => {
         yield write({ ctx, content: llmsIndex(baseUrl), slug: 'llms' as FullSlug, ext: '.txt' })
       }
 
-      const reconstructed: string[] = []
-      for (const [, file] of content) {
-        if (!canEmitMarkdown(file.data)) continue
+      const eligible = content.filter(([, file]) => {
+        if (!canEmitMarkdown(file.data)) return false
         if (
           watch &&
           !file.data.flashcardRoute &&
           file.data.frontmatter?.flashcards?.default !== true &&
           !isWatchMarkdownSlug(file.data.slug)
-        )
-          continue
-        yield llmText(ctx, file.data, reconstructed)
-      }
+        ) {
+          return false
+        }
+        return true
+      })
+      const reconstructed = Array.from<string>({ length: eligible.length })
+      const emitted = await mapConcurrent(
+        eligible,
+        defaultIoConcurrency,
+        async ([, file], index) => {
+          const doc: string[] = []
+          const out = await llmText(ctx, file.data, doc)
+          reconstructed[index] = doc[0] ?? ''
+          return out
+        },
+      )
+      yield* emitted
 
       if (watch) return
 
@@ -193,20 +206,23 @@ ${reconstructed.join('\n')}`,
         }
       }
 
-      for (const [, file] of content) {
+      const eligible = content.filter(([, file]) => {
         const slug = file.data.slug!
-        if (!changedSlugs.has(slug)) continue
-        if (!canEmitMarkdown(file.data)) continue
+        if (!changedSlugs.has(slug)) return false
+        if (!canEmitMarkdown(file.data)) return false
         if (
           watch &&
           !file.data.flashcardRoute &&
           file.data.frontmatter?.flashcards?.default !== true &&
           !isWatchMarkdownSlug(file.data.slug)
-        )
-          continue
-
-        yield llmText(ctx, file.data, [])
-      }
+        ) {
+          return false
+        }
+        return true
+      })
+      yield* await mapConcurrent(eligible, defaultIoConcurrency, ([, file]) =>
+        llmText(ctx, file.data, []),
+      )
     },
   } satisfies QuartzEmitterPluginInstance
   return plugin

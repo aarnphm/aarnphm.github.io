@@ -28,10 +28,12 @@ import { writeXsltPolyfillAsset } from './component-resources/xslt-polyfill-asse
 
 const name = 'ComponentResources'
 
-async function* yieldFiles(files: readonly FilePath[]): AsyncGenerator<FilePath> {
-  for (const file of files) {
-    yield file
+async function collectFiles(files: AsyncIterable<FilePath>): Promise<FilePath[]> {
+  const collected: FilePath[] = []
+  for await (const file of files) {
+    collected.push(file)
   }
+  return collected
 }
 
 export const ComponentResources: QuartzEmitterPlugin = () => {
@@ -40,44 +42,77 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
     async *emit(ctx, _content, resources) {
       const componentResources = await currentComponentResources(ctx)
       const [
-        notebookRuntimeFiles,
-        collaborativeCommentsFiles,
-        semanticWorkerFiles,
-        lexicalWorkerFile,
+        pageAndWorkerScripts,
+        fontAndIndexFiles,
+        componentStyleFiles,
+        staticCssBundleFiles,
+        staticJsBundleFiles,
+        siteManifestFile,
+        genericWorkerFiles,
         speechRuntimeFiles,
         emojiFiles,
         xsltPolyfillFile,
         sharedTrailFiles,
       ] = await Promise.all([
-        writeNotebookRuntimeAssets(ctx),
-        writeCollaborativeCommentsAssets(ctx),
-        writeSemanticWorkerAssets(ctx),
-        writeLexicalWorkerAsset(ctx),
+        (async () => {
+          const [
+            notebookRuntimeFiles,
+            collaborativeCommentsFiles,
+            semanticWorkerFiles,
+            lexicalWorkerFile,
+          ] = await Promise.all([
+            writeNotebookRuntimeAssets(ctx),
+            writeCollaborativeCommentsAssets(ctx),
+            writeSemanticWorkerAssets(ctx),
+            writeLexicalWorkerAsset(ctx),
+          ])
+          resolveComponentResourceAssets(ctx, componentResources)
+          const pageScriptFiles = await writePageScripts(ctx, componentResources)
+          return {
+            pageScriptFiles,
+            notebookRuntimeFiles,
+            collaborativeCommentsFiles,
+            semanticWorkerFiles,
+            lexicalWorkerFile,
+          }
+        })(),
+        (async () => {
+          const fontAssets = await writeFontAssets(ctx)
+          const indexStylesheetFile = await writeIndexStylesheet(
+            ctx,
+            componentResources,
+            fontAssets.googleFontsStyleSheet,
+          )
+          return { fontFiles: fontAssets.files, indexStylesheetFile }
+        })(),
+        collectFiles(writeComponentStyles(ctx, componentResources)),
+        collectFiles(writeStaticCssResourceBundles(ctx, resources)),
+        collectFiles(writeStaticJsResourceBundles(ctx, resources)),
+        writeSiteManifest(ctx),
+        collectFiles(writeGenericWorkerAssets(ctx)),
         writeSpeechRuntimeAssets(ctx),
         writeEmojiAssets(ctx),
         writeXsltPolyfillAsset(ctx),
         writeSharedTrailAsset(ctx),
       ])
-      resolveComponentResourceAssets(ctx, componentResources)
 
-      const fontAssets = await writeFontAssets(ctx)
-      yield* yieldFiles(fontAssets.files)
-      yield* writeComponentStyles(ctx, componentResources)
-      yield await writeIndexStylesheet(ctx, componentResources, fontAssets.googleFontsStyleSheet)
-      yield* writeStaticCssResourceBundles(ctx, resources)
-      yield* writeStaticJsResourceBundles(ctx, resources)
-      yield* yieldFiles(await writePageScripts(ctx, componentResources))
-      yield await writeSiteManifest(ctx)
-      yield* writeGenericWorkerAssets(ctx)
-      yield* yieldFiles(notebookRuntimeFiles)
-      yield* yieldFiles(collaborativeCommentsFiles)
-      yield* yieldFiles(semanticWorkerFiles)
-      yield lexicalWorkerFile
-      yield* yieldFiles(speechRuntimeFiles)
-      yield* yieldFiles(emojiFiles)
+      yield* fontAndIndexFiles.fontFiles
+      yield* componentStyleFiles
+      yield fontAndIndexFiles.indexStylesheetFile
+      yield* staticCssBundleFiles
+      yield* staticJsBundleFiles
+      yield* pageAndWorkerScripts.pageScriptFiles
+      yield siteManifestFile
+      yield* genericWorkerFiles
+      yield* pageAndWorkerScripts.notebookRuntimeFiles
+      yield* pageAndWorkerScripts.collaborativeCommentsFiles
+      yield* pageAndWorkerScripts.semanticWorkerFiles
+      yield pageAndWorkerScripts.lexicalWorkerFile
+      yield* speechRuntimeFiles
+      yield* emojiFiles
       yield xsltPolyfillFile
-      yield* yieldFiles(sharedTrailFiles)
-      yield writeAssetManifest(ctx)
+      yield* sharedTrailFiles
+      yield await writeAssetManifest(ctx)
     },
     // Source edits regenerate resources through buildSourceResources; content edits reuse them.
     async partialEmit() {

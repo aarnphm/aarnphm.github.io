@@ -82,7 +82,7 @@ async function fingerprint(files: string[]): Promise<string> {
 // Generated runtime artifacts are outputs. Provider caches remain inputs, including newly added
 // provider directories. A cache produced during a build delays admission until inputs stabilize.
 const generatedCache = (relative: string): boolean =>
-  /^(?:transpiled-|output-assets\.json$|pdf-documents\.json$|triathlon\/data\.jsonl$|notebook-pages(?:\/|$)|notebook-assets(?:\/|$)|fonts(?:\/|$)|tikz(?:\/|$)|bookcase-covers(?:\/|$)|og-images(?:\/|$)|citations\.json$)/.test(
+  /^(?:transpiled-|output-assets\.json$|pdf-documents\.json$|triathlon\/data\.jsonl$|notebook-pages(?:\/|$)|notebook-assets(?:\/|$)|fonts(?:\/|$)|tikz(?:\/|$)|bookcase-covers(?:\/|$)|og-images(?:\/|$)|twitter-posts(?:\/|$)|citations\.json$)/.test(
     relative,
   )
 

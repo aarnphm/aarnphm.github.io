@@ -95,7 +95,5 @@ export async function* writeGenericWorkerAssets(ctx: BuildCtx): AsyncGenerator<F
   const workerFiles = (await globby([workerEntryPattern])).filter(
     src => src !== semanticWorkerEntry && src !== speechWorkerEntry && src !== lexicalWorkerEntry,
   )
-  for (const src of workerFiles) {
-    yield writeGenericWorkerAsset(ctx, src)
-  }
+  yield* await Promise.all(workerFiles.map(src => writeGenericWorkerAsset(ctx, src)))
 }

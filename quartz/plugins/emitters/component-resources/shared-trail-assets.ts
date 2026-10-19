@@ -7,42 +7,44 @@ import { joinSegments } from '../../../util/path'
 import { resolveAssetPath, writeRawAsset } from './asset-writer'
 
 export async function writeSharedTrailAsset(ctx: BuildCtx) {
-  const styles = await compileAsync('quartz/components/styles/trail-surface.scss', {
-    charset: false,
-    style: 'expanded',
-  })
-  const worker = await build({
-    entryPoints: ['quartz/components/visitor-trail/tree-worker.ts'],
-    bundle: true,
-    minify: true,
-    platform: 'browser',
-    format: 'iife',
-    write: false,
-  })
-  const navigation = await build({
-    entryPoints: ['quartz/components/visitor-trail/navigation-worker.ts'],
-    bundle: true,
-    minify: true,
-    platform: 'browser',
-    format: 'iife',
-    write: false,
-  })
-  const moss = await build({
-    entryPoints: ['quartz/components/visitor-trail/moss-worker.ts'],
-    bundle: true,
-    minify: true,
-    platform: 'browser',
-    format: 'iife',
-    write: false,
-  })
-  const scenery = await build({
-    entryPoints: ['quartz/components/visitor-trail/scenery-worker.ts'],
-    bundle: true,
-    minify: true,
-    platform: 'browser',
-    format: 'iife',
-    write: false,
-  })
+  const [styles, worker, navigation, moss, scenery] = await Promise.all([
+    compileAsync('quartz/components/styles/trail-surface.scss', {
+      charset: false,
+      style: 'expanded',
+    }),
+    build({
+      entryPoints: ['quartz/components/visitor-trail/tree-worker.ts'],
+      bundle: true,
+      minify: true,
+      platform: 'browser',
+      format: 'iife',
+      write: false,
+    }),
+    build({
+      entryPoints: ['quartz/components/visitor-trail/navigation-worker.ts'],
+      bundle: true,
+      minify: true,
+      platform: 'browser',
+      format: 'iife',
+      write: false,
+    }),
+    build({
+      entryPoints: ['quartz/components/visitor-trail/moss-worker.ts'],
+      bundle: true,
+      minify: true,
+      platform: 'browser',
+      format: 'iife',
+      write: false,
+    }),
+    build({
+      entryPoints: ['quartz/components/visitor-trail/scenery-worker.ts'],
+      bundle: true,
+      minify: true,
+      platform: 'browser',
+      format: 'iife',
+      write: false,
+    }),
+  ])
   const entries = [
     { path: 'static/scripts/trail-navigation.worker.js', source: navigation.outputFiles[0].text },
     { path: 'static/scripts/trail-moss.worker.js', source: moss.outputFiles[0].text },

@@ -10,6 +10,7 @@ import { pageResources, renderPage } from '../../components/renderPage'
 import { prepareSlides, slidePageSlug, SlidesPageData } from '../../components/SlidesContent'
 import { QuartzComponentProps } from '../../types/component'
 import { QuartzEmitterPlugin } from '../../types/plugin'
+import { defaultIoConcurrency, mapConcurrent } from '../../util/async-pool'
 import { BuildCtx, contentDataFor } from '../../util/ctx'
 import { escapeHTML } from '../../util/escape'
 import { pathToRoot, joinSegments, FilePath, FullSlug } from '../../util/path'
@@ -141,14 +142,18 @@ export const SlidesPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts
     },
     async *emit(ctx, content, resources) {
       const allFiles = contentDataFor(content)
-
-      for (const [tree, file] of content) {
+      const slideTargets = content.filter(([, file]) => {
         const slug = file.data.slug!
-        // skip tag pages and everything that isn’t a primary content page
-        if (slug.endsWith('/index') || slug.startsWith('tags/')) continue
-        // Only emit slides if explicitly enabled via frontmatter
-        if (!file.data.frontmatter?.slides) continue
-        yield* await processSlides(ctx, tree, file.data, allFiles, opts, resources)
+        if (slug.endsWith('/index') || slug.startsWith('tags/')) return false
+        return Boolean(file.data.frontmatter?.slides)
+      })
+      const emittedGroups = await mapConcurrent(
+        slideTargets,
+        defaultIoConcurrency,
+        ([tree, file]) => processSlides(ctx, tree, file.data, allFiles, opts, resources),
+      )
+      for (const group of emittedGroups) {
+        yield* group
       }
     },
     async *partialEmit(ctx, content, resources, changeEvents) {
@@ -166,12 +171,19 @@ export const SlidesPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts
         }
       }
 
-      for (const [tree, file] of content) {
+      const slideTargets = content.filter(([, file]) => {
         const slug = file.data.slug!
-        if (!changedSlugs.has(slug)) continue
-        if (slug.endsWith('/index') || slug.startsWith('tags/')) continue
-        if (!file.data.frontmatter?.slides) continue
-        yield* await processSlides(ctx, tree, file.data, allFiles, opts, resources)
+        if (!changedSlugs.has(slug)) return false
+        if (slug.endsWith('/index') || slug.startsWith('tags/')) return false
+        return Boolean(file.data.frontmatter?.slides)
+      })
+      const emittedGroups = await mapConcurrent(
+        slideTargets,
+        defaultIoConcurrency,
+        ([tree, file]) => processSlides(ctx, tree, file.data, allFiles, opts, resources),
+      )
+      for (const group of emittedGroups) {
+        yield* group
       }
     },
   }
