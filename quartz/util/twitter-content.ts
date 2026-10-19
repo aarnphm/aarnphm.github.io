@@ -4,6 +4,9 @@ import { Defuddle, type DefuddleOptions, type DefuddleResponse } from 'defuddle/
 import { fromHtml } from 'hast-util-from-html'
 import { toHtml } from 'hast-util-to-html'
 import { h, s } from 'hastscript'
+import { createHash, randomUUID } from 'node:crypto'
+import fs from 'node:fs/promises'
+import path from 'node:path'
 import { svgOptions } from './svg-options'
 import { parseTwitterPostUrl } from './twitter'
 import { twitterIconPath } from './twitter-icon'
@@ -11,8 +14,15 @@ import { isRecord } from './type-guards'
 
 const EMPTY_DOCUMENT = '<!doctype html><html><head></head><body></body></html>'
 const MAX_RESPONSE_BYTES = 2 * 1024 * 1024
-const requests = new Semaphore(4)
+const DEFAULT_TWITTER_CACHE_DIR = path.join(
+  process.cwd(),
+  'quartz',
+  '.quartz-cache',
+  'twitter-posts',
+)
+const requests = new Semaphore(16)
 const posts = new Map<string, Promise<string>>()
+const ensuredCacheDirs = new Map<string, Promise<void>>()
 const contentTags = new Set([
   'p',
   'br',
@@ -204,13 +214,16 @@ async function boundedResponse(response: Response): Promise<Response> {
   })
 }
 
-export async function extractTwitterPost(
+async function extractTwitterPostWithStatus(
   url: string,
   fetchSource: typeof fetch = fetch,
-): Promise<string> {
+): Promise<{ html: string; cacheable: boolean }> {
   const signal = AbortSignal.timeout(15_000)
   const visited = new Set<string>()
   let count = 0
+  let hadTransientError = false
+  let hadTerminalStatus = false
+
   async function fetchResponse(request: Request): Promise<Response> {
     const target = new URL(request.url)
     if (
@@ -226,7 +239,13 @@ export async function extractTwitterPost(
     )
       throw new Error('Unsupported X extractor request.')
     signal.throwIfAborted()
-    const response = await fetchSource(request, { signal, redirect: 'manual' })
+    let response: Response
+    try {
+      response = await fetchSource(request, { signal, redirect: 'manual' })
+    } catch (error) {
+      hadTransientError = true
+      throw error
+    }
     if ([301, 302, 303, 307, 308].includes(response.status)) {
       const location = response.headers.get('Location')
       await response.body?.cancel()
@@ -234,6 +253,11 @@ export async function extractTwitterPost(
       if (!next) throw new Error('Invalid X extractor redirect.')
       // The oEmbed endpoint redirects to publish.x.com. Validate and count every hop.
       return fetchResponse(new Request(next, { headers: request.headers }))
+    }
+    if (response.status === 429 || response.status >= 500) {
+      hadTransientError = true
+    } else if ([400, 401, 403, 404, 410].includes(response.status)) {
+      hadTerminalStatus = true
     }
     return boundedResponse(response)
   }
@@ -290,18 +314,85 @@ export async function extractTwitterPost(
     }
     return article
   }
+  const fallback = twitterPostFallback(url)
   const article = await extract(url, 0)
-  return article ? renderTwitterPost(article, url) : twitterPostFallback(url)
+  const html = article ? renderTwitterPost(article, url) : fallback
+  const isFallback = html === fallback
+  const cacheable = !hadTransientError && (!isFallback || hadTerminalStatus)
+  return { html, cacheable }
 }
 
-export function fetchTwitterPost(url: string): Promise<string> {
+export async function extractTwitterPost(
+  url: string,
+  fetchSource: typeof fetch = fetch,
+): Promise<string> {
+  const { html } = await extractTwitterPostWithStatus(url, fetchSource)
+  return html
+}
+
+function ensureCacheDir(cacheDir: string): Promise<void> {
+  let existing = ensuredCacheDirs.get(cacheDir)
+  if (!existing) {
+    existing = fs
+      .mkdir(cacheDir, { recursive: true })
+      .then(() => undefined)
+      .catch(error => {
+        ensuredCacheDirs.delete(cacheDir)
+        throw error
+      })
+    ensuredCacheDirs.set(cacheDir, existing)
+  }
+  return existing
+}
+
+export interface FetchTwitterPostOptions {
+  cacheDir?: string
+  fetchSource?: typeof fetch
+  bypassMemoryCache?: boolean
+}
+
+export function fetchTwitterPost(url: string, options?: FetchTwitterPostOptions): Promise<string> {
   const key = parseTwitterPostUrl(url)
   if (!key) return Promise.resolve('')
-  const existing = posts.get(key)
-  if (existing) return existing
-  const pending = requests.runExclusive(() =>
-    extractTwitterPost(url).catch(() => twitterPostFallback(url)),
-  )
-  posts.set(key, pending)
+  const cacheDir = options?.cacheDir ?? DEFAULT_TWITTER_CACHE_DIR
+  const fetchSource = options?.fetchSource ?? fetch
+  const memoryKey = cacheDir === DEFAULT_TWITTER_CACHE_DIR ? key : `${cacheDir}::${key}`
+  if (!options?.bypassMemoryCache) {
+    const existing = posts.get(memoryKey)
+    if (existing) return existing
+  }
+
+  const cacheFile = path.join(cacheDir, `${createHash('sha256').update(url).digest('hex')}.html`)
+
+  const pending = (async () => {
+    try {
+      const cached = await fs.readFile(cacheFile, 'utf8')
+      if (cached.trim().length > 0) return cached
+    } catch {}
+
+    return requests.runExclusive(async () => {
+      try {
+        const cached = await fs.readFile(cacheFile, 'utf8')
+        if (cached.trim().length > 0) return cached
+      } catch {}
+
+      const { html, cacheable } = await extractTwitterPostWithStatus(url, fetchSource).catch(
+        () => ({ html: twitterPostFallback(url), cacheable: false }),
+      )
+      if (cacheable) {
+        try {
+          await ensureCacheDir(cacheDir)
+          const tempFile = `${cacheFile}.tmp-${process.pid}-${randomUUID()}`
+          await fs.writeFile(tempFile, html, 'utf8')
+          await fs.rename(tempFile, cacheFile)
+        } catch {}
+      }
+      return html
+    })
+  })()
+
+  if (!options?.bypassMemoryCache) {
+    posts.set(memoryKey, pending)
+  }
   return pending
 }

@@ -5,13 +5,21 @@ import satori, { SatoriOptions } from 'satori'
 import sharp from 'sharp'
 import { i18n } from '../../i18n'
 import { QuartzEmitterPlugin } from '../../types/plugin'
+import { defaultIoConcurrency, mapConcurrent } from '../../util/async-pool'
 import { copyFile } from '../../util/copy-file'
 import { BuildCtx } from '../../util/ctx'
 import { descriptionToPlainText } from '../../util/description'
 import { getIconCode } from '../../util/emoji'
 import { loadEmoji } from '../../util/emoji-node'
 import { unescapeHTML } from '../../util/escape'
-import { ImageOptions, SocialImageOptions, defaultImage, getSatoriFonts } from '../../util/og'
+import { onModuleRelease } from '../../util/module-caches'
+import {
+  ImageOptions,
+  SocialImageOptions,
+  defaultImage,
+  defaultImageMeta,
+  getSatoriFonts,
+} from '../../util/og'
 import { FilePath, FullSlug, QUARTZ, getFileExtension, joinSegments } from '../../util/path'
 import { StaticResources } from '../../util/resources'
 import { SECTIONS, type Section, isSlidePage, sectionOf } from '../../util/section-icon'
@@ -31,6 +39,10 @@ function isExistingFileError(error: unknown): boolean {
   return typeof error === 'object' && error !== null && 'code' in error && error.code === 'EEXIST'
 }
 
+function isMissingFileError(error: unknown): boolean {
+  return typeof error === 'object' && error !== null && 'code' in error && error.code === 'ENOENT'
+}
+
 async function pathExists(fp: FilePath): Promise<boolean> {
   try {
     await fs.access(fp)
@@ -42,24 +54,70 @@ async function pathExists(fp: FilePath): Promise<boolean> {
 
 type SectionIcon = { dataUri: string; hash: string }
 
+let sectionIconsPromise: Promise<Map<Section, SectionIcon>> | null = null
+const satoriFontCache = new Map<
+  string,
+  Promise<{ fonts: SatoriOptions['fonts']; fontsSignature: string }>
+>()
+const inFlightOgImages = new Map<FilePath, Promise<void>>()
+
+onModuleRelease(() => {
+  sectionIconsPromise = null
+  satoriFontCache.clear()
+  inFlightOgImages.clear()
+})
+
 // The section mascots (quartz/static/icon-<section>.png), shrunk for the card's header. A missing
 // file leaves that section's cards without an icon.
-async function loadSectionIcons(): Promise<Map<Section, SectionIcon>> {
-  const icons = new Map<Section, SectionIcon>()
-  for (const section of SECTIONS) {
-    const file = joinSegments(QUARTZ, 'static', `icon-${section}.png`)
-    if (!(await pathExists(file as FilePath))) continue
-    const png = await sharp(file).resize(192, 192).png().toBuffer()
-    icons.set(section, {
-      dataUri: `data:image/png;base64,${png.toString('base64')}`,
-      hash: createHash('sha256').update(png).digest('base64url'),
-    })
-  }
-  return icons
+function loadSectionIcons(): Promise<Map<Section, SectionIcon>> {
+  if (sectionIconsPromise) return sectionIconsPromise
+  sectionIconsPromise = (async () => {
+    const entries = await Promise.all(
+      SECTIONS.map(async section => {
+        const file = joinSegments(QUARTZ, 'static', `icon-${section}.png`)
+        if (!(await pathExists(file as FilePath))) return null
+        const png = await sharp(file).resize(192, 192).png().toBuffer()
+        return [
+          section,
+          {
+            dataUri: `data:image/png;base64,${png.toString('base64')}`,
+            hash: createHash('sha256').update(png).digest('base64url'),
+          },
+        ] as const
+      }),
+    )
+    const icons = new Map<Section, SectionIcon>()
+    for (const entry of entries) {
+      if (entry) icons.set(entry[0], entry[1])
+    }
+    return icons
+  })()
+  return sectionIconsPromise
 }
 
+function loadCachedSatoriFonts(
+  cfg: BuildCtx['cfg']['configuration'],
+): Promise<{ fonts: SatoriOptions['fonts']; fontsSignature: string }> {
+  const key = JSON.stringify({
+    baseUrl: cfg.baseUrl,
+    header: cfg.theme.typography.header,
+    body: cfg.theme.typography.body,
+  })
+  const cached = satoriFontCache.get(key)
+  if (cached) return cached
+  const pending = (async () => {
+    const fonts = await getSatoriFonts(cfg, cfg.theme.typography.header, cfg.theme.typography.body)
+    return { fonts, fontsSignature: fontSignature(fonts) }
+  })()
+  satoriFontCache.set(key, pending)
+  return pending
+}
+
+let cacheDirReady: Promise<string | undefined> | null = null
+
 async function ensureCachedOgImage(cachePath: FilePath, content: Buffer): Promise<void> {
-  await fs.mkdir(path.dirname(cachePath), { recursive: true })
+  cacheDirReady ??= fs.mkdir(path.dirname(cachePath), { recursive: true })
+  await cacheDirReady
   try {
     await fs.writeFile(cachePath, content, { flag: 'wx' })
   } catch (error) {
@@ -78,36 +136,69 @@ function fontSignature(fonts: SatoriOptions['fonts']): string {
   return hash.digest('base64url')
 }
 
-function ogImageSignature(
-  ctx: BuildCtx,
-  fileData: QuartzPluginData,
-  title: string,
-  description: string,
+function computeBaseSignature(
+  cfg: BuildCtx['cfg']['configuration'],
   fullOptions: SocialImageOptions,
   fontsSignature: string,
-  icon: SectionIcon | undefined,
 ): string {
-  const cfg = ctx.cfg.configuration
   return createHash('sha256')
     .update(
       JSON.stringify({
         baseUrl: cfg.baseUrl,
         colorScheme: fullOptions.colorScheme,
-        dates: fileData.dates,
-        description,
         excludeRoot: fullOptions.excludeRoot,
         font: fontsSignature,
-        frontmatter: fileData.frontmatter,
         height: fullOptions.height,
-        icon: icon?.hash,
-        imageStructure: fullOptions.imageStructure.toString(),
+        imageStructure:
+          fullOptions.imageStructure === defaultImage
+            ? 'defaultImage'
+            : fullOptions.imageStructure.toString(),
         locale: cfg.locale,
         pageTitleSuffix: cfg.pageTitleSuffix,
+        theme: cfg.theme,
+        width: fullOptions.width,
+      }),
+    )
+    .digest('base64url')
+}
+
+function ogImageSignature(
+  cfg: BuildCtx['cfg']['configuration'],
+  fileData: QuartzPluginData,
+  title: string,
+  description: string,
+  fullOptions: SocialImageOptions,
+  baseSignature: string,
+  icon: SectionIcon | undefined,
+): string {
+  if (fullOptions.imageStructure === defaultImage) {
+    const { date, readingTimeText, tags } = defaultImageMeta(cfg, fileData)
+    return createHash('sha256')
+      .update(
+        JSON.stringify({
+          base: baseSignature,
+          date,
+          description,
+          icon: icon?.hash,
+          readingTimeText,
+          tags,
+          title,
+        }),
+      )
+      .digest('base64url')
+  }
+
+  return createHash('sha256')
+    .update(
+      JSON.stringify({
+        base: baseSignature,
+        dates: fileData.dates,
+        description,
+        frontmatter: fileData.frontmatter,
+        icon: icon?.hash,
         slug: fileData.slug,
         text: fileData.text,
-        theme: cfg.theme,
         title,
-        width: fullOptions.width,
       }),
     )
     .digest('base64url')
@@ -152,7 +243,7 @@ async function processOgImage(
   fileData: QuartzPluginData,
   fonts: SatoriOptions['fonts'],
   fullOptions: SocialImageOptions,
-  fontsSignature: string,
+  baseSignature: string,
   icons: Map<Section, SectionIcon>,
 ) {
   const cfg = ctx.cfg.configuration
@@ -175,26 +266,40 @@ async function processOgImage(
   const outputSlug = `${slug}-og-image` as FullSlug
   const dest = joinSegments(ctx.argv.output, `${outputSlug}.webp`) as FilePath
   const signature = ogImageSignature(
-    ctx,
+    cfg,
     fileData,
     title,
     description,
     fullOptions,
-    fontsSignature,
+    baseSignature,
     icon,
   )
   const cachePath = path.join(cacheDir, `${signature}.webp`) as FilePath
+  const trackedRoot = ctx.incremental ? ctx.argv.output : undefined
 
-  if (!(await pathExists(cachePath))) {
-    const content = await generateSocialImage(
-      { title, description, fonts, cfg, fileData },
-      fullOptions,
-      icon?.dataUri,
-    )
-    await ensureCachedOgImage(cachePath, content)
+  try {
+    return await copyFile(cachePath, dest, trackedRoot)
+  } catch (error) {
+    if (!isMissingFileError(error)) throw error
   }
 
-  return copyFile(cachePath, dest, ctx.incremental ? ctx.argv.output : undefined)
+  let pending = inFlightOgImages.get(cachePath)
+  if (!pending) {
+    pending = (async () => {
+      const content = await generateSocialImage(
+        { title, description, fonts, cfg, fileData },
+        fullOptions,
+        icon?.dataUri,
+      )
+      await ensureCachedOgImage(cachePath, content)
+    })().finally(() => {
+      inFlightOgImages.delete(cachePath)
+    })
+    inFlightOgImages.set(cachePath, pending)
+  }
+  await pending
+
+  return copyFile(cachePath, dest, trackedRoot)
 }
 
 export async function createOgImageGenerator(
@@ -203,10 +308,12 @@ export async function createOgImageGenerator(
 ): Promise<(fileData: QuartzPluginData) => Promise<FilePath>> {
   const fullOptions = { ...defaultOptions, ...userOpts }
   const cfg = ctx.cfg.configuration
-  const fonts = await getSatoriFonts(cfg, cfg.theme.typography.header, cfg.theme.typography.body)
-  const fontsSignature = fontSignature(fonts)
-  const icons = await loadSectionIcons()
-  return fileData => processOgImage(ctx, fileData, fonts, fullOptions, fontsSignature, icons)
+  const [{ fonts, fontsSignature }, icons] = await Promise.all([
+    loadCachedSatoriFonts(cfg),
+    loadSectionIcons(),
+  ])
+  const baseSignature = computeBaseSignature(cfg, fullOptions, fontsSignature)
+  return fileData => processOgImage(ctx, fileData, fonts, fullOptions, baseSignature, icons)
 }
 
 export const CustomOgImagesEmitterName = 'CustomOgImages'
@@ -267,23 +374,29 @@ export const CustomOgImages: QuartzEmitterPlugin<Partial<SocialImageOptions>> = 
       return []
     },
     async *emit(ctx, content, _resources) {
+      const targets = content.filter(
+        ([_tree, vfile]) => vfile.data.frontmatter?.socialImage === undefined,
+      )
+      if (targets.length === 0) return
       const generateOgImage = await createOgImageGenerator(ctx, fullOptions)
-      for (const [_tree, vfile] of content) {
-        if (vfile.data.frontmatter?.socialImage !== undefined) continue
-        yield generateOgImage(vfile.data)
-      }
+      const emitted = await mapConcurrent(targets, defaultIoConcurrency, ([_tree, vfile]) =>
+        generateOgImage(vfile.data),
+      )
+      yield* emitted
     },
     async *partialEmit(ctx, _content, _resources, changeEvents) {
+      const targets = changeEvents.filter(
+        changeEvent =>
+          changeEvent.file &&
+          changeEvent.file.data.frontmatter?.socialImage === undefined &&
+          (changeEvent.type === 'add' || changeEvent.type === 'change'),
+      )
+      if (targets.length === 0) return
       const generateOgImage = await createOgImageGenerator(ctx, fullOptions)
-
-      // find all slugs that changed or were added
-      for (const changeEvent of changeEvents) {
-        if (!changeEvent.file) continue
-        if (changeEvent.file.data.frontmatter?.socialImage !== undefined) continue
-        if (changeEvent.type === 'add' || changeEvent.type === 'change') {
-          yield generateOgImage(changeEvent.file.data)
-        }
-      }
+      const emitted = await mapConcurrent(targets, defaultIoConcurrency, changeEvent =>
+        generateOgImage(changeEvent.file!.data),
+      )
+      yield* emitted
     },
     externalResources: ctx => socialImageResources(ctx, fullOptions, true),
   }
