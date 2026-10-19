@@ -6,21 +6,21 @@ The garden renders the same `.base` file at build time. Both sides read the same
 
 ## View keys
 
-| key             | option type | default        | meaning                                                                                                                                          |
-| --------------- | ----------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `type`          | -           | `bookcase`     | view id                                                                                                                                          |
-| `image`         | property    | `note.posters` | cover image, as in the cards view                                                                                                                |
-| `spineTitle`    | property    | `note.title`   | spine label; the spine shows the text before the first `:`                                                                                       |
-| `spineAuthor`   | property    | `note.author`  | small label at the spine foot; a list shows 2 names, then `et al.`                                                                               |
-| `spineColor`    | property    | none           | CSS colour; if absent or invalid, the colour sampled from the cover                                                                              |
-| `bookHeight`    | slider      | `220`          | tallest book in world units, 120 to 320                                                                                                          |
-| `shelfStyle`    | dropdown    | `straight`     | `straight`, `corner`, `spine`, `wall`, `zigzag` or `ladder` for `all` and for a topic with no style of its own; an unknown value draws `straight` |
+| key             | option type | default        | meaning                                                                                                                                                                  |
+| --------------- | ----------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `type`          | -           | `bookcase`     | view id                                                                                                                                                                  |
+| `image`         | property    | `note.posters` | cover image, as in the cards view                                                                                                                                        |
+| `spineTitle`    | property    | `note.title`   | spine label; the spine shows the text before the first `:`                                                                                                               |
+| `spineAuthor`   | property    | `note.author`  | small label at the spine foot; a list shows 2 names, then `et al.`                                                                                                       |
+| `spineColor`    | property    | none           | CSS colour; if absent or invalid, the colour sampled from the cover                                                                                                      |
+| `bookHeight`    | slider      | `220`          | tallest book in world units, 120 to 320                                                                                                                                  |
+| `shelfStyle`    | dropdown    | `straight`     | `straight`, `corner`, `spine`, `wall`, `zigzag` or `ladder` for `all` and for a topic with no style of its own; an unknown value draws `straight`                        |
 | `shelfMaterial` | dropdown    | `paper`        | `paper`, `walnut`, `birch-ply`, `black-lacquer` or `steel` for every furniture part, with the same fallback; unset keeps the style's own materials. Books do not change. |
-| `shelfWidth`    | slider      | `600`          | shelf length in world units; a group wraps onto a new shelf at this width, 320 to 1200                                                           |
-| `scrollStep`    | slider      | `56`           | px of scroll per book, 24 to 120                                                                                                                 |
-| `showTags`      | toggle      | `true`         | label plates on the shelves; a topic's `showTags` overrides it                                                                                   |
-| `pageContent`   | toggle      | `true`         | render the note body in the page panel                                                                                                           |
-| `editorPane`    | toggle      | `true`         | "Edit notes in a side pane": in a wide pane, a selection opens the note in an editor beside the view                                             |
+| `shelfWidth`    | slider      | `600`          | shelf length in world units; a group wraps onto a new shelf at this width, 320 to 1200                                                                                   |
+| `scrollStep`    | slider      | `56`           | px of scroll per book, 24 to 120                                                                                                                                         |
+| `showTags`      | toggle      | `true`         | label plates on the shelves; a topic's `showTags` overrides it                                                                                                           |
+| `pageContent`   | toggle      | `true`         | render the note body in the page panel                                                                                                                                   |
+| `editorPane`    | toggle      | `true`         | "Edit notes in a side pane": in a wide pane, a selection opens the note in an editor beside the view                                                                     |
 
 `filters`, `sort`, `groupBy`, `limit` and `order` keep their Bases meaning. `order` lists the properties on the page panel.
 
