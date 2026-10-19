@@ -1,4 +1,5 @@
 import { s } from 'hastscript'
+import { render } from 'preact-render-to-string'
 import { htmlToJsx } from '../util/jsx'
 import { FilePath } from '../util/path'
 import { twitterIconPath } from '../util/twitter-icon'
@@ -395,4 +396,20 @@ const quartzIconsJsx = htmlToJsx(
   ),
 )
 
-export const QuartzIcon = (_props?: { filePath?: FilePath }) => quartzIconsJsx
+const quartzIconsRawHtml = render(quartzIconsJsx)
+const quartzIconsInnerHtml = quartzIconsRawHtml.slice(
+  quartzIconsRawHtml.indexOf('>') + 1,
+  quartzIconsRawHtml.lastIndexOf('</svg>'),
+)
+const quartzIconsFastJsx = (
+  <svg
+    class="quartz-icons"
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    style="height: 0;"
+    data-singleton={true}
+    dangerouslySetInnerHTML={{ __html: quartzIconsInnerHtml }}
+  />
+)
+
+export const QuartzIcon = (_props?: { filePath?: FilePath }) => quartzIconsFastJsx

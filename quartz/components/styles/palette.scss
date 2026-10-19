@@ -310,13 +310,18 @@ ul#helper {
           padding: 6px 12px;
           cursor: default;
 
+          // The cursor follows the mouse too, so it underlines the title instead of filling the row.
           &:focus,
           &.focus {
-            background: var(--lightgray);
+            .suggestion-title {
+              color: var(--dark);
+              text-decoration: underline;
+              text-underline-offset: 0.15em;
+            }
           }
 
           &:focus-visible {
-            outline: 2px solid var(--secondary);
+            outline: 2px solid var(--dark);
             outline-offset: -2px;
           }
 

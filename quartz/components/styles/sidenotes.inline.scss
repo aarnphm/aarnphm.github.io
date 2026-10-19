@@ -35,7 +35,6 @@ $sidenote-enter-shift: 0.85rem;
     .sidenote-label:not([data-auto]) {
       border-bottom-color: $sidenote-accent;
       border-bottom-style: solid;
-      background-color: color-mix(in srgb, $sidenote-accent 10%, $sidenote-surface);
     }
 
     ~ .sidenote-content {
@@ -51,7 +50,6 @@ $sidenote-enter-shift: 0.85rem;
   .sidenote-label:not([data-auto]) {
     border-bottom-color: $sidenote-accent;
     border-bottom-style: solid;
-    background-color: color-mix(in srgb, $sidenote-accent 10%, $sidenote-surface);
   }
 }
 

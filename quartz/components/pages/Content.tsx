@@ -1,3 +1,4 @@
+import type { Element } from 'hast'
 import { EXIT, visit } from 'unist-util-visit'
 import {
   QuartzComponent,
@@ -23,8 +24,11 @@ export default (() => {
     const { fileData, tree } = props
     const content = htmlToJsx(fileData.filePath!, tree)
     let hasNotebookRuntime = false
-    visit(tree, 'element', node => {
-      if (node.properties.className?.includes('notebook-runtime')) {
+    visit(tree, 'element', (node: Element) => {
+      if (
+        Array.isArray(node.properties.className) &&
+        node.properties.className.includes('notebook-runtime')
+      ) {
         hasNotebookRuntime = true
         return EXIT
       }

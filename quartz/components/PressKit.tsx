@@ -1,3 +1,4 @@
+import { render } from 'preact-render-to-string'
 import type { CardModel } from './scripts/press-kit-card'
 import {
   QuartzComponent,
@@ -144,6 +145,399 @@ const Include = ({
   </button>
 )
 
+const SHARE_URL_TOKEN = '__PRESS_KIT_SHARE_URL__'
+const MAILTO_URL_TOKEN = '__PRESS_KIT_MAILTO_URL__'
+const PAGE_JSON_TOKEN = '__PRESS_KIT_PAGE_JSON__'
+const pressKitTemplateBySite = new Map<string, string>()
+
+const encodeAttr = (value: string): string =>
+  value
+    .replaceAll('&', '&amp;')
+    .replaceAll('"', '&quot;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+
+function getPressKitInnerTemplate(site: string): string {
+  let cached = pressKitTemplateBySite.get(site)
+  if (cached !== undefined) return cached
+  cached = render(
+    <>
+      <header class="press-kit-header">
+        <span id="press-kit-title">kit de presse</span>
+        <div class="press-kit-tabs" role="tablist" aria-label="kit de presse">
+          {(
+            [
+              ['note', 'note', '1'],
+              ['quote', 'citation', '2'],
+              ['links', 'liens', '3'],
+            ] as const
+          ).map(([tab, label, key], index) => (
+            <button
+              type="button"
+              role="tab"
+              id={`press-kit-tab-${tab}`}
+              class="press-kit-tab"
+              data-tab={tab}
+              aria-selected={index === 0 ? 'true' : 'false'}
+              aria-controls="press-kit-panel"
+              aria-keyshortcuts={key}
+              tabindex={index === 0 ? 0 : -1}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <button type="button" class="press-kit-close g-icon-button" aria-label="fermer">
+          <CloseIcon />
+        </button>
+      </header>
+
+      <div
+        class="press-kit-body"
+        id="press-kit-panel"
+        role="tabpanel"
+        aria-labelledby="press-kit-tab-note"
+      >
+        <figure class="press-kit-stage">
+          <div class="press-kit-frame">
+            <canvas class="press-kit-canvas" role="img" aria-label="aperçu de la carte" />
+            <div class="press-kit-unfurl" hidden>
+              <img class="press-kit-unfurl-image" alt="" decoding="async" data-ignore-popup />
+              <div class="press-kit-unfurl-text">
+                <span class="press-kit-unfurl-site">{site}</span>
+                <span class="press-kit-unfurl-title" />
+              </div>
+            </div>
+          </div>
+          <figcaption class="press-kit-caption" aria-live="polite" />
+        </figure>
+
+        <div class="press-kit-controls">
+          <div class="press-kit-group" data-for="image">
+            <fieldset class="press-kit-field">
+              <legend>format</legend>
+              <div class="press-kit-segments">
+                {FORMAT_OPTIONS.map(([value, label, ratio]) => (
+                  <label class="press-kit-segment">
+                    <input type="radio" name="press-kit-format" value={value} />
+                    <span>{label}</span>
+                    <small>{ratio}</small>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+
+            <fieldset class="press-kit-field">
+              <legend>thème</legend>
+              <div class="press-kit-segments">
+                {THEME_OPTIONS.map(([value, label]) => (
+                  <label class="press-kit-segment press-kit-swatch" data-theme={value}>
+                    <input type="radio" name="press-kit-theme" value={value} />
+                    <i aria-hidden="true" />
+                    <span>{label}</span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+
+            <fieldset class="press-kit-field" data-activity-only data-for="note">
+              <legend>langue</legend>
+              <div class="press-kit-segments press-kit-includes press-kit-language">
+                {[
+                  ['en', 'English'],
+                  ['fr', 'Français'],
+                ].map(([value, label]) => (
+                  <label class="press-kit-segment">
+                    <input type="radio" name="press-kit-language" value={value} />
+                    <span>{label}</span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+
+            <div class="press-kit-field" data-for="quote">
+              <label class="press-kit-legend" for="press-kit-quote">
+                texte
+              </label>
+              <textarea
+                id="press-kit-quote"
+                class="press-kit-textarea"
+                rows={5}
+                spellcheck={false}
+                aria-describedby="press-kit-quote-hint"
+              />
+              <p class="press-kit-hint" id="press-kit-quote-hint">
+                sélectionnez un passage pour le citer. <code>*italique*</code> <code>**gras**</code>{' '}
+                <code>`code`</code> <code>$tex$</code>
+              </p>
+            </div>
+
+            <div class="press-kit-field" data-for="quote">
+              <label class="press-kit-legend" for="press-kit-attribution">
+                attribution
+              </label>
+              <input
+                id="press-kit-attribution"
+                class="press-kit-input"
+                type="text"
+                spellcheck={false}
+                aria-describedby="press-kit-attribution-hint"
+              />
+              <p class="press-kit-hint" id="press-kit-attribution-hint">
+                laisser vide pour utiliser le titre d’origine.
+              </p>
+            </div>
+
+            <fieldset class="press-kit-field" data-note-only>
+              <legend>inclure</legend>
+              <div class="press-kit-segments press-kit-includes">
+                <Include name="description" label="description" tab="note" pageOnly pressed />
+                <Include name="excerpt" label="extrait" tab="note" pageOnly />
+                <Include name="meta" label="méta" tab="note" pressed />
+                <Include name="art" label="illustration" />
+                <Include name="highlight" label="surligner" tab="quote" />
+                <Include name="section" label="section" tab="quote" pressed />
+              </div>
+            </fieldset>
+
+            <fieldset class="press-kit-field" data-activity-only data-for="note">
+              <legend>inclure</legend>
+              <div class="press-kit-data-grid press-kit-data-grid--compact">
+                <Include name="title" label="titre" pressed data />
+                <Include name="date" label="date" pressed data />
+                <Include name="metrics" label="mesures" pressed data />
+                <div class="press-kit-data-fields" data-training-options>
+                  <Include name="map" label="carte du parcours" shortLabel="carte" pressed data />
+                  <Include name="distance" label="distance" pressed data />
+                  <Include name="time" label="durée" pressed data />
+                  <Include
+                    name="pace"
+                    label="allure / vitesse"
+                    shortLabel="allure / vit."
+                    pressed
+                    data
+                  />
+                  <Include name="elevation" label="dénivelé" shortLabel="D+" pressed data />
+                  <Include
+                    name="heartRate"
+                    label="fréquence cardiaque"
+                    shortLabel="FC"
+                    pressed
+                    data
+                  />
+                  <Include name="power" label="puissance" shortLabel="puiss." pressed data />
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="press-kit-field" data-day-only data-for="note">
+              <legend>blocs de la journée</legend>
+              <div class="press-kit-data-grid press-kit-block-list">
+                <Include name="entry" label="entrée" data />
+                <div class="press-kit-entry-display" />
+              </div>
+              <div class="press-kit-data-grid press-kit-block-list press-kit-day-blocks" />
+            </fieldset>
+
+            <fieldset class="press-kit-field" data-training-options>
+              <legend>superposition</legend>
+              <div class="press-kit-overlay" />
+              <div class="press-kit-data-grid press-kit-overlay-background">
+                <Include name="transparent" label="fond transparent" data />
+                <button
+                  type="button"
+                  class="press-kit-data-toggle"
+                  data-editor-rulers
+                  aria-pressed="false"
+                  disabled
+                >
+                  <span class="press-kit-data-label">règles</span>
+                </button>
+              </div>
+            </fieldset>
+
+            <fieldset class="press-kit-field" data-training-options>
+              <legend>graphiques</legend>
+              <div class="press-kit-data-grid press-kit-data-grid--compact">
+                <Include name="cyclingPower" label="puissance vélo" shortLabel="puiss. vélo" data />
+                <Include
+                  name="powerCurve"
+                  label="courbe de puissance"
+                  shortLabel="courbe puiss."
+                  data
+                />
+                <Include
+                  name="cyclingLaps"
+                  label="analyse des tours vélo"
+                  shortLabel="tours vélo"
+                  data
+                />
+                <Include name="runPace" label="d d’allure" data />
+                <Include name="runLaps" label="analyse des tours" shortLabel="tours" data />
+              </div>
+              <div class="press-kit-chart-setting press-kit-power-window" hidden>
+                <span class="press-kit-legend" id="press-kit-power-window-label">
+                  moyenne de puissance
+                </span>
+                <div
+                  class="press-kit-segments"
+                  role="radiogroup"
+                  aria-labelledby="press-kit-power-window-label"
+                >
+                  {[
+                    ['30', '30 s'],
+                    ['300', '5 min'],
+                  ].map(([value, label]) => (
+                    <label class="press-kit-segment">
+                      <input type="radio" name="press-kit-power-window" value={value} />
+                      <span>{label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+              <div class="press-kit-chart-setting press-kit-power-scale" hidden>
+                <span class="press-kit-legend" id="press-kit-power-scale-label">
+                  échelle de la courbe
+                </span>
+                <div
+                  class="press-kit-segments"
+                  role="radiogroup"
+                  aria-labelledby="press-kit-power-scale-label"
+                >
+                  {[
+                    ['linear', 'linéaire'],
+                    ['log', 'logarithmique'],
+                  ].map(([value, label]) => (
+                    <label class="press-kit-segment">
+                      <input type="radio" name="press-kit-power-scale" value={value} />
+                      <span>{label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </fieldset>
+
+            <div class="press-kit-metrics" data-training-options />
+
+            <div class="press-kit-actions">
+              <button type="button" class="g-button" data-action="download">
+                télécharger
+              </button>
+              <button type="button" class="g-button" data-action="copy-image">
+                copier l'image
+              </button>
+              <button type="button" class="g-button" data-action="share-image" hidden>
+                partager…
+              </button>
+            </div>
+          </div>
+
+          <div class="press-kit-group" data-for="links">
+            <div class="press-kit-field">
+              <span class="press-kit-legend" id="press-kit-anchor-label">
+                ancre
+              </span>
+              <div class="press-kit-anchor" />
+            </div>
+
+            <div class="press-kit-field">
+              <label class="press-kit-legend" for="press-kit-url">
+                lien
+              </label>
+              <div class="press-kit-url-row">
+                <input id="press-kit-url" class="press-kit-input" type="url" readonly />
+                <button type="button" class="g-button" data-copy="url">
+                  copier
+                </button>
+              </div>
+            </div>
+
+            <div class="press-kit-field">
+              <span class="press-kit-legend">copier comme</span>
+              <div class="press-kit-chips">
+                <button type="button" class="g-button" data-copy="markdown">
+                  markdown
+                </button>
+                <button type="button" class="g-button" data-copy="wikilink">
+                  wikilink
+                </button>
+                <button type="button" class="g-button" data-copy="bibtex" data-citation-only>
+                  bibtex
+                </button>
+                <button type="button" class="g-button" data-copy="citation" data-citation-only>
+                  citation
+                </button>
+              </div>
+            </div>
+
+            <div class="press-kit-field">
+              <label class="press-kit-legend" for="press-kit-note">
+                note
+              </label>
+              <textarea
+                id="press-kit-note"
+                class="press-kit-textarea"
+                rows={4}
+                aria-describedby="press-kit-note-count"
+              />
+              <p class="press-kit-hint" id="press-kit-note-count" />
+            </div>
+
+            <div class="press-kit-field">
+              <span class="press-kit-legend">publier sur</span>
+              <div class="press-kit-chips">
+                {INTENTS.map(([intent, label, d]) => (
+                  <a
+                    class="press-kit-chip press-kit-intent"
+                    data-intent={intent}
+                    href={SHARE_URL_TOKEN}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={label}
+                    title={label}
+                    data-no-popover
+                  >
+                    <Glyph d={d} />
+                  </a>
+                ))}
+                <a
+                  class="press-kit-chip press-kit-intent"
+                  data-intent="email"
+                  href={MAILTO_URL_TOKEN}
+                  aria-label="courriel"
+                  title="courriel"
+                  data-no-popover
+                >
+                  <Glyph d={MAIL} stroke />
+                </a>
+                <button
+                  type="button"
+                  class="g-button press-kit-intent"
+                  data-action="share-link"
+                  aria-label="partager…"
+                  title="partager…"
+                  hidden
+                >
+                  <Glyph d={SHARE} stroke />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="press-kit-help" role="status" />
+      <script
+        type="application/json"
+        class="press-kit-data"
+        dangerouslySetInnerHTML={{ __html: PAGE_JSON_TOKEN }}
+      />
+    </>,
+  )
+  pressKitTemplateBySite.set(site, cached)
+  return cached
+}
+
 export default ((userOpts?: Partial<Options>) => {
   const opts = { ...defaultOptions, ...userOpts }
 
@@ -160,9 +554,11 @@ export default ((userOpts?: Partial<Options>) => {
       ? (fileData.frontmatter.tags as unknown[]).map(String).slice(0, 4)
       : []
 
+    const shareUrl = `https://${site}/${path}`
+    const mailtoUrl = `mailto:?body=${encodeURIComponent(shareUrl)}`
     const page: PressKitPage = {
       slug: path,
-      url: `https://${site}/${path}`,
+      url: shareUrl,
       site,
       crumbs: [
         site,
@@ -179,6 +575,11 @@ export default ((userOpts?: Partial<Options>) => {
       handle: opts.handle,
       colors: { light: { ...cfg.theme.colors.lightMode }, dark: { ...cfg.theme.colors.darkMode } },
     }
+    const pageJson = JSON.stringify(page).replace(/</g, '\\u003c')
+    const innerHtml = getPressKitInnerTemplate(site)
+      .replaceAll(SHARE_URL_TOKEN, encodeAttr(shareUrl))
+      .replace(MAILTO_URL_TOKEN, encodeAttr(mailtoUrl))
+      .replace(PAGE_JSON_TOKEN, () => pageJson)
 
     return (
       <dialog
@@ -187,383 +588,8 @@ export default ((userOpts?: Partial<Options>) => {
         data-tab="note"
         tabindex={-1}
         lang="fr"
-      >
-        <header class="press-kit-header">
-          <span id="press-kit-title">kit de presse</span>
-          <div class="press-kit-tabs" role="tablist" aria-label="kit de presse">
-            {(
-              [
-                ['note', 'note', '1'],
-                ['quote', 'citation', '2'],
-                ['links', 'liens', '3'],
-              ] as const
-            ).map(([tab, label, key], index) => (
-              <button
-                type="button"
-                role="tab"
-                id={`press-kit-tab-${tab}`}
-                class="press-kit-tab"
-                data-tab={tab}
-                aria-selected={index === 0 ? 'true' : 'false'}
-                aria-controls="press-kit-panel"
-                aria-keyshortcuts={key}
-                tabindex={index === 0 ? 0 : -1}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-          <button type="button" class="press-kit-close g-icon-button" aria-label="fermer">
-            <CloseIcon />
-          </button>
-        </header>
-
-        <div
-          class="press-kit-body"
-          id="press-kit-panel"
-          role="tabpanel"
-          aria-labelledby="press-kit-tab-note"
-        >
-          <figure class="press-kit-stage">
-            <div class="press-kit-frame">
-              <canvas class="press-kit-canvas" role="img" aria-label="aperçu de la carte" />
-              <div class="press-kit-unfurl" hidden>
-                <img class="press-kit-unfurl-image" alt="" decoding="async" data-ignore-popup />
-                <div class="press-kit-unfurl-text">
-                  <span class="press-kit-unfurl-site">{site}</span>
-                  <span class="press-kit-unfurl-title" />
-                </div>
-              </div>
-            </div>
-            <figcaption class="press-kit-caption" aria-live="polite" />
-          </figure>
-
-          <div class="press-kit-controls">
-            <div class="press-kit-group" data-for="image">
-              <fieldset class="press-kit-field">
-                <legend>format</legend>
-                <div class="press-kit-segments">
-                  {FORMAT_OPTIONS.map(([value, label, ratio]) => (
-                    <label class="press-kit-segment">
-                      <input type="radio" name="press-kit-format" value={value} />
-                      <span>{label}</span>
-                      <small>{ratio}</small>
-                    </label>
-                  ))}
-                </div>
-              </fieldset>
-
-              <fieldset class="press-kit-field">
-                <legend>thème</legend>
-                <div class="press-kit-segments">
-                  {THEME_OPTIONS.map(([value, label]) => (
-                    <label class="press-kit-segment press-kit-swatch" data-theme={value}>
-                      <input type="radio" name="press-kit-theme" value={value} />
-                      <i aria-hidden="true" />
-                      <span>{label}</span>
-                    </label>
-                  ))}
-                </div>
-              </fieldset>
-
-              <fieldset class="press-kit-field" data-activity-only data-for="note">
-                <legend>langue</legend>
-                <div class="press-kit-segments press-kit-includes press-kit-language">
-                  {[
-                    ['en', 'English'],
-                    ['fr', 'Français'],
-                  ].map(([value, label]) => (
-                    <label class="press-kit-segment">
-                      <input type="radio" name="press-kit-language" value={value} />
-                      <span>{label}</span>
-                    </label>
-                  ))}
-                </div>
-              </fieldset>
-
-              <div class="press-kit-field" data-for="quote">
-                <label class="press-kit-legend" for="press-kit-quote">
-                  texte
-                </label>
-                <textarea
-                  id="press-kit-quote"
-                  class="press-kit-textarea"
-                  rows={5}
-                  spellcheck={false}
-                  aria-describedby="press-kit-quote-hint"
-                />
-                <p class="press-kit-hint" id="press-kit-quote-hint">
-                  sélectionnez un passage pour le citer. <code>*italique*</code>{' '}
-                  <code>**gras**</code> <code>`code`</code> <code>$tex$</code>
-                </p>
-              </div>
-
-              <div class="press-kit-field" data-for="quote">
-                <label class="press-kit-legend" for="press-kit-attribution">
-                  attribution
-                </label>
-                <input
-                  id="press-kit-attribution"
-                  class="press-kit-input"
-                  type="text"
-                  spellcheck={false}
-                  aria-describedby="press-kit-attribution-hint"
-                />
-                <p class="press-kit-hint" id="press-kit-attribution-hint">
-                  laisser vide pour utiliser le titre d’origine.
-                </p>
-              </div>
-
-              <fieldset class="press-kit-field" data-note-only>
-                <legend>inclure</legend>
-                <div class="press-kit-segments press-kit-includes">
-                  <Include name="description" label="description" tab="note" pageOnly pressed />
-                  <Include name="excerpt" label="extrait" tab="note" pageOnly />
-                  <Include name="meta" label="méta" tab="note" pressed />
-                  <Include name="art" label="illustration" />
-                  <Include name="highlight" label="surligner" tab="quote" />
-                  <Include name="section" label="section" tab="quote" pressed />
-                </div>
-              </fieldset>
-
-              <fieldset class="press-kit-field" data-activity-only data-for="note">
-                <legend>inclure</legend>
-                <div class="press-kit-data-grid press-kit-data-grid--compact">
-                  <Include name="title" label="titre" pressed data />
-                  <Include name="date" label="date" pressed data />
-                  <Include name="metrics" label="mesures" pressed data />
-                  <div class="press-kit-data-fields" data-training-options>
-                    <Include name="map" label="carte du parcours" shortLabel="carte" pressed data />
-                    <Include name="distance" label="distance" pressed data />
-                    <Include name="time" label="durée" pressed data />
-                    <Include
-                      name="pace"
-                      label="allure / vitesse"
-                      shortLabel="allure / vit."
-                      pressed
-                      data
-                    />
-                    <Include name="elevation" label="dénivelé" shortLabel="D+" pressed data />
-                    <Include
-                      name="heartRate"
-                      label="fréquence cardiaque"
-                      shortLabel="FC"
-                      pressed
-                      data
-                    />
-                    <Include name="power" label="puissance" shortLabel="puiss." pressed data />
-                  </div>
-                </div>
-              </fieldset>
-
-              <fieldset class="press-kit-field" data-day-only data-for="note">
-                <legend>blocs de la journée</legend>
-                <div class="press-kit-data-grid press-kit-block-list">
-                  <Include name="entry" label="entrée" data />
-                  <div class="press-kit-entry-display" />
-                </div>
-                <div class="press-kit-data-grid press-kit-block-list press-kit-day-blocks" />
-              </fieldset>
-
-              <fieldset class="press-kit-field" data-training-options>
-                <legend>superposition</legend>
-                <div class="press-kit-overlay" />
-                <div class="press-kit-data-grid press-kit-overlay-background">
-                  <Include name="transparent" label="fond transparent" data />
-                  <button
-                    type="button"
-                    class="press-kit-data-toggle"
-                    data-editor-rulers
-                    aria-pressed="false"
-                    disabled
-                  >
-                    <span class="press-kit-data-label">règles</span>
-                  </button>
-                </div>
-              </fieldset>
-
-              <fieldset class="press-kit-field" data-training-options>
-                <legend>graphiques</legend>
-                <div class="press-kit-data-grid press-kit-data-grid--compact">
-                  <Include
-                    name="cyclingPower"
-                    label="puissance vélo"
-                    shortLabel="puiss. vélo"
-                    data
-                  />
-                  <Include
-                    name="powerCurve"
-                    label="courbe de puissance"
-                    shortLabel="courbe puiss."
-                    data
-                  />
-                  <Include
-                    name="cyclingLaps"
-                    label="analyse des tours vélo"
-                    shortLabel="tours vélo"
-                    data
-                  />
-                  <Include name="runPace" label="d d’allure" data />
-                  <Include name="runLaps" label="analyse des tours" shortLabel="tours" data />
-                </div>
-                <div class="press-kit-chart-setting press-kit-power-window" hidden>
-                  <span class="press-kit-legend" id="press-kit-power-window-label">
-                    moyenne de puissance
-                  </span>
-                  <div
-                    class="press-kit-segments"
-                    role="radiogroup"
-                    aria-labelledby="press-kit-power-window-label"
-                  >
-                    {[
-                      ['30', '30 s'],
-                      ['300', '5 min'],
-                    ].map(([value, label]) => (
-                      <label class="press-kit-segment">
-                        <input type="radio" name="press-kit-power-window" value={value} />
-                        <span>{label}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-                <div class="press-kit-chart-setting press-kit-power-scale" hidden>
-                  <span class="press-kit-legend" id="press-kit-power-scale-label">
-                    échelle de la courbe
-                  </span>
-                  <div
-                    class="press-kit-segments"
-                    role="radiogroup"
-                    aria-labelledby="press-kit-power-scale-label"
-                  >
-                    {[
-                      ['linear', 'linéaire'],
-                      ['log', 'logarithmique'],
-                    ].map(([value, label]) => (
-                      <label class="press-kit-segment">
-                        <input type="radio" name="press-kit-power-scale" value={value} />
-                        <span>{label}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              </fieldset>
-
-              <div class="press-kit-metrics" data-training-options />
-
-              <div class="press-kit-actions">
-                <button type="button" class="g-button" data-action="download">
-                  télécharger
-                </button>
-                <button type="button" class="g-button" data-action="copy-image">
-                  copier l'image
-                </button>
-                <button type="button" class="g-button" data-action="share-image" hidden>
-                  partager…
-                </button>
-              </div>
-            </div>
-
-            <div class="press-kit-group" data-for="links">
-              <div class="press-kit-field">
-                <span class="press-kit-legend" id="press-kit-anchor-label">
-                  ancre
-                </span>
-                <div class="press-kit-anchor" />
-              </div>
-
-              <div class="press-kit-field">
-                <label class="press-kit-legend" for="press-kit-url">
-                  lien
-                </label>
-                <div class="press-kit-url-row">
-                  <input id="press-kit-url" class="press-kit-input" type="url" readonly />
-                  <button type="button" class="g-button" data-copy="url">
-                    copier
-                  </button>
-                </div>
-              </div>
-
-              <div class="press-kit-field">
-                <span class="press-kit-legend">copier comme</span>
-                <div class="press-kit-chips">
-                  <button type="button" class="g-button" data-copy="markdown">
-                    markdown
-                  </button>
-                  <button type="button" class="g-button" data-copy="wikilink">
-                    wikilink
-                  </button>
-                  <button type="button" class="g-button" data-copy="bibtex" data-citation-only>
-                    bibtex
-                  </button>
-                  <button type="button" class="g-button" data-copy="citation" data-citation-only>
-                    citation
-                  </button>
-                </div>
-              </div>
-
-              <div class="press-kit-field">
-                <label class="press-kit-legend" for="press-kit-note">
-                  note
-                </label>
-                <textarea
-                  id="press-kit-note"
-                  class="press-kit-textarea"
-                  rows={4}
-                  aria-describedby="press-kit-note-count"
-                />
-                <p class="press-kit-hint" id="press-kit-note-count" />
-              </div>
-
-              <div class="press-kit-field">
-                <span class="press-kit-legend">publier sur</span>
-                <div class="press-kit-chips">
-                  {INTENTS.map(([intent, label, d]) => (
-                    <a
-                      class="press-kit-chip press-kit-intent"
-                      data-intent={intent}
-                      href={`https://${site}/${path}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={label}
-                      title={label}
-                      data-no-popover
-                    >
-                      <Glyph d={d} />
-                    </a>
-                  ))}
-                  <a
-                    class="press-kit-chip press-kit-intent"
-                    data-intent="email"
-                    href={`mailto:?body=${encodeURIComponent(`https://${site}/${path}`)}`}
-                    aria-label="courriel"
-                    title="courriel"
-                    data-no-popover
-                  >
-                    <Glyph d={MAIL} stroke />
-                  </a>
-                  <button
-                    type="button"
-                    class="g-button press-kit-intent"
-                    data-action="share-link"
-                    aria-label="partager…"
-                    title="partager…"
-                    hidden
-                  >
-                    <Glyph d={SHARE} stroke />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <p class="press-kit-help" role="status" />
-        <script
-          type="application/json"
-          class="press-kit-data"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(page).replace(/</g, '\\u003c') }}
-        />
-      </dialog>
+        dangerouslySetInnerHTML={{ __html: innerHtml }}
+      />
     )
   }
 

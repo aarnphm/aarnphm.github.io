@@ -522,12 +522,14 @@ body[data-pdf-embedded='course'] {
 
   a {
     position: absolute;
+    box-sizing: border-box;
     pointer-events: auto;
   }
 
+  // The link box sits over canvas text, so its bottom edge draws the underline.
   @media (hover: hover) and (pointer: fine) {
     a:hover {
-      background: color-mix(in srgb, #{$mark-ink} 14%, transparent);
+      border-bottom: 1px solid #{$mark-ink};
     }
   }
 }
@@ -1212,7 +1214,12 @@ body[data-pdf-embedded='course'] {
 
   @media (hover: hover) and (pointer: fine) {
     a:hover {
-      background: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+      color: var(--dark);
+    }
+
+    a:hover .pdf-reader-library-title {
+      text-decoration: underline;
+      text-underline-offset: 0.15em;
     }
   }
 }

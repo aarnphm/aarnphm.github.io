@@ -236,8 +236,9 @@ body[data-arena-subpage='true'] {
   }
 
   &:hover {
-    background: var(--arena-surface);
-    color: var(--darkgray);
+    color: var(--dark);
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
   }
 
   .arena-channel-row-preview-thumb {
@@ -524,7 +525,6 @@ body[data-arena-subpage='true'] {
 
   &:hover {
     border-color: var(--gray);
-    background: var(--arena-surface);
   }
 
   &.pinned {
@@ -1428,14 +1428,6 @@ span.tag-link:hover {
   }
 }
 
-[saved-theme='dark'] {
-  .arena-wikilink-trail-anchor {
-    &:hover {
-      background: var(--light);
-    }
-  }
-}
-
 .arena-search-row {
   display: flex;
   align-items: center;
@@ -1544,17 +1536,20 @@ span.tag-link:hover {
   padding: 0.4rem 0.75rem;
   border-bottom: 1px solid var(--lightgray);
   cursor: pointer;
-  transition: border-color 0.2s ease;
 
-  &:hover {
-    border-color: var(--secondary);
-  }
-
+  // Hover and the keyboard cursor underline the title instead of filling the row.
+  &:hover,
   &.active,
   &:focus-visible {
-    border-color: var(--secondary);
-    outline: none;
-    background-color: color-mix(in srgb, var(--dark) 4%, transparent);
+    .arena-search-result-title {
+      text-decoration: underline;
+      text-underline-offset: 0.15em;
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: -2px;
   }
 
   &:last-child {
@@ -1581,7 +1576,6 @@ span.tag-link:hover {
 
 .arena-search-result-tag-badge {
   display: inline-block;
-  transition: background-color 0.15s ease;
   border: 1px solid var(--gray);
   color: inherit;
   border-radius: var(--radius-none);
@@ -1591,10 +1585,6 @@ span.tag-link:hover {
   font-style: normal;
   line-height: 1.4;
   text-decoration: none;
-
-  &:hover {
-    background-color: color-mix(in srgb, var(--secondary) 12%, transparent);
-  }
 }
 
 .arena-search-result-channel-badge {

@@ -717,6 +717,7 @@ type RenderTreeFeatures = {
   hasFootnotes: boolean
   hasNestedAnchor: boolean
   hasDateAnchor: boolean
+  hasDataSlugAnchor: boolean
 }
 
 const DATE_ANCHOR_RE = /#(\d{4}-\d{2}-\d{2})$/
@@ -760,6 +761,7 @@ function collectRenderTreeFeatures(root: Root): RenderTreeFeatures {
     hasFootnotes: false,
     hasNestedAnchor: false,
     hasDateAnchor: false,
+    hasDataSlugAnchor: false,
   }
   visit(root, 'element', node => {
     if (node.tagName === 'blockquote') {
@@ -780,6 +782,9 @@ function collectRenderTreeFeatures(root: Root): RenderTreeFeatures {
       if (typeof node.properties?.href === 'string' && DATE_ANCHOR_RE.test(node.properties.href)) {
         features.hasDateAnchor = true
       }
+      if (typeof (node.properties?.dataSlug ?? node.properties?.['data-slug']) === 'string') {
+        features.hasDataSlugAnchor = true
+      }
     }
 
     if (
@@ -787,7 +792,8 @@ function collectRenderTreeFeatures(root: Root): RenderTreeFeatures {
       features.hasReferences &&
       features.hasFootnotes &&
       features.hasNestedAnchor &&
-      features.hasDateAnchor
+      features.hasDateAnchor &&
+      features.hasDataSlugAnchor
     ) {
       return EXIT
     }
@@ -1454,15 +1460,17 @@ function resolveTransclusions(
   }
 
   // Canvas and base pages render through their own runtime; the popover reads a summary instead.
-  const previewData = renderDataFor(componentData.ctx, allFiles)
-  visit(root, { tagName: 'a' }, node => {
-    const props = node.properties
-    const targetSlug = props?.['dataSlug'] ?? props?.['data-slug']
-    if (typeof targetSlug !== 'string' || !isFullSlug(targetSlug)) return
-    const page = previewData.bySlug.get(targetSlug)
-    const type = page?.bases ? 'base' : page?.jsonCanvas ? 'canvas' : null
-    if (type) props['data-document-preview'] = type
-  })
+  if (features.hasDataSlugAnchor) {
+    const previewData = renderDataFor(componentData.ctx, allFiles)
+    visit(root, { tagName: 'a' }, node => {
+      const props = node.properties
+      const targetSlug = props?.['dataSlug'] ?? props?.['data-slug']
+      if (typeof targetSlug !== 'string' || !isFullSlug(targetSlug)) return
+      const page = previewData.bySlug.get(targetSlug)
+      const type = page?.bases ? 'base' : page?.jsonCanvas ? 'canvas' : null
+      if (type) props['data-document-preview'] = type
+    })
+  }
 
   if (features.hasTranscludeBlockquote) {
     const renderData = renderDataFor(componentData.ctx, allFiles)
@@ -2557,163 +2565,179 @@ export function renderPageWithMetadata(
 ): { html: string; fileData: QuartzPluginData } {
   const renderPerf = new PerfTimer()
   componentData = { ...componentData, fileData: { ...componentData.fileData }, pageSlug: slug }
-  // make a deep copy of the tree so we don't remove the transclusion references
-  // for the file cached in contentMap in build.ts
-  const root = clone(componentData.tree) as Root
-  const visited = new Set<FullSlug>([slug])
-  // NOTE: set componentData.tree to the edited html that has transclusions rendered
-
-  const transcluded = resolveTransclusions(
-    root,
-    componentData,
-    { visited },
-    componentData.fileData.flashcards ? { dynalist: false } : undefined,
-  )
-  let tree = transcluded.tree
-  if (transcluded.readingTime) componentData.fileData.readingTime = transcluded.readingTime
-  logBuildSpan(ctx.argv, 'render:transclude', slug, renderPerf.elapsedMs())
-  renderBaseEmbeds(tree, componentData)
-
-  if (componentData.fileData.frontmatter?.pageLayout === 'technical-tractatus') {
-    applyTractatusLayout(tree)
-  }
-
   const renderOptions: RenderPageOptions = {
     skipProtected: false,
     forEmail: false,
     skipSearch: false,
     ...userOptions,
   }
-
   const skipProtected = renderOptions?.skipProtected ?? renderOptions?.forEmail ?? false
   if (skipProtected) {
     delete componentData.fileData.protectedPassword
-  } else if (componentData.fileData.protectedPassword) {
-    const password = componentData.fileData.protectedPassword as string
-
-    // Convert final tree to HTML
-    const finalHtml = toHtml(tree, { allowDangerousHtml: true })
-
-    // Encrypt the final HTML
-    const encrypted = encryptContent(finalHtml, password)
-
-    // Replace tree with password prompt overlay
-    tree = {
-      type: 'root',
-      children: [
-        h(
-          'div.protected-content-wrapper',
-          {
-            dataProtected: 'true',
-            dataSlug: componentData.fileData.slug,
-            dataEncryptedContent: encodeURIComponent(JSON.stringify(encrypted)),
-          },
-          [
-            h('.password-prompt-overlay', { id: 'password-prompt', style: 'display: flex;' }, [
-              h('.password-prompt-container', [
-                h('p', 'this content is protected'),
-                h('form.password-form', [
-                  h('input.password-input', {
-                    type: 'password',
-                    placeholder: 'enter password',
-                    autocomplete: 'off',
-                    required: true,
-                    id: 'protected-password-input',
-                    name: 'password input for protected page',
-                  }),
-                  h('button.password-submit', { type: 'submit' }, 'unlock'),
-                ]),
-                h(
-                  'p.password-error',
-                  { style: 'display: none; color: var(--rose); margin-top: 2rem;' },
-                  'incorrect password',
-                ),
-              ]),
-            ]),
-          ],
-        ),
-      ],
-    } as Root
-
-    // Clean up password from file.data
-    delete componentData.fileData.protectedPassword
-  }
-
-  // NOTE: Finally, we dump out the data-references and data-footnotes down to page footer, if exists
-  const toRemove: Array<{ parent: Element; index: number; node: Element }> = []
-  const referenceSections: Element[] = []
-  const footnoteSections: Element[] = []
-  let referenceOrder = Number.MAX_SAFE_INTEGER
-  let footnoteOrder = Number.MAX_SAFE_INTEGER
-
-  visit(tree, { tagName: 'section' }, (node, index, parent) => {
-    const isReference = node.properties?.dataReferences === ''
-    const isFootnote = node.properties?.dataFootnotes === ''
-    if (isReference || isFootnote) {
-      const className = Array.isArray(node.properties.className)
-        ? node.properties.className
-        : (node.properties.className = [])
-      className.push('main-col')
-      toRemove.push({ parent: parent as Element, index: index!, node })
-
-      if (isReference) {
-        referenceSections.push(node as Element)
-        referenceOrder = Math.min(referenceOrder, index ?? Number.MAX_SAFE_INTEGER)
-      } else {
-        footnoteSections.push(node as Element)
-        footnoteOrder = Math.min(footnoteOrder, index ?? Number.MAX_SAFE_INTEGER)
-      }
-    }
-  })
-
-  // remove in reverse order to maintain correct indices
-  toRemove.sort((a, b) => b.index - a.index)
-  for (const { parent, index } of toRemove) {
-    parent.children.splice(index, 1)
-  }
-
-  const mergeSectionLists = (sections: Element[], listTag: 'ol' | 'ul'): Element | undefined => {
-    if (sections.length === 0) return undefined
-    const base = sections[0]
-    const listGetter = listTag === 'ol' ? getFootnotesList : getBibList
-    const targetList = listGetter(base)
-    if (!targetList) return base
-
-    // collect all items before mutating any list to avoid losing base children
-    const allItems: Element[] = []
-    for (const section of sections) {
-      const list = listGetter(section)
-      if (!list) continue
-      allItems.push(...((list.children as Element[]) ?? []))
-    }
-
-    const seenIds = new Set<string>()
-    targetList.children = []
-
-    for (const child of allItems) {
-      const childId = (child?.properties?.id as string | undefined) ?? ''
-      if (childId && seenIds.has(childId)) continue
-      if (childId) seenIds.add(childId)
-      targetList.children.push(child)
-    }
-
-    return base
   }
 
   const retrievalNodes: Element[] = []
-  const mergedReferences = mergeSectionLists(referenceSections, 'ul')
-  const mergedFootnotes = mergeSectionLists(footnoteSections, 'ol')
+  if (
+    (componentData.tree as Root).children.length === 0 &&
+    !componentData.fileData.protectedPassword
+  ) {
+    const tocOpts = componentData.fileData.tocOptions
+    if (tocOpts) {
+      delete componentData.fileData.toc
+      if (tocOpts.display) {
+        componentData.fileData.tocOptions = { ...tocOpts, sourceEntries: 0 }
+      }
+    }
+    logBuildSpan(ctx.argv, 'render:transclude', slug, renderPerf.elapsedMs())
+    logBuildSpan(ctx.argv, 'render:prepare', slug, renderPerf.elapsedMs())
+  } else {
+    // make a deep copy of the tree so we don't remove the transclusion references
+    // for the file cached in contentMap in build.ts
+    const root = clone(componentData.tree) as Root
+    const visited = new Set<FullSlug>([slug])
+    // NOTE: set componentData.tree to the edited html that has transclusions rendered
 
-  const orderedNodes: Array<{ order: number; node: Element }> = []
-  if (mergedReferences) orderedNodes.push({ order: referenceOrder, node: mergedReferences })
-  if (mergedFootnotes) orderedNodes.push({ order: footnoteOrder, node: mergedFootnotes })
-  orderedNodes.sort((a, b) => a.order - b.order)
-  retrievalNodes.push(...orderedNodes.map(entry => entry.node))
-  logBuildSpan(ctx.argv, 'render:prepare', slug, renderPerf.elapsedMs())
+    const transcluded = resolveTransclusions(
+      root,
+      componentData,
+      { visited },
+      componentData.fileData.flashcards ? { dynalist: false } : undefined,
+    )
+    let tree = transcluded.tree
+    if (transcluded.readingTime) componentData.fileData.readingTime = transcluded.readingTime
+    logBuildSpan(ctx.argv, 'render:transclude', slug, renderPerf.elapsedMs())
+    renderBaseEmbeds(tree, componentData)
 
-  componentData.tree = tree
-  updateTocDataFromTree(tree, componentData)
-  updateStreamDataFromTree(tree, componentData)
+    if (componentData.fileData.frontmatter?.pageLayout === 'technical-tractatus') {
+      applyTractatusLayout(tree)
+    }
+
+    if (componentData.fileData.protectedPassword) {
+      const password = componentData.fileData.protectedPassword as string
+
+      // Convert final tree to HTML
+      const finalHtml = toHtml(tree, { allowDangerousHtml: true })
+
+      // Encrypt the final HTML
+      const encrypted = encryptContent(finalHtml, password)
+
+      // Replace tree with password prompt overlay
+      tree = {
+        type: 'root',
+        children: [
+          h(
+            'div.protected-content-wrapper',
+            {
+              dataProtected: 'true',
+              dataSlug: componentData.fileData.slug,
+              dataEncryptedContent: encodeURIComponent(JSON.stringify(encrypted)),
+            },
+            [
+              h('.password-prompt-overlay', { id: 'password-prompt', style: 'display: flex;' }, [
+                h('.password-prompt-container', [
+                  h('p', 'this content is protected'),
+                  h('form.password-form', [
+                    h('input.password-input', {
+                      type: 'password',
+                      placeholder: 'enter password',
+                      autocomplete: 'off',
+                      required: true,
+                      id: 'protected-password-input',
+                      name: 'password input for protected page',
+                    }),
+                    h('button.password-submit', { type: 'submit' }, 'unlock'),
+                  ]),
+                  h(
+                    'p.password-error',
+                    { style: 'display: none; color: var(--rose); margin-top: 2rem;' },
+                    'incorrect password',
+                  ),
+                ]),
+              ]),
+            ],
+          ),
+        ],
+      } as Root
+
+      // Clean up password from file.data
+      delete componentData.fileData.protectedPassword
+    }
+
+    // NOTE: Finally, we dump out the data-references and data-footnotes down to page footer, if exists
+    const toRemove: Array<{ parent: Element; index: number; node: Element }> = []
+    const referenceSections: Element[] = []
+    const footnoteSections: Element[] = []
+    let referenceOrder = Number.MAX_SAFE_INTEGER
+    let footnoteOrder = Number.MAX_SAFE_INTEGER
+
+    visit(tree, { tagName: 'section' }, (node, index, parent) => {
+      const isReference = node.properties?.dataReferences === ''
+      const isFootnote = node.properties?.dataFootnotes === ''
+      if (isReference || isFootnote) {
+        const className = Array.isArray(node.properties.className)
+          ? node.properties.className
+          : (node.properties.className = [])
+        className.push('main-col')
+        toRemove.push({ parent: parent as Element, index: index!, node })
+
+        if (isReference) {
+          referenceSections.push(node as Element)
+          referenceOrder = Math.min(referenceOrder, index ?? Number.MAX_SAFE_INTEGER)
+        } else {
+          footnoteSections.push(node as Element)
+          footnoteOrder = Math.min(footnoteOrder, index ?? Number.MAX_SAFE_INTEGER)
+        }
+      }
+    })
+
+    // remove in reverse order to maintain correct indices
+    toRemove.sort((a, b) => b.index - a.index)
+    for (const { parent, index } of toRemove) {
+      parent.children.splice(index, 1)
+    }
+
+    const mergeSectionLists = (sections: Element[], listTag: 'ol' | 'ul'): Element | undefined => {
+      if (sections.length === 0) return undefined
+      const base = sections[0]
+      const listGetter = listTag === 'ol' ? getFootnotesList : getBibList
+      const targetList = listGetter(base)
+      if (!targetList) return base
+
+      // collect all items before mutating any list to avoid losing base children
+      const allItems: Element[] = []
+      for (const section of sections) {
+        const list = listGetter(section)
+        if (!list) continue
+        allItems.push(...((list.children as Element[]) ?? []))
+      }
+
+      const seenIds = new Set<string>()
+      targetList.children = []
+
+      for (const child of allItems) {
+        const childId = (child?.properties?.id as string | undefined) ?? ''
+        if (childId && seenIds.has(childId)) continue
+        if (childId) seenIds.add(childId)
+        targetList.children.push(child)
+      }
+
+      return base
+    }
+
+    const mergedReferences = mergeSectionLists(referenceSections, 'ul')
+    const mergedFootnotes = mergeSectionLists(footnoteSections, 'ol')
+
+    const orderedNodes: Array<{ order: number; node: Element }> = []
+    if (mergedReferences) orderedNodes.push({ order: referenceOrder, node: mergedReferences })
+    if (mergedFootnotes) orderedNodes.push({ order: footnoteOrder, node: mergedFootnotes })
+    orderedNodes.sort((a, b) => a.order - b.order)
+    retrievalNodes.push(...orderedNodes.map(entry => entry.node))
+    logBuildSpan(ctx.argv, 'render:prepare', slug, renderPerf.elapsedMs())
+
+    componentData.tree = tree
+    updateTocDataFromTree(tree, componentData)
+    updateStreamDataFromTree(tree, componentData)
+  }
   isFolderTag = isFolderTag ?? false
 
   const skipSearch = renderOptions?.skipSearch ?? renderOptions?.forEmail ?? false
@@ -2929,7 +2953,10 @@ export function renderPageWithMetadata(
   // The body renders first so the head links only the page-scoped sheets its markup uses.
   const { externalResources } = componentData
   const css = externalResources.css.filter(
-    ({ classPrefixes }) => !classPrefixes || classPrefixPattern(classPrefixes).test(body),
+    ({ classPrefixes }) =>
+      !classPrefixes ||
+      (classPrefixes.some(prefix => body.includes(prefix)) &&
+        classPrefixPattern(classPrefixes).test(body)),
   )
   const head = render(
     <html lang={lang}>

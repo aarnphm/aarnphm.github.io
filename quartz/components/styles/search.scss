@@ -382,7 +382,6 @@
             overflow: hidden;
             padding: 1em;
             cursor: pointer;
-            transition: background 0.2s ease;
             border-bottom: 1px solid var(--lightgray);
             width: 100%;
             display: block;
@@ -402,11 +401,14 @@
               font-family: var(--headerFont);
             }
 
+            // Hover and the keyboard cursor underline the title instead of filling the card.
             &:hover,
             &:focus,
             &.focus {
-              background: var(--lightgray);
-              color: var(--gray);
+              h3 {
+                text-decoration: underline;
+                text-underline-offset: 0.15em;
+              }
             }
 
             h3 {

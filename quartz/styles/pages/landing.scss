@@ -274,13 +274,8 @@ body[data-slug='index'] {
     .recent-links {
       flex-direction: column;
 
-      a {
-        &:hover {
-          &.see-more {
-            background: var(--dark);
-            color: var(--light);
-          }
-        }
+      a.see-more:hover {
+        text-decoration: underline;
       }
     }
   }

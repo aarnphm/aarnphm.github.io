@@ -383,11 +383,6 @@ a {
             .backlink-card {
               padding: 0;
 
-              &:hover,
-              &:focus-within {
-                background: var(--base-table-surface);
-              }
-
               a[data-backlink] {
                 line-height: 1.45;
                 color: var(--dark);
@@ -438,7 +433,8 @@ a {
 
           &:hover,
           &:focus-visible {
-            background: color-mix(in srgb, var(--light) 72%, var(--lightgray));
+            text-decoration: underline;
+            text-underline-offset: 0.15em;
           }
 
           &:focus-visible {

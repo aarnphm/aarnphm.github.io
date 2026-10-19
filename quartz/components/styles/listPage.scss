@@ -21,7 +21,6 @@ li.section-li {
   grid-template-columns: subgrid;
   padding: 0;
   background: var(--light);
-  transition: background-color 0.2s ease;
 
   &[hidden] {
     display: none;
@@ -31,16 +30,14 @@ li.section-li {
     border-bottom: 1px solid var(--dark);
   }
 
-  &:hover {
-    background: color-mix(in srgb, var(--light) 86%, var(--lightgray));
-  }
-
+  // Hover and the keyboard cursor underline the title instead of filling the row.
+  &:hover,
   &.focus {
-    background: color-mix(
-      in srgb,
-      var(--secondary) 18%,
-      color-mix(in srgb, var(--light) 86%, var(--lightgray))
-    );
+    .desc {
+      color: var(--dark);
+      text-decoration: underline;
+      text-underline-offset: 0.15em;
+    }
   }
 
   .note-link {
@@ -54,9 +51,6 @@ li.section-li {
     font-size: var(--text-ui);
     line-height: 1.45;
     color: var(--darkgray);
-    &:hover {
-      background: transparent;
-    }
 
     &:focus-visible {
       outline: 2px solid var(--dark);
