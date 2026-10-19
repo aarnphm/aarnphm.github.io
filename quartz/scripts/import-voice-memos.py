@@ -18,7 +18,10 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 TORONTO = ZoneInfo('America/Toronto')
-RECORDINGS = Path.home() / 'Library/Group Containers/group.com.apple.VoiceMemos.shared/Recordings'
+RECORDINGS = (
+  Path.home()
+  / 'Library/Group Containers/group.com.apple.VoiceMemos.shared/Recordings'
+)
 REPOSITORY = Path(__file__).resolve().parents[2]
 MEMO_ATTRIBUTE_RULES = (
   'content/triathlon/memos/**/*.m4a filter=lfs diff=lfs merge=lfs -text',
@@ -44,12 +47,21 @@ def active_recording_names(directory: Path) -> set[str] | None:
   database = directory / 'CloudRecordings.db'
   if not database.exists():
     if directory.resolve() == RECORDINGS.resolve():
-      raise ValueError('Voice Memos metadata is unavailable; cannot exclude Recently Deleted recordings')
+      raise ValueError(
+        'Voice Memos metadata is unavailable; cannot exclude Recently Deleted recordings'
+      )
     return None
   try:
-    with closing(sqlite3.connect(f'{database.resolve().as_uri()}?mode=ro', uri=True)) as connection:
+    with closing(
+      sqlite3.connect(f'{database.resolve().as_uri()}?mode=ro', uri=True)
+    ) as connection:
       # Voice Memos can leave Recently Deleted audio on disk.
-      return {path for (path,) in connection.execute('SELECT ZPATH FROM ZCLOUDRECORDING WHERE ZEVICTIONDATE IS NULL')}
+      return {
+        path
+        for (path,) in connection.execute(
+          'SELECT ZPATH FROM ZCLOUDRECORDING WHERE ZEVICTIONDATE IS NULL'
+        )
+      }
   except sqlite3.Error as error:
     raise ValueError(f'Cannot read Voice Memos metadata: {error}') from error
 
@@ -83,16 +95,32 @@ def ensure_memo_attributes(repository: Path) -> None:
 
 def probe(path: Path) -> Recording:
   result = subprocess.run(
-    ['ffprobe', '-v', 'error', '-show_format', '-show_streams', '-of', 'json', str(path)],
+    [
+      'ffprobe',
+      '-v',
+      'error',
+      '-show_format',
+      '-show_streams',
+      '-of',
+      'json',
+      str(path),
+    ],
     check=True,
     capture_output=True,
     text=True,
     timeout=60,
   )
   data = json.loads(result.stdout)
-  audio = next((stream for stream in data['streams'] if stream.get('codec_name') == 'aac'), None)
+  audio = next(
+    (
+      stream for stream in data['streams'] if stream.get('codec_name') == 'aac'
+    ),
+    None,
+  )
   if audio is None:
-    raise ValueError(f'{path.name} has no AAC track to copy without re-encoding')
+    raise ValueError(
+      f'{path.name} has no AAC track to copy without re-encoding'
+    )
   created = data['format'].get('tags', {}).get('creation_time')
   if not created:
     raise ValueError(f'{path.name} has no recording creation time')
@@ -102,12 +130,33 @@ def probe(path: Path) -> Recording:
   duration = float(audio['duration'])
   if not math.isfinite(duration) or duration <= 0:
     raise ValueError(f'{path.name} has an invalid duration')
-  return Recording(path, recorded_at.astimezone(TORONTO), duration, int(audio['index']), sha256(path))
+  return Recording(
+    path,
+    recorded_at.astimezone(TORONTO),
+    duration,
+    int(audio['index']),
+    sha256(path),
+  )
 
 
 def waveform(path: Path) -> list[float]:
   result = subprocess.run(
-    ['ffmpeg', '-v', 'error', '-i', str(path), '-map', '0:a:0', '-ac', '1', '-ar', '8000', '-f', 's16le', '-'],
+    [
+      'ffmpeg',
+      '-v',
+      'error',
+      '-i',
+      str(path),
+      '-map',
+      '0:a:0',
+      '-ac',
+      '1',
+      '-ar',
+      '8000',
+      '-f',
+      's16le',
+      '-',
+    ],
     check=True,
     capture_output=True,
     timeout=240,
@@ -120,15 +169,21 @@ def waveform(path: Path) -> list[float]:
   count = 512
   peaks = []
   for index in range(count):
-    segment = samples[index * len(samples) // count : (index + 1) * len(samples) // count]
-    peaks.append(math.sqrt(sum(value * value for value in segment) / max(1, len(segment))))
+    segment = samples[
+      index * len(samples) // count : (index + 1) * len(samples) // count
+    ]
+    peaks.append(
+      math.sqrt(sum(value * value for value in segment) / max(1, len(segment)))
+    )
   maximum = max(peaks) or 1
   return [round(value / maximum, 4) for value in peaks]
 
 
 def memo_name(recording: Recording, destination: Path) -> str:
   for existing in sorted(destination.glob('*.peaks.json')):
-    if json.loads(existing.read_text()).get('sourceSha256') == recording.digest:
+    if (
+      json.loads(existing.read_text()).get('sourceSha256') == recording.digest
+    ):
       return existing.name.removesuffix('.peaks.json')
   if recording.path.parent.resolve() == destination.resolve():
     return recording.path.stem
@@ -140,13 +195,17 @@ def timestamp(value: datetime) -> str:
   return f'{value:%Y-%m-%d %H:%M:%S} GMT{offset[:3]}:{offset[3:]}'
 
 
-VALID_DISPLAY_PRESETS: tuple[str, ...] = ('detailed', 'focused', 'simplified', 'run-swim')
+VALID_DISPLAY_PRESETS: tuple[str, ...] = (
+  'detailed',
+  'focused',
+  'simplified',
+  'run-swim',
+)
 TRACE_NAME_RE = re.compile(r'^[a-z0-9]+(?:-[a-z0-9]+)*$')
 
 
 def normalize_display_settings(
-  display: str | None = None,
-  expanded: bool | None = None,
+  display: str | None = None, expanded: bool | None = None
 ) -> str:
   if display is None and expanded is None:
     return ''
@@ -189,13 +248,17 @@ def normalize_display_settings(
           display_val = value_norm
         elif key == 'expanded':
           if value not in ('true', 'false'):
-            raise ValueError(f"expanded must be 'true' or 'false', got '{value}'")
+            raise ValueError(
+              f"expanded must be 'true' or 'false', got '{value}'"
+            )
           settings['expanded'] = value
         else:
           if not TRACE_NAME_RE.match(key):
             raise ValueError(f"Invalid trace setting name: '{key}'")
           if value not in ('true', 'false'):
-            raise ValueError(f"Trace setting '{key}' must be 'true' or 'false', got '{value}'")
+            raise ValueError(
+              f"Trace setting '{key}' must be 'true' or 'false', got '{value}'"
+            )
           settings[key] = value
 
   if expanded is not None:
@@ -209,12 +272,12 @@ def normalize_display_settings(
       )
     parts = [f'display:{display_val}']
     if 'expanded' in settings:
-      parts.append(f"expanded:{settings['expanded']}")
-    return f"#settings={'&'.join(parts)}"
+      parts.append(f'expanded:{settings["expanded"]}')
+    return f'#settings={"&".join(parts)}'
 
   if settings:
     parts = [f'{k}:{v}' for k, v in settings.items()]
-    return f"#settings={'&'.join(parts)}"
+    return f'#settings={"&".join(parts)}'
 
   return ''
 
@@ -233,26 +296,42 @@ def update_stream(
   sections = list(re.finditer(r'^## .+$', text, re.MULTILINE))
   matches = []
   for index, heading in enumerate(sections):
-    end = sections[index + 1].start() if index + 1 < len(sections) else len(text)
+    end = (
+      sections[index + 1].start() if index + 1 < len(sections) else len(text)
+    )
     section = text[heading.start() : end]
-    if heading.group() == f'## {day_text}' and re.search(r'  - description: training log \d+', section):
+    if heading.group() == f'## {day_text}' and re.search(
+      r'  - description: training log \d+', section
+    ):
       matches.append((heading.start(), end, section))
   if len(matches) > 1:
-    raise ValueError(f'Multiple training entries exist for {day_text}; select the intended entry')
+    raise ValueError(
+      f'Multiple training entries exist for {day_text}; select the intended entry'
+    )
   if matches:
     start, end, section = matches[0]
     for name in memos:
-      section = section.replace(f'![[triathlon/memos/{name}.qta]]', f'![[triathlon/memos/{name}.m4a]]')
+      section = section.replace(
+        f'![[triathlon/memos/{name}.qta]]', f'![[triathlon/memos/{name}.m4a]]'
+      )
     missing = [embed for embed in embeds if embed not in section]
     if missing:
       separator = re.search(r'^---\s*$', section, re.MULTILINE)
       if not separator:
-        raise ValueError(f'The training entry for {day_text} has no closing separator')
+        raise ValueError(
+          f'The training entry for {day_text} has no closing separator'
+        )
       section = (
-        section[: separator.start()].rstrip() + '\n\n' + '\n\n'.join(missing) + '\n\n' + section[separator.start() :]
+        section[: separator.start()].rstrip()
+        + '\n\n'
+        + '\n\n'.join(missing)
+        + '\n\n'
+        + section[separator.start() :]
       )
     if display is not None or expanded is not None:
-      tri_re = re.compile(r'!\[\[triathlon#' + re.escape(day_text) + r'(?P<tail>[^\]]*)\]\]')
+      tri_re = re.compile(
+        r'!\[\[triathlon#' + re.escape(day_text) + r'(?P<tail>[^\]]*)\]\]'
+      )
       tri_match = tri_re.search(section)
       if tri_match:
         tail = tri_match.group('tail')
@@ -261,14 +340,23 @@ def update_stream(
         else:
           new_tail = tail + display_options
         new_embed = f'![[triathlon#{day_text}{new_tail}]]'
-        section = section[: tri_match.start()] + new_embed + section[tri_match.end() :]
+        section = (
+          section[: tri_match.start()] + new_embed + section[tri_match.end() :]
+        )
     return text[:start] + section + text[end:]
-  numbers = [int(value) for value in re.findall(r'^  - description: training log (\d+)', text, re.MULTILINE)]
+  numbers = [
+    int(value)
+    for value in re.findall(
+      r'^  - description: training log (\d+)', text, re.MULTILINE
+    )
+  ]
   number = max(numbers, default=0) + 1
   entry = (
     f'## {day_text}\n\n- [meta]:\n  - date: {timestamp(now)}\n  - tags:\n'
     f'    - life\n    - o/training\n  - description: training log {number:03d}\n\n'
-    f'![[triathlon#{day_text}#analytics{display_options}]]\n\n' + '\n\n'.join(embeds) + '\n\n---\n\n'
+    f'![[triathlon#{day_text}#analytics{display_options}]]\n\n'
+    + '\n\n'.join(embeds)
+    + '\n\n---\n\n'
   )
   frontmatter = re.match(r'\A---\n.*?\n---\n', text, re.DOTALL)
   if not frontmatter:
@@ -325,16 +413,22 @@ def import_recording(recording: Recording, destination: Path) -> str:
       'peaks': waveform(converted),
     }
     if sha256(recording.path) != recording.digest:
-      raise ValueError(f'{recording.path.name} changed during import; wait until recording finishes')
+      raise ValueError(
+        f'{recording.path.name} changed during import; wait until recording finishes'
+      )
     if audio.resolve() == recording.path.resolve():
-      raise ValueError('Move an original .m4a outside the destination before importing it')
+      raise ValueError(
+        'Move an original .m4a outside the destination before importing it'
+      )
     shutil.copyfile(converted, audio)
     peaks.write_text(json.dumps(metadata, indent=2) + '\n')
   return name
 
 
 def main() -> None:
-  parser = argparse.ArgumentParser(description='Import Apple Voice Memos into triathlon training logs')
+  parser = argparse.ArgumentParser(
+    description='Import Apple Voice Memos into triathlon training logs'
+  )
   dates = parser.add_mutually_exclusive_group()
   dates.add_argument(
     '--date',
@@ -380,13 +474,20 @@ def main() -> None:
       prefixes = ()
       if args.since is None:
         nearby_days = [day + timedelta(days=offset) for offset in (-1, 0, 1)]
-        prefixes = tuple(nearby.strftime(pattern) for nearby in nearby_days for pattern in ('%Y%m%d', '%Y-%m-%d'))
+        prefixes = tuple(
+          nearby.strftime(pattern)
+          for nearby in nearby_days
+          for pattern in ('%Y%m%d', '%Y-%m-%d')
+        )
       candidates = sorted(
         path
         for path in args.source.iterdir()
         if path.suffix.lower() in {'.qta', '.m4a'}
         and (args.since is not None or path.name.startswith(prefixes))
-        and not (path.suffix.lower() == '.m4a' and path.with_suffix('.peaks.json').exists())
+        and not (
+          path.suffix.lower() == '.m4a'
+          and path.with_suffix('.peaks.json').exists()
+        )
       )
     except PermissionError as error:
       raise ValueError(
@@ -410,8 +511,12 @@ def main() -> None:
       recordings.append(recording)
     elif args.file:
       if args.since:
-        raise ValueError(f'{path.name} was recorded on {recorded_day}, before {day}')
-      raise ValueError(f'{path.name} was recorded on {recorded_day}, not {day}')
+        raise ValueError(
+          f'{path.name} was recorded on {recorded_day}, before {day}'
+        )
+      raise ValueError(
+        f'{path.name} was recorded on {recorded_day}, not {day}'
+      )
   recordings.sort(key=lambda item: (item.recorded_at, item.digest))
   if not recordings:
     selection = f'since {day}' if args.since else f'for {day}'
@@ -419,7 +524,9 @@ def main() -> None:
     return
   if args.list:
     for recording in recordings:
-      print(f'{recording.recorded_at.isoformat()}  {recording.duration:.1f}s  {recording.path.name}')
+      print(
+        f'{recording.recorded_at.isoformat()}  {recording.duration:.1f}s  {recording.path.name}'
+      )
     return
   destination = args.repo / 'content/triathlon/memos'
   stream = args.repo / 'content/stream.md'
@@ -445,7 +552,9 @@ def main() -> None:
     name = import_recording(recording, destination)
     print(f'{name}.m4a  {recording.duration:.1f}s')
   if stream.read_text() != current:
-    raise ValueError('stream.md changed during import; rerun to apply embeds to the latest text')
+    raise ValueError(
+      'stream.md changed during import; rerun to apply embeds to the latest text'
+    )
   ensure_memo_attributes(args.repo)
   if updated != current:
     stream.write_text(updated)
