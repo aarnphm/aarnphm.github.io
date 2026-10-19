@@ -1,3 +1,4 @@
+import { render } from 'preact-render-to-string'
 import {
   QuartzComponent,
   QuartzComponentConstructor,
@@ -34,35 +35,48 @@ const revert = (key: string) =>
 export default ((userOpts?: Partial<Options>) => {
   const opts = { ...defaultOptions, ...userOpts }
   const defaultKey = opts.default![0]
+  const mappingAttr = JSON.stringify(opts.default?.map(revert))
+  const innerHtmlCache = new Map<string, string>()
 
   const Keybind: QuartzComponent = ({ cfg, fileData, displayClass }: QuartzComponentProps) => {
-    const shortcuts = Object.entries(cfg.keybinds ?? {}).map(([key, value]) =>
-      fileData.slug === 'index' && key === 'gh'
-        ? (['gt', 'sentier'] as const)
-        : ([key, value] as const),
-    )
-    return (
-      <div class={classNames(displayClass, 'keybind')} lang={'fr'}>
-        <kbd id="shortcut-key" data-mapping={JSON.stringify(opts.default?.map(revert))}>
-          {defaultKey}
-        </kbd>
-        <div id="shortcut-container">
-          <div id="shortcut-space">
-            <div id="title">raccourcis clavier</div>
-            <ul id="shortcut-list">
-              {shortcuts.map(([key, value]) => (
-                <li>
-                  <div
-                    id="shortcuts"
-                    data-key={convert(key).replace(' ', '--')}
-                    data-value={value}
-                  ></div>
-                </li>
-              ))}
-            </ul>
+    const isIndex = fileData.slug === 'index'
+    const cacheKey = `${isIndex ? '1' : '0'}:${JSON.stringify(cfg.keybinds ?? {})}`
+    let innerHtml = innerHtmlCache.get(cacheKey)
+    if (innerHtml === undefined) {
+      const shortcuts = Object.entries(cfg.keybinds ?? {}).map(([key, value]) =>
+        isIndex && key === 'gh' ? (['gt', 'sentier'] as const) : ([key, value] as const),
+      )
+      innerHtml = render(
+        <>
+          <kbd id="shortcut-key" data-mapping={mappingAttr}>
+            {defaultKey}
+          </kbd>
+          <div id="shortcut-container">
+            <div id="shortcut-space">
+              <div id="title">raccourcis clavier</div>
+              <ul id="shortcut-list">
+                {shortcuts.map(([key, value]) => (
+                  <li>
+                    <div
+                      id="shortcuts"
+                      data-key={convert(key).replace(' ', '--')}
+                      data-value={value}
+                    ></div>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
-        </div>
-      </div>
+        </>,
+      )
+      innerHtmlCache.set(cacheKey, innerHtml)
+    }
+    return (
+      <div
+        class={classNames(displayClass, 'keybind')}
+        lang={'fr'}
+        dangerouslySetInnerHTML={{ __html: innerHtml }}
+      />
     )
   }
 

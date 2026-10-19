@@ -273,7 +273,6 @@
     }
 
     &[data-stream-link]:hover {
-      background: var(--light);
       text-decoration: underline;
     }
 
@@ -313,10 +312,6 @@
     cursor: pointer;
     font-size: 10px;
 
-    &:hover {
-      background-color: rgb(222, 222, 222);
-    }
-
     [saved-theme='dark'] & {
       background-color: var(--highlight);
     }
@@ -338,7 +333,7 @@
       color: var(--gray);
 
       &:hover {
-        background: var(--light);
+        color: var(--darkgray);
       }
     }
   }
@@ -679,10 +674,6 @@
     &[data-stream-restricted='true'] {
       background: color-mix(in srgb, var(--lightgray) 16%, transparent);
     }
-
-    &:hover {
-      background: color-mix(in srgb, var(--lightgray) 30%, transparent);
-    }
   }
 
   .stream-legend-date,
@@ -696,12 +687,12 @@
 
     &:hover,
     &:focus-visible {
-      color: var(--secondary);
-      background: transparent;
+      text-decoration: underline;
+      text-underline-offset: 0.15em;
     }
 
     &:focus-visible {
-      outline: 2px solid var(--secondary);
+      outline: 2px solid var(--dark);
       outline-offset: 2px;
     }
   }
@@ -732,7 +723,6 @@
       &:hover,
       &:focus-visible {
         text-decoration: underline;
-        background: var(--light);
       }
     }
   }

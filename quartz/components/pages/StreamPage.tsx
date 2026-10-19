@@ -152,11 +152,14 @@ export default (() => {
     const streamView = streamViewForSlug(typeof slug === 'string' ? slug : '')
     const isDailyView = streamView.kind === 'day'
 
-    const groups = groupStreamEntries(fileData.streamData.entries)
-    const { feedGroups, hasLazyGroups } = selectStreamFeedGroups(groups, streamView.kind === 'root')
-    const entriesWithContext = feedGroups.flatMap(group =>
-      group.entries.map(entry => ({ entry, group })),
-    )
+    const isFeedView = streamView.kind === 'root' || streamView.kind === 'day'
+    const groups = isFeedView ? groupStreamEntries(fileData.streamData.entries) : []
+    const { feedGroups, hasLazyGroups } = isFeedView
+      ? selectStreamFeedGroups(groups, streamView.kind === 'root')
+      : { feedGroups: [], hasLazyGroups: false }
+    const entriesWithContext = isFeedView
+      ? feedGroups.flatMap(group => group.entries.map(entry => ({ entry, group })))
+      : []
     const protectedPayloads = fileData.streamData.protectedPayloads
     const mode = isDailyView ? 'daily' : 'listing'
     const protectedEntryCount = isDailyView
@@ -341,7 +344,7 @@ export default (() => {
       </section>
     )
 
-    const years = groupStreamEntriesByYear(fileData.streamData.entries)
+    const years = isFeedView ? [] : groupStreamEntriesByYear(fileData.streamData.entries)
     const matchingYear =
       streamView.kind === 'year' || streamView.kind === 'month'
         ? years.find(year => year.yearText === streamView.year)
@@ -357,7 +360,7 @@ export default (() => {
         data-stream-canonical={canonicalPath}
         data-stream-view={streamView.kind}
       >
-        {streamView.kind === 'root' || streamView.kind === 'day' ? (
+        {isFeedView ? (
           renderFeed()
         ) : streamView.kind === 'index' ? (
           renderIndex(years)

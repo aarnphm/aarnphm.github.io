@@ -25,12 +25,6 @@
 @use './pages/triathlon.scss';
 @use './pages/nytimes.scss';
 
-[role='article']:hover {
-  border: 1px solid var(--highlight);
-  background: var(--highlight);
-  border-radius: var(--radius-none);
-}
-
 hgroup {
   & > .description {
     overflow: hidden;

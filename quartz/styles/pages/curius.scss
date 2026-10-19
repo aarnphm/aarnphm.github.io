@@ -86,6 +86,11 @@ body[data-slug='curius'] {
     font-weight: 400;
     text-decoration: none;
     overflow-wrap: anywhere;
+
+    &:hover {
+      color: var(--darkgray);
+      text-decoration: underline;
+    }
   }
 
   .curius-toolbar {
@@ -165,8 +170,26 @@ body[data-slug='curius'] {
       border-top: 1px solid var(--curius-line);
     }
 
+    // The title underlines; the snippet stays plain.
+    &:hover {
+      text-decoration: none;
+    }
+
     &:hover,
-    &:focus-visible,
+    &:focus-visible {
+      .curius-search-title {
+        color: var(--dark);
+        text-decoration: underline;
+        text-underline-offset: 0.15em;
+      }
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--dark);
+      outline-offset: -2px;
+    }
+
+    // The open preview's row stays selected.
     &.preview-active {
       background: var(--curius-selected);
     }
@@ -296,6 +319,12 @@ body[data-slug='curius'] {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+
+      &:hover {
+        color: var(--dark);
+        text-decoration: underline;
+        text-underline-offset: 0.15em;
+      }
     }
   }
 
@@ -497,8 +526,10 @@ body[data-slug='curius'] {
       border-top: 1px solid var(--curius-line);
     }
 
-    &:hover {
-      background: var(--curius-surface);
+    &:hover .friend-shortcut {
+      color: var(--darkgray);
+      text-decoration: underline;
+      text-underline-offset: 0.15em;
     }
   }
 
@@ -626,7 +657,6 @@ body[data-slug='curius'] {
 
     .curius-item-link > a:hover {
       color: var(--darkgray);
-      text-decoration: none;
     }
   }
 
