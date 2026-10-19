@@ -8,7 +8,13 @@ tags:
 title: Fisher-Yates
 ---
 
-Produced an _unbiased_ permutation: every permutation is equally likely.
+Produces an _unbiased_ permutation of $n$ items: each of the $n!$ orderings comes out with probability $1/n!$, given a uniform source of random integers.
+
+Why it works: step $i$ picks $j$ uniformly from $i+1$ choices, so one run makes $n \cdot (n-1) \cdots 2 = n!$ equally likely choice sequences. Each sequence yields a different permutation, so the map from choice sequences to permutations is a bijection.
+
+The common bug draws $j$ from all of $\{0, \dots, n-1\}$ at every step. That gives $n^n$ equally likely sequences mapped onto $n!$ permutations. For $n=3$ that is $27$ sequences over $6$ permutations, and $6 \nmid 27$, so some permutations must appear more often than others.
+
+The version below is Durstenfeld's in-place form (1964), which Knuth lists as Algorithm P in TAOCP vol. 2. It costs $O(n)$ time and $O(1)$ extra space; the original 1938 pen-and-paper method struck out items and cost $O(n^2)$.
 
 Pseudocode:
 
@@ -25,7 +31,7 @@ Pseudocode:
 \end{algorithm}
 ```
 
-Implementation of modern Fisher-Yates algorithm
+Underscore.js `_.sample` runs the same swap forward and stops after $n$ steps. The first $n$ slots then hold a uniform random sample without replacement, so a partial shuffle costs $O(n)$ swaps (plus the array copy) instead of a full pass:
 
 ```js title="FisherYates.js"
 function sample(obj, n, guard) {
