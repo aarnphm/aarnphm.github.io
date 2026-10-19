@@ -292,17 +292,33 @@ function searchChunkManifest(lexical: {
   })
 }
 
+const searchChunksByEntries = new WeakMap<
+  ReadonlyMap<FullSlug, string>,
+  Map<string, Map<FullSlug, string>>
+>()
+
 function searchChunkEntries(
   entries: ReadonlyMap<FullSlug, string>,
   id: string,
 ): Map<FullSlug, string> {
-  const chunk = new Map<FullSlug, string>()
-  for (const [slug, content] of entries) {
-    if (searchChunkId(slug) === id) {
-      chunk.set(slug, content)
+  let buckets = searchChunksByEntries.get(entries)
+  if (!buckets) {
+    buckets = new Map()
+    for (const chunkId of searchChunkIds()) {
+      buckets.set(chunkId, new Map())
     }
+    for (const [slug, content] of entries) {
+      const chunkId = searchChunkId(slug)
+      let bucket = buckets.get(chunkId)
+      if (!bucket) {
+        bucket = new Map()
+        buckets.set(chunkId, bucket)
+      }
+      bucket.set(slug, content)
+    }
+    searchChunksByEntries.set(entries, buckets)
   }
-  return chunk
+  return buckets.get(id) ?? new Map()
 }
 
 async function writeSearchChunk(
@@ -420,6 +436,23 @@ function deriveFolderDisplayTitle(
   return undefined
 }
 
+const richContentTreeByDetails = new WeakMap<ContentDetails, Root>()
+
+function resolveRichContent(content: ContentDetails): string {
+  if (content.richContent !== undefined) {
+    return content.richContent
+  }
+  const tree = richContentTreeByDetails.get(content)
+  if (!tree) {
+    content.richContent = ''
+    return ''
+  }
+  const rendered = sanitizeXml(escapeHTML(toHtml(tree, { allowDangerousHtml: true })))
+  content.richContent = rendered
+  richContentTreeByDetails.delete(content)
+  return rendered
+}
+
 function atomFeedEntry(
   cfg: GlobalConfiguration,
   base: string,
@@ -434,7 +467,7 @@ function atomFeedEntry(
   }
 
   const summary = escapeHTML(sanitizeNullable(content.description) ?? '')
-  const richContent = content.richContent ?? ''
+  const richContent = resolveRichContent(content)
 
   return `<entry>
     <title>${escapeHTML(content.title)}</title>
@@ -566,7 +599,9 @@ function feedCacheContainsAnySlug(
 }
 
 type LinkIndexUpdate = { previous: ContentIndexMap; changeEvents: readonly ChangeEvent[] }
-type ReusableContentDetails = Pick<ContentDetails, 'content' | 'richContent' | 'readingTime'>
+type ReusableContentDetails = Pick<ContentDetails, 'content' | 'richContent' | 'readingTime'> & {
+  richContentTree?: Root
+}
 
 function normalizedContentSlug(fileData: QuartzPluginData): FullSlug | undefined {
   const slug = fileData.slug
@@ -702,6 +737,7 @@ function reusableContentDetails(update?: LinkIndexUpdate): Map<FullSlug, Reusabl
     reusable.set(slug, {
       content: previousDetails.content,
       richContent: previousDetails.richContent,
+      richContentTree: richContentTreeByDetails.get(previousDetails),
       readingTime: previousDetails.readingTime,
     })
   }
@@ -764,18 +800,13 @@ function addProcessedContentToIndex(
 
   const links = filterVisibleLinks(file.data.links ?? [], contentBySlug)
   const isProtected = file.data.frontmatter?.protected === true
-  const richContent =
-    reusableDetails?.richContent ??
-    (includeRichContent && !isProtected
-      ? sanitizeXml(escapeHTML(toHtml(tree as Root, { allowDangerousHtml: true })))
-      : '')
   const content = reusableDetails?.content ?? (isProtected ? '' : sanitizeXml(file.data.text ?? ''))
   const readingTime = reusableDetails?.readingTime ?? {
     minutes: Math.ceil(file.data.readingTime ? file.data.readingTime.minutes! : 0),
     words: Math.ceil(file.data.readingTime ? file.data.readingTime.words! : 0),
   }
 
-  linkIndex.set(slug, {
+  const details: ContentDetails = {
     slug,
     title: file.data.frontmatter ? file.data.frontmatter.title! : '',
     links,
@@ -784,14 +815,18 @@ function addProcessedContentToIndex(
     tags: file.data.frontmatter?.tags ?? [],
     aliases: file.data.frontmatter?.aliases ?? [],
     content,
-    richContent: isProtected ? '' : richContent,
+    richContent: isProtected || !includeRichContent ? '' : reusableDetails?.richContent,
     date: date,
     readingTime,
     fileData: file.data,
     layout: file.data.frontmatter!.pageLayout,
     description: descriptionToPlainText(file.data.rawDescription ?? file.data.description, slug),
     protected: isProtected,
-  })
+  }
+  if (!isProtected && includeRichContent && details.richContent === undefined) {
+    richContentTreeByDetails.set(details, reusableDetails?.richContentTree ?? (tree as Root))
+  }
+  linkIndex.set(slug, details)
 
   if (slug !== 'arena') {
     return
@@ -1055,6 +1090,26 @@ async function writePatchedRootAtomFeed(
   return { file: await writeKnownChanged({ ctx, content, slug, ext: '.xml' }), cache: { entries } }
 }
 
+const simplifiedLinkIndexCache = new WeakMap<ContentIndexMap, Map<SimpleSlug, ContentDetails>>()
+
+function lookupSimplifiedLinkIndex(
+  linkIndex: ContentIndexMap,
+  folderSlug: string,
+): ContentDetails | undefined {
+  let simplified = simplifiedLinkIndexCache.get(linkIndex)
+  if (!simplified) {
+    simplified = new Map()
+    for (const [existingSlug, details] of linkIndex.entries()) {
+      const key = simplifySlug(existingSlug)
+      if (!simplified.has(key)) {
+        simplified.set(key, details)
+      }
+    }
+    simplifiedLinkIndexCache.set(linkIndex, simplified)
+  }
+  return simplified.get(folderSlug as SimpleSlug)
+}
+
 async function writeFolderAtomFeed(
   ctx: BuildCtx,
   cfg: GlobalConfiguration,
@@ -1068,11 +1123,7 @@ async function writeFolderAtomFeed(
   }
 
   const folderKey = folderSlug as FullSlug
-  const folderDetails =
-    linkIndex.get(folderKey) ??
-    Array.from(linkIndex.entries()).find(
-      ([existingSlug]) => simplifySlug(existingSlug) === folderSlug,
-    )?.[1]
+  const folderDetails = linkIndex.get(folderKey) ?? lookupSimplifiedLinkIndex(linkIndex, folderSlug)
   const fallbackName = folderSlug.split('/').pop() ?? folderSlug
   const folderPathTitle =
     deriveFolderDisplayTitle(folderSlug, folderIndex) ??

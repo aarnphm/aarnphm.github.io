@@ -33,11 +33,7 @@ import {
 } from '../../util/stream'
 import { generateStreamAtomFeed } from '../../util/stream-feed'
 import { buildStreamManifestGroup } from '../../util/stream-manifest'
-import {
-  buildStreamPageTree,
-  cloneStreamEntries,
-  rebaseStreamEntries,
-} from '../../util/stream-route-tree'
+import { buildStreamPageTree, rebaseStreamEntries } from '../../util/stream-route-tree'
 import { removeWritten, write } from './helpers'
 import { createOgImageGenerator } from './ogImage'
 import { renderedStreamEntries } from './streamRenderedText'
@@ -60,6 +56,17 @@ const streamDay = (iso: string | null | undefined): Date | undefined => {
   return parts ? new Date(Date.UTC(parts[0], parts[1] - 1, parts[2], 12)) : undefined
 }
 
+const entryPlainTextCache = new WeakMap<StreamEntry['content'], string>()
+
+const entryPlainText = (entry: StreamEntry): string => {
+  let body = entryPlainTextCache.get(entry.content)
+  if (body === undefined) {
+    body = toString({ type: 'root', children: entry.content })
+    entryPlainTextCache.set(entry.content, body)
+  }
+  return [entry.title, entry.description, body].filter(Boolean).join('\n')
+}
+
 // An archive route is a page of its own: its date, words, tags and social summary come from the
 // entries it shows, so its head, press kit and social image describe the route and not stream.md.
 // Private and protected entries add nothing.
@@ -71,13 +78,7 @@ const archiveFileData = (
   date?: Date,
 ): QuartzPluginData => {
   const shown = entries.filter(entry => !isRestrictedEntry(entry))
-  const text = shown
-    .map(entry =>
-      [entry.title, entry.description, toString({ type: 'root', children: entry.content })]
-        .filter(Boolean)
-        .join('\n'),
-    )
-    .join('\n\n')
+  const text = shown.map(entryPlainText).join('\n\n')
   const summary = shown
     .flatMap(entry => {
       const title = entry.title?.trim()
@@ -228,7 +229,7 @@ async function* processStreamIndex(
         ...legendFrontmatter,
         title: route.title,
       }),
-      streamData: { entries: cloneStreamEntries(route.entries) },
+      streamData: { entries: route.entries },
     }
     socialPages.push(routeFile)
     return renderStreamRoute(ctx, tree, routeFile, allFiles, resources, layout)
@@ -299,7 +300,7 @@ async function* processStreamIndex(
       externalResources,
       cfg: ctx.cfg.configuration,
       children: [],
-      tree: buildStreamPageTree(rebasedEntries, tree, slug),
+      tree: { type: 'root', children: [] } as Root,
       allFiles,
     }
 

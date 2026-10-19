@@ -231,6 +231,8 @@ async function processChannel(
   return files
 }
 
+const EMPTY_ARENA_ENTRY_TREE: Root = { type: 'root', children: [] }
+
 async function processEntries(
   ctx: BuildCtx,
   channel: ArenaChannel,
@@ -239,6 +241,7 @@ async function processEntries(
   opts: FullPageLayout,
   resources: StaticResources,
 ): Promise<FilePath[]> {
+  let sharedEntryResources: StaticResources | undefined
   return mapConcurrent(channel.blocks, defaultIoConcurrency, async block => {
     if (!block.entryId) throw new Error(`Arena entry ID missing in ${channel.slug}: ${block.id}`)
     const slug = joinSegments('arena', channel.slug, block.entryId) as FullSlug
@@ -248,8 +251,11 @@ async function processEntries(
       description: block.content.slice(0, 240),
       pageLayout: 'default' as const,
     }
-    const [tree] = defaultProcessedContent({ slug, frontmatter })
-    const externalResources = pageResources(pathToRoot(slug), resources, ctx)
+    const baseDir = pathToRoot(slug)
+    const externalResources =
+      baseDir === '../..'
+        ? (sharedEntryResources ??= pageResources(baseDir, resources, ctx))
+        : pageResources(baseDir, resources, ctx)
     const componentData: QuartzComponentProps = {
       ctx,
       fileData: {
@@ -263,7 +269,7 @@ async function processEntries(
       externalResources,
       cfg: ctx.cfg.configuration,
       children: [],
-      tree,
+      tree: EMPTY_ARENA_ENTRY_TREE,
       allFiles,
     }
     const content = renderPage(ctx, slug, componentData, opts, externalResources, false)
