@@ -128,6 +128,12 @@ interface RenderComponents {
   footer: QuartzComponent
 }
 
+const Header = HeaderConstructor()
+const Headings = HeadingsConstructor()
+const PressKit = PressKitConstructor()
+const PoetryFooter = FooterConstructor({ layout: 'poetry' })
+const MenuFooter = FooterConstructor({ layout: 'menu' })
+
 function headerElement(
   node: Element,
   content: ElementContent[],
@@ -2754,7 +2760,7 @@ export function renderPageWithMetadata(
   }
 
   if (componentData.fileData.frontmatter?.poem) {
-    components = { ...components, footer: FooterConstructor({ layout: 'poetry' }) }
+    components = { ...components, footer: PoetryFooter }
   }
 
   let isMenu = false
@@ -2766,7 +2772,7 @@ export function renderPageWithMetadata(
       beforeBody: [],
       sidebar: [],
       afterBody: [Functions],
-      footer: FooterConstructor({ layout: 'menu' }),
+      footer: MenuFooter,
     }
   }
 
@@ -2783,9 +2789,6 @@ export function renderPageWithMetadata(
     sidebar,
     footer: Footer,
   } = components
-  const Header = HeaderConstructor()
-  const Headings = HeadingsConstructor()
-  const PressKit = PressKitConstructor()
 
   // TODO: https://thesolarmonk.com/posts/a-spacebar-for-the-web style
   const lang =

@@ -143,6 +143,11 @@ const rewriteArxivUrl = (rawUrl: string): string => {
   return `https://alphaxiv.org/abs/${[head, ...rest].join('/')}${suffix}`
 }
 
+const utcMediumDateFormatter = new Intl.DateTimeFormat('en-US', {
+  dateStyle: 'medium',
+  timeZone: 'UTC',
+})
+
 const normalizeDate = (value: string): { display: string; dateTime?: string } => {
   const trimmed = value.trim()
   const match = trimmed.match(/^([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{4})$/)
@@ -168,21 +173,47 @@ const normalizeDate = (value: string): { display: string; dateTime?: string } =>
   }
 
   const date = new Date(Date.UTC(year, month - 1, day))
-  const formatter = new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeZone: 'UTC' })
-  const display = formatter.format(date)
+  const display = utcMediumDateFormatter.format(date)
   const iso = `${yearStr.padStart(4, '0')}-${monthStr.padStart(2, '0')}-${dayStr.padStart(2, '0')}`
 
   return { display, dateTime: iso }
 }
 
-export function arenaChannelSections(channel: ArenaChannel) {
+export interface ArenaChannelSectionsResult {
+  pinned: ArenaBlock[]
+  later: ArenaBlock[]
+  blocks: ArenaBlock[]
+  ordered: ArenaBlock[]
+  indexById: ReadonlyMap<string, number>
+}
+
+const arenaChannelSectionsCache = new WeakMap<
+  ArenaChannel,
+  { blocksRef: ArenaBlock[]; length: number; result: ArenaChannelSectionsResult }
+>()
+
+export function arenaChannelSections(channel: ArenaChannel): ArenaChannelSectionsResult {
+  const cached = arenaChannelSectionsCache.get(channel)
+  if (cached && cached.blocksRef === channel.blocks && cached.length === channel.blocks.length) {
+    return cached.result
+  }
   const sorted = (blocks: ArenaBlock[]) =>
     blocks.sort((a, b) => arenaBlockTimestamp(b) - arenaBlockTimestamp(a))
-  return {
-    pinned: sorted(channel.blocks.filter(block => block.pinned)),
-    later: sorted(channel.blocks.filter(block => block.later && !block.pinned)),
-    blocks: sorted(channel.blocks.filter(block => !block.pinned && !block.later)),
+  const pinned = sorted(channel.blocks.filter(block => block.pinned))
+  const later = sorted(channel.blocks.filter(block => block.later && !block.pinned))
+  const blocks = sorted(channel.blocks.filter(block => !block.pinned && !block.later))
+  const ordered = [...pinned, ...later, ...blocks]
+  const indexById = new Map<string, number>()
+  for (let i = 0; i < ordered.length; i++) {
+    indexById.set(ordered[i].id, i)
   }
+  const result: ArenaChannelSectionsResult = { pinned, later, blocks, ordered, indexById }
+  arenaChannelSectionsCache.set(channel, {
+    blocksRef: channel.blocks,
+    length: channel.blocks.length,
+    result,
+  })
+  return result
 }
 
 export function createArenaChannelRenderer(
