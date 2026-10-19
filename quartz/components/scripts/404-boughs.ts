@@ -8,7 +8,7 @@ import type { Voices } from './404-crew'
 import { type Grid, type Pt, type RGB, BAYER, col, dot, hash, line, row, stamp } from './404-pixel'
 
 type Limb = { x0: number; y0: number; x1: number; y1: number; w0: number; w1: number }
-type Crown = { segs: Limb[]; tips: [number, number, number][] }
+export type Crown = { segs: Limb[]; tips: [number, number, number][] }
 
 // In scene units: the seat, the trunk end of the limb the lights run up and its far end, and the
 // point on a limb above that the rope is tied to.
@@ -136,6 +136,16 @@ export function workFor(s: { autumn: number; bare: number; ground: number }): Wo
   return s.autumn > 0.35 ? 'shake' : 'saw'
 }
 
+function pickTip(crowns: Crown[], total: number): [number, number, number] {
+  let idx = Math.floor(Math.random() * total)
+  for (let i = 0; i < crowns.length; i++) {
+    const tips = crowns[i].tips
+    if (idx < tips.length) return tips[idx]
+    idx -= tips.length
+  }
+  return crowns[0].tips[0]
+}
+
 // Leaves fall at about a metre and a half a second, a tree being some nine hundred units tall, and
 // blossom at half that; both tumble, so they drop fastest edge-on and slide sideways as they turn.
 export function stepShed(
@@ -152,17 +162,18 @@ export function stepShed(
 ) {
   const shaken = env.shake ? 5 : 0
   const rate = (4 * env.leaves + 3 * env.blossom) * (0.5 + env.wind) + shaken
-  const tips = crowns.flatMap(c => c.tips)
-  if (tips.length) shed.spawn += rate * dt
-  while (shed.spawn >= 1 && shed.leaves.length < 80) {
+  let totalTips = 0
+  for (let i = 0; i < crowns.length; i++) totalTips += crowns[i].tips.length
+  if (totalTips > 0) shed.spawn += rate * dt
+  while (totalTips > 0 && shed.spawn >= 1 && shed.leaves.length < 80) {
     shed.spawn -= 1
-    let [x, y] = tips[Math.floor(Math.random() * tips.length)]
+    let [x, y] = pickTip(crowns, totalTips)
     // The arborist's share comes off the limbs round the rope.
     if (env.shake && Math.random() * rate < shaken) {
       const [ax, ay] = env.shake
       let near = Infinity
       for (let k = 0; k < 12; k++) {
-        const t = tips[Math.floor(Math.random() * tips.length)]
+        const t = pickTip(crowns, totalTips)
         const dist = Math.hypot(t[0] - ax, t[1] - ay)
         if (dist < near) [near, x, y] = [dist, t[0], t[1]]
       }
@@ -178,13 +189,18 @@ export function stepShed(
     })
   }
   shed.spawn = Math.min(shed.spawn, 1)
-  for (const l of shed.leaves) {
+  const [x0, y0, x1, y1] = env.box
+  let write = 0
+  for (let i = 0; i < shed.leaves.length; i++) {
+    const l = shed.leaves[i]
     l.spin += dt * (2.4 + (l.tone & 1) * 1.1)
     l.x += (l.vx + 22 * Math.sin(l.spin * 1.3)) * dt
     l.y += l.vy * (0.45 + 0.55 * Math.abs(Math.cos(l.spin))) * dt
+    if (l.y < y1 && l.y > y0 - 50 && l.x < x1 + 20 && l.x > x0 - 20) {
+      shed.leaves[write++] = l
+    }
   }
-  const [x0, y0, x1, y1] = env.box
-  shed.leaves = shed.leaves.filter(l => l.y < y1 && l.y > y0 - 50 && l.x < x1 + 20 && l.x > x0 - 20)
+  shed.leaves.length = write
 }
 
 export function paintShed(d: Uint8ClampedArray, g: Grid, shed: Shed, leaf: RGB[], petal: RGB) {

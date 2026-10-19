@@ -942,6 +942,8 @@ function finish(h: Hill, o: Skier) {
   o.t = 0
 }
 
+const skiQueue: Skier[] = []
+
 export function stepHill(h: Hill, dt: number, voices: Voices) {
   h.time += dt
   h.cheer = Math.max(0, h.cheer - dt)
@@ -957,8 +959,15 @@ export function stepHill(h: Hill, dt: number, voices: Voices) {
 
   if (env.camp && !h.skiers.some(o => o.role === 'coach')) camp(h)
   if (env.control && !h.skiers.some(o => o.shot >= 0)) control(h)
-  const live = h.skiers.filter(free).length
-  const touring = h.skiers.filter(o => o.role === 'tour' && o.state !== 'leave').length
+  let live = 0
+  let touring = 0
+  skiQueue.length = 0
+  for (let i = 0; i < h.skiers.length; i++) {
+    const o = h.skiers[i]
+    if (free(o)) live++
+    if (o.role === 'tour' && o.state !== 'leave') touring++
+    if (o.state === 'queue') skiQueue.push(o)
+  }
   h.arrive = Math.max(0, h.arrive - dt)
   if (!h.arrive && live < env.crowd) {
     recruit(h, env.crowd - live)
@@ -975,16 +984,19 @@ export function stepHill(h: Hill, dt: number, voices: Voices) {
   }
   stepCat(h, dt)
 
-  const queue = h.skiers.filter(o => o.state === 'queue').sort(byTicket)
+  const queue = skiQueue.sort(byTicket)
   // A charge is seen at the foot a second before it is heard, some four hundred metres off, and the
   // line for first chair cheers it.
-  for (const b of h.blasts) {
+  let bw = 0
+  for (let i = 0; i < h.blasts.length; i++) {
+    const b = h.blasts[i]
     if (b.t < 1.1 && b.t + dt >= 1.1)
       for (const o of queue) if (h.rng() < 0.25) say(voices, `ski${o.id}`, '!')
     b.t += dt
+    // A slide's crown and bed stay on the face for the rest of the morning; smoke alone is soon gone.
+    if (b.t < (b.slide ? 6 * 3600 : 40)) h.blasts[bw++] = b
   }
-  // A slide's crown and bed stay on the face for the rest of the morning; smoke alone is soon gone.
-  h.blasts = h.blasts.filter(b => b.t < (b.slide ? 6 * 3600 : 40))
+  h.blasts.length = bw
   const steps = Math.ceil(dt * 30)
   for (const o of h.skiers) {
     o.t += dt
@@ -1169,7 +1181,11 @@ export function stepHill(h: Hill, dt: number, voices: Voices) {
       }
     }
   }
-  h.skiers = h.skiers.filter(o => !o.gone)
+  let sw = 0
+  for (let i = 0; i < h.skiers.length; i++) {
+    if (!h.skiers[i].gone) h.skiers[sw++] = h.skiers[i]
+  }
+  h.skiers.length = sw
 }
 
 // The lift line or the blue: the steeper the better they are and the surer of themselves.
@@ -1181,16 +1197,23 @@ function choose(h: Hill, o: Skier) {
 // At the top they wait for the rest of their party (up to a minute), then drop in one after another,
 // a few seconds apart; a racer waits until the course below is clear.
 function drop(h: Hill, o: Skier) {
-  const party = h.skiers.filter(p => p.party === o.party && p.role !== 'coach')
-  const behind = party.some(
-    p => p.state === 'chair' || p.state === 'top' || p.state === 'strap' || p.state === 'skin',
-  )
+  let behind = false
+  let order = 0
+  let seenSelf = false
+  for (let i = 0; i < h.skiers.length; i++) {
+    const p = h.skiers[i]
+    if (p.party !== o.party || p.role === 'coach') continue
+    if (p.state === 'chair' || p.state === 'top' || p.state === 'strap' || p.state === 'skin') {
+      behind = true
+    }
+    if (p === o) seenSelf = true
+    else if (!seenSelf && (p.state === 'ready' || p.state === 'ski')) order++
+  }
   if (behind && o.t < 60) return
-  const order = party.filter(p => p.state === 'ready' || p.state === 'ski').indexOf(o)
   if (o.role === 'racer') {
     const busy = h.skiers.some(p => p.role === 'racer' && p.state === 'ski' && p.s < FINISH)
     if (busy || o.t < 4) return
-  } else if (o.role !== 'pupil' && o.t < 2 + 4 * Math.max(0, order)) return
+  } else if (o.role !== 'pupil' && o.t < 2 + 4 * order) return
   if (o.role === 'pupil' && o.lead && o.lead.state !== 'ski' && o.t < 60) return
   start(h, o)
 }

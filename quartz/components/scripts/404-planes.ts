@@ -38,17 +38,25 @@ const life = (cover: number) => 3 + 80 * smooth(0.2, 0.75, cover)
 
 export function stepSkyway(s: Skyway, dt: number, env: SkyEnv) {
   const keep = life(env.cover)
-  for (const p of s.trail) p.age += dt
-  s.trail = s.trail.filter(p => p.age < keep)
-  for (const p of s.planes) {
+  let tw = 0
+  for (let i = 0; i < s.trail.length; i++) {
+    const p = s.trail[i]
+    p.age += dt
+    if (p.age < keep) s.trail[tw++] = p
+  }
+  s.trail.length = tw
+  let pw = 0
+  for (let i = 0; i < s.planes.length; i++) {
+    const p = s.planes[i]
     p.x += p.dir * p.v * dt
     p.y += p.climb * p.v * dt
     if (p.kind === 'jet' && (s.drop -= dt) <= 0) {
       s.drop = 0.2
       s.trail.push({ x: p.x, y: p.y, age: 0, drift: env.drift })
     }
+    if (p.x > env.left - 60 && p.x < env.right + 60) s.planes[pw++] = p
   }
-  s.planes = s.planes.filter(p => p.x > env.left - 60 && p.x < env.right + 60)
+  s.planes.length = pw
   if (s.planes.length || (s.next -= dt) > 0) return
   s.next = QUIET.min + Math.random() * QUIET.span
   // Above an overcast there is nothing to see.

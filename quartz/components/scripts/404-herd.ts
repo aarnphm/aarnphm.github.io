@@ -368,8 +368,15 @@ function near(
   return null
 }
 
-const kin = (h: Herd, b: Beast) =>
-  h.beasts.filter(o => !o.in && (o.kind === 'sheep') === (b.kind === 'sheep'))
+const kinScratch: Beast[] = []
+function kin(h: Herd, b: Beast): Beast[] {
+  kinScratch.length = 0
+  const isSheep = b.kind === 'sheep'
+  for (const o of h.beasts) {
+    if (!o.in && (o.kind === 'sheep') === isSheep) kinScratch.push(o)
+  }
+  return kinScratch
+}
 function centre(group: { x: number; y: number }[]): Pt {
   let x = 0
   let y = 0
@@ -448,7 +455,9 @@ function leave(h: Herd, b: Beast) {
 function next(h: Herd, b: Beast, env: HerdEnv) {
   const r = h.rng
   const group = kin(h, b)
-  const down = group.filter(o => o.doing === 'lie').length / group.length
+  let downCount = 0
+  for (const o of group) if (o.doing === 'lie') downCount++
+  const down = downCount / group.length
   b.at = null
   b.watch = null
   b.path = []
@@ -647,6 +656,7 @@ function toPlace(h: Herd, b: Beast) {
   go(b, to)
 }
 
+const hurtScratch: Passer[] = []
 export function stepHerd(h: Herd, env: HerdEnv, dt: number, people: Passer[]) {
   if (env.out !== h.out) {
     h.out = env.out
@@ -665,7 +675,9 @@ export function stepHerd(h: Herd, env: HerdEnv, dt: number, people: Passer[]) {
   const open = h.doors === 2 && slant(h.farmer.x - FRONT[0], h.farmer.y - FRONT[1]) > 20
   if (open) h.since += dt
   serve(h)
-  const hurt = people.filter(o => o.hurt)
+  hurtScratch.length = 0
+  for (const o of people) if (o.hurt) hurtScratch.push(o)
+  const hurt = hurtScratch
   for (const [n, b] of h.beasts.entries()) {
     // Called in, each in its turn sets off for the barn from whatever it was doing; called out,
     // each in its turn comes out of the doors once the one before is clear of them.

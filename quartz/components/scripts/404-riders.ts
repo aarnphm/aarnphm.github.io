@@ -821,10 +821,18 @@ function stepMedics(p: Park, dt: number, voices: Voices) {
   // A call already answered gets its board whatever the hour.
   for (const r of p.riders) {
     if (r.state !== 'hurt') continue
-    const on = p.medics.filter(m => m.who === r)
-    const second = r.hurt > BOARD && on.length === 1 && on[0].state === 'tend'
-    const free = p.medics.find(m => m.state === 'post')
-    if (!free || (on.length ? !second : !p.env.open)) continue
+    let onCount = 0
+    let firstOn: Medic | null = null
+    let free: Medic | undefined
+    for (const m of p.medics) {
+      if (m.who === r) {
+        onCount++
+        if (!firstOn) firstOn = m
+      }
+      if (!free && m.state === 'post') free = m
+    }
+    const second = r.hurt > BOARD && onCount === 1 && firstOn!.state === 'tend'
+    if (!free || (onCount ? !second : !p.env.open)) continue
     Object.assign(free, { state: 'go', t: 0, who: r, board: second })
     free.walk = upTo(r.line, r.q, second ? CLIMB * 0.75 : CLIMB)
   }
@@ -901,25 +909,35 @@ function stepMedics(p: Park, dt: number, voices: Voices) {
         break
     }
   })
-  for (const b of p.leaning) b.t += dt
-  p.leaning = p.leaning.filter(b => b.t < 900).slice(-2)
+  let lw = 0
+  for (let i = 0; i < p.leaning.length; i++) {
+    const b = p.leaning[i]
+    b.t += dt
+    if (b.t < 900) p.leaning[lw++] = b
+  }
+  p.leaning.length = lw
+  if (p.leaning.length > 2) p.leaning.splice(0, p.leaning.length - 2)
 }
 
 // Whom the herd takes notice of: bikes going by fast, and anyone lying hurt.
+const passersOut: Passer[] = []
 function passers(p: Park): Passer[] {
-  const out: Passer[] = []
+  passersOut.length = 0
   for (const r of p.riders) {
     const fast = (r.state === 'ride' || r.state === 'air') && r.v > 3 * UNIT
     const hurt = r.state === 'hurt'
     if (!fast && !hurt) continue
     const at = place(r)
-    out.push({ x: at.x, y: at.ground, fast, hurt })
+    passersOut.push({ x: at.x, y: at.ground, fast, hurt })
   }
-  return out
+  return passersOut
 }
 
 const toward = (from: number, to: number, step: number) =>
   from < to ? Math.min(to, from + step) : Math.max(to, from - step)
+
+const liftqScratch: Rider[] = []
+const gateqScratch: Rider[] = []
 
 export function stepPark(p: Park, dt: number, voices: Voices) {
   p.time += dt
@@ -932,14 +950,21 @@ export function stepPark(p: Park, dt: number, voices: Voices) {
   if (p.env.open || p.riders.some(r => r.state === 'lift')) p.lift += dt
   let board = p.env.open && Math.floor(p.lift / BARS) !== bar
 
-  const live = p.riders.filter(r => r.state !== 'leave').length
+  let live = 0
+  liftqScratch.length = 0
+  gateqScratch.length = 0
+  for (const r of p.riders) {
+    if (r.state !== 'leave') live++
+    if (r.state === 'liftq') liftqScratch.push(r)
+    else if (r.state === 'link' || r.state === 'gate') gateqScratch.push(r)
+  }
   if (live < p.env.crowd && (p.arrive -= dt) <= 0) {
     recruit(p, p.env.crowd - live)
     p.arrive = 6 + p.rng() * 14
   }
 
-  const liftq = p.riders.filter(r => r.state === 'liftq').sort(byTicket)
-  const gateq = p.riders.filter(r => r.state === 'link' || r.state === 'gate').sort(byTicket)
+  const liftq = liftqScratch.sort(byTicket)
+  const gateq = gateqScratch.sort(byTicket)
   const { base, lift, link, runout } = PATHS
   for (const r of p.riders) {
     r.t += dt
@@ -1036,7 +1061,12 @@ export function stepPark(p: Park, dt: number, voices: Voices) {
         break
     }
   }
-  p.riders = p.riders.filter(r => !r.gone)
+  let rw = 0
+  for (let i = 0; i < p.riders.length; i++) {
+    const r = p.riders[i]
+    if (!r.gone) p.riders[rw++] = r
+  }
+  p.riders.length = rw
   stepMedics(p, dt, voices)
   stepHerd(p.herd, p.env.herd, dt, passers(p))
 

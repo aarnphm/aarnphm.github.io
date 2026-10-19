@@ -51,9 +51,9 @@ function missingPath(): string {
   return path.length > 1 ? path.replace(/\/$/, '') : path
 }
 
-function trigrams(s: string): Set<string> {
+function fillTrigrams(s: string, out = new Set<string>()): Set<string> {
+  out.clear()
   const padded = `  ${s} `
-  const out = new Set<string>()
   for (let i = 0; i < padded.length - 2; i++) out.add(padded.slice(i, i + 3))
   return out
 }
@@ -81,30 +81,37 @@ async function fillDepartures(list: HTMLElement, path: string, isActive: () => b
   const data = await fetchData.catch(() => undefined)
   if (!data || !isActive()) return
   const query = norm(path)
-  const qAll = trigrams(query)
-  const qLast = trigrams(lastSegment(query))
-  const entries = Object.entries(data).filter(
-    ([slug, d]) => !slug.startsWith('tags/') && slug !== '404' && !d.protected,
-  )
-  let picks = entries
-    .map(([slug, d]) => {
-      const s = norm(slug)
-      const score = Math.max(
-        dice(qAll, trigrams(s)),
-        dice(qLast, trigrams(lastSegment(s))) * 0.95,
-        dice(qLast, trigrams(norm(d.title))) * 0.9,
-      )
-      return { slug, title: d.title, score }
-    })
-    .filter(p => p.score > 0.3)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 3)
-  const wander = picks.length === 0
-  if (wander)
-    picks = Array.from({ length: 3 }, () => {
-      const [slug, d] = entries[Math.floor(Math.random() * entries.length)]
-      return { slug, title: d.title, score: 0 }
-    })
+  const qAll = fillTrigrams(query)
+  const qLast = fillTrigrams(lastSegment(query))
+  const candTri = new Set<string>()
+  const top: { slug: string; title: string; score: number }[] = []
+  const validSlugs: string[] = []
+  for (const slug in data) {
+    if (slug.startsWith('tags/') || slug === '404') continue
+    const d = data[slug]
+    if (!d || d.protected) continue
+    validSlugs.push(slug)
+    const s = norm(slug)
+    const s1 = dice(qAll, fillTrigrams(s, candTri))
+    const s2 = dice(qLast, fillTrigrams(lastSegment(s), candTri)) * 0.95
+    const s3 = dice(qLast, fillTrigrams(norm(d.title), candTri)) * 0.9
+    const score = Math.max(s1, s2, s3)
+    if (score <= 0.3) continue
+    if (top.length < 3) {
+      top.push({ slug, title: d.title, score })
+      top.sort((a, b) => b.score - a.score)
+    } else if (score > top[2].score) {
+      top[2] = { slug, title: d.title, score }
+      top.sort((a, b) => b.score - a.score)
+    }
+  }
+  const wander = top.length === 0
+  const picks = wander
+    ? Array.from({ length: Math.min(3, validSlugs.length) }, () => {
+        const slug = validSlugs[Math.floor(Math.random() * validSlugs.length)]
+        return { slug, title: data[slug].title, score: 0 }
+      })
+    : top
   const rows = picks.map((p, i) => {
     const li = document.createElement('li')
     const a = document.createElement('a')
@@ -121,6 +128,7 @@ async function fillDepartures(list: HTMLElement, path: string, isActive: () => b
     li.append(a)
     return li
   })
+  while (list.children.length > 1) list.firstElementChild?.remove()
   list.prepend(...rows)
 }
 
@@ -161,7 +169,11 @@ const pad2 = (n: number) => String(n).padStart(2, '0')
 const hhmm = (d: Date, seconds = false) =>
   [d.getHours(), d.getMinutes(), ...(seconds ? [d.getSeconds()] : [])].map(pad2).join(':')
 
+let cleanupPrev: (() => void) | null = null
+
 document.addEventListener('nav', () => {
+  cleanupPrev?.()
+  cleanupPrev = null
   if (document.body.dataset.slug !== '404') return
   const scene = document.querySelector<HTMLElement>('.nf-scene')
   if (!scene) return
@@ -183,7 +195,20 @@ document.addEventListener('nav', () => {
   if (pathEl) pathEl.textContent = path
 
   const departures = scene.querySelector<HTMLElement>('[data-nf-departures]')
-  if (departures) void fillDepartures(departures, path, () => active)
+  const boardDetails = scene.querySelector<HTMLDetailsElement>('.nf-board details')
+  let departuresLoaded = false
+  const ensureDepartures = () => {
+    if (departuresLoaded || !departures) return
+    if (boardDetails && !boardDetails.open) return
+    departuresLoaded = true
+    void fillDepartures(departures, path, () => active)
+  }
+  if (boardDetails) {
+    boardDetails.addEventListener('toggle', ensureDepartures)
+    if (boardDetails.open) ensureDepartures()
+  } else {
+    ensureDepartures()
+  }
 
   const arrival = scene.querySelector<HTMLElement>('[data-nf-arrival]')
   if (arrival) arrival.textContent = `arr ${hhmm(new Date())}`
@@ -610,8 +635,10 @@ document.addEventListener('nav', () => {
     later(crumble, 4200)
   }
 
-  window.addCleanup(() => {
+  const cleanup = () => {
+    if (!active) return
     active = false
+    if (cleanupPrev === cleanup) cleanupPrev = null
     locating.abort()
     land?.dispose()
     stop()
@@ -627,10 +654,13 @@ document.addEventListener('nav', () => {
     scene.removeEventListener('click', onHail, true)
     scene.removeEventListener('pointerdown', onPat)
     scene.removeEventListener('touchstart', onTouch)
+    boardDetails?.removeEventListener('toggle', ensureDepartures)
     petter?.removeEventListener('keydown', onPaw)
     petter?.removeEventListener('keyup', onPaw)
     petter?.removeEventListener('focus', onPawFocus)
     petter?.removeEventListener('blur', onPawBlur)
     petter?.removeEventListener('click', onPawPress)
-  })
+  }
+  cleanupPrev = cleanup
+  window.addCleanup(cleanup)
 })

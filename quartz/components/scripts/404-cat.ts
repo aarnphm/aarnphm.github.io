@@ -600,10 +600,16 @@ export function paintCat(
   const local = (f: (x: number, y: number) => number) => (x: number, y: number) =>
     f(...inward(x, y))
   const box = (x0: number, y0: number, x1: number, y1: number) => {
-    const corners = [world(c, x0, y0), world(c, x1, y0), world(c, x0, y1), world(c, x1, y1)]
-    const xs = corners.map(p => p[0])
-    const ys = corners.map(p => p[1])
-    return [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)] as const
+    const [ax, ay] = world(c, x0, y0)
+    const [bx, by] = world(c, x1, y0)
+    const [cx, cy] = world(c, x0, y1)
+    const [dx, dy] = world(c, x1, y1)
+    return [
+      Math.min(ax, bx, cx, dx),
+      Math.min(ay, by, cy, dy),
+      Math.max(ax, bx, cx, dx),
+      Math.max(ay, by, cy, dy),
+    ] as const
   }
   const pixel = (x: number, y: number): Pt => {
     const [wx, wy] = world(c, x, y)
@@ -659,12 +665,18 @@ export function paintCat(
     return smin(f, ellipse(x - l.foot[0] + 3, y - l.foot[1], 10, 6), 4)
   }
   // The far legs behind the body, a tone darker.
-  const far = legs.filter(l => l.far)
-  if (far.length)
+  let hasFar = false
+  for (let k = 0; k < legs.length; k++) if (legs[k].far) hasFar = true
+  if (hasFar)
     paintBlob(
       d,
       g,
-      local((x, y) => Math.min(...far.map(l => limb(x, y, l))) + lumpy(x, y, 67, 3)),
+      local((x, y) => {
+        let dMin = Infinity
+        for (let k = 0; k < legs.length; k++)
+          if (legs[k].far) dMin = Math.min(dMin, limb(x, y, legs[k]))
+        return dMin + lumpy(x, y, 67, 3)
+      }),
       box(-72, -60, 72, 64),
       { ...ink.stone, light: ink.stone.plate, plate: ink.stone.shade },
       keep,
