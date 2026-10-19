@@ -1,0 +1,298 @@
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
+@use './figure.scss' as *;
+
+.gated-sae {
+  @include figure-frame('gsae-figure', 30rem);
+
+  --gsae-on: color-mix(in srgb, var(--fig-salmon) 78%, var(--light));
+  --gsae-gate: color-mix(in srgb, var(--fig-sage) 70%, var(--light));
+  --gsae-param: color-mix(in srgb, var(--lightgray) 40%, var(--light));
+}
+
+:root[saved-theme='dark'] .gated-sae {
+  --gsae-on: color-mix(in srgb, var(--fig-salmon) 30%, var(--lightgray));
+  --gsae-gate: color-mix(in srgb, var(--fig-sage) 24%, var(--lightgray));
+  --gsae-param: var(--lightgray);
+}
+
+.gsae-controls {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr) 3rem;
+  gap: 0.8rem;
+  align-items: center;
+}
+
+.gsae-label {
+  color: var(--fig-note);
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+.gsae-slider {
+  width: 100%;
+  min-width: 0;
+  @include stableRangeControl;
+}
+
+.gsae-chip {
+  color: var(--dark);
+  font-family: var(--codeFont);
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.gsae-rule {
+  margin: 0.5rem 0 0;
+  color: var(--fig-note);
+  font-size: 0.78rem;
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+.gsae-body {
+  margin-top: 0.9rem;
+}
+
+.gsae-body--jumprelu {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 15rem);
+  gap: 1rem;
+  align-items: center;
+}
+
+.gsae-scroll {
+  overflow-x: auto;
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
+}
+
+.gsae-svg--gated {
+  min-width: 30rem;
+}
+
+.gsae-svg--plot {
+  max-width: 20rem;
+}
+
+.gsae-svg {
+  display: block;
+  width: 100%;
+  margin: 0 auto;
+  overflow: visible;
+
+  text {
+    font-family: var(--codeFont);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .gsae-wire {
+    fill: none;
+    stroke: var(--fig-stroke);
+    stroke-width: 1;
+  }
+
+  .gsae-cell {
+    fill: var(--light);
+    stroke: var(--fig-stroke);
+    stroke-width: 0.8;
+    transition: fill 160ms ease;
+  }
+
+  .gsae-col--param .gsae-cell {
+    fill: var(--gsae-param);
+    stroke: var(--fig-stroke-soft);
+  }
+
+  .gsae-col--gate .gsae-cell[data-gsae-on='1'] {
+    fill: var(--gsae-gate);
+  }
+
+  .gsae-col--out .gsae-cell {
+    stroke: var(--dark);
+  }
+
+  .gsae-col--out .gsae-cell[data-gsae-on='1'] {
+    fill: var(--gsae-on);
+  }
+
+  .gsae-num {
+    fill: var(--dark);
+    font-size: 9.5px;
+  }
+
+  .gsae-index {
+    fill: var(--fig-note);
+    font-size: 9px;
+  }
+
+  .gsae-lane {
+    fill: var(--fig-note);
+    font-family: inherit;
+    font-size: 10px;
+  }
+
+  .gsae-block {
+    fill: none;
+    stroke: var(--fig-stroke);
+    stroke-width: 1;
+  }
+
+  .gsae-op {
+    fill: var(--light);
+    stroke: var(--dark);
+    stroke-width: 1;
+  }
+
+  .gsae-prod {
+    fill: var(--light);
+    stroke: var(--dark);
+    stroke-width: 1;
+  }
+
+  .gsae-prod-dot {
+    fill: var(--dark);
+  }
+
+  .gsae-grid line {
+    stroke: var(--fig-div);
+    stroke-width: 1;
+  }
+
+  .gsae-axis {
+    stroke: var(--fig-stroke);
+    stroke-width: 1;
+  }
+
+  .gsae-tick {
+    fill: var(--dark);
+    font-size: 10px;
+  }
+
+  .gsae-diag {
+    stroke: var(--fig-stroke-soft);
+    stroke-width: 1;
+  }
+
+  .gsae-theta {
+    stroke: var(--fig-stroke-soft);
+    stroke-width: 1;
+  }
+
+  .gsae-curve {
+    fill: none;
+    stroke: var(--dark);
+    stroke-width: 1.8;
+  }
+
+  .gsae-end {
+    stroke: var(--dark);
+    stroke-width: 1.2;
+  }
+
+  .gsae-end--closed {
+    fill: var(--dark);
+  }
+
+  .gsae-end--open {
+    fill: var(--light);
+  }
+
+  .gsae-point {
+    fill: var(--light);
+    stroke: var(--dark);
+    stroke-width: 1;
+    transition:
+      cy 180ms ease,
+      fill 160ms ease;
+  }
+
+  .gsae-point[data-gsae-on='1'] {
+    fill: var(--fig-salmon);
+  }
+}
+
+.gsae-fo {
+  @include figure-fo;
+  justify-content: center;
+  height: 100%;
+  font-size: 0.74rem;
+}
+
+.gsae-table {
+  width: 100%;
+  margin: 0;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+
+  th,
+  td {
+    padding: 0.32rem 0.5rem;
+    border: 1px solid var(--fig-grid-line);
+    background: var(--fig-grid-cell);
+    color: var(--dark);
+    text-align: right;
+  }
+
+  thead th {
+    color: var(--fig-note);
+    font-weight: 400;
+  }
+
+  tbody th {
+    color: var(--fig-note);
+    font-weight: 400;
+    text-align: center;
+  }
+
+  td {
+    font-family: var(--codeFont);
+    font-variant-numeric: tabular-nums;
+    transition: background-color 160ms ease;
+  }
+
+  td[data-gsae-on='1'] {
+    background: var(--gsae-on);
+  }
+}
+
+.gsae-readout {
+  @include figure-table;
+  margin-top: 0.9rem;
+}
+
+.gsae-math {
+  @include figure-inline-math;
+}
+
+.gsae-caption {
+  @include figure-caption;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gsae-svg .gsae-cell,
+  .gsae-svg .gsae-point,
+  .gsae-table td {
+    transition: none;
+  }
+}
+
+@container gsae-figure (max-width: 520px) {
+  .gsae-body--jumprelu {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@container gsae-figure (max-width: 380px) {
+  .gsae-controls {
+    grid-template-columns: minmax(0, 1fr) 3rem;
+  }
+
+  .gsae-label {
+    grid-column: 1 / -1;
+  }
+}

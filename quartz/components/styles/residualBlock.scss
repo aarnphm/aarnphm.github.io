@@ -1,0 +1,92 @@
+@use '../../styles/variables.scss' as *;
+@use './figure.scss' as *;
+
+.residual-block {
+  @include figure-frame('rb-figure', 26rem);
+
+  --rb-act: color-mix(in srgb, var(--lightgray) 45%, var(--light));
+}
+
+:root[saved-theme='dark'] .residual-block {
+  --rb-act: var(--lightgray);
+
+  // The salmon sum stays light in both themes, so its glyph keeps dark ink.
+  .rb-glyph {
+    stroke: var(--light);
+  }
+}
+
+.rb-svg {
+  display: block;
+  width: 100%;
+  max-width: 19rem;
+  margin: 0 auto;
+  overflow: visible;
+
+  .rb-edge {
+    stroke: var(--fig-stroke);
+    stroke-width: 1.2;
+  }
+
+  .rb-skip {
+    fill: none;
+    stroke: var(--dark);
+    stroke-width: 1.6;
+  }
+
+  .rb-arrowhead {
+    fill: var(--dark);
+  }
+
+  .rb-node {
+    fill: var(--light);
+    stroke: var(--dark);
+    stroke-width: 1;
+  }
+
+  .rb-node--act {
+    fill: var(--rb-act);
+    stroke: var(--fig-stroke);
+  }
+
+  .rb-node--io {
+    stroke: var(--fig-stroke);
+  }
+
+  .rb-sum {
+    fill: var(--fig-salmon);
+    stroke: var(--dark);
+    stroke-width: 1;
+  }
+
+  .rb-glyph {
+    stroke: var(--dark);
+    stroke-width: 1.4;
+  }
+}
+
+.rb-fo {
+  @include figure-fo;
+  height: 100%;
+  font-size: 0.82rem;
+}
+
+.rb-fo--center {
+  justify-content: center;
+}
+
+.rb-fo--start {
+  justify-content: flex-start;
+}
+
+.rb-fo--end {
+  justify-content: flex-end;
+}
+
+.rb-math {
+  @include figure-inline-math;
+}
+
+.rb-caption {
+  @include figure-caption;
+}
