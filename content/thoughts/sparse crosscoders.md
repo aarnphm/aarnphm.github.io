@@ -117,7 +117,45 @@ These masks constrain information flow in the crosscoder. Mechanistic faithfulne
 
 The preview compared a global acausal crosscoder with separate SAEs on all layers of an 18-layer model. Activations were normalized per layer and the sparsity coefficient was fixed. The crosscoder achieved lower evaluation loss at a matched total dictionary size; at large compute budgets, reaching the same loss cost roughly twice the training FLOPs. Dictionary size and training cost answer different questions here. [@lindsey2024sparsecrosscoders]
 
-![[thoughts/images/all-layer-crosscoder-vs-per-layer-sae.webp]]
+```jsx imports={Zoomable,DataChart}
+<Zoomable label="crosscoder and per-layer SAE loss against number of features">
+  <DataChart
+    label="loss against number of features"
+    mode="line"
+    xscale="log2"
+    x='[4096,8192,16384,32768,65536,131072,262144,524288,1048576,2097152,4194304]'
+    xlabel="number of features (log)"
+    xname="features"
+    yscale="log"
+    ymin={5}
+    ymax={13}
+    yticks='[5,6,7,8,9,10,12]'
+    ylabel="minimum loss (arb. unit, log)"
+    decimals={2}
+    series='[{"name":"all-layer crosscoder","values":[9.16,8.49,7.92,7.39,6.91,6.52,6.02,5.75,5.54,5.44,null]},{"name":"per-layer SAEs","values":[10.60,10.09,9.57,9.03,8.48,7.95,7.38,6.90,6.47,6.13,6.03]}]'
+    active={5}
+    caption="Minimum loss of one all-layer acausal crosscoder (salmon circles) and of separate per-layer SAEs (sage squares) on an 18-layer model, against total dictionary size. Both axes are logarithmic. Values are read from the Anthropic crosscoders figure and are approximate, to about $\pm 0.05$. The crosscoder at $2^{17}$ features matches the SAEs at about $2^{20}$, so it is about 8 times more feature efficient. Hover or focus a point, then use the arrow keys, to read both losses."
+  />
+</Zoomable>
+
+<Zoomable label="crosscoder and per-layer SAE loss against training FLOPs">
+  <DataChart
+    label="loss against training FLOPs"
+    mode="line"
+    xscale="log2"
+    xlabel="training FLOPs (arb. unit, log)"
+    xname="FLOPs"
+    yscale="log"
+    ymin={5}
+    ymax={13}
+    yticks='[5,6,7,8,9,10,12]'
+    ylabel="minimum loss (arb. unit, log)"
+    decimals={2}
+    series='[{"name":"all-layer crosscoder","points":[[17.753,11.98],[35.506,10.94],[71.012,9.94],[142.025,9.09],[284.05,8.41],[568.1,7.84],[1136.199,7.42],[2272.398,7.12],[4544.797,6.74],[9089.593,6.41]]},{"name":"per-layer SAEs","points":[[2,10.82],[4,10.37],[8,9.93],[16,9.51],[32,9.08],[64,8.63],[128,8.24],[256,7.86],[512,7.48],[1024,7.16],[2048,6.82],[4096,6.54],[8192,6.28]]}]'
+    caption="The same coders against training compute. Values are read from the Anthropic crosscoders figure and are approximate; the crosscoder points sit about $2^{0.15}$ to the right of the SAE points in that figure. Hover or focus a point, then use the arrow keys, to read each loss. The figure marks the crosscoder as about 2 times less FLOP efficient at the largest budget. The features plot reaches lower losses because those coders are trained past FLOP-optimality."
+  />
+</Zoomable>
+```
 
 ## model diffing
 

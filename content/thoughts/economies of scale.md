@@ -13,7 +13,27 @@ title: economies of scale
 
 In microeconomics, **economies of scale** are the cost advantages that enterprises obtain due to their scale of operation, typically measured by the amount of output produced per unit of cost (production cost). A decrease in cost per unit of output enables an increase in scale—that is, increased production with lowered cost.
 
-![[thoughts/images/economies-of-scales.webp|As quantity of production increases from Q to Q_2, the average cost of each unit decreases from C to C_1. LRAC is the long-run average cost.]]
+```jsx imports={Zoomable,DataChart}
+<Zoomable label="long-run average cost curve">
+  <DataChart
+    label="long-run average cost"
+    mode="line"
+    xlabel="output"
+    ylabel="average cost"
+    xmin={0}
+    xmax={40}
+    ymin={0}
+    ymax={16}
+    xticks="[]"
+    yticks="[]"
+    decimals={2}
+    series='[{"name":"LRAC","terms":[[-1,36],[0,2],[1,0.25]],"from":3,"to":38}]'
+    marks='[{"x":4,"xlabel":"Q","ylabel":"C"},{"x":12,"xlabel":"Q_2","ylabel":"C_1"}]'
+    probe='{"x":8,"step":0.5,"xname":"output $Q$","yname":"average cost","falling":"economies of scale","flat":"minimum efficient scale","rising":"diseconomies of scale","state":"region"}'
+    caption="As quantity of production increases from $Q$ to $Q_2$, the average cost of each unit decreases from $C$ to $C_1$. LRAC is the long-run average cost. The curve is illustrative, $\mathrm{LRAC}(Q) = 36/Q + 2 + Q/4$: a fixed cost spread over more units, plus a cost that grows with scale, so the minimum sits at $Q_2 = 12$. The sage squares mark $Q$ and $Q_2$. Drag the salmon point, or use the slider, to read the average cost at any output and whether it still falls."
+  />
+</Zoomable>
+```
 
 ## Overview
 

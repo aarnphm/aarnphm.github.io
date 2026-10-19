@@ -190,9 +190,45 @@ There are few limitations with current vLLM's support of the Outlines backend:
 
 This is great because it addresses **limitation (1)** by moving grammar compilation out of Python into C, utilising `pthread`. Additionally, XGrammar lays the groundwork for addressing **limitation (4)** in future releases. Below are performance comparisons between the XGrammar and Outlines backends:
 
-![[posts/images/vllm-new-xgrammar.webp]]
+```jsx imports={Zoomable,DataChart}
+<Zoomable label="vLLM guided decoding time to first token">
+  <DataChart
+    label="vLLM guided decoding: time to first token"
+    mode="bar"
+    x="[1,5,10,15,20,25]"
+    xlabel="QPS"
+    yscale="log"
+    ymin={10}
+    ymax={1000000}
+    ylabel="mean TTFT (ms, log)"
+    unit="ms"
+    series='[{"name":"vLLM 0.6.5 (xgrammar)","values":[75,68,80,118,220,446]},{"name":"vLLM 0.6.4 (outlines)","values":[10507,139455,144131,204710,192325,244884]}]'
+    labels="[0,5]"
+    ratio="outlines ÷ xgrammar"
+    caption="Mean time to first token for Llama-3.1-8B on one H100 GPU, NousResearch/json-mode-eval, with 50% of requests guided. Salmon bars are vLLM 0.6.5 with XGrammar; darker sage bars are vLLM 0.6.4 with Outlines. The y axis is logarithmic, so each gridline is ten times the one below. Values are as printed on the original benchmark figure. Hover or focus a QPS group, then use the arrow keys, to read both values and their ratio; the table lists every value."
+  />
+</Zoomable>
+```
 
-![[posts/images/vllm-xgrammar-decode-time-per-output-token.webp|courtesy of Michael Goin (Red Hat)]]
+```jsx imports={Zoomable,DataChart}
+<Zoomable label="vLLM guided decoding time per output token">
+  <DataChart
+    label="vLLM guided decoding: time per output token"
+    mode="bar"
+    x="[1,5,10,15,20,25]"
+    xlabel="QPS"
+    ymin={0}
+    ymax={200}
+    ylabel="mean TPOT (ms)"
+    unit="ms"
+    decimals={1}
+    series='[{"name":"XGrammar","values":[8.4,9.6,12.1,16.1,26.5,32.0]},{"name":"Outlines","values":[7.9,13.4,19.6,73.8,68.6,152.3]}]'
+    labels="[3,5]"
+    ratio="Outlines ÷ XGrammar"
+    caption="Mean time per output token on the same setup: Llama-3.1-8B, one H100 GPU, NousResearch/json-mode-eval, 50% guided decoding. Salmon bars are XGrammar; darker sage bars are Outlines. Values are as printed on the original figure, courtesy of Michael Goin (Red Hat). Hover or focus a QPS group to read both values; the gap opens from 15 QPS."
+  />
+</Zoomable>
+```
 
 In vLLM’s v0 architecture, we’ve implemented XGrammar as a [logit processor](https://github.com/vllm-project/vllm/blob/main/vllm/model_executor/guided_decoding/xgrammar_decoding.py), optimizing it with caching for tokenizer data. While the performance improvements are encouraging, we believe there’s still significant room for optimisation.
 
