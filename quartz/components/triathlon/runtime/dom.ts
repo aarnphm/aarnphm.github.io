@@ -41,6 +41,15 @@ export const svg = (tag: string, attrs: Record<string, string | number>): SVGEle
   return e
 }
 
+// Hover readouts rewrite their text node in place. Replacing children (`textContent =`) sends every
+// `:has()` rule on the page through invalidation, about 30 ms of style recalc per write on a day page.
+export const setText = (node: Element, value: string): void => {
+  const first = node.firstChild
+  if (first instanceof Text && first === node.lastChild) {
+    if (first.data !== value) first.data = value
+  } else node.textContent = value
+}
+
 export const mathFrag = (text: string): Node[] => {
   const out: Node[] = []
   text.split(/\$([^$]+)\$/).forEach((part, i) => {

@@ -401,7 +401,8 @@ body {
   }
 }
 
-.page-header:not(aside[class~='sidepanel-container'] *) {
+// A class selector here: `[class~=…] *` makes every class change on the page restyle the whole document.
+.page-header:not(aside.sidepanel-container *) {
   padding-top: var(--sidepanel-padding);
 }
 
