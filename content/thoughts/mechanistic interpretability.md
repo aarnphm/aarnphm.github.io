@@ -92,10 +92,10 @@ config:
 swimlane-beta LR
   subgraph baseline["unmodified pass"]
     prompt["<b>prompt:</b> <i>The</i><br/><i>weather in</i><br/><i>California is</i>"]
-    early@{ shape: st-rect, label: "<b>earlier layers</b><br/>$$1\ldots\ell-1$$" }
+    early@{ shape: st-rect, label: "<b>layers through</b><br/>$$1\ldots\ell$$" }
     clean(["<b>chosen state</b><br/>$$h_{\ell,t}\text{ at }(\ell,t)$$"])
     late_b@{ shape: st-rect, label: "<b>later layers</b><br/>$$\ell+1\ldots L$$" }
-    out_b["<b>clean logits</b><br/>$$P(y\mid x)$$<br/>favours “hot”"]
+    out_b["<b>next-token probabilities</b><br/>$$P(y\mid x)$$<br/>favours “hot”"]
   end
 
   subgraph steered["steered pass"]
@@ -107,12 +107,12 @@ swimlane-beta LR
   subgraph vector["steering vector"]
     sae["<b>SAE decoder</b><br/>feature dir $$d_i$$"]
     caa["<b>CAA vector</b><br/>$$\mathbb{E}[a(c_p)-a(c_n)]$$"]
-    scale@{ shape: hex, label: "<b>scale factor</b><br/>$$\alpha=s\cdot m_i$$<br/>offset $$\alpha d_i$$" }
+    scale@{ shape: hex, label: "<b>strength</b><br/>$$\alpha$$<br/>offset $$\alpha d_i$$" }
   end
 
   prompt --> early
   early --> clean --> late_b --> out_b
-  early -->|$$h_{\ell,t}$$| hook
+  clean -->|$$h_{\ell,t}$$| hook
   sae --> scale
   caa --> scale
   scale -.->|$$+\alpha d_i$$| hook
