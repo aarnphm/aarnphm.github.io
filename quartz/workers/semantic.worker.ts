@@ -92,6 +92,25 @@ async function fetchAsset(path: string): Promise<Response> {
 }
 
 async function loadVectors(data: Manifest): Promise<Float32Array> {
+  if (data.vectors.shards.length === 1 && data.vectors.shards[0].rowOffset === 0) {
+    const shard = data.vectors.shards[0]
+    const view = new Float32Array(await fetchBinary(toAssetUrl(shard.path)))
+    if (view.length !== shard.rows * data.dims) {
+      throw new Error(
+        `shard ${shard.path} has mismatched length (expected ${shard.rows * data.dims}, got ${view.length})`,
+      )
+    }
+    if (shard.rows > data.rows) {
+      throw new Error(`shard ${shard.path} reaches past the ${data.rows} rows of the manifest`)
+    }
+    const progress: ProgressMessage = {
+      type: 'progress',
+      loadedRows: shard.rows,
+      totalRows: data.rows,
+    }
+    self.postMessage(progress)
+    return view
+  }
   const all = new Float32Array(data.rows * data.dims)
   let loadedRows = 0
   await Promise.all(
@@ -138,8 +157,27 @@ function configureRuntimeEnv() {
   if (envConfigured) return
   env.allowLocalModels = false
   env.allowRemoteModels = true
-  // The ONNX wasm paths stay at the transformers.js default: it pins them to the onnxruntime-web build it bundles.
+  // WebGPU runs the query encoder; keep the ONNX WASM orchestrator single-threaded.
+  const onnxWasm = (
+    env as { backends?: { onnx?: { wasm?: { numThreads?: number; wasmBinary?: unknown } } } }
+  ).backends?.onnx?.wasm
+  if (onnxWasm) onnxWasm.numThreads = 1
   envConfigured = true
+}
+
+function pruneTokenizerMemory(loadedTokenizer: any) {
+  if (!loadedTokenizer || typeof loadedTokenizer !== 'object') return
+  loadedTokenizer._tokenizerJSON = null
+  const inner = loadedTokenizer._tokenizer
+  if (inner && typeof inner === 'object') {
+    inner.tokenizer = null
+    const innerModel = inner.model
+    if (innerModel && typeof innerModel === 'object') {
+      innerModel.config = null
+      innerModel.merges = null
+      innerModel.vocab = null
+    }
+  }
 }
 
 const QUERY_DTYPES: readonly SemanticQueryDType[] = ['q4', 'q8', 'fp32']
@@ -175,8 +213,13 @@ async function loadEncoder() {
   if (config.model_type === 'embedding_gemma2') {
     Object.assign(config, { vision_config: null, audio_config: null })
   }
-  tokenizer = await AutoTokenizer.from_pretrained(mappedModel)
+  const loadedTokenizer = await AutoTokenizer.from_pretrained(mappedModel)
+  pruneTokenizerMemory(loadedTokenizer)
+  tokenizer = loadedTokenizer
   model = await AutoModel.from_pretrained(mappedModel, { config, dtype, device: 'webgpu' })
+  const onnxWasm = (env as { backends?: { onnx?: { wasm?: { wasmBinary?: unknown } } } }).backends
+    ?.onnx?.wasm
+  if (onnxWasm) onnxWasm.wasmBinary = undefined
 }
 
 async function embed(text: string, isQuery: boolean = false): Promise<Float32Array> {
@@ -209,47 +252,61 @@ async function embed(text: string, isQuery: boolean = false): Promise<Float32Arr
   }
   const inputs = await tokenizer([prefixedText], { padding: true })
   const outputs = await model(inputs)
+  try {
+    let embedding
+    if (outputs.sentence_embedding) {
+      embedding = outputs.sentence_embedding
+    } else if (outputs.last_hidden_state) {
+      const lastHidden = outputs.last_hidden_state
+      const attentionMask = inputs.attention_mask
+      const [_, seqLen, hiddenSize] = lastHidden.dims
+      const pooled = new Float32Array(hiddenSize)
 
-  let embedding
-  if (outputs.sentence_embedding) {
-    embedding = outputs.sentence_embedding
-  } else if (outputs.last_hidden_state) {
-    const lastHidden = outputs.last_hidden_state
-    const attentionMask = inputs.attention_mask
-    const [_, seqLen, hiddenSize] = lastHidden.dims
-    const pooled = new Float32Array(hiddenSize)
-
-    for (let i = 0; i < hiddenSize; i++) {
-      let sum = 0
-      let count = 0
-      for (let j = 0; j < seqLen; j++) {
-        if (attentionMask.data[j] > 0) {
-          sum += lastHidden.data[j * hiddenSize + i]
-          count++
+      for (let i = 0; i < hiddenSize; i++) {
+        let sum = 0
+        let count = 0
+        for (let j = 0; j < seqLen; j++) {
+          if (attentionMask.data[j] > 0) {
+            sum += lastHidden.data[j * hiddenSize + i]
+            count++
+          }
         }
+        pooled[i] = count > 0 ? sum / count : 0
       }
-      pooled[i] = count > 0 ? sum / count : 0
+
+      embedding = { data: pooled }
+    } else {
+      throw new Error('unsupported model output format')
     }
 
-    embedding = { data: pooled }
-  } else {
-    throw new Error('unsupported model output format')
+    const data = embedding.data
+    if (data.length < dims) {
+      throw new Error(`model emits ${data.length} dims but the index stores ${dims}`)
+    }
+    // Matryoshka models (embeddinggemma-2: 768/512/256/128) keep the leading dims, then renormalize below.
+    const vec = new Float32Array(dims)
+    for (let i = 0; i < dims; i++) vec[i] = data[i]
+    let norm = 0
+    for (let i = 0; i < dims; i++) norm += vec[i] * vec[i]
+    norm = Math.sqrt(norm)
+    if (norm > 0) {
+      for (let i = 0; i < dims; i++) vec[i] /= norm
+    }
+    return vec
+  } finally {
+    for (const map of [outputs, inputs]) {
+      if (map && typeof map === 'object') {
+        for (const key of Object.keys(map)) {
+          const val = map[key]
+          if (val && typeof val.dispose === 'function') {
+            try {
+              val.dispose()
+            } catch {}
+          }
+        }
+      }
+    }
   }
-
-  const data = embedding.data
-  if (data.length < dims) {
-    throw new Error(`model emits ${data.length} dims but the index stores ${dims}`)
-  }
-  // Matryoshka models (embeddinggemma-2: 768/512/256/128) keep the leading dims, then renormalize below.
-  const vec = new Float32Array(dims)
-  for (let i = 0; i < dims; i++) vec[i] = data[i]
-  let norm = 0
-  for (let i = 0; i < dims; i++) norm += vec[i] * vec[i]
-  norm = Math.sqrt(norm)
-  if (norm > 0) {
-    for (let i = 0; i < dims; i++) vec[i] /= norm
-  }
-  return vec
 }
 
 async function fetchManifest(path: string): Promise<Manifest> {
@@ -267,7 +324,7 @@ async function fetchManifest(path: string): Promise<Manifest> {
   if (manifest && data.model !== manifest.model) {
     throw new Error(`index model ${data.model} differs from the loaded encoder ${manifest.model}`)
   }
-  return data
+  return { ...data, ids: [], titles: undefined, chunkMetadata: undefined }
 }
 
 async function handleInit(msg: InitMessage) {
@@ -306,6 +363,7 @@ async function handleLoad(msg: LoadMessage) {
   state = 'loading'
   try {
     const next = await fetchManifest(msg.manifestUrl)
+    vectors = null
     const loaded = await loadVectors(next)
     manifest = next
     dims = next.dims
