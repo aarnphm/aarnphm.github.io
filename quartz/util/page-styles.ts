@@ -5,8 +5,16 @@ export type PageStyle = { href: string; classPrefixes: string[] }
 
 const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
+const patternCache = new Map<string, RegExp>()
+
 export function classPrefixPattern(prefixes: readonly string[]): RegExp {
-  return new RegExp(`class="(?:[^"]*\\s)?(?:${prefixes.map(escapeRegExp).join('|')})`)
+  const key = prefixes.join('\u0000')
+  let cached = patternCache.get(key)
+  if (!cached) {
+    cached = new RegExp(`class="(?:[^"]*\\s)?(?:${prefixes.map(escapeRegExp).join('|')})`)
+    patternCache.set(key, cached)
+  }
+  return cached
 }
 
 export function classPrefixSelector(prefixes: readonly string[]): string {

@@ -902,6 +902,15 @@ export function createMarkdownParser(ctx: BuildCtx, mdContent: MarkdownContent[]
 const clamp = (num: number, min: number, max: number) =>
   Math.min(Math.max(Math.round(num), min), max)
 
+const HEAVY_PARSE_SUFFIXES = ['/are.na.md', '/stream.md', '/triathlon.md']
+
+function isHeavyParseFile(fp: FilePath): boolean {
+  const normalized = fp.replace(/\\/g, '/')
+  return HEAVY_PARSE_SUFFIXES.some(
+    suffix => normalized.endsWith(suffix) || normalized === suffix.slice(1),
+  )
+}
+
 export async function parseMarkdown(
   ctx: BuildCtx,
   fps: FilePath[],
@@ -972,9 +981,16 @@ export async function parseMarkdown(
       incremental: ctx.incremental,
     }
 
+    const heavyFps = fpsToParse.filter(isHeavyParseFile)
+    const regularFps = fpsToParse.filter(fp => !isHeavyParseFile(fp))
+    const scheduledChunks: FilePath[][] = [
+      ...heavyFps.map(fp => [fp]),
+      ...chunks(regularFps, HTML_PARSE_CHUNK_SIZE),
+    ]
+
     const parsePromises: WorkerPromise<ProcessedContent[]>[] = []
     let processedFiles = 0
-    for (const chunk of chunks(fpsToParse, HTML_PARSE_CHUNK_SIZE)) {
+    for (const chunk of scheduledChunks) {
       parsePromises.push(pool.exec('parseFiles', [serializableCtx, chunk]))
     }
 
@@ -990,7 +1006,15 @@ export async function parseMarkdown(
         }),
       )
 
-      res = results.flat()
+      const parsedByFp = new Map<FilePath, ProcessedContent>()
+      for (const content of results.flat()) {
+        const fp = filePathForProcessedContent(content)
+        if (fp) parsedByFp.set(fp, content)
+      }
+      res = fpsToParse.flatMap(fp => {
+        const content = parsedByFp.get(fp)
+        return content ? [content] : []
+      })
     } finally {
       await pool.terminate()
     }

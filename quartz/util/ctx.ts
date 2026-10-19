@@ -59,7 +59,15 @@ export interface BuildCtx {
   decks?: QuartzPluginData[]
 }
 
+import { ReloadableWeakMap } from './module-caches'
+
+const trieCache = new ReloadableWeakMap<QuartzPluginData[], FileTrieNode<BuildTimeTrieData>>()
+const renderDataCache = new ReloadableWeakMap<QuartzPluginData[], RenderData>()
+
 export function trieFromAllFiles(allFiles: QuartzPluginData[]): FileTrieNode<BuildTimeTrieData> {
+  const cached = trieCache.get(allFiles)
+  if (cached) return cached
+
   const trie = new FileTrieNode<BuildTimeTrieData>([])
   allFiles.forEach(file => {
     // Handle PDFs and files with frontmatter
@@ -92,12 +100,18 @@ export function trieFromAllFiles(allFiles: QuartzPluginData[]): FileTrieNode<Bui
     }
   })
 
+  trieCache.set(allFiles, trie)
   return trie
 }
 
 export function renderDataFor(ctx: BuildCtx, allFiles: QuartzPluginData[]): RenderData {
   const cached = ctx.renderData
   if (cached?.source === allFiles) return cached
+  const weakCached = renderDataCache.get(allFiles)
+  if (weakCached) {
+    ctx.renderData = weakCached
+    return weakCached
+  }
 
   const bySlug = new Map<FullSlug, QuartzPluginData>()
   const baseFiles: QuartzPluginData[] = []
@@ -143,11 +157,10 @@ export function renderDataFor(ctx: BuildCtx, allFiles: QuartzPluginData[]): Rend
     recommendationPool,
     frontmatterLinksByKey,
   }
+  renderDataCache.set(allFiles, renderData)
   ctx.renderData = renderData
   return renderData
 }
-
-import { ReloadableWeakMap } from './module-caches'
 
 export type WorkerSerializableBuildCtx = Omit<BuildCtx, 'cfg' | 'trie' | 'renderData'>
 

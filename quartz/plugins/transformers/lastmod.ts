@@ -75,7 +75,9 @@ export const CreatedModifiedDate: QuartzTransformerPlugin<Partial<Options>> = us
                     repo = Repository.discover(ctx.argv.directory)
                   }
                   try {
-                    modified ||= await repo.getFileLatestModifiedDateAsync(fullFp)
+                    const gitDate = await repo.getFileLatestModifiedDateAsync(fullFp)
+                    created ||= gitDate
+                    modified ||= gitDate
                   } catch {
                     console.log(
                       styleText(
