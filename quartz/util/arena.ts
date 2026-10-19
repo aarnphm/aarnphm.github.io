@@ -27,11 +27,79 @@ function rebaseUrl(value: string, currentSlug: FullSlug): string {
   return joinSegments(root, value)
 }
 
+interface ArenaNodeInspection {
+  hasRelativeUrl: boolean
+  hasTransclude: boolean
+}
+
+const arenaNodeInspectionCache = new WeakMap<ElementContent, ArenaNodeInspection>()
+const arenaJsxCache = new WeakMap<ElementContent, Map<string, ReturnType<typeof htmlToJsx>>>()
+
+function inspectArenaNode(node: ElementContent): ArenaNodeInspection {
+  const cached = arenaNodeInspectionCache.get(node)
+  if (cached) return cached
+
+  let hasRelativeUrl = false
+  let hasTransclude = false
+
+  const visit = (el: ElementContent) => {
+    if (el.type !== 'element') return
+    const e = el as Element
+    if (e.properties) {
+      const href = e.properties.href
+      if (
+        typeof href === 'string' &&
+        href.length > 0 &&
+        !href.startsWith('#') &&
+        !href.startsWith('/') &&
+        !isAbsoluteURL(href)
+      ) {
+        hasRelativeUrl = true
+      }
+      const src = e.properties.src
+      if (
+        typeof src === 'string' &&
+        src.length > 0 &&
+        !src.startsWith('#') &&
+        !src.startsWith('/') &&
+        !isAbsoluteURL(src)
+      ) {
+        hasRelativeUrl = true
+      }
+      if (e.tagName === 'blockquote') {
+        const className = e.properties.className as unknown
+        if (
+          Array.isArray(className)
+            ? className.includes('transclude')
+            : typeof className === 'string' && className.split(/\s+/).includes('transclude')
+        ) {
+          hasTransclude = true
+        }
+      }
+    }
+    if (e.children) {
+      for (const child of e.children) {
+        visit(child)
+        if (hasRelativeUrl && hasTransclude) return
+      }
+    }
+  }
+
+  visit(node)
+  const result = { hasRelativeUrl, hasTransclude }
+  arenaNodeInspectionCache.set(node, result)
+  return result
+}
+
 export function adjustArenaNode(
   raw: ElementContent,
   currentSlug: FullSlug,
   opts?: { rewriteFirstAnchorTo?: FullSlug },
 ): ElementContent {
+  if (!opts?.rewriteFirstAnchorTo && !inspectArenaNode(raw).hasRelativeUrl) {
+    return raw
+  }
+
   const node = cloneContent(raw)
   let anchorRewritten = false
 
@@ -81,6 +149,24 @@ export function toArenaJsx(
   currentSlug: FullSlug,
   componentData: QuartzComponentProps,
 ) {
+  const info = inspectArenaNode(node)
+  if (!info.hasTransclude) {
+    const cacheKey = `${filePath}\u0000${info.hasRelativeUrl ? pathToRoot(currentSlug) : ''}`
+    let byKey = arenaJsxCache.get(node)
+    if (byKey?.has(cacheKey)) {
+      return byKey.get(cacheKey)
+    }
+    const adjusted = info.hasRelativeUrl ? adjustArenaNode(node, currentSlug) : node
+    const root: Root = { type: 'root', children: [adjusted] }
+    const rendered = htmlToJsx(filePath as FilePath, root)
+    if (!byKey) {
+      byKey = new Map()
+      arenaJsxCache.set(node, byKey)
+    }
+    byKey.set(cacheKey, rendered)
+    return rendered
+  }
+
   const adjusted = adjustArenaNode(node, currentSlug)
   const root: Root = { type: 'root', children: [adjusted] }
   const visited = new Set<FullSlug>([currentSlug])

@@ -216,6 +216,16 @@ export function arenaChannelSections(channel: ArenaChannel): ArenaChannelSection
   return result
 }
 
+const CONSUMED_METADATA_KEYS = new Set([
+  'accessed',
+  'accessed_date',
+  'date',
+  'tags',
+  'tag',
+  'coord',
+  'socials',
+])
+
 export function createArenaChannelRenderer(
   componentData: QuartzComponentProps,
   channel: ArenaChannel,
@@ -275,13 +285,8 @@ export function createArenaChannelRenderer(
 
   return (block: ArenaBlock, blockIndex: number, view: 'card' | 'modal' | 'page' = 'card') => {
     const hasSubItems = block.subItems && block.subItems.length > 0
-    const frameTitle = block.title ?? block.content ?? `Block ${blockIndex + 1}`
-    const targetUrl = block.url ? rewriteArxivUrl(block.url) : undefined
-    const embedHtml = block.embedHtml
-    const isSubstackCandidate = block.url ? substackPostRegex.test(block.url) : false
     const isPdfCandidate = block.url ? isArenaPdfUrl(block.url) : false
     const isPinned = block.pinned ?? false
-    const externalEmbedMode = block.embedMode ?? 'auto'
     const accessedRaw =
       (typeof block.metadata?.accessed === 'string' ? block.metadata.accessed : undefined) ??
       (typeof block.metadata?.accessed_date === 'string'
@@ -289,117 +294,114 @@ export function createArenaChannelRenderer(
         : undefined) ??
       (typeof block.metadata?.date === 'string' ? block.metadata.date : undefined)
     const accessed = accessedRaw ? normalizeDate(accessedRaw) : undefined
-    const displayUrl =
-      block.url ?? (block.internalSlug ? `https://${cfg.baseUrl}/${block.internalSlug}` : undefined)
-    const mapTitle = block.title ?? block.content ?? block.url ?? undefined
-
-    const metadataEntries: Array<{ label: string; value: ComponentChild }> = []
-
-    if (accessed) {
-      metadataEntries.push({
-        label: 'accessed',
-        value: accessed.dateTime ? (
-          <time dateTime={accessed.dateTime}>{accessed.display}</time>
-        ) : (
-          accessed.display
-        ),
-      })
-    }
-
-    if (block.importance !== undefined) {
-      metadataEntries.push({
-        label: 'importance',
-        value: <span class="arena-meta-importance">{block.importance}</span>,
-      })
-    }
-
-    if (block.metadata) {
-      const consumedKeys = new Set([
-        'accessed',
-        'accessed_date',
-        'date',
-        'tags',
-        'tag',
-        'coord',
-        'socials',
-      ])
-      const additionalEntries = Object.entries(block.metadata)
-        .filter((entry): entry is [string, string] => {
-          const [key, value] = entry
-          if (typeof value !== 'string' || value.trim().length === 0) return false
-          if (consumedKeys.has(key.toLowerCase())) return false
-          return true
-        })
-        .sort(([a], [b]) => a.localeCompare(b))
-        .map(([rawKey, rawValue]) => ({
-          label: rawKey.replace(/_/g, ' '),
-          value: renderInlineText(rawValue),
-        }))
-
-      metadataEntries.push(...additionalEntries)
-    }
-
-    if (block.tags && block.tags.length > 0) {
-      metadataEntries.push({
-        label: block.tags.length === 1 ? 'tag' : 'tags',
-        value: (
-          <span class="arena-meta-taglist">
-            {block.tags.map(tag => (
-              <span class="tag-link" key={`${block.id}-tag-${slugTag(tag)}`}>
-                {tag}
-              </span>
-            ))}
-          </span>
-        ),
-      })
-    }
-
-    const socials =
-      block.metadata?.socials && typeof block.metadata.socials === 'object'
-        ? (block.metadata.socials as Record<string, unknown>)
-        : null
-
-    if (socials && Object.keys(socials).length > 0) {
-      metadataEntries.push({
-        label: 'média',
-        value: (
-          <span class="arena-meta-socials">
-            {Object.entries(socials).map(([name, link]) => {
-              const href = typeof link === 'string' ? link : (link?.toString?.() ?? '')
-              const isInternal = href.startsWith('/')
-              return (
-                <address key={name}>
-                  <a
-                    href={href}
-                    target={!isInternal ? '_blank' : ''}
-                    rel={!isInternal ? 'noopener noreferrer' : ''}
-                    class={isInternal ? 'internal' : 'external'}
-                    data-no-popover
-                  >
-                    {name}
-                  </a>
-                </address>
-              )
-            })}
-          </span>
-        ),
-      })
-    }
-
-    const convertFromText = (text: string) => {
-      const root = fromHtmlIsomorphic(text, { fragment: true }) as Root
-      return fromHtmlStringToArenaJsx(
-        fileData.filePath!,
-        root,
-        fileData.slug! as FullSlug,
-        componentData,
-      )
-    }
 
     const hasMetaPreview =
       Boolean(accessed) || (block.tags && Array.isArray(block.tags) && block.tags.length > 0)
 
     if (view === 'modal' || view === 'page') {
+      const frameTitle = block.title ?? block.content ?? `Block ${blockIndex + 1}`
+      const targetUrl = block.url ? rewriteArxivUrl(block.url) : undefined
+      const embedHtml = block.embedHtml
+      const isSubstackCandidate = block.url ? substackPostRegex.test(block.url) : false
+      const externalEmbedMode = block.embedMode ?? 'auto'
+      const displayUrl =
+        block.url ??
+        (block.internalSlug ? `https://${cfg.baseUrl}/${block.internalSlug}` : undefined)
+      const mapTitle = block.title ?? block.content ?? block.url ?? undefined
+
+      const metadataEntries: Array<{ label: string; value: ComponentChild }> = []
+
+      if (accessed) {
+        metadataEntries.push({
+          label: 'accessed',
+          value: accessed.dateTime ? (
+            <time dateTime={accessed.dateTime}>{accessed.display}</time>
+          ) : (
+            accessed.display
+          ),
+        })
+      }
+
+      if (block.importance !== undefined) {
+        metadataEntries.push({
+          label: 'importance',
+          value: <span class="arena-meta-importance">{block.importance}</span>,
+        })
+      }
+
+      if (block.metadata) {
+        const additionalEntries = Object.entries(block.metadata)
+          .filter((entry): entry is [string, string] => {
+            const [key, value] = entry
+            if (typeof value !== 'string' || value.trim().length === 0) return false
+            if (CONSUMED_METADATA_KEYS.has(key.toLowerCase())) return false
+            return true
+          })
+          .sort(([a], [b]) => a.localeCompare(b))
+          .map(([rawKey, rawValue]) => ({
+            label: rawKey.replace(/_/g, ' '),
+            value: renderInlineText(rawValue),
+          }))
+
+        metadataEntries.push(...additionalEntries)
+      }
+
+      if (block.tags && block.tags.length > 0) {
+        metadataEntries.push({
+          label: block.tags.length === 1 ? 'tag' : 'tags',
+          value: (
+            <span class="arena-meta-taglist">
+              {block.tags.map(tag => (
+                <span class="tag-link" key={`${block.id}-tag-${slugTag(tag)}`}>
+                  {tag}
+                </span>
+              ))}
+            </span>
+          ),
+        })
+      }
+
+      const socials =
+        block.metadata?.socials && typeof block.metadata.socials === 'object'
+          ? (block.metadata.socials as Record<string, unknown>)
+          : null
+
+      if (socials && Object.keys(socials).length > 0) {
+        metadataEntries.push({
+          label: 'média',
+          value: (
+            <span class="arena-meta-socials">
+              {Object.entries(socials).map(([name, link]) => {
+                const href = typeof link === 'string' ? link : (link?.toString?.() ?? '')
+                const isInternal = href.startsWith('/')
+                return (
+                  <address key={name}>
+                    <a
+                      href={href}
+                      target={!isInternal ? '_blank' : ''}
+                      rel={!isInternal ? 'noopener noreferrer' : ''}
+                      class={isInternal ? 'internal' : 'external'}
+                      data-no-popover
+                    >
+                      {name}
+                    </a>
+                  </address>
+                )
+              })}
+            </span>
+          ),
+        })
+      }
+
+      const convertFromText = (text: string) => {
+        const root = fromHtmlIsomorphic(text, { fragment: true }) as Root
+        return fromHtmlStringToArenaJsx(
+          fileData.filePath!,
+          root,
+          fileData.slug! as FullSlug,
+          componentData,
+        )
+      }
       return (
         <div
           class="arena-block-modal-data"
