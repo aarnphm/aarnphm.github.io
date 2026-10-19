@@ -197,7 +197,13 @@ Use parentheses or intermediate assignments when mixing operators; notation conv
 
 ### expression tree
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/expression-tree-relalg.webp]]
+```jsx imports={Zoomable,RelAlgTree}
+<Zoomable label="Relational algebra expression tree">
+  <RelAlgTree
+    caption="The expression tree for the names of the bars that are on Maple St. or sell Bud for less than 3 dollars, after the course slide, evaluated over the Sells and Bars tables above with set semantics. The query uses the original schema Bars(name, addr), so the Bars rows keep their values and the column bar is read as name. Select a node: salmon marks it, sage marks the subtree that computes it, and the panel shows its inputs and the relation it produces. In a selection, the sage rows are the tuples that pass every test. Rename turns bar into name so the two union inputs are compatible, and Joe’s, found by both branches, appears once in the result."
+  />
+</Zoomable>
+```
 
 ## extended algebra
 

@@ -9,7 +9,8 @@ Task: replace eight note images with three figures that draw the mechanism.
   - series: adjacent continuous blocks multiply;
   - sampler: a block that a sample sequence drives gives a pulse transfer function, written $G(z)$ for one named factor and $\mathcal{P}_T\{\cdot\}$ for a product;
   - series of sequences: $z$-blocks multiply, output side first;
-  - feedback: $G/(1 \mp GH)$ for the continuous loop;
+  - parallel: two branches from one takeoff point that meet at a junction add, $G_1 \pm G_2$. A plain gain plus $N/D$ is also written over $D$ and with the gain factored out, $K_1 + K_2/s = (K_1s + K_2)/s = K_1(s + K_2/K_1)/s$, and the readout gives its zero and pole;
+  - feedback: $G/(1 \mp GH)$ for the continuous loop. An empty feedback chain is unity feedback. When a factor is a fraction, the result is also written with the inner fractions cleared, $N_fD_h/(D_fD_h \mp N_fN_h)$;
   - moving a block past a summing junction, checked by expanding the output of both diagrams;
   - sampled single loops: the samplers cut the loop into continuous segments. Each segment gives one relation. The junction segment gives the continuous relation and then its sampled form. Solving gives the result, or no $C(z)/R(z)$ when the reference stays inside $\mathcal{P}_T$.
 
@@ -29,6 +30,8 @@ Embeds:
 | `sfwr-4aa4/closed loop system.md` | `closed-loop-sampled-data-system.webp`       | `BlockDiagram config="sampled-feedback"`   |
 | `sfwr-4aa4/closed loop system.md` | `closed-loop-tf-sensing-device.webp`         | `BlockDiagram config="sensing-device"`     |
 | `sfwr-4aa4/closed loop system.md` | `closed-loop-tf-digital-controller.webp`     | `BlockDiagram config="digital-controller"` |
+| `sfwr-3dx4/Root locus control.md` | `idea-integral-compensator-impl.webp`        | `BlockDiagram config="pi-controller"`      |
+| `sfwr-4aa4/PID controller.md`     | `prop-control.webp`                          | `BlockDiagram config="proportional"`       |
 | `Radix tree.md`                   | `Patricia_trie.svg`                          | `PatriciaTrie`                             |
 
 The image files stay in the repository.
@@ -43,7 +46,7 @@ It uses `docs/verification/figure-harness.mjs` (Quartz esbuild, Sass and inline-
 
 ## Results (2026-10-19)
 
-131 of 131 checks passed (GraphTraversal 42, BlockDiagram 55, PatriciaTrie 34).
+162 of 162 checks passed (GraphTraversal 42, BlockDiagram 86, PatriciaTrie 34). The BlockDiagram run now has nine instances; the `pi-controller` and `proportional` configurations were added later (task `blocks-relalg`), and the whole replay was run again with them.
 
 - GraphTraversal: all 27 DFS steps from $n_0$, stepped with the next button. At each step the open vertices are the call stack, the salmon vertex is its top, and shown $d$/$f$ cells match the vertex states. The final times match a hand trace: $n_0$ 1/16, $n_3$ 2/7, $n_2$ 3/6, $n_7$ 4/5, $n_4$ 8/9, $n_9$ 10/15, $n_5$ 11/14, $n_6$ 12/13. The BFS distances and parents from $n_0$ match too. For all 20 mode and source pairs, the marked count is 8 (2 from $n_1$ or $n_8$), the tree has one edge less, and the readout agrees. The checks also cover the slider and radio keyboard, the second instance, focus outline and cleanup.
 - BlockDiagram: for every variant and step, one panel is shown and each rule step lights its parts. Final results equal the notes:
@@ -52,7 +55,11 @@ It uses `docs/verification/figure-harness.mjs` (Quartz esbuild, Sass and inline-
   - open loop: $C(z)=G(z)D(z)E(z)$ with $G(s)=\frac{1-e^{-sT}}{s}G_p(s)$ and $G(z)=(1-z^{-1})\mathcal{P}_T\{G_p(s)/s\}$;
   - sampled error: $G(z)/(1+\mathcal{P}_T\{G(s)H(s)\})$;
   - sensing device: $C(z)=\mathcal{P}_T\{GR\}/(1+\mathcal{P}_T\{GH\})$ and no $C(z)/R(z)$;
-  - digital controller: $G_1(z)G_2(z)/(1+G_1(z)\mathcal{P}_T\{G_2(s)H(s)\})$.
+  - digital controller: $G_1(z)G_2(z)/(1+G_1(z)\mathcal{P}_T\{G_2(s)H(s)\})$;
+  - PI controller (Nise Figure 9.8): steps diagram, parallel, loop, feedback. The parallel step derives the note's $G_c(s) = K_p + K_i/s = K_p(s+K_i/K_p)/s$ with $K_1 = K_p$, $K_2 = K_i$; the replay reads that equation from the note. The readout gives zero $-K_2/K_1$ and pole $0$. The result is $K_1(s+K_2/K_1)G(s)/(s + K_1(s+K_2/K_1)G(s))$. The diagram draws three blocks and two junctions; the parallel step leaves two blocks and one junction;
+  - proportional: $E(s)=R(s)-Y(s)$, $Y(s)=K_pG_p(s)E(s)$ and $K_pG_p(s)/(1+K_pG_p(s))$, which the replay finds in the PID note.
+
+  Every KaTeX label of every step fits its box.
 
   The intermediate relations of the notes appear in the steps. Both summing-junction moves give the same expanded output. Seven instances on one page have unique ids.
 
@@ -64,5 +71,6 @@ It uses `docs/verification/figure-harness.mjs` (Quartz esbuild, Sass and inline-
 - The rendered note pages through the Quartz build and `Zoomable` (no dev watcher in this session).
 - 200% and 400% browser zoom.
 - At 320px the graph and tree SVGs scale to about 55%, so their 10px labels render near 6px. `Zoomable` is the reading path at that width.
-- Parallel-form reduction: no replaced image needs it, so the reducer does not implement it.
+- The parallel rule factors only a plain gain plus one fraction; other sums stay as $G_1 \pm G_2$. No configuration uses them.
+- The `content-visibility: auto` frame needs a frame to render after a long scroll before a click can hit it, so the replay waits 150ms before the keyboard checks.
 - The source of "Figure 5.7" in the summing-junction image; the course textbook in the repository is a Git LFS pointer.

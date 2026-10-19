@@ -1,9 +1,16 @@
 // Renders GraphTraversal, BlockDiagram and PatriciaTrie through the shared figure harness, drives
 // every control by click and keyboard, and checks that each drawn state matches its readout and
 // the formulas in the notes. Writes pages, screenshots and results.json under ./artifacts.
+import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { checker, openFigurePage, renderFigurePage, standardChecks } from '../figure-harness.mjs'
+import {
+  checker,
+  openFigurePage,
+  renderFigurePage,
+  repo,
+  standardChecks,
+} from '../figure-harness.mjs'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const art = path.join(here, 'artifacts')
@@ -215,6 +222,8 @@ const settled320 = async (page, c, selector) => {
     'sampled-feedback',
     'sensing-device',
     'digital-controller',
+    'pi-controller',
+    'proportional',
   ]
   const pagePath = await renderFigurePage({
     component: 'BlockDiagram',
@@ -224,7 +233,25 @@ const settled320 = async (page, c, selector) => {
   })
   const { browser, page, errors } = await openFigurePage(pagePath, { width: 900, height: 1400 })
   const c = checker(out)
-  const norm = t => t.replace(/\s+/g, '')
+  const norm = t =>
+    t
+      .replace(/\s+/g, '')
+      .replace(/\\(left|right)/g, '')
+      .replace(/\\,/g, '')
+  const note = async rel =>
+    norm(await readFile(path.join(repo, 'content/thoughts/university', rel), 'utf8'))
+  const rootLocus = await note('twenty-three-twenty-four/sfwr-3dx4/Root locus control.md')
+  const pid = await note('twenty-four-twenty-five/sfwr-4aa4/PID controller.md')
+  // The figure keeps the course image's K_1 and K_2; the note writes K_p and K_i.
+  const piNote = norm('G_c(s) = K_p + \\frac{K_i}{s} = \\frac{K_p(s+\\frac{K_i}{K_p})}{s}')
+  c.check(
+    'Root locus note states G_c(s) = K_p + K_i/s = K_p(s+K_i/K_p)/s',
+    rootLocus.includes(piNote),
+  )
+  c.check(
+    'PID note states T(s) = K_pG_p/(1+K_pG_p)',
+    pid.includes(norm('T(s)=\\frac{K_pG_p(s)}{1+K_pG_p(s)}')),
+  )
   // Final results as the notes write them.
   const expected = {
     'feedback:0': '\\frac{H_1}{1+H_1H_2}',
@@ -237,6 +264,10 @@ const settled320 = async (page, c, selector) => {
     'sampled-feedback:0': '\\frac{G(z)}{1+\\mathcal{P}_T\\{G(s)H(s)\\}}',
     'sensing-device:0': '\\frac{\\mathcal{P}_T\\{G(s)R(s)\\}}{1+\\mathcal{P}_T\\{G(s)H(s)\\}}',
     'digital-controller:0': '\\frac{G_1(z)G_2(z)}{1+G_1(z)\\mathcal{P}_T\\{G_2(s)H(s)\\}}',
+    // Unity feedback around G_c(s)G(s), multiplied above and below by s.
+    'pi-controller:0':
+      '\\frac{K_1\\left(s+\\frac{K_2}{K_1}\\right)G(s)}{s+K_1\\left(s+\\frac{K_2}{K_1}\\right)G(s)}',
+    'proportional:0': '\\frac{K_pG_p(s)}{1+K_pG_p(s)}',
   }
   // Intermediate relations the notes state.
   const relations = {
@@ -257,6 +288,27 @@ const settled320 = async (page, c, selector) => {
       'C(z)=G_2(z)U(z)',
       'E(z)=R(z)-\\mathcal{P}_T\\{G_2(s)H(s)\\}U(z)',
     ],
+    'pi-controller:0': [
+      piNote
+        .replace(/K_p/g, 'K_1')
+        .replace(/K_i/g, 'K_2')
+        .replace('K_2}{s}=', 'K_2}{s}=\\frac{K_1s+K_2}{s}='),
+      'E(s)=R(s)-C(s)',
+      'C(s)=\\frac{\\frac{K_1(s+\\frac{K_2}{K_1})}{s}G(s)}{1+\\frac{K_1(s+\\frac{K_2}{K_1})}{s}G(s)}R(s)',
+    ],
+    'proportional:0': ['E(s)=R(s)-Y(s)', 'Y(s)=K_pG_p(s)E(s)'],
+  }
+  // Readout rows the notes state besides the result.
+  const readouts = {
+    'pi-controller:1': [
+      '\\frac{K_1\\left(s+\\frac{K_2}{K_1}\\right)}{s}',
+      's=-\\frac{K_2}{K_1}',
+      's=0',
+    ],
+  }
+  const stepNames = {
+    'pi-controller:0': ['diagram', 'parallel', 'loop', 'feedback'],
+    'proportional:0': ['diagram', 'loop', 'feedback'],
   }
   const visible = i =>
     page.evaluate(i => {
@@ -270,6 +322,18 @@ const settled320 = async (page, c, selector) => {
         svgs: s ? s.querySelectorAll('svg').length : 0,
         eq: s?.querySelector('[data-bd-eq]')?.dataset.bdEq ?? '',
         outs: s ? [...s.querySelectorAll('[data-bd-out]')].map(d => d.dataset.bdOut) : [],
+        name: r.querySelector(
+          `[data-bd-variant="${vs[0]?.dataset.bdVariant}"] [data-bd-step-input]:checked`,
+        )?.parentElement.textContent,
+        blocks: s ? s.querySelectorAll('svg .bd-block').length : 0,
+        sums: s ? s.querySelectorAll('svg .bd-sum').length : 0,
+        fits: s
+          ? [...s.querySelectorAll('svg foreignObject')].every(fo => {
+              const k = fo.querySelector('.katex')?.getBoundingClientRect()
+              const b = fo.getBoundingClientRect()
+              return !k || (k.width <= b.width + 1 && k.height <= b.height + 1)
+            })
+          : true,
         lit: s ? s.querySelectorAll('svg [data-state="lit"]').length : 0,
         done: s ? s.querySelectorAll('svg [data-state="done"]').length : 0,
         height: s ? s.querySelector('svg').getBoundingClientRect().height : 0,
@@ -285,12 +349,25 @@ const settled320 = async (page, c, selector) => {
       const panel = r.locator(`[data-bd-variant="${v}"]`)
       const nSteps = await panel.locator('[data-bd-step-input]').count()
       const eqs = []
+      const names = []
+      const shapes = []
+      let fits = true
       let shown = true
       let lit = true
       for (let k = 0; k < nSteps; k++) {
         await panel.locator(`[data-bd-step-input][value="${k}"]`).check({ force: true })
         const s = await visible(i)
         eqs.push(norm(s.eq))
+        names.push(s.name.replace(/^\d+\s*/, ''))
+        shapes.push([s.blocks, s.sums])
+        fits &&= s.fits
+        for (const row of readouts[`${config}:${k}`] ?? [])
+          c.check(
+            `${config}: step ${k} readout shows ${row}`,
+            s.outs.map(norm).includes(norm(row)),
+            s.outs,
+          )
+        if (stepNames[`${config}:${v}`]) await c.shoot(panel, `${config}-${v}-step${k}-all.png`)
         shown &&= s.variants.join() === String(v) && s.steps.join() === String(k) && s.svgs === 1
         // Every rule step lights the parts it acts on; the diagram step lights nothing.
         lit &&= k === 0 ? s.lit === 0 : s.lit > 0 || (s.done > 0 && config === 'sensing-device')
@@ -311,6 +388,16 @@ const settled320 = async (page, c, selector) => {
         if (k === 1) await c.shoot(panel, `${config}-${v}-step1.png`)
       }
       c.check(`${config}:${v}: one step panel shown per choice`, shown)
+      c.check(`${config}:${v}: every KaTeX label fits its box`, fits)
+      const want = stepNames[`${config}:${v}`]
+      if (want)
+        c.check(`${config}:${v}: steps are ${want.join(', ')}`, names.join() === want.join(), names)
+      if (config === 'pi-controller')
+        c.check(
+          'pi-controller: diagram draws K_1, K_2/s, G(s) and two junctions; the parallel step merges the branches into one block',
+          shapes[0].join() === '3,2' && shapes[1].join() === '2,1',
+          shapes,
+        )
       c.check(`${config}:${v}: rule steps light their parts`, lit)
       for (const rel of relations[`${config}:${v}`] ?? [])
         c.check(
@@ -323,6 +410,10 @@ const settled320 = async (page, c, selector) => {
 
   // Keyboard: arrow keys move the step radio group.
   const r0 = page.locator('[data-block-diagram]').nth(0)
+  // The frame uses content-visibility: auto, so after a long scroll its contents need a frame to
+  // render before a click can hit them.
+  await r0.scrollIntoViewIfNeeded()
+  await page.waitForTimeout(150)
   await r0.locator('[data-bd-variant-input][value="0"]').check({ force: true })
   await r0.locator('[data-bd-variant="0"] [data-bd-step-input][value="0"]').check({ force: true })
   await r0.locator('[data-bd-variant="0"] [data-bd-step-input][value="0"]').focus()
@@ -342,7 +433,7 @@ const settled320 = async (page, c, selector) => {
     const all = [...document.querySelectorAll('[id]')].map(e => e.id)
     return all.length === new Set(all).size
   })
-  c.check('Marker and control ids are unique across seven instances', ids)
+  c.check('Marker and control ids are unique across nine instances', ids)
 
   await standardChecks(page, errors, c, '.zoomable')
   await settled320(page, c, '.zoomable')

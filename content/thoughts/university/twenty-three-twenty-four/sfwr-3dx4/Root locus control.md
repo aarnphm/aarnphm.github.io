@@ -112,7 +112,13 @@ where $K_p$ is the proportional gain and $K_i$ is the integral gain.
 >
 > The zero sits at $s = -K_i/K_p$, so a small ratio $K_i/K_p$ keeps it near the origin.
 
-![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/idea-integral-compensator-impl.webp]]
+```jsx imports={Zoomable,BlockDiagram}
+<Zoomable label="PI controller implementation">
+  <BlockDiagram config="pi-controller"
+    caption="A PI controller as parallel proportional and integral paths, after Figure 9.8 of Nise: the error drives $K_1$ and $K_2/s$, their outputs add before the plant $G(s)$, and unity feedback closes the loop. In the notation above, $K_1 = K_p$ and $K_2 = K_i$. Step through the reduction; salmon marks the parts the current rule acts on. The parallel rule gives $G_c(s) = K_1 + K_2/s = K_1(s + K_2/K_1)/s$, with its zero at $-K_2/K_1$ and its pole at the origin, and the feedback rule then closes the loop around $G_c(s)G(s)$."
+  />
+</Zoomable>
+```
 
 ### lag compensation
 

@@ -15,6 +15,8 @@ type ConfigId =
   | 'sampled-feedback'
   | 'sensing-device'
   | 'digital-controller'
+  | 'pi-controller'
+  | 'proportional'
 type Props = { caption?: string; config?: ConfigId; variant?: number }
 
 // A block's factors are s-domain TeX terms such as G_1(s); `z` marks a block that is already a
@@ -40,7 +42,17 @@ type Sum = {
   side?: { input: string; chain: Block[] }
   out?: string
 }
-type El = Block | Sampler | Sum
+// Two blocks that take the same input and whose outputs meet at a junction; branches[0] stays on
+// the main row, branches[1] runs above it.
+type Par = {
+  k: 'par'
+  id: string
+  signs: [string, string]
+  branches: [Block, Block]
+  merge: string
+  out?: string
+}
+type El = Block | Sampler | Sum | Par
 type Loop = { chain: El[]; inLabel?: string }
 type Diagram = { input: string; output: string; chain: El[]; loop?: Loop }
 
@@ -271,14 +283,79 @@ const moveJunction = (v: Variant, outName: string): Step[] => {
   ]
 }
 
+// ---- parallel rule: the branch transfer functions add ----
+
+// A top-level \frac{N}{D} as [N, D]; any other term has no denominator.
+const fracParts = (t: string): [string, string] | null => {
+  if (!t.startsWith('\\frac{')) return null
+  const n1 = readGroup(t, 5)
+  const d1 = readGroup(t, n1 + 1)
+  return d1 === t.length - 1 ? [t.slice(6, n1), t.slice(n1 + 2, d1)] : null
+}
+
+const reduceParallel = (d: Diagram): { d: Diagram; steps: Step[] } => {
+  const i = d.chain.findIndex(e => e.k === 'par')
+  if (i < 0) return { d, steps: [] }
+  const p = d.chain[i] as Par
+  const [a, b] = p.branches.map(blockTex)
+  const op = signTex(p.signs[1])
+  const forms = [`${a} ${op} ${b}`]
+  const rows: Row[] = []
+  const nb = fracParts(b)
+  // A plain gain plus N/D shares the denominator D; factoring the gain out shows the zero.
+  if (!fracParts(a) && nb) {
+    const [n, den] = nb
+    const factored = `\\frac{${a}\\left(${den} ${op} \\frac{${n}}{${a}}\\right)}{${den}}`
+    forms.push(`\\frac{${a}${den} ${op} ${n}}{${den}}`, factored)
+    rows.push([p.merge, factored])
+    if (den === 's')
+      rows.push(
+        ['\\text{zero}', `s = ${op === '+' ? '-' : ''}\\frac{${n}}{${a}}`],
+        ['\\text{pole}', 's = 0'],
+      )
+  } else rows.push([p.merge, forms[0]])
+  const merged: Block = { k: 'block', id: p.id, f: [forms.at(-1)!] }
+  const next = { ...d, chain: [...d.chain.slice(0, i), merged, ...d.chain.slice(i + 1)] }
+  return {
+    d: next,
+    steps: [
+      {
+        d: next,
+        name: 'parallel',
+        text: 'Parallel rule: both paths take the same input and their outputs add at the junction, so their transfer functions add.',
+        eq: `${p.merge} = ${forms.join(' = ')}`,
+        lit: [p.id],
+        done: [],
+        rows,
+      },
+    ],
+  }
+}
+
+// Clears fractions in a closed loop: F/(1 ∓ FH) with F = Nf/Df, H = Nh/Dh is NfDh/(DfDh ∓ NfNh).
+const clearFractions = (fwd: string[], fb: string[], sgn: string): string | null => {
+  const parts = (fs: string[]) => {
+    const ps = fs.map(f => fracParts(f) ?? [f, ''])
+    return [ps.map(x => x[0]).join(''), ps.map(x => x[1]).join('')]
+  }
+  const [nf, df] = parts(fwd)
+  const [nh, dh] = parts(fb)
+  if (!df && !dh) return null
+  return `\\frac{${nf}${dh}}{${df}${dh} ${flip(sgn)} ${nf}${nh}}`
+}
+
 // ---- single loops: continuous feedback rule, or samplers that split the loop ----
 
 const reduceLoop = (v: Variant, outName: string): Step[] => {
-  const d = v.d
+  const par = reduceParallel(v.d)
+  const d = par.d
   const loop = d.loop!
   const sum = d.chain[0] as Sum
   const sgn = sum.signs[1]
-  const steps: Step[] = [{ d, name: 'diagram', text: v.text, eq: '', lit: [], done: [], rows: [] }]
+  const steps: Step[] = [
+    { d: v.d, name: 'diagram', text: v.text, eq: '', lit: [], done: [], rows: [] },
+    ...par.steps,
+  ]
   const all = [...d.chain, ...loop.chain]
   const ids = all.map(e => e.id)
   const samplers = all.filter((e): e is Sampler => e.k === 'sampler')
@@ -288,25 +365,35 @@ const reduceLoop = (v: Variant, outName: string): Step[] => {
     const fb = loop.chain.filter(isBlock).flatMap(b => b.f)
     const e = sum.out ?? 'e'
     const y = (d.chain.at(-1) as El).out ?? d.output
-    const yb = (loop.chain.at(-1) as El).out ?? 'b'
+    // With unity feedback the junction subtracts the output itself.
+    const unity = loop.chain.length === 0
+    const yb = unity ? y : ((loop.chain.at(-1) as El).out ?? 'b')
     steps.push({
       d,
       name: 'loop',
-      text: 'Write one relation per element. The takeoff point copies the output into the feedback path.',
-      eq: `${e} = ${d.input} ${signTex(sgn)} ${yb},\\quad ${y} = ${fwd.join('')}${e},\\quad ${yb} = ${fb.join('')}${y}`,
+      text: unity
+        ? 'Write one relation per element. Unity feedback returns the output itself to the junction.'
+        : 'Write one relation per element. The takeoff point copies the output into the feedback path.',
+      eq: `${e} = ${d.input} ${signTex(sgn)} ${yb},\\quad ${y} = ${fwd.join('')}${e}${unity ? '' : `,\\quad ${yb} = ${fb.join('')}${y}`}`,
       lit: ids,
       done: [],
       rows: [],
     })
     const tf = `\\frac{${fwd.join('')}}{1 ${flip(sgn)} ${fwd.join('')}${fb.join('')}}`
+    const cleared = clearFractions(fwd, fb, sgn)
+    const result = cleared ?? tf
     steps.push({
-      d: { input: d.input, output: d.output, chain: [{ k: 'block', id: 'eq', f: [tf], z: true }] },
+      d: {
+        input: d.input,
+        output: d.output,
+        chain: [{ k: 'block', id: 'eq', f: [result], z: true }],
+      },
       name: 'feedback',
-      text: `Feedback rule: eliminate $${e}$ and $${yb}$. ${sgn === MINUS ? 'Negative' : 'Positive'} feedback puts $${flip(sgn)}$ in the denominator.`,
-      eq: `${d.output} = ${tf}\\,${d.input}`,
+      text: `Feedback rule: eliminate $${e}$${unity ? '' : ` and $${yb}$`}. ${sgn === MINUS ? 'Negative' : 'Positive'} feedback puts $${flip(sgn)}$ in the denominator.${cleared ? ' Multiply above and below by the denominators to clear the inner fractions.' : ''}`,
+      eq: `${d.output} = ${tf}\\,${d.input}${cleared ? ` = ${cleared}\\,${d.input}` : ''}`,
       lit: ['eq'],
       done: [],
-      rows: [[`${d.output}/${d.input}`, tf]],
+      rows: [[`${d.output}/${d.input}`, result]],
     })
     return steps
   }
@@ -608,6 +695,50 @@ const CONFIGS: Record<ConfigId, Config> = {
     ],
     outName: 'C',
   },
+  'pi-controller': {
+    variants: [
+      {
+        label: 'PI controller',
+        text: 'The error $E(s)$ drives two parallel paths: proportional $K_1$ and integral $K_2/s$. Their outputs add before the plant $G(s)$, and unity feedback closes the loop.',
+        d: {
+          input: 'R(s)',
+          output: 'C(s)',
+          chain: [
+            { k: 'sum', id: 'sum', signs: ['+', MINUS], out: 'E(s)' },
+            {
+              k: 'par',
+              id: 'gc',
+              signs: ['+', '+'],
+              branches: [blk('k1', 'K_1'), blk('k2', '\\frac{K_2}{s}')],
+              merge: 'G_c(s)',
+            },
+            blk('g', 'G(s)'),
+          ],
+          loop: { chain: [] },
+        },
+      },
+    ],
+    outName: 'C',
+  },
+  proportional: {
+    variants: [
+      {
+        label: 'proportional',
+        text: 'The controller multiplies the error $E(s)$ by $K_p$ to give the control signal $U(s)$, which drives the plant $G_p(s)$. A unit-gain sensor feeds the output $Y(s)$ back.',
+        d: {
+          input: 'R(s)',
+          output: 'Y(s)',
+          chain: [
+            { k: 'sum', id: 'sum', signs: ['+', MINUS], out: 'E(s)' },
+            blk('kp', 'K_p', { out: 'U(s)' }),
+            blk('gp', 'G_p(s)'),
+          ],
+          loop: { chain: [] },
+        },
+      },
+    ],
+    outName: 'Y',
+  },
 }
 
 const reduceDiagram = (config: ConfigId, variant: Variant): Step[] => {
@@ -668,6 +799,9 @@ const SW = 30
 const BH = 34
 const BH_TALL = 50
 const FB_GAP = 84
+const UNITY_GAP = 46
+// A parallel branch runs this far above the main row.
+const PAR_RISE = 58
 const CH = 7.4
 
 const blockW = (b: Block) => Math.max(56, Math.round(texLen(blockTex(b)) * CH + 22))
@@ -686,6 +820,7 @@ const LABEL_H = 22
 
 const layout = (d: Diagram): { shapes: Shape[]; w: number; h: number } => {
   const shapes: Shape[] = []
+  const Y = Y0 + (d.chain.some(e => e.k === 'par') ? PAR_RISE - 16 : 0)
   const label = (x0: number, x1: number, y: number, t?: string) => {
     if (!t) return
     const w = Math.max(x1 - x0, texLen(t) * CH + 12)
@@ -701,33 +836,33 @@ const layout = (d: Diagram): { shapes: Shape[]; w: number; h: number } => {
   let x = 6
   let lastLabel: string | undefined = d.input
   let sumX = 0
-  let bottom = Y0 + BH_TALL / 2
+  let bottom = Y + BH_TALL / 2
 
   for (const e of d.chain) {
     const x1 = x + GAP
     if (e.k === 'sampler') {
-      shapes.push({ t: 'wire', d: `M${x} ${Y0}H${x1}`, arrow: false })
-      label(x, x1, Y0, lastLabel)
-      shapes.push({ t: 'sampler', id: e.id, x: x1, y: Y0, dir: 1 })
+      shapes.push({ t: 'wire', d: `M${x} ${Y}H${x1}`, arrow: false })
+      label(x, x1, Y, lastLabel)
+      shapes.push({ t: 'sampler', id: e.id, x: x1, y: Y, dir: 1 })
       x = x1 + SW
     } else if (e.k === 'sum') {
       const cx = x1 + SR
-      shapes.push({ t: 'wire', d: `M${x} ${Y0}H${x1}`, arrow: true })
-      label(x, x1, Y0, lastLabel)
+      shapes.push({ t: 'wire', d: `M${x} ${Y}H${x1}`, arrow: true })
+      label(x, x1, Y, lastLabel)
       shapes.push({
         t: 'sum',
         id: e.id,
         cx,
-        cy: Y0,
+        cy: Y,
         signs: [
-          [e.signs[0], cx - SR - 7, Y0 + SR + 9],
-          [e.signs[1], cx + SR + 7, Y0 + SR + 11],
+          [e.signs[0], cx - SR - 7, Y + SR + 9],
+          [e.signs[1], cx + SR + 7, Y + SR + 11],
         ],
       })
       sumX = cx
       if (e.side) {
-        let y = Y0 + SR
-        let yy = Y0 + SR + 36
+        let y = Y + SR
+        let yy = Y + SR + 36
         const parts: string[] = []
         for (const b of e.side.chain) {
           const h = blockH(b)
@@ -751,12 +886,48 @@ const layout = (d: Diagram): { shapes: Shape[]; w: number; h: number } => {
         bottom = Math.max(bottom, yy + LABEL_H + 4)
       }
       x = cx + SR
+    } else if (e.k === 'par') {
+      const [main, up] = e.branches
+      const bw = Math.max(blockW(main), blockW(up))
+      const hm = blockH(main)
+      const hu = blockH(up)
+      const yU = Y - PAR_RISE
+      const bx = x1 + Math.round(GAP * 0.6)
+      const cx = bx + bw + GAP + SR
+      shapes.push({ t: 'wire', d: `M${x} ${Y}H${x1}`, arrow: false })
+      label(x, x1, Y, lastLabel)
+      shapes.push({ t: 'wire', d: `M${x1} ${Y}H${bx}`, arrow: true })
+      shapes.push({ t: 'wire', d: `M${x1} ${Y}V${yU}H${bx}`, arrow: true })
+      shapes.push({ t: 'dot', cx: x1, cy: Y })
+      shapes.push({
+        t: 'block',
+        id: main.id,
+        x: bx,
+        y: Y - hm / 2,
+        w: bw,
+        h: hm,
+        tex: blockTex(main),
+      })
+      shapes.push({ t: 'block', id: up.id, x: bx, y: yU - hu / 2, w: bw, h: hu, tex: blockTex(up) })
+      shapes.push({ t: 'wire', d: `M${bx + bw} ${Y}H${cx - SR}`, arrow: true })
+      shapes.push({ t: 'wire', d: `M${bx + bw} ${yU}H${cx}V${Y - SR}`, arrow: true })
+      shapes.push({
+        t: 'sum',
+        id: `${e.id}-sum`,
+        cx,
+        cy: Y,
+        signs: [
+          [e.signs[0], cx - SR - 7, Y - 5],
+          [e.signs[1], cx + 8, Y - SR - 5],
+        ],
+      })
+      x = cx + SR
     } else {
       const w = blockW(e)
       const h = blockH(e)
-      shapes.push({ t: 'wire', d: `M${x} ${Y0}H${x1}`, arrow: true })
-      label(x, x1, Y0, lastLabel)
-      shapes.push({ t: 'block', id: e.id, x: x1, y: Y0 - h / 2, w, h, tex: blockTex(e) })
+      shapes.push({ t: 'wire', d: `M${x} ${Y}H${x1}`, arrow: true })
+      label(x, x1, Y, lastLabel)
+      shapes.push({ t: 'block', id: e.id, x: x1, y: Y - h / 2, w, h, tex: blockTex(e) })
       x = x1 + w
     }
     lastLabel = e.out
@@ -764,8 +935,8 @@ const layout = (d: Diagram): { shapes: Shape[]; w: number; h: number } => {
 
   if (!d.loop) {
     const x1 = x + GAP
-    shapes.push({ t: 'wire', d: `M${x} ${Y0}H${x1}`, arrow: true })
-    label(x, x1, Y0, lastLabel ?? d.output)
+    shapes.push({ t: 'wire', d: `M${x} ${Y}H${x1}`, arrow: true })
+    label(x, x1, Y, lastLabel ?? d.output)
     return { shapes, w: x1 + 8, h: bottom + 8 }
   }
 
@@ -775,13 +946,13 @@ const layout = (d: Diagram): { shapes: Shape[]; w: number; h: number } => {
   // The feedback row needs a labelled wire gap on both sides of each element.
   const xt = Math.max(x + Math.round(GAP * 0.8), sumX + fbW + (fb.length + 1) * GAP)
   const xo = xt + 46
-  shapes.push({ t: 'wire', d: `M${x} ${Y0}H${xt}`, arrow: false })
-  label(x, xt, Y0, lastLabel)
-  shapes.push({ t: 'wire', d: `M${xt} ${Y0}H${xo}`, arrow: true })
-  label(xt, xo, Y0, d.output)
-  shapes.push({ t: 'dot', cx: xt, cy: Y0 })
+  shapes.push({ t: 'wire', d: `M${x} ${Y}H${xt}`, arrow: false })
+  label(x, xt, Y, lastLabel)
+  shapes.push({ t: 'wire', d: `M${xt} ${Y}H${xo}`, arrow: true })
+  label(xt, xo, Y, d.output)
+  shapes.push({ t: 'dot', cx: xt, cy: Y })
 
-  const yF = Y0 + FB_GAP
+  const yF = Y + (fb.length ? FB_GAP : UNITY_GAP)
   const free = xt - sumX - fbW
   const gap = free / (fb.length + 1)
   let cur = xt
@@ -789,7 +960,7 @@ const layout = (d: Diagram): { shapes: Shape[]; w: number; h: number } => {
   let first = true
   for (const [i, e] of fb.entries()) {
     const right = cur - gap
-    const start = first ? `M${xt} ${Y0}V${yF}H${right}` : `M${cur} ${yF}H${right}`
+    const start = first ? `M${xt} ${Y}V${yF}H${right}` : `M${cur} ${yF}H${right}`
     first = false
     const fl = (x0: number, x1: number, t?: string) => {
       if (!t) return
@@ -826,7 +997,8 @@ const layout = (d: Diagram): { shapes: Shape[]; w: number; h: number } => {
     }
     fbLabel = e.out
   }
-  shapes.push({ t: 'wire', d: `M${cur} ${yF}H${sumX}V${Y0 + SR}`, arrow: true })
+  const back = fb.length ? `M${cur} ${yF}` : `M${xt} ${Y}V${yF}`
+  shapes.push({ t: 'wire', d: `${back}H${sumX}V${Y + SR}`, arrow: true })
   if (fbLabel) {
     const w = Math.max(cur - sumX, texLen(fbLabel) * CH + 12)
     shapes.push({
@@ -838,7 +1010,7 @@ const layout = (d: Diagram): { shapes: Shape[]; w: number; h: number } => {
       anchor: 'mid',
     })
   }
-  bottom = Math.max(bottom, yF + BH_TALL / 2, yF + LABEL_H + 8)
+  bottom = fb.length ? Math.max(bottom, yF + BH_TALL / 2, yF + LABEL_H + 8) : yF + 8
   return { shapes, w: xo + 8, h: bottom + 8 }
 }
 
