@@ -173,7 +173,7 @@ export async function emitBookcaseCovers(
 ): Promise<FilePath[]> {
   const targets: { slug: FullSlug; node: Element; cover: string }[] = []
   for (const { slug, tree, view } of views) {
-    if (view.type !== 'bookcase') continue
+    if (view.type !== 'bookcase' && view.type !== 'cards' && view.type !== 'kanban') continue
     visit(tree, 'element', (node: Element) => {
       const cover = node.properties?.dataBookcaseCover
       if (typeof cover === 'string' && cover) targets.push({ slug, node, cover })
@@ -193,8 +193,11 @@ export async function emitBookcaseCovers(
     if (!result) continue
     const url = resolveRelative(slug, `static/bookcase/${result.key}.webp` as FullSlug)
     const properties = node.properties
-    if (node.tagName === 'img') properties.src = url
-    else properties.dataCover = url
+    if (node.tagName === 'img') {
+      properties.src = url
+      continue
+    }
+    properties.dataCover = url
     if (result.spine) properties.dataSpineArt = resolveRelative(slug, result.spine)
     else delete properties.dataSpineArt
     if (result.spineDetail) {

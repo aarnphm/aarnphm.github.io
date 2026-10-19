@@ -126,6 +126,22 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='bookca
     border-block-start: 0;
   }
 
+  // The open tab is wider than the column, so it draws its own top edge over the bottom edge of
+  // the tab above instead of showing that grey line across its fill. A pseudo-element keeps the
+  // tabs below from moving when the choice changes.
+  & + &[aria-selected='true'] {
+    position: relative;
+    z-index: 1;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: -1px -1px auto;
+      block-size: 1px;
+      background: var(--dark);
+    }
+  }
+
   &[aria-selected='true'] {
     padding-inline: 0.5rem;
     color: var(--light);
@@ -616,8 +632,12 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='bookca
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .bookcase :is(summary, .bookcase-entry-link):hover {
+  .bookcase summary:hover {
     background: var(--bc-surface);
+    color: var(--dark);
+  }
+
+  .bookcase-entry-link:hover {
     color: var(--dark);
   }
 
