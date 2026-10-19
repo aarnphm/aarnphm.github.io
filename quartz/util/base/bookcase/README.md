@@ -30,8 +30,15 @@ comes from `jackets.json`, which pins the publisher source, ISBN, crop and hashe
 the local front and spine images. The emitter attaches a spine only when both local
 hashes match. The spine otherwise uses sampled colour and readable title/author
 labels. Spine crops are local WebP assets, at most 96 × 320 px; sourcing is an offline
-step, with no publisher requests during a build or browsing. The cover emitter
-generates 320 px front images. The camera keeps up to 32 shelf images total across
+step, with no publisher requests during a build or browsing.
+
+The offline source workflow can opt into `sampling: 'independent'` for a complete
+photographed spine plane. It retains native samples across the spine while limiting
+its length to 320 px. Each axis stays within the photographed edge lengths and the
+96 × 320 px cap; the renderer already maps artwork to the book's physical face.
+This improves narrow lettering without increasing resident image or detail limits.
+
+The cover emitter generates 320 px front images. The camera keeps up to 32 shelf images total across
 fronts and spines, using
 cached bounds, a 120 px viewport margin and a 72 px minimum projected book height.
 Exposed jackets take priority over nearby spines and covers hidden between books,

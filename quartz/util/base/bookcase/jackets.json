@@ -311,7 +311,7 @@
       "poster": "library/posters/mindset.jpg",
       "posterSha256": "7ea6abf8f942c5c347b278b4d3a039d39ad4ab6e433d40839f56d21988cf9974",
       "crop": { "left": 0, "top": 0, "width": 72, "height": 1500 },
-      "artwork": "mindset-021ea6b4617f.webp",
+      "artwork": "mindset-low-2e8832cfce0b44b7.webp",
       "height": 320,
       "perspective": {
         "width": 72,
@@ -325,11 +325,12 @@
       },
       "sourceKind": "bookseller-photograph-rectified",
       "corroboration": ["https://rezised-images.knhbt.cz/1920x1920/80884658.jpg"],
-      "artworkSha256": "923b57968bbe6a80e848666deb29b0d09498b1318b62a52b204d0c284114dbb6",
+      "artworkSha256": "2e8832cfce0b44b7903e18e94d0ab7a52475fff576db78cf63243b6433bbe193",
       "detailArtwork": "mindset-detail-f8ed4ace0fff9483.webp",
       "detailArtworkSha256": "f8ed4ace0fff94836b5b416c1e0169eddcbae3f5e27910339cd6b50605e93a00",
       "detailWidth": 61,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "the-fall",
@@ -343,7 +344,7 @@
       "poster": "library/posters/the-fall.jpg",
       "posterSha256": "4b4fd7ce77d3826a673ea5d8cac2b125589df03972cd61f52c8a17d5e3cd722f",
       "crop": { "left": 0, "top": 0, "width": 1753, "height": 78 },
-      "artwork": "the-fall-003627ae2872.webp",
+      "artwork": "the-fall-low-6d75e7f6ade89805.webp",
       "height": 320,
       "perspective": {
         "width": 1753,
@@ -357,12 +358,13 @@
       },
       "sourceKind": "original-photograph-rectified",
       "rotation": 90,
-      "artworkSha256": "c5ed57d3cc097f5817c846888118ea0ead5a5ad723b8f78334e1461af19431bb",
+      "artworkSha256": "6d75e7f6ade89805f0e16f824d593155cf9af661d16379fd7dec70d1d2ce4c2b",
       "corroboration": ["https://images3.penguinrandomhouse.com/cover/9780679720225"],
       "detailArtwork": "the-fall-detail-cb0701df06a8cf4c.webp",
       "detailArtworkSha256": "cb0701df06a8cf4ce105de313f7af42fa46571ea228174618c22ca4162c0aec5",
       "detailWidth": 56,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "the-myth-of-sisyphus",
@@ -376,7 +378,7 @@
       "poster": "library/posters/the-myth-of-sisyphus.jpg",
       "posterSha256": "b880bccdb1e9f66c7b63656a4c4a34d6345348b22487a6672baa16f5b3e82f35",
       "crop": { "left": 0, "top": 0, "width": 1738, "height": 90 },
-      "artwork": "the-myth-of-sisyphus-003627ae2872.webp",
+      "artwork": "the-myth-of-sisyphus-low-49bc516bb6ebccb9.webp",
       "height": 320,
       "perspective": {
         "width": 1738,
@@ -390,12 +392,13 @@
       },
       "sourceKind": "original-photograph-rectified",
       "rotation": 90,
-      "artworkSha256": "7110194c92c4f540cf35ec50c465fd3f41000b6b343057cca4ce1c46f4288c8d",
+      "artworkSha256": "49bc516bb6ebccb922c928688f0b99cceb464b168e54ca98c6b93d5096c69eb6",
       "corroboration": ["https://images3.penguinrandomhouse.com/cover/9780525564454"],
       "detailArtwork": "the-myth-of-sisyphus-detail-9806372cb0bec0e8.webp",
       "detailArtworkSha256": "9806372cb0bec0e80b1c33ff85f8c559318b56527e4bc498951935d61b97098e",
       "detailWidth": 66,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "the-plague",
@@ -791,7 +794,7 @@
       "poster": "library/posters/fear-and-trembling.jpg",
       "posterSha256": "b23f31cfa9b220be69049047c208c63d5cbc175e63e5e6d4b1a2f8c9db494292",
       "crop": { "left": 0, "top": 0, "width": 76, "height": 1334 },
-      "artwork": "fear-and-trembling-3d36724c10be.webp",
+      "artwork": "fear-and-trembling-low-fb44cbc3e4032b11.webp",
       "height": 320,
       "perspective": {
         "width": 76,
@@ -804,7 +807,7 @@
         ]
       },
       "sourceKind": "seller-photograph",
-      "artworkSha256": "42ee7929b304045195fcb5482be49aa16cfd755409e02932272075070295db06",
+      "artworkSha256": "fb44cbc3e4032b1114113a986094eda909c6a83c84529d716f11062bf5b204bc",
       "corroboration": [
         "https://images.pangobooks.com/images/42cb9d13-cff1-42f0-bd60-204697d60c83?width=1400&quality=95",
         null
@@ -812,7 +815,8 @@
       "detailArtwork": "fear-and-trembling-detail-243d5b99a4f566d2.webp",
       "detailArtworkSha256": "243d5b99a4f566d27788f585993bd7adde4c968b55453b4fb9cf81cef2d2338c",
       "detailWidth": 72,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "grokking-algorithm",
@@ -826,7 +830,7 @@
       "poster": "library/posters/grokking-algorithms-cover.avif",
       "posterSha256": "0fe943af4a37a02fb4b2e0d52b5b40cbb03b4cf27b35582f15084c16248411be",
       "crop": { "left": 0, "top": 0, "width": 64, "height": 1508 },
-      "artwork": "grokking-algorithm-6ae76994d224.webp",
+      "artwork": "grokking-algorithm-low-1494f0966cb4cf63.webp",
       "height": 320,
       "perspective": {
         "width": 64,
@@ -839,12 +843,13 @@
         ]
       },
       "sourceKind": "seller-photograph",
-      "artworkSha256": "43520a2056af74638ef30da72b4dc9b9d7f6304ee36148a6b5219a6ec4d9c493",
+      "artworkSha256": "1494f0966cb4cf63c8f9dd8ef0aa739a1ac15928b071a0a84088d983d37a29d9",
       "corroboration": ["https://rezised-images.knhbt.cz/1920x1920/82077496.jpg", null],
       "detailArtwork": "grokking-algorithm-detail-fcbd8e69a581ef7d.webp",
       "detailArtworkSha256": "fcbd8e69a581ef7dc95d597ffacc1459abc696ddf443dc4b1e55c23a7927c30e",
       "detailWidth": 54,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "men-without-women",
@@ -858,7 +863,7 @@
       "poster": "library/posters/men-without-women.png",
       "posterSha256": "66cd2cd27478b8f99333e560d4d396a3379f3d05459df34972af20a283400261",
       "crop": { "left": 0, "top": 0, "width": 84, "height": 1518 },
-      "artwork": "men-without-women-c94ec11d3b66.webp",
+      "artwork": "men-without-women-low-bf7a325e7b7daef6.webp",
       "height": 320,
       "perspective": {
         "width": 84,
@@ -872,11 +877,12 @@
       },
       "sourceKind": "bookseller-photograph-rectified",
       "corroboration": ["https://rezised-images.knhbt.cz/1920x1920/33642944.jpg"],
-      "artworkSha256": "ca6a8be2e6622f71d76627e4e09e36e190616ffe1d5fd5813bfa1e5fec61d090",
+      "artworkSha256": "bf7a325e7b7daef6f275da5ed491d14af626efaa0fb74000d54c58161cd8b277",
       "detailArtwork": "men-without-women-detail-39aa008cf8da2186.webp",
       "detailArtworkSha256": "39aa008cf8da2186f301fc015f31cd23cd770c76633aba4ab1aed6baa7b937e9",
       "detailWidth": 70,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "my-friends",
@@ -1178,7 +1184,7 @@
       "poster": "library/posters/dopamine-nation.jpg",
       "posterSha256": "928340d5720791f0c16cbd71e1699ccacb732132cd1f2129b31068e268a0bdb9",
       "crop": { "left": 0, "top": 0, "width": 18, "height": 320 },
-      "artwork": "dopamine-nation-49f2e4d1ff7d.webp",
+      "artwork": "dopamine-nation-low-ef42a0cbe4e2be5b.webp",
       "height": 320,
       "perspective": {
         "width": 18,
@@ -1191,11 +1197,12 @@
         ]
       },
       "sourceKind": "original-photograph-rectified",
-      "artworkSha256": "ce5959780edaf1ee2f11e87cd462f9a5e9504ecdf9119403d128c45d8dd42723",
+      "artworkSha256": "ef42a0cbe4e2be5b9074770f0151c37af7c5505f57d7f01146825de6deddc1bf",
       "detailArtwork": "dopamine-nation-detail-8f6005a8b29d2a85.webp",
       "detailArtworkSha256": "8f6005a8b29d2a85bf95aeb61997310a279d3117a92091904c98b70379ea5c3d",
       "detailWidth": 72,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "either-or",
@@ -1303,7 +1310,7 @@
       "poster": "library/posters/homage-to-catalonia.jpg",
       "posterSha256": "bd1c88ced932a616ed6f961230f349fd01c5bef182be3ddfe04377ea24d0ff86",
       "crop": { "left": 0, "top": 0, "width": 77, "height": 1492 },
-      "artwork": "homage-to-catalonia-509d11841c52.webp",
+      "artwork": "homage-to-catalonia-low-33aeeb6694415103.webp",
       "height": 320,
       "perspective": {
         "width": 77,
@@ -1316,11 +1323,12 @@
         ]
       },
       "sourceKind": "seller-photograph",
-      "artworkSha256": "b81e126525d974708c2006874e8942ed5f1d83ad37af4cf1ae334aa41c0abcd2",
+      "artworkSha256": "33aeeb6694415103cb0ec8fcbc63c54d72f966e4ce6b314d59596b35927397d2",
       "detailArtwork": "homage-to-catalonia-detail-2fca91acdd1e2f73.webp",
       "detailArtworkSha256": "2fca91acdd1e2f73753c821785ccd251b5233147a81d8db591c26a0a7ecd4603",
       "detailWidth": 66,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "intuition-pumps-and-other-tools-for-thinking",
@@ -1365,7 +1373,7 @@
       "poster": "library/posters/naked-lunch.jpg",
       "posterSha256": "b0951879a1321e9be3f20c62bf3a3a17374fe2bc6a2db2c18a0a5253e95f2d7b",
       "crop": { "left": 0, "top": 0, "width": 88, "height": 1520 },
-      "artwork": "naked-lunch-07c24d672b4c.webp",
+      "artwork": "naked-lunch-low-989a6edb43ec94f1.webp",
       "height": 320,
       "perspective": {
         "width": 88,
@@ -1382,11 +1390,12 @@
         "https://rezised-images.knhbt.cz/1920x1920/59083078.jpg",
         "https://rezised-images.knhbt.cz/1920x1920/59083079.jpg"
       ],
-      "artworkSha256": "00c3fd848eb6455df4546d943eceb3942bea09bbd8cf75d8588a57d16f5b8cbc",
+      "artworkSha256": "989a6edb43ec94f14ba2c5a654498c2fabafcd5e92ee43925eefff6bdba5b654",
       "detailArtwork": "naked-lunch-detail-ae56f9d75ed57618.webp",
       "detailArtworkSha256": "ae56f9d75ed5761801a4cbbf797e50da1dae803cd670de34c114acd95393434d",
       "detailWidth": 74,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "oblivion",
@@ -1508,7 +1517,7 @@
       "poster": "library/posters/seduction-and-betrayal.jpg",
       "posterSha256": "bc8c165ccff0f6db86b9a8f4354df9eef24bbc530b9367ae93b1b624c16b7d87",
       "crop": { "left": 0, "top": 0, "width": 90, "height": 1540 },
-      "artwork": "seduction-and-betrayal-a779176f1044.webp",
+      "artwork": "seduction-and-betrayal-low-2adfcb1c96d0494b.webp",
       "height": 320,
       "perspective": {
         "width": 90,
@@ -1522,11 +1531,12 @@
       },
       "sourceKind": "seller-original-photograph-rectified",
       "corroboration": ["https://rezised-images.knhbt.cz/1920x1920/25211414.webp"],
-      "artworkSha256": "54b515ea4a582285cb6d8c1a5e3ee0af202936924ac8d6f1ce605d9c7ebb1a1d",
+      "artworkSha256": "2adfcb1c96d0494b057eb6e92f9fe4634fc7e3170d59781fa335b1f59bb8a14a",
       "detailArtwork": "seduction-and-betrayal-detail-79c42104fbe7b7c0.webp",
       "detailArtworkSha256": "79c42104fbe7b7c0b6072ecf5170a1775a9160be28d666e97579cf4bde2e0795",
       "detailWidth": 74,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "swe-books",
@@ -1671,7 +1681,7 @@
       "poster": "library/posters/anti-memetic-warfare.jpeg",
       "posterSha256": "dd7e09741726dabf3083a38af88a6a1199671d7bf5e93526b0bbc64da55a8db4",
       "crop": { "left": 0, "top": 0, "width": 1540, "height": 85 },
-      "artwork": "anti-memetic-warfare-d93673cf29a4.webp",
+      "artwork": "anti-memetic-warfare-low-2d23048f54223cd8.webp",
       "height": 320,
       "perspective": {
         "width": 1540,
@@ -1685,11 +1695,12 @@
       },
       "sourceKind": "original-photograph-rectified",
       "rotation": 90,
-      "artworkSha256": "1187977b832abeeeac6fbf4de6f866b1b0c070aa3b8e89c30bac4b940c82ea2c",
+      "artworkSha256": "2d23048f54223cd8d42e9bca282617c7522953624be923dfc6849b8dfed113b4",
       "detailArtwork": "anti-memetic-warfare-detail-1cb839156125425b.webp",
       "detailArtworkSha256": "1cb839156125425b1243379e8e4efe1436d87403d6040da4107c501609dbc54c",
       "detailWidth": 70,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "till-we-have-faces",
@@ -1745,8 +1756,8 @@
       },
       "rotation": 90,
       "height": 320,
-      "artwork": "the-year-of-magical-thinking-ab2408d47c8c.webp",
-      "artworkSha256": "880ab5b50e13e9e56cf10037368d3788984b43ecc5e363c7d29d6c5dfe6d71c9",
+      "artwork": "the-year-of-magical-thinking-low-ae747af870ce9d03.webp",
+      "artworkSha256": "ae747af870ce9d031c7c03b1f3f205b7e41cb344170d82a2bf3f6048956a5537",
       "editionEvidence": "Same seller gallery shows exact saved2007Vintage International cream front: National Bestseller, Michiko Kakutani quote, gold National Book Award seal, colored letters J/O/H/N. Same photo shows complete turquoise printed spine. Back barcode confirms9781400078431. Full JOAN DIDION/title/Vintage oval/VINTAGE marks retained; source slight binding wear and lighting preserved. Source gallery alt text wrongly calls this hardcover; physical photo and ISBN identify paperback.",
       "sourceKind": "seller-original-photograph-rectified",
       "corroboration": [
@@ -1756,7 +1767,8 @@
       "detailArtwork": "the-year-of-magical-thinking-detail-7fa5bae29887fd0b.webp",
       "detailArtworkSha256": "7fa5bae29887fd0bfd0b088472b31d4c08a15d1e5ffcf311919723c047808535",
       "detailWidth": 36,
-      "detailHeight": 829
+      "detailHeight": 829,
+      "sampling": "independent"
     },
     {
       "id": "memoirs-of-a-dutiful-daughter",
@@ -1805,7 +1817,7 @@
       "poster": "library/posters/Slouching Towards Bethlehem.jpg",
       "posterSha256": "40c635fc0bcbebb3f047d45593a3360c433f9847ff2d3c93c80fc1280c903d33",
       "crop": { "left": 0, "top": 0, "width": 78, "height": 1520 },
-      "artwork": "slouching-towards-bethlehem-f65e1ab03c9f.webp",
+      "artwork": "slouching-towards-bethlehem-low-096dd32f6475a135.webp",
       "height": 320,
       "perspective": {
         "width": 78,
@@ -1822,11 +1834,12 @@
         "https://rezised-images.knhbt.cz/1920x1920/88202102.jpg",
         "https://rezised-images.knhbt.cz/1920x1920/88202103.jpg"
       ],
-      "artworkSha256": "05cc2f6c8dfcb08d748a79ebc4a0196b4f635cc6b5fb8fc593e2d444f66f4bd1",
+      "artworkSha256": "096dd32f6475a1354f2b4ad133d0a08a23529179f7178f79dac82710f6ab310e",
       "detailArtwork": "slouching-towards-bethlehem-detail-2987f91bd647ab53.webp",
       "detailArtworkSha256": "2987f91bd647ab536fdbd4ff3a6029213b59d0640b240e7f6fcd2d643c5435be",
       "detailWidth": 65,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "play-it-as-it-lays",
@@ -1840,7 +1853,7 @@
       "poster": "library/posters/play-it-as-it-lays.jpg",
       "posterSha256": "79aa491ce8f9dbb706ae0ccd47ff03448f4bd5666e2102d80f0855de7e66916a",
       "crop": { "left": 0, "top": 0, "width": 82, "height": 1520 },
-      "artwork": "play-it-as-it-lays-15e0c3b129b9.webp",
+      "artwork": "play-it-as-it-lays-low-968cb22878074333.webp",
       "height": 320,
       "perspective": {
         "width": 82,
@@ -1857,11 +1870,12 @@
         "https://rezised-images.knhbt.cz/1920x1920/82249261.jpg",
         "https://rezised-images.knhbt.cz/1920x1920/82249262.jpg"
       ],
-      "artworkSha256": "22497a467a3bd04e555ef2fec1280627b065100467ae7d311b93beb625232bb9",
+      "artworkSha256": "968cb22878074333b211b67439f937496d1d5b87b4db12ec58bc32cafdaade7f",
       "detailArtwork": "play-it-as-it-lays-detail-683c6908d74ff30e.webp",
       "detailArtworkSha256": "683c6908d74ff30e2513525260787c10ef3509f19133aefd9a98024598a27c91",
       "detailWidth": 69,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "risibles-amours",
@@ -1954,14 +1968,15 @@
       "crop": { "left": 0, "top": 0, "width": 65, "height": 1506 },
       "rotation": 0,
       "height": 320,
-      "artwork": "on-certainty-bd0116ceff00.webp",
+      "artwork": "on-certainty-low-f986b65f9ac26b8f.webp",
       "editionEvidence": "Exact saved English On Certainty Harper Torchbooks TB1686 front matches black outlined hands over red rectangle, author and editor credits. Same physical copy exposes full grey-white spine with black Wittgenstein, On Certainty, Harper Torchbooks and TB1686. Edition-specific metadata identifies Harper Collins1972 ISBN9780061316869.",
       "sourceKind": "bookseller-photograph-rectified",
-      "artworkSha256": "3028ae45613c9579e45c124a6a5df1a97e3b6ef62331d9be586a7ef8830af19d",
+      "artworkSha256": "f986b65f9ac26b8fbd03844d813d58b298d3fbb40b5ca26b16f6801c196d65cf",
       "detailArtwork": "on-certainty-detail-65fabbff8b04a973.webp",
       "detailArtworkSha256": "65fabbff8b04a97373af0fc1da3bf8394f4ca74970625c033927033671c56b02",
       "detailWidth": 55,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "philosophical-investigations",
@@ -2174,9 +2189,9 @@
       "poster": "library/posters/dog-songs.jpg",
       "posterSha256": "50699bbed501a165ec88fe2ea960954a25a67d64aa00b5defaa3086d72a9d9f7",
       "crop": { "left": 0, "top": 0, "width": 14, "height": 320 },
-      "artwork": "dog-songs-16f7e0552a9c.webp",
+      "artwork": "dog-songs-low-bce7bdc1495700cf.webp",
       "height": 320,
-      "artworkSha256": "a61025c1730f1e5be9e70ba0b7747520837132d25ceed482941d52ca5260297d",
+      "artworkSha256": "bce7bdc1495700cf02134c79e94b16f43c3c0b83d82d43455d008052dc6793ac",
       "perspective": {
         "width": 14,
         "height": 320,
@@ -2191,7 +2206,8 @@
       "detailArtwork": "dog-songs-detail-7958f0528c8ce23b.webp",
       "detailArtworkSha256": "7958f0528c8ce23bc603ec4edf6b1ac508bac04867a2b399c9b132271ad435bd",
       "detailWidth": 56,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "ecce-homo",
@@ -2205,9 +2221,9 @@
       "poster": "library/posters/ecce-homo.webp",
       "posterSha256": "40ab232474809bbffd6dfd4cd0748b171f701598f126a546ca10e2844401bde5",
       "crop": { "left": 0, "top": 0, "width": 14, "height": 320 },
-      "artwork": "ecce-homo-cec3cc278160.webp",
+      "artwork": "ecce-homo-low-700b80f4b25b970a.webp",
       "height": 320,
-      "artworkSha256": "a37caf69d9affb22d5315c49639dc77a50059f3e577fdd218867eea7bd6b3f52",
+      "artworkSha256": "700b80f4b25b970ad0548c9b603ebf490cbfc67595a41bf20eb6996b865ce593",
       "perspective": {
         "width": 14,
         "height": 320,
@@ -2222,7 +2238,8 @@
       "detailArtwork": "ecce-homo-detail-4718c3716a45e8ab.webp",
       "detailArtworkSha256": "4718c3716a45e8ab22303f7ed8249759bde28bdb7dbc643808e30b019eb183a7",
       "detailWidth": 56,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "infinite-jest",
@@ -2373,9 +2390,9 @@
       "poster": "library/posters/the-presentation-of-self-in-everyday-life.jpg",
       "posterSha256": "4c2bcc09bdf4bc1a134a8f188695983df7802da9aafa8de110019506aa16903a",
       "crop": { "left": 0, "top": 0, "width": 66, "height": 1514 },
-      "artwork": "the-presentation-of-self-in-everyday-life-0ffd85c1ea66.webp",
+      "artwork": "the-presentation-of-self-in-everyday-life-low-0b351d20db3bd918.webp",
       "height": 320,
-      "artworkSha256": "33ca99abc1737ec663831117881341c831d5af844484d421bfaff0c3e3f79407",
+      "artworkSha256": "0b351d20db3bd9186494e45cc28af3d441c982d9b28586a3f3df0cec159691aa",
       "perspective": {
         "width": 66,
         "height": 1514,
@@ -2390,7 +2407,8 @@
       "detailArtwork": "the-presentation-of-self-in-everyday-life-detail-a5792f207f0e8ce7.webp",
       "detailArtworkSha256": "a5792f207f0e8ce7b6ff3451a9f45c8544cd5c7419d9013b714370d62cd1b69a",
       "detailWidth": 55,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "the-sovereignty-of-good",
@@ -2437,9 +2455,9 @@
       "poster": "library/posters/the-triple-helix.jpg",
       "posterSha256": "5528a6651e72b84d9fa88f5f36a535076857055e0e1f7373ad4080edaf389bb4",
       "crop": { "left": 0, "top": 0, "width": 70, "height": 1518 },
-      "artwork": "the-triple-helix-1c9adcedb900.webp",
+      "artwork": "the-triple-helix-low-011a7298a3967b54.webp",
       "height": 320,
-      "artworkSha256": "e0cd36d30bba17bc41b1874e4471e4dd74423a077f530005aa9ba3d94b3f59fe",
+      "artworkSha256": "011a7298a3967b5420015babe231027f9c44f5a26aa564882bda7fa2672ce735",
       "perspective": {
         "width": 70,
         "height": 1518,
@@ -2454,7 +2472,8 @@
       "detailArtwork": "the-triple-helix-detail-bfd8c539ca6302c0.webp",
       "detailArtworkSha256": "bfd8c539ca6302c0dc108747c2a7a7c76e903056f20ad67408edd14ea104c248",
       "detailWidth": 59,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "to-save-and-to-destroy",
@@ -2503,9 +2522,9 @@
       "poster": "library/posters/language-truth-logic.jpg",
       "posterSha256": "fb5d3081fe191b2ca88466f9a3450b27efb6323ef62e0ff659e49a3a54323fb1",
       "crop": { "left": 0, "top": 0, "width": 124, "height": 2833 },
-      "artwork": "language-truth-and-logic-8c3962a346ab.webp",
+      "artwork": "language-truth-and-logic-low-e56b86954128c494.webp",
       "height": 320,
-      "artworkSha256": "9f87d718a4f6aff0f478cd380682f895c6d440b8a96b870bf23920997c80b57f",
+      "artworkSha256": "e56b86954128c494f969a84250fffbaa1ae0eb5240034b99def2821d0b9d124e",
       "perspective": {
         "width": 124,
         "height": 2833,
@@ -2523,7 +2542,8 @@
       "detailArtwork": "language-truth-and-logic-detail-bc775d71ce266387.webp",
       "detailArtworkSha256": "bc775d71ce266387d5e0b3e5afa6d9bcbd8a52c67986ff632dbe0269d025d885",
       "detailWidth": 56,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "on-photography-fsg1977",
@@ -2569,9 +2589,9 @@
       "poster": "library/posters/recursion.jpg",
       "posterSha256": "d56853ebb95e2eb6c79675e2249b82dfacfc407bd58c37c75852c1597abdabab",
       "crop": { "left": 0, "top": 0, "width": 64, "height": 1600 },
-      "artwork": "recursion-ballantine2020-75fade5b801f.webp",
+      "artwork": "recursion-ballantine2020-low-e828838e60850e66.webp",
       "height": 320,
-      "artworkSha256": "7081ca03893b8ad198342d17ab5ee0b605bc2aee62ac8721184df7866404b577",
+      "artworkSha256": "e828838e60850e66a3480bd8e1836d7186906847b24f68423b82031147230643",
       "perspective": {
         "width": 64,
         "height": 1600,
@@ -2590,7 +2610,8 @@
       "detailArtwork": "recursion-ballantine2020-detail-f99397a41f4b326a.webp",
       "detailArtworkSha256": "f99397a41f4b326ababe370cf7e4cc47df6a4494fc0e30270650fde7d4fa5365",
       "detailWidth": 51,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "sea-of-tranquility",
@@ -2710,9 +2731,9 @@
       "poster": "library/posters/the-sea-the-sea-cover.avif",
       "posterSha256": "efdfe1856b7165e9cb71df025e401922349c4f148e5466470284c3d9fe8561c7",
       "crop": { "left": 0, "top": 0, "width": 73, "height": 1286 },
-      "artwork": "the-sea-the-sea-7b8fcc67cd0a.webp",
+      "artwork": "the-sea-the-sea-low-7a8894023b60f5f4.webp",
       "height": 320,
-      "artworkSha256": "8c7b7df9c6fadc74442a6da7f724a218fd9a38275349f47b33d1d6c84a1686aa",
+      "artworkSha256": "7a8894023b60f5f413c113a47258c19d5dc7c4e23b3b8e23dfad398088c47dd8",
       "perspective": {
         "width": 73,
         "height": 1286,
@@ -2731,7 +2752,8 @@
       "detailArtwork": "the-sea-the-sea-detail-18790ab9e9eeedd3.webp",
       "detailArtworkSha256": "18790ab9e9eeedd30e2d3071a12e392b1133685a6d6f12a84eba98ae6a73c7ad",
       "detailWidth": 70,
-      "detailHeight": 1241
+      "detailHeight": 1241,
+      "sampling": "independent"
     },
     {
       "id": "the-three-body-problem",
@@ -2780,9 +2802,9 @@
       "poster": "library/posters/the-trial.jpg",
       "posterSha256": "3c1d9be9bdd7aff6a221f30eff2b7c761744c47106a40cd2561d87d48646e121",
       "crop": { "left": 0, "top": 0, "width": 64, "height": 1545 },
-      "artwork": "the-trial-19b80f08dabc.webp",
+      "artwork": "the-trial-low-4b22df01888eb735.webp",
       "height": 320,
-      "artworkSha256": "6d9f9dd825199d171b233c15ef2c3742268fcebd0548bd5d124fec65c955db91",
+      "artworkSha256": "4b22df01888eb7350ce5d2768d1db3c4da5f21440bb16e598e791e8ad37415dc",
       "perspective": {
         "width": 64,
         "height": 1545,
@@ -2798,7 +2820,8 @@
       "detailArtwork": "the-trial-detail-0bec7419fb3d8837.webp",
       "detailArtworkSha256": "0bec7419fb3d8837b3b949cf5ad2b6d6272b2ec643dfb8040e60e3a5d8608c9b",
       "detailWidth": 53,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "the-unbearable-lightness-of-being",
@@ -2812,9 +2835,9 @@
       "poster": "library/posters/the-unbearable-lightness-of-being-cover.avif",
       "posterSha256": "fe0aea45e5b680d6a824ed77abe6570613874822bc07435c9d59af98a989848d",
       "crop": { "left": 0, "top": 0, "width": 70, "height": 1520 },
-      "artwork": "the-unbearable-lightness-of-being-660bc89d7fef.webp",
+      "artwork": "the-unbearable-lightness-of-being-low-70e4cf63e5ef7c69.webp",
       "height": 320,
-      "artworkSha256": "59c6dba860c92c1aec34b9ac412a44051bb76a1641941a1184ec8af5b362cfe8",
+      "artworkSha256": "70e4cf63e5ef7c694eec3fc8957b1a845e284a5c2ae88eed45125e092c5352f1",
       "perspective": {
         "width": 70,
         "height": 1520,
@@ -2830,7 +2853,8 @@
       "detailArtwork": "the-unbearable-lightness-of-being-detail-ab702985381f2e1a.webp",
       "detailArtworkSha256": "ab702985381f2e1ab8614ae46ec1074d4f2dc569a662b6fcd2c5e76a64563fc0",
       "detailWidth": 58,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "capitalism-and-freedom",
@@ -2843,9 +2867,9 @@
       "sourceSha256": "19522d35c2a05b1b574d76d8ddddf3bd636cc82e25d1d1b9c834cf032350f100",
       "poster": "library/posters/capitalism-and-freedom-cover.avif",
       "crop": { "left": 0, "top": 0, "width": 18, "height": 320 },
-      "artwork": "capitalism-and-freedom-19522d35c2a0.webp",
+      "artwork": "capitalism-and-freedom-low-e2786e1ea779e0dc.webp",
       "height": 320,
-      "artworkSha256": "e43eac2e4125dc673524da40794033325b2f11a77230416c574d4e7b86114ef2",
+      "artworkSha256": "e2786e1ea779e0dc2eae82a6f0033a50097aad3642dc0b3c87ab4de56c70da55",
       "perspective": {
         "width": 18,
         "height": 320,
@@ -2865,7 +2889,8 @@
       "detailArtwork": "capitalism-and-freedom-detail-1a800a5752a704ac.webp",
       "detailArtworkSha256": "1a800a5752a704ac023d9a376eaa22269ff4d46697949a61d5e5a4c1167bfcfc",
       "detailWidth": 72,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "the-concept-of-mind",
@@ -2986,9 +3011,9 @@
       "poster": "library/posters/essays-in-love-cover.avif",
       "posterSha256": "711fe712e33d2a5ca30cac4162a7081c7c143584fef73ca3f8fe236ded4dac8a",
       "crop": { "left": 0, "top": 0, "width": 15, "height": 320 },
-      "artwork": "essays-in-love-9caa324b9ee7.webp",
+      "artwork": "essays-in-love-low-e168a467b465afd9.webp",
       "height": 320,
-      "artworkSha256": "cc04022b894184174b51d7b6b283341a8db97218a76849f92766190b71408064",
+      "artworkSha256": "e168a467b465afd9af047e941ebc4f0c9a83225b09cf5a5865d80e192d2e5b54",
       "perspective": {
         "width": 15,
         "height": 320,
@@ -3007,7 +3032,8 @@
       "detailArtwork": "essays-in-love-detail-6447c68f5d54df4e.webp",
       "detailArtworkSha256": "6447c68f5d54df4e2ffaad871ad8d292cfd60cd968348455f3b6686514af2102",
       "detailWidth": 50,
-      "detailHeight": 1068
+      "detailHeight": 1068,
+      "sampling": "independent"
     },
     {
       "id": "smoke-gets-in-your-eyes",
@@ -3178,9 +3204,9 @@
       "poster": "library/posters/regarding-pain-of-others.jpg",
       "posterSha256": "bb095ee963bb77c2eaebb6b159f66ddbfc05a3e086a846b5cd03c632ef2fe113",
       "crop": { "left": 0, "top": 0, "width": 65, "height": 1680 },
-      "artwork": "regarding-the-pain-of-others-e17b3b294fa4.webp",
+      "artwork": "regarding-the-pain-of-others-low-534af2bf7de3a61d.webp",
       "height": 320,
-      "artworkSha256": "f9350370f5ada5ec84cf77762dc452cabbe32a7a73568239fb69fd79c35cbd93",
+      "artworkSha256": "534af2bf7de3a61d38d5b789609bd314f88447be158d908767e984262b4fa85f",
       "perspective": {
         "width": 65,
         "height": 1680,
@@ -3195,7 +3221,8 @@
       "detailArtwork": "regarding-the-pain-of-others-detail-6b52b516ff65a9f0.webp",
       "detailArtworkSha256": "6b52b516ff65a9f0558e1d5d7315785a8dbefb347de8b36487e81bf74244d621",
       "detailWidth": 49,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "twilight-of-the-idols",
@@ -3209,9 +3236,9 @@
       "poster": "library/posters/twilight-of-the-idols.jpg",
       "posterSha256": "a6481d24f05a65232dbd2ff27e94b9b6d1c4506a17a650767e7ef4dd61c024b3",
       "crop": { "left": 0, "top": 0, "width": 60, "height": 1520 },
-      "artwork": "twilight-of-the-idols-213f90b6cf4d.webp",
+      "artwork": "twilight-of-the-idols-low-fffa63cf9e8a344c.webp",
       "height": 320,
-      "artworkSha256": "3c21158141cf3ed8222e89c22f23ec0062c2817e130e28a653aa52b001c96911",
+      "artworkSha256": "fffa63cf9e8a344cbb7f24c4cf6f5223b020ddeca684e4e1336b6d8798d66b95",
       "perspective": {
         "width": 60,
         "height": 1520,
@@ -3226,7 +3253,8 @@
       "detailArtwork": "twilight-of-the-idols-detail-fb63cc3713191a91.webp",
       "detailArtworkSha256": "fb63cc3713191a9115a756287067c135a823dcdc7f271735b09104d6f9ca0559",
       "detailWidth": 50,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "letters-to-family-friends-and-editors",
@@ -3369,9 +3397,9 @@
       "poster": "library/posters/notes-on-synthesis-of-form.jpg",
       "posterSha256": "2e595f6b521d4444e180cd3506056a78980cd716a77e86f956d569c100d40106",
       "crop": { "left": 0, "top": 0, "width": 89, "height": 1527 },
-      "artwork": "notes-on-the-synthesis-of-form-b51fd983c5a5.webp",
+      "artwork": "notes-on-the-synthesis-of-form-low-845621d8c5b20e77.webp",
       "height": 320,
-      "artworkSha256": "7b9c834cbd0b6921ac946961c20efb29c4f123fa99fcd7bf350704c4f0340f64",
+      "artworkSha256": "845621d8c5b20e77028c0ffe9b6be3e50467be555ae58056d8498304cbab0537",
       "perspective": {
         "width": 89,
         "height": 1527,
@@ -3386,7 +3414,8 @@
       "detailArtwork": "notes-on-the-synthesis-of-form-detail-6530add21a754032.webp",
       "detailArtworkSha256": "6530add21a754032e6caf1182e9f0abd666017c2477df90b576bc4961c277525",
       "detailWidth": 74,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "22-cells-in-nuremberg",
@@ -3400,9 +3429,9 @@
       "poster": "library/posters/22-cell-in-nuremberg.jpg",
       "posterSha256": "33c345ddfcdbfe2df3952e10c3ed504ba0fb24ea3ad8edd7b1c0329c110be7aa",
       "crop": { "left": 0, "top": 0, "width": 1478, "height": 88 },
-      "artwork": "22-cells-in-nuremberg-09abdcb773f0.webp",
+      "artwork": "22-cells-in-nuremberg-low-8407fd14f54eef07.webp",
       "height": 320,
-      "artworkSha256": "51750e48e8ad7ea9c2425aa6ab4f008fa451f0b78cfcb627b4047b48287391a4",
+      "artworkSha256": "8407fd14f54eef07bb6dcebd45377f577a93c491f80b6e2d599a0374d9758d1e",
       "perspective": {
         "width": 1478,
         "height": 88,
@@ -3418,7 +3447,8 @@
       "detailArtwork": "22-cells-in-nuremberg-detail-33ed6d8bab7d2dce.webp",
       "detailArtworkSha256": "33ed6d8bab7d2dcec8c092a28dcddb3d4f8fecfc4366d8d1fc2b570f01d0cb74",
       "detailWidth": 76,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "the-evolution-of-modern-metaphysics",
@@ -3462,9 +3492,9 @@
       "poster": "library/posters/our-knowledge-of-the-external-world.png",
       "posterSha256": "c78d3e2eb4a87b43d422ee13a041e403cc6dc157f55177ada6e94e9182062305",
       "crop": { "left": 0, "top": 0, "width": 56, "height": 1130 },
-      "artwork": "our-knowledge-of-the-external-world-15aabb9deec2.webp",
+      "artwork": "our-knowledge-of-the-external-world-low-d98a1be6e76ae891.webp",
       "height": 320,
-      "artworkSha256": "d0ac5e4b440ef6d3985be03906eefd9fa7ac7f05a1cdbcb00e74f93bcdbda4f8",
+      "artworkSha256": "d98a1be6e76ae89177e80aa9f5bdbfe61bf46a973d4c8bfbbd0073b867bb918c",
       "perspective": {
         "width": 56,
         "height": 1130,
@@ -3479,7 +3509,8 @@
       "detailArtwork": "our-knowledge-of-the-external-world-detail-3d26c92b7e4becde.webp",
       "detailArtworkSha256": "3d26c92b7e4becde08a21b5e26e1276ed39654f0db0d6a721cfbcacc8dd75bdf",
       "detailWidth": 54,
-      "detailHeight": 1102
+      "detailHeight": 1102,
+      "sampling": "independent"
     },
     {
       "id": "the-end-of-the-affair",
@@ -3811,9 +3842,9 @@
       "poster": "library/posters/the-conquest-of-happiness.jpg",
       "posterSha256": "17f219c9a30d99de16a08bb0203679fff0b15e0e17ebaffff9790eaa2db050a7",
       "crop": { "left": 0, "top": 0, "width": 66, "height": 1345 },
-      "artwork": "the-conquest-of-happiness-5b0c8a9c6987.webp",
+      "artwork": "the-conquest-of-happiness-low-3017432d073d9100.webp",
       "height": 320,
-      "artworkSha256": "5b0c8a9c6987d5a52d23f8eae82492b592bbc3d850478c6562ec35b3312c8b1f",
+      "artworkSha256": "3017432d073d91008eda18f4443d3f1fd84b6544a1a3deff71c9e3adee8fe4ba",
       "perspective": {
         "width": 66,
         "height": 1345,
@@ -3828,7 +3859,8 @@
       "detailArtwork": "the-conquest-of-happiness-detail-a793d1df7c0e48ed.webp",
       "detailArtworkSha256": "a793d1df7c0e48edef8d941185602f47d1f37fb488b63f75b32754a6aaa8dfa8",
       "detailWidth": 62,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "madness-and-civilization",
@@ -3842,9 +3874,9 @@
       "poster": "library/posters/madness-and-civilization.jpg",
       "posterSha256": "2d7a4084e93f124b1b432644612440b559519eb8465b162619cc3002c6524709",
       "crop": { "left": 0, "top": 0, "width": 88, "height": 1510 },
-      "artwork": "madness-and-civilization-1c498b610937.webp",
+      "artwork": "madness-and-civilization-low-619836cd31b22dc3.webp",
       "height": 320,
-      "artworkSha256": "1c498b610937b374c981f7538c349e6f98f3c8f1a9250a11c3ab6c60e3f89a9e",
+      "artworkSha256": "619836cd31b22dc3f3225c7f39cf001332a503a46868721302cd6d2d65288e8d",
       "perspective": {
         "width": 88,
         "height": 1510,
@@ -3860,7 +3892,8 @@
       "detailArtwork": "madness-and-civilization-detail-284536a969d65a7a.webp",
       "detailArtworkSha256": "284536a969d65a7a67e26c7ee471af45e09036bf05adeffe1e52e49376d52cac",
       "detailWidth": 74,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "principles-2017-linen-case-half-jacket",
