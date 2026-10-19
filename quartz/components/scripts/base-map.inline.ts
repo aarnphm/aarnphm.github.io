@@ -417,20 +417,29 @@ function initBaseMaps(): void {
   }
 }
 document.addEventListener('nav', () => {
-  document.addEventListener('base-content-changed', initBaseMaps)
-  if (initializationTimer === undefined)
+  let observer: MutationObserver | undefined
+  const ensureObserver = () => {
+    if (observer || mapStates.size === 0) return
+    observer = new MutationObserver(() => {
+      for (const [container, state] of mapStates)
+        if (!container.isConnected) disposeMap(container, state)
+    })
+    observer.observe(document.documentElement, { childList: true, subtree: true })
+  }
+  const initAndObserve = () => {
+    initBaseMaps()
+    ensureObserver()
+  }
+  document.addEventListener('base-content-changed', initAndObserve)
+  if (document.querySelector('.base-map') && initializationTimer === undefined) {
     initializationTimer = window.setTimeout(() => {
       initializationTimer = undefined
-      initBaseMaps()
+      initAndObserve()
     }, 100)
-  const observer = new MutationObserver(() => {
-    for (const [container, state] of mapStates)
-      if (!container.isConnected) disposeMap(container, state)
-  })
-  observer.observe(document.documentElement, { childList: true, subtree: true })
+  }
   window.addCleanup(() => {
-    document.removeEventListener('base-content-changed', initBaseMaps)
-    observer.disconnect()
+    document.removeEventListener('base-content-changed', initAndObserve)
+    observer?.disconnect()
     if (initializationTimer !== undefined) {
       window.clearTimeout(initializationTimer)
       initializationTimer = undefined

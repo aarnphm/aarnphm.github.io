@@ -9,12 +9,12 @@ export const BASE_QUERY_DATA_PATH = `/${BASE_QUERY_DATA_SLUG}.json`
 
 export interface BrowserBaseRecord {
   slug: string
-  filePath: string
+  filePath?: string
   frontmatter: JsonObject
-  datePaths: string[][]
+  datePaths?: string[][]
   dates?: { created: string; modified: string; published: string }
-  links: string[]
-  embeds: string[]
+  links?: string[]
+  embeds?: string[]
   size?: number
 }
 
@@ -86,6 +86,11 @@ function projectValue(
     result = Object.fromEntries(
       Object.entries(value).flatMap(([key, entry]) => {
         if (isSensitiveKey(key)) return []
+        if (
+          path.length === 0 &&
+          (key === 'pdfTitles' || (key === 'pageLayout' && entry === 'default'))
+        )
+          return []
         const projected = projectValue(entry, [...path, key], datePaths, ancestors)
         return projected === undefined ? [] : [[key, projected]]
       }),
@@ -126,24 +131,25 @@ function serializeRecord(file: QuartzPluginData): BrowserBaseRecord | undefined 
     [dates.created, dates.modified, dates.published].every(
       date => date instanceof Date && Number.isFinite(date.getTime()),
     )
-  return {
-    slug: file.slug,
-    filePath: sourcePath(file),
-    frontmatter,
-    datePaths,
-    dates: validDates
-      ? {
-          created: dates.created.toISOString(),
-          modified: dates.modified.toISOString(),
-          published: dates.published.toISOString(),
-        }
-      : undefined,
-    links: Array.isArray(file.links) ? file.links.filter(link => typeof link === 'string') : [],
-    embeds: Array.isArray(file.embeds)
-      ? file.embeds.filter((entry): entry is string => typeof entry === 'string')
-      : [],
-    size: typeof file.size === 'number' && Number.isFinite(file.size) ? file.size : undefined,
+  const resolvedPath = sourcePath(file)
+  const links = Array.isArray(file.links) ? file.links.filter(link => typeof link === 'string') : []
+  const embeds = Array.isArray(file.embeds)
+    ? file.embeds.filter((entry): entry is string => typeof entry === 'string')
+    : []
+  const record: BrowserBaseRecord = { slug: file.slug, frontmatter }
+  if (resolvedPath !== `${file.slug}.md`) record.filePath = resolvedPath
+  if (datePaths.length > 0) record.datePaths = datePaths
+  if (validDates) {
+    record.dates = {
+      created: dates.created.toISOString(),
+      modified: dates.modified.toISOString(),
+      published: dates.published.toISOString(),
+    }
   }
+  if (links.length > 0) record.links = links
+  if (embeds.length > 0) record.embeds = embeds
+  if (typeof file.size === 'number' && Number.isFinite(file.size)) record.size = file.size
+  return record
 }
 
 /** The emitter passes its already-published inventory; this projection also excludes locked notes. */
@@ -155,8 +161,12 @@ export function createBaseQueryData(files: QuartzPluginData[]): BaseQueryData {
   const visible = new Set(
     records.flatMap(record => (isFullSlug(record.slug) ? [simplifySlug(record.slug)] : [])),
   )
-  for (const record of records)
-    record.links = record.links.filter(link => isSimpleSlug(link) && visible.has(link))
+  for (const record of records) {
+    if (!record.links) continue
+    const filtered = record.links.filter(link => isSimpleSlug(link) && visible.has(link))
+    if (filtered.length > 0) record.links = filtered
+    else delete record.links
+  }
   return { version: 1, files: records }
 }
 
@@ -191,18 +201,20 @@ const parsedDates = new ReloadableWeakMap<
   NonNullable<QuartzPluginData['dates']>
 >()
 
+const EMPTY_STRINGS: never[] = []
+
 function readRecord(value: unknown): BrowserBaseRecord | undefined {
   if (
     !isRecord(value) ||
     typeof value.slug !== 'string' ||
     value.slug.length === 0 ||
     !isFullSlug(value.slug) ||
-    !isSourcePath(value.filePath) ||
+    (value.filePath !== undefined && !isSourcePath(value.filePath)) ||
     !isJsonObject(value.frontmatter) ||
-    !Array.isArray(value.datePaths) ||
-    !value.datePaths.every(strings) ||
-    !strings(value.links) ||
-    !strings(value.embeds) ||
+    (value.datePaths !== undefined &&
+      (!Array.isArray(value.datePaths) || !value.datePaths.every(strings))) ||
+    (value.links !== undefined && !strings(value.links)) ||
+    (value.embeds !== undefined && !strings(value.embeds)) ||
     (value.size !== undefined && (typeof value.size !== 'number' || !Number.isFinite(value.size)))
   )
     return undefined
@@ -274,10 +286,11 @@ function reviveValue(value: JsonValue, path: string[], datePaths: Set<string>): 
 
 export function hydrateBaseQueryRecord(record: BrowserBaseRecord): QuartzPluginData {
   const slug = record.slug
-  const filePath = record.filePath
+  const filePath = record.filePath ?? `${slug}.md`
   if (!isFullSlug(slug) || !isFilePath(filePath)) throw new Error('Invalid base record path')
+  const datePaths = record.datePaths
   let frontmatter: QuartzPluginData['frontmatter']
-  if (record.datePaths.length === 0) {
+  if (!datePaths || datePaths.length === 0) {
     frontmatter = {
       title: slug,
       pageLayout: 'default',
@@ -288,7 +301,7 @@ export function hydrateBaseQueryRecord(record: BrowserBaseRecord): QuartzPluginD
     const revived = reviveValue(
       record.frontmatter,
       [],
-      new Set(record.datePaths.map(path => JSON.stringify(path))),
+      new Set(datePaths.map(path => JSON.stringify(path))),
     )
     if (isRecord(revived)) Object.assign(frontmatter, revived)
   }
@@ -310,8 +323,8 @@ export function hydrateBaseQueryRecord(record: BrowserBaseRecord): QuartzPluginD
     relativePath: filePath,
     frontmatter,
     dates,
-    links: record.links.filter(isSimpleSlug),
-    embeds: record.embeds,
+    links: record.links ? record.links.filter(isSimpleSlug) : EMPTY_STRINGS,
+    embeds: record.embeds ?? EMPTY_STRINGS,
     size: record.size,
   }
 }

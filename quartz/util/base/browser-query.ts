@@ -253,6 +253,14 @@ export function runBaseQuery(request: BaseQueryRequest): BaseQueryResult {
 
 const dataCache = new Map<string, Promise<QuartzPluginData[]>>()
 
+if (typeof document !== 'undefined') {
+  document.addEventListener('nav', () => {
+    if (!document.querySelector('[data-base-query]')) {
+      dataCache.clear()
+    }
+  })
+}
+
 export function loadBaseQueryData(url = BASE_QUERY_DATA_PATH): Promise<QuartzPluginData[]> {
   const cached = dataCache.get(url)
   if (cached) return cached

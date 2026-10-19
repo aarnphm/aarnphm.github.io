@@ -80,28 +80,18 @@ function getCorpusCatalogSummary(files: QuartzPluginData[]): CorpusCatalogSummar
   const cached = corpusCatalogCache.get(files)
   if (cached) return cached
 
-  const noteProps = new Set([
-    ...fileProperties,
-    ...fileProperties.map(property => `this.${property}`),
-  ])
+  const noteProps = new Set<string>(fileProperties)
   const values = new Map<string, Set<string>>()
   const tags = new Set<string>()
   const folders = new Set<string>()
   const seenDirs = new Set<string>()
-  const collect = (property: string, value: unknown, depth: number): void => {
+  const collect = (property: string, value: unknown): void => {
     noteProps.add(property)
     if (Array.isArray(value)) {
-      for (let i = 0; i < value.length; i++) collect(property, value[i], depth)
+      for (let i = 0; i < value.length; i++) collect(property, value[i])
       return
     }
     if (isRecord(value) && !(value instanceof Date)) {
-      if (depth < 3) {
-        for (const key in value) {
-          if (Object.prototype.hasOwnProperty.call(value, key)) {
-            collect(`${property}.${key}`, value[key], depth + 1)
-          }
-        }
-      }
       return
     }
     let observed = values.get(property)
@@ -123,8 +113,9 @@ function getCorpusCatalogSummary(files: QuartzPluginData[]): CorpusCatalogSummar
     const fm = file.frontmatter as Record<string, unknown> | undefined
     if (fm) {
       for (const key in fm) {
+        if (key === 'pdfTitles') continue
         if (Object.prototype.hasOwnProperty.call(fm, key)) {
-          collect(`note.${key}`, fm[key], 1)
+          collect(`note.${key}`, fm[key])
         }
       }
       // hasTag("a") also matches a/b, so offer every parent of a nested tag.
@@ -167,6 +158,9 @@ function getCorpusCatalogSummary(files: QuartzPluginData[]): CorpusCatalogSummar
   return summary
 }
 
+const normalizeCatalogProperty = (key: string): string =>
+  /^(?:note|file|formula|this)\./.test(key) ? key : `note.${key}`
+
 export function createBaseQueryCatalog(
   files: QuartzPluginData[],
   config: BaseFile,
@@ -174,9 +168,15 @@ export function createBaseQueryCatalog(
   const summary = getCorpusCatalogSummary(files)
   const properties = new Set(summary.noteProps)
   for (const key of Object.keys(config.properties ?? {})) {
-    properties.add(/^(?:note|file|formula)\./.test(key) ? key : `note.${key}`)
+    properties.add(normalizeCatalogProperty(key))
   }
   for (const key of Object.keys(config.formulas ?? {})) properties.add(`formula.${key}`)
+  for (const view of config.views) {
+    for (const key of view.order ?? []) properties.add(normalizeCatalogProperty(key))
+    for (const rule of view.sort ?? []) properties.add(normalizeCatalogProperty(rule.property))
+    if (typeof view.groupBy === 'string') properties.add(normalizeCatalogProperty(view.groupBy))
+    else if (view.groupBy?.property) properties.add(normalizeCatalogProperty(view.groupBy.property))
+  }
   return {
     properties: [...properties].sort(),
     values: summary.values,
@@ -230,7 +230,11 @@ const methods: Completion[] = [
 ].map(([template, label, detail]) => snippetCompletion(template, { label, detail, type: 'method' }))
 
 function completions(catalog: BaseQueryCatalog) {
-  const propertyOptions: Completion[] = catalog.properties.map(property => ({
+  const allProperties = [
+    ...catalog.properties,
+    ...fileProperties.map(property => `this.${property}`),
+  ]
+  const propertyOptions: Completion[] = allProperties.map(property => ({
     label: buildPropertyExpressionSource(property) ?? property,
     detail: property.startsWith('formula.') ? 'formula' : 'property',
     type: 'property',

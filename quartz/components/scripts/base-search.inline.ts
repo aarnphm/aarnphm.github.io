@@ -14,6 +14,7 @@ const SEMANTIC_IDLE_MS = 30_000
 type SharedSemantic = { manifest: string; client: SemanticClient; ids: Promise<string[]> }
 let shared: SharedSemantic | null = null
 let releaseTimer: ReturnType<typeof setTimeout> | undefined
+const manifestIdsCache = new Map<string, Promise<string[]>>()
 
 function releaseSemantic() {
   if (!shared || releaseTimer !== undefined) return
@@ -26,13 +27,27 @@ function releaseSemantic() {
   }, SEMANTIC_IDLE_MS)
 }
 
-async function manifestIds(manifest: string): Promise<string[]> {
-  const res = await fetch(manifest)
-  if (!res.ok) throw new Error(`failed to load ${manifest}: ${res.status}`)
-  const data: unknown = await res.json()
-  if (!isRecord(data) || !Array.isArray(data.ids) || !data.ids.every(id => typeof id === 'string'))
-    throw new Error('The semantic index has no valid note inventory.')
-  return data.ids
+function manifestIds(manifest: string): Promise<string[]> {
+  let cached = manifestIdsCache.get(manifest)
+  if (!cached) {
+    cached = (async () => {
+      const res = await fetch(manifest)
+      if (!res.ok) throw new Error(`failed to load ${manifest}: ${res.status}`)
+      const data: unknown = await res.json()
+      if (
+        !isRecord(data) ||
+        !Array.isArray(data.ids) ||
+        !data.ids.every(id => typeof id === 'string')
+      )
+        throw new Error('The semantic index has no valid note inventory.')
+      return data.ids
+    })().catch(err => {
+      manifestIdsCache.delete(manifest)
+      throw err
+    })
+    manifestIdsCache.set(manifest, cached)
+  }
+  return cached
 }
 
 function sharedSemantic(manifest: string): SharedSemantic {
@@ -94,6 +109,7 @@ function setupBaseSearch(): (() => void) | undefined {
   const originalIndex = new Map<HTMLElement, number>()
   items.forEach((item, index) => originalIndex.set(item, index))
   const scoreLabels = new Map<HTMLElement, { label: HTMLElement; title: HTMLElement }>()
+  const lexicalText = new WeakMap<HTMLElement, string>()
 
   const clearScore = (item: HTMLElement) => {
     delete item.dataset.semanticScore
@@ -214,7 +230,11 @@ function setupBaseSearch(): (() => void) | undefined {
     }
     for (const item of items) {
       clearScore(item)
-      const text = item.textContent?.toLowerCase() || ''
+      let text = lexicalText.get(item)
+      if (text === undefined) {
+        text = item.textContent?.toLowerCase() || ''
+        lexicalText.set(item, text)
+      }
       item.style.display = text.includes(query) ? '' : 'none'
     }
     restoreOrder()
@@ -357,9 +377,11 @@ function setupBaseSearch(): (() => void) | undefined {
         }
       }
       applySemantic(scores)
+      releaseSemantic()
     } catch (err) {
       if (seq !== searchSeq) return
       console.warn('[BaseSearch] semantic query failed:', err)
+      releaseSemantic()
       filterLexical()
     }
   }

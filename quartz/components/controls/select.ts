@@ -167,7 +167,7 @@ export const buildSelect = <T>(options: SelectOptions<T>): Select<T> => {
     trigger.setAttribute('aria-expanded', 'false')
     if (restoreFocus) trigger.focus({ preventScroll: true })
   }
-  const focusItem = (index: number): void => {
+  const focusItem = (index: number, scroll = true): void => {
     const target = items[index]
     if (!target) return
     if (focusedIndex !== index) {
@@ -178,7 +178,7 @@ export const buildSelect = <T>(options: SelectOptions<T>): Select<T> => {
       focusedIndex = index
     }
     target.button.focus({ preventScroll: true })
-    target.button.scrollIntoView({ block: 'nearest' })
+    if (scroll) target.button.scrollIntoView({ block: 'nearest' })
   }
   const open = (): void => {
     ensureMenuMaterialized()
@@ -208,7 +208,13 @@ export const buildSelect = <T>(options: SelectOptions<T>): Select<T> => {
         menu.style.top = `${y}px`
       })
     }
-    focusItem(selectedIndex >= 0 ? selectedIndex : 0)
+    const initialIndex = selectedIndex >= 0 ? selectedIndex : 0
+    focusItem(initialIndex, false)
+    if (initialIndex > 0) {
+      requestAnimationFrame(() => {
+        if (!menu.hidden) items[initialIndex]?.button.scrollIntoView({ block: 'nearest' })
+      })
+    }
   }
 
   // Listeners read the root's document and skip realm-bound instanceof checks: the homepage trail

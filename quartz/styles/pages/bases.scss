@@ -97,12 +97,6 @@
 
     tr {
       border-bottom: 1px solid var(--base-table-line);
-      transition: background-color 0.2s ease;
-
-      &:hover,
-      &:focus-within {
-        background-color: var(--base-table-surface);
-      }
 
       &:last-child {
         border-bottom: none;
@@ -146,7 +140,6 @@
         text-decoration: none;
 
         &:hover {
-          background: initial !important;
           text-decoration: underline;
         }
       }
@@ -344,11 +337,6 @@
       gap: 0.5rem 1.5rem;
     }
 
-    &:hover,
-    &:focus-within {
-      background: var(--base-list-surface);
-    }
-
     a.internal {
       color: var(--dark);
       text-decoration: none;
@@ -356,7 +344,6 @@
       border-radius: 0;
 
       &:hover {
-        background: initial !important;
         text-decoration: underline;
         text-underline-offset: 0.15em;
       }
@@ -420,11 +407,29 @@
   color: var(--darkgray);
 }
 
+// Gapless grid with collapsed hairlines: the grid draws the top and left edge, each card its right
+// and bottom edge, so neighbouring cards share one 1px line and a short last row ends at its cards.
 .base-card-grid {
+  // Solid gray: images run to the card edge, and the translucent list hairline vanished beside them.
+  --base-card-line: var(--gray);
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(var(--base-card-min, 280px), 1fr));
-  gap: 1.5rem;
+  gap: 0;
   margin: 1.5rem 0;
+  border-block-start: 1px solid var(--base-card-line);
+  border-inline-start: 1px solid var(--base-card-line);
+
+  > .base-card {
+    border: 0;
+    border-inline-end: 1px solid var(--base-card-line);
+    border-block-end: 1px solid var(--base-card-line);
+
+    // 1px of paper between each image and the grid line, so adjacent covers stay apart.
+    .base-card-image-link {
+      inline-size: auto;
+      margin: 1px 1px 0;
+    }
+  }
 }
 
 // grouped cards container
@@ -440,10 +445,10 @@
   }
 }
 
+// The grid's top edge is the header's rule.
 .base-card-group-header {
-  margin: 0 0 0.75rem 0;
+  margin: 0;
   padding-bottom: 0.4rem;
-  border-bottom: 1px solid color-mix(in srgb, var(--gray) 55%, transparent);
   font-family: var(--codeFont);
   font-size: 0.66rem;
   font-weight: 400;
@@ -453,6 +458,7 @@
 }
 
 .base-card {
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   background: var(--light);
@@ -494,7 +500,8 @@
       color: var(--dark);
 
       &:hover {
-        background: initial !important;
+        text-decoration: underline;
+        text-underline-offset: 0.15em;
       }
 
       .base-card-title {
@@ -546,7 +553,6 @@
             text-decoration: none;
 
             &:hover {
-              background: initial !important;
               text-decoration: underline;
             }
           }
@@ -582,11 +588,6 @@
     flex-shrink: 0;
     border: 0;
     border-block-end: 1px solid var(--base-kanban-line);
-
-    &:hover,
-    &:focus-within {
-      background: var(--base-kanban-surface);
-    }
 
     .base-card-image-link {
       flex-shrink: 0;
@@ -773,7 +774,6 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='kanban
 
   .base-card-grid {
     grid-template-columns: 1fr;
-    gap: 1rem;
   }
 
   .base-card .base-card-content {
@@ -1439,6 +1439,16 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='kanban
 
 [data-slug='antilibrary'],
 [data-slug='books'] {
+  // Borderless book cards keep the spaced grid.
+  .base-card-grid {
+    gap: 1.5rem;
+    border: 0;
+
+    > .base-card {
+      border: 0;
+    }
+  }
+
   .base-card {
     border: 0;
     overflow: visible;
