@@ -81,14 +81,42 @@ Here $d_i$ is a chosen direction, such as decoder feature $i$ from a [[thoughts/
 
 For the prompt “The weather in California is”, the unmodified computation might favour “hot”. An intervention could change that distribution:
 
-```mermaid
-flowchart LR
-  A[The weather in California is] --> B[earlier layers] --> D[chosen activation] --> E[remaining layers] --> C[next-token distribution]
-```
+```pele
+---
+config:
+  flowchart:
+    nodeSpacing: 20
+    rankSpacing: 28
+    curve: step
+---
+swimlane-beta LR
+  subgraph baseline["unmodified pass"]
+    prompt["<b>prompt:</b> <i>The</i><br/><i>weather in</i><br/><i>California is</i>"]
+    early@{ shape: st-rect, label: "<b>earlier layers</b><br/>$$1\ldots\ell-1$$" }
+    clean(["<b>chosen state</b><br/>$$h_{\ell,t}\text{ at }(\ell,t)$$"])
+    late_b@{ shape: st-rect, label: "<b>later layers</b><br/>$$\ell+1\ldots L$$" }
+    out_b["<b>clean logits</b><br/>$$P(y\mid x)$$<br/>favours “hot”"]
+  end
 
-```mermaid
-flowchart LR
-  A[The weather in California is] --> B[earlier layers] --> D[edited activation] --> E[remaining layers] --> C[changed next-token distribution]
+  subgraph steered["steered pass"]
+    hook@{ shape: subproc, label: "<b>edited state</b><br/>$$h'_{\ell,t}=h_{\ell,t}+\alpha d_i$$" }
+    late_s@{ shape: st-rect, label: "<b>later layers</b><br/>$$\ell+1\ldots L$$" }
+    out_s["<b>next-token</b><br/>$$P(y\mid x;\alpha d_i)$$<br/>test “cold”"]
+  end
+
+  subgraph vector["steering vector"]
+    sae["<b>SAE decoder</b><br/>feature dir $$d_i$$"]
+    caa["<b>CAA vector</b><br/>$$\mathbb{E}[a(c_p)-a(c_n)]$$"]
+    scale@{ shape: hex, label: "<b>scale factor</b><br/>$$\alpha=s\cdot m_i$$<br/>offset $$\alpha d_i$$" }
+  end
+
+  prompt --> early
+  early --> clean --> late_b --> out_b
+  early -->|$$h_{\ell,t}$$| hook
+  sae --> scale
+  caa --> scale
+  scale -.->|$$+\alpha d_i$$| hook
+  hook ==> late_s ==> out_s
 ```
 
 “Cold” becoming more likely would be an experimental result to measure. Naming the direction “cold” does not establish that effect, and large edits can disrupt unrelated behaviour. [[thoughts/mechanistic interpretability#ablation|Ablation]] tests what happens when a component's contribution is removed or replaced.
