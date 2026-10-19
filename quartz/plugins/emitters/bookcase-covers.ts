@@ -24,7 +24,27 @@ const COVER_WIDTH = 320
 const CACHE_VERSION = 2
 const CACHE_DIR = joinSegments(QUARTZ, '.quartz-cache', 'bookcase-covers')
 
-type Cover = { key: string; color: string; data: Buffer; spine?: FullSlug }
+type SpineDetail = { url: FullSlug; width: number; height: number }
+type Cover = {
+  key: string
+  color: string
+  data: Buffer
+  spine?: FullSlug
+  spineDetail?: SpineDetail
+}
+
+interface Jacket {
+  poster: string
+  posterSha256: string
+  artwork: string
+  artworkSha256: string
+  detailArtwork?: string
+  detailArtworkSha256?: string
+  detailWidth?: number
+  detailHeight?: number
+}
+
+const jacketEntries: Jacket[] = jackets.entries
 
 const pending = new Map<string, Promise<Cover | null>>()
 let slugIndex: { source: FilePath[]; map: Map<string, FilePath> } | undefined
@@ -53,8 +73,9 @@ async function readCache(key: string): Promise<Cover | null> {
 
 async function processCover(file: string, relative: string): Promise<Cover | null> {
   const stat = await fs.stat(file)
-  const match = jackets.entries.find(entry => entry.poster === relative)
+  const match = jacketEntries.find(entry => entry.poster === relative)
   let spine: { url: FullSlug; data: Buffer } | undefined
+  let spineDetail: SpineDetail | undefined
   if (match) {
     const poster = await fs.readFile(file)
     if (createHash('sha256').update(poster).digest('hex') === match.posterSha256) {
@@ -66,8 +87,35 @@ async function processCover(file: string, relative: string): Promise<Cover | nul
         data &&
         createHash('sha256').update(data).digest('hex') === match.artworkSha256 &&
         isFullSlug(url)
-      )
+      ) {
         spine = { url, data }
+        if (match.detailArtwork && match.detailArtworkSha256) {
+          const detail = await fs
+            .readFile(joinSegments(QUARTZ, 'static', 'bookcase-spines', match.detailArtwork))
+            .catch(() => undefined)
+          const detailUrl = `static/bookcase-spines/${match.detailArtwork}`
+          if (
+            detail &&
+            createHash('sha256').update(detail).digest('hex') === match.detailArtworkSha256 &&
+            isFullSlug(detailUrl)
+          ) {
+            const metadata = await sharp(detail)
+              .metadata()
+              .catch(() => undefined)
+            const width = metadata?.width
+            const height = metadata?.height
+            if (
+              width &&
+              height &&
+              width <= 256 &&
+              height <= 1280 &&
+              width === match.detailWidth &&
+              height === match.detailHeight
+            )
+              spineDetail = { url: detailUrl, width, height }
+          }
+        }
+      }
     }
   }
   const key = createHash('sha1')
@@ -75,7 +123,8 @@ async function processCover(file: string, relative: string): Promise<Cover | nul
     .digest('hex')
     .slice(0, 16)
   const cached = await readCache(key)
-  if (cached) return { ...cached, spine: spine?.url }
+  // Detail is checked independently so replacing it neither re-encodes fronts nor reuses stale URLs.
+  if (cached) return { ...cached, spine: spine?.url, spineDetail }
 
   const sample = spine?.data ?? file
   const { width = 0, height = 0 } = await sharp(sample, { failOn: 'none' }).metadata()
@@ -97,7 +146,7 @@ async function processCover(file: string, relative: string): Promise<Cover | nul
     fs.writeFile(path.join(CACHE_DIR, `${key}.webp`), data),
     fs.writeFile(path.join(CACHE_DIR, `${key}.json`), JSON.stringify({ color })),
   ])
-  return { key, color, data, spine: spine?.url }
+  return { key, color, data, spine: spine?.url, spineDetail }
 }
 
 function coverFor(ctx: BuildCtx, slug: string): Promise<Cover | null> {
@@ -147,6 +196,16 @@ export async function emitBookcaseCovers(
     if (node.tagName === 'img') properties.src = url
     else properties.dataCover = url
     if (result.spine) properties.dataSpineArt = resolveRelative(slug, result.spine)
+    else delete properties.dataSpineArt
+    if (result.spineDetail) {
+      properties.dataSpineArtDetail = resolveRelative(slug, result.spineDetail.url)
+      properties.dataSpineArtDetailWidth = result.spineDetail.width
+      properties.dataSpineArtDetailHeight = result.spineDetail.height
+    } else {
+      delete properties.dataSpineArtDetail
+      delete properties.dataSpineArtDetailWidth
+      delete properties.dataSpineArtDetailHeight
+    }
     if (properties.dataSpineSampled !== undefined && typeof properties.style === 'string') {
       properties.style = properties.style.replace(
         /--spine:[^;]*;--spine-ink:[^;]*/,

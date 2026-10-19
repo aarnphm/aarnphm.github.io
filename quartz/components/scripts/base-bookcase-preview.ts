@@ -6,6 +6,9 @@ export interface HardcoverBook {
   title: string
   author: string
   spineArt?: string
+  spineArtDetail?: string
+  spineArtDetailWidth?: number
+  spineArtDetailHeight?: number
 }
 
 export function createHardcoverPreview(root: HTMLElement, signal: AbortSignal) {
@@ -76,6 +79,16 @@ export function createHardcoverPreview(root: HTMLElement, signal: AbortSignal) {
   let drag: { id: number; x: number; y: number; rx: number; ry: number } | undefined
   let frame = 0
   let revision = 0
+  let originalDecoder: HTMLImageElement | undefined
+  let spineDecoder: HTMLImageElement | undefined
+  let lowSpine: string | undefined
+  let detailSpine: string | undefined
+  const cancelDecoders = () => {
+    originalDecoder?.removeAttribute('src')
+    spineDecoder?.removeAttribute('src')
+    originalDecoder = undefined
+    spineDecoder = undefined
+  }
   let size = { width: 0, height: 0 }
   let availableSize = { width: 0, height: 0 }
   let motion: Animation[] = []
@@ -127,6 +140,23 @@ export function createHardcoverPreview(root: HTMLElement, signal: AbortSignal) {
     },
     { signal },
   )
+  const showLoadedSpine = () => {
+    if (!spineImage.complete || spineImage.naturalWidth === 0) return
+    spineImage.hidden = false
+    spineImage.dataset.spineResolution = spineImage.src === detailSpine ? 'detail' : 'low'
+    spine.dataset.artReady = ''
+  }
+  spineImage.addEventListener('load', showLoadedSpine, { signal })
+  spineImage.addEventListener(
+    'error',
+    () => {
+      spineImage.hidden = true
+      delete spine.dataset.artReady
+      delete spineImage.dataset.spineResolution
+      if (lowSpine && spineImage.src === detailSpine) spineImage.src = lowSpine
+    },
+    { signal },
+  )
   root.addEventListener(
     'pointerdown',
     event => {
@@ -174,6 +204,9 @@ export function createHardcoverPreview(root: HTMLElement, signal: AbortSignal) {
     () => {
       observer.disconnect()
       revision++
+      cancelDecoders()
+      image.removeAttribute('src')
+      spineImage.removeAttribute('src')
       cancelMotion()
       if (frame) cancelAnimationFrame(frame)
     },
@@ -183,7 +216,12 @@ export function createHardcoverPreview(root: HTMLElement, signal: AbortSignal) {
   return {
     async show(value: HardcoverBook): Promise<boolean> {
       const current = ++revision
+      cancelDecoders()
       cancelMotion()
+      lowSpine = value.spineArt
+      detailSpine = value.spineArtDetail
+        ? new URL(value.spineArtDetail, document.baseURI).href
+        : undefined
       const url = value.thumbnail ?? value.cover
       const sameCover = Boolean(url && image.getAttribute('src') === url)
       aspect = sameCover && image.naturalWidth > 0 ? image.naturalHeight / image.naturalWidth : 1.53
@@ -198,6 +236,7 @@ export function createHardcoverPreview(root: HTMLElement, signal: AbortSignal) {
       image.hidden = !loaded
       spineImage.hidden = true
       delete spine.dataset.artReady
+      delete spineImage.dataset.spineResolution
       if (value.spineArt) spineImage.src = value.spineArt
       else spineImage.removeAttribute('src')
       if (url) {
@@ -221,6 +260,7 @@ export function createHardcoverPreview(root: HTMLElement, signal: AbortSignal) {
         value.spineArt && spineImage.complete && spineImage.naturalWidth > 0,
       )
       spineImage.hidden = !spineAvailable
+      if (spineAvailable) spineImage.dataset.spineResolution = 'low'
       spine.toggleAttribute('data-art-ready', spineAvailable)
       const available = Boolean(url && image.complete && image.naturalWidth > 0)
       image.hidden = !available
@@ -232,12 +272,40 @@ export function createHardcoverPreview(root: HTMLElement, signal: AbortSignal) {
       paint()
       if (value.cover && value.cover !== url) {
         const original = new Image()
+        originalDecoder = original
         original.src = value.cover
         void original.decode().then(
           () => {
+            if (originalDecoder !== original) return
+            originalDecoder = undefined
             if (current === revision && !signal.aborted) image.src = original.src
+            original.removeAttribute('src')
           },
-          () => {},
+          () => {
+            if (originalDecoder === original) originalDecoder = undefined
+            original.removeAttribute('src')
+          },
+        )
+      }
+      if (value.spineArtDetail) {
+        const detail = new Image()
+        spineDecoder = detail
+        detail.decoding = 'async'
+        detail.src = value.spineArtDetail
+        void detail.decode().then(
+          () => {
+            if (spineDecoder !== detail) return
+            spineDecoder = undefined
+            if (current === revision && !signal.aborted) {
+              spineImage.src = detail.src
+              showLoadedSpine()
+            }
+            detail.removeAttribute('src')
+          },
+          () => {
+            if (spineDecoder === detail) spineDecoder = undefined
+            detail.removeAttribute('src')
+          },
         )
       }
       return true
@@ -272,9 +340,13 @@ export function createHardcoverPreview(root: HTMLElement, signal: AbortSignal) {
     },
     clear() {
       revision++
+      cancelDecoders()
       cancelMotion()
+      lowSpine = undefined
+      detailSpine = undefined
       image.removeAttribute('src')
       spineImage.removeAttribute('src')
+      delete spineImage.dataset.spineResolution
       delete spine.dataset.artReady
     },
   }

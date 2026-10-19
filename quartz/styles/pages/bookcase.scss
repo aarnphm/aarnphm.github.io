@@ -970,6 +970,11 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='bookca
     width: 100%;
     height: 100%;
     object-fit: fill;
+    content-visibility: visible;
+
+    &[hidden] {
+      display: none;
+    }
   }
 
   &[data-art-ready] > span {
