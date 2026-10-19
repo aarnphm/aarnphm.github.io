@@ -5,8 +5,25 @@ import { readingRoutes } from './reading-routes'
 
 type Point = { x: number; y: number }
 type Rect = { left: number; top: number; right: number; bottom: number }
-export type TrailId = 'main' | 'pines' | 'grove' | 'ridge' | 'meadow' | 'switchback'
-export const trailIds: TrailId[] = ['main', 'pines', 'grove', 'ridge', 'meadow', 'switchback']
+export type TrailId =
+  | 'main'
+  | 'pines'
+  | 'grove'
+  | 'ridge'
+  | 'meadow'
+  | 'switchback'
+  | 'brook'
+  | 'col'
+export const trailIds: TrailId[] = [
+  'main',
+  'pines',
+  'grove',
+  'ridge',
+  'meadow',
+  'switchback',
+  'brook',
+  'col',
+]
 
 function curvedPath(input: Point[], width: number, height: number, landscape?: Landscape) {
   const points = landscape ? followTerrain(input, landscape) : input
@@ -285,6 +302,37 @@ export function trailLayout(
         wander(0.79, 0.47),
         wander(0.61, 0.64),
         wander(0.76, 0.8),
+        end,
+      ],
+      width,
+      height,
+      landscape,
+    ),
+    // Two later routes draw their randomness after the six above, so those keep their shapes.
+    // The brook route swings out to the far right field before turning back to the camp.
+    brook: curvedPath(
+      [
+        start(0.33),
+        wander(0.37, 0.1),
+        wander(0.52, 0.28),
+        wander(0.7, 0.42),
+        wander(0.88, 0.6),
+        wander(0.72, 0.88),
+        end,
+      ],
+      width,
+      height,
+      landscape,
+    ),
+    // The col route crosses the whole meadow from the right-centre pass to the left field.
+    col: curvedPath(
+      [
+        start(0.68),
+        wander(0.66, 0.12),
+        wander(0.46, 0.3),
+        wander(0.24, 0.48),
+        wander(0.3, 0.72),
+        wander(0.5, 0.9),
         end,
       ],
       width,

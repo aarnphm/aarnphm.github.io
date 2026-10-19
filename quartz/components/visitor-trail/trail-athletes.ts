@@ -9,9 +9,9 @@ import { sceneMotionReady } from './scene-reveal'
 // Now and then an ultrarunner and a mountain biker come down off the mountain on the trails. The
 // runner runs one trail down to the camp, stops at the aid station, and runs back up another. The
 // biker descends one trail at speed and climbs back up another in a low gear. Between outings both
-// are away in the mountains. They give way to everyone: on a trail a runner or a rider passes
-// hikers, horses and cows on the far side, slowing to do it, and nobody steps aside for them, so
-// they publish no collision body. Runners leave shoe prints and the bike a tyre line, both on the
+// are away in the mountains. They give way to everyone: on a trail a runner or a rider swings out
+// round hikers, horses and cows with room to spare, braking until clear and stopping behind a
+// crowd, and nobody steps aside for them, so they publish no collision body. Runners leave shoe prints and the bike a tyre line, both on the
 // track layer, so the moss takes the damage. Weather keeps the biker home when the trails are wet,
 // snowed over or dark; only a storm keeps the runner in, who goes out at night with a headlamp.
 
@@ -234,22 +234,45 @@ export function mountTrailAthletes(scene: HTMLElement, host: HTMLElement, signal
     const tx = (ahead.x - here.x) / length
     const ty = (ahead.y - here.y) / length
     const scale = trailGroundScale(here.y, landscape)
-    // Anyone on the line ahead is passed on the side away from them, at half speed.
-    let lane = 0
-    let pace = leg.pace
+    // Anyone ahead is passed with room to spare. The look ahead is about a second at full pace, so
+    // a descending rider sees people in time to swing out. The lane is the offset from the trail,
+    // within the verge, that clears every body in reach and is nearest the current one; until the
+    // athlete is out in it they brake, down to a stop behind whoever they would hit.
+    const own = (athlete.kind === 'runner' ? 8 : 14) * scale
+    const look = (24 + leg.pace * 0.9) * scale
+    const verge = 60 * scale
+    const blocks: { along: number; across: number; clear: number }[] = []
     for (const body of bodies) {
       const rx = body.x - here.x
       const ry = body.y - here.y
       const along = rx * tx + ry * ty
       const across = tx * ry - ty * rx
-      const reach = body.radius + 10 * scale
-      if (along < -reach || along > reach + 40 * scale || Math.abs(across) > reach + 8 * scale)
-        continue
-      lane = (across > 0 ? -1 : 1) * Math.min(18, reach + 6 * scale)
-      pace = leg.pace * 0.5
+      const clear = body.radius + own + 4 * scale
+      if (along < -clear || along > clear + look || Math.abs(across) > clear + verge) continue
+      blocks.push({ along, across, clear })
+    }
+    const free = (offset: number) =>
+      Math.abs(offset) <= verge &&
+      blocks.every(block => Math.abs(offset - block.across) >= block.clear - 0.01)
+    const cost = (offset: number) => Math.abs(offset - athlete.lane) + Math.abs(offset) * 0.25
+    let lane: number | null = null
+    for (const offset of [0, ...blocks.flatMap(b => [b.across - b.clear, b.across + b.clear])])
+      if (free(offset) && (lane === null || cost(offset) < cost(lane))) lane = offset
+    let pace = leg.pace
+    if (blocks.length) {
+      // The gap to the first body on the athlete's current line.
+      let gap = Infinity
+      for (const block of blocks)
+        if (block.along > 0 && Math.abs(athlete.lane - block.across) < block.clear)
+          gap = Math.min(gap, block.along - block.clear)
+      pace =
+        gap === Infinity
+          ? leg.pace * 0.6
+          : leg.pace * Math.max(0, Math.min(0.4, (gap - 4 * scale) / look))
     }
     const seconds = delta / 1000
-    athlete.lane += Math.max(-30 * seconds, Math.min(30 * seconds, lane - athlete.lane))
+    const swing = 60 * scale * seconds
+    athlete.lane += Math.max(-swing, Math.min(swing, (lane ?? athlete.lane) - athlete.lane))
     athlete.distance += pace * scale * seconds
     if (athlete.distance >= leg.route.length) {
       if (athlete.leg === 0 && athlete.kind === 'runner') {
@@ -269,7 +292,7 @@ export function mountTrailAthletes(scene: HTMLElement, host: HTMLElement, signal
     // A pedal stroke or a stride per beat; a rider descending stands on level cranks.
     athlete.cadence += delta
     const beat = athlete.kind === 'runner' ? 170 : 260
-    if (athlete.phase === 'out' && athlete.cadence >= beat) {
+    if (athlete.phase === 'out' && pace > 0 && athlete.cadence >= beat) {
       athlete.cadence = 0
       if (athlete.kind === 'runner' || !leg.down) athlete.stride++
     }

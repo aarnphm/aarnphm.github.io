@@ -29,8 +29,8 @@ const since = (now: number, period: number, offset: number) =>
 
 // The open sky above the ranges, around the reading board: a starfield on clear nights, shooting
 // stars whenever the lighting is moonlit, clouds that drift downwind as thick as the forecast
-// cover, and a flock that crosses on fair mornings. Forecast rain and snow fall through it from the
-// homepage layer.
+// cover, and flocks that cross while the sun is up. Forecast rain and snow fall through it from
+// the homepage layer.
 export function skyBand(
   landscape: Landscape,
   seed: number,
@@ -112,23 +112,29 @@ export function skyBand(
     `<g class="trail-sky-clouds" data-overcast="${rain || snow ? 'true' : 'false'}">${cloudMarks.join('')}</g>`,
   )
 
-  // Birds fly the fair mornings, from first light until the sun is well up.
-  const hour = new Date(now).getHours()
-  if (!rain && !snow && hour >= 5 && hour < 11 && sunAltitude > -3) {
-    const period = 46
-    const y = Math.round(top + 20 + random() * Math.max(1, floor - top - 60))
-    const heading = random() < 0.5 ? -1 : 1
-    const birds = Array.from({ length: 3 + Math.floor(random() * 3) }, (_, index) => {
-      // A loose V: each bird behind and to one side of the one ahead.
-      const rank = Math.ceil(index / 2)
-      const side = index % 2 ? 1 : -1
-      const bx = -heading * rank * 12
-      const by = side * rank * 6 + Math.round(random() * 2) * 2
-      return `<g class="trail-sky-bird" transform="translate(${bx} ${by})" style="--trail-bird-delay:${(-random()).toFixed(2)}s"><g class="trail-sky-bird-up">${pixels(wings.up, { B: 'trail-sky-bird-body' }, 2)}</g><g class="trail-sky-bird-down">${pixels(wings.down, { B: 'trail-sky-bird-body' }, 2)}</g></g>`
-    }).join('')
-    marks.push(
-      `<g class="trail-sky-day"><g transform="translate(0 ${y})"><g class="trail-sky-flock" style="--trail-flock-from:${heading > 0 ? -60 : width + 60}px;--trail-flock-to:${heading > 0 ? width + 60 : -60}px;--trail-flock-period:${period}s;--trail-flock-delay:${since(now, period, 11)}">${birds}</g></g></g>`,
-    )
+  // Birds fly while the sun is up and the weather holds: one flock under cloud, two on a clear
+  // day, each a loose V of four to seven at its own height, pace and heading.
+  if (!rain && !snow && sunAltitude > -3) {
+    const flocks = clear > 0.5 ? 2 : 1
+    const span = Math.max(1, floor - top - 60)
+    const dayMarks: string[] = []
+    for (let flock = 0; flock < flocks; flock++) {
+      const period = flock ? 61 : 46
+      const y = Math.round(top + 20 + ((flock + random()) / flocks) * span)
+      const heading = random() < 0.5 ? -1 : 1
+      const birds = Array.from({ length: 4 + Math.floor(random() * 4) }, (_, index) => {
+        // A loose V: each bird behind and to one side of the one ahead.
+        const rank = Math.ceil(index / 2)
+        const side = index % 2 ? 1 : -1
+        const bx = -heading * rank * 12
+        const by = side * rank * 6 + Math.round(random() * 2) * 2
+        return `<g class="trail-sky-bird" transform="translate(${bx} ${by})" style="--trail-bird-delay:${(-random()).toFixed(2)}s"><g class="trail-sky-bird-up">${pixels(wings.up, { B: 'trail-sky-bird-body' }, 2)}</g><g class="trail-sky-bird-down">${pixels(wings.down, { B: 'trail-sky-bird-body' }, 2)}</g></g>`
+      }).join('')
+      dayMarks.push(
+        `<g transform="translate(0 ${y})"><g class="trail-sky-flock" style="--trail-flock-from:${heading > 0 ? -60 : width + 60}px;--trail-flock-to:${heading > 0 ? width + 60 : -60}px;--trail-flock-period:${period}s;--trail-flock-delay:${since(now, period, 11 + flock * 29)}">${birds}</g></g>`,
+      )
+    }
+    marks.push(`<g class="trail-sky-day">${dayMarks.join('')}</g>`)
   }
   return `<g class="trail-sky-band">${marks.join('')}</g>`
 }
