@@ -81,16 +81,16 @@ const ResidualStreamImpl: QuartzMdxComponent<Props> = ({ caption, markerId }) =>
           <rect class="rs-box rs-box-accent" x="145" y="84" width="80" height="32" />
           <MathFO x={145} y={84} w={80} h={32} tex="\text{unembed}" />
           <line
-            class="rs-line rs-line--dotted"
+            class="rs-line"
             x1="185"
-            y1="188"
+            y1="193"
             x2="185"
             y2="118"
             marker-end={`url(#${arrowId})`}
           />
           <MathFO x={200} y={138} w={40} h={20} tex="x_{-1}" align="start" cls="rs-fo--axis" />
 
-          <line class="rs-line" x1="185" y1="207" x2="185" y2="370" />
+          <line class="rs-line" x1="185" y1="207" x2="185" y2="373" />
           <path
             class="rs-line"
             d="M 185 305 L 115 305 Q 110 305 110 300 L 110 205 Q 110 200 115 200 L 178 200"
@@ -135,9 +135,9 @@ const ResidualStreamImpl: QuartzMdxComponent<Props> = ({ caption, markerId }) =>
 
           <MathFO x={200} y={530} w={40} h={20} tex="x_i" align="start" cls="rs-fo--axis" />
           <line
-            class="rs-line rs-line--dotted"
+            class="rs-line"
             x1="185"
-            y1="595"
+            y1="600"
             x2="185"
             y2="541"
             marker-end={`url(#${arrowId})`}
