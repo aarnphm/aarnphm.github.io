@@ -4,6 +4,9 @@ import { sceneSettings } from './scene-settings'
 import { anonymousVisitor } from './visitor-name'
 import { renderVisitorRegister, type VisitorVisit } from './visitor-register'
 
+const SETTLE_MS = 400
+const SETTLE_MAX_MS = 2000
+
 export function connectCampPresence(
   scene: HTMLElement,
   host: HTMLElement,
@@ -25,11 +28,25 @@ export function connectCampPresence(
   let pointer: { x: number; y: number; touch: boolean } | null = null
   let pointerTimer = 0
   let sentAt = -Infinity
+  // The room's peers arrive over a moment after joining, while the first render sees only this
+  // visitor, so the count would read 1 and then jump. It stays on the connecting dot until the
+  // presence stream has been quiet for SETTLE_MS, or for at most SETTLE_MAX_MS.
+  const joined = view.performance.now()
+  let settled = false
+  let settleTimer = 0
+  const settle = () => {
+    settleTimer = 0
+    settled = true
+    renderVisitors()
+  }
 
   const renderVisitors = () => {
     const visitors: TrailVisitor[] = []
     const now = Date.now()
     for (const [id, peer] of room.presence.getPresences()) {
+      // A peer whose identity has not arrived is keyed by its connection; it is counted once its
+      // identity folds it into the visitor it belongs to.
+      if (!peer.isMe && !peer.playerIdentity) continue
       const previous = activeVisitors.get(id)
       // PlayHTML expires stamped fields in background tabs before their socket identity leaves.
       if (peer.visiting !== true && !(peer.visiting === undefined && previous)) continue
@@ -73,13 +90,19 @@ export function connectCampPresence(
       .sort((a, b) => (b.left ?? 0) - (a.left ?? 0))
     for (const visit of departed.slice(16)) visits.splice(visits.indexOf(visit), 1)
     renderVisitorRegister(root, visits)
+    onVisitors(visitors.sort((a, b) => a.id.localeCompare(b.id)))
+    if (!settled) {
+      view.clearTimeout(settleTimer)
+      const left = SETTLE_MAX_MS - (view.performance.now() - joined)
+      settleTimer = view.setTimeout(settle, Math.max(0, Math.min(SETTLE_MS, left)))
+      return
+    }
     count.textContent = String(visitors.length)
     count.dataset.state = 'ready'
     count.setAttribute(
       'aria-label',
       `${visitors.length} ${visitors.length === 1 ? 'visitor' : 'visitors'} here`,
     )
-    onVisitors(visitors.sort((a, b) => a.id.localeCompare(b.id)))
   }
   const renderPointers = () => {
     const shown = new Set<string>()
@@ -195,6 +218,7 @@ export function connectCampPresence(
     'abort',
     () => {
       clear()
+      view.clearTimeout(settleTimer)
       view.clearInterval(membershipTimer)
       unsubscribeVisitors()
       unsubscribeCamp()
