@@ -6,14 +6,12 @@ $base-control-height: 2.125rem;
   margin: 1rem 0;
   grid-column: var(--layout-search-column);
 
+  // The frame colour and the focus border come from baseQuery.scss with the rest of the row.
   #base-search-bar {
     box-sizing: border-box;
     height: $base-control-height;
-    border-color: var(--lightgray);
 
-    // the border is the focus ring: one rectangle, no outline drawn around it
     &:focus-within {
-      border-color: var(--secondary);
       outline: none;
     }
   }
@@ -45,9 +43,11 @@ $base-control-height: 2.125rem;
         height: $base-control-height;
         gap: 0.375rem;
         margin: 0;
-        padding: 0.375rem 0.75rem;
+        padding: 0 0.75rem;
         background: var(--light);
-        border: 1px solid var(--lightgray);
+        // The same line as the search field and the filter/sort pair beside it; the border
+        // never changes colour, so the three frames stay one weight in both themes.
+        border: 1px solid var(--base-query-line);
         border-radius: var(--radius-none);
         color: var(--darkgray);
         font-family: inherit;
@@ -59,19 +59,18 @@ $base-control-height: 2.125rem;
 
         @media (hover: hover) and (pointer: fine) {
           &:hover {
-            background: var(--highlight);
-            border-color: var(--gray);
+            background: var(--base-query-surface);
           }
         }
 
         &:focus-visible {
-          outline: 2px solid var(--secondary);
+          outline: 2px solid var(--dark);
           outline-offset: 2px;
         }
 
+        // Open menu: the selected ground, as the filter and sort tabs show their open panel.
         &.has-active-menu {
-          border-color: var(--secondary);
-          background: var(--highlight);
+          background: var(--base-query-selected);
         }
 
         .text-button-icon {
