@@ -101,10 +101,6 @@
     stroke: var(--rs-stroke);
     stroke-width: 1.2;
     fill: none;
-
-    &.rs-line--dotted {
-      stroke: var(--fig-stroke-soft);
-    }
   }
 
   .rs-arrowhead {
@@ -173,9 +169,12 @@
   color: var(--rs-note-fg);
 }
 
+// A square bracket that closes the attention and MLP rows on the right.
 .rs-bracket-line {
   width: 8px;
   align-self: stretch;
+  border: 1px solid var(--rs-stroke);
+  border-inline-start: 0;
 }
 
 .rs-bracket-label {
