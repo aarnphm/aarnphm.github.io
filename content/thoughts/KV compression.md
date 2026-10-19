@@ -64,7 +64,15 @@ Ablate attentions among layers that deemed to be less valuable to current genera
 
 https://arxiv.org/abs/2406.02069
 
-![[thoughts/images/pyramid-kv.webp]]
+```jsx imports={Zoomable,KVBudgetAllocation}
+<Zoomable label="KV budget allocation, PyramidKV">
+  <KVBudgetAllocation
+    policy="pyramidkv"
+    budget={4}
+    caption="Synthetic window votes for $L=4$ layers, $H=3$ heads and 16 prefix tokens, shaped after the funnel PyramidKV reports: near-uniform attention in low layers, a few dominant tokens in high layers, and one dispersed head per layer. Mark size is a token's vote share $C$; sage cells are kept, salmon columns are the observation window, which votes and is always kept. Mass is the vote share a head retains. SnapKV's pooling step is omitted. Switch the policy at a fixed budget to compare where each one spends it."
+  />
+</Zoomable>
+```
 
 ## Snap-KV
 
@@ -107,7 +115,15 @@ ideas: instead of uniform eviction for KV cache hit, allocate a certain budget $
 
 _built on-top of PyramidKV and SnapKV_
 
-![[thoughts/images/vllm/ada-kv.webp]]
+```jsx imports={Zoomable,KVBudgetAllocation}
+<Zoomable label="KV budget allocation, Ada-SnapKV">
+  <KVBudgetAllocation
+    policy="adakv"
+    budget={4}
+    caption="Synthetic window votes for $L=4$ layers, $H=3$ heads and 16 prefix tokens, shaped after the funnel PyramidKV reports: near-uniform attention in low layers, a few dominant tokens in high layers, and one dispersed head per layer. Mark size is a token's vote share $C$; sage cells are kept, salmon columns are the observation window, which votes and is always kept. Mass is the vote share a head retains. SnapKV's pooling step is omitted. Switch the policy at a fixed budget to compare where each one spends it."
+  />
+</Zoomable>
+```
 
 > [!note]
 >
