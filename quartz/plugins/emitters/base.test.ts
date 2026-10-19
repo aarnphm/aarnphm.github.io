@@ -175,3 +175,119 @@ test('base view partial emit rebuilds when a linked non-member changes', () => {
 
   assert.deepEqual(rebuiltSlugs(plan), ['library'])
 })
+
+test('createBaseQueryData compacts empty arrays, default filePath/pageLayout, and pdfTitles while round-tripping via readBaseQueryData', async () => {
+  const { createBaseQueryData, readBaseQueryData } = await import('../../util/base/browser-data')
+  const book = note('library/book', 'library/book.md')[1].data
+  book.frontmatter = {
+    title: 'Book Title',
+    pageLayout: 'default',
+    author: 'Ada Lovelace',
+    pdfTitles: { 'folder/paper.pdf': 'Internal PDF Title' },
+  }
+  const payload = createBaseQueryData([book])
+  assert.equal(payload.files.length, 1)
+  const rawRecord = payload.files[0] as unknown as Record<string, unknown>
+  assert.equal(rawRecord.filePath, undefined)
+  assert.equal(rawRecord.datePaths, undefined)
+  assert.equal(rawRecord.links, undefined)
+  assert.equal(rawRecord.embeds, undefined)
+  assert.equal((rawRecord.frontmatter as Record<string, unknown>).pageLayout, undefined)
+  assert.equal((rawRecord.frontmatter as Record<string, unknown>).pdfTitles, undefined)
+
+  const hydrated = readBaseQueryData(JSON.parse(JSON.stringify(payload)))
+  assert.equal(hydrated.length, 1)
+  assert.equal(hydrated[0].slug, 'library/book')
+  assert.equal(hydrated[0].filePath, 'library/book.md')
+  assert.equal(hydrated[0].frontmatter?.title, 'Book Title')
+  assert.equal(hydrated[0].frontmatter?.pageLayout, 'default')
+  assert.equal(hydrated[0].frontmatter?.author, 'Ada Lovelace')
+  assert.deepEqual(hydrated[0].links, [])
+  assert.deepEqual(hydrated[0].embeds, [])
+})
+
+test('createBaseQueryCatalog excludes nested dictionary bloat and this.file.* from sort properties while keeping top-level and configured properties', async () => {
+  const { createBaseQueryCatalog } = await import('../../components/scripts/base-query-editor')
+  const compiled = compileBaseConfig(
+    `
+formulas:
+  age_years: 2026 - number(year)
+properties:
+  note.custom.nested:
+    displayName: Custom Nested
+views:
+  - type: table
+    name: all
+`,
+    'library.base',
+  )
+  const book = note('library/book', 'library/book.md')[1].data
+  book.frontmatter = {
+    title: 'Book Title',
+    pageLayout: 'default',
+    author: 'Ada Lovelace',
+    year: 1843,
+    pdfTitles: { 'folder/scan.pdf': 'Scan Title' },
+    socials: { twitter: 'https://x.com/ada' },
+  }
+  const catalog = createBaseQueryCatalog([book], compiled.config)
+  assert.ok(catalog.properties.includes('note.author'))
+  assert.ok(catalog.properties.includes('note.year'))
+  assert.ok(catalog.properties.includes('formula.age_years'))
+  assert.ok(catalog.properties.includes('note.custom.nested'))
+  assert.ok(catalog.properties.includes('file.name'))
+  assert.ok(!catalog.properties.some(prop => prop.startsWith('note.pdfTitles')))
+  assert.ok(!catalog.properties.some(prop => prop.startsWith('note.socials.')))
+  assert.ok(!catalog.properties.some(prop => prop.startsWith('this.')))
+})
+
+test('renderBaseViewsForFile marks card images for thumbnail generation and omits empty table cell wrappers', async () => {
+  const { renderBaseViewsForFile } = await import('../../util/base/render')
+  const { toHtml } = await import('hast-util-to-html')
+  const compiled = compileBaseConfig(
+    `
+filters:
+  and:
+    - file.inFolder("library")
+views:
+  - type: cards
+    name: gallery
+    image: note.posters
+    order:
+      - title
+      - author
+  - type: table
+    name: editors
+    order:
+      - title
+      - author
+      - missing_col
+      - read_flag
+`,
+    'library.base',
+  )
+  const baseData = defaultProcessedContent({
+    slug: 'library' as FullSlug,
+    filePath: 'library.base' as FilePath,
+    relativePath: 'library.base' as FilePath,
+    bases: true,
+    basesConfig: compiled.config,
+    basesDiagnostics: compiled.diagnostics,
+    basesExpressions: compiled.expressions,
+  })[1].data
+  const book = note('library/book', 'library/book.md')[1].data
+  book.frontmatter = {
+    title: 'Book Title',
+    pageLayout: 'default',
+    author: 'Ada Lovelace',
+    posters: '[[library/posters/book.jpg]]',
+    read_flag: true,
+  }
+  const rendered = renderBaseViewsForFile(baseData, [book], baseData)
+  const galleryHtml = toHtml(rendered.views[0].tree)
+  assert.match(galleryHtml, /data-bookcase-cover="library\/posters\/book\.jpg"/)
+
+  const tableHtml = toHtml(rendered.views[1].tree)
+  assert.match(tableHtml, /<td><\/td>/)
+  assert.doesNotMatch(tableHtml, /<div class="base-table-cell-content"><\/div>/)
+})

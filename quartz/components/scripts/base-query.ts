@@ -549,10 +549,23 @@ export async function mountBaseQuery(
       }
       const previous = document.querySelector<HTMLElement>('.main-col > .base-view')
       if (!previous) throw new Error('The current base view is unavailable.')
+      const coverThumbs = new Map<string, string>()
+      for (const img of previous.querySelectorAll<HTMLImageElement>('img[data-bookcase-cover]')) {
+        const key = img.dataset.bookcaseCover
+        const src = img.getAttribute('src')
+        if (key && src) coverThumbs.set(key, src)
+      }
       const fragment = document.createElement('template')
       fragment.innerHTML = sanitize(result.html)
       const next = fragment.content.querySelector<HTMLElement>('.base-view')
       if (!next) throw new Error('The query did not produce a view.')
+      if (coverThumbs.size > 0) {
+        for (const img of next.querySelectorAll<HTMLImageElement>('img[data-bookcase-cover]')) {
+          const key = img.dataset.bookcaseCover
+          const thumb = key ? coverThumbs.get(key) : undefined
+          if (thumb) img.setAttribute('src', thumb)
+        }
+      }
       cleanupHydratedRoot(previous)
       const diagnostics = previous.previousElementSibling
       if (diagnostics?.classList.contains('base-diagnostics')) diagnostics.remove()

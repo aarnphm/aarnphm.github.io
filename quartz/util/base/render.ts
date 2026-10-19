@@ -364,6 +364,7 @@ function renderBooleanCheckbox(value: boolean): RenderElement {
 
 function wrapTableCellContent(content: RenderNode | RenderNode[]): RenderElement {
   const nodes = Array.isArray(content) ? content : [content]
+  if (nodes.length === 0 || (nodes.length === 1 && nodes[0] === '')) return h('td', {})
   return h('td', {}, [h('div.base-table-cell-content', nodes)])
 }
 
@@ -472,11 +473,11 @@ function buildTableCell(
   if (column === 'file.backlinks' || column === 'file.inlinks') {
     const backlinks = resolveValueWithFormulas(file, column, getContext, getPropertyExpr)
     if (!Array.isArray(backlinks) || backlinks.length === 0) {
-      return wrapTableCellContent('')
+      return h('td', {})
     }
     const entries = backlinks.filter((entry): entry is string => typeof entry === 'string')
     if (entries.length === 0) {
-      return wrapTableCellContent('')
+      return h('td', {})
     }
     const nodes = renderBacklinkNodes(entries, currentSlug, allFiles)
     return wrapTableCellContent(nodes)
@@ -492,14 +493,12 @@ function buildTableCell(
   const value = resolveValueWithFormulas(file, column, getContext, getPropertyExpr)
 
   if (value === undefined || value === null) {
-    return wrapTableCellContent('')
+    return h('td', {})
   }
 
   if (isIconToken(value)) {
     const cleaned = value.value.trim()
-    return cleaned.length > 0
-      ? wrapTableCellContent(renderIconNode(cleaned))
-      : wrapTableCellContent('')
+    return cleaned.length > 0 ? h('td', {}, [renderIconNode(cleaned)]) : h('td', {})
   }
 
   if (Array.isArray(value)) {
@@ -532,7 +531,7 @@ function buildTableCell(
   }
 
   if (typeof value === 'boolean') {
-    return wrapTableCellContent(renderBooleanCheckbox(value))
+    return h('td', {}, [renderBooleanCheckbox(value)])
   }
 
   return wrapTableCellContent(String(value))
@@ -1096,10 +1095,6 @@ function resolveCardImage(
   return { url: resolveRelative(currentSlug, slug), slug }
 }
 
-function resolveCardImageUrl(imageValue: unknown, currentSlug: FullSlug): string | undefined {
-  return resolveCardImage(imageValue, currentSlug)?.url
-}
-
 function buildCards(
   files: QuartzPluginData[],
   view: BaseView,
@@ -1129,7 +1124,7 @@ function buildCards(
     const imageValue = imageField
       ? resolveValueWithFormulas(file, imageField, getContext, getPropertyExpr)
       : undefined
-    const imageUrl = resolveCardImageUrl(imageValue, currentSlug)
+    const image = resolveCardImage(imageValue, currentSlug)
 
     const metadataItems: RenderElement[] = []
     const metadataFields = (isKanban ? order.slice(1) : order).filter(
@@ -1154,10 +1149,17 @@ function buildCards(
     }
 
     const cardChildren: RenderElement[] = []
-    if (imageUrl) {
+    if (image) {
       cardChildren.push(
         h('a.base-card-image-link', { href, 'data-slug': slug, 'aria-label': title }, [
-          h('img.base-card-image', { src: imageUrl, alt: '', loading: 'lazy', decoding: 'async' }),
+          h('img.base-card-image', {
+            src: image.url,
+            'data-bookcase-cover': image.slug,
+            'data-full-cover': image.slug ? image.url : undefined,
+            alt: '',
+            loading: 'lazy',
+            decoding: 'async',
+          }),
         ]),
       )
     }

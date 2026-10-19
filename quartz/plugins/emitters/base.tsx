@@ -46,11 +46,12 @@ async function emitBaseView(
   layout: FullPageLayout,
   renderedView: BaseViewRender,
   semanticManifest: string | undefined,
+  queryDocument: ReturnType<typeof createBaseQueryDocument>,
 ): Promise<FilePath> {
   const { baseData, rendered } = plan
   const slug = renderedView.slug
   const fileData: QuartzPluginData = { ...baseData }
-  fileData.basesQueryDocument = createBaseQueryDocument(baseData)
+  fileData.basesQueryDocument = queryDocument
   fileData.slug = slug
   fileData.htmlAst = renderedView.tree
   if (semanticManifest) fileData.basesSemantic = { manifest: semanticManifest }
@@ -127,6 +128,7 @@ async function emitBaseViewsForPlan(
   resources: StaticResources,
   layout: FullPageLayout,
 ): Promise<FilePath[]> {
+  const queryDocument = createBaseQueryDocument(plan.baseData)
   const [semanticManifest, covers] = await Promise.all([
     baseSemanticManifest(ctx, baseSlug),
     emitBookcaseCovers(ctx, plan.rendered.views),
@@ -142,6 +144,7 @@ async function emitBaseViewsForPlan(
         layout,
         renderedView,
         semanticManifest,
+        queryDocument,
       ),
     ),
     write({
@@ -178,12 +181,6 @@ export const BasePage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts =
       return [Head, ...header, ...beforeBody, pageBody, ...afterBody, ...sidebar, Footer]
     },
     async *partialEmit(ctx, content, resources, changeEvents) {
-      yield await write({
-        ctx,
-        slug: BASE_QUERY_DATA_SLUG,
-        ext: '.json',
-        content: JSON.stringify(createBaseQueryData(content.map(([, file]) => file.data))),
-      })
       const plan = planBaseViewPartialEmit(content, changeEvents, partialState)
       partialState = plan.nextState
       const embeddingExports = new Map<FullSlug, ReadonlySet<string>>()
@@ -204,7 +201,15 @@ export const BasePage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts =
       }
       if (plan.slugsToRebuild.size === 0 && embeddingExports.size === 0) return
 
-      const allFiles = embeddingExports.size > 0 ? content.map(([, file]) => file.data) : []
+      const allFiles = content.map(([, file]) => file.data)
+      if (plan.slugsToRebuild.size > 0) {
+        yield await write({
+          ctx,
+          slug: BASE_QUERY_DATA_SLUG,
+          ext: '.json',
+          content: JSON.stringify(createBaseQueryData(allFiles)),
+        })
+      }
       const [files, embeddingFiles] = await Promise.all([
         mapConcurrent(
           [...plan.basePlans].filter(([slug]) => plan.slugsToRebuild.has(slug)),
