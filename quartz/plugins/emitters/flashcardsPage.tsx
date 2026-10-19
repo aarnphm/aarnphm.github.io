@@ -6,6 +6,7 @@ import HeaderConstructor from '../../components/Header'
 import { pageResources, renderPage } from '../../components/renderPage'
 import { QuartzComponentProps } from '../../types/component'
 import { QuartzEmitterPlugin } from '../../types/plugin'
+import { defaultIoConcurrency, mapConcurrent } from '../../util/async-pool'
 import { BuildCtx, contentDataFor } from '../../util/ctx'
 import { flashcardsSlug } from '../../util/flashcards-path'
 import { FullSlug, pathToRoot } from '../../util/path'
@@ -61,11 +62,10 @@ export const FlashcardsPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = user
     },
     async *emit(ctx, content, resources) {
       const allFiles = contentDataFor(content)
-
-      for (const [tree, file] of content) {
-        if (!file.data.flashcards) continue
-        yield processFlashcards(ctx, tree, file.data, allFiles, opts, resources)
-      }
+      const targets = content.filter(([, file]) => Boolean(file.data.flashcards))
+      yield* await mapConcurrent(targets, defaultIoConcurrency, ([tree, file]) =>
+        processFlashcards(ctx, tree, file.data, allFiles, opts, resources),
+      )
     },
     async *partialEmit(ctx, content, resources, changeEvents) {
       const allFiles = contentDataFor(content)
@@ -78,11 +78,12 @@ export const FlashcardsPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = user
         }
       }
 
-      for (const [tree, file] of content) {
-        if (!file.data.flashcards) continue
-        if (!changedSlugs.has(file.data.slug!)) continue
-        yield processFlashcards(ctx, tree, file.data, allFiles, opts, resources)
-      }
+      const targets = content.filter(
+        ([, file]) => Boolean(file.data.flashcards) && changedSlugs.has(file.data.slug!),
+      )
+      yield* await mapConcurrent(targets, defaultIoConcurrency, ([tree, file]) =>
+        processFlashcards(ctx, tree, file.data, allFiles, opts, resources),
+      )
     },
   }
 }

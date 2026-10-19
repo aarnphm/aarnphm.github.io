@@ -163,7 +163,7 @@ async function processChannel(
   }
   const assetBase = arenaChannelAssets(channel.slug)
   const sections = arenaChannelSections(channel)
-  const ordered = [...sections.pinned, ...sections.later, ...sections.blocks]
+  const { ordered } = sections
   const renderBlock = createArenaChannelRenderer(componentData, channel)
   const modalFiles = await mapConcurrent(ordered, defaultIoConcurrency, (block, index) =>
     write({
@@ -176,6 +176,7 @@ async function processChannel(
   files.push(...modalFiles)
 
   const sectionNames: ArenaSectionName[] = ['pinned', 'later', 'blocks']
+  const cardPageWrites: Promise<FilePath>[] = []
   let startIndex = 0
   for (const name of sectionNames) {
     const blocks = sections[name]
@@ -185,8 +186,8 @@ async function processChannel(
         .slice(offset, loaded)
         .map((block, index) => render(renderBlock(block, startIndex + offset + index)))
         .join('')
-      files.push(
-        await write({
+      cardPageWrites.push(
+        write({
           ctx,
           slug: arenaCardPageSource(assetBase, name, offset).slice(1),
           ext: '',
@@ -196,6 +197,7 @@ async function processChannel(
     }
     startIndex += blocks.length
   }
+  files.push(...(await Promise.all(cardPageWrites)))
 
   const searchIndex: ArenaSearchIndex = {
     version: '1.0.0',
@@ -431,12 +433,14 @@ async function processChannelOutputs(
   entryOpts: FullPageLayout,
   resources: StaticResources,
 ): Promise<FilePath[]> {
-  const files = await processChannel(ctx, channel, baseFileData, allFiles, opts, resources)
-  files.push(...(await processEntries(ctx, channel, baseFileData, allFiles, entryOpts, resources)))
-  if (isArenaChannelJsonEnabled(channel)) {
-    files.push(await processChannelJson(ctx, channel))
-  }
-  return files
+  const [channelFiles, entryFiles, jsonFile] = await Promise.all([
+    processChannel(ctx, channel, baseFileData, allFiles, opts, resources),
+    processEntries(ctx, channel, baseFileData, allFiles, entryOpts, resources),
+    isArenaChannelJsonEnabled(channel)
+      ? processChannelJson(ctx, channel)
+      : Promise.resolve(undefined),
+  ])
+  return jsonFile ? [...channelFiles, ...entryFiles, jsonFile] : [...channelFiles, ...entryFiles]
 }
 
 async function processChangedChannelOutputs(

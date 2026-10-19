@@ -90,10 +90,13 @@ export const CreatedModifiedDate: QuartzTransformerPlugin<Partial<Options>> = us
               }
             }
 
+            const createdDate = coerceDate(fp, created)
+            const modifiedDate = modified !== undefined ? coerceDate(fp, modified) : createdDate
+            const publishedDate = published !== undefined ? coerceDate(fp, published) : createdDate
             file.data.dates = {
-              created: coerceDate(fp, created),
-              modified: coerceDate(fp, modified),
-              published: coerceDate(fp, published),
+              created: createdDate,
+              modified: modifiedDate,
+              published: publishedDate,
             }
           }
         },
