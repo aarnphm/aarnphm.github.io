@@ -150,7 +150,14 @@ Motivation:
 - _group-query-compression_: compress KV-cache of [[thoughts/GQA|GQA]] without repeating it into the dimension of $\sum$ query heads.
 - Modified `PagedAttention` that compute _against_ KV-cache (contains variable numbers of KVs per head)
 
-![[thoughts/images/vllm/kv-compress-vllm.webp]]
+```jsx imports={Zoomable,KVCompressBlocks}
+<Zoomable label="vLLM and KV-Compress block layout">
+  <KVCompressBlocks
+    view="vllm"
+    caption="Block layout after the KV-Compress paper's figure, for one sequence with $l = 2$ layers, $H = 2$ KV heads and block size $2$. Layer 0 holds the head lengths of the eviction example ($5$ and $2$ KVs); layer 1 ($3$ and $4$) and the physical block ids are illustrative. In vLLM one block id names the same slots in every layer and head, so one block table and one context length serve the sequence and every head keeps the longest head's blocks. In KV-Compress each block holds one head of one layer, and block tables and context lengths expand to $l \times H$ rows. Salmon is logical block 0 of layer 0, head 0 in each layout. Switch the tabs to compare, or step through the eviction."
+  />
+</Zoomable>
+```
 
 > For vLLM, each cache block stores KV for every attention head of every layer
 >
@@ -170,7 +177,14 @@ KV compression algorithm doesn't have GQA design in mind.
 
 idea: adapt PagedAttention to page out cache on a _per-head, per-layer–as well as per sequence–basis_
 
-![[thoughts/images/vllm/paged-attention-block-kv-compress.webp]]
+```jsx imports={Zoomable,KVCompressBlocks}
+<Zoomable label="KV-Compress block eviction">
+  <KVCompressBlocks
+    view="evict"
+    caption="The ten eviction steps of the KV-Compress paper's figure, on its example: two KV heads, block size $2$, one sequence that must evict $E = 2$ blocks. Metrics and logical indices are values read from the KV-Compress paper figure; physical ids are illustrative. The empty slot counts as metric $0$ and a block's metric is its largest entry. Salmon KVs are marked for eviction, sage blocks are freed, and an outline marks the block metric (step 4) or the moved KV and its old slot (step 8). Step through with next and prev or pick a step."
+  />
+</Zoomable>
+```
 
 > [!note]- explanation
 >

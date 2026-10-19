@@ -177,7 +177,14 @@ $$
 
 ### all-reduce
 
-![[thoughts/images/all-reduce-meta.webp]]
+```jsx imports={Zoomable,AllReduceSteps}
+<Zoomable label="Ring all-reduce">
+  <AllReduceSteps
+    gpus={4}
+    caption="Ring all-reduce as reduce-scatter then all-gather, after Meta's figure. Columns are GPUs A to D in a ring $A \to B \to C \to D \to A$; rows are the $N$ chunks of each GPU's buffer of size $S$, and a cell lists whose data it sums. In reduce-scatter step $t$, GPU $i$ sends its partial of chunk $(i - t) \bmod N$ to GPU $i + 1$, which adds its own; after $N - 1$ steps GPU $i$ holds the full sum $\Sigma$ of chunk $i$. All-gather forwards the full chunks for $N - 1$ more steps. Salmon cells were received this step, outlined cells were sent, sage cells hold $\Sigma$. Each GPU sends $S/N$ per step, $2(N-1)/N \cdot S$ in total. Step through, or change $N$."
+  />
+</Zoomable>
+```
 
 - naively, send device shard, reduce received shard
 - can be done in tree, ring
