@@ -21,7 +21,7 @@ import { scrubDist } from '../../../util/triathlon-card'
 import { speedKph } from '../../../util/triathlon-card'
 import { triText } from '../../../util/triathlon-i18n'
 import { isRecord } from '../../../util/type-guards'
-import { el } from '../runtime/dom'
+import { el, setText } from '../runtime/dom'
 import { mountWorkoutLapHover } from './workout-lap-hover'
 
 export type ScrubSurface = {
@@ -331,8 +331,8 @@ export const linkActivityAnalysis = (
       const readoutLabel = readout.querySelector<HTMLElement>('.tri-analysis-readout-label')
       const readoutMetrics = readout.querySelector<HTMLElement>('.tri-analysis-readout-metrics')
       if (range) {
-        if (readoutLabel) readoutLabel.textContent = label
-        if (readoutMetrics) readoutMetrics.textContent = rangeReadoutMetrics(range).join(' · ')
+        if (readoutLabel) setText(readoutLabel, label)
+        if (readoutMetrics) setText(readoutMetrics, rangeReadoutMetrics(range).join(' · '))
       }
       readout.dataset.visible = String(range != null)
       readout.setAttribute('aria-hidden', String(range == null))
@@ -642,7 +642,7 @@ export const linkScrub = (
           linked.svgEl.setAttribute('aria-valuetext', linked.fmt(linkedIndex))
         }
         if (rangeController?.hasLocked() || drag?.range || linked === surf)
-          linked.readout.textContent = linked.fmt(linkedIndex)
+          setText(linked.readout, linked.fmt(linkedIndex))
       }
       if (runWalkCursor && runWalkDomain) {
         const x = activityScrubCursorX(sample, runWalkDomain).toFixed(4)
