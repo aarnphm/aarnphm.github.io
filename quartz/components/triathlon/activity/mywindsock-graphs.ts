@@ -12,7 +12,7 @@ import {
 } from '../../../util/mywindsock-graphs'
 import { triText } from '../../../util/triathlon-i18n'
 import { buildSelect, type Select } from '../../controls/select'
-import { applyI18n, el, svg } from '../runtime/dom'
+import { applyI18n, el, setText, svg } from '../runtime/dom'
 import { WIND_TRACE_COLORS } from './trace-colors'
 
 export async function loadMyWindsockGraphs(
@@ -356,13 +356,23 @@ const renderCartesian = (
   const cursor = svg('line', { x1: 0, x2: 0, y1: 0, y2: 100, class: 'tri-workspace-cursor' })
   graph.append(cursor)
   let fraction = 0
+  // The readout doubles as the legend: colour key, series name, then the value under the cursor.
+  // Its nodes are built once and rewritten in place, so a pointer move adds and removes no nodes.
+  const items = series.map(line => {
+    const item = el('span', 'tri-workspace-current-value')
+    item.style.setProperty('--trace-color', color(line.id))
+    const label = el('span', 'tri-mywindsock-legend-label')
+    const value = document.createTextNode('')
+    item.append(label, value)
+    return { item, label, value }
+  })
+  values.replaceChildren(...items.map(entry => entry.item))
   const show = (next: number): void => {
     fraction = Math.max(0, Math.min(1, next))
     const at = xLow + fraction * (xHigh - xLow)
     const descriptions = [`${text(plot.xLabel)} ${formatX(at)}`]
-    location.textContent = `${text(plot.xLabel).toLocaleLowerCase()} ${formatX(at)}`
-    values.replaceChildren()
-    for (const line of series) {
+    setText(location, `${text(plot.xLabel).toLocaleLowerCase()} ${formatX(at)}`)
+    for (const [index, line] of series.entries()) {
       let nearest: MyWindsockGraphSeries['points'][number] | undefined =
         line.step === 'after' || line.step === 'before' ? undefined : line.points[0]
       for (const point of line.points)
@@ -388,14 +398,11 @@ const renderCartesian = (
             ? `${number(nearest.y, precision)}–${number(nearest.upper, precision)}`
             : number(nearest.y, precision)
       const description = `${text(line.label)} ${formatted}`
-      // The readout doubles as the legend: colour key, series name, then the value under the cursor.
-      const item = el('span', 'tri-workspace-current-value', undefined, {
-        title: description,
-        'aria-label': description,
-      })
-      item.style.setProperty('--trace-color', color(line.id))
-      item.append(el('span', 'tri-mywindsock-legend-label', text(line.label)), formatted)
-      values.append(item)
+      const { item, label, value } = items[index]
+      item.title = description
+      item.setAttribute('aria-label', description)
+      setText(label, text(line.label))
+      if (value.data !== formatted) value.data = formatted
       descriptions.push(description)
     }
     graph.setAttribute('aria-valuenow', String(Math.round(fraction * 100)))
@@ -403,9 +410,17 @@ const renderCartesian = (
     cursor.setAttribute('x1', String(fraction * 100))
     cursor.setAttribute('x2', String(fraction * 100))
   }
+  let pendingX: number | null = null
   graph.addEventListener('pointermove', event => {
-    const bounds = graph.getBoundingClientRect()
-    show((event.clientX - bounds.left) / bounds.width)
+    if (pendingX == null)
+      requestAnimationFrame(() => {
+        const clientX = pendingX
+        pendingX = null
+        if (clientX == null || !graph.isConnected) return
+        const bounds = graph.getBoundingClientRect()
+        if (bounds.width > 0) show((clientX - bounds.left) / bounds.width)
+      })
+    pendingX = event.clientX
   })
   graph.addEventListener('keydown', event => {
     if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return
