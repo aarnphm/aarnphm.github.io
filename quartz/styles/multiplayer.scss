@@ -1,115 +1,273 @@
-@use 'sass:list';
-@use 'sass:meta';
-@use 'sass:string';
-@use 'sass:math';
 @use './variables.scss' as *;
 
-$primary-blue: #0d99ff;
-$hover-blue: #007be5;
-$active-blue: #0768cf;
 $comment-highlight: rgba(255, 220, 100, 0.3);
 $selection-highlight: rgba(255, 220, 100, 0.5);
-$bubble-size: 32px;
-$bubble-margin: 6px;
-$bubble-padding: 8px;
-$button-size: 1.5rem;
-$transition-fast: 0.15s;
-$transition-std: 0.2s;
-$modal-width: 360px;
-$space-2xs: 4px;
-$space-xs: 8px;
-$space-sm: 12px;
-$space-md: 16px;
-$space-lg: 20px;
-$space-xl: 24px;
-$space-2xl: 32px;
-$font-xs: 11px;
-$font-sm: 12px;
-$font-md: 13px;
-$font-lg: 14px;
-$font-xl: 15px;
-$line-base: 1.5;
-$line-xs: 16px;
-$line-md: 24px;
-$avatar-sm: 24px;
 
-@mixin flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-@mixin button-base {
-  border: none;
-  cursor: pointer;
-  @include flex-center;
-}
-
-@mixin button-states($normal, $hover, $active) {
-  background: $normal;
-  &:hover {
-    background: $hover;
-  }
-  &:active {
-    background: $active;
+@mixin fine-hover {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      @content;
+    }
   }
 }
 
-@mixin icon-button($size: 20px) {
-  @include button-base;
-  background: none;
-  padding: $space-2xs;
-  color: var(--gray);
-  transition: color $transition-std;
-
-  &:hover {
-    color: var(--dark);
-  }
-
-  svg {
-    width: $size;
-    height: $size;
-  }
-}
-
-%edit-button-base {
-  border: none;
+:where(
+  .comment-bubble,
+  .comment-composer,
+  .comment-thread-modal,
+  .comment-actions-popover,
+  .delete-confirmation-modal
+) {
+  --comment-line: color-mix(in srgb, var(--gray) 55%, transparent);
+  --comment-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+  --comment-selected: color-mix(in srgb, var(--secondary) 18%, var(--comment-surface));
+  --comment-control-size: 1.5rem;
+  box-sizing: border-box;
+  border: 1px solid var(--comment-line);
   border-radius: var(--radius-none);
-  cursor: pointer;
-  background: transparent;
-  outline: rgba(0, 0, 0, 0.2) solid 1px;
-  outline-offset: -0.0625rem;
-  font-size: 10px;
-  font-weight: 450;
-  line-height: 1rem;
-  position: relative;
-  display: inline-flex;
-  height: 1.5rem;
-  max-width: 100%;
-  text-align: center;
-  padding-inline: 0;
-}
+  background: var(--light);
+  color: var(--darkgray);
+  font-family: var(--bodyFont);
+  font-size: var(--text-ui);
+  line-height: 1.5;
 
-%button-container {
-  display: flex;
-  width: 100%;
-  height: 1.5rem;
-  max-width: 100%;
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
 
-  > .button-text {
+  button {
+    min-width: var(--comment-control-size);
+    min-height: var(--comment-control-size);
+    border: 1px solid transparent;
+    border-radius: var(--radius-none);
+    padding: var(--space-1) var(--space-2);
+    background: transparent;
+    color: var(--darkgray);
+    font: 400 var(--text-meta) / 1.4 var(--codeFont);
+    text-transform: lowercase;
+    cursor: pointer;
+    transition:
+      color 150ms ease,
+      background-color 150ms ease,
+      border-color 150ms ease;
+
+    @include fine-hover {
+      background: var(--comment-surface);
+      color: var(--dark);
+    }
+
+    &:active,
+    &[aria-expanded='true'] {
+      background: var(--comment-selected);
+      color: var(--dark);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--dark);
+      outline-offset: 2px;
+    }
+
+    &:disabled,
+    &[aria-disabled='true'] {
+      background: var(--comment-surface);
+      color: var(--darkgray);
+      cursor: not-allowed;
+    }
+  }
+
+  :is(.composer-submit, .submit-button, .modal-actions-button, .modal-close, .reply-actions) {
     display: flex;
-    justify-content: center;
+    flex: none;
     align-items: center;
-    max-width: 100%;
-    margin: $space-xs;
-    overflow: hidden;
+    justify-content: center;
+    width: var(--comment-control-size);
+    height: var(--comment-control-size);
+    padding: 0;
 
-    > .button-content {
-      display: block;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      overflow-wrap: break-word;
-      overflow: hidden;
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  :is(.composer-submit, .submit-button, .edit-button-save, .edit-button-delete) {
+    border-color: var(--darkgray);
+    background: var(--comment-selected);
+    color: var(--dark);
+
+    @include fine-hover {
+      border-color: var(--dark);
+      background: var(--comment-selected);
+    }
+  }
+
+  .edit-button {
+    border-color: var(--darkgray);
+  }
+
+  .button-container,
+  .button-text,
+  .button-content {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+  }
+
+  :is(.input-section-wrapper, .composer-input-wrapper, .comment-edit-wrapper) {
+    min-width: 0;
+    border: 1px solid var(--darkgray);
+    background: var(--comment-surface);
+    color: var(--dark);
+
+    &:focus-within {
+      outline: 2px solid var(--dark);
+      outline-offset: 2px;
+    }
+  }
+
+  :is(.composer-input, .editable-typeahead-wrapper, .edit-input) {
+    min-width: 0;
+    font: 400 var(--text-ui) / 1.5 var(--bodyFont);
+    overflow-wrap: anywhere;
+  }
+
+  .cm-editor {
+    font: inherit;
+    color: inherit;
+
+    .cm-scroller {
+      min-width: 0;
+    }
+
+    .cm-content {
+      min-height: var(--comment-control-size);
+    }
+
+    .cm-formatting {
+      color: var(--darkgray);
+    }
+  }
+
+  .reply-author {
+    min-width: 0;
+    color: var(--dark);
+    font-size: var(--text-ui);
+    font-weight: 500;
+    overflow-wrap: anywhere;
+  }
+
+  .reply-time,
+  .preview-replies {
+    color: var(--darkgray);
+    font: 400 var(--text-meta) / 1.4 var(--codeFont);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .reply-avatar,
+  .avatar {
+    display: block;
+    flex: none;
+    width: 24px;
+    height: 24px;
+    margin: 0;
+    border-radius: var(--radius-none);
+    background: var(--comment-selected);
+    object-fit: cover;
+  }
+
+  .markdown-content {
+    min-width: 0;
+    color: var(--darkgray);
+    font: 400 var(--text-ui) / 1.5 var(--bodyFont);
+    overflow-wrap: anywhere;
+
+    p {
+      margin: 0;
+    }
+
+    p + p {
+      margin-top: var(--space-2);
+    }
+
+    :is(h1, h2, h3, h4, h5, h6) {
+      margin: var(--space-3) 0 var(--space-2);
+      color: var(--dark);
+      font: 500 1em / 1.4 var(--headerFont);
+    }
+
+    :is(code, pre) {
+      background: var(--comment-surface);
+      font-family: var(--codeFont);
+      font-size: var(--text-meta);
+    }
+
+    code {
+      padding: var(--space-px) var(--space-1);
+    }
+
+    pre {
+      max-width: 100%;
+      margin: var(--space-2) 0;
+      padding: var(--space-3);
+      overflow-x: auto;
+
+      code {
+        padding: 0;
+        background: transparent;
+      }
+    }
+
+    :is(ul, ol) {
+      margin: var(--space-2) 0;
+      padding-inline-start: var(--space-5);
+    }
+
+    blockquote {
+      margin: var(--space-2) 0;
+      border: 0;
+      padding: var(--space-2) var(--space-3);
+      background: var(--comment-surface);
+      color: var(--darkgray);
+    }
+
+    a {
+      color: var(--dark);
+      background: transparent;
+      text-decoration: underline;
+      text-underline-offset: 0.2em;
+
+      @include fine-hover {
+        background: transparent;
+        color: var(--dark);
+        text-decoration-thickness: 2px;
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--dark);
+        outline-offset: 2px;
+      }
+    }
+
+    .mention {
+      padding: var(--space-px) var(--space-1);
+      background: var(--comment-selected);
+      color: var(--dark);
+    }
+
+    .hljs {
+      background: transparent;
+      color: var(--dark);
+    }
+
+    :is(.hljs-keyword, .hljs-function, .hljs-number) {
+      color: var(--dark);
+    }
+
+    :is(.hljs-string, .hljs-comment) {
+      color: var(--darkgray);
     }
   }
 }
@@ -117,946 +275,379 @@ $avatar-sm: 24px;
 .comment-composer {
   position: absolute;
   z-index: 903;
-  width: $modal-width;
-  border: 1px solid var(--gray);
+  width: 360px;
+  max-width: calc(100vw - var(--space-6));
+  border: 0;
 
   .composer-input-wrapper {
     display: flex;
     align-items: center;
-    gap: $space-sm;
-    background: var(--light);
-    border-radius: var(--radius-none);
-    padding: $space-xs $space-xs $space-xs $space-md;
-    min-width: 320px;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+  }
 
-    .composer-input {
-      flex: 1;
-      min-height: $space-xl;
-      font-size: $font-lg;
-      line-height: $line-base;
-      color: var(--dark);
-      outline: none;
-      white-space: pre-wrap;
-      word-break: break-word;
-      user-select: text;
-      font-family: inherit !important;
-      background-color: inherit !important;
-      position: relative;
+  .composer-input {
+    position: relative;
+    flex: 1;
 
-      .composer-editor-mount {
-        position: relative;
-      }
-
-      > div[aria-hidden='true'] {
-        position: absolute;
-        left: 0;
-        top: 0;
-        pointer-events: none;
-        color: var(--gray);
-        font-size: $font-lg;
-        line-height: $line-base;
-
-        .placeholder-text {
-          opacity: 0.6;
-        }
-      }
-    }
-
-    &.composer-empty {
-      .composer-input > div[aria-hidden='true'] {
-        display: block;
-      }
-    }
-
-    &:not(.composer-empty) {
-      .composer-input > div[aria-hidden='true'] {
-        display: none;
-      }
+    > div[aria-hidden='true'] {
+      position: absolute;
+      inset: 0;
+      color: var(--darkgray);
+      pointer-events: none;
     }
   }
 
-  .composer-submit {
-    flex-shrink: 0;
-    width: $button-size;
-    height: $button-size;
-    border-radius: var(--radius-none);
-    @include button-base;
-    background: var(--secondary);
-    color: white;
-    transition: background $transition-std ease;
-
-    &:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-      background: var(--gray);
-    }
-
-    &:not(:disabled):hover {
-      transform: scale(1.05);
-      background: var(--tertiary);
-    }
-
-    &:not(:disabled):active {
-      transform: scale(0.95);
-    }
-
-    .icon {
-      @include flex-center;
-      svg {
-        fill: currentColor;
-      }
-    }
+  .composer-input-wrapper:not(.composer-empty) .composer-input > div[aria-hidden='true'] {
+    display: none;
   }
 }
 
 .comment-highlight {
-  background-color: $comment-highlight;
+  background: $comment-highlight;
   cursor: pointer;
 }
 
-.comment-highlight-layer {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 900;
-
-  .comment-highlight {
-    position: absolute;
-    border-radius: var(--radius-none);
-  }
-}
-
+.comment-highlight-layer,
 .comment-selection-layer {
   position: absolute;
   inset: 0;
   pointer-events: none;
+
+  :is(.comment-highlight, .comment-selection-highlight) {
+    position: absolute;
+  }
+}
+
+.comment-highlight-layer {
+  z-index: 900;
+}
+
+.comment-selection-layer {
   z-index: 899;
 
   .comment-selection-highlight {
-    position: absolute;
-    border-radius: var(--radius-none);
-    background-color: $selection-highlight;
+    background: $selection-highlight;
   }
 }
 
 .comment-bubble {
-  --expand-animation-time: 0.1s;
-  --bubble-collapsed-size: #{$bubble-size};
-  --bubble-margin: #{$bubble-margin};
+  --expand-animation-time: 0.15s;
+  --bubble-collapsed-size: 32px;
   position: absolute;
   z-index: 901;
-  cursor: pointer;
-  overflow: hidden;
-  background: var(--light);
-  border: 1px solid var(--lightgray);
   display: flex;
-  left: 0;
-  bottom: auto;
-  min-width: var(--bubble-collapsed-size);
-  min-height: var(--bubble-collapsed-size);
-  align-self: flex-start;
-  justify-self: flex-start;
   flex-direction: column;
+  min-width: var(--bubble-collapsed-size);
   max-width: var(--bubble-collapsed-size);
+  min-height: var(--bubble-collapsed-size);
   max-height: var(--bubble-collapsed-size);
-  box-sizing: border-box;
   padding: 3px;
-  font-size: $font-xs;
-  line-height: $line-xs;
-  color: var(--darkgray);
-  border-radius: var(--radius-none) var(--radius-none) var(--radius-none) var(--radius-none);
+  overflow: hidden;
+  cursor: pointer;
   transform-origin: bottom left;
-  transform: translateY(0);
   transition:
-    max-width var(--expand-animation-time) ease-in-out,
-    max-height var(--expand-animation-time) ease-in-out,
-    padding var(--expand-animation-time) ease-in-out,
-    min-width var(--expand-animation-time) ease-in-out,
-    transform var(--expand-animation-time) ease-in-out,
-    border-radius var(--expand-animation-time) ease-in-out;
+    max-width 220ms $panel-ease,
+    max-height 220ms $panel-ease,
+    padding 150ms ease,
+    transform 220ms $panel-ease;
 
   &.comment-bubble-unread {
-    background: $primary-blue;
-    border-color: $primary-blue;
-    color: #ffffff;
-
-    .preview-replies,
-    .reply-text > * {
-      color: #ffffff;
-    }
+    border-color: var(--darkgray);
+    background: var(--comment-selected);
   }
 
-  .reply-top {
+  .reply-left {
     display: flex;
-    margin: 0;
-    min-height: 1.5rem;
-    transition:
-      opacity 0.1s ease-in-out,
-      visibility 0.1s ease-in-out;
+    align-items: center;
+    gap: var(--space-2);
+  }
 
-    .reply-left {
-      display: flex;
-      gap: 0;
-      align-items: center;
+  .reply-author,
+  .reply-time {
+    display: none;
+  }
 
-      .reply-avatar {
-        width: calc(var(--bubble-collapsed-size) - var(--bubble-margin));
-        height: calc(var(--bubble-collapsed-size) - var(--bubble-margin));
-        border-radius: var(--radius-full);
-        flex-shrink: 0;
-        flex-direction: row-reverse;
-        justify-content: flex-end;
-        align-items: flex-start;
-        min-width: calc(var(--bubble-collapsed-size) - var(--bubble-margin));
-        min-height: calc(var(--bubble-collapsed-size) - var(--bubble-margin));
-        object-fit: cover;
-      }
+  .reply-text,
+  .preview-replies {
+    display: none;
+    padding-inline-start: var(--space-8);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(.modal-active) {
+      z-index: 902;
+      width: 320px;
+      max-width: min(320px, calc(100vw - var(--space-6)));
+      max-height: 200px;
+      padding: var(--space-2) var(--space-3);
+      transform: translateY(calc(-100% + var(--bubble-collapsed-size)));
 
       .reply-author,
-      .reply-time {
-        width: 0;
-        opacity: 0;
-        overflow: hidden;
-        white-space: nowrap;
-        transition:
-          width 220ms cubic-bezier(0.2, 0, 0, 1),
-          opacity 180ms 40ms;
+      .reply-time,
+      .preview-replies {
+        display: block;
       }
-    }
-  }
 
-  .reply-text {
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-    font-size: $font-md;
-    line-height: $line-base;
-    color: var(--dark);
-    padding-left: calc(var(--bubble-collapsed-size) - var(--bubble-margin) + var(--space-2));
-    margin-top: 0;
-    transition:
-      max-height 220ms cubic-bezier(0.2, 0, 0, 1),
-      opacity 180ms 40ms;
-  }
-
-  .preview-replies {
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-    font-size: $font-sm;
-    color: var(--gray);
-    padding-left: calc(var(--bubble-collapsed-size) - var(--bubble-margin) + var(--space-2));
-    transition:
-      max-height 220ms cubic-bezier(0.2, 0, 0, 1),
-      opacity 180ms 40ms;
-  }
-
-  &:hover:not(.modal-active) {
-    z-index: 902;
-    min-width: 280px;
-    max-width: 320px;
-    max-height: 200px;
-    padding: 8px 16px;
-    border-radius: var(--radius-none) var(--radius-none) var(--radius-none) var(--radius-none);
-    transform: translateY(calc(-100% + var(--bubble-collapsed-size)));
-
-    .reply-top {
       .reply-left {
-        gap: 8px;
-
-        .reply-author,
-        .reply-time {
-          width: auto;
-          opacity: 1;
-        }
+        flex-wrap: wrap;
       }
-    }
 
-    .reply-text {
-      max-height: 120px;
-      opacity: 1;
-      margin-top: $space-2xs;
-      overflow: hidden;
-      display: -webkit-box;
-      -webkit-line-clamp: 4;
-      -webkit-box-orient: vertical;
-    }
-
-    .preview-replies {
-      max-height: 24px;
-      opacity: 1;
-      margin-top: $space-2xs;
+      .reply-text {
+        display: -webkit-box;
+        margin-top: var(--space-1);
+        overflow: hidden;
+        -webkit-line-clamp: 4;
+        -webkit-box-orient: vertical;
+      }
     }
   }
 }
 
 .comment-thread-modal {
   position: absolute;
-  right: 20px;
-  top: 20%;
-  width: $modal-width;
-  max-width: calc(100vw - 24px);
-  box-sizing: border-box;
-  background: var(--light);
-  border: 1px solid var(--lightgray);
-  border-radius: var(--radius-none);
   z-index: 904;
+  top: 20%;
+  right: var(--space-5);
   display: flex;
   flex-direction: column;
-  overflow: auto;
+  width: 360px;
+  max-width: calc(100vw - var(--space-6));
 
   .modal-header {
-    padding: 0.25rem $space-xs 0.25rem 0.75rem;
-    margin: 0;
-    border-bottom: 1px solid var(--lightgray);
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px solid var(--comment-line);
+    background: var(--comment-surface);
     cursor: move;
     user-select: none;
-    box-sizing: border-box;
-    height: 42px;
-    position: sticky;
-    top: 0;
-    z-index: 1;
+  }
 
-    .modal-title {
-      font-weight: 600;
-      font-size: $font-xl;
-      color: var(--dark);
-    }
+  .modal-title {
+    color: var(--dark);
+    font: 400 var(--text-meta) / 1.4 var(--codeFont);
+  }
 
-    .modal-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
+  .modal-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+  }
 
-      .modal-actions-button {
-        @include icon-button(20px);
-      }
-
-      .modal-resolve-button {
-        &:hover {
-          color: $primary-blue;
-        }
-      }
-    }
-
-    .modal-close {
-      @include button-base;
-      background: none;
-      font-size: 20px;
-      color: var(--gray);
-      padding: 0;
-      width: 20px;
-      height: 20px;
-      transition: color $transition-std;
-
-      &:hover {
-        color: var(--dark);
-      }
-    }
+  .modal-close {
+    font: 400 20px / 1 var(--bodyFont);
   }
 
   .modal-content {
-    flex: 1;
-    max-height: 1126px;
+    min-width: 0;
+    max-height: min(60dvh, 40rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
 
   .reply-item {
-    margin-bottom: $space-sm;
-    padding-left: $space-md;
-    padding-right: $space-md;
+    padding: var(--space-3);
 
-    &:first-of-type {
-      margin-top: $space-xs;
-      margin-bottom: $space-md;
-
-      .reply-avatar {
-        background: #5b9eff;
-      }
+    + .reply-item {
+      border-top: 1px solid var(--comment-line);
     }
+  }
 
-    .reply-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: $space-xs;
+  .reply-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-2);
+    margin-bottom: var(--space-2);
+  }
 
-      .reply-left {
-        display: flex;
-        align-items: center;
-        gap: $space-xs;
+  .reply-left {
+    display: grid;
+    flex: 1;
+    min-width: 0;
+    grid-template-columns: 24px minmax(0, 1fr);
+    column-gap: var(--space-2);
 
-        .reply-avatar {
-          flex-shrink: 0;
-          width: $avatar-sm;
-          height: $avatar-sm;
-          border-radius: var(--radius-none);
-          background: #8e81a2;
-          color: white;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: $font-xs;
-          font-weight: 600;
-        }
-
-        .reply-author {
-          font-size: $font-md;
-          font-weight: 600;
-          color: var(--dark);
-        }
-
-        .reply-time {
-          font-size: $font-sm;
-          color: var(--gray);
-        }
-      }
-
-      .reply-right {
-        .reply-actions {
-          @include icon-button(20px);
-        }
-      }
+    .reply-avatar {
+      grid-row: span 2;
     }
+  }
 
-    .reply-text {
-      font-size: $font-md;
-      line-height: $line-base;
-      color: var(--dark);
-      padding-left: $space-2xl;
-      margin-top: $space-2xs;
-    }
+  .reply-text {
+    padding-inline-start: var(--space-8);
   }
 
   .reply-composer-container {
     display: flex;
+    align-items: flex-start;
+    gap: var(--space-2);
+    min-width: 0;
+    padding: var(--space-3);
+    border-top: 1px solid var(--comment-line);
+  }
 
-    .reply-author-element {
-      flex-shrink: 0;
-      margin-top: $space-lg;
-      margin-left: $space-md;
+  .reply-author-element {
+    flex: none;
+    padding-top: var(--space-2);
+  }
 
-      .avatar {
-        width: $avatar-sm;
-        height: $avatar-sm;
-        border-radius: var(--radius-none);
-        overflow: hidden;
-        display: flex;
-        line-height: 30px;
-        font-size: $font-xl;
-        background: #5b9eff;
-        align-items: center;
-        justify-content: center;
-        user-select: none;
-        color: white;
-        display: flex;
-        font-weight: 600;
-      }
+  .input-section-wrapper {
+    display: flex;
+    flex: 1;
+    align-items: flex-start;
+  }
+
+  .editable-typeahead-wrapper {
+    flex: 1;
+    padding: var(--space-2);
+  }
+
+  .lexical-wrapper {
+    position: relative;
+
+    > div[aria-hidden='true'] {
+      position: absolute;
+      inset: 0;
+      color: var(--darkgray);
+      pointer-events: none;
+      text-transform: lowercase;
     }
+  }
 
-    .input-section-wrapper {
-      overflow: visible;
-      flex-grow: 1;
-      display: flex;
-      flex-direction: row;
-      min-height: $space-2xl;
-      align-items: center;
-      margin: $space-md $space-md $space-md $space-xs;
-      border-radius: var(--radius-none);
-      position: relative;
-      background-color: var(--lightgray);
-      outline: 0px solid transparent;
+  .input-section-wrapper:not(.composer-empty) .lexical-wrapper > div[aria-hidden='true'] {
+    display: none;
+  }
 
-      .editable-typeahead-wrapper {
-        cursor: text;
-        flex-grow: 1;
-        user-select: text;
-        white-space: pre-wrap;
-        word-wrap: break-word;
-        overflow: visible;
-        box-sizing: border-box;
-        padding: $space-xs $space-xs $space-xs $space-md;
-        transition: padding-bottom 0.1s;
-        font-size: $font-md;
-        line-height: $line-md;
-
-        .primitive-wrapper {
-          .lexical-wrapper {
-            position: relative;
-
-            > div[contenteditable] {
-              outline: none;
-              color: var(--dark);
-
-              p {
-                margin: 0;
-                padding: 0;
-              }
-
-              &:focus {
-                outline: none;
-              }
-            }
-
-            > div[aria-hidden='true'] {
-              position: absolute;
-              left: 0;
-              pointer-events: none;
-              color: rgba(0, 0, 0, 0.3);
-              font-size: $font-md;
-              top: 2px;
-              pointer-events: none;
-              line-height: 1;
-
-              .placeholder-text {
-                opacity: 0.6;
-              }
-            }
-          }
-        }
-      }
-
-      &.composer-empty {
-        > .editable-typeahead-wrapper
-          .primitive-wrapper
-          .lexical-wrapper
-          > div[aria-hidden='true'] {
-          display: block;
-        }
-      }
-
-      &:not(.composer-empty) {
-        > .editable-typeahead-wrapper
-          .primitive-wrapper
-          .lexical-wrapper
-          > div[aria-hidden='true'] {
-          display: none;
-        }
-      }
-
-      .composer-actions {
-        display: flex;
-        justify-content: flex-end;
-        position: relative;
-        height: 40px;
-        align-items: center;
-        padding: $space-2xs $space-xs $space-2xs;
-        box-sizing: border-box;
-        border: unset;
-
-        .submit-button {
-          width: $button-size;
-          height: $button-size;
-          min-width: $button-size;
-          border-radius: var(--radius-none);
-          @include button-base;
-          background: $primary-blue;
-          color: white;
-          transition:
-            background-color $transition-fast ease,
-            opacity $transition-fast ease;
-          outline: none;
-
-          &[aria-disabled='true'] {
-            opacity: 0.4;
-            cursor: not-allowed;
-            background: var(--gray);
-          }
-
-          &[aria-disabled='false']:hover {
-            background: $hover-blue;
-          }
-
-          &[aria-disabled='false']:active {
-            background: $active-blue;
-          }
-
-          .button-icon {
-            @include flex-center;
-            svg {
-              fill: currentColor;
-            }
-          }
-        }
-      }
-    }
+  .composer-actions {
+    display: flex;
+    flex: none;
+    padding: var(--space-2) var(--space-2) var(--space-2) 0;
   }
 }
 
-.delete-confirmation-overlay {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(6px);
-  z-index: 906;
-}
-
-.delete-confirmation-modal {
-  background: var(--light);
-  border: 1px solid var(--lightgray);
-  border-radius: var(--radius-none);
-  padding: $space-xl;
-  min-width: 320px;
+.comment-edit-wrapper {
   display: flex;
   flex-direction: column;
-  gap: $space-md;
+  margin: var(--space-2) 0 0 var(--space-8);
 
-  .delete-confirmation-message {
-    font-size: $font-xl;
-    font-weight: 600;
-    color: var(--dark);
+  .edit-input-content {
+    padding: var(--space-2);
   }
 
-  .delete-confirmation-actions {
+  .edit-actions {
     display: flex;
     justify-content: flex-end;
-    gap: $space-xs;
-  }
-
-  .edit-button {
-    @extend %edit-button-base;
-  }
-
-  .edit-button-cancel {
-    background: var(--lightgray);
-    color: var(--dark);
-
-    &:hover {
-      background: var(--gray);
-    }
-  }
-
-  .edit-button-delete {
-    background: #d32f2f;
-    color: white;
-
-    &:hover {
-      background: #c62828;
-    }
-
-    &:active {
-      background: #b71c1c;
-    }
-  }
-
-  .button-container {
-    @extend %button-container;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding: var(--space-2);
+    border-top: 1px solid var(--comment-line);
   }
 }
 
 .comment-actions-popover {
   position: absolute;
   z-index: 905;
-  background: var(--dark);
-  min-width: 80px;
-  padding: $space-xs 0;
-  border-radius: var(--radius-none);
+  width: max-content;
+  max-width: calc(100vw - var(--space-6));
+  padding: var(--space-1);
+  background: var(--comment-surface);
 
   .popover-action {
-    width: 100%;
-    background: none;
-    border: none;
-    text-align: left;
-    cursor: pointer;
-    font-size: $font-md;
-    transition: background $transition-fast;
     display: flex;
     align-items: center;
-    padding: 0 $space-xs;
-    color: var(--light);
-    text-decoration: none;
-    user-select: none;
+    width: 100%;
+    min-height: 1.75rem;
+    text-align: start;
 
-    .menu-item {
-      display: flex;
-      align-items: center;
-      width: 100%;
-      min-height: $button-size;
-      padding: $space-2xs $space-xs;
-      box-sizing: border-box;
-      color: var(--light);
-      white-space: nowrap;
-      border-radius: var(--radius-none);
-
-      &:hover {
-        background: var(--foam);
-      }
+    &:focus-visible {
+      outline-offset: -2px;
     }
+  }
+
+  .popover-action-danger {
+    margin-top: var(--space-1);
+    border-top-color: var(--comment-line);
+  }
+}
+
+.delete-confirmation-modal {
+  width: 360px;
+  max-width: calc(100vw - var(--space-6));
+  padding: var(--space-6);
+
+  &::backdrop {
+    background: color-mix(in srgb, var(--light) 75%, transparent);
+  }
+
+  .delete-confirmation-message {
+    margin-bottom: var(--space-4);
+    color: var(--dark);
+  }
+
+  .delete-confirmation-actions {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: var(--space-2);
   }
 }
 
 body:has(.search-container.active),
 body:has(#palette-container.active),
 body:has(.global-graph-outer.active) {
-  .comment-highlight-layer,
-  .comment-selection-layer,
-  .comment-bubble,
-  .comment-composer,
-  .comment-thread-modal,
-  .comment-actions-popover,
-  .delete-confirmation-overlay,
-  .delete-confirmation-modal {
+  :is(
+    .comment-highlight-layer,
+    .comment-selection-layer,
+    .comment-bubble,
+    .comment-composer,
+    .comment-thread-modal,
+    .comment-actions-popover,
+    .delete-confirmation-modal
+  ) {
     display: none !important;
   }
 }
 
-.comment-edit-wrapper {
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  min-height: $space-2xl;
-  margin-left: $space-2xl;
-  margin-top: $space-xs;
-  border-radius: var(--radius-none);
-  position: relative;
-  background-color: var(--lightgray);
+@media (max-width: 800px) {
+  :is(.comment-composer, .comment-thread-modal) .cm-editor {
+    font-size: 1rem;
+  }
+}
 
-  .edit-input-content {
-    padding: $space-xs $space-md;
-
-    .edit-input {
-      outline: none;
-      color: var(--dark);
-      font-size: $font-md;
-      line-height: $line-base;
-      min-height: $space-xl;
-      white-space: pre-wrap;
-      word-break: break-word;
-
-      &:focus {
-        outline: none;
-      }
-    }
+@media (pointer: coarse) {
+  :is(
+    .comment-bubble,
+    .comment-composer,
+    .comment-thread-modal,
+    .comment-actions-popover,
+    .delete-confirmation-modal
+  ) {
+    --comment-control-size: 44px;
   }
 
-  .edit-actions {
-    display: flex;
-    justify-content: flex-end;
+  .comment-bubble {
+    --bubble-collapsed-size: 44px;
     align-items: center;
-    gap: $space-xs;
-    padding: $space-xs $space-md;
-    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    justify-content: center;
+  }
 
-    .edit-button {
-      @extend %edit-button-base;
-
-      &.edit-button-cancel {
-        background: var(--lightgray);
-        color: var(--dark);
-
-        &:hover {
-          background: var(--gray);
-        }
-      }
-
-      &.edit-button-save {
-        @include button-states($primary-blue, $hover-blue, $active-blue);
-        color: white;
-      }
-    }
-
-    .button-container {
-      @extend %button-container;
-    }
+  .comment-actions-popover .popover-action {
+    min-height: 44px;
   }
 }
 
-.cm-editor {
-  background-color: var(--lightgray);
-  border-radius: var(--radius-none);
-  font-family: var(--bodyFont);
-  font-size: $font-md;
-  line-height: $line-base;
-  height: auto;
-
-  &.cm-focused {
-    outline: 2px solid $primary-blue;
+@media (prefers-reduced-motion: reduce) {
+  .comment-bubble,
+  :is(
+      .comment-composer,
+      .comment-thread-modal,
+      .comment-actions-popover,
+      .delete-confirmation-modal
+    )
+    button {
+    transition: none;
   }
-
-  .cm-content {
-    caret-color: var(--dark);
-  }
-
-  .cm-line {
-    padding: 0;
-  }
-
-  .cm-scroller {
-    overflow: visible;
-  }
-
-  .cm-cursor {
-    border-left-color: var(--dark);
-  }
-
-  .cm-strong {
-    font-weight: 600;
-  }
-  .cm-em {
-    font-style: italic;
-  }
-  .cm-link {
-    color: $primary-blue;
-    text-decoration: underline;
-  }
-  .cm-monospace {
-    font-family: var(--codeFont);
-    background: rgba(0, 0, 0, 0.05);
-    padding: 2px $space-2xs;
-    border-radius: var(--radius-none);
-  }
-
-  .cm-formatting {
-    opacity: 0.3;
-    transition: opacity $transition-std;
-  }
-
-  &.cm-focused .cm-formatting {
-    opacity: 1;
-  }
-}
-
-.markdown-content {
-  font-size: $font-md;
-  line-height: $line-base;
-
-  p {
-    margin: 0;
-  }
-  strong {
-    font-weight: 600;
-  }
-  em {
-    font-style: italic;
-  }
-  code {
-    font-family: 'Courier New', monospace;
-    background: rgba(0, 0, 0, 0.05);
-    padding: 2px $space-2xs;
-    border-radius: var(--radius-none);
-    font-size: 0.9em;
-  }
-
-  pre {
-    background: var(--lightgray);
-    border-radius: var(--radius-none);
-    padding: $space-sm;
-    overflow-x: auto;
-    margin: $space-xs 0;
-
-    code {
-      background: none;
-      padding: 0;
-    }
-  }
-
-  a {
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-
-  ul,
-  ol {
-    margin: $space-xs 0;
-    padding-left: $space-xl;
-  }
-
-  blockquote {
-    border-left: 3px solid var(--gray);
-    padding-left: $space-sm;
-    margin: $space-xs 0;
-    color: var(--gray);
-  }
-
-  .hljs {
-    background: transparent;
-    color: var(--dark);
-  }
-
-  .hljs-keyword {
-    color: #d73a49;
-  }
-  .hljs-string {
-    color: #032f62;
-  }
-  .hljs-comment {
-    color: #6a737d;
-    font-style: italic;
-  }
-  .hljs-function {
-    color: #6f42c1;
-  }
-  .hljs-number {
-    color: #005cc5;
-  }
-}
-
-.comment-composer .composer-editor-mount,
-.reply-composer-container > .lexical-wrapper,
-.comment-edit-wrapper > .edit-input {
-  .cm-editor {
-    background: transparent !important;
-    border: none !important;
-    outline: none !important;
-    font-size: inherit;
-    font-family: inherit !important;
-    line-height: inherit;
-    color: inherit;
-    padding: 0 !important;
-    margin: 0 !important;
-    height: auto;
-
-    &.cm-focused {
-      outline: none !important;
-      border: none !important;
-      box-shadow: none !important;
-    }
-
-    .cm-content {
-      padding: 0 !important;
-      min-height: inherit;
-      caret-color: inherit;
-    }
-
-    .cm-scroller {
-      overflow: inherit;
-      font-family: inherit !important;
-      font-size: inherit;
-    }
-
-    .cm-line {
-      padding: 0;
-    }
-
-    .cm-cursor {
-      border-left-color: inherit;
-    }
-  }
-}
-
-.markdown-content .mention,
-.reply-text .mention {
-  color: $primary-blue;
-  font-weight: 500;
-  text-decoration: none;
-  background: rgba($primary-blue, 0.1);
-  padding: 1px 4px;
-  border-radius: var(--radius-none);
-  transition: background $transition-fast;
-
-  &:hover {
-    background: rgba($primary-blue, 0.2);
-    text-decoration: none;
-  }
-}
-
-div[class~='cm-tooltip-autocomplete'] > ul {
-  min-width: inherit !important;
-  max-height: 20em !important;
 }

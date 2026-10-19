@@ -10,10 +10,15 @@ body[data-is-base='true'] #quartz-root > .page-body-grid > .page-header {
   }
 }
 
-.bases-search[data-base-query] {
+// One frame recipe for the whole Base toolbar row: the view menu button (baseViewSelector.scss),
+// the search field and the filter/sort pair share the line, the surface and the selected ground.
+:is(.bases-toolbar, .bases-search[data-base-query]) {
   --base-query-line: color-mix(in srgb, var(--gray) 55%, transparent);
   --base-query-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
   --base-query-selected: color-mix(in srgb, var(--secondary) 18%, var(--base-query-surface));
+}
+
+.bases-search[data-base-query] {
   --base-query-control-height: 2.125rem;
   --base-query-action-size: 2rem;
   --control-height: var(--base-query-action-size);
@@ -38,7 +43,8 @@ body[data-is-base='true'] #quartz-root > .page-body-grid > .page-header {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-2) var(--space-4);
+    // The same column gap as the page header puts between the view menu and this toolbar.
+    gap: var(--space-2) var(--space-3);
     min-width: 0;
   }
 

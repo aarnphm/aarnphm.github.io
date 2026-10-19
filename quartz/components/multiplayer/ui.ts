@@ -203,6 +203,49 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
     modal.style.right = 'auto'
   }
 
+  const mountActionsPopover = (popover: HTMLElement, trigger: HTMLButtonElement) => {
+    document.body.appendChild(popover)
+    trigger.setAttribute('aria-expanded', 'true')
+
+    const position = () => {
+      const anchor = trigger.getBoundingClientRect()
+      const rect = popover.getBoundingClientRect()
+      const width = document.documentElement.clientWidth
+      const height = document.documentElement.clientHeight
+      const preferredLeft = anchor.right + 4
+      const left =
+        preferredLeft + rect.width <= width - 12 ? preferredLeft : anchor.right - rect.width
+      popover.style.left = `${Math.max(12, Math.min(left, width - rect.width - 12)) + window.scrollX}px`
+      popover.style.top = `${Math.max(12, Math.min(anchor.top, height - rect.height - 12)) + window.scrollY}px`
+    }
+    position()
+
+    const closeOnClickOutside = (event: MouseEvent) => {
+      const target = event.target
+      if (target instanceof Node && (popover.contains(target) || trigger.contains(target))) return
+      hideActionsPopover()
+    }
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        event.stopImmediatePropagation()
+        hideActionsPopover()
+        trigger.focus()
+      }
+    }
+
+    document.addEventListener('mousedown', closeOnClickOutside)
+    popover.addEventListener('keydown', onKeyDown)
+    window.addEventListener('resize', position)
+    popover.querySelector<HTMLButtonElement>('button')?.focus()
+    activePopoverCleanup = () => {
+      trigger.setAttribute('aria-expanded', 'false')
+      document.removeEventListener('mousedown', closeOnClickOutside)
+      popover.removeEventListener('keydown', onKeyDown)
+      window.removeEventListener('resize', position)
+    }
+  }
+
   const refreshActiveModal = () => {
     if (!activeModal) return
     keepModalInViewport(activeModal)
@@ -220,7 +263,7 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
   }
 
   const showActionsPopover = (
-    buttonRect: DOMRect,
+    trigger: HTMLButtonElement,
     onEdit: () => void,
     onDelete: () => void,
     commentId: string | null,
@@ -232,12 +275,6 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
     popover.className = 'comment-actions-popover'
     activeActionsPopover = popover
     dispatch({ type: 'ui.popover.open', commentId })
-
-    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop
-
-    popover.style.left = `${buttonRect.right + scrollLeft + 4}px`
-    popover.style.top = `${buttonRect.top + scrollTop}px`
 
     const editButton = document.createElement('button')
     editButton.className = 'popover-action'
@@ -260,38 +297,16 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
       popover.appendChild(deleteButton)
     }
 
-    document.body.appendChild(popover)
-
-    const closeOnClickOutside = (e: MouseEvent) => {
-      const target = e.target
-      if (!(target instanceof Node) || !popover.contains(target)) {
-        hideActionsPopover()
-        document.removeEventListener('mousedown', closeOnClickOutside)
-      }
-    }
-    const timer = window.setTimeout(
-      () => document.addEventListener('mousedown', closeOnClickOutside),
-      0,
-    )
-    activePopoverCleanup = () => {
-      window.clearTimeout(timer)
-      document.removeEventListener('mousedown', closeOnClickOutside)
-    }
+    mountActionsPopover(popover, trigger)
   }
 
-  const showThreadActionsPopover = (comment: MultiplayerComment, buttonRect: DOMRect) => {
+  const showThreadActionsPopover = (comment: MultiplayerComment, trigger: HTMLButtonElement) => {
     hideActionsPopover()
 
     const popover = document.createElement('div')
     popover.className = 'comment-actions-popover'
     activeActionsPopover = popover
     dispatch({ type: 'ui.popover.open', commentId: comment.id })
-
-    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop
-
-    popover.style.left = `${buttonRect.right + scrollLeft + 4}px`
-    popover.style.top = `${buttonRect.top + scrollTop}px`
 
     const markUnreadButton = document.createElement('button')
     const isUnread = getState().unreadCommentIds.has(comment.id)
@@ -332,23 +347,7 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
     popover.appendChild(markUnreadButton)
     popover.appendChild(copyLinkButton)
     popover.appendChild(deleteButton)
-    document.body.appendChild(popover)
-
-    const closeOnClickOutside = (e: MouseEvent) => {
-      const target = e.target
-      if (!(target instanceof Node) || !popover.contains(target)) {
-        hideActionsPopover()
-        document.removeEventListener('mousedown', closeOnClickOutside)
-      }
-    }
-    const timer = window.setTimeout(
-      () => document.addEventListener('mousedown', closeOnClickOutside),
-      0,
-    )
-    activePopoverCleanup = () => {
-      window.clearTimeout(timer)
-      document.removeEventListener('mousedown', closeOnClickOutside)
-    }
+    mountActionsPopover(popover, trigger)
   }
 
   const enterEditMode = async (comment: MultiplayerComment, textElement: HTMLElement) => {
@@ -414,6 +413,7 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
 
     markdownEditor = await createMarkdownEditor({
       parent: editorMount,
+      ariaLabel: 'Edit comment',
       initialContent: comment.content,
       onSubmit: () => saveButton.click(),
       onCancel: exitEditMode,
@@ -431,11 +431,10 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
     comment: MultiplayerComment,
     onConfirm?: (deletedAt: number) => void,
   ) => {
-    const overlay = document.createElement('div')
-    overlay.className = 'delete-confirmation-overlay'
-
-    const modal = document.createElement('div')
+    const modal = document.createElement('dialog')
     modal.className = 'delete-confirmation-modal'
+    modal.setAttribute('aria-label', 'Delete comment')
+    const returnFocus = activeModal?.querySelector<HTMLButtonElement>('.modal-actions-button')
 
     const message = document.createElement('div')
     message.className = 'delete-confirmation-message'
@@ -453,12 +452,12 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
     deleteButton.innerHTML = `<span class="button-container"><span class="button-text"><span class="button-content">Delete</span></span></span>`
 
     cancelButton.onclick = () => {
-      document.body.removeChild(overlay)
+      modal.close()
     }
 
     deleteButton.onclick = async () => {
       const deletedAt = Date.now()
-      document.body.removeChild(overlay)
+      modal.close()
       if (onConfirm) {
         onConfirm(deletedAt)
         return
@@ -470,8 +469,17 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
     actions.appendChild(deleteButton)
     modal.appendChild(message)
     modal.appendChild(actions)
-    overlay.appendChild(modal)
-    document.body.appendChild(overlay)
+    modal.addEventListener(
+      'close',
+      () => {
+        modal.remove()
+        returnFocus?.focus()
+      },
+      { once: true },
+    )
+    document.body.appendChild(modal)
+    modal.showModal()
+    cancelButton.focus()
   }
 
   const submitNewComment = (comment: MultiplayerComment) => {
@@ -542,13 +550,13 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
     const actions = document.createElement('button')
     actions.className = 'reply-actions'
     actions.setAttribute('aria-label', 'Comment actions')
+    actions.setAttribute('aria-expanded', 'false')
     actions.innerHTML = `<svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M7.5 12a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m6 0a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m4.5 1.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3" clip-rule="evenodd"></path></svg>`
 
     actions.onclick = (e: MouseEvent) => {
       e.stopPropagation()
-      const buttonRect = actions.getBoundingClientRect()
       showActionsPopover(
-        buttonRect,
+        actions,
         () => {
           void enterEditMode(comment, text).catch(error => {
             console.error('failed to enter comment edit mode', error)
@@ -634,15 +642,16 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
     const headerMenuButton = document.createElement('button')
     headerMenuButton.className = 'modal-actions-button'
     headerMenuButton.setAttribute('aria-label', 'Thread actions')
+    headerMenuButton.setAttribute('aria-expanded', 'false')
     headerMenuButton.innerHTML = `<svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M7.5 12a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m6 0a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m4.5 1.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3" clip-rule="evenodd"></path></svg>`
     headerMenuButton.onclick = (e: MouseEvent) => {
       e.stopPropagation()
-      const buttonRect = headerMenuButton.getBoundingClientRect()
-      showThreadActionsPopover(comment, buttonRect)
+      showThreadActionsPopover(comment, headerMenuButton)
     }
 
     const closeButton = document.createElement('button')
     closeButton.className = 'modal-close'
+    closeButton.setAttribute('aria-label', 'Close comment')
     closeButton.textContent = '×'
     closeButton.onclick = () => {
       closeActiveModal()
@@ -763,7 +772,7 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
     const buttonIconSpan = document.createElement('span')
     buttonIconSpan.setAttribute('aria-hidden', 'true')
     buttonIconSpan.className = 'button-icon'
-    buttonIconSpan.innerHTML = `<svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path fill="var(--fpl-icon-color, var(--color-icon))" fill-rule="evenodd" d="M12 16a.5.5 0 0 1-.5-.5V8.707l-3.146 3.147a.5.5 0 0 1-.708-.708l4-4a.5.5 0 0 1 .708 0l4 4a.5.5 0 0 1-.708.708L12.5 8.707V15.5a.5.5 0 0 1-.5.5" clip-rule="evenodd"></path></svg>`
+    buttonIconSpan.innerHTML = `<svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M12 16a.5.5 0 0 1-.5-.5V8.707l-3.146 3.147a.5.5 0 0 1-.708-.708l4-4a.5.5 0 0 1 .708 0l4 4a.5.5 0 0 1-.708.708L12.5 8.707V15.5a.5.5 0 0 1-.5.5" clip-rule="evenodd"></path></svg>`
     replyButton.appendChild(buttonIconSpan)
 
     replyButton.onclick = async () => {
@@ -815,9 +824,12 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
 
     document.body.appendChild(modal)
     keepModalInViewport(modal)
+    const onResize = () => keepModalInViewport(modal)
+    window.addEventListener('resize', onResize)
 
     void createMarkdownEditor({
       parent: editorMount,
+      ariaLabel: 'Reply to comment',
       onEdited: state => {
         if (state.empty) {
           inputSectionWrapper.classList.add('composer-empty')
@@ -841,6 +853,7 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
       })
 
     const handleEscape = (e: KeyboardEvent) => {
+      if (e.target instanceof Element && e.target.closest('dialog')) return
       if (e.key === 'Escape' && activeModal === modal) {
         closeActiveModal()
       }
@@ -852,6 +865,7 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
       document.removeEventListener('mousemove', onMouseMove)
       document.removeEventListener('mouseup', onMouseUp)
       document.removeEventListener('keydown', handleEscape)
+      window.removeEventListener('resize', onResize)
     }
   }
 
@@ -909,6 +923,7 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
 
     const submitButton = document.createElement('button')
     submitButton.className = 'composer-submit'
+    submitButton.setAttribute('aria-label', 'Submit comment')
     submitButton.disabled = true
     submitButton.innerHTML = `<span class="icon"><svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M12 16a.5.5 0 0 1-.5-.5V8.707l-3.146 3.147a.5.5 0 0 1-.708-.708l4-4a.5.5 0 0 1 .708 0l4 4a.5.5 0 0 1-.708.708L12.5 8.707V15.5a.5.5 0 0 1-.5.5" clip-rule="evenodd"></path></svg></span>`
 
@@ -948,9 +963,11 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
     inputWrapper.appendChild(submitButton)
     composer.appendChild(inputWrapper)
     document.body.appendChild(composer)
+    keepModalInViewport(composer)
 
     editor = await createMarkdownEditor({
       parent: editorMount,
+      ariaLabel: 'Comment',
       onEdited: state => {
         submitButton.disabled = state.empty
         if (state.empty) {
@@ -1174,7 +1191,10 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
             bubble.classList.add('comment-bubble-unread')
           }
           bubble.dataset.commentId = comment.id
-          const baseLeft = anchorRect.right + scrollLeft + 8
+          const bubbleSize = window.matchMedia('(pointer: coarse)').matches ? 44 : 32
+          const baseLeft =
+            Math.min(anchorRect.right + 8, document.documentElement.clientWidth - bubbleSize - 12) +
+            scrollLeft
           const baseTop = anchorRect.top + scrollTop
           const offset = getState().bubbleOffsets.get(comment.id)
           const initialLeft = baseLeft + (offset?.x ?? 0)
@@ -1369,7 +1389,6 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
     document.querySelectorAll('.comment-bubble').forEach(el => el.remove())
     document.querySelectorAll('.comment-thread-modal').forEach(el => el.remove())
     document.querySelectorAll('.comment-actions-popover').forEach(el => el.remove())
-    document.querySelectorAll('.delete-confirmation-overlay').forEach(el => el.remove())
     document.querySelectorAll('.delete-confirmation-modal').forEach(el => el.remove())
   }
 
