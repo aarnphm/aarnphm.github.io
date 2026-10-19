@@ -23,7 +23,7 @@ import { resolveAsset, resolveExtractedStaticResource } from '../util/asset-mani
 import { compileBaseConfig } from '../util/base/compile'
 import { renderBaseViewsForFile } from '../util/base/render'
 import { clone } from '../util/clone'
-import { pdfResourceOf } from '../util/course'
+import { hasCourseCrumb, pdfResourceOf } from '../util/course'
 import { BuildCtx, renderDataFor } from '../util/ctx'
 import { EXTERNAL_LINK_ICON_PATH } from '../util/external-link-icon'
 import { htmlToJsx } from '../util/jsx'
@@ -2828,6 +2828,7 @@ export function renderPageWithMetadata(
       >
         <main
           id="quartz-root"
+          data-course-crumb={hasCourseCrumb(componentData.fileData) ? '' : undefined}
           class={classNames(undefined, 'page', slug === 'index' ? 'grid' : '')}
           style={
             slug === 'index'

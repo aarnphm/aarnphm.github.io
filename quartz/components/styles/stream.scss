@@ -63,9 +63,9 @@
   }
 }
 
-.preview-container > .preview-inner:has(.stream-feed),
+.preview-container > .preview-inner.stream-preview,
 [data-slug*='stream'] {
-  section[class~='header'] {
+  section.header {
     border-bottom: 0;
     padding-bottom: 0;
     position: static !important;
@@ -101,7 +101,7 @@
   }
 }
 
-.preview-container > .preview-inner:has(.stream-feed),
+.preview-container > .preview-inner.stream-preview,
 .stream {
   margin: 0 auto;
   padding: 1rem 0;
