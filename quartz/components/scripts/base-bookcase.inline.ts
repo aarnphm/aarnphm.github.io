@@ -389,14 +389,15 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
   let previewWheelStep = -Infinity
   let returnFocus: HTMLElement | undefined
   let searchOpen: Map<HTMLDetailsElement, boolean> | undefined
+  let visibleEntries: HTMLLIElement[] | undefined
 
   const matches = () =>
-    [...indexPane.querySelectorAll<HTMLLIElement>('.bookcase-entry')].filter(
+    (visibleEntries ??= [...indexPane.querySelectorAll<HTMLLIElement>('.bookcase-entry')].filter(
       entry =>
         entry.style.display !== 'none' &&
         !entry.hasAttribute('data-topic-hidden') &&
         !entry.closest('.bookcase-index-group[hidden], .bookcase-index-group[data-topic-hidden]'),
-    )
+    ))
   const maxScale = () => Math.max(2, fitScale * 4)
   const clamp = (n: number, min: number, max: number) => Math.min(max, Math.max(min, n))
 
@@ -451,6 +452,7 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
       face: ArtworkFace
       key: string
       score: number
+      exposed: boolean
       detail?: boolean
     }[] = []
     for (const [index, book] of books) {
@@ -477,7 +479,8 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
           index,
           face: 'cover',
           key: `${index}:cover`,
-          score: distance * (end ? 0.25 : 1),
+          score: distance,
+          exposed: end,
         })
       if (book.dataset.spineArt) {
         const key = `${index}:spine`
@@ -500,6 +503,7 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
           face: 'spine',
           key,
           score: distance * 0.5,
+          exposed: false,
           detail: Boolean(
             visible &&
             book.dataset.spineArtDetail &&
@@ -509,7 +513,10 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
         })
       }
     }
-    const wanted = candidates.sort((a, b) => a.score - b.score).slice(0, MAX_SHELF_COVERS)
+    // Exposed jackets need a slot even at the top or bottom of the fitted case.
+    const wanted = candidates
+      .sort((a, b) => Number(b.exposed) - Number(a.exposed) || a.score - b.score)
+      .slice(0, MAX_SHELF_COVERS)
     const keys = new Set(wanted.map(candidate => candidate.key))
     for (const [key, image] of residentCovers) {
       if (keys.has(key) && image.isConnected) continue
@@ -1189,6 +1196,7 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
       else if (!searching && searchOpen) group.open = searchOpen.get(group) ?? true
     }
     if (!searching) searchOpen = undefined
+    visibleEntries = undefined
     const visible = matches()
     const rearranged = arrange(visible)
     // A new topic or search keeps the chosen book only while it stays in view.
@@ -1300,6 +1308,7 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
       for (const image of residentCovers.values()) removeArtwork(image)
       residentCovers.clear()
       preloaded.clear()
+      visibleEntries = undefined
       delete root.dataset.bookcaseReady
     },
     { once: true },

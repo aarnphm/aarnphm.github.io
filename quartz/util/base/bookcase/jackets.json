@@ -475,7 +475,7 @@
       "poster": "library/posters/the-stranger.jpg",
       "posterSha256": "789e8c3d6fcbf495a98f8d383d58751fa857c9b678269ab63e54e58f0cbad4bc",
       "crop": { "left": 0, "top": 0, "width": 1765, "height": 76 },
-      "artwork": "the-stranger-003627ae2872.webp",
+      "artwork": "the-stranger-low-af6b9b7f6145dfd0.webp",
       "height": 320,
       "perspective": {
         "width": 1765,
@@ -489,12 +489,13 @@
       },
       "sourceKind": "original-photograph-rectified",
       "rotation": 90,
-      "artworkSha256": "09e04bc3891c42dd9bb59e85fcaaf3ebe433993ca9f533e84146566db7ae964a",
+      "artworkSha256": "af6b9b7f6145dfd00f289cdc0b942f6022cfb990ddad3fd8ae9ad991f3aee655",
       "corroboration": ["https://images3.penguinrandomhouse.com/cover/9780679720201"],
       "detailArtwork": "the-stranger-detail-8687b2f588d5d4ac.webp",
       "detailArtworkSha256": "8687b2f588d5d4ac7880179721270e42db5d2187227551d8f3c7663880e2d6de",
       "detailWidth": 55,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "resistance-rebellion-and-death",
@@ -1270,7 +1271,7 @@
       "poster": "library/posters/groundwork-of-the-metaphysics-of-morals.jpg",
       "posterSha256": "2e94793b5272046b1a5eda2f42ebcdbbce05d3cdc736af4c2d9dd3887fe6819c",
       "crop": { "left": 0, "top": 0, "width": 41, "height": 1522 },
-      "artwork": "groundwork-of-the-metaphysics-of-morals-69262ceb8551.webp",
+      "artwork": "groundwork-of-the-metaphysics-of-morals-low-9b620450ea4cc162.webp",
       "height": 320,
       "perspective": {
         "width": 41,
@@ -1283,11 +1284,12 @@
         ]
       },
       "sourceKind": "seller-photograph",
-      "artworkSha256": "d09b74d597cbb175fea79453583bdda5f026ca73656ea36c14f420e58f60e8eb",
+      "artworkSha256": "9b620450ea4cc16266d859dcd8e9787460d465104f700fab9e063b1caf7dc212",
       "detailArtwork": "groundwork-of-the-metaphysics-of-morals-detail-251814ce06d45c09.webp",
       "detailArtworkSha256": "251814ce06d45c09cc9486c5ee9209ddb99e2467f0c422c7a800c6672584e644",
       "detailWidth": 34,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "homage-to-catalonia",
@@ -1434,7 +1436,7 @@
       "poster": "library/posters/our-man-in-havana.jpg",
       "posterSha256": "9b1d9010e33c22e923b34808fb52b30a52e0e23771534edcb9ee6fbd6282cf7d",
       "crop": { "left": 0, "top": 0, "width": 42, "height": 1470 },
-      "artwork": "our-man-in-havana-fe05f7001845.webp",
+      "artwork": "our-man-in-havana-low-7a08ab886531af22.webp",
       "height": 320,
       "perspective": {
         "width": 42,
@@ -1452,11 +1454,12 @@
         "https://rezised-images.knhbt.cz/1920x1920/83214131.jpg",
         "https://rezised-images.knhbt.cz/1920x1920/83214132.jpg"
       ],
-      "artworkSha256": "d7231931627a56af7940cecb800778bb8c406522d15645bcf285acfd0d92b6c7",
+      "artworkSha256": "7a08ab886531af225ca2a64d2b3e271b562f6ea49eb6447cf360fe406a881dcb",
       "detailArtwork": "our-man-in-havana-detail-32fe1df9d4845e69.webp",
       "detailArtworkSha256": "32fe1df9d4845e692a4335aa88aaae39f830bf6c04e1d298a495f60f4b8d80a8",
       "detailWidth": 36,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "pillow-thoughts-iv",
@@ -1572,7 +1575,7 @@
       "poster": "library/posters/the-birth-of-tragedy.jpg",
       "posterSha256": "11862b33ae736ac1074309daad7c3539201fca22044e7d7f7cc8f6a3ff7c14d5",
       "crop": { "left": 0, "top": 0, "width": 50, "height": 1520 },
-      "artwork": "the-birth-of-tragedy-59c865111127.webp",
+      "artwork": "the-birth-of-tragedy-low-7322bc229bd11c0f.webp",
       "height": 320,
       "perspective": {
         "width": 50,
@@ -1586,11 +1589,12 @@
       },
       "sourceKind": "seller-original-photograph-rectified",
       "corroboration": ["https://rezised-images.knhbt.cz/1920x1920/56684449.webp"],
-      "artworkSha256": "468cce065c299370f037e5879a726e6b9335d581dd245630250c3f26740a7289",
+      "artworkSha256": "7322bc229bd11c0f8e95dd7d9d9b393b4de9c71d2888c371d25724d8ebc66408",
       "detailArtwork": "the-birth-of-tragedy-detail-f9521c703298d93a.webp",
       "detailArtworkSha256": "f9521c703298d93a11182fc6226fd500484ce6754c9a3c1be9aeb9a973214ede",
       "detailWidth": 42,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "the-subtle-art-of-not-giving-a-fuck",
@@ -2400,9 +2404,9 @@
       "poster": "library/posters/the-sovereignty-of-good.jpg",
       "posterSha256": "6d27e0855ded2fa396995a86ca07eb37c3327b3be6f7b0138fd5177726072262",
       "crop": { "left": 0, "top": 0, "width": 60, "height": 1515 },
-      "artwork": "the-sovereignty-of-good-c36df9db1042.webp",
+      "artwork": "the-sovereignty-of-good-low-9d89be87d71c69f0.webp",
       "height": 320,
-      "artworkSha256": "305fd6015033a3e0e34c32b7137d35a173494181b0aacdd58c16fc8b994d61be",
+      "artworkSha256": "9d89be87d71c69f08ba56cde7d73564c3376961c8a3486379e262c246a88030a",
       "perspective": {
         "width": 60,
         "height": 1515,
@@ -2418,7 +2422,8 @@
       "detailArtwork": "the-sovereignty-of-good-detail-77b88f1023d9e8eb.webp",
       "detailArtworkSha256": "77b88f1023d9e8ebec24798645e281525c3c109ace50df0677adc54a900ad15b",
       "detailWidth": 50,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "the-triple-helix",
@@ -2669,9 +2674,9 @@
       "poster": "library/posters/the-prince.jpg",
       "posterSha256": "030849c6018b49194b2d430a4b3c8e6bd0aabdef3f2d116df48594a4ef09325e",
       "crop": { "left": 0, "top": 0, "width": 60, "height": 1525 },
-      "artwork": "the-prince-cad5d2a3a614.webp",
+      "artwork": "the-prince-low-50651f9a7bcb1dcd.webp",
       "height": 320,
-      "artworkSha256": "33441d381993ff9bd6d4e5c85455c2f7825c63192d8735ea2ec8068ee3f08f09",
+      "artworkSha256": "50651f9a7bcb1dcd1fc30d46ff952573efe83e10291465fb9fe1dabd41c5bf75",
       "perspective": {
         "width": 60,
         "height": 1525,
@@ -2690,7 +2695,8 @@
       "detailArtwork": "the-prince-detail-35bc8d1f19e626e1.webp",
       "detailArtworkSha256": "35bc8d1f19e626e1e1dbad4a2022c7f2b4e1ad754b37e6d62d88d9b446c4ae99",
       "detailWidth": 50,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "the-sea-the-sea",
@@ -3140,9 +3146,9 @@
       "poster": "library/posters/letter-to-his-father.jpg",
       "posterSha256": "a9669c381f2db2a9f7d07f45709545d2ac2e5cb153b9e19bdb42e11f76db0c3a",
       "crop": { "left": 0, "top": 0, "width": 60, "height": 1520 },
-      "artwork": "letter-to-the-father-b6262dceab1c.webp",
+      "artwork": "letter-to-the-father-low-1135a45a679dc826.webp",
       "height": 320,
-      "artworkSha256": "b412de9df649f35f0b99b1d0aa79fa8f4e372d5b69b9d327c6041b36ecdbc5b0",
+      "artworkSha256": "1135a45a679dc82658b27ea994df9d567c053cd6bc00c02fcb839c1dbe27a449",
       "perspective": {
         "width": 60,
         "height": 1520,
@@ -3157,7 +3163,8 @@
       "detailArtwork": "letter-to-the-father-detail-799019c96d7e8a75.webp",
       "detailArtworkSha256": "799019c96d7e8a75555b98a45c965f5f2c2e2b123dd76d7875eb26da48211b18",
       "detailWidth": 50,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "regarding-the-pain-of-others",
@@ -3329,9 +3336,9 @@
       "poster": "library/posters/symposium.jpg",
       "posterSha256": "476902ea93003d09e85fed52ff79b515c324784cd1d5325770072d588126221f",
       "crop": { "left": 0, "top": 0, "width": 1380, "height": 40 },
-      "artwork": "symposium-57c349828826.webp",
+      "artwork": "symposium-low-19289b545dcb04d1.webp",
       "height": 320,
-      "artworkSha256": "4f13857d2d62ce8ce4e81a0fdc2c481cf422d517431d6a5468cd486b497bb003",
+      "artworkSha256": "19289b545dcb04d1e7541302798e9a326393d7fd8180df5e30a8f2a1f64ab5a5",
       "perspective": {
         "width": 1380,
         "height": 40,
@@ -3347,7 +3354,8 @@
       "detailArtwork": "symposium-detail-6f14b1ba7bc12398.webp",
       "detailArtworkSha256": "6f14b1ba7bc12398c12c052d94beebcab2a44134c96afcbf78430cb4570c6ab6",
       "detailWidth": 37,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "notes-on-the-synthesis-of-form",
@@ -3503,6 +3511,452 @@
       "detailArtworkSha256": "2b39b74633a32216525787b6f894daad547c84c4596ad7c8a123ab22d16286df",
       "detailWidth": 168,
       "detailHeight": 1280
+    },
+    {
+      "id": "fall-on-your-knees",
+      "title": "Fall On Your Knees",
+      "publisher": "Vintage Canada",
+      "isbn": "9780394281780",
+      "editionEvidence": "eBay listing 147228511620 photographs a complete physical copy of the 2022 Vintage Canada trade paperback (ISBN 978-0-394-28178-0). Seller image 2 (WlgAAeSwqLBpMjVI, 1600x1600) shows the exact full-bleed M. Jensen waves/clouds painting with turquoise title and 'the author of Fayne' credit matching library/posters/fall-on-your-knees.jpg; seller image 4 (DsgAAeSw4VRpMjVJ, 1600x1600) shows the back cover with barcode 9780394281780; seller image 5 (99AAAeSwlURpMjVI, 1600x1600) shows the copyright page confirming 'VINTAGE CANADA EDITION, 2022 ... ISBN 978-0-394-28178-0 ... Cover design: Kelly Hill'. Seller image 0 (gQsAAeSwSqVpMjWC, 1600x1600) shows the complete, sharp, unobscured spine with 'Ann-Marie MacDonald' in turquoise, 'Fall on Your Knees' in cream, and the Vintage Canada V-lion colophon + 'Vintage / Canada' at the foot (the wire book stand sits behind the board and does not obscure any spine pixels). Corroborated by a second physical copy in eBay listing 147214918701. Exact printing number unverified. Perspective rectification (132x1286 plane, 128x1282 crop) yields a 32x320 q80 shelf spine and a 127x1280 q84 detail spine from ~1287 longitudinal native pixels without enlargement.",
+      "page": "https://www.ebay.com/itm/147228511620",
+      "source": "https://i.ebayimg.com/images/g/gQsAAeSwSqVpMjWC/s-l1600.jpg",
+      "sourceSha256": "d289c3cf87d3b0c1aa54e9fd92d639c32c99c97d6e7a0fb911d6e3f15948e373",
+      "poster": "library/posters/fall-on-your-knees.jpg",
+      "posterSha256": "64757c0875d8f1c73caf88939211f42796fd188698f25a0f4632519aabe138f6",
+      "crop": { "left": 2, "top": 2, "width": 128, "height": 1282 },
+      "artwork": "fall-on-your-knees-e8295dedeb36.webp",
+      "height": 320,
+      "artworkSha256": "e8295dedeb3663c7e70a04de1207b359d6018a5eb6056e25359f2714a4fbe4c9",
+      "perspective": {
+        "width": 132,
+        "height": 1286,
+        "points": [
+          { "source": [124, 190], "target": [0, 0] },
+          { "source": [276, 154], "target": [131, 0] },
+          { "source": [556, 1440], "target": [131, 1285] },
+          { "source": [446, 1440], "target": [0, 1285] }
+        ]
+      },
+      "rotation": 0,
+      "sourceKind": "seller-original-photograph-perspective-cropped",
+      "detailArtwork": "fall-on-your-knees-detail-e707357c608d5545.webp",
+      "detailArtworkSha256": "e707357c608d55453b49abc662fdc38488c62cd5ac00a8a1824ba27b76c94128",
+      "detailWidth": 127,
+      "detailHeight": 1280
+    },
+    {
+      "id": "lives-of-the-saints",
+      "title": "Lives of the Saints",
+      "publisher": "New York Review Books Classics",
+      "isbn": "9798896230281",
+      "editionEvidence": "PangoBooks listing d99340bd-0fcd-4413-956b-06f864063a01-U8NZqABK7HaejnMXdO1fuqWCrQY2 (recorded under /pricing/author/nancy-lemann/lives-of-the-saints/9798896230281) photographs a complete physical copy of the 2026 New York Review Books Classics paperback (ISBN 979-8-89623-028-1). Seller image 0 (575eaae9-1478-430c-b496-18a331c7571d, 1080x1080) shows the exact monochrome Spanish-moss mansion photograph with the central purple box reading 'LIVES OF THE SAINTS / NANCY LEMANN / INTRODUCTION BY GEOFF DYER' matching library/posters/Lives of the Saints.jpg; seller image 1 (e664ee3b-6bff-4f74-a6ac-4d26b0deb71d, 1080x1080) shows the purple back cover with barcode; seller image 2 (26ba7a5f-bbcd-4702-b9cd-1e06ef40f990, 1080x1080) shows the NYRB title/biographical page. Seller image 5 (74cf8ac5-c858-4b17-be61-612227a7eae9, 1080x1080) is a straight-on horizontal photograph of the purple spine showing 'NANCY LEMANN', 'LIVES OF THE SAINTS', and the white 'nyrb' pill colophon in full with no curvature clipping and no hand overlap on the spine face. Corroborated by a second PangoBooks copy (12d8ce6f) and Biblioklept’s physical copy photograph (img_9404.jpg). Exact printing number unverified. Perspective rectification (1014x58 plane, 1010x54 crop, rotation 90) yields a 17x320 q80 shelf spine and a 54x1010 q84 detail spine capped at ~1010 native longitudinal pixels without enlargement.",
+      "page": "https://pangobooks.com/books/d99340bd-0fcd-4413-956b-06f864063a01-U8NZqABK7HaejnMXdO1fuqWCrQY2",
+      "source": "https://images2.pangobooks.com/images/74cf8ac5-c858-4b17-be61-612227a7eae9",
+      "sourceSha256": "82d5551180ec1d45bd33782a192fafe44197df44f3b1b91dfbcad7ba28be70b1",
+      "poster": "library/posters/Lives of the Saints.jpg",
+      "posterSha256": "4826694b0d9d4b7ab50ca9b79fddc3e36b84d23f3e3f8f409c3844196f4c3eed",
+      "crop": { "left": 2, "top": 2, "width": 1010, "height": 54 },
+      "artwork": "lives-of-the-saints-f36affddf904.webp",
+      "height": 320,
+      "artworkSha256": "f36affddf904da575521d4f4a49b6bf0cfcace15f224d45160f4de19ecb54f7b",
+      "perspective": {
+        "width": 1014,
+        "height": 58,
+        "points": [
+          { "source": [42, 486], "target": [0, 0] },
+          { "source": [1058, 504], "target": [1013, 0] },
+          { "source": [1056, 562], "target": [1013, 57] },
+          { "source": [42, 544], "target": [0, 57] }
+        ]
+      },
+      "rotation": 90,
+      "sourceKind": "seller-original-photograph-perspective-cropped",
+      "detailArtwork": "lives-of-the-saints-detail-dbda2f8ac884c8b0.webp",
+      "detailArtworkSha256": "dbda2f8ac884c8b00f56ffb5fea6047abfa69551fab0af08da65218295421d86",
+      "detailWidth": 54,
+      "detailHeight": 1010
+    },
+    {
+      "id": "pilgrim-at-tinker-creek",
+      "title": "Pilgrim at Tinker Creek",
+      "publisher": "Harper Perennial Modern Classics",
+      "isbn": "9780061233326",
+      "editionEvidence": "eBay listing 307184855685 photographs a complete physical copy of the 2013 Harper Perennial Modern Classics trade paperback (ISBN 978-0-06-123332-6). Seller image 0 (jcoAAeSwsKFqrJiv, 1200x1600) shows the exact dark-blue Will Brown geometric circles cover matching library/posters/pilgrim-at-tinker-creek.jpg; seller image 2 (qJ0AAeSwtMVqrEIS, 1200x1600) shows the back cover with barcode 9780061233326; seller image 4 (pLUAAeSwCZ5qrEIR, 1200x1600) shows the copyright page confirming the 2013 Harper Perennial Modern Classics reissue and ISBN 978-0-06-123332-6; seller image 6 (mh8AAeSwHYBqrEIR, 1200x1600) shows the rear flap explicitly crediting 'Cover design by Will Brown'. Seller image 1 (JyYAAeSwvMFqrEIR, 1200x1600) is a straight-on vertical spine photograph showing 'PILGRIM AT TINKER CREEK' in cream, 'ANNIE DILLARD' in yellow, and the white lower imprint box with the blue/white circle emblem and 'HARPER / PERENNIAL / MODERN / CLASSICS' completely unobscured. Exact printing number unverified. Perspective rectification (130x1544 plane, 126x1540 crop) yields a 26x320 q80 shelf spine and a 104x1280 q84 detail spine from ~1540 native longitudinal pixels without enlargement. Part of the blank physical head exits the original photograph; every printed title, author and Harper label mark remains visible. Exact printing unverified.",
+      "page": "https://www.ebay.com/itm/307184855685",
+      "source": "https://i.ebayimg.com/images/g/JyYAAeSwvMFqrEIR/s-l1600.jpg",
+      "sourceSha256": "6b5fa3d5822888b5bd0eb5fcfa93473b1d64efd863aba20808ae113f077fec75",
+      "poster": "library/posters/pilgrim-at-tinker-creek.jpg",
+      "posterSha256": "eca39f9669b8cb1bc0fef37fe804472c0085926c044e7de9a698d7de79885ba6",
+      "crop": { "left": 2, "top": 2, "width": 126, "height": 1540 },
+      "artwork": "pilgrim-at-tinker-creek-4cc243eb4c9d.webp",
+      "height": 320,
+      "artworkSha256": "4cc243eb4c9dad91bac0eac60b3fea6bd9a0dd1a5dc2ce16ddbc3123f84f4c5c",
+      "perspective": {
+        "width": 130,
+        "height": 1544,
+        "points": [
+          { "source": [490, 20], "target": [0, 0] },
+          { "source": [620, 20], "target": [129, 0] },
+          { "source": [606, 1564], "target": [129, 1543] },
+          { "source": [474, 1564], "target": [0, 1543] }
+        ]
+      },
+      "rotation": 0,
+      "sourceKind": "seller-original-photograph-perspective-cropped",
+      "detailArtwork": "pilgrim-at-tinker-creek-detail-8b53d59b446ae7f1.webp",
+      "detailArtworkSha256": "8b53d59b446ae7f11a8ef379ce6e27dd41d4c3d31b92dd4e2b0a0530bfafa956",
+      "detailWidth": 104,
+      "detailHeight": 1280
+    },
+    {
+      "id": "rejection",
+      "title": "Rejection",
+      "publisher": "William Morrow",
+      "isbn": "9780063337879",
+      "editionEvidence": "PangoBooks listing 419e90ef-9299-461f-8d27-929aac473d08-CyajFVi3K0N2DayFgqYAJtYVGJ93 (recorded under /pricing/author/tony-tulathimutte/rejection-1/9780063337879) photographs a complete physical copy of the 2024 William Morrow first-edition hardcover (ISBN 978-0-06-333787-9, jacket design by Leah Carlson-Stanisic). Seller image 0 (00724038-94c9-406b-9150-e5f6c4f20329, 1080x1080) shows the iridescent dark-purple/olive gradient front with yellow 'REJECTION', 'Fiction', and 'TONY TULATHIMUTTE / AUTHOR OF PRIVATE CITIZENS'; seller image 1 (e7d6db34-2775-4b04-80e1-1ec20dcbcf5f, 1080x1080) shows the back cover with barcode 9780063337879; seller image 7 (18b8a001-e988-4cc8-b585-1eebee7fd2e2, 1080x1080) shows the entire dust-jacket wrap unfolded flat alongside the green cloth boards. Corroborated by PangoBooks copy a0a834ed (aa80ed97-70ad-4a89-9bee-a2ec84a71385, which includes the National Book Award Longlist medallion on the front cover and identical William Morrow spine 2c234d2a-759b-435c-98ab-185e676f829b) and eBay listings 168759511630 & 137301398939. Seller image 2 (801e5d83-d80c-48e5-9e03-7fd70dafae1b, 1080x1080) is a straight-on vertical spine photograph showing 'REJECTION', 'TONY TULATHIMUTTE', and the 'wm / MORROW' script colophon in full (hand holds the boards behind the spine and does not touch the spine face). Exact printing number unverified. Perspective rectification (98x940 plane, 94x936 crop) yields a 32x320 q80 shelf spine and a 94x936 q84 detail spine capped at ~936 native longitudinal pixels without enlargement.",
+      "page": "https://pangobooks.com/books/419e90ef-9299-461f-8d27-929aac473d08-CyajFVi3K0N2DayFgqYAJtYVGJ93",
+      "source": "https://images2.pangobooks.com/images/801e5d83-d80c-48e5-9e03-7fd70dafae1b",
+      "sourceSha256": "d45853769a7dc3aa55361fd8d43316f475c46e8f222b3246e1094f68401b01d7",
+      "poster": "library/posters/rejection.jpg",
+      "posterSha256": "a8f0b3feadfd3204f327a69f47643b3930150ed786153702cec41b4c18765e52",
+      "crop": { "left": 2, "top": 2, "width": 94, "height": 936 },
+      "artwork": "rejection-e5a0eb851d26.webp",
+      "height": 320,
+      "artworkSha256": "e5a0eb851d26e670d3f081e71eb4f74e33bd3c5207e87ff773cd551f4cab72d5",
+      "perspective": {
+        "width": 98,
+        "height": 940,
+        "points": [
+          { "source": [514, 66], "target": [0, 0] },
+          { "source": [612, 68], "target": [97, 0] },
+          { "source": [602, 1008], "target": [97, 939] },
+          { "source": [506, 1006], "target": [0, 939] }
+        ]
+      },
+      "rotation": 0,
+      "sourceKind": "seller-original-photograph-perspective-cropped",
+      "detailArtwork": "rejection-detail-607601148a6f3b29.webp",
+      "detailArtworkSha256": "607601148a6f3b2987b4540394dffc9800fdf007df2c5a7804b5486a4f076533",
+      "detailWidth": 94,
+      "detailHeight": 936
+    },
+    {
+      "id": "the-care-of-the-self",
+      "title": "The Care of the Self: The History of Sexuality, Vol. 3",
+      "publisher": "Vintage Books",
+      "isbn": "9780394741550",
+      "editionEvidence": "PangoBooks listing d62a057a-ce20-44b8-91ef-d6cfeca196d2-YGdqQTIYiPO8zSQYsfAO32yZ3dz2 (recorded under /pricing/author/michel-foucault/the-history-of-sexuality-vol-3/9780394741550) photographs a complete physical copy of the Peter Mendelsund Vintage Books trade paperback (ISBN 978-0-394-74155-0). Seller image 0 (ca527032-3913-4490-9585-7c03e52546ed, 1080x1080) shows the exact black-and-cream 'fig. 67' rusted-screw front cover with the small orange lower-left corner mark matching library/posters/the-care-of-the-self.jpg; seller image 5 (3acc2051-daf6-42fe-a9e4-79d891e254ec, 1080x1080) shows the matching Mendelsund back cover with seven small specimen icons and barcode 9780394741550. Seller image 1 (3ab5be92-c73d-444d-bf34-329ebabc340d, 1080x1080) captures both the 'fig. 67' front cover and the complete, unobscured horizontal spine in a single frame: black upper third with 'Foucault', cream middle section with horizontal screw icon and 'The Care of the Self', orange Vintage sun colophon + 'Vintage', and the orange bottom band that wraps onto the front cover’s lower-left corner. Independently corroborated by eBay listing 318817959934 (ebay-318817959934-0..2.jpg). Exact printing number unverified. Perspective rectification (960x78 plane, 956x74 crop, rotation 90) yields a 25x320 q80 shelf spine and a 74x956 q84 detail spine capped at ~956 native longitudinal pixels without enlargement.",
+      "page": "https://pangobooks.com/books/d62a057a-ce20-44b8-91ef-d6cfeca196d2-YGdqQTIYiPO8zSQYsfAO32yZ3dz2",
+      "source": "https://images2.pangobooks.com/images/3ab5be92-c73d-444d-bf34-329ebabc340d",
+      "sourceSha256": "b0dde487a7e69eeaf273fba0e31eeb75b6b7a76db62b1dcb29c5b879f44c8ba5",
+      "poster": "library/posters/the-care-of-the-self.jpg",
+      "posterSha256": "0404fbcaf511181fa76ffd77551d9caa2870b162f8fbe067655816c84406346b",
+      "crop": { "left": 2, "top": 2, "width": 956, "height": 74 },
+      "artwork": "the-care-of-the-self-e8b5d0818b47.webp",
+      "height": 320,
+      "artworkSha256": "e8b5d0818b470856d1ce5cfaadcaf3c673a2d3989157767c20e7c341199ed32b",
+      "perspective": {
+        "width": 960,
+        "height": 78,
+        "points": [
+          { "source": [36, 260], "target": [0, 0] },
+          { "source": [1032, 282], "target": [959, 0] },
+          { "source": [1024, 362], "target": [959, 77] },
+          { "source": [64, 334], "target": [0, 77] }
+        ]
+      },
+      "rotation": 90,
+      "sourceKind": "seller-original-photograph-perspective-cropped",
+      "detailArtwork": "the-care-of-the-self-detail-61401f11422ada93.webp",
+      "detailArtworkSha256": "61401f11422ada93edc7a26085196f00bcbfa5b607b47555a2d3ab363407b037",
+      "detailWidth": 74,
+      "detailHeight": 956
+    },
+    {
+      "id": "when-einstein-walked-with-godel",
+      "title": "\"When Einstein Walked With Gödel: Excursions to the Edge of Thought\"",
+      "publisher": "Farrar, Straus and Giroux",
+      "isbn": "9780374146702",
+      "editionEvidence": "Bookbot physical-copy gallery shows matching 2018 FSG hardcover, white front with black title, orange subtitle, Jim Holt and Einstein/Goedel walking photograph. Same-copy back image69474479 visibly carries ISBN9780374146702. Title, author and FSG imprint on genuine spine are complete and unobscured. Original jacket wear retained. Exact printing unverified.",
+      "page": "https://bookbot.com/g/4482672/m/8821389",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/69474478.jpg",
+      "sourceSha256": "205ed1bb665ecadb65f38fdf42975eaf677910b362ec9c04f1ae1fdecbba0eb0",
+      "poster": "library/posters/when-einstein.jpg",
+      "posterSha256": "4056c7b16dc57d95db55ebe5d2ebc4d98073c18b55d8aacf7916820ce2cf0d9b",
+      "crop": { "left": 0, "top": 0, "width": 130, "height": 1500 },
+      "artwork": "when-einstein-walked-with-godel-9838a48c65bf.webp",
+      "height": 320,
+      "artworkSha256": "9838a48c65bfe9882ee26d308dfac84d9924586c919470f2823c42b68ff94fc9",
+      "perspective": {
+        "width": 130,
+        "height": 1500,
+        "points": [
+          { "source": [585, 240], "target": [0, 0] },
+          { "source": [704, 240], "target": [129, 0] },
+          { "source": [683, 1700], "target": [129, 1499] },
+          { "source": [574, 1660], "target": [0, 1499] }
+        ]
+      },
+      "sourceKind": "same-copy dealer photograph",
+      "detailArtwork": "when-einstein-walked-with-godel-detail-29a553a5da46a479.webp",
+      "detailArtworkSha256": "29a553a5da46a4794da74971b29d58823186fb19417d32884657cb26a983f884",
+      "detailWidth": 110,
+      "detailHeight": 1280
+    },
+    {
+      "id": "civilisation-and-its-discontents",
+      "title": "Civilisation and its Discontents",
+      "publisher": "W. W. Norton & Company",
+      "isbn": "9780393304510",
+      "editionEvidence": "eBay listing 277986612940 photographs a complete physical copy of the W. W. Norton Standard Edition paperback (ISBN 978-0-393-30451-0). Seller image 0 (cPkAAeSweBdqBWsv, 990x1405) shows the exact dark-brown/cream Triboro block-typography front cover with INTRODUCTION BY CHRISTOPHER HITCHENS matching the saved poster; seller image 1 (vSEAAeSwWi9qBWsz, 1200x1600) shows the back cover with THE STANDARD EDITION, COVER DESIGN BY TRIBORO, and barcode 978-0-393-30451-0; seller image 4 (uIYAAeSwDgxqBWsa, 1200x1600) shows the copyright page confirming ISBN 978-0-393-30451-0. Seller image 2 (PMgAAeSwSeRqBWsV, 1200x1600) is an unstickered, straight-on vertical spine photograph showing CIVILIZATION AND ITS DISCONTENTS, SIGMUND FREUD, THE STANDARD EDITION, and the boxed Norton gull logo + NORTON in full. Exact printing number of the saved poster vs photographed copy is unverified. Perspective rectification (85x1506 plane, 83x1500 interior crop) yields an 18x320 q80 shelf spine and a 70x1280 q84 detail spine from ~1500 longitudinal by ~83 transverse native source pixels with no enlargement or pixel reconstruction.",
+      "page": "https://www.ebay.com/itm/277986612940",
+      "source": "https://i.ebayimg.com/images/g/PMgAAeSwSeRqBWsV/s-l1600.jpg",
+      "sourceSha256": "f94d3104e0398f3df9d10c38ebd1a70801a9216006bbf7191d5799c782a407ee",
+      "poster": "library/posters/civilisation-and-its-discontents.jpg",
+      "posterSha256": "95d725861ad83fd0499d3192c3ac7c8d05cb7b33d3634505ba6091591cc7067b",
+      "crop": { "left": 1, "top": 2, "width": 83, "height": 1500 },
+      "artwork": "civilisation-and-its-discontents-47fe14432cca.webp",
+      "height": 320,
+      "artworkSha256": "47fe14432cca8572fbbf569f0cbb19d58d05bd5bce0f39db9adf00240711f740",
+      "perspective": {
+        "width": 85,
+        "height": 1506,
+        "points": [
+          { "source": [545, 14], "target": [0, 0] },
+          { "source": [626, 14], "target": [84, 0] },
+          { "source": [634, 1520], "target": [84, 1505] },
+          { "source": [546, 1520], "target": [0, 1505] }
+        ]
+      },
+      "rotation": 0,
+      "sourceKind": "seller-original-photograph-perspective-cropped",
+      "detailArtwork": "civilisation-and-its-discontents-detail-5903aeb29c4c2825.webp",
+      "detailArtworkSha256": "5903aeb29c4c28251565fc24677c469b6445f85ed918d96c943b5e7b91d70dab",
+      "detailWidth": 70,
+      "detailHeight": 1280
+    },
+    {
+      "id": "logical-investigations",
+      "title": "Logical Investigations, Volume 1",
+      "publisher": "Routledge",
+      "isbn": "9780415241892",
+      "editionEvidence": "The actual seller-copy front, spine and back identify the gray-cloud International Library of Philosophy paperback, Volume 1, ISBN 9780415241892. It is Findlay’s translation, first published 1970, in the 2001 edition reprinted 2002. The spine crop is from the same physical copy as its matching front and back photos.",
+      "page": "https://www.ebay.ca/itm/117161028939",
+      "source": "https://i.ebayimg.com/images/g/AOEAAeSwdJBp67DA/s-l1600.jpg",
+      "sourceSha256": "14abd6c8ccf8b01f072ad5e60e0c0c770312d3c81a8bbc87084c40e92fc4912a",
+      "poster": "library/posters/logical-investigations.jpg",
+      "posterSha256": "61ae0a2fc7228207d605b9122fc859a2ec81a5aeeaa5adb07738645b0a0272aa",
+      "crop": { "left": 0, "top": 0, "width": 180, "height": 1432 },
+      "artwork": "logical-investigations-282d8d590bd9.webp",
+      "height": 320,
+      "artworkSha256": "282d8d590bd955a2d776b002289c85105157982a98e47cd6b3e8ccadf027dc7b",
+      "perspective": {
+        "width": 180,
+        "height": 1432,
+        "points": [
+          { "source": [352, 96], "target": [0, 0] },
+          { "source": [558, 102], "target": [179, 0] },
+          { "source": [562, 1527], "target": [179, 1431] },
+          { "source": [391, 1527], "target": [0, 1431] }
+        ]
+      },
+      "rotation": 0,
+      "sourceKind": "seller-original-physical-photograph-perspective-cropped",
+      "detailArtwork": "logical-investigations-detail-981b62dbe4648e61.webp",
+      "detailArtworkSha256": "981b62dbe4648e61745c28bcbc90152f6e0d629fd20db8f0d4da1624fa832253",
+      "detailWidth": 160,
+      "detailHeight": 1280
+    },
+    {
+      "id": "slaughterhouse-five",
+      "title": "Slaughterhouse-Five",
+      "publisher": "Dial Press Trade Paperbacks",
+      "isbn": "9780385333849",
+      "editionEvidence": "eBay listing 257759195043 photographs a complete physical copy of the Dial Press Trade Paperback edition (ISBN 978-0-385-33384-9). Seller front photo (qB8AAeSwfh1qss8x, 1199x1599) matches the saved red/yellow skull cover design (yellow slab-serif author, left Boston Globe quote, black hand-lettered SLAUGHTERHOUSE-FIVE / A NOVEL); back photo (M8wAAeSwDQlqss8x, 1199x1599) prints A DIAL PRESS TRADE PAPERBACK, credits Lynn Buckley cover design and Kurt Vonnegut illustration/lettering, and carries barcode 978-0-385-33384-9; copyright page photo (LVsAAeSwS8Fqss8x, 1199x1599) confirms Dial Press Trade Paperbacks ISBN 978-0-385-33384-9. Spine photo (dh8AAeSwIiNqss8x, 1599x1199) captures the red skull front cover and the entire horizontal yellow spine in one frame with both blank ends and all printed elements (SLAUGHTERHOUSE-FIVE, red asterisk, KURT VONNEGUT, Dial Press lion emblem, and DIAL PRESS) 100% unobscured. Exact printing number of the saved poster vs photographed copy is unverified. Perspective rectification (1081x58 plane, 1072x55 interior crop, rotation 90) via source.mjs yields a 16x320 q80 shelf spine and a 55x1072 q84 detail spine at full native longitudinal resolution (~1072x55 native pixels) with no enlargement or pixel reconstruction.",
+      "page": "https://www.ebay.com/itm/257759195043",
+      "source": "https://i.ebayimg.com/images/g/dh8AAeSwIiNqss8x/s-l1600.jpg",
+      "sourceSha256": "ba97ad6c1ce052102a70b86ec39f9e50ff8431069b63ad5256d29e2eff50a7a6",
+      "poster": "library/posters/slaughterhouse-five.jpg",
+      "posterSha256": "b071f2c799d56efbc14c35411d865bd5f4dcbc9511941d8962bdbeb1e275fe50",
+      "crop": { "left": 4, "top": 0, "width": 1072, "height": 55 },
+      "artwork": "slaughterhouse-five-c09207085462.webp",
+      "height": 320,
+      "artworkSha256": "c0920708546232f0c9e2ea1f8fec8a1326ab38fc23384d91eb9edc810ecff4c8",
+      "perspective": {
+        "width": 1081,
+        "height": 58,
+        "points": [
+          { "source": [228, 703], "target": [0, 0] },
+          { "source": [1332, 683], "target": [1080, 0] },
+          { "source": [1323, 741], "target": [1080, 57] },
+          { "source": [242, 760], "target": [0, 57] }
+        ]
+      },
+      "rotation": 90,
+      "sourceKind": "seller-original-photograph-perspective-cropped",
+      "detailArtwork": "slaughterhouse-five-detail-2fa3486dae881e15.webp",
+      "detailArtworkSha256": "2fa3486dae881e15cdb5bb82c6dea3487703bd0204bcba0109be246c01469fb8",
+      "detailWidth": 55,
+      "detailHeight": 1072
+    },
+    {
+      "id": "the-conquest-of-happiness",
+      "title": "The Conquest of Happiness",
+      "publisher": "Routledge",
+      "isbn": "9780415378475",
+      "editionEvidence": "Bookbot same-copy front, back18132031 and copyright18132033 photographs identify matching Routledge Classics paperback ISBN9780415378475, introduced2006 and sourcecopy reprinted2008, magenta background with four bananas, white Russell title, white subtitle band. Full author, Routledge logo, title and bottom banana design on spine are complete. The thumb overlaps only blank head margin; crop begins below it and trims that blank margin, leaving no skin pixels. Original photographic wear retained; exact printing unverified. Approximately11% of full physical spine length is trimmed, entirely in the blank head margin; blank-head spacing differs from an untrimmed face.",
+      "page": "https://bookbot.com/g/533022/m/611272",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/18132030.jpg",
+      "sourceSha256": "f121513243163f8ff6cff0cf534033dc2e7856286ff9cbcc51dfa06e4c8596d6",
+      "poster": "library/posters/the-conquest-of-happiness.jpg",
+      "posterSha256": "17f219c9a30d99de16a08bb0203679fff0b15e0e17ebaffff9790eaa2db050a7",
+      "crop": { "left": 0, "top": 0, "width": 66, "height": 1345 },
+      "artwork": "the-conquest-of-happiness-5b0c8a9c6987.webp",
+      "height": 320,
+      "artworkSha256": "5b0c8a9c6987d5a52d23f8eae82492b592bbc3d850478c6562ec35b3312c8b1f",
+      "perspective": {
+        "width": 66,
+        "height": 1345,
+        "points": [
+          { "source": [609, 390], "target": [0, 0] },
+          { "source": [666, 390], "target": [65, 0] },
+          { "source": [641, 1735], "target": [65, 1344] },
+          { "source": [575, 1718], "target": [0, 1344] }
+        ]
+      },
+      "sourceKind": "same-copy dealer photograph",
+      "detailArtwork": "the-conquest-of-happiness-detail-a793d1df7c0e48ed.webp",
+      "detailArtworkSha256": "a793d1df7c0e48edef8d941185602f47d1f37fb488b63f75b32754a6aaa8dfa8",
+      "detailWidth": 62,
+      "detailHeight": 1280
+    },
+    {
+      "id": "madness-and-civilization",
+      "title": "Madness & Civilization",
+      "publisher": "Vintage Books",
+      "isbn": "9780394719146",
+      "editionEvidence": "Original physical Bookbot photograph matches saved cream header, MICHEL FOUCAULT serif author, History of Insanity subtitle, skull held in hands and handwritten white title. Saved front visibly identifies V.914 and 394-71914-X, equivalent to ISBN9780394719146. Source physical front carries that same Vintage V.914 design; full spine confirms Vintage imprint and V.914. Bookbot cataloguing says1982 whereas separate matching Gillmore copy says1973; exact impression/year of the saved cover and source is unverified. Catalogue dates are not used as proof of identical printing. A small original front-price-label corner extends into blank right spine margin beside/above the sunburst. It does not cover title, author, logo rays, V.914 or Vintage wordmark. Label, age toning and wear remain in all output. Full printed design is present. Source1920x1920, approximately1490 longitudinal by88 transverse samples; detail may use1280 longitudinal samples without enlargement.",
+      "page": "https://bookbot.com/g/5104476/m/9636265",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/90517238.jpg",
+      "sourceSha256": "174ef599058c1c0467af95e02bf1531924c971c85eef26d29a99c4fb04ad87c4",
+      "poster": "library/posters/madness-and-civilization.jpg",
+      "posterSha256": "2d7a4084e93f124b1b432644612440b559519eb8465b162619cc3002c6524709",
+      "crop": { "left": 0, "top": 0, "width": 88, "height": 1510 },
+      "artwork": "madness-and-civilization-1c498b610937.webp",
+      "height": 320,
+      "artworkSha256": "1c498b610937b374c981f7538c349e6f98f3c8f1a9250a11c3ab6c60e3f89a9e",
+      "perspective": {
+        "width": 88,
+        "height": 1510,
+        "points": [
+          { "source": [609, 213], "target": [0, 0] },
+          { "source": [697, 211], "target": [87, 0] },
+          { "source": [697, 1726], "target": [87, 1509] },
+          { "source": [609, 1703], "target": [0, 1509] }
+        ]
+      },
+      "rotation": 0,
+      "sourceKind": "original-photograph-rectified",
+      "detailArtwork": "madness-and-civilization-detail-284536a969d65a7a.webp",
+      "detailArtworkSha256": "284536a969d65a7a67e26c7ee471af45e09036bf05adeffe1e52e49376d52cac",
+      "detailWidth": 74,
+      "detailHeight": 1280
+    },
+    {
+      "id": "principles-2017-linen-case-half-jacket",
+      "title": "Principles",
+      "publisher": "Avid Reader Press / Simon & Schuster",
+      "isbn": "9781501124020",
+      "editionEvidence": "Simon & Schuster confirms the hardcover ISBN. ISBN-specific product format metadata states “linen case w- half jacket.” Bookbot physical-copy photo 79055029 shows one complete as-sold composite spine: underlying linen reads LIFE & WORK and the visible beginning of PRINCIP; the white half-jacket overlays its remaining letters and carries red DALIO plus the Simon & Schuster imprint. This designed concealment is retained. The seller’s Gates/Robbins quote band and #1 NYT footer differ from the saved 5-million front; exact printing is unverified. No removal, stitching or letter reconstruction.",
+      "page": "https://bookbot.com/p/q/9781501124020",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/79055029.jpg",
+      "sourceSha256": "7d1d2ecb0cc93bbb784b37a41181b37629915da169b1c4f623c84be9a84f81ce",
+      "poster": "library/posters/principles.jpg",
+      "posterSha256": "a495c7081bf74464328dcc23a7ffbc8aa44689d841469de6639f5116333209df",
+      "crop": { "left": 0, "top": 0, "width": 210, "height": 1534 },
+      "artwork": "principles-2017-linen-case-half-jacket-2edbd74fafc5.webp",
+      "height": 320,
+      "artworkSha256": "2edbd74fafc5e5ac76ddf836dde2593d3d3ab299db6b88f59ba158ab520fe4b6",
+      "perspective": {
+        "width": 210,
+        "height": 1534,
+        "points": [
+          { "source": [617, 192], "target": [0, 0] },
+          { "source": [816, 216], "target": [209, 0] },
+          { "source": [822, 1725], "target": [209, 1533] },
+          { "source": [636, 1725], "target": [0, 1533] }
+        ]
+      },
+      "rotation": 0,
+      "sourceKind": "bookseller-original-physical-photograph-perspective-cropped",
+      "detailArtwork": "principles-2017-linen-case-half-jacket-detail-5ca9abeb01da7a76.webp",
+      "detailArtworkSha256": "5ca9abeb01da7a7692d8ccd5cfc9d60bad18d2a3163905b617b06084f3bb5553",
+      "detailWidth": 175,
+      "detailHeight": 1280
+    },
+    {
+      "id": "the-outsiders-hbr-2012",
+      "title": "The Outsiders: Eight Unconventional CEOs and Their Radically Rational Blueprint for Success",
+      "publisher": "Harvard Business Review Press",
+      "isbn": "9781422162675",
+      "editionEvidence": "The eBay physical seller listing identifies the 2012 Harvard Business Review Press hardcover and ISBN 9781422162675. Its gallery pairs a front matching saved black/white typography, teal “The”, subtitle and author with a separate spine photo showing the complete stylized title, Thorndike and HBR Press mark. The expanded right edge preserves the full printed contours. No reconstruction.",
+      "page": "https://www.ebay.com/itm/168209513907",
+      "source": "https://i.ebayimg.com/images/g/wmUAAeSwXVZpqn9h/s-l1600.webp",
+      "sourceSha256": "a1d4a36c5835f2d1ac48583891cee4f67af8d52f30cabf84149567dc4d83a20b",
+      "poster": "library/posters/the-outsiders.jpg",
+      "posterSha256": "aa0e9d41ddee33a70b139488f85d9ce8136ad70140c3878d01cdc0c9711e6ced",
+      "crop": { "left": 0, "top": 0, "width": 118, "height": 800 },
+      "artwork": "the-outsiders-hbr-2012-b157a815e90f.webp",
+      "height": 320,
+      "artworkSha256": "b157a815e90fc43f3bdf0045b6a7ab1a4331edefb4e66734bdc5763a9c315616",
+      "perspective": {
+        "width": 118,
+        "height": 800,
+        "points": [
+          { "source": [420, 170], "target": [0, 0] },
+          { "source": [523, 151], "target": [117, 0] },
+          { "source": [759, 920], "target": [117, 799] },
+          { "source": [702, 938], "target": [0, 799] }
+        ]
+      },
+      "rotation": 0,
+      "sourceKind": "seller-original-physical-photograph-perspective-cropped",
+      "detailArtwork": "the-outsiders-hbr-2012-detail-c57b3071d939d6d0.webp",
+      "detailArtworkSha256": "c57b3071d939d6d0cddcd1c3633f89f50b231805ecd0dd8ae10d595ac3f2af23",
+      "detailWidth": 118,
+      "detailHeight": 803
+    },
+    {
+      "id": "phenomenology-of-perception-routledge-2013",
+      "title": "Phenomenology of Perception",
+      "publisher": "Routledge",
+      "isbn": "9780415834339",
+      "editionEvidence": "AbeBooks listing 32473137415 identifies a 2013 Routledge paperback, ISBN 9780415834339. Seller image 1 shows the same charcoal front, white title, landscape painting, gold Maurice Merleau-Ponty name, and Routledge mark as the current poster. The full physical spine prints PHENOMENOLOGY and OF PERCEPTION as two lines, the Maurice Merleau-Ponty author line, and the Routledge R mark. Seller image 2 shows the back barcode for ISBN 9780415834339. The spine title and mark remain visible at source resolution; the small gold author lettering is soft. No glyphs are reconstructed.",
+      "page": "https://www.abebooks.co.uk/Phenomenology-Perception-Merleau-Ponty-Maurice-Routledge/32473137415/bd",
+      "source": "https://pictures.abebooks.com/inventory/32473137415.jpg",
+      "sourceSha256": "6e81d8cccf169635b7b77258ea91506c19bf19f90020d704157d8b932489163a",
+      "poster": "library/posters/phenomenology-of-perception.jpg",
+      "posterSha256": "194f25f331877a7b6da69e3dca9fa92475d560321f8485a9c2a9d967bb1233e9",
+      "crop": { "left": 0, "top": 0, "width": 44, "height": 410 },
+      "artwork": "phenomenology-of-perception-routledge-2013-7b2f14c863d7.webp",
+      "height": 320,
+      "artworkSha256": "7b2f14c863d79bc21ecef7ab7e6ea4ed93ef056d8f9e1529faf94808405e8208",
+      "perspective": {
+        "width": 44,
+        "height": 410,
+        "points": [
+          { "source": [14, 65], "target": [0, 0] },
+          { "source": [31, 26], "target": [43, 0] },
+          { "source": [94, 459], "target": [43, 409] },
+          { "source": [70, 467], "target": [0, 409] }
+        ]
+      },
+      "rotation": 0,
+      "sourceKind": "seller-original-photograph-perspective-cropped",
+      "detailArtwork": "phenomenology-of-perception-routledge-2013-detail-b404aed710d0d41b.webp",
+      "detailArtworkSha256": "b404aed710d0d41b3d1f1b5d452fcef728ec1d6366d97861ba32cfbf0b890f00",
+      "detailWidth": 43,
+      "detailHeight": 405
     }
   ]
 }

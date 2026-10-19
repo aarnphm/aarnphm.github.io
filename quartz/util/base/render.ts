@@ -928,16 +928,21 @@ function createListItemRenderer(
 
     const metadataItems: RenderElement[] = []
 
+    // Missing values keep their slot as "–" so the property columns line up across rows.
     for (const propertyKey of secondaryProps) {
       if (!propertyKey || seen.has(propertyKey)) continue
       const value = resolveValueWithFormulas(file, propertyKey, getContext, getPropertyExpr)
-      if (!hasRenderableValue(value)) continue
-
-      const renderedValue = renderPropertyValueNodes(value, currentSlug, allFiles)
-      if (renderedValue.length === 0) continue
+      const renderedValue = hasRenderableValue(value)
+        ? renderPropertyValueNodes(value, currentSlug, allFiles)
+        : []
 
       const label = getPropertyDisplayName(propertyKey, properties)
-      metadataItems.push(h('li', [h('span.base-list-meta-label', `${label}: `), ...renderedValue]))
+      metadataItems.push(
+        h('li', [
+          h('span.base-list-meta-label', `${label}:`),
+          ...(renderedValue.length > 0 ? renderedValue : ['–']),
+        ]),
+      )
       seen.add(propertyKey)
     }
 

@@ -20,6 +20,10 @@ Entry indices identify placed copies. A book can occur in several tag groups, so
 its slug alone cannot identify a placed copy. Repacking keeps each entry's original
 index for hit testing, selection and preview navigation.
 
+The browser caches the matching sidebar order between search and topic refreshes.
+Each refresh reads the live DOM order again, including semantic ranking; root
+cleanup releases the cached entries.
+
 Every shelf book has a jacket surface, cover-board rims, recessed pages and spine
 folds. The saved artwork belongs on the front board. Verified edition spine artwork
 comes from `jackets.json`, which pins the publisher source, ISBN, crop and hashes of
@@ -30,6 +34,8 @@ step, with no publisher requests during a build or browsing. The cover emitter
 generates 320 px front images. The camera keeps up to 32 shelf images total across
 fronts and spines, using
 cached bounds, a 120 px viewport margin and a 72 px minimum projected book height.
+Exposed jackets take priority over nearby spines and covers hidden between books,
+so fitting a tall cabinet cannot starve its top or bottom cover faces.
 Residency updates when selection, layout or a coarse camera window changes. Spine
 art projects through the shared book frame, including flat and rotated books. Its
 lettering replaces the fallback only after load; failure or eviction restores the
