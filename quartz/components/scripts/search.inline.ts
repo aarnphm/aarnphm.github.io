@@ -900,6 +900,7 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
       previewInner = document.createElement('div')
       previewInner.classList.add('preview-inner')
       previewInner.append(...innerDiv)
+      if (previewInner.querySelector('.stream-feed')) previewInner.classList.add('stream-preview')
       preview.replaceChildren(previewInner)
 
       const highlights = [...preview.getElementsByClassName('highlight')].sort(

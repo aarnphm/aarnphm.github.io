@@ -1,3 +1,4 @@
+import { EXIT, visit } from 'unist-util-visit'
 import {
   QuartzComponent,
   QuartzComponentConstructor,
@@ -21,6 +22,13 @@ export default (() => {
   const Content: QuartzComponent = (props: QuartzComponentProps) => {
     const { fileData, tree } = props
     const content = htmlToJsx(fileData.filePath!, tree)
+    let hasNotebookRuntime = false
+    visit(tree, 'element', node => {
+      if (node.properties.className?.includes('notebook-runtime')) {
+        hasNotebookRuntime = true
+        return EXIT
+      }
+    })
     const classes: string[] = fileData.frontmatter?.cssclasses ?? []
     const unitKind = unitOf(fileData.slug ?? '')?.kind
     // authored and converted lecture notes and problem sets open the workspace
@@ -28,6 +36,7 @@ export default (() => {
     const classString = [
       'popover-hint',
       'main-col',
+      ...(hasNotebookRuntime ? ['notebook-runtime-page'] : []),
       ...(isLecture ? ['course-lecture'] : []),
       ...classes,
     ].join(' ')

@@ -287,7 +287,7 @@
 
   .course-rail {
     position: sticky;
-    // the site header collapses on course pages (`#quartz-root:has(.course-crumb)`)
+    // Course pages supply their own breadcrumb and collapse the site header.
     top: var(--space-6);
     align-self: start;
   }
@@ -1005,9 +1005,8 @@
   }
 }
 
-// Anchored on the page root: a `body:has()` anchor re-matches whenever the homepage trail or pet
-// changes the body's DOM, and its descendant rules then restyle the whole document.
-#quartz-root:has(.course-crumb) {
+// The renderer resolves the course layout once; dynamic drawings must not invalidate this shell.
+#quartz-root[data-course-crumb] {
   > section.header,
   .header-content {
     display: contents;

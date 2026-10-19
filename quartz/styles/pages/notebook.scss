@@ -5,12 +5,12 @@ body:has(article.notebook-page) [data-article-title] {
 }
 
 article.notebook-page,
-article:has(.notebook-runtime) {
+article.notebook-runtime-page {
   grid-column: var(--layout-wide-column);
 }
 
 article.notebook-page,
-article:has(.notebook-runtime),
+article.notebook-runtime-page,
 .slides-root {
   hr {
     background-color: var(--lightgray);

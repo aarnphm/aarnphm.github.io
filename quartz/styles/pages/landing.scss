@@ -78,7 +78,7 @@ body[data-slug='index'] {
     opacity: 1;
   }
 
-  &:has(.homepage-trail-toggle[aria-expanded='true']) #quartz-root > section[class~='header'] {
+  &:has(.homepage-trail-toggle[aria-expanded='true']) #quartz-root > section.header {
     background: transparent;
   }
 
