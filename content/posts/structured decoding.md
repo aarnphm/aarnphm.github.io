@@ -149,7 +149,11 @@ From a technical perspective, an inference engine can modify the probability dis
 
 [^blogpost]: [LMSys](https://lmsys.org/blog/2024-02-05-compressed-fsm/) goes into their implementation of a compressed FSM via outlines, in SGLang.
 
-![[thoughts/images/vllm/constrained-json-fsm.webp|courtesy of (LMSys, 2024)]]
+```jsx imports={Zoomable,FSMDecoding}
+<Zoomable label="Constrained decoding with a logits mask">
+  <FSMDecoding preset="json" mode="char" caption="Constrained decoding with a logits mask, after the figure by (LMSys, 2024), on a smaller schema: a name of Paul or John and an age of 20 or 30. Each step is one forward pass. At the salmon state of the FSM, the mask keeps the toy tokens that leave the output viable (sage, with the state each token reaches) and sets the others to $-\infty$. The sampled token is salmon in the mask and in the output tape. The 21-token vocabulary is a toy, not a real tokenizer. Press step to walk the 10 passes, or switch to the compressed FSM to see jump-forward finish in 2 passes." />
+</Zoomable>
+```
 
 _in vLLM, you can use this by passing a JSON schema to the sampling params (either through [Python SDK](https://github.com/vllm-project/vllm/blob/80c751e7f68ade3d4c6391a0f3fce9ce970ddad0/benchmarks/benchmark_guided.py#L137) or HTTP requests)_
 
