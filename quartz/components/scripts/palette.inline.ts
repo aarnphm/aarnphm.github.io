@@ -1075,7 +1075,7 @@ document.addEventListener('nav', () => {
       const query = currentSearchTerm.trim()
       if (!query) {
         output.removeAttribute('aria-busy')
-        quickOpenProgress(!quickOpenLoaded && !quickOpenUnavailable)
+        quickOpenProgress(quickOpenReady !== null && !quickOpenLoaded && !quickOpenUnavailable)
         quickOpenStatus(
           quickOpenUnavailable
             ? 'Semantic search is unavailable. Use Ctrl+K for full-text search.'
@@ -1277,7 +1277,6 @@ document.addEventListener('nav', () => {
       for (const action of [...CONNECTOR_ACTS, ...COMMAND_ACTS]) {
         if (!actionCache.has(action)) actionCache.set(action, createActComponent(action, ''))
       }
-      void ensureQuickOpen().catch(error => console.warn('[QuickOpen] preload failed:', error))
     }
     const schedule = () => {
       if (window.requestIdleCallback) idle = window.requestIdleCallback(preload, { timeout: 2000 })

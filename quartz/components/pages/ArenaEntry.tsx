@@ -25,8 +25,8 @@ export default (() => {
 
     const renderBlock = createArenaChannelRenderer(componentData, channel)
     const sections = arenaChannelSections(channel)
-    const ordered = [...sections.pinned, ...sections.later, ...sections.blocks]
-    const index = ordered.findIndex(item => item.id === block.id)
+    const { ordered, indexById } = sections
+    const index = indexById.get(block.id) ?? -1
     if (index < 0) throw new Error(`Arena entry missing from ${channel.slug}: ${block.id}`)
     const entryHref = (offset: number) => {
       const adjacent = ordered[index + offset]

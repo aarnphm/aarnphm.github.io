@@ -148,6 +148,27 @@ let reminding = false
 let landAfterJet = false
 // Where the eyes look instead of the pointer: a triathlon window as it opens.
 let lookAt: Point | null = null
+// The home page's clock is the door to the trail: the scene opens out of it and shuts back into
+// it. The pet rides both sweeps sitting on the clock, as the 404 pet keeps the keystone over its
+// gate: a leap there on the click, a beat on the clock, then onto the route or back to the page.
+// It sits past the clock's left end with its legs over the paper, so the digits stay readable;
+// every other perch keeps out of the clock's corner.
+const clockDwellMs = 900
+let clockLanded = 0
+const clockEl = () => document.querySelector<HTMLElement>('.trail-local-time')
+const onClock = () => !!perch?.el && perch.el === clockEl()
+const perchClock = () => {
+  const clock = clockEl()
+  if (!root || !clock || carry) return false
+  const rect = clock.getBoundingClientRect()
+  if (rect.width <= 0 || rect.height <= 0) return false
+  clockLanded = performance.now()
+  afterMove = () => {
+    clockLanded = performance.now()
+  }
+  moveTo({ el: clock, kind: 'sit', t: -(0.36 * unit) / rect.width }, 'leap')
+  return true
+}
 // A window closing under the pet: no edge on it or inside it counts while the pet jumps off.
 let closing: Element | null = null
 let windowTimer: number | undefined
@@ -681,6 +702,7 @@ const wander = () => {
   if (Math.random() < 0.6 && walkTrail()) return
   if (
     !perch ||
+    onClock() ||
     perch.kind === 'hang' ||
     (perch.kind === 'floor' && perch.foot) ||
     // It stays on a triathlon window until the window closes, strolling along its top.
@@ -1707,7 +1729,7 @@ const boardTrail = (path: SVGPathElement) => landOnTrail(path, driveStep)
 // no walkable run in view, lands on the nearest clear foot and leaves the rest to the wander.
 const enterTrail = (obstacles: PetObstacles) => {
   dropHop()
-  if (walkTrail(obstacles, 'fade')) return true
+  if (walkTrail(obstacles, onClock() ? 'hop' : 'fade')) return true
   const path = expeditionPath()
   if (!path) return false
   return landOnTrail(path, () => {
@@ -1920,18 +1942,26 @@ function stopGround() {
       if ((Number(anim.currentTime) || 0) < delay) anim.cancel()
 }
 
-function moveTo(next: Perch, how: 'chute' | 'stroll' | 'fade' | null = null) {
+function moveTo(next: Perch, how: 'chute' | 'stroll' | 'fade' | 'leap' | null = null) {
   const after = afterMove
   afterMove = null
   if (!root) return
-  if (!petTrail(next.el)) leaveTrail()
-  else clearTrailActor()
+  // Off the route the move starts where the twin stood, at the size it had there, and grows on
+  // the way; leaving first would put the full-size pet at the foot for the first frame.
+  let from = doc
+  let fromScale = perch?.scale ?? 1
+  if (!petTrail(next.el)) {
+    if (trailWalk) {
+      pauseTrail()
+      from = doc
+      fromScale = perch?.scale ?? 1
+    }
+    leaveTrail()
+  } else clearTrailActor()
   root.hidden = false
   stopGround()
   gaze = ''
   const target = placeOn(next)
-  const from = doc
-  const fromScale = perch?.scale ?? 1
   const same = !!from && perch?.el === next.el && perch?.kind === next.kind && next.kind !== 'hang'
   perch = next
   doc = target
@@ -1996,7 +2026,7 @@ function moveTo(next: Perch, how: 'chute' | 'stroll' | 'fade' | null = null) {
       { transform: end },
     ]
     duration = clamp((d / 380) * 1000, 320, 1400)
-  } else if (offscreen || d > 900) {
+  } else if (offscreen || (d > 900 && how !== 'leap')) {
     frames = [
       { transform: transformFor({ x: target.x, y: target.y - 160 }), opacity: 0 },
       { transform: end, opacity: 1 },
@@ -2079,7 +2109,7 @@ const slidesPerch = (seen: PlacementMeasurements): Perch | 'covered' | null => {
 // The page changed under a perched pet: if its edge went away or text now sits under it, it finds
 // another edge.
 function recheckPerch() {
-  if (!root || !perch || !doc || hop || carry || petTrail(perch.el)) return
+  if (!root || !perch || !doc || hop || carry || petTrail(perch.el) || onClock()) return
   const scale = perch.scale ?? 1
   const at = {
     x: doc.x - window.scrollX + (width * scale) / 2,
@@ -3039,6 +3069,7 @@ document.addEventListener('nav', () => {
   void loadWeather(signal)
   const scene = document.querySelector<HTMLElement>('.homepage-trail-scene')
   let trailFrame = 0
+  let clockTimer = 0
   let trailWanted = false
   let waiting: Animation | null = null
   const refreshTrail = () => {
@@ -3070,8 +3101,9 @@ document.addEventListener('nav', () => {
     }
     if (trailScene(document)?.dataset.trailRendered !== 'true') return
     if (!trailWanted || carry) return
-    // On the trail a move finishes first; from the page the pet comes in at once.
-    const current = trailWalk ? hop : null
+    // On the trail a move finishes first, and the leap to the clock lands and sits a beat there;
+    // from anywhere else on the page the pet comes in at once.
+    const current = trailWalk || onClock() ? hop : null
     if (current) {
       if (waiting === current) return
       waiting = current
@@ -3082,6 +3114,14 @@ document.addEventListener('nav', () => {
       }
       void current.finished.then(ready, ready)
       return
+    }
+    if (onClock()) {
+      const left = clockDwellMs - (performance.now() - clockLanded)
+      if (left > 0) {
+        window.clearTimeout(clockTimer)
+        clockTimer = window.setTimeout(queueTrail, left + 20)
+        return
+      }
     }
     if (trailWalk ? walkTrail(obstacles) : enterTrail(obstacles)) {
       trailWanted = false
@@ -3108,6 +3148,7 @@ document.addEventListener('nav', () => {
   }
   const pausePageTrail = () => {
     cancelAnimationFrame(trailFrame)
+    window.clearTimeout(clockTimer)
     trailFrame = 0
     waiting = null
     trailWanted = false
@@ -3143,16 +3184,24 @@ document.addEventListener('nav', () => {
     else root.hidden = true
   }
   // Fresh page placement already checked the clock in its obstacle snapshot. Slides have their
-  // own perch policy; retained pets still need the live check after the page changes.
-  if (!placed || document.body.dataset.slides === 'true') clearClock()
+  // own perch policy; retained pets still need the live check after the page changes. A trail
+  // still opening at load (the saved preference) takes the pet to the clock instead.
+  const openingAtLoad =
+    !!scene && !scene.hidden && trailScene(document)?.dataset.trailOpening !== 'complete'
+  if ((!placed || document.body.dataset.slides === 'true') && !openingAtLoad) clearClock()
   if (scene) {
     const openTrail = () => {
       if (scene.hidden) return
       trailWanted = true
       queueTrail()
     }
+    const leaveForClock = () => {
+      pausePageTrail()
+      perchClock()
+    }
+    scene.addEventListener('trail:open', () => !scene.hidden && perchClock(), { signal })
     scene.addEventListener('trail:show', openTrail, { signal })
-    scene.addEventListener('trail:close', pausePageTrail, { signal })
+    scene.addEventListener('trail:close', leaveForClock, { signal })
     scene.addEventListener('trail:hide', closeTrail, { signal })
     scene.addEventListener('trail:dispose', closeTrail, { signal })
     scene.addEventListener('trail:reflow', queueTrail, { signal })
@@ -3254,6 +3303,7 @@ document.addEventListener('nav', () => {
       { signal },
     )
     if (!scene.hidden) openTrail()
+    if (openingAtLoad) perchClock()
   }
   document.addEventListener('pointermove', onPointerMove, { passive: true, signal })
   document.addEventListener('pointerdown', onPointerDown, { passive: true, signal })
