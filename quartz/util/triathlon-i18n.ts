@@ -1635,8 +1635,6 @@ const en: TriDict = {
 const fr: TriDict = {
   ui: {
     'workout notation': 'notation des séances',
-    'Read each workout in order: distance or duration, number of repeats, effort target, then recovery. Swim sets may pair a technique drill with full-stroke swimming; bike sets pair power blocks with easy pedalling; run sets pair pace or heart-rate targets with jog recoveries. Use the sport-specific units and targets written in your plan.':
-      'Lisez chaque séance dans l’ordre : distance ou durée, nombre de répétitions, cible d’effort, puis récupération. En natation, une série peut alterner un exercice technique et la nage complète; à vélo, des blocs de puissance et un pédalage facile; en course, des cibles d’allure ou de fréquence cardiaque et une récupération en jogging. Suivez les unités et les cibles propres à chaque sport dans votre plan.',
     'Four 100 m repeats, each starting 1 min 45 s after the last. The interval includes both swimming and rest.':
       'Quatre répétitions de 100 m, avec un départ toutes les 1 min 45 s. L’intervalle comprend la nage et le repos.',
     'Swim in 1:30, rest 15 s, then start the next 100.':
@@ -1653,6 +1651,14 @@ const fr: TriDict = {
       'Quatre nages individuel : papillon, dos, brasse, nage libre. IMO suit cet ordre d’une répétition à l’autre.',
     '100 m IM → 25 m of each stroke. 4 × 100 m IMO → one stroke per 100.':
       '100 m IM → 25 m de chaque nage. 4 × 100 m IMO → une nage par 100 m.',
+    'Swim (full stroke, usually freestyle).': 'Nage complète (habituellement le crawl).',
+    'Kick (legs only, often with a kickboard).': 'Jambes seules (souvent avec une planche).',
+    'IM (butterfly, backstroke, breaststroke, freestyle).':
+      'Quatre nages (papillon, dos, brasse, nage libre).',
+    'Pull (arms only, with a pull buoy).': 'Bras seuls (avec un pull-buoy).',
+    'Swim again at the prescribed effort.': 'Nage complète à l’effort prescrit.',
+    '5 × 100 m SKIPS → 100 m swim, 100 m kick, 100 m IM, 100 m pull, 100 m swim.':
+      '5 × 100 m SKIPS → 100 m nage complète, 100 m jambes, 100 m quatre nages, 100 m bras, 100 m nage complète.',
     'Descend: make each repeat faster while keeping the stroke controlled. Build: increase speed during one repeat.':
       'Descend : accélérez à chaque répétition en gardant une nage maîtrisée. Build : augmentez la vitesse au cours d’une même répétition.',
     '4 × 100 desc 1–4 → finish each 100 faster than the one before.':

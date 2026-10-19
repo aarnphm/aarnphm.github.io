@@ -1,7 +1,11 @@
 import type { Locale } from '../../../util/triathlon-presentation'
 import { triText } from '../../../util/triathlon-i18n'
 
-type NotationCard = { term: string; meaning: string; example: string }
+type NotationCard = {
+  term: string
+  meaning: string | { letter: string; meaning: string }[]
+  example: string
+}
 type NotationSport = 'swim' | 'bike' | 'run'
 
 const CARDS: Record<NotationSport, NotationCard[]> = {
@@ -28,6 +32,17 @@ const CARDS: Record<NotationSport, NotationCard[]> = {
       meaning:
         'Individual medley: butterfly, backstroke, breaststroke, freestyle. IMO follows that order across repeats.',
       example: '100 m IM → 25 m of each stroke. 4 × 100 m IMO → one stroke per 100.',
+    },
+    {
+      term: 'SKIPS',
+      meaning: [
+        { letter: 'S', meaning: 'Swim (full stroke, usually freestyle).' },
+        { letter: 'K', meaning: 'Kick (legs only, often with a kickboard).' },
+        { letter: 'I', meaning: 'IM (butterfly, backstroke, breaststroke, freestyle).' },
+        { letter: 'P', meaning: 'Pull (arms only, with a pull buoy).' },
+        { letter: 'S', meaning: 'Swim again at the prescribed effort.' },
+      ],
+      example: '5 × 100 m SKIPS → 100 m swim, 100 m kick, 100 m IM, 100 m pull, 100 m swim.',
     },
     {
       term: 'desc · build',
@@ -179,11 +194,6 @@ export const Notation = ({ id, locale = 'en' }: { id: string; locale?: Locale })
     <section class="tri-notation" aria-labelledby={`${id}-title`}>
       <header class="tri-notation-header">
         <h2 id={`${id}-title`}>{copy('workout notation')}</h2>
-        <p>
-          {copy(
-            'Read each workout in order: distance or duration, number of repeats, effort target, then recovery. Swim sets may pair a technique drill with full-stroke swimming; bike sets pair power blocks with easy pedalling; run sets pair pace or heart-rate targets with jog recoveries. Use the sport-specific units and targets written in your plan.',
-          )}
-        </p>
       </header>
       <fieldset class="tri-notation-categories">
         <legend class="sr-only">{copy('sport')}</legend>
@@ -214,7 +224,19 @@ export const Notation = ({ id, locale = 'en' }: { id: string; locale?: Locale })
                 <dt>
                   <code>{card.term}</code>
                 </dt>
-                <dd>{copy(card.meaning)}</dd>
+                <dd>
+                  {typeof card.meaning === 'string' ? (
+                    copy(card.meaning)
+                  ) : (
+                    <ul class="tri-notation-list">
+                      {card.meaning.map((item, index) => (
+                        <li key={index}>
+                          <code>{item.letter}</code> – {copy(item.meaning)}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </dd>
                 <dd class="tri-notation-example">{copy(card.example)}</dd>
               </div>
             ))}

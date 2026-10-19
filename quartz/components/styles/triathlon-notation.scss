@@ -11,8 +11,6 @@
 .tri-notation {
   min-width: 0;
 
-  // base.scss lays every <header> out as a row; the title sits above its note, as the
-  // calendar title does.
   .tri-notation-header {
     display: block;
     margin-bottom: 1rem;
@@ -23,13 +21,6 @@
       font-size: 1.15rem;
       line-height: 1.3;
       font-weight: 500;
-    }
-
-    p {
-      margin: 0;
-      max-width: 65ch;
-      color: var(--darkgray);
-      font-size: 0.85rem;
     }
   }
 }
@@ -158,6 +149,19 @@
     font-family: var(--codeFont);
     font-size: 0.7rem;
     line-height: 1.5;
+  }
+}
+
+.tri-notation-list {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0;
+  padding-inline-start: 1.1rem;
+  list-style: disc;
+
+  li {
+    margin: 0;
+    padding: 0;
   }
 }
 

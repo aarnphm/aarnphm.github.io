@@ -284,8 +284,7 @@ class VoiceMemoTests(unittest.TestCase):
       '#settings=display:simplified',
     )
     self.assertEqual(
-      memos.normalize_display_settings('focused'),
-      '#settings=display:focused',
+      memos.normalize_display_settings('focused'), '#settings=display:focused'
     )
     self.assertEqual(
       memos.normalize_display_settings('run-swim'),
@@ -334,7 +333,9 @@ class VoiceMemoTests(unittest.TestCase):
     with self.assertRaisesRegex(ValueError, 'Unknown display preset'):
       memos.normalize_display_settings('display:unknown')
     with self.assertRaisesRegex(ValueError, 'cannot be combined'):
-      memos.normalize_display_settings('display:simplified&matched-rides:false')
+      memos.normalize_display_settings(
+        'display:simplified&matched-rides:false'
+      )
     with self.assertRaisesRegex(ValueError, 'Invalid trace setting name'):
       memos.normalize_display_settings('not_kebab_name:true')
 
@@ -361,11 +362,7 @@ class VoiceMemoTests(unittest.TestCase):
 
     # Existing entry updated with display options
     modified = memos.update_stream(
-      STREAM,
-      date(2026, 9, 5),
-      ['20260905'],
-      NOW,
-      display='run-swim',
+      STREAM, date(2026, 9, 5), ['20260905'], NOW, display='run-swim'
     )
     self.assertIn(
       '![[triathlon#2026-09-05#analytics#settings=display:run-swim]]', modified
@@ -417,8 +414,7 @@ class VoiceMemoTests(unittest.TestCase):
           'CREATE TABLE ZCLOUDRECORDING (ZPATH TEXT, ZEVICTIONDATE REAL)'
         )
         db.execute(
-          'INSERT INTO ZCLOUDRECORDING VALUES (?, ?)',
-          (audio.name, None),
+          'INSERT INTO ZCLOUDRECORDING VALUES (?, ?)', (audio.name, None)
         )
       repo = root / 'repo'
       repo.mkdir()
