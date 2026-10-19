@@ -53,7 +53,7 @@ views:
     bookHeight: 220
     shelfWidth: 600
     shelfStyle: spine
-    shelfMaterial: walnut
+    shelfMaterial: steel
     topicShelves:
       philosophy:
         style: zigzag
@@ -75,10 +75,16 @@ views:
         material: steel
       technology:
         style: wall
-        material: steel
+        material: walnut
       poetry:
         style: straight
         material: paper
+      finance:
+        style: straight
+        material: birch-ply
+      progress:
+        style: wall
+        material: steel
   - type: cards
     name: gallery
     order:
