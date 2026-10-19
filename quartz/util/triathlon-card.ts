@@ -14129,15 +14129,43 @@ export const buildActivityComparison = <N>(
   return root
 }
 
-export const dayDetails = (payload: DayCardPayload, dateIso: string): StravaActivityDetail[] =>
-  Object.values(payload.details)
-    .filter(d => d.date === dateIso)
-    .sort((a, b) => b.distanceKm - a.distanceKm)
+const dayDetailsByMap = new WeakMap<
+  DayCardPayload['details'],
+  Map<string, StravaActivityDetail[]>
+>()
+const recentLocationByMap = new WeakMap<DayCardPayload['details'], string | undefined>()
 
-export const recentLocation = (payload: DayCardPayload): string | undefined =>
-  Object.values(payload.details)
-    .sort((a, b) => b.date.localeCompare(a.date))
-    .find(d => d.location)?.location ?? undefined
+export const dayDetails = (payload: DayCardPayload, dateIso: string): StravaActivityDetail[] => {
+  let byDate = dayDetailsByMap.get(payload.details)
+  if (!byDate) {
+    byDate = new Map()
+    for (const detail of Object.values(payload.details)) {
+      let list = byDate.get(detail.date)
+      if (!list) {
+        list = []
+        byDate.set(detail.date, list)
+      }
+      list.push(detail)
+    }
+    for (const list of byDate.values()) {
+      list.sort((a, b) => b.distanceKm - a.distanceKm)
+    }
+    dayDetailsByMap.set(payload.details, byDate)
+  }
+  return byDate.get(dateIso) ?? []
+}
+
+export const recentLocation = (payload: DayCardPayload): string | undefined => {
+  if (recentLocationByMap.has(payload.details)) {
+    return recentLocationByMap.get(payload.details)
+  }
+  const location =
+    Object.values(payload.details)
+      .sort((a, b) => b.date.localeCompare(a.date))
+      .find(d => d.location)?.location ?? undefined
+  recentLocationByMap.set(payload.details, location)
+  return location
+}
 
 const timelineActivityValue = (
   presentation: TriathlonPresentation,
