@@ -1,3 +1,5 @@
+import { setText } from '../runtime/dom'
+
 export function setupTorqueCharts(scope: HTMLElement): () => void {
   const showCell = (graph: SVGSVGElement, index: number): void => {
     const cells = Array.from(graph.querySelectorAll<SVGRectElement>('[data-torque-cell]'))
@@ -10,7 +12,7 @@ export function setupTorqueCharts(scope: HTMLElement): () => void {
     graph.setAttribute('aria-valuenow', String(selected))
     graph.setAttribute('aria-valuetext', text)
     const readout = graph.closest('.tri-torque-cadence')?.querySelector('.tri-torque-readout')
-    if (readout) readout.textContent = text
+    if (readout) setText(readout, text)
   }
   const click = (event: MouseEvent): void => {
     if (!(event.target instanceof Element)) return

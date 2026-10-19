@@ -1,5 +1,6 @@
 import type { TriathlonPresentation } from '../../../util/triathlon-presentation'
 import { cyclingWattsCellText } from '../../../util/triathlon-card'
+import { setText } from '../runtime/dom'
 
 export function setupCyclingWattsCharts(
   scope: HTMLElement,
@@ -57,7 +58,7 @@ export function setupCyclingWattsCharts(
     activeChart = chart
     cell.classList.add('tri-cycling-watts-heat-cell--active')
     chart.classList.add('tri-chart--hover')
-    readout.textContent = value
+    setText(readout, value)
     readout.hidden = false
     graph.setAttribute('aria-valuenow', String(selected))
     graph.setAttribute('aria-valuetext', value)

@@ -1,6 +1,7 @@
 import type { SwimPowerCurvePoint } from '../../../util/swim-power'
 import { dlabel, powerCurveFraction } from '../../../util/triathlon-card'
 import { isRecord } from '../../../util/type-guards'
+import { setText } from '../runtime/dom'
 
 export function setupSwimPowerCharts(scope: HTMLElement): () => void {
   const curves = new WeakMap<SVGSVGElement, SwimPowerCurvePoint[]>()
@@ -58,8 +59,8 @@ export function setupSwimPowerCharts(scope: HTMLElement): () => void {
     }
     const duration = wrap.querySelector('.tri-curve-readout-duration')
     const value = wrap.querySelector('.tri-swim-drag-value')
-    if (duration) duration.textContent = dlabel(point.durationS)
-    if (value) value.textContent = `${point.index.toFixed(1)} idx`
+    if (duration) setText(duration, dlabel(point.durationS))
+    if (value) setText(value, `${point.index.toFixed(1)} idx`)
     graph.setAttribute('aria-valuenow', String(point.durationS))
     graph.setAttribute(
       'aria-valuetext',
