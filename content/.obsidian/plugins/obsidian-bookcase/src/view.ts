@@ -16,6 +16,7 @@ import { type BookcaseConfig, readConfig } from './options'
 import { Page } from './page'
 import { type CameraAction, Panel } from './panel'
 import { type Point, type Scene, buildScene } from './scene-model'
+import { type SpineFonts, fitSpine, spineFonts } from './spine-fit'
 import { type Frame, LayerStack, Stage, cameraTarget, toPx } from './stage'
 import {
   type BookPaint,
@@ -123,6 +124,8 @@ export class BookcaseView extends BasesView {
 
   private settings: BookcaseConfig | null = null
   private scene: Scene<BookModel> | null = null
+  /** Resolved spine label fonts; cleared when the theme or fonts change. */
+  private fonts: SpineFonts | null = null
   /** Paint and camera point of each book, filled on first use. */
   private paints: (BookPaint | undefined)[] = []
   private centres: (Point | undefined)[] = []
@@ -260,7 +263,12 @@ export class BookcaseView extends BasesView {
   }
 
   onload(): void {
-    this.registerEvent(this.app.workspace.on('css-change', () => this.schedule()))
+    this.registerEvent(
+      this.app.workspace.on('css-change', () => {
+        this.fonts = null
+        this.schedule()
+      }),
+    )
     this.registerEvent(
       // A finished cover patches only its books, in the next idle pass (SPEC 7).
       this.plugin.covers.on('cover', path => {
@@ -437,7 +445,7 @@ export class BookcaseView extends BasesView {
       minX,
       maxX - minX,
       this.panel.inset(),
-      !this.linked,
+      !this.linked && this.marked >= 0,
     )
     const { scale } = metrics
     this.frame = { minX, minY, scale }
@@ -901,9 +909,13 @@ export class BookcaseView extends BasesView {
     const n = Number(key.slice(1))
     switch (key[0]) {
       case 't':
-        return scene.books[n]?.text.title?.text ?? ''
-      case 'a':
-        return scene.books[n]?.text.author?.text ?? ''
+      case 'a': {
+        const book = scene.books[n]
+        if (!book) return ''
+        this.fonts ??= spineFonts(this.root)
+        const labels = fitSpine(book, this.fonts)
+        return key[0] === 't' ? labels.title : labels.author
+      }
       case 'p':
         for (const layer of scene.layers)
           if (layer.kind === 'shelf' && layer.shelf === n) return layer.plate?.label ?? ''
@@ -1221,8 +1233,14 @@ export class BookcaseView extends BasesView {
   private markSelected(index: number): void {
     if (index === this.marked) return
     this.buttons[this.marked]?.removeAttribute('aria-current')
+    const had = this.marked >= 0
     this.marked = index
     this.buttons[index]?.setAttribute('aria-current', 'true')
+    // With nothing selected there is no page panel: the stage takes the width until a pick.
+    if (had !== index >= 0) {
+      this.root.toggleClass('has-selection', index >= 0)
+      this.schedule()
+    }
   }
 
   private updateIndex(scene: Scene<BookModel>): void {
@@ -1251,7 +1269,7 @@ export class BookcaseView extends BasesView {
       }
     }
     if (this.roving >= books.length) this.roving = -1
-    if (this.marked >= books.length) this.marked = -1
+    if (this.marked >= books.length) this.markSelected(-1)
   }
 
   private buttonIndex(target: EventTarget | null): number | null {
