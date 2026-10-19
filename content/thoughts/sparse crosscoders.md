@@ -55,11 +55,25 @@ Joint dictionary learning can capture correlated contributions in these spaces.[
 
 ### persistent features and complexity
 
-![[thoughts/images/proposal-formed-by-cross-layers-superposition.webp]]
+```jsx imports={Zoomable,CrossLayerFeatures}
+<Zoomable label="feature lifecycle through the residual stream">
+  <CrossLayerFeatures
+    view="lifecycle"
+    caption="A synthetic feature lifecycle, after Anthropic's crosscoders figure. Eight blocks write into the residual stream $r_0,\dots,r_8$. Projected on the feature direction, $r_{l+1}=r_l+u_l$ becomes $s_{l+1}=s_l+w_l$. Sage blocks write to the feature: two form it by cross-layer superposition, one amplifies it and one deletes it. With one SAE per position $r_1,\dots,r_8$ and unit decoder norms, the feature becomes 5 salmon duplicate latents. A crosscoder gives one salmon latent with $z=1$ and decoder norms $\|d^l\|=s_l$. Both pay the same $L_1$-of-norms penalty, $11\lambda$. Switch the dictionary to compare."
+  />
+</Zoomable>
+```
 
 Suppose a signal with strength $z(x)$ persists across three layers. Its contribution at layer $l$ is $z(x)d^l$, where the direction $d^l$ may change. Separate SAEs must discover and match those three occurrences. A crosscoder can assign them one activation $z(x)$ and three decoder vectors.
 
-![[thoughts/images/dedup-features-persistent.webp]]
+```jsx imports={Zoomable,CrossLayerFeatures}
+<Zoomable label="duplicate features and circuit edges">
+  <CrossLayerFeatures
+    view="circuit"
+    caption="The preview's hypothetical circuit, after Anthropic's crosscoders figure. Features 1 and 2 (sage) are present by layer $L$. MLPs in layers $L+2$ and $L+3$ combine them into feature 3 (salmon), and all three persist to $L+4$. Per-layer SAEs give 13 latents and 14 edges; 10 of the edges are a feature causing itself one layer later. A crosscoder whose latents read one layer and write that layer and later ones gives 3 latents and 2 edges. Switch the dictionary to compare."
+  />
+</Zoomable>
+```
 
 This can combine repeated occurrences into one graph node.[^risks] The reconstruction alone leaves open whether the original model carried the signal forward or independently recomputed it.
 
@@ -69,7 +83,14 @@ This can combine repeated occurrences into one graph node.[^risks] The reconstru
 
 An SAE reconstructs its input activation space. A [[thoughts/mechanistic interpretability#transcoders|transcoder]] predicts another space, commonly an MLP's output from its input. Both fit within the crosscoder family.
 
-![[thoughts/images/crosscoder-setup.webp]]
+```jsx imports={Zoomable,CrosscoderMasks}
+<Zoomable label="autoencoder, transcoder and crosscoder reads and writes">
+  <CrosscoderMasks
+    dims="coder"
+    caption="Autoencoder, transcoder and acausal crosscoder on five residual-stream layers, after Anthropic's crosscoders figure. The stream runs up from L0. Each box is a group of latents with one encoder placement; an arrow into a box is a read and an arrow out is a reconstruction. The grid marks each pair of read layer and reconstructed layer that a group connects: sage where the coder allows it, salmon for the selected read layer. Pick a coder and a read layer."
+  />
+</Zoomable>
+```
 
 > [!math]+ crosscoders
 >
@@ -101,7 +122,16 @@ The outer sum is an $L_1$ norm of per-layer $L_2$ norms.[^l2weightnorm] For one 
 
 ## variants
 
-![[thoughts/images/crosscoders-variants.webp]]
+```jsx imports={Zoomable,CrosscoderMasks}
+<Zoomable label="crosscoder causality and locality masks">
+  <CrosscoderMasks
+    dims="variant"
+    causality="weak"
+    locality="global"
+    caption="Crosscoder variants on five residual-stream layers, after Anthropic's crosscoders variant table. Causality sets which layers a read can reconstruct: every layer (acausal), the same and later layers (weakly causal) or only later layers (strictly causal). Locality limits each latent to a window of $K=2$ adjacent layers, or keeps every other layer. Sage cells are allowed pairs; the salmon row and boxes belong to the selected read layer. The table also lists a shared SAE (one dictionary tied across layers, with the autoencoder mask), cross-model coders, and coders that predict layer outputs instead of the residual stream; this figure does not draw those. Pick a variant and a read layer."
+  />
+</Zoomable>
+```
 
 The placement of encoders and decoders determines what information a prediction can use:
 
