@@ -50,29 +50,156 @@ export interface FeedMarkdownOpts {
   includeRestDays?: boolean
 }
 
+interface ParsedDataFeed {
+  source: string
+  activitiesReversed: FeedActivityRow[]
+  daysReversed: FeedDayRow[]
+  weeksReversed: FeedWeekRow[]
+}
+
+let cachedParsedDataFeed: ParsedDataFeed | undefined
+const staticSummaryTailCache = new WeakMap<Analytics, string>()
+const activityMarkdownCache = new WeakMap<FeedActivityRow, WeakMap<object, Map<boolean, string>>>()
+const activityMarkdownNoDetailCache = new WeakMap<FeedActivityRow, Map<boolean, string>>()
+
+function parseDataFeed(dataFeed: string): ParsedDataFeed {
+  if (cachedParsedDataFeed?.source === dataFeed) {
+    return cachedParsedDataFeed
+  }
+  const rows = dataFeed
+    .split('\n')
+    .filter(Boolean)
+    .map(line => JSON.parse(line) as { kind: string } & Record<string, unknown>)
+  const activitiesReversed = (
+    rows.filter(r => r.kind === 'activity') as unknown as FeedActivityRow[]
+  )
+    .slice()
+    .reverse()
+  const daysReversed = (rows.filter(r => r.kind === 'day') as unknown as FeedDayRow[])
+    .slice()
+    .reverse()
+  const weeksReversed = (rows.filter(r => r.kind === 'week') as unknown as FeedWeekRow[])
+    .slice()
+    .reverse()
+  cachedParsedDataFeed = { source: dataFeed, activitiesReversed, daysReversed, weeksReversed }
+  return cachedParsedDataFeed
+}
+
+function renderStaticSummaryTail(analytics: Analytics): string {
+  const cached = staticSummaryTailCache.get(analytics)
+  if (cached !== undefined) return cached
+  const m = analytics.meta
+  const staticEntries: Array<[string, unknown]> = [
+    ['loadShare', analytics.loadShare],
+    ['form', analytics.risk],
+    ['vo2max', analytics.engine.vo2max],
+    ['body', analytics.body],
+    ['thresholds', analytics.thresholds],
+    ['bests', analytics.bests],
+    ['criticalPower', analytics.powerCurve.criticalPower],
+    ['criticalPowerYear', analytics.powerCurve.criticalPowerYear],
+    ['upcoming', (analytics.events ?? []).filter(e => e.date >= m.today)],
+    ['races', analytics.races],
+    ['tests', analytics.tests],
+  ]
+  const rendered = staticEntries
+    .map(([key, value]) =>
+      renderTitledSections(value, { title: `summary.${key}`, headingDepth: 3 }),
+    )
+    .join('\n\n')
+  staticSummaryTailCache.set(analytics, rendered)
+  return rendered
+}
+
+function renderActivityMarkdown(
+  a: FeedActivityRow,
+  det: StravaActivityDetail | undefined,
+  includeActivityDetails: boolean,
+): string {
+  if (det && typeof det === 'object') {
+    const byDetail = activityMarkdownCache.get(a)?.get(det)?.get(includeActivityDetails)
+    if (byDetail !== undefined) return byDetail
+  } else {
+    const byFlag = activityMarkdownNoDetailCache.get(a)?.get(includeActivityDetails)
+    if (byFlag !== undefined) return byFlag
+  }
+
+  const full = includeActivityDetails
+    ? { ...a, detail: det ?? null }
+    : {
+        ...a,
+        hrZones: det?.hrZones ?? null,
+        powerZones: det?.powerZones ?? null,
+        strokes: det?.strokes ?? null,
+      }
+  const sauna = a.sport === 'sauna' ? a.sauna : null
+  const gloss = (
+    sauna
+      ? [
+          hms(a.movingTimeS),
+          `${Math.round(sauna.temperatureC)} °C`,
+          `${sauna.humidityPct}% RH`,
+          sauna.cooldown,
+          sauna.heatTrainingLoad != null ? `HTL ${sauna.heatTrainingLoad}` : null,
+          a.avgHr != null ? `hr ${a.avgHr}` : null,
+        ]
+      : [
+          distGloss(a.sport, a.distanceKm),
+          hms(a.movingTimeS),
+          paceGloss(a.sport, a.distanceKm, a.movingTimeS),
+          a.avgHr != null ? `hr ${a.avgHr}` : null,
+          a.avgWatts != null ? `${a.avgWatts}w` : null,
+          `load ${a.load}`,
+        ]
+  )
+    .filter(Boolean)
+    .join(' · ')
+  const title = `${a.date} · ${a.sport} · ${a.id}`
+  const data = renderTitledSections(full, { title: `activities.${a.id}`, headingDepth: 4 })
+  const block = `### ${escapeMarkdownHeading(title)}\n\n${gloss}\n\n${data}`
+
+  if (det && typeof det === 'object') {
+    let byDetail = activityMarkdownCache.get(a)
+    if (!byDetail) {
+      byDetail = new WeakMap()
+      activityMarkdownCache.set(a, byDetail)
+    }
+    let byFlag = byDetail.get(det)
+    if (!byFlag) {
+      byFlag = new Map()
+      byDetail.set(det, byFlag)
+    }
+    byFlag.set(includeActivityDetails, block)
+  } else {
+    let byFlag = activityMarkdownNoDetailCache.get(a)
+    if (!byFlag) {
+      byFlag = new Map()
+      activityMarkdownNoDetailCache.set(a, byFlag)
+    }
+    byFlag.set(includeActivityDetails, block)
+  }
+
+  return block
+}
+
 export function buildFeedMarkdown(
   dataFeed: string,
   analytics: Analytics,
   opts: FeedMarkdownOpts = {},
 ): string {
-  const rows = dataFeed
-    .split('\n')
-    .filter(Boolean)
-    .map(line => JSON.parse(line) as { kind: string } & Record<string, unknown>)
+  const parsed = parseDataFeed(dataFeed)
   const scopePrefix = opts.scopePrefix ?? ''
-  const activities = (rows.filter(r => r.kind === 'activity') as unknown as FeedActivityRow[])
-    .filter(row => row.date.startsWith(scopePrefix))
-    .slice()
-    .reverse()
-  const days = (rows.filter(r => r.kind === 'day') as unknown as FeedDayRow[])
-    .filter(row => row.date.startsWith(scopePrefix))
-    .filter(row => opts.includeRestDays !== false || row.sessions > 0)
-    .slice()
-    .reverse()
-  const weeks = (rows.filter(r => r.kind === 'week') as unknown as FeedWeekRow[])
-    .filter(row => row.weekStart.startsWith(scopePrefix))
-    .slice()
-    .reverse()
+  const activities = scopePrefix
+    ? parsed.activitiesReversed.filter(row => row.date.startsWith(scopePrefix))
+    : parsed.activitiesReversed
+  const days = parsed.daysReversed.filter(
+    row =>
+      (!scopePrefix || row.date.startsWith(scopePrefix)) &&
+      (opts.includeRestDays !== false || row.sessions > 0),
+  )
+  const weeks = scopePrefix
+    ? parsed.weeksReversed.filter(row => row.weekStart.startsWith(scopePrefix))
+    : parsed.weeksReversed
   const details = opts.details ?? {}
   const m = analytics.meta
   const title = opts.title ?? 'triathlon activity feed'
@@ -94,7 +221,7 @@ export function buildFeedMarkdown(
     ]),
   )
 
-  const summary = {
+  const dynamicSummary = {
     window: {
       from: dates[0] ?? m.windowFrom,
       to: dates[dates.length - 1] ?? m.windowTo,
@@ -112,18 +239,9 @@ export function buildFeedMarkdown(
       goalFtp: ATHLETE.goalFTP,
     },
     bySport,
-    loadShare: analytics.loadShare,
-    form: analytics.risk,
-    vo2max: analytics.engine.vo2max,
-    body: analytics.body,
-    thresholds: analytics.thresholds,
-    bests: analytics.bests,
-    criticalPower: analytics.powerCurve.criticalPower,
-    criticalPowerYear: analytics.powerCurve.criticalPowerYear,
-    upcoming: (analytics.events ?? []).filter(e => e.date >= m.today),
-    races: analytics.races,
-    tests: analytics.tests,
   }
+
+  const summaryMarkdown = `${renderTitledSections(dynamicSummary, { title: 'summary' })}\n\n${renderStaticSummaryTail(analytics)}`
 
   const header = [
     '---',
@@ -139,50 +257,16 @@ export function buildFeedMarkdown(
     '',
     `Training log for ${ATHLETE.sex === 'M' ? 'a male' : 'a'} athlete (age ${ageOn(m.today)}), ${activities.length} activities from ${dates[0] ?? m.windowFrom} to ${dates[dates.length - 1] ?? m.windowTo}. Each activity below carries hierarchical GFM tables of its measured numbers; the summary holds season totals, current form, thresholds, lab tests, and bests. All distances are kilometres, paces minutes per kilometre (swim per 100 m), speeds km/h, unless noted.`,
     '',
-    renderTitledSections(summary, { title: 'summary' }),
+    summaryMarkdown,
     '',
     '## activities',
     '',
     'Newest first. Each block is one activity; fields are exact measured values (null when unrecorded).',
   ].join('\n')
 
+  const includeActivityDetails = Boolean(opts.includeActivityDetails)
   const acts = activities
-    .map(a => {
-      const det = details[String(a.id)]
-      const full = opts.includeActivityDetails
-        ? { ...a, detail: det ?? null }
-        : {
-            ...a,
-            hrZones: det?.hrZones ?? null,
-            powerZones: det?.powerZones ?? null,
-            strokes: det?.strokes ?? null,
-          }
-      const sauna = a.sport === 'sauna' ? a.sauna : null
-      const gloss = (
-        sauna
-          ? [
-              hms(a.movingTimeS),
-              `${Math.round(sauna.temperatureC)} °C`,
-              `${sauna.humidityPct}% RH`,
-              sauna.cooldown,
-              sauna.heatTrainingLoad != null ? `HTL ${sauna.heatTrainingLoad}` : null,
-              a.avgHr != null ? `hr ${a.avgHr}` : null,
-            ]
-          : [
-              distGloss(a.sport, a.distanceKm),
-              hms(a.movingTimeS),
-              paceGloss(a.sport, a.distanceKm, a.movingTimeS),
-              a.avgHr != null ? `hr ${a.avgHr}` : null,
-              a.avgWatts != null ? `${a.avgWatts}w` : null,
-              `load ${a.load}`,
-            ]
-      )
-        .filter(Boolean)
-        .join(' · ')
-      const title = `${a.date} · ${a.sport} · ${a.id}`
-      const data = renderTitledSections(full, { title: `activities.${a.id}`, headingDepth: 4 })
-      return `### ${escapeMarkdownHeading(title)}\n\n${gloss}\n\n${data}`
-    })
+    .map(a => renderActivityMarkdown(a, details[String(a.id)], includeActivityDetails))
     .join('\n\n')
 
   return [
