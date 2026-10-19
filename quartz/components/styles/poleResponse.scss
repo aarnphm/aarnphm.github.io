@@ -1,0 +1,453 @@
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
+@use './figure.scss' as *;
+
+.pole-response {
+  @include figure-frame('prs-figure', 36rem);
+
+  --prs-lit: var(--fig-salmon);
+  --prs-ref: var(--fig-sage);
+  --prs-stable: color-mix(in srgb, var(--fig-sage) 16%, var(--light));
+  --prs-unstable: color-mix(in srgb, var(--lightgray) 70%, var(--light));
+  --prs-rise: color-mix(in srgb, var(--gray) 16%, transparent);
+  --prs-band: color-mix(in srgb, var(--gray) 26%, transparent);
+  --prs-segment-on: var(--fig-grid-selected);
+}
+
+:root[saved-theme='dark'] .pole-response {
+  --prs-stable: color-mix(in srgb, var(--fig-sage) 14%, var(--light));
+  --prs-unstable: color-mix(in srgb, var(--lightgray) 80%, var(--light));
+  --prs-rise: color-mix(in srgb, var(--gray) 22%, transparent);
+  --prs-band: color-mix(in srgb, var(--gray) 40%, transparent);
+  --prs-segment-on: color-mix(in srgb, var(--fig-sage) 22%, var(--lightgray));
+  // Pole discs carry an ink cross, so in the dark theme their fill drops toward the ground.
+  --prs-lit: color-mix(in srgb, var(--fig-salmon) 50%, var(--lightgray));
+  --prs-ref: color-mix(in srgb, var(--fig-sage) 45%, var(--lightgray));
+}
+
+.prs-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.25rem;
+  align-items: flex-end;
+  margin-bottom: 0.9rem;
+}
+
+.prs-segments {
+  @include figure-grid;
+  grid-auto-flow: column;
+  min-width: 0;
+  position: relative;
+  margin-top: 1.1rem;
+}
+
+.prs-legend {
+  position: absolute;
+  top: -1.15rem;
+  left: 0;
+  padding: 0;
+  color: var(--fig-note);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.prs-segment {
+  @include figure-grid-cell;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.28rem 0.6rem;
+  color: var(--fig-tab-fg);
+  cursor: pointer;
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  transition:
+    background-color 140ms ease,
+    color 140ms ease;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    pointer-events: none;
+  }
+
+  &:has(input:checked) {
+    background: var(--prs-segment-on);
+    color: var(--dark);
+  }
+
+  &:has(input:focus-visible) {
+    outline: 2px solid var(--dark);
+    outline-offset: -2px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      color: var(--dark);
+    }
+  }
+}
+
+.prs-gain {
+  display: grid;
+  grid-template-columns: max-content minmax(8rem, 1fr) max-content;
+  gap: 0.5rem 0.75rem;
+  align-items: center;
+  flex: 1 1 20rem;
+  min-width: 0;
+}
+
+.prs-gain-label {
+  color: var(--fig-note);
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.prs-slider {
+  width: 100%;
+  min-width: 0;
+  @include stableRangeControl;
+}
+
+.prs-button {
+  min-height: 1.75rem;
+  padding: 0.2rem 0.6rem;
+  border: 1px solid var(--darkgray);
+  border-radius: var(--radius-none);
+  background: var(--light);
+  color: var(--dark);
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  cursor: pointer;
+  transition: background-color 140ms ease;
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background: var(--fig-grid-selected);
+    }
+  }
+}
+
+.prs-loop {
+  display: none;
+  margin: 0 0 0.6rem;
+  color: var(--fig-note);
+  font-size: 0.82rem;
+}
+
+.pole-response[data-prs-comp='none'] [data-prs-loop='none'],
+.pole-response[data-prs-comp='integrator'] [data-prs-loop='integrator'],
+.pole-response[data-prs-comp='pi'] [data-prs-loop='pi'] {
+  display: block;
+}
+
+.prs-panels {
+  display: grid;
+  grid-template-columns: minmax(0, 250fr) minmax(0, 342fr);
+  gap: 0.75rem;
+  align-items: start;
+}
+
+.pole-response[data-prs-mode='locus'] .prs-panels {
+  grid-template-columns: minmax(0, 304fr) minmax(0, 342fr);
+}
+
+.prs-plane,
+.prs-plot {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+
+  text {
+    font-family: var(--codeFont);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .prs-tick text {
+    fill: var(--darkgray);
+    font-size: 10px;
+  }
+
+  .prs-grid line {
+    stroke: var(--fig-line);
+    stroke-width: 1;
+  }
+
+  .prs-frame {
+    fill: none;
+    stroke: var(--fig-stroke-soft);
+    stroke-width: 1;
+  }
+}
+
+.prs-plane {
+  touch-action: none;
+  cursor: crosshair;
+
+  .prs-region--stable {
+    fill: var(--prs-stable);
+  }
+
+  .prs-region--unstable {
+    fill: var(--prs-unstable);
+  }
+
+  .prs-region-label text {
+    fill: var(--fig-note);
+    font-size: 9px;
+  }
+
+  .prs-axis {
+    stroke: var(--fig-stroke);
+    stroke-width: 1;
+  }
+
+  .prs-axis--region {
+    stroke: var(--dark);
+    stroke-width: 2;
+  }
+
+  .prs-guide {
+    stroke: var(--fig-stroke);
+    stroke-width: 1;
+  }
+
+  .prs-geo {
+    stroke: var(--dark);
+    stroke-width: 1;
+  }
+
+  .prs-proj,
+  .prs-angle {
+    stroke: var(--fig-stroke-soft);
+    stroke-width: 1;
+  }
+
+  .prs-arc {
+    fill: none;
+    stroke: var(--dark);
+    stroke-width: 1;
+  }
+
+  .prs-mark .prs-pole {
+    fill: var(--prs-lit);
+    stroke: var(--dark);
+    stroke-width: 1;
+  }
+
+  .prs-mark--ref .prs-pole {
+    fill: var(--prs-ref);
+  }
+
+  .prs-x {
+    fill: none;
+    stroke: var(--dark);
+    stroke-width: 1.25;
+    pointer-events: none;
+  }
+
+  .prs-handle {
+    cursor: grab;
+    outline: none;
+
+    .prs-hit {
+      fill: transparent;
+    }
+
+    .prs-ring {
+      fill: none;
+      stroke: none;
+    }
+
+    .prs-pole {
+      fill: var(--prs-lit);
+      stroke: var(--dark);
+      stroke-width: 1;
+    }
+
+    &:focus-visible .prs-ring {
+      stroke: var(--dark);
+      stroke-width: 2;
+    }
+  }
+
+  .prs-branch {
+    fill: none;
+    stroke: var(--dark);
+    stroke-width: 1.5;
+    stroke-linejoin: round;
+  }
+
+  .prs-open {
+    fill: none;
+    stroke: var(--dark);
+    stroke-width: 1.5;
+  }
+
+  .prs-zero,
+  .prs-point {
+    fill: var(--light);
+    stroke: var(--dark);
+    stroke-width: 1.25;
+  }
+
+  .prs-closed {
+    fill: var(--prs-lit);
+    stroke: var(--dark);
+    stroke-width: 1;
+    pointer-events: none;
+  }
+
+  .prs-locus {
+    display: none;
+  }
+}
+
+.pole-response[data-prs-comp='none'] [data-prs-locus='none'],
+.pole-response[data-prs-comp='integrator'] [data-prs-locus='integrator'],
+.pole-response[data-prs-comp='pi'] [data-prs-locus='pi'] {
+  display: inline;
+}
+
+.prs-plot {
+  .prs-band {
+    fill: var(--prs-band);
+  }
+
+  .prs-rise {
+    fill: var(--prs-rise);
+  }
+
+  .prs-final {
+    stroke: var(--fig-stroke);
+    stroke-width: 1;
+  }
+
+  .prs-curve,
+  .prs-ref-curve,
+  .prs-env {
+    fill: none;
+    stroke-linejoin: round;
+  }
+
+  .prs-curve {
+    stroke: var(--dark);
+    stroke-width: 1.75;
+  }
+
+  .prs-ref-curve {
+    stroke: var(--gray);
+    stroke-width: 1.5;
+  }
+
+  .prs-env {
+    stroke: var(--fig-stroke-soft);
+    stroke-width: 1;
+  }
+
+  .prs-drop {
+    stroke: var(--fig-stroke);
+    stroke-width: 1;
+  }
+
+  .prs-dot {
+    fill: var(--light);
+    stroke: var(--dark);
+    stroke-width: 1.25;
+  }
+}
+
+.prs-fo {
+  @include figure-fo;
+  justify-content: center;
+  font-size: 0.68rem;
+}
+
+.prs-fo--end {
+  justify-content: flex-end;
+}
+
+.prs-readout {
+  @include figure-table(repeat(2, minmax(0, 1fr) max-content));
+  margin-top: 0.9rem;
+}
+
+.prs-math {
+  @include figure-inline-math;
+}
+
+.prs-caption {
+  @include figure-caption;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .prs-segment,
+  .prs-button {
+    transition: none;
+  }
+}
+
+@container prs-figure (max-width: 560px) {
+  .prs-panels,
+  .pole-response[data-prs-mode='locus'] .prs-panels {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .prs-plane {
+    max-width: 20rem;
+    margin: 0 auto;
+  }
+
+  // Each panel spans the column here, so the viewBox scales down; text keeps a readable size.
+  .prs-plane .prs-tick text,
+  .prs-plot .prs-tick text {
+    font-size: 12px;
+  }
+
+  .prs-fo {
+    font-size: 0.8rem;
+  }
+
+  .prs-readout {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    dd {
+      overflow-wrap: anywhere;
+    }
+  }
+
+  .prs-gain {
+    grid-template-columns: max-content minmax(0, 1fr);
+  }
+
+  .prs-button {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+  .prs-segments {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .prs-segment:last-of-type:nth-of-type(odd) {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 480px) {
+  .pole-response {
+    padding: 1rem 0.75rem;
+  }
+}
