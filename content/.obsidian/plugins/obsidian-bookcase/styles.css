@@ -50,6 +50,15 @@
   display: none;
 }
 
+/* nothing selected: no empty page panel, the stage takes the width */
+.bookcase-view[data-layout]:not(.has-selection) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.bookcase-view:not(.has-selection) .bookcase-page {
+  display: none;
+}
+
 .bookcase-view.is-own-scroller {
   height: 520px;
   overflow-y: auto;
@@ -201,9 +210,21 @@
 }
 
 .bookcase-topic[aria-selected='true'] {
+  position: relative;
+  z-index: 1;
   border-color: var(--bc-hi);
   background: var(--bc-hi);
   color: var(--background-primary);
+}
+
+/* the open tab is wider than the column: it draws its own top edge over the tab above.
+   A pseudo-element, since a negative margin would shift every tab below by 1px on selection. */
+.bookcase-tab + .bookcase-topic[aria-selected='true']::before {
+  content: '';
+  position: absolute;
+  inset: -1px -1px auto;
+  block-size: 1px;
+  background: var(--bc-hi);
 }
 
 .bookcase-tab-shortcut,
