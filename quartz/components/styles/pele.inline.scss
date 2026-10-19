@@ -1,3 +1,30 @@
+@use './figure.scss' as figure;
+
+.pele-math-probe {
+  position: fixed;
+  top: 0;
+  left: 0;
+  visibility: hidden;
+  pointer-events: none;
+
+  > .pele-math-label {
+    display: inline-flex;
+    width: max-content;
+    height: auto;
+    font-size: 16px;
+  }
+}
+
+.pele-math-label {
+  @include figure.figure-fo;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.pele-math {
+  overflow: visible;
+}
+
 .pele-figure {
   --pele-bg: var(--light);
   --pele-fg: var(--dark);
@@ -9,16 +36,23 @@
   --pele-accent: var(--dark);
   --pele-critical: var(--dark);
   --pele-error: var(--dark);
+  --pele-control: var(--gray);
   --pele-font: var(--bodyFont);
   --pele-font-mono: var(--codeFont);
   --pele-radius: 0px;
 
   position: relative;
+  box-sizing: border-box;
   min-width: 0;
   margin: 1rem 0;
-  padding: 0;
-  border: 0;
+  padding: 2rem 1rem 1rem;
+  border: 1px solid var(--dark);
+  border-radius: var(--radius-none);
   background: transparent;
+
+  :root[saved-theme='dark'] & {
+    --pele-control: var(--darkgray);
+  }
 
   > .pele-trigger {
     position: absolute;
@@ -32,13 +66,99 @@
     background: transparent;
     cursor: zoom-in;
 
+    > svg {
+      position: absolute;
+      top: 0.25rem;
+      right: 2.25rem;
+    }
+
     &:focus-visible {
       outline: 2px solid var(--dark);
       outline-offset: 2px;
+
+      > svg {
+        color: var(--dark);
+      }
     }
 
     &:disabled {
       cursor: wait;
+    }
+  }
+
+  > .pele-inline-copy {
+    position: absolute;
+    top: 0.25rem;
+    right: 0.25rem;
+    z-index: 1;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-none);
+    background: transparent;
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: 2px solid var(--dark);
+      outline-offset: 2px;
+      color: var(--dark);
+    }
+  }
+
+  > .pele-trigger > svg,
+  > .pele-inline-copy {
+    box-sizing: border-box;
+    display: grid;
+    place-items: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0.375rem;
+    color: var(--pele-control);
+    transition: color 120ms ease;
+  }
+
+  > .pele-trigger > svg,
+  > .pele-inline-copy > svg {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  > .pele-inline-copy > svg {
+    width: 0.75rem;
+    height: 0.75rem;
+  }
+
+  > .pele-inline-copy.check {
+    color: var(--dark);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    > .pele-trigger:hover > svg,
+    > .pele-inline-copy:hover {
+      color: var(--dark);
+    }
+  }
+
+  @media (pointer: coarse) {
+    padding-top: 3.5rem;
+
+    > .pele-trigger > svg,
+    > .pele-inline-copy {
+      width: 44px;
+      height: 44px;
+      padding: 0.875rem;
+    }
+
+    > .pele-trigger > svg {
+      right: 3.25rem;
+    }
+
+    > .pele-inline-copy > svg {
+      width: 1rem;
+      height: 1rem;
     }
   }
 
@@ -135,20 +255,20 @@
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
-    width: 2rem;
-    height: 2rem;
+    width: 1.5rem;
+    height: 1.5rem;
     margin: 0;
     padding: 0;
     border: 0;
     border-radius: var(--radius-none);
     background: transparent;
-    color: var(--dark);
+    color: var(--pele-control);
     cursor: pointer;
-    transition: background-color 120ms ease;
+    transition: color 120ms ease;
 
     > svg {
-      width: 1rem;
-      height: 1rem;
+      width: 0.75rem;
+      height: 0.75rem;
       fill: none;
       stroke: currentColor;
       stroke-width: 1.5;
@@ -159,6 +279,7 @@
     &:focus-visible {
       outline: 2px solid var(--dark);
       outline-offset: -2px;
+      color: var(--dark);
     }
 
     &:disabled {
@@ -168,7 +289,7 @@
 
     @media (hover: hover) and (pointer: fine) {
       &:hover:not(:disabled) {
-        background: var(--pele-surface-alt);
+        color: var(--dark);
       }
     }
 
@@ -183,7 +304,7 @@
   }
 
   .pele-copy.check {
-    background: var(--pele-surface-alt);
+    color: var(--dark);
   }
 }
 

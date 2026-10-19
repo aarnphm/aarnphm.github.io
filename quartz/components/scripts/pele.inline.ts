@@ -1,5 +1,6 @@
 import { mount, mountAsync, type Mounted } from 'pele/lazy'
 import { registerEscapeHandler } from './escape-handler'
+import { prepareDiagramMath } from './pele-math'
 import { rootNavSignal } from './root-lifecycle'
 
 function diagramFigures(root: Document | HTMLElement): HTMLElement[] {
@@ -18,7 +19,7 @@ document.addEventListener('nav', () => {
     if (diagrams.has(figure)) return
     const drawing = figure.querySelector('.pele-diagram')
     const expand = figure.querySelector('button.pele-trigger')
-    const copy = figure.querySelector('button.pele-copy')
+    const copies = figure.querySelectorAll<HTMLButtonElement>('button.pele-copy')
     const dialog = figure.querySelector('dialog.pele-dialog')
     const content = dialog?.querySelector('.pele-dialog-content')
     const close = dialog?.querySelector('button.pele-close')
@@ -31,7 +32,7 @@ document.addEventListener('nav', () => {
     if (
       !(drawing instanceof HTMLElement) ||
       !(expand instanceof HTMLButtonElement) ||
-      !(copy instanceof HTMLButtonElement) ||
+      copies.length === 0 ||
       !(dialog instanceof HTMLDialogElement) ||
       !(content instanceof HTMLElement) ||
       !(close instanceof HTMLButtonElement) ||
@@ -48,33 +49,41 @@ document.addEventListener('nav', () => {
     const source = drawing.dataset.clipboard ?? drawing.textContent ?? ''
     let diagram: Mounted | undefined
     let expanded: Mounted | undefined
-    let copiedTimer: ReturnType<typeof setTimeout> | undefined
     let zoomObserver: MutationObserver | undefined
+    let math: Awaited<ReturnType<typeof prepareDiagramMath>>
     diagrams.add(figure)
 
-    copy.addEventListener(
-      'click',
-      () => {
-        void navigator.clipboard.writeText(source).then(
-          () => {
-            if (signal.aborted) return
-            copy.setAttribute('aria-label', 'source copied')
-            copy.title = 'source copied'
-            copy.classList.add('check')
-            clearTimeout(copiedTimer)
-            copiedTimer = setTimeout(() => {
-              copy.classList.remove('check')
-              copy.setAttribute('aria-label', 'copy source')
-              copy.title = 'copy source'
-            }, 2000)
-          },
-          () => {
-            if (!signal.aborted) copy.setAttribute('aria-label', 'copy failed, try again')
-          },
-        )
-      },
-      { signal },
-    )
+    for (const copy of copies) {
+      const icon = copy.querySelector('svg path')
+      const copyPath = icon?.getAttribute('d') ?? ''
+      let copiedTimer: ReturnType<typeof setTimeout> | undefined
+      copy.addEventListener(
+        'click',
+        () => {
+          void navigator.clipboard.writeText(source).then(
+            () => {
+              if (signal.aborted) return
+              copy.setAttribute('aria-label', 'source copied')
+              copy.title = 'source copied'
+              copy.classList.add('check')
+              icon?.setAttribute('d', 'M5 12l4 4L19 6')
+              clearTimeout(copiedTimer)
+              copiedTimer = setTimeout(() => {
+                copy.classList.remove('check')
+                icon?.setAttribute('d', copyPath)
+                copy.setAttribute('aria-label', 'copy source')
+                copy.title = 'copy source'
+              }, 2000)
+            },
+            () => {
+              if (!signal.aborted) copy.setAttribute('aria-label', 'copy failed, try again')
+            },
+          )
+        },
+        { signal },
+      )
+      signal.addEventListener('abort', () => clearTimeout(copiedTimer), { once: true })
+    }
 
     function clearExpanded() {
       zoomObserver?.disconnect()
@@ -122,7 +131,10 @@ document.addEventListener('nav', () => {
         if (dialog.open) return
         setControlsExpanded(true)
         dialog.showModal()
-        expanded = mount(content, source, { zoom: { always: true, controls: false } })
+        expanded = mount(content, math?.source ?? source, {
+          ...math?.options(content),
+          zoom: { always: true, controls: false },
+        })
         zoomObserver = new MutationObserver(syncZoomControls)
         zoomObserver.observe(content, {
           attributes: true,
@@ -141,14 +153,18 @@ document.addEventListener('nav', () => {
         closeDiagram()
         diagram?.destroy()
         diagrams.delete(figure)
-        clearTimeout(copiedTimer)
         disposeEscape()
       },
       { once: true },
     )
 
     try {
-      diagram = await mountAsync(drawing, source, { zoom: false })
+      math = await prepareDiagramMath(figure, signal)
+      if (signal.aborted || !figure.isConnected) return
+      diagram = await mountAsync(drawing, math?.source ?? source, {
+        ...math?.options(drawing),
+        zoom: false,
+      })
     } catch (error) {
       if (signal.aborted || !figure.isConnected) return
       const message = document.createElement('p')

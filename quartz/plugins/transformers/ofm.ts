@@ -57,6 +57,7 @@ import { FullSlug, pathToRoot, slugTag } from '../../util/path'
 import { CSSResource, JSResource } from '../../util/resources'
 import { escapeWikilinkForTable } from '../../util/wikilinks'
 import { buildYouTubeEmbed } from '../../util/youtube'
+import { diagramMath } from './pele-math'
 
 export interface Options {
   comments: boolean
@@ -780,7 +781,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
         plugins.push(() => {
           return tree => {
             visit(tree, 'code', (node: Code) => {
-              if (node.lang === 'mermaid') {
+              if (node.lang === 'mermaid' || node.lang === 'pele') {
                 node.data = {
                   hProperties: { className: ['mermaid'], 'data-clipboard': toString(node) },
                 }
@@ -1096,7 +1097,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
 
       if (opts.mermaid) {
         plugins.push(() => {
-          return tree => {
+          return (tree, file) => {
             const control = (
               className: string,
               label: string,
@@ -1114,18 +1115,26 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                   ),
                 ],
               )
-            visit(tree, 'element', (node, _, parent) => {
+            visit(tree, 'element', (node: Element, _, parent) => {
               if (!checkMermaidCode(node) || parent?.type !== 'element' || parent.tagName !== 'pre')
                 return
               parent.tagName = 'figure'
               parent.properties = { ...parent.properties, className: ['pele-figure'] }
+              const source = node.children
+                .map(child => (child.type === 'text' ? child.value : toText(child)))
+                .join('')
+              const math = diagramMath(source)
+              if (math) file.data.hasMath = true
               parent.children = [
-                h('button.pele-trigger', {
-                  type: 'button',
-                  ariaLabel: 'expand diagram',
-                  ariaHasPopup: 'dialog',
-                  disabled: true,
-                }),
+                control(
+                  'pele-trigger',
+                  'expand diagram',
+                  ['M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7'],
+                  { ariaHasPopup: 'dialog', disabled: true },
+                ),
+                control('pele-copy.pele-inline-copy', 'copy source', [
+                  'M9 9h11v11H9zM5 15H3V3h12v2',
+                ]),
                 h(
                   '.pele-diagram',
                   { 'data-clipboard': node.properties['data-clipboard'] },
@@ -1150,6 +1159,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                   ]),
                   h('.pele-dialog-content'),
                 ]),
+                ...(math ? [math] : []),
               ]
             })
           }
