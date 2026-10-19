@@ -27,7 +27,7 @@ import { swimActivityHeaderValue } from '../../../util/triathlon-i18n'
 import { swimActivityPointText } from '../../../util/triathlon-i18n'
 import { swimActivityValueText } from '../../../util/triathlon-i18n'
 import { triText } from '../../../util/triathlon-i18n'
-import { createDomFactory } from '../runtime/dom'
+import { createDomFactory, setText } from '../runtime/dom'
 import { setupCyclingWattsCharts } from './cycling-watts'
 import { syncPowerCurveActivityLink } from './power-links'
 import { setupSwimPowerCharts } from './swim-power'
@@ -363,7 +363,7 @@ export const setupChartScrub = (
       const watts = Math.round(criticalPower + wPrime / seconds)
       const value = row.querySelector<HTMLElement>('.tri-curve-readout-value--model')
       const label = row.querySelector<HTMLElement>('.tri-curve-readout-label--model')
-      if (value) value.textContent = curvePowerText(svg, watts)
+      if (value) setText(value, curvePowerText(svg, watts))
       values.push({ label: label?.textContent ?? 'eCP model', watts })
     }
     return values
@@ -482,8 +482,8 @@ export const setupChartScrub = (
           height,
         )
       }
-      if (duration) duration.textContent = zoneClock(hover.durationS)
-      if (ride) ride.textContent = curvePowerText(svg, hover.watts)
+      if (duration) setText(duration, zoneClock(hover.durationS))
+      if (ride) setText(ride, curvePowerText(svg, hover.watts))
       if (referenceRow) referenceRow.hidden = hover.referenceWatts == null
       syncPowerCurveActivityLink(
         referenceRow instanceof HTMLAnchorElement ? referenceRow : null,
@@ -491,11 +491,11 @@ export const setupChartScrub = (
         wrap.closest<HTMLElement>('.tri-act[data-activity-id]')?.dataset.activityId,
       )
       if (referenceValue && hover.referenceWatts != null)
-        referenceValue.textContent = curvePowerText(svg, hover.referenceWatts)
+        setText(referenceValue, curvePowerText(svg, hover.referenceWatts))
       if (referenceLabel)
-        referenceLabel.textContent = powerCurveReferenceLabel(
-          presentation().locale,
-          curveReferenceYear(svg),
+        setText(
+          referenceLabel,
+          powerCurveReferenceLabel(presentation().locale, curveReferenceYear(svg)),
         )
       const modelValues = syncCurveModelReadouts(svg, wrap, hover.durationS)
       svg.dataset.curveIndex = String(hover.index)
@@ -551,8 +551,8 @@ export const setupChartScrub = (
     point.style.left = `${hover.xPct.toFixed(2)}%`
     point.style.top = `${hover.yPct.toFixed(2)}%`
     point.hidden = !activateChart
-    readoutPosition.textContent = swimActivityPointText(presentation().locale, swimTextPoint(hover))
-    readoutValue.textContent = swimDisplayValue(kind, hover.value)
+    setText(readoutPosition, swimActivityPointText(presentation().locale, swimTextPoint(hover)))
+    setText(readoutValue, swimDisplayValue(kind, hover.value))
     svg.dataset.swimIndex = String(hover.index)
     svg.setAttribute('aria-label', swimAriaLabel(svg))
     svg.setAttribute('aria-valuenow', String(Math.round(hover.cumulativeDistanceM)))
@@ -606,7 +606,7 @@ export const setupChartScrub = (
     activeBar = svg.querySelector(`.tri-hist-bar[data-bin="${bin}"]`)
     activeBar?.classList.add('tri-hist-bar--on')
     const readout = wrap.querySelector<HTMLElement>('.tri-chart-readout')
-    if (readout) readout.textContent = value
+    if (readout) setText(readout, value)
     svg.setAttribute('aria-valuenow', String(bin))
     svg.setAttribute('aria-valuetext', value)
     activate(wrap)
@@ -632,7 +632,7 @@ export const setupChartScrub = (
     const elapsedS = Math.max(0, Math.min(durationS, requestedElapsedS))
     const segment = runWalkSegmentAt(runWalkSegments(svg), elapsedS)
     const value = `${clock(elapsedS)} · ${text(segment?.state ?? 'unavailable')}`
-    readout.textContent = value
+    setText(readout, value)
     svg.setAttribute('aria-valuenow', String(elapsedS))
     svg.setAttribute('aria-valuetext', value)
     const cursor = svg.querySelector<SVGElement>('.tri-chart-cursor')

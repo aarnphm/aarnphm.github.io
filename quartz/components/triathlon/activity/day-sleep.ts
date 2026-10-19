@@ -5,6 +5,7 @@ import {
   daySleepSampleClock,
 } from '../../../util/triathlon-card'
 import { wallClock, wallMin } from '../analytics/panels/recovery'
+import { setText } from '../runtime/dom'
 
 export type DaySleepValueLabel = (value: number | null) => string
 
@@ -174,7 +175,7 @@ const mountDaySleepChart = (wrap: HTMLElement, locale: () => Locale): (() => voi
     )
     cursor.setAttribute('x1', x.toFixed(2))
     cursor.setAttribute('x2', x.toFixed(2))
-    readout.textContent = text
+    setText(readout, text)
     svg.setAttribute('aria-valuenow', currentIndex.toString())
     svg.setAttribute('aria-valuetext', text)
     wrap.dataset.sleepInput = input
