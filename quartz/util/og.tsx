@@ -227,6 +227,18 @@ export type ImageOptions = {
   fileData: QuartzPluginData
 }
 
+export function defaultImageMeta(cfg: GlobalConfiguration, fileData: QuartzPluginData) {
+  const rawDate = getDate(cfg, fileData)
+  const date = rawDate ? formatDate(rawDate, cfg.locale) : null
+  const { minutes, words } = fileData.readingTime ?? readingTime(fileData.text ?? '')
+  const readingTimeText = i18n(cfg.locale).components.contentMeta.readingTime({
+    minutes: Math.ceil(minutes),
+    words: Math.ceil(words),
+  })
+  const tags = (fileData.frontmatter?.tags ?? []).slice(0, 3)
+  return { date, readingTimeText, tags }
+}
+
 // This is the default template for generated social image.
 export const defaultImage: SocialImageOptions['imageStructure'] = ({
   cfg,
@@ -240,23 +252,11 @@ export const defaultImage: SocialImageOptions['imageStructure'] = ({
   const fontBreakPoint = 32
   const useSmallerFont = title.length > fontBreakPoint
 
-  // Format date if available
-  const rawDate = getDate(cfg, fileData)
-  const date = rawDate ? formatDate(rawDate, cfg.locale) : null
-
-  // Calculate reading time
-  const { minutes, words } = readingTime(fileData.text ?? '')
-  const readingTimeText = i18n(cfg.locale).components.contentMeta.readingTime({
-    minutes: Math.ceil(minutes),
-    words,
-  })
-
-  // Get tags if available
-  const tags = fileData.frontmatter?.tags ?? []
+  const { date, readingTimeText, tags } = defaultImageMeta(cfg, fileData)
   const bodyFont = getFontSpecificationName(cfg.theme.typography.body)
   const headerFont = getFontSpecificationName(cfg.theme.typography.header)
 
-  const descriptionText = renderDescription(description, fileData.slug!) || description
+  const descriptionText = description || renderDescription(description, fileData.slug!)
 
   return (
     <div

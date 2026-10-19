@@ -1,10 +1,18 @@
 import assert from 'node:assert/strict'
 import { execFile } from 'node:child_process'
 import { once } from 'node:events'
+import fs from 'node:fs/promises'
 import { createServer } from 'node:http'
+import os from 'node:os'
+import path from 'node:path'
 import test from 'node:test'
 import { promisify } from 'node:util'
-import { extractTwitterPost, parseTwitterPost, renderTwitterPost } from './twitter-content'
+import {
+  extractTwitterPost,
+  fetchTwitterPost,
+  parseTwitterPost,
+  renderTwitterPost,
+} from './twitter-content'
 
 const source = 'https://x.com/garden_fixture/status/101'
 
@@ -388,4 +396,106 @@ test('unavailable X posts stop extraction quietly and retain the original link',
     assert.match(stdout, /Post unavailable/)
     assert.match(stderr, /oEmbed request failed: 500/)
   })
+})
+
+test('fetchTwitterPost persists extracted posts and terminal 404s on disk without caching transient 5xx failures', async t => {
+  const cacheDir = await fs.mkdtemp(path.join(os.tmpdir(), 'quartz-twitter-cache-'))
+  t.after(async () => {
+    await fs.rm(cacheDir, { recursive: true, force: true })
+  })
+
+  let requests = 0
+  let transient500 = true
+  const fixtureFetch: typeof fetch = async (resource, _init) => {
+    requests++
+    const request = new Request(resource)
+    const target = new URL(request.url)
+    if (target.hostname === 'api.fxtwitter.com') {
+      if (target.pathname.endsWith('/201')) {
+        return new Response(
+          JSON.stringify({
+            tweet: {
+              author: { screen_name: 'garden_fixture' },
+              text: 'Persisted across processes.',
+              created_at: '2026-09-16T00:00:00Z',
+            },
+          }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } },
+        )
+      }
+      if (target.pathname.endsWith('/202') && !transient500) {
+        return new Response(
+          JSON.stringify({
+            tweet: {
+              author: { screen_name: 'garden_fixture' },
+              text: 'Recovered after transient failure.',
+              created_at: '2026-09-16T00:00:00Z',
+            },
+          }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } },
+        )
+      }
+      return new Response('{}', { status: 404, headers: { 'Content-Type': 'application/json' } })
+    }
+    if (target.hostname === 'publish.twitter.com') {
+      target.hostname = 'publish.x.com'
+      return new Response(null, { status: 301, headers: { Location: target.href } })
+    }
+    if (target.searchParams.get('url')?.endsWith('/202') && transient500) {
+      return new Response('{}', { status: 500, headers: { 'Content-Type': 'application/json' } })
+    }
+    return new Response('{}', { status: 404, headers: { 'Content-Type': 'application/json' } })
+  }
+
+  const failingFetch: typeof fetch = async () => {
+    requests++
+    throw new Error('Network should not be called on warm disk cache hit')
+  }
+
+  // 1. Available post is written to disk and reused without network on subsequent calls
+  const postUrl = 'https://x.com/garden_fixture/status/201'
+  const firstHtml = await fetchTwitterPost(postUrl, { cacheDir, fetchSource: fixtureFetch })
+  assert.match(firstHtml, /Persisted across processes\./)
+  assert.equal(requests, 1)
+
+  requests = 0
+  const cachedHtml = await fetchTwitterPost(postUrl, {
+    cacheDir,
+    fetchSource: failingFetch,
+    bypassMemoryCache: true,
+  })
+  assert.equal(cachedHtml, firstHtml)
+  assert.equal(requests, 0)
+
+  // 2. Terminal 404 post is written to disk and reused without network on subsequent calls
+  const missingUrl = 'https://x.com/garden_fixture/status/404'
+  const missingHtml = await fetchTwitterPost(missingUrl, { cacheDir, fetchSource: fixtureFetch })
+  assert.match(missingHtml, /Post unavailable/)
+  assert.ok(requests > 0)
+
+  requests = 0
+  const cachedMissingHtml = await fetchTwitterPost(missingUrl, {
+    cacheDir,
+    fetchSource: failingFetch,
+    bypassMemoryCache: true,
+  })
+  assert.equal(cachedMissingHtml, missingHtml)
+  assert.equal(requests, 0)
+
+  // 3. Transient 500 failure returns fallback immediately but is NOT persisted to disk
+  const transientUrl = 'https://x.com/garden_fixture/status/202'
+  const transientHtml = await fetchTwitterPost(transientUrl, {
+    cacheDir,
+    fetchSource: fixtureFetch,
+    bypassMemoryCache: true,
+  })
+  assert.match(transientHtml, /Post unavailable/)
+
+  transient500 = false
+  const recoveredHtml = await fetchTwitterPost(transientUrl, {
+    cacheDir,
+    fetchSource: fixtureFetch,
+    bypassMemoryCache: true,
+  })
+  assert.match(recoveredHtml, /Recovered after transient failure\./)
 })
