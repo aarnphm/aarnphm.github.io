@@ -86,7 +86,6 @@ const tones = [
   'rock',
   'rock-lit',
   'lip',
-  'strata',
 ] as const
 type Tone = (typeof tones)[number]
 const bodies = ['top', 'ground'] as const
@@ -138,8 +137,9 @@ export const reliefStrengths = [0.7, 0.8, 0.9, 1]
 // slope is cut into ledges, as a top-down pixel map steps its terrain. Each ledge is a rim along
 // its top edge, a riser turned toward or away from the light, and a line of shadow on the plateau
 // under it; the plateaus between ledges are the meadow itself. Hills and ridges carry a ledge
-// every `step` pixels of height, so the ledges run around the swell like contours. Buttes and
-// knobs are one sheer riser from brow to foot, banded or rocky, under a hard outline.
+// every `step` pixels of height, so the ledges run around the swell like contours, and a butte
+// is a bench ledged the same way under its level cap. Knobs are one sheer rocky riser from brow
+// to foot under a hard outline.
 //
 // The landform stands up from the ground: its summit is lifted by the height of its top surface,
 // so the strip of meadow behind the crest, as many rows as that lift, lies hidden behind it. The
@@ -166,13 +166,12 @@ function paintRise(faces: readonly Face[], left: number, seed: number, level: nu
     const foot = y + tall
     const riser: Tone = turn < -0.1 ? 'face-lit' : turn > 0.1 ? 'face-dark' : 'face'
     const column = face.x / 4
-    if (form === 'butte' || form === 'knob') {
+    if (form === 'knob') {
       set(k, y, 'outline')
       set(k, brow, 'crest')
       for (let at = brow + 2; at < foot; at += 2) {
         const down = (at - brow) / Math.max(2, foot - brow)
-        if (form === 'butte' && down < 0.6 && ((at - brow) / 2) % 3 === 0) set(k, at, 'strata')
-        else if (form === 'knob' && down < 0.55)
+        if (down < 0.55)
           set(k, at, hash(column, at / 2, seed) < 0.18 ? 'lip' : turn < -0.1 ? 'rock-lit' : 'rock')
         else set(k, at, riser)
       }

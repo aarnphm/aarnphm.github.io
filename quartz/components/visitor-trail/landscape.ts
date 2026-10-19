@@ -268,7 +268,7 @@ function trailRises(landscape: Landscape, seed: number) {
   const shapes: Record<RiseKind, { half: [number, number]; tall: [number, number] }> = {
     ridge: { half: [180, 320], tall: [32, 60] },
     hill: { half: [90, 170], tall: [28, 54] },
-    butte: { half: [70, 130], tall: [34, 60] },
+    butte: { half: [70, 130], tall: [24, 44] },
     knob: { half: [36, 64], tall: [26, 46] },
   }
   const order: RiseKind[] = ['ridge', 'hill', 'butte', 'hill', 'knob', 'ridge', 'hill', 'knob']
@@ -294,9 +294,11 @@ function trailRises(landscape: Landscape, seed: number) {
       if (kind === 'hill') return bell
       if (kind === 'knob') return bell ** 2.2
       if (kind === 'ridge') return bell ** 0.6 * (0.72 + 0.28 * Math.sin(v * 4.6 + phase))
-      // A mesa: level across its cap, then shoulders that roll smoothly down.
+      // A bench: a cap that is nearly level, crowned a little toward its middle, and shoulders
+      // that bell out to the ground, so no edge of it runs as a rule across the meadow.
       const out = Math.max(0, (Math.abs(v) - cap) / (1 - cap))
-      return Math.cos((Math.min(1, out) * Math.PI) / 2) ** 1.4
+      if (out === 0) return 1 - 0.08 * (Math.abs(v) / cap) ** 2
+      return 0.92 * Math.cos((Math.min(1, out) * Math.PI) / 2) ** 2
     }
     const crest: Rise['crest'] = []
     const ground = meadowTop + clearing * level
@@ -342,10 +344,10 @@ function trailRises(landscape: Landscape, seed: number) {
       })
     }
     // Isometric slopes run on two-step lines: over each 4 px column a crest climbs or falls by at
-    // most 2 px, so hills and ridges rise as 2:1 planes. Mesas and knobs keep sheer block sides.
+    // most 2 px, so hills, ridges and benches rise as 2:1 planes. Knobs keep sheer rock sides.
     const slope = (k: number, from: number) => {
       const column = crest[k]
-      if (column.form === 'butte' || column.form === 'knob') return
+      if (column.form === 'knob') return
       const limit = Math.min(column.foot, crest[from].y - 2)
       if (column.y < limit) {
         column.brow = Math.min(column.foot, column.brow + limit - column.y)

@@ -62,7 +62,6 @@ document.addEventListener('nav', () => {
   let fetchedAt = 0
   let map: ReturnType<typeof mountVisitorWeatherMap> | null = null
   let mapLocation = ''
-  let mapPreload = 0
   let dismissed = false
   let overToggle = false
   let overPanel = false
@@ -177,7 +176,8 @@ document.addEventListener('nav', () => {
     },
     { signal },
   )
-  const mountScene = () => {
+  const prepareMap = () => {
+    if (!panel.matches(':popover-open')) return
     const canvas = panel.querySelector<HTMLElement>('[data-weather-map]')
     if (canvas && forecast && forecast.lat !== null && forecast.lon !== null) {
       const location = `${forecast.lat},${forecast.lon}`
@@ -189,38 +189,6 @@ document.addEventListener('nav', () => {
       map?.resize()
     }
   }
-  const trailSettled = () => {
-    const host = document.querySelector<HTMLElement>('.homepage-trail-scene')
-    const scene = host?.shadowRoot?.querySelector<HTMLElement>('.trail-scene')
-    return !host || (scene?.dataset.trailOpening === 'complete' && !scene.dataset.trailReveal)
-  }
-  const cancelMapPreload = () => {
-    if (window.cancelIdleCallback) window.cancelIdleCallback(mapPreload)
-    else window.clearTimeout(mapPreload)
-    mapPreload = 0
-  }
-  const prepareMap = () => {
-    if (panel.matches(':popover-open')) {
-      cancelMapPreload()
-      mountScene()
-      return
-    }
-    if (map || mapPreload || document.hidden || !trailSettled()) return
-    if (!forecast || forecast.lat === null || forecast.lon === null) return
-    // The closed popover stays measurable. Give its map the first idle slot after the full
-    // trail reveal, so map script evaluation and tile uploads cannot delay that opening.
-    const preload = () => {
-      mapPreload = 0
-      if (!signal.aborted && !document.hidden && trailSettled()) mountScene()
-    }
-    mapPreload = window.requestIdleCallback
-      ? window.requestIdleCallback(preload)
-      : window.setTimeout(preload, 0)
-  }
-  for (const event of ['trail:prepared', 'trail:reveal-end', 'trail:closed'])
-    document.addEventListener(event, prepareMap, { signal, capture: true })
-  document.addEventListener('trail:open', cancelMapPreload, { signal, capture: true })
-  document.addEventListener('visibilitychange', prepareMap, { signal })
 
   const write = (name: string, value: string) => {
     const node = panel.querySelector<HTMLElement>(`[data-weather-${name}]`)
@@ -346,7 +314,6 @@ document.addEventListener('nav', () => {
   window.addCleanup(() => {
     disposeEscape()
     controller.abort()
-    cancelMapPreload()
     setScenePreview(document, null)
     map?.dispose()
     window.clearInterval(timer)

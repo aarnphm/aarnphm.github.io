@@ -34,9 +34,6 @@
   .trail-ravine-butte {
     fill: color-mix(in srgb, #d9b99a 36%, var(--light));
   }
-  .trail-ravine-strata {
-    fill: color-mix(in srgb, #a8744f 50%, var(--light));
-  }
   .trail-ravine-rock {
     fill: color-mix(in srgb, #8c887f 68%, var(--light));
   }
@@ -123,13 +120,6 @@
     }
     .trail-ravine-outline {
       @include night(light, 60%);
-    }
-    .trail-ravine-strata {
-      fill: color-mix(
-        in srgb,
-        #a8744f calc(14% * var(--trail-relief-strength, 1)),
-        var(--trail-landform-field, var(--light))
-      );
     }
   }
   .trail-ravine-hollow {

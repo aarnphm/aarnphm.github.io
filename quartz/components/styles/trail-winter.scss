@@ -140,9 +140,6 @@
         var(--light)
       );
     }
-    .trail-ravine-strata {
-      opacity: calc(1 - var(--trail-snow-cover, 0) * 0.75);
-    }
   }
   .trail-pond-ice {
     fill: none;
