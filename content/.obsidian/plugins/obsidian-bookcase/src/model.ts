@@ -64,21 +64,15 @@ export class ModelReader {
     return this.list(this.read(entry, id))
   }
 
-  /** Shelves as Bases groups the entries; with `keep`, only those entries, and no empty group. */
-  groups(
-    grouped: BasesEntryGroup[],
-    config: BookcaseConfig,
-    keep?: (entry: BasesEntry) => boolean,
-  ): ShelfGroup<BookModel>[] {
+  /** Shelves as Bases groups the entries. */
+  groups(grouped: BasesEntryGroup[], config: BookcaseConfig): ShelfGroup<BookModel>[] {
     let index = 0
     const out: ShelfGroup<BookModel>[] = []
     for (const group of grouped) {
-      const entries = keep ? group.entries.filter(keep) : group.entries
-      if (keep && entries.length === 0) continue
       const g = out.length
       out.push({
         label: group.hasKey() && group.key ? group.key.toString() : null,
-        books: entries.map(entry => {
+        books: group.entries.map(entry => {
           const model = this.model(entry, config, index++, g)
           return { path: model.path, item: model }
         }),

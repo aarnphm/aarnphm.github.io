@@ -46,6 +46,8 @@ export interface BookcaseConfig {
   shelfMaterial: ShelfMaterial | null
   /** Label plates on the shelves; a topic's `showTags` overrides it. */
   showTags: boolean
+  /** A selection opens the note in a split beside the view, in place of the page panel. */
+  editorPane: boolean
 }
 
 export const bookcaseOptions = (): BasesAllOptions[] => [
@@ -106,6 +108,12 @@ export const bookcaseOptions = (): BasesAllOptions[] => [
       },
       { type: 'toggle', key: 'showTags', displayName: 'Shelf labels', default: true },
       { type: 'toggle', key: 'pageContent', displayName: 'Show note body', default: true },
+      {
+        type: 'toggle',
+        key: 'editorPane',
+        displayName: 'Edit notes in a side pane',
+        default: true,
+      },
     ],
   },
 ]
@@ -136,5 +144,6 @@ export function readConfig(config: BasesViewConfig): BookcaseConfig {
     shelfStyle: oneOf(BOOKCASE_STYLES, config.get('shelfStyle')) ?? 'straight',
     shelfMaterial: oneOf(SHELF_MATERIALS, config.get('shelfMaterial')),
     showTags: config.get('showTags') !== false,
+    editorPane: config.get('editorPane') !== false,
   }
 }

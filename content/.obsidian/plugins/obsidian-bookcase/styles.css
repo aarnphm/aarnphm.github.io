@@ -17,7 +17,6 @@
      with the garden (5.3), set in JS */
   --bc-stage-height: 520px;
   --bc-scene-height: 520px;
-  --bc-stage-width: 64%;
 
   position: relative;
   display: grid;
@@ -38,8 +37,17 @@
 }
 
 .bookcase-view[data-layout='wide'] {
-  /* the stage is as wide as the case; the page panel takes the rest */
-  grid-template-columns: var(--bc-stage-width) minmax(0, 1fr);
+  /* 80/20: the stage, then the page panel, which keeps 240px and takes them from the stage */
+  grid-template-columns: minmax(0, 4fr) minmax(240px, 1fr);
+}
+
+/* the editor pane shows the selection: no page panel, the stage takes the width */
+.bookcase-view.is-linked[data-layout] {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.bookcase-view.is-linked .bookcase-page {
+  display: none;
 }
 
 .bookcase-view.is-own-scroller {
@@ -61,8 +69,8 @@
   background: var(--bc-card);
 }
 
-/* camera buttons, and under them a right-aligned column of topic tabs or tag toggles, as the
-   garden's; the column stops 5.5rem above the stage bottom and scrolls on a short stage */
+/* camera buttons, and under them a right-aligned column of topic tabs, as the garden's; the
+   column stops 5.5rem above the stage bottom and scrolls on a short stage */
 .bookcase-controls {
   --bc-control: 2.125rem;
 
@@ -153,33 +161,11 @@
   max-width: 100%;
 }
 
-.bookcase-panel.is-hidden,
-.bookcase-panel .is-hidden {
+.bookcase-panel.is-hidden {
   display: none;
 }
 
-/* the switch at the column's head: two segments */
-.bookcase-panel-tabs {
-  display: flex;
-  flex: none;
-}
-
-.bookcase-controls .bookcase-panel-tab {
-  height: var(--bc-control);
-  padding: 0 0.5rem;
-  color: var(--bc-mid);
-}
-
-.bookcase-panel-tab + .bookcase-panel-tab {
-  border-left: 0;
-}
-
-.bookcase-panel-tab[aria-selected='true'] {
-  background: var(--bc-card);
-  color: var(--bc-hi);
-}
-
-.bookcase-panel-body {
+.bookcase-topics {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -188,13 +174,6 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: none;
-}
-
-.bookcase-topics,
-.bookcase-tags {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
 }
 
 /* a collapsed tab is a square with its shortcut; the chosen one is filled and opens leftward */
@@ -209,13 +188,11 @@
   outline-offset: -4px;
 }
 
-.bookcase-controls .bookcase-topic[aria-selected='true'],
-.bookcase-controls .bookcase-tag[aria-pressed='true'] {
+.bookcase-controls .bookcase-topic[aria-selected='true'] {
   padding: 0 0.5rem;
 }
 
-.bookcase-topic[aria-selected='true']:focus-visible,
-.bookcase-tag[aria-pressed='true']:focus-visible {
+.bookcase-topic[aria-selected='true']:focus-visible {
   outline-color: var(--background-primary);
 }
 
@@ -223,8 +200,7 @@
   border-top: 0;
 }
 
-.bookcase-topic[aria-selected='true'],
-.bookcase-tag[aria-pressed='true'] {
+.bookcase-topic[aria-selected='true'] {
   border-color: var(--bc-hi);
   background: var(--bc-hi);
   color: var(--background-primary);
@@ -249,22 +225,18 @@
   opacity: 0;
 }
 
-.bookcase-topic[aria-selected='true'] .bookcase-tab-shortcut,
-.bookcase-tag[aria-pressed='true'] .bookcase-tab-shortcut {
+.bookcase-topic[aria-selected='true'] .bookcase-tab-shortcut {
   inline-size: 0;
   opacity: 0;
 }
 
-.bookcase-topic[aria-selected='true'] .bookcase-tab-label,
-.bookcase-tag[aria-pressed='true'] .bookcase-tab-label {
+.bookcase-topic[aria-selected='true'] .bookcase-tab-label {
   inline-size: var(--bc-tab-label);
   opacity: 1;
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .bookcase-panel-tab:not([aria-selected='true']):hover,
-  .bookcase-topic:not([aria-selected='true']):hover,
-  .bookcase-tag:not([aria-pressed='true']):hover {
+  .bookcase-topic:not([aria-selected='true']):hover {
     color: var(--bc-hi);
   }
 }
@@ -377,6 +349,13 @@
   margin-top: var(--bc-scene-height);
 }
 
+.bookcase-page-empty {
+  margin: 0;
+  color: var(--text-muted);
+  font-family: var(--font-interface);
+  font-size: var(--font-ui-small);
+}
+
 .bookcase-page-title {
   margin: 0 0 4px;
   font-size: var(--h3-size);
@@ -456,6 +435,11 @@
 .bookcase-world .bc-plate-ticks,
 .bookcase-world .bc-screws ellipse {
   stroke: var(--bc-lo);
+}
+
+/* screw heads are filled, as the garden's */
+.bookcase-world .bc-screws ellipse {
+  fill: var(--bc-top);
 }
 
 .bookcase-world .bc-plate-label {
@@ -577,6 +561,11 @@
 .bookcase-world .bc-halo-contact {
   opacity: 0.12;
   filter: blur(4px);
+}
+
+.bookcase-world .bc-halo-shadow {
+  opacity: 0.14;
+  filter: blur(5px);
 }
 
 /* books: shelf copies sit 22% toward the card so the case reads first; the lifted book is lit */

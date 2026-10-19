@@ -18,16 +18,17 @@ export interface PageHost extends HoverParent {
   removeChild<T extends Component>(component: T): T
 }
 
-/** The sheet next to the case with the focused book's title, properties and body (SPEC 8). */
+/** The sheet next to the case with the selected book's title, properties and body (SPEC 8). */
 export class Page {
   private timer: number | null = null
   private token = 0
   private child: Component | null = null
   private shown: string | null = null
   private pending: {
-    id: string | null
+    id: string
     book: BookModel | null
     config: BookcaseConfig
+    note: string
     at: number
   } | null = null
   private source = ''
@@ -44,13 +45,14 @@ export class Page {
   }
 
   /**
-   * Renders `book` once focus has rested for DELAY_MS. The same book again keeps its pending
-   * render. One timer serves a run of focus changes: when it fires early it waits out the rest.
+   * Renders `book`, or with no book the quiet `note`, once the selection has rested for DELAY_MS.
+   * The same book again keeps its pending render. One timer serves a run of changes: when it fires
+   * early it waits out the rest.
    */
-  schedule(book: BookModel | null, config: BookcaseConfig, force = false): void {
-    const id = book ? `${book.index}:${book.path}` : null
+  schedule(book: BookModel | null, config: BookcaseConfig, force = false, note = ''): void {
+    const id = book ? `${book.index}:${book.path}` : `-:${note}`
     if (!force && id === (this.timer === null ? this.shown : this.pending?.id)) return
-    this.pending = { id, book, config, at: performance.now() }
+    this.pending = { id, book, config, note, at: performance.now() }
     if (this.timer === null) this.arm(DELAY_MS)
   }
 
@@ -66,7 +68,7 @@ export class Page {
       }
       this.pending = null
       this.shown = pending.id
-      void this.render(pending.book, pending.config, ++this.token)
+      void this.render(pending.book, pending.config, pending.note, ++this.token)
     }, delay)
   }
 
@@ -87,13 +89,17 @@ export class Page {
   private async render(
     book: BookModel | null,
     config: BookcaseConfig,
+    note: string,
     token: number,
   ): Promise<void> {
     const { app } = this.host
     this.dropChild()
     this.el.empty()
     this.source = ''
-    if (!book) return
+    if (!book) {
+      if (note) this.el.createEl('p', { cls: 'bookcase-page-empty', text: note })
+      return
+    }
     const { entry, path } = book
     this.source = path
 
