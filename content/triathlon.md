@@ -2021,6 +2021,29 @@ power: wahoo
 virtual: true
 ```
 
+<!--
+2026-10-18, hamstrings, glutes, calves. Prescription: 2 min warm-up,
+4 rounds of the five main exercises, 40s work / 20s rest, 2 min cool-down.
+The supplied circuit heading says 16 min; the listed intervals total 20 min
+for the circuit and 24 min for the full prescription. Recorded activity time
+remains provider-owned. Alternate legs each round for unilateral exercises.
+-->
+
+```tracking
+date: 2026-10-18
+activity: 20642462794
+exercise: Glute Bridge | 30s
+exercise: Standing Calf Raise | 30s
+exercise: Walking Lunge (bodyweight, slow) | 30s
+exercise: Hip Hinge (no weight, focus on form) | 30s
+exercise: Single-Leg Calf Raise (alternate legs each round, full range, controlled tempo) | 40s | 40s | 40s | 40s
+exercise: Glute Bridge March (hips level, alternate lifting each foot) | 40s | 40s | 40s | 40s
+exercise: Curtsy Lunge (alternate legs each round, knee tracks over toe, controlled) | 40s | 40s | 40s | 40s
+exercise: Wall Sit (thighs parallel if possible, breathe steadily) | 40s | 40s | 40s | 40s
+exercise: Single-Leg Romanian Deadlift (alternate legs each round, hips square, slow eccentric) | 40s | 40s | 40s | 40s
+exercise: Standing Calf, Seated Forward Fold, and Pigeon Stretch Flow (each side) | 2m
+```
+
 <!-- training plan start
 meta: IRONMAN Lanzarote
 date: 2026-09-01
