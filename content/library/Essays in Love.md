@@ -7,7 +7,7 @@ description: novelistic essay cycle tracing a relationship from first attraction
 finished: 2024
 id: Essays in Love
 modified: 2026-06-05 15:07:57 GMT-04:00
-posters: '[[library/posters/essays-in-love.jpg]]'
+posters: '[[library/posters/essays-in-love-cover.avif]]'
 status: finished
 subcategory: love
 tags:
