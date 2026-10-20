@@ -144,7 +144,7 @@ export class ModelReader {
     return out
   }
 
-  private cover(value: Value | null, source: string): BookModel['cover'] {
+  cover(value: Value | null, source: string): BookModel['cover'] {
     const first = value ? (isList(value) ? value.get(0) : value) : null
     const raw = first?.isTruthy() ? first.toString().trim() : ''
     if (!raw) return null

@@ -1,0 +1,15 @@
+[
+  {
+    "kind": "front-only-translation-correction",
+    "poster": "library/posters/tractatus-logico-philosophicus.jpg",
+    "note": "content/library/Tractatus Logico-Philosophicus.md",
+    "previousSha256": "1cfad67011ee1d8d3c85346019f29e166c69cfd76e8fc042ed93f2c49aa5d2c1",
+    "replacementSha256": "eb8e8b7445ecdc2b369feaa8675a49578d6c2914d8ccc0117b216c2941d52a63",
+    "source": "https://store.doverpublications.com/cdn/shop/files/9780486404455.jpg?v=1751647850",
+    "sourcePage": "https://store.doverpublications.com/products/9780486404455",
+    "edition": "Dover Publications 1998 paperback, ISBN 9780486404455",
+    "width": 298,
+    "height": 468,
+    "qualification": "Official native front corrects the authored Ogden translation. Lower native resolution than the prior wrong-edition front; spine remains unresolved."
+  }
+]

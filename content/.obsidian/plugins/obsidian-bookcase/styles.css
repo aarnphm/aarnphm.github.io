@@ -653,3 +653,484 @@
     transition: none;
   }
 }
+
+/* ---- film vault: the garden's vault.scss on Obsidian's tokens. The scene's own <style> sets the
+   tone, label and gradient colours for both themes (quartz/util/base/vault/styles.ts). */
+.vault-view {
+  --vault-line: var(--background-modifier-border);
+  --vault-surface: color-mix(in srgb, var(--text-faint) 12%, var(--background-primary));
+  --vault-weight: 0.75px;
+
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  height: 520px;
+  box-sizing: border-box;
+}
+
+/* 80/20 once a can is picked, as the bookcase; no page panel before that or with the editor pane */
+.vault-view[data-layout='wide'].has-selection:not(.is-linked) {
+  grid-template-columns: minmax(0, 4fr) minmax(240px, 1fr);
+}
+
+.vault-view[data-layout='narrow'].has-selection:not(.is-linked) {
+  grid-template-rows: minmax(0, 3fr) minmax(0, 2fr);
+}
+
+.vault-view:not(.has-selection) .vault-page,
+.vault-view.is-linked .vault-page,
+.vault-view.is-empty .vault-page {
+  display: none;
+}
+
+.vault-view:fullscreen {
+  height: 100%;
+  background: var(--background-primary);
+}
+
+.vault-host,
+.vault-host > .vault {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+}
+
+.vault-host > .vault {
+  height: 100%;
+  border: 1px solid var(--vault-line);
+  box-sizing: border-box;
+}
+
+.vault-empty {
+  padding: 20px;
+  color: var(--text-muted);
+  font-family: var(--font-interface);
+  font-size: var(--font-ui-small);
+}
+
+.vault-stage {
+  position: absolute;
+  inset: 0;
+  background: var(--background-primary);
+}
+
+.vault-viewport {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  overflow: auto;
+  overscroll-behavior: contain;
+  cursor: grab;
+  user-select: none;
+}
+
+.vault-viewport:focus-visible {
+  outline: 2px solid var(--text-normal);
+  outline-offset: -2px;
+}
+
+.vault-viewport[data-dragging],
+.vault-viewport[data-pulling],
+.vault-viewport[data-pulling] .cn-can {
+  cursor: grabbing;
+}
+
+.vault-corner {
+  position: absolute;
+  z-index: 2;
+  max-width: 48%;
+  overflow: hidden;
+  padding: 0.2rem 0.3rem;
+  color: var(--text-muted);
+  background: var(--background-primary);
+  font: var(--font-ui-smaller) / 1 var(--font-monospace);
+  font-variant-numeric: tabular-nums;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.vault-corner:empty {
+  display: none;
+}
+
+.vault-corner[data-corner='title'] {
+  top: 0.75rem;
+  left: 0.75rem;
+  color: var(--text-normal);
+}
+
+.vault-corner[data-corner='hint'] {
+  bottom: 0.75rem;
+  left: 0.75rem;
+}
+
+.vault-corner[data-corner='readout'] {
+  right: 0.75rem;
+  bottom: 0.75rem;
+  color: var(--text-normal);
+}
+
+.vault-view[data-layout='narrow'] .vault-corner[data-corner='hint'] {
+  display: none;
+}
+
+.vault-controls {
+  position: absolute;
+  z-index: 2;
+  top: 0.75rem;
+  right: 0.75rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.vault-view[data-layout='narrow'] .vault-controls {
+  flex-direction: row;
+}
+
+.vault-controls > button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 2.125rem;
+  height: 2.125rem;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--text-muted);
+  border-radius: 0;
+  background: var(--background-primary);
+  box-shadow: none;
+  color: var(--text-normal);
+  cursor: pointer;
+}
+
+.vault-controls > button + button {
+  border-top: 0;
+}
+
+.vault-view[data-layout='narrow'] .vault-controls > button + button {
+  border-top: 1px solid var(--text-muted);
+  border-left: 0;
+}
+
+.vault-controls > button:disabled {
+  color: var(--text-faint);
+  cursor: default;
+}
+
+.vault-controls > button:focus-visible {
+  position: relative;
+  z-index: 1;
+  outline: 2px solid var(--text-normal);
+  outline-offset: 1px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .vault-controls > button:not(:disabled):hover {
+    background: var(--vault-surface);
+  }
+}
+
+.vault-controls svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+.vault-scene {
+  display: block;
+  margin: auto;
+  overflow: visible;
+}
+
+.vault-scene :is(path, polygon, circle, ellipse) {
+  vector-effect: non-scaling-stroke;
+  stroke-linejoin: round;
+}
+
+.vault-scene .cn-face {
+  stroke: none;
+  pointer-events: none;
+}
+
+.vault-scene .cn-edge {
+  fill: none;
+  stroke: var(--cn-mid);
+  stroke-width: var(--vault-weight);
+  pointer-events: none;
+}
+
+.vault-scene .cn-holder {
+  fill: var(--cn-vinyl);
+  stroke: var(--cn-mid);
+  stroke-width: var(--vault-weight);
+}
+
+.vault-scene .cn-holder-label {
+  fill: var(--cn-vinyl-ink);
+  font-family: var(--font-monospace);
+  font-size: 11px;
+  letter-spacing: 1px;
+  font-variant-numeric: tabular-nums;
+}
+
+.vault-scene .cn-crank {
+  pointer-events: none;
+}
+
+.vault-scene :is(.cn-crank-rim, .cn-crank-spokes) {
+  fill: none;
+  stroke: var(--cn-s3);
+  vector-effect: none;
+}
+
+.vault-scene .cn-crank-rim {
+  stroke-width: 14px;
+}
+
+.vault-scene .cn-crank-spokes {
+  stroke-width: 8px;
+  stroke-linecap: round;
+}
+
+.vault-scene :is(.cn-crank-hub, .cn-crank-knob) {
+  fill: var(--cn-s3);
+  stroke: var(--cn-mid);
+  stroke-width: var(--vault-weight);
+}
+
+.vault-scene .cn-can {
+  cursor: pointer;
+  transition: transform 120ms ease-out;
+}
+
+.vault-scene .cn-can[data-lifted] {
+  visibility: hidden;
+}
+
+.vault-scene :is(.cn-band, .cn-lid) {
+  stroke: var(--cn-hi);
+  stroke-width: var(--vault-weight);
+  stroke-opacity: 0.7;
+}
+
+.vault-scene .cn-grain {
+  pointer-events: none;
+}
+
+.vault-scene .cn-strip {
+  fill: var(--cn-vinyl);
+  stroke: color-mix(in srgb, var(--cn-vinyl-ink) 30%, transparent);
+  stroke-width: var(--vault-weight);
+}
+
+.vault-scene .cn-tape {
+  fill: var(--cn-tape);
+}
+
+.vault-scene :is(.cn-title, .cn-line) {
+  fill: var(--cn-vinyl-ink);
+  font-family: var(--font-monospace);
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+.vault-scene .cn-title {
+  font-weight: 600;
+}
+
+.vault-scene .cn-tape ~ text {
+  fill: var(--cn-tape-ink);
+}
+
+.vault-scene .cn-stamp {
+  fill: var(--cn-stamp);
+  font-weight: 600;
+}
+
+.vault-scene .cn-dot {
+  stroke: var(--cn-hi);
+  stroke-width: var(--vault-weight);
+  stroke-opacity: 0.6;
+}
+
+.vault-scene .cn-dot-high {
+  fill: var(--cn-dot-high);
+}
+
+.vault-scene .cn-dot-good {
+  fill: var(--cn-dot-good);
+}
+
+.vault-scene .cn-rings {
+  fill: url(#cn-lid-rings);
+  pointer-events: none;
+}
+
+.vault-scene .cn-lid-label {
+  fill: var(--cn-vinyl);
+  stroke: color-mix(in srgb, var(--cn-vinyl-ink) 30%, transparent);
+  stroke-width: var(--vault-weight);
+}
+
+.vault-scene .cn-lid-text {
+  fill: var(--cn-vinyl-ink);
+  font-family: var(--font-monospace);
+  font-weight: 600;
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+/* hover nudges a can 18 units toward the aisle: project(0, -18, 0) */
+@media (hover: hover) and (pointer: fine) {
+  .vault-scene > .cn-can:hover {
+    transform: translate(-15.6px, 9px);
+  }
+}
+
+/* the pulled copy leaves its slot along -y and rises; the lid detail shows once it is out */
+.vault-scene .vault-lift .cn-can {
+  transition: transform 220ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.vault-scene .vault-lift .cn-can[data-pulling] {
+  transition: none;
+}
+
+.vault-scene .vault-lift .cn-can[data-out] {
+  transform: translate(var(--px), var(--py));
+}
+
+.vault-scene .vault-lift .cn-lid-detail {
+  animation: vault-lid-in 120ms 200ms both;
+}
+
+@keyframes vault-lid-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vault-scene .cn-can,
+  .vault-scene .vault-lift .cn-can {
+    transition: none;
+  }
+
+  .vault-scene .vault-lift .cn-lid-detail {
+    animation: none;
+  }
+}
+
+/* the index and the live line are for screen readers; the rack's arrow keys walk the same order */
+.vault-host .vault-index,
+.vault-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* page panel: the garden's vault card, as a sheet beside the rack */
+.vault-page {
+  min-width: 0;
+  min-height: 0;
+  box-sizing: border-box;
+  overflow-y: auto;
+  padding: 20px;
+  background: var(--background-primary);
+  border: 1px solid var(--vault-line);
+  border-left-width: 0;
+  font-family: var(--font-text);
+}
+
+.vault-view[data-layout='narrow'] .vault-page {
+  border-top-width: 0;
+  border-left-width: 1px;
+}
+
+.vault-page > * {
+  max-width: var(--file-line-width, 700px);
+}
+
+.vault-page-poster {
+  width: min(12rem, 70%);
+  margin: 0 0 12px;
+}
+
+.vault-page-poster img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border: 1px solid var(--text-normal);
+  background: var(--vault-surface);
+  animation: vault-poster-in 220ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@keyframes vault-poster-in {
+  from {
+    transform: perspective(1200px) rotateY(6deg);
+  }
+}
+
+.vault-page-title {
+  margin: 0 0 12px;
+  font-size: var(--h3-size);
+}
+
+.vault-page-record .vault-label-line {
+  margin: 0;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--text-muted);
+  color: var(--text-normal);
+  font: var(--font-ui-smaller) / 1.4 var(--font-monospace);
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.vault-page-record .vault-props {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 4px 12px;
+  margin: 12px 0;
+  font: var(--font-ui-smaller) / 1.45 var(--font-monospace);
+  font-variant-numeric: tabular-nums;
+}
+
+.vault-page-record .vault-prop {
+  display: contents;
+}
+
+.vault-page-record dt {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.vault-page-record dd {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.vault-page-record .vault-description {
+  margin: 0 0 12px;
+  color: var(--text-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vault-page-poster img {
+    animation: none;
+  }
+}

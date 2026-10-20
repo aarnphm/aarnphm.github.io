@@ -5,12 +5,19 @@
     "moduleResolution": "node",
     "strict": true,
     "isolatedModules": true,
-    "lib": ["DOM", "ES2022"]
+    "lib": [
+      "DOM",
+      "ES2022"
+    ]
   },
   "include": [
     "main.ts",
     "src/**/*.ts",
     "../../../../quartz/util/base/bookcase/geometry.ts",
-    "../../../../quartz/util/base/bookcase/styles.ts"
+    "../../../../quartz/util/base/bookcase/styles.ts",
+    "../../../../quartz/util/base/vault/layout.ts",
+    "../../../../quartz/util/base/vault/styles.ts",
+    "../../../../quartz/util/base/vault/scene.ts",
+    "../../../../quartz/util/base/vault/render.ts"
   ]
 }
