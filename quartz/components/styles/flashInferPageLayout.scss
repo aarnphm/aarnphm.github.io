@@ -1,0 +1,226 @@
+@use '../../styles/variables.scss' as *;
+@use './figure.scss' as *;
+
+.flashinfer-page-layout {
+  @include figure-frame('fpl-figure', 34rem);
+
+  --fpl-salmon: color-mix(in srgb, var(--fig-salmon) 72%, var(--light));
+  --fpl-sage: color-mix(in srgb, var(--fig-sage) 55%, var(--light));
+  --fpl-ink: color-mix(in srgb, var(--darkgray) 28%, var(--light));
+  --fpl-empty: var(--light);
+  --fpl-on: var(--fig-grid-selected);
+}
+
+:root[saved-theme='dark'] .flashinfer-page-layout {
+  --fpl-salmon: color-mix(in srgb, var(--fig-salmon) 40%, var(--lightgray));
+  --fpl-sage: color-mix(in srgb, var(--fig-sage) 28%, var(--lightgray));
+  --fpl-ink: color-mix(in srgb, var(--gray) 55%, var(--lightgray));
+  --fpl-empty: var(--lightgray);
+  --fpl-on: color-mix(in srgb, var(--fig-sage) 22%, var(--lightgray));
+}
+
+.fpl-controls {
+  margin-bottom: 0.85rem;
+}
+
+.fpl-segments {
+  @include figure-grid;
+  grid-auto-flow: column;
+  min-width: 0;
+  position: relative;
+  margin-top: 1.1rem;
+  width: fit-content;
+}
+
+.fpl-legend {
+  position: absolute;
+  top: -1.15rem;
+  left: 0;
+  padding: 0;
+  color: var(--fig-note);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.fpl-segment {
+  @include figure-grid-cell;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  padding: 0.28rem 0.55rem;
+  color: var(--fig-tab-fg);
+  cursor: pointer;
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  line-height: 1.2;
+  transition:
+    background-color 140ms ease,
+    color 140ms ease;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    pointer-events: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      color: var(--dark);
+    }
+  }
+
+  &:has(input:checked) {
+    background: var(--fpl-on);
+    color: var(--dark);
+  }
+
+  &:has(input:focus-visible) {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
+}
+
+.fpl-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(12rem, 0.9fr);
+  gap: 1.25rem 1.5rem;
+  align-items: start;
+}
+
+@container fpl-figure (max-width: 36rem) {
+  .fpl-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+.fpl-svg {
+  display: block;
+  width: 100%;
+  max-width: 22rem;
+  overflow: visible;
+}
+
+.fpl-title,
+.fpl-page-label {
+  fill: var(--fig-note);
+  font-family: var(--codeFont);
+  font-size: 11px;
+}
+
+.fpl-cell {
+  fill: var(--fpl-empty);
+  stroke: var(--fig-stroke-soft);
+  stroke-width: 1;
+  transition:
+    fill 140ms ease,
+    opacity 140ms ease,
+    stroke 140ms ease;
+}
+
+.fpl-cell--live {
+  stroke: var(--fig-stroke);
+}
+
+[data-fpl-tone='salmon'] .fpl-cell--live {
+  fill: var(--fpl-salmon);
+}
+
+[data-fpl-tone='sage'] .fpl-cell--live {
+  fill: var(--fpl-sage);
+}
+
+[data-fpl-tone='ink'] .fpl-cell--live {
+  fill: var(--fpl-ink);
+}
+
+[data-fpl-page][data-fpl-dim='true'] {
+  opacity: 0.28;
+}
+
+.fpl-side {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  min-width: 0;
+}
+
+.fpl-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--dark);
+
+  th,
+  td {
+    padding: 0.35rem 0.45rem;
+    border: 1px solid var(--fig-grid-line);
+    text-align: left;
+  }
+
+  th {
+    color: var(--fig-note);
+    font-weight: 500;
+    background: var(--fig-tab-surface);
+  }
+
+  tr[data-fpl-on] {
+    background: var(--fpl-on);
+  }
+}
+
+.fpl-readout {
+  @include figure-table;
+  margin: 0;
+}
+
+.fpl-qo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  align-items: center;
+}
+
+.fpl-qo-label {
+  margin-right: 0.35rem;
+  color: var(--fig-note);
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+}
+
+.fpl-qo-cell {
+  width: 1.1rem;
+  height: 1.1rem;
+  border: 1px solid var(--fig-stroke);
+  box-sizing: border-box;
+  transition: opacity 140ms ease;
+}
+
+.fpl-qo-cell[data-fpl-tone='salmon'] {
+  background: var(--fpl-salmon);
+}
+
+.fpl-qo-cell[data-fpl-tone='sage'] {
+  background: var(--fpl-sage);
+}
+
+.fpl-qo-cell[data-fpl-tone='ink'] {
+  background: var(--fpl-ink);
+}
+
+.fpl-qo-cell[data-fpl-dim='true'] {
+  opacity: 0.28;
+}
+
+.fpl-math {
+  @include figure-inline-math;
+}
+
+.fpl-caption {
+  @include figure-caption;
+}

@@ -1,0 +1,106 @@
+@use '../../styles/variables.scss' as *;
+@use './figure.scss' as *;
+
+.cpm-activity {
+  @include figure-frame('cpm-figure', 22rem);
+
+  --cpm-id: color-mix(in srgb, var(--fig-salmon) 42%, var(--light));
+}
+
+:root[saved-theme='dark'] .cpm-activity {
+  --cpm-id: color-mix(in srgb, var(--fig-salmon) 26%, var(--lightgray));
+}
+
+.cpm-node {
+  position: relative;
+  max-width: 28rem;
+  margin: 0 auto;
+  min-height: 14rem;
+  border: 1px solid var(--dark);
+  background: var(--fig-surface);
+  padding: 2.4rem 5.5rem 3.2rem;
+}
+
+.cpm-corner {
+  position: absolute;
+  width: 5rem;
+  border: 1px solid var(--dark);
+  background: var(--light);
+  color: var(--dark);
+  font-family: var(--codeFont);
+  font-size: 0.62rem;
+  line-height: 1.25;
+  text-align: center;
+  padding: 0.35rem 0.25rem;
+}
+
+.cpm-corner--tl {
+  top: 0.55rem;
+  left: 0.55rem;
+}
+
+.cpm-corner--tr {
+  top: 0.55rem;
+  right: 0.55rem;
+}
+
+.cpm-corner--bl {
+  bottom: 0.55rem;
+  left: 0.55rem;
+}
+
+.cpm-corner--br {
+  bottom: 0.55rem;
+  right: 0.55rem;
+}
+
+.cpm-id {
+  width: 5.5rem;
+  height: 5.5rem;
+  margin: 0 auto 0.6rem;
+  border: 1px solid var(--dark);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  background: var(--cpm-id);
+  color: var(--dark);
+  font-family: var(--codeFont);
+  font-size: 0.68rem;
+  padding: 0.4rem;
+}
+
+.cpm-name {
+  text-align: center;
+  color: var(--dark);
+  font-family: var(--bodyFont);
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.85rem;
+}
+
+.cpm-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-top: 1px solid var(--dark);
+
+  span {
+    text-align: center;
+    padding: 0.7rem 0.4rem;
+    color: var(--dark);
+    font-family: var(--codeFont);
+    font-size: 0.78rem;
+  }
+
+  span:first-child {
+    border-right: 1px solid var(--dark);
+  }
+}
+
+.cpm-caption {
+  @include figure-caption;
+}
+
+.cpm-math {
+  @include figure-inline-math;
+}

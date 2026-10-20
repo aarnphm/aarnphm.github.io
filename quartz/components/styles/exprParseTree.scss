@@ -1,0 +1,66 @@
+@use '../../styles/variables.scss' as *;
+@use './figure.scss' as *;
+
+.expr-parse-tree {
+  @include figure-frame('ept-figure', 16rem);
+
+  --ept-lit: color-mix(in srgb, var(--fig-salmon) 42%, var(--light));
+}
+
+:root[saved-theme='dark'] .expr-parse-tree {
+  --ept-lit: color-mix(in srgb, var(--fig-salmon) 26%, var(--lightgray));
+}
+
+article.notebook-page .expr-parse-tree--float-end {
+  float: right;
+  width: min(18rem, 46%);
+  margin: 0 0 1rem 1rem;
+}
+
+.ept-root {
+  display: flex;
+  justify-content: center;
+}
+
+.ept-branch {
+  display: grid;
+  justify-items: center;
+  gap: 0.35rem;
+}
+
+.ept-kids {
+  display: flex;
+  gap: 0.7rem;
+  justify-content: center;
+}
+
+.ept-node {
+  border: 1px solid var(--dark);
+  background: var(--light);
+  color: var(--dark);
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  padding: 0.22rem 0.45rem;
+  min-width: 1.6rem;
+  text-align: center;
+}
+
+.ept-node--lit {
+  background: var(--ept-lit);
+}
+
+.ept-caption {
+  @include figure-caption;
+}
+
+.ept-math {
+  @include figure-inline-math;
+}
+
+@media (max-width: 640px) {
+  article.notebook-page .expr-parse-tree--float-end {
+    float: none;
+    width: 100%;
+    margin: 0 0 1rem;
+  }
+}

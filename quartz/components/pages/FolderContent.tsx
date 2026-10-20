@@ -26,6 +26,7 @@ import {
 } from '../../util/path'
 import { pdfTitlesFor } from '../../util/pdf-titles'
 import { concatenateResources } from '../../util/resources'
+import { universityHomeRe } from '../../util/university'
 import { parseWikilink } from '../../util/wikilinks'
 import { CourseCalendar, courseCalendarScript } from '../CourseCalendar'
 import CourseHomeConstructor from '../CourseHome'
@@ -43,6 +44,8 @@ import PageListConstructor, {
 import PageListSearchConstructor from '../PageListSearch'
 import SeeAlsoComponent from '../SeeAlso'
 import style from '../styles/listPage.scss'
+import UniversityCourseConstructor from '../UniversityCourse'
+import UniversityIndexConstructor from '../UniversityIndex'
 
 interface FolderContentOptions {
   /**
@@ -103,6 +106,7 @@ const Layout = {
   lovp: 'L',
   course: 'COURSE',
   courses: 'COURSES',
+  university: 'UNIVERSITY',
   resource: 'RESOURCE',
   studyLog: 'STUDY-LOG',
   statements: 'STATEMENTS',
@@ -339,6 +343,8 @@ export default ((opts?: Partial<FolderContentOptions>) => {
   const SeeAlso = SeeAlsoComponent()
   const CourseHome = CourseHomeConstructor()
   const CoursesIndex = CoursesIndexConstructor()
+  const UniversityIndex = UniversityIndexConstructor()
+  const UniversityCourse = UniversityCourseConstructor()
   const CourseResource = CourseResourceConstructor()
   const CourseStudyLog = CourseStudyLogConstructor()
   const CourseStatements = CourseStatementsConstructor()
@@ -505,6 +511,9 @@ export default ((opts?: Partial<FolderContentOptions>) => {
     const sort = sortMode ? sortForFolderMode(sortMode, cfg) : options.sort
     const listProps = { ...props, sort, content, allFiles: entries, vaults: allFiles }
 
+    // `thoughts/university/<term>/<course>/index.md`: the course home over its own files
+    if (universityHomeRe.test(fileData.slug ?? '')) return <UniversityCourse {...props} />
+
     // vendored OCW pages (syllabus, calendar, …) are articles under a course, never listings
     if (coursePageOf(fileData.slug)) {
       return (
@@ -568,6 +577,10 @@ export default ((opts?: Partial<FolderContentOptions>) => {
       case Layout.courses:
         return <CoursesIndex {...props} />
 
+      // `thoughts/university/index.md`: archived courses by term, no study state
+      case Layout.university:
+        return <UniversityIndex {...props} />
+
       // vendored OCW resource pages pick their view from `resource.kind`
       case Layout.resource:
         return <CourseResource {...props} />
@@ -618,6 +631,8 @@ export default ((opts?: Partial<FolderContentOptions>) => {
     CourseResource.css,
     CourseStudyLog.css,
     CourseStatements.css,
+    UniversityIndex.css,
+    UniversityCourse.css,
   )
   FolderContent.sourceNames = inheritComponentSourceNames('FolderContent', [
     Evergreen,
@@ -626,6 +641,8 @@ export default ((opts?: Partial<FolderContentOptions>) => {
     SeeAlso,
     CourseHome,
     CoursesIndex,
+    UniversityIndex,
+    UniversityCourse,
     CourseResource,
     CourseStudyLog,
     CourseStatements,

@@ -1,0 +1,179 @@
+@use '../../styles/variables.scss' as *;
+@use './figure.scss' as *;
+
+.sql-join {
+  @include figure-frame('sj-figure', 36rem);
+
+  --sj-course: color-mix(in srgb, var(--fig-salmon) 45%, var(--light));
+  --sj-prereq: color-mix(in srgb, var(--fig-sage) 40%, var(--light));
+  --sj-head: color-mix(in srgb, var(--lightgray) 55%, var(--light));
+  --sj-on: var(--fig-grid-selected);
+}
+
+:root[saved-theme='dark'] .sql-join {
+  --sj-course: color-mix(in srgb, var(--fig-salmon) 28%, var(--lightgray));
+  --sj-prereq: color-mix(in srgb, var(--fig-sage) 24%, var(--lightgray));
+  --sj-head: color-mix(in srgb, var(--gray) 35%, var(--lightgray));
+  --sj-on: color-mix(in srgb, var(--fig-sage) 22%, var(--lightgray));
+}
+
+.sj-segments {
+  @include figure-grid;
+  grid-auto-flow: column;
+  width: fit-content;
+  position: relative;
+  margin: 0 0 1.1rem;
+  padding: 0;
+  border: 0;
+}
+
+.sj-legend {
+  position: absolute;
+  top: -1.15rem;
+  left: 0;
+  padding: 0;
+  color: var(--fig-note);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.sj-segment {
+  @include figure-grid-cell;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.4rem;
+  padding: 0.28rem 0.55rem;
+  color: var(--fig-tab-fg);
+  cursor: pointer;
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    pointer-events: none;
+  }
+
+  &:has(input:checked) {
+    background: var(--sj-on);
+    color: var(--dark);
+  }
+
+  &:has(input:focus-visible) {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
+}
+
+.sj-sources {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 1rem;
+  margin-bottom: 0.85rem;
+}
+
+.sj-table {
+  min-width: 0;
+}
+
+.sj-name {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.35rem;
+  color: var(--fig-note);
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+}
+
+.sj-swatch {
+  width: 0.55rem;
+  height: 0.55rem;
+  flex: 0 0 auto;
+}
+
+.sj-swatch--course {
+  background: var(--sj-course);
+}
+
+.sj-swatch--prereq {
+  background: var(--sj-prereq);
+}
+
+.sj-swatch--result {
+  background: var(--sj-on);
+}
+
+.sj-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--codeFont);
+  font-size: 0.7rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.sj-table th,
+.sj-table td {
+  border: 1px solid var(--fig-grid-line);
+  padding: 0.28rem 0.4rem;
+  text-align: left;
+  color: var(--dark);
+  background: var(--light);
+}
+
+.sj-table th {
+  background: var(--sj-head);
+  font-style: italic;
+  font-weight: 500;
+}
+
+.sj-null {
+  font-style: italic;
+  color: var(--fig-note);
+}
+
+.sj-op {
+  margin: 0 0 0.45rem;
+  color: var(--dark);
+  font-family: var(--codeFont);
+  font-size: 0.78rem;
+}
+
+.sj-op strong {
+  color: var(--dark);
+  font-weight: 600;
+}
+
+.sj-result {
+  display: none;
+}
+
+.sql-join:has([data-sql-mode-input][value='inner']:checked) [data-sql-panel='inner'],
+.sql-join:has([data-sql-mode-input][value='left']:checked) [data-sql-panel='left'],
+.sql-join:has([data-sql-mode-input][value='right']:checked) [data-sql-panel='right'],
+.sql-join:has([data-sql-mode-input][value='full']:checked) [data-sql-panel='full'] {
+  display: block;
+}
+
+.sj-caption {
+  @include figure-caption;
+}
+
+.sj-math {
+  @include figure-inline-math;
+}
+
+@media (max-width: 640px) {
+  .sj-sources {
+    grid-template-columns: 1fr;
+  }
+
+  .sj-segments {
+    grid-auto-flow: row;
+    width: 100%;
+  }
+}

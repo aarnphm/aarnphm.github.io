@@ -6,7 +6,7 @@ comments: false
 date: '2021-12-22'
 description: and a celebration for the act of making.
 id: craft
-modified: 2026-10-19 17:16:02 GMT-04:00
+modified: 2026-10-19 21:49:56 GMT-04:00
 permalinks:
   - /thoughts/work
   - /craft
@@ -114,11 +114,8 @@ There is also a [[ideas|backlog]] of unfinished ideas that I might work on, one 
 <!-- prettier-ignore -->
 - [[triathlon|an amateur triathlete]]
 
-  <div class="nolist">
+  <div data-triathlon-latest />
 
-  <iframe height='454' width='300' frameborder='0' allowtransparency='true' scrolling='no' src='https://www.strava.com/athletes/123158310/latest-rides/6ecaafad0b2414c8166dcd13d4d97950a87764f4'></iframe>
-
-  </div>
 - NVIDIA, 11/26-Now
 - Modular, 01/2026—06/2026
   - Inference Optimization Engineer, MAX Serve

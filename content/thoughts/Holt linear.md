@@ -3,13 +3,13 @@ date: '2025-09-11'
 description: double exponential smoothing for forecasting
 id: Holt linear
 modified: 2026-06-05 15:08:27 GMT-04:00
+seealso:
+  - '[[thoughts/university/twenty-five-twenty-six/commerce-4qa3/financial analysis|lecture notes]]'
 tags:
   - seed
   - math
 title: Holt linear
 ---
-
-see also [[thoughts/university/twenty-five-twenty-six/commerce-4qa3/financial analysis|lecture notes]]
 
 For data with trends, using level $s_t$ and trend $b_t$:
 

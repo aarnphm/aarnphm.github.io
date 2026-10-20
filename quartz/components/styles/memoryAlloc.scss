@@ -1,0 +1,119 @@
+@use '../../styles/variables.scss' as *;
+@use './figure.scss' as *;
+
+.memory-alloc {
+  @include figure-frame('ma-figure', 14rem);
+
+  --ma-lit: color-mix(in srgb, var(--fig-salmon) 42%, var(--light));
+  --ma-soft: color-mix(in srgb, var(--lightgray) 50%, var(--light));
+}
+
+:root[saved-theme='dark'] .memory-alloc {
+  --ma-lit: color-mix(in srgb, var(--fig-salmon) 26%, var(--lightgray));
+  --ma-soft: color-mix(in srgb, var(--gray) 30%, var(--lightgray));
+}
+
+article.notebook-page .memory-alloc--float-end {
+  float: right;
+  width: min(22rem, 48%);
+  max-width: 100%;
+  margin: 0 0 1rem 1rem;
+}
+
+.ma-block,
+.ma-align,
+.ma-risc {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.ma-label,
+.ma-align-title,
+.ma-note,
+.ma-band-note {
+  margin: 0;
+  color: var(--fig-note);
+  font-family: var(--codeFont);
+  font-size: 0.7rem;
+}
+
+.ma-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1px;
+  background: var(--fig-grid-line);
+  border: 1px solid var(--dark);
+  width: fit-content;
+  max-width: 100%;
+}
+
+.ma-cell {
+  min-width: 2.4rem;
+  padding: 0.45rem 0.4rem;
+  background: var(--light);
+  color: var(--dark);
+  font-family: var(--codeFont);
+  font-size: 0.7rem;
+  text-align: center;
+}
+
+.ma-cell--lit {
+  background: var(--ma-lit);
+}
+
+.ma-cell--soft {
+  background: var(--ma-soft);
+  color: var(--fig-note);
+}
+
+.ma-marks {
+  display: flex;
+  gap: 0.55rem;
+  color: var(--fig-note);
+  font-family: var(--codeFont);
+  font-size: 0.65rem;
+}
+
+.ma-risc {
+  max-width: 18rem;
+  margin-inline: auto;
+}
+
+.ma-band {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border: 1px solid var(--dark);
+  padding: 0.45rem 0.55rem;
+  background: var(--light);
+}
+
+.ma-band--lit {
+  background: var(--ma-lit);
+}
+
+.ma-band--soft {
+  background: var(--ma-soft);
+}
+
+.ma-band-name {
+  color: var(--dark);
+  font-family: var(--bodyFont);
+  font-size: 0.78rem;
+}
+
+.ma-caption {
+  @include figure-caption;
+}
+
+.ma-math {
+  @include figure-inline-math;
+}
+
+@media (max-width: 640px) {
+  article.notebook-page .memory-alloc--float-end {
+    float: none;
+    width: 100%;
+    margin: 0 0 1rem;
+  }
+}

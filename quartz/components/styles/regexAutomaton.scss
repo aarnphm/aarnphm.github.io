@@ -1,0 +1,79 @@
+@use '../../styles/variables.scss' as *;
+@use './figure.scss' as *;
+
+.regex-automaton {
+  @include figure-frame('ra-figure', 14rem);
+
+  --ra-lit: color-mix(in srgb, var(--fig-salmon) 42%, var(--light));
+  --ra-fill: color-mix(in srgb, var(--lightgray) 40%, var(--light));
+}
+
+:root[saved-theme='dark'] .regex-automaton {
+  --ra-lit: color-mix(in srgb, var(--fig-salmon) 26%, var(--lightgray));
+  --ra-fill: color-mix(in srgb, var(--gray) 28%, var(--lightgray));
+}
+
+article.notebook-page .regex-automaton--float-end {
+  float: right;
+  width: min(20rem, 48%);
+  max-width: 100%;
+  margin: 0 0 1rem 1rem;
+}
+
+.ra-svg {
+  display: block;
+  width: 100%;
+  max-width: 28rem;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+.ra-state {
+  fill: var(--ra-fill);
+  stroke: var(--dark);
+  stroke-width: 1.2;
+}
+
+.ra-state--lit {
+  fill: var(--ra-lit);
+}
+
+.ra-accept {
+  fill: none;
+  stroke: var(--dark);
+  stroke-width: 1.1;
+}
+
+.ra-state-label,
+.ra-edge-label {
+  fill: var(--dark);
+  font-family: var(--codeFont);
+  font-size: 11px;
+}
+
+.ra-edge,
+.ra-start {
+  fill: none;
+  stroke: var(--dark);
+  stroke-width: 1.1;
+}
+
+.ra-arrowhead {
+  fill: var(--dark);
+}
+
+.ra-caption {
+  @include figure-caption;
+}
+
+.ra-math {
+  @include figure-inline-math;
+}
+
+@media (max-width: 640px) {
+  article.notebook-page .regex-automaton--float-end {
+    float: none;
+    width: 100%;
+    margin: 0 0 1rem;
+  }
+}

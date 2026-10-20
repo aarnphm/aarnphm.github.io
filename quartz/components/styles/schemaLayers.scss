@@ -1,0 +1,78 @@
+@use '../../styles/variables.scss' as *;
+@use './figure.scss' as *;
+
+.schema-layers {
+  @include figure-frame('scl-figure', 26rem);
+
+  --scl-view: color-mix(in srgb, var(--lightgray) 45%, var(--light));
+  --scl-concept: color-mix(in srgb, var(--fig-salmon) 40%, var(--light));
+  --scl-phys: color-mix(in srgb, var(--fig-sage) 38%, var(--light));
+}
+
+:root[saved-theme='dark'] .schema-layers {
+  --scl-view: color-mix(in srgb, var(--gray) 28%, var(--lightgray));
+  --scl-concept: color-mix(in srgb, var(--fig-salmon) 24%, var(--lightgray));
+  --scl-phys: color-mix(in srgb, var(--fig-sage) 22%, var(--lightgray));
+}
+
+.scl-svg {
+  display: block;
+  width: 100%;
+  max-width: 36rem;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+.scl-box {
+  stroke: var(--dark);
+  stroke-width: 1;
+}
+
+.scl-box--view {
+  fill: var(--scl-view);
+}
+
+.scl-box--concept {
+  fill: var(--scl-concept);
+}
+
+.scl-box--phys {
+  fill: var(--scl-phys);
+}
+
+.scl-disk,
+.scl-disk-body {
+  fill: var(--light);
+  stroke: var(--dark);
+  stroke-width: 1;
+}
+
+.scl-edge {
+  fill: none;
+  stroke: var(--fig-stroke);
+  stroke-width: 1.2;
+}
+
+.scl-arrowhead {
+  fill: var(--dark);
+}
+
+.scl-label {
+  fill: var(--dark);
+  font-family: var(--bodyFont);
+  font-size: 12px;
+}
+
+.scl-sub {
+  fill: var(--fig-note);
+  font-family: var(--codeFont);
+  font-size: 11px;
+}
+
+.scl-caption {
+  @include figure-caption;
+}
+
+.scl-math {
+  @include figure-inline-math;
+}

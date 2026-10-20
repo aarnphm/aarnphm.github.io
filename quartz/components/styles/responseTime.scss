@@ -1,0 +1,63 @@
+@use '../../styles/variables.scss' as *;
+@use './figure.scss' as *;
+
+.response-time {
+  @include figure-frame('rt-figure', 20rem);
+
+  --rt-job: color-mix(in srgb, var(--fig-salmon) 50%, var(--light));
+}
+
+:root[saved-theme='dark'] .response-time {
+  --rt-job: color-mix(in srgb, var(--fig-salmon) 28%, var(--lightgray));
+}
+
+.rt-svg {
+  display: block;
+  width: 100%;
+  max-width: 36rem;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+.rt-axis,
+.rt-marker,
+.rt-bracket {
+  stroke: var(--dark);
+  stroke-width: 1.2;
+  fill: none;
+}
+
+.rt-bracket--wide {
+  stroke-width: 1.4;
+}
+
+.rt-arrowhead {
+  fill: var(--dark);
+}
+
+.rt-job {
+  fill: var(--rt-job);
+  stroke: var(--dark);
+  stroke-width: 1;
+}
+
+.rt-axis-label,
+.rt-marker-label,
+.rt-bracket-label,
+.rt-job-label {
+  fill: var(--dark);
+  font-family: var(--bodyFont);
+  font-size: 11px;
+}
+
+.rt-job-label {
+  font-family: var(--codeFont);
+}
+
+.rt-caption {
+  @include figure-caption;
+}
+
+.rt-math {
+  @include figure-inline-math;
+}

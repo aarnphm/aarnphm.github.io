@@ -3,12 +3,12 @@ date: '2023-10-24'
 description: a moral prejudice, truth-seeking masks will to power and ascetic life
 id: Will to Truth
 modified: 2026-06-05 15:08:21 GMT-04:00
+seealso:
+  - '[[thoughts/Philosophy and Nietzsche|Philosophy and Nietzsche]]'
 tags:
   - philosophy
 title: Will to Truth
 ---
-
-See also: [[thoughts/Philosophy and Nietzsche|Philosophy and Nietzsche]]
 
 _excerpt from [[thoughts/Nietzsche|Nietzsche]]'s Beyond Good and Evil_
 

@@ -3,6 +3,11 @@ date: '2025-09-15'
 description: Likelihood objective, Fisher information, conditional classification, and MAP
 id: Maximum likelihood estimation
 modified: 2026-09-01 09:15:00 GMT-04:00
+seealso:
+  - '[[thoughts/Logistic regression]]'
+  - '[[thoughts/regularization]]'
+  - '[[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/likelihood]]'
+  - '[[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/finals|supervised learning notes]]'
 tags:
   - ml
   - probability
@@ -13,7 +18,6 @@ title: Maximum likelihood estimation
 >
 > Maximum likelihood estimation chooses the parameter value that gives the observed sample the largest probability mass or density under a model. With independent data, maximizing likelihood is equivalent to minimizing negative log likelihood. Conditional classification likelihood gives the usual [[thoughts/cross entropy|cross entropy]] objective.
 
-See also: [[thoughts/Logistic regression]], [[thoughts/regularization]], [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/likelihood]], [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/finals|supervised learning notes]].
 
 ## definition
 

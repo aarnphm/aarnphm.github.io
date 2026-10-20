@@ -3,13 +3,16 @@ date: '2025-11-19'
 description: defense mechanism where one unconsciously block painful thoughts.
 id: repression
 modified: 2026-06-05 15:08:22 GMT-04:00
+seealso:
+  - '[[thoughts/Freud|Freud]]'
+  - '[[library/Civilisation and its Discontents|Civilisation and its Discontents]]'
+  - '[[thoughts/guilt|guilt]]'
+  - '[[thoughts/performativity|performativity]]'
 tags:
   - psychoanalysis
   - pattern
 title: repression
 ---
-
-see also: [[thoughts/Freud|Freud]], [[library/Civilisation and its Discontents|Civilisation and its Discontents]], [[thoughts/guilt|guilt]], [[thoughts/performativity|performativity]]
 
 repression is the central mechanism of [[thoughts/Freud|freudian]] psychoanalysis. it's how civilization gets inside you—how social prohibitions become psychic structure.
 

@@ -3,6 +3,9 @@ date: '2025-08-28'
 description: structure-preserving function between vector spaces satisfying additivity and scalar multiplication, fundamental to matrices and differentiation.
 id: linear map
 modified: 2026-06-05 15:08:26 GMT-04:00
+seealso:
+  - '[[thoughts/Vector space|vector spaces]]'
+  - '[[thoughts/Inner product space|inner product spaces]]'
 tags:
   - math/linalg
 title: linear map
@@ -21,7 +24,6 @@ Linear maps preserve the algebra of vector spaces: addition and scalar multiplic
 >
 > Equivalently, $T(0)=0$ and $T\big(\sum_i a_i x_i\big)=\sum_i a_i T(x_i)$.
 
-See also [[thoughts/Vector space|vector spaces]] and [[thoughts/Inner product space|inner product spaces]].
 
 ## Basic examples
 

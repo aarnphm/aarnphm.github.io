@@ -3,12 +3,12 @@ date: '2024-01-30'
 description: via subset construction algorithm of DFA
 id: NFA
 modified: 2026-06-05 15:08:20 GMT-04:00
+seealso:
+  - '[[thoughts/DFA|deterministic finite automaton]]'
 tags:
   - math
 title: non-deterministic finite automaton
 ---
-
-see also [[thoughts/DFA|deterministic finite automaton]]
 
 ## definition
 

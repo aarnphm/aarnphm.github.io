@@ -1,0 +1,85 @@
+@use '../../styles/variables.scss' as *;
+@use './figure.scss' as *;
+
+.job-deadline {
+  @include figure-frame('jd-figure', 22rem);
+
+  --jd-job: color-mix(in srgb, var(--fig-salmon) 48%, var(--light));
+  --jd-release: color-mix(in srgb, var(--fig-sage) 42%, var(--light));
+}
+
+:root[saved-theme='dark'] .job-deadline {
+  --jd-job: color-mix(in srgb, var(--fig-salmon) 28%, var(--lightgray));
+  --jd-release: color-mix(in srgb, var(--fig-sage) 24%, var(--lightgray));
+}
+
+.jd-svg {
+  display: block;
+  width: 100%;
+  max-width: 42rem;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+.jd-axis {
+  stroke: var(--dark);
+  stroke-width: 1.2;
+}
+
+.jd-arrowhead {
+  fill: var(--dark);
+}
+
+.jd-axis-label,
+.jd-mark,
+.jd-span-label,
+.jd-anno,
+.jd-job-label {
+  fill: var(--dark);
+  font-family: var(--bodyFont);
+  font-size: 11px;
+}
+
+.jd-job-label {
+  font-family: var(--codeFont);
+  font-size: 12px;
+}
+
+.jd-release {
+  fill: var(--jd-release);
+  stroke: var(--dark);
+  stroke-width: 1;
+}
+
+.jd-job {
+  fill: var(--jd-job);
+  stroke: var(--dark);
+  stroke-width: 1;
+}
+
+.jd-tick {
+  stroke: var(--fig-stroke);
+  stroke-width: 1;
+}
+
+.jd-tick--hard {
+  stroke: var(--dark);
+  stroke-width: 1.4;
+}
+
+.jd-span {
+  stroke: var(--dark);
+  stroke-width: 1.1;
+}
+
+.jd-span--rel {
+  stroke: var(--fig-stroke);
+}
+
+.jd-caption {
+  @include figure-caption;
+}
+
+.jd-math {
+  @include figure-inline-math;
+}

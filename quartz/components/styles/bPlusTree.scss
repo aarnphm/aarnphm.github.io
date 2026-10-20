@@ -1,0 +1,74 @@
+@use '../../styles/variables.scss' as *;
+@use './figure.scss' as *;
+
+.b-plus-tree {
+  @include figure-frame('bpt-figure', 28rem);
+
+  --bpt-node: color-mix(in srgb, var(--lightgray) 50%, var(--light));
+  --bpt-lit: color-mix(in srgb, var(--fig-salmon) 42%, var(--light));
+}
+
+:root[saved-theme='dark'] .b-plus-tree {
+  --bpt-node: color-mix(in srgb, var(--gray) 30%, var(--lightgray));
+  --bpt-lit: color-mix(in srgb, var(--fig-salmon) 26%, var(--lightgray));
+}
+
+.bpt-svg {
+  display: block;
+  width: 100%;
+  max-width: 42rem;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+.bpt-node {
+  fill: var(--bpt-node);
+  stroke: var(--dark);
+  stroke-width: 1;
+}
+
+.bpt-node--lit {
+  fill: var(--bpt-lit);
+}
+
+.bpt-cell {
+  fill: var(--light);
+  stroke: var(--fig-stroke);
+  stroke-width: 1;
+}
+
+.bpt-ptr {
+  fill: var(--dark);
+}
+
+.bpt-key {
+  fill: var(--dark);
+  font-family: var(--codeFont);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.bpt-level,
+.bpt-anno {
+  fill: var(--fig-note);
+  font-family: var(--bodyFont);
+  font-size: 11px;
+}
+
+.bpt-edge {
+  fill: none;
+  stroke: var(--fig-stroke);
+  stroke-width: 1.1;
+}
+
+.bpt-arrowhead {
+  fill: var(--dark);
+}
+
+.bpt-caption {
+  @include figure-caption;
+}
+
+.bpt-math {
+  @include figure-inline-math;
+}
