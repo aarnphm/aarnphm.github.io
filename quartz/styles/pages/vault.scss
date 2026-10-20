@@ -73,10 +73,11 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='vault'
 .vault-viewport {
   position: absolute;
   inset: 0;
-  display: grid;
   overflow: auto;
   overscroll-behavior: contain;
+  scrollbar-width: none;
   cursor: grab;
+  touch-action: none;
   user-select: none;
 
   &:focus-visible {
@@ -85,10 +86,16 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='vault'
   }
 
   &[data-dragging],
+  &[data-dragging] .cn-can,
   &[data-pulling],
   &[data-pulling] .cn-can {
     cursor: grabbing;
   }
+}
+
+.vault-canvas {
+  position: relative;
+  overflow: clip;
 }
 
 .vault-corner {
@@ -189,8 +196,10 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='vault'
 
 // The drawing. Tone, label and gradient colours come from the scene's own <style> (styles.ts).
 .vault-scene {
+  position: absolute;
+  top: 0;
+  left: 0;
   display: block;
-  margin: auto;
   overflow: visible;
   transform-origin: 0 0;
 
@@ -259,12 +268,16 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='vault'
 .vault-lift {
   .cn-can {
     cursor: pointer;
-    transition: transform 120ms ease-out;
 
     // Transparent, not hidden: the empty slot keeps the pointer, so the can behind it cannot claim
     // it once the pulled copy slides away from under it.
     &[data-lifted] {
       opacity: 0;
+    }
+
+    &[data-dimmed] {
+      opacity: 0.22;
+      pointer-events: none;
     }
 
     // Only the front of the roll, the face that carries the label, takes the pointer.
@@ -354,20 +367,9 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='vault'
   }
 }
 
-// Hover nudges a can 18 units toward the aisle: project(0, -18, 0). Click pulls it all the way.
-@media (hover: hover) and (pointer: fine) {
-  .vault-scene .cn-can:hover {
-    transform: translate(-15.6px, 9px);
-  }
-}
-
-// The pulled copy leaves its slot along -y and rises; the script sets --pull on arrival.
+// The pulled copy leaves its slot along -y and rises; WAAPI and drag inline transforms drive motion.
 .vault-lift .cn-can {
-  transition: transform 220ms cubic-bezier(0.23, 1, 0.32, 1);
-
-  &[data-pulling] {
-    transition: none;
-  }
+  will-change: transform;
 
   &[data-out] {
     transform: translate(var(--px), var(--py));
@@ -375,14 +377,7 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='vault'
 
   // The embossed lid shows once the can has left the rack.
   .cn-lid-detail {
-    animation: vault-lid-in 120ms 200ms both;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .vault-scene .cn-can,
-  .vault-lift .cn-can {
-    transition: none;
+    animation: vault-lid-in 120ms 160ms both;
   }
 }
 
@@ -440,8 +435,7 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='vault'
 }
 
 .vault .vault-index-list > li {
-  content-visibility: auto;
-  contain-intrinsic-block-size: auto 3.25rem;
+  position: relative;
   margin: 0;
   padding: 0;
   background: var(--light);
