@@ -1,6 +1,7 @@
 import type { ActivitySummary, DailyPoint } from '../plugins/stores/analytics'
 import type { ActivityKind, StravaActivityDetail } from '../plugins/stores/strava'
 import type { FullSlug } from './path'
+import { decodeActivityComparisonAnchor } from './triathlon-comparison'
 import {
   triathlonActivityAnchor,
   triathlonDateFromSlug,
@@ -12,6 +13,7 @@ import { isRecord } from './type-guards'
 
 // The day page and its detail shards weigh megabytes; a link preview reads this ~1 KB summary instead.
 export const TRIATHLON_PREVIEW_KIND = 'triathlon-preview-v1'
+export const TRIATHLON_CALENDAR_PREVIEW_KIND = 'triathlon-calendar-preview-v1'
 
 const PREVIEW_KINDS: readonly ActivityKind[] = [
   'swim',
@@ -25,6 +27,7 @@ const PREVIEW_KINDS: readonly ActivityKind[] = [
 ]
 const TRACE_BOX = 100
 const TRACE_MIN_EXTENT_M = 150
+const CALC_SHARE = /^calculator-\d+-[ap]-[im](?:-\d+){5}$/
 
 export interface TriathlonPreviewActivity {
   id: number
@@ -55,16 +58,53 @@ export interface TriathlonPreview {
   activities: TriathlonPreviewActivity[]
 }
 
-export interface TriathlonPreviewTarget {
-  date: string
-  activityId: string | null
+export type TriathlonPreviewTarget =
+  | { kind: 'day'; date: string; activityId: string | null }
+  | { kind: 'comparison'; ids: string[] }
+  | { kind: 'calendar'; year: number | null; view: 'list' | 'year' }
+  | { kind: 'calculator'; raw: string }
+
+export interface TriathlonCalendarPreviewEvent {
+  name: string
+  date: string | null
+  location: string
+  kind: string
+}
+
+export interface TriathlonCalendarPreviewSeason {
+  year: number
+  events: TriathlonCalendarPreviewEvent[]
+}
+
+export interface TriathlonCalendarPreview {
+  kind: typeof TRIATHLON_CALENDAR_PREVIEW_KIND
+  seasons: TriathlonCalendarPreviewSeason[]
 }
 
 export const triathlonPreviewSlug = (date: string): FullSlug =>
   `static/triathlon/preview/${date}` as FullSlug
 
+export const triathlonCalendarPreviewSlug = (): FullSlug =>
+  'static/triathlon/preview/calendar' as FullSlug
+
 export const triathlonPreviewUrl = (date: string, reference: string): URL =>
   new URL(`/${triathlonPreviewSlug(date)}.json`, reference)
+
+export const triathlonCalendarPreviewUrl = (reference: string): URL =>
+  new URL(`/${triathlonCalendarPreviewSlug()}.json`, reference)
+
+export const triathlonPopoverDomId = (target: TriathlonPreviewTarget, distance: string): string => {
+  switch (target.kind) {
+    case 'day':
+      return `popover-triathlon-${target.date}-${target.activityId ?? 'day'}-${distance}`
+    case 'comparison':
+      return `popover-triathlon-comparison-${target.ids.join('-')}-${distance}`
+    case 'calendar':
+      return `popover-triathlon-calendar-${target.year ?? 'all'}-${target.view}`
+    case 'calculator':
+      return `popover-triathlon-calc-${target.raw}`
+  }
+}
 
 /** The day page on the reference's host: `/triathlon/on/…` on the apex, `/on/…` on the microsite. */
 export function triathlonPreviewDayHref(date: string, reference: string): string {
@@ -72,7 +112,18 @@ export function triathlonPreviewDayHref(date: string, reference: string): string
   return url.hostname === TRIATHLON_HOSTNAME ? triathlonHostUrl(url) : url.toString()
 }
 
-/** Resolves `/triathlon/on/YYYY/MM/DD[#tri-activity-ID]` on the apex and `/on/…` on the microsite. */
+const calendarView = (hash: string): TriathlonPreviewTarget | null => {
+  const bare = hash.replace(/^#/, '')
+  if (bare === '' || bare === 'list') return { kind: 'calendar', year: null, view: 'list' }
+  if (bare === 'year') return { kind: 'calendar', year: null, view: 'year' }
+  const yearView = /^(\d{4})-year$/.exec(bare)
+  if (yearView) return { kind: 'calendar', year: Number(yearView[1]), view: 'year' }
+  const year = /^(\d{4})$/.exec(bare)
+  if (year) return { kind: 'calendar', year: Number(year[1]), view: 'list' }
+  return null
+}
+
+/** Day, comparison, calendar, and calculator links, including embed source hashes. */
 export function triathlonPreviewTarget(
   href: string,
   reference?: string,
@@ -81,13 +132,51 @@ export function triathlonPreviewTarget(
   const url = new URL(href, reference)
   const pathname =
     url.hostname === TRIATHLON_HOSTNAME ? triathlonAssetPathname(url.pathname) : url.pathname
-  const date = triathlonDateFromSlug(pathname.replace(/^\/+|\/+$/g, '').replace(/\.html?$/, ''))
-  if (!date) return null
-  const activityId = /(\d+)$/.exec(url.hash)?.[1]
+  const path = pathname.replace(/^\/+|\/+$/g, '').replace(/\.html?$/, '')
+  const hash = decodeURIComponent(url.hash)
+  const bare = hash.replace(/^#/, '')
+
+  const date = triathlonDateFromSlug(path)
+  if (date) {
+    const activityId = /(\d+)$/.exec(hash)?.[1]
+    return {
+      kind: 'day',
+      date,
+      activityId:
+        activityId && `#${triathlonActivityAnchor(activityId)}` === hash ? activityId : null,
+    }
+  }
+
+  if (path === 'triathlon/calendar') return calendarView(hash)
+
+  const comparison = decodeActivityComparisonAnchor(bare)
+  if (comparison) return { kind: 'comparison', ids: comparison }
+  if (CALC_SHARE.test(bare)) return { kind: 'calculator', raw: bare }
+
+  if (path === 'triathlon' || path === 'triathlon/index') {
+    const hashed = bare.split('#').find(part => triathlonDaySlug(part))
+    if (hashed) return { kind: 'day', date: hashed, activityId: null }
+  }
+  return null
+}
+
+export function buildTriathlonCalendarPreview(
+  calendars: readonly {
+    year: number
+    events: readonly { name: string; date: string | null; location: string; kind: string }[]
+  }[],
+): TriathlonCalendarPreview {
   return {
-    date,
-    activityId:
-      activityId && `#${triathlonActivityAnchor(activityId)}` === url.hash ? activityId : null,
+    kind: TRIATHLON_CALENDAR_PREVIEW_KIND,
+    seasons: calendars.map(season => ({
+      year: season.year,
+      events: season.events.map(event => ({
+        name: event.name,
+        date: event.date,
+        location: event.location,
+        kind: event.kind,
+      })),
+    })),
   }
 }
 
@@ -216,4 +305,29 @@ export function readTriathlonPreview(value: unknown, date: string): TriathlonPre
   )
     return null
   return value as unknown as TriathlonPreview
+}
+
+const isCalendarEvent = (value: unknown): value is TriathlonCalendarPreviewEvent =>
+  isRecord(value) &&
+  typeof value.name === 'string' &&
+  (value.date === null || typeof value.date === 'string') &&
+  typeof value.location === 'string' &&
+  typeof value.kind === 'string'
+
+export function readTriathlonCalendarPreview(value: unknown): TriathlonCalendarPreview | null {
+  if (
+    !isRecord(value) ||
+    value.kind !== TRIATHLON_CALENDAR_PREVIEW_KIND ||
+    !Array.isArray(value.seasons)
+  )
+    return null
+  const seasons = value.seasons.filter(
+    (season): season is TriathlonCalendarPreviewSeason =>
+      isRecord(season) &&
+      typeof season.year === 'number' &&
+      Array.isArray(season.events) &&
+      season.events.every(isCalendarEvent),
+  )
+  if (seasons.length !== value.seasons.length) return null
+  return { kind: TRIATHLON_CALENDAR_PREVIEW_KIND, seasons }
 }

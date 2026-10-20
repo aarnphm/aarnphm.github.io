@@ -155,26 +155,22 @@ export const buildVo2max = (data: Analytics, context: TriathlonContext): HTMLEle
   block.appendChild(cap)
   const lab = data.tests.vo2max[data.tests.vo2max.length - 1]
   const hasProjNote = v.trend.some(p => p.method === 'bike')
-  if ((lab && (lab.vt1Hr != null || lab.maxKmh != null)) || hasProjNote) {
-    const labCap = el('div', 'tri-elev-cap tri-vo2-lab')
-    if (lab?.vt1Hr != null)
-      labCap.appendChild(
-        el(
-          'span',
-          'tri-ana-k',
-          `vt1 ${lab.vt1Hr}bpm${lab.vt1Kmh != null ? ` · ${fmtSpeedKmh(context.formatter, lab.vt1Kmh, 1, '')}` : ''}`,
-        ),
-      )
-    if (lab?.maxKmh != null)
-      labCap.appendChild(
-        el('span', 'tri-ana-k', `vmax ${fmtSpeedKmh(context.formatter, lab.maxKmh, 1, '')}`),
-      )
-    if (hasProjNote)
-      labCap.appendChild(
-        el('span', 'tri-ana-k tri-vo2-proj-note', text('dashed line is projected from bike power')),
-      )
-    block.appendChild(labCap)
-  }
+  if (lab?.vt1Hr != null)
+    cap.appendChild(
+      el(
+        'span',
+        'tri-ana-k',
+        `vt1 ${lab.vt1Hr}bpm${lab.vt1Kmh != null ? ` · ${fmtSpeedKmh(context.formatter, lab.vt1Kmh, 1, '')}` : ''}`,
+      ),
+    )
+  if (lab?.maxKmh != null)
+    cap.appendChild(
+      el('span', 'tri-ana-k', `vmax ${fmtSpeedKmh(context.formatter, lab.maxKmh, 1, '')}`),
+    )
+  if (hasProjNote)
+    cap.appendChild(
+      el('span', 'tri-ana-k tri-vo2-proj-note', text('dashed line is projected from bike power')),
+    )
   return block
 }
 
