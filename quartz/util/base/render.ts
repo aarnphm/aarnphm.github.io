@@ -751,6 +751,18 @@ function buildTable(
   summaryExpressions?: Record<string, ProgramIR>,
 ): RenderElement {
   const columns = view.order || []
+  const wrapTable = (table: RenderElement) =>
+    h(
+      'div.base-table-wrapper',
+      {
+        tabindex: 0,
+        role: 'region',
+        'aria-label': `${view.name} table`,
+        'data-base-table-group-by':
+          typeof view.groupBy === 'string' ? view.groupBy : view.groupBy?.property,
+      },
+      [table],
+    )
 
   const summaryConfig = parseViewSummaries(view.summaries, topLevelSummaries)
 
@@ -781,7 +793,7 @@ function buildTable(
     const tbody = h('tbody', allRows)
     const thead = h('thead', buildTableHead(columns, properties))
     const table = h('table.base-table', [thead, tbody])
-    return h('div.base-table-wrapper', [table])
+    return wrapTable(table)
   }
 
   const rows = files.map(f => {
@@ -804,7 +816,7 @@ function buildTable(
   )
   const tableChildren = tfoot ? [thead, tbody, tfoot] : [thead, tbody]
   const table = h('table.base-table', tableChildren)
-  return h('div.base-table-wrapper', [table])
+  return wrapTable(table)
 }
 
 function listValueToPlainText(value: unknown): string | undefined {

@@ -584,15 +584,40 @@ async function handleXmlContent(response: Response, popoverInner: HTMLDivElement
   popoverInner.append(rss)
 }
 
+/**
+ * Links rendered at runtime, or to a base view route, carry no data-document-preview; their page
+ * body still names the type, so the popover shows the same summary card instead of a bookcase or
+ * vault shell that only its runtime can draw.
+ */
+async function renderPageDocumentPreview(
+  html: Document,
+  targetUrl: URL,
+  popoverInner: HTMLDivElement,
+): Promise<boolean> {
+  const { slug, isBase, isCanvas } = html.body.dataset
+  const type = isBase === 'true' ? 'base' : isCanvas === 'true' ? 'canvas' : null
+  if (!type || !slug) return false
+  const response = await fetch(documentPreviewUrl(slug, window.location.href)).catch(() => null)
+  const preview =
+    response?.ok === true
+      ? readDocumentPreview(await response.json().catch(() => null), type, slug)
+      : null
+  if (!preview) return false
+  popoverInner.closest('.popover')?.classList.add('document-popover')
+  renderDocumentPreview(preview, targetUrl.toString(), popoverInner)
+  return true
+}
+
 async function handleDefaultContent(
   response: Response,
   targetUrl: URL,
   popoverInner: HTMLDivElement,
   hash = '',
 ) {
-  popoverInner.classList.add('grid')
   const contents = await response.text()
   const html = p.parseFromString(contents, 'text/html')
+  if (await renderPageDocumentPreview(html, targetUrl, popoverInner)) return
+  popoverInner.classList.add('grid')
   normalizeRelativeURLs(html, targetUrl)
   prefixPopoverIds(html)
   const elts = [

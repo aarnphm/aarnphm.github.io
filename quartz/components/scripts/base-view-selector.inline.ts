@@ -1,3 +1,4 @@
+import { initializeBaseTables } from './base-table'
 import { currentNavSignal } from './nav-lifecycle'
 import { rootNavSignal } from './root-lifecycle'
 
@@ -63,8 +64,11 @@ function updateEmbedView(
 
 document.addEventListener('nav', () => {
   const navSignal = currentNavSignal()
+  initializeBaseTables()
   if (activeSignal !== navSignal) {
     activeSignal = navSignal
+    document.addEventListener('base-content-changed', initializeBaseTables, { signal: navSignal })
+    document.addEventListener('contentdecrypted', initializeBaseTables, { signal: navSignal })
 
     document.addEventListener(
       'click',

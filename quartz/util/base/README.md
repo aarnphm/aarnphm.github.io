@@ -91,6 +91,12 @@ coercions are permissive to match obsidian behavior. comparisons prefer type-awa
 - map rendering expects coordinates `[lat, lon]` and map config fields
 - view filters combine with base filters via logical and
 
+### Tables
+
+Full-page tables fill the viewport below the Base toolbar. Their rows scroll inside a named, keyboard-focusable region while the column headings stay pinned to its top edge. Embedded tables use a `72dvh` height limit. Horizontal scrolling stays inside the same region so headings and cells remain aligned. Grouped, ungrouped, and browser query results share this renderer and layout.
+
+Repeatable browser checks: [frozen table headings](../../../docs/verification/bases-table-headers/README.md).
+
 ### Kanban
 
 Native Obsidian 1.14 [Kanban views](https://obsidian.md/help/bases/views/kanban) use `type: kanban` and require `groupBy`. Quartz renders the same notes as columns within a focusable scroll region. Card titles and images link to the note. The published view supports browsing and search; property edits and note creation remain in Obsidian.

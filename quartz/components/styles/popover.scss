@@ -401,7 +401,6 @@
   }
 }
 
-
 .course-popover {
   color: var(--dark);
 
@@ -496,7 +495,8 @@
 
 .course-popover-row {
   display: grid;
-  grid-template-columns: 7ch minmax(0, 1fr);
+  // wide enough for `commerce 3fi3` as well as `18.905`
+  grid-template-columns: 13ch minmax(0, 1fr);
   gap: var(--space-1) var(--space-3);
   align-items: baseline;
   padding: var(--space-2) var(--space-3);
@@ -627,6 +627,22 @@
     stroke-width: 2;
     stroke-linecap: round;
     stroke-linejoin: round;
+  }
+
+  // Pool lengths: filled bars on a time axis, pauses left empty.
+  svg[data-chart='pool'] {
+    width: 86%;
+    height: 52%;
+    border-block-end: 1px solid var(--lightgray);
+
+    path {
+      fill: color-mix(in srgb, var(--tri-popover-sport, var(--darkgray)) 72%, var(--dark));
+      stroke: none;
+    }
+
+    path[data-stroke='other'] {
+      fill: color-mix(in srgb, var(--tri-popover-sport, var(--darkgray)) 40%, var(--light));
+    }
   }
 }
 
