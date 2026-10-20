@@ -448,7 +448,7 @@ const hydrateStream = (): void => {
 
   const onFocusout = (): void => {
     window.setTimeout(() => {
-      if (activeTimestamp === null) return
+      if (signal.aborted || activeTimestamp === null) return
       const active = document.activeElement
       if (active instanceof Node && root.contains(active)) return
       activeTimestamp = null
@@ -472,6 +472,8 @@ const hydrateStream = (): void => {
 
   window.addCleanup(() => {
     for (let index = cleanups.length - 1; index >= 0; index -= 1) cleanups[index]()
+    groupDocumentRequests.clear()
+    manifestRequest = null
   })
 }
 
