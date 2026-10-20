@@ -153,6 +153,24 @@ function traceFigure(activity: TriathlonPreviewActivity): SVGSVGElement | null {
   return svg
 }
 
+function poolFigure(activity: TriathlonPreviewActivity): SVGSVGElement | null {
+  if (!activity.pool) return null
+  const svg = document.createElementNS(SVG_NS, 'svg')
+  svg.dataset.sport = activity.sport
+  svg.dataset.chart = 'pool'
+  svg.setAttribute('viewBox', '0 0 100 40')
+  svg.setAttribute('preserveAspectRatio', 'none')
+  svg.setAttribute('aria-hidden', 'true')
+  for (const [stroke, d] of Object.entries(activity.pool)) {
+    if (!d) continue
+    const path = document.createElementNS(SVG_NS, 'path')
+    path.dataset.stroke = stroke
+    path.setAttribute('d', d)
+    svg.appendChild(path)
+  }
+  return svg
+}
+
 const longestTrace = (
   activities: readonly TriathlonPreviewActivity[],
 ): TriathlonPreviewActivity | undefined =>
@@ -215,7 +233,7 @@ export function renderTriathlonPreview(
       title: focus ? focus.name : longDate(preview.date),
       icon: (focus ?? traced)?.sport ?? preview.activities[0]?.sport ?? 'day',
       meta: dayMeta(p, preview, focus),
-      trace: traced ? traceFigure(traced) : null,
+      trace: traced ? traceFigure(traced) : focus ? poolFigure(focus) : null,
       body,
     }),
     'text/x-triathlon',
