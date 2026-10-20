@@ -322,7 +322,7 @@ function setupBaseSearch(): (() => void) | undefined {
 
   const ensureSemantic = async (seq: number): Promise<string[] | null> => {
     if (!manifest || semanticState === 'unavailable') return null
-    if (semanticState !== 'ready') setSemanticState('loading')
+    setSemanticState('loading')
     try {
       if (bar.closest<HTMLElement>('[data-base-query]')?.dataset.baseQueryModified === 'true') {
         coverage ??= manifestIds(manifest).then(ids => {
@@ -347,7 +347,6 @@ function setupBaseSearch(): (() => void) | undefined {
       const semantic = sharedSemantic(manifest)
       const ids = await semantic.ids
       if (!active || seq !== searchSeq) return null
-      setSemanticState('ready')
       return ids
     } catch (err) {
       if (!active || seq !== searchSeq) return null
@@ -375,7 +374,6 @@ function setupBaseSearch(): (() => void) | undefined {
       return
     }
     try {
-      setSemanticState('loading')
       const { semantic } = await sharedSemantic(manifest!).client.search(query, SEMANTIC_K)
       if (seq !== searchSeq) return
       const scores = new Map<string, number>()
