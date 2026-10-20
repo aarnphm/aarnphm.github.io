@@ -2,9 +2,9 @@
 date: '2025-08-06'
 description: When moving cached keys and values out of GPU memory saves prefill work, and what it costs to load them again.
 id: KV offloading
-modified: 2026-09-11 09:21:35 GMT-04:00
+modified: 2026-10-19 17:22:02 GMT-04:00
 seealso:
-  - '[[thoughts/KV connector]]'
+  - '[[thoughts/KV connector|KV connector]]'
 socials:
   handbook: https://bentoml.com/llm/inference-optimization/kv-cache-offloading
 tags:

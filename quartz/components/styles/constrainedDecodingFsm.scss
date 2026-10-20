@@ -1,0 +1,460 @@
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
+@use './figure.scss' as *;
+
+.constrained-decoding-fsm {
+  @include figure-frame('cdfsm-figure', 46rem);
+
+  --cdfsm-node-bg: var(--light);
+  --cdfsm-visited-bg: color-mix(in srgb, var(--fig-sage) 32%, var(--light));
+  --cdfsm-current-bg: var(--fig-salmon);
+  --cdfsm-new-bg: color-mix(in srgb, var(--fig-salmon) 45%, var(--light));
+  --cdfsm-clause-bg: var(--fig-grid-selected);
+
+  display: grid;
+  gap: 1rem;
+}
+
+.structured-decoding-flow {
+  @include figure-frame('sdflow-figure', 16rem);
+
+  --cdfsm-current-bg: var(--fig-salmon);
+  --cdfsm-visited-bg: color-mix(in srgb, var(--fig-sage) 32%, var(--light));
+}
+
+:root[saved-theme='dark'] {
+  .constrained-decoding-fsm,
+  .structured-decoding-flow {
+    --cdfsm-node-bg: var(--lightgray);
+    --cdfsm-visited-bg: color-mix(in srgb, var(--fig-sage) 24%, var(--lightgray));
+    --cdfsm-new-bg: color-mix(in srgb, var(--fig-salmon) 26%, var(--lightgray));
+    --cdfsm-current-bg: color-mix(in srgb, var(--fig-salmon) 70%, var(--lightgray));
+  }
+}
+
+.cdfsm-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.cdfsm-top {
+  display: grid;
+  gap: 1rem;
+}
+
+@container cdfsm-figure (min-width: 64rem) {
+  .cdfsm-top {
+    grid-template-columns: minmax(0, 30rem) minmax(0, 1fr);
+  }
+}
+
+.constrained-decoding-fsm .cdfsm-card {
+  min-width: 0;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--fig-frame-border);
+  border-radius: var(--radius-none);
+  background: var(--fig-surface);
+
+  .cdfsm-code {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    font-family: var(--codeFont);
+    font-size: 0.78rem;
+    line-height: 1.55;
+    color: var(--dark);
+    text-align: left;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  code {
+    font-family: var(--codeFont);
+    font-size: 0.95em;
+    padding: 0;
+    background: none;
+    color: var(--dark);
+  }
+}
+
+.cdfsm-card-title {
+  @include figure-card-heading(0.78rem);
+
+  .katex {
+    color: inherit;
+    font-size: 1.05em;
+  }
+}
+
+.cdfsm-regex-line {
+  display: block;
+
+  &.is-age {
+    outline: 1px solid var(--fig-stroke);
+    outline-offset: -1px;
+    background: var(--cdfsm-clause-bg);
+  }
+}
+
+.cdfsm-svg {
+  display: block;
+  width: 100%;
+  max-width: 48rem;
+  margin: 0 auto;
+  height: auto;
+  overflow: visible;
+  font-family: var(--codeFont);
+  font-size: 12px;
+
+  &--narrow {
+    display: none;
+    max-width: 26rem;
+    margin: 0 auto;
+    font-size: 13px;
+  }
+}
+
+@container cdfsm-figure (max-width: 34rem) {
+  .cdfsm-svg--wide {
+    display: none;
+  }
+  .cdfsm-svg--narrow {
+    display: block;
+  }
+}
+
+.cdfsm-edge {
+  path {
+    fill: none;
+    stroke: var(--fig-stroke-soft);
+    stroke-width: 1.25;
+    marker-end: url(#cdfsm-arrow);
+    transition:
+      stroke 180ms ease,
+      stroke-width 180ms ease;
+  }
+
+  text {
+    fill: var(--fig-note);
+    dominant-baseline: auto;
+  }
+
+  &.is-seen path {
+    stroke: var(--fig-stroke);
+  }
+
+  &.is-taken {
+    path {
+      stroke: var(--dark);
+      stroke-width: 2.25;
+      marker-end: url(#cdfsm-arrow-taken);
+    }
+    text {
+      fill: var(--dark);
+      font-weight: 700;
+    }
+  }
+}
+
+.cdfsm-arrowhead {
+  fill: var(--fig-stroke);
+
+  &--taken {
+    fill: var(--dark);
+  }
+}
+
+.cdfsm-state {
+  circle {
+    fill: var(--cdfsm-node-bg);
+    stroke: var(--fig-stroke);
+    stroke-width: 1.25;
+    transition:
+      fill 180ms ease,
+      stroke-width 180ms ease;
+  }
+
+  .cdfsm-accept {
+    fill: none;
+  }
+
+  text {
+    fill: var(--dark);
+    text-anchor: middle;
+    dominant-baseline: central;
+  }
+
+  &.is-visited circle:not(.cdfsm-accept) {
+    fill: var(--cdfsm-visited-bg);
+  }
+
+  &.is-current {
+    circle:not(.cdfsm-accept) {
+      fill: var(--cdfsm-current-bg);
+    }
+    circle {
+      stroke: var(--dark);
+      stroke-width: 2;
+    }
+    text {
+      font-weight: 700;
+    }
+  }
+}
+
+.cdfsm-decode {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: 1rem;
+}
+
+@container cdfsm-figure (max-width: 34rem) {
+  .cdfsm-decode {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.cdfsm-tok {
+  transition: background-color 180ms ease;
+
+  &.is-new {
+    background: var(--cdfsm-new-bg);
+    outline: 1px solid var(--dark);
+    outline-offset: -1px;
+  }
+}
+
+.cdfsm-caret {
+  display: inline-block;
+  width: 0.55em;
+  height: 1.1em;
+  margin-left: 1px;
+  vertical-align: -0.2em;
+  background: var(--fig-stroke);
+}
+
+.cdfsm-mask {
+  @include figure-grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) minmax(0, 0.8fr);
+  font-size: 0.78rem;
+  line-height: 1.35;
+
+  .katex {
+    color: inherit;
+    font-size: 1em;
+  }
+}
+
+.cdfsm-mask-row {
+  display: contents;
+
+  > span {
+    @include figure-grid-cell;
+    padding: 0.35rem 0.5rem;
+    color: var(--dark);
+    overflow-wrap: anywhere;
+  }
+
+  > span:nth-child(2) {
+    font-family: var(--codeFont);
+  }
+
+  > [role='columnheader'] {
+    color: var(--fig-note);
+    font-family: var(--bodyFont);
+  }
+
+  &.is-masked > span {
+    color: var(--fig-note);
+  }
+
+  &.is-masked code {
+    color: var(--fig-note);
+    text-decoration: line-through;
+  }
+
+  &.is-sampled > span {
+    background: var(--fig-grid-selected);
+    font-weight: 600;
+  }
+}
+
+@container cdfsm-figure (max-width: 34rem) {
+  .constrained-decoding-fsm .cdfsm-card {
+    padding: 0.6rem 0.65rem;
+
+    .cdfsm-code {
+      font-size: 0.72rem;
+    }
+  }
+}
+
+// The frame padding is fixed by the mixin; a phone needs the width for the cards.
+@media (max-width: 30rem) {
+  .constrained-decoding-fsm,
+  .structured-decoding-flow {
+    padding: 1rem 0.75rem;
+  }
+}
+
+.cdfsm-mark {
+  display: inline-block;
+  width: 1.1em;
+}
+
+.cdfsm-sampled,
+.cdfsm-done {
+  margin: 0.6rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--darkgray);
+}
+
+.cdfsm-done {
+  margin: 0;
+}
+
+.cdfsm-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cdfsm-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 1.75rem;
+  padding: 0 0.75rem;
+  border: 1px solid var(--darkgray);
+  border-radius: var(--radius-none);
+  background: var(--light);
+  color: var(--dark);
+  font-family: var(--codeFont);
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: background-color 120ms ease;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not([aria-disabled='true']) {
+      background: var(--fig-tab-surface);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
+
+  &[aria-disabled='true'] {
+    border-color: var(--fig-stroke-soft);
+    color: var(--fig-note);
+    cursor: default;
+  }
+
+  @media (pointer: coarse) {
+    min-height: 44px;
+  }
+}
+
+.cdfsm-status {
+  flex: 1 1 14rem;
+  min-width: 0;
+  margin: 0;
+  font-family: var(--codeFont);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--darkgray);
+  font-variant-numeric: tabular-nums;
+}
+
+.cdfsm-caption {
+  @include figure-caption;
+  margin-top: 0;
+
+  .cdfsm-math {
+    @include figure-caption-math-gap;
+  }
+}
+
+.structured-decoding-flow .cdfsm-caption {
+  margin-top: 0.75rem;
+}
+
+.sdflow-svg {
+  display: block;
+  width: 100%;
+  max-width: 44rem;
+  margin: 0 auto;
+  height: auto;
+  font-family: var(--bodyFont);
+  font-size: 13px;
+
+  &--narrow {
+    display: none;
+    max-width: 24rem;
+    margin: 0 auto;
+  }
+}
+
+@container sdflow-figure (max-width: 32rem) {
+  .sdflow-svg--wide {
+    display: none;
+  }
+  .sdflow-svg--narrow {
+    display: block;
+  }
+}
+
+.sdflow-group {
+  rect {
+    fill: none;
+    stroke: var(--fig-frame-border);
+    stroke-width: 1;
+  }
+  text {
+    fill: var(--fig-note);
+    font-size: 11px;
+  }
+}
+
+.sdflow-edge {
+  path {
+    fill: none;
+    stroke: var(--fig-stroke);
+    stroke-width: 1.25;
+    marker-end: url(#sdflow-arrow);
+  }
+  text {
+    fill: var(--fig-note);
+    font-size: 11px;
+  }
+}
+
+.sdflow-arrowhead {
+  fill: var(--fig-stroke);
+}
+
+.sdflow-node {
+  rect {
+    fill: var(--light);
+    stroke: var(--fig-stroke);
+    stroke-width: 1.25;
+  }
+  text {
+    fill: var(--dark);
+    text-anchor: middle;
+    dominant-baseline: central;
+  }
+  &.is-lit rect {
+    fill: var(--cdfsm-current-bg);
+    stroke: var(--dark);
+  }
+  &.is-done rect {
+    fill: var(--cdfsm-visited-bg);
+  }
+}
