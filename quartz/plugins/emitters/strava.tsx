@@ -47,7 +47,12 @@ import {
   type TriathlonMaintenance,
 } from '../../util/triathlon-maintenance'
 import { buildTriathlonMarkdown } from '../../util/triathlon-markdown'
-import { buildTriathlonPreview, triathlonPreviewSlug } from '../../util/triathlon-preview'
+import {
+  buildTriathlonCalendarPreview,
+  buildTriathlonPreview,
+  triathlonCalendarPreviewSlug,
+  triathlonPreviewSlug,
+} from '../../util/triathlon-preview'
 import { buildStravaActivityIndex } from '../../util/triathlon-shortcut'
 import { ATHLETE, buildDataFeed, parseVo2Lab } from '../stores/analytics'
 import { buildMatchedRides, emptyMatchedRides } from '../stores/matched-rides'
@@ -313,6 +318,12 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
           slug: 'triathlon/calendar',
           ext: '.ics',
           content: serializeTriathlonCalendar(calendar),
+        }),
+        write({
+          ctx,
+          slug: triathlonCalendarPreviewSlug(),
+          ext: '.json',
+          content: JSON.stringify(buildTriathlonCalendarPreview(calendars)),
         }),
         ...calendars.map(season =>
           write({

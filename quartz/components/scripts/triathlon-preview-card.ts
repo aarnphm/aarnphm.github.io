@@ -1,17 +1,17 @@
-import type { ActivityKind } from '../../plugins/stores/strava'
 import type {
+  TriathlonCalendarPreview,
   TriathlonPreview,
   TriathlonPreviewActivity,
   TriathlonPreviewTarget,
 } from '../../util/triathlon-preview'
+import { SPORT_ICON, type ActivityKind } from '../../plugins/stores/strava'
 import {
-  clock,
-  dist,
-  distCombined,
-  dur,
-  formatElevationGain,
-  rate,
-} from '../../util/triathlon-card'
+  computeTriathlonCalcTimes,
+  formatDurationClock,
+  TRI_RACE_DISTANCES,
+  type CalcShare,
+} from '../../util/triathlon-calculator'
+import { clock, dist, distCombined, dur, KM_TO_MI } from '../../util/triathlon-card'
 import { triathlonActivityAnchor } from '../../util/triathlon-date-route'
 import {
   DEFAULT_TRIATHLON_PRESENTATION,
@@ -21,7 +21,6 @@ import {
 } from '../../util/triathlon-presentation'
 
 const TIMED_ONLY = new Set<ActivityKind>(['strength', 'yoga', 'treatment', 'sauna'])
-const CLIMB_SPORTS = new Set<ActivityKind>(['bike', 'run', 'walk'])
 const SVG_NS = 'http://www.w3.org/2000/svg'
 const LONG_DATE = new Intl.DateTimeFormat('en-US', {
   weekday: 'short',
@@ -62,55 +61,88 @@ const longDate = (iso: string): string => {
   return LONG_DATE.format(new Date(Date.UTC(year, month - 1, day)))
 }
 
-const signed = (value: number): string =>
-  `${value > 0 ? '+' : value < 0 ? '−' : ''}${Math.abs(value).toFixed(1)}`
-
-function activityStats(p: TriathlonPresentation, a: TriathlonPreviewActivity): [string, string][] {
-  const rows: [string, string][] = []
-  if (!TIMED_ONLY.has(a.sport) && a.distanceKm > 0) {
-    rows.push(['distance', dist(p, a.distanceKm, a.sport)])
-    rows.push(['time', dur(a.movingTimeS)])
-    if (a.movingTimeS > 0)
-      rows.push([
-        a.sport === 'bike' ? 'speed' : 'pace',
-        a.swimPaceSPer100m != null
-          ? `${clock(a.swimPaceSPer100m)} /100m`
-          : rate(p, a.sport, a.distanceKm, a.movingTimeS),
-      ])
-  } else rows.push(['time', dur(a.movingTimeS)])
-  const watts = a.npWatts ?? a.avgWatts
-  if (watts != null) rows.push([a.npWatts != null ? 'NP' : 'avg power', `${Math.round(watts)} W`])
-  if (a.avgHr != null) rows.push(['avg hr', `${Math.round(a.avgHr)} bpm`])
-  if (CLIMB_SPORTS.has(a.sport) && a.elevationM > 0)
-    rows.push(['elevation', formatElevationGain(p, a.elevationM)])
-  if (a.load != null) rows.push(['load', String(Math.round(a.load))])
-  return rows
-}
-
-function dayStats(p: TriathlonPresentation, preview: TriathlonPreview): [string, string][] {
-  const { activities } = preview
-  const rows: [string, string][] = []
-  if (activities.length > 0) {
-    rows.push(['sessions', String(activities.length)])
-    rows.push(['time', dur(activities.reduce((sum, a) => sum + a.movingTimeS, 0))])
-    const km = activities.reduce((sum, a) => sum + (TIMED_ONLY.has(a.sport) ? 0 : a.distanceKm), 0)
-    if (km > 0) rows.push(['distance', distCombined(p, km)])
-  }
-  if (preview.load != null && preview.load > 0)
-    rows.push(['load', String(Math.round(preview.load))])
-  if (preview.form) rows.push(['form', signed(preview.form.tsb)])
-  return rows
-}
-
 const sessionSummary = (p: TriathlonPresentation, a: TriathlonPreviewActivity): string =>
   TIMED_ONLY.has(a.sport) || a.distanceKm <= 0
     ? dur(a.movingTimeS)
     : `${dist(p, a.distanceKm, a.sport)} · ${dur(a.movingTimeS)}`
 
+const ICONS: Record<string, string[]> = {
+  day: ['M6 3h8l4 4v14H6z', 'M14 3v5h5'],
+  calendar: ['M5 5h14v15H5z', 'M5 9h14', 'M9 3v4', 'M15 3v4'],
+  calculator: [
+    'M7 3h10v18H7z',
+    'M9 7h6',
+    'M9 11h.01',
+    'M12 11h.01',
+    'M15 11h.01',
+    'M9 15h.01',
+    'M12 15h.01',
+    'M15 15h.01',
+  ],
+}
+
+const isSport = (name: string): name is ActivityKind =>
+  Object.prototype.hasOwnProperty.call(SPORT_ICON, name)
+
+function icon(name: string): SVGSVGElement {
+  const sport = isSport(name)
+  const glyph = document.createElementNS(SVG_NS, 'svg')
+  glyph.setAttribute('viewBox', '0 0 24 24')
+  glyph.setAttribute('aria-hidden', 'true')
+  if (sport) glyph.dataset.sport = name
+  if (name === 'yoga' || name === 'treatment') glyph.dataset.solid = ''
+  for (const d of sport ? SPORT_ICON[name] : (ICONS[name] ?? ICONS.day)) {
+    const path = document.createElementNS(SVG_NS, 'path')
+    path.setAttribute('d', d)
+    glyph.appendChild(path)
+  }
+  return glyph
+}
+
+function miniatureList(items: string[]): HTMLElement {
+  const list = el('ul', 'document-popover-list')
+  for (const item of items) list.appendChild(el('li', undefined, item))
+  return list
+}
+
+function windowPreview(options: {
+  href: string
+  title: string
+  icon: string
+  meta: string[]
+  trace: SVGSVGElement | null
+  body: HTMLElement | null
+}) {
+  const card = el('article', 'document-popover-card')
+  card.dataset.type = 'triathlon'
+  if (options.trace) card.dataset.trace = ''
+
+  const anchor = link(options.href, '', 'document-popover-window')
+  const frame = el('div', 'document-popover-frame')
+  frame.ariaHidden = 'true'
+  const surface = el('div', 'document-popover-surface')
+  if (options.trace) {
+    const figure = el('div', 'document-popover-route')
+    figure.appendChild(options.trace)
+    surface.appendChild(figure)
+  } else if (options.body) surface.appendChild(options.body)
+  else frame.classList.add('is-empty')
+  frame.appendChild(surface)
+
+  const badge = el('span', 'document-popover-badge')
+  badge.appendChild(icon(options.icon))
+  anchor.append(frame, badge, el('span', 'document-popover-title', options.title))
+  card.appendChild(anchor)
+
+  const meta = el('ul', 'document-popover-meta')
+  for (const item of options.meta) meta.appendChild(el('li', undefined, item))
+  card.appendChild(meta)
+  return card
+}
+
 function traceFigure(activity: TriathlonPreviewActivity): SVGSVGElement | null {
   if (!activity.trace) return null
   const svg = document.createElementNS(SVG_NS, 'svg')
-  svg.classList.add('triathlon-popover-trace')
   svg.dataset.sport = activity.sport
   svg.setAttribute('viewBox', '-6 -6 112 112')
   svg.setAttribute('aria-hidden', 'true')
@@ -121,88 +153,199 @@ function traceFigure(activity: TriathlonPreviewActivity): SVGSVGElement | null {
   return svg
 }
 
+const longestTrace = (
+  activities: readonly TriathlonPreviewActivity[],
+): TriathlonPreviewActivity | undefined =>
+  [...activities]
+    .filter(activity => activity.trace)
+    .sort((left, right) => right.distanceKm - left.distanceKm)[0]
+
+function dayMeta(
+  p: TriathlonPresentation,
+  preview: TriathlonPreview,
+  focus?: TriathlonPreviewActivity,
+): string[] {
+  if (focus) {
+    const items = [focus.sport, sessionSummary(p, focus)]
+    const watts = focus.npWatts ?? focus.avgWatts
+    if (watts != null) items.push(`${Math.round(watts)} W`)
+    if (focus.virtual) items.push('virtual')
+    return items
+  }
+  const items = ['day']
+  if (preview.activities.length > 0) items.push(String(preview.activities.length))
+  const km = preview.activities.reduce(
+    (sum, activity) => sum + (TIMED_ONLY.has(activity.sport) ? 0 : activity.distanceKm),
+    0,
+  )
+  if (km > 0) items.push(distCombined(p, km))
+  if (preview.load != null && preview.load > 0) items.push(`load ${Math.round(preview.load)}`)
+  if (preview.activities.length === 0) items.push('rest')
+  if (preview.event) items.push(preview.event)
+  return items
+}
+
+function mount(popoverInner: HTMLElement, card: HTMLElement, contentType: string) {
+  popoverInner.dataset.contentType = contentType
+  popoverInner.appendChild(card)
+}
+
 export function renderTriathlonPreview(
   preview: TriathlonPreview,
-  target: TriathlonPreviewTarget,
+  target: Extract<TriathlonPreviewTarget, { kind: 'day' }>,
   dayHref: string,
   p: TriathlonPresentation,
   popoverInner: HTMLElement,
 ) {
   const focus = target.activityId
-    ? preview.activities.find(a => String(a.id) === target.activityId)
+    ? preview.activities.find(activity => String(activity.id) === target.activityId)
     : undefined
-  const activityHref = (a: TriathlonPreviewActivity) =>
-    `${dayHref}#${triathlonActivityAnchor(a.id) ?? ''}`
-  popoverInner.dataset.contentType = 'text/x-triathlon'
-
-  const card = el('article', 'triathlon-popover-card')
-  const header = el('header', 'triathlon-popover-header')
-  const title = el('h2', 'triathlon-popover-title')
-  title.appendChild(
-    link(focus ? activityHref(focus) : dayHref, focus ? focus.name : longDate(preview.date)),
+  const href = focus ? `${dayHref}#${triathlonActivityAnchor(focus.id) ?? ''}` : dayHref
+  const traced = focus?.trace ? focus : focus ? undefined : longestTrace(preview.activities)
+  const body =
+    traced || focus
+      ? null
+      : preview.activities.length > 0
+        ? miniatureList(preview.activities.map(activity => `${activity.sport} · ${activity.name}`))
+        : null
+  mount(
+    popoverInner,
+    windowPreview({
+      href,
+      title: focus ? focus.name : longDate(preview.date),
+      icon: (focus ?? traced)?.sport ?? preview.activities[0]?.sport ?? 'day',
+      meta: dayMeta(p, preview, focus),
+      trace: traced ? traceFigure(traced) : null,
+      body,
+    }),
+    'text/x-triathlon',
   )
-  header.appendChild(title)
-
-  const meta = el('ul', 'triathlon-popover-meta')
-  meta.ariaLabel = focus ? 'activity' : 'day'
-  if (focus) {
-    const sport = el('li', 'triathlon-popover-sport', focus.sport)
-    sport.dataset.sport = focus.sport
-    meta.appendChild(sport)
-    meta.appendChild(el('li', undefined, longDate(preview.date)))
-  }
-  const location = (focus ?? preview.activities[0])?.location
-  if (location) meta.appendChild(el('li', undefined, location))
-  if (focus?.virtual) meta.appendChild(el('li', undefined, 'virtual'))
-  if (preview.activities.length === 0) meta.appendChild(el('li', undefined, 'rest day'))
-  if (preview.event) meta.appendChild(el('li', 'triathlon-popover-event', preview.event))
-  header.appendChild(meta)
-  card.appendChild(header)
-
-  const traced =
-    focus ??
-    [...preview.activities]
-      .filter(a => a.trace)
-      .sort((left, right) => right.distanceKm - left.distanceKm)[0]
-  const trace = traced ? traceFigure(traced) : null
-  if (trace) {
-    card.classList.add('has-trace')
-    card.appendChild(trace)
-  }
-
-  const stats = el('dl', 'triathlon-popover-stats')
-  for (const [label, value] of focus ? activityStats(p, focus) : dayStats(p, preview)) {
-    const cell = el('div')
-    cell.append(el('dt', undefined, label), el('dd', undefined, value))
-    stats.appendChild(cell)
-  }
-  if (stats.childElementCount > 0) card.appendChild(stats)
-
-  const sessions = preview.activities.filter(a => a !== focus)
-  if (sessions.length > 0) {
-    const section = el('section', 'triathlon-popover-sessions')
-    section.ariaLabel = focus ? 'same day' : 'sessions'
-    if (focus) section.appendChild(el('h3', undefined, 'same day'))
-    const list = el('ol')
-    for (const a of sessions) {
-      const row = el('li')
-      const anchor = link(activityHref(a), '')
-      const swatch = el('span', 'triathlon-popover-sport', a.sport)
-      swatch.dataset.sport = a.sport
-      anchor.append(
-        swatch,
-        el('span', 'triathlon-popover-session-name', a.name),
-        el('span', 'triathlon-popover-session-figures', sessionSummary(p, a)),
+  if (traced && preview.activities.length > 1) {
+    popoverInner
+      .querySelector('.document-popover-card')
+      ?.appendChild(
+        miniatureList(
+          preview.activities.map(activity => `${activity.sport} · ${sessionSummary(p, activity)}`),
+        ),
       )
-      row.appendChild(anchor)
-      list.appendChild(row)
-    }
-    section.appendChild(list)
-    card.appendChild(section)
   }
+}
 
-  const source = el('p', 'triathlon-popover-source')
-  source.appendChild(link(dayHref, 'triathlon log'))
-  card.appendChild(source)
-  popoverInner.appendChild(card)
+export function renderTriathlonComparisonPreview(
+  activities: readonly TriathlonPreviewActivity[],
+  href: string,
+  p: TriathlonPresentation,
+  popoverInner: HTMLElement,
+) {
+  const traced = longestTrace(activities)
+  mount(
+    popoverInner,
+    windowPreview({
+      href,
+      title: 'comparison',
+      icon: (traced ?? activities[0])?.sport ?? 'day',
+      meta: ['comparison', String(activities.length)],
+      trace: traced ? traceFigure(traced) : null,
+      body: traced
+        ? null
+        : miniatureList(activities.map(activity => `${activity.sport} · ${activity.name}`)),
+    }),
+    'text/x-triathlon-comparison',
+  )
+  if (traced) {
+    popoverInner
+      .querySelector('.document-popover-card')
+      ?.appendChild(
+        miniatureList(
+          activities.map(activity => `${activity.sport} · ${sessionSummary(p, activity)}`),
+        ),
+      )
+  }
+}
+
+export function renderTriathlonCalendarPreview(
+  preview: TriathlonCalendarPreview,
+  target: Extract<TriathlonPreviewTarget, { kind: 'calendar' }>,
+  href: string,
+  popoverInner: HTMLElement,
+) {
+  const season =
+    (target.year != null ? preview.seasons.find(entry => entry.year === target.year) : undefined) ??
+    preview.seasons[preview.seasons.length - 1]
+  const events = [...(season?.events ?? [])].sort((left, right) =>
+    (left.date ?? '9999').localeCompare(right.date ?? '9999'),
+  )
+  const shown = events.slice(0, 6)
+  mount(
+    popoverInner,
+    windowPreview({
+      href,
+      title: season ? String(season.year) : 'calendar',
+      icon: 'calendar',
+      meta: ['calendar', target.view, ...(season ? [String(events.length)] : [])],
+      trace: null,
+      body:
+        shown.length > 0
+          ? miniatureList(
+              shown.map(event => (event.date ? `${event.date} · ${event.name}` : event.name)),
+            )
+          : null,
+    }),
+    'text/x-triathlon-calendar',
+  )
+}
+
+export function renderTriathlonCalculatorPreview(
+  share: CalcShare,
+  href: string,
+  popoverInner: HTMLElement,
+) {
+  const [label, swimKm, bikeKm, runKm] =
+    TRI_RACE_DISTANCES[share.presetIdx] ?? TRI_RACE_DISTANCES[1]
+  const times = computeTriathlonCalcTimes({
+    swimKm,
+    bikeKm,
+    runKm,
+    swimPaceSec: share.swimPaceSec,
+    t1Sec: share.t1Sec,
+    bikeMph: share.bikeMph,
+    t2Sec: share.t2Sec,
+    runPaceSec: share.runPaceSec,
+  })
+  const imperial = share.unit === 'i'
+  const rows: [string, string][] = [
+    ['swim', `${clock(share.swimPaceSec)} /100m`],
+    [
+      'bike',
+      `${(imperial ? share.bikeMph : share.bikeMph / KM_TO_MI).toFixed(1)} ${imperial ? 'mph' : 'km/h'}`,
+    ],
+    [
+      'run',
+      `${clock(imperial ? share.runPaceSec : share.runPaceSec * KM_TO_MI)} ${imperial ? '/mi' : '/km'}`,
+    ],
+    ['finish', formatDurationClock(times.totalSec)],
+  ]
+  const table = el('table', 'document-popover-table')
+  const body = table.appendChild(el('tbody'))
+  for (const [name, value] of rows) {
+    const row = el('tr')
+    row.append(el('td', undefined, name), el('td', undefined, value))
+    body.appendChild(row)
+  }
+  mount(
+    popoverInner,
+    windowPreview({
+      href,
+      title: label,
+      icon: 'calculator',
+      meta: [
+        'calculator',
+        share.mode === 'a' ? 'average' : 'projected',
+        formatDurationClock(times.totalSec),
+      ],
+      trace: null,
+      body: table,
+    }),
+    'text/x-triathlon-calculator',
+  )
 }

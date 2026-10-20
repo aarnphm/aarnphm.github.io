@@ -690,24 +690,23 @@ function matchingAppleHeartRate(
 ): { workout: AppleWorkout; samples: TimedAppleHeartRate[] } | null {
   const startMs = Date.parse(detail.start)
   if (!Number.isFinite(startMs)) return null
-  const candidates = workouts
-    .map(workout => ({
-      workout,
-      startDiffMs: Math.abs(Date.parse(workout.start) - startMs),
-      samples: appleHeartRateSamples(detail, workout),
-    }))
-    .filter(
-      candidate =>
-        Number.isFinite(candidate.startDiffMs) &&
-        candidate.startDiffMs <= APPLE_WORKOUT_START_TOLERANCE_MS &&
-        candidate.samples.length >= 2,
-    )
-    .sort(
-      (left, right) =>
-        left.startDiffMs - right.startDiffMs ||
-        right.samples.length - left.samples.length ||
-        left.workout.id.localeCompare(right.workout.id),
-    )
+  const candidates: {
+    workout: AppleWorkout
+    startDiffMs: number
+    samples: TimedAppleHeartRate[]
+  }[] = []
+  for (const workout of workouts) {
+    const startDiffMs = Math.abs(Date.parse(workout.start) - startMs)
+    if (!Number.isFinite(startDiffMs) || startDiffMs > APPLE_WORKOUT_START_TOLERANCE_MS) continue
+    const samples = appleHeartRateSamples(detail, workout)
+    if (samples.length >= 2) candidates.push({ workout, startDiffMs, samples })
+  }
+  candidates.sort(
+    (left, right) =>
+      left.startDiffMs - right.startDiffMs ||
+      right.samples.length - left.samples.length ||
+      left.workout.id.localeCompare(right.workout.id),
+  )
   return candidates[0] ?? null
 }
 
