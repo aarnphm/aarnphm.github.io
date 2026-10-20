@@ -63,8 +63,9 @@ Thus $G(z)=1+(1-a)/(z-a)$, agreeing with the result above. A unit step gives $c[
 
 ```jsx imports={Zoomable,BlockDiagram}
 <Zoomable label="Pulse transfer functions of blocks in cascade">
-  <BlockDiagram config="sampler-cascade"
-    caption="Two blocks in cascade, (a) with a sampler between them and (b) without. Step through the rules; salmon marks the sampler and blocks the current rule acts on, sage the parts already reduced. With the sampler, the result is $G_2(z)G_1(z)$; without it, $\mathcal{P}_T\{G_1(s)G_2(s)\}$."
+  <BlockDiagram
+    config="sampler-cascade"
+    caption="With a sampler between the blocks, the pulse transfer is $G_2(z)G_1(z)$; without one, it is $\mathcal{P}_T\{G_1(s)G_2(s)\}$."
   />
 </Zoomable>
 ```
@@ -96,8 +97,9 @@ $$
 
 ```jsx imports={Zoomable,BlockDiagram}
 <Zoomable label="Open-loop sampled-data model">
-  <BlockDiagram config="open-loop"
-    caption="Digital controller $D(z)$, zero-order hold and plant $G_p(s)$. Step through the reduction; salmon marks the parts the current rule acts on, sage the parts already reduced. The hold and plant combine into $G(s)$ before sampling, and the result is $C(z) = G(z)D(z)E(z)$."
+  <BlockDiagram
+    config="open-loop"
+    caption="Open-loop sampled model: $C(z)=G(z)D(z)E(z)$, with the hold and plant combined before sampling."
   />
 </Zoomable>
 ```
@@ -123,8 +125,9 @@ $$
 
 ```jsx imports={Zoomable,BlockDiagram}
 <Zoomable label="Closed loop with a sampled error">
-  <BlockDiagram config="sampled-feedback"
-    caption="Closed loop with one sampler after the junction. Step through the reduction; salmon marks the parts the current rule acts on, sage the parts already reduced. $G(s)$ and $H(s)$ share one continuous path, so the loop gain is $\mathcal{P}_T\{G(s)H(s)\}$."
+  <BlockDiagram
+    config="sampled-feedback"
+    caption="One sampler after the junction gives loop gain $\mathcal{P}_T\{G(s)H(s)\}$."
   />
 </Zoomable>
 ```
@@ -135,8 +138,9 @@ The denominator contains the combined continuous feedback path. There is no samp
 
 ```jsx imports={Zoomable,BlockDiagram}
 <Zoomable label="Closed loop with a sampled feedback branch">
-  <BlockDiagram config="sensing-device"
-    caption="Closed loop with the sampler in the feedback branch, before $H(s)$. Step through the reduction; salmon marks the parts the current rule acts on, sage the parts already reduced. The reference stays inside $\mathcal{P}_T\{G(s)R(s)\}$, so the last step gives $C(z)$ but no ratio $C(z)/R(z)$."
+  <BlockDiagram
+    config="sensing-device"
+    caption="With the sampler before $H(s)$, the reference stays inside $\mathcal{P}_T\{G(s)R(s)\}$; the result gives $C(z)$, not $C(z)/R(z)$."
   />
 </Zoomable>
 ```
@@ -160,8 +164,9 @@ The numerator depends on the continuous reference between samples. Without speci
 
 ```jsx imports={Zoomable,BlockDiagram}
 <Zoomable label="Closed loop with two synchronized samplers">
-  <BlockDiagram config="digital-controller"
-    caption="Closed loop with synchronized samplers before $G_1(s)$ and $G_2(s)$. Step through the reduction; salmon marks the parts the current rule acts on, sage the parts already reduced. Each segment between samplers gives one pulse transfer function, and $G_2(s)H(s)$ is sampled as one path."
+  <BlockDiagram
+    config="digital-controller"
+    caption="Synchronized samplers before $G_1(s)$ and $G_2(s)$ make each inter-sampler segment a pulse transfer function; $G_2(s)H(s)$ is sampled as one path."
   />
 </Zoomable>
 ```

@@ -1,0 +1,95 @@
+@use '../../styles/variables.scss' as *;
+@use './figure.scss' as *;
+
+.cfg-diagram {
+  @include figure-frame('cfg-figure', 18rem);
+
+  --cfg-lit: color-mix(in srgb, var(--fig-salmon) 40%, var(--light));
+  --cfg-block: color-mix(in srgb, var(--lightgray) 45%, var(--light));
+}
+
+:root[saved-theme='dark'] .cfg-diagram {
+  --cfg-lit: color-mix(in srgb, var(--fig-salmon) 24%, var(--lightgray));
+  --cfg-block: color-mix(in srgb, var(--gray) 28%, var(--lightgray));
+}
+
+.cfg-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.cfg-col {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: center;
+}
+
+.cfg-code {
+  margin: 0;
+  width: 100%;
+  max-width: 14rem;
+  border: 1px solid var(--dark);
+  background: var(--light);
+  padding: var(--space-2) var(--space-3);
+  display: grid;
+  gap: 0.15rem;
+}
+
+.cfg-code code {
+  color: var(--dark);
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  white-space: pre;
+}
+
+.cfg-svg {
+  display: block;
+  width: 100%;
+  max-width: 12rem;
+  overflow: visible;
+}
+
+.cfg-edge {
+  fill: none;
+  stroke: var(--dark);
+  stroke-width: 1.2;
+}
+
+.cfg-end {
+  fill: var(--light);
+  stroke: var(--dark);
+  stroke-width: 1.2;
+}
+
+.cfg-diamond,
+.cfg-block {
+  fill: var(--cfg-block);
+  stroke: var(--dark);
+  stroke-width: 1.2;
+}
+
+.cfg-diamond--lit,
+.cfg-block--lit {
+  fill: var(--cfg-lit);
+}
+
+.cfg-label {
+  fill: var(--dark);
+  font-family: var(--codeFont);
+  font-size: 11px;
+}
+
+.cfg-caption {
+  @include figure-caption;
+}
+
+.cfg-math {
+  @include figure-inline-math;
+}
+
+@media (max-width: 640px) {
+  .cfg-row {
+    grid-template-columns: 1fr;
+  }
+}

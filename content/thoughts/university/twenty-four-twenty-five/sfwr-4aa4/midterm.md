@@ -18,7 +18,11 @@ $$
 
 Monotonicity: $\forall t_{2} > t_{1}: C(t_{2}) > C(t_{1})$
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/rt-sys-failure.webp]]
+```jsx imports={Zoomable,DeadlineUsefulness}
+<Zoomable label="Deadline usefulness">
+  <DeadlineUsefulness caption="Soft usefulness decays after the deadline; firm drops to zero; hard goes negative." />
+</Zoomable>
+```
 
 ## kernels
 
@@ -213,7 +217,11 @@ set scheduling policy: `sched_setscheduler(pid, SCHED_FIFO | SCHED_RR | SCHED_DE
 
 1. Priority-based preemptive scheduling
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/pbps.webp]]
+```jsx imports={Zoomable,PreemptSchedule}
+<Zoomable label="Priority-based preemptive scheduling">
+  <PreemptSchedule caption="Higher-priority Task3 preempts Task2, which preempted Task1; completion bars mark finished jobs." />
+</Zoomable>
+```
 
 Temporal parameters:
 

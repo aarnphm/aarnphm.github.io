@@ -11,9 +11,9 @@ pdfTitles:
   '1A3Reader(2019).pdf': 'Philosophical Texts: Philosophy 1A03 Reader, 2019'
   'All.pdf': 'Philosophy 1A03: Philosophical Texts'
 university:
-  summary: "This course is a historical survey of western philosophy from Socrates to Nietzsche, taught through close reading of the original texts. The readings go from the Presocratics, Plato, and Aristotle to Epicurus and the Stoics, then to Descartes, Spinoza, Hume, Mill, and Nietzsche. The folder has the course reader, a full set of lecture notes, and tutorial notes on Euthyphro, the Apology and Phaedo, the Symposium, the Republic, Aristotle, Epicurus, the Stoics, and Spinoza."
+  summary: 'This course is a historical survey of western philosophy from Socrates to Nietzsche, taught through close reading of the original texts. The readings go from the Presocratics, Plato, and Aristotle to Epicurus and the Stoics, then to Descartes, Spinoza, Hume, Mill, and Nietzsche. The folder has the course reader, a full set of lecture notes, and tutorial notes on Euthyphro, the Apology and Phaedo, the Symposium, the Republic, Aristotle, Epicurus, the Stoics, and Spinoza.'
   inferred: false
-  instructors: ["Barry Allen"]
+  instructors: ['Barry Allen']
 ---
 
 An introduction to philosophy through the close reading of selected classical texts.
@@ -21,4 +21,4 @@ Authors to be considered may include Plato, Descartes, Hobbes, Hume, Marx, Mill,
 
 The full notes can be found [[thoughts/university/twenty-three-twenty-four/philo-1aa3/All.pdf|here]], with all of the reference [[thoughts/university/twenty-three-twenty-four/philo-1aa3/1A3Reader(2019).pdf|text]].
 
-Tutorial notes can be found [[thoughts/university/philo-1aa3/tut|here]]
+Tutorial notes can be found [[thoughts/university/twenty-three-twenty-four/philo-1aa3/tut|here]]

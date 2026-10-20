@@ -15,12 +15,11 @@ pdfTitles:
   'pdfs/A2.pdf': 'Automata and Computability: Assignment 2'
   'pdfs/A3.pdf': 'Automata and Computability: Assignment 3'
 university:
-  summary: "This course covers automata and computability, starting from propositional logic and moving to DFAs, NFAs and regular languages, then the pumping lemma and pushdown automata, and last Turing machines. The folder holds three assignments with DFA and NFA constructions, midterm and final review notes, the course textbook and an archive of the assignments from an earlier attempt in 2023-2024."
+  summary: 'This course covers automata and computability, starting from propositional logic and moving to DFAs, NFAs and regular languages, then the pumping lemma and pushdown automata, and last Turing machines. The folder holds three assignments with DFA and NFA constructions, midterm and final review notes, the course textbook and an archive of the assignments from an earlier attempt in 2023-2024.'
   inferred: true
 ---
 
 Aight, let's think how to strategically pass this course.
-
 
 | Item                   | Weight | Comments                                                                                                  |
 | ---------------------- | ------ | --------------------------------------------------------------------------------------------------------- |

@@ -19,7 +19,7 @@ A high-priority task waiting for a lock needs its owner to run. Otherwise, unrel
   <PriorityProtocolTimeline
     preset="pip"
     protocol="pip"
-    caption="Priority inheritance on the PIP slide's task set: $T_1$ (priority 1, highest) to $T_4$ (priority 4), with $T_1$ and $T_4$ sharing one resource $S$. Release times and segments are read from the PIP slide figure. The slide does not show when $T_2$ and $T_3$ arrive; they are assumed released at $t=9$ and $t=10$. Each bar shows its effective priority. Sage marks a held resource, salmon a run at an inherited priority, and a hollow bar a wait for a lock; $+S$ and $-S$ mark lock and unlock. Switch the protocol: with none, $T_2$ and $T_3$ preempt $T_4$ inside its critical section, and $T_1$ waits 10 units instead of 4."
+    caption="PIP task set from the course slide: $T_1$ (highest) and $T_4$ share $S$; release times/segments follow the slide, with $T_2,T_3$ assumed at $t=9,10$. $T_1$ waits 4 units under PIP, versus 10 with no protocol."
   />
 </Zoomable>
 ```
@@ -58,7 +58,7 @@ For example, $T_L$ holds $R_A$, whose ceiling equals the base priority of $T_M$.
   <PriorityProtocolTimeline
     preset="pcp"
     protocol="pcp"
-    caption="PCP on the PCP slide's task set: $C$ (H) locks $S_1$, $B$ (M) nests $S_3$ inside $S_2$, and $A$ (L) nests $S_2$ inside $S_3$; ceilings $S_1=\mathrm{H}$, $S_2=S_3=\mathrm{M}$. The slide has no time axis, so durations are read from its bar lengths in whole units. At $t=6$ the ceiling of $S_3$ blocks $B$ although $S_2$ is free; $A$ inherits M and $B$ meets one critical section. Select PIP or none to see $A$ and $B$ deadlock at $t=20$. Sage marks a held resource, salmon a run at an inherited priority, and a hollow bar a wait. The chained task set is synthetic."
+    caption="PCP course task set; bar lengths give whole-unit durations because the slide has no time axis. $C_H$ locks $S_1$, $B_M$ nests $S_3$ inside $S_2$, and $A_L$ nests $S_2$ inside $S_3$ ($S_1=H$, $S_2=S_3=M$). At $t=6$, $S_3$ blocks $B$ while free; the synthetic chain deadlocks without a protocol at $t=20$."
   />
 </Zoomable>
 ```

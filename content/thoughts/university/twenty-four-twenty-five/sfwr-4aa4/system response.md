@@ -70,7 +70,7 @@ These definitions follow the [Michigan CTMS first-order analysis](https://ctms.e
   <PoleResponse
     mode="first"
     a={1}
-    caption="First-order step response of $G(s)=a/(s+a)$, starting at $a=1$. Drag the salmon pole along the real axis, or focus it and use the left and right arrow keys. The response reaches $1-e^{-1}\approx0.632$ at $t=\tau=1/a$, where the line from the origin with the initial slope $a$ meets the final value. The shaded strip is the 10% to 90% rise interval $T_r=\ln9/a$, and $T_s$ marks the exact 2% settling time $-\ln(0.02)/a$, which the $4/a$ rule rounds. A pole in the right half-plane makes the response diverge."
+    caption="First-order unit-step response $G(s)=a/(s+a)$, starting at $a=1$. Drag the pole or use arrow keys; the figure marks $T_r=\ln9/a$ and exact $T_s=-\ln(0.02)/a$ (the $4/a$ rule rounds it)."
   />
 </Zoomable>
 ```
@@ -105,7 +105,7 @@ A nonzero natural response oscillates indefinitely, as shown below. The unit-ste
     re={0}
     im={3.14159}
     lock="sigma"
-    caption="Undamped pair $\pm j\omega_n$, starting at $\omega_n=\pi$. The real part is held at $0$, so drag the salmon pole up or down the imaginary axis, or use the up and down arrow keys, to change $\omega_n$. The plot shows the unit-step response $c(t)=1-\cos(\omega_nt)$: the natural oscillation shifted up by the final value. It swings between $0$ and $2$ for ever, so $T_p=\pi/\omega_n$ exists, the overshoot is 100%, and there is no settling time. The sage poles and the lighter curve keep the starting pair for comparison."
+    caption="Undamped unit-step response, starting at $\omega_n=\pi$ with real part fixed at 0. Move the pole vertically to change $\omega_n$; the response has no settling time."
   />
 </Zoomable>
 ```
@@ -150,7 +150,7 @@ The diagram locates these pole types in the complex plane. The undamped case lie
     preset="underdamped"
     cases
     regions
-    caption="Pole regions of $G(s)=\omega_n^2/(s^2+2\zeta\omega_ns+\omega_n^2)$. Pick a case to load a course example with $\omega_n=3$ ($a=9$, $6$, $2$ and $0$, and $a=-1$ for the unstable pair), or drag the salmon pole. Off the real axis in the sage left half-plane the pair is underdamped. On the negative real axis it splits into two real poles: overdamped, or critically damped where they meet. On the imaginary axis it is undamped, and in the grey right half-plane the response grows. Arrow keys move the focused pole; the up arrow lifts a double pole off the axis."
+    caption="Pole regions for $G(s)=\omega_n^2/(s^2+2\zeta\omega_ns+\omega_n^2)$. Course cases use $\omega_n=3$, $a\in\{9,6,2,0,-1\}$. Select a case or move the pole."
   />
 </Zoomable>
 ```
@@ -179,7 +179,7 @@ The phase has a minus sign. Check it against the initial conditions: $c(0)=0$ an
 <Zoomable label="underdamped step-response specifications">
   <PoleResponse
     preset="underdamped"
-    caption="Step-response specifications for the course example $-1\pm j\sqrt8$ ($\omega_n=3$, $\zeta=1/3$). The shaded strip spans the 10% to 90% rise time $T_r$. The dot at $T_p=\pi/\omega_d$ is the first peak, $c_{\max}=1+e^{-\zeta\pi/\sqrt{1-\zeta^2}}$, and $T_s$ marks the last exit from the grey 2% band, measured on the curve; the readout also gives the $4/\sigma_d$ rule. Drag the salmon pole, or use the arrow keys, to move each value."
+    caption="Course example $-1\pm j\sqrt8$ ($\omega_n=3$, $\zeta=1/3$): read $T_r$, $T_p=\pi/\omega_d$, curve-measured 2% $T_s$, and the $4/\sigma_d$ rule. Move the pole to update values."
   />
 </Zoomable>
 ```
@@ -234,15 +234,15 @@ The envelope time $T_{s,\mathrm{env}}$ is an upper bound for the actual $2\%$ se
     re={-1}
     im={3}
     locks
-    caption="Poles of a second-order underdamped system, starting at $-1\pm j3$. The radius is $\omega_n$, $\cos\theta=\zeta$, the real part is $-\sigma_d=-\zeta\omega_n$ and the imaginary part is $\omega_d=\omega_n\sqrt{1-\zeta^2}$. Choose what to hold fixed, then drag the salmon pole: same envelope keeps it on a vertical line ($\sigma_d$ fixed), same frequency on a horizontal line ($\omega_d$ fixed), and same overshoot on a ray from the origin ($\zeta$ fixed). The sage poles and the lighter curve keep the pair as it was when you chose the constraint."
+    caption="Underdamped poles start at $-1\pm j3$. Lock $\sigma_d$, $\omega_d$, or $\zeta$, then move the pole to compare equal envelope, frequency, or overshoot."
   />
 </Zoomable>
 ```
 
-| location of poles | pole motion                                                                    | examples                                                                                 |
-| ----------------- | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
-| Same envelope     | vertical line: $\sigma_d$ fixed, $\omega_d$ changes  | [[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/system response#same envelope]]  |
-| Same frequency    | horizontal line: $\omega_d$ fixed, $\sigma_d$ changes | [[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/system response#same frequency]] |
+| location of poles | pole motion                                            | examples                                                                                 |
+| ----------------- | ------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| Same envelope     | vertical line: $\sigma_d$ fixed, $\omega_d$ changes    | [[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/system response#same envelope]]  |
+| Same frequency    | horizontal line: $\omega_d$ fixed, $\sigma_d$ changes  | [[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/system response#same frequency]] |
 | Same overshoot    | ray from the origin: $\zeta$ fixed, $\omega_n$ changes | [[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/system response#same overshoot]] |
 
 #### same envelope

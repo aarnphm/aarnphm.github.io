@@ -176,6 +176,7 @@ Dealing with 12 months per year: saying outcomes over a year should be **normall
 WBS (work breakdown structure): hierarchical decomposition of the total scope of work
 
 CPM (critical path method): determine the longest path through the network, the critical path, and the shortest time to complete the project
+
 ```jsx imports={Zoomable,CpmActivity}
 <Zoomable label="CPM activity node">
   <CpmActivity caption="Activity-on-node template: early and late start/end dates at the corners, identifier in the circle, duration and float below. Salmon marks the identifier." />

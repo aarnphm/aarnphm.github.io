@@ -189,8 +189,16 @@ _Criterion A subsumes criterion B if every test set that satisfies A **also** sa
 
 _think of state diagrams, same thing_
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-3s03/CFG-if-else.webp]]
+```jsx imports={Zoomable,CfgDiagram}
+<Zoomable label="If-then and if-then-else CFGs">
+  <CfgDiagram pair="branch" caption="If-then skips G1 on the false edge; if-then-else runs G1 or G2." />
+</Zoomable>
+```
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-3s03/CFG-while-branch.webp]]
+```jsx imports={Zoomable,CfgDiagram}
+<Zoomable label="While and sequence CFGs">
+  <CfgDiagram pair="loop" caption="While loops back through COND into G1; sequence is G1 then G2." />
+</Zoomable>
+```
 
 ![[thoughts/university/twenty-four-twenty-five/sfwr-3s03/technique|technique|Testing Techniques]]

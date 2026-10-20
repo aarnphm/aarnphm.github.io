@@ -31,9 +31,9 @@ pdfTitles:
   'sheet.pdf': '4C03 exam cheat sheet'
   'transport_layer.pdf': 'Transport Layer'
 university:
-  summary: "This course covers computer networks and their security, using the Kurose and Ross textbook. The lectures go from internet architecture through the application, transport, network (IP) and data link layers, and end with network security. The folder holds Wireshark labs on HTTP and TCP, a peer-to-peer file synchronizer written in Python, a Mininet network topology assignment, a TCP attack assignment on reset attacks and session hijacking, and notes for the final exam."
+  summary: 'This course covers computer networks and their security, using the Kurose and Ross textbook. The lectures go from internet architecture through the application, transport, network (IP) and data link layers, and end with network security. The folder holds Wireshark labs on HTTP and TCP, a peer-to-peer file synchronizer written in Python, a Mininet network topology assignment, a TCP attack assignment on reset attacks and session hijacking, and notes for the final exam.'
   inferred: true
-  instructors: ["Rong Zheng"]
+  instructors: ['Rong Zheng']
 ---
 
 [[thoughts/university/twenty-four-twenty-five/sfwr-4c03/James W. Kurose, Keith W. Ross - Computer Networking_ A Top-Down Approach-Pearson (2021).pdf|Textbook]]: James F. Kurose, Keith W. Ross, "Computer Networking: A Top-Down Approach Featuring the Internet", 8th ed. Pearson Education

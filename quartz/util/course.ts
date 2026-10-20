@@ -1,6 +1,6 @@
 import { QuartzPluginData } from '../plugins/vfile'
 import { FullSlug, joinSegments, slugifyFilePath, FilePath } from './path'
-import { universityHomeRe } from './university'
+import { universityPlaceOf } from './university'
 import { isUniversityPdfPage } from './university-pdf'
 
 export type CourseUnitKind = 'lecture' | 'week' | 'session'
@@ -326,7 +326,7 @@ export function coursePageOf(slug: string | undefined): { dir: string; name: str
  */
 export function hasCourseCrumb(data: QuartzPluginData): boolean {
   const slug = data.slug ?? ''
-  if (isUniversityPdfPage(slug) || universityHomeRe.test(slug)) return true
+  if (isUniversityPdfPage(slug) || universityPlaceOf(slug)) return true
   if (!courseDirOf(slug)) return false
   return (
     parseCourseRecord(data.frontmatter) !== null ||

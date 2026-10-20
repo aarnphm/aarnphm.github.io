@@ -30,9 +30,8 @@ pdfTitles:
   'WEEK 5 LECTURE - Student.pdf': 'Engineer 4A03: Week 5 Lecture'
   'WEEK 9 LECTURE - Student.pdf': 'Engineer 4A03: Week 9 Lecture'
 university:
-  summary: "This course introduces the ethical, equitable and legal sides of engineering practice. Topics run from technology and society and technology assessment, through equity, diversity and inclusion, the corporation, insurance and misconduct, to the Engineers Act, tort law, patents and contract law. The folder holds the weekly lectures, three assignments and a three-part term project: a literature review, a case study and a project application template."
+  summary: 'This course introduces the ethical, equitable and legal sides of engineering practice. Topics run from technology and society and technology assessment, through equity, diversity and inclusion, the corporation, insurance and misconduct, to the Engineers Act, tort law, patents and contract law. The folder holds the weekly lectures, three assignments and a three-part term project: a literature review, a case study and a project application template.'
   inferred: false
-  instructors: ["Joab Ogato"]
-  term: "fall 2024"
+  instructors: ['Joab Ogato']
+  term: 'fall 2024'
 ---
-

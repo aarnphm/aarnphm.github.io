@@ -52,6 +52,7 @@ import Spacer from './Spacer'
 import StackedNotes from './StackedNotes'
 import TableOfContents from './TableOfContents'
 import TagList from './TagList'
+import UniversityCrumbBar from './UniversityCrumb'
 import VisitorWeather from './VisitorWeather'
 
 export {
@@ -109,6 +110,7 @@ export {
   CourseHome,
   CoursesIndex,
   CourseUnitBar,
+  UniversityCrumbBar,
   CoursePsetDesk,
   CourseUnitFoot,
   CourseUnitNotes,
