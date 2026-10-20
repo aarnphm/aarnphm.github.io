@@ -13,8 +13,33 @@ worker-configuration.d.ts linguist-generated=true
 *.markdown linguist-detectable=true
 *.markdown linguist-documentation=false
 *.markdown linguist-language=Markdown
-quartz/static/pdfjs linguist-vendored
+quartz/static/pdfjs/** linguist-vendored
 content/thoughts/university/**/*.ipynb linguist-vendored
+# Token budget (quartz/scripts/check-token-budget.mjs, pre-commit) skips these: agents do not author them.
+*.lock linguist-generated
+pnpm-lock.yaml linguist-generated
+package-lock.json linguist-generated
+go.sum linguist-generated
+content/embeddings/** linguist-generated
+quartz/util/emojimap/** linguist-generated
+quartz/util/base/bookcase/jackets.json linguist-generated
+.agents/skills/garden-design-system/references/** linguist-generated
+quartz/runtime/native/packs/** linguist-vendored
+.gitattributes -agent-authored
+content/** -agent-authored
+content/.obsidian/plugins/** agent-authored
+*.json -agent-authored
+*.jsonl -agent-authored
+*.svg -agent-authored
+*.csv -agent-authored
+*.tsv -agent-authored
+*.txt -agent-authored
+*.gpx -agent-authored
+*.geojson -agent-authored
+*.vtt -agent-authored
+*.ipynb -agent-authored
+*.bib -agent-authored
+*.map -agent-authored
 content/thoughts/university/twenty-four-twenty-five/sfwr-3db3/a2/loadData.ddl filter=lfs diff=lfs merge=lfs -text
 *.pptx filter=lfs diff=lfs merge=lfs -text
 .claude/launch.json filter=lfs diff=lfs merge=lfs -text
