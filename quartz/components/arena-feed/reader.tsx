@@ -12,6 +12,7 @@ import {
   type ArenaFeedEntry,
 } from '../../util/arena-feed'
 import { EXTERNAL_LINK_ICON_PATH } from '../../util/external-link-icon'
+import { SelectionToolbar } from '../selection-toolbar'
 import { isNote, isReadLink, isRecord, ReaderApiError, readerApi } from './api'
 import { ArticleContent, safeHref } from './content'
 import { ReaderFilter } from './filter'
@@ -116,8 +117,7 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
   const [editing, setEditing] = useState<string | null>(null)
   const [selectionAction, setSelectionAction] = useState<{
     quote: ArenaNoteQuote
-    left: number
-    top: number
+    range: Range
   } | null>(null)
   const [drafts, setDrafts] = useState<Record<string, NoteDraft>>({})
   const draftRef = useRef(drafts)
@@ -907,35 +907,32 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
       const root = contentRef.current
       const selection = window.getSelection()
       const quote = root ? quoteFromSelection(root) : null
-      const rects = selection?.rangeCount ? selection.getRangeAt(0).getClientRects() : null
-      const rect = rects
-        ? Array.from(rects)
-            .reverse()
-            .find(item => item.width && item.height)
-        : null
-      if (!quote || !rect || !rect.width || !rect.height) {
+      const range = quote && selection?.rangeCount ? selection.getRangeAt(0).cloneRange() : null
+      if (!quote || !range) {
         setSelectionAction(null)
         return
       }
-      const left = Math.min(window.innerWidth - 48, Math.max(48, rect.left + rect.width / 2))
-      const top = Math.min(window.innerHeight - 40, Math.max(8, rect.bottom + 6))
+      const rects = [...range.getClientRects()].filter(rect => rect.width > 0 && rect.height > 0)
+      if (!rects.length) {
+        setSelectionAction(null)
+        return
+      }
       setSelectionAction(previous =>
-        previous?.quote.exact === quote.exact && previous.left === left && previous.top === top
+        previous?.quote.exact === quote.exact &&
+        previous.range.startContainer === range.startContainer &&
+        previous.range.startOffset === range.startOffset &&
+        previous.range.endContainer === range.endContainer &&
+        previous.range.endOffset === range.endOffset
           ? previous
-          : { quote, left, top },
+          : { quote, range },
       )
     }
     const schedule = () => {
       if (!frame) frame = requestAnimationFrame(update)
     }
-    const scroller = articleRef.current
     document.addEventListener('selectionchange', schedule)
-    scroller?.addEventListener('scroll', schedule, { passive: true })
-    window.addEventListener('resize', schedule)
     return () => {
       document.removeEventListener('selectionchange', schedule)
-      scroller?.removeEventListener('scroll', schedule)
-      window.removeEventListener('resize', schedule)
       if (frame) cancelAnimationFrame(frame)
     }
   }, [artifact?.snapshotId, inbox, selected?.articleId])
@@ -1314,16 +1311,11 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
               </div>
             )}
             {selectionAction && !inbox && artifact && (
-              <button
-                type="button"
-                class="arena-reader-selection-action"
-                style={{ left: `${selectionAction.left}px`, top: `${selectionAction.top}px` }}
-                aria-label="Add selected text to a new note"
-                onPointerDown={event => event.preventDefault()}
-                onClick={() => createNote(selectionAction.quote)}
-              >
-                add note
-              </button>
+              <SelectionToolbar range={selectionAction.range} label="Selection">
+                <button type="button" onClick={() => createNote(selectionAction.quote)}>
+                  note
+                </button>
+              </SelectionToolbar>
             )}
           </main>
           <dialog

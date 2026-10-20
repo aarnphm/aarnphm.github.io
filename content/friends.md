@@ -6,7 +6,7 @@ date: '2026-01-17'
 description: my name is Aaron, and on the virtue of friendship
 id: friends
 layout: technical
-modified: 2026-10-14 15:12:37 GMT-04:00
+modified: 2026-10-20 00:12:56 GMT-04:00
 tags:
   - evergreen
   - friend
@@ -33,6 +33,8 @@ quick tl/dr: i used to live in sf for a bit for work, and moved abroad to vancou
 > i collect [[watch|watches]] as well!
 >
 > i also don't drink anymore 😸
+>
+> <div data-triathlon-latest />
 
 ```quotes
 friends are still our first and sometimes best model of someone who chooses to be always on your side.

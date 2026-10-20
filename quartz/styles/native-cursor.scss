@@ -133,6 +133,9 @@ $cursors: (
   }
 }
 
+// The root carries the page cursor too: during an SPA view transition the pointer hits <html>,
+// which would otherwise show the system arrow until the new page paints.
+:root,
 body {
   cursor: var(--cursor-page, auto);
 }
