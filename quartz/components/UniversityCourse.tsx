@@ -7,7 +7,7 @@ import {
 import { BuildCtx } from '../util/ctx'
 import { htmlToJsx } from '../util/jsx'
 import { classNames } from '../util/lang'
-import { FilePath, FullSlug, resolveRelative, slugifyFilePath } from '../util/path'
+import { FilePath, FullSlug, resolveRelative, slugifyFilePath, sluggify } from '../util/path'
 import { normalizePdfSlug } from '../util/pdf-marks'
 import { pdfTitlesFor } from '../util/pdf-titles'
 import { concatenateResources } from '../util/resources'
@@ -16,12 +16,13 @@ import {
   UNIVERSITY_SLUG,
   courseCode,
   semesterOf,
-  termLabel,
-  universityHomeRe,
+  universityFolderName,
+  universityPlaceOf,
 } from '../util/university'
 import { universityPdfOf } from '../util/university-pdf'
 import SeeAlsoConstructor from './SeeAlso'
 import style from './styles/university-course.scss'
+import { UniversityCrumb } from './UniversityCrumb'
 
 type Kind = 'note' | 'pdf' | 'ipynb'
 
@@ -35,7 +36,7 @@ interface Entry {
 }
 
 interface Group {
-  /** first folder under the course; empty for files at the course root */
+  /** first folder under the page's folder; empty for files directly in it */
   dir: string
   title: string
   slug?: FullSlug
@@ -63,37 +64,42 @@ const anchor = (dir: string) =>
 
 const str = (value: unknown): string => (typeof value === 'string' ? value : '')
 
-/** Course files grouped by their first folder, built from every source path. */
+/**
+ * Files under a folder grouped by their first subfolder, built from every source path. `folder`
+ * is a slug: source folders keep their spaces, so each path is matched through `sluggify`.
+ */
 function courseGroups(
   ctx: BuildCtx,
   allFiles: QuartzComponentProps['allFiles'],
-  prefix: string,
+  folder: string,
 ): Group[] {
   const bySlug = new Map(allFiles.map(file => [file.slug, file]))
   const pdfTitles = pdfTitlesFor(allFiles)
   const groups = new Map<string, Group>()
+  const depth = folder.split('/').length
+  const prefix = `${folder}/`
   for (const fp of ctx.allFiles) {
     const rel = String(fp).replace(/^content\//, '')
-    if (!rel.startsWith(prefix)) continue
-    const parts = rel.slice(prefix.length).split('/')
+    if (!rel.startsWith(UNIVERSITY_ROOT)) continue
+    const all = rel.split('/')
+    if (all.length <= depth || sluggify(all.slice(0, depth).join('/')) !== folder) continue
+    const parts = all.slice(depth)
     const name = parts[parts.length - 1]
     const kind = kindOf[name.slice(name.lastIndexOf('.')).toLowerCase()]
     if (!kind || skipped(parts)) continue
     const dir = parts.length > 1 ? parts[0] : ''
     let group = groups.get(dir)
     if (!group) {
-      const index = dir
-        ? bySlug.get(slugifyFilePath(`${prefix}${dir}/index.md` as FilePath))
-        : undefined
+      const index = dir ? bySlug.get(`${prefix}${sluggify(dir)}/index` as FullSlug) : undefined
       group = {
         dir,
-        title: str(index?.frontmatter?.title) || dir || 'course',
-        slug: index?.slug as FullSlug | undefined,
+        title: str(index?.frontmatter?.title) || dir || 'files',
+        slug: dir ? (`${prefix}${sluggify(dir)}/index` as FullSlug) : undefined,
         entries: [],
       }
       groups.set(dir, group)
     }
-    // the course home and folder indexes are the page and the group heading
+    // the page's own index and the subfolder indexes are the page and the group headings
     if (kind === 'note' && name === 'index.md' && parts.length <= 2) continue
     const file = slugifyFilePath(rel as FilePath, kind === 'ipynb')
     // a PDF opens in its reader page under `<course>/pdf/`
@@ -143,47 +149,50 @@ export default (() => {
   const UniversityCourse: QuartzComponent = (props: QuartzComponentProps) => {
     const { ctx, fileData, allFiles, tree, displayClass } = props
     const from = fileData.slug!
-    const match = universityHomeRe.exec(from)
-    if (!match) return null
-    const [, term, dir] = match
-    const prefix = `${UNIVERSITY_ROOT}${term}/${dir}/`
-    const groups = courseGroups(ctx, allFiles, prefix)
+    const place = universityPlaceOf(from)
+    if (!place || !place.isFolder) return null
+    const courseSlug = `${UNIVERSITY_ROOT}${place.term}/${place.course}`
+    const folder = [courseSlug, ...place.folders].join('/')
+    const isHome = place.folders.length === 0
+    const groups = courseGroups(ctx, allFiles, folder)
     const all = groups.flatMap(group => group.entries)
 
     const fm: Record<string, unknown> = fileData.frontmatter ?? {}
+    const homeFm: Record<string, unknown> = isHome
+      ? fm
+      : (allFiles.find(file => file.slug === `${courseSlug}/index`)?.frontmatter ?? {})
     const course = (
-      typeof fm.university === 'object' && fm.university ? fm.university : {}
+      typeof homeFm.university === 'object' && homeFm.university ? homeFm.university : {}
     ) as Record<string, unknown>
-    const summary = str(course.summary) || str(fm.description)
-    const inferred = course.inferred === true
+    const inferred = isHome && course.inferred === true
     const instructors = Array.isArray(course.instructors)
       ? course.instructors.map(str).filter(Boolean)
       : []
-    const semester = str(course.term) || semesterOf(fm.date)
-    const site = str((fm.socials as Record<string, unknown> | undefined)?.site)
+    const semester = str(course.term) || semesterOf(homeFm.date)
+    const site = str((homeFm.socials as Record<string, unknown> | undefined)?.site)
     const meta = [semester, ...instructors].filter(Boolean)
     const universityHref = resolveRelative(from, UNIVERSITY_SLUG as FullSlug)
+    const courseTitle = str(homeFm.title) || courseCode(place.course)
+    // a folder without an index.md gets a generated title that names its whole path
+    const ownIndex = ctx.allFiles.some(
+      fp => slugifyFilePath(String(fp).replace(/^content\//, '') as FilePath) === from,
+    )
+    const summary = isHome
+      ? str(course.summary) || str(fm.description)
+      : ownIndex
+        ? str(fm.description)
+        : ''
+    const title = isHome
+      ? courseTitle
+      : (ownIndex && str(fm.title)) || universityFolderName(ctx.allFiles, folder)
 
     return (
       <div class={classNames(displayClass, 'course-home', 'university-course')}>
         <header class="course-masthead">
           <p class="course-masthead-num course-num course-crumb">
-            <a class="internal" href={universityHref} data-slug={UNIVERSITY_SLUG} data-no-popover>
-              university
-            </a>
-            <span class="course-unit-sep">/</span>
-            <a
-              class="internal"
-              href={`${universityHref}#term-${term}`}
-              data-slug={UNIVERSITY_SLUG}
-              data-no-popover
-            >
-              {termLabel(term)}
-            </a>
-            <span class="course-unit-sep">/</span>
-            <span>{courseCode(dir)}</span>
+            <UniversityCrumb from={from} place={place} paths={ctx.allFiles} />
           </p>
-          <h1 class="course-masthead-title">{str(fm.title) || courseCode(dir)}</h1>
+          <h1 class="course-masthead-title">{title}</h1>
           <p class="course-masthead-meta">
             {meta.map((item, i) => (
               <>
@@ -192,7 +201,17 @@ export default (() => {
               </>
             ))}
             {meta.length > 0 ? <span class="course-sep">·</span> : null}
-            <span>mcmaster university</span>
+            {isHome ? (
+              <span>mcmaster university</span>
+            ) : (
+              <a
+                class="internal"
+                href={resolveRelative(from, `${courseSlug}/index` as FullSlug)}
+                data-slug={`${courseSlug}/index`}
+              >
+                {courseTitle}
+              </a>
+            )}
             {site ? (
               <>
                 <span class="course-sep">·</span>
@@ -232,6 +251,20 @@ export default (() => {
               <dl>
                 <dt>files</dt>
                 <dd>{countOf(all) || 'none'}</dd>
+                {isHome ? null : (
+                  <>
+                    <dt>course</dt>
+                    <dd>
+                      <a
+                        class="internal"
+                        href={resolveRelative(from, `${courseSlug}/index` as FullSlug)}
+                        data-slug={`${courseSlug}/index`}
+                      >
+                        {courseCode(place.course)}
+                      </a>
+                    </dd>
+                  </>
+                )}
                 <dt>archive</dt>
                 <dd>
                   <a class="internal" href={universityHref} data-slug={UNIVERSITY_SLUG}>

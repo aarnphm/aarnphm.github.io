@@ -23,10 +23,10 @@ pdfTitles:
   'Requirements Highlights.pdf': 'Software Requirements Highlights'
   'Winter-2026-SFWRENG-3A04-T03-KHEDRI-Software-Design-III-Large-System-Design.pdf': 'Software Design III: Large System Design, Winter 2026 Course Outline'
 university:
-  summary: "This course teaches how to design the architecture of large software systems so that they are easy to change and extend. It moves from requirements and the architecture design space to the main architectural styles (data flow, data-centered, hierarchical, interaction-oriented, distributed and component-based), and then to heterogeneous architectures, where styles are selected and evaluated against quality attributes. The folder holds the lecture slides, midterm and final review notes, notes on analysis class diagrams, and the term project, a smart city environmental monitoring and alert system with its requirements specification."
+  summary: 'This course teaches how to design the architecture of large software systems so that they are easy to change and extend. It moves from requirements and the architecture design space to the main architectural styles (data flow, data-centered, hierarchical, interaction-oriented, distributed and component-based), and then to heterogeneous architectures, where styles are selected and evaluated against quality attributes. The folder holds the lecture slides, midterm and final review notes, notes on analysis class diagrams, and the term project, a smart city environmental monitoring and alert system with its requirements specification.'
   inferred: false
-  instructors: ["Ridha Khedri"]
-  term: "winter 2026"
+  instructors: ['Ridha Khedri']
+  term: 'winter 2026'
 ---
 
 _time not to fail this course_

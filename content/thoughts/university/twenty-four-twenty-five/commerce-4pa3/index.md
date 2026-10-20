@@ -29,8 +29,8 @@ pdfTitles:
 university:
   summary: "This capstone course teaches strategic management from the general manager's view, using the Diamond-E framework to link strategy with the environment, the organization and resources, and then moving to strategic choice. Each class applies numbered analysis tools and Porter's five forces to a business case, such as Canadian Airlines. The folder holds textbook chapters, case notes, a midterm ratio sheet, Capsim simulation reports, notes from the McMaster World Congress and a final case analysis of Healthy Eats."
   inferred: true
-  instructors: ["R Cossa"]
-  term: "winter 2025"
+  instructors: ['R Cossa']
+  term: 'winter 2025'
 ---
 
 ISBN: [281000001294B]

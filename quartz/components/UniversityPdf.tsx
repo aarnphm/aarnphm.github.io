@@ -27,7 +27,12 @@ export const UniversityPdfStrip = (() => {
     if (!page) return null
     const from = fileData.slug as FullSlug
     const internal = (slug: string, text: string, extra: Record<string, string> = {}) => (
-      <a class="internal" href={resolveRelative(from, slug as FullSlug)} data-slug={slug} {...extra}>
+      <a
+        class="internal"
+        href={resolveRelative(from, slug as FullSlug)}
+        data-slug={slug}
+        {...extra}
+      >
         {text}
       </a>
     )
@@ -51,12 +56,10 @@ export const UniversityPdfStrip = (() => {
       ...(page.next ? [pagerLink('next', page.next)] : []),
     ]
     if (pager.length > 0) rows.push(['pdfs', pager])
-    if (page.home) rows.push(['course', [internal(page.home, page.homeTitle ?? courseCode(page.course))]])
+    if (page.home)
+      rows.push(['course', [internal(page.home, page.homeTitle ?? courseCode(page.course))]])
     if (cited.length > 0)
-      rows.push([
-        'cited by',
-        cited.map(note => internal(note.from, note.title.toLowerCase())),
-      ])
+      rows.push(['cited by', cited.map(note => internal(note.from, note.title.toLowerCase()))])
     rows.push([
       'file',
       [

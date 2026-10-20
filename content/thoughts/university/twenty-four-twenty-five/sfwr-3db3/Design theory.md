@@ -16,7 +16,6 @@ title: Design theory
 >
 > A _superkey_ determines every attribute of $R$. It may contain attributes that a candidate key does not need.
 
-
 ## functional dependency
 
 A functional dependency (FD) $X \to Y$ says that any two tuples agreeing on $X$ must agree on $Y$. As a schema constraint, it must hold in every legal instance. A small table can satisfy an FD by accident.

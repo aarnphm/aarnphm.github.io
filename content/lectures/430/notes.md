@@ -269,7 +269,7 @@ NSA solves both: natively trainable, hardware-aligned sparsity.
 <Zoomable label="Native sparse attention branches">
   <SparseAttentionMask
     mode="nsa"
-    caption="The three NSA branches and their masks on a causal grid of 64 toy tokens, after NSA Figure 2. Compressed keys summarise blocks of $l=4$ at stride $d=2$; selection keeps the top-$n$ blocks of $l'=8$ keys, with the initial and 2 local blocks always kept; the sliding window keeps the last $w=24$ keys. Learned gates mix the three outputs. Salmon marks the keys that query $t$ reads, sage the keys that other queries read. Block scores come from synthetic keys and queries with a fixed seed. Toy values are scaled down from the paper ($l=32$, $d=16$, $l'=64$, $n=16$, $w=512$); at 64 tokens the branches overlap and $N_t$ can exceed $t+1$, so read the savings in the $32\mathrm{k}$ and $128\mathrm{k}$ columns. Switch the pattern to see each branch, or DSA for comparison, and drag $t$ to move the query."
+    caption="Toy NSA branches on a 64-token causal grid, after NSA Fig. 2; fixed-seed synthetic keys and queries. Toy parameters are $l=4$, $d=2$, $l'=8$, $n$ top blocks, and $w=24$; the paper uses $32$, $16$, $64$, $16$, and $512$. Branches overlap at 64 tokens, so compare savings at 32k and 128k."
   />
 </Zoomable>
 ```

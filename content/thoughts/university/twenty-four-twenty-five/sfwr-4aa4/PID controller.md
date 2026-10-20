@@ -28,8 +28,9 @@ The transfer functions below assume zero initial conditions and a linear plant w
 
 ```jsx imports={Zoomable,BlockDiagram}
 <Zoomable label="Proportional control loop">
-  <BlockDiagram config="proportional"
-    caption="Proportional control under unity negative feedback, in the notation above: the error $E(s) = R(s) - Y(s)$ is multiplied by $K_p$ to give the control signal $U(s)$, which drives the plant $G_p(s)$, and a unit-gain sensor returns $Y(s)$. The course image draws the plant on the return path and labels the set point $u(t)$; it is the same single loop. Step through the reduction; salmon marks the parts the current rule acts on. The feedback rule gives $T(s) = K_pG_p(s)/(1 + K_pG_p(s))$."
+  <BlockDiagram
+    config="proportional"
+    caption="Unity negative-feedback proportional control: $E(s)=R(s)-Y(s)$, $U(s)=K_pE(s)$, plant $G_p(s)$, and unit-gain sensor. The course image places the plant on the return path and labels the set point $u(t)$. The transfer function is $T(s)=K_pG_p(s)/(1+K_pG_p(s))$; step through the reduction."
   />
 </Zoomable>
 ```

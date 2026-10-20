@@ -2,8 +2,8 @@ import { slugifyFilePath, type FilePath } from './path'
 
 /** A hosted PDF under `thoughts/university/<term>/<course>/`, as a manifest slug. */
 const pdfRe = /^thoughts\/university\/([^/]+)\/([^/]+)\/(.+)\.pdf$/i
-/** A course folder: `thoughts/university/<term>/<course>` with an optional `/index`. */
-const homeRe = /^thoughts\/university\/([^/]+)\/([^/]+)(?:\/index)?$/
+/** A term folder or a course folder under `thoughts/university`. */
+const homeRe = /^thoughts\/university\/([^/]+)(?:\/([^/]+))?$/
 const pageRe = /^thoughts\/university\/[^/]+\/[^/]+\/pdf\/.+$/
 
 export interface UniversityPdf {
@@ -42,11 +42,19 @@ export function isUniversityPdfPage(slug: string): boolean {
   return pageRe.test(slug)
 }
 
-/** `/thoughts/university/<term>/<course>/` when the path is a course folder, else null. */
+/**
+ * Index and course folders that open as a course card: the archive root, a term folder and a
+ * course folder. A path ending in `/index` names its folder.
+ */
 export function universityHomePath(pathname: string): string | null {
-  const match = homeRe.exec(pathname.replace(/^\/+/, '').replace(/\/+$/, ''))
-  // a term folder holds only its `index`, which `<term>/index` would otherwise read as a course
-  return match && match[2] !== 'index' ? `/thoughts/university/${match[1]}/${match[2]}/` : null
+  const path = pathname
+    .replace(/^\/+/, '')
+    .replace(/\/+$/, '')
+    .replace(/\/index$/, '')
+  if (path === 'thoughts/university') return '/thoughts/university/'
+  const match = homeRe.exec(path)
+  if (!match) return null
+  return `/thoughts/university/${match[1]}/${match[2] ? `${match[2]}/` : ''}`
 }
 
 /** What the strip above a university PDF reader needs, resolved by the emitter. */

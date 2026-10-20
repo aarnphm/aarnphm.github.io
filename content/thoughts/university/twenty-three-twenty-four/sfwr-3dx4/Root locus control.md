@@ -43,7 +43,7 @@ The loop below puts a gain $K$ in front of the plant $G(s)$ under unity negative
   <PoleResponse
     mode="locus"
     comp="none"
-    caption="Root locus of $KG(s)$ for the plant $G(s)=1/((s+1)(s+2)(s+10))$ of Nise, Example 9.1, under unity feedback. The black branches are computed by solving the characteristic polynomial for each gain; the salmon dots are the closed-loop poles at the current $K$. The grey ray is $\zeta=0.174$, and $A$ is where it crosses the locus: $K\approx164.5$, $s_0\approx-0.69\pm j3.93$, third pole near $-11.61$. Move the slider, or drag along a branch, to set $K$. The plot shows the closed-loop step response; the lighter curve is the response at $A$."
+    caption="Unity-feedback root locus for $G(s)=1/((s+1)(s+2)(s+10))$, after Nise, Example 9.1. At the $\zeta=0.174$ crossing, $K\approx164.5$, $s_0\approx-0.69\pm j3.93$, with third pole near $-11.61$."
   />
 </Zoomable>
 ```
@@ -76,7 +76,7 @@ _proportional-plus-integral (PI) controller_
     mode="locus"
     comp="integrator"
     compensators
-    caption="An integrator $K/s$ added to the plant $G(s)=1/((s+1)(s+2)(s+10))$ of Nise, Example 9.1, under unity feedback. The black branches are computed by solving the characteristic polynomial for each gain; the salmon dots are the closed-loop poles at the current $K$. Its pole at the origin makes the angle at $A$ equal to $-280^\circ$ instead of $-180^\circ$, so $A$ is off the new locus. The $\zeta=0.174$ crossing moves to $-0.16\pm j0.92$ at $K\approx23.8$, and at $K=164.5$ the loop is unstable. Switch the compensator, move the gain, or press the button to go to the $\zeta=0.174$ crossing; the lighter curve is the gain-only response at $A$."
+    caption="Unity-feedback plant $G(s)=1/((s+1)(s+2)(s+10))$ with integrator $K/s$, after Nise, Example 9.1. Its pole at 0 shifts the angle at A to $-280^\circ$; the $\zeta=0.174$ crossing is $-0.16\pm j0.92$ at $K\approx23.8$, while $K=164.5$ is unstable."
   />
 </Zoomable>
 ```
@@ -90,7 +90,7 @@ _proportional-plus-integral (PI) controller_
     mode="locus"
     comp="pi"
     compensators
-    caption="The PI compensator $K(s+0.1)/s$ with the plant $G(s)=1/((s+1)(s+2)(s+10))$ of Nise, Example 9.1, under unity feedback. The black branches are computed by solving the characteristic polynomial for each gain; the salmon dots are the closed-loop poles at the current $K$. The zero at $-0.1$ nearly cancels the angle of the pole at the origin: the angle at $A$ is $-181.4^\circ$, and the $\zeta=0.174$ crossing moves only to $-0.68\pm j3.84$ at $K\approx158.1$. The step error goes to zero, and the extra closed-loop pole near $-0.09$ leaves a slow tail. Compare it with the lighter gain-only response."
+    caption="Unity-feedback plant $G(s)=1/((s+1)(s+2)(s+10))$ with PI compensator $K(s+0.1)/s$, after Nise, Example 9.1. The zero nearly cancels the integrator angle; the $\zeta=0.174$ crossing is $-0.68\pm j3.84$ at $K\approx158.1$, with zero step error and a slow tail from the pole near $-0.09$."
   />
 </Zoomable>
 ```
@@ -115,8 +115,9 @@ where $K_p$ is the proportional gain and $K_i$ is the integral gain.
 
 ```jsx imports={Zoomable,BlockDiagram}
 <Zoomable label="PI controller implementation">
-  <BlockDiagram config="pi-controller"
-    caption="A PI controller as parallel proportional and integral paths, after Figure 9.8 of Nise: the error drives $K_1$ and $K_2/s$, their outputs add before the plant $G(s)$, and unity feedback closes the loop. In the notation above, $K_1 = K_p$ and $K_2 = K_i$. Step through the reduction; salmon marks the parts the current rule acts on. The parallel rule gives $G_c(s) = K_1 + K_2/s = K_1(s + K_2/K_1)/s$, with its zero at $-K_2/K_1$ and its pole at the origin, and the feedback rule then closes the loop around $G_c(s)G(s)$."
+  <BlockDiagram
+    config="pi-controller"
+    caption="PI implementation after Nise, Fig. 9.8: $K_1=K_p$, $K_2=K_i$, and $G_c(s)=K_1+K_2/s=K_1(s+K_2/K_1)/s$. Its zero is $-K_2/K_1$ and pole is 0; unity feedback closes around $G_c(s)G(s)$."
   />
 </Zoomable>
 ```

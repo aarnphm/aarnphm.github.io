@@ -33,9 +33,8 @@ pdfTitles:
   'tut/5th_week_2024F1.pdf': 'Tutorial 5: SQL #2'
   'tut/6th_week_2024.pdf': 'Introduction to Databases: Tutorial 6'
 university:
-  summary: "This course introduces database systems: entity-relationship modelling, the relational model with keys and foreign keys, relational algebra and SQL, then design theory with functional dependencies and normal forms, and transactions with concurrency control. The folder holds lecture and tutorial slides, notes for each topic, midterm and final reviews, and three assignments that design and query a MacAir Aviation database with ER diagrams, DDL scripts, relational algebra and indexes."
+  summary: 'This course introduces database systems: entity-relationship modelling, the relational model with keys and foreign keys, relational algebra and SQL, then design theory with functional dependencies and normal forms, and transactions with concurrency control. The folder holds lecture and tutorial slides, notes for each topic, midterm and final reviews, and three assignments that design and query a MacAir Aviation database with ER diagrams, DDL scripts, relational algebra and indexes.'
   inferred: true
-  instructors: ["Fei Chiang"]
-  term: "fall 2024"
+  instructors: ['Fei Chiang']
+  term: 'fall 2024'
 ---
-

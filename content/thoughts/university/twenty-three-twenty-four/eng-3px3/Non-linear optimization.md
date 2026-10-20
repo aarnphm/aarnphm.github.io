@@ -9,4 +9,3 @@ tags:
   - eng3px3
 title: Non-linear Optimization
 ---
-

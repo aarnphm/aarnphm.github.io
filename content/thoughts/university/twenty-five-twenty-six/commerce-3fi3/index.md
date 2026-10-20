@@ -19,7 +19,7 @@ pdfTitles:
 university:
   summary: "This course teaches trading in financial markets, using John Siam's THE Trading Manual. The lectures move from the cash market to market direction, indices and ETFs, and then to the option market, delta trading and directional option spreads. The folder holds trading case tutorials on market efficiency (RE2) and option trading (OP1 and OP2), a sample quiz with solutions, and notes on market structure and options."
   inferred: true
-  instructors: ["Dr. John Siam"]
+  instructors: ['Dr. John Siam']
 ---
 
 Book: THE Trading Manual, Forth Canadian Edition Version 4.0, John J. Siam

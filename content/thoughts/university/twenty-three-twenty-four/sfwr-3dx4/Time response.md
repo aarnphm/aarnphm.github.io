@@ -44,7 +44,7 @@ After each time constant, the remaining gap is multiplied by the same factor, $e
   <PoleResponse
     mode="first"
     a={1}
-    caption="First-order step response of $G(s)=a/(s+a)$, starting at $a=1$. Drag the salmon pole along the real axis, or focus it and use the left and right arrow keys. The response reaches $1-e^{-1}\approx0.632$ at $t=\tau=1/a$, where the line from the origin with the initial slope $a$ meets the final value. The shaded strip is the 10% to 90% rise interval $T_r=\ln9/a$, and $T_s$ marks the exact 2% settling time $-\ln(0.02)/a$, which the $4/a$ rule rounds. A pole in the right half-plane makes the response diverge."
+    caption="First-order step response of $G(s)=a/(s+a)$ at $a=1$. Drag the pole or use arrow keys. The plot marks $T_r=\ln9/a$ and exact $T_s=-\ln(0.02)/a$ (the $4/a$ rule rounds it); a right-half-plane pole diverges."
   />
 </Zoomable>
 ```
@@ -84,7 +84,7 @@ The discriminant tells us whether the transient contains two real exponentials, 
   <PoleResponse
     preset="underdamped"
     cases
-    caption="Unit-step responses of $G(s)=b/(s^2+as+b)$ for the course examples with $b=9$: overdamped $s^2+9s+9$ (poles $-1.146$ and $-7.854$), critically damped $s^2+6s+9$ (double pole $-3$), underdamped $s^2+2s+9$ (poles $-1\pm j\sqrt8$) and undamped $s^2+9$; unstable loads $s^2-s+9$. Pick a case or drag the salmon pole. The readout gives the denominator, $\zeta$, $\omega_n$ and the time specifications measured on $c(t)$."
+    caption="Unit-step responses of $G(s)=b/(s^2+as+b)$ for course cases at $b=9$: overdamped $s^2+9s+9$, critically damped $s^2+6s+9$, underdamped $s^2+2s+9$, undamped $s^2+9$, and unstable $s^2-s+9$. Select a case or drag the pole; readout shows $\zeta$, $\omega_n$ and time specs."
   />
 </Zoomable>
 ```

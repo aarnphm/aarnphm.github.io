@@ -41,6 +41,8 @@ export const defaultContentPageLayout: PageLayout = {
     Component.NotebookRuntimeLoader(),
     // the course crumb is the trail on unit pages (the site breadcrumbs stay off them)
     Component.CourseUnitBar(),
+    // the university course trail on notes and notebooks inside a course folder
+    Component.UniversityCrumbBar(),
     Component.ArticleTitle(),
     // a problem set page is a course page: no note byline, the desk sits under the title
     Component.ConditionalRender({

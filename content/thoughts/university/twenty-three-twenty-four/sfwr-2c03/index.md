@@ -36,10 +36,10 @@ pdfTitles:
   'sortings.pdf': 'Sorting - SFWRENG 2CO3: Data Structures and Algorithms'
   'string.pdf': 'Strings - SFWRENG 2CO3: Data Structures and Algorithms'
 university:
-  summary: "This course teaches how to reason about the correctness and cost of algorithms and data structures. It covers fundamentals and complexity analysis, then sorting, searching with balanced search trees and hash tables, graph algorithms such as search, spanning trees, and shortest paths, and string algorithms. The folder has the lecture slides, course notes, the Sedgewick and Wayne textbook, and twelve weekly assignments."
+  summary: 'This course teaches how to reason about the correctness and cost of algorithms and data structures. It covers fundamentals and complexity analysis, then sorting, searching with balanced search trees and hash tables, graph algorithms such as search, spanning trees, and shortest paths, and string algorithms. The folder has the lecture slides, course notes, the Sedgewick and Wayne textbook, and twelve weekly assignments.'
   inferred: false
-  instructors: ["Jelle Hellings"]
-  term: "winter 2024"
+  instructors: ['Jelle Hellings']
+  term: 'winter 2024'
 ---
 
 Pretty explanatory, collection of notes for Data Structures and Algorithms course.

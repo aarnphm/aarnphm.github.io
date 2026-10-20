@@ -18,7 +18,6 @@ transclude:
 
 slides: [[lectures/440/vllm-toronto-2025.pdf|infer-0.440]]
 
-
 To run DeepSeek-R1:
 
 ```bash

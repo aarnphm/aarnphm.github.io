@@ -26,7 +26,7 @@ import {
 } from '../../util/path'
 import { pdfTitlesFor } from '../../util/pdf-titles'
 import { concatenateResources } from '../../util/resources'
-import { universityHomeRe } from '../../util/university'
+import { universityPlaceOf } from '../../util/university'
 import { parseWikilink } from '../../util/wikilinks'
 import { CourseCalendar, courseCalendarScript } from '../CourseCalendar'
 import CourseHomeConstructor from '../CourseHome'
@@ -511,8 +511,8 @@ export default ((opts?: Partial<FolderContentOptions>) => {
     const sort = sortMode ? sortForFolderMode(sortMode, cfg) : options.sort
     const listProps = { ...props, sort, content, allFiles: entries, vaults: allFiles }
 
-    // `thoughts/university/<term>/<course>/index.md`: the course home over its own files
-    if (universityHomeRe.test(fileData.slug ?? '')) return <UniversityCourse {...props} />
+    // a university course home or one of its subfolders, over the folder's own files
+    if (universityPlaceOf(fileData.slug ?? '')?.isFolder) return <UniversityCourse {...props} />
 
     // vendored OCW pages (syllabus, calendar, …) are articles under a course, never listings
     if (coursePageOf(fileData.slug)) {

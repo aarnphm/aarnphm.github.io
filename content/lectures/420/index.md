@@ -22,7 +22,6 @@ pdfTitles:
 
 slides: [[lectures/420/infer-0.420.pdf]]
 
-
 > [!tip] Runnable Code Examples
 >
 > All CUDA code snippets in these notes have been collected into verifiable, runnable examples:

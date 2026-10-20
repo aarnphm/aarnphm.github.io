@@ -1,0 +1,77 @@
+@use '../../styles/variables.scss' as *;
+@use './figure.scss' as *;
+
+.preempt-schedule {
+  @include figure-frame('ps-figure', 16rem);
+
+  --ps-bar: color-mix(in srgb, var(--lightgray) 50%, var(--light));
+  --ps-lit: color-mix(in srgb, var(--fig-salmon) 40%, var(--light));
+}
+
+:root[saved-theme='dark'] .preempt-schedule {
+  --ps-bar: color-mix(in srgb, var(--gray) 30%, var(--lightgray));
+  --ps-lit: color-mix(in srgb, var(--fig-salmon) 24%, var(--lightgray));
+}
+
+.ps-svg {
+  display: block;
+  width: 100%;
+  max-width: 36rem;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+.ps-axis {
+  stroke: var(--dark);
+  stroke-width: 1.2;
+  fill: none;
+}
+
+.ps-arrow {
+  fill: var(--dark);
+}
+
+.ps-axis-label,
+.ps-tick,
+.ps-bar-label,
+.ps-note {
+  fill: var(--dark);
+  font-family: var(--bodyFont);
+  font-size: 11px;
+}
+
+.ps-tick,
+.ps-note {
+  fill: var(--fig-note);
+  font-size: 10px;
+}
+
+.ps-bar {
+  fill: var(--ps-bar);
+  stroke: var(--dark);
+  stroke-width: 1.1;
+}
+
+.ps-bar--lit {
+  fill: var(--ps-lit);
+}
+
+.ps-xfer {
+  stroke: var(--dark);
+  stroke-width: 1;
+  fill: none;
+  opacity: 0.55;
+}
+
+.ps-done {
+  stroke: var(--dark);
+  stroke-width: 3;
+}
+
+.ps-caption {
+  @include figure-caption;
+}
+
+.ps-math {
+  @include figure-inline-math;
+}

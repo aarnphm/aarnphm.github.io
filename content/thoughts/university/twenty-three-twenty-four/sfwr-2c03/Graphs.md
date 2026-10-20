@@ -127,7 +127,7 @@ DFS follows an unvisited neighbor recursively, then returns to inspect the remai
   <GraphTraversal
     mode="dfs"
     start={0}
-    caption="The course example graph on $n_0,\ldots,n_9$, with each $\operatorname{Adj}(n)$ in ascending index order. Pick DFS or BFS and a source $s$, then step. The salmon square is the vertex at work (the top of the call stack, or the vertex just dequeued) and the salmon band is the edge it inspects. A dark outline marks a vertex on the stack or in the queue; sage marks a vertex whose call has returned (DFS) or whose list is scanned (BFS). Heavy edges form the search tree. DFS times $d$ and $f$ tick one clock at each entry and return. From $n_1$ or $n_8$ only two vertices are marked: the graph is disconnected."
+    caption="Course graph $n_0,\ldots,n_9$ uses ascending adjacency order. Choose DFS/BFS and source $s$, then step: salmon marks the active vertex and inspected edge, outlines mark the stack/queue, sage marks completed vertices, and heavy edges form the search tree. DFS $d/f$ times tick on entry/return. Sources $n_1$ and $n_8$ reach only two vertices because the graph is disconnected."
   />
 </Zoomable>
 ```

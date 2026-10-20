@@ -17,10 +17,10 @@ pdfTitles:
   'quiz_8.pdf': 'Quizzes - ASTRON 2E03:Planetary Astronomy - McMaster University'
   'Solar System Exoplanets 2024.pdf': 'Lecture 1: Our Solar System in the Context of Exoplanets'
 university:
-  summary: "This course studies planets in our solar system and around other stars. It covers the solar system next to known exoplanet systems, the methods used to find exoplanets (transits, radial velocity, astrometry, direct imaging and microlensing), orbital mechanics, heating and cooling of planets including the greenhouse effect, planetary atmospheres and interiors, and how planets form. The course used pre- and post-lecture quizzes, three in-class tests, three take-home assignments and a final exam; the folder holds lecture slides, notes, two assignments and a quiz."
+  summary: 'This course studies planets in our solar system and around other stars. It covers the solar system next to known exoplanet systems, the methods used to find exoplanets (transits, radial velocity, astrometry, direct imaging and microlensing), orbital mechanics, heating and cooling of planets including the greenhouse effect, planetary atmospheres and interiors, and how planets form. The course used pre- and post-lecture quizzes, three in-class tests, three take-home assignments and a final exam; the folder holds lecture slides, notes, two assignments and a quiz.'
   inferred: true
-  instructors: ["Ryan Cloutier"]
-  term: "winter 2024"
+  instructors: ['Ryan Cloutier']
+  term: 'winter 2024'
 ---
 
 Dr. [Ryan Cloutier](mailto:ryan.cloutier@mcmaster.ca) or [link](https://avenue.cllmcmaster.ca/d2l/home/598689)

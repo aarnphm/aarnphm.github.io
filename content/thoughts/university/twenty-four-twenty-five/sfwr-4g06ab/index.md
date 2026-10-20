@@ -10,10 +10,10 @@ title: Software Enginering Capstone a la carte.
 pdfTitles:
   'VnVPlan.pdf': 'SE 4G06 (Capstone Design Project) Fall & Winter 2024–2025 [2ex] Verification and Validation Plan'
 university:
-  summary: "This is the two-term software engineering capstone design project. The team chose to build morph, a WYSIWYG Markdown editor that explores steering text generation for creative writing with sparse autoencoder features. The folder holds the project statement with the candidate project ideas and the course slides on the verification and validation plan."
+  summary: 'This is the two-term software engineering capstone design project. The team chose to build morph, a WYSIWYG Markdown editor that explores steering text generation for creative writing with sparse autoencoder features. The folder holds the project statement with the candidate project ideas and the course slides on the verification and validation plan.'
   inferred: true
-  instructors: ["Dr. Spencer Smith"]
-  term: "fall 2024 and winter 2025"
+  instructors: ['Dr. Spencer Smith']
+  term: 'fall 2024 and winter 2025'
 ---
 
 ## projects

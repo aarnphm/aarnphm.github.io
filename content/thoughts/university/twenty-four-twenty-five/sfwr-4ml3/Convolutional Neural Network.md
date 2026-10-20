@@ -20,7 +20,7 @@ title: Convolutional Neural Network
 <Zoomable label="Dense, local and shared connections">
   <ConvLocality
     view="connectivity"
-    caption="A $6\times6$ input feeds a $4\times4$ layer of units through $3\times3$ patches at stride $1$, so $W_2=(6-3)/1+1=4$. Each input cell shows the index of the weight that the selected unit applies to it, and the largest index is the weight count of the layer (biases left out): $576$ dense, $144$ local, $9$ shared. Salmon marks the selected unit and the inputs it reads. Pick a unit and a connection type. With sharing, every unit applies the same filter $w_1,\dots,w_9$ to its own patch, so a feature that the filter detects in one place it detects everywhere. Redrawn from the lecture's sparse-connectivity and weight-sharing sketches."
+    caption="For a $6\times6$ input, $3\times3$ patches and stride 1 give $W_2=4$. Excluding biases, the layer has 576 dense, 144 local, or 9 shared weights; redrawn from the lecture."
   />
 </Zoomable>
 ```
@@ -68,7 +68,7 @@ idea to reduce number of parameters
 <Zoomable label="Max pooling window walk">
   <ConvLocality
     view="pooling"
-    caption="Max pooling over the lecture's $4\times4$ example. Each output cell is the maximum of one $F\times F$ window, and the windows step by $S$. Sage cells are the selected window; the salmon cell is its maximum and the output cell it becomes. Pick an output cell (arrow keys walk the windows) and change $F$ and $S$. $F=2$, $S=2$ gives the lecture's $2\times2$ result $6, 8, 3, 4$. $F=3$, $S=2$ fits one window only, so the last row and column are never read."
+    caption="Max pooling takes each $F\times F$ window maximum at stride $S$. In the lecture example, $F=S=2$ gives $2\times2$ outputs $6,8,3,4$; $F=3,S=2$ reads one window."
   />
 </Zoomable>
 ```

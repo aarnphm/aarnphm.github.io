@@ -160,7 +160,13 @@ export function renderCoursePreview(page: Document, href: URL, popoverInner: HTM
   if (!home) {
     renderCourseCard(page, href, card)
   } else if (index) {
-    title.appendChild(link(href.toString(), 'course-popover-title-link', 'courses'))
+    title.appendChild(
+      link(
+        href.toString(),
+        'course-popover-title-link',
+        href.pathname.startsWith('/courses') ? 'courses' : text(page, 'h1') || 'courses',
+      ),
+    )
     header.append(
       title,
       el(

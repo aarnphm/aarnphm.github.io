@@ -1,0 +1,84 @@
+@use '../../styles/variables.scss' as *;
+@use './figure.scss' as *;
+
+.deadline-usefulness {
+  @include figure-frame('du-figure', 14rem);
+
+  --du-curve: color-mix(in srgb, var(--gray) 55%, var(--dark));
+  --du-lit: color-mix(in srgb, var(--fig-salmon) 55%, var(--dark));
+}
+
+:root[saved-theme='dark'] .deadline-usefulness {
+  --du-curve: color-mix(in srgb, var(--lightgray) 45%, var(--dark));
+  --du-lit: color-mix(in srgb, var(--fig-salmon) 40%, var(--light));
+}
+
+.du-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.du-title {
+  margin: 0 0 var(--space-2);
+  color: var(--fig-note);
+  font-family: var(--bodyFont);
+  font-size: 0.78rem;
+  text-align: center;
+}
+
+.du-svg {
+  display: block;
+  width: 100%;
+  max-width: 12rem;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+.du-axis {
+  stroke: var(--dark);
+  stroke-width: 1.2;
+  fill: none;
+}
+
+.du-arrow {
+  fill: var(--dark);
+}
+
+.du-label,
+.du-deadline-label {
+  fill: var(--fig-note);
+  font-family: var(--bodyFont);
+  font-size: 10px;
+}
+
+.du-deadline {
+  stroke: var(--dark);
+  stroke-width: 1.2;
+}
+
+.du-curve {
+  fill: none;
+  stroke: var(--du-curve);
+  stroke-width: 3.5;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+}
+
+.du-curve--lit {
+  stroke: var(--du-lit);
+}
+
+.du-caption {
+  @include figure-caption;
+}
+
+.du-math {
+  @include figure-inline-math;
+}
+
+@media (max-width: 640px) {
+  .du-row {
+    grid-template-columns: 1fr;
+  }
+}

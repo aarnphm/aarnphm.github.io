@@ -1,0 +1,131 @@
+@use '../../styles/variables.scss' as *;
+@use './figure.scss' as *;
+
+.register-as-stack {
+  @include figure-frame('ras-figure', 22rem);
+
+  --ras-filled: color-mix(in srgb, var(--fig-salmon) 36%, var(--light));
+  --ras-empty: color-mix(in srgb, var(--lightgray) 55%, var(--light));
+}
+
+:root[saved-theme='dark'] .register-as-stack {
+  --ras-filled: color-mix(in srgb, var(--fig-salmon) 22%, var(--lightgray));
+  --ras-empty: color-mix(in srgb, var(--gray) 28%, var(--lightgray));
+}
+
+article.notebook-page .register-as-stack--float-end {
+  float: right;
+  width: min(22rem, 48%);
+  max-width: 100%;
+  margin: 0 0 1rem 1rem;
+}
+
+.ras-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.ras-stack,
+.ras-ops {
+  position: relative;
+  margin: 0;
+  margin-top: calc(0.75rem * 1.5 + var(--space-3));
+  padding: var(--space-3);
+  border: 1px solid var(--fig-frame-border);
+  background: var(--light);
+}
+
+.ras-stack > legend,
+.ras-ops > legend {
+  position: absolute;
+  bottom: calc(100% + var(--space-3));
+  left: 0;
+  margin: 0;
+  padding: 0 0 var(--space-1);
+  color: var(--fig-note);
+  font-size: 0.75rem;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.ras-steps {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.ras-row {
+  position: relative;
+}
+
+.ras-slots {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(2.4rem, 1fr));
+  gap: var(--space-1);
+}
+
+.ras-sp {
+  grid-row: 1;
+  justify-self: start;
+  color: var(--fig-note);
+  font-family: var(--codeFont);
+  font-size: 0.62rem;
+  white-space: nowrap;
+  line-height: 1.2;
+  margin-bottom: 0.1rem;
+}
+
+.ras-slot {
+  grid-row: 2;
+  min-height: 1.85rem;
+  border: 1px solid color-mix(in srgb, var(--dark) 35%, var(--lightgray));
+  background: var(--ras-empty);
+  color: var(--dark);
+  font-family: var(--codeFont);
+  font-size: 0.68rem;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 0.15rem 0.2rem;
+}
+
+.ras-slot--filled {
+  border-color: var(--dark);
+  background: var(--ras-filled);
+}
+
+.ras-op-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-3);
+  padding-top: var(--space-2);
+}
+
+.ras-op code {
+  color: var(--dark);
+  font-family: var(--codeFont);
+  font-size: 0.74rem;
+}
+
+.ras-caption {
+  @include figure-caption;
+}
+
+.ras-math {
+  @include figure-inline-math;
+}
+
+@media (max-width: 640px) {
+  article.notebook-page .register-as-stack--float-end {
+    float: none;
+    width: 100%;
+    margin: 0 0 1rem;
+  }
+
+  .ras-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -21,9 +21,9 @@ pdfTitles:
   'nous.pdf': 'Engineering Economics: Exam Reference Notes'
   'sheets.pdf': 'Engineering Economics: Formula Sheets'
 university:
-  summary: "This course teaches how to use economic analysis to compare engineering decisions. It starts with net value functions and conversion factors, then moves to technical design, sensitivity analysis, and linear and nonlinear optimization. The folder has lecture slides, notes, formula sheets for the exam, and the simple and complex reports from a group design project on affordable housing."
+  summary: 'This course teaches how to use economic analysis to compare engineering decisions. It starts with net value functions and conversion factors, then moves to technical design, sensitivity analysis, and linear and nonlinear optimization. The folder has lecture slides, notes, formula sheets for the exam, and the simple and complex reports from a group design project on affordable housing.'
   inferred: true
-  instructors: ["Matt Minnick"]
+  instructors: ['Matt Minnick']
 ---
 
 Dr. [Matt Minnick](mailto:prof3px3@mcmaster.ca)

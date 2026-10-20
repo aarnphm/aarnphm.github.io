@@ -81,7 +81,7 @@ See the [Berkeley transaction notes](https://cs186berkeley.net/notes/note11/) fo
 <Zoomable label="schedule classifier">
   <ScheduleClassifier
     preset="serialisable"
-    caption="Venn diagram for schedule, redrawn from the slide: recoverable contains ACA, which contains strict, which contains serial, and the conflict-serialisable band crosses all four. Pick a schedule. The timeline lists each operation in its transaction's column, the precedence graph draws one edge per conflicting order, and the salmon region is where the classifier places the schedule. Sage cells mark the operations that keep the schedule out of the next inner class. Three schedules come from the slide tables and one from the lost-update example below; the others fill the remaining regions. The slide tables omit commits, so commits are added. The graph includes aborted transactions."
+    caption="Schedule-classification regions redrawn from the slides. Commits are added where omitted; aborted transactions remain in the precedence graph."
   />
 </Zoomable>
 ```
@@ -101,7 +101,7 @@ A serial schedule runs each transaction to completion before starting the next. 
   <ScheduleClassifier
     preset="serial"
     view="single"
-    caption="The serial slide table: $T_1$ runs to completion, then $T_2$. The slide writes updates as assignments ($A := A + 100$, $A := A \cdot 2$); here they are the writes $W_i$, and each transaction commits as it finishes. The salmon region is serial."
+    caption="Slide serial schedule: $T_1$ completes before $T_2$; updates are shown as writes and each transaction commits at completion."
   />
 </Zoomable>
 ```
@@ -117,7 +117,7 @@ A serial schedule runs each transaction to completion before starting the next. 
   <ScheduleClassifier
     preset="serialisable"
     view="single"
-    caption="An interleaved schedule with the same read/write order on each item as $T_1$ followed by $T_2$, from the serialisable slide table with commits added at the end. Both conflict edges point from $T_1$ to $T_2$. The sage cells mark the dirty read $R_2(A)$ of $W_1(A)$, so the salmon region is recoverable but not ACA."
+    caption="Slide schedule with commits added: both conflict edges point $T_1\to T_2$; $R_2(A)$ reads uncommitted $W_1(A)$, so it is recoverable but not ACA."
   />
 </Zoomable>
 ```
@@ -158,7 +158,7 @@ Conflict serialisability implies serialisability. Its graph test can reject some
   <ScheduleClassifier
     preset="unrecoverable"
     view="single"
-    caption="$T_2$ commits after reading $T_1$'s uncommitted write; $T_1$ then aborts. From the abort slide table. The sage cells mark $W_1(A)$, $R_2(A)$, $C_2$ and $A_1$. The precedence graph is acyclic, so the salmon region is conflict serialisable but outside recoverable."
+    caption="Abort-slide schedule: $T_2$ commits after reading $T_1$'s uncommitted write, then $T_1$ aborts. Its precedence graph is acyclic, but the schedule is unrecoverable."
   />
 </Zoomable>
 ```
