@@ -1,3 +1,5 @@
+import { effortCues, effortCueSegments } from './effort-cues'
+
 export type SwimEffort = 'easy' | 'technique' | 'steady' | 'build' | 'hard'
 
 export interface SwimPart {
@@ -63,6 +65,8 @@ const ROUND_REST = new RegExp(
   'i',
 )
 const NESTED = /^(\d+)\s*[x×]\s*\((.+)\)$/i
+// "2(2 x 50) superman" repeats the bracketed set; the text after it describes the reps.
+const NESTED_BARE = /^(\d+)\s*\((\d+\s*[x×]\s*[^()]+)\)\s*(.*)$/i
 const ALTERNATION = new RegExp(
   String.raw`^(\d+)\s+([a-z]+)(?:\s*\((\d+)\s*${TIME_UNIT}\))?\s*,\s*(\d+)\s+([a-z]+)(?:\s*\((\d+)\s*${TIME_UNIT}\))?\s*,?\s*repeat\.?$`,
   'i',
@@ -83,8 +87,58 @@ const REST_TEXT: [RegExp, boolean][] = [
 const seconds = (value: number, unit: string | undefined): number =>
   unit && /^min/i.test(unit) ? value * 60 : value
 
+// An RPE out of 10 ("7/10", "RPE 8") names the effort before any keyword; the hardest one wins.
+const rpeEffort = (text: string): SwimEffort | null => {
+  const values = effortCues(text).flatMap(cue =>
+    /\/\s*10\b|^RPE/i.test(cue)
+      ? (cue.replace(/\/\s*10\b.*$/, '').match(/\d+(?:\.\d)?/g) ?? []).map(Number)
+      : [],
+  )
+  const rpe = Math.max(...values)
+  if (!(rpe > 0 && rpe <= 10)) return null
+  return rpe >= 8 ? 'hard' : rpe >= 5 ? 'steady' : 'easy'
+}
+
 const effortOf = (text: string): SwimEffort | null =>
-  EFFORTS.find(([, pattern]) => pattern.test(text))?.[0] ?? null
+  rpeEffort(text) ?? EFFORTS.find(([, pattern]) => pattern.test(text))?.[0] ?? null
+
+// "/" separates the parts of a split rep, except inside an effort cue such as "7/10".
+const splitPieces = (text: string): string[] => {
+  const pieces = ['']
+  for (const segment of effortCueSegments(text)) {
+    if (segment.cue) {
+      pieces[pieces.length - 1] += segment.text
+      continue
+    }
+    const [first, ...rest] = segment.text.split('/')
+    pieces[pieces.length - 1] += first
+    pieces.push(...rest)
+  }
+  return pieces.map(piece => piece.trim())
+}
+
+// A parenthesis may wrap onto the next lines; they join unless a blank line comes first.
+const depth = (line: string): number =>
+  (line.match(/\(/g)?.length ?? 0) - (line.match(/\)/g)?.length ?? 0)
+
+const joinWrapped = (lines: string[]): string[] => {
+  const joined: string[] = []
+  for (let index = 0; index < lines.length; index++) {
+    let line = lines[index]
+    let open = depth(line)
+    let end = index
+    while (open > 0 && lines[end + 1]?.trim()) {
+      end++
+      line += ` ${lines[end]}`
+      open += depth(lines[end])
+    }
+    if (open <= 0 && end > index) {
+      joined.push(line)
+      index = end
+    } else joined.push(lines[index])
+  }
+  return joined
+}
 
 const clean = (text: string): string =>
   text
@@ -93,10 +147,9 @@ const clean = (text: string): string =>
     .trim()
 
 // A pool distance needs a unit unless it is a whole number of 25 m lengths.
-const quantity = (
-  value: string,
-  unit: string | undefined,
-): Pick<SwimPart, 'meters' | 'seconds'> | null => {
+type Quantity = Pick<SwimPart, 'meters' | 'seconds'>
+
+const quantity = (value: string, unit: string | undefined): Quantity | null => {
   const amount = Number(value)
   if (!(amount > 0)) return null
   if (unit && !/^m$/i.test(unit)) return { meters: null, seconds: seconds(amount, unit) }
@@ -114,6 +167,32 @@ const extractRest = (text: string): { rest: SwimRest | null; text: string } => {
       }
   }
   return { rest: null, text }
+}
+
+// The parts of a split rep ("25m drill/25m swim"). With `remainder`, a first part without a
+// distance ("catch drill / 25 swim") takes the lengths left in the rep. A timed rep keeps its
+// time: "2min hard/30sec float" is a hard piece and then a float.
+const splitParts = (
+  text: string,
+  main: Quantity,
+  unit: string | undefined,
+  remainder: boolean,
+): SwimPart[] | null => {
+  const pieces = splitPieces(text)
+  if (pieces.length < 2) return null
+  const parsed = pieces.map(piece => {
+    const match = PIECE.exec(piece)
+    const part = match && quantity(match[1], match[2] ?? unit)
+    return part && match ? { ...part, effort: effortOf(match[3]) } : null
+  })
+  const split = parsed.slice(1)
+  if (!split.every(part => part !== null)) return null
+  const [head] = parsed
+  if (head) return [head, ...split]
+  if (!remainder) return null
+  const rest = (main.meters ?? 0) - split.reduce((sum, part) => sum + (part.meters ?? 0), 0)
+  const lengths = split.every(part => part.meters !== null) && rest > 0
+  return [{ ...main, ...(lengths && { meters: rest }), effort: effortOf(pieces[0]) }, ...split]
 }
 
 const amountLabel = (amount: string, unit: string | undefined): string =>
@@ -139,20 +218,9 @@ const parseStep = (line: string): SwimStep | null => {
       return ' '
     }),
   ).replace(/^as\b\s*/i, '')
-  const pieces = descriptor.split('/').map(piece => piece.trim())
-  const split = pieces.slice(1).map(piece => PIECE.exec(piece))
-  let parts: SwimPart[]
-  if (pieces.length > 1 && split.every(Boolean)) {
-    const first = PIECE.exec(pieces[0])
-    const head = first && quantity(first[1], first[2] ?? unit)
-    parts = [
-      { ...(head ?? main), effort: effortOf(head && first ? first[3] : pieces[0]) },
-      ...split.flatMap(piece => {
-        const part = piece && quantity(piece[1], piece[2] ?? unit)
-        return piece && part ? [{ ...part, effort: effortOf(piece[3]) }] : []
-      }),
-    ]
-  } else parts = [{ ...main, effort: effortOf(descriptor) }]
+  const parts = splitParts(descriptor, main, unit, true) ?? [
+    { ...main, effort: effortOf(descriptor) },
+  ]
   if (descriptor) notes.unshift(descriptor)
   return { label: repLabel(ladder ?? reps, amountLabel(amount, unit)), reps, parts, rest, notes }
 }
@@ -207,7 +275,7 @@ export function parseSwimDescription(description: string): SwimStructure | null 
     const block = blocks.at(-1)
     return block?.kind === 'set' ? block.steps.at(-1) : undefined
   }
-  for (const raw of description.split(/\r?\n/)) {
+  for (const raw of joinWrapped(description.split(/\r?\n/))) {
     const line = clean(raw.replace(/https?:\/\/\S+/g, ''))
     if (!line) continue
     const roundRest = ROUND_REST.exec(line)
@@ -236,6 +304,12 @@ export function parseSwimDescription(description: string): SwimStructure | null 
       blocks.push({ kind: 'set', repeat: Number(nested[1]), steps: [inner], rest: null })
       continue
     }
+    const bare = NESTED_BARE.exec(line)
+    const bareInner = bare && parseStep(`${bare[2]} ${bare[3]}`)
+    if (bare && bareInner && Number(bare[1]) > 0) {
+      blocks.push({ kind: 'set', repeat: Number(bare[1]), steps: [bareInner], rest: null })
+      continue
+    }
     const step = parseStep(line)
     if (step) {
       blocks.push({ kind: 'set', repeat: 1, steps: [step], rest: null })
@@ -251,8 +325,17 @@ export function parseSwimDescription(description: string): SwimStructure | null 
     if (!target) continue
     const { rest, text } = extractRest(line)
     if (rest && !target.rest) target.rest = rest
-    const note = clean(text.replace(/^\((.*)\)$/, '$1'))
-    if (note) target.notes.push(note)
+    const note = clean(clean(text).replace(/^\((.*)\)$/, '$1'))
+    if (!note) continue
+    target.notes.push(note)
+    // "4 x 50" then "as (25 drill/25 swim)" splits the reps when the parts add up to one rep.
+    const [only] = target.parts
+    const split =
+      target.parts.length === 1 && only.effort === null && only.meters !== null
+        ? splitParts(note, only, undefined, false)
+        : null
+    if (split && split.reduce((sum, part) => sum + (part.meters ?? 0), 0) === only.meters)
+      target.parts = split
   }
 
   const parts = blocks.flatMap(block =>

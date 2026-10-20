@@ -1,6 +1,8 @@
-export type WorkoutAnalysisView = 'workout' | 'laps' | 'pace' | 'power' | 'heart-rate'
+export type WorkoutAnalysisView = 'planned' | 'workout' | 'laps' | 'pace' | 'power' | 'heart-rate'
 
+// The planned tab leads the row: the plan reads before the recorded workout.
 const WORKOUT_ANALYSIS_VIEWS: readonly WorkoutAnalysisView[] = [
+  'planned',
   'workout',
   'laps',
   'pace',
@@ -31,7 +33,7 @@ export const workoutAnalysisViewFromKey = (
   return views[next] ?? null
 }
 
-const selectWorkoutAnalysisView = (
+export const selectWorkoutAnalysisView = (
   analysis: HTMLElement,
   selected: WorkoutAnalysisView,
   focus: boolean,
