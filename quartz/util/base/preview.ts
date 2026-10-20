@@ -131,13 +131,14 @@ export function buildBasePreview(
   )
   const description = descriptionText ? previewLabel(descriptionText, 160) : null
 
+  // Cover images identify a base at a glance, so a card view wins over an earlier table or list;
+  // bookcase, vault and map views never sample because they need their runtime.
   let sample: BasePreview['sample'] = null
   for (const rendered of views) {
     const found = sampleView(rendered)
-    if (found) {
-      sample = { ...found, view: rendered.view.name }
-      break
-    }
+    if (!found || (sample && found.type !== 'cards')) continue
+    sample = { ...found, view: rendered.view.name }
+    if (found.type === 'cards') break
   }
 
   return {

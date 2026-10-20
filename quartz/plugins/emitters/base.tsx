@@ -133,7 +133,10 @@ async function emitBaseViewsForPlan(
     baseSemanticManifest(ctx, baseSlug),
     emitBookcaseCovers(ctx, plan.rendered.views),
   ])
-  const [views, preview, embeddingText] = await Promise.all([
+  // Every view route shares the base summary, so a link to any view previews the same cards.
+  const preview = buildBasePreview(baseSlug, plan.baseData, plan.rendered.views)
+  const previewSlugs = new Set([baseSlug, ...plan.rendered.views.map(view => view.slug)])
+  const [views, previews, embeddingText] = await Promise.all([
     mapConcurrent(plan.rendered.views, defaultIoConcurrency, renderedView =>
       emitBaseView(
         ctx,
@@ -147,15 +150,19 @@ async function emitBaseViewsForPlan(
         queryDocument,
       ),
     ),
-    write({
-      ctx,
-      content: JSON.stringify(buildBasePreview(baseSlug, plan.baseData, plan.rendered.views)),
-      slug: documentPreviewSlug(baseSlug),
-      ext: '.json',
-    }),
+    Promise.all(
+      [...previewSlugs].map(slug =>
+        write({
+          ctx,
+          content: JSON.stringify({ ...preview, slug }),
+          slug: documentPreviewSlug(slug),
+          ext: '.json',
+        }),
+      ),
+    ),
     emitBaseEmbeddingText(ctx, baseSlug, plan.memberSlugs, allFiles),
   ])
-  return [...views, preview, embeddingText, ...covers]
+  return [...views, ...previews, embeddingText, ...covers]
 }
 
 export const BasePage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => {
