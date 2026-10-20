@@ -239,7 +239,6 @@ async function readNotebookPageBlob(
     if (!(await ensureExtractedNotebookAssets(ctx, extractedAssets))) {
       return undefined
     }
-    delete blob.data.syntaxHighlightingCache
     delete blob.data.htmlAst
     entry.data ??= compactNotebookPluginData(blob.data)
     const file = new VFile({ path: src, value: '' })
@@ -257,7 +256,6 @@ async function writeNotebookPageBlob(
   extractedAssets: ExtractedAsset[],
 ): Promise<void> {
   const [tree, file] = page.content
-  delete file.data.syntaxHighlightingCache
   delete file.data.htmlAst
   const name = createHash('sha256').update(page.fp).digest('hex').slice(0, 24)
   const blob = joinSegments(notebookPageBlobDir, `${name}.bin`) as FilePath
@@ -287,8 +285,6 @@ async function writeNotebookPageBlob(
 }
 
 const notebookCacheSourcePaths: FilePath[] = [
-  'quartz/plugins/emitters/notebook.ts' as FilePath,
-  'quartz/processors/parse.ts' as FilePath,
   'quartz/util/notebook/cell-html.ts' as FilePath,
   'quartz/util/notebook/extract-assets.ts' as FilePath,
   'quartz/util/notebook/markdown.ts' as FilePath,
@@ -550,6 +546,10 @@ function notebookPageCacheKey(
   ].join('\u0001')
 }
 
+function notebookCacheKeyMatches(cachedKey: string | undefined, expectedKey: string): boolean {
+  return cachedKey === expectedKey || Boolean(cachedKey?.endsWith(`|${expectedKey}`))
+}
+
 async function notebookProcessedContent(
   ctx: BuildCtx,
   fp: FilePath,
@@ -567,8 +567,9 @@ async function notebookProcessedContent(
     : undefined
   if (cacheKey && cacheOptions.read) {
     const cached = cacheOptions.entries.get(fp)
-    const page =
-      cached?.key === cacheKey ? await readNotebookPageBlob(ctx, cached, fp, src, slug) : undefined
+    const page = notebookCacheKeyMatches(cached?.key, cacheKey)
+      ? await readNotebookPageBlob(ctx, cached!, fp, src, slug)
+      : undefined
     if (page) return { page, cacheHit: true }
   }
 
@@ -780,7 +781,7 @@ async function* emitNotebookPages(
 
         if (cacheKey && cacheOptions.read) {
           const cached = cacheOptions.entries.get(fp)
-          if (cached?.key === cacheKey) {
+          if (cached && notebookCacheKeyMatches(cached.key, cacheKey)) {
             if (
               cached.data &&
               (await ensureExtractedNotebookAssets(localCtx, cached.extractedAssets))

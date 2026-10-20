@@ -4,6 +4,7 @@ import type { BuildCtx } from '../../../util/ctx'
 import { getMdxComponents } from '../../../components/mdx/registry'
 import audioStyle from '../../../components/styles/audio.scss'
 import clipboardStyle from '../../../components/styles/clipboard.scss'
+import performanceStyle from '../../../components/styles/performance-debug.scss'
 import petStyle from '../../../components/styles/pet.scss'
 import '../../../components/mdx'
 import popoverStyle from '../../../components/styles/popover.scss'
@@ -20,6 +21,7 @@ const collaborativeCommentsInlineEntry =
   'quartz/components/scripts/collaborative-comments.inline.ts'
 const markerInlineEntry = 'quartz/components/scripts/marker.inline.ts'
 const pageStylesInlineEntry = 'quartz/components/scripts/page-styles.inline.ts'
+const performanceDebugInlineEntry = 'quartz/components/scripts/performance-debug.inline.ts'
 const petInlineEntry = 'quartz/components/scripts/pet.inline.ts'
 const popoverInlineEntry = 'quartz/components/scripts/popover.inline.ts'
 const protectedInlineEntry = 'quartz/components/scripts/protected.inline.ts'
@@ -96,6 +98,7 @@ async function addGlobalPageResources(ctx: BuildCtx, componentResources: Compone
     collaborativeCommentsScript,
     markerScript,
     pageStylesScript,
+    performanceDebugScript,
     petScript,
     protectedScript,
     webMcpScript,
@@ -109,6 +112,7 @@ async function addGlobalPageResources(ctx: BuildCtx, componentResources: Compone
     bundleInlineScript(collaborativeCommentsInlineEntry),
     bundleInlineScript(markerInlineEntry),
     bundleInlineScript(pageStylesInlineEntry),
+    bundleInlineScript(performanceDebugInlineEntry),
     bundleInlineScript(petInlineEntry),
     bundleInlineScript(protectedInlineEntry),
     bundleInlineScript(webMcpInlineEntry),
@@ -122,7 +126,7 @@ async function addGlobalPageResources(ctx: BuildCtx, componentResources: Compone
   }
 
   componentResources.beforeDOMLoaded.push(markerScript)
-  componentResources.css.push(clipboardStyle, pseudoStyle, audioStyle, petStyle)
+  componentResources.css.push(clipboardStyle, pseudoStyle, audioStyle, petStyle, performanceStyle)
   componentResources.afterDOMLoaded.push(
     pageStylesScript,
     clipboardScript,
@@ -131,6 +135,7 @@ async function addGlobalPageResources(ctx: BuildCtx, componentResources: Compone
     audioScript,
     baseMapScript,
     collaborativeCommentsScript,
+    performanceDebugScript,
     petScript,
     webMcpScript,
   )

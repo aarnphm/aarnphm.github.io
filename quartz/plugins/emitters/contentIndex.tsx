@@ -562,16 +562,17 @@ function limitedFeedEntries(
   limit?: number,
 ): Array<[FullSlug, ContentDetails]> {
   const filteredEntries = Array.from(idx)
-    .sort(([, f1], [, f2]) => {
+    .sort(([slug1, f1], [slug2, f2]) => {
       if (f1.date && f2.date) {
-        return f2.date.getTime() - f1.date.getTime()
+        const dateComparison = f2.date.getTime() - f1.date.getTime()
+        if (dateComparison) return dateComparison
       } else if (f1.date && !f2.date) {
         return -1
       } else if (!f1.date && f2.date) {
         return 1
       }
 
-      return f1.title.localeCompare(f2.title)
+      return f1.title.localeCompare(f2.title) || (slug1 < slug2 ? -1 : slug1 > slug2 ? 1 : 0)
     })
     .filter(([slug, content]) => shouldIncludeInFeed(slug, content))
 
@@ -1588,13 +1589,11 @@ import { onModuleRelease } from '../../util/module-caches'
 
 export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = userOpts => {
   const opts: Options = { ...defaultOptions, ...userOpts }
-  const folderFeedSlugs = new Set<string>()
   let cachedLinkIndex: ContentIndexMap | undefined
   let cachedContentIndexJson: SerializedIndexCache | undefined
   let cachedRootAtomFeed: AtomFeedCache | undefined
   let cachedSearchIndexJson: SerializedIndexCache | undefined
   onModuleRelease(() => {
-    folderFeedSlugs.clear()
     cachedLinkIndex = undefined
     cachedContentIndexJson = undefined
     cachedRootAtomFeed = undefined
@@ -1630,7 +1629,6 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = userOpts => {
         cachedRootAtomFeed = rootFeedWrite.cache
         yield rootFeedWrite.file
         const folderFeedMap = buildFolderFeedMap(linkIndex)
-        folderFeedSlugs.clear()
         const sortedFolderFeeds = Array.from(folderFeedMap.entries()).sort(([a], [b]) =>
           a.localeCompare(b),
         )
@@ -1647,17 +1645,13 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = userOpts => {
               folderIndex,
               opts,
             )
-            return file ? { folderSlug, file } : undefined
+            return file
           },
         )
 
-        for (const write of folderFeedWrites) {
-          if (!write) continue
-          folderFeedSlugs.add(write.folderSlug.replace(/^\/+/, ''))
-          yield write.file
+        for (const file of folderFeedWrites) {
+          if (file) yield file
         }
-      } else {
-        folderFeedSlugs.clear()
       }
 
       addGraphFilePages(ctx, linkIndex)
@@ -1844,13 +1838,6 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = userOpts => {
           yield rootFeedWrite.file
           if (plan.affectedFolders.size > 0) {
             const folderFeedMap = buildFolderFeedMap(linkIndex)
-            folderFeedSlugs.clear()
-
-            for (const [folderSlug, folderIndex] of folderFeedMap) {
-              if (hasFeedEntries(folderIndex)) {
-                folderFeedSlugs.add(folderSlug.replace(/^\/+/, ''))
-              }
-            }
 
             const affectedFeeds = Array.from(plan.affectedFolders).sort((a, b) =>
               a.localeCompare(b),
@@ -1964,7 +1951,8 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = userOpts => {
         }
       }
     },
-    externalResources: ({ argv, cfg }) => {
+    externalResources: (ctx, content = []) => {
+      const { argv, cfg } = ctx
       const additionalHead: StaticResources['additionalHead'] = [
         <link
           rel="stylesheet"
@@ -1976,6 +1964,14 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = userOpts => {
       ]
 
       if (opts.enableAtom && !argv.watch) {
+        // Capture feed eligibility before concurrent emitters render page heads.
+        const folderFeedSlugs = new Set(
+          Array.from(
+            buildFolderFeedMap(buildLinkIndex(ctx, content, { ...opts, enableAtom: false })),
+          )
+            .filter(([, folderIndex]) => hasFeedEntries(folderIndex))
+            .map(([folderSlug]) => folderSlug),
+        )
         additionalHead.push(
           <link
             rel="alternate"

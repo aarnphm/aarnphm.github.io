@@ -76,6 +76,7 @@ export const componentScriptAssetReplacements: ScriptAssetReplacement[] = [
 ]
 
 const inlineScriptNamespace = 'inline-script'
+const inlineScriptEntrySpecifier = `${inlineScriptNamespace}:entry`
 const inlineScriptSpecifier = (index: number) => `${inlineScriptNamespace}:${index}`
 
 // Inline scripts keep npm imports bare (inline-script-bundler.ts), so every script file is bundled
@@ -84,12 +85,15 @@ function inlineScriptModules(scripts: readonly string[]): Plugin {
   return {
     name: 'inline-script-modules',
     setup(build) {
-      build.onResolve({ filter: /^inline-script:\d+$/ }, args => ({
+      build.onResolve({ filter: /^inline-script:(?:entry|\d+)$/ }, args => ({
         path: args.path,
         namespace: inlineScriptNamespace,
       }))
       build.onLoad({ filter: /.*/, namespace: inlineScriptNamespace }, args => ({
-        contents: scripts[Number(args.path.slice(inlineScriptNamespace.length + 1))],
+        contents:
+          args.path === inlineScriptEntrySpecifier
+            ? scripts.map((_, index) => `import "${inlineScriptSpecifier(index)}"`).join('\n')
+            : scripts[Number(args.path.slice(inlineScriptNamespace.length + 1))],
         loader: 'js',
         resolveDir: path.resolve('.'),
       }))
@@ -172,12 +176,10 @@ async function writeAfterDomLoadedScripts(
   // A repeated script used to hash to the same file, so only its first import evaluated it.
   const sources = [...new Set(scripts)]
   const outdir = path.join(ctx.argv.output, staticScriptsDir)
-  // One build for every chunk: packages imported by several scripts move into shared
-  // `chunks/` files instead of being copied into each script.
+  // Bundle all page scripts into one entry module so HTTP/1.1 does not queue 70+ module requests
+  // behind 6 sockets while lazy `import()` chunks still split into `chunks/`.
   const result = await bundle({
-    entryPoints: Object.fromEntries(
-      sources.map((_, index) => [`script-${index}`, inlineScriptSpecifier(index)]),
-    ),
+    entryPoints: { script: inlineScriptEntrySpecifier },
     bundle: true,
     minify: true,
     platform: 'browser',
@@ -186,66 +188,28 @@ async function writeAfterDomLoadedScripts(
     outdir,
     entryNames: '[name]',
     chunkNames: 'chunks/[name]-[hash]',
-    metafile: true,
     write: false,
     plugins: [inlineScriptModules(sources)],
   })
 
-  const outputs = new Map(result.outputFiles.map(output => [output.path, output]))
-  const entryOutputs = sources.map((_, index) => {
-    const output = outputs.get(path.resolve(outdir, `script-${index}.js`))
-    if (!output) throw new Error(`esbuild emitted no output for page script ${index}`)
-    return output
-  })
-  const entryPaths = new Set(entryOutputs.map(output => output.path))
-  const [entries, chunkFiles] = await Promise.all([
-    Promise.all(
-      entryOutputs.map(async ({ text: content }) => {
-        const slug = contentHashSlug('static/scripts/script', content)
-        return {
-          filename: assetPath(slug, '.js'),
-          file: await write({ ctx, slug, ext: '.js', content }),
-        }
-      }),
-    ),
+  const entryOutput = result.outputFiles.find(
+    output => output.path === path.resolve(outdir, 'script.js'),
+  )
+  if (!entryOutput) throw new Error('esbuild emitted no output for combined page script')
+
+  const slug = contentHashSlug('static/scripts/script', entryOutput.text)
+  const filename = assetPath(slug, '.js')
+  const [entryFile, chunkFiles] = await Promise.all([
+    write({ ctx, slug, ext: '.js', content: entryOutput.text }),
     Promise.all(
       result.outputFiles
-        .filter(output => !entryPaths.has(output.path))
+        .filter(output => output.path !== entryOutput.path)
         .map(output => writeAssetBundleOutput(ctx, output)),
     ),
   ])
 
-  // Shared chunks reached through static imports load on every page; lazy `import()` chunks stay
-  // off the preload list.
-  const sharedChunks = new Set<string>()
-  const pending = entryOutputs.map(output => path.relative(path.resolve('.'), output.path))
-  while (pending.length > 0) {
-    for (const imported of result.metafile.outputs[pending.pop()!]?.imports ?? []) {
-      if (imported.kind !== 'import-statement' || sharedChunks.has(imported.path)) continue
-      sharedChunks.add(imported.path)
-      pending.push(imported.path)
-    }
-  }
-  const preloads = [...sharedChunks].map(chunk =>
-    path.relative(ctx.argv.output, chunk).split(path.sep).join('/'),
-  )
-
-  // modulepreload fetches every chunk and its shared imports in parallel without evaluating them.
-  // The awaited imports then evaluate chunks in source order, so spa.inline.ts (last) fires the
-  // initial `nav` after every other chunk has attached its listeners; `Promise.all` over `import()`
-  // evaluates in arrival order.
-  const chunks = JSON.stringify(entries.map(({ filename }) => `./${filename}`))
-  const shared = JSON.stringify(preloads.map(chunk => `./${chunk}`))
-  const postscript = `const chunks = ${chunks};
-for (const src of [...${shared}, ...chunks]) {
-  const link = document.createElement("link");
-  link.rel = "modulepreload";
-  link.href = new URL(src, import.meta.url).href;
-  document.head.append(link);
-}
-for (const src of chunks) await import(src);
-`
-  return { postscript, files: [...entries.map(({ file }) => file), ...chunkFiles] }
+  const postscript = `await import("./${filename}");\n`
+  return { postscript, files: [entryFile, ...chunkFiles] }
 }
 
 export async function writePageScripts(
