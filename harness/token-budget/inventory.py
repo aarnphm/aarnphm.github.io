@@ -3,15 +3,17 @@
 # requires-python = ">=3.12"
 # dependencies = ["ast-grep-py>=0.40"]
 # ///
-"""Stage 0: turn a check-token-budget --json report into the graph boundary proposals need.
+"""Stage 0: turn a check.py --json report into the graph boundary proposals need.
 
-  harness/token-budget/inventory.py <inventory.json> [--paths <p...>] [--out graph.json]
-    [--briefs <dir>]
+  harness/token-budget/inventory.py <inventory.json> [--paths <p...> | --top N]
+    [--out graph.json] [--briefs <dir>]
 
+--top picks the N code and style files with the most tokens x commits in the last CHURN_DAYS.
 Block IDs are stable for one blob ID; proposals refer to them (docs/plans/token-budget-refactor.md).
 """
 
 import argparse
+import collections
 import datetime
 import json
 import os
@@ -39,11 +41,30 @@ SCRIPT_EXT = re.compile(r'\.(?:[cm]?[jt]sx?)$')
 STYLE_EXT = re.compile(r'\.(?:s?css|sass)$')
 
 
-def churn(path: str) -> int:
-  since = (
+def since() -> str:
+  return (
     datetime.date.today() - datetime.timedelta(days=CHURN_DAYS)
   ).isoformat()
-  return len(git('log', f'--since={since}', '--format=%h', '--', path).split())
+
+
+def churn(path: str) -> int:
+  return len(
+    git('log', f'--since={since()}', '--format=%h', '--', path).split()
+  )
+
+
+def top(files: list[dict], n: int) -> set[str]:
+  """The n refactor targets with the most tokens x churn (one git log pass)."""
+  log = git('log', f'--since={since()}', '--name-only', '--format=')
+  counts = collections.Counter(line for line in log.splitlines() if line)
+  ok = [
+    f
+    for f in files
+    if f['kind'] in ('code', 'style')
+    and (SCRIPT_EXT.search(f['path']) or STYLE_EXT.search(f['path']))
+  ]
+  ok.sort(key=lambda f: -f['tokens'] * counts[f['path']])
+  return {f['path'] for f in ok[:n]}
 
 
 def search_roots(path: str) -> list[str]:
@@ -216,13 +237,24 @@ def main() -> int:
     description=__doc__, formatter_class=argparse.RawTextHelpFormatter
   )
   ap.add_argument('inventory')
-  ap.add_argument('--paths', nargs='+')
+  pick = ap.add_mutually_exclusive_group()
+  pick.add_argument('--paths', nargs='+')
+  pick.add_argument('--top', type=int)
   ap.add_argument('--out')
   ap.add_argument('--briefs')
   args = ap.parse_args()
   report = json.loads(Path(args.inventory).read_text())
   check_report(report)
-  only = set(args.paths) if args.paths else None
+  only = (
+    set(args.paths)
+    if args.paths
+    else top(report['files'], args.top)
+    if args.top
+    else None
+  )
+  missing = only - {f['path'] for f in report['files']} if only else set()
+  for p in sorted(missing):
+    print(f'{p}: not in the report (under budget or exempt)', file=sys.stderr)
   graphs = [
     analyse(f, git('cat-file', 'blob', f['blob']))
     for f in report['files']

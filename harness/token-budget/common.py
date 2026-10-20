@@ -1,7 +1,8 @@
 """Shared constants and helpers for the token budget harness.
 
-LIMIT, TARGET and BYTES_PER_TOKEN mirror quartz/scripts/check-token-budget.mjs; the harness reads
-the hook's --json report, which carries them, and checks that they agree.
+check.py (the pre-commit hook) and the refactor stages share LIMIT, TARGET and BYTES_PER_TOKEN.
+A saved check.py --json report carries the values it was made with; check_report refuses a stale
+one.
 """
 
 import math
