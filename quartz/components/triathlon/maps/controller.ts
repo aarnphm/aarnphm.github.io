@@ -1146,5 +1146,14 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
     detailTransition.cancel()
     detailCleanup?.()
     detailCleanup = null
+    loadedDetails.clear()
+    pendingActivityDetails.clear()
+    shardCache.clear()
+    resolvedShardCache.clear()
+    detailIndexState = null
+    detailIndexPromise = null
+    mapData = null
+    detailData = null
+    data = null
   }
 }
