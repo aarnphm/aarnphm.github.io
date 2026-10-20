@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-10-19 21:02:11 GMT-04:00
+modified: 2026-10-20 11:58:29 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -82,6 +82,16 @@ title: are.na
 
 ## discourse
 
+- https://www.lesswrong.com/posts/zxXPEtSSSEdwpjopb/we-ve-saved-the-world-before-what-the-ozone-hole-teaches-us -- We've saved the world before: what the ozone hole teaches us about AI
+  - [meta]:
+    - date: 10/20/2026
+    - tags: [ai governance, coordination]
+    - later: true
+- https://www.lesswrong.com/posts/ceEgAEXcL7cC2Ddiy/anthropic-s-hot-mess-paper-overstates-its-case-and-the-blog?commentId=tSPv5SEFPD5cNGbkz -- Kaarel on relative and absolute coherence
+  - [meta]:
+    - date: 10/20/2026
+    - tags: [ai risk, coherence]
+    - later: true
 - https://discourse.haskell.org/t/how-to-keep-enjoying-programming-in-a-world-of-llms/14705 -- How to keep enjoying programming in a world of LLMs
   - [meta]:
     - date: 10/11/2026
@@ -5339,6 +5349,16 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://xianyangcb.substack.com/p/the-mirror-of-erised -- The Mirror of Erised
+  - [meta]:
+    - date: 10/20/2026
+    - tags: [ai art, cultural production]
+    - later: true
+- https://alexanderao.substack.com/p/cities-wont-save-you-from-isolation -- Cities won't save you from isolation
+  - [meta]:
+    - date: 10/20/2026
+    - tags: [urbanism, community]
+    - later: true
 - https://asteriskmag.com/issues/15/after-work-we-ll-have-each-other -- After Work, We'll Have Each Other
   - [meta]:
     - date: 10/11/2026
@@ -9123,6 +9143,16 @@ title: are.na
   - view: list
   - json: true
 
+- https://www.lesswrong.com/posts/6cb7qd3RSkgnviCpf/swarm-scaling -- Swarm Scaling
+  - [meta]:
+    - date: 10/20/2026
+    - tags: [agent swarms, scaling laws]
+    - later: true
+- https://www.lesswrong.com/posts/hfNBEKaStASAYMLiu/kimi-likes-causal-decision-theory-more-after-rl-in-twin-1 -- Kimi likes causal decision theory more after RL in twin prisoner's dilemmas
+  - [meta]:
+    - date: 10/20/2026
+    - tags: [reinforcement learning, decision theory]
+    - later: true
 - https://cursor.com/blog/improved-token-efficiency -- Improved token efficiency for longer agent runs
   - [meta]:
     - date: 10/11/2026
@@ -13363,6 +13393,21 @@ title: are.na
 
 ## life is literature
 
+- https://www.avabear.xyz/p/effort -- effort
+  - [meta]:
+    - date: 10/20/2026
+    - tags: [craft, effort]
+    - later: true
+- https://healthcaresimulationists.substack.com/p/reasons-the-sci-fi-epic-accelerando -- Reasons the Sci-Fi Epic 'Accelerando' Will Rewire Your Brain
+  - [meta]:
+    - date: 10/20/2026
+    - tags: [science fiction, accelerando]
+    - later: true
+- https://sincerelykun.substack.com/p/goodbye-to-all-that#:~:text=that%20sometimes%20one%E2%80%99s%20capacity%20to%20love%20somewhere%20is%20contingent%20upon%20the%20distance%20one%20maintains%20from%20it -- goodbye to all that.
+  - [meta]:
+    - date: 10/20/2026
+    - tags: [home, belonging]
+    - later: true
 - https://chrislakin.blog/p/locally-optimal?v=3 -- Why we create our suffering
   - [meta]:
     - date: 10/11/2026
@@ -19604,6 +19649,26 @@ title: are.na
 
 ## resources
 
+- https://github.com/vllm-project/vllm/blob/main/docs/community/sponsors.md -- vLLM Sponsors
+  - [meta]:
+    - date: 10/20/2026
+    - tags: [vllm, open source]
+    - later: true
+- https://github.com/vllm-project/vllm/pulls?q=is%3Apr+state%3Aopen+xpress -- Open xPress pull requests in vLLM
+  - [meta]:
+    - date: 10/20/2026
+    - tags: [vllm, speculative decoding]
+    - later: true
+- https://www.lesswrong.com/posts/Q4rcvgjbgjTwmn8Xa/research-lessons-i-learned-at-mats-and-redwood -- Research Lessons I Learned at MATS & Redwood
+  - [meta]:
+    - date: 10/20/2026
+    - tags: [research methods, ai safety]
+    - later: true
+- https://slatestarcodex.com/2014/09/05/mapmaker-mapmaker-make-me-a-map/ -- Mapmaker, Mapmaker, Make Me A Map
+  - [meta]:
+    - date: 10/20/2026
+    - tags: [rationality, community maps]
+    - later: true
 - https://fmhy.net/ai#ai-coding-tools -- FMHY: AI Coding Tools
   - [meta]:
     - date: 10/11/2026
@@ -21612,6 +21677,31 @@ title: are.na
   - view: list
   - json: true
 
+- https://github.com/tomjohndesign/what-the-port -- WhatThePort
+  - [meta]:
+    - date: 10/20/2026
+    - tags: [macos, developer tools]
+    - later: true
+- https://github.com/deepseek-ai/DeepGEMM-Ascend -- DeepGEMM-Ascend
+  - [meta]:
+    - date: 10/20/2026
+    - tags: [matrix multiplication, ascend]
+    - later: true
+- https://github.com/jakubkrehel/skills -- Jakub Krehel's interface design skills
+  - [meta]:
+    - date: 10/20/2026
+    - tags: [agent skills, interface design]
+    - later: true
+- https://github.com/Supercomputing-System-AI-Lab/xPress -- xPress: Parallel Refinement for Diffusion Drafters in Speculative Decoding
+  - [meta]:
+    - date: 10/20/2026
+    - tags: [speculative decoding, diffusion models]
+    - later: true
+- https://github.com/context-dot-dev/sgrep -- sgrep
+  - [meta]:
+    - date: 10/20/2026
+    - tags: [semantic search, developer tools]
+    - later: true
 - https://gist.github.com/VictorTaelin/91837951a5ce5b38f341ec1ba1df6449 -- OptChat: How to Replicate My Setup
   - [meta]:
     - date: 10/11/2026
@@ -23046,6 +23136,46 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://github.com/vllm-project/vllm/pull/57934 -- [SpecDecode] Add LiLiCorr drafter
+  - [meta]:
+    - date: 10/20/2026
+    - tags: [vllm, speculative decoding]
+    - later: true
+- https://github.com/vllm-project/vllm/pull/54448 -- [Core] Add XPress speculative decoding method
+  - [meta]:
+    - date: 10/20/2026
+    - tags: [vllm, speculative decoding]
+    - later: true
+- https://github.com/sgl-project/sglang/pull/37462 -- [Spec] Add LiLiCorr: a candidate-lattice reranker for DFlash drafts
+  - [meta]:
+    - date: 10/20/2026
+    - tags: [sglang, speculative decoding]
+    - later: true
+- https://github.com/vllm-project/vllm/pull/46995 -- [Spec Decode] DSpark
+  - [meta]:
+    - date: 10/20/2026
+    - tags: [vllm, speculative decoding]
+    - later: true
+- https://github.com/vllm-project/vllm/pull/52816 -- [Spec Decode] DFlash2: local convolution + candidate selector
+  - [meta]:
+    - date: 10/20/2026
+    - tags: [vllm, speculative decoding]
+    - later: true
+- https://github.com/vllm-project/vllm/issues/58638 -- [RFC]: KV cache grouping for hybrid models with speculative drafters
+  - [meta]:
+    - date: 10/20/2026
+    - tags: [kv cache, hybrid models]
+    - later: true
+- https://github.com/vllm-project/vllm/pull/58207 -- [Core] Pick hybrid KV cache group size by worst-case padding bytes; add --min-kv-cache-group-layers
+  - [meta]:
+    - date: 10/20/2026
+    - tags: [vllm, kv cache]
+    - later: true
+- https://github.com/jackyzha0/jackyzha0.github.io/commit/e89c53d882fbe04be6fad021f6a9c697ae2b967d#diff-6d590ff89a41b2247df2db03cb888df55cbf6a0c9753098dda05ced29510b103 -- notes on eg-walker
+  - [meta]:
+    - date: 10/20/2026
+    - tags: [crdt, collaborative editing]
+    - later: true
 - https://simonwillison.net/2026/Sep/12/astra-running-routes -- Generating running routes with GPT-6 Astra and ChatGPT Work
   - [meta]:
     - date: 10/11/2026
@@ -25503,6 +25633,71 @@ title: are.na
   - view: list
   - json: true
 
+- https://arxiv.org/abs/2107.07511 -- A Gentle Introduction to Conformal Prediction and Distribution-Free Uncertainty Quantification
+  - [meta]:
+    - date: 10/20/2026
+    - tags: [conformal prediction, uncertainty quantification]
+    - later: true
+- https://arxiv.org/abs/2608.11859 -- Small-Scale Experiments: Are We There Yet?
+  - [meta]:
+    - date: 10/20/2026
+    - tags: [scaling laws, hyperparameters]
+    - later: true
+- https://arxiv.org/abs/2404.00732 -- An Abundance of Katherines: The Game Theory of Baby Naming
+  - [meta]:
+    - date: 10/20/2026
+    - tags: [game theory, sigbovik]
+    - later: true
+- https://arxiv.org/abs/2608.02438 -- xPress: Parallel Refinement for Diffusion Drafters in Speculative Decoding
+  - [meta]:
+    - date: 10/20/2026
+    - tags: [speculative decoding, diffusion models]
+    - later: true
+- https://arxiv.org/abs/cs/0108005 -- A Bit of Progress in Language Modeling
+  - [meta]:
+    - date: 10/20/2026
+    - tags: [language modeling, smoothing]
+    - later: true
+- https://arxiv.org/abs/2409.14252 -- Collaborative Text Editing with Eg-walker: Better, Faster, Smaller
+  - [meta]:
+    - date: 10/20/2026
+    - tags: [collaborative editing, distributed systems]
+    - later: true
+- https://arxiv.org/abs/1711.10563 -- FearNet: Brain-Inspired Model for Incremental Learning
+  - [meta]:
+    - date: 10/20/2026
+    - tags: [continual learning, catastrophic forgetting]
+    - later: true
+- https://arxiv.org/abs/2105.09352 -- DeepDebug: Fixing Python Bugs Using Stack Traces, Backtranslation, and Code Skeletons
+  - [meta]:
+    - date: 10/20/2026
+    - tags: [program repair, debugging]
+    - later: true
+- https://arxiv.org/abs/2508.02935 -- Using Dynamical Systems Theory to Quantify Complexity in Asymptotic Lenia
+  - [meta]:
+    - date: 10/20/2026
+    - tags: [cellular automata, dynamical systems]
+    - later: true
+- https://arxiv.org/abs/2606.16475 -- AI systems out-persuade expert humans
+  - [meta]:
+    - date: 10/20/2026
+    - tags: [persuasion, language models]
+    - later: true
+- https://arxiv.org/abs/2608.20530 -- LiLiCorr: Lightweight Likelihood Correlation of Parallel Drafts for Speculative Decoding
+  - [meta]:
+    - date: 10/20/2026
+    - tags: [speculative decoding, draft correlation]
+    - later: true
+- https://arxiv.org/abs/2509.16293 -- Robust LLM Training Infrastructure at ByteDance
+  - [meta]:
+    - date: 10/20/2026
+    - tags: [distributed training, fault tolerance]
+    - later: true
+- https://arxiv.org/abs/2609.16589 -- Do LLMs Have Values? A Quantitative Analysis and Alignment Framework for Values in Large Language Models
+  - [meta]:
+    - date: 10/20/2026
+    - tags: [ai alignment, values]
+    - later: true
 - https://gwern.net/doc/ai/1956-ashby.pdf -- Design for an Intelligence-Amplifier
   - [meta]:
     - date: 10/11/2026
