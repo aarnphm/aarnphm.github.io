@@ -6,6 +6,7 @@ import {
 import { BuildCtx } from '../util/ctx'
 import { classNames } from '../util/lang'
 import { FullSlug, resolveRelative } from '../util/path'
+import { courseCode, termLabel } from '../util/university'
 import style from './styles/university.scss'
 
 const root = 'thoughts/university/'
@@ -19,16 +20,6 @@ interface Counts {
 }
 
 const emptyCounts = (): Counts => ({ notes: 0, pdfs: 0, notebooks: 0 })
-
-// `twenty-five-twenty-six` -> `2025–26`
-const numberWords: Record<string, number> = { three: 3, four: 4, five: 5, six: 6, seven: 7 }
-function termLabel(dir: string): string {
-  const [a, b] = dir.split('-twenty-').map(part => numberWords[part.replace(/^twenty-/, '')])
-  return a && b ? `20${20 + a}–${20 + b}` : dir
-}
-
-// `sfwr-4ml3` -> `SFWR 4ML3`
-const courseCode = (dir: string): string => dir.replace('-', ' ').toUpperCase()
 
 let counted: { allFiles: BuildCtx['allFiles']; byCourse: Map<string, Counts> } | undefined
 
