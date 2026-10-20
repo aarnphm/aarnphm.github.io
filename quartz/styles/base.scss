@@ -550,6 +550,17 @@ p {
 }
 
 .table-container {
+  // Anchor positioned math content here so the scroll container clips it.
+  position: relative;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: -2px;
+  }
+
   & > table {
     border-collapse: collapse;
 

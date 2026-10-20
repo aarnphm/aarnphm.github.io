@@ -26,6 +26,27 @@ test('highlight trims around the strongest matching window', () => {
   assert.equal(result.includes('<span class="highlight">target</span>70'), true)
 })
 
+test('highlight keeps the last equally strong excerpt window', () => {
+  const words = Array.from({ length: 100 }, (_, index) =>
+    index === 30 || index === 61 ? `target${index}` : `word${index}`,
+  )
+  const expected = words
+    .slice(31, 92)
+    .map(word => (word === 'target61' ? '<span class="highlight">target</span>61' : word))
+    .join(' ')
+  assert.equal(highlight('target', words.join(' '), true), `...${expected}...`)
+})
+
+test('highlight preserves unmatched excerpt selection and short documents', () => {
+  const words = Array.from({ length: 100 }, (_, index) => `word${index}`)
+  assert.equal(highlight('absent', words.join(' '), true), `...${words.slice(40).join(' ')}`)
+  assert.equal(
+    highlight('target', 'before TARGET after', true),
+    'before <span class="highlight">TARGET</span> after',
+  )
+  assert.equal(highlight('target', '', true), '')
+})
+
 test('encode separates CJK characters from word tokens', () => {
   assert.deepEqual(encode('Alpha 日本 beta'), ['alpha', '日', '本', 'beta'])
 })
