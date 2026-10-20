@@ -45,6 +45,7 @@ export declare global {
     addCleanup(fn: () => void)
     quartzNavLifecycle?: { listening: boolean; controller?: AbortController }
     quartzSiteSemantic?: Promise<import('./quartz/components/scripts/site-semantic').SiteSemantic>
+    quartzSemanticRuntime?: import('./quartz/components/scripts/semantic.inline').SemanticRuntime
     quartzEscapeHandlers?: import('./quartz/components/scripts/escape-handler').EscapeHandlerRegistry
     quartzRootLifecycles?: import('./quartz/components/scripts/root-lifecycle').RootLifecycleRegistry
     quartzSidePanelSessions?: WeakMap<HTMLElement, () => void>

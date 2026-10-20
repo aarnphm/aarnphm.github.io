@@ -1,203 +1,163 @@
 import type { SemanticQueryDType } from '../../util/semantic-search'
 
 export type SemanticResult = { id: number; score: number }
-
-type ProgressMessage = { type: 'progress'; loadedRows: number; totalRows: number }
-
-type ReadyMessage = { type: 'ready' }
-
-type ResultMessage = { type: 'search-result'; seq: number; semantic: SemanticResult[] }
-
-type LoadedMessage = { type: 'loaded'; seq: number; rows: number }
-
-type ErrorMessage = { type: 'error'; seq?: number; message: string }
-
 type SearchPayload = { semantic: SemanticResult[] }
-
-type PendingResolver = { resolve: (payload: SearchPayload) => void; reject: (err: Error) => void }
-
-type PendingLoad = { resolve: (rows: number) => void; reject: (err: Error) => void }
-
+type WorkerResponse =
+  | { type: 'progress'; loadedRows: number; totalRows: number }
+  | { type: 'ready' }
+  | { type: 'search-result'; seq: number; semantic: SemanticResult[] }
+  | { type: 'error'; seq?: number; message: string }
 type SemanticConfig = {
   enable?: boolean
   model?: string
   queryDtype?: SemanticQueryDType
-  /** Overrides the site index manifest (/embeddings/manifest.json), e.g. for one base. */
   manifestUrl?: string
 }
+type PendingResolver = { resolve: (payload: SearchPayload) => void; reject: (err: Error) => void }
 
-export class SemanticClient {
-  private ready: Promise<void>
-  private resolveReady!: () => void
+export function isSemanticCancellation(error: unknown): boolean {
+  return error instanceof Error && error.name === 'AbortError'
+}
+
+function cancelled(): DOMException {
+  return new DOMException('semantic query superseded', 'AbortError')
+}
+
+// Inline entry points are bundled separately. Keep the encoder on window so Base and site
+// search share its GPU session even when their copies of this module differ.
+export class SemanticRuntime {
+  readonly ready: Promise<void>
   private worker: Worker | null = null
+  private resolveReady!: () => void
+  private error: Error | null = null
   private pending = new Map<number, PendingResolver>()
-  private pendingLoads = new Map<number, PendingLoad>()
   private seq = 0
-  private disposed = false
-  private readySettled = false
-  private configured = false
-  private lastError: Error | null = null
+  private clients = 0
+  private queue: Promise<unknown> = Promise.resolve()
+  private timer: ReturnType<typeof setTimeout> | undefined
 
-  constructor(private cfg?: SemanticConfig) {
-    this.ready = new Promise(resolve => {
-      this.resolveReady = () => {
-        if (this.readySettled) return
-        this.readySettled = true
-        resolve()
-      }
-    })
-
-    if (this.cfg?.enable === false) {
-      this.lastError = new Error('semantic search disabled by configuration')
-      this.resolveReady()
-      return
-    }
-
-    this.startWorker()
-  }
-
-  private startWorker() {
+  constructor(readonly cfg: SemanticConfig) {
+    this.ready = new Promise(resolve => (this.resolveReady = resolve))
     try {
       this.worker = new Worker(new URL('semantic.worker.js', import.meta.url), { type: 'module' })
-    } catch (err) {
-      this.handleFatal(err)
-      return
-    }
-    this.setupWorker()
-    this.worker.postMessage({ type: 'init', cfg: this.cfg })
-  }
-
-  private setupWorker() {
-    if (!this.worker) return
-    this.worker.onmessage = (
-      event: MessageEvent<
-        ProgressMessage | ReadyMessage | ResultMessage | LoadedMessage | ErrorMessage
-      >,
-    ) => {
-      const msg = event.data
-      if (msg.type === 'progress') {
-        return
-      }
-      if (msg.type === 'ready') {
-        this.configured = true
-        this.lastError = null
-        this.resolveReady()
-        return
-      }
-      if (msg.type === 'search-result') {
-        const pending = this.pending.get(msg.seq)
-        if (pending) {
-          this.pending.delete(msg.seq)
-          pending.resolve({ semantic: msg.semantic ?? [] })
-        }
-        return
-      }
-      if (msg.type === 'loaded') {
-        const pending = this.pendingLoads.get(msg.seq)
-        if (pending) {
-          this.pendingLoads.delete(msg.seq)
-          pending.resolve(msg.rows)
-        }
-        return
-      }
-      if (msg.type === 'error') {
-        if (typeof msg.seq === 'number') {
+      this.worker.onmessage = (event: MessageEvent<WorkerResponse>) => {
+        const msg = event.data
+        if (msg.type === 'progress') return
+        if (msg.type === 'ready') {
+          clearTimeout(this.timer)
+          this.resolveReady()
+        } else if (msg.type === 'search-result') {
           const pending = this.pending.get(msg.seq)
-          if (pending) {
-            this.pending.delete(msg.seq)
-            pending.reject(new Error(msg.message))
-          }
-          const load = this.pendingLoads.get(msg.seq)
-          if (load) {
-            this.pendingLoads.delete(msg.seq)
-            load.reject(new Error(msg.message))
-          }
+          this.pending.delete(msg.seq)
+          pending?.resolve({ semantic: msg.semantic })
+        } else if (typeof msg.seq === 'number') {
+          const pending = this.pending.get(msg.seq)
+          this.pending.delete(msg.seq)
+          pending?.reject(new Error(msg.message))
         } else {
-          this.handleFatal(msg.message)
+          this.fail(new Error(msg.message))
         }
       }
-    }
-    this.worker.onerror = (event: ErrorEvent) => {
-      this.handleFatal(event.error ?? (event.message || 'semantic worker error'))
-    }
-  }
-
-  private rejectAll(err: Error, fatal = false) {
-    for (const [id, pending] of this.pending.entries()) {
-      pending.reject(err)
-      this.pending.delete(id)
-    }
-    for (const [id, pending] of this.pendingLoads.entries()) {
-      pending.reject(err)
-      this.pendingLoads.delete(id)
-    }
-    if (fatal) {
-      this.lastError = err
-      this.configured = false
-      if (!this.readySettled) {
-        this.resolveReady()
-      }
+      this.worker.onerror = event => this.fail(new Error(event.message || 'semantic worker error'))
+      this.timer = setTimeout(() => this.fail(new Error('semantic model load timed out')), 120_000)
+      this.worker.postMessage({ type: 'init', cfg })
+    } catch (error) {
+      this.fail(error instanceof Error ? error : new Error(String(error)))
     }
   }
 
-  private handleFatal(err: unknown) {
-    const error = err instanceof Error ? err : new Error(String(err))
-    console.error('[SemanticClient] initialization failure:', error)
-    this.rejectAll(error, true)
-    if (this.worker) {
-      this.worker.terminate()
-      this.worker = null
-    }
+  retain() {
+    this.clients++
+  }
+
+  release() {
+    if (--this.clients === 0) this.fail(new Error('semantic encoder released'))
+  }
+
+  private fail(error: Error) {
+    this.error = error
+    clearTimeout(this.timer)
+    this.worker?.terminate()
+    this.worker = null
+    this.resolveReady()
+    for (const pending of this.pending.values()) pending.reject(error)
+    this.pending.clear()
+    if (window.quartzSemanticRuntime === this) window.quartzSemanticRuntime = undefined
   }
 
   async ensureReady() {
     await this.ready
+    if (this.error) {
+      if (window.quartzSemanticRuntime === this) window.quartzSemanticRuntime = undefined
+      throw this.error
+    }
+  }
+
+  search(text: string, k: number, manifestUrl: string, current: () => boolean) {
+    const result = this.queue.then(async () => {
+      if (!current()) throw cancelled()
+      await this.ensureReady()
+      if (!current()) throw cancelled()
+      const payload = await new Promise<SearchPayload>((resolve, reject) => {
+        const seq = ++this.seq
+        this.pending.set(seq, { resolve, reject })
+        this.timer = setTimeout(() => this.fail(new Error('semantic query timed out')), 15_000)
+        this.worker?.postMessage({ type: 'search', text, k, seq, manifestUrl })
+      }).finally(() => clearTimeout(this.timer))
+      if (!current()) throw cancelled()
+      return payload
+    })
+    this.queue = result.catch(() => {})
+    return result
+  }
+}
+
+export class SemanticClient {
+  private runtime: SemanticRuntime | null = null
+  private generation = 0
+  private disposed = false
+
+  constructor(private cfg: SemanticConfig = {}) {
+    if (cfg.enable === false) return
+    const previous = window.quartzSemanticRuntime
+    if (
+      previous &&
+      (previous.cfg.model !== cfg.model || previous.cfg.queryDtype !== cfg.queryDtype)
+    )
+      throw new Error('semantic encoder configuration differs from the active encoder')
+    this.runtime = previous ?? new SemanticRuntime(cfg)
+    window.quartzSemanticRuntime = this.runtime
+    this.runtime.retain()
+  }
+
+  async ensureReady() {
     if (this.disposed) throw new Error('semantic client has been disposed')
-    if (!this.configured) {
-      throw this.lastError ?? new Error('semantic search unavailable')
-    }
+    if (!this.runtime) throw new Error('semantic search disabled by configuration')
+    await this.runtime.ensureReady()
+    if (this.disposed) throw new Error('semantic client has been disposed')
   }
 
-  async search(text: string, k: number): Promise<SearchPayload> {
-    if (this.disposed) {
-      throw new Error('semantic client has been disposed')
-    }
-    await this.ensureReady()
-    if (!this.worker || !this.configured) {
-      throw this.lastError ?? new Error('worker unavailable')
-    }
-    return new Promise<SearchPayload>((resolve, reject) => {
-      const seq = ++this.seq
-      this.pending.set(seq, { resolve, reject })
-      this.worker?.postMessage({ type: 'search', text, k, seq })
-    })
+  search(text: string, k: number): Promise<SearchPayload> {
+    const generation = ++this.generation
+    if (this.disposed || !this.runtime)
+      return Promise.reject(new Error('semantic client unavailable'))
+    return this.runtime.search(
+      text,
+      k,
+      this.cfg.manifestUrl ?? '/embeddings/manifest.json',
+      () => !this.disposed && generation === this.generation,
+    )
   }
 
-  /** Swaps the vector set for another same-model index; the encoder stays loaded. */
-  async load(manifestUrl: string): Promise<number> {
-    if (this.disposed) {
-      throw new Error('semantic client has been disposed')
-    }
-    await this.ensureReady()
-    if (!this.worker || !this.configured) {
-      throw this.lastError ?? new Error('worker unavailable')
-    }
-    return new Promise<number>((resolve, reject) => {
-      const seq = ++this.seq
-      this.pendingLoads.set(seq, { resolve, reject })
-      this.worker?.postMessage({ type: 'load', manifestUrl, seq })
-    })
+  cancel() {
+    this.generation++
   }
 
   dispose() {
     if (this.disposed) return
     this.disposed = true
-    this.resolveReady()
-    this.rejectAll(new Error('semantic client disposed'))
-    if (this.worker) {
-      this.worker.terminate()
-    }
-    this.worker = null
-    this.configured = false
+    this.cancel()
+    this.runtime?.release()
+    this.runtime = null
   }
 }

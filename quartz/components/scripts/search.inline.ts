@@ -15,6 +15,8 @@ import { renderCoursePreview } from './course-preview-card'
 import { renderDocumentPreview } from './document-preview-card'
 import { registerEscapeHandler } from './escape-handler'
 import { getLexicalSearchClient } from './lexical-search'
+import { fitSearchPath } from './search-path'
+import { isSemanticCancellation } from './semantic.inline'
 import { resetSiteSemantic, siteSemantic, type SiteSemantic } from './site-semantic'
 
 type Item = {
@@ -418,6 +420,19 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     appendLayout(results)
   }
 
+  const fitResultPaths = () => {
+    for (const label of results.querySelectorAll<HTMLElement>('.search-result-path')) {
+      fitSearchPath(label, currentSearchTerm)
+    }
+  }
+  const pathObserver = new ResizeObserver(fitResultPaths)
+  pathObserver.observe(results)
+  document.fonts.addEventListener('loadingdone', fitResultPaths)
+  window.addCleanup(() => {
+    pathObserver.disconnect()
+    document.fonts.removeEventListener('loadingdone', fitResultPaths)
+  })
+
   if (enablePreview) {
     preview = searchLayout.querySelector('.preview-container') as HTMLDivElement
     if (!preview) {
@@ -454,6 +469,7 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   }
 
   function hideSearch(focusButton = true) {
+    semantic?.cancel()
     searchSeq += 1
     pressedKeys.clear()
     composing = false
@@ -733,6 +749,16 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
       </hgroup>`
     }
 
+    const accessibleName = itemTile.textContent?.trim() ?? ''
+    for (const label of itemTile.querySelectorAll<HTMLElement>('h3, hgroup > b')) {
+      const path = label.textContent ?? ''
+      if (!path.includes('/') && label.tagName !== 'B' && path !== slug && path !== fileName)
+        continue
+      label.classList.add('search-result-path')
+      label.title = path
+      itemTile.setAttribute('aria-label', accessibleName)
+    }
+
     if (Number.isFinite(similarity)) itemTile.dataset.similarity = String(similarity)
 
     const handler = (evt: MouseEvent) => {
@@ -767,6 +793,7 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
       currentHover = null
     } else {
       results.append(...finalResults.map(resultToHTML))
+      fitResultPaths()
     }
 
     if (finalResults.length === 0 && preview) {
@@ -1111,6 +1138,7 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
       })
       if (showProgress) completeSearchProgress()
     } catch (err) {
+      if (isSemanticCancellation(err) || token !== searchSeq) return
       console.warn('[SemanticClient] search failed:', err)
       if (showProgress) completeSearchProgress()
       resetSiteSemantic(orchestrator.client)
@@ -1134,6 +1162,7 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   }
 
   function onType() {
+    semantic?.cancel()
     previewRequest?.abort()
     rawSearchTerm = searchBar.value
     const hasQuery = rawSearchTerm.trim() !== ''

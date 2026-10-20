@@ -10,8 +10,9 @@
 
 // Shared by the global search and the base search bar: the semantic icon turns while the
 // encoder loads, and holds still for people who asked for reduced motion.
-.search-mode-toggle .mode-option[data-mode='semantic'].is-loading svg {
+.search-mode-toggle .mode-option[data-mode='semantic'].is-loading svg > g {
   animation: semantic-spin 1.2s linear infinite;
+  transform-box: view-box;
   transform-origin: center;
 
   @media (prefers-reduced-motion: reduce) {
@@ -118,6 +119,11 @@
       display: flex;
       flex-direction: column;
 
+      @media all and ($mobile) {
+        width: calc(100% - 2 * var(--space-3));
+        max-width: none;
+      }
+
       & > .input-container {
         align-items: center;
         gap: 0.5rem;
@@ -126,11 +132,11 @@
         .search-bar {
           flex: 1 1 auto;
           min-width: 0;
-          padding-right: 9rem;
         }
 
         .search-mode-toggle {
           display: inline-flex;
+          flex-shrink: 0;
           align-items: center;
           border-radius: var(--radius-none);
           height: 1.4rem;
@@ -375,6 +381,7 @@
         }
 
         & > .results-container {
+          min-width: 0;
           overflow-y: auto;
           border-right: 1px solid var(--lightgray);
 
@@ -417,6 +424,13 @@
               margin: 0;
               font-weight: 400;
               color: inherit;
+            }
+
+            .search-result-path {
+              display: block;
+              min-width: 0;
+              overflow: hidden;
+              white-space: nowrap;
             }
 
             ul.tags {
