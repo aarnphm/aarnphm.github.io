@@ -1,0 +1,219 @@
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
+@use './figure.scss' as *;
+
+.logits-processor-trace {
+  @include figure-frame('lpt-figure', 36rem);
+
+  --lpt-lit: var(--fig-salmon);
+  --lpt-row: color-mix(in srgb, var(--fig-sage) 70%, var(--dark));
+  --lpt-node: var(--light);
+  --lpt-segment-on: var(--fig-grid-selected);
+}
+
+:root[saved-theme='dark'] .logits-processor-trace {
+  --lpt-row: color-mix(in srgb, var(--fig-sage) 70%, var(--lightgray));
+  --lpt-segment-on: color-mix(in srgb, var(--fig-sage) 22%, var(--lightgray));
+}
+
+.lpt-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.25rem;
+  align-items: flex-end;
+}
+
+.lpt-segments {
+  @include figure-grid;
+  grid-auto-flow: column;
+  position: relative;
+  min-width: 0;
+  margin-top: 1.1rem;
+}
+
+.lpt-legend {
+  position: absolute;
+  top: -1.15rem;
+  left: 0;
+  padding: 0;
+  color: var(--fig-note);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.lpt-segment {
+  @include figure-grid-cell;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.28rem 0.7rem;
+  color: var(--fig-tab-fg);
+  cursor: pointer;
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  line-height: 1.2;
+  transition:
+    background-color 140ms ease,
+    color 140ms ease;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    pointer-events: none;
+  }
+
+  &:hover {
+    color: var(--dark);
+  }
+
+  &:has(input:checked) {
+    background: var(--lpt-segment-on);
+    color: var(--dark);
+  }
+
+  &:has(input:focus-visible) {
+    outline: 2px solid var(--dark);
+    outline-offset: -2px;
+  }
+}
+
+.lpt-range {
+  display: flex;
+  flex: 1 1 14rem;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+  color: var(--fig-note);
+  font-size: 0.72rem;
+
+  input {
+    flex: 1 1 auto;
+    min-width: 0;
+    @include stableRangeControl;
+
+    &:focus-visible {
+      outline: 2px solid var(--dark);
+      outline-offset: 2px;
+    }
+  }
+
+  output {
+    min-width: 3.2rem;
+    color: var(--dark);
+    font-family: var(--codeFont);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+}
+
+.lpt-svg {
+  display: block;
+  width: 100%;
+  margin: 0.9rem auto 0;
+
+  text {
+    font-family: var(--codeFont);
+    font-variant-numeric: tabular-nums;
+  }
+
+  [data-lpt-set][data-on='false'] {
+    display: none;
+  }
+
+  .lpt-lane {
+    fill: var(--dark);
+    font-size: 9px;
+  }
+
+  .lpt-num,
+  .lpt-tag {
+    fill: var(--fig-note);
+    font-size: 8px;
+  }
+
+  .lpt-track {
+    stroke: var(--fig-line);
+    stroke-width: 0.8;
+  }
+
+  .lpt-wire {
+    stroke: var(--fig-stroke);
+    stroke-width: 1;
+    transition: stroke-width 160ms ease;
+  }
+
+  .lpt-from,
+  .lpt-to,
+  .lpt-self {
+    fill: var(--lpt-node);
+    stroke: var(--fig-stroke);
+    stroke-width: 1;
+    transition: fill 160ms ease;
+  }
+
+  .lpt-call[data-kind='row'] .lpt-wire,
+  .lpt-call[data-kind='row'] .lpt-to,
+  .lpt-call[data-kind='attach'] .lpt-self {
+    stroke: var(--dark);
+  }
+
+  .lpt-call[data-kind='row'] .lpt-to,
+  .lpt-call[data-kind='attach'] .lpt-self {
+    fill: var(--lpt-row);
+  }
+
+  .lpt-call[data-on='true'] .lpt-wire {
+    stroke: var(--dark);
+    stroke-width: 2;
+  }
+
+  .lpt-call[data-on='true'] .lpt-from,
+  .lpt-call[data-on='true'] .lpt-to,
+  .lpt-call[data-on='true'] .lpt-self {
+    fill: var(--lpt-lit);
+    stroke: var(--dark);
+  }
+}
+
+.lpt-readout {
+  @include figure-table(minmax(6rem, 0.32fr) minmax(0, 1fr));
+  margin-top: 0.9rem;
+
+  dd {
+    justify-content: flex-start;
+    text-align: left;
+    overflow-wrap: anywhere;
+  }
+
+  .lpt-prose {
+    font-family: inherit;
+  }
+}
+
+.lpt-math {
+  @include figure-inline-math;
+}
+
+.lpt-caption {
+  @include figure-caption;
+  overflow-wrap: anywhere;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lpt-segment,
+  .lpt-svg .lpt-wire,
+  .lpt-svg .lpt-from,
+  .lpt-svg .lpt-to,
+  .lpt-svg .lpt-self {
+    transition: none;
+  }
+}
+
+@container lpt-figure (max-width: 480px) {
+  .lpt-readout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
