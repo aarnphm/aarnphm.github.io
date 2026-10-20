@@ -20,9 +20,13 @@ const tones = {
   L: 'trail-pet-leg',
   B: 'trail-pet-boot',
   H: 'trail-pet-hand',
-  S: 'trail-pet-scarf',
-  s: 'trail-pet-scarf-shade',
-  T: 'trail-pet-stripe',
+  V: 'trail-pet-shell-light',
+  A: 'trail-pet-shell',
+  Z: 'trail-pet-shell-shade',
+  J: 'trail-pet-knit-light',
+  j: 'trail-pet-knit',
+  z: 'trail-pet-knit-shade',
+  X: 'trail-pet-rib',
   U: 'trail-pet-cloth',
   G: 'trail-pet-panel',
   F: 'trail-pet-flame',
@@ -96,13 +100,52 @@ const eyes: Record<string, string> = {
   'eyes-wide': at(['K....K', 'K....K', 'K....K', 'K....K'], 5, 6),
   'eyes-happy': at(['.K....K.', 'K.K..K.K'], 4, 7),
 }
-const mouth = at(['KK'], 7, 11)
+const mouth = at(['KK'], 7, 10)
 const shades = at(['KKKKKKKK', 'KKK..KKK'], 4, 7)
-// Wrapped round twice, the tail hanging down its back.
-const scarf = at(
-  ['KSSTSSSTSSSSTK', '.KssssssssssK.', '..........TS..', '..........ST..', '..........T.T.'],
-  2,
-  11,
+// What it wears in the cold, cut from the body from its chin down: each cell of cloth takes the tone
+// of the body cell under it, so the cloth is lit as the body is. `cut` gives false for bare body,
+// true for cloth, or a letter for a seam drawn on it.
+const clothes = (
+  cut: (i: number, j: number) => boolean | string,
+  light: string,
+  plate: string,
+  shade: string,
+) => {
+  const cloth = (rows: readonly string[]) =>
+    rows.map((row, j) =>
+      [...row]
+        .map((t, i) => {
+          const c = t === '.' || t === 'K' ? false : cut(i, j)
+          if (typeof c === 'string') return c
+          return !c ? '.' : t === 'C' ? light : t === 'Q' ? shade : plate
+        })
+        .join(''),
+    )
+  return `<g class="trail-pet-blob">${at(cloth(body))}</g><g class="trail-pet-blob-mirrored">${at(cloth(bodyMirrored))}</g>`
+}
+// The neck opening, round the mouth.
+const neck = (i: number, j: number) => j === 10 && i >= 6 && i <= 8
+// Cool: a windbreaker with a drawn-in hem, its zip a seam in the shade tone: an ink zip under the
+// dash eyes reads as a third mark on the face.
+const windbreaker = clothes(
+  (i, j) => {
+    if (j < 10 || neck(i, j)) return false
+    return j === 14 || (i === 7 && j > 10) ? 'Z' : true
+  },
+  'V',
+  'A',
+  'Z',
+)
+// Cold: a knit jumper with a ribbed collar and hem and a row of cream stitches across it.
+const jumper = clothes(
+  (i, j) => {
+    if (j < 10 || neck(i, j)) return false
+    if ((j === 10 && (i === 5 || i === 9)) || (j === 11 && i >= 6 && i <= 8) || j === 14) return 'X'
+    return j === 12 && i % 2 === 0 ? 'C' : true
+  },
+  'J',
+  'j',
+  'z',
 )
 const puffs = [at(['E.', '.E'], -2, 9), at(['E.', '.E'], -4, 7)]
 // Held in the hand on its back, tipped forward over its head; in a storm the gust blows it inside
@@ -169,7 +212,8 @@ export function trailPetSprite() {
     ),
     part('laptop', laptop),
     `<g class="trail-pet-blob">${at(body)}</g><g class="trail-pet-blob-mirrored">${at(bodyMirrored)}</g>`,
-    part('scarf', scarf),
+    part('windbreaker', windbreaker),
+    part('jumper', jumper),
     ...Object.entries(eyes).map(([name, svg]) => part(name, svg)),
     part('mouth', mouth),
     part('shades', shades),

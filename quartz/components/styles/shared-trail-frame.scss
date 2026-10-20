@@ -153,16 +153,31 @@
       display: none;
     }
     .trail-pet-band,
-    .trail-pet-stripe,
     .trail-pet-cloth {
       fill: #e9a090;
     }
-    .trail-pet-scarf,
     .trail-pet-panel {
       fill: #cdd597;
     }
-    .trail-pet-scarf-shade {
+    // The cold-weather clothes, each in three tones lit as the body is.
+    .trail-pet-shell-light {
+      fill: #e2e7bf;
+    }
+    .trail-pet-shell {
+      fill: #cdd597;
+    }
+    .trail-pet-shell-shade {
       fill: #a9b46c;
+    }
+    .trail-pet-knit-light {
+      fill: #fecdc1;
+    }
+    .trail-pet-knit {
+      fill: #fdb2a2;
+    }
+    .trail-pet-knit-shade,
+    .trail-pet-rib {
+      fill: #d98e7f;
     }
     .trail-pet-flame {
       fill: #f3a35a;
@@ -262,7 +277,8 @@
         display: inline;
       }
     }
-    &[data-cold] [data-part='scarf'] {
+    &[data-cold='cool'] [data-part='windbreaker'],
+    &[data-cold='cold'] [data-part='jumper'] {
       display: inline;
     }
     &[data-cold='cold'] [data-part='breath'] {

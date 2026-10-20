@@ -3,19 +3,14 @@
   inset: auto;
   margin: 0;
   box-sizing: border-box;
-  // Set like the 404 departures board: Departure Mono on its 11px grid (14px lines hold the
-  // capitals 3px from either edge), tracked capitals, a dark head band inside a 2px frame.
-  --trail-board-mono: 'Departure Mono', var(--codeFont);
-  width: min(22rem, calc(100vw - 16px));
+  width: min(320px, calc(100vw - 16px));
   max-height: calc(100dvh - 24px);
   padding: 0;
-  border: 2px solid var(--dark);
+  border: 1px solid var(--lightgray);
   border-radius: 0;
   background: var(--light);
   color: var(--darkgray);
-  font: 400 11px/14px var(--trail-board-mono);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font: 10px/1.6 var(--codeFont);
   font-variant-numeric: tabular-nums;
 
   &:popover-open {
@@ -26,16 +21,13 @@
   .visitor-register-columns,
   .visitor-register-list li {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 64px 56px 40px;
+    grid-template-columns: minmax(0, 1fr) 48px 44px 32px;
     align-items: baseline;
     gap: 8px;
-    padding: 6px 12px;
+    padding: 5px 12px;
   }
   .visitor-register-columns {
-    padding-block: 8px;
-    background: var(--dark);
-    color: var(--light);
-    letter-spacing: 0.12em;
+    color: var(--gray);
   }
   .visitor-register-list {
     min-height: 0;
@@ -53,11 +45,8 @@
       background: var(--darkgray);
       border-radius: 0;
     }
-    li + li {
+    li {
       border-top: 1px solid var(--lightgray);
-    }
-    li[data-visit-own] {
-      color: var(--dark);
     }
     li[data-visit-state='left'] {
       color: var(--gray);
@@ -77,12 +66,12 @@
   }
   p {
     margin: 0;
-    padding: 8px 12px;
-    color: var(--darkgray);
+    padding: 5px 12px;
+    color: var(--gray);
   }
   .visitor-register-total {
-    padding: 8px 12px;
-    border-top: 2px solid var(--dark);
+    padding: 5px 12px;
+    border-top: 1px solid var(--lightgray);
   }
   .visitor-register-connection {
     display: flex;
@@ -91,7 +80,7 @@
     gap: 8px;
     min-height: 28px;
     padding: 0 12px;
-    border-top: 2px solid var(--dark);
+    border-top: 1px solid var(--lightgray);
     [data-trail-retry] {
       min-height: 28px;
       padding: 0 4px;
@@ -103,8 +92,8 @@
       text-decoration: underline;
       cursor: pointer;
       &:focus-visible {
-        outline: 2px solid var(--dark);
-        outline-offset: -2px;
+        outline: 1px solid var(--darkgray);
+        outline-offset: 2px;
       }
     }
   }
