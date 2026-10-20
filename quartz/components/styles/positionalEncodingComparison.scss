@@ -308,17 +308,6 @@
   font-size: 0.88rem;
 }
 
-.pec-intuition {
-  margin: 1rem 0 0;
-  color: var(--pec-note);
-  font-size: 0.85rem;
-  line-height: 1.55;
-  .katex {
-    color: var(--dark);
-    font-size: 0.95em;
-  }
-}
-
 .pec-caption {
   margin-top: 0.9rem;
   color: color-mix(in srgb, var(--gray) 70%, var(--dark) 30%);

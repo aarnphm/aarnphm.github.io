@@ -255,7 +255,7 @@ const RadixPrefixTreeImpl: QuartzMdxComponent<Props> = ({ caption }) => (
           viewBox={`0 0 ${VW} ${VH}`}
           preserveAspectRatio="xMidYMid meet"
           role="img"
-          aria-label="Radix prefix tree with root, three named branches (chat_a, chat_b, few_shot), and turn or example nodes; matched paths highlight in coral and newly cached nodes in olive when a prompt is routed."
+          aria-label="Radix prefix tree with chat_a, chat_b, and few_shot branches; matched paths and newly cached nodes are highlighted."
         >
           <defs>
             <marker
@@ -366,8 +366,8 @@ const RadixPrefixTreeImpl: QuartzMdxComponent<Props> = ({ caption }) => (
           />
           <M t="C \ge \sum_{e \in \text{edges}(T)} |e|" d cls="rpt-math rpt-math--display" />
           <p>
-            Longest-shared-prefix-first scheduling = DFS over <M t="T" />, which touches each edge
-            once. FIFO ordering thrashes; LRU keeps the hot branch resident.
+            Longest-prefix-first is DFS over <M t="T" /> and touches each edge once. FIFO thrashes;
+            LRU keeps hot branches resident.
           </p>
         </div>
       </aside>

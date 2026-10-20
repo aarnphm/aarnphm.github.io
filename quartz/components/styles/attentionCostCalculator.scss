@@ -18,7 +18,7 @@
 }
 
 :root[saved-theme='dark'] .attention-cost-calculator {
-  --acc-card-bg: color-mix(in srgb, var(--lightgray) 22%, var(--dark));
+  --acc-card-bg: color-mix(in srgb, var(--lightgray) 22%, var(--light));
   --acc-card-bg-salmon: color-mix(in srgb, var(--acc-salmon) 32%, var(--lightgray));
   --acc-card-bg-sage: color-mix(in srgb, var(--acc-sage) 28%, var(--lightgray));
   --acc-track-bg: color-mix(in srgb, var(--lightgray) 28%, var(--dark));
@@ -128,10 +128,6 @@
   &[hidden] {
     display: none;
   }
-  &:focus-visible {
-    outline: 2px solid var(--dark);
-    outline-offset: 1px;
-  }
 }
 
 .acc-dtype {
@@ -202,30 +198,17 @@
   }
 }
 
-.acc-card-body {
-  display: flex;
-  align-items: baseline;
-  gap: 0.45rem;
-  min-width: 0;
-}
-
 .acc-card-num {
+  display: block;
   font-size: 1.45rem;
   color: var(--dark);
-  line-height: 1.15;
+  line-height: 1.5;
+  min-block-size: 1.5em;
+  white-space: nowrap;
 
   .katex {
     font-size: 1em;
     color: inherit;
-  }
-}
-
-.acc-card-delta {
-  font-size: 0.72rem;
-  color: var(--acc-note);
-  opacity: 0.85;
-  &:empty {
-    display: none;
   }
 }
 

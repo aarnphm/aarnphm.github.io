@@ -18,23 +18,12 @@
 }
 
 .sj-segments {
-  @include figure-grid;
+  @include figure-fieldset;
   grid-auto-flow: column;
   width: fit-content;
-  position: relative;
-  margin: 0 0 1.1rem;
+  margin-bottom: 1.1rem;
   padding: 0;
   border: 0;
-}
-
-.sj-legend {
-  position: absolute;
-  top: -1.15rem;
-  left: 0;
-  padding: 0;
-  color: var(--fig-note);
-  font-size: 0.72rem;
-  white-space: nowrap;
 }
 
 .sj-segment {

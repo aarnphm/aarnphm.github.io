@@ -68,7 +68,7 @@ const ringArcPath = (p: number) => {
 const RingRotationImpl: QuartzMdxComponent<Props> = ({ caption, devices = DEFAULT_DEVICES }) => {
   const initialP = clamp(Math.round(devices), MIN_DEVICES, MAX_DEVICES)
   const indices = Array.from({ length: initialP }, (_, i) => i)
-  const ariaLabel = `Ring topology of ${initialP} devices circulating key-value slices; controls below let you step, play, reset and resize the ring.`
+  const ariaLabel = `Ring topology of ${initialP} devices circulating key-value slices; controls step, play, reset and resize the ring.`
 
   return (
     <figure
@@ -282,12 +282,6 @@ const RingRotationImpl: QuartzMdxComponent<Props> = ({ caption, devices = DEFAUL
           </button>
         </div>
       </div>
-
-      <p class="rr-intuition">
-        Each device only ever holds <MathLabel tex="L/p" /> tokens of cache, but eventually sees all
-        slices through circulation. Overlapping communication with compute hides the network cost
-        and the result stays <strong>exact</strong>, unlike sparse or windowed approximations.
-      </p>
 
       {caption ? (
         <figcaption class="rr-caption">

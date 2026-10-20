@@ -21,23 +21,11 @@
 }
 
 .tbs-segments {
-  @include figure-grid;
+  @include figure-fieldset(var(--space-1));
   grid-auto-flow: column;
   width: fit-content;
   max-width: 100%;
-  position: relative;
   min-width: 0;
-  margin-top: 1.45rem;
-}
-
-.tbs-legend {
-  position: absolute;
-  top: -1.15rem;
-  left: 0;
-  padding: 0;
-  color: var(--fig-note);
-  font-size: 0.72rem;
-  white-space: nowrap;
 }
 
 .tbs-segment {

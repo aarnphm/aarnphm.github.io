@@ -163,7 +163,7 @@ const Fsm: FunctionalComponent<{ layout: Layout; variant: string }> = ({ layout,
       class={`cdfsm-svg cdfsm-svg--${variant}`}
       viewBox={`0 0 ${layout.w} ${layout.h}`}
       role="img"
-      aria-label='Finite-state machine for the "age" clause: states 0 to 7 read the characters quote, a, g, e, quote, colon, then one digit to state 6, which loops on further digits, and a comma to the accepting state 7.'
+      aria-label="Age-field finite-state machine: quoted key, integer digits, comma accept."
     >
       {EDGES.map(e => {
         const g = edgeGeometry(layout, e)
@@ -259,7 +259,7 @@ const CandidatePanel: FunctionalComponent<{ step: Step; index: number }> = ({ st
       </>
     ) : (
       <p class="cdfsm-done">
-        state 7 accepts. The mask moves on to the <code>"house"</code> clause.
+        state 7 accepts; the mask moves to the <code>"house"</code> clause.
       </p>
     )}
   </div>
@@ -297,7 +297,7 @@ const ConstrainedDecodingFSMImpl: QuartzMdxComponent<Props> = ({ caption }) => (
     <div class="cdfsm-top">
       <div class="cdfsm-card cdfsm-regex">
         <p class="cdfsm-card-title">regular expression</p>
-        <div class="cdfsm-code" aria-label="Regular expression for the Harry Potter JSON schema">
+        <div class="cdfsm-code" aria-label="JSON schema regular expression">
           {REGEX.map(l => (
             <span key={l.text} class={l.age ? 'cdfsm-regex-line is-age' : 'cdfsm-regex-line'}>
               {l.text}
@@ -405,7 +405,7 @@ const FLOW_WIDE: FlowLayout = {
   ],
   edges: [
     { d: 'M 154 64 L 300 64', label: ['defines'], lx: 227, ly: 56 },
-    { d: 'M 375 82 L 375 168', label: ['mask'], lx: 383, ly: 130, anchor: 'start' },
+    { d: 'M 375 82 L 375 168', label: ['mask'], lx: 383, ly: 160, anchor: 'start' },
     { d: 'M 154 186 L 300 186', label: ['token distribution'], lx: 227, ly: 178 },
     { d: 'M 450 186 L 538 186', label: [], lx: 0, ly: 0 },
   ],
@@ -427,7 +427,7 @@ const FLOW_NARROW: FlowLayout = {
   ],
   edges: [
     { d: 'M 136 64 L 204 64', label: ['defines'], lx: 170, ly: 57 },
-    { d: 'M 264 82 L 264 176', label: ['mask'], lx: 272, ly: 132, anchor: 'start' },
+    { d: 'M 264 82 L 264 176', label: ['mask'], lx: 272, ly: 168, anchor: 'start' },
     { d: 'M 136 194 L 204 194', label: ['token', 'distribution'], lx: 170, ly: 170 },
     { d: 'M 264 212 L 264 258', label: [], lx: 0, ly: 0 },
   ],
@@ -441,7 +441,7 @@ const Flow: FunctionalComponent<{ layout: FlowLayout; variant: string }> = ({
     class={`sdflow-svg sdflow-svg--${variant}`}
     viewBox={`0 0 ${layout.w} ${layout.h}`}
     role="img"
-    aria-label="The schema defines a logit bias. The language model gives a token distribution. Constrained sampling applies the bias as a mask to that distribution and emits structured output."
+    aria-label="Schema-derived logit bias masks the model's token distribution to produce structured output."
   >
     {layout.groups.map(g => (
       <g key={g.label} class="sdflow-group">

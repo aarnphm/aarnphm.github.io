@@ -790,18 +790,18 @@ button.g-select-trigger {
   }
 }
 
-.g-datepicker-trigger,
 .g-icon-button,
 .g-text-button,
-.g-button,
-.g-select-trigger {
+.g-button {
   &:focus-visible {
     outline: 2px solid var(--control-focus, var(--dark));
     outline-offset: 2px;
   }
 }
 
-// Inside a framed panel, an inset ring stays clear of the frame and the next cell.
+// Framed controls share one focus edge with their border; cells stay inside their panel.
+.g-datepicker-trigger,
+.g-select-trigger,
 .g-cal-day,
 .g-select-option,
 .g-event,

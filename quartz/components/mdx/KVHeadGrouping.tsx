@@ -330,10 +330,8 @@ const KVHeadGroupingImpl: QuartzMdxComponent<Props> = ({ caption, heads = DEFAUL
       </div>
 
       <p class="kvg-intuition">
-        Per-head queries stay cheap to compute, but per-head <MathLabel tex="K,V" /> are{' '}
-        <strong>expensive at decode</strong> because every token reads the full cache. Sharing{' '}
-        <MathLabel tex="K,V" /> across <MathLabel tex="r" /> query heads preserves query diversity
-        and slashes cache reads by <MathLabel tex="1/r" />.
+        Sharing <MathLabel tex="K,V" /> across <MathLabel tex="r" /> query heads reduces decode
+        cache reads to <MathLabel tex="1/r" /> of the unshared cache.
       </p>
 
       {caption ? (

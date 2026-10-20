@@ -22,12 +22,12 @@ const MODES: readonly { id: ModeId; label: string; rule: string }[] = [
   {
     id: 'cmp',
     label: 'compressed',
-    rule: 'Compression: $\\tilde k_i=\\varphi(k_{id:id+l})$ summarises $l$ keys and slides by $d$, so neighbouring blocks overlap. Query $t$ reads every complete block, $\\lfloor (t+1-l)/d\\rfloor+1$ compressed keys. Each wide cell is one compressed key, drawn over its first stride; the strip shows its full span.',
+    rule: 'Compressed keys $\\tilde k_i=\\varphi(k_{id:id+l})$ summarize overlapping $l$-key blocks at stride $d$. Query $t$ reads $\\lfloor (t+1-l)/d\\rfloor+1$ complete blocks. Wide cells mark each key’s first stride; the strip shows its span.',
   },
   {
     id: 'slc',
     label: 'selected',
-    rule: "Selection: the score of a block of $l'$ keys sums the compressed scores $p^{\\mathrm{cmp}}_t$ of the compression blocks that cover it (Eq. 9). Keep the top-$n$ blocks. The initial block and the 2 local blocks are always kept.",
+    rule: "Score each $l'$ block by summing covering compressed-block scores $p^{\\mathrm{cmp}}_t$ (Eq. 9). Keep the top-$n$ blocks, the initial block, and two local blocks.",
   },
   {
     id: 'win',
@@ -37,12 +37,12 @@ const MODES: readonly { id: ModeId; label: string; rule: string }[] = [
   {
     id: 'nsa',
     label: 'NSA union',
-    rule: 'NSA mixes the three branches with learned gates: $o_t=\\sum_{c}g^c_t\\,\\mathrm{Attn}(q_t,\\tilde K^c_t,\\tilde V^c_t)$, $g^c_t\\in[0,1]$. The grid shows the raw keys that selection or the window reads; compressed keys add to $N_t$ in the table.',
+    rule: 'NSA combines three branches with learned gates: $o_t=\\sum_{c}g^c_t\\,\\mathrm{Attn}(q_t,\\tilde K^c_t,\\tilde V^c_t)$, $g^c_t\\in[0,1]$. The grid shows raw keys read by selection and the window; the table includes compressed keys in $N_t$.',
   },
   {
     id: 'dsa',
     label: 'DSA top-k',
-    rule: 'DSA: the lightning indexer scores every earlier key, $I_{t,s}=\\sum_j w^I_{t,j}\\,\\mathrm{ReLU}(q^I_{t,j}\\cdot k^I_s)$, from FP8 $q^I$ and $k^I$. Core attention reads the top-$k$ keys of each query, one token at a time. Bars under the zero line come from the head with $w^I<0$.',
+    rule: 'The DSA indexer scores earlier keys with FP8 vectors: $I_{t,s}=\\sum_j w^I_{t,j}\\,\\mathrm{ReLU}(q^I_{t,j}\\cdot k^I_s)$. Attention reads each query’s top-$k$ keys. Negative bars mark heads with $w^I<0$.',
   },
 ]
 
@@ -353,7 +353,7 @@ const SparseAttentionMaskImpl: QuartzMdxComponent<Props> = ({ caption, mode, que
           viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
           preserveAspectRatio="xMidYMid meet"
           role="img"
-          aria-label={`Causal attention mask over ${N} tokens. Rows are queries, columns are keys. The strip above shows how the selected query picks its keys.`}
+          aria-label={`Causal attention mask over ${N} tokens; rows are queries, columns are keys. The strip shows the selected query's keys.`}
         >
           {/* Strip: how query t picks keys, per mode. Columns align with the grid's keys. */}
           <g class="sam-strip" data-sam-strip="cmp">

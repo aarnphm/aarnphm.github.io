@@ -66,7 +66,7 @@ where $L$ is the layer count, $n_{\mathrm{kv}}$ is the number of key-value heads
 
 ```jsx imports={Zoomable,FlashInferPageLayout}
 <Zoomable label="FlashInfer page layout">
-  <FlashInferPageLayout caption="FlashInfer's paged KV layout for three requests. Physical pages live in a flat pool of size nine with page size eight. Select a request: salmon, sage and ink mark its pages and the query/output segment; the readout shows the matching CSR arrays $\mathrm{kv\_indptr}$, $\mathrm{kv\_page\_indices}$, $\mathrm{kv\_last\_page\_lens}$ and $\mathrm{qo\_indptr}$." />
+  <FlashInferPageLayout caption="FlashInfer's three-request layout uses a nine-page pool with eight slots per page. Select a request to inspect its pages and CSR arrays $\mathrm{kv\_indptr}$, $\mathrm{kv\_page\_indices}$, $\mathrm{kv\_last\_page\_lens}$ and $\mathrm{qo\_indptr}$." />
 </Zoomable>
 ```
 
@@ -88,7 +88,7 @@ Then there is the kernel problem.[^kernel] Deep learning uses dense matrix multi
 
 ```jsx imports={Zoomable,VllmEngineLayout}
 <Zoomable label="vLLM engine layout">
-  <VllmEngineLayout caption="A request through vLLM's engine core client: the processor feeds the scheduler and model executor; the KV cache manager owns the CPU free-block queue that indexes the GPU paged KV pool." />
+  <VllmEngineLayout />
 </Zoomable>
 ```
 

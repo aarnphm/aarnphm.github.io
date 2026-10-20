@@ -6,7 +6,11 @@ type Props = { caption?: string }
 
 const CpmActivityImpl: QuartzMdxComponent<Props> = ({ caption }) => (
   <figure class="cpm-activity">
-    <div class="cpm-node" role="img" aria-label="CPM activity node template with early and late dates, duration, and float.">
+    <div
+      class="cpm-node"
+      role="img"
+      aria-label="CPM activity node template with early and late dates, duration, and float."
+    >
       <div class="cpm-corner cpm-corner--tl">Early Start Date</div>
       <div class="cpm-corner cpm-corner--tr">Early End Date</div>
       <div class="cpm-corner cpm-corner--bl">Late Start Date</div>

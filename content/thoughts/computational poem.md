@@ -12,7 +12,6 @@ title: computational poem
 
 Workshop by [Alicia Guo](https://www.aliciaguo.com/)
 
-
 ## text generation with grammars
 
 So what shapes languages?

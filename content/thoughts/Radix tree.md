@@ -12,9 +12,7 @@ A compressed prefix [[thoughts/university/twenty-three-twenty-four/sfwr-2c03/Has
 
 ```jsx imports={Zoomable,PatriciaTrie}
 <Zoomable label="Radix tree insertion">
-  <PatriciaTrie
-    caption="Radix (Patricia) tree for the seven keys of the Wikimedia Patricia trie figure, inserted in its order. Pick a key to see the tree after inserting the keys up to it. The salmon box is the new edge and its numbered key node; sage boxes are the edges the new key matched, including the upper part of a split edge. Small dark squares are internal nodes. The readout compares node counts with an uncompressed trie that holds one symbol per edge; both trees hold the same edge symbols."
-  />
+  <PatriciaTrie caption="Seven keys from the Wikimedia Patricia trie figure, in its insertion order. Select a prefix length; salmon marks new edges and sage marks matched edges. The readout compares node counts; both trees store the same edge symbols." />
 </Zoomable>
 ```
 

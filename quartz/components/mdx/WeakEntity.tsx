@@ -49,22 +49,12 @@ const WeakEntityImpl: QuartzMdxComponent<Props> = ({ caption }) => {
         </text>
 
         <line class="we-edge" x1={210} y1={134} x2={280} y2={134} />
-        <polygon
-          class="we-rel we-rel--outer"
-          points="340,100 390,134 340,168 290,134"
-        />
+        <polygon class="we-rel we-rel--outer" points="340,100 390,134 340,168 290,134" />
         <polygon class="we-rel" points="340,108 382,134 340,160 298,134" />
         <text class="we-label" x={340} y={138} text-anchor="middle">
           Plays-on
         </text>
-        <line
-          class="we-edge"
-          x1={390}
-          y1={134}
-          x2={470}
-          y2={134}
-          marker-end={`url(#${arrow})`}
-        />
+        <line class="we-edge" x1={390} y1={134} x2={470} y2={134} marker-end={`url(#${arrow})`} />
 
         <ellipse class="we-attr we-attr--key" cx={540} cy={48} rx={42} ry={20} />
         <text class="we-label we-label--key" x={540} y={52} text-anchor="middle">
@@ -77,7 +67,7 @@ const WeakEntityImpl: QuartzMdxComponent<Props> = ({ caption }) => {
         </text>
 
         <text class="we-note" x={400} y={210}>
-          each player needs a team for the key
+          team name completes the player key
         </text>
         <line class="we-edge we-edge--soft" x1={430} y1={196} x2={450} y2={140} />
       </svg>

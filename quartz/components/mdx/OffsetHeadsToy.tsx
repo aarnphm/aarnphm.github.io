@@ -93,7 +93,7 @@ const OffsetHeadsToyImpl: QuartzMdxComponent<Props> = ({ caption, length = DEFAU
   const rows = Array.from({ length: L }, (_, i) => i)
   const viewSize = L + 2
   const cellPad = 1
-  const ariaSummary = `Two-offset-heads toy: three ${L} by ${L} probability matrices side by side, next-token head, prev-token head, and a single-head surrogate that adds the two score matrices before one softmax.`
+  const ariaSummary = `Three ${L} by ${L} probability matrices: next-token head, previous-token head, and combined-score surrogate.`
 
   return (
     <figure
@@ -212,14 +212,9 @@ const OffsetHeadsToyImpl: QuartzMdxComponent<Props> = ({ caption, length = DEFAU
           </div>
         </dl>
         <p class="oht-note">
-          Each head runs its own softmax. The distributions <MathLabel tex="P^{(+1)}" /> and{' '}
-          <MathLabel tex="P^{(-1)}" /> weight the values separately;{' '}
-          <MathLabel tex="W_O^{(1)}, W_O^{(2)}" /> project those mixtures before their contributions
-          are summed.
-          <br />
-          The surrogate adds the scores first, leaving one softmax over both offsets. Forced mode
-          fits <MathLabel tex="\tilde W_O" /> by ridge regression on this sampled value matrix; the
-          displayed gap measures that fit and does not prove failure for every projection or input.
+          Separate heads apply separate softmaxes before summing. The surrogate combines scores
+          before one softmax. Forced mode uses ridge regression on this value matrix; its gap is
+          sample-specific.
         </p>
       </div>
 

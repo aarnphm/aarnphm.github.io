@@ -164,7 +164,7 @@ const MultiHeadAttentionImpl: QuartzMdxComponent<Props> = ({ caption, heads = DE
           viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
           preserveAspectRatio="xMidYMid meet"
           role="img"
-          aria-label={`Multi-head attention with ${initialH} heads: input x splits into per-head Q, K, V projections, each head runs an independent softmax over a per-head attention pattern, outputs are concatenated and projected by W_O, then added back to the residual stream.`}
+          aria-label={`Multi-head attention with ${initialH} heads: per-head Q, K, V projections and softmax; concatenate outputs, project with W_O, add to residual.`}
           data-mha-canvas
         >
           <defs>
@@ -586,12 +586,7 @@ const MultiHeadAttentionImpl: QuartzMdxComponent<Props> = ({ caption, heads = DE
       </div>
 
       <p class="mha-intuition">
-        Each head's softmax is an <strong>independent normaliser</strong>. <MathLabel tex="h" />{' '}
-        heads are strictly more expressive than one wider head with the same{' '}
-        <MathLabel tex="h \cdot d_h" /> dimension because{' '}
-        <MathLabel tex="\operatorname{softmax}(A+B) \neq \operatorname{softmax}(A) + \operatorname{softmax}(B)" />
-        . The slider rearranges the <MathLabel tex="d_m" /> budget across heads; it does not grow
-        the cache.
+        The slider redistributes <MathLabel tex="d_m" /> across heads; cache size stays fixed.
       </p>
 
       {caption ? (

@@ -59,7 +59,7 @@ Joint dictionary learning can capture correlated contributions in these spaces.[
 <Zoomable label="feature lifecycle through the residual stream">
   <CrossLayerFeatures
     view="lifecycle"
-    caption="A synthetic feature lifecycle, after Anthropic's crosscoders figure. Eight blocks write into the residual stream $r_0,\dots,r_8$. Projected on the feature direction, $r_{l+1}=r_l+u_l$ becomes $s_{l+1}=s_l+w_l$. Sage blocks write to the feature: two form it by cross-layer superposition, one amplifies it and one deletes it. With one SAE per position $r_1,\dots,r_8$ and unit decoder norms, the feature becomes 5 salmon duplicate latents. A crosscoder gives one salmon latent with $z=1$ and decoder norms $\|d^l\|=s_l$. Both pay the same $L_1$-of-norms penalty, $11\lambda$. Switch the dictionary to compare."
+    caption="Synthetic eight-block lifecycle after Anthropic: $r_{l+1}=r_l+u_l$, projected as $s_{l+1}=s_l+w_l$. Unit-norm per-layer SAE decoders give 5 latents; the crosscoder gives one ($z=1$, $\|d^l\|=s_l$). Both penalties are $11\lambda$. Switch dictionaries."
   />
 </Zoomable>
 ```
@@ -70,7 +70,7 @@ Suppose a signal with strength $z(x)$ persists across three layers. Its contribu
 <Zoomable label="duplicate features and circuit edges">
   <CrossLayerFeatures
     view="circuit"
-    caption="The preview's hypothetical circuit, after Anthropic's crosscoders figure. Features 1 and 2 (sage) are present by layer $L$. MLPs in layers $L+2$ and $L+3$ combine them into feature 3 (salmon), and all three persist to $L+4$. Per-layer SAEs give 13 latents and 14 edges; 10 of the edges are a feature causing itself one layer later. A crosscoder whose latents read one layer and write that layer and later ones gives 3 latents and 2 edges. Switch the dictionary to compare."
+    caption="Hypothetical circuit after Anthropic: features 1 and 2 form 3 at $L+2,L+3$; all persist to $L+4$. Per-layer SAEs: 13 latents/14 edges (10 persistence); crosscoder: 3 latents/2 edges. Switch dictionaries."
   />
 </Zoomable>
 ```
@@ -87,7 +87,7 @@ An SAE reconstructs its input activation space. A [[thoughts/mechanistic interpr
 <Zoomable label="autoencoder, transcoder and crosscoder reads and writes">
   <CrosscoderMasks
     dims="coder"
-    caption="Autoencoder, transcoder and acausal crosscoder on five residual-stream layers, after Anthropic's crosscoders figure. The stream runs up from L0. Each box is a group of latents with one encoder placement; an arrow into a box is a read and an arrow out is a reconstruction. The grid marks each pair of read layer and reconstructed layer that a group connects: sage where the coder allows it, salmon for the selected read layer. Pick a coder and a read layer."
+    caption="Five-layer autoencoder, transcoder and acausal crosscoder masks, after Anthropic. The grid shows allowed read/reconstruction layer pairs. Select a coder and read layer."
   />
 </Zoomable>
 ```
@@ -128,7 +128,7 @@ The outer sum is an $L_1$ norm of per-layer $L_2$ norms.[^l2weightnorm] For one 
     dims="variant"
     causality="weak"
     locality="global"
-    caption="Crosscoder variants on five residual-stream layers, after Anthropic's crosscoders variant table. Causality sets which layers a read can reconstruct: every layer (acausal), the same and later layers (weakly causal) or only later layers (strictly causal). Locality limits each latent to a window of $K=2$ adjacent layers, or keeps every other layer. Sage cells are allowed pairs; the salmon row and boxes belong to the selected read layer. The table also lists a shared SAE (one dictionary tied across layers, with the autoencoder mask), cross-model coders, and coders that predict layer outputs instead of the residual stream; this figure does not draw those. Pick a variant and a read layer."
+    caption="Five-layer causality/locality variants after Anthropic. Select a variant and read layer; shared SAE, cross-model and output-prediction variants appear in the table but are not drawn."
   />
 </Zoomable>
 ```
@@ -164,7 +164,7 @@ The preview compared a global acausal crosscoder with separate SAEs on all layer
     decimals={2}
     series='[{"name":"all-layer crosscoder","values":[9.16,8.49,7.92,7.39,6.91,6.52,6.02,5.75,5.54,5.44,null]},{"name":"per-layer SAEs","values":[10.60,10.09,9.57,9.03,8.48,7.95,7.38,6.90,6.47,6.13,6.03]}]'
     active={5}
-    caption="Minimum loss of one all-layer acausal crosscoder (salmon circles) and of separate per-layer SAEs (sage squares) on an 18-layer model, against total dictionary size. Both axes are logarithmic. Values are read from the Anthropic crosscoders figure and are approximate, to about $\pm 0.05$. The crosscoder at $2^{17}$ features matches the SAEs at about $2^{20}$, so it is about 8 times more feature efficient. Hover or focus a point, then use the arrow keys, to read both losses."
+    caption="Approximate Anthropic values ($\pm0.05$) for an 18-layer crosscoder and per-layer SAEs; both axes are logarithmic. Hover or focus a point, then use arrows to read losses."
   />
 </Zoomable>
 
@@ -182,7 +182,7 @@ The preview compared a global acausal crosscoder with separate SAEs on all layer
     ylabel="minimum loss (arb. unit, log)"
     decimals={2}
     series='[{"name":"all-layer crosscoder","points":[[17.753,11.98],[35.506,10.94],[71.012,9.94],[142.025,9.09],[284.05,8.41],[568.1,7.84],[1136.199,7.42],[2272.398,7.12],[4544.797,6.74],[9089.593,6.41]]},{"name":"per-layer SAEs","points":[[2,10.82],[4,10.37],[8,9.93],[16,9.51],[32,9.08],[64,8.63],[128,8.24],[256,7.86],[512,7.48],[1024,7.16],[2048,6.82],[4096,6.54],[8192,6.28]]}]'
-    caption="The same coders against training compute. Values are read from the Anthropic crosscoders figure and are approximate; the crosscoder points sit about $2^{0.15}$ to the right of the SAE points in that figure. Hover or focus a point, then use the arrow keys, to read each loss. The figure marks the crosscoder as about 2 times less FLOP efficient at the largest budget. The features plot reaches lower losses because those coders are trained past FLOP-optimality."
+    caption="Approximate Anthropic compute/loss values; at the largest budget the crosscoder uses about $2\times$ the FLOPs. Hover or focus a point, then use arrows to read losses."
   />
 </Zoomable>
 ```

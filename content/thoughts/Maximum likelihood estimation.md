@@ -18,7 +18,6 @@ title: Maximum likelihood estimation
 >
 > Maximum likelihood estimation chooses the parameter value that gives the observed sample the largest probability mass or density under a model. With independent data, maximizing likelihood is equivalent to minimizing negative log likelihood. Conditional classification likelihood gives the usual [[thoughts/cross entropy|cross entropy]] objective.
 
-
 ## definition
 
 For a realized sample $\mathbf x=(x_1,\ldots,x_n)$, the likelihood is the joint probability mass or density as a function of $\theta$:

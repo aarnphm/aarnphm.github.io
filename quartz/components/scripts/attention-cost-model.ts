@@ -103,19 +103,3 @@ export const accMetricTex = (k: string, m: AccMetrics): string => {
       return '\\text{–}'
   }
 }
-
-/** Signed change between two metric states, empty when nothing moved. */
-export const accDeltaTex = (k: string, cur: AccMetrics, prev: AccMetrics): string => {
-  const a = cur[k as keyof AccMetrics]
-  const b = prev[k as keyof AccMetrics]
-  if (a === b || !Number.isFinite(b)) return ''
-  const sign = a > b ? '+' : '-'
-  const diff = Math.abs(a - b)
-  const body =
-    k === 'kvtok' || k === 'kvtotal'
-      ? accBytesTex(diff)
-      : k === 'ratio'
-        ? accRatioTex(diff)
-        : accCountTex(diff)
-  return `${sign}${body}`
-}

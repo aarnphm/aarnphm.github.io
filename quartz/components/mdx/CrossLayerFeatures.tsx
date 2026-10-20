@@ -143,7 +143,7 @@ const Lifecycle = ({ arrow }: { arrow: string }) => (
     viewBox={`0 0 ${LC_W} ${LC_H}`}
     preserveAspectRatio="xMidYMid meet"
     role="img"
-    aria-label={`A residual stream of ${STATIONS} positions and ${STAGES.length} blocks. The feature forms over blocks 2 and 3, persists, is amplified at block 5 and is deleted at block 7. Per-layer SAEs give it ${LC.active.length} latents; a crosscoder gives it one.`}
+    aria-label={`${STATIONS} residual positions, ${STAGES.length} blocks. The feature forms at blocks 2–3, persists, grows at 5, and is deleted at 7. ${LC.active.length} per-layer SAE latents versus one crosscoder latent.`}
   >
     <defs>
       <Arrow id={arrow} />
@@ -306,7 +306,7 @@ const Circuit = ({ arrow }: { arrow: string }) => (
     viewBox={`0 0 ${CC_W} ${CC_H}`}
     preserveAspectRatio="xMidYMid meet"
     role="img"
-    aria-label={`Features 1 and 2 present from layer L combine into feature 3 at layers L+2 and L+3. Per-layer SAEs give ${CIRCUIT.nodes.length} latents and ${CIRCUIT.edges.length} edges; a crosscoder gives ${FEATURES.length} latents and ${CIRCUIT.latentEdges.length} edges.`}
+    aria-label={`Features 1 and 2 form feature 3 at L+2 and L+3. Per-layer SAEs: ${CIRCUIT.nodes.length} latents, ${CIRCUIT.edges.length} edges. Crosscoder: ${FEATURES.length} latents, ${CIRCUIT.latentEdges.length} edges.`}
   >
     <defs>
       <Arrow id={arrow} />

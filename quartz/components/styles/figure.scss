@@ -42,6 +42,11 @@
 
   @include figure-palette;
 
+  :is(input[type='text'], input[type='number'], textarea, select):focus-visible {
+    outline: 2px solid var(--control-focus, var(--dark));
+    outline-offset: -2px;
+  }
+
   :root[saved-theme='dark'] & {
     --fig-frame-border: color-mix(in srgb, var(--gray) 46%, transparent);
     --fig-tab-fg: var(--fig-note);
@@ -114,6 +119,31 @@
   border: 0;
   border-radius: var(--radius-none);
   background: var(--fig-grid-line);
+}
+
+// Keep the legend clear of the grid without painting the grid behind its text.
+@mixin figure-fieldset($space-before: 0rem) {
+  $legend-size: 0.75rem;
+  $legend-line-height: 1.5;
+  $legend-gap: var(--space-3);
+
+  @include figure-grid;
+  position: relative;
+  margin-top: calc(
+    $legend-size * $legend-line-height + #{$legend-gap} + var(--space-1) + $space-before
+  );
+
+  > legend {
+    position: absolute;
+    bottom: calc(100% + #{$legend-gap});
+    left: 0;
+    margin: 0;
+    padding: 0 0 var(--space-1);
+    color: var(--fig-note);
+    font-size: $legend-size;
+    line-height: $legend-line-height;
+    white-space: nowrap;
+  }
 }
 
 @mixin figure-grid-cell {

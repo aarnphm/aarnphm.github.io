@@ -61,7 +61,7 @@ const MODES: readonly { id: ModeId; label: string; rule: string; groups: Group[]
   {
     id: 'mha',
     label: 'MHA mode',
-    rule: 'Training and prefill. Each head rebuilds its own key and value from the latent, $\\mathbf{k}^C_{t,i}=W^{UK}_i\\mathbf{c}^{KV}_t$ and $\\mathbf{v}_{t,i}=W^{UV}_i\\mathbf{c}^{KV}_t$, so core attention is ordinary multi-head attention with head width $d_h+d_h^R$.',
+    rule: 'Training and prefill: each head reconstructs $\\mathbf{k}^C_{t,i}=W^{UK}_i\\mathbf{c}^{KV}_t$ and $\\mathbf{v}_{t,i}=W^{UV}_i\\mathbf{c}^{KV}_t$. Core attention uses width $d_h+d_h^R$.',
     groups: [
       CACHE,
       { title: 'head 1', rows: headRowsMha('1') },
@@ -72,7 +72,7 @@ const MODES: readonly { id: ModeId; label: string; rule: string; groups: Group[]
   {
     id: 'mqa',
     label: 'MQA mode',
-    rule: 'Decode. Absorb $W^{UK}_i$ into the query, $\\mathbf{q}_{t,i}^{\\top}\\mathbf{k}^C_{s,i}=(W^{UK\\top}_i\\mathbf{q}^C_{t,i})^{\\top}\\mathbf{c}^{KV}_s$. Every head then attends to the same cached $[\\mathbf{c}^{KV}_s;\\mathbf{k}^R_s]$, and $W^{UV}_i$ maps the $d_c$-wide output back to $d_h$ after attention.',
+    rule: 'Decode: absorb $W^{UK}_i$ into the query, so each head attends to cached $[\\mathbf{c}^{KV}_s;\\mathbf{k}^R_s]$. $W^{UV}_i$ maps the $d_c$ output to $d_h$.',
     groups: [
       CACHE,
       {

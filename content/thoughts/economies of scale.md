@@ -30,7 +30,7 @@ In microeconomics, **economies of scale** are the cost advantages that enterpris
     series='[{"name":"LRAC","terms":[[-1,36],[0,2],[1,0.25]],"from":3,"to":38}]'
     marks='[{"x":4,"xlabel":"Q","ylabel":"C"},{"x":12,"xlabel":"Q_2","ylabel":"C_1"}]'
     probe='{"x":8,"step":0.5,"xname":"output $Q$","yname":"average cost","falling":"economies of scale","flat":"minimum efficient scale","rising":"diseconomies of scale","state":"region"}'
-    caption="As quantity of production increases from $Q$ to $Q_2$, the average cost of each unit decreases from $C$ to $C_1$. LRAC is the long-run average cost. The curve is illustrative, $\mathrm{LRAC}(Q) = 36/Q + 2 + Q/4$: a fixed cost spread over more units, plus a cost that grows with scale, so the minimum sits at $Q_2 = 12$. The sage squares mark $Q$ and $Q_2$. Drag the salmon point, or use the slider, to read the average cost at any output and whether it still falls."
+    caption="Illustrative $\mathrm{LRAC}(Q)=36/Q+2+Q/4$ reaches its minimum at $Q_2=12$. Markers show $(Q,C)$ and $(Q_2,C_1)$; move the point or slider to inspect average cost and its trend."
   />
 </Zoomable>
 ```

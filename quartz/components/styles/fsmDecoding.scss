@@ -27,21 +27,9 @@
 }
 
 .fsm-segments {
-  @include figure-grid;
+  @include figure-fieldset(var(--space-1));
   grid-auto-flow: column;
   min-width: 0;
-  position: relative;
-  margin-top: 1.45rem;
-}
-
-.fsm-legend {
-  position: absolute;
-  top: -1.15rem;
-  left: 0;
-  padding: 0;
-  color: var(--fig-note);
-  font-size: 0.72rem;
-  white-space: nowrap;
 }
 
 .fsm-segment {

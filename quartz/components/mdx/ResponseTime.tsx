@@ -36,14 +36,7 @@ const ResponseTimeImpl: QuartzMdxComponent<Props> = ({ caption }) => {
           </marker>
         </defs>
 
-        <line
-          class="rt-axis"
-          x1={40}
-          y1={Y}
-          x2={520}
-          y2={Y}
-          marker-end={`url(#rt-arrow-${id})`}
-        />
+        <line class="rt-axis" x1={40} y1={Y} x2={520} y2={Y} marker-end={`url(#rt-arrow-${id})`} />
         <text class="rt-axis-label" x={530} y={Y + 4}>
           Time
         </text>

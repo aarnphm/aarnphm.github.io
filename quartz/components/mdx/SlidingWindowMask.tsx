@@ -58,7 +58,7 @@ const SlidingWindowMaskImpl: QuartzMdxComponent<Props> = ({ caption, length = DE
   const L = clamp(Math.round(length), MIN_LENGTH, MAX_LENGTH)
   const initialW = clamp(DEFAULT_W, 1, Math.floor(L / 2))
   const rows = Array.from({ length: L }, (_, i) => i)
-  const ariaLabel = `Sliding window attention mask: ${L} by ${L} grid where rows are query indices and columns are key indices. Salmon cells lie inside the window, sage cells are global tokens, gray cells are masked.`
+  const ariaLabel = `${L} by ${L} sliding-window mask: rows are queries, columns are keys; salmon marks the window, sage global tokens, and gray masked cells.`
 
   return (
     <figure
@@ -255,10 +255,8 @@ const SlidingWindowMaskImpl: QuartzMdxComponent<Props> = ({ caption, length = DE
       </div>
 
       <p class="swm-intuition">
-        Information clusters locally. Cap each token's view to a neighbourhood of radius{' '}
-        <MathLabel tex="w" /> and pay a linear price; a handful of global tokens preserve long-range
-        channels. As <MathLabel tex="w" /> grows the band thickens; at <MathLabel tex="w=L" /> you
-        recover full attention.
+        Each token attends within radius <MathLabel tex="w" /> and to global tokens. At{' '}
+        <MathLabel tex="w=L" />, the window covers the full sequence.
       </p>
 
       {caption ? (

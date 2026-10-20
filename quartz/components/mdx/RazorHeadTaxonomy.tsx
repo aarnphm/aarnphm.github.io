@@ -79,7 +79,7 @@ const RazorHeadTaxonomyImpl: QuartzMdxComponent<Props> = ({ caption }) => (
         viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
         preserveAspectRatio="xMidYMid meet"
         role="img"
-        aria-label="Token strip A B C ellipsis A B with the second B as the current query. An echo head attends back to the earlier identical B; an induction head attends back to the C that followed the earlier B, copying it out as the next token."
+        aria-label="In A B C … A B, the echo head matches the earlier B; the induction head copies the following C as the next token."
       >
         <defs>
           <marker
@@ -123,7 +123,7 @@ const RazorHeadTaxonomyImpl: QuartzMdxComponent<Props> = ({ caption }) => (
           class="rht-arc-group rht-arc-group--echo"
           tabindex={0}
           role="img"
-          aria-label="echo head: attends to the previous identical token, detecting the repeat"
+          aria-label="Echo head attends to the previous identical token."
         >
           <path class="rht-arc-hit" d={echoArc} />
           <path class="rht-arc rht-arc--echo" d={echoArc} marker-end="url(#rht-arrow-echo)" />
@@ -132,7 +132,7 @@ const RazorHeadTaxonomyImpl: QuartzMdxComponent<Props> = ({ caption }) => (
           class="rht-arc-group rht-arc-group--induction"
           tabindex={0}
           role="img"
-          aria-label="induction head: attends to the token after the repeat, then copies it out as the prediction"
+          aria-label="Induction head attends to the token after the repeat and copies it as the prediction."
         >
           <path class="rht-arc-hit" d={inductionArc} />
           <path
@@ -158,10 +158,10 @@ const RazorHeadTaxonomyImpl: QuartzMdxComponent<Props> = ({ caption }) => (
       </svg>
 
       <div class="rht-tip rht-tip--echo" role="tooltip">
-        attends to the previous identical token. detects the repeat.
+        attends to the previous identical token.
       </div>
       <div class="rht-tip rht-tip--induction" role="tooltip">
-        attends to the token after that repeat, then copies it out as the prediction.
+        attends to the token after the repeat and copies it as the prediction.
       </div>
     </div>
 

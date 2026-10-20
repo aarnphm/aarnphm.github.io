@@ -235,7 +235,7 @@ const KVCacheVariantsImpl: QuartzMdxComponent<Props> = ({ caption }) => (
         viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
         preserveAspectRatio="xMidYMid meet"
         role="img"
-        aria-label="kv cache across attention variants. MHA caches every head's keys and values; GQA shares keys and values across query groups; MQA stores one shared key and value; MLA stores a compressed latent plus a RoPE key and reconstructs per-head keys and values by projection."
+        aria-label="KV cache comparison: MHA stores per-head keys and values; GQA shares them by query group; MQA shares one pair; MLA stores compressed KV and a RoPE key, then reconstructs per-head keys and values."
       >
         <defs>
           <pattern

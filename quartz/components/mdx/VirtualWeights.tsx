@@ -183,38 +183,28 @@ const VirtualWeightsImpl: QuartzMdxComponent<Props> = ({ caption }) => (
     <div class="vw-panels">
       <section class="vw-panel">
         <p class="vw-panel-title">
-          The residual stream is modified by a sequence of MLP and attention layers "reading from"
-          and "writing to" it with linear operations.
+          MLP and attention layers read from and write to the residual stream.
         </p>
         <div class="vw-stage">
           <Panel kind="reading" arrowId="vw-arrow-r" />
           <div class="vw-callouts vw-callouts--reading">
             <p class="vw-callout">
-              Each layer <strong>"writes"</strong> to the residual stream by adding a linear
-              projection of its results.
+              <strong>Write:</strong> add a linear projection of the layer output.
             </p>
             <p class="vw-callout">
-              Each layer <strong>"reads"</strong> from the residual stream with a linear projection.
+              <strong>Read:</strong> project the residual stream into the layer.
             </p>
           </div>
         </div>
       </section>
 
       <section class="vw-panel">
-        <p class="vw-panel-title">
-          Because all these operations are linear, we can "multiply through" the residual stream.
-        </p>
+        <p class="vw-panel-title">Linearity lets us expand the sequence into virtual weights.</p>
         <div class="vw-stage">
           <Panel kind="virtual" arrowId="vw-arrow-v" />
           <div class="vw-callouts vw-callouts--virtual">
-            <p class="vw-callout">
-              Multiplying out the weights reveals "virtual weights" implicitly connecting each pair
-              of layers.
-            </p>
-            <p class="vw-callout">
-              By using different subspaces of the residual stream, a layer can send different
-              information to different layers, or even not interact with other layers.
-            </p>
+            <p class="vw-callout">Each virtual weight connects a source layer to a later layer.</p>
+            <p class="vw-callout">Residual subspaces can separate layer-to-layer paths.</p>
           </div>
         </div>
       </section>

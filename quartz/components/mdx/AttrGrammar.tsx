@@ -13,23 +13,20 @@ const TREES: Record<Kind, Node> = {
     label: 'binary(5)',
     lit: true,
     kids: [
-      {
-        label: 'binary(2)',
-        kids: [{ label: 'digit(1)' }, { label: 'digit(0)' }],
-      },
+      { label: 'binary(2)', kids: [{ label: 'digit(1)' }, { label: 'digit(0)' }] },
       { label: 'digit(1)' },
     ],
   },
   inherited: {
-    label: "expression([], 6)",
+    label: 'expression([], 6)',
     lit: true,
     kids: [
       {
-        label: "term([], 6)",
+        label: 'term([], 6)',
         kids: [
           {
-            label: "factor([], 6)",
-            kids: [{ label: "integer(2)", kids: [{ label: 'digit(2)' }] }],
+            label: 'factor([], 6)',
+            kids: [{ label: 'integer(2)', kids: [{ label: 'digit(2)' }] }],
           },
         ],
       },
@@ -37,14 +34,14 @@ const TREES: Record<Kind, Node> = {
         label: "declaration([], 'a', 3)",
         kids: [
           {
-            label: "expression([], 3)",
+            label: 'expression([], 3)',
             kids: [
               {
-                label: "term([], 3)",
+                label: 'term([], 3)',
                 kids: [
                   {
-                    label: "factor([], 3)",
-                    kids: [{ label: "integer(3)", kids: [{ label: 'digit(3)' }] }],
+                    label: 'factor([], 3)',
+                    kids: [{ label: 'integer(3)', kids: [{ label: 'digit(3)' }] }],
                   },
                 ],
               },
@@ -59,7 +56,9 @@ const TREES: Record<Kind, Node> = {
 const renderNode = (node: Node, key: string) => (
   <div class="ag-branch" key={key}>
     <div class={node.lit ? 'ag-node ag-node--lit' : 'ag-node'}>{node.label}</div>
-    {node.kids ? <div class="ag-kids">{node.kids.map((k, i) => renderNode(k, `${key}-${i}`))}</div> : null}
+    {node.kids ? (
+      <div class="ag-kids">{node.kids.map((k, i) => renderNode(k, `${key}-${i}`))}</div>
+    ) : null}
   </div>
 )
 
@@ -77,8 +76,8 @@ const AttrGrammarImpl: QuartzMdxComponent<Props> = ({
         role="img"
         aria-label={
           kind === 'inherited'
-            ? 'Decorated tree with inherited attributes flowing downward.'
-            : 'Decorated tree with synthesized attributes flowing upward.'
+            ? 'Inherited attributes flow down the tree.'
+            : 'Synthesized attributes flow up the tree.'
         }
       >
         {renderNode(root, 'r')}

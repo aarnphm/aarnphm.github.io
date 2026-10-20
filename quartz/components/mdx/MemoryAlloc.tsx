@@ -2,13 +2,7 @@ import { MathText } from '../../util/math-text'
 import style from '../styles/memoryAlloc.scss'
 import { registerMdxComponent, type QuartzMdxComponent } from './registry'
 
-type Layout =
-  | 'seq'
-  | 'array'
-  | 'array-lb'
-  | 'record'
-  | 'align'
-  | 'risc'
+type Layout = 'seq' | 'array' | 'array-lb' | 'record' | 'align' | 'risc'
 type Float = 'none' | 'end'
 type Props = { caption?: string; layout?: Layout; float?: Float }
 
@@ -52,7 +46,11 @@ const CELLS: Record<Exclude<Layout, 'align' | 'risc'>, Cell[]> = {
 
 const ALIGN_ROWS = [
   { title: 'packed', cells: ['a', 'b', 'c', 'd'], marks: ['0', '1', '2', '3', '4'] },
-  { title: 'aligned', cells: ['a', 'b', '·', 'c', '·', '·', 'd'], marks: ['0', '1', '2', '3', '4', '5', '6', '8'] },
+  {
+    title: 'aligned',
+    cells: ['a', 'b', '·', 'c', '·', '·', 'd'],
+    marks: ['0', '1', '2', '3', '4', '5', '6', '8'],
+  },
 ] as const
 
 const RISC_BANDS: { name: string; note: string; lit?: boolean; soft?: boolean }[] = [
@@ -80,7 +78,11 @@ const MemoryAllocImpl: QuartzMdxComponent<Props> = ({
   return (
     <figure class={`memory-alloc${floatClass}`} data-ma-layout={layout}>
       {layout === 'risc' ? (
-        <div class="ma-risc" role="img" aria-label="RISC-V memory layout from reserved through stack.">
+        <div
+          class="ma-risc"
+          role="img"
+          aria-label="RISC-V memory layout from reserved through stack."
+        >
           {[...RISC_BANDS].reverse().map(band => (
             <div
               class={
@@ -102,7 +104,10 @@ const MemoryAllocImpl: QuartzMdxComponent<Props> = ({
               <p class="ma-align-title">{row.title}</p>
               <div class="ma-strip">
                 {row.cells.map((c, i) => (
-                  <div class={c === '·' ? 'ma-cell ma-cell--soft' : 'ma-cell'} key={`${row.title}-${i}`}>
+                  <div
+                    class={c === '·' ? 'ma-cell ma-cell--soft' : 'ma-cell'}
+                    key={`${row.title}-${i}`}
+                  >
                     {c}
                   </div>
                 ))}

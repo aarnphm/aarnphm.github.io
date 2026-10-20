@@ -120,12 +120,7 @@ const RegexAutomatonImpl: QuartzMdxComponent<Props> = ({
 
   return (
     <figure class={`regex-automaton${floatClass}`} data-ra-machine={machine}>
-      <svg
-        class="ra-svg"
-        viewBox={`0 0 ${spec.w} ${spec.h}`}
-        role="img"
-        aria-label={spec.label}
-      >
+      <svg class="ra-svg" viewBox={`0 0 ${spec.w} ${spec.h}`} role="img" aria-label={spec.label}>
         <defs>
           <marker
             id={marker}
@@ -146,11 +141,7 @@ const RegexAutomatonImpl: QuartzMdxComponent<Props> = ({
           const lp = labelPoint(from, to, e.bend)
           return (
             <g key={`${e.from}-${e.to}-${i}`}>
-              <path
-                class="ra-edge"
-                d={edgePath(from, to, e.bend)}
-                marker-end={`url(#${marker})`}
-              />
+              <path class="ra-edge" d={edgePath(from, to, e.bend)} marker-end={`url(#${marker})`} />
               <text class="ra-edge-label" x={lp.x} y={lp.y} text-anchor="middle">
                 {e.label}
               </text>

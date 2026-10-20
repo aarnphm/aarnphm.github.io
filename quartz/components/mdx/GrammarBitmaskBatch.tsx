@@ -169,7 +169,7 @@ const GrammarBitmaskBatchImpl: QuartzMdxComponent<Props> = ({
         class="gbb-svg"
         viewBox={`0 0 ${W} ${H}`}
         role="img"
-        aria-label={`The scheduler fills one grammar bitmask row per structured request in a batch of ${BATCH.length}, broadcasts it with the scheduler output, and every GPU worker applies it to its logits before sampling.`}
+        aria-label={`Grammar bitmask batch of ${BATCH.length} requests: the scheduler broadcasts one row per request; workers mask logits before sampling.`}
       >
         <rect
           class="gbb-box"

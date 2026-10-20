@@ -18,7 +18,7 @@ title: Multi-Head Latent Attention
 
 ```jsx imports={Zoomable,KVCacheVariants}
 <Zoomable label="KV cache across attention variants">
-  <KVCacheVariants caption="hatched blocks are cache-resident. MHA stores every head's $K,V$; GQA stores one $K,V$ pair per group; MQA stores one shared pair; MLA stores $c_t^{KV}$ and $k_t^R$, then reconstructs $k_{t,i}^C$ and $v_{t,i}^C$ on demand." />
+  <KVCacheVariants />
 </Zoomable>
 ```
 
@@ -49,7 +49,7 @@ $$
 
 ```jsx imports={Zoomable,MLALatentPath}
 <Zoomable label="MLA latent projection path">
-  <MLALatentPath caption="MLA latent projection path. We only cache $c_t^{KV}$ and $k_t^R$ only. reconstruct $k_{t,i}^C$ and $v_{t,i}^C$ from $c_t^{KV}$, concatenate $k_{t,i}^C$ with $k_t^R$, and keep queries on the separate $c_t^Q$ path. slide $d_c$ and $d_h^R$ to move cache size." />
+  <MLALatentPath caption="Cache $c_t^{KV}$ and $k_t^R$; reconstruct per-head $k_{t,i}^C$ and $v_{t,i}^C$ on demand. Adjust $d_c$ and $d_h^R$ to change cache size." />
 </Zoomable>
 ```
 

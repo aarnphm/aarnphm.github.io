@@ -23,7 +23,7 @@ Post-training quantization uses a trained model. Conversion can happen offline o
 
 ```jsx imports={Zoomable,NumberFormatBits}
 <Zoomable label="Number format bit layouts">
-  <NumberFormatBits caption="Bit layouts of seven formats, after the figure from baseten introduction into quantization format, recomputed here for an input $x$. Each row has one cell per bit on a shared 32-bit scale. The sign, exponent and fraction fields are three steps of ink, and a solid square marks a set bit. Floating-point rows round to nearest, ties to even. FP32, BF16 and FP16 overflow to infinity; the FP8 and FP4 rows saturate to their largest finite value. INT8 uses the symmetric example below, $S=1/127$ and $[-127,127]$. Select an input, then select a row: its name turns salmon, its ground turns pale sage, and the table decodes its bits." />
+  <NumberFormatBits caption="Seven bit layouts adapted from Baseten’s quantization-format introduction, recomputed for input $x$ on a shared 32-bit scale. Floating-point formats use ties-to-even; FP32/BF16/FP16 overflow to infinity, while FP8/FP4 saturate. INT8 uses $S=1/127$ and levels $[-127,127]$. Select an input and format row to decode its bits." />
 </Zoomable>
 ```
 
@@ -135,7 +135,7 @@ Here $Q_{\mathrm{E2M1}}$ rounds to the element format and clamps finite overflow
 
 ```jsx imports={Zoomable,MXBlockScale}
 <Zoomable label="MX block scale">
-  <MXBlockScale caption="One MX block of 32 synthetic values: standard normal draws from a fixed seed, with element 11 replaced by $7$ (the example above) or by an outlier of $24$. The shared exponent follows the conversion above. Elements round to nearest, ties to even, and clamp at the largest level. Outlines are the inputs $V_i$, sage fills are the dequantized $\hat V_i=SP_i$, and the salmon fill is the block maximum that sets $S$. Ticks on the value axis mark every level $SP$ that the block can hold. The error strip shows $\hat V_i-V_i$ on its own axis. Change the element format or the block and watch small values flush to zero." />
+  <MXBlockScale caption="Thirty-two seeded normal values; element 11 is $7$ or the outlier $24$. The shared exponent follows the conversion above; elements round ties-to-even and clamp. Outlines show inputs $V_i$, sage shows $\hat V_i=SP_i$, salmon marks the maximum that sets $S$, and the error strip shows $\hat V_i-V_i$. Select a format or block." />
 </Zoomable>
 ```
 
@@ -143,7 +143,7 @@ MX formats apply to both training and inference. A format definition alone gives
 
 ```jsx imports={Zoomable,MXComputeFlow}
 <Zoomable label="MX compute flow">
-  <MXComputeFlow caption="The three matrix products of one training step for layer $i$, after Figure 2 of Microscaling Data Formats for Deep Learning; this computed figure replaces that image. Each operand is drawn element by element with $M=32$, $K=64$ and $N=32$. Each grey strip is one block of 32 values that share an E8M0 scale, and blocks run along the reduction axis of the product, marked $Q$. The salmon row and column meet at the salmon output element. The operands are MXFP4 copies of synthetic BF16 tensors: activations with two outlier channels, Gaussian weights, and output gradients with one scale per token. The readout accumulates products without rounding; in the training flow the outputs are stored as BF16. Quantization and transposition do not commute, so each tensor needs a second MX copy for the backward pass. The table counts the values where the two copies differ, and pale sage marks the copies that the selected product uses. Vector operations (activations, normalization, softmax, residual add) stay in BF16, and the optimizer updates an FP32 master copy of the weights. Select a product." />
+  <MXComputeFlow caption="Three training GEMMs for layer $i$, after Fig. 2 of *Microscaling Data Formats for Deep Learning*. $M=32$, $K=64$, $N=32$; each gray block shares an E8M0 scale along $Q$. MXFP4 operands copy synthetic BF16 activations (two outlier channels), Gaussian weights, and per-token-scaled gradients. Accumulation is unrounded; outputs are BF16. Backward uses separately quantized transposes because quantization and transpose do not commute; the table counts mismatches. Selected operands are sage, the output salmon. Vector ops stay BF16; weights update from an FP32 master copy. Select a product." />
 </Zoomable>
 ```
 

@@ -5,7 +5,6 @@ import {
   ACC_VALUES,
   accBytesTex,
   accCompute,
-  accDeltaTex,
   accMetricTex,
   accRatioTex,
   type AccDType,
@@ -74,10 +73,9 @@ const accUpdateInputs = (root: HTMLElement, s: AccState) => {
 
 const accCards = ['dh', 'params', 'flops', 'kvtok', 'kvtotal', 'ratio']
 
-const accUpdateCards = (root: HTMLElement, m: AccMetrics, prev: AccMetrics | null) => {
+const accUpdateCards = (root: HTMLElement, m: AccMetrics) => {
   for (const k of accCards) {
     accSetTex(root, `[data-acc-num="${k}"]`, accMetricTex(k, m))
-    if (prev) accSetTex(root, `[data-acc-delta="${k}"]`, accDeltaTex(k, m, prev))
   }
   const warning = root.querySelector<HTMLElement>('[data-acc-warning]')
   if (warning) warning.hidden = Number.isInteger(m.dh)
@@ -119,14 +117,13 @@ const accUpdateSummary = (root: HTMLElement, m: AccMetrics) => {
   accSetTex(root, '[data-acc-sumratio]', accRatioTex(m.ratio))
 }
 
-const accRender = (root: HTMLElement, s: AccState, prev: AccMetrics | null): AccMetrics => {
+const accRender = (root: HTMLElement, s: AccState) => {
   const m = accCompute(s)
   accWriteState(root, s)
   accUpdateInputs(root, s)
-  accUpdateCards(root, m, prev)
+  accUpdateCards(root, m)
   accUpdateBar(root, m)
   accUpdateSummary(root, m)
-  return m
 }
 
 const accSetup = () => {
@@ -136,8 +133,7 @@ const accSetup = () => {
     root.dataset.accBound = 'true'
 
     const state = accReadState(root)
-    let prev: AccMetrics | null = null
-    prev = accRender(root, state, prev)
+    accRender(root, state)
 
     const offHandlers: Array<() => void> = []
 
@@ -156,7 +152,7 @@ const accSetup = () => {
           }
         }
         state[k] = next
-        prev = accRender(root, state, prev)
+        accRender(root, state)
         accFlashCard(root, k)
       }
       input.addEventListener('input', handler)
@@ -182,7 +178,7 @@ const accSetup = () => {
               if (divisors.length > 0) next = accSnap(next, divisors)
             }
             state[k] = next
-            prev = accRender(root, state, prev)
+            accRender(root, state)
             accFlashCard(root, k)
           }
           editEl.hidden = true
@@ -224,7 +220,7 @@ const accSetup = () => {
         selected: state.dt,
         onSelect: v => {
           state.dt = v
-          prev = accRender(root, state, prev)
+          accRender(root, state)
           accFlashCard(root, 'dt')
         },
       })

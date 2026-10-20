@@ -10,4 +10,3 @@ tags:
   - tsfm
 title: linear backward implementation of gradient descent
 ---
-

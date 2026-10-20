@@ -27,7 +27,7 @@ const PacketSnifferImpl: QuartzMdxComponent<Props> = ({ caption }) => {
         class="psn-svg"
         viewBox={`0 0 ${W} ${H}`}
         role="img"
-        aria-label="Packet sniffer: packet capture in the OS copies Ethernet frames to a packet analyzer in the application layer."
+        aria-label="Packet capture copies Ethernet frames from the OS to an application-layer packet analyzer."
       >
         <defs>
           <marker
@@ -69,15 +69,13 @@ const PacketSnifferImpl: QuartzMdxComponent<Props> = ({ caption }) => {
           </g>
         ))}
 
-        <line
+        <line class="psn-edge" x1={500} y1={156} x2={500} y2={104} marker-end={`url(#${arrow})`} />
+        <path
           class="psn-edge"
-          x1={500}
-          y1={156}
-          x2={500}
-          y2={104}
+          d="M440 276 H560"
+          marker-start={`url(#${arrow})`}
           marker-end={`url(#${arrow})`}
         />
-        <path class="psn-edge" d="M440 276 H560" marker-start={`url(#${arrow})`} marker-end={`url(#${arrow})`} />
         <line class="psn-edge" x1={500} y1={270} x2={500} y2={276} />
         <text class="psn-sub" x={500} y={H - 4} text-anchor="middle">
           to/from network
@@ -106,18 +104,8 @@ const PacketSnifferImpl: QuartzMdxComponent<Props> = ({ caption }) => {
           y2={112}
           marker-end={`url(#${arrow})`}
         />
-        <line
-          class="psn-edge psn-edge--strong"
-          x1={220}
-          y1={112}
-          x2={220}
-          y2={200}
-        />
-        <path
-          class="psn-edge psn-edge--tap"
-          d="M420 228 H300"
-          marker-end={`url(#${arrow})`}
-        />
+        <line class="psn-edge psn-edge--strong" x1={220} y1={112} x2={220} y2={200} />
+        <path class="psn-edge psn-edge--tap" d="M420 228 H300" marker-end={`url(#${arrow})`} />
         <text class="psn-tap" x={360} y={218} text-anchor="middle">
           copy of Ethernet frames
         </text>

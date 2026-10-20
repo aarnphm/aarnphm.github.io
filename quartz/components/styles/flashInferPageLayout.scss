@@ -24,22 +24,10 @@
 }
 
 .fpl-segments {
-  @include figure-grid;
+  @include figure-fieldset;
   grid-auto-flow: column;
   min-width: 0;
-  position: relative;
-  margin-top: 1.1rem;
   width: fit-content;
-}
-
-.fpl-legend {
-  position: absolute;
-  top: -1.15rem;
-  left: 0;
-  padding: 0;
-  color: var(--fig-note);
-  font-size: 0.72rem;
-  white-space: nowrap;
 }
 
 .fpl-segment {

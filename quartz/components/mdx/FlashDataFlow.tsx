@@ -18,8 +18,7 @@ const MODES: readonly Mode[] = [
     bullets: [
       '$K,V$ outer, $Q$ inner',
       '$O_i$ read-modify-written $\\times T_c$',
-      'serial: no overlap',
-      'grid: batch $\\times$ heads',
+      'serial: no overlap, grid: batch $\\times$ heads',
     ],
   },
   {
