@@ -7,12 +7,13 @@
   --pk-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
   --pk-selected: color-mix(in srgb, var(--secondary) 26%, var(--light));
   --pk-control: 1.75rem;
+  --pk-meta: max(12px, 0.66rem);
   // One inline inset for header, controls and help line, so their edges line up.
   --pk-pad: 0.85rem;
   --pk-offset: 0, 0.75rem;
   // Skin for the shared controls (styles/controls.scss) inside the editor.
   --control-height: var(--pk-control);
-  --control-font-size: 0.68rem;
+  --control-font-size: var(--pk-meta);
   --control-surface: var(--pk-surface);
   --control-focus: var(--dark);
   position: fixed;
@@ -111,11 +112,18 @@
   border: 1px solid var(--pk-line);
   padding: 0.45rem;
   margin-block: 0;
-  font: 0.7rem var(--bodyFont);
+  font: var(--pk-meta) / 1.5 var(--codeFont);
 
   summary {
     cursor: pointer;
     padding-block: 0.35rem;
+    min-height: 24px;
+    box-sizing: border-box;
+
+    @media (pointer: coarse) {
+      min-height: 44px;
+      align-content: center;
+    }
   }
 
   .press-kit-data-grid {
@@ -179,7 +187,7 @@
   summary {
     padding-block: 0.35rem;
     color: var(--darkgray);
-    font: 0.66rem var(--bodyFont);
+    font: var(--pk-meta) / 1.5 var(--codeFont);
     cursor: pointer;
   }
 
@@ -199,6 +207,8 @@
 .press-kit-data-grid--compact .press-kit-data-label {
   white-space: nowrap;
   overflow-wrap: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .press-kit-block-list {
@@ -233,7 +243,7 @@
   border-radius: var(--radius-none);
   background: var(--light);
   color: var(--darkgray);
-  font: 0.66rem/1.2 var(--bodyFont);
+  font: var(--pk-meta) / 1.3 var(--codeFont);
   text-align: start;
   cursor: pointer;
 
@@ -265,7 +275,7 @@
 
   small {
     color: var(--darkgray);
-    font-size: 0.56rem;
+    font-size: inherit;
     font-family: var(--codeFont);
     overflow-wrap: anywhere;
   }
@@ -500,7 +510,7 @@
 .press-kit-group {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .press-kit-field {
@@ -513,16 +523,16 @@
   border: 0;
 }
 
-// Matches the uppercase labels in the page's content meta.
+// Section labels use the same lowercase mono treatment as Bases table headers.
 .press-kit-field > legend,
 .press-kit-legend {
   margin: 0 0 0.4rem;
   padding: 0;
   color: var(--darkgray);
   font-family: var(--codeFont);
-  font-size: 0.58rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-size: var(--pk-meta);
+  line-height: 1.5;
+  text-transform: lowercase;
 }
 
 .press-kit-field > .press-kit-legend {
@@ -555,7 +565,7 @@
   background: var(--light);
   color: var(--darkgray);
   font-family: var(--codeFont);
-  font-size: 0.66rem;
+  font-size: var(--pk-meta);
   font-weight: 400;
   line-height: 1.2;
   text-align: center;
@@ -574,7 +584,7 @@
 
   small {
     color: var(--darkgray);
-    font-size: 0.56rem;
+    font-size: inherit;
   }
 
   &:has(input:checked),
@@ -654,10 +664,6 @@
   }
 }
 
-.press-kit-language > .press-kit-segment {
-  font-size: 0.6rem;
-}
-
 .press-kit-includes {
   display: flex;
   flex-wrap: wrap;
@@ -669,12 +675,22 @@
 
 .press-kit-actions {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
+  gap: 0;
+  border: 1px solid var(--pk-line);
 
   > .g-button {
-    flex: 1 0 0;
+    flex: 1 0 auto;
+    padding-inline: 0.3rem;
+    border: 0;
     white-space: nowrap;
+
+    + .g-button {
+      border-inline-start: 1px solid var(--pk-line);
+    }
+
+    &:active:not(:disabled) {
+      transform: none;
+    }
   }
 }
 
@@ -694,7 +710,7 @@
 .press-kit-textarea {
   min-height: 5.5rem;
   font-family: var(--bodyFont);
-  font-size: 0.8rem;
+  font-size: var(--pk-meta);
   line-height: 1.45;
   field-sizing: content;
   overflow: hidden;
@@ -704,15 +720,21 @@
 .press-kit-input {
   min-height: var(--pk-control);
   font-family: var(--codeFont);
-  font-size: 0.66rem;
+  font-size: var(--pk-meta);
   text-overflow: ellipsis;
+}
+
+@media (pointer: coarse) {
+  .press-kit :is(.press-kit-input, .press-kit-textarea) {
+    font-size: max(16px, 1rem);
+  }
 }
 
 .press-kit-hint {
   margin: 0;
   color: var(--darkgray);
   font-family: var(--codeFont);
-  font-size: 0.58rem;
+  font-size: var(--pk-meta);
   line-height: 1.6;
   font-variant-numeric: tabular-nums;
 
@@ -798,6 +820,10 @@ a.press-kit-chip {
   background: var(--dark);
   color: var(--light);
 
+  &:focus-visible {
+    outline-color: var(--light);
+  }
+
   @media (hover: hover) and (pointer: fine) {
     &:hover {
       background: color-mix(in srgb, var(--dark) 86%, var(--light));
@@ -875,14 +901,20 @@ a.press-kit-chip {
 }
 
 .press-kit-editor {
-  margin-top: 0.8rem;
+  margin-top: 0.75rem;
   border-top: 1px solid var(--pk-line);
-  padding-block: 0.5rem;
-  font: 0.75rem var(--bodyFont);
+  padding-block: 0 0.5rem;
+  font: var(--pk-meta) / 1.5 var(--codeFont);
+
+  > div {
+    display: grid;
+    gap: 0.5rem;
+  }
 
   summary {
     position: relative;
-    padding-block: 0.5rem;
+    padding-block: 0.4rem;
+    color: var(--dark);
     cursor: pointer;
 
     &:not([data-help-dismissed]):is(
@@ -897,13 +929,13 @@ a.press-kit-chip {
   p {
     font-size: inherit;
     line-height: 1.5;
-    margin-block: 0.5rem;
+    margin: 0;
   }
   label {
     display: grid;
-    gap: 0.3rem;
+    gap: 0.25rem;
     min-width: 0;
-    margin-block: 0.4rem;
+    margin: 0;
   }
   // Number fields share the press kit's text input; buttons and selects are the shared controls.
   input {
@@ -919,22 +951,24 @@ a.press-kit-chip {
     font: var(--control-font-size) / 1.3 var(--codeFont);
     font-variant-numeric: tabular-nums;
   }
-  input[type='text'] {
-    font-family: var(--bodyFont);
-  }
   fieldset {
     min-width: 0;
-    border: 1px solid var(--pk-line);
-    padding: 0.5rem;
-    margin: 0.7rem 0;
+    border: 0;
+    padding: 0;
+    margin: 0;
+
+    > * + * {
+      margin-block-start: 0.4rem;
+    }
   }
   legend {
     box-sizing: border-box;
     max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    padding-inline: 0.25rem;
+    overflow-wrap: anywhere;
+    padding: 0;
+  }
+  :is(.g-select-trigger, .g-button) {
+    border-color: var(--pk-line);
   }
   @media (pointer: coarse) {
     summary {
@@ -942,7 +976,7 @@ a.press-kit-chip {
     }
 
     input {
-      font-size: 1rem;
+      font-size: max(16px, 1rem);
     }
   }
 }
@@ -958,13 +992,13 @@ a.press-kit-chip {
   border: 1px solid var(--pk-line);
   background: var(--light);
   color: var(--darkgray);
-  font: 0.75rem/1.5 var(--bodyFont);
+  font: var(--pk-meta) / 1.5 var(--bodyFont);
   cursor: default;
   visibility: hidden;
 }
 
 .press-kit-editor-toolbar {
-  grid-template-columns: 1fr 1fr 1.45fr 0.8fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 
   > .press-kit-segment:disabled {
     background: var(--light);
@@ -973,12 +1007,19 @@ a.press-kit-chip {
   }
 }
 
+.press-kit-editor > div > label,
 .press-kit-editor-field {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 0.3rem;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  align-items: center;
+  gap: 0.5rem;
   min-width: 0;
-  margin-block: 0.4rem;
+  margin: 0;
+
+  &:has(input[type='text']) {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.25rem;
+  }
 
   .g-select,
   .g-select-trigger {
@@ -996,7 +1037,7 @@ a.press-kit-chip {
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  margin-block: 0.5rem;
+  margin: 0;
 
   output {
     color: var(--darkgray);
@@ -1045,7 +1086,18 @@ a.press-kit-chip {
 .press-kit-editor-fields {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.4rem;
+  gap: 1px;
+  border: 1px solid var(--pk-line);
+  background: var(--pk-line);
+
+  > label {
+    padding: 0.3rem 0.4rem 0.4rem;
+    background: var(--light);
+  }
+
+  input {
+    border: 0;
+  }
 }
 .press-kit-editor-overlay {
   --pk-editor-cursor: crosshair;
@@ -1082,6 +1134,11 @@ a.press-kit-chip {
 .press-kit .is-selected > .press-kit-editor-select {
   border-color: var(--secondary);
   outline: 1px solid var(--light);
+
+  &:focus-visible {
+    outline: 2px solid var(--control-focus);
+    outline-offset: -2px;
+  }
 }
 .press-kit .press-kit-editor-select:active {
   cursor: grabbing;

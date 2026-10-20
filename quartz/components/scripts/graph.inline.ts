@@ -426,7 +426,7 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
       label,
       eventMode: 'static',
       hitArea: new Circle(0, 0, nodeRadius(simulationData)),
-      cursor: 'pointer',
+      cursor: 'var(--cursor-pointer, pointer)',
     })
       .circle(0, 0, nodeRadius(simulationData))
       .fill({ color: isTagNode ? computedStyleMap['--foam'] : color(simulationData) })

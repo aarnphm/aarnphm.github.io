@@ -1,0 +1,232 @@
+@use 'sass:map';
+@use 'sass:math';
+
+// Site cursors outside the triathlon pages: a small square for the page, a larger square for
+// anything clickable (links and controls grow into it), and diamond variants for every other cursor
+// keyword. They are native cursor images,
+// so the system draws them at pointer rate with no script. minify-stylesheet.ts rewrites every
+// component `cursor: <keyword>` to `var(--cursor-<keyword>, <keyword>)`; a keyword without a glyph
+// here keeps the system cursor. The triathlon pages reset the properties to the system cursors,
+// which cursor.scss replaces with the scripted cursor.
+//
+// Each glyph is 11 CSS px with its hot spot in the centre, with a 2x copy for high-density
+// screens. One ink serves both themes: rgb(200,72,42) has about 4:1 contrast on the light paper
+// and on the dark one.
+
+// The ink is a string: Sass would print a colour value as a hex code, and `#` ends a data URI.
+$ink: 'rgb(200,72,42)';
+
+@function el($tag, $attrs) {
+  @return '%3C#{$tag} #{$attrs}/%3E';
+}
+
+@function fill($d) {
+  @return el('path', "d='#{$d}' fill='#{$ink}'");
+}
+
+@function line($d, $width: 1) {
+  @return el('path', "d='#{$d}' fill='none' stroke='#{$ink}' stroke-width='#{$width}'");
+}
+
+$outline: line('M5.5 1.7 9.3 5.5 5.5 9.3 1.7 5.5z', 1.2);
+$resize: line('M3 3.5 1 5.5l2 2M8 3.5l2 2-2 2M1 5.5h9');
+$ibeam: line('M5.5 1v9');
+
+@function turn($art, $angle) {
+  @return "%3Cg transform='rotate(#{$angle} 5.5 5.5)'%3E#{$art}%3C/g%3E";
+}
+
+$glyphs: (
+  square: fill('M2 2h7v7H2z'),
+  diamond: fill('M5.5 1 10 5.5 5.5 10 1 5.5z'),
+  ibeam: $ibeam,
+  ibeam-v: turn($ibeam, 90),
+  help: $outline + fill('M4.5 4.5h2v2h-2z'),
+  wait: $outline + fill('M1.7 5.5h7.6L5.5 9.3z'),
+  grab: $outline,
+  grabbing: fill('M5.5 3 8 5.5 5.5 8 3 5.5z'),
+  move: fill('M5.5.5 8 3H3zM5.5 10.5 3 8h5zM.5 5.5 3 3v5zM10.5 5.5 8 8V3zM4.5 4.5h2v2h-2z'),
+  crosshair: line('M5.5 0v5M5.5 6v5M0 5.5h5M6 5.5h5'),
+  no: $outline + line('M4 4l3 3M7 4l-3 3', 1.2),
+  zoom-in: $outline + line('M3.5 5.5h4M5.5 3.5v4'),
+  zoom-out: $outline + line('M3.5 5.5h4'),
+  copy: fill('M4 1 7 4 4 7 1 4z') + line('M7 4.7 9.8 7.5 7 10.3 4.2 7.5z'),
+  resize-ew: $resize,
+  resize-ns: turn($resize, 90),
+  resize-nesw: turn($resize, -45),
+  resize-nwse: turn($resize, 45),
+);
+
+// Link hover squares: 7 px to 11 px in half-pixel steps.
+$grow-steps: 8;
+
+@for $step from 0 through $grow-steps {
+  $inset: 2 - $step * 0.25;
+  $size: 7 + $step * 0.5;
+  $glyphs: map.set(
+    $glyphs,
+    grow-#{$step},
+    fill('M#{$inset} #{$inset}h#{$size}v#{$size}H#{$inset}z')
+  );
+}
+
+$cursors: (
+  default: square,
+  pointer: grow-8,
+  text: ibeam,
+  vertical-text: ibeam-v,
+  help: help,
+  wait: wait,
+  progress: wait,
+  crosshair: crosshair,
+  cell: crosshair,
+  move: move,
+  all-scroll: move,
+  grab: grab,
+  grabbing: grabbing,
+  not-allowed: no,
+  no-drop: no,
+  zoom-in: zoom-in,
+  zoom-out: zoom-out,
+  copy: copy,
+  alias: copy,
+  context-menu: diamond,
+  ew-resize: resize-ew,
+  e-resize: resize-ew,
+  w-resize: resize-ew,
+  col-resize: resize-ew,
+  ns-resize: resize-ns,
+  n-resize: resize-ns,
+  s-resize: resize-ns,
+  row-resize: resize-ns,
+  nesw-resize: resize-nesw,
+  ne-resize: resize-nesw,
+  sw-resize: resize-nesw,
+  nwse-resize: resize-nwse,
+  nw-resize: resize-nwse,
+  se-resize: resize-nwse,
+);
+
+@function image($art, $size) {
+  @return url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='#{$size}' height='#{$size}' viewBox='0 0 11 11'%3E#{$art}%3C/svg%3E");
+}
+
+:root {
+  @each $name, $art in $glyphs {
+    --cursor-glyph-#{$name}: #{image($art, 11)};
+  }
+
+  @supports (cursor: image-set(url('data:,') 1x) 0 0, auto) {
+    @each $name, $art in $glyphs {
+      --cursor-glyph-#{$name}: image-set(#{image($art, 11)} 1x, #{image($art, 22)} 2x);
+    }
+  }
+
+  --cursor-page: var(--cursor-glyph-square) 5 5, default;
+
+  @for $step from 0 through $grow-steps {
+    --cursor-link-#{$step}: var(--cursor-glyph-grow-#{$step}) 5 5, pointer;
+  }
+
+  @each $keyword, $glyph in $cursors {
+    --cursor-#{$keyword}: var(--cursor-glyph-#{$glyph}) 5 5, #{$keyword};
+  }
+}
+
+body {
+  cursor: var(--cursor-page, auto);
+}
+
+body:is([data-slug='triathlon'], [data-slug^='triathlon/']) {
+  --cursor-page: auto;
+
+  @for $step from 0 through $grow-steps {
+    --cursor-link-#{$step}: pointer;
+  }
+
+  @each $keyword, $glyph in $cursors {
+    --cursor-#{$keyword}: #{$keyword};
+  }
+}
+
+// The user agent gives links their hand; these take the clickable square. Component rules still win.
+:where(
+  a[href],
+  area[href],
+  summary,
+  label[for],
+  select,
+  [role='button'],
+  [role='link'],
+  [role='tab'],
+  input:is([type='checkbox'], [type='radio'], [type='file'], [type='color'], [type='range'])
+) {
+  cursor: var(--cursor-pointer, pointer);
+}
+
+// A link or control grows the square from 7 to 11 px in half-pixel steps, one device pixel each on a 2x
+// screen. The cursor property is discrete, so each keyframe holds its size until the next one
+// (step-end), and the keyframes sit where a cubic ease-out crosses each half pixel. An animation
+// sets the cursor over component rules, so the controls below skip disabled ones, which keep
+// their own cursor. The system repaints the cursor on the next pointer move or style change.
+@keyframes cursor-link-grow {
+  @for $step from 0 through $grow-steps {
+    $reach: math.max(0, math.div($step - 0.5, $grow-steps));
+
+    #{math.div(math.round((1 - math.pow(1 - $reach, math.div(1, 3))) * 1000), 10) * 1%} {
+      cursor: var(--cursor-link-#{$step});
+      animation-timing-function: step-end;
+    }
+  }
+
+  // Without a closing keyframe the fill would end on the element's own cursor.
+  to {
+    cursor: var(--cursor-link-#{$grow-steps});
+  }
+}
+
+:where(
+  a[href],
+  area[href],
+  summary,
+  label[for],
+  :is(button, select, [role='button'], [role='tab']):not(:disabled, [aria-disabled='true'])
+):hover {
+  animation: cursor-link-grow 140ms forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(
+    a[href],
+    area[href],
+    summary,
+    label[for],
+    :is(button, select, [role='button'], [role='tab']):not(:disabled, [aria-disabled='true'])
+  ):hover {
+    animation-duration: 0s;
+  }
+}
+
+// Text fields take the beam.
+:where(
+  input:not(
+    [type='button'],
+    [type='checkbox'],
+    [type='color'],
+    [type='file'],
+    [type='hidden'],
+    [type='image'],
+    [type='radio'],
+    [type='range'],
+    [type='reset'],
+    [type='submit']
+  ),
+  textarea,
+  [contenteditable]:not([contenteditable='false'])
+) {
+  cursor: var(--cursor-text, text);
+}
+
+:where(:disabled, [aria-disabled='true']) {
+  cursor: var(--cursor-not-allowed, not-allowed);
+}

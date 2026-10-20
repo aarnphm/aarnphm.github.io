@@ -270,6 +270,10 @@ ul#helper {
     background: transparent;
     color: inherit;
 
+    &:popover-open {
+      visibility: visible;
+    }
+
     & > #space {
       width: 30%;
 

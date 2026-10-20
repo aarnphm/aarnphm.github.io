@@ -183,6 +183,7 @@ let anchorFrame = 0
 let stateTimer: number | undefined
 let dwellTimer: number | undefined
 let scrollTimer: number | undefined
+let scrollQuietUntil = 0
 let wanderTimer: number | undefined
 let reminderTimer: number | undefined
 let reminderHideTimer: number | undefined
@@ -631,7 +632,11 @@ function placeOn(p: Perch): Point {
   if (p.foot) {
     const scale = p.scale ?? 1
     return {
-      x: p.foot.x - (width * scale) / 2,
+      x: clamp(
+        p.foot.x - (width * scale) / 2,
+        window.scrollX + margin,
+        window.scrollX + window.innerWidth - margin - width * scale,
+      ),
       y: p.foot.y - (edgeY[p.kind] - viewTop) * unit * scale,
     }
   }
@@ -687,7 +692,18 @@ const wander = () => {
   const now = performance.now()
   const s = state(now)
   const free = s === 'idle' || s === 'wait' || s === 'work'
-  if (!free || now - lastMove < 3000 || hop || carry || reducedMotion() || document.hidden) return
+  if (
+    !free ||
+    now < scrollQuietUntil ||
+    now - lastMove < 3000 ||
+    hop ||
+    carry ||
+    reducedMotion() ||
+    document.hidden
+  )
+    return
+  // The modal makes the page inert; scanning its geometry can stall the active dialog.
+  if (document.querySelector('dialog:modal')) return
   if (document.body.dataset.slides === 'true') return
   // A sunny hot day makes it lazy: it mostly stays put, so it gets to lie out on its lounger.
   if (beach && Math.random() < 0.75) return
@@ -1198,6 +1214,7 @@ const reserveTrailFoot = (path: SVGPathElement, foot: TrailFoot) => {
     trailActor.setAttribute('transform', transform)
   const pose = `scale(${(scale * face).toFixed(4)} ${scale.toFixed(4)})`
   if (trailArt?.getAttribute('transform') !== pose) trailArt?.setAttribute('transform', pose)
+  if (trailActor.dataset.face !== String(face)) trailActor.dataset.face = String(face)
   trailActor.dataset.collisionRadius = String(TRAIL_PET_RADIUS * scale)
   trailActor.dataset.collisionActive = 'true'
   trailActor.dataset.groundX = String(point.x)
@@ -1942,6 +1959,14 @@ function stopGround() {
       if ((Number(anim.currentTime) || 0) < delay) anim.cancel()
 }
 
+function clearGround() {
+  for (const ground of grounds) {
+    for (const { anim } of ground.pieces) anim.cancel()
+    ground.svg.remove()
+  }
+  grounds.clear()
+}
+
 function moveTo(next: Perch, how: 'chute' | 'stroll' | 'fade' | 'leap' | null = null) {
   const after = afterMove
   afterMove = null
@@ -2430,6 +2455,37 @@ const onSettle = () => {
   relocate(anchor, null)
 }
 
+// Old document coordinates can enlarge the page before the delayed edge checks run.
+const onViewportWidthChange = () => {
+  if (!root) return
+  if (trailWalk) pauseTrail()
+  dropHop()
+  clearGround()
+  for (const heart of document.querySelectorAll('.garden-pet-heart')) heart.remove()
+  if (carry) {
+    carry = railFor()
+    root.style.setProperty('--pet-rail-from', `${carry.from.toFixed(1)}px`)
+    root.style.setProperty('--pet-rail-to', `${carry.to.toFixed(1)}px`)
+    root.style.transform = `translate3d(${carry.x.toFixed(1)}px, 0, 0)`
+    root.style.translate = `0 ${railY(carry).toFixed(1)}px`
+  } else {
+    if (doc) {
+      doc = {
+        ...doc,
+        x: clamp(
+          doc.x,
+          window.scrollX + margin,
+          window.scrollX + window.innerWidth - margin - width * (perch?.scale ?? 1),
+        ),
+      }
+      root.style.transform = transformFor(doc)
+    }
+    reanchor()
+    if (friend && perch && doc) friendFollow(perch, doc, 'place')
+  }
+  render()
+}
+
 const hideReminder = () => {
   window.clearTimeout(reminderHideTimer)
   reminding = false
@@ -2829,6 +2885,8 @@ const bounce = (el: Element | null | undefined, delay = 0) =>
 // One of their moments together, when both rest and the reader is not busy with either.
 function meet() {
   meetTimer = undefined
+  if (performance.now() < scrollQuietUntil) return scheduleMeet()
+  if (document.querySelector('dialog:modal')) return scheduleMeet()
   const fc = friendCenter()
   const busy =
     !friend ||
@@ -2984,8 +3042,7 @@ const despawn = () => {
   reminderTimer = undefined
   resizeObserver?.disconnect()
   hideReminder()
-  for (const ground of grounds) ground.svg.remove()
-  grounds.clear()
+  clearGround()
   root?.remove()
   root = null
   svg = null
@@ -3059,6 +3116,13 @@ document.addEventListener('nav', () => {
   const fontsReady = document.fonts?.ready
   const controller = new AbortController()
   const { signal } = controller
+  scrollQuietUntil = 0
+  const deferGeometry = () => {
+    scrollQuietUntil = performance.now() + 500
+  }
+  document.addEventListener('wheel', deferGeometry, { passive: true, signal })
+  document.addEventListener('scroll', deferGeometry, { capture: true, passive: true, signal })
+  let viewportWidth = window.innerWidth
   document.addEventListener('animationstart', syncStorm, { signal })
   trailSpaceSignal = signal
   trailSpaces = new WeakMap()
@@ -3377,6 +3441,10 @@ document.addEventListener('nav', () => {
   window.addEventListener(
     'resize',
     () => {
+      if (viewportWidth !== window.innerWidth) {
+        viewportWidth = window.innerWidth
+        onViewportWidthChange()
+      }
       clearClock()
       window.clearTimeout(scrollTimer)
       scrollTimer = window.setTimeout(() => {

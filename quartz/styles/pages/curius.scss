@@ -408,6 +408,11 @@ body[data-slug='curius'] {
       color: inherit;
       font-weight: 400;
       text-decoration: none;
+
+      &:hover {
+        color: var(--dark);
+        text-decoration: underline;
+      }
     }
   }
 

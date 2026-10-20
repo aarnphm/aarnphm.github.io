@@ -18,7 +18,7 @@ function shouldSkipImage(img: HTMLImageElement) {
 function markPopupImages(root: ParentNode = document) {
   for (const img of root.querySelectorAll('img')) {
     if (shouldSkipImage(img)) continue
-    img.style.cursor = 'pointer'
+    img.style.cursor = 'var(--cursor-pointer, pointer)'
   }
 }
 

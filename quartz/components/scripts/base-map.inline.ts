@@ -378,7 +378,7 @@ async function initializeMap(container: HTMLElement, state: BaseMapState): Promi
   })
   for (const layer of ['clusters', 'unclustered-point']) {
     current.on('mouseenter', layer, () => {
-      current.getCanvas().style.cursor = 'pointer'
+      current.getCanvas().style.cursor = 'var(--cursor-pointer, pointer)'
     })
     current.on('mouseleave', layer, () => {
       current.getCanvas().style.cursor = ''

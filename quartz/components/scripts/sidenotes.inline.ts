@@ -231,7 +231,7 @@ class SidenoteManager {
     content.style.display = 'none'
     content.style.position = 'static'
 
-    label.style.cursor = 'pointer'
+    label.style.cursor = 'var(--cursor-pointer, pointer)'
     label.style.userSelect = 'none'
     label.setAttribute('role', 'button')
     label.setAttribute('tabindex', '0')
@@ -273,7 +273,12 @@ class SidenoteManager {
     this.setExpandedState(state, false)
   }
 
+  public hasSidenotes(): boolean {
+    return this.sidenotes.length > 0
+  }
+
   public layout() {
+    if (this.sidenotes.length === 0) return
     this.layoutMode = getLayoutMode()
     this.reset()
 
@@ -295,7 +300,9 @@ class SidenoteManager {
 }
 
 function setupSidenotes() {
+  if (!document.querySelector('.sidenote')) return
   const manager = new SidenoteManager()
+  if (!manager.hasSidenotes()) return
   manager.layout()
 
   const debouncedLayout = debounce(() => manager.layout(), 100)
