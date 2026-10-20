@@ -5,7 +5,7 @@ export type Point = { x: number; y: number }
 export type Pond = Point & { rx: number; ry: number }
 // A grove with a `stand` is one a wide meadow adds past the four home groves; the planner fills
 // it from that stand's kinds on top of the usual count instead of thinning the home groves.
-export type Grove = Point & { rx: number; ry: number; stand?: 'pine' }
+export type Grove = Point & { rx: number; ry: number; stand?: 'pine' | 'spruce' }
 export type Alpine = { left: number; top: number; width: number; height: number; base: number }
 export type Landscape = {
   width: number
@@ -178,6 +178,23 @@ export function trailLandscape(
       ry: Math.min(56, clearing * 0.1),
       stand: 'pine',
     })
+  }
+  // At 4k the open ground doubles again. Two more stands take the far left, between the first
+  // two home groves, and the right middle over the camp's grove; the home groves stay as drawn.
+  if (width >= 2600) {
+    const ultra = trailRandom(seed ^ 0x5bd1e995)
+    for (const [fx, fy, stand] of [
+      [0.3, 0.1, 'spruce'],
+      [0.78, 0.3, 'pine'],
+    ] as const) {
+      landscape.groves.push({
+        x: width * (fx + (ultra() - 0.5) * 0.04),
+        y: meadowTop + 64 + Math.max(1, clearing - 100) * (fy + ultra() * 0.06),
+        rx: Math.min(104, width * 0.04),
+        ry: Math.min(60, clearing * 0.11),
+        stand,
+      })
+    }
   }
   landscape.contours = [0.16, 0.39, 0.64, 0.91].map((level, index) => {
     const points: Point[] = []

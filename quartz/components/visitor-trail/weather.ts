@@ -342,13 +342,11 @@ export function farGateSite(landscape: Landscape, ranges: readonly MountainRange
 
 function farGate(site: FarGateSite, ranges: readonly MountainRange[], now: number) {
   const { cx, cy, radius, cell } = site
-  const tones: Record<'stone' | 'joint' | 'portal' | 'star' | 'hand', string[]> = {
-    stone: [],
-    joint: [],
-    portal: [],
-    star: [],
-    hand: [],
-  }
+  // Later tones paint over earlier ones: the hour hand sits above the minute hand where they cross.
+  const tones: Record<
+    'stone' | 'joint' | 'portal' | 'star' | 'tick' | 'minute' | 'hour',
+    string[]
+  > = { stone: [], joint: [], portal: [], star: [], tick: [], minute: [], hour: [] }
   // A cell whose centre lies under the skyline is rock, so the ring's foot stays buried.
   const buried = (i: number, j: number) =>
     cy + (j + 0.5) * cell > (mountainCrestAt(cx + (i + 0.5) * cell, ranges) ?? Infinity)
@@ -367,10 +365,22 @@ function farGate(site: FarGateSite, ranges: readonly MountainRange[], now: numbe
         plot(turn % 1 < 0.14 ? 'joint' : 'stone', i, j)
       } else plot(random() < 0.06 ? 'star' : 'portal', i, j)
     }
+  // A face to read the hands against: one cell inside the ring at each hour, or only the quarters
+  // on the small ring, where twelve marks would close up into a second ring.
+  const marks = radius >= 8 ? 12 : 4
+  for (let mark = 0; mark < marks; mark++) {
+    const angle = (mark / marks) * 2 * Math.PI
+    const reach = radius - 2.9
+    plot(
+      'tick',
+      Math.round(Math.sin(angle) * reach - 0.5),
+      Math.round(-Math.cos(angle) * reach - 0.5),
+    )
+  }
   const time = new Date(now)
   const minute = time.getMinutes() + time.getSeconds() / 60
   const hour = (time.getHours() % 12) + minute / 60
-  const hand = (turns: number, length: number) => {
+  const hand = (tone: 'minute' | 'hour', turns: number, length: number) => {
     const angle = turns * 2 * Math.PI
     const seen = new Set<string>()
     for (let t = 0; t <= length; t += 0.5) {
@@ -378,11 +388,11 @@ function farGate(site: FarGateSite, ranges: readonly MountainRange[], now: numbe
       const j = Math.round(-Math.cos(angle) * t - 0.5)
       if (seen.has(`${i},${j}`)) continue
       seen.add(`${i},${j}`)
-      plot('hand', i, j)
+      plot(tone, i, j)
     }
   }
-  hand(minute / 60, radius - 3)
-  hand(hour / 12, (radius - 3) * 0.6)
+  hand('minute', minute / 60, radius - 3)
+  hand('hour', hour / 12, (radius - 3) * 0.6)
   const paths = Object.entries(tones)
     .map(([tone, runs]) => `<path class="trail-far-gate-${tone}" d="${runs.join('')}"/>`)
     .join('')

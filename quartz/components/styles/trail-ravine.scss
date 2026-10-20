@@ -172,6 +172,66 @@
   .trail-river-splash {
     opacity: 0;
   }
+  // A fish the bear took is out of the water until the next one runs.
+  .trail-river-fish[data-caught='true'] :is(.trail-river-jump, .trail-river-splash) {
+    animation: none;
+    opacity: 0;
+  }
+  // The living bear (river-bear.ts): the paw swipes on the strike, the catch hangs from the
+  // muzzle while it eats, the water band covers its feet in the shallows, and the den is off
+  // screen. The stance moves the drawn bear so the body's own transform stays untouched.
+  .trail-river-bear[data-driven='true'] {
+    .trail-river-strike,
+    .trail-river-catch,
+    .trail-river-nap,
+    .trail-river-drops,
+    .trail-river-wade {
+      display: none;
+    }
+    &[data-pose='striking'] {
+      .trail-river-paw {
+        display: none;
+      }
+      .trail-river-strike {
+        display: inline;
+      }
+    }
+    &[data-pose='caught'],
+    &[data-pose='eating'] {
+      .trail-river-catch {
+        display: inline;
+      }
+    }
+    &[data-pose='eating'] .trail-river-bear-stance {
+      animation: trail-river-chew 360ms steps(1, end) infinite;
+    }
+    &[data-pose='walking'] .trail-river-bear-stance {
+      animation: trail-river-lumber 260ms steps(1, end) infinite;
+    }
+    &[data-pose='shaking'] {
+      .trail-river-bear-stance {
+        animation: trail-river-shake 90ms steps(1, end) infinite;
+      }
+      .trail-river-drops {
+        display: inline;
+      }
+    }
+    &[data-pose='napping'] {
+      .trail-river-bear-stance {
+        transform: translateY(4px) scale(1, 0.76);
+      }
+      .trail-river-nap {
+        display: inline;
+        animation: trail-river-snore 1400ms steps(1, end) infinite;
+      }
+    }
+    &[data-wading='true'] .trail-river-wade {
+      display: inline;
+    }
+    &[data-denned='true'] {
+      display: none;
+    }
+  }
   .trail-river-glint {
     opacity: 0.45;
     transform: translate(var(--current-x0), var(--current-y0)) rotate(var(--current-angle0));
@@ -313,7 +373,7 @@
       .trail-river-splash {
         animation: trail-river-splash var(--river-cycle) steps(1, end) var(--river-delay) infinite;
       }
-      .trail-river-paw {
+      .trail-river-bear:not([data-driven='true']) .trail-river-paw {
         animation: trail-river-paw var(--river-cycle) linear var(--river-delay) infinite;
       }
     }
@@ -402,6 +462,46 @@
   70%,
   75% {
     opacity: 0.7;
+  }
+}
+
+@keyframes trail-river-chew {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(1px);
+  }
+}
+
+@keyframes trail-river-lumber {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-1px);
+  }
+}
+
+@keyframes trail-river-shake {
+  0%,
+  100% {
+    transform: translateX(-1px);
+  }
+  50% {
+    transform: translateX(1px);
+  }
+}
+
+@keyframes trail-river-snore {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
   }
 }
 

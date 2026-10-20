@@ -108,11 +108,21 @@
   .trail-backpacker[data-phase='gone'] {
     visibility: hidden;
   }
-  // The pet on the trail (visitor-trail/trail-pet.ts), a cream body in an ink keyline in either
-  // theme, as the 404 prints it. pet.inline.ts copies the site pet's data-* attributes onto it, and
+  // The pet on the trail (visitor-trail/trail-pet.ts), printed as the 404 prints its pet in either
+  // theme. pet.inline.ts copies the site pet's data-* attributes onto it, and
   // its parts show for them as pet.scss shows the site pet's: walking, its legs step between two
   // frames; its eyes blink, follow the pointer by a pixel and change with its state; the visitor's
   // weather dresses it.
+  // Facing right the whole sprite is mirrored; its mirrored body keeps the light up and to the
+  // right, where the 404 has the sun.
+  [data-face='-1'] > .trail-pet-art {
+    .trail-pet-blob {
+      display: none;
+    }
+    .trail-pet-blob-mirrored {
+      display: inline;
+    }
+  }
   .trail-pet-art {
     shape-rendering: crispEdges;
 
@@ -122,11 +132,25 @@
     .trail-pet-hand {
       fill: #1c1b1a;
     }
+    // The 404 pet's tones (404-landscape.ts petInk): paper for the light, a plate a shade under it,
+    // and a shade three-tenths of the way to the ink.
     .trail-pet-body {
+      fill: #fffcf0;
+    }
+    .trail-pet-plate {
       fill: #f4ecd6;
+    }
+    .trail-pet-shade {
+      fill: #bbb8b0;
     }
     .trail-pet-hat {
       fill: #d8c08e;
+    }
+    .trail-pet-hat-light {
+      fill: #ecd9ae;
+    }
+    .trail-pet-blob-mirrored {
+      display: none;
     }
     .trail-pet-band,
     .trail-pet-stripe,

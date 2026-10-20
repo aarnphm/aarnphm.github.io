@@ -69,13 +69,16 @@ function timing(site: FishingSite) {
   return `--river-cycle:${site.duration.toFixed(2)}s;--river-delay:${site.delay.toFixed(2)}s`
 }
 
-export function riverFish(site: FishingSite) {
-  return `<g class="trail-river-fish" data-ground-y="${site.fish.y.toFixed(1)}" transform="translate(${site.fish.x.toFixed(1)} ${site.fish.y.toFixed(1)}) scale(${site.scale.toFixed(3)})" style="${timing(site)}"><g class="trail-river-jump"><g transform="translate(-4.5 -2.5)">${pixels(riverArt.fish, fishTones, 1)}</g></g><path class="trail-river-splash trail-ravine-foam" d="M-4 0h2v1h-2ZM1 1h3v1H1ZM5 -1h1v1H5Z"/></g>`
+// The bank and scale ride on the fish, so the bear's controller can read every site, with or
+// without a bear drawn there, and walk between them.
+export function riverFish(site: FishingSite, index = 0) {
+  return `<g class="trail-river-fish" data-site="${index}" data-bank-x="${site.bank.x.toFixed(1)}" data-bank-y="${site.bank.y.toFixed(1)}" data-scale="${site.scale.toFixed(3)}" data-ground-y="${site.fish.y.toFixed(1)}" transform="translate(${site.fish.x.toFixed(1)} ${site.fish.y.toFixed(1)}) scale(${site.scale.toFixed(3)})" style="${timing(site)}"><g class="trail-river-jump"><g transform="translate(-4.5 -2.5)">${pixels(riverArt.fish, fishTones, 1)}</g></g><path class="trail-river-splash trail-ravine-foam" d="M-4 0h2v1h-2ZM1 1h3v1H1ZM5 -1h1v1H5Z"/></g>`
 }
 
 // One of the configured bears waits on a clear bank. Its collision body and forest exclusion
 // share this anchor; the paw reaches the water without moving that body into a hiking route.
+// The stylesheet swipes the paw on the fish's cycle until river-bear.ts takes the bear over.
 export function riverBear(site: FishingSite) {
   const radius = 16 * site.scale
-  return `<g class="trail-bear trail-river-bear" data-trail-animal="bear" data-trail-collision="animal" data-collision-id="animal-bear-0" data-collision-radius="${radius.toFixed(2)}" data-ground-x="${site.bank.x.toFixed(1)}" data-ground-y="${site.bank.y.toFixed(1)}" data-phase="resting" transform="translate(${site.bank.x.toFixed(1)} ${site.bank.y.toFixed(1)})" style="${timing(site)}"><g transform="scale(${site.scale.toFixed(3)}) translate(-15 -16.5)">${pixels(riverArt.bear, bearTones, 1.5)}<g class="trail-river-paw">${pixels(riverArt.paw, bearTones, 1.5)}</g></g></g>`
+  return `<g class="trail-bear trail-river-bear" data-trail-animal="bear" data-trail-collision="animal" data-collision-id="animal-bear-0" data-collision-radius="${radius.toFixed(2)}" data-site="0" data-scale="${site.scale.toFixed(3)}" data-ground-x="${site.bank.x.toFixed(1)}" data-ground-y="${site.bank.y.toFixed(1)}" data-phase="resting" transform="translate(${site.bank.x.toFixed(1)} ${site.bank.y.toFixed(1)})" style="${timing(site)}"><g class="trail-river-bear-facing"><g class="trail-river-bear-body" transform="scale(${site.scale.toFixed(3)}) translate(-15 -16.5)">${pixels(riverArt.bear, bearTones, 1.5)}<g class="trail-river-paw">${pixels(riverArt.paw, bearTones, 1.5)}</g></g></g></g>`
 }

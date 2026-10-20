@@ -91,8 +91,14 @@
   .trail-far-gate-star {
     fill: #8b7ec8;
   }
-  .trail-far-gate-hand {
+  .trail-far-gate-tick {
+    fill: color-mix(in srgb, #f1d67e 45%, #2c2d55);
+  }
+  .trail-far-gate-minute {
     fill: #f1d67e;
+  }
+  .trail-far-gate-hour {
+    fill: #fbf3dc;
   }
   // The ring's link: an unpainted square over the composited ring, keyboard reachable.
   .trail-far-gate-link {

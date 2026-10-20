@@ -1,6 +1,7 @@
 import { playhtml } from 'playhtml'
 import type { TrailVisitor } from './visitor-journey'
 import { sceneSettings } from './scene-settings'
+import { localUtcOffset, OFFSET_PATTERN } from './visitor-locale'
 import { anonymousVisitor } from './visitor-name'
 import { renderVisitorRegister, type VisitorVisit } from './visitor-register'
 
@@ -67,7 +68,12 @@ export function connectCampPresence(
         peer.trailArrival <= now + 300000
           ? peer.trailArrival
           : null
+      const offset =
+        typeof peer.trailOffset === 'string' && OFFSET_PATTERN.test(peer.trailOffset)
+          ? peer.trailOffset
+          : null
       const visit = visits.find(visit => visit.id === id && visit.left === null)
+      if (visit && offset) visit.offset = offset
       if (!visit)
         visits.push({
           id,
@@ -75,6 +81,7 @@ export function connectCampPresence(
           arrived: joined ?? now,
           observed: joined === null,
           left: null,
+          offset,
         })
       else if (joined !== null) {
         visit.arrived = visit.observed ? joined : Math.min(visit.arrived, joined)
@@ -176,6 +183,8 @@ export function connectCampPresence(
   document.addEventListener('pointerleave', clearPointer, { signal })
   const publish = () => {
     room.presence.setMyPresence('trailArrival', arrived)
+    // Only the UTC offset is shared; zone and country stay in this browser.
+    room.presence.setMyPresence('trailOffset', localUtcOffset(view))
     room.presence.setMyPresence('campsite', { camp: destination, joined: true })
     room.presence.setMyPresence('visiting', true)
   }
@@ -191,6 +200,7 @@ export function connectCampPresence(
   const unsubscribeCamp = room.presence.onPresenceChange('campsite', renderVisitors)
   const unsubscribePointer = room.presence.onPresenceChange('trailPointer', renderPointers)
   const unsubscribeArrival = room.presence.onPresenceChange('trailArrival', renderVisitors)
+  const unsubscribeOffset = room.presence.onPresenceChange('trailOffset', renderVisitors)
   // A disconnected identity may have no live fields left to trigger a channel subscription.
   const membershipTimer = view.setInterval(() => {
     const peers = room.presence.getPresences()
@@ -224,6 +234,7 @@ export function connectCampPresence(
       unsubscribeCamp()
       unsubscribePointer()
       unsubscribeArrival()
+      unsubscribeOffset()
       room.destroy()
       cursors.replaceChildren()
     },

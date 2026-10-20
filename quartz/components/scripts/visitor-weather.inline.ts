@@ -7,6 +7,7 @@ import {
   subscribeSceneClock,
   type ScenePreview,
 } from '../../util/scene-clock'
+import { createVisitorCountrySource } from '../../util/visitor-country'
 import { createVisitorDaylightSource, readVisitorDaylightCell } from '../../util/visitor-daylight'
 import { createVisitorHolidaySource } from '../../util/visitor-holiday'
 import { createVisitorTrailWeatherSource } from '../../util/visitor-trail-weather'
@@ -56,6 +57,7 @@ document.addEventListener('nav', () => {
   const daylight = createVisitorDaylightSource(document, signal)
   mountHomepagePrecipitation(document, signal)
   const holiday = createVisitorHolidaySource(document, signal)
+  const country = createVisitorCountrySource(document, signal)
   const moon = mountVisitorMoon(root, signal)
   let forecast: VisitorForecast | null = null
   let pending = false
@@ -206,6 +208,7 @@ document.addEventListener('nav', () => {
     daylight.publish(forecast, sceneNow(document))
     trailWeather.publish(forecast)
     holiday.publish(forecast?.country ?? null)
+    country.publish(forecast?.country ?? null)
     const weather = forecast?.weather
     if (windArrow) {
       const bearing = weather && weather.wind > 0 ? weather.windDirection : null
