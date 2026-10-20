@@ -213,6 +213,7 @@ export const setupStreamVirtualizer = (
     if (destroyed || signal.aborted) return
     for (const slot of slots.values()) {
       const near = isNearViewport(slot.node)
+      if (!near) slot.statefulInteraction = false
       if (slot.mounted) {
         if (!near) unmountSlot(slot)
       } else if (near) {
@@ -294,6 +295,7 @@ export const setupStreamVirtualizer = (
     window.removeEventListener('resize', scheduleSweep)
     for (const slot of slots.values()) {
       if (slot.mounted) cleanupHydratedRoot(slot.node)
+      measuredEntries.delete(slot.source.entryId)
     }
     slots.clear()
   }
