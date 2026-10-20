@@ -1,10 +1,8 @@
 import { Root as MdRoot } from 'mdast'
-import { createHash } from 'node:crypto'
 import fs from 'node:fs/promises'
 import { availableParallelism } from 'node:os'
 import path from 'node:path'
 import { styleText } from 'node:util'
-import v8 from 'node:v8'
 import { VFile } from 'vfile'
 import { defaultContentPageLayout, sharedPageComponents } from '../../../quartz.layout'
 import { FullPageLayout } from '../../cfg'
@@ -13,31 +11,43 @@ import HeaderConstructor from '../../components/Header'
 import { pageResources, renderPage } from '../../components/renderPage'
 import { createHtmlProcessor, createMdProcessor, mdastToHastRoot } from '../../processors/parse'
 import '../../runtime/notebook/registry'
-import { backendFor } from '../../runtime/notebook/backend'
 import { ChangeEvent, QuartzEmitterPlugin } from '../../types/plugin'
 import { mapConcurrent } from '../../util/async-pool'
 import { BuildCtx, contentDataFor } from '../../util/ctx'
 import {
   ensureExtractedNotebookAssets,
   extractInlineNotebookAssets,
-  type ExtractedAsset,
 } from '../../util/notebook/extract-assets'
+import { embedLocalSvgImages, themeNotebookSvgs } from '../../util/notebook/inline-svg'
 import { notebookToMarkdownChunks } from '../../util/notebook/markdown'
 import { parseNotebookDoc } from '../../util/notebook/parse'
 import { isNotebookParseError } from '../../util/notebook/types'
-import {
-  FilePath,
-  FullSlug,
-  joinSegments,
-  pathToRoot,
-  QUARTZ,
-  slugifyFilePath,
-} from '../../util/path'
+import { FilePath, FullSlug, joinSegments, pathToRoot, slugifyFilePath } from '../../util/path'
 import { logBuildSpan, PerfTimer } from '../../util/perf'
 import { StaticResources } from '../../util/resources'
-import { isRecord } from '../../util/type-guards'
 import { ProcessedContent, QuartzPluginData } from '../vfile'
 import { write } from './helpers'
+import { affectedNotebookFiles, isNotebookPath } from './notebook-dependencies'
+import {
+  compactNotebookPluginData,
+  notebookPageCacheEntries,
+  readNotebookPageBlob,
+  writeNotebookPageBlob,
+  writeNotebookPageCacheIndex,
+  type NotebookPage,
+  type NotebookPageCacheEntry,
+} from './notebook-page-cache'
+
+export {
+  notebookPageCacheEntries,
+  resetNotebookCaches,
+  type NotebookPageCacheEntry,
+} from './notebook-page-cache'
+export {
+  affectedNotebookFiles,
+  readNotebookDependencies,
+  type NotebookDependencyRecord,
+} from './notebook-dependencies'
 
 type NotebookRuntimeOptions = false | { enabled?: boolean; indexUrl?: string }
 
@@ -48,26 +58,9 @@ type ResolvedOptions = {
   runtime: false | { enabled: true; indexUrl?: string }
 }
 
-type NotebookDependencies = { imports: Set<FilePath>; assets: Set<FilePath> }
-export type NotebookDependencyRecord = NotebookDependencies & { signature: string }
-type NotebookDependencyCacheEntry = {
-  mtimeMs: number
-  size: number
-  record: NotebookDependencyRecord
-}
 type NotebookProcessors = {
   md: ReturnType<typeof createMdProcessor>
   html: ReturnType<typeof createHtmlProcessor>
-}
-export type NotebookPageCacheEntry = {
-  fp: FilePath
-  slug: FullSlug
-  key: string
-  cacheKey: string
-  blob: FilePath
-  htmlBlobPath: FilePath
-  extractedAssets: ExtractedAsset[]
-  data?: QuartzPluginData
 }
 type NotebookPageCacheOptions = {
   salt: string | undefined
@@ -76,225 +69,17 @@ type NotebookPageCacheOptions = {
   entries: Map<FilePath, NotebookPageCacheEntry>
 }
 type NotebookPageResult = { page: NotebookPage; cacheHit: boolean }
-type NotebookPageBlob = {
-  tree: ProcessedContent[0]
-  data: QuartzPluginData
-  value: string
-  extractedAssets?: ExtractedAsset[]
-}
-
-declare global {
-  var __quartzNotebookPageBlobs: Map<FilePath, NotebookPageCacheEntry> | undefined
-  var __quartzNotebookDependencyCache: Map<FilePath, NotebookDependencyCacheEntry> | undefined
-}
 
 const defaultOptions: ResolvedOptions = { executeTimeoutSeconds: 120, runtime: false }
-
-// Parsed pages live on disk across rebuilds and CLI restarts: 220 pages hold ~0.4 GiB of hast in
-// memory and load from blobs in ~3 s, against ~55 s to parse.
-const notebookPageBlobDir = joinSegments(QUARTZ, '.quartz-cache', 'notebook-pages') as FilePath
-const notebookPageIndexFile = joinSegments(notebookPageBlobDir, 'index.json') as FilePath
-
-function isExtractedAsset(value: unknown): value is ExtractedAsset {
-  return (
-    isRecord(value) &&
-    typeof value.hash === 'string' &&
-    typeof value.url === 'string' &&
-    typeof value.mime === 'string' &&
-    typeof value.byteLength === 'number'
-  )
-}
-
-function compactNotebookPluginData(data: QuartzPluginData): QuartzPluginData {
-  return {
-    filePath: data.filePath,
-    relativePath: data.relativePath,
-    slug: data.slug,
-    frontmatter: data.frontmatter,
-    description: data.description,
-    links: data.links,
-    dates: data.dates,
-  }
-}
-
-function parseNotebookCachedData(value: unknown): QuartzPluginData | undefined {
-  if (!isRecord(value) || typeof value.slug !== 'string') return undefined
-  const dates = isRecord(value.dates)
-    ? {
-        created: new Date(String(value.dates.created)),
-        modified: new Date(String(value.dates.modified)),
-        published: new Date(String(value.dates.published)),
-      }
-    : undefined
-  return { ...(value as QuartzPluginData), ...(dates ? { dates } : {}) }
-}
-
-function parseNotebookPageCacheEntry(value: unknown): NotebookPageCacheEntry | undefined {
-  if (!isRecord(value)) return undefined
-  const fp = typeof value.fp === 'string' ? (value.fp as FilePath) : undefined
-  const slug = typeof value.slug === 'string' ? (value.slug as FullSlug) : undefined
-  const key =
-    typeof value.key === 'string'
-      ? value.key
-      : typeof value.cacheKey === 'string'
-        ? value.cacheKey
-        : undefined
-  const blob =
-    typeof value.blob === 'string'
-      ? (value.blob as FilePath)
-      : typeof value.htmlBlobPath === 'string'
-        ? (value.htmlBlobPath as FilePath)
-        : undefined
-  if (!fp || !slug || !key || !blob) return undefined
-  const extractedAssets = Array.isArray(value.extractedAssets)
-    ? value.extractedAssets.filter(isExtractedAsset)
-    : []
-  const data = parseNotebookCachedData(value.data)
-  return {
-    fp,
-    slug,
-    key,
-    cacheKey: key,
-    blob,
-    htmlBlobPath: blob,
-    extractedAssets,
-    ...(data ? { data } : {}),
-  }
-}
-
-async function loadNotebookPageCacheFromDisk(): Promise<Map<FilePath, NotebookPageCacheEntry>> {
-  const entries = new Map<FilePath, NotebookPageCacheEntry>()
-  await fs.mkdir(notebookPageBlobDir, { recursive: true })
-  try {
-    const rawIndex: unknown = JSON.parse(await fs.readFile(notebookPageIndexFile, 'utf8'))
-    if (isRecord(rawIndex) && isRecord(rawIndex.entries)) {
-      for (const [fp, rawEntry] of Object.entries(rawIndex.entries)) {
-        const parsed = parseNotebookPageCacheEntry(
-          isRecord(rawEntry) ? { fp, ...rawEntry } : rawEntry,
-        )
-        if (parsed) entries.set(parsed.fp, parsed)
-      }
-    }
-  } catch {}
-
-  try {
-    const dirEntries = await fs.readdir(notebookPageBlobDir)
-    await Promise.all(
-      dirEntries
-        .filter(name => name.endsWith('.meta.json'))
-        .map(async name => {
-          try {
-            const raw: unknown = JSON.parse(
-              await fs.readFile(joinSegments(notebookPageBlobDir, name), 'utf8'),
-            )
-            const parsed = parseNotebookPageCacheEntry(raw)
-            if (parsed) entries.set(parsed.fp, parsed)
-          } catch {}
-        }),
-    )
-  } catch {}
-
-  return entries
-}
-
-async function writeNotebookPageCacheIndex(
-  entries: ReadonlyMap<FilePath, NotebookPageCacheEntry>,
-): Promise<void> {
-  try {
-    await fs.mkdir(notebookPageBlobDir, { recursive: true })
-    const serialized: Record<string, NotebookPageCacheEntry> = {}
-    for (const [fp, entry] of [...entries.entries()].sort(([left], [right]) =>
-      left.localeCompare(right),
-    )) {
-      serialized[fp] = entry
-    }
-    const temp = joinSegments(notebookPageBlobDir, `index.${process.pid}.${Date.now()}.tmp`)
-    await fs.writeFile(temp, JSON.stringify({ version: 1, entries: serialized }))
-    await fs.rename(temp, notebookPageIndexFile)
-  } catch {}
-}
-
-export async function notebookPageCacheEntries(): Promise<Map<FilePath, NotebookPageCacheEntry>> {
-  if (!globalThis.__quartzNotebookPageBlobs) {
-    globalThis.__quartzNotebookPageBlobs = await loadNotebookPageCacheFromDisk()
-  }
-  return globalThis.__quartzNotebookPageBlobs
-}
-
-export function resetNotebookCaches(): void {
-  globalThis.__quartzNotebookPageBlobs = undefined
-  globalThis.__quartzNotebookDependencyCache?.clear()
-}
-
-async function readNotebookPageBlob(
-  ctx: BuildCtx,
-  entry: NotebookPageCacheEntry,
-  fp: FilePath,
-  src: FilePath,
-  slug: FullSlug,
-): Promise<NotebookPage | undefined> {
-  try {
-    const blob = v8.deserialize(await fs.readFile(entry.blob)) as NotebookPageBlob
-    const extractedAssets = entry.extractedAssets ?? blob.extractedAssets ?? []
-    if (!(await ensureExtractedNotebookAssets(ctx, extractedAssets))) {
-      return undefined
-    }
-    delete blob.data.htmlAst
-    entry.data ??= compactNotebookPluginData(blob.data)
-    const file = new VFile({ path: src, value: '' })
-    file.data = blob.data
-    return { fp, slug, content: [blob.tree, file] }
-  } catch {
-    return undefined
-  }
-}
-
-async function writeNotebookPageBlob(
-  entries: Map<FilePath, NotebookPageCacheEntry>,
-  key: string,
-  page: NotebookPage,
-  extractedAssets: ExtractedAsset[],
-): Promise<void> {
-  const [tree, file] = page.content
-  delete file.data.htmlAst
-  const name = createHash('sha256').update(page.fp).digest('hex').slice(0, 24)
-  const blob = joinSegments(notebookPageBlobDir, `${name}.bin`) as FilePath
-  const meta = joinSegments(notebookPageBlobDir, `${name}.meta.json`) as FilePath
-  try {
-    await fs.mkdir(notebookPageBlobDir, { recursive: true })
-    const value: NotebookPageBlob = { tree, data: file.data, value: '', extractedAssets }
-    const entry: NotebookPageCacheEntry = {
-      fp: page.fp,
-      slug: page.slug,
-      key,
-      cacheKey: key,
-      blob,
-      htmlBlobPath: blob,
-      extractedAssets,
-      data: compactNotebookPluginData(file.data),
-    }
-    await Promise.all([
-      fs.writeFile(blob, v8.serialize(value)),
-      fs.writeFile(meta, JSON.stringify(entry)),
-    ])
-    entries.set(page.fp, entry)
-  } catch (error) {
-    entries.delete(page.fp)
-    console.warn(styleText('yellow', `[emit:NotebookViewer] page cache skipped ${page.fp}`), error)
-  }
-}
 
 const notebookCacheSourcePaths: FilePath[] = [
   'quartz/util/notebook/cell-html.ts' as FilePath,
   'quartz/util/notebook/extract-assets.ts' as FilePath,
+  'quartz/util/notebook/inline-svg.ts' as FilePath,
   'quartz/util/notebook/markdown.ts' as FilePath,
   'quartz/util/notebook/parse.ts' as FilePath,
   'quartz/util/notebook/render/icons.ts' as FilePath,
 ]
-
-const htmlResourceSrcPattern =
-  /<(?:img|video|audio|iframe)\b[^>]*\bsrc\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/gi
-const markdownImageTargetPattern = /!\[[^\]]*\]\(\s*(<[^>]+>|[^)\s]+)[^)]*\)/g
 
 function resolveOptions(userOpts?: Options): ResolvedOptions {
   const runtime: ResolvedOptions['runtime'] =
@@ -309,15 +94,14 @@ function resolveOptions(userOpts?: Options): ResolvedOptions {
 
 const notebookPageLayout: FullPageLayout = {
   ...sharedPageComponents,
-  beforeBody: [Component.NotebookRuntimeLoader(), Component.ArticleTitle()],
+  beforeBody: [
+    Component.NotebookRuntimeLoader(),
+    // notebooks inside a university course carry the course trail, like its notes
+    Component.UniversityCrumbBar(),
+    Component.ArticleTitle(),
+  ],
   pageBody: Component.Content(),
   sidebar: defaultContentPageLayout.sidebar,
-}
-
-type NotebookPage = { fp: FilePath; slug: FullSlug; content: ProcessedContent }
-
-function isNotebookPath(fp: FilePath): boolean {
-  return path.extname(fp) === '.ipynb'
 }
 
 function notebookFiles(ctx: BuildCtx): FilePath[] {
@@ -356,144 +140,6 @@ function parseNotebookMarkdownChunks(
     children.push(...mdProcessor.parse(chunk).children)
   }
   return { type: 'root', children }
-}
-
-function localNotebookResourcePath(raw: string, fp: FilePath): FilePath | undefined {
-  const trimmed = raw.trim()
-  const value = trimmed.startsWith('<') && trimmed.endsWith('>') ? trimmed.slice(1, -1) : trimmed
-  if (
-    !value ||
-    value.startsWith('#') ||
-    value.startsWith('/') ||
-    /^[A-Za-z][A-Za-z0-9+.-]*:/.test(value)
-  ) {
-    return undefined
-  }
-
-  const match = value.match(/^([^?#]*)([?#].*)?$/)
-  let pathname = match?.[1] ?? value
-  if (!pathname) return undefined
-  try {
-    pathname = decodeURI(pathname)
-  } catch {}
-
-  const resolved = path.posix.normalize(path.posix.join(path.posix.dirname(fp), pathname))
-  if (resolved === '.' || resolved.startsWith('../')) return undefined
-  return resolved as FilePath
-}
-
-function notebookDependencies(raw: string, fp: FilePath): NotebookDependencies {
-  const doc = parseNotebookDoc(raw, fp)
-  const imports = new Set<FilePath>()
-  const assets = new Set<FilePath>()
-  if (isNotebookParseError(doc)) return { imports, assets }
-  const dir = path.posix.dirname(fp)
-  const backend = backendFor(doc.language)
-  const moduleResolver = backend?.moduleResolver
-
-  for (const cell of doc.cells) {
-    const source = cell.source
-    if (cell.cellType === 'code' && moduleResolver) {
-      for (const name of moduleResolver.importNames(source)) {
-        imports.add(path.posix.join(dir, `${name}.ipynb`) as FilePath)
-      }
-    }
-    if (cell.cellType !== 'markdown') continue
-
-    for (const match of source.matchAll(htmlResourceSrcPattern)) {
-      const candidate = match[1] ?? match[2] ?? match[3]
-      if (candidate === undefined) continue
-      const dependency = localNotebookResourcePath(candidate, fp)
-      if (dependency !== undefined) assets.add(dependency)
-    }
-
-    for (const match of source.matchAll(markdownImageTargetPattern)) {
-      const dependency = localNotebookResourcePath(match[1], fp)
-      if (dependency !== undefined) assets.add(dependency)
-    }
-  }
-
-  return { imports, assets }
-}
-
-export async function readNotebookDependencies(
-  ctx: BuildCtx,
-  fp: FilePath,
-): Promise<NotebookDependencyRecord> {
-  const src = joinSegments(ctx.argv.directory, fp) as FilePath
-  const cache = (globalThis.__quartzNotebookDependencyCache ??= new Map())
-  try {
-    const stat = await fs.stat(src)
-    const cached = cache.get(src)
-    if (cached && cached.mtimeMs === stat.mtimeMs && cached.size === stat.size) {
-      return cached.record
-    }
-    const raw = await fs.readFile(src, 'utf8')
-    const deps = notebookDependencies(raw, fp)
-    const signature = `${stat.mtimeMs}:${stat.size}`
-    const record: NotebookDependencyRecord = {
-      imports: deps.imports,
-      assets: deps.assets,
-      signature,
-    }
-    cache.set(src, { mtimeMs: stat.mtimeMs, size: stat.size, record })
-    return record
-  } catch {
-    cache.delete(src)
-    return { imports: new Set(), assets: new Set(), signature: 'missing' }
-  }
-}
-
-export async function affectedNotebookFiles(
-  ctx: BuildCtx,
-  fps: FilePath[],
-  changeEvents: ChangeEvent[],
-): Promise<FilePath[]> {
-  const available = new Set(fps)
-  const changedPaths = new Set(changeEvents.map(event => event.path))
-  const changedNotebooks = new Set(
-    changeEvents.filter(event => isNotebookPath(event.path)).map(event => event.path),
-  )
-  const affected = new Set<FilePath>()
-
-  for (const event of changeEvents) {
-    if (isNotebookPath(event.path) && event.type !== 'delete' && available.has(event.path)) {
-      affected.add(event.path)
-    }
-  }
-
-  const dependencyPairs = await Promise.all(
-    fps.map(async fp => [fp, await readNotebookDependencies(ctx, fp)] as const),
-  )
-  const reverseImports = new Map<FilePath, Set<FilePath>>()
-  for (const [fp, deps] of dependencyPairs) {
-    for (const target of deps.imports) {
-      if (!available.has(target)) continue
-      const dependents = reverseImports.get(target) ?? new Set<FilePath>()
-      dependents.add(fp)
-      reverseImports.set(target, dependents)
-    }
-    for (const target of deps.assets) {
-      if (changedPaths.has(target)) affected.add(fp)
-    }
-  }
-
-  const queue = [...changedNotebooks]
-  const seen = new Set<FilePath>()
-  while (queue.length > 0) {
-    const current = queue.shift()
-    if (current === undefined) break
-    if (seen.has(current)) continue
-    seen.add(current)
-    for (const dependent of reverseImports.get(current) ?? []) {
-      if (!affected.has(dependent)) {
-        affected.add(dependent)
-        queue.push(dependent)
-      }
-    }
-  }
-
-  return fps.filter(fp => affected.has(fp))
 }
 
 function notebookContext(ctx: BuildCtx, fps: FilePath[]): BuildCtx {
@@ -581,8 +227,9 @@ async function notebookProcessedContent(
     runtime:
       opts.runtime === false ? false : { ...opts.runtime, sourcePath: fp, importableModules },
   }).map(chunk => applyTextTransforms(ctx, chunk))
+  const svgChunks = await embedLocalSvgImages(rawChunks, ctx.argv.directory)
   const { chunks: markdownChunks, extracted: extractedAssets } = await extractInlineNotebookAssets(
-    rawChunks,
+    svgChunks,
     ctx,
   )
   const markdown = markdownChunks.join('\n\n').trim()
@@ -596,6 +243,7 @@ async function notebookProcessedContent(
   const ast = parseNotebookMarkdownChunks(mdProcessor, markdownChunks)
   const mdAst = await mdProcessor.run(ast, file)
   const htmlAst = await htmlProcessor.run(mdastToHastRoot(mdAst), file)
+  themeNotebookSvgs(htmlAst)
   if (file.data.frontmatter) {
     file.data.frontmatter.description = ''
     file.data.frontmatter.socialDescription = ''

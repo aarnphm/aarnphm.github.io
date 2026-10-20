@@ -11,6 +11,7 @@ import {
 } from '../processors/parse'
 import { defaultIoConcurrency, mapConcurrent } from './async-pool'
 import { emitQuartzCacheReceipt, type QuartzCacheReceipt } from './cache-receipts'
+import { pruneStaleOutputStages } from './staged-output'
 import { isRecord } from './type-guards'
 
 declare global {
@@ -357,6 +358,11 @@ export async function restoreBuildCache(
           reason: sameInputs ? 'output-changed' : 'build-inputs-changed',
         },
   )
+  if (unchanged) {
+    void pruneStaleOutputStages(ctx.argv.output).catch(error => {
+      console.warn('Could not prune abandoned output stages:', error)
+    })
+  }
   return { unchanged, published: manifest.published }
 }
 
