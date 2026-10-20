@@ -82,6 +82,8 @@ export interface BaseView {
   spineColor?: string
   bookHeight?: number
   shelfWidth?: number
+  /** Shelf levels in one bay (default 5); more shelves fill bays to the right. */
+  shelfRows?: number
   scrollStep?: number
   pageContent?: boolean
   /** Bookcase style: straight (default), corner, spine, wall, zigzag or ladder. */
@@ -110,9 +112,8 @@ export interface BaseView {
   labelRuntime?: string
   /** Vault rack: `rack-steel` (default) or `black-lacquer`. */
   rackMaterial?: string
-  /** Vault shelf length in world units (600 to 2400) and shelves per bay. */
+  /** Vault shelf length in world units (600 to 2400); shelves per bay is `shelfRows`. */
   bayWidth?: number
-  bayShelves?: number
   /** Cans between dividers; 0 for none. Section changes always get one. */
   dividers?: number
   /** Year cuts between tin, hammertone and polypropylene cans. */

@@ -4,14 +4,17 @@ body[data-is-base='true'] #quartz-root > .page-body-grid > .page-header {
   }
 
   > .bases-search[data-base-query] {
-    flex: 1 1 28rem;
+    flex: 0 1 auto;
     min-width: 0;
     max-width: none;
+    margin-inline-start: auto;
+    // Reserve the focused footprint so the controls keep their row when search expands.
+    inline-size: min(calc(var(--base-query-search-width) + 7rem + 2px), 100%);
   }
 }
 
 // One frame recipe for the whole Base toolbar row: the view menu button (baseViewSelector.scss),
-// the search field and the filter/sort pair share the line, the surface and the selected ground.
+// search, filter, and sort share the line, the surface and the selected ground.
 :is(.bases-toolbar, .bases-search[data-base-query]) {
   --base-query-line: color-mix(in srgb, var(--gray) 55%, transparent);
   --base-query-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
@@ -21,13 +24,13 @@ body[data-is-base='true'] #quartz-root > .page-body-grid > .page-header {
 .bases-search[data-base-query] {
   --base-query-control-height: 2.125rem;
   --base-query-action-size: 2rem;
+  --base-query-search-width: min(24rem, calc(100vw - 11rem));
   --control-height: var(--base-query-action-size);
   --control-font-size: var(--text-meta);
   --control-surface: var(--base-query-surface);
   --control-focus: var(--dark);
 
   position: relative;
-  container: base-query / inline-size;
   color: var(--darkgray);
   font: var(--text-ui) / 1.45 var(--bodyFont);
 
@@ -41,6 +44,7 @@ body[data-is-base='true'] #quartz-root > .page-body-grid > .page-header {
 
   .base-query-toolbar {
     display: flex;
+    justify-content: flex-end;
     flex-wrap: wrap;
     align-items: center;
     // The same column gap as the page header puts between the view menu and this toolbar.
@@ -49,19 +53,71 @@ body[data-is-base='true'] #quartz-root > .page-body-grid > .page-header {
   }
 
   #base-search-bar {
-    flex: 1 1 12rem;
+    position: relative;
+    flex: 0 1 auto;
+    width: 3.5rem;
     min-width: 0;
-    max-width: 28rem;
-    min-height: var(--base-query-control-height);
-    border-color: var(--base-query-line);
+    max-width: none;
+    min-height: 0;
+    height: auto;
+    padding: 0 var(--space-2);
+    border: 0;
+    background: transparent;
+
+    .base-search-label {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--darkgray);
+      font: var(--text-meta) / 1 var(--codeFont);
+      pointer-events: none;
+    }
 
     input {
       min-width: 0;
       width: 100%;
+      padding: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    &:not(:focus-within) input {
+      position: absolute;
+      inset: 0;
+      height: 100%;
+    }
+
+    .search-mode-toggle {
+      display: none;
     }
 
     &:focus-within {
-      border-color: var(--dark);
+      width: var(--base-query-search-width);
+      min-width: 8rem;
+      background: var(--light);
+      outline: 2px solid var(--dark);
+      outline-offset: -2px;
+
+      .base-search-label {
+        display: none;
+      }
+
+      input {
+        opacity: 1;
+        cursor: text;
+      }
+
+      .search-mode-toggle {
+        display: inline-flex;
+      }
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        background: var(--base-query-surface);
+      }
     }
 
     .mode-option {
@@ -123,16 +179,21 @@ body[data-is-base='true'] #quartz-root > .page-body-grid > .page-header {
     min-width: 0;
     max-width: 100%;
     height: var(--base-query-control-height);
-    margin-inline-start: auto;
     border: 1px solid var(--base-query-line);
     border-radius: var(--radius-none);
     background: var(--base-query-surface);
     isolation: isolate;
+  }
 
-    button {
+  .base-query-tabs {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: stretch;
+
+    > button {
       appearance: none;
-      flex: 1 1 0;
-      min-width: 4rem;
+      flex: 0 0 3.5rem;
+      min-width: 3.5rem;
       min-height: 0;
       height: 100%;
       margin: 0;
@@ -176,12 +237,13 @@ body[data-is-base='true'] #quartz-root > .page-body-grid > .page-header {
   }
 
   .base-query-panel {
+    container: base-query / inline-size;
     position: absolute;
     z-index: var(--z-popover);
     inset-block-start: calc(100% + var(--space-2));
     inset-inline-end: 0;
     box-sizing: border-box;
-    inline-size: min(48rem, 100%);
+    inline-size: min(48rem, calc(100vw - 3rem));
     max-block-size: min(42rem, calc(100dvh - 8rem));
     margin: 0;
     padding: var(--space-3);
@@ -446,16 +508,6 @@ body[data-is-base='true'] #quartz-root > .page-body-grid > .page-header {
 
     [data-base-query-apply] {
       background: var(--base-query-selected);
-    }
-  }
-
-  @container base-query (max-width: 28rem) {
-    .base-query-actions {
-      flex: 0 1 8rem;
-    }
-
-    .base-query-actions button {
-      min-width: 0;
     }
   }
 

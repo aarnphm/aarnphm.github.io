@@ -328,7 +328,7 @@ export interface SceneOptions {
 
 /** The rack in painter's order; the script paints a pulled can last, in `.vault-lift`. */
 export function vaultScene(layout: VaultLayout<SceneCan>, options: SceneOptions): Element {
-  const { bayWidth: W, bayShelves: S, bays } = layout
+  const { bayWidth: W, shelfRows: S, bays } = layout
   const steel = options.material
   const [minX, minY, maxX, maxY] = layout.bounds
   const pad = 24
@@ -390,6 +390,13 @@ export function vaultScene(layout: VaultLayout<SceneCan>, options: SceneOptions)
   for (const can of layout.cans) materials.add(can.finish)
   // The camera's first frame starts under the cap board, at the top-left of the first bay.
   const [sx, sy] = project(bayStart(0, W) - RACK.post, 0, shelfTop(0, S) + RACK.pitch - RACK.board)
+  // The screen box of the first bay, rails to cap: the camera fits its height to the stage.
+  const bay = [0, bayStart(1, W)].flatMap(x =>
+    [0, RACK.depth].flatMap(y => [-40, tall + 20].map(z => project(x, y, z))),
+  )
+  const bayXs = bay.map(([px]) => px)
+  const bayYs = bay.map(([, py]) => py)
+  const bayBox = [Math.min(...bayXs), Math.min(...bayYs), Math.max(...bayXs), Math.max(...bayYs)]
   return s(
     'svg',
     {
@@ -400,6 +407,7 @@ export function vaultScene(layout: VaultLayout<SceneCan>, options: SceneOptions)
       role: 'img',
       'aria-label': options.label,
       'data-start': `${r1(sx)} ${r1(sy)}`,
+      'data-bay': bayBox.map(r1).join(' '),
     },
     [s('style', vaultCss(materials)), vaultDefs(), ...children],
   )

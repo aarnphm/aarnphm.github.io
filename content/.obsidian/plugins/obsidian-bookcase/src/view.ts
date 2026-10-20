@@ -431,6 +431,7 @@ export class BookcaseView extends BasesView {
         style,
         material,
         showTags,
+        rows: settings.shelfRows,
       },
       model => ({ title: model.spine, author: authorLabel(model.authors) || undefined }),
     )
@@ -455,6 +456,7 @@ export class BookcaseView extends BasesView {
       scene.span,
       minX,
       maxX - minX,
+      maxY - minY,
       this.panel.inset(),
       !this.linked && this.marked >= 0,
     )

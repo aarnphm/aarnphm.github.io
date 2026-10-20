@@ -53,7 +53,7 @@ views:
     labelStudio: note.studio
     rackMaterial: rack-steel
     bayWidth: 1200
-    bayShelves: 5
+    shelfRows: 5
     dividers: 8
     eraCuts: [1980, 2016]
   - type: vault
@@ -78,7 +78,7 @@ views:
     labelStudio: note.studio
     rackMaterial: rack-steel
     bayWidth: 1200
-    bayShelves: 5
+    shelfRows: 5
     dividers: 8
     eraCuts: [1980, 2016]
   - type: cards

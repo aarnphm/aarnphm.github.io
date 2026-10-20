@@ -42,6 +42,8 @@ export interface BookcaseConfig {
   bookHeight: number
   shelfWidth: number
   scrollStep: number
+  /** Shelf levels in one bay; more bays run to the right. */
+  shelfRows: number
   pageContent: boolean
   shelfStyle: BookcaseStyle
   /** Null when the view stores none: the style's own materials apply. */
@@ -101,6 +103,15 @@ export const bookcaseOptions = (): BasesAllOptions[] => [
       },
       {
         type: 'slider',
+        key: 'shelfRows',
+        displayName: 'Shelf rows',
+        default: BOOKCASE_DEFAULTS.shelfRows,
+        min: BOOKCASE_LIMITS.shelfRows[0],
+        max: BOOKCASE_LIMITS.shelfRows[1],
+        step: 1,
+      },
+      {
+        type: 'slider',
         key: 'scrollStep',
         displayName: 'Scroll per book',
         default: BOOKCASE_DEFAULTS.scrollStep,
@@ -141,6 +152,9 @@ export function readConfig(config: BasesViewConfig): BookcaseConfig {
       config.get('scrollStep'),
       BOOKCASE_DEFAULTS.scrollStep,
       BOOKCASE_LIMITS.scrollStep,
+    ),
+    shelfRows: Math.round(
+      clampOption(config.get('shelfRows'), BOOKCASE_DEFAULTS.shelfRows, BOOKCASE_LIMITS.shelfRows),
     ),
     pageContent: typeof pageContent === 'boolean' ? pageContent : true,
     shelfStyle: oneOf(BOOKCASE_STYLES, config.get('shelfStyle')) ?? 'straight',

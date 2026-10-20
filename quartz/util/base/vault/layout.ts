@@ -6,16 +6,12 @@ import { type Point, clampOption, hashPath, project } from '../bookcase/geometry
 
 export const VAULT_DEFAULTS = {
   bayWidth: 1200,
-  bayShelves: 5,
+  shelfRows: 5,
   dividers: 8,
   eraCuts: [1980, 2016] as readonly number[],
 } as const
 
-export const VAULT_LIMITS = {
-  bayWidth: [600, 2400],
-  bayShelves: [1, 8],
-  dividers: [0, 40],
-} as const
+export const VAULT_LIMITS = { bayWidth: [600, 2400], shelfRows: [1, 8], dividers: [0, 40] } as const
 
 /** Rack dimensions in world units. */
 export const RACK = {
@@ -124,7 +120,7 @@ export interface VaultLayout<T> {
   holders: Holder[]
   shelves: number
   bays: number
-  bayShelves: number
+  shelfRows: number
   bayWidth: number
   /** Last can of each shelf, by shelf. */
   rowEnds: number[]
@@ -133,7 +129,7 @@ export interface VaultLayout<T> {
 
 export interface VaultOptions {
   bayWidth?: unknown
-  bayShelves?: unknown
+  shelfRows?: unknown
   dividers?: unknown
   eraCuts?: unknown
 }
@@ -144,8 +140,8 @@ export function vaultOptions(view: VaultOptions) {
     : []
   return {
     bayWidth: clampOption(view.bayWidth, VAULT_DEFAULTS.bayWidth, VAULT_LIMITS.bayWidth),
-    bayShelves: Math.round(
-      clampOption(view.bayShelves, VAULT_DEFAULTS.bayShelves, VAULT_LIMITS.bayShelves),
+    shelfRows: Math.round(
+      clampOption(view.shelfRows, VAULT_DEFAULTS.shelfRows, VAULT_LIMITS.shelfRows),
     ),
     dividers: Math.round(
       clampOption(view.dividers, VAULT_DEFAULTS.dividers, VAULT_LIMITS.dividers),
@@ -157,27 +153,27 @@ export function vaultOptions(view: VaultOptions) {
 /** World x where bay `b`'s shelves begin; post `b` stands just before it. */
 export const bayStart = (b: number, bayWidth: number) => b * (bayWidth + RACK.post) + RACK.post
 /** Top of the board of `row` (0 is the top shelf). */
-export const shelfTop = (row: number, bayShelves: number) =>
-  RACK.lift + (bayShelves - 1 - row) * RACK.pitch
-export const rackHeight = (bayShelves: number) => RACK.lift + bayShelves * RACK.pitch + 10
+export const shelfTop = (row: number, shelfRows: number) =>
+  RACK.lift + (shelfRows - 1 - row) * RACK.pitch
+export const rackHeight = (shelfRows: number) => RACK.lift + shelfRows * RACK.pitch + 10
 
 /** Width of a holder label character: 11 px Berkeley Mono at 0.6 em plus 1 px tracking. */
 export const HOLDER_CHAR = 7.6
 export const HOLDER_PAD = 22
 
 /**
- * Packs the run in reading order. Shelves fill at `bayWidth`, bays at `bayShelves`. A divider goes
+ * Packs the run in reading order. Shelves fill at `bayWidth`, bays at `shelfRows`. A divider goes
  * at every section change and after every `dividers` cans in a section; a section's card holder
  * sits on the lip under its first can.
  */
 export function packVault<T>(items: VaultItem<T>[], view: VaultOptions = {}): VaultLayout<T> {
   const options = vaultOptions(view)
-  const { bayWidth, bayShelves } = options
+  const { bayWidth, shelfRows } = options
   let layout = packRun(items, options)
   // A last bay under half full reads as a mistake: widen the shelves by up to a quarter to fold it
   // into the bays before it.
   const stray = (l: VaultLayout<T>) =>
-    l.bays > 1 && l.shelves - (l.bays - 1) * bayShelves < bayShelves / 2
+    l.bays > 1 && l.shelves - (l.bays - 1) * shelfRows < shelfRows / 2
   for (let width = bayWidth + 40; stray(layout) && width <= bayWidth * 1.25; width += 40) {
     const wider = packRun(items, { ...options, bayWidth: width })
     if (wider.bays < layout.bays) layout = wider
@@ -189,7 +185,7 @@ function packRun<T>(
   items: VaultItem<T>[],
   options: ReturnType<typeof vaultOptions>,
 ): VaultLayout<T> {
-  const { bayWidth, bayShelves, dividers: every, eraCuts } = options
+  const { bayWidth, shelfRows, dividers: every, eraCuts } = options
   const counts = new Map<string, number>()
   for (const { section } of items) counts.set(section, (counts.get(section) ?? 0) + 1)
   const cans: PlacedCan<T>[] = []
@@ -201,8 +197,8 @@ function packRun<T>(
   let previous: string | undefined
   let lastDiameter = 0
   const at = (s: number) => ({
-    x0: bayStart(Math.floor(s / bayShelves), bayWidth),
-    z: shelfTop(s % bayShelves, bayShelves),
+    x0: bayStart(Math.floor(s / shelfRows), bayWidth),
+    z: shelfTop(s % shelfRows, shelfRows),
   })
   for (const [index, { path, year, section, item }] of items.entries()) {
     const size = canSize(path, year, eraCuts)
@@ -237,13 +233,13 @@ function packRun<T>(
     previous = section
     lastDiameter = size.diameter
   }
-  const shelves = Math.max(shelf + 1, Math.min(3, bayShelves))
-  const bays = Math.ceil(shelves / bayShelves)
+  const shelves = Math.max(shelf + 1, Math.min(3, shelfRows))
+  const bays = Math.ceil(shelves / shelfRows)
   const rowEnds: number[] = []
   for (const can of cans) rowEnds[can.shelf] = can.index
   const pull = RACK.start + 380 + RACK.pullClear
   const right = bayStart(bays, bayWidth) + RACK.panel + 140
-  const top = rackHeight(bayShelves) + 40
+  const top = rackHeight(shelfRows) + 40
   const corners: Point[] = []
   for (const cx of [-120, right])
     for (const cy of [-pull, RACK.depth + 20])
@@ -256,7 +252,7 @@ function packRun<T>(
     holders,
     shelves,
     bays,
-    bayShelves,
+    shelfRows,
     bayWidth,
     rowEnds,
     bounds: [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)],
