@@ -123,33 +123,19 @@ OpenAI then introduced [JSON mode](https://platform.openai.com/docs/guides/struc
 
 In layman terms, structured decoding gives LLMs a "template" to follow. Users provide a schema that "influences" the model's output, ensuring compliance with the desired structure:
 
-```mermaid
-graph LR
-    subgraph Structured automaton
-        A[Schema] -->|Defines| B[Logit Bias]
-    end
-
-    subgraph Decoding
-        C[Language Model] -->|Token distribution| D[Constrained Sampling]
-    end
-
-    B --> D
-    D --> E[Structured Output]
-
-    style A fill:#e1f3f8,stroke:#333,stroke-width:2px
-    style B fill:#e1f3f8,stroke:#333,stroke-width:2px
-    style C fill:#f8e1e1,stroke:#333,stroke-width:2px
-    style D fill:#f8e1e1,stroke:#333,stroke-width:2px
-    style E fill:#e1f8e1,stroke:#333,stroke-width:2px
-
-    classDef default fill:#fff,stroke:#333,stroke-width:2px;
+```jsx imports={StructuredDecodingFlow}
+<StructuredDecodingFlow caption="The schema compiles into a logit bias; constrained sampling (salmon) masks the model's token distribution with it, so every sample stays inside the structure (sage)." />
 ```
 
 From a technical perspective, an inference engine can modify the probability distribution for next-tokens by applying bias (often via logit masks) for all tokens from any given schemas. To apply these biases, [outlines](https://github.com/dottxt-ai/outlines) was proposed to construct a finite-state machine [^fsm] (FSM) from any given schemas to then guide the generations [@willard2023efficientguidedgenerationlarge]. This allows us to track the current state during decoding and filter out invalid tokens by applying logit bias to the output [^blogpost].
 
 [^blogpost]: [LMSys](https://lmsys.org/blog/2024-02-05-compressed-fsm/) goes into their implementation of a compressed FSM via outlines, in SGLang.
 
-![[thoughts/images/vllm/constrained-json-fsm.webp|courtesy of (LMSys, 2024)]]
+```jsx imports={Zoomable,FSMDecoding}
+<Zoomable label="Constrained decoding with a logits mask">
+  <FSMDecoding preset="json" mode="char" caption="Constrained decoding with a logits mask, after the figure by (LMSys, 2024), on a smaller schema: a name of Paul or John and an age of 20 or 30. Each step is one forward pass. At the salmon state of the FSM, the mask keeps the toy tokens that leave the output viable (sage, with the state each token reaches) and sets the others to $-\infty$. The sampled token is salmon in the mask and in the output tape. The 21-token vocabulary is a toy, not a real tokenizer. Press step to walk the 10 passes, or switch to the compressed FSM to see jump-forward finish in 2 passes." />
+</Zoomable>
+```
 
 _in vLLM, you can use this by passing a JSON schema to the sampling params (either through [Python SDK](https://github.com/vllm-project/vllm/blob/80c751e7f68ade3d4c6391a0f3fce9ce970ddad0/benchmarks/benchmark_guided.py#L137) or HTTP requests)_
 
@@ -178,6 +164,15 @@ There are few limitations with current vLLM's support of the Outlines backend:
 3. **Performance issues with CFG mode**: With outlines integrations, while JSON mode is relatively fast, the CFG mode runs significantly slower, and can occasionally [crashes](https://github.com/vllm-project/vllm/issues/10081) the engine.
 4. **Limited advanced feature support**: Techniques like [jump-forward decoding](https://lmsys.org/blog/2024-02-05-compressed-fsm/) are currently not possible with logit-processor approach. It requires prefilling a set of k-next tokens, whereas for logit processors we can only deal with the next-token.
 
+```jsx imports={Zoomable,LogitsProcessorTrace}
+<Zoomable label="Waterfall of sampling process in vLLM">
+  <LogitsProcessorTrace
+    guided={2}
+    caption="Waterfall of the sampling process in vLLM, after the sequence diagram in vllm-project/vllm#5329, with each call and line checked against the vLLM v0.5.0 source. Each column is one call: the small square marks the caller, the larger square the callee, and a lone square a call inside one class. Sage marks where the guided processor joins the request and each per-row processor call; salmon is the selected call. In a batch of 4, every guided row adds one Python call between the forward pass and sampling, and each such call builds a full-vocabulary mask. Move the slider or use the arrow keys to walk the calls, and change the guided rows to watch the loop grow."
+  />
+</Zoomable>
+```
+
 [^logit-processor]: See this [blog post](https://huggingface.co/blog/logits-processor-zoo) from Transformers for using logit processors to control generations process.
 
 ### integrations with XGrammar
@@ -186,9 +181,45 @@ There are few limitations with current vLLM's support of the Outlines backend:
 
 This is great because it addresses **limitation (1)** by moving grammar compilation out of Python into C, utilising `pthread`. Additionally, XGrammar lays the groundwork for addressing **limitation (4)** in future releases. Below are performance comparisons between the XGrammar and Outlines backends:
 
-![[posts/images/vllm-new-xgrammar.webp]]
+```jsx imports={Zoomable,DataChart}
+<Zoomable label="vLLM guided decoding time to first token">
+  <DataChart
+    label="vLLM guided decoding: time to first token"
+    mode="bar"
+    x="[1,5,10,15,20,25]"
+    xlabel="QPS"
+    yscale="log"
+    ymin={10}
+    ymax={1000000}
+    ylabel="mean TTFT (ms, log)"
+    unit="ms"
+    series='[{"name":"vLLM 0.6.5 (xgrammar)","values":[75,68,80,118,220,446]},{"name":"vLLM 0.6.4 (outlines)","values":[10507,139455,144131,204710,192325,244884]}]'
+    labels="[0,5]"
+    ratio="outlines ÷ xgrammar"
+    caption="Mean time to first token for Llama-3.1-8B on one H100 GPU, NousResearch/json-mode-eval, with 50% of requests guided. Salmon bars are vLLM 0.6.5 with XGrammar; darker sage bars are vLLM 0.6.4 with Outlines. The y axis is logarithmic, so each gridline is ten times the one below. Values are as printed on the original benchmark figure. Hover or focus a QPS group, then use the arrow keys, to read both values and their ratio; the table lists every value."
+  />
+</Zoomable>
+```
 
-![[posts/images/vllm-xgrammar-decode-time-per-output-token.webp|courtesy of Michael Goin (Red Hat)]]
+```jsx imports={Zoomable,DataChart}
+<Zoomable label="vLLM guided decoding time per output token">
+  <DataChart
+    label="vLLM guided decoding: time per output token"
+    mode="bar"
+    x="[1,5,10,15,20,25]"
+    xlabel="QPS"
+    ymin={0}
+    ymax={200}
+    ylabel="mean TPOT (ms)"
+    unit="ms"
+    decimals={1}
+    series='[{"name":"XGrammar","values":[8.4,9.6,12.1,16.1,26.5,32.0]},{"name":"Outlines","values":[7.9,13.4,19.6,73.8,68.6,152.3]}]'
+    labels="[3,5]"
+    ratio="Outlines ÷ XGrammar"
+    caption="Mean time per output token on the same setup: Llama-3.1-8B, one H100 GPU, NousResearch/json-mode-eval, 50% guided decoding. Salmon bars are XGrammar; darker sage bars are Outlines. Values are as printed on the original figure, courtesy of Michael Goin (Red Hat). Hover or focus a QPS group to read both values; the gap opens from 15 QPS."
+  />
+</Zoomable>
+```
 
 In vLLM’s v0 architecture, we’ve implemented XGrammar as a [logit processor](https://github.com/vllm-project/vllm/blob/main/vllm/model_executor/guided_decoding/xgrammar_decoding.py), optimizing it with caching for tokenizer data. While the performance improvements are encouraging, we believe there’s still significant room for optimisation.
 
@@ -226,10 +257,7 @@ With the release of [v1](https://github.com/vllm-project/vllm/issues/8779) on th
 
 _NOTE: if you have any more suggestions we are more than happy to take it into consideration. Consider joining [vLLM slack](slack.vllm.ai) via `#feat-structured-output`_
 
-[^sampling]:
-    _The following was excerpt from [vllm-project/vllm#5329](https://github.com/vllm-project/vllm/pull/5329)_:
-
-    ![[thoughts/images/vllm/pre-optimized-logit-processor-handling.webp|waterfall of sampling process in vLLM]]
+[^sampling]: _The waterfall of the sampling process below the limitations follows [vllm-project/vllm#5329](https://github.com/vllm-project/vllm/pull/5329)._
 
 ## acknowledgement
 

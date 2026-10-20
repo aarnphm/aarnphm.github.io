@@ -1,0 +1,117 @@
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
+@use './figure.scss' as *;
+
+.vllm-sampling-sequence {
+  @include figure-frame('vsq-figure', 38rem);
+  padding: 1rem 1rem 1.1rem;
+
+  --vsq-bar-fill: var(--light);
+  --vsq-head-fill: color-mix(in srgb, var(--lightgray) 45%, var(--light));
+  --vsq-critical-fill: color-mix(in srgb, var(--fig-salmon) 34%, var(--light));
+  --vsq-critical-bar: var(--fig-salmon);
+}
+
+:root[saved-theme='dark'] .vllm-sampling-sequence {
+  --vsq-head-fill: var(--lightgray);
+  --vsq-critical-fill: color-mix(in srgb, var(--fig-salmon) 24%, var(--lightgray));
+}
+
+// The diagram keeps its natural size so the method names stay legible; the frame scrolls.
+.vsq-scroll {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
+}
+
+.vsq-graph {
+  display: block;
+  max-width: none;
+  font-family: var(--codeFont);
+}
+
+.vsq-lifeline {
+  stroke: var(--fig-stroke-soft);
+  stroke-width: 1;
+}
+
+.vsq-head {
+  fill: var(--vsq-head-fill);
+  stroke: var(--fig-stroke);
+  stroke-width: 1;
+}
+
+.vsq-head-label {
+  fill: var(--dark);
+  font-size: 10.5px;
+}
+
+.vsq-bar {
+  fill: var(--vsq-bar-fill);
+  stroke: var(--fig-stroke);
+  stroke-width: 1;
+
+  &.vsq-bar--critical {
+    fill: var(--vsq-critical-bar);
+    stroke: var(--dark);
+  }
+}
+
+.vsq-label {
+  fill: var(--dark);
+  font-size: 10px;
+
+  &.vsq-label--tag {
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+}
+
+.vsq-line {
+  fill: none;
+  stroke: var(--fig-stroke);
+  stroke-width: 1;
+
+  // UML return messages are dashed with an open arrowhead.
+  &.vsq-line--return {
+    stroke-dasharray: 4 3;
+  }
+}
+
+.vsq-msg--critical .vsq-line {
+  stroke: var(--dark);
+  stroke-width: 1.5;
+}
+
+.vsq-critical {
+  fill: var(--vsq-critical-fill);
+  stroke: var(--dark);
+  stroke-width: 1;
+}
+
+.vsq-arrowhead {
+  fill: var(--fig-stroke);
+}
+
+.vsq-arrowhead--open {
+  fill: none;
+  stroke: var(--fig-stroke);
+  stroke-width: 1.4;
+}
+
+.vsq-found {
+  fill: var(--dark);
+}
+
+.vsq-caption {
+  @include figure-caption;
+}
+
+.zoomable.is-zoomed > .zoomable-content > .vllm-sampling-sequence .vsq-graph {
+  width: 100%;
+  height: auto;
+}

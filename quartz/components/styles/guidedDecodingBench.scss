@@ -1,0 +1,299 @@
+@use '../../styles/variables.scss' as *;
+@use './figure.scss' as *;
+
+.guided-decoding-bench {
+  @include figure-frame('gdb-figure', 34rem);
+
+  // Lightness separates the series as well as hue: XGrammar is a solid sage bar, Outlines a pale salmon tint.
+  --gdb-xgrammar: var(--fig-sage);
+  --gdb-outlines: color-mix(in srgb, var(--fig-salmon) 45%, var(--light));
+  --gdb-tab-surface: var(--fig-tab-surface);
+  --gdb-tab-border: var(--fig-tab-border);
+  --gdb-tab-active: color-mix(in srgb, var(--fig-sage) 24%, var(--gdb-tab-surface));
+  --gdb-row-active: var(--fig-grid-selected);
+
+  :root[saved-theme='dark'] & {
+    // At 26% the tint reads as brown-gray on the dark ground; 40% stays salmon and still sits darker than sage.
+    --gdb-outlines: color-mix(in srgb, var(--fig-salmon) 40%, var(--lightgray));
+    --gdb-tab-active: color-mix(in srgb, var(--fig-sage) 28%, var(--gdb-tab-surface));
+    --gdb-row-active: color-mix(in srgb, var(--fig-sage) 18%, var(--light));
+  }
+}
+
+// Wide pages give the frame over 1300px; the controls, table and caption keep the chart's measure.
+.gdb-head,
+.gdb-panel,
+.gdb-caption {
+  max-width: 640px;
+  margin-inline: auto;
+}
+
+.gdb-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem 1rem;
+  margin-bottom: 0.9rem;
+}
+
+.gdb-tablist {
+  display: inline-flex;
+  align-items: stretch;
+  height: 1.55rem;
+  overflow: hidden;
+  border: 1px solid var(--gdb-tab-border);
+  border-radius: var(--radius-none);
+  background: var(--gdb-tab-surface);
+}
+
+.gdb-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0 0.8rem;
+  border: 0;
+  border-radius: 0;
+  background: var(--gdb-tab-surface);
+  color: var(--fig-tab-fg);
+  cursor: pointer;
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  line-height: 1;
+  transition:
+    background-color 140ms ease,
+    color 140ms ease;
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: -2px;
+  }
+
+  &[aria-selected='true'] {
+    background: var(--gdb-tab-active);
+    color: var(--dark);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      color: var(--dark);
+    }
+  }
+}
+
+.gdb-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  color: var(--dark);
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0;
+  }
+}
+
+.gdb-swatch {
+  display: inline-block;
+  width: 0.7rem;
+  height: 0.7rem;
+  box-sizing: border-box;
+  border: 1px solid var(--fig-stroke);
+  vertical-align: -0.08rem;
+
+  &--xgrammar {
+    background: var(--gdb-xgrammar);
+  }
+
+  &--outlines {
+    background: var(--gdb-outlines);
+  }
+}
+
+.gdb-graph {
+  display: block;
+  width: 100%;
+  max-width: 640px;
+  aspect-ratio: 560 / 250;
+  margin: 0 auto;
+  overflow: visible;
+
+  .gdb-grid line {
+    stroke: var(--fig-div);
+    stroke-width: 1;
+  }
+
+  .gdb-baseline {
+    stroke: var(--fig-stroke);
+    stroke-width: 1;
+  }
+
+  .gdb-tick,
+  .gdb-axis,
+  .gdb-ratio {
+    font-family: var(--codeFont);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .gdb-tick {
+    font-size: 10px;
+    fill: var(--darkgray);
+  }
+
+  .gdb-axis {
+    font-size: 10.5px;
+    fill: var(--darkgray);
+  }
+
+  .gdb-ratio {
+    font-size: 10.5px;
+    font-weight: 600;
+    fill: var(--dark);
+  }
+
+  .gdb-bar {
+    stroke: var(--fig-stroke);
+    stroke-width: 1;
+    transition: stroke-width 160ms ease;
+  }
+
+  .gdb-bar--xgrammar {
+    fill: var(--gdb-xgrammar);
+  }
+
+  .gdb-bar--outlines {
+    fill: var(--gdb-outlines);
+  }
+
+  .gdb-hit {
+    fill: transparent;
+    pointer-events: all;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gdb-bar {
+      transition: none;
+    }
+  }
+}
+
+// The table transformer wraps every table in .table-container, whose cell rules outrank a single class.
+.gdb-panel .gdb-table {
+  width: 100%;
+  margin: 1rem 0 0;
+  border-collapse: collapse;
+  font-family: var(--codeFont);
+  font-size: 0.74rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--dark);
+
+  tr {
+    border: 0;
+  }
+
+  th,
+  td {
+    min-width: 0;
+    padding: 0.32rem 0.6rem;
+    line-height: 1.35;
+    border: 1px solid var(--fig-grid-line);
+    background: var(--fig-grid-cell);
+    text-align: right;
+    white-space: nowrap;
+    transition: background-color 140ms ease;
+  }
+
+  thead th {
+    color: var(--fig-note);
+    font-weight: 500;
+    font-size: 0.7rem;
+
+    .gdb-swatch {
+      margin-inline-end: 0.35rem;
+    }
+  }
+
+  th:first-child {
+    text-align: left;
+  }
+
+  tbody th {
+    font-weight: 400;
+  }
+
+  .gdb-ratio-cell {
+    font-weight: 600;
+  }
+}
+
+.gdb-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@for $q from 0 through 5 {
+  .gdb-panel[data-gdb-active='#{$q}'] {
+    tr[data-gdb-q='#{$q}'] > * {
+      background: var(--gdb-row-active);
+    }
+
+    .gdb-group[data-gdb-q='#{$q}'] .gdb-bar {
+      stroke: var(--dark);
+      stroke-width: 2;
+    }
+  }
+}
+
+.gdb-caption {
+  @include figure-caption;
+  display: block;
+}
+
+.gdb-math {
+  @include figure-inline-math;
+}
+
+@container gdb-figure (max-width: 440px) {
+  // The SVG scales to about 0.55 of its viewBox here, so text grows in user units to stay near 8px.
+  .gdb-graph {
+    .gdb-tick {
+      font-size: 14px;
+    }
+
+    .gdb-axis,
+    .gdb-ratio {
+      font-size: 15px;
+    }
+  }
+
+  .gdb-panel .gdb-table {
+    font-size: 0.7rem;
+
+    th,
+    td {
+      padding: 0.28rem 0.4rem;
+    }
+
+    thead th {
+      white-space: normal;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .guided-decoding-bench {
+    padding: 1rem 0.75rem;
+  }
+}
