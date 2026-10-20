@@ -217,6 +217,7 @@ export function bookcaseScene(layout: StyledLayout<SceneBook>, label: string): E
       'aria-label': label,
       'data-origin': `${r1(minX - pad)} ${r1(minY - pad)}`,
       'data-style': layout.style,
+      'data-fit': r1(layout.fit),
     },
     [...materialNodes(materials), ...children],
   )

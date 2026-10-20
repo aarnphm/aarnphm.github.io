@@ -25,7 +25,6 @@ const SVG_NS = 'http://www.w3.org/2000/svg'
 const ZOOM = 1.25
 const MAX_SCALE = 3
 /** 1000 ft rim titles are 9.5 units tall; this scale shows them at about 9 px. */
-const READ_SCALE = 0.95
 const DRAG_PX = 5
 const PULL_ALIGN = Math.cos((24 * Math.PI) / 180)
 const PULL_MS = 220
@@ -127,7 +126,8 @@ interface Rack {
   cans: Map<number, SVGGElement>
   rows: Map<number, HTMLElement>
   box: DOMRect
-  start: [number, number]
+  /** The first bay's screen box: min x, min y, max x, max y. */
+  bay: number[]
 }
 
 export class VaultView extends BasesView {
@@ -541,12 +541,14 @@ export class VaultView extends BasesView {
   private frameStart(): void {
     const rack = this.rack
     if (!rack) return
-    const { box, start } = rack
-    this.setScale(Math.max(this.fitScale, READ_SCALE), this.viewW / 2, this.viewH / 2, true)
+    // The first bay fills the height; the rest of the run waits to the right.
+    const { box, bay } = rack
+    const [left, top, , bottom] = bay
+    this.setScale(bottom > top ? (this.viewH - 48) / (bottom - top) : this.fitScale, 0, 0, true)
     const [ox, oy] = this.pad(this.scale)
     this.writeScroll(
-      ox + (start[0] - box.x) * this.scale - 24,
-      oy + (start[1] - box.y) * this.scale - 48,
+      ox + (left - box.x) * this.scale - 24,
+      oy + ((top + bottom) / 2 - box.y) * this.scale - this.viewH / 2,
     )
     this.framed = true
   }
@@ -1026,7 +1028,7 @@ export class VaultView extends BasesView {
     for (const row of Array.from(this.host.querySelectorAll<HTMLElement>('.vault-entry')))
       rows.set(Number(row.dataset.index), row)
     const vb = svg.viewBox.baseVal
-    const [sx, sy] = (svg.dataset.start ?? '0 0').split(' ').map(Number)
+    const bay = (svg.dataset.bay ?? '0 0 0 0').split(' ').map(Number)
     // The index stays for screen readers; the arrow keys on the rack walk it for everyone else.
     for (const button of Array.from(this.host.querySelectorAll<HTMLElement>('.vault-index button')))
       button.tabIndex = -1
@@ -1055,7 +1057,7 @@ export class VaultView extends BasesView {
       cans,
       rows,
       box: new DOMRect(vb.x, vb.y, vb.width, vb.height),
-      start: [sx, sy],
+      bay,
     }
     this.rack = rack
     this.updateFullscreenButton()

@@ -18,6 +18,7 @@ The garden renders the same `.base` file at build time. Both sides read the same
 | `shelfMaterial` | dropdown    | `paper`        | `paper`, `walnut`, `birch-ply`, `black-lacquer` or `steel` for every furniture part, with the same fallback; unset keeps the style's own materials. Books do not change. |
 | `shelfWidth`    | slider      | `600`          | shelf length in world units; a group wraps onto a new shelf at this width, 320 to 1200                                                                                   |
 | `scrollStep`    | slider      | `56`           | px of scroll per book, 24 to 120                                                                                                                                         |
+| `shelfRows`     | slider      | `5`            | shelf levels in one bay; more bays run to the right, 1 to 12                                                                                                             |
 | `showTags`      | toggle      | `true`         | label plates on the shelves; a topic's `showTags` overrides it                                                                                                           |
 | `pageContent`   | toggle      | `true`         | render the note body in the page panel                                                                                                                                   |
 | `editorPane`    | toggle      | `true`         | "Edit notes in a side pane": in a wide pane, a selection opens the note in an editor beside the view                                                                     |
@@ -121,7 +122,7 @@ A second Bases view, `vault`, draws the query result as 35 mm film cans on edge 
 | `labelRuntime`  | property    | `note.runtime`  | runtime and estimated reels on the page panel                             |
 | `rackMaterial`  | dropdown    | `rack-steel`    | `rack-steel` or `black-lacquer`                                           |
 | `bayWidth`      | slider      | `1200`          | shelf length in world units, 600 to 2400                                  |
-| `bayShelves`    | slider      | `5`             | shelves per bay, 1 to 8                                                   |
+| `shelfRows`     | slider      | `5`             | shelves per bay, 1 to 8; more bays run to the right                       |
 | `dividers`      | slider      | `8`             | cans between dividers, 0 for none; a section change always gets one       |
 | `eraCuts`       | -           | `[1980, 2016]`  | set in the `.base` file: tin before the first year, hammertone, then poly |
 | `showTags`      | toggle      | `true`          | card holders with the section and its count                               |

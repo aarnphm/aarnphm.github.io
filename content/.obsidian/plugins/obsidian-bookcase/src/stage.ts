@@ -6,6 +6,8 @@ export type LayoutMode = 'wide' | 'narrow'
 const WIDE_MIN = 600
 const OWN_HEIGHT = 520
 const MIN_SCALE = 0.55
+/** Floor of the height fit: a tall bay may shrink past MIN_SCALE to stay on the stage. */
+const MIN_FIT_SCALE = 0.25
 /** Room kept between the stage's left edge and a pulled book. */
 const LIFT_PAD = 8
 /** Track height while the scroller is found, so an element that only grows with its content fails the test. */
@@ -71,6 +73,8 @@ export interface Metrics {
   caseWidth: number
   /** Width of the case with every pulled position in world px; the world starts at its left. */
   boxWidth: number
+  /** Height of the case with every pulled position in world px; the world starts at its top. */
+  boxHeight: number
 }
 
 /** The scroll container, the scroll track and the camera. */
@@ -92,6 +96,7 @@ export class Stage {
     caseLeft: 0,
     caseWidth: 0,
     boxWidth: 0,
+    boxHeight: 0,
   }
 
   constructor(
@@ -163,6 +168,7 @@ export class Stage {
     span: readonly [number, number],
     minX: number,
     reach: number,
+    tall: number,
     inset: number,
     paged: boolean,
   ): Metrics {
@@ -178,9 +184,12 @@ export class Stage {
     // A layout read, once per measure: the grid follows the pane, and real themes may pad the view.
     const stageWidth = this.stage.clientWidth || width
     let fitted = stageWidth / (fit || 1)
+    // Wide, one bay and its pulled overhang fit beside the panel; more bays pan across.
+    const bayReach = Math.min(reach, fit + reach - (span[1] - span[0]))
     if (mode === 'wide')
-      fitted = Math.min(fitted, (stageWidth - inset - 2 * LIFT_PAD) / (reach || 1))
-    const scale = Math.min(1, Math.max(MIN_SCALE, fitted))
+      fitted = Math.min(fitted, (stageWidth - inset - 2 * LIFT_PAD) / (bayReach || 1))
+    const heightFit = (sceneHeight - 2 * LIFT_PAD) / (tall || 1)
+    const scale = Math.max(MIN_FIT_SCALE, Math.min(1, Math.max(MIN_SCALE, fitted), heightFit))
     const caseWidth = (span[1] - span[0]) * scale
     this.root.style.setProperty('--bc-stage-height', `${stageHeight}px`)
     this.root.style.setProperty('--bc-scene-height', `${sceneHeight}px`)
@@ -209,6 +218,7 @@ export class Stage {
       caseLeft: (span[0] - minX) * scale,
       caseWidth,
       boxWidth: reach * scale,
+      boxHeight: tall * scale,
     }
     return this.metrics
   }
@@ -265,12 +275,17 @@ export class Stage {
    * book on the stage.
    */
   offset(target: Point, lift: Point, reserve: number): Point {
-    const { mode, stageWidth, caseLeft, caseWidth, boxWidth } = this.metrics
+    const { mode, stageWidth, sceneHeight, caseLeft, caseWidth, boxWidth, boxHeight } = this.metrics
     const [ax, ay] = this.anchor()
+    // Down, a case that fits the stage stays centred; a taller one stops at its top and bottom.
+    const y =
+      boxHeight <= sceneHeight
+        ? (sceneHeight - boxHeight) / 2
+        : Math.min(0, Math.max(sceneHeight - boxHeight, ay - target[1]))
     const room = stageWidth - reserve - LIFT_PAD - boxWidth
     if (mode === 'wide' && room >= LIFT_PAD) {
       const centred = (stageWidth - caseWidth) / 2 - caseLeft
-      return [Math.min(room, Math.max(LIFT_PAD, centred)), ay - target[1]]
+      return [Math.min(room, Math.max(LIFT_PAD, centred)), y]
     }
     let x =
       caseWidth <= stageWidth
@@ -278,7 +293,7 @@ export class Stage {
         : Math.min(-caseLeft, Math.max(stageWidth - caseLeft - caseWidth, ax - target[0]))
     x = Math.min(x, stageWidth - reserve - lift[1])
     x = Math.max(x, LIFT_PAD - lift[0])
-    return [x, ay - target[1]]
+    return [x, y]
   }
 
   /** Visible band of the world, in world px, for the world translation `offset` and `zoom`. */

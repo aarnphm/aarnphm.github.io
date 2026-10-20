@@ -5,15 +5,13 @@ import { rootNavSignal } from './root-lifecycle'
 const SVG_NS = 'http://www.w3.org/2000/svg'
 const ZOOM_STEP = 1.25
 const MAX_SCALE = 3
-// 1000 ft rim titles are 9.5 units tall in the drawing; this scale shows them at about 9 px.
-const READ_SCALE = 0.95
+// The bays run down to the right at 30°: a sideways scroll moves down the stage this much per pixel.
+const RACK_SLOPE = Math.tan(Math.PI / 6)
 const DRAG_PX = 5
 // Within this angle of the active pull direction the drag slides the can; any other angle pans.
 const PULL_ALIGN = Math.cos((24 * Math.PI) / 180)
 const PULL_MS = 220
 const GLIDE_MS = 90
-// A wheel or pinch that pauses for less than this keeps its live scale; only a rest re-renders.
-const BAKE_MS = 320
 const SCROLL_SETTLE_MS = 140
 const UPGRADE_DELAY_MS = 300
 const PRELOAD = 3
@@ -25,6 +23,10 @@ const FLICK_MS = 140
 const WHEEL_COOLDOWN_MS = 220
 const WHEEL_STEP_PX = 64
 const EASE = 'cubic-bezier(0.23, 1, 0.32, 1)'
+// A wheel zoom glides to each new scale in this time, and settles into the layout this long after
+// its last step.
+const ZOOM_GLIDE_MS = 90
+const ZOOM_REST_MS = 200
 
 /**
  * A firm, non-overshooting ease whose first slope matches the speed the drag let go at, so the can
@@ -102,7 +104,7 @@ export function initializeVault(root: HTMLElement): void {
   const signal = rootNavSignal(root)
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)')
   const { x: minX, y: minY, width: W, height: H } = svg.viewBox.baseVal
-  const [startX, startY] = (svg.dataset.start ?? '0 0').split(' ').map(Number)
+  const [bayLeft, bayTop, , bayBottom] = (svg.dataset.bay ?? '').split(' ').map(Number)
   const cans = new Map<number, SVGGElement>()
   for (const can of svg.querySelectorAll<SVGGElement>(':scope > .cn-can'))
     cans.set(Number(can.dataset.index), can)
@@ -119,9 +121,8 @@ export function initializeVault(root: HTMLElement): void {
   const previous = dialog.querySelector<HTMLButtonElement>('[data-card="previous"]')
   const next = dialog.querySelector<HTMLButtonElement>('[data-card="next"]')
 
-  // The drawing sits in a scaler that carries the interim zoom as a composited transform. Any
-  // style change on the SVG root itself relayouts the whole scene (about 11 ms for 235 cans), so
-  // the root is only touched when the scale bakes after the gesture settles.
+  // The drawing sits in a scaler that carries the zoom as a composited transform. Any change on
+  // the SVG root itself relayouts the whole scene, so the root keeps its size.
   const canvas = document.createElement('div')
   canvas.className = 'vault-canvas'
   const scaler = document.createElement('div')
@@ -140,9 +141,7 @@ export function initializeVault(root: HTMLElement): void {
   let viewW = viewport.clientWidth
   let viewH = viewport.clientHeight
   let scale = 1
-  let bakedScale = 1
   let fitScale = 1
-  let bakeTimer: ReturnType<typeof setTimeout> | undefined
   let aim: { left: number; top: number } | undefined
   let glideFrame = 0
   let glideAt = 0
@@ -177,26 +176,78 @@ export function initializeVault(root: HTMLElement): void {
     scaler.style.top = `${py}px`
   }
 
-  // The wrapper always carries a transform on its own layer: a transform that comes and goes
-  // rebuilds the layer and lays out every rim title again.
-  const applySceneScale = () => {
-    const ratio = bakedScale > 0 ? scale / bakedScale : 1
-    scaler.style.transform = `scale(${Math.abs(ratio - 1) < 0.001 ? 1 : ratio})`
+  // A wheel zoom plays on the compositor as short animations of the scaler toward each new scale:
+  // a scale written from script lays out every rim title again, about 30 ms a step. The canvas
+  // size, the scroll and the scaler's own transform catch up once, when the zoom rests.
+  let live:
+    | { left: number; top: number; ox: number; oy: number; vl: number; vt: number }
+    | undefined
+  let liveAnim: Animation | undefined
+  let liveFrom = [0, 0, 1]
+  let liveTo = [0, 0, 1]
+  let restTimer: ReturnType<typeof setTimeout> | undefined
+  const liveTransform = ([dx, dy, k]: number[]) => `translate(${dx}px, ${dy}px) scale(${k})`
+  // A scroll during the zoom moves the committed canvas; the zoom's own camera moves with it.
+  const followScroll = (at: NonNullable<typeof live>) => {
+    const left = viewport.scrollLeft
+    const top = viewport.scrollTop
+    at.vl += left - at.left
+    at.vt += top - at.top
+    at.left = left
+    at.top = top
   }
-
-  const bakeScale = (nextScale = scale) => {
-    if (bakeTimer !== undefined) {
-      clearTimeout(bakeTimer)
-      bakeTimer = undefined
+  const commitZoom = () => {
+    if (!live) return
+    if (restTimer !== undefined) clearTimeout(restTimer)
+    restTimer = undefined
+    followScroll(live)
+    const { vl, vt } = live
+    live = undefined
+    layoutCanvas(scale)
+    scaler.style.transform = `scale(${scale})`
+    liveAnim?.cancel()
+    liveAnim = undefined
+    writeScroll(vl, vt)
+  }
+  const zoomLive = (value: number, ax: number, ay: number) => {
+    cancelGlide()
+    if (live) {
+      followScroll(live)
+    } else {
+      const [ox, oy] = pad(scale)
+      const left = viewport.scrollLeft
+      const top = viewport.scrollTop
+      live = { left, top, ox, oy, vl: left, vt: top }
+      liveTo = [0, 0, scale]
     }
-    bakedScale = nextScale
-    svg.setAttribute('width', String(Math.round(W * bakedScale)))
-    svg.setAttribute('height', String(Math.round(H * bakedScale)))
-    layoutCanvas(bakedScale)
-    applySceneScale()
+    const prevScale = scale
+    const [px, py] = pad(prevScale)
+    const wx = (live.vl + ax - px) / prevScale
+    const wy = (live.vt + ay - py) / prevScale
+    scale = Math.min(MAX_SCALE, Math.max(fitScale, value))
+    if (zoomOut) zoomOut.disabled = scale <= fitScale * 1.001
+    if (zoomIn) zoomIn.disabled = scale >= MAX_SCALE * 0.999
+    const [nx, ny] = pad(scale)
+    const maxLeft = Math.max(0, Math.round(W * scale + nx * 2) - viewW)
+    const maxTop = Math.max(0, Math.round(H * scale + ny * 2) - viewH)
+    live.vl = Math.min(maxLeft, Math.max(0, Math.round(wx * scale + nx - ax)))
+    live.vt = Math.min(maxTop, Math.max(0, Math.round(wy * scale + ny - ay)))
+    // The next glide starts where the running one is now.
+    const t = liveAnim?.effect?.getComputedTiming().progress ?? 1
+    liveFrom = liveFrom.map((v, i) => v + (liveTo[i] - v) * t)
+    if (!liveAnim) liveFrom = liveTo
+    liveTo = [nx - live.vl - live.ox + live.left, ny - live.vt - live.oy + live.top, scale]
+    liveAnim?.cancel()
+    liveAnim = scaler.animate(
+      [{ transform: liveTransform(liveFrom) }, { transform: liveTransform(liveTo) }],
+      { duration: reduced.matches ? 0 : ZOOM_GLIDE_MS, fill: 'forwards' },
+    )
+    if (restTimer !== undefined) clearTimeout(restTimer)
+    restTimer = setTimeout(commitZoom, ZOOM_REST_MS)
   }
 
-  const setScale = (value: number, ax = viewW / 2, ay = viewH / 2, immediate = false) => {
+  const setScale = (value: number, ax = viewW / 2, ay = viewH / 2) => {
+    commitZoom()
     cancelGlide()
     const prevScale = scale
     const [ox, oy] = pad(prevScale)
@@ -206,14 +257,10 @@ export function initializeVault(root: HTMLElement): void {
     if (zoomOut) zoomOut.disabled = scale <= fitScale * 1.001
     if (zoomIn) zoomIn.disabled = scale >= MAX_SCALE * 0.999
     const [nx, ny] = pad(scale)
-    if (immediate) {
-      bakeScale(scale)
-    } else {
-      layoutCanvas(scale)
-      applySceneScale()
-      if (bakeTimer !== undefined) clearTimeout(bakeTimer)
-      bakeTimer = setTimeout(() => bakeScale(scale), BAKE_MS)
-    }
+    layoutCanvas(scale)
+    // The drawing keeps its unit size and only its wrapper scales: a new <svg> size lays out and
+    // repaints all ~10k nodes, a stall of a few hundred ms at every pause in a zoom.
+    scaler.style.transform = `scale(${scale})`
     writeScroll(wx * scale + nx - ax, wy * scale + ny - ay)
   }
 
@@ -254,6 +301,7 @@ export function initializeVault(root: HTMLElement): void {
   }
 
   const lookAt = (x: number, y: number) => {
+    commitZoom()
     const [ox, oy] = pad(scale)
     const targetLeft = Math.max(0, Math.round((x - minX) * scale + ox - viewW / 2))
     const targetTop = Math.max(0, Math.round((y - minY) * scale + oy - viewH / 2))
@@ -291,7 +339,7 @@ export function initializeVault(root: HTMLElement): void {
     fitScale = Math.min(1, (viewW - 32) / W, (viewH - 32) / H)
   }
   const fit = () => {
-    setScale(fitScale, viewW / 2, viewH / 2, true)
+    setScale(fitScale, viewW / 2, viewH / 2)
     const [ox, oy] = pad(fitScale)
     writeScroll(ox + (W * fitScale - viewW) / 2, oy + (H * fitScale - viewH) / 2)
   }
@@ -865,6 +913,7 @@ export function initializeVault(root: HTMLElement): void {
     event => {
       clearDragged()
       if (event.button !== 0 || event.isPrimary === false || dialog.open) return
+      commitZoom()
       cancelGlide()
       const node = canAt(event)
       const index = Number(node?.dataset.index ?? -1)
@@ -1052,7 +1101,7 @@ export function initializeVault(root: HTMLElement): void {
     const factor = zoomFactor
     zoomFactor = 1
     if (factor === 1 || signal.aborted) return
-    setScale(scale * factor, zoomAnchor[0], zoomAnchor[1])
+    zoomLive(scale * factor, zoomAnchor[0], zoomAnchor[1])
   }
   // The next frame flushes; a throttled page (no frames) flushes on a short timer instead.
   const scheduleZoom = () => {
@@ -1063,7 +1112,20 @@ export function initializeVault(root: HTMLElement): void {
   viewport.addEventListener(
     'wheel',
     event => {
-      if (!event.ctrlKey && !event.metaKey) return
+      if (!event.ctrlKey && !event.metaKey) {
+        // A sideways scroll follows the rack down its slant, so the shelves stay in the frame.
+        const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? viewW : 1
+        const dx = (event.deltaX || (event.shiftKey ? event.deltaY : 0)) * unit
+        if (!dx) return
+        event.preventDefault()
+        const dy = event.deltaX && !event.shiftKey ? event.deltaY * unit : 0
+        viewport.scrollBy({
+          left: dx,
+          top: dy + dx * RACK_SLOPE,
+          behavior: Math.abs(dx) >= 40 ? 'smooth' : 'instant',
+        })
+        return
+      }
       event.preventDefault()
       if (!zoomRect || event.timeStamp - zoomRectAt > 400) {
         zoomRect = viewport.getBoundingClientRect()
@@ -1185,16 +1247,21 @@ export function initializeVault(root: HTMLElement): void {
   dialog.addEventListener('close', cleanupCard, { signal })
 
   const observer = new ResizeObserver(() => {
+    commitZoom()
     measure()
-    if (scale < fitScale) setScale(fitScale, viewW / 2, viewH / 2, true)
+    if (scale < fitScale) setScale(fitScale, viewW / 2, viewH / 2)
     else layoutCanvas(scale)
   })
   measure()
   if (readout && !readout.textContent) readout.textContent = `– / ${total}`
-  // The first frame reads: the top-left of the first bay at a scale where rim titles are legible.
-  setScale(Math.max(fitScale, READ_SCALE), viewW / 2, viewH / 2, true)
+  // The first frame fits the first bay's shelves to the stage height, its left post at the left
+  // edge; the other bays run on to the right.
+  setScale(bayBottom > bayTop ? (viewH - 48) / (bayBottom - bayTop) : fitScale, 0, 0)
   const [initOx, initOy] = pad(scale)
-  writeScroll(initOx + (startX - minX) * scale - 24, initOy + (startY - minY) * scale - 48)
+  writeScroll(
+    initOx + (bayLeft - minX) * scale - 24,
+    initOy + ((bayTop + bayBottom) / 2 - minY) * scale - viewH / 2,
+  )
   observer.observe(viewport)
 
   const groups = [...indexPane.querySelectorAll<HTMLDetailsElement>('.vault-index-group')]
@@ -1230,11 +1297,12 @@ export function initializeVault(root: HTMLElement): void {
       cancelIdle()
       cancelGlide()
       cancelUpgrade()
-      if (bakeTimer !== undefined) clearTimeout(bakeTimer)
-      bakeTimer = undefined
       if (scrollingTimer !== undefined) clearTimeout(scrollingTimer)
       scrollingTimer = undefined
       cancelZoom()
+      if (restTimer !== undefined) clearTimeout(restTimer)
+      restTimer = undefined
+      liveAnim?.cancel()
       activePullAnim?.cancel()
       activePullAnim = undefined
       for (const s of settling.values()) s.finish()

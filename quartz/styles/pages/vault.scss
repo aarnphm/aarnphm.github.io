@@ -197,8 +197,7 @@ body[data-vault-page] {
   outline-offset: -2px;
 }
 
-// The interim zoom rides on this wrapper as a composited transform; the drawing's own size only
-// changes when the scale bakes.
+// The zoom rides on this wrapper as a composited transform; the drawing keeps its unit size.
 .vault-scaler {
   position: absolute;
   top: 0;

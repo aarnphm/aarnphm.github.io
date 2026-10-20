@@ -199,6 +199,8 @@ export interface SceneOptions extends PackOptions {
   material: ShelfMaterial | null
   /** False drops every label plate. */
   showTags: boolean
+  /** Shelf levels in one bay. */
+  rows: number
 }
 
 /** Back cover of a rot-90 book: the -y face, read with the spine on the right. */
@@ -222,12 +224,13 @@ export function buildScene<T>(
       continuous: options.continuous,
     },
     count,
+    options.rows,
   )
   const layout = placeShelves(
     packShelves(groups, pack),
     options.style,
     options.material ?? undefined,
-    { showTags: options.showTags },
+    { showTags: options.showTags, rows: options.rows },
   )
 
   const layers: SceneLayer[] = []

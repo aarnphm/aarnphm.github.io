@@ -30,7 +30,7 @@ export interface VaultEntry {
 export interface VaultView {
   name: string
   bayWidth?: unknown
-  bayShelves?: unknown
+  shelfRows?: unknown
   dividers?: unknown
   eraCuts?: unknown
   rackMaterial?: unknown

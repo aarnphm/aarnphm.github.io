@@ -148,13 +148,14 @@ export interface Face {
 
 /**
  * Run length for a style. The spine style packs a stack height and the wall style short blades;
- * the ladder needs longer boards so it stays within six tiers. These bypass BOOKCASE_LIMITS, which
+ * the ladder needs longer boards so it stays within one bay of tiers. These bypass BOOKCASE_LIMITS, which
  * only clamp user input.
  */
 export function stylePackOptions(
   style: BookcaseStyle,
   options: PackOptions,
   bookCount = 0,
+  rows: number = BOOKCASE_DEFAULTS.shelfRows,
 ): PackOptions {
   switch (style) {
     case 'spine':
@@ -166,7 +167,7 @@ export function stylePackOptions(
         ...options,
         shelfWidth: Math.max(
           options.shelfWidth ?? BOOKCASE_DEFAULTS.shelfWidth,
-          Math.ceil((bookCount * 26.5) / 6),
+          Math.ceil((bookCount * 26.5) / rows),
         ),
       }
     default:
@@ -582,14 +583,16 @@ const FINISHES: Record<ShelfMaterial, Finish> = {
 export const GRAIN_ASSETS = '/static/bookcase-grain/'
 
 type GrainDef = { tile: [number, number]; directed: boolean } & (
-  | { image: true }
+  | { image: true; edge: number }
   | { opacity: number; noise: DefNode[] }
 )
 
 const GRAINS: Record<Grain, GrainDef> = {
-  // Veneer: an RGBA tile with the rings, pores and comb baked in, dark where the wood is dark and
-  // pale where it is pale, transparent at the mean. Made by docs/verification/bookcase-materials.
-  wood: { tile: [1536, 768], directed: true, image: true },
+  // Veneer: an RGBA tile grown by docs/verification/bookcase-materials/gen-grain.py, dark where the
+  // wood is dark and pale where it is pale, transparent at the mean. The image is 2048×1024 px laid
+  // over 1024×512 units, so it stays sharp at 2× zoom. Its top 28% is the straight-grained zone far
+  // from the pith; edge faces sample that band alone.
+  wood: { tile: [1024, 512], directed: true, image: true, edge: 0.28 },
   // Brushing: fine lines along the tile with the brightness varying across them.
   brush: {
     tile: [480, 48],
@@ -887,13 +890,27 @@ export function materialDefs(
     const [w, h] = grain.tile
     const id = `bc-grain-${material}`
     if ('image' in grain) {
-      defs.push({
-        tag: 'pattern',
-        attrs: { id, patternUnits: 'userSpaceOnUse', width: w, height: h },
-        children: [
-          { tag: 'image', attrs: { href: `${assets}${finish.image}`, width: w, height: h } },
-        ],
-      })
+      const image = {
+        tag: 'image',
+        attrs: { href: `${assets}${finish.image}`, width: w, height: h },
+      }
+      defs.push(
+        {
+          tag: 'pattern',
+          attrs: { id, patternUnits: 'userSpaceOnUse', width: w, height: h },
+          children: [image],
+        },
+        {
+          tag: 'pattern',
+          attrs: {
+            id: `${id}-edge`,
+            patternUnits: 'userSpaceOnUse',
+            width: w,
+            height: h * grain.edge,
+          },
+          children: [image],
+        },
+      )
     } else {
       defs.push(
         {
@@ -921,11 +938,13 @@ export function materialDefs(
       )
     }
     if (grain.directed)
-      for (const [dir, m] of Object.entries(GRAIN_MAPS))
+      for (const [dir, m] of Object.entries(GRAIN_MAPS)) {
+        const base = 'image' in grain && dir.startsWith('s') ? `${id}-edge` : id
         defs.push({
           tag: 'pattern',
-          attrs: { id: `${id}-${dir}`, href: `#${id}`, patternTransform: `matrix(${m} 0 0)` },
+          attrs: { id: `${id}-${dir}`, href: `#${base}`, patternTransform: `matrix(${m} 0 0)` },
         })
+      }
   }
   return defs
 }
@@ -1878,6 +1897,70 @@ const COMPANIONS: Partial<Record<ShelfMaterial, Partial<Record<StylePart, ShelfM
 export interface PlaceOptions {
   /** False drops every shelf's label plate (the `showTags` view key). */
   showTags?: boolean
+  /** Shelf levels in one bay (the `shelfRows` view key). */
+  rows?: number
+}
+
+/** Runs that share one level: the corner's two wings, the wall's two columns. */
+const RUNS_PER_LEVEL: Partial<Record<BookcaseStyle, number>> = { corner: 2, wall: 2 }
+/** Screen gap between two bays. */
+const BAY_GAP = 48
+
+function screenBounds(
+  layers: StyleLayer[],
+  worldBooks: WorldBook[],
+): readonly [number, number, number, number] {
+  const corners: Point[] = []
+  for (const layer of layers) {
+    if (layer.kind === 'solids') {
+      for (const solid of layer.solids) for (const face of solid.faces) corners.push(...face.points)
+      for (const h of layer.halos) corners.push(...h.points)
+    } else {
+      corners.push(...layer.contact.points, ...(layer.plate?.face ?? []))
+    }
+  }
+  for (const b of worldBooks) {
+    const [dx, dy] = pullOffsetW(b)
+    for (const [x, y] of bookFacesW(b).edge) corners.push([x, y], [x + dx, y + dy])
+  }
+  const xs = corners.map(p => p[0])
+  const ys = corners.map(p => p[1])
+  return [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)]
+}
+
+/** Moves a layer along the screen's x. */
+function shiftLayer(layer: StyleLayer, dx: number): StyleLayer {
+  const pt = ([x, y]: Point): Point => [x + dx, y]
+  const sg = ([a, b]: Segment): Segment => [pt(a), pt(b)]
+  const moveHalo = (h: StyleHalo): StyleHalo => ({ ...h, points: h.points.map(pt) })
+  if (layer.kind === 'shelf') {
+    const plate = layer.plate
+    if (!plate) return { ...layer, contact: moveHalo(layer.contact) }
+    const [a, b, c, d, e, f] = plate.matrix
+    return {
+      ...layer,
+      contact: moveHalo(layer.contact),
+      plate: {
+        ...plate,
+        face: plate.face.map(pt),
+        ticks: plate.ticks.map(sg),
+        matrix: [a, b, c, d, e + dx, f],
+      },
+    }
+  }
+  return {
+    ...layer,
+    halos: layer.halos.map(moveHalo),
+    solids: layer.solids.map(solid => ({
+      ...solid,
+      faces: solid.faces.map(face => ({ ...face, points: face.points.map(pt) })),
+      lines: solid.lines.map(line => ({ ...line, segments: line.segments.map(sg) })),
+      creases: solid.creases.map(sg),
+      outline: solid.outline?.map(pt) ?? null,
+      edges: solid.edges.map(sg),
+      screws: solid.screws.map(pt),
+    })),
+  }
 }
 
 /**
@@ -1896,29 +1979,53 @@ export function placeShelves<T>(
   const parts = typeof materials === 'string' ? undefined : materials
   const pick = (part: StylePart): ShelfMaterial =>
     parts?.[part] ?? own[part] ?? COMPANIONS[base]?.[part] ?? base
-  // Runs hold positions in layout.books; callers may renumber `index` (the browser repack does).
-  const runs: number[][] = layout.shelves.map(() => [])
-  layout.books.forEach((book, i) => runs[book.shelf].push(i))
   const showTags = options.showTags ?? true
-  const { placements, layers } = STYLE_BUILDERS[style]({ layout, pick, runs, showTags })
-  const worldBooks = layout.books.map(book => worldBook(book, placements[book.shelf]))
-
-  const corners: Point[] = []
-  for (const layer of layers) {
-    if (layer.kind === 'solids') {
-      for (const solid of layer.solids) for (const face of solid.faces) corners.push(...face.points)
-      for (const h of layer.halos) corners.push(...h.points)
-    } else {
-      corners.push(...layer.contact.points, ...(layer.plate?.face ?? []))
+  const rows = Math.max(1, Math.round(options.rows ?? BOOKCASE_DEFAULTS.shelfRows))
+  const perBay = rows * (RUNS_PER_LEVEL[style] ?? 1)
+  const placements: ShelfPlacement[] = []
+  const layers: StyleLayer[] = []
+  let right = 0
+  let bayWidth = 0
+  // Runs past `rows` levels go into more bays to the right. Each bay is a whole case of the style,
+  // so the case keeps the stage's height and grows along the screen's x.
+  for (let first = 0; first < layout.shelves.length; first += perBay) {
+    const last = Math.min(layout.shelves.length, first + perBay)
+    // Runs hold positions in layout.books; callers may renumber `index` (the browser repack does).
+    const members = layout.books.flatMap((book, i) =>
+      book.shelf >= first && book.shelf < last ? [i] : [],
+    )
+    const bay: BookcaseLayout<T> = {
+      ...layout,
+      shelves: layout.shelves.slice(first, last).map((shelf, i) => ({ ...shelf, index: i })),
+      books: members.map(i => ({ ...layout.books[i], shelf: layout.books[i].shelf - first })),
+    }
+    const runs: number[][] = bay.shelves.map(() => [])
+    bay.books.forEach((book, i) => runs[book.shelf].push(i))
+    const built = STYLE_BUILDERS[style]({ layout: bay, pick, runs, showTags })
+    const [minX, , maxX] = screenBounds(
+      built.layers,
+      bay.books.map(book => worldBook(book, built.placements[book.shelf])),
+    )
+    const dx = first === 0 ? 0 : right + BAY_GAP - minX
+    if (first === 0) bayWidth = maxX - minX
+    right = maxX + dx
+    // World (d, d, 0) projects to (2d cos30, 0), a step along the screen's x only.
+    const d = dx / (2 * COS30)
+    for (const p of built.placements) {
+      const [x, y, z] = p.origin
+      placements.push({ ...p, shelf: p.shelf + first, origin: [x + d, y + d, z] })
+    }
+    for (const layer of built.layers) {
+      const moved = dx === 0 ? layer : shiftLayer(layer, dx)
+      layers.push(
+        moved.kind === 'shelf'
+          ? { ...moved, shelf: moved.shelf + first, books: moved.books.map(i => members[i]) }
+          : moved,
+      )
     }
   }
-  for (const b of worldBooks) {
-    const [dx, dy] = pullOffsetW(b)
-    for (const [x, y] of bookFacesW(b).edge) corners.push([x, y], [x + dx, y + dy])
-  }
-  const xs = corners.map(p => p[0])
-  const ys = corners.map(p => p[1])
-  const bounds = [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)] as const
+  const worldBooks = layout.books.map(book => worldBook(book, placements[book.shelf]))
+  const bounds = screenBounds(layers, worldBooks)
   const caseWidth =
     (Math.max(layout.shelfWidth, BOOKCASE_DEFAULTS.shelfWidth) + 2 * WALL + 10 + layout.depth) *
     COS30
@@ -1929,6 +2036,6 @@ export function placeShelves<T>(
     worldBooks,
     layers,
     bounds,
-    fit: Math.min(bounds[2] - bounds[0], caseWidth),
+    fit: Math.min(bayWidth, caseWidth),
   }
 }

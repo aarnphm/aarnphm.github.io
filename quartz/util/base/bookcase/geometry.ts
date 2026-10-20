@@ -15,6 +15,8 @@ export const BOOKCASE_DEFAULTS = {
   bookHeight: 220,
   scrollStep: 56,
   shelfWidth: 600,
+  /** Shelf levels in one bay; more shelves fill bays to the right. */
+  shelfRows: 5,
   /** Median cover height / cover width of the antilibrary posters. */
   aspect: 1.53,
 } as const
@@ -23,6 +25,7 @@ export const BOOKCASE_LIMITS = {
   bookHeight: [120, 320],
   scrollStep: [24, 120],
   shelfWidth: [320, 1200],
+  shelfRows: [1, 12],
 } as const
 
 /** Case dimensions in world units, shared by every style. */

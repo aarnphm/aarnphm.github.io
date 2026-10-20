@@ -1426,6 +1426,11 @@ function buildBookcase(
     BOOKCASE_DEFAULTS.shelfWidth,
     BOOKCASE_LIMITS.shelfWidth,
   )
+  const shelfRows = clampOption(
+    view.shelfRows,
+    BOOKCASE_DEFAULTS.shelfRows,
+    BOOKCASE_LIMITS.shelfRows,
+  )
   const scrollStep = clampOption(
     view.scrollStep,
     BOOKCASE_DEFAULTS.scrollStep,
@@ -1583,11 +1588,11 @@ function buildBookcase(
           item: entry,
         })),
       })),
-      stylePackOptions(style, { bookHeight, shelfWidth }, count),
+      stylePackOptions(style, { bookHeight, shelfWidth }, count, shelfRows),
     ),
     style,
     material,
-    { showTags: view.showTags !== false },
+    { showTags: view.showTags !== false, rows: shelfRows },
   )
   const total = layout.books.length
 
@@ -1665,6 +1670,7 @@ function buildBookcase(
       'data-scroll-step': scrollStep,
       'data-book-height': bookHeight,
       'data-shelf-width': shelfWidth,
+      'data-shelf-rows': shelfRows,
       'data-shelf-style': style,
       'data-shelf-material': material,
       'data-show-tags': view.showTags === false ? 'false' : undefined,

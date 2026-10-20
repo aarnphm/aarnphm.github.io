@@ -69,7 +69,7 @@ export const vaultOptions = (): BasesAllOptions[] => [
     displayName: 'Rack',
     items: [
       slider('bayWidth', 'Shelf width', 40),
-      slider('bayShelves', 'Shelves per bay', 1),
+      slider('shelfRows', 'Shelf rows', 1),
       slider('dividers', 'Cans between dividers', 1),
       { type: 'toggle', key: 'showTags', displayName: 'Card holders', default: true },
       { type: 'toggle', key: 'crank', displayName: 'End panel and handwheel', default: true },
@@ -94,7 +94,7 @@ export function readVaultConfig(config: BasesViewConfig, name: string): VaultCon
     view: {
       name,
       bayWidth: config.get('bayWidth'),
-      bayShelves: config.get('bayShelves'),
+      shelfRows: config.get('shelfRows'),
       dividers: config.get('dividers'),
       eraCuts: config.get('eraCuts'),
       rackMaterial: config.get('rackMaterial'),

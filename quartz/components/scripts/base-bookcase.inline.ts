@@ -365,6 +365,7 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
     const material = own
       ? own.material
       : SHELF_MATERIALS.find(name => name === root.dataset.shelfMaterial)
+    const rows = Number(root.dataset.shelfRows) || BOOKCASE_DEFAULTS.shelfRows
     const options = {
       bookHeight: Number(root.dataset.bookHeight) || BOOKCASE_DEFAULTS.bookHeight,
       shelfWidth: Number(root.dataset.shelfWidth) || BOOKCASE_DEFAULTS.shelfWidth,
@@ -372,10 +373,10 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
       continuous: Boolean(topic),
     }
     const layout = placeShelves(
-      packShelves(shelves, stylePackOptions(style, options, visible.length)),
+      packShelves(shelves, stylePackOptions(style, options, visible.length, rows)),
       style,
       material,
-      { showTags: own?.showTags ?? root.dataset.showTags !== 'false' },
+      { showTags: own?.showTags ?? root.dataset.showTags !== 'false', rows },
     )
     for (const book of layout.books) book.index = book.item.index
     const name = root.closest<HTMLElement>('.base-view')?.dataset.baseViewName ?? 'bookcase'
@@ -394,6 +395,7 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
     scene.replaceChildren(...next.childNodes)
     ;[originX, originY] = (scene.dataset.origin ?? '0 0').split(' ').map(Number)
     box = scene.viewBox.baseVal
+    fitWidth = Number(scene.dataset.fit) || box.width
     bakedScale = 1
     scene.style.width = `${box.width}px`
     scene.style.height = `${box.height}px`
@@ -431,6 +433,9 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
   const preloaded = new Map<string, HTMLImageElement>()
   let camera: Camera = { x: 0, y: 0, scale: 1 }
   let fitScale = 1
+  // The fit shows one bay at the stage's height; zooming out may show every bay.
+  let minScale = 1
+  let fitWidth = Number(scene.dataset.fit) || box.width
   let fitted = true
   let focus = -1
   let lifted: SVGSVGElement | undefined
@@ -556,7 +561,7 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
     }
     refreshShelfCovers()
     if (moved) schedulePrefetch()
-    if (zoomOut) zoomOut.disabled = camera.scale <= fitScale + 0.001
+    if (zoomOut) zoomOut.disabled = camera.scale <= minScale + 0.001
     if (zoomIn) zoomIn.disabled = camera.scale >= maxScale() - 0.001
   }
   function refreshShelfCovers(): void {
@@ -801,8 +806,10 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
     cameraDirty = true
     fitted = true
     aim = undefined
+    const width = box.width * fitScale
     camera = {
-      x: (viewportWidth - box.width * fitScale) / 2,
+      // Bays past the stage's width start at its left edge.
+      x: width <= viewportWidth ? (viewportWidth - width) / 2 : 16,
       y: (viewportHeight - box.height * fitScale) / 2,
       scale: fitScale,
     }
@@ -815,7 +822,7 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
   const zoom = (factor: number, x = viewportWidth / 2, y = viewportHeight / 2) => {
     cancelWheel()
     cameraDirty = true
-    const scale = clamp(camera.scale * factor, fitScale, maxScale())
+    const scale = clamp(camera.scale * factor, minScale, maxScale())
     const ratio = scale / camera.scale
     aim = undefined
     camera = { x: x - (x - camera.x) * ratio, y: y - (y - camera.y) * ratio, scale }
@@ -1113,11 +1120,14 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
     if (!book) return
     const scale = Math.max(
       fitScale,
-      Math.min(1.25, viewportHeight / 600, viewportWidth / (box.width + 80)),
+      Math.min(1.25, viewportHeight / 600, viewportWidth / (fitWidth + 80)),
     )
     const y = Number(book.dataset.cy) - originY
     const next = {
-      x: (viewportWidth - box.width * scale) / 2,
+      x:
+        box.width * scale <= viewportWidth
+          ? (viewportWidth - box.width * scale) / 2
+          : viewportWidth / 2 - (Number(book.dataset.cx) - originX) * scale,
       y: viewportHeight / 2 - y * scale,
       scale,
     }
@@ -1595,9 +1605,10 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
     const previousFit = fitScale
     fitScale = Math.max(
       0.01,
-      Math.min((viewportWidth - 32) / box.width, (viewportHeight - 72) / box.height),
+      Math.min((viewportWidth - 32) / fitWidth, (viewportHeight - 72) / box.height),
     )
-    if (fitted || camera.scale < fitScale || previousFit === 1) fit()
+    minScale = Math.min(fitScale, (viewportWidth - 32) / box.width)
+    if (fitted || camera.scale < minScale || previousFit === 1) fit()
     else schedule()
   }
   const resize = () => {

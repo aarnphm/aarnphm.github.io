@@ -32,7 +32,6 @@
   overflow: auto;
   -webkit-overflow-scrolling: touch;
   scroll-padding-block-start: 2.125rem;
-  scroll-padding-inline-start: var(--base-frozen-column-width, 0px);
   border: 1px solid var(--base-table-line);
   border-radius: var(--radius-none);
   background: var(--light);
@@ -73,6 +72,12 @@
 
 .page-content article.main-col > .base-embed {
   margin: 1.5rem 0;
+}
+
+// On a base page the toolbar row above already ends with its own 1rem margin. Each view root's
+// 1.5rem top margin stacks on it, so the page drops it here once for every view type.
+.page-content article.main-col > .base-view > :first-child {
+  margin-block-start: 0;
 }
 
 .base-table {
@@ -275,37 +280,6 @@
     width: var(--base-first-col-width, min(24rem, 60vw));
     min-width: var(--base-first-col-width, min(24rem, 60vw));
     max-width: var(--base-first-col-width, min(24rem, 60vw));
-  }
-
-  thead th:first-child,
-  tbody tr:not(.base-group-header) > td:first-child,
-  tfoot td:first-child {
-    position: sticky;
-    inset-inline-start: 0;
-
-    &::before {
-      content: '';
-      position: absolute;
-      inset-block: 0;
-      inset-inline-end: 0;
-      inline-size: 1px;
-      background: var(--base-table-line);
-      pointer-events: none;
-    }
-  }
-
-  thead th:first-child {
-    z-index: calc(var(--z-sticky) + var(--z-base));
-  }
-
-  tbody tr:not(.base-group-header) > td:first-child {
-    z-index: var(--z-base);
-    background: var(--light);
-  }
-
-  tfoot td:first-child {
-    z-index: var(--z-base);
-    background: var(--base-table-surface);
   }
 
   tfoot {
