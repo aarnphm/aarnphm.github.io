@@ -21,20 +21,23 @@ export function highlight(searchTerm: string, text: string, trim = false): strin
   let endIndex = wordCount - 1
 
   if (trim && wordCount > 0) {
-    const matches = words.map(word =>
-      terms.some(term => word.toLowerCase().startsWith(term.toLowerCase())),
-    )
+    const prefixes = terms.map(term => term.toLowerCase())
+    const matches = words.map(word => {
+      const lower = word.toLowerCase()
+      return prefixes.some(term => lower.startsWith(term))
+    })
     let bestSum = 0
     let bestIndex = 0
+    let sum = matches
+      .slice(0, CONTEXT_WINDOW_WORDS)
+      .reduce((total, match) => total + Number(match), 0)
     const finalWindowStart = Math.max(wordCount - CONTEXT_WINDOW_WORDS, 0)
     for (let index = 0; index <= finalWindowStart; index++) {
-      const sum = matches
-        .slice(index, index + CONTEXT_WINDOW_WORDS)
-        .reduce((total, match) => total + Number(match), 0)
       if (sum >= bestSum) {
         bestSum = sum
         bestIndex = index
       }
+      sum += Number(matches[index + CONTEXT_WINDOW_WORDS] ?? false) - Number(matches[index])
     }
     startIndex = Math.max(bestIndex - CONTEXT_WINDOW_WORDS, 0)
     endIndex = Math.min(startIndex + 2 * CONTEXT_WINDOW_WORDS, wordCount - 1)

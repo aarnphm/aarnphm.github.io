@@ -212,8 +212,13 @@ const center = (): Point =>
         }
       : { x: window.innerWidth - width, y: window.innerHeight - height() }
 
-const transformFor = (p: Point, scale = perch?.scale ?? 1) =>
-  `translate3d(${(p.x - origin.x).toFixed(1)}px, ${(p.y - origin.y).toFixed(1)}px, 0) scale(${scale.toFixed(4)})`
+const transformFor = (p: Point, scale = perch?.scale ?? 1) => {
+  // Rail exits and jet control points can extend past the viewport even when the perch fits.
+  const left = window.scrollX
+  const right = Math.max(left, left + window.innerWidth - width * scale)
+  const x = clamp(p.x, left, right)
+  return `translate3d(${(x - origin.x).toFixed(1)}px, ${(p.y - origin.y).toFixed(1)}px, 0) scale(${scale.toFixed(4)})`
+}
 
 const state = (now: number): State => {
   if (override && now < override.until) return override.state
