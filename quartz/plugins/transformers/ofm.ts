@@ -50,7 +50,7 @@ import {
   isStandaloneProofLine,
   italicizeProofLine,
 } from '../../util/callouts'
-import { buildExternalEmbed, stravaLatestRidesAthlete } from '../../util/embed'
+import { buildExternalEmbed } from '../../util/embed'
 import { capitalize } from '../../util/lang'
 // @ts-ignore
 import { FullSlug, pathToRoot, slugTag } from '../../util/path'
@@ -1090,30 +1090,6 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                 ...(usable(width) ? { width } : {}),
                 ...(usable(height) ? { height } : {}),
               }
-            })
-          }
-        })
-
-        // The latest-rides widget is a cross-origin iframe that ignores the site theme. Leave a
-        // placeholder that renderPage fills from the synced Strava cache; its link is the fallback.
-        plugins.push(() => {
-          return tree => {
-            visit(tree, { tagName: 'iframe' }, (node: Element, index, parent) => {
-              const src = node.properties.src
-              const athleteId = typeof src === 'string' ? stravaLatestRidesAthlete(src) : undefined
-              if (athleteId === undefined || !parent || index === undefined) return
-              parent.children[index] = h(
-                'div.strava-rides',
-                { dataStravaAthlete: String(athleteId) },
-                [
-                  h(
-                    'a.external',
-                    { href: `https://www.strava.com/athletes/${athleteId}` },
-                    'latest rides on strava',
-                  ),
-                ],
-              )
-              return SKIP
             })
           }
         })

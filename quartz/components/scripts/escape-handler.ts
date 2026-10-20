@@ -12,10 +12,17 @@ export interface EscapeHandlerRegistry {
   registrations: Map<HTMLElement, EscapeHandlerRegistration>
 }
 
-const registry = window.quartzEscapeHandlers ?? {
-  registrations: new Map<HTMLElement, EscapeHandlerRegistration>(),
+function getEscapeRegistry(): EscapeHandlerRegistry {
+  const registry = window.quartzEscapeHandlers ?? {
+    registrations: new Map<HTMLElement, EscapeHandlerRegistration>(),
+  }
+  window.quartzEscapeHandlers = registry
+  return registry
 }
-window.quartzEscapeHandlers = registry
+
+if (typeof window !== 'undefined') {
+  getEscapeRegistry()
+}
 
 function defaultIsActive(root: HTMLElement): boolean {
   const active = document.activeElement
@@ -30,6 +37,7 @@ function defaultIsActive(root: HTMLElement): boolean {
 }
 
 function ensureEscapeDispatcher(navSignal: AbortSignal): void {
+  const registry = getEscapeRegistry()
   if (registry.navSignal === navSignal) return
   for (const registration of registry.registrations.values()) registration.dispose()
   registry.navSignal = navSignal
@@ -80,6 +88,7 @@ export function registerEscapeHandler(
   isActive?: () => boolean,
 ): () => void {
   if (!root) return () => {}
+  const registry = getEscapeRegistry()
   const navSignal = currentNavSignal()
   ensureEscapeDispatcher(navSignal)
   for (const registration of registry.registrations.values()) {
@@ -111,6 +120,7 @@ export function registerEscapeHandler(
 }
 
 export function cleanupEscapeHandlers(root?: Node): void {
+  const registry = getEscapeRegistry()
   for (const registration of registry.registrations.values()) {
     if (root && registration.root !== root && !root.contains(registration.root)) continue
     registration.dispose()

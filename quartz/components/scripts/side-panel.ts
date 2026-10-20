@@ -1,11 +1,15 @@
 import { getFullSlug, isFullSlug, resolveRelative, type FullSlug } from '../../util/path'
 import { cleanupHydratedRoot } from './root-lifecycle'
 
-const activeSessions = window.quartzSidePanelSessions ?? new WeakMap<HTMLElement, () => void>()
-window.quartzSidePanelSessions = activeSessions
+const activeSessions =
+  (typeof window !== 'undefined' ? window.quartzSidePanelSessions : undefined) ??
+  new WeakMap<HTMLElement, () => void>()
+if (typeof window !== 'undefined') window.quartzSidePanelSessions = activeSessions
 const pendingRequests =
-  window.quartzSidePanelRequests ?? new WeakMap<HTMLElement, AbortController>()
-window.quartzSidePanelRequests = pendingRequests
+  (typeof window !== 'undefined' ? window.quartzSidePanelRequests : undefined) ??
+  new WeakMap<HTMLElement, AbortController>()
+if (typeof window !== 'undefined') window.quartzSidePanelRequests = pendingRequests
+const trackedPanels = new Set<HTMLElement>()
 
 export interface SidePanelRequest {
   signal: AbortSignal
@@ -16,20 +20,32 @@ export interface SidePanelRequest {
 function clearSidePanel(asidePanel: HTMLElement): void {
   pendingRequests.get(asidePanel)?.abort()
   pendingRequests.delete(asidePanel)
+  trackedPanels.delete(asidePanel)
   cleanupHydratedRoot(asidePanel)
   asidePanel.replaceChildren()
   asidePanel.classList.remove('active')
   asidePanel.style.removeProperty('--sidepanel-top-offset')
 }
 
-export function disposeSidePanel(asidePanel?: HTMLElement | null): void {
-  const panel =
-    asidePanel ??
-    document.querySelector<HTMLDivElement>("main > * > aside[class~='sidepanel-container']")
-  if (!panel) return
+function disposeSingleSidePanel(panel: HTMLElement): void {
   const dispose = activeSessions.get(panel)
   if (dispose) dispose()
   else clearSidePanel(panel)
+}
+
+export function disposeSidePanel(asidePanel?: HTMLElement | null): void {
+  if (asidePanel) {
+    disposeSingleSidePanel(asidePanel)
+    return
+  }
+  const panels = new Set<HTMLElement>(trackedPanels)
+  const domPanel = document.querySelector<HTMLDivElement>(
+    "main > * > aside[class~='sidepanel-container']",
+  )
+  if (domPanel) panels.add(domPanel)
+  for (const panel of panels) {
+    disposeSingleSidePanel(panel)
+  }
 }
 
 export function getOrCreateSidePanel(): HTMLElement {
@@ -49,6 +65,7 @@ export function getOrCreateSidePanel(): HTMLElement {
 
 function createSidePanel(asidePanel: HTMLElement, ...inner: HTMLElement[]): HTMLDivElement {
   disposeSidePanel(asidePanel)
+  trackedPanels.add(asidePanel)
   asidePanel.classList.add('active')
 
   const events = new AbortController()
@@ -128,6 +145,7 @@ function createSidePanel(asidePanel: HTMLElement, ...inner: HTMLElement[]): HTML
 
 export function beginSidePanelRequest(asidePanel: HTMLElement): SidePanelRequest {
   pendingRequests.get(asidePanel)?.abort()
+  trackedPanels.add(asidePanel)
   const controller = new AbortController()
   pendingRequests.set(asidePanel, controller)
 

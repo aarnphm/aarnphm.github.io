@@ -10,10 +10,12 @@ import {
 } from '../../util/path'
 import {
   cacheStackedNotePayload,
+  clearStackedNotePayloadCache,
   Dag,
   type DagNode,
   getCachedStackedNotePayload,
   hashStackedNoteSlug,
+  MAX_STACKED_NOTE_PAYLOAD_CACHE_ENTRIES,
   type NoteDocument,
   NOTES_HOSTNAME,
   stackedNoteRootSlug,
@@ -37,6 +39,7 @@ import {
   triathlonHostLinkUrl,
   TRIATHLON_HOSTNAME,
 } from '../../util/triathlon-host'
+import { triathlonPreviewTarget } from '../../util/triathlon-preview'
 import { preloadHomepageTrail } from './homepage-trail-preload'
 import { loadPageStyles } from './page-styles'
 import { cleanupHydratedRoot } from './root-lifecycle'
@@ -44,6 +47,7 @@ import { Toast } from './toast'
 
 function startViewTransition(callback: () => void): void {
   if (
+    document.visibilityState === 'hidden' ||
     window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
     typeof document.startViewTransition !== 'function'
   ) {
@@ -425,7 +429,7 @@ class StackedNoteManager {
         p = p || new DOMParser()
         const html = p.parseFromString(content.innerHTML, 'text/html')
         normalizeStackedNoteURLs(html, new URL(`/${slug}`, url))
-        this.documentCache.set(slug, {
+        this.cacheDocument(slug, {
           slug,
           title,
           bodyHtml: html.body.innerHTML,
@@ -433,7 +437,7 @@ class StackedNoteManager {
           hash: slug === slugs[0] ? url.hash : '',
         })
       } else if (slug === getFullSlug(window)) {
-        this.documentCache.set(slug, this.currentDocument(slug, url))
+        this.cacheDocument(slug, this.currentDocument(slug, url))
       }
       this.addPendingNode(slug, new URL(`/${slug}${slug === slugs[0] ? url.hash : ''}`, url), null)
     }
@@ -816,9 +820,23 @@ class StackedNoteManager {
     window.setTimeout(() => node.mounted.shell.classList.remove('highlights'), 500)
   }
 
+  private cacheDocument(slug: string, noteDocument: NoteDocument) {
+    this.documentCache.delete(slug)
+    while (this.documentCache.size >= MAX_STACKED_NOTE_PAYLOAD_CACHE_ENTRIES) {
+      const evictSlug = Array.from(this.documentCache.keys()).find(key => !this.dag.has(key))
+      if (!evictSlug) break
+      this.documentCache.delete(evictSlug)
+    }
+    this.documentCache.set(slug, noteDocument)
+  }
+
   private async loadDocument(href: URL, slug: string): Promise<NoteDocument> {
     const cached = this.documentCache.get(slug)
-    if (cached && cached.state !== 'pending') return cached
+    if (cached && cached.state !== 'pending') {
+      this.documentCache.delete(slug)
+      this.documentCache.set(slug, cached)
+      return cached
+    }
 
     const pending = this.inflight.get(slug)
     if (pending) return pending
@@ -829,7 +847,7 @@ class StackedNoteManager {
         return this.failedDocument(slug, href.hash)
       })
       .then(noteDocument => {
-        this.documentCache.set(slug, noteDocument)
+        this.cacheDocument(slug, noteDocument)
         this.inflight.delete(slug)
         return noteDocument
       })
@@ -897,7 +915,10 @@ class StackedNoteManager {
   private truncateAfter(slug: string) {
     const nodes = this.dag.getOrderedNodes()
     const index = nodes.findIndex(node => node.slug === slug)
-    for (const node of nodes.slice(index + 1)) this.unmountBody(node)
+    for (const node of nodes.slice(index + 1)) {
+      node.anchor = null
+      this.unmountBody(node)
+    }
     this.dag.truncateAfter(slug)
   }
 
@@ -912,8 +933,14 @@ class StackedNoteManager {
     if (this.layoutFrame !== null) cancelAnimationFrame(this.layoutFrame)
     this.layoutFrame = null
     this.pendingTailScroll = false
-    for (const node of this.dag.getOrderedNodes()) this.unmountBody(node)
+    for (const node of this.dag.getOrderedNodes()) {
+      node.anchor = null
+      this.unmountBody(node)
+    }
     this.dag.clear()
+    this.documentCache.clear()
+    this.inflight.clear()
+    clearStackedNotePayloadCache()
     this.isActive = false
   }
 
@@ -997,8 +1024,8 @@ function transformHostInternalLinks(root: Document | Element) {
       if (anchor.getAttribute('href') !== absoluteHref) {
         anchor.setAttribute('href', absoluteHref)
       }
-      anchor.dataset.noPopover = 'true'
       anchor.dataset.routerIgnore = 'true'
+      if (!triathlonPreviewTarget(anchor.href)) anchor.dataset.noPopover = 'true'
     } else if (host === TRIATHLON_HOSTNAME) {
       anchor.href = triathlonHostLinkUrl(anchor.href, window.location.href)
       anchor.dataset.noPopover = 'true'
@@ -1144,7 +1171,11 @@ async function navigate(
 window.spaNavigate = navigate
 window.notifyNav = notifyNav
 
+let activeRouterNavCleanup: (() => void) | null = null
+
 document.addEventListener('nav', () => {
+  activeRouterNavCleanup?.()
+  activeRouterNavCleanup = null
   transformHostInternalLinks(document)
   const controller = new AbortController()
   let warmingHome = false
@@ -1187,6 +1218,9 @@ document.addEventListener('nav', () => {
     clearHoverPrefetch()
     prefetchCanonical(options.url)
   }
+  const onContentMounted = (event: CustomEventMap['contentdecrypted']) => {
+    transformHostInternalLinks(event.detail.content)
+  }
   document.addEventListener('pointerover', warmRoute, { signal: controller.signal, passive: true })
   document.addEventListener('pointerout', clearHoverPrefetch, {
     signal: controller.signal,
@@ -1197,17 +1231,16 @@ document.addEventListener('nav', () => {
     signal: controller.signal,
     passive: true,
   })
-  window.addCleanup(() => {
+  document.addEventListener('contentdecrypted', onContentMounted, { signal: controller.signal })
+  const cleanupRouterNav = () => {
+    if (activeRouterNavCleanup === cleanupRouterNav) activeRouterNavCleanup = null
     clearHoverPrefetch()
     controller.abort()
-  })
+  }
+  activeRouterNavCleanup = cleanupRouterNav
+  window.addCleanup(cleanupRouterNav)
   window.addCleanup(() => stacked.release())
   queueMicrotask(() => stacked.restore(new URL(window.location.href)))
-  const onContentMounted = (event: CustomEventMap['contentdecrypted']) => {
-    transformHostInternalLinks(event.detail.content)
-  }
-  document.addEventListener('contentdecrypted', onContentMounted)
-  window.addCleanup(() => document.removeEventListener('contentdecrypted', onContentMounted))
 })
 
 function createRouter() {

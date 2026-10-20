@@ -170,6 +170,8 @@ export class Dag {
   }
 }
 
+export const MAX_STACKED_NOTE_PAYLOAD_CACHE_ENTRIES = 24
+
 function isStackedNoteState(value: unknown): value is StackedNoteState {
   return value === 'pending' || value === 'ready' || value === 'protected' || value === 'failed'
 }
@@ -186,11 +188,29 @@ export function stackedNotePayloadUrl(slug: string): URL {
 }
 
 export function getCachedStackedNotePayload(slug: string): StackedNotePayload | null {
-  return window.stackedNotePayloadCache?.get(slug) ?? null
+  const cache = window.stackedNotePayloadCache
+  if (!cache) return null
+  const cached = cache.get(slug)
+  if (!cached) return null
+  cache.delete(slug)
+  cache.set(slug, cached)
+  return cached
 }
 
 export function cacheStackedNotePayload(payload: StackedNotePayload): void {
-  if (payload.state === 'ready') sharedStackedNotePayloadCache().set(payload.slug, payload)
+  if (payload.state !== 'ready') return
+  const cache = sharedStackedNotePayloadCache()
+  cache.delete(payload.slug)
+  while (cache.size >= MAX_STACKED_NOTE_PAYLOAD_CACHE_ENTRIES) {
+    const oldest = cache.keys().next().value
+    if (oldest === undefined) break
+    cache.delete(oldest)
+  }
+  cache.set(payload.slug, payload)
+}
+
+export function clearStackedNotePayloadCache(): void {
+  window.stackedNotePayloadCache?.clear()
 }
 
 export function readStackedNotePayload(value: unknown): StackedNotePayload | null {

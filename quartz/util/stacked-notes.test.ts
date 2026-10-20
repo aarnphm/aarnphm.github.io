@@ -7,8 +7,12 @@ import {
   normalizeStackedNoteSlug,
 } from '../../worker/stacked'
 import {
+  cacheStackedNotePayload,
+  clearStackedNotePayloadCache,
   decodeStackedNoteHash,
+  getCachedStackedNotePayload,
   hashStackedNoteSlug,
+  MAX_STACKED_NOTE_PAYLOAD_CACHE_ENTRIES,
   readStackedNotePayload,
   stackedNoteSlugs,
   stackedNotesUrl,
@@ -121,4 +125,42 @@ test('notes host accepts readable and encoded paths and writes encoded roots', (
   }
   const apex = new URL('https://aarnphm.xyz/personal-canon')
   assert.equal(stackedNotesUrl(apex, ['personal-canon']).href, apex.href)
+})
+
+test('stacked note payload cache enforces LRU bound and clears cleanly', t => {
+  const prevWindow = (globalThis as { window?: unknown }).window
+  const mockWindow: Record<string, unknown> = {}
+  ;(globalThis as { window?: unknown }).window = mockWindow
+  t.after(() => {
+    ;(globalThis as { window?: unknown }).window = prevWindow
+  })
+
+  clearStackedNotePayloadCache()
+
+  for (let i = 0; i < MAX_STACKED_NOTE_PAYLOAD_CACHE_ENTRIES; i++) {
+    cacheStackedNotePayload({
+      slug: `thoughts/note-${i}`,
+      title: `Note ${i}`,
+      content: `<article>Note ${i}</article>`,
+      state: 'ready',
+    })
+  }
+
+  // Touch note-0 so it becomes most recently used; note-1 should be evicted next
+  assert.equal(getCachedStackedNotePayload('thoughts/note-0')?.title, 'Note 0')
+
+  cacheStackedNotePayload({
+    slug: 'thoughts/note-overflow',
+    title: 'Overflow',
+    content: '<article>Overflow</article>',
+    state: 'ready',
+  })
+
+  assert.equal(getCachedStackedNotePayload('thoughts/note-0')?.title, 'Note 0')
+  assert.equal(getCachedStackedNotePayload('thoughts/note-1'), null)
+  assert.equal(getCachedStackedNotePayload('thoughts/note-overflow')?.title, 'Overflow')
+
+  clearStackedNotePayloadCache()
+  assert.equal(getCachedStackedNotePayload('thoughts/note-0'), null)
+  assert.equal(getCachedStackedNotePayload('thoughts/note-overflow'), null)
 })

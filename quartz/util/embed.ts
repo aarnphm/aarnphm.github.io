@@ -35,21 +35,6 @@ export interface ExternalEmbed {
   provider?: string
 }
 
-// Strava's "latest rides" widget: /athletes/<id>/latest-rides/<hash>. The hash only keys the
-// widget; the athlete id selects which synced cache can stand in for it.
-export const stravaLatestRidesAthlete = (rawUrl: string): number | undefined => {
-  let url: URL
-  try {
-    url = new URL(rawUrl)
-  } catch {
-    return undefined
-  }
-  const host = url.hostname.toLowerCase().replace(/^www\./, '')
-  if (host !== 'strava.com') return undefined
-  const match = /^\/athletes\/(\d+)\/latest-rides(?:\/|$)/.exec(url.pathname)
-  return match ? Number(match[1]) : undefined
-}
-
 export const buildExternalEmbed = (rawUrl: string): ExternalEmbed | undefined => {
   let url: URL
   try {
