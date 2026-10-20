@@ -27,6 +27,33 @@ export type Instruction =
 
 export type ProgramIR = { instructions: Instruction[]; span: Span }
 
+const collectLogicalChain = (expr: Expr, operator: '&&' | '||', out: Expr[]) => {
+  if (expr.type === 'LogicalExpr' && expr.operator === operator) {
+    collectLogicalChain(expr.left, operator, out)
+    collectLogicalChain(expr.right, operator, out)
+    return
+  }
+  out.push(expr)
+}
+
+const isGuaranteedBooleanExpr = (expr: Expr): boolean => {
+  if (expr.type === 'Literal' && expr.kind === 'boolean') return true
+  if (expr.type === 'UnaryExpr' && expr.operator === '!') return true
+  if (expr.type === 'LogicalExpr') return true
+  if (
+    expr.type === 'BinaryExpr' &&
+    (expr.operator === '==' ||
+      expr.operator === '!=' ||
+      expr.operator === '<' ||
+      expr.operator === '<=' ||
+      expr.operator === '>' ||
+      expr.operator === '>=')
+  ) {
+    return true
+  }
+  return false
+}
+
 const compileExpr = (expr: Expr, out: Instruction[]) => {
   switch (expr.type) {
     case 'Literal':
@@ -36,6 +63,20 @@ const compileExpr = (expr: Expr, out: Instruction[]) => {
       out.push({ op: 'ident', name: expr.name, span: expr.span })
       return
     case 'UnaryExpr':
+      if (expr.operator === '!') {
+        if (expr.argument.type === 'BinaryExpr' && expr.argument.operator === '==') {
+          compileExpr(expr.argument.left, out)
+          compileExpr(expr.argument.right, out)
+          out.push({ op: 'binary', operator: '!=', span: expr.span })
+          return
+        }
+        if (expr.argument.type === 'BinaryExpr' && expr.argument.operator === '!=') {
+          compileExpr(expr.argument.left, out)
+          compileExpr(expr.argument.right, out)
+          out.push({ op: 'binary', operator: '==', span: expr.span })
+          return
+        }
+      }
       compileExpr(expr.argument, out)
       out.push({ op: 'unary', operator: expr.operator, span: expr.span })
       return
@@ -45,16 +86,35 @@ const compileExpr = (expr: Expr, out: Instruction[]) => {
       out.push({ op: 'binary', operator: expr.operator, span: expr.span })
       return
     case 'LogicalExpr': {
+      const terms: Expr[] = []
+      collectLogicalChain(expr, expr.operator, terms)
       if (expr.operator === '&&') {
-        compileExpr(expr.left, out)
-        const jumpFalse: JumpInstruction = { op: 'jump_if_false', target: -1, span: expr.span }
-        out.push(jumpFalse)
-        compileExpr(expr.right, out)
-        out.push({ op: 'to_bool', span: expr.span })
+        const falseJumps: JumpInstruction[] = []
+        for (let i = 0; i < terms.length - 1; i += 1) {
+          const term = terms[i]
+          if (term.type === 'UnaryExpr' && term.operator === '!') {
+            compileExpr(term.argument, out)
+            const jumpFalse: JumpInstruction = { op: 'jump_if_true', target: -1, span: term.span }
+            out.push(jumpFalse)
+            falseJumps.push(jumpFalse)
+          } else {
+            compileExpr(term, out)
+            const jumpFalse: JumpInstruction = { op: 'jump_if_false', target: -1, span: term.span }
+            out.push(jumpFalse)
+            falseJumps.push(jumpFalse)
+          }
+        }
+        const lastTerm = terms[terms.length - 1]
+        compileExpr(lastTerm, out)
+        if (!isGuaranteedBooleanExpr(lastTerm)) {
+          out.push({ op: 'to_bool', span: expr.span })
+        }
         const jumpEnd: JumpInstruction = { op: 'jump', target: -1, span: expr.span }
         out.push(jumpEnd)
         const falseTarget = out.length
-        jumpFalse.target = falseTarget
+        for (const jumpFalse of falseJumps) {
+          jumpFalse.target = falseTarget
+        }
         out.push({
           op: 'const',
           literal: { type: 'Literal', kind: 'boolean', value: false, span: expr.span },
@@ -63,15 +123,32 @@ const compileExpr = (expr: Expr, out: Instruction[]) => {
         jumpEnd.target = out.length
         return
       }
-      compileExpr(expr.left, out)
-      const jumpTrue: JumpInstruction = { op: 'jump_if_true', target: -1, span: expr.span }
-      out.push(jumpTrue)
-      compileExpr(expr.right, out)
-      out.push({ op: 'to_bool', span: expr.span })
+      const trueJumps: JumpInstruction[] = []
+      for (let i = 0; i < terms.length - 1; i += 1) {
+        const term = terms[i]
+        if (term.type === 'UnaryExpr' && term.operator === '!') {
+          compileExpr(term.argument, out)
+          const jumpTrue: JumpInstruction = { op: 'jump_if_false', target: -1, span: term.span }
+          out.push(jumpTrue)
+          trueJumps.push(jumpTrue)
+        } else {
+          compileExpr(term, out)
+          const jumpTrue: JumpInstruction = { op: 'jump_if_true', target: -1, span: term.span }
+          out.push(jumpTrue)
+          trueJumps.push(jumpTrue)
+        }
+      }
+      const lastTerm = terms[terms.length - 1]
+      compileExpr(lastTerm, out)
+      if (!isGuaranteedBooleanExpr(lastTerm)) {
+        out.push({ op: 'to_bool', span: expr.span })
+      }
       const jumpEnd: JumpInstruction = { op: 'jump', target: -1, span: expr.span }
       out.push(jumpEnd)
       const trueTarget = out.length
-      jumpTrue.target = trueTarget
+      for (const jumpTrue of trueJumps) {
+        jumpTrue.target = trueTarget
+      }
       out.push({
         op: 'const',
         literal: { type: 'Literal', kind: 'boolean', value: true, span: expr.span },

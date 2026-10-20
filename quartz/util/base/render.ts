@@ -1416,10 +1416,18 @@ function buildBookcase(
   const topicGroupBy = typeof view.topicGroupBy === 'string' ? view.topicGroupBy : 'subcategory'
   const declared = topicKeys(view.topicShelves)
   const members = new Map<string, Entry[]>()
+  const memberSlugs = new Map<string, Set<string>>()
   const join = (topic: string, entry: Entry) => {
-    const list = members.get(topic) ?? []
-    if (!list.some(other => other.slug === entry.slug)) list.push(entry)
-    members.set(topic, list)
+    let seen = memberSlugs.get(topic)
+    if (!seen) {
+      seen = new Set()
+      memberSlugs.set(topic, seen)
+    }
+    if (seen.has(entry.slug)) return
+    seen.add(entry.slug)
+    const list = members.get(topic)
+    if (list) list.push(entry)
+    else members.set(topic, [entry])
   }
   for (const { topic, entries } of entryGroups)
     for (const entry of entries) {
@@ -1431,11 +1439,16 @@ function buildBookcase(
   for (const [topic, list] of Array.from(members))
     if (list.length <= 1) {
       members.delete(topic)
+      memberSlugs.delete(topic)
       for (const entry of list) join('other', entry)
     }
   const topicsOf = new Map<Entry, string[]>()
   for (const [topic, list] of members)
-    for (const entry of list) topicsOf.set(entry, [...(topicsOf.get(entry) ?? []), topic])
+    for (const entry of list) {
+      const existing = topicsOf.get(entry)
+      if (existing) existing.push(topic)
+      else topicsOf.set(entry, [topic])
+    }
   const topicShelves: Record<string, TopicShelf> = {}
   for (const topic of members.keys()) {
     const shelf = topicShelf(topic, view.topicShelves)

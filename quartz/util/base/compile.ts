@@ -3,6 +3,7 @@ import { isRecord } from '../type-guards'
 import {
   parseExpressionSource,
   compileExpression,
+  optimizeFilterExprWithIsop,
   buildPropertyExpressionSource,
   BaseExpressionDiagnostic,
   BasesExpressions,
@@ -151,8 +152,7 @@ export function compileBaseConfig(source: string, path?: string): CompileBaseRes
 
   const buildFilterExpr = (raw: unknown, context: string): Expr | null => {
     if (typeof raw === 'string') {
-      addExpressionDiagnostics(raw, context)
-      return parseExpression(raw)
+      return parseExpressionWithDiagnostics(raw, context)
     }
     if (!isRecord(raw)) return null
     const record = raw
@@ -290,7 +290,7 @@ export function compileBaseConfig(source: string, path?: string): CompileBaseRes
   if (parsedConfig.filters) {
     const expr = buildFilterExpr(parsedConfig.filters, 'filters')
     if (expr) {
-      expressions.filters = compileExpression(expr)
+      expressions.filters = compileExpression(optimizeFilterExprWithIsop(expr))
     }
   }
 
@@ -300,7 +300,7 @@ export function compileBaseConfig(source: string, path?: string): CompileBaseRes
     if (view.filters) {
       const expr = buildFilterExpr(view.filters, `views[${index}].filters`)
       if (expr) {
-        expressions.viewFilters[String(index)] = compileExpression(expr)
+        expressions.viewFilters[String(index)] = compileExpression(optimizeFilterExprWithIsop(expr))
       }
     }
     if (view.summaries) {
@@ -311,8 +311,7 @@ export function compileBaseConfig(source: string, path?: string): CompileBaseRes
   if (isRecord(parsedConfig.formulas)) {
     for (const [name, expression] of Object.entries(parsedConfig.formulas)) {
       if (typeof expression === 'string') {
-        addExpressionDiagnostics(expression, `formulas.${name}`)
-        const expr = parseExpression(expression)
+        const expr = parseExpressionWithDiagnostics(expression, `formulas.${name}`)
         if (expr) {
           expressions.formulas[name] = compileExpression(expr)
         }
@@ -323,8 +322,7 @@ export function compileBaseConfig(source: string, path?: string): CompileBaseRes
   if (summaries) {
     for (const [name, expression] of Object.entries(summaries)) {
       if (typeof expression === 'string') {
-        addExpressionDiagnostics(expression, `summaries.${name}`)
-        const expr = parseExpression(expression)
+        const expr = parseExpressionWithDiagnostics(expression, `summaries.${name}`)
         if (expr) {
           expressions.summaries[name] = compileExpression(expr)
         }

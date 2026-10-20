@@ -1,5 +1,5 @@
 import { isRecord } from '../../util/type-guards'
-import { SemanticClient } from './semantic.inline'
+import { isSemanticCancellation, SemanticClient } from './semantic.inline'
 
 type SearchMode = 'lexical' | 'semantic'
 type SemanticState = 'idle' | 'loading' | 'ready' | 'unavailable'
@@ -54,10 +54,9 @@ function sharedSemantic(manifest: string): SharedSemantic {
   clearTimeout(releaseTimer)
   releaseTimer = undefined
   if (shared?.manifest === manifest) return shared
-  const previous = shared
-  const client = previous?.client ?? new SemanticClient({ ...semanticCfg, manifestUrl: manifest })
-  const swap = previous ? previous.ids.then(() => client.load(manifest)) : client.ensureReady()
-  const ids = swap.then(() => manifestIds(manifest))
+  const client = new SemanticClient({ ...semanticCfg, manifestUrl: manifest })
+  shared?.client.dispose()
+  const ids = Promise.all([client.ensureReady(), manifestIds(manifest)]).then(([, ids]) => ids)
   const next: SharedSemantic = { manifest, client, ids }
   ids.catch(() => {
     client.dispose()
@@ -206,7 +205,12 @@ function setupBaseSearch(): (() => void) | undefined {
     return byParent
   }
 
+  let filtered = false
+  let reordered = false
+
   const restoreOrder = () => {
+    if (!reordered) return
+    reordered = false
     for (const [parent, siblings] of bySibling([...items.filter(reorderable), ...groups])) {
       siblings.sort((a, b) => originalIndex.get(a)! - originalIndex.get(b)!)
       parent.append(...siblings)
@@ -214,6 +218,8 @@ function setupBaseSearch(): (() => void) | undefined {
   }
 
   const showAll = () => {
+    if (!filtered && !reordered) return
+    filtered = false
     for (const item of items) {
       item.style.display = ''
       clearScore(item)
@@ -228,6 +234,7 @@ function setupBaseSearch(): (() => void) | undefined {
       showAll()
       return
     }
+    filtered = true
     for (const item of items) {
       clearScore(item)
       let text = lexicalText.get(item)
@@ -242,6 +249,8 @@ function setupBaseSearch(): (() => void) | undefined {
   }
 
   const applySemantic = (scores: Map<string, number>) => {
+    filtered = true
+    reordered = true
     const ranked: HTMLElement[] = []
     const groupBest = new Map<HTMLElement, number>()
     for (const item of items) {
@@ -287,7 +296,7 @@ function setupBaseSearch(): (() => void) | undefined {
       status.dataset.state = state
       status.textContent =
         state === 'loading'
-          ? 'loading the semantic model'
+          ? 'loading semantic results'
           : state === 'unavailable'
             ? semanticNotice || 'semantic search unavailable'
             : ''
@@ -296,7 +305,7 @@ function setupBaseSearch(): (() => void) | undefined {
     if (semanticButton) {
       semanticButton.disabled = state === 'unavailable'
       semanticButton.title = semanticNotice
-      // The icon spins while the encoder loads; the bar has no room for a text label.
+      // The bar has no room for a visible loading label.
       semanticButton.classList.toggle('is-loading', state === 'loading')
       semanticButton.setAttribute('aria-busy', state === 'loading' ? 'true' : 'false')
     }
@@ -366,6 +375,7 @@ function setupBaseSearch(): (() => void) | undefined {
       return
     }
     try {
+      setSemanticState('loading')
       const { semantic } = await sharedSemantic(manifest!).client.search(query, SEMANTIC_K)
       if (seq !== searchSeq) return
       const scores = new Map<string, number>()
@@ -379,10 +389,13 @@ function setupBaseSearch(): (() => void) | undefined {
       applySemantic(scores)
       releaseSemantic()
     } catch (err) {
+      if (isSemanticCancellation(err)) return
       if (seq !== searchSeq) return
       console.warn('[BaseSearch] semantic query failed:', err)
       releaseSemantic()
       filterLexical()
+    } finally {
+      if (active && seq === searchSeq) setSemanticState('ready')
     }
   }
 
@@ -390,6 +403,7 @@ function setupBaseSearch(): (() => void) | undefined {
     if (mode === 'semantic') {
       void runSemantic()
     } else {
+      shared?.client.cancel()
       searchSeq++
       releaseSemantic()
       setSemanticState('idle')
@@ -407,6 +421,7 @@ function setupBaseSearch(): (() => void) | undefined {
 
   const handleInput = () => {
     clearTimeout(debounce)
+    shared?.client.cancel()
     searchSeq++
     for (const item of items) clearScore(item)
     if (mode === 'semantic' && searchInput.value.trim().length > 0) {
@@ -417,6 +432,7 @@ function setupBaseSearch(): (() => void) | undefined {
   }
 
   const handleKeydown = (e: KeyboardEvent) => {
+    if (e.defaultPrevented) return
     const activeElement = document.activeElement
     const isTypingInInput =
       activeElement instanceof HTMLInputElement ||
@@ -464,6 +480,7 @@ function setupBaseSearch(): (() => void) | undefined {
   search()
 
   return () => {
+    shared?.client.cancel()
     active = false
     clearTimeout(debounce)
     searchSeq++
