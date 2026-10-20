@@ -1,5 +1,12 @@
 import type { Placement, ReferenceElement, Strategy, VirtualElement } from '@floating-ui/dom'
-import { arrow as floatingArrow, computePosition, flip, offset, shift } from '@floating-ui/dom'
+import {
+  arrow as floatingArrow,
+  computePosition,
+  flip,
+  offset,
+  shift,
+  size,
+} from '@floating-ui/dom'
 import xmlFormat from 'xml-formatter'
 import { arenaPdfViewerSource } from '../../util/arena-embed'
 import {
@@ -26,13 +33,20 @@ import {
   stackedNoteRootSlug,
   type StackedNotePayload,
 } from '../../util/stacked-notes'
+import { decodeCalcShare } from '../../util/triathlon-calculator'
 import {
+  readTriathlonCalendarPreview,
   readTriathlonPreview,
+  triathlonCalendarPreviewUrl,
+  triathlonPopoverDomId,
   triathlonPreviewDayHref,
   triathlonPreviewTarget,
   triathlonPreviewUrl,
+  type TriathlonPreview,
+  type TriathlonPreviewActivity,
   type TriathlonPreviewTarget,
 } from '../../util/triathlon-preview'
+import { isStravaActivityIndex, STRAVA_ACTIVITY_INDEX_PATH } from '../../util/triathlon-shortcut'
 import {
   readWikipediaPreviewResponse,
   wikipediaActionApiUrl,
@@ -43,8 +57,21 @@ import { coursePreviewTarget, renderCoursePreview } from './course-preview-card'
 import { renderDocumentPreview } from './document-preview-card'
 import { currentNavSignal } from './nav-lifecycle'
 import { beginSitePerformanceSample, endSitePerformanceSample } from './performance-sample'
+import {
+  blurPopoverFocus,
+  clearAllPopovers,
+  evictInactivePopovers,
+  removePopoverElement,
+  touchPopoverElement,
+} from './popover-dom'
 import { beginSidePanelRequest, disposeSidePanel, getOrCreateSidePanel } from './side-panel'
-import { renderTriathlonPreview, triathlonPreviewPresentation } from './triathlon-preview-card'
+import {
+  renderTriathlonCalculatorPreview,
+  renderTriathlonCalendarPreview,
+  renderTriathlonComparisonPreview,
+  renderTriathlonPreview,
+  triathlonPreviewPresentation,
+} from './triathlon-preview-card'
 
 type ContentHandler = (
   response: Response,
@@ -668,6 +695,16 @@ async function setPosition(
     offset(2),
     shift(),
     flip(),
+    // a course card is taller than the room beside a short window; it scrolls instead of clipping
+    popoverElement.classList.contains('course-popover')
+      ? size({
+          padding: 8,
+          apply({ availableHeight, elements }) {
+            const inner = elements.floating.querySelector<HTMLElement>('.popover-inner')
+            if (inner) inner.style.maxHeight = `min(${Math.floor(availableHeight)}px, 75vh, 30rem)`
+          },
+        })
+      : null,
     arrowElement ? floatingArrow({ element: arrowElement, padding: 12 }) : null,
   ]
   const {
@@ -697,8 +734,10 @@ async function showPopover(
   options: ShowPopoverOptions = {},
 ) {
   const startedAt = beginSitePerformanceSample()
+  touchPopoverElement(popoverElement)
   clearActivePopover(popoverElement)
   popoverElement.classList.add('active-popover')
+  evictInactivePopovers(popoverElement)
 
   await setPosition(link, popoverElement, {
     clientX: pointer.clientX,
@@ -720,23 +759,13 @@ async function showLoadingPopover(
   pointer: { clientX: number; clientY: number },
 ) {
   const startedAt = beginSitePerformanceSample()
+  touchPopoverElement(popoverElement)
   clearActivePopover(popoverElement)
   activeAnchor = link
   popoverElement.classList.add('active-popover')
+  evictInactivePopovers(popoverElement)
   await setPosition(link, popoverElement, { clientX: pointer.clientX, clientY: pointer.clientY })
   endSitePerformanceSample('popover', startedAt)
-}
-
-function removePopoverElement(popoverElement: HTMLElement) {
-  window.quartzPdfEmbeds?.cleanup(popoverElement)
-  popoverElement.remove()
-}
-
-function blurPopoverFocus(popoverElement: HTMLElement) {
-  const activeElement = document.activeElement
-  if (activeElement instanceof HTMLElement && popoverElement.contains(activeElement)) {
-    activeElement.blur()
-  }
 }
 
 function clearActivePopover(except?: HTMLElement) {
@@ -749,6 +778,7 @@ function clearActivePopover(except?: HTMLElement) {
     blurPopoverFocus(popoverElement)
     popoverElement.classList.remove('active-popover')
   })
+  evictInactivePopovers(except)
 }
 
 function dismissPopover() {
@@ -1157,10 +1187,66 @@ function sepPreviewSource(target: SepTarget): SummaryPreviewSource {
 
 function triathlonTargetFromLink(link: HTMLAnchorElement): TriathlonPreviewTarget | null {
   const date = link.dataset.triathlonDate
-  if (date) return { date, activityId: null }
+  if (date) {
+    const activityId = link.dataset.powerActivityId
+    return { kind: 'day', date, activityId: activityId ?? null }
+  }
   // A same-page activity anchor scrolls to content already on screen.
   if (compareUrls(new URL(document.location.href), new URL(link.href))) return null
   return triathlonPreviewTarget(link.href)
+}
+
+let activityDatesRequest: Promise<Record<string, string> | null> | null = null
+
+function activityDates(): Promise<Record<string, string> | null> {
+  activityDatesRequest ??= fetch(new URL(STRAVA_ACTIVITY_INDEX_PATH, window.location.href))
+    .then(async response => {
+      if (!response.ok) return null
+      const index = await response.json()
+      return isStravaActivityIndex(index) ? index.activities : null
+    })
+    .catch(() => null)
+  return activityDatesRequest.then(dates => {
+    if (!dates) activityDatesRequest = null
+    return dates
+  })
+}
+
+async function fetchDayPreview(
+  date: string,
+  signal: AbortSignal,
+): Promise<TriathlonPreview | null> {
+  const response = await fetch(triathlonPreviewUrl(date, window.location.href), { signal })
+  if (!response.ok) return null
+  return readTriathlonPreview(await response.json(), date)
+}
+
+async function comparisonActivities(
+  ids: readonly string[],
+  signal: AbortSignal,
+): Promise<TriathlonPreviewActivity[] | null> {
+  const dates = await activityDates()
+  if (!dates || signal.aborted) return null
+  const byDate = new Map<string, string[]>()
+  for (const id of ids) {
+    const date = dates[id]
+    if (!date) continue
+    const group = byDate.get(date) ?? []
+    group.push(id)
+    byDate.set(date, group)
+  }
+  if (byDate.size === 0) return null
+  const previews = await Promise.all([...byDate.keys()].map(date => fetchDayPreview(date, signal)))
+  const activities = new Map<string, TriathlonPreviewActivity>()
+  for (const preview of previews) {
+    if (!preview) continue
+    for (const activity of preview.activities) activities.set(String(activity.id), activity)
+  }
+  const matched = ids.flatMap(id => {
+    const activity = activities.get(id)
+    return activity ? [activity] : []
+  })
+  return matched.length > 0 ? matched : null
 }
 
 function triathlonPreviewSource(
@@ -1168,18 +1254,42 @@ function triathlonPreviewSource(
   target: TriathlonPreviewTarget,
 ): SummaryPreviewSource {
   const presentation = triathlonPreviewPresentation()
-  const dayHref = triathlonPreviewDayHref(target.date, link.href)
+  const href = link.href
   return {
-    popoverId: `popover-triathlon-${target.date}-${target.activityId ?? 'day'}-${presentation.distance}`,
-    className: 'triathlon-popover',
+    popoverId: triathlonPopoverDomId(target, presentation.distance),
+    className: 'triathlon-popover document-popover',
     async load(signal) {
-      const url = triathlonPreviewUrl(target.date, window.location.href)
-      const response = await fetch(url, { signal })
-      if (!response.ok) return null
-      const preview = readTriathlonPreview(await response.json(), target.date)
+      if (target.kind === 'calculator') {
+        const share = decodeCalcShare(target.raw)
+        return share
+          ? popoverInner => renderTriathlonCalculatorPreview(share, href, popoverInner)
+          : null
+      }
+      if (target.kind === 'calendar') {
+        const response = await fetch(triathlonCalendarPreviewUrl(window.location.href), { signal })
+        if (!response.ok) return null
+        const preview = readTriathlonCalendarPreview(await response.json())
+        return preview
+          ? popoverInner => renderTriathlonCalendarPreview(preview, target, href, popoverInner)
+          : null
+      }
+      if (target.kind === 'comparison') {
+        const activities = await comparisonActivities(target.ids, signal)
+        return activities
+          ? popoverInner =>
+              renderTriathlonComparisonPreview(activities, href, presentation, popoverInner)
+          : null
+      }
+      const preview = await fetchDayPreview(target.date, signal)
       return preview
         ? popoverInner =>
-            renderTriathlonPreview(preview, target, dayHref, presentation, popoverInner)
+            renderTriathlonPreview(
+              preview,
+              target,
+              triathlonPreviewDayHref(target.date, href),
+              presentation,
+              popoverInner,
+            )
         : null
     },
   }
@@ -1267,7 +1377,7 @@ async function handleSummaryPreview(
   if (!render || !link.isConnected || activeAnchor !== link || document.getElementById(popoverId))
     return
 
-  const { popoverElement, popoverInner } = createPopoverElement(source.className)
+  const { popoverElement, popoverInner } = createPopoverElement(...source.className.split(/\s+/))
   popoverElement.id = popoverId
   render(popoverInner)
   link.dataset.popoverId = popoverId
@@ -1811,7 +1921,7 @@ async function mouseClickHandler(evt: MouseEvent, link: HTMLAnchorElement) {
 function closestPopoverLink(target: EventTarget | null): HTMLAnchorElement | null {
   const element =
     target instanceof Element ? target : target instanceof Node ? target.parentElement : null
-  const link = element?.closest<HTMLAnchorElement>('a.internal') ?? null
+  const link = element?.closest<HTMLAnchorElement>('a.internal, a[data-power-activity-id]') ?? null
   return link?.closest('#stacked-notes-container') ? null : link
 }
 
@@ -1902,6 +2012,7 @@ function cleanupPopoverRuntime(): void {
   stackedPopoverEvents?.abort()
   stackedPopoverEvents = null
   clearActivePopover()
+  clearAllPopovers()
 }
 
 document.addEventListener('nav', () => {

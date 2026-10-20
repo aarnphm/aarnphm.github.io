@@ -50,8 +50,8 @@ function handleToggleKeydown(event: KeyboardEvent) {
   toggle.click()
 }
 
-const hydratedCollapseToggles = new WeakSet<HTMLElement>()
-const hydratedTranscludeButtons = new WeakSet<Element>()
+const hydratedCollapseToggleSignals = new WeakMap<HTMLElement, AbortSignal>()
+const hydratedTranscludeButtonSignals = new WeakMap<Element, AbortSignal>()
 
 function collapseStorageKey(slug: string, toggleId: string) {
   return `${slug.replace(/\//g, '--')}-${toggleId}`
@@ -69,7 +69,8 @@ function hydrateCollapsibleHeaders(
     const toggle = section.querySelector<HTMLElement>('[data-collapse-toggle]')
     if (!toggle) return
 
-    if (!hydratedCollapseToggles.has(toggle)) {
+    const signal = rootNavSignal(toggle)
+    if (hydratedCollapseToggleSignals.get(toggle) !== signal) {
       const initialOpen = shell.dataset.initialOpen !== 'false'
       const stored = localStorage.getItem(collapseStorageKey(storageSlug, toggle.id))
       const isOpen = stored ? stored === 'true' : initialOpen
@@ -85,23 +86,20 @@ function hydrateCollapsibleHeaders(
         toggle.tabIndex = 0
       }
 
-      hydratedCollapseToggles.add(toggle)
+      hydratedCollapseToggleSignals.set(toggle, signal)
       toggle.dataset.collapseSlug = storageSlug
-      const signal = rootNavSignal(toggle)
       toggle.addEventListener('click', handleToggleClick, { signal })
       toggle.addEventListener('keydown', handleToggleKeydown, { signal })
-      signal.addEventListener('abort', () => hydratedCollapseToggles.delete(toggle), { once: true })
     }
   })
 
   const transcludeButtons = root.querySelectorAll('button.transclude-title-link')
   for (const button of transcludeButtons) {
-    if (hydratedTranscludeButtons.has(button)) continue
+    const signal = rootNavSignal(button)
+    if (hydratedTranscludeButtonSignals.get(button) === signal) continue
     const parent = button.parentElement
     if (!parent || !parent.dataset.href) continue
-    hydratedTranscludeButtons.add(button)
-    const signal = rootNavSignal(button)
-    signal.addEventListener('abort', () => hydratedTranscludeButtons.delete(button), { once: true })
+    hydratedTranscludeButtonSignals.set(button, signal)
 
     const navigate = () => {
       const href = parent.dataset.href

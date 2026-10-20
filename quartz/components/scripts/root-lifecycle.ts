@@ -11,10 +11,18 @@ export interface RootLifecycleRegistry {
   lifecycles: Map<Node, RootLifecycle>
 }
 
-const registry = window.quartzRootLifecycles ?? { lifecycles: new Map<Node, RootLifecycle>() }
-window.quartzRootLifecycles = registry
+function getRootRegistry(): RootLifecycleRegistry {
+  const registry = window.quartzRootLifecycles ?? { lifecycles: new Map<Node, RootLifecycle>() }
+  window.quartzRootLifecycles = registry
+  return registry
+}
+
+if (typeof window !== 'undefined') {
+  getRootRegistry()
+}
 
 export function rootNavSignal(root: Node): AbortSignal {
+  const registry = getRootRegistry()
   const navSignal = currentNavSignal()
   const existing = registry.lifecycles.get(root)
   if (existing?.navSignal === navSignal && !existing.controller.signal.aborted) {
@@ -39,6 +47,7 @@ export function rootNavSignal(root: Node): AbortSignal {
 }
 
 export function cleanupRootLifecycles(root?: Node): void {
+  const registry = getRootRegistry()
   for (const [owner, lifecycle] of registry.lifecycles) {
     if (root && owner !== root && !root.contains(owner)) continue
     lifecycle.dispose()

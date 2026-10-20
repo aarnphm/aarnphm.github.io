@@ -10,7 +10,7 @@ function toggleCallout(this: HTMLElement) {
   document.dispatchEvent(new CustomEvent('callouttoggle', { detail: { collapsed } }))
 }
 
-const hydratedCalloutTitles = new WeakSet<HTMLElement>()
+const hydratedCalloutSignals = new WeakMap<HTMLElement, AbortSignal>()
 
 function setupCallout(root: Document | HTMLElement = document) {
   const collapsible = root.querySelectorAll<HTMLElement>('.callout.is-collapsible')
@@ -19,11 +19,10 @@ function setupCallout(root: Document | HTMLElement = document) {
     const content = div.getElementsByClassName('callout-content')[0] as HTMLElement
     if (!title || !content) continue
 
-    if (!hydratedCalloutTitles.has(title)) {
-      hydratedCalloutTitles.add(title)
-      const signal = rootNavSignal(title)
+    const signal = rootNavSignal(title)
+    if (hydratedCalloutSignals.get(title) !== signal) {
+      hydratedCalloutSignals.set(title, signal)
       title.addEventListener('click', toggleCallout, { signal })
-      signal.addEventListener('abort', () => hydratedCalloutTitles.delete(title), { once: true })
     }
 
     const collapsed = div.classList.contains('is-collapsed')

@@ -297,15 +297,27 @@ class SidenoteManager {
       }
     })
   }
+
+  public destroy() {
+    this.sidenotes.forEach(state => this.cleanupHandlers(state))
+    this.sidenotes.length = 0
+  }
 }
 
+let activeSidenotesCleanup: (() => void) | null = null
+
 function setupSidenotes() {
+  activeSidenotesCleanup?.()
+  activeSidenotesCleanup = null
   if (!document.querySelector('.sidenote')) return
   const manager = new SidenoteManager()
   if (!manager.hasSidenotes()) return
   manager.layout()
 
-  const debouncedLayout = debounce(() => manager.layout(), 100)
+  let destroyed = false
+  const debouncedLayout = debounce(() => {
+    if (!destroyed) manager.layout()
+  }, 100)
 
   window.addEventListener('resize', debouncedLayout, { passive: true })
 
@@ -322,14 +334,21 @@ function setupSidenotes() {
     observer.observe(sidepanel, { attributes: true, attributeFilter: ['class'] })
   }
 
-  window.addCleanup(() => {
+  const cleanup = () => {
+    if (destroyed) return
+    destroyed = true
+    if (activeSidenotesCleanup === cleanup) activeSidenotesCleanup = null
     window.removeEventListener('resize', debouncedLayout)
     document.removeEventListener('callouttoggle', debouncedLayout)
     document.removeEventListener('collapsibletoggle', debouncedLayout)
     if (observer) {
       observer.disconnect()
+      observer = null
     }
-  })
+    manager.destroy()
+  }
+  activeSidenotesCleanup = cleanup
+  window.addCleanup(cleanup)
 }
 
 document.addEventListener('nav', setupSidenotes)

@@ -133,6 +133,10 @@ a {
     flex-direction: row;
   }
 
+  a[data-role='anchor'] {
+    display: none;
+  }
+
   & > #stacked-notes-main {
     --note-content-width: 620px;
     --note-title-width: 40px;

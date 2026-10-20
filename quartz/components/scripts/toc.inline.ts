@@ -83,7 +83,10 @@ function scrollToElement(hash: string) {
 
   revealHeading(element)
 
-  if (ag) ag.hide()
+  if (ag) {
+    ag.remove()
+    ag = null
+  }
 
   const highlight = element.querySelector<HTMLElement>('span.highlight-span')
   if (highlight) {
@@ -279,8 +282,17 @@ function setupToc() {
     { passive: true, signal },
   )
 
+  let initFrame = requestAnimationFrame(() => {
+    initFrame = 0
+    refreshTocGeometry()
+  })
+
   tocCleanup = () => {
     controller.abort()
+    if (initFrame !== 0) {
+      cancelAnimationFrame(initFrame)
+      initFrame = 0
+    }
     if (frame !== 0) {
       cancelAnimationFrame(frame)
       frame = 0
@@ -295,8 +307,6 @@ function setupToc() {
     touchedMetrics.length = 0
     nextTouchedMetrics.length = 0
   }
-
-  requestAnimationFrame(refreshTocGeometry)
 }
 
 function cleanupToc() {
@@ -475,5 +485,12 @@ document.addEventListener('nav', () => {
 
   window.addCleanup(() => {
     cleanupToc()
+    observer.disconnect()
+    activeToc = null
+    tocEntryBySlug.clear()
+    if (ag) {
+      ag.remove()
+      ag = null
+    }
   })
 })

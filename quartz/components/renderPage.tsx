@@ -103,7 +103,7 @@ import curiusFriendScript from './scripts/curius-friends.inline'
 //@ts-ignore
 import curiusScript from './scripts/curius.inline'
 import Search from './Search'
-import { renderStravaRides } from './strava-rides'
+import { renderStravaActivities } from './strava-activities'
 import collapseHeaderStyle from './styles/collapseHeader.inline.scss'
 import { svgOptions, QuartzIcon } from './svg'
 import {
@@ -2608,7 +2608,7 @@ export function renderPageWithMetadata(
     if (transcluded.readingTime) componentData.fileData.readingTime = transcluded.readingTime
     logBuildSpan(ctx.argv, 'render:transclude', slug, renderPerf.elapsedMs())
     renderBaseEmbeds(tree, componentData)
-    renderStravaRides(tree)
+    renderStravaActivities(tree, slug)
 
     if (componentData.fileData.frontmatter?.pageLayout === 'technical-tractatus') {
       applyTractatusLayout(tree)
@@ -2826,7 +2826,10 @@ export function renderPageWithMetadata(
   const isCurius = slug === 'curius'
   // The PDF reader shell renders once at `read` and the worker serves it for every `/read/...`
   // path; course PDF resource pages carry the same shell under their own slug.
-  const isPdfReader = slug === 'read' || pdfResourceOf(componentData.fileData) !== null
+  const isPdfReader =
+    slug === 'read' ||
+    pdfResourceOf(componentData.fileData) !== null ||
+    componentData.fileData.pdfReader?.chrome === 'course'
   const isFullBleed = isArena || isPdfReader
   const isArenaSubpage = slug.startsWith('arena/') && slug !== 'arena'
   const isBase = componentData.fileData.bases ?? false
