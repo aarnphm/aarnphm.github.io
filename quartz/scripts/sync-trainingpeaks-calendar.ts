@@ -174,7 +174,8 @@ export function normalizeTrainingPeaksStructure(
   if (
     metric !== 'percentOfFtp' &&
     metric !== 'percentOfThresholdPace' &&
-    metric !== 'percentOfThresholdHr'
+    metric !== 'percentOfThresholdHr' &&
+    metric !== 'rpe'
   )
     throw new Error(`uses intensity metric ${String(metric)}`)
   if (!Array.isArray(value.structure) || value.structure.length === 0)

@@ -26,6 +26,10 @@ const PREVIEW_KINDS: readonly ActivityKind[] = [
   'sauna',
 ]
 const TRACE_BOX = 100
+const POOL_WIDTH = 100
+const POOL_HEIGHT = 40
+// In Apple pool data, wall pauses inside a set stay under 10 s and set breaks run longer.
+const POOL_REST_S = 10
 const TRACE_MIN_EXTENT_M = 150
 const CALC_SHARE = /^calculator-\d+-[ap]-[im](?:-\d+){5}$/
 
@@ -47,6 +51,17 @@ export interface TriathlonPreviewActivity {
   virtual: boolean
   /** Route shape as SVG path data in a 100×100 box; no coordinates leave the build. */
   trace: string | null
+  /** Pool swims only: lengths on an elapsed-time axis, absent from older payloads. */
+  pool?: TriathlonPoolChart | null
+}
+
+/**
+ * SVG path data in a 100×40 box, one step per set: x is elapsed time, height is the set's mean
+ * speed, and rests stay empty, like a structured-workout graph. `other` holds mostly non-freestyle sets.
+ */
+export interface TriathlonPoolChart {
+  free: string
+  other: string
 }
 
 export interface TriathlonPreview {
@@ -221,6 +236,52 @@ function previewTrace(detail: StravaActivityDetail): string | null {
   return commands.length > 1 ? commands.join('') : null
 }
 
+function poolChart(detail: StravaActivityDetail): TriathlonPoolChart | null {
+  if (detail.sport !== 'swim' || detail.swimLocation !== 'pool') return null
+  const lengths = detail.swimIntervals.filter(
+    length =>
+      length.distanceM > 0 && length.durationS > 0 && length.endElapsedS > length.startElapsedS,
+  )
+  if (lengths.length < 2) return null
+
+  // A pause at the wall of POOL_REST_S or more ends a set; each set becomes one step.
+  const sets: { from: number; to: number; distanceM: number; swimS: number; freeM: number }[] = []
+  for (const length of lengths) {
+    const last = sets[sets.length - 1]
+    const freeM = length.stroke === null || length.stroke === 'freestyle' ? length.distanceM : 0
+    if (last && length.startElapsedS - last.to < POOL_REST_S) {
+      last.to = Math.max(last.to, length.endElapsedS)
+      last.distanceM += length.distanceM
+      last.swimS += length.durationS
+      last.freeM += freeM
+    } else {
+      sets.push({
+        from: length.startElapsedS,
+        to: length.endElapsedS,
+        distanceM: length.distanceM,
+        swimS: length.durationS,
+        freeM,
+      })
+    }
+  }
+  const start = sets[0].from
+  const span = sets[sets.length - 1].to - start
+  if (!(span > 0)) return null
+
+  const speeds = sets.map(set => set.distanceM / set.swimS)
+  const floor = Math.min(...speeds) * 0.8
+  const range = Math.max(Math.max(...speeds) - floor, 1e-6)
+  const x = (elapsed: number) => round(((elapsed - start) / span) * POOL_WIDTH, 2)
+  const paths = { free: [] as string[], other: [] as string[] }
+  sets.forEach((set, index) => {
+    const level = (speeds[index] - floor) / range
+    const top = round(POOL_HEIGHT * (1 - (0.25 + 0.75 * level)), 2)
+    const kind = set.freeM * 2 >= set.distanceM ? 'free' : 'other'
+    paths[kind].push(`M${x(set.from)} ${POOL_HEIGHT}V${top}H${x(set.to)}V${POOL_HEIGHT}Z`)
+  })
+  return { free: paths.free.join(''), other: paths.other.join('') }
+}
+
 const positive = (value: number | null | undefined): number | null =>
   value != null && Number.isFinite(value) && value > 0 ? value : null
 
@@ -249,6 +310,7 @@ export function buildTriathlonPreview(input: {
         location: detail.location,
         virtual: detail.virtual === true,
         trace: previewTrace(detail),
+        pool: poolChart(detail),
       }),
     )
   return {
@@ -286,7 +348,12 @@ function isPreviewActivity(value: unknown): value is TriathlonPreviewActivity {
     finiteOrNull(value.load) &&
     (value.location === null || typeof value.location === 'string') &&
     typeof value.virtual === 'boolean' &&
-    (value.trace === null || typeof value.trace === 'string')
+    (value.trace === null || typeof value.trace === 'string') &&
+    (value.pool === undefined ||
+      value.pool === null ||
+      (isRecord(value.pool) &&
+        typeof value.pool.free === 'string' &&
+        typeof value.pool.other === 'string'))
   )
 }
 

@@ -1,22 +1,25 @@
 import { useState } from 'preact/hooks'
 import type {
-  TrainingPeaksCalendar,
-  TrainingPeaksCalendarRange,
   TrainingPeaksCalendarStep,
-  TrainingPeaksCalendarStructure,
   TrainingPeaksCalendarWorkout,
-  TrainingPeaksCalendarZone,
-  TrainingPeaksCalendarZoneBounds,
 } from '../../../util/trainingpeaks-calendar'
 import type { TriathlonFormatter } from '../runtime/formatter'
-import { RUN_PACE_ZONE_NAMES } from '../../../util/run-pace-zones'
+import { clock, zoneClock } from '../../../util/triathlon-card'
 import {
-  HR_ZONE_NAMES,
-  KM_TO_MI,
-  POWER_ZONE_NAMES,
-  clock,
-  zoneClock,
-} from '../../../util/triathlon-card'
+  TARGET_LABEL,
+  absoluteText,
+  rangeValues,
+  stepLevel,
+  stepTop,
+  targetText,
+  thresholdPercent,
+  zoneRange,
+  zoneScaleFor,
+  zoneSourceText,
+  type StructuredWorkout,
+  type TrainingZoneSource,
+  type ZoneScale,
+} from './structure-targets'
 import {
   parseSwimDescription,
   type SwimEffort,
@@ -27,17 +30,7 @@ import {
 import { trainingDuration } from './training-display'
 import { useStructureHover } from './TrainingStructureHover'
 
-const ZONE_SET = {
-  percentOfFtp: 'power',
-  percentOfThresholdPace: 'speed',
-  percentOfThresholdHr: 'heartRate',
-} as const
-
-const TARGET_LABEL = {
-  percentOfFtp: '% FTP',
-  percentOfThresholdPace: '% threshold pace',
-  percentOfThresholdHr: '% threshold HR',
-} as const
+export type { TrainingZoneSource } from './structure-targets'
 
 const INTENSITY_LABEL = {
   warmUp: 'warm up',
@@ -55,20 +48,6 @@ const EFFORT_BAR: Record<SwimEffort, { height: number; level: number }> = {
   hard: { height: 100, level: 7 },
 }
 
-export type TrainingZoneSource = Pick<TrainingPeaksCalendar, 'zones' | 'localZones'> | null
-
-interface ZoneScale {
-  source: 'trainingpeaks' | 'garden'
-  threshold: number
-  zones: TrainingPeaksCalendarZone[]
-}
-
-interface ZoneMatch {
-  label: string
-  short: string
-  level: number
-}
-
 interface Bar {
   step: string
   lap: number
@@ -79,127 +58,10 @@ interface Bar {
   level: number | null
 }
 
-type StructuredWorkout = TrainingPeaksCalendarWorkout & {
-  structure: TrainingPeaksCalendarStructure
-}
-
 interface WorkoutStructureProps {
   workout: TrainingPeaksCalendarWorkout
   zones: TrainingZoneSource
   formatter: TriathlonFormatter
-}
-
-// The garden FTP and pace zones each belong to one sport; its heart rate zones cover both.
-const gardenZones = (
-  workout: StructuredWorkout,
-  source: TrainingZoneSource,
-): [TrainingPeaksCalendarZoneBounds, readonly string[]] | null => {
-  const local = source?.localZones
-  const { metric } = workout.structure
-  const sport = workout.sport
-  const found =
-    metric === 'percentOfThresholdHr' && (sport === 'bike' || sport === 'run')
-      ? ([local?.heartRate, HR_ZONE_NAMES] as const)
-      : metric === 'percentOfFtp' && sport === 'bike'
-        ? ([local?.power, POWER_ZONE_NAMES] as const)
-        : metric === 'percentOfThresholdPace' && sport === 'run'
-          ? ([local?.runSpeed, RUN_PACE_ZONE_NAMES] as const)
-          : null
-  return found?.[0] ? [found[0], found[1]] : null
-}
-
-// As in TrainingPeaks, the athlete default (workoutTypeId 0) covers sports without their own set.
-const zoneScaleFor = (
-  workout: StructuredWorkout,
-  source: TrainingZoneSource,
-  text: TriathlonFormatter['text'],
-): ZoneScale | null => {
-  const sets = source?.zones?.[ZONE_SET[workout.structure.metric]] ?? []
-  const set =
-    sets.find(item => item.workoutTypeId === workout.workoutTypeId) ??
-    sets.find(item => item.workoutTypeId === 0)
-  if (set) return { source: 'trainingpeaks', threshold: set.threshold, zones: set.zones }
-  const garden = gardenZones(workout, source)
-  if (!garden) return null
-  const [{ threshold, bounds }, names] = garden
-  return {
-    source: 'garden',
-    threshold,
-    zones: [...bounds, Infinity].map((max, index) => ({
-      label: text(names[index] ?? `Z${index + 1}`),
-      min: index === 0 ? 0 : bounds[index - 1],
-      max,
-    })),
-  }
-}
-
-const zoneAt = (scale: ZoneScale, percent: number): ZoneMatch => {
-  const value = (percent / 100) * scale.threshold
-  const found = scale.zones.findIndex(zone => value <= zone.max)
-  const index = found < 0 ? scale.zones.length - 1 : found
-  const label = scale.zones[index].label
-  const id =
-    scale.source === 'trainingpeaks'
-      ? /^(?:zone|z)\s*(\d+[a-z]?|[a-z])\b/i.exec(label)?.[1]
-      : String(index + 1)
-  return {
-    label,
-    short: id ? `Z${id.toUpperCase()}` : label,
-    // Any zone count spreads over the seven steps of the shared zone fill ramp.
-    level: 1 + Math.round((index * 6) / Math.max(1, scale.zones.length - 1)),
-  }
-}
-
-const rangeValues = (range: TrainingPeaksCalendarRange): number[] =>
-  range.max === null || range.max === range.min ? [range.min] : [range.min, range.max]
-
-const stepTop = (step: TrainingPeaksCalendarStep): number | null =>
-  step.target?.max ?? step.target?.min ?? null
-
-const percentText = (range: TrainingPeaksCalendarRange, formatter: TriathlonFormatter): string =>
-  `${rangeValues(range)
-    .map(value => formatter.number(value, 0, 1))
-    .join('–')}%`
-
-// TrainingPeaks scales threshold speed, so a higher percentage is a faster pace.
-const absoluteText = (
-  workout: StructuredWorkout,
-  threshold: number,
-  range: TrainingPeaksCalendarRange,
-  formatter: TriathlonFormatter,
-): string => {
-  const values = rangeValues(range).map(value => (value / 100) * threshold)
-  const metric = workout.structure.metric
-  if (metric === 'percentOfFtp') return `${values.map(value => Math.round(value)).join('–')} W`
-  if (metric === 'percentOfThresholdHr')
-    return `${values.map(value => Math.round(value)).join('–')} bpm`
-  if (workout.sport === 'swim') return `${values.map(speed => clock(100 / speed)).join('–')} /100m`
-  const imperial = formatter.presentation.distance === 'imperial'
-  return `${values.map(speed => clock(1000 / speed / (imperial ? KM_TO_MI : 1))).join('–')} ${imperial ? '/mi' : '/km'}`
-}
-
-const zoneRange = (
-  scale: ZoneScale | null,
-  range: TrainingPeaksCalendarRange | null,
-): { short: string; label: string } | null => {
-  if (!scale || !range) return null
-  const low = zoneAt(scale, range.min)
-  const high = zoneAt(scale, range.max ?? range.min)
-  return low.label === high.label
-    ? low
-    : { short: `${low.short}–${high.short}`, label: `${low.label} – ${high.label}` }
-}
-
-const thresholdText = (
-  workout: StructuredWorkout,
-  scale: ZoneScale,
-  formatter: TriathlonFormatter,
-): string => {
-  const metric = workout.structure.metric
-  if (metric === 'percentOfFtp') return `FTP ${Math.round(scale.threshold)} W`
-  if (metric === 'percentOfThresholdHr')
-    return `${formatter.text('threshold HR')} ${Math.round(scale.threshold)} bpm`
-  return `${formatter.text('threshold pace')} ${absoluteText(workout, scale.threshold, { min: 100, max: null }, formatter)}`
 }
 
 const stepNotes = (step: TrainingPeaksCalendarStep, sport: string): string =>
@@ -217,7 +79,10 @@ const structureBars = (
   formatter: TriathlonFormatter,
 ): { blocks: Bar[][]; threshold: number } => {
   const tops = workout.structure.blocks.flatMap(block => block.steps.map(stepTop))
-  const ceiling = Math.max(110, ...tops.map(top => top ?? 0))
+  const ceiling = Math.max(
+    110,
+    ...tops.map(top => (top === null ? 0 : thresholdPercent(workout, top))),
+  )
   let lap = 0
   return {
     threshold: (100 / ceiling) * 100,
@@ -225,7 +90,7 @@ const structureBars = (
       Array.from({ length: block.repeat }, (_, repeat) =>
         block.steps.map((step, stepIndex) => {
           const top = stepTop(step)
-          const zone = zoneRange(scale, step.target)
+          const zone = zoneRange(workout, scale, step.target)
           return {
             step: `${blockIndex}:${stepIndex}`,
             lap: ++lap,
@@ -233,18 +98,19 @@ const structureBars = (
             details: [
               zoneClock(step.seconds),
               step.target
-                ? `${percentText(step.target, formatter)} ${formatter.text(TARGET_LABEL[workout.structure.metric]).replace(/^% /, '')}`
+                ? workout.structure.metric === 'rpe'
+                  ? targetText(workout, step.target, formatter)
+                  : `${targetText(workout, step.target, formatter)} ${formatter.text(TARGET_LABEL[workout.structure.metric]).replace(/^% /, '')}`
                 : '',
-              step.target && scale
-                ? absoluteText(workout, scale.threshold, step.target, formatter)
-                : '',
+              step.target && scale ? absoluteText(workout, scale, step.target, formatter) : '',
               zone?.short ?? '',
               block.repeat > 1 ? `${repeat + 1}/${block.repeat} ×` : '',
               stepNotes(step, workout.sport),
             ].filter(Boolean),
             grow: step.seconds,
-            height: top === null ? 12 : Math.max(4, (top / ceiling) * 100),
-            level: scale && top !== null ? zoneAt(scale, top).level : null,
+            height:
+              top === null ? 12 : Math.max(4, (thresholdPercent(workout, top) / ceiling) * 100),
+            level: stepLevel(workout, scale, top),
           }
         }),
       ).flat(),
@@ -491,7 +357,7 @@ const TrainingPeaksStructure = ({
                 </tr>
               )}
               {block.steps.map((step, stepIndex) => {
-                const zone = zoneRange(scale, step.target)
+                const zone = zoneRange(workout, scale, step.target)
                 const note = stepNotes(step, workout.sport)
                 return (
                   <tr
@@ -505,10 +371,10 @@ const TrainingPeaksStructure = ({
                     </th>
                     <td>{zoneClock(step.seconds)}</td>
                     <td>
-                      {step.target ? percentText(step.target, formatter) : '—'}
+                      {step.target ? targetText(workout, step.target, formatter) : '—'}
                       {step.target && scale && (
                         <span class="tri-training-structure-note">
-                          {absoluteText(workout, scale.threshold, step.target, formatter)}
+                          {absoluteText(workout, scale, step.target, formatter)}
                         </span>
                       )}
                     </td>
@@ -520,11 +386,7 @@ const TrainingPeaksStructure = ({
           )
         })}
       </table>
-      <p class="tri-training-structure-source">
-        {scale
-          ? `${text(scale.source === 'garden' ? 'Garden zones' : 'TrainingPeaks zones')} · ${thresholdText(workout, scale, formatter)}`
-          : text('No zones for this sport.')}
-      </p>
+      <p class="tri-training-structure-source">{zoneSourceText(workout, scale, formatter)}</p>
     </section>
   )
 }

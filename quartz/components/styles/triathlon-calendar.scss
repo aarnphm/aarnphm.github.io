@@ -408,7 +408,6 @@
 
 .tri-calendar[data-calendar-view='year'] .tri-calendar-body {
   grid-template-columns: minmax(0, 72rem) minmax(22rem, 1fr);
-  align-items: start;
   gap: 1rem;
 }
 
@@ -423,7 +422,7 @@
 }
 
 .tri-calendar-views:has(> .tri-calendar-projection) {
-  align-content: start;
+  grid-template-rows: auto 1fr;
 }
 
 .tri-calendar-projection {
