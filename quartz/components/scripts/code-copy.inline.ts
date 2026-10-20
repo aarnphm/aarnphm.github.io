@@ -27,7 +27,7 @@ function setupCodeCopy(root: Document | HTMLElement = document) {
     if (hydratedCodeElements.has(code)) return
     hydratedCodeElements.add(code)
     const signal = rootNavSignal(code)
-    code.style.cursor = 'pointer'
+    code.style.cursor = 'var(--cursor-pointer, pointer)'
     code.title = 'Click to copy'
 
     const onClick = async (e: MouseEvent) => {

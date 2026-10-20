@@ -30,9 +30,15 @@ function naturalSlugFor(file: QuartzPluginData): string {
   return (file.slug ?? '').replace(/\/index$/, '').replace(/[-_]+/g, ' ')
 }
 
+function bySlug(f1: QuartzPluginData, f2: QuartzPluginData): number {
+  const left = f1.slug ?? ''
+  const right = f2.slug ?? ''
+  return left < right ? -1 : left > right ? 1 : 0
+}
+
 export function byTitleAlphabetical(cfg: LocaleConfig): SortFn {
   const collator = collatorFor(cfg)
-  return (f1, f2) => collator.compare(titleFor(f1), titleFor(f2))
+  return (f1, f2) => collator.compare(titleFor(f1), titleFor(f2)) || bySlug(f1, f2)
 }
 
 export function byNaturalSlug(cfg: LocaleConfig): SortFn {
@@ -40,7 +46,7 @@ export function byNaturalSlug(cfg: LocaleConfig): SortFn {
   return (f1, f2) => {
     const slugComparison = collator.compare(naturalSlugFor(f1), naturalSlugFor(f2))
     if (slugComparison !== 0) return slugComparison
-    return collator.compare(titleFor(f1), titleFor(f2))
+    return collator.compare(titleFor(f1), titleFor(f2)) || bySlug(f1, f2)
   }
 }
 
@@ -49,7 +55,8 @@ export function byDateAndAlphabetical(cfg: GlobalConfiguration): SortFn {
     // Sort by date/alphabetical
     if (f1.dates && f2.dates) {
       // sort descending
-      return getDate(cfg, f2)!.getTime() - getDate(cfg, f1)!.getTime()
+      const dateComparison = getDate(cfg, f2)!.getTime() - getDate(cfg, f1)!.getTime()
+      if (dateComparison) return dateComparison
     } else if (f1.dates && !f2.dates) {
       // prioritize files with dates
       return -1
@@ -60,7 +67,7 @@ export function byDateAndAlphabetical(cfg: GlobalConfiguration): SortFn {
     // otherwise, sort lexicographically by title
     const f1Title = f1.frontmatter?.title.toLowerCase() ?? ''
     const f2Title = f2.frontmatter?.title.toLowerCase() ?? ''
-    return f1Title.localeCompare(f2Title)
+    return f1Title.localeCompare(f2Title) || bySlug(f1, f2)
   }
 }
 

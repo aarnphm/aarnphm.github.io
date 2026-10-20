@@ -427,7 +427,7 @@ function getPressKitInnerTemplate(site: string): string {
                 copier l'image
               </button>
               <button type="button" class="g-button" data-action="share-image" hidden>
-                partager…
+                partager
               </button>
             </div>
           </div>

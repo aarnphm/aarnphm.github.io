@@ -31,6 +31,7 @@ import {
 } from '../../util/triathlon-activity-layout'
 import { registerEscapeHandler } from './escape-handler'
 import { currentNavSignal } from './nav-lifecycle'
+import { isSemanticCancellation } from './semantic.inline'
 import { beginSidePanelRequest, disposeSidePanel, getOrCreateSidePanel } from './side-panel'
 import { siteSemantic, type SiteSemantic } from './site-semantic'
 
@@ -378,6 +379,7 @@ document.addEventListener('nav', () => {
 
   window.addCleanup(() => {
     isActive = false
+    quickOpenSemantic?.cancel()
   })
 
   let contentDataReady: Promise<ContentIndex> | null = null
@@ -436,6 +438,7 @@ document.addEventListener('nav', () => {
   }
 
   function hidePalette() {
+    quickOpenSemantic?.cancel()
     queryGeneration += 1
     window.clearTimeout(quickOpenTimer)
     output.removeAttribute('aria-busy')
@@ -499,18 +502,8 @@ document.addEventListener('nav', () => {
       currentSearchTerm = ''
       syncPaletteHelper()
       quickOpenStatus('')
-      if (!quickOpenLoaded && !quickOpenUnavailable) quickOpenProgress(true)
-      void ensureQuickOpen().then(
-        () => {
-          if (isActive && actionType === 'quick_open' && !currentSearchTerm)
-            quickOpenProgress(false)
-        },
-        () => {
-          if (isActive && container.classList.contains('active') && actionType === 'quick_open')
-            quickOpenStatus('Semantic search is unavailable. Use Ctrl+K for full-text search.')
-          quickOpenProgress(false)
-        },
-      )
+      quickOpenProgress(false)
+      void ensureContentData()
     }
 
     bar?.focus()
@@ -1085,6 +1078,14 @@ document.addEventListener('nav', () => {
       }
       output.setAttribute('aria-busy', 'true')
       quickOpenProgress(true)
+      let settled = false
+      void ensureContentData().then(
+        () => {
+          if (settled || generation !== queryGeneration || !isActive) return
+          displayPendingTitles(query, 'loading semantic results')
+        },
+        () => {},
+      )
       try {
         const service = await ensureQuickOpen()
         if (generation !== queryGeneration || queryActionType !== actionType || !isActive) return
@@ -1092,11 +1093,14 @@ document.addEventListener('nav', () => {
         if (generation !== queryGeneration || queryActionType !== actionType || !isActive) return
         displayQuickOpenResults(documents, query)
       } catch (error) {
+        if (isSemanticCancellation(error)) return
         if (generation !== queryGeneration || queryActionType !== actionType || !isActive) return
         console.warn('[QuickOpen] semantic search failed:', error)
         output.removeAttribute('aria-busy')
         quickOpenProgress(false)
-        quickOpenStatus('Semantic search is unavailable. Use Ctrl+K for full-text search.')
+        displayPendingTitles(query, 'semantic unavailable; use ctrl+k for full-text search', false)
+      } finally {
+        settled = true
       }
     } else {
       const query = currentSearchTerm.toLowerCase().trim()
@@ -1114,6 +1118,29 @@ document.addEventListener('nav', () => {
     }
   }
 
+  function displayPendingTitles(query: string, message: string, loading = true) {
+    const terms = query.toLowerCase().split(/\s+/).filter(Boolean)
+    const items = Object.entries(data ?? {})
+      .flatMap(([slug, note]) => {
+        if (!isFullSlug(slug) || note.protected) return []
+        const title = note.title || note.fileName
+        const text = [title, note.fileName, ...(note.aliases ?? [])].join(' ').toLowerCase()
+        return terms.every(term => text.includes(term)) ? [{ slug, name: title }] : []
+      })
+      .sort((a, b) => {
+        const match = (item: Item) => Number(item.name.toLowerCase() === query.toLowerCase())
+        return match(b) - match(a)
+      })
+      .slice(0, numSearchResults)
+    if (items.length) displayResults(items, query)
+    else output.replaceChildren()
+    const status = document.createElement('p')
+    status.setAttribute('role', 'status')
+    status.textContent = items.length ? `${message}; title matches shown` : message
+    output.prepend(status)
+    if (loading) output.setAttribute('aria-busy', 'true')
+  }
+
   function displayQuickOpenResults(documents: SemanticDocument[], query: string) {
     const items: Item[] = []
     for (const document of documents) {
@@ -1129,6 +1156,7 @@ document.addEventListener('nav', () => {
   }
 
   async function onType(e: HTMLElementEventMap['input']) {
+    quickOpenSemantic?.cancel()
     queryGeneration += 1
     const value = (e.target as HTMLInputElement).value
     const commandMode = value.trimStart().startsWith('>')

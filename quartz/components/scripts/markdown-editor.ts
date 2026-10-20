@@ -155,7 +155,7 @@ const sharedTransparentTheme = EditorView.theme({
   },
   '.cm-completionIcon': { display: 'none' },
   "li[role='option']": {
-    cursor: 'pointer',
+    cursor: 'var(--cursor-pointer, pointer)',
     borderRadius: '6px',
     margin: '1px 6px',
     justifyContent: 'center',

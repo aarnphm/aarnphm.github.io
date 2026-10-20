@@ -1106,95 +1106,27 @@ img.inline-icons {
   border-radius: var(--radius-none);
 }
 
-a.bentoml-link {
-  display: inline;
-  align-items: center;
-  gap: 0.2em;
-
-  [data-icon='bentoml-white'] {
-    display: none;
-  }
-
-  &:hover [data-icon='bentoml'],
-  &:focus-visible [data-icon='bentoml'] {
-    display: none;
-  }
-
-  &:hover [data-icon='bentoml-white'],
-  &:focus-visible [data-icon='bentoml-white'] {
-    display: inline;
-  }
-}
-
+// Vendor marks take the link's ink, so they follow hover and theme with the text. The white copies
+// date from the inverted-fill hover and stay hidden.
+a.bentoml-link,
 a.github-link {
   display: inline;
   align-items: center;
   gap: 0.2em;
-  margin-right: 0.2em;
 
+  [data-icon='bentoml'],
+  [data-icon='github'] {
+    fill: currentColor;
+  }
+
+  [data-icon='bentoml-white'],
   [data-icon='github-white'] {
     display: none;
   }
-
-  &:hover [data-icon='github'],
-  &:focus-visible [data-icon='github'] {
-    display: none;
-  }
-
-  &:hover [data-icon='github-white'],
-  &:focus-visible [data-icon='github-white'] {
-    display: inline;
-  }
 }
 
-[saved-theme='dark'] {
-  a.bentoml-link {
-    [data-icon='bentoml'] {
-      display: none;
-    }
-
-    [data-icon='bentoml-white'] {
-      display: inline;
-    }
-  }
-
-  &:hover,
-  &:focus-visible {
-    [data-icon='bentoml-white'] {
-      display: none;
-    }
-    [data-icon='bentoml'] {
-      display: inline;
-
-      svg {
-        fill: #000;
-      }
-    }
-  }
-
-  a.github-link {
-    [data-icon='github'] {
-      display: none;
-    }
-
-    [data-icon='github-white'] {
-      display: inline;
-    }
-
-    &:hover,
-    &:focus-visible {
-      [data-icon='github-white'] {
-        display: none;
-      }
-      [data-icon='github'] {
-        display: inline;
-
-        svg {
-          fill: #000;
-        }
-      }
-    }
-  }
+a.github-link {
+  margin-right: 0.2em;
 }
 
 .nolist {

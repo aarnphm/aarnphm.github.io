@@ -130,7 +130,7 @@ export class Toast {
         border: '1px solid var(--gray)',
         borderRadius: '0',
         font: 'inherit',
-        cursor: 'pointer',
+        cursor: 'var(--cursor-pointer, pointer)',
       })
       toast.append(text, actionButton)
     } else {

@@ -206,7 +206,7 @@ function hydrateMapboxMaps(root: HTMLElement) {
           markerEl.style.alignItems = 'center'
           markerEl.style.justifyContent = 'center'
           markerEl.style.fontSize = '18px'
-          markerEl.style.cursor = 'pointer'
+          markerEl.style.cursor = 'var(--cursor-pointer, pointer)'
 
           const marker = new mapboxgl.Marker({ element: markerEl, anchor: 'bottom' }).setLngLat([
             lon,
