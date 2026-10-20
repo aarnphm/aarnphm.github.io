@@ -1,0 +1,162 @@
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
+@use './figure.scss' as *;
+
+.heavy-ball-rate {
+  @include figure-frame('hbr-figure', 32rem);
+
+  --hbr-band: color-mix(in srgb, var(--fig-sage) 34%, var(--light));
+}
+
+:root[saved-theme='dark'] .heavy-ball-rate {
+  --hbr-band: color-mix(in srgb, var(--fig-sage) 14%, var(--lightgray));
+}
+
+.hbr-controls {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr) 3.2rem;
+  gap: 0.4rem 0.8rem;
+  align-items: center;
+}
+
+.hbr-label {
+  color: var(--fig-note);
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+.hbr-slider {
+  width: 100%;
+  min-width: 0;
+  @include stableRangeControl;
+}
+
+.hbr-chip {
+  color: var(--dark);
+  font-family: var(--codeFont);
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.hbr-plots {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.hbr-panel {
+  min-width: 0;
+}
+
+.hbr-heading {
+  @include figure-card-heading;
+}
+
+.hbr-svg {
+  display: block;
+  width: 100%;
+  overflow: visible;
+
+  .hbr-grid line {
+    stroke: var(--fig-div);
+    stroke-width: 1;
+  }
+
+  .hbr-one {
+    stroke: var(--fig-stroke);
+    stroke-width: 1;
+  }
+
+  .hbr-tick {
+    font-family: var(--codeFont);
+    font-size: 10px;
+    font-variant-numeric: tabular-nums;
+    fill: var(--dark);
+  }
+
+  .hbr-band {
+    fill: var(--hbr-band);
+    transition: width 180ms ease;
+  }
+
+  .hbr-reference {
+    fill: none;
+    stroke: var(--fig-stroke-soft);
+    stroke-width: 2.5;
+  }
+
+  .hbr-curve {
+    fill: none;
+    stroke: var(--dark);
+    stroke-width: 1.6;
+    stroke-linejoin: round;
+  }
+
+  .hbr-guide {
+    stroke: var(--fig-stroke);
+    stroke-width: 1;
+  }
+
+  .hbr-mark {
+    fill: var(--fig-salmon);
+    stroke: var(--dark);
+    stroke-width: 1;
+  }
+
+  .hbr-traj {
+    fill: none;
+    stroke: var(--fig-stroke);
+    stroke-width: 1;
+  }
+
+  .hbr-point {
+    fill: var(--dark);
+  }
+}
+
+.hbr-fo {
+  @include figure-fo;
+  justify-content: center;
+  font-size: 0.78rem;
+}
+
+.hbr-fo--end {
+  justify-content: flex-end;
+}
+
+.hbr-math {
+  @include figure-inline-math;
+}
+
+.hbr-readout {
+  @include figure-table;
+  margin-top: 0.9rem;
+}
+
+.hbr-caption {
+  @include figure-caption;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hbr-svg .hbr-band {
+    transition: none;
+  }
+}
+
+@container hbr-figure (max-width: 540px) {
+  .hbr-plots {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@container hbr-figure (max-width: 380px) {
+  .hbr-controls {
+    grid-template-columns: minmax(0, 1fr) 3.2rem;
+  }
+
+  .hbr-label {
+    grid-column: 1 / -1;
+  }
+}

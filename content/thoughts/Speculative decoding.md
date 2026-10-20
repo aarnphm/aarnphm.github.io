@@ -60,8 +60,6 @@ The original EAGLE paper finds feature prediction useful for its draft model. Th
 - predict $f_{\mathrm{always}}$ from $f_{\mathrm I}$ and $t_{\mathrm{always}}$
 - predict $f_{\mathrm{am}}$ from $f_{\mathrm I}$ and $t_{\mathrm{am}}$
 
-![[thoughts/images/eagle-feature-prediction-one-time-step.webp]]
-
 #### notation.
 
 - "Features" means the LLM's second-to-top-layer hidden states, before the LM head.
@@ -78,7 +76,15 @@ The original EAGLE paper finds feature prediction useful for its draft model. Th
 
 #### architecture
 
-![[thoughts/images/eagle-figure-5-comparison.webp]]
+```jsx imports={Zoomable,SpeculativeDraftTree}
+<Zoomable label="Draft tree and verification by drafter">
+  <SpeculativeDraftTree
+    method="eagle"
+    step="d1"
+    caption="One round after the target sampled I from How can. Pick a drafter, then step through draft, verify and accept. The strip shows what the drafter reads: tokens, target features and the cached prefix (tinted), or its own predicted features (untinted). Salmon marks the newest drafts, the mask under test and the accepted prefix; sage marks tokens the target emits itself. All probabilities are synthetic, shaped after EAGLE figures 3, 5 and 6 and EAGLE-3 figure 5: each drafter's $q$ mixes the target $p$ with an error distribution, and the error grows where the drafter cannot see the drafted token or reuses its own features. A test keeps a draft when $U \le \min(1, p/q)$, with every $U$ fixed at $0.7$; the residual and bonus draws are fixed to their most likely token. $\beta=\sum_x \min(p(x), q(x))$ is read along How can I help you."
+  />
+</Zoomable>
+```
 
 ![[thoughts/images/eagle-figure-6-architecture.webp]]
 

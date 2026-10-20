@@ -1,0 +1,280 @@
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
+@use './figure.scss' as *;
+
+.all-reduce-steps {
+  @include figure-frame('ars-figure', 30rem);
+
+  --ars-own: var(--light);
+  --ars-partial: color-mix(in srgb, var(--darkgray) 20%, var(--light));
+  --ars-recv: var(--fig-salmon);
+  --ars-full: color-mix(in srgb, var(--fig-sage) 90%, var(--light));
+  --ars-head: var(--fig-tab-surface);
+  --ars-on: var(--fig-grid-selected);
+}
+
+:root[saved-theme='dark'] .all-reduce-steps {
+  --ars-partial: color-mix(in srgb, var(--gray) 55%, var(--light));
+  --ars-recv: color-mix(in srgb, var(--fig-salmon) 46%, var(--lightgray));
+  --ars-full: color-mix(in srgb, var(--fig-sage) 30%, var(--lightgray));
+  --ars-on: color-mix(in srgb, var(--fig-sage) 22%, var(--lightgray));
+}
+
+.ars-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.25rem;
+  align-items: flex-end;
+}
+
+.ars-segments {
+  @include figure-grid;
+  grid-auto-flow: column;
+  min-width: 0;
+  position: relative;
+  margin-top: 1.1rem;
+}
+
+.ars-legend {
+  position: absolute;
+  top: -1.15rem;
+  left: 0;
+  padding: 0;
+  color: var(--fig-note);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.ars-segment {
+  @include figure-grid-cell;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.8rem;
+  padding: 0.28rem 0.5rem;
+  color: var(--fig-tab-fg);
+  cursor: pointer;
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  line-height: 1.2;
+  transition:
+    background-color 140ms ease,
+    color 140ms ease;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    pointer-events: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      color: var(--dark);
+    }
+  }
+
+  &:has(input:checked) {
+    background: var(--ars-on);
+    color: var(--dark);
+  }
+
+  &:has(input:focus-visible) {
+    outline: 2px solid var(--dark);
+    outline-offset: -2px;
+  }
+}
+
+.ars-stepper {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.ars-nav {
+  box-sizing: border-box;
+  height: calc(0.72rem * 1.2 + 0.56rem + 2px);
+  padding: 0 0.6rem;
+  border: 1px solid var(--fig-stroke);
+  border-radius: var(--radius-none);
+  background: var(--light);
+  color: var(--dark);
+  cursor: pointer;
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  transition: background-color 140ms ease;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      background: var(--ars-on);
+    }
+  }
+
+  &:disabled {
+    color: var(--fig-tab-fg);
+    border-color: var(--fig-stroke-soft);
+    cursor: default;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
+}
+
+.ars-status {
+  margin: 0.75rem 0 0;
+  color: var(--fig-note);
+  font-size: 0.78rem;
+}
+
+.ars-status-step {
+  color: var(--dark);
+  font-family: var(--codeFont);
+}
+
+.ars-svg {
+  display: block;
+  width: 100%;
+  margin: 0.6rem auto 0;
+
+  &[hidden] {
+    display: none;
+  }
+
+  text {
+    font-family: var(--codeFont);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ars-ring {
+    fill: none;
+    stroke: var(--fig-stroke);
+    stroke-width: 1;
+  }
+
+  .ars-ring-head {
+    fill: var(--fig-stroke);
+  }
+
+  .ars-head {
+    fill: var(--ars-head);
+    stroke: var(--fig-stroke);
+    stroke-width: 0.8;
+  }
+
+  .ars-head-label {
+    fill: var(--dark);
+    font-size: 9px;
+  }
+
+  .ars-row-label {
+    fill: var(--fig-note);
+    font-size: 8.5px;
+  }
+
+  .ars-cell {
+    rect {
+      fill: var(--ars-own);
+      stroke: var(--fig-stroke);
+      stroke-width: 0.8;
+      transition:
+        fill 180ms ease,
+        stroke-width 180ms ease;
+    }
+
+    text {
+      fill: var(--dark);
+      font-size: 9px;
+    }
+  }
+
+  .ars-cell[data-ars-state='partial'] rect {
+    fill: var(--ars-partial);
+  }
+
+  .ars-cell[data-ars-state='recv'] rect {
+    fill: var(--ars-recv);
+    stroke: var(--dark);
+  }
+
+  .ars-cell[data-ars-state='full'] rect {
+    fill: var(--ars-full);
+  }
+
+  .ars-cell[data-ars-sender='true'] rect {
+    stroke: var(--dark);
+    stroke-width: 2;
+  }
+}
+
+.ars-legend-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.9rem;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--fig-note);
+  font-size: 0.72rem;
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0;
+  }
+}
+
+.ars-swatch {
+  width: 0.7rem;
+  height: 0.7rem;
+  box-sizing: border-box;
+  border: 1px solid var(--fig-stroke);
+  background: var(--ars-own);
+
+  &[data-ars-state='partial'] {
+    background: var(--ars-partial);
+  }
+
+  &[data-ars-state='recv'] {
+    background: var(--ars-recv);
+    border-color: var(--dark);
+  }
+
+  &[data-ars-state='full'] {
+    background: var(--ars-full);
+  }
+
+  &.ars-swatch--sender {
+    border: 2px solid var(--dark);
+  }
+}
+
+.ars-readout {
+  @include figure-table;
+  margin-top: 0.9rem;
+
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+
+  dd {
+    overflow-wrap: anywhere;
+  }
+}
+
+.ars-math {
+  @include figure-inline-math;
+}
+
+.ars-caption {
+  @include figure-caption;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ars-svg .ars-cell rect,
+  .ars-segment,
+  .ars-nav {
+    transition: none;
+  }
+}

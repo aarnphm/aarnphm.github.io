@@ -209,7 +209,11 @@ $$
 
 Each step multiplies the distance to zero by $|1-\alpha|$. Thus $0<\alpha<2$ gives convergence, and $\alpha=1$ reaches zero in one step in exact arithmetic.
 
-![[thoughts/images/convergence-vs-step-side-momentum.webp]]
+```jsx imports={Zoomable,HeavyBallRate}
+<Zoomable label="Convergence rate against step size, with momentum">
+  <HeavyBallRate caption="Gradient descent with heavy-ball momentum on $f(x)=\frac{\lambda}{2}x^2$. The rate depends on the step only through $\alpha\lambda$. The light V is plain gradient descent, $|1-\alpha\lambda|$, with its minimum $0$ at $\alpha\lambda=1$. The dark curve is the rate $\rho=\max|r|$ over the roots of $r^2-(1+\beta-\alpha\lambda)r+\beta$ for the selected $\beta$; at $\beta=0$ it lies on the V. The sage band spans the convergent steps $0<\alpha\lambda<2(1+\beta)$. The salmon point is the selected step, and the right panel runs the recurrence from rest at $x_{-1}=x_0=1$. Raise $\beta$ to widen the band and to flatten the curve at $\rho=\sqrt{\beta}$, where the roots are complex." />
+</Zoomable>
+```
 
 Changing the curvature to $f(x)=2x^2$ gives $x_{t+1}=(1-4\alpha)x_t$. The convergent range becomes $0<\alpha<\frac{1}{2}$, and the one-step choice becomes $\alpha=\frac{1}{4}$.
 

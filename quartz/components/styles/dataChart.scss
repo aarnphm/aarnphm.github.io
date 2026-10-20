@@ -1,0 +1,374 @@
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
+@use './figure.scss' as *;
+
+.data-chart {
+  @include figure-frame('dch-figure', 30rem);
+
+  // Salmon and sage sit at the same lightness, so the second slot takes a darker sage step:
+  // the pair then separates under protan and deutan simulation (OKLab dE 12 light, 10 dark).
+  --dch-s0: var(--fig-salmon);
+  --dch-s1: color-mix(in srgb, var(--fig-sage) 70%, var(--dark));
+  --dch-edge: var(--dark);
+  --dch-band: color-mix(in srgb, var(--gray) 16%, transparent);
+}
+
+:root[saved-theme='dark'] .data-chart {
+  --dch-s1: color-mix(in srgb, var(--fig-sage) 70%, var(--lightgray));
+  --dch-band: color-mix(in srgb, var(--gray) 22%, transparent);
+}
+
+.dch-title {
+  @include figure-card-heading(0.82rem);
+  margin-bottom: 0.4rem;
+}
+
+.dch-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  margin: 0 0 0.5rem;
+  padding: 0;
+  list-style: none;
+  color: var(--dark);
+  font-size: 0.75rem;
+  line-height: 1.35;
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0;
+  }
+}
+
+.dch-swatch {
+  flex: none;
+  width: 18px;
+  height: 10px;
+  overflow: visible;
+}
+
+.dch-svg {
+  display: block;
+  width: 100%;
+  max-width: 640px;
+  aspect-ratio: 440 / 270;
+  margin: 0 auto;
+  overflow: visible;
+
+  text {
+    font-family: var(--codeFont);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .dch-grid line {
+    stroke: var(--fig-div);
+    stroke-width: 1;
+  }
+
+  .dch-rule {
+    fill: none;
+    stroke: var(--fig-stroke);
+    stroke-width: 1;
+  }
+
+  .dch-tick {
+    fill: var(--darkgray);
+    font-size: 10px;
+  }
+
+  .dch-sup {
+    font-size: 7.5px;
+  }
+
+  .dch-axis {
+    fill: var(--darkgray);
+    font-family: var(--bodyFont);
+    font-size: 11px;
+  }
+
+  .dch-value {
+    fill: var(--dark);
+    font-size: 10px;
+  }
+
+  .dch-curve-label {
+    fill: var(--dark);
+    font-size: 10.5px;
+  }
+}
+
+.dch-bar,
+.dch-marker {
+  stroke: var(--dch-edge);
+  stroke-width: 1;
+}
+
+.dch-s0 {
+  fill: var(--dch-s0);
+}
+
+.dch-s1 {
+  fill: var(--dch-s1);
+}
+
+.dch-line {
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.dch-l0 {
+  stroke: var(--dark);
+}
+
+.dch-l1 {
+  stroke: var(--fig-stroke);
+}
+
+.dch-lc {
+  stroke: var(--dark);
+  stroke-width: 2;
+}
+
+.dch-band {
+  rect {
+    fill: transparent;
+    transition: fill 140ms ease;
+  }
+
+  line {
+    stroke: transparent;
+    stroke-width: 1;
+    transition: stroke 140ms ease;
+  }
+}
+
+.dch-band[data-dch-on] {
+  rect {
+    fill: var(--dch-band);
+  }
+
+  line {
+    stroke: var(--fig-stroke);
+  }
+}
+
+.dch-hit {
+  fill: transparent;
+  stroke: none;
+  cursor: crosshair;
+  outline: none;
+
+  &:focus-visible {
+    stroke: var(--dark);
+    stroke-width: 2;
+  }
+}
+
+.dch-ref {
+  path {
+    fill: none;
+    stroke: var(--fig-stroke-soft);
+    stroke-width: 1;
+  }
+
+  rect {
+    fill: var(--dch-s1);
+    stroke: var(--dch-edge);
+    stroke-width: 1;
+  }
+}
+
+.dch-probe-hit {
+  fill: transparent;
+  cursor: ew-resize;
+  touch-action: pan-y;
+}
+
+.dch-probe-drop {
+  fill: none;
+  stroke: var(--fig-stroke);
+  stroke-width: 1;
+  pointer-events: none;
+  transition: d 160ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.dch-probe-dot {
+  fill: var(--fig-salmon);
+  stroke: var(--dark);
+  stroke-width: 1;
+  pointer-events: none;
+  transition:
+    cx 160ms cubic-bezier(0.23, 1, 0.32, 1),
+    cy 160ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.data-chart[data-dch-dragging] {
+  .dch-probe-drop,
+  .dch-probe-dot {
+    transition: none;
+  }
+}
+
+.dch-fo {
+  @include figure-fo;
+  font-size: 0.82rem;
+}
+
+.dch-fo--center {
+  justify-content: center;
+}
+
+.dch-fo--end {
+  justify-content: flex-end;
+}
+
+.dch-math {
+  @include figure-inline-math;
+}
+
+.dch-probe-control {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 0.8rem;
+  align-items: center;
+  margin-top: 0.75rem;
+}
+
+.dch-probe-label {
+  color: var(--fig-note);
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+.dch-slider {
+  width: 100%;
+  min-width: 0;
+  @include stableRangeControl;
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
+}
+
+.dch-readouts {
+  margin-top: 0.75rem;
+}
+
+.dch-readout {
+  @include figure-table;
+
+  &[hidden] {
+    display: none;
+  }
+
+  dt {
+    align-items: center;
+  }
+}
+
+.dch-details {
+  margin-top: 0.6rem;
+  font-size: 0.75rem;
+
+  summary {
+    width: max-content;
+    color: var(--fig-tab-fg);
+    font-family: var(--codeFont);
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: 2px solid var(--dark);
+      outline-offset: 2px;
+    }
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    summary:hover {
+      color: var(--dark);
+    }
+  }
+}
+
+.dch-table-wrap {
+  overflow-x: auto;
+  margin-top: 0.5rem;
+}
+
+.dch-table {
+  width: 100%;
+  margin: 0;
+  border-collapse: collapse;
+  font-size: 0.75rem;
+  line-height: 1.35;
+
+  th,
+  td {
+    padding: 0.3rem 0.5rem;
+    border: 1px solid var(--fig-grid-line);
+    background: var(--fig-grid-cell);
+  }
+
+  th {
+    color: var(--fig-note);
+    font-weight: 400;
+    text-align: left;
+  }
+
+  thead th:not(:first-child),
+  td {
+    text-align: right;
+  }
+
+  td {
+    color: var(--dark);
+    font-family: var(--codeFont);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.dch-caption {
+  @include figure-caption;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dch-band rect,
+  .dch-band line,
+  .dch-probe-drop,
+  .dch-probe-dot {
+    transition: none;
+  }
+}
+
+// The SVG scales with its frame, so on a narrow frame its type grows in user units to stay legible.
+@container dch-figure (max-width: 30rem) {
+  .dch-svg {
+    .dch-tick {
+      font-size: 16px;
+    }
+
+    .dch-axis,
+    .dch-curve-label,
+    .dch-value {
+      font-size: 15px;
+    }
+
+    .dch-sup {
+      font-size: 11px;
+    }
+  }
+
+  .dch-fo {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .data-chart {
+    padding: 1rem 0.75rem;
+  }
+}
