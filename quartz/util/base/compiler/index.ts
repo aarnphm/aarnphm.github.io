@@ -7,6 +7,7 @@ export type { BaseExpressionDiagnostic } from './diagnostics'
 export type { BasesExpressions } from './expressions'
 export type { Instruction, ProgramIR } from './ir'
 export { compileExpression } from './ir'
+export { optimizeFilterExprWithIsop, estimatePredicateCost } from './isop'
 export { buildPropertyExpressionSource } from './properties'
 export type {
   SummaryDefinition,

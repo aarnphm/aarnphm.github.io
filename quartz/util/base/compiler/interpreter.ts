@@ -79,9 +79,12 @@ export type EvalContext = {
 }
 
 const nullValue: NullValue = { kind: 'null' }
+const trueValue: BooleanValue = { kind: 'boolean', value: true }
+const falseValue: BooleanValue = { kind: 'boolean', value: false }
+const emptyValueList: Value[] = []
 
 const makeNull = (): NullValue => nullValue
-const makeBoolean = (value: boolean): BooleanValue => ({ kind: 'boolean', value })
+const makeBoolean = (value: boolean): BooleanValue => (value ? trueValue : falseValue)
 const makeNumber = (value: number): NumberValue => ({ kind: 'number', value })
 const makeString = (value: string): StringValue => ({ kind: 'string', value })
 const makeDate = (value: Date): DateValue => ({ kind: 'date', value })
@@ -652,7 +655,8 @@ const evaluateProgram = (program: ProgramIR, ctx: EvalContext): Value => {
 
   const popValue = (): Value => stack.pop() ?? makeNull()
   const popArgs = (count: number): Value[] => {
-    if (count <= 0) return []
+    if (count <= 0) return emptyValueList
+    if (count === 1) return [stack.pop() ?? makeNull()]
     const start = Math.max(0, stack.length - count)
     return stack.splice(start, stack.length - start)
   }
@@ -664,6 +668,36 @@ const evaluateProgram = (program: ProgramIR, ctx: EvalContext): Value => {
         stack.push(literalToValue(instr.literal))
         break
       case 'ident': {
+        if (instr.name === 'file' && !(ctx.locals && 'file' in ctx.locals)) {
+          const nextInstr = instructions[ip + 1]
+          if (nextInstr?.op === 'member') {
+            stack.push(resolveFileProperty(ctx.file, nextInstr.property, ctx))
+            ip += 2
+            continue
+          }
+          const thirdInstr = instructions[ip + 2]
+          if (
+            nextInstr?.op === 'const' &&
+            nextInstr.literal.kind === 'string' &&
+            thirdInstr?.op === 'call_method' &&
+            thirdInstr.name === 'inFolder' &&
+            thirdInstr.argc === 1
+          ) {
+            const rawFolder = nextInstr.literal.value
+            const folder =
+              rawFolder.startsWith('/') || rawFolder.endsWith('/')
+                ? rawFolder.replace(/^\/+|\/+$/g, '')
+                : rawFolder
+            if (!folder) {
+              stack.push(trueValue)
+            } else {
+              const vp = vaultPath(ctx.file)
+              stack.push(makeBoolean(vp.startsWith(folder) && vp.charCodeAt(folder.length) === 47))
+            }
+            ip += 3
+            continue
+          }
+        }
         if (
           instr.name === 'note' &&
           !(ctx.locals && 'note' in ctx.locals) &&
@@ -1542,9 +1576,14 @@ const evalFileMethod = (
     )
   }
   if (method === 'inFolder') {
-    const folder = (args[0] ? valueToString(args[0]) : '').replace(/^\/+|\/+$/g, '')
+    const rawFolder = args[0] ? valueToString(args[0]) : ''
+    const folder =
+      rawFolder.startsWith('/') || rawFolder.endsWith('/')
+        ? rawFolder.replace(/^\/+|\/+$/g, '')
+        : rawFolder
     if (!folder) return makeBoolean(true)
-    return makeBoolean(vaultPath(file).startsWith(`${folder}/`))
+    const vp = vaultPath(file)
+    return makeBoolean(vp.startsWith(folder) && vp.charCodeAt(folder.length) === 47)
   }
   if (method === 'hasProperty') {
     const prop = args[0] ? valueToString(args[0]) : ''
@@ -1606,8 +1645,13 @@ const resolveFormulaProperty = (name: string, ctx: EvalContext): Value => {
 // Obsidian resolves file.path, folder, name and inFolder() against the vault path. A slug can
 // differ from it: spaces become dashes and a flashcard deck `a/b.fc` publishes at a/b/flashcards.
 const vaultPath = (file: QuartzPluginData): string => {
-  for (const path of [file.relativePath, file.filePath]) {
-    if (typeof path === 'string' && path.length > 0) return path.replace(/^content\//, '')
+  const rel = file.relativePath
+  if (typeof rel === 'string' && rel.length > 0) {
+    return rel.startsWith('content/') ? rel.slice(8) : rel
+  }
+  const fp = file.filePath
+  if (typeof fp === 'string' && fp.length > 0) {
+    return fp.startsWith('content/') ? fp.slice(8) : fp
   }
   return file.slug ? `${String(file.slug)}.md` : ''
 }
@@ -1645,9 +1689,12 @@ const getBacklinksIndex = (allFiles: QuartzPluginData[]): Map<string, string[]> 
 const resolveFileProperty = (file: QuartzPluginData, property: string, ctx: EvalContext): Value => {
   if (property === 'file') return makeFile(file)
   if (property === 'name' || property === 'basename') {
-    const segment = vaultPath(file).split('/').pop() || ''
+    const vp = vaultPath(file)
+    const slash = vp.lastIndexOf('/')
+    const segment = slash >= 0 ? vp.slice(slash + 1) : vp
     if (property === 'name') return makeString(segment)
-    return makeString(segment.replace(/\.[^/.]+$/, ''))
+    const dot = segment.lastIndexOf('.')
+    return makeString(dot > 0 ? segment.slice(0, dot) : dot === 0 ? '' : segment)
   }
   if (property === 'title') {
     const title = typeof file.frontmatter?.title === 'string' ? file.frontmatter.title : ''
@@ -1656,12 +1703,15 @@ const resolveFileProperty = (file: QuartzPluginData, property: string, ctx: Eval
   }
   if (property === 'path') return makeString(vaultPath(file))
   if (property === 'folder') {
-    const parts = vaultPath(file).split('/')
-    return makeString(parts.slice(0, -1).join('/'))
+    const vp = vaultPath(file)
+    const slash = vp.lastIndexOf('/')
+    return makeString(slash >= 0 ? vp.slice(0, slash) : '')
   }
   if (property === 'ext') {
-    const match = vaultPath(file).match(/\.([^./]+)$/)
-    return makeString(match ? match[1] : 'md')
+    const vp = vaultPath(file)
+    const slash = vp.lastIndexOf('/')
+    const dot = vp.lastIndexOf('.')
+    return makeString(dot > slash ? vp.slice(dot + 1) : 'md')
   }
   if (property === 'size') {
     if (isRecord(file) && typeof file.size === 'number') {
