@@ -7,27 +7,20 @@ type Props = { caption?: string }
 type Kind = 'soft' | 'firm' | 'hard'
 
 const PANELS: { kind: Kind; title: string; path: string }[] = [
-  {
-    kind: 'soft',
-    title: 'soft real time',
-    path: 'M 20 30 H 90 L 150 110',
-  },
-  {
-    kind: 'firm',
-    title: 'firm real time',
-    path: 'M 20 30 H 90 V 110',
-  },
-  {
-    kind: 'hard',
-    title: 'hard real time',
-    path: 'M 20 30 H 90 V 150 H 150',
-  },
+  { kind: 'soft', title: 'soft real time', path: 'M 20 30 H 90 L 150 110' },
+  { kind: 'firm', title: 'firm real time', path: 'M 20 30 H 90 V 110' },
+  { kind: 'hard', title: 'hard real time', path: 'M 20 30 H 90 V 150 H 150' },
 ]
 
 const Panel = ({ kind, title, path }: { kind: Kind; title: string; path: string }) => (
   <div class="du-panel" data-du-kind={kind}>
     <p class="du-title">{title}</p>
-    <svg class="du-svg" viewBox="0 0 170 170" role="img" aria-label={`${title} usefulness versus time`}>
+    <svg
+      class="du-svg"
+      viewBox="0 0 170 170"
+      role="img"
+      aria-label={`${title} usefulness versus time`}
+    >
       <line class="du-axis" x1={20} y1={110} x2={155} y2={110} />
       <line class="du-axis" x1={20} y1={110} x2={20} y2={15} />
       <polygon class="du-arrow" points="155,110 147,106 147,114" />

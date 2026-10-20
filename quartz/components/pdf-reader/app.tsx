@@ -125,7 +125,7 @@ function ReaderIndex({ documents }: { documents: IndexDocument[] }) {
       !query || doc.title.toLowerCase().includes(query) || doc.slug.toLowerCase().includes(query),
   )
   return (
-    <div class="pdf-reader-library">
+    <div class="pdf-reader-library" data-keyboard-scroll-scope data-keyboard-scroll>
       <header>
         <h1>reader</h1>
         <p>Open any PDFs to read with annotations.</p>
@@ -966,6 +966,7 @@ function DocumentReader({ data, signal }: { data: DocumentData; signal: AbortSig
     <div
       ref={rootRef}
       class="pdf-reader-app"
+      data-keyboard-scroll-scope
       data-phase={phase}
       data-tool={tool}
       data-view={view}
@@ -1114,6 +1115,7 @@ function DocumentReader({ data, signal }: { data: DocumentData; signal: AbortSig
         <div
           ref={scrollerRef}
           class="pdf-reader-scroller"
+          data-keyboard-scroll
           tabIndex={0}
           aria-label={`${title}, ${pageCount} pages`}
           onPointerDown={onPointerDown}

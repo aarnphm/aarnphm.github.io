@@ -191,13 +191,19 @@ _think of state diagrams, same thing_
 
 ```jsx imports={Zoomable,CfgDiagram}
 <Zoomable label="If-then and if-then-else CFGs">
-  <CfgDiagram pair="branch" caption="If-then skips G1 on the false edge; if-then-else runs G1 or G2." />
+  <CfgDiagram
+    pair="branch"
+    caption="If-then skips G1 on the false edge; if-then-else runs G1 or G2."
+  />
 </Zoomable>
 ```
 
 ```jsx imports={Zoomable,CfgDiagram}
 <Zoomable label="While and sequence CFGs">
-  <CfgDiagram pair="loop" caption="While loops back through COND into G1; sequence is G1 then G2." />
+  <CfgDiagram
+    pair="loop"
+    caption="While loops back through COND into G1; sequence is G1 then G2."
+  />
 </Zoomable>
 ```
 

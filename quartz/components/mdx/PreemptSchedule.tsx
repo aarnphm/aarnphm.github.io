@@ -33,7 +33,13 @@ const PreemptScheduleImpl: QuartzMdxComponent<Props> = ({ caption }) => {
         <text class="ps-axis-label" x={210} y={200} text-anchor="middle">
           Time
         </text>
-        <text class="ps-axis-label" x={14} y={100} text-anchor="middle" transform="rotate(-90 14 100)">
+        <text
+          class="ps-axis-label"
+          x={14}
+          y={100}
+          text-anchor="middle"
+          transform="rotate(-90 14 100)"
+        >
           Task Priority
         </text>
         <text class="ps-tick" x={36} y={154}>

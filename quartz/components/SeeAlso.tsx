@@ -1,7 +1,9 @@
+import type { Element } from 'hast'
 import { Cite } from '@citation-js/core'
 import fs from 'node:fs'
 import path from 'path'
 import { JSX } from 'preact'
+import { EXIT, visit } from 'unist-util-visit'
 import type { FrontmatterLink } from '../plugins/transformers/frontmatter'
 import { extractArxivIdFromCitationEntry } from '../plugins/stores/citations'
 import {
@@ -12,6 +14,7 @@ import {
 import { renderDataFor } from '../util/ctx'
 import { classNames } from '../util/lang'
 import { FullSlug, resolveRelative } from '../util/path'
+import { hasHastClass } from '../util/transclude-props'
 import style from './styles/seealsoTree.scss'
 import '@citation-js/plugin-bibtex'
 
@@ -108,6 +111,7 @@ export default (() => {
     allFiles,
     displayClass,
     ctx,
+    tree,
   }: QuartzComponentProps) => {
     const fmLinks = fileData.frontmatterLinks as Record<string, FrontmatterLink[]> | undefined
 
@@ -250,12 +254,22 @@ export default (() => {
     }
     topLevel.forEach((node, idx) => renderNode(node, idx === topLevel.length - 1, []))
 
+    let hasHeadingRail = false
+    visit(tree, 'element', (node: Element) => {
+      if (hasHastClass(node, 'collapsible-header')) {
+        hasHeadingRail = true
+        return EXIT
+      }
+    })
+
     return (
       <section class={classNames(displayClass, 'seealso-tree', 'main-col')}>
         <div class="seealso-tree-body">
-          <span class="seealso-rail" aria-hidden="true">
-            <span class="seealso-rail-line" />
-          </span>
+          {hasHeadingRail && (
+            <span class="seealso-rail" aria-hidden="true">
+              <span class="seealso-rail-line" />
+            </span>
+          )}
           <div class="seealso-tree-lines">{lines}</div>
         </div>
       </section>

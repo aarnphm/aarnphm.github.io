@@ -7,13 +7,13 @@ description: kafka novel about a land surveyor endlessly blocked by opaque autho
 finished: 2025
 id: The Castle
 language: german
-modified: 2026-06-05 15:08:01 GMT-04:00
+modified: 2026-10-20 16:19:47 GMT-04:00
 posters: '[[library/posters/the-castle.jpg]]'
 status: finished
 subcategory:
   - existentialism
 tags:
-  - phenomenology
+  - r/phenomenology
   - philosophy
 title: The Castle
 year: 1926

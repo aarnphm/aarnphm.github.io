@@ -72,11 +72,7 @@ const MTPModulesImpl: QuartzMdxComponent<Props> = ({ caption, depth = 2 }) => {
               output head
             </div>
             <Arrow />
-            <div
-              class="mtp-block mtp-block--stack"
-              data-mtp-out-h
-              data-mtp-node="transformer"
-            >
+            <div class="mtp-block mtp-block--stack" data-mtp-out-h data-mtp-node="transformer">
               transformer × L
             </div>
             <Arrow />
@@ -115,10 +111,7 @@ const MTPModulesImpl: QuartzMdxComponent<Props> = ({ caption, depth = 2 }) => {
               <div class="mtp-block mtp-block--op" data-mtp-node="loss">
                 cross-entropy
                 <span class="mtp-loss-tag">
-                  <MathText
-                    text={`$\\mathcal{L}_{\\mathrm{MTP}}^{${d}}$`}
-                    mathClass="mtp-math"
-                  />
+                  <MathText text={`$\\mathcal{L}_{\\mathrm{MTP}}^{${d}}$`} mathClass="mtp-math" />
                 </span>
               </div>
               <Arrow />

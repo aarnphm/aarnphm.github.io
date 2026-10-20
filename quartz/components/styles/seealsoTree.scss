@@ -20,8 +20,12 @@
 
   .seealso-tree-body {
     display: grid;
-    grid-template-columns: var(--seealso-tree-rail-width) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
     min-width: 0;
+
+    &:has(> .seealso-rail) {
+      grid-template-columns: var(--seealso-tree-rail-width) minmax(0, 1fr);
+    }
   }
 
   .seealso-rail {

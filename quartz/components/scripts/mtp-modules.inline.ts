@@ -68,10 +68,7 @@ const paint = (root: HTMLElement) => {
     const midX = a.right + Math.max(10, (b.left - a.right) * 0.45)
     const dropY = Math.max(y1, b.bottom + 8)
     const path = document.createElementNS(ns, 'path')
-    path.setAttribute(
-      'd',
-      `M ${x1} ${y1} H ${midX} V ${dropY} H ${x2} V ${y2}`,
-    )
+    path.setAttribute('d', `M ${x1} ${y1} H ${midX} V ${dropY} H ${x2} V ${y2}`)
     path.setAttribute('class', 'mtp-link-causal')
     path.setAttribute('marker-end', `url(#${markerId})`)
     svg.appendChild(path)
