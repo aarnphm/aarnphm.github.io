@@ -701,7 +701,10 @@ async function setPosition(
           padding: 8,
           apply({ availableHeight, elements }) {
             const inner = elements.floating.querySelector<HTMLElement>('.popover-inner')
-            if (inner) inner.style.maxHeight = `min(${Math.floor(availableHeight)}px, 75vh, 30rem)`
+            if (!inner) return
+            // the popover element wraps the inner box with its arrow gutter
+            const gutter = elements.floating.offsetHeight - inner.offsetHeight
+            inner.style.maxHeight = `min(${Math.floor(availableHeight - gutter)}px, 75vh, 30rem)`
           },
         })
       : null,

@@ -7,7 +7,7 @@ aliases:
 date: '2025-08-09'
 description: just another fish in the sea.
 id: dating
-modified: 2026-10-20 00:12:56 GMT-04:00
+modified: 2026-10-20 00:44:43 GMT-04:00
 slides: true
 tags:
   - evergreen
@@ -173,6 +173,7 @@ I have the attention-span of a three-year-old, but an old soul (some said). So I
 
 triathlon
 
+- <div data-triathlon-latest />
 - I'm training for IRONMAN Lanzarote 2027. Feel free to check out progress in [daily stream](https://stream.aarnphm.xyz) or the [feed](https://t.aarnphm.xyz/feed)/[calendar](https://t.aarnphm.xyz/calendar)
 
 </section>

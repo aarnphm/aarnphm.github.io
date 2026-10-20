@@ -119,9 +119,14 @@ blockquote:not([class~='is-collapsed']) {
       text-decoration: underline;
     }
 
+    // Children past the first fall into implicit grid rows below the zero-height box, so a folded
+    // callout clips and hides them; otherwise bordered content (a card) leaks out as a stray line
+    // and folded links stay in the tab order.
     & > .callout-content {
       grid-template-rows: 0fr;
       height: 0;
+      overflow: hidden;
+      visibility: hidden;
     }
   }
 }
