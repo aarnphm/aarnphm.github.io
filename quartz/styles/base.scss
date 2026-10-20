@@ -4,9 +4,10 @@
 @use './syntax.scss';
 @use './callouts.scss';
 @use './transcludes.scss';
-@use './strava-rides.scss';
+@use './strava-activities.scss';
 @use './native-cursor.scss';
 @use '../components/styles/controls.scss';
+@use '../components/styles/selection-toolbar.scss';
 @use './mixin.scss' as *;
 
 html,

@@ -64,7 +64,11 @@ $$
 
 where $L$ is the layer count, $n_{\mathrm{kv}}$ is the number of key-value heads, $d_h$ is the head dimension, $b$ is bytes per stored element, and $s$ is the cached sequence length. The factor $2$ accounts for keys and values.
 
-![[thoughts/images/page_layout_flashinfer.webp|Paged KV layout in FlashInfer]]
+```jsx imports={Zoomable,FlashInferPageLayout}
+<Zoomable label="FlashInfer page layout">
+  <FlashInferPageLayout caption="FlashInfer's paged KV layout for three requests. Physical pages live in a flat pool of size nine with page size eight. Select a request: salmon, sage and ink mark its pages and the query/output segment; the readout shows the matching CSR arrays $\mathrm{kv\_indptr}$, $\mathrm{kv\_page\_indices}$, $\mathrm{kv\_last\_page\_lens}$ and $\mathrm{qo\_indptr}$." />
+</Zoomable>
+```
 
 [^solutions]: [[thoughts/vllm|vLLM]] solved this with [[thoughts/paged attention|PagedAttention]] — treating KV cache like virtual memory, with pages that can be shared, swapped, and freed. It's pretty neat.
 
@@ -82,7 +86,11 @@ Then there is the kernel problem.[^kernel] Deep learning uses dense matrix multi
 
 **A**: Let's trace a request through vLLM, since it's become something of a reference [architecture](https://vllm.ai/blog/anatomy-of-vllm.html).
 
-![[thoughts/images/request-life-in-vllm.webp|A day in life of a request through vLLM]]
+```jsx imports={Zoomable,VllmEngineLayout}
+<Zoomable label="vLLM engine layout">
+  <VllmEngineLayout caption="A request through vLLM's engine core client: the processor feeds the scheduler and model executor; the KV cache manager owns the CPU free-block queue that indexes the GPU paged KV pool." />
+</Zoomable>
+```
 
 Your prompt arrives and gets tokenized. The scheduler looks at current system load and decides whether to process it immediately or queue it. If processing, it needs to allocate KV cache blocks — these are fixed-size chunks of GPU memory managed by the KV manager (that setup metadata to be ingested by the PagedAttention kernels).
 

@@ -938,18 +938,6 @@ body[data-slug='arena/feed'] {
   background-color: var(--text-highlight-bg);
 }
 
-.arena-reader .arena-reader-selection-action {
-  position: fixed;
-  z-index: 20;
-  transform: translateX(-50%);
-  min-height: var(--arena-control-height);
-  padding: 0.3rem 0.6rem;
-  color: var(--light);
-  background: var(--dark);
-  border-color: var(--dark);
-  white-space: nowrap;
-}
-
 .arena-reader-queue-title {
   font-family: var(--bodyFont);
   font-variant-numeric: normal;
