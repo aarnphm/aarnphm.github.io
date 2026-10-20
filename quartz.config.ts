@@ -185,6 +185,7 @@ const config: QuartzConfig = {
             { name: 'course-workspace', entry: 'components/course-workspace/app.tsx' },
             { name: 'course-calendar', entry: 'components/course-calendar/app.tsx' },
             { name: 'base-query', entry: 'components/scripts/base-query.ts' },
+            { name: 'pele', entry: 'components/scripts/pele.client.ts' },
           ],
         }),
         Plugin.Bibliography({ bibliography: './content/References.bib' }),

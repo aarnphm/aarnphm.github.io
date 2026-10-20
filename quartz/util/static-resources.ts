@@ -1,11 +1,12 @@
+import type { ProcessedContent } from '../plugins/vfile'
 import type { BuildCtx } from './ctx'
 import type { StaticResources } from './resources'
 
-export function getStaticResourcesFromPlugins(ctx: BuildCtx) {
+export function getStaticResourcesFromPlugins(ctx: BuildCtx, content?: ProcessedContent[]) {
   const staticResources: StaticResources = { css: [], js: [], additionalHead: [] }
 
   for (const transformer of [...ctx.cfg.plugins.transformers, ...ctx.cfg.plugins.emitters]) {
-    const res = transformer.externalResources ? transformer.externalResources(ctx) : {}
+    const res = transformer.externalResources ? transformer.externalResources(ctx, content) : {}
     if (res?.js) {
       staticResources.js.push(...res.js)
     }

@@ -8,6 +8,7 @@ import { createServer } from 'node:net'
 import path from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
+import { formatQuartzCacheReceipt, parseQuartzCacheReceipt } from '../util/cache-receipts'
 import { COURSE_STUDY_PORT_OFFSET } from '../util/course-study'
 import { parseQuartzDevEvent, splitDevEventLines, type QuartzDevEvent } from '../util/dev-events'
 import {
@@ -760,7 +761,13 @@ function handleWranglerOutput(chunk: Buffer): void {
 }
 
 function handleQuartzLine(line: string): void {
-  const event = parseQuartzDevEvent(stripAnsi(line).trim())
+  const text = stripAnsi(line).trim()
+  const receipt = parseQuartzCacheReceipt(text)
+  if (receipt) {
+    log('main', formatQuartzCacheReceipt(receipt))
+    return
+  }
+  const event = parseQuartzDevEvent(text)
   if (!event) return
   handleQuartzEvent(event)
 }

@@ -4,6 +4,7 @@ import type { Handler, Options as ToHastOptions, State } from 'mdast-util-to-has
 import esbuild from 'esbuild'
 import matter from 'gray-matter'
 import yaml from 'js-yaml'
+import katex from 'katex'
 import { toHast } from 'mdast-util-to-hast'
 import { createHash } from 'node:crypto'
 import fs from 'node:fs/promises'
@@ -313,7 +314,7 @@ const processedContentCache = (globalThis.__quartzProcessedContentCache ??= {
 
 type CachedError = {
   value: Error
-  vfileMessage: boolean
+  kind: 'native' | 'vfile-message' | 'katex-parse-error'
   properties: { key: string; value: unknown; enumerable: boolean }[]
 }
 const vfileMessagePrototype: object | null = Object.getPrototypeOf(new VFile().message(''))
@@ -325,8 +326,23 @@ const errorPrototypes = new Set<unknown>([
   SyntaxError.prototype,
   TypeError.prototype,
   URIError.prototype,
-  vfileMessagePrototype,
 ])
+
+export const PROCESSED_CONTENT_CACHE_VERSION = 2
+export type ProcessedContentSnapshot =
+  | { bytes: Buffer }
+  | { reason: 'unsupported-metadata' | 'serialization-failed'; detail: string }
+
+class UnsupportedCacheMetadata extends Error {
+  constructor(
+    readonly location: string,
+    readonly prototypeName: string,
+  ) {
+    super(
+      `Plugin metadata contains a prototype the parse cache cannot restore at ${location}: ${prototypeName}`,
+    )
+  }
+}
 
 export function resetProcessedContentCache(): void {
   processedContentCache.sourceSalt = undefined
@@ -339,6 +355,7 @@ export function restoreProcessedContentCache(bytes: Uint8Array): boolean {
   const state: unknown = deserialize(bytes)
   if (
     !isRecord(state) ||
+    state.version !== PROCESSED_CONTENT_CACHE_VERSION ||
     typeof state.sourceSalt !== 'string' ||
     !(state.content instanceof Map) ||
     !Array.isArray(state.errors)
@@ -348,7 +365,9 @@ export function restoreProcessedContentCache(bytes: Uint8Array): boolean {
     if (
       !isRecord(error) ||
       !(error.value instanceof Error) ||
-      typeof error.vfileMessage !== 'boolean' ||
+      (error.kind !== 'native' &&
+        error.kind !== 'vfile-message' &&
+        error.kind !== 'katex-parse-error') ||
       !Array.isArray(error.properties)
     )
       return false
@@ -366,7 +385,9 @@ export function restoreProcessedContentCache(bytes: Uint8Array): boolean {
         writable: true,
       })
     }
-    if (error.vfileMessage) Object.setPrototypeOf(error.value, vfileMessagePrototype)
+    if (error.kind === 'vfile-message') Object.setPrototypeOf(error.value, vfileMessagePrototype)
+    if (error.kind === 'katex-parse-error')
+      Object.setPrototypeOf(error.value, katex.ParseError.prototype)
   }
   for (const [fp, entry] of state.content) {
     if (
@@ -391,10 +412,11 @@ export function restoreProcessedContentCache(bytes: Uint8Array): boolean {
   return true
 }
 
-export function snapshotProcessedContentCache(fps: FilePath[]): Buffer | undefined {
+export function snapshotProcessedContentCache(fps: FilePath[]): ProcessedContentSnapshot {
   try {
     const errors: CachedError[] = []
     const snapshot = {
+      version: PROCESSED_CONTENT_CACHE_VERSION,
       sourceSalt: processedContentCache.sourceSalt,
       content: new Map(
         fps.flatMap(fp => {
@@ -404,10 +426,12 @@ export function snapshotProcessedContentCache(fps: FilePath[]): Buffer | undefin
       ),
     }
     assertPersistable(snapshot, new WeakSet(), errors)
-    return serialize({ ...snapshot, errors })
+    return { bytes: serialize({ ...snapshot, errors }) }
   } catch (error) {
     console.warn('Unable to serialize persistent parse cache', error)
-    return undefined
+    return error instanceof UnsupportedCacheMetadata
+      ? { reason: 'unsupported-metadata', detail: `${error.location}: ${error.prototypeName}` }
+      : { reason: 'serialization-failed', detail: 'Unable to encode the processed content graph' }
   }
 }
 
@@ -421,14 +445,22 @@ function assertPersistable(
   seen.add(value)
   const prototype: unknown = Object.getPrototypeOf(value)
   if (ArrayBuffer.isView(value) || value instanceof ArrayBuffer || value instanceof Date) return
-  if (value instanceof Error && errorPrototypes.has(prototype)) {
+  const kind =
+    prototype === vfileMessagePrototype
+      ? 'vfile-message'
+      : prototype === katex.ParseError.prototype
+        ? 'katex-parse-error'
+        : errorPrototypes.has(prototype)
+          ? 'native'
+          : undefined
+  if (value instanceof Error && kind) {
     // V8 retains Error identity and causes, but drops custom diagnostic fields and subclasses.
     const properties: CachedError['properties'] = Object.getOwnPropertyNames(value).map(key => ({
       key,
       value: Reflect.get(value, key),
       enumerable: Object.prototype.propertyIsEnumerable.call(value, key),
     }))
-    errors.push({ value, properties, vfileMessage: prototype === vfileMessagePrototype })
+    errors.push({ value, properties, kind })
     for (const property of properties)
       assertPersistable(property.value, seen, errors, `${location}.${property.key}`)
     return
@@ -441,8 +473,11 @@ function assertPersistable(
     prototype !== Set.prototype &&
     prototype !== VFile.prototype
   )
-    throw new Error(
-      `Plugin metadata contains a prototype the parse cache cannot restore at ${location}: ${isRecord(prototype) && typeof prototype.constructor === 'function' ? prototype.constructor.name : 'unknown'}`,
+    throw new UnsupportedCacheMetadata(
+      location,
+      isRecord(prototype) && typeof prototype.constructor === 'function'
+        ? prototype.constructor.name
+        : 'unknown',
     )
   if (value instanceof Map) {
     for (const [key, item] of value) {

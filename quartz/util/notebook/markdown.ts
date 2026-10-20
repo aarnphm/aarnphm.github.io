@@ -158,6 +158,8 @@ function frontmatter(title: string): string {
   return [
     '---',
     `title: ${JSON.stringify(title)}`,
+    'tags:',
+    '  - notebook',
     'cssclasses:',
     '  - notebook-page',
     'collapseHeadings: false',

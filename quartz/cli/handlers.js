@@ -475,7 +475,7 @@ export async function handleBuild(argv) {
   }
 
   console.log('\n' + styleText(['bgGreen', 'black'], `Quartz v${version}`) + '\n')
-  const ctx = await esbuild.context(createBuildConfig())
+  const ctx = await esbuild.context({ ...createBuildConfig(), write: false })
 
   const buildMutex = new Mutex()
   let activeBuild = null
@@ -498,6 +498,18 @@ export async function handleBuild(argv) {
   const rebuildQuartzBundle = async () => {
     try {
       const result = await ctx.rebuild()
+      for (const output of result.outputFiles) {
+        const unchanged = await promises.readFile(output.path).then(
+          previous => previous.equals(output.contents),
+          error => {
+            if (error.code === 'ENOENT') return false
+            throw error
+          },
+        )
+        if (unchanged) continue
+        await promises.mkdir(path.dirname(output.path), { recursive: true })
+        await promises.writeFile(output.path, output.contents)
+      }
       globalThis.__quartzParseSourceInputs = parseSourceInputs(result.metafile)
       globalThis.__quartzBuildSourceInputs = Object.keys(result.metafile.inputs)
       globalThis.__quartzStravaPayloadSourceInputs = stravaPayloadSourceInputs(result.metafile)

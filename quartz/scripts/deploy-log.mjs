@@ -7,6 +7,7 @@ import path from 'node:path'
 import { performance } from 'node:perf_hooks'
 import { StringDecoder } from 'node:string_decoder'
 import { parseArgs, stripVTControlCharacters } from 'node:util'
+import { parseQuartzCacheReceipt } from '../util/cache-receipts.ts'
 
 const { values, positionals } = parseArgs({
   allowPositionals: true,
@@ -58,6 +59,7 @@ const run = {
   node: process.version,
   deployStages: [],
   quartzStages: [],
+  cacheReceipts: [],
 }
 let tail = ''
 let dirty = false
@@ -75,6 +77,11 @@ const seconds = ms => `${(ms / 1000).toFixed(2)} s`
 const finiteNumber = value => typeof value === 'number' && Number.isFinite(value)
 
 function parseLine(line) {
+  const receipt = parseQuartzCacheReceipt(line)
+  if (receipt) {
+    run.cacheReceipts.push(receipt)
+    return
+  }
   for (const prefix of ['__QUARTZ_DEPLOY_STAGE__', '__QUARTZ_BUILD_STAGE__']) {
     const offset = line.indexOf(prefix)
     if (offset < 0) continue
@@ -136,6 +143,15 @@ function renderReport() {
         `<tr><th scope="row">${escape(stage.stage)}<small>${escape(stage.epoch)}</small></th><td>${seconds(stage.elapsedMs)}</td><td>${stage.atMs === null ? '–' : seconds(stage.atMs)}</td></tr>`,
     )
     .join('')
+  const cacheRows = run.cacheReceipts
+    .map(receipt => {
+      const counts = receipt.counts
+      const work = counts
+        ? `${counts.parsed} parsed · ${counts.rendered} rendered · ${counts.outputWrites} output writes`
+        : '–'
+      return `<tr><th scope="row">${escape(receipt.phase)} / ${escape(receipt.status)}<small>${escape(receipt.epoch)} · ${escape(receipt.profile)}</small></th><td>${escape(receipt.reason)}<small>${escape(receipt.manifestPath)}${receipt.detail ? `<br>${escape(receipt.detail)}` : ''}</small></td><td>${work}</td></tr>`
+    })
+    .join('')
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">${running ? '<meta http-equiv="refresh" content="3">' : ''}<title>deployment report · ${escape(run.status)}</title><style>
 :root{color-scheme:light dark;--light:#fffcf0;--dark:#100f0f;--darkgray:#6f6e69;--line:#e6e4d9;font-family:"PP Neue Montreal",system-ui,sans-serif;color:var(--dark);background:var(--light)}
 @media(prefers-color-scheme:dark){:root{--light:#100f0f;--dark:#cecdc3;--darkgray:#9f9d96;--line:#282726}}
@@ -143,6 +159,7 @@ function renderReport() {
 </style></head><body><main><h1>deployment report</h1><p><strong>${escape(run.status)}</strong>${run.exitCode === null ? ', exit status unknown' : `, exit ${run.exitCode}`}${run.elapsedMs === null ? '' : ` · ${seconds(run.elapsedMs)}`}</p><nav><a href="deploy.log">raw log</a><a href="run.json">timings and metadata</a></nav><dl><dt>${run.sourceLog ? 'imported at' : 'started'}</dt><dd>${escape(run.startedAt)}</dd><dt>${run.sourceLog ? 'ingestion directory' : 'checkout'}</dt><dd>${escape(run.cwd)}</dd><dt>${run.sourceLog ? 'imported from' : 'command'}</dt><dd>${escape(run.sourceLog ?? JSON.stringify(run.command))}</dd></dl>
 ${deployRows ? `<h2>deployment stages</h2><table><thead><tr><th>stage</th><th>status</th><th>elapsed</th></tr></thead><tbody>${deployRows}</tbody></table>` : ''}
 ${quartzRows ? `<h2>Quartz build stages</h2><p class="note">Emitter work can overlap. Stage durations cannot be added to obtain total build time. The JSON preserves CPU and event-loop measurements.</p><table><thead><tr><th>stage / epoch</th><th>elapsed</th><th>process clock</th></tr></thead><tbody>${quartzRows}</tbody></table>` : ''}
+${cacheRows ? `<h2>cache receipts</h2><p class="note">Zero work is reported when the committed output passes validation. Other decisions leave counts unknown. The raw log retains every receipt.</p><table><thead><tr><th>phase / status</th><th>reason / manifest</th><th>work</th></tr></thead><tbody>${cacheRows}</tbody></table>` : ''}
 <h2>log tail</h2><p class="note">The page shows the last 200,000 characters. The raw log keeps the complete output.${running ? ' This page refreshes every three seconds.' : ''}${run.sourceLog ? ' Import time is not deployment time.' : ''}</p><pre>${escape(stripVTControlCharacters(tail))}</pre></main></body></html>`
 }
 

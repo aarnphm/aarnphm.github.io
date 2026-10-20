@@ -19,24 +19,97 @@ import { parseWikilink, resolveWikilinkTarget } from '../../util/wikilinks'
 import { QuartzPluginData } from '../vfile'
 import { write, removeWritten } from './helpers'
 
+const HeaderInputSize = 64 * 1024
 const MaxInputSize = 512 * 1024
+const masonryImageCacheFile = path.join('quartz', '.quartz-cache', 'masonry-image-sizes.json')
+
+type MasonryImageSizeCacheEntry = { mtimeMs: number; size: number; width: number; height: number }
+
+declare global {
+  var __quartzMasonryImageSizeCache: Map<string, MasonryImageSizeCacheEntry> | undefined
+  var __quartzMasonryImageSizeCacheLoaded: boolean | undefined
+}
+
+let masonryCacheDirty = false
+
+async function ensureMasonryImageCache(): Promise<Map<string, MasonryImageSizeCacheEntry>> {
+  const cache = (globalThis.__quartzMasonryImageSizeCache ??= new Map())
+  if (globalThis.__quartzMasonryImageSizeCacheLoaded) return cache
+  globalThis.__quartzMasonryImageSizeCacheLoaded = true
+  try {
+    const raw = JSON.parse(await fs.readFile(masonryImageCacheFile, 'utf8')) as Record<
+      string,
+      MasonryImageSizeCacheEntry
+    >
+    if (raw && typeof raw === 'object') {
+      for (const [key, entry] of Object.entries(raw)) {
+        if (
+          entry &&
+          typeof entry.mtimeMs === 'number' &&
+          typeof entry.size === 'number' &&
+          typeof entry.width === 'number' &&
+          typeof entry.height === 'number'
+        ) {
+          cache.set(key, entry)
+        }
+      }
+    }
+  } catch {}
+  return cache
+}
+
+async function flushMasonryImageCache(): Promise<void> {
+  if (!masonryCacheDirty || !globalThis.__quartzMasonryImageSizeCache) return
+  masonryCacheDirty = false
+  try {
+    await fs.mkdir(path.dirname(masonryImageCacheFile), { recursive: true })
+    const serialized = Object.fromEntries(globalThis.__quartzMasonryImageSizeCache.entries())
+    const temp = `${masonryImageCacheFile}.${process.pid}.${Date.now()}.tmp`
+    await fs.writeFile(temp, JSON.stringify(serialized))
+    await fs.rename(temp, masonryImageCacheFile)
+  } catch {}
+}
 
 async function imageSizeFromFile(filePath: string): Promise<{ width?: number; height?: number }> {
-  let handle: Awaited<ReturnType<typeof fs.open>> | undefined
+  const resolved = path.resolve(filePath)
+  const cache = await ensureMasonryImageCache()
   try {
-    handle = await fs.open(path.resolve(filePath), 'r')
-    const { size } = await handle.stat()
-    if (size <= 0) {
+    const stat = await fs.stat(resolved)
+    if (stat.size <= 0) {
       return { width: undefined, height: undefined }
     }
-    const inputSize = Math.min(size, MaxInputSize)
-    const input = new Uint8Array(inputSize)
-    await handle.read(input, 0, inputSize, 0)
-    return imageSize(input)
+    const cached = cache.get(resolved)
+    if (cached && cached.mtimeMs === stat.mtimeMs && cached.size === stat.size) {
+      return { width: cached.width, height: cached.height }
+    }
+
+    let handle: Awaited<ReturnType<typeof fs.open>> | undefined
+    try {
+      handle = await fs.open(resolved, 'r')
+      const firstSize = Math.min(stat.size, HeaderInputSize)
+      const firstInput = new Uint8Array(firstSize)
+      await handle.read(firstInput, 0, firstSize, 0)
+      let dimensions: { width?: number; height?: number } | undefined
+      try {
+        dimensions = imageSize(firstInput)
+      } catch {}
+      if ((!dimensions?.width || !dimensions?.height) && stat.size > firstSize) {
+        const fullSize = Math.min(stat.size, MaxInputSize)
+        const fullInput = new Uint8Array(fullSize)
+        fullInput.set(firstInput, 0)
+        await handle.read(fullInput, firstSize, fullSize - firstSize, firstSize)
+        dimensions = imageSize(fullInput)
+      }
+      const width = dimensions?.width || 800
+      const height = dimensions?.height || 600
+      cache.set(resolved, { mtimeMs: stat.mtimeMs, size: stat.size, width, height })
+      masonryCacheDirty = true
+      return { width, height }
+    } finally {
+      await handle?.close()
+    }
   } catch {
     return { width: 800, height: 600 }
-  } finally {
-    await handle?.close()
   }
 }
 
@@ -110,6 +183,7 @@ export const Masonry: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts =>
       yield* await mapConcurrent(targets, defaultIoConcurrency, ([tree, file]) =>
         processMasonry(ctx, tree, file, allFiles, opts, resources),
       )
+      await flushMasonryImageCache()
     },
     async *emit(ctx, content, resources) {
       const allFiles = contentDataFor(content)
@@ -117,6 +191,7 @@ export const Masonry: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts =>
       yield* await mapConcurrent(targets, defaultIoConcurrency, ([tree, file]) =>
         processMasonry(ctx, tree, file, allFiles, opts, resources),
       )
+      await flushMasonryImageCache()
     },
   }
 }
@@ -237,34 +312,40 @@ async function processMasonry(
   const currentPageImages = await extractImagesFromTree(tree, ctx.argv.directory)
 
   // extract images from frontmatter masonry references
-  const referencedImages: MasonryImage[] = []
   const masonryRefs = file.data.frontmatter?.masonry as string[] | undefined
+  let allFilesBySlug: Map<string, QuartzPluginData> | undefined
 
-  if (masonryRefs && Array.isArray(masonryRefs)) {
-    for (const ref of masonryRefs) {
-      const parsed = parseWikilink(ref)
-      if (!parsed) continue
+  const referencedImages =
+    masonryRefs && Array.isArray(masonryRefs)
+      ? (
+          await Promise.all(
+            masonryRefs.map(async ref => {
+              const parsed = parseWikilink(ref)
+              if (!parsed) return []
 
-      const targetPath = parsed.target
+              const targetPath = parsed.target
 
-      // try directory extraction first
-      const dirImages = await extractImagesFromDirectory(targetPath, ctx.argv.directory)
-      if (dirImages.length > 0) {
-        referencedImages.push(...dirImages)
-        continue
-      }
+              // try directory extraction first
+              const dirImages = await extractImagesFromDirectory(targetPath, ctx.argv.directory)
+              if (dirImages.length > 0) {
+                return dirImages
+              }
 
-      // fall back to file reference
-      const resolved = resolveWikilinkTarget(parsed, slug)
-      if (!resolved) continue
+              // fall back to file reference
+              const resolved = resolveWikilinkTarget(parsed, slug)
+              if (!resolved) return []
 
-      const referencedFile = allFiles.find(f => f.slug === resolved.slug)
-      if (!referencedFile?.tree || !isHastNode(referencedFile.tree)) continue
+              allFilesBySlug ??= new Map(
+                allFiles.filter(f => f.slug).map(f => [f.slug!, f] as const),
+              )
+              const referencedFile = allFilesBySlug.get(resolved.slug)
+              if (!referencedFile?.tree || !isHastNode(referencedFile.tree)) return []
 
-      const refImages = await extractImagesFromTree(referencedFile.tree, ctx.argv.directory)
-      referencedImages.push(...refImages)
-    }
-  }
+              return extractImagesFromTree(referencedFile.tree, ctx.argv.directory)
+            }),
+          )
+        ).flat()
+      : []
 
   // combine and deduplicate images
   const allImages = deduplicateImages([...currentPageImages, ...referencedImages])

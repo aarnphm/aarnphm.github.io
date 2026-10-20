@@ -3,15 +3,21 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import { z } from 'zod'
 import type { BuildCtx } from './ctx'
-import { restoreProcessedContentCache } from '../processors/parse'
+import {
+  PROCESSED_CONTENT_CACHE_VERSION,
+  restoreProcessedContentCache,
+  type ProcessedContentSnapshot,
+} from '../processors/parse'
 import { defaultIoConcurrency, mapConcurrent } from './async-pool'
+import { emitQuartzCacheReceipt, type QuartzCacheReceipt } from './cache-receipts'
+import { isRecord } from './type-guards'
 
 declare global {
   var __quartzBuildSourceInputs: string[] | undefined
 }
 
 const schema = z.object({
-  version: z.literal(1),
+  version: z.literal(PROCESSED_CONTENT_CACHE_VERSION),
   inputs: z.string(),
   content: z.string(),
   parseIdentity: z.string(),
@@ -39,6 +45,26 @@ const cacheDirectory = (ctx: BuildCtx): string =>
     '.quartz-cache',
     `build-${hash(JSON.stringify([process.cwd(), path.resolve(ctx.argv.directory), path.resolve(ctx.argv.output)])).slice(0, 20)}`,
   )
+
+function receipt(
+  ctx: BuildCtx,
+  decision: Omit<QuartzCacheReceipt, 'epoch' | 'profile' | 'manifestPath'>,
+): void {
+  emitQuartzCacheReceipt({
+    epoch: ctx.buildId,
+    profile: ctx.argv.watch
+      ? 'watch'
+      : process.env.NODE_ENV === 'production'
+        ? 'production'
+        : 'build',
+    manifestPath: path.join(cacheDirectory(ctx), 'manifest.json'),
+    ...decision,
+  })
+}
+
+function missing(error: unknown): boolean {
+  return isRecord(error) && error.code === 'ENOENT'
+}
 
 async function signature(filename: string): Promise<string> {
   return fs.stat(filename, { bigint: true }).then(
@@ -82,16 +108,27 @@ async function fingerprint(files: string[]): Promise<string> {
 // Generated runtime artifacts are outputs. Provider caches remain inputs, including newly added
 // provider directories. A cache produced during a build delays admission until inputs stabilize.
 const generatedCache = (relative: string): boolean =>
-  /^(?:transpiled-|output-assets\.json$|pdf-documents\.json$|triathlon\/data\.jsonl$|notebook-pages(?:\/|$)|notebook-assets(?:\/|$)|fonts(?:\/|$)|tikz(?:\/|$)|bookcase-covers(?:\/|$)|og-images(?:\/|$)|twitter-posts(?:\/|$)|citations\.json$)/.test(
+  /^(?:transpiled-|output-assets\.json$|pdf-documents\.json$|masonry-image-sizes\.json(?:$|\.\d+\.\d+\.tmp$)|triathlon\/data\.jsonl$|notebook-pages(?:\/|$)|notebook-assets(?:\/|$)|fonts(?:\/|$)|tikz(?:\/|$)|bookcase-covers(?:\/|$)|og-images(?:\/|$)|twitter-posts(?:\/|$)|citations\.json$)/.test(
     relative,
   )
 
 export async function captureBuildInputs(ctx: BuildCtx): Promise<BuildInputs | undefined> {
-  if (!ctx.argv.watch || ctx.argv.force || !globalThis.__quartzParseSourceInputs) return undefined
+  const reason = !ctx.argv.watch
+    ? 'non-watch'
+    : ctx.argv.force
+      ? 'forced'
+      : !globalThis.__quartzParseSourceInputs
+        ? 'missing-parser-inputs'
+        : undefined
+  if (reason) {
+    receipt(ctx, { phase: 'inputs', status: 'disabled', reason })
+    return undefined
+  }
   try {
     return await buildInputs(ctx)
   } catch (error) {
     console.warn('Unable to fingerprint persistent build inputs', error)
+    receipt(ctx, { phase: 'inputs', status: 'disabled', reason: 'inputs-unavailable' })
     return undefined
   }
 }
@@ -106,7 +143,7 @@ async function buildInputs(ctx: BuildCtx): Promise<BuildInputs> {
     plugin => plugin.fileDependencies?.(ctx) ?? [],
   )
   const common = JSON.stringify([
-    1,
+    PROCESSED_CONTENT_CACHE_VERSION,
     process.versions.node,
     process.versions.v8,
     process.platform,
@@ -188,21 +225,33 @@ export async function commitResourceBuildCache(
   inputs: BuildInputs | undefined,
   previous: Manifest | undefined,
 ): Promise<void> {
-  if (!inputs || !previous) return
+  if (!inputs) return
+  if (!previous) {
+    receipt(ctx, { phase: 'admission', status: 'skipped', reason: 'checkpoint-changed' })
+    return
+  }
   try {
     const after = await captureBuildInputs(ctx)
-    if (after?.inputs !== inputs.inputs) return
+    if (after?.inputs !== inputs.inputs) {
+      receipt(ctx, { phase: 'admission', status: 'skipped', reason: 'inputs-unstable' })
+      return
+    }
     const directory = cacheDirectory(ctx)
     const current = schema.parse(
       JSON.parse(await fs.readFile(path.join(directory, 'manifest.json'), 'utf8')),
     )
-    if (current.blob !== previous.blob || current.inputs !== previous.inputs) return
+    if (current.blob !== previous.blob || current.inputs !== previous.inputs) {
+      receipt(ctx, { phase: 'admission', status: 'skipped', reason: 'checkpoint-changed' })
+      return
+    }
     const manifest: Manifest = { ...previous, ...inputs, outputs: await outputFingerprint(ctx) }
     const temporary = path.join(directory, `manifest-${randomUUID()}.tmp`)
     await fs.writeFile(temporary, JSON.stringify(manifest), { flag: 'wx' })
     await fs.rename(temporary, path.join(directory, 'manifest.json'))
+    receipt(ctx, { phase: 'admission', status: 'saved', reason: 'resources-updated' })
   } catch (error) {
     console.warn('Unable to update persistent resource checkpoint', error)
+    receipt(ctx, { phase: 'admission', status: 'skipped', reason: 'unavailable' })
   }
 }
 
@@ -223,34 +272,105 @@ export async function restoreBuildCache(
   inputs: BuildInputs | undefined,
 ): Promise<{ unchanged: boolean; published: string[] } | undefined> {
   if (!inputs) return undefined
+  const directory = cacheDirectory(ctx)
+  let raw: unknown
   try {
-    const directory = cacheDirectory(ctx)
-    const manifest = schema.parse(
-      JSON.parse(await fs.readFile(path.join(directory, 'manifest.json'), 'utf8')),
-    )
-    if (manifest.parseIdentity !== inputs.parseIdentity) return undefined
-    const bytes = await fs.readFile(path.join(directory, manifest.blob))
-    if (hash(bytes) !== manifest.digest || !restoreProcessedContentCache(bytes)) return undefined
-    const unchanged =
-      manifest.inputs === inputs.inputs && manifest.outputs === (await outputFingerprint(ctx))
-    return { unchanged, published: manifest.published }
-  } catch {
-    // Persistence is an optimization. An incomplete or incompatible generation uses the normal build.
+    raw = JSON.parse(await fs.readFile(path.join(directory, 'manifest.json'), 'utf8'))
+  } catch (error) {
+    receipt(ctx, {
+      phase: 'restore',
+      status: 'miss',
+      reason: missing(error)
+        ? 'missing-manifest'
+        : error instanceof SyntaxError
+          ? 'corrupt-manifest'
+          : 'unavailable',
+    })
     return undefined
   }
+  const decoded = schema.safeParse(raw)
+  if (!decoded.success) {
+    receipt(ctx, {
+      phase: 'restore',
+      status: 'miss',
+      reason:
+        isRecord(raw) && raw.version !== PROCESSED_CONTENT_CACHE_VERSION
+          ? 'incompatible-manifest'
+          : 'corrupt-manifest',
+    })
+    return undefined
+  }
+  const manifest = decoded.data
+  if (manifest.parseIdentity !== inputs.parseIdentity) {
+    receipt(ctx, { phase: 'restore', status: 'miss', reason: 'parse-inputs-changed' })
+    return undefined
+  }
+  try {
+    const bytes = await fs.readFile(path.join(directory, manifest.blob))
+    if (hash(bytes) !== manifest.digest || !restoreProcessedContentCache(bytes)) {
+      receipt(ctx, { phase: 'restore', status: 'miss', reason: 'corrupt-snapshot' })
+      return undefined
+    }
+  } catch (error) {
+    receipt(ctx, {
+      phase: 'restore',
+      status: 'miss',
+      reason: missing(error)
+        ? 'missing-snapshot'
+        : isRecord(error) && error.code === 'EACCES'
+          ? 'unavailable'
+          : 'corrupt-snapshot',
+    })
+    return undefined
+  }
+  const sameInputs = manifest.inputs === inputs.inputs
+  const sameOutputs =
+    sameInputs &&
+    (await outputFingerprint(ctx).then(
+      value => value === manifest.outputs,
+      () => false,
+    ))
+  const unchanged = sameInputs && sameOutputs
+  receipt(
+    ctx,
+    unchanged
+      ? {
+          phase: 'restore',
+          status: 'output-hit',
+          reason: 'unchanged',
+          counts: { parsed: 0, rendered: 0, outputWrites: 0 },
+        }
+      : {
+          phase: 'restore',
+          status: 'parse-hit',
+          reason: sameInputs ? 'output-changed' : 'build-inputs-changed',
+        },
+  )
+  return { unchanged, published: manifest.published }
 }
 
 export async function commitBuildCache(
   ctx: BuildCtx,
   inputs: BuildInputs | undefined,
-  bytes: Buffer | undefined,
+  snapshot: ProcessedContentSnapshot | undefined,
   published: string[],
 ): Promise<void> {
-  if (!inputs || !bytes) return
+  if (!inputs) return
+  if (!snapshot || !('bytes' in snapshot)) {
+    receipt(ctx, {
+      phase: 'admission',
+      status: 'skipped',
+      reason: snapshot?.reason ?? 'missing-snapshot-result',
+      detail: snapshot?.detail,
+    })
+    return
+  }
+  const { bytes } = snapshot
   try {
     const after = await captureBuildInputs(ctx)
     if (inputs.inputs !== after?.inputs || inputs.parseIdentity !== after.parseIdentity) {
       console.log('Persistent build cache skipped: inputs changed during the build')
+      receipt(ctx, { phase: 'admission', status: 'skipped', reason: 'inputs-unstable' })
       return
     }
     const directory = cacheDirectory(ctx)
@@ -263,7 +383,7 @@ export async function commitBuildCache(
       .catch(() => undefined)
     const blob = `parse-${randomUUID()}.bin`
     const manifest: Manifest = {
-      version: 1,
+      version: PROCESSED_CONTENT_CACHE_VERSION,
       ...inputs,
       published,
       outputs: await outputFingerprint(ctx),
@@ -276,9 +396,14 @@ export async function commitBuildCache(
     await fs.writeFile(temporary, JSON.stringify(manifest), { flag: 'wx' })
     await fs.rename(temporary, path.join(directory, 'manifest.json'))
     // Only immutable, superseded parse generations in this build's own directory are disposable.
-    if (previous?.success && previous.data.blob !== blob)
-      await fs.rm(path.join(directory, previous.data.blob), { force: true })
+    if (previous?.success && previous.data.blob !== blob) {
+      await fs.rm(path.join(directory, previous.data.blob), { force: true }).catch(error => {
+        console.warn('Unable to remove superseded parse cache', error)
+      })
+    }
+    receipt(ctx, { phase: 'admission', status: 'saved', reason: 'published' })
   } catch (error) {
     console.warn('Unable to save persistent build cache', error)
+    receipt(ctx, { phase: 'admission', status: 'skipped', reason: 'unavailable' })
   }
 }

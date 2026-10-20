@@ -108,7 +108,7 @@ export async function emitPartialEmitter(
   }
   const perf = new PerfTimer()
   const log = new QuartzLogger(ctx.argv.verbose)
-  const staticResources = getStaticResourcesFromPlugins(ctx)
+  const staticResources = getStaticResourcesFromPlugins(ctx, content)
   log.start(``)
   // Without change events the emitter regenerates everything it owns.
   const emittedFiles = changeEvents
@@ -226,7 +226,7 @@ export async function emitContent(
 
   let emittedFiles = 0
   const failures: unknown[] = []
-  const staticResources = getStaticResourcesFromPlugins(ctx)
+  const staticResources = getStaticResourcesFromPlugins(ctx, content)
   const componentResources = cfg.plugins.emitters.find(
     emitter => emitter.name === 'ComponentResources',
   )

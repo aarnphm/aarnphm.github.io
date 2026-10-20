@@ -1,4 +1,5 @@
 import type { Element, Root as HtmlRoot } from 'hast'
+import matter from 'gray-matter'
 import assert from 'node:assert'
 import test, { describe } from 'node:test'
 import rehypeRaw from 'rehype-raw'
@@ -8,7 +9,12 @@ import { unified } from 'unified'
 import type { FullSlug } from '../path'
 import { unsupportedNotebookRuntimeReason } from '../../runtime/python/can-execute'
 import { notebookCellLanguageBadge } from './cell-html'
-import { notebookRuntimeData, notebookToMarkdown, notebookToMarkdownChunks } from './markdown'
+import {
+  type NotebookMarkdownOptions,
+  notebookRuntimeData,
+  notebookToMarkdown,
+  notebookToMarkdownChunks,
+} from './markdown'
 import { parseNotebookDoc } from './parse'
 import { renderRuntimeOutputHtml } from './render/runtime-output-to-hast'
 import {
@@ -76,6 +82,24 @@ async function parseHtmlFragment(value: string): Promise<HastElement> {
 }
 
 describe('notebook parser', () => {
+  test('tags generated notebook pages in static and interactive exports', () => {
+    const modes: NotebookMarkdownOptions[] = [{ runtime: false }, { runtime: { enabled: true } }]
+    for (const cells of [
+      [],
+      [{ cell_type: 'markdown', source: '# Notebook\n\nbody' }],
+      [{ cell_type: 'code', source: 'print("hi")', outputs: [] }],
+    ]) {
+      const notebook = parseNotebook(
+        JSON.stringify({ metadata: { language_info: { name: 'python' } }, cells }),
+        'notes/example.ipynb',
+      )
+      for (const options of modes) {
+        const markdown = notebookToMarkdown(notebook, 'notes/example.ipynb', options)
+        assert.deepStrictEqual(matter(markdown).data.tags, ['notebook'])
+      }
+    }
+  })
+
   test('converts markdown and code cells into quartz markdown', () => {
     const notebook = parseNotebook(
       JSON.stringify({

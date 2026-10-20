@@ -13,7 +13,10 @@ export interface PluginTypes {
 }
 
 type OptionType = object | undefined
-type ExternalResourcesFn = (ctx: BuildCtx) => Partial<StaticResources> | undefined
+type ExternalResourcesFn = (
+  ctx: BuildCtx,
+  content?: ProcessedContent[],
+) => Partial<StaticResources> | undefined
 export type QuartzTransformerPlugin<Options extends OptionType = undefined> = (
   opts?: Options,
 ) => QuartzTransformerPluginInstance

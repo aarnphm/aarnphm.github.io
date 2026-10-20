@@ -4,6 +4,7 @@ import type {
   QuartzTransformerPluginInstance,
 } from '../types/plugin'
 import type { BuildCtx } from '../util/ctx'
+import type { ProcessedContent } from './vfile'
 import { isDevelopmentBuild } from '../util/build-mode'
 
 type QuartzPluginInstance =
@@ -50,8 +51,10 @@ function wrapPlugin<P extends QuartzPluginInstance>(plugin: P, fallback?: P): P 
     fallback && 'externalResources' in fallback ? fallback.externalResources : undefined
   const externalResources =
     resources || fallbackResources
-      ? (ctx: BuildCtx) =>
-          enabled(ctx) ? resources?.call(plugin, ctx) : fallbackResources?.call(fallback, ctx)
+      ? (ctx: BuildCtx, content?: ProcessedContent[]) =>
+          enabled(ctx)
+            ? resources?.call(plugin, ctx, content)
+            : fallbackResources?.call(fallback, ctx, content)
       : undefined
 
   if (isEmitter(plugin)) {
