@@ -3,6 +3,8 @@ date: '2024-04-03'
 description: space of a model's latent variables or internal representations, whose geometry depends on the training objective and chosen coordinates.
 id: latent space
 modified: 2026-10-08 09:07:14 GMT-04:00
+seealso:
+  - '[[thoughts/Embedding]]'
 tags:
   - seed
   - ml
@@ -31,5 +33,3 @@ $$
 The reconstructed inputs are identical because $\tilde{g}(\tilde{f}(x))=g(f(x))$. Ordinary Euclidean distances between codes have changed: a difference along the first coordinate now contributes $10^4$ times as much to squared distance. The reconstruction objective cannot distinguish these two arrangements.
 
 This matters when inspecting a cluster or interpolating between codes. A useful neighborhood has to be established for the task and metric being used. Low dimensionality alone gives no assurance that a straight path through the codes will decode into plausible inputs, or that changing one coordinate will isolate one feature.
-
-see also [[thoughts/Embedding]]

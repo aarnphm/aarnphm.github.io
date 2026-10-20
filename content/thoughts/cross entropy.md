@@ -3,13 +3,18 @@ date: '2025-09-14'
 description: criterion for finding difference between input logits and targets.
 id: cross entropy
 modified: 2026-06-05 15:08:26 GMT-04:00
+seealso:
+  - '[[thoughts/Entropy]]'
+  - '[[thoughts/Kullback-Leibler divergence]]'
+  - '[[thoughts/Maximum likelihood estimation]]'
+  - '[[thoughts/Logistic regression]]'
+  - '[[thoughts/Negative log-likelihood]]'
+  - '[[thoughts/Perplexity]]'
 tags:
   - ml
   - probability
 title: cross entropy
 ---
-
-see also: [[thoughts/Entropy]], [[thoughts/Kullback-Leibler divergence]], [[thoughts/Maximum likelihood estimation]], [[thoughts/Logistic regression]], [[thoughts/Negative log-likelihood]] · [[thoughts/Perplexity]]
 
 measures how well a predictive distribution $q(y\mid x)$ matches the true distribution $p(y\mid x)$.
 

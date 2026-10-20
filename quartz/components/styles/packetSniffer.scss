@@ -1,0 +1,96 @@
+@use '../../styles/variables.scss' as *;
+@use './figure.scss' as *;
+
+.packet-sniffer {
+  @include figure-frame('psn-figure', 28rem);
+
+  --psn-lit: color-mix(in srgb, var(--fig-salmon) 55%, var(--light));
+  --psn-sniff: color-mix(in srgb, var(--lightgray) 35%, var(--light));
+}
+
+:root[saved-theme='dark'] .packet-sniffer {
+  --psn-lit: color-mix(in srgb, var(--fig-salmon) 32%, var(--lightgray));
+  --psn-sniff: color-mix(in srgb, var(--gray) 40%, var(--lightgray));
+}
+
+.psn-svg {
+  display: block;
+  width: 100%;
+  max-width: 40rem;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+.psn-frame {
+  fill: var(--fig-surface);
+  stroke: var(--fig-frame-border);
+  stroke-width: 1;
+}
+
+.psn-div {
+  stroke: var(--fig-stroke-soft);
+  stroke-width: 1;
+}
+
+.psn-sniff {
+  fill: var(--psn-sniff);
+  stroke: var(--fig-stroke);
+  stroke-width: 1;
+}
+
+.psn-box {
+  fill: var(--light);
+  stroke: var(--dark);
+  stroke-width: 1;
+}
+
+.psn-box--lit {
+  fill: var(--psn-lit);
+}
+
+.psn-edge {
+  fill: none;
+  stroke: var(--fig-stroke);
+  stroke-width: 1.2;
+}
+
+.psn-edge--strong {
+  stroke: var(--dark);
+  stroke-width: 1.5;
+}
+
+.psn-edge--tap {
+  stroke: var(--dark);
+  stroke-width: 1.4;
+}
+
+.psn-arrowhead {
+  fill: var(--dark);
+}
+
+.psn-tier {
+  fill: var(--fig-note);
+  font-family: var(--bodyFont);
+  font-size: 12px;
+}
+
+.psn-label {
+  fill: var(--dark);
+  font-family: var(--codeFont);
+  font-size: 11px;
+}
+
+.psn-sub,
+.psn-tap {
+  fill: var(--fig-note);
+  font-family: var(--codeFont);
+  font-size: 10px;
+}
+
+.psn-math {
+  @include figure-inline-math;
+}
+
+.psn-caption {
+  @include figure-caption;
+}

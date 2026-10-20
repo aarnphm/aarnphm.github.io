@@ -1,0 +1,169 @@
+@use '../../styles/variables.scss' as *;
+@use './figure.scss' as *;
+
+.vllm-engine-layout {
+  @include figure-frame('vel-figure', 30rem);
+
+  --vel-exec: color-mix(in srgb, var(--fig-sage) 40%, var(--light));
+  --vel-sched: color-mix(in srgb, var(--darkgray) 16%, var(--light));
+  --vel-lit: color-mix(in srgb, var(--fig-salmon) 55%, var(--light));
+  --vel-band: color-mix(in srgb, var(--lightgray) 28%, var(--light));
+}
+
+:root[saved-theme='dark'] .vllm-engine-layout {
+  --vel-exec: color-mix(in srgb, var(--fig-sage) 24%, var(--lightgray));
+  --vel-sched: color-mix(in srgb, var(--gray) 45%, var(--lightgray));
+  --vel-lit: color-mix(in srgb, var(--fig-salmon) 34%, var(--lightgray));
+  --vel-band: color-mix(in srgb, var(--gray) 35%, var(--lightgray));
+}
+
+.vel-client,
+.vel-band {
+  padding: 0.75rem;
+  border: 1px solid var(--fig-frame-border);
+  background: var(--fig-surface);
+}
+
+.vel-client + .vel-band,
+.vel-band + .vel-band {
+  margin-top: 0.65rem;
+}
+
+.vel-band--cpu,
+.vel-band--gpu {
+  background: var(--vel-band);
+}
+
+.vel-title {
+  margin: 0;
+  color: var(--dark);
+  font-family: var(--headerFont);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.vel-band-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-bottom: 0.55rem;
+}
+
+.vel-where {
+  color: var(--fig-note);
+  font-family: var(--codeFont);
+  font-size: 0.7rem;
+}
+
+.vel-flow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: stretch;
+  margin-top: 0.65rem;
+}
+
+.vel-chip,
+.vel-box,
+.vel-mini,
+.vel-block,
+.vel-phys {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem 0.55rem;
+  border: 1px solid var(--fig-stroke);
+  color: var(--dark);
+  font-family: var(--codeFont);
+  font-size: 0.68rem;
+  text-align: center;
+}
+
+.vel-chip {
+  background: var(--light);
+  color: var(--fig-note);
+}
+
+.vel-box {
+  background: var(--light);
+}
+
+.vel-box--exec {
+  background: var(--vel-exec);
+}
+
+.vel-box--sched {
+  background: var(--vel-sched);
+  width: 100%;
+}
+
+.vel-core {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 11rem;
+  padding: 0.45rem;
+  border: 1px solid var(--dark);
+  background: var(--light);
+}
+
+.vel-sched {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.vel-queues {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.3rem;
+}
+
+.vel-mini {
+  background: var(--light);
+  min-height: 2rem;
+}
+
+.vel-mini--lit {
+  background: var(--vel-lit);
+}
+
+.vel-index {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  align-items: center;
+}
+
+.vel-queue,
+.vel-pool {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.vel-block {
+  background: color-mix(in srgb, var(--fig-salmon) 28%, var(--light));
+  min-width: 3.2rem;
+}
+
+.vel-phys {
+  background: var(--light);
+  min-width: 3.2rem;
+}
+
+.vel-note {
+  margin: 0 0 0.45rem;
+  color: var(--fig-note);
+  font-family: var(--codeFont);
+  font-size: 0.7rem;
+}
+
+.vel-math {
+  @include figure-inline-math;
+}
+
+.vel-caption {
+  @include figure-caption;
+}

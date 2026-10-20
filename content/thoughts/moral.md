@@ -3,12 +3,12 @@ date: '2024-02-07'
 description: reasons for moral judgments, three approaches to normative ethics, and the separate questions of moral truth and knowledge.
 id: moral
 modified: 2026-10-16 09:01:01 GMT-04:00
+seealso:
+  - '[[thoughts/Value|Value]]'
 tags:
   - philosophy
 title: Moral
 ---
-
-See also: [[thoughts/Value|Value]]
 
 > [!important] Justification
 >

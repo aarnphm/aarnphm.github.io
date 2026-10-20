@@ -37,9 +37,11 @@ _Notes on [Anthropic's Responsible Scaling Policy v2.0](https://www-cdn.anthropi
 
 This version links capability thresholds to required safeguards. Deployment standards address dangerous use; security standards address theft or compromise of the model and its weights. An AI Safety Level specifies protections to apply as capabilities increase. Later versions are listed in [Anthropic's policy archive](https://www.anthropic.com/responsible-scaling-policy).
 
-![[thoughts/images/alignment-asl-scale.webp]]
-
-_Historical ASL overview. "Present large models" refers to the period when the diagram was made._
+```jsx imports={Zoomable,SafetyLevels}
+<Zoomable label="AI safety levels">
+  <SafetyLevels caption="Historical ASL overview from Anthropic's Responsible Scaling Policy. ASL-2's 'present large models' names the period when the diagram was made; later cards mark higher capability and the matching security and safety measures." />
+</Zoomable>
+```
 
 ## trustworthy and untrustworthy models
 

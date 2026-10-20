@@ -1,0 +1,87 @@
+@use '../../styles/variables.scss' as *;
+@use './figure.scss' as *;
+
+.thread-address-space {
+  @include figure-frame('tas-figure', 28rem);
+
+  --tas-shared: color-mix(in srgb, var(--fig-sage) 40%, var(--light));
+  --tas-private: color-mix(in srgb, var(--fig-salmon) 42%, var(--light));
+  --tas-view: color-mix(in srgb, var(--lightgray) 35%, var(--light));
+}
+
+:root[saved-theme='dark'] .thread-address-space {
+  --tas-shared: color-mix(in srgb, var(--fig-sage) 24%, var(--lightgray));
+  --tas-private: color-mix(in srgb, var(--fig-salmon) 26%, var(--lightgray));
+  --tas-view: color-mix(in srgb, var(--gray) 28%, var(--lightgray));
+}
+
+.tas-svg {
+  display: block;
+  width: 100%;
+  max-width: 42rem;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+.tas-frame {
+  fill: var(--fig-surface);
+  stroke: var(--fig-frame-border);
+  stroke-width: 1;
+}
+
+.tas-frame--thread {
+  fill: transparent;
+}
+
+.tas-cell {
+  stroke: var(--dark);
+  stroke-width: 1;
+}
+
+.tas-cell--shared {
+  fill: var(--tas-shared);
+}
+
+.tas-cell--private {
+  fill: var(--tas-private);
+}
+
+.tas-cell--view {
+  fill: var(--tas-view);
+  stroke: var(--fig-stroke-soft);
+}
+
+.tas-edge {
+  fill: none;
+  stroke: var(--fig-stroke);
+  stroke-width: 1.1;
+}
+
+.tas-edge--private {
+  stroke: var(--dark);
+  stroke-width: 1.35;
+}
+
+.tas-arrowhead {
+  fill: var(--dark);
+}
+
+.tas-title {
+  fill: var(--fig-note);
+  font-family: var(--bodyFont);
+  font-size: 11px;
+}
+
+.tas-label {
+  fill: var(--dark);
+  font-family: var(--codeFont);
+  font-size: 10px;
+}
+
+.tas-caption {
+  @include figure-caption;
+}
+
+.tas-math {
+  @include figure-inline-math;
+}

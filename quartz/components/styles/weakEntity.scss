@@ -1,0 +1,100 @@
+@use '../../styles/variables.scss' as *;
+@use './figure.scss' as *;
+
+.weak-entity {
+  @include figure-frame('we-figure', 24rem);
+
+  --we-entity: color-mix(in srgb, var(--fig-salmon) 36%, var(--light));
+  --we-rel: color-mix(in srgb, var(--fig-sage) 40%, var(--light));
+  --we-attr: color-mix(in srgb, var(--lightgray) 55%, var(--light));
+}
+
+:root[saved-theme='dark'] .weak-entity {
+  --we-entity: color-mix(in srgb, var(--fig-salmon) 22%, var(--lightgray));
+  --we-rel: color-mix(in srgb, var(--fig-sage) 22%, var(--lightgray));
+  --we-attr: color-mix(in srgb, var(--gray) 30%, var(--lightgray));
+}
+
+.we-svg {
+  display: block;
+  width: 100%;
+  max-width: 42rem;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+.we-entity {
+  fill: var(--we-entity);
+  stroke: var(--dark);
+  stroke-width: 1.2;
+}
+
+.we-entity--weak-outer {
+  fill: none;
+  stroke: var(--dark);
+  stroke-width: 1.2;
+}
+
+.we-entity--weak {
+  fill: var(--we-entity);
+}
+
+.we-rel {
+  fill: var(--we-rel);
+  stroke: var(--dark);
+  stroke-width: 1.1;
+}
+
+.we-rel--outer {
+  fill: none;
+  stroke: var(--dark);
+  stroke-width: 1.1;
+}
+
+.we-attr {
+  fill: var(--we-attr);
+  stroke: var(--dark);
+  stroke-width: 1;
+}
+
+.we-attr--key {
+  stroke-width: 1.4;
+}
+
+.we-edge {
+  stroke: var(--fig-stroke);
+  stroke-width: 1.2;
+  fill: none;
+}
+
+.we-edge--soft {
+  stroke: var(--fig-stroke-soft);
+}
+
+.we-arrowhead {
+  fill: var(--dark);
+}
+
+.we-label {
+  fill: var(--dark);
+  font-family: var(--bodyFont);
+  font-size: 12px;
+}
+
+.we-label--key {
+  text-decoration: underline;
+}
+
+.we-note {
+  fill: var(--fig-note);
+  font-family: var(--bodyFont);
+  font-size: 11px;
+}
+
+.we-caption {
+  @include figure-caption;
+}
+
+.we-math {
+  @include figure-inline-math;
+}

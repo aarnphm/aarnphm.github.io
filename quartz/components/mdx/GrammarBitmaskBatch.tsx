@@ -94,13 +94,15 @@ const STRIP_X = 148
 const BIN_W = 2.8
 const STRIP_W = BINS * BIN_W
 const COUNT_X = W - 8
-const ROW_Y0 = 40
+const TITLE_Y = 16
+const HEAD_Y = 42
+const ROW_Y0 = 54
 const ROW_PITCH = 24
 const ROW_H = 14
 const SCHED = { x: 0, y: 0, w: W, h: ROW_Y0 + REQUESTS.length * ROW_PITCH + 4 }
 const BUS_Y = SCHED.h + 40
 const WORKER_Y = BUS_Y + 26
-const WORKER_H = 92
+const WORKER_H = 104
 const H = WORKER_Y + WORKER_H + 2
 const RETURN_X = 18
 
@@ -176,16 +178,16 @@ const GrammarBitmaskBatchImpl: QuartzMdxComponent<Props> = ({
           width={SCHED.w - 1}
           height={SCHED.h - 1}
         />
-        <text class="gbb-title" x={LABEL_X} y={16}>
+        <text class="gbb-title" x={LABEL_X} y={TITLE_Y}>
           Scheduler, N = 1
         </text>
-        <text class="gbb-head" x={STATE_X} y={32}>
+        <text class="gbb-head" x={STATE_X} y={HEAD_Y}>
           grammar
         </text>
-        <text class="gbb-head" x={STRIP_X} y={32}>
+        <text class="gbb-head" x={STRIP_X} y={HEAD_Y}>
           {`grammar_bitmask row: ${fmt(WORDS)} int32 words, ${WORDS_PER_BIN} per cell`}
         </text>
-        <text class="gbb-head" x={COUNT_X} y={32} text-anchor="end">
+        <text class="gbb-head" x={COUNT_X} y={HEAD_Y} text-anchor="end">
           allowed
         </text>
         {REQUESTS.map((r, i) => {
@@ -296,17 +298,17 @@ const GrammarBitmaskBatchImpl: QuartzMdxComponent<Props> = ({
                       data-on={r.id === req0 ? 'true' : 'false'}
                       data-masked={r.state === null ? 'false' : 'true'}
                       x={b.x + 6}
-                      y={WORKER_Y + 24 + i * 9}
+                      y={WORKER_Y + 34 + i * 9}
                       width={b.w - 12}
                       height={7}
                     />
                   ))}
-                  <text class="gbb-step" x={b.x + 6} y={WORKER_Y + 72}>
+                  <text class="gbb-step" x={b.x + 6} y={WORKER_Y + 82}>
                     {n === 4
                       ? `mask ${structuredRows}`
                       : `logits ${BATCH.length} × ${fmt(VOCAB)}, mask rows ${structuredRows}`}
                   </text>
-                  <text class="gbb-step" x={b.x + 6} y={WORKER_Y + 84}>
+                  <text class="gbb-step" x={b.x + 6} y={WORKER_Y + 94}>
                     {b.k === 0 ? 'sample, return' : 'sample, return None'}
                   </text>
                 </g>

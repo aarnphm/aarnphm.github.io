@@ -5,7 +5,7 @@ aliases:
 date: '2025-05-21'
 description: How draft tokens are verified, why residual sampling preserves the target distribution, and when the extra work reduces decoding time.
 id: Speculative decoding
-modified: 2026-09-16 15:58:23 GMT-04:00
+modified: 2026-10-19 23:22:15 GMT-04:00
 socials:
   slides: https://docs.google.com/presentation/d/1p1xE-EbSAnXpTSiSI0gmy_wdwxN5XaULO3AnCWWoRe4/edit#slide=id.p
 tags:
@@ -21,7 +21,7 @@ https://x.com/karpathy/status/1697318534555336961
 Intuition:
 
 - we generate a short continuation with a cheaper speculator, say two to five lookahead tokens
-- the larger [[thoughts/Transformers#model|transformer]] scores those positions together, reusing the cached prefix. At the first rejection, the sampler draws a correction token and discards the remaining draft
+- the larger [[thoughts/Transformers|transformer]] scores those positions together, reusing the cached prefix. At the first rejection, the sampler draws a correction token and discards the remaining draft
 
 The draft tokens are already available, so the target can score them in one causal forward pass. A sequential speculator still drafts [[thoughts/Autoregressive models|autoregressively]]. Speed comes from accepting several tokens per target pass, especially when the target pass amortizes memory reads. Low acceptance or an expensive draft can erase the gain [@leviathan2023fastinferencetransformersspeculative].
 

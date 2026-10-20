@@ -3,6 +3,9 @@ date: '2024-02-12'
 description: how instructions, examples, and intermediate answers shape language-model outputs, with chain-of-thought and least-to-most prompting.
 id: prompt engineering
 modified: 2026-10-13 09:04:01 GMT-04:00
+seealso:
+  - '[[thoughts/linguistic]]'
+  - '[[thoughts/NLP]]'
 tags:
   - seed
   - ml
@@ -15,7 +18,6 @@ What counts as a better prompt depends on what the output must do. For a date ex
 
 [[thoughts/zero-shot learning|Zero-shot prompting]] describes how many demonstrations appear in the prompt: none. A zero-shot prompt can still be carefully designed. Adding solved examples makes the setup one-shot or few-shot.
 
-See also: [[thoughts/linguistic]], [[thoughts/NLP]].
 
 ## CoT prompting
 

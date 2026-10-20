@@ -1,0 +1,133 @@
+@use '../../styles/variables.scss' as *;
+@use './figure.scss' as *;
+
+.grammar-diagram {
+  @include figure-frame('gd-figure', 10rem);
+
+  --gd-term: color-mix(in srgb, var(--fig-salmon) 40%, var(--light));
+  --gd-nonterm: color-mix(in srgb, var(--fig-sage) 38%, var(--light));
+}
+
+:root[saved-theme='dark'] .grammar-diagram {
+  --gd-term: color-mix(in srgb, var(--fig-salmon) 24%, var(--lightgray));
+  --gd-nonterm: color-mix(in srgb, var(--fig-sage) 22%, var(--lightgray));
+}
+
+article.notebook-page .grammar-diagram--float-end {
+  float: right;
+  width: min(16rem, 46%);
+  max-width: 100%;
+  margin: 0 0 1rem 1rem;
+}
+
+.gd-canvas {
+  display: grid;
+  place-items: center;
+  min-height: 4.5rem;
+  padding: 0.35rem 0;
+}
+
+.gd-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.gd-term,
+.gd-nonterm,
+.gd-paren {
+  border: 1px solid var(--dark);
+  color: var(--dark);
+  font-family: var(--codeFont);
+  font-size: 0.74rem;
+  padding: 0.28rem 0.55rem;
+  text-align: center;
+}
+
+.gd-term {
+  background: var(--gd-term);
+  border-radius: 999px;
+}
+
+.gd-nonterm {
+  background: var(--gd-nonterm);
+}
+
+.gd-paren {
+  background: var(--light);
+  border: none;
+  padding: 0.28rem 0.2rem;
+  font-size: 1rem;
+}
+
+.gd-rail {
+  display: block;
+  width: 1.1rem;
+  height: 1px;
+  background: var(--dark);
+}
+
+.gd-arrow {
+  color: var(--fig-note);
+  font-family: var(--codeFont);
+  font-size: 0.9rem;
+}
+
+.gd-choice {
+  display: grid;
+  gap: 0.35rem;
+  justify-items: center;
+  border-left: 1px solid var(--dark);
+  border-right: 1px solid var(--dark);
+  padding: 0.35rem 0.7rem;
+}
+
+.gd-option {
+  display: grid;
+  gap: 0.25rem;
+  justify-items: center;
+}
+
+.gd-bypass {
+  display: block;
+  width: 3.2rem;
+  height: 1px;
+  background: var(--fig-note);
+}
+
+.gd-rep {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.gd-loop {
+  color: var(--fig-note);
+  font-size: 1rem;
+}
+
+.gd-railroad {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.gd-caption {
+  @include figure-caption;
+}
+
+.gd-math {
+  @include figure-inline-math;
+}
+
+@media (max-width: 640px) {
+  article.notebook-page .grammar-diagram--float-end {
+    float: none;
+    width: 100%;
+    margin: 0 0 1rem;
+  }
+}

@@ -1,0 +1,72 @@
+@use '../../styles/variables.scss' as *;
+@use './figure.scss' as *;
+
+.attr-grammar {
+  @include figure-frame('ag-figure', 16rem);
+
+  --ag-lit: color-mix(in srgb, var(--fig-salmon) 42%, var(--light));
+}
+
+:root[saved-theme='dark'] .attr-grammar {
+  --ag-lit: color-mix(in srgb, var(--fig-salmon) 26%, var(--lightgray));
+}
+
+article.notebook-page .attr-grammar--float-end {
+  float: right;
+  width: min(22rem, 48%);
+  max-width: 100%;
+  margin: 0 0 1rem 1rem;
+}
+
+.ag-root {
+  display: flex;
+  justify-content: center;
+  overflow-x: auto;
+}
+
+.ag-branch {
+  display: grid;
+  justify-items: center;
+  gap: 0.3rem;
+}
+
+.ag-kids {
+  display: flex;
+  gap: 0.55rem;
+  justify-content: center;
+}
+
+.ag-node {
+  border: 1px solid var(--dark);
+  background: var(--light);
+  color: var(--dark);
+  font-family: var(--codeFont);
+  font-size: 0.68rem;
+  padding: 0.22rem 0.4rem;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.ag-node--lit {
+  background: var(--ag-lit);
+}
+
+.ag-caption {
+  @include figure-caption;
+}
+
+.ag-math {
+  @include figure-inline-math;
+}
+
+@media (max-width: 640px) {
+  article.notebook-page .attr-grammar--float-end {
+    float: none;
+    width: 100%;
+    margin: 0 0 1rem;
+  }
+
+  .ag-node {
+    white-space: normal;
+  }
+}

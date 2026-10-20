@@ -1,0 +1,115 @@
+@use '../../styles/variables.scss' as *;
+@use './figure.scss' as *;
+
+.process-threads {
+  @include figure-frame('pt-figure', 26rem);
+
+  --pt-shared: color-mix(in srgb, var(--fig-sage) 38%, var(--light));
+  --pt-state: color-mix(in srgb, var(--lightgray) 50%, var(--light));
+  --pt-wave: var(--fig-salmon);
+}
+
+:root[saved-theme='dark'] .process-threads {
+  --pt-shared: color-mix(in srgb, var(--fig-sage) 22%, var(--lightgray));
+  --pt-state: color-mix(in srgb, var(--gray) 30%, var(--lightgray));
+}
+
+.pt-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 1rem;
+}
+
+.pt-card {
+  border: 1px solid var(--fig-frame-border);
+  padding: 0.75rem;
+  background: var(--fig-surface);
+}
+
+.pt-title {
+  @include figure-card-heading;
+  margin: 0 0 0.65rem;
+}
+
+.pt-shared {
+  @include figure-grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin-bottom: 0.65rem;
+}
+
+.pt-shared-cell {
+  @include figure-grid-cell;
+  background: var(--pt-shared);
+  color: var(--dark);
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  text-align: center;
+  padding: 0.35rem 0.2rem;
+}
+
+.pt-threads {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.45rem;
+}
+
+.pt-thread {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.pt-state {
+  @include figure-grid;
+  width: 100%;
+  grid-template-columns: 1fr;
+  gap: 1px;
+
+  span {
+    @include figure-grid-cell;
+    background: var(--pt-state);
+    color: var(--dark);
+    font-family: var(--codeFont);
+    font-size: 0.68rem;
+    text-align: center;
+    padding: 0.3rem 0.2rem;
+  }
+}
+
+.pt-wave {
+  height: 3rem;
+  width: 1.25rem;
+}
+
+.pt-wave-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.pt-wave-path {
+  fill: none;
+  stroke: var(--pt-wave);
+  stroke-width: 2;
+}
+
+.pt-thread-label {
+  color: var(--fig-note);
+  font-family: var(--codeFont);
+  font-size: 0.68rem;
+}
+
+.pt-caption {
+  @include figure-caption;
+}
+
+.pt-math {
+  @include figure-inline-math;
+}
+
+@media (max-width: 640px) {
+  .pt-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,65 @@
+@use '../../styles/variables.scss' as *;
+@use './figure.scss' as *;
+
+.hyperperiod-flow {
+  @include figure-frame('hpf-figure', 24rem);
+
+  --hpf-end: color-mix(in srgb, var(--fig-salmon) 40%, var(--light));
+}
+
+:root[saved-theme='dark'] .hyperperiod-flow {
+  --hpf-end: color-mix(in srgb, var(--fig-salmon) 24%, var(--lightgray));
+}
+
+.hpf-svg {
+  display: block;
+  width: 100%;
+  max-width: 38rem;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+.hpf-node {
+  fill: var(--light);
+  stroke: var(--dark);
+  stroke-width: 1.2;
+}
+
+.hpf-node--end {
+  fill: var(--hpf-end);
+}
+
+.hpf-edge {
+  stroke: var(--fig-stroke);
+  stroke-width: 1.2;
+}
+
+.hpf-arrowhead {
+  fill: var(--dark);
+}
+
+.hpf-col,
+.hpf-node-label,
+.hpf-edge-label {
+  fill: var(--dark);
+  font-family: var(--bodyFont);
+  font-size: 12px;
+}
+
+.hpf-edge-label {
+  font-family: var(--codeFont);
+  font-size: 11px;
+}
+
+.hpf-col {
+  fill: var(--fig-note);
+  font-size: 11px;
+}
+
+.hpf-caption {
+  @include figure-caption;
+}
+
+.hpf-math {
+  @include figure-inline-math;
+}

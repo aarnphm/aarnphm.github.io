@@ -1,0 +1,205 @@
+@use '../../styles/variables.scss' as *;
+@use './figure.scss' as *;
+
+.mtp-modules {
+  @include figure-frame('mtp-figure', 40rem);
+
+  --mtp-shared: color-mix(in srgb, var(--fig-sage) 45%, var(--light));
+  --mtp-op: color-mix(in srgb, var(--lightgray) 40%, var(--light));
+  --mtp-on: var(--fig-grid-selected);
+}
+
+:root[saved-theme='dark'] .mtp-modules {
+  --mtp-shared: color-mix(in srgb, var(--fig-sage) 26%, var(--lightgray));
+  --mtp-op: var(--lightgray);
+  --mtp-on: color-mix(in srgb, var(--fig-sage) 22%, var(--lightgray));
+}
+
+.mtp-controls {
+  margin-bottom: 0.9rem;
+}
+
+.mtp-segments {
+  @include figure-grid;
+  grid-auto-flow: column;
+  width: fit-content;
+  position: relative;
+  margin-top: 1.1rem;
+}
+
+.mtp-legend {
+  position: absolute;
+  top: -1.15rem;
+  left: 0;
+  padding: 0;
+  color: var(--fig-note);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.mtp-segment {
+  @include figure-grid-cell;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  padding: 0.28rem 0.55rem;
+  color: var(--fig-tab-fg);
+  cursor: pointer;
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    pointer-events: none;
+  }
+
+  &:has(input:checked) {
+    background: var(--mtp-on);
+    color: var(--dark);
+  }
+
+  &:has(input:focus-visible) {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
+}
+
+.mtp-rail {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(9.5rem, 1fr);
+  gap: 0.75rem;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+}
+
+.mtp-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+  padding: 0.65rem;
+  border: 1px solid var(--fig-frame-border);
+  background: var(--fig-surface);
+}
+
+.mtp-col[data-mtp-off='true'] {
+  display: none;
+}
+
+.mtp-head {
+  margin-bottom: 0.15rem;
+}
+
+.mtp-title {
+  margin: 0;
+  color: var(--dark);
+  font-family: var(--headerFont);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.mtp-sub {
+  margin: 0.1rem 0 0;
+  color: var(--fig-note);
+  font-size: 0.7rem;
+}
+
+.mtp-block {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 1.7rem;
+  padding: 0.25rem 0.4rem;
+  border: 1px solid var(--fig-stroke);
+  background: var(--mtp-op);
+  color: var(--dark);
+  font-family: var(--codeFont);
+  font-size: 0.68rem;
+  text-align: center;
+}
+
+.mtp-block--shared {
+  background: var(--mtp-shared);
+}
+
+.mtp-block--stack {
+  min-height: 3.2rem;
+}
+
+.mtp-block--small {
+  flex: 1;
+  min-height: 1.5rem;
+}
+
+.mtp-share {
+  color: var(--fig-note);
+  font-size: 0.62rem;
+}
+
+.mtp-row {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.mtp-concat {
+  color: var(--fig-note);
+  font-family: var(--codeFont);
+  font-size: 0.65rem;
+  text-align: center;
+}
+
+.mtp-targets,
+.mtp-inputs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.mtp-k {
+  color: var(--fig-note);
+  font-family: var(--codeFont);
+  font-size: 0.65rem;
+  margin-right: 0.15rem;
+}
+
+.mtp-tok {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.4rem;
+  padding: 0.12rem 0.28rem;
+  border: 1px solid var(--fig-stroke-soft);
+  background: var(--light);
+  color: var(--dark);
+  font-family: var(--codeFont);
+  font-size: 0.65rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.mtp-loss {
+  margin-top: 0.2rem;
+  color: var(--dark);
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.mtp-readout {
+  @include figure-table;
+  margin: 0.9rem 0 0;
+}
+
+.mtp-math {
+  @include figure-inline-math;
+}
+
+.mtp-caption {
+  @include figure-caption;
+}

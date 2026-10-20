@@ -57,9 +57,11 @@
 
 .gsae-body--jumprelu {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 15rem);
-  gap: 1rem;
+  // Plot and table sit together as one centred pair, so the expanded view keeps them side by side.
+  grid-template-columns: minmax(0, 20rem) minmax(0, 18rem);
+  gap: 1.5rem;
   align-items: center;
+  justify-content: center;
 }
 
 .gsae-scroll {
@@ -258,6 +260,12 @@
   td[data-gsae-on='1'] {
     background: var(--gsae-on);
   }
+}
+
+// The page wraps the table in .table-container, whose cell minimum (75px) makes four columns
+// wider than the table track. The figure scope outranks that rule.
+.gated-sae .gsae-table :is(th, td) {
+  min-width: 0;
 }
 
 .gsae-readout {
