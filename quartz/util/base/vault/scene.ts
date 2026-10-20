@@ -19,20 +19,14 @@ import {
   bandPath,
   bayStart,
   discMatrix,
+  lidRibs,
   pullOffset,
   rackHeight,
   rimCentre,
   rimPoint,
   shelfTop,
 } from './layout'
-import {
-  type VaultMaterial,
-  type VaultTone,
-  hasGrain,
-  toneFill,
-  vaultCss,
-  vaultDefs,
-} from './styles'
+import { type VaultMaterial, type VaultTone, toneClass, vaultCss, vaultDefs } from './styles'
 
 export type LabelKind = 'vinyl' | 'tape' | 'viewed'
 
@@ -110,10 +104,10 @@ function labelLines(can: SceneCan, footage: 1000 | 2000): { title: string; line:
   return { title: fitText(can.title.toUpperCase(), room, type.title, EM), line }
 }
 
-const polygon = (cls: string, points: readonly Point[], fill?: string): Element =>
-  s('polygon', { class: cls, points: toPoints(points), fill })
+const polygon = (cls: string, points: readonly Point[]): Element =>
+  s('polygon', { class: cls, points: toPoints(points) })
 
-/** A box solid in the anatomy idiom: three gradient faces and one path of edges and creases. */
+/** A box solid in the anatomy idiom: three flat faces and one path of edges and creases. */
 function boxNodes(
   material: VaultMaterial,
   [x, y, z]: readonly [number, number, number],
@@ -122,9 +116,9 @@ function boxNodes(
 ): Element[] {
   const solid = box(x, y, z, w, d, h)
   return [
-    polygon('cn-face', solid.front, toneFill(material, tones[0])),
-    polygon('cn-face', solid.side, toneFill(material, tones[1])),
-    polygon('cn-face', solid.top, toneFill(material, tones[2])),
+    polygon(`cn-face ${toneClass(material, tones[0])}`, solid.front),
+    polygon(`cn-face ${toneClass(material, tones[1])}`, solid.side),
+    polygon(`cn-face ${toneClass(material, tones[2])}`, solid.top),
     s('path', {
       class: `cn-edge cn-m-${material}`,
       d: `M${toPoints(solid.edge).replaceAll(' ', 'L')}Z${toPath(solid.creases)}`,
@@ -157,11 +151,16 @@ function canNode(can: PlacedCan<SceneCan>, rowEnd: boolean): Element {
       [s('textPath', { href: `#cn-arc-${ARC[footage].r}`, startOffset: START }, value)],
     )
   }
+  // Moulded poly: the skirt, its lit shoulder, then the step where the lid's skirt laps the tray.
+  const seam = x0 + Math.round(w * 0.42)
   const children: Element[] = [
-    s('path', { class: 'cn-band', d: band, fill: toneFill(finish, 'face') }),
+    s('path', { class: `cn-band ${toneClass(finish, 'face')}`, d: band }),
+    s('path', {
+      class: `cn-shade ${toneClass(finish, 'top')}`,
+      d: bandPath(can, x0, x0 + w, 45, 118),
+    }),
+    s('path', { class: 'cn-seam', d: bandPath(can, seam, seam + 2.5, 45, 225) }),
   ]
-  if (hasGrain(finish))
-    children.push(s('path', { class: 'cn-grain', d: band, fill: `url(#cn-grain-${finish})` }))
   children.push(
     s('path', {
       class: tape ? 'cn-strip cn-tape' : 'cn-strip',
@@ -193,8 +192,8 @@ function canNode(can: PlacedCan<SceneCan>, rowEnd: boolean): Element {
     )
   }
   const lid = discMatrix(can, x0 + w)
-  children.push(s('circle', { class: 'cn-lid', r, transform: lid, fill: toneFill(finish, 's2') }))
-  if (rowEnd) children.push(s('circle', { class: 'cn-rings', r, transform: lid }))
+  children.push(s('circle', { class: `cn-lid ${toneClass(finish, 's2')}`, r, transform: lid }))
+  if (rowEnd) children.push(lidRelief(r, lid))
   // Only the front of the roll, the face that carries the label, takes the pointer.
   children.push(s('path', { class: 'cn-hit', d: bandPath(can, x0, x0 + w, 135, 225) }))
   return s(
@@ -211,10 +210,19 @@ function canNode(can: PlacedCan<SceneCan>, rowEnd: boolean): Element {
   )
 }
 
+/** The lid's stacking ring, ribs and hub, on a lid the rack leaves in view. */
+function lidRelief(r: number, transform: string): Element {
+  return s('g', { class: 'cn-rings', transform }, [
+    s('circle', { class: 'cn-lid-ring', r: r1(r * 0.9) }),
+    s('path', { class: 'cn-lid-ribs', d: lidRibs(r) }),
+    s('circle', { class: 'cn-lid-hub', r: r1(r * 0.24) }),
+  ])
+}
+
 function dividerNodes(material: VaultMaterial, x: number, z: number, height: number): Element[] {
   const solid = box(x, 10, z, RACK.divider, RACK.depth - 20, height)
   return [
-    polygon('cn-face', solid.edge, toneFill(material, 's2')),
+    polygon(`cn-face ${toneClass(material, 's2')}`, solid.edge),
     s('path', {
       class: `cn-edge cn-m-${material}`,
       d: `M${toPoints(solid.edge).replaceAll(' ', 'L')}Z${toPath(solid.creases)}`,
@@ -249,27 +257,66 @@ function holderNodes(
   ]
 }
 
+// A cast handwheel seated on the end panel: a turned steel boss flush on the panel, an enamelled
+// rim and spokes, and a revolving knob standing on the rim. Each part is a disc in the panel's
+// (y, z) plane pushed toward the viewer along x, so depth is the screen offset of x.
 function crankNode(x: number, z: number): Element {
-  const [e, f] = project(x, RACK.depth / 2 + 10, z)
+  const y = RACK.depth / 2 + 10
+  const plane = (dx: number, u = 0, v = 0) => {
+    const [e, f] = project(x + dx, y + u, z - v)
+    return `matrix(${COS30.toFixed(4)} -0.5 0 1 ${r1(e)} ${r1(f)})`
+  }
+  // In the panel plane u runs along +y and v down; the outline of a cylinder along x turns at
+  // (−1, 1)/√2 of its radius, where the screen normal to the x offset meets the disc.
+  const cylinder = (part: string, u: number, v: number, r: number, from: number, to: number) => {
+    const k = r * Math.SQRT1_2
+    const at = (dx: number, du: number, dv: number) => project(x + dx, y + u + du, z - v - dv)
+    return [
+      s('circle', { class: `cn-crank-${part}-end`, r, transform: plane(from, u, v) }),
+      s('polygon', {
+        class: `cn-crank-${part}-side`,
+        points: toPoints([at(from, -k, k), at(to, -k, k), at(to, k, -k), at(from, k, -k)]),
+      }),
+      s('circle', { class: `cn-crank-${part}-face`, r, transform: plane(to, u, v) }),
+    ]
+  }
+  const R = 110
+  // Tapered spokes, 16 wide at the boss and 9 at the rim.
   const spokes = [90, 210, 330]
     .map(deg => {
       const t = (deg * Math.PI) / 180
-      return `M${r1(22 * Math.cos(t))} ${r1(22 * Math.sin(t))}L${r1(104 * Math.cos(t))} ${r1(104 * Math.sin(t))}`
+      const [c, sn] = [Math.cos(t), Math.sin(t)]
+      const p = (r: number, w: number) => `${r1(r * c - w * sn)} ${r1(r * sn + w * c)}`
+      return `M${p(24, -8)}L${p(R - 6, -4.5)}L${p(R - 6, 4.5)}L${p(24, 8)}Z`
     })
     .join('')
-  return s(
-    'g',
-    {
-      class: 'cn-crank cn-m-black-lacquer',
-      transform: `matrix(${COS30.toFixed(4)} -0.5 0 1 ${r1(e)} ${r1(f)})`,
-    },
-    [
-      s('circle', { class: 'cn-crank-rim', r: 110 }),
-      s('path', { class: 'cn-crank-spokes', d: spokes }),
-      s('circle', { class: 'cn-crank-hub', r: 22 }),
-      s('circle', { class: 'cn-crank-knob', r: 12, cx: 78, cy: -78 }),
-    ],
+  const knob = { u: 78, v: -78 }
+  // The rim is a solid ring from 6 to 18: stacked rings fill its side, so it reads as one casting.
+  const [back, front] = [6, 18]
+  const side = [back, 9, 12, 15].map(dx =>
+    s('circle', {
+      class: dx === back ? 'cn-crank-rim-back' : 'cn-crank-rim-side',
+      r: R,
+      transform: plane(dx),
+    }),
   )
+  return s('g', { class: 'cn-crank' }, [
+    ...side,
+    ...[8, 10, 12].map(dx =>
+      s('path', {
+        class: dx === 8 ? 'cn-crank-spokes-back' : 'cn-crank-spokes-side',
+        d: spokes,
+        transform: plane(dx),
+      }),
+    ),
+    s('path', { class: 'cn-crank-spokes', d: spokes, transform: plane(14) }),
+    s('circle', { class: 'cn-crank-rim', r: R, transform: plane(front) }),
+    ...cylinder('boss', 0, 0, 26, 0, 34),
+    s('circle', { class: 'cn-crank-turning', r: 26, transform: plane(34) }),
+    s('circle', { class: 'cn-crank-nut', r: 8, transform: plane(36) }),
+    ...cylinder('knob', knob.u, knob.v, 11, front, 72),
+    s('circle', { class: 'cn-crank-turning', r: 11, transform: plane(72, knob.u, knob.v) }),
+  ])
 }
 
 export interface SceneOptions {
@@ -354,6 +401,6 @@ export function vaultScene(layout: VaultLayout<SceneCan>, options: SceneOptions)
       'aria-label': options.label,
       'data-start': `${r1(sx)} ${r1(sy)}`,
     },
-    [s('style', vaultCss(materials)), vaultDefs(materials), ...children],
+    [s('style', vaultCss(materials)), vaultDefs(), ...children],
   )
 }

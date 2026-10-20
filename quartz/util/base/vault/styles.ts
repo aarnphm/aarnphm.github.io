@@ -1,12 +1,11 @@
-// Materials of the film vault: tone ladders per theme, gradient finishes, grain tiles and the fixed
-// label colours. Every gradient and pattern is a shared def; the scene's <style> sets the stop
-// colours for both themes, so no element carries its own filter or colour.
+// Materials of the film vault: flat tone ladders per theme and the fixed label colours. Faces take
+// a tone class that the scene's <style> fills for both themes. Paint servers are kept to the one
+// handwheel: about 700 gradient fills cost the rack 30 times the raster time of flat ones.
 import type { Element } from 'hast'
 import { s } from 'hastscript'
-import { COS30, rgbToHex } from '../bookcase/geometry'
 import { labelArc } from './layout'
 
-export const VAULT_MATERIALS = ['rack-steel', 'black-lacquer', 'tin', 'hammertone', 'poly'] as const
+export const VAULT_MATERIALS = ['rack-steel', 'black-lacquer', 'poly'] as const
 export type VaultMaterial = (typeof VAULT_MATERIALS)[number]
 export type VaultTone = 'top' | 'face' | 's2'
 
@@ -21,99 +20,38 @@ interface Ladder {
   faint: string
   lo: string
   hi: string
-  halo: string
 }
 
-const ladderOf = (row: string, halo: string): Ladder => {
+const ladderOf = (row: string): Ladder => {
   const [top, face, s3, s2, s1, s0, mid, faint, lo, hi] = row.split(' ')
-  return { top, face, s3, s2, s1, s0, mid, faint, lo, hi, halo }
+  return { top, face, s3, s2, s1, s0, mid, faint, lo, hi }
 }
 
 const LADDERS: Record<'light' | 'dark', Record<VaultMaterial, Ladder>> = {
   light: {
     'rack-steel': ladderOf(
       '#E3E1D9 #D2D0C7 #C4C2B9 #B3B1A8 #A19F97 #8F8D86 #5C5B56 #B8B6AE #8A8880 #282726',
-      '#3A3936',
     ),
     'black-lacquer': ladderOf(
       '#3C3B38 #2C2B29 #1C1B1A #181716 #151413 #100F0F #8E8C85 #4E4D49 #696863 #FFFCF0',
-      '#000000',
     ),
-    tin: ladderOf(
-      '#D7DADA #C3C7C8 #B4B8B9 #A3A8A9 #929798 #818687 #4A4F51 #AEB2B3 #868B8C #22272A',
-      '#2E3336',
-    ),
-    hammertone: ladderOf(
-      '#9A9B97 #80817D #747571 #676864 #5B5C58 #4F504C #DCDAD1 #86877F #6C6D68 #FFFCF0',
-      '#1F1F1D',
-    ),
+    // Moulded grey polypropylene: a mid-grey lid, a lighter skirt and lighter ribs.
     poly: ladderOf(
-      '#EDEAE0 #DEDBD0 #D1CEC3 #C2BFB4 #B2AFA5 #A29F95 #5F5E58 #C7C4B9 #9B998F #282726',
-      '#45443F',
+      '#9A9A98 #8A8A88 #7E7E7C #727270 #686866 #5E5E5C #474745 #8E8E8C #5A5A58 #3A3A39',
     ),
   },
   dark: {
     'rack-steel': ladderOf(
       '#6B6A66 #5A5955 #504F4B #454440 #3B3A37 #31302D #B5B3AB #6E6D68 #8A8882 #E6E4DA',
-      '#000000',
     ),
     'black-lacquer': ladderOf(
       '#454441 #33322F #252423 #1C1B1A #171616 #100F0F #A4A29A #575652 #777570 #FFFCF0',
-      '#000000',
-    ),
-    tin: ladderOf(
-      '#8E9394 #767B7C #6A6F70 #5C6162 #4F5354 #424647 #C9CDCE #7F8485 #9A9FA0 #EEF1F1',
-      '#000000',
-    ),
-    hammertone: ladderOf(
-      '#767773 #616260 #565755 #4B4C4A #414240 #373836 #C4C2B9 #6B6C68 #83847F #E6E4DA',
-      '#000000',
     ),
     poly: ladderOf(
-      '#7D7B74 #6B6963 #5F5D57 #52504B #46443F #3A3834 #C4C2B9 #78766F #918F87 #E6E4DA',
-      '#000000',
+      '#76767A #68686B #5E5E61 #545457 #4B4B4E #424245 #2C2C2E #6E6E71 #4A4A4D #C8C8CB',
     ),
   },
 }
-
-/** Gradient stops from the lit edge: offset, and a weight toward white (+) or the halo (−). */
-const FINISH_STOPS: Record<VaultMaterial, readonly (readonly [number, number])[]> = {
-  'rack-steel': [
-    [0, 0.08],
-    [1, -0.1],
-  ],
-  'black-lacquer': [
-    [0, 0.34],
-    [0.16, 0.1],
-    [0.5, -0.02],
-    [1, -0.22],
-  ],
-  tin: [
-    [0, 0.26],
-    [0.3, 0.04],
-    [0.55, -0.12],
-    [1, -0.42],
-  ],
-  hammertone: [
-    [0, 0.2],
-    [0.35, 0],
-    [1, -0.38],
-  ],
-  poly: [
-    [0, 0.1],
-    [1, -0.16],
-  ],
-}
-
-/** Seamless RGBA tiles from docs/verification/film-vault/gen-can.py, and their world size. */
-const GRAINS: Partial<Record<VaultMaterial, { image: string; size: number }>> = {
-  tin: { image: 'spangle.webp', size: 96 },
-  hammertone: { image: 'dimple.webp', size: 48 },
-}
-
-export const GRAIN_ASSETS = '/static/vault-grain/'
-
-export const hasGrain = (material: VaultMaterial) => material in GRAINS
 
 /** Fixed object colours: label stock, ink and stickers. Labels dim a little in the dark theme. */
 export const LABELS = {
@@ -124,69 +62,19 @@ export const LABELS = {
   dotGood: '#CDD597',
 } as const
 
-function hexRgb(hex: string): [number, number, number] {
-  return [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16)) as [number, number, number]
-}
-
-function mixHex(a: string, b: string, t: number): string {
-  const [ar, ag, ab] = hexRgb(a)
-  const [br, bg, bb] = hexRgb(b)
-  return rgbToHex(ar + (br - ar) * t, ag + (bg - ag) * t, ab + (bb - ab) * t)
-}
-
 const TONES: readonly VaultTone[] = ['top', 'face', 's2']
-const stopVar = (m: VaultMaterial, tone: VaultTone, i: number) => `--cn-${m}-${tone}-${i}`
 
-/** Fill of a face of `material` in `tone`. Lids and box tops run diagonally, the rest top down. */
-export const toneFill = (material: VaultMaterial, tone: VaultTone) =>
-  `url(#cn-g-${material}-${tone})`
+/** Class that fills a face of `material` in `tone`. */
+export const toneClass = (material: VaultMaterial, tone: VaultTone) => `cn-f-${material}-${tone}`
 
-/** Shared defs: gradients, grain patterns, the lid rings and the two label arcs. */
-export function vaultDefs(materials: Iterable<VaultMaterial>, assets = GRAIN_ASSETS): Element {
+/** Shared defs: the handwheel's finishes and the two label arcs. */
+export function vaultDefs(): Element {
   const defs: Element[] = []
-  for (const material of new Set(materials)) {
-    for (const tone of TONES) {
-      const diagonal = tone !== 'face'
-      defs.push(
-        s(
-          'linearGradient',
-          { id: `cn-g-${material}-${tone}`, x1: 0, y1: 0, x2: diagonal ? 1 : 0, y2: 1 },
-          FINISH_STOPS[material].map(([offset], i) =>
-            s('stop', { offset, style: `stop-color:var(${stopVar(material, tone, i)})` }),
-          ),
-        ),
-      )
-    }
-    const grain = GRAINS[material]
-    if (grain) {
-      // The tile lies in the rim's plane: tile x along the run, tile y down the can.
-      defs.push(
-        s(
-          'pattern',
-          {
-            id: `cn-grain-${material}`,
-            patternUnits: 'userSpaceOnUse',
-            width: grain.size,
-            height: grain.size,
-            patternTransform: `matrix(${COS30.toFixed(4)} 0.5 0 1 0 0)`,
-          },
-          [
-            s('image', {
-              href: `${assets}${grain.image}`,
-              width: grain.size,
-              height: grain.size,
-              preserveAspectRatio: 'none',
-            }),
-          ],
-        ),
-      )
-    }
-  }
-  // Embossed lid: concentric pressed rings, alternately catching and losing the light.
+  // Lathe rings on the handwheel's turned faces, alternately catching and losing the light.
   defs.push(
     s(
       'radialGradient',
-      { id: 'cn-lid-rings' },
+      { id: 'cn-turning' },
       Array.from({ length: 14 }, (_, i) =>
         s('stop', {
           offset: Math.round((0.18 + (i / 13) * 0.8) * 1000) / 1000,
@@ -195,13 +83,30 @@ export function vaultDefs(materials: Iterable<VaultMaterial>, assets = GRAIN_ASS
         }),
       ),
     ),
+    // Handwheel finishes: enamel lit from the upper left, turned steel with a bright band.
+    s('linearGradient', { id: 'cn-crank-enamel', x1: 0, y1: 0, x2: 1, y2: 1 }, [
+      s('stop', { offset: 0, style: 'stop-color:var(--cn-crank-hi)' }),
+      s('stop', { offset: 0.45, style: 'stop-color:var(--cn-crank-mid)' }),
+      s('stop', { offset: 1, style: 'stop-color:var(--cn-crank-lo)' }),
+    ]),
+    s('linearGradient', { id: 'cn-crank-steel', x1: 1, y1: 0, x2: 0, y2: 1 }, [
+      s('stop', { offset: 0, style: 'stop-color:var(--cn-steel-lo)' }),
+      s('stop', { offset: 0.3, style: 'stop-color:var(--cn-steel-hi)' }),
+      s('stop', { offset: 0.55, style: 'stop-color:var(--cn-steel-mid)' }),
+      s('stop', { offset: 1, style: 'stop-color:var(--cn-steel-lo)' }),
+    ]),
+    s('radialGradient', { id: 'cn-crank-face', cx: 0.38, cy: 0.34, r: 0.75 }, [
+      s('stop', { offset: 0, style: 'stop-color:var(--cn-steel-hi)' }),
+      s('stop', { offset: 0.6, style: 'stop-color:var(--cn-steel-mid)' }),
+      s('stop', { offset: 1, style: 'stop-color:var(--cn-steel-lo)' }),
+    ]),
     s('path', { id: 'cn-arc-190', d: labelArc(190) }),
     s('path', { id: 'cn-arc-135', d: labelArc(135) }),
   )
   return s('defs', defs)
 }
 
-/** Edge tokens per material and every gradient stop colour, for both themes. */
+/** Edge tokens and face fills per material, and the label colours, for both themes. */
 export function vaultCss(
   materials: Iterable<VaultMaterial>,
   scope = '.vault-scene',
@@ -215,15 +120,10 @@ export function vaultCss(
     for (const material of set) {
       const ladder = LADDERS[theme][material]
       rules.push(
-        `${root}${scope} .cn-m-${material}{--cn-hi:${ladder.hi};--cn-mid:${ladder.mid};--cn-faint:${ladder.faint};--cn-s3:${ladder.s3}}`,
+        `${root}${scope} .cn-m-${material}{--cn-hi:${ladder.hi};--cn-mid:${ladder.mid};--cn-faint:${ladder.faint};--cn-s3:${ladder.s3};--cn-top:${ladder.top}}`,
       )
       for (const tone of TONES)
-        FINISH_STOPS[material].forEach(([, w], i) => {
-          const toward = w > 0 ? '#FFFFFF' : ladder.halo
-          // The dark theme keeps its sheen lower so a lit can does not glare.
-          const k = Math.abs(w) * (theme === 'dark' && w > 0 ? 0.55 : 1)
-          stops.push(`${stopVar(material, tone, i)}:${mixHex(ladder[tone], toward, k)}`)
-        })
+        rules.push(`${root}${scope} .${toneClass(material, tone)}{fill:${ladder[tone]}}`)
     }
     const { vinyl, tape } = LABELS
     const labels =

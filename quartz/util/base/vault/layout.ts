@@ -42,13 +42,13 @@ export const RACK = {
   nudge: 18,
 } as const
 
-export const FINISHES = ['tin', 'hammertone', 'poly'] as const
+export const FINISHES = ['poly'] as const
 export type CanFinish = (typeof FINISHES)[number]
 
-/** 1000 ft Goldberg tin, 2000 ft hammertone steel, 2000 ft archival polypropylene. */
+/** Every print is in moulded polypropylene; an older print is a 1000 ft can, a newer one 2000 ft. */
 const ERAS = [
-  { finish: 'tin', footage: 1000, diameter: 270, thickness: 38 },
-  { finish: 'hammertone', footage: 2000, diameter: 380, thickness: 50 },
+  { finish: 'poly', footage: 1000, diameter: 270, thickness: 38 },
+  { finish: 'poly', footage: 2000, diameter: 380, thickness: 50 },
   { finish: 'poly', footage: 2000, diameter: 380, thickness: 50 },
 ] as const
 
@@ -317,6 +317,22 @@ export function discMatrix(can: CanSize & { y: number; z: number }, x: number): 
   const r = can.diameter / 2
   const [e, f] = project(x, can.y + r, can.z + r)
   return `matrix(0.866 -0.5 0 1 ${r1(e)} ${r1(f)})`
+}
+
+/**
+ * Moulded lid relief in the lid's own disc frame (radius r): four radial ribs from the hub to the
+ * stacking ring, as one path.
+ */
+export function lidRibs(r: number): string {
+  const [inner, outer, w] = [r * 0.24, r * 0.86, r * 0.05]
+  return [0, 90, 180, 270]
+    .map(deg => {
+      const t = ((deg + 45) * Math.PI) / 180
+      const [c, sn] = [Math.cos(t), Math.sin(t)]
+      const p = (d: number, o: number) => `${r1(d * c - o * sn)} ${r1(d * sn + o * c)}`
+      return `M${p(inner, -w)}L${p(outer, -w)}L${p(outer, w)}L${p(inner, w)}Z`
+    })
+    .join('')
 }
 
 /** Screen offset of a can pulled out of the rack along -y and lifted. */
