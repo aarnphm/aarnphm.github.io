@@ -53,7 +53,7 @@ views:
     bookHeight: 220
     shelfWidth: 600
     shelfStyle: spine
-    shelfMaterial: steel
+    shelfMaterial: copper
     topicShelves:
       philosophy:
         style: zigzag
@@ -72,7 +72,7 @@ views:
       p/scifi:
         displayNames: sci-fi
         style: corner
-        material: steel
+        material: copper
       technology:
         style: wall
         material: walnut
@@ -81,10 +81,10 @@ views:
         material: paper
       finance:
         style: straight
-        material: birch-ply
+        material: concrete
       progress:
         style: wall
-        material: steel
+        material: copper
   - type: cards
     name: gallery
     order:

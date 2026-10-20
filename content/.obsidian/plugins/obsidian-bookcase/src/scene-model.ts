@@ -25,6 +25,7 @@ import {
   coverMatrixW,
   placeShelves,
   pullOffsetW,
+  sheenFill,
   spineCentreW,
   spineTextW,
   stylePackOptions,
@@ -53,14 +54,17 @@ export {
 export {
   BOOKCASE_STYLES,
   SHELF_MATERIALS,
+  faceFill,
+  grainFill,
   hasTopicTag,
-  materialLadder,
+  materialCss,
+  materialDefs,
   topicKeys,
   topicLabel,
   topicShelf,
   topicShortcuts,
 } from '../../../../../quartz/util/base/bookcase/styles'
-export type { TopicShelf } from '../../../../../quartz/util/base/bookcase/styles'
+export type { DefNode, TopicShelf } from '../../../../../quartz/util/base/bookcase/styles'
 
 /**
  * Painter's order. A shelf layer is one windowed `<svg>`: the solids layer that comes right
@@ -100,6 +104,8 @@ export interface SceneBook<T> {
   /** Screen offset of the pulled book. */
   readonly pull: Point
   readonly text: SpineText
+  /** Gradient reference that rounds the spine, lit along its lit edge. */
+  readonly sheen: string
   /** Frame of a `depth × height` front-cover image; null when the visible side is the back. */
   readonly cover: Matrix | null
   /** Frame of the visible back cover (rot-90 wing), for its title; null otherwise. */
@@ -147,6 +153,10 @@ class PlacedBook<T> implements SceneBook<T> {
 
   get pull(): Point {
     return (this.cache.pull ??= pullOffsetW(this.world))
+  }
+
+  get sheen(): string {
+    return sheenFill(this.world)
   }
 
   get text(): SpineText {

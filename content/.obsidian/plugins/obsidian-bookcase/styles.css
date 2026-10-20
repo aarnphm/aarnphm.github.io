@@ -34,6 +34,8 @@
   --bc-s1: color-mix(in srgb, black 22%, var(--background-primary));
   --bc-s0: color-mix(in srgb, black 34%, var(--background-primary));
   --bc-halo: black;
+  /* light speckle shows more on a dark face */
+  --bc-grain: 0.6;
 }
 
 .bookcase-view[data-layout='wide'] {
@@ -496,62 +498,11 @@
   fill: var(--bc-s0);
 }
 
-/* materials: the view sets each ladder's values for the theme from the shared tables */
-.bookcase-world [data-material='walnut'] {
-  --bc-top: var(--bc-walnut-top);
-  --bc-face: var(--bc-walnut-face);
-  --bc-s3: var(--bc-walnut-s3);
-  --bc-s2: var(--bc-walnut-s2);
-  --bc-s1: var(--bc-walnut-s1);
-  --bc-s0: var(--bc-walnut-s0);
-  --bc-mid: var(--bc-walnut-mid);
-  --bc-faint: var(--bc-walnut-faint);
-  --bc-lo: var(--bc-walnut-lo);
-  --bc-hi: var(--bc-walnut-hi);
-  --bc-halo: var(--bc-walnut-halo);
-}
-
-.bookcase-world [data-material='birch-ply'] {
-  --bc-top: var(--bc-birch-ply-top);
-  --bc-face: var(--bc-birch-ply-face);
-  --bc-s3: var(--bc-birch-ply-s3);
-  --bc-s2: var(--bc-birch-ply-s2);
-  --bc-s1: var(--bc-birch-ply-s1);
-  --bc-s0: var(--bc-birch-ply-s0);
-  --bc-mid: var(--bc-birch-ply-mid);
-  --bc-faint: var(--bc-birch-ply-faint);
-  --bc-lo: var(--bc-birch-ply-lo);
-  --bc-hi: var(--bc-birch-ply-hi);
-  --bc-halo: var(--bc-birch-ply-halo);
-  --bc-ply: var(--bc-birch-ply-ply);
-}
-
-.bookcase-world [data-material='black-lacquer'] {
-  --bc-top: var(--bc-black-lacquer-top);
-  --bc-face: var(--bc-black-lacquer-face);
-  --bc-s3: var(--bc-black-lacquer-s3);
-  --bc-s2: var(--bc-black-lacquer-s2);
-  --bc-s1: var(--bc-black-lacquer-s1);
-  --bc-s0: var(--bc-black-lacquer-s0);
-  --bc-mid: var(--bc-black-lacquer-mid);
-  --bc-faint: var(--bc-black-lacquer-faint);
-  --bc-lo: var(--bc-black-lacquer-lo);
-  --bc-hi: var(--bc-black-lacquer-hi);
-  --bc-halo: var(--bc-black-lacquer-halo);
-}
-
-.bookcase-world [data-material='steel'] {
-  --bc-top: var(--bc-steel-top);
-  --bc-face: var(--bc-steel-face);
-  --bc-s3: var(--bc-steel-s3);
-  --bc-s2: var(--bc-steel-s2);
-  --bc-s1: var(--bc-steel-s1);
-  --bc-s0: var(--bc-steel-s0);
-  --bc-mid: var(--bc-steel-mid);
-  --bc-faint: var(--bc-steel-faint);
-  --bc-lo: var(--bc-steel-lo);
-  --bc-hi: var(--bc-steel-hi);
-  --bc-halo: var(--bc-steel-halo);
+/* materials: the ladder tokens and finish stops come from the shared tables, in the scene's <style> */
+.bookcase-world .bookcase-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
 }
 
 /* the darkest spines barely separate from these boards, so their tops take the light step */
@@ -566,6 +517,25 @@
 
 .bookcase-world .bc-highlight {
   stroke: var(--bc-top);
+}
+
+/* grain and form joints come from styles.ts as tiled noise and faint lines over the face */
+.bookcase-world .bc-grain {
+  pointer-events: none;
+  opacity: var(--bc-grain, 1);
+}
+
+.bookcase-world .bc-form {
+  fill: none;
+  stroke: var(--bc-lo);
+  stroke-width: var(--bc-weight);
+  stroke-opacity: 0.7;
+}
+
+/* tie holes read as recesses, not fittings */
+.bookcase-world [data-material='concrete'] .bc-screws ellipse {
+  fill: var(--bc-s0);
+  stroke: var(--bc-s1);
 }
 
 /* halos: the only blurred elements */
@@ -600,6 +570,10 @@
 
 .bookcase-world .bc-book .bc-face-spine {
   fill: var(--c);
+}
+
+.bookcase-world .bc-spine-sheen {
+  pointer-events: none;
 }
 
 .bookcase-world .bc-book .bc-face-cover {

@@ -73,6 +73,8 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='bookca
   --bc-s1: color-mix(in srgb, black 22%, var(--light));
   --bc-s0: color-mix(in srgb, black 34%, var(--light));
   --bc-halo: black;
+  // Light speckle shows more on a dark face.
+  --bc-grain: 0.6;
 }
 
 .bookcase-stage {
@@ -150,12 +152,7 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='bookca
   }
 
   &:focus-visible {
-    outline: 2px solid var(--dark);
-    outline-offset: -4px;
-  }
-
-  &[aria-selected='true']:focus-visible {
-    outline-color: var(--light);
+    outline: none;
   }
 
   @media (hover: hover) and (pointer: fine) {
@@ -266,7 +263,9 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='bookca
 .bookcase-viewport {
   position: absolute;
   inset: 0;
-  overflow: hidden;
+  overflow: auto;
+  overscroll-behavior: none;
+  scrollbar-width: none;
   cursor: grab;
   touch-action: none;
   user-select: none;
@@ -285,9 +284,18 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='bookca
   }
 }
 
+.bookcase-scroll-space {
+  pointer-events: none;
+}
+
+.bookcase-pan {
+  position: absolute;
+  overflow: clip;
+}
+
 .bookcase-plate:has(.bookcase-viewport:focus-visible) [data-corner='title'] {
-  outline: 2px solid var(--dark);
-  outline-offset: 2px;
+  color: var(--light);
+  background: var(--dark);
 }
 
 .bookcase-world {
@@ -297,6 +305,7 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='bookca
   width: 100%;
   height: 100%;
   transform-origin: 0 0;
+  will-change: transform;
 }
 
 .bookcase-scene {
@@ -358,6 +367,12 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='bookca
     stroke-width: var(--bc-weight);
   }
 
+  // Grain comes from styles.ts as tiled noise over the face.
+  .bc-grain {
+    pointer-events: none;
+    opacity: var(--bc-grain, 1);
+  }
+
   .bc-screws ellipse {
     fill: var(--bc-top);
     stroke: var(--bc-lo);
@@ -408,11 +423,15 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='bookca
 
     cursor: pointer;
     &[data-lifted] {
-      visibility: hidden;
+      opacity: 0;
     }
 
     .bc-face-spine {
       fill: var(--c);
+    }
+
+    .bc-spine-sheen {
+      pointer-events: none;
     }
 
     .bc-spine-art {
@@ -627,8 +646,12 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='bookca
 }
 
 .bookcase :is(button, summary, a):focus-visible {
-  outline: 2px solid var(--dark);
-  outline-offset: -2px;
+  outline: none;
+}
+
+.bookcase :is(button, summary, a):not(.bookcase-topic):focus-visible {
+  color: var(--light);
+  background: var(--dark);
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -676,6 +699,8 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='bookca
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
+  content-visibility: hidden;
+  contain: strict;
 }
 
 @media (max-width: 480px) {
@@ -710,13 +735,16 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='bookca
 .bookcase-no-results {
   display: none;
   position: absolute;
-  inset: 40% 1rem auto;
+  z-index: 2;
+  inset-block-start: 0.75rem;
+  inset-inline-start: 0.75rem;
+  max-inline-size: calc(50% - 1rem);
   margin: 0;
-  padding: 0.75rem;
+  padding: 0.2rem 0.3rem;
   color: var(--dark);
-  background: var(--light);
+  background: var(--bc-surface);
   font: 0.75rem var(--codeFont);
-  text-align: center;
+  text-align: left;
 
   .bookcase[data-empty] & {
     display: block;
@@ -810,6 +838,7 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='bookca
   color: var(--dark);
   background: var(--light);
   overscroll-behavior: contain;
+  outline: none;
 
   &::backdrop {
     background: color-mix(in srgb, var(--light) 88%, transparent);
@@ -870,6 +899,7 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='bookca
   display: block;
   position: relative;
   transform-style: preserve-3d;
+  will-change: transform;
 }
 
 .bookcase-hardcover {
@@ -881,6 +911,7 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='bookca
   inset: 0;
   transform-style: preserve-3d;
   transform: rotateX(-18deg) rotateY(20deg) rotateZ(-2deg);
+  will-change: transform;
 
   > span {
     display: block;

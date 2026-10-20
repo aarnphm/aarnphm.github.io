@@ -81,9 +81,18 @@ export function createHardcoverPreview(root: HTMLElement, signal: AbortSignal) {
   let revision = 0
   let originalDecoder: HTMLImageElement | undefined
   let spineDecoder: HTMLImageElement | undefined
+  let upgradeTimer: number | undefined
+  let pendingCoverSrc: string | undefined
+  let pendingSpineSrc: string | undefined
+  let upgradingCover = false
   let lowSpine: string | undefined
   let detailSpine: string | undefined
   const cancelDecoders = () => {
+    if (upgradeTimer !== undefined) clearTimeout(upgradeTimer)
+    upgradeTimer = undefined
+    pendingCoverSrc = undefined
+    pendingSpineSrc = undefined
+    upgradingCover = false
     originalDecoder?.removeAttribute('src')
     spineDecoder?.removeAttribute('src')
     originalDecoder = undefined
@@ -98,6 +107,21 @@ export function createHardcoverPreview(root: HTMLElement, signal: AbortSignal) {
     motion = []
     delete root.dataset.bookcaseFlying
   }
+  const flushUpgrades = () => {
+    if (motion.length > 0 || drag || signal.aborted) return
+    if (pendingCoverSrc) {
+      const nextSrc = pendingCoverSrc
+      pendingCoverSrc = undefined
+      upgradingCover = true
+      image.src = nextSrc
+    }
+    if (pendingSpineSrc) {
+      const nextSpine = pendingSpineSrc
+      pendingSpineSrc = undefined
+      spineImage.src = nextSpine
+      showLoadedSpine()
+    }
+  }
   const paint = () => {
     frame = 0
     if (signal.aborted) return
@@ -107,6 +131,7 @@ export function createHardcoverPreview(root: HTMLElement, signal: AbortSignal) {
     if (!frame) frame = requestAnimationFrame(paint)
   }
   const resize = () => {
+    if (availableSize.width <= 0 || availableSize.height <= 0) return
     const width = Math.max(
       1,
       Math.min(400, availableSize.width * 0.76, (availableSize.height * 0.76) / aspect),
@@ -123,6 +148,12 @@ export function createHardcoverPreview(root: HTMLElement, signal: AbortSignal) {
   image.addEventListener(
     'load',
     () => {
+      if (upgradingCover) {
+        upgradingCover = false
+        image.hidden = false
+        fallback.hidden = true
+        return
+      }
       const nextAspect = image.naturalWidth > 0 ? image.naturalHeight / image.naturalWidth : aspect
       const changed = Math.abs(nextAspect - aspect) > 0.01
       aspect = nextAspect
@@ -189,6 +220,7 @@ export function createHardcoverPreview(root: HTMLElement, signal: AbortSignal) {
   const stop = () => {
     drag = undefined
     delete root.dataset.turning
+    flushUpgrades()
   }
   root.addEventListener('pointerup', stop, { signal })
   root.addEventListener('pointercancel', stop, { signal })
@@ -224,7 +256,9 @@ export function createHardcoverPreview(root: HTMLElement, signal: AbortSignal) {
         : undefined
       const url = value.thumbnail ?? value.cover
       const sameCover = Boolean(url && image.getAttribute('src') === url)
-      aspect = sameCover && image.naturalWidth > 0 ? image.naturalHeight / image.naturalWidth : 1.53
+      // Keep the current geometry until the next cover supplies its aspect, avoiding a reset
+      // to the fallback dimensions between books.
+      if (sameCover && image.naturalWidth > 0) aspect = image.naturalHeight / image.naturalWidth
       rotation = restingPose()
       book.style.setProperty('--bc-book-cloth', value.spine)
       book.style.setProperty('--bc-book-ink', value.ink)
@@ -237,24 +271,20 @@ export function createHardcoverPreview(root: HTMLElement, signal: AbortSignal) {
       spineImage.hidden = true
       delete spine.dataset.artReady
       delete spineImage.dataset.spineResolution
+      if (!availableSize.width || !availableSize.height)
+        availableSize = { width: root.clientWidth, height: root.clientHeight }
+      resize()
+      paint()
       if (value.spineArt) spineImage.src = value.spineArt
       else spineImage.removeAttribute('src')
       if (url) {
         if (!sameCover) image.src = url
-        // Decode the derivative before a turn can expose the front board.
-        try {
-          await image.decode()
-        } catch {
-          // A failed cover keeps the title on the cloth board.
-        }
       } else image.removeAttribute('src')
-      if (value.spineArt) {
-        try {
-          await spineImage.decode()
-        } catch {
-          // The title remains readable if an edition texture cannot load.
-        }
-      }
+      // Decode cover and spine derivatives in parallel before revealing.
+      const decodes: Promise<unknown>[] = []
+      if (url) decodes.push(image.decode().catch(() => undefined))
+      if (value.spineArt) decodes.push(spineImage.decode().catch(() => undefined))
+      if (decodes.length) await Promise.all(decodes)
       if (current !== revision || signal.aborted) return false
       const spineAvailable = Boolean(
         value.spineArt && spineImage.complete && spineImage.naturalWidth > 0,
@@ -265,49 +295,59 @@ export function createHardcoverPreview(root: HTMLElement, signal: AbortSignal) {
       const available = Boolean(url && image.complete && image.naturalWidth > 0)
       image.hidden = !available
       fallback.hidden = available
-      aspect = available ? image.naturalHeight / image.naturalWidth : 1.53
-      if (!availableSize.width || !availableSize.height)
-        availableSize = { width: root.clientWidth, height: root.clientHeight }
-      resize()
+      const nextAspect = available ? image.naturalHeight / image.naturalWidth : 1.53
+      if (Math.abs(nextAspect - aspect) > 0.01) {
+        aspect = nextAspect
+        resize()
+      }
       paint()
-      if (value.cover && value.cover !== url) {
-        const original = new Image()
-        originalDecoder = original
-        original.src = value.cover
-        void original.decode().then(
-          () => {
-            if (originalDecoder !== original) return
-            originalDecoder = undefined
-            if (current === revision && !signal.aborted) image.src = original.src
-            original.removeAttribute('src')
-          },
-          () => {
-            if (originalDecoder === original) originalDecoder = undefined
-            original.removeAttribute('src')
-          },
-        )
-      }
-      if (value.spineArtDetail) {
-        const detail = new Image()
-        spineDecoder = detail
-        detail.decoding = 'async'
-        detail.src = value.spineArtDetail
-        void detail.decode().then(
-          () => {
-            if (spineDecoder !== detail) return
-            spineDecoder = undefined
-            if (current === revision && !signal.aborted) {
-              spineImage.src = detail.src
-              showLoadedSpine()
-            }
-            detail.removeAttribute('src')
-          },
-          () => {
-            if (spineDecoder === detail) spineDecoder = undefined
-            detail.removeAttribute('src')
-          },
-        )
-      }
+      // Wheel browsing can replace a book every 220 ms; upgrade once that input has settled.
+      upgradeTimer = window.setTimeout(() => {
+        upgradeTimer = undefined
+        if (current !== revision || signal.aborted) return
+        if (value.cover && value.cover !== url) {
+          const original = new Image()
+          originalDecoder = original
+          original.decoding = 'async'
+          original.src = value.cover
+          void original.decode().then(
+            () => {
+              if (originalDecoder !== original) return
+              originalDecoder = undefined
+              if (current === revision && !signal.aborted) {
+                pendingCoverSrc = original.src
+                flushUpgrades()
+              }
+              original.removeAttribute('src')
+            },
+            () => {
+              if (originalDecoder === original) originalDecoder = undefined
+              original.removeAttribute('src')
+            },
+          )
+        }
+        if (value.spineArtDetail) {
+          const detail = new Image()
+          spineDecoder = detail
+          detail.decoding = 'async'
+          detail.src = value.spineArtDetail
+          void detail.decode().then(
+            () => {
+              if (spineDecoder !== detail) return
+              spineDecoder = undefined
+              if (current === revision && !signal.aborted) {
+                pendingSpineSrc = detail.src
+                flushUpgrades()
+              }
+              detail.removeAttribute('src')
+            },
+            () => {
+              if (spineDecoder === detail) spineDecoder = undefined
+              detail.removeAttribute('src')
+            },
+          )
+        }
+      }, 300)
       return true
     },
     reveal() {
@@ -336,12 +376,14 @@ export function createHardcoverPreview(root: HTMLElement, signal: AbortSignal) {
       movement.onfinish = () => {
         motion = []
         delete root.dataset.bookcaseFlying
+        flushUpgrades()
       }
     },
     clear() {
       revision++
       cancelDecoders()
       cancelMotion()
+      aspect = 1.53
       lowSpine = undefined
       detailSpine = undefined
       image.removeAttribute('src')

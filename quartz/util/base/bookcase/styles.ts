@@ -15,6 +15,7 @@ import {
   box,
   fitText,
   project,
+  rgbToHex,
 } from './geometry'
 
 const {
@@ -29,7 +30,15 @@ const {
 export const BOOKCASE_STYLES = ['straight', 'corner', 'spine', 'wall', 'zigzag', 'ladder'] as const
 export type BookcaseStyle = (typeof BOOKCASE_STYLES)[number]
 
-export const SHELF_MATERIALS = ['paper', 'walnut', 'birch-ply', 'black-lacquer', 'steel'] as const
+export const SHELF_MATERIALS = [
+  'paper',
+  'walnut',
+  'birch-ply',
+  'black-lacquer',
+  'steel',
+  'copper',
+  'concrete',
+] as const
 export type ShelfMaterial = (typeof SHELF_MATERIALS)[number]
 
 /**
@@ -48,7 +57,7 @@ export const TOPIC_SHELVES: Readonly<Record<string, TopicShelf>> = {
   philosophy: { style: 'wall', material: 'walnut' },
   'p/fiction': { style: 'corner', material: 'paper' },
   'p/nf': { style: 'ladder', material: 'birch-ply' },
-  'p/scifi': { style: 'spine', material: 'steel' },
+  'p/scifi': { style: 'spine', material: 'copper' },
 }
 
 const TOPIC_WORDS: Readonly<Record<string, string>> = { nf: 'non-fiction', scifi: 'sci-fi' }
@@ -125,6 +134,17 @@ export type StylePart =
   | 'base'
 
 export type Tone = 'top' | 'face' | 's3' | 's2' | 's1' | 's0'
+
+export type Orientation = 'front' | 'side' | 'top'
+
+export interface Face {
+  points: Point[]
+  tone: Tone
+  /** Which way the face looks; the finish shades it from its lit edge. */
+  o?: Orientation
+  /** The long axis is up (or along the depth for a top), not along the run. */
+  tall?: boolean
+}
 
 /**
  * Run length for a style. The spine style packs a stack height and the wall style short blades;
@@ -378,13 +398,15 @@ export interface Ladder {
   lo: string
   hi: string
   halo: string
+  /** Lit end of a face gradient; the halo is its shaded end. */
+  sheen: string
   /** Stripe on thin plywood edges. */
   ply?: string
 }
 
-const ladderOf = (row: string, halo: string, ply?: string): Ladder => {
+const ladderOf = (row: string, halo: string, sheen: string, ply?: string): Ladder => {
   const [top, face, s3, s2, s1, s0, mid, faint, lo, hi] = row.split(' ')
-  return { top, face, s3, s2, s1, s0, mid, faint, lo, hi, halo, ply }
+  return { top, face, s3, s2, s1, s0, mid, faint, lo, hi, halo, sheen, ply }
 }
 
 const LADDERS: Record<'light' | 'dark', Record<ShelfMaterial, Ladder>> = {
@@ -392,46 +414,78 @@ const LADDERS: Record<'light' | 'dark', Record<ShelfMaterial, Ladder>> = {
     paper: ladderOf(
       '#FFFCF0 #FFFCF0 #F9F6EA #F1EEE2 #E8E5DA #DFDCD1 #6F6E69 #D2D0C6 #9F9D96 #282726',
       '#403E3C',
+      '#FFFFFF',
     ),
     walnut: ladderOf(
-      '#8F6D54 #7A5236 #6F4B32 #63432D #563B29 #493324 #3A2A1F #63432D #4D3626 #100F0F',
-      '#2A1A10',
+      '#866A53 #6E4E3A #634535 #583D2F #4C3529 #412D23 #3A2A1F #5A3F31 #46312A #100F0F',
+      '#221710',
+      '#B89778',
     ),
     'birch-ply': ladderOf(
       '#F3EAD6 #EADBC0 #DFCFB4 #D3C3A8 #C6B69C #BBAB90 #6E5B45 #C5B59B #AC9B83 #3A2E22',
       '#403E3C',
+      '#FFFBEE',
       '#B2A189',
     ),
     'black-lacquer': ladderOf(
       '#3C3B38 #2C2B29 #1C1B1A #181716 #151413 #100F0F #8E8C85 #4E4D49 #696863 #FFFCF0',
       '#000000',
+      '#8A8883',
     ),
     steel: ladderOf(
       '#D5D8DC #AEB4BA #9EA4AA #8D949A #7C8389 #6C7379 #3C454D #8C9399 #757D84 #1F262B',
       '#2A3238',
+      '#F7F9FA',
+    ),
+    // Antiqued copper: brown-gold, the lit faces a step warmer, no orange.
+    copper: ladderOf(
+      '#B48D60 #9C744A #8E6941 #7F5D39 #6F5031 #5F4429 #3A2A19 #80603C #5C4229 #1A120A',
+      '#2A1A0E',
+      '#EBCD98',
+    ),
+    // Faux-concrete panel: light warm grey with a short ladder, no blue.
+    concrete: ladderOf(
+      '#CDCAC2 #C1BDB5 #B6B2AA #ABA79F #9F9B93 #918D85 #5B5955 #A6A29A #86837C #1F1E1C',
+      '#2E2D2A',
+      '#E8E5DC',
     ),
   },
   dark: {
     paper: ladderOf(
       '#403E3C #343331 #2F2E2C #292827 #242322 #1E1D1D #9F9D96 #52514D #6F6E69 #CECDC3',
       '#000000',
+      '#6B6965',
     ),
     walnut: ladderOf(
-      '#70543F #5C3D27 #533724 #483121 #3E2B1D #33241A #9D8977 #765C47 #8A725F #FFFCF0',
+      '#6A5040 #563B2C #4C3428 #432E24 #39271F #2F201A #9D8977 #6E5444 #7E6553 #FFFCF0',
       '#000000',
+      '#A08468',
     ),
     'birch-ply': ladderOf(
       '#C6B599 #B8A383 #A49175 #8E7E66 #786B57 #645949 #3A2E22 #928066 #796953 #FFFCF0',
       '#000000',
+      '#E6D8BC',
       '#7F6E57',
     ),
     'black-lacquer': ladderOf(
       '#454441 #33322F #252423 #1C1B1A #171616 #100F0F #A4A29A #575652 #777570 #FFFCF0',
       '#000000',
+      '#7A7873',
     ),
     steel: ladderOf(
       '#AEB3B7 #7F868C #72787E #63696F #545A5F #474D51 #D5DADF #999FA5 #AAB0B6 #F4F6F8',
       '#000000',
+      '#E3E7EA',
+    ),
+    copper: ladderOf(
+      '#8E6E48 #7A5A38 #6E5033 #61462C #553D26 #483320 #D2B48C #8A6A48 #A07F5A #FFF3DC',
+      '#000000',
+      '#E0BE88',
+    ),
+    concrete: ladderOf(
+      '#8E8C86 #7E7C76 #747069 #6A6660 #5F5B56 #534F4A #B8B5AC #87847D #9A978F #FFFCF0',
+      '#000000',
+      '#B3B0A8',
     ),
   },
 }
@@ -441,11 +495,480 @@ export function materialLadder(material: ShelfMaterial, theme: 'light' | 'dark')
   return LADDERS[theme][material]
 }
 
+// ---------------------------------------------------------------------------------------------
+// Finishes. Every case face is a gradient of its tone, from a lit edge to a shaded one, and the
+// grained materials lay a tiled noise over the face. Both are SVG defs the renderers emit once per
+// scene; `materialDefs` describes them, `materialCss` sets the stop colours per theme, and
+// `faceFill` / `grainFill` give each face its reference. Gradients stay in the face's own box, so a
+// tone step still reads as a step; the grain tiles in user space and is rasterised once per tile.
+
+export type Grain = 'wood' | 'brush' | 'cast' | 'patina'
+
+interface Finish {
+  /** Gradient stops from the lit edge: offset, and a weight toward the sheen (+) or the halo (−). */
+  stops: readonly (readonly [number, number])[]
+  grain: Grain | null
+  /** Tile file under the grain assets folder, for a grain painted from an image. */
+  image?: string
+}
+
+const FINISHES: Record<ShelfMaterial, Finish> = {
+  paper: {
+    stops: [
+      [0, 0.06],
+      [1, -0.09],
+    ],
+    grain: null,
+  },
+  'birch-ply': {
+    stops: [
+      [0, 0.14],
+      [1, -0.1],
+    ],
+    grain: 'wood',
+    image: 'birch-ply.webp',
+  },
+  walnut: {
+    stops: [
+      [0, 0.2],
+      [0.55, 0],
+      [1, -0.18],
+    ],
+    grain: 'wood',
+    image: 'walnut.webp',
+  },
+  // Gloss: a reflection band along the lit edge, then a fall-off into the dark.
+  'black-lacquer': {
+    stops: [
+      [0, 0.34],
+      [0.16, 0.1],
+      [0.5, -0.02],
+      [1, -0.22],
+    ],
+    grain: null,
+  },
+  // Brushed: the highlight smears along the brushing, so brightness bands across the face.
+  steel: {
+    stops: [
+      [0, 0.12],
+      [0.22, -0.1],
+      [0.42, 0.3],
+      [0.58, 0.06],
+      [0.8, -0.12],
+      [1, 0.04],
+    ],
+    grain: 'brush',
+  },
+  // Antiqued: darker at both edges, a soft burnish inside, so a cube reads as one wrapped sheet.
+  copper: {
+    stops: [
+      [0, -0.18],
+      [0.3, 0.3],
+      [0.62, 0],
+      [1, -0.36],
+    ],
+    grain: 'patina',
+  },
+  concrete: {
+    stops: [
+      [0, 0.05],
+      [1, -0.08],
+    ],
+    grain: 'cast',
+  },
+}
+
+/** Where `Finish.image` tiles are served from; the plugin passes its own base. */
+export const GRAIN_ASSETS = '/static/bookcase-grain/'
+
+type GrainDef = { tile: [number, number]; directed: boolean } & (
+  | { image: true }
+  | { opacity: number; noise: DefNode[] }
+)
+
+const GRAINS: Record<Grain, GrainDef> = {
+  // Veneer: an RGBA tile with the rings, pores and comb baked in, dark where the wood is dark and
+  // pale where it is pale, transparent at the mean. Made by docs/verification/bookcase-materials.
+  wood: { tile: [1536, 768], directed: true, image: true },
+  // Brushing: fine lines along the tile with the brightness varying across them.
+  brush: {
+    tile: [480, 48],
+    opacity: 0.36,
+    directed: true,
+    noise: [
+      {
+        tag: 'feTurbulence',
+        attrs: {
+          type: 'fractalNoise',
+          baseFrequency: '0.012 0.5',
+          numOctaves: 2,
+          seed: 7,
+          stitchTiles: 'stitch',
+          result: 'n',
+        },
+      },
+      {
+        tag: 'feColorMatrix',
+        attrs: { in: 'n', type: 'matrix', values: matrix('#000000', 2.2), result: 'd' },
+      },
+      {
+        tag: 'feColorMatrix',
+        attrs: { in: 'n', type: 'matrix', values: matrix('#FFFFFF', 2.2), result: 'l' },
+      },
+      merge(['d', 'l']),
+    ],
+  },
+  // Faux-concrete panel: a faint cloud, trowel streaks that run up the face, a fine speckle.
+  cast: {
+    tile: [256, 256],
+    opacity: 0.24,
+    directed: false,
+    noise: [
+      {
+        tag: 'feTurbulence',
+        attrs: {
+          type: 'fractalNoise',
+          baseFrequency: '0.012',
+          numOctaves: 2,
+          seed: 5,
+          stitchTiles: 'stitch',
+          result: 'c',
+        },
+      },
+      {
+        tag: 'feColorMatrix',
+        attrs: { in: 'c', type: 'matrix', values: matrix('#000000', 1.2), result: 'cd' },
+      },
+      {
+        tag: 'feTurbulence',
+        attrs: {
+          type: 'fractalNoise',
+          baseFrequency: '0.09 0.016',
+          numOctaves: 3,
+          seed: 13,
+          stitchTiles: 'stitch',
+          result: 'v',
+        },
+      },
+      {
+        tag: 'feColorMatrix',
+        attrs: { in: 'v', type: 'matrix', values: matrix('#FFFFFF', 1.1), result: 'vl' },
+      },
+      {
+        tag: 'feTurbulence',
+        attrs: {
+          type: 'turbulence',
+          baseFrequency: '0.8',
+          numOctaves: 1,
+          seed: 9,
+          stitchTiles: 'stitch',
+          result: 't',
+        },
+      },
+      {
+        tag: 'feColorMatrix',
+        attrs: {
+          in: 't',
+          type: 'matrix',
+          values: '0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.3 0.3 0.3 0 -0.14',
+          result: 's',
+        },
+      },
+      merge(['cd', 'vl', 's']),
+    ],
+  },
+  // Antiqued copper: brown clouds and gold burnish at hand scale, smeared a little sideways.
+  patina: {
+    tile: [512, 512],
+    opacity: 0.5,
+    directed: false,
+    noise: [
+      {
+        tag: 'feTurbulence',
+        attrs: {
+          type: 'fractalNoise',
+          baseFrequency: '0.006 0.009',
+          numOctaves: 4,
+          seed: 3,
+          stitchTiles: 'stitch',
+          result: 'n',
+        },
+      },
+      {
+        tag: 'feColorMatrix',
+        attrs: { in: 'n', type: 'matrix', values: matrix('#2B1A0C', 2.1), result: 'd' },
+      },
+      {
+        tag: 'feColorMatrix',
+        attrs: { in: 'n', type: 'matrix', values: matrix('#F2D8A6', 2.1), result: 'l' },
+      },
+      {
+        tag: 'feTurbulence',
+        attrs: {
+          type: 'fractalNoise',
+          baseFrequency: '0.02 0.05',
+          numOctaves: 2,
+          seed: 17,
+          stitchTiles: 'stitch',
+          result: 'w',
+        },
+      },
+      {
+        tag: 'feColorMatrix',
+        attrs: { in: 'w', type: 'matrix', values: matrix('#5A3D22', 1.0), result: 'wd' },
+      },
+      merge(['d', 'l', 'wd']),
+    ],
+  },
+}
+
+/** A plain element tree a renderer turns into SVG: hast in Quartz, a string in the plugin. */
+export interface DefNode {
+  tag: string
+  attrs: Record<string, string | number>
+  children?: DefNode[]
+}
+
+/**
+ * Colour matrix that paints `colour` with the noise's brightness as alpha: a dark colour where the
+ * noise is bright, a light colour where it is dark, so the two halves of one noise tint both ways.
+ */
+function matrix(colour: string, gain: number): string {
+  const [r, g, b] = hexRgb(colour).map(c => c / 255)
+  const dark = r + g + b < 1.5
+  const k = (dark ? gain : -gain) / 3
+  return `0 0 0 0 ${r} 0 0 0 0 ${g} 0 0 0 0 ${b} ${k} ${k} ${k} 0 ${dark ? -gain / 2 : gain / 2}`
+}
+
+function merge(inputs: string[]): DefNode {
+  return {
+    tag: 'feMerge',
+    attrs: {},
+    children: inputs.map(i => ({ tag: 'feMergeNode', attrs: { in: i } })),
+  }
+}
+
+// A declaration: GRAINS above calls it while the module loads.
+function hexRgb(hex: string): [number, number, number] {
+  return [
+    parseInt(hex.slice(1, 3), 16),
+    parseInt(hex.slice(3, 5), 16),
+    parseInt(hex.slice(5, 7), 16),
+  ]
+}
+
+/** sRGB mix of `t` of `b` into `a`. */
+export function mixHex(a: string, b: string, t: number): string {
+  const [ar, ag, ab] = hexRgb(a)
+  const [br, bg, bb] = hexRgb(b)
+  return rgbToHex(ar + (br - ar) * t, ag + (bg - ag) * t, ab + (bb - ab) * t)
+}
+
+const TONES: readonly Tone[] = ['top', 'face', 's3', 's2', 's1', 's0']
+
+const gradientId = (material: ShelfMaterial, tone: Tone) => `bc-g-${material}-${tone}`
+const stopVar = (material: ShelfMaterial, tone: Tone, i: number) =>
+  `--bc-g-${material}-${tone}-${i}`
+
+/**
+ * Colour of one gradient stop. Paper stays on the theme tokens, so its stops are mixes of the
+ * `--bc-*` the scene inherits; every other material gets its ladder's hex for the theme.
+ */
+function stopColour(
+  material: ShelfMaterial,
+  theme: 'light' | 'dark',
+  tone: Tone,
+  w: number,
+): string {
+  const pct = Math.round(Math.abs(w) * 100)
+  if (material === 'paper')
+    return `color-mix(in srgb, var(--bc-${tone}) ${100 - pct}%, ${w > 0 ? 'white' : 'var(--bc-halo)'})`
+  const ladder = LADDERS[theme][material]
+  return mixHex(ladder[tone], w > 0 ? ladder.sheen : ladder.halo, Math.abs(w))
+}
+
+/** Reference for a case face: its tone's gradient, run the way the face is lit. */
+export function faceFill(material: ShelfMaterial, face: Face): string {
+  const id = gradientId(material, face.tone)
+  const o = face.o ?? 'front'
+  if (o === 'top') return `url(#${id}-t)`
+  const across = (o === 'front') === !face.tall
+  return `url(#${id}${across ? '' : '-h'})`
+}
+
+/**
+ * Pattern transforms that lay a tile flat on each face. The projection is parallel, so a face is
+ * an affine image of its plane: tile x goes along the grain (the face's long axis), tile y across
+ * it. World +x projects to (cos30, ½), +y to (cos30, −½) and up to (0, −1).
+ */
+const GRAIN_MAPS: Record<string, string> = {
+  // front face, grain along the run
+  fa: `${COS30} 0.5 0 1`,
+  // front face, grain up
+  fu: `0 -1 ${COS30} 0.5`,
+  // side face, grain along the depth
+  sa: `${COS30} -0.5 0 1`,
+  // side face, grain up
+  su: `0 -1 ${COS30} -0.5`,
+  // top face, grain along the run
+  ta: `${COS30} 0.5 ${COS30} -0.5`,
+  // top face, grain along the depth
+  td: `${COS30} -0.5 ${COS30} 0.5`,
+}
+
+/** Reference for the grain over a case face, null for a material with none. */
+export function grainFill(material: ShelfMaterial, face: Face): string | null {
+  const grain = FINISHES[material].grain
+  if (!grain) return null
+  if (!GRAINS[grain].directed) return `url(#bc-grain-${material})`
+  const o = face.o ?? 'front'
+  const dir = o === 'top' ? (face.tall ? 'td' : 'ta') : `${o[0]}${face.tall ? 'u' : 'a'}`
+  return `url(#bc-grain-${material}-${dir})`
+}
+
+/** True when a scene with this material needs grain overlays. */
+export const hasGrain = (material: ShelfMaterial): boolean => FINISHES[material].grain !== null
+
+/** Reference for the sheen that rounds a book's spine, lit along its lit edge. */
+export function sheenFill(b: WorldBook): string {
+  return b.pose === 'flat' ? 'url(#bc-g-sheen-v)' : 'url(#bc-g-sheen)'
+}
+
+/**
+ * Gradient, filter and pattern defs for the materials in a scene, plus the spine sheen every book
+ * shares. Emit them once in the scene's `<defs>`.
+ */
+export function materialDefs(
+  materials: Iterable<ShelfMaterial>,
+  assets: string = GRAIN_ASSETS,
+): DefNode[] {
+  const defs: DefNode[] = [
+    {
+      tag: 'linearGradient',
+      attrs: { id: 'bc-g-sheen', x1: 0, y1: 0, x2: 1, y2: 0 },
+      children: [
+        { tag: 'stop', attrs: { offset: 0, 'stop-color': '#FFFFFF', 'stop-opacity': 0.16 } },
+        { tag: 'stop', attrs: { offset: 0.35, 'stop-color': '#FFFFFF', 'stop-opacity': 0 } },
+        { tag: 'stop', attrs: { offset: 0.7, 'stop-color': '#000000', 'stop-opacity': 0 } },
+        { tag: 'stop', attrs: { offset: 1, 'stop-color': '#000000', 'stop-opacity': 0.2 } },
+      ],
+    },
+    // A flat book's spine is lit along its top edge.
+    {
+      tag: 'linearGradient',
+      attrs: { id: 'bc-g-sheen-v', href: '#bc-g-sheen', x1: 0, y1: 0, x2: 0, y2: 1 },
+    },
+  ]
+  for (const material of new Set(materials)) {
+    const finish = FINISHES[material]
+    for (const tone of TONES) {
+      const id = gradientId(material, tone)
+      defs.push(
+        {
+          tag: 'linearGradient',
+          attrs: { id, x1: 0, y1: 0, x2: 0, y2: 1 },
+          children: finish.stops.map(([offset], i) => ({
+            tag: 'stop',
+            attrs: { offset, style: `stop-color:var(${stopVar(material, tone, i)})` },
+          })),
+        },
+        {
+          tag: 'linearGradient',
+          attrs: { id: `${id}-h`, href: `#${id}`, x1: 0, y1: 0, x2: 1, y2: 0 },
+        },
+        {
+          tag: 'linearGradient',
+          attrs: { id: `${id}-t`, href: `#${id}`, x1: 0, y1: 1, x2: 1, y2: 0 },
+        },
+      )
+    }
+    if (!finish.grain) continue
+    const grain = GRAINS[finish.grain]
+    const [w, h] = grain.tile
+    const id = `bc-grain-${material}`
+    if ('image' in grain) {
+      defs.push({
+        tag: 'pattern',
+        attrs: { id, patternUnits: 'userSpaceOnUse', width: w, height: h },
+        children: [
+          { tag: 'image', attrs: { href: `${assets}${finish.image}`, width: w, height: h } },
+        ],
+      })
+    } else {
+      defs.push(
+        {
+          tag: 'filter',
+          attrs: {
+            id: `${id}-noise`,
+            x: 0,
+            y: 0,
+            width: '100%',
+            height: '100%',
+            'color-interpolation-filters': 'sRGB',
+          },
+          children: grain.noise,
+        },
+        {
+          tag: 'pattern',
+          attrs: { id, patternUnits: 'userSpaceOnUse', width: w, height: h },
+          children: [
+            {
+              tag: 'rect',
+              attrs: { width: w, height: h, opacity: grain.opacity, filter: `url(#${id}-noise)` },
+            },
+          ],
+        },
+      )
+    }
+    if (grain.directed)
+      for (const [dir, m] of Object.entries(GRAIN_MAPS))
+        defs.push({
+          tag: 'pattern',
+          attrs: { id: `${id}-${dir}`, href: `#${id}`, patternTransform: `matrix(${m} 0 0)` },
+        })
+  }
+  return defs
+}
+
+/**
+ * Tone tokens of each material under `[data-material]`, and every gradient stop colour on the
+ * scene root, for both themes. `scope` is the scene's selector and `dark` the prefix of a rule
+ * that applies in the dark theme.
+ */
+export function materialCss(
+  materials: Iterable<ShelfMaterial>,
+  scope = '.bookcase-scene',
+  dark = ":root[saved-theme='dark'] ",
+): string {
+  const rules: string[] = []
+  const set = new Set(materials)
+  for (const theme of ['light', 'dark'] as const) {
+    const root = theme === 'dark' ? dark : ''
+    const stops: string[] = []
+    for (const material of set) {
+      if (material !== 'paper') {
+        const ladder = materialLadder(material, theme)
+        const tokens = Object.entries(ladder)
+          .filter(([, value]) => value)
+          .map(([key, value]) => `--bc-${key}:${value}`)
+          .join(';')
+        rules.push(`${root}${scope} [data-material='${material}']{${tokens}}`)
+      }
+      for (const tone of TONES)
+        FINISHES[material].stops.forEach(([, w], i) =>
+          stops.push(`${stopVar(material, tone, i)}:${stopColour(material, theme, tone, w)}`),
+        )
+    }
+    if (stops.length > 0) rules.push(`${root}${scope}{${stops.join(';')}}`)
+  }
+  return rules.join('')
+}
+
 /** A filled part in the anatomy idiom: faces, then lines, creases, silhouette and screws. */
 export interface StyleSolid {
   part: StylePart
   material: ShelfMaterial
-  faces: { points: Point[]; tone: Tone }[]
+  faces: Face[]
   lines: { kind: 'bevel' | 'ply' | 'highlight'; segments: Segment[] }[]
   creases: Segment[]
   /** Closed silhouette (boxes and panels). */
@@ -504,9 +1027,9 @@ function boxPart(
   const s = box(x, y, z, w, d, h)
   const solid = solidOf(part, material)
   solid.faces = [
-    { points: s.front, tone: tones.front ?? 'face' },
-    { points: s.side, tone: tones.side ?? 's2' },
-    { points: s.top, tone: tones.top ?? 'top' },
+    { points: s.front, tone: tones.front ?? 'face', o: 'front', tall: h > w },
+    { points: s.side, tone: tones.side ?? 's2', o: 'side', tall: h > d },
+    { points: s.top, tone: tones.top ?? 'top', o: 'top', tall: d > w },
   ]
   if (material === 'birch-ply' && h <= 16) {
     const stripes = [1 / 3, 2 / 3].flatMap(k =>
@@ -564,12 +1087,19 @@ function prismPart(
   for (const [i, [ax, ay]] of q.entries()) {
     if (!visible[i]) continue
     const [bx, by] = next(i)
+    const front = Math.abs(bx - ax) > Math.abs(by - ay)
     solid.faces.push({
       points: [project(ax, ay, z0), project(bx, by, z0), project(bx, by, z1), project(ax, ay, z1)],
-      tone: Math.abs(bx - ax) > Math.abs(by - ay) ? (tones.front ?? 'face') : (tones.side ?? 's2'),
+      tone: front ? (tones.front ?? 'face') : (tones.side ?? 's2'),
+      o: front ? 'front' : 'side',
+      tall: h > Math.hypot(bx - ax, by - ay),
     })
   }
-  solid.faces.push({ points: q.map(([x, y]) => project(x, y, z1)), tone: tones.top ?? 'top' })
+  solid.faces.push({
+    points: q.map(([x, y]) => project(x, y, z1)),
+    tone: tones.top ?? 'top',
+    o: 'top',
+  })
   for (const [i, [x, y]] of q.entries()) {
     const before = visible[(i - 1 + n) % n]
     const [nx, ny] = next(i)
@@ -592,7 +1122,15 @@ function panelPart(
   outline = false,
 ): StyleSolid {
   const solid = solidOf(part, material)
-  solid.faces = [{ points: points.map(at), tone }]
+  const span = (i: 0 | 1 | 2): [number, number] => {
+    const values = points.map(p => p[i])
+    return [Math.min(...values), Math.max(...values)]
+  }
+  const [xs, ys, zs] = [span(0), span(1), span(2)]
+  const o: Orientation = ys[0] === ys[1] ? 'front' : xs[0] === xs[1] ? 'side' : 'top'
+  const length = o === 'front' ? xs[1] - xs[0] : ys[1] - ys[0]
+  const tall = o === 'top' ? ys[1] - ys[0] > xs[1] - xs[0] : zs[1] - zs[0] > length
+  solid.faces = [{ points: points.map(at), tone, o, tall }]
   if (outline) solid.outline = points.map(at)
   return solid
 }
@@ -1253,9 +1791,9 @@ function ladder(ctx: StyleContext): Built {
     ).map(at)
     const solid = solidOf('rail', railMaterial)
     solid.faces = [
-      { points: [A, B, N, F], tone: 'face' },
-      { points: [B, C, D, N], tone: 's2' },
-      { points: [F, N, D, E], tone: 'top' },
+      { points: [A, B, N, F], tone: 'face', o: 'front', tall: true },
+      { points: [B, C, D, N], tone: 's2', o: 'side', tall: true },
+      { points: [F, N, D, E], tone: 'top', o: 'top', tall: true },
     ]
     solid.lines = [
       { kind: 'highlight', segments: [seg([x + 2, y0, FLOOR + 2], [x + 2, y1, zTop - 2])] },
@@ -1322,10 +1860,19 @@ const STYLE_MATERIALS: Record<
 > = {
   straight: ['paper', {}],
   corner: ['walnut', {}],
-  spine: ['steel', {}],
+  spine: ['copper', {}],
   wall: ['birch-ply', {}],
   zigzag: ['black-lacquer', { upright: 'walnut', foot: 'walnut' }],
   ladder: ['birch-ply', { rail: 'steel', stretcher: 'steel' }],
+}
+
+/**
+ * Parts a material brings with it, after the style's own exceptions: a concrete case carries black
+ * boards, a copper case sits on a black plinth.
+ */
+const COMPANIONS: Partial<Record<ShelfMaterial, Partial<Record<StylePart, ShelfMaterial>>>> = {
+  concrete: { board: 'black-lacquer' },
+  copper: { plinth: 'black-lacquer', foot: 'black-lacquer', base: 'black-lacquer' },
 }
 
 export interface PlaceOptions {
@@ -1347,7 +1894,8 @@ export function placeShelves<T>(
   const [main, own] = STYLE_MATERIALS[style]
   const base = typeof materials === 'string' ? materials : main
   const parts = typeof materials === 'string' ? undefined : materials
-  const pick = (part: StylePart): ShelfMaterial => parts?.[part] ?? own[part] ?? base
+  const pick = (part: StylePart): ShelfMaterial =>
+    parts?.[part] ?? own[part] ?? COMPANIONS[base]?.[part] ?? base
   // Runs hold positions in layout.books; callers may renumber `index` (the browser repack does).
   const runs: number[][] = layout.shelves.map(() => [])
   layout.books.forEach((book, i) => runs[book.shelf].push(i))

@@ -15,10 +15,20 @@ import { rootNavSignal } from './root-lifecycle'
 const SVG_NS = 'http://www.w3.org/2000/svg'
 const PRELOAD = 3
 const MAX_SHELF_COVERS = 32
+// Spines get their own slots: a shelf in view shows far more spines than jackets, and a spine
+// texture decodes to about a tenth of a cover.
+const MAX_SHELF_SPINES = 64
 const MAX_DETAIL_SPINES = 4
 const DETAIL_ENTER_PX = 360
 const DETAIL_LEAVE_PX = 280
 const COVER_MARGIN = 120
+// Resident art stays until its book is this far out, so dragging back and forth keeps it.
+const EVICT_MARGIN = 360
+// Prefetch reaches where the camera will be after this much travel at its current velocity.
+const PREFETCH_LOOKAHEAD_MS = 400
+const PREFETCH_MARGIN = 240
+const MAX_PREFETCH_INFLIGHT = 4
+const MAX_PREFETCHED = 48
 
 type Camera = { x: number; y: number; scale: number }
 type LiftGeometry = { x: number; y: number; width: number; height: number; px: number; py: number }
@@ -29,6 +39,7 @@ const GLIDE_MS = 90
 const PULL_MS = 280
 const PULL_DELAY_MS = 160
 const SETTLE_MS = 180
+const WHEEL_SETTLE_MS = 500
 type Drag = { id: number; x: number; y: number; camera: Camera; book: number; moved: boolean }
 type Cover = {
   url: string
@@ -63,19 +74,50 @@ function retainCovers(root: HTMLElement, covers: Map<string, Cover>): void {
     const slug = node.dataset.bookcaseCover
     const cover = slug ? covers.get(slug) : undefined
     if (!cover) continue
-    if (node instanceof HTMLImageElement) node.src = cover.url
-    else node.dataset.cover = cover.url
-    if (cover.art) node.dataset.spineArt = cover.art
-    if (cover.artDetail) {
+    if (node instanceof HTMLImageElement) {
+      if (node.getAttribute('src') !== cover.url) node.src = cover.url
+      continue
+    }
+    if (node.dataset.cover !== cover.url) node.dataset.cover = cover.url
+    if (cover.art && node.dataset.spineArt !== cover.art) node.dataset.spineArt = cover.art
+    if (cover.artDetail && node.dataset.spineArtDetail !== cover.artDetail) {
       node.dataset.spineArtDetail = cover.artDetail
       node.dataset.spineArtDetailWidth = cover.artDetailWidth ?? ''
       node.dataset.spineArtDetailHeight = cover.artDetailHeight ?? ''
     }
     if (node.hasAttribute('data-spine-sampled')) {
-      if (cover.spine) node.style.setProperty('--spine', cover.spine)
-      if (cover.ink) node.style.setProperty('--spine-ink', cover.ink)
+      if (cover.spine && node.style.getPropertyValue('--spine') !== cover.spine)
+        node.style.setProperty('--spine', cover.spine)
+      if (cover.ink && node.style.getPropertyValue('--spine-ink') !== cover.ink)
+        node.style.setProperty('--spine-ink', cover.ink)
     }
   }
+}
+
+function readBookBounds(book: SVGGElement): DOMRect {
+  const candidate = book.lastElementChild?.previousElementSibling
+  const edge = candidate?.classList.contains('bc-edge') ? candidate : book.querySelector('.bc-edge')
+  const points = edge?.getAttribute('points')
+  if (points) {
+    let minX = Infinity
+    let minY = Infinity
+    let maxX = -Infinity
+    let maxY = -Infinity
+    for (const pair of points.trim().split(/\s+/)) {
+      const comma = pair.indexOf(',')
+      if (comma < 0) continue
+      const x = Number(pair.slice(0, comma))
+      const y = Number(pair.slice(comma + 1))
+      if (x < minX) minX = x
+      if (x > maxX) maxX = x
+      if (y < minY) minY = y
+      if (y > maxY) maxY = y
+    }
+    if (Number.isFinite(minX) && Number.isFinite(minY)) {
+      return new DOMRect(minX, minY, maxX - minX, maxY - minY)
+    }
+  }
+  return book.getBBox()
 }
 
 type ArtworkFace = 'cover' | 'spine'
@@ -208,6 +250,15 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
   const indexPane = root.querySelector<HTMLElement>('.bookcase-index')
   const dialog = root.querySelector<HTMLDialogElement>('.bookcase-preview')
   if (!scene || !world || !viewport || !indexPane || !dialog) return
+  const scrollSpace = document.createElement('div')
+  scrollSpace.className = 'bookcase-scroll-space'
+  scrollSpace.setAttribute('aria-hidden', 'true')
+  const pan = document.createElement('div')
+  pan.className = 'bookcase-pan'
+  world.before(scrollSpace, pan)
+  pan.append(world)
+  let viewportWidth = viewport.clientWidth
+  let viewportHeight = viewport.clientHeight
   retainCovers(root, covers)
   root.dataset.bookcaseReady = ''
   const signal = rootNavSignal(root)
@@ -219,7 +270,7 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
   const spineLengths = new Map<number, number>()
   const spineBounds = new Map<number, { x: number; y: number; width: number; height: number }>()
   const cacheBookGeometry = (index: number, book: SVGGElement) => {
-    bookBounds.set(index, book.getBBox())
+    bookBounds.set(index, readBookBounds(book))
     const transform = book.dataset.spineTransform
     const [width, height] = (book.dataset.spineSize ?? '').split(' ').map(Number)
     if (!transform || !Number.isFinite(width) || !Number.isFinite(height)) return
@@ -240,9 +291,17 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
   for (const book of scene.querySelectorAll<SVGGElement>('.bc-book'))
     books.set(Number(book.dataset.bookIndex), book)
   const residentCovers = new Map<string, SVGImageElement>()
+  // Base art the camera is heading toward, fetched and decoded into detached images so a new
+  // resident node finds its URL in the document's image cache. Insertion order is recency.
+  const prefetched = new Map<string, { image: HTMLImageElement; settled: boolean }>()
+  let prefetching = 0
+  let prefetchTask: number | undefined
+  const idle = typeof requestIdleCallback === 'function'
   let coverWindow = ''
   let [originX, originY] = (scene.dataset.origin ?? '0 0').split(' ').map(Number)
   let box = scene.viewBox.baseVal
+  world.style.width = `${box.width}px`
+  world.style.height = `${box.height}px`
   for (const [index, book] of books) cacheBookGeometry(index, book)
   const inventory = new Map(
     [...books].map(([index, book]) => [
@@ -335,6 +394,8 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
     scene.replaceChildren(...next.childNodes)
     ;[originX, originY] = (scene.dataset.origin ?? '0 0').split(' ').map(Number)
     box = scene.viewBox.baseVal
+    world.style.width = `${box.width}px`
+    world.style.height = `${box.height}px`
     books.clear()
     bookBounds.clear()
     spineLengths.clear()
@@ -349,7 +410,7 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
       cacheBookGeometry(index, book)
     }
     fitted = true
-    resize()
+    updateFit()
     return true
   }
 
@@ -363,8 +424,6 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
   const zoomIn = root.querySelector<HTMLButtonElement>('[data-camera="in"]')
   const preloaded = new Map<string, HTMLImageElement>()
   let camera: Camera = { x: 0, y: 0, scale: 1 }
-  let viewportWidth = viewport.clientWidth
-  let viewportHeight = viewport.clientHeight
   let fitScale = 1
   let fitted = true
   let focus = -1
@@ -374,25 +433,37 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
   // The pull of the lifted copy, and copies still sliding home with the covers they exposed.
   let pull: Animation | undefined
   let reveal: Animation | undefined
-  const settling = new Set<{ svg: SVGSVGElement; cover?: SVGImageElement }>()
+  const settling = new Set<{ svg: SVGSVGElement; cover?: SVGImageElement; done: () => void }>()
   // A camera the view glides toward, and when it last stepped.
   let aim: Camera | undefined
   let steppedAt = 0
+  // The last painted camera and its screen velocity in px/ms, for prefetch.
+  let painted = { x: 0, y: 0, scale: 1, at: 0 }
+  let velocity = { x: 0, y: 0 }
   let drag: Drag | undefined
   let frame = 0
   let indexFrame = 0
   let followIndexScroll = false
-  let browsePosition = 0
-  const scrollStep = Math.max(1, Number(root.dataset.scrollStep) || 56)
+  let wheelTimer: number | undefined
+  const cancelWheel = () => {
+    if (wheelTimer !== undefined) clearTimeout(wheelTimer)
+    wheelTimer = undefined
+  }
+  let scrollOrigin = { x: 0, y: 0 }
+  let scrollLayout = ''
+  let paintedScroll = { left: 0, top: 0 }
+  let cameraDirty = true
   let previewWheelDelta = 0
   let previewWheelAt = 0
   let previewWheelStep = -Infinity
+  // Commit preview browsing to the shelf on close, so its SVG and index stay still underneath.
+  let previewIndex = -1
   let returnFocus: HTMLElement | undefined
   let searchOpen: Map<HTMLDetailsElement, boolean> | undefined
   let visibleEntries: HTMLLIElement[] | undefined
 
   const matches = () =>
-    (visibleEntries ??= [...indexPane.querySelectorAll<HTMLLIElement>('.bookcase-entry')].filter(
+    (visibleEntries ??= entries.filter(
       entry =>
         entry.style.display !== 'none' &&
         !entry.hasAttribute('data-topic-hidden') &&
@@ -409,8 +480,13 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
   }
   const paint = (now = performance.now()) => {
     frame = 0
-    if (signal.aborted) return
+    if (signal.aborted || dialog.open) return
+    if (!cameraDirty && !aim) {
+      camera.x = scrollOrigin.x - viewport.scrollLeft
+      camera.y = scrollOrigin.y - viewport.scrollTop
+    }
     if (aim) {
+      cameraDirty = true
       // Each frame closes most of the gap (about 95% in 270 ms), so a new aim mid-glide carries
       // on from where the view is. Zoom runs in log scale about the viewport centre, so going from
       // the whole case to a shelf reads as one dolly-in rather than a slide and a jump.
@@ -433,18 +509,53 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
         aim = undefined
       } else schedule()
     }
-    bound(camera)
-    world.style.width = `${box.width * camera.scale}px`
-    world.style.height = `${box.height * camera.scale}px`
-    world.style.transform = `translate(${camera.x}px, ${camera.y}px)`
-    placeLift()
+    if (cameraDirty) bound(camera)
+    const elapsed = now - painted.at
+    if (elapsed > 0 && elapsed < 100 && camera.scale === painted.scale) {
+      velocity = {
+        x: velocity.x * 0.4 + ((camera.x - painted.x) / elapsed) * 0.6,
+        y: velocity.y * 0.4 + ((camera.y - painted.y) / elapsed) * 0.6,
+      }
+    } else velocity = { x: 0, y: 0 }
+    const moved = camera.x !== painted.x || camera.y !== painted.y || camera.scale !== painted.scale
+    painted = { ...camera, at: now }
+    const layout = `${viewportWidth}:${viewportHeight}:${box.width}:${box.height}:${camera.scale}`
+    if (cameraDirty && layout !== scrollLayout) {
+      scrollLayout = layout
+      scrollOrigin = {
+        x: viewportWidth - Math.min(viewportWidth, box.width * camera.scale) * 0.3,
+        y: viewportHeight - Math.min(viewportHeight, box.height * camera.scale) * 0.3,
+      }
+      const px = Math.min(128 * camera.scale, scrollOrigin.x)
+      const py = Math.min(128 * camera.scale, scrollOrigin.y)
+      scrollSpace.style.width = `${box.width * camera.scale + scrollOrigin.x * 2}px`
+      scrollSpace.style.height = `${box.height * camera.scale + scrollOrigin.y * 2}px`
+      pan.style.left = `${scrollOrigin.x - px}px`
+      pan.style.top = `${scrollOrigin.y - py}px`
+      pan.style.width = `${box.width * camera.scale + px * 2}px`
+      pan.style.height = `${box.height * camera.scale + py * 2}px`
+      world.style.left = `${px}px`
+      world.style.top = `${py}px`
+      world.style.transform = `scale(${camera.scale})`
+    }
+    if (cameraDirty) {
+      const left = scrollOrigin.x - camera.x
+      const top = scrollOrigin.y - camera.y
+      if (Math.abs(viewport.scrollLeft - left) > 0.5) viewport.scrollLeft = left
+      if (Math.abs(viewport.scrollTop - top) > 0.5) viewport.scrollTop = top
+      paintedScroll = { left: viewport.scrollLeft, top: viewport.scrollTop }
+      cameraDirty = false
+    }
     refreshShelfCovers()
+    if (moved) schedulePrefetch()
     if (zoomOut) zoomOut.disabled = camera.scale <= fitScale + 0.001
     if (zoomIn) zoomIn.disabled = camera.scale >= maxScale() - 0.001
   }
   function refreshShelfCovers(): void {
     const pixelRatio = Math.min(2, window.devicePixelRatio || 1)
-    const key = `${focus}:${Math.round(camera.x / 64)}:${Math.round(camera.y / 64)}:${Math.round(camera.scale * 32)}:${viewportWidth}:${viewportHeight}:${pixelRatio}`
+    // A moving camera keeps detail spines it has but starts no new detail decodes.
+    const moving = Boolean(drag?.moved || aim || wheelTimer !== undefined)
+    const key = `${focus}:${Math.round(camera.x / 64)}:${Math.round(camera.y / 64)}:${Math.round(camera.scale * 32)}:${viewportWidth}:${viewportHeight}:${pixelRatio}:${moving}`
     if (key === coverWindow) return
     coverWindow = key
     const candidates: {
@@ -453,6 +564,7 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
       key: string
       score: number
       exposed: boolean
+      outside: boolean
       detail?: boolean
     }[] = []
     for (const [index, book] of books) {
@@ -462,29 +574,30 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
       const height = bounds.height * camera.scale
       const x = (bounds.x - originX) * camera.scale + camera.x
       const y = (bounds.y - originY) * camera.scale + camera.y
-      if (
-        height < 72 ||
-        x + width < -COVER_MARGIN ||
-        x > viewportWidth + COVER_MARGIN ||
-        y + height < -COVER_MARGIN ||
-        y > viewportHeight + COVER_MARGIN
-      )
-        continue
+      const gap = Math.max(-x - width, x - viewportWidth, -y - height, y - viewportHeight)
+      if (height < 72 || gap > EVICT_MARGIN) continue
+      // Past the add margin a book keeps the art it has but gets no new art.
+      const outside = gap > COVER_MARGIN
       const end = !book.nextElementSibling?.matches('.bc-book:not([data-lifted])')
       const distance =
         Math.abs(y + height / 2 - viewportHeight / 2) +
         Math.abs(x + width / 2 - viewportWidth / 2) * 0.25
-      if (book.dataset.coverTransform && book.dataset.cover)
+      if (
+        book.dataset.coverTransform &&
+        book.dataset.cover &&
+        (!outside || residentCovers.has(`${index}:cover`))
+      )
         candidates.push({
           index,
           face: 'cover',
           key: `${index}:cover`,
           score: distance,
           exposed: end,
+          outside,
         })
-      if (book.dataset.spineArt) {
-        const key = `${index}:spine`
-        const resident = residentCovers.get(key)
+      const key = `${index}:spine`
+      const resident = residentCovers.get(key)
+      if (book.dataset.spineArt && (!outside || resident)) {
         const detailed =
           resident?.dataset.spineResolution === 'detail' ||
           Boolean(resident && spineDecoders.has(resident))
@@ -504,8 +617,10 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
           key,
           score: distance * 0.5,
           exposed: false,
+          outside,
           detail: Boolean(
             visible &&
+            (detailed || !moving) &&
             book.dataset.spineArtDetail &&
             book.dataset.spineArtDetailFailed !== book.dataset.spineArtDetail &&
             length > (detailed ? DETAIL_LEAVE_PX : DETAIL_ENTER_PX),
@@ -513,10 +628,17 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
         })
       }
     }
-    // Exposed jackets need a slot even at the top or bottom of the fitted case.
+    // Exposed jackets need a slot even at the top or bottom of the fitted case; art kept past
+    // the add margin only fills slots nothing nearer wants.
+    const slots = { cover: MAX_SHELF_COVERS, spine: MAX_SHELF_SPINES }
     const wanted = candidates
-      .sort((a, b) => Number(b.exposed) - Number(a.exposed) || a.score - b.score)
-      .slice(0, MAX_SHELF_COVERS)
+      .sort(
+        (a, b) =>
+          Number(b.exposed) - Number(a.exposed) ||
+          Number(a.outside) - Number(b.outside) ||
+          a.score - b.score,
+      )
+      .filter(candidate => slots[candidate.face]-- > 0)
     const keys = new Set(wanted.map(candidate => candidate.key))
     for (const [key, image] of residentCovers) {
       if (keys.has(key) && image.isConnected) continue
@@ -550,7 +672,121 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
   const schedule = () => {
     if (!frame) frame = requestAnimationFrame(paint)
   }
+
+  const settlePrefetch = (url: string) => {
+    const entry = prefetched.get(url)
+    if (!entry || entry.settled) return
+    entry.settled = true
+    prefetching--
+  }
+  const dropPrefetch = (url: string) => {
+    const entry = prefetched.get(url)
+    if (!entry) return
+    settlePrefetch(url)
+    prefetched.delete(url)
+    // Clearing the source aborts a load that no resident node shares.
+    entry.image.removeAttribute('src')
+  }
+  // Ranks the base art (never the detail tier) of books in the views the camera is heading
+  // toward: its position after the lookahead at the current velocity, and a glide's target.
+  function planPrefetch(): void {
+    prefetchTask = undefined
+    if (signal.aborted || dialog?.open) return
+    const recent = performance.now() - painted.at < 150
+    const dx = recent ? clamp(velocity.x * PREFETCH_LOOKAHEAD_MS, -viewportWidth, viewportWidth) : 0
+    const dy = recent
+      ? clamp(velocity.y * PREFETCH_LOOKAHEAD_MS, -viewportHeight, viewportHeight)
+      : 0
+    const views = [{ camera, dx, dy }]
+    if (aim) views.push({ camera: aim, dx: 0, dy: 0 })
+    const ranked: { url: string; score: number }[] = []
+    for (const [index, book] of books) {
+      const bounds = bookBounds.get(index)
+      if (!bounds) continue
+      let score = Infinity
+      for (const view of views) {
+        const { scale } = view.camera
+        const width = bounds.width * scale
+        const height = bounds.height * scale
+        const x = (bounds.x - originX) * scale + view.camera.x
+        const y = (bounds.y - originY) * scale + view.camera.y
+        if (height < 72) continue
+        // The swept window between now and the projected view, measured in this view's pixels.
+        const gap = Math.max(
+          Math.min(0, -view.dx) - x - width,
+          x - Math.max(viewportWidth, viewportWidth - view.dx),
+          Math.min(0, -view.dy) - y - height,
+          y - Math.max(viewportHeight, viewportHeight - view.dy),
+        )
+        if (gap > PREFETCH_MARGIN) continue
+        // Nearest the current viewport first: that art is needed soonest.
+        score = Math.min(
+          score,
+          Math.max(0, -x - width, x - viewportWidth) + Math.max(0, -y - height, y - viewportHeight),
+        )
+      }
+      if (score === Infinity) continue
+      const spine = book.dataset.spineArt
+      if (
+        spine?.includes('/static/bookcase-spines/') &&
+        book.dataset.spineArtFailed !== spine &&
+        !residentCovers.has(`${index}:spine`)
+      )
+        ranked.push({ url: spine, score: score * 0.5 })
+      const cover = book.dataset.cover
+      if (
+        book.dataset.coverTransform &&
+        cover?.includes('/static/bookcase/') &&
+        book.dataset.coverFailed !== cover &&
+        !residentCovers.has(`${index}:cover`)
+      )
+        ranked.push({ url: cover, score })
+    }
+    const wanted = ranked
+      .sort((a, b) => a.score - b.score)
+      .slice(0, MAX_PREFETCHED)
+      .map(entry => entry.url)
+    // A resident node shares the load and its decode, so its prefetch is kept.
+    const keep = new Set(wanted)
+    for (const image of residentCovers.values()) keep.add(image.getAttribute('href') ?? '')
+    for (const [url, entry] of prefetched) if (!entry.settled && !keep.has(url)) dropPrefetch(url)
+    // Refresh recency from least to most wanted, so eviction drops the least wanted first.
+    for (const url of [...wanted].reverse()) {
+      const entry = prefetched.get(url)
+      if (!entry) continue
+      prefetched.delete(url)
+      prefetched.set(url, entry)
+    }
+    for (const url of wanted) {
+      if (prefetching >= MAX_PREFETCH_INFLIGHT) break
+      if (prefetched.has(url)) continue
+      const image = new Image()
+      image.decoding = 'async'
+      image.fetchPriority = 'low'
+      prefetched.set(url, { image, settled: false })
+      prefetching++
+      image.src = url
+      const settle = () => {
+        if (prefetched.get(url)?.image !== image) return
+        settlePrefetch(url)
+        schedulePrefetch()
+      }
+      void image.decode().then(settle, settle)
+    }
+    for (const url of prefetched.keys()) {
+      if (prefetched.size <= MAX_PREFETCHED) break
+      dropPrefetch(url)
+    }
+  }
+  function schedulePrefetch(): void {
+    if (prefetchTask !== undefined || signal.aborted) return
+    prefetchTask = idle
+      ? requestIdleCallback(planPrefetch, { timeout: 100 })
+      : window.setTimeout(planPrefetch, 50)
+  }
   const fit = () => {
+    cancelWheel()
+    cameraDirty = true
     fitted = true
     aim = undefined
     camera = {
@@ -558,9 +794,15 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
       y: (viewportHeight - box.height * fitScale) / 2,
       scale: fitScale,
     }
-    schedule()
+    if (frame) {
+      cancelAnimationFrame(frame)
+      frame = 0
+    }
+    paint()
   }
   const zoom = (factor: number, x = viewportWidth / 2, y = viewportHeight / 2) => {
+    cancelWheel()
+    cameraDirty = true
     const scale = clamp(camera.scale * factor, fitScale, maxScale())
     const ratio = scale / camera.scale
     aim = undefined
@@ -624,28 +866,39 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
     const home = books.get(liftedIndex(previous))
     const spine = previous.querySelector<SVGImageElement>('.bc-spine-art')
     if (spine) setSpineResolution(spine, false)
-    const settle = { svg: previous, cover }
-    const done = () => {
-      settling.delete(settle)
-      previous.remove()
-      removeExposedCover(cover)
-      if (home && liftedIndex(lifted) !== liftedIndex(previous)) {
-        home.removeAttribute('data-lifted')
-        coverWindow = ''
-        if (!signal.aborted) schedule()
-      }
+    let finished = false
+    const settle = {
+      svg: previous,
+      cover,
+      done: () => {
+        if (finished) return
+        finished = true
+        settling.delete(settle)
+        for (const image of previous.querySelectorAll<SVGImageElement>('.bc-spine-art'))
+          cancelSpineDetail(image)
+        previous.remove()
+        removeExposedCover(cover)
+        if (home && liftedIndex(lifted) !== liftedIndex(previous)) {
+          home.removeAttribute('data-lifted')
+          coverWindow = ''
+          if (!signal.aborted) schedule()
+        }
+      },
     }
-    if (reducedMotion.matches) return done()
+    if (reducedMotion.matches) return settle.done()
+    while (settling.size >= 2) {
+      const oldest = settling.values().next().value
+      if (!oldest) break
+      oldest.done()
+    }
     settling.add(settle)
     previous
-      .animate(
-        [
-          { translate: '0px 0px' },
-          { translate: `${-px * camera.scale}px ${-py * camera.scale}px` },
-        ],
-        { duration: SETTLE_MS, easing: 'cubic-bezier(0.4, 0, 1, 1)', fill: 'forwards' },
-      )
-      .finished.then(done, done)
+      .animate([{ translate: '0px 0px' }, { translate: `${-px}px ${-py}px` }], {
+        duration: SETTLE_MS,
+        easing: 'cubic-bezier(0.4, 0, 1, 1)',
+        fill: 'forwards',
+      })
+      .finished.then(settle.done, settle.done)
   }
 
   // Puts the lifted copy back on its shelf without lifting another.
@@ -677,8 +930,11 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
     reveal = undefined
     lifted = undefined
     exposedCover = undefined
-    const neighbors = [...(book.parentElement?.querySelectorAll<SVGGElement>('.bc-book') ?? [])]
-    const neighbor = neighbors[neighbors.indexOf(book) - 1]
+    const prevSibling = book.previousElementSibling
+    const neighbor =
+      prevSibling instanceof SVGGElement && prevSibling.classList.contains('bc-book')
+        ? prevSibling
+        : undefined
     // The cover the last copy uncovered stays if the new copy uncovers the same book.
     const kept = previousCover && neighbor?.contains(previousCover) ? previousCover : undefined
     if (previous && previousGeometry)
@@ -713,25 +969,45 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
     placeLift()
     if (still) return
     const { px, py } = liftGeometry
-    pull = svg.animate(
-      [{ translate: `${-px * camera.scale}px ${-py * camera.scale}px` }, { translate: '0px 0px' }],
-      { duration: PULL_MS, easing: 'cubic-bezier(0.2, 0, 0, 1)', fill: 'backwards' },
-    )
+    pull = svg.animate([{ translate: `${-px}px ${-py}px` }, { translate: '0px 0px' }], {
+      duration: PULL_MS,
+      easing: 'cubic-bezier(0.2, 0, 0, 1)',
+      fill: 'backwards',
+    })
   }
 
   function placeLift(): void {
     if (!lifted || !liftGeometry) return
     const { x, y, width, height, px, py } = liftGeometry
-    lifted.style.left = `${x * camera.scale}px`
-    lifted.style.top = `${y * camera.scale}px`
-    lifted.style.width = `${width * camera.scale}px`
-    lifted.style.height = `${height * camera.scale}px`
-    lifted.style.transform = `translate(${px * camera.scale}px, ${py * camera.scale}px)`
+    lifted.style.left = `${x}px`
+    lifted.style.top = `${y}px`
+    lifted.style.width = `${width}px`
+    lifted.style.height = `${height}px`
+    lifted.style.transform = `translate(${px}px, ${py}px)`
   }
 
   const copyDetail = (row: HTMLLIElement, target: Element | null) => {
     const detail = row.querySelector('.bookcase-entry-detail')
     target?.replaceChildren(...[...(detail?.childNodes ?? [])].map(node => node.cloneNode(true)))
+  }
+
+  const preloadCovers = (visible: HTMLLIElement[], position: number) => {
+    const urls = new Set<string>()
+    for (let i = position - PRELOAD; i <= position + PRELOAD; i++) {
+      const neighbor = visible[i]
+      const url = neighbor
+        ? books.get(Number(neighbor.dataset.bookIndex))?.dataset.cover
+        : undefined
+      if (url) urls.add(url)
+    }
+    for (const url of preloaded.keys()) if (!urls.has(url)) preloaded.delete(url)
+    for (const url of urls) {
+      if (preloaded.has(url)) continue
+      const image = new Image()
+      image.decoding = 'async'
+      image.src = url
+      preloaded.set(url, image)
+    }
   }
 
   const select = (index: number, reveal = false) => {
@@ -760,35 +1036,22 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
     if (shelfLabel)
       shelfLabel.textContent = (topic ? row.dataset.topicShelf : groupLabel?.textContent) ?? ''
     const visible = matches()
-    browsePosition = visible.indexOf(row)
+    const position = visible.indexOf(row)
     if (readout)
-      readout.textContent = `${String(visible.indexOf(row) + 1).padStart(3, '0')} / ${visible.length}`
+      readout.textContent = `${String(position + 1).padStart(3, '0')} / ${visible.length}`
     if (
-      !lifted ||
-      lifted.querySelector<SVGGElement>('.bc-book')?.dataset.bookIndex !== String(index)
+      !dialog.open &&
+      (!lifted ||
+        lifted.querySelector<SVGGElement>('.bc-book')?.dataset.bookIndex !== String(index))
     )
       lift(index)
-    const urls = new Set<string>()
-    for (let i = browsePosition - PRELOAD; i <= browsePosition + PRELOAD; i++) {
-      const neighbor = visible[i]
-      const url = neighbor
-        ? books.get(Number(neighbor.dataset.bookIndex))?.dataset.cover
-        : undefined
-      if (url) urls.add(url)
-    }
-    for (const url of preloaded.keys()) if (!urls.has(url)) preloaded.delete(url)
-    for (const url of urls) {
-      if (preloaded.has(url)) continue
-      const image = new Image()
-      image.decoding = 'async'
-      image.src = url
-      preloaded.set(url, image)
-    }
+    preloadCovers(visible, position)
   }
 
   // Nothing is chosen until a click, the keyboard or the wheel picks a book; Escape, a click on
   // the empty stage or leaving the bookcase puts it back on its shelf.
   const deselect = () => {
+    cancelWheel()
     const row = entryByIndex.get(focus)
     row?.removeAttribute('data-current')
     row?.querySelector('.bookcase-entry-link')?.removeAttribute('aria-current')
@@ -798,25 +1061,23 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
     if (shelfLabel) shelfLabel.textContent = ''
   }
 
-  // A jump to a book glides; scroll-browsing passes `glide` false, since the wheel already moves
-  // the view in small steps.
-  const focusCamera = (index: number, towards = index, progress = 0, glide = true) => {
+  const focusCamera = (index: number) => {
+    cancelWheel()
+    cameraDirty = true
     const book = books.get(index)
     if (!book) return
     const scale = Math.max(
       fitScale,
       Math.min(1.25, viewportHeight / 600, viewportWidth / (box.width + 80)),
     )
-    const startY = Number(book.dataset.cy)
-    const endY = Number(books.get(towards)?.dataset.cy ?? startY)
-    const y = startY + (endY - startY) * progress - originY
+    const y = Number(book.dataset.cy) - originY
     const next = {
       x: (viewportWidth - box.width * scale) / 2,
       y: viewportHeight / 2 - y * scale,
       scale,
     }
     fitted = false
-    if (glide && !reducedMotion.matches) {
+    if (!reducedMotion.matches) {
       if (!aim) steppedAt = performance.now()
       aim = next
       // The book waits for the view to close in before it slides out.
@@ -831,11 +1092,12 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
     schedule()
   }
 
-  const renderPreview = () => {
-    const row = entryByIndex.get(focus)
+  const renderPreview = (enter = false) => {
+    const row = entryByIndex.get(previewIndex)
     if (!row) return
     const visible = matches()
     const position = visible.indexOf(row)
+    preloadCovers(visible, position)
     const link = row.querySelector<HTMLAnchorElement>('.bookcase-entry-link')
     const previewLink = dialog.querySelector<HTMLAnchorElement>('.bookcase-preview-link')
     const title = row.querySelector('.bookcase-entry-title')?.textContent ?? ''
@@ -853,7 +1115,7 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
       previewLink.dataset.slug = link.dataset.slug ?? ''
     }
     copyDetail(row, dialog.querySelector('.bookcase-preview-detail'))
-    const book = books.get(focus)
+    const book = books.get(previewIndex)
     if (book) {
       const style = book.style
       void hardcover
@@ -870,27 +1132,29 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
           spineArtDetailHeight: Number(book.dataset.spineArtDetailHeight) || undefined,
         })
         .then(ready => {
-          if (ready && dialog.open) hardcover?.reveal()
+          if (ready && enter && dialog.open) hardcover?.reveal()
         })
     }
   }
 
   const openPreview = (index: number) => {
-    select(index, true)
     if (!dialog.open) {
       const active = document.activeElement
       returnFocus = active instanceof HTMLElement && active !== document.body ? active : undefined
       dialog.showModal()
     }
-    renderPreview()
+    aim = undefined
+    previewIndex = index
+    previewWheelDelta = 0
+    previewWheelStep = -Infinity
+    renderPreview(true)
   }
   const browsePreview = (delta: number) => {
     const visible = matches()
-    const position = visible.findIndex(entry => Number(entry.dataset.bookIndex) === focus)
+    const position = visible.findIndex(entry => Number(entry.dataset.bookIndex) === previewIndex)
     const row = visible[position + delta]
     if (!row) return
-    select(Number(row.dataset.bookIndex), true)
-    focusCamera(focus)
+    previewIndex = Number(row.dataset.bookIndex)
     renderPreview()
   }
 
@@ -901,10 +1165,39 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
         ? height
         : 1
 
+  const finishWheel = () => {
+    wheelTimer = undefined
+    if (signal.aborted || dialog.open) return
+    camera.x = scrollOrigin.x - viewport.scrollLeft
+    camera.y = scrollOrigin.y - viewport.scrollTop
+    schedule()
+  }
+
+  let hoverPoint = { x: -1, y: -1 }
+
+  viewport.addEventListener(
+    'scroll',
+    () => {
+      const left = viewport.scrollLeft
+      const top = viewport.scrollTop
+      // Native paging or autoscroll interrupts a glide; our own camera writes retain it.
+      if (left !== paintedScroll.left || top !== paintedScroll.top) {
+        fitted = false
+        aim = undefined
+        cameraDirty = false
+      }
+      camera.x = scrollOrigin.x - left
+      camera.y = scrollOrigin.y - top
+      paintedScroll = { left, top }
+      schedule()
+    },
+    { passive: true, signal },
+  )
   viewport.addEventListener(
     'pointerdown',
     event => {
       if (!event.isPrimary || event.button !== 0) return
+      cancelWheel()
       const target = event.target
       const book = target instanceof Element ? target.closest<SVGGElement>('.bc-book') : null
       drag = {
@@ -922,7 +1215,24 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
   viewport.addEventListener(
     'pointermove',
     event => {
-      if (!drag || event.pointerId !== drag.id) return
+      if (!drag) {
+        if (
+          event.pointerType === 'touch' ||
+          event.buttons !== 0 ||
+          dialog.open ||
+          wheelTimer !== undefined ||
+          (event.clientX === hoverPoint.x && event.clientY === hoverPoint.y)
+        )
+          return
+        hoverPoint = { x: event.clientX, y: event.clientY }
+        const target = event.target
+        const book = target instanceof Element ? target.closest<SVGGElement>('.bc-book') : null
+        if (!book) return
+        const index = Number(book.dataset.bookIndex)
+        if (index >= 0 && index !== focus) select(index, true)
+        return
+      }
+      if (event.pointerId !== drag.id) return
       const dx = event.clientX - drag.x
       const dy = event.clientY - drag.y
       if (!drag.moved && Math.hypot(dx, dy) < 5) return
@@ -931,6 +1241,7 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
       viewport.dataset.dragging = ''
       aim = undefined
       camera = { ...drag.camera, x: drag.camera.x + dx, y: drag.camera.y + dy }
+      cameraDirty = true
       schedule()
     },
     { signal },
@@ -946,6 +1257,8 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
         viewport.releasePointerCapture(event.pointerId)
       if (!gesture.moved && gesture.book >= 0) openPreview(gesture.book)
       else if (!gesture.moved && focus >= 0) deselect()
+      // A settled camera may start the detail decodes the drag held back.
+      else if (gesture.moved) schedule()
     },
     { signal },
   )
@@ -959,12 +1272,14 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
     'keydown',
     event => {
       if (event.target !== viewport) return
+      cancelWheel()
       if (event.key === 'Home') fit()
       else if (event.key === '+' || event.key === '=') zoom(1.35)
       else if (event.key === '-') zoom(1 / 1.35)
       else if (event.key === 'Enter' && focus >= 0) openPreview(focus)
       else if (event.key === 'Escape' && focus >= 0) deselect()
       else if (event.key.startsWith('Arrow')) {
+        cameraDirty = true
         aim = undefined
         if (event.key === 'ArrowLeft') camera.x += 48
         if (event.key === 'ArrowRight') camera.x -= 48
@@ -980,8 +1295,8 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
   viewport.addEventListener(
     'wheel',
     event => {
-      event.preventDefault()
       if (event.ctrlKey || event.metaKey) {
+        event.preventDefault()
         const bounds = viewport.getBoundingClientRect()
         zoom(
           Math.exp(-event.deltaY * 0.01),
@@ -989,31 +1304,13 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
           event.clientY - bounds.top,
         )
       } else {
-        const unit = wheelUnit(event, viewportHeight)
-        if (Math.abs(event.deltaX) > Math.abs(event.deltaY) || event.shiftKey) {
-          aim = undefined
-          camera.x -= (event.deltaX || event.deltaY) * unit
-          fitted = false
-          schedule()
-          return
-        }
-        const visible = matches()
-        if (!visible.length) return
-        const position = clamp(
-          browsePosition + (event.deltaY * unit) / scrollStep,
-          0,
-          visible.length - 1,
-        )
-        const selected = Number(visible[Math.round(position)].dataset.bookIndex)
-        if (selected !== focus) select(selected, true)
-        browsePosition = position
-        const start = Math.floor(position)
-        focusCamera(
-          Number(visible[start].dataset.bookIndex),
-          Number(visible[Math.min(start + 1, visible.length - 1)].dataset.bookIndex),
-          position - start,
-          false,
-        )
+        // Native scrolling keeps wheel momentum on the compositor. Selection waits for rest.
+        aim = undefined
+        cameraDirty = false
+        camera.scale = painted.scale
+        fitted = false
+        cancelWheel()
+        wheelTimer = window.setTimeout(finishWheel, WHEEL_SETTLE_MS)
       }
     },
     { passive: false, signal },
@@ -1060,7 +1357,6 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
     select(Number(row.dataset.bookIndex))
     focusCamera(focus)
   }
-  indexPane.addEventListener('pointermove', selectFromIndex, { signal })
   indexPane.addEventListener(
     'focusin',
     event => {
@@ -1072,7 +1368,30 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
   const enableIndexScroll = () => {
     followIndexScroll = true
   }
-  indexPane.addEventListener('wheel', enableIndexScroll, { passive: true, signal })
+  indexPane.addEventListener(
+    'wheel',
+    event => {
+      enableIndexScroll()
+      if (dialog.open || indexPane.scrollHeight > indexPane.clientHeight + 1) return
+      const delta = event.deltaY * wheelUnit(event, indexPane.clientHeight)
+      if (Math.abs(delta) < 1) return
+      const visible = matches()
+      if (!visible.length) return
+      const currentPos = visible.findIndex(entry => Number(entry.dataset.bookIndex) === focus)
+      const nextPos =
+        currentPos < 0
+          ? delta > 0
+            ? 0
+            : visible.length - 1
+          : clamp(currentPos + (delta > 0 ? 1 : -1), 0, visible.length - 1)
+      const nextIndex = Number(visible[nextPos]?.dataset.bookIndex ?? -1)
+      if (nextIndex >= 0 && nextIndex !== focus) {
+        select(nextIndex)
+        focusCamera(nextIndex)
+      }
+    },
+    { passive: true, signal },
+  )
   indexPane.addEventListener('pointerdown', enableIndexScroll, { signal })
   indexPane.addEventListener(
     'keydown',
@@ -1082,6 +1401,15 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
     },
     { signal },
   )
+  const groupEntries = new Map(
+    groups.map(group => [
+      group,
+      {
+        entries: [...group.querySelectorAll<HTMLLIElement>('.bookcase-entry')],
+        count: group.querySelector<HTMLElement>('.bookcase-index-count'),
+      },
+    ]),
+  )
   indexPane.addEventListener(
     'scroll',
     () => {
@@ -1089,23 +1417,77 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
       indexFrame = requestAnimationFrame(() => {
         indexFrame = 0
         if (signal.aborted || dialog.open) return
-        const visible = matches().filter(row => row.offsetParent !== null)
-        if (!visible.length) return
-        const pane = indexPane.getBoundingClientRect()
-        const line = pane.top + pane.height * 0.4
-        let nearest = visible[0]
-        let distance = Infinity
-        for (const row of visible) {
-          const bounds = row.getBoundingClientRect()
-          const delta = Math.abs(bounds.top + bounds.height / 2 - line)
-          if (delta < distance) {
-            nearest = row
-            distance = delta
+        const visible: HTMLLIElement[] = []
+        for (const group of groups) {
+          if (!group.open || group.hidden || group.hasAttribute('data-topic-hidden')) continue
+          const info = groupEntries.get(group)
+          if (!info) continue
+          for (const entry of info.entries) {
+            if (entry.style.display !== 'none' && !entry.hasAttribute('data-topic-hidden'))
+              visible.push(entry)
           }
         }
-        if (indexPane.scrollTop <= 0) nearest = visible[0]
-        else if (indexPane.scrollTop + indexPane.clientHeight >= indexPane.scrollHeight - 1)
+        if (!visible.length) return
+        const maxScroll = Math.max(0, indexPane.scrollHeight - indexPane.clientHeight)
+        const progress = maxScroll > 0 ? clamp(indexPane.scrollTop / maxScroll, 0, 1) : 0
+        let nearest = visible[0]
+        if (
+          progress >= 1 ||
+          indexPane.scrollTop + indexPane.clientHeight >= indexPane.scrollHeight - 1
+        ) {
           nearest = visible[visible.length - 1]
+        } else if (indexPane.scrollTop > 0) {
+          const pane = indexPane.getBoundingClientRect()
+          const line = pane.top + 16 + progress * Math.max(0, pane.height - 32)
+          const probeX = pane.left + pane.width * 0.5
+          let hitRow: HTMLLIElement | null = null
+          for (const dy of [0, 20, -20]) {
+            const hit = document.elementFromPoint(probeX, line + dy)
+            const candidate = hit?.closest<HTMLLIElement>('.bookcase-entry')
+            if (candidate && indexPane.contains(candidate)) {
+              hitRow = candidate
+              break
+            }
+          }
+          const hitPos = hitRow ? visible.indexOf(hitRow) : -1
+          if (hitPos >= 0) {
+            let bestDist = Infinity
+            for (
+              let i = Math.max(0, hitPos - 1);
+              i <= Math.min(visible.length - 1, hitPos + 1);
+              i++
+            ) {
+              const row = visible[i]
+              const bounds = row.getBoundingClientRect()
+              const delta = Math.abs(bounds.top + bounds.height / 2 - line)
+              if (delta < bestDist) {
+                nearest = row
+                bestDist = delta
+              }
+            }
+          } else {
+            let lo = 0
+            let hi = visible.length - 1
+            while (lo < hi) {
+              const mid = (lo + hi) >> 1
+              const bounds = visible[mid].getBoundingClientRect()
+              if (bounds.top + bounds.height / 2 < line) lo = mid + 1
+              else hi = mid
+            }
+            nearest = visible[lo]
+            if (lo > 0) {
+              const prev = visible[lo - 1]
+              const prevBounds = prev.getBoundingClientRect()
+              const loBounds = nearest.getBoundingClientRect()
+              if (
+                Math.abs(prevBounds.top + prevBounds.height / 2 - line) <=
+                Math.abs(loBounds.top + loBounds.height / 2 - line)
+              ) {
+                nearest = prev
+              }
+            }
+          }
+        }
         const index = Number(nearest.dataset.bookIndex)
         if (index === focus) return
         select(index)
@@ -1134,6 +1516,16 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
     'close',
     () => {
       hardcover?.clear()
+      const index = previewIndex
+      previewIndex = -1
+      if (
+        !signal.aborted &&
+        root.isConnected &&
+        matches().some(row => Number(row.dataset.bookIndex) === index)
+      ) {
+        select(index, true)
+        focusCamera(focus)
+      }
       const fallback = entryByIndex
         .get(focus)
         ?.querySelector<HTMLAnchorElement>('.bookcase-entry-link')
@@ -1182,16 +1574,18 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
   )
 
   const refresh = () => {
+    if (!root.isConnected) return
     const searching = Boolean(
       document.querySelector<HTMLInputElement>('#base-search-input')?.value.trim(),
     )
     if (searching && !searchOpen) searchOpen = new Map(groups.map(group => [group, group.open]))
     for (const group of groups) {
-      const shown = [...group.querySelectorAll<HTMLLIElement>('.bookcase-entry')].filter(
-        entry => entry.style.display !== 'none' && !entry.hasAttribute('data-topic-hidden'),
-      )
-      const count = group.querySelector('.bookcase-index-count')
-      if (count) count.textContent = String(shown.length)
+      const info = groupEntries.get(group)
+      const shown =
+        info?.entries.filter(
+          entry => entry.style.display !== 'none' && !entry.hasAttribute('data-topic-hidden'),
+        ) ?? []
+      if (info?.count) info.count.textContent = String(shown.length)
       if (searching && shown.length) group.open = true
       else if (!searching && searchOpen) group.open = searchOpen.get(group) ?? true
     }
@@ -1207,12 +1601,15 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
       if (rearranged) focusCamera(focus)
     } else deselect()
     if (dialog.open) {
-      if (selected) renderPreview()
+      if (visible.some(entry => Number(entry.dataset.bookIndex) === previewIndex)) renderPreview()
       else dialog.close()
     }
   }
   document.addEventListener('base-search-results', refresh, { signal })
 
+  const entryTopics = new Map(
+    entries.map(entry => [entry, new Set<string>(JSON.parse(entry.dataset.topics ?? '[]'))]),
+  )
   const topicButtons = [...root.querySelectorAll<HTMLButtonElement>('.bookcase-topic')]
   const showTopic = (next: string) => {
     topic = topicButtons.some(button => button.dataset.topic === next) ? next : ''
@@ -1221,11 +1618,15 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
       button.tabIndex = button.dataset.topic === topic ? 0 : -1
     }
     for (const entry of entries) {
-      const topics: string[] = JSON.parse(entry.dataset.topics ?? '[]')
-      entry.toggleAttribute('data-topic-hidden', Boolean(topic) && !topics.includes(topic))
+      entry.toggleAttribute(
+        'data-topic-hidden',
+        Boolean(topic) && !entryTopics.get(entry)?.has(topic),
+      )
     }
     for (const group of groups) {
-      const empty = !group.querySelector('.bookcase-entry:not([data-topic-hidden])')
+      const empty = !groupEntries
+        .get(group)
+        ?.entries.some(entry => !entry.hasAttribute('data-topic-hidden'))
       group.toggleAttribute('data-topic-hidden', empty)
     }
     const url = new URL(window.location.href)
@@ -1246,7 +1647,7 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
     if (key === 'ArrowDown' || key === 'ArrowRight') return (active + 1) % n
     if (key === 'Home') return 0
     if (key === 'End') return n - 1
-    // A letter moves to the next tab whose shortcut starts with it, as the triathlon tabs do.
+    // Repeating a category's initial cycles through its matching tabs.
     if (key.length !== 1) return undefined
     for (let step = 1; step <= n; step++) {
       const i = (active + step) % n
@@ -1254,10 +1655,15 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
     }
     return undefined
   }
-  topicList?.addEventListener(
+  root.addEventListener(
     'keydown',
     event => {
+      if (event.defaultPrevented || dialog.open) return
       if (event.ctrlKey || event.metaKey || event.altKey || event.isComposing) return
+      if (!(event.target instanceof Element)) return
+      if (event.target.closest('input, textarea, select, [contenteditable]')) return
+      const inTopics = topicList?.contains(event.target)
+      if (!inTopics && !/^\p{L}$/u.test(event.key)) return
       const active = topicButtons.findIndex(button => button.dataset.topic === topic)
       const next = nextTab(event.key, Math.max(0, active))
       if (next === undefined) return
@@ -1268,26 +1674,34 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
     { signal },
   )
 
-  const resize = () => {
-    for (const view of aim ? [camera, aim] : [camera]) {
-      view.x += (viewport.clientWidth - viewportWidth) / 2
-      view.y += (viewport.clientHeight - viewportHeight) / 2
-    }
-    viewportWidth = viewport.clientWidth
-    viewportHeight = viewport.clientHeight
+  const updateFit = () => {
     const previousFit = fitScale
     fitScale = Math.max(
       0.01,
-      Math.min((viewport.clientWidth - 32) / box.width, (viewport.clientHeight - 72) / box.height),
+      Math.min((viewportWidth - 32) / box.width, (viewportHeight - 72) / box.height),
     )
     if (fitted || camera.scale < fitScale || previousFit === 1) fit()
     else schedule()
+  }
+  const resize = () => {
+    if (!root.isConnected) return
+    const nextWidth = viewport.clientWidth
+    const nextHeight = viewport.clientHeight
+    if (nextWidth === viewportWidth && nextHeight === viewportHeight && painted.at > 0) return
+    for (const view of aim ? [camera, aim] : [camera]) {
+      view.x += (nextWidth - viewportWidth) / 2
+      view.y += (nextHeight - viewportHeight) / 2
+    }
+    viewportWidth = nextWidth
+    viewportHeight = nextHeight
+    cameraDirty = true
+    updateFit()
   }
   const observer = new ResizeObserver(resize)
   observer.observe(root)
   observer.observe(viewport)
   window.addEventListener('resize', resize, { signal })
-  resize()
+  updateFit()
   const initialTopic = new URL(window.location.href).searchParams.get('topic')
   if (initialTopic) {
     // A shared link opens on its tab without the label animation.
@@ -1303,11 +1717,22 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
       disposeEscape()
       if (frame) cancelAnimationFrame(frame)
       if (indexFrame) cancelAnimationFrame(indexFrame)
+      cancelWheel()
       if (dialog.open) dialog.close()
       dropLift()
       for (const image of residentCovers.values()) removeArtwork(image)
       residentCovers.clear()
       preloaded.clear()
+      if (prefetchTask !== undefined && idle) cancelIdleCallback(prefetchTask)
+      else if (prefetchTask !== undefined) clearTimeout(prefetchTask)
+      for (const url of prefetched.keys()) dropPrefetch(url)
+      pan.before(world)
+      pan.remove()
+      scrollSpace.remove()
+      world.style.left = '0px'
+      world.style.top = '0px'
+      viewport.scrollLeft = 0
+      viewport.scrollTop = 0
       visibleEntries = undefined
       delete root.dataset.bookcaseReady
     },

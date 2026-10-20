@@ -1,6 +1,7 @@
 // SVG strings for case layers, shelves and books. The strings hold geometry, class names and
 // colour tokens only; note text is written afterwards with `fillText`, never through markup.
 import {
+  type DefNode,
   type Point,
   type SceneBook,
   type SceneHalo,
@@ -9,8 +10,10 @@ import {
   type ScenePlate,
   type Segment,
   type ShelfMaterial,
-  SHELF_MATERIALS,
-  materialLadder,
+  faceFill,
+  grainFill,
+  materialCss,
+  materialDefs,
   spineInk,
   toMatrix,
   toPath,
@@ -59,10 +62,20 @@ const material = (m: ShelfMaterial) => (m === 'paper' ? '' : ` data-material="${
 
 const halo = (h: SceneHalo) => polygon(`bc-halo bc-halo-${h.kind}`, h.points, material(h.material))
 
-/** Faces, then bevel, ply and highlight lines, creases, silhouette and screws. */
+/** Faces with their finish and grain, then bevel, ply, highlight and form lines, creases, silhouette and screws. */
 function part(p: ScenePart): string {
   let out = `<g class="bc-solid" data-part="${p.part}"${material(p.material)}>`
-  for (const face of p.faces) out += polygon(`bc-tone-${face.tone}`, face.points)
+  // The tone class keeps the flat fill as the fallback; the finish gradient sits on the element.
+  for (const face of p.faces)
+    out += polygon(
+      `bc-tone-${face.tone}`,
+      face.points,
+      ` style="fill:${faceFill(p.material, face)}"`,
+    )
+  for (const face of p.faces) {
+    const grain = grainFill(p.material, face)
+    if (grain) out += polygon('bc-grain', face.points, ` fill="${grain}"`)
+  }
   for (const line of p.lines) out += lines(`bc-${line.kind}`, line.segments)
   out += lines('bc-crease', p.creases)
   if (p.outline) out += polygon('bc-edge', p.outline)
@@ -116,6 +129,7 @@ function bookBody<T>(book: SceneBook<T>, paint: BookPaint, cover: string): strin
     labels += `<text class="bc-spine-author" x="${r1(text.author.x)}" font-size="${r1(text.author.size)}" text-anchor="end" data-text="a${index}"></text>`
   return (
     polygon('bc-face-spine', faces.spine) +
+    polygon('bc-spine-sheen', faces.spine, ` fill="${book.sheen}"`) +
     `<g class="bc-jacket">${polygon('bc-face-cover', faces.cover)}${cover}</g>` +
     polygon('bc-face-end', faces.end) +
     polygon('bc-pages', detail.pages) +
@@ -221,34 +235,21 @@ export function fillText(root: Element, text: (key: string) => string | string[]
   }
 }
 
-const LADDER_KEYS = [
-  'top',
-  'face',
-  's3',
-  's2',
-  's1',
-  's0',
-  'mid',
-  'faint',
-  'lo',
-  'hi',
-  'halo',
-  'ply',
-]
+const defMarkup = (node: DefNode): string => {
+  const attrs = Object.entries(node.attrs)
+    .map(([key, value]) => ` ${key}="${value}"`)
+    .join('')
+  return `<${node.tag}${attrs}>${(node.children ?? []).map(defMarkup).join('')}</${node.tag}>`
+}
 
 /**
- * Ladder values of every material but paper for the current theme, as `--bc-<material>-<step>`
- * properties for the view root. styles.css maps them onto `--bc-<step>` under [data-material].
+ * Ladder tokens, gradient stops and the finish, grain and sheen defs for `materials`; veneer
+ * tiles load from `assets`. The stops
+ * resolve where they are defined, so this goes inside `.bookcase-world`; other layers reference
+ * the defs by id.
  */
-export function materialTokens(theme: 'light' | 'dark'): Record<string, string> {
-  const out: Record<string, string> = {}
-  for (const m of SHELF_MATERIALS) {
-    if (m === 'paper') continue
-    const ladder = materialLadder(m, theme) as unknown as Record<string, string | undefined>
-    for (const key of LADDER_KEYS) {
-      const value = ladder[key]
-      if (value) out[`--bc-${m}-${key}`] = value
-    }
-  }
-  return out
+export function materialMarkup(materials: Iterable<ShelfMaterial>, assets: string): string {
+  const set = new Set<ShelfMaterial>(['paper', ...materials])
+  const css = materialCss(set, '.bookcase-world', '.theme-dark ')
+  return `<style>${css}</style><defs>${materialDefs(set, assets).map(defMarkup).join('')}</defs>`
 }
