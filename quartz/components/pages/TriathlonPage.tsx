@@ -13,7 +13,6 @@ import { triathlonDaySlug } from '../../util/triathlon-date-route'
 import { DEFAULT_TRIATHLON_PRESENTATION } from '../../util/triathlon-presentation'
 // @ts-ignore
 import script from '../scripts/triathlon.inline'
-import performanceStyle from '../styles/performance-debug.scss'
 import style from '../styles/triathlon.scss'
 import { TRI_ANALYTICS_BOOT_SCRIPT } from '../triathlon/analytics/boot'
 import { SeasonSummary } from '../triathlon/SeasonSummary'
@@ -339,7 +338,7 @@ export default (() => {
     )
   }
 
-  TriathlonPage.css = [style, performanceStyle]
+  TriathlonPage.css = style
   TriathlonPage.beforeDOMLoaded = TRI_ANALYTICS_BOOT_SCRIPT
   TriathlonPage.afterDOMLoaded = script
 

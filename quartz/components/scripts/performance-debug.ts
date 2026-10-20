@@ -1,3 +1,4 @@
+import { sceneProbe } from '../visitor-trail/performance-probe'
 import {
   SITE_PERFORMANCE_SAMPLE_EVENT,
   type SitePerformanceSample,
@@ -20,6 +21,7 @@ const EVENT_THRESHOLD_MS = 16
 // Refresh intervals jitter around the budget; a frame counts as dropped only past one and a half.
 const DROPPED_FACTOR = 1.5
 const DEBUG_VALUE = 'performance'
+export const DEFAULT_DEBUG_QUERIES = ['debug', 'trail-debug', 'tri-debug'] as const
 
 export interface PerformanceDebugReading {
   label: string
@@ -34,7 +36,7 @@ export interface PerformanceDebugProbe {
 export interface PerformanceDebugProfile {
   label: string
   /** `?<query>=performance` opens the panel on load. */
-  query: string
+  query: string | readonly string[]
   sources: readonly SitePerformanceSource[]
   /** Text beside the frame rate; the cursor mode shows when this returns nothing. */
   state?: () => string | null | undefined
@@ -533,6 +535,7 @@ export const setupPerformanceDebug = (profile: PerformanceDebugProfile): (() => 
   eventRow.element.className = 'site-perf-attribution-row'
   attribution.append(scriptRow.element, eventRow.element)
 
+  for (const existing of document.querySelectorAll('.site-perf-debug')) existing.remove()
   panel.append(header, primary, canvas, legend, metrics, readings, attribution)
   document.body.appendChild(panel)
 
@@ -882,7 +885,8 @@ export const setupPerformanceDebug = (profile: PerformanceDebugProfile): (() => 
   }
 
   const onKey = (event: KeyboardEvent): void => {
-    if (!event.altKey || !event.shiftKey || event.code !== 'KeyD') return
+    if (!event.altKey || !event.shiftKey || event.ctrlKey || event.metaKey || event.code !== 'KeyD')
+      return
     event.preventDefault()
     toggle()
   }
@@ -905,7 +909,7 @@ export const setupPerformanceDebug = (profile: PerformanceDebugProfile): (() => 
   document.addEventListener('visibilitychange', onVisibility)
   window.addEventListener(SITE_PERFORMANCE_SAMPLE_EVENT, onSample)
   window.addEventListener('scroll', onScroll, { capture: true, passive: true })
-  if (new URLSearchParams(window.location.search).get(profile.query) === DEBUG_VALUE) start()
+  if (matchesPerformanceDebugQuery(window.location.search, profile.query)) start()
 
   return () => {
     stop()
@@ -920,3 +924,55 @@ export const setupPerformanceDebug = (profile: PerformanceDebugProfile): (() => 
     panel.remove()
   }
 }
+
+export const matchesPerformanceDebugQuery = (
+  search: string,
+  query: string | readonly string[] = DEFAULT_DEBUG_QUERIES,
+): boolean => {
+  if (!search) return false
+  const params = new URLSearchParams(search)
+  const keys =
+    typeof query === 'string'
+      ? new Set<string>([query, ...DEFAULT_DEBUG_QUERIES])
+      : new Set<string>([...query, ...DEFAULT_DEBUG_QUERIES])
+  for (const key of keys) {
+    if (params.get(key) === DEBUG_VALUE) return true
+  }
+  return false
+}
+
+export const sitePerformanceProfile = (doc: Document = document): PerformanceDebugProfile => {
+  const trailHost = doc.querySelector<HTMLElement>('.homepage-trail-scene')
+  const triathlonRoot = doc.querySelector<HTMLElement>('.triathlon')
+  const hasTimeline = Boolean(triathlonRoot || doc.querySelector('.tri-bars'))
+  const label = trailHost
+    ? 'trail performance debug'
+    : triathlonRoot
+      ? 'triathlon performance debug'
+      : 'performance debug'
+  const sources: readonly SitePerformanceSource[] = hasTimeline
+    ? ['cursor', 'timeline', 'popover']
+    : ['cursor', 'popover']
+  return {
+    label,
+    query: DEFAULT_DEBUG_QUERIES,
+    sources,
+    state: () => {
+      const currentTrail = doc.querySelector<HTMLElement>('.homepage-trail-scene') ?? trailHost
+      if (currentTrail && !currentTrail.hidden) return 'trail'
+      const currentTri = doc.querySelector<HTMLElement>('.triathlon') ?? triathlonRoot
+      if (currentTri) {
+        const openModal = currentTri.className.match(
+          /tri-(analytics|calc|calendar|map|training)-open/,
+        )?.[1]
+        if (openModal) return openModal
+        if (currentTri.dataset?.triView) return currentTri.dataset.triView
+      }
+      return null
+    },
+    ...(trailHost ? { probe: () => sceneProbe(doc) } : {}),
+  }
+}
+
+export const setupSitePerformanceDebug = (doc: Document = document): (() => void) =>
+  setupPerformanceDebug(sitePerformanceProfile(doc))

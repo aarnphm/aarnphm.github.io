@@ -4,7 +4,6 @@ import { joinSegments } from '../util/path'
 // @ts-expect-error Quartz's resource loader imports inline modules as script text.
 import script from './scripts/homepage-trail.inline'
 import style from './styles/homepage-trail.scss'
-import performanceStyle from './styles/performance-debug.scss'
 
 export default (() => {
   const HomepageTrail: QuartzComponent = ({ fileData, ctx }) => {
@@ -44,6 +43,7 @@ export default (() => {
         >
           <div class="visitor-register-columns" aria-hidden="true">
             <span>visitor</span>
+            <span>utc</span>
             <span>arrived</span>
             <span>left</span>
           </div>
@@ -119,7 +119,7 @@ export default (() => {
       </div>
     )
   }
-  HomepageTrail.css = [style, performanceStyle]
+  HomepageTrail.css = style
   HomepageTrail.afterDOMLoaded = script
   return HomepageTrail
 }) satisfies QuartzComponentConstructor

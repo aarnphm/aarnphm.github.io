@@ -3,7 +3,9 @@ import test from 'node:test'
 import {
   estimateFrameBudget,
   frameChartRatio,
+  matchesPerformanceDebugQuery,
   monotoneSlopes,
+  sitePerformanceProfile,
   smoothWindow,
   summarizeFrameDurations,
 } from './performance-debug'
@@ -85,4 +87,52 @@ test('chart ratio spreads frame durations across a logarithmic axis', () => {
   const quarter = frameChartRatio(1000 / 15)
   assert.ok(budget > 0.3 && budget < 0.4)
   assert.ok(Math.abs(half - budget - (quarter - half)) < 1e-9)
+})
+
+test('query matcher accepts unified debug, trail-debug, and tri-debug parameters', () => {
+  assert.equal(matchesPerformanceDebugQuery('?debug=performance'), true)
+  assert.equal(matchesPerformanceDebugQuery('?trail-debug=performance'), true)
+  assert.equal(matchesPerformanceDebugQuery('?tri-debug=performance'), true)
+  assert.equal(matchesPerformanceDebugQuery('?debug=other'), false)
+  assert.equal(matchesPerformanceDebugQuery(''), false)
+  assert.equal(matchesPerformanceDebugQuery('?custom=performance', 'custom'), true)
+})
+
+test('site profile adapts sources, state, and probe across general, trail, and triathlon pages', () => {
+  const generalDoc = { querySelector: () => null } as unknown as Document
+  const general = sitePerformanceProfile(generalDoc)
+  assert.equal(general.label, 'performance debug')
+  assert.deepEqual(general.sources, ['cursor', 'popover'])
+  assert.equal(general.probe, undefined)
+  assert.equal(general.state?.(), null)
+
+  const trailSceneEl = { hidden: true } as HTMLElement
+  const trailDoc = {
+    querySelector: (selector: string) =>
+      selector === '.homepage-trail-scene' ? trailSceneEl : null,
+  } as unknown as Document
+  const trail = sitePerformanceProfile(trailDoc)
+  assert.equal(trail.label, 'trail performance debug')
+  assert.deepEqual(trail.sources, ['cursor', 'popover'])
+  assert.equal(typeof trail.probe, 'function')
+  assert.equal(trail.state?.(), null)
+  trailSceneEl.hidden = false
+  assert.equal(trail.state?.(), 'trail')
+
+  const triRoot = {
+    className: 'triathlon tri-analytics-open',
+    dataset: {} as DOMStringMap,
+  } as HTMLElement
+  const triDoc = {
+    querySelector: (selector: string) =>
+      selector === '.triathlon' || selector === '.tri-bars' ? triRoot : null,
+  } as unknown as Document
+  const tri = sitePerformanceProfile(triDoc)
+  assert.equal(tri.label, 'triathlon performance debug')
+  assert.deepEqual(tri.sources, ['cursor', 'timeline', 'popover'])
+  assert.equal(tri.probe, undefined)
+  assert.equal(tri.state?.(), 'analytics')
+  triRoot.className = 'triathlon tri-subpage'
+  triRoot.dataset.triView = 'calc'
+  assert.equal(tri.state?.(), 'calc')
 })
