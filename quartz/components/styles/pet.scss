@@ -303,16 +303,26 @@ $pet-looks: (
   }
 }
 
-// Cold where the visitor is (pet.inline.ts reads the wind chill): at 10 °C and under it wears its
-// scarf; at 0 °C and under a toque too, unless the page's outfit or the trail's hat has the head,
-// and at rest its breath shows and every few seconds it hunches up and shivers.
-.pet-svg:is([data-cold='cool'], [data-cold='cold']) [data-part='scarf'] {
+// Cold where the visitor is (pet.inline.ts reads the wind chill): at 10 °C and under it zips on its
+// wind vest; at 0 °C and under it pulls on its jumper, and a toque too unless the page's outfit or
+// the trail's hat has the head, and at rest its breath shows and every few seconds it hunches up and
+// shivers.
+.pet-svg[data-cold='cool'] [data-part='vest'] {
   display: inline;
 }
 
-// On triathlon pages it trains in its wind vest instead of the scarf, the back panel flapping.
+// The flapping back panel is for training in it.
+.pet-svg[data-cold='cool']:not([data-outfit='triathlon']) .pet-flap-frame {
+  display: none;
+}
+
+.pet-svg[data-cold='cold'] [data-part='jumper'] {
+  display: inline;
+}
+
+// On triathlon pages it trains in its wind vest in the cold too, the back panel flapping.
 .pet-svg[data-outfit='triathlon']:is([data-cold='cool'], [data-cold='cold']) {
-  [data-part='scarf'] {
+  [data-part='jumper'] {
     display: none;
   }
 
@@ -385,7 +395,7 @@ $pet-looks: (
   }
 }
 
-// Rest, then shoulders up (it hunches into the scarf), a few quick shakes, and it settles.
+// Rest, then shoulders up (it hunches into its collar), a few quick shakes, and it settles.
 @keyframes pet-shiver {
   0%,
   70%,

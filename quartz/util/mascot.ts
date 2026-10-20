@@ -1040,9 +1040,8 @@ export function cinephile(w: number, paper = PAPER, ink = INK, stripe = PINK, bu
   return { specs, popcorn, kernel }
 }
 
-// Cold weather: a knit toque pulled down to the brow, ribbed cuff and pom-pom, and a striped scarf
-// wound under the chin with one end hanging. `puffs` are three breaths, drawn apart so the pet can
-// let them out one at a time.
+// Cold weather: a knit toque pulled down to the brow, ribbed cuff and pom-pom. `puffs` are three
+// breaths, drawn apart so the pet can let them out one at a time.
 export function winter(w: number, paper = PAPER, ink = INK, knit = SAGE, stripe = PINK) {
   // The crown's line, x across the brow at height y of the cuff top.
   const crown: Pt[] = Array.from({ length: 31 }, (_, i) => {
@@ -1102,69 +1101,6 @@ export function winter(w: number, paper = PAPER, ink = INK, knit = SAGE, stripe 
   const pom = filled(hand(tuft, 0.02, 0.008, 630), stripe, pressure(631, w * 0.8, 0.3), ink)
   const toque = `${filled(dome, knit, pressure(632, w, 0.3), ink)}${ribs}${filled(cuff, knit, pressure(633, w, 0.3), ink)}${cuffRibs}${pom}`
 
-  // The wrap, below the mouth: it dips at the middle, as cloth over a round chin does.
-  const top = (x: number) => 0.36 + 0.06 * (1 - x * x)
-  const bottom = (x: number) => 0.64 + 0.08 * (1 - x * x)
-  const along = (f: (x: number) => number, from: number, to: number) =>
-    Array.from({ length: 21 }, (_, i) => {
-      const x = from + ((to - from) * i) / 20
-      return [x, f(x)] as const
-    })
-  const wrap = hand(
-    [...along(top, -0.96, 0.96), ...along(bottom, 0.9, -0.9), [-0.96, top(-0.96)]],
-    0.03,
-    0.01,
-    640,
-  )
-  const band = (x0: number, x1: number, seed: number) =>
-    `<path d="${poly(hand([...along(top, x0, x1), ...along(bottom, x1, x0)], 0.03, 0.006, seed))}" style="fill:${stripe}"/>`
-  // The end hangs from a knot at the back of the neck, stripes and fringe and all.
-  const end = curve([0.56, 0.6], [0.78, 0.88], [0.7, 1.18], 16)
-  const tail = hand(
-    ribbon(end, t => 0.13 - 0.02 * t),
-    0.03,
-    0.008,
-    645,
-  )
-  const tailBand = (t0: number, t1: number, seed: number) => {
-    const piece = end.slice(Math.round(t0 * 16), Math.round(t1 * 16) + 1)
-    return `<path d="${poly(
-      hand(
-        ribbon(piece, () => 0.12),
-        0.03,
-        0.006,
-        seed,
-      ),
-    )}" style="fill:${stripe}"/>`
-  }
-  const fringe = [-0.09, -0.03, 0.03, 0.09]
-    .map((dx, i) =>
-      stroke(
-        hand(
-          [
-            [0.7 + dx, 1.18],
-            [0.69 + dx * 1.2, 1.3],
-          ],
-          0.02,
-          0.006,
-          650 + i,
-        ),
-        () => w * 0.5,
-        ink,
-      ),
-    )
-    .join('')
-  const knot = filled(
-    hand(rounded(0.6, 0.52, 0.26, 0.26, 0.1), 0.02, 0.008, 655),
-    knit,
-    pressure(656, w, 0.3),
-    ink,
-  )
-  const outline = (pts: Pt[], seed: number) => stroke(pts, pressure(seed, w, 0.3), ink)
-  const scarf =
-    `<path d="${poly(wrap)}" style="fill:${knit}"/>${band(-0.5, -0.36, 641)}${band(0.2, 0.34, 642)}${outline(wrap, 643)}` +
-    `<path d="${poly(tail)}" style="fill:${knit}"/>${tailBand(0.45, 0.62, 646)}${tailBand(0.78, 0.92, 647)}${outline(tail, 648)}${fringe}${knot}`
-
   // Breath in the cold, out of the mouth and off to the side it faces.
   const puffs = (
     [
@@ -1178,7 +1114,7 @@ export function winter(w: number, paper = PAPER, ink = INK, knit = SAGE, stripe 
       return `<g class="pet-puff">${filled(cloud, paper, () => w * 0.45, ink)}</g>`
     })
     .join('')
-  return { toque, scarf, puffs }
+  return { toque, puffs }
 }
 
 // Triathlon in the cold: the wind vest a rider zips on for a cold descent. `body` is the pet's own
@@ -1281,6 +1217,59 @@ export function windVest(body: readonly Pt[], w: number, ink = INK, shell = SAGE
     return `<path d="${poly(panel)}" style="fill:${shell}"/>${line(out, 714 + k, 1, ink)}${streaks}`
   })
   return { vest, flaps }
+}
+
+// Deep cold: a knit jumper pulled on over the body from the chin down. `body` is the pet's own
+// outline, so the knit tucks under its line as the wind vest does. A crew collar and a hem in rib,
+// and a row of cream stitches across the chest, cream in either theme.
+export function jumper(body: readonly Pt[], w: number, ink = INK, knit = PINK, stitch = PAPER) {
+  // The neckline dips at the middle, as cloth over a round chin does.
+  const top = (x: number) => 0.32 + 0.08 * (1 - x * x)
+  const across = (f: (x: number) => number, from: number, to: number) =>
+    Array.from({ length: 33 }, (_, i) => {
+      const x = from + ((to - from) * i) / 32
+      return [x, f(x)] as const
+    })
+  // Half the body's width at height y, a little inside its line.
+  const edge = (y: number) => 0.95 * Math.sqrt(Math.max(0, 1 - y * y))
+  const inside = (pts: Pt[]) => pts.filter(([x, y]) => Math.abs(x) < edge(y))
+  const lower = body.map(([x, y]) => [x * 0.975, y * 0.975] as const).filter(([x, y]) => y > top(x))
+  const shape: Pt[] = [...lower, ...across(top, lower[lower.length - 1][0], lower[0][0])]
+  const line = (pts: Pt[], seed: number, k = 1, color = INK) =>
+    stroke(pts, pressure(seed, w * k, 0.3), color)
+  const tick = (a: Pt, b: Pt) => stroke([a, b], () => w * 0.35, INK)
+  // The collar: the neckline in the theme's ink, a seam under it, and ribs between.
+  const rib = 0.11
+  const collar = line(hand(inside(across(top, -1, 1)), 0.03, 0.008, 721), 722, 1, ink)
+  const seam = line(hand(inside(across(x => top(x) + rib, -1, 1)), 0.03, 0.008, 723), 724, 0.55)
+  const collarRibs = Array.from({ length: 15 }, (_, i) => -0.84 + i * 0.12)
+    .filter(x => Math.abs(x) < edge(top(x) + rib) - 0.04)
+    .map(x => tick([x, top(x) + 0.02], [x, top(x) + rib - 0.02]))
+    .join('')
+  // The hem: a seam across the bottom of the body, ribs down from it to the body's edge.
+  const hem = (x: number) => 0.8 + 0.04 * (1 - x * x)
+  const hemSeam = line(hand(inside(across(hem, -1, 1)), 0.03, 0.008, 725), 726, 0.55)
+  const hemRibs = Array.from({ length: 13 }, (_, i) => -0.6 + i * 0.1)
+    .filter(x => edge(hem(x)) > Math.abs(x) && 0.95 * Math.sqrt(1 - x * x) - hem(x) > 0.08)
+    .map(x => tick([x, hem(x) + 0.02], [x, 0.95 * Math.sqrt(1 - x * x) - 0.03]))
+    .join('')
+  // Cream stitches across the chest, a row of small v's.
+  const row = 0.6
+  const stitches = Array.from({ length: 13 }, (_, i) => -0.72 + i * 0.12)
+    .filter(x => Math.abs(x) < edge(row) - 0.1)
+    .map(x =>
+      stroke(
+        [
+          [x - 0.04, row - 0.035],
+          [x, row + 0.035],
+          [x + 0.04, row - 0.035],
+        ],
+        () => w * 0.45,
+        stitch,
+      ),
+    )
+    .join('')
+  return `<path d="${poly(shape)}" style="fill:${knit}"/>${seam}${collarRibs}${hemSeam}${hemRibs}${stitches}${collar}`
 }
 
 // Rain: a little umbrella held up in the paw on its right, the canopy tipped forward over its head,
@@ -2228,12 +2217,13 @@ export function petSvg(paper = 'var(--light)', ink = 'var(--dark)', pink = PINK,
     'hair',
     [0, 1].map(k => `<g class="pet-hair-frame">${wildHair(w * 1.1, ink, k)}</g>`).join(''),
   )
-  // Wrapped up against the visitor's cold (pet.inline.ts): the scarf, a toque and breath that shows.
+  // Wrapped up against the visitor's cold (pet.inline.ts): a jumper, a toque and breath that shows.
   const cold = winter(w, paper, ink, SAGE, pink)
-  const scarf = part('scarf', cold.scarf)
+  const knit = part('jumper', jumper(outline, w, ink, pink))
   const toque = part('toque', cold.toque)
   const breath = part('breath', cold.puffs)
-  // On triathlon pages it goes out in its wind vest instead, the back panel flapping.
+  // In the cool it zips on its wind vest; on triathlon pages it trains in it in the cold too, the back
+  // panel flapping.
   const gilet = windVest(outline, w, ink, SAGE, pink)
   // In the snow, at rest, it holds both mittens up to catch the flakes falling round it; one comes
   // down into the front mitten and melts there.
@@ -2573,5 +2563,5 @@ export function petSvg(paper = 'var(--light)', ink = 'var(--dark)', pink = PINK,
     ),
   )
 
-  return `<svg class="pet-svg" viewBox="-1.8 -2 3.6 3.8" aria-hidden="true" focusable="false" data-state="idle"><g class="pet-flip">${ground}${snowfall}<g class="pet-hop"><g class="pet-lean">${chute}${legs}${lounge}${speed}<g class="pet-body">${jetpack}${hair}${outfit.back}${body}${tan}${vest}${strap}<g class="pet-look">${dash}${happy}${wide}${wince}${mouthO}${smile}${grin}${blush}</g>${scarf}${outfit.front}${glasses}${shades}${toque}${hat}${holds}${shelter}${breath}${arms}${caught}${lit}${grip}${pole}${laptop}</g>${sweat}${dots}${gust}${thought}</g></g></g></svg>`
+  return `<svg class="pet-svg" viewBox="-1.8 -2 3.6 3.8" aria-hidden="true" focusable="false" data-state="idle"><g class="pet-flip">${ground}${snowfall}<g class="pet-hop"><g class="pet-lean">${chute}${legs}${lounge}${speed}<g class="pet-body">${jetpack}${hair}${outfit.back}${body}${tan}${vest}${strap}<g class="pet-look">${dash}${happy}${wide}${wince}${mouthO}${smile}${grin}${blush}</g>${knit}${outfit.front}${glasses}${shades}${toque}${hat}${holds}${shelter}${breath}${arms}${caught}${lit}${grip}${pole}${laptop}</g>${sweat}${dots}${gust}${thought}</g></g></g></svg>`
 }
