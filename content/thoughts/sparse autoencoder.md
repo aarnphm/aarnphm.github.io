@@ -80,7 +80,14 @@ $$
 \qquad r_\text{mag}\in\mathbb{R}^M.
 $$
 
-![[thoughts/images/gated-sae-architecture.webp]]
+```jsx imports={Zoomable,GatedSAE}
+<Zoomable label="Gated SAE encoder on four features">
+  <GatedSAE
+    view="gated"
+    caption="Gated SAE encoder on four features. The column $u=W_\text{gate}(x-b_\text{dec})$ is the shared projection. The magnitude path computes $\pi_\text{mag}=e^{r_\text{mag}}\odot u+b_\text{mag}$ and rectifies it. The gating path computes $\pi_\text{gate}=u+b_\text{gate}$ and binarizes it. Values of $u$, $f_\text{mag}$ and $\tilde f$ at $\theta=0.35$ are read from the Gated SAE paper's architecture figure; the scales and biases are synthetic values chosen to reproduce them. Sage cells are open gates; salmon cells are active features. Drag $\theta$ to move the gate biases: features switch off, and the features that stay on keep their full magnitude."
+  />
+</Zoomable>
+```
 
 _Figure 3: Gated SAE with shared projection directions and separate scales and biases._
 
@@ -98,7 +105,14 @@ $$
 
 The auxiliary reconstruction trains the gate through $q$. The stop-gradient operator $\operatorname{sg}$ blocks gradients through the auxiliary decoder. The magnitude output receives no direct sparsity penalty. The paper reports improved reconstruction at matched sparsity across its tested models and sites. [@rajamanoharan2024improvingdictionarylearninggated]
 
-![[thoughts/images/gated_jump_relu.webp]]
+```jsx imports={Zoomable,GatedSAE}
+<Zoomable label="Gated SAE as a JumpReLU">
+  <GatedSAE
+    view="jumprelu"
+    caption="The same four features against their magnitude preactivation $\pi_\text{mag}$. The dark curve is $\operatorname{JumpReLU}_\theta$: zero up to $\theta$ (closed dot), then the identity (open dot), a jump of size $\theta$. Salmon points are active features; hollow points are gated off. Drag $\theta$: feature 4 at $\pi_\text{mag}=0.30$ turns on once $\theta<0.30$, and every active feature sits on the identity, with no shrinkage."
+  />
+</Zoomable>
+```
 
 _Figure 4: With tied weights, the gated forward pass can be written using a [[thoughts/optimization#JumpReLU]] activation with a nonnegative effective threshold._ [@erichson2019jumpreluretrofitdefensestrategy]
 

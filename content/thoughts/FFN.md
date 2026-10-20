@@ -117,6 +117,8 @@ $$
 
 The identity term carries the output gradient through the skip path. The residual branch and any activation after the addition can still change its scale and direction. A skip connection alone does not guarantee a well-scaled gradient. See [He et al.'s residual-network paper](https://www.cv-foundation.org/openaccess/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html).
 
-![[thoughts/images/residual-network.webp]]
+```jsx imports={ResidualBlock}
+<ResidualBlock caption="One residual block after He et al.'s Figure 2. Two weight layers with a ReLU between them form the branch $F(x)$. The dark identity shortcut adds $x$ at the salmon sum, and a ReLU follows the sum. Without that last ReLU the block is $h_{\ell+1}=h_\ell+F(h_\ell)$ above; the ReLU is the activation after the addition that can still change the gradient's scale." />
+```
 
 ![[thoughts/regularization]]
