@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-10-11 13:37:07 GMT-04:00
+modified: 2026-10-19 21:02:11 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -728,6 +728,256 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/LydNot/status/2109337691834008026 -- Lydia on LLMs as a sufficient path to superintelligence
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [llms, superintelligence]
+    - later: true
+- https://x.com/copyconstruct/status/2108967806666715591 -- Cindy Sridharan on debugging agent-written code
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [ai agents, debugging]
+    - later: true
+- https://x.com/WillManidis/status/2109390741843648767 -- Will Manidis on legal jurisdiction and inference locations
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [jurisdiction, ai infrastructure]
+    - later: true
+- https://x.com/nwilliams030/status/2109330288543424899 -- Nicole Ruiz on the All Souls examination
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [education, examinations]
+    - later: true
+- https://x.com/isabelunraveled/status/2109315139237552302 -- Isabel on building a happy long-term relationship
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [relationships, shared life]
+    - later: true
+- https://x.com/noampomsky/status/2109323833081795039 -- Ava on hypervigilance and learning to relax
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [psychology, self-development]
+    - later: true
+- https://x.com/patrickc/status/2109122600630952282 -- Patrick Collison on The Brothers Karamazov and Life and Fate
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [literature, theodicy]
+    - later: true
+- https://x.com/badlogicgames/status/2109415651349856308 -- Mario Zechner shares a critique of programming craftsmanship in the AI era
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [programming, ai tooling]
+    - later: true
+- https://x.com/donaldjewkes/status/2108267057485898032 -- donald shares a flight simulator for shooting down SaaS ads
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [games, creative coding]
+    - later: true
+- https://x.com/redblobgames/status/2109706780750287051 -- Amit Patel on bidirectional lenses for editable data formats
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [bidirectional programming, data formats]
+    - later: true
+- https://x.com/WillManidis/status/2109715323423273033 -- Will Manidis on technology borrowing the language of finance
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [language, finance]
+    - later: true
+- https://x.com/waterloo_intern/status/2109743600041091312 -- ali proposes an experiment on RL generalization from chess to mazes
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [reinforcement learning, generalization]
+    - later: true
+- https://x.com/michellechen/status/2112310950309355943 -- Michelle Chen on combining Clairic extraction with Clef decisions
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [data extraction, decision models]
+    - later: true
+- https://x.com/michellechen/status/2112241006104244584 -- Michelle Chen introduces Clairic for structured extraction from unstructured inputs
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [clairic, data extraction]
+    - later: true
+- https://x.com/jrosseruk/status/2110107006996709515 -- J Rosser on chain-of-thought controllability evaluations for Gemini 4 Argon
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [chain of thought, ai safety]
+    - later: true
+- https://x.com/GottliebEli/status/2110077216260608037 -- Eli Gottlieb on making good RL tasks
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [reinforcement learning, task design]
+    - later: true
+- https://x.com/eliebakouch/status/2110633823662637460 -- Elie on optimizer choice in pretraining and fine-tuning
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [optimizers, fine-tuning]
+    - later: true
+- https://x.com/yzhang_cs/status/2110412813864993215 -- Yu Zhang on Linear Depth Memory and the delta rule
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [model architecture, depth memory]
+    - later: true
+- https://x.com/ASBaird/status/2110080948482216344 -- Austin Baird recommends pumpkin pie with orange zest and cardamom cream
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [baking, recipes]
+    - later: true
+- https://x.com/stevenstrogatz/status/2110123857541775711 -- Steven Strogatz shares Why A.I. Has This Mathematician in Tears
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [mathematics, artificial intelligence]
+    - later: true
+- https://x.com/xhfloz/status/2110230453802123366 -- XH on machine-mediated work and intuitive experience
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [artificial intelligence, human experience]
+    - later: true
+- https://x.com/_chenglou/status/2110557373651931267 -- Cheng Lou introduces Handwired for turning JavaScript into neural networks
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [javascript, neural networks]
+    - later: true
+- https://x.com/waterloo_intern/status/2110775614743429176 -- ali on data bottlenecks and the limits of model generalization
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [training data, generalization]
+    - later: true
+- https://x.com/tszzl/status/2110758311339729061 -- roon on Nick Cammarata's interpretability results
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [interpretability, ai alignment]
+    - later: true
+- https://x.com/tenobrus/status/2110764250386096496 -- Tenobrus reacts to Goodfire's neuron interpretability work
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [interpretability, goodfire]
+    - later: true
+- https://x.com/nickcammarata/status/2110757819427574056 -- Nick Cammarata on automated neuron interpretability
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [interpretability, ai alignment]
+    - later: true
+- https://x.com/neelnanda5/status/2110875974296654062 -- Neel Nanda on neuron interpretability and superposition
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [interpretability, superposition]
+    - later: true
+- https://x.com/__morse/status/2110408502644519256 -- Tommy D. Rossi introduces mdastic, a TypeScript Markdown and MDX parser
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [markdown, parsers]
+    - later: true
+- https://x.com/banburismus_/status/2111581405323071842 -- Tom McGrath on residual-stream superposition and neuron functions
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [interpretability, superposition]
+    - later: true
+- https://x.com/kepano/status/2111472054293913749 -- kepano introduces Pele for rendering Mermaid diagrams and charts
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [mermaid, diagrams]
+    - later: true
+- https://x.com/fforres/status/2110883187920617472 -- fforres on macOS filesystem-event overhead in agent workspaces
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [macos, ai agents]
+    - later: true
+- https://x.com/nabla_theta/status/2111576980344950893 -- Leo Gao on neural-network superposition
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [interpretability, superposition]
+    - later: true
+- https://x.com/_inception_ai/status/2112236719068369299 -- Inception launches Mercury 3, a diffusion language model
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [diffusion models, mercury]
+    - later: true
+- https://x.com/sarthakgh/status/2110162988657180990 -- Sar Haribhakti shares a tutorial on prompting for greater ambition
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [prompting, ai collaboration]
+    - later: true
+- https://x.com/Aprilzz423/status/2111839048230666590 -- April introduces Colorfigures for interactive object illustrations
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [illustration, interactive diagrams]
+    - later: true
+- https://x.com/aidenybai/status/2111991261540528454 -- Aiden Bai on measuring loaded interfaces to size skeleton UIs
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [interface design, layout stability]
+    - later: true
+- https://x.com/geoffreylitt/status/2111931145005015070 -- Geoffrey Litt on taking your interests seriously
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [personal projects, curiosity]
+    - later: true
+- https://x.com/eliebakouch/status/2112257525739618410 -- Elie shares Prime Intellect's Berlin research day
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [ai research, events]
+    - later: true
+- https://x.com/lexnlin/status/2111927727318245426 -- Leon Lin releases Earshot v0.3 for code-generated sound effects
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [audio, creative coding]
+    - later: true
+- https://x.com/eliebakouch/status/2112276389210603880 -- Elie on Muse Glimmer's co-distillation recipe
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [distillation, language models]
+    - later: true
+- https://x.com/wustep/status/2111873792008237254 -- Stephen Wu shares his bot and Notion setup
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [ai agents, notion]
+    - later: true
+- https://x.com/i/trending/2112296416815067381 -- Frictionmaxxing: Choosing Effort Over Endless Convenience
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [friction, technology]
+    - later: true
+- https://x.com/xenocryptsite/status/2112280472504209643 -- Xenocrypt on intentionality and sustainable habits in the friction debate
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [intentionality, habits]
+    - later: true
+- https://x.com/majamediaco/status/2112265038933402060 -- maja shares Kurt Vonnegut on friction
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [kurt vonnegut, friction]
+    - later: true
+- https://x.com/majamediaco/status/2112264840937189768 -- maja on frictionmaxxing and the costs of convenience
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [friction, technology]
+    - later: true
+- https://x.com/nikc_is_sad/status/2111957751567912966 -- nick on the Abbott and Costello joke in You Can See Everything
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [literature, humor]
+    - later: true
+- https://x.com/noampomsky/status/2112305146030084464 -- Ava on protective beliefs and psychological maturity
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [psychology, self-knowledge]
+    - later: true
+- https://x.com/noampomsky/status/2112307840342020248 -- Ava on strained interpersonal dynamics
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [relationships, communication]
+    - later: true
+- https://x.com/Turn_Trout/status/2112298976183833003 -- Alex Turner on gradient routing for reward hacking
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [ai alignment, gradient routing]
+    - later: true
+- https://x.com/WillManidis/status/2112290037836439888 -- Will Manidis on sovereignty as a limit to frontier AI ambitions
+  - [meta]:
+    - date: 10/19/2026
+    - tags: [sovereignty, frontier ai]
+    - later: true
 - https://x.com/victortaelin/status/2106575078838178270 -- Victor Taelin shares his OptChat setup
   - [meta]:
     - date: 10/11/2026
