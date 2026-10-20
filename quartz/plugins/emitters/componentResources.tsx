@@ -1,5 +1,6 @@
 import type { QuartzEmitterPlugin } from '../../types/plugin'
 import type { FilePath } from '../../util/path'
+import { allSettledOrThrow } from '../../util/staged-output'
 import { writeAssetManifest } from './component-resources/asset-writer'
 import { writeEmojiAssets } from './component-resources/emoji-assets'
 import { writeNotebookRuntimeAssets } from './component-resources/notebook-assets'
@@ -53,14 +54,14 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
         emojiFiles,
         xsltPolyfillFile,
         sharedTrailFiles,
-      ] = await Promise.all([
+      ] = await allSettledOrThrow([
         (async () => {
           const [
             notebookRuntimeFiles,
             collaborativeCommentsFiles,
             semanticWorkerFiles,
             lexicalWorkerFile,
-          ] = await Promise.all([
+          ] = await allSettledOrThrow([
             writeNotebookRuntimeAssets(ctx),
             writeCollaborativeCommentsAssets(ctx),
             writeSemanticWorkerAssets(ctx),

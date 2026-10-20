@@ -1,8 +1,41 @@
 import { createHash } from 'node:crypto'
-import { constants, createReadStream, type BigIntStats } from 'node:fs'
+import { constants, createReadStream, rmSync, type BigIntStats } from 'node:fs'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { defaultIoConcurrency, mapConcurrent } from './async-pool'
+
+type SeededFile = { source: BigIntStats; copy: BigIntStats }
+
+declare global {
+  var __quartzStageSeedsByRoot: Map<string, Map<string, SeededFile>> | undefined
+  var __quartzActiveProcessStages: Set<string> | undefined
+  var __quartzStageExitHookRegistered: boolean | undefined
+}
+
+const stageSeedsByRoot = (globalThis.__quartzStageSeedsByRoot ??= new Map<
+  string,
+  Map<string, SeededFile>
+>())
+const activeProcessStages = (globalThis.__quartzActiveProcessStages ??= new Set<string>())
+
+if (!globalThis.__quartzStageExitHookRegistered) {
+  globalThis.__quartzStageExitHookRegistered = true
+  process.once('exit', () => {
+    for (const stage of activeProcessStages) {
+      try {
+        rmSync(stage, { recursive: true, force: true })
+      } catch {}
+    }
+  })
+}
+
+export async function allSettledOrThrow<T>(promises: readonly Promise<T>[]): Promise<T[]> {
+  const results = await Promise.allSettled(promises)
+  for (const result of results) {
+    if (result.status === 'rejected') throw result.reason
+  }
+  return results.map(result => (result as PromiseFulfilledResult<T>).value)
+}
 
 async function entriesIn(
   root: string,
@@ -16,13 +49,15 @@ async function entriesIn(
       throw error
     })
     directories.push(dir)
+    const subdirs: string[] = []
     for (const entry of entries) {
       const relative = path.join(dir, entry.name)
       if (preserved.has(relative)) continue
-      if (entry.isDirectory()) await walk(relative)
+      if (entry.isDirectory()) subdirs.push(relative)
       else if (entry.isFile()) files.push(relative)
       else throw new Error(`Unsupported output entry: ${relative}`)
     }
+    if (subdirs.length > 0) await Promise.all(subdirs.map(walk))
   }
   await walk('')
   return { files, directories }
@@ -33,8 +68,6 @@ async function fileDigest(file: string): Promise<string> {
   for await (const chunk of createReadStream(file)) hash.update(chunk)
   return hash.digest('hex')
 }
-
-type SeededFile = { source: BigIntStats; copy: BigIntStats }
 
 async function stageEntries<T>(
   entries: readonly T[],
@@ -161,7 +194,8 @@ export async function withStagedOutput<T>(
   await fs.mkdir(stagingRoot, { recursive: true })
   const stage = path.join(stagingRoot, `output-stage-${path.basename(publicRoot)}-${process.pid}`)
   const preserved = new Set(preserve)
-  await fs.mkdir(stage)
+  await fs.mkdir(stage, { recursive: true })
+  activeProcessStages.add(stage)
   let backup: string | undefined
   try {
     const existing = await fs.stat(publicRoot).catch(error => {
@@ -170,28 +204,56 @@ export async function withStagedOutput<T>(
     })
     const seeded = new Map<string, SeededFile>()
     if (existing) {
-      const { files, directories } = await entriesIn(publicRoot, preserved)
-      const [sources, directoryStats] = await Promise.all([
+      const [{ files, directories }, stageInventory] = await Promise.all([
+        entriesIn(publicRoot, preserved),
+        entriesIn(stage, preserved),
+      ])
+      const previousSeeds = stageSeedsByRoot.get(stage)
+      const [sources, stageStats] = await Promise.all([
         mapConcurrent(files, defaultIoConcurrency, file =>
           fs.stat(path.join(publicRoot, file), { bigint: true }),
         ),
-        mapConcurrent(directories, defaultIoConcurrency, directory =>
-          fs.stat(path.join(publicRoot, directory)),
+        mapConcurrent(stageInventory.files, defaultIoConcurrency, file =>
+          fs.stat(path.join(stage, file), { bigint: true }),
         ),
       ])
-      await stageEntries(directories, directory =>
-        fs.mkdir(path.join(stage, directory), { recursive: true }),
-      )
+      const stageStatByFile = new Map(stageInventory.files.map((file, i) => [file, stageStats[i]]))
+      const publicFileSet = new Set(files)
+      const extraStageFiles = stageInventory.files.filter(file => !publicFileSet.has(file))
+      if (extraStageFiles.length > 0) {
+        await stageEntries(extraStageFiles, file => fs.rm(path.join(stage, file), { force: true }))
+      }
+      const stageDirSet = new Set(stageInventory.directories)
+      const missingDirectories = directories.filter(dir => dir !== '' && !stageDirSet.has(dir))
+      if (missingDirectories.length > 0) {
+        await stageEntries(missingDirectories, directory =>
+          fs.mkdir(path.join(stage, directory), { recursive: true }),
+        )
+      }
       await stageEntries(files, async (file, index) => {
+        const source = sources[index]
+        const existingCopy = stageStatByFile.get(file)
+        const cachedSeed = previousSeeds?.get(file)
+        if (
+          cachedSeed &&
+          existingCopy &&
+          unchangedFile(cachedSeed.source, source) &&
+          unchangedFile(cachedSeed.copy, existingCopy)
+        ) {
+          seeded.set(file, cachedSeed)
+          return
+        }
         const target = path.join(stage, file)
+        await fs.mkdir(path.dirname(target), { recursive: true })
         await fs.copyFile(path.join(publicRoot, file), target, constants.COPYFILE_FICLONE)
-        await fs.utimes(target, sources[index].atime, sources[index].mtime)
         const copy = await fs.stat(target, { bigint: true })
-        seeded.set(file, { source: sources[index], copy })
+        seeded.set(file, { source, copy })
       })
-      await stageEntries(directories, (directory, index) =>
-        fs.chmod(path.join(stage, directory), directoryStats[index].mode & 0o7777),
-      )
+      stageSeedsByRoot.set(stage, new Map(seeded))
+    } else {
+      await fs.rm(stage, { recursive: true, force: true })
+      await fs.mkdir(stage, { recursive: true })
+      stageSeedsByRoot.delete(stage)
     }
     console.log(`Prepared staged output in ${Math.round(performance.now() - started)}ms`)
     onTiming?.('stage.prepare', performance.now() - started)
@@ -234,8 +296,15 @@ export async function withStagedOutput<T>(
     try {
       for (const file of changed) {
         const target = path.join(publicRoot, file)
+        const stageFile = path.join(stage, file)
+        const tempTarget = path.join(stagingRoot, `.publish-${process.pid}-${published.length}`)
         await fs.mkdir(path.dirname(target), { recursive: true })
-        await fs.rename(path.join(stage, file), target)
+        try {
+          await fs.copyFile(stageFile, tempTarget, constants.COPYFILE_FICLONE)
+          await fs.rename(tempTarget, target)
+        } finally {
+          await fs.rm(tempTarget, { force: true })
+        }
         published.push(file)
       }
       for (const file of removed) {
@@ -250,6 +319,19 @@ export async function withStagedOutput<T>(
       }
       throw error
     }
+    for (const file of removed) {
+      seeded.delete(file)
+    }
+    if (changed.length > 0) {
+      await mapConcurrent(changed, defaultIoConcurrency, async file => {
+        const [source, copy] = await Promise.all([
+          fs.stat(path.join(publicRoot, file), { bigint: true }),
+          fs.stat(path.join(stage, file), { bigint: true }),
+        ])
+        seeded.set(file, { source, copy })
+      })
+    }
+    stageSeedsByRoot.set(stage, seeded)
     console.log(
       `Published ${changed.length} changed files, removed ${removed.length}; kept ${next.length - changed.length} unchanged files in ${Math.round(performance.now() - publishStarted)}ms`,
     )
@@ -257,7 +339,6 @@ export async function withStagedOutput<T>(
     return result
   } finally {
     const cleanupStarted = performance.now()
-    await fs.rm(stage, { recursive: true, force: true })
     if (backup) await fs.rm(backup, { recursive: true, force: true })
     onTiming?.('stage.cleanup', performance.now() - cleanupStarted)
     // Orphan removal must not hold up publication readiness or invalidate restart caches.

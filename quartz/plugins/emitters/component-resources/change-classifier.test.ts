@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { sourceRebuildScope } from './change-classifier'
+import { isParseSourceInput, sourceRebuildScope } from './change-classifier'
 
 test('scopes source rebuilds by the server bundle closure', () => {
   const server = new Set([
@@ -102,4 +102,16 @@ test('source resource scope includes shared styles, JavaScript helpers, and runt
     sourceRebuildScope(['quartz/runtime/lsp/pyodide-lock-v0.29.4.json'], new Set()),
     { kind: 'full' },
   )
+})
+
+test('isParseSourceInput excludes stylesheets and inline client scripts from parse source closure', () => {
+  assert.equal(isParseSourceInput('quartz/processors/parse.ts'), true)
+  assert.equal(isParseSourceInput('quartz/plugins/transformers/ofm.ts'), true)
+  assert.equal(isParseSourceInput('quartz/components/mdx/Registry.tsx'), true)
+  assert.equal(isParseSourceInput('quartz/components/mdx/jackets.json'), true)
+
+  assert.equal(isParseSourceInput('quartz/components/styles/popover.scss'), false)
+  assert.equal(isParseSourceInput('quartz/styles/base.scss'), false)
+  assert.equal(isParseSourceInput('quartz/components/scripts/popover.inline.ts'), false)
+  assert.equal(isParseSourceInput('quartz/components/scripts/spa.inline.js'), false)
 })

@@ -106,7 +106,7 @@ type BuildData = {
   disposed: boolean
 }
 
-type WatchRuntime = { ready: boolean; dispose(): Promise<void> }
+type WatchRuntime = { ready: boolean; dispose(): Promise<boolean> }
 
 type SourceEmissionSnapshot = {
   key: string
@@ -699,10 +699,16 @@ async function startWatching(
   return {
     ready: false,
     async dispose() {
+      const hadPending =
+        buildData.pending.size > 0 ||
+        buildData.agentSkillsPending.size > 0 ||
+        queue.running ||
+        agentSkillsQueue.running
       buildData.disposed = true
       buildData.pending.clear()
       buildData.agentSkillsPending.clear()
       await Promise.all([watcher.close(), agentSkillsWatcher.close()])
+      return hadPending
     },
   }
 }
@@ -737,11 +743,9 @@ async function requestRebuild(
   if (queue.running) return
   queue.running = true
   try {
-    while (queue.requested && !buildData.disposed) {
+    while ((queue.requested || buildData.pending.size > 0) && !buildData.disposed) {
       queue.requested = false
-      const pending: PendingChanges = new Map(buildData.pending)
-      buildData.pending.clear()
-      await rebuild(clientRefresh, buildData, pending)
+      await rebuild(clientRefresh, buildData)
     }
   } finally {
     queue.running = false
@@ -757,29 +761,25 @@ async function requestAgentSkillsRebuild(
   if (queue.running) return
   queue.running = true
   try {
-    while (queue.requested && !buildData.disposed) {
+    while ((queue.requested || buildData.agentSkillsPending.size > 0) && !buildData.disposed) {
       queue.requested = false
-      const pending: PendingChanges = new Map(buildData.agentSkillsPending)
-      buildData.agentSkillsPending.clear()
-      await rebuildAgentSkills(clientRefresh, buildData, pending)
+      await rebuildAgentSkills(clientRefresh, buildData)
     }
   } finally {
     queue.running = false
   }
 }
 
-async function rebuildAgentSkills(
-  clientRefresh: () => void,
-  buildData: BuildData,
-  pending: PendingChanges,
-) {
+async function rebuildAgentSkills(clientRefresh: () => void, buildData: BuildData) {
   const { ctx, mut, contentMap } = buildData
   const release = await mut.acquire()
   const buildId = randomIdNonSecure()
   let shouldRefresh = false
 
   try {
-    if (buildData.disposed) return
+    if (buildData.disposed || buildData.agentSkillsPending.size === 0) return
+    const pending: PendingChanges = new Map(buildData.agentSkillsPending)
+    buildData.agentSkillsPending.clear()
     globalThis.__quartzSourceEmissionSnapshot = undefined
     ctx.buildId = buildId
     emitQuartzDevEvent({ type: 'build:start', epoch: buildId, reason: 'content' })
@@ -808,17 +808,19 @@ async function rebuildAgentSkills(
   }
 }
 
-async function rebuild(clientRefresh: () => void, buildData: BuildData, pending: PendingChanges) {
+async function rebuild(clientRefresh: () => void, buildData: BuildData) {
   const { ctx, mut, contentMap } = buildData
   const { argv } = ctx
 
   const release = await mut.acquire()
   let shouldRefresh = false
   const buildId = randomIdNonSecure()
-  const incremental = ctx.incremental && pending.size > 0 && contentMap.size > 0
 
   try {
-    if (buildData.disposed) return
+    if (buildData.disposed || buildData.pending.size === 0) return
+    const pending: PendingChanges = new Map(buildData.pending)
+    buildData.pending.clear()
+    const incremental = ctx.incremental && pending.size > 0 && contentMap.size > 0
     globalThis.__quartzSourceEmissionSnapshot = undefined
     ctx.buildId = buildId
     emitQuartzDevEvent({ type: 'build:start', epoch: buildId, reason: 'content' })

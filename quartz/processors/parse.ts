@@ -298,6 +298,7 @@ type ProcessedContentCacheState = {
   content: Map<FilePath, ProcessedContentCacheEntry>
 }
 
+import { isParseSourceInput } from '../plugins/emitters/component-resources/change-classifier'
 import { ReloadableWeakMap } from '../util/module-caches'
 
 const processorCache = new ReloadableWeakMap<BuildCtx, ProcessorCache>()
@@ -305,6 +306,7 @@ const processorCache = new ReloadableWeakMap<BuildCtx, ProcessorCache>()
 declare global {
   var __quartzProcessedContentCache: ProcessedContentCacheState | undefined
   var __quartzParseSourceInputs: string[] | undefined
+  var __quartzParseSourceSalt: string | undefined
 }
 
 const processedContentCache = (globalThis.__quartzProcessedContentCache ??= {
@@ -707,8 +709,13 @@ async function sourceFileSignature(fp: string): Promise<string> {
 }
 
 async function processedContentCacheSourceSalt(): Promise<string> {
+  if (typeof globalThis.__quartzParseSourceSalt === 'string') {
+    return globalThis.__quartzParseSourceSalt
+  }
   const signatures = await Promise.all(
-    (globalThis.__quartzParseSourceInputs ?? []).map(sourceFileSignature),
+    (globalThis.__quartzParseSourceInputs ?? [])
+      .filter(isParseSourceInput)
+      .map(sourceFileSignature),
   )
   return signatures.join('|')
 }
