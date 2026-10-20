@@ -1,0 +1,248 @@
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
+@use './figure.scss' as *;
+
+.crosscoder-masks {
+  @include figure-frame('ccm-figure', 30rem);
+
+  --ccm-lit: color-mix(in srgb, var(--fig-salmon) 78%, var(--light));
+  --ccm-allowed: color-mix(in srgb, var(--fig-sage) 80%, var(--light));
+  --ccm-segment-on: var(--fig-grid-selected);
+}
+
+:root[saved-theme='dark'] .crosscoder-masks {
+  --ccm-lit: color-mix(in srgb, var(--fig-salmon) 30%, var(--lightgray));
+  --ccm-allowed: color-mix(in srgb, var(--fig-sage) 26%, var(--lightgray));
+  --ccm-segment-on: color-mix(in srgb, var(--fig-sage) 22%, var(--lightgray));
+}
+
+.ccm-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.25rem;
+  align-items: flex-end;
+}
+
+.ccm-segments {
+  @include figure-grid;
+  grid-auto-flow: column;
+  min-width: 0;
+  position: relative;
+  margin-top: 1.1rem;
+}
+
+.ccm-legend {
+  position: absolute;
+  top: -1.15rem;
+  left: 0;
+  padding: 0;
+  color: var(--fig-note);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.ccm-segment {
+  @include figure-grid-cell;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.28rem 0.6rem;
+  color: var(--fig-tab-fg);
+  cursor: pointer;
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  transition:
+    background-color 140ms ease,
+    color 140ms ease;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    pointer-events: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      color: var(--dark);
+    }
+  }
+
+  &:has(input:checked) {
+    background: var(--ccm-segment-on);
+    color: var(--dark);
+  }
+
+  &:has(input:focus-visible) {
+    outline: 2px solid var(--dark);
+    outline-offset: -2px;
+  }
+}
+
+.ccm-rule {
+  margin: 0.75rem 0 0;
+  color: var(--fig-note);
+  font-size: 0.78rem;
+  line-height: 1.45;
+  text-wrap: pretty;
+
+  &[data-on='false'] {
+    display: none;
+  }
+}
+
+.ccm-body {
+  // Column widths follow the two viewBox widths, so both panels draw at one scale.
+  display: grid;
+  grid-template-columns: minmax(0, 168fr) minmax(0, 180fr);
+  gap: 0.5rem;
+  max-width: 24rem;
+  margin: 0.9rem auto 0;
+}
+
+.ccm-svg {
+  display: block;
+  width: 100%;
+
+  text {
+    font-family: var(--codeFont);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ccm-axis {
+    fill: var(--fig-note);
+    font-size: 8.5px;
+  }
+
+  .ccm-stream {
+    stroke: var(--fig-stroke);
+    stroke-width: 2;
+  }
+
+  .ccm-station {
+    fill: var(--dark);
+    stroke: var(--dark);
+    stroke-width: 1;
+    transition: fill 160ms ease;
+  }
+
+  // A skipped layer stays on the stream as an empty point.
+  .ccm-station[data-used='0'] {
+    fill: var(--light);
+    stroke: var(--fig-stroke);
+  }
+
+  .ccm-variant[data-on='false'] {
+    display: none;
+  }
+
+  .ccm-box {
+    fill: var(--light);
+    stroke: var(--fig-stroke);
+    stroke-width: 1;
+    transition:
+      fill 160ms ease,
+      stroke 160ms ease;
+  }
+
+  .ccm-box[data-lit='true'] {
+    fill: var(--ccm-lit);
+    stroke: var(--dark);
+  }
+
+  .ccm-edges {
+    transition: opacity 160ms ease;
+  }
+
+  .ccm-edges[data-lit='false'] {
+    opacity: 0;
+  }
+
+  .ccm-edge {
+    stroke: var(--dark);
+    stroke-width: 1.2;
+  }
+
+  .ccm-arrowhead {
+    fill: var(--dark);
+  }
+
+  .ccm-cell {
+    fill: var(--light);
+    stroke: var(--fig-stroke-soft);
+    stroke-width: 1;
+    transition:
+      fill 160ms ease,
+      stroke 160ms ease;
+  }
+
+  .ccm-cell[data-state='1'] {
+    fill: var(--ccm-allowed);
+    stroke: var(--fig-stroke);
+  }
+
+  .ccm-cell[data-state='2'] {
+    fill: var(--ccm-lit);
+    stroke: var(--dark);
+  }
+}
+
+.ccm-readout {
+  @include figure-table;
+  margin-top: 0.9rem;
+}
+
+.ccm-math {
+  @include figure-inline-math;
+}
+
+.ccm-caption {
+  @include figure-caption;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ccm-svg .ccm-station,
+  .ccm-svg .ccm-box,
+  .ccm-svg .ccm-edges,
+  .ccm-svg .ccm-cell,
+  .ccm-segment {
+    transition: none;
+  }
+}
+
+@container ccm-figure (max-width: 400px) {
+  .ccm-segments {
+    grid-auto-flow: row;
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+  }
+
+  .ccm-segment {
+    justify-content: flex-start;
+  }
+
+  .ccm-body {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 15rem;
+  }
+
+  .ccm-readout {
+    grid-template-columns: minmax(0, 1fr);
+
+    dd {
+      justify-content: flex-start;
+    }
+  }
+
+  .ccm-segments--read {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .ccm-segment {
+    padding: 0.28rem 0.35rem;
+  }
+}
