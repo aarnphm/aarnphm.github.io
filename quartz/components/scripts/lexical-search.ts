@@ -7,6 +7,7 @@ import type {
   LexicalWorkerRequest,
   LexicalWorkerResponse,
 } from './lexical-search-types'
+import { isSearchExcluded } from '../../util/search-exclude'
 import { prepareLexicalDocument } from './lexical-search-document'
 
 type PendingSearch = {
@@ -226,6 +227,7 @@ export class LexicalSearchClient {
       if (this.worker !== worker || this.pendingCommit?.seq !== seq) {
         throw new Error('lexical worker reset during indexing')
       }
+      if (isSearchExcluded(slug) || isSearchExcluded(fileData.fileName)) continue
       const item = prepareLexicalDocument(id, slug, fileData)
       documents.push(item)
       id += 1
@@ -342,6 +344,7 @@ export class LexicalSearchClient {
       let id = 0
       // FlexSearch addAsync yields via timer per document; a single library call per document is not mid-call preemptible.
       for (const [slug, fileData] of Object.entries<ContentDetails>(data)) {
+        if (isSearchExcluded(slug) || isSearchExcluded(fileData.fileName)) continue
         const item = prepareLexicalDocument(id, slug, fileData)
         await nextIndex.addAsync(item)
         id += 1

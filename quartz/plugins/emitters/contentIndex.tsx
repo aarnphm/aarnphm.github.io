@@ -41,6 +41,7 @@ import {
 } from '../../util/path'
 import { logBuildSpan, PerfTimer } from '../../util/perf'
 import { componentCssBundleKey } from '../../util/resource-bundles'
+import { isSearchExcluded } from '../../util/search-exclude'
 import { pageTitlePatchEvents } from '../../util/title-patch'
 import { ArenaData } from '../transformers/arena'
 import { ProcessedContent, QuartzPluginData } from '../vfile'
@@ -940,9 +941,13 @@ function addGraphFilePages(ctx: BuildCtx, linkIndex: ContentIndexMap) {
 }
 
 function buildSearchIndex(ctx: BuildCtx, linkIndex: ContentIndexMap): ContentIndexMap {
-  const searchIndex: ContentIndexMap = new Map(linkIndex)
+  const searchIndex: ContentIndexMap = new Map()
+  for (const [slug, details] of linkIndex) {
+    if (isSearchExcluded(slug) || isSearchExcluded(details.fileName)) continue
+    searchIndex.set(slug, details)
+  }
   for (const file of ctx.allFiles) {
-    if (isContentPageFile(file)) {
+    if (isContentPageFile(file) || isSearchExcluded(file)) {
       continue
     }
 
@@ -1388,7 +1393,7 @@ function buildSearchIndexPatch(
       if (!slug || slug === 'arena') {
         return undefined
       }
-      if (changeEvent.type === 'delete') {
+      if (changeEvent.type === 'delete' || isSearchExcluded(slug)) {
         deletes.add(slug)
         continue
       }
@@ -1413,6 +1418,10 @@ function buildSearchIndexPatch(
         return undefined
       }
       for (const [entrySlug, details] of entryIndex) {
+        if (isSearchExcluded(entrySlug) || isSearchExcluded(details.fileName)) {
+          deletes.add(entrySlug)
+          continue
+        }
         updates.set(entrySlug, serializeContentDetails(details, true))
       }
       continue
@@ -1426,7 +1435,11 @@ function buildSearchIndexPatch(
     }
 
     const slug = filePageSlug(changeEvent.path)
-    if (changeEvent.type === 'delete') {
+    if (
+      changeEvent.type === 'delete' ||
+      isSearchExcluded(changeEvent.path) ||
+      isSearchExcluded(slug)
+    ) {
       deletes.add(slug)
       continue
     }

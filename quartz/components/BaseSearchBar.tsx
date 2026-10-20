@@ -21,76 +21,91 @@ function BaseSearchBar({ displayClass, fileData }: QuartzComponentProps) {
       data-base-query-view={fileData.basesMetadata?.currentView}
     >
       <div class="base-query-toolbar">
-        <div id="base-search-bar" data-semantic-manifest={semanticManifest}>
-          <input
-            type="text"
-            id="base-search-input"
-            placeholder="Search this base"
-            aria-label="Search this base"
-            autocomplete="off"
-          />
-          {semanticManifest && (
-            <>
-              <span class="semantic-status sr-only" data-state="idle" aria-live="polite"></span>
-              <div class="search-mode-toggle" role="radiogroup" aria-label="Search mode">
+        <div class="base-query-actions">
+          <div id="base-search-bar" data-semantic-manifest={semanticManifest}>
+            <span class="base-search-label" aria-hidden="true">
+              search
+            </span>
+            <input
+              type="text"
+              id="base-search-input"
+              placeholder="Search this base"
+              aria-label="Search this base"
+              autocomplete="off"
+            />
+            {semanticManifest && (
+              <>
+                <span class="semantic-status sr-only" data-state="idle" aria-live="polite"></span>
+                <div class="search-mode-toggle" role="radiogroup" aria-label="Search mode">
+                  <button
+                    type="button"
+                    class="mode-option active"
+                    data-mode="lexical"
+                    aria-pressed="true"
+                    aria-label="Full-text search"
+                  >
+                    <svg viewBox="0 0 20 20" role="img" aria-hidden="true">
+                      <g
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                      >
+                        <path d="M4 6h12M4 10h8M4 14h6" />
+                      </g>
+                    </svg>
+                    <span class="sr-only">Full-text</span>
+                  </button>
+                  <button
+                    type="button"
+                    class="mode-option"
+                    data-mode="semantic"
+                    aria-pressed="false"
+                    aria-label="Semantic search"
+                  >
+                    <svg viewBox="0 0 20 20" role="img" aria-hidden="true">
+                      <g
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                      >
+                        <circle cx="5.2" cy="10" r="2.4" />
+                        <circle cx="14.8" cy="4.8" r="2.1" />
+                        <circle cx="14.8" cy="15.2" r="2.1" />
+                        <path d="M7.1 8.7l5.2-2.4M7.1 11.3l5.2 2.4M14.8 6.9v6.2" />
+                      </g>
+                    </svg>
+                    <span class="sr-only">Semantic</span>
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+          {queryDocument && (
+            <div
+              class="base-query-tabs"
+              role="tablist"
+              aria-label="Edit base view"
+              aria-orientation="horizontal"
+            >
+              {['filter', 'sort'].map(mode => (
                 <button
+                  id={`base-query-tab-${mode}`}
                   type="button"
-                  class="mode-option active"
-                  data-mode="lexical"
-                  aria-pressed="true"
-                  aria-label="Full-text search"
+                  role="tab"
+                  data-base-query-toggle={mode}
+                  aria-selected={mode === 'filter'}
+                  aria-expanded="false"
+                  aria-controls="base-query-panel"
+                  tabIndex={mode === 'filter' ? 0 : -1}
                 >
-                  <svg viewBox="0 0 20 20" role="img" aria-hidden="true">
-                    <g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
-                      <path d="M4 6h12M4 10h8M4 14h6" />
-                    </g>
-                  </svg>
-                  <span class="sr-only">Full-text</span>
+                  {mode}
                 </button>
-                <button
-                  type="button"
-                  class="mode-option"
-                  data-mode="semantic"
-                  aria-pressed="false"
-                  aria-label="Semantic search"
-                >
-                  <svg viewBox="0 0 20 20" role="img" aria-hidden="true">
-                    <g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
-                      <circle cx="5.2" cy="10" r="2.4" />
-                      <circle cx="14.8" cy="4.8" r="2.1" />
-                      <circle cx="14.8" cy="15.2" r="2.1" />
-                      <path d="M7.1 8.7l5.2-2.4M7.1 11.3l5.2 2.4M14.8 6.9v6.2" />
-                    </g>
-                  </svg>
-                  <span class="sr-only">Semantic</span>
-                </button>
-              </div>
-            </>
+              ))}
+            </div>
           )}
         </div>
-        {queryDocument && (
-          <div
-            class="base-query-actions"
-            role="tablist"
-            aria-label="Edit base view"
-            aria-orientation="horizontal"
-          >
-            {['filter', 'sort'].map(mode => (
-              <button
-                id={`base-query-tab-${mode}`}
-                type="button"
-                role="tab"
-                data-base-query-toggle={mode}
-                aria-selected={mode === 'filter'}
-                aria-expanded="false"
-                aria-controls="base-query-panel"
-                tabIndex={mode === 'filter' ? 0 : -1}
-              >
-                {mode}
-              </button>
-            ))}
-          </div>
-        )}
       </div>
       {queryDocument && (
         <div

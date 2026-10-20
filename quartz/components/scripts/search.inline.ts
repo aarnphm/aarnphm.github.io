@@ -9,6 +9,8 @@ import {
   normalizeRelativeURLs,
   resolveRelative,
 } from '../../util/path'
+import { isSearchExcluded } from '../../util/search-exclude'
+import { isSearchModeToggle, isSearchToggle } from '../../util/search-shortcuts'
 import { highlight, tokenizeTerm } from '../../util/search-text'
 import { fuseSearchRanks } from '../../util/semantic-search'
 import { renderCoursePreview } from './course-preview-card'
@@ -373,14 +375,32 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   let runSearchTimer: number | null = null
   searchLayout.dataset.mode = searchMode
 
+  let requestedMode: SearchMode = searchMode
+  let modeRequest = 0
   const triggerSearchWithMode = (mode: SearchMode) => {
+    requestedMode = mode
+    const request = ++modeRequest
     if (mode === 'semantic' && !semanticReady) {
       void ensureSemantic().then(ready => {
+        if (request !== modeRequest) return
         if (ready) triggerSearchWithMode('semantic')
+        else {
+          requestedMode = 'lexical'
+          updateModeUI('lexical')
+        }
       })
+      updateModeUI(mode)
       return
     }
-    if (searchMode === mode) return
+    if (searchMode === mode) {
+      updateModeUI(mode)
+      return
+    }
+    semantic?.cancel()
+    if (runSearchTimer !== null) {
+      window.clearTimeout(runSearchTimer)
+      runSearchTimer = null
+    }
     searchMode = mode
     updateModeUI(mode)
     persistSearchMode(searchMode)
@@ -469,6 +489,9 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   }
 
   function hideSearch(focusButton = true) {
+    modeRequest++
+    requestedMode = searchMode
+    updateModeUI(searchMode)
     semantic?.cancel()
     searchSeq += 1
     pressedKeys.clear()
@@ -530,18 +553,24 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   }
 
   async function shortcutHandler(e: HTMLElementEventMap['keydown']) {
+    if (e.defaultPrevented) return
     const paletteOpen = document.querySelector('search#palette-container') as HTMLDivElement
     if (paletteOpen && paletteOpen.classList.contains('active')) return
     if (e.isComposing || composing) return
 
-    const isBasePage = document.body?.dataset?.isBase === 'true'
+    const inlineSearch = document.querySelector<HTMLElement>('#base-search-bar')
     const key = e.key.toLowerCase()
 
-    if ((e.key === '/' || key === 'k') && (e.ctrlKey || e.metaKey) && !e.shiftKey) {
-      if (key === 'k') {
-        if (isBasePage) return
-
-        const hasInlineSearch = document.querySelector('.page-list-search-container')
+    if (isSearchToggle(e)) {
+      if (
+        !container.classList.contains('active') &&
+        inlineSearch?.checkVisibility({ visibilityProperty: true })
+      )
+        return
+      if (key === 'k' && !container.classList.contains('active')) {
+        const hasInlineSearch = [...document.querySelectorAll('.page-list-search-container')].some(
+          element => element.checkVisibility({ visibilityProperty: true }),
+        )
         if (hasInlineSearch) return
 
         const streamSearchInput = document.querySelector<HTMLInputElement>('.stream-search-input')
@@ -574,6 +603,12 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     }
 
     if (!container!.classList.contains('active')) return
+    if (isSearchModeToggle(e) && container.contains(document.activeElement)) {
+      if (requestedMode === 'lexical' && semanticInitFailed) return
+      e.preventDefault()
+      if (!e.repeat) triggerSearchWithMode(requestedMode === 'semantic' ? 'lexical' : 'semantic')
+      return
+    }
     if (preview?.contains(document.activeElement)) {
       if (e.key === 'ArrowLeft') {
         e.preventDefault()
@@ -658,6 +693,7 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     const slug = idDataMap[id]
     const fileData = requireData()[slug]
     if (!fileData) return null
+    if (isSearchExcluded(slug) || isSearchExcluded(fileData.fileName)) return null
     if (fileData.layout === 'letter' || (searchMode === 'semantic' && slug.includes('arena')))
       return null
     const aliases: string[] = fileData.aliases

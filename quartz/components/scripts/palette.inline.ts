@@ -23,6 +23,7 @@ import {
   normalizeRelativeURLs,
   resolveRelative,
 } from '../../util/path'
+import { isSearchExcluded } from '../../util/search-exclude'
 import { tokenizeTerm } from '../../util/search-text'
 import {
   setTriActivityLayout,
@@ -989,7 +990,7 @@ document.addEventListener('nav', () => {
         showPalette('command', 'quick_open')
       }
       return
-    } else if (key === 'p' && (e.altKey || e.metaKey || e.ctrlKey)) {
+    } else if (key === 'p' && (e.altKey || e.metaKey) && !e.ctrlKey) {
       e.preventDefault()
       const barOpen = container?.classList.contains('active')
       if (barOpen) {
@@ -1082,7 +1083,7 @@ document.addEventListener('nav', () => {
       void ensureContentData().then(
         () => {
           if (settled || generation !== queryGeneration || !isActive) return
-          displayPendingTitles(query, 'loading semantic results')
+          displayPendingTitles(query)
         },
         () => {},
       )
@@ -1098,7 +1099,7 @@ document.addEventListener('nav', () => {
         console.warn('[QuickOpen] semantic search failed:', error)
         output.removeAttribute('aria-busy')
         quickOpenProgress(false)
-        displayPendingTitles(query, 'semantic unavailable; use ctrl+k for full-text search', false)
+        displayPendingTitles(query, 'semantic unavailable; use ctrl+k for full-text search')
       } finally {
         settled = true
       }
@@ -1118,11 +1119,17 @@ document.addEventListener('nav', () => {
     }
   }
 
-  function displayPendingTitles(query: string, message: string, loading = true) {
+  function displayPendingTitles(query: string, message?: string) {
     const terms = query.toLowerCase().split(/\s+/).filter(Boolean)
     const items = Object.entries(data ?? {})
       .flatMap(([slug, note]) => {
-        if (!isFullSlug(slug) || note.protected) return []
+        if (
+          !isFullSlug(slug) ||
+          note.protected ||
+          isSearchExcluded(slug) ||
+          isSearchExcluded(note.fileName)
+        )
+          return []
         const title = note.title || note.fileName
         const text = [title, note.fileName, ...(note.aliases ?? [])].join(' ').toLowerCase()
         return terms.every(term => text.includes(term)) ? [{ slug, name: title }] : []
@@ -1134,19 +1141,22 @@ document.addEventListener('nav', () => {
       .slice(0, numSearchResults)
     if (items.length) displayResults(items, query)
     else output.replaceChildren()
-    const status = document.createElement('p')
-    status.setAttribute('role', 'status')
-    status.textContent = items.length ? `${message}; title matches shown` : message
-    output.prepend(status)
-    if (loading) output.setAttribute('aria-busy', 'true')
+    if (message) {
+      const status = document.createElement('p')
+      status.setAttribute('role', 'status')
+      status.textContent = items.length ? `${message}; title matches shown` : message
+      output.prepend(status)
+    } else {
+      output.setAttribute('aria-busy', 'true')
+    }
   }
 
   function displayQuickOpenResults(documents: SemanticDocument[], query: string) {
     const items: Item[] = []
     for (const document of documents) {
-      if (!isFullSlug(document.slug)) continue
+      if (!isFullSlug(document.slug) || isSearchExcluded(document.slug)) continue
       const fileData = data?.[document.slug]
-      if (!fileData) continue
+      if (!fileData || isSearchExcluded(fileData.fileName)) continue
       items.push({ slug: document.slug, name: fileData.title || fileData.fileName })
       if (items.length === numSearchResults) break
     }

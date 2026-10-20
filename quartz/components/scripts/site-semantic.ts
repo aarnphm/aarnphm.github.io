@@ -1,3 +1,4 @@
+import { isSearchExcluded } from '../../util/search-exclude'
 import {
   aggregateSemanticResults,
   type SemanticDocument,
@@ -64,7 +65,9 @@ export function siteSemantic(): Promise<SiteSemantic> {
           const previous = cache.get(key)
           if (previous) return previous.promise
           const result = client.search(text, limit).then(({ semantic }) => {
-            const documents = aggregateSemanticResults(semantic, index)
+            const documents = aggregateSemanticResults(semantic, index).filter(
+              document => !isSearchExcluded(document.slug),
+            )
             entry.documents = documents
             return documents
           })

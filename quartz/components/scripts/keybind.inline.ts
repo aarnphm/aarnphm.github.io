@@ -257,13 +257,6 @@ document.addEventListener('nav', () => {
       ggTimeout = null
     }
   }
-  const maxScrollY = (): number => {
-    const scroller = document.scrollingElement ?? document.documentElement
-    return Math.max(0, scroller.scrollHeight - window.innerHeight)
-  }
-  const scrollToPageRatio = (ratio: number): void => {
-    window.scrollTo({ top: maxScrollY() * ratio, behavior: 'smooth' })
-  }
   const isScrollableRegion = (element: HTMLElement): boolean => {
     const overflowY = window.getComputedStyle(element).overflowY
     return (
@@ -289,13 +282,15 @@ document.addEventListener('nav', () => {
       ) ?? null
     )
   }
+  const pageKeyboardScrollRegion = (): HTMLElement | null =>
+    Array.from(document.querySelectorAll<HTMLElement>('[data-keyboard-scroll]')).find(
+      isScrollableRegion,
+    ) ?? null
   let activeScrollRegion: HTMLElement | null = null
   const updateActiveScrollRegion = (event: Event): void => {
     activeScrollRegion = event.target instanceof Element ? scopedScrollRegion(event.target) : null
   }
-  const currentScrollTarget = (event: KeyboardEvent): HTMLElement | Window => {
-    const direct = event.target instanceof Element ? scopedScrollRegion(event.target) : null
-    if (direct) activeScrollRegion = direct
+  const resolveScrollTarget = (): HTMLElement | Window => {
     if (
       activeScrollRegion?.isConnected &&
       window.getComputedStyle(activeScrollRegion).visibility !== 'hidden' &&
@@ -303,7 +298,12 @@ document.addEventListener('nav', () => {
     )
       return activeScrollRegion
     activeScrollRegion = null
-    return window
+    return pageKeyboardScrollRegion() ?? window
+  }
+  const currentScrollTarget = (event: KeyboardEvent): HTMLElement | Window => {
+    const direct = event.target instanceof Element ? scopedScrollRegion(event.target) : null
+    if (direct) activeScrollRegion = direct
+    return resolveScrollTarget()
   }
   const scrollTargetBy = (
     target: HTMLElement | Window,
@@ -311,6 +311,24 @@ document.addEventListener('nav', () => {
     behavior: ScrollBehavior,
   ): void => {
     target.scrollBy({ top, behavior })
+  }
+  const scrollTargetTo = (
+    target: HTMLElement | Window,
+    top: number,
+    behavior: ScrollBehavior,
+  ): void => {
+    target.scrollTo({ top, behavior })
+  }
+  const scrollTargetMax = (target: HTMLElement | Window): number => {
+    if (target instanceof HTMLElement) {
+      return Math.max(0, target.scrollHeight - target.clientHeight)
+    }
+    const scroller = document.scrollingElement ?? document.documentElement
+    return Math.max(0, scroller.scrollHeight - window.innerHeight)
+  }
+  const scrollToPageRatio = (ratio: number): void => {
+    const target = resolveScrollTarget()
+    scrollTargetTo(target, scrollTargetMax(target) * ratio, 'smooth')
   }
 
   document.addEventListener('focusin', updateActiveScrollRegion, true)
@@ -659,18 +677,19 @@ document.addEventListener('nav', () => {
 
       case 'G':
         e.preventDefault()
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
+        {
+          const target = currentScrollTarget(e)
+          scrollTargetTo(target, scrollTargetMax(target), 'smooth')
+        }
         break
 
       case 'g':
         if (e.repeat) break
         if (waitingForSecondG) {
-          // Second 'g' pressed - scroll to top
           e.preventDefault()
-          window.scrollTo({ top: 0, behavior: 'smooth' })
+          scrollTargetTo(currentScrollTarget(e), 0, 'smooth')
           clearGPrefix()
         } else {
-          // First 'g' pressed - wait for second
           waitingForSecondG = true
           ggTimeout = window.setTimeout(() => {
             waitingForSecondG = false
@@ -699,18 +718,19 @@ document.addEventListener('nav', () => {
     }
   }
 
-  // Ctrl-based scroll handler
   function ctrlScrollHandler(e: KeyboardEvent) {
-    if (shouldIgnoreTarget(e.target)) return
+    if (e.defaultPrevented || e.isComposing || shouldIgnoreTarget(e.target)) return
     if (isPaletteActive()) return
-    if (!e.ctrlKey || e.metaKey) return
+    if (!e.ctrlKey || e.metaKey || e.altKey) return
 
-    switch (e.key) {
+    const key = e.key.toLowerCase()
+    switch (key) {
       case 'd': {
         const target = currentScrollTarget(e)
         const halfPage =
           (target instanceof HTMLElement ? target.clientHeight : window.innerHeight) / 2
         e.preventDefault()
+        e.stopPropagation()
         scrollTargetBy(target, halfPage, 'instant')
         break
       }
@@ -720,19 +740,42 @@ document.addEventListener('nav', () => {
         const halfPage =
           (target instanceof HTMLElement ? target.clientHeight : window.innerHeight) / 2
         e.preventDefault()
+        e.stopPropagation()
         scrollTargetBy(target, -halfPage, 'instant')
         break
       }
 
-      case 'e':
+      case 'n': {
+        const target = currentScrollTarget(e)
         e.preventDefault()
-        window.scrollBy({ top: SCROLL_AMOUNT_LARGE, behavior: 'instant' })
+        e.stopPropagation()
+        scrollTargetBy(target, SCROLL_AMOUNT_SMALL, 'instant')
         break
+      }
 
-      case 'y':
+      case 'p': {
+        const target = currentScrollTarget(e)
         e.preventDefault()
-        window.scrollBy({ top: -SCROLL_AMOUNT_LARGE, behavior: 'instant' })
+        e.stopPropagation()
+        scrollTargetBy(target, -SCROLL_AMOUNT_SMALL, 'instant')
         break
+      }
+
+      case 'e': {
+        const target = currentScrollTarget(e)
+        e.preventDefault()
+        e.stopPropagation()
+        scrollTargetBy(target, SCROLL_AMOUNT_LARGE, 'instant')
+        break
+      }
+
+      case 'y': {
+        const target = currentScrollTarget(e)
+        e.preventDefault()
+        e.stopPropagation()
+        scrollTargetBy(target, -SCROLL_AMOUNT_LARGE, 'instant')
+        break
+      }
     }
   }
 
