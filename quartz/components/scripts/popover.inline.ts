@@ -42,6 +42,7 @@ import {
 import { coursePreviewTarget, renderCoursePreview } from './course-preview-card'
 import { renderDocumentPreview } from './document-preview-card'
 import { currentNavSignal } from './nav-lifecycle'
+import { beginSitePerformanceSample, endSitePerformanceSample } from './performance-sample'
 import { beginSidePanelRequest, disposeSidePanel, getOrCreateSidePanel } from './side-panel'
 import { renderTriathlonPreview, triathlonPreviewPresentation } from './triathlon-preview-card'
 
@@ -695,6 +696,7 @@ async function showPopover(
   pointer: { clientX: number; clientY: number },
   options: ShowPopoverOptions = {},
 ) {
+  const startedAt = beginSitePerformanceSample()
   clearActivePopover(popoverElement)
   popoverElement.classList.add('active-popover')
 
@@ -709,6 +711,7 @@ async function showPopover(
   if (hash && hash !== '' && popoverInner) {
     scrollPopoverToHash(popoverInner, hash)
   }
+  endSitePerformanceSample('popover', startedAt)
 }
 
 async function showLoadingPopover(
@@ -716,10 +719,12 @@ async function showLoadingPopover(
   popoverElement: HTMLElement,
   pointer: { clientX: number; clientY: number },
 ) {
+  const startedAt = beginSitePerformanceSample()
   clearActivePopover(popoverElement)
   activeAnchor = link
   popoverElement.classList.add('active-popover')
   await setPosition(link, popoverElement, { clientX: pointer.clientX, clientY: pointer.clientY })
+  endSitePerformanceSample('popover', startedAt)
 }
 
 function removePopoverElement(popoverElement: HTMLElement) {
@@ -1337,6 +1342,7 @@ async function handleStackedNotes(
     return
   }
 
+  const startedAt = beginSitePerformanceSample()
   column.appendChild(popoverElement)
   mountPdfPreviews(popoverInner)
   notifyProtectedContentLoaded(popoverInner)
@@ -1354,6 +1360,7 @@ async function handleStackedNotes(
   requestAnimationFrame(() => {
     if (link.isConnected && activeAnchor === link) popoverElement.classList.add('active-popover')
   })
+  endSitePerformanceSample('popover', startedAt)
 
   if (activePopoverReq?.link === link) activePopoverReq = null
 }

@@ -11,11 +11,9 @@ import {
 } from '../../util/visitor-holiday'
 import { holidayArt, holidaySprite, type HolidaySpriteName } from '../visitor-trail/holiday-sprites'
 import { mountTrailClock } from '../visitor-trail/local-clock'
-import { trailPerformanceProfile } from '../visitor-trail/performance-probe'
 import { mountVisitorRegister } from '../visitor-trail/visitor-register'
 import { registerEscapeHandler } from './escape-handler'
 import { mountMoonCalendar } from './moon-calendar'
-import { setupPerformanceDebug } from './performance-debug'
 import { mountTrailGateNavigation } from './trail-gate-navigation'
 
 const CHORD_WINDOW_MS = 1000
@@ -103,7 +101,6 @@ document.addEventListener('nav', () => {
   const disposeMoon = mountMoonCalendar(root, signal)
   mountVisitorRegister(root, signal)
   mountTrailClock(clock, signal)
-  const disposePerformance = setupPerformanceDebug(trailPerformanceProfile(scene))
   // Keep reload timings observable before an external profiler can attach to the scene.
   for (const phase of ['open', 'prepare', 'ready', 'prepared', 'reveal-end', 'show']) {
     const name = `trail:${phase}`
@@ -299,7 +296,6 @@ document.addEventListener('nav', () => {
     controller.abort()
     disposeMoon()
     disposeEscape()
-    disposePerformance()
     resize.disconnect()
     mutation.disconnect()
     cancelAnimationFrame(layoutFrame)

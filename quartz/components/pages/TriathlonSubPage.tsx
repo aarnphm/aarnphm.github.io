@@ -7,7 +7,6 @@ import { joinSegments, pathToRoot } from '../../util/path'
 import { triathlonDateTree, triathlonFeedScopeFromSlug } from '../../util/triathlon-date-route'
 // @ts-ignore
 import script from '../scripts/triathlon.inline'
-import performanceStyle from '../styles/performance-debug.scss'
 import style from '../styles/triathlon.scss'
 import { TRI_ANALYTICS_BOOT_SCRIPT } from '../triathlon/analytics/boot'
 import { CalendarPanel } from '../triathlon/calendar/Calendar'
@@ -82,7 +81,7 @@ export const TriathlonSubPage = (view: TriView, defaultDistance?: unknown): Quar
       </div>
     )
   }
-  Page.css = [style, performanceStyle]
+  Page.css = style
   Page.beforeDOMLoaded = TRI_ANALYTICS_BOOT_SCRIPT
   Page.afterDOMLoaded = script
   return Page
