@@ -561,11 +561,17 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='bookca
     display: none;
   }
 
+  // The heading holds the top of the pane while its rows scroll under it, and the next group's
+  // heading pushes it off; the last heading stays put at the end of the list.
   .base-list-group-header {
+    position: sticky;
+    top: 0;
+    z-index: 1;
     display: grid;
     grid-template-columns: 0.75rem minmax(0, 1fr) auto;
     align-items: center;
     gap: 0.75rem;
+    background: var(--light);
     margin: 0;
     min-height: 2.125rem;
     padding: 0.5rem 0.75rem;

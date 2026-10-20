@@ -62,7 +62,9 @@ export class Drag extends Component {
         // Captured only once it is a drag, so a plain press still clicks the book under it.
         g.moved = true
         this.el.setPointerCapture(g.id)
-        this.el.dataset.dragging = ''
+        // Inline, not an attribute: a selector on the stage would restyle every book at both ends
+        // of the drag. The captured stage's cursor holds over the books too.
+        this.el.style.cursor = 'grabbing'
         this.host.start()
       }
       this.host.move([g.pan[0] + dx, g.pan[1] + dy])
@@ -106,7 +108,7 @@ export class Drag extends Component {
     const g = this.gesture
     if (!g) return
     this.gesture = null
-    delete this.el.dataset.dragging
+    this.el.style.cursor = ''
     if (this.el.hasPointerCapture(g.id)) this.el.releasePointerCapture(g.id)
   }
 }

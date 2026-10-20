@@ -5,10 +5,7 @@
     "moduleResolution": "node",
     "strict": true,
     "isolatedModules": true,
-    "lib": [
-      "DOM",
-      "ES2022"
-    ]
+    "lib": ["DOM", "ES2022"]
   },
   "include": [
     "main.ts",

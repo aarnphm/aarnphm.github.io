@@ -16,7 +16,7 @@ import {
 import type BookcasePlugin from '../main'
 import { EditorPane } from './editor-pane'
 import { ModelReader } from './model'
-import { type VaultEntry, vaultMarkup } from './vault-model'
+import { type VaultEntry, lidRibs, vaultMarkup } from './vault-model'
 import { type VaultConfig, readVaultConfig } from './vault-options'
 
 export const VAULT_VIEW = 'vault'
@@ -33,6 +33,10 @@ const GLIDE_MS = 90
 const BAKE_MS = 120
 const MAX_SETTLING = 1
 const EASE = 'cubic-bezier(0.23, 1, 0.32, 1)'
+/** A can left out this long with nothing happening on the rack slides back; the pick stays. */
+const IDLE_MS = 2400
+/** The scroll shield takes the pointer until a scroll rests this long. */
+const SCROLL_SETTLE_MS = 140
 /** The page panel renders once a run of arrow keys rests this long. */
 const PAGE_MS = 140
 const WIDE_PX = 600
@@ -93,8 +97,13 @@ function lidDetail(can: SVGGElement, title: string): SVGGElement | null {
     span.textContent = line
     text.append(span)
   })
+  const relief = node('g', { class: 'cn-rings' })
+  relief.append(
+    node('circle', { class: 'cn-lid-ring', r: String(Math.round(r * 9) / 10) }),
+    node('path', { class: 'cn-lid-ribs', d: lidRibs(r) }),
+  )
   group.append(
-    node('circle', { class: 'cn-rings', r: String(r) }),
+    relief,
     node('circle', { class: 'cn-lid-label', r: String(Math.round(r * 0.28)) }),
     text,
   )
@@ -165,6 +174,9 @@ export class VaultView extends BasesView {
   private pageTimer: number | null = null
   private pageToken = 0
   private pullToken = 0
+  private idleTimer: number | null = null
+  /** A pan or pull holds the pointer; the idle return waits for it. */
+  private holding = false
   private pageChild: Component | null = null
   private fullscreen = false
 
@@ -234,6 +246,7 @@ export class VaultView extends BasesView {
     for (const s of this.settling.values()) s.finish()
     this.settling.clear()
     this.rebuildRaf = this.pageTimer = this.bakeTimer = null
+    this.cancelIdle()
     this.closeHover()
     // The pane may hold unsaved edits: the view lets go of it and never closes it.
     this.editor.forget()
@@ -305,7 +318,7 @@ export class VaultView extends BasesView {
       this.showPage(-1)
       return
     }
-    this.host.innerHTML = vaultMarkup(entries, settings.view, `${this.plugin.grainAssets}vault/`)
+    this.host.innerHTML = vaultMarkup(entries, settings.view)
     this.rack = this.wire()
     if (!this.rack) return
     this.fitHeight()
@@ -378,7 +391,7 @@ export class VaultView extends BasesView {
    * An embed gets a fixed height, full screen the whole screen.
    */
   private fitHeight(): void {
-    this.root.dataset.layout = this.root.clientWidth >= WIDE_PX ? 'wide' : 'narrow'
+    this.setLayout()
     if (this.fullscreen) {
       this.root.style.removeProperty('height')
       return
@@ -411,6 +424,12 @@ export class VaultView extends BasesView {
       }
     }
     this.root.style.height = `${Math.round(height)}px`
+  }
+
+  /** Writes the layout only when it changes: any attribute write on the root restyles the rack. */
+  private setLayout(): void {
+    const layout = this.root.clientWidth >= WIDE_PX ? 'wide' : 'narrow'
+    if (this.root.dataset.layout !== layout) this.root.dataset.layout = layout
   }
 
   private measure(): void {
@@ -604,7 +623,7 @@ export class VaultView extends BasesView {
     const can = rack?.cans.get(index)
     if (!rack || !can) return
     const [px, py] = this.pullOf(can)
-    if (index !== this.current) {
+    if (index !== this.current || !this.pulled.has(can)) {
       this.pullToken++
       this.putBack()
       this.current = index
@@ -630,6 +649,7 @@ export class VaultView extends BasesView {
             if (this.activePullAnim === anim) this.activePullAnim = null
           }
         }
+        this.armIdle()
       }
       const row = rack.rows.get(index)
       row?.querySelector('.vault-entry-select')?.setAttribute('aria-current', 'true')
@@ -687,8 +707,24 @@ export class VaultView extends BasesView {
     this.settling.set(can, { finish })
   }
 
+  private cancelIdle(): void {
+    if (this.idleTimer !== null) window.clearTimeout(this.idleTimer)
+    this.idleTimer = null
+  }
+
+  /** Puts the pulled can back after IDLE_MS; the page panel or editor pane keeps the pick. */
+  private armIdle(): void {
+    this.cancelIdle()
+    if (this.current < 0) return
+    this.idleTimer = window.setTimeout(() => {
+      this.idleTimer = null
+      if (this.current >= 0 && !this.holding) this.putBack()
+    }, IDLE_MS)
+  }
+
   /** Returns the pulled can to its slot. */
   private putBack(from?: number): void {
+    this.cancelIdle()
     const rack = this.rack
     if (!rack || this.current < 0) return
     const can = rack.cans.get(this.current)
@@ -800,6 +836,7 @@ export class VaultView extends BasesView {
     if (this.current !== index) {
       this.select(index, false, false, true)
     }
+    this.armIdle()
     if (reduced || t >= 0.999 || typeof clone.animate !== 'function') return
     const duration = Math.max(1, Math.round(PULL_MS * (1 - t)))
     this.pulledAt = performance.now()
@@ -1002,8 +1039,12 @@ export class VaultView extends BasesView {
       .createSvg('path', { attr: { d: FULLSCREEN_ICON } })
     const canvas = document.createElement('div')
     canvas.className = 'vault-canvas'
+    // Laid out and never painted: it takes the pointer while the rack scrolls or a pan or pull is
+    // held, so no can is hit-tested then. Only its inline style changes.
+    const shield = document.createElement('div')
+    shield.className = 'vault-shield'
     svg.remove()
-    canvas.append(svg)
+    canvas.append(svg, shield)
     viewport.append(canvas)
     const rack: Rack = {
       abort,
@@ -1086,14 +1127,48 @@ export class VaultView extends BasesView {
       const [px, py] = this.pullOf(can)
       this.activePullAnim?.cancel()
       this.activePullAnim = null
+      this.cancelIdle()
       clone.dataset.pulling = ''
       clone.dataset.progress = String(t)
       clone.style.transition = 'none'
       clone.style.transform = `translate(${px * t}px, ${py * t}px)`
     }
+    let scrollingTimer: number | null = null
+    const hold = (on: boolean) => {
+      this.holding = on
+      shield.style.cursor = on ? 'grabbing' : ''
+      if (on || scrollingTimer === null) shield.style.pointerEvents = on ? 'auto' : ''
+    }
+    // A press drops the shield at once and finds the can under it, so a click right after a scroll
+    // or a camera glide still reaches the can.
+    const canAt = (evt: MouseEvent) => {
+      let hit: EventTarget | null = evt.target
+      if (hit === shield || hit === canvas) {
+        if (scrollingTimer !== null) window.clearTimeout(scrollingTimer)
+        scrollingTimer = null
+        shield.style.pointerEvents = ''
+        hit = document.elementFromPoint(evt.clientX, evt.clientY)
+      }
+      return hit instanceof Element ? hit.closest<SVGGElement>('.cn-can') : null
+    }
+    signal.addEventListener(
+      'abort',
+      () => {
+        if (scrollingTimer !== null) window.clearTimeout(scrollingTimer)
+        this.holding = false
+        this.cancelIdle()
+      },
+      { once: true },
+    )
     viewport.addEventListener(
       'scroll',
       () => {
+        if (scrollingTimer === null) shield.style.pointerEvents = 'auto'
+        else window.clearTimeout(scrollingTimer)
+        scrollingTimer = window.setTimeout(() => {
+          scrollingTimer = null
+          if (!this.holding) shield.style.pointerEvents = ''
+        }, SCROLL_SETTLE_MS)
         if (
           Math.abs(viewport.scrollLeft - this.writtenScroll.left) > 1 ||
           Math.abs(viewport.scrollTop - this.writtenScroll.top) > 1
@@ -1103,13 +1178,22 @@ export class VaultView extends BasesView {
       },
       { passive: true, signal },
     )
+    // A press does not focus the rack: a focus change restyles every :focus-within and
+    // :has(:focus-visible) ancestor. Tab still focuses it for the keys.
+    viewport.addEventListener(
+      'mousedown',
+      evt => {
+        if (evt.button === 0) evt.preventDefault()
+      },
+      { signal },
+    )
     viewport.addEventListener(
       'pointerdown',
       evt => {
         clearDragged()
         if (evt.button !== 0 || evt.isPrimary === false) return
         this.cancelGlide()
-        const node = (evt.target as Element).closest<SVGGElement>('.cn-can')
+        const node = canAt(evt)
         const index = Number(node?.dataset.index ?? -1)
         const can = rack.cans.get(index)
         const [px, py] = can ? this.pullOf(can) : [0, 0]
@@ -1168,7 +1252,7 @@ export class VaultView extends BasesView {
               } else {
                 placePull(gesture.index, startT)
                 capturePointer(evt.pointerId)
-                viewport.dataset.pulling = ''
+                hold(true)
                 gesture = {
                   mode: 'pull',
                   id: gesture.id,
@@ -1200,7 +1284,7 @@ export class VaultView extends BasesView {
             if (!gesture.moved) {
               gesture.moved = true
               capturePointer(evt.pointerId)
-              viewport.dataset.dragging = ''
+              hold(true)
             }
             this.writeScroll(gesture.left - panDx, gesture.top - panDy)
             return
@@ -1235,8 +1319,7 @@ export class VaultView extends BasesView {
       if (!active) return
       if (evt && evt.pointerId !== undefined && evt.pointerId !== active.id) return
       gesture = undefined
-      delete viewport.dataset.dragging
-      delete viewport.dataset.pulling
+      hold(false)
       releasePointer(active.id)
       if (active.mode === 'pan') {
         if (active.moved) markDragged()
@@ -1273,7 +1356,7 @@ export class VaultView extends BasesView {
           clearDragged()
           return
         }
-        const can = (evt.target as Element).closest<SVGGElement>('.cn-can')
+        const can = canAt(evt)
         if (!can) return this.release()
         const index = Number(can.dataset.index)
         if (index === this.current) this.openNote(index, evt)
@@ -1326,7 +1409,7 @@ export class VaultView extends BasesView {
       { signal },
     )
     const observer = new ResizeObserver(() => {
-      this.root.dataset.layout = this.root.clientWidth >= WIDE_PX ? 'wide' : 'narrow'
+      this.setLayout()
       this.measure()
       if (this.scale < this.fitScale)
         this.setScale(this.fitScale, this.viewW / 2, this.viewH / 2, true)

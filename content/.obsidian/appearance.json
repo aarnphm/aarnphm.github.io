@@ -8,7 +8,8 @@
   "translucency": false,
   "showViewHeader": false,
   "enabledCssSnippets": [
-    "plugin-ui"
+    "plugin-ui",
+    "snippet"
   ],
   "baseFontSizeAction": true,
   "theme": "system",

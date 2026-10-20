@@ -1,3 +1,4 @@
+import { lidRibs } from '../../util/base/vault/layout'
 import { registerEscapeHandler } from './escape-handler'
 import { rootNavSignal } from './root-lifecycle'
 
@@ -11,13 +12,30 @@ const DRAG_PX = 5
 const PULL_ALIGN = Math.cos((24 * Math.PI) / 180)
 const PULL_MS = 220
 const GLIDE_MS = 90
-const BAKE_MS = 120
+// A wheel or pinch that pauses for less than this keeps its live scale; only a rest re-renders.
+const BAKE_MS = 320
+const SCROLL_SETTLE_MS = 140
 const UPGRADE_DELAY_MS = 300
 const PRELOAD = 3
-const MAX_SETTLING = 1
+const MAX_SETTLING = 3
+// A can left out this long with nothing happening on the stage slides back into the rack.
+const IDLE_MS = 2400
+// A released drag keeps going for this long at its last speed before the snap decides its side.
+const FLICK_MS = 140
 const WHEEL_COOLDOWN_MS = 220
 const WHEEL_STEP_PX = 64
 const EASE = 'cubic-bezier(0.23, 1, 0.32, 1)'
+
+/**
+ * A firm, non-overshooting ease whose first slope matches the speed the drag let go at, so the can
+ * carries on at the hand's pace and settles instead of jumping to a new speed. `speed` is progress
+ * per ms toward the target, `distance` the progress still to cover.
+ */
+function snapEase(speed: number, distance: number, duration: number): string {
+  const x1 = 0.25
+  const y1 = distance > 0 ? Math.min(1, Math.max(0, (speed * duration * x1) / distance)) : 0
+  return `cubic-bezier(${x1}, ${Math.round(y1 * 1000) / 1000}, 0.3, 1)`
+}
 
 /** Two lines of at most `max` characters for the round lid label. */
 function lidLines(title: string, max = 12): string[] {
@@ -35,7 +53,7 @@ function lidLines(title: string, max = 12): string[] {
   return lines.map(line => (line.length > max + 1 ? `${line.slice(0, max - 1)}…` : line))
 }
 
-/** Embossed rings and the round lid label, laid on the pulled can's lid. */
+/** The moulded lid relief and the round lid label, laid on the pulled can's lid. */
 function lidDetail(can: SVGGElement, title: string): SVGGElement | null {
   const lid = can.querySelector('.cn-lid')
   const transform = lid?.getAttribute('transform')
@@ -58,8 +76,13 @@ function lidDetail(can: SVGGElement, title: string): SVGGElement | null {
     span.textContent = line
     text.append(span)
   })
+  const relief = node('g', { class: 'cn-rings' })
+  relief.append(
+    node('circle', { class: 'cn-lid-ring', r: String(Math.round(r * 9) / 10) }),
+    node('path', { class: 'cn-lid-ribs', d: lidRibs(r) }),
+  )
   group.append(
-    node('circle', { class: 'cn-rings', r: String(r) }),
+    relief,
     node('circle', { class: 'cn-lid-label', r: String(Math.round(r * 0.28)) }),
     text,
   )
@@ -75,6 +98,7 @@ export function initializeVault(root: HTMLElement): void {
   const dialog = root.querySelector<HTMLDialogElement>('.vault-card')
   if (!viewport || !svg || !lift || !indexPane || !dialog) return
   root.dataset.vaultReady = ''
+  document.body.dataset.vaultPage = ''
   const signal = rootNavSignal(root)
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)')
   const { x: minX, y: minY, width: W, height: H } = svg.viewBox.baseVal
@@ -95,10 +119,21 @@ export function initializeVault(root: HTMLElement): void {
   const previous = dialog.querySelector<HTMLButtonElement>('[data-card="previous"]')
   const next = dialog.querySelector<HTMLButtonElement>('[data-card="next"]')
 
+  // The drawing sits in a scaler that carries the interim zoom as a composited transform. Any
+  // style change on the SVG root itself relayouts the whole scene (about 11 ms for 235 cans), so
+  // the root is only touched when the scale bakes after the gesture settles.
   const canvas = document.createElement('div')
   canvas.className = 'vault-canvas'
+  const scaler = document.createElement('div')
+  scaler.className = 'vault-scaler'
+  // While the camera moves, a blank sheet over the drawing takes the pointer, so cans sliding under
+  // a still pointer are not each hit-tested and hovered. It turns on through an inline style: an
+  // attribute or class change would wake the site's :has() rules and restyle the whole page.
+  const shield = document.createElement('div')
+  shield.className = 'vault-shield'
   svg.remove()
-  canvas.append(svg)
+  scaler.append(svg)
+  canvas.append(scaler, shield)
   viewport.append(canvas)
 
   // Cached sizes: the viewport's from the observer, the drawing's from its viewBox.
@@ -113,6 +148,7 @@ export function initializeVault(root: HTMLElement): void {
   let glideAt = 0
   let inGlideStep = false
   let writtenScroll = { left: -1, top: -1 }
+  let scrollingTimer: ReturnType<typeof setTimeout> | undefined
   const pad = (k = scale): [number, number] => [
     Math.round(viewW - Math.min(viewW, W * k) * 0.3),
     Math.round(viewH - Math.min(viewH, H * k) * 0.3),
@@ -137,19 +173,15 @@ export function initializeVault(root: HTMLElement): void {
     const [px, py] = pad(k)
     canvas.style.width = `${Math.round(W * k + px * 2)}px`
     canvas.style.height = `${Math.round(H * k + py * 2)}px`
-    svg.style.left = `${px}px`
-    svg.style.top = `${py}px`
+    scaler.style.left = `${px}px`
+    scaler.style.top = `${py}px`
   }
 
+  // The wrapper always carries a transform on its own layer: a transform that comes and goes
+  // rebuilds the layer and lays out every rim title again.
   const applySceneScale = () => {
     const ratio = bakedScale > 0 ? scale / bakedScale : 1
-    if (Math.abs(ratio - 1) < 0.001) {
-      svg.style.transform = ''
-      svg.style.willChange = 'auto'
-    } else {
-      svg.style.transform = `scale(${ratio})`
-      svg.style.willChange = 'transform'
-    }
+    scaler.style.transform = `scale(${Math.abs(ratio - 1) < 0.001 ? 1 : ratio})`
   }
 
   const bakeScale = (nextScale = scale) => {
@@ -271,6 +303,7 @@ export function initializeVault(root: HTMLElement): void {
   let pulledAt = 0
   let pullFrom = 0
   let pullDuration = PULL_MS
+  let idleTimer: ReturnType<typeof setTimeout> | undefined
   const pulled = new Map<SVGGElement, SVGGElement>()
   const settling = new Map<SVGGElement, { finish: () => void }>()
   const preloaded = new Map<string, HTMLImageElement>()
@@ -331,6 +364,28 @@ export function initializeVault(root: HTMLElement): void {
     pendingPosterUrl = undefined
   }
 
+  const cancelIdle = () => {
+    if (idleTimer !== undefined) clearTimeout(idleTimer)
+    idleTimer = undefined
+  }
+  const armIdle = () => {
+    cancelIdle()
+    if (current < 0 || dialog.open) return
+    idleTimer = setTimeout(() => {
+      idleTimer = undefined
+      if (!signal.aborted && !dialog.open && !gesture && current >= 0) release()
+    }, IDLE_MS)
+  }
+  /** Start the idle return only after the outward slide ends. */
+  const restOut = (clone: SVGGElement, anim?: Animation) => {
+    const land = () => {
+      if (clone.dataset.out === undefined || clone.dataset.pulling !== undefined) return
+      armIdle()
+    }
+    if (anim) anim.addEventListener('finish', land, { once: true })
+    else land()
+  }
+
   const pullOf = (can: SVGGElement): [number, number] => {
     const style = can.style
     return [
@@ -368,7 +423,7 @@ export function initializeVault(root: HTMLElement): void {
 
   const sceneScale = () => scale
 
-  const sendHome = (can: SVGGElement, clone: SVGGElement, from: number) => {
+  const sendHome = (can: SVGGElement, clone: SVGGElement, from: number, speed = 0) => {
     pulled.delete(can)
     delete clone.dataset.out
     delete clone.dataset.pulling
@@ -384,7 +439,7 @@ export function initializeVault(root: HTMLElement): void {
     }
     if (settling.size >= MAX_SETTLING) settling.values().next().value?.finish()
     const [px, py] = pullOf(can)
-    const duration = Math.max(1, Math.round(PULL_MS * from))
+    const duration = Math.max(90, Math.round(PULL_MS * from))
     let done = false
     let timer: ReturnType<typeof setTimeout> | undefined
     const anim = clone.animate(
@@ -392,7 +447,7 @@ export function initializeVault(root: HTMLElement): void {
         { transform: `translate(${px * from}px, ${py * from}px)` },
         { transform: 'translate(0px, 0px)' },
       ],
-      { duration, easing: EASE, fill: 'both' },
+      { duration, easing: snapEase(speed, from, duration), fill: 'both' },
     )
     const finish = () => {
       if (done) return
@@ -409,7 +464,8 @@ export function initializeVault(root: HTMLElement): void {
     settling.set(can, { finish })
   }
 
-  const release = (from?: number) => {
+  const release = (from?: number, speed = 0) => {
+    cancelIdle()
     if (current < 0) return
     const can = cans.get(current)
     const row = rows.get(current)
@@ -428,7 +484,7 @@ export function initializeVault(root: HTMLElement): void {
     const start = from ?? pullProgress(clone, px, py)
     activePullAnim?.cancel()
     activePullAnim = undefined
-    sendHome(can, clone, start)
+    sendHome(can, clone, start, speed)
   }
 
   const mountClone = (index: number) => {
@@ -441,8 +497,10 @@ export function initializeVault(root: HTMLElement): void {
     clone.querySelector('.cn-rings')?.remove()
     const detail = lidDetail(clone, titleOf(rows.get(index)))
     if (detail) clone.append(detail)
+    clone.classList.add('cn-pulled')
     can.dataset.lifted = ''
     pulled.set(can, clone)
+    // Keep the whole moving solid above the shelf tags and neighbouring cans until it seats.
     lift.append(clone)
     return clone
   }
@@ -452,7 +510,9 @@ export function initializeVault(root: HTMLElement): void {
     if (group && !group.open) group.setAttribute('open', '')
     const box = row.getBoundingClientRect()
     const pane = indexPane.getBoundingClientRect()
-    if (box.top >= pane.top && box.bottom <= pane.bottom) return
+    // The group heading sticks over the top of the pane; a row under it is not in view.
+    const top = pane.top + (group?.querySelector('summary')?.getBoundingClientRect().height ?? 0)
+    if (box.top >= top && box.bottom <= pane.bottom) return
     const delta = box.top - pane.top - pane.height / 2 + box.height / 2
     if (typeof indexPane.scrollBy === 'function') {
       indexPane.scrollBy({ top: delta, behavior: 'instant' })
@@ -508,7 +568,8 @@ export function initializeVault(root: HTMLElement): void {
       anim.onfinish = () => {
         if (activePullAnim === anim) activePullAnim = undefined
       }
-    }
+      restOut(clone, anim)
+    } else restOut(clone)
     mark(index, false)
     if (camera) {
       lookAt(Number(can.dataset.cx) + px * 0.6, Number(can.dataset.cy) + py * 0.6)
@@ -529,8 +590,6 @@ export function initializeVault(root: HTMLElement): void {
       heading.textContent = title
       heading.href = href
     }
-    const open = dialog.querySelector<HTMLAnchorElement>('.vault-card-open')
-    if (open) open.href = href
     const source = row.querySelector('.vault-entry-detail')
     dialog
       .querySelector('.vault-card-detail')
@@ -598,6 +657,7 @@ export function initializeVault(root: HTMLElement): void {
       cardIndex = current
       const active = document.activeElement
       returnFocus = active instanceof HTMLElement && active !== document.body ? active : viewport
+      cancelIdle()
       dialog.showModal()
       renderCard(true)
     } else {
@@ -638,26 +698,27 @@ export function initializeVault(root: HTMLElement): void {
     const [px, py] = pullOf(can)
     activePullAnim?.cancel()
     activePullAnim = undefined
+    cancelIdle()
     clone.dataset.pulling = ''
     clone.dataset.progress = String(t)
     clone.style.transition = 'none'
     clone.style.transform = `translate(${px * t}px, ${py * t}px)`
   }
 
-  const finishPull = (index: number, t: number) => {
+  const finishPull = (index: number, t: number, speed = 0) => {
     const can = cans.get(index)
     const clone = can && pulled.get(can)
     if (!can || !clone) return
     const [px, py] = pullOf(can)
-    const out = t >= 0.5
+    const out = t + speed * FLICK_MS >= 0.5
     activePullAnim?.cancel()
     activePullAnim = undefined
     delete clone.dataset.pulling
     clone.style.transition = ''
     clone.style.transform = ''
     if (!out) {
-      if (current === index) release(t)
-      else sendHome(can, clone, t)
+      if (current === index) release(t, -speed)
+      else sendHome(can, clone, t, -speed)
       return
     }
     if (current !== index) {
@@ -666,8 +727,11 @@ export function initializeVault(root: HTMLElement): void {
     }
     clone.dataset.out = ''
     clone.dataset.progress = '1'
-    if (reduced.matches || t >= 0.999 || typeof clone.animate !== 'function') return
-    const duration = Math.max(1, Math.round(PULL_MS * (1 - t)))
+    if (reduced.matches || t >= 0.999 || typeof clone.animate !== 'function') {
+      restOut(clone)
+      return
+    }
+    const duration = Math.max(90, Math.round(PULL_MS * (1 - t)))
     pulledAt = performance.now()
     pullFrom = t
     pullDuration = duration
@@ -676,12 +740,13 @@ export function initializeVault(root: HTMLElement): void {
         { transform: `translate(${px * t}px, ${py * t}px)` },
         { transform: `translate(${px}px, ${py}px)` },
       ],
-      { duration, easing: EASE },
+      { duration, easing: snapEase(speed, 1 - t, duration) },
     )
     activePullAnim = anim
     anim.onfinish = () => {
       if (activePullAnim === anim) activePullAnim = undefined
     }
+    restOut(clone, anim)
   }
 
   type PendingGesture = {
@@ -714,6 +779,9 @@ export function initializeVault(root: HTMLElement): void {
     py: number
     start: number
     t: number
+    /** Progress per ms, smoothed over the last moves. */
+    speed: number
+    at: number
   }
   let gesture: PendingGesture | PanGesture | PullGesture | undefined
   let dragged = false
@@ -747,6 +815,12 @@ export function initializeVault(root: HTMLElement): void {
   viewport.addEventListener(
     'scroll',
     () => {
+      if (scrollingTimer === undefined) shield.style.pointerEvents = 'auto'
+      else clearTimeout(scrollingTimer)
+      scrollingTimer = setTimeout(() => {
+        scrollingTimer = undefined
+        if (!holding) shield.style.pointerEvents = ''
+      }, SCROLL_SETTLE_MS)
       if (
         Math.abs(viewport.scrollLeft - writtenScroll.left) > 1 ||
         Math.abs(viewport.scrollTop - writtenScroll.top) > 1
@@ -757,14 +831,42 @@ export function initializeVault(root: HTMLElement): void {
     { passive: true, signal },
   )
 
+  // A press ends the shield at once and finds the can under it, so a click right after a scroll or a
+  // camera glide still reaches the can. A click whose press dropped the shield targets the canvas.
+  // A held pan or pull also raises the shield, with the grabbing cursor. An attribute on the viewport
+  // for the cursor would restyle the whole page through the site's :has() rules.
+  let holding = false
+  const hold = (on: boolean) => {
+    holding = on
+    shield.style.cursor = on ? 'grabbing' : ''
+    if (on || scrollingTimer === undefined) shield.style.pointerEvents = on ? 'auto' : ''
+  }
+  const canAt = (event: MouseEvent) => {
+    let hit = event.target
+    if (hit === shield || hit === canvas) {
+      if (scrollingTimer !== undefined) clearTimeout(scrollingTimer)
+      scrollingTimer = undefined
+      shield.style.pointerEvents = ''
+      hit = document.elementFromPoint(event.clientX, event.clientY)
+    }
+    return hit instanceof Element ? hit.closest<SVGGElement>('.cn-can') : null
+  }
+  // A press does not focus the stage: a focus change wakes the site's :has(:focus-visible) rules and
+  // restyles every element on the page. Tab still focuses it for the keys.
+  viewport.addEventListener(
+    'mousedown',
+    event => {
+      if (event.button === 0) event.preventDefault()
+    },
+    { signal },
+  )
   viewport.addEventListener(
     'pointerdown',
     event => {
       clearDragged()
       if (event.button !== 0 || event.isPrimary === false || dialog.open) return
       cancelGlide()
-      const node =
-        event.target instanceof Element ? event.target.closest<SVGGElement>('.cn-can') : null
+      const node = canAt(event)
       const index = Number(node?.dataset.index ?? -1)
       const can = cans.get(index)
       const [px, py] = can ? pullOf(can) : [0, 0]
@@ -823,7 +925,7 @@ export function initializeVault(root: HTMLElement): void {
           } else {
             placePull(gesture.index, startT)
             capturePointer(event.pointerId)
-            viewport.dataset.pulling = ''
+            hold(true)
             gesture = {
               mode: 'pull',
               id: gesture.id,
@@ -834,6 +936,8 @@ export function initializeVault(root: HTMLElement): void {
               py: gesture.py,
               start: startT,
               t: startT,
+              speed: 0,
+              at: event.timeStamp,
             }
           }
         } else {
@@ -855,7 +959,7 @@ export function initializeVault(root: HTMLElement): void {
         if (!gesture.moved) {
           gesture.moved = true
           capturePointer(event.pointerId)
-          viewport.dataset.dragging = ''
+          hold(true)
         }
         writeScroll(gesture.left - panDx, gesture.top - panDy)
         return
@@ -869,6 +973,9 @@ export function initializeVault(root: HTMLElement): void {
         1,
         Math.max(0, gesture.start + along / (gesture.px * gesture.px + gesture.py * gesture.py)),
       )
+      const elapsed = event.timeStamp - gesture.at
+      if (elapsed > 0) gesture.speed = gesture.speed * 0.5 + ((t - gesture.t) / elapsed) * 0.5
+      gesture.at = event.timeStamp
       gesture.t = t
       placePull(gesture.index, t)
     },
@@ -879,8 +986,7 @@ export function initializeVault(root: HTMLElement): void {
     if (!active) return
     if (event && event.pointerId !== undefined && event.pointerId !== active.id) return
     gesture = undefined
-    delete viewport.dataset.dragging
-    delete viewport.dataset.pulling
+    hold(false)
     releasePointer(active.id)
     if (active.mode === 'pan') {
       if (active.moved) markDragged()
@@ -888,7 +994,9 @@ export function initializeVault(root: HTMLElement): void {
     }
     if (active.mode === 'pull') {
       markDragged()
-      finishPull(active.index, active.t)
+      // A hand that stopped before letting go has no speed left to carry.
+      const still = (event?.timeStamp ?? performance.now()) - active.at > 80
+      finishPull(active.index, active.t, still ? 0 : active.speed)
     }
   }
   viewport.addEventListener('pointerup', endGesture, { signal })
@@ -901,8 +1009,7 @@ export function initializeVault(root: HTMLElement): void {
         clearDragged()
         return
       }
-      const can =
-        event.target instanceof Element ? event.target.closest<SVGGElement>('.cn-can') : null
+      const can = canAt(event)
       if (can) openCard(Number(can.dataset.index))
       else release()
     },
@@ -926,18 +1033,48 @@ export function initializeVault(root: HTMLElement): void {
     },
     { signal },
   )
+  // A pinch delivers many wheel events a frame; they fold into one scale step per frame, about
+  // the anchor of the last one. The viewport rect is read once per gesture, not per event.
+  let zoomFrame = 0
+  let zoomTimer: ReturnType<typeof setTimeout> | undefined
+  let zoomFactor = 1
+  let zoomAnchor: [number, number] = [0, 0]
+  let zoomRect: DOMRect | undefined
+  let zoomRectAt = 0
+  const cancelZoom = () => {
+    if (zoomFrame) cancelAnimationFrame(zoomFrame)
+    zoomFrame = 0
+    if (zoomTimer !== undefined) clearTimeout(zoomTimer)
+    zoomTimer = undefined
+  }
+  const flushZoom = () => {
+    cancelZoom()
+    const factor = zoomFactor
+    zoomFactor = 1
+    if (factor === 1 || signal.aborted) return
+    setScale(scale * factor, zoomAnchor[0], zoomAnchor[1])
+  }
+  // The next frame flushes; a throttled page (no frames) flushes on a short timer instead.
+  const scheduleZoom = () => {
+    if (zoomFrame || zoomTimer !== undefined) return
+    zoomFrame = requestAnimationFrame(flushZoom)
+    zoomTimer = setTimeout(flushZoom, 32)
+  }
   viewport.addEventListener(
     'wheel',
     event => {
       if (!event.ctrlKey && !event.metaKey) return
       event.preventDefault()
-      const rect = viewport.getBoundingClientRect()
-      const factor = Math.exp(-event.deltaY * 0.0025)
-      setScale(
-        scale * factor,
-        (event.clientX ?? rect.left + viewW / 2) - rect.left,
-        (event.clientY ?? rect.top + viewH / 2) - rect.top,
-      )
+      if (!zoomRect || event.timeStamp - zoomRectAt > 400) {
+        zoomRect = viewport.getBoundingClientRect()
+        zoomRectAt = event.timeStamp
+      }
+      zoomFactor *= Math.exp(-event.deltaY * 0.0025)
+      zoomAnchor = [
+        (event.clientX ?? zoomRect.left + viewW / 2) - zoomRect.left,
+        (event.clientY ?? zoomRect.top + viewH / 2) - zoomRect.top,
+      ]
+      scheduleZoom()
     },
     { passive: false, signal },
   )
@@ -955,6 +1092,7 @@ export function initializeVault(root: HTMLElement): void {
       select(cardIndex, true, true)
     }
     cardIndex = -1
+    armIdle()
     if (returnFocus) {
       const target = returnFocus.isConnected ? returnFocus : viewport
       target.focus({ preventScroll: true })
@@ -1089,10 +1227,14 @@ export function initializeVault(root: HTMLElement): void {
       observer.disconnect()
       disposeEscape()
       clearDragged()
+      cancelIdle()
       cancelGlide()
       cancelUpgrade()
       if (bakeTimer !== undefined) clearTimeout(bakeTimer)
       bakeTimer = undefined
+      if (scrollingTimer !== undefined) clearTimeout(scrollingTimer)
+      scrollingTimer = undefined
+      cancelZoom()
       activePullAnim?.cancel()
       activePullAnim = undefined
       for (const s of settling.values()) s.finish()
@@ -1105,6 +1247,8 @@ export function initializeVault(root: HTMLElement): void {
       viewport.append(svg)
       canvas.remove()
       delete root.dataset.vaultReady
+      if (!document.querySelector('.vault[data-vault-ready]'))
+        delete document.body.dataset.vaultPage
     },
     { once: true },
   )

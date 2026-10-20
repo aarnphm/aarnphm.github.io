@@ -21,7 +21,9 @@
   border: 1px solid var(--vault-line);
 }
 
-body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='vault']) {
+// The script marks the body while a vault is on the page. A body:has() for this makes the browser
+// restyle every element on the page whenever a node goes in or out of the rack, as a pulled can does.
+body[data-vault-page] {
   #quartz-root {
     height: 100dvh;
     min-height: 0;
@@ -55,7 +57,8 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='vault'
     grid-template-rows: minmax(0, 1fr);
   }
 
-  .vault-index {
+  // Beside the stage the frame's own top rule is the index's; its stacked rule would read double.
+  .vault .vault-index {
     border-block-start: 0;
     border-inline-end: 1px solid var(--vault-line);
   }
@@ -80,22 +83,22 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='vault'
   touch-action: none;
   user-select: none;
 
+  // No ring on the stage: the selected can and the readout show where keyboard focus is.
   &:focus-visible {
-    outline: 2px solid var(--dark);
-    outline-offset: -2px;
-  }
-
-  &[data-dragging],
-  &[data-dragging] .cn-can,
-  &[data-pulling],
-  &[data-pulling] .cn-can {
-    cursor: grabbing;
+    outline: none;
   }
 }
 
 .vault-canvas {
   position: relative;
   overflow: clip;
+}
+
+// Always laid out and never painted; only its pointer-events change, so showing it repaints nothing.
+.vault-shield {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
 }
 
 .vault-corner {
@@ -194,6 +197,16 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='vault'
   outline-offset: -2px;
 }
 
+// The interim zoom rides on this wrapper as a composited transform; the drawing's own size only
+// changes when the scale bakes.
+.vault-scaler {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
 // The drawing. Tone, label and gradient colours come from the scene's own <style> (styles.ts).
 .vault-scene {
   position: absolute;
@@ -201,7 +214,6 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='vault'
   left: 0;
   display: block;
   overflow: visible;
-  transform-origin: 0 0;
 
   path,
   polygon,
@@ -209,6 +221,11 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='vault'
   ellipse {
     vector-effect: non-scaling-stroke;
     stroke-linejoin: round;
+  }
+
+  // Fixed glyph metrics: otherwise every zoom step reshapes each rim title at a new font size.
+  text {
+    text-rendering: geometricPrecision;
   }
 
   .cn-face {
@@ -241,26 +258,61 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='vault'
     pointer-events: none;
   }
 
+  // The rim is a stroke 19 units wide in the drawing, so it scales with the camera like the rest
+  // of the casting; a screen-width stroke would thicken as the camera pulls back.
+  .cn-crank-rim-back,
+  .cn-crank-rim-side,
   .cn-crank-rim {
     fill: none;
-    stroke: var(--cn-s3);
-    stroke-width: 14px;
+    stroke-width: 19px;
     vector-effect: none;
+  }
+
+  .cn-crank-rim-back {
+    stroke: var(--cn-crank-lo);
+  }
+
+  .cn-crank-rim-side {
+    stroke: color-mix(in srgb, var(--cn-crank-lo) 55%, var(--cn-crank-mid));
+  }
+
+  .cn-crank-rim {
+    stroke: url(#cn-crank-enamel);
+  }
+
+  // Spokes are solid bars like the rim: a dark back, a stacked side and an enamel face, no outline.
+  .cn-crank-spokes-back {
+    fill: var(--cn-crank-lo);
+  }
+
+  .cn-crank-spokes-side {
+    fill: color-mix(in srgb, var(--cn-crank-lo) 55%, var(--cn-crank-mid));
   }
 
   .cn-crank-spokes {
-    fill: none;
-    stroke: var(--cn-s3);
-    stroke-width: 8px;
-    stroke-linecap: round;
-    vector-effect: none;
+    fill: url(#cn-crank-enamel);
   }
 
-  .cn-crank-hub,
-  .cn-crank-knob {
-    fill: var(--cn-s3);
-    stroke: var(--cn-mid);
-    stroke-width: var(--vault-weight);
+  // A back cap shows only where the barrel curves away, so it takes the barrel's finish.
+  .cn-crank-boss-end,
+  .cn-crank-knob-end,
+  .cn-crank-boss-side,
+  .cn-crank-knob-side {
+    fill: url(#cn-crank-steel);
+  }
+
+  .cn-crank-boss-face,
+  .cn-crank-knob-face {
+    fill: url(#cn-crank-face);
+  }
+
+  // Lathe rings on the turned faces.
+  .cn-crank-turning {
+    fill: url(#cn-turning);
+  }
+
+  .cn-crank-nut {
+    fill: var(--cn-steel-lo);
   }
 }
 
@@ -298,8 +350,10 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='vault'
     stroke-opacity: 0.7;
   }
 
-  .cn-grain {
-    pointer-events: none;
+  // The skirt's step: a dark line where the lid laps the tray.
+  .cn-seam {
+    fill: var(--cn-mid);
+    fill-opacity: 0.55;
   }
 
   .cn-strip {
@@ -348,8 +402,25 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='vault'
   }
 
   .cn-rings {
-    fill: url(#cn-lid-rings);
     pointer-events: none;
+  }
+
+  .cn-lid-ring,
+  .cn-lid-ribs,
+  .cn-lid-hub {
+    stroke: var(--cn-mid);
+    stroke-width: var(--vault-weight);
+    stroke-opacity: 0.5;
+  }
+
+  .cn-lid-ring {
+    fill: none;
+  }
+
+  // Raised relief catches the light: the ribs and hub take the lit tone.
+  .cn-lid-ribs,
+  .cn-lid-hub {
+    fill: var(--cn-top);
   }
 
   .cn-lid-label {
@@ -368,17 +439,18 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='vault'
 }
 
 // The pulled copy leaves its slot along -y and rises; WAAPI and drag inline transforms drive motion.
-.vault-lift .cn-can {
+// The lift layer holds it through the outward slide, drag and return.
+.cn-can.cn-pulled {
   will-change: transform;
 
   &[data-out] {
     transform: translate(var(--px), var(--py));
   }
+}
 
-  // The embossed lid shows once the can has left the rack.
-  .cn-lid-detail {
-    animation: vault-lid-in 120ms 160ms both;
-  }
+// The embossed lid stays with the moving can through its whole slide.
+.vault-lift .cn-pulled .cn-lid-detail {
+  animation: vault-lid-in 120ms both;
 }
 
 .vault-index {
@@ -392,11 +464,17 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='vault'
 }
 
 .vault-index-group {
+  // The heading holds the top of the pane while its rows scroll under it, and the next group's
+  // heading pushes it off; the last heading stays put at the end of the list.
   .base-list-group-header {
+    position: sticky;
+    top: 0;
+    z-index: 1;
     display: grid;
     grid-template-columns: 0.75rem minmax(0, 1fr) auto;
     align-items: center;
     gap: 0.75rem;
+    background: var(--light);
     min-height: 2.125rem;
     margin: 0;
     padding: 0.5rem 0.75rem;
@@ -438,7 +516,10 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='vault'
   position: relative;
   margin: 0;
   padding: 0;
+  // The shared base-list row draws its own bottom rule; here the 1px grid gap is the rule.
+  border: 0;
   background: var(--light);
+  transition: none;
 
   &[data-current] {
     background: var(--vault-selected);
@@ -588,13 +669,6 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='vault'
   }
 }
 
-.vault-card-open {
-  color: var(--dark);
-  font: var(--text-meta, 0.75rem) var(--codeFont);
-  text-decoration: underline;
-  background: transparent;
-}
-
 .vault-card-detail,
 .vault-entry-detail {
   .vault-label-line {
@@ -691,4 +765,25 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='vault'
   .vault-lift .cn-lid-detail {
     animation: none;
   }
+}
+
+// Handwheel tones live on the drawing: its gradients in <defs> resolve variables there.
+.vault-scene {
+  --cn-crank-hi: #5c5b56;
+  --cn-crank-mid: #2a2926;
+  --cn-crank-lo: #121110;
+  --cn-crank-edge: #8f8d86;
+  --cn-steel-hi: #f4f2ea;
+  --cn-steel-mid: #b5b3ab;
+  --cn-steel-lo: #686660;
+}
+
+:root[saved-theme='dark'] .vault-scene {
+  --cn-crank-hi: #73726c;
+  --cn-crank-mid: #393834;
+  --cn-crank-lo: #1c1b19;
+  --cn-crank-edge: #a19f97;
+  --cn-steel-hi: #dedcd4;
+  --cn-steel-mid: #95938b;
+  --cn-steel-lo: #4a4944;
 }

@@ -170,7 +170,7 @@ export class Stage {
     if (!scroller) return this.metrics
     const width = this.width
     const mode: LayoutMode = width >= WIDE_MIN ? 'wide' : 'narrow'
-    this.root.dataset.layout = mode
+    if (this.root.dataset.layout !== mode) this.root.dataset.layout = mode
     const viewportHeight = scroller.clientHeight || OWN_HEIGHT
     const stageHeight = viewportHeight
     // Narrow, the page panel sits under the stage; with the editor pane there is no page panel.

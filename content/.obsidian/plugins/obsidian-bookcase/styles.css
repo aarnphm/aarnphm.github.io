@@ -288,11 +288,6 @@
   user-select: none;
 }
 
-.bookcase-stage[data-dragging],
-.bookcase-stage[data-dragging] [data-book] {
-  cursor: grabbing;
-}
-
 /* in full screen the view is the screen and scrolls itself */
 .bookcase-view:fullscreen {
   overflow-y: auto;
@@ -731,16 +726,17 @@
   outline-offset: -2px;
 }
 
-.vault-viewport[data-dragging],
-.vault-viewport[data-dragging] .cn-can,
-.vault-viewport[data-pulling],
-.vault-viewport[data-pulling] .cn-can {
-  cursor: grabbing;
-}
-
 .vault-canvas {
   position: relative;
   overflow: clip;
+}
+
+/* the scroll shield: always laid out, never painted; the view sets only its inline pointer-events
+   and cursor, so raising it repaints nothing and no can is hit-tested while it is up */
+.vault-shield {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
 }
 
 .vault-corner {
@@ -858,11 +854,34 @@
   display: block;
   overflow: visible;
   transform-origin: 0 0;
+  /* handwheel tones: its gradients in <defs> resolve these on the drawing */
+  --cn-crank-hi: #5c5b56;
+  --cn-crank-mid: #2a2926;
+  --cn-crank-lo: #121110;
+  --cn-crank-edge: #8f8d86;
+  --cn-steel-hi: #f4f2ea;
+  --cn-steel-mid: #b5b3ab;
+  --cn-steel-lo: #686660;
+}
+
+.theme-dark .vault-scene {
+  --cn-crank-hi: #73726c;
+  --cn-crank-mid: #393834;
+  --cn-crank-lo: #1c1b19;
+  --cn-crank-edge: #a19f97;
+  --cn-steel-hi: #dedcd4;
+  --cn-steel-mid: #95938b;
+  --cn-steel-lo: #4a4944;
 }
 
 .vault-scene :is(path, polygon, circle, ellipse) {
   vector-effect: non-scaling-stroke;
   stroke-linejoin: round;
+}
+
+/* fixed glyph metrics: otherwise every zoom step reshapes each rim title at a new font size */
+.vault-scene text {
+  text-rendering: geometricPrecision;
 }
 
 .vault-scene .cn-face {
@@ -895,33 +914,70 @@
   pointer-events: none;
 }
 
-.vault-scene :is(.cn-crank-rim, .cn-crank-spokes) {
+/* the rim is a stroke 19 units wide in the drawing, so it scales with the camera like the casting */
+.vault-scene :is(.cn-crank-rim-back, .cn-crank-rim-side, .cn-crank-rim) {
   fill: none;
-  stroke: var(--cn-s3);
+  stroke-width: 19px;
   vector-effect: none;
 }
 
+.vault-scene .cn-crank-rim-back {
+  stroke: var(--cn-crank-lo);
+}
+
+.vault-scene .cn-crank-rim-side {
+  stroke: color-mix(in srgb, var(--cn-crank-lo) 55%, var(--cn-crank-mid));
+}
+
 .vault-scene .cn-crank-rim {
-  stroke-width: 14px;
+  stroke: url(#cn-crank-enamel);
+}
+
+.vault-scene .cn-crank-spokes-back {
+  fill: var(--cn-crank-lo);
+}
+
+.vault-scene .cn-crank-spokes-side {
+  fill: color-mix(in srgb, var(--cn-crank-lo) 55%, var(--cn-crank-mid));
 }
 
 .vault-scene .cn-crank-spokes {
-  stroke-width: 8px;
-  stroke-linecap: round;
+  fill: url(#cn-crank-enamel);
 }
 
-.vault-scene :is(.cn-crank-hub, .cn-crank-knob) {
-  fill: var(--cn-s3);
-  stroke: var(--cn-mid);
-  stroke-width: var(--vault-weight);
+.vault-scene :is(.cn-crank-boss-end, .cn-crank-knob-end, .cn-crank-boss-side, .cn-crank-knob-side) {
+  fill: url(#cn-crank-steel);
+}
+
+.vault-scene :is(.cn-crank-boss-face, .cn-crank-knob-face) {
+  fill: url(#cn-crank-face);
+}
+
+.vault-scene .cn-crank-turning {
+  fill: url(#cn-turning);
+}
+
+.vault-scene .cn-crank-nut {
+  fill: var(--cn-steel-lo);
 }
 
 .vault-scene .cn-can {
   cursor: pointer;
 }
 
+/* transparent, not hidden: the empty slot keeps the pointer, so the can behind it cannot claim it */
 .vault-scene .cn-can[data-lifted] {
   opacity: 0;
+}
+
+/* only the front of the roll, the face that carries the label, takes the pointer */
+.vault-scene .cn-can > * {
+  pointer-events: none;
+}
+
+.vault-scene .cn-can > .cn-hit {
+  fill: transparent;
+  pointer-events: all;
 }
 
 .vault-scene :is(.cn-band, .cn-lid) {
@@ -930,8 +986,10 @@
   stroke-opacity: 0.7;
 }
 
-.vault-scene .cn-grain {
-  pointer-events: none;
+/* the skirt's step: a dark line where the lid laps the tray */
+.vault-scene .cn-seam {
+  fill: var(--cn-mid);
+  fill-opacity: 0.55;
 }
 
 .vault-scene .cn-strip {
@@ -979,8 +1037,22 @@
 }
 
 .vault-scene .cn-rings {
-  fill: url(#cn-lid-rings);
   pointer-events: none;
+}
+
+.vault-scene :is(.cn-lid-ring, .cn-lid-ribs, .cn-lid-hub) {
+  stroke: var(--cn-mid);
+  stroke-width: var(--vault-weight);
+  stroke-opacity: 0.5;
+}
+
+.vault-scene .cn-lid-ring {
+  fill: none;
+}
+
+/* raised relief catches the light: the ribs and hub take the lit tone */
+.vault-scene :is(.cn-lid-ribs, .cn-lid-hub) {
+  fill: var(--cn-top);
 }
 
 .vault-scene .cn-lid-label {

@@ -213,7 +213,6 @@ export function buildVault(entries: VaultEntry[], view: VaultView): Element {
         h('div.vault-card-record', [
           h('h2', [h('a.vault-card-title')]),
           h('div.vault-card-detail'),
-          h('a.vault-card-open', 'open note'),
         ]),
       ]),
       h('div.vault-card-navigation', [

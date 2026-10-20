@@ -995,7 +995,11 @@ test('buildVault emits data-base-slug on entries and initializeVault decouples m
       0,
       'interactive zoom steps must scale via compositor transform rather than synchronous SVG width/height relayout',
     )
-    assert.match(svg.style.transform ?? '', /scale\(/)
+    // The interim zoom rides on the scaler wrapper; the drawing's own style stays untouched.
+    const scaler = viewport.querySelector('.vault-scaler')
+    assert.ok(scaler, 'the drawing is wrapped in a scaler')
+    assert.match(scaler.style.transform ?? '', /scale\(/)
+    assert.equal(svg.style.transform ?? '', '')
     assert.notEqual(
       viewport.scrollLeft,
       scrollLeftBeforeZoom,
