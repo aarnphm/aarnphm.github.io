@@ -168,6 +168,8 @@ export const Pseudocode: QuartzTransformerPlugin<Partial<Options>> = userOpts =>
     markdownPlugins() {
       return [
         () => (tree: MdRoot, _file) => {
+          // The library keeps its caption counter on Renderer; each document owns a new sequence.
+          let captionCount: number | undefined = opts.renderer?.captionCount ?? 0
           visit(tree, 'code', node => {
             let { lang, meta, value } = node
             if (lang === opts.code) {
@@ -185,9 +187,10 @@ export const Pseudocode: QuartzTransformerPlugin<Partial<Options>> = userOpts =>
               })
 
               const rendered = fromHtmlIsomorphic(
-                renderToString(algoWithPreamble!, { ...opts?.renderer, lineNumber }),
+                renderToString(algoWithPreamble!, { ...opts?.renderer, lineNumber, captionCount }),
                 { fragment: true },
               ).children[0] as Element
+              captionCount = undefined
 
               rendered.children = [
                 h(
