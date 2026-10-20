@@ -24,6 +24,7 @@ const BASE_VIEW_TYPES = [
   'map',
   'kanban',
   'bookcase',
+  'vault',
 ] as const
 
 type BaseViewType = (typeof BASE_VIEW_TYPES)[number]
@@ -99,6 +100,25 @@ export interface BaseView {
   showTags?: boolean
   /** Property that groups the shelves inside one topic (default `subcategory`). */
   topicGroupBy?: string
+  labelTitle?: string
+  labelDirector?: string
+  labelYear?: string
+  labelRating?: string
+  labelStatus?: string
+  labelStudio?: string
+  labelWatched?: string
+  labelRuntime?: string
+  /** Vault rack: `rack-steel` (default) or `black-lacquer`. */
+  rackMaterial?: string
+  /** Vault shelf length in world units (600 to 2400) and shelves per bay. */
+  bayWidth?: number
+  bayShelves?: number
+  /** Cans between dividers; 0 for none. Section changes always get one. */
+  dividers?: number
+  /** Year cuts between tin, hammertone and polypropylene cans. */
+  eraCuts?: number[]
+  /** False leaves the end panel and handwheel off the vault rack. */
+  crank?: boolean
 }
 
 /** Bookcase view keys that name a property, with the property used when the key is absent. */
@@ -108,6 +128,19 @@ export const BOOKCASE_PROPERTY_DEFAULTS = [
   ['spineAuthor', 'note.author'],
   ['spineColor', undefined],
 ] as const satisfies readonly (readonly [keyof BaseView, string | undefined])[]
+
+/** Vault view keys that name a property, with the property used when the key is absent. */
+export const VAULT_PROPERTY_DEFAULTS = [
+  ['image', 'note.posters'],
+  ['labelTitle', 'note.title'],
+  ['labelDirector', 'note.director'],
+  ['labelYear', 'note.year'],
+  ['labelRating', 'note.rating'],
+  ['labelStatus', 'note.status'],
+  ['labelStudio', 'note.studio'],
+  ['labelWatched', 'note.watched'],
+  ['labelRuntime', 'note.runtime'],
+] as const satisfies readonly (readonly [keyof BaseView, string])[]
 
 export interface BaseSortConfig {
   property: string

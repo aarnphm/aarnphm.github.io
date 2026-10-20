@@ -12,6 +12,7 @@ import {
 import { Expr, LogicalExpr, UnaryExpr, spanFrom } from './compiler/ast'
 import { BUILTIN_SUMMARY_TYPES } from './compiler/schema'
 import { parseViews, BaseFile, PropertyConfig, BOOKCASE_PROPERTY_DEFAULTS } from './types'
+import { VAULT_PROPERTY_DEFAULTS } from './types'
 
 const normalizeProperties = (raw: unknown): Record<string, PropertyConfig> | undefined => {
   if (!isRecord(raw)) return undefined
@@ -258,6 +259,13 @@ export function compileBaseConfig(source: string, path?: string): CompileBaseRes
         const raw = view[key]
         const prop = typeof raw === 'string' ? raw : fallback
         if (prop) addPropertyExpression(prop, `${viewContext}.${key}`)
+      }
+    }
+
+    if (view.type === 'vault') {
+      for (const [key, fallback] of VAULT_PROPERTY_DEFAULTS) {
+        const raw = view[key]
+        addPropertyExpression(typeof raw === 'string' ? raw : fallback, `${viewContext}.${key}`)
       }
     }
 
