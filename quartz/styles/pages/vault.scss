@@ -1,0 +1,700 @@
+@use '../variables.scss' as *;
+
+.base-view[data-base-view-type='vault'] {
+  container: vault / inline-size;
+}
+
+// A workspace like the bookcase: the stage scrolls on both axes, the index scrolls on its own.
+.vault {
+  --vault-line: color-mix(in srgb, var(--gray) 55%, transparent);
+  --vault-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+  --vault-selected: color-mix(in srgb, var(--secondary) 18%, var(--vault-surface));
+  --vault-weight: 0.75px;
+
+  display: grid;
+  grid-template-areas: 'stage' 'index';
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 2fr) minmax(0, 1fr);
+  height: calc(100dvh - 8rem);
+  min-height: 0;
+  margin: 1.5rem 0 0;
+  border: 1px solid var(--vault-line);
+}
+
+body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='vault']) {
+  #quartz-root {
+    height: 100dvh;
+    min-height: 0;
+  }
+  .page-content {
+    margin-block-end: 0;
+  }
+  .page-content > .main-col {
+    min-height: 0;
+  }
+
+  .main-col > .base-view[data-base-view-type='vault'] {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+
+    > .vault {
+      flex: 1;
+      height: auto;
+      min-height: 0;
+      margin-block-end: 1rem;
+    }
+  }
+}
+
+@container vault (min-width: 880px) {
+  .vault {
+    grid-template-areas: 'index stage';
+    grid-template-columns: minmax(14rem, 20rem) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+  }
+
+  .vault-index {
+    border-block-start: 0;
+    border-inline-end: 1px solid var(--vault-line);
+  }
+}
+
+.vault-stage {
+  grid-area: stage;
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--light);
+}
+
+.vault-viewport {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  overflow: auto;
+  overscroll-behavior: contain;
+  cursor: grab;
+  user-select: none;
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: -2px;
+  }
+
+  &[data-dragging],
+  &[data-pulling],
+  &[data-pulling] .cn-can {
+    cursor: grabbing;
+  }
+}
+
+.vault-corner {
+  position: absolute;
+  z-index: 2;
+  max-width: 48%;
+  overflow: hidden;
+  padding: 0.2rem 0.3rem;
+  color: var(--darkgray);
+  background: var(--light);
+  font: var(--text-meta, 0.75rem) / 1 var(--codeFont);
+  font-variant-numeric: tabular-nums;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  pointer-events: none;
+
+  &:empty {
+    display: none;
+  }
+
+  &[data-corner='title'] {
+    top: 0.75rem;
+    left: 0.75rem;
+    color: var(--dark);
+  }
+
+  &[data-corner='hint'] {
+    bottom: 0.75rem;
+    left: 0.75rem;
+  }
+
+  &[data-corner='readout'] {
+    right: 0.75rem;
+    bottom: 0.75rem;
+    color: var(--dark);
+  }
+}
+
+.vault-controls {
+  position: absolute;
+  z-index: 2;
+  inset-block-start: 0.75rem;
+  inset-inline-end: 0.75rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.vault-controls > button,
+.vault-card button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.125rem;
+  height: 2.125rem;
+  padding: 0;
+  border: 1px solid var(--darkgray);
+  border-radius: 0;
+  color: var(--dark);
+  background: var(--light);
+  cursor: pointer;
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    pointer-events: none;
+  }
+
+  &:disabled {
+    color: var(--darkgray);
+    cursor: default;
+
+    svg {
+      opacity: 0.4;
+    }
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:not(:disabled):hover {
+      background: var(--vault-surface);
+    }
+  }
+}
+
+.vault-controls > button + button {
+  border-block-start: 0;
+}
+
+.vault :is(button, summary, a):focus-visible,
+.vault-card :is(button, a):focus-visible {
+  outline: 2px solid var(--dark);
+  outline-offset: -2px;
+}
+
+// The drawing. Tone, label and gradient colours come from the scene's own <style> (styles.ts).
+.vault-scene {
+  display: block;
+  margin: auto;
+  overflow: visible;
+  transform-origin: 0 0;
+
+  path,
+  polygon,
+  circle,
+  ellipse {
+    vector-effect: non-scaling-stroke;
+    stroke-linejoin: round;
+  }
+
+  .cn-face {
+    stroke: none;
+    pointer-events: none;
+  }
+
+  .cn-edge {
+    fill: none;
+    stroke: var(--cn-mid);
+    stroke-width: var(--vault-weight);
+    pointer-events: none;
+  }
+
+  .cn-holder {
+    fill: var(--cn-vinyl);
+    stroke: var(--cn-mid);
+    stroke-width: var(--vault-weight);
+  }
+
+  .cn-holder-label {
+    fill: var(--cn-vinyl-ink);
+    font-family: var(--codeFont);
+    font-size: 11px;
+    letter-spacing: 1px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .cn-crank {
+    pointer-events: none;
+  }
+
+  .cn-crank-rim {
+    fill: none;
+    stroke: var(--cn-s3);
+    stroke-width: 14px;
+    vector-effect: none;
+  }
+
+  .cn-crank-spokes {
+    fill: none;
+    stroke: var(--cn-s3);
+    stroke-width: 8px;
+    stroke-linecap: round;
+    vector-effect: none;
+  }
+
+  .cn-crank-hub,
+  .cn-crank-knob {
+    fill: var(--cn-s3);
+    stroke: var(--cn-mid);
+    stroke-width: var(--vault-weight);
+  }
+}
+
+.vault-scene,
+.vault-lift {
+  .cn-can {
+    cursor: pointer;
+    transition: transform 120ms ease-out;
+
+    // Transparent, not hidden: the empty slot keeps the pointer, so the can behind it cannot claim
+    // it once the pulled copy slides away from under it.
+    &[data-lifted] {
+      opacity: 0;
+    }
+
+    // Only the front of the roll, the face that carries the label, takes the pointer.
+    > * {
+      pointer-events: none;
+    }
+
+    > .cn-hit {
+      fill: transparent;
+      pointer-events: all;
+    }
+  }
+
+  .cn-band,
+  .cn-lid {
+    stroke: var(--cn-hi);
+    stroke-width: var(--vault-weight);
+    stroke-opacity: 0.7;
+  }
+
+  .cn-grain {
+    pointer-events: none;
+  }
+
+  .cn-strip {
+    fill: var(--cn-vinyl);
+    stroke: color-mix(in srgb, var(--cn-vinyl-ink) 30%, transparent);
+    stroke-width: var(--vault-weight);
+  }
+
+  .cn-tape {
+    fill: var(--cn-tape);
+  }
+
+  .cn-title,
+  .cn-line {
+    fill: var(--cn-vinyl-ink);
+    font-family: var(--codeFont);
+    font-variant-numeric: tabular-nums;
+    pointer-events: none;
+  }
+
+  .cn-title {
+    font-weight: 600;
+  }
+
+  .cn-tape ~ text {
+    fill: var(--cn-tape-ink);
+  }
+
+  .cn-stamp {
+    fill: var(--cn-stamp);
+    font-weight: 600;
+  }
+
+  .cn-dot {
+    stroke: var(--cn-hi);
+    stroke-width: var(--vault-weight);
+    stroke-opacity: 0.6;
+  }
+
+  .cn-dot-high {
+    fill: var(--cn-dot-high);
+  }
+
+  .cn-dot-good {
+    fill: var(--cn-dot-good);
+  }
+
+  .cn-rings {
+    fill: url(#cn-lid-rings);
+    pointer-events: none;
+  }
+
+  .cn-lid-label {
+    fill: var(--cn-vinyl);
+    stroke: color-mix(in srgb, var(--cn-vinyl-ink) 30%, transparent);
+    stroke-width: var(--vault-weight);
+  }
+
+  .cn-lid-text {
+    fill: var(--cn-vinyl-ink);
+    font-family: var(--codeFont);
+    font-weight: 600;
+    text-anchor: middle;
+    pointer-events: none;
+  }
+}
+
+// Hover nudges a can 18 units toward the aisle: project(0, -18, 0). Click pulls it all the way.
+@media (hover: hover) and (pointer: fine) {
+  .vault-scene .cn-can:hover {
+    transform: translate(-15.6px, 9px);
+  }
+}
+
+// The pulled copy leaves its slot along -y and rises; the script sets --pull on arrival.
+.vault-lift .cn-can {
+  transition: transform 220ms cubic-bezier(0.23, 1, 0.32, 1);
+
+  &[data-pulling] {
+    transition: none;
+  }
+
+  &[data-out] {
+    transform: translate(var(--px), var(--py));
+  }
+
+  // The embossed lid shows once the can has left the rack.
+  .cn-lid-detail {
+    animation: vault-lid-in 120ms 200ms both;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vault-scene .cn-can,
+  .vault-lift .cn-can {
+    transition: none;
+  }
+}
+
+.vault-index {
+  grid-area: index;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  border-block-start: 1px solid var(--vault-line);
+}
+
+.vault-index-group {
+  .base-list-group-header {
+    display: grid;
+    grid-template-columns: 0.75rem minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 2.125rem;
+    margin: 0;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--vault-line);
+    color: var(--darkgray);
+    font: 400 var(--text-meta, 0.75rem) / 1.4 var(--codeFont);
+    list-style: none;
+    cursor: pointer;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &::before {
+      content: '+';
+    }
+  }
+
+  &[open] > summary::before {
+    content: '−';
+  }
+}
+
+.vault-index-count {
+  font-variant-numeric: tabular-nums;
+}
+
+.vault-index-list {
+  display: grid;
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  border-block-end: 1px solid var(--vault-line);
+  background: var(--vault-line);
+  list-style: none;
+}
+
+.vault .vault-index-list > li {
+  content-visibility: auto;
+  contain-intrinsic-block-size: auto 3.25rem;
+  margin: 0;
+  padding: 0;
+  background: var(--light);
+
+  &[data-current] {
+    background: var(--vault-selected);
+  }
+}
+
+.vault-entry-select {
+  display: grid;
+  gap: 0.1rem;
+  width: 100%;
+  min-width: 0;
+  padding: 0.6rem 0.75rem;
+  border: 0;
+  border-radius: 0;
+  color: var(--dark);
+  background: transparent;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover .vault-entry-title {
+      text-decoration: underline;
+    }
+  }
+}
+
+.vault-entry-title,
+.vault-entry-byline {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vault-entry-title {
+  font-size: var(--text-ui, 0.875rem);
+  line-height: 1.3;
+}
+
+.vault-entry-byline {
+  color: var(--darkgray);
+  font: var(--text-meta, 0.75rem) / 1.3 var(--codeFont);
+}
+
+// The card shows the current row's record; the row keeps it for search and assistive tech.
+.vault-entry-detail {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  content-visibility: hidden;
+  contain: strict;
+}
+
+.vault-card {
+  width: min(56rem, calc(100vw - 2rem));
+  max-width: none;
+  max-height: calc(100dvh - 2rem);
+  padding: 0;
+  overflow: auto;
+  border: 1px solid var(--vault-line, var(--gray));
+  border-radius: 0;
+  color: var(--dark);
+  background: var(--light);
+  overscroll-behavior: contain;
+
+  &::backdrop {
+    background: color-mix(in srgb, var(--light) 80%, transparent);
+  }
+
+  &[open] {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    animation: vault-card-in 220ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+}
+
+.vault-card-toolbar,
+.vault-card-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  color: var(--darkgray);
+  font: var(--text-meta, 0.75rem) var(--codeFont);
+  font-variant-numeric: tabular-nums;
+}
+
+.vault-card-content {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  align-items: start;
+  gap: 1.5rem;
+  min-height: 0;
+  padding: 0 1.5rem 0.75rem;
+}
+
+.vault-card-poster {
+  margin: 0;
+  perspective: 1200px;
+
+  img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    border: 1px solid var(--dark);
+    background: var(--vault-surface, var(--lightgray));
+  }
+
+  &[data-empty] img {
+    visibility: hidden;
+  }
+}
+
+.vault-card-record {
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: 0.75rem;
+  min-width: 0;
+
+  h2 {
+    margin: 0;
+  }
+}
+
+.vault-card-title {
+  color: var(--dark);
+  font-family: var(--titleFont);
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 1.2;
+  text-decoration: none;
+  background: transparent;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      color: var(--dark);
+      background: transparent;
+      text-decoration: underline;
+    }
+  }
+}
+
+.vault-card-open {
+  color: var(--dark);
+  font: var(--text-meta, 0.75rem) var(--codeFont);
+  text-decoration: underline;
+  background: transparent;
+}
+
+.vault-card-detail,
+.vault-entry-detail {
+  .vault-label-line {
+    margin: 0;
+    padding: 0.35rem 0.5rem;
+    border: 1px solid var(--darkgray);
+    color: var(--dark);
+    font: var(--text-meta, 0.75rem) / 1.4 var(--codeFont);
+    letter-spacing: 0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .vault-props {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: 0.2rem 0.75rem;
+    margin: 0.75rem 0 0;
+    font: var(--text-meta, 0.75rem) / 1.45 var(--codeFont);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .vault-prop {
+    display: contents;
+  }
+
+  dt {
+    margin: 0;
+    color: var(--darkgray);
+  }
+
+  dd {
+    margin: 0;
+    min-width: 0;
+    color: var(--dark);
+    overflow-wrap: anywhere;
+  }
+
+  .vault-description {
+    margin: 0.75rem 0 0;
+    color: var(--darkgray);
+    font-family: var(--bodyFont);
+    font-size: var(--text-ui, 0.875rem);
+    line-height: 1.5;
+  }
+}
+
+@keyframes vault-card-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes vault-lid-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .vault-card {
+    width: calc(100vw - 1rem);
+    max-height: calc(100dvh - 1rem);
+  }
+
+  .vault-card-content {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.75rem;
+    padding: 0 0.75rem 0.75rem;
+  }
+
+  .vault-card-poster {
+    width: min(12rem, 60%);
+  }
+
+  .vault-corner[data-corner='hint'] {
+    display: none;
+  }
+}
+
+@media (pointer: coarse) {
+  .vault :is(summary, .vault-entry-select) {
+    min-height: 44px;
+  }
+
+  .vault-controls > button,
+  .vault-card button {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vault-card[open],
+  .vault-lift .cn-lid-detail {
+    animation: none;
+  }
+}

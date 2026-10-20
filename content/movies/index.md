@@ -3,13 +3,13 @@ date: '2024-02-07'
 description: a capsule of life
 id: movies
 modified: 2026-06-05 15:08:15 GMT-04:00
+seealso:
+  - '[[cinematheque.base|base view]]'
 tags:
   - evergreen
   - meta
 title: movies.
 ---
-
-see also: [[cinematheque.base|base view]]
 
 this is my index for [[thoughts/Cinematography|films]] and shows. i use it for watched items and the watch list.
 

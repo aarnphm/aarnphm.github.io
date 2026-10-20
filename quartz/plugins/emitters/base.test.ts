@@ -619,3 +619,462 @@ views:
     `expected 27 instructions after ISOP + flat N-ary jump optimization, got ${filterIr.instructions.length}`,
   )
 })
+
+test('buildVault emits data-base-slug on entries and initializeVault decouples modal browsing, debounces/defers full-res poster decode, and bounds zoom/lift work', async () => {
+  const { buildVault } = await import('../../util/base/vault/render')
+  const { toHtml } = await import('hast-util-to-html')
+
+  const entries = [0, 1, 2, 3, 4].map(i => ({
+    path: `movies/film-${i}.md`,
+    slug: `movies/film-${i}`,
+    href: `./movies/film-${i}`,
+    title: `Film ${i}`,
+    directors: [`Director ${i}`],
+    year: 1950 + i * 10,
+    runtime: 110 + i * 5,
+    status: 'finished',
+    watched: '2026-01-01',
+    rating: 8.5,
+    cover: `http://localhost:8080/static/bookcase/film-${i}-w320.webp`,
+    coverSlug: `movies/posters/film-${i}.jpg`,
+    studio: 'Studio',
+    description: `Description ${i}`,
+    group: `${1950 + i * 10}s`,
+    rows: [],
+  }))
+  const tree = buildVault(entries, { name: 'vault' })
+  const html = toHtml(tree)
+  assert.match(html, /data-base-slug="movies\/film-0"/)
+
+  let resolveFullDecode: (() => void) | undefined
+  const createdImages: { src: string; removedSrc: boolean }[] = []
+  const posterAnims: { onfinish: (() => void) | null; cancel: () => void; finish: () => void }[] =
+    []
+
+  class FakeVaultNode {
+    tagName: string
+    className = ''
+    dataset: Record<string, string> = {}
+    style: Record<string, string> & {
+      setProperty: (k: string, v: string) => void
+      getPropertyValue: (k: string) => string
+      removeProperty: (k: string) => void
+    }
+    children: FakeVaultNode[] = []
+    parentElement: FakeVaultNode | null = null
+    attributes = new Map<string, string>()
+    listeners = new Map<string, ((e: Record<string, unknown>) => void)[]>()
+    textContent = ''
+    href = ''
+    disabled = false
+    open = false
+    isConnected = true
+    clientWidth = 800
+    clientHeight = 600
+    scrollLeft = 0
+    scrollTop = 0
+    scrollCalls = 0
+    widthAttrMutations = 0
+    viewBox = { baseVal: { x: 0, y: 0, width: 1600, height: 1200 } }
+    private _src = ''
+
+    constructor(tagName: string, className = '') {
+      this.tagName = tagName
+      this.className = className
+      const store: Record<string, string> = {}
+      this.style = Object.assign(store, {
+        setProperty: (k: string, v: string) => {
+          store[k] = v
+        },
+        getPropertyValue: (k: string) => store[k] ?? '',
+        removeProperty: (k: string) => {
+          delete store[k]
+        },
+      })
+    }
+    get childNodes() {
+      return this.children
+    }
+    get src() {
+      return this._src
+    }
+    set src(v: string) {
+      this._src = v
+      this.attributes.set('src', v)
+    }
+    setAttribute(k: string, v: string) {
+      if (k === 'width' || k === 'height') this.widthAttrMutations++
+      this.attributes.set(k, v)
+    }
+    getAttribute(k: string) {
+      return this.attributes.get(k) ?? null
+    }
+    removeAttribute(k: string) {
+      this.attributes.delete(k)
+      if (k === 'src') this._src = ''
+    }
+    append(...nodes: FakeVaultNode[]) {
+      for (const n of nodes) {
+        n.parentElement = this
+        this.children.push(n)
+      }
+    }
+    replaceChildren(...nodes: FakeVaultNode[]) {
+      for (const c of this.children) c.parentElement = null
+      this.children = []
+      this.append(...nodes)
+    }
+    remove() {
+      if (!this.parentElement) return
+      const idx = this.parentElement.children.indexOf(this)
+      if (idx >= 0) this.parentElement.children.splice(idx, 1)
+      this.parentElement = null
+    }
+    cloneNode(): FakeVaultNode {
+      const copy = new FakeVaultNode(this.tagName, this.className)
+      copy.dataset = { ...this.dataset }
+      for (const [k, v] of this.attributes) copy.attributes.set(k, v)
+      for (const c of this.children) copy.append(c.cloneNode())
+      return copy
+    }
+    matchesSelector(sel: string): boolean {
+      if (sel.startsWith(':scope > ')) return this.matchesSelector(sel.slice(9))
+      if (sel === 'svg.vault-scene')
+        return this.tagName === 'svg' && this.className.includes('vault-scene')
+      if (sel === 'img') return this.tagName === 'img'
+      if (sel === 'details') return this.tagName === 'details'
+      if (sel.startsWith('[data-camera="')) {
+        const val = sel.slice(14, -2)
+        return this.dataset.camera === val
+      }
+      if (sel === '[data-camera]') return this.dataset.camera !== undefined
+      if (sel.startsWith('[data-card="')) {
+        const val = sel.slice(12, -2)
+        return this.dataset.card === val
+      }
+      if (sel === '[data-card]') return this.dataset.card !== undefined
+      if (sel === '[data-vault-readout]') return this.dataset.vaultReadout !== undefined
+      if (sel === '[data-vault-section]') return this.dataset.vaultSection !== undefined
+      if (sel.startsWith('.')) {
+        const cls = sel.slice(1)
+        return this.className.split(/\s+/).includes(cls)
+      }
+      return false
+    }
+    querySelector(sel: string): FakeVaultNode | null {
+      return this.querySelectorAll(sel)[0] ?? null
+    }
+    querySelectorAll(sel: string): FakeVaultNode[] {
+      const out: FakeVaultNode[] = []
+      const directOnly = sel.startsWith(':scope > ')
+      const targetSel = directOnly ? sel.slice(9) : sel
+      const visit = (node: FakeVaultNode, depth: number) => {
+        for (const child of node.children) {
+          if (child.matchesSelector(targetSel)) out.push(child)
+          if (!directOnly && depth < 10) visit(child, depth + 1)
+        }
+      }
+      visit(this, 0)
+      return out
+    }
+    closest(sel: string): FakeVaultNode | null {
+      if (this.matchesSelector(sel)) return this
+      return this.parentElement?.closest(sel) ?? null
+    }
+    addEventListener(type: string, cb: (e: Record<string, unknown>) => void) {
+      const list = this.listeners.get(type) ?? []
+      list.push(cb)
+      this.listeners.set(type, list)
+    }
+    removeEventListener() {}
+    dispatch(type: string, extra: Record<string, unknown> = {}) {
+      const event: Record<string, unknown> = {
+        type,
+        target: extra.target ?? this,
+        preventDefault: () => {},
+        ...extra,
+      }
+      for (const cb of this.listeners.get(type) ?? []) cb(event)
+    }
+    scrollTo(opts: { left?: number; top?: number }) {
+      this.scrollCalls++
+      if (typeof opts.left === 'number') this.scrollLeft = opts.left
+      if (typeof opts.top === 'number') this.scrollTop = opts.top
+    }
+    getBoundingClientRect() {
+      return { left: 0, top: 0, right: 400, bottom: 300, width: 400, height: 300 }
+    }
+    showModal() {
+      this.open = true
+    }
+    close() {
+      if (!this.open) return
+      this.open = false
+      this.dispatch('close')
+    }
+    focus() {}
+    animate() {
+      const anim = {
+        onfinish: null as (() => void) | null,
+        cancel: () => {
+          anim.onfinish = null
+        },
+        finish: () => {
+          const cb = anim.onfinish
+          anim.onfinish = null
+          cb?.()
+        },
+      }
+      if (this.tagName === 'img') posterAnims.push(anim)
+      return anim
+    }
+  }
+
+  const prevWindow = globalThis.window
+  const prevDocument = globalThis.document
+  const prevImage = globalThis.Image
+  const prevRO = globalThis.ResizeObserver
+  const prevRAF = globalThis.requestAnimationFrame
+  const prevCAF = globalThis.cancelAnimationFrame
+  const prevElement = globalThis.Element
+  const prevHTMLElement = globalThis.HTMLElement
+
+  try {
+    globalThis.Element = FakeVaultNode as unknown as typeof Element
+    globalThis.HTMLElement = FakeVaultNode as unknown as typeof HTMLElement
+    globalThis.ResizeObserver = class {
+      observe() {}
+      disconnect() {}
+    } as unknown as typeof ResizeObserver
+    globalThis.Image = class {
+      decoding = 'async'
+      onload: (() => void) | null = null
+      onerror: (() => void) | null = null
+      private _record = { src: '', removedSrc: false }
+      constructor() {
+        createdImages.push(this._record)
+      }
+      get src() {
+        return this._record.src
+      }
+      set src(v: string) {
+        this._record.src = v
+      }
+      removeAttribute(k: string) {
+        if (k === 'src') {
+          this._record.removedSrc = true
+          this._record.src = ''
+        }
+      }
+      decode() {
+        if (this._record.src.includes('-full.jpg')) {
+          return new Promise<void>(resolve => {
+            resolveFullDecode = () => {
+              this.onload?.()
+              resolve()
+            }
+          })
+        }
+        return Promise.resolve()
+      }
+    } as unknown as typeof Image
+    globalThis.requestAnimationFrame = (cb: FrameRequestCallback) => {
+      cb(16)
+      return 1
+    }
+    globalThis.cancelAnimationFrame = () => {}
+    const controller = new AbortController()
+    globalThis.window = {
+      quartzNavLifecycle: { listening: true, controller },
+      matchMedia: () => ({ matches: false, addEventListener: () => {} }),
+      setTimeout: globalThis.setTimeout.bind(globalThis),
+      clearTimeout: globalThis.clearTimeout.bind(globalThis),
+      addCleanup: () => {},
+    } as unknown as Window & typeof globalThis
+    globalThis.document = {
+      activeElement: null,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      querySelectorAll: () => [],
+      createElement: (tag: string) => new FakeVaultNode(tag),
+      createElementNS: (_ns: string, tag: string) => new FakeVaultNode(tag),
+    } as unknown as Document
+
+    const mod = (await import('../../components/scripts/base-vault.inline')) as {
+      initializeVault?: (root: HTMLElement) => void
+    }
+    assert.equal(typeof mod.initializeVault, 'function')
+
+    const root = new FakeVaultNode('div', 'vault')
+    const stage = new FakeVaultNode('div', 'vault-stage')
+    const viewport = new FakeVaultNode('div', 'vault-viewport')
+    const svg = new FakeVaultNode('svg', 'vault-scene')
+    svg.dataset.start = '100 100'
+    const lift = new FakeVaultNode('g', 'vault-lift')
+    for (let i = 0; i < 5; i++) {
+      const can = new FakeVaultNode('g', 'cn-can')
+      can.dataset.index = String(i)
+      can.dataset.cx = String(100 + i * 50)
+      can.dataset.cy = String(200)
+      can.style.setProperty('--px', '-24')
+      can.style.setProperty('--py', '14')
+      const lid = new FakeVaultNode('circle', 'cn-lid')
+      lid.setAttribute('transform', 'translate(0,0)')
+      lid.setAttribute('r', '80')
+      can.append(lid)
+      svg.append(can)
+    }
+    svg.append(lift)
+    viewport.append(svg)
+
+    const zoomIn = new FakeVaultNode('button')
+    zoomIn.dataset.camera = 'in'
+    const zoomOut = new FakeVaultNode('button')
+    zoomOut.dataset.camera = 'out'
+    const readout = new FakeVaultNode('span', 'vault-corner')
+    readout.dataset.vaultReadout = ''
+    const section = new FakeVaultNode('span', 'vault-corner')
+    section.dataset.vaultSection = ''
+    stage.append(viewport, zoomIn, zoomOut, readout, section)
+
+    const indexPane = new FakeVaultNode('div', 'vault-index')
+    const groupDetails = new FakeVaultNode('details', 'vault-index-group')
+    const groupLabel = new FakeVaultNode('span', 'vault-index-label')
+    groupLabel.textContent = '1950s'
+    groupDetails.append(groupLabel)
+    for (let i = 0; i < 5; i++) {
+      const row = new FakeVaultNode('li', 'vault-entry')
+      row.dataset.index = String(i)
+      row.dataset.href = `./movies/film-${i}`
+      row.dataset.cover = `http://localhost:8080/static/bookcase/film-${i}-w320.webp`
+      row.dataset.fullCover = `http://localhost:8080/movies/posters/film-${i}-full.jpg`
+      const btn = new FakeVaultNode('button', 'vault-entry-select')
+      const title = new FakeVaultNode('span', 'vault-entry-title')
+      title.textContent = `Film ${i}`
+      btn.append(title)
+      const detail = new FakeVaultNode('div', 'vault-entry-detail')
+      row.append(btn, detail)
+      groupDetails.append(row)
+    }
+    indexPane.append(groupDetails)
+
+    const dialog = new FakeVaultNode('dialog', 'vault-card')
+    const poster = new FakeVaultNode('figure', 'vault-card-poster')
+    const posterImg = new FakeVaultNode('img')
+    poster.append(posterImg)
+    const cardTitle = new FakeVaultNode('a', 'vault-card-title')
+    const cardDetail = new FakeVaultNode('div', 'vault-card-detail')
+    const cardOpen = new FakeVaultNode('a', 'vault-card-open')
+    const cardPos = new FakeVaultNode('span', 'vault-card-position')
+    const prevBtn = new FakeVaultNode('button')
+    prevBtn.dataset.card = 'previous'
+    const nextBtn = new FakeVaultNode('button')
+    nextBtn.dataset.card = 'next'
+    const closeBtn = new FakeVaultNode('button')
+    closeBtn.dataset.card = 'close'
+    dialog.append(poster, cardTitle, cardDetail, cardOpen, cardPos, prevBtn, nextBtn, closeBtn)
+
+    root.append(stage, indexPane, dialog)
+    mod.initializeVault!(root as unknown as HTMLElement)
+
+    // 1. Compositor zoom: clicking zoom-in 3 times must NOT mutate svg width/height synchronously on every click
+    svg.widthAttrMutations = 0
+    root.dispatch('click', { target: zoomIn })
+    root.dispatch('click', { target: zoomIn })
+    root.dispatch('click', { target: zoomIn })
+    assert.equal(
+      svg.widthAttrMutations,
+      0,
+      'interactive zoom steps must scale via compositor transform rather than synchronous SVG width/height relayout',
+    )
+    assert.match(svg.style.transform ?? '', /scale\(/)
+
+    // 2. Rapid can stepping: pull starts immediately and bounds settling clones in .vault-lift to <= 3 (1 active + <= 2 settling)
+    for (let i = 0; i < 5; i++) {
+      viewport.dispatch('keydown', { key: 'ArrowRight' })
+      assert.ok(
+        lift.children.length <= 3,
+        `expected at most 3 clones in .vault-lift during rapid stepping, got ${lift.children.length}`,
+      )
+    }
+
+    // 3. Modal browsing: opening card and stepping Next 3 times must NOT mutate .vault-lift or scroll viewport while open
+    const cans = svg.querySelectorAll(':scope > .cn-can')
+    createdImages.length = 0
+    posterAnims.length = 0
+    viewport.dispatch('click', { target: cans[0] })
+    assert.equal(dialog.open, true)
+    assert.equal(posterAnims.length, 1, 'entrance animation runs on modal open')
+
+    const liftChildrenAtOpen = [...lift.children]
+    const scrollCallsAtOpen = viewport.scrollCalls
+    root.dispatch('click', { target: nextBtn })
+    root.dispatch('click', { target: nextBtn })
+    root.dispatch('click', { target: nextBtn })
+
+    assert.equal(
+      posterAnims.length,
+      1,
+      'stepping Next inside open modal must not re-run the entrance transform animation',
+    )
+    assert.deepEqual(
+      lift.children,
+      liftChildrenAtOpen,
+      'stepping inside open modal must not clone or mutate background rack cans',
+    )
+    assert.equal(
+      viewport.scrollCalls,
+      scrollCallsAtOpen,
+      'stepping inside open modal must not scroll the hidden background viewport',
+    )
+
+    // Full-res poster decode is debounced (300ms): before 300ms, zero full-res decodes have started
+    const fullResBeforeDebounce = createdImages.filter(img => img.src.includes('-full.jpg'))
+    assert.equal(
+      fullResBeforeDebounce.length,
+      0,
+      'full-res poster decode must be debounced during rapid modal stepping',
+    )
+
+    // Wait 320ms for debounced full-res decode of film-3 to start
+    await new Promise(resolve => setTimeout(resolve, 320))
+    const fullResAfterDebounce = createdImages.filter(img => img.src.includes('-full.jpg'))
+    assert.equal(
+      fullResAfterDebounce.length,
+      1,
+      'only the settled card index (film-3) should start a full-res poster decode',
+    )
+
+    // Resolve full-res decode while entrance animation is still in-flight: posterImg.src stays on 320px thumb until animation finishes
+    resolveFullDecode?.()
+    await Promise.resolve()
+    await Promise.resolve()
+    assert.equal(
+      posterImg.src,
+      'http://localhost:8080/static/bookcase/film-3-w320.webp',
+      'full-res poster swap must wait until entrance animation finishes',
+    )
+    posterAnims[0].finish()
+    assert.equal(
+      posterImg.src,
+      'http://localhost:8080/movies/posters/film-3-full.jpg',
+      'finishing entrance animation flushes the decoded full-res poster',
+    )
+
+    // Closing modal commits selection (index 3) to the rack and clears posterImg src
+    root.dispatch('click', { target: closeBtn })
+    assert.equal(dialog.open, false)
+    assert.equal(posterImg.getAttribute('src'), null, 'closing modal must clear posterImg src')
+    assert.equal(readout.textContent, '4 / 5', 'closing modal commits final cardIndex to the rack')
+    controller.abort()
+  } finally {
+    globalThis.window = prevWindow
+    globalThis.document = prevDocument
+    globalThis.Image = prevImage
+    globalThis.ResizeObserver = prevRO
+    globalThis.requestAnimationFrame = prevRAF
+    globalThis.cancelAnimationFrame = prevCAF
+    globalThis.Element = prevElement
+    globalThis.HTMLElement = prevHTMLElement
+  }
+})

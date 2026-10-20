@@ -34,6 +34,53 @@ properties:
   note.watched:
     displayName: watched date
 views:
+  - type: vault
+    name: vault
+    order:
+      - category
+      - tags
+    sort:
+      - property: year
+        direction: ASC
+      - property: title
+        direction: ASC
+    image: note.posters
+    labelTitle: note.title
+    labelDirector: note.director
+    labelYear: note.year
+    labelRating: note.rating
+    labelStatus: note.status
+    labelStudio: note.studio
+    rackMaterial: rack-steel
+    bayWidth: 1200
+    bayShelves: 5
+    dividers: 8
+    eraCuts: [1980, 2016]
+  - type: vault
+    name: directors
+    groupBy:
+      property: director
+      direction: ASC
+    order:
+      - category
+      - tags
+    sort:
+      - property: year
+        direction: ASC
+      - property: title
+        direction: ASC
+    image: note.posters
+    labelTitle: note.title
+    labelDirector: note.director
+    labelYear: note.year
+    labelRating: note.rating
+    labelStatus: note.status
+    labelStudio: note.studio
+    rackMaterial: rack-steel
+    bayWidth: 1200
+    bayShelves: 5
+    dividers: 8
+    eraCuts: [1980, 2016]
   - type: cards
     name: gallery
     groupBy:
