@@ -19,6 +19,7 @@ import { emitContent, emitPartialEmitter } from './processors/emit'
 import { filterContentResult } from './processors/filter'
 import {
   parseMarkdown,
+  processedContentCacheMisses,
   restoredProcessedContent,
   snapshotProcessedContentCache,
 } from './processors/parse'
@@ -43,6 +44,7 @@ import {
   captureBuildInputs,
   commitBuildCache,
   commitResourceBuildCache,
+  commitUnchangedParseBuildCache,
   resourceBuildCheckpoint,
   restoreBuildCache,
 } from './util/persistent-build-cache'
@@ -554,7 +556,9 @@ export async function buildQuartz(
     for (const [fp, content] of indexContent(filteredContent)) initialContent.set(fp, content)
     logBuildStage(argv, ctx.buildId, 'build.filter-index', perf.elapsedMs('filter-index'))
     perf.addEvent('cache-snapshot')
-    const parseSnapshot = persistentInputs ? snapshotProcessedContentCache(filePaths) : undefined
+    const reuseParseBlob = Boolean(persistentInputs) && processedContentCacheMisses() === 0
+    const parseSnapshot =
+      persistentInputs && !reuseParseBlob ? snapshotProcessedContentCache(filePaths) : undefined
     logBuildStage(argv, ctx.buildId, 'build.cache-snapshot', perf.elapsedMs('cache-snapshot'))
 
     perf.addEvent('emission')
@@ -567,7 +571,17 @@ export async function buildQuartz(
     }
     logBuildStage(argv, ctx.buildId, 'build.emission', perf.elapsedMs('emission'))
     perf.addEvent('cache-commit')
-    await commitBuildCache(ctx, persistentInputs, parseSnapshot, [...initialContent.keys()])
+    const published = [...initialContent.keys()]
+    if (
+      !(reuseParseBlob && (await commitUnchangedParseBuildCache(ctx, persistentInputs, published)))
+    ) {
+      await commitBuildCache(
+        ctx,
+        persistentInputs,
+        parseSnapshot ?? (persistentInputs ? snapshotProcessedContentCache(filePaths) : undefined),
+        published,
+      )
+    }
     logBuildStage(argv, ctx.buildId, 'build.cache-commit', perf.elapsedMs('cache-commit'))
     ctx.incremental = argv.watch
     if (watching) watching.ready = true
@@ -837,7 +851,9 @@ async function rebuild(clientRefresh: () => void, buildData: BuildData, pending:
     const parsedFiles = await parseMarkdown(ctx, filePaths, dirtyPaths)
     const processedFiles = filterContentResult(ctx, parsedFiles).published
     const current = indexContent(processedFiles)
-    const parseSnapshot = persistentInputs ? snapshotProcessedContentCache(filePaths) : undefined
+    const reuseParseBlob = Boolean(persistentInputs) && processedContentCacheMisses() === 0
+    const parseSnapshot =
+      persistentInputs && !reuseParseBlob ? snapshotProcessedContentCache(filePaths) : undefined
     const changeEvents = incremental ? buildChangeEvents(ctx, pending, contentMap, current) : []
     // Partial emit does not remove every output a deleted page derived, so a delete cleans `public`
     // and emits the site again. Course pages are leaves whose outputs sit at their own slug: remove
@@ -863,7 +879,17 @@ async function rebuild(clientRefresh: () => void, buildData: BuildData, pending:
       await emitFullBuild(ctx, perf, processedFiles)
     }
     buildData.contentMap = current
-    await commitBuildCache(ctx, persistentInputs, parseSnapshot, [...current.keys()])
+    const published = [...current.keys()]
+    if (
+      !(reuseParseBlob && (await commitUnchangedParseBuildCache(ctx, persistentInputs, published)))
+    ) {
+      await commitBuildCache(
+        ctx,
+        persistentInputs,
+        parseSnapshot ?? (persistentInputs ? snapshotProcessedContentCache(filePaths) : undefined),
+        published,
+      )
+    }
     ctx.incremental = argv.watch
     console.log(styleText('green', `Done rebuilding in ${perf.timeSince()}`))
     emitQuartzDevEvent({

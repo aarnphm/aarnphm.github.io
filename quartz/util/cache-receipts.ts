@@ -27,6 +27,7 @@ const receiptSchema = z.object({
     'inputs-unstable',
     'unavailable',
     'published',
+    'parse-unchanged',
     'resources-updated',
     'checkpoint-changed',
   ]),

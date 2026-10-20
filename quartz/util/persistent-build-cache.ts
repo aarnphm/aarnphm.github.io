@@ -349,6 +349,49 @@ export async function restoreBuildCache(
   return { unchanged, published: manifest.published }
 }
 
+export async function commitUnchangedParseBuildCache(
+  ctx: BuildCtx,
+  inputs: BuildInputs | undefined,
+  published: string[],
+): Promise<boolean> {
+  if (!inputs) return false
+  try {
+    const directory = cacheDirectory(ctx)
+    const previous = schema.parse(
+      JSON.parse(await fs.readFile(path.join(directory, 'manifest.json'), 'utf8')),
+    )
+    if (
+      previous.parseIdentity !== inputs.parseIdentity ||
+      previous.content !== inputs.content ||
+      previous.blob.length === 0
+    ) {
+      return false
+    }
+    await fs.access(path.join(directory, previous.blob))
+    const after = await captureBuildInputs(ctx)
+    if (after?.inputs !== inputs.inputs || after.parseIdentity !== inputs.parseIdentity) {
+      receipt(ctx, { phase: 'admission', status: 'skipped', reason: 'inputs-unstable' })
+      return true
+    }
+    if (after.content !== inputs.content) {
+      return false
+    }
+    const manifest: Manifest = {
+      ...previous,
+      ...inputs,
+      published,
+      outputs: await outputFingerprint(ctx),
+    }
+    const temporary = path.join(directory, `manifest-${randomUUID()}.tmp`)
+    await fs.writeFile(temporary, JSON.stringify(manifest), { flag: 'wx' })
+    await fs.rename(temporary, path.join(directory, 'manifest.json'))
+    receipt(ctx, { phase: 'admission', status: 'saved', reason: 'parse-unchanged' })
+    return true
+  } catch {
+    return false
+  }
+}
+
 export async function commitBuildCache(
   ctx: BuildCtx,
   inputs: BuildInputs | undefined,
@@ -395,7 +438,6 @@ export async function commitBuildCache(
     const temporary = path.join(directory, `manifest-${randomUUID()}.tmp`)
     await fs.writeFile(temporary, JSON.stringify(manifest), { flag: 'wx' })
     await fs.rename(temporary, path.join(directory, 'manifest.json'))
-    // Only immutable, superseded parse generations in this build's own directory are disposable.
     if (previous?.success && previous.data.blob !== blob) {
       await fs.rm(path.join(directory, previous.data.blob), { force: true }).catch(error => {
         console.warn('Unable to remove superseded parse cache', error)
