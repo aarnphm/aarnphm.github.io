@@ -946,13 +946,22 @@ function isHeavyParseFile(fp: FilePath): boolean {
   )
 }
 
+let lastProcessedContentCacheMisses = 0
+
+export function processedContentCacheMisses(): number {
+  return lastProcessedContentCacheMisses
+}
+
 export async function parseMarkdown(
   ctx: BuildCtx,
   fps: FilePath[],
   dirtyPaths?: ReadonlySet<FilePath>,
 ): Promise<ProcessedContent[]> {
   const { argv } = ctx
-  if (fps.length === 0) return []
+  if (fps.length === 0) {
+    lastProcessedContentCacheMisses = 0
+    return []
+  }
 
   const perf = new PerfTimer()
   const log = new QuartzLogger(argv.verbose)
@@ -978,6 +987,7 @@ export async function parseMarkdown(
   }
 
   const fpsToParse = useCache ? fps.filter(fp => !cachedContent.has(fp)) : fps
+  lastProcessedContentCacheMisses = fpsToParse.length
   const concurrency = parseWorkerConcurrency(fpsToParse.length, ctx.argv.concurrency)
 
   let res: ProcessedContent[] = []
