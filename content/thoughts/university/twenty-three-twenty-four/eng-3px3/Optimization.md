@@ -3,12 +3,12 @@ date: '2024-02-01'
 description: economic optimization framework with decision variables, constraints, objective functions, feasible sets, and optimal value determination.
 id: Optimization
 modified: 2026-06-05 15:08:34 GMT-04:00
+seealso:
+  - '[[thoughts/university/twenty-three-twenty-four/eng-3px3/3PX3 07 Optimization Problem Formulation.pdf|slides]]'
 tags:
   - eng3px3
 title: Economic Optimization
 ---
-
-See also [[thoughts/university/twenty-three-twenty-four/eng-3px3/3PX3 07 Optimization Problem Formulation.pdf|slides]]
 
 # model-based
 

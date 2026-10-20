@@ -43,8 +43,7 @@
   position: relative;
 }
 
-.course-workspace-app,
-.course-selection-actions {
+.course-workspace-app {
   box-sizing: border-box;
 
   *,
@@ -330,23 +329,6 @@
   }
 }
 
-.course-selection-actions {
-  position: fixed;
-  // Measure at the viewport origin, not at the launcher's corner, so flip sees the real size.
-  top: 0;
-  left: 0;
-  width: max-content;
-  z-index: var(--z-popover);
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1);
-  max-width: calc(100vw - var(--space-6));
-  padding: var(--space-1);
-  border: 1px solid var(--gray);
-  background: var(--light);
-  visibility: hidden;
-}
-
 ::highlight(course-mark),
 ::highlight(course-question) {
   background: var(--textHighlight);
@@ -368,7 +350,7 @@
     height: min(48rem, calc(100dvh - var(--space-6)));
   }
 
-  .course-selection-actions button {
+  .course-workspace-app .selection-toolbar button {
     min-height: 2.75rem;
   }
 }

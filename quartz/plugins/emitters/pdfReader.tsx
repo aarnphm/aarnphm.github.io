@@ -7,6 +7,7 @@ import path from 'node:path'
 import { sharedPageComponents } from '../../../quartz.layout'
 import { FullPageLayout } from '../../cfg'
 import { CourseResourceStrip } from '../../components/CourseResource'
+import { UniversityPdfStrip } from '../../components/UniversityPdf'
 import PdfReaderPage from '../../components/pages/PdfReader'
 import { pageResources, renderPage } from '../../components/renderPage'
 import { QuartzComponentProps } from '../../types/component'
@@ -33,6 +34,7 @@ import {
 } from '../../util/pdf-marks'
 import { pdfTitlesFor } from '../../util/pdf-titles'
 import { StaticResources } from '../../util/resources'
+import { universityPdfOf, type UniversityPdfPage } from '../../util/university-pdf'
 import { ProcessedContent, defaultProcessedContent } from '../vfile'
 import { write } from './helpers'
 
@@ -40,6 +42,8 @@ declare module 'vfile' {
   interface DataMap {
     /** Set on a course PDF resource page before render; the reader page inlines it. */
     pdfReader?: PdfReaderData
+    /** Set on a university PDF page before render; the strip above the reader reads it. */
+    universityPdf?: UniversityPdfPage
   }
 }
 
@@ -236,6 +240,8 @@ export async function buildPdfManifest(
       titleSource: namedTitle ? 'frontmatter' : aliasTitle ? 'alias' : 'filename',
       citedBy: (citations.get(slug) ?? []).sort((a, b) => a.from.localeCompare(b.from)),
       ...(readPaths.has(slug) ? { readPath: readPaths.get(slug) } : {}),
+      // a university PDF opens on its own page under the course, never the bare `/read/` shell
+      ...(universityPdfOf(slug) ? { readPath: `/${universityPdfOf(slug)!.pageSlug}/` } : {}),
     }
   }
 
@@ -261,6 +267,7 @@ export const PdfReader: QuartzEmitterPlugin = () => {
   }
   // Course PDF pages: the strip above the reader, the shared header, no footer components.
   const resourceOpts: FullPageLayout = { ...opts, beforeBody: [CourseResourceStrip()] }
+  const universityOpts: FullPageLayout = { ...opts, beforeBody: [UniversityPdfStrip()] }
   let previousDocuments: PdfManifest['documents'] = {}
 
   async function emitManifest(ctx: BuildCtx, content: ProcessedContent[]) {
@@ -320,16 +327,115 @@ export const PdfReader: QuartzEmitterPlugin = () => {
     })
   }
 
+  /**
+   * Renders one reader page per university PDF at `<course>/pdf/<path>/`, with the strip that
+   * names the course, the neighbouring PDFs and the notes that cite this one.
+   */
+  async function emitUniversityPages(
+    ctx: BuildCtx,
+    content: ProcessedContent[],
+    resources: StaticResources,
+    manifest: PdfManifest,
+    include: (course: string, pdfSlug: string) => boolean,
+  ): Promise<FilePath[]> {
+    const allFiles = contentDataFor(content)
+    const notes = new Map<string, string>()
+    for (const data of allFiles) {
+      if (data.slug && data.frontmatter?.title) notes.set(data.slug, String(data.frontmatter.title))
+    }
+    const numeric = (a: string, b: string) =>
+      a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' })
+    const courses = new Map<string, { slug: string; rel: string }[]>()
+    for (const slug of Object.keys(manifest.documents)) {
+      const pdf = universityPdfOf(slug)
+      if (!pdf) continue
+      const key = `${pdf.term}/${pdf.course}`
+      courses.set(key, [...(courses.get(key) ?? []), { slug, rel: pdf.rel }])
+    }
+    for (const list of courses.values()) list.sort((a, b) => numeric(a.rel, b.rel))
+
+    const jobs = [...courses].flatMap(([key, list]) =>
+      list.flatMap(({ slug }, index) => (include(key, slug) ? [{ key, list, index, slug }] : [])),
+    )
+    const cfg = ctx.cfg.configuration
+    return mapConcurrent(jobs, defaultIoConcurrency, async ({ key, list, index, slug }) => {
+      const pdf = universityPdfOf(slug)!
+      const record = manifest.documents[slug]
+      const pageSlug = pdf.pageSlug as FullSlug
+      const base = `thoughts/university/${key}`
+      const neighbour = (at: number) => {
+        const other = list[at]
+        return other
+          ? {
+              title: manifest.documents[other.slug].title,
+              path: `/${universityPdfOf(other.slug)!.pageSlug}/`,
+            }
+          : undefined
+      }
+      const home = `${base}/index`
+      const termHome = `thoughts/university/${pdf.term}/index`
+      const [tree, vfile] = defaultProcessedContent({
+        slug: pageSlug,
+        text: '',
+        description: `${record.title}, a PDF from ${pdf.course.replace(/-/g, ' ').toUpperCase()}.`,
+        frontmatter: { title: record.title, tags: [], pageLayout: 'default' },
+      })
+      vfile.data.pdfReader = {
+        mode: 'document',
+        slug,
+        readPath: `/${pageSlug}/`,
+        chrome: 'course',
+        document: record,
+      }
+      vfile.data.universityPdf = {
+        term: pdf.term,
+        course: pdf.course,
+        title: record.title,
+        bytes: record.bytes,
+        ...(notes.has(termHome) ? { termHome } : {}),
+        ...(notes.has(home) ? { home, homeTitle: notes.get(home) } : {}),
+        ...(neighbour(index - 1) ? { prev: neighbour(index - 1) } : {}),
+        ...(neighbour(index + 1) ? { next: neighbour(index + 1) } : {}),
+        position: [index + 1, list.length],
+        citedBy: [...new Map(record.citedBy.map(item => [item.from, item])).values()].map(item => ({
+          from: item.from,
+          title: item.title,
+        })),
+        rawPath: `/${slug}?raw=1`,
+      }
+      const externalResources = pageResources(pathToRoot(pageSlug), resources, ctx)
+      const componentData: QuartzComponentProps = {
+        ctx,
+        fileData: vfile.data,
+        externalResources,
+        cfg,
+        children: [],
+        tree,
+        allFiles,
+      }
+      const html = renderPage(ctx, pageSlug, componentData, universityOpts, externalResources)
+      return write({ ctx, content: html, slug: pageSlug, ext: '.html' })
+    })
+  }
+
   return {
     name: 'PdfReader',
     getQuartzComponents() {
-      return [opts.head, ...header, ...resourceOpts.beforeBody, opts.pageBody, opts.footer]
+      return [
+        opts.head,
+        ...header,
+        ...resourceOpts.beforeBody,
+        ...universityOpts.beforeBody,
+        opts.pageBody,
+        opts.footer,
+      ]
     },
     async *emit(ctx, content, resources) {
       const { manifest, file } = await emitManifest(ctx, content)
       previousDocuments = manifest.documents
       yield await file
       yield* await emitResourcePages(ctx, content, resources, manifest, () => true)
+      yield* await emitUniversityPages(ctx, content, resources, manifest, () => true)
 
       const cfg = ctx.cfg.configuration
       const url = new URL(`https://${cfg.baseUrl ?? 'example.com'}`)
@@ -375,6 +481,15 @@ export const PdfReader: QuartzEmitterPlugin = () => {
       )
       const changed = (pdfSlug: string) =>
         JSON.stringify(manifest.documents[pdfSlug]) !== JSON.stringify(previousDocuments[pdfSlug])
+      // a note or PDF edit changes the cited-by row and neighbours of every PDF in its course
+      const universityCourses = new Set(
+        changeEvents.flatMap(event => {
+          const match = /^thoughts\/university\/([^/]+\/[^/]+)\//.exec(
+            slugifyFilePath(event.path as FilePath),
+          )
+          return match ? [match[1]] : []
+        }),
+      )
       previousDocuments = manifest.documents
       yield* await emitResourcePages(
         ctx,
@@ -383,6 +498,13 @@ export const PdfReader: QuartzEmitterPlugin = () => {
         manifest,
         (slug, pdfSlug) =>
           (courseDirOf(slug) !== null && dirs.has(courseDirOf(slug)!)) || changed(pdfSlug),
+      )
+      yield* await emitUniversityPages(
+        ctx,
+        content,
+        resources,
+        manifest,
+        (course, pdfSlug) => universityCourses.has(course) || changed(pdfSlug),
       )
     },
   }

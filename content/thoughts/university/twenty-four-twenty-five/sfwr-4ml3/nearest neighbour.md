@@ -3,13 +3,15 @@ date: '2024-10-28'
 description: nearest-neighbour voting, signed-label linear classifiers, and the perceptron convergence proof.
 id: nearest neighbor
 modified: 2026-10-05 09:12:12 GMT-04:00
+seealso:
+  - '[[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/lec/Lecture13.pdf|slides 13]]'
+  - '[[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/lec/Lecture14.pdf|slides 14]]'
+  - '[[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/lec/Lecture15.pdf|slides 15]]'
 tags:
   - sfwr4ml3
   - ml
 title: nearest neighbour
 ---
-
-See also: [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/lec/Lecture13.pdf|slides 13]], [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/lec/Lecture14.pdf|slides 14]], [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/lec/Lecture15.pdf|slides 15]]
 
 ![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/likelihood#expected error minimisation]]
 

@@ -3,12 +3,12 @@ date: '2025-01-15'
 description: and how to prep effectively
 id: Case analysis
 modified: 2026-06-05 15:08:37 GMT-04:00
+seealso:
+  - '[[thoughts/university/twenty-four-twenty-five/commerce-4pa3/guide-case-analysis.pdf|pdf]]'
 tags:
   - commerce4pa3
 title: Case analysis
 ---
-
-See also [[thoughts/university/twenty-four-twenty-five/commerce-4pa3/guide-case-analysis.pdf|pdf]]
 
 ## Core Purpose of Case Analysis
 

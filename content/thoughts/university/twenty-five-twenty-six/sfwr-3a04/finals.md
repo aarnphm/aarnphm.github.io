@@ -3,12 +3,12 @@ date: '2025-04-17'
 description: And everything in between
 id: finals
 modified: 2026-06-05 15:08:38 GMT-04:00
+seealso:
+  - '[[thoughts/university/twenty-five-twenty-six/sfwr-3a04/midterm|midterm]]'
 tags:
   - sfwr3a04
 title: Software Design 2
 ---
-
-See also: [[thoughts/university/twenty-five-twenty-six/sfwr-3a04/midterm|midterm]]
 
 > [!question] 1
 >

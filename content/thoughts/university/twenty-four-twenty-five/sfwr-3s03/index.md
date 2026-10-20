@@ -23,6 +23,11 @@ pdfTitles:
   'TestingClassification.LNs.FULL.pdf': 'Testing Techniques and Methods SFWR ENG 3S03: Software Testing'
   'TestingContext.LNs.FULL.pdf': 'Testing Context SFWR ENG 3S03: Software Testing'
   'UTandTDD.Additional.LNs.pdf': 'Unit Testing and TDD Additional Material SFWR ENG 3S03: Software Testing'
+university:
+  summary: "This course covers software testing in order: testing principles and techniques, testing context, unit testing and test-driven development, reviews, static analysis, test strategies and plans, non-functional testing, coverage metrics and measurement, security testing, mobile and web testing, and testing by and of AI. The folder holds the lecture notes, the Ammann and Offutt textbook, three assignments that use JUnit tests and ChatGPT prompts, and midterm and final notes."
+  inferred: true
+  instructors: ["Alicia Marinache"]
+  term: "winter 2025"
 ---
 
 Instructor: Alicia Marinache ([mail](mailto:arinaam@mcmaster.ca))

@@ -3,12 +3,13 @@ date: '2024-02-08'
 description: linear programs, feasible and optimal solutions, and the limits of reduced costs, shadow prices, and sensitivity ranges.
 id: Linear Optimization
 modified: 2026-10-14 09:11:10 GMT-04:00
+seealso:
+  - '[[thoughts/university/twenty-three-twenty-four/eng-3px3/3PX3 08 - Linear Optimization.pdf|slides]]'
+  - '[[thoughts/university/twenty-three-twenty-four/eng-3px3/Optimization|optimization]]'
 tags:
   - eng3px3
 title: Linear Optimization in Economics Analysis
 ---
-
-See also [[thoughts/university/twenty-three-twenty-four/eng-3px3/3PX3 08 - Linear Optimization.pdf|slides]], [[thoughts/university/twenty-three-twenty-four/eng-3px3/Optimization|optimization]]
 
 Linear programming allocates quantities under a set of limits. A production model might choose how much of each product to make, with limits on material and labour. Each unit contributes a fixed amount to profit and uses a fixed amount of each resource. Those fixed coefficients make the model linear.
 

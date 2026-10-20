@@ -1,0 +1,40 @@
+@use '../../styles/variables.scss' as *;
+
+// archived courses by term. Rows and bars reuse the course index classes (course.scss);
+// this file only adds what the archive needs on top.
+.university-index {
+  .university-lede {
+    margin: var(--space-3) 0;
+    font-size: var(--text-ui);
+    color: var(--darkgray);
+    text-wrap: pretty;
+  }
+
+  .university-term {
+    margin-top: var(--space-4);
+
+    // the course bar styles only h2; the term heading matches it and shares the meta's baseline
+    .course-bar {
+      align-items: baseline;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: var(--text-ui);
+      font-weight: 400;
+      font-family: var(--codeFont);
+      line-height: 1.4;
+      color: var(--dark);
+    }
+  }
+
+  .course-row-link {
+    grid-template-columns: 14ch minmax(0, 1fr);
+  }
+
+  @media all and ($mobile) {
+    .course-row-link {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+}

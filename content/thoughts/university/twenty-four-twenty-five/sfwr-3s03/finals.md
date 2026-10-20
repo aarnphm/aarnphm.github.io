@@ -3,9 +3,10 @@ date: '2025-04-13'
 description: and list of final notes for exams.
 id: finals
 modified: 2026-06-05 15:08:39 GMT-04:00
+seealso:
+  - '[[thoughts/university/twenty-four-twenty-five/sfwr-3s03/notes/|All lecture notes]]'
 tags:
   - sfwr3s03
 title: Finals Testing a la carte
 ---
 
-See also: [[thoughts/university/twenty-four-twenty-five/sfwr-3s03/notes/|All lecture notes]]

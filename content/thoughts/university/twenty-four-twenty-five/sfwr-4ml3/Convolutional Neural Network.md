@@ -3,12 +3,12 @@ date: '2024-12-09'
 description: convolutional neural networks exploiting sparse connectivity and locality through filters, stride, padding, and 1d/2d convolutions.
 id: Convolutional Neural Network
 modified: 2026-06-05 15:08:39 GMT-04:00
+seealso:
+  - '[[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a4/CNN.ipynb|this one assignment on CNN]]'
 tags:
   - sfwr4ml3
 title: Convolutional Neural Network
 ---
-
-See also: [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a4/CNN.ipynb|this one assignment on CNN]]
 
 > [!question] how can we exploit sparsity and locality?
 >

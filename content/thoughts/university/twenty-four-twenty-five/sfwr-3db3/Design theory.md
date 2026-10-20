@@ -3,6 +3,8 @@ date: '2024-12-13'
 description: Functional dependencies, closure, lossless decomposition, and normal forms.
 id: Design theory
 modified: 2026-09-28 09:11:47 GMT-04:00
+seealso:
+  - '[[thoughts/university/twenty-four-twenty-five/sfwr-3db3/Keys and Foreign Keys|keys]]'
 tags:
   - sfwr3db3
 title: Design theory
@@ -14,7 +16,6 @@ title: Design theory
 >
 > A _superkey_ determines every attribute of $R$. It may contain attributes that a candidate key does not need.
 
-_see also: [[thoughts/university/twenty-four-twenty-five/sfwr-3db3/Keys and Foreign Keys|keys]]_
 
 ## functional dependency
 

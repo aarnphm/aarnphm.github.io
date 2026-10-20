@@ -17,6 +17,10 @@ pdfTitles:
   '08 A RISC Architecture as Target/MIPS Slides.pdf': 'MIPS Slides'
   '08 A RISC Architecture as Target/RISC-V Reference Card.pdf': 'RISC-V Reference Data'
   '88 Assignment 2/prettyprintgrammar.pdf': 'Syntax Diagrams for Expressions'
+university:
+  summary: "This course covers lexical analysis, syntax analysis and type checking, syntax-directed translation and attribute grammars, and then code generation and optimization for real computer architectures. The notebooks build the P0 compiler in order: regular and context-free languages, parser construction, WebAssembly as a stack target, further data types and control structures, RISC-V and MIPS as register targets, code optimization, and generalized parsing. The folder holds the weekly lab and assignment notebooks, plus practice final and final exam notebooks."
+  inferred: false
+  instructors: ["Emil Sekerinski"]
 ---
 
 _Lexical analysis, syntax analysis, type checking; syntax-directed translation, attribute grammars; compiler structure; implications of computer architecture; mapping of programming language concepts; code generation and optimization._

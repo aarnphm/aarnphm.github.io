@@ -1,0 +1,57 @@
+@use '../../styles/variables.scss' as *;
+
+// a university course home: the course masthead, rail and table (course.scss) over the
+// folder's own files. This file only adds the file table columns and the inferred mark.
+.university-course {
+  .university-course-inferred {
+    display: block;
+    margin-top: var(--space-2);
+    font-family: var(--codeFont);
+    font-size: var(--text-meta);
+    color: var(--gray);
+  }
+
+  .course-main > .course-bar {
+    align-items: baseline;
+  }
+
+  .university-course-body {
+    max-width: 72ch;
+    margin: 0 0 var(--space-4);
+    font-size: var(--text-ui);
+    line-height: 1.5;
+
+    > :first-child {
+      margin-top: 0;
+    }
+  }
+
+  .university-course-table {
+    .course-part-head th a {
+      color: var(--dark);
+    }
+
+    .university-c-kind,
+    .university-c-date {
+      width: 1%;
+      white-space: nowrap;
+      font-family: var(--codeFont);
+      font-size: var(--text-meta);
+      color: var(--darkgray);
+    }
+
+    .university-c-date {
+      text-align: right;
+    }
+
+    .university-course-sub {
+      color: var(--darkgray);
+    }
+  }
+
+  @container course-spine (max-width: 30rem) {
+    .university-course-table .university-c-date {
+      display: none;
+    }
+  }
+}

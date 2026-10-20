@@ -3,12 +3,13 @@ date: '2024-02-28'
 description: using the root locus to choose a gain for a transient specification, then adding a PI or lag compensator to cut steady-state error without moving the dominant poles.
 id: Root locus control
 modified: 2026-10-09 11:00:00 GMT-04:00
+seealso:
+  - '[[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/root_locus_control.pdf|slides]]'
+  - '[[thoughts/Root locus]]'
 tags:
   - sfwr3dx4
 title: Root locus control
 ---
-
-See also [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/root_locus_control.pdf|slides]] and [[thoughts/Root locus]]
 
 The loop below puts a gain $K$ in front of the plant $G(s)$ under unity negative feedback. The closed-loop poles are the roots of $1 + KG(s) = 0$, so the [[thoughts/Root locus|root locus]] of $KG(s)$ shows every closed-loop pole placement that gain alone can reach. Design with this loop has two steps: choose $K$ for the transient, then add a compensator for the steady-state error.
 

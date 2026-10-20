@@ -3,12 +3,13 @@ date: '2024-01-09'
 description: frequency domain analysis using laplace transforms, transfer functions, stability analysis via poles, partial fraction expansion, and impedance calculations.
 id: Frequency Domain
 modified: 2026-06-05 15:08:43 GMT-04:00
+seealso:
+  - '[[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/intro.pdf|introduction slides]]'
+  - '[[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/frequency_domain.pdf|frequency domain slides]]'
 tags:
   - sfwr3dx4
 title: Frequency Domain and a la carte.
 ---
-
-See also [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/intro.pdf|introduction slides]] and [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/frequency_domain.pdf|frequency domain slides]]
 
 Open-loop versus closed-loop
 

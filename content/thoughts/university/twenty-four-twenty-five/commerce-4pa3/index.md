@@ -3,6 +3,8 @@ date: '2025-01-06'
 description: commerce capstone
 id: index
 modified: 2026-06-05 15:08:37 GMT-04:00
+seealso:
+  - '[[thoughts/university/twenty-four-twenty-five/commerce-4pa3/Tool Summary.pdf|toolkit]]'
 tags:
   - university
   - commerce4pa3
@@ -24,8 +26,11 @@ pdfTitles:
   'Tool 22 Instructions W2025 - R Cossa.pdf': 'Commerce 4PA3: Tool 22 Steps'
   'Tool Summary.pdf': 'Commerce 4PA3: Tools Summary'
   'week-3.pdf': 'Commerce 4PA3: Week 3'
+university:
+  summary: "This capstone course teaches strategic management from the general manager's view, using the Diamond-E framework to link strategy with the environment, the organization and resources, and then moving to strategic choice. Each class applies numbered analysis tools and Porter's five forces to a business case, such as Canadian Airlines. The folder holds textbook chapters, case notes, a midterm ratio sheet, Capsim simulation reports, notes from the McMaster World Congress and a final case analysis of Healthy Eats."
+  inferred: true
+  instructors: ["R Cossa"]
+  term: "winter 2025"
 ---
 
 ISBN: [281000001294B]
-
-See also [[thoughts/university/twenty-four-twenty-five/commerce-4pa3/Tool Summary.pdf|toolkit]]

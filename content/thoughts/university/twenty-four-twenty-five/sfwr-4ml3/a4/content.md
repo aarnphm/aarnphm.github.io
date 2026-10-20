@@ -3,12 +3,13 @@ date: '2024-11-11'
 description: and image processing.
 id: content
 modified: 2026-06-05 15:08:40 GMT-04:00
+seealso:
+  - '[[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a4/CNN.ipynb|jupyter notebook]]'
+  - '[[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a4/kaggle|Kaggle]]'
 tags:
   - sfwr4ml3
 title: Application of Convolutional Neural Network
 ---
-
-See also [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a4/CNN.ipynb|jupyter notebook]] and [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a4/kaggle|Kaggle]]
 
 ## Task 1: SVHN Image Classification Using CNN
 

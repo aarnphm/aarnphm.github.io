@@ -58,4 +58,9 @@ pdfTitles:
   'lec/quiz-7-sols.pdf': 'Real-Time Systems: Quiz 7 Solutions'
   'lec/Quiz8&Solutions.pdf': 'Solutions to Quiz 8: S- and Z-Transform Table'
   'lec/ReviewFinal.pdf': 'Review of Final Exam'
+university:
+  summary: "This course covers real-time systems and their use in control. It starts with real-time operating systems, processes, threads and priorities, then moves to real-time scheduling (cyclic executives, rate-monotonic and earliest-deadline-first scheduling, priority inversion and the priority inheritance and ceiling protocols), and ends with control theory: Laplace transforms, system response, root locus, PID control, z-transforms and the conversion of continuous control systems to digital ones. The folder holds the ten C labs on the NI myRIO board, from signal generation and task scheduling to shared resources, servo motor PWM and PID motor position control, plus quiz work and midterm and final notes."
+  inferred: false
+  instructors: ["Wenbo He"]
+  term: "fall 2024"
 ---

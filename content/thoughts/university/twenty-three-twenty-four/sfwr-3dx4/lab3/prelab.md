@@ -3,13 +3,13 @@ date: '2024-03-05'
 description: prelab on root mean square calculations for square wave, sawtooth, and sine wave signals, cutoff frequency of low-pass filters from bode plots.
 id: prelab
 modified: 2026-06-05 15:08:43 GMT-04:00
+seealso:
+  - '[[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab3/prelab.pdf|pdf]]'
 tags:
   - sfwr3dx4
   - lab
 title: Root mean square
 ---
-
-See also: [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab3/prelab.pdf|pdf]]
 
 ### problème 1.
 

@@ -3,12 +3,12 @@ date: '2024-02-26'
 description: Graph representations and traversal, with the invariants behind DFS, BFS, connected components, two-colouring and unweighted shortest paths.
 id: Graphs
 modified: 2026-10-12 09:12:00 GMT-04:00
+seealso:
+  - '[[thoughts/university/twenty-three-twenty-four/sfwr-2c03/elementary-graph-algorithm.pdf|slides]]'
 tags:
   - sfwr2c03
 title: Graphs
 ---
-
-See also [[thoughts/university/twenty-three-twenty-four/sfwr-2c03/elementary-graph-algorithm.pdf|slides]].
 
 A graph records which objects are related. Vertices can carry data, and edges encode the relation we chose to study. That choice determines what [[thoughts/Information Theory|information]] the graph retains. A road graph might use intersections as vertices and road segments as edges.
 

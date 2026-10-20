@@ -3,12 +3,12 @@ date: '2024-02-06'
 description: BIBO and internal stability, pole locations, and the Routh-Hurwitz test with its coefficient check and zero-row exceptions.
 id: stability
 modified: 2026-10-13 09:14:06 GMT-04:00
+seealso:
+  - '[[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/stability.pdf|slides]]'
 tags:
   - sfwr3dx4
 title: Stability and natural responses.
 ---
-
-See also [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/stability.pdf|slides]]
 
 For a continuous-time linear time-invariant state model, **asymptotic internal stability** means every zero-input state response tends to zero as $t\to\infty$. This holds exactly when every eigenvalue of $A$ has strictly negative real part.[^internal]
 

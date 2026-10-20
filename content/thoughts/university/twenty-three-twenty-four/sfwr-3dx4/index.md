@@ -46,6 +46,9 @@ pdfTitles:
   'steady_state_error_specifications.pdf': 'Steady-State Error Specification Example'
   'steady_state_error.pdf': 'Software Engineering/Mechatronics 3DX4 Slides 7: Steady-State Errors'
   'time_response.pdf': 'Software Engineering/Mechatronics 3DX4 Slides 5: Time Response'
+university:
+  summary: "This course is an introduction to control systems that uses the Nise textbook. It covers modelling in the frequency and time domains, block diagrams, time response, stability, steady-state error, root locus design, frequency response, and state space design. The folder has lecture slides and notes, five assignments, and five labs that model and control a DC motor and a ball and beam system in Simulink."
+  inferred: true
 ---
 
 External source: [theory](https://engineering.purdue.edu/~sundara2/misc/ece380_notes.pdf)

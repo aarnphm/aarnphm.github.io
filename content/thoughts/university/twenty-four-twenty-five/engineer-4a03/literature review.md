@@ -4,12 +4,13 @@ description: How we understand machine learning system is how we can move toward
 id: literature review
 modified: 2026-06-05 15:08:40 GMT-04:00
 noindex: true
+seealso:
+  - '[[posts/chatgpt|essays on ChatGPT]]'
+  - '[[thoughts/university/twenty-four-twenty-five/engineer-4a03/case study|case study on Cambridge Analytica]]'
 tags:
   - engineer4a03
 title: machine learning, from the inception of time, a literature review
 ---
-
-See also [[posts/chatgpt|essays on ChatGPT]], [[thoughts/university/twenty-four-twenty-five/engineer-4a03/case study|case study on Cambridge Analytica]]
 
 ## introduction.
 

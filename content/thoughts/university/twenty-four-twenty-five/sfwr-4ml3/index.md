@@ -3,6 +3,9 @@ date: '2024-09-10'
 description: course on machine learning covering pattern recognition, theory, and practical algorithms with annotated lecture slides.
 id: index
 modified: 2026-06-05 15:08:39 GMT-04:00
+seealso:
+  - '[[thoughts/Machine learning|machine learning]]'
+  - '[[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/lec/Lecture1.pdf|introduction]]'
 tags:
   - university
   - sfwr4ml3
@@ -25,9 +28,12 @@ pdfTitles:
   'W23-final.pdf': 'Introduction to Machine Learning: Final Exam, April 2023'
   'W23-midterm-sols.pdf': 'Introduction to Machine Learning: Midterm Exam Solutions, March 2023'
   'W23-midterm.pdf': 'Introduction to Machine Learning: Midterm Exam, March 2023'
+university:
+  summary: "This course is an introduction to machine learning in thirty lectures, from curve fitting and linear regression through maximum likelihood, probabilistic models, principal component analysis, nearest neighbours, support vector machines, logistic regression, stochastic gradient descent and convolutional neural networks, to text processing. The folder holds annotated lecture slides, tutorials, and four assignments: least squares regression, PCA and kernel PCA from scratch, SVM and logistic regression in PyTorch, and CNNs for image classification and denoising, with a Kaggle entry on CIFAR-100. It also keeps past midterm and final exams with solutions."
+  inferred: true
+  instructors: ["Hassan Ashtiani"]
+  term: "fall 2024"
 ---
-
-See also [[thoughts/Machine learning|machine learning]] and [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/lec/Lecture1.pdf|introduction]]
 
 For annotated slides check out [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/lec|annotated folders]]
 

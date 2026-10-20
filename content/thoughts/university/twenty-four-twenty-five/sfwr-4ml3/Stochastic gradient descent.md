@@ -5,13 +5,14 @@ id: Stochastic gradient descent
 modified: 2026-10-01 09:15:44 GMT-04:00
 permalinks:
   - /SGD
+seealso:
+  - '[[thoughts/university/twenty-three-twenty-four/compsci-4x03/A4|that numerical assignment on ODEs and GD]]'
+  - '[[thoughts/PyTorch#SGD|SGD implementation in PyTorch]]'
 tags:
   - sfwr4ml3
   - ml
 title: Stochastic gradient descent
 ---
-
-See also [[thoughts/university/twenty-three-twenty-four/compsci-4x03/A4|that numerical assignment on ODEs and GD]], [[thoughts/PyTorch#SGD|SGD implementation in PyTorch]]
 
 Stochastic gradient descent uses a randomly sampled gradient estimate for each update. For a training set of $n$ examples, write the **mean** loss as
 

@@ -3,12 +3,12 @@ date: '2024-03-20'
 description: prelab on root locus plotting, pole and zero locations, gain parameter effects, breakaway points, asymptotes, and controller design using pencil-and-paper method.
 id: prelab
 modified: 2026-06-05 15:08:43 GMT-04:00
+seealso:
+  - '[[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab4/lab4-prelab.pdf|problem]]'
 tags:
   - sfwr3dx4
 title: Root locus and graphical analysis
 ---
-
-See also [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab4/lab4-prelab.pdf|problem]]
 
 ## Problemè 1
 

@@ -2,6 +2,7 @@
 date: '2023-09-04'
 description: let's do this.
 id: index
+layout: university
 modified: 2026-06-05 15:08:41 GMT-04:00
 tags:
   - university

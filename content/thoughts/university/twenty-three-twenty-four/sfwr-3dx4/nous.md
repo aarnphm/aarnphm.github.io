@@ -3,12 +3,13 @@ date: '2024-02-17'
 description: control-system reference sheet for feedback, state-space models, stability, step responses, pole placement, and sampling.
 id: nous
 modified: 2026-10-13 09:04:47 GMT-04:00
+seealso:
+  - '[[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/code/tests.py|source for code]]'
+  - '[[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/code/midterm.ipynb|jupyter notebook]]'
 tags:
   - sfwr3dx4
 title: Tout ce qu'il faut savoir sur la conception des systèmes de contrôle
 ---
-
-See also [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/code/tests.py|source for code]] and [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/code/midterm.ipynb|jupyter notebook]]
 
 Book: [ISBN: 978-1-119-47422-7](https://www.wiley.com/en-us/Control+Systems+Engineering%2C+8th+Edition-p-9781119474227) and [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/Norman S. Nise - Control System Engineering-Wiley (2019).pdf|pdf]]
 

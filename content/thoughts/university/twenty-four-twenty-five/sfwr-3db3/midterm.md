@@ -87,7 +87,11 @@ b. cartesian products
 >
 > ==weak== identity we need one (or more) many-to-one (==supporting==) relationship(s) to other (supporting) entity sets
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/weak-entity.webp]]
+```jsx imports={Zoomable,WeakEntity}
+<Zoomable label="Weak entity">
+  <WeakEntity caption="Players is a weak entity; Plays-on is the identifying relationship to Teams. Salmon marks entities, sage the relationship." />
+</Zoomable>
+```
 
 Role
 
@@ -433,17 +437,11 @@ Outer join preserves dangling tuples by padding with `NULL`
 
 > A tuple of $R$ that has no tuple of $S$ which it joins is said to be `dangling`
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/left-outer-join.webp]]
-_Left outer join_
-
-![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/right-outer-join.webp]]
-_Right outer join_
-
-![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/full-outer-join.webp]]
-_full outer join_
-
-![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/inner-join.webp]]
-_inner join_
+```jsx imports={Zoomable,SqlJoin}
+<Zoomable label="SQL joins">
+  <SqlJoin caption="Course and prereq joined on course_id. Switch join kind; dangling tuples pad with null on outer joins." />
+</Zoomable>
+```
 
 ```sql
 R [NATURAL] [LEFT|RIGHT|FULL] OUTERJOIN [ON<condition>] S
@@ -461,7 +459,11 @@ R NATURAL FULL OUTERJOIN S
 
 - many views (how users see data), single _logical schema (logical structure)_ and _physical schema (files and indexes used)_
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/view-abstraction.webp]]
+```jsx imports={Zoomable,SchemaLayers}
+<Zoomable label="Three-schema architecture">
+  <SchemaLayers caption="External views map to one conceptual schema, then one physical schema over storage. Salmon is conceptual, sage physical." />
+</Zoomable>
+```
 
 ==virtual== views _does not stored in database_ (think of query for constructing relations)
 
@@ -489,7 +491,11 @@ DS: B+ Tree Index or Hash-based Index
 
 note: each node are at least 50% full
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/b-plus-tree.webp]]
+```jsx imports={Zoomable,BPlusTree}
+<Zoomable label="B+ tree">
+  <BPlusTree caption="Root keys 30 and 65; Level 2 holds internal index nodes; Level 3 holds leaf data entries. Salmon marks the root." />
+</Zoomable>
+```
 
 > [!important] cost
 >

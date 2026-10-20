@@ -3,12 +3,13 @@ date: '2024-02-28'
 description: pay surveys, market competitors, external competitiveness, broadbanding, and employee benefits including flexible work arrangements and parental leave.
 id: Designing Pay Levels  and Employee Benefits
 modified: 2026-06-05 15:08:37 GMT-04:00
+seealso:
+  - '[[thoughts/university/twenty-three-twenty-four/commerce-4be3/Designing Pay Levels, Pay Mix and Pay Structure.pdf|Designing Pay Levels, Pay Mix and Pay Structure]]'
+  - '[[thoughts/university/twenty-three-twenty-four/commerce-4be3/Pay Employment Benefits.pdf|Pay Employment Benefits]]'
 tags:
   - commerce4be3
 title: Designing Pay Levels and Employee Benefits
 ---
-
-See also [[thoughts/university/twenty-three-twenty-four/commerce-4be3/Designing Pay Levels, Pay Mix and Pay Structure.pdf|Designing Pay Levels, Pay Mix and Pay Structure]] and [[thoughts/university/twenty-three-twenty-four/commerce-4be3/Pay Employment Benefits.pdf|Pay Employment Benefits]]
 
 ## decision for externally competitive pay levels and structure.
 
