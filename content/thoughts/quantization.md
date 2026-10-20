@@ -21,7 +21,11 @@ Keep the formats separate:
 
 Post-training quantization uses a trained model. Conversion can happen offline or while loading it; the name describes its relation to training.
 
-![[thoughts/images/quantisation-format.webp|from baseten introduction into quantization format]]
+```jsx imports={Zoomable,NumberFormatBits}
+<Zoomable label="Number format bit layouts">
+  <NumberFormatBits caption="Bit layouts of seven formats, after the figure from baseten introduction into quantization format, recomputed here for an input $x$. Each row has one cell per bit on a shared 32-bit scale. The sign, exponent and fraction fields are three steps of ink, and a solid square marks a set bit. Floating-point rows round to nearest, ties to even. FP32, BF16 and FP16 overflow to infinity; the FP8 and FP4 rows saturate to their largest finite value. INT8 uses the symmetric example below, $S=1/127$ and $[-127,127]$. Select an input, then select a row: its name turns salmon, its ground turns pale sage, and the table decodes its bits." />
+</Zoomable>
+```
 
 ## metrics for calibration
 
@@ -129,9 +133,19 @@ $$
 
 Here $Q_{\mathrm{E2M1}}$ rounds to the element format and clamps finite overflow to $\pm6$. The exponent rule can still clip: a block maximum of $7$ gives $S=1$ and reconstructs as $6$. An all-zero block needs a separate case, such as $S=1$ and all $P_i=0$, because $\log_2 0$ is undefined. The paper presents a conversion recipe; the format allows other recipes.
 
+```jsx imports={Zoomable,MXBlockScale}
+<Zoomable label="MX block scale">
+  <MXBlockScale caption="One MX block of 32 synthetic values: standard normal draws from a fixed seed, with element 11 replaced by $7$ (the example above) or by an outlier of $24$. The shared exponent follows the conversion above. Elements round to nearest, ties to even, and clamp at the largest level. Outlines are the inputs $V_i$, sage fills are the dequantized $\hat V_i=SP_i$, and the salmon fill is the block maximum that sets $S$. Ticks on the value axis mark every level $SP$ that the block can hold. The error strip shows $\hat V_i-V_i$ on its own axis. Change the element format or the block and watch small values flush to zero." />
+</Zoomable>
+```
+
 MX formats apply to both training and inference. A format definition alone gives no guarantee that a particular model trains or retains its accuracy at four bits. The paper evaluates several MX precisions across different workloads.
 
-![[thoughts/images/compute-flow-mxformat.webp]]
+```jsx imports={Zoomable,MXComputeFlow}
+<Zoomable label="MX compute flow">
+  <MXComputeFlow caption="The three matrix products of one training step for layer $i$, after Figure 2 of Microscaling Data Formats for Deep Learning; this computed figure replaces that image. Each operand is drawn element by element with $M=32$, $K=64$ and $N=32$. Each grey strip is one block of 32 values that share an E8M0 scale, and blocks run along the reduction axis of the product, marked $Q$. The salmon row and column meet at the salmon output element. The operands are MXFP4 copies of synthetic BF16 tensors: activations with two outlier channels, Gaussian weights, and output gradients with one scale per token. The readout accumulates products without rounding; in the training flow the outputs are stored as BF16. Quantization and transposition do not commute, so each tensor needs a second MX copy for the backward pass. The table counts the values where the two copies differ, and pale sage marks the copies that the selected product uses. Vector operations (activations, normalization, softmax, residual add) stay in BF16, and the optimizer updates an FP32 master copy of the weights. Select a product." />
+</Zoomable>
+```
 
 Stochastic rounding is a separate choice. Between adjacent levels, rounding probabilities can preserve the input in expectation, provided it is in range. Individual samples still lose information, and clipping still introduces bias. [Gupta et al.](https://arxiv.org/abs/1502.02551)
 

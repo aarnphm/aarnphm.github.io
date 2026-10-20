@@ -1,0 +1,265 @@
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
+@use './figure.scss' as *;
+
+// Fields read as three steps of one ink tone; a set bit is a solid ink square inside its cell.
+.number-format-bits {
+  @include figure-frame('nfb-figure', 36rem);
+
+  --nfb-sign: color-mix(in srgb, var(--dark) 40%, var(--light));
+  --nfb-exp: color-mix(in srgb, var(--dark) 20%, var(--light));
+  --nfb-frac: color-mix(in srgb, var(--dark) 9%, var(--light));
+  --nfb-on: var(--dark);
+  --nfb-lit: color-mix(in srgb, var(--fig-salmon) 80%, var(--light));
+  --nfb-segment-on: var(--fig-grid-selected);
+}
+
+:root[saved-theme='dark'] .number-format-bits {
+  --nfb-sign: color-mix(in srgb, var(--dark) 46%, var(--lightgray));
+  --nfb-exp: color-mix(in srgb, var(--dark) 24%, var(--lightgray));
+  --nfb-frac: color-mix(in srgb, var(--dark) 6%, var(--lightgray));
+  --nfb-lit: color-mix(in srgb, var(--fig-salmon) 26%, var(--lightgray));
+  --nfb-segment-on: color-mix(in srgb, var(--fig-sage) 22%, var(--lightgray));
+}
+
+.nfb-segments {
+  @include figure-grid;
+  grid-auto-flow: column;
+  width: max-content;
+  max-width: 100%;
+  min-width: 0;
+  position: relative;
+  margin-top: 1.1rem;
+}
+
+.nfb-legend,
+.nfb-rows-legend {
+  position: absolute;
+  top: -1.15rem;
+  left: 0;
+  padding: 0;
+  color: var(--fig-note);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.nfb-segment {
+  @include figure-grid-cell;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.28rem 0.6rem;
+  color: var(--fig-tab-fg);
+  cursor: pointer;
+  font-size: 0.78rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  transition:
+    background-color 140ms ease,
+    color 140ms ease;
+
+  .katex {
+    font-size: 1em;
+  }
+
+  &:hover,
+  &:has(input:checked) {
+    color: var(--dark);
+  }
+
+  &:has(input:checked) {
+    background: var(--nfb-segment-on);
+  }
+}
+
+.nfb-segment,
+.nfb-row {
+  input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    pointer-events: none;
+  }
+
+  &:has(input:focus-visible) {
+    outline: 2px solid var(--dark);
+    outline-offset: -2px;
+  }
+}
+
+.nfb-rows {
+  @include figure-grid;
+  position: relative;
+  margin-top: 1.9rem;
+  min-width: 0;
+}
+
+.nfb-row {
+  @include figure-grid-cell;
+  display: grid;
+  grid-template-columns: 5.4rem minmax(0, 1fr) 6.4rem;
+  gap: 0.6rem;
+  align-items: center;
+  padding: 0.3rem 0.55rem 0.3rem 0;
+  cursor: pointer;
+  transition: background-color 140ms ease;
+
+  &:has(input:checked) {
+    background: var(--fig-grid-selected);
+  }
+}
+
+.nfb-name {
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  padding: 0 0.55rem;
+  color: var(--dark);
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  white-space: nowrap;
+  transition: background-color 140ms ease;
+
+  .nfb-row:has(input:checked) & {
+    background: var(--nfb-lit);
+    font-weight: 600;
+  }
+}
+
+// Every row shares one 32-column grid, so a row's length is its bit width.
+.nfb-bits {
+  display: grid;
+  grid-template-columns: repeat(32, minmax(0, 1fr));
+  gap: 1px;
+}
+
+.nfb-bit,
+.nfb-swatch {
+  position: relative;
+  aspect-ratio: 1;
+  background: var(--nfb-frac);
+
+  &[data-nfb-field='s'] {
+    background: var(--nfb-sign);
+  }
+
+  &[data-nfb-field='e'] {
+    background: var(--nfb-exp);
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 24%;
+    background: var(--nfb-on);
+    opacity: 0;
+    transition: opacity 160ms ease;
+  }
+
+  &[data-nfb-on='1']::after {
+    opacity: 1;
+  }
+}
+
+.nfb-dec {
+  color: var(--dark);
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.nfb-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 1rem;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--fig-note);
+  font-size: 0.72rem;
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0;
+  }
+}
+
+.nfb-swatch {
+  width: 0.8rem;
+}
+
+.nfb-detail {
+  margin-top: 1rem;
+}
+
+.nfb-eq {
+  min-width: 0;
+  overflow-x: auto;
+  color: var(--dark);
+  font-size: 0.85rem;
+
+  .katex-display {
+    margin: 0;
+  }
+}
+
+.nfb-readout {
+  @include figure-table(max-content minmax(0, 1fr) max-content minmax(0, 1fr));
+  margin-top: 0.75rem;
+
+  dd[data-nfb-out='outcome'] {
+    font-family: inherit;
+    text-align: right;
+  }
+}
+
+.nfb-math {
+  @include figure-inline-math;
+}
+
+.nfb-caption {
+  @include figure-caption;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nfb-segment,
+  .nfb-row,
+  .nfb-name,
+  .nfb-bit::after {
+    transition: none;
+  }
+}
+
+@container nfb-figure (max-width: 520px) {
+  .nfb-segments {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  // The bits take the full row width; the name and value share the line above them.
+  .nfb-row {
+    grid-template-columns: max-content minmax(0, 1fr);
+    row-gap: 0.3rem;
+    padding: 0 0.45rem 0.4rem 0;
+  }
+
+  .nfb-name {
+    padding: 0.2rem 0.45rem;
+  }
+
+  .nfb-bits {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    padding-left: 0.45rem;
+  }
+
+  .nfb-readout {
+    grid-template-columns: max-content minmax(0, 1fr);
+  }
+}
