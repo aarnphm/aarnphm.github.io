@@ -68,7 +68,13 @@ For the standard inputs below, substitute their Laplace transforms into the erro
 
 The factor of $1/2$ in the parabola matters. Using $r(t)=t^2$ doubles its Laplace transform and its error. More generally, multiplying an input by $A$ multiplies its error by $A$.
 
-![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/steady-state error table.webp]]
+| Input                          | Steady-state error formula | Type 0 static error constant | Type 0 error      | Type 1 static error constant | Type 1 error    | Type 2 static error constant | Type 2 error    |
+| ------------------------------ | -------------------------- | ---------------------------- | ----------------- | ---------------------------- | --------------- | ---------------------------- | --------------- |
+| Step, $u(t)$                   | $\frac{1}{1+K_p}$          | $K_p=$ Constant              | $\frac{1}{1+K_p}$ | $K_p=\infty$                 | $0$             | $K_p=\infty$                 | $0$             |
+| Ramp, $tu(t)$                  | $\frac{1}{K_v}$            | $K_v=0$                      | $\infty$          | $K_v=$ Constant              | $\frac{1}{K_v}$ | $K_v=\infty$                 | $0$             |
+| Parabola, $\frac{1}{2}t^2u(t)$ | $\frac{1}{K_a}$            | $K_a=0$                      | $\infty$          | $K_a=0$                      | $\infty$        | $K_a=$ Constant              | $\frac{1}{K_a}$ |
+
+Table 7.2.
 
 Read this table after the stability check. Its $\infty$ entries mean the error grows without bound, so there is no finite steady state. For a stable unity-feedback loop, type $1$ gives zero final error for a step; type $2$ gives zero final error for a ramp. Each uncanceled integrator increases low-frequency gain, allowing the output to track a higher-degree polynomial reference without a lasting offset.[^type]
 

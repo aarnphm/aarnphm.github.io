@@ -265,7 +265,14 @@ your 64k context just made attention compute 70-80% of total latency. most spars
 
 NSA solves both: natively trainable, hardware-aligned sparsity.
 
-![[thoughts/images/native-sparse-attention.webp]]
+```jsx imports={Zoomable,SparseAttentionMask}
+<Zoomable label="Native sparse attention branches">
+  <SparseAttentionMask
+    mode="nsa"
+    caption="The three NSA branches and their masks on a causal grid of 64 toy tokens, after NSA Figure 2. Compressed keys summarise blocks of $l=4$ at stride $d=2$; selection keeps the top-$n$ blocks of $l'=8$ keys, with the initial and 2 local blocks always kept; the sliding window keeps the last $w=24$ keys. Learned gates mix the three outputs. Salmon marks the keys that query $t$ reads, sage the keys that other queries read. Block scores come from synthetic keys and queries with a fixed seed. Toy values are scaled down from the paper ($l=32$, $d=16$, $l'=64$, $n=16$, $w=512$); at 64 tokens the branches overlap and $N_t$ can exceed $t+1$, so read the savings in the $32\mathrm{k}$ and $128\mathrm{k}$ columns. Switch the pattern to see each branch, or DSA for comparison, and drag $t$ to move the query."
+  />
+</Zoomable>
+```
 
 **three-branch architecture**:
 

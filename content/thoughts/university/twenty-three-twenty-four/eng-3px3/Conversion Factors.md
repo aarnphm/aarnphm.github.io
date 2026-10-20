@@ -81,7 +81,17 @@ Correct this failure with policies:
 ### health costs.
 
 - difficult to answer this, but most common pollutants: $PM_{2.5}$ (fine particulate matter) and $NO$ (Nitrogen oxides)
-  ![[thoughts/university/twenty-three-twenty-four/eng-3px3/table-health-costs.webp]]
+
+|                                                                         | $PM_{2.5}$ | $NO_x$   | Source                                |
+| ----------------------------------------------------------------------- | ---------- | -------- | ------------------------------------- |
+| Health cost per year (Billions of 2015 CAD)                             | 77         | 7        | 2019 Health Canada study              |
+| Emissions per year (million tonnes in 2015)                             | 1.6        | 1.8      | Health Canada Report citing ECCC 2020 |
+| Cost per tonne (thousands of CAD)                                       | 48.125     | 16.38889 | Calculation                           |
+| Light duty gas car & truck emissions per year in 2015 (tonnes)          | 2300       | 114000   | ECCC 2020 report                      |
+| % of total emissions from personal vehicles                             | 0.144%     | 6.333%   | Calculation                           |
+| Health Cost from all Personal Vehicles per Year (Millions of CAD)       | 110.7      | 443.3    | Calculation                           |
+| Total distance driven by all personal vehicles in 2015 (billions of km) | 324        | 324      | Stats Canada                          |
+| Therefore: Health Cost per km driven (\$)                               | 0.0003     | 0.0014   | Calculation                           |
 
 ### ethical consideration
 

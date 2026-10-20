@@ -1,0 +1,220 @@
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
+@use './figure.scss' as *;
+
+.block-diagram {
+  @include figure-frame('bd-figure', 30rem);
+
+  --bd-lit: var(--fig-salmon);
+  --bd-done: color-mix(in srgb, var(--fig-sage) 90%, var(--light));
+  --bd-segment-on: var(--fig-grid-selected);
+}
+
+:root[saved-theme='dark'] .block-diagram {
+  --bd-lit: color-mix(in srgb, var(--fig-salmon) 46%, var(--lightgray));
+  --bd-done: color-mix(in srgb, var(--fig-sage) 26%, var(--lightgray));
+  --bd-segment-on: color-mix(in srgb, var(--fig-sage) 22%, var(--lightgray));
+}
+
+.bd-segments {
+  @include figure-grid;
+  grid-auto-flow: column;
+  width: fit-content;
+  max-width: 100%;
+  min-width: 0;
+  position: relative;
+  margin-top: 1.1rem;
+  margin-bottom: 0.6rem;
+}
+
+.bd-legend {
+  position: absolute;
+  top: -1.15rem;
+  left: 0;
+  padding: 0;
+  color: var(--fig-note);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.bd-segment {
+  @include figure-grid-cell;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.28rem 0.55rem;
+  color: var(--fig-tab-fg);
+  cursor: pointer;
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  transition:
+    background-color 140ms ease,
+    color 140ms ease;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    pointer-events: none;
+  }
+
+  &:has(input:checked) {
+    background: var(--bd-segment-on);
+    color: var(--dark);
+  }
+
+  &:has(input:focus-visible) {
+    outline: 2px solid var(--dark);
+    outline-offset: -2px;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .bd-segment:hover {
+    color: var(--dark);
+  }
+}
+
+.bd-variant[hidden],
+.bd-step[hidden] {
+  display: none;
+}
+
+.bd-svg {
+  display: block;
+  width: 100%;
+  margin: 0.5rem auto 0;
+  overflow: visible;
+
+  .bd-wire {
+    fill: none;
+    stroke: var(--dark);
+    stroke-width: 1.3;
+  }
+
+  .bd-arrowhead,
+  .bd-dot {
+    fill: var(--dark);
+  }
+
+  .bd-block rect,
+  .bd-sum circle {
+    fill: var(--light);
+    stroke: var(--dark);
+    stroke-width: 1.3;
+    transition: fill 180ms ease;
+  }
+
+  .bd-sampler-ground {
+    fill: transparent;
+    transition: fill 180ms ease;
+  }
+
+  [data-state='lit'] rect,
+  [data-state='lit'] circle {
+    fill: var(--bd-lit);
+  }
+
+  [data-state='done'] rect,
+  [data-state='done'] circle {
+    fill: var(--bd-done);
+  }
+
+  .bd-sign,
+  .bd-t {
+    fill: var(--dark);
+    font-family: var(--codeFont);
+    font-size: 12px;
+  }
+
+  .bd-t {
+    font-family: KaTeX_Math, serif;
+    font-style: italic;
+    font-size: 13px;
+  }
+}
+
+.bd-fo {
+  @include figure-fo;
+  justify-content: center;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.bd-text {
+  margin: 0.75rem 0 0;
+  color: var(--fig-note);
+  font-size: 0.78rem;
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+.bd-eq {
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  color: var(--dark);
+
+  .katex-display {
+    margin: 0.4rem 0;
+  }
+
+  .katex {
+    font-size: 1em;
+  }
+}
+
+.bd-readout {
+  @include figure-table;
+  margin-top: 0.6rem;
+
+  dd {
+    overflow-x: auto;
+  }
+}
+
+.bd-math {
+  @include figure-inline-math;
+}
+
+.bd-caption {
+  @include figure-caption;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bd-svg .bd-block rect,
+  .bd-svg .bd-sum circle,
+  .bd-svg .bd-sampler-ground,
+  .bd-segment {
+    transition: none;
+  }
+}
+
+@container bd-figure (max-width: 460px) {
+  .bd-segments {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .bd-segment {
+    justify-content: flex-start;
+    padding: 0.28rem 0.4rem;
+  }
+
+  .bd-segment:last-of-type:nth-of-type(odd) {
+    grid-column: 1 / -1;
+  }
+
+  .bd-segments:not(.bd-segments--steps) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .bd-eq {
+    font-size: 0.82rem;
+  }
+}

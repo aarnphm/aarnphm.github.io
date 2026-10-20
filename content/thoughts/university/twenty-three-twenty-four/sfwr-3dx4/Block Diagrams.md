@@ -110,10 +110,22 @@ title: Block Diagrams
 
 ## Feedback loop
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/feedback-loop-transfer-function.webp]]
+```jsx imports={Zoomable,BlockDiagram}
+<Zoomable label="Feedback loop reduction">
+  <BlockDiagram config="feedback"
+    caption="Forward block $H_1$ with feedback block $H_2$. Choose the sign of the fed-back $y_2$, then step through the reduction; salmon marks the parts the current rule acts on. Negative feedback reduces to $H_1/(1+H_1H_2)$, positive feedback to $H_1/(1-H_1H_2)$."
+  />
+</Zoomable>
+```
 
 ## Moving through summing junction
 
-![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/summing junction.webp]]
+```jsx imports={Zoomable,BlockDiagram}
+<Zoomable label="Moving a block past a summing junction">
+  <BlockDiagram config="summing-junction"
+    caption="Moving a block past a summing junction, after Figure 5.7 of the course slides. Choose (a) or (b), then step from the diagram to the move; salmon marks the junction and the block the move adds to the side input $X(s)$. The readout expands the output each diagram draws, and equal expansions show the two diagrams are equivalent."
+  />
+</Zoomable>
+```
 
 ## Reduction via Familiar Forms

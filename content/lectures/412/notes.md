@@ -204,28 +204,13 @@ where $v_j$ is the $j$th column of $V^\top$. Each neuron contributes a rank-one 
 > - Effective rank $r_{\text{eff}} = \exp\!\big(-\sum_i p_i \log p_i\big)$ with $p_i = \sigma_i^2 / \sum_j \sigma_j^2$ summarises the decay; it stays small for copy heads and grows when heads mix many directions.
 > - The cumulative energy $E_k = \sum_{i\le k}\sigma_i^2 / \sum_i \sigma_i^2$ tells you how many singular directions you need to capture a target fraction of variance.
 > - The diagnostic script [[lectures/412/tools#scripts]] computes these curves, logs spectra, and now measures effective rank so you can separate low-rank copiers from high-rank mixers in practice.
-> - Example below: layer 12 head 8 on the prompt "The true meaning of life is absurdity, and suffering" shows both spectrum and attention routing for the same head.
->
-> ![[thoughts/images/Qwen3-0.6B_layer12_head8.webp]]
-> ![[thoughts/images/Qwen3-0.6B_layer12_head8_heatmap.webp]]
->
-> ![[thoughts/images/Qwen3-0.6B_layer22_head4.webp]]
-> ![[thoughts/images/Qwen3-0.6B_layer22_head4_heatmap.webp]]
->
-> ![[thoughts/images/Qwen3-0.6B_layer22_head8.webp]]
-> ![[thoughts/images/Qwen3-0.6B_layer22_head8_heatmap.webp]]
->
-> ![[thoughts/images/Qwen3-0.6B_layer3_head3.webp]]
-> ![[thoughts/images/Qwen3-0.6B_layer3_head3_heatmap.webp]]
->
-> ![[thoughts/images/Qwen3-0.6B_layer3_head6.webp]]
-> ![[thoughts/images/Qwen3-0.6B_layer3_head6_heatmap.webp]]
->
-> ![[thoughts/images/Qwen3-0.6B_layer3_head8.webp]]
-> ![[thoughts/images/Qwen3-0.6B_layer3_head8_heatmap.webp]]
->
-> ![[lectures/412/images/qwen3-0.6b_layer12_head8_absurdity_spectrum.webp]]
-> ![[lectures/412/images/qwen3-0.6b_layer12_head8_absurdity_heatmap.webp]]
+> - Example below: six heads of Qwen3-0.6B, with the $W_{OV}$ spectrum and the attention routing of the same head on the prompt "The true meaning of life is absurdity, and suffering". Layer 12 head 8 has the largest gap $\sigma_1/\sigma_2 \approx 1.9$ and the smallest $r_{\text{eff}} \approx 83$.
+
+```jsx imports={Zoomable,HeadSpectrum}
+<Zoomable label="W_OV spectrum and attention per head">
+  <HeadSpectrum caption="Six heads of Qwen3-0.6B (16 query heads, 8 KV heads, $d_{\text{model}}=1024$, $d_{\text{head}}=128$), computed on CPU by export_head_spectra.py with the extraction in latent_projection.py. Top: singular values $\sigma_i$ of $W_{OV}^{(h)} = W_O^{(h)} W_V^{(\lfloor h/2 \rfloor)}$ on a log scale; the selected head is ink, the other five are soft lines. The cliff after $i=128$ is the rank $d_{\text{head}}$; values past it are float32 round-off. Middle: cumulative energy $E_k = \sum_{i\le k}\sigma_i^2 / \sum_i \sigma_i^2$ for $k \le 128$. Drag the salmon handle or use the arrow keys to move $k$; the salmon points read $\sigma_k$ and $E_k$, and sage marks the $k$ directions that a rank-$k$ truncation keeps. The thin rule marks $r_{\text{eff}} = \exp(-\sum_i p_i \log p_i)$ with $p_i = \sigma_i^2/\sum_j \sigma_j^2$. Bottom: softmax attention of the same head on “The true meaning of life is absurdity, and suffering” (comma, 11 tokens) or the prompt without the comma (10 tokens); the spectrum does not depend on the prompt. Rows are target tokens and columns source tokens; a cell shades from paper to ink with its weight, and an empty cell is a masked future token. Hover a cell, or focus the grid and use the arrow keys, to read its weight." />
+</Zoomable>
+```
 
 [^embed-proof]: This condition is finite and exact for a fixed vocabulary and context window. a direct-sum assumption on the token-difference and position-difference spans would be sufficient, though stronger than necessary.
 

@@ -1,0 +1,226 @@
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
+@use './figure.scss' as *;
+
+.rel-alg-tree {
+  @include figure-frame('rat-figure', 36rem);
+
+  --rat-lit: var(--fig-salmon);
+  --rat-done: color-mix(in srgb, var(--fig-sage) 50%, var(--light));
+  --rat-kept: color-mix(in srgb, var(--fig-sage) 40%, var(--light));
+}
+
+:root[saved-theme='dark'] .rel-alg-tree {
+  --rat-lit: color-mix(in srgb, var(--fig-salmon) 46%, var(--lightgray));
+  --rat-done: color-mix(in srgb, var(--fig-sage) 26%, var(--lightgray));
+  --rat-kept: color-mix(in srgb, var(--fig-sage) 20%, var(--lightgray));
+}
+
+.rat-tree {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.rat-legend {
+  padding: 0;
+  margin-bottom: 0.5rem;
+  color: var(--fig-note);
+  font-size: 0.72rem;
+}
+
+.rat-svg {
+  display: block;
+  width: 100%;
+  margin: 0 auto;
+  overflow: visible;
+
+  .rat-edge {
+    fill: none;
+    stroke: var(--fig-stroke-soft);
+    stroke-width: 1.2;
+    transition: stroke 160ms ease;
+
+    &[data-state='on'] {
+      stroke: var(--dark);
+    }
+  }
+
+  .rat-node rect {
+    fill: var(--light);
+    stroke: var(--fig-stroke);
+    stroke-width: 1.2;
+    transition:
+      fill 160ms ease,
+      stroke 160ms ease;
+  }
+
+  .rat-node[data-state='done'] rect {
+    fill: var(--rat-done);
+    stroke: var(--dark);
+  }
+
+  .rat-node[data-state='lit'] rect {
+    fill: var(--rat-lit);
+    stroke: var(--dark);
+    stroke-width: 1.6;
+  }
+}
+
+.rat-fo {
+  @include figure-fo;
+  justify-content: center;
+  position: relative;
+  box-sizing: border-box;
+  cursor: pointer;
+  font-size: 14px;
+  white-space: nowrap;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    pointer-events: none;
+  }
+
+  &:has(input:focus-visible) {
+    outline: 2px solid var(--dark);
+    outline-offset: -3px;
+  }
+}
+
+.rat-panel[hidden] {
+  display: none;
+}
+
+.rat-expr {
+  margin-top: 0.9rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  font-size: 0.9rem;
+  color: var(--dark);
+
+  .katex-display {
+    margin: 0.3rem 0;
+  }
+
+  .katex {
+    font-size: 1em;
+  }
+}
+
+.rat-text {
+  margin: 0.5rem 0 0;
+  color: var(--fig-note);
+  font-size: 0.78rem;
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+.rat-tables {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0.9rem 1.2rem;
+  margin-top: 0.8rem;
+}
+
+.rat-card {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.rat-card-title {
+  @include figure-card-heading;
+}
+
+.rat-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.rat-table {
+  border-collapse: collapse;
+  margin: 0;
+  font-size: 0.74rem;
+  line-height: 1.3;
+
+  th,
+  td {
+    border: 1px solid var(--fig-grid-line);
+    padding: 0.3rem 0.5rem;
+    background: var(--fig-grid-cell);
+    color: var(--dark);
+    text-align: left;
+    white-space: nowrap;
+    transition: background-color 160ms ease;
+  }
+
+  th {
+    color: var(--fig-note);
+    font-weight: 600;
+  }
+
+  td {
+    font-family: var(--codeFont);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .rat-test .katex {
+    font-size: 1em;
+  }
+
+  tr[data-kept='true'] td {
+    background: var(--rat-kept);
+  }
+}
+
+.rat-empty {
+  margin: 0.3rem 0 0;
+  color: var(--fig-note);
+  font-size: 0.74rem;
+}
+
+.rat-math {
+  @include figure-inline-math;
+}
+
+.rat-caption {
+  @include figure-caption;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rat-svg .rat-edge,
+  .rat-svg .rat-node rect,
+  .rat-table th,
+  .rat-table td {
+    transition: none;
+  }
+}
+
+// The outline replaces the tree where the tree's labels would shrink below reading size.
+.rat-svg--narrow {
+  display: none;
+}
+
+@container rat-figure (max-width: 460px) {
+  .rat-svg--wide {
+    display: none;
+  }
+
+  .rat-svg--narrow {
+    display: block;
+    margin: 0;
+  }
+
+  .rat-expr {
+    font-size: 0.78rem;
+  }
+
+  .rat-tables {
+    gap: 0.7rem;
+  }
+}

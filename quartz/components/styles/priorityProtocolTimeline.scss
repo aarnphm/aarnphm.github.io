@@ -1,0 +1,329 @@
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
+@use './figure.scss' as *;
+
+.priority-protocol-timeline {
+  @include figure-frame('ppt-figure', 42rem);
+
+  --ppt-run: color-mix(in srgb, var(--lightgray) 70%, var(--light));
+  --ppt-held: color-mix(in srgb, var(--fig-sage) 80%, var(--light));
+  --ppt-inherit: color-mix(in srgb, var(--fig-salmon) 85%, var(--light));
+  --ppt-segment-on: var(--fig-grid-selected);
+
+  [hidden] {
+    display: none;
+  }
+}
+
+:root[saved-theme='dark'] .priority-protocol-timeline {
+  --ppt-run: color-mix(in srgb, var(--gray) 30%, var(--lightgray));
+  --ppt-held: color-mix(in srgb, var(--fig-sage) 34%, var(--lightgray));
+  --ppt-inherit: color-mix(in srgb, var(--fig-salmon) 38%, var(--lightgray));
+  --ppt-segment-on: color-mix(in srgb, var(--fig-sage) 22%, var(--lightgray));
+}
+
+.ppt-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.25rem;
+  align-items: flex-end;
+}
+
+.ppt-segments {
+  @include figure-grid;
+  grid-auto-flow: column;
+  min-width: 0;
+  position: relative;
+  margin-top: 1.1rem;
+}
+
+.ppt-legend {
+  position: absolute;
+  top: -1.15rem;
+  left: 0;
+  padding: 0;
+  color: var(--fig-note);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.ppt-segment {
+  @include figure-grid-cell;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.28rem 0.6rem;
+  color: var(--fig-tab-fg);
+  cursor: pointer;
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  transition:
+    background-color 140ms ease,
+    color 140ms ease;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    pointer-events: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      color: var(--dark);
+    }
+  }
+
+  &:has(input:checked) {
+    background: var(--ppt-segment-on);
+    color: var(--dark);
+  }
+
+  &:has(input:focus-visible) {
+    outline: 2px solid var(--dark);
+    outline-offset: -2px;
+  }
+}
+
+.ppt-note,
+.ppt-rule {
+  margin: 0.75rem 0 0;
+  color: var(--fig-note);
+  font-size: 0.78rem;
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+.ppt-rule {
+  margin-top: 0.4rem;
+  color: var(--dark);
+}
+
+// Below this width the time labels fall under 7px, so the chart scrolls inside the frame.
+.ppt-scroll {
+  margin: 0.5rem 0 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.ppt-svg {
+  display: block;
+  width: 100%;
+  min-width: 30rem;
+
+  text {
+    font-family: var(--codeFont);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ppt-task {
+    fill: var(--dark);
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .ppt-task-sub {
+    font-size: 8px;
+  }
+
+  .ppt-baseline,
+  .ppt-axis {
+    stroke: var(--fig-stroke-soft);
+    stroke-width: 1;
+  }
+
+  .ppt-axis {
+    stroke: var(--fig-stroke);
+  }
+
+  .ppt-tick {
+    stroke: var(--fig-stroke);
+    stroke-width: 1;
+  }
+
+  .ppt-axis-label {
+    fill: var(--fig-note);
+    font-size: 8.5px;
+  }
+
+  .ppt-release {
+    fill: var(--dark);
+  }
+
+  .ppt-seg {
+    stroke: var(--fig-stroke);
+    stroke-width: 0.8;
+  }
+
+  .ppt-seg--run {
+    fill: var(--ppt-run);
+  }
+
+  .ppt-seg--held {
+    fill: var(--ppt-held);
+  }
+
+  .ppt-seg--inherit {
+    fill: var(--ppt-inherit);
+    stroke: var(--dark);
+  }
+
+  .ppt-prio {
+    fill: var(--dark);
+    font-size: 9px;
+    pointer-events: none;
+  }
+
+  .ppt-wait {
+    fill: none;
+    stroke: var(--dark);
+    stroke-width: 0.8;
+  }
+
+  .ppt-mark line {
+    stroke: var(--dark);
+    stroke-width: 1.2;
+  }
+
+  .ppt-mark text {
+    fill: var(--dark);
+    font-size: 8px;
+  }
+
+  .ppt-mark--wait text {
+    fill: var(--fig-note);
+  }
+
+  .ppt-deadlock line {
+    stroke: var(--dark);
+    stroke-width: 1.4;
+  }
+
+  .ppt-deadlock text {
+    fill: var(--dark);
+    font-size: 9px;
+    font-weight: 600;
+  }
+}
+
+.ppt-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 1rem;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--fig-note);
+  font-size: 0.72rem;
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0;
+  }
+}
+
+.ppt-swatch {
+  display: inline-block;
+  width: 0.9rem;
+  height: 0.6rem;
+  box-sizing: border-box;
+  border: 1px solid var(--fig-stroke);
+}
+
+.ppt-swatch--run {
+  background: var(--ppt-run);
+}
+
+.ppt-swatch--held {
+  background: var(--ppt-held);
+}
+
+.ppt-swatch--inherit {
+  background: var(--ppt-inherit);
+  border-color: var(--dark);
+}
+
+.ppt-swatch--wait {
+  height: 0.3rem;
+  border-color: var(--dark);
+}
+
+.ppt-table {
+  width: 100%;
+  margin: 0.9rem 0 0;
+  border-collapse: collapse;
+  font-size: 0.74rem;
+  font-variant-numeric: tabular-nums;
+
+  th,
+  td {
+    border: 1px solid var(--fig-grid-line);
+    padding: 0.28rem 0.45rem;
+    text-align: left;
+    line-height: 1.35;
+    vertical-align: baseline;
+  }
+
+  thead th {
+    color: var(--fig-note);
+    font-weight: 400;
+  }
+
+  tbody td {
+    color: var(--dark);
+    font-family: var(--codeFont);
+  }
+
+  .ppt-by,
+  .ppt-outcome {
+    font-family: inherit;
+  }
+}
+
+.ppt-readout {
+  @include figure-table;
+  margin-top: 0.9rem;
+}
+
+.ppt-math {
+  @include figure-inline-math;
+}
+
+.ppt-caption {
+  @include figure-caption;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ppt-segment {
+    transition: none;
+  }
+}
+
+@container ppt-figure (max-width: 480px) {
+  .ppt-segments {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .ppt-segment {
+    padding: 0.28rem 0.3rem;
+    white-space: normal;
+    text-align: center;
+  }
+
+  .ppt-table {
+    font-size: 0.68rem;
+
+    th,
+    td {
+      padding: 0.24rem 0.3rem;
+    }
+  }
+}
