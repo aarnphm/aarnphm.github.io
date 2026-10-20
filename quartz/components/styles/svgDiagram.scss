@@ -1,0 +1,15 @@
+// Inline SVG diagrams whose paint already uses theme tokens: notebook images inlined by
+// themeNotebookSvgs (WaveDrom, graphviz, drawio) and diagrams written into notes as markup.
+.svg-diagram {
+  display: inline-block;
+  max-width: 100%;
+  vertical-align: middle;
+  color: var(--dark);
+
+  svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+}

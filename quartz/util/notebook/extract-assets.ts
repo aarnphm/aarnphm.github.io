@@ -173,7 +173,8 @@ export async function extractInlineNotebookAssets(
   const updated = chunks.map(chunk =>
     chunk.replace(DATA_URI_PATTERN, (match, mime: string, payload: string) => {
       const ext = mimeExtension(mime)
-      if (!ext) return match
+      // SVG stays inline: themeNotebookSvgs turns it into themed markup.
+      if (!ext || mime === 'image/svg+xml') return match
       let bytes: Uint8Array
       try {
         bytes = decodeBase64(payload)
