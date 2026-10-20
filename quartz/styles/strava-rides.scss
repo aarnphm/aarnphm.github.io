@@ -1,0 +1,173 @@
+// Latest rides card (quartz/components/strava-rides.ts): stands in for Strava's latest-rides
+// iframe on prose pages. Tool register inside a prose column: framed list, mono readouts, row
+// links that fill with surface on hover.
+
+.strava-rides {
+  --strava-rides-line: color-mix(in srgb, var(--gray) 55%, transparent);
+  --strava-rides-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+  container-type: inline-size;
+  box-sizing: border-box;
+  max-inline-size: 36rem;
+  min-width: 0;
+  margin-block: var(--space-2) var(--space-3);
+  border: 1px solid var(--strava-rides-line);
+  font-family: var(--codeFont);
+  font-size: var(--text-meta);
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums;
+  color: var(--darkgray);
+}
+
+.strava-rides-head,
+.strava-rides-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-3);
+  padding: var(--space-2) var(--space-3);
+}
+
+.strava-rides-head {
+  border-block-end: 1px solid var(--strava-rides-line);
+}
+
+.strava-rides-foot {
+  border-block-start: 1px solid var(--strava-rides-line);
+}
+
+.strava-rides-title {
+  color: var(--dark);
+}
+
+.strava-rides a.strava-rides-source {
+  color: var(--darkgray);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      color: var(--dark);
+    }
+  }
+}
+
+.strava-rides-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) repeat(4, auto);
+  column-gap: var(--space-3);
+}
+
+.strava-rides-cols,
+.strava-rides-list,
+.strava-rides-list > li,
+.strava-ride {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
+}
+
+// Baseline-align only the leaf rows. Chromium gives a subgrid item that is baseline-aligned in its
+// parent grid an offset near -2^24 px, so the list and its items keep the default stretch.
+.strava-rides-cols,
+.strava-ride {
+  align-items: baseline;
+}
+
+.strava-rides-cols {
+  padding: var(--space-1) var(--space-3);
+
+  > :nth-child(n + 3) {
+    text-align: end;
+  }
+}
+
+.strava-rides .strava-rides-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  > li {
+    margin: 0;
+    padding: 0;
+
+    & + li {
+      border-block-start: 1px solid var(--strava-rides-line);
+    }
+  }
+}
+
+.strava-rides a.strava-ride {
+  padding: var(--space-2) var(--space-3);
+  color: var(--darkgray);
+  text-decoration: none;
+  line-height: 1.4;
+  transition: background-color 120ms ease;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background-color: var(--strava-rides-surface);
+      color: var(--darkgray);
+
+      .strava-ride-name {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: -2px;
+  }
+
+  @media (pointer: coarse) {
+    min-block-size: 44px;
+    align-content: center;
+  }
+}
+
+.strava-ride-name {
+  min-width: 0;
+  overflow: hidden;
+  font-family: var(--bodyFont);
+  font-size: var(--text-ui);
+  font-variant-numeric: normal;
+  color: var(--dark);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.strava-ride-num {
+  text-align: end;
+  white-space: nowrap;
+  color: var(--dark);
+}
+
+.strava-ride-date {
+  white-space: nowrap;
+}
+
+// Narrow card: the name takes its own line above the four readouts.
+@container (max-width: 30rem) {
+  .strava-rides-grid {
+    grid-template-columns: auto repeat(3, minmax(0, 1fr));
+  }
+
+  .strava-rides-cols > :first-child {
+    display: none;
+  }
+
+  .strava-ride-name {
+    grid-column: 1 / -1;
+  }
+
+  .strava-rides a.strava-ride {
+    row-gap: var(--space-px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .strava-rides a.strava-ride {
+    transition: none;
+  }
+}

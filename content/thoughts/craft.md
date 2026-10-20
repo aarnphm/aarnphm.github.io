@@ -6,7 +6,7 @@ comments: false
 date: '2021-12-22'
 description: and a celebration for the act of making.
 id: craft
-modified: 2026-06-07 22:35:56 GMT-04:00
+modified: 2026-10-19 17:16:02 GMT-04:00
 permalinks:
   - /thoughts/work
   - /craft
@@ -113,19 +113,16 @@ There is also a [[ideas|backlog]] of unfinished ideas that I might work on, one 
 
 <!-- prettier-ignore -->
 - [[triathlon|an amateur triathlete]]
+
   <div class="nolist">
 
   <iframe height='454' width='300' frameborder='0' allowtransparency='true' scrolling='no' src='https://www.strava.com/athletes/123158310/latest-rides/6ecaafad0b2414c8166dcd13d4d97950a87764f4'></iframe>
 
   </div>
-  - SuperTri Toronto 2026
-  - TODO:
-    - [Challenge Roth](https://www.challenge-roth.com/en/registration.html)
-    - IRONMAN {{sidenotes[70.3]: in Palm Springs, California}} [La Quinta](https://www.ironman.com/races/im703-la-quinta)
-    - IRONMAN [70.3 Phu Quoc](https://www.ironman.com/races/im703-phu-quoc)
-    - {{sidenotes[Norseman]: This is far fetch, but I want that black jacket}} [XTREME Triathlon](https://www.nxtri.com/)
-- Modular, 01/2026—Now
+- NVIDIA, 11/26-Now
+- Modular, 01/2026—06/2026
   - Inference Optimization Engineer, MAX Serve
+  - _Acquired by Qualcomm_
   - Source: [website](https://www.modular.com/)
 - BentoML, 04/2021—12/2025
   - Inference Optimization Engineer
@@ -138,15 +135,12 @@ There is also a [[ideas|backlog]] of unfinished ideas that I might work on, one 
 
 You can find internal monologue under [[/posts/]] index. I also send a ~monthly newsletter to friends, mostly life updates.
 
-BentoML Blog: Get 3x Faster LLM Inference with Speculative Decoding Using the Right Draft Model
-
-- Collaborate with larme to train specific EAGLE weights with some custom kernels
-- Link: [original](https://bentoml.com/blog/3x-faster-llm-inference-with-speculative-decoding)
-
-vLLM Blog: Structured Decoding in vLLM: a gentle introduction
-
-- Collaborate with Michael Goin (RedHat), Russell Bryant (RedHat) for most of the integration for vLLM's structured outputs kernels and scheduler.
-- Link: [original](https://vllm.ai/blog/2025-01-14-struct-decode-intro), [[/posts/structured outputs|personal mirror]]
+- BentoML Blog: Get 3x Faster LLM Inference with Speculative Decoding Using the Right Draft Model
+  - Collaborate with larme to train specific EAGLE weights with some custom kernels
+  - Link: [original](https://bentoml.com/blog/3x-faster-llm-inference-with-speculative-decoding)
+- vLLM Blog: Structured Decoding in vLLM: a gentle introduction
+  - Collaborate with Michael Goin (RedHat), Russell Bryant (RedHat) for most of the integration for vLLM's structured outputs kernels and scheduler.
+  - Link: [original](https://vllm.ai/blog/2025-01-14-struct-decode-intro), [[/posts/structured decoding|personal mirror]]
 
 ## web poetics
 

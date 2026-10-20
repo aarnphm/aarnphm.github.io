@@ -103,6 +103,7 @@ import curiusFriendScript from './scripts/curius-friends.inline'
 //@ts-ignore
 import curiusScript from './scripts/curius.inline'
 import Search from './Search'
+import { renderStravaRides } from './strava-rides'
 import collapseHeaderStyle from './styles/collapseHeader.inline.scss'
 import { svgOptions, QuartzIcon } from './svg'
 import {
@@ -2607,6 +2608,7 @@ export function renderPageWithMetadata(
     if (transcluded.readingTime) componentData.fileData.readingTime = transcluded.readingTime
     logBuildSpan(ctx.argv, 'render:transclude', slug, renderPerf.elapsedMs())
     renderBaseEmbeds(tree, componentData)
+    renderStravaRides(tree)
 
     if (componentData.fileData.frontmatter?.pageLayout === 'technical-tractatus') {
       applyTractatusLayout(tree)
