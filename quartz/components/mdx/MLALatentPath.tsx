@@ -371,7 +371,7 @@ const MLALatentPathImpl: QuartzMdxComponent<Props> = ({ caption }) => {
           viewBox={`0 0 ${W} ${H}`}
           preserveAspectRatio="xMidYMid meet"
           role="img"
-          aria-label="MLA latent path: h_t branches into a query latent c_t^Q and cached KV latents c_t^KV and k_t^R; per-head q, k, and v projections are reconstructed before attention."
+          aria-label="MLA path: h_t produces query latent c_t^Q and cached c_t^KV, k_t^R; per-head q, k, and v are reconstructed before attention."
         >
           <defs>
             <marker

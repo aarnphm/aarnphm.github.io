@@ -65,7 +65,7 @@ The running maximum $m$, partition sum $z$, and value accumulator $y$ are the sa
 ```jsx imports={Zoomable,RingRotation}
 <Zoomable label="ring attention rotation">
   <RingRotation
-    caption="step the ring, watch each device accrue all $p$ slices while its own cache stays at $L/p$."
+    caption="Each device receives all $p$ slices while its local cache stays at $L/p$. Step the ring to follow the rotation."
     devices={4}
   />
 </Zoomable>

@@ -189,13 +189,13 @@ const MODES: readonly { id: Mode; label: string; store: string; rule: string }[]
     id: 'dfs',
     label: 'DFS',
     store: 'call stack, bottom to top',
-    rule: 'DFS-R marks a vertex on entry, then calls itself on each unmarked neighbour in $\\operatorname{Adj}(n)$ order. $d$ and $f$ tick one clock at each entry and return.',
+    rule: 'DFS-R marks on entry and recurses through unmarked neighbours in $\\operatorname{Adj}(n)$ order. $d$ and $f$ record entry and return times.',
   },
   {
     id: 'bfs',
     label: 'BFS',
     store: 'queue Q, front to back',
-    rule: 'BFS marks a vertex when it enters $Q$, so each reached vertex is queued once. Vertices leave $Q$ in distance layers.',
+    rule: 'BFS marks each vertex when it enters $Q$, then dequeues vertices by distance layer.',
   },
 ]
 
@@ -286,7 +286,7 @@ const GraphTraversalImpl: QuartzMdxComponent<Props> = ({ caption, mode = 'dfs', 
         viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
         preserveAspectRatio="xMidYMid meet"
         role="img"
-        aria-label="Undirected graph on vertices n0 to n9: a triangle n5, n6, n9; n9 joins n0; n4 hangs from n0; a four-cycle n0, n7, n2, n3; and a separate edge n1 to n8."
+        aria-label="Undirected graph on n0–n9: triangle n5–n6–n9, edge n9–n0, leaf n4 at n0, cycle n0–n7–n2–n3, and edge n1–n8."
       >
         {EDGES.map(([a, b], k) => (
           <line

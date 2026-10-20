@@ -39,7 +39,7 @@ This version links capability thresholds to required safeguards. Deployment stan
 
 ```jsx imports={Zoomable,SafetyLevels}
 <Zoomable label="AI safety levels">
-  <SafetyLevels caption="Historical ASL overview from Anthropic's Responsible Scaling Policy. ASL-2's 'present large models' names the period when the diagram was made; later cards mark higher capability and the matching security and safety measures." />
+  <SafetyLevels caption="ASL overview after Anthropic’s Responsible Scaling Policy; ASL-2 refers to large models at the time of the diagram." />
 </Zoomable>
 ```
 

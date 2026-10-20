@@ -59,7 +59,7 @@ const ResidualStreamImpl: QuartzMdxComponent<Props> = ({ caption, markerId }) =>
           viewBox="0 0 240 700"
           preserveAspectRatio="xMidYMid meet"
           role="img"
-          aria-label="Transformer residual stream: tokens to embed, attention heads added at a sum node, MLP added at a sum node, then unembed to logits"
+          aria-label="Transformer residual stream: embed tokens, add attention and MLP outputs, unembed to logits."
         >
           <defs>
             <marker
@@ -160,26 +160,18 @@ const ResidualStreamImpl: QuartzMdxComponent<Props> = ({ caption, markerId }) =>
         <div class="rs-divider" aria-hidden="true" />
 
         <div class="rs-note rs-note--unembed">
-          <p>The final logits are produced by applying the unembedding.</p>
           <MathLabel tex="T(t) = W_U x_{-1}" display />
         </div>
 
         <div class="rs-note rs-note--mlp">
-          <p>
-            An MLP layer, <MathLabel tex="m" />, is run and added to the residual stream.
-          </p>
           <MathLabel tex="x_{i+2} = x_{i+1} + m(x_{i+1})" display />
         </div>
 
         <div class="rs-note rs-note--attn">
-          <p>
-            Each attention head, <MathLabel tex="h" />, is run and added to the residual stream.
-          </p>
           <MathLabel tex="x_{i+1} = x_i + \sum_{h \in H_i} h(x_i)" display />
         </div>
 
         <div class="rs-note rs-note--embed">
-          <p>Token embedding.</p>
           <MathLabel tex="x_0 = W_E t" display />
         </div>
 

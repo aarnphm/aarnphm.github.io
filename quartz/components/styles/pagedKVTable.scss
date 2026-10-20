@@ -387,19 +387,6 @@
   }
 }
 
-.pkt-intuition {
-  margin: 1.1rem auto 0;
-  max-width: 76rem;
-  padding: 0.75rem 0.9rem;
-  color: var(--pkt-note-fg);
-  font-size: 0.85rem;
-  line-height: 1.5;
-  strong {
-    color: var(--dark);
-    font-weight: 600;
-  }
-}
-
 .pkt-caption {
   @include figure-caption;
   display: block;

@@ -121,18 +121,13 @@ const SqlJoinImpl: QuartzMdxComponent<Props> = ({ caption, mode = 'inner' }) => 
           headers={['course_id', 'title', 'dept_name', 'credits']}
           rows={COURSE}
         />
-        <Table
-          name="prereq"
-          tone="prereq"
-          headers={['course_id', 'prereq_id']}
-          rows={PREREQ}
-        />
+        <Table name="prereq" tone="prereq" headers={['course_id', 'prereq_id']} rows={PREREQ} />
       </div>
 
       {MODES.map(m => (
         <div class="sj-result" data-sql-panel={m.id} key={m.id}>
           <p class="sj-op">
-            course <strong>{m.label}</strong> prereq on course.course_id = prereq.course_id
+            course <strong>{m.label}</strong> join prereq on course.course_id = prereq.course_id
           </p>
           <Table name="result" tone="result" headers={HEADERS} rows={joinRows(m.id)} />
         </div>

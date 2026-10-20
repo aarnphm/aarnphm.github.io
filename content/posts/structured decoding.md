@@ -124,7 +124,7 @@ OpenAI then introduced [JSON mode](https://platform.openai.com/docs/guides/struc
 In layman terms, structured decoding gives LLMs a "template" to follow. Users provide a schema that "influences" the model's output, ensuring compliance with the desired structure:
 
 ```jsx imports={StructuredDecodingFlow}
-<StructuredDecodingFlow caption="The schema compiles into a logit bias; constrained sampling (salmon) masks the model's token distribution with it, so every sample stays inside the structure (sage)." />
+<StructuredDecodingFlow />
 ```
 
 From a technical perspective, an inference engine can modify the probability distribution for next-tokens by applying bias (often via logit masks) for all tokens from any given schemas. To apply these biases, [outlines](https://github.com/dottxt-ai/outlines) was proposed to construct a finite-state machine [^fsm] (FSM) from any given schemas to then guide the generations [@willard2023efficientguidedgenerationlarge]. This allows us to track the current state during decoding and filter out invalid tokens by applying logit bias to the output [^blogpost].
@@ -133,7 +133,11 @@ From a technical perspective, an inference engine can modify the probability dis
 
 ```jsx imports={Zoomable,FSMDecoding}
 <Zoomable label="Constrained decoding with a logits mask">
-  <FSMDecoding preset="json" mode="char" caption="Constrained decoding with a logits mask, after the figure by (LMSys, 2024), on a smaller schema: a name of Paul or John and an age of 20 or 30. Each step is one forward pass. At the salmon state of the FSM, the mask keeps the toy tokens that leave the output viable (sage, with the state each token reaches) and sets the others to $-\infty$. The sampled token is salmon in the mask and in the output tape. The 21-token vocabulary is a toy, not a real tokenizer. Press step to walk the 10 passes, or switch to the compressed FSM to see jump-forward finish in 2 passes." />
+  <FSMDecoding
+    preset="json"
+    mode="char"
+    caption="After LMSys (2024): character-level JSON for a name (Paul or John) and age (20 or 30), using a 21-token toy vocabulary. Each step is one forward pass; forced text still processes to extend the KV cache. Salmon marks sampled tokens, sage viable tokens, and $-\infty$ masks invalid tokens. Step through 10 passes or switch to the compressed FSM (2 passes)."
+  />
 </Zoomable>
 ```
 
@@ -168,7 +172,7 @@ There are few limitations with current vLLM's support of the Outlines backend:
 <Zoomable label="Waterfall of sampling process in vLLM">
   <LogitsProcessorTrace
     guided={2}
-    caption="Waterfall of the sampling process in vLLM, after the sequence diagram in vllm-project/vllm#5329, with each call and line checked against the vLLM v0.5.0 source. Each column is one call: the small square marks the caller, the larger square the callee, and a lone square a call inside one class. Sage marks where the guided processor joins the request and each per-row processor call; salmon is the selected call. In a batch of 4, every guided row adds one Python call between the forward pass and sampling, and each such call builds a full-vocabulary mask. Move the slider or use the arrow keys to walk the calls, and change the guided rows to watch the loop grow."
+    caption="vLLM v0.5.0 call trace, checked against source and based on vllm-project/vllm#5329. Small and large squares mark caller and callee; a lone square marks an internal call. In batch 4, each guided row adds a Python call and full-vocabulary mask between forward pass and sampling. Move the slider or change guided rows to inspect the trace."
   />
 </Zoomable>
 ```
@@ -196,7 +200,7 @@ This is great because it addresses **limitation (1)** by moving grammar compilat
     series='[{"name":"vLLM 0.6.5 (xgrammar)","values":[75,68,80,118,220,446]},{"name":"vLLM 0.6.4 (outlines)","values":[10507,139455,144131,204710,192325,244884]}]'
     labels="[0,5]"
     ratio="outlines ÷ xgrammar"
-    caption="Mean time to first token for Llama-3.1-8B on one H100 GPU, NousResearch/json-mode-eval, with 50% of requests guided. Salmon bars are vLLM 0.6.5 with XGrammar; darker sage bars are vLLM 0.6.4 with Outlines. The y axis is logarithmic, so each gridline is ten times the one below. Values are as printed on the original benchmark figure. Hover or focus a QPS group, then use the arrow keys, to read both values and their ratio; the table lists every value."
+    caption="Reported mean TTFT (ms) for Llama-3.1-8B on one H100, NousResearch/json-mode-eval, with 50% guided requests: vLLM 0.6.5/XGrammar vs 0.6.4/Outlines. Values are from the original benchmark; the y-axis is logarithmic. Focus a QPS group and use arrow keys to read values and ratio; the table lists all values."
   />
 </Zoomable>
 ```
@@ -216,7 +220,7 @@ This is great because it addresses **limitation (1)** by moving grammar compilat
     series='[{"name":"XGrammar","values":[8.4,9.6,12.1,16.1,26.5,32.0]},{"name":"Outlines","values":[7.9,13.4,19.6,73.8,68.6,152.3]}]'
     labels="[3,5]"
     ratio="Outlines ÷ XGrammar"
-    caption="Mean time per output token on the same setup: Llama-3.1-8B, one H100 GPU, NousResearch/json-mode-eval, 50% guided decoding. Salmon bars are XGrammar; darker sage bars are Outlines. Values are as printed on the original figure, courtesy of Michael Goin (Red Hat). Hover or focus a QPS group to read both values; the gap opens from 15 QPS."
+    caption="Mean TPOT (ms) for Llama-3.1-8B on one H100, NousResearch/json-mode-eval, with 50% guided decoding: XGrammar vs Outlines. Values are from the original figure, courtesy of Michael Goin (Red Hat). Focus a QPS group to compare values; the gap opens from 15 QPS."
   />
 </Zoomable>
 ```

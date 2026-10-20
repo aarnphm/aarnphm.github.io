@@ -38,7 +38,7 @@ The product maps the earlier component's output coordinates into the later compo
 
 ```jsx imports={Zoomable,VirtualWeights}
 <Zoomable label="virtual weights diagram">
-  <VirtualWeights caption="The diagram isolates linear read and write projections through the residual stream. Attention patterns, MLP activations, and normalization still affect the full computation." />
+  <VirtualWeights />
 </Zoomable>
 ```
 

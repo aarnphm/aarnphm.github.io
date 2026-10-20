@@ -88,7 +88,7 @@ const RazorCompressionImpl: QuartzMdxComponent<Props> = ({ caption }) => (
         viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
         preserveAspectRatio="xMidYMid meet"
         role="img"
-        aria-label="Two attention heads. The retrieval head keeps its full KV cache. The non-retrieval head keeps a few sink tokens and a recent rolling window, drops the remote tokens, and folds them into a single compensation token."
+        aria-label="Retrieval head keeps its full KV cache. Non-retrieval head keeps sink tokens and a recent window, then folds remote tokens into one compensation token."
       >
         <defs>
           <pattern

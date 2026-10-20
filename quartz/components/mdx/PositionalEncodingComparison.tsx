@@ -102,7 +102,7 @@ const AbsolutePanel: FunctionalComponent<{ length: number }> = ({ length }) => {
       shape-rendering="crispEdges"
       data-pec-vis="absolute"
       role="img"
-      aria-label="Sinusoidal absolute positional encoding heatmap: rows are token positions, columns are embedding dimensions, salmon is positive, neutral is zero"
+      aria-label="Sinusoidal encoding: rows are token positions, columns are dimensions; salmon is positive and neutral is zero."
     >
       {rows.map(p =>
         cols.map(d => (
@@ -129,7 +129,7 @@ const RelativePanel: FunctionalComponent<{ length: number }> = ({ length }) => {
       shape-rendering="crispEdges"
       data-pec-vis="relative"
       role="img"
-      aria-label="Relative positional bias matrix: cell (i, j) brightness scales with proximity along the diagonal"
+      aria-label="Relative bias matrix: brightness decreases with distance from the diagonal."
     >
       {idx.map(i =>
         idx.map(j => (
@@ -182,7 +182,7 @@ const RopePanel: FunctionalComponent<{ length: number }> = ({ length }) => {
       preserveAspectRatio="xMidYMid meet"
       data-pec-vis="rope"
       role="img"
-      aria-label="Rotary position encoding dial grid: rows are sampled positions, columns are dimension pairs, hand angle equals the per-position rotation"
+      aria-label="RoPE dial grid: rows are positions, columns are dimension pairs, hand angle is the rotation."
     >
       {cells}
     </svg>
@@ -199,7 +199,7 @@ const AlibiPanel: FunctionalComponent<{ length: number }> = ({ length }) => {
       shape-rendering="crispEdges"
       data-pec-vis="alibi"
       role="img"
-      aria-label="ALiBi penalty matrix: cell (i, j) darkens linearly with distance from the diagonal"
+      aria-label="ALiBi penalty matrix: cells darken linearly with distance from the diagonal."
     >
       {idx.map(i =>
         idx.map(j => (
@@ -258,7 +258,7 @@ const PositionalEncodingComparisonImpl: QuartzMdxComponent<Props> = ({
         <Panel
           title="Absolute"
           tag="input embed"
-          caption="Added to input embeddings; weak extrapolation beyond training length."
+          caption="Sinusoidal values added to input embeddings."
           math="\mathrm{PE}(p, 2i) = \sin\!\left(\tfrac{p}{10000^{2i/d}}\right)"
           logit={renderMath('x_p \\leftarrow E_p + \\mathrm{PE}_p', false)}
         >
@@ -267,7 +267,7 @@ const PositionalEncodingComparisonImpl: QuartzMdxComponent<Props> = ({
         <Panel
           title="Relative bias"
           tag="logit add"
-          caption="Added to attention logits; bias as a learned monotonic function of pairwise distance."
+          caption="Added to attention logits as a learned function of pairwise distance."
           math="A_{ij} \mathrel{+}= b_{\,j-i}"
           logit={renderMath('A_{ij} \\mathrel{+}= b_{\\,j-i}', false)}
         >
@@ -276,7 +276,7 @@ const PositionalEncodingComparisonImpl: QuartzMdxComponent<Props> = ({
         <Panel
           title="RoPE"
           tag="rotate Q/K"
-          caption="Rotates Q and K in the complex plane; inner products encode relative offsets."
+          caption="Rotates Q and K; inner products encode relative offsets."
           math="q' = R_p\, q,\ \ \theta_p^{(i)} = \tfrac{p}{10000^{2i/d}}"
           logit={renderMath('A_{ij} = (R_i q_i)^{\\top} (R_j k_j)', false)}
         >
@@ -285,7 +285,7 @@ const PositionalEncodingComparisonImpl: QuartzMdxComponent<Props> = ({
         <Panel
           title="ALiBi"
           tag="logit add"
-          caption="Additive linear penalty; extrapolates without re-training, slope chosen per head."
+          caption="Linear attention-logit penalty with a per-head slope."
           math="A_{ij} \mathrel{+}= -\,m\,\lvert\,j - i\,\rvert"
           logit={renderMath('A_{ij} \\mathrel{+}= -m\\,|j-i|', false)}
         >
@@ -297,13 +297,13 @@ const PositionalEncodingComparisonImpl: QuartzMdxComponent<Props> = ({
         <div class="pec-extrap-title">length extrapolation</div>
         <dl>
           <dt>absolute</dt>
-          <dd>poor, fixed table; off-distribution at longer L.</dd>
+          <dd>Fixed table; longer lengths are out of distribution.</dd>
           <dt>relative</dt>
-          <dd>decent, bias table caps at training distance.</dd>
+          <dd>Learned bias is limited by its training-distance range.</dd>
           <dt>RoPE</dt>
-          <dd>good with NTK / YaRN / LongRoPE rescaling of frequency base.</dd>
+          <dd>Long-context scaling can rescale the frequency base.</dd>
           <dt>ALiBi</dt>
-          <dd>best by construction, penalty is unbounded in L.</dd>
+          <dd>Linear distance penalty extends to longer lengths.</dd>
         </dl>
       </section>
 
@@ -341,15 +341,6 @@ const PositionalEncodingComparisonImpl: QuartzMdxComponent<Props> = ({
           show as attention logit modifier
         </label>
       </div>
-
-      <p class="pec-intuition">
-        Three orthogonal axes separate these schemes: where positional information enters (input
-        embedding for absolute; attention logits for relative and ALiBi; Q/K rotation for RoPE), how
-        the effect scales with distance (constant table, monotonic falloff, periodic dial, linear
-        penalty), and how well it extrapolates beyond the training length. RoPE wins for length
-        extrapolation when combined with NTK-aware scaling, YaRN, or LongRoPE; ALiBi extrapolates by
-        construction because the penalty is a closed-form function of <MathLabel tex="|j-i|" />.
-      </p>
 
       {caption ? (
         <figcaption class="pec-caption">

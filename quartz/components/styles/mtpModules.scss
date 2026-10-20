@@ -2,17 +2,20 @@
 @use './figure.scss' as *;
 
 .mtp-modules {
-  @include figure-frame('mtp-figure', 40rem);
+  @include figure-frame('mtp-figure', 44rem);
 
   --mtp-shared: color-mix(in srgb, var(--fig-sage) 45%, var(--light));
   --mtp-op: color-mix(in srgb, var(--lightgray) 40%, var(--light));
   --mtp-on: var(--fig-grid-selected);
+  --mtp-link: var(--dark);
+  --mtp-share-stroke: color-mix(in srgb, var(--fig-sage) 55%, var(--dark));
 }
 
 :root[saved-theme='dark'] .mtp-modules {
   --mtp-shared: color-mix(in srgb, var(--fig-sage) 26%, var(--lightgray));
   --mtp-op: var(--lightgray);
   --mtp-on: color-mix(in srgb, var(--fig-sage) 22%, var(--lightgray));
+  --mtp-share-stroke: color-mix(in srgb, var(--fig-sage) 45%, var(--light));
 }
 
 .mtp-controls {
@@ -20,21 +23,9 @@
 }
 
 .mtp-segments {
-  @include figure-grid;
+  @include figure-fieldset;
   grid-auto-flow: column;
   width: fit-content;
-  position: relative;
-  margin-top: 1.1rem;
-}
-
-.mtp-legend {
-  position: absolute;
-  top: -1.15rem;
-  left: 0;
-  padding: 0;
-  color: var(--fig-note);
-  font-size: 0.72rem;
-  white-space: nowrap;
 }
 
 .mtp-segment {
@@ -69,19 +60,58 @@
   }
 }
 
+.mtp-stage {
+  position: relative;
+}
+
+.mtp-links {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.mtp-link-causal {
+  fill: none;
+  stroke: var(--mtp-link);
+  stroke-width: 1.35;
+}
+
+.mtp-link-share {
+  fill: none;
+  stroke: var(--mtp-share-stroke);
+  stroke-width: 1.2;
+  opacity: 0.85;
+}
+
+.mtp-link-arrow {
+  fill: var(--mtp-link);
+}
+
+.mtp-share-label {
+  fill: var(--mtp-share-stroke);
+  font-family: var(--codeFont);
+  font-size: 10px;
+}
+
 .mtp-rail {
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: minmax(9.5rem, 1fr);
-  gap: 0.75rem;
+  grid-auto-columns: minmax(10rem, 1fr);
+  gap: 1.35rem;
   overflow-x: auto;
-  padding-bottom: 0.25rem;
+  padding: 0.35rem 0.55rem 0.45rem;
+  position: relative;
+  z-index: 1;
 }
 
 .mtp-col {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.2rem;
   min-width: 0;
   padding: 0.65rem;
   border: 1px solid var(--fig-frame-border);
@@ -93,7 +123,7 @@
 }
 
 .mtp-head {
-  margin-bottom: 0.15rem;
+  margin-bottom: 0.2rem;
 }
 
 .mtp-title {
@@ -129,6 +159,12 @@
   background: var(--mtp-shared);
 }
 
+.mtp-block--op {
+  flex-direction: column;
+  gap: 0.1rem;
+  min-height: 2.2rem;
+}
+
 .mtp-block--stack {
   min-height: 3.2rem;
 }
@@ -138,9 +174,9 @@
   min-height: 1.5rem;
 }
 
-.mtp-share {
+.mtp-loss-tag {
   color: var(--fig-note);
-  font-size: 0.62rem;
+  font-size: 0.72rem;
 }
 
 .mtp-row {
@@ -148,11 +184,40 @@
   gap: 0.35rem;
 }
 
-.mtp-concat {
+.mtp-concat-label {
   color: var(--fig-note);
   font-family: var(--codeFont);
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   text-align: center;
+  margin: 0.05rem 0;
+}
+
+.mtp-varrow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 0.7rem;
+}
+
+.mtp-varrow-line {
+  display: block;
+  width: 1px;
+  height: 100%;
+  background: var(--dark);
+  position: relative;
+}
+
+.mtp-varrow-line::after {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  border-left: 1px solid var(--dark);
+  border-top: 1px solid var(--dark);
+  transform: translateX(-50%) rotate(45deg);
+  background: transparent;
 }
 
 .mtp-targets,
@@ -184,13 +249,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-.mtp-loss {
-  margin-top: 0.2rem;
-  color: var(--dark);
-  font-size: 0.8rem;
-  text-align: center;
-}
-
 .mtp-readout {
   @include figure-table;
   margin: 0.9rem 0 0;
@@ -202,4 +260,10 @@
 
 .mtp-caption {
   @include figure-caption;
+}
+
+@media (max-width: 640px) {
+  .mtp-rail {
+    gap: 1rem;
+  }
 }

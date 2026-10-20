@@ -38,14 +38,7 @@ const JobDeadlineImpl: QuartzMdxComponent<Props> = ({ caption }) => {
             <path class="jd-arrowhead" d="M0,0 L10,5 L0,10 z" />
           </marker>
         </defs>
-        <line
-          class="jd-axis"
-          x1={40}
-          y1={Y}
-          x2={600}
-          y2={Y}
-          marker-end={`url(#jd-arrow-${id})`}
-        />
+        <line class="jd-axis" x1={40} y1={Y} x2={600} y2={Y} marker-end={`url(#jd-arrow-${id})`} />
         <text class="jd-axis-label" x={610} y={Y + 4}>
           Time
         </text>

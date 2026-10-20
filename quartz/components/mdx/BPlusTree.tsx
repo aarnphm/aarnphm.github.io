@@ -66,7 +66,12 @@ const drawNode = (n: Node, lit: boolean, key: string) => {
         const cx = left + 2 + PTR + i * (CELL + PTR) + CELL / 2
         return (
           <g key={`${key}-k-${i}`}>
-            <circle class="bpt-ptr" cx={left + 2 + PTR / 2 + i * (CELL + PTR)} cy={n.y + NODE_H / 2} r={2.2} />
+            <circle
+              class="bpt-ptr"
+              cx={left + 2 + PTR / 2 + i * (CELL + PTR)}
+              cy={n.y + NODE_H / 2}
+              r={2.2}
+            />
             <rect
               class="bpt-cell"
               x={left + 2 + PTR + i * (CELL + PTR)}

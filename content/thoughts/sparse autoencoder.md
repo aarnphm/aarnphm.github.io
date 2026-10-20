@@ -84,7 +84,7 @@ $$
 <Zoomable label="Gated SAE encoder on four features">
   <GatedSAE
     view="gated"
-    caption="Gated SAE encoder on four features. The column $u=W_\text{gate}(x-b_\text{dec})$ is the shared projection. The magnitude path computes $\pi_\text{mag}=e^{r_\text{mag}}\odot u+b_\text{mag}$ and rectifies it. The gating path computes $\pi_\text{gate}=u+b_\text{gate}$ and binarizes it. Values of $u$, $f_\text{mag}$ and $\tilde f$ at $\theta=0.35$ are read from the Gated SAE paper's architecture figure; the scales and biases are synthetic values chosen to reproduce them. Sage cells are open gates; salmon cells are active features. Drag $\theta$ to move the gate biases: features switch off, and the features that stay on keep their full magnitude."
+    caption="Four-feature gated SAE: shared projection $u=W_\text{gate}(x-b_\text{dec})$ feeds a rectified magnitude path $\pi_\text{mag}=e^{r_\text{mag}}\odot u+b_\text{mag}$ and binary gate $\pi_\text{gate}=u+b_\text{gate}$. At $\theta=0.35$, $u$, $f_\text{mag}$, and $\tilde f$ follow the paper figure; scales and biases are synthetic. Drag $\theta$ to change gates; active features retain full magnitude."
   />
 </Zoomable>
 ```
@@ -109,7 +109,7 @@ The auxiliary reconstruction trains the gate through $q$. The stop-gradient oper
 <Zoomable label="Gated SAE as a JumpReLU">
   <GatedSAE
     view="jumprelu"
-    caption="The same four features against their magnitude preactivation $\pi_\text{mag}$. The dark curve is $\operatorname{JumpReLU}_\theta$: zero up to $\theta$ (closed dot), then the identity (open dot), a jump of size $\theta$. Salmon points are active features; hollow points are gated off. Drag $\theta$: feature 4 at $\pi_\text{mag}=0.30$ turns on once $\theta<0.30$, and every active feature sits on the identity, with no shrinkage."
+    caption="For four features, $\operatorname{JumpReLU}_\theta(\pi_\text{mag})$ is zero through $\theta$, then identity. Feature 4 ($\pi_\text{mag}=0.30$) activates when $\theta<0.30$; active points have no shrinkage. Drag $\theta$ to compare."
   />
 </Zoomable>
 ```

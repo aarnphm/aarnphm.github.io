@@ -50,27 +50,38 @@ const TREES: Record<TreeId, Node> = {
   idparen: {
     label: '+',
     lit: true,
-    kids: [{ label: 'id' }, { label: '(…)', kids: [{ label: '+', kids: [{ label: 'id' }, { label: 'id' }] }] }],
+    kids: [
+      { label: 'id' },
+      { label: '(…)', kids: [{ label: '+', kids: [{ label: 'id' }, { label: 'id' }] }] },
+    ],
   },
   idast: {
     label: ':=',
     lit: true,
     kids: [
       { label: 'id' },
-      { label: '+', kids: [{ label: 'id' }, { label: '×', kids: [{ label: 'id' }, { label: 'num' }] }] },
+      {
+        label: '+',
+        kids: [{ label: 'id' }, { label: '×', kids: [{ label: 'id' }, { label: 'num' }] }],
+      },
     ],
   },
   nl: {
     label: 'S',
     lit: true,
-    kids: [{ label: 'NP', kids: [{ label: 'Det' }, { label: 'N' }] }, { label: 'VP', kids: [{ label: 'V' }, { label: 'NP' }] }],
+    kids: [
+      { label: 'NP', kids: [{ label: 'Det' }, { label: 'N' }] },
+      { label: 'VP', kids: [{ label: 'V' }, { label: 'NP' }] },
+    ],
   },
 }
 
 const renderNode = (node: Node, key: string) => (
   <div class="ept-branch" key={key}>
     <div class={node.lit ? 'ept-node ept-node--lit' : 'ept-node'}>{node.label}</div>
-    {node.kids ? <div class="ept-kids">{node.kids.map((k, i) => renderNode(k, `${key}-${i}`))}</div> : null}
+    {node.kids ? (
+      <div class="ept-kids">{node.kids.map((k, i) => renderNode(k, `${key}-${i}`))}</div>
+    ) : null}
   </div>
 )
 

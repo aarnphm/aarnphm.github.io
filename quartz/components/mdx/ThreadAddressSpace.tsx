@@ -43,7 +43,13 @@ const ThreadAddressSpaceImpl: QuartzMdxComponent<Props> = ({ caption }) => {
           </marker>
         </defs>
 
-        <rect class="tas-frame" x={processX} y={36} width={processW} height={processRows.length * rowH + 28} />
+        <rect
+          class="tas-frame"
+          x={processX}
+          y={36}
+          width={processW}
+          height={processRows.length * rowH + 28}
+        />
         <text class="tas-title" x={processX + processW / 2} y={28} text-anchor="middle">
           Process Address Space
         </text>

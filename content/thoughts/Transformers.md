@@ -222,7 +222,10 @@ Ordinary next-token inference can use the first output head. The additional head
 
 ```jsx imports={Zoomable,MTPModules}
 <Zoomable label="DeepSeek MTP modules">
-  <MTPModules depth={2} caption="DeepSeek-V3 multi-token prediction keeps a causal chain across MTP modules. Each module takes the previous hidden state, concatenates a shared embedding of the shifted tokens, projects, runs one transformer block, and scores with the shared output head. Select depth $D$ to show MTP $1..D$." />
+  <MTPModules
+    depth={2}
+    caption="DeepSeek-V3 MTP uses a causal chain: each module combines the previous hidden state with shifted-token embeddings, runs one transformer block, and shares the output head. Select depth $D$."
+  />
 </Zoomable>
 ```
 

@@ -201,24 +201,24 @@ const classify = (ops: Op[]): Result => {
     const readerCommit = commitAt(ops[r].tx)
     const end = endAt(writer)
     witness = [w, r, readerCommit, ...(end === -1 ? [] : [end])]
-    reason = `Not recoverable: $${opTex(ops[r])}$ reads $${opTex(ops[w])}$, and $${opTex(ops[readerCommit])}$ comes before $T_${writer}$ commits${end === -1 ? '' : `; $${opTex(ops[end])}$ follows`}.`
+    reason = `Not recoverable: $${opTex(ops[r])}$ reads $${opTex(ops[w])}$; the reader commits before $T_${writer}$.${end === -1 ? '' : ` $${opTex(ops[end])}$ follows.`}`
   } else if (dirtyRead) {
     const { w, r } = dirtyRead
     witness = [w, r]
-    reason = `Recoverable, not ACA: $${opTex(ops[r])}$ reads the uncommitted $${opTex(ops[w])}$. $T_${ops[r].tx}$ commits only after $T_${ops[w].tx}$, but an abort of $T_${ops[w].tx}$ would cascade.`
+    reason = `Recoverable, not ACA: $${opTex(ops[r])}$ reads uncommitted $${opTex(ops[w])}$; $T_${ops[r].tx}$ commits after $T_${ops[w].tx}$, so an abort would cascade.`
   } else if (unstrict) {
     const [i, j] = unstrict
     witness = [i, j]
-    reason = `ACA, not strict: $${opTex(ops[j])}$ overwrites the uncommitted $${opTex(ops[i])}$. No read is dirty.`
+    reason = `ACA, not strict: $${opTex(ops[j])}$ overwrites uncommitted $${opTex(ops[i])}$.`
   } else if (!serial) {
     const first = ops[0].tx
     const end = endAt(first)
     const j = ops.findIndex((o, k) => o.tx !== first && k < end)
     witness = [j]
-    reason = `Strict, not serial: no item written by an active transaction is read or overwritten, but $${opTex(ops[j])}$ runs before $T_${first}$ ends.`
+    reason = `Strict, not serial: no dirty reads or overwrites; $${opTex(ops[j])}$ runs before $T_${first}$ ends.`
   } else {
     witness = []
-    reason = `Serial: each transaction runs to completion before the next starts.`
+    reason = `Serial: each transaction completes before the next starts.`
   }
 
   return { ops, txs, serial, csr, order, edges, recoverable, aca, strict, region, reason, witness }

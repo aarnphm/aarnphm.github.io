@@ -41,7 +41,7 @@ const CompilerPipelineImpl: QuartzMdxComponent<Props> = ({
   return (
     <figure class={`compiler-pipeline${floatClass}`} data-cp-diagram={diagram}>
       {diagram === 'task' ? (
-        <div class="cp-task" role="img" aria-label="Compiler turns a source program into target code or error messages.">
+        <div class="cp-task" role="img" aria-label="Source program to target code or errors.">
           <div class="cp-box">source program</div>
           <span class="cp-arrow" aria-hidden="true">
             →
@@ -55,7 +55,7 @@ const CompilerPipelineImpl: QuartzMdxComponent<Props> = ({
       ) : null}
 
       {diagram === 'phases' ? (
-        <ol class="cp-phases" role="img" aria-label="Compiler phases from source text to target code.">
+        <ol class="cp-phases" role="img" aria-label="Compiler phases.">
           <li class="cp-io">source text</li>
           {PHASES.map((p, i) => (
             <li class="cp-phase" key={p.name} data-cp-band={i < 3 ? 'analysis' : 'synthesis'}>
@@ -70,7 +70,7 @@ const CompilerPipelineImpl: QuartzMdxComponent<Props> = ({
         <div
           class="cp-example"
           role="img"
-          aria-label="Compilation of dist := dist + rot × 24 through lexical tokens, a syntax tree, and typed intermediate code."
+          aria-label="Compilation example: source, tokens, syntax tree, and integer types."
         >
           <div class="cp-ex-col">
             <p class="cp-ex-label">source</p>
@@ -104,13 +104,13 @@ const CompilerPipelineImpl: QuartzMdxComponent<Props> = ({
           </div>
           <div class="cp-ex-col">
             <p class="cp-ex-label">with context</p>
-            <p class="cp-ex-note">all expressions typed integer</p>
+            <p class="cp-ex-note">all expressions: integer</p>
           </div>
         </div>
       ) : null}
 
       {diagram === 'passes' ? (
-        <ol class="cp-passes" role="img" aria-label="Compiler passes merge several phases.">
+        <ol class="cp-passes" role="img" aria-label="Combined compiler passes.">
           {PASSES.map(p => (
             <li class="cp-pass" key={p.name} data-cp-band={p.kind}>
               {p.name}
@@ -126,7 +126,7 @@ const CompilerPipelineImpl: QuartzMdxComponent<Props> = ({
           aria-label={
             diagram === 'bytecode'
               ? 'Front ends emit byte code for back ends and an interpreter.'
-              : 'Language front ends share a syntax tree with context across target back ends.'
+              : 'Language front ends share a contextual syntax tree across back ends.'
           }
         >
           <div class="cp-fb-col">
@@ -151,7 +151,11 @@ const CompilerPipelineImpl: QuartzMdxComponent<Props> = ({
       ) : null}
 
       {diagram === 'asm-pipeline' ? (
-        <ol class="cp-passes" role="img" aria-label="High-level language to assembly to machine code.">
+        <ol
+          class="cp-passes"
+          role="img"
+          aria-label="High-level language to assembly to machine code."
+        >
           <li class="cp-pass" data-cp-band="analysis">
             high-level language program
           </li>
@@ -179,9 +183,6 @@ const CompilerPipelineImpl: QuartzMdxComponent<Props> = ({
 const CompilerPipelineComponent = CompilerPipelineImpl as QuartzMdxComponent<Props>
 CompilerPipelineComponent.css = style
 
-export const CompilerPipeline = registerMdxComponent(
-  'CompilerPipeline',
-  CompilerPipelineComponent,
-)
+export const CompilerPipeline = registerMdxComponent('CompilerPipeline', CompilerPipelineComponent)
 
 export default (() => CompilerPipeline) satisfies (opts: undefined) => QuartzMdxComponent<Props>

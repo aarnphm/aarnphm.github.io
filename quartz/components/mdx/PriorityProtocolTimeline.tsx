@@ -38,7 +38,7 @@ const PRESETS: readonly Preset[] = [
   {
     id: 'pip',
     label: 'PIP slide',
-    note: 'Slide task set: $T_1$ (priority 1, highest) to $T_4$ (priority 4). $T_1$ and $T_4$ share one resource $S$. Release times and segments read from the PIP slide; the slide does not show when $T_2$ and $T_3$ arrive, so they are assumed released at $t=9$ and $t=10$, inside $T_1$’s wait.',
+    note: 'Slide tasks $T_1$–$T_4$ use priorities 1 (highest) to 4; $T_1$ and $T_4$ share $S$. The slide omits $T_2$ and $T_3$ arrivals, assumed at $t=9$ and $t=10$ during $T_1$’s wait.',
     horizon: 28,
     prio: p => String(5 - p),
     tasks: [
@@ -67,7 +67,7 @@ const PRESETS: readonly Preset[] = [
   {
     id: 'pcp',
     label: 'PCP slide',
-    note: 'Slide task set: $C$ (H) locks $S_1$; $B$ (M) nests $S_3$ inside $S_2$; $A$ (L) nests $S_2$ inside $S_3$. Ceilings $S_1=\\mathrm{H}$, $S_2=S_3=\\mathrm{M}$. The slide has no time axis; durations are read from its bar lengths in whole units.',
+    note: 'Resource ceilings are $S_1=\\mathrm{H}$ and $S_2=S_3=\\mathrm{M}$. The slide omits a time axis; bar lengths are treated as whole-unit durations.',
     horizon: 36,
     prio: HML,
     tasks: [
@@ -100,7 +100,7 @@ const PRESETS: readonly Preset[] = [
   {
     id: 'chained',
     label: 'chained (synthetic)',
-    note: 'Synthetic task set shaped after the chained-blocking case in Sha, Rajkumar and Lehoczky (1990): $T_H$ locks $S_1$ and then $S_2$; $T_M$ holds $S_2$; $T_L$ holds $S_1$. Both ceilings are H.',
+    note: 'Synthetic chained-blocking case based on Sha, Rajkumar and Lehoczky (1990): $T_H$ locks $S_1$ then $S_2$; $T_M$ holds $S_2$; $T_L$ holds $S_1$. Both ceilings are H.',
     horizon: 20,
     prio: HML,
     tasks: [
@@ -149,12 +149,12 @@ const PROTOCOLS: readonly { id: Protocol; label: string; rule: string }[] = [
   {
     id: 'none',
     label: 'none',
-    rule: 'No protocol. A task waiting for a held resource keeps its own priority, and the owner runs at its base priority, so medium-priority work can preempt the owner.',
+    rule: 'No inheritance: blocked tasks keep base priority, so medium-priority work can preempt resource owners.',
   },
   {
     id: 'pip',
     label: 'PIP',
-    rule: 'Priority inheritance. The owner of a resource inherits the effective priority of the tasks blocked on it, transitively. On unlock it recomputes from the waiters that remain.',
+    rule: 'Resource owners inherit blocked tasks’ effective priorities transitively; unlock recomputes priority from remaining waiters.',
   },
   {
     id: 'pcp',

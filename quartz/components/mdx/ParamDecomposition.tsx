@@ -40,10 +40,7 @@ const ParamDecompositionImpl: QuartzMdxComponent<Props> = ({ caption, components
       n,
       {
         columns: COLUMNS[n],
-        nonzero: COLUMNS[n].reduce(
-          (acc, col) => acc + col.filter(v => v > 0).length / FLAT,
-          0,
-        ) / n,
+        nonzero: COLUMNS[n].reduce((acc, col) => acc + col.filter(v => v > 0).length / FLAT, 0) / n,
       },
     ]),
   )
@@ -104,10 +101,9 @@ const ParamDecompositionImpl: QuartzMdxComponent<Props> = ({ caption, components
             {Array.from({ length: FLAT }, (_, i) => (
               <span
                 class="apd-cell apd-cell--tall"
-                style={{ '--apd-a': String(0.3 + SEED[i % SEED.length] * 0.7) } as Record<
-                  string,
-                  string
-                >}
+                style={
+                  { '--apd-a': String(0.3 + SEED[i % SEED.length] * 0.7) } as Record<string, string>
+                }
                 key={i}
               />
             ))}
@@ -163,10 +159,6 @@ const ParamDecompositionImpl: QuartzMdxComponent<Props> = ({ caption, components
           <dt>mean fill</dt>
           <dd data-apd-out="fill">{(state[n0].nonzero * 100).toFixed(0)}%</dd>
         </div>
-        <div>
-          <dt>objective</dt>
-          <dd>faithful, minimal, simple</dd>
-        </div>
       </dl>
 
       {caption ? (
@@ -187,6 +179,4 @@ export const ParamDecomposition = registerMdxComponent(
   ParamDecompositionComponent,
 )
 
-export default (() => ParamDecomposition) satisfies (
-  opts: undefined,
-) => QuartzMdxComponent<Props>
+export default (() => ParamDecomposition) satisfies (opts: undefined) => QuartzMdxComponent<Props>

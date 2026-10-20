@@ -228,7 +228,7 @@ Pole-zero cancellation can hide unstable internal modes. Use the state model to 
     re={-2}
     im={2}
     regions
-    caption="Poles on the s-plane, $s=\sigma\pm j\omega$, for a unit-gain second-order model. Drag the salmon pole, or use the arrow keys. In the sage left half-plane ($\sigma<0$) the step response settles; on the imaginary axis it oscillates for ever; in the grey right half-plane it grows without bound. Under $z=e^{sT}$ these regions map to the inside of the unit circle, the circle and the outside."
+    caption="Poles $s=\sigma\pm j\omega$ for a unit-gain second-order model. Drag the pole or use arrow keys. LHP poles settle, imaginary-axis poles oscillate, and RHP poles diverge; under $z=e^{sT}$ these map inside, on, and outside the unit circle."
   />
 </Zoomable>
 ```

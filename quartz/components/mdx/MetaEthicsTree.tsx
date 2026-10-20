@@ -327,7 +327,7 @@ const MetaEthicsTreeImpl: QuartzMdxComponent<Props> = ({ caption }) => (
           viewBox={`0 0 ${VW} ${VH}`}
           preserveAspectRatio="xMidYMid meet"
           role="img"
-          aria-label="Meta-ethical positions decision tree: a root question about whether moral claims can be true or false branches through cognitivism and non-cognitivism into ten terminal positions; selecting a position highlights the chain of answers leading to it, defaulting to moral objectivism."
+          aria-label="Meta-ethical decision tree with ten terminal positions; selecting one highlights its answer path. Defaults to moral objectivism."
         >
           {EDGES_RAW.map(([from, to, label]) => (
             <EdgeGroup key={ek(from, to)} from={from} to={to} label={label} />

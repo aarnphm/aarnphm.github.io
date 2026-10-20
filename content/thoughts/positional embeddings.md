@@ -12,7 +12,7 @@ title: Positional Embeddings
 ```jsx imports={Zoomable,PositionalEncodingComparison}
 <Zoomable label="positional encoding comparison">
   <PositionalEncodingComparison
-    caption="Four positional encoding methods side-by-side: absolute (input-embedding heatmap), relative (logit-bias matrix), RoPE (per-dim-pair rotation), ALiBi (linear distance penalty). Toggle 'show as attention logit modifier' to see how each enters the attention computation."
+    caption="Absolute, relative, RoPE and ALiBi encodings at sequence length 16; toggle the logit-modifier view."
     length={16}
   />
 </Zoomable>

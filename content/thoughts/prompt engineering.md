@@ -18,7 +18,6 @@ What counts as a better prompt depends on what the output must do. For a date ex
 
 [[thoughts/zero-shot learning|Zero-shot prompting]] describes how many demonstrations appear in the prompt: none. A zero-shot prompt can still be carefully designed. Adding solved examples makes the setup one-shot or few-shot.
 
-
 ## CoT prompting
 
 Chain-of-thought prompting supplies examples with intermediate reasoning before the final answer. In Wei et al.'s experiments, this improved arithmetic, commonsense, and symbolic reasoning on the models and tasks tested. [@wei2023chainofthoughtpromptingelicitsreasoning]

@@ -20,7 +20,7 @@ const SchemaLayersImpl: QuartzMdxComponent<Props> = ({ caption }) => {
         class="scl-svg"
         viewBox="0 0 560 320"
         role="img"
-        aria-label="Three-schema architecture: external views over a conceptual schema, physical schema, and storage."
+        aria-label="Three-schema architecture: views, conceptual schema, physical schema, and storage."
       >
         <defs>
           <marker
@@ -58,28 +58,14 @@ const SchemaLayersImpl: QuartzMdxComponent<Props> = ({ caption }) => {
           Conceptual Schema
         </text>
 
-        <line
-          class="scl-edge"
-          x1={280}
-          y1={144}
-          x2={280}
-          y2={176}
-          marker-end={`url(#${arrow})`}
-        />
+        <line class="scl-edge" x1={280} y1={144} x2={280} y2={176} marker-end={`url(#${arrow})`} />
 
         <rect class="scl-box scl-box--phys" x={180} y={176} width={200} height={44} />
         <text class="scl-label" x={280} y={203} text-anchor="middle">
           Physical Schema
         </text>
 
-        <line
-          class="scl-edge"
-          x1={280}
-          y1={220}
-          x2={280}
-          y2={248}
-          marker-end={`url(#${arrow})`}
-        />
+        <line class="scl-edge" x1={280} y1={220} x2={280} y2={248} marker-end={`url(#${arrow})`} />
 
         <ellipse class="scl-disk" cx={280} cy={268} rx={54} ry={14} />
         <rect class="scl-disk-body" x={226} y={268} width={108} height={28} />

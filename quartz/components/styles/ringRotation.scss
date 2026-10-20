@@ -309,19 +309,6 @@
   background: color-mix(in srgb, var(--rr-salmon) 28%, var(--light));
 }
 
-.rr-intuition {
-  margin: 1.1rem 0 0;
-  padding: 0.75rem 0.9rem;
-  color: var(--rr-note-fg);
-  font-size: 0.88rem;
-  line-height: 1.5;
-
-  strong {
-    color: var(--dark);
-    font-weight: 600;
-  }
-}
-
 .rr-caption {
   @include figure-caption;
 

@@ -239,7 +239,7 @@ const MFAFactorBasesImpl: QuartzMdxComponent<Props> = ({ caption }) => (
         viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
         preserveAspectRatio="xMidYMid meet"
         role="img"
-        aria-label={`Dense L by L attention matrix on the left versus a low-rank sum of ${DEFAULT_M} factor outer products on the right.`}
+        aria-label={`Dense L by L attention matrix versus ${DEFAULT_M} low-rank factor outer products.`}
         data-mfa-canvas
       >
         <>
@@ -338,18 +338,10 @@ const MFAFactorBasesImpl: QuartzMdxComponent<Props> = ({ caption }) => (
     </div>
 
     <p class="mfa-intuition">
-      Heads of attention reuse a small library of relational patterns. Factor those into shared
-      low-rank bases <MathLabel tex="U_i V_i^{\top}" />; each head becomes a sparse combination.
-      With <MathLabel tex="m=L,\, r=d" /> you recover dense attention exactly. With{' '}
-      <MathLabel tex="m \ll L" /> you trade reconstruction for{' '}
-      <strong>
-        <MathLabel tex="O(Lmr)" /> compute
-      </strong>{' '}
-      and a cache of{' '}
-      <strong>
-        <MathLabel tex="mr" /> per token
-      </strong>
-      .
+      Approximate each head with shared low-rank bases <MathLabel tex="U_i V_i^{\top}" />. Setting{' '}
+      <MathLabel tex="m=L,\,r=d" /> recovers dense attention; smaller <MathLabel tex="m" /> uses{' '}
+      <MathLabel tex="O(Lmr)" /> compute and <MathLabel tex="mr" />
+      cached values per token.
     </p>
 
     {caption ? (

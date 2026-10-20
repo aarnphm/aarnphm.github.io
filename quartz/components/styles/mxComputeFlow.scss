@@ -18,23 +18,11 @@
 }
 
 .mxf-segments {
-  @include figure-grid;
+  @include figure-fieldset;
   grid-auto-flow: column;
   width: max-content;
   max-width: 100%;
   min-width: 0;
-  position: relative;
-  margin-top: 1.1rem;
-}
-
-.mxf-legend {
-  position: absolute;
-  top: -1.15rem;
-  left: 0;
-  padding: 0;
-  color: var(--fig-note);
-  font-size: 0.72rem;
-  white-space: nowrap;
 }
 
 .mxf-segment {

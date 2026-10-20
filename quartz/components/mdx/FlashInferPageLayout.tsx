@@ -34,8 +34,7 @@ const REQUESTS: Request[] = KV_INDPTR.slice(0, -1).map((start, id) => ({
   qoEnd: QO_INDPTR[id + 1],
 }))
 
-const pageOwner = (page: number): Request | undefined =>
-  REQUESTS.find(r => r.pages.includes(page))
+const pageOwner = (page: number): Request | undefined => REQUESTS.find(r => r.pages.includes(page))
 
 const filledSlots = (page: number): number => {
   const owner = pageOwner(page)

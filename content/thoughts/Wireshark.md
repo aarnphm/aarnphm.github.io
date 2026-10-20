@@ -20,6 +20,6 @@ _capture messages being sent by/received from a computer_
 
 ```jsx imports={Zoomable,PacketSniffer}
 <Zoomable label="packet sniffer">
-  <PacketSniffer caption="A packet sniffer sits beside the host stack. Packet capture (pcap) in the OS copies Ethernet frames from the link layer; the packet analyzer in the application layer reads that copy. The sniffer never injects packets." />
+  <PacketSniffer />
 </Zoomable>
 ```

@@ -134,7 +134,7 @@ Here $Q$, $K$ and $V$ denote the inputs before the head projections. In self-att
 ```jsx imports={Zoomable,OffsetHeadsToy}
 <Zoomable label="two-head softmax demo">
   <OffsetHeadsToy
-    caption="Finite offset scores give two distributions $P^{(+1)}$ and $P^{(-1)}$; a missing boundary neighbour leaves that head's row uniform. The surrogate uses $P=\operatorname{softmax}(S^{(+1)}+S^{(-1)})$. Independent mode samples the output projections. Forced mode fits a ridge-regularized projection to this one sampled $V$, so its residual is a numerical example, with no guarantee about every possible projection or input."
+    caption="Finite offset scores yield $P^{(\pm1)}$; missing boundary neighbours make that head’s row uniform. The surrogate softmaxes summed scores. Forced ridge regression fits this sampled $V$, so its gap is sample-specific."
     length={6}
   />
 </Zoomable>
@@ -165,7 +165,7 @@ Here $Q$, $K$ and $V$ denote the inputs before the head projections. In self-att
 
 ```jsx imports={Zoomable,AttentionCostCalculator}
 <Zoomable label="attention cost calculator">
-  <AttentionCostCalculator caption="This calculator assumes ordinary MHA: $h_{\text{kv}}=h$ and $hd_h=d_{\text{model}}$. For batch $B$, $N$ layers and $L$ cached tokens per sequence, raw KV storage is $2BLNd_{\text{model}}$ times the bytes per value. Lower precision reduces this payload; quantization scales and allocator overhead are excluded. Changing $h$ alone preserves the parameter and cache counts shown here." />
+  <AttentionCostCalculator caption="Ordinary MHA assumes $h_{\text{kv}}=h$ and $hd_h=d_{\text{model}}$. For batch $B$, $N$ layers and $L$ cached tokens per sequence, raw KV storage is $2BLNd_{\text{model}}$ values times bytes per value. Scales and allocator overhead are excluded; changing $h$ alone leaves the shown parameter and cache counts fixed." />
 </Zoomable>
 ```
 

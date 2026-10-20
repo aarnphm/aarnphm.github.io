@@ -59,7 +59,7 @@ the two head types that matter for recall are well-known interpretability object
 
 ```jsx imports={Zoomable,RazorHeadTaxonomy}
 <Zoomable label="echo and induction heads">
-  <RazorHeadTaxonomy caption="the probe repeats a random block, so each head's habit is legible. landing on the second $B$, an echo head attends back to the earlier $B$ (the duplicate); an induction head attends to the $C$ that followed that earlier $B$ and copies $C$ out as the next token. RazorAttention protects both kinds." />
+  <RazorHeadTaxonomy caption="A repeated random block distinguishes the heads: echo heads attend to the earlier $B$; induction heads attend to its following $C$ and copy $C$. RazorAttention protects both." />
 </Zoomable>
 ```
 
@@ -77,7 +77,7 @@ with the castes labelled, the algorithm is short. retrieval heads keep an untouc
 
 ```jsx imports={Zoomable,RazorCompression}
 <Zoomable label="razor attention cache scheme">
-  <RazorCompression caption="a non-retrieval head keeps its sink tokens and a recent window $L_h = N/C$, drops the remote middle, and folds it into a single compensation token $\{\hat{k}, \hat{v}\}$. retrieval heads (15% of heads) keep the full cache. slide $C$ to trade window length against compression; the paper's $C = 5$ keeps $0.15 + 0.85 \cdot \tfrac{1}{5} \approx 0.32$ of the cache, a $3.125\times$ shrink." />
+  <RazorCompression caption="Non-retrieval heads keep sink tokens and a recent window $L_h=N/C$, then fold the remote middle into $(\hat{k},\hat{v})$. Retrieval heads (15%) keep the full cache. At $C=5$, retention is $0.15+0.85/5\approx0.32$ ($3.125\times$ shrink). Move $C$ to compare." />
 </Zoomable>
 ```
 

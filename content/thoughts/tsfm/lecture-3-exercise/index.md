@@ -15,7 +15,6 @@ this directory contains a NumPy implementation of Transformer components with fo
 
 the backward-pass tests compare individual NumPy components against PyTorch references. The training path has separate smoke tests.
 
-
 ## assignment
 
 1. Add causal masking to the attention mechanism in this NumPy implementation for autoregressive language modeling.

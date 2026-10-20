@@ -24,7 +24,6 @@ Linear maps preserve the algebra of vector spaces: addition and scalar multiplic
 >
 > Equivalently, $T(0)=0$ and $T\big(\sum_i a_i x_i\big)=\sum_i a_i T(x_i)$.
 
-
 ## Basic examples
 
 > [!example]

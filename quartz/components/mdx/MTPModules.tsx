@@ -12,6 +12,12 @@ const TOKENS = [1, 2, 3, 4, 5, 6, 7] as const
 const shift = (start: number, n: number) =>
   Array.from({ length: n }, (_, i) => TOKENS[start + i - 1] ?? start + i)
 
+const Arrow = () => (
+  <div class="mtp-varrow" aria-hidden="true">
+    <span class="mtp-varrow-line" />
+  </div>
+)
+
 let instance = 0
 
 const MTPModulesImpl: QuartzMdxComponent<Props> = ({ caption, depth = 2 }) => {
@@ -19,11 +25,7 @@ const MTPModulesImpl: QuartzMdxComponent<Props> = ({ caption, depth = 2 }) => {
   const d0 = (DEPTHS as readonly number[]).includes(depth) ? depth : 2
 
   return (
-    <figure
-      class="mtp-modules"
-      data-mtp-modules
-      data-mtp-depth={String(d0)}
-    >
+    <figure class="mtp-modules" data-mtp-modules data-mtp-depth={String(d0)}>
       <div class="mtp-controls">
         <fieldset class="mtp-segments">
           <legend class="mtp-legend">
@@ -44,81 +46,116 @@ const MTPModulesImpl: QuartzMdxComponent<Props> = ({ caption, depth = 2 }) => {
         </fieldset>
       </div>
 
-      <div class="mtp-rail" data-mtp-rail>
-        <section class="mtp-col" data-mtp-col="main">
-          <header class="mtp-head">
-            <h3 class="mtp-title">main model</h3>
-            <p class="mtp-sub">next-token prediction</p>
-          </header>
-          <div class="mtp-targets">
-            <span class="mtp-k">targets</span>
-            {shift(2, 4).map(t => (
-              <span class="mtp-tok">t{t}</span>
-            ))}
-          </div>
-          <div class="mtp-block mtp-block--shared" data-mtp-shared="head">
-            output head
-          </div>
-          <div class="mtp-block mtp-block--stack">transformer × L</div>
-          <div class="mtp-block mtp-block--shared" data-mtp-shared="emb">
-            embedding
-          </div>
-          <div class="mtp-inputs">
-            <span class="mtp-k">inputs</span>
-            {shift(1, 4).map(t => (
-              <span class="mtp-tok">t{t}</span>
-            ))}
-          </div>
-          <div class="mtp-loss">
-            <MathText text="$\mathcal{L}_{\mathrm{Main}}$" mathClass="mtp-math" />
-          </div>
-        </section>
-
-        {DEPTHS.map(d => (
-          <section
-            class="mtp-col"
-            data-mtp-col={String(d)}
-            data-mtp-off={d > d0 ? 'true' : undefined}
-            key={d}
-          >
+      <div class="mtp-stage" data-mtp-stage>
+        <svg class="mtp-links" data-mtp-links aria-hidden="true" />
+        <div class="mtp-rail" data-mtp-rail>
+          <section class="mtp-col" data-mtp-col="main">
             <header class="mtp-head">
-              <h3 class="mtp-title">MTP {d}</h3>
-              <p class="mtp-sub">
-                next<sup>{d + 1}</sup> token
-              </p>
+              <h3 class="mtp-title">main model</h3>
+              <p class="mtp-sub">next-token prediction</p>
             </header>
-            <div class="mtp-targets">
+            <div class="mtp-targets" data-mtp-node="targets">
               <span class="mtp-k">targets</span>
-              {shift(2 + d, 4).map(t => (
+              {shift(2, 4).map(t => (
                 <span class="mtp-tok">t{t}</span>
               ))}
             </div>
-            <div class="mtp-block mtp-block--shared" data-mtp-shared="head">
+            <Arrow />
+            <div class="mtp-block mtp-block--op" data-mtp-node="loss">
+              cross-entropy
+              <span class="mtp-loss-tag">
+                <MathText text="$\mathcal{L}_{\mathrm{Main}}$" mathClass="mtp-math" />
+              </span>
+            </div>
+            <Arrow />
+            <div class="mtp-block mtp-block--shared" data-mtp-shared="head" data-mtp-node="head">
               output head
-              <span class="mtp-share">shared</span>
             </div>
-            <div class="mtp-block">transformer block</div>
-            <div class="mtp-block">linear projection</div>
-            <div class="mtp-row">
-              <div class="mtp-block mtp-block--small">RMSNorm</div>
-              <div class="mtp-block mtp-block--small">RMSNorm</div>
+            <Arrow />
+            <div
+              class="mtp-block mtp-block--stack"
+              data-mtp-out-h
+              data-mtp-node="transformer"
+            >
+              transformer × L
             </div>
-            <div class="mtp-concat">concat ← previous hidden</div>
-            <div class="mtp-block mtp-block--shared" data-mtp-shared="emb">
+            <Arrow />
+            <div class="mtp-block mtp-block--shared" data-mtp-shared="emb" data-mtp-node="emb">
               embedding
-              <span class="mtp-share">shared</span>
             </div>
-            <div class="mtp-inputs">
+            <Arrow />
+            <div class="mtp-inputs" data-mtp-node="inputs">
               <span class="mtp-k">inputs</span>
-              {shift(1 + d, 4).map(t => (
+              {shift(1, 4).map(t => (
                 <span class="mtp-tok">t{t}</span>
               ))}
-            </div>
-            <div class="mtp-loss">
-              <MathText text={`$\\mathcal{L}_{\\mathrm{MTP}}^{${d}}$`} mathClass="mtp-math" />
             </div>
           </section>
-        ))}
+
+          {DEPTHS.map(d => (
+            <section
+              class="mtp-col"
+              data-mtp-col={String(d)}
+              data-mtp-off={d > d0 ? 'true' : undefined}
+              key={d}
+            >
+              <header class="mtp-head">
+                <h3 class="mtp-title">MTP {d}</h3>
+                <p class="mtp-sub">
+                  next<sup>{d + 1}</sup> token
+                </p>
+              </header>
+              <div class="mtp-targets" data-mtp-node="targets">
+                <span class="mtp-k">targets</span>
+                {shift(2 + d, 4).map(t => (
+                  <span class="mtp-tok">t{t}</span>
+                ))}
+              </div>
+              <Arrow />
+              <div class="mtp-block mtp-block--op" data-mtp-node="loss">
+                cross-entropy
+                <span class="mtp-loss-tag">
+                  <MathText
+                    text={`$\\mathcal{L}_{\\mathrm{MTP}}^{${d}}$`}
+                    mathClass="mtp-math"
+                  />
+                </span>
+              </div>
+              <Arrow />
+              <div class="mtp-block mtp-block--shared" data-mtp-shared="head" data-mtp-node="head">
+                output head
+              </div>
+              <Arrow />
+              <div class="mtp-block" data-mtp-out-h data-mtp-node="transformer">
+                transformer block
+              </div>
+              <Arrow />
+              <div class="mtp-block" data-mtp-node="proj">
+                linear projection
+              </div>
+              <div class="mtp-concat-label">concatenation</div>
+              <div class="mtp-row" data-mtp-node="norms">
+                <div class="mtp-block mtp-block--small" data-mtp-norm="emb">
+                  RMSNorm
+                </div>
+                <div class="mtp-block mtp-block--small" data-mtp-in-h data-mtp-norm="prev">
+                  RMSNorm
+                </div>
+              </div>
+              <Arrow />
+              <div class="mtp-block mtp-block--shared" data-mtp-shared="emb" data-mtp-node="emb">
+                embedding
+              </div>
+              <Arrow />
+              <div class="mtp-inputs" data-mtp-node="inputs">
+                <span class="mtp-k">inputs</span>
+                {shift(1 + d, 4).map(t => (
+                  <span class="mtp-tok">t{t}</span>
+                ))}
+              </div>
+            </section>
+          ))}
+        </div>
       </div>
 
       <dl class="mtp-readout">

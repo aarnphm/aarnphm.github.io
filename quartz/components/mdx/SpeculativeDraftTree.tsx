@@ -328,38 +328,37 @@ const CLIENT_STATES = Object.fromEntries(
 
 const RULES: Record<MethodId, Record<StepId, string>> = {
   small: {
-    d1: 'A separate small LM reads only the tokens How can I and samples from its own $q$. Speculative sampling drafts a chain: one candidate per depth.',
-    d2: 'The small LM appends its drafted token and runs again. Each draft token costs one small-LM forward pass, and the small LM never sees the target features.',
-    d3: 'Third pass, third token. The chain ends at $\\gamma = 3$.',
-    verify:
-      'The target scores I and the three drafted tokens in one pass. For a chain, the tree mask is the ordinary causal triangle.',
+    d1: 'A separate small LM samples from $q$ given “How can I”; the chain drafts one candidate per depth.',
+    d2: 'Append each draft token and run the small LM again. Each token costs one draft pass; the LM does not use target features.',
+    d3: 'The third pass drafts token three; chain depth is $\\gamma = 3$.',
+    verify: 'One target pass scores I and three drafts; the chain uses a causal mask.',
     accept:
       'Test each token in order: keep it when $U \\le \\min(1, p/q)$. At the first rejection, emit the most likely token of the residual $\\max(p-q,0)$ and discard the rest of the chain.',
   },
   medusa: {
-    d1: 'Medusa heads read one vector: $f_{\\text{can}}$, the target feature from the pass that sampled I. Head 1 drafts depth 1.',
-    d2: 'Head 2 reads the same $f_{\\text{can}}$. It cannot see which depth-1 token was drafted, so make and help get the same two children, with the same $q$.',
-    d3: 'Head 3 also reads $f_{\\text{can}}$ and expands the two most probable depth-2 paths. The heads ran inside the previous target pass, so drafting adds no forward pass.',
+    d1: 'Head 1 drafts from $f_{\\text{can}}$, the target feature from the pass that sampled I.',
+    d2: 'Head 2 sees only $f_{\\text{can}}$; make and help share the same children and $q$.',
+    d3: 'Head 3 expands the two highest-probability depth-2 paths from $f_{\\text{can}}$. Heads add no draft-time forward pass.',
     verify:
-      'One target pass scores I and all ten drafted tokens. Each row attends to the cached prefix, its own ancestors and itself; sibling branches stay masked.',
+      'One target pass scores I and all ten drafts. Rows attend to the cached prefix, their ancestors, and themselves; sibling branches are masked.',
     accept:
-      "Same exact test as the other drafters; Medusa's own typical acceptance relaxes it. Head 2 averages over branches, so it under-proposes you ($q < p$) and the test keeps it. The cost is the lower $\\beta$ and nodes such as make you.",
+      'The simplified model uses the same test as other drafters; typical Medusa acceptance relaxes it. Head 2 averages branch proposals, so $q < p$ and the test accepts them. This lowers $\\beta$ and retains nodes such as make you.',
   },
   eagle: {
-    d1: 'EAGLE pairs each target feature with the next token: $(f_{\\text{how}}, e_{\\text{can}})$ and $(f_{\\text{can}}, e_{\\text{I}})$. It predicts $\\hat f_{\\text{I}}$, and the frozen LM head drafts depth 1.',
-    d2: 'Each branch shifts in its own drafted token. $(\\hat f_{\\text{I}}, e_{\\text{help}})$ and $(\\hat f_{\\text{I}}, e_{\\text{make}})$ predict different features, so the two branches get different children.',
-    d3: 'Depth 3 reads $\\hat f_{\\text{help}}$, a feature EAGLE predicted itself. The regression error adds up, and the draft leans toward to and feel.',
+    d1: 'Pairs $(f_{\\text{how}}, e_{\\text{can}})$ and $(f_{\\text{can}}, e_{\\text{I}})$ predict $\\hat f_{\\text{I}}$; the frozen LM head drafts depth 1.',
+    d2: 'Branches use $(\\hat f_{\\text{I}}, e_{\\text{help}})$ and $(\\hat f_{\\text{I}}, e_{\\text{make}})$, producing distinct features and children.',
+    d3: 'Depth 3 reads EAGLE’s predicted $\\hat f_{\\text{help}}$; accumulated regression error shifts drafts toward to and feel.',
     verify:
-      'One target pass scores I and all ten drafted tokens. Each row attends to the cached prefix, its own ancestors and itself; sibling branches stay masked.',
+      'One target pass scores I and all ten drafts. Rows attend to the cached prefix, their ancestors, and themselves; sibling branches are masked.',
     accept:
       'Test children in order. When a child fails, $p$ becomes the normalized residual $\\max(p-q,0)$, the child leaves $q$, and the next sibling is tested. Both depth-3 drafts fail, so the target emits the correction. A prime marks a test against the residual.',
   },
   eagle3: {
-    d1: 'EAGLE-3 fuses low, middle and high target layers, $g = \\mathrm{FC}([l; m; h])$, and reads $(g_{\\text{how}}, e_{\\text{can}})$ and $(g_{\\text{can}}, e_{\\text{I}})$.',
-    d2: 'Where no target feature exists, the draft feeds back its own output $a$: $(a_{\\text{I}}, e_{\\text{help}})$ and $(a_{\\text{I}}, e_{\\text{make}})$.',
-    d3: 'Training-time test rehearsed these feedback steps, and no loss ties $a$ to a target feature, so depth 3 stays close to the target.',
+    d1: 'Fuses target layers as $g = \\mathrm{FC}([l; m; h])$; reads $(g_{\\text{how}}, e_{\\text{can}})$ and $(g_{\\text{can}}, e_{\\text{I}})$.',
+    d2: 'Without target features, the draft feeds back $a$: $(a_{\\text{I}}, e_{\\text{help}})$ and $(a_{\\text{I}}, e_{\\text{make}})$.',
+    d3: 'Training rehearses feedback; no loss ties $a$ to target features, keeping depth 3 close to the target.',
     verify:
-      'One target pass scores I and all ten drafted tokens. Each row attends to the cached prefix, its own ancestors and itself; sibling branches stay masked.',
+      'One target pass scores I and all ten drafts. Rows attend to the cached prefix, their ancestors, and themselves; sibling branches are masked.',
     accept:
       'Test children in order with the same residual rule. Every test on the path passes, so the leaf earns a bonus token from the target distribution at that leaf.',
   },

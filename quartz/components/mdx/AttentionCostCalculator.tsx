@@ -186,14 +186,11 @@ const AttentionCostCalculatorImpl: QuartzMdxComponent<Props> = ({ caption }) => 
               role="listitem"
             >
               <span class="acc-card-label">{r.label}</span>
-              <div class="acc-card-body">
-                <Num
-                  t={accMetricTex(r.k, init)}
-                  class="acc-card-num"
-                  attr={{ 'data-acc-num': r.k }}
-                />
-                <span class="acc-card-delta" data-acc-delta={r.k} aria-live="polite" />
-              </div>
+              <Num
+                t={accMetricTex(r.k, init)}
+                class="acc-card-num"
+                attr={{ 'data-acc-num': r.k, 'aria-live': 'polite' }}
+              />
               <FormulaFO t={r.formula} />
             </article>
           ))}

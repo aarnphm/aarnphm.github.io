@@ -211,7 +211,7 @@ Each step multiplies the distance to zero by $|1-\alpha|$. Thus $0<\alpha<2$ giv
 
 ```jsx imports={Zoomable,HeavyBallRate}
 <Zoomable label="Convergence rate against step size, with momentum">
-  <HeavyBallRate caption="Gradient descent with heavy-ball momentum on $f(x)=\frac{\lambda}{2}x^2$. The rate depends on the step only through $\alpha\lambda$. The light V is plain gradient descent, $|1-\alpha\lambda|$, with its minimum $0$ at $\alpha\lambda=1$. The dark curve is the rate $\rho=\max|r|$ over the roots of $r^2-(1+\beta-\alpha\lambda)r+\beta$ for the selected $\beta$; at $\beta=0$ it lies on the V. The sage band spans the convergent steps $0<\alpha\lambda<2(1+\beta)$. The salmon point is the selected step, and the right panel runs the recurrence from rest at $x_{-1}=x_0=1$. Raise $\beta$ to widen the band and to flatten the curve at $\rho=\sqrt{\beta}$, where the roots are complex." />
+  <HeavyBallRate caption="For $f(x)=\frac{\lambda}{2}x^2$, the heavy-ball rate is $\rho=\max|r|$ over roots of $r^2-(1+\beta-\alpha\lambda)r+\beta$, with step dependence through $\alpha\lambda$. The light V is gradient descent; at $\beta=0$ the curves coincide. Sage marks $0<\alpha\lambda<2(1+\beta)$. The salmon point selects the step; the right panel starts from rest at $x_{-1}=x_0=1$. Raise $\beta$ to update the band and complex-root rate $\rho=\sqrt{\beta}$." />
 </Zoomable>
 ```
 

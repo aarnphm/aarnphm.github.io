@@ -260,8 +260,7 @@ const PagedKVTableImpl: QuartzMdxComponent<Props> = ({ caption }) => (
           tex="A_{ij} = \dfrac{\exp\!\left(q_i^{\top} K_j / \sqrt{d}\right)}{\sum_{t}\exp\!\left(q_i^{\top} K_t / \sqrt{d}\right)}"
         />
         <p class="pkt-card-note">
-          <MathLabel tex="K_j" /> is the j-th physical block, fetched through the page table on
-          demand.
+          Select a logical block to trace its mapping. Use + token or evict to update the pool.
         </p>
       </div>
       <div class="pkt-card">
@@ -332,13 +331,6 @@ const PagedKVTableImpl: QuartzMdxComponent<Props> = ({ caption }) => (
         </dl>
       </div>
     </aside>
-
-    <p class="pkt-intuition">
-      Virtual memory for the KV cache. Two sequences of different lengths share one pool of physical
-      blocks through the page table; growth needs no contiguous region, eviction frees a slot
-      anywhere, and cold blocks can spill to host. Click a logical block to trace its mapping, press{' '}
-      <strong>+ token</strong> to grow, or <strong>evict</strong> to free a slot.
-    </p>
 
     {caption ? (
       <figcaption class="pkt-caption">

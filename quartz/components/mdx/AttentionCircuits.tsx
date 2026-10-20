@@ -178,18 +178,18 @@ const CircuitPanel: FunctionalComponent = () => {
       </g>
       <g data-acir-circuit="ov">
         <g data-acir-ov-split>
-          <rect class="acir-box acir-box--weight" x={200} y={160} width={56} height={36} />
-          <Fo x={200} y={160} w={56} h={36} t="W_V" />
-          <Fo x={200} y={198} w={56} h={14} t={math`\cdot`} cls="acir-fo--sm" />
-          <rect class="acir-box acir-box--weight" x={200} y={214} width={56} height={36} />
-          <Fo x={200} y={214} w={56} h={36} t="W_O" />
+          <rect class="acir-box acir-box--weight" x={200} y={211} width={56} height={36} />
+          <Fo x={200} y={211} w={56} h={36} t="W_V" />
+          <Fo x={200} y={249} w={56} h={14} t={math`\cdot`} cls="acir-fo--sm" />
+          <rect class="acir-box acir-box--weight" x={200} y={265} width={56} height={36} />
+          <Fo x={200} y={265} w={56} h={36} t="W_O" />
         </g>
         <g data-acir-ov-rank hidden>
-          <rect class="acir-box acir-box--ov-rank" x={200} y={170} width={56} height={70} />
-          <Fo x={200} y={170} w={56} h={34} t="W_V W_O" cls="acir-fo--xs" />
+          <rect class="acir-box acir-box--ov-rank" x={200} y={221} width={56} height={70} />
+          <Fo x={200} y={221} w={56} h={34} t="W_V W_O" cls="acir-fo--xs" />
           <Fo
             x={200}
-            y={206}
+            y={257}
             w={56}
             h={30}
             t={math`\mathrm{rank}\le d_h`}
@@ -198,17 +198,17 @@ const CircuitPanel: FunctionalComponent = () => {
         </g>
         <Fo
           x={196}
-          y={252}
+          y={308}
           w={64}
           h={22}
           t={math`\text{OV}`}
           cls="acir-fo--label acir-fo--ov-label"
         />
       </g>
-      <path class="acir-line" d="M 166 205 L 196 205" marker-end={arr} />
-      <path class="acir-line" d="M 256 205 L 276 205" marker-end={arr} />
-      <rect class="acir-box acir-box--output" x={280} y={185} width={36} height={40} />
-      <Fo x={280} y={185} w={36} h={40} t={math`\mathrm{out}`} cls="acir-fo--sm" />
+      <path class="acir-line" d="M 138 256 L 196 256" marker-end={arr} />
+      <path class="acir-line" d="M 256 256 L 276 256" marker-end={arr} />
+      <rect class="acir-box acir-box--output" x={280} y={236} width={36} height={40} />
+      <Fo x={280} y={236} w={36} h={40} t={math`\mathrm{out}`} cls="acir-fo--sm" />
       <rect class="acir-sum-bg" x={30} y={380} width={260} height={56} />
       <foreignObject x={30} y={380} width={260} height={56}>
         <div

@@ -150,7 +150,7 @@ const TokenBoundaryShiftImpl: QuartzMdxComponent<Props> = ({ caption, boundary =
         class="tbs-svg"
         viewBox={`0 0 ${W} ${H}`}
         role="img"
-        aria-label="Forced text tokenized two ways, both reaching grammar state 9, and the next-token distributions over the six tokens the grammar allows there."
+        aria-label="Two tokenizations reach grammar state 9; the chart shows probabilities for its six allowed next tokens."
       >
         <text class="tbs-row" x={0} y={TAPE_Y[0] + 15}>
           natural

@@ -257,7 +257,7 @@ from [this test](https://programs.clearerthinking.org/philosophical_beliefs.html
 
 ```jsx imports={Zoomable,MetaEthicsTree}
 <Zoomable label="meta-ethical positions decision tree">
-  <MetaEthicsTree caption="The Clearer Thinking meta-ethics decision tree, after Tommy Crow. Following my answers (moral claims are truth-apt, some are true, their truth independent of belief) lands on moral objectivism, a sub-branch of the moral realism I tested into. Click any position to trace the questions that lead there." />
+  <MetaEthicsTree caption="Clearer Thinking’s meta-ethics tree, after Tommy Crow. My answers lead to moral objectivism; select a position to trace its questions." />
 </Zoomable>
 ```
 

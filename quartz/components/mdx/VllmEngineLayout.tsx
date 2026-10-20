@@ -72,9 +72,6 @@ const VllmEngineLayoutImpl: QuartzMdxComponent<Props> = ({ caption }) => (
 const VllmEngineLayoutComponent = VllmEngineLayoutImpl as QuartzMdxComponent<Props>
 VllmEngineLayoutComponent.css = style
 
-export const VllmEngineLayout = registerMdxComponent(
-  'VllmEngineLayout',
-  VllmEngineLayoutComponent,
-)
+export const VllmEngineLayout = registerMdxComponent('VllmEngineLayout', VllmEngineLayoutComponent)
 
 export default (() => VllmEngineLayout) satisfies (opts: undefined) => QuartzMdxComponent<Props>

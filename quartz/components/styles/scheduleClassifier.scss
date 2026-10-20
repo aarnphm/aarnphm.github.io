@@ -21,21 +21,9 @@
 }
 
 .scl-segments {
-  @include figure-grid;
+  @include figure-fieldset;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   min-width: 0;
-  position: relative;
-  margin-top: 1.1rem;
-}
-
-.scl-legend {
-  position: absolute;
-  top: -1.15rem;
-  left: 0;
-  padding: 0;
-  color: var(--fig-note);
-  font-size: 0.72rem;
-  white-space: nowrap;
 }
 
 .scl-segment {

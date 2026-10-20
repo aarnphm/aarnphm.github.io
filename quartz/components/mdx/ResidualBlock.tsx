@@ -74,7 +74,7 @@ const ResidualBlockImpl: QuartzMdxComponent<Props> = ({ caption }) => {
         class="rb-svg"
         viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
         role="img"
-        aria-label="Residual block: x passes through a weight layer, ReLU and a second weight layer to give F(x); an identity shortcut adds x at the sum; a ReLU follows the sum."
+        aria-label="Residual block: F(x) is added to x, then passed through ReLU."
       >
         <defs>
           <marker

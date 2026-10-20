@@ -152,16 +152,16 @@ const evictBlocks = (pool: PoolBlock[], B: number, E: number): Eviction => {
 }
 
 const STEPS = [
-  'Inputs: the KV metrics and logical indices of one sequence, scattered over the paged cache. The sequence must evict $E = 2$ blocks.',
+  'Input KV metrics and logical indices; evict $E = 2$ blocks.',
   'Sort by (sequence, head, metric). The empty slot counts as metric $0$.',
-  "Reshape each head's run to [blocks $\\times$ block size]. Each column is one candidate block.",
-  'Sort blocks by (sequence, block metric). The block metric is its largest entry, the outlined bottom cell.',
-  'Select the first $E = 2$ blocks for eviction. Both belong to head 0.',
+  "Reshape each head's run to [blocks $\\times$ block size]; columns are candidate blocks.",
+  'Sort blocks by (sequence, block metric), the largest entry in each block.',
+  'Evict the first $E = 2$ blocks; both belong to head 0.',
   'Flatten the blocks back to one row.',
-  "Sort by (sequence, head, logical index). A head's eviction range is its last $e_h$ blocks: $e_0 = 2$, $e_1 = 0$.",
-  'Move kept KVs out of the eviction range into evicted slots before it.',
-  'Mark the blocks in the eviction range to be freed.',
-  'Free those blocks of the KV metrics and the KV cache.',
+  "Sort by (sequence, head, logical index). Each head's eviction range is its last $e_h$ blocks: $e_0 = 2$, $e_1 = 0$.",
+  'Move kept KVs into evicted slots before the range.',
+  'Mark the eviction range for freeing.',
+  'Free the blocks and their KV slots.',
 ]
 
 const EVICTION = evictBlocks(POOL, BLOCK, EVICT)
@@ -721,8 +721,8 @@ const KVCompressBlocksImpl: QuartzMdxComponent<Props> = ({ caption, view = 'evic
         data-kvc-panel="vllm"
       >
         <p class="kvc-step-text kvc-panel-note">
-          One block id names the same slots in every layer and every head. One block table per
-          sequence, one context length, so every head keeps the longest head's blocks.
+          Each block id spans all layers and heads. One table and context length per sequence, sized
+          to the longest head.
         </p>
         <VllmCache />
         <Legend items={legendLayout(`block b0 = p${LIT_VLLM}, every layer and head`)} />
@@ -739,7 +739,7 @@ const KVCompressBlocksImpl: QuartzMdxComponent<Props> = ({ caption, view = 'evic
         data-kvc-panel="kvcompress"
       >
         <p class="kvc-step-text kvc-panel-note">
-          Each block holds one head of one layer, tagged layer·head. Block tables expand to{' '}
+          Each block holds one layer·head pair. Tables expand to{' '}
           <MathText text="$l \times H$" mathClass="kvc-math" /> rows, each with its own context
           length.
         </p>

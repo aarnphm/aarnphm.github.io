@@ -227,18 +227,15 @@ const TreeReductionImpl: QuartzMdxComponent<Props> = ({ caption, leaves = 4 }) =
               </div>
             </div>
             <p style="margin-top: 0.55rem;">
-              Both push <code>p - 1</code> messages; the tree just reorders them into{' '}
-              <code>log_2 p</code> latency-bound rounds.
+              Both send <code>p - 1</code> messages; the tree uses <code>log_2 p</code> rounds.
             </p>
           </div>
 
           <div class="tr-card">
             <h5>intuition</h5>
             <p>
-              Once you rescale by the running max, the softmax reduction becomes an associative
-              operator on <code>(m, z, y)</code> triples. Any tree topology computes the exact same
-              result, no approximation, and the log-depth tree wins on latency. Same trick as
-              parallel-prefix scan.
+              Rescaling by the running maximum makes softmax reduction associative over{' '}
+              <code>(m, z, y)</code> triples.
             </p>
           </div>
         </aside>

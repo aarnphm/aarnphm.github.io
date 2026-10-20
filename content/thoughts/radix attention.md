@@ -45,7 +45,7 @@ The LRU policy keeps active prefixes resident on the GPU and frees the coldest l
 
 ```jsx imports={Zoomable,RadixPrefixTree}
 <Zoomable label="radix prefix tree">
-  <RadixPrefixTree caption="Click a request to walk the deepest matching prefix (salmon) and watch newly cached tokens append (sage). Prompt #4 falls back to root and evicts the coldest branch under LRU; the readout reports the per-request hit rate $H = 1 - C / \sum |r|$." />
+  <RadixPrefixTree caption="Select a request to trace its deepest cached prefix (salmon) and appended tokens (sage). Request #4 falls back to root and evicts the coldest LRU branch; the readout gives $H=1-C/\sum|r|$." />
 </Zoomable>
 ```
 

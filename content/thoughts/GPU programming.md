@@ -130,7 +130,7 @@ $$
 
 ```jsx imports={Zoomable,Roofline}
 <Zoomable label="Roofline for H100 SXM">
-  <Roofline caption="One H100 SXM in dense BF16: $P_{\max}=989.5\ \mathrm{TFLOP/s}$, $B=3.35\ \mathrm{TB/s}$. The plotted points use a weight-only model: each 2-byte weight is read from HBM once and contributes $2b$ FLOPs across $b$ token rows, giving $I\approx b$ FLOP/byte. Activation traffic and repeated weight loads are omitted. Under these assumptions, a $2048$-token prefill lies beyond the ridge. The roof is an upper bound; actual throughput can be lower. Attention and its context-dependent KV-cache traffic need a separate calculation." />
+  <Roofline caption="Dense BF16 H100 SXM: $P_{\max}=989.5\ \mathrm{TFLOP/s}$, $B=3.35\ \mathrm{TB/s}$. Weight-only decode reads each 2-byte weight once for $b$ rows, so $I\approx b$ FLOP/byte; activation traffic and repeated loads are omitted. A $2048$-token prefill exceeds the ridge under this model. The roof is an upper bound; attention and KV-cache traffic are excluded." />
 </Zoomable>
 ```
 
