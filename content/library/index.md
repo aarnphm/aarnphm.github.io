@@ -2,7 +2,7 @@
 date: '2025-10-06'
 description: aesthetics, taste, or whatever you want to call it.
 id: index
-modified: 2026-10-19 18:41:44 GMT-04:00
+modified: 2026-10-20 16:46:19 GMT-04:00
 pdfTitles:
   TAO/10.4159_9780674045385-002.pdf: 'Chapter 1: Inflating Deflationism'
   TAO/10.4159_9780674045385-003.pdf: 'Chapter 2: Minimal Truth, Internal Realism and Superassertibility'
@@ -23,10 +23,15 @@ tags:
 title: bibliothèque
 ---
 
-> In essence, an [antilibrary](https://nesslabs.com/antilibrary) is a collection of unread books. It represents an ode to self that reminds you about topics that one wants to explore.
+The Japanese has a term for this: 積ん読 (Tsundoku), i.e the habit of buying books and letting them pile up unread. A list of books I will need to finish at some points.
 
-The Japanese has a term for this: 積ん読 (Tsundoku), i.e the habit of buying books and letting them pile up unread.
+```quotes
+In essence, an [antilibrary](https://nesslabs.com/antilibrary) is a collection of unread books. It represents an ode to self that reminds you about topics that one wants to explore.
 
-Some booklist I like:
+Anne-Laure Le Cunff
+```
+
+Some booklist I particularly enjoy:
 
 - [Jacob G-W](https://jacobgw.com/books)
+- [Jacky](https://jzhao.xyz/books)

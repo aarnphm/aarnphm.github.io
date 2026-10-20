@@ -7,10 +7,7 @@ type Props = { caption?: string; pair?: Pair }
 
 type Kind = 'if-then' | 'if-else' | 'while' | 'seq'
 
-const PAIRS: Record<Pair, Kind[]> = {
-  branch: ['if-then', 'if-else'],
-  loop: ['while', 'seq'],
-}
+const PAIRS: Record<Pair, Kind[]> = { branch: ['if-then', 'if-else'], loop: ['while', 'seq'] }
 
 const CODE: Record<Kind, string[]> = {
   'if-then': ['if COND then S1;'],

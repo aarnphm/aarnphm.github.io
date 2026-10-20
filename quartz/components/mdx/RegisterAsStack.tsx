@@ -27,7 +27,11 @@ const RegisterAsStackImpl: QuartzMdxComponent<Props> = ({ caption, float = 'none
       <div class="ras-grid">
         <fieldset class="ras-stack">
           <legend>Stack (SP = stack pointer)</legend>
-          <div class="ras-steps" role="img" aria-label="Register bank used as a stack for y := x × (x + 7).">
+          <div
+            class="ras-steps"
+            role="img"
+            aria-label="Register bank used as a stack for y := x × (x + 7)."
+          >
             {STEPS.map((step, row) => (
               <div class="ras-row" key={`stack-${row}`} data-ras-sp={step.sp}>
                 <div class="ras-slots">
