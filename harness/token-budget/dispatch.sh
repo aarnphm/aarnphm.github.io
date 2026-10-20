@@ -51,8 +51,20 @@ EOF
           --json -o last-message.txt - < task.txt > events.ndjson 2> stderr.txt; echo $? > exit-code ) &
       ;;
     argon)
-      ( cd "$d" && argon --workspace "$WS" --browser none --stream --timeout 1800 \
-          < task.txt > events.ndjson 2> stderr.txt; echo $? > exit-code ) &
+      # agy can keep running after its result event; stop this run (and only it) after a grace period.
+      ( cd "$d"
+        argon --workspace "$WS" --browser none --stream --timeout 1800 \
+          < task.txt > events.ndjson 2> stderr.txt &
+        pid=$!
+        while kill -0 "$pid" 2> /dev/null; do
+          if rg -q '"event":\s*"result"' events.ndjson 2> /dev/null; then
+            sleep 30
+            kill -0 "$pid" 2> /dev/null && { pkill -TERM -P "$pid"; kill -TERM "$pid"; echo "killed after result" > watchdog; }
+            break
+          fi
+          sleep 10
+        done
+        wait "$pid"; echo $? > exit-code ) &
       ;;
   esac
 done

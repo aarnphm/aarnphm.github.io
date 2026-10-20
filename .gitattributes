@@ -15,7 +15,7 @@ worker-configuration.d.ts linguist-generated=true
 *.markdown linguist-language=Markdown
 quartz/static/pdfjs/** linguist-vendored
 content/thoughts/university/**/*.ipynb linguist-vendored
-# Token budget (quartz/scripts/check-token-budget.mjs, pre-commit) skips these: agents do not author them.
+# Token budget (harness/token-budget/check.py, pre-commit) skips these: agents do not author them.
 *.lock linguist-generated
 pnpm-lock.yaml linguist-generated
 package-lock.json linguist-generated

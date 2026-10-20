@@ -14,7 +14,7 @@ status=0
 for s in "$RUN"/*/brief.md; do
   s=$(dirname "$s")
   target=$(jq -r --arg slug "$(basename "$s")" \
-    '.files[] | select((.path | gsub("/"; "-")) == $slug) | .path' "$RUN/graph.json")
+    '.files[] | select((.path | gsub("[^A-Za-z0-9_.-]+"; "-")) == $slug) | .path' "$RUN/graph.json")
   mkdir -p "$s/baseline"
   "$HERE/baseline.py" "$RUN/graph.json" "$target" > "$s/baseline/proposal.json"
   for d in "$s"/*/; do
