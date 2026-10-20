@@ -11,7 +11,12 @@ const clientScriptRoots = [
   'quartz/runtime/',
 ]
 const inlineScriptPattern = /\.inline\.[jt]s$/
+const nonParseAssetPattern = /\.(?:scss|css|inline\.[jt]s)$/
 const scriptPattern = /\.[jt]sx?$/
+
+export function isParseSourceInput(filePath: string): boolean {
+  return !nonParseAssetPattern.test(filePath)
+}
 
 function isClientScriptChange(changePath: string, serverInputs: ReadonlySet<string>): boolean {
   // The build bundle loads an inline script as text, so its edits only change page chunks.

@@ -3,6 +3,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import { z } from 'zod'
 import type { BuildCtx } from './ctx'
+import { isParseSourceInput } from '../plugins/emitters/component-resources/change-classifier'
 import {
   PROCESSED_CONTENT_CACHE_VERSION,
   restoreProcessedContentCache,
@@ -88,20 +89,39 @@ async function filesIn(
         if (error.code === 'ENOENT') return []
         throw error
       })
+    const subdirs: string[] = []
     for (const entry of entries) {
       const next = path.join(relative, entry.name)
       if (excluded(next)) continue
-      if (entry.isDirectory()) await walk(next)
+      if (entry.isDirectory()) subdirs.push(next)
       else files.push(path.resolve(directory, next))
     }
+    if (subdirs.length > 0) await Promise.all(subdirs.map(walk))
   }
   await walk('')
   return files.sort()
 }
 
-async function fingerprint(files: string[]): Promise<string> {
+async function fingerprint(files: string[], memo?: Map<string, Promise<string>>): Promise<string> {
+  const readSig = memo
+    ? (filename: string) => {
+        const key = path.resolve(filename)
+        let pending = memo.get(key)
+        if (!pending) {
+          pending = fs.stat(key, { bigint: true }).then(
+            info => `${info.size}:${info.mtimeNs}:${info.ctimeNs}:${info.ino}:${info.mode}`,
+            error => {
+              if (error.code === 'ENOENT') return 'missing'
+              throw error
+            },
+          )
+          memo.set(key, pending)
+        }
+        return pending.then(sig => `${filename}:${sig}`)
+      }
+    : signature
   return hash(
-    (await mapConcurrent([...new Set(files)].sort(), defaultIoConcurrency, signature)).join('\n'),
+    (await mapConcurrent([...new Set(files)].sort(), defaultIoConcurrency, readSig)).join('\n'),
   )
 }
 
@@ -163,41 +183,32 @@ async function buildInputs(ctx: BuildCtx): Promise<BuildInputs> {
     ctx.cfg.plugins.filters.map(plugin => plugin.name),
     ctx.cfg.plugins.emitters.map(plugin => plugin.name),
   ])
-  const external = await fingerprint([
-    ...providers,
-    ...dependencies,
-    'package.json',
-    'pnpm-lock.yaml',
-    '.env',
+  const memo = new Map<string, Promise<string>>()
+  const [external, parseSourcesHash, content, sourceTreeHash] = await Promise.all([
+    fingerprint([...providers, ...dependencies, 'package.json', 'pnpm-lock.yaml', '.env'], memo),
+    fingerprint((globalThis.__quartzParseSourceInputs ?? []).filter(isParseSourceInput), memo),
+    fingerprint(
+      ctx.allFiles.map(file => path.resolve(ctx.argv.directory, file)),
+      memo,
+    ),
+    fingerprint(
+      [
+        ...sources,
+        ...skills,
+        ...(globalThis.__quartzBuildSourceInputs ?? []),
+        'quartz.config.ts',
+        'quartz.layout.ts',
+      ],
+      memo,
+    ),
   ])
   const parseIdentity = hash(
-    JSON.stringify([
-      common,
-      external,
-      ctx.allFiles.slice().sort(),
-      await fingerprint(globalThis.__quartzParseSourceInputs ?? []),
-    ]),
-  )
-  const content = await fingerprint(
-    ctx.allFiles.map(file => path.resolve(ctx.argv.directory, file)),
+    JSON.stringify([common, external, ctx.allFiles.slice().sort(), parseSourcesHash]),
   )
   return {
     content,
     parseIdentity,
-    inputs: hash(
-      JSON.stringify([
-        common,
-        external,
-        await fingerprint([
-          ...sources,
-          ...skills,
-          ...(globalThis.__quartzBuildSourceInputs ?? []),
-          'quartz.config.ts',
-          'quartz.layout.ts',
-        ]),
-        content,
-      ]),
-    ),
+    inputs: hash(JSON.stringify([common, external, sourceTreeHash, content])),
   }
 }
 

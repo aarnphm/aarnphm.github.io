@@ -127,3 +127,113 @@ test('a content edit during the initial build is rebuilt before becoming idle', 
     assets.deregister()
   }
 })
+
+test('dispose reports pending content edits queued while the build mutex is held', async () => {
+  const assets = registerHooks({
+    resolve(specifier, context, next) {
+      return next(specifier.endsWith('.inline') ? `${specifier}.ts` : specifier, context)
+    },
+    load(url, context, next) {
+      if (/\.(?:scss|css|inline\.ts)$/.test(url)) {
+        return {
+          format: 'module',
+          source: `export default ${JSON.stringify(readFileSync(new URL(url), 'utf8'))}`,
+          shortCircuit: true,
+        }
+      }
+      return next(url, context)
+    },
+  })
+  const { buildQuartz } = await import('./build')
+  const originalDirectory = process.cwd()
+  const directory = await mkdtemp(path.join(tmpdir(), 'quartz-dispose-pending-'))
+  const input = path.join(directory, 'content')
+  const output = path.join(directory, 'public')
+  await mkdir(input)
+  await mkdir(path.join(directory, 'quartz/static'), { recursive: true })
+  await mkdir(path.join(directory, '.agents/skills'), { recursive: true })
+  const source = path.join(input, 'note.md')
+  await writeFile(source, 'initial note content')
+  const colors = {
+    light: '#fff',
+    lightgray: '#eee',
+    gray: '#999',
+    darkgray: '#555',
+    dark: '#111',
+    secondary: '#123',
+    tertiary: '#456',
+    highlight: '#def',
+    textHighlight: '#fed',
+  }
+  const config: QuartzConfig = {
+    configuration: {
+      pageTitle: 'dispose fixture',
+      enableSPA: false,
+      enablePopovers: false,
+      analytics: null,
+      ignorePatterns: [],
+      defaultDateType: 'created',
+      locale: 'en-US',
+      theme: {
+        typography: { header: 'sans-serif', body: 'sans-serif', code: 'monospace' },
+        cdnCaching: false,
+        colors: { lightMode: colors, darkMode: colors },
+        fontOrigin: 'local',
+      },
+    },
+    plugins: {
+      transformers: [],
+      filters: [],
+      emitters: [
+        {
+          name: 'FixturePage',
+          async *emit(ctx, content) {
+            for (const [tree, file] of content) {
+              if (!file.data.slug) throw new Error('missing slug')
+              yield write({ ctx, slug: file.data.slug, ext: '.html', content: toHtml(tree) })
+            }
+          },
+        },
+      ],
+    },
+  }
+  const argv: Argv = {
+    directory: input,
+    output,
+    watch: true,
+    serve: false,
+    verbose: false,
+    force: false,
+    port: 0,
+    wsPort: 0,
+    concurrency: 1,
+  }
+  const mut = new Mutex()
+  process.chdir(directory)
+  resetProcessedContentCache()
+  let watching: Awaited<ReturnType<typeof buildQuartz>>
+  try {
+    watching = await buildQuartz(config, argv, mut, () => {})
+    assert.ok(watching)
+    // Hold the build mutex (as a concurrent source rebuild would) while a content edit lands
+    const release = await mut.acquire()
+    try {
+      await writeFile(source, 'edited while mutex held by source rebuild')
+      await delay(500)
+      const hadPending = await watching.dispose()
+      assert.equal(
+        hadPending,
+        true,
+        'expected dispose() to report pending content edits that had not yet rebuilt',
+      )
+    } finally {
+      release()
+    }
+  } finally {
+    await watching?.dispose()
+    resetProcessedContentCache()
+    process.chdir(originalDirectory)
+    await rm(directory, { recursive: true, force: true })
+    assets.deregister()
+  }
+})

@@ -68,6 +68,7 @@ export type ContentLayout =
   | 'triathlon'
   | 'course'
   | 'courses'
+  | 'university'
   | 'flashcards'
   | 'resource'
   | 'study-log'

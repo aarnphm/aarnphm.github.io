@@ -251,3 +251,77 @@ test('notebook files render Markdown, code, and stored outputs through the file 
   assert.match(html, /id="cell-2"/)
   assert.match(html, /id="notebook-md-1"/)
 })
+
+test('editing stylesheet or inline client script files in parseSourceInputs does not wipe cached Markdown parses', async t => {
+  const directory = await mkdtemp(join(tmpdir(), 'quartz-parse-style-script-'))
+  const previousInputs = globalThis.__quartzParseSourceInputs
+  t.after(async () => {
+    globalThis.__quartzParseSourceInputs = previousInputs
+    resetProcessedContentCache()
+    await rm(directory, { recursive: true, force: true })
+  })
+
+  const fp = join(directory, 'note.md') as FilePath
+  const styleFile = join(directory, 'widget.scss')
+  const inlineScriptFile = join(directory, 'widget.inline.ts')
+  const parserSourceFile = join(directory, 'parser-helper.ts')
+  await writeFile(fp, '# cached note\n')
+  await writeFile(styleFile, '.widget { color: red; }\n')
+  await writeFile(inlineScriptFile, 'console.log("v1")\n')
+  await writeFile(parserSourceFile, 'export const v = 1\n')
+
+  globalThis.__quartzParseSourceInputs = [styleFile, inlineScriptFile, parserSourceFile]
+  resetProcessedContentCache()
+
+  const [first] = await parseMarkdown(testCtx(directory, 'first'), [fp])
+  assert.equal(hasMarker(first, 'first'), true)
+
+  // Editing an SCSS file or inline script imported by an MDX component must not clear the AST cache
+  await writeFile(styleFile, '.widget { color: blue; padding: 4px; }\n')
+  await writeFile(inlineScriptFile, 'console.log("v2-updated")\n')
+
+  const [afterClientAssetEdit] = await parseMarkdown(testCtx(directory, 'second'), [fp])
+  assert.equal(afterClientAssetEdit, first)
+  assert.equal(hasMarker(afterClientAssetEdit, 'first'), true)
+
+  // Editing an actual parser source file must invalidate the AST cache when unpinned
+  await writeFile(parserSourceFile, 'export const v = 222\n')
+  const [afterParserEdit] = await parseMarkdown(testCtx(directory, 'second'), [fp])
+  assert.notEqual(afterParserEdit, first)
+  assert.equal(hasMarker(afterParserEdit, 'second'), true)
+})
+
+test('pinned bundle parseSourceSalt prevents mid-build disk edits from wiping cached Markdown parses before bundle reload', async t => {
+  const directory = await mkdtemp(join(tmpdir(), 'quartz-parse-pinned-salt-'))
+  const previousInputs = globalThis.__quartzParseSourceInputs
+  const previousSalt = (globalThis as { __quartzParseSourceSalt?: string }).__quartzParseSourceSalt
+  t.after(async () => {
+    globalThis.__quartzParseSourceInputs = previousInputs
+    ;(globalThis as { __quartzParseSourceSalt?: string }).__quartzParseSourceSalt = previousSalt
+    resetProcessedContentCache()
+    await rm(directory, { recursive: true, force: true })
+  })
+
+  const fp = join(directory, 'note.md') as FilePath
+  const parserSourceFile = join(directory, 'transformer.ts')
+  await writeFile(fp, '# note\n')
+  await writeFile(parserSourceFile, 'export const version = 1\n')
+
+  globalThis.__quartzParseSourceInputs = [parserSourceFile]
+  ;(globalThis as { __quartzParseSourceSalt?: string }).__quartzParseSourceSalt = 'bundle-epoch-1'
+  resetProcessedContentCache()
+
+  const [first] = await parseMarkdown(testCtx(directory, 'epoch-1'), [fp])
+  assert.equal(hasMarker(first, 'epoch-1'), true)
+
+  // Simulate a disk edit to transformer.ts while a content rebuild is running on bundle-epoch-1
+  await writeFile(parserSourceFile, 'export const version = 200\n')
+  const [duringContentRebuild] = await parseMarkdown(testCtx(directory, 'epoch-1-stale'), [fp])
+  assert.equal(duringContentRebuild, first)
+
+  // Once rebuildQuartzBundle finishes and updates __quartzParseSourceSalt, the cache invalidates cleanly
+  ;(globalThis as { __quartzParseSourceSalt?: string }).__quartzParseSourceSalt = 'bundle-epoch-2'
+  const [afterBundleReload] = await parseMarkdown(testCtx(directory, 'epoch-2'), [fp])
+  assert.notEqual(afterBundleReload, first)
+  assert.equal(hasMarker(afterBundleReload, 'epoch-2'), true)
+})

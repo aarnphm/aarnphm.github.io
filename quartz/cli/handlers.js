@@ -159,12 +159,14 @@ const sourceInputClosure = (metafile, isSeed, closure = new Set()) => {
   return [...closure].sort()
 }
 
+const nonParseAssetPattern = /\.(?:scss|css|inline\.[jt]s)$/
+
 export const parseSourceInputs = metafile =>
   sourceInputClosure(
     metafile,
     fp => parseSourceSeedPrefixes.some(prefix => fp === prefix || fp.startsWith(prefix)),
     new Set(['quartz.config.ts']),
-  )
+  ).filter(fp => !nonParseAssetPattern.test(fp))
 
 export const stravaPayloadSourceInputs = metafile =>
   sourceInputClosure(metafile, fp => fp === 'quartz/util/strava-payload.ts')
@@ -490,9 +492,10 @@ export async function handleBuild(argv) {
   let previousEmissionInputs = new Map()
 
   const disposeActiveBuild = async () => {
-    if (!activeBuild) return
-    await activeBuild.dispose()
+    if (!activeBuild) return false
+    const hadPending = Boolean(await activeBuild.dispose())
     activeBuild = null
+    return hadPending
   }
 
   const rebuildQuartzBundle = async () => {
@@ -510,7 +513,19 @@ export async function handleBuild(argv) {
         await promises.mkdir(path.dirname(output.path), { recursive: true })
         await promises.writeFile(output.path, output.contents)
       }
-      globalThis.__quartzParseSourceInputs = parseSourceInputs(result.metafile)
+      const parseInputs = parseSourceInputs(result.metafile)
+      globalThis.__quartzParseSourceInputs = parseInputs
+      const parseSignatures = await Promise.all(
+        parseInputs.map(async inputFp => {
+          try {
+            const stat = await promises.stat(inputFp, { bigint: true })
+            return `${inputFp}:${stat.mtimeNs}:${stat.ctimeNs}:${stat.size}:${stat.ino}`
+          } catch {
+            return `${inputFp}:missing`
+          }
+        }),
+      )
+      globalThis.__quartzParseSourceSalt = parseSignatures.join('|')
       globalThis.__quartzBuildSourceInputs = Object.keys(result.metafile.inputs)
       globalThis.__quartzStravaPayloadSourceInputs = stravaPayloadSourceInputs(result.metafile)
       previousServerSourceInputs = serverSourceInputs
@@ -569,18 +584,22 @@ export async function handleBuild(argv) {
     }
 
     const courses = scope.kind === 'courses'
+    let hadPendingContent = false
     if (activeBuild) {
+      hadPendingContent = await disposeActiveBuild()
       console.log(
         styleText(
           'yellow',
-          courses
+          courses && !hadPendingContent
             ? 'Detected a course source change, rebuilding the courses...'
-            : scope.kind === 'emitters'
+            : scope.kind === 'emitters' && !hadPendingContent
               ? `Detected an emission source change, rebuilding ${scope.emitters.join(', ')}...`
               : 'Detected a source code change, doing a hard rebuild...',
         ),
       )
-      await disposeActiveBuild()
+    }
+    if (hadPendingContent) {
+      globalThis.__quartzSourceEmissionSnapshot = undefined
     }
     activeBundle?.releaseModuleCaches()
     activeBundle = bundle
@@ -591,7 +610,13 @@ export async function handleBuild(argv) {
       buildMutex,
       clientRefresh,
       buildReason,
-      courses ? 'courses' : scope.kind === 'emitters' ? { emitters: scope.emitters } : 'site',
+      hadPendingContent
+        ? 'site'
+        : courses
+          ? 'courses'
+          : scope.kind === 'emitters'
+            ? { emitters: scope.emitters }
+            : 'site',
     )
     if (activeBuild?.ready) clientRefresh()
   }

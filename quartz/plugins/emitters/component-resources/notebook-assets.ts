@@ -318,7 +318,7 @@ async function writeNotebookPyrightWorkerAssets(ctx: BuildCtx): Promise<FilePath
     define: { __dirname: "'/'", __filename: "'/pyright-worker.js'" },
     platform: 'browser',
     format: 'esm',
-    splitting: true,
+    splitting: false,
     outdir,
     entryNames: '[name]',
     chunkNames: 'chunks/[name]-[hash]',
