@@ -718,11 +718,12 @@
 .vault-viewport {
   position: absolute;
   inset: 0;
-  display: grid;
   overflow: auto;
   overscroll-behavior: contain;
   cursor: grab;
   user-select: none;
+  touch-action: none;
+  scrollbar-width: none;
 }
 
 .vault-viewport:focus-visible {
@@ -731,9 +732,15 @@
 }
 
 .vault-viewport[data-dragging],
+.vault-viewport[data-dragging] .cn-can,
 .vault-viewport[data-pulling],
 .vault-viewport[data-pulling] .cn-can {
   cursor: grabbing;
+}
+
+.vault-canvas {
+  position: relative;
+  overflow: clip;
 }
 
 .vault-corner {
@@ -845,9 +852,12 @@
 }
 
 .vault-scene {
+  position: absolute;
+  top: 0;
+  left: 0;
   display: block;
-  margin: auto;
   overflow: visible;
+  transform-origin: 0 0;
 }
 
 .vault-scene :is(path, polygon, circle, ellipse) {
@@ -908,11 +918,10 @@
 
 .vault-scene .cn-can {
   cursor: pointer;
-  transition: transform 120ms ease-out;
 }
 
 .vault-scene .cn-can[data-lifted] {
-  visibility: hidden;
+  opacity: 0;
 }
 
 .vault-scene :is(.cn-band, .cn-lid) {
@@ -988,20 +997,9 @@
   pointer-events: none;
 }
 
-/* hover nudges a can 18 units toward the aisle: project(0, -18, 0) */
-@media (hover: hover) and (pointer: fine) {
-  .vault-scene > .cn-can:hover {
-    transform: translate(-15.6px, 9px);
-  }
-}
-
 /* the pulled copy leaves its slot along -y and rises; the lid detail shows once it is out */
 .vault-scene .vault-lift .cn-can {
-  transition: transform 220ms cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-.vault-scene .vault-lift .cn-can[data-pulling] {
-  transition: none;
+  will-change: transform;
 }
 
 .vault-scene .vault-lift .cn-can[data-out] {
@@ -1019,11 +1017,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .vault-scene .cn-can,
-  .vault-scene .vault-lift .cn-can {
-    transition: none;
-  }
-
   .vault-scene .vault-lift .cn-lid-detail {
     animation: none;
   }

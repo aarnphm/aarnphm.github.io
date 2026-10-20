@@ -26,10 +26,13 @@ const ZOOM = 1.25
 const MAX_SCALE = 3
 /** 1000 ft rim titles are 9.5 units tall; this scale shows them at about 9 px. */
 const READ_SCALE = 0.95
-const DRAG_PX = 4
-const PULL_ARM_PX = 8
-const PULL_ALIGN = Math.cos((41 * Math.PI) / 180)
+const DRAG_PX = 5
+const PULL_ALIGN = Math.cos((24 * Math.PI) / 180)
 const PULL_MS = 220
+const GLIDE_MS = 90
+const BAKE_MS = 120
+const MAX_SETTLING = 1
+const EASE = 'cubic-bezier(0.23, 1, 0.32, 1)'
 /** The page panel renders once a run of arrow keys rests this long. */
 const PAGE_MS = 140
 const WIDE_PX = 600
@@ -109,6 +112,7 @@ interface Film {
 interface Rack {
   abort: AbortController
   viewport: HTMLElement
+  canvas: HTMLElement
   svg: SVGSVGElement
   lift: SVGGElement
   cans: Map<number, SVGGElement>
@@ -135,15 +139,26 @@ export class VaultView extends BasesView {
   private scroller: HTMLElement | null = null
 
   private scale = 1
+  private bakedScale = 1
   private fitScale = 1
   private viewW = 0
   private viewH = 0
+  private bakeTimer: number | null = null
+  private aim: { left: number; top: number } | null = null
+  private glideFrame = 0
+  private glideAt = 0
+  private writtenScroll = { left: -1, top: -1 }
   /** The first frame reads the top-left of the first bay; later rebuilds keep the camera. */
   private framed = false
 
   private current = -1
   private currentPath: string | null = null
   private pulled = new Map<SVGGElement, SVGGElement>()
+  private settling = new Map<SVGGElement, { finish: () => void }>()
+  private activePullAnim: Animation | null = null
+  private pulledAt = 0
+  private pullFrom = 0
+  private pullDuration = PULL_MS
   /** Lifted can hover-link fired for, once per lift; -1 for none. */
   private hovering = -1
   private linked = false
@@ -212,7 +227,13 @@ export class VaultView extends BasesView {
   onunload(): void {
     if (this.rebuildRaf !== null) cancelAnimationFrame(this.rebuildRaf)
     if (this.pageTimer !== null) window.clearTimeout(this.pageTimer)
-    this.rebuildRaf = this.pageTimer = null
+    if (this.bakeTimer !== null) window.clearTimeout(this.bakeTimer)
+    this.cancelGlide()
+    this.activePullAnim?.cancel()
+    this.activePullAnim = null
+    for (const s of this.settling.values()) s.finish()
+    this.settling.clear()
+    this.rebuildRaf = this.pageTimer = this.bakeTimer = null
     this.closeHover()
     // The pane may hold unsaved edits: the view lets go of it and never closes it.
     this.editor.forget()
@@ -261,6 +282,15 @@ export class VaultView extends BasesView {
     const keep = previous && this.framed
     const left = previous?.viewport.scrollLeft ?? 0
     const top = previous?.viewport.scrollTop ?? 0
+    this.cancelGlide()
+    if (this.bakeTimer !== null) {
+      window.clearTimeout(this.bakeTimer)
+      this.bakeTimer = null
+    }
+    this.activePullAnim?.cancel()
+    this.activePullAnim = null
+    for (const s of this.settling.values()) s.finish()
+    this.settling.clear()
     previous?.abort.abort()
     for (const clone of this.pulled.values()) clone.remove()
     this.pulled.clear()
@@ -281,8 +311,8 @@ export class VaultView extends BasesView {
     this.fitHeight()
     this.measure()
     if (keep) {
-      this.setScale(Math.max(this.fitScale, this.scale))
-      this.rack.viewport.scrollTo({ left, top, behavior: 'instant' })
+      this.setScale(Math.max(this.fitScale, this.scale), this.viewW / 2, this.viewH / 2, true)
+      this.writeScroll(left, top)
     } else this.frameStart()
     // A rebuild keeps the pick when its note is still in the view.
     const again = this.currentPath ? films.findIndex(f => f.file.path === this.currentPath) : -1
@@ -392,31 +422,95 @@ export class VaultView extends BasesView {
     this.fitScale = Math.min(1, (this.viewW - 32) / W, (this.viewH - 32) / H)
   }
 
-  private offset(): [number, number] {
+  private pad(k = this.scale): [number, number] {
     const { width: W, height: H } = this.rack!.box
     return [
-      Math.max(0, (this.viewW - W * this.scale) / 2),
-      Math.max(0, (this.viewH - H * this.scale) / 2),
+      Math.round(this.viewW - Math.min(this.viewW, W * k) * 0.3),
+      Math.round(this.viewH - Math.min(this.viewH, H * k) * 0.3),
     ]
   }
 
-  /** Zooms about a viewport point, the centre by default, keeping it in place. */
-  private setScale(value: number, ax = this.viewW / 2, ay = this.viewH / 2): void {
+  private writeScroll(left: number, top: number): void {
     const rack = this.rack
     if (!rack) return
-    const { viewport, svg, box } = rack
-    const [ox, oy] = this.offset()
-    const sx = (viewport.scrollLeft + ax - ox) / this.scale
-    const sy = (viewport.scrollTop + ay - oy) / this.scale
+    const l = Math.max(0, Math.round(left))
+    const t = Math.max(0, Math.round(top))
+    this.writtenScroll = { left: l, top: t }
+    rack.viewport.scrollTo({ left: l, top: t, behavior: 'instant' })
+  }
+
+  private cancelGlide(): void {
+    this.aim = null
+    if (this.glideFrame) {
+      cancelAnimationFrame(this.glideFrame)
+      this.glideFrame = 0
+    }
+  }
+
+  private layoutCanvas(k = this.scale): void {
+    const rack = this.rack
+    if (!rack) return
+    const { canvas, svg, box } = rack
+    const [px, py] = this.pad(k)
+    canvas.style.width = `${Math.round(box.width * k + px * 2)}px`
+    canvas.style.height = `${Math.round(box.height * k + py * 2)}px`
+    svg.style.left = `${px}px`
+    svg.style.top = `${py}px`
+  }
+
+  private applySceneScale(): void {
+    const svg = this.rack?.svg
+    if (!svg) return
+    const ratio = this.bakedScale > 0 ? this.scale / this.bakedScale : 1
+    if (Math.abs(ratio - 1) < 0.001) {
+      svg.style.transform = ''
+      svg.style.willChange = 'auto'
+    } else {
+      svg.style.transform = `scale(${ratio})`
+      svg.style.willChange = 'transform'
+    }
+  }
+
+  private bakeScale(nextScale = this.scale): void {
+    if (this.bakeTimer !== null) {
+      window.clearTimeout(this.bakeTimer)
+      this.bakeTimer = null
+    }
+    const rack = this.rack
+    if (!rack) return
+    this.bakedScale = nextScale
+    rack.svg.setAttribute('width', String(Math.round(rack.box.width * this.bakedScale)))
+    rack.svg.setAttribute('height', String(Math.round(rack.box.height * this.bakedScale)))
+    this.layoutCanvas(this.bakedScale)
+    this.applySceneScale()
+  }
+
+  /** Zooms about a viewport point, the centre by default, keeping it in place. */
+  private setScale(
+    value: number,
+    ax = this.viewW / 2,
+    ay = this.viewH / 2,
+    immediate = false,
+  ): void {
+    const rack = this.rack
+    if (!rack) return
+    this.cancelGlide()
+    const { viewport } = rack
+    const prevScale = this.scale
+    const [ox, oy] = this.pad(prevScale)
+    const wx = (viewport.scrollLeft + ax - ox) / prevScale
+    const wy = (viewport.scrollTop + ay - oy) / prevScale
     this.scale = Math.min(MAX_SCALE, Math.max(this.fitScale, value))
-    svg.setAttribute('width', String(Math.round(box.width * this.scale)))
-    svg.setAttribute('height', String(Math.round(box.height * this.scale)))
-    const [nx, ny] = this.offset()
-    viewport.scrollTo({
-      left: sx * this.scale + nx - ax,
-      top: sy * this.scale + ny - ay,
-      behavior: 'instant',
-    })
+    const [nx, ny] = this.pad(this.scale)
+    if (immediate) {
+      this.bakeScale(this.scale)
+    } else {
+      this.layoutCanvas(this.scale)
+      this.applySceneScale()
+      if (this.bakeTimer !== null) window.clearTimeout(this.bakeTimer)
+      this.bakeTimer = window.setTimeout(() => this.bakeScale(this.scale), BAKE_MS)
+    }
+    this.writeScroll(wx * this.scale + nx - ax, wy * this.scale + ny - ay)
     const button = (action: string) =>
       this.root.querySelector<HTMLButtonElement>(`[data-camera="${action}"]`)
     const zoomOut = button('out')
@@ -429,30 +523,77 @@ export class VaultView extends BasesView {
     const rack = this.rack
     if (!rack) return
     const { box, start } = rack
-    this.setScale(Math.max(this.fitScale, READ_SCALE))
-    rack.viewport.scrollTo({
-      left: (start[0] - box.x) * this.scale - 24,
-      top: (start[1] - box.y) * this.scale - 48,
-      behavior: 'instant',
-    })
+    this.setScale(Math.max(this.fitScale, READ_SCALE), this.viewW / 2, this.viewH / 2, true)
+    const [ox, oy] = this.pad(this.scale)
+    this.writeScroll(
+      ox + (start[0] - box.x) * this.scale - 24,
+      oy + (start[1] - box.y) * this.scale - 48,
+    )
     this.framed = true
   }
 
   private fit(): void {
-    this.setScale(this.fitScale)
-    this.rack?.viewport.scrollTo({ left: 0, top: 0, behavior: 'instant' })
+    const rack = this.rack
+    if (!rack) return
+    this.setScale(this.fitScale, this.viewW / 2, this.viewH / 2, true)
+    const [ox, oy] = this.pad(this.fitScale)
+    this.writeScroll(
+      ox + (rack.box.width * this.fitScale - this.viewW) / 2,
+      oy + (rack.box.height * this.fitScale - this.viewH) / 2,
+    )
+  }
+
+  private stepGlide(now = performance.now()): void {
+    this.glideFrame = 0
+    const rack = this.rack
+    const aim = this.aim
+    if (!rack || !aim) return
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const dt = now - this.glideAt
+    this.glideAt = now
+    const curLeft = rack.viewport.scrollLeft
+    const curTop = rack.viewport.scrollTop
+    const dx = aim.left - curLeft
+    const dy = aim.top - curTop
+    if (reduced || dt <= 0 || Math.hypot(dx, dy) < 1) {
+      this.aim = null
+      this.writeScroll(aim.left, aim.top)
+      return
+    }
+    const k = 1 - Math.exp(-Math.min(64, Math.max(8, dt)) / GLIDE_MS)
+    this.writeScroll(curLeft + dx * k, curTop + dy * k)
+    if (Math.hypot(aim.left - rack.viewport.scrollLeft, aim.top - rack.viewport.scrollTop) < 1) {
+      this.aim = null
+      this.writeScroll(aim.left, aim.top)
+      return
+    }
+    this.glideFrame = requestAnimationFrame(nextNow => this.stepGlide(nextNow))
   }
 
   private lookAt(x: number, y: number): void {
     const rack = this.rack
     if (!rack) return
-    const [ox, oy] = this.offset()
+    const [ox, oy] = this.pad(this.scale)
+    const targetLeft = Math.max(0, Math.round((x - rack.box.x) * this.scale + ox - this.viewW / 2))
+    const targetTop = Math.max(0, Math.round((y - rack.box.y) * this.scale + oy - this.viewH / 2))
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    rack.viewport.scrollTo({
-      left: (x - rack.box.x) * this.scale + ox - this.viewW / 2,
-      top: (y - rack.box.y) * this.scale + oy - this.viewH / 2,
-      behavior: reduced ? 'instant' : 'smooth',
-    })
+    if (reduced) {
+      this.cancelGlide()
+      this.writeScroll(targetLeft, targetTop)
+      return
+    }
+    const firstStep = !this.aim
+    this.aim = { left: targetLeft, top: targetTop }
+    if (firstStep) {
+      this.glideAt = performance.now()
+      const curLeft = rack.viewport.scrollLeft
+      const curTop = rack.viewport.scrollTop
+      const k = 1 - Math.exp(-16 / GLIDE_MS)
+      this.writeScroll(curLeft + (targetLeft - curLeft) * k, curTop + (targetTop - curTop) * k)
+    }
+    if (!this.glideFrame && this.aim) {
+      this.glideFrame = requestAnimationFrame(nextNow => this.stepGlide(nextNow))
+    }
   }
 
   // ---- selection
@@ -462,26 +603,33 @@ export class VaultView extends BasesView {
     const rack = this.rack
     const can = rack?.cans.get(index)
     if (!rack || !can) return
+    const [px, py] = this.pullOf(can)
     if (index !== this.current) {
       this.pullToken++
       this.putBack()
       this.current = index
       this.currentPath = this.films[index].file.path
       this.hovering = -1
-      let clone = this.pulled.get(can)
-      if (!clone) {
-        clone = can.cloneNode(true) as SVGGElement
-        clone.querySelector('.cn-rings')?.remove()
-        const detail = lidDetail(clone, this.films[index].title)
-        if (detail) clone.append(detail)
-        can.dataset.lifted = ''
-        this.pulled.set(can, clone)
-        rack.lift.append(clone)
-      }
-      if (clone.dataset.out === undefined) {
-        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) clone.dataset.out = ''
-        // Two frames: the copy must paint in its slot before it can transition out of it.
-        else requestAnimationFrame(() => requestAnimationFrame(() => (clone.dataset.out = '')))
+      const clone = this.mountClone(index)
+      if (clone) {
+        clone.dataset.out = ''
+        clone.dataset.progress = '1'
+        this.activePullAnim?.cancel()
+        this.activePullAnim = null
+        this.pulledAt = performance.now()
+        this.pullFrom = 0
+        this.pullDuration = PULL_MS
+        const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        if (!reduced && typeof clone.animate === 'function') {
+          const anim = clone.animate(
+            [{ transform: 'translate(0px, 0px)' }, { transform: `translate(${px}px, ${py}px)` }],
+            { duration: PULL_MS, easing: EASE },
+          )
+          this.activePullAnim = anim
+          anim.onfinish = () => {
+            if (this.activePullAnim === anim) this.activePullAnim = null
+          }
+        }
       }
       const row = rack.rows.get(index)
       row?.querySelector('.vault-entry-select')?.setAttribute('aria-current', 'true')
@@ -489,8 +637,6 @@ export class VaultView extends BasesView {
       this.liveEl.setText(`${this.films[index].title}, ${index + 1} of ${this.films.length}`)
     }
     if (camera) {
-      const px = parseFloat(can.style.getPropertyValue('--px')) || 0
-      const py = parseFloat(can.style.getPropertyValue('--py')) || 0
       this.lookAt(Number(can.dataset.cx) + px * 0.6, Number(can.dataset.cy) + py * 0.6)
     }
     this.root.toggleClass('has-selection', true)
@@ -500,8 +646,49 @@ export class VaultView extends BasesView {
     else this.showPage(index)
   }
 
+  private sendHome(can: SVGGElement, clone: SVGGElement, from: number): void {
+    this.pulled.delete(can)
+    delete clone.dataset.out
+    delete clone.dataset.pulling
+    delete clone.dataset.progress
+    clone.style.transition = ''
+    clone.style.transform = ''
+    clone.style.pointerEvents = 'none'
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (reduced || from < 0.08 || typeof clone.animate !== 'function') {
+      clone.remove()
+      if (!this.pulled.has(can)) delete can.dataset.lifted
+      return
+    }
+    if (this.settling.size >= MAX_SETTLING) this.settling.values().next().value?.finish()
+    const [px, py] = this.pullOf(can)
+    const duration = Math.max(1, Math.round(PULL_MS * from))
+    let done = false
+    let timer: number | undefined
+    const anim = clone.animate(
+      [
+        { transform: `translate(${px * from}px, ${py * from}px)` },
+        { transform: 'translate(0px, 0px)' },
+      ],
+      { duration, easing: EASE, fill: 'both' },
+    )
+    const finish = () => {
+      if (done) return
+      done = true
+      if (timer !== undefined) window.clearTimeout(timer)
+      anim.onfinish = null
+      anim.cancel()
+      this.settling.delete(can)
+      clone.remove()
+      if (!this.pulled.has(can)) delete can.dataset.lifted
+    }
+    anim.onfinish = finish
+    timer = window.setTimeout(finish, duration + 20)
+    this.settling.set(can, { finish })
+  }
+
   /** Returns the pulled can to its slot. */
-  private putBack(): void {
+  private putBack(from?: number): void {
     const rack = this.rack
     if (!rack || this.current < 0) return
     const can = rack.cans.get(this.current)
@@ -511,24 +698,22 @@ export class VaultView extends BasesView {
       ?.removeAttribute('aria-current')
     this.closeHover()
     const clone = can && this.pulled.get(can)
-    if (!can || !clone) return
-    this.pulled.delete(can)
-    delete clone.dataset.pulling
-    clone.style.transition = ''
-    clone.style.transform = ''
-    delete clone.dataset.out
-    const home = () => {
-      clone.remove()
-      if (!this.pulled.has(can)) delete can.dataset.lifted
+    if (!can || !clone) {
+      this.activePullAnim?.cancel()
+      this.activePullAnim = null
+      return
     }
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) home()
-    else window.setTimeout(home, PULL_MS + 20)
+    const [px, py] = this.pullOf(can)
+    const start = from ?? this.pullProgress(clone, px, py)
+    this.activePullAnim?.cancel()
+    this.activePullAnim = null
+    this.sendHome(can, clone, start)
   }
 
   /** Clears the pick: the can goes back, the page panel closes, an editor pane keeps its note. */
-  private release(): void {
+  private release(from?: number): void {
     this.pullToken++
-    this.putBack()
+    this.putBack(from)
     this.current = -1
     this.currentPath = null
     this.corners(-1)
@@ -544,6 +729,21 @@ export class VaultView extends BasesView {
   }
 
   private pullProgress(clone: SVGGElement, px: number, py: number): number {
+    if (clone.dataset.pulling !== undefined && clone.dataset.progress !== undefined) {
+      const p = Number(clone.dataset.progress)
+      if (Number.isFinite(p)) return Math.min(1, Math.max(0, p))
+    }
+    if (clone.dataset.pulling === undefined && this.activePullAnim) {
+      const elapsed = performance.now() - this.pulledAt
+      if (elapsed < 16) return this.pullFrom
+      if (elapsed >= this.pullDuration) return 1
+      const u = 1 - elapsed / this.pullDuration
+      return this.pullFrom + (1 - this.pullFrom) * (1 - u * u * u)
+    }
+    if (clone.dataset.progress !== undefined) {
+      const p = Number(clone.dataset.progress)
+      if (Number.isFinite(p)) return Math.min(1, Math.max(0, p))
+    }
     const len2 = px * px + py * py
     const resting = clone.dataset.out !== undefined ? 1 : 0
     if (len2 < 1) return resting
@@ -555,11 +755,7 @@ export class VaultView extends BasesView {
   }
 
   private sceneScale(): number {
-    const svg = this.rack?.svg
-    if (!svg) return 1
-    const laid = svg.width.baseVal.value
-    const rendered = svg.getBoundingClientRect().width
-    return laid > 0 && rendered > 0 ? rendered / laid : 1
+    return this.scale
   }
 
   private mountClone(index: number): SVGGElement | undefined {
@@ -569,6 +765,7 @@ export class VaultView extends BasesView {
     if (!rack || !can || !film) return
     const existing = this.pulled.get(can)
     if (existing) return existing
+    this.settling.get(can)?.finish()
     const clone = can.cloneNode(true) as SVGGElement
     clone.querySelector('.cn-rings')?.remove()
     const detail = lidDetail(clone, film.title)
@@ -587,52 +784,38 @@ export class VaultView extends BasesView {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const [px, py] = this.pullOf(can)
     const out = t >= 0.5
-    const token = ++this.pullToken
+    this.pullToken++
+    this.activePullAnim?.cancel()
+    this.activePullAnim = null
     delete clone.dataset.pulling
-    if (reduced) {
-      clone.style.transition = ''
-      clone.style.transform = ''
-      this.settlePull(can, clone, index, out, token)
-      return
-    }
-    const duration = Math.max(90, Math.round(PULL_MS * Math.abs(out ? 1 - t : t)))
-    clone.style.transition = `transform ${duration}ms cubic-bezier(0.23, 1, 0.32, 1)`
-    window.requestAnimationFrame(() => {
-      if (token !== this.pullToken || !clone.isConnected) return
-      clone.style.transform = out ? `translate(${px}px, ${py}px)` : 'none'
-    })
-    window.setTimeout(() => this.settlePull(can, clone, index, out, token), duration + 30)
-  }
-
-  private settlePull(
-    can: SVGGElement,
-    clone: SVGGElement,
-    index: number,
-    out: boolean,
-    token: number,
-  ): void {
-    if (!clone.isConnected) return
     clone.style.transition = ''
     clone.style.transform = ''
-    if (token !== this.pullToken) {
-      if (this.pulled.get(can) === clone && this.current !== index) {
-        this.pulled.delete(can)
-        delete clone.dataset.out
-        clone.remove()
-        if (!this.pulled.has(can)) delete can.dataset.lifted
-      }
+    if (!out) {
+      if (this.current === index) this.release(t)
+      else this.sendHome(can, clone, t)
       return
     }
-    if (out) {
-      clone.dataset.out = ''
-      if (this.current !== index) this.select(index, false, false, true)
-      return
+    clone.dataset.out = ''
+    clone.dataset.progress = '1'
+    if (this.current !== index) {
+      this.select(index, false, false, true)
     }
-    delete clone.dataset.out
-    clone.remove()
-    this.pulled.delete(can)
-    if (!this.pulled.has(can)) delete can.dataset.lifted
-    if (this.current === index) this.release()
+    if (reduced || t >= 0.999 || typeof clone.animate !== 'function') return
+    const duration = Math.max(1, Math.round(PULL_MS * (1 - t)))
+    this.pulledAt = performance.now()
+    this.pullFrom = t
+    this.pullDuration = duration
+    const anim = clone.animate(
+      [
+        { transform: `translate(${px * t}px, ${py * t}px)` },
+        { transform: `translate(${px}px, ${py}px)` },
+      ],
+      { duration, easing: EASE },
+    )
+    this.activePullAnim = anim
+    anim.onfinish = () => {
+      if (this.activePullAnim === anim) this.activePullAnim = null
+    }
   }
 
   private step(delta: number): void {
@@ -817,9 +1000,15 @@ export class VaultView extends BasesView {
     full
       .createSvg('svg', { attr: { viewBox: '0 0 24 24', 'aria-hidden': 'true' } })
       .createSvg('path', { attr: { d: FULLSCREEN_ICON } })
+    const canvas = document.createElement('div')
+    canvas.className = 'vault-canvas'
+    svg.remove()
+    canvas.append(svg)
+    viewport.append(canvas)
     const rack: Rack = {
       abort,
       viewport,
+      canvas,
       svg,
       lift,
       cans,
@@ -863,19 +1052,63 @@ export class VaultView extends BasesView {
     }
     let gesture: PendingGesture | PanGesture | PullGesture | undefined
     let dragged = false
+    let draggedResetTimer: number | null = null
+    const clearDragged = () => {
+      dragged = false
+      if (draggedResetTimer !== null) {
+        window.clearTimeout(draggedResetTimer)
+        draggedResetTimer = null
+      }
+    }
+    const markDragged = () => {
+      dragged = true
+      if (draggedResetTimer !== null) window.clearTimeout(draggedResetTimer)
+      draggedResetTimer = window.setTimeout(() => {
+        draggedResetTimer = null
+        dragged = false
+      }, 0)
+    }
+    const capturePointer = (pointerId: number) => {
+      try {
+        viewport.setPointerCapture(pointerId)
+      } catch {}
+    }
+    const releasePointer = (pointerId: number) => {
+      try {
+        if (viewport.hasPointerCapture(pointerId)) viewport.releasePointerCapture(pointerId)
+      } catch {}
+    }
+    signal.addEventListener('abort', clearDragged, { once: true })
     const placePull = (index: number, t: number) => {
       const can = rack.cans.get(index)
       const clone = can && this.pulled.get(can)
       if (!can || !clone) return
       const [px, py] = this.pullOf(can)
+      this.activePullAnim?.cancel()
+      this.activePullAnim = null
       clone.dataset.pulling = ''
+      clone.dataset.progress = String(t)
       clone.style.transition = 'none'
       clone.style.transform = `translate(${px * t}px, ${py * t}px)`
     }
     viewport.addEventListener(
+      'scroll',
+      () => {
+        if (
+          Math.abs(viewport.scrollLeft - this.writtenScroll.left) > 1 ||
+          Math.abs(viewport.scrollTop - this.writtenScroll.top) > 1
+        ) {
+          this.cancelGlide()
+        }
+      },
+      { passive: true, signal },
+    )
+    viewport.addEventListener(
       'pointerdown',
       evt => {
-        if (evt.button !== 0 || evt.pointerType === 'touch') return
+        clearDragged()
+        if (evt.button !== 0 || evt.isPrimary === false) return
+        this.cancelGlide()
         const node = (evt.target as Element).closest<SVGGElement>('.cn-can')
         const index = Number(node?.dataset.index ?? -1)
         const can = rack.cans.get(index)
@@ -898,20 +1131,29 @@ export class VaultView extends BasesView {
       'pointermove',
       evt => {
         if (gesture && evt.pointerId === gesture.id) {
+          if (evt.buttons === 0) {
+            endGesture(evt)
+            return
+          }
           const dx = evt.clientX - gesture.x
           const dy = evt.clientY - gesture.y
+          const dist = Math.hypot(dx, dy)
           if (gesture.mode === 'pending') {
-            const arm = gesture.index >= 0 ? PULL_ARM_PX : DRAG_PX
-            if (Math.hypot(dx, dy) < arm) return
+            if (dist < DRAG_PX) return
             const len = Math.hypot(gesture.px, gesture.py)
-            const align =
-              gesture.index >= 0 && len > 0
-                ? Math.abs(dx * gesture.px + dy * gesture.py) / (len * Math.hypot(dx, dy))
-                : 0
-            if (align >= PULL_ALIGN) {
-              const can = rack.cans.get(gesture.index)
-              const existing = can && this.pulled.get(can)
-              const live = existing ? this.pullProgress(existing, gesture.px, gesture.py) : 0
+            const dot =
+              gesture.index >= 0 && len > 0 ? (dx * gesture.px + dy * gesture.py) / (len * dist) : 0
+            const can = gesture.index >= 0 ? rack.cans.get(gesture.index) : undefined
+            const existing = can ? this.pulled.get(can) : undefined
+            const isOut = Boolean(existing && existing.dataset.out !== undefined)
+            const live = existing ? this.pullProgress(existing, gesture.px, gesture.py) : 0
+            const canPullOut = !isOut && dot >= PULL_ALIGN
+            const canPushIn = isOut && dot <= -PULL_ALIGN
+            if (can && (canPullOut || canPushIn)) {
+              const startT = canPushIn ? Math.max(0.5, live) : live
+              if (this.current >= 0 && this.current !== gesture.index) this.release()
+              this.activePullAnim?.cancel()
+              this.activePullAnim = null
               const clone = existing ?? this.mountClone(gesture.index)
               if (!clone) {
                 gesture = {
@@ -924,8 +1166,8 @@ export class VaultView extends BasesView {
                   moved: false,
                 }
               } else {
-                placePull(gesture.index, live)
-                viewport.setPointerCapture(evt.pointerId)
+                placePull(gesture.index, startT)
+                capturePointer(evt.pointerId)
                 viewport.dataset.pulling = ''
                 gesture = {
                   mode: 'pull',
@@ -935,8 +1177,8 @@ export class VaultView extends BasesView {
                   index: gesture.index,
                   px: gesture.px,
                   py: gesture.py,
-                  start: live,
-                  t: live,
+                  start: startT,
+                  t: startT,
                 }
               }
             } else {
@@ -957,14 +1199,10 @@ export class VaultView extends BasesView {
             if (!gesture.moved && Math.hypot(panDx, panDy) < DRAG_PX) return
             if (!gesture.moved) {
               gesture.moved = true
-              viewport.setPointerCapture(evt.pointerId)
+              capturePointer(evt.pointerId)
               viewport.dataset.dragging = ''
             }
-            viewport.scrollTo({
-              left: gesture.left - panDx,
-              top: gesture.top - panDy,
-              behavior: 'instant',
-            })
+            this.writeScroll(gesture.left - panDx, gesture.top - panDy)
             return
           }
           if (gesture.mode !== 'pull') return
@@ -995,17 +1233,17 @@ export class VaultView extends BasesView {
     const endGesture = (evt?: PointerEvent) => {
       const active = gesture
       if (!active) return
-      if (evt && evt.pointerId !== active.id) return
+      if (evt && evt.pointerId !== undefined && evt.pointerId !== active.id) return
       gesture = undefined
       delete viewport.dataset.dragging
       delete viewport.dataset.pulling
-      if (viewport.hasPointerCapture(active.id)) viewport.releasePointerCapture(active.id)
+      releasePointer(active.id)
       if (active.mode === 'pan') {
-        if (active.moved) dragged = true
+        if (active.moved) markDragged()
         return
       }
       if (active.mode === 'pull') {
-        dragged = true
+        markDragged()
         this.finishPull(active.index, active.t)
       }
     }
@@ -1013,11 +1251,26 @@ export class VaultView extends BasesView {
     viewport.addEventListener('pointercancel', endGesture, { signal })
     viewport.addEventListener('lostpointercapture', endGesture, { signal })
     viewport.addEventListener(
+      'wheel',
+      evt => {
+        if (!evt.ctrlKey && !evt.metaKey) return
+        evt.preventDefault()
+        const rect = viewport.getBoundingClientRect()
+        const factor = Math.exp(-evt.deltaY * 0.0025)
+        this.setScale(
+          this.scale * factor,
+          (evt.clientX ?? rect.left + this.viewW / 2) - rect.left,
+          (evt.clientY ?? rect.top + this.viewH / 2) - rect.top,
+        )
+      },
+      { passive: false, signal },
+    )
+    viewport.addEventListener(
       'click',
       evt => {
         // After a drag the click is dropped, so no can lifts or opens.
         if (dragged) {
-          dragged = false
+          clearDragged()
           return
         }
         const can = (evt.target as Element).closest<SVGGElement>('.cn-can')
@@ -1031,6 +1284,7 @@ export class VaultView extends BasesView {
     viewport.addEventListener(
       'keydown',
       evt => {
+        clearDragged()
         if (evt.altKey || evt.ctrlKey || evt.metaKey) {
           if (evt.key === 'Enter' && this.current >= 0) this.openNote(this.current, evt)
           return
@@ -1074,7 +1328,9 @@ export class VaultView extends BasesView {
     const observer = new ResizeObserver(() => {
       this.root.dataset.layout = this.root.clientWidth >= WIDE_PX ? 'wide' : 'narrow'
       this.measure()
-      if (this.scale < this.fitScale) this.setScale(this.fitScale)
+      if (this.scale < this.fitScale)
+        this.setScale(this.fitScale, this.viewW / 2, this.viewH / 2, true)
+      else this.layoutCanvas(this.scale)
     })
     observer.observe(viewport)
     signal.addEventListener('abort', () => observer.disconnect(), { once: true })

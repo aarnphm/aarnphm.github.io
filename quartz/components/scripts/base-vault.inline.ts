@@ -6,15 +6,11 @@ const ZOOM_STEP = 1.25
 const MAX_SCALE = 3
 // 1000 ft rim titles are 9.5 units tall in the drawing; this scale shows them at about 9 px.
 const READ_SCALE = 0.95
-const DRAG_PX = 4
-// A press on a can locks as a pull once it has moved this far, so a short slip still clicks.
-const PULL_ARM_PX = 8
-// Within this angle of the pull axis the drag slides the can; a wider drag pans the rack.
-const PULL_ALIGN = Math.cos((41 * Math.PI) / 180)
+const DRAG_PX = 5
+// Within this angle of the active pull direction the drag slides the can; any other angle pans.
+const PULL_ALIGN = Math.cos((24 * Math.PI) / 180)
 const PULL_MS = 220
-// Hover pulls a can after the pointer rests this long, so sweeping across the rack does not leave
-// a trail of cans in transit.
-const HOVER_MS = 90
+const GLIDE_MS = 90
 const BAKE_MS = 120
 const UPGRADE_DELAY_MS = 300
 const PRELOAD = 3
@@ -99,15 +95,51 @@ export function initializeVault(root: HTMLElement): void {
   const previous = dialog.querySelector<HTMLButtonElement>('[data-card="previous"]')
   const next = dialog.querySelector<HTMLButtonElement>('[data-card="next"]')
 
+  const canvas = document.createElement('div')
+  canvas.className = 'vault-canvas'
+  svg.remove()
+  canvas.append(svg)
+  viewport.append(canvas)
+
   // Cached sizes: the viewport's from the observer, the drawing's from its viewBox.
   let viewW = viewport.clientWidth
   let viewH = viewport.clientHeight
   let scale = 1
   let bakedScale = 1
   let fitScale = 1
-  let bakeTimer: number | undefined
-  const behavior = (): ScrollBehavior => (reduced.matches ? 'instant' : 'smooth')
-  const offset = (k = scale) => [Math.max(0, (viewW - W * k) / 2), Math.max(0, (viewH - H * k) / 2)]
+  let bakeTimer: ReturnType<typeof setTimeout> | undefined
+  let aim: { left: number; top: number } | undefined
+  let glideFrame = 0
+  let glideAt = 0
+  let inGlideStep = false
+  let writtenScroll = { left: -1, top: -1 }
+  const pad = (k = scale): [number, number] => [
+    Math.round(viewW - Math.min(viewW, W * k) * 0.3),
+    Math.round(viewH - Math.min(viewH, H * k) * 0.3),
+  ]
+
+  const writeScroll = (left: number, top: number) => {
+    const l = Math.max(0, Math.round(left))
+    const t = Math.max(0, Math.round(top))
+    writtenScroll = { left: l, top: t }
+    viewport.scrollTo({ left: l, top: t, behavior: 'instant' })
+  }
+
+  const cancelGlide = () => {
+    aim = undefined
+    if (glideFrame) {
+      cancelAnimationFrame(glideFrame)
+      glideFrame = 0
+    }
+  }
+
+  const layoutCanvas = (k = scale) => {
+    const [px, py] = pad(k)
+    canvas.style.width = `${Math.round(W * k + px * 2)}px`
+    canvas.style.height = `${Math.round(H * k + py * 2)}px`
+    svg.style.left = `${px}px`
+    svg.style.top = `${py}px`
+  }
 
   const applySceneScale = () => {
     const ratio = bakedScale > 0 ? scale / bakedScale : 1
@@ -120,46 +152,106 @@ export function initializeVault(root: HTMLElement): void {
     }
   }
 
-  const bakeScale = (nextScale = scale, ax = viewW / 2, ay = viewH / 2) => {
+  const bakeScale = (nextScale = scale) => {
     if (bakeTimer !== undefined) {
-      window.clearTimeout(bakeTimer)
+      clearTimeout(bakeTimer)
       bakeTimer = undefined
     }
-    const [ox, oy] = offset(bakedScale)
-    const sx = (viewport.scrollLeft + ax - ox) / scale
-    const sy = (viewport.scrollTop + ay - oy) / scale
     bakedScale = nextScale
     svg.setAttribute('width', String(Math.round(W * bakedScale)))
     svg.setAttribute('height', String(Math.round(H * bakedScale)))
+    layoutCanvas(bakedScale)
     applySceneScale()
-    const [nx, ny] = offset(bakedScale)
-    viewport.scrollTo({
-      left: sx * bakedScale + nx - ax,
-      top: sy * bakedScale + ny - ay,
-      behavior: 'instant',
-    })
   }
 
   const setScale = (value: number, ax = viewW / 2, ay = viewH / 2, immediate = false) => {
+    cancelGlide()
+    const prevScale = scale
+    const [ox, oy] = pad(prevScale)
+    const wx = (viewport.scrollLeft + ax - ox) / prevScale
+    const wy = (viewport.scrollTop + ay - oy) / prevScale
     scale = Math.min(MAX_SCALE, Math.max(fitScale, value))
     if (zoomOut) zoomOut.disabled = scale <= fitScale * 1.001
     if (zoomIn) zoomIn.disabled = scale >= MAX_SCALE * 0.999
+    const [nx, ny] = pad(scale)
     if (immediate) {
-      bakeScale(scale, ax, ay)
+      bakeScale(scale)
+    } else {
+      layoutCanvas(scale)
+      applySceneScale()
+      if (bakeTimer !== undefined) clearTimeout(bakeTimer)
+      bakeTimer = setTimeout(() => bakeScale(scale), BAKE_MS)
+    }
+    writeScroll(wx * scale + nx - ax, wy * scale + ny - ay)
+  }
+
+  const stepGlide = (now = performance.now()) => {
+    glideFrame = 0
+    if (signal.aborted || dialog.open || !aim) return
+    const dt = now - glideAt
+    glideAt = now
+    const curLeft = viewport.scrollLeft
+    const curTop = viewport.scrollTop
+    const dx = aim.left - curLeft
+    const dy = aim.top - curTop
+    if (reduced.matches || dt <= 0 || Math.hypot(dx, dy) < 1) {
+      const target = aim
+      aim = undefined
+      writeScroll(target.left, target.top)
       return
     }
-    applySceneScale()
-    if (bakeTimer !== undefined) window.clearTimeout(bakeTimer)
-    bakeTimer = window.setTimeout(() => bakeScale(scale, ax, ay), BAKE_MS)
+    const k = 1 - Math.exp(-Math.min(64, Math.max(8, dt)) / GLIDE_MS)
+    writeScroll(curLeft + dx * k, curTop + dy * k)
+    if (Math.hypot(aim.left - viewport.scrollLeft, aim.top - viewport.scrollTop) < 1) {
+      const target = aim
+      aim = undefined
+      writeScroll(target.left, target.top)
+      return
+    }
+    inGlideStep = true
+    glideFrame = requestAnimationFrame(nextNow => {
+      if (inGlideStep) {
+        const target = aim
+        aim = undefined
+        if (target) writeScroll(target.left, target.top)
+        return
+      }
+      stepGlide(nextNow)
+    })
+    inGlideStep = false
   }
 
   const lookAt = (x: number, y: number) => {
-    const [ox, oy] = offset(bakedScale)
-    viewport.scrollTo({
-      left: (x - minX) * scale + ox - viewW / 2,
-      top: (y - minY) * scale + oy - viewH / 2,
-      behavior: behavior(),
-    })
+    const [ox, oy] = pad(scale)
+    const targetLeft = Math.max(0, Math.round((x - minX) * scale + ox - viewW / 2))
+    const targetTop = Math.max(0, Math.round((y - minY) * scale + oy - viewH / 2))
+    if (reduced.matches) {
+      cancelGlide()
+      writeScroll(targetLeft, targetTop)
+      return
+    }
+    const firstStep = !aim
+    aim = { left: targetLeft, top: targetTop }
+    if (firstStep) {
+      glideAt = performance.now()
+      const curLeft = viewport.scrollLeft
+      const curTop = viewport.scrollTop
+      const k = 1 - Math.exp(-16 / GLIDE_MS)
+      writeScroll(curLeft + (targetLeft - curLeft) * k, curTop + (targetTop - curTop) * k)
+    }
+    if (!glideFrame && aim) {
+      inGlideStep = true
+      glideFrame = requestAnimationFrame(nextNow => {
+        if (inGlideStep) {
+          const target = aim
+          aim = undefined
+          if (target) writeScroll(target.left, target.top)
+          return
+        }
+        stepGlide(nextNow)
+      })
+      inGlideStep = false
+    }
   }
   const measure = () => {
     viewW = viewport.clientWidth
@@ -168,19 +260,21 @@ export function initializeVault(root: HTMLElement): void {
   }
   const fit = () => {
     setScale(fitScale, viewW / 2, viewH / 2, true)
-    viewport.scrollTo({ left: 0, top: 0, behavior: 'instant' })
+    const [ox, oy] = pad(fitScale)
+    writeScroll(ox + (W * fitScale - viewW) / 2, oy + (H * fitScale - viewH) / 2)
   }
 
   let current = -1
   let cardIndex = -1
   let returnFocus: HTMLElement | undefined
-  let hover: number | undefined
   let activePullAnim: Animation | undefined
   let pulledAt = 0
+  let pullFrom = 0
+  let pullDuration = PULL_MS
   const pulled = new Map<SVGGElement, SVGGElement>()
   const settling = new Map<SVGGElement, { finish: () => void }>()
   const preloaded = new Map<string, HTMLImageElement>()
-  let upgradeTimer: number | undefined
+  let upgradeTimer: ReturnType<typeof setTimeout> | undefined
   let activeOriginal: HTMLImageElement | undefined
   let pendingPosterUrl: string | undefined
   let entranceAnim: Animation | undefined
@@ -219,7 +313,7 @@ export function initializeVault(root: HTMLElement): void {
 
   const cancelUpgrade = () => {
     if (upgradeTimer !== undefined) {
-      window.clearTimeout(upgradeTimer)
+      clearTimeout(upgradeTimer)
       upgradeTimer = undefined
     }
     pendingPosterUrl = undefined
@@ -246,12 +340,20 @@ export function initializeVault(root: HTMLElement): void {
   }
 
   const pullProgress = (clone: SVGGElement, px: number, py: number) => {
+    if (clone.dataset.pulling !== undefined && clone.dataset.progress !== undefined) {
+      const p = Number(clone.dataset.progress)
+      if (Number.isFinite(p)) return Math.min(1, Math.max(0, p))
+    }
     if (clone.dataset.pulling === undefined && activePullAnim) {
       const elapsed = performance.now() - pulledAt
-      if (elapsed < 16) return 0
-      if (elapsed >= PULL_MS) return 1
-      const u = 1 - elapsed / PULL_MS
-      return 1 - u * u * u
+      if (elapsed < 16) return pullFrom
+      if (elapsed >= pullDuration) return 1
+      const u = 1 - elapsed / pullDuration
+      return pullFrom + (1 - pullFrom) * (1 - u * u * u)
+    }
+    if (clone.dataset.progress !== undefined) {
+      const p = Number(clone.dataset.progress)
+      if (Number.isFinite(p)) return Math.min(1, Math.max(0, p))
     }
     const len2 = px * px + py * py
     const resting = clone.dataset.out !== undefined ? 1 : 0
@@ -264,16 +366,13 @@ export function initializeVault(root: HTMLElement): void {
     return Math.min(1, Math.max(0, (matrix.e * px + matrix.f * py) / len2))
   }
 
-  const sceneScale = () => {
-    const laid = svg.width.baseVal.value
-    const rendered = svg.getBoundingClientRect().width
-    return laid > 0 && rendered > 0 ? rendered / laid : 1
-  }
+  const sceneScale = () => scale
 
   const sendHome = (can: SVGGElement, clone: SVGGElement, from: number) => {
     pulled.delete(can)
     delete clone.dataset.out
     delete clone.dataset.pulling
+    delete clone.dataset.progress
     clone.style.transition = ''
     clone.style.transform = ''
     // A copy on its way home must not take the pointer from the can in its slot.
@@ -287,7 +386,7 @@ export function initializeVault(root: HTMLElement): void {
     const [px, py] = pullOf(can)
     const duration = Math.max(1, Math.round(PULL_MS * from))
     let done = false
-    let timer: number | undefined
+    let timer: ReturnType<typeof setTimeout> | undefined
     const anim = clone.animate(
       [
         { transform: `translate(${px * from}px, ${py * from}px)` },
@@ -298,7 +397,7 @@ export function initializeVault(root: HTMLElement): void {
     const finish = () => {
       if (done) return
       done = true
-      if (timer !== undefined) window.clearTimeout(timer)
+      if (timer !== undefined) clearTimeout(timer)
       anim.onfinish = null
       anim.cancel()
       settling.delete(can)
@@ -306,7 +405,7 @@ export function initializeVault(root: HTMLElement): void {
       if (!pulled.has(can)) delete can.dataset.lifted
     }
     anim.onfinish = finish
-    timer = window.setTimeout(finish, duration + 20)
+    timer = setTimeout(finish, duration + 20)
     settling.set(can, { finish })
   }
 
@@ -356,9 +455,9 @@ export function initializeVault(root: HTMLElement): void {
     if (box.top >= pane.top && box.bottom <= pane.bottom) return
     const delta = box.top - pane.top - pane.height / 2 + box.height / 2
     if (typeof indexPane.scrollBy === 'function') {
-      indexPane.scrollBy({ top: delta, behavior: behavior() })
+      indexPane.scrollBy({ top: delta, behavior: 'instant' })
     } else {
-      indexPane.scrollTo({ top: indexPane.scrollTop + delta, behavior: behavior() })
+      indexPane.scrollTo({ top: indexPane.scrollTop + delta })
     }
   }
 
@@ -382,21 +481,33 @@ export function initializeVault(root: HTMLElement): void {
   const select = (index: number, camera = true, revealRow = true) => {
     const can = cans.get(index)
     const row = rows.get(index)
-    if (!can || !row || index === current) return
+    if (!can || !row) return
+    const [px, py] = pullOf(can)
+    if (index === current) {
+      if (revealRow) reveal(row)
+      if (camera) lookAt(Number(can.dataset.cx) + px * 0.6, Number(can.dataset.cy) + py * 0.6)
+      return
+    }
     if (revealRow) reveal(row)
     release()
     const clone = mountClone(index)
     if (!clone) return
     clone.dataset.out = ''
-    const [px, py] = pullOf(can)
+    clone.dataset.progress = '1'
     activePullAnim?.cancel()
     activePullAnim = undefined
     pulledAt = performance.now()
+    pullFrom = 0
+    pullDuration = PULL_MS
     if (!reduced.matches && typeof clone.animate === 'function') {
-      activePullAnim = clone.animate(
+      const anim = clone.animate(
         [{ transform: 'translate(0px, 0px)' }, { transform: `translate(${px}px, ${py}px)` }],
         { duration: PULL_MS, easing: EASE },
       )
+      activePullAnim = anim
+      anim.onfinish = () => {
+        if (activePullAnim === anim) activePullAnim = undefined
+      }
     }
     mark(index, false)
     if (camera) {
@@ -453,7 +564,7 @@ export function initializeVault(root: HTMLElement): void {
       }
     }
     if (thumbnail && full && full !== thumbnail) {
-      upgradeTimer = window.setTimeout(() => {
+      upgradeTimer = setTimeout(() => {
         upgradeTimer = undefined
         if (!dialog.open || cardIndex !== shown) return
         const original = new Image()
@@ -478,6 +589,11 @@ export function initializeVault(root: HTMLElement): void {
     const wasOpen = dialog.open
     if (!wasOpen) {
       select(index, true, true)
+      if (aim) {
+        const target = aim
+        cancelGlide()
+        writeScroll(target.left, target.top)
+      }
       if (current < 0) return
       cardIndex = current
       const active = document.activeElement
@@ -489,17 +605,29 @@ export function initializeVault(root: HTMLElement): void {
       renderCard(false)
     }
   }
+  const visibleIndices = (): number[] => {
+    const list: number[] = []
+    for (const [idx, row] of rows) {
+      if (row.style.display !== 'none') list.push(idx)
+    }
+    return list.length > 0 ? list : [...rows.keys()]
+  }
   const step = (delta: number) => {
+    const visible = visibleIndices()
     if (dialog.open) {
       const base = cardIndex < 0 ? current : cardIndex
-      const target = base < 0 ? (delta > 0 ? 0 : total - 1) : base + delta
-      if (target < 0 || target >= total) return
+      const pos = visible.indexOf(base)
+      const nextPos = pos < 0 ? (delta > 0 ? 0 : visible.length - 1) : pos + delta
+      const target = visible[nextPos]
+      if (target === undefined) return
       cardIndex = target
       renderCard(false)
       return
     }
-    const target = current < 0 ? (delta > 0 ? 0 : total - 1) : current + delta
-    if (target < 0 || target >= total) return
+    const pos = visible.indexOf(current)
+    const nextPos = pos < 0 ? (delta > 0 ? 0 : visible.length - 1) : pos + delta
+    const target = visible[nextPos]
+    if (target === undefined) return
     select(target, true, true)
   }
 
@@ -508,7 +636,10 @@ export function initializeVault(root: HTMLElement): void {
     const clone = can && pulled.get(can)
     if (!can || !clone) return
     const [px, py] = pullOf(can)
+    activePullAnim?.cancel()
+    activePullAnim = undefined
     clone.dataset.pulling = ''
+    clone.dataset.progress = String(t)
     clone.style.transition = 'none'
     clone.style.transform = `translate(${px * t}px, ${py * t}px)`
   }
@@ -531,17 +662,26 @@ export function initializeVault(root: HTMLElement): void {
     }
     if (current !== index) {
       release()
-      mark(index, false)
+      mark(index, true)
     }
     clone.dataset.out = ''
+    clone.dataset.progress = '1'
     if (reduced.matches || t >= 0.999 || typeof clone.animate !== 'function') return
-    activePullAnim = clone.animate(
+    const duration = Math.max(1, Math.round(PULL_MS * (1 - t)))
+    pulledAt = performance.now()
+    pullFrom = t
+    pullDuration = duration
+    const anim = clone.animate(
       [
         { transform: `translate(${px * t}px, ${py * t}px)` },
         { transform: `translate(${px}px, ${py}px)` },
       ],
-      { duration: Math.max(1, Math.round(PULL_MS * (1 - t))), easing: EASE, fill: 'both' },
+      { duration, easing: EASE },
     )
+    activePullAnim = anim
+    anim.onfinish = () => {
+      if (activePullAnim === anim) activePullAnim = undefined
+    }
   }
 
   type PendingGesture = {
@@ -577,13 +717,52 @@ export function initializeVault(root: HTMLElement): void {
   }
   let gesture: PendingGesture | PanGesture | PullGesture | undefined
   let dragged = false
-  const blocksHover = () => gesture !== undefined
+  let draggedResetTimer: ReturnType<typeof setTimeout> | undefined
+  const clearDragged = () => {
+    dragged = false
+    if (draggedResetTimer !== undefined) {
+      clearTimeout(draggedResetTimer)
+      draggedResetTimer = undefined
+    }
+  }
+  const markDragged = () => {
+    dragged = true
+    if (draggedResetTimer !== undefined) clearTimeout(draggedResetTimer)
+    draggedResetTimer = setTimeout(() => {
+      draggedResetTimer = undefined
+      dragged = false
+    }, 0)
+  }
+  const capturePointer = (pointerId: number) => {
+    try {
+      viewport.setPointerCapture?.(pointerId)
+    } catch {}
+  }
+  const releasePointer = (pointerId: number) => {
+    try {
+      if (viewport.hasPointerCapture?.(pointerId)) viewport.releasePointerCapture(pointerId)
+    } catch {}
+  }
+
+  viewport.addEventListener(
+    'scroll',
+    () => {
+      if (
+        Math.abs(viewport.scrollLeft - writtenScroll.left) > 1 ||
+        Math.abs(viewport.scrollTop - writtenScroll.top) > 1
+      ) {
+        cancelGlide()
+      }
+    },
+    { passive: true, signal },
+  )
 
   viewport.addEventListener(
     'pointerdown',
     event => {
-      if (event.button !== 0 || event.pointerType === 'touch' || dialog.open) return
-      cancelHover()
+      clearDragged()
+      if (event.button !== 0 || event.isPrimary === false || dialog.open) return
+      cancelGlide()
       const node =
         event.target instanceof Element ? event.target.closest<SVGGElement>('.cn-can') : null
       const index = Number(node?.dataset.index ?? -1)
@@ -607,24 +786,31 @@ export function initializeVault(root: HTMLElement): void {
     'pointermove',
     event => {
       if (!gesture || event.pointerId !== gesture.id) return
+      if (event.buttons === 0) {
+        endGesture(event)
+        return
+      }
       const dx = event.clientX - gesture.x
       const dy = event.clientY - gesture.y
+      const dist = Math.hypot(dx, dy)
       if (gesture.mode === 'pending') {
-        const arm = gesture.index >= 0 ? PULL_ARM_PX : DRAG_PX
-        if (Math.hypot(dx, dy) < arm) return
+        if (dist < DRAG_PX) return
         const len = Math.hypot(gesture.px, gesture.py)
-        const align =
-          gesture.index >= 0 && len > 0
-            ? Math.abs(dx * gesture.px + dy * gesture.py) / (len * Math.hypot(dx, dy))
-            : 0
-        if (align >= PULL_ALIGN) {
-          const can = cans.get(gesture.index)
-          const existing = can && pulled.get(can)
-          const live = existing ? pullProgress(existing, gesture.px, gesture.py) : 0
+        const dot =
+          gesture.index >= 0 && len > 0 ? (dx * gesture.px + dy * gesture.py) / (len * dist) : 0
+        const can = gesture.index >= 0 ? cans.get(gesture.index) : undefined
+        const existing = can ? pulled.get(can) : undefined
+        const isOut = Boolean(existing && existing.dataset.out !== undefined)
+        const live = existing ? pullProgress(existing, gesture.px, gesture.py) : 0
+        const canPullOut = !isOut && dot >= PULL_ALIGN
+        const canPushIn = isOut && dot <= -PULL_ALIGN
+        if (can && (canPullOut || canPushIn)) {
+          const startT = canPushIn ? Math.max(0.5, live) : live
+          if (current >= 0 && current !== gesture.index) release()
           activePullAnim?.cancel()
           activePullAnim = undefined
           const clone = existing ?? mountClone(gesture.index)
-          if (!clone || !can) {
+          if (!clone) {
             gesture = {
               mode: 'pan',
               id: gesture.id,
@@ -635,8 +821,8 @@ export function initializeVault(root: HTMLElement): void {
               moved: false,
             }
           } else {
-            placePull(gesture.index, live)
-            viewport.setPointerCapture(event.pointerId)
+            placePull(gesture.index, startT)
+            capturePointer(event.pointerId)
             viewport.dataset.pulling = ''
             gesture = {
               mode: 'pull',
@@ -646,8 +832,8 @@ export function initializeVault(root: HTMLElement): void {
               index: gesture.index,
               px: gesture.px,
               py: gesture.py,
-              start: live,
-              t: live,
+              start: startT,
+              t: startT,
             }
           }
         } else {
@@ -668,14 +854,10 @@ export function initializeVault(root: HTMLElement): void {
         if (!gesture.moved && Math.hypot(panDx, panDy) < DRAG_PX) return
         if (!gesture.moved) {
           gesture.moved = true
-          viewport.setPointerCapture(event.pointerId)
+          capturePointer(event.pointerId)
           viewport.dataset.dragging = ''
         }
-        viewport.scrollTo({
-          left: gesture.left - panDx,
-          top: gesture.top - panDy,
-          behavior: 'instant',
-        })
+        writeScroll(gesture.left - panDx, gesture.top - panDy)
         return
       }
       if (gesture.mode !== 'pull') return
@@ -695,42 +877,20 @@ export function initializeVault(root: HTMLElement): void {
   const endGesture = (event?: PointerEvent) => {
     const active = gesture
     if (!active) return
-    if (event && event.pointerId !== active.id) return
+    if (event && event.pointerId !== undefined && event.pointerId !== active.id) return
     gesture = undefined
     delete viewport.dataset.dragging
     delete viewport.dataset.pulling
-    if (viewport.hasPointerCapture(active.id)) viewport.releasePointerCapture(active.id)
+    releasePointer(active.id)
     if (active.mode === 'pan') {
-      if (active.moved) dragged = true
+      if (active.moved) markDragged()
       return
     }
     if (active.mode === 'pull') {
-      dragged = true
+      markDragged()
       finishPull(active.index, active.t)
     }
   }
-  // Hovering a can pulls it and reveals its index row without moving the camera.
-  const cancelHover = () => {
-    if (hover !== undefined) clearTimeout(hover)
-    hover = undefined
-  }
-  viewport.addEventListener(
-    'pointerover',
-    event => {
-      if (event.pointerType !== 'mouse' || blocksHover() || dialog.open) return
-      const can =
-        event.target instanceof Element ? event.target.closest<SVGGElement>('.cn-can') : null
-      const index = Number(can?.dataset.index ?? -1)
-      cancelHover()
-      if (index < 0 || index === current) return
-      hover = window.setTimeout(() => {
-        hover = undefined
-        if (!signal.aborted && !dialog.open && !blocksHover()) select(index, false)
-      }, HOVER_MS)
-    },
-    { signal },
-  )
-  viewport.addEventListener('pointerleave', cancelHover, { signal })
   viewport.addEventListener('pointerup', endGesture, { signal })
   viewport.addEventListener('pointercancel', endGesture, { signal })
   viewport.addEventListener('lostpointercapture', endGesture, { signal })
@@ -738,7 +898,7 @@ export function initializeVault(root: HTMLElement): void {
     'click',
     event => {
       if (dragged) {
-        dragged = false
+        clearDragged()
         return
       }
       const can =
@@ -751,6 +911,7 @@ export function initializeVault(root: HTMLElement): void {
   viewport.addEventListener(
     'keydown',
     event => {
+      clearDragged()
       if (event.altKey || event.ctrlKey || event.metaKey) return
       const key = event.key
       if (key === 'ArrowRight' || key === 'ArrowDown') step(1)
@@ -888,25 +1049,49 @@ export function initializeVault(root: HTMLElement): void {
   const observer = new ResizeObserver(() => {
     measure()
     if (scale < fitScale) setScale(fitScale, viewW / 2, viewH / 2, true)
+    else layoutCanvas(scale)
   })
   measure()
+  if (readout && !readout.textContent) readout.textContent = `– / ${total}`
   // The first frame reads: the top-left of the first bay at a scale where rim titles are legible.
   setScale(Math.max(fitScale, READ_SCALE), viewW / 2, viewH / 2, true)
-  viewport.scrollTo({
-    left: (startX - minX) * scale - 24,
-    top: (startY - minY) * scale - 48,
-    behavior: 'instant',
-  })
+  const [initOx, initOy] = pad(scale)
+  writeScroll(initOx + (startX - minX) * scale - 24, initOy + (startY - minY) * scale - 48)
   observer.observe(viewport)
+
+  const groups = [...indexPane.querySelectorAll<HTMLDetailsElement>('.vault-index-group')]
+  let searchOpen: Map<HTMLDetailsElement, boolean> | undefined
+  const onSearchResults = () => {
+    const query = document.querySelector<HTMLInputElement>('#base-search-input')?.value.trim() ?? ''
+    const searching = query.length > 0
+    if (searching && !searchOpen) searchOpen = new Map(groups.map(g => [g, g.open]))
+    for (const group of groups) {
+      const groupRows = [...group.querySelectorAll<HTMLLIElement>('.vault-entry')]
+      const shownCount = groupRows.filter(r => r.style.display !== 'none').length
+      const countEl = group.querySelector<HTMLElement>('.vault-index-count')
+      if (countEl) countEl.textContent = String(shownCount)
+      if (searching && shownCount > 0) group.open = true
+      else if (!searching && searchOpen) group.open = searchOpen.get(group) ?? true
+    }
+    if (!searching) searchOpen = undefined
+    for (const [idx, can] of cans) {
+      const row = rows.get(idx)
+      if (searching && row?.style.display === 'none') can.dataset.dimmed = ''
+      else delete can.dataset.dimmed
+    }
+    if (current >= 0 && rows.get(current)?.style.display === 'none') release()
+  }
+  document.addEventListener('base-search-results', onSearchResults, { signal })
 
   signal.addEventListener(
     'abort',
     () => {
       observer.disconnect()
       disposeEscape()
-      cancelHover()
+      clearDragged()
+      cancelGlide()
       cancelUpgrade()
-      if (bakeTimer !== undefined) window.clearTimeout(bakeTimer)
+      if (bakeTimer !== undefined) clearTimeout(bakeTimer)
       bakeTimer = undefined
       activePullAnim?.cancel()
       activePullAnim = undefined
@@ -916,6 +1101,9 @@ export function initializeVault(root: HTMLElement): void {
       if (dialog.open) closeCard()
       for (const clone of pulled.values()) clone.remove()
       pulled.clear()
+      svg.remove()
+      viewport.append(svg)
+      canvas.remove()
       delete root.dataset.vaultReady
     },
     { once: true },

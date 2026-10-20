@@ -676,6 +676,7 @@ test('buildVault emits data-base-slug on entries and initializeVault decouples m
     scrollCalls = 0
     widthAttrMutations = 0
     viewBox = { baseVal: { x: 0, y: 0, width: 1600, height: 1200 } }
+    width = { baseVal: { value: 1600 } }
     private _src = ''
 
     constructor(tagName: string, className = '') {
@@ -813,6 +814,11 @@ test('buildVault emits data-base-slug on entries and initializeVault decouples m
       this.dispatch('close')
     }
     focus() {}
+    setPointerCapture() {}
+    hasPointerCapture() {
+      return false
+    }
+    releasePointerCapture() {}
     animate() {
       const anim = {
         onfinish: null as (() => void) | null,
@@ -977,8 +983,10 @@ test('buildVault emits data-base-slug on entries and initializeVault decouples m
     root.append(stage, indexPane, dialog)
     mod.initializeVault!(root as unknown as HTMLElement)
 
-    // 1. Compositor zoom: clicking zoom-in 3 times must NOT mutate svg width/height synchronously on every click
+    // 1. Compositor zoom: clicking zoom-in 3 times must NOT mutate svg width/height synchronously on every click,
+    // and MUST update scrollLeft/scrollTop immediately so the viewport center stays anchored.
     svg.widthAttrMutations = 0
+    const scrollLeftBeforeZoom = viewport.scrollLeft
     root.dispatch('click', { target: zoomIn })
     root.dispatch('click', { target: zoomIn })
     root.dispatch('click', { target: zoomIn })
@@ -988,6 +996,110 @@ test('buildVault emits data-base-slug on entries and initializeVault decouples m
       'interactive zoom steps must scale via compositor transform rather than synchronous SVG width/height relayout',
     )
     assert.match(svg.style.transform ?? '', /scale\(/)
+    assert.notEqual(
+      viewport.scrollLeft,
+      scrollLeftBeforeZoom,
+      'interactive zoom must update viewport scroll position to keep the anchor point stationary',
+    )
+
+    // 1b. Directional drag-to-pan vs can-pull disambiguation:
+    // Pressing on an unpulled can (cans[0], px=-24, py=14) and dragging in the push-in direction (+48, -28)
+    // must pan the viewport rather than locking into a dead pull gesture clamped at t=0.
+    const allCans = svg.querySelectorAll(':scope > .cn-can')
+    const scrollBeforeReverseDrag = viewport.scrollLeft
+    viewport.dispatch('pointerdown', {
+      button: 0,
+      isPrimary: true,
+      pointerId: 1,
+      clientX: 200,
+      clientY: 200,
+      target: allCans[0],
+    })
+    viewport.dispatch('pointermove', {
+      pointerId: 1,
+      buttons: 1,
+      clientX: 248,
+      clientY: 172,
+      target: allCans[0],
+    })
+    viewport.dispatch('pointerup', { pointerId: 1, clientX: 248, clientY: 172, target: allCans[0] })
+    assert.equal(
+      viewport.scrollLeft,
+      scrollBeforeReverseDrag - 48,
+      'dragging against the pull vector on an unpulled can must pan the viewport instead of freezing',
+    )
+    assert.equal(readout.textContent, '– / 5', 'panning across an unpulled can must not select it')
+
+    // Pressing on cans[1] and dragging along its pull-out vector (-24, +14) pulls the can out and selects it.
+    viewport.dispatch('pointerdown', {
+      button: 0,
+      isPrimary: true,
+      pointerId: 2,
+      clientX: 200,
+      clientY: 200,
+      target: allCans[1],
+    })
+    viewport.dispatch('pointermove', {
+      pointerId: 2,
+      buttons: 1,
+      clientX: 176,
+      clientY: 214,
+      target: allCans[1],
+    })
+    viewport.dispatch('pointerup', { pointerId: 2, clientX: 176, clientY: 214, target: allCans[1] })
+    assert.equal(
+      readout.textContent,
+      '2 / 5',
+      'dragging along the pull-out vector on an unpulled can must pull it out and select it',
+    )
+
+    // Dragging in the pull-out direction (-48, +28) on the ALREADY pulled-out cans[1] must pan the viewport
+    // rather than locking into a dead pull gesture clamped at t=1.
+    const scrollBeforeOutDrag = viewport.scrollLeft
+    viewport.dispatch('pointerdown', {
+      button: 0,
+      isPrimary: true,
+      pointerId: 3,
+      clientX: 200,
+      clientY: 200,
+      target: allCans[1],
+    })
+    viewport.dispatch('pointermove', {
+      pointerId: 3,
+      buttons: 1,
+      clientX: 152,
+      clientY: 228,
+      target: allCans[1],
+    })
+    viewport.dispatch('pointerup', { pointerId: 3, clientX: 152, clientY: 228, target: allCans[1] })
+    assert.equal(
+      viewport.scrollLeft,
+      scrollBeforeOutDrag + 48,
+      'dragging in the pull-out direction on an already pulled can must pan the viewport instead of freezing at t=1',
+    )
+
+    // Dragging in the push-in direction (+24, -14) on the pulled-out cans[1] slides it back in and releases selection.
+    viewport.dispatch('pointerdown', {
+      button: 0,
+      isPrimary: true,
+      pointerId: 4,
+      clientX: 200,
+      clientY: 200,
+      target: allCans[1],
+    })
+    viewport.dispatch('pointermove', {
+      pointerId: 4,
+      buttons: 1,
+      clientX: 224,
+      clientY: 186,
+      target: allCans[1],
+    })
+    viewport.dispatch('pointerup', { pointerId: 4, clientX: 224, clientY: 186, target: allCans[1] })
+    assert.equal(
+      readout.textContent,
+      '– / 5',
+      'dragging back along the push-in vector on a pulled can must return it to its slot and clear selection',
+    )
 
     // 2. Rapid can stepping: pull starts immediately and bounds settling clones in .vault-lift to <= 3 (1 active + <= 2 settling)
     for (let i = 0; i < 5; i++) {
