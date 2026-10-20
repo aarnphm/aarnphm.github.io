@@ -3,12 +3,12 @@ date: '2025-09-11'
 description: chapter 1 and 2
 id: financial analysis
 modified: 2026-06-05 15:08:38 GMT-04:00
+seealso:
+  - '[[thoughts/university/twenty-five-twenty-six/commerce-4qa3/timeseries.py]]'
 tags:
   - commerce4qa3
 title: financial analysis
 ---
-
-see also: [[thoughts/university/twenty-five-twenty-six/commerce-4qa3/timeseries.py]]
 
 ## continuous compounding
 

@@ -3,6 +3,8 @@ date: '2024-10-29'
 description: course on database management systems covering relational models, sql, and database design.
 id: index
 modified: 2026-06-05 15:08:42 GMT-04:00
+seealso:
+  - '[[thoughts/Database]]'
 tags:
   - university
   - sfwr3db3
@@ -30,6 +32,10 @@ pdfTitles:
   'tut/4th_week_2024F.pdf': 'Tutorial 4: SQL'
   'tut/5th_week_2024F1.pdf': 'Tutorial 5: SQL #2'
   'tut/6th_week_2024.pdf': 'Introduction to Databases: Tutorial 6'
+university:
+  summary: "This course introduces database systems: entity-relationship modelling, the relational model with keys and foreign keys, relational algebra and SQL, then design theory with functional dependencies and normal forms, and transactions with concurrency control. The folder holds lecture and tutorial slides, notes for each topic, midterm and final reviews, and three assignments that design and query a MacAir Aviation database with ER diagrams, DDL scripts, relational algebra and indexes."
+  inferred: true
+  instructors: ["Fei Chiang"]
+  term: "fall 2024"
 ---
 
-See also [[thoughts/Database]]

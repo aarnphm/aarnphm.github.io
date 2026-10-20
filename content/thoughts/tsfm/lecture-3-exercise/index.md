@@ -3,6 +3,8 @@ date: '2025-09-11'
 description: from scratch frfr
 id: index
 modified: 2026-06-05 15:08:32 GMT-04:00
+seealso:
+  - '[[thoughts/tsfm/lecture-3-exercise/reports|reports]]'
 tags:
   - ml
   - tsfm
@@ -13,7 +15,6 @@ this directory contains a NumPy implementation of Transformer components with fo
 
 the backward-pass tests compare individual NumPy components against PyTorch references. The training path has separate smoke tests.
 
-see also [[thoughts/tsfm/lecture-3-exercise/reports|reports]]
 
 ## assignment
 

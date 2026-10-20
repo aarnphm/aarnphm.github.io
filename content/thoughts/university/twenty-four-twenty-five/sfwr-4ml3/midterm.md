@@ -3,14 +3,14 @@ date: '2024-10-28'
 description: midterm review covering probability density functions, linear regression, ordinary least squares, bias, and overfitting.
 id: midterm
 modified: 2026-06-05 15:08:39 GMT-04:00
+seealso:
+  - '[[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Understand Machine Learning.pdf|book]]'
 tags:
   - sfwr4ml3
   - ml
   - math/linalg
 title: Supervised machine learning
 ---
-
-See also: [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Understand Machine Learning.pdf|book]]
 
 ## probability density function
 

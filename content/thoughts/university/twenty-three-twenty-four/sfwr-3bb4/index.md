@@ -5,10 +5,16 @@ id: index
 layout: A|L
 modified: 2026-06-05 15:08:31 GMT-04:00
 sort: title
+seealso:
+  - '[[thoughts/university/twenty-three-twenty-four/sfwr-2c03/index|Data Structures and Algorithms]]'
 tags:
   - university
   - sfwr3bb4
 title: Concurrent System Design
+university:
+  summary: "This course teaches how to design and reason about concurrent programs. The lecture notebooks go from sequential programming and concurrency to semaphores, classes, robustness, monitors, message passing, remote procedure calls, and coroutines and futures. The folder has twelve assignments and midterm work in Python, C, Java, and Go, on problems such as producers and consumers, readers and writers, and the dining philosophers."
+  inferred: true
+  instructors: ["Emil Sekerinski"]
 ---
 
 book: [Teaching Concurrency with the Disappearing Formal Method](http://doi.org/10.1007/978-3-030-32441-4_9). Sekerinski, E. In Dongol, B.; Petre, L.; and Smith, G., editor(s), Formal Methods Teaching, volume 11758 of Lecture Notes in Computer Science, pages 135–149, 2019. Springer, Cham.
@@ -19,7 +25,6 @@ Most images are cell attachments, which are not rendered by GitHub. Images that 
 
 -- Emil Sekerinski
 
-See also: [[thoughts/university/twenty-three-twenty-four/sfwr-2c03/index|Data Structures and Algorithms]].
 
 ## Lectures
 

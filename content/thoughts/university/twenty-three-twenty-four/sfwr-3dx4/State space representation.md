@@ -3,12 +3,12 @@ date: '2024-01-24'
 description: state space representation using time-domain technique, converting transfer functions to controller canonical and observer canonical forms.
 id: State space representation
 modified: 2026-06-05 15:08:43 GMT-04:00
+seealso:
+  - '[[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/state_space.pdf|sides]]'
 tags:
   - sfwr3dx4
 title: State space representation
 ---
-
-See also [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/state_space.pdf|sides]]
 
 > time-domain technique
 

@@ -3,12 +3,12 @@ date: '2024-03-06'
 description: steady-state tracking error under unity feedback, with stability conditions, system type, static error constants, and a worked ramp example.
 id: steady-state error
 modified: 2026-10-09 09:03:00 GMT-04:00
+seealso:
+  - '[[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/steady_state_error.pdf|slides]]'
 tags:
   - sfwr3dx4
 title: steady-state error
 ---
-
-See also [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/steady_state_error.pdf|slides]]
 
 Steady-state error asks how much tracking error remains after the transient has decayed. Let the reference be $r(t)$ and the output be $y(t)$:
 

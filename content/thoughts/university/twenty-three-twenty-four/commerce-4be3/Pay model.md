@@ -3,12 +3,12 @@ date: '2024-01-10'
 description: compensation fundamentals including total rewards, internal alignment, external competitiveness, employee contributions, and strategic pay policies.
 id: Pay model
 modified: 2026-06-05 15:08:38 GMT-04:00
+seealso:
+  - '[[thoughts/university/twenty-three-twenty-four/commerce-4be3/The Pay Model.pdf|Slides]]'
 tags:
   - commerce4be3
 title: Pay model
 ---
-
-see also: [[thoughts/university/twenty-three-twenty-four/commerce-4be3/The Pay Model.pdf|Slides]]
 
 ## compensation.
 

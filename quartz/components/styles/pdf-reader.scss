@@ -1046,23 +1046,6 @@ body[data-pdf-embedded='course'] {
   pointer-events: none;
 }
 
-// Selection bubble
-
-.pdf-reader-bubble {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: var(--z-popover);
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem;
-  max-width: calc(100vw - 1.5rem);
-  padding: 0.25rem;
-  visibility: hidden;
-  background: var(--light);
-  border: 1px solid var(--gray);
-}
-
 // Dialogs
 
 .pdf-reader-sheet,

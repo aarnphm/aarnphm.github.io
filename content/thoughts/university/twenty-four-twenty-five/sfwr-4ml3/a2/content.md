@@ -3,12 +3,14 @@ date: '2024-10-21'
 description: implementation of PCA on LFW and TNC datasets
 id: content
 modified: 2026-06-05 15:08:39 GMT-04:00
+seealso:
+  - '[[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/PCA.ipynb|jupyter notebook]]'
+  - '[[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/assignment.pdf|pdf]]'
+  - '[[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/solution.pdf|solutions]]'
 tags:
   - sfwr4ml3
 title: PCA and Kernels, from scratch
 ---
-
-See also [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/PCA.ipynb|jupyter notebook]], [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/assignment.pdf|pdf]], [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/solution.pdf|solutions]]
 
 ## question 1.
 

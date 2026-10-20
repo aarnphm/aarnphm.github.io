@@ -3,12 +3,12 @@ date: '2025-09-18'
 description: chapter 7
 id: supply chain analytics and capacity growth
 modified: 2026-06-05 15:08:38 GMT-04:00
+seealso:
+  - '[[thoughts/university/twenty-five-twenty-six/commerce-4qa3/financial analysis]]'
 tags:
   - commerce4qa3
 title: supply chain analytics and capacity growth
 ---
-
-see also [[thoughts/university/twenty-five-twenty-six/commerce-4qa3/financial analysis]]
 
 ## break-even analysis
 

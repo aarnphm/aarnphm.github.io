@@ -4,6 +4,10 @@ description: GPUs, CUTLASS, and CuTe
 id: index
 layout: A|L
 modified: 2026-09-14 15:58:14 GMT-04:00
+seealso:
+  - '[[thoughts/GPU programming|GPU]]'
+  - '[[thoughts/XLA]]'
+  - '[[thoughts/LLMs]]'
 tags:
   - ml
   - math/linalg
@@ -18,7 +22,6 @@ pdfTitles:
 
 slides: [[lectures/420/infer-0.420.pdf]]
 
-see also: [[thoughts/GPU programming|GPU]], [[thoughts/XLA]], [[thoughts/LLMs]]
 
 > [!tip] Runnable Code Examples
 >

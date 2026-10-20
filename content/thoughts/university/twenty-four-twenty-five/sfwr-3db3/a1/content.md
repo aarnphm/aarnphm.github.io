@@ -3,6 +3,8 @@ date: '2024-09-26'
 description: some notes about entity-relationship models and foreign keys
 id: a1
 modified: 2026-06-05 15:08:42 GMT-04:00
+seealso:
+  - '[[thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1/airline.ddl]]'
 tags:
   - sfwr3db3
 title: E/R models and keys
@@ -120,7 +122,9 @@ A ticket is associated to many (types of) bags.
 > [!question] 2.a
 > Draw the ER diagram capturing the described requirements. You may use any drawing tool of your choice, but please ensure your ER diagram is clearly readable, and the notation you use is clear and consistent (i.e., notation from the lecture slides or textbook).
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1/ER.pdf]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1/ER.svg]]
+
+PDF submission copy: [[thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1/ER.pdf|ER.pdf]]
 
 > [!question] 2.b
 > Give a brief (one sentence) description of each of your entities and relationships, and any constraints that exist. For example, $X$ is a weak entity with attributes $(a, b, c)$, and has a many-one relationship with $Y$
@@ -178,5 +182,3 @@ Constraints:
 > Provide the corresponding DB2 `CREATE TABLE`` statements describing the relational schema.
 Please include all your statements in an executable script `airline.ddl` that can be run on the DB2 command line, in a single command.
 > Ensure that your script runs on the CAS DB2 server.
-
-See also: [[thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1/airline.ddl]]

@@ -25,6 +25,11 @@ pdfTitles:
   'projects/MisterMaki_Research_Proposal.pdf': 'Brand Awareness, Value Perception, and Competitive Positioning of Mister Maki Among McMaster Students'
   'projects/MisterMaki_Survey_Form.pdf': 'Mister Maki Survey'
   'projects/MisterMaki_Survey_Proposal.pdf': 'Mister Maki: Survey Proposal'
+university:
+  summary: "This course follows the steps of the marketing research process: problem definition, research design, secondary data, qualitative research, observation, surveys, measurement scales and questionnaire design, and then causal research and data analysis. It teaches students to direct and use research as managers and to conduct it themselves. The folder holds the chapter slides and a team research project on the Mister Maki brand among McMaster students, with a research proposal, a survey proposal and form, survey responses with analysis scripts, presentation speaker notes and a final report."
+  inferred: false
+  instructors: ["Dr. Yang Pan"]
+  term: "winter 2026"
 ---
 
 | Component                  |   Weight |

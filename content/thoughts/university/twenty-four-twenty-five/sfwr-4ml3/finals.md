@@ -3,13 +3,13 @@ date: '2024-12-10'
 description: and an unstructured overview of patterns in machine learning
 id: finals
 modified: 2026-06-05 15:08:39 GMT-04:00
+seealso:
+  - '[[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/midterm#probability theory|some statistical theory]]'
 tags:
   - sfwr4ml3
   - ml
 title: basis to supervised learning
 ---
-
-See also [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/midterm#probability theory|some statistical theory]]
 
 ![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/midterm#bayes rules and chain rules]]
 

@@ -14,6 +14,11 @@ pdfTitles:
   'Instructions.pdf': 'SFWRENG 3RA3 Assignment: Software Requirement Document'
   'Midterm_firstpage.pdf': 'Software Requirements: Midterm Test Exam Cover, Fall 2024'
   'T02.pdf': 'Tutorial 2: Identifying Stakeholders'
+university:
+  summary: "This course covers software requirements engineering: what makes a good requirement, stakeholders and personas, elicitation, goals and obstacles, functional and non-functional requirements, risk management and oppression-aware design. The main work is a term-long requirements document for a case study product, ACME Visit!, worth 40% of the grade. The folder also holds tutorial notes on identifying stakeholders, midterm notes and an exam reference sheet."
+  inferred: true
+  instructors: ["Sébastien Mosser"]
+  term: "fall 2024"
 ---
 
 prof: [Dr. Sébastien Mosser](https://mosser.github.io/teaching/)

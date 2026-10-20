@@ -1,8 +1,8 @@
 import type { ComponentChildren } from 'preact'
-import { autoUpdate, computePosition, flip, offset, shift } from '@floating-ui/dom'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'preact/hooks'
 import type { PdfCitation, PdfMark, PdfMarkKind } from '../../util/pdf-marks'
 import { simplifySlug, type FullSlug } from '../../util/path'
+import { SelectionToolbar } from '../selection-toolbar'
 import { renderBody } from './body'
 import { saveStatusLabel, type MarkEntry } from './book'
 
@@ -608,39 +608,8 @@ export function SelectionBubble({
   canWrite: boolean
   onAction(action: PdfMarkKind | 'note' | 'quote'): void
 }) {
-  const bubble = useRef<HTMLDivElement>(null)
-
-  useLayoutEffect(() => {
-    const floating = bubble.current
-    if (!floating) return
-    const reference = {
-      getBoundingClientRect: () => {
-        const rects = range.getClientRects()
-        return rects.length > 0 ? rects[rects.length - 1] : range.getBoundingClientRect()
-      },
-      contextElement:
-        range.endContainer instanceof Element
-          ? range.endContainer
-          : (range.endContainer.parentElement ?? undefined),
-    }
-    return autoUpdate(reference, floating, async () => {
-      const { x, y } = await computePosition(reference, floating, {
-        placement: 'bottom-end',
-        strategy: 'fixed',
-        middleware: [offset(6), flip({ padding: 12 }), shift({ padding: 12 })],
-      })
-      Object.assign(floating.style, { left: `${x}px`, top: `${y}px`, visibility: 'visible' })
-    })
-  }, [range])
-
   return (
-    <div
-      ref={bubble}
-      class="pdf-reader-bubble"
-      role="toolbar"
-      aria-label="Mark the selection"
-      onPointerDown={event => event.preventDefault()}
-    >
+    <SelectionToolbar range={range} label="Mark the selection" placement="bottom-end">
       {canWrite &&
         kinds.map(kind => (
           <button
@@ -659,6 +628,6 @@ export function SelectionBubble({
       <button type="button" title="copy as a garden quote (c)" onClick={() => onAction('quote')}>
         quote
       </button>
-    </div>
+    </SelectionToolbar>
   )
 }

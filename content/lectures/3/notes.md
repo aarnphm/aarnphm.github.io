@@ -5,14 +5,14 @@ id: notes
 modified: 2026-06-07 01:30:00 GMT-04:00
 socials:
   youtube: https://youtu.be/DDLlOqQ46HE
+seealso:
+  - '[[lectures/3/quantisation basics]]'
 tags:
   - workshop
 title: supplement to 0[dot]300
 transclude:
   title: false
 ---
-
-see also [[lectures/3/quantisation basics]]
 
 ## kvcache ad-hoc implementation
 

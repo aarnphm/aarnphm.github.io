@@ -3,6 +3,11 @@ date: '2025-10-30'
 description: anatomy of an inference engine
 id: index
 modified: 2026-08-12 11:31:40 GMT-04:00
+seealso:
+  - '[[thoughts/vllm]]'
+  - '[[thoughts/LLMs]]'
+  - '[[thoughts/Transformers|Transformers]]'
+  - '[[thoughts/Attention|Attention]]'
 tags:
   - ml
   - workshop
@@ -13,7 +18,6 @@ transclude:
 
 slides: [[lectures/440/vllm-toronto-2025.pdf|infer-0.440]]
 
-see also: [[thoughts/vllm]], [[thoughts/LLMs]], [[thoughts/Transformers|Transformers]], [[thoughts/Attention|Attention]]
 
 To run DeepSeek-R1:
 

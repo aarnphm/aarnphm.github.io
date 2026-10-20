@@ -3,12 +3,12 @@ date: '2024-01-25'
 description: technical design process using decision variables, performance parameters, and optimization methods to determine optimal engineering solutions.
 id: Technical Design
 modified: 2026-06-05 15:08:34 GMT-04:00
+seealso:
+  - '[[thoughts/university/twenty-three-twenty-four/eng-3px3/3PX3 05 Tech Design.pdf|slides]]'
 tags:
   - eng3px3
 title: Technical Design
 ---
-
-See also: [[thoughts/university/twenty-three-twenty-four/eng-3px3/3PX3 05 Tech Design.pdf|slides]]
 
 > technical analysis: Using science to determine how variables are related in order to draw conclusions in engineering-relevant context
 

@@ -3,12 +3,14 @@ date: '2025-01-22'
 description: a case study.
 id: Canada Airlines Corp
 modified: 2026-06-05 15:08:37 GMT-04:00
+seealso:
+  - '[[thoughts/university/twenty-four-twenty-five/commerce-4pa3/case-study/canadian-airlines-corp-p.50-p.69.pdf|first pdf]]'
+  - '[[thoughts/university/twenty-four-twenty-five/commerce-4pa3/case-study/canandian-airlines-corp-p.70-p.75.pdf|second pdf]]'
+  - '[[thoughts/university/twenty-four-twenty-five/commerce-4pa3/week-3.pdf|this week lecture]]'
 tags:
   - commerce4pa3
 title: Canada Airlines Corp
 ---
-
-See also [[thoughts/university/twenty-four-twenty-five/commerce-4pa3/case-study/canadian-airlines-corp-p.50-p.69.pdf|first pdf]] and [[thoughts/university/twenty-four-twenty-five/commerce-4pa3/case-study/canandian-airlines-corp-p.70-p.75.pdf|second pdf]] and [[thoughts/university/twenty-four-twenty-five/commerce-4pa3/week-3.pdf|this week lecture]]
 
 ## Key Issues
 

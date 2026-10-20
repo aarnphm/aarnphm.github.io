@@ -3,12 +3,13 @@ date: '2024-01-23'
 description: conversion factors for economic analysis including cost of labor, time, opportunity cost, environmental impacts, ghg emissions, and health costs.
 id: Conversion Factors
 modified: 2026-06-05 15:08:34 GMT-04:00
+seealso:
+  - '[[thoughts/university/twenty-three-twenty-four/eng-3px3/Conversion Factors.pdf|slides]]'
+  - '[[thoughts/university/twenty-three-twenty-four/eng-3px3/3PX3 04 Conversion Factors.pdf|this one]]'
 tags:
   - eng3px3
 title: Conversion Factors
 ---
-
-See also: [[thoughts/university/twenty-three-twenty-four/eng-3px3/Conversion Factors.pdf|slides]] and [[thoughts/university/twenty-three-twenty-four/eng-3px3/3PX3 04 Conversion Factors.pdf|this one]]
 
 Relevant to economic analysis process must:
 

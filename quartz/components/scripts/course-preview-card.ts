@@ -1,3 +1,9 @@
+import {
+  isUniversityPdfPage,
+  universityHomePath,
+  universityPdfPagePath,
+} from '../../util/university-pdf'
+
 function el<K extends keyof HTMLElementTagNameMap>(
   tag: K,
   className: string,
@@ -29,22 +35,34 @@ function coursePath(url: URL): string {
   return url.pathname.replace(/\/index\/?$/, '').replace(/\/+$/, '')
 }
 
+/**
+ * Course card pages outside `/courses`: a university course home, a university PDF page, and a
+ * link to the PDF file itself, which opens as that page.
+ */
+function universityPreviewPath(path: string): string | null {
+  return (
+    universityPdfPagePath(path) ??
+    (isUniversityPdfPage(path.replace(/^\/+/, '')) ? path : universityHomePath(path))
+  )
+}
+
 export function coursePreviewTarget(href: URL, current: URL): URL | null {
-  const path = coursePath(href)
-  // every same-origin page under /courses, except the review app, raw PDFs and the page itself
-  if (
-    href.origin !== current.origin ||
-    !/^\/courses(?:\/|$)/.test(path) ||
-    path === '/courses/review' ||
-    /\.pdf$/i.test(path) ||
-    path === coursePath(current)
-  ) {
-    return null
-  }
+  if (href.origin !== current.origin) return null
   const target = new URL(href)
   target.hash = ''
   target.search = ''
-  return target
+  const path = coursePath(href)
+  // every same-origin page under /courses, except the review app, raw PDFs and the page itself
+  if (/^\/courses(?:\/|$)/.test(path)) {
+    if (path === '/courses/review' || /\.pdf$/i.test(path) || path === coursePath(current)) {
+      return null
+    }
+    return target
+  }
+  const university = universityPreviewPath(path)
+  if (!university) return null
+  target.pathname = university
+  return coursePath(target) === coursePath(current) ? null : target
 }
 
 const MAX_ROWS = 5

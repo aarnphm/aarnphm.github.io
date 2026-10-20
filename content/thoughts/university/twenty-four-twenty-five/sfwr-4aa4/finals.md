@@ -2,13 +2,15 @@
 date: '2024-12-16'
 description: final exam review covering laplace and z-transforms, poles and zeros, pid control, and sampled-data systems.
 id: finals
-modified: 2026-06-05 15:08:42 GMT-04:00
+modified: 2026-10-19 22:38:59 GMT-04:00
+seealso:
+  - '[[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/midterm|some OS-related for real-time system]]'
+  - '[[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/index|Control systems]]'
+  - '[[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/Frequency Domain|Frequency domain]]'
 tags:
   - sfwr4aa4
 title: Real-time control systems, and scheduling
 ---
-
-see also [[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/midterm|some OS-related for real-time system]], [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4|Control systems]], or [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/Frequency Domain]]
 
 ## time domain versus frequency domain
 
@@ -113,10 +115,37 @@ $s=0,-5$ are poles and $s=-2$ are zeros
 
 ![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/closed loop system]]
 
-| System Type               | Transfer Function                                                        | Diagram                                                                                           |
-| ------------------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------- |
-| Basis                     | $\frac{C(z)}{R(z)} = \frac{G(z)}{1+Z[G(s)H(s)]}$                         | ![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/closed-loop-sampled-data-system.webp]]   |
-| w/ digital sensing device | $C(z) = \frac{Z[G(s)R(s)]}{1+Z(G(s)H(s))}$                               | ![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/closed-loop-tf-sensing-device.webp]]     |
-| w/ digital controller     | $\frac{C(z)}{R(z)} = \frac{G_{1}(z)G_{2}(z)}{1+G_{1}(z)Z(G_{2}(s)H(s))}$ | ![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/closed-loop-tf-digital-controller.webp]] |
+| System Type               | Transfer Function                                                        |
+| ------------------------- | ------------------------------------------------------------------------ |
+| Basis                     | $\frac{C(z)}{R(z)} = \frac{G(z)}{1+Z[G(s)H(s)]}$                         |
+| w/ digital sensing device | $C(z) = \frac{Z[G(s)R(s)]}{1+Z(G(s)H(s))}$                               |
+| w/ digital controller     | $\frac{C(z)}{R(z)} = \frac{G_{1}(z)G_{2}(z)}{1+G_{1}(z)Z(G_{2}(s)H(s))}$ |
+
+```jsx imports={Zoomable,BlockDiagram}
+<Zoomable label="Closed-loop sampled-data basis">
+  <BlockDiagram
+    config="sampled-feedback"
+    caption="Sampler after the error sum; G(s) forward, H(s) in feedback. Step through the reduction; salmon marks the active rule."
+  />
+</Zoomable>
+```
+
+```jsx imports={Zoomable,BlockDiagram}
+<Zoomable label="Closed loop with digital sensing">
+  <BlockDiagram
+    config="sensing-device"
+    caption="Feedback branch sampled before H(s); reference drives G(s) continuously."
+  />
+</Zoomable>
+```
+
+```jsx imports={Zoomable,BlockDiagram}
+<Zoomable label="Closed loop with digital controller">
+  <BlockDiagram
+    config="digital-controller"
+    caption="Samplers before G₁(s) and G₂(s); H(s) feeds back continuously."
+  />
+</Zoomable>
+```
 
 ![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/CCS to DCS]]

@@ -3,13 +3,15 @@ date: '2025-09-04'
 description: Train a byte-level BPE model in Python and check its Python and Rust encoders against the same saved merges.
 id: index
 modified: 2026-09-16 09:15:11 GMT-04:00
+seealso:
+  - '[[thoughts/tsfm/2|notes]]'
+  - '[[thoughts/byte-pair encoding|BPE]]'
+  - '[[thoughts/tsfm/lecture-2-exercise/implementation|implementation]]'
 tags:
   - ml
   - tsfm
 title: tokenization and computation
 ---
-
-see also [[thoughts/tsfm/2|notes]], [[thoughts/byte-pair encoding|BPE]], [[thoughts/tsfm/lecture-2-exercise/implementation|implementation]]
 
 This exercise has a byte-level BPE trainer in Python and two encoders that load the same saved merge list. The Rust extension exposes encoding and decoding for saved models; training stays in Python.
 

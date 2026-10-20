@@ -130,9 +130,17 @@ int main(int argc, char** argv) {
 > - Needs synchronisation (global variables are shared between threads)
 > - lack robustness (one thread can crash the whole program)
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/mem-layout-threaded.webp]]
+```jsx imports={Zoomable,ThreadAddressSpace}
+<Zoomable label="Thread address spaces">
+  <ThreadAddressSpace caption="Two threads share global data, code, and heap in the process; each keeps a private stack. Salmon marks private stacks, sage shared segments." />
+</Zoomable>
+```
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/single-vs-multithreaded.webp]]
+```jsx imports={Zoomable,ProcessThreads}
+<Zoomable label="Single vs multi-threaded process">
+  <ProcessThreads caption="A process shares code, data, and files; each thread keeps its own registers and stack. Salmon marks the thread wave." />
+</Zoomable>
+```
 
 ```c
 #include <pthread.h>
@@ -220,9 +228,17 @@ Let the following be the scheduling parameters:
 | execution time       | $e_i$                 |
 | response time        | $R_i$                 |
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/abs-rel-deadline.webp]]
+```jsx imports={Zoomable,JobDeadline}
+<Zoomable label="Absolute and relative deadline">
+  <JobDeadline caption="Release window from rᵢ⁻ to rᵢ⁺, job run to completion, absolute deadline dᵢ. Relative deadline Dᵢ spans release to dᵢ; response time ends at completion." />
+</Zoomable>
+```
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/resp-time-exec-time.webp]]
+```jsx imports={Zoomable,ResponseTime}
+<Zoomable label="Response and execution time">
+  <ResponseTime caption="Wait time is arrival to execution start; execution time is the job run; response time is arrival to output." />
+</Zoomable>
+```
 
 > Period $p_i$ of a periodic task $T_i$ is **min length** of all time intervales between release times of consecutive tasks.
 
@@ -296,7 +312,11 @@ $T_3=(20, 5)$ becomes $T_{3_{1}}=(20,1)$ and $T_{3_{2}}=(20,3)$ and $T_{3_{3}}=(
   - $(f, \text{sink})$ with capacity $f$
     - encodes limited computational capacity in each frame
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/flow-graph-hyperperiod.webp]]
+```jsx imports={Zoomable,HyperperiodFlow}
+<Zoomable label="Hyperperiod flow network">
+  <HyperperiodFlow caption="Source feeds jobs with capacities Cᵢ; jobs connect to feasible frames with capacity f; frames drain to the sink with capacity f. Salmon marks source and sink." />
+</Zoomable>
+```
 
 ## static priority assignment
 

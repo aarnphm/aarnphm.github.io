@@ -38,6 +38,19 @@ article.notebook-runtime-page,
     line-height: 0;
   }
 
+  figure[class*='--float-end'] {
+    max-width: min(22rem, 48%);
+  }
+
+  @media (max-width: 640px) {
+    figure[class*='--float-end'] {
+      float: none;
+      width: 100%;
+      max-width: 100%;
+      margin: 0 0 1rem;
+    }
+  }
+
   .notebook-runtime-toolbar {
     display: flex;
     position: relative;

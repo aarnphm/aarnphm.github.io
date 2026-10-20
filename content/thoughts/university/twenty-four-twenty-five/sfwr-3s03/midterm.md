@@ -3,12 +3,16 @@ date: '2025-02-11'
 description: and a midterm review.
 id: midterm
 modified: 2026-06-05 15:08:39 GMT-04:00
+seealso:
+  - '[[thoughts/university/twenty-four-twenty-five/sfwr-3s03/ReviewsAndEvaluation.LNs.FULL.pdf|ReviewsAndEvaluation.LNs.FULL]]'
+  - '[[thoughts/university/twenty-four-twenty-five/sfwr-3s03/CoverageMetrics.LNs.FULL.pdf|CoverageMetrics.LNs.FULL]]'
+  - '[[thoughts/university/twenty-four-twenty-five/sfwr-3s03/TestingContext.LNs.FULL.pdf|TestingContext.LNs.FULL]]'
+  - '[[thoughts/university/twenty-four-twenty-five/sfwr-3s03/TestingClassification.LNs.FULL.pdf|TestingClassification.LNs.FULL]]'
+  - '[[thoughts/university/twenty-four-twenty-five/sfwr-3s03/UTandTDD.Additional.LNs.pdf|UTandTDD.Additional.LNs]]'
 tags:
   - sfwr3s03
 title: Reviews and Evaluation Methods
 ---
-
-See also: [[thoughts/university/twenty-four-twenty-five/sfwr-3s03/ReviewsAndEvaluation.LNs.FULL.pdf|ReviewsAndEvaluation.LNs.FULL]], [[thoughts/university/twenty-four-twenty-five/sfwr-3s03/CoverageMetrics.LNs.FULL.pdf|CoverageMetrics.LNs.FULL]], [[thoughts/university/twenty-four-twenty-five/sfwr-3s03/TestingContext.LNs.FULL.pdf|TestingContext.LNs.FULL]] [[thoughts/university/twenty-four-twenty-five/sfwr-3s03/TestingClassification.LNs.FULL.pdf|TestingClassification.LNs.FULL]] [[thoughts/university/twenty-four-twenty-five/sfwr-3s03/UTandTDD.Additional.LNs.pdf|UTandTDD.Additional.LNs]]
 
 ## Evaluations Methods
 

@@ -3,12 +3,12 @@ date: '2024-12-11'
 description: Schedules, serialisability, recovery, and lock-based concurrency control.
 id: Transaction
 modified: 2026-06-05 15:08:42 GMT-04:00
+seealso:
+  - '[[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/index|concurrency]]'
 tags:
   - sfwr3db3
 title: Transaction
 ---
-
-see also [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/index|concurrency]]
 
 A transaction groups database operations into one unit that either commits or aborts. In the schedules below, we track its reads, writes, and final outcome.
 
