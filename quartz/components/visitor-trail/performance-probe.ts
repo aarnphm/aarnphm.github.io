@@ -7,7 +7,7 @@ import { trailScene } from '../../util/trail-scene'
 
 const megabytes = (bytes: number) => `${(bytes / 1048576).toFixed(1)} MB`
 
-function sceneProbe(document: Document): PerformanceDebugProbe {
+export function sceneProbe(document: Document): PerformanceDebugProbe {
   let observed: HTMLElement | null = null
   let writes = 0
   let counted = 0
@@ -60,7 +60,7 @@ export function trailPerformanceProfile(host: HTMLElement): PerformanceDebugProf
   return {
     label: 'trail performance debug',
     query: 'trail-debug',
-    sources: ['cursor'],
+    sources: ['cursor', 'popover'],
     state: () => (host.hidden ? null : 'trail'),
     probe: () => sceneProbe(host.ownerDocument),
   }

@@ -1,4 +1,14 @@
+import { subscribeVisitorCountry } from '../../util/visitor-country'
+import { localUtcOffset, visitorLocale, visitorLocaleTitle } from './visitor-locale'
 import { anonymousVisitor } from './visitor-name'
+
+// The weather response's country for this browser, per register. Memory only; see visitor-locale.ts.
+const weatherCountries = new WeakMap<HTMLElement, string | null>()
+
+const ownLocaleTitle = (root: HTMLElement) => {
+  const view = root.ownerDocument.defaultView
+  return view ? visitorLocaleTitle(visitorLocale(view, weatherCountries.get(root) ?? null)) : ''
+}
 
 export type VisitorVisit = {
   id: string
@@ -6,6 +16,8 @@ export type VisitorVisit = {
   arrived: number
   observed: boolean
   left: number | null
+  // The UTC offset the visitor published, e.g. "UTC−4"; null for an older client.
+  offset: string | null
 }
 
 export function renderVisitorRegister(root: HTMLElement, visits: VisitorVisit[]) {
@@ -45,13 +57,24 @@ export function renderVisitorRegister(root: HTMLElement, visits: VisitorVisit[])
       const row = document.createElement('li')
       row.dataset.visitorVisit = visit.id
       row.dataset.visitState = visit.left === null ? 'here' : 'left'
+      if (visit.own) row.dataset.visitOwn = ''
       const name = document.createElement('span')
       name.textContent = `${anonymousVisitor(visit.id)}${visit.own ? ' (you)' : ''}`
       name.title = name.textContent
       const departure =
         visit.left === null ? document.createElement('span') : clock(visit.left, 'Left')
       if (visit.left === null) departure.textContent = 'here'
-      row.append(name, clock(visit.arrived, visit.observed ? 'First seen' : 'Arrived'), departure)
+      const offset = document.createElement('span')
+      offset.dataset.visitorOffset = ''
+      const view = document.defaultView
+      offset.textContent = (visit.own && view ? localUtcOffset(view) : visit.offset) ?? '–'
+      if (visit.own) offset.title = ownLocaleTitle(root)
+      row.append(
+        name,
+        offset,
+        clock(visit.arrived, visit.observed ? 'First seen' : 'Arrived'),
+        departure,
+      )
       return row
     }),
   )
@@ -69,6 +92,15 @@ export function mountVisitorRegister(root: HTMLElement, signal: AbortSignal) {
   if (!view || !toggle || !panel || !retry)
     throw new Error('Visitor register controls are incomplete')
   retry.addEventListener('click', () => view.location.reload(), { signal })
+  subscribeVisitorCountry(
+    root.ownerDocument,
+    country => {
+      weatherCountries.set(root, country)
+      const cell = root.querySelector<HTMLElement>('[data-visit-own] [data-visitor-offset]')
+      if (cell) cell.title = ownLocaleTitle(root)
+    },
+    signal,
+  )
   const hover = view.matchMedia('(hover: hover) and (pointer: fine)')
   let pinned = false
   let closeTimer = 0

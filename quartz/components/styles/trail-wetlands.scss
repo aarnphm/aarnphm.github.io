@@ -38,9 +38,57 @@
       display: none;
     }
   }
+  // The living frog (frog.ts): one frame per pose, the tongue and the splash only when they
+  // act. The driven root carries no stylesheet hop; its moves are scripted.
+  .trail-wetland-frog[data-driven='true'] {
+    .trail-frog-leap,
+    .trail-frog-swim,
+    .trail-frog-tongue,
+    .trail-frog-splash,
+    .trail-frog-throat {
+      display: none;
+    }
+    .trail-frog-tongue {
+      fill: color-mix(in srgb, #c76a5c 80%, var(--light));
+    }
+    &[data-pose='leaping'] {
+      .trail-frog-sit {
+        display: none;
+      }
+      .trail-frog-leap {
+        display: inline;
+      }
+    }
+    &[data-pose='swimming'] {
+      .trail-frog-sit {
+        display: none;
+      }
+      .trail-frog-swim {
+        display: inline;
+      }
+    }
+    // The body group carries the pose moves; a transform on the frame group would replace its
+    // own translate.
+    &[data-pose='crouching'] .trail-frog-body {
+      transform: translateY(1px);
+    }
+    &[data-pose='tongue'] .trail-frog-tongue {
+      display: inline;
+    }
+    &[data-pose='croaking'] .trail-frog-throat {
+      display: inline;
+      animation: trail-frog-croak 420ms steps(1, end) infinite;
+    }
+    &[data-pose='swallowing'] .trail-frog-body {
+      animation: trail-frog-swallow 240ms steps(1, end) 2;
+    }
+    &[data-splash='true'] .trail-frog-splash {
+      display: inline;
+    }
+  }
   @media (prefers-reduced-motion: no-preference) {
     .trail-scene:not([data-water-frozen='true']) {
-      .trail-wetland-frog-motion {
+      .trail-wetland-frog:not([data-driven='true']) .trail-wetland-frog-motion {
         animation: trail-wetland-hop var(--wetland-cycle) linear var(--wetland-delay) infinite;
       }
       .trail-wetland-otter-motion {
@@ -95,5 +143,25 @@
   }
   70% {
     transform: translate(2px, 0);
+  }
+}
+
+@keyframes trail-frog-croak {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(1px) scaleX(1.3);
+  }
+}
+
+@keyframes trail-frog-swallow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(1px);
   }
 }

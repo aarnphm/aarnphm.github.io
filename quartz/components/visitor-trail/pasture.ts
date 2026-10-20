@@ -69,7 +69,7 @@ export function trailPasture(
     return `<g class="trail-${kind}${tone}" data-trail-wander="${kind}-${index}" data-trail-animal="${kind}" data-animal-home-x="${x}" data-animal-home-y="${y}" data-animal-size="${size}" data-phase="waiting" data-motion="paused" data-stride="0" transform="translate(${x} ${y})" style="--trail-animal-step:${size}px;--trail-cow-delay:${index * -2700}ms;--trail-animal-delay:${index * -1700}ms"><g class="trail-animal-facing" transform="scale(${flip} 1)"><g transform="translate(${-size * anchor} ${-size * 8})">${sprite}</g></g></g>`
   }
   const animals: { y: number; markup: string }[] = []
-  for (const site of fishing) animals.push({ y: site.fish.y, markup: riverFish(site) })
+  fishing.forEach((site, index) => animals.push({ y: site.fish.y, markup: riverFish(site, index) }))
   if (fishingBear) animals.push({ y: fishingBear.bank.y, markup: riverBear(fishingBear) })
   for (let index = 0; index < settings.cow; index++) {
     const point = site()

@@ -16,6 +16,7 @@ import { mountCrownWind } from './crown-wind'
 import { mountGroundDepth } from './depth-order'
 import { footprint, footprintTransform, type FootprintKind } from './footprints'
 import { createForestSprites } from './forest-sprites'
+import { mountFrog } from './frog'
 import { mountHikerJourney } from './hiker-journey'
 import { mountTrailHolidays } from './holidays'
 import { mountJay } from './jay'
@@ -36,6 +37,7 @@ import { mountPastureWanderers } from './pasture-wander'
 import { mountTrailPerspective } from './perspective'
 import { petExpedition } from './pet-expedition'
 import { trailRandom } from './random'
+import { mountRiverBear } from './river-bear'
 import { mountSceneCompositor } from './scene-compositor'
 import { mountSceneLighting } from './scene-lighting'
 import { mountSceneReveal, sceneMotionReady } from './scene-reveal'
@@ -244,6 +246,10 @@ const larderClear = (point: Point) => {
 }
 const refreshForest = () => {
   jay.refresh(treePlan ?? [], larderClear)
+  if (forestLayout) {
+    frog.refresh(forestLayout)
+    riverBear.refresh(forestLayout)
+  }
   crowns.refresh()
   holidays.refreshTrees()
   pastureJourneys.refreshForest()
@@ -348,6 +354,8 @@ mountSceneLighting(scene, signal)
 mountTrailBlazes(scene, signal)
 mountLeafFall(scene, signal)
 const jay = mountJay(scene, host, signal)
+const frog = mountFrog(scene, host, signal)
+const riverBear = mountRiverBear(scene, host, signal)
 const groundDepth = mountGroundDepth(scene, host, signal)
 const moss = mountMossCover(scene, host, signal)
 const grove = mountSharedGrove(
