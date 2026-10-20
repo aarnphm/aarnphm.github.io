@@ -1,5 +1,4 @@
 import type { Root as HtmlRoot } from 'hast'
-import fs from 'node:fs/promises'
 import { Node } from 'unist'
 import type { TriathlonRenderData } from '../../components/triathlon/render-data'
 import { defaultContentPageLayout, sharedPageComponents } from '../../../quartz.layout'
@@ -21,19 +20,12 @@ import { isDevelopmentBuild } from '../../util/build-mode'
 import { hashContent } from '../../util/content-hash'
 import { BuildCtx, contentDataFor } from '../../util/ctx'
 import { onModuleRelease, releasedOnReload } from '../../util/module-caches'
-import { FilePath, FullSlug, joinSegments, pathToRoot, QUARTZ } from '../../util/path'
+import { FilePath, FullSlug, pathToRoot } from '../../util/path'
 import { StaticResources } from '../../util/resources'
-import {
-  serializeStravaDetails,
-  serializeStravaMapPayload,
-  type StravaDetailPayload,
-} from '../../util/strava-detail'
+import { serializeStravaDetails, serializeStravaMapPayload } from '../../util/strava-detail'
 import { loadStravaDataSync, type LoadedStravaPayload } from '../../util/strava-payload'
 import { sealTrainingCalendar } from '../../util/training-calendar-crypto'
-import { linkTrainingPeaksCalendarActivities } from '../../util/trainingpeaks-activity-links'
 import { readTrainingPeaksCalendar } from '../../util/trainingpeaks-calendar-cache'
-import { trainingPeaksActivityPeaks } from '../../util/trainingpeaks-calendar-peaks'
-import { trainingPeaksLocalZones } from '../../util/trainingpeaks-calendar-zones'
 import { parseTriathlonCalendars, serializeTriathlonCalendar } from '../../util/triathlon-calendar'
 import {
   triathlonActivityFeedRoutes,
@@ -54,61 +46,21 @@ import {
   triathlonPreviewSlug,
 } from '../../util/triathlon-preview'
 import { buildStravaActivityIndex } from '../../util/triathlon-shortcut'
-import { ATHLETE, buildDataFeed, parseVo2Lab } from '../stores/analytics'
+import { buildDataFeed, parseVo2Lab } from '../stores/analytics'
 import { buildMatchedRides, emptyMatchedRides } from '../stores/matched-rides'
 import { buildMatchedRuns, emptyMatchedRuns } from '../stores/matched-runs'
 import { parseTrainingPlans } from '../stores/training'
 import { defaultProcessedContent, ProcessedContent, QuartzPluginData } from '../vfile'
 import { removeWritten, write } from './helpers'
 import { createOgImageGenerator } from './ogImage'
-
-const TRI_SUBVIEWS: TriView[] = [
-  'tools',
-  'calc',
-  'analytics',
-  'maps',
-  'training',
-  'calendar',
-  'feed',
-  'on',
-]
-const TRIATHLON_DATA_CACHE_DIR = joinSegments(QUARTZ, '.quartz-cache', 'triathlon')
-const TRIATHLON_DATA_CACHE_PATH = joinSegments(TRIATHLON_DATA_CACHE_DIR, 'data.jsonl')
-
-async function cacheDataFeed(content: string): Promise<void> {
-  await fs.mkdir(TRIATHLON_DATA_CACHE_DIR, { recursive: true })
-  await fs.writeFile(TRIATHLON_DATA_CACHE_PATH, content)
-}
-
-const isTriathlon = (data: QuartzPluginData): boolean => data.frontmatter?.layout === 'triathlon'
-
-const triathlonDescription = (
-  view: TriView | 'day',
-  activityCount: number,
-  planCount: number,
-  scopePrefix = '',
-): string => {
-  switch (view) {
-    case 'tools':
-      return 'Triathlon gear, fuel, pace conversions, and race-distance reference data.'
-    case 'calc':
-      return 'Triathlon finish-time calculator inputs, current calibration, thresholds, and projections.'
-    case 'analytics':
-      return `Generated training analytics across ${activityCount} activities.`
-    case 'maps':
-      return `Generated route geometry and map metrics across ${activityCount} activities.`
-    case 'training':
-      return `${planCount} generated triathlon training plans with their complete note content.`
-    case 'calendar':
-      return 'Race dates and the TrainingPeaks training calendar, with weekly planned and completed sessions.'
-    case 'feed':
-      return `Generated training feed across ${activityCount} activities.`
-    case 'on':
-      return `Generated training log for ${scopePrefix || 'the complete activity window'}.`
-    case 'day':
-      return `Generated activity data and telemetry for ${scopePrefix}.`
-  }
-}
+import {
+  cacheDataFeed,
+  isTriathlon,
+  stravaDetailPayload,
+  TRI_SUBVIEWS,
+  triathlonDescription,
+} from './strava-helpers'
+import { linkTrainingCalendar } from './strava-training-calendar'
 
 export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => {
   const opts: FullPageLayout = {
@@ -152,18 +104,18 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
       const calendar = calendars.at(-1) ?? null
       const importedTrainingCalendar = await readTrainingPeaksCalendar()
       const tracking = file.data.tracking
-      const { payload, analytics, trackedCache, sources, wahooActivities, generatedAt } =
-        loadStravaDataSync(
-          typeof since === 'string' ? since : undefined,
-          tracking,
-          {
-            weights: tracking?.days,
-            events: tracking?.races,
-            dexa: file.data.frontmatter?.['dexa'],
-            vo2labs: file.data.frontmatter?.['vo2max'],
-          },
-          ctx.argv.directory,
-        )
+      const stravaData = loadStravaDataSync(
+        typeof since === 'string' ? since : undefined,
+        tracking,
+        {
+          weights: tracking?.days,
+          events: tracking?.races,
+          dexa: file.data.frontmatter?.['dexa'],
+          vo2labs: file.data.frontmatter?.['vo2max'],
+        },
+        ctx.argv.directory,
+      )
+      const { payload, analytics, trackedCache, sources, generatedAt } = stravaData
       const { strava: cache, oura, apple, garmin, weather } = sources
       const vo2labs = parseVo2Lab(file.data.frontmatter?.['vo2max'])
       const latestVo2 = vo2labs.at(-1)
@@ -173,35 +125,11 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
             detailActivityIds.has(String(activity.id)),
           )
         : []
-      const linkedTrainingCalendar = importedTrainingCalendar
-        ? linkTrainingPeaksCalendarActivities(
-            importedTrainingCalendar,
-            matchedActivities.flatMap(activity => {
-              const detail = payload.details[String(activity.id)]
-              return detail
-                ? [
-                    {
-                      ...activity,
-                      sport: detail.sport,
-                      garmin: detail.garmin,
-                      wahoo: detail.wahoo ? wahooActivities[detail.wahoo.activityId] : undefined,
-                      peaks: trainingPeaksActivityPeaks({
-                        strava: cache?.streams?.[String(activity.id)],
-                        garmin: detail.garmin
-                          ? garmin?.streams?.[detail.garmin.activityId]
-                          : undefined,
-                        powerCurve: detail.powerCurve,
-                      }),
-                    },
-                  ]
-                : []
-            }),
-          )
-        : null
-      const trainingCalendar = linkedTrainingCalendar && {
-        ...linkedTrainingCalendar,
-        localZones: trainingPeaksLocalZones(analytics, payload.zones.ftp),
-      }
+      const { calendar: trainingCalendar, plannedActivityIds } = linkTrainingCalendar(
+        importedTrainingCalendar,
+        matchedActivities,
+        stravaData,
+      )
       const matchedRuns = cache
         ? buildMatchedRuns(matchedActivities, trackedCache?.streams ?? {})
         : emptyMatchedRuns()
@@ -210,25 +138,11 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
         : emptyMatchedRides()
       const dailyAnalytics = payload.dailyAnalytics
       const renderPayload = payload
-      const detailPayload: StravaDetailPayload = {
-        details: payload.details,
-        swimTrend: payload.swimTrend,
-        health: payload.health,
-        dailyAnalytics,
-        zones: payload.zones,
-        powerCurveRef: payload.powerCurveRef,
-        powerCurveYearRef: payload.powerCurveYearRef,
-        runPowerCurveRef: payload.runPowerCurveRef,
-        runPowerCurveYearRef: payload.runPowerCurveYearRef,
-        powerCurveYear: payload.powerCurveYear,
-        criticalPower: payload.criticalPower,
-        criticalPowerYear: payload.criticalPowerYear,
-        ftp: ATHLETE.ftp,
-        goalFtp: ATHLETE.goalFTP,
+      const detailPayload = stravaDetailPayload(payload, {
         vt1Hr: latestVo2?.vt1Hr ?? null,
         matchedRuns,
         matchedRides,
-      }
+      })
       const detailArtifacts = serializeStravaDetails(detailPayload)
       const plans = parseTrainingPlans(tree as unknown as HtmlRoot)
       const equipment = buildTriathlonEquipment(cache)
@@ -471,6 +385,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
       const globalDayKey = dayRenderCacheEligible
         ? hashContent({
             payload: { ...payload, details: undefined, health: undefined },
+            plannedActivityIds,
             maintenance,
             location,
             today: new Date().toISOString().slice(0, 10),
@@ -534,7 +449,11 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
             const dayResources = pageResources(pathToRoot(daySlug), resources, ctx)
             const dayData: QuartzComponentProps = {
               ctx,
-              fileData: { ...dayFile.data, stravaPayload: renderPayload },
+              fileData: {
+                ...dayFile.data,
+                stravaPayload: renderPayload,
+                trainingPlannedActivities: plannedActivityIds,
+              },
               externalResources: dayResources,
               cfg: ctx.cfg.configuration,
               children: [],
@@ -609,6 +528,8 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
 declare module 'vfile' {
   interface DataMap {
     stravaPayload: LoadedStravaPayload
+    /** Activities linked to a TrainingPeaks workout; the workouts stay in the sealed calendar. */
+    trainingPlannedActivities: number[]
     triathlonMaintenance: TriathlonMaintenance | null
     triathlonRenderData: TriathlonRenderData
   }

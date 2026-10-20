@@ -13,6 +13,7 @@ import { triathlonDateFromSlug, triathlonMonthSlug } from '../../util/triathlon-
 import script from '../scripts/triathlon.inline'
 import style from '../styles/triathlon.scss'
 import { triathlonDayCard, triathlonDayExtras, triathlonDayProps } from '../triathlon-day-card'
+import { addPlannedTabs } from '../triathlon-planned-tabs'
 import { TriathlonSubnav } from './triathlon-panels'
 
 export default (() => {
@@ -41,6 +42,7 @@ export default (() => {
       goalFtp: ATHLETE.goalFTP,
       vt1: null,
     })
+    addPlannedTabs(card, fileData.trainingPlannedActivities)
 
     return (
       <article

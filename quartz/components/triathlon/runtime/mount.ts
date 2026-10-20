@@ -6,6 +6,7 @@ import { setupDayEmbeds } from '../activity/embeds'
 import { setupEnvironmentTabs } from '../activity/environment-tabs'
 import { setupMatchedActivities } from '../activity/matched'
 import { setupMyWindsockGraphs } from '../activity/mywindsock-graphs'
+import { setupPlannedWorkouts } from '../activity/planned-workout'
 import { setupPowerCurveActivityLinks } from '../activity/power-links'
 import { setupChartScrub } from '../activity/scrub'
 import { setupWorkoutAnalysisTabs } from '../activity/workout-analysis-tabs'
@@ -57,6 +58,7 @@ export const mountTriathlon = (signal: AbortSignal): MountedTriathlon => {
   addCleanup(setupChartScrub(document.body, () => context.presentation))
   addCleanup(setupEnvironmentTabs(document.body, () => context.presentation))
   addCleanup(setupWorkoutAnalysisTabs(document.body))
+  addCleanup(setupPlannedWorkouts(document.body, signal, () => context.presentation))
   addCleanup(setupMatchedActivities(document.body))
   addCleanup(setupGloss(document.body, () => context.presentation.locale))
   if (root) {

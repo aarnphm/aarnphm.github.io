@@ -1,0 +1,112 @@
+// The planned tab of the workout analysis: the TrainingPeaks plan beside the recorded workout.
+// It reuses the training calendar's structure, table and instruction styles.
+.tri-planned-panel {
+  // The hover tip renders beside the article, so the line colour its border uses is set here.
+  --calendar-line: color-mix(in srgb, var(--gray) 55%, transparent);
+  // The calendar styles size their text with --text-meta; at 0.6rem the plan reads at the size
+  // of the other workout analysis panels (zone rows, lap splits).
+  --text-meta: 0.6rem;
+  container: tri-planned / inline-size;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  // Overlay scrollbars draw over the right-aligned completed column on phones.
+  padding-inline-end: 0.5rem;
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: -2px;
+  }
+}
+
+.tri-planned {
+  display: grid;
+  gap: 0.6rem;
+  min-width: 0;
+  padding-block-end: 0.25rem;
+  font-size: var(--text-meta, 0.75rem);
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+
+.tri-planned-locked {
+  display: block;
+  margin: 0;
+  color: var(--darkgray);
+
+  > a {
+    color: var(--dark);
+  }
+}
+
+.tri-planned-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.15rem 0.75rem;
+  min-width: 0;
+  line-height: 1.4;
+}
+
+.tri-planned-title {
+  min-width: 0;
+  color: var(--dark);
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.tri-planned-source {
+  color: var(--darkgray);
+}
+
+.tri-planned-body {
+  display: grid;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.tri-planned-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+
+  // Without a structure column the totals would spread planned and completed across the panel.
+  > .tri-training-table {
+    max-width: 28rem;
+  }
+}
+
+@container tri-planned (min-width: 40rem) {
+  .tri-planned-body:has(> .tri-training-structure) {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    align-items: start;
+  }
+}
+
+// Effort cues the coach wrote (RPE, % effort, zones), marked in the text and listed once.
+.tri-training-cues {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.35rem;
+  margin: 0;
+  font-family: var(--codeFont);
+  font-size: var(--text-meta, 0.75rem);
+  line-height: 1.5;
+
+  > .tri-training-pre-activity-label {
+    display: inline;
+    margin-inline-end: 0.15rem;
+  }
+}
+
+// A stronger `selected` fill: sage at 28% keeps dark ink above 4.5:1 in both themes, where the
+// theme highlight (olive in dark) does not.
+.tri-training-cue {
+  padding-inline: 0.2em;
+  background: color-mix(in srgb, var(--secondary) 28%, transparent);
+  box-decoration-break: clone;
+  color: var(--dark);
+  font-variant-numeric: tabular-nums;
+}

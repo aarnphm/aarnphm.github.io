@@ -350,13 +350,14 @@
 }
 
 // On a phone the step column takes width from the target column, so coach notes keep whole words.
+// The zone column keeps the remaining 17%, enough for the "zone" header on one line.
 @container tri-training-detail (max-width: 30rem) {
   .tri-training-structure-table:not(.tri-training-structure-table--swim) {
     thead th:nth-child(1) {
-      width: 36%;
+      width: 34%;
     }
     thead th:nth-child(2) {
-      width: 18%;
+      width: 17%;
     }
     thead th:nth-child(3) {
       width: 32%;
