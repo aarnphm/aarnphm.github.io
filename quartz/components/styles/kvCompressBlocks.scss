@@ -1,0 +1,481 @@
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
+@use './figure.scss' as *;
+
+.kv-compress-blocks {
+  @include figure-frame('kvc-figure', 36rem);
+
+  --kvc-kv: color-mix(in srgb, var(--darkgray) 34%, var(--light));
+  --kvc-other: color-mix(in srgb, var(--lightgray) 55%, var(--light));
+  --kvc-evict: var(--fig-salmon);
+  --kvc-free: color-mix(in srgb, var(--fig-sage) 90%, var(--light));
+  --kvc-lit-cell: color-mix(in srgb, var(--fig-salmon) 55%, var(--light));
+  --kvc-band: var(--fig-tab-surface);
+  --kvc-on: var(--fig-grid-selected);
+}
+
+:root[saved-theme='dark'] .kv-compress-blocks {
+  --kvc-kv: color-mix(in srgb, var(--gray) 78%, var(--light));
+  --kvc-other: var(--lightgray);
+  --kvc-evict: color-mix(in srgb, var(--fig-salmon) 46%, var(--lightgray));
+  --kvc-free: color-mix(in srgb, var(--fig-sage) 30%, var(--lightgray));
+  --kvc-lit-cell: color-mix(in srgb, var(--fig-salmon) 32%, var(--lightgray));
+  --kvc-on: color-mix(in srgb, var(--fig-sage) 22%, var(--lightgray));
+}
+
+@mixin kvc-segment {
+  @include figure-grid-cell;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--fig-tab-fg);
+  cursor: pointer;
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  transition:
+    background-color 140ms ease,
+    color 140ms ease;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      color: var(--dark);
+    }
+  }
+}
+
+.kvc-tabs {
+  @include figure-grid;
+  grid-auto-flow: column;
+  justify-content: start;
+}
+
+.kvc-tab {
+  @include kvc-segment;
+  padding: 0.3rem 0.65rem;
+
+  &[aria-selected='true'] {
+    background: var(--kvc-on);
+    color: var(--dark);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: -2px;
+  }
+}
+
+.kvc-panel {
+  margin-top: 0.9rem;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.kvc-stepper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+
+.kvc-steps {
+  @include figure-grid;
+  grid-auto-flow: column;
+  min-width: 0;
+  position: relative;
+  margin-top: 1.1rem;
+}
+
+.kvc-legend {
+  position: absolute;
+  top: -1.15rem;
+  left: 0;
+  padding: 0;
+  color: var(--fig-note);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.kvc-step {
+  @include kvc-segment;
+  min-width: 1.6rem;
+  padding: 0.28rem 0.3rem;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    pointer-events: none;
+  }
+
+  &:has(input:checked) {
+    background: var(--kvc-on);
+    color: var(--dark);
+  }
+
+  &:has(input:focus-visible) {
+    outline: 2px solid var(--dark);
+    outline-offset: -2px;
+  }
+}
+
+.kvc-nav {
+  box-sizing: border-box;
+  height: calc(0.72rem * 1.2 + 0.56rem + 2px);
+  padding: 0 0.6rem;
+  border: 1px solid var(--fig-stroke);
+  border-radius: var(--radius-none);
+  background: var(--light);
+  color: var(--dark);
+  cursor: pointer;
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  transition:
+    background-color 140ms ease,
+    color 140ms ease;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      background: var(--kvc-on);
+    }
+  }
+
+  &:disabled {
+    color: var(--fig-tab-fg);
+    border-color: var(--fig-stroke-soft);
+    cursor: default;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
+}
+
+.kvc-step-texts {
+  margin-top: 0.75rem;
+  min-height: 2.3rem;
+}
+
+.kvc-step-text {
+  display: none;
+  margin: 0;
+  color: var(--fig-note);
+  font-size: 0.78rem;
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+.kvc-panel-note {
+  display: block;
+}
+
+.kvc-step-num {
+  color: var(--dark);
+  font-family: var(--codeFont);
+}
+
+@for $i from 1 through 10 {
+  .kv-compress-blocks[data-kvc-step='#{$i}'] {
+    [data-kvc-step-text='#{$i}'] {
+      display: block;
+    }
+
+    .kvc-frame[data-kvc-frame='#{$i}'] {
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 180ms ease;
+    }
+  }
+}
+
+.kvc-svg,
+.kvc-layout-svg {
+  display: block;
+  width: 100%;
+  margin: 0.6rem auto 0;
+
+  text {
+    font-family: var(--codeFont);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.kvc-svg {
+  max-width: 34rem;
+
+  .kvc-frame {
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 180ms ease,
+      visibility 0s linear 180ms;
+  }
+
+  .kvc-cell {
+    fill: var(--kvc-kv);
+    stroke: var(--fig-stroke);
+    stroke-width: 0.8;
+  }
+
+  .kvc-metric {
+    fill: var(--dark);
+    font-size: 10.5px;
+  }
+
+  .kvc-index {
+    fill: var(--fig-note);
+    font-size: 7.5px;
+  }
+
+  [data-kvc-mark='empty'] .kvc-cell,
+  [data-kvc-mark='vacated'] .kvc-cell {
+    fill: var(--light);
+    stroke: var(--fig-stroke-soft);
+  }
+
+  [data-kvc-mark='evict'] .kvc-cell {
+    fill: var(--kvc-evict);
+    stroke: var(--dark);
+  }
+
+  [data-kvc-mark='free'] .kvc-cell {
+    fill: var(--kvc-free);
+    stroke: var(--fig-stroke);
+  }
+
+  [data-kvc-key='true'] .kvc-cell,
+  [data-kvc-mark='moved'] .kvc-cell,
+  [data-kvc-mark='vacated'] .kvc-cell {
+    stroke: var(--dark);
+    stroke-width: 2;
+  }
+
+  [data-kvc-key='true'] .kvc-metric,
+  [data-kvc-mark='moved'] .kvc-metric {
+    font-weight: 700;
+  }
+
+  .kvc-other {
+    fill: var(--kvc-other);
+    stroke: var(--fig-stroke-soft);
+    stroke-width: 0.8;
+  }
+
+  .kvc-band {
+    fill: var(--kvc-band);
+    stroke: var(--fig-stroke);
+    stroke-width: 0.8;
+  }
+
+  .kvc-band-label {
+    fill: var(--dark);
+    font-size: 8px;
+  }
+
+  .kvc-phys,
+  .kvc-range-label {
+    fill: var(--fig-note);
+    font-size: 8px;
+  }
+
+  .kvc-range {
+    fill: var(--dark);
+  }
+
+  .kvc-move {
+    fill: none;
+    stroke: var(--dark);
+    stroke-width: 1.2;
+  }
+
+  .kvc-move-head {
+    fill: var(--dark);
+  }
+}
+
+.kvc-layout-svg {
+  // Both layout drawings share one scale; the inline max-width sets it from each viewBox.
+
+  .kvc-phys,
+  .kvc-axis {
+    fill: var(--fig-note);
+    font-size: 7.5px;
+  }
+
+  .kvc-lslot {
+    fill: var(--kvc-kv);
+    stroke: var(--fig-stroke);
+    stroke-width: 0.6;
+  }
+
+  [data-kvc-mark='pad'] {
+    fill: var(--light);
+    stroke: var(--fig-stroke-soft);
+  }
+
+  [data-kvc-mark='other'] {
+    fill: var(--kvc-other);
+    stroke: var(--fig-stroke-soft);
+  }
+
+  [data-kvc-mark='lit'] {
+    fill: var(--kvc-evict);
+    stroke: var(--dark);
+  }
+}
+
+.kvc-legend-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.9rem;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--fig-note);
+  font-size: 0.72rem;
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0;
+  }
+}
+
+.kvc-swatch {
+  width: 0.7rem;
+  height: 0.7rem;
+  box-sizing: border-box;
+  border: 1px solid var(--fig-stroke);
+  background: var(--kvc-kv);
+
+  &[data-kvc-mark='empty'] {
+    background: var(--light);
+    border-color: var(--fig-stroke-soft);
+  }
+
+  &[data-kvc-mark='evict'] {
+    background: var(--kvc-evict);
+    border-color: var(--dark);
+  }
+
+  &[data-kvc-mark='free'] {
+    background: var(--kvc-free);
+  }
+
+  &[data-kvc-mark='other'] {
+    background: var(--kvc-other);
+    border-color: var(--fig-stroke-soft);
+  }
+
+  &[data-kvc-mark='lit'] {
+    background: var(--kvc-evict);
+    border-color: var(--dark);
+  }
+}
+
+.kvc-readout {
+  @include figure-table;
+  margin-top: 0.9rem;
+}
+
+.kvc-table,
+.kvc-compare {
+  width: 100%;
+  margin: 0.9rem 0 0;
+  border-collapse: collapse;
+  font-size: 0.74rem;
+  line-height: 1.3;
+
+  th,
+  td {
+    padding: 0.3rem 0.5rem;
+    border: 1px solid var(--fig-grid-line);
+    background: var(--fig-grid-cell);
+    color: var(--dark);
+    font-family: var(--codeFont);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    transition: background-color 180ms ease;
+  }
+
+  th {
+    color: var(--fig-note);
+    font-weight: 400;
+  }
+
+  th[scope='row'],
+  thead th:first-child {
+    text-align: left;
+  }
+
+  td[data-kvc-lit='true'] {
+    background: var(--kvc-lit-cell);
+  }
+}
+
+.kvc-compare th[scope='row'] {
+  font-family: inherit;
+}
+
+.kvc-table-caption {
+  @include figure-card-heading;
+  caption-side: top;
+  text-align: left;
+}
+
+.kvc-math {
+  @include figure-inline-math;
+}
+
+.kvc-caption {
+  @include figure-caption;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kvc-svg .kvc-frame,
+  .kv-compress-blocks .kvc-frame[data-kvc-frame],
+  .kvc-step,
+  .kvc-tab,
+  .kvc-nav {
+    transition: none !important;
+  }
+}
+
+@container kvc-figure (max-width: 460px) {
+  .kvc-tabs {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .kvc-tab {
+    padding: 0.3rem 0.3rem;
+    white-space: normal;
+    text-align: center;
+  }
+
+  .kvc-stepper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .kvc-steps {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-auto-flow: row;
+  }
+
+  .kvc-table th,
+  .kvc-table td,
+  .kvc-compare th,
+  .kvc-compare td {
+    padding: 0.28rem 0.3rem;
+  }
+}

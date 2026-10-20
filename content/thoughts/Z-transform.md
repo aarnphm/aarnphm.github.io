@@ -222,7 +222,16 @@ $$
 
 Pole-zero cancellation can hide unstable internal modes. Use the state model to check internal stability. [MIT §15.3.1](https://ocw.mit.edu/courses/6-241j-dynamic-systems-and-control-spring-2011/5b744a33f5db9b0cc70dbc04a9de5706_MIT6_241JS11_chap15.pdf).
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/s-plane-stability.webp|poles on s-plane]]
+```jsx imports={Zoomable,PoleResponse}
+<Zoomable label="poles on s-plane">
+  <PoleResponse
+    re={-2}
+    im={2}
+    regions
+    caption="Poles on the s-plane, $s=\sigma\pm j\omega$, for a unit-gain second-order model. Drag the salmon pole, or use the arrow keys. In the sage left half-plane ($\sigma<0$) the step response settles; on the imaginary axis it oscillates for ever; in the grey right half-plane it grows without bound. Under $z=e^{sT}$ these regions map to the inside of the unit circle, the circle and the outside."
+  />
+</Zoomable>
+```
 
 > [!important] mapping from s-plane to z-plane
 >

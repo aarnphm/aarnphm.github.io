@@ -1,0 +1,384 @@
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
+@use './figure.scss' as *;
+
+.sparse-attention-mask {
+  @include figure-frame('sam-figure', 62rem);
+
+  --sam-ground: color-mix(in srgb, var(--lightgray) 60%, var(--light));
+  --sam-kept: color-mix(in srgb, var(--fig-sage) 90%, var(--light));
+  --sam-lit: var(--fig-salmon);
+  --sam-segment-on: var(--fig-grid-selected);
+}
+
+:root[saved-theme='dark'] .sparse-attention-mask {
+  --sam-ground: color-mix(in srgb, var(--lightgray) 70%, var(--light));
+  --sam-kept: color-mix(in srgb, var(--fig-sage) 34%, var(--lightgray));
+  --sam-lit: color-mix(in srgb, var(--fig-salmon) 78%, var(--lightgray));
+  --sam-segment-on: color-mix(in srgb, var(--fig-sage) 22%, var(--lightgray));
+}
+
+.sam-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.25rem;
+  align-items: flex-end;
+}
+
+.sam-segments {
+  @include figure-grid;
+  grid-auto-flow: column;
+  min-width: 0;
+  // The legend sits above the grid instead of breaking its top edge.
+  position: relative;
+  margin-top: 1.1rem;
+}
+
+.sam-legend {
+  color: var(--fig-note);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.sam-segments > .sam-legend {
+  position: absolute;
+  top: -1.15rem;
+  left: 0;
+  padding: 0;
+}
+
+.sam-segment {
+  @include figure-grid-cell;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.28rem 0.6rem;
+  color: var(--fig-tab-fg);
+  cursor: pointer;
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  transition:
+    background-color 140ms ease,
+    color 140ms ease;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    pointer-events: none;
+  }
+
+  &:hover {
+    color: var(--dark);
+  }
+
+  &:has(input:checked) {
+    background: var(--sam-segment-on);
+    color: var(--dark);
+  }
+
+  &:has(input:focus-visible) {
+    outline: 2px solid var(--dark);
+    outline-offset: -2px;
+  }
+}
+
+.sam-slider {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  flex: 1 1 12rem;
+
+  input {
+    @include stableRangeControl;
+    flex: 1 1 auto;
+    min-width: 0;
+
+    &:focus-visible {
+      outline: 2px solid var(--dark);
+      outline-offset: 2px;
+    }
+  }
+}
+
+.sam-slider-value {
+  min-width: 2ch;
+  color: var(--dark);
+  font-family: var(--codeFont);
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.sam-rule {
+  display: none;
+  margin: 0.75rem 0 0;
+  color: var(--fig-note);
+  font-size: 0.78rem;
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+@each $m in cmp, slc, win, nsa, dsa {
+  .sparse-attention-mask[data-sam-mode='#{$m}'] [data-sam-rule='#{$m}'] {
+    display: block;
+  }
+
+  .sparse-attention-mask[data-sam-mode='#{$m}'] [data-sam-strip='#{$m}'] {
+    display: inline;
+  }
+}
+
+.sam-stage {
+  display: grid;
+  gap: 0.9rem;
+  margin-top: 0.9rem;
+}
+
+.sam-svg {
+  display: block;
+  width: 100%;
+  max-width: 34rem;
+  margin: 0 auto;
+
+  text {
+    font-family: var(--codeFont);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .sam-axis {
+    fill: var(--fig-note);
+    font-size: 7.5px;
+  }
+
+  .sam-axis--title {
+    fill: var(--dark);
+  }
+
+  .sam-lane,
+  .sam-tag {
+    fill: var(--dark);
+    font-size: 7px;
+  }
+
+  .sam-strip {
+    display: none;
+  }
+
+  .sam-span {
+    fill: transparent;
+    stroke: var(--fig-stroke-soft);
+    stroke-width: 0.6;
+    transition: fill 160ms ease;
+
+    &[data-on='true'] {
+      fill: var(--sam-lit);
+      stroke: var(--dark);
+    }
+  }
+
+  .sam-block {
+    fill: transparent;
+    stroke: var(--fig-stroke-soft);
+    stroke-width: 0.6;
+  }
+
+  .sam-score,
+  .sam-bar {
+    fill: var(--fig-stroke-soft);
+    transition:
+      fill 160ms ease,
+      y 160ms ease,
+      height 160ms ease;
+  }
+
+  [data-sam-block][data-on='true'] {
+    .sam-block {
+      stroke: var(--dark);
+      stroke-width: 0.9;
+    }
+
+    .sam-score {
+      fill: var(--sam-lit);
+    }
+  }
+
+  [data-shown='false'] {
+    display: none;
+  }
+
+  .sam-bar[data-on='true'] {
+    fill: var(--sam-lit);
+  }
+
+  .sam-zero {
+    stroke: var(--fig-stroke);
+    stroke-width: 0.6;
+  }
+
+  .sam-cell {
+    fill: var(--sam-ground);
+    transition: fill 160ms ease;
+  }
+
+  .sam-cmp {
+    display: none;
+    fill: var(--sam-kept);
+  }
+
+  [data-lit='true'] .sam-cmp {
+    fill: var(--sam-lit);
+  }
+
+  .sam-row-frame {
+    fill: none;
+    stroke: var(--dark);
+    stroke-width: 0.8;
+    transition: y 160ms ease;
+  }
+}
+
+.sparse-attention-mask[data-sam-mode='cmp'] .sam-svg .sam-cmp {
+  display: inline;
+}
+
+@each $m in slc, win, nsa, dsa {
+  .sparse-attention-mask[data-sam-mode='#{$m}'] .sam-svg {
+    .sam-cell.#{$m} {
+      fill: var(--sam-kept);
+    }
+
+    [data-lit='true'] .sam-cell.#{$m} {
+      fill: var(--sam-lit);
+    }
+  }
+}
+
+.sam-side {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: 0.9rem;
+  align-items: start;
+  min-width: 0;
+}
+
+.sam-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.74rem;
+  line-height: 1.3;
+
+  th,
+  td {
+    padding: 0.32rem 0.45rem;
+    border: 1px solid var(--fig-grid-line);
+    background: var(--fig-grid-cell);
+    transition: background-color 140ms ease;
+  }
+
+  th {
+    color: var(--fig-note);
+    font-weight: 400;
+    text-align: left;
+  }
+
+  thead th {
+    color: var(--dark);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  td {
+    color: var(--dark);
+    font-family: var(--codeFont);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  thead th:not(:first-child) {
+    text-align: right;
+  }
+
+  .katex {
+    color: inherit;
+    font-size: 1em;
+  }
+}
+
+@each $m in cmp, slc, win, nsa, dsa {
+  .sparse-attention-mask[data-sam-mode='#{$m}'] tr[data-modes~='#{$m}'] > * {
+    background: var(--fig-grid-selected);
+  }
+}
+
+.sam-math {
+  @include figure-inline-math;
+}
+
+.sam-caption {
+  @include figure-caption;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sam-segment,
+  .sam-table th,
+  .sam-table td,
+  .sam-svg .sam-span,
+  .sam-svg .sam-score,
+  .sam-svg .sam-bar,
+  .sam-svg .sam-cell,
+  .sam-svg .sam-row-frame {
+    transition: none;
+  }
+}
+
+@container sam-figure (max-width: 560px) {
+  .sam-side {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sam-side > .sam-table {
+    display: block;
+    overflow-x: auto;
+  }
+
+  .sam-segments {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sam-segment:last-of-type:nth-of-type(odd) {
+    grid-column: 1 / -1;
+  }
+
+  .sam-segment {
+    padding: 0.28rem 0.35rem;
+  }
+
+  // The drawing scales to about half size here, so its labels grow in viewBox units.
+  .sam-svg {
+    .sam-axis {
+      font-size: 13px;
+    }
+
+    .sam-lane,
+    .sam-tag {
+      font-size: 11px;
+    }
+
+    .sam-axis--query {
+      display: none;
+    }
+
+    // Larger query ticks would touch the key ticks at the corner.
+    .sam-axis--qtick {
+      transform: translateY(4px);
+    }
+  }
+}

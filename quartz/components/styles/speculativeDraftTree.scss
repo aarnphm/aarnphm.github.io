@@ -1,0 +1,432 @@
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
+@use './figure.scss' as *;
+
+.speculative-draft-tree {
+  @include figure-frame('sdt-figure', 44rem);
+
+  --sdt-lit: color-mix(in srgb, var(--fig-salmon) 85%, var(--light));
+  --sdt-target: color-mix(in srgb, var(--fig-sage) 85%, var(--light));
+  --sdt-on: color-mix(in srgb, var(--darkgray) 30%, var(--light));
+  --sdt-feature: color-mix(in srgb, var(--darkgray) 14%, var(--light));
+  --sdt-node: var(--fig-grid-cell);
+  --sdt-segment-on: var(--fig-grid-selected);
+
+  [hidden] {
+    display: none !important;
+  }
+}
+
+:root[saved-theme='dark'] .speculative-draft-tree {
+  --sdt-lit: color-mix(in srgb, var(--fig-salmon) 34%, var(--lightgray));
+  --sdt-target: color-mix(in srgb, var(--fig-sage) 30%, var(--lightgray));
+  --sdt-on: color-mix(in srgb, var(--dark) 34%, var(--lightgray));
+  --sdt-feature: color-mix(in srgb, var(--dark) 12%, var(--lightgray));
+  --sdt-node: var(--lightgray);
+  --sdt-segment-on: color-mix(in srgb, var(--fig-sage) 22%, var(--lightgray));
+}
+
+.sdt-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.25rem;
+  align-items: flex-end;
+}
+
+.sdt-segments {
+  @include figure-grid;
+  grid-auto-flow: column;
+  min-width: 0;
+
+  // The legend sits above the grid instead of breaking its top edge.
+  position: relative;
+  margin-top: 1.1rem;
+}
+
+.sdt-legend {
+  position: absolute;
+  top: -1.15rem;
+  left: 0;
+  padding: 0;
+  color: var(--fig-note);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.sdt-segment {
+  @include figure-grid-cell;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.28rem 0.6rem;
+  color: var(--fig-tab-fg);
+  cursor: pointer;
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  transition:
+    background-color 140ms ease,
+    color 140ms ease;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    pointer-events: none;
+  }
+
+  &:hover {
+    color: var(--dark);
+  }
+
+  &:has(input:checked) {
+    background: var(--sdt-segment-on);
+    color: var(--dark);
+  }
+
+  &:has(input:focus-visible) {
+    outline: 2px solid var(--dark);
+    outline-offset: -2px;
+  }
+}
+
+.sdt-step {
+  margin-top: 0.75rem;
+}
+
+.sdt-rule {
+  margin: 0;
+  min-height: 2.3rem;
+  color: var(--fig-note);
+  font-size: 0.78rem;
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+.sdt-strip-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.6rem;
+  margin-top: 0.6rem;
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+}
+
+.sdt-strip-label,
+.sdt-strip-out {
+  color: var(--fig-note);
+  white-space: nowrap;
+}
+
+.sdt-strip-out {
+  color: var(--dark);
+}
+
+.sdt-strip-cols {
+  display: flex;
+  flex-wrap: wrap;
+  min-width: 0;
+  // Columns overlap their 1px borders, so wrapped rows keep single hairlines and no empty track.
+  padding: 1px 0 0 1px;
+}
+
+.sdt-col {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+  margin: -1px 0 0 -1px;
+  border: 1px solid var(--fig-grid-line);
+  background: var(--fig-grid-line);
+}
+
+.sdt-col-token,
+.sdt-col-feature {
+  @include figure-grid-cell;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.1rem;
+  padding: 0.2rem 0.35rem;
+  color: var(--dark);
+  line-height: 1.2;
+  white-space: nowrap;
+  transition: background-color 160ms ease;
+}
+
+.sdt-col-token[data-kind='lit'] {
+  background: var(--sdt-lit);
+}
+
+.sdt-col-token[data-kind='target'] {
+  background: var(--sdt-target);
+}
+
+.sdt-col-token[data-kind='cached'],
+.sdt-col-feature[data-own='false'] {
+  background: var(--sdt-feature);
+}
+
+.sdt-col-feature .katex {
+  color: inherit;
+  font-size: 0.95em;
+}
+
+.sdt-stage {
+  margin-top: 0.9rem;
+}
+
+.sdt-panels {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.sdt-tree,
+.sdt-mask {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+
+  text {
+    font-family: var(--codeFont);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .sdt-axis {
+    fill: var(--fig-note);
+    font-size: 7.5px;
+  }
+}
+
+.sdt-tree {
+  max-width: 24rem;
+
+  .sdt-node {
+    transition: opacity 180ms ease;
+
+    rect {
+      fill: var(--sdt-node);
+      stroke: var(--fig-stroke);
+      stroke-width: 1;
+      transition:
+        fill 180ms ease,
+        stroke 180ms ease;
+    }
+  }
+
+  .sdt-node-token {
+    fill: var(--dark);
+    font-size: 11px;
+  }
+
+  .sdt-node-q {
+    fill: var(--fig-note);
+    font-size: 8px;
+  }
+
+  .sdt-node[data-state='root'] rect {
+    fill: var(--sdt-target);
+    stroke: var(--dark);
+  }
+
+  .sdt-node[data-state='new'] rect,
+  .sdt-node[data-state='accepted'] rect {
+    fill: var(--sdt-lit);
+    stroke: var(--dark);
+  }
+
+  .sdt-node[data-state='accepted'] rect {
+    stroke-width: 1.6;
+  }
+
+  .sdt-node[data-state='rejected'] {
+    opacity: 0.6;
+
+    .sdt-node-token {
+      text-decoration: line-through;
+    }
+  }
+
+  .sdt-node[data-state='untested'] {
+    opacity: 0.45;
+  }
+
+  .sdt-edge {
+    fill: none;
+    stroke: var(--fig-stroke);
+    stroke-width: 1;
+    transition:
+      opacity 180ms ease,
+      stroke 180ms ease;
+  }
+
+  .sdt-edge[data-state='accepted'] {
+    stroke: var(--dark);
+    stroke-width: 1.6;
+  }
+
+  .sdt-edge[data-state='rejected'],
+  .sdt-edge[data-state='untested'] {
+    opacity: 0.38;
+  }
+
+  .sdt-node[data-state='hidden'],
+  .sdt-edge[data-state='hidden'] {
+    opacity: 0;
+  }
+}
+
+.sdt-mask {
+  max-width: 20rem;
+  justify-self: end;
+
+  .sdt-mask-row {
+    fill: var(--dark);
+    font-size: 8px;
+  }
+
+  .sdt-mask-row,
+  .sdt-mask-col {
+    transition: opacity 180ms ease;
+  }
+
+  .sdt-mask-row[data-state='hidden'],
+  .sdt-mask-col[data-state='hidden'] {
+    opacity: 0.3;
+  }
+
+  .sdt-cell {
+    fill: transparent;
+    stroke: var(--fig-div);
+    stroke-width: 0.6;
+    transition: fill 180ms ease;
+  }
+
+  .sdt-cell[data-state='1'] {
+    fill: var(--sdt-on);
+  }
+
+  .sdt-cell[data-state='2'] {
+    fill: var(--sdt-lit);
+    stroke: var(--fig-stroke);
+  }
+}
+
+.sdt-read {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.75rem;
+  margin-top: 0.9rem;
+}
+
+.sdt-log-wrap {
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.sdt-readout {
+  @include figure-table;
+}
+
+.sdt-log {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.74rem;
+  line-height: 1.3;
+
+  th,
+  td {
+    padding: 0.32rem 0.5rem;
+    border: 1px solid var(--fig-grid-line);
+    background: var(--fig-grid-cell);
+    color: var(--dark);
+    text-align: right;
+    font-family: var(--codeFont);
+    font-variant-numeric: tabular-nums;
+  }
+
+  th {
+    color: var(--fig-note);
+    font-weight: 400;
+  }
+
+  th:first-child,
+  td:first-child {
+    text-align: left;
+  }
+
+  tr[data-ok='true'] td {
+    background: var(--fig-grid-selected);
+  }
+}
+
+.sdt-math {
+  @include figure-inline-math;
+}
+
+.sdt-caption {
+  @include figure-caption;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sdt-segment,
+  .sdt-col-token,
+  .sdt-col-feature,
+  .sdt-tree .sdt-node,
+  .sdt-tree .sdt-node rect,
+  .sdt-tree .sdt-edge,
+  .sdt-mask .sdt-cell,
+  .sdt-mask .sdt-mask-row,
+  .sdt-mask .sdt-mask-col {
+    transition: none;
+  }
+}
+
+@container sdt-figure (max-width: 560px) {
+  .sdt-panels {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sdt-mask {
+    justify-self: start;
+  }
+}
+
+@container sdt-figure (max-width: 440px) {
+  .sdt-segments {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sdt-segment:last-of-type:nth-of-type(odd) {
+    grid-column: 1 / -1;
+  }
+
+  .sdt-segment {
+    padding: 0.28rem 0.35rem;
+  }
+
+  .sdt-readout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+
+    dd {
+      text-align: right;
+      overflow-wrap: anywhere;
+    }
+  }
+
+  .sdt-log {
+    font-size: 0.66rem;
+
+    th,
+    td {
+      padding: 0.26rem 0.22rem;
+    }
+  }
+}
