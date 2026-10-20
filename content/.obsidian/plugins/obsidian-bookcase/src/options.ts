@@ -24,6 +24,8 @@ const MATERIAL_NAMES: Record<ShelfMaterial, string> = {
   'birch-ply': 'Birch ply',
   'black-lacquer': 'Black lacquer',
   steel: 'Steel',
+  copper: 'Copper',
+  concrete: 'Concrete',
 }
 
 const names = <K extends string>(keys: readonly K[], labels: Record<K, string>) =>

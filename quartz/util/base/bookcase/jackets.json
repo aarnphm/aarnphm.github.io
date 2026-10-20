@@ -13,13 +13,14 @@
       "poster": "library/posters/scientific-freedom.jpg",
       "posterSha256": "2ff0d156ab1d2f547990b75998fd8e2c89622a86187a3ae1f21815dc1f29350c",
       "crop": { "left": 869, "top": 348, "width": 182, "height": 1227 },
-      "artwork": "scientific-freedom-989566ee6114.webp",
+      "artwork": "scientific-freedom-round-10-sampling.webp",
       "height": 320,
-      "artworkSha256": "dbeec4e0cfb68c0ba39f7ae8f55e769c8ae97c4d7ca51e5ff740ae56d30793ce",
+      "artworkSha256": "f052e97beecebea51629963cc69b121d511f92621a505f5513c0ca86fedbe425",
       "detailArtwork": "scientific-freedom-detail-962f60c515e52092.webp",
       "detailArtworkSha256": "962f60c515e5209249b69d8a03cf680bcbbcf144cda97a724ef241154774e798",
       "detailWidth": 182,
-      "detailHeight": 1227
+      "detailHeight": 1227,
+      "sampling": "independent"
     },
     {
       "id": "the-dream-machine",
@@ -33,13 +34,14 @@
       "poster": "library/posters/the-dream-machine.jpg",
       "posterSha256": "ce980a6dfb854fc812fbc4d40a0084372ce7145d246c1bbdf082f7ab36ed95ec",
       "crop": { "left": 869, "top": 348, "width": 182, "height": 1227 },
-      "artwork": "the-dream-machine-a9a23a09cbb1.webp",
+      "artwork": "the-dream-machine-round-10-sampling.webp",
       "height": 320,
-      "artworkSha256": "8179cfdbd8947e1066944f1c3ad33f5f6bc13328601f34831531cd35f7534f68",
+      "artworkSha256": "de87c7176788dfc707dae51ec70ff957314f2b30ebead99533dd2ad7577a109e",
       "detailArtwork": "the-dream-machine-detail-ed54aee3c7783460.webp",
       "detailArtworkSha256": "ed54aee3c77834607c33d25fbc3e4e08521962b4e6694ee8993d2cae592c8db5",
       "detailWidth": 182,
-      "detailHeight": 1227
+      "detailHeight": 1227,
+      "sampling": "independent"
     },
     {
       "id": "working-in-public",
@@ -53,13 +55,14 @@
       "poster": "library/posters/working-in-public.jpg",
       "posterSha256": "0f126e4560d4a3e2a80307afd106d50d4a00ed2b8a6600c8dc0dff48afa0ceb9",
       "crop": { "left": 869, "top": 348, "width": 182, "height": 1227 },
-      "artwork": "working-in-public-834c7ead2058.webp",
+      "artwork": "working-in-public-round-10-sampling.webp",
       "height": 320,
-      "artworkSha256": "654cae3b271998e3a55ecfd606014ce9e119bb296eeade34fef01ea7745e0a77",
+      "artworkSha256": "e9dfb2c9e7a30c25d0369c63cdb78530b37bbff043763379ff60a3d59b458098",
       "detailArtwork": "working-in-public-detail-7e96bcfe4846a64f.webp",
       "detailArtworkSha256": "7e96bcfe4846a64f8aaf61d2b83afdd3834ff5f3362fb8c443ac2d5024bfb5f4",
       "detailWidth": 182,
-      "detailHeight": 1227
+      "detailHeight": 1227,
+      "sampling": "independent"
     },
     {
       "id": "pretentiousness",
@@ -74,12 +77,19 @@
       "posterSha256": "8659ff033d6f89fc1e20ba0695f9afeb936ad100382aec4a314bbd7f8a00a2c2",
       "render": { "page": 18, "dpi": 200 },
       "crop": { "left": 2384, "top": 1140, "width": 53, "height": 988 },
-      "artwork": "pretentiousness-1f8a4d52ea47.webp",
+      "artwork": "pretentiousness-vector-low-484e1bbba8caf0d5.webp",
       "height": 320,
-      "artworkSha256": "45b20f3a97ee99ec5b277202cb732143397a3b6555c822ba33075ad536e93780",
-      "detailArtwork": "pretentiousness-detail-67216a9a29fe6838.webp",
-      "detailArtworkSha256": "67216a9a29fe68383953d2a28d552e82894734525a727ad1b8ab1ba89b3bc653",
-      "detailWidth": 68,
+      "artworkSha256": "484e1bbba8caf0d5f2fb333658b349d59d0330aa766c63aed654250557d0977e",
+      "vectorSource": {
+        "file": "quartz/util/base/bookcase/spine-sources/pretentiousness.svg",
+        "sha256": "c0f363028233c77fc9926451ced8267b9b746b7ce9414bb5b32eaa37510d6aab",
+        "provenance": "Exact designer-PDF lettering outlines and spine panel; original embedded Coffee House Press bitmap emblem and mask retained.",
+        "extraction": "docs/verification/bookcase-spine-art/candidates/round-7-vector/extract-pretentiousness.py"
+      },
+      "sourceKind": "designer-pdf-vector-extract",
+      "detailArtwork": "pretentiousness-detail-3a989f094dc59247.webp",
+      "detailArtworkSha256": "3a989f094dc5924784c03ab7403da10cf30eca975bd81895ea88eeb9453d339c",
+      "detailWidth": 256,
       "detailHeight": 1280
     },
     {
@@ -94,14 +104,15 @@
       "crop": { "left": 681, "top": 49, "width": 107, "height": 728 },
       "editionEvidence": "Pentagram production article by Paula Scher and Rick Rubin shows this clothbound Penguin Press book, ring/dot motif, stacked front title and vertical author exactly matching saved front. PRH hardcover page confirms ISBN9780593652886. Original photograph has slight spine curvature and uneven lighting; crop is interior to the binding edges and retains title, circular motif, author, Penguin mark. No typography reconstructed.",
       "sourceKind": "designer-production-photograph",
-      "artwork": "the-creative-act-23d1df57f465.webp",
+      "artwork": "the-creative-act-round-10-sampling.webp",
       "height": 320,
       "poster": "library/posters/the-creative-act.jpg",
-      "artworkSha256": "5f2a6c6ec278f50425e649fbca6cd1c1b1a4ad34c5f5fb981e74bc5743879cc8",
+      "artworkSha256": "8162b1fcab0619f08d855712f6d74b36d07bd31a74b5348b05a5e19e685255d8",
       "detailArtwork": "the-creative-act-detail-f5398c0de3ab2ad9.webp",
       "detailArtworkSha256": "f5398c0de3ab2ad96a8b6dc16e17377ae40e26f3e17a4d6ca704a0c79f11eb07",
       "detailWidth": 107,
-      "detailHeight": 728
+      "detailHeight": 728,
+      "sampling": "independent"
     },
     {
       "id": "catch-22",
@@ -116,13 +127,14 @@
       "crop": { "left": 1314, "top": 30, "width": 257, "height": 1270 },
       "editionEvidence": "Heritage Auctions lot6278-45170 describes1961 first edition with original Paul Bacon jacket. Saved front visually matches all lettering/art composition; specific physical copy/printing not otherwise identified. Source flattened photo includes full spine; mild paper curvature/aged wear remains, no reconstructed pixels.",
       "sourceKind": "historical-jacket-photograph",
-      "artwork": "catch-22-3d7c8c22f0bd.webp",
+      "artwork": "catch-22-round-10-sampling.webp",
       "height": 320,
-      "artworkSha256": "0019479b409b1dca3edec290edf1acea10582f8f83d8f397143c20d37c63e9da",
+      "artworkSha256": "992245ea42b21ff9daaf310ede5a3d372a65056178dd3ae6fa505d7b32268881",
       "detailArtwork": "catch-22-detail-d8e4727253033701.webp",
       "detailArtworkSha256": "d8e4727253033701e4fa009f2800789879414988d66d5e9b998e0c0275d981b3",
       "detailWidth": 256,
-      "detailHeight": 1265
+      "detailHeight": 1265,
+      "sampling": "independent"
     },
     {
       "id": "the-ai-anarchies-book",
@@ -182,12 +194,13 @@
       "crop": { "left": 0, "top": 0, "width": 112, "height": 906 },
       "height": 320,
       "sourceKind": "artist-promotional-render-rectified",
-      "artwork": "what-we-can-know-7d08b03cbd52.webp",
-      "artworkSha256": "e65f1986ac9cff677ec8abc197c31a424f9bd8df8073ff479900a8f35c851e47",
+      "artwork": "what-we-can-know-round-10-sampling.webp",
+      "artworkSha256": "993a555deeb7863e5db52b5eae9fb61c22375cc2bff77d6dd11ed5ffada07d91",
       "detailArtwork": "what-we-can-know-detail-64d86964dada4ed2.webp",
       "detailArtworkSha256": "64d86964dada4ed2a1a4b71cf3d31d9ccafcbb81d20e32f208919cf5939b0a15",
       "detailWidth": 106,
-      "detailHeight": 859
+      "detailHeight": 859,
+      "sampling": "independent"
     },
     {
       "id": "leaving-the-twentieth-century",
@@ -203,13 +216,14 @@
       "sourceKind": "publisher-packshot",
       "editionEvidence": "Official product JSON SKU and barcode 9781804294864 for paperback. Publisher packshot matches orange brick texture and white black-lettered spine in existing saved poster. Publisher crop retains full title, McKenzie Wark, Verso logo; crop is genuine packshot pixels and has mild perspective shear. Original source has650px height, final22x320 WebP inspected. This is a visual design match, not verification of a particular owned physical printing. Front normalized in cover audit: Replace clipped angled packshot with publisher flat front for same edition. White space belongs to printed brick design.",
       "qualityLimit": "Publisher packshot rather than flat press wrap. Mild shear and22px width at320height; root must approve visual quality. No missing artwork filled or invented.",
-      "artwork": "leaving-the-twentieth-century-35dfe63c7018.webp",
+      "artwork": "leaving-the-twentieth-century-round-10-sampling.webp",
       "height": 320,
-      "artworkSha256": "c45de7c77e244d2ddbb0fd346a96e802512f4f845496a09ee4c60c19663a46a4",
+      "artworkSha256": "c09f39e15d63a264fe20dc228829fad37a197a0e44ca8487a1a74a4e8c36a241",
       "detailArtwork": "leaving-the-twentieth-century-detail-03e78fb304e58f36.webp",
       "detailArtworkSha256": "03e78fb304e58f36e663f9250e1a0111bcb6118ab3d4b9b0758df8169fe83406",
       "detailWidth": 44,
-      "detailHeight": 650
+      "detailHeight": 650,
+      "sampling": "independent"
     },
     {
       "id": "beyond-good-and-evil",
@@ -225,12 +239,13 @@
       "crop": { "left": 0, "top": 0, "width": 293, "height": 4579 },
       "height": 320,
       "sourceKind": "owner-flat-scan",
-      "artwork": "beyond-good-and-evil-32bc3352a156.webp",
-      "artworkSha256": "3c70e23cb324070c357789ce11fd7b492530c0c99cd0d770ad0a8fa9818bcc09",
+      "artwork": "beyond-good-and-evil-round-10-sampling.webp",
+      "artworkSha256": "c23b6528db97268240164ebd98e64854fd1f2fad36e6b1e01895014b2ae0210c",
       "detailArtwork": "beyond-good-and-evil-detail-9d3a29e7aed8cbc2.webp",
       "detailArtworkSha256": "9d3a29e7aed8cbc2655f1e5ed8d42b52770134120281ee8935e35e0bb2412275",
       "detailWidth": 82,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "structure-and-interpretation-of-computer-programs",
@@ -257,12 +272,13 @@
       "editionEvidence": "First-edition paperback matches saved purple front with red floor, red top rule, title and author block above fullwidth wizard scene. Seller paired back photo prints0-262-51036-7, equivalent ISBN13 9780262510363. Genuine burgundy spine is faded and scraped; retain original title/author/MIT logo, no invented marks. Source quad rectified by magick with alphaoff, virtualpixel edge and viewport130x1500. Specific physical printing unknown.",
       "sourceKind": "seller-original-photograph-rectified",
       "poster": "library/posters/structure-and-interpretation-of-computer-programs.jpg",
-      "artwork": "structure-and-interpretation-of-computer-programs-0f64b3af7a77.webp",
-      "artworkSha256": "0699e6443073bf7f6f27ab3bc8e6016e7721bb0a69876a7820b83858c41558e5",
+      "artwork": "structure-and-interpretation-of-computer-programs-round-10-sampling.webp",
+      "artworkSha256": "adcf65bd6a50ede367a6c622186081ef739ed70fc7603d71388186b44b1dc0bb",
       "detailArtwork": "structure-and-interpretation-of-computer-programs-detail-e4a1a5b9eaf134f6.webp",
       "detailArtworkSha256": "e4a1a5b9eaf134f6d0ab4659e14b82d5d1e6ed06ded6249cb4745eb2fc74e06a",
       "detailWidth": 110,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "tcp-ip-illustrated",
@@ -292,12 +308,13 @@
       "editionEvidence": "Saved first-edition front matches seller photograph in serif title, red brushstroke, globe/rainbow scene, W.Richard Stevens and blue series strip at right. Back photograph barcode prints9780201633467 and ISBN0-201-63346-9. Actual white/red spine at left carries globe, TCP/IP Illustrated Volume1, Stevens and AddisonWesley mark, all unobscured. Slight curved binding/photographic shading retained after homography, no reconstructed pixels. Specific printing unknown.",
       "sourceKind": "seller-original-photograph-rectified",
       "poster": "library/posters/TCP-IP-Illustrated.jpg",
-      "artwork": "tcp-ip-illustrated-8b3e02bad5b4.webp",
-      "artworkSha256": "5bc1a501a6e58dbf034a10ff5a267fa43d30498619772b7cb595460a099c2fea",
+      "artwork": "tcp-ip-illustrated-round-10-sampling.webp",
+      "artworkSha256": "37d491199bffd0b534060e2b2c5f01ec6bbaecc6030cabbf5b327e5705a4f1a5",
       "detailArtwork": "tcp-ip-illustrated-detail-f5416cc5085ff679.webp",
       "detailArtworkSha256": "f5416cc5085ff6793cf26dcbccdb586ff44557c2d786d397644665b89be70d1a",
       "detailWidth": 170,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "mindset",
@@ -412,7 +429,7 @@
       "poster": "library/posters/the-plague.jpg",
       "posterSha256": "16122f212330b443bf40eaddf114649fd4cc8e9d7dcfb0d6e225bf70071b03be",
       "crop": { "left": 0, "top": 0, "width": 1743, "height": 137 },
-      "artwork": "the-plague-003627ae2872.webp",
+      "artwork": "the-plague-round-10-sampling.webp",
       "height": 320,
       "perspective": {
         "width": 1743,
@@ -426,12 +443,13 @@
       },
       "sourceKind": "original-photograph-rectified",
       "rotation": 90,
-      "artworkSha256": "2c23147f3641fb639dd0a44fb870e428be50744a05d8dffc419bc1d3faacc8ec",
+      "artworkSha256": "3affee6b207713fbc38eb5f1072a487b171c570d91231e8c16bbd402779bd2e5",
       "corroboration": ["https://images3.penguinrandomhouse.com/cover/9780679720218"],
       "detailArtwork": "the-plague-detail-721e02a5a65abc22.webp",
       "detailArtworkSha256": "721e02a5a65abc22371c71dc6d722709f59237a64d960f1746aef8d66a88bd8a",
       "detailWidth": 100,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "the-rebel",
@@ -445,7 +463,7 @@
       "poster": "library/posters/the-rebel.jpg",
       "posterSha256": "bf053c6d05cd7524a9733abc0a2d0cf45b40740f7d198f000aca80c45d4b6030",
       "crop": { "left": 0, "top": 0, "width": 1751, "height": 129 },
-      "artwork": "the-rebel-003627ae2872.webp",
+      "artwork": "the-rebel-round-10-sampling.webp",
       "height": 320,
       "perspective": {
         "width": 1751,
@@ -459,12 +477,13 @@
       },
       "sourceKind": "original-photograph-rectified",
       "rotation": 90,
-      "artworkSha256": "d74db2daa7c3c01922fa8d5e9d3c183c58dfaf801101bdeaa0c4105926616059",
+      "artworkSha256": "510627653d9e32e1a1a5dcf33c1f9c6a1f6c010cf9d8efc0165671df72903e8c",
       "corroboration": ["https://images3.penguinrandomhouse.com/cover/9780679733843"],
       "detailArtwork": "the-rebel-detail-b911c37063f104a5.webp",
       "detailArtworkSha256": "b911c37063f104a58772427381b8e6a3dbb8ec3d29f170308d9a0dfda86a2133",
       "detailWidth": 94,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "the-stranger",
@@ -512,7 +531,7 @@
       "poster": "library/posters/resistance-rebellion-and-death.jpg",
       "posterSha256": "a0477476d915b66dbce7538adde76264a7fa830964d1df8e8283be4985c296da",
       "crop": { "left": 0, "top": 0, "width": 1770, "height": 121 },
-      "artwork": "resistance-rebellion-and-death-003627ae2872.webp",
+      "artwork": "resistance-rebellion-and-death-round-10-sampling.webp",
       "height": 320,
       "perspective": {
         "width": 1770,
@@ -526,12 +545,13 @@
       },
       "sourceKind": "original-photograph-rectified",
       "rotation": 90,
-      "artworkSha256": "2256048d867e6ed1fed666b7cd33de4863672273c08d2e77220771f73eba4e40",
+      "artworkSha256": "b4e7d3f3d3f51d9921976d420ed575f949ce301c273ca3e4d9360b6e639880ed",
       "corroboration": ["https://images3.penguinrandomhouse.com/cover/9780679764014"],
       "detailArtwork": "resistance-rebellion-and-death-detail-fe5372f6e111d508.webp",
       "detailArtworkSha256": "fe5372f6e111d5089e835c759f88cb38fb897b8d659335e8a9d5373a5a5d8aef",
       "detailWidth": 87,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "the-world-as-will-and-representation",
@@ -545,7 +565,7 @@
       "poster": "library/posters/the-world-as-will-and-representation.jpg",
       "posterSha256": "9e931cb5058fa7654bd5c51a5527987e30a67e10b4c97058ffdc60e35021cd30",
       "crop": { "left": 0, "top": 0, "width": 192, "height": 1685 },
-      "artwork": "the-world-as-will-and-representation-bfac48750538.webp",
+      "artwork": "the-world-as-will-and-representation-round-10-sampling.webp",
       "height": 320,
       "perspective": {
         "width": 192,
@@ -558,11 +578,12 @@
         ]
       },
       "sourceKind": "original-photograph-rectified",
-      "artworkSha256": "ed7f3c8c6f250e6809d26a74e0d3ca1da57abdaaf30a50cb95f6af0163623f35",
+      "artworkSha256": "e770f04039376db9dec6bbefd7141b6a070a1067d4ff8ba87c1618ce6c2c1879",
       "detailArtwork": "the-world-as-will-and-representation-detail-93c1a7ea37b28722.webp",
       "detailArtworkSha256": "93c1a7ea37b287220765ff9bf93aaa386747692f8974093a1b81d83c521c4140",
       "detailWidth": 145,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "think",
@@ -576,7 +597,7 @@
       "poster": "library/posters/think.jpg",
       "posterSha256": "1a34620ff991c8cc29a4f55a9e6d2b3cad6baeaf0536ceb34a10fe41d34b0f47",
       "crop": { "left": 0, "top": 0, "width": 90, "height": 740 },
-      "artwork": "think-aa26c848bada.webp",
+      "artwork": "think-round-10-sampling.webp",
       "height": 320,
       "perspective": {
         "width": 90,
@@ -589,11 +610,12 @@
         ]
       },
       "sourceKind": "original-photograph-rectified",
-      "artworkSha256": "ff523266d3e8bcf61366d60657c86dc2e8290abe749fcae34f34751ba84662b8",
+      "artworkSha256": "8275d3a1d53fcb96fa9748d2e28aee650d405edf11967407a0d6274dcee4506a",
       "detailArtwork": "think-detail-38d30f218edf773f.webp",
       "detailArtworkSha256": "38d30f218edf773f1247493b628f3fffe2e1580a5fa2ebd7a696858be55beba7",
       "detailWidth": 88,
-      "detailHeight": 727
+      "detailHeight": 727,
+      "sampling": "independent"
     },
     {
       "id": "tomorrow-and-tomorrow-and-tomorrow",
@@ -607,7 +629,7 @@
       "poster": "library/posters/tomorrow-and-tomorrow-and-tomorrow.jpg",
       "posterSha256": "f6376f04b042609c877c777aa84642043a678f3f6dc829934fda55344ea45e21",
       "crop": { "left": 0, "top": 0, "width": 1280, "height": 185 },
-      "artwork": "tomorrow-and-tomorrow-and-tomorrow-d9623cea570d.webp",
+      "artwork": "tomorrow-and-tomorrow-and-tomorrow-round-10-sampling.webp",
       "height": 320,
       "perspective": {
         "width": 1280,
@@ -621,11 +643,12 @@
       },
       "sourceKind": "original-photograph-rectified",
       "rotation": 90,
-      "artworkSha256": "8b9afd8d64a7418d21ecaa1d88aa9f5fafa4dae7e501efe7120a86d92c3fff85",
+      "artworkSha256": "f7c7f49e545ab36c909f5a75892a94f3004ace71f0d21a1ab6a89d5eda8498e0",
       "detailArtwork": "tomorrow-and-tomorrow-and-tomorrow-detail-d86846177c13dc3a.webp",
       "detailArtworkSha256": "d86846177c13dc3a186fb9a7142e10af50f2d98b260562006a21530852f3e13f",
       "detailWidth": 183,
-      "detailHeight": 1267
+      "detailHeight": 1267,
+      "sampling": "independent"
     },
     {
       "id": "anti-oedipus",
@@ -639,7 +662,7 @@
       "poster": "library/posters/anti-oedipus-cover.avif",
       "posterSha256": "699a65d88d49cd0d830c5773497dd76671889403ff55b0d5eaeef1a19b4812a1",
       "crop": { "left": 0, "top": 0, "width": 31, "height": 320 },
-      "artwork": "anti-oedipus-dddc776ddbcf.webp",
+      "artwork": "anti-oedipus-round-10-sampling.webp",
       "height": 320,
       "perspective": {
         "width": 31,
@@ -652,11 +675,12 @@
         ]
       },
       "sourceKind": "original-photograph-rectified",
-      "artworkSha256": "9c43e2317293ec4ad3196eeee316c7acf0df0d5e5cd684786869c34122fdae4b",
+      "artworkSha256": "94583fcc760e889145e33671a93b089a5c43d476aabceee70a0f260c74917793",
       "detailArtwork": "anti-oedipus-detail-9db46156b1ad68ac.webp",
       "detailArtworkSha256": "9db46156b1ad68ac7b12f63c6336c2336c5baa42381bba1a1610d6d6894ac0a0",
       "detailWidth": 124,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "crafting-interpreters",
@@ -670,7 +694,7 @@
       "poster": "library/posters/crafting-interpreters-cover.avif",
       "posterSha256": "5439a3ea4ac116dbb47552147f44db49d9e45c86560f1f0bf2f58db11843860b",
       "crop": { "left": 0, "top": 0, "width": 39, "height": 320 },
-      "artwork": "crafting-interpreters-8bc6f6301e42.webp",
+      "artwork": "crafting-interpreters-round-10-sampling.webp",
       "height": 320,
       "perspective": {
         "width": 39,
@@ -683,11 +707,12 @@
         ]
       },
       "sourceKind": "original-photograph-rectified",
-      "artworkSha256": "e2d374b42b3d412c4c419c71f83c7fef0c44d66945438bda72474132621bc492",
+      "artworkSha256": "388a5c0c3e8cd93b1a67a5d7c4bf7919f4087c3e47c1d7c6b7f3bc93a07c9bc5",
       "detailArtwork": "crafting-interpreters-detail-adffb94a413a51d5.webp",
       "detailArtworkSha256": "adffb94a413a51d58bcf41dcc2d7e10e5ebb1435e7d9976557f3fbc6ec2a3821",
       "detailWidth": 156,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "crime-and-punishment",
@@ -701,7 +726,7 @@
       "poster": "library/posters/crime-and-punishment-cover.avif",
       "posterSha256": "b78e888bc167d99fd4a3a537fa212e742fe80dad446381f8abc2bc2b39c5fc07",
       "crop": { "left": 0, "top": 0, "width": 38, "height": 320 },
-      "artwork": "crime-and-punishment-d2dba58756bd.webp",
+      "artwork": "crime-and-punishment-round-10-sampling.webp",
       "height": 320,
       "perspective": {
         "width": 38,
@@ -714,11 +739,12 @@
         ]
       },
       "sourceKind": "original-photograph-rectified",
-      "artworkSha256": "a76c7de15f71bbf62fd0c3f152ad41950ec40db4355670ed2d32eb81664a61f7",
+      "artworkSha256": "370f8f2f8b6598f459c3100f827eb9942de918a40be329cb149283d84b83ae1d",
       "detailArtwork": "crime-and-punishment-detail-07950a40ea3e238e.webp",
       "detailArtworkSha256": "07950a40ea3e238ebd69feae19701b630f77e80c91fffaee2ceb575c691e8ebd",
       "detailWidth": 152,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "deep-work",
@@ -732,7 +758,7 @@
       "poster": "library/posters/deep-work.jpg",
       "posterSha256": "e0a038b0e6a100b359ae5094a1780f2687296943443ffe244a2d453ce0e6017c",
       "crop": { "left": 0, "top": 0, "width": 30, "height": 320 },
-      "artwork": "deep-work-66aebf293e94.webp",
+      "artwork": "deep-work-round-10-sampling.webp",
       "height": 320,
       "perspective": {
         "width": 30,
@@ -745,11 +771,12 @@
         ]
       },
       "sourceKind": "original-photograph-rectified",
-      "artworkSha256": "e10e85c22f026c0df617febad8d45dd2e363766be9775995a6d6f2cbec9f1185",
+      "artworkSha256": "e2a9050a2d9ac5f3f4eba98d6df605210988d9a52d5bc4ff7532bb73e7c17006",
       "detailArtwork": "deep-work-detail-c7cb0f32211c6295.webp",
       "detailArtworkSha256": "c7cb0f32211c6295ac63cf4c6bb2d58d913b6f3c3d831be7be66bee075abb5fe",
       "detailWidth": 106,
-      "detailHeight": 1135
+      "detailHeight": 1135,
+      "sampling": "independent"
     },
     {
       "id": "dune",
@@ -763,7 +790,7 @@
       "poster": "library/posters/dune.jpg",
       "posterSha256": "953994d0422cacd91ae97ada740c2d6d5b95c86634d8f6e15115dadbf71b9018",
       "crop": { "left": 0, "top": 0, "width": 52, "height": 320 },
-      "artwork": "dune-a563338da495.webp",
+      "artwork": "dune-round-10-sampling.webp",
       "height": 320,
       "perspective": {
         "width": 52,
@@ -776,11 +803,12 @@
         ]
       },
       "sourceKind": "original-photograph-rectified",
-      "artworkSha256": "e9bcd633ef22db411b0564bcfb49974d36e0f65e0db6a94c3d3c4b07085d8f10",
+      "artworkSha256": "b4153e4d513ece4fb60a888aa6d274e0efee676f771fb8a8914c4571e67963f8",
       "detailArtwork": "dune-detail-81161bfc175b3f29.webp",
       "detailArtworkSha256": "81161bfc175b3f296fb6c96fd18cbe524f16a3f402506ee2e79775a62dc91519",
       "detailWidth": 208,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "fear-and-trembling",
@@ -896,7 +924,7 @@
       "poster": "library/posters/my-friends.avif",
       "posterSha256": "171493dd61c7121103507662dcc9332ccb9927df361a53e034e4f15fca515346",
       "crop": { "left": 0, "top": 0, "width": 136, "height": 1520 },
-      "artwork": "my-friends-0f2194404890.webp",
+      "artwork": "my-friends-round-10-sampling.webp",
       "height": 320,
       "perspective": {
         "width": 136,
@@ -910,11 +938,12 @@
       },
       "sourceKind": "bookseller-photograph-rectified",
       "corroboration": ["https://rezised-images.knhbt.cz/1920x1920/80702256.jpg"],
-      "artworkSha256": "afa0d69fe1c7e97b0493eedbef73f3da2731be85c37d5f061593861dd87d19a8",
+      "artworkSha256": "ef029ea38b272cc7d4413df9e3f8e244da73b80f6935d375347af92a37725b5b",
       "detailArtwork": "my-friends-detail-485f5f6393d3c175.webp",
       "detailArtworkSha256": "485f5f6393d3c17596afe6ceb94ae2c37fe424efc4f5eeb41eb744b84f0b64cb",
       "detailWidth": 114,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "radically-human",
@@ -928,7 +957,7 @@
       "poster": "library/posters/radically-human.jpg",
       "posterSha256": "a7603463f15b4bd76b769ab050b455400987f683a412962788a656c04742d996",
       "crop": { "left": 0, "top": 0, "width": 100, "height": 1540 },
-      "artwork": "radically-human-c3f597ec12fc.webp",
+      "artwork": "radically-human-round-10-sampling.webp",
       "height": 320,
       "perspective": {
         "width": 100,
@@ -944,11 +973,12 @@
       "corroboration": [
         "https://store.hbr.org/product/radically-human-how-new-technology-is-transforming-business-and-shaping-our-future/10483"
       ],
-      "artworkSha256": "1fd941a9bee41cae3f9adfdad2d61ce3bbfebbb645afd547a721af500365e961",
+      "artworkSha256": "55e9c3350a8e4e9056acf55059ad1350f170750651f7ffabcca06fecb90f19ae",
       "detailArtwork": "radically-human-detail-2cc8a5adcea60dea.webp",
       "detailArtworkSha256": "2cc8a5adcea60dea87c4f4e1212c3208db2fc59c63e36234803f4412fb3ec2e2",
       "detailWidth": 83,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "repetition",
@@ -962,7 +992,7 @@
       "poster": "library/posters/repetition.jpg",
       "posterSha256": "38b842017c555fce66785fd8a6a12bb247f53f730e9e9f9dbeff53ae6dcfc00d",
       "crop": { "left": 0, "top": 0, "width": 120, "height": 1525 },
-      "artwork": "repetition-e82f6571a531.webp",
+      "artwork": "repetition-round-10-sampling.webp",
       "height": 320,
       "perspective": {
         "width": 120,
@@ -976,11 +1006,12 @@
       },
       "sourceKind": "seller-original-photograph-rectified",
       "corroboration": ["https://bookbot.com/g/5204468"],
-      "artworkSha256": "21c7529015e499f728776d11dbbb4c772db5d9a1474f0775dacd0c01ecc445ce",
+      "artworkSha256": "06c235fedb3098cfdd117fe97c7faea060bbcf6ea894afc9063cf99bb8edd802",
       "detailArtwork": "repetition-detail-7fe81cba54c9344f.webp",
       "detailArtworkSha256": "7fe81cba54c9344f519ad4906962240b51c404b9e6c36521d81b30b4a30d6379",
       "detailWidth": 100,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "stay-true",
@@ -994,7 +1025,7 @@
       "poster": "library/posters/stay true.jpg",
       "posterSha256": "3b9bd715863def43174f9f1ca5d831e75b4e1e5e87f15258247875514237adee",
       "crop": { "left": 0, "top": 0, "width": 115, "height": 1525 },
-      "artwork": "stay-true-4d03c24a7718.webp",
+      "artwork": "stay-true-round-10-sampling.webp",
       "height": 320,
       "perspective": {
         "width": 115,
@@ -1008,11 +1039,12 @@
       },
       "sourceKind": "seller-original-photograph-rectified",
       "corroboration": ["https://prhinternationalsales.com/book/?isbn=9780385547772"],
-      "artworkSha256": "1f8f4fe77284d2c373cea4ebd177adf161b0bdb9ae5dbe8b1b70fdd0a6efee2d",
+      "artworkSha256": "9025e06f08e573e4beeb3675dbd2a5fc5e9c12c0929da3d0b58ea37a0e723586",
       "detailArtwork": "stay-true-detail-2e7e82acaa841600.webp",
       "detailArtworkSha256": "2e7e82acaa841600675e9fb2443bc5765a1a9235533cd2e8d3a5e8602524443d",
       "detailWidth": 96,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "the-gay-science",
@@ -1026,7 +1058,7 @@
       "poster": "library/posters/the-gay-science.jpg",
       "posterSha256": "7ed981e3b6d4a9aced324cad53154a609021faa77b7f2e32ce87ccf8c15bf775",
       "crop": { "left": 0, "top": 0, "width": 1366, "height": 154 },
-      "artwork": "the-gay-science-d261c3cb03f2.webp",
+      "artwork": "the-gay-science-round-10-sampling.webp",
       "height": 320,
       "perspective": {
         "width": 1366,
@@ -1040,12 +1072,13 @@
       },
       "sourceKind": "original-photograph-rectified",
       "rotation": 90,
-      "artworkSha256": "8b452906ca1c4b3c3b178d6db7803c4b6acb9340ebbc55dda7131ef07387b7b3",
+      "artworkSha256": "45b2670e19b3236fcc378f452c7997ff56595e0a6edb04459500fc615be9b6a5",
       "corroboration": ["https://images3.penguinrandomhouse.com/cover/9780394719856"],
       "detailArtwork": "the-gay-science-detail-1248f4c22778476a.webp",
       "detailArtworkSha256": "1248f4c22778476a4dab1c4f558d016b2efea0bdc99a3a591febe48fa7940426",
       "detailWidth": 144,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "the-midnight-library",
@@ -1059,7 +1092,7 @@
       "poster": "library/posters/the-midnight-library.jpg",
       "posterSha256": "a99fe0eb27581deb2bf1773b3bd3689099d2155121fa257e8856c89e94cb076c",
       "crop": { "left": 0, "top": 0, "width": 147, "height": 1174 },
-      "artwork": "the-midnight-library-74d398ee702f.webp",
+      "artwork": "the-midnight-library-round-10-sampling.webp",
       "height": 320,
       "perspective": {
         "width": 147,
@@ -1072,12 +1105,13 @@
         ]
       },
       "sourceKind": "original-photograph-rectified",
-      "artworkSha256": "463044121d9d073f15f7de04c777ea48afc3647c1bb0717fe187c9d97eb40413",
+      "artworkSha256": "1c3fa6073e1c323c575854325d06d6def73cf420027f72ae1a4e68a8bdd5d79a",
       "corroboration": ["https://images3.penguinrandomhouse.com/cover/9780525559474"],
       "detailArtwork": "the-midnight-library-detail-4f4db792c00e12d8.webp",
       "detailArtworkSha256": "4f4db792c00e12d84bd502313d6c9f9bd924c7f489def4091586470567526068",
       "detailWidth": 146,
-      "detailHeight": 1172
+      "detailHeight": 1172,
+      "sampling": "independent"
     },
     {
       "id": "21-lessons-for-the-21st-century",
@@ -1091,7 +1125,7 @@
       "poster": "library/posters/21-lessons-for-the-21st-century.jpg",
       "posterSha256": "1134393c41652d18dd8e3fce2d1bfb62788a0057219c42ad96ba72cc80553e17",
       "crop": { "left": 0, "top": 0, "width": 23, "height": 320 },
-      "artwork": "21-lessons-for-the-21st-century-170ef0f2b442.webp",
+      "artwork": "21-lessons-for-the-21st-century-round-10-sampling.webp",
       "height": 320,
       "perspective": {
         "width": 23,
@@ -1104,11 +1138,12 @@
         ]
       },
       "sourceKind": "original-photograph-rectified",
-      "artworkSha256": "28978c5ec6277b7e252b163ad99ca4e05fe49f3d7abec6d84f266ee55b6675f0",
+      "artworkSha256": "414f413aca9e99c1a3dc8c124576949491df1c8506cff4cebfc3657d2f0a10d4",
       "detailArtwork": "21-lessons-for-the-21st-century-detail-2e5d5cd0921f159f.webp",
       "detailArtworkSha256": "2e5d5cd0921f159f21d28dc4d604be742e6a5e59a5c0db05ec5fe3b0170f93fc",
       "detailWidth": 92,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "a-thousand-plateaus",
@@ -1122,7 +1157,7 @@
       "poster": "library/posters/a-thousand-plateaus.jpg",
       "posterSha256": "d3467d3cf12a660f3e33eed5b7bf0cbef72ba80b4b125056f09f392eb9d56d59",
       "crop": { "left": 0, "top": 0, "width": 29, "height": 320 },
-      "artwork": "a-thousand-plateaus-e6ee9cd03388.webp",
+      "artwork": "a-thousand-plateaus-round-10-sampling.webp",
       "height": 320,
       "perspective": {
         "width": 29,
@@ -1135,11 +1170,12 @@
         ]
       },
       "sourceKind": "original-photograph-rectified",
-      "artworkSha256": "e2aba78b0985ff1c1402edb52faea4155315fdf255c703048b1996e942b226ae",
+      "artworkSha256": "0d8b6aaa0afd1e63d9c6610d8390fe59aa43bb5b4bf8914df7f6dbb3fb0ca4da",
       "detailArtwork": "a-thousand-plateaus-detail-11600fb71beb61d7.webp",
       "detailArtworkSha256": "11600fb71beb61d72db9b85c61ffa6e104a72ea407b24493da900a441c5fa7c4",
       "detailWidth": 116,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "digital-minimalism",
@@ -1153,7 +1189,7 @@
       "poster": "library/posters/digital-minimalism.jpg",
       "posterSha256": "28528d04638350e2d9986df9c0997786ef699789df43971cdc401dc9309c408c",
       "crop": { "left": 0, "top": 0, "width": 25, "height": 320 },
-      "artwork": "digital-minimalism-507d887482ff.webp",
+      "artwork": "digital-minimalism-round-10-sampling.webp",
       "height": 320,
       "perspective": {
         "width": 25,
@@ -1166,11 +1202,12 @@
         ]
       },
       "sourceKind": "original-photograph-rectified",
-      "artworkSha256": "6cc8036519231f85a1061f384256c3f0866b2ce476fa8025a9257c08b2d08694",
+      "artworkSha256": "4cfe7081f7b9828e632415a10619e03db5c69524c4f06d63ad7e44a2e3bf9f45",
       "detailArtwork": "digital-minimalism-detail-36abdf73dc24e19e.webp",
       "detailArtworkSha256": "36abdf73dc24e19ee8a799467722110df892c8f0c2237511a90cf3b15885d078",
       "detailWidth": 100,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "dopamine-nation",
@@ -1216,7 +1253,7 @@
       "poster": "library/posters/either-or.jpg",
       "posterSha256": "d474560b8f2f1224c7c3082513dda9de1f0df3ed1381d74f01e3724f62d173f4",
       "crop": { "left": 0, "top": 0, "width": 109, "height": 1490 },
-      "artwork": "either-or-82b6eb869f7f.webp",
+      "artwork": "either-or-round-10-sampling.webp",
       "height": 320,
       "perspective": {
         "width": 109,
@@ -1229,11 +1266,12 @@
         ]
       },
       "sourceKind": "seller-photograph",
-      "artworkSha256": "bd4d6d629a54569e424d85d5adc36df52ab74886e3f1e699a87093afbb3e5d9f",
+      "artworkSha256": "db6f49bcb590a2f36741184a7d4b3de116a0b27ca56473bb127a877866df004c",
       "detailArtwork": "either-or-detail-755ab7382fe9c3ae.webp",
       "detailArtworkSha256": "755ab7382fe9c3ae2f083ff92e1b0e1b0a45c6bff6b9b05c53729e1c6d9572c1",
       "detailWidth": 93,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "godfather",
@@ -1247,7 +1285,7 @@
       "poster": "library/posters/godfather-cover.avif",
       "posterSha256": "de3669433f4bb2c775ace01d57ebdc4c14ad89653b99cb7e671e1707c30b7fdc",
       "crop": { "left": 0, "top": 0, "width": 233, "height": 1536 },
-      "artwork": "godfather-a5d4c8bfcbca.webp",
+      "artwork": "godfather-round-10-sampling.webp",
       "height": 320,
       "perspective": {
         "width": 233,
@@ -1260,11 +1298,12 @@
         ]
       },
       "sourceKind": "seller-photograph",
-      "artworkSha256": "13e11e9e7800ea31232ac2c0cd52a35130d6f389a370d39b7acf315b96da1e21",
+      "artworkSha256": "2a85ef42d48a418a4db71e24a935623df62af714e5abcb55a00bc9b845b2a709",
       "detailArtwork": "godfather-detail-8869e5e7d91a86e5.webp",
       "detailArtworkSha256": "8869e5e7d91a86e5eb378f57133cad0b53c16e0d811d2714091f9feb4861db4d",
       "detailWidth": 194,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "groundwork-of-the-metaphysics-of-morals",
@@ -1342,7 +1381,7 @@
       "poster": "library/posters/intuition-pumps-and-other-tools-for-thinking.jpg",
       "posterSha256": "82e5af083a9e047aeec6c4677f98322559c7444bc243cc4753fcb8216dedf9bd",
       "crop": { "left": 0, "top": 0, "width": 135, "height": 1558 },
-      "artwork": "intuition-pumps-and-other-tools-for-thinking-50098d659973.webp",
+      "artwork": "intuition-pumps-and-other-tools-for-thinking-round-10-sampling.webp",
       "height": 320,
       "perspective": {
         "width": 135,
@@ -1355,11 +1394,12 @@
         ]
       },
       "sourceKind": "seller-photograph",
-      "artworkSha256": "56281e893ebc3ba30d209a311fa3b2821f2e2e6a4f94e4690a0ebe5fca6ec64a",
+      "artworkSha256": "be0c04152aa7e27fcfa6dd83da090ed60117cc618f2c456bc737a2f8eba47fee",
       "detailArtwork": "intuition-pumps-and-other-tools-for-thinking-detail-45dd35587ec27c36.webp",
       "detailArtworkSha256": "45dd35587ec27c36230e125b5d360e0683981949c064e7329ef5a4edc33db600",
       "detailWidth": 110,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "naked-lunch",
@@ -1409,7 +1449,7 @@
       "poster": "library/posters/oblivion.jpg",
       "posterSha256": "7c24de718073b2216e0bd923b711367cbc8d5602993d10ff5ba622f0f92aa7da",
       "crop": { "left": 0, "top": 0, "width": 104, "height": 1500 },
-      "artwork": "oblivion-36234c5318e1.webp",
+      "artwork": "oblivion-round-10-sampling.webp",
       "height": 320,
       "perspective": {
         "width": 104,
@@ -1427,11 +1467,12 @@
         "https://rezised-images.knhbt.cz/1920x1920/65340096.jpg",
         "https://dancingelephant.shop/products/oblivion-by-david-foster-wallace-first-edition"
       ],
-      "artworkSha256": "6efc90030a7d42fa54121acb3794632a5a9604a58d5d782fba60d1879af6a850",
+      "artworkSha256": "942ffb11af58bbf0ac192c8d418a404f718aeabb6eae11088b0ebb78012dd87a",
       "detailArtwork": "oblivion-detail-82444e839d73982b.webp",
       "detailArtworkSha256": "82444e839d73982b80cd24456b28df02cc3a8544a92081d1bdb8856ef9c51625",
       "detailWidth": 88,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "our-man-in-havana",
@@ -1482,7 +1523,7 @@
       "poster": "library/posters/pillow-thoughts-iv.jpg",
       "posterSha256": "add2fb9f5d0a309c6754e53114fc0671c7bfc179f51b8ae3f5d30b8a0ba04a3f",
       "crop": { "left": 0, "top": 0, "width": 108, "height": 1530 },
-      "artwork": "pillow-thoughts-iv-5af298254c73.webp",
+      "artwork": "pillow-thoughts-iv-round-10-sampling.webp",
       "height": 320,
       "perspective": {
         "width": 108,
@@ -1499,11 +1540,12 @@
         "https://rezised-images.knhbt.cz/1920x1920/75003466.jpg",
         "https://rezised-images.knhbt.cz/1920x1920/75003467.jpg"
       ],
-      "artworkSha256": "9b60d13b4abc970407894ae8062a0b91eb93ff45df7db001e08460a58f4f9ffc",
+      "artworkSha256": "f4179529a8293382d680b67b5030108535b77c562747221d085876274dda55d5",
       "detailArtwork": "pillow-thoughts-iv-detail-c4309ef077c13c61.webp",
       "detailArtworkSha256": "c4309ef077c13c6113874b895169627f742de9c1cf090b2d625a46b7671c0ea3",
       "detailWidth": 90,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "seduction-and-betrayal",
@@ -1550,7 +1592,7 @@
       "poster": "library/posters/swe-books.jpeg",
       "posterSha256": "1c73e039e8d309dd2896662f40505961cccdc2d740ef2bbe85dbf95bbfb11cc2",
       "crop": { "left": 0, "top": 0, "width": 150, "height": 1565 },
-      "artwork": "swe-books-591efd4eee37.webp",
+      "artwork": "swe-books-round-10-sampling.webp",
       "height": 320,
       "perspective": {
         "width": 150,
@@ -1567,11 +1609,12 @@
         "https://rezised-images.knhbt.cz/1920x1920/93336405.webp",
         "https://www.oreilly.com/library/view/software-engineering-at/9781492082781/copyright-page01.html"
       ],
-      "artworkSha256": "112908bdb9991344b546771c1c94ce9f2dfcb6f811f6ad6f3fc08ccb563d9bfe",
+      "artworkSha256": "2e1062066f78cc463fc41eee52a541461ae3978e7d3618cc39e6e4e53687203c",
       "detailArtwork": "swe-books-detail-91dee513fc9b08fc.webp",
       "detailArtworkSha256": "91dee513fc9b08fc46ce4f4dfd99e09c8c55c9a261324c9f96bae274c60702e8",
       "detailWidth": 122,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "the-birth-of-tragedy",
@@ -1618,7 +1661,7 @@
       "poster": "library/posters/the-subtle-art-of-not-giving-a-fuck.jpg",
       "posterSha256": "10eb49a35aeef9378e7344d7868705c1093920c7b6855a27be66bf51cca7d0f4",
       "crop": { "left": 0, "top": 0, "width": 70, "height": 816 },
-      "artwork": "the-subtle-art-of-not-giving-a-fuck-d366d12175ce.webp",
+      "artwork": "the-subtle-art-of-not-giving-a-fuck-round-10-sampling.webp",
       "height": 320,
       "perspective": {
         "width": 70,
@@ -1631,11 +1674,12 @@
         ]
       },
       "sourceKind": "original-photograph-rectified",
-      "artworkSha256": "62a9f1f383e5d450ceb6253090e7f5946738f907d87ab2946e9e36c901b94b8e",
+      "artworkSha256": "ec9264bb27078abab7b934a1bbbb5180fb69bd1b7ef7cccd2a27a520c0255ef6",
       "detailArtwork": "the-subtle-art-of-not-giving-a-fuck-detail-ca2f9a5f8eda03eb.webp",
       "detailArtworkSha256": "ca2f9a5f8eda03eb86d27ebdff3c9953bd2455b8ba4a92d12a99ccc5f1f73c1a",
       "detailWidth": 69,
-      "detailHeight": 815
+      "detailHeight": 815,
+      "sampling": "independent"
     },
     {
       "id": "the-uninhabitable-earth",
@@ -1649,7 +1693,7 @@
       "poster": "library/posters/the-uninhabitable-earth.jpg",
       "posterSha256": "cb634be244a36cfc44fe6cde572e2eb3a9c03d9fbfc02db387111b25528ff1ff",
       "crop": { "left": 0, "top": 0, "width": 1480, "height": 126 },
-      "artwork": "the-uninhabitable-earth-df56c4c2f4bd.webp",
+      "artwork": "the-uninhabitable-earth-round-10-sampling.webp",
       "height": 320,
       "perspective": {
         "width": 1480,
@@ -1663,11 +1707,12 @@
       },
       "sourceKind": "original-photograph-rectified",
       "rotation": 90,
-      "artworkSha256": "c7cf3e566e9be085576b6b42482dcf854b331eac73b8bc34c788f5a80457ab3f",
+      "artworkSha256": "563ef73acf49be7f143c1775241cf59f8850eb36ec0adaf05d323381dada7d03",
       "detailArtwork": "the-uninhabitable-earth-detail-a044f30c61613127.webp",
       "detailArtworkSha256": "a044f30c6161312767a1adb89f18bc14248ee59e7b9501228b9caeb1a39821c1",
       "detailWidth": 108,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "anti-memetic-warfare",
@@ -1714,7 +1759,7 @@
       "poster": "library/posters/till-we-have-faces.jpg",
       "posterSha256": "9eabbf73dd27fbfb29278f5012cec4fbfc334624a740636d2281a07235a19e13",
       "crop": { "left": 0, "top": 0, "width": 140, "height": 1420 },
-      "artwork": "till-we-have-faces-9267c9b9a013.webp",
+      "artwork": "till-we-have-faces-round-10-sampling.webp",
       "height": 320,
       "perspective": {
         "width": 140,
@@ -1727,11 +1772,12 @@
         ]
       },
       "sourceKind": "original-photograph-rectified",
-      "artworkSha256": "e225fd7810f61aa778f81d6a30a2a1c630669e89aa558245b6900641f84cf74f",
+      "artworkSha256": "e4d168315f7d911a59c1aa2297cea77bff20a053c621f2a55a6b7a49f09f6703",
       "detailArtwork": "till-we-have-faces-detail-5a5a1eda2bc6c9c2.webp",
       "detailArtworkSha256": "5a5a1eda2bc6c9c28e344c923925f1f339838e7355287abe0c3d3ce7e8ba4204",
       "detailWidth": 126,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "the-year-of-magical-thinking",
@@ -1782,7 +1828,7 @@
       "poster": "library/posters/memoirs-of-a-dutiful-daughter.jpg",
       "posterSha256": "485032d2df0b632b23592a5291068158d086c60c6b7bc9fd63c136391c26020c",
       "crop": { "left": 0, "top": 0, "width": 102, "height": 1530 },
-      "artwork": "memoirs-of-a-dutiful-daughter-4fc54c72cf8e.webp",
+      "artwork": "memoirs-of-a-dutiful-daughter-round-10-sampling.webp",
       "height": 320,
       "perspective": {
         "width": 102,
@@ -1799,11 +1845,12 @@
         "https://rezised-images.knhbt.cz/1920x1920/87589109.jpg",
         "https://rezised-images.knhbt.cz/1920x1920/87589110.jpg"
       ],
-      "artworkSha256": "7b8c4facfebf89fc81a20f965e5f4be83484fa3e4157090cea5cd9a045822bfe",
+      "artworkSha256": "65679f1ea97fbf06e1d36e0349477799234de88513001d92dd2d31e10412bba4",
       "detailArtwork": "memoirs-of-a-dutiful-daughter-detail-dff0a8a4362fd2e9.webp",
       "detailArtworkSha256": "dff0a8a4362fd2e9f26e6e4be611f1035fe78ad37110be037d0d9f8d0c4754d8",
       "detailWidth": 85,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "slouching-towards-bethlehem",
@@ -1889,7 +1936,7 @@
       "poster": "library/posters/risibles-amours.jpg",
       "posterSha256": "b7c389d1d06088dda354e4fa718cb7ef1fb599e8a133ce321380cef4335db17c",
       "crop": { "left": 3, "top": 0, "width": 77, "height": 1510 },
-      "artwork": "risibles-amours-003728753e33.webp",
+      "artwork": "risibles-amours-low-d07a81f22eb77117.webp",
       "height": 320,
       "perspective": {
         "width": 80,
@@ -1903,11 +1950,22 @@
       },
       "sourceKind": "seller-original-photograph-rectified",
       "corroboration": ["https://rezised-images.knhbt.cz/1920x1920/79006330.webp"],
-      "artworkSha256": "c3e0ad3869958664e300e6d19ce3836d13cba66d6e69f9f9fba6db4853590547",
+      "artworkSha256": "d07a81f22eb7711716207d3bf485d07ad700013576466ddf8c82feaa56b1629a",
       "detailArtwork": "risibles-amours-detail-145a9758005c673a.webp",
       "detailArtworkSha256": "145a9758005c673a83d35f41a815d59a0cef47ccfea528b5362e29953644a647",
       "detailWidth": 65,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent",
+      "lowPerspective": {
+        "width": 77,
+        "height": 1510,
+        "points": [
+          { "source": [615.060775756917, 210.99999999999997], "target": [0, 0] },
+          { "source": [668.0000000000001, 211], "target": [76, 0] },
+          { "source": [650, 1720.9999999999998], "target": [76, 1509] },
+          { "source": [597.0606490140656, 1700.7867932599158], "target": [0, 1509] }
+        ]
+      }
     },
     {
       "id": "reimagining-capitalism-in-a-world-on-fire",
@@ -1921,7 +1979,7 @@
       "poster": "library/posters/reimagining-capitalism-in-a-world-on-fire.jpg",
       "posterSha256": "777b1ce6c610456551037e1acb4fa0a284156b7037811b2ca41fb19498d0deac",
       "crop": { "left": 0, "top": 0, "width": 140, "height": 1520 },
-      "artwork": "reimagining-capitalism-in-a-world-on-fire-3ea978d4a5fa.webp",
+      "artwork": "reimagining-capitalism-in-a-world-on-fire-round-10-sampling.webp",
       "height": 320,
       "perspective": {
         "width": 140,
@@ -1939,11 +1997,12 @@
         "https://bookbot.com/m/8112593",
         "https://ci.nii.ac.jp/ncid/BC07740626"
       ],
-      "artworkSha256": "4041b63806f588f2bfc2ae96d435067c0281b2b1560dba04f8b3205bc1b674db",
+      "artworkSha256": "9ac2b5aeb6f554a26a5e4bb7e2a85087c99413dbc27f0dbf83c9417302c8e327",
       "detailArtwork": "reimagining-capitalism-in-a-world-on-fire-detail-29abf5d9e9dc36b0.webp",
       "detailArtworkSha256": "29abf5d9e9dc36b002444e66b477f522d56d16efe4baf6ca9944334d6e7d7fcc",
       "detailWidth": 117,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "on-certainty",
@@ -2001,14 +2060,15 @@
       "crop": { "left": 0, "top": 0, "width": 115, "height": 1530 },
       "rotation": 0,
       "height": 320,
-      "artwork": "philosophical-investigations-da018d75815d.webp",
+      "artwork": "philosophical-investigations-round-10-sampling.webp",
       "editionEvidence": "Same Wiley-Blackwell revised4th edition front, including German/English text statement, Anscombe/Hacker/Schulte translator credit, grey oversized lower author and red type, matches saved artwork. Same paperback physical copy exposes full spine: title, red Wittgenstein, lower grey letter fragment and Wiley-Blackwell mark. Edition-specific metadata pins paperback ISBN9781405159296 (the photographed hardback57754394 is a separate ISBN and not used).",
       "sourceKind": "bookseller-photograph-rectified",
-      "artworkSha256": "1d380d0d7903e7967135aa7603bbf9c320e3096c5b851453cd4fcb1533d90503",
+      "artworkSha256": "d9444e23dd1d5c459c8593d5ebeda643e78a3e6d3f39236b53d71082e3826ded",
       "detailArtwork": "philosophical-investigations-detail-ce422b344a732d9a.webp",
       "detailArtworkSha256": "ce422b344a732d9a7a2794db14f8716f1b64cf1f4af45b32389568437faa1c42",
       "detailWidth": 96,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "a-pattern-language",
@@ -2022,9 +2082,9 @@
       "poster": "library/posters/a-pattern-language.jpg",
       "posterSha256": "d5f3f01500e985cfcfd99d8e972b116610eeb7e1670675e15dadf1d1c9906b60",
       "crop": { "left": 0, "top": 0, "width": 64, "height": 320 },
-      "artwork": "a-pattern-language-7c74fa697f00.webp",
+      "artwork": "a-pattern-language-round-10-sampling.webp",
       "height": 320,
-      "artworkSha256": "15a9732ccb5020a46e1937305c7d9f88a13a8d6ef9a2d8abc352865e0a4bed2e",
+      "artworkSha256": "7de5da59720562ae5f5cde224aca71bb98a135067f97041243ea5e74dfa8cf1b",
       "perspective": {
         "width": 64,
         "height": 320,
@@ -2040,7 +2100,8 @@
       "detailArtwork": "a-pattern-language-detail-335dc4577480a613.webp",
       "detailArtworkSha256": "335dc4577480a6133cf7332d02c6d40a06f17b41db392fa2a5019c8e93bde519",
       "detailWidth": 235,
-      "detailHeight": 1179
+      "detailHeight": 1179,
+      "sampling": "independent"
     },
     {
       "id": "the-secret-history",
@@ -2054,9 +2115,9 @@
       "poster": "library/posters/the-secret-history.jpg",
       "posterSha256": "98db23ad9a3d60c1109c2e307452dcd0e45763e36ba7472dabab4fdcef18c612",
       "crop": { "left": 0, "top": 0, "width": 169, "height": 1510 },
-      "artwork": "the-secret-history-07e7f26057cd.webp",
+      "artwork": "the-secret-history-round-10-sampling.webp",
       "height": 320,
-      "artworkSha256": "d93f4e610ba1e5d5a93bc4fd06532b30a1d0363f4946b36bff41c54c701c28ce",
+      "artworkSha256": "8e97e988ca73f93d1d0e11f9a96249aa1371c2e4baff49d9dc74ac4c44b19187",
       "perspective": {
         "width": 169,
         "height": 1510,
@@ -2075,7 +2136,8 @@
       "detailArtwork": "the-secret-history-detail-be31b76facf8ba4d.webp",
       "detailArtworkSha256": "be31b76facf8ba4d14e07ecece2f896929b8b2f66f28f2b4d2ec5a1b8db89898",
       "detailWidth": 143,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "the-first-man",
@@ -2089,9 +2151,9 @@
       "poster": "library/posters/the-first-man.jpg",
       "posterSha256": "ebad936d9741c1de9111039048321e6489cccf5c1d0de829d69a5c07b4b186a5",
       "crop": { "left": 0, "top": 0, "width": 93, "height": 1585 },
-      "artwork": "the-first-man-fa08f4831606.webp",
+      "artwork": "the-first-man-low-8db980d92111cbea.webp",
       "height": 320,
-      "artworkSha256": "0c745feee7631c41b3f6f6ce7ee5d6baf4ec143ecdab7ff9f5357d63c193c455",
+      "artworkSha256": "8db980d92111cbead57cf41f43c1c2423a331c7f85e6ac8cf455d99fda3be617",
       "perspective": {
         "width": 95,
         "height": 1585,
@@ -2107,7 +2169,18 @@
       "detailArtwork": "the-first-man-detail-9c059ffc98806e41.webp",
       "detailArtworkSha256": "9c059ffc98806e41ffd7e9fc6e3e65b1cb9f79a2f7be4e10f3cd1cde3fa7fbec",
       "detailWidth": 75,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent",
+      "lowPerspective": {
+        "width": 93,
+        "height": 1585,
+        "points": [
+          { "source": [509, 194], "target": [0, 0] },
+          { "source": [576.5080357047933, 192.04324534189004], "target": [92, 0] },
+          { "source": [617.4862965827067, 1774.4810159712138], "target": [92, 1584] },
+          { "source": [549, 1751], "target": [0, 1584] }
+        ]
+      }
     },
     {
       "id": "the-ego-and-the-id",
@@ -2121,9 +2194,9 @@
       "poster": "library/posters/the-ego-and-the-id.jpg",
       "posterSha256": "5781169ddb0b6030009268eca2b369959ff5bbe366fe1ebac4196ae7dd2ec474",
       "crop": { "left": 0, "top": 0, "width": 95, "height": 1545 },
-      "artwork": "the-ego-and-the-id-1a515558af47.webp",
+      "artwork": "the-ego-and-the-id-round-10-sampling.webp",
       "height": 320,
-      "artworkSha256": "ef1821698f83f613525d95f234e98d47c5f71bd3d5de96f85163b2d6c71006f8",
+      "artworkSha256": "faf590a0b56fce735b62749a42dd78083f680054b080581a2f068fe2805b5306",
       "perspective": {
         "width": 95,
         "height": 1545,
@@ -2139,7 +2212,8 @@
       "detailArtwork": "the-ego-and-the-id-detail-df6be83397ed86e5.webp",
       "detailArtworkSha256": "df6be83397ed86e53b03e9442012fec65f1dd95b75d892c432a7aa9e18adef88",
       "detailWidth": 78,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "truth-and-objectivity",
@@ -2153,9 +2227,9 @@
       "poster": "library/posters/truth-and-objectivity.jpeg",
       "posterSha256": "f2de5ce4a07cecc9a31eb69b4ad1bb60292801e03c655f8e712b16568d46bdfc",
       "crop": { "left": 0, "top": 0, "width": 140, "height": 1480 },
-      "artwork": "truth-and-objectivity-7295ed28b8a6.webp",
+      "artwork": "truth-and-objectivity-round-10-sampling.webp",
       "height": 320,
-      "artworkSha256": "95a8612e90e555ee7a48fd6c7f7d4a3dc6cc48c8e356c9990ad3cf4feced022b",
+      "artworkSha256": "404fa836334d0c405a1cf2c403b70e89d0afd88dc6ed1f64078d70702fd37731",
       "perspective": {
         "width": 140,
         "height": 1480,
@@ -2175,7 +2249,8 @@
       "detailArtwork": "truth-and-objectivity-detail-cb0816e93524210d.webp",
       "detailArtworkSha256": "cb0816e93524210d682cc50dfaca0747238babca9a2caf0f66c1e8cee3c56d35",
       "detailWidth": 121,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "dog-songs",
@@ -2253,9 +2328,9 @@
       "poster": "library/posters/infinite-jest.jpg",
       "posterSha256": "546e903c0c36050a9674e5c9fefb9a136309b3632d176488f31e4e94612dbfa1",
       "crop": { "left": 0, "top": 0, "width": 260, "height": 1447 },
-      "artwork": "infinite-jest-58b6760aedf2.webp",
+      "artwork": "infinite-jest-round-10-sampling.webp",
       "height": 320,
-      "artworkSha256": "43d0997fca1b5475d4d481c46006efd5b58da2978e9bac558762bd6da95db14e",
+      "artworkSha256": "bce38df4b8e949f047836cbaf93b25551809714af17f4d6fe6d6009518fb6888",
       "perspective": {
         "width": 260,
         "height": 1447,
@@ -2275,7 +2350,8 @@
       "detailArtwork": "infinite-jest-detail-9c4365ebe99eba38.webp",
       "detailArtworkSha256": "9c4365ebe99eba383e82bbd04cc8e50e576c503512017dccefbbed8bcbb26c6a",
       "detailWidth": 229,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "of-mice-and-men-1937",
@@ -2289,9 +2365,9 @@
       "poster": "library/posters/of-mice-and-men.jpg",
       "posterSha256": "7be95062141e27c9c7c4d81f268b62ca785aa39107a6a2c910b92a15339ecb65",
       "crop": { "left": 0, "top": 0, "width": 1635, "height": 198 },
-      "artwork": "of-mice-and-men-1937-5ae11f61f946.webp",
+      "artwork": "of-mice-and-men-1937-round-10-sampling.webp",
       "height": 320,
-      "artworkSha256": "9a0dfd7dad4cfea4b08a63d17b52b556b25270133a68c2b6098edadb224f4bb1",
+      "artworkSha256": "1e00084fbd4d9e1571f95c98d4a1fbd9da2144c901b79b035721313e0e20f513",
       "perspective": {
         "width": 1635,
         "height": 198,
@@ -2310,7 +2386,8 @@
       "detailArtwork": "of-mice-and-men-1937-detail-255fba51ad99cca7.webp",
       "detailArtworkSha256": "255fba51ad99cca7a2b633871a3ccfd37e8a9598be58c012f921f9824ab9e564",
       "detailWidth": 155,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "the-idiot",
@@ -2358,9 +2435,9 @@
       "poster": "library/posters/the-overstory.jpg",
       "posterSha256": "ba3809795ac62157d6c3d4ba3b207cfd8374415bfadce7a581b7e0d4590e7197",
       "crop": { "left": 0, "top": 0, "width": 125, "height": 1508 },
-      "artwork": "the-overstory-037908142732.webp",
+      "artwork": "the-overstory-round-10-sampling.webp",
       "height": 320,
-      "artworkSha256": "f473c02e07d732466531660a7b5f5dfc47f9867bc336ac675334d94f434009e5",
+      "artworkSha256": "5e4ddd1514e166ac0a3c8782e5169044acb37ef07aaaed4f78c400b17465b7f5",
       "perspective": {
         "width": 125,
         "height": 1508,
@@ -2376,7 +2453,8 @@
       "detailArtwork": "the-overstory-detail-ca0eec63b9a6469b.webp",
       "detailArtworkSha256": "ca0eec63b9a6469bcf03069d53bbf9a041578372214fbca08453a94c7d836a88",
       "detailWidth": 106,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "the-presentation-of-self-in-everyday-life",
@@ -2487,9 +2565,9 @@
       "poster": "library/posters/to-save-and-to-destroy.jpg",
       "posterSha256": "803ba7edb9fd0326dea9a1f610cfc8dd95e69bfa7c96ea3a0471798050e7730b",
       "crop": { "left": 0, "top": 0, "width": 64, "height": 584 },
-      "artwork": "to-save-and-to-destroy-fd66870ff020.webp",
+      "artwork": "to-save-and-to-destroy-round-10-sampling.webp",
       "height": 320,
-      "artworkSha256": "bd36072639c116839b131862f4c58219497ce3786a101fe5070d408866aef2cb",
+      "artworkSha256": "22b9fc581ef4f670b10b42e117f8a8a297d4b1430907a96ab12a1ff2fbd4a3a0",
       "perspective": {
         "width": 64,
         "height": 584,
@@ -2508,7 +2586,8 @@
       "detailArtwork": "to-save-and-to-destroy-detail-47496842632c1115.webp",
       "detailArtworkSha256": "47496842632c1115a5f667e4947de4a8f191d78b7767d8ef78d101cf634ef560",
       "detailWidth": 62,
-      "detailHeight": 574
+      "detailHeight": 574,
+      "sampling": "independent"
     },
     {
       "id": "language-truth-and-logic",
@@ -2557,9 +2636,9 @@
       "poster": "library/posters/on-photography.jpg",
       "posterSha256": "5d0b5e42338f767cc4acf7f0c3fe1785a1e0440333f6dc42321f6bb41e9916eb",
       "crop": { "left": 0, "top": 0, "width": 43, "height": 405 },
-      "artwork": "on-photography-fsg1977-2ee94dd8acfd.webp",
+      "artwork": "on-photography-fsg1977-round-10-sampling.webp",
       "height": 320,
-      "artworkSha256": "2225683a50cda60182a49245e19319fd75ab57f48b374124712704c4e7fb25ab",
+      "artworkSha256": "8b7a13057898a300fbd95d7ff79a36f6aec39a713604afad956a93a4186c6c7b",
       "perspective": {
         "width": 43,
         "height": 405,
@@ -2575,7 +2654,8 @@
       "detailArtwork": "on-photography-fsg1977-detail-5a784cb2d9944fad.webp",
       "detailArtworkSha256": "5a784cb2d9944fad7c8d0cbe5670e58abbf98fb2dde61f27c563c679d871be44",
       "detailWidth": 42,
-      "detailHeight": 401
+      "detailHeight": 401,
+      "sampling": "independent"
     },
     {
       "id": "recursion-ballantine2020",
@@ -2625,9 +2705,9 @@
       "poster": "library/posters/sea-of-tranquility.jpg",
       "posterSha256": "981321500d4b9c58121af24c3af4a3b9b0ff5908f7d9da151826645fc071c1c2",
       "crop": { "left": 0, "top": 0, "width": 220, "height": 1580 },
-      "artwork": "sea-of-tranquility-0bf96c25b4ab.webp",
+      "artwork": "sea-of-tranquility-round-10-sampling.webp",
       "height": 320,
-      "artworkSha256": "bdca938bcb1651837f99ac6bbde3ebe0067eae187e186cbb99afa8fe7d2cab81",
+      "artworkSha256": "8019118391931b798392f99f7dd66bbbbe708c5e7935f46a20eb08353d2405f6",
       "perspective": {
         "width": 220,
         "height": 1580,
@@ -2649,7 +2729,8 @@
       "detailArtwork": "sea-of-tranquility-detail-88cdec1ef876c64b.webp",
       "detailArtworkSha256": "88cdec1ef876c64b9d0d94c68f41dc47f6a182de2bb6a64821f041c46fe1581a",
       "detailWidth": 178,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "the-phenomenology-of-spirit",
@@ -2663,9 +2744,9 @@
       "poster": "library/posters/the-phenomenology-of-spirit.jpg",
       "posterSha256": "5eb32788a453b909de68f00460f37412fea1ee2ab71c47bffa3776155dad95ee",
       "crop": { "left": 0, "top": 0, "width": 173, "height": 1495 },
-      "artwork": "the-phenomenology-of-spirit-5db39075ae2a.webp",
+      "artwork": "the-phenomenology-of-spirit-round-10-sampling.webp",
       "height": 320,
-      "artworkSha256": "df372f0a6f63d537b7bf6a8e879cf603bcedf0666d3fac6ece251f9524fed1fc",
+      "artworkSha256": "d3f354f6d024372a84b0ab3924434a53e142168f05df07837d00fcbf6e2c4052",
       "perspective": {
         "width": 173,
         "height": 1495,
@@ -2681,7 +2762,8 @@
       "detailArtwork": "the-phenomenology-of-spirit-detail-45dda1d930590476.webp",
       "detailArtworkSha256": "45dda1d9305904764ef01e896f4ed9c566d4931c6cfaad766754afa8a3d7b153",
       "detailWidth": 148,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "the-prince",
@@ -2767,9 +2849,9 @@
       "poster": "library/posters/the-three-body-problem-cover.avif",
       "posterSha256": "52e411d0d7715d6b4c0103b03b2d1818e2e7bfbbd6a3be4616d01330629ec46a",
       "crop": { "left": 0, "top": 0, "width": 140, "height": 1510 },
-      "artwork": "the-three-body-problem-f7a69be7202d.webp",
+      "artwork": "the-three-body-problem-round-10-sampling.webp",
       "height": 320,
-      "artworkSha256": "e7233d15428f73995457e668fd99560497f565f730b7854fe1793b7ddb95456f",
+      "artworkSha256": "ccb324603eef2e4a0268d876d900633e9dd2699a02a7a87d04a232bc2244db80",
       "perspective": {
         "width": 140,
         "height": 1510,
@@ -2788,7 +2870,8 @@
       "detailArtwork": "the-three-body-problem-detail-546990a6e6228081.webp",
       "detailArtworkSha256": "546990a6e622808100587d8d4eabf7451472056aca3651ccf62898574d03264c",
       "detailWidth": 118,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "the-trial",
@@ -2938,9 +3021,9 @@
       "sourceSha256": "f685a74d0ad3e0ab24d829005689f78049b257de4ece3a37cb60fa6a22703211",
       "poster": "library/posters/robinson-crusoe-cover.avif",
       "crop": { "left": 0, "top": 0, "width": 110, "height": 1535 },
-      "artwork": "robinson-crusoe-f685a74d0ad3.webp",
+      "artwork": "robinson-crusoe-round-10-sampling.webp",
       "height": 320,
-      "artworkSha256": "a541351f412df2d5d892ec626fdb0103512ec61c168e68b5c97cb83814c207fe",
+      "artworkSha256": "25fa3cf55904b7b8cad58976cb03e91ad187b8bd420e537bb02ec6fc18a01bac",
       "perspective": {
         "width": 110,
         "height": 1535,
@@ -2960,7 +3043,8 @@
       "detailArtwork": "robinson-crusoe-detail-538ed143b5a20068.webp",
       "detailArtworkSha256": "538ed143b5a200683d7373b2694a93011837e910687bf9efdfac2ff801c28380",
       "detailWidth": 91,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "why-i-am-so-wise",
@@ -2973,9 +3057,9 @@
       "sourceSha256": "1243a4034c50b1f08556bfb591ebd5e1c424ac27f9a6ebcfe6e66128d2028201",
       "poster": "library/posters/why-i-am-so-wise.jpg",
       "crop": { "left": 0, "top": 0, "width": 904, "height": 72 },
-      "artwork": "why-i-am-so-wise-1243a4034c50.webp",
+      "artwork": "why-i-am-so-wise-round-10-sampling.webp",
       "height": 320,
-      "artworkSha256": "6b2720e9c10918aac3cb96d82d75c60eb7efa6930ad21337eb13c9c035545cda",
+      "artworkSha256": "3b5b1a5eb9446e0666bf9e470ea6e0f1c21d64847844dfcdecb00322de5ba2ef",
       "perspective": {
         "width": 904,
         "height": 72,
@@ -2997,7 +3081,8 @@
       "detailArtwork": "why-i-am-so-wise-detail-097526e54fe57b2b.webp",
       "detailArtworkSha256": "097526e54fe57b2befb9df16c727ce1d1e6ba81a4d93f71196c288b7b5ce1d40",
       "detailWidth": 71,
-      "detailHeight": 893
+      "detailHeight": 893,
+      "sampling": "independent"
     },
     {
       "id": "essays-in-love",
@@ -3047,9 +3132,9 @@
       "poster": "library/posters/smoke-gets-in-your-eyes.jpg",
       "posterSha256": "da99cbcc6fce08e1150e2da09356906f4c0b901bffd957c9f8a42153d1cc6fef",
       "crop": { "left": 0, "top": 0, "width": 100, "height": 1590 },
-      "artwork": "smoke-gets-in-your-eyes-311d652b9aa3.webp",
+      "artwork": "smoke-gets-in-your-eyes-round-10-sampling.webp",
       "height": 320,
-      "artworkSha256": "7929d64afcf2512f5ea47d9bdbee6b67dafe1d29360f465348dda4938ecc83ee",
+      "artworkSha256": "1e2b1c39397f1ab39d9eb0fbd33c9ee22ac7da0a6b12711407a252b339105c40",
       "perspective": {
         "width": 100,
         "height": 1590,
@@ -3065,7 +3150,8 @@
       "detailArtwork": "smoke-gets-in-your-eyes-detail-e84cca2223516216.webp",
       "detailArtworkSha256": "e84cca222351621692b737a2b0e3d1181ff03645ecf76280f3be42cf15f5d183",
       "detailWidth": 80,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "the-communist-manifesto",
@@ -3079,9 +3165,9 @@
       "poster": "library/posters/the-communist-manifesto.avif",
       "posterSha256": "80bfbe00dcc33ea24ee4f2b8b885ba81dec6793db114681d179c5b986aa53ef5",
       "crop": { "left": 0, "top": 0, "width": 30, "height": 320 },
-      "artwork": "the-communist-manifesto-3e4694aab053.webp",
+      "artwork": "the-communist-manifesto-round-10-sampling.webp",
       "height": 320,
-      "artworkSha256": "27fecd8297680ac621df3869b4d029855214b633f10fc0d1aaa85d5d03f07a73",
+      "artworkSha256": "7d1221121eae5c959df5001081414f4aa9e1848c70c00eb3d80b204d608f42d4",
       "perspective": {
         "width": 30,
         "height": 320,
@@ -3096,7 +3182,8 @@
       "detailArtwork": "the-communist-manifesto-detail-ad202b2279619bef.webp",
       "detailArtworkSha256": "ad202b2279619befe1af91840c29df94e08676bd78cb030ea3287c661c141474",
       "detailWidth": 120,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "the-lily-of-the-field-and-the-bird-of-the-air",
@@ -3110,9 +3197,9 @@
       "poster": "library/posters/the-lily-of-the-field-and-the-bird-of-the-air.jpg",
       "posterSha256": "52073d7dc39301498ccf564941f9eb3fd0f5bf416ef01b8a4917575bef7f88cf",
       "crop": { "left": 0, "top": 0, "width": 23, "height": 320 },
-      "artwork": "the-lily-of-the-field-and-the-bird-of-the-air-efd76e9ce663.webp",
+      "artwork": "the-lily-of-the-field-and-the-bird-of-the-air-round-10-sampling.webp",
       "height": 320,
-      "artworkSha256": "7a8df34c52692f6cbcc00ea50ea69e6e233dd26286961d894c1cd2c6ef1a8cc2",
+      "artworkSha256": "7b9565e05a988d8f923f02265ffbe9693bc3f7b9bb67e3ae705feb03824dd4b0",
       "perspective": {
         "width": 23,
         "height": 320,
@@ -3127,7 +3214,8 @@
       "detailArtwork": "the-lily-of-the-field-and-the-bird-of-the-air-detail-6973c21b9c8e5e0e.webp",
       "detailArtworkSha256": "6973c21b9c8e5e0e6035c1c154f06d50a2009129bf730d8defcb54626edeeeaf",
       "detailWidth": 78,
-      "detailHeight": 1095
+      "detailHeight": 1095,
+      "sampling": "independent"
     },
     {
       "id": "operating-systems",
@@ -3141,9 +3229,9 @@
       "poster": "library/posters/operating-systems.jpg",
       "posterSha256": "da9be844c194b196cd130780b0fc0dd6ef4cf6bbd9d4025d99f57448d37bd911",
       "crop": { "left": 0, "top": 0, "width": 147, "height": 1490 },
-      "artwork": "operating-systems-fe3f95360267.webp",
+      "artwork": "operating-systems-round-10-sampling.webp",
       "height": 320,
-      "artworkSha256": "248c7790edc01b190a53f14a23b9d0162ff0b6852ad738662cf19208d87e29f5",
+      "artworkSha256": "9956c73175241fff71e9372cb9caed65d00db3e81fbc4a41a47586ad227ca799",
       "perspective": {
         "width": 147,
         "height": 1490,
@@ -3158,7 +3246,8 @@
       "detailArtwork": "operating-systems-detail-f7ee241612c3e8fc.webp",
       "detailArtworkSha256": "f7ee241612c3e8fc288404243277b8a1eec96490ac126ce731dbd3ef7682f4e6",
       "detailWidth": 126,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "letter-to-the-father",
@@ -3268,9 +3357,9 @@
       "poster": "library/posters/letters-to-family-friends-editors.jpg",
       "posterSha256": "b9d7ef3d8456921c18e13080f6df5171fbd93eeb0e99451896e073645b9cf3a3",
       "crop": { "left": 0, "top": 0, "width": 500, "height": 54 },
-      "artwork": "letters-to-family-friends-and-editors-fb34cc78f2a3.webp",
+      "artwork": "letters-to-family-friends-and-editors-round-10-sampling.webp",
       "height": 320,
-      "artworkSha256": "d92d1b10278b85d6db559934ccd43ab1c18106c25384557fe449eaba58d1939d",
+      "artworkSha256": "34673e332da78e17af33f22175ec76e8e979b724ca211de0335228a11841ab27",
       "perspective": {
         "width": 500,
         "height": 54,
@@ -3286,7 +3375,8 @@
       "detailArtwork": "letters-to-family-friends-and-editors-detail-b599c02962c94691.webp",
       "detailArtworkSha256": "b599c02962c94691d54ac5184f5d2c40cc1b87fa70244ee41181bd211764be36",
       "detailWidth": 52,
-      "detailHeight": 485
+      "detailHeight": 485,
+      "sampling": "independent"
     },
     {
       "id": "in-emergency-break-glass",
@@ -3300,9 +3390,9 @@
       "poster": "library/posters/in-emergency-break-glass.jpg",
       "posterSha256": "bb8ec62b6a674e521863514c86680b369cb142d86bfc72d89afff5b2cfceb5e6",
       "crop": { "left": 0, "top": 0, "width": 1400, "height": 110 },
-      "artwork": "in-emergency-break-glass-3ab29774baabe8d8.webp",
+      "artwork": "in-emergency-break-glass-round-10-sampling.webp",
       "height": 320,
-      "artworkSha256": "3ab29774baabe8d85d3154fbfb6c0ef3d1da7018852e90cf02298b80b861880b",
+      "artworkSha256": "9422e75dafe9843aba02ea313cd8f3cc12254ae90e28050053cfc0566bb84c66",
       "perspective": {
         "width": 1400,
         "height": 110,
@@ -3318,7 +3408,8 @@
       "detailArtwork": "in-emergency-break-glass-detail-0b7130c6b9e434c8.webp",
       "detailArtworkSha256": "0b7130c6b9e434c8c5c07463194356bdbbe90a15662fd346ba4d17baf9de1113",
       "detailWidth": 100,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "out-of-love",
@@ -3332,9 +3423,9 @@
       "poster": "library/posters/out-of-love.jpg",
       "posterSha256": "a0764a0cffd80a12e5a9a9f82a7ae181cf452f428e34f7015eb8e9ef931144ff",
       "crop": { "left": 0, "top": 0, "width": 1530, "height": 190 },
-      "artwork": "out-of-love-b1f2ed0463382590.webp",
+      "artwork": "out-of-love-round-10-sampling.webp",
       "height": 320,
-      "artworkSha256": "b1f2ed0463382590370671305b1568dc8b9a2227ebe9637e7c1c34cbb7a3bc13",
+      "artworkSha256": "0ff9c3e7dc8aabe34dbb0d4a436c8752ee4a623d0eb0b648728c6568d9dc7485",
       "perspective": {
         "width": 1530,
         "height": 190,
@@ -3350,7 +3441,8 @@
       "detailArtwork": "out-of-love-detail-79cc0c9f443c3f7b.webp",
       "detailArtworkSha256": "79cc0c9f443c3f7be3d8f512a6e53f52a54ea0951a5253f1e962f428747f93b5",
       "detailWidth": 158,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "symposium",
@@ -3462,9 +3554,9 @@
       "poster": "library/posters/the-evolution-of-modern-metaphysics.jpg",
       "posterSha256": "d5936232b74f5c8794233793ea9eec768272646aa9c158ab29a5f6fb4ba211e8",
       "crop": { "left": 0, "top": 0, "width": 120, "height": 1500 },
-      "artwork": "the-evolution-of-modern-metaphysics-037638a46087.webp",
+      "artwork": "the-evolution-of-modern-metaphysics-round-10-sampling.webp",
       "height": 320,
-      "artworkSha256": "865beab2e1fafabbae7587e96f65a885d2a8478099f60913e2586116a494adef",
+      "artworkSha256": "8f13b2ad044c9e78baaf51492fbf7b1f64d2ee4311df7dc63547feeef9916e1f",
       "perspective": {
         "width": 120,
         "height": 1500,
@@ -3478,7 +3570,8 @@
       "detailArtwork": "the-evolution-of-modern-metaphysics-detail-72754087e8944047.webp",
       "detailArtworkSha256": "72754087e894404793941013871a86aaa7c965134bc515198f78aa64dec60e7d",
       "detailWidth": 102,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "our-knowledge-of-the-external-world",
@@ -3524,9 +3617,9 @@
       "poster": "library/posters/the-end-of-the-affair.jpg",
       "posterSha256": "f68e9a93f74c32ea545b3c3c0078ea6e72b06e6c0aed67d5ffb4686aacebdd7f",
       "crop": { "left": 0, "top": 0, "width": 280, "height": 2130 },
-      "artwork": "the-end-of-the-affair-dcdc51ad8865.webp",
+      "artwork": "the-end-of-the-affair-round-10-sampling.webp",
       "height": 320,
-      "artworkSha256": "4af92a4d7d2a8ef2021a9b08656c6c1288784122a5e5f37879162f552509cc0b",
+      "artworkSha256": "268cd386e971a3f7d40236a49cd41f35ac92d4f4696e710301aac25c7422fa71",
       "perspective": {
         "width": 280,
         "height": 2130,
@@ -3541,7 +3634,8 @@
       "detailArtwork": "the-end-of-the-affair-detail-2b39b74633a32216.webp",
       "detailArtworkSha256": "2b39b74633a32216525787b6f894daad547c84c4596ad7c8a123ab22d16286df",
       "detailWidth": 168,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "fall-on-your-knees",
@@ -3587,9 +3681,9 @@
       "poster": "library/posters/Lives of the Saints.jpg",
       "posterSha256": "4826694b0d9d4b7ab50ca9b79fddc3e36b84d23f3e3f8f409c3844196f4c3eed",
       "crop": { "left": 2, "top": 2, "width": 1010, "height": 54 },
-      "artwork": "lives-of-the-saints-f36affddf904.webp",
+      "artwork": "lives-of-the-saints-low-d6ffa9e433e63061.webp",
       "height": 320,
-      "artworkSha256": "f36affddf904da575521d4f4a49b6bf0cfcace15f224d45160f4de19ecb54f7b",
+      "artworkSha256": "d6ffa9e433e63061d7f5bdfabaa39a25938aecc83bf3c7281df5e77c20403332",
       "perspective": {
         "width": 1014,
         "height": 58,
@@ -3605,7 +3699,18 @@
       "detailArtwork": "lives-of-the-saints-detail-dbda2f8ac884c8b0.webp",
       "detailArtworkSha256": "dbda2f8ac884c8b00f56ffb5fea6047abfa69551fab0af08da65218295421d86",
       "detailWidth": 54,
-      "detailHeight": 1010
+      "detailHeight": 1010,
+      "sampling": "independent",
+      "lowPerspective": {
+        "width": 1010,
+        "height": 54,
+        "points": [
+          { "source": [44.00455966389095, 488.07447453533035], "target": [0, 0] },
+          { "source": [1055.9226815563204, 506.00340086994987], "target": [1009, 0] },
+          { "source": [1054.0667087269321, 559.9332183818592], "target": [1009, 53] },
+          { "source": [44.000892573999934, 542.0042920558197], "target": [0, 53] }
+        ]
+      }
     },
     {
       "id": "pilgrim-at-tinker-creek",
@@ -3715,9 +3820,9 @@
       "poster": "library/posters/when-einstein.jpg",
       "posterSha256": "4056c7b16dc57d95db55ebe5d2ebc4d98073c18b55d8aacf7916820ce2cf0d9b",
       "crop": { "left": 0, "top": 0, "width": 130, "height": 1500 },
-      "artwork": "when-einstein-walked-with-godel-9838a48c65bf.webp",
+      "artwork": "when-einstein-walked-with-godel-round-10-sampling.webp",
       "height": 320,
-      "artworkSha256": "9838a48c65bfe9882ee26d308dfac84d9924586c919470f2823c42b68ff94fc9",
+      "artworkSha256": "e2ec4a4832bc3acaa4c8e01ee7edc76836abdbd92d26002cca950457935d5d8e",
       "perspective": {
         "width": 130,
         "height": 1500,
@@ -3732,7 +3837,8 @@
       "detailArtwork": "when-einstein-walked-with-godel-detail-29a553a5da46a479.webp",
       "detailArtworkSha256": "29a553a5da46a4794da74971b29d58823186fb19417d32884657cb26a983f884",
       "detailWidth": 110,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "civilisation-and-its-discontents",
@@ -3746,9 +3852,9 @@
       "poster": "library/posters/civilisation-and-its-discontents.jpg",
       "posterSha256": "95d725861ad83fd0499d3192c3ac7c8d05cb7b33d3634505ba6091591cc7067b",
       "crop": { "left": 1, "top": 2, "width": 83, "height": 1500 },
-      "artwork": "civilisation-and-its-discontents-47fe14432cca.webp",
+      "artwork": "civilisation-and-its-discontents-low-b5ec10e5063f04b6.webp",
       "height": 320,
-      "artworkSha256": "47fe14432cca8572fbbf569f0cbb19d58d05bd5bce0f39db9adf00240711f740",
+      "artworkSha256": "b5ec10e5063f04b691ed0f2226fdaf29b9638929bd2a1cfe36cc2316a87c7b15",
       "perspective": {
         "width": 85,
         "height": 1506,
@@ -3764,7 +3870,18 @@
       "detailArtwork": "civilisation-and-its-discontents-detail-5903aeb29c4c2825.webp",
       "detailArtworkSha256": "5903aeb29c4c28251565fc24677c469b6445f85ed918d96c943b5e7b91d70dab",
       "detailWidth": 70,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent",
+      "lowPerspective": {
+        "width": 83,
+        "height": 1500,
+        "points": [
+          { "source": [545.9656109827375, 15.842327035476417], "target": [0, 0] },
+          { "source": [625.0453989397852, 15.842327035476417], "target": [82, 0] },
+          { "source": [632.9295268713147, 1515.6524320733517], "target": [82, 1499] },
+          { "source": [547.044491647052, 1515.6524320733517], "target": [0, 1499] }
+        ]
+      }
     },
     {
       "id": "logical-investigations",
@@ -3778,9 +3895,9 @@
       "poster": "library/posters/logical-investigations.jpg",
       "posterSha256": "61ae0a2fc7228207d605b9122fc859a2ec81a5aeeaa5adb07738645b0a0272aa",
       "crop": { "left": 0, "top": 0, "width": 180, "height": 1432 },
-      "artwork": "logical-investigations-282d8d590bd9.webp",
+      "artwork": "logical-investigations-round-10-sampling.webp",
       "height": 320,
-      "artworkSha256": "282d8d590bd955a2d776b002289c85105157982a98e47cd6b3e8ccadf027dc7b",
+      "artworkSha256": "370640811969037908d0a001cd0671c05c56acc45c75fb448672797ae7cc4ab2",
       "perspective": {
         "width": 180,
         "height": 1432,
@@ -3796,7 +3913,8 @@
       "detailArtwork": "logical-investigations-detail-981b62dbe4648e61.webp",
       "detailArtworkSha256": "981b62dbe4648e61745c28bcbc90152f6e0d629fd20db8f0d4da1624fa832253",
       "detailWidth": 160,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "slaughterhouse-five",
@@ -3810,9 +3928,9 @@
       "poster": "library/posters/slaughterhouse-five.jpg",
       "posterSha256": "b071f2c799d56efbc14c35411d865bd5f4dcbc9511941d8962bdbeb1e275fe50",
       "crop": { "left": 4, "top": 0, "width": 1072, "height": 55 },
-      "artwork": "slaughterhouse-five-c09207085462.webp",
+      "artwork": "slaughterhouse-five-low-542299c8582e45cc.webp",
       "height": 320,
-      "artworkSha256": "c0920708546232f0c9e2ea1f8fec8a1326ab38fc23384d91eb9edc810ecff4c8",
+      "artworkSha256": "542299c8582e45cc9e0e31bc39920669d654ae36ee5e1f36ab7054111f6fc480",
       "perspective": {
         "width": 1081,
         "height": 58,
@@ -3828,7 +3946,18 @@
       "detailArtwork": "slaughterhouse-five-detail-2fa3486dae881e15.webp",
       "detailArtworkSha256": "2fa3486dae881e15cdb5bb82c6dea3487703bd0204bcba0109be246c01469fb8",
       "detailWidth": 55,
-      "detailHeight": 1072
+      "detailHeight": 1072,
+      "sampling": "independent",
+      "lowPerspective": {
+        "width": 1072,
+        "height": 55,
+        "points": [
+          { "source": [232.0469295470359, 702.9266860589305], "target": [0, 0] },
+          { "source": [1326.8359477090935, 683.0935516719367], "target": [1071, 0] },
+          { "source": [1318.403280173383, 738.0971527416712], "target": [1071, 54] },
+          { "source": [245.24543702445595, 756.9891919446359], "target": [0, 54] }
+        ]
+      }
     },
     {
       "id": "the-conquest-of-happiness",
@@ -3907,9 +4036,9 @@
       "poster": "library/posters/principles.jpg",
       "posterSha256": "a495c7081bf74464328dcc23a7ffbc8aa44689d841469de6639f5116333209df",
       "crop": { "left": 0, "top": 0, "width": 210, "height": 1534 },
-      "artwork": "principles-2017-linen-case-half-jacket-2edbd74fafc5.webp",
+      "artwork": "principles-2017-linen-case-half-jacket-round-10-sampling.webp",
       "height": 320,
-      "artworkSha256": "2edbd74fafc5e5ac76ddf836dde2593d3d3ab299db6b88f59ba158ab520fe4b6",
+      "artworkSha256": "3f09417f0aa6e7f17e6e7e27a7f00794ea561183c234f11afe44a4d717bfaeac",
       "perspective": {
         "width": 210,
         "height": 1534,
@@ -3925,7 +4054,8 @@
       "detailArtwork": "principles-2017-linen-case-half-jacket-detail-5ca9abeb01da7a76.webp",
       "detailArtworkSha256": "5ca9abeb01da7a7692d8ccd5cfc9d60bad18d2a3163905b617b06084f3bb5553",
       "detailWidth": 175,
-      "detailHeight": 1280
+      "detailHeight": 1280,
+      "sampling": "independent"
     },
     {
       "id": "the-outsiders-hbr-2012",
@@ -3939,9 +4069,9 @@
       "poster": "library/posters/the-outsiders.jpg",
       "posterSha256": "aa0e9d41ddee33a70b139488f85d9ce8136ad70140c3878d01cdc0c9711e6ced",
       "crop": { "left": 0, "top": 0, "width": 118, "height": 800 },
-      "artwork": "the-outsiders-hbr-2012-b157a815e90f.webp",
+      "artwork": "the-outsiders-hbr-2012-round-10-sampling.webp",
       "height": 320,
-      "artworkSha256": "b157a815e90fc43f3bdf0045b6a7ab1a4331edefb4e66734bdc5763a9c315616",
+      "artworkSha256": "b6dffde921a4d0a30e2ad6eb1e4503f322af9d91890459cd1987caaa092a5629",
       "perspective": {
         "width": 118,
         "height": 800,
@@ -3957,7 +4087,8 @@
       "detailArtwork": "the-outsiders-hbr-2012-detail-c57b3071d939d6d0.webp",
       "detailArtworkSha256": "c57b3071d939d6d0cddcd1c3633f89f50b231805ecd0dd8ae10d595ac3f2af23",
       "detailWidth": 118,
-      "detailHeight": 803
+      "detailHeight": 803,
+      "sampling": "independent"
     },
     {
       "id": "phenomenology-of-perception-routledge-2013",
@@ -3990,6 +4121,533 @@
       "detailArtworkSha256": "b404aed710d0d41b3d1f1b5d452fcef728ec1d6366d97861ba32cfbf0b890f00",
       "detailWidth": 43,
       "detailHeight": 405
+    },
+    {
+      "id": "the-art-of-doing-science-and-engineering",
+      "title": "The Art of Doing Science and Engineering",
+      "publisher": "Stripe Press",
+      "isbn": "9781732265172",
+      "editionEvidence": "Publisher-supplied physical hardcover wrap for the 2020 Stripe Press edition. The saved mustard distributor/digital front was replaced with the physical front from the same original after explicit approval on 2026-10-19. The green/gold front and complete spine now share one source. The note retains the work’s original publication year, 1997. No foil or bump-map simulation is claimed.",
+      "page": "https://press.stripe.com/the-art-of-doing-science-and-engineering",
+      "source": "https://images.ctfassets.net/fzn2n1nzq965/33d465k9ffR932H3B3m6L1/1599c62f51404156603909b7962c7b1e/TADSE_diffuse.png",
+      "sourceSha256": "118d67d2acb9e18aa062c7167e4432980d536147e57d8c23cc68327b1ebb3746",
+      "poster": "library/posters/the-art-of-doing-science-and-engineering.jpg",
+      "posterSha256": "cea7d5b55e8b43fde1c5a6a70527b89e348d8cde9b39de2b8106c9ba165de961",
+      "crop": { "left": 904, "top": 324, "width": 112, "height": 1276 },
+      "artwork": "the-art-of-doing-science-and-engineering-118d67d2acb9.webp",
+      "height": 320,
+      "sampling": "independent",
+      "artworkSha256": "338f3f6baa382a204c0fc31bf9baf7339fa1e71307f30a6553106373e625c1a5",
+      "detailArtwork": "the-art-of-doing-science-and-engineering-detail-27bfe2690f8e687d.webp",
+      "detailArtworkSha256": "27bfe2690f8e687dd357370cdd762e77d2af3eaa481a91a8c0edd135997ee322",
+      "detailWidth": 112,
+      "detailHeight": 1276
+    },
+    {
+      "id": "the-notebook",
+      "title": "The Notebook: A History of Thinking on Paper",
+      "publisher": "Profile Books",
+      "isbn": "9781788169332",
+      "editionEvidence": "Exact saved olive Profile paperback front matches Bookbot copy8655633/8623591; the same-copy back barcode confirms ISBN9781788169332. Source-backed reconstruction: native title/author letter shapes traced directly from the saved front, arranged and recolored against the complete photographed spine. The original photographed publisher mark is retained as a soft 80x120 raster fragment. It remains motion-blurred; this does not claim a sharp emblem or a publisher production vector. Cover design credited to Louis Gabaldoni by the author and publisher.",
+      "page": "https://bookbot.com/g/8655633/m/8623591",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/63311869.webp",
+      "sourceSha256": "bd8c44df60043bc5e26555de3a7c090b8d6f32ea2ae56a1ffc97728ad47249f7",
+      "poster": "library/posters/the-notebook.jpg",
+      "posterSha256": "67166efee5b1dbcb474781720d9d024f13274aef4ab50be148e225ab4af289b4",
+      "crop": { "left": 0, "top": 0, "width": 112, "height": 1280 },
+      "artwork": "the-notebook-bf7d5e9b6b59bfdb.webp",
+      "height": 320,
+      "vectorSource": {
+        "kind": "reference-reconstruction",
+        "file": "quartz/util/base/bookcase/spine-sources/the-notebook.svg",
+        "sha256": "bf7d5e9b6b59bfdbfe72d3e43b282804d5ab50160c1b4b2ec5951ae0239805a3",
+        "provenance": "Four SVG lettering paths trace native saved-front glyph masks at260x610,300x1500,270x760,280x600. Original80x120 publisher-mark raster retains its photographed blur; no substitute font or invented mark. Placement and olive ground derive from the exact-edition complete spine photo. Mixed vector/raster reconstruction, not an extracted designer original.",
+        "extraction": "docs/verification/bookcase-spine-art/candidates/round-8-notebook-vector/trace.py",
+        "reference": {
+          "file": "docs/verification/bookcase-spine-art/artifacts/round-7-argon/notebook-bookbot-0.png",
+          "sha256": "57c23e180ee5f8ec3c4ee9c390c7544015968fd5b0cc4f3af727e73dcf641a98"
+        }
+      },
+      "artworkSha256": "e164befe0696799e964c961f3b0febb37dac2693ab8519f5e0531493330581e2",
+      "detailArtwork": "the-notebook-detail-f1b31b0a4eedd6b7.webp",
+      "detailArtworkSha256": "f1b31b0a4eedd6b7e745f955cc5d8474d148b824c3c62e9ba1330ee037edd203",
+      "detailWidth": 256,
+      "detailHeight": 1280
+    },
+    {
+      "id": "on-friendship",
+      "title": "On Friendship",
+      "publisher": "Penguin Books",
+      "isbn": "9780141018867",
+      "editionEvidence": "Penguin Great Ideas series1 paperback, M.A.Screech translation, publisher confirms ISBN9780141018867 and physical format. Designer-linked 20-book series1 photograph shows complete numbered spine6 with Michel de Montaigne, On Friendship, GREAT IDEAS and Penguin mark. Publisher high-resolution ornate physical front replaces the earlier minimal white/orange publisher template under the approved verified-physical-pair direction. The old template is not independently linked to a binding; no claim of identical printing or color-managed red. This spine is a native22x428 photographic crop, not high-resolution vector artwork.",
+      "page": "https://collective-investigations.blogspot.com/2016/04/the-complete-virginia-woolf-ebook-as.html",
+      "source": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgGSCqURGn3W2quZzqHf0t08wdJOXruvFB-tFIgnZO4whFW471OP8dULTsOGoC2dJZlMMYgBrDuEQP6JEbtA9VGcde_VQhG2K_qXIxol0X4-Qj6XKyILTR0SuYXNGJY76lRgmijqhdbvIY/s1600/greatideasone1.jpg",
+      "sourceSha256": "d6b90a11b9297a57c265153a4dce37fb6451167e6f2188c1386e08c2df08b7b3",
+      "poster": "library/posters/on-friendship-cover.avif",
+      "posterSha256": "c2b7b843184379b45011df6196b88bc1a09e62c3e168345385dc1a132ddd0c18",
+      "crop": { "left": 115, "top": 3, "width": 22, "height": 428 },
+      "artwork": "on-friendship-round-10-sampling.webp",
+      "height": 320,
+      "artworkSha256": "e5352a1ac510c41175dd21ad95bf4a6134e2bc138c89ae1bd8df6fa175412052",
+      "detailArtwork": "on-friendship-detail-e657a8e378766bee.webp",
+      "detailArtworkSha256": "e657a8e378766beee41539597cb00bae5b0833a77ccb793b5634cb388897eda4",
+      "detailWidth": 22,
+      "detailHeight": 428,
+      "sampling": "independent"
+    },
+    {
+      "id": "as-we-may-think-new-media-reader",
+      "title": "As We May Think",
+      "publisher": "The MIT Press",
+      "isbn": "9780262232272",
+      "containingVolume": {
+        "title": "The New Media Reader",
+        "editors": ["Noah Wardrip-Fruin", "Nick Montfort"],
+        "year": 2003,
+        "contents": "https://www.newmediareader.com/book_contents.html",
+        "publisher": "https://mitpress.mit.edu/9780262232272/the-new-media-reader/",
+        "work": "Chapter 02, As We May Think, Vannevar Bush, 1945, pages 35–47."
+      },
+      "editionEvidence": "The author-maintained supplemental site, linked by MIT Press, confirms chapter02 As We May Think by Vannevar Bush1945. MIT Press confirms the2003 hardcover ISBN9780262232272 and supplies the unresized648x749 flat front. Bookbot same-copy front/spine/back photographs80924405–80924407 visibly match that front; the back barcode reads9780262232272. Human explicitly approved verified containing volumes for poem/article shelf art on2026-10-19 while retaining original work title and reading history in preview. The previous LIFE interior spread is replaced only as the visual representation; no note metadata or content changes. The complete photographed spine has title, editors, wrap illustrations, MIT mark and all orange rules. Perspective correction retains the source photography and its gloss, wear and curved shoulders. No invented SVG or sharper-text claim.",
+      "page": "https://bookbot.com/g/9322099/m/9289766",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/80924405.webp",
+      "sourceSha256": "11eb9e4a86f9c80c84b3fe9684a2bf565c13c5f58c4fbf321ef9a6f5a72b67f5",
+      "poster": "library/posters/as-we-may-think.jpg",
+      "posterSha256": "3659d0c5a9edc67a9a348b1f86a775e6f98986af32fff1b39ddf02e77506f233",
+      "crop": { "left": 0, "top": 0, "width": 145, "height": 1700 },
+      "perspective": {
+        "width": 145,
+        "height": 1700,
+        "points": [
+          { "source": [378, 110], "target": [0, 0] },
+          { "source": [523, 96], "target": [144, 0] },
+          { "source": [558, 1832], "target": [144, 1699] },
+          { "source": [419, 1780], "target": [0, 1699] }
+        ]
+      },
+      "sampling": "independent",
+      "artwork": "as-we-may-think-new-media-reader-11eb9e4a86f9.webp",
+      "height": 320,
+      "artworkSha256": "1d51e44f42359e9052f975f69a9bea4e5c68893c83de15c84ce1cc7bf32fc68b",
+      "detailArtwork": "as-we-may-think-new-media-reader-detail-d55ee9cf0b3df952.webp",
+      "detailArtworkSha256": "d55ee9cf0b3df952af6fb0258344750aa633c3b6586459873889f839c6fe0c3f",
+      "detailWidth": 109,
+      "detailHeight": 1280
+    },
+    {
+      "id": "the-applicant",
+      "title": "The Applicant",
+      "publisher": "Faber and Faber",
+      "containingVolume": {
+        "title": "Ariel",
+        "author": "Sylvia Plath",
+        "year": 1965,
+        "work": "The Applicant, page14; same-copy contents photograph5.",
+        "page": "https://www.pbfa.org/books/ariel"
+      },
+      "editionEvidence": "PBFA seller gallery identifies Faber and Faber1965 first edition/first impression. Its same-copy title page(photo2), copyright(photo4) and contents(photo5) verify the binding and The Applicant on page14. Complete spine photograph3 supplies all ARIEL/SYLVIA PLATH/Faber lettering, white head and burgundy foot; front photograph1 is corrected for camera perspective without repainting. The human approved verified containing-volume art on2026-10-19. Original poem title, author, year and reading history stay in the preview. The plastic jacket protector, glare, paper age and wear remain photographic evidence; this is not a clean publisher master or invented vector. The earlier worker crop was rejected because it omitted ARIEL and included table background; this revised recipe uses the complete physical face.",
+      "page": "https://www.pbfa.org/books/ariel",
+      "source": "https://pbfa.ams3.digitaloceanspaces.com/148948/11718-3.jpg",
+      "sourceSha256": "5b838daf57d7f6d3de63a02252bf3fd6014b8f1835e967e6605da236eabf0518",
+      "poster": "library/posters/the-applicant.jpg",
+      "posterSha256": "af84bd4b1fe411e78125dd22b02e8d519540df648b9da49d5b228bfa82fbff91",
+      "crop": { "left": 0, "top": 0, "width": 90, "height": 1230 },
+      "perspective": {
+        "width": 90,
+        "height": 1230,
+        "points": [
+          { "source": [474, 166], "target": [0, 0] },
+          { "source": [562, 160], "target": [89, 0] },
+          { "source": [557, 1383], "target": [89, 1229] },
+          { "source": [451, 1379], "target": [0, 1229] }
+        ]
+      },
+      "sampling": "independent",
+      "artwork": "the-applicant-complete-joint-5b838daf57d7.webp",
+      "height": 320,
+      "artworkSha256": "2a043865ae81bc09b05538e2e8ebbdf7234b844acbbfeb299ad22ada0ac804a9",
+      "detailArtwork": "the-applicant-detail-a5327f0f56185672.webp",
+      "detailArtworkSha256": "a5327f0f56185672bff425db903ce8255c97ccefb868f442513cdf9e44b8aaf2",
+      "detailWidth": 88,
+      "detailHeight": 1213
+    },
+    {
+      "id": "very-slender-differences-idler-vol-i",
+      "title": "Very Slender Differences",
+      "publisher": "J. Newbery",
+      "containingVolume": {
+        "title": "The Idler, Volume I",
+        "author": "Samuel Johnson",
+        "year": 1761,
+        "work": "No23, Uncertainty of Friendship, pp127–130. Primary VolumeI contents and text corroborate the phrase Very slender differences.",
+        "primaryScan": "https://archive.org/details/bim_eighteenth-century_the-idler-in-two-volume_1761_1"
+      },
+      "editionEvidence": "The Manhattan Rare Book Company record identifies its copy as the complete 1761 London first collected edition, published by J. Newbery, and quotes The Idler No. 23. Gallery image 1 shows the same set with separate gilt labels VOL II and VOL I; the right-hand spine is VOL I and is attached to the adjacent unlettered front board. Gallery image 2 shows the 1761 Volume I title page for the listed copy, while its closed visible spine reads VOL II, so the Volume I spine and board crop are taken from gallery image 1. The listing describes contemporary full calf; the candidate represents the photographed binding and does not assert a later binding date or independently establish the binding's repair history. Front is an interior board-surface crop that excludes the white backdrop and trims unprinted leather at the perimeter. Front proportion is a documented visual estimate, informed by the same-copy title-page view; exact board dimensions are unverified. No title or ornament was added to the unlettered front.",
+      "page": "https://www.manhattanrarebooks.com/pages/books/2154/samuel-johnson/the-idler?soldItem=true",
+      "source": "https://manhattanrarebooks.cdn.bibliopolis.com/pictures/2154.jpg?auto=webp&v=1539715694",
+      "sourceSha256": "5fc6c8a3f6330d5ced9b4f8b8ec3c8fd3ba2eaff95d2ad6fc09d0121c1b290c1",
+      "crop": { "left": 0, "top": 0, "width": 124, "height": 965 },
+      "perspective": {
+        "width": 124,
+        "height": 965,
+        "points": [
+          { "source": [299, 108], "target": [0, 0] },
+          { "source": [417, 125], "target": [123, 0] },
+          { "source": [410, 1036], "target": [123, 964] },
+          { "source": [301, 1023], "target": [0, 964] }
+        ]
+      },
+      "sampling": "independent",
+      "artwork": "very-slender-differences-idler-vol-i-5fc6c8a3f633.webp",
+      "height": 320,
+      "poster": "library/posters/very-slender-differences.jpg",
+      "posterSha256": "0de56f504d338251fbef33d8d75bc86a3bc7b94eb11552fbf181b06abf3e06b2",
+      "artworkSha256": "235c81e32d6aa1c95417ea8cbe4a3c4186ab4a2731e401ca0509799d6f8d1d25",
+      "detailArtwork": "very-slender-differences-idler-vol-i-detail-71d3e82216aa13cb.webp",
+      "detailArtworkSha256": "71d3e82216aa13cb655c25c5a3605ee643f5b036fc3ec38b5a6b47e84d4a2909",
+      "detailWidth": 117,
+      "detailHeight": 911
+    },
+    {
+      "id": "crossroads",
+      "title": "Crossroads",
+      "publisher": "Farrar, Straus and Giroux",
+      "containingVolume": {
+        "title": "A Village Life",
+        "author": "Louise Glück",
+        "year": 2009,
+        "work": "Crossroads",
+        "page": "https://griffinpoetryprize.com/poem/crossroads-gluck/"
+      },
+      "page": "https://www.thirdmindbooks.com/pages/books/5834/louise-gluck/a-village-life",
+      "editionEvidence": "Third Mind Books lists the photographed physical book as the 2009 FSG first edition, first printing. Its seller photo shows the complete dust jacket front and spine. Griffin Poetry Prize credits Crossroads to A Village Life (FSG, 2009). Macmillan confirms hardcoverISBN9780374283742 and supplies the flat1400x2096 front with the same image/title/author/Pulitzer line. Its900x1347 PNG rendition keeps the correct publisher proportions and exceeds the400px preview face at2x; the unmodified original remains in research evidence. No Nobel sticker or alternate cover revision is substituted. The photographed spine retains its perspective-corrected native detail.",
+      "source": "https://thirdmindbooks.cdn.bibliopolis.com/pictures/5834_1.jpg",
+      "sourceSha256": "bae9039e7976382f19839c998ac929d65bc5f7fe3b57e481e5f8210b80f21c65",
+      "poster": "library/posters/crossroads.png",
+      "posterSha256": "39c05f3093323a1badbf29fd0a1bee4470555369d0e857b201276b02de0a3c1c",
+      "crop": { "left": 0, "top": 0, "width": 44, "height": 1680 },
+      "perspective": {
+        "width": 44,
+        "height": 1680,
+        "points": [
+          { "source": [624, 168], "target": [0, 0] },
+          { "source": [669, 182], "target": [43, 0] },
+          { "source": [668, 1855], "target": [43, 1679] },
+          { "source": [634, 1857], "target": [0, 1679] }
+        ]
+      },
+      "sampling": "independent",
+      "artwork": "crossroads-bae9039e7976.webp",
+      "height": 320,
+      "spineSourceSha256": "bae9039e7976382f19839c998ac929d65bc5f7fe3b57e481e5f8210b80f21c65",
+      "isbn": "9780374283742",
+      "artworkSha256": "4ed166b4659dd6f53a4f6b23338a2a6b3b905b3e802dd055fcf14aad62457e64",
+      "detailArtwork": "crossroads-detail-8f9d1ab37cc906c9.webp",
+      "detailArtworkSha256": "8f9d1ab37cc906c957a332dab1bd3f121b9e029252c9222898b6c7b97e6088f6",
+      "detailWidth": 33,
+      "detailHeight": 1280
+    },
+    {
+      "id": "95-poems-burnside-spine",
+      "title": "[i carry your heart with me(i carry it in]",
+      "publisher": "Harcourt, Brace and Company",
+      "editionEvidence": "Burnside Rare Books listing identifies 95 Poems, 1958, Harcourt Brace, first trade edition and first printing, publisher black cloth-backed paper-covered boards, with the photographed dust jacket. One listing photo shows this physical copy's complete front and full spine together. The human approved verified containing volumes for poem/artwork on2026-10-19; the original poem title, date and reading history remain unchanged. The front photograph is corrected for perspective and trims the outside white backdrop at the foot; jacket wear remains. Front aspect is a visual estimate because exact width is unavailable; output axes stay below the physical photograph samples. The final spine quadrilateral reaches the physical lower jacket edge and retains the complete Harcourt Brace device, including the lower bowl and worn blank foot.",
+      "page": "https://www.burnsiderarebooks.com/pages/books/140942645/e-e-cummings/95-poems-ninety-five",
+      "source": "https://burnsiderarebooks.cdn.bibliopolis.com/pictures/140942645.jpg?auto=webp&v=1643150300",
+      "sourceSha256": "46aefd9a6bc4959873d2f82e01f51cd498786d11048266aebb69fb6e39cfd46a",
+      "poster": "library/posters/623a82240254feaa3fbe220edc44096a89b52002.jpeg",
+      "posterSha256": "07edd6e3ed9276c937487e3b5e9754cc62348d4e83f6582cb739ccc878e18142",
+      "crop": { "left": 0, "top": 0, "width": 73, "height": 1852 },
+      "artwork": "95-poems-burnside-spine-46aefd9a6bc4.webp",
+      "height": 320,
+      "perspective": {
+        "width": 73,
+        "height": 1852,
+        "points": [
+          { "source": [44, 104], "target": [0, 0] },
+          { "source": [119, 103], "target": [72, 0] },
+          { "source": [123, 1955], "target": [72, 1851] },
+          { "source": [57, 1941], "target": [0, 1851] }
+        ]
+      },
+      "sampling": "independent",
+      "lowPerspective": {
+        "width": 73,
+        "height": 1852,
+        "points": [
+          { "source": [44, 104], "target": [0, 0] },
+          { "source": [119, 103], "target": [72, 0] },
+          { "source": [123, 1955], "target": [72, 1851] },
+          { "source": [57, 1941], "target": [0, 1851] }
+        ]
+      },
+      "containingVolume": {
+        "title": "95 Poems",
+        "author": "E.E.Cummings",
+        "year": 1958,
+        "inclusionEvidence": "Peter Harrington catalogue182 describes95Poems as including i carry your heart with me.",
+        "page": "https://aba.org.uk/assets/catalogues/mail%40peterharrington.co.uk/182-low-res-singles.pdf"
+      },
+      "artworkSha256": "5cc767f3e85f2522d0d5ee31a99eb38e1766d1988fb92c0193388a141cdbe977",
+      "detailArtwork": "95-poems-burnside-spine-detail-70133572c33a5f57.webp",
+      "detailArtworkSha256": "70133572c33a5f5798403c415ce5ef912fc273755a623e6c986c770de31ab444",
+      "detailWidth": 50,
+      "detailHeight": 1280
+    },
+    {
+      "id": "free-to-choose",
+      "title": "Free to Choose",
+      "publisher": "Harcourt",
+      "isbn": "9780156334600",
+      "editionEvidence": "Bookbot exact-ISBN product record and its three original 1920x1920 listing photos identify Harcourt edition ISBN 9780156334600. Photo 93449728 shows the same pale-blue cover and globe illustration as the pinned poster, with the complete spine visible from head to foot. The candidate is a perspective-corrected crop of that photographed spine. It preserves the photographed title, subtitle, authors and Harcourt mark; no lettering or marks are recreated.",
+      "page": "https://bookbot.com/g/639121/m/688037",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/93449728.webp",
+      "sourceSha256": "6f22651f1d5e4c7b175d8a82c4f5112a1cf62273d33111f8c47d3ba902b36657",
+      "poster": "library/posters/free-to-choose.jpg",
+      "posterSha256": "52db3d2b274e5b667e0bc5693bf11a496484f50ec6207787e0971995ac761a25",
+      "crop": { "left": 0, "top": 0, "width": 120, "height": 1520 },
+      "perspective": {
+        "width": 120,
+        "height": 1520,
+        "points": [
+          { "source": [638, 202], "target": [0, 0] },
+          { "source": [760, 211], "target": [119, 0] },
+          { "source": [744, 1730], "target": [119, 1519] },
+          { "source": [626, 1719], "target": [0, 1519] }
+        ]
+      },
+      "sampling": "independent",
+      "artwork": "free-to-choose-6f22651f1d5e.webp",
+      "height": 320,
+      "artworkSha256": "5e0994d6997f4be606974b99528f34a5cdeffa010b585234747511ca5ab0e1de",
+      "detailArtwork": "free-to-choose-detail-aa187630556f5051.webp",
+      "detailArtworkSha256": "aa187630556f50517143745df265acf16ae4c6c92825060ebd312aa6ca34e54e",
+      "detailWidth": 101,
+      "detailHeight": 1280
+    },
+    {
+      "id": "the-voice-of-robert-desnos",
+      "title": "The Voice of Robert Desnos",
+      "publisher": "The Ecco Press",
+      "isbn": "9780880012614",
+      "containingVolume": {
+        "title": "The Selected Poems of Robert Desnos",
+        "author": "Robert Desnos",
+        "year": 1991,
+        "isbn": "9780880012614",
+        "work": "The Voice of Robert Desnos, poem attribution credits Desnos and William Kulik in this collection.",
+        "translation": "William Kulik",
+        "page": "https://poets.org/poem/voice-robert-desnos/print"
+      },
+      "page": "https://www.abebooks.com/first-edition/selected-poems-Translated-Carolyn-Forche-William/31439566751/bd",
+      "editionEvidence": "Rulon-Miller Books seller listing identifies inventory 62898 as a first edition published by Ecco Press in 1991, inscribed by William Kulik to Kim Merker. Gallery image 1 is the actual physical front and complete spine. Native gallery image 2 is the title page naming the same volume, translators, and editor; the inscription reads For Kim Merker / Best wishes! / Bill Kulik, July 4, 1991. Academy of American Poets credits The Voice of Robert Desnos to Desnos and Kulik in The Selected Poems of Robert Desnos. The review front uses an estimated 2:3 octavo face ratio, because no verified physical dimensions were available. The photographed front plane shortest sampled width is 284 px, so the crop uses 284x426 and does not exceed source sampling. This estimate describes the review crop only; it does not assert verified book measurements. Final plane registration follows the visible front-to-spine jacket joint and physical board perimeter; page block and outside backdrop are excluded. The spine crop includes both complete printed columns and the Ecco mark.",
+      "source": "https://pictures.abebooks.com/inventory/31439566751.jpg",
+      "sourceSha256": "28b7023349dd5180d1f6ceef9673044c5d72a303fbe36797f4a0d363775923b2",
+      "poster": "library/posters/the-voice-of-robert-desnos.png",
+      "posterSha256": "1e95c3e191ea4535425db8bd472f0fff594100491366ef7307e9ccc4d0864ea7",
+      "frontProportionEstimate": {
+        "ratio": "2:3",
+        "basis": "Visual estimate for the octavo book face; exact physical width and height are not verified.",
+        "crop": { "left": 0, "top": 0, "width": 284, "height": 426 },
+        "perspective": {
+          "width": 284,
+          "height": 426,
+          "points": [
+            { "source": [94, 80], "target": [0, 0] },
+            { "source": [390, 42], "target": [283, 0] },
+            { "source": [393, 566], "target": [283, 425] },
+            { "source": [112, 623], "target": [0, 425] }
+          ]
+        }
+      },
+      "crop": { "left": 0, "top": 0, "width": 44, "height": 540 },
+      "perspective": {
+        "width": 44,
+        "height": 540,
+        "points": [
+          { "source": [55, 73], "target": [0, 0] },
+          { "source": [94, 80], "target": [43, 0] },
+          { "source": [112, 623], "target": [43, 539] },
+          { "source": [69, 618], "target": [0, 539] }
+        ]
+      },
+      "sampling": "independent",
+      "artwork": "the-voice-of-robert-desnos-spine-28b7023349dd.webp",
+      "height": 320,
+      "spineSourceSha256": "28b7023349dd5180d1f6ceef9673044c5d72a303fbe36797f4a0d363775923b2",
+      "artworkSha256": "c1bf3fab13bfcd471b5b58ff7ddb443cf086c95bbdb783cbbde37f833980db24",
+      "detailArtwork": "the-voice-of-robert-desnos-detail-5aced4403a9744a0.webp",
+      "detailArtworkSha256": "5aced4403a9744a079cfd133052776f6e2a46066d6fd4e69a43f7908bdced6e2",
+      "detailWidth": 44,
+      "detailHeight": 543
+    },
+    {
+      "id": "mathematics",
+      "title": "Mathematics",
+      "publisher": "HarperCollins",
+      "containingVolume": {
+        "title": "Given Sugar, Given Salt",
+        "author": "Jane Hirshfield",
+        "year": 2001,
+        "work": "Mathematics",
+        "page": "https://www.poetryfoundation.org/poems/47098/mathematics-56d22750792c3"
+      },
+      "page": "https://www.ebay.com/itm/353383590385",
+      "editionEvidence": "The eBay item metadata identifies the photographed copy as a signed 2001 HarperCollins hardcover, first edition and first printing. In the nine-photo gallery, photo 1 shows the front, photo 3 shows the poem Mathematics, and photo 9 shows the full exterior spine and back with the ISBN 9780060199548 barcode. Poetry Foundation attributes Mathematics to Given Sugar, Given Salt, copyright 2001. Weber State Stewart Library lists the first edition, ISBN 0060199547, and Mathematics in the contents. The containing volume supplies the artwork while the original poem title, author, year and reading history remain unchanged.",
+      "isbn": "9780060199548",
+      "source": "https://i.ebayimg.com/images/g/lMsAAOSw-IlgJBDF/s-l1600.webp",
+      "sourceSha256": "02d98e6d520813df2b2795b48eb3b1c9c5627a70ae9ce46866ee82e6f2b628af",
+      "poster": "library/posters/mathematics.png",
+      "posterSha256": "f06168376da87b3869f9926e090175895e8b95773c061df399fdc085e25cfecb",
+      "crop": { "left": 0, "top": 0, "width": 62, "height": 1280 },
+      "perspective": {
+        "width": 62,
+        "height": 1280,
+        "points": [
+          { "source": [861, 78], "target": [0, 0] },
+          { "source": [921, 76], "target": [61, 0] },
+          { "source": [899, 1382], "target": [61, 1279] },
+          { "source": [839, 1378], "target": [0, 1279] }
+        ]
+      },
+      "sampling": "independent",
+      "artwork": "mathematics-given-sugar-salt-ebay-02d98e6d.webp",
+      "height": 320,
+      "artworkSha256": "6e6c57f3140a20def6189a3993f78d8159d94f97041684b8ffed432a9ac1e3cc",
+      "detailArtwork": "mathematics-detail-9d8359a82db122c2.webp",
+      "detailArtworkSha256": "9d8359a82db122c284602c679d97f70946091ec19e3615a119be11fbeda9c04a",
+      "detailWidth": 62,
+      "detailHeight": 1280
+    },
+    {
+      "id": "a-treatise-of-human-nature-pelican-1969",
+      "title": "A Treatise of Human Nature",
+      "author": "David Hume",
+      "publisher": "Pelican Books / Penguin Books",
+      "isbn": "9780140400076",
+      "editionEvidence": "The observed eBay listing is a single two-book lot. Photo 1 shows the Treatise front beside Hume's History of Great Britain; photo 5 shows both books' full spines, with the Treatise identified by its title and the partially visible printed spine digits `14 040007 9`. Photos 2 and 3 show the same lot's Treatise title and copyright pages: edited with an introduction by Ernest C. Mossner, published in Pelican Books in 1969. Independent exact-ISBN edition records identify the Penguin/Pelican paperback as ISBN 9780140400076, English, 678 pages. Photo 6 shows the same worn portrait front from the edge-on pair, corroborating the copy match. The 1600x1600 same-gallery front listing image is cropped and rectified without enlargement; all source wear and print marks remain visible.",
+      "page": "https://www.ebay.com/itm/389822893765",
+      "source": "https://i.ebayimg.com/images/g/LtIAAeSw59Bpyt-o/s-l1600.webp",
+      "sourceSha256": "6811283ae480e50a57bd06fd10fc1121570722e7ed95a25932ba837d3a9e0d43",
+      "poster": "library/posters/a-treatise-of-human-nature.jpg",
+      "posterSha256": "a8ad78a7baad68518237f3ced6457b53ab8a5db7a25d15abee703d7b002d97ec",
+      "crop": { "left": 0, "top": 0, "width": 1450, "height": 220 },
+      "rotation": 90,
+      "artwork": "a-treatise-of-human-nature-pelican-1969-spine-6811283a.webp",
+      "height": 320,
+      "perspective": {
+        "width": 1450,
+        "height": 220,
+        "points": [
+          { "source": [86, 872], "target": [0, 0] },
+          { "source": [1554, 796], "target": [1449, 0] },
+          { "source": [1556, 1024], "target": [1449, 219] },
+          { "source": [96, 1108], "target": [0, 219] }
+        ]
+      },
+      "lowPerspective": {
+        "width": 1450,
+        "height": 220,
+        "points": [
+          { "source": [86, 872], "target": [0, 0] },
+          { "source": [1554, 796], "target": [1449, 0] },
+          { "source": [1556, 1024], "target": [1449, 219] },
+          { "source": [96, 1108], "target": [0, 219] }
+        ]
+      },
+      "sampling": "independent",
+      "artworkSha256": "a99e9e014e3ec8812a576d3d1af46b44af5325cedaf635b4ff8438f2ff9df29d",
+      "detailArtwork": "a-treatise-of-human-nature-pelican-1969-detail-cb8914addd877251.webp",
+      "detailArtworkSha256": "cb8914addd87725151ec359dc935edc28f2b2c9672eed4388529443a16edf3f2",
+      "detailWidth": 194,
+      "detailHeight": 1280
+    },
+    {
+      "id": "critique-of-religion-and-philosophy-round-10",
+      "title": "Critique of Religion and Philosophy",
+      "author": "Walter Kaufmann",
+      "publisher": "Princeton University Press",
+      "isbn": "9780691020012",
+      "editionEvidence": "Same-copy Etsy gallery front matches the pinned shoreline cover. Copyright page shows 0-691-02001-9 (ISBN-13 9780691020012), paperback edition, and First Princeton Paperback printing, 1978. Spine photograph shows all printed spine content: Kaufmann, complete title, Princeton wordmark, and shield. The spine face exits the lower photo boundary after the complete shield; the physical lower edge is not pictured. The recipe terminates at that observed boundary and does not extend or invent pixels. Independent review is required before any publication.",
+      "page": "https://www.etsy.com/ie/listing/1617901398/critique-of-religion-and-philosophy-by",
+      "source": "file:///Users/aarnphm/workspace/garden/docs/verification/bookcase-spine-art/artifacts/round-10-1/etsy-critique-spine.jpg",
+      "sourceSha256": "dde440144ddf5eccefd314bc7e6bbaf87f7f0455e0287084f4f505d43b598680",
+      "poster": "library/posters/critique-of-religion-and-philosophy-cover.avif",
+      "posterSha256": "a875d013c0ba9d6f86614865e3074a24742e77997694801467b471ba490dbcb5",
+      "crop": { "left": 0, "top": 0, "width": 210, "height": 2042 },
+      "rotation": 0,
+      "artwork": "critique-of-religion-and-philosophy-round-10-candidate.webp",
+      "height": 320,
+      "perspective": {
+        "width": 210,
+        "height": 2042,
+        "points": [
+          { "source": [663, 74], "target": [0, 0] },
+          { "source": [877, 78], "target": [209, 0] },
+          { "source": [877, 2116], "target": [209, 2041] },
+          { "source": [685, 2116], "target": [0, 2041] }
+        ]
+      },
+      "lowPerspective": {
+        "width": 210,
+        "height": 2042,
+        "points": [
+          { "source": [663, 74], "target": [0, 0] },
+          { "source": [877, 78], "target": [209, 0] },
+          { "source": [877, 2116], "target": [209, 2041] },
+          { "source": [685, 2116], "target": [0, 2041] }
+        ]
+      },
+      "sampling": "independent",
+      "sourceKind": "same-copy Etsy seller photograph; lower physical edge clipped by source frame; no extension",
+      "artworkSha256": "aaf2ae95159379a608e2c18099c974aa3e402a4b4fb37b9f6b1013ec14c8f2e3",
+      "detailArtwork": "critique-of-religion-and-philosophy-round-10-detail-da058f70f85cd878.webp",
+      "detailArtworkSha256": "da058f70f85cd87889caec4e32b10ad1c57cb48e140e16698e7b0f56901b0ad2",
+      "detailWidth": 131,
+      "detailHeight": 1280
+    },
+    {
+      "id": "actual-air-open-city-1999",
+      "title": "Actual Air",
+      "author": "David Berman",
+      "publisher": "Open City Books",
+      "isbn": "9781890447045",
+      "editionEvidence": "Observed eBay listing 168788697519. Photo 1 matches the pinned Actual Air building front. Photo 2 from the same copy shows ISBN 1-890447-04-8 / 9781890447045, © 1999 David Berman, and Open City Books. Photo 6 is the same physical copy, with the full spine, title, David Berman, Open City Books imprint, and both ends visible. The source is the original 1600x750 gallery photo, not the Argon-rectified derivative.",
+      "page": "https://www.ebay.com/itm/168788697519",
+      "source": "https://i.ebayimg.com/images/g/Iz4AAeSwHbxqy6Fr/s-l1600.jpg",
+      "sourceSha256": "1597e89c7749b08aa4bf68398b221f2387baf4df4ce414538981ec8ab62b6428",
+      "poster": "library/posters/actual-air.png",
+      "posterSha256": "ec7829e1fccb1f0ff2ca771394188638ac31c216f7a479cac5eaf50aa46ca89e",
+      "crop": { "left": 0, "top": 0, "width": 1470, "height": 68 },
+      "rotation": 90,
+      "artwork": "actual-air-open-city-1999-spine-1597e89c.webp",
+      "height": 320,
+      "perspective": {
+        "width": 1470,
+        "height": 68,
+        "points": [
+          { "source": [149, 603], "target": [0, 0] },
+          { "source": [1590, 365], "target": [1469, 0] },
+          { "source": [1600, 447], "target": [1469, 67] },
+          { "source": [156, 674], "target": [0, 67] }
+        ]
+      },
+      "lowPerspective": {
+        "width": 1470,
+        "height": 68,
+        "points": [
+          { "source": [149, 603], "target": [0, 0] },
+          { "source": [1590, 365], "target": [1469, 0] },
+          { "source": [1600, 447], "target": [1469, 67] },
+          { "source": [156, 674], "target": [0, 67] }
+        ]
+      },
+      "sampling": "independent",
+      "artworkSha256": "55776f868813662db5b5462f8edb4ac731c9d87c51e840c16183f42314b6b8d4",
+      "detailArtwork": "actual-air-open-city-1999-detail-dab1659c242fcf7b.webp",
+      "detailArtworkSha256": "dab1659c242fcf7b5e18d3a698d1aa8a904f989f0827b7aed1a59709072e02c7",
+      "detailWidth": 59,
+      "detailHeight": 1280
     }
   ]
 }

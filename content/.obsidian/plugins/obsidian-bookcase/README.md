@@ -111,3 +111,5 @@ npm run build
 ```
 
 The scoped build checks TypeScript and emits the installed `main.js`. Generated bundles, dependencies, the cover cache and `data.json` are ignored. `npm run dev` starts an esbuild watcher, so inspect running processes before starting one.
+
+The walnut and birch-ply veneer tiles in `grain/` are copies of `quartz/static/bookcase-grain/`. The vault cannot reach the garden's `/static`. When the garden regenerates the tiles, copy them again.

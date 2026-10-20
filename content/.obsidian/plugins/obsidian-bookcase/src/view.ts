@@ -15,14 +15,14 @@ import { type BookModel, ModelReader, authorLabel } from './model'
 import { type BookcaseConfig, readConfig } from './options'
 import { Page } from './page'
 import { type CameraAction, Panel } from './panel'
-import { type Point, type Scene, buildScene } from './scene-model'
+import { type Point, type Scene, type ShelfMaterial, buildScene } from './scene-model'
 import { type SpineFonts, fitSpine, spineFonts } from './spine-fit'
 import { type Frame, LayerStack, Stage, cameraTarget, toPx } from './stage'
 import {
   type BookPaint,
   bookStyle,
   fillText,
-  materialTokens,
+  materialMarkup,
   paintBook,
   partsSignature,
   spineLabels,
@@ -152,7 +152,9 @@ export class BookcaseView extends BasesView {
   private restoreFocus = false
   private scrollers = new Set<HTMLElement>()
   private dark = false
-  private theme: string | null = null
+  /** Holds the finish defs and material tokens every layer references; rewritten when the set changes. */
+  private defsEl: SVGSVGElement
+  private defsKey = ''
   /** Book at the reading position: it moves the camera and the roving tabindex, not the selection. */
   private focus = -1
   /**
@@ -255,6 +257,10 @@ export class BookcaseView extends BasesView {
       render: layer => this.render(layer),
       prepare: (layer, markup) => this.prepare(layer, markup),
       mounted: (_, el) => fillText(el, key => this.text(key)),
+    })
+    this.defsEl = this.world.createSvg('svg', {
+      cls: 'bookcase-defs',
+      attr: { 'aria-hidden': 'true', focusable: 'false', width: 0, height: 0 },
     })
     this.page = new Page(this, this.pageEl, this.reader)
     // The ink pair and fallback hues are literals shared with the garden, so they live in JS.
@@ -415,11 +421,6 @@ export class BookcaseView extends BasesView {
       this.setLinked(false, false)
     }
     this.dark = document.body.hasClass('theme-dark')
-    const theme = this.dark ? 'dark' : 'light'
-    if (theme !== this.theme) {
-      this.theme = theme
-      this.root.setCssProps(materialTokens(theme))
-    }
     const { groups, style, material, continuous, showTags } = this.filtered(settings)
     const scene = buildScene(
       groups,
@@ -435,6 +436,16 @@ export class BookcaseView extends BasesView {
     )
     const count = scene.books.length
     this.root.toggleClass('is-empty', count === 0)
+    const materials = new Set<ShelfMaterial>()
+    for (const layer of scene.layers) {
+      for (const solid of layer.solids) materials.add(solid.material)
+      for (const halo of layer.halos) materials.add(halo.material)
+    }
+    const defsKey = [...materials].sort().join(' ')
+    if (defsKey !== this.defsKey) {
+      this.defsKey = defsKey
+      this.defsEl.innerHTML = materialMarkup(materials, this.plugin.grainAssets)
+    }
 
     const [minX, minY, maxX, maxY] = scene.bounds
     const metrics = this.stage.measure(

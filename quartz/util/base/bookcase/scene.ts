@@ -2,6 +2,7 @@ import type { Element } from 'hast'
 import { s } from 'hastscript'
 import { type PlacedBook, type Point, type Segment, toMatrix, toPath, toPoints } from './geometry'
 import {
+  type DefNode,
   type ShelfMaterial,
   type StyleHalo,
   type StyleSolid,
@@ -10,8 +11,12 @@ import {
   bookDetailW,
   bookFacesW,
   coverMatrixW,
-  materialLadder,
+  faceFill,
+  grainFill,
+  materialCss,
+  materialDefs,
   pullOffsetW,
+  sheenFill,
   spineCentreW,
   spineMatrixW,
   spineTextW,
@@ -45,10 +50,25 @@ const polygon = (className: string, points: readonly Point[]): Element =>
 const strokes = (className: string, segments: readonly Segment[]): Element =>
   s(`path.${className}`, { d: toPath(segments) })
 
+const surfaces = (className: string, faces: readonly (readonly Point[])[]): Element =>
+  s(`path.${className}`, {
+    d: faces.map(points => `M${toPoints(points).replaceAll(' ', 'L')}Z`).join(''),
+  })
+
 const materialAttr = (material: ShelfMaterial) => (material === 'paper' ? undefined : material)
 
 function solidNode(solid: StyleSolid): Element {
-  const children: Element[] = solid.faces.map(face => polygon(`bc-tone-${face.tone}`, face.points))
+  // The tone class keeps the flat fill as the fallback; the finish gradient sits on the element.
+  const children: Element[] = solid.faces.map(face =>
+    s(`polygon.bc-tone-${face.tone}`, {
+      points: toPoints(face.points),
+      style: `fill:${faceFill(solid.material, face)}`,
+    }),
+  )
+  for (const face of solid.faces) {
+    const grain = grainFill(solid.material, face)
+    if (grain) children.push(s('polygon.bc-grain', { points: toPoints(face.points), fill: grain }))
+  }
   for (const line of solid.lines) children.push(strokes(`bc-${line.kind}`, line.segments))
   if (solid.creases.length > 0) children.push(strokes('bc-crease', solid.creases))
   if (solid.outline) children.push(polygon('bc-edge', solid.outline))
@@ -74,22 +94,12 @@ const haloNode = (halo: StyleHalo): Element =>
     'data-material': materialAttr(halo.material),
   })
 
-/** Light and dark ladders of the materials in use; paper keeps the theme tokens. */
-function materialStyle(materials: Set<ShelfMaterial>): Element | null {
-  const rules: string[] = []
-  for (const material of materials) {
-    if (material === 'paper') continue
-    for (const theme of ['light', 'dark'] as const) {
-      const ladder = materialLadder(material, theme)
-      const tokens = Object.entries(ladder)
-        .filter(([, value]) => value)
-        .map(([key, value]) => `--bc-${key}:${value}`)
-        .join(';')
-      const root = theme === 'dark' ? ":root[saved-theme='dark'] " : ''
-      rules.push(`${root}.bookcase-scene [data-material='${material}']{${tokens}}`)
-    }
-  }
-  return rules.length > 0 ? s('style', rules.join('')) : null
+const defNode = (node: DefNode): Element =>
+  s(node.tag, node.attrs, (node.children ?? []).map(defNode))
+
+/** Tone tokens and gradient stops of the materials in use, and the defs their faces reference. */
+function materialNodes(materials: Set<ShelfMaterial>): Element[] {
+  return [s('style', materialCss(materials)), s('defs', materialDefs(materials).map(defNode))]
 }
 
 function bookNode(placed: PlacedBook<SceneBook>, world: WorldBook): Element {
@@ -139,12 +149,14 @@ function bookNode(placed: PlacedBook<SceneBook>, world: WorldBook): Element {
     },
     [
       polygon('bc-face-spine', faces.spine),
+      // Spine art is inserted right after the spine face, so the sheen rounds it too.
+      s('polygon.bc-spine-sheen', { points: toPoints(faces.spine), fill: sheenFill(world) }),
       s('g.bc-jacket', [polygon('bc-face-cover', faces.cover)]),
       polygon('bc-face-end', faces.end),
       polygon('bc-pages', detail.pages),
       strokes('bc-page-crease', detail.pageCreases),
-      ...detail.boardRims.map(points => polygon('bc-board-rim', points)),
-      ...detail.jacketRims.map(points => polygon('bc-jacket-rim', points)),
+      surfaces('bc-board-rim', detail.boardRims),
+      surfaces('bc-jacket-rim', detail.jacketRims),
       strokes('bc-jacket-fold', detail.jacketCreases),
       strokes('bc-round-lit', [detail.round[0]]),
       strokes('bc-round-shade', [detail.round[1]]),
@@ -195,8 +207,6 @@ export function bookcaseScene(layout: StyledLayout<SceneBook>, label: string): E
       ]),
     )
   }
-  const style = materialStyle(materials)
-
   return s(
     'svg.bookcase-scene',
     {
@@ -208,6 +218,6 @@ export function bookcaseScene(layout: StyledLayout<SceneBook>, label: string): E
       'data-origin': `${r1(minX - pad)} ${r1(minY - pad)}`,
       'data-style': layout.style,
     },
-    style ? [style, ...children] : children,
+    [...materialNodes(materials), ...children],
   )
 }

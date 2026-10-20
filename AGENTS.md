@@ -15,6 +15,7 @@ This repository powers a Quartz digital garden with custom plugins and a Cloudfl
 - Keep filesystem access out of Quartz transformers. Emitters own filesystem output.
 - Register browser listeners within `document.addEventListener('nav', () => { ... })` and register their `window.addCleanup` callbacks inside that handler. Keep transient state scoped to the page; persist only state that should survive navigation or reloads.
 - Use native buttons for actions and links for navigation. Preserve keyboard operation and visible focus when styling controls.
+- Bookcase keyboard focus uses fill and text changes, without outline rings on its controls, viewport label or preview dialog. Category initials select and focus the matching topic from the bookcase; repeated initials cycle matching categories. Keep typing in search fields and preview navigation independent.
 - Keep secrets in local `.env` files or Cloudflare Secrets. Never add secret values to tracked configuration.
 - Use LaTeX math syntax in Markdown and preserve existing note paths and source citations.
 
