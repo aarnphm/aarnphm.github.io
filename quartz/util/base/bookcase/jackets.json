@@ -354,34 +354,41 @@
       "title": "The Fall",
       "publisher": "Vintage",
       "isbn": "9780679720225",
-      "editionEvidence": "Primary publisher front matches saved art. Genuine photographed spine matches title, author, unique geometric motif and Vintage imprint for the same Yentus edition design; printing and personal copy identity remain unknown. ISBN basis: publisher front image https://images3.penguinrandomhouse.com/cover/9780679720225 visually matches existing front; photographed spine has same distinctive Yentus-series pattern. No claim to printing number.",
+      "editionEvidence": "Primary publisher front matches saved art. Genuine photographed spine matches title, author, unique geometric motif and Vintage imprint for the same Yentus edition design; printing and personal copy identity remain unknown. ISBN basis: publisher front image https://images3.penguinrandomhouse.com/cover/9780679720225 visually matches existing front; photographed spine has same distinctive Yentus-series pattern. No claim to printing number. Round13 reference reconstruction retains this Vintage ISBN and Justin O’Brien translation (primary publisher confirmed). The physical complete spine controls all text placement, spacing, geometric diagonal corners and publisher-mark location. Actual saved-front serif title and sans author glyphs visually match corresponding photographed spine glyphs; their native outlines are traced per letter, with each letter fitted within its measured physical-spine ink bounds. Title native68px caps replace49–50px photo caps; author native46–48px caps replace33–35px photo caps. This is a mixed vector/raster source-backed approximation, not a publisher mechanical. The native191x92 Vintage mark/word photograph remains raster with alpha cleanup and uniform78/92 containment only. No new detail or tracing claim is made for that mark. Cream and black solid fields remove photograph shading. Personal printing remains unknown.",
       "page": "https://www.penguinrandomhouse.com/books/23468/the-fall-by-albert-camus/",
       "source": "https://casacarlini.com/cdn/shop/articles/Albert-Camus-Books_7319c56c-7186-4182-a068-0361b14deebf.jpg?v=1788615528",
       "sourceSha256": "003627ae287250716bd4338f1e0b26cf407b6963c95d062ce546a789a75db1ec",
       "poster": "library/posters/the-fall.jpg",
       "posterSha256": "4b4fd7ce77d3826a673ea5d8cac2b125589df03972cd61f52c8a17d5e3cd722f",
-      "crop": { "left": 0, "top": 0, "width": 1753, "height": 78 },
-      "artwork": "the-fall-low-6d75e7f6ade89805.webp",
+      "crop": { "left": 0, "top": 0, "width": 78, "height": 1753 },
+      "artwork": "the-fall-reference-5b640d3e0180e78b.webp",
       "height": 320,
-      "perspective": {
-        "width": 1753,
-        "height": 78,
-        "points": [
-          { "source": [148, 1133], "target": [0, 0] },
-          { "source": [1901, 1142], "target": [1752, 0] },
-          { "source": [1901, 1221], "target": [1752, 77] },
-          { "source": [149, 1210], "target": [0, 77] }
-        ]
-      },
-      "sourceKind": "original-photograph-rectified",
-      "rotation": 90,
-      "artworkSha256": "6d75e7f6ade89805f0e16f824d593155cf9af661d16379fd7dec70d1d2ce4c2b",
+      "artworkSha256": "5b640d3e0180e78bc082623648586278c92d667ec0405521e78caafebfd65a98",
       "corroboration": ["https://images3.penguinrandomhouse.com/cover/9780679720225"],
-      "detailArtwork": "the-fall-detail-cb0701df06a8cf4c.webp",
-      "detailArtworkSha256": "cb0701df06a8cf4ce105de313f7af42fa46571ea228174618c22ca4162c0aec5",
+      "detailArtwork": "the-fall-detail-0aa64d110508ac81.webp",
+      "detailArtworkSha256": "0aa64d110508ac81f691b7b87eb84dea87988c9181322f7668484909d2c49cb2",
       "detailWidth": 56,
       "detailHeight": 1280,
-      "sampling": "independent"
+      "vectorSource": {
+        "kind": "reference-reconstruction",
+        "file": "quartz/util/base/bookcase/spine-sources/the-fall.svg",
+        "sha256": "1e9981910f02c35498fdd7000612f4e3294c6179b3a87258a7629551f5025eb5",
+        "detailWidth": 56,
+        "provenance": "Complete Casa Carlini physical reference measures1753x78. Saved-front actual seven title and eleven author glyph native contours are fitted per glyph to the measured photograph bounds, preserving physical word spacing and typography without a font substitution. Two physical black/cream diagonal transitions reconstructed from their observed endpoints. Native191x92 publisher emblem/word photograph retained with luminance-alpha cleanup, then uniform78/92 containment into161.934782609x78 centered within the191x78 footer box. The native emblem/word aspect is preserved. Source-backed reconstruction and glyph-fit approximation, with printing unspecified. Detail56x1280 equals current pixel budget; low96x320q80/detailq84 remain canonical caps.",
+        "extraction": "docs/verification/bookcase-spine-art/candidates/round-13-fall/trace.py",
+        "reference": {
+          "file": "docs/verification/bookcase-spine-art/artifacts/round-13-fall/reference-plane.png",
+          "sha256": "05373c7d58bf13383fe650a7bfc3c10a98d84c2331ad71a30414456224cd1e49"
+        },
+        "corroboration": [
+          {
+            "page": "https://penguinrandomhousehighereducation.com/book/?isbn=9780679720225",
+            "source": "https://images3.penguinrandomhouse.com/cover/9780679720225",
+            "file": "docs/verification/bookcase-spine-art/artifacts/round-13-fall/publisher-front.jpg",
+            "sha256": "443fad332e31f1fea797699eeb962771117c2b5490269f6c4884006483c357b5"
+          }
+        ]
+      }
     },
     {
       "id": "the-myth-of-sisyphus",
@@ -490,34 +497,40 @@
       "title": "The Stranger",
       "publisher": "Vintage",
       "isbn": "9780679720201",
-      "editionEvidence": "Primary publisher front matches saved art. Genuine photographed spine matches title, author, unique geometric motif and Vintage imprint for the same Yentus edition design; printing and personal copy identity remain unknown. ISBN basis: publisher front image https://images3.penguinrandomhouse.com/cover/9780679720201 visually matches existing front; photographed spine has same distinctive Yentus-series pattern. No claim to printing number.",
+      "editionEvidence": "1989 Vintage International ISBN 9780679720201, Matthew Ward translation. The pinned front is the verified Penguin Random House cover for this ISBN. The photographed Casa Carlini spine is from the matching Yentus design family; its exact printing remains unverified. This source-backed reconstruction uses the high-resolution saved-front exact title and ALBERT CAMUS glyph contours, fitted to the photographed spine word bounds. The observed black and cream triangular geometry is reconstructed as solid paths. The original Vintage emblem/imprint remains a bounded, native-resolution photographic fragment, with no redrawing or detail enhancement. This improves the title and author edge quality using verified front glyph shapes, without claiming new photographic detail or a publisher mechanical. The tail field uses source-observed near-white #fbfcf4 from rectified reference-plane sample (1700,65); exact substrate pigment is approximate because source lighting is uneven.",
       "page": "https://www.penguinrandomhouse.com/books/23477/the-stranger-by-albert-camus-translated-by-matthew-ward-introduction-by-keith-gore/9780679720201/",
       "source": "https://casacarlini.com/cdn/shop/articles/Albert-Camus-Books_7319c56c-7186-4182-a068-0361b14deebf.jpg?v=1788615528",
       "sourceSha256": "003627ae287250716bd4338f1e0b26cf407b6963c95d062ce546a789a75db1ec",
       "poster": "library/posters/the-stranger.jpg",
       "posterSha256": "789e8c3d6fcbf495a98f8d383d58751fa857c9b678269ab63e54e58f0cbad4bc",
-      "crop": { "left": 0, "top": 0, "width": 1765, "height": 76 },
-      "artwork": "the-stranger-low-af6b9b7f6145dfd0.webp",
+      "crop": { "left": 0, "top": 0, "width": 55, "height": 1280 },
       "height": 320,
-      "perspective": {
-        "width": 1765,
-        "height": 76,
-        "points": [
-          { "source": [150, 156], "target": [0, 0] },
-          { "source": [1918, 182], "target": [1764, 0] },
-          { "source": [1913, 255], "target": [1764, 75] },
-          { "source": [152, 234], "target": [0, 75] }
-        ]
-      },
-      "sourceKind": "original-photograph-rectified",
-      "rotation": 90,
-      "artworkSha256": "af6b9b7f6145dfd00f289cdc0b942f6022cfb990ddad3fd8ae9ad991f3aee655",
-      "corroboration": ["https://images3.penguinrandomhouse.com/cover/9780679720201"],
-      "detailArtwork": "the-stranger-detail-8687b2f588d5d4ac.webp",
-      "detailArtworkSha256": "8687b2f588d5d4ac7880179721270e42db5d2187227551d8f3c7663880e2d6de",
+      "artwork": "the-stranger-reference-a0787c1ad42dd560.webp",
+      "artworkSha256": "a0787c1ad42dd5605b133e3170aa6d3e1dcb3e85e599cdb3b6eaf447eab712f3",
+      "detailArtwork": "the-stranger-detail-a76d487a261d22a0.webp",
+      "detailArtworkSha256": "a76d487a261d22a0f5c3edf10e4b22de14dcad0c45d5b1d2f37902643e33dd68",
       "detailWidth": 55,
       "detailHeight": 1280,
-      "sampling": "independent"
+      "vectorSource": {
+        "kind": "reference-reconstruction",
+        "file": "quartz/util/base/bookcase/spine-sources/the-stranger.svg",
+        "sha256": "f27d0e775a254bf8355e901b4d470a38eb2b56f98df143ceca838eea00c1d08a",
+        "detailWidth": 55,
+        "provenance": "Traced exact binary contours from the pinned 1554x2400 high-resolution front. The complete serif title and sans author word masks are fitted to measured bounds in the 1765x76 Casa Carlini source plane. Triangle edges and flat grounds follow the photographed layout. The Vintage mark/imprint is embedded from an unresampled 195x76 pixel fragment of that plane. Source resolution across the spine is approximately 76 pixels; this replacement uses verified front glyph contours for text edges and claims no new source-photo detail. The formerly gray tail polygon is filled #fbfcf4, the clear observed tail-field sample at rectified reference-plane coordinate (1700,65). The color is an approximate source match because photo lighting varies. Lettering, layout, motif paths, Vintage bitmap, edition metadata and front remain inherited unchanged.",
+        "extraction": "docs/verification/bookcase-spine-art/candidates/round-13-stranger-svg/trace.py",
+        "reference": {
+          "file": "docs/verification/bookcase-spine-art/artifacts/round-13-stranger-svg/reference-plane.png",
+          "sha256": "895dd4b9996f12d062bf7075f6513c24138ad3bc8daa37c5d602b6b3e2953c40"
+        },
+        "corroboration": [
+          {
+            "page": "https://www.penguinrandomhouse.com/books/23477/the-stranger-by-albert-camus-translated-by-matthew-ward-introduction-by-keith-gore/9780679720201/",
+            "source": "https://images3.penguinrandomhouse.com/cover/9780679720201",
+            "file": "content/library/posters/the-stranger.jpg",
+            "sha256": "789e8c3d6fcbf495a98f8d383d58751fa857c9b678269ab63e54e58f0cbad4bc"
+          }
+        ]
+      }
     },
     {
       "id": "resistance-rebellion-and-death",
@@ -4029,33 +4042,51 @@
       "title": "Principles",
       "publisher": "Avid Reader Press / Simon & Schuster",
       "isbn": "9781501124020",
-      "editionEvidence": "Simon & Schuster confirms the hardcover ISBN. ISBN-specific product format metadata states “linen case w- half jacket.” Bookbot physical-copy photo 79055029 shows one complete as-sold composite spine: underlying linen reads LIFE & WORK and the visible beginning of PRINCIP; the white half-jacket overlays its remaining letters and carries red DALIO plus the Simon & Schuster imprint. This designed concealment is retained. The seller’s Gates/Robbins quote band and #1 NYT footer differ from the saved 5-million front; exact printing is unverified. No removal, stitching or letter reconstruction.",
+      "editionEvidence": "Simon & Schuster identifies hardcover ISBN9781501124020; ISBN-specific physical format metadata describes a linen case with half jacket. Bookbot original79055029 shows the complete as-sold composite spine. LIFE & WORK and the exposed case title prefix PRINC are visible; the white half-jacket naturally conceals the rest and carries red DALIO plus the Simon & Schuster mark. Its older quote/#1NYT band differs from the saved 5-million front, so exact printing remains unverified and the saved front is retained with this qualification. Round13 review candidate: SVG lettering traces actual saved-front PRINCIPLES and DALIO masks; LIFE & WORK, including its ampersand, uses a bilinear source-edge isocontour plus bounded quadratic approximation of the official author complete-spine render. Maximum certified native boundary deviation0.442px, all9 ink components and4 counters retained;18pixel cap height remains a source limit, no newly discovered native detail claim. Corral design portfolio credits2017 Simon & Schuster and confirms the bare-case layout. Placement and the half-jacket overlap derive from Bookbot79055029, leaving the title prefix PRINC visible and all remaining case letters concealed. The104x170 publisher mark remains an alpha-cleaned native photograph fragment. Flat grounds, red rules and the thin visible black case foot reconstruct the complete photographed case/half-jacket arrangement; this is a source-backed mixed vector/raster reconstruction, not a production mechanical or a claim of a sharper publisher emblem.",
       "page": "https://bookbot.com/p/q/9781501124020",
       "source": "https://rezised-images.knhbt.cz/1920x1920/79055029.jpg",
       "sourceSha256": "7d1d2ecb0cc93bbb784b37a41181b37629915da169b1c4f623c84be9a84f81ce",
       "poster": "library/posters/principles.jpg",
       "posterSha256": "a495c7081bf74464328dcc23a7ffbc8aa44689d841469de6639f5116333209df",
       "crop": { "left": 0, "top": 0, "width": 210, "height": 1534 },
-      "artwork": "principles-2017-linen-case-half-jacket-round-10-sampling.webp",
       "height": 320,
-      "artworkSha256": "3f09417f0aa6e7f17e6e7e27a7f00794ea561183c234f11afe44a4d717bfaeac",
-      "perspective": {
-        "width": 210,
-        "height": 1534,
-        "points": [
-          { "source": [617, 192], "target": [0, 0] },
-          { "source": [816, 216], "target": [209, 0] },
-          { "source": [822, 1725], "target": [209, 1533] },
-          { "source": [636, 1725], "target": [0, 1533] }
-        ]
-      },
-      "rotation": 0,
-      "sourceKind": "bookseller-original-physical-photograph-perspective-cropped",
-      "detailArtwork": "principles-2017-linen-case-half-jacket-detail-5ca9abeb01da7a76.webp",
-      "detailArtworkSha256": "5ca9abeb01da7a7692d8ccd5cfc9d60bad18d2a3163905b617b06084f3bb5553",
+      "artwork": "principles-2017-linen-case-half-jacket-reference-98e137e186f73910.webp",
+      "artworkSha256": "98e137e186f7391090d7f70262b3bc2f0134a0fa78e074f7672202d0613a5959",
+      "detailArtwork": "principles-2017-linen-case-half-jacket-detail-1f7fd6e98ca7be4a.webp",
+      "detailArtworkSha256": "1f7fd6e98ca7be4ad183306a81f5a9c598138e06640ea6f46605311e8796dbe2",
       "detailWidth": 175,
       "detailHeight": 1280,
-      "sampling": "independent"
+      "vectorSource": {
+        "kind": "reference-reconstruction",
+        "file": "quartz/util/base/bookcase/spine-sources/principles-2017-linen-case-half-jacket.svg",
+        "sha256": "9002b1768544c7aaf83eeeab14eeed95e2db60d6430cd1a7147e0148d378e307",
+        "detailWidth": 175,
+        "provenance": "Native saved-front title841x97 and DALIO427x96 mask contours, no substituted font. LIFE & WORK uses original antialiased author-reference R-G isocontour and bounded curve approximation, with0.442native pixel maximum certified displacement;13closed contours,9ink components and4counters retained. This approximation improves edge rendering without claiming new detail in the18pixel-high source. Complete physical spine controls placement, concealed letters and jacket/rule geometry. Original104x170 S&S mark photograph has native alpha masking only. Its detail is bounded by that photograph. SVG is an authored mixed vector/raster reference reconstruction. Same low/detail pixel and quality caps as the replaced derivative.",
+        "extraction": "docs/verification/bookcase-spine-art/candidates/round-13-principles/trace.py",
+        "curveFit": {
+          "file": "docs/verification/bookcase-spine-art/candidates/round-13-principles/life-contour-receipt.json",
+          "sha256": "8553bcc6369ccea709489cd24e8f308bbaadbb399518340fe8444985c7eac6a5",
+          "verification": "docs/verification/bookcase-spine-art/artifacts/round-13-principles/life-fit-verification.json"
+        },
+        "reference": {
+          "file": "docs/verification/bookcase-spine-art/artifacts/round-13-principles/reference-plane.png",
+          "sha256": "ce341e033b03d933172af89e2058a2445671d207b24bfce0ad1820a906785aa2"
+        },
+        "corroboration": [
+          {
+            "page": "https://www.principles.com/",
+            "file": "docs/verification/bookcase-spine-art/artifacts/round-13-principles/official-mock.png",
+            "source": "https://www.principles.com/assets/preorder-ray-dalio-principles-book-95db76ead27720616fe067f8e730b9f17a1a1c0b115f4028e075cc73ce9dcd40.png",
+            "sha256": "95db76ead27720616fe067f8e730b9f17a1a1c0b115f4028e075cc73ce9dcd40"
+          },
+          {
+            "page": "https://rodrigocorral.com/",
+            "file": "docs/verification/bookcase-spine-art/artifacts/round-13-principles/rodrigo-1.jpg",
+            "source": "https://rodrigocorral.com/uploads/projects/nyt_principles-1572457753.jpg",
+            "sha256": "3ad2991d5553672764a7592d2688c971088e50a14da9f478981284388503d90d"
+          }
+        ]
+      }
     },
     {
       "id": "the-outsiders-hbr-2012",
@@ -4813,6 +4844,448 @@
       "detailArtwork": "principia-mathematica-volume-one-2011-rough-draft-detail-cf1c0cf77ad80be5.webp",
       "detailArtworkSha256": "cf1c0cf77ad80be5206b54dd0882c5af6eeb7d91e582a074e25af32c84b6b187",
       "detailWidth": 238,
+      "detailHeight": 1280
+    },
+    {
+      "id": "genealogy-of-morals-penguin-2013-current-revision",
+      "title": "On The Genealogy of Morals",
+      "author": "Friedrich Nietzsche",
+      "publisher": "Penguin Classics",
+      "isbn": "9780141195377",
+      "editionEvidence": "Newer physical cover typography revision of Penguin Classics ISBN 9780141195377, retaining the 2013 Michael A. Scarpitti translation and Robert C. Holub introduction and notes. Elephant Bookstore front, copyright and barcode photographs identify the saved gold-author/italic-title front as an older physical revision of this edition. The complete Booksturner physical-copy photograph shows the newer white-uppercase front and entire spine, with author and title in two white lines, a white Penguin logo band and the Penguin Classics imprint at the foot. Its front matches the official PRH South Africa 3047x4677 publisher image used for the paired front replacement. The physical front and spine are updated together under the explicitly approved same-ISBN, same-publisher, same-translation revision rule. Native source sampling limits the detail export to29x838; photographic softness remains.",
+      "page": "https://booksturner.pk/products/on-the-genealogy-of-morals-penguin-classics-by-friedrich-nietzsche",
+      "source": "https://booksturner.pk/cdn/shop/files/image00082-scaled_6e24415f-cb46-4eb5-9f24-6587ee6b1bee.jpg?v=1750848092",
+      "sourceSha256": "e3399bd093c81c0859b3934dc032aff6c5929c54d355f12087ec2f5d27ea8956",
+      "poster": "library/posters/on-the-genealogy-of-morals.jpg",
+      "posterSha256": "c6a7a660a3750e5c77d9939fecac66d65ad0da185d32166dce36807f9bf1110c",
+      "crop": { "left": 0, "top": 0, "width": 850, "height": 30 },
+      "rotation": 90,
+      "artwork": "genealogy-of-morals-penguin-2013-current-revision-spine-e3399bd0.webp",
+      "artworkSha256": "8d8d1ee8c0b34db99473dfba209dc2f25f78ce3782e4db9c71532800989edd1f",
+      "height": 320,
+      "perspective": {
+        "width": 850,
+        "height": 30,
+        "points": [
+          { "source": [387, 1052], "target": [0, 0] },
+          { "source": [1234, 1055], "target": [849, 0] },
+          { "source": [1228, 1088], "target": [849, 29] },
+          { "source": [390, 1082], "target": [0, 29] }
+        ]
+      },
+      "lowPerspective": {
+        "width": 850,
+        "height": 30,
+        "points": [
+          { "source": [387, 1052], "target": [0, 0] },
+          { "source": [1234, 1055], "target": [849, 0] },
+          { "source": [1228, 1088], "target": [849, 29] },
+          { "source": [390, 1082], "target": [0, 29] }
+        ]
+      },
+      "sampling": "independent",
+      "sourceKind": "Same-copy physical front and full-spine photograph, newer allcaps jacket revision; public publisher front supplied separately.",
+      "detailArtwork": "genealogy-of-morals-penguin-2013-current-revision-detail-5f636b7571d3792a.webp",
+      "detailArtworkSha256": "5f636b7571d3792ac5a327f253f990f85c78e16525f0afda858c435ceafaa5a6",
+      "detailWidth": 29,
+      "detailHeight": 838
+    },
+    {
+      "id": "das-passagen-werk-suhrkamp-stw-935",
+      "title": "Das Passagen-Werk",
+      "author": "Walter Benjamin",
+      "publisher": "Suhrkamp",
+      "isbn": "9783518285350",
+      "editionEvidence": "The Bookbot physical-copy photograph shows the complete V:1 front and full spine, with Walter Benjamin, Das Passagen-Werk, Gesammelte Schriften Band V:1 and stw935 marks matching the saved front layout. Paired rear photograph68417814 visibly identifies set ISBN9783518285350 and 2Bde.; the photographed volume is V:1 within that set. The saved poster remains unchanged. The physical photograph has a warm purple/brown cast relative to the navy saved front; its photographed colour is retained without asserting a cause or a newer jacket revision. The entire printed spine, serial at the head, Benjamin near the foot and both physical ends are visible and unobscured.",
+      "page": "https://bookbot.com/g/4048328/m/4066389",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/68417813.webp",
+      "sourceSha256": "9fcd05dedfbebd1cd5053da78c6d41c341adc0cdd0a49c1f461068ad936cceb1",
+      "poster": "library/posters/das-passagen-werk.jpg",
+      "posterSha256": "9fbceea3969578199b943767b7eee4224c6c4d8be89030e201ce7a894a1e237b",
+      "crop": { "left": 0, "top": 0, "width": 193, "height": 1464 },
+      "rotation": 0,
+      "artwork": "das-passagen-werk-suhrkamp-stw-935-spine-9fcd05de.webp",
+      "artworkSha256": "5d65e95a387e2e6a9abf8bdf4ed75eb4b2d378a8c29c42932be255b9e3e9f2f0",
+      "height": 320,
+      "perspective": {
+        "width": 193,
+        "height": 1464,
+        "points": [
+          { "source": [548, 230], "target": [0, 0] },
+          { "source": [755, 218], "target": [192, 0] },
+          { "source": [827, 1727], "target": [192, 1463] },
+          { "source": [637, 1692], "target": [0, 1463] }
+        ]
+      },
+      "lowPerspective": {
+        "width": 193,
+        "height": 1464,
+        "points": [
+          { "source": [548, 230], "target": [0, 0] },
+          { "source": [755, 218], "target": [192, 0] },
+          { "source": [827, 1727], "target": [192, 1463] },
+          { "source": [637, 1692], "target": [0, 1463] }
+        ]
+      },
+      "sampling": "independent",
+      "sourceKind": "Bookbot same-copy physical front/full-spine photograph, ISBN corroborated by paired rear photograph; original photographed colour retained.",
+      "detailArtwork": "das-passagen-werk-suhrkamp-stw-935-detail-ba8099a04cccbb7b.webp",
+      "detailArtworkSha256": "ba8099a04cccbb7b503ac3f642ffad96739e5cfb73124a1f4bcbc68e4427d604",
+      "detailWidth": 168,
+      "detailHeight": 1280
+    },
+    {
+      "id": "will-to-believe-dover-1956-9780486202914",
+      "title": "The Will to Believe and Other Essays in Popular Philosophy",
+      "author": "William James",
+      "publisher": "Dover Publications",
+      "isbn": "9780486202914",
+      "editionEvidence": "Exact-ISBN eBay seller listing identifies Dover Publications, 1956, English trade paperback, ISBN 9780486202914. Its five-photo gallery includes a photographed physical front, a separate photographed full spine with The Will to Believe, James, the Dover logo and Dover catalogue code, rear cover and interior pages. The interior copyright leaf prints 486-20291-7, corresponding to ISBN 9780486202914. The front and spine photos belong to the same listing/copy. The physical front visibly differs from the saved black portrait collage, so this candidate includes an isolated seller-photo front replacement for review.",
+      "page": "https://www.ebay.com/itm/175629755580",
+      "source": "https://i.ebayimg.com/images/g/EoAAAOSwv~hj-3zn/s-l1600.jpg",
+      "sourceSha256": "21e5866571e0dff77f44047e929ef717f1ddea01401ae0ac9b230535f5618581",
+      "poster": "library/posters/the-will-to-believe.jpg",
+      "posterSha256": "aa85c7d4a1b502c3bba0dbf64e425e04d87454c33923d7ebf840994e5fb177be",
+      "crop": { "left": 0, "top": 0, "width": 1080, "height": 100 },
+      "rotation": 90,
+      "artwork": "will-to-believe-dover-1956-9780486202914-spine.webp",
+      "height": 320,
+      "perspective": {
+        "width": 1080,
+        "height": 100,
+        "points": [
+          { "source": [20, 617], "target": [0, 0] },
+          { "source": [1100, 596], "target": [1079, 0] },
+          { "source": [1111, 676], "target": [1079, 99] },
+          { "source": [32, 712], "target": [0, 99] }
+        ]
+      },
+      "lowPerspective": {
+        "width": 1080,
+        "height": 100,
+        "points": [
+          { "source": [20, 617], "target": [0, 0] },
+          { "source": [1100, 596], "target": [1079, 0] },
+          { "source": [1111, 676], "target": [1079, 99] },
+          { "source": [32, 712], "target": [0, 99] }
+        ]
+      },
+      "sampling": "independent",
+      "sourceKind": "Same-item physical seller-gallery photograph of exact-ISBN Dover paperback spine; the spine carries a Dover catalogue code, and the interior copyright leaf prints 486-20291-7.",
+      "artworkSha256": "99c1900f9c2c0ee73470d80ed7075f4b59d29b28b45809600af56c254f4ce256",
+      "detailArtwork": "will-to-believe-dover-1956-9780486202914-detail-48880025ddb3e9a1.webp",
+      "detailArtworkSha256": "48880025ddb3e9a14e60db7050489b8302e34f8bc889d443e246dabb96841dff",
+      "detailWidth": 99,
+      "detailHeight": 1079
+    },
+    {
+      "id": "why-i-write-renardpress-2021-grayscale-mockup",
+      "title": "Why I Write",
+      "author": "George Orwell",
+      "publisher": "Renard Press",
+      "isbn": "9781913724290",
+      "editionEvidence": "The official Renard Press series PDF page 12 prints ISBN 9781913724290 beneath this matching grayscale three-dimensional book mockup. Native PDF image XObject 126 is the complete 383x637 RGB mockup. The left spine visibly reads WHY I WRITE and ORWELL and includes the Renard mark at the foot. This is publisher catalog art, not a physical copy photograph or print wrap; physical spine color remains unverified.",
+      "page": "https://renardpress.com/wp-content/uploads/2021/10/9781913724665.t.pdf",
+      "source": "https://renardpress.com/wp-content/uploads/2021/10/9781913724665.t.pdf",
+      "sourceSha256": "99b785ef33330920ee292c1ed2225e0326860c1c24bccf2ce2a149b591f897ad",
+      "sourceObject": {
+        "container": "https://renardpress.com/wp-content/uploads/2021/10/9781913724665.t.pdf",
+        "page": 12,
+        "object": 126,
+        "extractionCommand": "mutool extract -r SOURCE_PDF 126",
+        "file": "docs/verification/bookcase-spine-art/artifacts/round-13-why-write/why-i-write-object-126.png",
+        "sha256": "e4e5e03b628ab80e8e539f6d4960ad17c730d9ea5e9e0c2609c5f27d7fbf1ce5",
+        "dimensions": "383x637 RGB",
+        "visualIdentification": "Contact sheet of the page 12 XObjects identifies object 126 as the matching WHY I WRITE mockup. Objects 118, 122, 130, and 134 are other Orwell essays."
+      },
+      "poster": "library/posters/why-i-write.jpg",
+      "posterSha256": "f53765551d31b606df8e3ae35dbda16ee712f07d63476139f62c2bbfda869297",
+      "crop": { "left": 0, "top": 0, "width": 470, "height": 33 },
+      "rotation": 90,
+      "height": 320,
+      "perspective": {
+        "width": 470,
+        "height": 33,
+        "points": [
+          { "source": [49, 78], "target": [0, 0] },
+          { "source": [84, 81], "target": [0, 32] },
+          { "source": [81, 542], "target": [469, 32] },
+          { "source": [56, 561], "target": [469, 0] }
+        ]
+      },
+      "lowPerspective": {
+        "width": 470,
+        "height": 33,
+        "points": [
+          { "source": [49, 78], "target": [0, 0] },
+          { "source": [84, 81], "target": [0, 32] },
+          { "source": [81, 542], "target": [469, 32] },
+          { "source": [56, 561], "target": [469, 0] }
+        ]
+      },
+      "sampling": "independent",
+      "artwork": "why-i-write-renardpress-2021-grayscale-mockup-spine.webp",
+      "embeddedImage": {
+        "object": 126,
+        "sha256": "e4e5e03b628ab80e8e539f6d4960ad17c730d9ea5e9e0c2609c5f27d7fbf1ce5",
+        "width": 383,
+        "height": 637
+      },
+      "artworkSha256": "b83d4d185ea4b8c3c198477e1b412bee4cde15bbe3140021310a73f5b7424101",
+      "detailArtwork": "why-i-write-renardpress-2021-grayscale-mockup-detail-8ad34273e7b7d6b2.webp",
+      "detailArtworkSha256": "8ad34273e7b7d6b23723710398a99edfd0af633e6bf963b01510a1852a949330",
+      "detailWidth": 32,
+      "detailHeight": 461,
+      "sourceKind": "publisher-catalogue-grayscale-3d-render"
+    },
+    {
+      "id": "the-problems-of-philosophy-dover-1999",
+      "title": "The Problems of Philosophy",
+      "author": "Bertrand Russell",
+      "publisher": "Dover Publications",
+      "isbn": "9780486406749",
+      "editionEvidence": "Physical-copy eBay listing 196596061425 identifies the 1999 Dover trade paperback and ISBN 9780486406749. Gallery photo 1 shows the front; photo 2 prints ISBN-13 978-0-486-40674-9; photo 4 shows the same paperback with its complete spine. The front and spine are the same pictured physical copy. The known Dover eText-to-print crosswalk 9780486121161 → 9780486406749 preserves the English text/translation. Spine text is fully visible, though the source photograph has modest focus softness.",
+      "page": "https://www.ebay.com/itm/196596061425",
+      "source": "https://i.ebayimg.com/images/g/P-8AAOSwLzZm0zKv/s-l2000.jpg",
+      "sourceSha256": "95fc55d7a829c9404c672b863720be362c9a67ad20f149380e8b1a621193b089",
+      "poster": "library/posters/the-problems-of-philosophy.jpg",
+      "posterSha256": "cf188d5db9090a840dd54e6271d03864ef3f851a0f6b6200fc467bae164c60fd",
+      "crop": { "left": 0, "top": 0, "width": 778, "height": 26 },
+      "rotation": 90,
+      "artwork": "problems-of-philosophy-dover-1999-spine.webp",
+      "height": 320,
+      "perspective": {
+        "width": 778,
+        "height": 26,
+        "points": [
+          { "source": [730, 695], "target": [0, 0] },
+          { "source": [1390, 264], "target": [777, 0] },
+          { "source": [1406, 284], "target": [777, 25] },
+          { "source": [748, 717], "target": [0, 25] }
+        ]
+      },
+      "sourceKind": "eBay seller photograph of the physical Dover 1999 paperback, front and spine from same gallery/copy; ISBN verified on same-copy back photo.",
+      "sampling": "independent",
+      "lowPerspective": {
+        "width": 778,
+        "height": 26,
+        "points": [
+          { "source": [730, 695], "target": [0, 0] },
+          { "source": [1390, 264], "target": [777, 0] },
+          { "source": [1406, 284], "target": [777, 25] },
+          { "source": [748, 717], "target": [0, 25] }
+        ]
+      },
+      "artworkSha256": "fea8944ce0051bf4c1de2121ecbe859acbb53fe9f0a0e90ebd044dd58e7faed5",
+      "detailArtwork": "the-problems-of-philosophy-dover-1999-detail-0594048c7699d220.webp",
+      "detailArtworkSha256": "0594048c7699d220569711d171402966a3c8864e25ebd67c0e3e52f1048cc589",
+      "detailWidth": 26,
+      "detailHeight": 787
+    },
+    {
+      "id": "foundation-del-rey-2021-apple-tie-in",
+      "title": "Foundation",
+      "author": "Isaac Asimov",
+      "publisher": "Del Rey",
+      "isbn": "9780593497487",
+      "editionEvidence": "The same-copy eBay seller gallery shows the Apple TV monolith front matching the current poster, complete blue/lilac outer spine with gold Foundation title, white Asimov and circular Del Rey imprint, and rear ISBN9780593497487. Copyright photograph05 confirms first Del Rey trade paperback edition2021 and print ISBN9780593497487. All nine original gallery images were inspected. The entire spine is visible from head to tail, free of hands/background; minor physical edge wear and photographed lighting are retained. Original native plane is about58 by1196 pixels; no invented glyphs, SVG redraw or upscale. The saved front is retained.",
+      "page": "https://www.ebay.com/itm/365912226815",
+      "source": "https://i.ebayimg.com/images/g/QOEAAOSwNcJkm3kq/s-l1600.webp",
+      "sourceSha256": "4d1bb716de65d37d1771941a5e12e279e3731a3e2d0b1c70691f0b052e27e8a5",
+      "poster": "library/posters/foundation.jpg",
+      "posterSha256": "4592cf856b317e93ec1fc200e91fe735cddfaff3711be1adc2f9abc55393e877",
+      "crop": { "left": 0, "top": 0, "width": 57, "height": 1196 },
+      "rotation": 0,
+      "artwork": "foundation-del-rey-2021-apple-tie-in-spine-4d1bb716.webp",
+      "artworkSha256": "c0851f31475bf9107d1a06b6f62d5f8d2f034219e715631b82fdb42b17a9e71e",
+      "height": 320,
+      "perspective": {
+        "width": 57,
+        "height": 1196,
+        "points": [
+          { "source": [180, 746], "target": [0, 0] },
+          { "source": [177, 687], "target": [56, 0] },
+          { "source": [1381, 689], "target": [56, 1195] },
+          { "source": [1376, 746], "target": [0, 1195] }
+        ]
+      },
+      "lowPerspective": {
+        "width": 57,
+        "height": 1196,
+        "points": [
+          { "source": [180, 746], "target": [0, 0] },
+          { "source": [177, 687], "target": [56, 0] },
+          { "source": [1381, 689], "target": [56, 1195] },
+          { "source": [1376, 746], "target": [0, 1195] }
+        ]
+      },
+      "sampling": "independent",
+      "sourceKind": "eBay same-copy complete physical front/spine photograph, paired rear and copyright ISBN proof; native-limited photographic raster.",
+      "detailArtwork": "foundation-del-rey-2021-apple-tie-in-detail-e033221fc8f9ef75.webp",
+      "detailArtworkSha256": "e033221fc8f9ef75db1f2dfc214e3bcfe6babc59cedca88c44e2cefd17a2d721",
+      "detailWidth": 57,
+      "detailHeight": 1196
+    },
+    {
+      "id": "understanding-brain-mcgraw-hill-1973-isbn-9780070188648",
+      "title": "The Understanding of the Brain",
+      "author": "John C. Eccles",
+      "publisher": "McGraw-Hill Book Company",
+      "isbn": "9780070188648",
+      "editionEvidence": "Physical eBay listing 227168853132 identifies the photographed book as John C. Eccles, McGraw-Hill, ISBN 9780070188648, English, 238 pages, and hardcover; its photo 3 shows the printed ISBN-10 07-018864-5 on the back. Open Library's 1973 McGraw-Hill record joins ISBN-10 0070188645 to the 238-page English work, while other ISBN listings label this ISBN as paperback. Therefore the exact copy is identified by its own back-cover ISBN and front match; the conflicting binding classifications are retained as source metadata rather than generalized into the edition. Photo 1's black-and-cream cover exactly matches the saved pin; photo 2 shows the entire black spine with red ECCLES and cream title, with both ends visible.",
+      "page": "https://www.ebay.com/itm/227168853132",
+      "source": "https://i.ebayimg.com/images/g/v-gAAeSw5jFprM5u/s-l1600.webp",
+      "sourceSha256": "e3a40a96d71455fb0f53bf35ccabdbfcb7ced9b801eec8f471cb55d34bbf2bb6",
+      "poster": "library/posters/the-understanding-of-the-brain.jpg",
+      "posterSha256": "c98bd98cf8f108eabad9725a9ae35b658dc9227fba0625447030dfe0492572f9",
+      "crop": { "left": 0, "top": 0, "width": 1490, "height": 94 },
+      "rotation": 90,
+      "artwork": "understanding-brain-mcgraw-hill-1973-isbn-9780070188648-spine-e3a40a96.webp",
+      "height": 320,
+      "perspective": {
+        "width": 1490,
+        "height": 94,
+        "points": [
+          { "source": [53, 597], "target": [0, 0] },
+          { "source": [1542, 575], "target": [1489, 0] },
+          { "source": [1538, 669], "target": [1489, 93] },
+          { "source": [60, 691], "target": [0, 93] }
+        ]
+      },
+      "sampling": "independent",
+      "lowPerspective": {
+        "width": 1490,
+        "height": 94,
+        "points": [
+          { "source": [53, 597], "target": [0, 0] },
+          { "source": [1542, 575], "target": [1489, 0] },
+          { "source": [1538, 669], "target": [1489, 93] },
+          { "source": [60, 691], "target": [0, 93] }
+        ]
+      },
+      "artworkSha256": "311cac5aabd352af55c5e24c121df0db5d70f22838232868966449361f2edeac",
+      "detailArtwork": "understanding-brain-mcgraw-hill-1973-isbn-9780070188648-detail-5c45ecfd339fd212.webp",
+      "detailArtworkSha256": "5c45ecfd339fd21218ea4a3485d05c27c2791d602770ffae075a31a53bc6d8fc",
+      "detailWidth": 80,
+      "detailHeight": 1280
+    },
+    {
+      "id": "principia-ethica-cambridge-1903-first",
+      "title": "Principia Ethica",
+      "author": "G. E. Moore",
+      "publisher": "Cambridge University Press",
+      "isbn": "1903 first edition, ISBN not established from the listing",
+      "editionEvidence": "The AbeBooks seller identifies this photographed physical copy as the 1903 Cambridge first edition. The same image contains the complete spine and both boards. The pin shows a Cambridge reprint jacket. The physical copy is a verified same-work, English-original replacement, with the printing generation explicitly changed.",
+      "page": "https://www.abebooks.com/Principia-Ethica-Moore-George-Edward-Cambridge/31072421623/bd",
+      "source": "https://pictures.abebooks.com/inventory/31072421623.jpg",
+      "sourceSha256": "305f18ec54fc9ea100295e5cc60eefe9ed01088e88450ab4553fd7e5ba8648a9",
+      "sourceKind": "Copy-specific antiquarian bookseller photo of one 1903 first-edition physical copy; complete spine and both cloth boards visible.",
+      "poster": "library/posters/principia-ethica.jpg",
+      "posterSha256": "3cedd0cafaf8bb530bffe52623c0efa524c80c87cd5c1e71ce2a0814d3ef4006",
+      "crop": { "left": 1050, "top": 30, "width": 420, "height": 3400 },
+      "artwork": "principia-ethica-cambridge-1903-first.webp",
+      "height": 320,
+      "artworkSha256": "ed6b48ad06ce7edbd522f32908d9eb015236952aaa226a8c5feb99cac22b628c",
+      "detailArtwork": "principia-ethica-cambridge-1903-first-detail-56b12c9a66addec2.webp",
+      "detailArtworkSha256": "56b12c9a66addec2bad04960a99c820e166cd88b00e958acc61a452ebb75a205",
+      "detailWidth": 158,
+      "detailHeight": 1280
+    },
+    {
+      "id": "metamorphosis-simon-schuster-enriched-2009",
+      "title": "The metamorphosis",
+      "author": "Franz Kafka",
+      "publisher": "Simon & Schuster",
+      "isbn": "9781416599685",
+      "editionEvidence": "The Momo used-book photograph shows the same green bedroom/insect-shadow front as the current saved poster, Simon and Schuster Enriched Classic banner and complete curved outer spine with author, ochre title panel and ochre publisher mark at foot. Official S&S page identifies this front as English Enriched Classic mass market paperback2009, ISBN9781416599685. The source gallery contains only physical front/spine and contents; same-copy ISBN/copyright/translator are not shown. Authored note has no translator field; German is the work original language. ISBN is inferred from exact publisher front join, not claimed physically read on this copy. This narrow projection preserves photographed wear and curved type; no letters or imprint details are invented.  Offline piecewise-linear strip follows20observed row pairs spanning full head/author/title/foot. Source-correspondence overlay shows every visible glyph between measured boundaries. Native body transverse bound22pixels,1695longitudinal; output17x1280detail. Only the already rounded blank end caps have smaller sample widths. No hidden glyphs are reconstructed; photographed wear and original pixels remain. Recipe is review-only and requires canonical offline mesh support before publication.",
+      "page": "https://muabansachcu.vn/products/the-metamorphosis-franz-kafka",
+      "source": "https://cdn.hstatic.net/products/200000481913/fa355bc2-feb8-4416-b091-95b181ef0457_057b77dcdcd0427287d38ca7a0651aab_master.jpg",
+      "sourceSha256": "960a8834d8533ca384afa70beaa5669d528b6e6a0630e9a76c2ee18f940d6546",
+      "poster": "library/posters/the-metamorphosis.jpg",
+      "posterSha256": "12ddc40441abc7bb95a109fcbf5121994b388ed07c1b60cc0b679422b43f6bfe",
+      "crop": { "left": 0, "top": 0, "width": 22, "height": 1695 },
+      "rotation": 0,
+      "artwork": "metamorphosis-simon-schuster-enriched-2009-mesh-spine-079bc304070d1d48.webp",
+      "artworkSha256": "079bc304070d1d48e60e7c734ba043b2226b45e41131c42a1f5c49499aee8fa9",
+      "height": 320,
+      "sampling": "independent",
+      "sourceKind": "Momo same-copy matching physical front/full curved-spine photograph; native-limited source-pixel strip unwarp. ISBN corroborated by publisher front-design join, not physically read on this copy.",
+      "detailArtwork": "metamorphosis-simon-schuster-enriched-2009-detail-eb54b03a4280e85e.webp",
+      "detailArtworkSha256": "eb54b03a4280e85e0faad8ff93d72da5ba5ee2d3d57c8f12f8c016021e931cd4",
+      "detailWidth": 17,
+      "detailHeight": 1280,
+      "mesh": {
+        "kind": "piecewise-linear-spine-strip",
+        "width": 22,
+        "height": 1695,
+        "rows": [
+          [173, 388, 404],
+          [200, 376, 400],
+          [300, 370, 394],
+          [400, 364, 388],
+          [500, 356, 381],
+          [600, 350, 376],
+          [700, 343, 370],
+          [800, 339, 365],
+          [900, 334, 360],
+          [1000, 330, 355],
+          [1100, 326, 350],
+          [1200, 322, 345],
+          [1300, 317, 341],
+          [1400, 313, 338],
+          [1500, 308, 335],
+          [1600, 303, 331],
+          [1700, 299, 328],
+          [1800, 299, 325],
+          [1850, 301, 325],
+          [1868, 310, 324]
+        ],
+        "interpolation": "bilinear",
+        "bodyRange": [200, 1850]
+      }
+    },
+    {
+      "id": "gilson-pims-9780888444158-second-corrected-paperback",
+      "title": "Being and Some Philosophers",
+      "author": "Etienne Gilson",
+      "publisher": "Pontifical Institute of Mediaeval Studies (PIMS)",
+      "isbn": "9780888444158",
+      "editionEvidence": "AbeBooks identifies this 2016 softcover as the PIMS second edition, corrected and enlarged, and its same-copy photograph shows the complete front and spine. The photographed front is rectified from that photo and replaces the mismatched retained white-and-blue poster in this review candidate. AbeBooks lists ISBN 9780888444158; University of Toronto Press Distribution lists that ISBN as the PIMS paperback. Both faces come from the same photographed physical copy.",
+      "page": "https://www.abebooks.co.uk/Being-Philosophers-Second-edition-Corrected-enlarged/32498880525/bd",
+      "source": "https://pictures.abebooks.com/inventory/32498880525.jpg",
+      "sourceSha256": "809c33a1f14c5dfa2202562645d535544f024e13c0e1a32b011b7157ac79141e",
+      "poster": "library/posters/being-and-some-philosophers.jpg",
+      "posterSha256": "2f3db3646dc69f39892f7d7922a4104618897ed24807fd092af23dc2a6be6cb3",
+      "crop": { "left": 0, "top": 0, "width": 46, "height": 1966 },
+      "rotation": 0,
+      "artwork": "gilson-pims-9780888444158-second-corrected-paperback-spine-809c33a1.webp",
+      "artworkSha256": "cf446a1213a2cdab29a66366a75146293f0af5e14bd7bfcd7ed74b876225a3e7",
+      "height": 320,
+      "perspective": {
+        "width": 46,
+        "height": 1966,
+        "points": [
+          { "source": [250, 404], "target": [0, 0] },
+          { "source": [326, 386], "target": [45, 0] },
+          { "source": [520, 2348], "target": [45, 1965] },
+          { "source": [475, 2358], "target": [0, 1965] }
+        ]
+      },
+      "lowPerspective": {
+        "width": 46,
+        "height": 1966,
+        "points": [
+          { "source": [250, 404], "target": [0, 0] },
+          { "source": [326, 386], "target": [45, 0] },
+          { "source": [520, 2348], "target": [45, 1965] },
+          { "source": [475, 2358], "target": [0, 1965] }
+        ]
+      },
+      "sampling": "independent",
+      "sourceKind": "AbeBooks actual-copy photograph, full printed paperback front and spine; original 1724 x 2566 image, listing ISBN 9780888444158.",
+      "detailArtwork": "gilson-pims-9780888444158-second-corrected-paperback-detail-badc15ef79870b70.webp",
+      "detailArtworkSha256": "badc15ef79870b70124810aec25d51e89599024e9e7c3cd1c89a6550755ea86e",
+      "detailWidth": 29,
       "detailHeight": 1280
     }
   ]

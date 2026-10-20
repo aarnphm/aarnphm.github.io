@@ -103,6 +103,42 @@ In a pane, the stage fills the height of the element that scrolls: containerEl o
 
 Covers are decoded once, in idle time, into 480 px thumbnails under `cache/covers/` with a sampled spine colour. The index is in `data.json`.
 
+## Film vault
+
+A second Bases view, `vault`, draws the query result as 35 mm film cans on edge in a steel archive rack: the garden's view for `cinematheque.base`. `src/vault-model.ts` is the only file that calls the garden's `quartz/util/base/vault/` modules. It gives resolved entries to `buildVault`, and so the rack, the can eras, the labels, the dividers and the card holders are the garden's. It replaces the scene's theme rules (`.theme-dark`) and grain base (`grain/vault/`, copies of `quartz/static/vault-grain/`), and removes the garden's card dialog.
+
+| key             | option type | default         | meaning                                                                   |
+| --------------- | ----------- | --------------- | ------------------------------------------------------------------------- |
+| `type`          | -           | `vault`         | view id                                                                   |
+| `image`         | property    | `note.posters`  | poster on the page panel                                                  |
+| `labelTitle`    | property    | `note.title`    | rim title                                                                 |
+| `labelDirector` | property    | `note.director` | `DIR.` surname on the label                                               |
+| `labelYear`     | property    | `note.year`     | year; it sets the can era with `eraCuts`                                  |
+| `labelRating`   | property    | `note.rating`   | number on the label; salmon dot from 8.5, sage from 7.5                   |
+| `labelStatus`   | property    | `note.status`   | `recurring` is camera tape, `finished` is a red `VIEWED` stamp            |
+| `labelStudio`   | property    | `note.studio`   | studio on a 2000 ft label when it fits                                    |
+| `labelWatched`  | property    | `note.watched`  | date of the `VIEWED` stamp                                                |
+| `labelRuntime`  | property    | `note.runtime`  | runtime and estimated reels on the page panel                             |
+| `rackMaterial`  | dropdown    | `rack-steel`    | `rack-steel` or `black-lacquer`                                           |
+| `bayWidth`      | slider      | `1200`          | shelf length in world units, 600 to 2400                                  |
+| `bayShelves`    | slider      | `5`             | shelves per bay, 1 to 8                                                   |
+| `dividers`      | slider      | `8`             | cans between dividers, 0 for none; a section change always gets one       |
+| `eraCuts`       | -           | `[1980, 2016]`  | set in the `.base` file: tin before the first year, hammertone, then poly |
+| `showTags`      | toggle      | `true`          | card holders with the section and its count                               |
+| `crank`         | toggle      | `true`          | end panel and handwheel                                                   |
+| `pageContent`   | toggle      | `true`          | render the note body in the page panel                                    |
+| `editorPane`    | toggle      | `true`          | as the bookcase's                                                         |
+
+Without `groupBy`, a divider and a card holder mark each decade. With `groupBy`, a group change does.
+
+The rack scrolls on both axes in a viewport that fills the pane. The first frame shows the top-left of the first bay at a scale where rim titles are about 9 px. Drag across the rack to pan. Drag a can along its pull, toward the aisle or back into the slot, and it follows; past halfway it stays out, and short of halfway it returns. A press that moves less than 4 px is a click. The zoom, zoom out, fit and full screen buttons are at the top right; `+`, `-` and `0` do the same with focus on the rack. A data change keeps the camera and the pick.
+
+- Nothing is picked when the view opens. A click on a can, or the arrow keys on the rack, pull the can out: it slides toward the aisle and its lid shows the embossed rings and a round label. The page panel (80/20, as the bookcase's) then shows the poster, the title, the garden's label line and record, the view's other `order` properties and, with `pageContent`, the note body.
+- With `editorPane`, a click or key pick in a wide main-area pane opens the note in an editor beside the view, as the bookcase does, and the page panel stays hidden.
+- A click on the pulled can, or `Enter`, opens the note (Mod: a new tab). A pointer that moves onto the pulled can opens its page preview, once per pull.
+- `Esc` and a click on the empty rack return the can and close the page panel.
+- The index is visually hidden, for screen readers; a live line reads the picked title and its place.
+
 ## Development
 
 ```sh
@@ -112,4 +148,4 @@ npm run build
 
 The scoped build checks TypeScript and emits the installed `main.js`. Generated bundles, dependencies, the cover cache and `data.json` are ignored. `npm run dev` starts an esbuild watcher, so inspect running processes before starting one.
 
-The walnut and birch-ply veneer tiles in `grain/` are copies of `quartz/static/bookcase-grain/`. The vault cannot reach the garden's `/static`. When the garden regenerates the tiles, copy them again.
+The walnut and birch-ply veneer tiles in `grain/` are copies of `quartz/static/bookcase-grain/`, and `grain/vault/` holds copies of `quartz/static/vault-grain/`. The vault cannot reach the garden's `/static`. When the garden regenerates the tiles, copy them again.

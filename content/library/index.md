@@ -15,13 +15,13 @@ pdfTitles:
   TAO/10.4159_9780674045385-010.pdf: 'Truth and Objectivity: Index'
 permalinks:
   - /books
+seealso:
+  - '[[antilibrary.base|base view]]'
 tags:
   - evergreen
   - meta
 title: bibliothèque
 ---
-
-see also: [[antilibrary.base|base view]]
 
 > In essence, an [antilibrary](https://nesslabs.com/antilibrary) is a collection of unread books. It represents an ode to self that reminds you about topics that one wants to explore.
 

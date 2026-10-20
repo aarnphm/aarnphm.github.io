@@ -52,8 +52,7 @@ views:
     spineAuthor: note.author
     bookHeight: 220
     shelfWidth: 600
-    shelfStyle: spine
-    shelfMaterial: copper
+    shelfStyle: zigzag
     topicShelves:
       philosophy:
         style: zigzag

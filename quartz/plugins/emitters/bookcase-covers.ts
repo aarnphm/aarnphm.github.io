@@ -173,7 +173,7 @@ export async function emitBookcaseCovers(
 ): Promise<FilePath[]> {
   const targets: { slug: FullSlug; node: Element; cover: string }[] = []
   for (const { slug, tree, view } of views) {
-    if (view.type !== 'bookcase' && view.type !== 'cards' && view.type !== 'kanban') continue
+    if (!['bookcase', 'vault', 'cards', 'kanban'].includes(view.type)) continue
     visit(tree, 'element', (node: Element) => {
       const cover = node.properties?.dataBookcaseCover
       if (typeof cover === 'string' && cover) targets.push({ slug, node, cover })

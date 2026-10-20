@@ -75,9 +75,13 @@ Wheel distance stays in screen pixels and preserves zoom and horizontal position
 without lifting books from the shelf. Hovering a book on the stage lifts its copy
 and reveals the matching sidebar entry without moving the camera. Scrolling the
 sidebar list interpolates selection continuously from the top visible entry to the
-bottom entry and follows it with the camera. A padded, clipped plane keeps SVG
-overflow within the camera's existing bounds; fit, zoom, drag and keyboard jumps
-write the same native scroll offsets. The world transform changes only with scale.
+bottom entry and follows it with the camera. The lifted copy waits until that
+scroll has been still, so a fast pass does not clone a book on every row. A padded,
+clipped plane keeps SVG overflow within the camera's existing bounds; fit, zoom,
+drag and keyboard jumps write the same native scroll offsets. A settled scale is
+stored in the world and scene size, so the scrolled layer matches the drawing.
+Pinch zoom and a scale glide use a temporary transform from the last baked size,
+then bake when the scale is still.
 Detailed spine upgrades wait during wheel input, drag and camera glides. Replay and
 limits live in `docs/verification/bookcase-shelf-scroll/README.md`.
 
