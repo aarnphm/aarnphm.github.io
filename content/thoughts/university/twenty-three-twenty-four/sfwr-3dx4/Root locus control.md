@@ -37,7 +37,15 @@ The loop below puts a gain $K$ in front of the plant $G(s)$ under unity negative
 
 ## improving transient response
 
-![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/transient-response-root-locus.webp]]
+```jsx imports={Zoomable,PoleResponse}
+<Zoomable label="root locus and design point">
+  <PoleResponse
+    mode="locus"
+    comp="none"
+    caption="Root locus of $KG(s)$ for the plant $G(s)=1/((s+1)(s+2)(s+10))$ of Nise, Example 9.1, under unity feedback. The black branches are computed by solving the characteristic polynomial for each gain; the salmon dots are the closed-loop poles at the current $K$. The grey ray is $\zeta=0.174$, and $A$ is where it crosses the locus: $K\approx164.5$, $s_0\approx-0.69\pm j3.93$, third pole near $-11.61$. Move the slider, or drag along a branch, to set $K$. The plot shows the closed-loop step response; the lighter curve is the response at $A$."
+  />
+</Zoomable>
+```
 
 A transient specification such as percent overshoot fixes the damping ratio $\zeta$, and a closed-loop pole pair with that damping lies on the ray from the origin at angle $\pi - \cos^{-1}\zeta$. Where this ray crosses the locus is the design point $s_0$.
 
@@ -61,12 +69,30 @@ Raising the [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/steady-stat
 
 _proportional-plus-integral (PI) controller_
 
-![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/ideal-integral-compensator.webp]]
+```jsx imports={Zoomable,PoleResponse}
+<Zoomable label="integrator added to the loop">
+  <PoleResponse
+    mode="locus"
+    comp="integrator"
+    compensators
+    caption="An integrator $K/s$ added to the plant $G(s)=1/((s+1)(s+2)(s+10))$ of Nise, Example 9.1, under unity feedback. The black branches are computed by solving the characteristic polynomial for each gain; the salmon dots are the closed-loop poles at the current $K$. Its pole at the origin makes the angle at $A$ equal to $-280^\circ$ instead of $-180^\circ$, so $A$ is off the new locus. The $\zeta=0.174$ crossing moves to $-0.16\pm j0.92$ at $K\approx23.8$, and at $K=164.5$ the loop is unstable. Switch the compensator, move the gain, or press the button to go to the $\zeta=0.174$ crossing; the lighter curve is the gain-only response at $A$."
+  />
+</Zoomable>
+```
 
 > [!important]
 > Add the integrator pole at $s = 0$ together with a zero at $s = -a$ close to the origin.
 
-![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/zero-add-compensator.webp]]
+```jsx imports={Zoomable,PoleResponse}
+<Zoomable label="PI compensator">
+  <PoleResponse
+    mode="locus"
+    comp="pi"
+    compensators
+    caption="The PI compensator $K(s+0.1)/s$ with the plant $G(s)=1/((s+1)(s+2)(s+10))$ of Nise, Example 9.1, under unity feedback. The black branches are computed by solving the characteristic polynomial for each gain; the salmon dots are the closed-loop poles at the current $K$. The zero at $-0.1$ nearly cancels the angle of the pole at the origin: the angle at $A$ is $-181.4^\circ$, and the $\zeta=0.174$ crossing moves only to $-0.68\pm j3.84$ at $K\approx158.1$. The step error goes to zero, and the extra closed-loop pole near $-0.09$ leaves a slow tail. Compare it with the lighter gain-only response."
+  />
+</Zoomable>
+```
 
 Seen from a distant $s_0$, the new pole and zero lie at nearly the same place, so their angles nearly cancel and their distances nearly cancel. The locus near the dominant poles barely moves, and the gain found above still roughly applies. The integrator still acts at $s = 0$, so the steady-state error to a step goes to zero. The closed loop gains one slow pole near $-a$. Its response term is small because the zero nearly cancels it, though it can leave a slow tail before the error fully settles.
 
@@ -86,7 +112,13 @@ where $K_p$ is the proportional gain and $K_i$ is the integral gain.
 >
 > The zero sits at $s = -K_i/K_p$, so a small ratio $K_i/K_p$ keeps it near the origin.
 
-![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/idea-integral-compensator-impl.webp]]
+```jsx imports={Zoomable,BlockDiagram}
+<Zoomable label="PI controller implementation">
+  <BlockDiagram config="pi-controller"
+    caption="A PI controller as parallel proportional and integral paths, after Figure 9.8 of Nise: the error drives $K_1$ and $K_2/s$, their outputs add before the plant $G(s)$, and unity feedback closes the loop. In the notation above, $K_1 = K_p$ and $K_2 = K_i$. Step through the reduction; salmon marks the parts the current rule acts on. The parallel rule gives $G_c(s) = K_1 + K_2/s = K_1(s + K_2/K_1)/s$, with its zero at $-K_2/K_1$ and its pole at the origin, and the feedback rule then closes the loop around $G_c(s)G(s)$."
+  />
+</Zoomable>
+```
 
 ### lag compensation
 

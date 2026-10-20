@@ -198,12 +198,57 @@ For each non-trivial $X \to A$, either $X$ determines the whole relation or $A$ 
 
 In the book example below, assume `BookID` is the only candidate key and $\text{AuthorID} \to \text{AuthorName}$. The dependency $\text{BookID} \to \text{AuthorID} \to \text{AuthorName}$ is transitive. The illustrated split removes a 3NF violation.
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/second-normal-form.webp|3NF decomposition of the author-name dependency]]
+3NF decomposition of the author-name dependency. Before:
+
+| BookID | Name                | AuthorID | AuthorName   | Inventory |
+| ------ | ------------------- | -------- | ------------ | --------- |
+| 100    | Pride and Prejudice | 1        | Jane Austen  | 12        |
+| 101    | The Shining         | 2        | Stephen King | 10        |
+| 102    | Emma                | 1        | Jane Austen  | 5         |
+
+After:
+
+| BookID | Name                | AuthorID | Inventory |
+| ------ | ------------------- | -------- | --------- |
+| 100    | Pride and Prejudice | 1        | 12        |
+| 101    | The Shining         | 2        | 10        |
+| 102    | Emma                | 1        | 5         |
+
+| AuthorID | AuthorName   |
+| -------- | ------------ |
+| 1        | Jane Austen  |
+| 2        | Stephen King |
 
 A violation: $\text{studio} \to \text{studioAddr}$ in a movie relation where `studio` is not a superkey and `studioAddr` is non-prime. Every movie from the same studio repeats its address.
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/three-normal-form.webp|Three normal form counter example]]
-![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/three-normal-form-decomposition.webp]]
+Three normal form counter example:
+
+| Title         | Year | Studio    | StudioAddr  |
+| ------------- | ---- | --------- | ----------- |
+| Star Wars     | 1977 | Lucasfilm | 1 Lucas Way |
+| Patriot Games | 1992 | Paramount | Cloud 9     |
+| Last Crusade  | 1989 | Lucasfilm | 1 Lucas Way |
+
+3rd Normal Form (3NF). Before:
+
+| EmpID | Department  | Salary | DepBuilding |
+| ----- | ----------- | ------ | ----------- |
+| 104   | Engineering | 89k    | Ventura     |
+| 278   | Sales       | 95k    | Jupiter     |
+| 112   | Engineering | 112k   | Ventura     |
+
+After:
+
+| EmpID | Department  | Salary |
+| ----- | ----------- | ------ |
+| 104   | Engineering | 89k    |
+| 278   | Sales       | 95k    |
+| 112   | Engineering | 112k   |
+
+| Department  | DepBuilding |
+| ----------- | ----------- |
+| Engineering | Ventura     |
+| Sales       | Jupiter     |
 
 > [!theorem]
 >

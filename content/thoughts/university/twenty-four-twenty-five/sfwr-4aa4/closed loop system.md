@@ -61,7 +61,13 @@ Thus $G(z)=1+(1-a)/(z-a)$, agreeing with the result above. A unit step gives $c[
 
 ## block diagram reduction
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/closed-loop-z-block-diagram-reduction.webp]]
+```jsx imports={Zoomable,BlockDiagram}
+<Zoomable label="Pulse transfer functions of blocks in cascade">
+  <BlockDiagram config="sampler-cascade"
+    caption="Two blocks in cascade, (a) with a sampler between them and (b) without. Step through the rules; salmon marks the sampler and blocks the current rule acts on, sage the parts already reduced. With the sampler, the result is $G_2(z)G_1(z)$; without it, $\mathcal{P}_T\{G_1(s)G_2(s)\}$."
+  />
+</Zoomable>
+```
 
 a. The intermediate sampler turns the first block's output into the sequence driving the second:
 
@@ -88,7 +94,13 @@ $$
 C(z) = G(z)D(z)E(z)
 $$
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/model-open-loop-system.webp]]
+```jsx imports={Zoomable,BlockDiagram}
+<Zoomable label="Open-loop sampled-data model">
+  <BlockDiagram config="open-loop"
+    caption="Digital controller $D(z)$, zero-order hold and plant $G_p(s)$. Step through the reduction; salmon marks the parts the current rule acts on, sage the parts already reduced. The hold and plant combine into $G(s)$ before sampling, and the result is $C(z) = G(z)D(z)E(z)$."
+  />
+</Zoomable>
+```
 
 ## closed loop sample data system
 
@@ -109,13 +121,25 @@ $$
 =\frac{G(z)}{1+\mathcal{P}_T\{G(s)H(s)\}}.
 $$
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/closed-loop-sampled-data-system.webp]]
+```jsx imports={Zoomable,BlockDiagram}
+<Zoomable label="Closed loop with a sampled error">
+  <BlockDiagram config="sampled-feedback"
+    caption="Closed loop with one sampler after the junction. Step through the reduction; salmon marks the parts the current rule acts on, sage the parts already reduced. $G(s)$ and $H(s)$ share one continuous path, so the loop gain is $\mathcal{P}_T\{G(s)H(s)\}$."
+  />
+</Zoomable>
+```
 
 The denominator contains the combined continuous feedback path. There is no sampler between $G(s)$ and $H(s)$ to justify multiplying their separate pulse transfer functions. This is the configuration in [Gajić, section 2.5.2](https://eceweb1.rutgers.edu/~gajic/psfiles/chap2.pdf#page=40).
 
 ### using digital sensing device
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/closed-loop-tf-sensing-device.webp]]
+```jsx imports={Zoomable,BlockDiagram}
+<Zoomable label="Closed loop with a sampled feedback branch">
+  <BlockDiagram config="sensing-device"
+    caption="Closed loop with the sampler in the feedback branch, before $H(s)$. Step through the reduction; salmon marks the parts the current rule acts on, sage the parts already reduced. The reference stays inside $\mathcal{P}_T\{G(s)R(s)\}$, so the last step gives $C(z)$ but no ratio $C(z)/R(z)$."
+  />
+</Zoomable>
+```
 
 Here only the feedback branch is sampled, before $H(s)$. The reference still drives $G(s)$ continuously:
 
@@ -134,7 +158,13 @@ The numerator depends on the continuous reference between samples. Without speci
 
 ### using digital controller
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/closed-loop-tf-digital-controller.webp]]
+```jsx imports={Zoomable,BlockDiagram}
+<Zoomable label="Closed loop with two synchronized samplers">
+  <BlockDiagram config="digital-controller"
+    caption="Closed loop with synchronized samplers before $G_1(s)$ and $G_2(s)$. Step through the reduction; salmon marks the parts the current rule acts on, sage the parts already reduced. Each segment between samplers gives one pulse transfer function, and $G_2(s)H(s)$ is sampled as one path."
+  />
+</Zoomable>
+```
 
 The drawing labels the block between the two samplers $G_1(s)$; its sampled input-output equivalent is $G_1(z)$. A software controller can supply this same discrete relation. With both samplers synchronized,
 

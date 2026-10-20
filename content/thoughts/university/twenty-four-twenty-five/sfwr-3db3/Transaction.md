@@ -77,7 +77,14 @@ See the [Berkeley transaction notes](https://cs186berkeley.net/notes/note11/) fo
 
 ## Schedule
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/venn-schedule.webp|Venn diagram for schedule]]
+```jsx imports={Zoomable,ScheduleClassifier}
+<Zoomable label="schedule classifier">
+  <ScheduleClassifier
+    preset="serialisable"
+    caption="Venn diagram for schedule, redrawn from the slide: recoverable contains ACA, which contains strict, which contains serial, and the conflict-serialisable band crosses all four. Pick a schedule. The timeline lists each operation in its transaction's column, the precedence graph draws one edge per conflicting order, and the salmon region is where the classifier places the schedule. Sage cells mark the operations that keep the schedule out of the next inner class. Three schedules come from the slide tables and one from the lost-update example below; the others fill the remaining regions. The slide tables omit commits, so commits are added. The graph includes aborted transactions."
+  />
+</Zoomable>
+```
 
 > [!abstract] definition
 >
@@ -89,15 +96,31 @@ A serial schedule runs each transaction to completion before starting the next. 
 
 ### serial
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/serial-transaction.webp]]
+```jsx imports={Zoomable,ScheduleClassifier}
+<Zoomable label="serial schedule">
+  <ScheduleClassifier
+    preset="serial"
+    view="single"
+    caption="The serial slide table: $T_1$ runs to completion, then $T_2$. The slide writes updates as assignments ($A := A + 100$, $A := A \cdot 2$); here they are the writes $W_i$, and each transaction commits as it finishes. The salmon region is serial."
+  />
+</Zoomable>
+```
 
 > [!note] serialisable schedule
 >
-> ![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/serialisable-transaction.webp|An interleaved schedule with the same read/write order on each item as T1 followed by T2.]]
->
-> The image uses assignments as shorthand for updates. Making the writes explicit:
+> The source slide uses assignments as shorthand for updates. Making the writes explicit:
 >
 > $S:R_1(A),W_1(A),R_2(A),W_2(A),R_1(B),W_1(B),R_2(B),W_2(B)$
+
+```jsx imports={Zoomable,ScheduleClassifier}
+<Zoomable label="serialisable schedule">
+  <ScheduleClassifier
+    preset="serialisable"
+    view="single"
+    caption="An interleaved schedule with the same read/write order on each item as $T_1$ followed by $T_2$, from the serialisable slide table with commits added at the end. Both conflict edges point from $T_1$ to $T_2$. The sage cells mark the dirty read $R_2(A)$ of $W_1(A)$, so the salmon region is recoverable but not ACA."
+  />
+</Zoomable>
+```
 
 All conflicts place $T_1$ before $T_2$, so this read/write schedule is conflict serialisable. Commit and abort handling still need checking.
 
@@ -130,7 +153,15 @@ Conflict serialisability implies serialisability. Its graph test can reject some
 
 ### schedule with abort
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/unrecoverable-transaction.webp|T2 commits after reading T1's uncommitted write; T1 then aborts.]]
+```jsx imports={Zoomable,ScheduleClassifier}
+<Zoomable label="unrecoverable schedule">
+  <ScheduleClassifier
+    preset="unrecoverable"
+    view="single"
+    caption="$T_2$ commits after reading $T_1$'s uncommitted write; $T_1$ then aborts. From the abort slide table. The sage cells mark $W_1(A)$, $R_2(A)$, $C_2$ and $A_1$. The precedence graph is acyclic, so the salmon region is conflict serialisable but outside recoverable."
+  />
+</Zoomable>
+```
 
 The failure is the dependency $W_1(A),R_2(A),C_2,A_1$. Once $T_2$ commits, the database cannot retract its result as an ordinary abort. If $T_2$ is still active when $T_1$ aborts, it must also abort. Other transactions that read its writes may have to follow.
 

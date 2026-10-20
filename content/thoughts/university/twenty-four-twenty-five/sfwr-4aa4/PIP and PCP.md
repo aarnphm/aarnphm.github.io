@@ -14,7 +14,15 @@ Assume one CPU, preemptive scheduling, fixed base priorities, and mutex-protecte
 
 A high-priority task waiting for a lock needs its owner to run. Otherwise, unrelated medium-priority work can keep preempting the owner and delaying the waiting task. PIP raises the owner's priority when contention occurs.
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/PIP.webp]]
+```jsx imports={Zoomable,PriorityProtocolTimeline}
+<Zoomable label="priority inheritance timeline">
+  <PriorityProtocolTimeline
+    preset="pip"
+    protocol="pip"
+    caption="Priority inheritance on the PIP slide's task set: $T_1$ (priority 1, highest) to $T_4$ (priority 4), with $T_1$ and $T_4$ sharing one resource $S$. Release times and segments are read from the PIP slide figure. The slide does not show when $T_2$ and $T_3$ arrive; they are assumed released at $t=9$ and $t=10$. Each bar shows its effective priority. Sage marks a held resource, salmon a run at an inherited priority, and a hollow bar a wait for a lock; $+S$ and $-S$ mark lock and unlock. Switch the protocol: with none, $T_2$ and $T_3$ preempt $T_4$ inside its critical section, and $T_1$ waits 10 units instead of 4."
+  />
+</Zoomable>
+```
 
 Keep two priorities separate: a task's assigned **base priority** and its **effective priority** while inheriting from blocked tasks.
 
@@ -45,7 +53,15 @@ If no other task holds a resource, the ceiling check passes. Excluding $T$'s own
 
 For example, $T_L$ holds $R_A$, whose ceiling equals the base priority of $T_M$. Suppose $T_M$ has inherited no higher priority. If it requests another free lock, the strict check fails: its effective priority equals the system ceiling. $T_L$ inherits $T_M$'s priority and can release $R_A$ before a circular wait forms. [Original protocol, §IV](https://www.cse.iitb.ac.in/~cs431/papers/pi-pcp.pdf)
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/PCP.webp]]
+```jsx imports={Zoomable,PriorityProtocolTimeline}
+<Zoomable label="priority ceiling timeline">
+  <PriorityProtocolTimeline
+    preset="pcp"
+    protocol="pcp"
+    caption="PCP on the PCP slide's task set: $C$ (H) locks $S_1$, $B$ (M) nests $S_3$ inside $S_2$, and $A$ (L) nests $S_2$ inside $S_3$; ceilings $S_1=\mathrm{H}$, $S_2=S_3=\mathrm{M}$. The slide has no time axis, so durations are read from its bar lengths in whole units. At $t=6$ the ceiling of $S_3$ blocks $B$ although $S_2$ is free; $A$ inherits M and $B$ meets one critical section. Select PIP or none to see $A$ and $B$ deadlock at $t=20$. Sage marks a held resource, salmon a run at an inherited priority, and a hollow bar a wait. The chained task set is synthetic."
+  />
+</Zoomable>
+```
 
 Under the stated model, with all shared resources following PCP and their users known in advance, PCP prevents lock deadlock. Each job's lower-priority blocking is bounded by the longest lower-priority critical section whose resource ceiling reaches that job's base priority. Higher-priority preemption still contributes to response time, so meeting deadlines requires schedulability analysis. [Real-time scheduling text, §4.6](https://www.es.mdu.se/pdf_publications/166.pdf)
 

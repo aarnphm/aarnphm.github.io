@@ -70,7 +70,31 @@ $$
 
 The product pairs every tuple of $R_1$ with every tuple of $R_2$. Rename overlapping attribute names so each output column is unambiguous. Its size is $|R_1||R_2|$, counting occurrences for bags.
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/products-relalg.webp]]
+$R_1$:
+
+| A   | B   |
+| --- | --- |
+| 1   | 2   |
+| 3   | 4   |
+
+$R_2$:
+
+| B   | C   |
+| --- | --- |
+| 5   | 6   |
+| 7   | 8   |
+| 9   | 10  |
+
+$R_3 = R_1 \times R_2$:
+
+| A   | R1.B | R2.B | C   |
+| --- | ---- | ---- | --- |
+| 1   | 2    | 5    | 6   |
+| 1   | 2    | 7    | 8   |
+| 1   | 2    | 9    | 10  |
+| 3   | 4    | 5    | 6   |
+| 3   | 4    | 7    | 8   |
+| 3   | 4    | 9    | 10  |
 
 ## theta-join
 
@@ -97,7 +121,34 @@ $$
 
 If the schemas share no attribute names, natural join is the Cartesian product. With bags, each matching pair contributes the product of its input multiplicities; merging the shared columns does not deduplicate the result. See [relational operations on bags](https://csci3030u.science.ontariotechu.ca/chapter_5/chapter_5_section_1.html).
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/natural-join.webp]]
+Sells:
+
+| bar   | beer   | price |
+| ----- | ------ | ----- |
+| Joe’s | Bud    | 2.50  |
+| Joe’s | Miller | 2.75  |
+| Sue’s | Bud    | 2.50  |
+| Sue’s | Coors  | 3.00  |
+
+Bars:
+
+| bar   | addr      |
+| ----- | --------- |
+| Joe’s | Maple St. |
+| Sue’s | River Rd. |
+
+$\text{BarInfo} \coloneqq \text{Sells} \bowtie \text{Bars}$
+
+Note: Bars.name has become Bars.bar to make the natural join non-trivial.
+
+BarInfo:
+
+| bar   | beer   | price | addr      |
+| ----- | ------ | ----- | --------- |
+| Joe’s | Bud    | 2.50  | Maple St. |
+| Joe’s | Miller | 2.75  | Maple St. |
+| Sue’s | Bud    | 2.50  | River Rd. |
+| Sue’s | Coors  | 3.00  | River Rd. |
 
 ## renaming
 
@@ -146,7 +197,13 @@ Use parentheses or intermediate assignments when mixing operators; notation conv
 
 ### expression tree
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/expression-tree-relalg.webp]]
+```jsx imports={Zoomable,RelAlgTree}
+<Zoomable label="Relational algebra expression tree">
+  <RelAlgTree
+    caption="The expression tree for the names of the bars that are on Maple St. or sell Bud for less than 3 dollars, after the course slide, evaluated over the Sells and Bars tables above with set semantics. The query uses the original schema Bars(name, addr), so the Bars rows keep their values and the column bar is read as name. Select a node: salmon marks it, sage marks the subtree that computes it, and the panel shows its inputs and the relation it produces. In a selection, the sage rows are the tuples that pass every test. Rename turns bar into name so the two union inputs are compatible, and Joe’s, found by both branches, appears once in the result."
+  />
+</Zoomable>
+```
 
 ## extended algebra
 

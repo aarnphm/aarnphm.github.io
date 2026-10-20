@@ -1,0 +1,364 @@
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
+@use './figure.scss' as *;
+
+.graph-traversal {
+  @include figure-frame('gtr-figure', 40rem);
+
+  --gtr-current: var(--fig-salmon);
+  --gtr-done: color-mix(in srgb, var(--fig-sage) 90%, var(--light));
+  --gtr-segment-on: var(--fig-grid-selected);
+}
+
+:root[saved-theme='dark'] .graph-traversal {
+  --gtr-current: color-mix(in srgb, var(--fig-salmon) 46%, var(--lightgray));
+  --gtr-done: color-mix(in srgb, var(--fig-sage) 26%, var(--lightgray));
+  --gtr-segment-on: color-mix(in srgb, var(--fig-sage) 22%, var(--lightgray));
+}
+
+.gtr-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.25rem;
+  align-items: flex-end;
+}
+
+.gtr-segments {
+  @include figure-grid;
+  grid-auto-flow: column;
+  min-width: 0;
+  position: relative;
+  margin-top: 1.1rem;
+}
+
+.gtr-legend {
+  position: absolute;
+  top: -1.15rem;
+  left: 0;
+  padding: 0;
+  color: var(--fig-note);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.gtr-segment {
+  @include figure-grid-cell;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.28rem 0.5rem;
+  color: var(--fig-tab-fg);
+  cursor: pointer;
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  transition:
+    background-color 140ms ease,
+    color 140ms ease;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    pointer-events: none;
+  }
+
+  &:has(input:checked) {
+    background: var(--gtr-segment-on);
+    color: var(--dark);
+  }
+
+  &:has(input:focus-visible) {
+    outline: 2px solid var(--dark);
+    outline-offset: -2px;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .gtr-segment:hover {
+    color: var(--dark);
+  }
+}
+
+.gtr-rule {
+  display: none;
+  margin: 0.75rem 0 0;
+  color: var(--fig-note);
+  font-size: 0.78rem;
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+.graph-traversal[data-gtr-mode='dfs'] [data-gtr-rule='dfs'],
+.graph-traversal[data-gtr-mode='bfs'] [data-gtr-rule='bfs'] {
+  display: block;
+}
+
+.gtr-svg {
+  display: block;
+  width: 100%;
+  max-width: 32rem;
+  margin: 0.9rem auto 0;
+  overflow: visible;
+
+  .gtr-edge {
+    stroke: var(--fig-stroke-soft);
+    stroke-width: 1.6;
+    transition:
+      stroke 160ms ease,
+      stroke-width 160ms ease;
+  }
+
+  .gtr-edge[data-state='s'] {
+    stroke: var(--fig-stroke);
+  }
+
+  .gtr-edge[data-state='t'] {
+    stroke: var(--dark);
+    stroke-width: 2.4;
+  }
+
+  .gtr-edge[data-state='c'] {
+    stroke: var(--fig-salmon);
+    stroke-width: 5;
+  }
+
+  .gtr-node rect {
+    fill: var(--light);
+    stroke: var(--fig-stroke);
+    stroke-width: 1;
+    transition:
+      fill 160ms ease,
+      stroke 160ms ease;
+  }
+
+  .gtr-node text {
+    fill: var(--fig-note);
+    font-family: var(--codeFont);
+    font-size: 10px;
+  }
+
+  .gtr-node[data-state='o'] rect {
+    stroke: var(--dark);
+    stroke-width: 1.8;
+  }
+
+  .gtr-node[data-state='f'] rect {
+    fill: var(--gtr-done);
+    stroke: var(--fig-stroke);
+  }
+
+  .gtr-node[data-state='c'] rect {
+    fill: var(--gtr-current);
+    stroke: var(--dark);
+    stroke-width: 1.8;
+  }
+
+  .gtr-node:not([data-state='u']) text {
+    fill: var(--dark);
+  }
+}
+
+.gtr-stepper {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.9rem;
+}
+
+.gtr-button {
+  flex: none;
+  min-height: 1.5rem;
+  padding: 0.2rem 0.55rem;
+  border: 1px solid var(--darkgray);
+  border-radius: var(--radius-none);
+  background: var(--light);
+  color: var(--dark);
+  cursor: pointer;
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  line-height: 1.2;
+  transition: background-color 120ms ease;
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .gtr-button:hover {
+    background: var(--fig-tab-surface);
+  }
+}
+
+.gtr-range {
+  flex: 1 1 auto;
+  min-width: 0;
+  @include stableRangeControl;
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
+}
+
+.gtr-say {
+  display: flex;
+  gap: 0.6rem;
+  align-items: baseline;
+  min-height: 2.3em;
+  margin: 0.6rem 0 0;
+  color: var(--dark);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.gtr-count {
+  flex: none;
+  min-width: 3.4rem;
+  color: var(--fig-note);
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.gtr-store {
+  margin-top: 0.6rem;
+}
+
+.gtr-store-label {
+  display: none;
+  margin-bottom: 0.3rem;
+  color: var(--fig-note);
+  font-size: 0.72rem;
+}
+
+.graph-traversal[data-gtr-mode='dfs'] [data-gtr-store-label='dfs'],
+.graph-traversal[data-gtr-mode='bfs'] [data-gtr-store-label='bfs'] {
+  display: block;
+}
+
+.gtr-store-cells {
+  @include figure-grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  list-style: none;
+}
+
+.gtr-store-cell {
+  @include figure-grid-cell;
+  min-height: 1.6rem;
+  padding: 0.25rem 0;
+  color: var(--dark);
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  line-height: 1.6rem;
+  text-align: center;
+  transition: background-color 140ms ease;
+
+  &[data-filled] {
+    background: var(--fig-grid-selected);
+  }
+
+  // The newest entry is the stack top or the queue back.
+  &[data-filled]:has(+ :not([data-filled])),
+  &[data-filled]:last-child {
+    font-weight: 600;
+  }
+}
+
+.gtr-table {
+  width: 100%;
+  margin-top: 0.75rem;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+
+  th,
+  td {
+    padding: 0.3rem 0;
+    border: 1px solid var(--fig-grid-line);
+    background: var(--fig-grid-cell);
+    color: var(--dark);
+    text-align: center;
+    font-weight: 400;
+  }
+
+  th[scope='col']:first-child,
+  th[scope='row'] {
+    width: 4.2rem;
+    padding: 0.3rem 0.45rem;
+    color: var(--fig-note);
+    text-align: left;
+  }
+
+  thead th {
+    color: var(--fig-note);
+  }
+}
+
+.gtr-readout {
+  @include figure-table;
+  margin-top: 0.75rem;
+}
+
+.gtr-math {
+  @include figure-inline-math;
+}
+
+.gtr-caption {
+  @include figure-caption;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gtr-svg .gtr-edge,
+  .gtr-svg .gtr-node rect,
+  .gtr-segment,
+  .gtr-store-cell,
+  .gtr-button {
+    transition: none;
+  }
+}
+
+@container gtr-figure (max-width: 480px) {
+  .gtr-stepper {
+    flex-wrap: wrap;
+  }
+
+  .gtr-range {
+    flex-basis: 100%;
+    order: 1;
+  }
+
+  .gtr-segments--start {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .gtr-segment {
+    padding: 0.28rem 0.3rem;
+  }
+
+  .gtr-table {
+    font-size: 0.64rem;
+
+    th[scope='col']:first-child,
+    th[scope='row'] {
+      width: 3rem;
+      padding: 0.3rem 0.25rem;
+    }
+  }
+
+  .gtr-store-cell {
+    font-size: 0.64rem;
+  }
+
+  .gtr-button {
+    padding: 0.2rem 0.35rem;
+  }
+}

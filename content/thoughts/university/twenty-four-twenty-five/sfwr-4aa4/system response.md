@@ -65,7 +65,15 @@ Taking the inverse Laplace transform gives $y(t)=1-e^{-at}$ for $t\geq0$. The re
 
 These definitions follow the [Michigan CTMS first-order analysis](https://ctms.engin.umich.edu/CTMS/?example=Introduction&section=SystemAnalysis).
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/time-response-freq-domain.webp]]
+```jsx imports={Zoomable,PoleResponse}
+<Zoomable label="first-order step response">
+  <PoleResponse
+    mode="first"
+    a={1}
+    caption="First-order step response of $G(s)=a/(s+a)$, starting at $a=1$. Drag the salmon pole along the real axis, or focus it and use the left and right arrow keys. The response reaches $1-e^{-1}\approx0.632$ at $t=\tau=1/a$, where the line from the origin with the initial slope $a$ meets the final value. The shaded strip is the 10% to 90% rise interval $T_r=\ln9/a$, and $T_s$ marks the exact 2% settling time $-\ln(0.02)/a$, which the $4/a$ rule rounds. A pole in the right half-plane makes the response diverge."
+  />
+</Zoomable>
+```
 
 ## second-order systems
 
@@ -91,7 +99,16 @@ $$
 
 A nonzero natural response oscillates indefinitely, as shown below. The unit-step response is $c(t)=1-\cos(\omega_n t)$, so it has no final value or finite settling time.
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/undamped-natural-freq.webp]]
+```jsx imports={Zoomable,PoleResponse}
+<Zoomable label="undamped second-order response">
+  <PoleResponse
+    re={0}
+    im={3.14159}
+    lock="sigma"
+    caption="Undamped pair $\pm j\omega_n$, starting at $\omega_n=\pi$. The real part is held at $0$, so drag the salmon pole up or down the imaginary axis, or use the up and down arrow keys, to change $\omega_n$. The plot shows the unit-step response $c(t)=1-\cos(\omega_nt)$: the natural oscillation shifted up by the final value. It swings between $0$ and $2$ for ever, so $T_p=\pi/\omega_n$ exists, the overshoot is 100%, and there is no settling time. The sage poles and the lighter curve keep the starting pair for comparison."
+  />
+</Zoomable>
+```
 
 ### damping coefficient
 
@@ -127,7 +144,16 @@ The homogeneous equation is $\ddot c+a\dot c+bc=0$. Its two initial conditions d
 
 The diagram locates these pole types in the complex plane. The undamped case lies on the imaginary axis; poles with positive real parts produce growing natural responses.
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/sec-order-impulse-response.webp]]
+```jsx imports={Zoomable,PoleResponse}
+<Zoomable label="second-order pole regions">
+  <PoleResponse
+    preset="underdamped"
+    cases
+    regions
+    caption="Pole regions of $G(s)=\omega_n^2/(s^2+2\zeta\omega_ns+\omega_n^2)$. Pick a case to load a course example with $\omega_n=3$ ($a=9$, $6$, $2$ and $0$, and $a=-1$ for the unstable pair), or drag the salmon pole. Off the real axis in the sage left half-plane the pair is underdamped. On the negative real axis it splits into two real poles: overdamped, or critically damped where they meet. On the imaginary axis it is undamped, and in the grey right half-plane the response grows. Arrow keys move the focused pole; the up arrow lifts a double pole off the axis."
+  />
+</Zoomable>
+```
 
 ### underdamped second-order step response
 
@@ -149,7 +175,14 @@ $$
 
 The phase has a minus sign. Check it against the initial conditions: $c(0)=0$ and $\dot c(0)=0$. A plus sign would give a nonzero initial slope. This agrees with [Hallauer's step-response derivation](<https://eng.libretexts.org/Bookshelves/Electrical_Engineering/Signal_Processing_and_Modeling/Introduction_to_Linear_Time-Invariant_Dynamic_Systems_for_Students_of_Engineering_(Hallauer)/09%3A_Damped_Second_Order_Systems/9.06%3A_Step_Response_of_Underdamped_Second_Order_Systems>).
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/peak-graph-time-response.webp]]
+```jsx imports={Zoomable,PoleResponse}
+<Zoomable label="underdamped step-response specifications">
+  <PoleResponse
+    preset="underdamped"
+    caption="Step-response specifications for the course example $-1\pm j\sqrt8$ ($\omega_n=3$, $\zeta=1/3$). The shaded strip spans the 10% to 90% rise time $T_r$. The dot at $T_p=\pi/\omega_d$ is the first peak, $c_{\max}=1+e^{-\zeta\pi/\sqrt{1-\zeta^2}}$, and $T_s$ marks the last exit from the grey 2% band, measured on the curve; the readout also gives the $4/\sigma_d$ rule. Drag the salmon pole, or use the arrow keys, to move each value."
+  />
+</Zoomable>
+```
 
 ### peak time $T_p$
 
@@ -195,13 +228,22 @@ $$
 
 The envelope time $T_{s,\mathrm{env}}$ is an upper bound for the actual $2\%$ settling time when $0<\zeta<1$. The last band crossing can occur earlier. Keeping only the exponential decay gives the approximation $4/\sigma_d$, which loses accuracy near critical damping. See [Mahajan's step-response analysis](https://adityam.github.io/linear-systems/step-response.html#features-of-time-response-in-terms-of-location-of-poles) for the pole geometry.
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/relations-to-poles.webp|poles of second-order underdamped system]]
+```jsx imports={Zoomable,PoleResponse}
+<Zoomable label="poles of second-order underdamped system">
+  <PoleResponse
+    re={-1}
+    im={3}
+    locks
+    caption="Poles of a second-order underdamped system, starting at $-1\pm j3$. The radius is $\omega_n$, $\cos\theta=\zeta$, the real part is $-\sigma_d=-\zeta\omega_n$ and the imaginary part is $\omega_d=\omega_n\sqrt{1-\zeta^2}$. Choose what to hold fixed, then drag the salmon pole: same envelope keeps it on a vertical line ($\sigma_d$ fixed), same frequency on a horizontal line ($\omega_d$ fixed), and same overshoot on a ray from the origin ($\zeta$ fixed). The sage poles and the lighter curve keep the pair as it was when you chose the constraint."
+  />
+</Zoomable>
+```
 
 | location of poles | pole motion                                                                    | examples                                                                                 |
 | ----------------- | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
-| Same envelope     | ![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/same-envelope.webp]]  | [[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/system response#same envelope]]  |
-| Same frequency    | ![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/same-frequency.webp]] | [[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/system response#same frequency]] |
-| Same overshoot    | ![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/same-overshoot.webp]] | [[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/system response#same overshoot]] |
+| Same envelope     | vertical line: $\sigma_d$ fixed, $\omega_d$ changes  | [[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/system response#same envelope]]  |
+| Same frequency    | horizontal line: $\omega_d$ fixed, $\sigma_d$ changes | [[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/system response#same frequency]] |
+| Same overshoot    | ray from the origin: $\zeta$ fixed, $\omega_n$ changes | [[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/system response#same overshoot]] |
 
 #### same envelope
 
