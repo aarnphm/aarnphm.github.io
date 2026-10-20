@@ -3,6 +3,7 @@ import { styleText } from 'node:util'
 import { GlobalConfiguration } from '../../cfg'
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import { FullSlug, joinSegments, QUARTZ } from '../../util/path'
+import { isSearchExcluded } from '../../util/search-exclude'
 import { write } from './helpers'
 
 const DEFAULT_MODEL_ID = 'onnx-community/Qwen3-Embedding-0.6B-ONNX'
@@ -135,6 +136,7 @@ export const SemanticIndex: QuartzEmitterPlugin<
         // `semantic: false`: video transcripts stay out of the embeddings (+35% words otherwise)
         if (file.data.flashcards || file.data.frontmatter?.semantic === false) continue
         const slug = file.data.slug!
+        if (isSearchExcluded(slug)) continue
         const title = file.data.frontmatter?.title ?? slug
         const text = file.data.text
         if (!text) continue

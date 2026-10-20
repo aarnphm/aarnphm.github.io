@@ -291,6 +291,11 @@ ul#helper {
 
       .input-container {
         border-bottom: 1px solid var(--lightgray);
+
+        & > .semantic-search-progress {
+          top: calc(100% + 1px);
+          bottom: auto;
+        }
       }
 
       & > output {

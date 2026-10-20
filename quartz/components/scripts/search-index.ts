@@ -1,5 +1,6 @@
 import FlexSearch, { DocumentData } from 'flexsearch'
 import { FullSlug, FilePath } from '../../util/path'
+import { isSearchExcluded } from '../../util/search-exclude'
 import { encode, pathSearchText } from '../../util/search-text'
 
 export interface SearchItem extends DocumentData {
@@ -67,6 +68,7 @@ async function addDocuments(data: ContentIndex): Promise<void> {
   const promises = []
 
   for (const [slug, fileData] of Object.entries(data)) {
+    if (isSearchExcluded(slug) || isSearchExcluded(fileData.fileName)) continue
     const item: SearchItem = {
       id,
       slug: slug as FullSlug,

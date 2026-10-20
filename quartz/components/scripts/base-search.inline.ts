@@ -1,3 +1,4 @@
+import { isSearchModeToggle, isSearchToggle } from '../../util/search-shortcuts'
 import { isRecord } from '../../util/type-guards'
 import { isSemanticCancellation, SemanticClient } from './semantic.inline'
 
@@ -411,6 +412,7 @@ function setupBaseSearch(): (() => void) | undefined {
 
   const setMode = (next: SearchMode) => {
     if (next === mode) return
+    clearTimeout(debounce)
     mode = next
     storeMode(next)
     updateModeUI()
@@ -429,35 +431,45 @@ function setupBaseSearch(): (() => void) | undefined {
     }
   }
 
+  let previousFocus: HTMLElement | null = null
+  const closeSearch = () => {
+    const focused = document.activeElement
+    if (focused instanceof HTMLElement && bar.contains(focused)) focused.blur()
+    if (previousFocus?.isConnected && !bar.contains(previousFocus)) {
+      previousFocus.focus({ preventScroll: true })
+    }
+    previousFocus = null
+  }
+
   const handleKeydown = (e: KeyboardEvent) => {
-    if (e.defaultPrevented) return
-    const activeElement = document.activeElement
-    const isTypingInInput =
-      activeElement instanceof HTMLInputElement ||
-      activeElement instanceof HTMLTextAreaElement ||
-      activeElement?.getAttribute('contenteditable') === 'true'
+    if (e.defaultPrevented || e.isComposing) return
+    if (document.querySelector('.search-container.active, #palette-container.active')) return
+    if (!bar.checkVisibility({ visibilityProperty: true })) return
+    const focused = document.activeElement
+    const withinSearch = focused !== null && bar.contains(focused)
 
-    const searchContainers = document.querySelectorAll<HTMLElement>('.search-container')
-    const globalSearchOpen = Array.from(searchContainers).some(el =>
-      el.classList.contains('active'),
-    )
-
-    if (e.key === 'k' && (e.metaKey || e.ctrlKey) && !e.shiftKey) {
-      if (globalSearchOpen || isTypingInInput) {
-        return
-      }
+    if (isSearchToggle(e)) {
       e.preventDefault()
-      searchInput.focus()
-      searchInput.select()
-    } else if (e.key === 'Escape') {
-      if (document.activeElement === searchInput) {
-        searchInput.blur()
+      if (e.repeat) return
+      if (withinSearch) closeSearch()
+      else {
+        previousFocus = focused instanceof HTMLElement ? focused : null
+        searchInput.focus({ preventScroll: true })
+        searchInput.select()
       }
+    } else if (withinSearch && isSearchModeToggle(e) && manifest) {
+      if (mode === 'lexical' && semanticState === 'unavailable') return
+      e.preventDefault()
+      if (!e.repeat) setMode(mode === 'semantic' ? 'lexical' : 'semantic')
+    } else if (withinSearch && e.key === 'Escape') {
+      e.preventDefault()
+      closeSearch()
     }
   }
 
   const handleModeClick = (event: MouseEvent) => {
-    const button = (event.target as Element | null)?.closest<HTMLButtonElement>('.mode-option')
+    if (!(event.target instanceof Element)) return
+    const button = event.target.closest<HTMLButtonElement>('.mode-option')
     if (!button || button.disabled) return
     setMode(button.dataset.mode === 'semantic' ? 'semantic' : 'lexical')
     searchInput.focus()

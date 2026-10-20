@@ -5,6 +5,7 @@ import {
   QuartzComponentProps,
   QuartzComponentConstructor,
 } from '../types/component'
+import { unwrapTitleQuotes } from '../util/listing-title'
 import { resolveRelative } from '../util/path'
 import { Date as DateComponent, getDate } from './Date'
 
@@ -23,7 +24,7 @@ function collatorFor(cfg: LocaleConfig): Intl.Collator {
 }
 
 function titleFor(file: QuartzPluginData): string {
-  return file.frontmatter?.title ?? ''
+  return unwrapTitleQuotes(file.frontmatter?.title ?? '')
 }
 
 function naturalSlugFor(file: QuartzPluginData): string {
@@ -64,9 +65,8 @@ export function byDateAndAlphabetical(cfg: GlobalConfiguration): SortFn {
       return 1
     }
 
-    // otherwise, sort lexicographically by title
-    const f1Title = f1.frontmatter?.title.toLowerCase() ?? ''
-    const f2Title = f2.frontmatter?.title.toLowerCase() ?? ''
+    const f1Title = titleFor(f1).toLowerCase()
+    const f2Title = titleFor(f2).toLowerCase()
     return f1Title.localeCompare(f2Title) || bySlug(f1, f2)
   }
 }
@@ -103,7 +103,7 @@ export default ((userOpts?: Options) => {
     return (
       <ul class="section-ul">
         {list.map((page, idx) => {
-          const title = page.frontmatter?.title
+          const title = unwrapTitleQuotes(page.frontmatter?.title ?? '')
           const tags = page.frontmatter?.tags ?? []
           const hiTags = opts.highlightTags.filter(v => tags.includes(v))
           const date = getDate(cfg, page) ?? new Date(0)

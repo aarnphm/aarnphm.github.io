@@ -272,6 +272,12 @@ function setupAllTagsSearch(container: HTMLElement) {
   document.addEventListener(
     'keydown',
     e => {
+      if (
+        e.defaultPrevented ||
+        !container.checkVisibility({ visibilityProperty: true }) ||
+        document.querySelector('.search-container.active, #palette-container.active')
+      )
+        return
       if ((e.ctrlKey || e.metaKey) && e.key === 'k' && !e.shiftKey) {
         const active = document.activeElement
         const isOtherInput =
@@ -368,6 +374,12 @@ function setupPageListSearch(container: HTMLElement) {
   document.addEventListener(
     'keydown',
     e => {
+      if (
+        e.defaultPrevented ||
+        !container.checkVisibility({ visibilityProperty: true }) ||
+        document.querySelector('.search-container.active, #palette-container.active')
+      )
+        return
       if ((e.ctrlKey || e.metaKey) && e.key === 'k' && !e.shiftKey) {
         const active = document.activeElement
         const isOtherInput =
