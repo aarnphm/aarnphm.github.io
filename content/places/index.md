@@ -10,4 +10,3 @@ tags:
   - meta
 title: lieux à visiter
 ---
-
