@@ -99,4 +99,8 @@ SPD recovers ground-truth mechanisms in the paper's toy experiments, including a
 
 The same burden applies to [[thoughts/sparse crosscoders|cross-layer features]] and [[thoughts/circuit tracing|circuit tracing]]: a useful decomposition needs both reconstruction checks and evidence about the computation assigned to each part.
 
-![[thoughts/images/apd.webp|Decomposition of parameters, or APD]]
+```jsx imports={Zoomable,ParamDecomposition}
+<Zoomable label="parameter decomposition">
+  <ParamDecomposition caption="Attribution parameter decomposition flattens network weights into $\theta^\star$, then learns sparse components $P_c$ with $\theta^\star \approx \sum_c P_c$. Select $C$ to inspect how the toy fill rate of the components changes; the figure uses a fixed seed, not a trained APD run." />
+</Zoomable>
+```

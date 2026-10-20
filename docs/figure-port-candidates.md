@@ -22,6 +22,7 @@ Survey of image embeds in notes (2026-10-19) that a Garden figure can replace. S
 | `sfwr-2c03/Sorting.md`, `sfwr-3dx4/steady-state error.md`, `eng-3px3/Conversion Factors.md`, `sfwr-3db3/Relational Algebra.md`, `sfwr-3db3/Design theory.md` | Markdown tables                                                                                                                      | —                                     |
 | `thoughts/sparse crosscoders.md` (4 of 8 concept diagrams)                                                                                                   | `CrossLayerFeatures`, `CrosscoderMasks`                                                                                              | `crosscoders`                         |
 | `sfwr-3dx4/Root locus control.md` (PI), `sfwr-4aa4/PID controller.md`, `sfwr-3db3/Relational Algebra.md` (expression tree)                                   | `BlockDiagram` (parallel rule), `RelAlgTree`                                                                                         | `graphs-blocks-trie`, `blocks-relalg` |
+| `content/research.md` (FlashInfer pages, vLLM engine), `thoughts/Wireshark.md`, `thoughts/Transformers.md` (MTP), `thoughts/Attribution parameter decomposition.md`, `thoughts/Alignment.md` | `FlashInferPageLayout`, `VllmEngineLayout`, `PacketSniffer`, `MTPModules`, `ParamDecomposition`, `SafetyLevels` | `image-to-react-port` |
 
 ## Left as images
 
@@ -31,3 +32,5 @@ Survey of image embeds in notes (2026-10-19) that a Garden figure can replace. S
 | `eagle-figure-6-architecture.webp`, `eagle-3-inference-pipeline.webp`                                              | Architecture art (frozen modules, FC layers); the draft tree is in `SpeculativeDraftTree`.            |
 | `comparison-ddp-fsdp.webp`                                                                                         | Values cannot be recovered: broken log axis, no numbers in the cited post.                            |
 | `additive-residual-stream-llm.webp`, `feature-neurons.webp`, `one-step-circuit.webp`, `parallel-joint-branch.webp` | Redraws of one graph in an equivalent form, or neurons in superposition: no count or rule to compute. |
+| `mooncake-pd.webp`, `deepseek-v3-arch.webp`                                                                        | Distributed serving / model architecture art without a single computable mechanism.                   |
+| Assignment screenshots, photos, artworks, course statics                                                           | Provenance or non-diagram media.                                                                      |

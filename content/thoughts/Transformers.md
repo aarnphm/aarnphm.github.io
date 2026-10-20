@@ -220,7 +220,11 @@ Ordinary next-token inference can use the first output head. The additional head
 
 [[thoughts/DeepSeek|DeepSeek-V3]] uses a different construction: sequential MTP modules incorporate the intervening token embeddings and share the embedding and output layers. The report describes both discarding the auxiliary modules for ordinary inference and using them for speculative decoding. [DeepSeek-V3 report, §2.2](https://arxiv.org/html/2412.19437v2#S2.SS2)
 
-![[thoughts/images/MTP-deepseek.webp|MTP implementation in DeepSeek, where they keep causal chain for prediction of each token at each depth]]
+```jsx imports={Zoomable,MTPModules}
+<Zoomable label="DeepSeek MTP modules">
+  <MTPModules depth={2} caption="DeepSeek-V3 multi-token prediction keeps a causal chain across MTP modules. Each module takes the previous hidden state, concatenates a shared embedding of the shifted tokens, projects, runs one transformer block, and scores with the shared output head. Select depth $D$ to show MTP $1..D$." />
+</Zoomable>
+```
 
 ## Byte-Latent Transformer
 
