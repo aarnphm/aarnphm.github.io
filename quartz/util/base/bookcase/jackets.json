@@ -5287,6 +5287,106 @@
       "detailArtworkSha256": "badc15ef79870b70124810aec25d51e89599024e9e7c3cd1c89a6550755ea86e",
       "detailWidth": 29,
       "detailHeight": 1280
+    },
+    {
+      "id": "death-ivan-ilyich-1887-dole-abebooks-copy",
+      "title": "The Death of Ivan Ilyich",
+      "author": "Leo Tolstoy",
+      "publisher": "Thomas Y. Crowell & Co.",
+      "isbn": "1887 first American edition; ISBN not established",
+      "editionEvidence": "AbeBooks seller Raptis Rare Books identifies this copy as the first English edition, Thomas Y. Crowell & Co., New York, 1887, translated from Russian by Nathan Haskell Dole. The seller photograph shows one physical green-cloth volume, titled Iván Ilyitch and Other Stories, with the complete front and full spine in the same frame. It is a containing volume, not a standalone novella edition.",
+      "page": "https://www.abebooks.com/first-edition/Ivan-Ilyitch-Stories-Tolstoi-Count-Lyof/31374498346/bd",
+      "source": "https://pictures.abebooks.com/inventory/31374498346.jpg",
+      "sourceSha256": "84cdcc315198491e7c47b4756d0b3b577e9553ed93223aefdd6aada873e4f48e",
+      "poster": "library/posters/the-death-of-ivan-ilyich.jpg",
+      "posterSha256": "5726352367b982890ba30b1773997281838a0779f554c28256c05c1b1886dd82",
+      "crop": { "left": 270, "top": 56, "width": 142, "height": 890 },
+      "rotation": 0,
+      "height": 320,
+      "artwork": "death-ivan-ilyich-1887-dole-independent.webp",
+      "detailArtwork": "death-ivan-ilyich-1887-dole-abebooks-copy-detail-c25f8bc7db370b08.webp",
+      "detailArtworkSha256": "c25f8bc7db370b085b3d1fc541b951ea073571072a7fa052f954f3fc0769082f",
+      "detailWidth": 142,
+      "detailHeight": 890,
+      "sourceKind": "Native 1250x1000 seller photo from the AbeBooks listing; one pictured copy shows the full front and spine. Exact listing identifies the 1887 Crowell first English edition and Dole translation.",
+      "sampling": "independent",
+      "artworkSha256": "95248352ed3effa0c3cd7937f4c12bbf4fdc6748152a991cf60d80dd1bba2acd"
+    },
+    {
+      "id": "being-and-time-harper-0061575594-restored-copy-pair-v2",
+      "title": "Being and Time",
+      "author": "Martin Heidegger",
+      "publisher": "Harper Perennial Modern Thought",
+      "isbn": "9780061575594",
+      "editionEvidence": "Bookbot listing /g/5088031 image 57819372 shows this physical copy with its complete front and spine; the same-copy back photo 57819373 prints ISBN 978-0-06-157559-4. The spine credits the Macquarrie and Robinson translation and shows Harper Perennial Modern Thought. The candidate front is rectified from that same photograph to 700×1043 using bookseller-documented physical dimensions 143×213 mm. The finger covers only the unprinted top margin; a labeled SVG reference reconstruction restores a feathered top field: a 300×80 opaque plateau, 30-pixel side feather and 20-pixel bottom feather by interpolation from visible paper on either side. No lettering is generated. The existing saved poster remains an unidentified physical edition. The work year 1927 is unchanged; the paperback edition is 2008.",
+      "page": "https://bookbot.com/g/5088031",
+      "source": "https://rezised-images.knhbt.cz/1920x1920/57819372.webp",
+      "sourceSha256": "629f23ae6c6134cc22583d49650ac2c43f02ebaccf8afc674f6029f86908ae31",
+      "sourceKind": "Public native Bookbot gallery WebP, 1920×1920 pixels. Same-copy front/spine photograph supplies both front and spine evidence.",
+      "poster": "library/posters/being-and-time.jpg",
+      "crop": { "left": 0, "top": 0, "width": 150, "height": 1600 },
+      "height": 320,
+      "perspective": {
+        "width": 150,
+        "height": 1600,
+        "points": [
+          { "source": [531, 218], "target": [0, 0] },
+          { "source": [680, 218], "target": [149, 0] },
+          { "source": [618, 1691], "target": [149, 1599] },
+          { "source": [477, 1680], "target": [0, 1599] }
+        ]
+      },
+      "artwork": "being-and-time-harper-0061575594-restored-copy-pair-v2.webp",
+      "sampling": "independent",
+      "lowPerspective": {
+        "width": 150,
+        "height": 1600,
+        "points": [
+          { "source": [531, 218], "target": [0, 0] },
+          { "source": [680, 218], "target": [149, 0] },
+          { "source": [618, 1691], "target": [149, 1599] },
+          { "source": [477, 1680], "target": [0, 1599] }
+        ]
+      },
+      "posterSha256": "79b9cc80cf580bee66ae78d19c08fabc337defa68756791ee108086c5d0cdc10",
+      "artworkSha256": "ad28d9772282b056eb72328b826129fe35eb7d0a1258e09f6f49eb2a84379ca3",
+      "detailArtwork": "being-and-time-harper-0061575594-restored-copy-pair-v2-detail-a95a6b9e1103d041.webp",
+      "detailArtworkSha256": "a95a6b9e1103d041332fa571f561fcf509034c4ee61b68c4c26fd3362e959e68",
+      "detailWidth": 120,
+      "detailHeight": 1280
+    },
+    {
+      "id": "critique-practical-reason-hartknoch-riga-1788",
+      "title": "The Critique of Practical Reason",
+      "author": "Immanuel Kant",
+      "publisher": "Johann Friedrich Hartknoch",
+      "isbn": null,
+      "editionEvidence": "PY Rare Books item 1424 identifies the first edition, Riga, Johann Friedrich Hartknoch, 1788, contemporary half calf, and octavo dimensions 19.7 × 11 cm. The same listing gallery image 1424_2.jpg shows this physical copy’s complete front board and complete spine, with both spine endpoints visible. Adjacent close-ups 1424.jpg and 1424_3.jpg to 1424_5.jpg show the spine panel reading “Kants Critik der practischen Vernunft”. The title-page photo 1424_1.jpg prints “Critik der practischen Vernunft”, “Immanuel Kant”, “Riga”, “Johann Friedrich Hartknoch”, and “1788”. The Garden note specifies German; this is a German first edition. No translator is inferred.",
+      "page": "https://www.pyrarebooks.com/rare-book/kant-kritik-praktischen-vernunft-first-edition-1424/",
+      "source": "https://www.pyrarebooks.com/wp-content/uploads/2023/03/1424_2.jpg",
+      "sourceSha256": "17aa3a4179cd3c5d8af03ccedf330affcd9c8edff9f00a40b617489cd8d93dfa",
+      "sourceKind": "Original full-resolution PY Rare Books photograph of the actual 1788 copy; 979×1250 JPEG. The complete photographed spine is perspective-rectified from the source pixels; no lettering, marks, or ornament are synthesized.",
+      "poster": "library/posters/the-critique-of-practical-reason.jpg",
+      "posterSha256": "b4bde74b25ff57e19f64cc11132208bcfa701f0a34f65f0343002777d4cfa5a3",
+      "crop": { "left": 0, "top": 0, "width": 110, "height": 1000 },
+      "height": 320,
+      "perspective": {
+        "width": 110,
+        "height": 1000,
+        "points": [
+          { "source": [228, 145], "target": [0, 0] },
+          { "source": [338, 151], "target": [109, 0] },
+          { "source": [337, 1155], "target": [109, 999] },
+          { "source": [225, 1148], "target": [0, 999] }
+        ]
+      },
+      "artwork": "critique-practical-reason-hartknoch-riga-1788.webp",
+      "artworkSha256": "60c498d4bcc7b6bc48bfc98d760c4b76a2c90bd0333449c1324d559ad320796b",
+      "sampling": "independent",
+      "detailArtwork": "critique-practical-reason-hartknoch-riga-1788-detail-00e1258f31b81972.webp",
+      "detailArtworkSha256": "00e1258f31b819725a6262c03a528fc47f40e951d75ce1ad7ce05e8564cea80b",
+      "detailWidth": 110,
+      "detailHeight": 1002
     }
   ]
 }
