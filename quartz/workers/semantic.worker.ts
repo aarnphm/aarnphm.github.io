@@ -1,5 +1,6 @@
 import { env, AutoConfig, AutoModel, AutoTokenizer } from '@huggingface/transformers'
 import { SEMANTIC_ONNX_MODELS, type SemanticQueryDType } from '../util/semantic-search'
+import { isRecord } from '../util/type-guards'
 
 type VectorShardMeta = {
   path: string
@@ -28,16 +29,12 @@ type Manifest = {
 
 type InitMessage = { type: 'init'; cfg?: SemanticWorkerConfig }
 
-type SearchMessage = { type: 'search'; text: string; k: number; seq: number }
-
-/** Swaps the vector set (another base's index) and keeps the loaded encoder. */
+type SearchMessage = { type: 'search'; text: string; k: number; seq: number; manifestUrl?: string }
 type LoadMessage = { type: 'load'; manifestUrl: string; seq: number }
 
 type WorkerMessage = InitMessage | SearchMessage | LoadMessage
 
 type ReadyMessage = { type: 'ready' }
-
-type LoadedMessage = { type: 'loaded'; seq: number; rows: number }
 
 type ProgressMessage = { type: 'progress'; loadedRows: number; totalRows: number }
 
@@ -62,13 +59,16 @@ let state: WorkerState = 'idle'
 let manifest: Manifest | null = null
 let cfg: SemanticWorkerConfig | null = null
 let dims = 0
-let tokenizer: any = null
-let model: any = null
+let tokenizer: Awaited<ReturnType<typeof AutoTokenizer.from_pretrained>> | null = null
+let model: Awaited<ReturnType<typeof AutoModel.from_pretrained>> | null = null
 let encoderLoading: Promise<void> | null = null
 let envConfigured = false
 let abortController: AbortController | null = null
 // Row-major unit vectors, `rows * dims` floats. Every query scans all of them.
 let vectors: Float32Array | null = null
+const indexes = new Map<string, { manifest: Manifest; vectors: Float32Array }>()
+let manifestPath = ''
+const queryVectors = new Map<string, Float32Array>()
 
 function toAssetUrl(path: string): string {
   const url = new URL(path, self.location.origin)
@@ -158,21 +158,18 @@ function configureRuntimeEnv() {
   env.allowLocalModels = false
   env.allowRemoteModels = true
   // WebGPU runs the query encoder; keep the ONNX WASM orchestrator single-threaded.
-  const onnxWasm = (
-    env as { backends?: { onnx?: { wasm?: { numThreads?: number; wasmBinary?: unknown } } } }
-  ).backends?.onnx?.wasm
+  const onnxWasm = env.backends.onnx.wasm
   if (onnxWasm) onnxWasm.numThreads = 1
   envConfigured = true
 }
 
-function pruneTokenizerMemory(loadedTokenizer: any) {
-  if (!loadedTokenizer || typeof loadedTokenizer !== 'object') return
+function pruneTokenizerMemory(loadedTokenizer: NonNullable<typeof tokenizer>) {
   loadedTokenizer._tokenizerJSON = null
-  const inner = loadedTokenizer._tokenizer
-  if (inner && typeof inner === 'object') {
+  const inner: unknown = loadedTokenizer._tokenizer
+  if (isRecord(inner)) {
     inner.tokenizer = null
     const innerModel = inner.model
-    if (innerModel && typeof innerModel === 'object') {
+    if (isRecord(innerModel)) {
       innerModel.config = null
       innerModel.merges = null
       innerModel.vocab = null
@@ -213,17 +210,22 @@ async function loadEncoder() {
   if (config.model_type === 'embedding_gemma2') {
     Object.assign(config, { vision_config: null, audio_config: null })
   }
-  const loadedTokenizer = await AutoTokenizer.from_pretrained(mappedModel)
-  pruneTokenizerMemory(loadedTokenizer)
+  const [loadedTokenizer, loadedModel] = await Promise.all([
+    AutoTokenizer.from_pretrained(mappedModel).then(loaded => {
+      pruneTokenizerMemory(loaded)
+      return loaded
+    }),
+    AutoModel.from_pretrained(mappedModel, { config, dtype, device: 'webgpu' }),
+  ])
   tokenizer = loadedTokenizer
-  model = await AutoModel.from_pretrained(mappedModel, { config, dtype, device: 'webgpu' })
-  const onnxWasm = (env as { backends?: { onnx?: { wasm?: { wasmBinary?: unknown } } } }).backends
-    ?.onnx?.wasm
+  model = loadedModel
+  const onnxWasm = env.backends.onnx.wasm
   if (onnxWasm) onnxWasm.wasmBinary = undefined
 }
 
 async function embed(text: string, isQuery: boolean = false): Promise<Float32Array> {
   await ensureEncoder()
+  if (!tokenizer || !model) throw new Error('semantic encoder unavailable')
   let prefixedText = text
   const modelId = manifest?.model ?? cfg?.model
   if (modelId) {
@@ -317,7 +319,7 @@ async function fetchManifest(path: string): Promise<Manifest> {
       `failed to fetch manifest ${manifestUrl}: ${response.status} ${response.statusText}`,
     )
   }
-  const data = (await response.json()) as Manifest
+  const data: Manifest = await response.json()
   if (data.vectors.dtype !== 'fp32') {
     throw new Error(`unsupported embedding dtype '${data.vectors.dtype}', regenerate with fp32`)
   }
@@ -346,6 +348,8 @@ async function handleInit(msg: InitMessage) {
     // WebGPU adapter fails now, not after the vectors are downloaded.
     const [loaded] = await Promise.all([loadVectors(manifest), ensureEncoder()])
     vectors = loaded
+    manifestPath = cfg.manifestUrl ?? MANIFEST_URL
+    indexes.set(manifestPath, { manifest, vectors })
 
     state = 'ready'
     const ready: ReadyMessage = { type: 'ready' }
@@ -356,26 +360,24 @@ async function handleInit(msg: InitMessage) {
   }
 }
 
-async function handleLoad(msg: LoadMessage) {
-  if (state !== 'ready') {
-    throw new Error('worker not ready to load another index')
+async function selectIndex(path: string) {
+  if (manifestPath === path) return
+  let next = indexes.get(path)
+  if (!next) {
+    const data = await fetchManifest(path)
+    next = { manifest: data, vectors: await loadVectors(data) }
   }
-  state = 'loading'
-  try {
-    const next = await fetchManifest(msg.manifestUrl)
-    vectors = null
-    const loaded = await loadVectors(next)
-    manifest = next
-    dims = next.dims
-    vectors = loaded
-    state = 'ready'
-    const message: LoadedMessage = { type: 'loaded', seq: msg.seq, rows: next.rows }
-    self.postMessage(message)
-  } catch (err) {
-    // The previous index stays usable; only the swap failed.
-    state = vectors ? 'ready' : 'error'
-    throw err
+  // Publish the new inventory only after all shards load. Failed swaps leave the old index intact.
+  indexes.delete(path)
+  indexes.set(path, next)
+  if (indexes.size > 2) {
+    const oldest = indexes.keys().next().value
+    if (oldest !== undefined) indexes.delete(oldest)
   }
+  manifest = next.manifest
+  dims = manifest.dims
+  vectors = next.vectors
+  manifestPath = path
 }
 
 async function handleSearch(msg: SearchMessage) {
@@ -386,7 +388,17 @@ async function handleSearch(msg: SearchMessage) {
     throw new Error('semantic worker not configured')
   }
 
-  const queryVec = await embed(msg.text, true)
+  await selectIndex(msg.manifestUrl ?? manifestPath)
+  const key = `${dims}\u0000${msg.text}`
+  let queryVec = queryVectors.get(key)
+  if (!queryVec) {
+    queryVec = await embed(msg.text, true)
+    queryVectors.set(key, queryVec)
+    if (queryVectors.size > 32) {
+      const oldest = queryVectors.keys().next().value
+      if (oldest !== undefined) queryVectors.delete(oldest)
+    }
+  }
   const message: SearchResultMessage = {
     type: 'search-result',
     seq: msg.seq,
@@ -395,43 +407,29 @@ async function handleSearch(msg: SearchMessage) {
   self.postMessage(message)
 }
 
+let requests: Promise<void> = Promise.resolve()
+
 self.onmessage = (event: MessageEvent<WorkerMessage>) => {
   const origin = typeof event.origin === 'string' ? event.origin : ''
   if (origin && origin !== self.location.origin) return
 
   const data = event.data
 
-  if (data.type === 'init') {
-    void handleInit(data).catch((err: unknown) => {
+  // The worker URL is stable, so an already open page may still send the previous protocol.
+  requests = requests
+    .then(async () => {
+      if (data.type === 'init') await handleInit(data)
+      else if (data.type === 'load') {
+        await selectIndex(data.manifestUrl)
+        self.postMessage({ type: 'loaded', seq: data.seq, rows: manifest?.rows ?? 0 })
+      } else await handleSearch(data)
+    })
+    .catch((err: unknown) => {
       const message: ErrorMessage = {
         type: 'error',
+        seq: data.type === 'init' ? undefined : data.seq,
         message: err instanceof Error ? err.message : String(err),
       }
       self.postMessage(message)
     })
-    return
-  }
-
-  if (data.type === 'load') {
-    void handleLoad(data).catch((err: unknown) => {
-      const message: ErrorMessage = {
-        type: 'error',
-        seq: data.seq,
-        message: err instanceof Error ? err.message : String(err),
-      }
-      self.postMessage(message)
-    })
-    return
-  }
-
-  if (data.type === 'search') {
-    void handleSearch(data).catch((err: unknown) => {
-      const message: ErrorMessage = {
-        type: 'error',
-        seq: data.seq,
-        message: err instanceof Error ? err.message : String(err),
-      }
-      self.postMessage(message)
-    })
-  }
 }
