@@ -95,6 +95,7 @@ document.addEventListener('nav', () => {
 
   const fill = (root: HTMLElement, rows: Map<string, CardState>, login: string | null) => {
     const now = Date.now()
+    const fr = root.dataset.courseLang === 'fr'
     const lastByUnit = new Map<string, HTMLElement>()
     for (const el of root.querySelectorAll<HTMLElement>('[data-last][data-for]')) {
       const key = el.dataset.for
@@ -136,10 +137,14 @@ document.addEventListener('nav', () => {
           const badge = document.createElement('span')
           badge.className = 'course-new'
           badge.textContent = `+${fresh}`
-          badge.title = `${fresh} new ${fresh === 1 ? 'card' : 'cards'}`
+          badge.title = fr
+            ? `${fresh} ${fresh === 1 ? 'nouvelle carte' : 'nouvelles cartes'}`
+            : `${fresh} new ${fresh === 1 ? 'card' : 'cards'}`
           dueEl.append(badge)
         }
-        dueEl.title = `${due} due · ${seen} seen of ${ids.length}`
+        dueEl.title = fr
+          ? `${due} à revoir · ${seen} vues sur ${ids.length}`
+          : `${due} due · ${seen} seen of ${ids.length}`
       }
       const unitKey = el.dataset.unit ?? ''
       const lastEl = lastByUnit.get(unitKey)
@@ -165,7 +170,7 @@ document.addEventListener('nav', () => {
       link.className = action.className
       link.setAttribute('data-router-ignore', '')
       link.href = loginHref()
-      link.textContent = 'sign in to schedule'
+      link.textContent = fr ? 'se connecter' : 'sign in to schedule'
       action.replaceWith(link)
     }
   }

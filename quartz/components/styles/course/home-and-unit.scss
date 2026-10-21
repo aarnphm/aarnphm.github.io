@@ -419,7 +419,21 @@
     font-size: var(--text-ui);
     color: var(--dark);
     text-decoration: none;
-    overflow-wrap: anywhere;
+  }
+
+  .course-num {
+    flex: none;
+  }
+
+  // one line per side; a long title ends in an ellipsis
+  .course-pager-title {
+    display: block;
+    min-height: 0;
+    min-width: 0;
+    padding: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   a:focus-visible {
@@ -438,15 +452,6 @@
     justify-content: flex-end;
     text-align: right;
     border-left: 1px solid var(--dark);
-  }
-
-  @media all and ($mobile) {
-    grid-template-columns: minmax(0, 1fr);
-
-    [rel='next'] {
-      border-left: 0;
-      border-top: 1px solid var(--dark);
-    }
   }
 }
 

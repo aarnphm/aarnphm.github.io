@@ -128,8 +128,13 @@
 
 // courses index: an intro, then bordered rows (the listPage idiom), as one grid item so the
 // page grid cannot stretch the intro to fill the viewport
-.course-home--index {
-  grid-column: var(--layout-reading-column);
+.course-home.course-home--index {
+  grid-column: var(--layout-wide-column);
+
+  > .course-unit-bar {
+    grid-column: 1 / -1;
+    margin-top: 0;
+  }
 }
 
 .course-index {
