@@ -6,10 +6,17 @@ tags:
   - fr
   - language
   - learning
-title: registre-soutenu
+title: registre soutenu
 ---
 
 Écrire et argumenter comme un natif cultivé — C1. Les tournures du débat sont dans [[fr/phrases]] ; ici, le registre qui impressionne.
+
+```jsx imports={RegisterLadder}
+<RegisterLadder
+  label="échelle de registre"
+  pairs='{"qc":{"fam":["C’est plate, y’a pas de quoi.","forme orale sans *ne* ; *plate* et *y’a pas de quoi* sont québécois familiers."],"std":["C’est dommage, il n’y a pas de quoi.","le *ne* revient ; *dommage* remplace *plate*, compris partout."],"sou":["C’est regrettable, je vous en prie.","registre écrit ou formel ; *je vous en prie* au lieu de *il n’y a pas de quoi*."]},"fr":{"fam":["C’est nul, y a pas de quoi.","en France, *nul* ou *chiant* ; *plate* ne se dit pas."],"std":["C’est dommage, il n’y a pas de quoi.","le standard est le même des deux côtés de l’Atlantique."],"sou":["C’est regrettable, je vous en prie.","le soutenu aussi : la variation est surtout dans le familier."]}}'
+/>
+```
 
 ## Connecteurs formels
 

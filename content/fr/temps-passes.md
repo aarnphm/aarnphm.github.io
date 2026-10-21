@@ -6,7 +6,7 @@ tags:
   - fr
   - language
   - learning
-title: temps-passes
+title: temps du passé
 ---
 
 Raconter au passé, supposer au conditionnel — A2 → B1. Les conjugaisons de base sont dans [[fr/verbs]] ; ici, c'est le choix du temps qui compte.

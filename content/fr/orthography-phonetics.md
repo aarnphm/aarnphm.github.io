@@ -7,7 +7,7 @@ tags:
   - fr
   - language
   - learning
-title: orthography and phonetics
+title: sons et orthographe
 ---
 
 ## alphabet

@@ -6,7 +6,7 @@ tags:
   - fr
   - language
   - learning
-title: verbs
+title: verbes au présent
 ---
 
 Présent de l'indicatif, d'après [[fr/lessons/260921|la leçon du 21 septembre]]. Les colonnes rendent visibles les changements de radical. Pour {{`payer`}}, les deux graphies du radical sont possibles.

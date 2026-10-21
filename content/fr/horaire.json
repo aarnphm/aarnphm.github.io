@@ -1,0 +1,47 @@
+{
+  "fuseau": "America/Toronto",
+  "recurrences": [
+    {
+      "quoi": "cours",
+      "jour": "mar",
+      "de": "19:30",
+      "à": "21:30",
+      "depuis": "2026-09-16",
+      "lien": "fr/lessons"
+    },
+    {
+      "quoi": "cours",
+      "jour": "jeu",
+      "de": "19:30",
+      "à": "21:30",
+      "depuis": "2026-09-16",
+      "lien": "fr/lessons"
+    },
+    {
+      "quoi": "pratique",
+      "jour": "dim",
+      "de": "20:00",
+      "à": "21:00",
+      "depuis": "2026-10-04",
+      "lien": "fr/practices"
+    },
+    {
+      "quoi": "pratique",
+      "jour": "mer",
+      "de": "20:00",
+      "à": "21:00",
+      "depuis": "2026-10-04",
+      "lien": "fr/practices"
+    },
+    {
+      "quoi": "pratique",
+      "jour": "ven",
+      "de": "20:00",
+      "à": "21:00",
+      "depuis": "2026-10-04",
+      "lien": "fr/practices"
+    }
+  ],
+  "blocs": [{ "date": "2026-11-03", "quoi": "bilan ép. 13–16", "de": "19:30", "à": "21:30" }],
+  "sauf": ["2026-12-22", "2026-12-29"]
+}

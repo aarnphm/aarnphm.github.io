@@ -41,7 +41,8 @@ export default {
     search: { title: 'recherche', searchBarPlaceholder: 'rechercher quelque chose' },
     tableOfContents: { title: 'table des matières' },
     contentMeta: {
-      readingTime: ({ minutes, words }) => `${minutes} min de lecture (${words} words)`,
+      readingTime: ({ minutes, words }) =>
+        `${minutes} min de lecture (${words.toLocaleString('fr-CA')} mots)`,
     },
   },
   pages: {

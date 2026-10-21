@@ -1,0 +1,201 @@
+@use '../../styles/variables.scss' as *;
+
+// Margin notes on /fr pages: review and reader notes on the left, glosses and citations on the
+// right. They ride the sidenote layout (15.5rem in the margin at 1400px and up, a toggle under it).
+$fr-line: color-mix(in srgb, var(--gray) 55%, transparent);
+$fr-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+
+// The sidenote label only marks the position; it shows as a toggle once the note goes inline.
+.sidenote[data-fr] {
+  .sidenote-label:not([data-inline]) {
+    display: inline-block !important;
+    width: 0 !important;
+    overflow: hidden !important;
+    visibility: hidden !important;
+    border: 0 !important;
+  }
+}
+
+// sidenotes.inline.scss is unlayered and beats this layered sheet, so the reset needs !important
+.sidenote-content:has(> .fr-margin) {
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+
+  &.sidenote-inline {
+    margin-block: 0.5rem;
+  }
+}
+
+.fr-margin {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--darkgray);
+
+  + .fr-margin {
+    margin-top: var(--space-3);
+  }
+}
+
+.fr-label,
+.fr-meta {
+  font-family: var(--codeFont);
+  font-size: var(--text-meta);
+  font-variant-numeric: tabular-nums;
+  color: var(--darkgray);
+}
+
+.fr-meta {
+  display: block;
+}
+
+.fr-label a,
+.fr-meta a {
+  color: var(--dark);
+}
+
+.fr-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid $fr-line;
+  background: $fr-surface;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.fr-q,
+.fr-a {
+  color: var(--dark);
+
+  p {
+    margin: 0;
+  }
+}
+
+.fr-a {
+  padding-top: 0.5rem;
+  border-top: 1px solid $fr-line;
+}
+
+.fr-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.fr-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
+  min-height: 1.5rem;
+  padding: 0.15rem 0.5rem;
+  border: 1px solid var(--dark);
+  border-radius: var(--radius-none);
+  background: var(--light);
+  color: var(--dark);
+  font-family: var(--codeFont);
+  font-size: var(--text-meta);
+  text-transform: lowercase;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background: $fr-surface;
+    }
+  }
+
+  @media (pointer: coarse) {
+    min-height: 44px;
+  }
+
+  &.fr-link {
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--darkgray);
+    font-size: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        background: transparent;
+        color: var(--dark);
+      }
+    }
+
+    @media (pointer: coarse) {
+      min-height: 44px;
+    }
+  }
+}
+
+.fr-note {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding-top: 0.35rem;
+  border-top: 1px solid $fr-line;
+  font-style: italic;
+
+  .fr-meta {
+    font-style: normal;
+  }
+}
+
+.fr-editor {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+}
+
+.fr-area {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0.35rem 0.45rem;
+  border: 1px solid var(--dark);
+  border-radius: var(--radius-none);
+  background: var(--light);
+  color: var(--dark);
+  font: inherit;
+  // 16px keeps mobile browsers from zooming on focus
+  font-size: max(16px, 0.85rem);
+  resize: vertical;
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
+}
+
+.fr-gloss {
+  padding-top: 0.35rem;
+  border-top: 1px solid $fr-line;
+
+  b {
+    font-weight: 500;
+    color: var(--dark);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fr-btn {
+    transition: none;
+  }
+}
