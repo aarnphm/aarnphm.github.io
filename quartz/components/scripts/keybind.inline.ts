@@ -816,7 +816,14 @@ document.addEventListener('nav', () => {
 
     const hasPrefix = binding.includes('--')
 
-    if (hasPrefix) {
+    if (binding.startsWith('⌥--')) {
+      // Option bindings keep their own modifier instead of the cmd/ctrl prefix.
+      const [, key] = binding.split('--')
+      const label = isMacOS()
+        ? `⌥ ${key}`
+        : ['Alt', ...key.split(' ').map(k => (k === '⇧' ? 'Shift' : k.toUpperCase()))].join('+')
+      renderShortcut(short, label, span)
+    } else if (hasPrefix) {
       let [prefix, key] = binding.split('--')
       const spanAliases = aliases[span]
       prefix = isMacOS() ? '⌘' : '⌃'

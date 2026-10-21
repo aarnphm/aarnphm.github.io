@@ -10,7 +10,11 @@ import {
   resolveRelative,
 } from '../../util/path'
 import { isSearchExcluded } from '../../util/search-exclude'
-import { isSearchModeToggle, isSearchToggle } from '../../util/search-shortcuts'
+import {
+  isSearchModeToggle,
+  isSearchToggle,
+  searchModeShortcutLabel,
+} from '../../util/search-shortcuts'
 import { highlight, tokenizeTerm } from '../../util/search-text'
 import { fuseSearchRanks } from '../../util/semantic-search'
 import { renderCoursePreview } from './course-preview-card'
@@ -280,6 +284,10 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
       { kbd: '↑↓', description: 'pour naviguer' },
       { kbd: '↵', description: 'pour ouvrir' },
       { kbd: 'esc', description: 'pour rejeter' },
+      {
+        kbd: searchModeShortcutLabel(/mac/i.test(navigator.userAgent)),
+        description: 'pour basculer en recherche sémantique',
+      },
     ]
     const helper = document.createElement('ul')
     helper.id = 'helper'

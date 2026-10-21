@@ -8,13 +8,18 @@ export function isSearchToggle(event: KeyboardEvent): boolean {
   )
 }
 
+// Option+Shift+S types a different character on macOS (event.key is 'Í'), so match the physical key.
 export function isSearchModeToggle(event: KeyboardEvent): boolean {
   return (
     !event.isComposing &&
-    !event.altKey &&
+    event.altKey &&
+    event.shiftKey &&
     !event.metaKey &&
     !event.ctrlKey &&
-    event.shiftKey &&
-    event.key.toLowerCase() === 's'
+    event.code === 'KeyS'
   )
+}
+
+export function searchModeShortcutLabel(mac: boolean): string {
+  return mac ? '⌥⇧S' : 'Alt+Shift+S'
 }

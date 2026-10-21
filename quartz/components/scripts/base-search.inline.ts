@@ -1,4 +1,8 @@
-import { isSearchModeToggle, isSearchToggle } from '../../util/search-shortcuts'
+import {
+  isSearchModeToggle,
+  isSearchToggle,
+  searchModeShortcutLabel,
+} from '../../util/search-shortcuts'
 import { isRecord } from '../../util/type-guards'
 import { isSemanticCancellation, SemanticClient } from './semantic.inline'
 
@@ -283,6 +287,10 @@ function setupBaseSearch(): (() => void) | undefined {
   // Semantic mode exists only when the build found a vector index for this base.
   const manifest = bar.dataset.semanticManifest
   const modeButtons = Array.from(bar.querySelectorAll<HTMLButtonElement>('.mode-option'))
+  const modeShortcut = searchModeShortcutLabel(/mac/i.test(navigator.userAgent))
+  for (const button of modeButtons) {
+    if (button.dataset.mode === 'lexical') button.title = `Full-text search (${modeShortcut})`
+  }
   const status = bar.querySelector<HTMLElement>('.semantic-status')
   let mode: SearchMode = 'lexical'
   let semanticState: SemanticState = 'idle'
@@ -305,7 +313,7 @@ function setupBaseSearch(): (() => void) | undefined {
     const semanticButton = modeButtons.find(button => button.dataset.mode === 'semantic')
     if (semanticButton) {
       semanticButton.disabled = state === 'unavailable'
-      semanticButton.title = semanticNotice
+      semanticButton.title = semanticNotice || `Semantic search (${modeShortcut})`
       // The bar has no room for a visible loading label.
       semanticButton.classList.toggle('is-loading', state === 'loading')
       semanticButton.setAttribute('aria-busy', state === 'loading' ? 'true' : 'false')
