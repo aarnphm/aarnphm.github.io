@@ -57,7 +57,7 @@ When the API key cannot run, an Opus session can be the worker itself: after `di
 
 ### Stage 4a: hoist closure state
 
-The target is one large closure whose statements share `let` locals. Before any move, in the worktree, move the shared locals into one state object that the closure owns, with no new files. Check it like a deepen step, then run the pass again on that path from the worktree (`TB_WORKSPACE=<worktree>`). The blocks then reference the state object, and the move is mechanical.
+The target is one large closure whose statements share `let` locals, or a closure that alone is over the limit. Before any move, in the worktree, move the shared locals into one state object that the closure owns, or hoist the largest phase into a top-level function that takes that state object (strava `buildPayload`: its per-activity loop became `projectActivityDetail(scope, a, sport)`), with no new files. Check it like a deepen step and stage it in the worktree. Then either run the pass again from the worktree (`TB_WORKSPACE=<worktree>`), or, when a proposal already fits, rebuild the graph there (`check.py --paths <path> --json`, then `inventory.py`) and map the proposal onto the new block ids by label, each closure whole in its root's file, as `<run>/<slug>/arbiter/proposal.json`. `move` and `proof` read the target from the worktree index, so they see the staged hoist; run `proof` before you stage the move.
 
 ## Implement (stages 5 to 7)
 
