@@ -3,9 +3,9 @@ date: '2025-10-05'
 description: map of the Python AST, IR, bytecode, and benchmark experiments in this directory
 id: bytecode-jit-readme
 layout: L->ET|A
-modified: 2026-08-27 09:11:56 GMT-04:00
+modified: 2026-10-21 00:42:02 GMT-04:00
+noindex: true
 tags:
-  - seed
   - compilers
 title: Python compiler experiments
 ---

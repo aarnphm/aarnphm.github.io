@@ -2,7 +2,8 @@
 date: '2025-11-22'
 description: collection of lesswrong archives exploring rationality, alignment, and ai safety discussions.
 id: index
-modified: 2026-06-05 15:08:21 GMT-04:00
+modified: 2026-10-21 00:41:18 GMT-04:00
+noindex: true
 tags:
   - alignment
   - lesswrong

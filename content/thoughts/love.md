@@ -13,13 +13,12 @@ gemini:
     4a0fc1cd7b2da549: love, nihilism, mega deep research threads
     d7f06bc496ea82ea: Tractatus Amor-Politicus
 id: love
-modified: 2026-08-26 09:31:16 GMT-04:00
+modified: 2026-10-21 00:48:00 GMT-04:00
 socials:
   essay: '[[posts/love|mutual becoming]]'
   hermeneutics: '[[posts/romantic epistemology|romantic epistemology]]'
 tags:
   - evergreen
-  - love
   - philosophy
   - technical
   - fruit
