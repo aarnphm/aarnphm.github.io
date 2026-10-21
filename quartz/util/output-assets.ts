@@ -5,6 +5,7 @@ import path from 'node:path'
 import type { BuildCtx } from './ctx'
 import type { FilePath } from './path'
 import { copyFile, resetCopyFileCache } from './copy-file'
+import { recordAssetOutput, recordOutput, recordOutputRemoval } from './output-receipt-context'
 import { isRecord } from './type-guards'
 
 export type OutputAssetOwner =
@@ -253,6 +254,7 @@ export async function preservedOutputAssets(
     if (entry.owner === 'notebook-runtime' || entry.owner === 'notebook-asset') {
       if (await outputMatches(entry.output, entry.size)) {
         preserved.add(normalizeFilePath(entry.output))
+        recordAssetOutput(entry.output, entry.owner, entry.source)
       }
       continue
     }
@@ -265,6 +267,7 @@ export async function preservedOutputAssets(
         (await outputMatches(claim.output, fingerprint.size))
       ) {
         preserved.add(normalizeFilePath(claim.output))
+        recordAssetOutput(claim.output, claim.owner, claim.source)
       }
     } catch {}
   }
@@ -275,6 +278,7 @@ export async function preservedOutputAssets(
         const stat = await fs.stat(file)
         if (stat.isFile()) {
           preserved.add(normalizeFilePath(file))
+          recordAssetOutput(file, owner, file)
         }
       } catch {}
     }
@@ -330,6 +334,8 @@ export async function emitOutputAsset(ctx: BuildCtx, claim: OutputAssetClaim): P
   const manifest = ensureOutputAssetManifest(ctx)
   const normalized = normalizeClaim(claim)
   recordOutputAsset(normalized.owner, normalized.output)
+  recordOutput(normalized.output, false, normalized.source)
+  recordAssetOutput(normalized.output, normalized.owner, normalized.source)
   if (ctx.outputAssetPreserved?.has(manifestKey(normalized.output) as FilePath)) {
     return normalized.output as FilePath
   }
@@ -389,6 +395,7 @@ export async function removeOutputAsset(
   }
   ensureOutputAssetManifest(ctxOrOwner).delete(manifestKey(normalized))
   await fs.rm(normalized, { force: true })
+  recordOutputRemoval(normalized)
 }
 
 export function pruneOutputAssetManifest(

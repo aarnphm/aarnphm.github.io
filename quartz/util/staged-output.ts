@@ -3,6 +3,8 @@ import { constants, createReadStream, rmSync, type BigIntStats } from 'node:fs'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { defaultIoConcurrency, mapConcurrent } from './async-pool'
+import { withOutputReceipt } from './output-receipt-context'
+import { beginOutputReceipt, commitOutputReceipt } from './output-receipt-io'
 
 type SeededFile = { source: BigIntStats; copy: BigIntStats }
 
@@ -257,8 +259,9 @@ export async function withStagedOutput<T>(
     }
     console.log(`Prepared staged output in ${Math.round(performance.now() - started)}ms`)
     onTiming?.('stage.prepare', performance.now() - started)
+    const receipt = await beginOutputReceipt(publicRoot, stage)
     const buildStarted = performance.now()
-    const result = await build(stage)
+    const result = await withOutputReceipt(receipt, () => build(stage))
     onTiming?.('stage.build', performance.now() - buildStarted)
     const publishStarted = performance.now()
     const [{ files: next }, { files: previous }] = await Promise.all([
@@ -311,6 +314,10 @@ export async function withStagedOutput<T>(
         await fs.unlink(path.join(publicRoot, file))
         deleted.push(file)
       }
+      onTiming?.('stage.publish', performance.now() - replaceStarted)
+      const receiptStarted = performance.now()
+      await commitOutputReceipt(receipt, next, changed, removed, preserve)
+      onTiming?.('stage.receipt', performance.now() - receiptStarted)
     } catch (error) {
       for (const file of [...published, ...deleted].reverse()) {
         const target = path.join(publicRoot, file)
@@ -335,7 +342,6 @@ export async function withStagedOutput<T>(
     console.log(
       `Published ${changed.length} changed files, removed ${removed.length}; kept ${next.length - changed.length} unchanged files in ${Math.round(performance.now() - publishStarted)}ms`,
     )
-    onTiming?.('stage.publish', performance.now() - replaceStarted)
     return result
   } finally {
     const cleanupStarted = performance.now()

@@ -122,8 +122,7 @@
 
       .base-table-wrapper:is(
           [data-base-table-scrolled],
-          [data-base-table-group-by='status'],
-          [data-base-table-group-by='note.status']
+          [data-base-table-group-by]:not([data-base-table-group-by=''])
         )
         &::after {
         opacity: 1;
