@@ -10,8 +10,8 @@
     "caw": { "command": "caw", "model": null, "effort": null }
   },
   "limits": {
-    "invocationMs": 240000,
-    "workerMs": 180000,
+    "invocationMs": 7200000,
+    "workerMs": 1800000,
     "maxCalls": 24,
     "maxAttempts": 3,
     "maxOutputBytes": 16777216,

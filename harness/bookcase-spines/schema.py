@@ -120,7 +120,16 @@ class Config:
     if not (self.providers.opus.model or '').startswith('claude-opus-'):
       raise ValueError('Opus review requires an explicit Claude Opus model')
     caps = Limits(
-      240000, 240000, 100, 10, 33554432, 2097152, 100000, 32, 1000000, 30000
+      invocationMs=8 * 60 * 60 * 1000,
+      workerMs=2 * 60 * 60 * 1000,
+      maxCalls=100,
+      maxAttempts=10,
+      maxOutputBytes=33554432,
+      maxSvgBytes=2097152,
+      maxSegments=100000,
+      maxDepth=32,
+      maxCoordinate=1000000,
+      maxRasterMs=30000,
     )
     for name, value in asdict(self.limits).items():
       if not 0 < value <= getattr(caps, name):

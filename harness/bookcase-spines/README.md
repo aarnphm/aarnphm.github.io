@@ -46,13 +46,21 @@ is sufficient; no project environment sync or package install occurs. Run IDs
 resolve under `.quartz-cache/bookcase-spines/`. An explicit path selects a different
 root. Existing run directories cannot be replaced by `plan`.
 
-`--until-done` drains runnable work within a four-minute invocation and a 24-call
-ceiling. Each model call has a maximum 180-second deadline. All owned subprocesses
-share the invocation deadline. Each job gets at most three trace attempts.
+`--until-done` drains runnable work within a two-hour invocation and a 24-call
+ceiling. Each model call has a maximum 30-minute deadline. All owned subprocesses
+share the invocation deadline. Argon and Caw receive five seconds less so their
+wrappers can stop and save evidence before the coordinator's worker deadline.
+Each job gets at most three trace attempts.
 Successes and review receipts survive explicit `resume`; unresolved source gaps,
 review ambiguity and exhausted attempts require attention. Repeated invocation
 never implies an unattended scheduler. Inspect `stopReason`, `counts` and
 `complete`; a queue containing blocked jobs is incomplete.
+
+For a different budget, copy `config.json`, change `limits.workerMs` and
+`limits.invocationMs` (milliseconds), and use `plan --config PATH`. Workers can
+be configured up to two hours and invocations up to eight hours; both must be
+positive. A shorter invocation still bounds a longer worker budget. Raster,
+image-inspection and transport-inspection deadlines are separate and remain short.
 
 `resume` retries transport failures. It retains passing reviews for the same
 candidate. A repair replaces the candidate only after deterministic checks pass,
