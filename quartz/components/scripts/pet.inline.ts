@@ -102,8 +102,10 @@ document.addEventListener('nav', () => {
         return
       }
       if (!petState.root || !hit || !petState.root.contains(hit)) return
-      if (hit.closest('.garden-pet-close')) hideReminder()
-      else if (hit.closest('.garden-pet-button') && !petState.hop) play('cheer', 1400)
+      if (!hit.closest('.garden-pet-button')) return
+      // A click on the pet dismisses the reminder it is holding up.
+      if (petState.reminding) hideReminder()
+      if (!petState.hop) play('cheer', 1400)
     },
     { signal },
   )

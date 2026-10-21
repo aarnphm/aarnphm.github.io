@@ -33,7 +33,7 @@ const spawn = () => {
   petState.origin = { x: rect.left + window.scrollX, y: rect.top + window.scrollY }
   // Placement reads the page before the SVG's thousands of nodes need style and layout.
   return () => {
-    el.innerHTML = `<button type="button" class="garden-pet-button" aria-label="garden pet">${petState.markup}</button><div class="garden-pet-bubble" role="status"><span class="garden-pet-bubble-text"></span><button type="button" class="garden-pet-close" aria-label="dismiss reminder">×</button></div>`
+    el.innerHTML = `<button type="button" class="garden-pet-button" aria-label="garden pet">${petState.markup}</button><div class="garden-pet-bubble" role="status"><span class="garden-pet-bubble-text"></span></div>`
     petState.svg = el.querySelector('svg')
     petState.gazeArt = petState.svg ? createPetGaze(petState.svg) : null
     showBubble()
