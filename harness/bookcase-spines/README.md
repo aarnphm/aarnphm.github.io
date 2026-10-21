@@ -10,12 +10,12 @@ geometry in the SVG master. No bitmap, external resource or live font is allowed
 The browser-facing exports keep the current shelf (96 × 320, q80) and detail
 (256 × 1280, q84) ceilings and never exceed reference dimensions.
 
-| Role | Default |
-| --- | --- |
-| Trace | GPT-6.1 Sol, medium effort |
-| Independent visual review | Fresh GPT-6.1 Sol, high effort, then Gemini 4 Argon High |
-| Optional additional review | Caw, installed Cursor model, ask mode |
-| Coordinator | One Python process; sequential model calls |
+| Role                       | Default                                                  |
+| -------------------------- | -------------------------------------------------------- |
+| Trace                      | GPT-6.1 Sol, medium effort                               |
+| Independent visual review  | Fresh GPT-6.1 Sol, high effort, then Gemini 4 Argon High |
+| Optional additional review | Caw, installed Cursor model, ask mode                    |
+| Coordinator                | One Python process; sequential model calls               |
 
 The defaults live in [config.json](config.json). All configured reviewers must
 pass the exact candidate. Add `caw` to `reviewers` in a separate config before

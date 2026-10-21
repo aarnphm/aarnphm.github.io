@@ -16,23 +16,23 @@ from stats import compare, render_compare  # noqa: E402
 
 
 def main() -> int:
-    if len(sys.argv) != 3:
-        print(__doc__, file=sys.stderr)
-        return 2
-    a, b = sys.argv[1:3]
-    with open(os.path.join(a, 'results.json')) as f:
-        base = json.load(f)
-    with open(os.path.join(b, 'results.json')) as f:
-        cand = json.load(f)
-    cmp = compare(base, cand)
-    text = render_compare(cmp, base['meta'], cand['meta'])
-    with open(os.path.join(b, 'compare.md'), 'w') as f:
-        f.write(text)
-    with open(os.path.join(b, 'compare.json'), 'w') as f:
-        json.dump(cmp, f, indent=2)
-    print(text)
-    return 0 if all(c.get('accept') for c in cmp.values()) else 3
+  if len(sys.argv) != 3:
+    print(__doc__, file=sys.stderr)
+    return 2
+  a, b = sys.argv[1:3]
+  with open(os.path.join(a, 'results.json')) as f:
+    base = json.load(f)
+  with open(os.path.join(b, 'results.json')) as f:
+    cand = json.load(f)
+  cmp = compare(base, cand)
+  text = render_compare(cmp, base['meta'], cand['meta'])
+  with open(os.path.join(b, 'compare.md'), 'w') as f:
+    f.write(text)
+  with open(os.path.join(b, 'compare.json'), 'w') as f:
+    json.dump(cmp, f, indent=2)
+  print(text)
+  return 0 if all(c.get('accept') for c in cmp.values()) else 3
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+  sys.exit(main())
