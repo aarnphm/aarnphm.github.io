@@ -60,18 +60,4 @@ for t in $targets; do
     || echo "warning: $t changed in the index during the run; re-run before acting" >&2
 done
 
-for v in "$RUN"/*/validation.json; do
-  [ -f "$v" ] || continue
-  s=$(dirname "$v")
-  echo
-  jq -r '.target' "$v"
-  jq -r '.results[] | [.worker, .status, (.metrics | "files=\(.files) largest=\(.largest) exports \(.exportsBefore)->\(.exportsAfter) cutShare=\(.cutShare) sharedState=\(.sharedState)")] | @tsv' "$v" \
-    | while IFS="$(printf '\t')" read -r worker status metrics; do
-        d="$s/decisions/$(printf '%s' "$worker" | sed 's/[^A-Za-z0-9_.-][^A-Za-z0-9_.-]*/-/g').decision.json"
-        action=$(jq -r '.action // "?"' "$d" 2> /dev/null || echo '?')
-        printf '  %-28s %-5s decide=%-9s %s\n' "$worker" "$status" "$action" "$metrics"
-      done
-  jq -r '.agreement[] | "  ARI \(.a) vs \(.b): \(.ari)"' "$v"
-done
-echo
-echo "results: $RUN/<target>/validation.json and decisions/" >&2
+"$HERE/scripts/run.sh" summary "$RUN"

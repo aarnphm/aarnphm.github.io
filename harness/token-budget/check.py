@@ -1,9 +1,9 @@
 #!/usr/bin/env -S uv run --script
 # /// script
 # requires-python = ">=3.12"
-# dependencies = []
+# dependencies = ["tiktoken>=0.11"]
 # ///
-"""Token budget: files over LIMIT tokens, where tokens = bytes / 4.
+"""Token budget: files over LIMIT tokens, counted with tiktoken's ENCODING (o200k_base, the o3 tokenizer).
 
   harness/token-budget/check.py                  pre-commit: staged blobs; cut plans and split steps
   harness/token-budget/check.py --all            every tracked file in the index; one line per file
@@ -22,9 +22,8 @@ import re
 import subprocess
 import sys
 
-from common import BYTES_PER_TOKEN, LIMIT, TARGET, cuts, tokens
+from common import ENCODING, LIMIT, TARGET, cuts, texts_tokens
 
-MAX_BYTES = LIMIT * BYTES_PER_TOKEN
 CUTS_SHOWN = 40
 
 BLOCK_START = re.compile(
@@ -85,6 +84,18 @@ def index_entries(paths: list[str] | None = None) -> list[dict]:
   return out
 
 
+def blobs(shas: list[str]) -> list[bytes]:
+  """Blob contents in one `git cat-file --batch` process."""
+  raw = run(['cat-file', '--batch'], '\n'.join(shas).encode())
+  out, at = [], 0
+  for _ in shas:
+    nl = raw.index(b'\n', at)
+    size = int(raw[at:nl].split()[2])
+    out.append(raw[nl + 1 : nl + 1 + size])
+    at = nl + 1 + size + 1
+  return out
+
+
 def over_budget(entries: list[dict]) -> list[dict]:
   """Over-budget, agent-authored text files among the entries, with their text."""
   files = [f for f in entries if f['mode'] in ('100644', '100755')]
@@ -94,10 +105,11 @@ def over_budget(entries: list[dict]) -> list[dict]:
     ['cat-file', '--batch-check=%(objectsize)'],
     '\n'.join(f['sha'] for f in files).encode(),
   ).split()
+  # A token is at least one byte, so only files over LIMIT bytes can be over LIMIT tokens.
   big = [
     {'path': f['path'], 'sha': f['sha'], 'bytes': int(n)}
     for f, n in zip(files, sizes)
-    if int(n) > MAX_BYTES
+    if int(n) > LIMIT
   ]
   if not big:
     return []
@@ -113,22 +125,26 @@ def over_budget(entries: list[dict]) -> list[dict]:
   attrs: dict[str, dict] = {f['path']: {} for f in big}
   for i in range(0, len(raw) - 2, 3):
     attrs[raw[i]][raw[i + 1]] = raw[i + 2]
-  out = []
-  for f in big:
-    a = attrs[f['path']]
-    if any(
-      a.get(k) in ('set', 'true')
+  authored = [
+    f
+    for f in big
+    if not any(
+      attrs[f['path']].get(k) in ('set', 'true')
       for k in ('linguist-generated', 'linguist-vendored')
-    ):
-      continue
-    if any(a.get(k) in ('unset', 'false') for k in ('agent-authored', 'diff')):
-      continue
-    blob = run(['cat-file', 'blob', f['sha']])
+    )
+    and not any(
+      attrs[f['path']].get(k) in ('unset', 'false')
+      for k in ('agent-authored', 'diff')
+    )
+  ]
+  text = [
+    {**f, 'text': b.decode(errors='replace')}
+    for f, b in zip(authored, blobs([f['sha'] for f in authored]))
     # Same binary heuristic as git: a NUL byte in the first 8000 bytes.
-    if b'\0' in blob[:8000]:
-      continue
-    out.append({**f, 'text': blob.decode(errors='replace')})
-  return out
+    if b'\0' not in b[:8000]
+  ]
+  counts = texts_tokens([f['text'] for f in text])
+  return [{**f, 'tokens': t} for f, t in zip(text, counts) if t > LIMIT]
 
 
 def kind_of(p: str) -> str:
@@ -162,10 +178,13 @@ def line_blocks(text: str, kind: str) -> list[dict]:
       starts.append(at)
   if not starts or starts[0] != 0:
     starts.insert(0, 0)
+  texts: list[str] = []
   out = []
   for j, start in enumerate(starts):
     end = (starts[j + 1] if j + 1 < len(starts) else len(lines)) - 1
     body = lines[start : end + 1]
+    # Each block keeps its newline, as it would in its own file.
+    texts.append('\n'.join(body) + '\n')
     # The first line that is code, not a comment or blank.
     label = next(
       (l for l in body if l.strip() and not COMMENT.match(l)), lines[start]
@@ -174,16 +193,17 @@ def line_blocks(text: str, kind: str) -> list[dict]:
       'id': f'b{j}',
       'start': start + 1,
       'end': end + 1,
-      'tokens': tokens(len('\n'.join(body).encode()) + 1),
       'label': label.strip()[:64],
     })
+  for b, t in zip(out, texts_tokens(texts)):
+    b['tokens'] = t
   return out
 
 
 def describe(f: dict) -> dict:
   kind = kind_of(f['path'])
   bs = line_blocks(f['text'], kind)
-  t = tokens(f['bytes'])
+  t = f['tokens']
   return {
     'path': f['path'],
     'blob': f['sha'],
@@ -266,7 +286,7 @@ def main() -> int:
     report = {
       'limit': LIMIT,
       'target': TARGET,
-      'bytesPerToken': BYTES_PER_TOKEN,
+      'encoding': ENCODING,
       'source': source,
       'files': files,
     }
@@ -279,7 +299,7 @@ def main() -> int:
   where = 'staged' if source == 'staged' else 'tracked'
   out = [
     '',
-    f'token budget: {len(files)} {where} {plural} {LIMIT} tokens (tokens = bytes / {BYTES_PER_TOKEN}, so {MAX_BYTES} bytes).',
+    f'token budget: {len(files)} {where} {plural} {LIMIT} tokens ({ENCODING}, the o3 tokenizer, through tiktoken).',
     '',
   ]
   if source == 'all':

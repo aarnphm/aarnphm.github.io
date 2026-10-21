@@ -1,7 +1,7 @@
 #!/usr/bin/env -S uv run --script
 # /// script
 # requires-python = ">=3.12"
-# dependencies = []
+# dependencies = ["tiktoken>=0.11"]
 # ///
 """Stage 3: deterministic checks on boundary proposals, agreement between them, and one
 agent-decide request per proposal (docs/plans/token-budget-refactor.md).

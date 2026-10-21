@@ -5,7 +5,7 @@ description: 'Run a token budget pass: split Garden files over 5000 tokens into 
 
 # Token budget pass
 
-The pre-commit hook `harness/token-budget/check.py` rejects agent-authored files over 5000 tokens (tokens = bytes / 4, so 20000 bytes). A split that cuts a file in source order gives many files and no better modules. A pass instead asks two workers for a module boundary, checks both proposals with deterministic code, and implements the one that survives in a `w` worktree. The design and the pilot results are in `docs/plans/token-budget-refactor.md` (local only); read it before you change the harness.
+The pre-commit hook `harness/token-budget/check.py` rejects agent-authored files over 5000 tokens, counted with tiktoken o200k_base (the tokenizer of o1, o3, o4-mini and GPT-4o). A token is at least one byte, so files of 5000 bytes or less are never encoded. A split that cuts a file in source order gives many files and no better modules. A pass instead asks two workers for a module boundary, checks both proposals with deterministic code, and implements the one that survives in a `w` worktree. The design and the pilot results are in `docs/plans/token-budget-refactor.md` (local only); read it before you change the harness.
 
 ## Words
 
@@ -19,15 +19,16 @@ Use these words in briefs, reports and reviews:
 
 ## Run the pass (stages 0 to 4)
 
-From the main checkout:
+Every command goes through `harness/token-budget/scripts/run.sh` (below: `run.sh`), from the main checkout. `run.sh` with no arguments lists the commands.
 
 ```sh
-harness/token-budget/pass.sh --top 3          # the 3 files with the most tokens x churn
-harness/token-budget/pass.sh <path>...        # the named files
-TB_WORKERS= harness/token-budget/pass.sh ...  # baseline only, no model calls
+run.sh pass --top 3          # the 3 files with the most tokens x churn
+run.sh pass <path>...        # the named files
+TB_WORKERS= run.sh pass ...  # baseline only, no model calls
+run.sh summary <run>         # the table again for a finished run
 ```
 
-A pass with both workers takes 10 to 20 minutes. Run it in the background and do other work. It writes `work/refactor/pass-<date>/` (ignored by Git) and prints, per target, each proposal's status, its `agent-decide` action and its metrics, and the agreement (ARI) between proposals.
+A pass with both workers takes 10 to 20 minutes. Run it in the background and do other work. It writes `work/refactor/pass-<date>/` (ignored by Git) and prints, per target, each proposal's status, its failed checks, its `agent-decide` action and its metrics, and the agreement (ARI) between proposals.
 
 What the stages do:
 
@@ -58,32 +59,31 @@ The target is one large closure whose statements share `let` locals. Before any 
 One target at a time, one worktree per target:
 
 ```sh
-w garden tb-<slug>          # ~/workspace/worktrees/garden/tb-<slug>, branch aarnphm/tb-<slug>, from main
+run.sh worktree <name> <path>   # w garden tb-<name>: ~/workspace/worktrees/garden/tb-<name>, branch aarnphm/tb-<name>
 ```
 
-The worktree starts from HEAD. If the target's index or working-tree copy differs from HEAD, wait until aarnphm commits it. Compare the worktree blob (`git -C <wt> rev-parse HEAD:<path>`) with the `blob` in `graph.json` before you start.
+It runs `w` with stdin closed (`w` opens an interactive shell, and a non-interactive agent would hang) and warns when the target's copy in this checkout's index differs from HEAD. In that case wait until aarnphm commits it. The worktree starts from HEAD and has no `node_modules`, so `run.sh` uses the main checkout's tools on worktree paths. Compare the worktree blob (`git -C <wt> rev-parse HEAD:<path>`) with the `blob` in `graph.json` before you start.
 
-1. **Move.** Create the files the proposal names and move blocks into them verbatim. Fix only imports and exports. Do not rename, reformat or rewrite. Check the move: the non-import lines of the original and of the new files must match.
+1. **Move.** Create the files the proposal names and move blocks into them verbatim. Fix only imports and exports. Do not rename, reformat or rewrite. Check the move:
 
    ```sh
-   strip() { rg -v '^\s*(import\b|export \{|export \* from|\} from )' | sd '^export (default )?' '' | sort; }
-   git -C <wt> show main:<path> | strip > before.txt
-   cat <wt>/<path> <wt>/<folder>/* | strip > after.txt
-   diff before.txt after.txt
+   run.sh proof <wt> <path>   # non-import lines, HEAD vs entry + private folder; only blank lines and new comments may differ
+   run.sh css <wt> <path>     # style targets: HEAD vs worktree CSS, expanded and compressed, for the target and each stylesheet that @uses it
    ```
+
+   `css` must print `identical` for every line. A cascade-order mistake compiles fine and shows up only here.
 
 2. **Deepen.** Hide the exports the proposal hides. Update importers to use the entry. Move tests that import internals to the entry interface, and delete tests of internals when tests at the interface cover the same behaviour. Keep every behaviour that a test covers.
 
-3. **Verify.** In the worktree: `pnpm exec tsgo --noEmit`, `pnpm exec oxlint <changed files>`, the affected tests, and the hook on the new files: `git -C <wt> add <module paths>`, then `(cd <wt> && ~/workspace/garden/harness/token-budget/check.py --paths <module paths>)`. The hook reads the index of the directory it runs in, so it measures the worktree. For client scripts, land first, then use the running `quartz/scripts/dev.ts` watcher in the main checkout: wait for the next `build:ready` and check the rendered page. Then ask Argon, in a new conversation, to review the diff with the proposal as acceptance criteria.
+3. **Verify.** For scripts, link the main checkout's `node_modules` into the worktree first (`ln -s ~/workspace/garden/node_modules <wt>/node_modules`; not yet tried in a pass), then in the worktree: `pnpm exec tsgo --noEmit`, `pnpm exec oxlint <changed files>`, the affected tests, and the hook on the new files: `git -C <wt> add <module paths>`, then `(cd <wt> && ~/workspace/garden/harness/token-budget/scripts/run.sh check --paths <module paths>)`. The hook reads the index of the directory it runs in, so it measures the worktree. Keep each file under the 4000-token aim, not only the 5000 limit; when a file lands over the aim, move a whole concept out (pet.scss: wind left weather). For client scripts, land first, then use the running `quartz/scripts/dev.ts` watcher in the main checkout: wait for the next `build:ready` and check the rendered page. Then ask Argon, in a new conversation, to review the diff with the proposal as acceptance criteria.
 
 4. **Land.** From the main checkout:
 
    ```sh
-   git -C <wt> diff --binary main -- <module paths> > <run>/<slug>/land.patch
-   git apply --index --3way <run>/<slug>/land.patch
+   run.sh land <wt> <run>/<slug> <module paths>   # stages the worktree's changes vs HEAD; writes land.patch
    ```
 
-   This stages only the module's paths. Do not commit. aarnphm commits, then `w --rm garden tb-<slug>` removes the worktree.
+   This stages only the module's paths. It refuses when those paths are already staged here (a second round on a landed module): then copy the changed files over after checking `git diff --quiet -- <paths>`, and stage them. Do not commit. aarnphm commits, then `w --rm garden tb-<slug>` removes the worktree. `w --rm` keeps the branch; `git branch -D aarnphm/tb-<slug>` removes it (nothing was committed there).
 
 ## Rules
 
@@ -110,3 +110,4 @@ For each target, give aarnphm: the chosen proposal (or none) and why, the files 
 | `dispatch.sh`                                           | Stage 2 workers                                                                                 |
 | `collect.sh`, `baseline.py`, `validate.py`, `checks.py` | Stage 3                                                                                         |
 | `pass.sh`                                               | Stages 0 to 4 in one command                                                                    |
+| `scripts/run.sh`                                        | Entry point: every stage plus `summary`, `worktree`, `proof`, `css`, `land`                     |

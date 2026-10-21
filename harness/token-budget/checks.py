@@ -3,12 +3,13 @@
 import os
 import re
 
-from common import LIMIT, TARGET, index_blob, strip_ext, tokens
+from common import LIMIT, TARGET, index_blob, strip_ext, text_tokens
 
 
 def import_tokens(names: list[str]) -> int:
-  """Bytes of an import line naming these symbols, in tokens."""
-  return tokens(30 + sum(len(s) + 2 for s in names))
+  """Tokens of an import line naming these symbols, from a typical private path."""
+  line = f"import {{ {', '.join(names)} }} from './module/private-part'\n"
+  return text_tokens(line)
 
 
 def ari(a: dict[str, str], b: dict[str, str]) -> float:
