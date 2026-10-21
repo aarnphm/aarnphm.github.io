@@ -1414,6 +1414,13 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
     select(index)
   }
   indexPane.addEventListener('focusin', selectFromIndex, { signal })
+  const hoverFromIndex = (event: PointerEvent) => {
+    if (!event.shiftKey || event.pointerType === 'touch' || event.buttons !== 0 || dialog.open)
+      return
+    selectFromIndex(event)
+  }
+  indexPane.addEventListener('pointerover', hoverFromIndex, { signal })
+  indexPane.addEventListener('pointermove', hoverFromIndex, { signal })
   const groupEntries = new Map(
     groups.map(group => [
       group,

@@ -11,6 +11,20 @@ export interface HardcoverBook {
   spineArtDetailHeight?: number
 }
 
+function spineImageSource(
+  value: string | undefined,
+  width: number | undefined,
+  height: number | undefined,
+): string | undefined {
+  if (!value) return undefined
+  const url = new URL(value, document.baseURI)
+  if (url.pathname.endsWith('.svg') && width && height) {
+    // SVG deliveries use native, zero-origin bounds. Safari needs both view parameters.
+    url.hash = `svgView(viewBox(0,0,${width},${height});preserveAspectRatio(none))`
+  }
+  return url.href
+}
+
 export function createHardcoverPreview(root: HTMLElement, signal: AbortSignal) {
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
   const mount = document.createElement('span')
@@ -250,10 +264,16 @@ export function createHardcoverPreview(root: HTMLElement, signal: AbortSignal) {
       const current = ++revision
       cancelDecoders()
       cancelMotion()
-      lowSpine = value.spineArt
-      detailSpine = value.spineArtDetail
-        ? new URL(value.spineArtDetail, document.baseURI).href
-        : undefined
+      lowSpine = spineImageSource(
+        value.spineArt,
+        value.spineArtDetailWidth,
+        value.spineArtDetailHeight,
+      )
+      detailSpine = spineImageSource(
+        value.spineArtDetail,
+        value.spineArtDetailWidth,
+        value.spineArtDetailHeight,
+      )
       const url = value.thumbnail ?? value.cover
       const sameCover = Boolean(url && image.getAttribute('src') === url)
       // Keep the current geometry until the next cover supplies its aspect, avoiding a reset
@@ -275,7 +295,7 @@ export function createHardcoverPreview(root: HTMLElement, signal: AbortSignal) {
         availableSize = { width: root.clientWidth, height: root.clientHeight }
       resize()
       paint()
-      if (value.spineArt) spineImage.src = value.spineArt
+      if (lowSpine) spineImage.src = lowSpine
       else spineImage.removeAttribute('src')
       if (url) {
         if (!sameCover) image.src = url
@@ -283,14 +303,13 @@ export function createHardcoverPreview(root: HTMLElement, signal: AbortSignal) {
       // Decode cover and spine derivatives in parallel before revealing.
       const decodes: Promise<unknown>[] = []
       if (url) decodes.push(image.decode().catch(() => undefined))
-      if (value.spineArt) decodes.push(spineImage.decode().catch(() => undefined))
+      if (lowSpine) decodes.push(spineImage.decode().catch(() => undefined))
       if (decodes.length) await Promise.all(decodes)
       if (current !== revision || signal.aborted) return false
-      const spineAvailable = Boolean(
-        value.spineArt && spineImage.complete && spineImage.naturalWidth > 0,
-      )
+      const spineAvailable = Boolean(lowSpine && spineImage.complete && spineImage.naturalWidth > 0)
       spineImage.hidden = !spineAvailable
-      if (spineAvailable) spineImage.dataset.spineResolution = 'low'
+      if (spineAvailable)
+        spineImage.dataset.spineResolution = spineImage.src === detailSpine ? 'detail' : 'low'
       spine.toggleAttribute('data-art-ready', spineAvailable)
       const available = Boolean(url && image.complete && image.naturalWidth > 0)
       image.hidden = !available
@@ -326,11 +345,11 @@ export function createHardcoverPreview(root: HTMLElement, signal: AbortSignal) {
             },
           )
         }
-        if (value.spineArtDetail) {
+        if (detailSpine && detailSpine !== lowSpine) {
           const detail = new Image()
           spineDecoder = detail
           detail.decoding = 'async'
-          detail.src = value.spineArtDetail
+          detail.src = detailSpine
           void detail.decode().then(
             () => {
               if (spineDecoder !== detail) return
