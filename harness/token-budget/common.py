@@ -1,27 +1,46 @@
 """Shared constants and helpers for the token budget harness.
 
-check.py (the pre-commit hook) and the refactor stages share LIMIT, TARGET and BYTES_PER_TOKEN.
-A saved check.py --json report carries the values it was made with; check_report refuses a stale
-one.
+check.py (the pre-commit hook) and the refactor stages share LIMIT, TARGET and ENCODING. A saved
+check.py --json report carries the values it was made with; check_report refuses a stale one.
 """
 
-import math
+import functools
+import os
 import re
 import subprocess
+from pathlib import Path
 
 LIMIT = 5000
 TARGET = 4000
-BYTES_PER_TOKEN = 4
+# The tokenizer of o1, o3, o4-mini, GPT-4o and GPT-4.1 (tiktoken.encoding_for_model). Every token
+# decodes to at least one byte, so a file of at most LIMIT bytes is under budget without encoding.
+ENCODING = 'o200k_base'
+
+# tiktoken downloads the 3.6 MB rank file once; its default cache is under $TMPDIR, which macOS
+# clears, and a pre-commit hook should not need the network.
+os.environ.setdefault(
+  'TIKTOKEN_CACHE_DIR', str(Path.home() / '.cache' / 'tiktoken')
+)
 
 _EXT = re.compile(r'\.(?:[cm]?[jt]sx?|s?css|sass)$')
 
 
-def tokens(n_bytes: int) -> int:
-  return math.ceil(n_bytes / BYTES_PER_TOKEN)
+@functools.cache
+def _encoder():
+  import tiktoken
+
+  return tiktoken.get_encoding(ENCODING)
 
 
 def text_tokens(text: str) -> int:
-  return tokens(len(text.encode()))
+  # encode_ordinary: a file may contain special-token text such as <|endoftext|>.
+  return len(_encoder().encode_ordinary(text))
+
+
+def texts_tokens(texts: list[str]) -> list[int]:
+  return [
+    len(t) for t in _encoder().encode_ordinary_batch(texts, num_threads=8)
+  ]
 
 
 def strip_ext(p: str) -> str:
@@ -47,14 +66,11 @@ def slug(path: str) -> str:
 
 def check_report(report: dict) -> None:
   """Refuses a hook report whose budget constants differ from the harness's."""
-  theirs = (
-    report.get('limit'),
-    report.get('target'),
-    report.get('bytesPerToken', BYTES_PER_TOKEN),
-  )
-  if theirs != (LIMIT, TARGET, BYTES_PER_TOKEN):
+  theirs = (report.get('limit'), report.get('target'), report.get('encoding'))
+  if theirs != (LIMIT, TARGET, ENCODING):
     raise SystemExit(
-      f'report budget {theirs} differs from harness {(LIMIT, TARGET, BYTES_PER_TOKEN)}'
+      f'report budget {theirs} differs from harness {(LIMIT, TARGET, ENCODING)}; '
+      'run check.py --json again'
     )
 
 

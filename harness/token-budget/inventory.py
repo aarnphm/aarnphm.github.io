@@ -1,7 +1,7 @@
 #!/usr/bin/env -S uv run --script
 # /// script
 # requires-python = ">=3.12"
-# dependencies = ["ast-grep-py>=0.40"]
+# dependencies = ["ast-grep-py>=0.40", "tiktoken>=0.11"]
 # ///
 """Stage 0: turn a check.py --json report into the graph boundary proposals need.
 
