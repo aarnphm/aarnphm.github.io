@@ -48,6 +48,8 @@ export const PDF_RESOURCE_KINDS = new Set<CourseResourceKind>([
 export function hasCourseCrumb(data: QuartzPluginData): boolean {
   const slug = data.slug ?? ''
   if (isUniversityPdfPage(slug) || universityPlaceOf(slug) || universityIndexOf(slug)) return true
+  // the French folder draws the same unit bar on its episodes and its home
+  if (/^fr\/episode-\d+$/.test(slug) || data.frontmatter?.pageLayout === 'fr') return true
   if (!courseDirOf(slug)) return false
   return (
     parseCourseRecord(data.frontmatter) !== null ||

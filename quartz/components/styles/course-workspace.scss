@@ -21,13 +21,13 @@
 
 // Wide screens: the lecture text keeps the page column, and the workspace docks in the free space
 // to its right, from the top of the screen to the bottom. The left edge is the reading column's
-// end in the desktop grid (base.scss): a 1fr outer track, a 3-kern gutter and 5 of the 9 tracks.
+// end in the desktop grid (base.scss): a 1fr outer track, a 3-kern gutter and 6 of the 9 tracks.
 @media all and (min-width: 1401px) {
   .course-workspace {
     position: fixed;
     top: max(var(--course-workspace-top), var(--course-workspace-edge));
     bottom: var(--course-workspace-edge);
-    left: calc(var(--kern) * 4.5 + var(--grid-col-width) * 5 + var(--space-4));
+    left: calc(var(--kern) * 4.5 + var(--grid-col-width) * 6 + var(--space-4));
     right: var(--course-workspace-edge);
     z-index: 1;
   }

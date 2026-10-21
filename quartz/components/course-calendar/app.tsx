@@ -200,3 +200,5 @@ export function mountCourseCalendar(root: HTMLElement, signal: AbortSignal): () 
   render(<CourseCalendarView id={COURSE_CALENDAR_ID} data={data} signal={signal} />, mount)
   return () => render(null, mount)
 }
+
+export { FR_CALENDAR_ID, FrCalendarView, mountFrCalendar } from './fr'

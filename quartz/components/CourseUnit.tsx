@@ -488,7 +488,7 @@ export const CourseUnitFoot = (() => {
       const body = (
         <>
           <span class="course-num">{pad(unit.record.n)}</span>
-          <span>{unit.record.title}</span>
+          <span class="course-pager-title">{unit.record.title}</span>
         </>
       )
       return href ? (
@@ -512,7 +512,7 @@ export const CourseUnitFoot = (() => {
       return target ? (
         <a rel={rel} class="internal" href={resolveRelative(from, target)}>
           <span class="course-num">{pad(m)}</span>
-          <span>problem set</span>
+          <span class="course-pager-title">problem set</span>
         </a>
       ) : undefined
     }
