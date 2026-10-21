@@ -43,11 +43,17 @@ def sh(cmd: list[str]) -> str:
 
 
 LOCK_PATH = os.path.expanduser('~/.local/state/helium-cua/base-perf.lock')
+# Any CUA session on the machine that closes a debugged tab drops this session's lease too (the
+# lock only serializes benches); the rep that hits it reads as one of these.
 RECLAIM_ERRORS = (
   'STALE_HANDLE',
   'BROWSER_DISCONNECTED',
+  'BROWSER_TIMEOUT',
+  'connection invalidated',
   'EXECUTION_TIMEOUT',
   'detached',
+  # The broker reset the session's REPL (a call past its timeout); `var tab` is gone with it.
+  'tab is not defined',
 )
 
 
@@ -62,6 +68,16 @@ def run_once(
   limit_ms: int,
 ) -> dict:
   tab.bring_to_front()
+  # A hidden tab (Helium's window occluded, minimised, on another space, or the screen locked)
+  # gets no animation frames, and every step awaits one: wait for it to show, then give up on
+  # the rep with a reason instead of hanging on each step.
+  t_vis = time.monotonic()
+  while tab.evaluate('document.visibilityState', 30000) != 'visible':
+    if time.monotonic() - t_vis > float(os.environ.get('BP_VISIBLE_WAIT') or 600):
+      return {'rep': rep, 'skipped': 'tab hidden: Helium is not on screen'}
+    print('Helium tab hidden (window occluded or screen locked); waiting', file=sys.stderr)
+    time.sleep(15)
+    tab.bring_to_front()
   try:
     tab.goto(base + scenario['path'])
   except CuaError:
@@ -75,7 +91,27 @@ def run_once(
   time.sleep(scenario.get('settle', 800) / 1000)
   before = tab.metrics()
   longtasks_before = tab.evaluate('__bp.longtasks.length')
-  run = tab.evaluate(f'(async () => {{ {scenario["script"]} }})()', 60000)
+  # The broker allows one extension command 15 s and tears every lease down past that, so the
+  # script runs detached and the bench polls for its result with short evaluates.
+  # Runtime.evaluate awaits a returned promise (awaitPromise), so the starter returns a number.
+  tab.evaluate(
+    '(() => { window.__bpResult = null; '
+    f'(async () => {{ {scenario["script"]} }})().then('
+    'v => { window.__bpResult = {ok: v} }, e => { window.__bpResult = {err: String(e && e.stack || e)} }); '
+    'return 1 })()',
+    30000,
+  )
+  t_script = time.monotonic()
+  while True:
+    run = tab.evaluate('window.__bpResult', 30000)
+    if run is not None:
+      break
+    if time.monotonic() - t_script > 120:
+      raise CuaError('scenario script did not finish in 120 s')
+    time.sleep(0.5)
+  if 'err' in run:
+    raise CuaError(f'scenario script: {run["err"][:300]}')
+  run = run['ok']
   time.sleep(0.2)
   after = tab.metrics()
   # Oilpan (DOM, style, layout objects) is not in Performance.getMetrics; the extension does not
@@ -169,21 +205,45 @@ def main() -> int:
     },
     'scenarios': {},
   }
+  # A saturated machine makes every number noise and trips the broker's 15 s per-command limit
+  # (which drops every session's lease): wait for the load to come down, within a cap, and flag
+  # the run when it did not.
+  ncpu = os.cpu_count() or 1
+  load_max = float(os.environ.get('BP_LOAD_MAX') or 6 * ncpu)
+  quiet_wait = float(os.environ.get('BP_QUIET_WAIT') or 600)
+  t_quiet = time.monotonic()
+  while os.getloadavg()[0] > load_max:
+    if time.monotonic() - t_quiet > quiet_wait:
+      results['meta']['load_high'] = True
+      print(
+        f'load {os.getloadavg()[0]:.0f} still above {load_max:.0f} after {quiet_wait:.0f} s; measuring anyway, flagged',
+        file=sys.stderr,
+      )
+      break
+    print(f'load {os.getloadavg()[0]:.0f} > {load_max:.0f} on {ncpu} cpus; waiting', file=sys.stderr)
+    time.sleep(30)
+  results['meta']['load'] = round(os.getloadavg()[0], 1)
+  results['meta']['ncpu'] = ncpu
   # One bench at a time per machine: Helium drops every other session's debugger lease when a
   # debugged tab closes, so two concurrent benches fail each other's reps. Climbs queue here.
-  lock = open(LOCK_PATH, 'w')
+  try:
+    lock = open(LOCK_PATH, 'a')
+  except PermissionError:
+    # A sandboxed worker (codex workspace-write) can read but not create the lock; the main
+    # checkout's baseline bench created it. flock needs only an open descriptor.
+    lock = open(LOCK_PATH, 'r')
   print(f'waiting for {LOCK_PATH}', file=sys.stderr)
   fcntl.flock(lock, fcntl.LOCK_EX)
   session = Session(a.session)
 
   def fresh_tab() -> Tab:
     try:
-      return Tab(session, base + '/', width=a.width, height=a.height)
+      return Tab(session, base + '/robots.txt', width=a.width, height=a.height)
     except CuaError as e:
       # The extension reconnects within seconds after a service-worker restart.
       print(f'tab: {e}; retrying', file=sys.stderr)
       time.sleep(5)
-      return Tab(session, base + '/', width=a.width, height=a.height)
+      return Tab(session, base + '/robots.txt', width=a.width, height=a.height)
 
   tab = fresh_tab()
   reclaims = 0
@@ -251,6 +311,9 @@ def main() -> int:
         file=sys.stderr,
       )
   results['meta']['reclaims'] = reclaims
+  results['meta']['load_end'] = round(os.getloadavg()[0], 1)
+  if results['meta']['load_end'] > load_max:
+    results['meta']['load_high'] = True
   with open(os.path.join(a.out, 'results.json'), 'w') as f:
     json.dump(results, f, indent=2)
   text = render_summary(results)

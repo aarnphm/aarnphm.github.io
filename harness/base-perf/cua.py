@@ -130,7 +130,10 @@ class Session:
 
 class Tab:
   """A task tab owned by the session: `var tab` in the REPL. Page code goes through raw CDP
-  (`tab.command`) so the bench reads Performance.getMetrics like a DevTools client would."""
+  (`tab.command`) so the bench reads Performance.getMetrics like a DevTools client would. Open it
+  on a light page such as robots.txt (tabs.new takes HTTP(S) URLs only and waits for the load):
+  the home page took 30 s and more on a loaded worktree server, which spent the whole creation
+  timeout before the first goto."""
 
   def __init__(
     self,
@@ -147,7 +150,7 @@ class Tab:
       "await tab.command('Page.enable'); await tab.command('Runtime.enable'); await tab.command('Performance.enable');"
       f"await tab.command('Emulation.setDeviceMetricsOverride', {{width: {width}, height: {height}, deviceScaleFactor: 1, mobile: false}});"
       'repl.write(JSON.stringify({id: tab.id}))',
-      40000,
+      60000,
     )
 
   def evaluate(self, expression: str, timeout_ms: int = 30000):
@@ -180,10 +183,12 @@ class Tab:
     )
     while (time.monotonic() - t0) * 1000 < limit_ms:
       try:
-        if self.evaluate(probe, 10000):
+        # A loaded main thread answers late; a REPL timeout here would reset the session.
+        if self.evaluate(probe, 30000):
           return (time.monotonic() - t0) * 1000
-      except CuaError:
-        pass
+      except CuaError as e:
+        if 'EXECUTION_TIMEOUT' in str(e) or 'tab is not defined' in str(e):
+          raise
       time.sleep(poll_ms / 1000)
     return None
 

@@ -22,6 +22,11 @@ WS=$(git -C "$HERE" rev-parse --show-toplevel)
 cmd=${1:-}
 [ -n "$cmd" ] || { sed -n '3,17p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 2; }
 shift
+# Inside the codex seatbelt ~/.cache/uv is read-only and there is no network; uv still needs a
+# cache to run a script, so it goes to /tmp (shared, uv locks it) and stays offline.
+if [ -n "${CODEX_SANDBOX:-}" ] || [ ! -w "$HOME/.cache/uv" ]; then
+  export UV_CACHE_DIR="${UV_CACHE_DIR:-/tmp/base-perf-uv-cache}" UV_OFFLINE=1
+fi
 group_of() { cat "$("$HERE/worktree.sh" path "$1")/.base-perf/group" 2> /dev/null || echo "$1"; }
 
 case $cmd in

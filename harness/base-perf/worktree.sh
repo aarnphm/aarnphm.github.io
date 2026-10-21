@@ -78,11 +78,23 @@ case $cmd in
     url_of
     ;;
   down)
+    # pnpm → tsx → dev.ts → pnpm → wrangler → workerd: wrangler reparents to launchd when dev.ts
+    # dies, keeps the page port and makes the next watcher loop on "port is occupied". Walk the
+    # tree from the leaves, then whatever still listens on the page port.
     if [ -f "$STATE/dev.pid" ]; then
-      pid=$(cat "$STATE/dev.pid")
-      pkill -TERM -P "$pid" 2> /dev/null || true
-      kill -TERM "$pid" 2> /dev/null || true
+      kill_tree() {
+        for child in $(pgrep -P "$1" 2> /dev/null); do kill_tree "$child"; done
+        kill -TERM "$1" 2> /dev/null || true
+      }
+      kill_tree "$(cat "$STATE/dev.pid")"
       rm -f "$STATE/dev.pid"
+    fi
+    sleep 1
+    if [ -f "$STATE/port" ]; then
+      for pid in $(lsof -ti "tcp:$(( $(port_of) + 707 ))" -sTCP:LISTEN 2> /dev/null); do
+        kill -TERM "$pid" 2> /dev/null || true
+      done
+      pkill -TERM -f "wrangler dev --name portfolio-dev --port $(( $(port_of) + 707 ))" 2> /dev/null || true
     fi
     ;;
   wait-build)

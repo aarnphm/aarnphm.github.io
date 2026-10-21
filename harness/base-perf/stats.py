@@ -104,8 +104,14 @@ def render_summary(results: dict) -> str:
   reclaims = (
     f', {meta["reclaims"]} tab reclaims' if meta.get('reclaims') else ''
   )
+  load = (
+    f', load {meta["load"]}→{meta.get("load_end", "?")} on {meta["ncpu"]} cpus'
+    if meta.get('load') is not None
+    else ''
+  )
+  flag = ' · LOAD HIGH, numbers are noise' if meta.get('load_high') else ''
   lines = [
-    f'# bench {meta["date"]} @ {meta["commit"]}{dirty}, {meta["reps"]} reps, {meta["base_url"]}{reclaims}',
+    f'# bench {meta["date"]} @ {meta["commit"]}{dirty}, {meta["reps"]} reps, {meta["base_url"]}{reclaims}{load}{flag}',
     '',
   ]
   for name, s in results['scenarios'].items():
@@ -209,8 +215,9 @@ def compare(base: dict, cand: dict) -> dict:
 
 def render_compare(cmp: dict, base_meta: dict, cand_meta: dict) -> str:
   tag = lambda m: f'{m["commit"]}{"+" if m.get("dirty") else ""}'
+  loads = lambda m: f'{m.get("load", "?")}→{m.get("load_end", "?")}' + (' LOAD HIGH' if m.get('load_high') else '')
   lines = [
-    f'# compare {tag(base_meta)} (base) vs {tag(cand_meta)} (candidate)',
+    f'# compare {tag(base_meta)} (base) vs {tag(cand_meta)} (candidate), load {loads(base_meta)} vs {loads(cand_meta)}',
     '',
   ]
   for name, c in cmp.items():

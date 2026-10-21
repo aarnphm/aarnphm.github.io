@@ -76,6 +76,12 @@ per climb with `pass --workers vault,views,triathlon,maps` or `BP_WORKERS`, for 
 the only tab. Ports: 7400, 7500, 7600, 7700 (pages at port + 707). Other knobs:
 `BP_BUDGET_USD`, `BP_MAX_EXPERIMENTS`, `BP_TIMEOUT`.
 
+`BP_TIMEOUT` is in seconds and applies to Argon and Caw. It defaults to `0`,
+which waits until completion. Sol, Astra and Fable also have no harness model
+time limit. Browser readiness, individual RPCs, builds and Lighthouse retain
+their separate deadlines; those measure infrastructure progress rather than
+the duration of a model's optimization work.
+
 ## After a pass
 
 Each `<run-dir>/<name>/` holds `baseline/`, `cand-N/`, `experiments.md`, `events.ndjson`,
@@ -91,7 +97,17 @@ The bench brings its tab to the front for every rep: Helium's active tab changes
 on, and a background tab would get no animation frames. One bench runs at a time per machine
 (`~/.local/state/helium-cua/base-perf.lock`): when a debugged tab closes, Helium drops the other
 sessions' debugger leases, so two concurrent benches fail each other's reps with `STALE_HANDLE`.
-The four climbs of a pass queue on that lock; their Lighthouse runs happen outside it. Mapbox scenarios depend on the GPU and
+The four climbs of a pass queue on that lock; their Lighthouse runs happen outside it. Any other
+CUA session on the machine that closes a tab drops the lease as well; the bench reclaims its tab
+and retries the rep once, and `meta.reclaims` in results.json counts it. The broker gives every extension command 15 s and
+on a timeout drops the connection with every lease (the scenario script therefore runs detached
+and the bench polls `window.__bpResult`), so a saturated machine (load 150 on 10 cores
+while another session's full build and a Nix rustc build ran) fails reps on every session; the
+bench waits for load below `BP_LOAD_MAX` (6 × cpus) up to `BP_QUIET_WAIT` (600 s), records
+`load`/`load_end` in meta and flags `load_high` runs in the summary header. Inside the codex
+seatbelt the run script keeps uv's cache in `/tmp` (the home cache is read-only there) and the
+bench opens the lock read-only; the broker socket needs the sandbox's network access, which
+`climb.sh` enables. Mapbox scenarios depend on the GPU and
 network; their checks pass on a drawn canvas, not on tiles. `base.test.ts` fails at baseline
 (2026-10-21: `initializeVault` reads `document.body.dataset` in a DOM without a body); it is
 recorded per climb in `baseline/checks.txt`.
