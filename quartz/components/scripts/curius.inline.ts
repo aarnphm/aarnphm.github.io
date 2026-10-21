@@ -1,3 +1,4 @@
+import './curius-date.inline'
 import {
   fetchCuriusLinks,
   fetchSearchLinks,
@@ -43,6 +44,14 @@ document.addEventListener('nav', async e => {
     delete window.curiusState
   })
   fragment.setAttribute('aria-busy', 'true')
+  const loading = document.createElement('li')
+  loading.className = 'curius-list-status'
+  loading.setAttribute('role', 'status')
+  loading.textContent = 'Chargement des liens…'
+  const progress = document.createElement('progress')
+  progress.setAttribute('aria-label', 'Chargement des liens')
+  loading.appendChild(progress)
+  fragment.replaceChildren(loading)
   document.dispatchEvent(
     new CustomEvent('toast', { detail: { message: 'Récupération des liens curius…' } }),
   )

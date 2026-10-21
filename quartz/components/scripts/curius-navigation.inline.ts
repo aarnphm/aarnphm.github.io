@@ -99,7 +99,8 @@ document.addEventListener('nav', event => {
     if (frame !== undefined) return
     frame = requestAnimationFrame(() => {
       frame = undefined
-      if (ready && hasMore && !loading && !automaticPaused && nearEnd()) void appendNextPage()
+      if (!fragment.hidden && ready && hasMore && !loading && !automaticPaused && nearEnd())
+        void appendNextPage()
     })
   }
 
@@ -134,7 +135,7 @@ document.addEventListener('nav', event => {
   }
 
   const appendNextPage = async (moveToPage = false) => {
-    if (!ready || loading || !hasMore || signal.aborted) return
+    if (fragment.hidden || !ready || loading || !hasMore || signal.aborted) return
     loading = true
     navigation.setAttribute('aria-busy', 'true')
     fragment.setAttribute('aria-busy', 'true')

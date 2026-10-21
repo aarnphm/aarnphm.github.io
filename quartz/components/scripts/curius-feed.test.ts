@@ -8,42 +8,7 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import test from 'node:test'
 import { fileURLToPath } from 'node:url'
-import type { Link, Trail } from '../../types/curius'
-
-const trail: Trail = {
-  id: 1,
-  trailName: 'Fixture trail',
-  ownerId: 1,
-  description: 'Saved articles',
-  colorHex: '',
-  emojiUnicode: '',
-  flipped: null,
-  hash: 'fixture-trail',
-  slug: 'fixture-trail',
-  createdDate: '2026-09-01T00:00:00Z',
-  users: [],
-}
-
-function savedLink(id: number, trails: Trail[] = []): Link {
-  return {
-    id,
-    link: `https://example.org/article/${id}`,
-    title: `Saved article ${id}`,
-    favorite: false,
-    snippet: `Saved text ${id}`,
-    toRead: false,
-    createdBy: 1,
-    metadata: { full_text: '', author: '', page_type: '' },
-    lastCrawled: null,
-    createdDate: '2026-09-01T00:00:00Z',
-    modifiedDate: '2026-09-01T00:00:00Z',
-    trails,
-    comments: [],
-    mentions: [],
-    topics: [],
-    highlights: [],
-  }
-}
+import { savedLink, trail } from './curius-feed-fixtures'
 
 test('Curius loads sections independently and appends pages within the feed scrollport', async t => {
   let chrome: string | undefined
@@ -162,6 +127,8 @@ test('Curius loads sections independently and appends pages within the feed scro
                 const messageCount = messages.length
                 for (const cleanup of cleanups.splice(0)) cleanup()
                 document.dispatchEvent(new CustomEvent('nav', { detail: { url: 'other' } }))
+                const abortDeadline = Date.now() + 3000
+                while ((await requests()).abortedPages === 0 && Date.now() < abortDeadline) await wait(20)
                 await release('page')
                 await wait(100)
                 check(rows().length === 20, 'navigation cleanup prevents an in-flight page from rendering')
@@ -232,12 +199,12 @@ test('Curius loads sections independently and appends pages within the feed scro
               }
             }
             for (const cleanup of cleanups.splice(0)) cleanup()
-            document.body.textContent = btoa(JSON.stringify({ passed }))
+            document.body.textContent = JSON.stringify({ passed })
             document.body.dataset.fixtureDone = 'true'
           } catch (error) {
             const state = { requests: await requests(), messages, rows: rows().length,
               scrollTop: feed.scrollTop, scrollHeight: feed.scrollHeight, clientHeight: feed.clientHeight }
-            document.body.textContent = btoa(JSON.stringify({ passed, error: String(error) + ' ' + JSON.stringify(state) }))
+            document.body.textContent = JSON.stringify({ passed, error: String(error) + ' ' + JSON.stringify(state) })
             document.body.dataset.fixtureDone = 'true'
           }
         })()
@@ -425,9 +392,7 @@ test('Curius loads sections independently and appends pages within the feed scro
       })
       const encoded = await page.evaluate(() => document.body.textContent)
       assert.ok(encoded)
-      const output: { passed: string[]; error?: string } = JSON.parse(
-        Buffer.from(encoded, 'base64').toString('utf8'),
-      )
+      const output: { passed: string[]; error?: string } = JSON.parse(encoded)
       assert.equal(
         output.error,
         undefined,

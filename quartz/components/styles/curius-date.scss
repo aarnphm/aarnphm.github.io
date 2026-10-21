@@ -1,0 +1,93 @@
+.curius-date-view {
+  min-width: 0;
+  padding: 1rem 0;
+  color: var(--darkgray);
+  overflow-wrap: anywhere;
+
+  &[hidden] {
+    display: none;
+  }
+
+  .curius-date-heading {
+    color: var(--dark);
+  }
+
+  .curius-date-status,
+  .curius-date-list span {
+    font-family: var(--codeFont);
+    font-size: var(--text-meta);
+    font-variant-numeric: tabular-nums;
+  }
+
+  progress {
+    display: block;
+    width: 100%;
+    height: 0.25rem;
+    accent-color: var(--dark);
+  }
+
+  .curius-date-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    li {
+      display: grid;
+      gap: 0.25rem;
+      padding: 0.75rem 0;
+      border-top: 1px solid var(--gray);
+    }
+    a {
+      color: var(--dark);
+      background: transparent;
+    }
+    span {
+      color: var(--darkgray);
+    }
+  }
+
+  button {
+    min-height: 1.75rem;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid var(--darkgray);
+    border-radius: var(--radius-none);
+    color: var(--dark);
+    background: var(--light);
+    cursor: pointer;
+  }
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    a:hover {
+      color: var(--dark);
+      background: transparent;
+      text-decoration: underline;
+    }
+  }
+  @media (pointer: coarse) {
+    button {
+      min-height: 44px;
+    }
+  }
+}
+
+.curius-date-view[data-curius-page] {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.curius-date-reset {
+  margin-left: 1rem;
+  font-family: var(--codeFont);
+  font-size: var(--text-meta);
+}
+.curius-list-status progress {
+  display: block;
+  width: 100%;
+  height: 0.25rem;
+  margin-top: 0.5rem;
+  accent-color: var(--dark);
+}

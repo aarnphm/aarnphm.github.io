@@ -23,25 +23,19 @@ async function queryUsers(): Promise<ApiResponse> {
 }
 
 async function queryLinks(page: number = 0): Promise<ApiResponse> {
-  try {
-    const r = await fetch(`https://curius.app/api/users/3584/links?page=${page}`, HEADERS)
-    if (!r.ok) throw new Error('Network error')
-    const d: any = await r.json()
-    return { links: d.userSaved || [], page }
-  } catch {
-    return { links: [], page }
-  }
+  const response = await fetch(`https://curius.app/api/users/3584/links?page=${page}`, HEADERS)
+  if (!response.ok) throw new Error('Could not load Curius links')
+  const data: { userSaved?: Link[] } = await response.json()
+  if (!Array.isArray(data.userSaved)) throw new Error('Invalid Curius links response')
+  return { links: data.userSaved, page }
 }
 
 async function querySearchLinks(): Promise<ApiResponse> {
-  try {
-    const r = await fetch('https://curius.app/api/users/3584/searchLinks', HEADERS)
-    if (!r.ok) throw new Error('Network error')
-    const d: any = await r.json()
-    return { links: d.links || [] }
-  } catch {
-    return { links: [] }
-  }
+  const response = await fetch('https://curius.app/api/users/3584/searchLinks', HEADERS)
+  if (!response.ok) throw new Error('Could not load Curius archive')
+  const data: { links?: Link[] } = await response.json()
+  if (!Array.isArray(data.links)) throw new Error('Invalid Curius archive response')
+  return { links: data.links }
 }
 
 async function queryTrails(page: number = 0, alias?: string): Promise<ApiResponse> {
@@ -121,8 +115,8 @@ export default async function handleCurius(
       headers: { 'Content-Type': 'application/json' },
     })
   } catch {
-    return new Response(JSON.stringify({}), {
-      status: 200,
+    return new Response(JSON.stringify({ error: 'Could not load Curius data' }), {
+      status: 502,
       headers: { 'Content-Type': 'application/json' },
     })
   }
