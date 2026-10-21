@@ -9,7 +9,7 @@ const wholeAnchor = `    if (whole) {
         else paint(unit.draw)
       return
     }`
-const regionAnchor = `    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer)
+const regionAnchor = `    gl.bindBuffer(gl.ARRAY_BUFFER, gpu.vertexBuffer)
     gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0)
   }`
 
