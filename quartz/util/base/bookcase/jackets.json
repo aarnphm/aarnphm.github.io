@@ -6258,6 +6258,92 @@
       "detailArtworkSha256": "718b79a77936b809f67ab78680038ae59c4ab11dd4881207aa19ac2814f50eec",
       "detailWidth": 161,
       "detailHeight": 1280
+    },
+    {
+      "id": "harold-fry-random-house-2013-9780812983456-r20-followup",
+      "title": "The Unlikely Pilgrimage of Harold Fry",
+      "author": "Rachel Joyce",
+      "publisher": "The Dial Press",
+      "isbn": "9780812983456",
+      "editionEvidence": "Pango seller listing be3fe2a5 identifies ISBN 9780812983456. Photo 1 shows the pinned green illustrated front, photo 2 shows the same physical copy's spine, and photo 3 shows its back with the matching ISBN barcode. The spine photo includes Rachel Joyce, the full title, Harold Fry, and the Dial Press imprint with both printed ends. A narrow blank strip at the outer right edge is excluded to avoid a blue edge marking of unverified origin; all printed glyphs remain inside the plane.",
+      "page": "https://pangobooks.com/books/be3fe2a5-1857-4dfa-a70d-31db9840e16c-z7pWiWJmpaWWQZn1zGvH0nTt7Mo1",
+      "source": "https://images.pangobooks.com/images/ac2455d9-41f7-4f47-b568-719ecb1b208f?format=auto",
+      "sourceSha256": "7e0baaeedacaed171633fcaf500c75cfcadaf455d7dbabdb2c86de13d47a9382",
+      "sourceKind": "Pango seller-original gallery photo 2 of 5, downloaded as a 1080x1080 native JPEG from the observed photo asset. It shows the same-copy green spine and complete printed lettering and imprint.",
+      "poster": "library/posters/the-unlikely-pilgrimage-of-harold-fry.jpg",
+      "posterSha256": "4e9a3a2b13b03342f025d8711a3e6385cb08845ae646abaa35d3b32f01ce4cc9",
+      "crop": { "left": 0, "top": 0, "width": 94, "height": 1006 },
+      "height": 320,
+      "artwork": "harold-fry-random-house-2013-9780812983456-r20-followup.webp",
+      "perspective": {
+        "width": 94,
+        "height": 1006,
+        "points": [
+          { "source": [457, 48], "target": [0, 0] },
+          { "source": [540, 48], "target": [93, 0] },
+          { "source": [581, 1052], "target": [93, 1005] },
+          { "source": [477, 1052], "target": [0, 1005] }
+        ]
+      },
+      "lowPerspective": {
+        "width": 94,
+        "height": 1006,
+        "points": [
+          { "source": [457, 48], "target": [0, 0] },
+          { "source": [540, 48], "target": [93, 0] },
+          { "source": [581, 1052], "target": [93, 1005] },
+          { "source": [477, 1052], "target": [0, 1005] }
+        ]
+      },
+      "sampling": "independent",
+      "artworkSha256": "3115931eaf81909a8b60e0a092de9faaa0cf8f5bd1857bc84d6c371e1f443b38",
+      "detailArtwork": "harold-fry-random-house-2013-9780812983456-r20-followup-detail-92876af3d3cc149f.webp",
+      "detailArtworkSha256": "92876af3d3cc149f9571976392698ada51dcb9ee67a410690f7a4bb75ac8fbdc",
+      "detailWidth": 93,
+      "detailHeight": 1004
+    },
+    {
+      "id": "farewell-to-arms-scribner-1969-9780684717975-r23-root-v2",
+      "title": "A Farewell to Arms",
+      "author": "Ernest Hemingway",
+      "publisher": "Charles Scribner's Sons",
+      "isbn": "9780684717975",
+      "editionEvidence": "Kathrin's Books lists a 1969 Charles Scribner's Sons paperback with James and Ruth McCrea cover art. Gallery photo 1 shows the matching pinned fireworks-and-soldiers front. Photo 2 shows the full physical spine with A Farewell to Arms, HEMINGWAY, SL 61, and SCRIBNERS. Photo 4 is the same copy's copyright leaf: it prints copyright 1969 Charles Scribner's Sons, SBN 684-71797-2 (paper), and cover painting by James and Ruth McCrea. The SBN corresponds to ISBN 9780684717975. Root inspected the native front, spine and copyright photographs. The 1969 date is the photographed cover-art copyright and seller edition date; the individual copy's printing year is unverified. The root crop removes narrow unprinted curved edge margins, retaining every printed region.",
+      "page": "https://kathrinsbooks.com/books/e3ddff9b-f0b3-4c13-ac71-ff28390525a2",
+      "source": "https://storage.googleapis.com/kathrins-books-images/e3ddff9b-f0b3-4c13-ac71-ff28390525a2/image-2.webp?q=100&w=3840",
+      "sourceSha256": "dbc2456b04880ca13ba9b74a7674ecf67b90d0c4eaa760db6128538c05f5fb7a",
+      "sourceKind": "Native seller photograph, gallery photo 2 of the same listed copy as the matching front and copyright leaf. The complete printed spine plane and both physical ends are visible.",
+      "poster": "library/posters/a-farewell-to-arms.jpg",
+      "posterSha256": "4237034d3a22c9d73a9e1128d36760826414f08443dfbd14f98a0a8f044bde74",
+      "crop": { "left": 0, "top": 0, "width": 192, "height": 1536 },
+      "height": 320,
+      "artwork": "farewell-to-arms-scribner-1969-9780684717975-r23-root-v2.webp",
+      "perspective": {
+        "width": 192,
+        "height": 1536,
+        "points": [
+          { "source": [210, 1570], "target": [191, 0] },
+          { "source": [3495, 1600], "target": [191, 1535] },
+          { "source": [3427, 1749], "target": [0, 1535] },
+          { "source": [270, 1749], "target": [0, 0] }
+        ]
+      },
+      "lowPerspective": {
+        "width": 192,
+        "height": 1536,
+        "points": [
+          { "source": [210, 1570], "target": [191, 0] },
+          { "source": [3495, 1600], "target": [191, 1535] },
+          { "source": [3427, 1749], "target": [0, 1535] },
+          { "source": [270, 1749], "target": [0, 0] }
+        ]
+      },
+      "sampling": "independent",
+      "artworkSha256": "a5f48bf7b69741fca80225c8ee017a73bc26915cf7bbb9d89c28b40048ab4ac1",
+      "detailArtwork": "farewell-to-arms-scribner-1969-9780684717975-r23-root-v2-detail-0b63cc7cc95f2fc7.webp",
+      "detailArtworkSha256": "0b63cc7cc95f2fc7242daa182fe5a176be14045300a6e4ae547bdf236eb23e30",
+      "detailWidth": 160,
+      "detailHeight": 1280
     }
   ]
 }
