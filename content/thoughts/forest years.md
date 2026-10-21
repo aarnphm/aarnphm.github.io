@@ -17,20 +17,20 @@ The homepage forest keeps a calendar in `quartz/components/visitor-trail/forest-
 
 Shade tolerance runs from aspen at $0.1$ to hemlock at $0.95$. Lifespan and the age of nine-tenths height, in forest years:
 
-| kind | span | mature | shade |
-| --- | ---: | ---: | ---: |
-| aspen | $70$ | $18$ | $0.10$ |
-| birch | $80$ | $22$ | $0.20$ |
-| willow | $60$ | $14$ | $0.20$ |
-| larch | $160$ | $35$ | $0.15$ |
-| pine | $220$ | $45$ | $0.35$ |
-| oak | $320$ | $60$ | $0.45$ |
-| sequoia | $1500$ | $120$ | $0.40$ |
-| cypress | $300$ | $55$ | $0.60$ |
-| spruce | $250$ | $50$ | $0.70$ |
-| fir | $160$ | $40$ | $0.85$ |
-| maple | $260$ | $45$ | $0.90$ |
-| hemlock | $400$ | $70$ | $0.95$ |
+| kind    |   span | mature |  shade |
+| ------- | -----: | -----: | -----: |
+| aspen   |   $70$ |   $18$ | $0.10$ |
+| birch   |   $80$ |   $22$ | $0.20$ |
+| willow  |   $60$ |   $14$ | $0.20$ |
+| larch   |  $160$ |   $35$ | $0.15$ |
+| pine    |  $220$ |   $45$ | $0.35$ |
+| oak     |  $320$ |   $60$ | $0.45$ |
+| sequoia | $1500$ |  $120$ | $0.40$ |
+| cypress |  $300$ |   $55$ | $0.60$ |
+| spruce  |  $250$ |   $50$ | $0.70$ |
+| fir     |  $160$ |   $40$ | $0.85$ |
+| maple   |  $260$ |   $45$ | $0.90$ |
+| hemlock |  $400$ |   $70$ | $0.95$ |
 
 A drawn lifespan is $0.75$ to $1.25$ of the table, except a founding snag, which is already dead.
 

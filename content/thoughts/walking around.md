@@ -25,6 +25,6 @@ The fine pass uses $n = 32$ and padding $p = 2.25$. The coarse pass uses $n = 16
 
 ## the search
 
-Cost is Euclidean length. The heuristic is Euclidean distance to the goal, so the search is A* on a graph whose edges are straight and whose costs are the lengths of those edges. The heuristic is admissible. The implementation scans the open set linearly. An edge exists when `canMove` says the segment misses the blockers in the box around the nodes. Circles test the closest point on the segment against $(r + r_o + 2)^2$. Boxes test the sweep of the padded interval. From a point already inside a body, the test allows the move when the clearance is improving.
+Cost is Euclidean length. The heuristic is Euclidean distance to the goal, so the search is A\* on a graph whose edges are straight and whose costs are the lengths of those edges. The heuristic is admissible. The implementation scans the open set linearly. An edge exists when `canMove` says the segment misses the blockers in the box around the nodes. Circles test the closest point on the segment against $(r + r_o + 2)^2$. Boxes test the sweep of the padded interval. From a point already inside a body, the test allows the move when the clearance is improving.
 
 If the goal itself cannot be reached and a nearby arrival is allowed, the search keeps the visited node closest to that goal, inside $96$. The pet resamples the resulting polyline every $4$ pixels and carries scale and journey progress along the arc length, with its radius equal to its body size times the larger of the two endpoint scales.
