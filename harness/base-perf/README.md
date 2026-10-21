@@ -4,7 +4,7 @@ A measured loop for the heavy browser views (Base views such as the cinematheque
 antilibrary bookcase, the triathlon pages and the maps). A worker model edits a view in its own
 worktree, the worktree's dev watcher rebuilds, the bench measures the real Helium profile, and the
 worker keeps or reverts the change by the numbers. No node in the harness itself: the bench is a
-uv script that drives Helium through the CUA broker (`~/.local/share/helium-cua`), which uses
+uv script that drives Helium through the CUA broker (`~/workspace/agents/tools/browser`), which uses
 TabFS for discovery and raw CDP for the page.
 
     harness/base-perf/scripts/run.sh pass            the four standard climbs in parallel
@@ -93,8 +93,19 @@ with `w --rm garden bp-<name>`.
 
 ## Caveats
 
-The bench brings its tab to the front for every rep: Helium's active tab changes while a run is
-on, and a background tab would get no animation frames. One bench runs at a time per machine
+The bench opens its task group in a small Helium window of its own (`BP_WINDOW=left,top,width,height`,
+default `0,0,720,520`; the page still gets the 1440x900 viewport through device emulation) and
+selects its tab there with the CUA `activate` method, never `Page.bringToFront`: aarnphm works
+in the same Helium, and the bench must not focus a window or swap the page they are reading. A
+tab in a fully occluded window (behind a maximised window, minimised, on another space, or with
+the screen locked) gets no animation frames, and every step awaits one, so the bench counts
+only visible time toward its ready and script limits, re-activates the tab and prints
+`tab hidden; keep part of the bench window on screen`, and skips the rep after `BP_VISIBLE_WAIT`
+(600 s). Keep a sliver of that window visible, on a second display or beside an unmaximised
+window. The CUA runtime must carry `activate` (the agents repo since 2026-10-21; the bench says
+so and stops otherwise). Each invocation uses its own broker session (`bp-<name>-<pid>`), and a
+cleanup the extension reports as `RECOVERY_INCOMPLETE` for the bench's own record is forgotten
+and retried, so a wedged session never blocks the next bench. One bench runs at a time per machine
 (`~/.local/state/helium-cua/base-perf.lock`): when a debugged tab closes, Helium drops the other
 sessions' debugger leases, so two concurrent benches fail each other's reps with `STALE_HANDLE`.
 The four climbs of a pass queue on that lock; their Lighthouse runs happen outside it. Any other

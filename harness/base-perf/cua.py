@@ -1,4 +1,4 @@
-"""Client for the Helium CUA broker (~/.local/share/helium-cua): newline JSON over its Unix socket.
+"""Client for the Helium CUA broker (~/workspace/agents/tools/browser): newline JSON over its Unix socket.
 Each `execute` runs JavaScript in the session's persistent Node REPL, where `cua` controls the
 real Helium profile (TabFS discovery, exclusive tab leases, raw CDP per tab). The bench keeps one
 tab in a named task group and talks to the page through it. Nothing here runs node itself."""
@@ -16,7 +16,9 @@ STATE_DIR = os.environ.get('CUA_STATE_DIR') or os.path.expanduser(
   '~/.local/state/helium-cua'
 )
 SOCKET = os.path.join(STATE_DIR, 'broker.sock')
-RUNTIME = os.path.expanduser('~/.local/share/helium-cua')
+# The broker's source: the native-host manifest points at this checkout, so a broker the bench
+# starts must come from the same place (~/.local/share/helium-cua is an older copy).
+RUNTIME = os.path.expanduser('~/workspace/agents/tools/browser')
 
 
 class CuaError(RuntimeError):
@@ -144,14 +146,20 @@ class Tab:
     height: int = 900,
   ):
     self.s = session
+    # The task tab opens in a window of its own, behind the user's, so activating it never swaps
+    # the page aarnphm is reading. The device-metrics override gives the page its viewport
+    # whatever the window's size; the window only has to stay partly on screen (a fully
+    # occluded window is hidden to its pages: no animation frames). BP_WINDOW=left,top,width,height.
+    bounds = dict(zip(('left', 'top', 'width', 'height'), (int(v) for v in (os.environ.get('BP_WINDOW') or '0,0,720,520').split(','))))
     self.s.js(
       "var browser = await cua.getBrowser({id: 'helium'});"
-      f'var tab = await browser.tabs.new({{url: {json.dumps(url)}, sessionName: {json.dumps(group)}}});'
+      f'var tab = await browser.tabs.new({{url: {json.dumps(url)}, newWindow: {json.dumps(bounds)}, sessionName: {json.dumps(group)}}});'
       "await tab.command('Page.enable'); await tab.command('Runtime.enable'); await tab.command('Performance.enable');"
       f"await tab.command('Emulation.setDeviceMetricsOverride', {{width: {width}, height: {height}, deviceScaleFactor: 1, mobile: false}});"
       'repl.write(JSON.stringify({id: tab.id}))',
       60000,
     )
+    self.activate()
 
   def evaluate(self, expression: str, timeout_ms: int = 30000):
     code = (
@@ -170,27 +178,21 @@ class Tab:
   def goto(self, url: str) -> None:
     self.s.js(f'await tab.goto({json.dumps(url)})', 30000)
 
-  def bring_to_front(self) -> None:
-    self.s.js("await tab.command('Page.bringToFront')", 10000)
+  def activate(self) -> None:
+    """Selects the tab inside its own window; never Page.bringToFront, which raises the window
+    and takes the keyboard from whoever is using Helium."""
+    try:
+      self.s.js('await tab.activate()', 10000)
+    except CuaError as e:
+      if 'Unknown' in str(e) or 'not a function' in str(e):
+        raise CuaError(
+          'CUA runtime predates tab.activate(): restart the broker and reload the Helium CUA '
+          'extension from ~/workspace/agents/tools/browser'
+        ) from e
+      raise
 
-  def wait_ready(
-    self, ready: str, limit_ms: int, poll_ms: int = 100
-  ) -> float | None:
-    """Polls the ready expression; returns the wait in ms, or None at the limit."""
-    t0 = time.monotonic()
-    probe = (
-      f'(() => {{ try {{ return !!({ready}) }} catch {{ return false }} }})()'
-    )
-    while (time.monotonic() - t0) * 1000 < limit_ms:
-      try:
-        # A loaded main thread answers late; a REPL timeout here would reset the session.
-        if self.evaluate(probe, 30000):
-          return (time.monotonic() - t0) * 1000
-      except CuaError as e:
-        if 'EXECUTION_TIMEOUT' in str(e) or 'tab is not defined' in str(e):
-          raise
-      time.sleep(poll_ms / 1000)
-    return None
+  def visible(self) -> bool:
+    return self.evaluate('document.visibilityState', 30000) == 'visible'
 
   def metrics(self) -> dict:
     keys = {
@@ -222,7 +224,17 @@ class Tab:
     return self.s.image('await repl.emitImage(await tab.screenshot())', 30000)
 
   def finish(self) -> None:
+    # Cleanup can report RECOVERY_INCOMPLETE for this session's own record (the extension could
+    # not match it to a tab); the broker then refuses every later tabs.new for the session.
+    # Forget those records and finish again rather than wedge the run.
     try:
-      self.s.js('await cua.finish()', 40000)
+      self.s.js(
+        'try { await cua.finish() } catch (e) {'
+        ' const tokens = [...String(e.message).matchAll(/ownership ([0-9a-f-]{36})/g)].map(m => m[1]);'
+        ' if (!tokens.length) throw e;'
+        ' for (const t of tokens) await cua.forgetOwnership(t);'
+        ' repl.write("forgot " + tokens.join(" ")); await cua.finish() }',
+        60000,
+      )
     finally:
       self.s.reset(release=True)
