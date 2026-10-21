@@ -36,6 +36,7 @@ case $cmd in
     echo "$port" > "$STATE/port"
     # Workers start from the main checkout's HEAD: a worker branch never has commits of its own,
     # so this is a fast-forward; a tree with edits (a run in progress) is left where it is.
+    head0=$(git -C "$WT" rev-parse HEAD)
     if [ -z "$(git -C "$WT" status --porcelain)" ]; then
       git -C "$WT" merge --ff-only -q "$(git -C "$WS" rev-parse HEAD)" 2> /dev/null \
         || echo "worktree $WT is not behind main's HEAD on a straight line; left as is" >&2
@@ -66,6 +67,12 @@ case $cmd in
     for bib in $(cd "$WS" && git ls-files 'content/*.bib' 'content/**/*.bib'); do
       cmp -s "$WS/$bib" "$WT/$bib" 2> /dev/null || cp "$WS/$bib" "$WT/$bib"
     done
+    # A watcher left from an earlier run serves the build of the commit it started on; after a
+    # fast-forward the baseline would measure that stale build while a rebuild reloads the pages.
+    if [ "$head0" != "$(git -C "$WT" rev-parse HEAD)" ] && [ -f "$STATE/dev.pid" ]; then
+      echo "worktree moved to $(git -C "$WT" rev-parse --short HEAD); restarting its watcher" >&2
+      "$0" down "$name"
+    fi
     if [ -f "$STATE/dev.pid" ] && kill -0 "$(cat "$STATE/dev.pid")" 2> /dev/null; then
       echo "watcher already running (pid $(cat "$STATE/dev.pid"))" >&2
     else

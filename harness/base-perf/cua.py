@@ -150,7 +150,15 @@ class Tab:
     # the page aarnphm is reading. The device-metrics override gives the page its viewport
     # whatever the window's size; the window only has to stay partly on screen (a fully
     # occluded window is hidden to its pages: no animation frames). BP_WINDOW=left,top,width,height.
-    bounds = dict(zip(('left', 'top', 'width', 'height'), (int(v) for v in (os.environ.get('BP_WINDOW') or '0,0,720,520').split(','))))
+    bounds = dict(
+      zip(
+        ('left', 'top', 'width', 'height'),
+        (
+          int(v)
+          for v in (os.environ.get('BP_WINDOW') or '0,0,720,520').split(',')
+        ),
+      )
+    )
     self.s.js(
       "var browser = await cua.getBrowser({id: 'helium'});"
       f'var tab = await browser.tabs.new({{url: {json.dumps(url)}, newWindow: {json.dumps(bounds)}, sessionName: {json.dumps(group)}}});'

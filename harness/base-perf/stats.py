@@ -59,6 +59,11 @@ GUARDS = [
   'listeners',
   'heap_mb',
 ]
+# Smoothness guards for the scene views (the vault and views groups): a candidate that lowers the
+# interaction time while a step stutters more is rejected. A step stutters when its median worst
+# frame passes both the baseline's worst rep of that step and STUTTER_MS (two frames at 60 Hz).
+SMOOTH_GUARDS = ['worst_frame_ms', 'fps_min', 'longtask_ms', 'loaf_block_ms']
+STUTTER_MS = 32
 
 
 def _stat(xs):
@@ -79,13 +84,16 @@ def summarize(reps: list[dict], lighthouse: list[dict] | None = None) -> dict:
       out[k] = _stat(xs)
   steps: dict[str, list] = {}
   fps: dict[str, list] = {}
+  worst: dict[str, list] = {}
   for r in ok:
     for s in r.get('steps', []):
       steps.setdefault(s['name'], []).append(s['frame_ms'])
       if s.get('frames'):
         fps.setdefault(s['name'], []).append(s['fps'])
+        worst.setdefault(s['name'], []).append(s.get('worst_ms', 0))
   out['steps'] = {k: _stat(v) for k, v in steps.items()}
   out['step_fps'] = {k: _stat(v) for k, v in fps.items()}
+  out['step_worst'] = {k: _stat(v) for k, v in worst.items()}
   checks: dict[str, bool] = {}
   for r in ok:
     for k, v in (r.get('checks') or {}).items():
@@ -132,8 +140,9 @@ def render_summary(results: dict) -> str:
         lines.append(f'| {k} | {fmt(sm[k])} |')
     for k, v in sm['steps'].items():
       f = sm.get('step_fps', {}).get(k)
+      w = sm.get('step_worst', {}).get(k)
       lines.append(
-        f'| step {k} | {fmt(v)}{f" · {f['median']} fps" if f else ""} |'
+        f'| step {k} | {fmt(v)}{f" · {f['median']} fps" if f else ""}{f" · worst {w['median']} ms" if w else ""} |'
       )
     failed = [k for k, v in sm['checks'].items() if not v]
     notes = [r.get('notes') for r in s['reps'] if r.get('notes')]
@@ -156,8 +165,11 @@ def render_summary(results: dict) -> str:
   return '\n'.join(lines)
 
 
-def compare(base: dict, cand: dict) -> dict:
-  """better: candidate median below the baseline minimum; worse: above its maximum; noise between."""
+def compare(
+  base: dict, cand: dict, smooth: frozenset[str] = frozenset()
+) -> dict:
+  """better: candidate median below the baseline minimum; worse: above its maximum; noise between.
+  Scenarios named in `smooth` also guard the frame metrics and each step's worst frame."""
   out = {}
   for name in base['scenarios']:
     b = base['scenarios'][name]['summary']
@@ -198,14 +210,24 @@ def compare(base: dict, cand: dict) -> dict:
       for k, v in c['checks'].items()
       if not v and b['checks'].get(k) is not False
     ]
+    guards = GUARDS + SMOOTH_GUARDS if name in smooth else GUARDS
     worse = [
-      k for k, m in metrics.items() if m['verdict'] == 'worse' and k in GUARDS
+      k for k, m in metrics.items() if m['verdict'] == 'worse' and k in guards
     ]
+    bw, cw = b.get('step_worst', {}), c.get('step_worst', {})
+    stutter = {
+      k: {'base': bw[k], 'cand': cw[k]}
+      for k in bw
+      if k in cw and cw[k]['median'] > max(bw[k]['max'], STUTTER_MS)
+    }
+    if name in smooth:
+      worse += [f'stutter:{k}' for k in stutter]
     primary = metrics.get(PRIMARY, {}).get('verdict', 'missing')
     out[name] = {
       'metrics': metrics,
       'steps': steps,
       'checksBroken': broken,
+      'stutter': stutter,
       'primary': primary,
       'worse': worse,
       'accept': primary == 'better' and not worse and not broken,
@@ -215,7 +237,10 @@ def compare(base: dict, cand: dict) -> dict:
 
 def render_compare(cmp: dict, base_meta: dict, cand_meta: dict) -> str:
   tag = lambda m: f'{m["commit"]}{"+" if m.get("dirty") else ""}'
-  loads = lambda m: f'{m.get("load", "?")}→{m.get("load_end", "?")}' + (' LOAD HIGH' if m.get('load_high') else '')
+  loads = lambda m: (
+    f'{m.get("load", "?")}→{m.get("load_end", "?")}'
+    + (' LOAD HIGH' if m.get('load_high') else '')
+  )
   lines = [
     f'# compare {tag(base_meta)} (base) vs {tag(cand_meta)} (candidate), load {loads(base_meta)} vs {loads(cand_meta)}',
     '',
@@ -240,8 +265,9 @@ def render_compare(cmp: dict, base_meta: dict, cand_meta: dict) -> str:
         f'| {k} | {fmt(m["base"])} | {fmt(m["cand"])} | {m["ratio"]} | {m["verdict"]} |'
       )
     for k, m in c['steps'].items():
+      st = c.get('stutter', {}).get(k)
       lines.append(
-        f'| step {k} | {fmt(m["base"])} | {fmt(m["cand"])} | {m["ratio"]} | |'
+        f'| step {k} | {fmt(m["base"])} | {fmt(m["cand"])} | {m["ratio"]} | {"stutter, worst frame " + fmt(st["base"]) + " → " + fmt(st["cand"]) + " ms" if st else ""} |'
       )
     lines.append('')
   return '\n'.join(lines)

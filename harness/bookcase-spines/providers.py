@@ -295,7 +295,9 @@ def dispatch(prepared: Prepared, state: State) -> Transport:
       model = summary.get('model')
       if model is None and isinstance(models, list) and models:
         if len(models) != 1:
-          raise ValueError('Provider reported multiple models in one invocation')
+          raise ValueError(
+            'Provider reported multiple models in one invocation'
+          )
         model = models[0]
       report = Transport(
         prepared.provider,
@@ -373,7 +375,9 @@ def dispatch(prepared: Prepared, state: State) -> Transport:
       and 'fast' not in observed.replace('fast=false', '')
     ):
       report.complete = False
-      report.error = 'Grok trace did not confirm Extra High, 500K and Fast disabled'
+      report.error = (
+        'Grok trace did not confirm Extra High, 500K and Fast disabled'
+      )
   report.error = (
     result.error
     or report.error

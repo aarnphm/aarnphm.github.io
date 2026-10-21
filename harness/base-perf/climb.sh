@@ -17,8 +17,8 @@ RUN=$1; NAME=$2; GROUP=$3; PORT=$4; WORKER=$5
 RUNSH="$HERE/scripts/run.sh"
 
 case $GROUP in
-  vault) OWNED='`quartz/components/scripts/base-vault.inline.ts`, `quartz/util/base/vault/**`, `quartz/styles/pages/vault.scss`, `quartz/styles/pages/vault/**`, `quartz/components/scripts/base-kanban.inline.ts`, `quartz/util/base/kanban*`' ;;
-  views) OWNED='`quartz/components/scripts/base-bookcase.inline.ts`, `quartz/util/base/bookcase/**`, `quartz/styles/pages/bookcase.scss`, `quartz/components/scripts/base-query.inline.ts`, `quartz/components/scripts/base-search.inline.ts`, `quartz/components/scripts/base-view-selector.inline.ts`, `quartz/util/base/table*`, `quartz/util/base/cards*`, `quartz/util/base/list*`' ;;
+  vault) OWNED='`quartz/components/scripts/base-vault.inline.ts`, `quartz/components/scripts/base-vault/**`, `quartz/util/base/vault/**`, `quartz/styles/pages/vault.scss`, `quartz/styles/pages/vault/**`, `quartz/components/scripts/base-kanban.inline.ts`, `quartz/util/base/kanban*`' ;;
+  views) OWNED='`quartz/components/scripts/base-bookcase.inline.ts`, `quartz/components/scripts/base-bookcase-preview.ts`, `quartz/util/base/bookcase/**`, `quartz/styles/pages/bookcase.scss`, `quartz/components/scripts/base-query.inline.ts`, `quartz/components/scripts/base-search.inline.ts`, `quartz/components/scripts/base-view-selector.inline.ts`, `quartz/util/base/table*`, `quartz/util/base/cards*`, `quartz/util/base/list*`' ;;
   triathlon) OWNED='`quartz/components/scripts/triathlon.inline.ts`, `quartz/components/triathlon/**` except `maps/`, `quartz/components/styles/triathlon*.scss`, `quartz/components/styles/tri-*.scss`' ;;
   maps) OWNED='`quartz/components/triathlon/maps/**`, `quartz/components/triathlon/activity/comparison-map.ts`, `quartz/components/triathlon/activity/map-controls.ts`, `quartz/components/scripts/base-map.inline.ts`, `quartz/components/scripts/base-map-view.ts`, `quartz/components/scripts/base-map-data.ts`, `quartz/components/scripts/mapbox-client.ts`, `quartz/components/scripts/triathlon-map-heat.ts`, `quartz/components/styles/map*.scss`' ;;
   *) echo "unknown group $GROUP (vault|views|triathlon|maps)" >&2; exit 2 ;;

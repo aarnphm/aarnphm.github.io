@@ -1,4 +1,4 @@
-"""Base views: vault, bookcase, cards, table, kanban, mapbox map."""
+"""Base views: vault, cards, table, kanban, mapbox map (the bookcase lives in bookcase.py)."""
 
 from .prelude import HELPERS
 
@@ -8,13 +8,28 @@ vault = {
   'settle': 1500,
   'script': HELPERS
   + r"""
-    const viewport = document.querySelector('.vault-viewport')
+    const root = document.querySelector('[data-vault-ready]')
+    const viewport = root.querySelector('.vault-viewport')
     const scaler = viewport.querySelector('.vault-scaler')
     const svg = scaler.querySelector('svg')
+    const dialog = root.querySelector('dialog.vault-card')
     const r = viewport.getBoundingClientRect()
     const cx = r.left + r.width / 2, cy = r.top + r.height / 2
+    const current = () => root.querySelector('.vault-entry[data-current]')?.dataset.index ?? null
+    const cardTitle = () => dialog.querySelector('.vault-card-position')?.textContent ?? ''
     await step('scroll-down', () => scrollBy(viewport, 240, 20))
     await step('scroll-up', () => scrollBy(viewport, -240, 20))
+    // A sideways wheel follows the rack's slant with a smooth scroll of the page's own.
+    const left0 = viewport.scrollLeft
+    await step('pan-x-wheel', async () => { for (let i = 0; i < 6; i++) { sync(() => wheelXY(viewport, cx, cy, 120, 0)); await sleep(80) } await sleep(400) })
+    check('pan-x', viewport.scrollLeft !== left0)
+    const pan0 = [viewport.scrollLeft, viewport.scrollTop]
+    await step('drag-pan', async () => {
+      pointer(viewport, 'pointerdown', cx, cy)
+      for (let i = 1; i <= 24; i++) { sync(() => pointer(viewport, 'pointermove', cx, cy - i * 8)); await raf() }
+      pointer(viewport, 'pointerup', cx, cy - 192)
+    })
+    check('drag-pan', Math.abs(viewport.scrollTop - pan0[1]) > 50)
     const transform0 = scaler.style.transform
     await step('zoom-in', async () => { for (let i = 0; i < 12; i++) { sync(() => wheel(viewport, cx, cy, -60, true)); await sleep(40) } })
     await sleep(400)
@@ -22,48 +37,57 @@ vault = {
     check('zoom-applied', scaler.style.transform !== transform0)
     await step('zoom-out', async () => { for (let i = 0; i < 12; i++) { sync(() => wheel(viewport, cx, cy, 60, true)); await sleep(40) } })
     await sleep(400)
+    await step('zoom-keys', async () => { for (const k of ['+', '+', '-', '-']) { sync(() => key(viewport, k)); await sleep(180) } })
+    await step('fit-key', async () => { sync(() => key(viewport, '0')); await sleep(300) })
+    const cam = s => root.querySelector(`[data-camera="${s}"]`)
+    await step('zoom-buttons', async () => { for (const s of ['in', 'in', 'out', 'out', 'fit']) { if (cam(s)) sync(() => cam(s).click()); await sleep(180) } })
     const rows = [...document.querySelectorAll('.vault-entry-select')].slice(0, 12)
     await step('hover-rows', () => hoverEach(rows))
-    await step('open-card', async () => { rows[3].click(); await sleep(250) })
-    check('card-open', !!document.querySelector('.vault-card[open], .vault-card.is-open, .vault-card:not([hidden])'))
-    await step('close-card', async () => { escape(); await sleep(250) })
+    // A row click pulls its can out and glides the camera to it; arrows step along the rack.
+    await step('select-row', async () => { rows[3].click(); await sleep(400) })
+    const selected = current()
+    check('select-row', selected !== null)
+    await step('step-keys', async () => { for (let i = 0; i < 4; i++) { sync(() => key(viewport, 'ArrowRight')); await sleep(200) } })
+    check('step-keys', current() !== null && current() !== selected)
+    await step('open-card', async () => { sync(() => key(viewport, 'Enter')); await sleep(400) })
+    check('card-open', dialog.open)
+    const t0 = cardTitle()
+    const card = s => dialog.querySelector(`[data-card="${s}"]`)
+    await step('card-next', async () => { for (let i = 0; i < 3; i++) { if (card('next')) sync(() => card('next').click()); await sleep(180) } })
+    await step('card-keys', async () => { for (const k of ['ArrowRight', 'ArrowRight', 'ArrowLeft']) { sync(() => key(dialog, k)); await sleep(180) } })
+    const dr = dialog.getBoundingClientRect()
+    await step('card-wheel', async () => { for (let i = 0; i < 3; i++) { sync(() => wheelXY(dialog, dr.left + 8, dr.top + 8, 0, 120)); await sleep(260) } })
+    note('card', { t0, t1: cardTitle() })
+    check('card-browse', cardTitle() !== t0)
+    await step('close-card', async () => { if (card('close')) sync(() => card('close').click()); else escape(); await sleep(300) })
+    check('card-closed', !dialog.open)
+    const input = document.querySelector('#base-search-input')
+    const restore = lexical()
+    await step('search-type', () => typeInto(input, 'the', 110))
+    const dimmed = svg.querySelectorAll('[data-dimmed]').length
+    await step('search-clear', async () => { clearInput(input); await sleep(200) })
+    restore()
+    note('search', { dimmed })
+    check('search-dims', dimmed > 0 && svg.querySelectorAll('[data-dimmed]').length === 0)
     check('scene-nodes', svg.querySelectorAll('*').length > 1000)
     return __bp.result()
     """,
 }
 
-bookcase = {
-  'path': '/antilibrary',
-  'ready': r"""document.querySelector('.bookcase-viewport .bookcase-world') && document.querySelectorAll('.bc-cover').length > 10 && document.querySelectorAll('.bookcase-entry-link').length > 0""",
-  'settle': 1500,
-  'script': HELPERS
-  + r"""
-    const viewport = document.querySelector('.bookcase-viewport')
-    const r = viewport.getBoundingClientRect()
-    const cx = r.left + r.width / 2, cy = r.top + r.height / 2
-    await step('wheel-pan', async () => { for (let i = 0; i < 20; i++) { sync(() => wheel(viewport, cx, cy, 120, false)); await raf() } })
-    await step('drag-pan', async () => {
-      pointer(viewport, 'pointerdown', cx, cy)
-      for (let i = 1; i <= 24; i++) { sync(() => pointer(viewport, 'pointermove', cx - i * 12, cy + i * 4)); await raf() }
-      pointer(viewport, 'pointerup', cx - 288, cy + 96)
-    })
-    const topics = [...document.querySelectorAll('.bookcase-topic')]
-    await step('topics', async () => { for (const t of topics.slice(0, 4)) { sync(() => t.click()); await sleep(120) } })
-    const list = document.querySelector('.bookcase-index-list, .bookcase-index')
-    await step('index-scroll', () => scrollBy(list, 160, 20))
-    const links = [...document.querySelectorAll('.bookcase-entry-link')].slice(0, 12)
-    await step('hover-entries', () => hoverEach(links))
-    // A still press on a book opens the preview (the index link would navigate instead).
-    const vr = viewport.getBoundingClientRect()
-    const book = [...document.querySelectorAll('.bc-book')].find(b => { const q = b.getBoundingClientRect(); return q.width > 4 && q.left > vr.left && q.right < vr.right && q.top > vr.top && q.bottom < vr.bottom })
-    await step('open-preview', async () => { if (book) { const q = book.getBoundingClientRect(); const x = q.left + q.width / 2, y = q.top + q.height / 2; pointer(book, 'pointerdown', x, y); await raf(); pointer(book, 'pointerup', x, y) } await sleep(400) })
-    note('preview', { book: !!book, open: document.querySelector('.bookcase-preview')?.open ?? null })
-    check('preview-open', !!document.querySelector('.bookcase-preview[open]'))
-    await step('close-preview', async () => { const d = document.querySelector('.bookcase-preview[open]'); if (d?.close) d.close(); else escape(); await sleep(250) })
-    check('groups', document.querySelectorAll('.bookcase-index-group').length > 3)
-    return __bp.result()
-    """,
-}
+
+# Base search on the shared bar: type a query (one filter pass per keystroke), then clear it.
+SEARCH = r"""
+    const input = document.querySelector('#base-search-input')
+    const items = [...document.querySelectorAll('.main-col > .base-view :is(.base-card, .base-list > li, table.base-table tbody tr:not(.base-group-header))')]
+    const visibleCount = () => items.filter(i => i.style.display !== 'none').length
+    const restore = lexical()
+    await step('search-type', () => typeInto(input, 'the', 110))
+    const narrowed = visibleCount()
+    await step('search-clear', async () => { clearInput(input); await sleep(200) })
+    restore()
+    note('search', { total: items.length, narrowed })
+    check('search', narrowed > 0 && narrowed < items.length && visibleCount() === items.length)
+"""
 
 
 def cards(path):
@@ -78,8 +102,9 @@ def cards(path):
     const links = [...document.querySelectorAll('.base-view a[href]')].slice(0, 16)
     await step('hover-cards', () => hoverEach(links))
     check('cards', links.length === 16)
-    return __bp.result()
-    """,
+    """
+    + SEARCH
+    + '    return __bp.result()',
   }
 
 
@@ -98,8 +123,9 @@ def table(path):
     const rows = [...document.querySelectorAll('.base-table tbody tr')].slice(0, 16)
     await step('hover-rows', () => hoverEach(rows))
     check('rows', rows.length > 8)
-    return __bp.result()
-    """,
+    """
+    + SEARCH
+    + '    return __bp.result()',
   }
 
 
@@ -115,8 +141,9 @@ kanban = {
     const links = [...document.querySelectorAll('.base-view a[href]')].slice(0, 16)
     await step('hover-cards', () => hoverEach(links))
     check('cards', links.length > 5)
-    return __bp.result()
-    """,
+    """
+  + SEARCH
+  + '    return __bp.result()',
 }
 
 

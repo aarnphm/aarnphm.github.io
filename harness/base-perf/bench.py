@@ -45,6 +45,8 @@ def sh(cmd: list[str]) -> str:
 LOCK_PATH = os.path.expanduser('~/.local/state/helium-cua/base-perf.lock')
 # Any CUA session on the machine that closes a debugged tab drops this session's lease too (the
 # lock only serializes benches); the rep that hits it reads as one of these.
+BUSY_ERRORS = ('Tabs cannot be edited right now',)
+BUSY_RETRIES = 30
 RECLAIM_ERRORS = (
   'STALE_HANDLE',
   'BROWSER_DISCONNECTED',
@@ -61,7 +63,9 @@ class TabHidden(Exception):
   pass
 
 
-def poll_visible(tab: Tab, probe, limit_ms: float, what: str, every: float = 0.5):
+def poll_visible(
+  tab: Tab, probe, limit_ms: float, what: str, every: float = 0.5
+):
   """Polls `probe` until it returns a value other than None; returns (value, visible ms) or
   (None, ms) at the limit. Time while the tab is hidden does not count: a hidden tab (the bench
   window fully occluded, minimised, on another space, or the screen locked) gets no animation
@@ -82,7 +86,10 @@ def poll_visible(tab: Tab, probe, limit_ms: float, what: str, every: float = 0.5
     else:
       if hidden_since is None:
         hidden_since = now
-        print(f'{what}: tab hidden; keep part of the bench window on screen', file=sys.stderr)
+        print(
+          f'{what}: tab hidden; keep part of the bench window on screen',
+          file=sys.stderr,
+        )
       elif now - hidden_since > visible_wait:
         raise TabHidden(f'{what}: tab hidden for {int(visible_wait)} s')
       tab.activate()
@@ -116,11 +123,13 @@ def measure(tab, base, name, scenario, rep, reps, out, limit_ms) -> dict:
     # The worker route answers empty under load now and then; one retry after a pause.
     time.sleep(3)
     tab.goto(base + scenario['path'])
-  ready_probe = (
-    f'(() => {{ try {{ return !!({scenario["ready"]}) }} catch {{ return false }} }})()'
-  )
+  ready_probe = f'(() => {{ try {{ return !!({scenario["ready"]}) }} catch {{ return false }} }})()'
   ready, ready_ms = poll_visible(
-    tab, lambda: True if tab.evaluate(ready_probe, 30000) else None, limit_ms, 'ready', 0.1
+    tab,
+    lambda: True if tab.evaluate(ready_probe, 30000) else None,
+    limit_ms,
+    'ready',
+    0.1,
   )
   if ready is None:
     return {'rep': rep, 'skipped': f'not ready after {limit_ms} ms'}
@@ -254,7 +263,10 @@ def main() -> int:
         file=sys.stderr,
       )
       break
-    print(f'load {os.getloadavg()[0]:.0f} > {load_max:.0f} on {ncpu} cpus; waiting', file=sys.stderr)
+    print(
+      f'load {os.getloadavg()[0]:.0f} > {load_max:.0f} on {ncpu} cpus; waiting',
+      file=sys.stderr,
+    )
     time.sleep(30)
   results['meta']['load'] = round(os.getloadavg()[0], 1)
   results['meta']['ncpu'] = ncpu
@@ -289,7 +301,8 @@ def main() -> int:
       scenario = SCENARIOS[name]
       reps = []
       for rep in range(a.reps):
-        for attempt in range(2):
+        attempt = busy = 0
+        while True:
           try:
             r = run_once(
               tab, base, name, scenario, rep, a.reps, a.out, a.ready_timeout
@@ -297,6 +310,13 @@ def main() -> int:
             break
           except CuaError as e:
             msg = str(e)
+            # Helium refuses tab edits while a tab strip drag is in progress (aarnphm works in
+            # the same browser); the rep waits it out instead of failing.
+            if any(k in msg for k in BUSY_ERRORS) and busy < BUSY_RETRIES:
+              busy += 1
+              print(f'{name} rep {rep}: tabs busy; waiting', file=sys.stderr)
+              time.sleep(10)
+              continue
             # The extension drops the lease when the tab's debugger detaches (service-worker
             # restart, a dismissed debugging bar); the tab is still ours, so close it and
             # open a new one rather than failing every rep that follows.
@@ -312,6 +332,7 @@ def main() -> int:
                 pass
               time.sleep(3)
               tab = fresh_tab()
+              attempt += 1
               continue
             r = {'rep': rep, 'error': msg[:500]}
             break
