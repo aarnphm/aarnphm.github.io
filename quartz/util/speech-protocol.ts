@@ -56,6 +56,13 @@ function phonon(
 // The 40M repo is gated, so a browser cannot read it from the Hub. Its pinned files live in the
 // LFS_BUCKET R2 bucket under models/speech/, served by the worker's /models/ route.
 export const PHONON_MODELS = {
+  'phonon-40m-fr': phonon(
+    'Phonon 40M français',
+    'phonon-40m-fr',
+    '65b5b451d235a8c24245f51d2774ec9806a9443f',
+    phononFileBytes(74_553_568, 277_749, 2_851),
+    'CC BY-NC 4.0',
+  ),
   'phonon-40m-multilingual': phonon(
     'Phonon 40M multilingue',
     'phonon-40m-multilingual',
@@ -68,8 +75,13 @@ export const PHONON_MODELS = {
 export type PhononModelId = keyof typeof PHONON_MODELS
 export type SpeechModelId = 'supertonic-2' | PhononModelId
 
-export const DEFAULT_SPEECH_MODEL: SpeechModelId = 'phonon-40m-multilingual'
-export const SPEECH_MODEL_IDS: SpeechModelId[] = ['phonon-40m-multilingual', 'supertonic-2']
+// The multilingual checkpoint reads French with an English accent; the French one is the default.
+export const DEFAULT_SPEECH_MODEL: SpeechModelId = 'phonon-40m-fr'
+export const SPEECH_MODEL_IDS: SpeechModelId[] = [
+  'phonon-40m-fr',
+  'phonon-40m-multilingual',
+  'supertonic-2',
+]
 
 export function isSpeechModelId(value: unknown): value is SpeechModelId {
   return SPEECH_MODEL_IDS.some(id => id === value)
