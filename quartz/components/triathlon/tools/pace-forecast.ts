@@ -11,9 +11,10 @@ import { PaceForecaster } from '../../../util/pace-forecast'
 import { Z80 } from '../../../util/pace-forecast'
 import { buildDatePicker, DATE_PICKER_RENDER_EVENT } from '../../controls/date-picker'
 import { buildIcon } from '../activity/primitives'
+import { rafEvent } from '../analytics/scrub-primitives'
 import { hms } from '../analytics/shared'
 import { raceLegPace } from '../analytics/shared'
-import { el } from '../runtime/dom'
+import { el, setText } from '../runtime/dom'
 import {
   initialPaceForecastModel,
   paceForecastBounds,
@@ -554,9 +555,13 @@ export const wirePredTip = (root: HTMLElement): (() => void) => {
   document.body.querySelector('.tri-pred-tip')?.remove()
   const tip = el('div', 'tri-gloss tri-pred-tip')
   tip.setAttribute('role', 'tooltip')
+  const headSpan = el('span', 'tri-gloss-h')
+  const defSpan = el('span', 'tri-gloss-def')
+  tip.append(headSpan, defSpan)
   document.body.appendChild(tip)
   let cur: HTMLElement | null = null
-  const move = (e: MouseEvent): void => {
+  const sizeCache = new WeakMap<HTMLElement, { width: number; height: number }>()
+  const rafMove = rafEvent((e: MouseEvent): void => {
     const card = (e.target as HTMLElement | null)?.closest<HTMLElement>('.tri-pred-card')
     if (!card?.dataset.tipD) {
       cur = null
@@ -565,30 +570,37 @@ export const wirePredTip = (root: HTMLElement): (() => void) => {
     }
     if (card !== cur) {
       cur = card
-      tip.replaceChildren(
-        el('span', 'tri-gloss-h', card.dataset.tipH ?? ''),
-        el('span', 'tri-gloss-def', card.dataset.tipD ?? ''),
-      )
+      setText(headSpan, card.dataset.tipH ?? '')
+      setText(defSpan, card.dataset.tipD ?? '')
       tip.classList.add('tri-gloss--on')
     }
-    const pr = tip.getBoundingClientRect()
+    let size = sizeCache.get(card)
+    if (!size || size.width <= 0) {
+      const pr = tip.getBoundingClientRect()
+      size = { width: pr.width, height: pr.height }
+      if (size.width > 0) sizeCache.set(card, size)
+    }
     const left =
-      e.clientX + 14 + pr.width > window.innerWidth - 8 ? e.clientX - 14 - pr.width : e.clientX + 14
+      e.clientX + 14 + size.width > window.innerWidth - 8
+        ? e.clientX - 14 - size.width
+        : e.clientX + 14
     const top =
-      e.clientY + 14 + pr.height > window.innerHeight - 8
-        ? e.clientY - 14 - pr.height
+      e.clientY + 14 + size.height > window.innerHeight - 8
+        ? e.clientY - 14 - size.height
         : e.clientY + 14
     tip.style.left = `${Math.max(8, left).toFixed(0)}px`
     tip.style.top = `${Math.max(8, top).toFixed(0)}px`
-  }
+  })
   const leave = (): void => {
+    rafMove.cancel()
     cur = null
     tip.classList.remove('tri-gloss--on')
   }
-  root.addEventListener('mousemove', move)
+  root.addEventListener('mousemove', rafMove.onEvent)
   root.addEventListener('mouseleave', leave)
   return () => {
-    root.removeEventListener('mousemove', move)
+    rafMove.cancel()
+    root.removeEventListener('mousemove', rafMove.onEvent)
     root.removeEventListener('mouseleave', leave)
     tip.remove()
   }

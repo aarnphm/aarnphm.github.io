@@ -100,7 +100,7 @@ export const TRIATHLON_CALENDAR_CATALOG: Readonly<Record<number, TriathlonCalend
         format: 'HYROX',
         date: '2027-03-26',
         endDate: '2027-03-28',
-        note: 'Provisional start-wave windows, subject to change. Times are local to Miami Beach. Check-in opens 90 minutes before each division’s first wave; bring ID. Public sale: October 22, 2026 at 12:00 EDT (Toronto time). Division to be decided.',
+        note: 'Provisional',
       },
       'https://www.ironman.com/races/im-lanzarote/register': {
         name: 'IRONMAN Lanzarote',
@@ -145,7 +145,7 @@ export const TRIATHLON_CALENDAR_CATALOG: Readonly<Record<number, TriathlonCalend
         format: 'marathon',
         date: '2027-10-18',
         endDate: null,
-        note: 'Provisional: same date as the 2026 race (October 18). Awaiting the official 2027 date.',
+        note: 'Provisional',
         details: {
           sources: [
             'https://www.torontowaterfrontmarathon.com/event-info/',

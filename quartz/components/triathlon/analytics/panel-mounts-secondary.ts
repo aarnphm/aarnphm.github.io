@@ -9,8 +9,7 @@ import { clock } from '../../../util/triathlon-card'
 import { formatStrideLength } from '../../../util/triathlon-card'
 import { formatVerticalOscillation } from '../../../util/triathlon-card'
 import { M_TO_FT } from '../../../util/triathlon-card'
-import { el } from '../runtime/dom'
-import { renderGlossDef } from '../shell/glossary'
+import { el, setText as setDomText } from '../runtime/dom'
 import { radarAxisDefinition } from './panels/abilities'
 import { radarAxisLabel } from './panels/abilities'
 import { radarNotationDefinition } from './panels/abilities'
@@ -18,7 +17,7 @@ import { radarPaceHint } from './panels/abilities'
 import { cardioSeriesOf } from './panels/cardio'
 import { cardioValueText } from './panels/cardio'
 import { trendFrame, trendReadout } from './panels/pace-trend'
-import { scrubGroup, type ScrubItem } from './scrub-primitives'
+import { rafEvent, rectOf, scrubGroup, setFastMath, type ScrubItem } from './scrub-primitives'
 import { ANA_W } from './shared'
 import { bySport } from './shared'
 import { clampN } from './shared'
@@ -70,35 +69,40 @@ export const mountSecondaryPanel = (
       if (valueCell) valueCells.set(metric.key, valueCell)
     }
     if (dates.length > 0 && dateReadout && readout && items.length > 0) {
-      const startMs = Date.parse(`${dates[0]}T00:00:00Z`)
-      const endMs = Date.parse(`${dates[dates.length - 1]}T00:00:00Z`)
+      const dateMsList = dates.map(date => Date.parse(`${date}T00:00:00Z`))
+      const startMs = dateMsList[0]
+      const endMs = dateMsList[dateMsList.length - 1]
       const spanMs = Math.max(1, endMs - startMs)
       const dateIndexAt = (fraction: number): number => {
         const targetMs = startMs + clampN(fraction, 0, 1) * spanMs
         let nearestIndex = 0
-        for (let index = 1; index < dates.length; index++)
+        for (let index = 1; index < dateMsList.length; index++)
           if (
-            Math.abs(Date.parse(`${dates[index]}T00:00:00Z`) - targetMs) <
-            Math.abs(Date.parse(`${dates[nearestIndex]}T00:00:00Z`) - targetMs)
+            Math.abs(dateMsList[index] - targetMs) < Math.abs(dateMsList[nearestIndex] - targetMs)
           )
             nearestIndex = index
         return nearestIndex
       }
       let activeIndex = dates.length - 1
+      let shownIndex = -1
+      let readoutWidth = 0
+      let readoutHeight = 0
       const positionReadout = (
         item: { svgEl: SVGElement },
         fraction: number,
         pointerY?: number,
       ): void => {
-        const blockRect = cardioBlock.getBoundingClientRect()
-        const graphRect = item.svgEl.getBoundingClientRect()
+        const blockRect = rectOf(cardioBlock)
+        const graphRect = rectOf(item.svgEl)
         const anchorX = graphRect.left - blockRect.left + clampN(fraction, 0, 1) * graphRect.width
         const anchorY =
           pointerY != null
             ? pointerY - blockRect.top
             : graphRect.top - blockRect.top + graphRect.height / 2
-        const readoutWidth = readout.offsetWidth
-        const readoutHeight = readout.offsetHeight
+        if (readoutWidth <= 0 || readoutHeight <= 0) {
+          readoutWidth = readout.offsetWidth
+          readoutHeight = readout.offsetHeight
+        }
         const gap = 10
         const inset = 4
         const rightSpace = blockRect.width - anchorX
@@ -125,25 +129,28 @@ export const mountSecondaryPanel = (
       ): void => {
         const nextIndex = clampN(requestedIndex, 0, dates.length - 1)
         activeIndex = nextIndex
-        const date = dates[activeIndex]
-        const dateMs = Date.parse(`${date}T00:00:00Z`)
+        const dateMs = dateMsList[activeIndex]
         const cursorFraction = clampN((dateMs - startMs) / spanMs, 0, 1)
-        const cursorX = (cursorFraction * 100).toFixed(2)
-        dateReadout.textContent = context.formatter.shortDate(date)
-        const ariaValues = [date]
-        for (const metric of data.engine.cardio.metrics) {
-          const value = valuesByMetric.get(metric.key)?.get(date)
-          const valueText = value != null ? cardioValueText(value, metric.unit) : '—'
-          const valueCell = valueCells.get(metric.key)
-          if (valueCell) valueCell.textContent = valueText
-          ariaValues.push(`${context.formatter.text(metric.label)} ${valueText}`)
-        }
-        const ariaValueText = ariaValues.join(' · ')
-        for (const item of items) {
-          item.cursor.setAttribute('x1', cursorX)
-          item.cursor.setAttribute('x2', cursorX)
-          item.svgEl.setAttribute('aria-valuenow', String(activeIndex + 1))
-          item.svgEl.setAttribute('aria-valuetext', ariaValueText)
+        if (nextIndex !== shownIndex) {
+          shownIndex = nextIndex
+          const date = dates[activeIndex]
+          const cursorX = (cursorFraction * 100).toFixed(2)
+          setDomText(dateReadout, context.formatter.shortDate(date))
+          const ariaValues = [date]
+          for (const metric of data.engine.cardio.metrics) {
+            const value = valuesByMetric.get(metric.key)?.get(date)
+            const valueText = value != null ? cardioValueText(value, metric.unit) : '—'
+            const valueCell = valueCells.get(metric.key)
+            if (valueCell) setDomText(valueCell, valueText)
+            ariaValues.push(`${context.formatter.text(metric.label)} ${valueText}`)
+          }
+          const ariaValueText = ariaValues.join(' · ')
+          for (const item of items) {
+            item.cursor.setAttribute('x1', cursorX)
+            item.cursor.setAttribute('x2', cursorX)
+            item.svgEl.setAttribute('aria-valuenow', String(activeIndex + 1))
+            item.svgEl.setAttribute('aria-valuetext', ariaValueText)
+          }
         }
         cardioBlock.classList.add('tri-chart--hover')
         positionReadout(item, cursorFraction, pointerY)
@@ -158,11 +165,13 @@ export const mountSecondaryPanel = (
         keydown: (event: KeyboardEvent) => void
       }> = []
       for (const item of items) {
-        const move = (event: MouseEvent): void => {
-          const rect = item.svgEl.getBoundingClientRect()
+        const rafMove = rafEvent((event: MouseEvent): void => {
+          const rect = rectOf(item.svgEl)
           showIndex(dateIndexAt((event.clientX - rect.left) / rect.width), item, event.clientY)
-        }
+        })
+        const move = rafMove.onEvent
         const leave = (): void => {
+          rafMove.cancel()
           if (!item.svgEl.matches(':focus-visible')) hide()
         }
         const focus = (): void => showIndex(activeIndex, item)
@@ -217,6 +226,7 @@ export const mountSecondaryPanel = (
       const tr = bySport(data.trends, sport)
       if (!wrap || !svgEl || !cursor || !readout || !tr || !tr.history.length) continue
       const dots = Array.from(svgEl.querySelectorAll<SVGElement>('.tri-trend-dot'))
+      let lastHotDate: string | null = null
       items.push({
         svgEl,
         cursor,
@@ -224,8 +234,11 @@ export const mountSecondaryPanel = (
         hover: wrap,
         textOf: f => {
           const at = trendReadout(context.formatter, frame, tr, f)
-          for (const dot of dots)
-            dot.classList.toggle('tri-trend-dot--hot', dot.dataset.date === at.date)
+          if (at.date !== lastHotDate) {
+            lastHotDate = at.date
+            for (const dot of dots)
+              dot.classList.toggle('tri-trend-dot--hot', dot.dataset.date === at.date)
+          }
           return at.text
         },
       })
@@ -240,6 +253,9 @@ export const mountSecondaryPanel = (
     document.body.querySelector('.tri-radar-tip')?.remove()
     const radarTip = el('div', 'tri-gloss tri-radar-tip')
     radarTip.setAttribute('role', 'tooltip')
+    const slotH = el('span', 'tri-gloss-h')
+    const slotDefs = Array.from({ length: 4 }, () => el('span', 'tri-gloss-def'))
+    radarTip.append(slotH, ...slotDefs)
     document.body.appendChild(radarTip)
     const abilities = data.engine.abilities.sports
     const rawOf = (sp: SportAbility, a: AbilityAxis): string => {
@@ -256,92 +272,111 @@ export const mountSecondaryPanel = (
       a.proj != null && a.proj !== a.score
         ? ` → ${a.projRawValue != null ? `${a.projRawValue} w/kg · ` : ''}${a.proj}/100`
         : ''
-    const onMove = (event: MouseEvent) => {
+    let activeRadarKey = ''
+    const sizeCache = new Map<string, { width: number; height: number }>()
+    const onMove = rafEvent((event: MouseEvent) => {
       const n = abilities[0]?.axes.length ?? 0
       if (!n) return
-      const rect = radarSvg.getBoundingClientRect()
+      const rect = rectOf(radarSvg)
       const dx = event.clientX - (rect.left + rect.width / 2)
       const dy = event.clientY - (rect.top + rect.height / 2)
       const deg = (Math.atan2(dy, dx) * 180) / Math.PI
       const idx = ((Math.round(((deg + 90) / 360) * n) % n) + n) % n
-      const pressedSports = (radarBlock.dataset.pressed ?? '').split(',').filter(Boolean)
+      const pressedRaw = radarBlock.dataset.pressed ?? ''
+      const pressedSports = pressedRaw.split(',').filter(Boolean)
       if (!pressedSports.length) {
         radarTip.classList.remove('tri-gloss--on')
         return
       }
-      const single =
-        pressedSports.length === 1 ? abilities.find(sp => sp.sport === pressedSports[0]) : undefined
-      if (single) {
-        const a = single.axes[idx]
-        radarTip.replaceChildren(
-          el(
-            'span',
-            'tri-gloss-h',
+      const cacheKey = `${idx}:${pressedRaw}:${radarBlock.dataset.sport ?? ''}:${context.presentation.distance}:${context.presentation.locale}`
+      if (cacheKey !== activeRadarKey) {
+        activeRadarKey = cacheKey
+        const single =
+          pressedSports.length === 1
+            ? abilities.find(sp => sp.sport === pressedSports[0])
+            : undefined
+        if (single) {
+          const a = single.axes[idx]
+          setDomText(
+            slotH,
             `${context.formatter.text(single.sport)} · ${context.formatter.text(a.label)}`,
-          ),
-          el(
-            'span',
-            'tri-gloss-def',
+          )
+          setFastMath(
+            slotDefs[0],
             `${rawOf(single, a)} · ${a.score != null ? `${a.score}/100` : '—'}${projTxtOf(a)}`,
-          ),
-          renderGlossDef(radarAxisDefinition(context.presentation, single.sport, a)),
-          renderGlossDef(radarNotationDefinition(context.presentation, a)),
-        )
-      } else {
-        const activeAbilities = abilities.filter(sp => pressedSports.includes(sp.sport))
-        const rows: HTMLElement[] = [
-          el(
-            'span',
-            'tri-gloss-h',
+          )
+          slotDefs[0].hidden = false
+          slotDefs[0].style.display = ''
+          setFastMath(slotDefs[1], radarAxisDefinition(context.presentation, single.sport, a))
+          slotDefs[1].hidden = false
+          slotDefs[1].style.display = ''
+          setFastMath(slotDefs[2], radarNotationDefinition(context.presentation, a))
+          slotDefs[2].hidden = false
+          slotDefs[2].style.display = ''
+          setFastMath(slotDefs[3], '')
+          slotDefs[3].hidden = true
+          slotDefs[3].style.display = 'none'
+        } else {
+          const activeAbilities = abilities.filter(sp => pressedSports.includes(sp.sport))
+          setDomText(
+            slotH,
             radarAxisLabel(context.presentation, activeAbilities, idx) ||
               context.formatter.text(abilities[0].axes[idx].label),
-          ),
-        ]
-        if (radarBlock.dataset.sport === 'avg') {
-          const xs = abilities
-            .filter(sp => pressedSports.includes(sp.sport))
-            .map(sp => sp.axes[idx].score)
-            .filter((v): v is number => v != null)
-          if (xs.length)
-            rows.push(
-              el(
-                'span',
-                'tri-gloss-def',
-                `${context.formatter.text('average')}: ${Math.round(xs.reduce((acc, v) => acc + v, 0) / xs.length)}/100`,
-              ),
-            )
-        }
-        for (const sp of abilities) {
-          if (!pressedSports.includes(sp.sport)) continue
-          const a = sp.axes[idx]
-          rows.push(
-            el(
-              'span',
-              'tri-gloss-def',
-              `${context.formatter.text(sp.sport)}: ${a.score != null ? `${a.score}/100` : '—'}${projTxtOf(a)} · ${rawOf(sp, a)}`,
-            ),
           )
+          const defs: string[] = []
+          if (radarBlock.dataset.sport === 'avg') {
+            const xs = abilities
+              .filter(sp => pressedSports.includes(sp.sport))
+              .map(sp => sp.axes[idx].score)
+              .filter((v): v is number => v != null)
+            if (xs.length)
+              defs.push(
+                `${context.formatter.text('average')}: ${Math.round(xs.reduce((acc, v) => acc + v, 0) / xs.length)}/100`,
+              )
+          }
+          for (const sp of abilities) {
+            if (!pressedSports.includes(sp.sport)) continue
+            const a = sp.axes[idx]
+            defs.push(
+              `${context.formatter.text(sp.sport)}: ${a.score != null ? `${a.score}/100` : '—'}${projTxtOf(a)} · ${rawOf(sp, a)}`,
+            )
+          }
+          for (let k = 0; k < slotDefs.length; k++) {
+            const text = defs[k] ?? ''
+            setFastMath(slotDefs[k], text)
+            const hide = k >= defs.length
+            slotDefs[k].hidden = hide
+            slotDefs[k].style.display = hide ? 'none' : ''
+          }
         }
-        radarTip.replaceChildren(...rows)
       }
       radarTip.classList.add('tri-gloss--on')
-      const pr = radarTip.getBoundingClientRect()
+      let size = sizeCache.get(cacheKey)
+      if (!size || size.width <= 0) {
+        const pr = radarTip.getBoundingClientRect()
+        size = { width: pr.width, height: pr.height }
+        if (size.width > 0) sizeCache.set(cacheKey, size)
+      }
       const left =
-        event.clientX + 14 + pr.width > window.innerWidth - 8
-          ? event.clientX - 14 - pr.width
+        event.clientX + 14 + size.width > window.innerWidth - 8
+          ? event.clientX - 14 - size.width
           : event.clientX + 14
       const top =
-        event.clientY + 14 + pr.height > window.innerHeight - 8
-          ? event.clientY - 14 - pr.height
+        event.clientY + 14 + size.height > window.innerHeight - 8
+          ? event.clientY - 14 - size.height
           : event.clientY + 14
       radarTip.style.left = `${Math.max(8, left).toFixed(0)}px`
       radarTip.style.top = `${Math.max(8, top).toFixed(0)}px`
+    })
+    const onLeave = () => {
+      onMove.cancel()
+      radarTip.classList.remove('tri-gloss--on')
     }
-    const onLeave = () => radarTip.classList.remove('tri-gloss--on')
-    radarSvg.addEventListener('mousemove', onMove)
+    radarSvg.addEventListener('mousemove', onMove.onEvent)
     radarSvg.addEventListener('mouseleave', onLeave)
     cleanups.push(() => {
-      radarSvg.removeEventListener('mousemove', onMove)
+      onMove.cancel()
+      radarSvg.removeEventListener('mousemove', onMove.onEvent)
       radarSvg.removeEventListener('mouseleave', onLeave)
       radarTip.remove()
     })
@@ -357,31 +392,47 @@ export const mountSecondaryPanel = (
     document.body.querySelector('.tri-vo2t-tip')?.remove()
     const tip = el('div', 'tri-gloss tri-vo2t-tip')
     tip.setAttribute('role', 'tooltip')
+    const headSpan = el('span', 'tri-gloss-h')
+    const defSpan = el('span', 'tri-gloss-def')
+    tip.append(headSpan, defSpan)
     document.body.appendChild(tip)
-    const place = (event: MouseEvent): void => {
-      const pr = tip.getBoundingClientRect()
+    let activeTarget: HTMLElement | null = null
+    const sizeCache = new WeakMap<HTMLElement, { width: number; height: number }>()
+    const place = (event: MouseEvent, width: number, height: number): void => {
       const left =
-        event.clientX + 14 + pr.width > window.innerWidth - 8
-          ? event.clientX - 14 - pr.width
+        event.clientX + 14 + width > window.innerWidth - 8
+          ? event.clientX - 14 - width
           : event.clientX + 14
       const top =
-        event.clientY + 14 + pr.height > window.innerHeight - 8
-          ? event.clientY - 14 - pr.height
+        event.clientY + 14 + height > window.innerHeight - 8
+          ? event.clientY - 14 - height
           : event.clientY + 14
       tip.style.left = `${Math.max(8, left).toFixed(0)}px`
       tip.style.top = `${Math.max(8, top).toFixed(0)}px`
     }
     const bound: Array<[HTMLElement, (e: MouseEvent) => void, () => void]> = []
     for (const t of vo2TestTargets) {
-      const move = (e: MouseEvent): void => {
-        tip.replaceChildren(
-          el('span', 'tri-gloss-h', t.dataset.tipH ?? ''),
-          el('span', 'tri-gloss-def', t.dataset.tipD ?? ''),
-        )
+      const rafMove = rafEvent((e: MouseEvent): void => {
+        if (t !== activeTarget) {
+          activeTarget = t
+          setDomText(headSpan, t.dataset.tipH ?? '')
+          setDomText(defSpan, t.dataset.tipD ?? '')
+        }
         tip.classList.add('tri-gloss--on')
-        place(e)
+        let size = sizeCache.get(t)
+        if (!size || size.width <= 0) {
+          const pr = tip.getBoundingClientRect()
+          size = { width: pr.width, height: pr.height }
+          if (size.width > 0) sizeCache.set(t, size)
+        }
+        place(e, size.width, size.height)
+      })
+      const move = rafMove.onEvent
+      const leave = (): void => {
+        rafMove.cancel()
+        if (activeTarget === t) activeTarget = null
+        tip.classList.remove('tri-gloss--on')
       }
-      const leave = (): void => tip.classList.remove('tri-gloss--on')
       t.addEventListener('mousemove', move)
       t.addEventListener('mouseleave', leave)
       bound.push([t, move, leave])
@@ -400,16 +451,20 @@ export const mountSecondaryPanel = (
     document.body.querySelector('.tri-vo2p-tip')?.remove()
     const tip = el('div', 'tri-gloss tri-vo2p-tip')
     tip.setAttribute('role', 'tooltip')
+    const headSpan = el('span', 'tri-gloss-h')
+    const defSpan = el('span', 'tri-gloss-def')
+    tip.append(headSpan, defSpan)
     document.body.appendChild(tip)
-    const place = (event: MouseEvent): void => {
-      const pr = tip.getBoundingClientRect()
+    let activeTarget: SVGElement | null = null
+    const sizeCache = new WeakMap<SVGElement, { width: number; height: number }>()
+    const place = (event: MouseEvent, width: number, height: number): void => {
       const left =
-        event.clientX + 14 + pr.width > window.innerWidth - 8
-          ? event.clientX - 14 - pr.width
+        event.clientX + 14 + width > window.innerWidth - 8
+          ? event.clientX - 14 - width
           : event.clientX + 14
       const top =
-        event.clientY + 14 + pr.height > window.innerHeight - 8
-          ? event.clientY - 14 - pr.height
+        event.clientY + 14 + height > window.innerHeight - 8
+          ? event.clientY - 14 - height
           : event.clientY + 14
       tip.style.left = `${Math.max(8, left).toFixed(0)}px`
       tip.style.top = `${Math.max(8, top).toFixed(0)}px`
@@ -418,15 +473,27 @@ export const mountSecondaryPanel = (
     for (const t of vo2Profiles.flatMap(profile =>
       Array.from(profile.querySelectorAll<SVGElement>('[data-tip-h]')),
     )) {
-      const move = (e: MouseEvent): void => {
-        tip.replaceChildren(
-          el('span', 'tri-gloss-h', t.getAttribute('data-tip-h') ?? ''),
-          el('span', 'tri-gloss-def', t.getAttribute('data-tip-d') ?? ''),
-        )
+      const rafMove = rafEvent((e: MouseEvent): void => {
+        if (t !== activeTarget) {
+          activeTarget = t
+          setDomText(headSpan, t.getAttribute('data-tip-h') ?? '')
+          setDomText(defSpan, t.getAttribute('data-tip-d') ?? '')
+        }
         tip.classList.add('tri-gloss--on')
-        place(e)
+        let size = sizeCache.get(t)
+        if (!size || size.width <= 0) {
+          const pr = tip.getBoundingClientRect()
+          size = { width: pr.width, height: pr.height }
+          if (size.width > 0) sizeCache.set(t, size)
+        }
+        place(e, size.width, size.height)
+      })
+      const move = rafMove.onEvent
+      const leave = (): void => {
+        rafMove.cancel()
+        if (activeTarget === t) activeTarget = null
+        tip.classList.remove('tri-gloss--on')
       }
-      const leave = (): void => tip.classList.remove('tri-gloss--on')
       t.addEventListener('mousemove', move)
       t.addEventListener('mouseleave', leave)
       bound.push([t, move, leave])
@@ -454,7 +521,7 @@ export const mountSecondaryPanel = (
     const num = (key: string): number => Number(inputFor(key)?.value ?? 0)
     const setText = (key: string, value: string): void => {
       const node = out(key)
-      if (node) node.textContent = value
+      if (node) setDomText(node, value)
     }
     const setBar = (key: string, value: number): void => {
       const node = bar(key)
@@ -464,7 +531,7 @@ export const mountSecondaryPanel = (
       const numIn = ftpBlock.querySelector<HTMLInputElement>(`[data-ftp-num="${key}"]`)
       if (numIn && document.activeElement !== numIn) numIn.value = display
       const unitNode = ftpBlock.querySelector<HTMLElement>(`[data-ftp-unit="${key}"]`)
-      if (unitNode) unitNode.textContent = unit
+      if (unitNode) setDomText(unitNode, unit)
     }
     const renderFtp = (): void => {
       const mass = num('mass')
@@ -480,7 +547,7 @@ export const mountSecondaryPanel = (
       if (!calculation) return
       const writeVal = (key: string, value: string): void => {
         const node = valOut(key)
-        if (node) node.textContent = value
+        if (node) setDomText(node, value)
       }
       setNum('mass', wNum(context.formatter, mass, 1, 0), ` ${weightUnitLabel(context.formatter)}`)
       setNum('vo2', vo2.toFixed(1), '')

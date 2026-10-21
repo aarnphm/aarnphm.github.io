@@ -1,20 +1,20 @@
 import type { ActivitySummary } from '../../../../plugins/stores/analytics'
 import type { Analytics } from '../../../../plugins/stores/analytics'
 import type { DailyPoint } from '../../../../plugins/stores/analytics'
-import type { Sport } from '../../../../plugins/stores/strava'
+import type { ActivityKind, Sport } from '../../../../plugins/stores/strava'
 import type { TriathlonContext } from '../../runtime/context'
 import { axisFrame } from '../../../../util/triathlon-card'
 import { dist } from '../../../../util/triathlon-card'
 import { weeklyChartX } from '../../../../util/weekly-target-range'
 import { buildIcon } from '../../activity/primitives'
 import { createDomFactory } from '../../runtime/dom'
-import { el } from '../../runtime/dom'
+import { el, setText } from '../../runtime/dom'
 import { mathK } from '../../runtime/dom'
 import { svg } from '../../runtime/dom'
+import { rafEvent, rectOf, setFastMath } from '../scrub-primitives'
 import { ANA_W } from '../shared'
 import { anaTitle } from '../shared'
 import { buildHorizontalGrid } from '../shared'
-import { buildIconLeg } from '../shared'
 import { buildVerticalGrid } from '../shared'
 import { bySport } from '../shared'
 import { clampN } from '../shared'
@@ -335,84 +335,123 @@ export const buildPmc = (
   }
   block.appendChild(sportCap)
 
-  const legendRow = (cls: string, name: string, val: string): HTMLElement => {
+  const makeLegendRow = (cls: string, name: string): { row: HTMLElement; val: HTMLElement } => {
     const row = el('div', `tri-pmc-leg ${cls}`)
+    const val = el('span', 'tri-pmc-leg-v')
     row.append(
       el('span', 'tri-pmc-dot'),
-      el('span', 'tri-pmc-leg-v', val),
+      val,
       el('span', 'tri-pmc-leg-k', context.formatter.text(name)),
     )
-    return row
+    return { row, val }
   }
-  const entryRow = (a: ActivitySummary): HTMLElement => {
+  const legDate = el('span', 'tri-pmc-leg-date')
+  const fitLeg = makeLegendRow('tri-pmc-fit', 'fitness')
+  const fatLeg = makeLegendRow('tri-pmc-fat', 'fatigue')
+  const formLeg = makeLegendRow('tri-pmc-form', 'form')
+  const tssLeg = makeLegendRow('tri-pmc-tss', 'tss')
+  const metricGrid = el('div', 'tri-pmc-leg-grid')
+  metricGrid.append(fitLeg.row, fatLeg.row, formLeg.row, tssLeg.row)
+  const legLoad = el('span', 'tri-pmc-leg-load')
+  const entryList = el('div', 'tri-pmc-entries')
+  const emptyEntry = el(
+    'div',
+    'tri-pmc-entry tri-pmc-entry--empty',
+    context.formatter.text('no activity'),
+  )
+  const entrySlots = Array.from({ length: 3 }, () => {
     const row = el('div', 'tri-pmc-entry')
-    row.append(
-      el('span', 'tri-pmc-entry-n', a.name || a.sport),
-      el('span', `tri-pmc-entry-s tri-leg-${a.sport}`, context.formatter.text(a.sport)),
-      el('span', 'tri-pmc-entry-d', dist(context.presentation, a.distanceKm, a.sport)),
-    )
-    return row
-  }
+    const name = el('span', 'tri-pmc-entry-n')
+    const sport = el('span', 'tri-pmc-entry-s')
+    const d = el('span', 'tri-pmc-entry-d')
+    row.append(name, sport, d)
+    return { row, name, sport, d }
+  })
+  entryList.append(emptyEntry, ...entrySlots.map(slot => slot.row))
+  readoutEl.append(legDate, metricGrid, legLoad, entryList)
+
   const renderLegend = (i: number): void => {
     const proj = i >= n
     const p = proj ? projSeries[Math.min(H - 1, i - n)] : daily[i]
     const date = proj ? projDate(i - n + 1) : daily[i].date
-    const entries = proj
-      ? []
-      : [...(activitiesByDate.get(date) ?? [])].sort((a, b) => b.load - a.load)
-    const entryList = el('div', 'tri-pmc-entries')
-    if (!proj) {
-      if (entries.length === 0)
-        entryList.appendChild(
-          el('div', 'tri-pmc-entry tri-pmc-entry--empty', context.formatter.text('no activity')),
-        )
-      else for (const activity of entries.slice(0, 3)) entryList.appendChild(entryRow(activity))
+    setText(legDate, `${context.formatter.shortDate(date)}${proj ? ' · proj' : ''}`)
+    setText(fitLeg.val, String(Math.round(p.ctl)))
+    setText(fatLeg.val, String(Math.round(p.atl)))
+    setText(formLeg.val, signed(Math.round(p.tsb)))
+    setText(tssLeg.val, String(Math.round(proj ? futLoad : daily[i].load)))
+    if (proj) {
+      legLoad.style.display = 'none'
+      setText(legLoad, '')
+      entryList.style.display = 'none'
+      emptyEntry.style.display = 'none'
+      setText(emptyEntry, '')
+      for (const slot of entrySlots) {
+        slot.row.style.display = 'none'
+        setText(slot.name, '')
+        setText(slot.sport, '')
+        setText(slot.d, '')
+      }
+      return
     }
-    const metricGrid = el('div', 'tri-pmc-leg-grid')
-    metricGrid.append(
-      legendRow('tri-pmc-fit', 'fitness', String(Math.round(p.ctl))),
-      legendRow('tri-pmc-fat', 'fatigue', String(Math.round(p.atl))),
-      legendRow('tri-pmc-form', 'form', signed(Math.round(p.tsb))),
-      legendRow('tri-pmc-tss', 'tss', String(Math.round(proj ? futLoad : daily[i].load))),
+    const d = daily[i]
+    legLoad.style.display = ''
+    setText(
+      legLoad,
+      `${context.formatter.text('swim')} ${Math.round(d.swimCtl)} · ${context.formatter.text('bike')} ${Math.round(d.bikeCtl)} · ${context.formatter.text('run')} ${Math.round(d.runCtl)}`,
     )
-    readoutEl.replaceChildren(
-      el(
-        'span',
-        'tri-pmc-leg-date',
-        `${context.formatter.shortDate(date)}${proj ? ' · proj' : ''}`,
-      ),
-      metricGrid,
-    )
-    if (!proj) {
-      const d = daily[i]
-      readoutEl.append(
-        el(
-          'span',
-          'tri-pmc-leg-load',
-          `${context.formatter.text('swim')} ${Math.round(d.swimCtl)} · ${context.formatter.text('bike')} ${Math.round(d.bikeCtl)} · ${context.formatter.text('run')} ${Math.round(d.runCtl)}`,
-        ),
-      )
-      readoutEl.append(entryList)
+    entryList.style.display = ''
+    const entries = [...(activitiesByDate.get(date) ?? [])].sort((a, b) => b.load - a.load)
+    if (entries.length === 0) {
+      emptyEntry.style.display = ''
+      setText(emptyEntry, context.formatter.text('no activity'))
+    } else {
+      emptyEntry.style.display = 'none'
+      setText(emptyEntry, '')
+    }
+    for (let k = 0; k < entrySlots.length; k++) {
+      const slot = entrySlots[k]
+      const a = entries[k]
+      if (!a) {
+        slot.row.style.display = 'none'
+        setText(slot.name, '')
+        setText(slot.sport, '')
+        setText(slot.d, '')
+        continue
+      }
+      slot.row.style.display = ''
+      setText(slot.name, a.name || a.sport)
+      slot.sport.className = `tri-pmc-entry-s tri-leg-${a.sport}`
+      setText(slot.sport, context.formatter.text(a.sport))
+      setText(slot.d, dist(context.presentation, a.distanceKm, a.sport))
     }
   }
   const setCtrlLab = (): void => {
     const lp = projSeries[H - 1]
-    ctrlLab.textContent = `${futLoad}/day → ${H}d: ${context.formatter.text('fitness')} ${Math.round(lp.ctl)} · ${context.formatter.text('form')} ${signed(Math.round(lp.tsb))}`
+    setText(
+      ctrlLab,
+      `${futLoad}/day → ${H}d: ${context.formatter.text('fitness')} ${Math.round(lp.ctl)} · ${context.formatter.text('form')} ${signed(Math.round(lp.tsb))}`,
+    )
   }
+  let shownIndex = -1
+  let shownFutLoad = -1
   const focusIndex = (i: number, hover: boolean): void => {
     const activeIndex = Math.round(clampN(i, 0, N - 1))
-    const cx = x(activeIndex).toFixed(2)
-    cursor.setAttribute('x1', cx)
-    cursor.setAttribute('x2', cx)
-    readoutEl.style.setProperty(
-      '--tri-pmc-readout-x',
-      `${clampN((x(activeIndex) / ANA_W) * 100, 14, 86).toFixed(2)}%`,
-    )
-    renderLegend(activeIndex)
+    if (activeIndex !== shownIndex || futLoad !== shownFutLoad) {
+      shownIndex = activeIndex
+      shownFutLoad = futLoad
+      const cx = x(activeIndex).toFixed(2)
+      cursor.setAttribute('x1', cx)
+      cursor.setAttribute('x2', cx)
+      readoutEl.style.setProperty(
+        '--tri-pmc-readout-x',
+        `${clampN((x(activeIndex) / ANA_W) * 100, 14, 86).toFixed(2)}%`,
+      )
+      renderLegend(activeIndex)
+    }
     block.classList.toggle('tri-chart--hover', hover)
   }
   const indexAt = (event: MouseEvent): number => {
-    const rect = s.getBoundingClientRect()
+    const rect = rectOf(s)
     return Math.round(clampN((event.clientX - rect.left) / rect.width, 0, 1) * (N - 1))
   }
   setCtrlLab()
@@ -445,15 +484,17 @@ export const buildPmc = (
     focusIndex(model.activeIndex, block.classList.contains('tri-chart--hover'))
   }
 
-  const onMove = (event: MouseEvent): void => {
+  const rafMove = rafEvent((event: MouseEvent): void => {
     model = updatePerformance(model, { type: 'hover', index: indexAt(event) }, performanceBounds)
     focusIndex(model.activeIndex, true)
-  }
+  })
   const onLeave = (): void => {
+    rafMove.cancel()
     model = updatePerformance(model, { type: 'leave' }, performanceBounds)
     focusIndex(model.activeIndex, model.lockedIndex != null)
   }
   const onClick = (event: MouseEvent): void => {
+    rafMove.cancel()
     model = updatePerformance(
       model,
       { type: 'toggle-lock', index: indexAt(event) },
@@ -466,12 +507,13 @@ export const buildPmc = (
     element: block,
     mount: () => {
       slider.addEventListener('input', onSliderInput)
-      s.addEventListener('mousemove', onMove)
+      s.addEventListener('mousemove', rafMove.onEvent)
       s.addEventListener('mouseleave', onLeave)
       s.addEventListener('click', onClick)
       return () => {
+        rafMove.cancel()
         slider.removeEventListener('input', onSliderInput)
-        s.removeEventListener('mousemove', onMove)
+        s.removeEventListener('mousemove', rafMove.onEvent)
         s.removeEventListener('mouseleave', onLeave)
         s.removeEventListener('click', onClick)
       }
@@ -517,6 +559,26 @@ export const wkDayLetter = (context: TriathlonContext, iso: string): string => {
   return context.formatter.weekdayNarrow(day)
 }
 
+interface WkDetailSlots {
+  numSpan: HTMLElement
+  rangeSpan: HTMLElement
+  stateSpan: HTMLElement
+  days: Array<{ fill: HTMLElement; dl: HTMLElement }>
+  stats: HTMLElement
+  acts: Array<{
+    row: HTMLElement
+    icoWrap: HTMLElement
+    icon: SVGElement
+    paths: SVGElement[]
+    name: HTMLElement
+    t: HTMLElement
+    v: HTMLElement
+  }>
+  moreRow: HTMLElement
+}
+
+const wkDetailSlotsMap = new WeakMap<HTMLElement, WkDetailSlots>()
+
 export const renderWkDetail = (
   block: HTMLElement,
   data: Analytics,
@@ -528,27 +590,65 @@ export const renderWkDetail = (
   const row = wkTrendRows(data, kind)[i]
   if (!host || !row || host.dataset.week === row.week.weekStart) return
   host.dataset.week = row.week.weekStart
+  let slots = wkDetailSlotsMap.get(host)
+  if (!slots) {
+    const head = el('div', 'tri-wkdetail-head')
+    const numSpan = el('span', 'tri-wkdetail-num')
+    const rangeSpan = el('span', 'tri-wkdetail-range')
+    const stateSpan = el('span', 'tri-wkdetail-state')
+    head.append(numSpan, rangeSpan, stateSpan)
+    const grid = el('div', 'tri-wkdetail-days')
+    const daySlots = Array.from({ length: 7 }, () => {
+      const col = el('span', 'tri-wkdetail-day')
+      const track = el('span', 'tri-wkdetail-track')
+      const fill = el('span', 'tri-wkdetail-fill')
+      const dl = el('span', 'tri-wkdetail-dl')
+      track.appendChild(fill)
+      col.append(track, dl)
+      grid.appendChild(col)
+      return { fill, dl }
+    })
+    const stats = el('span', 'tri-ana-k tri-wkdetail-stats')
+    const actsBox = el('div', 'tri-wkdetail-acts')
+    const actSlots = Array.from({ length: WKT_ACTS }, () => {
+      const actRow = el('div', 'tri-wkdetail-act')
+      const icoWrap = el('span', 'tri-ana-ico')
+      const icon = svg('svg', { class: 'tri-ico', viewBox: '0 0 24 24', fill: 'none' })
+      const paths = Array.from({ length: 4 }, () => {
+        const p = svg('path', { d: '' })
+        icon.appendChild(p)
+        return p
+      })
+      icoWrap.appendChild(icon)
+      const name = el('span', 'tri-wkdetail-act-name')
+      const t = el('span', 'tri-wkdetail-act-t')
+      const v = el('span', 'tri-wkdetail-act-v')
+      actRow.append(icoWrap, name, t, v)
+      actsBox.appendChild(actRow)
+      return { row: actRow, icoWrap, icon, paths, name, t, v }
+    })
+    const moreRow = el('div', 'tri-wkdetail-act tri-wkdetail-act--more')
+    actsBox.appendChild(moreRow)
+    host.replaceChildren(head, grid, stats, actsBox)
+    slots = { numSpan, rangeSpan, stateSpan, days: daySlots, stats, acts: actSlots, moreRow }
+    wkDetailSlotsMap.set(host, slots)
+  }
   const w = row.week
   const band = row.band
   const days = wkDates(w.weekStart)
-  const head = el('div', 'tri-wkdetail-head')
-  head.append(
-    el('span', 'tri-wkdetail-num', String(Math.round(row.value))),
-    el(
-      'span',
-      'tri-wkdetail-range',
-      `${context.formatter.shortDate(days[0])} – ${context.formatter.shortDate(days[6])}`,
-    ),
+  setText(slots.numSpan, String(Math.round(row.value)))
+  setText(
+    slots.rangeSpan,
+    `${context.formatter.shortDate(days[0])} – ${context.formatter.shortDate(days[6])}`,
   )
   if (band) {
     const state = row.value > band[1] ? 'above' : row.value < band[0] ? 'below' : 'in'
-    head.appendChild(
-      el(
-        'span',
-        `tri-wkdetail-state tri-wkdetail-state--${state}`,
-        context.formatter.text(`${state} range`),
-      ),
-    )
+    slots.stateSpan.className = `tri-wkdetail-state tri-wkdetail-state--${state}`
+    slots.stateSpan.style.display = ''
+    setText(slots.stateSpan, context.formatter.text(`${state} range`))
+  } else {
+    slots.stateSpan.style.display = 'none'
+    setText(slots.stateSpan, '')
   }
   const byDate = new Map<string, DailyPoint>()
   for (const d of data.daily) byDate.set(d.date, d)
@@ -558,42 +658,73 @@ export const renderWkDetail = (
   })
   let dayMax = 1
   for (const dv of dayVals) if (dv > dayMax) dayMax = dv
-  const grid = el('div', 'tri-wkdetail-days')
   days.forEach((date, k) => {
-    const col = el('span', 'tri-wkdetail-day')
-    const track = el('span', 'tri-wkdetail-track')
+    const slot = slots.days[k]
     if (dayVals[k] > 0) {
-      const fill = el('span', 'tri-wkdetail-fill')
-      fill.style.height = `${Math.max(6, (dayVals[k] / dayMax) * 100).toFixed(1)}%`
-      track.appendChild(fill)
+      slot.fill.style.display = ''
+      slot.fill.style.height = `${Math.max(6, (dayVals[k] / dayMax) * 100).toFixed(1)}%`
+    } else {
+      slot.fill.style.display = 'none'
+      slot.fill.style.height = '0%'
     }
-    col.append(track, el('span', 'tri-wkdetail-dl', wkDayLetter(context, date)))
-    grid.appendChild(col)
+    setText(slot.dl, wkDayLetter(context, date))
   })
-  const stats = mathK(
-    'tri-ana-k tri-wkdetail-stats',
+  setFastMath(
+    slots.stats,
     `${w.sessions}$\\times$ $\\cdot$ ${fmtKm(context.presentation, w.km)} $\\cdot$ ${w.hours.toFixed(1)}h`,
   )
-  const actsBox = el('div', 'tri-wkdetail-acts')
   const acts = data.activities
     .filter(a => a.date >= days[0] && a.date <= days[6])
     .map(a => ({ a, v: kind === 'load' ? a.load : a.effort }))
     .sort((p, q) => (q.v ?? -1) - (p.v ?? -1))
-  for (const { a, v } of acts.slice(0, WKT_ACTS)) {
-    const row = el('div', 'tri-wkdetail-act')
-    row.append(
-      buildIconLeg(context.formatter, a.sport),
-      el('span', 'tri-wkdetail-act-name', a.name || a.sport),
-      el('span', 'tri-wkdetail-act-t', hms(a.movingTimeS)),
-      el('span', 'tri-wkdetail-act-v', v != null && v > 0 ? String(Math.round(v)) : '—'),
-    )
-    actsBox.appendChild(row)
+  const iconSpecs = new Map<ActivityKind, { cls: string; paths: string[] }>()
+  const getIconSpec = (sport: ActivityKind): { cls: string; paths: string[] } => {
+    let spec = iconSpecs.get(sport)
+    if (!spec) {
+      const node = buildIcon(context.presentation, sport)
+      spec = {
+        cls: node.getAttribute('class') ?? 'tri-ico',
+        paths: Array.from(node.querySelectorAll('path')).map(p => p.getAttribute('d') ?? ''),
+      }
+      iconSpecs.set(sport, spec)
+    }
+    return spec
   }
-  if (acts.length > WKT_ACTS)
-    actsBox.appendChild(
-      el('div', 'tri-wkdetail-act tri-wkdetail-act--more', `+${acts.length - WKT_ACTS}`),
-    )
-  host.replaceChildren(head, grid, stats, actsBox)
+  for (let k = 0; k < WKT_ACTS; k++) {
+    const slot = slots.acts[k]
+    const item = acts[k]
+    if (!item) {
+      slot.row.style.display = 'none'
+      setText(slot.name, '')
+      setText(slot.t, '')
+      setText(slot.v, '')
+      continue
+    }
+    const { a, v } = item
+    slot.row.style.display = ''
+    slot.icoWrap.className = `tri-ana-ico tri-leg-${a.sport}`
+    const spec = getIconSpec(a.sport)
+    slot.icon.setAttribute('class', spec.cls)
+    for (let p = 0; p < slot.paths.length; p++) {
+      const d = spec.paths[p]
+      if (d) {
+        slot.paths[p].setAttribute('d', d)
+        slot.paths[p].removeAttribute('display')
+      } else {
+        slot.paths[p].setAttribute('display', 'none')
+      }
+    }
+    setText(slot.name, a.name || a.sport)
+    setText(slot.t, hms(a.movingTimeS))
+    setText(slot.v, v != null && v > 0 ? String(Math.round(v)) : '—')
+  }
+  if (acts.length > WKT_ACTS) {
+    slots.moreRow.style.display = ''
+    setText(slots.moreRow, `+${acts.length - WKT_ACTS}`)
+  } else {
+    slots.moreRow.style.display = 'none'
+    setText(slots.moreRow, '')
+  }
 }
 
 export const buildWeekTrend = (

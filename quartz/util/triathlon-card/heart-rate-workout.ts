@@ -29,7 +29,8 @@ const buildSaunaLapAnalysis = <N>(
   const legend = f.el('div', 'tri-sauna-laps-legend')
   for (const phase of ['hot sauna', 'cold plunge', 'break'])
     f.add(legend, f.el('span', 'tri-sauna-phase', text(phase), { 'data-sauna-phase': phase }))
-  f.add(head, legend)
+  // The readout precedes the legend so CSS can hide the legend with a sibling combinator. A
+  // `:has([data-visible])` rule made every `data-visible` change on the page cost ~50 ms of style.
   if (layout === 'timeline') {
     const readout = f.el('div', 'tri-analysis-readout', undefined, {
       'data-tri-analysis-readout': '',
@@ -43,6 +44,7 @@ const buildSaunaLapAnalysis = <N>(
     )
     f.add(head, readout)
   }
+  f.add(head, legend)
   const timeline = f.el(
     'div',
     layout === 'legend' ? 'tri-sauna-lap-list' : 'tri-sauna-laps-timeline',

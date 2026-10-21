@@ -1,12 +1,15 @@
+import type { ActivityKind } from '../../../plugins/stores/strava'
 import type { TriathlonContext } from '../runtime/context'
 import type { TriathlonFormatter } from '../runtime/formatter'
-import { buildTimelineDayCard } from '../../../util/triathlon-card'
+import { buildBattery, buildIcon } from '../../../util/triathlon-card/activity-icons'
+import { dist, dur, prettyDate } from '../../../util/triathlon-card/metric-text'
+import { triText } from '../../../util/triathlon-i18n'
 import { readTimelineActivities } from '../../../util/triathlon-timeline'
 import {
   beginSitePerformanceSample,
   endSitePerformanceSample,
 } from '../../scripts/performance-sample'
-import { createDomFactory, el } from '../runtime/dom'
+import { createDomFactory, el, setText, svg } from '../runtime/dom'
 import { TRI_POWER_FILTER_EVENT } from '../runtime/preferences'
 
 const OPEN_PANEL_SELECTOR =
@@ -24,14 +27,22 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
   if (!barsEl || !pop || bars.length === 0) return null
 
   let active: HTMLElement | null = null
+  let activeIdx = -1
   const activities = new Map(
-    bars.map(bar => [bar, readTimelineActivities(bar.dataset.timelineActivities)]),
+    bars.map(bar => [
+      bar,
+      readTimelineActivities(bar.dataset.timelineActivities).toSorted(
+        (a, b) => b.distanceKm - a.distanceKm,
+      ),
+    ]),
   )
   let timelineFrame = 0
   let hoverFrame = 0
   let pendingClientX: number | null = null
   let geometryDirty = true
   let barsLeft = 0
+  let timelineTop = 0
+  let timelineBottom = 0
   let barCenters: number[] = []
   let yearOffsets: number[] = []
   let repositionActive: (() => void) | null = null
@@ -46,7 +57,10 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
   const updateTimeline = () => {
     const startedAt = beginSitePerformanceSample()
     const barsRect = barsEl.getBoundingClientRect()
+    const tlRect = timeline ? timeline.getBoundingClientRect() : barsRect
     barsLeft = barsRect.left
+    timelineTop = tlRect.top
+    timelineBottom = tlRect.bottom
     if (geometryDirty) {
       barCenters = bars.map(bar => {
         const rect = bar.getBoundingClientRect()
@@ -75,7 +89,7 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
     const activeYear = timelineYears[activeIndex]
     if (timelinePinnedYear && activeYear) {
       const label = activeYear.dataset.year ?? activeYear.textContent ?? ''
-      if (timelinePinnedYear.textContent !== label) timelinePinnedYear.textContent = label
+      setText(timelinePinnedYear, label)
     }
     repositionActive?.()
     endSitePerformanceSample('timeline', startedAt)
@@ -140,38 +154,127 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
   window.addEventListener('keydown', armAudio)
 
   const domF = createDomFactory(context.presentation)
-  const buildCard = (bar: HTMLElement) =>
-    buildTimelineDayCard(domF, bar.dataset.dateIso ?? '', activities.get(bar) ?? [])
-  const replaceCard = (bar: HTMLElement): void => {
-    scroller.replaceChildren(buildCard(bar))
+  const maxDayActivities = Math.max(1, ...Array.from(activities.values(), list => list.length))
+  const cardEl = el('div', 'tri-timeline-card')
+  const dateEl = el('span', 'tri-pop-date')
+  const restEl = el('span', 'tri-timeline-row tri-timeline-rest', undefined, { role: 'group' })
+  const restValEl = el('span', 'tri-timeline-value', undefined, { 'data-i18n': 'rest' })
+  restEl.append(buildBattery(domF), restValEl)
+  const listEl = el('ul', 'tri-timeline-list')
+  const itemSlots = Array.from({ length: maxDayActivities }, () => {
+    const item = el('li', 'tri-timeline-item')
+    const entry = el('span', 'tri-timeline-row tri-timeline-activity', undefined, { role: 'group' })
+    const icon = svg('svg', { class: 'tri-ico', viewBox: '0 0 24 24', fill: 'none' })
+    const paths = Array.from({ length: 4 }, () => {
+      const p = svg('path', { d: '' })
+      icon.appendChild(p)
+      return p
+    })
+    const val = el('span', 'tri-timeline-value')
+    entry.append(icon, val)
+    item.appendChild(entry)
+    listEl.appendChild(item)
+    return { item, entry, icon, paths, val }
+  })
+  cardEl.append(dateEl, restEl, listEl)
+  scroller.appendChild(cardEl)
+
+  const iconSpecs = new Map<ActivityKind, { cls: string; paths: string[] }>()
+  const getIconSpec = (sport: ActivityKind): { cls: string; paths: string[] } => {
+    let spec = iconSpecs.get(sport)
+    if (!spec) {
+      const node = buildIcon(domF, sport)
+      spec = {
+        cls: node.getAttribute('class') ?? 'tri-ico',
+        paths: Array.from(node.querySelectorAll('path')).map(p => p.getAttribute('d') ?? ''),
+      }
+      iconSpecs.set(sport, spec)
+    }
+    return spec
   }
 
-  const place = (bar: HTMLElement) => {
+  const replaceCard = (bar: HTMLElement): void => {
+    setText(dateEl, prettyDate(bar.dataset.dateIso ?? ''))
+    const day = activities.get(bar) ?? []
+    if (day.length === 0) {
+      const label = triText(context.presentation.locale, 'rest')
+      restEl.setAttribute('aria-label', label)
+      setText(restValEl, label)
+      restEl.style.display = ''
+      listEl.style.display = 'none'
+      for (const slot of itemSlots) {
+        slot.item.style.display = 'none'
+        setText(slot.val, '')
+      }
+      return
+    }
+    restEl.style.display = 'none'
+    setText(restValEl, '')
+    listEl.style.display = ''
+    for (let i = 0; i < itemSlots.length; i++) {
+      const slot = itemSlots[i]
+      const activity = day[i]
+      if (!activity) {
+        slot.item.style.display = 'none'
+        setText(slot.val, '')
+        continue
+      }
+      slot.item.style.display = ''
+      const value =
+        activity.distanceKm > 0
+          ? dist(context.presentation, activity.distanceKm, activity.sport)
+          : dur(activity.movingTimeS)
+      const aria = `${triText(context.presentation.locale, activity.sport)} · ${activity.name} · ${value}`
+      slot.entry.setAttribute('aria-label', aria)
+      slot.entry.setAttribute('title', activity.name)
+      const spec = getIconSpec(activity.sport)
+      slot.icon.setAttribute('class', spec.cls)
+      for (let k = 0; k < slot.paths.length; k++) {
+        const d = spec.paths[k]
+        if (d) {
+          slot.paths[k].setAttribute('d', d)
+          slot.paths[k].removeAttribute('display')
+        } else {
+          slot.paths[k].setAttribute('display', 'none')
+        }
+      }
+      setText(slot.val, value)
+    }
+  }
+
+  const place = (bar: HTMLElement, idx = activeIdx) => {
     const gap = 10
     const inset = 8
-    const barRect = bar.getBoundingClientRect()
-    const timelineRect = timeline?.getBoundingClientRect() ?? barsEl.getBoundingClientRect()
-    const popRect = pop.getBoundingClientRect()
+    const cx =
+      idx >= 0 && idx < barCenters.length
+        ? barsLeft + barCenters[idx]
+        : (() => {
+            const r = bar.getBoundingClientRect()
+            return r.left + r.width / 2
+          })()
+    if (timelineTop === 0 && timelineBottom === 0) {
+      const tlRect = timeline?.getBoundingClientRect() ?? barsEl.getBoundingClientRect()
+      timelineTop = tlRect.top
+      timelineBottom = tlRect.bottom
+    }
+    const popWidth = pop.offsetWidth
+    const popHeight = pop.offsetHeight
     const viewHeight = scroller.clientHeight
     const contentHeight = scroller.scrollHeight
     const scrollTop = scroller.scrollTop
-    const frameHeight = Math.max(0, pop.offsetHeight - viewHeight)
+    const frameHeight = Math.max(0, popHeight - viewHeight)
     const naturalHeight = contentHeight + frameHeight
-    const below = timelineRect.bottom + gap
+    const below = timelineBottom + gap
     const availableBelow = Math.max(0, window.innerHeight - inset - below)
-    const availableAbove = Math.max(0, timelineRect.top - gap - inset)
+    const availableAbove = Math.max(0, timelineTop - gap - inset)
     const placeBelow =
       naturalHeight > availableAbove &&
       (naturalHeight <= availableBelow || availableBelow >= availableAbove)
     const availableHeight = placeBelow ? availableBelow : availableAbove
     const maxContentHeight = Math.max(0, Math.floor(availableHeight - frameHeight))
     const height = Math.min(naturalHeight, maxContentHeight + frameHeight)
-    const cx = barRect.left + barRect.width / 2
-    const left = Math.max(
-      inset,
-      Math.min(cx - popRect.width / 2, window.innerWidth - popRect.width - inset),
-    )
-    const top = placeBelow ? below : Math.max(inset, timelineRect.top - gap - height)
+    const left = Math.max(inset, Math.min(cx - popWidth / 2, window.innerWidth - popWidth - inset))
+    const top = placeBelow ? below : Math.max(inset, timelineTop - gap - height)
     setStyle(scroller, 'maxHeight', `${maxContentHeight}px`)
     setStyle(pop, 'left', `${left}px`)
     setStyle(pop, 'top', `${top}px`)
@@ -179,7 +282,7 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
     applyOverflow(scrollTop, contentHeight, Math.min(contentHeight, maxContentHeight))
   }
   repositionActive = () => {
-    if (active) place(active)
+    if (active) place(active, activeIdx)
   }
   const onViewportResize = () => {
     geometryDirty = true
@@ -210,24 +313,27 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
   }
 
   const showFor = (idx: number) => {
-    const startedAt = beginSitePerformanceSample()
     const bar = bars[idx]
+    if (bar === active && root.classList.contains('tri-hovering')) return
+    const startedAt = beginSitePerformanceSample()
     if (bar !== active) {
       if (active) active.classList.remove('tri-bar--active')
       active = bar
+      activeIdx = idx
       bar.classList.add('tri-bar--active')
       raindrop(idx)
       replaceCard(bar)
       scroller.scrollTop = 0
     }
-    place(bar)
     root.classList.add('tri-hovering')
     pop.setAttribute('aria-hidden', 'false')
+    place(bar, idx)
     endSitePerformanceSample('popover', startedAt)
   }
   const hide = () => {
     if (active) active.classList.remove('tri-bar--active')
     active = null
+    activeIdx = -1
     root.classList.remove('tri-hovering')
     pop.setAttribute('aria-hidden', 'true')
   }
@@ -280,7 +386,7 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
   const onUnit = () => {
     if (!active) return
     replaceCard(active)
-    place(active)
+    place(active, activeIdx)
   }
 
   let wasPanelOpen = panelOpen()

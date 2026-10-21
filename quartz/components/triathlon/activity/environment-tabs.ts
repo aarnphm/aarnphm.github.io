@@ -3,6 +3,7 @@ import type {
   GardenEnvironmentSample,
 } from '../../../util/activity-environment'
 import type { TriathlonPresentation } from '../../../util/triathlon-presentation'
+import { setText } from '../../../util/set-text'
 import {
   ENVIRONMENT_CHART_VIEWS,
   ALL_ENVIRONMENT_CHART_VIEWS,
@@ -183,17 +184,43 @@ const relativeWindShares = (analysis: HTMLElement): number[] | null => {
   }
 }
 
+// Pointer moves read the samples on every event; parse each series string once.
+const parsedSamples = new WeakMap<
+  HTMLElement,
+  { source: string | undefined; samples: EnvironmentChartSample[] }
+>()
+
+const cachedSamples = (
+  analysis: HTMLElement,
+  source: string | undefined,
+  parse: (source: string | undefined) => EnvironmentChartSample[],
+): EnvironmentChartSample[] => {
+  const cached = parsedSamples.get(analysis)
+  if (cached && cached.source === source) return cached.samples
+  const samples = parse(source)
+  parsedSamples.set(analysis, { source, samples })
+  return samples
+}
+
 const readSamples = (analysis: HTMLElement): EnvironmentChartSample[] => {
   const view = analysis.dataset.environmentView
   if (view === 'current-speed' || view === 'current-direction')
-    return parseEnvironmentCurrentSamples(analysis.dataset.environmentCurrentSeries)
+    return cachedSamples(
+      analysis,
+      analysis.dataset.environmentCurrentSeries,
+      parseEnvironmentCurrentSamples,
+    )
   if (view === 'relative-wind') return []
   if (
     (view === 'wind' && analysis.dataset.environmentWindSource === 'mywindsock') ||
     ENVIRONMENT_PROVIDER_CHART_VIEWS.some(providerView => providerView === view)
   )
-    return parseEnvironmentProviderSamples(analysis.dataset.environmentProviderSeries)
-  return parseEnvironmentSamples(analysis.dataset.environmentSeries)
+    return cachedSamples(
+      analysis,
+      analysis.dataset.environmentProviderSeries,
+      parseEnvironmentProviderSamples,
+    )
+  return cachedSamples(analysis, analysis.dataset.environmentSeries, parseEnvironmentSamples)
 }
 
 const selectedViews = (analysis: HTMLElement): EnvironmentView[] =>
@@ -317,7 +344,7 @@ const selectRoseSample = (
   plot.setAttribute('aria-valuenow', `${Math.round(sample.elapsedS)}`)
   plot.setAttribute('aria-valuetext', readout)
   const output = analysis.querySelector<HTMLOutputElement>('[data-environment-readout]')
-  if (output) output.value = readout
+  if (output) setText(output, readout)
 }
 
 const restoreRoseReadout = (
@@ -329,7 +356,7 @@ const restoreRoseReadout = (
   const summary = shares ? relativeWindReadout(presentation, shares) : '—'
   plot.setAttribute('aria-valuetext', plot.getAttribute('aria-label') ?? summary)
   const output = analysis.querySelector<HTMLOutputElement>('[data-environment-readout]')
-  if (output) output.value = summary
+  if (output) setText(output, summary)
 }
 
 const updateCursor = (
@@ -342,7 +369,7 @@ const updateCursor = (
   const output = analysis.querySelector<HTMLOutputElement>('[data-environment-readout]')
   if (analysis.dataset.environmentView === 'relative-wind') {
     const shares = relativeWindShares(analysis)
-    if (output) output.value = shares ? relativeWindReadout(presentation, shares) : '—'
+    if (output) setText(output, shares ? relativeWindReadout(presentation, shares) : '—')
     const elapsedS = Number(analysis.dataset.environmentCursorElapsed)
     placeRoseCursor(
       analysis,
@@ -366,7 +393,7 @@ const updateCursor = (
   moveChartCursors(analysis, sample.elapsedS)
   for (const chart of analysis.querySelectorAll<SVGElement>('[data-environment-chart]'))
     chart.setAttribute('aria-valuetext', readout)
-  if (output) output.value = readout
+  if (output) setText(output, readout)
   if (samples.length > 0) analysis.dataset.environmentSampleIndex = `${index}`
   else delete analysis.dataset.environmentSampleIndex
 }

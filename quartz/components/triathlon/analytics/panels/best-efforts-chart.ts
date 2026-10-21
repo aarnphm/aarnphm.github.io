@@ -4,7 +4,8 @@ import type { TriathlonFormatter } from '../../runtime/formatter'
 import type { BestEffortDisplay } from './best-efforts-format'
 import { axisFrame, type AxisXTick, type AxisYTick } from '../../../../util/triathlon-card'
 import { powerCurveActivityLinkAttributes } from '../../../../util/triathlon-power-activity'
-import { createDomFactory, el, svg } from '../../runtime/dom'
+import { createDomFactory, el, setText, svg } from '../../runtime/dom'
+import { rafEvent, rectOf } from '../scrub-primitives'
 import { clampN } from '../shared'
 import {
   bestEffortAxisLabel,
@@ -144,29 +145,43 @@ const describe = (point: ChartPoint, formatter: TriathlonFormatter): string => {
   return parts.join(', ')
 }
 
-const buildTip = (point: ChartPoint, formatter: TriathlonFormatter): HTMLElement[] => {
+interface TipSlots {
+  head: HTMLElement
+  primary: HTMLElement
+  secondary: HTMLElement
+  rank: HTMLElement
+  name: HTMLElement
+}
+
+const updateTip = (slots: TipSlots, point: ChartPoint, formatter: TriathlonFormatter): void => {
   const { entry, display } = point
-  const head = el(
-    'span',
-    'tri-gloss-h',
+  setText(
+    slots.head,
     entry.indoor
       ? `${formatter.longDate(entry.date)} · ${formatter.text('indoor')}`
       : formatter.longDate(entry.date),
   )
-  const value = el('span', 'tri-be-chart-tip-value')
-  value.appendChild(el('strong', undefined, display.primary))
-  if (display.secondary)
-    value.appendChild(el('span', 'tri-be-chart-tip-secondary', display.secondary))
-  const rank = el(
-    'span',
-    'tri-gloss-def',
+  setText(slots.primary, display.primary)
+  if (display.secondary) {
+    slots.secondary.style.display = ''
+    setText(slots.secondary, display.secondary)
+  } else {
+    slots.secondary.style.display = 'none'
+    setText(slots.secondary, '')
+  }
+  setText(
+    slots.rank,
     entry.pr
       ? `${rankText(entry, formatter, ' · ')} · ${formatter.text('PR')}`
       : rankText(entry, formatter, ' · '),
   )
-  const parts = [head, value, rank]
-  if (entry.name) parts.push(el('span', 'tri-gloss-def tri-be-chart-tip-name', entry.name))
-  return parts
+  if (entry.name) {
+    slots.name.style.display = ''
+    setText(slots.name, entry.name)
+  } else {
+    slots.name.style.display = 'none'
+    setText(slots.name, '')
+  }
 }
 
 export const buildBestEffortsChart = ({
@@ -381,6 +396,22 @@ export const buildBestEffortsChart = ({
         role: 'tooltip',
         'aria-hidden': 'true',
       })
+      const tipHead = el('span', 'tri-gloss-h')
+      const tipValue = el('span', 'tri-be-chart-tip-value')
+      const tipPrimary = el('strong')
+      const tipSecondary = el('span', 'tri-be-chart-tip-secondary')
+      tipValue.append(tipPrimary, tipSecondary)
+      const tipRank = el('span', 'tri-gloss-def')
+      const tipName = el('span', 'tri-gloss-def tri-be-chart-tip-name')
+      tip.append(tipHead, tipValue, tipRank, tipName)
+      const tipSlots: TipSlots = {
+        head: tipHead,
+        primary: tipPrimary,
+        secondary: tipSecondary,
+        rank: tipRank,
+        name: tipName,
+      }
+      const tipSizes = new Map<number, { width: number; height: number }>()
       // Analytics blocks use content-visibility, which would trap a fixed tooltip inside the block.
       const host = context.root ?? document.body
       host.appendChild(tip)
@@ -397,7 +428,7 @@ export const buildBestEffortsChart = ({
         y: rect.top + (points[index].y / H) * rect.height,
       })
       const nearest = (clientX: number, clientY: number, radius: number): number | null => {
-        const rect = stage.getBoundingClientRect()
+        const rect = rectOf(stage)
         if (rect.width <= 0 || rect.height <= 0) return null
         let found: number | null = null
         let bestDistance = radius * radius
@@ -414,8 +445,13 @@ export const buildBestEffortsChart = ({
       }
       const place = (): void => {
         if (shown == null) return
-        const point = clientPoint(shown, stage.getBoundingClientRect())
-        const box = tip.getBoundingClientRect()
+        const point = clientPoint(shown, rectOf(stage))
+        let box = tipSizes.get(shown)
+        if (!box || box.width <= 0) {
+          const rect = tip.getBoundingClientRect()
+          box = { width: rect.width, height: rect.height }
+          if (box.width > 0) tipSizes.set(shown, box)
+        }
         const gap = 12
         const inset = 8
         const left = clampN(
@@ -438,7 +474,7 @@ export const buildBestEffortsChart = ({
           shown = next
           if (next != null) {
             links[next].classList.add('tri-be-chart-dot--hot')
-            tip.replaceChildren(...buildTip(points[next], formatter))
+            updateTip(tipSlots, points[next], formatter)
             place()
           }
         }
@@ -461,12 +497,13 @@ export const buildBestEffortsChart = ({
       const onPointerDown = (event: PointerEvent): void => {
         pointerType = event.pointerType
       }
-      const onPointerMove = (event: PointerEvent): void => {
+      const rafPointerMove = rafEvent((event: PointerEvent): void => {
         if (event.pointerType !== 'mouse') return
         hovered = nearest(event.clientX, event.clientY, MOUSE_RADIUS_PX)
         sync()
-      }
+      })
       const onPointerLeave = (): void => {
+        rafPointerMove.cancel()
         hovered = null
         sync()
       }
@@ -580,7 +617,7 @@ export const buildBestEffortsChart = ({
       resize.observe(stage)
 
       stage.addEventListener('pointerdown', onPointerDown)
-      stage.addEventListener('pointermove', onPointerMove)
+      stage.addEventListener('pointermove', rafPointerMove.onEvent)
       stage.addEventListener('pointerleave', onPointerLeave)
       stage.addEventListener('click', onClick)
       figure.addEventListener('focusin', onFocusIn)
@@ -590,8 +627,9 @@ export const buildBestEffortsChart = ({
       window.addEventListener('scroll', onViewport, { capture: true, passive: true })
       window.addEventListener('resize', onViewport, { passive: true })
       return () => {
+        rafPointerMove.cancel()
         stage.removeEventListener('pointerdown', onPointerDown)
-        stage.removeEventListener('pointermove', onPointerMove)
+        stage.removeEventListener('pointermove', rafPointerMove.onEvent)
         stage.removeEventListener('pointerleave', onPointerLeave)
         stage.removeEventListener('click', onClick)
         figure.removeEventListener('focusin', onFocusIn)

@@ -9,9 +9,10 @@ import { isRecord } from '../../../../util/type-guards'
 import { buildDatePicker } from '../../../controls/date-picker'
 import { parseIsoDate } from '../../../controls/dates'
 import { buildIcon } from '../../activity/primitives'
-import { el } from '../../runtime/dom'
+import { el, setText } from '../../runtime/dom'
 import { svg } from '../../runtime/dom'
 import { nextMapMetricShortcutIndex } from '../../shell/command-palette'
+import { rafEvent, rectOf } from '../scrub-primitives'
 import { anaTitle } from '../shared'
 import { buildTrendGlyph } from '../shared'
 import { clampN } from '../shared'
@@ -624,23 +625,61 @@ export const buildDistributions = (
       el('span', undefined, context.formatter.shortDate(maximumDate)),
     )
     axis.appendChild(timeScale)
+    const summaryTextSpan = el('span', 'tri-dist-readout-summary')
+    const headSpan = el('span', 'tri-dist-readout-head')
+    const table = el('table', 'tri-dist-readout-table', undefined, {
+      'aria-label': text('activity telemetry'),
+    })
+    const body = el('tbody')
+    const metricRowSlots = metrics.map(metric => {
+      const tr = el('tr')
+      const th = el('th', 'tri-dist-readout-metric', text(metric.label), { scope: 'row' })
+      const valTd = el('td', 'tri-dist-readout-value')
+      const deltaTd = el('td', 'tri-dist-readout-delta')
+      tr.append(th, valTd, deltaTd)
+      body.appendChild(tr)
+      return { metric, tr, th, valTd, deltaTd }
+    })
+    table.appendChild(body)
+    readout.replaceChildren(summaryTextSpan, headSpan, table)
+    const availableMs = available.map(point => Date.parse(point.startedAt))
+    let shownPoint: ActivityDistributionPoint | null = null
+    let readoutWidth = 0
+    let readoutHeight = 0
     const resetReadout = (): void => {
-      readout.textContent = `${available.length}/${points.length} ${text('activities with telemetry')} · ${context.formatter.longDate(startDate)}–${context.formatter.longDate(maximumDate)}`
+      shownPoint = null
+      summaryTextSpan.style.display = ''
+      setText(
+        summaryTextSpan,
+        `${available.length}/${points.length} ${text('activities with telemetry')} · ${context.formatter.longDate(startDate)}–${context.formatter.longDate(maximumDate)}`,
+      )
+      headSpan.style.display = 'none'
+      setText(headSpan, '')
+      table.style.display = 'none'
+      for (const slot of metricRowSlots) {
+        slot.tr.style.display = 'none'
+        setText(slot.th, '')
+        setText(slot.valTd, '')
+        setText(slot.deltaTd, '')
+      }
       telemetryPanel.classList.remove('tri-chart--hover')
     }
     let activePointIndex = available.length - 1
     const graphAnchorX = (fraction: number): number => {
-      const plotsRect = plots.getBoundingClientRect()
-      const graphRect = graphs[0]?.getBoundingClientRect()
+      const plotsRect = rectOf(plots)
+      const graphRect = graphs[0] ? rectOf(graphs[0]) : undefined
       return graphRect
         ? graphRect.left - plotsRect.left + clampN(fraction, 0, 1) * graphRect.width
-        : clampN(fraction, 0, 1) * plots.clientWidth
+        : clampN(fraction, 0, 1) * plotsRect.width
     }
     const positionReadout = (anchorX: number, anchorY: number): void => {
-      const plotWidth = plots.clientWidth
-      const plotHeight = plots.clientHeight
-      const readoutWidth = readout.offsetWidth
-      const readoutHeight = readout.offsetHeight
+      const plotsRect = rectOf(plots)
+      const plotWidth = plotsRect.width
+      const plotHeight = plotsRect.height
+      if (readoutWidth <= 0 || readoutHeight <= 0) {
+        readoutWidth = readout.offsetWidth
+        readoutHeight = readout.offsetHeight
+      }
       const gap = 10
       const inset = 4
       const rightSpace = plotWidth - anchorX
@@ -663,51 +702,57 @@ export const buildDistributions = (
     const showPoint = (
       point: ActivityDistributionPoint,
       anchorX = graphAnchorX(pointX(point) / 100),
-      anchorY = plots.clientHeight / 2,
+      anchorY = rectOf(plots).height / 2,
     ): void => {
-      const date = context.formatter.shortDate(point.date)
-      const table = el('table', 'tri-dist-readout-table', undefined, {
-        'aria-label': text('activity telemetry'),
-      })
-      const body = el('tbody')
-      const ariaValues = [date]
-      for (const metric of metrics) {
-        const value = metric.value(point)
-        if (value == null) continue
+      if (point !== shownPoint) {
+        shownPoint = point
+        summaryTextSpan.style.display = 'none'
+        setText(summaryTextSpan, '')
+        headSpan.style.display = ''
+        table.style.display = ''
+        const date = context.formatter.shortDate(point.date)
+        setText(headSpan, date)
+        const ariaValues = [date]
         const pointIndex = points.indexOf(point)
-        const previous = points
-          .slice(0, Math.max(0, pointIndex))
-          .reverse()
-          .find(candidate => metric.value(candidate) != null)
-        const previousValue = previous ? metric.value(previous) : null
-        const delta =
-          previousValue == null
-            ? ''
-            : ` (${value >= previousValue ? '+' : ''}${(value - previousValue).toFixed(
-                metric.key === 'skin' || metric.key === 'hsi' ? 1 : 0,
-              )})`
-        const formattedValue = metric.text(value, point)
-        const row = el('tr')
-        row.append(
-          el('th', 'tri-dist-readout-metric', text(metric.label), { scope: 'row' }),
-          el('td', 'tri-dist-readout-value', formattedValue),
-          el('td', 'tri-dist-readout-delta', delta.trim()),
-        )
-        body.appendChild(row)
-        ariaValues.push(`${text(metric.label)} ${formattedValue}${delta}`)
-      }
-      table.appendChild(body)
-      readout.replaceChildren(el('span', 'tri-dist-readout-head', date), table)
-      const availableIndex = available.indexOf(point)
-      if (availableIndex >= 0) {
-        activePointIndex = availableIndex
-        plots.setAttribute('aria-valuenow', String(availableIndex + 1))
-        plots.setAttribute('aria-valuetext', ariaValues.join(' · '))
-      }
-      const x = pointX(point).toFixed(2)
-      for (const cursor of cursorLines) {
-        cursor.setAttribute('x1', x)
-        cursor.setAttribute('x2', x)
+        for (const slot of metricRowSlots) {
+          const { metric } = slot
+          const value = metric.value(point)
+          if (value == null) {
+            slot.tr.style.display = 'none'
+            setText(slot.th, '')
+            setText(slot.valTd, '')
+            setText(slot.deltaTd, '')
+            continue
+          }
+          slot.tr.style.display = ''
+          setText(slot.th, text(metric.label))
+          const previous = points
+            .slice(0, Math.max(0, pointIndex))
+            .reverse()
+            .find(candidate => metric.value(candidate) != null)
+          const previousValue = previous ? metric.value(previous) : null
+          const delta =
+            previousValue == null
+              ? ''
+              : ` (${value >= previousValue ? '+' : ''}${(value - previousValue).toFixed(
+                  metric.key === 'skin' || metric.key === 'hsi' ? 1 : 0,
+                )})`
+          const formattedValue = metric.text(value, point)
+          setText(slot.valTd, formattedValue)
+          setText(slot.deltaTd, delta.trim())
+          ariaValues.push(`${text(metric.label)} ${formattedValue}${delta}`)
+        }
+        const availableIndex = available.indexOf(point)
+        if (availableIndex >= 0) {
+          activePointIndex = availableIndex
+          plots.setAttribute('aria-valuenow', String(availableIndex + 1))
+          plots.setAttribute('aria-valuetext', ariaValues.join(' · '))
+        }
+        const x = pointX(point).toFixed(2)
+        for (const cursor of cursorLines) {
+          cursor.setAttribute('x1', x)
+          cursor.setAttribute('x2', x)
+        }
       }
       telemetryPanel.classList.add('tri-chart--hover')
       positionReadout(anchorX, anchorY)
@@ -715,25 +760,23 @@ export const buildDistributions = (
     const showPointAt = (index: number): void => {
       showPoint(available[clampN(index, 0, available.length - 1)])
     }
-    const onMove = (event: PointerEvent): void => {
-      const plotsRect = plots.getBoundingClientRect()
-      const graphRect = graphs[0]?.getBoundingClientRect() ?? plotsRect
+    const rafMove = rafEvent((event: PointerEvent): void => {
+      const plotsRect = rectOf(plots)
+      const graphRect = graphs[0] ? rectOf(graphs[0]) : plotsRect
       const fraction = clampN((event.clientX - graphRect.left) / graphRect.width, 0, 1)
       const targetMs = rangeStartMs + fraction * rangeSpanMs
-      let nearest = available[0]
-      for (const point of available)
-        if (
-          Math.abs(Date.parse(point.startedAt) - targetMs) <
-          Math.abs(Date.parse(nearest.startedAt) - targetMs)
-        )
-          nearest = point
+      let nearestIndex = 0
+      for (let i = 1; i < availableMs.length; i++)
+        if (Math.abs(availableMs[i] - targetMs) < Math.abs(availableMs[nearestIndex] - targetMs))
+          nearestIndex = i
       showPoint(
-        nearest,
+        available[nearestIndex],
         clampN(event.clientX - plotsRect.left, 0, plotsRect.width),
         event.clientY - plotsRect.top,
       )
-    }
+    })
     const onLeave = (): void => {
+      rafMove.cancel()
       if (document.activeElement !== plots) resetReadout()
     }
     const onFocus = (): void => showPointAt(activePointIndex)
@@ -753,13 +796,14 @@ export const buildDistributions = (
       showPointAt(nextIndex)
     }
     mountTelemetry = () => {
-      plots.addEventListener('pointermove', onMove)
+      plots.addEventListener('pointermove', rafMove.onEvent)
       plots.addEventListener('pointerleave', onLeave)
       plots.addEventListener('focus', onFocus)
       plots.addEventListener('blur', resetReadout)
       plots.addEventListener('keydown', onKeydown)
       return () => {
-        plots.removeEventListener('pointermove', onMove)
+        rafMove.cancel()
+        plots.removeEventListener('pointermove', rafMove.onEvent)
         plots.removeEventListener('pointerleave', onLeave)
         plots.removeEventListener('focus', onFocus)
         plots.removeEventListener('blur', resetReadout)
@@ -915,33 +959,46 @@ export const buildDistributions = (
   }
 
   let zoneTip: HTMLElement | null = null
-  const hideZoneTip = (): void => zoneTip?.classList.remove('tri-gloss--on')
+  let zoneTipH: HTMLElement | null = null
+  let zoneTipD: HTMLElement | null = null
+  let activeZoneRow: HTMLElement | null = null
+  const zoneTipSizes = new WeakMap<HTMLElement, { width: number; height: number }>()
+  const hideZoneTip = (): void => {
+    activeZoneRow = null
+    zoneTip?.classList.remove('tri-gloss--on')
+  }
   const showZoneTip = (row: HTMLElement, clientX: number, clientY: number): void => {
-    if (!zoneTip) return
-    zoneTip.replaceChildren(
-      el('span', 'tri-gloss-h', row.dataset.tipH ?? ''),
-      el('span', 'tri-gloss-def', row.dataset.tipD ?? ''),
-    )
+    if (!zoneTip || !zoneTipH || !zoneTipD) return
+    if (row !== activeZoneRow) {
+      activeZoneRow = row
+      setText(zoneTipH, row.dataset.tipH ?? '')
+      setText(zoneTipD, row.dataset.tipD ?? '')
+    }
     zoneTip.classList.add('tri-gloss--on')
-    const rect = zoneTip.getBoundingClientRect()
+    let size = zoneTipSizes.get(row)
+    if (!size || size.width <= 0) {
+      const rect = zoneTip.getBoundingClientRect()
+      size = { width: rect.width, height: rect.height }
+      if (size.width > 0) zoneTipSizes.set(row, size)
+    }
     const gap = 12
     const inset = 8
     const left = clampN(
-      clientX + gap + rect.width <= window.innerWidth - inset
+      clientX + gap + size.width <= window.innerWidth - inset
         ? clientX + gap
-        : clientX - gap - rect.width,
+        : clientX - gap - size.width,
       inset,
-      Math.max(inset, window.innerWidth - rect.width - inset),
+      Math.max(inset, window.innerWidth - size.width - inset),
     )
     const top = clampN(
-      clientY - rect.height / 2,
+      clientY - size.height / 2,
       inset,
-      Math.max(inset, window.innerHeight - rect.height - inset),
+      Math.max(inset, window.innerHeight - size.height - inset),
     )
     zoneTip.style.left = `${left}px`
     zoneTip.style.top = `${top}px`
   }
-  const onZonePointerMove = (event: PointerEvent): void => {
+  const rafZoneMove = rafEvent((event: PointerEvent): void => {
     const target = event.target
     if (!(target instanceof Element)) return
     const row = target.closest<HTMLElement>('.tri-training-zone-row')
@@ -950,11 +1007,11 @@ export const buildDistributions = (
       return
     }
     showZoneTip(row, event.clientX, event.clientY)
-  }
+  })
   const onZoneFocusIn = (event: FocusEvent): void => {
     const target = event.target
     if (!(target instanceof HTMLElement) || !target.matches('.tri-training-zone-row')) return
-    const rect = target.getBoundingClientRect()
+    const rect = rectOf(target)
     showZoneTip(target, rect.left + rect.width / 2, rect.top + rect.height / 2)
   }
   const onZoneFocusOut = (): void => {
@@ -973,26 +1030,32 @@ export const buildDistributions = (
       rangeControls.addEventListener('click', onRangeClick)
       metricControls.addEventListener('click', onZoneMetricClick)
       metricControls.addEventListener('keydown', onZoneMetricKeydown)
-      zonePanel.addEventListener('pointermove', onZonePointerMove)
+      zonePanel.addEventListener('pointermove', rafZoneMove.onEvent)
       zonePanel.addEventListener('pointerleave', hideZoneTip)
       zonePanel.addEventListener('focusin', onZoneFocusIn)
       zonePanel.addEventListener('focusout', onZoneFocusOut)
       zoneTip = el('div', 'tri-gloss tri-zone-distribution-tip', undefined, { role: 'tooltip' })
+      zoneTipH = el('span', 'tri-gloss-h')
+      zoneTipD = el('span', 'tri-gloss-def')
+      zoneTip.append(zoneTipH, zoneTipD)
       document.body.appendChild(zoneTip)
       const datePickerCleanup = startPicker.mount()
       render()
       return () => {
         mounted = false
+        rafZoneMove.cancel()
         sportControls.removeEventListener('click', onSportClick)
         rangeControls.removeEventListener('click', onRangeClick)
         metricControls.removeEventListener('click', onZoneMetricClick)
         metricControls.removeEventListener('keydown', onZoneMetricKeydown)
-        zonePanel.removeEventListener('pointermove', onZonePointerMove)
+        zonePanel.removeEventListener('pointermove', rafZoneMove.onEvent)
         zonePanel.removeEventListener('pointerleave', hideZoneTip)
         zonePanel.removeEventListener('focusin', onZoneFocusIn)
         zonePanel.removeEventListener('focusout', onZoneFocusOut)
         zoneTip?.remove()
         zoneTip = null
+        zoneTipH = null
+        zoneTipD = null
         datePickerCleanup()
         telemetryCleanup?.()
         telemetryCleanup = null

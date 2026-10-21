@@ -1,8 +1,8 @@
 import type { Locale } from '../../../util/triathlon-presentation'
 import { glossFor } from '../../../util/triathlon-i18n'
+import { rafEvent, rectOf, setFastMath } from '../analytics/scrub-primitives'
 import { clampN } from '../analytics/shared'
-import { el } from '../runtime/dom'
-import { mathFrag } from '../runtime/dom'
+import { el, mathFrag, setText } from '../runtime/dom'
 
 export const renderGlossDef = (def: string): HTMLElement => {
   const span = el('span', 'tri-gloss-def')
@@ -13,22 +13,30 @@ export const renderGlossDef = (def: string): HTMLElement => {
 export const setupGloss = (root: HTMLElement, locale: () => Locale): (() => void) => {
   const pop = el('div', 'tri-gloss')
   pop.setAttribute('role', 'tooltip')
+  const headSpan = el('span', 'tri-gloss-h')
+  const defSpan = el('span', 'tri-gloss-def')
+  pop.append(headSpan, defSpan)
   root.appendChild(pop)
   let current: HTMLElement | null = null
+  let currentFollowsPointer = false
+  let popWidth = 0
+  let popHeight = 0
+  const sizeCache = new Map<string, { w: number; h: number }>()
+
   const place = (term: HTMLElement, pointer?: { x: number; y: number }) => {
-    const r = term.getBoundingClientRect()
-    const pr = pop.getBoundingClientRect()
-    const followsPointer = pointer != null && term.closest('.tri-engine-cardio') != null
-    let left = followsPointer ? pointer.x + 12 : r.left
-    if (left + pr.width > window.innerWidth - 8)
-      left = followsPointer ? pointer.x - 12 - pr.width : window.innerWidth - 8 - pr.width
-    let top = followsPointer ? pointer.y + 12 : r.bottom + 6
-    if (top + pr.height > window.innerHeight - 8)
-      top = followsPointer ? pointer.y - 12 - pr.height : r.top - 6 - pr.height
-    pop.style.left = `${clampN(left, 8, Math.max(8, window.innerWidth - 8 - pr.width))}px`
-    pop.style.top = `${clampN(top, 8, Math.max(8, window.innerHeight - 8 - pr.height))}px`
+    const followsPointer = pointer != null && currentFollowsPointer
+    const r = followsPointer ? null : rectOf(term)
+    let left = followsPointer ? pointer.x + 12 : (r?.left ?? 8)
+    if (left + popWidth > window.innerWidth - 8)
+      left = followsPointer ? pointer.x - 12 - popWidth : window.innerWidth - 8 - popWidth
+    let top = followsPointer ? pointer.y + 12 : (r?.bottom ?? 8) + 6
+    if (top + popHeight > window.innerHeight - 8)
+      top = followsPointer ? pointer.y - 12 - popHeight : (r?.top ?? 8) - 6 - popHeight
+    pop.style.left = `${clampN(left, 8, Math.max(8, window.innerWidth - 8 - popWidth))}px`
+    pop.style.top = `${clampN(top, 8, Math.max(8, window.innerHeight - 8 - popHeight))}px`
   }
   const show = (term: HTMLElement) => {
+    if (term === current) return
     const key = term.dataset.gloss ?? ''
     const definition = term.dataset.glossDef
     const g = definition
@@ -36,29 +44,50 @@ export const setupGloss = (root: HTMLElement, locale: () => Locale): (() => void
       : glossFor(locale(), key)
     if (!g) return
     current = term
-    pop.replaceChildren(el('span', 'tri-gloss-h', g.term), renderGlossDef(g.def))
+    currentFollowsPointer = term.closest('.tri-engine-cardio') != null
+    const cacheKey = `${locale()}:${g.term}:${g.def}`
+    const cached = sizeCache.get(cacheKey)
+    if (!cached) rectOf(term)
+    setText(headSpan, g.term)
+    setFastMath(defSpan, g.def)
     pop.classList.add('tri-gloss--on')
+    if (cached) {
+      popWidth = cached.w
+      popHeight = cached.h
+    } else {
+      const pr = pop.getBoundingClientRect()
+      popWidth = pr.width
+      popHeight = pr.height
+      if (popWidth > 0) sizeCache.set(cacheKey, { w: popWidth, h: popHeight })
+    }
     place(term)
   }
+  const rafMove = rafEvent((event: MouseEvent) => {
+    if (!current || !currentFollowsPointer) return
+    place(current, { x: event.clientX, y: event.clientY })
+  })
   const hide = (term?: HTMLElement) => {
     if (term && term !== current) return
+    rafMove.cancel()
     current = null
+    currentFollowsPointer = false
     pop.classList.remove('tri-gloss--on')
   }
   const onOver = (event: Event) => {
     const t = (event.target as HTMLElement | null)?.closest<HTMLElement>('[data-gloss]')
-    if (t) show(t)
+    if (t && t !== current) show(t)
   }
   const onOut = (event: Event) => {
+    if (!current) return
     const t = (event.target as HTMLElement | null)?.closest<HTMLElement>('[data-gloss]')
-    if (!t) return
+    if (!t || t !== current) return
     const to = (event as MouseEvent).relatedTarget as Node | null
     if (to && t.contains(to)) return
     hide(t)
   }
   const onMove = (event: MouseEvent) => {
-    const t = (event.target as HTMLElement | null)?.closest<HTMLElement>('[data-gloss]')
-    if (t && t === current) place(t, { x: event.clientX, y: event.clientY })
+    if (!current || !currentFollowsPointer) return
+    rafMove.onEvent(event)
   }
   const onKey = (event: KeyboardEvent) => {
     if (event.key === 'Escape') hide()
@@ -70,6 +99,7 @@ export const setupGloss = (root: HTMLElement, locale: () => Locale): (() => void
   root.addEventListener('focusout', onOut)
   document.addEventListener('keydown', onKey)
   return () => {
+    rafMove.cancel()
     root.removeEventListener('mouseover', onOver)
     root.removeEventListener('mousemove', onMove)
     root.removeEventListener('mouseout', onOut)

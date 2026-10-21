@@ -12,8 +12,9 @@ import { triText } from '../../../../util/triathlon-i18n'
 import { isRecord } from '../../../../util/type-guards'
 import { buildIcon } from '../../activity/primitives'
 import { createDomFactory } from '../../runtime/dom'
-import { el } from '../../runtime/dom'
+import { el, setText } from '../../runtime/dom'
 import { svg } from '../../runtime/dom'
+import { rafEvent, rectOf } from '../scrub-primitives'
 import { anaTitle } from '../shared'
 import { clampN } from '../shared'
 import { monthTicks } from '../shared'
@@ -502,36 +503,47 @@ export const buildAbilities = (
     sv.appendChild(cursor)
     plot.appendChild(sv)
     const readoutEl = el('div', 'tri-chart-readout tri-dev-read')
+    const dateEl = el('span', 'tri-dev-read-date')
+    const seriesRowSlots = series.map(sr => {
+      const row = el('div', 'tri-dev-read-row')
+      const kSpan = el('span', 'tri-dev-read-k', sr.label)
+      const vSpan = el('span', 'tri-dev-read-v')
+      row.append(el('span', `tri-dev-dot ${sr.dotCls}`), kSpan, vSpan)
+      return { row, kSpan, vSpan, sr }
+    })
+    readoutEl.append(dateEl, ...seriesRowSlots.map(slot => slot.row))
     plot.appendChild(readoutEl)
+    let shownIdx = -1
     const renderRead = (i: number): void => {
-      const rows: HTMLElement[] = [
-        el('span', 'tri-dev-read-date', context.formatter.shortDate(hist[i].date)),
-      ]
-      for (const sr of series) {
-        const v = sr.vals[i]
-        if (paths.get(sr.key)!.classList.contains('tri-dev-line--off') || v == null) continue
-        const row = el('div', 'tri-dev-read-row')
-        row.append(
-          el('span', `tri-dev-dot ${sr.dotCls}`),
-          el('span', 'tri-dev-read-k', sr.label),
-          el('span', 'tri-dev-read-v', String(v)),
-        )
-        rows.push(row)
+      setText(dateEl, context.formatter.shortDate(hist[i].date))
+      for (const slot of seriesRowSlots) {
+        const v = slot.sr.vals[i]
+        const hide = paths.get(slot.sr.key)!.classList.contains('tri-dev-line--off') || v == null
+        slot.row.style.display = hide ? 'none' : ''
+        if (hide) {
+          setText(slot.kSpan, '')
+          setText(slot.vSpan, '')
+        } else {
+          setText(slot.kSpan, slot.sr.label)
+          setText(slot.vSpan, String(v))
+        }
       }
-      readoutEl.replaceChildren(...rows)
     }
     const focusIndex = (i: number, hover: boolean): void => {
       const idx = Math.round(clampN(i, 0, hist.length - 1))
-      const cxAttr = xAt(idx).toFixed(2)
-      cursor.setAttribute('x1', cxAttr)
-      cursor.setAttribute('x2', cxAttr)
-      readoutEl.style.left = `${clampN((xAt(idx) / W) * 100, 6, 80).toFixed(2)}%`
-      readoutEl.style.right = 'auto'
-      renderRead(idx)
+      if (idx !== shownIdx) {
+        shownIdx = idx
+        const cxAttr = xAt(idx).toFixed(2)
+        cursor.setAttribute('x1', cxAttr)
+        cursor.setAttribute('x2', cxAttr)
+        readoutEl.style.left = `${clampN((xAt(idx) / W) * 100, 6, 80).toFixed(2)}%`
+        readoutEl.style.right = 'auto'
+        renderRead(idx)
+      }
       dev.classList.toggle('tri-chart--hover', hover)
     }
     const indexAt = (event: MouseEvent): number => {
-      const rect = sv.getBoundingClientRect()
+      const rect = rectOf(sv)
       return Math.round(clampN((event.clientX - rect.left) / rect.width, 0, 1) * (hist.length - 1))
     }
     devFocus = event => focusIndex(indexAt(event), true)
@@ -576,6 +588,7 @@ export const buildAbilities = (
       item.classList.toggle('tri-dev-leg--off', hidden)
       if (hidden) legendOn.delete(key)
       else legendOn.add(key)
+      shownIdx = -1
     }
     dev.appendChild(legend)
     if (draw !== 'none') {
@@ -614,7 +627,7 @@ export const buildAbilities = (
       if (current.textContent === text) return
       const nextIndex = label.active === 0 ? 1 : 0
       const next = label.nodes[nextIndex]
-      next.textContent = text
+      setText(next, text)
       current.classList.remove('tri-radar-ax--active')
       next.classList.add('tri-radar-ax--active')
       label.active = nextIndex
@@ -677,11 +690,14 @@ export const buildAbilities = (
     if (sport === 'swim' || sport === 'bike' || sport === 'run') toggleSport(sport)
     else if (tab === avgTab) toggleAvg()
   }
-  const onDevMove = (event: MouseEvent): void => {
+  const rafDevMove = rafEvent((event: MouseEvent): void => {
     if (event.target instanceof Element && event.target.closest('.tri-dev-svg')) devFocus?.(event)
-  }
+  })
   const onDevLeave = (event: MouseEvent): void => {
-    if (event.target instanceof Element && event.target.closest('.tri-dev-svg')) devLeave?.()
+    if (event.target instanceof Element && event.target.closest('.tri-dev-svg')) {
+      rafDevMove.cancel()
+      devLeave?.()
+    }
   }
   const onDevClick = (event: MouseEvent): void => {
     const target = event.target
@@ -711,7 +727,7 @@ export const buildAbilities = (
       syncChrome()
       renderDev(reduced ? 'none' : 'defer')
       tabs.addEventListener('click', onTabsClick)
-      devBox.addEventListener('mousemove', onDevMove)
+      devBox.addEventListener('mousemove', rafDevMove.onEvent)
       devBox.addEventListener('mouseleave', onDevLeave, true)
       devBox.addEventListener('click', onDevClick)
       devBox.addEventListener('transitionend', onDevTransitionEnd)
@@ -735,8 +751,9 @@ export const buildAbilities = (
         observer.observe(block)
       }
       return () => {
+        rafDevMove.cancel()
         tabs.removeEventListener('click', onTabsClick)
-        devBox.removeEventListener('mousemove', onDevMove)
+        devBox.removeEventListener('mousemove', rafDevMove.onEvent)
         devBox.removeEventListener('mouseleave', onDevLeave, true)
         devBox.removeEventListener('click', onDevClick)
         devBox.removeEventListener('transitionend', onDevTransitionEnd)
