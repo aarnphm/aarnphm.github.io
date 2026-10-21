@@ -326,7 +326,7 @@ export interface SceneOptions {
   label: string
 }
 
-/** The rack in painter's order; the script paints a pulled can last, in `.vault-lift`. */
+/** The rack in painter's order; motion masks preserve each can's place in this depth order. */
 export function vaultScene(layout: VaultLayout<SceneCan>, options: SceneOptions): Element {
   const { bayWidth: W, shelfRows: S, bays } = layout
   const steel = options.material
@@ -369,11 +369,12 @@ export function vaultScene(layout: VaultLayout<SceneCan>, options: SceneOptions)
       const shelf = b * S + row
       const z = shelfTop(row, S)
       children.push(...boxNodes(steel, [x0, 0, z - RACK.board], [W, RACK.depth, RACK.board]))
-      const items = (byShelf.get(shelf) ?? []).sort((a, c) => a.x - c.x)
-      for (const { node } of items) children.push(...node)
       if (options.showTags)
         for (const h of layout.holders)
           if (h.shelf === shelf) children.push(...holderNodes(steel, h.x, h.end, h.z, h.label))
+      // Holders sit below the board's top, behind a can sliding over the shelf lip.
+      const items = (byShelf.get(shelf) ?? []).sort((a, c) => a.x - c.x)
+      for (const { node } of items) children.push(...node)
     }
     children.push(...boxNodes(steel, [x0, 0, tall - 10 - RACK.board], [W, RACK.depth, RACK.board]))
   }
@@ -384,7 +385,6 @@ export function vaultScene(layout: VaultLayout<SceneCan>, options: SceneOptions)
     )
     children.push(crankNode(carriage + RACK.panel, 1050))
   }
-  children.push(s('g', { class: 'vault-lift' }))
 
   const materials = new Set<VaultMaterial>([steel, 'black-lacquer'])
   for (const can of layout.cans) materials.add(can.finish)

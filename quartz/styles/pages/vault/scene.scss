@@ -107,16 +107,9 @@
   }
 }
 
-.vault-scene,
-.vault-lift {
+.vault-scene {
   .cn-can {
     cursor: pointer;
-
-    // Transparent, not hidden: the empty slot keeps the pointer, so the can behind it cannot claim
-    // it once the pulled copy slides away from under it.
-    &[data-lifted] {
-      opacity: 0;
-    }
 
     &[data-dimmed] {
       opacity: 0.22;
@@ -230,7 +223,7 @@
 }
 
 // The pulled copy leaves its slot along -y and rises; WAAPI and drag inline transforms drive motion.
-// The lift layer holds it through the outward slide, drag and return.
+// Its fixed foreground mask preserves depth through the outward slide, drag and return.
 .cn-can.cn-pulled {
   will-change: transform;
 
@@ -239,7 +232,9 @@
   }
 }
 
-// The embossed lid stays with the moving can through its whole slide.
-.vault-lift .cn-pulled .cn-lid-detail {
-  animation: vault-lid-in 120ms both;
+.vault-motion {
+  contain: strict;
+  overflow: hidden;
+  pointer-events: none;
+  will-change: transform;
 }
