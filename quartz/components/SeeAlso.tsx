@@ -19,7 +19,7 @@ import style from './styles/seealsoTree.scss'
 import '@citation-js/plugin-bibtex'
 
 const MAX_DEPTH = 5
-const MAX_CHILDREN_PER_NODE = 5
+const MAX_CHILDREN_PER_NODE = 24
 
 interface CitationEntry {
   id?: string

@@ -227,16 +227,6 @@
   }
 }
 
-.page:has(> .page-body-grid > .page-content > .course-home--index) {
-  > .header > .header-content {
-    grid-column: var(--layout-full-column);
-
-    @media all and ($mobile) {
-      grid-column: var(--layout-reading-column);
-    }
-  }
-}
-
 .folder-layout.course-home--folder {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
