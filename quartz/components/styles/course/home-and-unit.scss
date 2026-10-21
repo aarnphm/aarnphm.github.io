@@ -1,0 +1,458 @@
+@use '../../../styles/variables.scss' as *;
+
+// course home: masthead across the top, a rail of vendored pages, the schedule beside it.
+// The split is a container query: the full column is wide enough below the desktop
+// breakpoint, and the rail folds under the masthead when it is not.
+.course-home {
+  --course-rail-width: 11rem;
+
+  grid-column: var(--layout-full-column);
+  container-type: inline-size;
+  container-name: course-home;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  gap: var(--space-6);
+  margin-top: var(--space-4);
+
+  @media all and ($mobile) {
+    grid-column: var(--layout-reading-column);
+  }
+}
+
+.folder-layout.course-home--folder {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+
+  > .folder-layout--article,
+  > .notes-list {
+    grid-column: 1;
+  }
+
+  > .notes-list {
+    margin-top: 0;
+  }
+}
+
+.page:has(
+  > .page-body-grid
+    > .page-content
+    > :is(.course-home:not(.course-home--index), .course-home--folder)
+) {
+  > .header,
+  > .page-body-grid > .page-content {
+    --layout-full-column: 3 / -3;
+  }
+
+  > .header > .header-content,
+  > .page-body-grid > .page-content > :is(.course-home, .course-home--folder) {
+    grid-column: var(--layout-full-column);
+    inline-size: 100%;
+    max-inline-size: 66rem;
+    justify-self: center;
+  }
+}
+
+// rail + schedule. A container query matches descendants only, so the split lives on
+// this wrapper rather than on .course-home itself.
+.course-body {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-6) var(--space-8);
+}
+
+@container course-home (min-width: 56rem) {
+  .course-body {
+    grid-template-columns: var(--course-rail-width) minmax(0, 1fr);
+  }
+
+  .course-rail {
+    position: sticky;
+    // Course pages supply their own breadcrumb and collapse the site header.
+    top: var(--space-6);
+    align-self: start;
+  }
+}
+
+.course-masthead {
+  // base.scss lays every <header> out as a flex row
+  display: block;
+  min-width: 0;
+  padding: 0 0 var(--space-4);
+  border-bottom: 1px solid var(--dark);
+
+  .course-masthead-num {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-2);
+    margin: 0;
+    font-size: var(--text-ui);
+    color: var(--darkgray);
+
+    .course-unit-sep {
+      color: var(--gray);
+    }
+
+    a {
+      color: var(--darkgray);
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+        text-underline-offset: 0.2em;
+      }
+    }
+  }
+
+  .course-masthead-title {
+    margin: var(--space-1) 0 var(--space-2);
+    font-size: 2rem;
+    line-height: 1.15;
+    text-wrap: balance;
+  }
+
+  .course-masthead-meta {
+    margin: 0;
+    font-family: var(--codeFont);
+    font-size: var(--text-meta);
+    text-transform: lowercase;
+    color: var(--darkgray);
+
+    .course-sep {
+      margin: 0 var(--space-2);
+      color: var(--gray);
+    }
+
+    a {
+      color: var(--dark);
+      text-decoration: underline;
+      text-decoration-color: var(--gray);
+      text-underline-offset: 0.2em;
+
+      &:hover {
+        text-decoration-color: var(--dark);
+      }
+    }
+  }
+
+  .course-masthead-desc {
+    max-width: 72ch;
+    margin: var(--space-4) 0 0;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--darkgray);
+    text-wrap: pretty;
+  }
+}
+
+.course-rail {
+  min-width: 0;
+  font-size: var(--text-ui);
+  line-height: 1.45;
+
+  section + section {
+    margin-top: var(--space-5);
+  }
+
+  h2 {
+    margin: 0 0 var(--space-1);
+    font-family: var(--codeFont);
+    font-size: var(--text-meta);
+    font-weight: 400;
+    text-transform: lowercase;
+    color: var(--darkgray);
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  li {
+    margin: 0;
+  }
+
+  dl {
+    margin: 0;
+  }
+
+  dt {
+    font-family: var(--codeFont);
+    font-size: var(--text-meta);
+    color: var(--darkgray);
+  }
+
+  dd {
+    margin: 0 0 var(--space-2);
+    overflow-wrap: anywhere;
+  }
+
+  a {
+    color: var(--dark);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+      text-underline-offset: 0.2em;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--dark);
+      outline-offset: 2px;
+    }
+  }
+
+  @container course-home (max-width: 56rem) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4) var(--space-8);
+
+    section + section {
+      margin-top: 0;
+    }
+  }
+}
+
+.course-main {
+  min-width: 0;
+  container-type: inline-size;
+  container-name: course-spine;
+}
+
+.course-spine-table {
+  width: 100%;
+  margin: 0;
+  border: 1px solid var(--dark);
+  border-collapse: collapse;
+  font-size: var(--text-ui);
+  line-height: 1.45;
+
+  th,
+  td {
+    padding: 0.4rem 0.6rem;
+    text-align: left;
+    vertical-align: baseline;
+    border: 0;
+    overflow-wrap: anywhere;
+  }
+
+  thead th {
+    font-family: var(--codeFont);
+    font-size: var(--text-meta);
+    font-weight: 400;
+    text-transform: lowercase;
+    color: var(--darkgray);
+    border-bottom: 1px solid var(--dark);
+  }
+
+  .course-part-head th {
+    padding-top: 0.5rem;
+    font-family: var(--codeFont);
+    font-size: var(--text-meta);
+    font-weight: 400;
+    text-transform: lowercase;
+    color: var(--dark);
+    background: var(--course-surface);
+    border-top: 1px solid var(--dark);
+
+    .course-count {
+      margin-left: var(--space-3);
+    }
+  }
+
+  .course-unit-row {
+    & + .course-unit-row td {
+      border-top: 1px solid var(--course-line);
+    }
+
+    &[data-frontier='true'] td {
+      background: var(--course-selected);
+    }
+
+    &[data-state='new'] .course-unit-title {
+      color: var(--darkgray);
+    }
+
+    .course-unit-title {
+      color: var(--dark);
+    }
+  }
+
+  .course-c-n,
+  .course-c-cards,
+  .course-c-due,
+  .course-c-last {
+    width: 1%;
+    white-space: nowrap;
+    text-align: right;
+  }
+
+  .course-unit-dates {
+    display: block;
+    font-size: var(--text-meta);
+    color: var(--darkgray);
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+
+    &:hover {
+      text-decoration: underline;
+      text-underline-offset: 0.2em;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--dark);
+      outline-offset: -2px;
+    }
+  }
+
+  @container course-spine (max-width: 36rem) {
+    .course-c-last {
+      display: none;
+    }
+  }
+
+  @container course-spine (max-width: 24rem) {
+    .course-c-src {
+      display: none;
+    }
+  }
+}
+
+.course-spine-trailing {
+  margin: var(--space-2) 0 0;
+  font-size: var(--text-meta);
+  font-family: var(--codeFont);
+  text-transform: lowercase;
+}
+
+// unit page: bar above the notes, foot below. The page header is a grid on desktop and a
+// wrapping flex row below it; the footer is always the page grid.
+.course-unit-bar {
+  grid-column: var(--layout-byline-column);
+  flex: 1 1 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  margin: var(--space-3) 0 var(--space-4);
+  padding: var(--space-2) 0;
+  border-top: 1px solid var(--course-line);
+  border-bottom: 1px solid var(--course-line);
+  font-family: var(--codeFont);
+  font-size: var(--text-meta);
+  text-transform: lowercase;
+
+  a {
+    color: var(--dark);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+      text-underline-offset: 0.2em;
+    }
+  }
+
+  .course-unit-sep {
+    color: var(--gray);
+  }
+
+  .course-action {
+    margin-left: auto;
+  }
+
+  @media all and ($mobile) {
+    .course-action {
+      margin-left: 0;
+    }
+  }
+}
+
+.course-unit-foot {
+  // footer.scss lays every <footer> out as a flex row; this one stacks
+  display: block;
+  grid-column: var(--layout-wide-column);
+  min-width: 0;
+  margin-top: var(--space-0);
+  padding-top: var(--space-0);
+
+  h2 {
+    margin: var(--space-6) 0 var(--space-2);
+    font-size: var(--text-ui);
+    font-family: var(--codeFont);
+    font-weight: 400;
+    text-transform: lowercase;
+    color: var(--dark);
+  }
+
+  .course-count {
+    margin: 0 0 var(--space-2);
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 1.2em;
+    font-size: var(--text-ui);
+  }
+}
+
+.course-unit-pager {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: var(--space-6);
+  border: 1px solid var(--dark);
+
+  a,
+  span {
+    box-sizing: border-box;
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    min-height: var(--course-control-height);
+    padding: 0.4rem 0.75rem;
+    font-size: var(--text-ui);
+    color: var(--dark);
+    text-decoration: none;
+    overflow-wrap: anywhere;
+  }
+
+  a:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: -2px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    a:hover {
+      text-decoration: underline;
+      text-underline-offset: 0.2em;
+    }
+  }
+
+  [rel='next'] {
+    justify-content: flex-end;
+    text-align: right;
+    border-left: 1px solid var(--dark);
+  }
+
+  @media all and ($mobile) {
+    grid-template-columns: minmax(0, 1fr);
+
+    [rel='next'] {
+      border-left: 0;
+      border-top: 1px solid var(--dark);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .course-action,
+  .course-row-link {
+    transition: none;
+  }
+}

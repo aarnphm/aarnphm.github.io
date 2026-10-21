@@ -1,0 +1,208 @@
+@use '../../../styles/variables.scss' as *;
+
+.course-home,
+.course-unit-bar,
+.course-unit-foot {
+  --course-line: color-mix(in srgb, var(--gray) 55%, transparent);
+  --course-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+  --course-selected: color-mix(in srgb, var(--secondary) 18%, var(--course-surface));
+  --course-control-height: 1.75rem;
+
+  min-width: 0;
+  color: var(--darkgray);
+
+  // base.scss inverts every <a> on hover (dark fill, light text); course views underline instead
+  a:hover {
+    background: transparent;
+    color: inherit;
+  }
+
+  @media (pointer: coarse) {
+    --course-control-height: 44px;
+  }
+
+  a.internal {
+    background: transparent;
+  }
+}
+
+.course-num,
+.course-count,
+.course-stats,
+[data-due],
+[data-last] {
+  font-family: var(--codeFont);
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings:
+    'tnum' 1,
+    'lnum' 1;
+}
+
+.course-count,
+.course-stats {
+  font-size: var(--text-meta);
+  line-height: 1.4;
+  color: var(--darkgray);
+  text-transform: lowercase;
+}
+
+// text action: the established underline, no box
+.course-action {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-1);
+  min-height: var(--course-control-height);
+  font-family: var(--codeFont);
+  font-size: var(--text-meta);
+  line-height: var(--course-control-height);
+  text-transform: lowercase;
+  color: var(--dark);
+  text-decoration: underline;
+  text-decoration-color: var(--gray);
+  text-underline-offset: 0.2em;
+  transition: text-decoration-color 120ms cubic-bezier(0.2, 0, 0, 1);
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
+
+  &[aria-disabled='true'] {
+    color: var(--darkgray);
+    text-decoration: none;
+    cursor: default;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:not([aria-disabled='true']):hover {
+      text-decoration-color: var(--dark);
+    }
+  }
+
+  @media (forced-colors: active) {
+    &:focus-visible {
+      outline-color: Highlight;
+    }
+  }
+}
+
+.course-new {
+  margin-left: var(--space-1);
+  padding: 0 var(--space-1);
+  background: color-mix(in srgb, var(--secondary) 45%, transparent);
+  color: var(--dark);
+}
+
+.course-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+  margin: 0 0 var(--space-3);
+
+  h2 {
+    margin: 0;
+    font-size: var(--text-ui);
+    font-weight: 400;
+    font-family: var(--codeFont);
+    text-transform: lowercase;
+    color: var(--dark);
+  }
+
+  .course-count {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+  }
+
+  .course-action {
+    margin-left: auto;
+  }
+
+  @media all and ($mobile) {
+    .course-action {
+      margin-left: 0;
+    }
+  }
+}
+
+// courses index: an intro, then bordered rows (the listPage idiom), as one grid item so the
+// page grid cannot stretch the intro to fill the viewport
+.course-home--index {
+  grid-column: var(--layout-reading-column);
+}
+
+.course-index {
+  min-width: 0;
+}
+
+.course-index-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--dark);
+}
+
+.course-row {
+  margin: 0;
+  padding: 0;
+
+  & + .course-row {
+    border-top: 1px solid var(--dark);
+  }
+}
+
+.course-row-link {
+  display: grid;
+  grid-template-columns: 7ch minmax(0, 1fr) auto;
+  gap: var(--space-1) var(--space-3);
+  align-items: baseline;
+  padding: 0.4rem 0.75rem;
+  font-size: var(--text-ui);
+  line-height: 1.45;
+  color: var(--darkgray);
+  text-decoration: none;
+  transition: background-color 120ms cubic-bezier(0.2, 0, 0, 1);
+
+  .course-num {
+    color: var(--dark);
+  }
+
+  .course-row-title {
+    min-width: 0;
+    color: var(--dark);
+    overflow-wrap: anywhere;
+    text-wrap: pretty;
+  }
+
+  .course-row-term {
+    font-size: var(--text-meta);
+    white-space: nowrap;
+  }
+
+  .course-stats {
+    grid-column: 2 / -1;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: -2px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover .course-row-title {
+      text-decoration: underline;
+      text-underline-offset: 0.2em;
+    }
+  }
+
+  @media all and ($mobile) {
+    grid-template-columns: minmax(0, 1fr);
+
+    .course-row-term,
+    .course-stats {
+      grid-column: 1;
+      white-space: normal;
+    }
+  }
+}
