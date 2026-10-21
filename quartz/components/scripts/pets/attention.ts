@@ -166,7 +166,6 @@ export const watch = () => {
 const triWindows = [
   ['tri-analytics-open', '.tri-analytics'],
   ['tri-map-open', '.tri-map'],
-  ['tri-training-open', '.tri-training'],
   ['tri-calendar-open', '.tri-calendar-panel'],
   ['tri-calc-open', '.tri-calc'],
 ] as const

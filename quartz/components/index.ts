@@ -20,12 +20,15 @@ import Explorer from './Explorer'
 import FlashcardsContent from './FlashcardsContent'
 import Flex from './Flex'
 import Footer from './Footer'
+import FrHome from './FrHome'
+import { FrUnitBar, FrUnitFoot } from './FrUnit'
 import Graph from './Graph'
 import Grid from './Grid'
 import Head from './Head'
 import HeadingsConstructor from './Headings'
 import HomepageTrail from './HomepageTrail'
 import Image from './Image'
+import InquiryMap from './InquiryMap'
 import Keybind from './Keybind'
 import License from './License'
 import MobileOnly from './MobileOnly'
@@ -87,6 +90,7 @@ export {
   TagList,
   Graph,
   Backlinks,
+  InquiryMap,
   Search,
   Footer,
   ConditionalRender,
@@ -110,6 +114,9 @@ export {
   CourseHome,
   CoursesIndex,
   CourseUnitBar,
+  FrHome,
+  FrUnitBar,
+  FrUnitFoot,
   UniversityCrumbBar,
   CoursePsetDesk,
   CourseUnitFoot,

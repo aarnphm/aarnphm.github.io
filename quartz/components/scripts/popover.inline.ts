@@ -1,6 +1,7 @@
 import type { Placement, ReferenceElement, Strategy, VirtualElement } from '@floating-ui/dom'
 import {
   arrow as floatingArrow,
+  autoPlacement,
   computePosition,
   flip,
   offset,
@@ -55,6 +56,9 @@ import {
   type WikipediaTarget,
 } from '../../util/wikipedia'
 import { coursePreviewTarget, renderCoursePreview } from './course-preview-card'
+import { curiusPagePreviewSource } from './curius-page-preview'
+import { curiusPopoverSource } from './curius-popover'
+import { renderCustomPagePreview } from './custom-page-preview'
 import { renderDocumentPreview } from './document-preview-card'
 import { currentNavSignal } from './nav-lifecycle'
 import { beginSitePerformanceSample, endSitePerformanceSample } from './performance-sample'
@@ -80,6 +84,7 @@ type ContentHandler = (
   targetUrl: URL,
   popoverInner: HTMLDivElement,
   hash: string,
+  signal: AbortSignal,
 ) => Promise<void>
 
 interface PositioningOptions {
@@ -615,10 +620,12 @@ async function handleDefaultContent(
   targetUrl: URL,
   popoverInner: HTMLDivElement,
   hash = '',
+  signal = currentNavSignal(),
 ) {
   const contents = await response.text()
   const html = p.parseFromString(contents, 'text/html')
   if (await renderPageDocumentPreview(html, targetUrl, popoverInner)) return
+  if (await renderCustomPagePreview(html, targetUrl, popoverInner, signal)) return
   popoverInner.classList.add('grid')
   normalizeRelativeURLs(html, targetUrl)
   prefixPopoverIds(html)
@@ -643,6 +650,7 @@ async function populatePopoverContent(
   targetUrl: URL,
   popoverInner: HTMLDivElement,
   hash = '',
+  signal = currentNavSignal(),
 ) {
   delete popoverInner.dataset.state
   popoverInner.replaceChildren()
@@ -658,7 +666,7 @@ async function populatePopoverContent(
     contentHandlers[contentType] ??
     contentHandlers['default']
 
-  await handler(response, targetUrl, popoverInner, hash)
+  await handler(response, targetUrl, popoverInner, hash, signal)
 }
 
 function isNoteDocumentUrl(targetUrl: URL): boolean {
@@ -720,10 +728,12 @@ async function setPosition(
   const reference = popoverReference(link, point)
   const middleware = [
     offset(2),
-    shift(),
-    flip(),
+    placement
+      ? flip({ padding: 8, fallbackAxisSideDirection: 'end' })
+      : autoPlacement({ padding: 8 }),
+    shift({ padding: 8 }),
     // a course card is taller than the room beside a short window; it scrolls instead of clipping
-    popoverElement.classList.contains('course-popover')
+    popoverElement.matches('.course-popover, .page-preview-popover')
       ? size({
           padding: 8,
           apply({ availableHeight, elements }) {
@@ -731,7 +741,7 @@ async function setPosition(
             if (!inner) return
             // the popover element wraps the inner box with its arrow gutter
             const gutter = elements.floating.offsetHeight - inner.offsetHeight
-            inner.style.maxHeight = `min(${Math.floor(availableHeight - gutter)}px, 75vh, 30rem)`
+            inner.style.maxHeight = `min(${Math.max(0, Math.floor(availableHeight - gutter))}px, 75vh, 30rem)`
           },
         })
       : null,
@@ -766,6 +776,7 @@ async function showPopover(
   const startedAt = beginSitePerformanceSample()
   touchPopoverElement(popoverElement)
   clearActivePopover(popoverElement)
+  popoverElement.classList.toggle('keyboard-popover', link.matches(':focus-visible'))
   popoverElement.classList.add('active-popover')
   evictInactivePopovers(popoverElement)
 
@@ -1172,6 +1183,7 @@ function renderSepPreview(preview: SepPreview, popoverInner: HTMLDivElement) {
 interface SummaryPreviewSource {
   popoverId: string
   className: string
+  loadingLabel?: string
   load(signal: AbortSignal): Promise<((popoverInner: HTMLDivElement) => void) | null>
 }
 
@@ -1373,6 +1385,10 @@ function coursePreviewSource(link: HTMLAnchorElement): SummaryPreviewSource | nu
 
 /** Links that open a compact preview instead of the full page body. */
 function summaryPreviewSource(link: HTMLAnchorElement): SummaryPreviewSource | null {
+  const curius = curiusPopoverSource(link)
+  if (curius) return curius
+  const curiusPage = curiusPagePreviewSource(link)
+  if (curiusPage) return curiusPage
   const course = coursePreviewSource(link)
   if (course) return course
   const page = documentPreviewSource(link)
@@ -1395,9 +1411,15 @@ async function handleSummaryPreview(
   const { popoverId } = source
   const existingPopover = document.getElementById(popoverId)
   if (existingPopover) {
-    link.dataset.popoverId = popoverId
-    await showPopover(link, existingPopover, pointer)
-    return
+    const loading = existingPopover.querySelector('.popover-inner[data-state="loading"]')
+    if (loading && activePopoverReq?.link !== link) {
+      activePopoverReq?.abort()
+      removePopoverElement(existingPopover)
+    } else {
+      link.dataset.popoverId = popoverId
+      await showPopover(link, existingPopover, pointer)
+      return
+    }
   }
 
   if (activePopoverReq && activePopoverReq.link !== link) {
@@ -1406,20 +1428,31 @@ async function handleSummaryPreview(
   }
 
   const controller = new AbortController()
-  activePopoverReq = { abort: () => controller.abort(), link }
+  const request = { abort: () => controller.abort(), link }
+  activePopoverReq = request
+  const { popoverElement, popoverInner } = createPopoverElement(...source.className.split(/\s+/))
+  popoverElement.id = popoverId
+  if (source.loadingLabel) {
+    setPopoverLoading(popoverInner, source.loadingLabel)
+    const label = document.createElement('span')
+    label.textContent = source.loadingLabel
+    popoverInner.querySelector('.popover-loading')?.appendChild(label)
+    document.body.appendChild(popoverElement)
+    await showLoadingPopover(link, popoverElement, pointer)
+  }
   const render = await source.load(controller.signal).catch(error => {
     if (!isAbortError(error)) console.error(error)
     return null
   })
-  if (activePopoverReq?.link === link) activePopoverReq = null
-  if (!render || !link.isConnected || activeAnchor !== link || document.getElementById(popoverId))
+  if (activePopoverReq === request) activePopoverReq = null
+  if (!render || controller.signal.aborted || !link.isConnected || activeAnchor !== link) {
+    removePopoverElement(popoverElement)
     return
-
-  const { popoverElement, popoverInner } = createPopoverElement(...source.className.split(/\s+/))
-  popoverElement.id = popoverId
+  }
+  clearPopoverLoading(popoverInner)
   render(popoverInner)
   link.dataset.popoverId = popoverId
-  document.body.appendChild(popoverElement)
+  if (!popoverElement.isConnected) document.body.appendChild(popoverElement)
   await showPopover(link, popoverElement, pointer, { popoverInner })
 }
 
@@ -1476,7 +1509,7 @@ async function handleStackedNotes(
       if (activePopoverReq?.link === link) activePopoverReq = null
       return
     }
-    await populatePopoverContent(response, targetUrl, popoverInner)
+    await populatePopoverContent(response, targetUrl, popoverInner, '', controller.signal)
   }
 
   if (
@@ -1728,6 +1761,7 @@ async function mouseEnterHandler(
   }
 
   let response: Response | void
+  let contentRequest: AbortController | undefined
   if (link.dataset.arxivId) {
     if (activePopoverReq && activePopoverReq.link !== link) {
       activePopoverReq.abort()
@@ -1798,18 +1832,33 @@ async function mouseEnterHandler(
     await showPopover(link, popoverElement, { clientX, clientY }, { hash, popoverInner })
     return
   } else {
-    response = await fetchCanonical(fetchUrl).catch(error => {
-      console.error(error)
+    activePopoverReq?.abort()
+    contentRequest = new AbortController()
+    const controller = contentRequest
+    activePopoverReq = { abort: () => controller.abort(), link }
+    response = await fetchCanonical(fetchUrl, { signal: controller.signal }).catch(error => {
+      if (!isAbortError(error)) console.error(error)
     })
   }
 
-  if (!response) return
+  if (!response) {
+    if (activePopoverReq?.link === link) activePopoverReq = null
+    return
+  }
   if (activeAnchor !== link) return
 
   const { popoverElement, popoverInner } = createPopoverElement()
   popoverElement.id = popoverId
 
-  await populatePopoverContent(response, targetUrl, popoverInner, hash)
+  try {
+    await populatePopoverContent(response, targetUrl, popoverInner, hash, contentRequest?.signal)
+  } catch (error) {
+    if (!isAbortError(error)) console.error(error)
+    return
+  } finally {
+    if (activePopoverReq?.link === link) activePopoverReq = null
+  }
+  if (contentRequest?.signal.aborted || !link.isConnected || activeAnchor !== link) return
 
   if (document.getElementById(popoverId)) return
 
@@ -1826,6 +1875,7 @@ async function mouseEnterHandler(
 
 async function mouseClickHandler(evt: MouseEvent, link: HTMLAnchorElement) {
   clearActivePopover()
+  if (link.dataset.curiusPopover) return
   if (getFullSlug(window) === 'index') return
 
   const thisUrl = new URL(document.location.href)
@@ -1959,7 +2009,10 @@ async function mouseClickHandler(evt: MouseEvent, link: HTMLAnchorElement) {
 function closestPopoverLink(target: EventTarget | null): HTMLAnchorElement | null {
   const element =
     target instanceof Element ? target : target instanceof Node ? target.parentElement : null
-  const link = element?.closest<HTMLAnchorElement>('a.internal, a[data-power-activity-id]') ?? null
+  const link =
+    element?.closest<HTMLAnchorElement>(
+      'a.internal, a[data-power-activity-id], a[data-curius-popover]',
+    ) ?? null
   return link?.closest('#stacked-notes-container') ? null : link
 }
 
@@ -1972,7 +2025,7 @@ function setupPopoverDelegation(): void {
     'focusin',
     event => {
       const link = closestPopoverLink(event.target)
-      if (!link || !summaryPreviewSource(link) || !link.matches(':focus-visible')) return
+      if (!link || !link.matches(':focus-visible')) return
       const rect = link.getBoundingClientRect()
       void mouseEnterHandler.call(link, {
         clientX: rect.left + rect.width / 2,
@@ -1985,7 +2038,7 @@ function setupPopoverDelegation(): void {
     'focusout',
     event => {
       const link = closestPopoverLink(event.target)
-      if (link && summaryPreviewSource(link)) mouseLeaveHandler.call(link, event)
+      if (link) mouseLeaveHandler.call(link, event)
     },
     { signal },
   )
@@ -2056,6 +2109,7 @@ function cleanupPopoverRuntime(): void {
 document.addEventListener('nav', () => {
   window.addCleanup(disposeSidePanel)
   window.addCleanup(cleanupPopoverRuntime)
+  document.addEventListener('curius:preview', dismissPopover, { signal: currentNavSignal() })
   setupPopoverDelegation()
   preloadPopoverLinks()
   setupStackedPopoverLinks()

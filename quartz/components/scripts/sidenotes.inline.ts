@@ -1,6 +1,6 @@
 import { debounce } from '../../util/debounce'
 
-const SIDENOTE_WIDTH = 17
+const SIDENOTE_WIDTH = 15.5
 const SPACING = 1
 const SIDENOTE_GUTTER = 1.5
 const GAP = 1
@@ -15,7 +15,11 @@ function remToPx(rem: number): number {
 
 function getMainColumn(content?: Element): HTMLElement | null {
   return (
-    content?.closest<HTMLElement>('.main-col') ?? document.querySelector<HTMLElement>('.main-col')
+    content?.closest<HTMLElement>('.main-col') ??
+    document.querySelector<HTMLElement>(
+      '#quartz-root > .page-body-grid > .page-content .main-col',
+    ) ??
+    document.querySelector<HTMLElement>('.main-col')
   )
 }
 
@@ -39,20 +43,31 @@ function getOffsetParentRect(content: HTMLElement): Pick<DOMRect, 'left' | 'righ
 
 function getContentWidth(): number {
   const mainColumn = getMainColumn()
-  if (!mainColumn) return remToPx(35)
+  if (!mainColumn) return remToPx(42)
   return mainColumn.getBoundingClientRect().width
 }
 
-function getViewportThresholds() {
-  const contentWidth = getContentWidth()
+function getMarginAvailability(content?: Element): { canFitLeft: boolean; canFitRight: boolean } {
   const sidenoteWidth = remToPx(SIDENOTE_WIDTH)
   const spacing = remToPx(SPACING)
   const gutter = remToPx(SIDENOTE_GUTTER)
+  const requiredMargin = sidenoteWidth + gutter + spacing
 
-  return {
-    ultraWide: contentWidth + 2 * (sidenoteWidth + gutter + spacing),
-    medium: contentWidth + sidenoteWidth + gutter + spacing,
+  const mainColumn = getMainColumn(content)
+  if (!mainColumn) {
+    const contentWidth = getContentWidth()
+    const windowWidth = window.innerWidth
+    return {
+      canFitLeft: windowWidth > contentWidth + 2 * requiredMargin,
+      canFitRight: windowWidth > contentWidth + requiredMargin,
+    }
   }
+
+  const mainRect = mainColumn.getBoundingClientRect()
+  const leftMargin = mainRect.left
+  const rightMargin = window.innerWidth - mainRect.right
+
+  return { canFitLeft: leftMargin >= requiredMargin, canFitRight: rightMargin >= requiredMargin }
 }
 
 type LayoutMode = 'double-sided' | 'single-sided' | 'inline'
@@ -64,11 +79,11 @@ function getLayoutMode(): LayoutMode {
     return 'inline'
   }
 
-  const thresholds = getViewportThresholds()
+  const { canFitLeft, canFitRight } = getMarginAvailability()
 
-  if (windowWidth > thresholds.ultraWide) {
+  if (canFitLeft && canFitRight) {
     return 'double-sided'
-  } else if (windowWidth > thresholds.medium) {
+  } else if (canFitLeft || canFitRight) {
     return 'single-sided'
   } else {
     return 'inline'
@@ -178,17 +193,25 @@ class SidenoteManager {
     const footerTop = footer ? footer.getBoundingClientRect().top + scrollTop : Infinity
     if (topPosition + contentHeight > footerTop) return false
 
-    const wouldOverlapSidepanel = !!document.querySelector('.sidepanel-container.active')
+    const wouldOverlapRightPanel = Boolean(
+      document.querySelector('.sidepanel-container.active, .course-workspace'),
+    )
+    const { canFitLeft, canFitRight } = getMarginAvailability(content)
 
-    const allowLeft = span.getAttribute('data-allow-left') !== 'false'
+    const allowLeft =
+      span.getAttribute('data-allow-left') !== 'false' &&
+      canFitLeft &&
+      (this.layoutMode === 'double-sided' || !canFitRight)
+    const allowRight =
+      span.getAttribute('data-allow-right') !== 'false' && !wouldOverlapRightPanel && canFitRight
     const gap = remToPx(GAP)
     const leftSpace = topPosition - this.lastBottomLeft
     const rightSpace = topPosition - this.lastBottomRight
 
     let side: 'left' | 'right'
-    if (allowLeft && leftSpace >= contentHeight + gap) {
+    if (allowLeft && leftSpace >= gap) {
       side = 'left'
-    } else if (!wouldOverlapSidepanel && rightSpace >= contentHeight + gap) {
+    } else if (allowRight && rightSpace >= gap) {
       side = 'right'
     } else {
       return false
@@ -285,7 +308,9 @@ class SidenoteManager {
     this.sidenotes.forEach(state => {
       if (this.isAnchorCollapsed(state.label)) return
 
-      const forceInline = state.span.getAttribute('data-force-inline') === 'true'
+      const forceInline =
+        state.span.getAttribute('data-force-inline') === 'true' ||
+        Boolean(state.span.closest('.popover, .sidepanel-container, .stacked-content'))
 
       if (this.layoutMode === 'inline' || forceInline) {
         this.positionInline(state)

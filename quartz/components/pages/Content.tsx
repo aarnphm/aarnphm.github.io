@@ -11,10 +11,13 @@ import { htmlToJsx } from '../../util/jsx'
 import { concatenateResources } from '../../util/resources'
 import { CourseUnitWorkspace } from '../CourseUnit'
 //@ts-ignore
+import frMarginsScript from '../scripts/fr-margins.inline'
+//@ts-ignore
 import lydiaScript from '../scripts/lydia.inline'
 //@ts-ignore
 import unbadgeScript from '../scripts/unbadge.inline'
 import SeeAlsoComponent from '../SeeAlso'
+import frMarginsStyle from '../styles/fr-margins.scss'
 
 export default (() => {
   const SeeAlso = SeeAlsoComponent()
@@ -69,11 +72,12 @@ export default (() => {
   }
 
   Content.afterDOMLoaded = concatenateResources(
+    frMarginsScript,
     lydiaScript,
     unbadgeScript,
     Workspace.afterDOMLoaded,
   )
-  Content.css = concatenateResources(SeeAlso.css, Workspace.css)
+  Content.css = concatenateResources(SeeAlso.css, Workspace.css, frMarginsStyle)
   Content.sourceNames = inheritComponentSourceNames('Content', [SeeAlso, Workspace])
 
   return Content

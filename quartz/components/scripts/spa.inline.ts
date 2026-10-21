@@ -1263,7 +1263,9 @@ function createRouter() {
       if (isSamePage(url) && url.hash) {
         const el = document.getElementById(decodeURIComponent(url.hash.substring(1)))
         el?.scrollIntoView()
+        const oldURL = window.location.href
         history.pushState({}, '', url)
+        window.dispatchEvent(new HashChangeEvent('hashchange', { oldURL, newURL: url.href }))
         return
       }
 

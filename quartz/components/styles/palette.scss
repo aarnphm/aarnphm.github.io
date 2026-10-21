@@ -41,7 +41,7 @@ ul#helper {
   display: flex;
   flex-direction: column;
   width: var(--sidepanel-width);
-  grid-column: 8/-1;
+  grid-column: 9/-1;
 
   @media all and (max-width: 1400px) {
     display: none;

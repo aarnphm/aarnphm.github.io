@@ -31,6 +31,7 @@ import VisitorWeather from '../VisitorWeather'
 import { renderBaseEmbeds } from './base-embeds'
 import { CuriusContent, CuriusFriends, CuriusTrail } from './curius'
 import { getBibList, getFootnotesList } from './footnotes-citations'
+import { renderFrMargins } from './fr-margins'
 import {
   ElementComponent,
   Functions,
@@ -102,6 +103,7 @@ export function renderPageWithMetadata(
     logBuildSpan(ctx.argv, 'render:transclude', slug, renderPerf.elapsedMs())
     renderBaseEmbeds(tree, componentData)
     renderStravaActivities(tree, slug)
+    renderFrMargins(tree, componentData, ctx)
 
     if (componentData.fileData.frontmatter?.pageLayout === 'technical-tractatus') {
       applyTractatusLayout(tree)

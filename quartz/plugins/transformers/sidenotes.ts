@@ -272,7 +272,7 @@ function deriveLabel(rawLabel: string): ElementContent[] {
   return [{ type: 'text', value: labelText }]
 }
 
-function buildSidenoteHast(
+export function buildSidenoteHast(
   label: ElementContent[],
   forceInline: boolean,
   allowLeft: boolean,

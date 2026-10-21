@@ -477,8 +477,8 @@ body[data-is-canvas='true'] {
 }
 
 .edge-label {
-  fill: var(--gray);
-  font-size: 0.9rem;
+  fill: var(--darkgray);
+  font-size: 14px;
   pointer-events: none;
   user-select: none;
   font-weight: 500;
@@ -822,7 +822,6 @@ body[data-is-canvas='true'] {
     &.node-title-center {
       display: block !important;
       font-weight: 600;
-      font-size: 2rem;
       fill: var(--dark);
     }
   }
@@ -840,10 +839,6 @@ body[data-is-canvas='true'] {
     display: block !important;
     opacity: 0.9;
   }
-
-  .edge-label {
-    font-size: 2rem;
-  }
 }
 
 // Responsive
@@ -855,9 +850,6 @@ body[data-is-canvas='true'] {
   }
   .node-content {
     font-size: 0.75rem;
-  }
-  .edge-label {
-    font-size: 0.65rem;
   }
 }
 

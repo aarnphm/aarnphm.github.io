@@ -38,6 +38,24 @@ export const englishDateLabels: DatePickerLabels = {
     new Date(2026, 0, 4 + day).toLocaleDateString('en', { weekday: 'narrow' }).toLowerCase(),
 }
 
+const frenchWords: Record<Parameters<DatePickerLabels['text']>[0], string> = {
+  'previous month': 'mois précédent',
+  'next month': 'mois suivant',
+  clear: 'effacer',
+  today: "aujourd'hui",
+  'date picker': 'calendrier',
+}
+
+export const frenchDateLabels: DatePickerLabels = {
+  text: key => frenchWords[key],
+  monthYear: iso =>
+    new Date(`${iso}T00:00:00`)
+      .toLocaleDateString('fr-CA', { month: 'long', year: 'numeric' })
+      .toLowerCase(),
+  weekdayNarrow: day =>
+    new Date(2026, 0, 4 + day).toLocaleDateString('fr-CA', { weekday: 'narrow' }).toLowerCase(),
+}
+
 export interface DatePickerOptions {
   id: string
   label: string

@@ -610,6 +610,10 @@ button.g-select-trigger {
     --tone: var(--love);
   }
 
+  &[data-tone='tertiary'] {
+    --tone: var(--tertiary);
+  }
+
   &[data-tone='rose'] {
     --tone: var(--rose);
   }
@@ -666,6 +670,14 @@ button.g-select-trigger {
     background: color-mix(in srgb, var(--tone) 32%, var(--light));
     color: var(--dark);
   }
+
+  // a reminder sits as a thin line under the day's events
+  &[data-thin] {
+    min-height: 1rem;
+    background: transparent;
+    font-size: 0.6875rem;
+    line-height: 1.2;
+  }
 }
 
 .g-event-mark {
@@ -687,6 +699,12 @@ button.g-select-trigger {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.g-event-time {
+  color: var(--darkgray);
+  font: 400 var(--text-meta, 0.75rem) / 1 var(--codeFont);
+  font-variant-numeric: tabular-nums;
 }
 
 .g-event-meta {
