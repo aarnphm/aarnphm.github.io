@@ -42,7 +42,9 @@ def rebase(spec: str, src_dir: str, dest_dir: str) -> str:
   """A specifier written in src_dir, rewritten for a file in dest_dir."""
   if not spec.startswith('.'):
     return spec
-  out = posixpath.relpath(posixpath.normpath(posixpath.join(src_dir, spec)), dest_dir)
+  out = posixpath.relpath(
+    posixpath.normpath(posixpath.join(src_dir, spec)), dest_dir
+  )
   return out if out.startswith('.') else f'./{out}'
 
 
@@ -56,10 +58,16 @@ def original_imports(path: str, text: str) -> tuple[dict, list[str]]:
     if st.kind() != 'import_statement':
       continue
     prev = st.prev()
-    directive = prev.text() if prev and prev.kind() == 'comment' and '@ts-' in prev.text() else ''
+    directive = (
+      prev.text()
+      if prev and prev.kind() == 'comment' and '@ts-' in prev.text()
+      else ''
+    )
     source = st.field('source').text()[1:-1]
     whole_type = re.match(r'import\s+type\b', st.text()) is not None
-    clause = next((c for c in st.named_children() if c.kind() == 'import_clause'), None)
+    clause = next(
+      (c for c in st.named_children() if c.kind() == 'import_clause'), None
+    )
     if not clause:
       bare.append(f'{directive}\n{st.text()}' if directive else st.text())
       continue
@@ -67,22 +75,34 @@ def original_imports(path: str, text: str) -> tuple[dict, list[str]]:
       if c.kind() == 'identifier':
         names[c.text()] = (source, 'default', 'default', whole_type, directive)
       elif c.kind() == 'namespace_import':
-        local = next(i.text() for i in c.named_children() if i.kind() == 'identifier')
+        local = next(
+          i.text() for i in c.named_children() if i.kind() == 'identifier'
+        )
         names[local] = (source, 'namespace', '*', whole_type, directive)
       elif c.kind() == 'named_imports':
         for s in c.named_children():
           if s.kind() == 'import_specifier':
             local = (s.field('alias') or s.field('name')).text()
             is_type = whole_type or s.text().startswith('type ')
-            names[local] = (source, 'named', s.field('name').text(), is_type, directive)
+            names[local] = (
+              source,
+              'named',
+              s.field('name').text(),
+              is_type,
+              directive,
+            )
   return names, bare
 
 
-def import_lines(spec: str, entries: list[tuple], directive: str = '') -> list[str]:
+def import_lines(
+  spec: str, entries: list[tuple], directive: str = ''
+) -> list[str]:
   """Statements for one module: entries are (local, form, imported, type-only)."""
   out = [directive] if directive else []
   default = [e for e in entries if e[1] == 'default']
-  named = sorted((e for e in entries if e[1] == 'named'), key=lambda e: (e[3], e[0].lower()))
+  named = sorted(
+    (e for e in entries if e[1] == 'named'), key=lambda e: (e[3], e[0].lower())
+  )
   for e in (e for e in entries if e[1] == 'namespace'):
     out.append(f"import {'type ' if e[3] else ''}* as {e[0]} from '{spec}'")
   parts = [default[0][0]] if default else []
@@ -95,11 +115,15 @@ def import_lines(spec: str, entries: list[tuple], directive: str = '') -> list[s
     )
     parts.append(f'{{ {inner} }}')
   if parts:
-    out.append(f"import {'type ' if all_type else ''}{', '.join(parts)} from '{spec}'")
+    out.append(
+      f"import {'type ' if all_type else ''}{', '.join(parts)} from '{spec}'"
+    )
   return out
 
 
-def scss_module(spec: str, src_dir: str, wt: str) -> tuple[str, set[str] | None]:
+def scss_module(
+  spec: str, src_dir: str, wt: str
+) -> tuple[str, set[str] | None]:
   """Namespace of an `@use` and the members its module declares (None when unknown)."""
   m = re.match(r"""(['"])([^'"]+)\1(?:\s+as\s+([\w*-]+))?""", spec)
   path, ns = m.group(2), m.group(3)
@@ -111,7 +135,13 @@ def scss_module(spec: str, src_dir: str, wt: str) -> tuple[str, set[str] | None]
   full = posixpath.normpath(posixpath.join(src_dir, path))
   stem = re.sub(r'\.s[ac]ss$', '', full)
   d, b = posixpath.split(stem)
-  for c in (full, f'{stem}.scss', f'{d}/_{b}.scss', f'{stem}/index.scss', f'{stem}/_index.scss'):
+  for c in (
+    full,
+    f'{stem}.scss',
+    f'{d}/_{b}.scss',
+    f'{stem}/index.scss',
+    f'{stem}/_index.scss',
+  ):
     f = Path(wt, c)
     if f.is_file():
       text = f.read_text()
@@ -142,16 +172,25 @@ def main() -> int:
 
   graph, proposal, wt = sys.argv[1:]
   p = json.loads(Path(proposal).read_text())
-  g = next(f for f in json.loads(Path(graph).read_text())['files'] if f['path'] == p['target'])
+  g = next(
+    f
+    for f in json.loads(Path(graph).read_text())['files']
+    if f['path'] == p['target']
+  )
   entry = g['path']
   # The worktree index, not HEAD: after a stage 4a hoist the graph is built from the staged hoist.
   staged = subprocess.run(
     ['git', '-C', wt, 'rev-parse', f':{entry}'], capture_output=True, text=True
   ).stdout.strip()
   if staged != g['blob']:
-    raise SystemExit(f'{entry} in the worktree index is {staged}, the graph has {g["blob"]}')
+    raise SystemExit(
+      f'{entry} in the worktree index is {staged}, the graph has {g["blob"]}'
+    )
   src = subprocess.run(
-    ['git', '-C', wt, 'cat-file', 'blob', g['blob']], capture_output=True, text=True, check=True
+    ['git', '-C', wt, 'cat-file', 'blob', g['blob']],
+    capture_output=True,
+    text=True,
+    check=True,
   ).stdout
   lines = src.split('\n')
   blocks = {b['id']: b for b in g['blocks']}
@@ -167,8 +206,13 @@ def main() -> int:
 
   for bid, f in home.items():
     if f != home.get(top(bid), f):
-      raise SystemExit(f'{bid} and its block {top(bid)} go to different files: hoist first (stage 4a)')
-  units = {f['path']: sorted({top(b) for b in f['blocks']}, key=order.get) for f in p['files']}
+      raise SystemExit(
+        f'{bid} and its block {top(bid)} go to different files: hoist first (stage 4a)'
+      )
+  units = {
+    f['path']: sorted({top(b) for b in f['blocks']}, key=order.get)
+    for f in p['files']
+  }
   # Re-exports stay in the entry: one in a private file makes the entry re-export a re-export.
   first = next(f for f in units if f in entries)
   for f in units:
@@ -178,9 +222,15 @@ def main() -> int:
       units[f] = kept
   units[first].sort(key=order.get)
   owner = {b: path for path, ids in units.items() for b in ids}
-  loose = [b['id'] for b in g['blocks'] if not b.get('parent') and b['id'] not in owner]
+  loose = [
+    b['id']
+    for b in g['blocks']
+    if not b.get('parent') and b['id'] not in owner
+  ]
   if any(blocks[b]['kind'] != 'import' for b in loose):
-    raise SystemExit(f'unassigned blocks: {[b for b in loose if blocks[b]["kind"] != "import"]}')
+    raise SystemExit(
+      f'unassigned blocks: {[b for b in loose if blocks[b]["kind"] != "import"]}'
+    )
 
   def body(ids: list[str], export: set[str] = frozenset()) -> list[str]:
     out: list[str] = []
@@ -209,10 +259,14 @@ def main() -> int:
   texts: dict[str, list[str]] = {}
   if style:
     partials = sorted(
-      (f for f in units if f not in entries and units[f]), key=lambda f: order[units[f][0]]
+      (f for f in units if f not in entries and units[f]),
+      key=lambda f: order[units[f][0]],
     )
     uses = [
-      l for b in g['blocks'] if b['kind'] == 'import' for l in body([b['id']])
+      l
+      for b in g['blocks']
+      if b['kind'] == 'import'
+      for l in body([b['id']])
       if re.match(r'\s*@use\b', l)
     ]
     for f in partials:
@@ -224,17 +278,34 @@ def main() -> int:
         ns, members = scss_module(spec, src_dir, wt)
         if uses_member(text, ns, members):
           q = re.match(r"""(['"])([^'"]+)\1(.*)""", spec)
-          head_lines.append(f"@use '{rebase(q.group(2), src_dir, posixpath.dirname(f))}'{q.group(3)};")
+          head_lines.append(
+            f"@use '{rebase(q.group(2), src_dir, posixpath.dirname(f))}'{q.group(3)};"
+          )
       for other in partials[: partials.index(f)]:
-        needed = {r for bid in units[f] for r in blocks[bid].get('refs', {}) if owner.get(top(r)) == other}
+        needed = {
+          r
+          for bid in units[f]
+          for r in blocks[bid].get('refs', {})
+          if owner.get(top(r)) == other
+        }
         if needed:
           head_lines.append(f"@use '{rel_module(f, other)}' as *;")
-      if any(owner.get(top(r)) in entries for bid in units[f] for r in blocks[bid].get('refs', {})):
-        todo.append(f'{f} reads a declaration the entry keeps; move it to a partial')
+      if any(
+        owner.get(top(r)) in entries
+        for bid in units[f]
+        for r in blocks[bid].get('refs', {})
+      ):
+        todo.append(
+          f'{f} reads a declaration the entry keeps; move it to a partial'
+        )
       texts[f] = [*head_lines, *([''] if head_lines else []), *body(units[f])]
     for f in entries:
       own = units.get(f, [])
-      imports = [b for b in sorted({*loose, *own}, key=order.get) if blocks[b]['kind'] == 'import']
+      imports = [
+        b
+        for b in sorted({*loose, *own}, key=order.get)
+        if blocks[b]['kind'] == 'import'
+      ]
       rest = [b for b in own if blocks[b]['kind'] != 'import']
       texts[f] = [
         *body(imports),
@@ -244,17 +315,26 @@ def main() -> int:
       ]
   else:
     imported, bare = original_imports(entry, src)
-    type_names = {n for b in g['blocks'] if TYPE_DECL.match(b['label']) for n in b['names']}
+    type_names = {
+      n for b in g['blocks'] if TYPE_DECL.match(b['label']) for n in b['names']
+    }
     export_needed: set[str] = set()
     local: dict[str, dict[str, set[str]]] = {f: {} for f in units}
     for f, ids in units.items():
       text = '\n'.join(body(ids))
       for bid in ids:
-        for b in [blocks[bid], *(x for x in g['blocks'] if x.get('parent') and top(x['id']) == bid)]:
+        for b in [
+          blocks[bid],
+          *(x for x in g['blocks'] if x.get('parent') and top(x['id']) == bid),
+        ]:
           for ref in b.get('refs', {}):
             other = owner.get(top(ref))
             if other and other != f:
-              names = [n for n in blocks[top(ref)]['names'] if re.search(rf'\b{re.escape(n)}\b', text)]
+              names = [
+                n
+                for n in blocks[top(ref)]['names']
+                if re.search(rf'\b{re.escape(n)}\b', text)
+              ]
               local[f].setdefault(other, set()).update(names)
               export_needed.add(top(ref))
     exports = set(p['interface'].get('exports') or [])
@@ -263,32 +343,48 @@ def main() -> int:
       text = '\n'.join(body(ids))
       used: dict[tuple, list[tuple]] = {}
       for bid in ids:
-        for b in [blocks[bid], *(x for x in g['blocks'] if x.get('parent') and top(x['id']) == bid)]:
+        for b in [
+          blocks[bid],
+          *(x for x in g['blocks'] if x.get('parent') and top(x['id']) == bid),
+        ]:
           for names in b.get('imports', {}).values():
             for n in names:
               if n in imported:
                 source, form, name, is_type, directive = imported[n]
-                spec = (rebase(source, src_dir, posixpath.dirname(f)), directive)
+                spec = (
+                  rebase(source, src_dir, posixpath.dirname(f)),
+                  directive,
+                )
                 if (n, form, name, is_type) not in used.setdefault(spec, []):
                   used[spec].append((n, form, name, is_type))
       for spec, directive in sorted(used):
         out += import_lines(spec, used[spec, directive], directive)
       for other in sorted(local[f]):
         names = sorted(local[f][other])
-        out += import_lines(rel_module(f, other), [(n, 'named', n, n in type_names) for n in names])
+        out += import_lines(
+          rel_module(f, other),
+          [(n, 'named', n, n in type_names) for n in names],
+        )
       if f in entries:
         for other, ids2 in units.items():
           if other in entries:
             continue
           moved = [n for b in ids2 for n in blocks[b]['names'] if n in exports]
-          if any(blocks[b].get('isDefault') for b in ids2) and 'default' in exports:
+          if (
+            any(blocks[b].get('isDefault') for b in ids2)
+            and 'default' in exports
+          ):
             moved.append('default')
           values = sorted(n for n in moved if n not in type_names)
           types = sorted(n for n in moved if n in type_names)
           if values:
-            out.append(f"export {{ {', '.join(values)} }} from '{rel_module(f, other)}'")
+            out.append(
+              f"export {{ {', '.join(values)} }} from '{rel_module(f, other)}'"
+            )
           if types:
-            out.append(f"export type {{ {', '.join(types)} }} from '{rel_module(f, other)}'")
+            out.append(
+              f"export type {{ {', '.join(types)} }} from '{rel_module(f, other)}'"
+            )
       chunk = body(ids, export_needed)
       if f not in entries:
         for i, line in enumerate(chunk):
@@ -296,7 +392,9 @@ def main() -> int:
             new = rebase(m.group(2), src_dir, posixpath.dirname(f))
             line = line.replace(m.group(0), f'{m.group(1)}{new}{m.group(1)}')
           if line != chunk[i]:
-            todo.append(f'{f}: rebased a specifier inside a block: {line.strip()[:80]}')
+            todo.append(
+              f'{f}: rebased a specifier inside a block: {line.strip()[:80]}'
+            )
             chunk[i] = line
       texts[f] = [*out, *([''] if out else []), *chunk]
 
@@ -306,11 +404,16 @@ def main() -> int:
     dest.parent.mkdir(parents=True, exist_ok=True)
     dest.write_text(text)
     t = text_tokens(text)
-    print(f'{f}: {t} tokens{" (over the aim)" if t > TARGET else ""}, {len(units.get(f, []))} blocks')
+    print(
+      f'{f}: {t} tokens{" (over the aim)" if t > TARGET else ""}, {len(units.get(f, []))} blocks'
+    )
   for t in todo:
     print(f'by hand: {t}', file=sys.stderr)
   if not style:
-    print('next: oxfmt the files, hide the exports the proposal hides, then run.sh proof', file=sys.stderr)
+    print(
+      'next: oxfmt the files, hide the exports the proposal hides, then run.sh proof',
+      file=sys.stderr,
+    )
   return 0
 
 

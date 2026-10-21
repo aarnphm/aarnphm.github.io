@@ -173,9 +173,15 @@ def params(fn: SgNode) -> list[str]:
   if one:
     return binding_names(one)
   ps = fn.field('parameters')
-  return [
-    n for p in ps.named_children() for n in binding_names(p.field('pattern') or p)
-  ] if ps else []
+  return (
+    [
+      n
+      for p in ps.named_children()
+      for n in binding_names(p.field('pattern') or p)
+    ]
+    if ps
+    else []
+  )
 
 
 def scope_bindings(node: SgNode, inner: bool) -> set[str]:
@@ -209,7 +215,9 @@ def scope_bindings(node: SgNode, inner: bool) -> set[str]:
         out |= set(binding_names(init))
   elif k == 'catch_clause':
     out |= set(binding_names(node.field('parameter')))
-  elif k in ('arrow_function', 'function_expression', 'class') and node.field('name'):
+  elif k in ('arrow_function', 'function_expression', 'class') and node.field(
+    'name'
+  ):
     out.add(node.field('name').text())
   return out
 
@@ -421,7 +429,10 @@ def link(bs: list[dict]) -> list[dict]:
       scope = dict(scope_for(by_id[parent].get('parent'))) if parent else {}
       # `export { x } from` binds no local name, so only declarations enter the scope.
       for b in bs:
-        if b.get('parent') == parent and b['kind'] not in ('import', 'reexport'):
+        if b.get('parent') == parent and b['kind'] not in (
+          'import',
+          'reexport',
+        ):
           for n in b['names']:
             scope[n] = b['id']
       scopes[key] = scope

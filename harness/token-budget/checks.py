@@ -190,7 +190,9 @@ def validate(g: dict, p: dict) -> dict:
       entry_only.append(f'{f["path"]} is an entry inside the private folder')
   # A name the target only re-exports may send its importers to the module that declares it.
   reexported = {
-    n: strip_ext(os.path.normpath(os.path.join(os.path.dirname(g['path']), b['from'])))
+    n: strip_ext(
+      os.path.normpath(os.path.join(os.path.dirname(g['path']), b['from']))
+    )
     for b in g['blocks']
     if b['kind'] == 'reexport' and (b.get('from') or '').startswith('.')
     for n in b['names']
@@ -259,7 +261,9 @@ def validate(g: dict, p: dict) -> dict:
   heavy = {u['path']: u for u in g['importers'] if u.get('overBudget')}
   edited = {c.get('importer') for c in p.get('importer_changes') or []}
   edited |= {t.get('path') for t in p.get('tests') or []}
-  edited |= {path for path, u in heavy.items() if (hidden | moved) & set(u['names'])}
+  edited |= {
+    path for path, u in heavy.items() if (hidden | moved) & set(u['names'])
+  }
   check(
     'importers-budget',
     f'No importer that must change is already over {LIMIT} tokens.',

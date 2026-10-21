@@ -102,7 +102,10 @@ def brief(g: dict) -> str:
           for n, on in (
             ('type-only', u['typeOnly']),
             ('dynamic', u['dynamic']),
-            (f'**over budget ({u.get("overBudget")} tokens): do not edit**', u.get('overBudget')),
+            (
+              f'**over budget ({u.get("overBudget")} tokens): do not edit**',
+              u.get('overBudget'),
+            ),
           )
           if on
         ),
