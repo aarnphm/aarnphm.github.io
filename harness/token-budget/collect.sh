@@ -30,11 +30,15 @@ for s in "$RUN"/*/brief.md; do
       text=$(jq -r '.response // .result // .final_response // ""' "$d/inspect.json")
     fi
     printf '%s' "$text" | python3 -c '
-import json, re, sys
-blocks = re.findall(r"```json\s*\n(.*?)```", sys.stdin.read(), re.S)
-if not blocks:
+import json, sys
+# The proposal is the last ```json block. A response can hold an abandoned draft whose block never
+# closes, so pairing fences from the start would swallow the restart.
+parts = sys.stdin.read().split("```json")
+if len(parts) < 2:
   sys.exit(3)
-print(json.dumps(json.loads(blocks[-1]), indent=2, ensure_ascii=False))
+block = parts[-1].split("```")[0]
+# strict=False: workers sometimes put a raw tab or newline inside a string.
+print(json.dumps(json.loads(block, strict=False), indent=2, ensure_ascii=False))
 ' > "$d/proposal.json.tmp" && mv "$d/proposal.json.tmp" "$d/proposal.json" \
       || { rm -f "$d/proposal.json.tmp"; echo "$d: no proposal in final message" >&2; }
   done

@@ -188,10 +188,21 @@ def validate(g: dict, p: dict) -> dict:
       entry_only.append(f'{f["path"]} is internal but outside {private_dir}')
     if f['path'] in entries and f['path'].startswith(private_dir):
       entry_only.append(f'{f["path"]} is an entry inside the private folder')
+  # A name the target only re-exports may send its importers to the module that declares it.
+  reexported = {
+    n: strip_ext(os.path.normpath(os.path.join(os.path.dirname(g['path']), b['from'])))
+    for b in g['blocks']
+    if b['kind'] == 'reexport' and (b.get('from') or '').startswith('.')
+    for n in b['names']
+  }
+
+  def to_source(c: dict) -> bool:
+    return reexported.get(c['symbol']) == strip_ext(c.get('to') or '')
+
   entry_only.extend(
     f'{c["importer"]} would import {c["symbol"]} from {c.get("to")}, not an entry'
     for c in p.get('importer_changes') or []
-    if c.get('to') not in entries
+    if c.get('to') not in entries and not to_source(c)
   )
   entry_only.extend(
     f'{t["path"]} tests through {t.get("through")}, not an entry'
@@ -230,7 +241,7 @@ def validate(g: dict, p: dict) -> dict:
     if c.get('replacement')
     else f'{c["importer"]} would import {c["symbol"]}, which no entry exports; name the exported replacement'
     for c in p.get('importer_changes') or []
-    if (c.get('replacement') or c['symbol']) not in kept
+    if (c.get('replacement') or c['symbol']) not in kept and not to_source(c)
   )
   kept_fail.extend(
     f'{n} is exported but not declared in the target'
@@ -241,6 +252,21 @@ def validate(g: dict, p: dict) -> dict:
     'interface-kept',
     'Every name importers use stays exported, moves to another entry, or is hidden with a deletion test.',
     kept_fail,
+  )
+
+  # The hook checks every staged file: an importer over budget cannot be edited in this pass. An
+  # importer changes when the proposal names it, or when it imports a name the proposal hides.
+  heavy = {u['path']: u for u in g['importers'] if u.get('overBudget')}
+  edited = {c.get('importer') for c in p.get('importer_changes') or []}
+  edited |= {t.get('path') for t in p.get('tests') or []}
+  edited |= {path for path, u in heavy.items() if (hidden | moved) & set(u['names'])}
+  check(
+    'importers-budget',
+    f'No importer that must change is already over {LIMIT} tokens.',
+    [
+      f'{path} ({heavy[path]["overBudget"]} tokens) would have to change and be staged'
+      for path in sorted(edited & heavy.keys())
+    ],
   )
 
   check(
