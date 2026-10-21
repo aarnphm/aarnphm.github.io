@@ -23,7 +23,13 @@ $$
 
 Grass coverage decreases toward the viewer. Let $n$ be normalised distance from the meadow top to the scene bottom. A candidate plant with uniform random value $U$ is retained when $U\ge(n-0.45)/0.2$.
 
-Ground height combines three sine terms. If $d$ measures depth from meadow top to camp, $W$ is scene width, and $\phi$ is the terrain phase, the offset is
+Ground height combines three sine terms. Depth is normalized by the distance from meadow top to camp:
+
+$$
+d=\frac{y-y_{\mathrm{meadow}}}{\max(1,y_{\mathrm{camp}}-y_{\mathrm{meadow}})}.
+$$
+
+The denominator is measured in scene units, so $d$ is dimensionless. It is zero at meadow top and one at camp when their separation is at least one scene unit. With scene width $W$ and terrain phase $\phi$, the offset is
 
 $$
 A\sin(2\pi x/W+\phi+2.4d)
