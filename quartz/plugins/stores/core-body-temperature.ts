@@ -327,15 +327,35 @@ export function coreBodyTemperatureSamplesForWindow(
   durationS: number,
   cache: CoreBodyTemperatureCache | null | undefined,
 ): CoreBodyTemperatureActivitySample[] {
-  if (!cache || !Number.isFinite(durationS) || durationS <= 0) return []
-  const startMs = Date.parse(start)
-  if (!Number.isFinite(startMs)) return []
-  const endMs = startMs + durationS * 1_000
-  const samples: CoreBodyTemperatureActivitySample[] = []
-  for (const sample of cache.samples) {
-    const timeMs = Date.parse(sample.time)
-    if (!Number.isFinite(timeMs) || timeMs < startMs || timeMs > endMs) continue
-    samples.push({ ...sample, elapsedS: (timeMs - startMs) / 1_000 })
+  return coreBodyTemperatureWindowReader(cache)(start, durationS)
+}
+
+export function coreBodyTemperatureWindowReader(
+  cache: CoreBodyTemperatureCache | null | undefined,
+): (start: string, durationS: number) => CoreBodyTemperatureActivitySample[] {
+  // One synchronous enrichment owns this index; later calls rebuild it from mutable provider data.
+  let index: { sample: CoreBodyTemperatureSample; timeMs: number }[] | undefined
+  return (start, durationS) => {
+    if (!cache || !Number.isFinite(durationS) || durationS <= 0) return []
+    const startMs = Date.parse(start)
+    if (!Number.isFinite(startMs)) return []
+    const endMs = startMs + durationS * 1_000
+    index ??= cache.samples
+      .map(sample => ({ sample, timeMs: Date.parse(sample.time) }))
+      .filter(entry => Number.isFinite(entry.timeMs))
+      .sort((left, right) => left.timeMs - right.timeMs)
+    let low = 0
+    let high = index.length
+    while (low < high) {
+      const middle = (low + high) >>> 1
+      if (index[middle].timeMs < startMs) low = middle + 1
+      else high = middle
+    }
+    const samples: CoreBodyTemperatureActivitySample[] = []
+    for (let i = low; i < index.length && index[i].timeMs <= endMs; i++) {
+      const { sample, timeMs } = index[i]
+      samples.push({ ...sample, elapsedS: (timeMs - startMs) / 1_000 })
+    }
+    return samples
   }
-  return samples.sort((left, right) => left.elapsedS - right.elapsedS)
 }
