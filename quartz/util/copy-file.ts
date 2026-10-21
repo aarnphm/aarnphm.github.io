@@ -3,6 +3,7 @@ import { constants } from 'node:fs'
 import fs from 'node:fs/promises'
 import { dirname, join, resolve } from 'node:path'
 import type { FilePath } from './path'
+import { recordOutput } from './output-receipt-context'
 
 const ensuredDirs = new Map<string, Promise<void>>()
 
@@ -41,5 +42,6 @@ export async function copyFile(
   } else {
     await fs.copyFile(src, dest, constants.COPYFILE_FICLONE)
   }
+  recordOutput(dest, true, src)
   return dest
 }

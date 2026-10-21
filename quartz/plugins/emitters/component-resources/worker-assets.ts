@@ -28,7 +28,32 @@ export async function writeSpeechRuntimeAssets(ctx: BuildCtx): Promise<FilePath[
       content: wasm,
     }),
     await writeGenericWorkerAsset(ctx, speechWorkerEntry),
+    ...(await writePhononRuntimeAssets(ctx, resolve)),
   ]
+}
+
+// The page imports phonon-tts only on the first Phonon playback, and the package's own worker
+// imports its siblings and wasm builds by relative URL, so the layout is copied as is.
+async function writePhononRuntimeAssets(
+  ctx: BuildCtx,
+  resolve: NodeJS.RequireResolve,
+): Promise<FilePath[]> {
+  const root = path.dirname(resolve('phonon-tts/package.json'))
+  const files = await globby(['*.js', 'wasm/*', 'wasm-threads/**'], {
+    cwd: root,
+    ignore: ['**/*.d.ts'],
+  })
+  return Promise.all(
+    files.map(async file => {
+      const ext = path.extname(file) as `.${string}`
+      return write({
+        ctx,
+        slug: `static/speech/phonon/${file.slice(0, -ext.length)}` as FullSlug,
+        ext,
+        content: await fs.readFile(path.join(root, file)),
+      })
+    }),
+  )
 }
 
 export async function writeCollaborativeCommentsAssets(ctx: BuildCtx): Promise<FilePath[]> {

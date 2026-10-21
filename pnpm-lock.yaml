@@ -283,6 +283,9 @@ importers:
       pele:
         specifier: 1.6.0
         version: 1.6.0
+      phonon-tts:
+        specifier: 0.4.0
+        version: 0.4.0
       pixi.js:
         specifier: ^8.22.0
         version: 8.22.0
@@ -5312,6 +5315,9 @@ packages:
 
   pend@1.2.0:
     resolution: {integrity: sha512-F3asv42UuXchdzt+xXqfW1OGlVBe+mxa2mqI0pg5yAHZPvFmY3Y6drSf/GQ1A86WgWEN9Kzh/WrgKa6iGcHXLg==}
+
+  phonon-tts@0.4.0:
+    resolution: {integrity: sha512-008+bytDUgx2npm+KXJV4Quo8BTXeRVLiYkX4mXPcToy81RQ2cu3Vvi2bdRjFZdpyaWfDy574w4bIZnGqRd44g==}
 
   picocolors@1.1.1:
     resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
@@ -11472,6 +11478,8 @@ snapshots:
   pele@1.6.0: {}
 
   pend@1.2.0: {}
+
+  phonon-tts@0.4.0: {}
 
   picocolors@1.1.1: {}
 

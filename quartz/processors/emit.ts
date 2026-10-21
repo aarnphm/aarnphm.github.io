@@ -9,6 +9,7 @@ import { defaultEmitterConcurrency, mapConcurrent } from '../util/async-pool'
 import { BuildCtx, deckDataFor } from '../util/ctx'
 import { flashcardPages, flashcardPageChanges } from '../util/flashcards-routing'
 import { QuartzLogger } from '../util/log'
+import { recordOutput, withOutputOwner } from '../util/output-receipt-context'
 import { logBuildSpan, logBuildStage, PerfTimer } from '../util/perf'
 import { getStaticResourcesFromPlugins } from '../util/static-resources'
 import { trace } from '../util/trace'
@@ -35,6 +36,7 @@ async function runEmitterOutput(
 
     if (Symbol.asyncIterator in emitted) {
       for await (const file of emitted) {
+        recordOutput(file, false)
         emittedFiles++
         ctx.emittedFiles?.get(emitter.name)?.add(path.relative(ctx.argv.output, file))
         if (ctx.argv.verbose) {
@@ -46,6 +48,7 @@ async function runEmitterOutput(
     } else {
       emittedFiles += emitted.length
       for (const file of emitted) {
+        recordOutput(file, false)
         ctx.emittedFiles?.get(emitter.name)?.add(path.relative(ctx.argv.output, file))
         if (ctx.argv.verbose) {
           console.log(`[emit:${emitter.name}] ${file}`)
@@ -72,7 +75,9 @@ function runEmitter(
 ) {
   ctx.emittedFiles?.set(emitter.name, new Set())
   ctx.decks = deckDataFor(content)
-  return runEmitterOutput(emitter, ctx, log, emitter.emit(ctx, content, staticResources))
+  return withOutputOwner(ctx, content, emitter.name, 'replace', () =>
+    runEmitterOutput(emitter, ctx, log, emitter.emit(ctx, content, staticResources)),
+  )
 }
 
 function runPartialEmitter(
@@ -84,10 +89,18 @@ function runPartialEmitter(
   changeEvents: ChangeEvent[],
 ) {
   ctx.decks = deckDataFor(content)
-  const output = emitter.partialEmit
-    ? emitter.partialEmit(ctx, content, staticResources, changeEvents)
-    : emitter.emit(ctx, content, staticResources)
-  return runEmitterOutput(emitter, ctx, log, output)
+  return withOutputOwner(
+    ctx,
+    content,
+    emitter.name,
+    emitter.partialEmit ? 'patch' : 'replace',
+    () => {
+      const output = emitter.partialEmit
+        ? emitter.partialEmit(ctx, content, staticResources, changeEvents)
+        : emitter.emit(ctx, content, staticResources)
+      return runEmitterOutput(emitter, ctx, log, output)
+    },
+  )
 }
 
 export async function emitPartialEmitter(

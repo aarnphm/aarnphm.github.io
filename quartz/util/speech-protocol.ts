@@ -12,11 +12,86 @@ export const SPEECH_MODEL_INFO = {
     'https://huggingface.co/supertone-oss-archive/supertonic-2/blob/7edbcd0bba8cd579100a353a9e0b2b49cad7c875/LICENSE',
 }
 
+export type PhononModelInfo = {
+  label: string
+  model: string
+  revision: string
+  voice: string
+  /** Serves config.json, tokenizer.json, model.q8.gguf and default-voice.safetensors. */
+  baseUrl: string
+  modelDownloadBytes: number
+  runtimeDownloadBytes: number
+  downloadBytes: number
+  sourceUrl: string
+  license: string
+}
+
+// Chromium's path: the single-threaded relaxed-SIMD wasm plus the package's JS. Pages without
+// cross-origin isolation never load the threaded build.
+const PHONON_RUNTIME_BYTES = 4_387_046 + 96_812
+const phononFileBytes = (weights: number, tokenizer: number, config: number) =>
+  weights + tokenizer + config + 256_136
+
+function phonon(
+  label: string,
+  repo: string,
+  revision: string,
+  modelDownloadBytes: number,
+  license: string,
+): PhononModelInfo {
+  return {
+    label,
+    model: `gradium/${repo}`,
+    revision,
+    voice: 'default',
+    baseUrl: `/models/speech/${repo}/${revision}/`,
+    modelDownloadBytes,
+    runtimeDownloadBytes: PHONON_RUNTIME_BYTES,
+    downloadBytes: modelDownloadBytes + PHONON_RUNTIME_BYTES,
+    sourceUrl: `https://huggingface.co/gradium/${repo}`,
+    license,
+  }
+}
+
+// The 40M repo is gated, so a browser cannot read it from the Hub. Its pinned files live in the
+// LFS_BUCKET R2 bucket under models/speech/, served by the worker's /models/ route.
+export const PHONON_MODELS = {
+  'phonon-40m-multilingual': phonon(
+    'Phonon 40M multilingue',
+    'phonon-40m-multilingual',
+    '1267486cbcb55d2eaa61ba521c2ed8e4d22923c2',
+    phononFileBytes(74_553_568, 277_749, 2_891),
+    'CC BY-NC 4.0',
+  ),
+} satisfies Record<string, PhononModelInfo>
+
+export type PhononModelId = keyof typeof PHONON_MODELS
+export type SpeechModelId = 'supertonic-2' | PhononModelId
+
+export const DEFAULT_SPEECH_MODEL: SpeechModelId = 'phonon-40m-multilingual'
+export const SPEECH_MODEL_IDS: SpeechModelId[] = ['phonon-40m-multilingual', 'supertonic-2']
+
+export function isSpeechModelId(value: unknown): value is SpeechModelId {
+  return SPEECH_MODEL_IDS.some(id => id === value)
+}
+
+export function speechModelLabel(id: SpeechModelId): string {
+  return id === 'supertonic-2' ? SPEECH_MODEL_INFO.label : PHONON_MODELS[id].label
+}
+
 export type SpeechOptions = {
-  /** A mirror containing onnx/ and voice_styles/ from the pinned model revision. */
+  /** A mirror containing onnx/ and voice_styles/ from the pinned Supertonic revision. */
   modelBaseUrl?: string
   /** Warm an already-cached model without downloading missing assets. */
   cacheOnly?: boolean
+}
+
+export type SpeechTiming = {
+  /** From the request reaching the worker to the first PCM samples. */
+  firstAudioMs: number
+  totalMs: number
+  /** Where generation ran, such as `webgpu` or `cpu×1`. */
+  device: string
 }
 
 export type SpeechAudio = {
@@ -24,6 +99,7 @@ export type SpeechAudio = {
   samplingRate: number
   model: string
   voice: string
+  timing: SpeechTiming
 }
 
 export type SpeechProgress = {

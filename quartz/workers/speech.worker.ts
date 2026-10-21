@@ -25,7 +25,9 @@ async function handle(message: SpeechRequest): Promise<void> {
       return
     }
     if (!model) throw new Error("Le modèle vocal n'est pas encore chargé.")
+    const started = performance.now()
     const audio = await model.synthesize(message.text, progress(message.seq))
+    const totalMs = performance.now() - started
     const result: SpeechResponse = {
       type: 'result',
       seq: message.seq,
@@ -33,6 +35,8 @@ async function handle(message: SpeechRequest): Promise<void> {
       samplingRate: model.samplingRate,
       model: SPEECH_MODEL_INFO.model,
       voice: SPEECH_MODEL_INFO.voice,
+      // Supertonic returns the whole clip at once, so its first audio is the full synthesis.
+      timing: { firstAudioMs: totalMs, totalMs, device: 'cpu×1' },
     }
     self.postMessage(result, { transfer: [audio.buffer] })
   } catch (error) {

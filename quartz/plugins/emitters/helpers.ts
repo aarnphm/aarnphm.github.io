@@ -4,6 +4,7 @@ import path from 'path'
 import { Readable } from 'stream'
 import type { BuildCtx } from '../../util/ctx'
 import type { FilePath, FullSlug } from '../../util/path'
+import { recordOutput, recordOutputRemoval } from '../../util/output-receipt-context'
 import { joinSegments } from '../../util/path'
 import { logBuildSpan, PerfTimer } from '../../util/perf'
 
@@ -51,6 +52,7 @@ export async function removeWritten(
   const pathToPage = joinSegments(ctx.argv.output, slug + ext) as FilePath
   writtenContent.delete(pathToPage)
   await fs.promises.rm(pathToPage, { force: true })
+  recordOutputRemoval(pathToPage)
 }
 
 function contentCacheEntry(content: WriteOptions['content']): ContentCacheEntry | undefined {
@@ -164,9 +166,11 @@ export const write = async ({ ctx, slug, ext, content }: WriteOptions): Promise<
     !(await shouldWrite(pathToPage, content, cacheEntry))
   ) {
     logBuildSpan(ctx.argv, 'write:skip', pathToPage, perf.elapsedMs())
+    recordOutput(pathToPage)
     return pathToPage
   }
   await writeOutputFile(ctx, pathToPage, content)
+  recordOutput(pathToPage)
   if (!ctx.cleanOutput) cacheWrittenContent(pathToPage, cacheEntry)
   logBuildSpan(ctx.argv, 'write', pathToPage, perf.elapsedMs())
   return pathToPage
@@ -181,6 +185,7 @@ export async function writeKnownChanged({
   const perf = new PerfTimer()
   const pathToPage = joinSegments(ctx.argv.output, slug + ext) as FilePath
   await writeOutputFile(ctx, pathToPage, content)
+  recordOutput(pathToPage)
   if (!ctx.cleanOutput) cacheWrittenContent(pathToPage, contentCacheEntry(content))
   logBuildSpan(ctx.argv, 'write', pathToPage, perf.elapsedMs())
   return pathToPage
