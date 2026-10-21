@@ -60,13 +60,19 @@ The same phase sets leaf-tip depth through $\sin\phi$. Limbs below the width thr
 
 ## canopy and shade
 
-Each tip has depth $z\in[-1,1]$ and contributes to a disc of radius $40$ scene units. Within that disc, $q=1-d/40$. A pixel accumulates $q^2$ as density and $q^2z$ as weighted depth. The coverage input is
+Each tip has depth $z\in[-1,1]$ and contributes to a disc. The 404 uses radius $R=40$ scene units; the homepage uses $R=0.12h$, where $h$ is the rendered tree height. Within either disc, $q=1-d/R$, where $d$ is distance from the tip. A pixel accumulates $q^2$ as density and $q^2z$ as weighted depth. The homepage's coverage input is
 
 $$
-v = \mathrm{density}\,(0.35 + n)\,(1 + 0.15\, \bar z)\,(1 - 0.92\, \mathrm{bare}),
+v = \mathrm{density}\,(0.35 + n)\,(1 + 0.15\, \bar z),
 $$
 
-where $n$ is two-octave `fbm` and $\bar z$ is mean depth. Both scenes use the penumbra width $0.1+0.08(1-\bar z)$. The 404 writes the equivalent expression $0.1+0.16(1-\bar z)/2$. Coverage is tested against the [[thoughts/ordered dither|Bayer matrix]].
+where $n$ is two-octave `fbm` and $\bar z$ is mean depth. The 404 uses wind-displaced noise (`windFbm`) and multiplies the input by $1-0.92\,\mathrm{bare}$ to thin leaves with the season. Both scenes use the penumbra width $p=0.1+0.08(1-\bar z)$ and convert the input to coverage:
+
+$$
+c=\mathrm{clamp}\left(\frac{v-0.55}{p}+0.5,0,0.9999\right).
+$$
+
+Thus $v=0.55$ gives half coverage. The penumbra sets how quickly coverage changes around that threshold. The resulting $c$ is tested against the [[thoughts/ordered dither|Bayer matrix]].
 
 Ground shade uses a broader noise field. The source relates its edge width to the geometric penumbra rule $U=f\,b/a$. The implementation uses $b=\min(1,r_{\min}/640)$, where $r_{\min}$ is horizontal distance to the nearest tree root, and smooths the edge over $0.012+0.09b$.
 

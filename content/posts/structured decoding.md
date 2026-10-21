@@ -136,7 +136,7 @@ From a technical perspective, an inference engine can modify the probability dis
   <FSMDecoding
     preset="json"
     mode="char"
-    caption="After LMSys (2024): character-level JSON for a name (Paul or John) and age (20 or 30), using a 21-token toy vocabulary. Each step is one forward pass; forced text still processes to extend the KV cache. Salmon marks sampled tokens, sage viable tokens, and $-\infty$ masks invalid tokens. Step through 10 passes or switch to the compressed FSM (2 passes)."
+    caption="After LMSys (2024): character-level JSON for a name (Paul or John) and age (20 or 30), using a 21-token toy vocabulary. Each sampling step is one forward pass; forced text still processes to extend the KV cache. Salmon marks sampled tokens, sage viable tokens, and $-\infty$ masks invalid tokens. Step through 10 sampling passes or switch to the compressed FSM (2 sampling passes)."
   />
 </Zoomable>
 ```

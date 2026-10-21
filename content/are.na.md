@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-10-20 11:58:29 GMT-04:00
+modified: 2026-10-21 09:10:36 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -82,6 +82,16 @@ title: are.na
 
 ## discourse
 
+- https://sparcjcs.substack.com/p/i-want-to-destroy-the-words-interesting -- "Interesting" and "sparkly"
+  - [meta]:
+    - date: 10/21/2026
+    - tags: [rationalist culture, social categorization]
+    - later: true
+- https://thevatstack.substack.com/p/infiltrating-a-rationalist-ai-doom -- infiltrating a rationalist ai doom cult
+  - [meta]:
+    - date: 10/21/2026
+    - tags: [rationalist culture, community building]
+    - later: true
 - https://www.lesswrong.com/posts/zxXPEtSSSEdwpjopb/we-ve-saved-the-world-before-what-the-ozone-hole-teaches-us -- We've saved the world before: what the ozone hole teaches us about AI
   - [meta]:
     - date: 10/20/2026
@@ -738,6 +748,61 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/whitecircle/status/2102087563913609534 -- White Circle introduces Halo for open-source model post-training
+  - [meta]:
+    - date: 10/21/2026
+    - tags: [post-training, training frameworks]
+    - later: true
+- https://x.com/ZachWeiner/status/2102409817373753822 -- Zach Weinersmith on economists welcoming automation
+  - [meta]:
+    - date: 10/21/2026
+    - tags: [automation, economics]
+    - later: true
+- https://x.com/asteriskmgzn/status/2095187200300421125 -- Asterisk on work, dignity, and relational societies
+  - [meta]:
+    - date: 10/21/2026
+    - tags: [work, social relations]
+    - later: true
+- https://x.com/PabloAntonio/status/2102144081317023897 -- LessWrong subcultures taxonomy meme
+  - [meta]:
+    - date: 10/21/2026
+    - tags: [rationalist culture, memes]
+    - later: true
+- https://x.com/tamarawinter/status/2102216337691185637 -- Tamara Winter teases Nomad Letters from Stripe Press
+  - [meta]:
+    - date: 10/21/2026
+    - tags: [publishing, investment letters]
+    - later: true
+- https://x.com/giffmana/status/2102126378174828999 -- Lucas Beyer on scaling laws at small model sizes
+  - [meta]:
+    - date: 10/21/2026
+    - tags: [scaling laws, small models]
+    - later: true
+- https://x.com/DanielCHTan97/status/2102686022954049691 -- Daniel Tan on confession training at Anthropic
+  - [meta]:
+    - date: 10/21/2026
+    - tags: [ai safety, model honesty]
+    - later: true
+- https://x.com/jonnym1ller/status/2099558411050635769 -- Jonny Miller introduces How to Unclench
+  - [meta]:
+    - date: 10/21/2026
+    - tags: [somatic awareness, relaxation]
+    - later: true
+- https://x.com/simonsarris/status/2103292080709874000 -- Simon Sarris on nutrition, exercise, and anxiety
+  - [meta]:
+    - date: 10/21/2026
+    - tags: [nutrition, mental health]
+    - later: true
+- https://x.com/dioscuri/status/2103236903872946257 -- Henry Shevlin on LinkedIn suggesting his wife contact him
+  - [meta]:
+    - date: 10/21/2026
+    - tags: [professional networks, humor]
+    - later: true
+- https://x.com/benspringwater/status/2103523510924829015 -- Ben Springwater introduces an AI-focused X starter pack
+  - [meta]:
+    - date: 10/21/2026
+    - tags: [ai discourse, curation]
+    - later: true
 - https://x.com/LydNot/status/2109337691834008026 -- Lydia on LLMs as a sufficient path to superintelligence
   - [meta]:
     - date: 10/19/2026
@@ -3727,6 +3792,26 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://en.wikipedia.org/wiki/Marshall_McLuhan -- Marshall McLuhan
+  - [meta]:
+    - date: 10/21/2026
+    - tags: [media theory, philosophy]
+    - later: true
+- https://en.wikipedia.org/wiki/Miriam_Margolyes -- Miriam Margolyes
+  - [meta]:
+    - date: 10/21/2026
+    - tags: [acting, biography]
+    - later: true
+- https://en.wikipedia.org/wiki/Harald_Bluetooth -- Harald Bluetooth
+  - [meta]:
+    - date: 10/21/2026
+    - tags: [danish history, biography]
+    - later: true
+- https://en.wikipedia.org/wiki/Rick_Rescorla -- Rick Rescorla
+  - [meta]:
+    - date: 10/21/2026
+    - tags: [biography, emergency preparedness]
+    - later: true
 - https://ch.sh -- Charles Shin
   - [meta]:
     - date: 10/11/2026
@@ -5349,6 +5434,21 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://sparcjcs.substack.com/p/i-was-half-myself-without-you-now -- i was half myself without you, now i feel so complete
+  - [meta]:
+    - date: 10/21/2026
+    - tags: [the knowledge society, self-improvement]
+    - later: true
+- https://showerthoughts.substack.com/p/what-you-cant-say-in-silicon-valley -- What you can't say in Silicon Valley
+  - [meta]:
+    - date: 10/21/2026
+    - tags: [venture capital, meritocracy]
+    - later: true
+- https://essilfie.substack.com/p/if-ai-agents-decide-for-us-who-do -- What we lose when AI does it for us
+  - [meta]:
+    - date: 10/21/2026
+    - tags: [ai agents, serendipity]
+    - later: true
 - https://xianyangcb.substack.com/p/the-mirror-of-erised -- The Mirror of Erised
   - [meta]:
     - date: 10/20/2026
@@ -9143,6 +9243,11 @@ title: are.na
   - view: list
   - json: true
 
+- https://cocohearts.substack.com/p/revisiting-situational-awareness -- Revisiting Situational Awareness
+  - [meta]:
+    - date: 10/21/2026
+    - tags: [ai forecasting, scaling]
+    - later: true
 - https://www.lesswrong.com/posts/6cb7qd3RSkgnviCpf/swarm-scaling -- Swarm Scaling
   - [meta]:
     - date: 10/20/2026
@@ -13393,6 +13498,31 @@ title: are.na
 
 ## life is literature
 
+- https://countercraft.substack.com/p/of-course-its-the-screens-who-are -- Of Course It's the Screens. Who Are We Kidding?
+  - [meta]:
+    - date: 10/21/2026
+    - tags: [reading, screen time]
+    - later: true
+- https://en.wikipedia.org/wiki/Gravity%27s_Rainbow -- Gravity's Rainbow
+  - [meta]:
+    - date: 10/21/2026
+    - tags: [thomas pynchon, postmodern literature]
+    - later: true
+- https://en.wikipedia.org/wiki/Finnegans_Wake -- Finnegans Wake
+  - [meta]:
+    - date: 10/21/2026
+    - tags: [james joyce, experimental literature]
+    - later: true
+- https://en.wikipedia.org/wiki/Jor%C5%8Dgumo -- Jorōgumo
+  - [meta]:
+    - date: 10/21/2026
+    - tags: [japanese folklore, yokai]
+    - later: true
+- https://x.com/allTheYud/status/2103352403580105010 -- Reading About Sex Is Not Like Having It
+  - [meta]:
+    - date: 10/21/2026
+    - tags: [writing craft, narrative conflict]
+    - later: true
 - https://www.avabear.xyz/p/effort -- effort
   - [meta]:
     - date: 10/20/2026
@@ -14337,6 +14467,16 @@ title: are.na
   - view: list
   - json: true
 
+- https://dakshitakhurana.substack.com/p/classical-at-heart -- Classical at Heart
+  - [meta]:
+    - date: 10/21/2026
+    - tags: [quantum computing, cryptography]
+    - later: true
+- https://en.wikipedia.org/wiki/Disk_partitioning -- Disk partitioning
+  - [meta]:
+    - date: 10/21/2026
+    - tags: [storage, operating systems]
+    - later: true
 - https://kaizakin.site/blogs/inside-go-garbage-collector -- Inside Go's Garbage Collector: Why Does It Take Pauses?
   - [meta]:
     - date: 10/11/2026
@@ -15323,6 +15463,26 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://contrapositive.substack.com/p/adaptive-complexity-as-a-supervalue -- Adaptive complexity as a supervalue
+  - [meta]:
+    - date: 10/21/2026
+    - tags: [value theory, complex systems]
+    - later: true
+- https://en.wikipedia.org/wiki/Failure_to_refer -- Failure to refer
+  - [meta]:
+    - date: 10/21/2026
+    - tags: [philosophy of language, reference]
+    - later: true
+- https://en.wikipedia.org/wiki/Tractatus_Logico-Philosophicus -- Tractatus Logico-Philosophicus
+  - [meta]:
+    - date: 10/21/2026
+    - tags: [wittgenstein, philosophy of language]
+    - later: true
+- https://en.wikipedia.org/wiki/Just_war_theory -- Just war theory
+  - [meta]:
+    - date: 10/21/2026
+    - tags: [ethics, war]
+    - later: true
 - https://www.nosetgauge.com/p/alignment-and-succession-the-ideology -- Alignment & Succession: The Ideology of Succession
   - [meta]:
     - date: 10/11/2026
@@ -19561,6 +19721,11 @@ title: are.na
 
 ## prompts
 
+- https://x.com/ericzakariasson/status/2102853511637774551 -- Improve this agent harness's token efficiency
+  - [meta]:
+    - date: 10/21/2026
+    - tags: [agent harnesses, token efficiency]
+    - later: true
 - https://prompt-motion.com -- Prompt Motion
   - [meta]:
     - date: 10/11/2026
@@ -19649,6 +19814,16 @@ title: are.na
 
 ## resources
 
+- https://seanmeng17.substack.com/p/a-hitchhikers-guide-to-phd-apps -- A hitchhiker's guide to PhD apps
+  - [meta]:
+    - date: 10/21/2026
+    - tags: [phd applications, research careers]
+    - later: true
+- https://en.wikipedia.org/wiki/N400_(neuroscience) -- N400 (neuroscience)
+  - [meta]:
+    - date: 10/21/2026
+    - tags: [neuroscience, semantic processing]
+    - later: true
 - https://github.com/vllm-project/vllm/blob/main/docs/community/sponsors.md -- vLLM Sponsors
   - [meta]:
     - date: 10/20/2026
@@ -21297,6 +21472,11 @@ title: are.na
 
 ## interfaces
 
+- https://x.com/natkohasic/status/2103440361716629785 -- Pinch-to-zoom timeline with progressive detail
+  - [meta]:
+    - date: 10/21/2026
+    - tags: [semantic zoom, interaction design]
+    - later: true
 - https://angelolibero.github.io/surface-field -- Surface Field
   - [meta]:
     - date: 10/11/2026
@@ -23136,6 +23316,21 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://en.wikipedia.org/wiki/Bayer_filter -- Bayer filter
+  - [meta]:
+    - date: 10/21/2026
+    - tags: [image sensors, color science]
+    - later: true
+- https://en.wikipedia.org/wiki/Low_Pin_Count -- Low Pin Count
+  - [meta]:
+    - date: 10/21/2026
+    - tags: [computer architecture, hardware buses]
+    - later: true
+- https://x.com/MarilynLiu97/status/2103302283194933301 -- Why Does Generalist Use Insta360 360° Cameras? A Deep Dive
+  - [meta]:
+    - date: 10/21/2026
+    - tags: [robotics, data collection]
+    - later: true
 - https://github.com/vllm-project/vllm/pull/57934 -- [SpecDecode] Add LiLiCorr drafter
   - [meta]:
     - date: 10/20/2026
@@ -24687,6 +24882,11 @@ title: are.na
   - view: list
   - json: true
 
+- https://en.wikipedia.org/wiki/Kolakoski_sequence -- Kolakoski sequence
+  - [meta]:
+    - date: 10/21/2026
+    - tags: [integer sequences, self-reference]
+    - later: true
 - https://francisbach.com/spectral_log_density_estimation -- Exploding variance of means of exponentials: least-squares to the rescue
   - [meta]:
     - date: 10/11/2026

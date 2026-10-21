@@ -65,4 +65,4 @@ $$
 
 The softening term keeps acceleration finite near the centre. Each step multiplies velocity by $e^{-1.4\,\mathrm{inflow}\,\Delta t}$. Hover-induced inflow therefore removes energy and draws comets inward.
 
-A comet is removed at $\rho^2<450$, where it triggers a central flare, or at $\rho>520$, where it has escaped. With zero inflow, the drag factor is one. These are softened gravitational trajectories; the source's term “Kepler arcs” is an approximation.
+A comet is removed at $\rho^2<450$, where it triggers a central flare, or at $\rho>520$, where it has escaped. It also expires when its age reaches $3.2$ seconds, even if neither distance limit has been reached. With zero inflow, the drag factor is one. These are softened gravitational trajectories; the source's term “Kepler arcs” is an approximation.
