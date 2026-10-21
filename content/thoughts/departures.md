@@ -1,6 +1,6 @@
 ---
 date: '2026-10-21'
-description: the 404 departures board scores nearby pages with Dice's coefficient on character trigrams.
+description: Character-trigram matching with Dice similarity for the 404 page suggestions.
 id: departures
 modified: 2026-10-21 02:50:00 GMT-04:00
 seealso:
@@ -11,14 +11,28 @@ tags:
 title: departures
 ---
 
-The board under the clock in `quartz/components/scripts/404.inline.ts` offers three pages near the path that 404'd. Home stays pinned as the last departure. If nothing scores, the board wanders.
+The departures board suggests up to three pages related to the missing URL. Home remains the final departure. `quartz/components/scripts/404.inline.ts` ranks candidates by character-trigram similarity and selects random pages if none exceeds the score threshold.
 
-A string is padded with a space on each side, `` `  ${s} ` ``, and cut into every three characters. Two sets $A$ and $B$ score
+## normalisation and trigrams
+
+The path is converted to lowercase, decomposed accents are removed, and a final `.htm` or `.html` suffix is removed. Characters outside ASCII letters, digits, and slashes become hyphens. Leading and trailing hyphens and slashes are stripped.
+
+Each normalised string receives two leading spaces and one trailing space. A sliding window extracts every three-character substring into a set. For trigram sets $A$ and $B$, Dice similarity is
 
 $$
-\frac{2\,|A \cap B|}{|A| + |B|},
+\frac{2\,|A \cap B|}{|A| + |B|}.
 $$
 
-Dice's coefficient. The missing path is normalised: case folded, accents stripped, `.html` removed, and anything that is not a letter, a digit, or a slash turned into a hyphen.
+Repeated trigrams count once because the representation is a set.
 
-Three comparisons are taken and the max is kept. The whole slug is weighted $1$. The last path segment is weighted $0.95$. The page title, normalised the same way, is weighted $0.9$. A score has to clear $0.3$. The top three pass.
+## ranking
+
+Each candidate receives the maximum of three scores:
+
+| Query             | Candidate             | Weight |
+| ----------------- | --------------------- | -----: |
+| Full missing path | Full page slug        |    $1$ |
+| Last path segment | Last slug segment     | $0.95$ |
+| Last path segment | Normalised page title |  $0.9$ |
+
+The board retains the three highest scores strictly above $0.3$. Tag pages, the 404 page, and protected pages are excluded.

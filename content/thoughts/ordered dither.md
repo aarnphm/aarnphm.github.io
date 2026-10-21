@@ -1,6 +1,6 @@
 ---
 date: '2026-10-21'
-description: the 4×4 Bayer screen shared by the 404 and the homepage, and the two ways a tone picks a stop.
+description: The 4×4 Bayer threshold matrix used for coverage and colour selection in the pixel scenes.
 id: ordered dither
 modified: 2026-10-21 02:50:00 GMT-04:00
 seealso:
@@ -11,7 +11,7 @@ tags:
 title: ordered dither
 ---
 
-Every pixel scene on the site, the 404 and the homepage trail, thresholds coverage against one 4×4 screen. It lives in `quartz/util/bayer.ts`.
+Ordered dithering represents a continuous tone with a fixed pattern of discrete pixels. The 404 and homepage trail share the $4\times4$ Bayer matrix in `quartz/util/bayer.ts`:
 
 $$
 B = \frac{1}{16}
@@ -23,18 +23,18 @@ B = \frac{1}{16}
 \end{bmatrix}
 $$
 
-The stored order is the classic Bayer matrix $0,8,2,10,\ldots$, and each entry is shifted by half a step: $(k + 1/2)/16$. The darkest cell lights at $1/32$. The lightest waits until $31/32$. A coverage $a$ lights pixel $(i, j)$ when
+The stored ranks are $0,8,2,10,\ldots$. Each rank $k$ gives a threshold $(k+1/2)/16$, so the thresholds range from $1/32$ to $31/32$. A pixel at $(i,j)$ is covered when
 
 $$
-a > B_{(j \bmod 4),\, (i \bmod 4)}.
+a > B_{(j \bmod 4),\, (i \bmod 4)},
 $$
 
-Because the thresholds are fixed to the pixel, a flat tone becomes a stable stipple, and a moving edge crawls through the same sixteen cells.
+where $a$ is the requested coverage. The threshold stays fixed at each pixel. A constant tone therefore produces a stable pattern as the scene updates.
 
-## two ways to pick a stop
+## colour selection
 
-`dither` and `step` let the pixel choose. A ramp of $n$ colours is a real index $t(n-1)$. The integer part names a stop. The fraction is compared with the Bayer cell, so neighbouring pixels of one tone land on neighbouring stops.
+`dither` tests coverage against the matrix. `step` uses the same test to select a colour from a ramp of $n$ stops. It computes $t(n-1)$, takes the integer part as the lower stop, and compares the fractional part with the Bayer threshold. Adjacent pixels can select either of the two neighbouring colours.
 
-`pick` lets the stroke choose. It takes the same fraction and compares it with a threshold the stroke already has, often a mote's own random number or a hash of the seed. A whole brush mark stays one colour. The rift's strokes and the sky's cloud marks use this, so a curved stroke does not break into a checker of two inks.
+`pick` selects one colour for an entire stroke. It compares the same fractional index with a threshold supplied by the caller, such as a particle's stored random value. The rift and cloud brushes use this to keep each curved mark a single colour.
 
-The homepage uses the same screen for sun flecks, fog, creek gravel, moss tones, and the canopy. A sun blob of cover $c$ at normalised radius $d$ lights a cell when the threshold is below $c(1 - d^2)^{0.8}$. See [[thoughts/the ground|the ground]].
+The homepage applies the matrix to sunlight, fog, creek gravel, moss tones, and canopy coverage. For example, a sun patch with cover $c$ and normalised radius $d$ uses coverage $c(1-d^2)^{0.8}$. See [[thoughts/the ground|the ground]].

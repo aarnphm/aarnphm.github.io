@@ -1,6 +1,6 @@
 ---
 date: '2026-10-21'
-description: thirty-degree ground, Tobler's pace, Gipps's gap, and the friction circle on the 404 bike park.
+description: Slope geometry, rider forces, braking plans, following distance, and uphill walking in the 404 bike park.
 id: the bike park
 modified: 2026-10-21 02:50:00 GMT-04:00
 seealso:
@@ -11,66 +11,84 @@ tags:
 title: the bike park
 ---
 
-The left-hand hill on the 404 is a surface with a grade, a grip, and a queue. The shape is `quartz/components/scripts/404-downhill.ts`. Who rides it is `404-riders.ts`.
+The 404 bike park combines a projected slope, a sampled track, and rider motion. `quartz/components/scripts/404-downhill.ts` defines the track. `404-riders.ts` and its modules control the riders.
 
-## the ground
+## coordinates and track
 
-The face is seen from level, falling at thirty degrees. A unit down the screen is a unit of height, and that unit runs $\sqrt{3}$ units back into the view, because $\cot 30° = \sqrt{3}$. People are drawn at about eighteen units to their metre seventy, and the code takes a metre as ten units. $G = 9.81 \times 10$.
+The slope is viewed from level and descends at $30°$. A screen-vertical displacement represents height; its horizontal depth is $\cot30°=\sqrt3$ times that displacement. The simulation uses ten scene units per metre, so $G=9.81\times10$ scene units per second squared.
 
-Map distance, the horizontal run, is $\mathrm{plan}(\Delta x, \Delta y) = \sqrt{\Delta x^2 + (\Delta y \sqrt{3})^2}$. Distance along the $30°$ face is $\mathrm{slant}(\Delta x, \Delta y) = \sqrt{\Delta x^2 + (2\Delta y)^2}$, since $\sin 30° = 1/2$. The track is sampled on the plan distance. Grade is rise over that run, $g = \Delta z / \Delta q$, so $g = \tan\theta$. Then $\cos\theta = 1/\sqrt{1 + g^2}$ and $\sin\theta = g\cos\theta$.
+For screen displacement $(\Delta x,\Delta y)$, plan distance is
 
-The line's corners are cut three times by Chaikin's rule, at $1/4$ and $3/4$ of each segment, endpoints held, then resampled every two scene units. The chicken line around the drop is the same cut.
+$$
+\mathrm{plan}(\Delta x,\Delta y)=\sqrt{\Delta x^2+3\Delta y^2}.
+$$
 
-## the rider
+Distance along the face is $\mathrm{slant}(\Delta x,\Delta y)=\sqrt{\Delta x^2+4\Delta y^2}$, since $\sin30°=1/2$. The track is sampled by plan distance $q$. Grade is $g=\Delta z/\Delta q=\tan\theta$, giving $\cos\theta=1/\sqrt{1+g^2}$ and $\sin\theta=g\cos\theta$.
 
-Along the slope, with $v$ the speed along it and $q$ advancing at $v\cos\theta$,
+Chaikin subdivision smooths the track through three passes. Each pass cuts segments at $1/4$ and $3/4$ while preserving endpoints. The result is resampled every two scene units. The bypass around the drop uses the same procedure.
+
+## rider forces
+
+For speed $v$ along the slope, plan position advances at $\dot q=v\cos\theta$. Acceleration is
 
 $$
 \dot v = -G g \cos\theta - c_{rr} G \cos\theta - D v^2 + u.
 $$
 
-Rolling resistance $c_{rr} = 0.035$. The drag coefficient is $(1/2)(1.2)(0.55)/95/10$: the comment's $95\,\mathrm{kg}$ rider and $0.55\,\mathrm{m}^2$ of frontal area, with $1.2$ the density, divided by the ten units in a metre so $v$ can stay in scene units. $u$ is the rider's brake or pedal, clamped by what the tyre has left.
+Rolling resistance is $c_{rr}=0.035$. The drag coefficient is
 
-Lateral acceleration is $v^2 |\kappa|$, with $\kappa$ the heading change over plan distance. The tyre's budget is $G(\mu + 0.7\, b)$, where $b \in [0, 1]$ is how bermed the sample is. The radius of the friction circle that remains for braking and pedaling is
+$$
+D=\frac{(1/2)(1.2)(0.55)}{95\cdot10}.
+$$
+
+This uses the source's $95\,\mathrm{kg}$ rider and bike, $1.2\,\mathrm{kg/m^3}$ air density, and $0.55\,\mathrm{m^2}$ area term. Division by ten converts drag for a speed measured in scene units. The control $u$ applies braking or pedalling.
+
+The model estimates lateral acceleration as $v^2|\kappa|$, where $\kappa$ is heading change per unit plan distance. Total grip is $G(\mu+0.7b)$, with berm parameter $b\in[0,1]$. The remaining braking acceleration is
 
 $$
 \sqrt{\max\left(0,\, G^2(\mu + 0.7 b)^2 - v^4 \kappa^2\right)}.
 $$
 
-A corner's planned speed is that same split done backwards: reserve $G\max(0, -\sin\theta)$ to hold a downhill grade, give the rest to $v^2|\kappa|$, and cap the result. A skilled rider's cap is $14\,\mathrm{m/s}$. A novice's is $8\,\mathrm{m/s}$. Kids are four fifths of that. The plan then walks back down the samples,
+Braking is limited by this friction-circle calculation. Pedalling has a separate cap.
+
+## speed plan and following distance
+
+The corner-speed plan reserves $G\max(0,-\sin\theta)$ for holding speed downhill, then assigns the remaining grip to turning. Skill sets the speed cap between $8$ and $14\,\mathrm{m/s}$. Children use $80\%$ of that cap.
+
+A backward pass lowers earlier speeds so the rider can brake before a slower sample:
 
 $$
-v_k^2 \le v_{k+1}^2 + 2 \max(8,\, a_{\mathrm{brake}} + G\sin\theta)\, \Delta q,
+v_k^2 \le v_{k+1}^2 + 2 \max(8,\, a_{\mathrm{brake}} + G\sin\theta)\, \Delta q.
 $$
 
-with the $8$ a floor of $0.8\,\mathrm{m/s}^2$ in scene units, and $\Delta q$ the horizontal spacing.
+The acceleration floor of eight scene units is $0.8\,\mathrm{m/s^2}$. $\Delta q$ is plan spacing.
 
-## the gap
-
-The comment names Gipps's safe speed. Behind a leader at speed $v_L$, gap $s$, standstill spacing $s_0$ and reaction $\tau$,
+The source labels its following-speed calculation as Gipps's rule. For leader speed $v_L$, gap $s$, standstill spacing $s_0$, braking acceleration $a$, and reaction time $\tau$,
 
 $$
-v_{\mathrm{safe}} = -a\tau + \sqrt{(a\tau)^2 + v_L^2 + 2a(s - s_0)}.
+v_{\mathrm{safe}} = -a\tau + \sqrt{\max\left(0,\,(a\tau)^2 + v_L^2 + 2a(s - s_0)\right)}.
 $$
 
-Friends use $s_0 = 20$ and $\tau = 0.35\,\mathrm{s}$, two metres and a third of a second. Strangers use $45$ and $0.8\,\mathrm{s}$. The rider takes the minimum of that and the plan over the next quarter second.
+Friends use $s_0=20$ scene units and $\tau=0.35\,\mathrm{s}$. Strangers use $45$ and $0.8\,\mathrm{s}$. These gaps are two and $4.5$ metres. The target speed is the minimum of this following limit and the track plan over the next quarter second.
 
-## pushing up
+## uphill travel
 
-The drag lift runs at $2.5$ scene units a second, a quarter metre per second, with a bar every five seconds. Someone pushing a bike uses Tobler's hiking function on the track's grade, a quarter slower for the bike. With $s$ the rise over the plan run,
+The drag lift moves at $2.5$ scene units per second, or $0.25\,\mathrm{m/s}$, with a bar every five seconds. A rider pushing a bike uses Tobler's hiking function with a $25\%$ speed reduction. For grade $s$,
 
 $$
 v = 0.75 \cdot \frac{6}{3.6} \cdot e^{-3.5|s + 0.05|} \cdot \sqrt{1 + s^2} \cdot 10.
 $$
 
-The $6\,\mathrm{km/h}$ is Tobler's flat pace, $6/3.6$ puts it in metres per second, the square root carries that pace onto the slope, and the $10$ is the scene scale.
+The base curve peaks at $6\,\mathrm{km/h}$ when $s=-0.05$; at zero grade it gives about $5.04\,\mathrm{km/h}$. Division by $3.6$ converts to metres per second, $\sqrt{1+s^2}$ converts plan speed to slope speed, and ten applies the scene scale.
 
-## the cattle
+## cattle activity
 
-A beast lies down for five to twenty minutes, mean $750\,\mathrm{s}$, and otherwise acts for about a minute before it chooses again. To keep a target share $\sigma$ of the hour actually spent lying, the chance of choosing to lie is
+`404-herd.ts` selects cattle activity with unequal bout lengths. Lying lasts five to twenty minutes, with mean $750\,\mathrm{s}$. Other activities last about $60\,\mathrm{s}$ before another choice.
+
+To target a fraction $\sigma$ of time spent lying, the probability of selecting a lying bout is
 
 $$
 p = \frac{\sigma \cdot 60}{\sigma \cdot 60 + (1 - \sigma) \cdot 750}.
 $$
 
-At night $\sigma = 0.75$ and $p$ is about one in five. In the morning $\sigma = 0.12$ and $p$ is about one in ninety, which is the comment's "under $1\%$". The hour's share is then pulled a third of the way toward the fraction of the kin group already down. Calves add $0.2$ to $\sigma$ before the cap at $0.9$.
+At night, $\sigma=0.75$ gives $p\approx0.194$. In the morning, $\sigma=0.12$ gives $p\approx0.0108$. The target also moves one third of the way toward the fraction of the kin group already lying. Calves add $0.2$ to the target before the $0.9$ cap.

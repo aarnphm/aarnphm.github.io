@@ -1,6 +1,6 @@
 ---
 date: '2026-10-21'
-description: the smaller closed-form motions on the 404, from the falling letters to the rope at the gate.
+description: Motion rules for 404 letters, fireflies, aircraft, animals, figures, and the gate rope.
 id: small motions
 modified: 2026-10-21 02:50:00 GMT-04:00
 seealso:
@@ -11,38 +11,44 @@ tags:
 title: small motions
 ---
 
-These are the motions on the 404 that are a formula and a few constants, recorded so the larger notes do not have to carry them. Scene units, unless a line says metres.
+These motion rules cover the smaller 404 animations. Distances are in scene units and time is in seconds unless stated otherwise.
 
-## letters and flies
+## letters, fireflies, and parallax
 
-Crumbling letters fall with $g = 900$. They leave the tablet at $v_y \in [-180, -60]$ and a sideways push capped at $240$. On the water, $v_x$ and the spin drop to a tenth and $v_y$ becomes $14$. The tablet's own rotation is applied first: a glyph at $(x, y)$ on a tablet rotated by $\theta$ goes to $(x\cos\theta - y\sin\theta,\, x\sin\theta + y\cos\theta)$ about the tablet origin.
+Falling letters use acceleration $g=900$, initial vertical velocity in $[-180,-60]$, and a sideways impulse capped at $240$. On contact with water, horizontal velocity and spin are multiplied by $0.1$; vertical velocity becomes $14$.
 
-A firefly's heading is a random walk, $(U - 1/2)\, 3$ radians per second, plus a pull back when it leaves $[200, 1400] \times [360, 960]$. Speed is $18$ to $40$. Inside a ring from $30$ to $260$ around the pointer it adds $34$ units of velocity toward the pointer. Glow is $0.15 + 0.85 \max(0, \sin(\phi + \omega t))^3$.
+Glyph positions first receive the tablet rotation. Relative to the tablet origin, $(x,y)$ becomes $(x\cos\theta-y\sin\theta,\,x\sin\theta+y\cos\theta)$.
 
-Pointer parallax eases at $5\%$ of the gap per frame. A layer at depth $d$ translates by $(-64\, d\, p_x,\, -30\, d\, p_y)$.
+A firefly's heading changes by a random rate $(U-1/2)\cdot3$ radians per second. Outside $[200,1400]\times[360,960]$, a restoring term turns it inward. Speed ranges from $18$ to $40$. At pointer distances between $30$ and $260$, the fly adds a velocity of $34$ toward the pointer. Glow is $0.15+0.85\max(0,\sin(\phi+\omega t))^3$.
 
-## the air and the water
+Pointer parallax closes $5\%$ of the remaining gap each frame. A layer at depth $d$ translates by $(-64dp_x,-30dp_y)$.
 
-Jets cross at $26$ scene units a second, props at $44$, each times $0.9$ to $1.1$. Climb is a few percent of that. A contrail lasts $3 + 80\, \mathrm{smooth}(0.2, 0.75, \mathrm{cover})$ seconds.
+## aircraft, bird, and fish
 
-The jay hops from perch to perch on a parabola. Over normalised time $u$, height adds $\sin(\pi u)$ times a lift of $\min(40,\, 6 + 0.2\, \mathrm{distance})$.
+Aircraft base speeds are $26$ for jets and $44$ for propeller planes, each multiplied by a factor from $0.9$ to $1.1$. Climb speed is a few percent of forward speed. Contrails last $3+80\,\mathrm{smooth}(0.2,0.75,\mathrm{cover})$ seconds.
 
-A fish's weight in pounds is lognormal, $e^{0.9 Z}$ with $Z$ standard normal, and the limit is $2.2$. The wait for a bite is exponential, $-\log(1 - U)$ times a mean. A miss is one in four. The fight oscillates at $1.1 + 0.8/\mathrm{size}$ radians per second and dies as the fish comes in. Casts and tosses are the parabola $4hu(1 - u)$.
+The jay's hop uses a sine-shaped height offset. At normalised time $u$, lift is $\sin(\pi u)\min(40,6+0.2\,\mathrm{distance})$.
 
-## bodies
+Fish weight in pounds is lognormal, $e^{0.9Z}$ for standard normal $Z$. The $2.2$-pound threshold changes escape probability: $0.8$ above it and $0.08$ at or below it. It does not cap sampled weight. Bite waiting time is exponential, $-\log(1-U)$ times the mean wait, and the strike misses with probability $0.25$.
 
-The cat walks at $12$ units a second with a stride of $52$. Legs are two bones of length $22$, and a step that would need more than $1.96$ bone-lengths lifts the body. Pitch is $0.85$ times the angle between shoulders and hips.
+During the fight, horizontal motion oscillates at $1.1+0.8/\mathrm{size}$ radians per second with decreasing amplitude as the fish approaches the boat. Casts and tosses use the parabolic height offset $4hu(1-u)$.
 
-The triathlete swims at $36$, wades at $24$, rides at $120$, and runs at $60$. The comment's real split is about $1{:}8{:}3$, with the swim quickened. The mountain leg is a parameter on the switchbacks: $40\,\mathrm{s}$ up, $2\,\mathrm{s}$ on top, $11\,\mathrm{s}$ down.
+## figure motion
 
-The pet's hops are the same $4hu(1-u)$ parabola, with lifts $90$, $80$, and $60 + 0.2$ of the distance. The dive scales by $1 - 0.85 u^2$ and spins $2.5$ turns.
+The cat walks at speed $12$ with stride length $52$. Each leg has two bones of length $22$. When a step would exceed $1.96$ bone lengths, the body is raised. Body pitch is $0.85$ times the angle between shoulders and hips.
 
-## the rope
+The triathlete's speeds are $36$ swimming, $24$ wading, $120$ cycling, and $60$ running. These give a swim:bike:run ratio of $3:10:5$; the source describes the swim as accelerated for the scene. The mountain leg takes $40$ seconds uphill, two at the summit, and $11$ downhill.
 
-The crew's rope at the gate is a damped pendulum. Length chases $132 + 56\, \mathrm{heat}$. With swing angle $\theta$,
+The pet also hops with height offset $4hu(1-u)$. Depending on the action, lift $h$ is $90$, $80$, or $60+0.2\,\mathrm{distance}$. A dive scales the body by $1-0.85u^2$ and rotates it through $2.5$ turns.
+
+## gate rope
+
+The crew's rope follows a driven, damped pendulum. Length approaches $L=132+56\,\mathrm{heat}$. For swing angle $\theta$,
 
 $$
-\ddot\theta = -\frac{400}{L}\sin\theta - 0.35\, \dot\theta + \mathrm{breeze} + 5\, \mathrm{heat}\, \sin(2.4\, t),
+\ddot\theta = -\frac{400}{L}\sin\theta - 0.35\, \dot\theta + \mathrm{breeze} + 5\, \mathrm{heat}\, \sin(2.4\, t).
 $$
 
-and $\theta$ is clamped to $[-1.1, 1.1]$. The $400/L$ is the $\omega^2$ of a pendulum whose $g$ is $400$ scene units per second squared. At the idle length $132$, the period is about $3.6\,\mathrm{s}$. A stick caught in the opening loses radius at $50 + 200\, \mathrm{inflow}$ and turns at the rift's `orbit` rate.
+The angle is clamped to $[-1.1,1.1]$. Gravity is $400$ scene units per second squared. At idle length $132$, the small-angle period is $2\pi\sqrt{132/400}\approx3.6\,\mathrm{s}$.
+
+A stick caught in the opening loses radius at $50+200\,\mathrm{inflow}$ units per second and rotates at the rift's `orbit` rate.

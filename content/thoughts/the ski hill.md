@@ -1,6 +1,6 @@
 ---
 date: '2026-10-21'
-description: the far ski hill's pitch, a fixed-grip double, and a slide that leaves at 4 m/s².
+description: Skier acceleration, chairlift spacing, and avalanche motion on the far 404 slope.
 id: the ski hill
 modified: 2026-10-21 02:50:00 GMT-04:00
 seealso:
@@ -11,32 +11,40 @@ tags:
 title: the ski hill
 ---
 
-The far range on the 404 is about eight times as far as the island, so a metre there is $1.2$ scene units. `quartz/components/scripts/404-skiers.ts` integrates skiing in metres, then draws it at that scale.
+`quartz/components/scripts/404-skiers.ts` computes motion in metres and renders it at $1.2$ scene units per metre. This scale places the far hill at roughly one eighth of the island's apparent scale.
 
-## down the fall line
+## downhill motion
 
-Pitch $a$ is the slope angle. A skier's heading across the fall line is $\psi$. With $G = 9.81$,
+Let $a$ be slope angle and $\psi$ the skier's heading relative to the fall line. With $G=9.81\,\mathrm{m/s^2}$,
 
 $$
 \dot v = G\sin a \cdot \cos\psi - \mu G\cos a - D v^2 - b.
 $$
 
-The drag is $(1/2)(0.9)(0.5)/75$. The comment calls this $\tfrac12 \rho C_d A / m$ for a $75\,\mathrm{kg}$ skier in thin air, so $0.9$ is the density and $0.5$ is $C_d A$. A snowplough brakes with $0.45\, G\cos a$ times the skid. Otherwise the brake is $0.35\, G$ times the skid times $|\sin\psi|$.
+The terms represent gravity along the heading, snow friction, air drag, and braking. Drag uses $D=(1/2)(0.9)(0.5)/75$: air density $0.9\,\mathrm{kg/m^3}$, combined $C_dA=0.5\,\mathrm{m^2}$, and skier mass $75\,\mathrm{kg}$.
 
-Carving compares $v$ times the turn rate with $G(0.45 + \mathrm{skill})$. The sidecut radii are $13\,\mathrm{m}$ for a ski and $7.5\,\mathrm{m}$ for a board. A beginner on a board leaves the edges and sideslips: across-slope speed clamped between $1.2$ and $2.6\,\mathrm{m/s}$, plus $1.8\,\mathrm{m/s}$ down the fall line.
+Snowplough braking is $0.45G\cos a$ times the skid parameter. Other braking is $0.35G|\sin\psi|$ times skid. The carving check compares $v$ times turn rate with $G(0.45+\mathrm{skill})$. Sidecut radii are $13\,\mathrm{m}$ for skis and $7.5\,\mathrm{m}$ for a snowboard.
 
-After a fall the body slides with friction $0.55$, decelerating at $\max(1.5,\, 0.55\, G\cos a - G\sin a)$.
+Beginner snowboarders sideslip with across-slope speed clamped to $1.2$–$2.6\,\mathrm{m/s}$ and downhill speed $1.8\,\mathrm{m/s}$. After a fall, body friction is $0.55$ and deceleration is $\max(1.5,0.55G\cos a-G\sin a)$.
 
-## the lift
+## chairlift
 
-The chairline is a fixed-grip double at $2.3\,\mathrm{m/s}$, pitched at $25°$. Its length divides the screen run by $1.2$ and the screen rise by $1.2\sin 25°$. Fourteen chairs share the loop, so the gap is $2L/14$. An even count closes the loop on itself.
+The fixed-grip double chairlift runs at $2.3\,\mathrm{m/s}$ on a nominal $25°$ slope. For screen displacements $\Delta x$ and $\Delta y$, its one-way length is
 
-## the slide
+$$
+L=\sqrt{\left(\frac{\Delta x}{1.2}\right)^2+\left(\frac{\Delta y}{1.2\sin25°}\right)^2}.
+$$
 
-A start zone sits at about $38°$, so a metre down the snow is $1.2\sin 38° \approx 0.74$ scene units down the screen. The comment's slide gets away at $4\,\mathrm{m/s}^2$ and then runs at $12\,\mathrm{m/s}$:
+Fourteen chairs are spaced around the return loop at intervals $2L/14$.
+
+## avalanche
+
+The avalanche start zone has nominal pitch $38°$. One metre along that slope gives $1.2\sin38°\approx0.74$ scene units of vertical screen movement.
+
+The slide accelerates at $4\,\mathrm{m/s^2}$ for three seconds, then continues at $12\,\mathrm{m/s}$ until it reaches runout length $L$:
 
 $$
 s(t) = \min\left(L,\; \begin{cases} 2t^2 & t < 3 \\ 18 + 12(t - 3) & t \ge 3 \end{cases}\right).
 $$
 
-At $t = 3$ the parabola has reached $18\,\mathrm{m}$ and its speed is $12\,\mathrm{m/s}$, so the two pieces meet. The second derivative on the first piece is $4$. The cloud settles as $e^{-\max(0, t - t_{\mathrm{stop}})/6}$.
+At $t=3\,\mathrm{s}$, both pieces give distance $18\,\mathrm{m}$ and speed $12\,\mathrm{m/s}$. Distance and velocity are continuous at the join. After the slide stops, cloud opacity decays as $e^{-\max(0,t-t_{\mathrm{stop}})/6}$, with a six-second time constant.
