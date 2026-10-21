@@ -28,15 +28,23 @@ export const mountWorkoutLapHover = (button: HTMLButtonElement, signal: AbortSig
     if (cleanup) void update()
     else cleanup = autoUpdate(reference, tooltip, update)
   }
+  let frame = 0
   const stop = (): void => {
     revision++
+    if (frame !== 0) cancelAnimationFrame(frame)
+    frame = 0
     cleanup?.()
     cleanup = null
   }
+  // One position per frame: pointermove can fire several times a frame, and each update reads layout.
   const move = (event: PointerEvent): void => {
     if (event.pointerType === 'touch') return
     pointer = { x: event.clientX, y: event.clientY }
-    start()
+    if (frame !== 0) return
+    frame = requestAnimationFrame(() => {
+      frame = 0
+      if (pointer && !signal.aborted) start()
+    })
   }
   button.addEventListener('pointerenter', move, { signal })
   button.addEventListener('pointermove', move, { signal })

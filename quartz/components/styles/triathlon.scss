@@ -16502,7 +16502,7 @@ a.tri-pop-date:hover {
     grid-area: 1 / 1;
   }
 
-  &:has([data-visible='true']) .tri-sauna-laps-legend {
+  > .tri-analysis-readout[data-visible='true'] ~ .tri-sauna-laps-legend {
     visibility: hidden;
   }
 

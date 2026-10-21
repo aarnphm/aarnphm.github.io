@@ -10,7 +10,8 @@ import type { TriathlonContext } from '../../runtime/context'
 import { POWER_TO_WEIGHT_DURATIONS } from '../../../../plugins/stores/analytics'
 import { axisFrame, axisNumber, niceStep, type AxisXTick } from '../../../../util/triathlon-card'
 import { syncPowerCurveActivityLink } from '../../activity/power-links'
-import { createDomFactory, el, svg } from '../../runtime/dom'
+import { createDomFactory, el, setText, svg } from '../../runtime/dom'
+import { rafEvent, rectOf } from '../scrub-primitives'
 import {
   anaTitle,
   buildVerticalGrid,
@@ -339,7 +340,28 @@ export const buildPowerToWeightTrend = (
       const averageLines = Array.from(
         graph.querySelectorAll<SVGLineElement>('.tri-power-weight-reference-line'),
       )
+      const dateEl = readout.querySelector<HTMLElement>('.tri-power-weight-date')
+      const markerByDuration = new Map<PowerToWeightDurationS, HTMLElement>()
+      for (const marker of markers) {
+        const d = durationFrom(marker.dataset.powerWeightDuration)
+        if (d != null) markerByDuration.set(d, marker)
+      }
+      const rowByDuration = new Map<
+        PowerToWeightDurationS,
+        { row: HTMLAnchorElement; value: HTMLElement | null }
+      >()
+      for (const durationS of POWER_TO_WEIGHT_DURATIONS) {
+        const row = readout.querySelector<HTMLAnchorElement>(
+          `.tri-power-weight-readout-row[data-power-weight-duration="${durationS}"]`,
+        )
+        if (row)
+          rowByDuration.set(durationS, {
+            row,
+            value: row.querySelector<HTMLElement>('.tri-power-weight-readout-value'),
+          })
+      }
       let selectedIndex = initialIndex
+      let shownIndex = -1
 
       const referenceFor = (durationS: PowerToWeightDurationS): PowerToWeightReference | null =>
         trend.references.find(reference => reference.durationS === durationS) ?? null
@@ -347,6 +369,7 @@ export const buildPowerToWeightTrend = (
         syncPowerCurveActivityLink(link, effortPowerPoint(effort))
       }
       const updateScale = (): void => {
+        shownIndex = -1
         scale = axisScale(trend.points, active, trend.references)
         const scaleY = (value: number): number => H - (value / scale.domainMax) * (H - 1)
         grids.replaceChildren(
@@ -387,34 +410,31 @@ export const buildPowerToWeightTrend = (
           selectedIndex = index
           graph.dataset.powerWeightIndex = String(index)
         }
+        if (index === shownIndex) return
+        shownIndex = index
         const xPct = (index / Math.max(1, trend.points.length - 1)) * 100
         cursor.setAttribute('x1', xPct.toFixed(2))
         cursor.setAttribute('x2', xPct.toFixed(2))
-        const date = readout.querySelector<HTMLElement>('.tri-power-weight-date')
-        if (date) date.textContent = context.formatter.longDate(point.date)
+        if (dateEl) setText(dateEl, context.formatter.longDate(point.date))
         const valueText: string[] = []
         for (const durationS of POWER_TO_WEIGHT_DURATIONS) {
           const enabled = active.has(durationS)
           const effort = enabled ? effortAt(point, durationS) : null
-          const marker = markers.find(
-            item => durationFrom(item.dataset.powerWeightDuration) === durationS,
-          )
+          const marker = markerByDuration.get(durationS)
           if (marker) {
-            marker.hidden = effort == null
+            marker.style.display = effort == null ? 'none' : ''
             if (effort != null) {
+              if (marker.hidden) marker.hidden = false
               marker.style.left = `${xPct.toFixed(2)}%`
               marker.style.top = `${((y(effort.wattsPerKg) / H) * 100).toFixed(2)}%`
             }
           }
-          const row = readout.querySelector<HTMLAnchorElement>(
-            `.tri-power-weight-readout-row[data-power-weight-duration="${durationS}"]`,
-          )
-          if (!row) continue
-          row.hidden = !enabled
-          setLink(row, effort)
-          const value = row.querySelector<HTMLElement>('.tri-power-weight-readout-value')
-          if (value)
-            value.textContent = effort == null ? '—' : `${effort.wattsPerKg.toFixed(2)} W/kg`
+          const slot = rowByDuration.get(durationS)
+          if (!slot) continue
+          if (slot.row.hidden !== !enabled) slot.row.hidden = !enabled
+          setLink(slot.row, effort)
+          if (slot.value)
+            setText(slot.value, effort == null ? '—' : `${effort.wattsPerKg.toFixed(2)} W/kg`)
           if (effort != null)
             valueText.push(
               `${powerToWeightDurationLabel(durationS)} ${effort.wattsPerKg.toFixed(2)} watts per kilogram`,
@@ -427,16 +447,20 @@ export const buildPowerToWeightTrend = (
         )
       }
       const showPointer = (event: PointerEvent, commit: boolean): void => {
-        const rect = graph.getBoundingClientRect()
+        const rect = rectOf(graph)
         if (rect.width <= 0) return
         showIndex(((event.clientX - rect.left) / rect.width) * (trend.points.length - 1), commit)
       }
-      const onMove = (event: PointerEvent): void => showPointer(event, false)
+      const rafMove = rafEvent((event: PointerEvent): void => showPointer(event, false))
       const onDown = (event: PointerEvent): void => {
+        rafMove.cancel()
         showPointer(event, true)
         graph.focus({ preventScroll: true })
       }
-      const onLeave = (): void => showIndex(selectedIndex, false)
+      const onLeave = (): void => {
+        rafMove.cancel()
+        showIndex(selectedIndex, false)
+      }
       const onKey = (event: KeyboardEvent): void => {
         let next: number | null = null
         if (event.key === 'ArrowLeft' || event.key === 'ArrowDown') next = selectedIndex - 1
@@ -494,14 +518,15 @@ export const buildPowerToWeightTrend = (
       syncSelection()
       updateScale()
       showIndex(initialIndex, true)
-      graph.addEventListener('pointermove', onMove)
+      graph.addEventListener('pointermove', rafMove.onEvent)
       graph.addEventListener('pointerdown', onDown)
       graph.addEventListener('pointerleave', onLeave)
       graph.addEventListener('pointercancel', onLeave)
       graph.addEventListener('keydown', onKey)
       controls.addEventListener('click', onToggle)
       return () => {
-        graph.removeEventListener('pointermove', onMove)
+        rafMove.cancel()
+        graph.removeEventListener('pointermove', rafMove.onEvent)
         graph.removeEventListener('pointerdown', onDown)
         graph.removeEventListener('pointerleave', onLeave)
         graph.removeEventListener('pointercancel', onLeave)

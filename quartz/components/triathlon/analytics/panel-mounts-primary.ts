@@ -13,30 +13,23 @@ import { weeklyChartIndex } from '../../../util/weekly-target-range'
 import { weeklyChartX } from '../../../util/weekly-target-range'
 import { daySleepBarIndex } from '../activity/day-sleep'
 import { syncPowerCurveActivityLink } from '../activity/power-links'
-import { el } from '../runtime/dom'
-import { setMath } from '../runtime/dom'
+import { el, setText } from '../runtime/dom'
 import { setupPowerCurveTicks } from '../shell/power-curve-ticks'
 import { groupBodyByDay } from './panels/body'
-import { renderWkDetail } from './panels/performance'
-import { wkTrendRows } from './panels/performance'
-import { bestPowerSeries } from './panels/power'
-import { bestPowerSeriesLabel } from './panels/power'
-import { criticalPowerForSeries } from './panels/power'
-import { estimatedFtpForSeries } from './panels/power'
-import { powerRankEffortLabel } from './panels/power'
-import { powerRankRangeRows } from './panels/power'
-import { powerRankProgressLabel } from './panels/power'
-import { powerRankProgressNextLabel } from './panels/power'
-import { powerSkillAtSeconds } from './panels/power'
-import { scrubBind } from './scrub-primitives'
-import { ANA_W } from './shared'
-import { clampN } from './shared'
-import { hms } from './shared'
-import { signed } from './shared'
-import { weightUnitLabel } from './shared'
-import { wFmt } from './shared'
-import { wNum } from './shared'
-import { wSigned } from './shared'
+import { renderWkDetail, wkTrendRows } from './panels/performance'
+import {
+  bestPowerSeries,
+  bestPowerSeriesLabel,
+  criticalPowerForSeries,
+  estimatedFtpForSeries,
+  powerRankEffortLabel,
+  powerRankProgressLabel,
+  powerRankProgressNextLabel,
+  powerRankRangeRows,
+  powerSkillAtSeconds,
+} from './panels/power'
+import { rafEvent, rectOf, scrubBind, setFastMath } from './scrub-primitives'
+import { ANA_W, clampN, hms, signed, weightUnitLabel, wFmt, wNum, wSigned } from './shared'
 
 export type PrimaryScrubPanel =
   | 'body'
@@ -49,54 +42,81 @@ export type PrimaryScrubPanel =
   | 'effort'
   | 'heat'
 
-const powerRangeTipContent = (
+interface PowerRangeTipSlots {
+  title: HTMLElement
+  best: HTMLElement
+  body: HTMLElement
+  rows: Array<{
+    tr: HTMLElement
+    level: HTMLElement
+    pct: HTMLElement
+    pwr: HTMLElement
+    res: HTMLElement
+  }>
+}
+
+const powerRangeTipSlots = new WeakMap<HTMLElement, PowerRangeTipSlots>()
+
+const updatePowerRangeTip = (
+  tip: HTMLElement,
   interval: PowerRankInterval,
   key: BestPowerSeriesKey,
-): HTMLElement[] => {
-  const effort = interval.efforts[key]
-  const head = el('div', 'tri-power-range-tip-head')
-  head.append(
-    el('strong', 'tri-power-range-tip-title', `${zoneClock(interval.durationS)} power`),
-    el(
-      'span',
-      'tri-power-range-tip-best',
-      effort == null
-        ? 'no data'
-        : `${effort.watts.toLocaleString()} W · ${effort.wattsPerKg.toFixed(2)} W/kg`,
-    ),
-  )
-  const table = el('table', 'tri-power-range-table')
-  const tableHead = el('thead')
-  const headerRow = el('tr')
-  for (const label of ['levels', '%', 'power', 'your best'])
-    headerRow.appendChild(el('th', undefined, label, { scope: 'col' }))
-  tableHead.appendChild(headerRow)
-  const tableBody = el('tbody')
-  for (const row of powerRankRangeRows(interval, key)) {
-    const tableRow = el(
-      'tr',
-      row.current ? 'tri-power-range-row tri-power-range-row--current' : 'tri-power-range-row',
-      undefined,
-      row.current ? { 'aria-current': 'true' } : undefined,
-    )
-    tableRow.append(
-      el('th', 'tri-power-range-level', `${row.level} ${row.label}`, { scope: 'row' }),
-      el('td', undefined, `${row.percentile}%`),
-      el('td', undefined, `${row.thresholdWatts.toLocaleString()} W`),
-      el(
-        'td',
-        'tri-power-range-result',
-        row.bestWatts != null
-          ? `${row.bestWatts.toLocaleString()} W`
-          : row.gapWatts != null
-            ? `+${row.gapWatts.toLocaleString()} W`
-            : '',
-      ),
-    )
-    tableBody.appendChild(tableRow)
+): void => {
+  let slots = powerRangeTipSlots.get(tip)
+  const dataRows = powerRankRangeRows(interval, key)
+  if (!slots || slots.rows.length !== dataRows.length) {
+    const head = el('div', 'tri-power-range-tip-head')
+    const title = el('strong', 'tri-power-range-tip-title')
+    const best = el('span', 'tri-power-range-tip-best')
+    head.append(title, best)
+    const table = el('table', 'tri-power-range-table')
+    const tableHead = el('thead')
+    const headerRow = el('tr')
+    for (const label of ['levels', '%', 'power', 'your best'])
+      headerRow.appendChild(el('th', undefined, label, { scope: 'col' }))
+    tableHead.appendChild(headerRow)
+    const tableBody = el('tbody')
+    const rows = dataRows.map(() => {
+      const tr = el('tr', 'tri-power-range-row')
+      const level = el('th', 'tri-power-range-level', '', { scope: 'row' })
+      const pct = el('td')
+      const pwr = el('td')
+      const res = el('td', 'tri-power-range-result')
+      tr.append(level, pct, pwr, res)
+      tableBody.appendChild(tr)
+      return { tr, level, pct, pwr, res }
+    })
+    table.append(tableHead, tableBody)
+    tip.replaceChildren(head, table)
+    slots = { title, best, body: tableBody, rows }
+    powerRangeTipSlots.set(tip, slots)
   }
-  table.append(tableHead, tableBody)
-  return [head, table]
+  const effort = interval.efforts[key]
+  setText(slots.title, `${zoneClock(interval.durationS)} power`)
+  setText(
+    slots.best,
+    effort == null
+      ? 'no data'
+      : `${effort.watts.toLocaleString()} W · ${effort.wattsPerKg.toFixed(2)} W/kg`,
+  )
+  for (let i = 0; i < dataRows.length; i++) {
+    const row = dataRows[i]
+    const slot = slots.rows[i]
+    slot.tr.classList.toggle('tri-power-range-row--current', Boolean(row.current))
+    if (row.current) slot.tr.setAttribute('aria-current', 'true')
+    else slot.tr.removeAttribute('aria-current')
+    setText(slot.level, `${row.level} ${row.label}`)
+    setText(slot.pct, `${row.percentile}%`)
+    setText(slot.pwr, `${row.thresholdWatts.toLocaleString()} W`)
+    setText(
+      slot.res,
+      row.bestWatts != null
+        ? `${row.bestWatts.toLocaleString()} W`
+        : row.gapWatts != null
+          ? `+${row.gapWatts.toLocaleString()} W`
+          : '',
+    )
+  }
 }
 
 export const mountPrimaryPanel = (
@@ -126,7 +146,7 @@ export const mountPrimaryPanel = (
     const rec = data.recovery.series
     bind('.tri-ana-recovery', '.tri-rec-svg', rec.length, ANA_W, i => {
       const d = rec[i]
-      const z = d.hrvZ != null ? ` $${signed(d.hrvZ)}\\sigma$` : ''
+      const z = d.hrvZ != null ? ` ${signed(d.hrvZ)}$\\sigma$` : ''
       return `${d.date} · HRV ${d.hrv ?? '—'}${z} · RHR ${d.rhr ?? '—'} · rdy ${d.readiness ?? '—'}`
     })
   }
@@ -180,6 +200,47 @@ export const mountPrimaryPanel = (
     )
     const progressTrack = powerBlock.querySelector<HTMLElement>('[data-power-rank-progress-track]')
     const progressFill = powerBlock.querySelector<HTMLElement>('[data-power-rank-progress-fill]')
+    const progressLabel = powerBlock.querySelector<HTMLElement>('[data-power-rank-progress-label]')
+    const progressNext = powerBlock.querySelector<HTMLElement>('[data-power-rank-progress-next]')
+    const rankDom = new Map(
+      powerSeries.map(({ key }) => {
+        const row = rankBlock?.querySelector<HTMLElement>(
+          `.tri-power-radar-readout-row[data-power-rank-series="${key}"]`,
+        )
+        return [
+          key,
+          {
+            row,
+            value: row?.querySelector<HTMLElement>('.tri-power-radar-readout-value') ?? null,
+            swatch: row?.querySelector<HTMLElement>('.tri-best-power-swatch') ?? null,
+          },
+        ] as const
+      }),
+    )
+    const powerDom = new Map(
+      powerSeries.map(({ key }) => {
+        const point = powerBlock.querySelector<HTMLElement>(
+          `.tri-best-power-point[data-power-series="${key}"]`,
+        )
+        const row = powerBlock.querySelector<HTMLAnchorElement>(
+          `.tri-best-power-readout-row[data-power-series="${key}"]`,
+        )
+        const modelRow = powerBlock.querySelector<HTMLElement>(
+          `.tri-best-power-readout-row--model[data-power-model-series="${key}"]`,
+        )
+        return [
+          key,
+          {
+            point,
+            row,
+            value: row?.querySelector<HTMLElement>('.tri-best-power-value') ?? null,
+            swatch: row?.querySelector<HTMLElement>('.tri-best-power-swatch') ?? null,
+            modelRow,
+            modelValue: modelRow?.querySelector<HTMLElement>('.tri-best-power-value') ?? null,
+          },
+        ] as const
+      }),
+    )
     const minSeconds = Number(powerSvg.getAttribute('aria-valuemin'))
     const maxSeconds = Number(powerSvg.getAttribute('aria-valuemax'))
     const domainMax = Number(powerSvg.dataset.powerDomainMax)
@@ -210,6 +271,10 @@ export const mountPrimaryPanel = (
           })
     if (powerRangeTip) document.body.appendChild(powerRangeTip)
     let selectedSeconds = Number(powerSvg.dataset.powerSelectedSeconds)
+    let shownSeconds = -1
+    let shownRankKey = ''
+    let tipWidth = 0
+    let tipHeight = 0
     const curveFor = (key: BestPowerSeriesKey): PowerCurvePoint[] =>
       key === 'six-weeks' ? power.sixWeeks : power.year
     const activeAnchor = (): PowerCurvePoint[] => {
@@ -228,6 +293,12 @@ export const mountPrimaryPanel = (
     const syncPowerRank = (seconds: number): void => {
       if (!rankSvg || rankIntervals.length === 0) return
       const index = rankIndexAtSeconds(seconds)
+      const primaryKey: BestPowerSeriesKey = activePowerSeries.has('six-weeks')
+        ? 'six-weeks'
+        : 'year'
+      const rankKey = `${index}:${primaryKey}:${activePowerSeries.size}`
+      if (rankKey === shownRankKey) return
+      shownRankKey = rankKey
       const interval = rankIntervals[index]
       rankSvg.dataset.powerRankIndex = String(index)
       rankSvg.setAttribute('aria-valuenow', String(interval.durationS))
@@ -237,33 +308,23 @@ export const mountPrimaryPanel = (
           Number(label.dataset.powerRankIndex) === index,
         )
       if (rankDuration)
-        rankDuration.textContent = `${zoneClock(interval.durationS)} · ${interval.skill}`
+        setText(rankDuration, `${zoneClock(interval.durationS)} · ${interval.skill}`)
       const valueText: string[] = []
       for (const { key } of powerSeries) {
-        const row = rankBlock?.querySelector<HTMLElement>(
-          `.tri-power-radar-readout-row[data-power-rank-series="${key}"]`,
-        )
+        const dom = rankDom.get(key)
         const effort = activePowerSeries.has(key) ? interval.efforts[key] : null
-        if (row) {
-          row.hidden = !activePowerSeries.has(key)
-          const value = row.querySelector<HTMLElement>('.tri-power-radar-readout-value')
-          if (value) value.textContent = powerRankEffortLabel(effort)
-          const swatch = row.querySelector<HTMLElement>('.tri-best-power-swatch')
-          if (swatch) swatch.dataset.powerSkill = interval.skill
+        if (dom?.row) {
+          const hideRow = !activePowerSeries.has(key)
+          if (dom.row.hidden !== hideRow) dom.row.hidden = hideRow
+          if (dom.value) setText(dom.value, powerRankEffortLabel(effort))
+          if (dom.swatch) dom.swatch.dataset.powerSkill = interval.skill
         }
         if (effort)
           valueText.push(
             `${bestPowerSeriesLabel(context.formatter, power, key)} ${powerRankEffortLabel(effort)}`,
           )
       }
-      const primaryKey: BestPowerSeriesKey = activePowerSeries.has('six-weeks')
-        ? 'six-weeks'
-        : 'year'
       const primaryEffort = interval.efforts[primaryKey]
-      const progressLabel = powerBlock.querySelector<HTMLElement>(
-        '[data-power-rank-progress-label]',
-      )
-      const progressNext = powerBlock.querySelector<HTMLElement>('[data-power-rank-progress-next]')
       if (progressTrack) progressTrack.dataset.powerSkill = interval.skill
       if (progressFill) {
         progressFill.style.setProperty(
@@ -277,8 +338,8 @@ export const mountPrimaryPanel = (
           `${bestPowerSeriesLabel(context.formatter, power, primaryKey)} power rank`,
         )
       }
-      if (progressLabel) progressLabel.textContent = powerRankProgressLabel(primaryEffort)
-      if (progressNext) progressNext.textContent = powerRankProgressNextLabel(primaryEffort)
+      if (progressLabel) setText(progressLabel, powerRankProgressLabel(primaryEffort))
+      if (progressNext) setText(progressNext, powerRankProgressNextLabel(primaryEffort))
       if (powerRangeTip) {
         powerRangeTip.dataset.powerSkill = interval.skill
         if (
@@ -287,7 +348,7 @@ export const mountPrimaryPanel = (
         ) {
           powerRangeTip.dataset.powerRankIndex = String(index)
           powerRangeTip.dataset.powerSeries = primaryKey
-          powerRangeTip.replaceChildren(...powerRangeTipContent(interval, primaryKey))
+          updatePowerRangeTip(powerRangeTip, interval, primaryKey)
         }
       }
       rankSvg.setAttribute(
@@ -325,38 +386,35 @@ export const mountPrimaryPanel = (
             String(Number(tick.dataset.powerSeconds) === selectedSeconds),
           )
       }
+      if (!commit && seconds === shownSeconds) return seconds
+      shownSeconds = seconds
       const xPct = powerCurveFraction(seconds, minSeconds, maxSeconds) * 100
       const powerSkill = powerSkillAtSeconds(seconds)
       cursor?.setAttribute('x1', xPct.toFixed(2))
       cursor?.setAttribute('x2', xPct.toFixed(2))
-      if (duration) duration.textContent = zoneClock(seconds)
+      if (duration) setText(duration, zoneClock(seconds))
       const valueText: string[] = []
+      let firstVisibleModelRow = true
       for (const { key, curve } of powerSeries) {
         const enabled = activePowerSeries.has(key)
         const selectedPoint = enabled ? nearestPowerCurvePoint(curve, seconds) : null
         const watts = selectedPoint?.w ?? null
-        const point = powerBlock.querySelector<HTMLElement>(
-          `.tri-best-power-point[data-power-series="${key}"]`,
-        )
-        const row = powerBlock.querySelector<HTMLAnchorElement>(
-          `.tri-best-power-readout-row[data-power-series="${key}"]`,
-        )
-        if (point) {
-          point.hidden = watts == null
-          point.dataset.powerSkill = powerSkill
+        const dom = powerDom.get(key)
+        if (dom?.point) {
+          dom.point.style.display = watts == null ? 'none' : ''
+          if (dom.point.hidden) dom.point.hidden = false
+          dom.point.dataset.powerSkill = powerSkill
           if (watts != null && domainMax > 0 && height > 0) {
             const y = height - (Math.min(domainMax, Math.max(0, watts)) / domainMax) * (height - 1)
-            point.style.left = `${xPct.toFixed(2)}%`
-            point.style.top = `${((y / height) * 100).toFixed(2)}%`
+            dom.point.style.left = `${xPct.toFixed(2)}%`
+            dom.point.style.top = `${((y / height) * 100).toFixed(2)}%`
           }
         }
-        if (row) {
-          row.hidden = !enabled
-          syncPowerCurveActivityLink(row, selectedPoint)
-          const value = row.querySelector<HTMLElement>('.tri-best-power-value')
-          if (value) value.textContent = watts == null ? '—' : `${watts.toLocaleString()} W`
-          const swatch = row.querySelector<HTMLElement>('.tri-best-power-swatch')
-          if (swatch) swatch.dataset.powerSkill = powerSkill
+        if (dom?.row) {
+          if (dom.row.hidden !== !enabled) dom.row.hidden = !enabled
+          syncPowerCurveActivityLink(dom.row, selectedPoint)
+          if (dom.value) setText(dom.value, watts == null ? '—' : `${watts.toLocaleString()} W`)
+          if (dom.swatch) dom.swatch.dataset.powerSkill = powerSkill
         }
         if (watts != null)
           valueText.push(
@@ -367,14 +425,15 @@ export const mountPrimaryPanel = (
           estimate && seconds >= 180 && seconds <= 720
             ? Math.round(criticalPowerAtDuration(estimate, seconds))
             : null
-        const modelRow = powerBlock.querySelector<HTMLElement>(
-          `.tri-best-power-readout-row--model[data-power-model-series="${key}"]`,
-        )
-        if (modelRow) {
-          modelRow.hidden = modelWatts == null
-          const value = modelRow.querySelector<HTMLElement>('.tri-best-power-value')
-          if (value)
-            value.textContent = modelWatts == null ? '—' : `${modelWatts.toLocaleString()} W`
+        if (dom?.modelRow) {
+          if (dom.modelRow.hidden) dom.modelRow.hidden = false
+          dom.modelRow.style.display = modelWatts == null ? 'none' : ''
+          if (modelWatts != null) {
+            dom.modelRow.style.marginTop = firstVisibleModelRow ? '0.28rem' : '0px'
+            firstVisibleModelRow = false
+          }
+          if (dom.modelValue)
+            setText(dom.modelValue, modelWatts == null ? '—' : `${modelWatts.toLocaleString()} W`)
         }
         if (modelWatts != null)
           valueText.push(
@@ -399,24 +458,27 @@ export const mountPrimaryPanel = (
     }
     const placePowerRangeTip = (clientX: number, clientY: number): void => {
       if (!powerRangeTip) return
-      const rect = powerRangeTip.getBoundingClientRect()
+      if (tipWidth <= 0 || tipHeight <= 0) {
+        tipWidth = powerRangeTip.offsetWidth
+        tipHeight = powerRangeTip.offsetHeight
+      }
       const gap = 14
       const margin = 8
       const preferredLeft = clientX + gap
       const left =
-        preferredLeft + rect.width <= window.innerWidth - margin
+        preferredLeft + tipWidth <= window.innerWidth - margin
           ? preferredLeft
-          : clientX - gap - rect.width
-      const maxTop = Math.max(margin, window.innerHeight - rect.height - margin)
-      const top = clampN(clientY - rect.height / 2, margin, maxTop)
+          : clientX - gap - tipWidth
+      const maxTop = Math.max(margin, window.innerHeight - tipHeight - margin)
+      const top = clampN(clientY - tipHeight / 2, margin, maxTop)
       powerRangeTip.style.left = `${Math.max(margin, left).toFixed(0)}px`
       powerRangeTip.style.top = `${top.toFixed(0)}px`
     }
-    const onPowerMove = (event: PointerEvent): void => {
-      const rect = powerSvg.getBoundingClientRect()
+    const rafPowerMove = rafEvent((event: PointerEvent): void => {
+      const rect = rectOf(powerSvg)
       if (rect.width <= 0) return
       showFraction((event.clientX - rect.left) / rect.width, false)
-    }
+    })
     const showPowerRangeTip = (clientX: number, clientY: number): void => {
       if (!powerRangeTip) return
       powerRangeTip.classList.add('tri-gloss--on')
@@ -424,12 +486,13 @@ export const mountPrimaryPanel = (
       placePowerRangeTip(clientX, clientY)
     }
     const onPowerDown = (event: PointerEvent): void => {
-      const rect = powerSvg.getBoundingClientRect()
+      const rect = rectOf(powerSvg)
       if (rect.width <= 0) return
       showFraction((event.clientX - rect.left) / rect.width, true)
       powerSvg.focus({ preventScroll: true })
     }
     const onPowerLeave = (): void => {
+      rafPowerMove.cancel()
       showSeconds(selectedSeconds, false)
     }
     const onPowerKey = (event: KeyboardEvent): void => {
@@ -469,7 +532,7 @@ export const mountPrimaryPanel = (
       }
       const axis = event.target.closest<HTMLElement>('.tri-cax-xax')
       if (axis && powerBlock.contains(axis)) {
-        const rect = axis.getBoundingClientRect()
+        const rect = rectOf(axis)
         if (rect.width > 0) {
           showFraction((event.clientX - rect.left) / rect.width, true)
           powerSvg.focus({ preventScroll: true })
@@ -508,11 +571,13 @@ export const mountPrimaryPanel = (
         `[data-power-radar-series="${key}"]`,
       ))
         element.toggleAttribute('hidden', enabled)
+      shownSeconds = -1
+      shownRankKey = ''
       syncPowerCaption()
       syncEstimatedFtp()
       showSeconds(selectedSeconds, false)
     }
-    powerSvg.addEventListener('pointermove', onPowerMove)
+    powerSvg.addEventListener('pointermove', rafPowerMove.onEvent)
     powerSvg.addEventListener('pointerdown', onPowerDown)
     powerSvg.addEventListener('pointerleave', onPowerLeave)
     powerSvg.addEventListener('pointercancel', onPowerLeave)
@@ -522,9 +587,10 @@ export const mountPrimaryPanel = (
     let onRankLeave: (() => void) | null = null
     let onRankDown: ((event: PointerEvent) => void) | null = null
     let onRankKey: ((event: KeyboardEvent) => void) | null = null
+    let cancelRankMove: (() => void) | null = null
     if (rankSvg && rankIntervals.length > 0) {
       const indexAt = (clientX: number, clientY: number): number => {
-        const rect = rankSvg.getBoundingClientRect()
+        const rect = rectOf(rankSvg)
         const angle =
           (Math.atan2(
             clientY - (rect.top + rect.height / 2),
@@ -538,13 +604,16 @@ export const mountPrimaryPanel = (
           rankIntervals.length
         )
       }
-      onRankMove = event => {
+      const rafRank = rafEvent((event: MouseEvent) => {
         const index = indexAt(event.clientX, event.clientY)
         const interval = rankIntervals[index]
         showSeconds(interval.durationS, false)
         showPowerRangeTip(event.clientX, event.clientY)
-      }
+      })
+      onRankMove = rafRank.onEvent
+      cancelRankMove = rafRank.cancel
       onRankLeave = () => {
+        rafRank.cancel()
         hidePowerRangeTip()
         showSeconds(selectedSeconds, false)
       }
@@ -578,7 +647,9 @@ export const mountPrimaryPanel = (
     syncEstimatedFtp()
     showSeconds(selectedSeconds, true)
     cleanups.push(() => {
-      powerSvg.removeEventListener('pointermove', onPowerMove)
+      rafPowerMove.cancel()
+      cancelRankMove?.()
+      powerSvg.removeEventListener('pointermove', rafPowerMove.onEvent)
       powerSvg.removeEventListener('pointerdown', onPowerDown)
       powerSvg.removeEventListener('pointerleave', onPowerLeave)
       powerSvg.removeEventListener('pointercancel', onPowerLeave)
@@ -607,12 +678,13 @@ export const mountPrimaryPanel = (
       for (const p of pts) p.classList.toggle(cls, p.dataset.week === String(idx))
     }
     const idxAt = (event: MouseEvent): number => {
-      const r = svgEl.getBoundingClientRect()
+      const r = rectOf(svgEl)
       const f = clampN((event.clientX - r.left) / r.width, 0, 1)
       return weeklyChartIndex(f, rows.length)
     }
     let selected = rows.length - 1
     let shown = selected
+    let hotIdx: number | null = null
     let detailAnimation: Animation | null = null
     const show = (i: number): void => {
       if (i === shown) return
@@ -625,17 +697,22 @@ export const mountPrimaryPanel = (
         easing: 'ease-out',
       })
     }
-    const onMove = (event: MouseEvent): void => {
+    const rafMove = rafEvent((event: MouseEvent): void => {
       const i = idxAt(event)
-      const cx = (weeklyChartX(i, rows.length) * ANA_W).toFixed(2)
-      cursor.setAttribute('x1', cx)
-      cursor.setAttribute('x2', cx)
-      show(i)
-      mark('tri-wkt-pt--hot', i)
-      block.classList.toggle('tri-wkt--current-hover', current != null && i === rows.length - 1)
+      if (i !== hotIdx) {
+        hotIdx = i
+        const cx = (weeklyChartX(i, rows.length) * ANA_W).toFixed(2)
+        cursor.setAttribute('x1', cx)
+        cursor.setAttribute('x2', cx)
+        show(i)
+        mark('tri-wkt-pt--hot', i)
+        block.classList.toggle('tri-wkt--current-hover', current != null && i === rows.length - 1)
+      }
       block.classList.add('tri-chart--hover')
-    }
+    })
     const onLeave = (): void => {
+      rafMove.cancel()
+      hotIdx = null
       block.classList.remove('tri-chart--hover')
       block.classList.remove('tri-wkt--current-hover')
       mark('tri-wkt-pt--hot', null)
@@ -655,12 +732,13 @@ export const mountPrimaryPanel = (
       applySelected(i)
       context.events.dispatch('analyticsWeek', { source: kind, index: i })
     }
-    svgEl.addEventListener('mousemove', onMove)
+    svgEl.addEventListener('mousemove', rafMove.onEvent)
     svgEl.addEventListener('mouseleave', onLeave)
     svgEl.addEventListener('click', onClick)
     cleanups.push(() => {
+      rafMove.cancel()
       unsubscribe()
-      svgEl.removeEventListener('mousemove', onMove)
+      svgEl.removeEventListener('mousemove', rafMove.onEvent)
       svgEl.removeEventListener('mouseleave', onLeave)
       svgEl.removeEventListener('click', onClick)
       detailAnimation?.cancel()
@@ -690,49 +768,61 @@ export const mountPrimaryPanel = (
       fraction: clampN((Date.parse(activity.startedAt) - fromMs) / (toMs - fromMs), 0, 1),
     }))
     const dayByDate = new Map(heatDays.map(day => [day.date, day]))
-    const onMove = (event: MouseEvent): void => {
-      const rect = heatSvg.getBoundingClientRect()
+    let lastNearest: (typeof positioned)[0] | null = null
+    const rafMove = rafEvent((event: MouseEvent): void => {
+      const rect = rectOf(heatSvg)
+      if (rect.width <= 0) return
       const fraction = clampN((event.clientX - rect.left) / rect.width, 0, 1)
       let nearest = positioned[0]
       for (const point of positioned)
         if (Math.abs(point.fraction - fraction) < Math.abs(nearest.fraction - fraction))
           nearest = point
-      const { activity } = nearest
-      const day = dayByDate.get(activity.date)
-      const temperatureDigits = activity.source === 'core' ? 2 : 0
-      const temperatureC = activity.sauna?.temperatureC ?? activity.temperatureC
-      const temperature =
-        temperatureC == null
-          ? '—'
-          : context.presentation.distance === 'imperial'
-            ? `${((temperatureC * 9) / 5 + 32).toFixed(temperatureDigits)}°F`
-            : `${temperatureC.toFixed(temperatureDigits)}°C`
-      const heatStrain =
-        activity.heatStrainIndex == null ? '' : ` · HSI ${activity.heatStrainIndex.toFixed(1)}`
-      const source =
-        activity.source === 'core'
-          ? activity.coreOrigin === 'app'
-            ? 'CORE app'
-            : 'CORE FIT'
-          : activity.source === 'weatherkit'
-            ? 'WeatherKit'
-            : activity.source === 'manual-sauna'
-              ? context.formatter.text('manual sauna')
-              : 'Strava'
-      const exposure = activity.sauna
-        ? `${context.formatter.text('room temperature')} ${temperature} · ${activity.sauna.humidityPct}% ${context.formatter.text('humidity')} · ${activity.sauna.durationMinutes.toFixed(0)} ${context.formatter.text('sauna min')} · HTL ${activity.sauna.heatTrainingLoad?.toFixed(1) ?? '—'} · ${context.formatter.text('cooldown')}: ${context.formatter.text(activity.sauna.cooldown)}`
-        : `${temperature}${heatStrain} · ${activity.hotMinutes} ${context.formatter.text('hot min')}`
-      const cx = (nearest.fraction * ANA_W).toFixed(2)
-      heatCursor.setAttribute('x1', cx)
-      heatCursor.setAttribute('x2', cx)
-      heatReadout.textContent = `${context.formatter.shortDate(activity.date)} · ${activity.name} · ${exposure} · ${context.formatter.text('proxy')} ${day?.acclimatisationPct.toFixed(0) ?? '—'}% · ${source}`
+      if (nearest !== lastNearest) {
+        lastNearest = nearest
+        const { activity } = nearest
+        const day = dayByDate.get(activity.date)
+        const temperatureDigits = activity.source === 'core' ? 2 : 0
+        const temperatureC = activity.sauna?.temperatureC ?? activity.temperatureC
+        const temperature =
+          temperatureC == null
+            ? '—'
+            : context.presentation.distance === 'imperial'
+              ? `${((temperatureC * 9) / 5 + 32).toFixed(temperatureDigits)}°F`
+              : `${temperatureC.toFixed(temperatureDigits)}°C`
+        const heatStrain =
+          activity.heatStrainIndex == null ? '' : ` · HSI ${activity.heatStrainIndex.toFixed(1)}`
+        const source =
+          activity.source === 'core'
+            ? activity.coreOrigin === 'app'
+              ? 'CORE app'
+              : 'CORE FIT'
+            : activity.source === 'weatherkit'
+              ? 'WeatherKit'
+              : activity.source === 'manual-sauna'
+                ? context.formatter.text('manual sauna')
+                : 'Strava'
+        const exposure = activity.sauna
+          ? `${context.formatter.text('room temperature')} ${temperature} · ${activity.sauna.humidityPct}% ${context.formatter.text('humidity')} · ${activity.sauna.durationMinutes.toFixed(0)} ${context.formatter.text('sauna min')} · HTL ${activity.sauna.heatTrainingLoad?.toFixed(1) ?? '—'} · ${context.formatter.text('cooldown')}: ${context.formatter.text(activity.sauna.cooldown)}`
+          : `${temperature}${heatStrain} · ${activity.hotMinutes} ${context.formatter.text('hot min')}`
+        const cx = (nearest.fraction * ANA_W).toFixed(2)
+        heatCursor.setAttribute('x1', cx)
+        heatCursor.setAttribute('x2', cx)
+        setText(
+          heatReadout,
+          `${context.formatter.shortDate(activity.date)} · ${activity.name} · ${exposure} · ${context.formatter.text('proxy')} ${day?.acclimatisationPct.toFixed(0) ?? '—'}% · ${source}`,
+        )
+      }
       heatBlock.classList.add('tri-chart--hover')
+    })
+    const onLeave = (): void => {
+      rafMove.cancel()
+      heatBlock.classList.remove('tri-chart--hover')
     }
-    const onLeave = (): void => heatBlock.classList.remove('tri-chart--hover')
-    heatSvg.addEventListener('mousemove', onMove)
+    heatSvg.addEventListener('mousemove', rafMove.onEvent)
     heatSvg.addEventListener('mouseleave', onLeave)
     cleanups.push(() => {
-      heatSvg.removeEventListener('mousemove', onMove)
+      rafMove.cancel()
+      heatSvg.removeEventListener('mousemove', rafMove.onEvent)
       heatSvg.removeEventListener('mouseleave', onLeave)
     })
   }
@@ -754,8 +844,10 @@ export const mountPrimaryPanel = (
     const bt1 = bdays[bdays.length - 1].ts
     const bx = (ts: number): number => (bt1 > bt0 ? ((ts - bt0) / (bt1 - bt0)) * 100 : 50)
     const ranges = Array.from(bodyPlot.querySelectorAll<SVGLineElement>('.tri-bodywt-range'))
-    const onMove = (event: MouseEvent) => {
-      const r = bodyPlot.getBoundingClientRect()
+    let lastBestDate = ''
+    const rafMove = rafEvent((event: MouseEvent) => {
+      const r = rectOf(bodyPlot)
+      if (r.width <= 0) return
       const fx = clampN((event.clientX - r.left) / r.width, 0, 1) * 100
       let best = bdays[0]
       let bestD = Infinity
@@ -766,37 +858,43 @@ export const mountPrimaryPanel = (
           best = d
         }
       }
-      const cx = bx(best.ts).toFixed(2)
-      bodyCursor.setAttribute('x1', cx)
-      bodyCursor.setAttribute('x2', cx)
-      const bmrV = bmrByDay.get(best.date)
-      const bmrTxt = bmrV != null ? ` · BMR ${bmrV} kcal` : ''
-      const ffmiV = ffmiByDay.get(best.date)
-      const ffmiTxt = ffmiV != null ? ` · FFMI ${context.formatter.number(ffmiV, 1, 1)}` : ''
-      if (best.samples.length > 1) {
-        const delta = best.last - best.first
-        setMath(
-          bodyReadout,
-          `${context.formatter.shortDate(best.date)} · $${best.samples.length}\\times$ · ${wNum(context.formatter, best.min)}–${wNum(context.formatter, best.max)} ${weightUnitLabel(context.formatter)} · $\\Delta${wSigned(context.formatter, delta, 1)}$${bmrTxt}${ffmiTxt}`,
-        )
-      } else {
-        setMath(
-          bodyReadout,
-          `${context.formatter.shortDate(best.date)} · ${wFmt(context.formatter, best.last)}${bmrTxt}${ffmiTxt}`,
-        )
+      if (best.date !== lastBestDate) {
+        lastBestDate = best.date
+        const cx = bx(best.ts).toFixed(2)
+        bodyCursor.setAttribute('x1', cx)
+        bodyCursor.setAttribute('x2', cx)
+        const bmrV = bmrByDay.get(best.date)
+        const bmrTxt = bmrV != null ? ` · BMR ${bmrV} kcal` : ''
+        const ffmiV = ffmiByDay.get(best.date)
+        const ffmiTxt = ffmiV != null ? ` · FFMI ${context.formatter.number(ffmiV, 1, 1)}` : ''
+        if (best.samples.length > 1) {
+          const delta = best.last - best.first
+          setFastMath(
+            bodyReadout,
+            `${context.formatter.shortDate(best.date)} · ${best.samples.length}$\\times$ · ${wNum(context.formatter, best.min)}–${wNum(context.formatter, best.max)} ${weightUnitLabel(context.formatter)} · $\\Delta$${wSigned(context.formatter, delta, 1)}${bmrTxt}${ffmiTxt}`,
+          )
+        } else {
+          setFastMath(
+            bodyReadout,
+            `${context.formatter.shortDate(best.date)} · ${wFmt(context.formatter, best.last)}${bmrTxt}${ffmiTxt}`,
+          )
+        }
+        for (const ln of ranges)
+          ln.classList.toggle('tri-bodywt-range--active', ln.dataset.day === best.date)
       }
-      for (const ln of ranges)
-        ln.classList.toggle('tri-bodywt-range--active', ln.dataset.day === best.date)
       bodyBlock.classList.add('tri-chart--hover')
-    }
+    })
     const onLeave = () => {
+      rafMove.cancel()
+      lastBestDate = ''
       bodyBlock.classList.remove('tri-chart--hover')
       for (const ln of ranges) ln.classList.remove('tri-bodywt-range--active')
     }
-    bodyPlot.addEventListener('mousemove', onMove)
+    bodyPlot.addEventListener('mousemove', rafMove.onEvent)
     bodyPlot.addEventListener('mouseleave', onLeave)
     cleanups.push(() => {
-      bodyPlot.removeEventListener('mousemove', onMove)
+      rafMove.cancel()
+      bodyPlot.removeEventListener('mousemove', rafMove.onEvent)
       bodyPlot.removeEventListener('mouseleave', onLeave)
     })
   }
@@ -807,59 +905,74 @@ export const mountPrimaryPanel = (
     document.body.querySelector('.tri-dexa-tip')?.remove()
     const tip = el('div', 'tri-gloss tri-dexa-tip')
     tip.setAttribute('role', 'tooltip')
+    const head = el('span', 'tri-dexa-tip-head')
+    const regionEl = el('span', 'tri-gloss-h')
+    const totalEl = el('span', 'tri-dexa-tip-total')
+    head.append(regionEl, totalEl)
+    const rowSpecs = [
+      ['lean', 'is-lean'],
+      ['fat', 'is-fat'],
+      ['bone', 'is-bone'],
+    ] as const
+    const rowSlots = rowSpecs.map(([label, cls]) => {
+      const row = el('span', 'tri-dexa-tip-row')
+      const valEl = el('span', 'tri-dexa-tip-value')
+      const pctEl = el('span', 'tri-dexa-tip-pct')
+      row.append(
+        el('span', `tri-dexa-dot ${cls}`, undefined, { 'aria-hidden': 'true' }),
+        el('span', 'tri-dexa-tip-label', context.formatter.text(label)),
+        valEl,
+        pctEl,
+      )
+      return { row, valEl, pctEl }
+    })
+    tip.append(head, ...rowSlots.map(s => s.row))
     document.body.appendChild(tip)
+    let tipWidth = 0
+    let tipHeight = 0
     const show = (column: HTMLElement): void => {
-      const head = el('span', 'tri-dexa-tip-head')
-      head.append(
-        el('span', 'tri-gloss-h', column.dataset.dexaRegion ?? ''),
-        el('span', 'tri-dexa-tip-total', column.dataset.dexaTotal ?? ''),
-      )
-      const rows = [
-        ['lean', 'is-lean', column.dataset.dexaLean, column.dataset.dexaLeanPct],
-        ['fat', 'is-fat', column.dataset.dexaFat, column.dataset.dexaFatPct],
-        ['bone', 'is-bone', column.dataset.dexaBone, column.dataset.dexaBonePct],
+      setText(regionEl, column.dataset.dexaRegion ?? '')
+      setText(totalEl, column.dataset.dexaTotal ?? '')
+      const vals = [
+        [column.dataset.dexaLean, column.dataset.dexaLeanPct],
+        [column.dataset.dexaFat, column.dataset.dexaFatPct],
+        [column.dataset.dexaBone, column.dataset.dexaBonePct],
       ] as const
-      tip.replaceChildren(
-        head,
-        ...rows.map(([label, cls, value, pct]) => {
-          const row = el('span', 'tri-dexa-tip-row')
-          row.append(
-            el('span', `tri-dexa-dot ${cls}`, undefined, { 'aria-hidden': 'true' }),
-            el('span', 'tri-dexa-tip-label', context.formatter.text(label)),
-            el('span', 'tri-dexa-tip-value', value ?? ''),
-            el('span', 'tri-dexa-tip-pct', pct ?? ''),
-          )
-          return row
-        }),
-      )
+      for (let i = 0; i < 3; i++) {
+        setText(rowSlots[i].valEl, vals[i][0] ?? '')
+        setText(rowSlots[i].pctEl, vals[i][1] ?? '')
+      }
       tip.classList.add('tri-gloss--on')
+      if (tipWidth <= 0 || tipHeight <= 0) {
+        tipWidth = tip.offsetWidth
+        tipHeight = tip.offsetHeight
+      }
     }
     const placeAtPointer = (event: MouseEvent): void => {
-      const rect = tip.getBoundingClientRect()
       const left =
-        event.clientX + 14 + rect.width > window.innerWidth - 8
-          ? event.clientX - 14 - rect.width
+        event.clientX + 14 + tipWidth > window.innerWidth - 8
+          ? event.clientX - 14 - tipWidth
           : event.clientX + 14
       const top =
-        event.clientY + 14 + rect.height > window.innerHeight - 8
-          ? event.clientY - 14 - rect.height
+        event.clientY + 14 + tipHeight > window.innerHeight - 8
+          ? event.clientY - 14 - tipHeight
           : event.clientY + 14
       tip.style.left = `${Math.max(8, left).toFixed(0)}px`
       tip.style.top = `${Math.max(8, top).toFixed(0)}px`
     }
     const placeAtColumn = (column: HTMLElement): void => {
-      const columnRect = column.getBoundingClientRect()
-      const tipRect = tip.getBoundingClientRect()
+      const columnRect = rectOf(column)
       const left = clampN(
-        columnRect.left + columnRect.width / 2 - tipRect.width / 2,
+        columnRect.left + columnRect.width / 2 - tipWidth / 2,
         8,
-        window.innerWidth - tipRect.width - 8,
+        window.innerWidth - tipWidth - 8,
       )
-      const above = columnRect.top - tipRect.height - 8
+      const above = columnRect.top - tipHeight - 8
       const top = above >= 8 ? above : columnRect.bottom + 8
       tip.style.left = `${left.toFixed(0)}px`
-      tip.style.top = `${Math.min(top, window.innerHeight - tipRect.height - 8).toFixed(0)}px`
+      tip.style.top = `${Math.min(top, window.innerHeight - tipHeight - 8).toFixed(0)}px`
     }
+    const rafPlace = rafEvent(placeAtPointer)
     const bound: Array<{
       column: HTMLElement
       enter: (event: MouseEvent) => void
@@ -873,8 +986,9 @@ export const mountPrimaryPanel = (
         show(column)
         placeAtPointer(event)
       }
-      const move = (event: MouseEvent): void => placeAtPointer(event)
+      const move = rafPlace.onEvent
       const leave = (): void => {
+        rafPlace.cancel()
         if (!column.matches(':focus-visible')) tip.classList.remove('tri-gloss--on')
       }
       const focus = (): void => {
@@ -891,6 +1005,7 @@ export const mountPrimaryPanel = (
       bound.push({ column, enter, move, leave, focus, blur })
     }
     cleanups.push(() => {
+      rafPlace.cancel()
       for (const { column, enter, move, leave, focus, blur } of bound) {
         column.removeEventListener('mouseenter', enter)
         column.removeEventListener('mousemove', move)

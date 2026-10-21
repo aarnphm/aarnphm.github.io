@@ -18,8 +18,9 @@ import {
   type DetailPayload,
 } from '../activity/data'
 import { metricSpecs, renderMapDetail } from '../activity/render'
+import { rectOf } from '../analytics/scrub-primitives'
 import { detailHead } from '../analytics/search'
-import { createDomFactory, el, setMath } from '../runtime/dom'
+import { createDomFactory, el, setMath, setText } from '../runtime/dom'
 import {
   mapboxStyleUrl,
   readTriMap3d,
@@ -378,6 +379,7 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
         if (sequence === streetSequence && !selection) drawStreetMap()
       })
     }
+    const tipWidths = new Map<string, number>()
     const onTraceMove = (e: MapboxLayerEvent) => {
       if (panel.classList.contains('tri-map--detail')) return
       const current = readyMap()
@@ -392,13 +394,21 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
         if (!d) return
         current.getSource('tri-hov')?.setData(routeFC(d))
         if (tip)
-          tip.textContent = `${d.name || d.sport} · ${context.formatter.shortDate(d.date)} · ${dist(context.presentation, d.distanceKm, d.sport)}`
+          setText(
+            tip,
+            `${d.name || d.sport} · ${context.formatter.shortDate(d.date)} · ${dist(context.presentation, d.distanceKm, d.sport)}`,
+          )
         void ensureActivityDetail(key)
       }
       if (tip) {
         tip.classList.add('tri-map-tip--on')
         if (!canvas) return
-        const bound = canvas.clientWidth - tip.offsetWidth - 8
+        let tipWidth = tipWidths.get(key) ?? 0
+        if (tipWidth <= 0) {
+          tipWidth = tip.offsetWidth
+          if (tipWidth > 0) tipWidths.set(key, tipWidth)
+        }
+        const bound = rectOf(canvas).width - tipWidth - 8
         tip.style.left = `${Math.min(e.point.x + 14, Math.max(8, bound))}px`
         tip.style.top = `${e.point.y + 14}px`
       }

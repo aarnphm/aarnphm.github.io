@@ -12,8 +12,9 @@ import {
   powerCurveFraction,
 } from '../../../../util/triathlon-card'
 import { powerCurveActivityLinkAttributes } from '../../../../util/triathlon-power-activity'
-import { createDomFactory, el, svg } from '../../runtime/dom'
+import { createDomFactory, el, setText, svg } from '../../runtime/dom'
 import { setupPowerCurveTicks } from '../../shell/power-curve-ticks'
+import { rafEvent, rectOf } from '../scrub-primitives'
 import { anaTitle, markGlossDefinition } from '../shared'
 
 const W = 100
@@ -207,6 +208,7 @@ export const buildSwimPowerCurve = (
       overlays,
     ),
   )
+  const tickButtons = Array.from(block.querySelectorAll<HTMLButtonElement>('[data-power-seconds]'))
   const visibleDurations = (): number[] =>
     [
       ...new Set(
@@ -215,7 +217,8 @@ export const buildSwimPowerCurve = (
           .flatMap(item => item.curve.map(point => point.durationS)),
       ),
     ].sort((a, b) => a - b)
-  const select = (requested: number): void => {
+  let shownSeconds = -1
+  const select = (requested: number, force = false): void => {
     const observed = visibleDurations()
     selectedSeconds = observed.reduce(
       (nearest, seconds) =>
@@ -224,9 +227,11 @@ export const buildSwimPowerCurve = (
           : nearest,
       observed[0],
     )
+    if (!force && selectedSeconds === shownSeconds) return
+    shownSeconds = selectedSeconds
     cursor.setAttribute('x1', String(X(selectedSeconds)))
     cursor.setAttribute('x2', String(X(selectedSeconds)))
-    duration.textContent = dlabel(selectedSeconds)
+    setText(duration, dlabel(selectedSeconds))
     const labels = [dlabel(selectedSeconds)]
     for (const item of rows) {
       const point: SwimPowerBestPoint | undefined = item.curve.find(
@@ -234,7 +239,8 @@ export const buildSwimPowerCurve = (
       )
       item.row.hidden = !active.has(item.key)
       item.marker.hidden = item.row.hidden || point == null
-      item.value.textContent = `${item.label} · ${point ? point.index.toFixed(1) : '—'} idx`
+      const text = `${item.label} · ${point ? point.index.toFixed(1) : '—'} idx`
+      setText(item.value, text)
       for (const name of [
         'href',
         'data-power-activity-id',
@@ -249,26 +255,26 @@ export const buildSwimPowerCurve = (
         item.marker.style.left = `${X(selectedSeconds)}%`
         item.marker.style.top = `${(Y(point.index) / H) * 100}%`
       } else item.row.removeAttribute('title')
-      if (!item.row.hidden) labels.push(item.value.textContent)
+      if (!item.row.hidden) labels.push(text)
     }
     graph.setAttribute('aria-valuenow', String(selectedSeconds))
     graph.setAttribute('aria-valuetext', labels.join(' · '))
-    for (const tick of block.querySelectorAll<HTMLButtonElement>('[data-power-seconds]'))
+    for (const tick of tickButtons)
       tick.setAttribute(
         'aria-pressed',
         String(Number(tick.dataset.powerSeconds) === selectedSeconds),
       )
   }
-  select(selectedSeconds)
+  select(selectedSeconds, true)
   return {
     element: block,
     mount: () => {
-      const move = (event: PointerEvent): void => {
-        const rect = graph.getBoundingClientRect()
+      const rafMove = rafEvent((event: PointerEvent): void => {
+        const rect = rectOf(graph)
         if (rect.width <= 0) return
         const fraction = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width))
         select(minSeconds * (maxSeconds / minSeconds) ** fraction)
-      }
+      })
       const key = (event: KeyboardEvent): void => {
         if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return
         event.preventDefault()
@@ -299,15 +305,16 @@ export const buildSwimPowerCurve = (
           for (const item of buttons)
             item.button.setAttribute('aria-pressed', String(active.has(item.key)))
           for (const item of lines) item.line.toggleAttribute('hidden', !active.has(item.key))
-          select(selectedSeconds)
+          select(selectedSeconds, true)
         } else if (target?.dataset.powerSeconds) select(Number(target.dataset.powerSeconds))
       }
-      graph.addEventListener('pointermove', move)
+      graph.addEventListener('pointermove', rafMove.onEvent)
       graph.addEventListener('keydown', key)
       block.addEventListener('click', click)
       const cleanupTicks = setupPowerCurveTicks(block)
       return () => {
-        graph.removeEventListener('pointermove', move)
+        rafMove.cancel()
+        graph.removeEventListener('pointermove', rafMove.onEvent)
         graph.removeEventListener('keydown', key)
         block.removeEventListener('click', click)
         cleanupTicks()

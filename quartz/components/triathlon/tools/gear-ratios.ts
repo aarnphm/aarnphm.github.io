@@ -11,9 +11,8 @@ import { formatGearEfficiencyDeltaPercent } from '../../../util/triathlon-gear-r
 import { gearCassettePreset } from '../../../util/triathlon-gear-ratio'
 import { gearChainringPreset } from '../../../util/triathlon-gear-ratio'
 import { gearRatioMatrix } from '../../../util/triathlon-gear-ratio'
-import { el } from '../runtime/dom'
-import { mathFrag } from '../runtime/dom'
-import { setMath } from '../runtime/dom'
+import { setFastMath } from '../analytics/scrub-primitives'
+import { el, mathFrag, setMath, setText } from '../runtime/dom'
 import {
   initialGearRatioModel,
   updateGearRatio,
@@ -215,6 +214,19 @@ export const setupGearRatios = (
     role: 'tooltip',
     'aria-hidden': 'true',
   })
+  const tipHeading = el('span', 'tri-ratio-efficiency-tip-heading')
+  const makeTipRow = (): { row: HTMLElement; label: HTMLElement; value: HTMLElement } => {
+    const row = el('span', 'tri-ratio-efficiency-tip-row')
+    const label = el('span', 'tri-ratio-efficiency-tip-label')
+    const value = el('span', 'tri-ratio-efficiency-tip-value')
+    row.append(label, value)
+    return { row, label, value }
+  }
+  const vsIdealRow = makeTipRow()
+  const effRow = makeTipRow()
+  const lossRow = makeTipRow()
+  const crossRow = makeTipRow()
+  efficiencyTip.append(tipHeading, vsIdealRow.row, effRow.row, lossRow.row, crossRow.row)
   document.body.appendChild(efficiencyTip)
   let activeEfficiencyCell: HTMLTableCellElement | null = null
   let hoveredEfficiencyCell: HTMLTableCellElement | null = null
@@ -226,9 +238,9 @@ export const setupGearRatios = (
       ? target.closest<HTMLTableCellElement>('td[data-efficiency-delta]')
       : null
 
-  const placeEfficiencyTip = (): void => {
+  const placeEfficiencyTip = (preReadTarget?: DOMRect): void => {
     if (!activeEfficiencyCell) return
-    const target = activeEfficiencyCell.getBoundingClientRect()
+    const target = preReadTarget ?? activeEfficiencyCell.getBoundingClientRect()
     const tip = efficiencyTip.getBoundingClientRect()
     const edge = 8
     const gap = 8
@@ -262,33 +274,22 @@ export const setupGearRatios = (
       !crossChainLossWatts
     )
       return
+    const targetRect = cell.getBoundingClientRect()
     activeEfficiencyCell?.removeAttribute('aria-describedby')
     activeEfficiencyCell = cell
-    const heading = el(
-      'span',
-      'tri-ratio-efficiency-tip-heading',
-      `${efficiencyChainring}T × ${efficiencyCog}T`,
-    )
-    const row = (label: string, value: string, math = false): HTMLElement => {
-      const item = el('span', 'tri-ratio-efficiency-tip-row')
-      const labelElement = el('span', 'tri-ratio-efficiency-tip-label', label)
-      const valueElement = el('span', 'tri-ratio-efficiency-tip-value')
-      if (math) setMath(valueElement, `$${value}$`)
-      else valueElement.textContent = value
-      item.append(labelElement, valueElement)
-      return item
-    }
-    efficiencyTip.replaceChildren(
-      heading,
-      row(context.formatter.text('vs. ideal'), `${efficiencyDelta}\\%`, true),
-      row(context.formatter.text('efficiency'), `${efficiencyValue}\\%`, true),
-      row(context.formatter.text('drivetrain loss'), `${lossWatts} W`),
-      row(context.formatter.text('cross-chain loss'), `${crossChainLossWatts} W`),
-    )
+    setText(tipHeading, `${efficiencyChainring}T × ${efficiencyCog}T`)
+    setText(vsIdealRow.label, context.formatter.text('vs. ideal'))
+    setFastMath(vsIdealRow.value, `$${efficiencyDelta}\\%$`)
+    setText(effRow.label, context.formatter.text('efficiency'))
+    setFastMath(effRow.value, `$${efficiencyValue}\\%$`)
+    setText(lossRow.label, context.formatter.text('drivetrain loss'))
+    setText(lossRow.value, `${lossWatts} W`)
+    setText(crossRow.label, context.formatter.text('cross-chain loss'))
+    setText(crossRow.value, `${crossChainLossWatts} W`)
     cell.setAttribute('aria-describedby', efficiencyTip.id)
     efficiencyTip.classList.add('tri-gloss--on')
     efficiencyTip.setAttribute('aria-hidden', 'false')
-    placeEfficiencyTip()
+    placeEfficiencyTip(targetRect)
   }
 
   const syncEfficiencyTip = (): void => {

@@ -102,7 +102,6 @@ const mountCalendar = (calendar: HTMLElement, context: TriathlonContext): (() =>
     if (!pop) return
     if (pop.matches(':popover-open')) pop.hidePopover()
     delete pop.dataset.open
-    pop.replaceChildren()
   }
   // A narrow calendar shows the detail in place of the views instead of beside them.
   const detailCoversViews = (): boolean =>
@@ -418,9 +417,9 @@ const mountCalendar = (calendar: HTMLElement, context: TriathlonContext): (() =>
     if (brief) node.querySelector('.tri-calendar-card-pending')?.remove()
     return node
   }
-  const place = (trigger: HTMLElement, pointerX: number | null): void => {
+  const place = (trigger: HTMLElement, pointerX: number | null, preReadAnchor?: DOMRect): void => {
     if (!pop) return
-    const anchor = trigger.getBoundingClientRect()
+    const anchor = preReadAnchor ?? trigger.getBoundingClientRect()
     const gap = 6
     // The card leaves its trigger uncovered so the pointer can still reach and click it.
     const available = Math.max(anchor.top, window.innerHeight - anchor.bottom) - gap - 8
@@ -441,26 +440,32 @@ const mountCalendar = (calendar: HTMLElement, context: TriathlonContext): (() =>
     pop.style.left = `${Math.max(8, left).toFixed(0)}px`
     pop.style.top = `${Math.max(8, Math.min(top, window.innerHeight - box.height - 8)).toFixed(0)}px`
   }
+  let shownCardKey = ''
   const showCard = (trigger: HTMLElement, pointerX: number | null): void => {
     if (!pop || trigger === active) return
     const ids = (trigger.dataset.calendarCard ?? '').split(' ').filter(Boolean)
     // The open detail already shows this event.
     if (ids.length === 1 && ids[0] === shown) return hideCard()
     cancelHide()
+    const anchor = trigger.getBoundingClientRect()
     const date = trigger.dataset.calendarCardDate ?? null
-    const cards = ids
-      .map(id => card(id, date, ids.length > 1 && !date))
-      .filter((node): node is Element => node !== null)
-    if (cards.length === 0) return hideCard()
+    const cardKey = `${ids.join(' ')}:${date ?? ''}:${context.presentation.locale}`
+    if (cardKey !== shownCardKey) {
+      const cards = ids
+        .map(id => card(id, date, ids.length > 1 && !date))
+        .filter((node): node is Element => node !== null)
+      if (cards.length === 0) return hideCard()
+      shownCardKey = cardKey
+      pop.replaceChildren(...cards)
+      localizeIn(pop)
+    }
     active?.removeAttribute('aria-describedby')
     active = trigger
-    pop.replaceChildren(...cards)
-    localizeIn(pop)
     if (typeof pop.showPopover === 'function') {
       if (!pop.matches(':popover-open')) pop.showPopover()
     } else pop.dataset.open = 'true'
     activeX = pointerX
-    place(trigger, pointerX)
+    place(trigger, pointerX, anchor)
     trigger.setAttribute('aria-describedby', pop.id)
   }
   const trigger = (target: EventTarget | null): HTMLElement | null =>
