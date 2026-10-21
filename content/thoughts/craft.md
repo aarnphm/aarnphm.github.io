@@ -6,7 +6,7 @@ comments: false
 date: '2021-12-22'
 description: and a celebration for the act of making.
 id: craft
-modified: 2026-10-19 21:49:56 GMT-04:00
+modified: 2026-10-21 15:29:49 GMT-04:00
 permalinks:
   - /thoughts/work
   - /craft
@@ -52,8 +52,8 @@ There is also a [[ideas|backlog]] of unfinished ideas that I might work on, one 
 
     </div>
 
-  - Landing page of [[/|this]] website
-  - Custom components, i.e: [[/thoughts/atelier with friends/dundurn|supper club]], [[/curius|curius]], parsing [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/PCA|jupyter notebook]]
+  - Landing page of [[/|this]] website, custom [[/404|404]] pages, and layouts for [[courses|learning]] and [[antilibrary|extensive Obsidian view plugins and supports]]
+  - Custom components, i.e: [[/thoughts/atelier with friends/dundurn|supper club]], [[/curius|curius]], parsing [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/PCA|jupyter notebook]], custom popovers for [[/tags/ml|tags]], [wikipedia links](https://en.wikipedia.org/wiki/Nash_equilibrium), [[/read|PDF readers]], semantic search, speech models, etc.
   - Source: [github](https://github.com/jackyzha0/quartz), [site](https://quartz.jzhao.xyz/)
 
     https://x.com/aarnphm/status/1861550609834402129

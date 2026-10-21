@@ -5,7 +5,7 @@ aliases:
 date: '2025-05-21'
 description: How draft tokens are verified, why residual sampling preserves the target distribution, and when the extra work reduces decoding time.
 id: Speculative decoding
-modified: 2026-10-19 23:22:15 GMT-04:00
+modified: 2026-10-21 16:34:55 GMT-04:00
 socials:
   slides: https://docs.google.com/presentation/d/1p1xE-EbSAnXpTSiSI0gmy_wdwxN5XaULO3AnCWWoRe4/edit#slide=id.p
 tags:
@@ -254,6 +254,10 @@ Lookahead collects candidate n-grams from Jacobi decoding iterations and verifie
 ## SPiRE
 
 ## MagicDec
+
+## LiLiCorr
+
+https://arxiv.org/abs/2608.20530
 
 ---
 
