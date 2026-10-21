@@ -34,6 +34,7 @@ import {
   triathlonFeedScopeFromSlug,
 } from '../../util/triathlon-date-route'
 import { buildTriathlonEquipment } from '../../util/triathlon-equipment'
+import { buildTriathlonHubPreview, triathlonHubPreviewSlug } from '../../util/triathlon-hub-preview'
 import {
   parseTriathlonMaintenance,
   type TriathlonMaintenance,
@@ -238,6 +239,17 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
           slug: triathlonCalendarPreviewSlug(),
           ext: '.json',
           content: JSON.stringify(buildTriathlonCalendarPreview(calendars)),
+        }),
+        write({
+          ctx,
+          slug: triathlonHubPreviewSlug(),
+          ext: '.json',
+          content: JSON.stringify(
+            buildTriathlonHubPreview(
+              Object.values(payload.details),
+              new Date().toISOString().slice(0, 10),
+            ),
+          ),
         }),
         ...calendars.map(season =>
           write({

@@ -78,6 +78,7 @@ export type TriathlonPreviewTarget =
   | { kind: 'comparison'; ids: string[] }
   | { kind: 'calendar'; year: number | null; view: 'list' | 'year' }
   | { kind: 'calculator'; raw: string }
+  | { kind: 'hub' }
 
 export interface TriathlonCalendarPreviewEvent {
   name: string
@@ -118,6 +119,8 @@ export const triathlonPopoverDomId = (target: TriathlonPreviewTarget, distance: 
       return `popover-triathlon-calendar-${target.year ?? 'all'}-${target.view}`
     case 'calculator':
       return `popover-triathlon-calc-${target.raw}`
+    case 'hub':
+      return `popover-triathlon-hub-${distance}`
   }
 }
 
@@ -138,7 +141,7 @@ const calendarView = (hash: string): TriathlonPreviewTarget | null => {
   return null
 }
 
-/** Day, comparison, calendar, and calculator links, including embed source hashes. */
+/** Day, comparison, calendar, calculator and hub links, including embed source hashes. */
 export function triathlonPreviewTarget(
   href: string,
   reference?: string,
@@ -171,6 +174,7 @@ export function triathlonPreviewTarget(
   if (path === 'triathlon' || path === 'triathlon/index') {
     const hashed = bare.split('#').find(part => triathlonDaySlug(part))
     if (hashed) return { kind: 'day', date: hashed, activityId: null }
+    return { kind: 'hub' }
   }
   return null
 }

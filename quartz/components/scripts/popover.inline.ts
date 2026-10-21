@@ -34,6 +34,7 @@ import {
   type StackedNotePayload,
 } from '../../util/stacked-notes'
 import { decodeCalcShare } from '../../util/triathlon-calculator'
+import { readTriathlonHubPreview, triathlonHubPreviewUrl } from '../../util/triathlon-hub-preview'
 import {
   readTriathlonCalendarPreview,
   readTriathlonPreview,
@@ -65,6 +66,7 @@ import {
   touchPopoverElement,
 } from './popover-dom'
 import { beginSidePanelRequest, disposeSidePanel, getOrCreateSidePanel } from './side-panel'
+import { renderTriathlonHubPreview } from './triathlon-hub-preview-card'
 import {
   renderTriathlonCalculatorPreview,
   renderTriathlonCalendarPreview,
@@ -1306,6 +1308,14 @@ function triathlonPreviewSource(
         return activities
           ? popoverInner =>
               renderTriathlonComparisonPreview(activities, href, presentation, popoverInner)
+          : null
+      }
+      if (target.kind === 'hub') {
+        const response = await fetch(triathlonHubPreviewUrl(window.location.href), { signal })
+        if (!response.ok) return null
+        const preview = readTriathlonHubPreview(await response.json())
+        return preview
+          ? popoverInner => renderTriathlonHubPreview(preview, href, presentation, popoverInner)
           : null
       }
       const preview = await fetchDayPreview(target.date, signal)

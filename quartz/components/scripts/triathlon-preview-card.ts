@@ -99,13 +99,13 @@ function icon(name: string): SVGSVGElement {
   return glyph
 }
 
-function miniatureList(items: string[]): HTMLElement {
+export function miniatureList(items: string[]): HTMLElement {
   const list = el('ul', 'document-popover-list')
   for (const item of items) list.appendChild(el('li', undefined, item))
   return list
 }
 
-function windowPreview(options: {
+export function windowPreview(options: {
   href: string
   title: string
   icon: string
