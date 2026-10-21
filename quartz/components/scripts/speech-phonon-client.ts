@@ -80,7 +80,7 @@ export class PhononClient {
       lastUpdate = performance.now()
       const percent = total && !cached ? ` (${Math.round((loaded / total) * 100)} %)` : ''
       this.onProgress(
-        cached ? 'Chargement de la voix depuis le cache…' : `Téléchargement de la voix${percent}…`,
+        cached ? 'chargement de la voix depuis le cache…' : `téléchargement de la voix${percent}…`,
       )
     }
     return module.PhononTTS.load({
@@ -105,7 +105,7 @@ export class PhononClient {
     if (trimmed.length > 5_000)
       throw new Error('Sélectionnez un texte de moins de 5 000 caractères.')
     const tts = await this.initialize()
-    this.onProgress('Prononciation en préparation…')
+    this.onProgress('prononciation en préparation…')
     const started = performance.now()
     let firstAudioMs: number | undefined
     const chunks: Float32Array[] = []
