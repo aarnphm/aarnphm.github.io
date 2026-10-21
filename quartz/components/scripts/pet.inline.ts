@@ -193,6 +193,7 @@ let trailJourney: { key: string; progress: number } | null = null
 
 const clamp = (v: number, min: number, max: number) => Math.min(Math.max(v, min), max)
 const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
+const readerMode = () => document.documentElement.getAttribute('reader-mode') === 'on'
 const height = (scale = 1) => (viewBottom - viewTop) * unit * scale
 
 // On unless the reader turned pets off from the palette.
@@ -337,7 +338,7 @@ const render = () => {
   svg.toggleAttribute('data-windy', windy)
   svg.toggleAttribute('data-storm', storm)
   svg.toggleAttribute('data-beach', beach)
-  svg.toggleAttribute('data-reading', document.documentElement.getAttribute('reader-mode') === 'on')
+  svg.toggleAttribute('data-reading', readerMode() || !!speaking)
   // On the rail it faces the page, its back to the pole.
   gazeArt?.face(carry ? 1 : face)
   syncTrailArt()
@@ -2579,10 +2580,7 @@ function renderFriend() {
   friendSvg.toggleAttribute('data-heat', heat)
   friendSvg.toggleAttribute('data-storm', storm)
   friendSvg.toggleAttribute('data-beach', beach)
-  friendSvg.toggleAttribute(
-    'data-reading',
-    document.documentElement.getAttribute('reader-mode') === 'on',
-  )
+  friendSvg.toggleAttribute('data-reading', readerMode())
   friendGaze?.face(friendFace)
   if (friend.classList.contains('is-speaking')) {
     const c = friendCenter()
@@ -3461,9 +3459,31 @@ document.addEventListener('nav', () => {
     { passive: true, signal },
   )
   window.addEventListener('pagehide', () => (doc || carry) && savePosition(), { signal })
+  // Glasses going on or coming off play their push-on or lift-off once; render keeps them on.
+  let readingTimer: number | undefined
+  const swapGlasses = (on: boolean) => {
+    if (!svg) return
+    clearTimeout(readingTimer)
+    const change = on ? 'data-reading-on' : 'data-reading-off'
+    svg.removeAttribute('data-reading-on')
+    svg.removeAttribute('data-reading-off')
+    svg.setAttribute(change, '')
+    readingTimer = window.setTimeout(() => svg?.removeAttribute(change), 420)
+  }
+  // While the French voice loads and says a phrase, the pet reads it off the page in its reading
+  // glasses, eyes on the phrase, then says it in its bubble.
+  let readLook: Point | null = null
   const onSpeech = (event: CustomEventMap['speech']) => {
-    const { state, text, lang } = event.detail
+    const { state, text, lang, phrase } = event.detail
+    const was = !!speaking
     speaking = state === 'idle' ? null : { text, lang, playing: state === 'playing' }
+    if (!!speaking !== was && !readerMode()) swapGlasses(!!speaking)
+    if (lookAt === readLook) lookAt = null
+    const rect = speaking ? phrase?.getBoundingClientRect() : undefined
+    readLook = rect ? { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 } : null
+    if (readLook) lookAt = readLook
+    gaze = ''
+    watch()
     showBubble()
   }
   document.addEventListener('speech', onSpeech)
@@ -3498,21 +3518,14 @@ document.addEventListener('nav', () => {
   }
   document.addEventListener('fullscreenchange', onFullscreen, { signal })
   // Reader mode puts its glasses on (render reads the mode).
-  let readingTimer: number | undefined
   let reflowTimer: number | undefined
   const onReaderMode = (event: CustomEventMap['readermodechange']) => {
     if (!svg) return
-    clearTimeout(readingTimer)
     clearTimeout(reflowTimer)
-    // Only the toggle animates; a pet spawned on a new page is already wearing them.
-    const change = event.detail.mode === 'on' ? 'data-reading-on' : 'data-reading-off'
-    const animate = event.detail.mode === 'on' || svg.hasAttribute('data-reading')
-    svg.removeAttribute('data-reading-on')
-    svg.removeAttribute('data-reading-off')
-    if (animate) {
-      svg.setAttribute(change, '')
-      readingTimer = window.setTimeout(() => svg?.removeAttribute(change), 420)
-    }
+    // Only the toggle animates; a pet spawned on a new page is already wearing them, and a pet
+    // reading a phrase aloud keeps them on.
+    const on = event.detail.mode === 'on'
+    if (!speaking && (on || svg.hasAttribute('data-reading'))) swapGlasses(on)
     render()
     // The text reflows into the freed width, under the pet as often as not; once it has settled,
     // a pet whose edge went away or now covers text finds another.
@@ -3588,6 +3601,7 @@ document.addEventListener('nav', () => {
     document.removeEventListener('contentdecrypted', onSlide)
     clearTimeout(slideTimer)
     speaking = null
+    readLook = null
     windows.disconnect()
     window.clearTimeout(windowTimer)
     lookAt = null

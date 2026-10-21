@@ -2007,14 +2007,6 @@ export function petSvg(paper = 'var(--light)', ink = 'var(--dark)', pink = PINK,
     'mouth-grin',
     `<path d="${poly(grinPts)}" style="fill:${pink}"/>${pen(grinPts, pressure(35, L, 0.2))}`,
   )
-  const blush = part(
-    'blush',
-    [EYES[0] - 0.18, EYES[1] + 0.2]
-      .map(
-        x => `<ellipse cx="${x.toFixed(3)}" cy="0.07" rx="0.15" ry="0.075" style="fill:${pink}"/>`,
-      )
-      .join(''),
-  )
 
   const sweat = part(
     'sweat',
@@ -2563,5 +2555,5 @@ export function petSvg(paper = 'var(--light)', ink = 'var(--dark)', pink = PINK,
     ),
   )
 
-  return `<svg class="pet-svg" viewBox="-1.8 -2 3.6 3.8" aria-hidden="true" focusable="false" data-state="idle"><g class="pet-flip">${ground}${snowfall}<g class="pet-hop"><g class="pet-lean">${chute}${legs}${lounge}${speed}<g class="pet-body">${jetpack}${hair}${outfit.back}${body}${tan}${vest}${strap}<g class="pet-look">${dash}${happy}${wide}${wince}${mouthO}${smile}${grin}${blush}</g>${knit}${outfit.front}${glasses}${shades}${toque}${hat}${holds}${shelter}${breath}${arms}${caught}${lit}${grip}${pole}${laptop}</g>${sweat}${dots}${gust}${thought}</g></g></g></svg>`
+  return `<svg class="pet-svg" viewBox="-1.8 -2 3.6 3.8" aria-hidden="true" focusable="false" data-state="idle"><g class="pet-flip">${ground}${snowfall}<g class="pet-hop"><g class="pet-lean">${chute}${legs}${lounge}${speed}<g class="pet-body">${jetpack}${hair}${outfit.back}${body}${tan}${vest}${strap}<g class="pet-look">${dash}${happy}${wide}${wince}${mouthO}${smile}${grin}</g>${knit}${outfit.front}${glasses}${shades}${toque}${hat}${holds}${shelter}${breath}${arms}${caught}${lit}${grip}${pole}${laptop}</g>${sweat}${dots}${gust}${thought}</g></g></g></svg>`
 }
