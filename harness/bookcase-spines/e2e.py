@@ -11,7 +11,7 @@ import sys
 import time
 import unittest
 
-from providers import mapping
+from schema import mapping
 
 ROOT = Path(__file__).resolve().parents[2]
 EVIDENCE = (
@@ -115,18 +115,64 @@ class Pipeline(unittest.TestCase):
       cli('plan', '--input', str(input_file), '--run', str(run), expected=1)
       self.assertEqual((run / 'state.json').read_bytes(), before)
       prepared = cli(
+        'prepare', '--run', str(run), '--job', 'fixture', '--stage', 'trace'
+      )
+      self.assertEqual(prepared['provider'], 'argon')
+      self.assertIsInstance(prepared['argv'], list)
+      self.assertIn('gemini-4-argon-high', list_value(prepared['argv']))
+      self.assertIn('none', list_value(prepared['argv']))
+      config = mapping(
+        json.loads((ROOT / 'harness/bookcase-spines/config.json').read_text())
+      )
+      self.assertEqual(config['reviewers'], ['astra', 'opus', 'caw'])
+      config_file = EVIDENCE / 'config.json'
+      for reviewers in [['astra', 'opus'], ['astra', 'opus', 'caw', 'argon']]:
+        write(config_file, {**config, 'reviewers': reviewers})
+        cli(
+          'plan',
+          '--input',
+          str(input_file),
+          '--config',
+          str(config_file),
+          '--run',
+          str(EVIDENCE / 'invalid-policy'),
+          expected=1,
+        )
+      write(
+        config_file,
+        {
+          **config,
+          'trace': {
+            'provider': 'sol',
+            'model': 'gpt-6.1-sol',
+            'effort': 'medium',
+          },
+        },
+      )
+      sol_run = EVIDENCE / 'sol-run'
+      cli(
+        'plan',
+        '--input',
+        str(input_file),
+        '--config',
+        str(config_file),
+        '--run',
+        str(sol_run),
+      )
+      sol = cli('prepare', '--run', str(sol_run), '--job', 'fixture')
+      self.assertEqual(sol['provider'], 'sol')
+      self.assertIn('read-only', list_value(sol['argv']))
+      self.assertIn('gpt-6.1-sol', list_value(sol['argv']))
+      cli(
         'prepare',
         '--run',
         str(run),
         '--job',
         'fixture',
-        '--stage',
-        'trace',
         '--provider',
         'sol',
+        expected=1,
       )
-      self.assertIsInstance(prepared['argv'], list)
-      self.assertIn('read-only', list_value(prepared['argv']))
       response = EVIDENCE / 'response.json'
       candidate = {
         'jobId': 'fixture',
@@ -176,7 +222,7 @@ class Pipeline(unittest.TestCase):
           expected=1,
         )
         self.assertEqual((run / 'state.json').read_bytes(), before)
-      for provider in ['argon', 'caw']:
+      for provider in ['astra', 'opus', 'caw']:
         request = cli(
           'prepare',
           '--run',
@@ -188,10 +234,36 @@ class Pipeline(unittest.TestCase):
           '--provider',
           provider,
         )
-        self.assertIn('none', list_value(request['argv']))
+        argv = list_value(request['argv'])
+        if provider == 'astra':
+          self.assertIn('gpt-6-astra', argv)
+          self.assertIn('read-only', argv)
+        if provider == 'opus':
+          for flag in [
+            '--bare',
+            '--restricted',
+            '--strict-mcp-config',
+            '--no-session-persistence',
+          ]:
+            self.assertIn(flag, argv)
+          self.assertEqual(argv[argv.index('--tools') + 1], 'Read')
+          self.assertNotIn('--fallback-model', argv)
         if provider == 'caw':
-          self.assertIn('ask', list_value(request['argv']))
-          self.assertNotIn('--force', list_value(request['argv']))
+          self.assertIn('none', argv)
+          self.assertIn('ask', argv)
+          self.assertNotIn('--force', argv)
+      cli(
+        'prepare',
+        '--run',
+        str(run),
+        '--job',
+        'fixture',
+        '--stage',
+        'verify',
+        '--provider',
+        'argon',
+        expected=1,
+      )
       self.assertEqual(
         cli('run', '--run', str(run), '--dry-run')['modelCalls'], 0
       )

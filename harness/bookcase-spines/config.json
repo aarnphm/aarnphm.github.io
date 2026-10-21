@@ -1,9 +1,11 @@
 {
-  "version": 1,
-  "trace": { "provider": "sol", "model": "gpt-6.1-sol", "effort": "medium" },
-  "reviewers": ["sol", "argon"],
+  "version": 2,
+  "trace": { "provider": "argon", "model": "gemini-4-argon-high", "effort": null },
+  "reviewers": ["astra", "opus", "caw"],
   "providers": {
     "sol": { "command": "codex", "model": "gpt-6.1-sol", "effort": "high" },
+    "astra": { "command": "codex", "model": "gpt-6-astra", "effort": "high" },
+    "opus": { "command": "claude", "model": "claude-opus-5-5", "effort": "high" },
     "argon": { "command": "argon", "model": "gemini-4-argon-high", "effort": null },
     "caw": { "command": "caw", "model": null, "effort": null }
   },

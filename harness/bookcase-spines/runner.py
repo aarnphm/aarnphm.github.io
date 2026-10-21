@@ -86,7 +86,8 @@ def run(
           state.config.limits.workerMs,
           int((deadline - monotonic() - 10) * 1000),
         )
-        request = prepare(state, job, 'trace', 'sol', timeout)
+        worker = state.config.trace.provider
+        request = prepare(state, job, 'trace', worker, timeout)
         job.attempts += 1
         state.calls += 1
         save_state(
@@ -95,14 +96,14 @@ def run(
           {
             'job': job.input.id,
             'invocation': request.invocation,
-            'provider': 'sol',
+            'provider': worker,
             'stage': 'trace',
           },
         )
         result = dispatch(request, state)
         if not result.complete:
           raise ValueError(
-            f'sol: {result.error}; invocation {request.invocation}'
+            f'{worker}: {result.error}; invocation {request.invocation}'
           )
         submit(state, job, response_json(result.response), count_attempt=False)
       if job.status == 'awaiting_review':

@@ -17,6 +17,16 @@ separately.
 - Deterministic validation alone cannot accept artwork or publish it.
 - Review must bind exact candidate, input, rubric, rendered images and provider
   invocation. Missing/partial/error results cannot satisfy a review.
+- Argon High implements by default; Sol Medium remains selectable. The default
+  CLI route must follow the planned worker. A worker cannot approve its own trace.
+- Astra, Opus and Caw each supply a required independent receipt. Omitting any
+  required role must fail policy validation before work starts.
+- Opus must use the configured API-credit key in the child environment only.
+  Missing credentials must fail without subscription fallback. Neither request
+  files nor process receipts may contain key values. Claude tools are limited to
+  reading the supplied images; no shell, edits, MCP or further delegation.
+- Claude errors, denied tools, absent image reads or missing structured results
+  must never be counted as a completed visual review.
 - Sol runs read-only; Caw uses ask mode without force or blanket MCP approval.
   Argon receives a read-only assignment. Browser tools are disabled by instruction.
   Provider process modes are recorded honestly, without claiming OS isolation for

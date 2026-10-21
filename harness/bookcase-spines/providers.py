@@ -1,4 +1,4 @@
-"""Fresh bounded Sol, Argon and Caw calls with native transport inspection."""
+"""Fresh bounded implementation and review calls with native transport inspection."""
 
 from __future__ import annotations
 
@@ -21,6 +21,7 @@ from files import (
   write_json,
 )
 from process import execute
+import opus
 from schema import (
   Job,
   Provider,
@@ -30,6 +31,8 @@ from schema import (
   Trace,
   Transport,
   json_schema,
+  mapping,
+  optional_text,
 )
 from svg import dimensions
 
@@ -56,8 +59,14 @@ def prepare(
 ) -> Prepared:
   fresh(state)
   fresh_job(job)
-  if stage == 'trace' and provider != 'sol':
-    raise ValueError('Trace workers are pinned to 6.1 Sol Medium')
+  if stage == 'trace' and provider != state.config.trace.provider:
+    raise ValueError(
+      'Trace provider must match the planned implementation worker'
+    )
+  if stage == 'verify' and provider == state.config.trace.provider:
+    raise ValueError(
+      'The implementation worker cannot review its own candidate'
+    )
   if (
     job.input.blockedReason
     or not job.input.reference
@@ -114,9 +123,9 @@ def prepare(
   )
   (directory / 'task.txt').write_text(prompt)
   timeout_ms = timeout_ms or state.config.limits.workerMs
-  if provider == 'sol':
+  if provider in ['sol', 'astra']:
     if not model or not effort:
-      raise ValueError('Sol requires an explicit model and effort')
+      raise ValueError('Codex requires an explicit model and effort')
     argv = [
       'exec',
       '--cd',
@@ -141,6 +150,12 @@ def prepare(
     for value in images:
       argv.extend(['--image', value.file])
     argv.append('-')
+  elif provider == 'opus':
+    if not model or not effort:
+      raise ValueError('Opus requires an explicit model and effort')
+    argv = opus.arguments(
+      model, effort, schema, [value.file for value in images]
+    )
   else:
     argv = [
       '--workspace',
@@ -170,21 +185,9 @@ def prepare(
   return prepared
 
 
-def mapping(value: object) -> dict[str, object]:
-  if not isinstance(value, dict):
-    raise ValueError('Expected a JSON object')
-  if any(not isinstance(key, str) for key in value):
-    raise ValueError('Expected string object keys')
-  return {key: item for key, item in value.items()}
-
-
-def optional_text(value: object) -> str | None:
-  if value is None or isinstance(value, str):
-    return value
-  raise ValueError('Expected string or null')
-
-
-def inspect_sol(directory: Path, output: str) -> Transport:
+def inspect_codex(
+  directory: Path, output: str, provider: Provider
+) -> Transport:
   events = [
     mapping(json.loads(line)) for line in output.splitlines() if line.strip()
   ]
@@ -205,7 +208,7 @@ def inspect_sol(directory: Path, output: str) -> Transport:
   final = directory / 'final.json'
   response = final.read_text() if final.exists() else ''
   return Transport(
-    'sol',
+    provider,
     bool(completed and not failed and response.strip()),
     None,
     response,
@@ -218,9 +221,13 @@ def inspect_sol(directory: Path, output: str) -> Transport:
 
 def dispatch(prepared: Prepared, state: State) -> Transport:
   directory = Path(prepared.directory)
-  family = {'sol': 'codex', 'argon': 'argon', 'caw': 'cursor'}[
-    prepared.provider
-  ]
+  family = {
+    'sol': 'codex',
+    'astra': 'codex',
+    'opus': 'claude',
+    'argon': 'argon',
+    'caw': 'cursor',
+  }[prepared.provider]
   logs = REPOSITORY / 'work' / family / 'bookcase-spines' / prepared.invocation
   logs.mkdir(parents=True)
   prompt = (directory / 'task.txt').read_text()
@@ -232,14 +239,29 @@ def dispatch(prepared: Prepared, state: State) -> Transport:
     max_bytes=state.config.limits.maxOutputBytes,
     stdin=prompt,
     active=directory / 'active.json',
+    env=opus.api_environment(REPOSITORY)
+    if prepared.provider == 'opus'
+    else None,
   )
   try:
-    if prepared.provider == 'sol':
-      report = inspect_sol(directory, Path(result.stdoutFile).read_text())
+    if prepared.provider in ['sol', 'astra']:
+      report = inspect_codex(
+        directory, Path(result.stdoutFile).read_text(), prepared.provider
+      )
       report.model = (
         state.config.trace.model
         if prepared.stage == 'trace'
-        else state.config.providers.sol.model
+        else state.config.providers.get(prepared.provider).model
+      )
+    elif prepared.provider == 'opus':
+      images = prepared.request['images']
+      if not isinstance(images, list):
+        raise ValueError('Expected image list')
+      paths = [optional_text(mapping(value).get('file')) for value in images]
+      report = opus.inspect(
+        Path(result.stdoutFile).read_text(),
+        [file for file in paths if file is not None],
+        state.config.providers.opus.model,
       )
     else:
       helper = (

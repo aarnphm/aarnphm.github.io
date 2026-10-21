@@ -12,7 +12,7 @@ import selectors
 import signal
 import subprocess
 import time
-from typing import Iterator
+from typing import Iterator, Mapping
 
 DEADLINE: ContextVar[float | None] = ContextVar(
   'invocation_deadline', default=None
@@ -45,6 +45,7 @@ def execute(
   max_bytes: int,
   stdin: str = '',
   active: Path | None = None,
+  env: Mapping[str, str] | None = None,
 ) -> Result:
   directory.mkdir(parents=True, exist_ok=True)
   stdout_file, stderr_file = (
@@ -73,6 +74,7 @@ def execute(
       stdout=subprocess.PIPE,
       stderr=subprocess.PIPE,
       start_new_session=True,
+      env=env,
     )
     if active:
       active.write_text(json.dumps({'pid': process.pid, 'argv': argv}))
