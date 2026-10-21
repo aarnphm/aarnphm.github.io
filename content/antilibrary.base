@@ -61,7 +61,7 @@ views:
       p/fiction:
         displayNames: fiction
         style: spine
-        material: walnut
+        material: steel
         showTags: false
       p/nf:
         displayNames: non fiction
@@ -71,13 +71,13 @@ views:
       p/scifi:
         displayNames: sci-fi
         style: corner
-        material: copper
+        material: walnut
       technology:
         style: wall
-        material: walnut
+        material: steel
       poetry:
         style: straight
-        material: paper
+        material: walnut
       finance:
         style: straight
         material: concrete
