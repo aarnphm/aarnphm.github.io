@@ -1,0 +1,6085 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:02.448 align:middle line:90%
+[SQUEAKING]
+
+00:00:02.448 --> 00:00:03.909 align:middle line:90%
+[RUSTLING]
+
+00:00:03.909 --> 00:00:09.885 align:middle line:90%
+[CLICKING]
+
+00:00:09.885 --> 00:00:12.260 align:middle line:84%
+IAN BALL: So today, we're
+going to start analyzing games.
+
+00:00:12.260 --> 00:00:19.652 align:middle line:90%
+
+
+00:00:19.652 --> 00:00:21.360 align:middle line:84%
+So in my view, this
+is where things start
+
+00:00:21.360 --> 00:00:22.760 align:middle line:90%
+getting a lot more interesting.
+
+00:00:22.760 --> 00:00:25.740 align:middle line:84%
+So far, we've just said how
+to set up a game-- or first,
+
+00:00:25.740 --> 00:00:27.980 align:middle line:84%
+how to set up an individual
+decision problem,
+
+00:00:27.980 --> 00:00:29.937 align:middle line:84%
+and then how to set up
+or represent a game.
+
+00:00:29.937 --> 00:00:31.520 align:middle line:84%
+And now, we're
+actually going to start
+
+00:00:31.520 --> 00:00:33.320 align:middle line:84%
+thinking about
+analyzing the game
+
+00:00:33.320 --> 00:00:35.120 align:middle line:84%
+and trying to make
+predictions about how
+
+00:00:35.120 --> 00:00:37.400 align:middle line:90%
+people will play in the game.
+
+00:00:37.400 --> 00:00:40.800 align:middle line:84%
+So I want to first
+go over the approach
+
+00:00:40.800 --> 00:00:44.880 align:middle line:84%
+that we're usually going
+to take in this course.
+
+00:00:44.880 --> 00:00:48.480 align:middle line:84%
+We'll usually start with
+some informal description
+
+00:00:48.480 --> 00:00:49.615 align:middle line:90%
+of a strategic setting.
+
+00:00:49.615 --> 00:00:51.740 align:middle line:84%
+That may be something that
+you get in a problem set
+
+00:00:51.740 --> 00:00:54.080 align:middle line:84%
+or from thinking
+about the world.
+
+00:00:54.080 --> 00:00:56.740 align:middle line:84%
+Then, based on the
+informal description,
+
+00:00:56.740 --> 00:00:59.560 align:middle line:84%
+we'll usually write down the
+extensive form representation.
+
+00:00:59.560 --> 00:01:06.500 align:middle line:90%
+
+
+00:01:06.500 --> 00:01:09.060 align:middle line:84%
+Remember, this is the very
+detailed representation
+
+00:01:09.060 --> 00:01:11.700 align:middle line:84%
+that we talked about
+a lot on Tuesday.
+
+00:01:11.700 --> 00:01:16.180 align:middle line:84%
+And then we'll reduce this
+extensive form representation
+
+00:01:16.180 --> 00:01:20.580 align:middle line:84%
+to the strategic
+form representation.
+
+00:01:20.580 --> 00:01:26.380 align:middle line:90%
+
+
+00:01:26.380 --> 00:01:27.940 align:middle line:84%
+And later on in
+the course, we will
+
+00:01:27.940 --> 00:01:29.700 align:middle line:84%
+discuss some issues
+that can only
+
+00:01:29.700 --> 00:01:33.487 align:middle line:84%
+be perceived in the extensive
+form representation.
+
+00:01:33.487 --> 00:01:35.820 align:middle line:84%
+But for the beginning of the
+course-- and in particular,
+
+00:01:35.820 --> 00:01:36.820 align:middle line:90%
+in today--
+
+00:01:36.820 --> 00:01:38.500 align:middle line:84%
+everything we're
+going to say is going
+
+00:01:38.500 --> 00:01:41.300 align:middle line:84%
+to be about a strategic
+form representation.
+
+00:01:41.300 --> 00:01:49.820 align:middle line:84%
+So today, our starting
+point is going to be 3.
+
+00:01:49.820 --> 00:01:52.740 align:middle line:84%
+We're going to imagine that
+we're given a strategic form
+
+00:01:52.740 --> 00:01:53.320 align:middle line:90%
+game.
+
+00:01:53.320 --> 00:01:55.180 align:middle line:84%
+But you can imagine,
+in the background,
+
+00:01:55.180 --> 00:01:58.250 align:middle line:84%
+that we may have derived arrived
+this given strategic form
+
+00:01:58.250 --> 00:02:02.530 align:middle line:84%
+game from an extensive form
+that we previously wrote down.
+
+00:02:02.530 --> 00:02:06.330 align:middle line:84%
+So let's just recall the
+notation for a strategic form
+
+00:02:06.330 --> 00:02:07.010 align:middle line:90%
+game.
+
+00:02:07.010 --> 00:02:10.970 align:middle line:84%
+We have the players,
+i equals 1 through n
+
+00:02:10.970 --> 00:02:15.770 align:middle line:84%
+And then for each player i, we
+have a strategy set associated
+
+00:02:15.770 --> 00:02:17.050 align:middle line:90%
+with that player i.
+
+00:02:17.050 --> 00:02:21.690 align:middle line:84%
+So we have big S1
+up to big Sn, where
+
+00:02:21.690 --> 00:02:26.310 align:middle line:84%
+S1 is the set of strategies
+that are available to player 1.
+
+00:02:26.310 --> 00:02:28.410 align:middle line:84%
+Remember, the set can
+be quite complicated,
+
+00:02:28.410 --> 00:02:31.850 align:middle line:84%
+if we've derived this
+set by evaluating
+
+00:02:31.850 --> 00:02:34.690 align:middle line:84%
+all complete contingent
+plans in the extensive form
+
+00:02:34.690 --> 00:02:36.330 align:middle line:90%
+representation.
+
+00:02:36.330 --> 00:02:42.290 align:middle line:84%
+And then we have our payoffs,
+ui from S to R, where, remember,
+
+00:02:42.290 --> 00:02:46.730 align:middle line:84%
+S is the set of
+strategy profiles.
+
+00:02:46.730 --> 00:02:51.410 align:middle line:84%
+So S, mathematically, is a
+product set of S1 up to Sn.
+
+00:02:51.410 --> 00:02:54.890 align:middle line:84%
+But the key thing is that
+what lives in S are profiles
+
+00:02:54.890 --> 00:02:57.990 align:middle line:84%
+files specifying a strategy
+for each of the n players.
+
+00:02:57.990 --> 00:02:59.490 align:middle line:84%
+And we have a
+function like this,
+
+00:02:59.490 --> 00:03:04.670 align:middle line:84%
+again for each of the n players,
+that specifies each player i's
+
+00:03:04.670 --> 00:03:08.550 align:middle line:84%
+utility as a function of
+the profile of strategies
+
+00:03:08.550 --> 00:03:09.690 align:middle line:90%
+that the players play.
+
+00:03:09.690 --> 00:03:12.790 align:middle line:90%
+
+
+00:03:12.790 --> 00:03:18.790 align:middle line:84%
+Now, what is our goal
+when we analyze a game?
+
+00:03:18.790 --> 00:03:22.230 align:middle line:84%
+I think we're asking the
+following fundamental question--
+
+00:03:22.230 --> 00:03:25.030 align:middle line:84%
+given a game, we want
+to ask, how do we
+
+00:03:25.030 --> 00:03:28.410 align:middle line:84%
+think players will play
+or should play the game?
+
+00:03:28.410 --> 00:03:46.430 align:middle line:90%
+
+
+00:03:46.430 --> 00:03:50.270 align:middle line:84%
+Now, notice, I think the
+distinction between will play
+
+00:03:50.270 --> 00:03:53.610 align:middle line:84%
+and should play gets into
+two different interpretations
+
+00:03:53.610 --> 00:03:55.250 align:middle line:90%
+of the analysis that we do.
+
+00:03:55.250 --> 00:03:58.530 align:middle line:84%
+So the answers that we get
+and the formal analysis we do
+
+00:03:58.530 --> 00:04:00.710 align:middle line:84%
+won't really depend on
+which interpretation
+
+00:04:00.710 --> 00:04:01.870 align:middle line:90%
+you want to keep in mind.
+
+00:04:01.870 --> 00:04:03.270 align:middle line:84%
+But depending on
+the application,
+
+00:04:03.270 --> 00:04:05.570 align:middle line:84%
+one may be more or
+less compelling.
+
+00:04:05.570 --> 00:04:08.630 align:middle line:84%
+So will play-- if we want
+to think about will play,
+
+00:04:08.630 --> 00:04:12.290 align:middle line:84%
+this is what sometimes
+called positive analysis
+
+00:04:12.290 --> 00:04:16.130 align:middle line:90%
+or descriptive analysis.
+
+00:04:16.130 --> 00:04:19.130 align:middle line:84%
+And the idea of this is that,
+if we observe some game,
+
+00:04:19.130 --> 00:04:21.970 align:middle line:84%
+we want to be able to make
+a prediction about how
+
+00:04:21.970 --> 00:04:24.730 align:middle line:84%
+rational players will
+choose to play this game.
+
+00:04:24.730 --> 00:04:29.810 align:middle line:84%
+So the goal here is
+really a prediction,
+
+00:04:29.810 --> 00:04:31.690 align:middle line:84%
+which will, of
+course, only be valid
+
+00:04:31.690 --> 00:04:34.450 align:middle line:84%
+if we think that the utility
+functions that we write down
+
+00:04:34.450 --> 00:04:38.210 align:middle line:84%
+and the rationality assumptions
+that we make are compelling.
+
+00:04:38.210 --> 00:04:40.010 align:middle line:84%
+Another interpretation
+of game theory
+
+00:04:40.010 --> 00:04:43.770 align:middle line:84%
+is to put yourself in
+the role of an advisor.
+
+00:04:43.770 --> 00:04:46.570 align:middle line:84%
+Someone comes to you and says,
+how should I play in this game?
+
+00:04:46.570 --> 00:04:48.933 align:middle line:84%
+What is your recommendation
+for how I should play?
+
+00:04:48.933 --> 00:04:50.850 align:middle line:84%
+And companies do sometimes
+hire game theorists
+
+00:04:50.850 --> 00:04:53.033 align:middle line:84%
+to consult and make
+recommendations for maybe
+
+00:04:53.033 --> 00:04:54.450 align:middle line:84%
+how they should
+bid in an auction.
+
+00:04:54.450 --> 00:04:55.670 align:middle line:90%
+That would be one example.
+
+00:04:55.670 --> 00:05:00.550 align:middle line:84%
+So here, this is
+sometimes called normative
+
+00:05:00.550 --> 00:05:05.710 align:middle line:90%
+or prescriptive analysis.
+
+00:05:05.710 --> 00:05:08.750 align:middle line:84%
+And the goal of our
+analysis is to provide
+
+00:05:08.750 --> 00:05:17.310 align:middle line:84%
+what I might say is a
+recommendation for how players
+
+00:05:17.310 --> 00:05:22.250 align:middle line:84%
+should play if they want
+to achieve their objectives
+
+00:05:22.250 --> 00:05:25.050 align:middle line:84%
+and they recognize that other
+players are rational as well
+
+00:05:25.050 --> 00:05:27.495 align:middle line:84%
+and maybe also are getting
+advice from game theorists
+
+00:05:27.495 --> 00:05:29.870 align:middle line:84%
+or from other informed parties
+about how they should play
+
+00:05:29.870 --> 00:05:30.910 align:middle line:90%
+in the game.
+
+00:05:30.910 --> 00:05:33.750 align:middle line:84%
+But I just want you to keep
+this in mind, in the background,
+
+00:05:33.750 --> 00:05:34.830 align:middle line:90%
+throughout the course.
+
+00:05:34.830 --> 00:05:37.247 align:middle line:84%
+But when you're formally asked
+to solve for an equilibrium
+
+00:05:37.247 --> 00:05:39.830 align:middle line:84%
+or to analyze a
+game, your answer
+
+00:05:39.830 --> 00:05:42.510 align:middle line:84%
+won't really depend on your
+particular interpretation
+
+00:05:42.510 --> 00:05:45.550 align:middle line:90%
+in that context.
+
+00:05:45.550 --> 00:05:49.860 align:middle line:84%
+So I want to start with an
+example of a game, an example
+
+00:05:49.860 --> 00:05:51.243 align:middle line:90%
+of a strategic form game.
+
+00:05:51.243 --> 00:05:53.660 align:middle line:84%
+And this is the most famous
+game in game theory, probably.
+
+00:05:53.660 --> 00:05:54.600 align:middle line:90%
+You may have heard of it.
+
+00:05:54.600 --> 00:05:56.080 align:middle line:84%
+It's called the
+prisoner's dilemma.
+
+00:05:56.080 --> 00:06:00.620 align:middle line:90%
+
+
+00:06:00.620 --> 00:06:02.440 align:middle line:90%
+Make sure to [INAUDIBLE].
+
+00:06:02.440 --> 00:06:06.460 align:middle line:90%
+
+
+00:06:06.460 --> 00:06:08.860 align:middle line:84%
+Now, the first thing
+I want to write down
+
+00:06:08.860 --> 00:06:12.000 align:middle line:84%
+is think about how we
+can represent this game.
+
+00:06:12.000 --> 00:06:14.500 align:middle line:84%
+It's kind of ugly to think about
+all these functions and all
+
+00:06:14.500 --> 00:06:15.540 align:middle line:90%
+these sets.
+
+00:06:15.540 --> 00:06:18.700 align:middle line:84%
+So normally, we represent
+strategic form games
+
+00:06:18.700 --> 00:06:21.020 align:middle line:84%
+using what's called a
+by matrix, just a box
+
+00:06:21.020 --> 00:06:23.220 align:middle line:90%
+with some numbers in it.
+
+00:06:23.220 --> 00:06:26.100 align:middle line:84%
+So in this game,
+each player is going
+
+00:06:26.100 --> 00:06:30.100 align:middle line:84%
+to have two strategies,
+which we'll call M and F. So
+
+00:06:30.100 --> 00:06:31.520 align:middle line:90%
+let me tell the story here.
+
+00:06:31.520 --> 00:06:32.840 align:middle line:90%
+So we have two prisoners.
+
+00:06:32.840 --> 00:06:36.620 align:middle line:90%
+
+
+00:06:36.620 --> 00:06:40.180 align:middle line:84%
+And we assume that they're
+placed in separate cells.
+
+00:06:40.180 --> 00:06:42.260 align:middle line:84%
+Again, this is going
+to be a colorful story
+
+00:06:42.260 --> 00:06:44.360 align:middle line:84%
+to help motivate
+this particular game.
+
+00:06:44.360 --> 00:06:46.272 align:middle line:84%
+But the lessons
+from this game, I
+
+00:06:46.272 --> 00:06:48.480 align:middle line:84%
+think a lot of game theorists
+and economists believe,
+
+00:06:48.480 --> 00:06:51.280 align:middle line:84%
+are much broader than
+this kind of silly story
+
+00:06:51.280 --> 00:06:52.760 align:middle line:90%
+that we're going to tell here.
+
+00:06:52.760 --> 00:06:54.700 align:middle line:90%
+So we have two prisoners.
+
+00:06:54.700 --> 00:06:56.640 align:middle line:84%
+And they've been
+accused of a crime.
+
+00:06:56.640 --> 00:06:59.040 align:middle line:84%
+And each prisoner
+has two options.
+
+00:06:59.040 --> 00:07:02.760 align:middle line:84%
+We'll call them M and
+F. So M is to stay mum--
+
+00:07:02.760 --> 00:07:05.360 align:middle line:84%
+that is, don't
+admit to anything.
+
+00:07:05.360 --> 00:07:09.265 align:middle line:84%
+And F is sometimes the word
+is used fink or tattle.
+
+00:07:09.265 --> 00:07:11.140 align:middle line:84%
+It's to tell on the
+other person-- say, yeah,
+
+00:07:11.140 --> 00:07:12.760 align:middle line:90%
+the other guy did it.
+
+00:07:12.760 --> 00:07:15.640 align:middle line:84%
+So the prosecutor
+comes by and says,
+
+00:07:15.640 --> 00:07:19.120 align:middle line:84%
+do you want to accuse
+your co-conspirator
+
+00:07:19.120 --> 00:07:20.640 align:middle line:90%
+of committing the crime?
+
+00:07:20.640 --> 00:07:23.420 align:middle line:84%
+And the prosecutor says, look,
+we'll give you a good deal.
+
+00:07:23.420 --> 00:07:27.680 align:middle line:84%
+So if you're willing to testify
+against the other prisoner,
+
+00:07:27.680 --> 00:07:29.888 align:middle line:84%
+we'll give you a
+sentence reduction.
+
+00:07:29.888 --> 00:07:32.180 align:middle line:84%
+But now, we're going to be
+able to catch the other guy.
+
+00:07:32.180 --> 00:07:34.463 align:middle line:84%
+And the other guy is going
+to get a bigger sentence.
+
+00:07:34.463 --> 00:07:35.880 align:middle line:84%
+So now, what we
+want to do is fill
+
+00:07:35.880 --> 00:07:38.560 align:middle line:90%
+in the payoffs in this matrix.
+
+00:07:38.560 --> 00:07:43.800 align:middle line:84%
+And what we imagine is, if
+both players stay silent, then
+
+00:07:43.800 --> 00:07:47.060 align:middle line:90%
+both players get a payoff of 2.
+
+00:07:47.060 --> 00:07:49.340 align:middle line:84%
+They both get convicted
+of, say, a minor crime,
+
+00:07:49.340 --> 00:07:50.820 align:middle line:84%
+because they didn't
+have testimony
+
+00:07:50.820 --> 00:07:52.540 align:middle line:90%
+to convict either of them.
+
+00:07:52.540 --> 00:07:54.460 align:middle line:90%
+Now, let's say I'm player 1.
+
+00:07:54.460 --> 00:08:01.860 align:middle line:84%
+So the way I'm writing this
+here is player 1 is the column--
+
+00:08:01.860 --> 00:08:03.540 align:middle line:90%
+sorry, the row player.
+
+00:08:03.540 --> 00:08:06.440 align:middle line:90%
+Player 1 is choosing the row.
+
+00:08:06.440 --> 00:08:09.460 align:middle line:84%
+So they're choosing
+between M and F. Player 2
+
+00:08:09.460 --> 00:08:10.940 align:middle line:90%
+is the column player.
+
+00:08:10.940 --> 00:08:13.660 align:middle line:84%
+They're choosing between
+the column m and F.
+
+00:08:13.660 --> 00:08:16.500 align:middle line:84%
+So the strategy set-- maybe
+this is helpful here--
+
+00:08:16.500 --> 00:08:22.460 align:middle line:84%
+for each player S1 equals
+S2 equals M comma F.
+
+00:08:22.460 --> 00:08:26.180 align:middle line:84%
+So if we want to formally
+connect it to our strategic form
+
+00:08:26.180 --> 00:08:30.080 align:middle line:84%
+representation over here, each
+player has two strategies.
+
+00:08:30.080 --> 00:08:31.800 align:middle line:84%
+They each have the
+same two strategies,
+
+00:08:31.800 --> 00:08:35.179 align:middle line:84%
+simply staying silent,
+M, or testifying
+
+00:08:35.179 --> 00:08:38.260 align:middle line:84%
+against the other
+player, finking, F.
+
+00:08:38.260 --> 00:08:41.940 align:middle line:84%
+And then when we write 2, 2
+in this box, the first number
+
+00:08:41.940 --> 00:08:46.330 align:middle line:84%
+represents player 1's utility
+from this strategy profile
+
+00:08:46.330 --> 00:08:47.930 align:middle line:90%
+corresponding to this box.
+
+00:08:47.930 --> 00:08:52.050 align:middle line:84%
+So this first box corresponds
+to the strategy profile where
+
+00:08:52.050 --> 00:08:55.650 align:middle line:84%
+player one chooses M
+and player 2 chooses M.
+
+00:08:55.650 --> 00:08:58.890 align:middle line:84%
+And then in the box, we're
+writing player 1'2 payoff from
+
+00:08:58.890 --> 00:09:01.450 align:middle line:84%
+that consequence or
+that strategy profile,
+
+00:09:01.450 --> 00:09:04.690 align:middle line:84%
+and then player 2's payoff
+from that strategy profile.
+
+00:09:04.690 --> 00:09:05.710 align:middle line:90%
+Now, let's go down here.
+
+00:09:05.710 --> 00:09:08.410 align:middle line:84%
+We want to say what
+happens if player 1 instead
+
+00:09:08.410 --> 00:09:11.690 align:middle line:84%
+testifies or finks against
+the other prisoner.
+
+00:09:11.690 --> 00:09:13.890 align:middle line:84%
+What this should do
+is it should increase
+
+00:09:13.890 --> 00:09:17.610 align:middle line:84%
+the utility of the prisoner who
+finks, because that prisoner
+
+00:09:17.610 --> 00:09:19.570 align:middle line:90%
+gets a sentence reduction.
+
+00:09:19.570 --> 00:09:22.635 align:middle line:84%
+But it decreases the utility
+of the other prisoner,
+
+00:09:22.635 --> 00:09:24.010 align:middle line:84%
+because the other
+prisoner is now
+
+00:09:24.010 --> 00:09:26.650 align:middle line:84%
+going to be convicted
+of a more serious crime.
+
+00:09:26.650 --> 00:09:29.870 align:middle line:84%
+So the exact numbers we'll
+use are 3 and negative 1.
+
+00:09:29.870 --> 00:09:34.690 align:middle line:90%
+
+
+00:09:34.690 --> 00:09:37.630 align:middle line:84%
+So relative to the case
+where they both stay silent,
+
+00:09:37.630 --> 00:09:42.430 align:middle line:84%
+if I fink on the other prisoner,
+my utility goes up by 1 util.
+
+00:09:42.430 --> 00:09:47.430 align:middle line:84%
+But my opponent's utility
+goes down by 3 utils.
+
+00:09:47.430 --> 00:09:50.390 align:middle line:84%
+And now, we're going to put the
+symmetric payoffs over here.
+
+00:09:50.390 --> 00:09:54.750 align:middle line:84%
+But remember, over here, it's
+prisoner 2 who's testifying.
+
+00:09:54.750 --> 00:09:57.150 align:middle line:84%
+And therefore, prisoner
+2 gets the higher payoff.
+
+00:09:57.150 --> 00:09:59.150 align:middle line:84%
+And prisoner 1 gets
+the lower payoff.
+
+00:09:59.150 --> 00:10:03.923 align:middle line:84%
+So here, we're going to put
+negative 1, 3 in this box.
+
+00:10:03.923 --> 00:10:05.590 align:middle line:84%
+And then finally, we
+have to decide what
+
+00:10:05.590 --> 00:10:08.430 align:middle line:90%
+happens if they both testify.
+
+00:10:08.430 --> 00:10:11.070 align:middle line:90%
+And here, the payoff is 0, 0.
+
+00:10:11.070 --> 00:10:13.510 align:middle line:84%
+So the exact numbers
+aren't so important.
+
+00:10:13.510 --> 00:10:15.330 align:middle line:84%
+But the order is
+pretty important.
+
+00:10:15.330 --> 00:10:17.030 align:middle line:90%
+So why is it 0 here?
+
+00:10:17.030 --> 00:10:21.830 align:middle line:84%
+Well, the other person
+is testifying against me.
+
+00:10:21.830 --> 00:10:24.670 align:middle line:84%
+So I get convicted of
+a pretty serious crime.
+
+00:10:24.670 --> 00:10:27.530 align:middle line:84%
+But it's not quite as bad
+as the negative 1 over here,
+
+00:10:27.530 --> 00:10:29.990 align:middle line:84%
+because I still get a little
+bit of a sentence reduction
+
+00:10:29.990 --> 00:10:32.510 align:middle line:84%
+for testifying
+against the other guy.
+
+00:10:32.510 --> 00:10:34.830 align:middle line:84%
+So you can see,
+there's an ordering
+
+00:10:34.830 --> 00:10:36.010 align:middle line:90%
+between the four outcomes.
+
+00:10:36.010 --> 00:10:37.510 align:middle line:84%
+And this is really
+what's important.
+
+00:10:37.510 --> 00:10:41.890 align:middle line:90%
+
+
+00:10:41.890 --> 00:10:46.170 align:middle line:84%
+So the highest payoff I get is
+if I testify and the other guy
+
+00:10:46.170 --> 00:10:48.290 align:middle line:90%
+doesn't.
+
+00:10:48.290 --> 00:10:51.590 align:middle line:84%
+The worst payoff is if the
+other prisoner testifies
+
+00:10:51.590 --> 00:10:53.890 align:middle line:84%
+and I don't, because
+then I get convicted
+
+00:10:53.890 --> 00:10:56.250 align:middle line:84%
+and I don't get any
+sentence reduction.
+
+00:10:56.250 --> 00:10:58.450 align:middle line:84%
+And then in between,
+we have the payoff
+
+00:10:58.450 --> 00:11:01.650 align:middle line:84%
+where we both stay silent,
+because we only get charged
+
+00:11:01.650 --> 00:11:04.170 align:middle line:90%
+with a pretty small crime.
+
+00:11:04.170 --> 00:11:05.810 align:middle line:84%
+And then the 0 here
+is where we both
+
+00:11:05.810 --> 00:11:08.430 align:middle line:84%
+testify, we both get charged
+with a serious crime,
+
+00:11:08.430 --> 00:11:12.210 align:middle line:84%
+but we get a sentence reduction
+because we each cooperated
+
+00:11:12.210 --> 00:11:13.690 align:middle line:90%
+with the authorities.
+
+00:11:13.690 --> 00:11:17.010 align:middle line:90%
+
+
+00:11:17.010 --> 00:11:21.010 align:middle line:84%
+Now, I guess the question is,
+how would you play in this game?
+
+00:11:21.010 --> 00:11:23.010 align:middle line:84%
+If you were here, you
+were one of the prisoners,
+
+00:11:23.010 --> 00:11:25.550 align:middle line:84%
+you're alone in your cell, how
+would you think about this?
+
+00:11:25.550 --> 00:11:28.310 align:middle line:84%
+And how would you expect
+the other person to play?
+
+00:11:28.310 --> 00:11:34.130 align:middle line:90%
+
+
+00:11:34.130 --> 00:11:35.290 align:middle line:90%
+STUDENT: [INAUDIBLE] go F.
+
+00:11:35.290 --> 00:11:36.370 align:middle line:90%
+IAN BALL: Say again?
+
+00:11:36.370 --> 00:11:36.890 align:middle line:90%
+STUDENT: [INAUDIBLE] go F.
+
+00:11:36.890 --> 00:11:37.932 align:middle line:90%
+IAN BALL: You would go F?
+
+00:11:37.932 --> 00:11:39.976 align:middle line:90%
+OK, tell me why.
+
+00:11:39.976 --> 00:11:42.390 align:middle line:84%
+STUDENT: Because the other
+one doesn't, then you're
+
+00:11:42.390 --> 00:11:45.070 align:middle line:90%
+just [INAUDIBLE].
+
+00:11:45.070 --> 00:11:47.550 align:middle line:84%
+IAN BALL: So you're
+saying you want
+
+00:11:47.550 --> 00:11:50.110 align:middle line:84%
+to go F because you're really
+afraid of-- so let's say
+
+00:11:50.110 --> 00:11:50.970 align:middle line:90%
+you're player 1.
+
+00:11:50.970 --> 00:11:54.830 align:middle line:84%
+So you're going to say, if
+I go F, you're saying, well,
+
+00:11:54.830 --> 00:11:56.250 align:middle line:90%
+I can either get 3 or 0.
+
+00:11:56.250 --> 00:11:58.130 align:middle line:84%
+But I'm at least not
+going to get negative 1.
+
+00:11:58.130 --> 00:11:59.163 align:middle line:90%
+So that's good.
+
+00:11:59.163 --> 00:12:00.830 align:middle line:84%
+So certainly, the
+worst possible outcome
+
+00:12:00.830 --> 00:12:04.890 align:middle line:84%
+is better if I go F. I
+think F is a good strategy.
+
+00:12:04.890 --> 00:12:08.470 align:middle line:84%
+Any other thoughts about
+why I might want to go F?
+
+00:12:08.470 --> 00:12:09.070 align:middle line:90%
+Yeah?
+
+00:12:09.070 --> 00:12:10.790 align:middle line:84%
+STUDENT: Regardless of what
+the other player chooses,
+
+00:12:10.790 --> 00:12:11.650 align:middle line:90%
+you're better off.
+
+00:12:11.650 --> 00:12:12.323 align:middle line:90%
+IAN BALL: Right.
+
+00:12:12.323 --> 00:12:13.990 align:middle line:84%
+So this is a really
+critical observation
+
+00:12:13.990 --> 00:12:15.390 align:middle line:90%
+to make in this game.
+
+00:12:15.390 --> 00:12:17.110 align:middle line:90%
+So I'm player 1.
+
+00:12:17.110 --> 00:12:19.830 align:middle line:84%
+I don't know whether
+the other prisoner
+
+00:12:19.830 --> 00:12:21.543 align:middle line:90%
+is going to mum or fink.
+
+00:12:21.543 --> 00:12:23.710 align:middle line:84%
+I don't know if they're
+going to testify against me.
+
+00:12:23.710 --> 00:12:26.550 align:middle line:84%
+But let me reason
+separately by cases, OK?
+
+00:12:26.550 --> 00:12:29.070 align:middle line:84%
+One possibility is
+the other prisoner
+
+00:12:29.070 --> 00:12:30.750 align:middle line:90%
+is going to stay silent.
+
+00:12:30.750 --> 00:12:33.350 align:middle line:84%
+If the other prisoner stays
+silent, well, what happens?
+
+00:12:33.350 --> 00:12:36.580 align:middle line:84%
+Either I get a payoff
+of 2, if I stay silent,
+
+00:12:36.580 --> 00:12:39.340 align:middle line:84%
+or I get a payoff
+of 3, if I testify.
+
+00:12:39.340 --> 00:12:41.260 align:middle line:90%
+So I'm better off testifying.
+
+00:12:41.260 --> 00:12:42.820 align:middle line:84%
+Now, let's look
+at the other case.
+
+00:12:42.820 --> 00:12:46.040 align:middle line:84%
+What if the other prisoner is
+going to testify against me?
+
+00:12:46.040 --> 00:12:47.360 align:middle line:90%
+That's certainly worse for me.
+
+00:12:47.360 --> 00:12:48.660 align:middle line:90%
+I'm certainly worse off.
+
+00:12:48.660 --> 00:12:51.280 align:middle line:84%
+But if the other
+prisoner testifies, well,
+
+00:12:51.280 --> 00:12:54.180 align:middle line:84%
+if I stay silent,
+I get negative 1.
+
+00:12:54.180 --> 00:12:56.820 align:middle line:84%
+And if I fink, I get
+0, which is higher?
+
+00:12:56.820 --> 00:13:00.580 align:middle line:84%
+So in both cases, I do
+strictly better if I fink.
+
+00:13:00.580 --> 00:13:04.180 align:middle line:84%
+So often, we think that
+a prediction of this game
+
+00:13:04.180 --> 00:13:07.660 align:middle line:84%
+might be we might be
+pretty confident that,
+
+00:13:07.660 --> 00:13:08.640 align:middle line:90%
+for each player--
+
+00:13:08.640 --> 00:13:12.448 align:middle line:90%
+
+
+00:13:12.448 --> 00:13:13.240 align:middle line:90%
+what are we saying?
+
+00:13:13.240 --> 00:13:19.700 align:middle line:84%
+Well, F is better
+than M no matter
+
+00:13:19.700 --> 00:13:20.920 align:middle line:90%
+what the other player does.
+
+00:13:20.920 --> 00:13:34.520 align:middle line:90%
+
+
+00:13:34.520 --> 00:13:37.780 align:middle line:84%
+And in a sense, games like this
+are a bit easier to analyze.
+
+00:13:37.780 --> 00:13:40.240 align:middle line:84%
+Because, remember, we said
+what makes game theory hard
+
+00:13:40.240 --> 00:13:42.920 align:middle line:84%
+is what we called strategic
+interdependence, where
+
+00:13:42.920 --> 00:13:44.920 align:middle line:84%
+the best thing for
+me to do depends
+
+00:13:44.920 --> 00:13:47.360 align:middle line:90%
+on what the other player does.
+
+00:13:47.360 --> 00:13:49.760 align:middle line:84%
+In this case, it is an
+interactive problem.
+
+00:13:49.760 --> 00:13:51.640 align:middle line:84%
+But the best thing
+for me to do is
+
+00:13:51.640 --> 00:13:53.898 align:middle line:84%
+independent of what
+my opponent does.
+
+00:13:53.898 --> 00:13:55.440 align:middle line:84%
+So there actually
+is not this element
+
+00:13:55.440 --> 00:13:57.120 align:middle line:90%
+of strategic interdependence.
+
+00:13:57.120 --> 00:13:59.480 align:middle line:84%
+F is better than
+M if my opponent
+
+00:13:59.480 --> 00:14:04.240 align:middle line:84%
+plays M. And F is still better
+than M if my opponent plays F.
+
+00:14:04.240 --> 00:14:07.080 align:middle line:84%
+So I don't really have to think
+too carefully about exactly
+
+00:14:07.080 --> 00:14:10.320 align:middle line:84%
+how my opponent is going to play
+because, however they play, I
+
+00:14:10.320 --> 00:14:14.200 align:middle line:90%
+know I'm better off if I play F.
+
+00:14:14.200 --> 00:14:16.100 align:middle line:90%
+So why is this called a dilemma?
+
+00:14:16.100 --> 00:14:18.640 align:middle line:84%
+Or sometimes, people
+think of it as a paradox.
+
+00:14:18.640 --> 00:14:23.880 align:middle line:84%
+Well, if both players
+play F, then--
+
+00:14:23.880 --> 00:14:27.840 align:middle line:84%
+if I have chalk, but I'll
+just highlight this--
+
+00:14:27.840 --> 00:14:30.172 align:middle line:90%
+we both get a payoff of 0.
+
+00:14:30.172 --> 00:14:32.380 align:middle line:84%
+But I think it's reasonable
+for someone to come along
+
+00:14:32.380 --> 00:14:34.380 align:middle line:84%
+and say, wait a
+second, these prisoners
+
+00:14:34.380 --> 00:14:36.380 align:middle line:90%
+must be doing something wrong.
+
+00:14:36.380 --> 00:14:38.340 align:middle line:84%
+They're both getting
+a payoff of 0.
+
+00:14:38.340 --> 00:14:42.300 align:middle line:84%
+But if they both did M, they'd
+both be strictly better off.
+
+00:14:42.300 --> 00:14:43.508 align:middle line:90%
+So are they being irrational?
+
+00:14:43.508 --> 00:14:44.800 align:middle line:90%
+Are they doing something wrong?
+
+00:14:44.800 --> 00:14:46.160 align:middle line:90%
+In this game, what do you think?
+
+00:14:46.160 --> 00:14:48.382 align:middle line:84%
+I mean, why is this a good
+prediction of the game?
+
+00:14:48.382 --> 00:14:49.840 align:middle line:84%
+We said we're
+studying game theory.
+
+00:14:49.840 --> 00:14:51.360 align:middle line:84%
+We said people
+are very rational.
+
+00:14:51.360 --> 00:14:53.040 align:middle line:84%
+They act towards
+their objectives.
+
+00:14:53.040 --> 00:14:54.060 align:middle line:84%
+And if they both
+do this, they're
+
+00:14:54.060 --> 00:14:55.160 align:middle line:90%
+both strictly better off.
+
+00:14:55.160 --> 00:14:56.900 align:middle line:90%
+So why don't they do that?
+
+00:14:56.900 --> 00:14:58.400 align:middle line:84%
+Is something wrong
+with game theory?
+
+00:14:58.400 --> 00:15:00.940 align:middle line:90%
+
+
+00:15:00.940 --> 00:15:01.840 align:middle line:90%
+Yeah?
+
+00:15:01.840 --> 00:15:05.020 align:middle line:84%
+STUDENT: If one player doesn't
+know what the other player is
+
+00:15:05.020 --> 00:15:09.100 align:middle line:84%
+going to do, they're
+just operating in like
+
+00:15:09.100 --> 00:15:14.300 align:middle line:84%
+just maximize my utility
+independent of what
+
+00:15:14.300 --> 00:15:15.840 align:middle line:90%
+the other person chooses.
+
+00:15:15.840 --> 00:15:16.540 align:middle line:90%
+IAN BALL: Right.
+
+00:15:16.540 --> 00:15:17.915 align:middle line:84%
+And another way
+of saying it is I
+
+00:15:17.915 --> 00:15:19.880 align:middle line:84%
+can't influence what the
+other person chooses.
+
+00:15:19.880 --> 00:15:22.200 align:middle line:84%
+So when I framed it, I
+said, oh, we're down here.
+
+00:15:22.200 --> 00:15:24.420 align:middle line:90%
+Wouldn't we like to be up here?
+
+00:15:24.420 --> 00:15:25.920 align:middle line:90%
+But how do we get up here?
+
+00:15:25.920 --> 00:15:28.602 align:middle line:84%
+Well, both players would
+have to behave differently.
+
+00:15:28.602 --> 00:15:30.560 align:middle line:84%
+And I can't control what
+the other person does.
+
+00:15:30.560 --> 00:15:32.480 align:middle line:90%
+I can only control what I do.
+
+00:15:32.480 --> 00:15:36.360 align:middle line:84%
+And I think this observation was
+surprising to a lot of people
+
+00:15:36.360 --> 00:15:36.900 align:middle line:90%
+early on.
+
+00:15:36.900 --> 00:15:39.140 align:middle line:84%
+I mean, mathematically,
+it's not very deep.
+
+00:15:39.140 --> 00:15:40.840 align:middle line:84%
+But it definitely
+surprised people.
+
+00:15:40.840 --> 00:15:44.400 align:middle line:84%
+And I think the key
+interpretation of the prisoner's
+
+00:15:44.400 --> 00:15:51.720 align:middle line:84%
+dilemma, or what we learned
+from it, is that, in games,
+
+00:15:51.720 --> 00:15:56.280 align:middle line:84%
+rational behavior can
+lead to inefficiency.
+
+00:15:56.280 --> 00:16:01.920 align:middle line:84%
+Or more precisely,
+rational behavior
+
+00:16:01.920 --> 00:16:03.380 align:middle line:90%
+can make everyone worse off.
+
+00:16:03.380 --> 00:16:14.600 align:middle line:90%
+
+
+00:16:14.600 --> 00:16:16.143 align:middle line:84%
+Worse off than
+what, you might say?
+
+00:16:16.143 --> 00:16:18.060 align:middle line:84%
+Well, what I mean is
+than some other behavior.
+
+00:16:18.060 --> 00:16:26.920 align:middle line:90%
+
+
+00:16:26.920 --> 00:16:29.790 align:middle line:84%
+And this is a novel
+implication or a novel feature
+
+00:16:29.790 --> 00:16:31.670 align:middle line:90%
+of interactive decision making.
+
+00:16:31.670 --> 00:16:34.830 align:middle line:84%
+In a single decision maker
+problem, this never happens.
+
+00:16:34.830 --> 00:16:37.650 align:middle line:84%
+In a single agent problem, I
+just do what's best for me.
+
+00:16:37.650 --> 00:16:39.630 align:middle line:84%
+And that gives me the
+best possible outcome.
+
+00:16:39.630 --> 00:16:42.910 align:middle line:84%
+But with an interactive problem,
+even if we're both behaving,
+
+00:16:42.910 --> 00:16:45.950 align:middle line:84%
+quote unquote, "rationally," the
+outcome may be very bad for both
+
+00:16:45.950 --> 00:16:48.910 align:middle line:84%
+of us and may be worse than a
+different outcome that would be
+
+00:16:48.910 --> 00:16:50.410 align:middle line:90%
+feasible for both of us.
+
+00:16:50.410 --> 00:16:56.470 align:middle line:90%
+
+
+00:16:56.470 --> 00:17:00.710 align:middle line:84%
+So I think today we want to
+continue what we started here.
+
+00:17:00.710 --> 00:17:04.829 align:middle line:84%
+And we argued that this
+game was relatively
+
+00:17:04.829 --> 00:17:08.030 align:middle line:84%
+easy to analyze because of
+this property, that the best
+
+00:17:08.030 --> 00:17:10.727 align:middle line:84%
+thing for me is independent
+of what the other player does.
+
+00:17:10.727 --> 00:17:13.310 align:middle line:84%
+And I think that's a guide for
+the way we're going to approach
+
+00:17:13.310 --> 00:17:14.730 align:middle line:90%
+analysis in this class.
+
+00:17:14.730 --> 00:17:17.630 align:middle line:84%
+So moving forward,
+we're going to start
+
+00:17:17.630 --> 00:17:23.950 align:middle line:84%
+with minimal assumptions,
+minimal assumptions
+
+00:17:23.950 --> 00:17:24.890 align:middle line:90%
+about behavior.
+
+00:17:24.890 --> 00:17:31.570 align:middle line:90%
+
+
+00:17:31.570 --> 00:17:34.090 align:middle line:84%
+And because these are
+minimal or weak assumptions,
+
+00:17:34.090 --> 00:17:37.010 align:middle line:84%
+we're going to be quite
+confident in the implications
+
+00:17:37.010 --> 00:17:38.170 align:middle line:90%
+of these assumptions.
+
+00:17:38.170 --> 00:17:40.790 align:middle line:84%
+So this might make us
+confident about predictions.
+
+00:17:40.790 --> 00:17:48.450 align:middle line:90%
+
+
+00:17:48.450 --> 00:17:50.250 align:middle line:84%
+But what we'll see is
+that a lot of games
+
+00:17:50.250 --> 00:17:52.010 align:middle line:84%
+are not like the
+prisoner's dilemma.
+
+00:17:52.010 --> 00:17:55.250 align:middle line:84%
+And we're not able to make very
+sharp predictions only based
+
+00:17:55.250 --> 00:17:56.610 align:middle line:90%
+on minimal assumptions.
+
+00:17:56.610 --> 00:17:58.710 align:middle line:84%
+So we might be confident
+about our predictions.
+
+00:17:58.710 --> 00:18:00.168 align:middle line:84%
+But these predictions
+are generally
+
+00:18:00.168 --> 00:18:01.970 align:middle line:84%
+going to be very
+weak predictions.
+
+00:18:01.970 --> 00:18:04.070 align:middle line:84%
+Or they could be very
+weak predictions.
+
+00:18:04.070 --> 00:18:06.650 align:middle line:90%
+
+
+00:18:06.650 --> 00:18:11.290 align:middle line:84%
+And here, notice, I'm using the
+interpretation of prediction
+
+00:18:11.290 --> 00:18:13.490 align:middle line:84%
+rather than
+recommendation for now.
+
+00:18:13.490 --> 00:18:15.370 align:middle line:84%
+In fact, sometimes,
+if we're only
+
+00:18:15.370 --> 00:18:18.170 align:middle line:84%
+willing to make minimal
+assumptions about behavior,
+
+00:18:18.170 --> 00:18:20.810 align:middle line:84%
+our only prediction might
+be anything could happen.
+
+00:18:20.810 --> 00:18:22.350 align:middle line:84%
+That's not a very
+useful prediction.
+
+00:18:22.350 --> 00:18:24.950 align:middle line:84%
+We might not be able to
+narrow things down very much.
+
+00:18:24.950 --> 00:18:27.790 align:middle line:84%
+So what we want to do, over
+the course of the class,
+
+00:18:27.790 --> 00:18:30.430 align:middle line:84%
+is gradually strengthen
+the assumptions
+
+00:18:30.430 --> 00:18:32.110 align:middle line:90%
+that we make about behavior.
+
+00:18:32.110 --> 00:18:34.550 align:middle line:84%
+We might gradually
+lose some confidence
+
+00:18:34.550 --> 00:18:36.330 align:middle line:84%
+in the accuracy of
+these predictions.
+
+00:18:36.330 --> 00:18:38.705 align:middle line:84%
+But at the same time, we'll
+be able to sharpen and refine
+
+00:18:38.705 --> 00:18:39.913 align:middle line:90%
+the predictions that we make.
+
+00:18:39.913 --> 00:18:41.710 align:middle line:84%
+And that's the direction
+we're going to go.
+
+00:18:41.710 --> 00:18:43.377 align:middle line:84%
+So today, we're going
+to start with what
+
+00:18:43.377 --> 00:18:45.670 align:middle line:84%
+I think of as the most
+basic or most minimal
+
+00:18:45.670 --> 00:18:47.190 align:middle line:90%
+assumption about behavior.
+
+00:18:47.190 --> 00:18:50.130 align:middle line:84%
+And later on, we'll move to
+more complicated assumptions.
+
+00:18:50.130 --> 00:18:54.990 align:middle line:90%
+
+
+00:18:54.990 --> 00:18:57.750 align:middle line:84%
+So the first thing I need to do
+is just introduce some notation
+
+00:18:57.750 --> 00:19:00.910 align:middle line:90%
+for strategic form games.
+
+00:19:00.910 --> 00:19:03.990 align:middle line:84%
+And then I can formally
+define and capture
+
+00:19:03.990 --> 00:19:05.990 align:middle line:90%
+what we described in this game.
+
+00:19:05.990 --> 00:19:09.533 align:middle line:84%
+So strategic form games
+often have many players.
+
+00:19:09.533 --> 00:19:10.950 align:middle line:84%
+But we're often
+interested in what
+
+00:19:10.950 --> 00:19:13.770 align:middle line:84%
+happens when a single player
+modifies their behavior,
+
+00:19:13.770 --> 00:19:15.070 align:middle line:90%
+modifies their strategy.
+
+00:19:15.070 --> 00:19:17.870 align:middle line:84%
+So we'd like to have some
+notation to capture that.
+
+00:19:17.870 --> 00:19:26.500 align:middle line:84%
+And what we're going to write
+is a strategy profile will often
+
+00:19:26.500 --> 00:19:28.180 align:middle line:90%
+decompose it in this way.
+
+00:19:28.180 --> 00:19:32.040 align:middle line:84%
+So we'll say we can think of the
+profile as player i's strategy.
+
+00:19:32.040 --> 00:19:35.140 align:middle line:90%
+
+
+00:19:35.140 --> 00:19:38.040 align:middle line:84%
+And S negative i's specifies
+the strategies of everyone else.
+
+00:19:38.040 --> 00:19:44.780 align:middle line:90%
+
+
+00:19:44.780 --> 00:19:46.120 align:middle line:90%
+And this notation is important.
+
+00:19:46.120 --> 00:19:48.780 align:middle line:84%
+So let's just go through an
+example with three players.
+
+00:19:48.780 --> 00:19:54.020 align:middle line:84%
+If S equals S1, S2, S3,
+this strategy profile
+
+00:19:54.020 --> 00:19:56.802 align:middle line:84%
+specifies a strategy for
+each of the three players.
+
+00:19:56.802 --> 00:19:58.260 align:middle line:84%
+But there's three
+different ways we
+
+00:19:58.260 --> 00:20:00.220 align:middle line:84%
+can express this
+depending on which player
+
+00:20:00.220 --> 00:20:01.700 align:middle line:90%
+we want to focus on.
+
+00:20:01.700 --> 00:20:06.300 align:middle line:84%
+So we could write this
+as S1, S negative 1,
+
+00:20:06.300 --> 00:20:09.400 align:middle line:84%
+meaning we're going to put
+player 1's strategy by itself.
+
+00:20:09.400 --> 00:20:12.540 align:middle line:84%
+And then we're going to group
+the other two players' strategy
+
+00:20:12.540 --> 00:20:15.300 align:middle line:84%
+under this notation
+S negative 1.
+
+00:20:15.300 --> 00:20:18.080 align:middle line:84%
+Here, negative 1 is not
+really the number negative 1.
+
+00:20:18.080 --> 00:20:19.860 align:middle line:90%
+What we mean is not player 1.
+
+00:20:19.860 --> 00:20:24.578 align:middle line:84%
+So think of the minus here
+as not rather than minus.
+
+00:20:24.578 --> 00:20:26.620 align:middle line:84%
+But then there's another
+way we could write this.
+
+00:20:26.620 --> 00:20:32.600 align:middle line:84%
+We could write it as S2
+S negative 2 or as S3 S
+
+00:20:32.600 --> 00:20:34.800 align:middle line:90%
+negative 3.
+
+00:20:34.800 --> 00:20:37.467 align:middle line:84%
+And you might object that, well,
+S3 is supposed to come last.
+
+00:20:37.467 --> 00:20:39.800 align:middle line:84%
+We're not really going to be
+consistent about the order.
+
+00:20:39.800 --> 00:20:41.920 align:middle line:84%
+As long as we understand
+what this means,
+
+00:20:41.920 --> 00:20:45.200 align:middle line:84%
+this is a strategy
+profile where player three
+
+00:20:45.200 --> 00:20:48.200 align:middle line:84%
+chooses S3 and players
+1 and 2 collectively
+
+00:20:48.200 --> 00:20:49.308 align:middle line:90%
+choose S negative 3.
+
+00:20:49.308 --> 00:20:50.100 align:middle line:90%
+It's just notation.
+
+00:20:50.100 --> 00:20:52.500 align:middle line:84%
+But it's going to help us
+write things down more cleanly.
+
+00:20:52.500 --> 00:20:53.000 align:middle line:90%
+Yeah?
+
+00:20:53.000 --> 00:20:55.760 align:middle line:84%
+STUDENT: So I need to add
+more of the [INAUDIBLE]
+
+00:20:55.760 --> 00:20:57.720 align:middle line:90%
+first, [INAUDIBLE].
+
+00:20:57.720 --> 00:21:00.040 align:middle line:84%
+IAN BALL: Sorry,
+I don't mean that.
+
+00:21:00.040 --> 00:21:01.857 align:middle line:84%
+I'm not making any--
+it's just notation,
+
+00:21:01.857 --> 00:21:02.940 align:middle line:90%
+no behavioral assumptions.
+
+00:21:02.940 --> 00:21:04.980 align:middle line:84%
+So literally, when I
+write S negative 3,
+
+00:21:04.980 --> 00:21:09.000 align:middle line:90%
+what I mean is S1, S2.
+
+00:21:09.000 --> 00:21:11.420 align:middle line:90%
+It's just notation.
+
+00:21:11.420 --> 00:21:14.160 align:middle line:84%
+So I'm not claiming that they're
+going to decide together.
+
+00:21:14.160 --> 00:21:15.660 align:middle line:84%
+Or I'm not doing
+anything like that.
+
+00:21:15.660 --> 00:21:17.300 align:middle line:84%
+It's just to save
+space on the board.
+
+00:21:17.300 --> 00:21:20.640 align:middle line:84%
+Instead of writing S1, S2, I'm
+going to write S negative 3.
+
+00:21:20.640 --> 00:21:23.320 align:middle line:84%
+But they're still choosing
+independently of each other.
+
+00:21:23.320 --> 00:21:24.640 align:middle line:90%
+That's a good clarification.
+
+00:21:24.640 --> 00:21:27.020 align:middle line:90%
+Thank you.
+
+00:21:27.020 --> 00:21:29.980 align:middle line:84%
+And then we need some notation
+for where these things live.
+
+00:21:29.980 --> 00:21:31.780 align:middle line:90%
+So we're going to use notation.
+
+00:21:31.780 --> 00:21:33.660 align:middle line:90%
+We've already introduced Si.
+
+00:21:33.660 --> 00:21:35.820 align:middle line:84%
+But now, we're going
+to use S negative i
+
+00:21:35.820 --> 00:21:38.900 align:middle line:84%
+to be the set of-- you might
+call them partial strategy
+
+00:21:38.900 --> 00:21:39.800 align:middle line:90%
+profiles.
+
+00:21:39.800 --> 00:21:41.700 align:middle line:84%
+These are the set of
+profiles specifying
+
+00:21:41.700 --> 00:21:44.780 align:middle line:84%
+a strategy for every
+player except player i.
+
+00:21:44.780 --> 00:21:47.820 align:middle line:90%
+So S little i lives in SI.
+
+00:21:47.820 --> 00:21:51.260 align:middle line:84%
+And S negative i, or
+not i, lives in S0
+
+00:21:51.260 --> 00:21:53.080 align:middle line:84%
+So that notation
+will be useful below.
+
+00:21:53.080 --> 00:21:58.284 align:middle line:90%
+
+
+00:21:58.284 --> 00:22:00.780 align:middle line:84%
+So now, we'd like to
+formalize what happened
+
+00:22:00.780 --> 00:22:02.140 align:middle line:90%
+in the prisoner's dilemma.
+
+00:22:02.140 --> 00:22:10.700 align:middle line:84%
+And the formal term for this
+is dominance, a natural term
+
+00:22:10.700 --> 00:22:13.020 align:middle line:84%
+because F is better
+than M no matter
+
+00:22:13.020 --> 00:22:14.540 align:middle line:90%
+what the other player does.
+
+00:22:14.540 --> 00:22:17.988 align:middle line:84%
+We would say that strategy
+F dominates strategy M.
+
+00:22:17.988 --> 00:22:20.280 align:middle line:84%
+But we have to be a little
+more careful because there's
+
+00:22:20.280 --> 00:22:21.620 align:middle line:90%
+strict and weak dominance.
+
+00:22:21.620 --> 00:22:25.400 align:middle line:84%
+So now, I'm going to
+define these two terms.
+
+00:22:25.400 --> 00:22:31.440 align:middle line:90%
+So for player i--
+
+00:22:31.440 --> 00:22:33.080 align:middle line:90%
+so let's consider player i.
+
+00:22:33.080 --> 00:22:36.820 align:middle line:84%
+And let's consider
+two strategies--
+
+00:22:36.820 --> 00:22:39.960 align:middle line:90%
+
+
+00:22:39.960 --> 00:22:41.860 align:middle line:90%
+Si and Si prime.
+
+00:22:41.860 --> 00:22:44.440 align:middle line:90%
+
+
+00:22:44.440 --> 00:22:47.280 align:middle line:84%
+And I want to say, so
+I'm focusing on player i.
+
+00:22:47.280 --> 00:22:50.760 align:middle line:84%
+I'm focusing on two strategies--
+they could be the same,
+
+00:22:50.760 --> 00:22:52.960 align:middle line:90%
+but two strategies of player i.
+
+00:22:52.960 --> 00:22:55.440 align:middle line:90%
+This is a prime here.
+
+00:22:55.440 --> 00:22:59.640 align:middle line:84%
+And I want to formally define
+what it means for strategy Si
+
+00:22:59.640 --> 00:23:03.440 align:middle line:84%
+to strictly dominate
+strategy S negative i.
+
+00:23:03.440 --> 00:23:07.580 align:middle line:84%
+So I'm going to say Si
+strictly dominates--
+
+00:23:07.580 --> 00:23:10.460 align:middle line:90%
+
+
+00:23:10.460 --> 00:23:11.960 align:middle line:84%
+sorry, I may have
+said S negative i.
+
+00:23:11.960 --> 00:23:13.000 align:middle line:90%
+I mean Si prime.
+
+00:23:13.000 --> 00:23:15.550 align:middle line:90%
+
+
+00:23:15.550 --> 00:23:18.230 align:middle line:84%
+Can anyone guess in
+words, strict dominates,
+
+00:23:18.230 --> 00:23:21.150 align:middle line:84%
+what that might mean, just if we
+think through from the example,
+
+00:23:21.150 --> 00:23:24.110 align:middle line:84%
+what it might mean for player
+i if strategy Si strictly
+
+00:23:24.110 --> 00:23:27.460 align:middle line:90%
+dominates Si prime?
+
+00:23:27.460 --> 00:23:28.210 align:middle line:90%
+Maybe at the back?
+
+00:23:28.210 --> 00:23:28.910 align:middle line:90%
+Yeah?
+
+00:23:28.910 --> 00:23:30.550 align:middle line:84%
+STUDENT: They have
+a better payoff
+
+00:23:30.550 --> 00:23:32.910 align:middle line:90%
+regardless of S negative i.
+
+00:23:32.910 --> 00:23:33.910 align:middle line:90%
+IAN BALL: Exactly right.
+
+00:23:33.910 --> 00:23:36.590 align:middle line:90%
+And by better, strictly better.
+
+00:23:36.590 --> 00:23:40.430 align:middle line:90%
+So Si dominates Si prime means--
+
+00:23:40.430 --> 00:23:44.330 align:middle line:84%
+sometimes I'll use this arrow
+just to mean a definition.
+
+00:23:44.330 --> 00:23:47.790 align:middle line:84%
+So I'm saying this is exactly
+what this phrase means.
+
+00:23:47.790 --> 00:23:51.510 align:middle line:84%
+It means that-- well, let
+me first just partially
+
+00:23:51.510 --> 00:23:52.290 align:middle line:90%
+write it out.
+
+00:23:52.290 --> 00:23:57.790 align:middle line:90%
+
+
+00:23:57.790 --> 00:24:00.152 align:middle line:84%
+So I'm going to fill
+it in in a second.
+
+00:24:00.152 --> 00:24:02.110 align:middle line:84%
+But the first thing is
+I'm looking-- let's just
+
+00:24:02.110 --> 00:24:03.630 align:middle line:90%
+focus on what's here already.
+
+00:24:03.630 --> 00:24:05.750 align:middle line:90%
+I'm focusing on player i.
+
+00:24:05.750 --> 00:24:08.430 align:middle line:84%
+And player i is making a
+comparison between things
+
+00:24:08.430 --> 00:24:10.430 align:middle line:90%
+that are in player i's control.
+
+00:24:10.430 --> 00:24:13.330 align:middle line:84%
+Player i is comparing
+what happens
+
+00:24:13.330 --> 00:24:17.810 align:middle line:84%
+if she plays Si to what
+happens if she plays Si prime.
+
+00:24:17.810 --> 00:24:20.930 align:middle line:84%
+But what we want to argue is
+that this inequality holds
+
+00:24:20.930 --> 00:24:23.290 align:middle line:90%
+whatever the opponents play.
+
+00:24:23.290 --> 00:24:26.210 align:middle line:84%
+So we're going to fill
+in S negative i here
+
+00:24:26.210 --> 00:24:27.610 align:middle line:90%
+and S negative i here.
+
+00:24:27.610 --> 00:24:33.730 align:middle line:84%
+And we want this to hold for all
+S negative i in S negative I.
+
+00:24:33.730 --> 00:24:36.250 align:middle line:90%
+So notice a key point here.
+
+00:24:36.250 --> 00:24:38.970 align:middle line:84%
+S negative i can take
+any possible value.
+
+00:24:38.970 --> 00:24:41.570 align:middle line:84%
+But in the inequality,
+the same S negative i
+
+00:24:41.570 --> 00:24:43.130 align:middle line:90%
+appears on both sides.
+
+00:24:43.130 --> 00:24:45.410 align:middle line:84%
+So fixing the way that
+my opponent is playing,
+
+00:24:45.410 --> 00:24:50.010 align:middle line:84%
+I'm strictly preferred to
+play Si to playing Si prime.
+
+00:24:50.010 --> 00:24:51.450 align:middle line:90%
+Why do we write it this way?
+
+00:24:51.450 --> 00:24:53.890 align:middle line:84%
+Because S negative i's
+outside my control.
+
+00:24:53.890 --> 00:24:55.790 align:middle line:84%
+I can't control what
+my opponents are doing.
+
+00:24:55.790 --> 00:24:57.130 align:middle line:90%
+But they're doing something.
+
+00:24:57.130 --> 00:25:01.378 align:middle line:84%
+So however they're behaving,
+this inequality should hold.
+
+00:25:01.378 --> 00:25:03.670 align:middle line:84%
+Now, we want to give a slightly
+weaker version of this.
+
+00:25:03.670 --> 00:25:04.850 align:middle line:90%
+This is very demanding.
+
+00:25:04.850 --> 00:25:06.090 align:middle line:90%
+And it may not hold.
+
+00:25:06.090 --> 00:25:09.370 align:middle line:84%
+So let's now say
+weakly dominates.
+
+00:25:09.370 --> 00:25:14.790 align:middle line:84%
+I won't fill out everything
+else, but just copy these words.
+
+00:25:14.790 --> 00:25:18.430 align:middle line:84%
+And now, we're going to weaken
+this to weak inequality.
+
+00:25:18.430 --> 00:25:30.990 align:middle line:90%
+
+
+00:25:30.990 --> 00:25:34.870 align:middle line:84%
+But this is a little too weak
+because this allows these two
+
+00:25:34.870 --> 00:25:38.370 align:middle line:84%
+strategies to give me the same
+payoff whatever my opponents do.
+
+00:25:38.370 --> 00:25:40.990 align:middle line:84%
+And we want there to be some
+reason that Si is better than Si
+
+00:25:40.990 --> 00:25:41.670 align:middle line:90%
+prime.
+
+00:25:41.670 --> 00:25:43.190 align:middle line:84%
+So we demand this
+weak inequality
+
+00:25:43.190 --> 00:25:52.430 align:middle line:84%
+for every S negative i,
+but strict inequality
+
+00:25:52.430 --> 00:25:53.890 align:middle line:90%
+for some S negative i.
+
+00:25:53.890 --> 00:25:57.310 align:middle line:90%
+
+
+00:25:57.310 --> 00:26:00.350 align:middle line:84%
+So however my
+opponents play, Si does
+
+00:26:00.350 --> 00:26:02.190 align:middle line:90%
+weakly better than Si prime.
+
+00:26:02.190 --> 00:26:04.430 align:middle line:84%
+But there's some, at
+least one particular way
+
+00:26:04.430 --> 00:26:08.940 align:middle line:84%
+my opponents could play such
+that Si is just strictly better
+
+00:26:08.940 --> 00:26:11.620 align:middle line:90%
+than Si prime.
+
+00:26:11.620 --> 00:26:13.700 align:middle line:84%
+And in particular,
+the strict part of it
+
+00:26:13.700 --> 00:26:18.300 align:middle line:84%
+means that no strategy can
+weakly dominate itself,
+
+00:26:18.300 --> 00:26:21.740 align:middle line:84%
+because if we put the same
+strategy here for Si and Si
+
+00:26:21.740 --> 00:26:24.400 align:middle line:84%
+prime, then we would never
+get a strict inequality.
+
+00:26:24.400 --> 00:26:27.780 align:middle line:90%
+
+
+00:26:27.780 --> 00:26:31.760 align:middle line:84%
+So far, these definitions have
+been pairwise comparisons.
+
+00:26:31.760 --> 00:26:33.900 align:middle line:84%
+We've taken one strategy
+and we've compared it
+
+00:26:33.900 --> 00:26:35.300 align:middle line:90%
+to another strategy.
+
+00:26:35.300 --> 00:26:37.960 align:middle line:84%
+But in reality, the player just
+needs to choose one strategy.
+
+00:26:37.960 --> 00:26:39.335 align:middle line:84%
+So what we'd like
+to know is when
+
+00:26:39.335 --> 00:26:42.060 align:middle line:84%
+is one strategy better than
+everything else or dominates
+
+00:26:42.060 --> 00:26:43.140 align:middle line:90%
+everything else.
+
+00:26:43.140 --> 00:26:47.400 align:middle line:84%
+So we'll say a strategy
+Si is weakly dominant--
+
+00:26:47.400 --> 00:26:52.180 align:middle line:90%
+
+
+00:26:52.180 --> 00:26:53.660 align:middle line:90%
+we could do weakly or strictly.
+
+00:26:53.660 --> 00:27:00.525 align:middle line:90%
+
+
+00:27:00.525 --> 00:27:04.940 align:middle line:84%
+Si is weakly dominant if Si
+weakly or strictly dominates
+
+00:27:04.940 --> 00:27:07.360 align:middle line:84%
+every other strategy
+that player i has.
+
+00:27:07.360 --> 00:27:10.000 align:middle line:84%
+So maybe I'll just do
+weakly to avoid confusion.
+
+00:27:10.000 --> 00:27:22.560 align:middle line:84%
+We say Si is weakly dominant
+if Si weakly dominates
+
+00:27:22.560 --> 00:27:27.162 align:middle line:90%
+every strategy Si prime.
+
+00:27:27.162 --> 00:27:28.620 align:middle line:84%
+Now, I need to be
+a little careful.
+
+00:27:28.620 --> 00:27:29.960 align:middle line:90%
+There's something wrong here.
+
+00:27:29.960 --> 00:27:32.000 align:middle line:84%
+I can't say every
+strategy, because Si
+
+00:27:32.000 --> 00:27:33.320 align:middle line:90%
+can't dominate itself.
+
+00:27:33.320 --> 00:27:41.760 align:middle line:84%
+So every strategy Si prime
+that's not equal to C.
+
+00:27:41.760 --> 00:27:44.840 align:middle line:84%
+So we think that, in this
+case, if player i has
+
+00:27:44.840 --> 00:27:46.840 align:middle line:84%
+a weakly dominant
+strategy, that's
+
+00:27:46.840 --> 00:27:50.120 align:middle line:84%
+a pretty safe prediction
+about how that player will
+
+00:27:50.120 --> 00:27:52.940 align:middle line:84%
+play in the game, about which
+strategy that player will use.
+
+00:27:52.940 --> 00:27:57.560 align:middle line:90%
+
+
+00:27:57.560 --> 00:27:59.860 align:middle line:84%
+And we have one
+final definition.
+
+00:27:59.860 --> 00:28:02.800 align:middle line:90%
+
+
+00:28:02.800 --> 00:28:05.260 align:middle line:84%
+And that is, well, let's
+think about the simplest
+
+00:28:05.260 --> 00:28:06.460 align:middle line:90%
+possible case.
+
+00:28:06.460 --> 00:28:10.820 align:middle line:84%
+That's where every player
+has some dominant strategy,
+
+00:28:10.820 --> 00:28:12.843 align:middle line:84%
+has some weakly
+dominant strategy.
+
+00:28:12.843 --> 00:28:14.260 align:middle line:84%
+If that's the case,
+then we can be
+
+00:28:14.260 --> 00:28:16.860 align:middle line:84%
+pretty confident our
+prediction in that game
+
+00:28:16.860 --> 00:28:18.740 align:middle line:84%
+is that each player
+is going to play
+
+00:28:18.740 --> 00:28:22.140 align:middle line:84%
+their corresponding
+weakly dominant strategy.
+
+00:28:22.140 --> 00:28:24.000 align:middle line:84%
+So we can give a
+definition here,
+
+00:28:24.000 --> 00:28:26.980 align:middle line:84%
+our first notion
+of an equilibrium.
+
+00:28:26.980 --> 00:28:34.380 align:middle line:84%
+We say a profile S1
+star up to Sn star
+
+00:28:34.380 --> 00:28:36.640 align:middle line:84%
+is a dominant
+strategy equilibrium.
+
+00:28:36.640 --> 00:28:45.735 align:middle line:90%
+
+
+00:28:45.735 --> 00:28:47.860 align:middle line:84%
+And here, I'm just going
+to write dominant strategy
+
+00:28:47.860 --> 00:28:48.840 align:middle line:90%
+equilibrium.
+
+00:28:48.840 --> 00:28:52.140 align:middle line:84%
+But more precisely, we mean
+weakly dominant strategy
+
+00:28:52.140 --> 00:28:53.020 align:middle line:90%
+equilibrium.
+
+00:28:53.020 --> 00:28:54.480 align:middle line:90%
+But we'll just say dominant.
+
+00:28:54.480 --> 00:28:56.080 align:middle line:84%
+And sometimes, we'll
+call this DSE--
+
+00:28:56.080 --> 00:29:00.740 align:middle line:90%
+
+
+00:29:00.740 --> 00:29:02.120 align:middle line:90%
+if what?
+
+00:29:02.120 --> 00:29:03.780 align:middle line:90%
+Well, this is a profile.
+
+00:29:03.780 --> 00:29:05.855 align:middle line:84%
+So we basically
+made a prediction
+
+00:29:05.855 --> 00:29:07.980 align:middle line:84%
+about how each player in
+the game is going to play.
+
+00:29:07.980 --> 00:29:10.640 align:middle line:84%
+We've made a prediction
+about each player's strategy.
+
+00:29:10.640 --> 00:29:13.320 align:middle line:84%
+And we say that this is a
+dominant strategy equilibrium
+
+00:29:13.320 --> 00:29:16.240 align:middle line:84%
+if each player is
+playing a strategy that's
+
+00:29:16.240 --> 00:29:19.120 align:middle line:84%
+a weakly dominant
+strategy for that player.
+
+00:29:19.120 --> 00:29:29.440 align:middle line:84%
+So if, for each
+player i, strategy--
+
+00:29:29.440 --> 00:29:32.040 align:middle line:84%
+well, what is the
+strategy used by player i?
+
+00:29:32.040 --> 00:29:33.440 align:middle line:90%
+It's Si star.
+
+00:29:33.440 --> 00:29:37.700 align:middle line:84%
+So strategy Si star
+is weakly dominant.
+
+00:29:37.700 --> 00:29:45.463 align:middle line:90%
+
+
+00:29:45.463 --> 00:29:46.880 align:middle line:84%
+But notice an
+important thing here
+
+00:29:46.880 --> 00:29:49.920 align:middle line:84%
+that, when we make a
+prediction about a game,
+
+00:29:49.920 --> 00:29:52.977 align:middle line:84%
+it's not enough just to
+predict one player's strategy.
+
+00:29:52.977 --> 00:29:54.560 align:middle line:84%
+We have to make a
+prediction about how
+
+00:29:54.560 --> 00:29:56.280 align:middle line:90%
+every player is going to play.
+
+00:29:56.280 --> 00:29:58.440 align:middle line:84%
+So our prediction
+here is a profile
+
+00:29:58.440 --> 00:30:01.070 align:middle line:84%
+of strategies specifying
+a strategy for each
+
+00:30:01.070 --> 00:30:02.230 align:middle line:90%
+of the n players.
+
+00:30:02.230 --> 00:30:07.090 align:middle line:84%
+And it's a dominant strategy
+equilibrium if, for each player,
+
+00:30:07.090 --> 00:30:09.990 align:middle line:84%
+their strategy is weakly
+dominant for them,
+
+00:30:09.990 --> 00:30:13.830 align:middle line:84%
+meaning that strategy, Si star--
+if we go back to our definition,
+
+00:30:13.830 --> 00:30:18.510 align:middle line:84%
+Si star weakly dominates every
+other strategy by player i.
+
+00:30:18.510 --> 00:30:19.410 align:middle line:90%
+Any question on this?
+
+00:30:19.410 --> 00:30:20.110 align:middle line:90%
+Yes?
+
+00:30:20.110 --> 00:30:26.190 align:middle line:84%
+STUDENT: Is it possible to
+have multiple weakly dominant
+
+00:30:26.190 --> 00:30:28.450 align:middle line:84%
+strategies, like one better
+than a different one?
+
+00:30:28.450 --> 00:30:29.170 align:middle line:84%
+IAN BALL: That's
+a great question.
+
+00:30:29.170 --> 00:30:30.390 align:middle line:90%
+So let's put this here.
+
+00:30:30.390 --> 00:30:31.590 align:middle line:84%
+Let's write this on
+the board because I
+
+00:30:31.590 --> 00:30:32.548 align:middle line:90%
+was going to get there.
+
+00:30:32.548 --> 00:30:33.870 align:middle line:90%
+That's a great question.
+
+00:30:33.870 --> 00:30:37.470 align:middle line:84%
+Is it possible for there to
+be multiple weakly dominant
+
+00:30:37.470 --> 00:30:38.010 align:middle line:90%
+strategies?
+
+00:30:38.010 --> 00:30:40.890 align:middle line:90%
+So maybe I'll say WD strategies.
+
+00:30:40.890 --> 00:30:43.550 align:middle line:90%
+
+
+00:30:43.550 --> 00:30:46.350 align:middle line:90%
+It's a great question.
+
+00:30:46.350 --> 00:30:47.290 align:middle line:90%
+Any ideas?
+
+00:30:47.290 --> 00:30:49.950 align:middle line:90%
+I'll put it to the class.
+
+00:30:49.950 --> 00:30:51.295 align:middle line:90%
+Yeah?
+
+00:30:51.295 --> 00:30:52.630 align:middle line:90%
+STUDENT: [INAUDIBLE]
+
+00:30:52.630 --> 00:30:54.040 align:middle line:90%
+IAN BALL: Say it again?
+
+00:30:54.040 --> 00:30:54.873 align:middle line:90%
+STUDENT: [INAUDIBLE]
+
+00:30:54.873 --> 00:30:56.995 align:middle line:90%
+IAN BALL: OK.
+
+00:30:56.995 --> 00:30:58.370 align:middle line:84%
+So what you have
+in mind is, what
+
+00:30:58.370 --> 00:31:00.953 align:middle line:84%
+if there's two strategies that
+give me exactly the same payoff
+
+00:31:00.953 --> 00:31:02.410 align:middle line:90%
+however my opponent plays?
+
+00:31:02.410 --> 00:31:04.090 align:middle line:84%
+Now, we have to
+be really careful.
+
+00:31:04.090 --> 00:31:07.490 align:middle line:84%
+The key thing, though, is
+this part of the definition.
+
+00:31:07.490 --> 00:31:09.713 align:middle line:84%
+So if we didn't have this
+part of the definition,
+
+00:31:09.713 --> 00:31:12.130 align:middle line:84%
+we could have two weak-- we
+could have two strategies that
+
+00:31:12.130 --> 00:31:15.210 align:middle line:84%
+were both weakly
+dominant because they
+
+00:31:15.210 --> 00:31:18.090 align:middle line:84%
+give the same payoff
+however the opponents play.
+
+00:31:18.090 --> 00:31:20.050 align:middle line:84%
+But two strategies that
+give the same payoff
+
+00:31:20.050 --> 00:31:23.730 align:middle line:84%
+are not going to satisfy
+strict inequality for any way
+
+00:31:23.730 --> 00:31:24.970 align:middle line:90%
+my opponents are playing.
+
+00:31:24.970 --> 00:31:28.370 align:middle line:84%
+So it's not possible for two
+strategies-- for one strategy
+
+00:31:28.370 --> 00:31:30.770 align:middle line:84%
+to weakly dominate another
+and for that strategy
+
+00:31:30.770 --> 00:31:32.350 align:middle line:90%
+to weakly dominate the first.
+
+00:31:32.350 --> 00:31:34.090 align:middle line:84%
+And for that reason,
+it's impossible
+
+00:31:34.090 --> 00:31:36.590 align:middle line:84%
+for there to be multiple
+weakly dominant strategies.
+
+00:31:36.590 --> 00:31:39.170 align:middle line:90%
+So the answer is no.
+
+00:31:39.170 --> 00:31:40.670 align:middle line:84%
+Let's go through
+the argument again.
+
+00:31:40.670 --> 00:31:44.030 align:middle line:84%
+Suppose I had two strategies
+that were both weakly dominant.
+
+00:31:44.030 --> 00:31:46.770 align:middle line:90%
+Let's call them SA and SB.
+
+00:31:46.770 --> 00:31:50.370 align:middle line:84%
+Well, that means SA
+must weakly dominate SB.
+
+00:31:50.370 --> 00:31:53.890 align:middle line:90%
+And SB must weakly dominate SA.
+
+00:31:53.890 --> 00:31:56.750 align:middle line:84%
+But that means SB must do weakly
+weekly better than SA no matter
+
+00:31:56.750 --> 00:32:00.230 align:middle line:84%
+how my opponents do, but
+sometimes strictly better.
+
+00:32:00.230 --> 00:32:02.750 align:middle line:84%
+But if SB sometimes
+does strictly better,
+
+00:32:02.750 --> 00:32:06.790 align:middle line:84%
+then it can't be the case
+that SA weakly dominates SB.
+
+00:32:06.790 --> 00:32:09.227 align:middle line:84%
+Maybe a bit fast, it might
+be a good little exercise
+
+00:32:09.227 --> 00:32:09.810 align:middle line:90%
+to write down.
+
+00:32:09.810 --> 00:32:10.977 align:middle line:90%
+But that's a great question.
+
+00:32:10.977 --> 00:32:12.290 align:middle line:90%
+And it's good to keep in mind.
+
+00:32:12.290 --> 00:32:14.470 align:middle line:84%
+And that's one of
+our motivations
+
+00:32:14.470 --> 00:32:17.470 align:middle line:84%
+for demanding strict inequality
+for some S negative i,
+
+00:32:17.470 --> 00:32:20.070 align:middle line:84%
+to rule out this case of
+multiple weakly dominant
+
+00:32:20.070 --> 00:32:21.510 align:middle line:90%
+strategies.
+
+00:32:21.510 --> 00:32:22.010 align:middle line:90%
+Great.
+
+00:32:22.010 --> 00:32:22.890 align:middle line:90%
+Any other questions?
+
+00:32:22.890 --> 00:32:23.670 align:middle line:90%
+Yeah?
+
+00:32:23.670 --> 00:32:26.790 align:middle line:84%
+STUDENT: Just to clarify, for
+the [INAUDIBLE] for strictly
+
+00:32:26.790 --> 00:32:31.230 align:middle line:84%
+dominates, is it just
+that the [INAUDIBLE]?
+
+00:32:31.230 --> 00:32:35.270 align:middle line:90%
+
+
+00:32:35.270 --> 00:32:35.990 align:middle line:90%
+IAN BALL: Yeah.
+
+00:32:35.990 --> 00:32:39.190 align:middle line:90%
+So what I mean is let's list--
+
+00:32:39.190 --> 00:32:41.310 align:middle line:84%
+for each S negative i,
+we have an inequality
+
+00:32:41.310 --> 00:32:42.397 align:middle line:90%
+that looks like this.
+
+00:32:42.397 --> 00:32:43.730 align:middle line:90%
+So let's say we have 10 of them.
+
+00:32:43.730 --> 00:32:45.980 align:middle line:84%
+And I'm just going to go
+through each of them and say,
+
+00:32:45.980 --> 00:32:47.790 align:middle line:84%
+does equality hold
+in every single one
+
+00:32:47.790 --> 00:32:49.030 align:middle line:90%
+of those inequalities?
+
+00:32:49.030 --> 00:32:53.350 align:middle line:84%
+And to get weak dominance,
+equality cannot hold in every
+
+00:32:53.350 --> 00:32:54.070 align:middle line:90%
+single one.
+
+00:32:54.070 --> 00:32:55.570 align:middle line:84%
+So another way of
+saying it is there
+
+00:32:55.570 --> 00:32:57.510 align:middle line:84%
+must be one inequality
+where it's strict.
+
+00:32:57.510 --> 00:32:59.710 align:middle line:84%
+But it could be
+equality in all but one.
+
+00:32:59.710 --> 00:33:00.450 align:middle line:90%
+That's right.
+
+00:33:00.450 --> 00:33:06.810 align:middle line:84%
+Yeah, so when I say strict, I'm
+referring to that being strict.
+
+00:33:06.810 --> 00:33:07.310 align:middle line:90%
+Great.
+
+00:33:07.310 --> 00:33:08.650 align:middle line:90%
+Any other questions?
+
+00:33:08.650 --> 00:33:13.720 align:middle line:90%
+
+
+00:33:13.720 --> 00:33:16.050 align:middle line:84%
+So now, let's look at a
+slightly more complicated game
+
+00:33:16.050 --> 00:33:19.510 align:middle line:84%
+than the prisoner's dilemma and
+see how we would approach this.
+
+00:33:19.510 --> 00:33:27.818 align:middle line:90%
+
+
+00:33:27.818 --> 00:33:31.370 align:middle line:84%
+Let me make sure I get
+[INAUDIBLE] two on top.
+
+00:33:31.370 --> 00:33:32.910 align:middle line:90%
+So we have a two player game.
+
+00:33:32.910 --> 00:33:41.890 align:middle line:90%
+
+
+00:33:41.890 --> 00:33:44.950 align:middle line:84%
+So remember, we, always
+put player 1 here.
+
+00:33:44.950 --> 00:33:47.170 align:middle line:84%
+Player 1 is always
+choosing rows.
+
+00:33:47.170 --> 00:33:49.530 align:middle line:84%
+Player 2 is always
+choosing columns.
+
+00:33:49.530 --> 00:33:51.450 align:middle line:84%
+And when we fill in
+the payoffs, we always
+
+00:33:51.450 --> 00:33:54.040 align:middle line:90%
+put player 1's payoffs first.
+
+00:33:54.040 --> 00:33:56.330 align:middle line:84%
+So here, player 1
+has three strategies.
+
+00:33:56.330 --> 00:33:58.080 align:middle line:84%
+We call them top,
+middle, and bottom, just
+
+00:33:58.080 --> 00:34:00.080 align:middle line:90%
+to make it easy to remember.
+
+00:34:00.080 --> 00:34:02.080 align:middle line:84%
+And player 2 also
+has two strategies,
+
+00:34:02.080 --> 00:34:03.760 align:middle line:90%
+which we call left and right.
+
+00:34:03.760 --> 00:34:05.200 align:middle line:84%
+So for what I'm
+going to do here,
+
+00:34:05.200 --> 00:34:07.500 align:middle line:84%
+I really only care about
+player 1's payoffs.
+
+00:34:07.500 --> 00:34:10.139 align:middle line:90%
+So to avoid just distractions.
+
+00:34:10.139 --> 00:34:13.300 align:middle line:84%
+I'm only going to fill
+in player 1's payoffs.
+
+00:34:13.300 --> 00:34:16.802 align:middle line:90%
+
+
+00:34:16.802 --> 00:34:18.219 align:middle line:84%
+So there should
+be something here.
+
+00:34:18.219 --> 00:34:20.318 align:middle line:84%
+Maybe I'll put this
+to indicate, if I
+
+00:34:20.318 --> 00:34:21.860 align:middle line:84%
+wanted to finish
+filling in the game,
+
+00:34:21.860 --> 00:34:23.402 align:middle line:84%
+I'd have to put in
+all those numbers.
+
+00:34:23.402 --> 00:34:24.880 align:middle line:84%
+But for what I'm
+doing now, I only
+
+00:34:24.880 --> 00:34:26.500 align:middle line:90%
+care about these first numbers.
+
+00:34:26.500 --> 00:34:30.480 align:middle line:90%
+
+
+00:34:30.480 --> 00:34:35.753 align:middle line:84%
+So let's ask, in this game, does
+any strategy dominate any other?
+
+00:34:35.753 --> 00:34:37.920 align:middle line:84%
+Does it strictly dominate,
+weakly dominate any other
+
+00:34:37.920 --> 00:34:38.780 align:middle line:90%
+for player 1?
+
+00:34:38.780 --> 00:34:43.679 align:middle line:90%
+
+
+00:34:43.679 --> 00:34:44.500 align:middle line:90%
+What do you think?
+
+00:34:44.500 --> 00:34:50.487 align:middle line:90%
+
+
+00:34:50.487 --> 00:34:51.820 align:middle line:90%
+How do you feel about this game?
+
+00:34:51.820 --> 00:34:53.520 align:middle line:84%
+Would you be happy to play
+any of these strategies?
+
+00:34:53.520 --> 00:34:55.800 align:middle line:84%
+Or do you think some of
+them seem worse than others?
+
+00:34:55.800 --> 00:35:03.900 align:middle line:90%
+
+
+00:35:03.900 --> 00:35:05.560 align:middle line:90%
+OK, maybe we'll go on.
+
+00:35:05.560 --> 00:35:08.320 align:middle line:84%
+But the answer is nothing
+dominates anything else.
+
+00:35:08.320 --> 00:35:09.380 align:middle line:90%
+Let's go through it.
+
+00:35:09.380 --> 00:35:11.420 align:middle line:90%
+Does T dominate M?
+
+00:35:11.420 --> 00:35:13.980 align:middle line:84%
+Well, you might think so
+because 2 is greater than 0.
+
+00:35:13.980 --> 00:35:16.180 align:middle line:84%
+But over here, we
+have negative 1 and 0.
+
+00:35:16.180 --> 00:35:21.020 align:middle line:84%
+So M does better than T
+if my opponent plays R.
+
+00:35:21.020 --> 00:35:25.020 align:middle line:84%
+So it can't be the case that
+T dominates M. And similarly,
+
+00:35:25.020 --> 00:35:26.860 align:middle line:90%
+does M dominate B?
+
+00:35:26.860 --> 00:35:32.100 align:middle line:84%
+Well, even though M does better
+than B when my opponent plays L,
+
+00:35:32.100 --> 00:35:34.900 align:middle line:84%
+M does worse than B when
+my opponent plays R.
+
+00:35:34.900 --> 00:35:36.900 align:middle line:84%
+And you can go through
+each of these comparisons
+
+00:35:36.900 --> 00:35:41.020 align:middle line:84%
+and see that no strategy weakly
+dominates any other strategy.
+
+00:35:41.020 --> 00:35:43.400 align:middle line:84%
+So now, we have a
+bit of a conundrum.
+
+00:35:43.400 --> 00:35:44.780 align:middle line:84%
+How should you
+play in this game?
+
+00:35:44.780 --> 00:35:45.530 align:middle line:90%
+It's not so clear.
+
+00:35:45.530 --> 00:35:46.760 align:middle line:90%
+Before, it was pretty easy.
+
+00:35:46.760 --> 00:35:49.052 align:middle line:84%
+In the prisoner's dilemma,
+we said, if you're rational,
+
+00:35:49.052 --> 00:35:51.460 align:middle line:84%
+play F. You don't have to
+worry about your opponent.
+
+00:35:51.460 --> 00:35:54.120 align:middle line:84%
+However they play, you're
+strictly better off playing F.
+
+00:35:54.120 --> 00:35:56.655 align:middle line:90%
+But here, it's not so clear.
+
+00:35:56.655 --> 00:35:58.280 align:middle line:84%
+So how would you
+approach this problem,
+
+00:35:58.280 --> 00:35:59.570 align:middle line:90%
+if you were player 1 here?
+
+00:35:59.570 --> 00:36:00.820 align:middle line:90%
+What would be relevant to you?
+
+00:36:00.820 --> 00:36:02.278 align:middle line:84%
+What would you need
+to think about?
+
+00:36:02.278 --> 00:36:05.120 align:middle line:90%
+
+
+00:36:05.120 --> 00:36:05.800 align:middle line:90%
+Yeah?
+
+00:36:05.800 --> 00:36:09.160 align:middle line:84%
+STUDENT: You want to know what
+the chances are the other player
+
+00:36:09.160 --> 00:36:10.080 align:middle line:90%
+plays [INAUDIBLE].
+
+00:36:10.080 --> 00:36:10.480 align:middle line:90%
+IAN BALL: Exactly.
+
+00:36:10.480 --> 00:36:12.105 align:middle line:84%
+So you're going to
+have to form beliefs
+
+00:36:12.105 --> 00:36:13.500 align:middle line:84%
+about how the
+other player plays,
+
+00:36:13.500 --> 00:36:16.200 align:middle line:84%
+just like on the first class
+when we said whether you walk
+
+00:36:16.200 --> 00:36:19.480 align:middle line:84%
+home or take the T depends on,
+after checking your phone, what
+
+00:36:19.480 --> 00:36:21.990 align:middle line:84%
+you think the probability
+is that it's going to rain.
+
+00:36:21.990 --> 00:36:24.240 align:middle line:84%
+In the same way, we're going
+to form beliefs or assign
+
+00:36:24.240 --> 00:36:28.360 align:middle line:84%
+probabilities to the strategies
+that my opponent is playing.
+
+00:36:28.360 --> 00:36:35.240 align:middle line:84%
+So in this context, maybe we'll
+assign a probability of p to L
+
+00:36:35.240 --> 00:36:40.560 align:middle line:84%
+and 1 minus p to R. So now,
+let's compute my payoffs
+
+00:36:40.560 --> 00:36:44.040 align:middle line:90%
+I'm going to write u of L, p.
+
+00:36:44.040 --> 00:36:45.630 align:middle line:90%
+So a few things here--
+
+00:36:45.630 --> 00:36:48.270 align:middle line:84%
+because my opponent
+only has two strategies,
+
+00:36:48.270 --> 00:36:51.390 align:middle line:84%
+if I want to specify my
+belief about their strategy,
+
+00:36:51.390 --> 00:36:53.483 align:middle line:84%
+it's enough to specify
+a single number p.
+
+00:36:53.483 --> 00:36:54.650 align:middle line:90%
+And I want to be clear here.
+
+00:36:54.650 --> 00:36:55.770 align:middle line:90%
+This is a number p.
+
+00:36:55.770 --> 00:36:56.910 align:middle line:90%
+It's not a vector.
+
+00:36:56.910 --> 00:36:58.030 align:middle line:90%
+It's just a number.
+
+00:36:58.030 --> 00:37:00.950 align:middle line:84%
+Once I know how much
+probability I assigned to L,
+
+00:37:00.950 --> 00:37:04.350 align:middle line:84%
+then the amount of probability
+I assign to R is always just 1
+
+00:37:04.350 --> 00:37:05.770 align:middle line:90%
+minus that probability.
+
+00:37:05.770 --> 00:37:08.030 align:middle line:90%
+So this is enough information.
+
+00:37:08.030 --> 00:37:10.290 align:middle line:84%
+And then here,
+remember, technically--
+
+00:37:10.290 --> 00:37:11.450 align:middle line:90%
+I'll put 1 here--
+
+00:37:11.450 --> 00:37:15.310 align:middle line:84%
+we only define the utility
+u1 of a strategy profile.
+
+00:37:15.310 --> 00:37:17.790 align:middle line:84%
+So technically, we haven't
+defined what this means yet.
+
+00:37:17.790 --> 00:37:19.790 align:middle line:84%
+But we're going to
+extend our notation
+
+00:37:19.790 --> 00:37:23.070 align:middle line:84%
+to define what my
+expected payoff is
+
+00:37:23.070 --> 00:37:26.550 align:middle line:84%
+if I play L and I believe
+that my opponent is going
+
+00:37:26.550 --> 00:37:30.230 align:middle line:84%
+to play L with probability p and
+R with probability 1 minus p.
+
+00:37:30.230 --> 00:37:30.870 align:middle line:90%
+Yes?
+
+00:37:30.870 --> 00:37:33.063 align:middle line:84%
+STUDENT: You're playing T
+or M or R [? instead. ?]
+
+00:37:33.063 --> 00:37:34.230 align:middle line:90%
+IAN BALL: Ah, yes, T, sorry.
+
+00:37:34.230 --> 00:37:35.190 align:middle line:90%
+Thank you.
+
+00:37:35.190 --> 00:37:36.950 align:middle line:90%
+T, yes.
+
+00:37:36.950 --> 00:37:38.590 align:middle line:90%
+Great.
+
+00:37:38.590 --> 00:37:39.550 align:middle line:90%
+So here we are.
+
+00:37:39.550 --> 00:37:42.710 align:middle line:84%
+So what is it/ Well,
+with probability p,
+
+00:37:42.710 --> 00:37:47.910 align:middle line:84%
+my opponent plays L. And
+therefore, my payoff is u1 of T,
+
+00:37:47.910 --> 00:37:55.090 align:middle line:84%
+L. But with probability 1
+minus p, my opponent plays R.
+
+00:37:55.090 --> 00:37:58.650 align:middle line:84%
+I'm still playing T. Thanks
+for the clarification.
+
+00:37:58.650 --> 00:38:04.650 align:middle line:90%
+So we have T, R.
+
+00:38:04.650 --> 00:38:06.290 align:middle line:84%
+So notice, we're
+treating my beliefs
+
+00:38:06.290 --> 00:38:08.970 align:middle line:84%
+about my opponent's strategy
+just like we treated lotteries
+
+00:38:08.970 --> 00:38:09.770 align:middle line:90%
+before.
+
+00:38:09.770 --> 00:38:12.090 align:middle line:84%
+When I have beliefs
+about something,
+
+00:38:12.090 --> 00:38:14.850 align:middle line:84%
+I think about my
+choices as corresponding
+
+00:38:14.850 --> 00:38:17.450 align:middle line:90%
+to lotteries over outcomes.
+
+00:38:17.450 --> 00:38:20.730 align:middle line:84%
+And then I evaluate expected
+utility over those outcomes.
+
+00:38:20.730 --> 00:38:22.630 align:middle line:84%
+So here, we can just
+plug in the numbers.
+
+00:38:22.630 --> 00:38:24.730 align:middle line:84%
+We're going to get this
+is going to be a 2.
+
+00:38:24.730 --> 00:38:28.170 align:middle line:84%
+And this is going
+to be a negative 1.
+
+00:38:28.170 --> 00:38:30.270 align:middle line:90%
+So what do we get?
+
+00:38:30.270 --> 00:38:37.850 align:middle line:84%
+We get 2p minus 1 plus p,
+if we do the math right,
+
+00:38:37.850 --> 00:38:40.990 align:middle line:90%
+which equals 3p minus 1.
+
+00:38:40.990 --> 00:38:43.550 align:middle line:90%
+
+
+00:38:43.550 --> 00:38:46.750 align:middle line:84%
+And it's often good to
+check if this makes sense.
+
+00:38:46.750 --> 00:38:48.510 align:middle line:90%
+The higher is p--
+
+00:38:48.510 --> 00:38:49.510 align:middle line:90%
+yes?
+
+00:38:49.510 --> 00:38:51.430 align:middle line:84%
+STUDENT: So I just
+[INAUDIBLE] question--
+
+00:38:51.430 --> 00:38:54.110 align:middle line:84%
+the utility, in this
+case, is specifically only
+
+00:38:54.110 --> 00:38:56.330 align:middle line:84%
+for the lottery, which is
+represented by the value p.
+
+00:38:56.330 --> 00:38:58.430 align:middle line:84%
+But we also have to
+include strategy, right?
+
+00:38:58.430 --> 00:38:59.310 align:middle line:90%
+IAN BALL: Right.
+
+00:38:59.310 --> 00:39:01.018 align:middle line:84%
+So if we want to be
+a little more formal,
+
+00:39:01.018 --> 00:39:02.950 align:middle line:84%
+what is this/ This
+is the lottery.
+
+00:39:02.950 --> 00:39:04.890 align:middle line:90%
+Well, this is a two player game.
+
+00:39:04.890 --> 00:39:08.690 align:middle line:84%
+So this is a lottery over the
+strategies of my opponents.
+
+00:39:08.690 --> 00:39:14.830 align:middle line:84%
+So this lives in delta
+of, in this case, S2,
+
+00:39:14.830 --> 00:39:19.070 align:middle line:84%
+but, more generally, S negative
+1, because what I need to do
+
+00:39:19.070 --> 00:39:21.090 align:middle line:84%
+is I need to say,
+more generally,
+
+00:39:21.090 --> 00:39:23.790 align:middle line:84%
+of all the possible
+profiles of strategies
+
+00:39:23.790 --> 00:39:25.670 align:middle line:84%
+that my opponents
+could play, I need
+
+00:39:25.670 --> 00:39:29.070 align:middle line:84%
+to form a belief that specifies
+the probability on each of them.
+
+00:39:29.070 --> 00:39:32.010 align:middle line:84%
+In this case, I can represent
+that belief by a single number.
+
+00:39:32.010 --> 00:39:34.210 align:middle line:84%
+But more generally, it's going
+to be a more complicated object.
+
+00:39:34.210 --> 00:39:36.293 align:middle line:84%
+STUDENT: So that means
+utilities usually calculate
+
+00:39:36.293 --> 00:39:40.250 align:middle line:84%
+the cross-product of a
+strategy [INAUDIBLE].
+
+00:39:40.250 --> 00:39:41.350 align:middle line:90%
+IAN BALL: Yes, yes.
+
+00:39:41.350 --> 00:39:43.650 align:middle line:84%
+And I'll be more formal
+in a second, yeah.
+
+00:39:43.650 --> 00:39:44.552 align:middle line:90%
+Other question, yeah?
+
+00:39:44.552 --> 00:39:46.010 align:middle line:84%
+STUDENT: So is the
+utility function
+
+00:39:46.010 --> 00:39:48.050 align:middle line:90%
+on the left side [INAUDIBLE]?
+
+00:39:48.050 --> 00:39:51.375 align:middle line:90%
+
+
+00:39:51.375 --> 00:39:52.750 align:middle line:84%
+IAN BALL: Good
+point, good point.
+
+00:39:52.750 --> 00:39:56.123 align:middle line:84%
+People are being very,
+very precise here.
+
+00:39:56.123 --> 00:39:57.790 align:middle line:84%
+You might say it's
+an abuse of notation.
+
+00:39:57.790 --> 00:39:59.370 align:middle line:84%
+Or you might say we're
+extending the notation
+
+00:39:59.370 --> 00:40:00.328 align:middle line:90%
+on the right-hand side.
+
+00:40:00.328 --> 00:40:02.410 align:middle line:84%
+So originally, we
+defined utilities only
+
+00:40:02.410 --> 00:40:04.290 align:middle line:90%
+for strategy profiles.
+
+00:40:04.290 --> 00:40:06.090 align:middle line:84%
+And now, we're going
+to define-- formally,
+
+00:40:06.090 --> 00:40:08.382 align:middle line:84%
+what we're doing is we're
+going to extend this function
+
+00:40:08.382 --> 00:40:09.510 align:middle line:90%
+to a larger domain.
+
+00:40:09.510 --> 00:40:11.810 align:middle line:84%
+So we're going to imagine
+that it has the same meaning
+
+00:40:11.810 --> 00:40:12.910 align:middle line:90%
+on the original domain.
+
+00:40:12.910 --> 00:40:15.370 align:middle line:84%
+But now, we're going to
+define it more broadly.
+
+00:40:15.370 --> 00:40:18.490 align:middle line:84%
+So maybe if I was
+being very pedantic,
+
+00:40:18.490 --> 00:40:20.390 align:middle line:84%
+I would use different
+notation here.
+
+00:40:20.390 --> 00:40:22.738 align:middle line:84%
+But we're going to be
+a little less pedantic.
+
+00:40:22.738 --> 00:40:24.530 align:middle line:84%
+And we're going to
+think of these utilities
+
+00:40:24.530 --> 00:40:26.540 align:middle line:84%
+as being defined on a
+bit more general space.
+
+00:40:26.540 --> 00:40:28.290 align:middle line:84%
+But you're right that,
+conceptually, there
+
+00:40:28.290 --> 00:40:29.510 align:middle line:90%
+is a distinction here.
+
+00:40:29.510 --> 00:40:31.450 align:middle line:84%
+Though, one way to
+think about it is,
+
+00:40:31.450 --> 00:40:33.290 align:middle line:90%
+how do I interpret u1 of T, L?
+
+00:40:33.290 --> 00:40:35.730 align:middle line:84%
+One interpretation is this
+is what happens when I play T
+
+00:40:35.730 --> 00:40:39.320 align:middle line:84%
+and I hold the belief that my
+opponent is certain to play L.
+
+00:40:39.320 --> 00:40:42.378 align:middle line:84%
+So you can think of this as a
+special case where p equals 1.
+
+00:40:42.378 --> 00:40:43.920 align:middle line:84%
+That would be one
+way you can see how
+
+00:40:43.920 --> 00:40:45.180 align:middle line:90%
+these functions fit together.
+
+00:40:45.180 --> 00:40:45.680 align:middle line:90%
+Yeah.
+
+00:40:45.680 --> 00:40:46.280 align:middle line:90%
+Any other questions?
+
+00:40:46.280 --> 00:40:46.680 align:middle line:90%
+Yes?
+
+00:40:46.680 --> 00:40:49.263 align:middle line:84%
+STUDENT: Can you just use big U
+on the left-hand side and then
+
+00:40:49.263 --> 00:40:50.920 align:middle line:90%
+little u on the right-hand side?
+
+00:40:50.920 --> 00:40:52.460 align:middle line:90%
+IAN BALL: I could do that.
+
+00:40:52.460 --> 00:40:53.540 align:middle line:90%
+I'm not doing that here.
+
+00:40:53.540 --> 00:40:54.140 align:middle line:90%
+I could do it.
+
+00:40:54.140 --> 00:40:57.660 align:middle line:84%
+But eventually, we just find
+it easier to always do this.
+
+00:40:57.660 --> 00:41:00.800 align:middle line:84%
+So from now on, we're
+going to use little u.
+
+00:41:00.800 --> 00:41:03.840 align:middle line:84%
+And we can put in a belief
+or a strategy over here.
+
+00:41:03.840 --> 00:41:05.880 align:middle line:84%
+And if we put in a
+strategy, the interpretation
+
+00:41:05.880 --> 00:41:08.040 align:middle line:84%
+is that's a belief that
+puts all the probability
+
+00:41:08.040 --> 00:41:09.560 align:middle line:90%
+on that particular strategy.
+
+00:41:09.560 --> 00:41:10.360 align:middle line:90%
+Yeah.
+
+00:41:10.360 --> 00:41:12.140 align:middle line:90%
+Any other questions here?
+
+00:41:12.140 --> 00:41:12.640 align:middle line:90%
+Good.
+
+00:41:12.640 --> 00:41:14.280 align:middle line:90%
+OK.
+
+00:41:14.280 --> 00:41:15.748 align:middle line:90%
+And we could similarly compute--
+
+00:41:15.748 --> 00:41:16.540 align:middle line:90%
+I won't do it here.
+
+00:41:16.540 --> 00:41:24.080 align:middle line:84%
+But we could compute u1
+of M, p and u1 of B, p.
+
+00:41:24.080 --> 00:41:25.762 align:middle line:84%
+Then I guess the
+question suggested
+
+00:41:25.762 --> 00:41:27.720 align:middle line:84%
+we need to be a little
+more rigorous about what
+
+00:41:27.720 --> 00:41:29.260 align:middle line:84%
+these beliefs are
+and what we mean.
+
+00:41:29.260 --> 00:41:31.360 align:middle line:84%
+So let me bring
+this down and erase.
+
+00:41:31.360 --> 00:41:43.060 align:middle line:90%
+
+
+00:41:43.060 --> 00:41:45.720 align:middle line:84%
+So let's be a little more
+precise about what a belief is.
+
+00:41:45.720 --> 00:41:48.660 align:middle line:90%
+
+
+00:41:48.660 --> 00:41:53.060 align:middle line:84%
+Well, a belief for player i is
+just a probability distribution
+
+00:41:53.060 --> 00:41:56.820 align:middle line:84%
+over the strategies that the
+other players are playing.
+
+00:41:56.820 --> 00:42:04.500 align:middle line:84%
+So I'll say, for player
+i, it's a function.
+
+00:42:04.500 --> 00:42:06.403 align:middle line:90%
+Maybe we'll say beta negative i.
+
+00:42:06.403 --> 00:42:08.820 align:middle line:84%
+We're going to use the negative
+i because even though it's
+
+00:42:08.820 --> 00:42:10.278 align:middle line:84%
+the belief that's
+held by player i,
+
+00:42:10.278 --> 00:42:13.160 align:middle line:84%
+it's a belief about
+everyone else's strategies.
+
+00:42:13.160 --> 00:42:15.220 align:middle line:84%
+And that's why we use
+the negative i here.
+
+00:42:15.220 --> 00:42:15.880 align:middle line:90%
+And what is it?
+
+00:42:15.880 --> 00:42:19.140 align:middle line:84%
+Well, it's a function
+from S negative i
+
+00:42:19.140 --> 00:42:23.180 align:middle line:84%
+to 0, 1, if you want to be
+really formal, where it says,
+
+00:42:23.180 --> 00:42:26.060 align:middle line:84%
+for each profile of
+strategies, or partial profile
+
+00:42:26.060 --> 00:42:28.700 align:middle line:84%
+of strategies, that
+my opponents play,
+
+00:42:28.700 --> 00:42:30.500 align:middle line:84%
+what is the probability
+that I assign
+
+00:42:30.500 --> 00:42:33.280 align:middle line:84%
+to that particular
+profile of strategies?
+
+00:42:33.280 --> 00:42:36.080 align:middle line:84%
+How likely is it that they
+played that particular profile?
+
+00:42:36.080 --> 00:42:38.400 align:middle line:84%
+Now, what we need--
+we have to be careful.
+
+00:42:38.400 --> 00:42:41.540 align:middle line:84%
+For this to make sense, when we
+sum up all these probabilities,
+
+00:42:41.540 --> 00:42:43.520 align:middle line:90%
+we have to get 1.
+
+00:42:43.520 --> 00:42:49.640 align:middle line:84%
+So it's a function like
+this that's satisfying what?
+
+00:42:49.640 --> 00:42:52.260 align:middle line:84%
+Well, the total
+probability is 1.
+
+00:42:52.260 --> 00:42:53.880 align:middle line:90%
+So let me take a summation.
+
+00:42:53.880 --> 00:42:55.360 align:middle line:90%
+What am I summing over?
+
+00:42:55.360 --> 00:42:57.640 align:middle line:84%
+I'm summing over all
+the partial strategy
+
+00:42:57.640 --> 00:42:59.480 align:middle line:90%
+profiles of my opponent.
+
+00:42:59.480 --> 00:43:04.200 align:middle line:84%
+So I'm going to sum over s
+negative i in big S negative i.
+
+00:43:04.200 --> 00:43:06.640 align:middle line:84%
+If you're not used to seeing
+summations that aren't just
+
+00:43:06.640 --> 00:43:08.720 align:middle line:84%
+numbers 1 to n, think
+of this as just I'm
+
+00:43:08.720 --> 00:43:15.560 align:middle line:84%
+writing out addition with one
+term for each strategy profile
+
+00:43:15.560 --> 00:43:18.480 align:middle line:90%
+S negative i.
+
+00:43:18.480 --> 00:43:22.980 align:middle line:84%
+And we have beta negative
+i of S negative i equals 1.
+
+00:43:22.980 --> 00:43:26.680 align:middle line:90%
+
+
+00:43:26.680 --> 00:43:28.960 align:middle line:84%
+So this is formally
+what a belief is.
+
+00:43:28.960 --> 00:43:32.510 align:middle line:84%
+And now, let me formally define
+the function that people rightly
+
+00:43:32.510 --> 00:43:33.810 align:middle line:90%
+challenged me on a little bit.
+
+00:43:33.810 --> 00:43:36.490 align:middle line:84%
+So if I want to formally
+extend this function,
+
+00:43:36.490 --> 00:43:43.310 align:middle line:84%
+we're going to define ui
+of Si beta negative i.
+
+00:43:43.310 --> 00:43:47.070 align:middle line:84%
+So remember, so far, we only
+defined player i's utility
+
+00:43:47.070 --> 00:43:48.870 align:middle line:90%
+from a strategy profile.
+
+00:43:48.870 --> 00:43:51.550 align:middle line:84%
+Now, we're going to think about
+what is player i's expected
+
+00:43:51.550 --> 00:43:55.950 align:middle line:84%
+utility if player i plays
+strategy Si and player
+
+00:43:55.950 --> 00:44:00.270 align:middle line:84%
+i holds this belief about
+everyone else's strategies.
+
+00:44:00.270 --> 00:44:02.030 align:middle line:84%
+We're going to
+take expectations.
+
+00:44:02.030 --> 00:44:04.870 align:middle line:84%
+So we're going to need
+to do a summation.
+
+00:44:04.870 --> 00:44:07.070 align:middle line:84%
+We always sum over
+things we don't know.
+
+00:44:07.070 --> 00:44:09.750 align:middle line:84%
+What we don't know is
+how my opponents play.
+
+00:44:09.750 --> 00:44:13.150 align:middle line:84%
+So this is going to be a
+sum over s negative i in S
+
+00:44:13.150 --> 00:44:15.150 align:middle line:90%
+negative i.
+
+00:44:15.150 --> 00:44:16.830 align:middle line:90%
+And we're taking an expectation.
+
+00:44:16.830 --> 00:44:19.630 align:middle line:84%
+So for each way that my
+opponents could play,
+
+00:44:19.630 --> 00:44:22.390 align:middle line:84%
+I want to consider the
+probability that that happens.
+
+00:44:22.390 --> 00:44:24.670 align:middle line:84%
+And then I want to multiply
+that by the utility
+
+00:44:24.670 --> 00:44:26.670 align:middle line:90%
+I get if that does happen.
+
+00:44:26.670 --> 00:44:31.610 align:middle line:84%
+So what's the probability
+that S negative i happens?
+
+00:44:31.610 --> 00:44:36.090 align:middle line:84%
+It's beta negative
+i of S negative i.
+
+00:44:36.090 --> 00:44:38.050 align:middle line:84%
+And I want to multiply
+this by the utility
+
+00:44:38.050 --> 00:44:39.690 align:middle line:90%
+I get if that happens.
+
+00:44:39.690 --> 00:44:41.010 align:middle line:90%
+Well, what's my utility?
+
+00:44:41.010 --> 00:44:43.370 align:middle line:90%
+Well, I'm still playing Si.
+
+00:44:43.370 --> 00:44:46.210 align:middle line:84%
+If it turns out my
+opponents play S negative i,
+
+00:44:46.210 --> 00:44:52.490 align:middle line:84%
+then my utility is ui
+of Si, S negative i.
+
+00:44:52.490 --> 00:44:54.750 align:middle line:84%
+Let me maybe draw a line
+here to make it clear
+
+00:44:54.750 --> 00:44:56.810 align:middle line:90%
+this is a separate line.
+
+00:44:56.810 --> 00:44:59.050 align:middle line:84%
+And this is the
+formal definition--
+
+00:44:59.050 --> 00:45:01.130 align:middle line:84%
+or the formal extension
+of this function
+
+00:45:01.130 --> 00:45:04.490 align:middle line:90%
+to strategies and beliefs.
+
+00:45:04.490 --> 00:45:06.810 align:middle line:84%
+Now, we can also see here
+what we mentioned earlier.
+
+00:45:06.810 --> 00:45:09.530 align:middle line:84%
+What if beta negative
+i is the special belief
+
+00:45:09.530 --> 00:45:12.210 align:middle line:84%
+that puts probability 1
+on a particular strategy
+
+00:45:12.210 --> 00:45:14.090 align:middle line:90%
+of my opponents?
+
+00:45:14.090 --> 00:45:16.330 align:middle line:84%
+If that happens, then
+all of these terms
+
+00:45:16.330 --> 00:45:19.010 align:middle line:90%
+become 0 except one of them.
+
+00:45:19.010 --> 00:45:21.970 align:middle line:84%
+And I simply get the
+same utility function
+
+00:45:21.970 --> 00:45:24.490 align:middle line:84%
+that I started with, where
+S negative i is exactly
+
+00:45:24.490 --> 00:45:29.830 align:middle line:84%
+the strategy that my belief
+puts probability 1 on.
+
+00:45:29.830 --> 00:45:32.810 align:middle line:90%
+Any questions about this?
+
+00:45:32.810 --> 00:45:33.310 align:middle line:90%
+Yeah?
+
+00:45:33.310 --> 00:45:35.410 align:middle line:84%
+STUDENT: So in this case,
+just for the left side,
+
+00:45:35.410 --> 00:45:38.490 align:middle line:84%
+we have the cross-product
+of [INAUDIBLE] strategy
+
+00:45:38.490 --> 00:45:40.750 align:middle line:84%
+[INAUDIBLE] while the
+ui on the right side
+
+00:45:40.750 --> 00:45:42.890 align:middle line:90%
+is just purely [INAUDIBLE].
+
+00:45:42.890 --> 00:45:43.890 align:middle line:90%
+IAN BALL: Exactly right.
+
+00:45:43.890 --> 00:45:50.150 align:middle line:84%
+So this lives in S.
+And this lives in Si
+
+00:45:50.150 --> 00:45:53.930 align:middle line:90%
+cross delta of S negative i.
+
+00:45:53.930 --> 00:45:56.650 align:middle line:84%
+But I don't want people
+to be scared by the math.
+
+00:45:56.650 --> 00:46:02.430 align:middle line:84%
+But yeah, that's where
+these things live.
+
+00:46:02.430 --> 00:46:03.350 align:middle line:90%
+Great.
+
+00:46:03.350 --> 00:46:05.190 align:middle line:90%
+OK.
+
+00:46:05.190 --> 00:46:07.310 align:middle line:84%
+So now we've talked
+about beliefs,
+
+00:46:07.310 --> 00:46:11.150 align:middle line:84%
+now we can talk about a
+best response to a belief.
+
+00:46:11.150 --> 00:46:14.510 align:middle line:84%
+And this is, I think, one
+of the most central ideas
+
+00:46:14.510 --> 00:46:16.630 align:middle line:90%
+in game theory.
+
+00:46:16.630 --> 00:46:18.130 align:middle line:84%
+Mathematically,
+it's not very deep.
+
+00:46:18.130 --> 00:46:21.230 align:middle line:84%
+But conceptually, it's really,
+I think, a step forward.
+
+00:46:21.230 --> 00:46:22.730 align:middle line:84%
+In interactive
+decision problems,
+
+00:46:22.730 --> 00:46:24.950 align:middle line:84%
+the idea is that
+there's two steps.
+
+00:46:24.950 --> 00:46:28.490 align:middle line:84%
+First, I form a belief about how
+my opponents are going to play.
+
+00:46:28.490 --> 00:46:30.450 align:middle line:84%
+And then I choose
+a strategy that's
+
+00:46:30.450 --> 00:46:33.610 align:middle line:84%
+best given the belief that
+I form about everyone else.
+
+00:46:33.610 --> 00:46:36.370 align:middle line:84%
+So we want to
+formally define that.
+
+00:46:36.370 --> 00:46:53.770 align:middle line:84%
+So we say strategy Si is a
+best response to belief beta
+
+00:46:53.770 --> 00:46:54.470 align:middle line:90%
+negative.
+
+00:46:54.470 --> 00:46:56.550 align:middle line:84%
+And remember, for any
+of this to make sense,
+
+00:46:56.550 --> 00:46:58.930 align:middle line:84%
+we have some game
+in the background.
+
+00:46:58.930 --> 00:47:00.430 align:middle line:84%
+We have some game
+in the background.
+
+00:47:00.430 --> 00:47:01.428 align:middle line:90%
+We have some player.
+
+00:47:01.428 --> 00:47:02.970 align:middle line:84%
+And if I wanted to
+be really precise,
+
+00:47:02.970 --> 00:47:06.650 align:middle line:84%
+I would say, for
+player i, strategy Si
+
+00:47:06.650 --> 00:47:09.850 align:middle line:84%
+is a best response to
+belief beta negative i,
+
+00:47:09.850 --> 00:47:11.490 align:middle line:84%
+because we're
+evaluating things here
+
+00:47:11.490 --> 00:47:13.490 align:middle line:84%
+from the perspective
+of player i.
+
+00:47:13.490 --> 00:47:16.130 align:middle line:84%
+Player i chooses a
+strategy for herself
+
+00:47:16.130 --> 00:47:20.010 align:middle line:84%
+and forms beliefs about
+everyone else's strategy.
+
+00:47:20.010 --> 00:47:23.010 align:middle line:90%
+Well, what do we need?
+
+00:47:23.010 --> 00:47:27.240 align:middle line:84%
+Well, we want Si to do better
+than any other strategy given
+
+00:47:27.240 --> 00:47:28.240 align:middle line:90%
+the belief.
+
+00:47:28.240 --> 00:47:30.940 align:middle line:90%
+So we need ui of Si.
+
+00:47:30.940 --> 00:47:42.282 align:middle line:90%
+
+
+00:47:42.282 --> 00:47:43.240 align:middle line:90%
+So what am I going to--
+
+00:47:43.240 --> 00:47:44.520 align:middle line:90%
+I'll fill it in a second.
+
+00:47:44.520 --> 00:47:45.680 align:middle line:90%
+I'm player i.
+
+00:47:45.680 --> 00:47:49.520 align:middle line:84%
+I'm comparing the utility that
+I get from Si to the utility
+
+00:47:49.520 --> 00:47:51.760 align:middle line:90%
+I get from Si prime.
+
+00:47:51.760 --> 00:47:56.360 align:middle line:84%
+And I want Si to be better
+than Si prime for any Si prime
+
+00:47:56.360 --> 00:47:57.920 align:middle line:90%
+that I contemplate.
+
+00:47:57.920 --> 00:47:59.020 align:middle line:90%
+But what goes in here?
+
+00:47:59.020 --> 00:48:02.320 align:middle line:84%
+Well, what goes in here is
+the fixed belief that I have.
+
+00:48:02.320 --> 00:48:04.320 align:middle line:90%
+So this is beta negative i.
+
+00:48:04.320 --> 00:48:05.660 align:middle line:90%
+And this is beta negative i.
+
+00:48:05.660 --> 00:48:10.640 align:middle line:90%
+
+
+00:48:10.640 --> 00:48:13.100 align:middle line:84%
+So given the belief
+beta negative i,
+
+00:48:13.100 --> 00:48:17.840 align:middle line:84%
+I can compute my expected
+utility from any strategy.
+
+00:48:17.840 --> 00:48:22.340 align:middle line:84%
+And we say that strategy Si is
+a best response to my belief
+
+00:48:22.340 --> 00:48:24.860 align:middle line:84%
+if the expected
+utility I get from Si
+
+00:48:24.860 --> 00:48:27.540 align:middle line:84%
+is weakly larger than
+the expected utility
+
+00:48:27.540 --> 00:48:30.743 align:middle line:84%
+I get from any other
+strategy Si prime.
+
+00:48:30.743 --> 00:48:33.160 align:middle line:84%
+Now, let's go back to the
+question that was asked earlier.
+
+00:48:33.160 --> 00:48:36.580 align:middle line:84%
+Can I have multiple best
+responses to a belief?
+
+00:48:36.580 --> 00:48:37.660 align:middle line:90%
+Is that possible?
+
+00:48:37.660 --> 00:48:41.320 align:middle line:84%
+Can two strategies both be best
+responses to the same belief?
+
+00:48:41.320 --> 00:48:47.180 align:middle line:90%
+
+
+00:48:47.180 --> 00:48:47.820 align:middle line:90%
+Yes.
+
+00:48:47.820 --> 00:48:49.940 align:middle line:84%
+So this goes back to
+the suggestion before.
+
+00:48:49.940 --> 00:48:52.580 align:middle line:84%
+If I had two strategies,
+Si and Si prime,
+
+00:48:52.580 --> 00:48:55.020 align:middle line:84%
+that gave me exactly the
+same utility no matter what
+
+00:48:55.020 --> 00:48:57.140 align:middle line:84%
+my opponents did, then
+it's possible for them
+
+00:48:57.140 --> 00:48:58.880 align:middle line:90%
+both to be best responses.
+
+00:48:58.880 --> 00:49:01.000 align:middle line:84%
+In fact, they could
+both be best responses
+
+00:49:01.000 --> 00:49:03.720 align:middle line:84%
+even if they didn't give me
+exactly the same utility,
+
+00:49:03.720 --> 00:49:05.900 align:middle line:84%
+but the expected
+utility was the same.
+
+00:49:05.900 --> 00:49:10.580 align:middle line:90%
+So let's note here--
+
+00:49:10.580 --> 00:49:19.240 align:middle line:84%
+there can be multiple best
+responses to the same belief.
+
+00:49:19.240 --> 00:49:28.280 align:middle line:90%
+
+
+00:49:28.280 --> 00:49:29.860 align:middle line:84%
+If we wanted there
+to only be one,
+
+00:49:29.860 --> 00:49:32.705 align:middle line:84%
+we sometimes might use the
+phrase strict best response
+
+00:49:32.705 --> 00:49:35.080 align:middle line:84%
+to say this is a best response
+and nothing else is a best
+
+00:49:35.080 --> 00:49:36.200 align:middle line:90%
+response.
+
+00:49:36.200 --> 00:49:40.000 align:middle line:84%
+But we'll generally
+just use the weak sense.
+
+00:49:40.000 --> 00:49:40.500 align:middle line:90%
+OK.
+
+00:49:40.500 --> 00:49:45.000 align:middle line:84%
+Let's try to understand
+this graphically.
+
+00:49:45.000 --> 00:49:47.520 align:middle line:90%
+I think there's space.
+
+00:49:47.520 --> 00:49:49.140 align:middle line:90%
+Maybe let's do this over here.
+
+00:49:49.140 --> 00:49:55.580 align:middle line:90%
+So let me just erase this.
+
+00:49:55.580 --> 00:49:58.240 align:middle line:90%
+STUDENT: [INAUDIBLE]
+
+00:49:58.240 --> 00:50:00.560 align:middle line:90%
+
+
+00:50:00.560 --> 00:50:01.720 align:middle line:90%
+IAN BALL: Yeah.
+
+00:50:01.720 --> 00:50:05.560 align:middle line:84%
+Yes, so delta is the space of
+lotteries over the set, yeah.
+
+00:50:05.560 --> 00:50:09.517 align:middle line:90%
+
+
+00:50:09.517 --> 00:50:11.600 align:middle line:84%
+And let me actually just
+erase this to give myself
+
+00:50:11.600 --> 00:50:12.580 align:middle line:90%
+a bit more space.
+
+00:50:12.580 --> 00:50:16.040 align:middle line:90%
+
+
+00:50:16.040 --> 00:50:20.940 align:middle line:84%
+So let's try to understand
+best responses in this game.
+
+00:50:20.940 --> 00:50:22.240 align:middle line:90%
+Best responses to what?
+
+00:50:22.240 --> 00:50:26.180 align:middle line:84%
+Well, best responses for
+player 1 to player 2's--
+
+00:50:26.180 --> 00:50:30.380 align:middle line:84%
+to player 1's belief
+about player 2's strategy.
+
+00:50:30.380 --> 00:50:33.820 align:middle line:84%
+So what we want to do is we're
+going to draw some payoffs here.
+
+00:50:33.820 --> 00:50:36.340 align:middle line:90%
+
+
+00:50:36.340 --> 00:50:41.680 align:middle line:84%
+I'm going to draw a graph here
+where, on the horizontal axis,
+
+00:50:41.680 --> 00:50:42.180 align:middle line:90%
+I'm--
+
+00:50:42.180 --> 00:50:44.780 align:middle line:90%
+
+
+00:50:44.780 --> 00:50:47.780 align:middle line:84%
+maybe it's better
+if I put p on R.
+
+00:50:47.780 --> 00:50:53.800 align:middle line:84%
+So let me just switch this so
+that we're geometrically better.
+
+00:50:53.800 --> 00:51:00.580 align:middle line:90%
+
+
+00:51:00.580 --> 00:51:03.580 align:middle line:84%
+So I can describe my belief
+by my probability on L
+
+00:51:03.580 --> 00:51:05.340 align:middle line:84%
+or my probability
+on R. It's more
+
+00:51:05.340 --> 00:51:07.550 align:middle line:84%
+convenient to put
+the probability on R
+
+00:51:07.550 --> 00:51:09.800 align:middle line:84%
+because then the graph is
+going to move left to right.
+
+00:51:09.800 --> 00:51:11.300 align:middle line:84%
+And that's going
+to be a bit better.
+
+00:51:11.300 --> 00:51:15.660 align:middle line:84%
+So p down here is
+the probability on R.
+
+00:51:15.660 --> 00:51:19.650 align:middle line:84%
+And I'm going to draw
+this graph from 0 to 1.
+
+00:51:19.650 --> 00:51:22.570 align:middle line:84%
+So if p equals 1, then I'm
+certain that my opponent is
+
+00:51:22.570 --> 00:51:26.850 align:middle line:84%
+playing R. If p equals 0, then
+I'm certain that my opponent is
+
+00:51:26.850 --> 00:51:31.570 align:middle line:84%
+playing L. And say if p is 1/2,
+then I think it's equally likely
+
+00:51:31.570 --> 00:51:34.310 align:middle line:84%
+that my opponent plays L and
+that my opponent plays R.
+
+00:51:34.310 --> 00:51:36.750 align:middle line:84%
+You can see why I switch things
+so that we move from left
+
+00:51:36.750 --> 00:51:37.250 align:middle line:90%
+to right.
+
+00:51:37.250 --> 00:51:40.050 align:middle line:84%
+I think it's a bit
+more intuitive.
+
+00:51:40.050 --> 00:51:43.370 align:middle line:84%
+And now, to think
+about best responses,
+
+00:51:43.370 --> 00:51:46.010 align:middle line:84%
+I basically want to plot
+each of these functions.
+
+00:51:46.010 --> 00:51:50.410 align:middle line:84%
+I want to say, if I play T,
+what is my utility from T
+
+00:51:50.410 --> 00:51:54.250 align:middle line:84%
+as a function of the belief
+that I have about my opponents?
+
+00:51:54.250 --> 00:51:57.730 align:middle line:90%
+So let's start.
+
+00:51:57.730 --> 00:52:03.450 align:middle line:90%
+Let's put negative 1, 0, 1, 2.
+
+00:52:03.450 --> 00:52:07.150 align:middle line:84%
+If I play T, well, if
+my opponent plays L,
+
+00:52:07.150 --> 00:52:09.010 align:middle line:90%
+I get a payoff of 2.
+
+00:52:09.010 --> 00:52:11.210 align:middle line:84%
+So that means, if I'm
+certain that my opponent is
+
+00:52:11.210 --> 00:52:13.630 align:middle line:84%
+going to play L, if
+that's my belief,
+
+00:52:13.630 --> 00:52:15.390 align:middle line:90%
+then my payoff better be 2.
+
+00:52:15.390 --> 00:52:18.150 align:middle line:84%
+So we're going to
+get a point up here.
+
+00:52:18.150 --> 00:52:20.630 align:middle line:84%
+And if I'm certain that
+my opponent is playing R,
+
+00:52:20.630 --> 00:52:22.910 align:middle line:84%
+then I get a payoff
+of negative 1.
+
+00:52:22.910 --> 00:52:27.910 align:middle line:84%
+So it better be that we
+get a point like this.
+
+00:52:27.910 --> 00:52:29.890 align:middle line:84%
+And it turns out-- we
+could calculate it.
+
+00:52:29.890 --> 00:52:31.830 align:middle line:84%
+But it turns out expected
+utilities are always
+
+00:52:31.830 --> 00:52:33.190 align:middle line:90%
+linear in my beliefs.
+
+00:52:33.190 --> 00:52:36.710 align:middle line:84%
+So once we know these two
+points, we can just fill it in.
+
+00:52:36.710 --> 00:52:40.110 align:middle line:84%
+It's going to be
+a line like this.
+
+00:52:40.110 --> 00:52:46.532 align:middle line:90%
+So this is u1 of T, p.
+
+00:52:46.532 --> 00:52:48.990 align:middle line:84%
+And remember, if you did the
+formula earlier in your notes,
+
+00:52:48.990 --> 00:52:52.030 align:middle line:90%
+we've switched p to 1 minus p.
+
+00:52:52.030 --> 00:52:55.070 align:middle line:84%
+So the formula in your notes
+was for the old convention.
+
+00:52:55.070 --> 00:52:58.390 align:middle line:90%
+So that no longer applies.
+
+00:52:58.390 --> 00:53:00.710 align:middle line:90%
+What about B?
+
+00:53:00.710 --> 00:53:02.450 align:middle line:90%
+Well, B is symmetric.
+
+00:53:02.450 --> 00:53:05.550 align:middle line:84%
+If I play B, then if I know
+my opponent is playing left,
+
+00:53:05.550 --> 00:53:08.310 align:middle line:90%
+I get negative 1.
+
+00:53:08.310 --> 00:53:12.143 align:middle line:84%
+And if I know my opponent
+is playing right, I get 2.
+
+00:53:12.143 --> 00:53:15.290 align:middle line:84%
+Let me test my
+drawing skills here.
+
+00:53:15.290 --> 00:53:18.130 align:middle line:90%
+And it's going to be linear.
+
+00:53:18.130 --> 00:53:21.210 align:middle line:84%
+So we're going to get
+something like this.
+
+00:53:21.210 --> 00:53:21.760 align:middle line:90%
+What about M?
+
+00:53:21.760 --> 00:53:23.510 align:middle line:84%
+What is the graph of
+M going to look like?
+
+00:53:23.510 --> 00:53:27.050 align:middle line:84%
+It's going to look a
+bit different, right?
+
+00:53:27.050 --> 00:53:28.750 align:middle line:90%
+What will that line look like?
+
+00:53:28.750 --> 00:53:29.590 align:middle line:90%
+Yeah?
+
+00:53:29.590 --> 00:53:30.600 align:middle line:90%
+STUDENT: [INAUDIBLE]
+
+00:53:30.600 --> 00:53:32.350 align:middle line:84%
+IAN BALL: It's just a
+horizontal line at 0
+
+00:53:32.350 --> 00:53:34.950 align:middle line:84%
+because, if I play M,
+whatever my opponent does,
+
+00:53:34.950 --> 00:53:36.160 align:middle line:90%
+I get a payoff of 0.
+
+00:53:36.160 --> 00:53:37.910 align:middle line:84%
+So whatever I believe
+my opponent's doing,
+
+00:53:37.910 --> 00:53:39.730 align:middle line:90%
+I'm going to get a payoff of 0.
+
+00:53:39.730 --> 00:53:43.330 align:middle line:84%
+So now, we have a
+horizontal line here at 0.
+
+00:53:43.330 --> 00:53:48.090 align:middle line:84%
+And if we're careful, this
+intersection should be at 1/2.
+
+00:53:48.090 --> 00:53:50.690 align:middle line:90%
+You can check that.
+
+00:53:50.690 --> 00:53:52.830 align:middle line:84%
+So let me finish
+writing these out.
+
+00:53:52.830 --> 00:54:03.370 align:middle line:90%
+
+
+00:54:03.370 --> 00:54:06.330 align:middle line:84%
+So to be clear, each of these
+is a different function of p.
+
+00:54:06.330 --> 00:54:08.270 align:middle line:84%
+We have three different
+functions of p,
+
+00:54:08.270 --> 00:54:10.370 align:middle line:84%
+where p is a number
+between 0 and 1.
+
+00:54:10.370 --> 00:54:13.520 align:middle line:84%
+And I've graphed all three
+of the functions here.
+
+00:54:13.520 --> 00:54:15.440 align:middle line:84%
+So from the graph, we
+should be able to say
+
+00:54:15.440 --> 00:54:18.000 align:middle line:90%
+a lot about best responses.
+
+00:54:18.000 --> 00:54:21.180 align:middle line:84%
+Can anyone read off from the
+graph what my best response is?
+
+00:54:21.180 --> 00:54:25.200 align:middle line:90%
+
+
+00:54:25.200 --> 00:54:26.800 align:middle line:90%
+Let's go through it, right?
+
+00:54:26.800 --> 00:54:28.600 align:middle line:90%
+Let's fix a belief.
+
+00:54:28.600 --> 00:54:31.440 align:middle line:84%
+A belief is some point
+on the horizontal axis.
+
+00:54:31.440 --> 00:54:33.000 align:middle line:84%
+Now, once I fix
+that belief, if I
+
+00:54:33.000 --> 00:54:36.060 align:middle line:84%
+want to understand my payoff
+from my different strategies,
+
+00:54:36.060 --> 00:54:40.240 align:middle line:84%
+I'm going to draw a
+vertical line upwards.
+
+00:54:40.240 --> 00:54:42.380 align:middle line:84%
+And as I pass up through
+that vertical line,
+
+00:54:42.380 --> 00:54:46.520 align:middle line:84%
+each curve I intersect is
+telling me my expected payoff
+
+00:54:46.520 --> 00:54:49.743 align:middle line:84%
+from that particular
+strategy given this belief.
+
+00:54:49.743 --> 00:54:51.160 align:middle line:84%
+So at this point,
+what it tells me
+
+00:54:51.160 --> 00:54:56.680 align:middle line:84%
+is my lowest payoff is from B.
+M gives me my middle payoff.
+
+00:54:56.680 --> 00:55:01.360 align:middle line:84%
+And then T gives me
+the highest payoff.
+
+00:55:01.360 --> 00:55:05.440 align:middle line:84%
+So at any beliefs where
+the highest curve is T,
+
+00:55:05.440 --> 00:55:07.720 align:middle line:90%
+T is my best response.
+
+00:55:07.720 --> 00:55:10.280 align:middle line:84%
+At any beliefs where B
+is the highest curve,
+
+00:55:10.280 --> 00:55:12.100 align:middle line:90%
+B is my best response.
+
+00:55:12.100 --> 00:55:14.100 align:middle line:90%
+So let's look at this.
+
+00:55:14.100 --> 00:55:16.200 align:middle line:84%
+I should have gotten
+out the colored chalk.
+
+00:55:16.200 --> 00:55:19.140 align:middle line:90%
+
+
+00:55:19.140 --> 00:55:20.800 align:middle line:90%
+That'd be nice if I have it.
+
+00:55:20.800 --> 00:55:23.820 align:middle line:90%
+
+
+00:55:23.820 --> 00:55:26.240 align:middle line:90%
+Maybe no colored chalk today.
+
+00:55:26.240 --> 00:55:27.100 align:middle line:90%
+Ah, yes.
+
+00:55:27.100 --> 00:55:30.883 align:middle line:90%
+
+
+00:55:30.883 --> 00:55:33.300 align:middle line:84%
+So what I'm actually going to
+do-- the easiest thing to do
+
+00:55:33.300 --> 00:55:35.460 align:middle line:84%
+is I'm going to shade
+in what's sometimes
+
+00:55:35.460 --> 00:55:36.680 align:middle line:90%
+called the upper envelope.
+
+00:55:36.680 --> 00:55:37.820 align:middle line:84%
+I'm going to go through
+all these curves.
+
+00:55:37.820 --> 00:55:39.620 align:middle line:84%
+And I'm going to look
+at what's highest.
+
+00:55:39.620 --> 00:55:42.590 align:middle line:84%
+So if I'm here, this
+is the highest curve.
+
+00:55:42.590 --> 00:55:44.220 align:middle line:90%
+It comes down.
+
+00:55:44.220 --> 00:55:45.120 align:middle line:90%
+Here, it changes.
+
+00:55:45.120 --> 00:55:48.900 align:middle line:84%
+Now, this becomes
+the highest curve.
+
+00:55:48.900 --> 00:55:51.900 align:middle line:90%
+And I get something like this.
+
+00:55:51.900 --> 00:55:55.700 align:middle line:90%
+So now, you can see down here--
+
+00:55:55.700 --> 00:55:59.380 align:middle line:84%
+can anyone now read off from the
+graph what my best responses are
+
+00:55:59.380 --> 00:56:01.420 align:middle line:90%
+as a function of my beliefs?
+
+00:56:01.420 --> 00:56:03.660 align:middle line:90%
+So when is T a best response?
+
+00:56:03.660 --> 00:56:05.900 align:middle line:84%
+For which beliefs is
+T a best response?
+
+00:56:05.900 --> 00:56:06.400 align:middle line:90%
+Yeah?
+
+00:56:06.400 --> 00:56:08.880 align:middle line:84%
+STUDENT: From 0 to 1/2
+probability of choosing R.
+
+00:56:08.880 --> 00:56:12.860 align:middle line:84%
+And then from 1/2 to 1, it's
+better to use B instead.
+
+00:56:12.860 --> 00:56:14.860 align:middle line:90%
+[INAUDIBLE]
+
+00:56:14.860 --> 00:56:16.380 align:middle line:84%
+IAN BALL: Great,
+so exactly right.
+
+00:56:16.380 --> 00:56:18.940 align:middle line:84%
+And a key point to make at
+the end, these are inclusive.
+
+00:56:18.940 --> 00:56:20.960 align:middle line:84%
+So at 1/2, I actually
+have two best responses.
+
+00:56:20.960 --> 00:56:24.320 align:middle line:84%
+T and B are both best responses
+at 1/2, as you pointed out.
+
+00:56:24.320 --> 00:56:27.800 align:middle line:84%
+And if my belief is below
+1/2, then T is the unique best
+
+00:56:27.800 --> 00:56:30.080 align:middle line:84%
+response, or the
+strict best response.
+
+00:56:30.080 --> 00:56:33.640 align:middle line:84%
+And if p is above 1/2, then
+B is the unique best response
+
+00:56:33.640 --> 00:56:36.540 align:middle line:90%
+or the strict best response.
+
+00:56:36.540 --> 00:56:37.040 align:middle line:90%
+Great.
+
+00:56:37.040 --> 00:56:41.000 align:middle line:84%
+Does this make sense/ Well,
+yes, because T does really well
+
+00:56:41.000 --> 00:56:43.240 align:middle line:90%
+if my opponent plays left.
+
+00:56:43.240 --> 00:56:45.823 align:middle line:84%
+So if my probability on
+right is small enough
+
+00:56:45.823 --> 00:56:48.240 align:middle line:84%
+and I think it's likely enough
+that my opponent is playing
+
+00:56:48.240 --> 00:56:51.120 align:middle line:90%
+left, then T is the best option.
+
+00:56:51.120 --> 00:56:53.960 align:middle line:84%
+If it's likely enough that
+my opponent is playing R,
+
+00:56:53.960 --> 00:56:55.560 align:middle line:90%
+then B is the best option.
+
+00:56:55.560 --> 00:56:59.840 align:middle line:84%
+And we see that B is the best
+response-- is a best response.
+
+00:56:59.840 --> 00:57:04.680 align:middle line:84%
+But now we have a predicament,
+which is, what about M?
+
+00:57:04.680 --> 00:57:09.620 align:middle line:90%
+
+
+00:57:09.620 --> 00:57:12.180 align:middle line:84%
+M is not a best
+response to any belief.
+
+00:57:12.180 --> 00:57:13.640 align:middle line:84%
+Does this mean we
+shouldn't play M?
+
+00:57:13.640 --> 00:57:15.740 align:middle line:90%
+What do you think about M?
+
+00:57:15.740 --> 00:57:16.840 align:middle line:90%
+Would you ever play it?
+
+00:57:16.840 --> 00:57:20.660 align:middle line:90%
+
+
+00:57:20.660 --> 00:57:21.620 align:middle line:90%
+Yeah?
+
+00:57:21.620 --> 00:57:23.940 align:middle line:84%
+STUDENT: If you're super
+uncertain about your beliefs
+
+00:57:23.940 --> 00:57:27.780 align:middle line:84%
+[INAUDIBLE], you
+might consider M.
+
+00:57:27.780 --> 00:57:31.305 align:middle line:84%
+IAN BALL: We have to be really
+careful with those words.
+
+00:57:31.305 --> 00:57:33.180 align:middle line:84%
+What you're describing
+is something important
+
+00:57:33.180 --> 00:57:34.460 align:middle line:84%
+that we're not going to
+cover in this class, which
+
+00:57:34.460 --> 00:57:35.680 align:middle line:90%
+is called ambiguity aversion.
+
+00:57:35.680 --> 00:57:40.360 align:middle line:84%
+So I don't want to go
+too far down this path.
+
+00:57:40.360 --> 00:57:42.640 align:middle line:84%
+But we're going to stick
+with expected utility.
+
+00:57:42.640 --> 00:57:44.452 align:middle line:84%
+And risk aversion
+would not actually
+
+00:57:44.452 --> 00:57:47.160 align:middle line:84%
+cause you to choose M. Something
+called ambiguity aversion would.
+
+00:57:47.160 --> 00:57:48.785 align:middle line:84%
+But we're not going
+to talk about that.
+
+00:57:48.785 --> 00:57:51.420 align:middle line:84%
+So we're imagining that we
+have our beliefs well-defined
+
+00:57:51.420 --> 00:57:53.620 align:middle line:84%
+about how the other
+person is doing.
+
+00:57:53.620 --> 00:57:55.860 align:middle line:84%
+So I think it's actually
+fair to say I don't really
+
+00:57:55.860 --> 00:57:59.780 align:middle line:84%
+want to play M. There's no
+belief against which M is a best
+
+00:57:59.780 --> 00:58:00.340 align:middle line:90%
+response.
+
+00:58:00.340 --> 00:58:04.850 align:middle line:84%
+But I think it's natural
+to think back to dominance.
+
+00:58:04.850 --> 00:58:07.450 align:middle line:84%
+What we said before is you might
+want to throw out a strategy
+
+00:58:07.450 --> 00:58:09.530 align:middle line:84%
+if it's dominated
+by another strategy.
+
+00:58:09.530 --> 00:58:12.130 align:middle line:84%
+But now, we're in this
+weird middle ground, where
+
+00:58:12.130 --> 00:58:15.610 align:middle line:84%
+strategy M is not a best
+response to any belief,
+
+00:58:15.610 --> 00:58:18.810 align:middle line:84%
+but it's also not dominated
+by any other strategy.
+
+00:58:18.810 --> 00:58:21.330 align:middle line:90%
+And that is a weird conundrum.
+
+00:58:21.330 --> 00:58:23.682 align:middle line:84%
+But we're going to show that,
+in fact, M is dominated.
+
+00:58:23.682 --> 00:58:25.390 align:middle line:84%
+We just have to be a
+little more careful.
+
+00:58:25.390 --> 00:58:28.893 align:middle line:84%
+Can anyone see a sense
+in which M is dominated?
+
+00:58:28.893 --> 00:58:30.810 align:middle line:84%
+Is there anything I could
+do that would always
+
+00:58:30.810 --> 00:58:32.390 align:middle line:90%
+do better than M?
+
+00:58:32.390 --> 00:58:32.890 align:middle line:90%
+Yeah?
+
+00:58:32.890 --> 00:58:35.290 align:middle line:84%
+STUDENT: [INAUDIBLE]
+strategy that basically
+
+00:58:35.290 --> 00:58:37.250 align:middle line:90%
+varies on whatever [INAUDIBLE].
+
+00:58:37.250 --> 00:58:41.210 align:middle line:90%
+
+
+00:58:41.210 --> 00:58:43.647 align:middle line:84%
+otherwise, that
+strategy [INAUDIBLE].
+
+00:58:43.647 --> 00:58:45.730 align:middle line:84%
+IAN BALL: OK, so I like
+the first part of what you
+
+00:58:45.730 --> 00:58:46.870 align:middle line:90%
+said about a mixed strategy.
+
+00:58:46.870 --> 00:58:48.412 align:middle line:84%
+But crucially, with
+a mixed strategy,
+
+00:58:48.412 --> 00:58:52.270 align:middle line:84%
+we can't vary our mixing
+probability based on our belief.
+
+00:58:52.270 --> 00:58:53.590 align:middle line:90%
+But the mixed idea is crucial.
+
+00:58:53.590 --> 00:58:56.908 align:middle line:84%
+So what if I said, instead
+of choosing strategy M,
+
+00:58:56.908 --> 00:58:57.950 align:middle line:90%
+I'm going to flip a coin.
+
+00:58:57.950 --> 00:58:59.050 align:middle line:90%
+Do you want to add something?
+
+00:58:59.050 --> 00:58:59.550 align:middle line:90%
+STUDENT: [INAUDIBLE]
+
+00:58:59.550 --> 00:59:00.092 align:middle line:90%
+IAN BALL: OK.
+
+00:59:00.092 --> 00:59:01.710 align:middle line:90%
+Imagine I flipped a coin.
+
+00:59:01.710 --> 00:59:04.750 align:middle line:84%
+And if the coin is heads,
+I'm going to play T.
+
+00:59:04.750 --> 00:59:09.917 align:middle line:84%
+So consider the strategy which
+we'll call 1/2 T plus 1/2 B.
+
+00:59:09.917 --> 00:59:10.750 align:middle line:90%
+What does this mean?
+
+00:59:10.750 --> 00:59:12.118 align:middle line:90%
+I'm going to flip a coin.
+
+00:59:12.118 --> 00:59:13.910 align:middle line:84%
+If it's heads, I play--
+well, if it's heads
+
+00:59:13.910 --> 00:59:15.118 align:middle line:90%
+I play T. That's a bit weird.
+
+00:59:15.118 --> 00:59:17.470 align:middle line:84%
+If it's tails I play T.
+If it's heads, I play B.
+
+00:59:17.470 --> 00:59:20.910 align:middle line:90%
+If I were to do that--
+
+00:59:20.910 --> 00:59:22.970 align:middle line:84%
+let's add this
+strategy down here.
+
+00:59:22.970 --> 00:59:32.350 align:middle line:84%
+So this is 1/2 T plus 1/2
+B. If my opponent plays L,
+
+00:59:32.350 --> 00:59:35.470 align:middle line:84%
+what is my payoff from this
+mixed strategy where I flip
+
+00:59:35.470 --> 00:59:36.010 align:middle line:90%
+a coin?
+
+00:59:36.010 --> 00:59:41.470 align:middle line:90%
+
+
+00:59:41.470 --> 00:59:42.790 align:middle line:90%
+What's my expected payoff?
+
+00:59:42.790 --> 00:59:48.750 align:middle line:84%
+Well, with probability
+1/2 I play T and I get 2.
+
+00:59:48.750 --> 00:59:51.910 align:middle line:84%
+With probability 1/2 I play
+B and I get negative 1.
+
+00:59:51.910 --> 00:59:55.430 align:middle line:84%
+So my expected payoff
+is 1/2 of 2, which is 1,
+
+00:59:55.430 --> 00:59:57.850 align:middle line:84%
+plus 1/2 negative 1,
+which is minus 1/2.
+
+00:59:57.850 --> 01:00:01.930 align:middle line:90%
+And if I add it up, I get 1/2.
+
+01:00:01.930 --> 01:00:05.730 align:middle line:90%
+And now, let's go to this side.
+
+01:00:05.730 --> 01:00:09.290 align:middle line:84%
+If I do my same coin flip,
+with probability 1/2,
+
+01:00:09.290 --> 01:00:11.370 align:middle line:90%
+I'm going to get negative 1.
+
+01:00:11.370 --> 01:00:14.290 align:middle line:84%
+With probability 1/2,
+I'm going to get 2.
+
+01:00:14.290 --> 01:00:16.190 align:middle line:84%
+So maybe I'll do
+the addition here.
+
+01:00:16.190 --> 01:00:21.750 align:middle line:84%
+It's 1/2 times 2 plus
+1/2 times negative 1.
+
+01:00:21.750 --> 01:00:24.750 align:middle line:84%
+It's easier to distribute and
+say, well, 2 minus 1 is 1.
+
+01:00:24.750 --> 01:00:26.490 align:middle line:84%
+So it's 1/2 times
+1, which is 1/2.
+
+01:00:26.490 --> 01:00:31.130 align:middle line:90%
+
+
+01:00:31.130 --> 01:00:34.850 align:middle line:90%
+Well, now, is M dominated?
+
+01:00:34.850 --> 01:00:37.530 align:middle line:84%
+So in this case, we
+see that M is not
+
+01:00:37.530 --> 01:00:39.730 align:middle line:90%
+dominated by any pure strategy.
+
+01:00:39.730 --> 01:00:42.330 align:middle line:84%
+But it is dominated by what's
+called a mixed strategy.
+
+01:00:42.330 --> 01:00:45.490 align:middle line:84%
+There's a way I can
+flip a coin so that,
+
+01:00:45.490 --> 01:00:49.410 align:middle line:84%
+if I flip a coin in this way,
+well, if my opponent plays L,
+
+01:00:49.410 --> 01:00:52.570 align:middle line:84%
+I get 1/2 from this mixed
+strategy and I only get 0 from
+
+01:00:52.570 --> 01:00:53.930 align:middle line:90%
+m.
+
+01:00:53.930 --> 01:00:57.680 align:middle line:84%
+And if my opponent plays R, I
+get 1/2 from this mixed strategy
+
+01:00:57.680 --> 01:00:59.920 align:middle line:90%
+and I only get 0 from M.
+
+01:00:59.920 --> 01:01:03.360 align:middle line:84%
+And in fact, whatever belief I
+have about however my opponents
+
+01:01:03.360 --> 01:01:05.933 align:middle line:84%
+play, I do strictly
+better under this mixture.
+
+01:01:05.933 --> 01:01:08.100 align:middle line:84%
+We could even write down
+the payoff of this mixture.
+
+01:01:08.100 --> 01:01:10.600 align:middle line:84%
+It's actually going to
+look exactly like this.
+
+01:01:10.600 --> 01:01:13.640 align:middle line:84%
+If we wanted to say, what
+is my expected payoff
+
+01:01:13.640 --> 01:01:16.633 align:middle line:84%
+from this mixed strategy
+as a function of my belief?
+
+01:01:16.633 --> 01:01:18.800 align:middle line:84%
+So what I have here-- let
+me put it a bit separate--
+
+01:01:18.800 --> 01:01:25.200 align:middle line:84%
+is u1 of 1/2 T
+plus 1/2 B comma p.
+
+01:01:25.200 --> 01:01:28.600 align:middle line:84%
+So this says, if I believe my
+opponent is playing right with
+
+01:01:28.600 --> 01:01:33.520 align:middle line:84%
+probability p and I flip a coin
+and play T with probability 1/2
+
+01:01:33.520 --> 01:01:36.280 align:middle line:84%
+and B with probability 1/2,
+what is my payoff going to be?
+
+01:01:36.280 --> 01:01:39.240 align:middle line:84%
+And you can see the dominance
+relation because this is always
+
+01:01:39.240 --> 01:01:41.760 align:middle line:90%
+higher than this.
+
+01:01:41.760 --> 01:01:44.080 align:middle line:84%
+So do we think people
+really play mixed strategies
+
+01:01:44.080 --> 01:01:45.360 align:middle line:90%
+in practice?
+
+01:01:45.360 --> 01:01:46.450 align:middle line:90%
+We can debate about it.
+
+01:01:46.450 --> 01:01:48.200 align:middle line:84%
+But I want to point
+out that this resolves
+
+01:01:48.200 --> 01:01:51.260 align:middle line:84%
+this seeming paradox at
+first where, on the one hand,
+
+01:01:51.260 --> 01:01:53.620 align:middle line:84%
+M was never a best
+response to any belief.
+
+01:01:53.620 --> 01:01:55.600 align:middle line:84%
+So it seemed like a
+really bad strategy.
+
+01:01:55.600 --> 01:01:57.340 align:middle line:84%
+But we couldn't
+directly show what
+
+01:01:57.340 --> 01:01:58.900 align:middle line:90%
+would always be better than it.
+
+01:01:58.900 --> 01:02:00.720 align:middle line:84%
+By using mixed
+strategies, we can.
+
+01:02:00.720 --> 01:02:03.260 align:middle line:84%
+We see that, in
+fact, M is dominated.
+
+01:02:03.260 --> 01:02:05.080 align:middle line:84%
+It's, in fact,
+strictly dominated,
+
+01:02:05.080 --> 01:02:06.760 align:middle line:90%
+just not by a pure strategy.
+
+01:02:06.760 --> 01:02:08.940 align:middle line:84%
+It's strictly dominated
+by a mixed strategy.
+
+01:02:08.940 --> 01:02:11.060 align:middle line:84%
+So let's formally
+define a mixed strategy.
+
+01:02:11.060 --> 01:02:14.800 align:middle line:84%
+It's what you would think,
+but be a little careful.
+
+01:02:14.800 --> 01:02:26.300 align:middle line:90%
+
+
+01:02:26.300 --> 01:02:28.020 align:middle line:90%
+So what is a mixed strategy?
+
+01:02:28.020 --> 01:02:30.560 align:middle line:84%
+It says, well,
+just like a belief,
+
+01:02:30.560 --> 01:02:32.980 align:middle line:84%
+it's a probability
+distribution, or a lottery.
+
+01:02:32.980 --> 01:02:35.520 align:middle line:84%
+But it's not a lottery about
+other people's strategies.
+
+01:02:35.520 --> 01:02:37.360 align:middle line:84%
+It's a lottery about
+my own strategy.
+
+01:02:37.360 --> 01:02:45.470 align:middle line:84%
+So a mixed strategy for
+player i is a function--
+
+01:02:45.470 --> 01:02:47.600 align:middle line:84%
+or is a probability
+distribution.
+
+01:02:47.600 --> 01:02:50.540 align:middle line:90%
+
+
+01:02:50.540 --> 01:02:53.320 align:middle line:84%
+We often use the
+notation sigma i.
+
+01:02:53.320 --> 01:02:55.840 align:middle line:84%
+So we use Si for
+a pure strategy.
+
+01:02:55.840 --> 01:02:58.180 align:middle line:84%
+And sigma i, it's like
+the Greek version of S.
+
+01:02:58.180 --> 01:02:59.920 align:middle line:84%
+We use that for
+a mixed strategy.
+
+01:02:59.920 --> 01:03:02.800 align:middle line:84%
+Well, now, it's going
+to be a function from Si
+
+01:03:02.800 --> 01:03:08.840 align:middle line:84%
+to 0, 1 that says, for each
+possible strategy, what
+
+01:03:08.840 --> 01:03:11.277 align:middle line:84%
+is the probability that
+I play that strategy?
+
+01:03:11.277 --> 01:03:13.360 align:middle line:84%
+But once again, we need
+another condition for this
+
+01:03:13.360 --> 01:03:14.080 align:middle line:90%
+to make sense.
+
+01:03:14.080 --> 01:03:16.440 align:middle line:84%
+The probabilities
+have to sum up to 1.
+
+01:03:16.440 --> 01:03:18.500 align:middle line:90%
+So it's a function satisfying--
+
+01:03:18.500 --> 01:03:21.320 align:middle line:90%
+
+
+01:03:21.320 --> 01:03:26.120 align:middle line:84%
+well, if I sum over
+all my strategies,
+
+01:03:26.120 --> 01:03:29.500 align:middle line:84%
+the probability I put on that
+strategy, that better sum to 1.
+
+01:03:29.500 --> 01:03:35.240 align:middle line:90%
+
+
+01:03:35.240 --> 01:03:37.960 align:middle line:84%
+And I asked before, do people
+ever play mixed strategies?
+
+01:03:37.960 --> 01:03:39.940 align:middle line:84%
+In a lot of economic
+contexts, they don't.
+
+01:03:39.940 --> 01:03:41.482 align:middle line:84%
+But there's actually
+one domain where
+
+01:03:41.482 --> 01:03:43.100 align:middle line:90%
+mixed strategies are crucial.
+
+01:03:43.100 --> 01:03:45.920 align:middle line:84%
+Does anyone know
+what's a domain where
+
+01:03:45.920 --> 01:03:49.100 align:middle line:84%
+people are very careful
+to play mixed strategies?
+
+01:03:49.100 --> 01:03:51.947 align:middle line:90%
+
+
+01:03:51.947 --> 01:03:54.280 align:middle line:84%
+Or are there times where
+you've played a mixed strategy?
+
+01:03:54.280 --> 01:03:57.320 align:middle line:90%
+
+
+01:03:57.320 --> 01:03:57.820 align:middle line:90%
+Yeah?
+
+01:03:57.820 --> 01:03:59.112 align:middle line:90%
+STUDENT: Rock, paper, scissors.
+
+01:03:59.112 --> 01:04:01.340 align:middle line:84%
+IAN BALL: Rock, paper,
+scissors is a good one.
+
+01:04:01.340 --> 01:04:03.320 align:middle line:84%
+And if you played in rock,
+paper, scissors in competitions,
+
+01:04:03.320 --> 01:04:04.760 align:middle line:84%
+yeah, that would probably
+be really important.
+
+01:04:04.760 --> 01:04:06.460 align:middle line:84%
+There's another domain where
+people make a lot of money
+
+01:04:06.460 --> 01:04:08.460 align:middle line:84%
+where randomization
+is also important.
+
+01:04:08.460 --> 01:04:09.020 align:middle line:90%
+Yeah?
+
+01:04:09.020 --> 01:04:09.480 align:middle line:90%
+STUDENT: Poker.
+
+01:04:09.480 --> 01:04:10.688 align:middle line:90%
+IAN BALL: Professional poker.
+
+01:04:10.688 --> 01:04:12.540 align:middle line:84%
+So professional poker
+players are extremely
+
+01:04:12.540 --> 01:04:13.457 align:middle line:90%
+good at randomization.
+
+01:04:13.457 --> 01:04:15.325 align:middle line:84%
+And they train to
+randomize well.
+
+01:04:15.325 --> 01:04:17.200 align:middle line:84%
+Humans are very bad at
+randomizing naturally.
+
+01:04:17.200 --> 01:04:19.380 align:middle line:84%
+And there's all these techniques
+professional poker players make.
+
+01:04:19.380 --> 01:04:21.703 align:middle line:84%
+15 years ago, you could
+play poker and win money
+
+01:04:21.703 --> 01:04:23.120 align:middle line:84%
+without being good
+at randomizing.
+
+01:04:23.120 --> 01:04:24.602 align:middle line:84%
+Today, you would
+just get destroyed
+
+01:04:24.602 --> 01:04:27.060 align:middle line:84%
+because the best players are
+extremely good at randomizing.
+
+01:04:27.060 --> 01:04:29.060 align:middle line:90%
+And they study game theory.
+
+01:04:29.060 --> 01:04:31.540 align:middle line:84%
+And they randomize
+extremely carefully.
+
+01:04:31.540 --> 01:04:33.043 align:middle line:84%
+And basically,
+the people who are
+
+01:04:33.043 --> 01:04:35.460 align:middle line:84%
+better at randomizing with
+exactly the right probabilities
+
+01:04:35.460 --> 01:04:36.500 align:middle line:90%
+win a lot of money.
+
+01:04:36.500 --> 01:04:38.740 align:middle line:84%
+So poker is a great
+example of mixed strategies
+
+01:04:38.740 --> 01:04:39.538 align:middle line:90%
+that really happen.
+
+01:04:39.538 --> 01:04:41.080 align:middle line:84%
+If I taught this
+course 20 years ago,
+
+01:04:41.080 --> 01:04:43.300 align:middle line:84%
+it would be hard to come up
+with an example of people
+
+01:04:43.300 --> 01:04:44.360 align:middle line:90%
+playing mixed strategies.
+
+01:04:44.360 --> 01:04:47.277 align:middle line:84%
+And now, the reality has
+caught up to the game theory.
+
+01:04:47.277 --> 01:04:49.610 align:middle line:84%
+And now, there's a lot of
+people who make a lot of money
+
+01:04:49.610 --> 01:04:51.770 align:middle line:90%
+by mixing.
+
+01:04:51.770 --> 01:04:52.270 align:middle line:90%
+OK.
+
+01:04:52.270 --> 01:04:55.450 align:middle line:84%
+So now, let's move
+on a little bit
+
+01:04:55.450 --> 01:04:57.990 align:middle line:84%
+and try to understand how
+general this phenomenon is.
+
+01:04:57.990 --> 01:05:00.290 align:middle line:84%
+So I want to make
+one observation here.
+
+01:05:00.290 --> 01:05:02.730 align:middle line:84%
+And then we want to try to
+see how general that is.
+
+01:05:02.730 --> 01:05:06.930 align:middle line:84%
+So if you're approaching a game
+like this and you're player 1,
+
+01:05:06.930 --> 01:05:08.830 align:middle line:84%
+there's two ways you
+could go about it.
+
+01:05:08.830 --> 01:05:12.410 align:middle line:84%
+If I were to ask you what is
+a reasonable strategy to play,
+
+01:05:12.410 --> 01:05:14.330 align:middle line:90%
+you could say, well--
+
+01:05:14.330 --> 01:05:18.690 align:middle line:84%
+so let me say, let's
+look at player 1.
+
+01:05:18.690 --> 01:05:20.430 align:middle line:84%
+And I'll just say,
+which strategies?
+
+01:05:20.430 --> 01:05:23.902 align:middle line:90%
+
+
+01:05:23.902 --> 01:05:25.610 align:middle line:84%
+Well, one thing you
+could do is you could
+
+01:05:25.610 --> 01:05:27.610 align:middle line:90%
+start with the good strategies.
+
+01:05:27.610 --> 01:05:30.110 align:middle line:84%
+And maybe I'll call them
+the reasonable strategies.
+
+01:05:30.110 --> 01:05:33.935 align:middle line:90%
+
+
+01:05:33.935 --> 01:05:35.310 align:middle line:84%
+This is not really
+a formal term.
+
+01:05:35.310 --> 01:05:37.730 align:middle line:84%
+But I'll just say
+reasonable strategies.
+
+01:05:37.730 --> 01:05:39.250 align:middle line:84%
+And these would
+be the strategies
+
+01:05:39.250 --> 01:05:41.590 align:middle line:84%
+that are best responses
+to some belief.
+
+01:05:41.590 --> 01:05:52.043 align:middle line:90%
+
+
+01:05:52.043 --> 01:05:54.710 align:middle line:84%
+So I don't want you to think too
+much, for the moment, about how
+
+01:05:54.710 --> 01:05:55.650 align:middle line:90%
+you form your beliefs.
+
+01:05:55.650 --> 01:05:58.630 align:middle line:84%
+But let's just say,
+is there some belief
+
+01:05:58.630 --> 01:06:00.870 align:middle line:84%
+I could have that would
+make this a best response?
+
+01:06:00.870 --> 01:06:02.895 align:middle line:84%
+So in this game,
+we saw in the graph
+
+01:06:02.895 --> 01:06:04.270 align:middle line:84%
+which strategies
+in this game are
+
+01:06:04.270 --> 01:06:06.050 align:middle line:90%
+best responses to some belief.
+
+01:06:06.050 --> 01:06:08.290 align:middle line:84%
+So which strategies are
+reasonable in this sense?
+
+01:06:08.290 --> 01:06:11.630 align:middle line:90%
+
+
+01:06:11.630 --> 01:06:12.910 align:middle line:90%
+Yeah?
+
+01:06:12.910 --> 01:06:13.830 align:middle line:90%
+STUDENT: T and B.
+
+01:06:13.830 --> 01:06:16.190 align:middle line:90%
+IAN BALL: T and B, right?
+
+01:06:16.190 --> 01:06:18.830 align:middle line:84%
+So I might say, look, I
+have three strategies.
+
+01:06:18.830 --> 01:06:21.903 align:middle line:84%
+But the reasonable ones
+are T and B. Another way
+
+01:06:21.903 --> 01:06:24.070 align:middle line:84%
+you could approach it,
+though, is instead of looking
+
+01:06:24.070 --> 01:06:25.430 align:middle line:84%
+for what you should
+do, you could
+
+01:06:25.430 --> 01:06:27.770 align:middle line:84%
+try to look for what you don't
+want to do and avoid that.
+
+01:06:27.770 --> 01:06:30.010 align:middle line:84%
+So I could say, what are
+the unreasonable strategies?
+
+01:06:30.010 --> 01:06:35.030 align:middle line:90%
+
+
+01:06:35.030 --> 01:06:37.150 align:middle line:84%
+And by an unreasonable
+strategy, I
+
+01:06:37.150 --> 01:06:40.390 align:middle line:84%
+mean a strategy that's
+strictly dominated
+
+01:06:40.390 --> 01:06:42.970 align:middle line:84%
+by some other strategy,
+possibly mixed.
+
+01:06:42.970 --> 01:07:00.770 align:middle line:90%
+
+
+01:07:00.770 --> 01:07:04.550 align:middle line:84%
+Now, technically, I only defined
+dominance for pure strategies.
+
+01:07:04.550 --> 01:07:06.090 align:middle line:84%
+But everything makes
+sense if I just
+
+01:07:06.090 --> 01:07:09.610 align:middle line:84%
+replace the Si's with
+the sigma i's and I
+
+01:07:09.610 --> 01:07:13.060 align:middle line:84%
+interpret these utilities
+as expected utilities.
+
+01:07:13.060 --> 01:07:15.310 align:middle line:84%
+So in this game, what are
+the unreasonable strategies?
+
+01:07:15.310 --> 01:07:16.810 align:middle line:84%
+What are the strategies
+I could throw out
+
+01:07:16.810 --> 01:07:18.750 align:middle line:84%
+by saying they're dominated
+by something else?
+
+01:07:18.750 --> 01:07:21.450 align:middle line:90%
+
+
+01:07:21.450 --> 01:07:22.310 align:middle line:90%
+Yeah?
+
+01:07:22.310 --> 01:07:22.890 align:middle line:90%
+STUDENT: M.
+
+01:07:22.890 --> 01:07:25.180 align:middle line:90%
+IAN BALL: Just M, right?
+
+01:07:25.180 --> 01:07:26.930 align:middle line:84%
+So notice here, there's
+two different ways
+
+01:07:26.930 --> 01:07:28.450 align:middle line:90%
+to get to the same answer.
+
+01:07:28.450 --> 01:07:31.090 align:middle line:84%
+I could say, let
+me only consider
+
+01:07:31.090 --> 01:07:33.970 align:middle line:84%
+strategies that are best
+responses to some beliefs.
+
+01:07:33.970 --> 01:07:35.110 align:middle line:90%
+I would go through.
+
+01:07:35.110 --> 01:07:38.390 align:middle line:84%
+And I would just get T and
+B. Or I could do the inverse.
+
+01:07:38.390 --> 01:07:41.050 align:middle line:84%
+I could say, let me throw
+out all the strategies that
+
+01:07:41.050 --> 01:07:43.870 align:middle line:84%
+are dominated, that are
+strictly dominated by something.
+
+01:07:43.870 --> 01:07:48.590 align:middle line:84%
+I would throw out M. And I'd
+be left with just T and B.
+
+01:07:48.590 --> 01:07:50.450 align:middle line:84%
+And the question is,
+is this a coincidence?
+
+01:07:50.450 --> 01:07:52.310 align:middle line:84%
+Is this a special
+property of this game?
+
+01:07:52.310 --> 01:07:54.550 align:middle line:84%
+Or is this more generally
+true, that we can always
+
+01:07:54.550 --> 01:07:57.310 align:middle line:84%
+split our strategies
+into two groups, those
+
+01:07:57.310 --> 01:07:59.950 align:middle line:84%
+that are best responses
+to some belief and those
+
+01:07:59.950 --> 01:08:03.990 align:middle line:84%
+that are strictly dominated
+by some mixed strategy?
+
+01:08:03.990 --> 01:08:06.130 align:middle line:84%
+And it turns out this is
+a very general property.
+
+01:08:06.130 --> 01:08:10.150 align:middle line:84%
+And that'll be the first theorem
+that we state in this course.
+
+01:08:10.150 --> 01:08:12.690 align:middle line:90%
+So let me state the theorem.
+
+01:08:12.690 --> 01:08:30.990 align:middle line:90%
+
+
+01:08:30.990 --> 01:08:34.029 align:middle line:90%
+So here's our theorem.
+
+01:08:34.029 --> 01:08:35.170 align:middle line:90%
+We need some assumptions.
+
+01:08:35.170 --> 01:08:37.529 align:middle line:84%
+So let's say we're in a
+finite strategic form game.
+
+01:08:37.529 --> 01:08:40.580 align:middle line:90%
+
+
+01:08:40.580 --> 01:08:43.380 align:middle line:84%
+Finite just means the set of
+strategies for every player
+
+01:08:43.380 --> 01:08:44.100 align:middle line:90%
+is finite.
+
+01:08:44.100 --> 01:08:45.520 align:middle line:84%
+And there's finitely
+many players.
+
+01:08:45.520 --> 01:08:58.220 align:middle line:90%
+
+
+01:08:58.220 --> 01:09:03.420 align:middle line:84%
+So for each player i
+and each strategy Si--
+
+01:09:03.420 --> 01:09:11.747 align:middle line:90%
+
+
+01:09:11.747 --> 01:09:13.580 align:middle line:84%
+so before I write it,
+let's just understand.
+
+01:09:13.580 --> 01:09:17.620 align:middle line:84%
+We fixed our finite
+strategic form game.
+
+01:09:17.620 --> 01:09:19.899 align:middle line:84%
+We're considering
+a particular player
+
+01:09:19.899 --> 01:09:23.939 align:middle line:90%
+i and a particular strategy Si.
+
+01:09:23.939 --> 01:09:26.540 align:middle line:84%
+And what we want to argue,
+what we want to say,
+
+01:09:26.540 --> 01:09:29.859 align:middle line:84%
+is that this strategy falls
+in exactly one of these two
+
+01:09:29.859 --> 01:09:31.859 align:middle line:90%
+categories.
+
+01:09:31.859 --> 01:09:33.500 align:middle line:90%
+It can't be in both.
+
+01:09:33.500 --> 01:09:35.460 align:middle line:90%
+And it can't be in Neither.
+
+01:09:35.460 --> 01:09:39.140 align:middle line:84%
+So what we say is exactly
+one of the following holds.
+
+01:09:39.140 --> 01:09:42.000 align:middle line:90%
+
+
+01:09:42.000 --> 01:09:44.979 align:middle line:84%
+Exactly one means not
+both and not neither.
+
+01:09:44.979 --> 01:09:57.120 align:middle line:90%
+
+
+01:09:57.120 --> 01:10:01.840 align:middle line:84%
+And one is that this strategy
+Si is reasonable in this sense.
+
+01:10:01.840 --> 01:10:04.780 align:middle line:84%
+Meaning what/ Si is a best
+response to some belief.
+
+01:10:04.780 --> 01:10:17.975 align:middle line:90%
+
+
+01:10:17.975 --> 01:10:20.100 align:middle line:84%
+And when I say belief, what
+is that a belief about?
+
+01:10:20.100 --> 01:10:25.140 align:middle line:84%
+It's a belief-- maybe I'll
+say over S negative i.
+
+01:10:25.140 --> 01:10:27.800 align:middle line:84%
+Let's remind ourselves,
+when player i forms beliefs,
+
+01:10:27.800 --> 01:10:29.400 align:middle line:84%
+they form beliefs
+over the strategy
+
+01:10:29.400 --> 01:10:32.200 align:middle line:90%
+profiles of the other players.
+
+01:10:32.200 --> 01:10:35.420 align:middle line:84%
+And then the other case is
+Si is strictly dominated.
+
+01:10:35.420 --> 01:10:43.260 align:middle line:90%
+
+
+01:10:43.260 --> 01:10:44.180 align:middle line:90%
+By what?
+
+01:10:44.180 --> 01:10:46.280 align:middle line:90%
+Well, by some mixed strategy.
+
+01:10:46.280 --> 01:10:47.700 align:middle line:90%
+And we have to allow mixed.
+
+01:10:47.700 --> 01:10:49.287 align:middle line:84%
+If we only allowed
+pure strategies,
+
+01:10:49.287 --> 01:10:51.620 align:middle line:84%
+we already saw up here that
+the theorem wouldn't be true
+
+01:10:51.620 --> 01:10:54.700 align:middle line:84%
+because there are strategies
+that are never best responses,
+
+01:10:54.700 --> 01:10:57.000 align:middle line:84%
+but are not dominated
+by any pure strategy.
+
+01:10:57.000 --> 01:10:59.060 align:middle line:84%
+So we have to allow
+for mixed strategies.
+
+01:10:59.060 --> 01:11:01.960 align:middle line:84%
+Si is strictly dominated
+by some mixed strategy.
+
+01:11:01.960 --> 01:11:09.140 align:middle line:90%
+
+
+01:11:09.140 --> 01:11:11.020 align:middle line:84%
+And of course, when
+I say strategy,
+
+01:11:11.020 --> 01:11:13.260 align:middle line:84%
+that has to be a
+strategy of player i
+
+01:11:13.260 --> 01:11:17.180 align:middle line:84%
+because player i compares
+two different strategies when
+
+01:11:17.180 --> 01:11:18.880 align:middle line:90%
+they look at strict dominance.
+
+01:11:18.880 --> 01:11:21.140 align:middle line:84%
+But wait a second, I said
+Si is strictly dominated
+
+01:11:21.140 --> 01:11:22.360 align:middle line:90%
+by some mixed strategy.
+
+01:11:22.360 --> 01:11:25.980 align:middle line:90%
+What about pure strategies?
+
+01:11:25.980 --> 01:11:27.040 align:middle line:90%
+Am I including those?
+
+01:11:27.040 --> 01:11:28.060 align:middle line:90%
+STUDENT: [INAUDIBLE]
+
+01:11:28.060 --> 01:11:29.433 align:middle line:90%
+IAN BALL: Why?
+
+01:11:29.433 --> 01:11:31.220 align:middle line:90%
+STUDENT: [INAUDIBLE]
+
+01:11:31.220 --> 01:11:35.150 align:middle line:90%
+
+
+01:11:35.150 --> 01:11:36.150 align:middle line:90%
+IAN BALL: Exactly right.
+
+01:11:36.150 --> 01:11:39.450 align:middle line:84%
+So every pure strategy
+is a mixed strategy.
+
+01:11:39.450 --> 01:11:42.770 align:middle line:84%
+But not every mixed
+strategy is a pure strategy.
+
+01:11:42.770 --> 01:11:45.150 align:middle line:84%
+So as long as I cover mixed
+strategies-- in particular,
+
+01:11:45.150 --> 01:11:47.730 align:middle line:84%
+I'm including the mixtures
+that put all the probability
+
+01:11:47.730 --> 01:11:51.450 align:middle line:84%
+on a single strategy, which
+are simply pure strategies.
+
+01:11:51.450 --> 01:11:53.910 align:middle line:84%
+So if we want to say
+that I'm not doing that,
+
+01:11:53.910 --> 01:11:57.490 align:middle line:84%
+sometimes we say
+properly mixed strategy
+
+01:11:57.490 --> 01:11:59.190 align:middle line:90%
+or nonpure mixed strategy.
+
+01:11:59.190 --> 01:12:02.710 align:middle line:84%
+But here, we're allowing all
+kinds of mixed strategies,
+
+01:12:02.710 --> 01:12:05.470 align:middle line:84%
+including the ones that are just
+pure strategies in disguise.
+
+01:12:05.470 --> 01:12:09.370 align:middle line:90%
+
+
+01:12:09.370 --> 01:12:11.930 align:middle line:84%
+And again, I think the
+interpretation of this
+
+01:12:11.930 --> 01:12:15.610 align:middle line:84%
+is that there are two very
+natural ways of thinking
+
+01:12:15.610 --> 01:12:18.390 align:middle line:84%
+about a game and which
+strategies someone might play.
+
+01:12:18.390 --> 01:12:20.370 align:middle line:84%
+I think it would be
+very natural to say,
+
+01:12:20.370 --> 01:12:22.530 align:middle line:84%
+it's reasonable to
+play anything that's
+
+01:12:22.530 --> 01:12:25.210 align:middle line:90%
+a best response to some belief.
+
+01:12:25.210 --> 01:12:28.470 align:middle line:84%
+And it would also be natural to
+say, here's what you should do.
+
+01:12:28.470 --> 01:12:30.450 align:middle line:84%
+Just don't play
+anything that's strictly
+
+01:12:30.450 --> 01:12:33.070 align:middle line:90%
+dominated by something else.
+
+01:12:33.070 --> 01:12:35.320 align:middle line:84%
+And if those two approaches
+gave us different answers,
+
+01:12:35.320 --> 01:12:37.070 align:middle line:84%
+we'd have to really
+think hard about which
+
+01:12:37.070 --> 01:12:38.630 align:middle line:90%
+one was more reasonable.
+
+01:12:38.630 --> 01:12:41.230 align:middle line:84%
+But it turns out these
+are literally going
+
+01:12:41.230 --> 01:12:42.830 align:middle line:90%
+to give us the same answer.
+
+01:12:42.830 --> 01:12:44.950 align:middle line:84%
+So you can think
+positively about what's
+
+01:12:44.950 --> 01:12:47.230 align:middle line:84%
+the best response
+to something or you
+
+01:12:47.230 --> 01:12:49.430 align:middle line:84%
+can think negatively
+about what's strictly
+
+01:12:49.430 --> 01:12:51.190 align:middle line:90%
+dominated by something.
+
+01:12:51.190 --> 01:12:54.030 align:middle line:84%
+And either way, you're
+going to get the same two
+
+01:12:54.030 --> 01:12:56.530 align:middle line:84%
+groups of strategies-- the
+good ones and the bad ones.
+
+01:12:56.530 --> 01:12:59.110 align:middle line:90%
+
+
+01:12:59.110 --> 01:13:02.510 align:middle line:84%
+Let me say a little bit
+about how we prove this.
+
+01:13:02.510 --> 01:13:06.810 align:middle line:84%
+The proof won't be
+covered on exams.
+
+01:13:06.810 --> 01:13:08.850 align:middle line:84%
+But I want to give
+you some idea.
+
+01:13:08.850 --> 01:13:13.550 align:middle line:90%
+
+
+01:13:13.550 --> 01:13:15.790 align:middle line:90%
+So what's the argument?
+
+01:13:15.790 --> 01:13:17.310 align:middle line:90%
+Proof?
+
+01:13:17.310 --> 01:13:20.350 align:middle line:84%
+Well, how do you show that
+exactly one thing happens?
+
+01:13:20.350 --> 01:13:23.650 align:middle line:84%
+You have to show that both can't
+happen and neither can't happen.
+
+01:13:23.650 --> 01:13:26.210 align:middle line:84%
+So another way of saying
+it is at most one--
+
+01:13:26.210 --> 01:13:29.656 align:middle line:90%
+
+
+01:13:29.656 --> 01:13:32.690 align:middle line:84%
+so at most one of these
+two things can be true
+
+01:13:32.690 --> 01:13:33.670 align:middle line:90%
+and at least one.
+
+01:13:33.670 --> 01:13:38.570 align:middle line:90%
+
+
+01:13:38.570 --> 01:13:40.250 align:middle line:84%
+So to say at most
+one of the statements
+
+01:13:40.250 --> 01:13:45.250 align:middle line:84%
+is true is another way of saying
+both statements can't be true--
+
+01:13:45.250 --> 01:13:48.330 align:middle line:90%
+at most one, not two.
+
+01:13:48.330 --> 01:13:50.890 align:middle line:84%
+At least one is a
+way of saying it
+
+01:13:50.890 --> 01:13:53.290 align:middle line:84%
+can't be the case
+that neither is true,
+
+01:13:53.290 --> 01:13:56.490 align:middle line:84%
+at least one, either one
+or two, but not zero.
+
+01:13:56.490 --> 01:13:59.090 align:middle line:84%
+And by one or two, I
+mean the number-- maybe
+
+01:13:59.090 --> 01:14:01.030 align:middle line:84%
+I'll call these A and
+B to avoid confusion.
+
+01:14:01.030 --> 01:14:03.730 align:middle line:90%
+
+
+01:14:03.730 --> 01:14:05.865 align:middle line:84%
+I'm talking about
+at most one, meaning
+
+01:14:05.865 --> 01:14:07.490 align:middle line:84%
+the number of statements
+that are true,
+
+01:14:07.490 --> 01:14:08.990 align:middle line:84%
+not the labels of
+the statements.
+
+01:14:08.990 --> 01:14:11.770 align:middle line:90%
+
+
+01:14:11.770 --> 01:14:15.250 align:middle line:84%
+So one of these directions
+is a bit easier.
+
+01:14:15.250 --> 01:14:17.097 align:middle line:90%
+One of these is quite tricky.
+
+01:14:17.097 --> 01:14:19.430 align:middle line:84%
+Does anyone see one that they
+think is kind of intuitive
+
+01:14:19.430 --> 01:14:20.478 align:middle line:90%
+and they could maybe--
+
+01:14:20.478 --> 01:14:22.770 align:middle line:84%
+I won't ask you for the proof,
+but could reason through
+
+01:14:22.770 --> 01:14:23.350 align:middle line:90%
+on their own?
+
+01:14:23.350 --> 01:14:26.610 align:middle line:90%
+
+
+01:14:26.610 --> 01:14:27.550 align:middle line:90%
+Yeah?
+
+01:14:27.550 --> 01:14:27.850 align:middle line:90%
+STUDENT: At most one.
+
+01:14:27.850 --> 01:14:28.767 align:middle line:90%
+IAN BALL: At most one.
+
+01:14:28.767 --> 01:14:31.190 align:middle line:84%
+So this is the easier
+direction-- not easy
+
+01:14:31.190 --> 01:14:32.550 align:middle line:90%
+maybe, but easier.
+
+01:14:32.550 --> 01:14:34.630 align:middle line:84%
+And what's your
+intuitive argument?
+
+01:14:34.630 --> 01:14:36.920 align:middle line:90%
+We won't give a formal one.
+
+01:14:36.920 --> 01:14:38.270 align:middle line:90%
+STUDENT: [INAUDIBLE]
+
+01:14:38.270 --> 01:14:39.855 align:middle line:90%
+
+
+01:14:39.855 --> 01:14:41.730 align:middle line:84%
+IAN BALL: We're going
+to get a contradiction.
+
+01:14:41.730 --> 01:14:44.070 align:middle line:84%
+So if both were
+true, you're saying
+
+01:14:44.070 --> 01:14:46.028 align:middle line:84%
+this is the best we can
+do against some belief.
+
+01:14:46.028 --> 01:14:48.570 align:middle line:84%
+But there's something else that
+does strictly better whatever
+
+01:14:48.570 --> 01:14:49.430 align:middle line:90%
+my opponent does.
+
+01:14:49.430 --> 01:14:50.490 align:middle line:84%
+Well, if it does
+strictly better,
+
+01:14:50.490 --> 01:14:52.698 align:middle line:84%
+whatever my opponent does,
+it should also do strictly
+
+01:14:52.698 --> 01:14:54.110 align:middle line:90%
+better given my belief.
+
+01:14:54.110 --> 01:14:56.755 align:middle line:84%
+But that means the other thing
+couldn't be a best response.
+
+01:14:56.755 --> 01:14:58.130 align:middle line:84%
+So I think it's
+pretty intuitive.
+
+01:14:58.130 --> 01:15:00.770 align:middle line:84%
+I'd encourage you to work
+out the algebra on your own.
+
+01:15:00.770 --> 01:15:04.150 align:middle line:84%
+I think this is a good
+exercise to do at home.
+
+01:15:04.150 --> 01:15:05.650 align:middle line:84%
+The at least one
+is a lot harder.
+
+01:15:05.650 --> 01:15:07.470 align:middle line:84%
+And that I wouldn't
+expect you to be
+
+01:15:07.470 --> 01:15:08.690 align:middle line:90%
+able to figure out at home.
+
+01:15:08.690 --> 01:15:11.882 align:middle line:84%
+There is a proof given in the
+appendix of the lecture notes.
+
+01:15:11.882 --> 01:15:13.090 align:middle line:90%
+And actually, let me clarify.
+
+01:15:13.090 --> 01:15:14.632 align:middle line:84%
+I said I won't test
+you on the proof.
+
+01:15:14.632 --> 01:15:16.770 align:middle line:84%
+But I could test you on
+this part of the proof.
+
+01:15:16.770 --> 01:15:18.570 align:middle line:90%
+I think the top is fair game.
+
+01:15:18.570 --> 01:15:19.410 align:middle line:90%
+The bottom is not.
+
+01:15:19.410 --> 01:15:20.950 align:middle line:90%
+Let me be clear about that.
+
+01:15:20.950 --> 01:15:25.910 align:middle line:84%
+So the bottom, for the
+harder part, see appendix.
+
+01:15:25.910 --> 01:15:28.860 align:middle line:84%
+And it uses a
+mathematical result
+
+01:15:28.860 --> 01:15:33.460 align:middle line:84%
+called either the separating
+hyperplane theorem, which
+
+01:15:33.460 --> 01:15:37.780 align:middle line:84%
+you may have heard
+of, or something
+
+01:15:37.780 --> 01:15:43.100 align:middle line:84%
+called Farkas' lemma is also
+my preferred way of proving it.
+
+01:15:43.100 --> 01:15:46.740 align:middle line:84%
+And just to see why this
+is harder, well, if Si--
+
+01:15:46.740 --> 01:15:48.640 align:middle line:84%
+we want to show at
+least one is true.
+
+01:15:48.640 --> 01:15:51.940 align:middle line:84%
+So we have to say if Si is not
+a best response to some belief,
+
+01:15:51.940 --> 01:15:53.965 align:middle line:84%
+then it's strictly
+dominated by something.
+
+01:15:53.965 --> 01:15:55.340 align:middle line:84%
+But that means
+the proof requires
+
+01:15:55.340 --> 01:15:56.640 align:middle line:90%
+you to construct something.
+
+01:15:56.640 --> 01:15:57.660 align:middle line:90%
+And that's what's hard.
+
+01:15:57.660 --> 01:16:00.140 align:middle line:84%
+All we know is it's not a
+best response to any belief.
+
+01:16:00.140 --> 01:16:02.300 align:middle line:84%
+But how do we know
+what dominates it?
+
+01:16:02.300 --> 01:16:03.920 align:middle line:84%
+Well, how do we
+come up with that.
+
+01:16:03.920 --> 01:16:04.800 align:middle line:90%
+That's pretty hard.
+
+01:16:04.800 --> 01:16:07.220 align:middle line:84%
+So this theorem gives
+you a way of constructing
+
+01:16:07.220 --> 01:16:10.337 align:middle line:84%
+either the belief you need
+or the dominating strategy
+
+01:16:10.337 --> 01:16:10.920 align:middle line:90%
+that you need.
+
+01:16:10.920 --> 01:16:12.295 align:middle line:90%
+And that's much more involved.
+
+01:16:12.295 --> 01:16:13.920 align:middle line:84%
+So that won't be
+covered in the course.
+
+01:16:13.920 --> 01:16:15.587 align:middle line:84%
+But I encourage you
+to read the appendix
+
+01:16:15.587 --> 01:16:16.860 align:middle line:90%
+if you want to see that.
+
+01:16:16.860 --> 01:16:18.140 align:middle line:90%
+And let me stop there.
+
+01:16:18.140 --> 01:16:19.620 align:middle line:90%
+And I'll see everyone next week.
+
+01:16:19.620 --> 01:16:22.250 align:middle line:90%
+Good luck on the quiz tomorrow.
+
+01:16:22.250 --> 01:16:26.000 align:middle line:90%

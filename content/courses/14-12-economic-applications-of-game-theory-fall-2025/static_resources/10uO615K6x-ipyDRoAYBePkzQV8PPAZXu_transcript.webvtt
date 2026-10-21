@@ -1,0 +1,6178 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:01.955 align:middle line:90%
+[SQUEAKING]
+
+00:00:01.955 --> 00:00:03.895 align:middle line:90%
+[RUSTLING]
+
+00:00:03.895 --> 00:00:05.835 align:middle line:90%
+[CLICKING]
+
+00:00:05.835 --> 00:00:09.785 align:middle line:90%
+
+
+00:00:09.785 --> 00:00:11.160 align:middle line:84%
+IAN BALL: So today
+I want to talk
+
+00:00:11.160 --> 00:00:13.240 align:middle line:84%
+about-- we're going to
+move to the final phase
+
+00:00:13.240 --> 00:00:16.820 align:middle line:84%
+of the course, which is going
+to be on dynamic Bayesian games.
+
+00:00:16.820 --> 00:00:19.980 align:middle line:84%
+But I want to start with maybe
+one example of a VCG mechanism,
+
+00:00:19.980 --> 00:00:21.800 align:middle line:84%
+because I think,
+yesterday, that was maybe
+
+00:00:21.800 --> 00:00:23.467 align:middle line:84%
+a bit abstract and a
+bit hard to follow.
+
+00:00:23.467 --> 00:00:26.020 align:middle line:84%
+So let's start with
+one final example.
+
+00:00:26.020 --> 00:00:28.580 align:middle line:84%
+And it's going to
+be a VCG mechanism,
+
+00:00:28.580 --> 00:00:32.580 align:middle line:84%
+or maybe we'll call it a
+VCG auction for two items.
+
+00:00:32.580 --> 00:00:40.520 align:middle line:90%
+
+
+00:00:40.520 --> 00:00:42.738 align:middle line:84%
+So a lot of the classical
+work that we did so far
+
+00:00:42.738 --> 00:00:45.280 align:middle line:84%
+in the course on auctions, we
+assumed there was just one item
+
+00:00:45.280 --> 00:00:46.392 align:middle line:90%
+being auctioned off.
+
+00:00:46.392 --> 00:00:48.100 align:middle line:84%
+Then we looked at the
+ad auction setting,
+
+00:00:48.100 --> 00:00:50.160 align:middle line:84%
+which had this special
+structure where there was
+
+00:00:50.160 --> 00:00:51.457 align:middle line:90%
+this ranking between the items.
+
+00:00:51.457 --> 00:00:53.540 align:middle line:84%
+Here, we're just going to
+have two abstract items.
+
+00:00:53.540 --> 00:01:00.470 align:middle line:84%
+So I'm going to call these
+maybe item A and item B.
+
+00:01:00.470 --> 00:01:03.970 align:middle line:84%
+So what the auction needs to
+do is it needs to solicit bids.
+
+00:01:03.970 --> 00:01:05.630 align:middle line:84%
+Maybe I'll write what
+it's going to do.
+
+00:01:05.630 --> 00:01:12.450 align:middle line:84%
+It's going to collect
+bids from the bidders.
+
+00:01:12.450 --> 00:01:17.030 align:middle line:90%
+
+
+00:01:17.030 --> 00:01:19.210 align:middle line:84%
+And then, based upon
+these bids, as usual,
+
+00:01:19.210 --> 00:01:20.710 align:middle line:90%
+we have to decide two things.
+
+00:01:20.710 --> 00:01:22.870 align:middle line:84%
+We have to decide how
+we allocate the goods
+
+00:01:22.870 --> 00:01:24.750 align:middle line:90%
+and how much everyone pays.
+
+00:01:24.750 --> 00:01:30.250 align:middle line:84%
+So then it specifies an
+allocation, which, in this case,
+
+00:01:30.250 --> 00:01:33.270 align:middle line:84%
+it says who gets item
+A if someone gets it
+
+00:01:33.270 --> 00:01:36.423 align:middle line:84%
+and who gets item B
+if anyone gets it.
+
+00:01:36.423 --> 00:01:38.090 align:middle line:84%
+And then, in addition
+to the allocation,
+
+00:01:38.090 --> 00:01:42.050 align:middle line:84%
+we have to specify a
+payment by each bidder.
+
+00:01:42.050 --> 00:01:46.950 align:middle line:90%
+
+
+00:01:46.950 --> 00:01:50.030 align:middle line:84%
+Now, I put bids in
+quotes because the kind
+
+00:01:50.030 --> 00:01:53.750 align:middle line:84%
+of surprising or maybe
+somewhat confusing
+
+00:01:53.750 --> 00:01:57.870 align:middle line:84%
+aspect of a VCG auction is
+that a bid is essentially
+
+00:01:57.870 --> 00:02:01.590 align:middle line:84%
+a report or claim about how
+much you value the items.
+
+00:02:01.590 --> 00:02:03.850 align:middle line:84%
+So you think of my bid
+as the auctioneer saying,
+
+00:02:03.850 --> 00:02:05.450 align:middle line:84%
+tell me how much you
+value everything.
+
+00:02:05.450 --> 00:02:07.808 align:middle line:84%
+And then the bidders say,
+I value it this much.
+
+00:02:07.808 --> 00:02:09.350 align:middle line:84%
+And that may seem
+strange, but if you
+
+00:02:09.350 --> 00:02:11.009 align:middle line:84%
+think about a
+second-price auction,
+
+00:02:11.009 --> 00:02:12.230 align:middle line:84%
+that's exactly what
+happens because,
+
+00:02:12.230 --> 00:02:13.830 align:middle line:84%
+in a second-price
+auction, people are
+
+00:02:13.830 --> 00:02:15.265 align:middle line:90%
+bidding their true valuation.
+
+00:02:15.265 --> 00:02:17.890 align:middle line:84%
+So it's as if the auctioneer is
+saying, tell me your valuation.
+
+00:02:17.890 --> 00:02:21.590 align:middle line:84%
+And then the bidders are
+submitting their valuation.
+
+00:02:21.590 --> 00:02:25.590 align:middle line:84%
+So let's put a little
+more structure on this.
+
+00:02:25.590 --> 00:02:28.130 align:middle line:84%
+So let's imagine that
+we have two bidders.
+
+00:02:28.130 --> 00:02:31.910 align:middle line:90%
+
+
+00:02:31.910 --> 00:02:34.390 align:middle line:84%
+And it's a little complicated
+to specify the whole auction
+
+00:02:34.390 --> 00:02:36.110 align:middle line:84%
+because we have to
+specify the allocation
+
+00:02:36.110 --> 00:02:38.588 align:middle line:84%
+and payment for any vector
+of bids that's submitted.
+
+00:02:38.588 --> 00:02:40.130 align:middle line:84%
+So let's just go
+through one example.
+
+00:02:40.130 --> 00:02:42.950 align:middle line:84%
+Let's look at some vector of
+bids that could be submitted.
+
+00:02:42.950 --> 00:02:46.508 align:middle line:84%
+So, well, we first have to
+say, well, what is a valuation?
+
+00:02:46.508 --> 00:02:48.050 align:middle line:84%
+What do I need to
+tell the auctioneer
+
+00:02:48.050 --> 00:02:50.290 align:middle line:84%
+if the auctioneer is asking
+me how much I value things?
+
+00:02:50.290 --> 00:02:52.040 align:middle line:84%
+Well, I actually have
+to say three things.
+
+00:02:52.040 --> 00:02:54.390 align:middle line:84%
+I have to say, how much do
+I value item A if I just
+
+00:02:54.390 --> 00:02:55.820 align:middle line:90%
+get item A?
+
+00:02:55.820 --> 00:02:58.580 align:middle line:84%
+How much do I value item
+B If I just get item B?
+
+00:02:58.580 --> 00:03:01.300 align:middle line:84%
+And then how much do I value
+getting both items together?
+
+00:03:01.300 --> 00:03:03.260 align:middle line:84%
+And depending on these
+items, it may not
+
+00:03:03.260 --> 00:03:06.700 align:middle line:84%
+be the value of the
+bundle of the two items
+
+00:03:06.700 --> 00:03:09.300 align:middle line:84%
+is exactly the same as some
+of your valuations for the two
+
+00:03:09.300 --> 00:03:10.860 align:middle line:90%
+items.
+
+00:03:10.860 --> 00:03:13.340 align:middle line:84%
+If it's shoes, a left
+shoe and a right shoe
+
+00:03:13.340 --> 00:03:15.900 align:middle line:84%
+together are much more
+valuable than the two shoes
+
+00:03:15.900 --> 00:03:19.540 align:middle line:84%
+separately whereas other items
+that are substitutes, the bundle
+
+00:03:19.540 --> 00:03:23.717 align:middle line:84%
+may be less valuable than
+the sum of its parts,
+
+00:03:23.717 --> 00:03:25.800 align:middle line:84%
+if there's some duplication
+between the two parts.
+
+00:03:25.800 --> 00:03:29.580 align:middle line:84%
+Maybe 2 apples is not twice
+as valuable as 1 apple.
+
+00:03:29.580 --> 00:03:36.140 align:middle line:84%
+So we're going to think
+of it as a table where
+
+00:03:36.140 --> 00:03:39.120 align:middle line:84%
+my valuation is going to
+say, if I get item A alone,
+
+00:03:39.120 --> 00:03:40.000 align:middle line:90%
+what's my value?
+
+00:03:40.000 --> 00:03:42.080 align:middle line:84%
+If I get item B alone,
+what's my value?
+
+00:03:42.080 --> 00:03:44.180 align:middle line:84%
+And if I get the
+bundle, what's my value?
+
+00:03:44.180 --> 00:03:47.160 align:middle line:84%
+So bidder 1 is going
+to make some report.
+
+00:03:47.160 --> 00:03:49.460 align:middle line:84%
+And bidder 2 is going
+to make some report.
+
+00:03:49.460 --> 00:03:51.540 align:middle line:84%
+I've made the numbers
+here so it works out.
+
+00:03:51.540 --> 00:03:55.170 align:middle line:84%
+So let's suppose that the
+report beta 1 makes is they say,
+
+00:03:55.170 --> 00:03:59.330 align:middle line:84%
+if I get only item
+A, I value that at 5.
+
+00:03:59.330 --> 00:04:03.890 align:middle line:84%
+If I get only item B, I valued
+at 3, and if I get both items,
+
+00:04:03.890 --> 00:04:05.490 align:middle line:90%
+I valued at 8.
+
+00:04:05.490 --> 00:04:09.050 align:middle line:84%
+So for bidder 1, it turns
+out, their value of the bundle
+
+00:04:09.050 --> 00:04:11.550 align:middle line:84%
+is exactly the sum of the
+value of the two parts,
+
+00:04:11.550 --> 00:04:13.690 align:middle line:84%
+but it doesn't have
+to be that way.
+
+00:04:13.690 --> 00:04:16.450 align:middle line:90%
+Now let's look at bidder 2.
+
+00:04:16.450 --> 00:04:20.649 align:middle line:84%
+Let's suppose bidder 2 says,
+I value item A alone at 2.
+
+00:04:20.649 --> 00:04:24.610 align:middle line:84%
+I value B alone at 6, but I
+only value the bundle at 7.
+
+00:04:24.610 --> 00:04:26.970 align:middle line:84%
+So notice for
+bidder 2, the bundle
+
+00:04:26.970 --> 00:04:30.150 align:middle line:84%
+is not worth as much to them
+as the sum of its parts.
+
+00:04:30.150 --> 00:04:32.210 align:middle line:84%
+If they just got
+A and if they just
+
+00:04:32.210 --> 00:04:34.710 align:middle line:84%
+got B, that's different from
+if they get the bundle together
+
+00:04:34.710 --> 00:04:38.867 align:middle line:84%
+because, for them, these two
+items, maybe if item B is
+
+00:04:38.867 --> 00:04:41.450 align:middle line:84%
+a better version of item A, then
+getting both of them together
+
+00:04:41.450 --> 00:04:44.250 align:middle line:84%
+is basically just as
+good as getting item B.
+
+00:04:44.250 --> 00:04:48.410 align:middle line:84%
+So let's suppose these are the
+reported valuations for the two
+
+00:04:48.410 --> 00:04:49.170 align:middle line:90%
+bidders.
+
+00:04:49.170 --> 00:04:52.620 align:middle line:84%
+And now we have to specify who
+gets and what the payments are.
+
+00:04:52.620 --> 00:04:54.000 align:middle line:90%
+So let's go through this.
+
+00:04:54.000 --> 00:04:55.620 align:middle line:84%
+Maybe we'll do
+allocation over here.
+
+00:04:55.620 --> 00:05:00.080 align:middle line:90%
+
+
+00:05:00.080 --> 00:05:02.640 align:middle line:84%
+So remember, the rule
+of the VCG mechanism
+
+00:05:02.640 --> 00:05:05.040 align:middle line:84%
+is that we always allocate
+things efficiently.
+
+00:05:05.040 --> 00:05:07.520 align:middle line:84%
+So that is, we want
+to maximize the sum
+
+00:05:07.520 --> 00:05:09.480 align:middle line:90%
+of the players' utilities.
+
+00:05:09.480 --> 00:05:14.120 align:middle line:84%
+So we need to think,
+who should item A go to?
+
+00:05:14.120 --> 00:05:15.623 align:middle line:90%
+And who should I be go to?
+
+00:05:15.623 --> 00:05:17.040 align:middle line:84%
+Any thoughts here
+on what would be
+
+00:05:17.040 --> 00:05:20.633 align:middle line:84%
+the efficient way of allocating
+things, given these reports?
+
+00:05:20.633 --> 00:05:22.800 align:middle line:84%
+Remember, when we say we
+allocated efficiently, what
+
+00:05:22.800 --> 00:05:25.080 align:middle line:84%
+we mean is, we
+collect the reports,
+
+00:05:25.080 --> 00:05:27.960 align:middle line:84%
+and we allocate in a way that
+would be efficient if these were
+
+00:05:27.960 --> 00:05:29.920 align:middle line:90%
+the players true valuations.
+
+00:05:29.920 --> 00:05:31.920 align:middle line:84%
+So taking this as the
+truth, let's think
+
+00:05:31.920 --> 00:05:34.600 align:middle line:84%
+about the efficient
+way of allocating it?
+
+00:05:34.600 --> 00:05:37.900 align:middle line:90%
+So how would you do this?
+
+00:05:37.900 --> 00:05:38.800 align:middle line:90%
+Yeah.
+
+00:05:38.800 --> 00:05:41.160 align:middle line:84%
+AUDIENCE: You could
+[INAUDIBLE] person 1.
+
+00:05:41.160 --> 00:05:43.767 align:middle line:90%
+
+
+00:05:43.767 --> 00:05:46.100 align:middle line:84%
+IAN BALL: Right, that seems
+like a good way of doing it.
+
+00:05:46.100 --> 00:05:46.840 align:middle line:90%
+So let's see.
+
+00:05:46.840 --> 00:05:51.440 align:middle line:84%
+If we give item A to person
+1, they get a valuation of 5.
+
+00:05:51.440 --> 00:05:54.040 align:middle line:84%
+If we give item B
+to person 2, they
+
+00:05:54.040 --> 00:05:56.980 align:middle line:84%
+get evaluation of 6,
+which means the sum is 11.
+
+00:05:56.980 --> 00:05:57.980 align:middle line:90%
+That sounds pretty good.
+
+00:05:57.980 --> 00:06:00.920 align:middle line:84%
+If we did the opposite, we
+would only get a sum of 5.
+
+00:06:00.920 --> 00:06:02.860 align:middle line:84%
+And if we gave both
+items to the same player,
+
+00:06:02.860 --> 00:06:04.140 align:middle line:90%
+we'd either get 8 or 7.
+
+00:06:04.140 --> 00:06:05.540 align:middle line:90%
+But that's still less than 11.
+
+00:06:05.540 --> 00:06:07.180 align:middle line:84%
+So this is going to be
+the efficient allocation.
+
+00:06:07.180 --> 00:06:08.805 align:middle line:84%
+This is going to be
+the allocation that
+
+00:06:08.805 --> 00:06:12.660 align:middle line:84%
+maximizes the sum of
+the reported utilities.
+
+00:06:12.660 --> 00:06:15.400 align:middle line:84%
+But now we have to
+do the payments.
+
+00:06:15.400 --> 00:06:18.460 align:middle line:84%
+And I think the payments
+part is a bit trickier.
+
+00:06:18.460 --> 00:06:22.530 align:middle line:84%
+So we have to specify
+two payments, t1 and t2.
+
+00:06:22.530 --> 00:06:24.280 align:middle line:84%
+And maybe if I'm more
+precise, I would say
+
+00:06:24.280 --> 00:06:28.400 align:middle line:90%
+this is t1 of v1 hat, v2 hat.
+
+00:06:28.400 --> 00:06:31.920 align:middle line:84%
+And this is t2 of
+v1 hat, v2 hat.
+
+00:06:31.920 --> 00:06:35.040 align:middle line:84%
+So what the mechanism is saying
+is if these are the submitted
+
+00:06:35.040 --> 00:06:37.900 align:middle line:84%
+valuation reports that
+the two players submit,
+
+00:06:37.900 --> 00:06:40.163 align:middle line:84%
+this is how much I'm going
+to ask player 1 to pay.
+
+00:06:40.163 --> 00:06:42.580 align:middle line:84%
+And if these are the valuation
+reports that are submitted,
+
+00:06:42.580 --> 00:06:44.935 align:middle line:84%
+this is how much I'm going
+to ask player 2 to pay.
+
+00:06:44.935 --> 00:06:46.560 align:middle line:84%
+And the full mechanism
+is going to have
+
+00:06:46.560 --> 00:06:49.470 align:middle line:84%
+to specify a function that
+says what these payments are
+
+00:06:49.470 --> 00:06:51.270 align:middle line:84%
+for any submitted
+reports, but writing out
+
+00:06:51.270 --> 00:06:52.650 align:middle line:84%
+that full function's
+a bit complicated.
+
+00:06:52.650 --> 00:06:53.950 align:middle line:90%
+So we'll just do this example.
+
+00:06:53.950 --> 00:06:57.510 align:middle line:84%
+Now, what we said
+in class last time
+
+00:06:57.510 --> 00:07:01.870 align:middle line:84%
+is what bidder 1 is supposed to
+pay is the externality that they
+
+00:07:01.870 --> 00:07:03.495 align:middle line:90%
+impose on the other bidders.
+
+00:07:03.495 --> 00:07:04.870 align:middle line:84%
+So we have to
+compute two things.
+
+00:07:04.870 --> 00:07:08.210 align:middle line:84%
+We have to say if we just
+cared about the other bidders
+
+00:07:08.210 --> 00:07:09.990 align:middle line:84%
+and we allocated the
+items to maximize
+
+00:07:09.990 --> 00:07:12.990 align:middle line:84%
+the utility of the other
+bidders, how well would they do?
+
+00:07:12.990 --> 00:07:14.710 align:middle line:84%
+And then we have to
+subtract from that
+
+00:07:14.710 --> 00:07:17.650 align:middle line:84%
+how well the bidders actually
+do under this allocation.
+
+00:07:17.650 --> 00:07:20.110 align:middle line:84%
+So let's start with
+the first part.
+
+00:07:20.110 --> 00:07:22.930 align:middle line:84%
+And this is how well the
+other bidders could do.
+
+00:07:22.930 --> 00:07:24.910 align:middle line:90%
+So let's say I'm bidder 1.
+
+00:07:24.910 --> 00:07:27.150 align:middle line:84%
+These are the
+submitted valuations.
+
+00:07:27.150 --> 00:07:30.870 align:middle line:84%
+If we gave bidder 2, if we just
+allocated things in the best way
+
+00:07:30.870 --> 00:07:35.310 align:middle line:84%
+for bidder 2, what would
+bidder 2's valuation be?
+
+00:07:35.310 --> 00:07:36.750 align:middle line:84%
+Well, what we would
+do is we would
+
+00:07:36.750 --> 00:07:39.270 align:middle line:90%
+give both items to bidder 2.
+
+00:07:39.270 --> 00:07:41.350 align:middle line:84%
+And if we gave both
+items to bidder 2,
+
+00:07:41.350 --> 00:07:43.530 align:middle line:84%
+then bidder 2's
+valuation would be 7.
+
+00:07:43.530 --> 00:07:45.910 align:middle line:84%
+So we're going to
+first start with a 7
+
+00:07:45.910 --> 00:07:49.020 align:middle line:84%
+here because this is how
+well the other bidders could
+
+00:07:49.020 --> 00:07:51.657 align:middle line:84%
+do optimally if bidder 1
+weren't here, or in other words,
+
+00:07:51.657 --> 00:07:53.740 align:middle line:84%
+if we didn't care about
+bidder 1 and we only tried
+
+00:07:53.740 --> 00:07:56.100 align:middle line:90%
+to maximize bidder 2's payoff.
+
+00:07:56.100 --> 00:08:00.980 align:middle line:84%
+Now we want to subtract from
+that how well bidder 2 actually
+
+00:08:00.980 --> 00:08:02.020 align:middle line:90%
+does.
+
+00:08:02.020 --> 00:08:04.840 align:middle line:84%
+How well does bidder 2 actually
+do under the given allocation?
+
+00:08:04.840 --> 00:08:07.020 align:middle line:90%
+What's their actual valuation?
+
+00:08:07.020 --> 00:08:08.100 align:middle line:90%
+6, right?
+
+00:08:08.100 --> 00:08:11.500 align:middle line:90%
+So we subtract 6, and we get 1.
+
+00:08:11.500 --> 00:08:15.220 align:middle line:84%
+So this is the payment that
+bidder 1 is asked to make.
+
+00:08:15.220 --> 00:08:16.360 align:middle line:90%
+Why is it 1?
+
+00:08:16.360 --> 00:08:20.140 align:middle line:84%
+Well, because what is
+the effect that they're
+
+00:08:20.140 --> 00:08:21.520 align:middle line:90%
+having on the other bidders?
+
+00:08:21.520 --> 00:08:24.020 align:middle line:84%
+The other bidder, bidder 2,
+could've gotten the bundle A,
+
+00:08:24.020 --> 00:08:26.900 align:middle line:84%
+B, but because of the
+presence of bidder 1,
+
+00:08:26.900 --> 00:08:29.820 align:middle line:84%
+bidder 2 is only getting
+the item B by itself.
+
+00:08:29.820 --> 00:08:33.700 align:middle line:84%
+And the difference in utility
+for bidder 2, between the bundle
+
+00:08:33.700 --> 00:08:36.880 align:middle line:84%
+and getting only B by
+itself is exactly 1.
+
+00:08:36.880 --> 00:08:38.179 align:middle line:90%
+And that's why we get this.
+
+00:08:38.179 --> 00:08:40.659 align:middle line:90%
+Now, let's do it for bidder 2.
+
+00:08:40.659 --> 00:08:42.700 align:middle line:84%
+So if I'm bidder
+2, we first need
+
+00:08:42.700 --> 00:08:44.460 align:middle line:84%
+to compute how
+well bidder 1 would
+
+00:08:44.460 --> 00:08:46.410 align:middle line:90%
+do if bidder 2 weren't here.
+
+00:08:46.410 --> 00:08:49.810 align:middle line:84%
+If bidder 2 weren't here,
+bidder 1 would get everything,
+
+00:08:49.810 --> 00:08:51.550 align:middle line:90%
+and their utility would be 8.
+
+00:08:51.550 --> 00:08:54.650 align:middle line:90%
+
+
+00:08:54.650 --> 00:08:57.090 align:middle line:84%
+How well does bidder
+1 actually do?
+
+00:08:57.090 --> 00:09:00.970 align:middle line:84%
+Well, bidder 1 actually
+gets item A, which
+
+00:09:00.970 --> 00:09:02.890 align:middle line:90%
+gives them a utility of 5.
+
+00:09:02.890 --> 00:09:05.250 align:middle line:90%
+So we get 8 minus 5.
+
+00:09:05.250 --> 00:09:08.090 align:middle line:90%
+And we see the payment is 3.
+
+00:09:08.090 --> 00:09:10.250 align:middle line:84%
+Why does bidder 2
+have to pay more?
+
+00:09:10.250 --> 00:09:13.850 align:middle line:84%
+Because bidder 2 has a bigger
+externality on bidder 1.
+
+00:09:13.850 --> 00:09:17.930 align:middle line:84%
+Bidder 1 would've been able to
+get everything together A and B,
+
+00:09:17.930 --> 00:09:19.890 align:middle line:84%
+but because of the
+presence of bidder 2,
+
+00:09:19.890 --> 00:09:22.370 align:middle line:84%
+they only get item A by
+itself, and the difference
+
+00:09:22.370 --> 00:09:26.268 align:middle line:84%
+in utility between 8 and 5 is
+3, which is a larger number.
+
+00:09:26.268 --> 00:09:27.810 align:middle line:84%
+And this is going
+to-- this completes
+
+00:09:27.810 --> 00:09:31.790 align:middle line:84%
+the specification of VCG
+for this particular profile
+
+00:09:31.790 --> 00:09:32.690 align:middle line:90%
+[INAUDIBLE].
+
+00:09:32.690 --> 00:09:34.658 align:middle line:84%
+And the result
+that I didn't prove
+
+00:09:34.658 --> 00:09:36.450 align:middle line:84%
+but that I claimed
+yesterday is that if you
+
+00:09:36.450 --> 00:09:38.930 align:middle line:84%
+use this kind of rule,
+in a VCG auction,
+
+00:09:38.930 --> 00:09:41.330 align:middle line:84%
+it's going to be
+optimal for each bidder
+
+00:09:41.330 --> 00:09:42.550 align:middle line:90%
+to report truthfully.
+
+00:09:42.550 --> 00:09:46.050 align:middle line:84%
+So I should maybe
+make a note on this.
+
+00:09:46.050 --> 00:09:56.170 align:middle line:84%
+There's an optimal
+strategy for each bidder.
+
+00:09:56.170 --> 00:09:57.350 align:middle line:90%
+And what is that strategy?
+
+00:09:57.350 --> 00:09:58.710 align:middle line:90%
+Well, it's reporting truthfully.
+
+00:09:58.710 --> 00:10:04.450 align:middle line:90%
+
+
+00:10:04.450 --> 00:10:09.010 align:middle line:84%
+And we might call
+that vi hat equals vi.
+
+00:10:09.010 --> 00:10:10.642 align:middle line:84%
+So whatever my
+true valuation is,
+
+00:10:10.642 --> 00:10:12.850 align:middle line:84%
+I look, and I say, this is
+how much I really value A,
+
+00:10:12.850 --> 00:10:14.930 align:middle line:84%
+this is how much
+I really value B,
+
+00:10:14.930 --> 00:10:16.890 align:middle line:84%
+and this is how much I
+really value the bundle.
+
+00:10:16.890 --> 00:10:20.530 align:middle line:84%
+It's optimal for me to tell the
+designer exactly how I really
+
+00:10:20.530 --> 00:10:21.910 align:middle line:90%
+feel and be honest about it.
+
+00:10:21.910 --> 00:10:23.930 align:middle line:84%
+And I can't benefit by
+misreporting my valuation
+
+00:10:23.930 --> 00:10:26.850 align:middle line:90%
+to the designer.
+
+00:10:26.850 --> 00:10:29.530 align:middle line:84%
+All right, any
+questions on that?
+
+00:10:29.530 --> 00:10:30.290 align:middle line:90%
+Yes.
+
+00:10:30.290 --> 00:10:31.957 align:middle line:84%
+AUDIENCE: Will you
+ever have a situation
+
+00:10:31.957 --> 00:10:33.850 align:middle line:84%
+where your
+externalities are going
+
+00:10:33.850 --> 00:10:38.410 align:middle line:84%
+to be less than the valuation
+that you have for the good?
+
+00:10:38.410 --> 00:10:41.030 align:middle line:84%
+That payment would be
+negative in essence?
+
+00:10:41.030 --> 00:10:42.090 align:middle line:90%
+IAN BALL: Good question.
+
+00:10:42.090 --> 00:10:43.840 align:middle line:84%
+So you're never going
+to have a case where
+
+00:10:43.840 --> 00:10:45.560 align:middle line:90%
+the payments are negative.
+
+00:10:45.560 --> 00:10:51.560 align:middle line:84%
+And this follows from the way
+that we define an externality.
+
+00:10:51.560 --> 00:10:57.500 align:middle line:84%
+So, yeah, we have to be a
+little careful about this.
+
+00:10:57.500 --> 00:11:00.065 align:middle line:84%
+So it is true that, more
+broadly, in economics,
+
+00:11:00.065 --> 00:11:01.440 align:middle line:84%
+when we talk about
+externalities,
+
+00:11:01.440 --> 00:11:03.232 align:middle line:84%
+some things do have
+positive externalities.
+
+00:11:03.232 --> 00:11:05.388 align:middle line:84%
+There are things I can
+do that make activities
+
+00:11:05.388 --> 00:11:07.180 align:middle line:84%
+I can do that make
+other people better off.
+
+00:11:07.180 --> 00:11:08.722 align:middle line:84%
+So I guess I should
+be maybe a little
+
+00:11:08.722 --> 00:11:10.740 align:middle line:84%
+careful about the
+terminology of externality.
+
+00:11:10.740 --> 00:11:15.440 align:middle line:84%
+So here, what we mean in this
+context by externality is,
+
+00:11:15.440 --> 00:11:19.320 align:middle line:84%
+well, we're comparing how
+well the other bidder would
+
+00:11:19.320 --> 00:11:21.720 align:middle line:84%
+do if we just cared about
+maximizing that bidder's
+
+00:11:21.720 --> 00:11:24.160 align:middle line:84%
+utility to how well
+that bidder actually
+
+00:11:24.160 --> 00:11:25.880 align:middle line:90%
+does under this allocation.
+
+00:11:25.880 --> 00:11:28.720 align:middle line:84%
+And there's no way that
+the current allocation can
+
+00:11:28.720 --> 00:11:30.680 align:middle line:84%
+give more to the other
+bidder than if we just
+
+00:11:30.680 --> 00:11:32.412 align:middle line:90%
+maximize that bidder's utility.
+
+00:11:32.412 --> 00:11:34.120 align:middle line:84%
+So for that reason,
+this number is always
+
+00:11:34.120 --> 00:11:35.180 align:middle line:90%
+going to be nonnegative.
+
+00:11:35.180 --> 00:11:36.680 align:middle line:84%
+And you're right,
+if you're thinking
+
+00:11:36.680 --> 00:11:39.180 align:middle line:84%
+of other externality context,
+this is a bit more special.
+
+00:11:39.180 --> 00:11:41.470 align:middle line:84%
+So it does turn out here
+that the payments will always
+
+00:11:41.470 --> 00:11:42.130 align:middle line:90%
+be nonnegative.
+
+00:11:42.130 --> 00:11:44.350 align:middle line:84%
+They could be 0, but they
+would never be negative
+
+00:11:44.350 --> 00:11:45.570 align:middle line:84%
+because, in order for
+them to be negative,
+
+00:11:45.570 --> 00:11:47.870 align:middle line:84%
+it would have to be that the
+allocation we're choosing
+
+00:11:47.870 --> 00:11:50.550 align:middle line:84%
+makes the other bidder strictly
+better off than the best
+
+00:11:50.550 --> 00:11:51.770 align:middle line:90%
+allocation for that bidder.
+
+00:11:51.770 --> 00:11:54.570 align:middle line:84%
+And that goes against
+the definition of best.
+
+00:11:54.570 --> 00:11:55.070 align:middle line:90%
+Yeah.
+
+00:11:55.070 --> 00:11:58.150 align:middle line:84%
+AUDIENCE: 7 is
+maximizing their utility
+
+00:11:58.150 --> 00:12:01.550 align:middle line:84%
+when everyone besides
+myself is in the game?
+
+00:12:01.550 --> 00:12:03.930 align:middle line:84%
+Or is it just their
+utility alone?
+
+00:12:03.930 --> 00:12:04.930 align:middle line:90%
+IAN BALL: Good question.
+
+00:12:04.930 --> 00:12:08.550 align:middle line:84%
+So the 7 here is--
+what we're maximizing
+
+00:12:08.550 --> 00:12:14.190 align:middle line:84%
+is the sum of everyone
+else's utility,
+
+00:12:14.190 --> 00:12:16.130 align:middle line:84%
+and we're ignoring
+my own utility.
+
+00:12:16.130 --> 00:12:18.693 align:middle line:84%
+So in this case, because
+there's only two bidders,
+
+00:12:18.693 --> 00:12:20.110 align:middle line:84%
+the sum of everyone
+else's utility
+
+00:12:20.110 --> 00:12:22.410 align:middle line:84%
+is just maximizing the
+other bidder's utility.
+
+00:12:22.410 --> 00:12:24.213 align:middle line:84%
+But if we had three
+bidders, then we
+
+00:12:24.213 --> 00:12:26.630 align:middle line:84%
+would think about how could
+we allocate the goods in a way
+
+00:12:26.630 --> 00:12:30.550 align:middle line:84%
+to maximize the sum of, say,
+bidders 2 and 3's utility,
+
+00:12:30.550 --> 00:12:33.110 align:middle line:84%
+ignoring the effect of the
+presence of bidder one.
+
+00:12:33.110 --> 00:12:34.910 align:middle line:90%
+Yeah, great.
+
+00:12:34.910 --> 00:12:36.210 align:middle line:90%
+Any other questions on this?
+
+00:12:36.210 --> 00:12:39.660 align:middle line:90%
+
+
+00:12:39.660 --> 00:12:44.540 align:middle line:84%
+So now let's change
+tacks a little bit.
+
+00:12:44.540 --> 00:12:46.620 align:middle line:84%
+And we're now going to
+move to the final phase
+
+00:12:46.620 --> 00:12:50.640 align:middle line:84%
+of the course, which is
+called dynamic Bayesian games.
+
+00:12:50.640 --> 00:12:56.780 align:middle line:90%
+
+
+00:12:56.780 --> 00:12:59.020 align:middle line:84%
+And I think it's good at
+this point to pause and see
+
+00:12:59.020 --> 00:13:00.480 align:middle line:90%
+where we've come.
+
+00:13:00.480 --> 00:13:03.260 align:middle line:84%
+So we can think of the course
+as organized into four parts.
+
+00:13:03.260 --> 00:13:07.520 align:middle line:84%
+We have looked at static
+games and dynamic games.
+
+00:13:07.520 --> 00:13:11.340 align:middle line:90%
+
+
+00:13:11.340 --> 00:13:17.100 align:middle line:84%
+And we've also looked at
+games of complete information
+
+00:13:17.100 --> 00:13:18.880 align:middle line:84%
+and games of
+incomplete information.
+
+00:13:18.880 --> 00:13:21.500 align:middle line:90%
+
+
+00:13:21.500 --> 00:13:24.000 align:middle line:84%
+And basically, so far, we've
+filled in three of these boxes,
+
+00:13:24.000 --> 00:13:25.917 align:middle line:84%
+and now we're going to
+fill in the fourth box.
+
+00:13:25.917 --> 00:13:27.758 align:middle line:84%
+And for each box,
+each class of games,
+
+00:13:27.758 --> 00:13:30.300 align:middle line:84%
+we have a different solution
+concept, a different equilibrium
+
+00:13:30.300 --> 00:13:30.960 align:middle line:90%
+notion.
+
+00:13:30.960 --> 00:13:32.040 align:middle line:90%
+So let's fill this in.
+
+00:13:32.040 --> 00:13:37.340 align:middle line:90%
+
+
+00:13:37.340 --> 00:13:40.120 align:middle line:84%
+So in the first part of the
+course, we started here.
+
+00:13:40.120 --> 00:13:43.420 align:middle line:84%
+This would just be your
+basic strategic-form game
+
+00:13:43.420 --> 00:13:44.740 align:middle line:90%
+with complete information.
+
+00:13:44.740 --> 00:13:47.420 align:middle line:84%
+And our solution concept there
+was just Nash equilibrium.
+
+00:13:47.420 --> 00:13:55.580 align:middle line:90%
+
+
+00:13:55.580 --> 00:13:57.380 align:middle line:90%
+Next, we said, well--
+
+00:13:57.380 --> 00:13:59.460 align:middle line:84%
+we looked at
+extensive-form games
+
+00:13:59.460 --> 00:14:01.580 align:middle line:84%
+where players make
+moves over time.
+
+00:14:01.580 --> 00:14:04.260 align:middle line:84%
+And we said, one problem
+of the Nash equilibrium
+
+00:14:04.260 --> 00:14:07.580 align:middle line:84%
+is it allows players to
+make non-credible threats.
+
+00:14:07.580 --> 00:14:10.140 align:middle line:84%
+And we said we wanted to
+refine Nash equilibrium
+
+00:14:10.140 --> 00:14:13.580 align:middle line:84%
+and impose a stronger solution
+concept that rules out
+
+00:14:13.580 --> 00:14:15.280 align:middle line:90%
+threats that are not credible.
+
+00:14:15.280 --> 00:14:17.980 align:middle line:84%
+And that solution concept was
+called subgame-perfect Nash
+
+00:14:17.980 --> 00:14:19.180 align:middle line:90%
+equilibrium.
+
+00:14:19.180 --> 00:14:28.780 align:middle line:90%
+
+
+00:14:28.780 --> 00:14:31.820 align:middle line:84%
+So that was a stronger
+notion than Nash
+
+00:14:31.820 --> 00:14:33.980 align:middle line:84%
+that ruled out some
+Nash equilibria
+
+00:14:33.980 --> 00:14:36.570 align:middle line:84%
+that we didn't find compelling
+because they involved threats
+
+00:14:36.570 --> 00:14:38.490 align:middle line:84%
+that were not
+credible at nodes that
+
+00:14:38.490 --> 00:14:41.330 align:middle line:90%
+were not reached in the game.
+
+00:14:41.330 --> 00:14:43.645 align:middle line:84%
+Then we stepped back, and
+we said, wait a second,
+
+00:14:43.645 --> 00:14:46.270 align:middle line:84%
+our complete information seems
+like a really strong assumption.
+
+00:14:46.270 --> 00:14:48.690 align:middle line:84%
+A lot of times when people
+come to the game and they start
+
+00:14:48.690 --> 00:14:50.950 align:middle line:84%
+the game, they know things
+that other players don't.
+
+00:14:50.950 --> 00:14:52.690 align:middle line:84%
+They know things about their
+preferences that other players
+
+00:14:52.690 --> 00:14:53.650 align:middle line:90%
+in the game don't.
+
+00:14:53.650 --> 00:14:57.110 align:middle line:84%
+So we introduced
+Bayesian games, that is,
+
+00:14:57.110 --> 00:14:58.735 align:middle line:84%
+games that have
+incomplete information,
+
+00:14:58.735 --> 00:15:00.193 align:middle line:84%
+and we introduce
+a solution concept
+
+00:15:00.193 --> 00:15:02.570 align:middle line:84%
+for that called Bayes-Nash
+equilibrium or Bayesian Nash
+
+00:15:02.570 --> 00:15:03.350 align:middle line:90%
+equilibrium.
+
+00:15:03.350 --> 00:15:15.610 align:middle line:90%
+
+
+00:15:15.610 --> 00:15:19.190 align:middle line:84%
+Now this dealt with the issue
+of incomplete information.
+
+00:15:19.190 --> 00:15:22.210 align:middle line:84%
+But it turns out that
+Bayesian Nash equilibrium
+
+00:15:22.210 --> 00:15:25.745 align:middle line:84%
+doesn't deal with the issue
+of non-credible threats.
+
+00:15:25.745 --> 00:15:27.370 align:middle line:84%
+And if we want to
+look at dynamic games
+
+00:15:27.370 --> 00:15:28.913 align:middle line:84%
+with incomplete
+information, we have
+
+00:15:28.913 --> 00:15:30.330 align:middle line:84%
+to both take into
+account the fact
+
+00:15:30.330 --> 00:15:32.110 align:middle line:84%
+that players have
+incomplete information.
+
+00:15:32.110 --> 00:15:34.800 align:middle line:84%
+But we also may want to
+rule out equilibria that
+
+00:15:34.800 --> 00:15:36.100 align:middle line:90%
+involve non-credible threats.
+
+00:15:36.100 --> 00:15:37.475 align:middle line:84%
+So we're going to
+introduce today
+
+00:15:37.475 --> 00:15:40.380 align:middle line:84%
+our final solution concept,
+which it's not very creative.
+
+00:15:40.380 --> 00:15:42.325 align:middle line:84%
+We basically combine
+the perfect from here
+
+00:15:42.325 --> 00:15:44.200 align:middle line:84%
+and the Bayes from here,
+and it's just called
+
+00:15:44.200 --> 00:15:45.660 align:middle line:90%
+perfect Bayesian equilibrium.
+
+00:15:45.660 --> 00:16:01.600 align:middle line:90%
+
+
+00:16:01.600 --> 00:16:04.800 align:middle line:84%
+I guess maybe I'll give somewhat
+of a Warning about this.
+
+00:16:04.800 --> 00:16:07.640 align:middle line:84%
+These first three
+concepts are very--
+
+00:16:07.640 --> 00:16:09.420 align:middle line:90%
+are well-agreed upon.
+
+00:16:09.420 --> 00:16:11.360 align:middle line:84%
+Everyone agrees what's
+the right notion.
+
+00:16:11.360 --> 00:16:14.280 align:middle line:84%
+Once we get to dynamic games
+of incomplete information,
+
+00:16:14.280 --> 00:16:16.040 align:middle line:84%
+there's been a lot of
+recent work arguing
+
+00:16:16.040 --> 00:16:17.780 align:middle line:84%
+about what's the right
+notion of equilibrium.
+
+00:16:17.780 --> 00:16:19.440 align:middle line:84%
+So we're going to present
+a particular notion called
+
+00:16:19.440 --> 00:16:20.893 align:middle line:90%
+perfect Bayesian equilibrium.
+
+00:16:20.893 --> 00:16:22.560 align:middle line:84%
+But there's 10 other
+equilibrium notions
+
+00:16:22.560 --> 00:16:24.855 align:middle line:84%
+that could fill this
+box that are more exotic
+
+00:16:24.855 --> 00:16:26.480 align:middle line:84%
+and involve more
+constraints and people
+
+00:16:26.480 --> 00:16:28.563 align:middle line:84%
+are arguing to this day
+about what's the right way
+
+00:16:28.563 --> 00:16:29.740 align:middle line:90%
+to define equilibrium.
+
+00:16:29.740 --> 00:16:31.115 align:middle line:84%
+So I'll just warn
+you that things
+
+00:16:31.115 --> 00:16:35.060 align:middle line:84%
+are a little maybe trickier or
+less clear cut in this case,
+
+00:16:35.060 --> 00:16:37.600 align:middle line:84%
+but we'll try to focus
+on well-trodden ground
+
+00:16:37.600 --> 00:16:39.000 align:middle line:90%
+in this class.
+
+00:16:39.000 --> 00:16:41.400 align:middle line:84%
+OK, so I want to first,
+today, before defining
+
+00:16:41.400 --> 00:16:43.048 align:middle line:84%
+perfect Bayesian
+equilibrium, I want
+
+00:16:43.048 --> 00:16:44.840 align:middle line:84%
+to give a few examples
+that try to motivate
+
+00:16:44.840 --> 00:16:48.320 align:middle line:84%
+why we need a new definition,
+why our existing equilibrium
+
+00:16:48.320 --> 00:16:49.650 align:middle line:90%
+notions are insufficient.
+
+00:16:49.650 --> 00:16:51.400 align:middle line:84%
+And then we'll go over
+how we can actually
+
+00:16:51.400 --> 00:16:52.983 align:middle line:84%
+solve for perfect
+Bayesian equilibrium
+
+00:16:52.983 --> 00:16:55.320 align:middle line:84%
+and go over the
+formal definition.
+
+00:16:55.320 --> 00:16:59.200 align:middle line:84%
+So let's start with
+maybe a reminder
+
+00:16:59.200 --> 00:17:04.119 align:middle line:84%
+about non-credible threats and
+a weakness of Nash equilibrium
+
+00:17:04.119 --> 00:17:06.560 align:middle line:84%
+with complete information,
+and then we'll build on that.
+
+00:17:06.560 --> 00:17:09.720 align:middle line:84%
+So let's go back to
+maybe our classic example
+
+00:17:09.720 --> 00:17:11.800 align:middle line:90%
+where we had two firms.
+
+00:17:11.800 --> 00:17:15.200 align:middle line:84%
+We had firm 1,
+and we had firm 2.
+
+00:17:15.200 --> 00:17:20.960 align:middle line:84%
+And we'll think of firm
+1 as a potential entrant.
+
+00:17:20.960 --> 00:17:23.099 align:middle line:84%
+And we'll think of
+firm 2 as an incumbent.
+
+00:17:23.099 --> 00:17:27.760 align:middle line:90%
+
+
+00:17:27.760 --> 00:17:29.430 align:middle line:84%
+So firm 2's already
+in the market.
+
+00:17:29.430 --> 00:17:32.330 align:middle line:84%
+Firm 1 is deciding whether
+to enter the market or not.
+
+00:17:32.330 --> 00:17:33.630 align:middle line:84%
+So they're called an
+entrant, but really, they're
+
+00:17:33.630 --> 00:17:34.463 align:middle line:90%
+a potential entrant.
+
+00:17:34.463 --> 00:17:35.830 align:middle line:90%
+They may or may not enter.
+
+00:17:35.830 --> 00:17:39.130 align:middle line:84%
+And firm 1 is choosing
+whether to enter the market--
+
+00:17:39.130 --> 00:17:40.350 align:middle line:90%
+we'll call that E--
+
+00:17:40.350 --> 00:17:42.030 align:middle line:90%
+or not enter the market.
+
+00:17:42.030 --> 00:17:45.390 align:middle line:84%
+We'll call that N. And this is
+an example we've done before.
+
+00:17:45.390 --> 00:17:46.990 align:middle line:90%
+Firm 2 is the incumbent.
+
+00:17:46.990 --> 00:17:49.750 align:middle line:84%
+If firm 1 enters, firm
+2 is the incumbent,
+
+00:17:49.750 --> 00:17:52.030 align:middle line:84%
+can choose whether to
+accommodate their entry
+
+00:17:52.030 --> 00:17:53.910 align:middle line:84%
+or to fight them by
+starting some price war
+
+00:17:53.910 --> 00:17:55.702 align:middle line:84%
+or trying to cut prices
+and doing something
+
+00:17:55.702 --> 00:17:56.950 align:middle line:90%
+that hurts both players.
+
+00:17:56.950 --> 00:18:02.270 align:middle line:84%
+So firm 2 is choosing A or F, a
+for accommodate the new entrant
+
+00:18:02.270 --> 00:18:04.870 align:middle line:84%
+and f for fight against
+the new entrant.
+
+00:18:04.870 --> 00:18:07.790 align:middle line:84%
+So let's write this as
+an extensive-form game.
+
+00:18:07.790 --> 00:18:09.210 align:middle line:90%
+We have firm 1 is here.
+
+00:18:09.210 --> 00:18:12.190 align:middle line:90%
+
+
+00:18:12.190 --> 00:18:14.830 align:middle line:84%
+They're choosing whether to--
+maybe I'll put N here, not
+
+00:18:14.830 --> 00:18:16.790 align:middle line:90%
+enter or enter.
+
+00:18:16.790 --> 00:18:19.990 align:middle line:84%
+And then if they do
+enter, we have firm 2.
+
+00:18:19.990 --> 00:18:23.030 align:middle line:84%
+And they're choosing to
+either accommodate the entrant
+
+00:18:23.030 --> 00:18:24.090 align:middle line:90%
+or fight.
+
+00:18:24.090 --> 00:18:27.860 align:middle line:84%
+Let me make sure I
+get the numbers right.
+
+00:18:27.860 --> 00:18:37.940 align:middle line:84%
+So what we did here, let's put
+0, 5, 1, 1, and negative 10, 10
+
+00:18:37.940 --> 00:18:39.180 align:middle line:90%
+to make this easy.
+
+00:18:39.180 --> 00:18:41.220 align:middle line:90%
+So what's the idea?
+
+00:18:41.220 --> 00:18:43.687 align:middle line:84%
+If firm 1 does not
+enter, well, that's
+
+00:18:43.687 --> 00:18:45.020 align:middle line:90%
+great for firm 2, the incumbent.
+
+00:18:45.020 --> 00:18:45.740 align:middle line:90%
+They're the monopolist.
+
+00:18:45.740 --> 00:18:46.823 align:middle line:90%
+They're all by themselves.
+
+00:18:46.823 --> 00:18:48.220 align:middle line:90%
+So they get a payoff of 5.
+
+00:18:48.220 --> 00:18:51.380 align:middle line:84%
+Firm 1 isn't entering, so
+they get a payoff of 0.
+
+00:18:51.380 --> 00:18:54.140 align:middle line:84%
+If firm 1 does enter, well,
+then the payoffs of the firms
+
+00:18:54.140 --> 00:18:57.700 align:middle line:84%
+depend on whether to accommodate
+the entrant or fights.
+
+00:18:57.700 --> 00:19:00.080 align:middle line:84%
+If they accommodate, then
+they both do pretty well.
+
+00:19:00.080 --> 00:19:02.900 align:middle line:84%
+They both get 1, but of
+course, not as well as firm 2
+
+00:19:02.900 --> 00:19:06.565 align:middle line:84%
+would've gotten if firm 2
+were by himself as monopolist.
+
+00:19:06.565 --> 00:19:07.940 align:middle line:84%
+And then if firm
+2 fights, that's
+
+00:19:07.940 --> 00:19:09.680 align:middle line:90%
+really bad for both sides.
+
+00:19:09.680 --> 00:19:10.560 align:middle line:90%
+They a price war.
+
+00:19:10.560 --> 00:19:12.080 align:middle line:90%
+Prices go, say, really low.
+
+00:19:12.080 --> 00:19:14.100 align:middle line:90%
+And this is bad for everyone.
+
+00:19:14.100 --> 00:19:16.560 align:middle line:84%
+We're thinking of fighting
+in an abstract sense.
+
+00:19:16.560 --> 00:19:18.060 align:middle line:84%
+It could literally
+involve violence,
+
+00:19:18.060 --> 00:19:19.340 align:middle line:84%
+or it could be
+cutting prices, or it
+
+00:19:19.340 --> 00:19:20.320 align:middle line:90%
+could be flooding the market.
+
+00:19:20.320 --> 00:19:21.900 align:middle line:84%
+There's a lot of
+things it could be.
+
+00:19:21.900 --> 00:19:26.650 align:middle line:84%
+So let's now just write
+this as a bit of a review
+
+00:19:26.650 --> 00:19:30.750 align:middle line:84%
+today of our standard
+strategic form game box.
+
+00:19:30.750 --> 00:19:34.330 align:middle line:84%
+Player 1 has two
+strategies, N, E. Player 2
+
+00:19:34.330 --> 00:19:41.210 align:middle line:84%
+has two strategies, A, F. N, E
+to keep the order consistent.
+
+00:19:41.210 --> 00:19:42.250 align:middle line:90%
+And let's see.
+
+00:19:42.250 --> 00:19:46.190 align:middle line:84%
+If player 1 doesn't enter, then
+they both get 0, 5 either way.
+
+00:19:46.190 --> 00:19:49.930 align:middle line:90%
+
+
+00:19:49.930 --> 00:19:52.290 align:middle line:84%
+If player 1 does
+enter, then the payoffs
+
+00:19:52.290 --> 00:19:53.550 align:middle line:90%
+depend on what player 2 does.
+
+00:19:53.550 --> 00:19:58.590 align:middle line:84%
+And we get 1, 1 here and
+negative 10, negative 10 here.
+
+00:19:58.590 --> 00:20:01.655 align:middle line:90%
+
+
+00:20:01.655 --> 00:20:03.530 align:middle line:84%
+Well, now let's just do
+our standard approach
+
+00:20:03.530 --> 00:20:05.582 align:middle line:84%
+to try to find the Nash
+equilibria of this.
+
+00:20:05.582 --> 00:20:06.790 align:middle line:90%
+This is a good little review.
+
+00:20:06.790 --> 00:20:08.498 align:middle line:84%
+The final exam is
+going to be cumulative.
+
+00:20:08.498 --> 00:20:11.988 align:middle line:84%
+So you do have to remember
+how to solve the basic games.
+
+00:20:11.988 --> 00:20:12.530 align:middle line:90%
+So let's see.
+
+00:20:12.530 --> 00:20:13.510 align:middle line:90%
+We go down here.
+
+00:20:13.510 --> 00:20:16.250 align:middle line:84%
+If firm 2 is going
+to accommodate,
+
+00:20:16.250 --> 00:20:18.730 align:middle line:84%
+then it's better
+for firm 1 to enter.
+
+00:20:18.730 --> 00:20:21.970 align:middle line:84%
+If firm 2 is going to fight,
+it's better for firm 1
+
+00:20:21.970 --> 00:20:23.210 align:middle line:90%
+to not enter.
+
+00:20:23.210 --> 00:20:25.370 align:middle line:84%
+And then we can do
+things the other way.
+
+00:20:25.370 --> 00:20:27.110 align:middle line:84%
+If firm 1 doesn't
+enter-- actually,
+
+00:20:27.110 --> 00:20:28.890 align:middle line:84%
+it doesn't matter
+what firm 2 does.
+
+00:20:28.890 --> 00:20:32.330 align:middle line:84%
+If firm 1 enters, then firm
+2 would rather accommodate.
+
+00:20:32.330 --> 00:20:34.650 align:middle line:90%
+So we get two equilibria.
+
+00:20:34.650 --> 00:20:46.350 align:middle line:84%
+We get EA and NF, which we
+can see on our graph here.
+
+00:20:46.350 --> 00:20:51.210 align:middle line:90%
+
+
+00:20:51.210 --> 00:20:54.370 align:middle line:84%
+Now, both of these
+are Nash equilibria.
+
+00:20:54.370 --> 00:20:57.970 align:middle line:84%
+But we precisely introduced
+subgame-perfect Nash equilibria
+
+00:20:57.970 --> 00:21:00.050 align:middle line:84%
+as a more demanding
+solution concept
+
+00:21:00.050 --> 00:21:02.730 align:middle line:84%
+to rule out one of
+these equilibria.
+
+00:21:02.730 --> 00:21:06.450 align:middle line:84%
+So which of these equilibria
+is not a subgame-perfect Nash
+
+00:21:06.450 --> 00:21:07.070 align:middle line:90%
+equilibrium?
+
+00:21:07.070 --> 00:21:08.170 align:middle line:90%
+Which one did we--
+
+00:21:08.170 --> 00:21:10.470 align:middle line:84%
+does subgame
+perfection rule out?
+
+00:21:10.470 --> 00:21:15.990 align:middle line:90%
+
+
+00:21:15.990 --> 00:21:16.490 align:middle line:90%
+Yeah.
+
+00:21:16.490 --> 00:21:19.010 align:middle line:84%
+AUDIENCE: [INAUDIBLE]
+because you can't really--
+
+00:21:19.010 --> 00:21:23.960 align:middle line:90%
+IAN BALL: Yeah, sorry, NF or EA.
+
+00:21:23.960 --> 00:21:25.140 align:middle line:90%
+It's one of these two.
+
+00:21:25.140 --> 00:21:26.375 align:middle line:90%
+It's EA and NF.
+
+00:21:26.375 --> 00:21:27.000 align:middle line:90%
+AUDIENCE: Yeah.
+
+00:21:27.000 --> 00:21:30.280 align:middle line:90%
+
+
+00:21:30.280 --> 00:21:31.380 align:middle line:90%
+IAN BALL: Maybe, yeah.
+
+00:21:31.380 --> 00:21:32.440 align:middle line:90%
+AUDIENCE: NF.
+
+00:21:32.440 --> 00:21:33.720 align:middle line:90%
+IAN BALL: NF, I agree, OK.
+
+00:21:33.720 --> 00:21:35.400 align:middle line:90%
+And why?
+
+00:21:35.400 --> 00:21:38.560 align:middle line:84%
+AUDIENCE: Because if
+the entrant enters,
+
+00:21:38.560 --> 00:21:44.000 align:middle line:84%
+it doesn't make sense for
+the incumbent to fight.
+
+00:21:44.000 --> 00:21:45.000 align:middle line:90%
+IAN BALL: Exactly right.
+
+00:21:45.000 --> 00:21:48.160 align:middle line:84%
+So both of these
+are Nash equilibria.
+
+00:21:48.160 --> 00:21:51.020 align:middle line:84%
+Only EA is a subgame-perfect
+Nash equilibrium.
+
+00:21:51.020 --> 00:21:53.380 align:middle line:84%
+As you said, NF is
+not subgame-perfect.
+
+00:21:53.380 --> 00:22:00.520 align:middle line:90%
+
+
+00:22:00.520 --> 00:22:03.160 align:middle line:84%
+And it's not subgame-perfect
+because it involves a threat
+
+00:22:03.160 --> 00:22:06.200 align:middle line:90%
+by firm 2 that is not credible.
+
+00:22:06.200 --> 00:22:11.120 align:middle line:84%
+Firm 2 says, if you
+enter, I'm going to fight.
+
+00:22:11.120 --> 00:22:13.522 align:middle line:84%
+But if firm 1 actually
+enters, well, firm 2 is here,
+
+00:22:13.522 --> 00:22:14.980 align:middle line:84%
+and they look,
+well, wait a second.
+
+00:22:14.980 --> 00:22:17.040 align:middle line:90%
+If I fight, I get negative 10.
+
+00:22:17.040 --> 00:22:18.740 align:middle line:90%
+If I accommodate, I get 1.
+
+00:22:18.740 --> 00:22:20.870 align:middle line:84%
+I'm much better
+off accommodating.
+
+00:22:20.870 --> 00:22:24.830 align:middle line:84%
+So it's not optimal for
+firm 2 to actually carry out
+
+00:22:24.830 --> 00:22:26.990 align:middle line:84%
+this punishment or
+this threat that they
+
+00:22:26.990 --> 00:22:29.070 align:middle line:90%
+threatened to carry out.
+
+00:22:29.070 --> 00:22:33.190 align:middle line:84%
+Formally, well, we have
+to think of the definition
+
+00:22:33.190 --> 00:22:36.050 align:middle line:84%
+of subgame-perfect
+Nash equilibrium.
+
+00:22:36.050 --> 00:22:38.390 align:middle line:84%
+In the definition, we have
+to look at every subgame.
+
+00:22:38.390 --> 00:22:40.470 align:middle line:84%
+We have the full game
+here, but we also
+
+00:22:40.470 --> 00:22:42.070 align:middle line:90%
+have subgame that starts here.
+
+00:22:42.070 --> 00:22:47.350 align:middle line:84%
+So remember, this is one
+subgame of the full game.
+
+00:22:47.350 --> 00:22:51.070 align:middle line:84%
+And the problem with NF
+is that fighting is not
+
+00:22:51.070 --> 00:22:52.750 align:middle line:90%
+an equilibrium of this subgame.
+
+00:22:52.750 --> 00:22:54.750 align:middle line:84%
+Now, it may be weird to
+think of this as subgame
+
+00:22:54.750 --> 00:22:56.375 align:middle line:84%
+because there's only
+one player moving.
+
+00:22:56.375 --> 00:22:59.110 align:middle line:84%
+But remember, we can have a
+game with a single player,
+
+00:22:59.110 --> 00:23:01.190 align:middle line:84%
+and an equilibrium of
+a single-player game
+
+00:23:01.190 --> 00:23:04.030 align:middle line:84%
+just means that player's
+behaving optimally.
+
+00:23:04.030 --> 00:23:08.690 align:middle line:84%
+So here F is not a Nash
+equilibrium of this subgame
+
+00:23:08.690 --> 00:23:10.990 align:middle line:84%
+because F is strictly
+worse for player 2
+
+00:23:10.990 --> 00:23:13.470 align:middle line:84%
+than A. So this doesn't
+satisfy our definition
+
+00:23:13.470 --> 00:23:18.260 align:middle line:84%
+of subgame-perfect
+Nash equilibrium.
+
+00:23:18.260 --> 00:23:21.840 align:middle line:84%
+But let's maybe change
+the game slightly.
+
+00:23:21.840 --> 00:23:25.530 align:middle line:90%
+
+
+00:23:25.530 --> 00:23:27.780 align:middle line:84%
+So what if we change the
+game and say, well, actually,
+
+00:23:27.780 --> 00:23:32.920 align:middle line:84%
+firm 1 has two different
+ways of entering.
+
+00:23:32.920 --> 00:23:35.400 align:middle line:84%
+They can enter the market
+and produce one kind of good,
+
+00:23:35.400 --> 00:23:37.260 align:middle line:84%
+or they can enter the market
+and produce a slightly different
+
+00:23:37.260 --> 00:23:38.080 align:middle line:90%
+kind of good.
+
+00:23:38.080 --> 00:23:39.747 align:middle line:84%
+So we're now going
+to say that firm 1 is
+
+00:23:39.747 --> 00:23:45.445 align:middle line:84%
+choosing between not entering
+or I'll call it E1 or E2.
+
+00:23:45.445 --> 00:23:46.820 align:middle line:84%
+These are just
+two different ways
+
+00:23:46.820 --> 00:23:48.780 align:middle line:84%
+they can enter and maybe use
+a slightly different marketing
+
+00:23:48.780 --> 00:23:50.960 align:middle line:84%
+strategy or slightly
+different pricing strategy,
+
+00:23:50.960 --> 00:23:54.620 align:middle line:84%
+but they're effectively
+entering either way.
+
+00:23:54.620 --> 00:23:58.620 align:middle line:84%
+And now let's write
+out how this looks.
+
+00:23:58.620 --> 00:24:01.780 align:middle line:90%
+So we have firm 1 here.
+
+00:24:01.780 --> 00:24:09.700 align:middle line:84%
+Firm 1 is now choosing enter,
+not enter-- sorry, not enter,
+
+00:24:09.700 --> 00:24:12.740 align:middle line:90%
+E1 or E2.
+
+00:24:12.740 --> 00:24:16.060 align:middle line:84%
+Again, if they don't
+enter, the payoff is 0, 5.
+
+00:24:16.060 --> 00:24:18.860 align:middle line:84%
+If they enter in
+this way, firm 2
+
+00:24:18.860 --> 00:24:21.060 align:middle line:90%
+chooses to accommodate a fight.
+
+00:24:21.060 --> 00:24:22.180 align:middle line:90%
+They enter in this way.
+
+00:24:22.180 --> 00:24:24.300 align:middle line:84%
+Firm 2 chooses to
+commentator or fight.
+
+00:24:24.300 --> 00:24:27.220 align:middle line:90%
+This is still firm 2, firm 2.
+
+00:24:27.220 --> 00:24:30.580 align:middle line:84%
+And maybe the exact
+pricing strategy
+
+00:24:30.580 --> 00:24:32.200 align:middle line:84%
+they use makes a
+bit of a difference.
+
+00:24:32.200 --> 00:24:33.783 align:middle line:84%
+But just to make
+things simpler, let's
+
+00:24:33.783 --> 00:24:36.583 align:middle line:84%
+say it doesn't really affect
+their payoffs whether they sell
+
+00:24:36.583 --> 00:24:38.000 align:middle line:84%
+them in one way
+or a different way
+
+00:24:38.000 --> 00:24:39.460 align:middle line:84%
+or whether they use
+this advertising firm
+
+00:24:39.460 --> 00:24:40.837 align:middle line:90%
+or this other advertising firm.
+
+00:24:40.837 --> 00:24:42.420 align:middle line:84%
+So let's say the
+payoffs down here are
+
+00:24:42.420 --> 00:24:46.660 align:middle line:84%
+going to be 1, 1, negative
+10, negative 10, 1, 1,
+
+00:24:46.660 --> 00:24:49.100 align:middle line:90%
+negative 10, negative 10.
+
+00:24:49.100 --> 00:24:51.000 align:middle line:84%
+So these are different
+ways of entering.
+
+00:24:51.000 --> 00:24:54.155 align:middle line:84%
+But the effect on the
+payoffs is actually 0.
+
+00:24:54.155 --> 00:24:56.280 align:middle line:84%
+It doesn't actually change
+the way the payoffs are.
+
+00:24:56.280 --> 00:24:58.280 align:middle line:84%
+And we could change these
+slightly if we wanted,
+
+00:24:58.280 --> 00:25:00.500 align:middle line:90%
+but it doesn't matter.
+
+00:25:00.500 --> 00:25:05.180 align:middle line:84%
+And notice, the way
+I'm writing this,
+
+00:25:05.180 --> 00:25:08.420 align:middle line:84%
+just let me slightly
+modify this.
+
+00:25:08.420 --> 00:25:10.140 align:middle line:84%
+We have to make a
+choice, does firm 2
+
+00:25:10.140 --> 00:25:14.080 align:middle line:84%
+observe the advertising
+strategy that firm 1 is using?
+
+00:25:14.080 --> 00:25:15.370 align:middle line:90%
+And we're going to assume no.
+
+00:25:15.370 --> 00:25:18.470 align:middle line:84%
+So we're going to put this
+in the same information set.
+
+00:25:18.470 --> 00:25:20.793 align:middle line:84%
+So as firm 2, all I see is
+that firm 1 has entered.
+
+00:25:20.793 --> 00:25:22.210 align:middle line:84%
+I don't really
+know under the Hood
+
+00:25:22.210 --> 00:25:24.530 align:middle line:84%
+exactly what, say, production
+process they're using
+
+00:25:24.530 --> 00:25:26.550 align:middle line:84%
+or what advertising
+firm they are.
+
+00:25:26.550 --> 00:25:30.785 align:middle line:90%
+
+
+00:25:30.785 --> 00:25:36.410 align:middle line:84%
+And now let's think of the
+strategies in this game.
+
+00:25:36.410 --> 00:25:38.810 align:middle line:84%
+It turns out the
+strategies in this game
+
+00:25:38.810 --> 00:25:41.730 align:middle line:84%
+are exactly the same as
+the strategies over here.
+
+00:25:41.730 --> 00:25:44.050 align:middle line:90%
+Firm 1 is still choosing--
+
+00:25:44.050 --> 00:25:47.250 align:middle line:84%
+sorry, for firm 1, it's
+slightly different.
+
+00:25:47.250 --> 00:25:52.890 align:middle line:84%
+So firm 1 is choosing
+between N, E1, and E2.
+
+00:25:52.890 --> 00:25:57.833 align:middle line:84%
+And firm 2 is still choosing
+accommodate or fight.
+
+00:25:57.833 --> 00:25:59.250 align:middle line:84%
+It's the same for
+firm 2, but it's
+
+00:25:59.250 --> 00:26:02.622 align:middle line:90%
+slightly different from firm 1.
+
+00:26:02.622 --> 00:26:04.330 align:middle line:84%
+Let's try to compute
+the Nash-- let's try
+
+00:26:04.330 --> 00:26:15.400 align:middle line:84%
+to find the Nash
+equilibria of this game.
+
+00:26:15.400 --> 00:26:21.900 align:middle line:84%
+And the idea is what are some
+Nash equilibria of this game?
+
+00:26:21.900 --> 00:26:22.900 align:middle line:90%
+It looks really similar.
+
+00:26:22.900 --> 00:26:27.920 align:middle line:84%
+So I think it shouldn't be
+too hard to figure this out.
+
+00:26:27.920 --> 00:26:31.160 align:middle line:84%
+Well, let's organize it
+by what firm 2's doing.
+
+00:26:31.160 --> 00:26:33.200 align:middle line:84%
+Let's say firm 2
+is accommodating.
+
+00:26:33.200 --> 00:26:36.020 align:middle line:84%
+And notice firm 2 makes a single
+choice-- accommodate or fight.
+
+00:26:36.020 --> 00:26:38.120 align:middle line:84%
+It's a single choice
+because these two nodes are
+
+00:26:38.120 --> 00:26:39.540 align:middle line:90%
+in the same information set.
+
+00:26:39.540 --> 00:26:41.960 align:middle line:84%
+So I can't choose to
+accommodate E1 and fight
+
+00:26:41.960 --> 00:26:44.360 align:middle line:84%
+against E2 because I
+can't distinguish those.
+
+00:26:44.360 --> 00:26:47.920 align:middle line:84%
+So if firm 2 accommodates,
+what does firm 1 want to do?
+
+00:26:47.920 --> 00:26:48.520 align:middle line:90%
+Yeah.
+
+00:26:48.520 --> 00:26:49.500 align:middle line:90%
+AUDIENCE: E1 or E2.
+
+00:26:49.500 --> 00:26:51.300 align:middle line:84%
+IAN BALL: E1 and E2 is
+going to be good for them.
+
+00:26:51.300 --> 00:26:53.592 align:middle line:84%
+They want to enter, and
+they're happy to do either one.
+
+00:26:53.592 --> 00:26:58.240 align:middle line:84%
+So we're going to get
+E1A and E2A are both
+
+00:26:58.240 --> 00:27:01.500 align:middle line:90%
+going to be Nash equilibrium.
+
+00:27:01.500 --> 00:27:04.040 align:middle line:90%
+What if firm 2's going to fight?
+
+00:27:04.040 --> 00:27:05.380 align:middle line:90%
+What does firm 1 want to do?
+
+00:27:05.380 --> 00:27:09.156 align:middle line:90%
+
+
+00:27:09.156 --> 00:27:09.656 align:middle line:90%
+Yeah.
+
+00:27:09.656 --> 00:27:10.600 align:middle line:90%
+AUDIENCE: Not enter.
+
+00:27:10.600 --> 00:27:11.433 align:middle line:90%
+IAN BALL: Not enter.
+
+00:27:11.433 --> 00:27:15.160 align:middle line:84%
+So now it looks
+similar to before.
+
+00:27:15.160 --> 00:27:17.320 align:middle line:84%
+But now we actually
+have three equilibria.
+
+00:27:17.320 --> 00:27:20.120 align:middle line:90%
+
+
+00:27:20.120 --> 00:27:23.260 align:middle line:84%
+Same idea, if firm 1 is
+going to accommodate, then--
+
+00:27:23.260 --> 00:27:23.760 align:middle line:90%
+sorry.
+
+00:27:23.760 --> 00:27:25.640 align:middle line:84%
+If firm 2 is going
+to accommodate,
+
+00:27:25.640 --> 00:27:27.260 align:middle line:90%
+then firm 1 wants to enter.
+
+00:27:27.260 --> 00:27:28.880 align:middle line:84%
+They're happy to
+enter either way.
+
+00:27:28.880 --> 00:27:33.960 align:middle line:84%
+If firm 2's going to fight, then
+firm 1 doesn't want to enter.
+
+00:27:33.960 --> 00:27:39.060 align:middle line:84%
+Now, I think that NF still feels
+like a non-credible threat.
+
+00:27:39.060 --> 00:27:43.680 align:middle line:90%
+
+
+00:27:43.680 --> 00:27:46.160 align:middle line:84%
+For exactly the same
+reason as before.
+
+00:27:46.160 --> 00:27:48.265 align:middle line:90%
+Firm 2 is fighting.
+
+00:27:48.265 --> 00:27:49.640 align:middle line:84%
+They know that,
+by fighting, they
+
+00:27:49.640 --> 00:27:52.340 align:middle line:84%
+get a payoff of negative 10,
+and if they didn't fight,
+
+00:27:52.340 --> 00:27:53.840 align:middle line:90%
+they would get a payoff of 1.
+
+00:27:53.840 --> 00:27:56.040 align:middle line:84%
+So to me, this feels like
+a non-credible threat.
+
+00:27:56.040 --> 00:27:59.680 align:middle line:84%
+But the question is, is NF a
+subgame-perfect Nash equilibrium
+
+00:27:59.680 --> 00:28:00.380 align:middle line:90%
+of this game?
+
+00:28:00.380 --> 00:28:03.310 align:middle line:90%
+
+
+00:28:03.310 --> 00:28:04.623 align:middle line:90%
+What do people think?
+
+00:28:04.623 --> 00:28:06.040 align:middle line:84%
+Well, the first
+question we always
+
+00:28:06.040 --> 00:28:08.417 align:middle line:84%
+have to ask ourselves
+about subgame-perfect Nash
+
+00:28:08.417 --> 00:28:10.250 align:middle line:84%
+is, first, we have to
+identify the subgames.
+
+00:28:10.250 --> 00:28:12.167 align:middle line:84%
+Remember, maybe we're
+going a little bit back.
+
+00:28:12.167 --> 00:28:13.550 align:middle line:90%
+We need to review a little bit.
+
+00:28:13.550 --> 00:28:16.150 align:middle line:84%
+So if we go all
+the way back, what
+
+00:28:16.150 --> 00:28:20.350 align:middle line:84%
+are the subgames
+of this game here?
+
+00:28:20.350 --> 00:28:22.270 align:middle line:84%
+AUDIENCE: Only if the
+entire game is a subgame
+
+00:28:22.270 --> 00:28:25.670 align:middle line:84%
+because the decision
+point for player 2
+
+00:28:25.670 --> 00:28:27.290 align:middle line:90%
+is not a singleton node.
+
+00:28:27.290 --> 00:28:28.290 align:middle line:90%
+IAN BALL: Exactly right.
+
+00:28:28.290 --> 00:28:32.070 align:middle line:84%
+So we can't start a subgame
+here because we would
+
+00:28:32.070 --> 00:28:33.790 align:middle line:90%
+break this information set.
+
+00:28:33.790 --> 00:28:36.310 align:middle line:84%
+We can't start here because we
+would break this information
+
+00:28:36.310 --> 00:28:36.850 align:middle line:90%
+set.
+
+00:28:36.850 --> 00:28:40.350 align:middle line:84%
+And we can't include both of
+them as part of our subgame
+
+00:28:40.350 --> 00:28:42.430 align:middle line:84%
+because we had a rule
+that a subgame has
+
+00:28:42.430 --> 00:28:44.510 align:middle line:90%
+to start with a single node.
+
+00:28:44.510 --> 00:28:47.070 align:middle line:84%
+So the only subgame
+of the full game
+
+00:28:47.070 --> 00:28:49.430 align:middle line:90%
+is just the full game itself.
+
+00:28:49.430 --> 00:28:53.170 align:middle line:84%
+And if there's no
+proper subgames,
+
+00:28:53.170 --> 00:28:55.310 align:middle line:84%
+no subgames other
+than the game itself,
+
+00:28:55.310 --> 00:28:57.270 align:middle line:84%
+then subgame-perfect
+Nash equilibrium
+
+00:28:57.270 --> 00:29:00.990 align:middle line:84%
+doesn't have any additional bite
+because the additional strength
+
+00:29:00.990 --> 00:29:04.067 align:middle line:84%
+of subgame-perfect Nash is
+it says, in every subgame,
+
+00:29:04.067 --> 00:29:05.650 align:middle line:84%
+we must be playing
+a Nash equilibrium.
+
+00:29:05.650 --> 00:29:06.850 align:middle line:84%
+But if there's no
+other subgames,
+
+00:29:06.850 --> 00:29:08.260 align:middle line:90%
+well, it doesn't have any bite.
+
+00:29:08.260 --> 00:29:12.586 align:middle line:84%
+So Nash equilibria
+and all of these--
+
+00:29:12.586 --> 00:29:16.440 align:middle line:90%
+all three are subgame-perfect.
+
+00:29:16.440 --> 00:29:25.980 align:middle line:90%
+
+
+00:29:25.980 --> 00:29:28.000 align:middle line:84%
+So this seems like
+maybe a problem.
+
+00:29:28.000 --> 00:29:31.900 align:middle line:84%
+It shows that our notion
+of subgame perfection
+
+00:29:31.900 --> 00:29:35.740 align:middle line:84%
+doesn't have the bite to
+rule out non-credible threats
+
+00:29:35.740 --> 00:29:37.860 align:middle line:84%
+in games like this where
+we have multiple nodes
+
+00:29:37.860 --> 00:29:39.235 align:middle line:90%
+in the same information set.
+
+00:29:39.235 --> 00:29:40.860 align:middle line:84%
+And we're going to
+introduce our notion
+
+00:29:40.860 --> 00:29:43.140 align:middle line:84%
+of perfect Bayesian
+equilibrium to rule out
+
+00:29:43.140 --> 00:29:44.800 align:middle line:84%
+these kinds of
+non-credible threats,
+
+00:29:44.800 --> 00:29:47.380 align:middle line:90%
+even in situations like this.
+
+00:29:47.380 --> 00:29:50.680 align:middle line:84%
+So let's maybe go through
+a more involved example.
+
+00:29:50.680 --> 00:29:55.140 align:middle line:90%
+
+
+00:29:55.140 --> 00:29:58.700 align:middle line:84%
+So let's think of, maybe we'll
+call this, an application game.
+
+00:29:58.700 --> 00:30:04.540 align:middle line:84%
+People have probably applied to
+internships or jobs or schools
+
+00:30:04.540 --> 00:30:05.360 align:middle line:90%
+like this.
+
+00:30:05.360 --> 00:30:07.632 align:middle line:84%
+And sometimes, there's
+an optional essay
+
+00:30:07.632 --> 00:30:09.590 align:middle line:84%
+or an optional interview
+or something optional.
+
+00:30:09.590 --> 00:30:11.190 align:middle line:84%
+And often, people feel
+it's not really optional.
+
+00:30:11.190 --> 00:30:12.510 align:middle line:84%
+If I don't do it, I'm
+not going to get the job.
+
+00:30:12.510 --> 00:30:13.390 align:middle line:90%
+I'm not going to get in.
+
+00:30:13.390 --> 00:30:15.265 align:middle line:84%
+Well, let's try to
+explore that in this game.
+
+00:30:15.265 --> 00:30:18.690 align:middle line:84%
+So let's say, well, it's
+an application game.
+
+00:30:18.690 --> 00:30:19.910 align:middle line:90%
+We have an applicant.
+
+00:30:19.910 --> 00:30:23.370 align:middle line:90%
+
+
+00:30:23.370 --> 00:30:26.170 align:middle line:84%
+And we could call it a firm
+or a college or a school.
+
+00:30:26.170 --> 00:30:26.950 align:middle line:90%
+Let's say school.
+
+00:30:26.950 --> 00:30:30.690 align:middle line:84%
+Let's use school just in this
+example, so we have a school.
+
+00:30:30.690 --> 00:30:35.730 align:middle line:84%
+And the applicant, let's
+assume, has private information.
+
+00:30:35.730 --> 00:30:38.458 align:middle line:84%
+In this example, it could be
+private information about how
+
+00:30:38.458 --> 00:30:39.750 align:middle line:90%
+strong of a candidate they are.
+
+00:30:39.750 --> 00:30:42.350 align:middle line:84%
+But maybe, here, just to
+make it a little nicer,
+
+00:30:42.350 --> 00:30:45.130 align:middle line:84%
+we'll say the applicant
+privately knows how excited they
+
+00:30:45.130 --> 00:30:46.770 align:middle line:90%
+are about going to this school.
+
+00:30:46.770 --> 00:30:50.190 align:middle line:90%
+So the applicant has two types.
+
+00:30:50.190 --> 00:30:51.450 align:middle line:90%
+We'll call them types.
+
+00:30:51.450 --> 00:30:59.850 align:middle line:84%
+Maybe t excited or passionate,
+let's say P, tP or tN.
+
+00:30:59.850 --> 00:31:01.802 align:middle line:84%
+So tP says, I'm really
+passionate about going
+
+00:31:01.802 --> 00:31:04.010 align:middle line:84%
+to this school about the
+thing that this school does.
+
+00:31:04.010 --> 00:31:05.490 align:middle line:90%
+I'm I want to go.
+
+00:31:05.490 --> 00:31:08.270 align:middle line:84%
+And tN doesn't really--
+they're not quite as excited.
+
+00:31:08.270 --> 00:31:12.610 align:middle line:84%
+They still want to go, but
+they're not quite as excited.
+
+00:31:12.610 --> 00:31:16.073 align:middle line:84%
+And then we have the
+school and the school--
+
+00:31:16.073 --> 00:31:17.490 align:middle line:84%
+let's just say in
+words, what they
+
+00:31:17.490 --> 00:31:28.855 align:middle line:84%
+do is they want to
+accept tP but not tN.
+
+00:31:28.855 --> 00:31:30.230 align:middle line:84%
+So there's two
+kinds of students,
+
+00:31:30.230 --> 00:31:31.470 align:middle line:90%
+two kinds of applicants.
+
+00:31:31.470 --> 00:31:33.370 align:middle line:84%
+I'll be more precise about what
+the utilities are, but just
+
+00:31:33.370 --> 00:31:35.198 align:middle line:84%
+at a high level to
+understand, if someone's
+
+00:31:35.198 --> 00:31:36.990 align:middle line:84%
+really passionate and
+excited about coming,
+
+00:31:36.990 --> 00:31:38.630 align:middle line:90%
+they want to accept that person.
+
+00:31:38.630 --> 00:31:40.922 align:middle line:84%
+If they're not excited, they
+don't want to accept them.
+
+00:31:40.922 --> 00:31:42.210 align:middle line:90%
+So let's try to--
+
+00:31:42.210 --> 00:31:45.890 align:middle line:90%
+let's draw out a game tree here.
+
+00:31:45.890 --> 00:31:47.970 align:middle line:84%
+So the applicant has
+private information
+
+00:31:47.970 --> 00:31:50.170 align:middle line:84%
+at the beginning of the
+game about whether they're
+
+00:31:50.170 --> 00:31:52.090 align:middle line:84%
+excited or not about
+going to the school.
+
+00:31:52.090 --> 00:31:54.450 align:middle line:84%
+And the way that we model
+this is we start with a move
+
+00:31:54.450 --> 00:31:55.330 align:middle line:90%
+by nature.
+
+00:31:55.330 --> 00:31:57.450 align:middle line:84%
+We first assume that
+nature makes a move
+
+00:31:57.450 --> 00:31:59.930 align:middle line:90%
+and draws this applicant's type.
+
+00:31:59.930 --> 00:32:02.030 align:middle line:84%
+And we need to specify
+some probabilities.
+
+00:32:02.030 --> 00:32:06.980 align:middle line:84%
+So let's say that they're
+passionate with probability 1/2,
+
+00:32:06.980 --> 00:32:08.980 align:middle line:84%
+and they're not passionate
+with probability 1/2,
+
+00:32:08.980 --> 00:32:12.570 align:middle line:84%
+just to make the math
+a little bit easier.
+
+00:32:12.570 --> 00:32:15.320 align:middle line:84%
+So I need a new
+board just to-- this
+
+00:32:15.320 --> 00:32:17.960 align:middle line:84%
+is going to get a
+little big, this game.
+
+00:32:17.960 --> 00:32:18.920 align:middle line:90%
+Let's start here.
+
+00:32:18.920 --> 00:32:23.000 align:middle line:90%
+So we start with nature.
+
+00:32:23.000 --> 00:32:25.920 align:middle line:84%
+And nature is first going to
+draw whether this person is
+
+00:32:25.920 --> 00:32:27.480 align:middle line:90%
+passionate or not.
+
+00:32:27.480 --> 00:32:30.720 align:middle line:84%
+So we're going to have nature
+making this first move,
+
+00:32:30.720 --> 00:32:33.540 align:middle line:84%
+probability 1/2,
+and probability 1/2.
+
+00:32:33.540 --> 00:32:37.900 align:middle line:84%
+And this is going to be
+the passionate student.
+
+00:32:37.900 --> 00:32:40.682 align:middle line:90%
+
+
+00:32:40.682 --> 00:32:42.640 align:middle line:84%
+This is going to be the
+non-passionate student.
+
+00:32:42.640 --> 00:32:45.160 align:middle line:90%
+
+
+00:32:45.160 --> 00:32:49.480 align:middle line:84%
+And then the student
+or the applicant--
+
+00:32:49.480 --> 00:32:52.040 align:middle line:84%
+I'm calling them the
+applicant, so I'll say A--
+
+00:32:52.040 --> 00:32:53.420 align:middle line:90%
+is going to make a choice.
+
+00:32:53.420 --> 00:32:57.220 align:middle line:84%
+They can either submit
+the optional essay or not.
+
+00:32:57.220 --> 00:32:58.800 align:middle line:90%
+They're applying to this job--
+
+00:32:58.800 --> 00:32:59.960 align:middle line:90%
+or this school.
+
+00:32:59.960 --> 00:33:01.390 align:middle line:90%
+There's some optional essay.
+
+00:33:01.390 --> 00:33:12.290 align:middle line:84%
+So let's write here, let's say
+I can include the essay or not.
+
+00:33:12.290 --> 00:33:13.910 align:middle line:90%
+Maybe I'll use these words.
+
+00:33:13.910 --> 00:33:17.350 align:middle line:84%
+So they're applying either
+way, but they're just choosing
+
+00:33:17.350 --> 00:33:18.610 align:middle line:90%
+whether to submit the essay.
+
+00:33:18.610 --> 00:33:27.650 align:middle line:90%
+
+
+00:33:27.650 --> 00:33:37.470 align:middle line:84%
+And now we have the
+school is making a choice
+
+00:33:37.470 --> 00:33:41.030 align:middle line:84%
+whether to accept or
+reject the candidate.
+
+00:33:41.030 --> 00:33:46.310 align:middle line:84%
+Let's say accept,
+reject, and let's save
+
+00:33:46.310 --> 00:33:57.750 align:middle line:90%
+some space over here, A, R. OK.
+
+00:33:57.750 --> 00:34:00.700 align:middle line:84%
+Now, we said the
+school would rather
+
+00:34:00.700 --> 00:34:04.220 align:middle line:84%
+accept someone who's passionate
+than someone who's not.
+
+00:34:04.220 --> 00:34:11.580 align:middle line:84%
+And let's say that a passionate
+candidate gives the school
+
+00:34:11.580 --> 00:34:14.820 align:middle line:84%
+a utility of 3, but
+someone who's not excited
+
+00:34:14.820 --> 00:34:17.540 align:middle line:84%
+gives the school a payoff of
+negative 2, if they accept them.
+
+00:34:17.540 --> 00:34:20.580 align:middle line:84%
+And if they don't accept them,
+they just get a payoff of 0.
+
+00:34:20.580 --> 00:34:22.699 align:middle line:84%
+So let's go and
+fill that in here.
+
+00:34:22.699 --> 00:34:24.880 align:middle line:84%
+On this side of the tree,
+the student is excited.
+
+00:34:24.880 --> 00:34:25.820 align:middle line:90%
+They're passionate.
+
+00:34:25.820 --> 00:34:27.860 align:middle line:84%
+So if the school
+accepts them, the school
+
+00:34:27.860 --> 00:34:31.699 align:middle line:90%
+is going to get a payoff of 3.
+
+00:34:31.699 --> 00:34:33.715 align:middle line:84%
+And if they reject
+them, the school's
+
+00:34:33.715 --> 00:34:34.840 align:middle line:90%
+going to get a payoff of 0.
+
+00:34:34.840 --> 00:34:36.423 align:middle line:84%
+I'm writing a comma
+here because we're
+
+00:34:36.423 --> 00:34:38.320 align:middle line:84%
+going to fill in the
+applicants payoffs next.
+
+00:34:38.320 --> 00:34:38.820 align:middle line:90%
+Yeah.
+
+00:34:38.820 --> 00:34:42.460 align:middle line:84%
+AUDIENCE: Is there a
+reason why there are no--
+
+00:34:42.460 --> 00:34:44.020 align:middle line:90%
+[INAUDIBLE]?
+
+00:34:44.020 --> 00:34:46.915 align:middle line:84%
+IAN BALL: Yes, I going to
+fill it out, but maybe I'll--
+
+00:34:46.915 --> 00:34:49.040 align:middle line:84%
+let me fill out the payoffs,
+and then I'll do that.
+
+00:34:49.040 --> 00:34:52.540 align:middle line:84%
+So I'm going to fill in
+some information sets next.
+
+00:34:52.540 --> 00:34:56.300 align:middle line:84%
+And then if we go over here,
+if we accept the not very
+
+00:34:56.300 --> 00:35:01.420 align:middle line:84%
+excited student, then we
+get negative 2, negative 2,
+
+00:35:01.420 --> 00:35:03.340 align:middle line:90%
+and then 0, 0.
+
+00:35:03.340 --> 00:35:07.620 align:middle line:84%
+But as you pointed
+out, the school
+
+00:35:07.620 --> 00:35:09.940 align:middle line:84%
+only observes whether
+the applicant has
+
+00:35:09.940 --> 00:35:11.163 align:middle line:90%
+submitted the optional essay.
+
+00:35:11.163 --> 00:35:13.580 align:middle line:84%
+They don't directly observe
+whether the student is excited
+
+00:35:13.580 --> 00:35:14.500 align:middle line:90%
+or not.
+
+00:35:14.500 --> 00:35:19.780 align:middle line:84%
+So we're going to need to define
+our information sets like this.
+
+00:35:19.780 --> 00:35:20.400 align:middle line:90%
+Here.
+
+00:35:20.400 --> 00:35:24.060 align:middle line:90%
+
+
+00:35:24.060 --> 00:35:25.740 align:middle line:90%
+And like this.
+
+00:35:25.740 --> 00:35:27.660 align:middle line:84%
+So the school has
+two information sets.
+
+00:35:27.660 --> 00:35:30.940 align:middle line:84%
+At this information set,
+I know that you've not
+
+00:35:30.940 --> 00:35:36.500 align:middle line:84%
+submitted the essay, but I
+don't know your true enthusiasm.
+
+00:35:36.500 --> 00:35:40.420 align:middle line:84%
+At this information set, I know
+you've submitted the essay,
+
+00:35:40.420 --> 00:35:44.620 align:middle line:84%
+but again, I don't know
+your true enthusiasm.
+
+00:35:44.620 --> 00:35:48.940 align:middle line:84%
+Now we need to specify
+the student's payoff.
+
+00:35:48.940 --> 00:35:51.740 align:middle line:84%
+And let's start,
+when the student
+
+00:35:51.740 --> 00:35:55.180 align:middle line:84%
+doesn't submit the
+essay, let's suppose
+
+00:35:55.180 --> 00:36:00.570 align:middle line:84%
+that if they're rejected,
+they get a payoff of 0.
+
+00:36:00.570 --> 00:36:03.810 align:middle line:84%
+And actually, let's
+assume that everywhere.
+
+00:36:03.810 --> 00:36:06.650 align:middle line:84%
+So all I've said here is
+whenever the student is
+
+00:36:06.650 --> 00:36:08.570 align:middle line:84%
+rejected, they get a
+payoff of 0 because they
+
+00:36:08.570 --> 00:36:09.830 align:middle line:90%
+want to be accepted.
+
+00:36:09.830 --> 00:36:12.970 align:middle line:90%
+
+
+00:36:12.970 --> 00:36:17.610 align:middle line:84%
+Now, if they do get accepted,
+let's suppose that--
+
+00:36:17.610 --> 00:36:19.910 align:middle line:84%
+so let's talk about the
+value of acceptance.
+
+00:36:19.910 --> 00:36:24.130 align:middle line:90%
+
+
+00:36:24.130 --> 00:36:29.610 align:middle line:84%
+Well it's 2 to the
+passionate student.
+
+00:36:29.610 --> 00:36:32.170 align:middle line:84%
+It's only 1 to the less
+passionate student.
+
+00:36:32.170 --> 00:36:34.650 align:middle line:84%
+And let's assume that
+writing the essay is costly.
+
+00:36:34.650 --> 00:36:37.830 align:middle line:84%
+So writing the essay
+also has a cost of c.
+
+00:36:37.830 --> 00:36:41.530 align:middle line:90%
+
+
+00:36:41.530 --> 00:36:43.990 align:middle line:84%
+And I'm just using c so I
+can vary this over the game.
+
+00:36:43.990 --> 00:36:45.190 align:middle line:90%
+But c is a known parameter.
+
+00:36:45.190 --> 00:36:47.510 align:middle line:84%
+We all know c is just like
+a number like 1 and 2,
+
+00:36:47.510 --> 00:36:50.830 align:middle line:84%
+but I just want to have some
+flexibility over what this is.
+
+00:36:50.830 --> 00:36:52.350 align:middle line:84%
+So let's see if we
+can fill this in.
+
+00:36:52.350 --> 00:36:55.760 align:middle line:84%
+So down here, the
+student is passionate,
+
+00:36:55.760 --> 00:36:59.160 align:middle line:84%
+and they don't submit the essay,
+and then they get accepted.
+
+00:36:59.160 --> 00:37:00.560 align:middle line:90%
+Yeah.
+
+00:37:00.560 --> 00:37:02.400 align:middle line:90%
+Question.
+
+00:37:02.400 --> 00:37:04.065 align:middle line:84%
+AUDIENCE: I guess
+we'll modify it,
+
+00:37:04.065 --> 00:37:06.440 align:middle line:84%
+but for the one where the
+student writes the essay and is
+
+00:37:06.440 --> 00:37:08.940 align:middle line:84%
+rejected, would
+it be [INAUDIBLE]?
+
+00:37:08.940 --> 00:37:11.320 align:middle line:84%
+IAN BALL: Good, good,
+yes, we should do that.
+
+00:37:11.320 --> 00:37:12.135 align:middle line:90%
+Good point.
+
+00:37:12.135 --> 00:37:13.260 align:middle line:90%
+They still had to write it.
+
+00:37:13.260 --> 00:37:15.140 align:middle line:90%
+Yeah, great point.
+
+00:37:15.140 --> 00:37:15.980 align:middle line:90%
+Let's do that.
+
+00:37:15.980 --> 00:37:20.360 align:middle line:90%
+
+
+00:37:20.360 --> 00:37:23.000 align:middle line:90%
+Good point.
+
+00:37:23.000 --> 00:37:24.720 align:middle line:90%
+Thank you.
+
+00:37:24.720 --> 00:37:26.380 align:middle line:90%
+OK, thanks.
+
+00:37:26.380 --> 00:37:27.700 align:middle line:90%
+So let's have that in here.
+
+00:37:27.700 --> 00:37:28.700 align:middle line:90%
+And now we go over here.
+
+00:37:28.700 --> 00:37:29.242 align:middle line:90%
+So let's see.
+
+00:37:29.242 --> 00:37:31.408 align:middle line:90%
+The student is passionate.
+
+00:37:31.408 --> 00:37:33.700 align:middle line:84%
+They don't write the essay,
+and then they get accepted.
+
+00:37:33.700 --> 00:37:37.760 align:middle line:84%
+So they get 2 for being
+passionate, and that's it.
+
+00:37:37.760 --> 00:37:39.505 align:middle line:84%
+Over here, the
+student is passionate,
+
+00:37:39.505 --> 00:37:40.880 align:middle line:84%
+but they have to
+write the essay,
+
+00:37:40.880 --> 00:37:42.180 align:middle line:90%
+and then they're accepted.
+
+00:37:42.180 --> 00:37:45.920 align:middle line:90%
+So we get 2 minus c.
+
+00:37:45.920 --> 00:37:47.240 align:middle line:90%
+Then we go over here.
+
+00:37:47.240 --> 00:37:48.818 align:middle line:90%
+The student is not passionate.
+
+00:37:48.818 --> 00:37:50.860 align:middle line:84%
+They don't write the essay,
+and they're accepted.
+
+00:37:50.860 --> 00:37:54.030 align:middle line:90%
+So they get 1.
+
+00:37:54.030 --> 00:37:56.370 align:middle line:84%
+And then, over here, the
+student is not passionate.
+
+00:37:56.370 --> 00:37:59.480 align:middle line:84%
+And they do write the
+essay so they get 1 minus.
+
+00:37:59.480 --> 00:38:01.530 align:middle line:84%
+It's maybe getting
+a little messy,
+
+00:38:01.530 --> 00:38:05.370 align:middle line:90%
+but I think we have everything.
+
+00:38:05.370 --> 00:38:07.510 align:middle line:84%
+Maybe I'll put parentheses
+around these things just
+
+00:38:07.510 --> 00:38:09.010 align:middle line:90%
+to make it a little clearer.
+
+00:38:09.010 --> 00:38:16.190 align:middle line:90%
+
+
+00:38:16.190 --> 00:38:22.070 align:middle line:90%
+OK, so here's our game.
+
+00:38:22.070 --> 00:38:23.950 align:middle line:90%
+Let's go back over here.
+
+00:38:23.950 --> 00:38:25.010 align:middle line:90%
+Start analyzing.
+
+00:38:25.010 --> 00:38:44.127 align:middle line:90%
+
+
+00:38:44.127 --> 00:38:46.710 align:middle line:84%
+So we're going to look at a few
+different versions of the game
+
+00:38:46.710 --> 00:38:48.377 align:middle line:84%
+and a few different
+kinds of equilibria.
+
+00:38:48.377 --> 00:38:55.030 align:middle line:84%
+But let's first assume
+that c is less than 1.
+
+00:38:55.030 --> 00:38:57.453 align:middle line:84%
+so this means even if
+I'm not passionate,
+
+00:38:57.453 --> 00:38:58.870 align:middle line:84%
+if I'm going to
+get accepted, it's
+
+00:38:58.870 --> 00:39:01.350 align:middle line:90%
+still worth writing the essay.
+
+00:39:01.350 --> 00:39:07.790 align:middle line:84%
+The benefit of being accepted
+outweighs the essay cost.
+
+00:39:07.790 --> 00:39:11.550 align:middle line:84%
+And let's see if we can
+look for an equilibrium
+
+00:39:11.550 --> 00:39:14.365 align:middle line:84%
+where every student
+applies and writes
+
+00:39:14.365 --> 00:39:15.990 align:middle line:84%
+the essay because I
+think this is often
+
+00:39:15.990 --> 00:39:16.970 align:middle line:90%
+what we see in practice.
+
+00:39:16.970 --> 00:39:18.450 align:middle line:84%
+Even the students who
+aren't that excited,
+
+00:39:18.450 --> 00:39:19.630 align:middle line:84%
+they write some essay
+about how excited
+
+00:39:19.630 --> 00:39:20.838 align:middle line:90%
+they are to go to the school.
+
+00:39:20.838 --> 00:39:22.970 align:middle line:84%
+So let's look for
+an equilibrium.
+
+00:39:22.970 --> 00:39:33.710 align:middle line:90%
+
+
+00:39:33.710 --> 00:39:43.090 align:middle line:84%
+In which both types of
+students submit the essay.
+
+00:39:43.090 --> 00:39:48.656 align:middle line:90%
+
+
+00:39:48.656 --> 00:39:53.820 align:middle line:84%
+So formally, let's look
+at the student strategy.
+
+00:39:53.820 --> 00:39:56.510 align:middle line:84%
+Remember, a student strategy
+has to say what the student does
+
+00:39:56.510 --> 00:39:58.260 align:middle line:84%
+as a function of their
+type, as a function
+
+00:39:58.260 --> 00:40:00.100 align:middle line:90%
+of their private information.
+
+00:40:00.100 --> 00:40:03.300 align:middle line:84%
+So we have the
+passionate student
+
+00:40:03.300 --> 00:40:06.800 align:middle line:84%
+and the non-passionate student,
+and they both choose the essay.
+
+00:40:06.800 --> 00:40:12.780 align:middle line:90%
+
+
+00:40:12.780 --> 00:40:14.260 align:middle line:90%
+It's pretty easy.
+
+00:40:14.260 --> 00:40:21.660 align:middle line:84%
+And now we have to go to the
+school and see what they do.
+
+00:40:21.660 --> 00:40:26.500 align:middle line:84%
+So let's put ourselves in
+the position of the school.
+
+00:40:26.500 --> 00:40:27.900 align:middle line:84%
+And let's look at
+the information
+
+00:40:27.900 --> 00:40:30.420 align:middle line:84%
+set where they have
+received an essay.
+
+00:40:30.420 --> 00:40:33.380 align:middle line:84%
+So remember, for the
+school, their information
+
+00:40:33.380 --> 00:40:36.000 align:middle line:90%
+sets are essay and no essay.
+
+00:40:36.000 --> 00:40:40.740 align:middle line:90%
+
+
+00:40:40.740 --> 00:40:42.460 align:middle line:84%
+So the school needs
+to decide what
+
+00:40:42.460 --> 00:40:45.413 align:middle line:84%
+to do if they see that the
+student has submitted an essay
+
+00:40:45.413 --> 00:40:47.330 align:middle line:84%
+and what to do if they
+see the student has not
+
+00:40:47.330 --> 00:40:48.190 align:middle line:90%
+submitted an essay.
+
+00:40:48.190 --> 00:40:51.250 align:middle line:90%
+
+
+00:40:51.250 --> 00:40:55.433 align:middle line:84%
+And if we think about
+our experience with how
+
+00:40:55.433 --> 00:40:56.850 align:middle line:84%
+these things work,
+what is a guess
+
+00:40:56.850 --> 00:40:58.488 align:middle line:84%
+about what the
+school strategy might
+
+00:40:58.488 --> 00:41:00.530 align:middle line:84%
+be if we want to try to
+look for this equilibrium
+
+00:41:00.530 --> 00:41:02.690 align:middle line:84%
+where all the students
+are writing the essay.
+
+00:41:02.690 --> 00:41:04.750 align:middle line:84%
+What's your guess about
+what the school might do?
+
+00:41:04.750 --> 00:41:07.682 align:middle line:90%
+
+
+00:41:07.682 --> 00:41:09.390 align:middle line:84%
+If they see that you
+submitted the essay,
+
+00:41:09.390 --> 00:41:11.650 align:middle line:90%
+what are they going to do?
+
+00:41:11.650 --> 00:41:13.450 align:middle line:84%
+They're probably
+going to accept you.
+
+00:41:13.450 --> 00:41:15.503 align:middle line:84%
+And if they see you
+didn't write the essay,
+
+00:41:15.503 --> 00:41:16.670 align:middle line:90%
+they're going to reject you.
+
+00:41:16.670 --> 00:41:19.468 align:middle line:90%
+Let's see how this works out.
+
+00:41:19.468 --> 00:41:21.010 align:middle line:84%
+So first, we need
+to say, well, let's
+
+00:41:21.010 --> 00:41:23.450 align:middle line:84%
+suppose they see that
+you've written the essay.
+
+00:41:23.450 --> 00:41:26.267 align:middle line:84%
+What is the school believe about
+your passion for the position.
+
+00:41:26.267 --> 00:41:28.350 align:middle line:84%
+Do they think you're
+passionate or not passionate?
+
+00:41:28.350 --> 00:41:29.710 align:middle line:90%
+What probability do they assign?
+
+00:41:29.710 --> 00:41:33.250 align:middle line:90%
+
+
+00:41:33.250 --> 00:41:36.670 align:middle line:84%
+1/2, 1/2, so technically,
+we're using Bayes' rule,
+
+00:41:36.670 --> 00:41:39.977 align:middle line:84%
+but here it's pretty simple
+because the prior is 1/2, 1/2.
+
+00:41:39.977 --> 00:41:41.310 align:middle line:90%
+1/2 the students are passionate.
+
+00:41:41.310 --> 00:41:42.590 align:middle line:84%
+1/2 the students
+are not passionate.
+
+00:41:42.590 --> 00:41:44.530 align:middle line:84%
+If all the students
+submit the essay, well,
+
+00:41:44.530 --> 00:41:46.710 align:middle line:84%
+then the students who submit the
+essay are also 1/2 passionate,
+
+00:41:46.710 --> 00:41:47.502 align:middle line:90%
+1/2 not passionate.
+
+00:41:47.502 --> 00:41:48.390 align:middle line:90%
+Nothing has changed.
+
+00:41:48.390 --> 00:41:51.722 align:middle line:90%
+
+
+00:41:51.722 --> 00:41:53.930 align:middle line:84%
+But what does the school
+believe if they see that you
+
+00:41:53.930 --> 00:41:55.070 align:middle line:90%
+didn't submit the essay?
+
+00:41:55.070 --> 00:41:57.177 align:middle line:90%
+
+
+00:41:57.177 --> 00:41:58.510 align:middle line:90%
+I don't know, what do you think.
+
+00:41:58.510 --> 00:41:59.468 align:middle line:90%
+This is a bit trickier.
+
+00:41:59.468 --> 00:42:00.390 align:middle line:90%
+Should it be 1/2, 1/2?
+
+00:42:00.390 --> 00:42:01.090 align:middle line:90%
+Why should it be 1/2, 1/2?
+
+00:42:01.090 --> 00:42:02.070 align:middle line:90%
+What do you think?
+
+00:42:02.070 --> 00:42:04.928 align:middle line:90%
+
+
+00:42:04.928 --> 00:42:06.470 align:middle line:84%
+There's not one
+right answer to this.
+
+00:42:06.470 --> 00:42:09.130 align:middle line:84%
+So I think it's unclear, but,
+Amy, you said 1/2, 1/2, why?
+
+00:42:09.130 --> 00:42:13.010 align:middle line:84%
+AUDIENCE: I guess the idea is
+symmetric to the other one where
+
+00:42:13.010 --> 00:42:14.250 align:middle line:90%
+everyone's--
+
+00:42:14.250 --> 00:42:17.370 align:middle line:90%
+no one [INAUDIBLE] essay, but--
+
+00:42:17.370 --> 00:42:18.250 align:middle line:90%
+wait.
+
+00:42:18.250 --> 00:42:20.505 align:middle line:84%
+So if everyone submits
+essay [INAUDIBLE] 1/2, 1/2.
+
+00:42:20.505 --> 00:42:23.130 align:middle line:84%
+And then that's like, you have
+a student that you don't receive
+
+00:42:23.130 --> 00:42:27.970 align:middle line:84%
+an essay from would also be
+1/2, 1/2 because, basically,
+
+00:42:27.970 --> 00:42:29.470 align:middle line:84%
+the way that Bayes'
+rule plays out,
+
+00:42:29.470 --> 00:42:33.143 align:middle line:84%
+they're all the same per
+person for other cases.
+
+00:42:33.143 --> 00:42:34.810 align:middle line:84%
+IAN BALL: OK, so let's
+maybe write out--
+
+00:42:34.810 --> 00:42:36.410 align:middle line:84%
+let's get another thought, and
+then let's write out Bayes' rule
+
+00:42:36.410 --> 00:42:37.493 align:middle line:90%
+and see what happens here.
+
+00:42:37.493 --> 00:42:40.250 align:middle line:84%
+Were there any other
+thoughts on what we do here?
+
+00:42:40.250 --> 00:42:40.890 align:middle line:90%
+Yeah.
+
+00:42:40.890 --> 00:42:42.690 align:middle line:84%
+AUDIENCE: I mean, just like
+qualitatively, then you
+
+00:42:42.690 --> 00:42:45.080 align:middle line:84%
+assume that there's a greater
+chance that they're not
+
+00:42:45.080 --> 00:42:46.320 align:middle line:90%
+passionate about [INAUDIBLE].
+
+00:42:46.320 --> 00:42:47.820 align:middle line:84%
+IAN BALL: That also
+seems reasonable.
+
+00:42:47.820 --> 00:42:49.987 align:middle line:84%
+I think there's a lot of
+reasonable answers to this,
+
+00:42:49.987 --> 00:42:52.800 align:middle line:84%
+but let's see how
+Bayes' rule works.
+
+00:42:52.800 --> 00:42:56.020 align:middle line:90%
+So to apply Bayes' rule--
+
+00:42:56.020 --> 00:43:00.312 align:middle line:90%
+
+
+00:43:00.312 --> 00:43:02.682 align:middle line:90%
+AUDIENCE: [INAUDIBLE]
+
+00:43:02.682 --> 00:43:03.860 align:middle line:90%
+
+
+00:43:03.860 --> 00:43:06.360 align:middle line:84%
+IAN BALL: Yeah, so I think we're
+going to have an issue when
+
+00:43:06.360 --> 00:43:07.235 align:middle line:90%
+we apply Bayes' rule.
+
+00:43:07.235 --> 00:43:09.560 align:middle line:90%
+So let's see what happens.
+
+00:43:09.560 --> 00:43:14.783 align:middle line:84%
+So remember, just a quick
+review of Bayes' rule.
+
+00:43:14.783 --> 00:43:16.200 align:middle line:84%
+Bayes' rule allows
+us to calculate
+
+00:43:16.200 --> 00:43:17.540 align:middle line:90%
+conditional probabilities.
+
+00:43:17.540 --> 00:43:21.100 align:middle line:84%
+So it allows us to say something
+like if we have two events, A
+
+00:43:21.100 --> 00:43:24.680 align:middle line:84%
+and B, what is the probability
+that event A occurs
+
+00:43:24.680 --> 00:43:27.332 align:middle line:90%
+conditional on B occurring.
+
+00:43:27.332 --> 00:43:29.040 align:middle line:84%
+And the rule for Bayes'
+rule is that this
+
+00:43:29.040 --> 00:43:34.600 align:middle line:84%
+is the probability
+of A and B occurring
+
+00:43:34.600 --> 00:43:39.320 align:middle line:84%
+divided by the probability
+of B occurring.
+
+00:43:39.320 --> 00:43:44.050 align:middle line:84%
+And this basic picture
+that we give, this is A,
+
+00:43:44.050 --> 00:43:48.350 align:middle line:84%
+and this is B. Well, what's the
+probability of A occurring given
+
+00:43:48.350 --> 00:43:48.850 align:middle line:90%
+B?
+
+00:43:48.850 --> 00:43:50.390 align:middle line:84%
+Well, if we know
+that B occurred,
+
+00:43:50.390 --> 00:43:53.310 align:middle line:84%
+we know we're somewhere
+in this circle.
+
+00:43:53.310 --> 00:43:55.870 align:middle line:84%
+The probability that
+A occurs given B
+
+00:43:55.870 --> 00:43:57.667 align:middle line:84%
+is saying what's
+given that we're
+
+00:43:57.667 --> 00:43:59.750 align:middle line:84%
+in this circle B, what's
+the likelihood that we're
+
+00:43:59.750 --> 00:44:01.230 align:middle line:90%
+in the shaded region.
+
+00:44:01.230 --> 00:44:03.350 align:middle line:84%
+And that's exactly what's
+being pictured here,
+
+00:44:03.350 --> 00:44:05.870 align:middle line:84%
+P of A intersect B
+is the probability
+
+00:44:05.870 --> 00:44:07.830 align:middle line:84%
+that we're in this
+shaded region.
+
+00:44:07.830 --> 00:44:10.070 align:middle line:84%
+And probability B is
+just the probability
+
+00:44:10.070 --> 00:44:14.770 align:middle line:84%
+that we're in this
+outer circle here.
+
+00:44:14.770 --> 00:44:17.513 align:middle line:84%
+So let's try to
+apply Bayes' rule
+
+00:44:17.513 --> 00:44:19.430 align:middle line:84%
+when we see that the
+student writes the essay.
+
+00:44:19.430 --> 00:44:27.750 align:middle line:84%
+So what we're interested
+in is, given essay,
+
+00:44:27.750 --> 00:44:31.550 align:middle line:84%
+we want to say, what is the
+probability that the student is
+
+00:44:31.550 --> 00:44:34.410 align:middle line:84%
+passionate, tP, given
+that they write the essay?
+
+00:44:34.410 --> 00:44:39.030 align:middle line:90%
+
+
+00:44:39.030 --> 00:44:41.997 align:middle line:84%
+And Bayes' rule tells us this
+is equal to the probability
+
+00:44:41.997 --> 00:44:43.580 align:middle line:84%
+that they're passionate
+and they write
+
+00:44:43.580 --> 00:44:45.517 align:middle line:84%
+the essay divided
+by the probability
+
+00:44:45.517 --> 00:44:46.600 align:middle line:90%
+that they write the essay.
+
+00:44:46.600 --> 00:45:00.420 align:middle line:90%
+
+
+00:45:00.420 --> 00:45:02.710 align:middle line:84%
+Now, the probability
+that they write the essay
+
+00:45:02.710 --> 00:45:03.960 align:middle line:90%
+is a little hard to calculate.
+
+00:45:03.960 --> 00:45:06.620 align:middle line:90%
+Let's break it down.
+
+00:45:06.620 --> 00:45:08.027 align:middle line:90%
+So write this one more time--
+
+00:45:08.027 --> 00:45:10.360 align:middle line:84%
+maybe I'll write it over here
+to give myself more space.
+
+00:45:10.360 --> 00:45:12.540 align:middle line:84%
+This is the probability
+that they're passionate
+
+00:45:12.540 --> 00:45:17.820 align:middle line:84%
+and they write the
+essay divided by-- well,
+
+00:45:17.820 --> 00:45:19.660 align:middle line:84%
+there's two ways they
+could write the essay.
+
+00:45:19.660 --> 00:45:21.780 align:middle line:84%
+They could be passionate
+and then write the essay,
+
+00:45:21.780 --> 00:45:23.560 align:middle line:84%
+or they could be not
+passionate and write the essay.
+
+00:45:23.560 --> 00:45:25.000 align:middle line:84%
+So let me break
+it down like that.
+
+00:45:25.000 --> 00:45:30.685 align:middle line:84%
+We have the probability
+of tP and essay
+
+00:45:30.685 --> 00:45:33.520 align:middle line:90%
+plus the probability of tN.
+
+00:45:33.520 --> 00:45:46.200 align:middle line:90%
+
+
+00:45:46.200 --> 00:45:48.420 align:middle line:84%
+So let's see if we
+can fill this in.
+
+00:45:48.420 --> 00:45:50.420 align:middle line:84%
+What is the probability
+that they're passionate,
+
+00:45:50.420 --> 00:45:51.900 align:middle line:90%
+and they write the essay?
+
+00:45:51.900 --> 00:45:53.995 align:middle line:84%
+Well, they always
+write the essay.
+
+00:45:53.995 --> 00:45:56.120 align:middle line:84%
+So this is just the
+probability they're passionate,
+
+00:45:56.120 --> 00:45:56.745 align:middle line:90%
+and that's 1/2.
+
+00:45:56.745 --> 00:46:00.420 align:middle line:90%
+
+
+00:46:00.420 --> 00:46:05.180 align:middle line:84%
+And on the bottom, again, we
+have the 1/2 plus we're going
+
+00:46:05.180 --> 00:46:07.690 align:middle line:84%
+to get a second 1/2 because the
+probability that they're not
+
+00:46:07.690 --> 00:46:09.440 align:middle line:84%
+passionate and they
+write the essay, well,
+
+00:46:09.440 --> 00:46:11.820 align:middle line:84%
+if they're not passionate,
+they always write the essay.
+
+00:46:11.820 --> 00:46:14.320 align:middle line:84%
+So this is just the probability
+that they're not passionate,
+
+00:46:14.320 --> 00:46:15.620 align:middle line:90%
+which is also 1/2.
+
+00:46:15.620 --> 00:46:17.735 align:middle line:84%
+So we get 1/2 divided
+by 1/2 plus 1/2,
+
+00:46:17.735 --> 00:46:18.860 align:middle line:90%
+and that's going to be 1/2.
+
+00:46:18.860 --> 00:46:22.020 align:middle line:90%
+
+
+00:46:22.020 --> 00:46:24.640 align:middle line:84%
+I think it's good to go
+over this carefully once.
+
+00:46:24.640 --> 00:46:26.480 align:middle line:84%
+And then I think people
+get the hang of it.
+
+00:46:26.480 --> 00:46:29.180 align:middle line:90%
+Any questions on this?
+
+00:46:29.180 --> 00:46:30.280 align:middle line:90%
+Two questions, OK, great.
+
+00:46:30.280 --> 00:46:31.080 align:middle line:90%
+Yeah.
+
+00:46:31.080 --> 00:46:32.100 align:middle line:90%
+AUDIENCE: [INAUDIBLE]
+
+00:46:32.100 --> 00:46:34.780 align:middle line:84%
+IAN BALL: This is
+just confirming this.
+
+00:46:34.780 --> 00:46:36.548 align:middle line:90%
+Yeah, yes.
+
+00:46:36.548 --> 00:46:38.090 align:middle line:84%
+AUDIENCE: So then
+in the other case--
+
+00:46:38.090 --> 00:46:41.930 align:middle line:84%
+IAN BALL: So let's go to
+the other case, yeah, yeah.
+
+00:46:41.930 --> 00:46:46.330 align:middle line:84%
+So maybe I'll erase our little
+review and go to the other case.
+
+00:46:46.330 --> 00:46:49.142 align:middle line:84%
+So now we want to say, given
+that we see a student--
+
+00:46:49.142 --> 00:46:50.350 align:middle line:90%
+we didn't expect to see this.
+
+00:46:50.350 --> 00:46:51.790 align:middle line:84%
+We thought everyone was
+supposed to write an essay.
+
+00:46:51.790 --> 00:46:53.330 align:middle line:84%
+That's what they're supposed
+to do under their equilibrium
+
+00:46:53.330 --> 00:46:54.150 align:middle line:90%
+strategy.
+
+00:46:54.150 --> 00:46:56.490 align:middle line:84%
+But now we see that
+someone submits
+
+00:46:56.490 --> 00:46:59.305 align:middle line:90%
+an application with no essay.
+
+00:46:59.305 --> 00:47:00.930 align:middle line:84%
+And we say, well,
+what belief should we
+
+00:47:00.930 --> 00:47:02.090 align:middle line:90%
+form about this student?
+
+00:47:02.090 --> 00:47:04.123 align:middle line:90%
+Well, let's apply Bayes' rule.
+
+00:47:04.123 --> 00:47:06.290 align:middle line:84%
+We say, what's the probability
+that they're actually
+
+00:47:06.290 --> 00:47:09.230 align:middle line:84%
+passionate, that I want to
+accept them, given no essay?
+
+00:47:09.230 --> 00:47:13.490 align:middle line:90%
+
+
+00:47:13.490 --> 00:47:16.690 align:middle line:84%
+And that's exactly
+equal to the probability
+
+00:47:16.690 --> 00:47:25.016 align:middle line:84%
+that they're
+passionate and no essay
+
+00:47:25.016 --> 00:47:27.190 align:middle line:84%
+divided by the
+probability of no essay.
+
+00:47:27.190 --> 00:47:32.010 align:middle line:90%
+
+
+00:47:32.010 --> 00:47:32.950 align:middle line:90%
+And what is this?
+
+00:47:32.950 --> 00:47:38.000 align:middle line:90%
+
+
+00:47:38.000 --> 00:47:38.840 align:middle line:90%
+Yeah.
+
+00:47:38.840 --> 00:47:39.740 align:middle line:90%
+AUDIENCE: 0 over 0.
+
+00:47:39.740 --> 00:47:41.200 align:middle line:90%
+IAN BALL: This is 0 over 0.
+
+00:47:41.200 --> 00:47:44.320 align:middle line:90%
+
+
+00:47:44.320 --> 00:47:48.000 align:middle line:84%
+Because I'm never-- no
+one is writing no essay.
+
+00:47:48.000 --> 00:47:49.208 align:middle line:90%
+Everyone is writing an essay.
+
+00:47:49.208 --> 00:47:50.917 align:middle line:84%
+So the probability
+that you're passionate
+
+00:47:50.917 --> 00:47:53.740 align:middle line:84%
+and you don't write an essay is
+0 because if you're passionate,
+
+00:47:53.740 --> 00:47:54.982 align:middle line:90%
+you always write an essay.
+
+00:47:54.982 --> 00:47:56.940 align:middle line:84%
+The probability that you
+don't submit an essay,
+
+00:47:56.940 --> 00:47:59.440 align:middle line:84%
+well, if you're passionate,
+you always submit an essay.
+
+00:47:59.440 --> 00:48:01.648 align:middle line:84%
+If you're not passionate,
+you always submit an essay.
+
+00:48:01.648 --> 00:48:04.240 align:middle line:90%
+So we get a 0 here as well.
+
+00:48:04.240 --> 00:48:06.600 align:middle line:84%
+So what we see is that
+there's a fundamental problem
+
+00:48:06.600 --> 00:48:08.800 align:middle line:84%
+with Bayes' rule,
+that Bayes' rule only
+
+00:48:08.800 --> 00:48:11.160 align:middle line:84%
+allows us to define
+conditional probabilities
+
+00:48:11.160 --> 00:48:14.200 align:middle line:84%
+conditional on events that
+have positive probability.
+
+00:48:14.200 --> 00:48:16.240 align:middle line:84%
+When we try to define
+conditional probabilities
+
+00:48:16.240 --> 00:48:18.200 align:middle line:84%
+conditioned on 0
+probability events,
+
+00:48:18.200 --> 00:48:20.960 align:middle line:84%
+Bayes' rule doesn't really
+apply, and we run into problems.
+
+00:48:20.960 --> 00:48:23.340 align:middle line:90%
+So I'll say not well defined.
+
+00:48:23.340 --> 00:48:28.040 align:middle line:90%
+
+
+00:48:28.040 --> 00:48:30.800 align:middle line:84%
+And I think this is exactly why
+we got a few different answers
+
+00:48:30.800 --> 00:48:31.400 align:middle line:90%
+here.
+
+00:48:31.400 --> 00:48:33.690 align:middle line:84%
+What should we conclude when
+someone doesn't write an essay?
+
+00:48:33.690 --> 00:48:35.470 align:middle line:84%
+I think there's a few
+reasonable choices.
+
+00:48:35.470 --> 00:48:38.130 align:middle line:84%
+You might say, well, this
+isn't supposed to happen.
+
+00:48:38.130 --> 00:48:40.990 align:middle line:84%
+So let me just go back to my
+prior and say it's 1/2, 1/2.
+
+00:48:40.990 --> 00:48:42.710 align:middle line:84%
+You could say, well,
+the fact that they
+
+00:48:42.710 --> 00:48:44.350 align:middle line:84%
+don't want to write
+an essay, that
+
+00:48:44.350 --> 00:48:46.250 align:middle line:84%
+must mean they're not really
+passionate about the program.
+
+00:48:46.250 --> 00:48:46.790 align:middle line:90%
+I'm going to assume--
+
+00:48:46.790 --> 00:48:48.290 align:middle line:84%
+I'm going to say that
+they're not passionate.
+
+00:48:48.290 --> 00:48:50.582 align:middle line:84%
+Or maybe you think they are
+passionate, and they just--
+
+00:48:50.582 --> 00:48:52.810 align:middle line:84%
+I don't know, you could
+tell a lot of stories.
+
+00:48:52.810 --> 00:48:57.630 align:middle line:84%
+But basically, we don't really
+pin down what the belief is.
+
+00:48:57.630 --> 00:49:01.050 align:middle line:84%
+But now this creates a problem
+because now the question is--
+
+00:49:01.050 --> 00:49:04.310 align:middle line:90%
+
+
+00:49:04.310 --> 00:49:07.130 align:middle line:84%
+so this equilibrium
+seems to fit.
+
+00:49:07.130 --> 00:49:08.750 align:middle line:90%
+Let's see if this makes sense.
+
+00:49:08.750 --> 00:49:11.910 align:middle line:84%
+If I'm the student, if I
+believe that the school is going
+
+00:49:11.910 --> 00:49:14.870 align:middle line:84%
+to accept me if I write
+an essay and not accept me
+
+00:49:14.870 --> 00:49:17.870 align:middle line:84%
+if I don't write the essay,
+then it's optimal for me
+
+00:49:17.870 --> 00:49:20.030 align:middle line:90%
+to write the essay.
+
+00:49:20.030 --> 00:49:21.500 align:middle line:90%
+That makes sense.
+
+00:49:21.500 --> 00:49:23.750 align:middle line:84%
+And given that all the
+students are writing the essay,
+
+00:49:23.750 --> 00:49:26.310 align:middle line:84%
+well, the school is
+happy to accept you
+
+00:49:26.310 --> 00:49:29.030 align:middle line:84%
+because the school
+gets a payoff of 3
+
+00:49:29.030 --> 00:49:31.850 align:middle line:84%
+from accepting a
+passionate student,
+
+00:49:31.850 --> 00:49:34.190 align:middle line:84%
+negative 2 from accepting
+a not passionate student,
+
+00:49:34.190 --> 00:49:37.110 align:middle line:84%
+And the average of 3 and
+negative 2 is strictly positive.
+
+00:49:37.110 --> 00:49:38.530 align:middle line:90%
+So everything looks good here.
+
+00:49:38.530 --> 00:49:41.530 align:middle line:84%
+The only question is, is
+this a credible threat?
+
+00:49:41.530 --> 00:49:49.643 align:middle line:90%
+
+
+00:49:49.643 --> 00:49:50.810 align:middle line:90%
+But there's a question here.
+
+00:49:50.810 --> 00:49:51.550 align:middle line:90%
+Yeah.
+
+00:49:51.550 --> 00:49:53.070 align:middle line:90%
+AUDIENCE: I was just curious.
+
+00:49:53.070 --> 00:49:56.050 align:middle line:84%
+If you were to get someone
+who submits an essay,
+
+00:49:56.050 --> 00:49:59.150 align:middle line:84%
+could that also imply that maybe
+there's a third type of student
+
+00:49:59.150 --> 00:50:00.360 align:middle line:90%
+that you don't know of?
+
+00:50:00.360 --> 00:50:01.610 align:middle line:90%
+IAN BALL: That's a good point.
+
+00:50:01.610 --> 00:50:03.777 align:middle line:84%
+So maybe you want to revise
+your model of the world.
+
+00:50:03.777 --> 00:50:06.430 align:middle line:84%
+And maybe our types, we've
+only represented types
+
+00:50:06.430 --> 00:50:08.370 align:middle line:84%
+by how excited they
+are about the program,
+
+00:50:08.370 --> 00:50:09.953 align:middle line:84%
+but maybe there's a
+laziness component
+
+00:50:09.953 --> 00:50:11.450 align:middle line:90%
+that we also need to model.
+
+00:50:11.450 --> 00:50:13.590 align:middle line:84%
+Or-- and we'll talk
+about this later--
+
+00:50:13.590 --> 00:50:17.070 align:middle line:84%
+it could be that this cost
+c varies in the population.
+
+00:50:17.070 --> 00:50:18.490 align:middle line:84%
+Again, talking
+about essay costs,
+
+00:50:18.490 --> 00:50:20.290 align:middle line:84%
+I feel like it's 0 for
+everyone in the world of GPT,
+
+00:50:20.290 --> 00:50:22.053 align:middle line:84%
+but in the old days,
+there was a cost.
+
+00:50:22.053 --> 00:50:24.470 align:middle line:84%
+And some people were better
+at writing essays and the cost
+
+00:50:24.470 --> 00:50:27.012 align:middle line:84%
+for them was lower, and we're
+going to talk about that later.
+
+00:50:27.012 --> 00:50:28.430 align:middle line:90%
+Yeah, exactly.
+
+00:50:28.430 --> 00:50:30.540 align:middle line:84%
+So I guess the
+basic question here
+
+00:50:30.540 --> 00:50:32.640 align:middle line:90%
+is, is this a credible threat?
+
+00:50:32.640 --> 00:50:34.940 align:middle line:84%
+Is it credible for
+the school to say,
+
+00:50:34.940 --> 00:50:37.837 align:middle line:84%
+as they do in this equilibrium,
+if you don't submit an essay,
+
+00:50:37.837 --> 00:50:38.920 align:middle line:90%
+we're going to reject you?
+
+00:50:38.920 --> 00:50:41.840 align:middle line:90%
+
+
+00:50:41.840 --> 00:50:42.340 align:middle line:90%
+Yeah.
+
+00:50:42.340 --> 00:50:43.460 align:middle line:84%
+AUDIENCE: Well, isn't
+it kind of murky
+
+00:50:43.460 --> 00:50:45.160 align:middle line:84%
+because, as you were
+just talking about,
+
+00:50:45.160 --> 00:50:46.880 align:middle line:84%
+there are some ways
+you could just say,
+
+00:50:46.880 --> 00:50:48.530 align:middle line:84%
+if you don't write an essay
+that you're not passionate,
+
+00:50:48.530 --> 00:50:49.600 align:middle line:90%
+so we don't want you.
+
+00:50:49.600 --> 00:50:51.700 align:middle line:84%
+But what if the school
+has a really different way
+
+00:50:51.700 --> 00:50:53.280 align:middle line:84%
+of thinking like, oh, he
+didn't write the essay.
+
+00:50:53.280 --> 00:50:55.947 align:middle line:84%
+That's because you were spending
+more time studying for an exam.
+
+00:50:55.947 --> 00:50:58.040 align:middle line:84%
+So then we're
+actually more excited,
+
+00:50:58.040 --> 00:50:59.420 align:middle line:84%
+so I think because
+you don't know
+
+00:50:59.420 --> 00:51:02.900 align:middle line:84%
+exactly what the school will
+conclude, the threat is--
+
+00:51:02.900 --> 00:51:04.100 align:middle line:90%
+it's not necessarily--
+
+00:51:04.100 --> 00:51:05.000 align:middle line:84%
+IAN BALL: I think
+that's a great answer.
+
+00:51:05.000 --> 00:51:06.000 align:middle line:90%
+So it's definitely murky.
+
+00:51:06.000 --> 00:51:06.940 align:middle line:84%
+And that's exactly
+what I'm trying
+
+00:51:06.940 --> 00:51:08.880 align:middle line:84%
+to convey with this
+example, that it is murky.
+
+00:51:08.880 --> 00:51:11.020 align:middle line:84%
+But I think the key point,
+which you hinted at,
+
+00:51:11.020 --> 00:51:15.060 align:middle line:84%
+was whether this threat
+is credible depends
+
+00:51:15.060 --> 00:51:18.500 align:middle line:84%
+on what the school believes
+when they don't see an essay.
+
+00:51:18.500 --> 00:51:19.900 align:middle line:90%
+So is this threat credible?
+
+00:51:19.900 --> 00:51:21.560 align:middle line:90%
+Well, it depends on the belief.
+
+00:51:21.560 --> 00:51:27.970 align:middle line:90%
+
+
+00:51:27.970 --> 00:51:29.530 align:middle line:84%
+If the school
+believes that everyone
+
+00:51:29.530 --> 00:51:31.645 align:middle line:84%
+who doesn't submit an
+essay is passionate,
+
+00:51:31.645 --> 00:51:33.270 align:middle line:84%
+then it's not credible
+for them to say,
+
+00:51:33.270 --> 00:51:35.687 align:middle line:84%
+we're going to reject those
+students because they'd rather
+
+00:51:35.687 --> 00:51:37.370 align:middle line:84%
+accept passionate
+students than not.
+
+00:51:37.370 --> 00:51:39.770 align:middle line:84%
+But if their belief,
+after not seeing an essay,
+
+00:51:39.770 --> 00:51:42.725 align:middle line:84%
+is that the student
+is not passionate,
+
+00:51:42.725 --> 00:51:44.850 align:middle line:84%
+then it is credible for
+them to reject that student
+
+00:51:44.850 --> 00:51:46.750 align:middle line:84%
+because that's exactly
+what's optimal for them,
+
+00:51:46.750 --> 00:51:49.370 align:middle line:84%
+if they see that a student-- if
+they believe that a student is
+
+00:51:49.370 --> 00:51:51.210 align:middle line:90%
+not passionate.
+
+00:51:51.210 --> 00:51:52.770 align:middle line:90%
+So how do we get around this?
+
+00:51:52.770 --> 00:51:55.530 align:middle line:84%
+Well, beliefs
+aren't well defined,
+
+00:51:55.530 --> 00:51:58.410 align:middle line:84%
+but whether something is
+credible depends on the belief.
+
+00:51:58.410 --> 00:52:01.610 align:middle line:84%
+The way we get at this
+is our equilibrium notion
+
+00:52:01.610 --> 00:52:04.010 align:middle line:84%
+is going to need to
+explicitly specify
+
+00:52:04.010 --> 00:52:09.210 align:middle line:84%
+what beliefs the school forms,
+even at this information set.
+
+00:52:09.210 --> 00:52:12.630 align:middle line:84%
+So as a result, beliefs must
+be part of the equilibrium.
+
+00:52:12.630 --> 00:52:22.690 align:middle line:90%
+
+
+00:52:22.690 --> 00:52:23.890 align:middle line:90%
+Why?
+
+00:52:23.890 --> 00:52:27.730 align:middle line:84%
+Well, specifying
+strategies alone
+
+00:52:27.730 --> 00:52:29.792 align:middle line:84%
+is not enough to tell
+us what people believe.
+
+00:52:29.792 --> 00:52:31.250 align:middle line:84%
+But our whole
+equilibrium notion is
+
+00:52:31.250 --> 00:52:33.370 align:middle line:84%
+supposed to capture whether
+these threats are credible.
+
+00:52:33.370 --> 00:52:35.703 align:middle line:84%
+And therefore, we're going
+to need to explicitly specify
+
+00:52:35.703 --> 00:52:37.210 align:middle line:90%
+what the belief is.
+
+00:52:37.210 --> 00:52:40.650 align:middle line:84%
+And what we'll see here
+is that, here, there's
+
+00:52:40.650 --> 00:52:43.350 align:middle line:84%
+no flexibility in what
+belief we specify here.
+
+00:52:43.350 --> 00:52:45.670 align:middle line:84%
+In this case, the belief is
+pinned down by Bayes' rule.
+
+00:52:45.670 --> 00:52:48.290 align:middle line:84%
+Bayes' rule tells us what
+the belief has to be.
+
+00:52:48.290 --> 00:52:51.150 align:middle line:84%
+Here, we can choose
+whatever belief we want.
+
+00:52:51.150 --> 00:52:53.970 align:middle line:84%
+There's no further restriction
+imposed by Bayes' rule
+
+00:52:53.970 --> 00:52:56.010 align:middle line:84%
+on what the school's
+belief is here.
+
+00:52:56.010 --> 00:52:58.090 align:middle line:84%
+Now, I said before,
+there's all this big debate
+
+00:52:58.090 --> 00:53:00.173 align:middle line:84%
+in the literature
+about how to define it.
+
+00:53:00.173 --> 00:53:02.090 align:middle line:84%
+People came along and
+made all these arguments
+
+00:53:02.090 --> 00:53:04.702 align:middle line:84%
+about what belief should be at
+this kind of information set.
+
+00:53:04.702 --> 00:53:05.910 align:middle line:90%
+What should you believe here?
+
+00:53:05.910 --> 00:53:08.035 align:middle line:84%
+For now, we're not going
+to impose any restrictions
+
+00:53:08.035 --> 00:53:09.210 align:middle line:90%
+on what those beliefs are.
+
+00:53:09.210 --> 00:53:14.290 align:middle line:84%
+And now I'm going to go
+into the formal definition.
+
+00:53:14.290 --> 00:53:15.910 align:middle line:90%
+Let's go back over here.
+
+00:53:15.910 --> 00:53:30.560 align:middle line:90%
+
+
+00:53:30.560 --> 00:53:38.020 align:middle line:84%
+Let's define perfect
+Bayesian equilibrium.
+
+00:53:38.020 --> 00:53:43.280 align:middle line:90%
+
+
+00:53:43.280 --> 00:53:45.080 align:middle line:84%
+So the first key point
+is that one thing
+
+00:53:45.080 --> 00:53:47.020 align:middle line:84%
+I've harped on throughout the
+semester is no longer true.
+
+00:53:47.020 --> 00:53:48.603 align:middle line:84%
+So throughout the
+semester, I've said,
+
+00:53:48.603 --> 00:53:50.180 align:middle line:84%
+an equilibrium is
+a strategy profile.
+
+00:53:50.180 --> 00:53:51.960 align:middle line:84%
+And I said this
+over and over again.
+
+00:53:51.960 --> 00:53:54.320 align:middle line:84%
+Now, that's no longer
+true because equilibrium
+
+00:53:54.320 --> 00:53:56.937 align:middle line:84%
+is going to be a strategy
+profile together with beliefs.
+
+00:53:56.937 --> 00:53:59.520 align:middle line:84%
+So we're going to have to have
+this new object, which is going
+
+00:53:59.520 --> 00:54:01.020 align:middle line:90%
+to be called an assessment.
+
+00:54:01.020 --> 00:54:03.497 align:middle line:90%
+
+
+00:54:03.497 --> 00:54:05.080 align:middle line:84%
+I think this is a
+silly word, but this
+
+00:54:05.080 --> 00:54:06.400 align:middle line:90%
+is the word that's used.
+
+00:54:06.400 --> 00:54:08.520 align:middle line:90%
+And that specifies two things.
+
+00:54:08.520 --> 00:54:10.540 align:middle line:90%
+It specifies a strategy profile.
+
+00:54:10.540 --> 00:54:14.880 align:middle line:90%
+
+
+00:54:14.880 --> 00:54:18.020 align:middle line:84%
+And also beliefs, sometimes
+it's called a belief system.
+
+00:54:18.020 --> 00:54:25.310 align:middle line:90%
+
+
+00:54:25.310 --> 00:54:28.410 align:middle line:84%
+So strategy profile, we
+already know what that is.
+
+00:54:28.410 --> 00:54:30.210 align:middle line:84%
+It specifies a strategy
+for each player.
+
+00:54:30.210 --> 00:54:32.910 align:middle line:84%
+And a strategy in this
+game and in any game
+
+00:54:32.910 --> 00:54:35.810 align:middle line:84%
+is a mapping from
+information sets to actions.
+
+00:54:35.810 --> 00:54:37.310 align:middle line:84%
+It's a complete
+contingent plan that
+
+00:54:37.310 --> 00:54:39.560 align:middle line:84%
+says that my information set
+and any of my information
+
+00:54:39.560 --> 00:54:41.150 align:middle line:90%
+sets, what am I going to do?
+
+00:54:41.150 --> 00:54:45.270 align:middle line:84%
+So in this game, it's exactly
+what we wrote down over here.
+
+00:54:45.270 --> 00:54:49.310 align:middle line:84%
+The student has two
+information sets tP and tN.
+
+00:54:49.310 --> 00:54:52.430 align:middle line:84%
+So a strategy for the student
+specifies what they do at tP
+
+00:54:52.430 --> 00:54:54.190 align:middle line:90%
+and what they do at tN.
+
+00:54:54.190 --> 00:54:56.327 align:middle line:84%
+Similarly, the school
+has two information sets.
+
+00:54:56.327 --> 00:54:57.910 align:middle line:84%
+The information set
+where they observe
+
+00:54:57.910 --> 00:54:59.827 align:middle line:84%
+the student wrote an
+essay and the information
+
+00:54:59.827 --> 00:55:02.243 align:middle line:84%
+set where they observed the
+student didn't write an essay,
+
+00:55:02.243 --> 00:55:03.910 align:middle line:84%
+and a strategy
+specifies what action
+
+00:55:03.910 --> 00:55:08.030 align:middle line:84%
+they take at each of
+those informations.
+
+00:55:08.030 --> 00:55:09.310 align:middle line:90%
+So I said that in words.
+
+00:55:09.310 --> 00:55:13.550 align:middle line:84%
+Now, a belief system
+is going to specify--
+
+00:55:13.550 --> 00:55:22.172 align:middle line:90%
+
+
+00:55:22.172 --> 00:55:34.980 align:middle line:84%
+specifies a belief at every
+non-singleton information set.
+
+00:55:34.980 --> 00:55:37.340 align:middle line:84%
+So a lot of the information
+sets are singletons.
+
+00:55:37.340 --> 00:55:38.960 align:middle line:84%
+I don't need to
+specify a belief here.
+
+00:55:38.960 --> 00:55:41.820 align:middle line:84%
+I only need to specify a belief
+at an information set that
+
+00:55:41.820 --> 00:55:43.700 align:middle line:90%
+contains multiple nodes.
+
+00:55:43.700 --> 00:55:44.918 align:middle line:90%
+And what is a belief?
+
+00:55:44.918 --> 00:55:46.460 align:middle line:84%
+A belief is going
+to be a probability
+
+00:55:46.460 --> 00:55:49.700 align:middle line:84%
+distribution over the nodes
+in that information set.
+
+00:55:49.700 --> 00:55:51.220 align:middle line:84%
+And that's exactly
+what we did here.
+
+00:55:51.220 --> 00:55:55.540 align:middle line:84%
+We said if the student
+submitted an essay,
+
+00:55:55.540 --> 00:55:57.520 align:middle line:84%
+we had two nodes in
+that information set.
+
+00:55:57.520 --> 00:55:59.100 align:middle line:84%
+And we had to form
+belief about what
+
+00:55:59.100 --> 00:56:01.380 align:middle line:84%
+was the relative likelihood
+of those two nodes.
+
+00:56:01.380 --> 00:56:03.860 align:middle line:84%
+And similarly, at this
+information set, no essay--
+
+00:56:03.860 --> 00:56:05.080 align:middle line:90%
+or maybe I got it backwards.
+
+00:56:05.080 --> 00:56:06.820 align:middle line:84%
+At the essay
+information set, we have
+
+00:56:06.820 --> 00:56:09.140 align:middle line:84%
+to form a belief
+about the two nodes
+
+00:56:09.140 --> 00:56:10.640 align:middle line:90%
+within that information set.
+
+00:56:10.640 --> 00:56:13.000 align:middle line:84%
+So a belief at every
+non-singleton information set.
+
+00:56:13.000 --> 00:56:14.460 align:middle line:90%
+What is a belief?
+
+00:56:14.460 --> 00:56:28.000 align:middle line:84%
+i.e., a probability
+distribution over-- well,
+
+00:56:28.000 --> 00:56:29.125 align:middle line:90%
+it can't be over all nodes.
+
+00:56:29.125 --> 00:56:31.000 align:middle line:84%
+I certainly can't assign
+positive probability
+
+00:56:31.000 --> 00:56:32.920 align:middle line:84%
+to nodes that are not
+in that information set.
+
+00:56:32.920 --> 00:56:34.660 align:middle line:84%
+It's only a distribution
+over the nodes that are
+
+00:56:34.660 --> 00:56:35.960 align:middle line:90%
+within that information set.
+
+00:56:35.960 --> 00:56:37.377 align:middle line:84%
+So it's a probability
+distribution
+
+00:56:37.377 --> 00:56:40.640 align:middle line:84%
+over nodes in the
+information set.
+
+00:56:40.640 --> 00:56:50.700 align:middle line:90%
+
+
+00:56:50.700 --> 00:56:52.160 align:middle line:84%
+So now we've defined
+an assessment.
+
+00:56:52.160 --> 00:56:55.420 align:middle line:84%
+Let's formally define a
+perfect Bayesian equilibrium.
+
+00:56:55.420 --> 00:57:04.460 align:middle line:84%
+So definition, an
+assessment is a PBE
+
+00:57:04.460 --> 00:57:06.400 align:middle line:90%
+if it satisfies two conditions.
+
+00:57:06.400 --> 00:57:11.180 align:middle line:90%
+
+
+00:57:11.180 --> 00:57:14.120 align:middle line:84%
+The first condition is
+sequential rationality.
+
+00:57:14.120 --> 00:57:21.010 align:middle line:90%
+
+
+00:57:21.010 --> 00:57:22.950 align:middle line:84%
+And the second is
+belief consistency.
+
+00:57:22.950 --> 00:57:31.850 align:middle line:90%
+
+
+00:57:31.850 --> 00:57:33.350 align:middle line:84%
+Let's start with
+belief consistency.
+
+00:57:33.350 --> 00:57:34.810 align:middle line:84%
+This is what we're
+getting at here.
+
+00:57:34.810 --> 00:57:39.210 align:middle line:84%
+We want to say that the school's
+belief here must be 1/2, 1/2.
+
+00:57:39.210 --> 00:57:42.050 align:middle line:84%
+But the school's belief
+here is totally flexible.
+
+00:57:42.050 --> 00:57:44.830 align:middle line:84%
+So what belief
+consistency says is,
+
+00:57:44.830 --> 00:57:46.690 align:middle line:84%
+well, the beliefs
+are consistent.
+
+00:57:46.690 --> 00:57:51.070 align:middle line:84%
+The beliefs are consistent
+with Bayes' rule.
+
+00:57:51.070 --> 00:57:58.770 align:middle line:90%
+
+
+00:57:58.770 --> 00:58:02.030 align:middle line:84%
+Well, they can't be consistent
+with Bayes' rule everywhere.
+
+00:58:02.030 --> 00:58:05.150 align:middle line:84%
+Sometimes we use this vague
+phrase wherever possible.
+
+00:58:05.150 --> 00:58:12.890 align:middle line:90%
+
+
+00:58:12.890 --> 00:58:15.560 align:middle line:84%
+There's often different ways of
+defining exactly what wherever
+
+00:58:15.560 --> 00:58:16.460 align:middle line:90%
+possible means.
+
+00:58:16.460 --> 00:58:19.520 align:middle line:84%
+What I mean by wherever possible
+is at any information set that's
+
+00:58:19.520 --> 00:58:25.340 align:middle line:84%
+reached with positive
+probability, so i.e.
+
+00:58:25.340 --> 00:58:33.560 align:middle line:90%
+
+
+00:58:33.560 --> 00:58:35.640 align:middle line:84%
+Now, let's be careful--
+the probability
+
+00:58:35.640 --> 00:58:39.220 align:middle line:84%
+that we reach an information set
+depends on the strategy profile.
+
+00:58:39.220 --> 00:58:42.760 align:middle line:84%
+So what we're saying is we
+have an assessment, looking
+
+00:58:42.760 --> 00:58:45.080 align:middle line:84%
+at the strategy profile that's
+part of that assessment,
+
+00:58:45.080 --> 00:58:46.540 align:middle line:90%
+I can go every information set.
+
+00:58:46.540 --> 00:58:48.160 align:middle line:84%
+And I can compute
+the probability
+
+00:58:48.160 --> 00:58:49.785 align:middle line:84%
+that we actually
+reach that information
+
+00:58:49.785 --> 00:58:51.360 align:middle line:90%
+set under the strategy profile.
+
+00:58:51.360 --> 00:58:53.503 align:middle line:84%
+And I can split those
+information sets in two.
+
+00:58:53.503 --> 00:58:54.920 align:middle line:84%
+I can say there's
+some information
+
+00:58:54.920 --> 00:58:56.860 align:middle line:84%
+sets that are reached
+with positive probability.
+
+00:58:56.860 --> 00:58:58.640 align:middle line:84%
+And there are some
+that are never reached.
+
+00:58:58.640 --> 00:59:00.820 align:middle line:84%
+And the ones that are reached
+with positive probability,
+
+00:59:00.820 --> 00:59:02.520 align:middle line:84%
+the beliefs that
+those information sets
+
+00:59:02.520 --> 00:59:04.425 align:middle line:90%
+must satisfy Bayes' rule.
+
+00:59:04.425 --> 00:59:05.800 align:middle line:84%
+But at the other
+information sets
+
+00:59:05.800 --> 00:59:08.040 align:middle line:84%
+that are not reached with
+positive probability,
+
+00:59:08.040 --> 00:59:11.880 align:middle line:84%
+I have total flexibility
+over those beliefs.
+
+00:59:11.880 --> 00:59:14.390 align:middle line:84%
+There's no restriction
+on the beliefs there.
+
+00:59:14.390 --> 00:59:17.710 align:middle line:90%
+So now sequential rationality.
+
+00:59:17.710 --> 00:59:18.750 align:middle line:90%
+We're close.
+
+00:59:18.750 --> 00:59:22.430 align:middle line:84%
+Well, the whole point
+of introducing beliefs
+
+00:59:22.430 --> 00:59:25.630 align:middle line:84%
+was to determine whether
+these threats were credible.
+
+00:59:25.630 --> 00:59:28.810 align:middle line:84%
+And what credible meant,
+precisely, was optimal.
+
+00:59:28.810 --> 00:59:32.070 align:middle line:84%
+Optimal given my beliefs and
+given the strategy of others.
+
+00:59:32.070 --> 00:59:39.710 align:middle line:84%
+So sequential rationality
+means, at every information set,
+
+00:59:39.710 --> 00:59:46.910 align:middle line:84%
+the action under the
+strategy profile is optimal,
+
+00:59:46.910 --> 00:59:56.970 align:middle line:84%
+given beliefs and the rest
+of the strategy profile.
+
+00:59:56.970 --> 01:00:00.470 align:middle line:90%
+
+
+01:00:00.470 --> 01:00:02.970 align:middle line:90%
+And let me say the rest.
+
+01:00:02.970 --> 01:00:12.710 align:middle line:90%
+
+
+01:00:12.710 --> 01:00:14.870 align:middle line:90%
+Put this in quotes.
+
+01:00:14.870 --> 01:00:16.750 align:middle line:90%
+So what do I mean here?
+
+01:00:16.750 --> 01:00:18.950 align:middle line:84%
+Whenever we get to
+an information set,
+
+01:00:18.950 --> 01:00:21.030 align:middle line:84%
+a strategy is going
+to specify what
+
+01:00:21.030 --> 01:00:25.023 align:middle line:84%
+action the player is supposed
+to take at that information set.
+
+01:00:25.023 --> 01:00:27.190 align:middle line:84%
+And that action that they're
+supposed to take better
+
+01:00:27.190 --> 01:00:28.142 align:middle line:90%
+be optimal.
+
+01:00:28.142 --> 01:00:29.850 align:middle line:84%
+Well, how do we define
+that it's optimal?
+
+01:00:29.850 --> 01:00:33.230 align:middle line:84%
+Well, we have to check that it's
+optimal given the beliefs that
+
+01:00:33.230 --> 01:00:37.430 align:middle line:84%
+the player has there and how
+everyone else is going to play,
+
+01:00:37.430 --> 01:00:39.990 align:middle line:84%
+which is the "rest of
+the strategy profile."
+
+01:00:39.990 --> 01:00:41.830 align:middle line:84%
+So what's optimal
+for me at this node
+
+01:00:41.830 --> 01:00:44.390 align:middle line:84%
+depends on-- or at
+this information set
+
+01:00:44.390 --> 01:00:46.030 align:middle line:84%
+depends on my beliefs
+over which node
+
+01:00:46.030 --> 01:00:49.150 align:middle line:84%
+I'm actually at and also, how
+people are going to subsequently
+
+01:00:49.150 --> 01:00:50.190 align:middle line:90%
+play in the game.
+
+01:00:50.190 --> 01:00:53.190 align:middle line:84%
+And the way they subsequently
+play is pinned down by the "rest
+
+01:00:53.190 --> 01:00:54.548 align:middle line:90%
+of the strategy profile."
+
+01:00:54.548 --> 01:00:57.090 align:middle line:84%
+I could write all this in math,
+and that's what the notes do,
+
+01:00:57.090 --> 01:00:58.070 align:middle line:84%
+but I think that
+maybe just makes
+
+01:00:58.070 --> 01:00:59.210 align:middle line:90%
+things a little more confusing.
+
+01:00:59.210 --> 01:01:00.668 align:middle line:84%
+So I'm trying to
+write it in words,
+
+01:01:00.668 --> 01:01:02.610 align:middle line:84%
+but if anything's
+unclear, let me know.
+
+01:01:02.610 --> 01:01:06.830 align:middle line:90%
+
+
+01:01:06.830 --> 01:01:09.238 align:middle line:90%
+Questions?
+
+01:01:09.238 --> 01:01:10.780 align:middle line:84%
+So let's go back to
+this game and see
+
+01:01:10.780 --> 01:01:17.500 align:middle line:90%
+if we can find some more PBE.
+
+01:01:17.500 --> 01:01:20.320 align:middle line:90%
+So let's look here.
+
+01:01:20.320 --> 01:01:36.620 align:middle line:90%
+
+
+01:01:36.620 --> 01:01:38.700 align:middle line:84%
+So let's try to finish
+off our construction
+
+01:01:38.700 --> 01:01:40.620 align:middle line:84%
+of a perfect Bayesian
+equilibrium over here.
+
+01:01:40.620 --> 01:01:43.740 align:middle line:84%
+We already have a
+strategy for the student.
+
+01:01:43.740 --> 01:01:45.900 align:middle line:84%
+We already have a
+strategy for the school.
+
+01:01:45.900 --> 01:01:48.820 align:middle line:84%
+The next step is we
+have to specify beliefs.
+
+01:01:48.820 --> 01:01:51.140 align:middle line:84%
+We've already specified
+the 1/2, 1/2 belief.
+
+01:01:51.140 --> 01:01:55.420 align:middle line:84%
+But we have flexibility
+over the p1 minus p belief.
+
+01:01:55.420 --> 01:01:58.300 align:middle line:84%
+So let's emphasize
+here that this is
+
+01:01:58.300 --> 01:01:59.920 align:middle line:90%
+unconstrained by Bayes' rule.
+
+01:01:59.920 --> 01:02:08.090 align:middle line:90%
+
+
+01:02:08.090 --> 01:02:10.730 align:middle line:84%
+Now one confusion I often
+see on problem sets or exams
+
+01:02:10.730 --> 01:02:13.090 align:middle line:84%
+is people say, oh,
+here's my equilibrium.
+
+01:02:13.090 --> 01:02:16.370 align:middle line:84%
+You can take p
+whatever you want.
+
+01:02:16.370 --> 01:02:18.890 align:middle line:84%
+Just because it's
+unconstrained by Bayes' rule,
+
+01:02:18.890 --> 01:02:20.850 align:middle line:84%
+to write down an
+equilibrium, we still
+
+01:02:20.850 --> 01:02:22.730 align:middle line:84%
+have to make a choice
+about what this is.
+
+01:02:22.730 --> 01:02:24.710 align:middle line:84%
+We have a lot of flexibility
+in what that choice is,
+
+01:02:24.710 --> 01:02:26.585 align:middle line:84%
+but you still have to
+make a concrete choice.
+
+01:02:26.585 --> 01:02:28.930 align:middle line:84%
+You can't say the equilibrium
+is whatever p you want.
+
+01:02:28.930 --> 01:02:30.685 align:middle line:84%
+You have to choose
+a particular P.
+
+01:02:30.685 --> 01:02:32.310 align:middle line:84%
+And that's what we're
+going to do here.
+
+01:02:32.310 --> 01:02:35.010 align:middle line:84%
+So let's see what
+p we can choose.
+
+01:02:35.010 --> 01:02:38.050 align:middle line:84%
+So this p is unconstrained
+by Bayes' rule,
+
+01:02:38.050 --> 01:02:40.130 align:middle line:84%
+but it is constrained
+by something else.
+
+01:02:40.130 --> 01:02:42.350 align:middle line:84%
+It is constrained by
+Sequential Rationality.
+
+01:02:42.350 --> 01:02:48.930 align:middle line:90%
+
+
+01:02:48.930 --> 01:02:49.810 align:middle line:90%
+Say Sr.
+
+01:02:49.810 --> 01:02:51.050 align:middle line:90%
+Why?
+
+01:02:51.050 --> 01:02:53.830 align:middle line:84%
+Why am I not allowed to
+choose whatever p I want here?
+
+01:02:53.830 --> 01:02:56.170 align:middle line:84%
+So I want to make
+this construct here
+
+01:02:56.170 --> 01:02:58.048 align:middle line:90%
+a perfect Bayesian equilibrium.
+
+01:02:58.048 --> 01:03:00.590 align:middle line:84%
+But you might think, oh, I can
+just choose whatever P I want,
+
+01:03:00.590 --> 01:03:01.870 align:middle line:90%
+but I think there's an issue.
+
+01:03:01.870 --> 01:03:02.730 align:middle line:90%
+Yeah.
+
+01:03:02.730 --> 01:03:05.210 align:middle line:84%
+AUDIENCE: I mean, if
+you were to accept--
+
+01:03:05.210 --> 01:03:10.160 align:middle line:84%
+or to assume that it was more
+passionate and not passionate
+
+01:03:10.160 --> 01:03:15.200 align:middle line:84%
+[INAUDIBLE] since you would
+be rejecting more [INAUDIBLE]
+
+01:03:15.200 --> 01:03:17.560 align:middle line:84%
+likely would've been a
+higher utility [INAUDIBLE].
+
+01:03:17.560 --> 01:03:18.560 align:middle line:90%
+IAN BALL: Exactly right.
+
+01:03:18.560 --> 01:03:21.600 align:middle line:84%
+So let's check whether rejecting
+is sequentially rational given
+
+01:03:21.600 --> 01:03:23.200 align:middle line:90%
+this belief.
+
+01:03:23.200 --> 01:03:27.400 align:middle line:84%
+So my payoff as the school
+is always 0 if I reject.
+
+01:03:27.400 --> 01:03:34.060 align:middle line:84%
+So my payoff from
+rejecting is 0.
+
+01:03:34.060 --> 01:03:36.760 align:middle line:90%
+
+
+01:03:36.760 --> 01:03:40.170 align:middle line:84%
+What's my expected payoff from
+accepting given this belief?
+
+01:03:40.170 --> 01:03:42.420 align:middle line:84%
+My expected payoff of accepting
+depends on the belief.
+
+01:03:42.420 --> 01:03:43.800 align:middle line:90%
+So let's write it down.
+
+01:03:43.800 --> 01:03:46.800 align:middle line:84%
+So we have-- well,
+p is the probability
+
+01:03:46.800 --> 01:03:49.440 align:middle line:90%
+that the student is passionate.
+
+01:03:49.440 --> 01:03:51.240 align:middle line:84%
+And if they're
+passionate, I think
+
+01:03:51.240 --> 01:03:54.240 align:middle line:90%
+we said I get a payoff of 3.
+
+01:03:54.240 --> 01:03:57.080 align:middle line:90%
+
+
+01:03:57.080 --> 01:04:03.520 align:middle line:84%
+And if they're not passionate,
+I get a payoff of negative 2.
+
+01:04:03.520 --> 01:04:06.880 align:middle line:84%
+So in order for rejecting
+to be sequentially
+
+01:04:06.880 --> 01:04:08.960 align:middle line:84%
+rational at this
+node, it must be
+
+01:04:08.960 --> 01:04:10.640 align:middle line:84%
+that the expected
+payoff from rejecting
+
+01:04:10.640 --> 01:04:14.560 align:middle line:84%
+is weakly higher than the
+expected payoff from accepting.
+
+01:04:14.560 --> 01:04:18.280 align:middle line:84%
+So I need 0 to be greater
+than or equal to this.
+
+01:04:18.280 --> 01:04:22.520 align:middle line:84%
+And now let's simplify
+this a little bit.
+
+01:04:22.520 --> 01:04:34.400 align:middle line:84%
+We get 3p, and then
+we get 5p minus 2.
+
+01:04:34.400 --> 01:04:35.440 align:middle line:90%
+That's right.
+
+01:04:35.440 --> 01:04:38.240 align:middle line:84%
+So we need 0 greater than
+or equal to 5p minus 2.
+
+01:04:38.240 --> 01:04:42.480 align:middle line:84%
+Let's put the 2 over here
+and then divide by 5.
+
+01:04:42.480 --> 01:04:48.260 align:middle line:84%
+So we must get p less
+than or equal to 2/5.
+
+01:04:48.260 --> 01:04:50.880 align:middle line:90%
+
+
+01:04:50.880 --> 01:04:52.840 align:middle line:84%
+So we've actually
+constructed a family
+
+01:04:52.840 --> 01:04:54.520 align:middle line:90%
+of perfect Bayesian equilibrium.
+
+01:04:54.520 --> 01:04:57.360 align:middle line:84%
+For any p that you give me, as
+long as that p is smaller than
+
+01:04:57.360 --> 01:05:00.960 align:middle line:84%
+2/5, we have a perfect Bayesian
+equilibria where the student
+
+01:05:00.960 --> 01:05:04.230 align:middle line:84%
+always submits the essay, the
+school accepts if you submit
+
+01:05:04.230 --> 01:05:06.590 align:middle line:84%
+an essay, they reject if
+you don't submit an essay,
+
+01:05:06.590 --> 01:05:08.590 align:middle line:84%
+and if they see that you
+don't submit an essay,
+
+01:05:08.590 --> 01:05:11.950 align:middle line:84%
+they assign belief p to you
+being a passionate student.
+
+01:05:11.950 --> 01:05:13.830 align:middle line:84%
+And that belief p
+must be small enough
+
+01:05:13.830 --> 01:05:16.690 align:middle line:84%
+that it's credible for
+them to actually reject.
+
+01:05:16.690 --> 01:05:17.215 align:middle line:90%
+Yes.
+
+01:05:17.215 --> 01:05:18.590 align:middle line:84%
+AUDIENCE: So does
+that mean that,
+
+01:05:18.590 --> 01:05:22.750 align:middle line:84%
+given different students,
+as long as they can assign
+
+01:05:22.750 --> 01:05:25.150 align:middle line:90%
+one person 3 and one person--
+
+01:05:25.150 --> 01:05:27.927 align:middle line:84%
+like, different students
+who don't submit essays
+
+01:05:27.927 --> 01:05:29.510 align:middle line:84%
+can have different
+values of p as long
+
+01:05:29.510 --> 01:05:31.447 align:middle line:90%
+as it just doesn't make sense.
+
+01:05:31.447 --> 01:05:33.030 align:middle line:84%
+IAN BALL: So I think
+you're describing
+
+01:05:33.030 --> 01:05:35.023 align:middle line:90%
+a slightly different game.
+
+01:05:35.023 --> 01:05:37.190 align:middle line:84%
+Yeah, here, we've kind of
+made a simplification here
+
+01:05:37.190 --> 01:05:40.630 align:middle line:84%
+where we've basically
+imagined that there's really
+
+01:05:40.630 --> 01:05:41.990 align:middle line:90%
+only one student.
+
+01:05:41.990 --> 01:05:44.750 align:middle line:84%
+So here what we're
+imagining is a student
+
+01:05:44.750 --> 01:05:49.630 align:middle line:84%
+is drawn from the
+population and applies.
+
+01:05:49.630 --> 01:05:52.210 align:middle line:84%
+I think this is a reasonable
+model if-- in reality,
+
+01:05:52.210 --> 01:05:53.770 align:middle line:84%
+what happens is
+many people apply,
+
+01:05:53.770 --> 01:05:55.810 align:middle line:84%
+but the school adopts
+a uniform rule,
+
+01:05:55.810 --> 01:05:58.962 align:middle line:84%
+they either accept students with
+essays or they don't, and they
+
+01:05:58.962 --> 01:06:01.420 align:middle line:84%
+either accept students who
+don't have essays or they don't.
+
+01:06:01.420 --> 01:06:03.740 align:middle line:84%
+If they wanted to do something
+more complicated where
+
+01:06:03.740 --> 01:06:04.980 align:middle line:84%
+there's five
+applications and they
+
+01:06:04.980 --> 01:06:06.480 align:middle line:84%
+do different things to
+different applications,
+
+01:06:06.480 --> 01:06:07.897 align:middle line:84%
+then we'd have to
+explicitly model
+
+01:06:07.897 --> 01:06:09.160 align:middle line:90%
+the number of applications.
+
+01:06:09.160 --> 01:06:11.640 align:middle line:84%
+And here, look at
+the information set.
+
+01:06:11.640 --> 01:06:14.700 align:middle line:84%
+All I see is I see 1 applicant,
+and it's either an essay or not
+
+01:06:14.700 --> 01:06:15.380 align:middle line:90%
+an essay.
+
+01:06:15.380 --> 01:06:16.980 align:middle line:84%
+And if we want to capture
+what you're describing, which
+
+01:06:16.980 --> 01:06:18.563 align:middle line:84%
+I think is important
+for applications,
+
+01:06:18.563 --> 01:06:20.660 align:middle line:90%
+we need to enrich the game.
+
+01:06:20.660 --> 01:06:21.820 align:middle line:90%
+AUDIENCE: [INAUDIBLE]
+
+01:06:21.820 --> 01:06:23.653 align:middle line:84%
+IAN BALL: We're just
+looking at one student.
+
+01:06:23.653 --> 01:06:26.620 align:middle line:84%
+Or the interpretation
+is a uniform policy that
+
+01:06:26.620 --> 01:06:27.840 align:middle line:90%
+treats all students equally.
+
+01:06:27.840 --> 01:06:29.200 align:middle line:84%
+If we wanted to treat
+students differently,
+
+01:06:29.200 --> 01:06:30.617 align:middle line:84%
+then we'd have to
+enrich the game.
+
+01:06:30.617 --> 01:06:33.660 align:middle line:90%
+
+
+01:06:33.660 --> 01:06:37.460 align:middle line:84%
+Great, so this is
+what's called a--
+
+01:06:37.460 --> 01:06:39.060 align:middle line:90%
+let's put this in words.
+
+01:06:39.060 --> 01:06:41.480 align:middle line:84%
+This is what's called
+a pooling equilibrium.
+
+01:06:41.480 --> 01:06:47.780 align:middle line:90%
+
+
+01:06:47.780 --> 01:06:49.260 align:middle line:84%
+It's called a
+pooling equilibrium
+
+01:06:49.260 --> 01:06:51.700 align:middle line:84%
+because both types of
+students, the passionate
+
+01:06:51.700 --> 01:06:54.900 align:middle line:84%
+and the non-passionate students,
+choose the same action.
+
+01:06:54.900 --> 01:06:57.740 align:middle line:84%
+They pool together,
+and all submit essays.
+
+01:06:57.740 --> 01:07:00.580 align:middle line:84%
+And as a result, their choice
+about whether to submit an essay
+
+01:07:00.580 --> 01:07:03.020 align:middle line:84%
+doesn't reveal that
+much information about
+
+01:07:03.020 --> 01:07:05.140 align:middle line:84%
+whether they're
+passionate or not.
+
+01:07:05.140 --> 01:07:07.300 align:middle line:84%
+So next, let's see
+if we can compute
+
+01:07:07.300 --> 01:07:10.220 align:middle line:84%
+what's called a separating
+equilibrium where
+
+01:07:10.220 --> 01:07:13.360 align:middle line:84%
+different types of students
+make different choices.
+
+01:07:13.360 --> 01:07:18.860 align:middle line:90%
+
+
+01:07:18.860 --> 01:07:20.260 align:middle line:90%
+Let's go down here.
+
+01:07:20.260 --> 01:07:21.760 align:middle line:84%
+This should be the
+last thing we do.
+
+01:07:21.760 --> 01:07:36.620 align:middle line:90%
+
+
+01:07:36.620 --> 01:07:38.440 align:middle line:84%
+So earlier, I had
+assumed that c--
+
+01:07:38.440 --> 01:07:40.460 align:middle line:84%
+remember c is the cost
+of submitting an essay--
+
+01:07:40.460 --> 01:07:41.680 align:middle line:90%
+was less than 1.
+
+01:07:41.680 --> 01:07:43.040 align:middle line:90%
+Let's now relax that assumption.
+
+01:07:43.040 --> 01:07:44.980 align:middle line:90%
+And let's let c be arbitrary.
+
+01:07:44.980 --> 01:07:48.480 align:middle line:90%
+So let c be arbitrary.
+
+01:07:48.480 --> 01:07:53.500 align:middle line:90%
+
+
+01:07:53.500 --> 01:07:57.850 align:middle line:84%
+And now what we'd like to do
+is see, for which values of c,
+
+01:07:57.850 --> 01:08:00.250 align:middle line:84%
+can we find a
+separating equilibrium?
+
+01:08:00.250 --> 01:08:03.490 align:middle line:84%
+And this is actually an exam
+question I often like to ask,
+
+01:08:03.490 --> 01:08:06.050 align:middle line:84%
+where you try to find the
+set of parameter values
+
+01:08:06.050 --> 01:08:08.462 align:middle line:84%
+such that something
+is in equilibrium.
+
+01:08:08.462 --> 01:08:10.170 align:middle line:84%
+So let's see if we
+can work through this.
+
+01:08:10.170 --> 01:08:17.970 align:middle line:84%
+So we want to look
+for an equilibrium
+
+01:08:17.970 --> 01:08:21.253 align:middle line:84%
+where the essay distinguishes
+the types of students.
+
+01:08:21.253 --> 01:08:23.670 align:middle line:84%
+I think this is exactly why
+schools offer optional essays.
+
+01:08:23.670 --> 01:08:25.370 align:middle line:84%
+What they're hoping is that
+people who really want to get in
+
+01:08:25.370 --> 01:08:27.490 align:middle line:84%
+and are excited write
+the essay, and the people
+
+01:08:27.490 --> 01:08:29.189 align:middle line:84%
+who don't really want to get
+in don't write the essay.
+
+01:08:29.189 --> 01:08:30.609 align:middle line:84%
+I think it often doesn't
+work because we end up
+
+01:08:30.609 --> 01:08:31.830 align:middle line:84%
+in the other
+equilibrium I described
+
+01:08:31.830 --> 01:08:33.750 align:middle line:84%
+where everyone submits the essay
+even if they don't want to go.
+
+01:08:33.750 --> 01:08:34.630 align:middle line:90%
+But this is the idea.
+
+01:08:34.630 --> 01:08:37.569 align:middle line:84%
+And if essays are costly
+enough, this is what might work.
+
+01:08:37.569 --> 01:08:39.090 align:middle line:84%
+So we're looking
+for an equilibrium
+
+01:08:39.090 --> 01:08:42.290 align:middle line:90%
+where what is the student doing?
+
+01:08:42.290 --> 01:08:49.010 align:middle line:84%
+Well, if they're passionate,
+they submit the essay.
+
+01:08:49.010 --> 01:08:56.359 align:middle line:84%
+And if they're not passionate,
+they don't submit the essay.
+
+01:08:56.359 --> 01:08:59.671 align:middle line:84%
+And then what does
+the school do?
+
+01:08:59.671 --> 01:09:08.540 align:middle line:84%
+Well, let's first specify
+the school's beliefs.
+
+01:09:08.540 --> 01:09:12.319 align:middle line:84%
+In this case, both
+information sets
+
+01:09:12.319 --> 01:09:14.180 align:middle line:84%
+are reached with
+positive probability.
+
+01:09:14.180 --> 01:09:15.640 align:middle line:84%
+There's a positive
+probability that a student
+
+01:09:15.640 --> 01:09:17.457 align:middle line:84%
+submits an essay and
+a positive probability
+
+01:09:17.457 --> 01:09:19.040 align:middle line:84%
+that student does
+not submit an essay.
+
+01:09:19.040 --> 01:09:20.960 align:middle line:84%
+So in this case, we
+can apply Bayes' rule
+
+01:09:20.960 --> 01:09:22.140 align:middle line:90%
+at both information sets.
+
+01:09:22.140 --> 01:09:24.200 align:middle line:84%
+We don't run into this
+issue of dividing by 0.
+
+01:09:24.200 --> 01:09:26.158 align:middle line:84%
+And these beliefs are
+going to be well defined.
+
+01:09:26.158 --> 01:09:28.840 align:middle line:84%
+So if I see that a student
+submits an essay given
+
+01:09:28.840 --> 01:09:30.946 align:middle line:84%
+that this is the strategy,
+what does Bayes' rule
+
+01:09:30.946 --> 01:09:31.779 align:middle line:90%
+tell me as a school?
+
+01:09:31.779 --> 01:09:33.140 align:middle line:84%
+What is the probability
+that they're passionate?
+
+01:09:33.140 --> 01:09:35.859 align:middle line:84%
+And what is the probability
+that they're not passionate?
+
+01:09:35.859 --> 01:09:36.359 align:middle line:90%
+Yeah.
+
+01:09:36.359 --> 01:09:37.160 align:middle line:90%
+AUDIENCE: 1?
+
+01:09:37.160 --> 01:09:38.327 align:middle line:90%
+IAN BALL: Yeah, it's just 1.
+
+01:09:38.327 --> 01:09:40.840 align:middle line:84%
+And I think the way I'm writing
+it, let's write this 1, 0.
+
+01:09:40.840 --> 01:09:42.298 align:middle line:84%
+So I say there's
+a probability of 1
+
+01:09:42.298 --> 01:09:44.960 align:middle line:84%
+that they're passionate and 0
+that they're not passionate.
+
+01:09:44.960 --> 01:09:46.620 align:middle line:84%
+What if I see that
+there's no essay?
+
+01:09:46.620 --> 01:09:47.852 align:middle line:90%
+Well, now it's the opposite.
+
+01:09:47.852 --> 01:09:49.560 align:middle line:84%
+The only students who
+don't submit essays
+
+01:09:49.560 --> 01:09:51.060 align:middle line:84%
+are the ones who
+are not passionate.
+
+01:09:51.060 --> 01:09:53.319 align:middle line:84%
+So I'm certain that they
+must be not passionate.
+
+01:09:53.319 --> 01:09:54.690 align:middle line:90%
+And I get 0, 1.
+
+01:09:54.690 --> 01:09:58.790 align:middle line:90%
+
+
+01:09:58.790 --> 01:09:59.670 align:middle line:90%
+OK.
+
+01:09:59.670 --> 01:10:01.313 align:middle line:84%
+Well, now it's
+pretty clear, if I'm
+
+01:10:01.313 --> 01:10:03.730 align:middle line:84%
+certain that students who
+submit the essay are passionate,
+
+01:10:03.730 --> 01:10:06.652 align:middle line:90%
+I certainly want to accept them.
+
+01:10:06.652 --> 01:10:09.110 align:middle line:84%
+And if I'm certain that students
+who don't submit the essay
+
+01:10:09.110 --> 01:10:11.810 align:middle line:84%
+are not passionate, then I
+certainly want to reject them.
+
+01:10:11.810 --> 01:10:19.530 align:middle line:90%
+
+
+01:10:19.530 --> 01:10:23.310 align:middle line:84%
+So here's our
+candidate equilibrium.
+
+01:10:23.310 --> 01:10:27.230 align:middle line:84%
+And let's just go
+through the conditions.
+
+01:10:27.230 --> 01:10:29.450 align:middle line:84%
+And I think this is always
+a good way to check.
+
+01:10:29.450 --> 01:10:42.870 align:middle line:90%
+
+
+01:10:42.870 --> 01:10:46.390 align:middle line:84%
+So does this equilibrium
+satisfy belief consistency?
+
+01:10:46.390 --> 01:10:47.210 align:middle line:90%
+Yes.
+
+01:10:47.210 --> 01:10:50.830 align:middle line:84%
+We just checked Bayes'
+rule, so we're good here.
+
+01:10:50.830 --> 01:10:52.890 align:middle line:84%
+And just to remind you,
+when I say equilibrium,
+
+01:10:52.890 --> 01:10:55.130 align:middle line:84%
+notice I've not just
+specified the strategies.
+
+01:10:55.130 --> 01:10:57.310 align:middle line:90%
+I've also specified the beliefs.
+
+01:10:57.310 --> 01:10:59.470 align:middle line:84%
+And that's because this
+is an assessment, not just
+
+01:10:59.470 --> 01:11:01.910 align:middle line:90%
+a strategy profile.
+
+01:11:01.910 --> 01:11:03.510 align:middle line:84%
+And so I have
+belief consistency.
+
+01:11:03.510 --> 01:11:05.303 align:middle line:84%
+Now we move to
+sequential rationality.
+
+01:11:05.303 --> 01:11:07.970 align:middle line:84%
+Well, let me separately check it
+for the student and the school.
+
+01:11:07.970 --> 01:11:15.430 align:middle line:90%
+
+
+01:11:15.430 --> 01:11:17.730 align:middle line:84%
+Sequential rationality for
+the school is pretty clear.
+
+01:11:17.730 --> 01:11:18.570 align:middle line:90%
+This is what I already said.
+
+01:11:18.570 --> 01:11:19.670 align:middle line:84%
+They're accepting
+students who they
+
+01:11:19.670 --> 01:11:21.090 align:middle line:84%
+think are likely
+to be passionate,
+
+01:11:21.090 --> 01:11:22.548 align:middle line:84%
+and they're rejecting
+students they
+
+01:11:22.548 --> 01:11:24.470 align:middle line:84%
+think are likely to
+be not passionate.
+
+01:11:24.470 --> 01:11:26.880 align:middle line:90%
+So we're good here.
+
+01:11:26.880 --> 01:11:29.130 align:middle line:84%
+But what about sequential
+rationality for the student,
+
+01:11:29.130 --> 01:11:30.450 align:middle line:84%
+this is going to be
+a little trickier.
+
+01:11:30.450 --> 01:11:31.825 align:middle line:84%
+And this is going
+to depend on c.
+
+01:11:31.825 --> 01:11:32.390 align:middle line:90%
+Yeah.
+
+01:11:32.390 --> 01:11:34.307 align:middle line:84%
+AUDIENCE: Yeah, [INAUDIBLE]
+the expected value
+
+01:11:34.307 --> 01:11:39.652 align:middle line:84%
+for passionate students have to
+be like, negative [INAUDIBLE].
+
+01:11:39.652 --> 01:11:41.610 align:middle line:84%
+IAN BALL: Right, so let's
+exactly check it out.
+
+01:11:41.610 --> 01:11:43.030 align:middle line:84%
+So there's two things
+we have to check.
+
+01:11:43.030 --> 01:11:45.230 align:middle line:84%
+We have to check that if
+I'm a passionate student,
+
+01:11:45.230 --> 01:11:47.330 align:middle line:84%
+I prefer writing
+an essay to not.
+
+01:11:47.330 --> 01:11:48.830 align:middle line:84%
+And if I'm a
+not-passionate student,
+
+01:11:48.830 --> 01:11:51.020 align:middle line:84%
+I prefer not writing an
+essay to writing an essay.
+
+01:11:51.020 --> 01:11:53.360 align:middle line:84%
+So let's just write that
+down in math, but in words,
+
+01:11:53.360 --> 01:11:55.220 align:middle line:90%
+that's exactly what we want.
+
+01:11:55.220 --> 01:11:58.780 align:middle line:84%
+So let's suppose I'm a
+student who's passionate.
+
+01:11:58.780 --> 01:12:03.918 align:middle line:84%
+And if I write an essay,
+what is my payoff?
+
+01:12:03.918 --> 01:12:05.960 align:middle line:84%
+And if I don't write an
+essay, what is my payoff?
+
+01:12:05.960 --> 01:12:09.940 align:middle line:90%
+
+
+01:12:09.940 --> 01:12:13.640 align:middle line:84%
+Well, if I'm passionate and I
+write an essay, what happens?
+
+01:12:13.640 --> 01:12:14.680 align:middle line:90%
+What's my payoff here?
+
+01:12:14.680 --> 01:12:18.580 align:middle line:90%
+
+
+01:12:18.580 --> 01:12:20.200 align:middle line:90%
+2 minus c.
+
+01:12:20.200 --> 01:12:23.348 align:middle line:90%
+
+
+01:12:23.348 --> 01:12:24.140 align:middle line:90%
+OK.
+
+01:12:24.140 --> 01:12:28.580 align:middle line:84%
+And if I don't write an
+essay, well, I'm not accepted,
+
+01:12:28.580 --> 01:12:31.040 align:middle line:84%
+and I don't write the essay,
+so my payoff is just 0.
+
+01:12:31.040 --> 01:12:33.920 align:middle line:90%
+
+
+01:12:33.920 --> 01:12:37.660 align:middle line:84%
+Now, notice a really
+crucial point here.
+
+01:12:37.660 --> 01:12:41.340 align:middle line:84%
+The school's strategy is that
+if you don't submit an essay,
+
+01:12:41.340 --> 01:12:43.380 align:middle line:90%
+you're rejected.
+
+01:12:43.380 --> 01:12:46.660 align:middle line:84%
+When I, as a passionate student,
+contemplate deviating and not
+
+01:12:46.660 --> 01:12:49.490 align:middle line:84%
+submitting an essay, when
+I don't submit an essay,
+
+01:12:49.490 --> 01:12:52.182 align:middle line:84%
+the school's strategy is fixed,
+and therefore, they reject me.
+
+01:12:52.182 --> 01:12:54.390 align:middle line:84%
+People often get confused
+here because you might say,
+
+01:12:54.390 --> 01:12:55.870 align:middle line:84%
+well, the school's
+belief is wrong.
+
+01:12:55.870 --> 01:12:58.690 align:middle line:84%
+Their belief is that only
+non-passionate students
+
+01:12:58.690 --> 01:13:00.130 align:middle line:90%
+don't submit essays.
+
+01:13:00.130 --> 01:13:02.462 align:middle line:84%
+And now a passionate
+student's submitting an essay.
+
+01:13:02.462 --> 01:13:04.170 align:middle line:84%
+But the school can't
+tell the difference.
+
+01:13:04.170 --> 01:13:07.270 align:middle line:84%
+If the school's belief is that
+if you don't submit an essay,
+
+01:13:07.270 --> 01:13:08.690 align:middle line:90%
+you can't be passionate.
+
+01:13:08.690 --> 01:13:11.130 align:middle line:84%
+And if a passionate student
+deviates and doesn't
+
+01:13:11.130 --> 01:13:13.410 align:middle line:84%
+send an essay, they're not
+able to change the beliefs
+
+01:13:13.410 --> 01:13:14.487 align:middle line:90%
+that the school has.
+
+01:13:14.487 --> 01:13:16.570 align:middle line:84%
+The school has their beliefs
+fixed, and therefore,
+
+01:13:16.570 --> 01:13:18.090 align:middle line:84%
+what happens to
+them when they don't
+
+01:13:18.090 --> 01:13:21.000 align:middle line:84%
+write an essay is determined
+by the strategy of the school.
+
+01:13:21.000 --> 01:13:21.750 align:middle line:90%
+It doesn't change.
+
+01:13:21.750 --> 01:13:23.510 align:middle line:84%
+Some people are tempted to
+say, oh, they're passionate,
+
+01:13:23.510 --> 01:13:25.218 align:middle line:84%
+so now the school's
+going to accept them.
+
+01:13:25.218 --> 01:13:26.770 align:middle line:90%
+No, it's a unilateral deviation.
+
+01:13:26.770 --> 01:13:28.390 align:middle line:90%
+The school strategy is fixed.
+
+01:13:28.390 --> 01:13:29.807 align:middle line:84%
+And we're considering
+what happens
+
+01:13:29.807 --> 01:13:32.290 align:middle line:84%
+when a passionate student
+deviates by not submitting this.
+
+01:13:32.290 --> 01:13:35.090 align:middle line:84%
+OK, now let's consider a
+non-passionate student.
+
+01:13:35.090 --> 01:13:37.890 align:middle line:90%
+They're not submitting an essay.
+
+01:13:37.890 --> 01:13:40.570 align:middle line:84%
+And again, they're
+getting a payoff of 0.
+
+01:13:40.570 --> 01:13:42.070 align:middle line:90%
+What if they submitted an essay?
+
+01:13:42.070 --> 01:13:44.970 align:middle line:90%
+
+
+01:13:44.970 --> 01:13:47.510 align:middle line:90%
+What would their payoff be?
+
+01:13:47.510 --> 01:13:48.920 align:middle line:90%
+Yeah.
+
+01:13:48.920 --> 01:13:53.538 align:middle line:84%
+1 minus C. Again, they're
+able to trick the school.
+
+01:13:53.538 --> 01:13:56.080 align:middle line:84%
+If they submit the essay, they
+successfully trick the school,
+
+01:13:56.080 --> 01:13:57.620 align:middle line:84%
+and the school's
+going to accept them
+
+01:13:57.620 --> 01:13:58.520 align:middle line:84%
+even though the
+school doesn't want
+
+01:13:58.520 --> 01:14:00.640 align:middle line:84%
+to accept non-passionate
+people, but they have
+
+01:14:00.640 --> 01:14:02.280 align:middle line:90%
+to pay the essay cost of c.
+
+01:14:02.280 --> 01:14:04.920 align:middle line:84%
+So now let's check the
+equilibrium conditions.
+
+01:14:04.920 --> 01:14:07.400 align:middle line:84%
+A passionate student is
+supposed to submit the essay,
+
+01:14:07.400 --> 01:14:11.680 align:middle line:84%
+so we need 2 minus c to be
+greater than or equal to 0.
+
+01:14:11.680 --> 01:14:13.400 align:middle line:84%
+But a non-passionate
+student is not
+
+01:14:13.400 --> 01:14:14.960 align:middle line:90%
+supposed to submit the essay.
+
+01:14:14.960 --> 01:14:20.280 align:middle line:84%
+So we need 0 greater than
+or equal to 1 minus c.
+
+01:14:20.280 --> 01:14:24.440 align:middle line:90%
+So what's our solution?
+
+01:14:24.440 --> 01:14:26.840 align:middle line:84%
+Well, this is going
+to be an equilibrium
+
+01:14:26.840 --> 01:14:30.760 align:middle line:84%
+if both of these
+inequalities are satisfied.
+
+01:14:30.760 --> 01:14:35.080 align:middle line:84%
+And that's going to be true if
+1 is less than or equal to c
+
+01:14:35.080 --> 01:14:37.465 align:middle line:90%
+less than or equal to 2.
+
+01:14:37.465 --> 01:14:39.340 align:middle line:84%
+And let's try to understand
+the role of this.
+
+01:14:39.340 --> 01:14:40.960 align:middle line:84%
+Why do we have these
+two assumptions?
+
+01:14:40.960 --> 01:14:44.160 align:middle line:84%
+Well, we want the essay to
+separate the good students
+
+01:14:44.160 --> 01:14:47.000 align:middle line:90%
+from the bad students.
+
+01:14:47.000 --> 01:14:49.060 align:middle line:84%
+What would go wrong
+if c was too big?
+
+01:14:49.060 --> 01:14:50.680 align:middle line:90%
+If c was greater than 2?
+
+01:14:50.680 --> 01:14:51.200 align:middle line:90%
+Yeah.
+
+01:14:51.200 --> 01:14:52.835 align:middle line:84%
+AUDIENCE: Even the
+good students--
+
+01:14:52.835 --> 01:14:54.460 align:middle line:84%
+IAN BALL: Yeah, it's
+so costly-- if you
+
+01:14:54.460 --> 01:14:55.660 align:middle line:84%
+say you have to write
+100 essays, well,
+
+01:14:55.660 --> 01:14:57.327 align:middle line:84%
+no one's going to
+apply to your school--
+
+01:14:57.327 --> 01:14:58.520 align:middle line:90%
+again, in the pre-GPT world.
+
+01:14:58.520 --> 01:15:00.312 align:middle line:84%
+So we're not able to
+separate the students.
+
+01:15:00.312 --> 01:15:03.120 align:middle line:84%
+If c is too low,
+what goes wrong?
+
+01:15:03.120 --> 01:15:06.180 align:middle line:84%
+If c is less than 1, well, even
+the non-passionate students say,
+
+01:15:06.180 --> 01:15:08.480 align:middle line:84%
+well, it's a one-paragraph
+essay, I can do that.
+
+01:15:08.480 --> 01:15:10.080 align:middle line:90%
+It's worth it for me to do that.
+
+01:15:10.080 --> 01:15:12.080 align:middle line:84%
+So if you think of
+the school as-- this
+
+01:15:12.080 --> 01:15:13.622 align:middle line:84%
+is a broader question
+about the game,
+
+01:15:13.622 --> 01:15:15.247 align:middle line:84%
+you could think of
+the design question,
+
+01:15:15.247 --> 01:15:17.800 align:middle line:84%
+if the school can choose c by
+choosing how hard the essay is,
+
+01:15:17.800 --> 01:15:19.258 align:middle line:84%
+they might want to
+choose the essay
+
+01:15:19.258 --> 01:15:20.660 align:middle line:90%
+to be a moderate difficulty.
+
+01:15:20.660 --> 01:15:23.480 align:middle line:84%
+It's hard enough to deter
+the uninspired students
+
+01:15:23.480 --> 01:15:26.520 align:middle line:84%
+from applying, but easy enough
+that the inspired students would
+
+01:15:26.520 --> 01:15:27.280 align:middle line:90%
+still apply.
+
+01:15:27.280 --> 01:15:29.920 align:middle line:84%
+And I think that's exactly
+what admissions offices
+
+01:15:29.920 --> 01:15:32.840 align:middle line:90%
+and jobs think about.
+
+01:15:32.840 --> 01:15:36.200 align:middle line:84%
+OK, let me stop there unless
+there's any questions.
+
+01:15:36.200 --> 01:15:39.070 align:middle line:90%
+And I'll see everyone next week.
+
+01:15:39.070 --> 01:15:44.000 align:middle line:90%

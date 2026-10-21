@@ -1,0 +1,6483 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:02.412 align:middle line:90%
+[SQUEAKING]
+
+00:00:02.412 --> 00:00:04.324 align:middle line:90%
+[RUSTLING]
+
+00:00:04.324 --> 00:00:05.758 align:middle line:90%
+[CLICKING]
+
+00:00:05.758 --> 00:00:08.887 align:middle line:90%
+
+
+00:00:08.887 --> 00:00:09.720 align:middle line:90%
+IAN BALL: All right.
+
+00:00:09.720 --> 00:00:11.220 align:middle line:84%
+So today, we're
+starting a new phase
+
+00:00:11.220 --> 00:00:15.560 align:middle line:84%
+of the course, which is
+going to be about games
+
+00:00:15.560 --> 00:00:19.433 align:middle line:90%
+with incomplete information.
+
+00:00:19.433 --> 00:00:21.600 align:middle line:84%
+And I'll warn you up front
+that the terminology here
+
+00:00:21.600 --> 00:00:22.420 align:middle line:90%
+is a bit confusing.
+
+00:00:22.420 --> 00:00:24.640 align:middle line:84%
+We've been talking about
+imperfect and perfect
+
+00:00:24.640 --> 00:00:26.200 align:middle line:84%
+information, and
+now we're talking
+
+00:00:26.200 --> 00:00:28.620 align:middle line:84%
+about complete and
+incomplete information.
+
+00:00:28.620 --> 00:00:31.220 align:middle line:84%
+Complete and perfect sound
+similar colloquially,
+
+00:00:31.220 --> 00:00:33.470 align:middle line:84%
+but in game theory, they
+have very different meanings.
+
+00:00:33.470 --> 00:00:37.075 align:middle line:84%
+So I want to be precise
+about what's going on.
+
+00:00:37.075 --> 00:00:42.100 align:middle line:84%
+So far, we've always looked
+at complete information.
+
+00:00:42.100 --> 00:00:48.640 align:middle line:90%
+
+
+00:00:48.640 --> 00:00:51.260 align:middle line:84%
+And what's confusing is that
+under complete information,
+
+00:00:51.260 --> 00:00:53.500 align:middle line:84%
+under this complete
+information umbrella,
+
+00:00:53.500 --> 00:00:55.200 align:middle line:84%
+there are two special
+cases that we've
+
+00:00:55.200 --> 00:00:57.680 align:middle line:84%
+talked about or two
+distinct cases, which
+
+00:00:57.680 --> 00:01:04.190 align:middle line:84%
+is perfect information
+and imperfect information.
+
+00:01:04.190 --> 00:01:08.488 align:middle line:90%
+
+
+00:01:08.488 --> 00:01:10.030 align:middle line:84%
+So I'll give some
+formal definitions,
+
+00:01:10.030 --> 00:01:11.250 align:middle line:84%
+but then I'll also
+give some examples
+
+00:01:11.250 --> 00:01:13.610 align:middle line:84%
+to keep in mind, because I
+think these definitions can
+
+00:01:13.610 --> 00:01:14.790 align:middle line:90%
+seem a bit abstract.
+
+00:01:14.790 --> 00:01:18.250 align:middle line:84%
+So in games of perfect
+information, what that meant
+
+00:01:18.250 --> 00:01:22.470 align:middle line:84%
+was that every information
+set was a singleton.
+
+00:01:22.470 --> 00:01:33.250 align:middle line:90%
+
+
+00:01:33.250 --> 00:01:35.370 align:middle line:84%
+And I think the canonical
+game to keep in mind
+
+00:01:35.370 --> 00:01:38.270 align:middle line:84%
+for games of perfect information
+would be games like chess.
+
+00:01:38.270 --> 00:01:42.850 align:middle line:90%
+
+
+00:01:42.850 --> 00:01:46.170 align:middle line:84%
+So when we play chess,
+whenever it's our turn to move,
+
+00:01:46.170 --> 00:01:48.770 align:middle line:84%
+we can perfectly see
+how everyone else
+
+00:01:48.770 --> 00:01:50.090 align:middle line:90%
+has moved so far in chess.
+
+00:01:50.090 --> 00:01:51.465 align:middle line:84%
+We see the position
+of the board,
+
+00:01:51.465 --> 00:01:54.330 align:middle line:84%
+and we remember each move
+that everyone else played.
+
+00:01:54.330 --> 00:01:58.460 align:middle line:84%
+That's the sense in which every
+information set is a singleton.
+
+00:01:58.460 --> 00:02:01.300 align:middle line:84%
+Then we also looked at games
+of imperfect information.
+
+00:02:01.300 --> 00:02:04.540 align:middle line:84%
+What that meant was that some
+information sets were not
+
+00:02:04.540 --> 00:02:05.780 align:middle line:90%
+singletons.
+
+00:02:05.780 --> 00:02:12.800 align:middle line:84%
+So I'll say some
+non-singleton info sets.
+
+00:02:12.800 --> 00:02:15.420 align:middle line:90%
+
+
+00:02:15.420 --> 00:02:17.020 align:middle line:84%
+Now, economically,
+what does it mean
+
+00:02:17.020 --> 00:02:19.122 align:middle line:84%
+when we had non-singleton
+information sets?
+
+00:02:19.122 --> 00:02:21.580 align:middle line:84%
+It meant that there were times
+when someone was called upon
+
+00:02:21.580 --> 00:02:24.640 align:middle line:84%
+to move, and there was
+some aspect of the game
+
+00:02:24.640 --> 00:02:26.140 align:middle line:84%
+or of the previous
+moves they didn't
+
+00:02:26.140 --> 00:02:27.700 align:middle line:84%
+know about-- either
+moved by nature
+
+00:02:27.700 --> 00:02:29.120 align:middle line:90%
+or moved by a different player.
+
+00:02:29.120 --> 00:02:31.200 align:middle line:84%
+And they knew which
+information set they were at,
+
+00:02:31.200 --> 00:02:36.460 align:middle line:84%
+but they didn't know which
+node within that information
+
+00:02:36.460 --> 00:02:37.660 align:middle line:90%
+set they were at.
+
+00:02:37.660 --> 00:02:41.000 align:middle line:90%
+And this was the case--
+
+00:02:41.000 --> 00:02:43.460 align:middle line:84%
+there's a few leading
+examples here.
+
+00:02:43.460 --> 00:02:45.760 align:middle line:84%
+Whenever we had a
+simultaneous move game--
+
+00:02:45.760 --> 00:02:49.813 align:middle line:90%
+
+
+00:02:49.813 --> 00:02:51.980 align:middle line:84%
+whenever the players moved
+simultaneously, remember,
+
+00:02:51.980 --> 00:02:54.920 align:middle line:84%
+the way we represented that in
+the extensive form was to say,
+
+00:02:54.920 --> 00:02:57.210 align:middle line:84%
+well, technically one
+player has moved first.
+
+00:02:57.210 --> 00:02:59.790 align:middle line:84%
+But then the other player moves
+without observing the move
+
+00:02:59.790 --> 00:03:02.190 align:middle line:84%
+by the other player, and
+therefore that second player's
+
+00:03:02.190 --> 00:03:03.870 align:middle line:84%
+information set is
+going to include
+
+00:03:03.870 --> 00:03:08.790 align:middle line:84%
+different nodes that specify
+how the other player moved.
+
+00:03:08.790 --> 00:03:11.110 align:middle line:84%
+So simultaneous moves--
+the simple example here,
+
+00:03:11.110 --> 00:03:14.270 align:middle line:90%
+I would say, is poker.
+
+00:03:14.270 --> 00:03:17.270 align:middle line:84%
+Poker would be another case,
+because when I'm called upon
+
+00:03:17.270 --> 00:03:20.510 align:middle line:84%
+to move in poker, I don't know
+the cards that the other players
+
+00:03:20.510 --> 00:03:24.510 align:middle line:84%
+have been dealt. Even if we
+move sequentially in poker,
+
+00:03:24.510 --> 00:03:26.790 align:middle line:84%
+my information set is
+still non-singleton
+
+00:03:26.790 --> 00:03:30.030 align:middle line:84%
+because when I move, I don't
+know what cards the other player
+
+00:03:30.030 --> 00:03:30.530 align:middle line:90%
+has.
+
+00:03:30.530 --> 00:03:32.230 align:middle line:84%
+So these are two
+distinct ways we
+
+00:03:32.230 --> 00:03:35.430 align:middle line:90%
+can have imperfect information.
+
+00:03:35.430 --> 00:03:39.250 align:middle line:84%
+But why do I say both of these
+are complete information?
+
+00:03:39.250 --> 00:03:43.430 align:middle line:90%
+
+
+00:03:43.430 --> 00:03:46.550 align:middle line:84%
+So the defining feature,
+the defining property
+
+00:03:46.550 --> 00:03:49.270 align:middle line:84%
+of these two classes
+of games is what makes
+
+00:03:49.270 --> 00:03:50.730 align:middle line:90%
+them complete information.
+
+00:03:50.730 --> 00:03:54.462 align:middle line:90%
+
+
+00:03:54.462 --> 00:03:55.920 align:middle line:84%
+And I'll warn you,
+some people give
+
+00:03:55.920 --> 00:03:57.580 align:middle line:84%
+slightly different
+definitions of this,
+
+00:03:57.580 --> 00:04:00.038 align:middle line:84%
+and I think my definition is
+slightly different than what's
+
+00:04:00.038 --> 00:04:01.000 align:middle line:90%
+given in the notes.
+
+00:04:01.000 --> 00:04:03.280 align:middle line:84%
+But what I like to think
+of it is, at the beginning
+
+00:04:03.280 --> 00:04:16.260 align:middle line:84%
+of the game, information
+is symmetric.
+
+00:04:16.260 --> 00:04:24.320 align:middle line:90%
+
+
+00:04:24.320 --> 00:04:26.480 align:middle line:84%
+So beginning of the
+game is crucial here.
+
+00:04:26.480 --> 00:04:30.705 align:middle line:84%
+Once we start playing poker,
+we're going to be dealt hands.
+
+00:04:30.705 --> 00:04:33.080 align:middle line:84%
+And one player won't know what
+cards the other player has
+
+00:04:33.080 --> 00:04:35.800 align:middle line:84%
+been dealt. But when we start
+the game, when we sit down
+
+00:04:35.800 --> 00:04:38.087 align:middle line:84%
+at the poker table,
+whatever one player knows,
+
+00:04:38.087 --> 00:04:38.920 align:middle line:90%
+everyone else knows.
+
+00:04:38.920 --> 00:04:40.580 align:middle line:84%
+No one's been dealt
+any cards yet.
+
+00:04:40.580 --> 00:04:42.260 align:middle line:84%
+We all understand the
+rules of the game.
+
+00:04:42.260 --> 00:04:43.677 align:middle line:84%
+We all understand
+that people want
+
+00:04:43.677 --> 00:04:45.080 align:middle line:84%
+to win as much
+money as possible,
+
+00:04:45.080 --> 00:04:47.760 align:middle line:84%
+and information is
+symmetric in the sense
+
+00:04:47.760 --> 00:04:56.320 align:middle line:84%
+that anything known by one
+player is known by all players.
+
+00:04:56.320 --> 00:05:00.215 align:middle line:90%
+
+
+00:05:00.215 --> 00:05:01.840 align:middle line:84%
+And maybe if I want
+to be more precise,
+
+00:05:01.840 --> 00:05:03.620 align:middle line:90%
+I'll say it's common knowledge.
+
+00:05:03.620 --> 00:05:08.958 align:middle line:90%
+
+
+00:05:08.958 --> 00:05:10.500 align:middle line:84%
+This doesn't mean
+we know everything.
+
+00:05:10.500 --> 00:05:11.960 align:middle line:84%
+When we sit down
+at a poker table,
+
+00:05:11.960 --> 00:05:14.940 align:middle line:84%
+we don't know what hand we're
+going to be dealt in the future.
+
+00:05:14.940 --> 00:05:16.197 align:middle line:90%
+But none of us know that.
+
+00:05:16.197 --> 00:05:17.780 align:middle line:84%
+There's no information
+that one player
+
+00:05:17.780 --> 00:05:19.900 align:middle line:84%
+knows that other
+players don't know
+
+00:05:19.900 --> 00:05:22.060 align:middle line:90%
+at the beginning of the game.
+
+00:05:22.060 --> 00:05:26.020 align:middle line:84%
+And it's crucial here that we're
+at the beginning of the game.
+
+00:05:26.020 --> 00:05:28.480 align:middle line:84%
+The distinction with
+incomplete information--
+
+00:05:28.480 --> 00:05:36.140 align:middle line:90%
+
+
+00:05:36.140 --> 00:05:38.080 align:middle line:84%
+when I say information
+is symmetric,
+
+00:05:38.080 --> 00:05:41.143 align:middle line:84%
+let me add here,
+relevant information.
+
+00:05:41.143 --> 00:05:43.060 align:middle line:84%
+Of course, when you sit
+down at a poker table,
+
+00:05:43.060 --> 00:05:44.840 align:middle line:84%
+you know your birthday
+and someone else doesn't.
+
+00:05:44.840 --> 00:05:46.840 align:middle line:84%
+But that's not really
+relevant to the game.
+
+00:05:46.840 --> 00:05:48.340 align:middle line:84%
+So in a technical
+sense, we never
+
+00:05:48.340 --> 00:05:50.030 align:middle line:84%
+have complete information
+because there's always
+
+00:05:50.030 --> 00:05:51.930 align:middle line:84%
+these unmodeled things
+that are irrelevant.
+
+00:05:51.930 --> 00:05:54.390 align:middle line:84%
+But what I mean is
+relevant information
+
+00:05:54.390 --> 00:05:56.090 align:middle line:90%
+with incomplete information.
+
+00:05:56.090 --> 00:06:05.070 align:middle line:84%
+The difference is that at
+the beginning of the game,
+
+00:06:05.070 --> 00:06:08.950 align:middle line:84%
+there is relevant information
+that some player knows
+
+00:06:08.950 --> 00:06:11.950 align:middle line:90%
+but another player doesn't know.
+
+00:06:11.950 --> 00:06:22.590 align:middle line:84%
+So there is information, or more
+precisely, relevant information
+
+00:06:22.590 --> 00:06:24.810 align:middle line:84%
+that is known by some
+player, but not others.
+
+00:06:24.810 --> 00:06:39.750 align:middle line:90%
+
+
+00:06:39.750 --> 00:06:42.170 align:middle line:84%
+And let's give a few
+examples of this.
+
+00:06:42.170 --> 00:06:44.750 align:middle line:90%
+
+
+00:06:44.750 --> 00:06:46.970 align:middle line:84%
+So examples of incomplete
+information games.
+
+00:06:46.970 --> 00:06:49.560 align:middle line:84%
+And what you'll
+see is that a lot
+
+00:06:49.560 --> 00:06:52.000 align:middle line:84%
+of our examples of
+complete information games
+
+00:06:52.000 --> 00:06:53.100 align:middle line:90%
+come from parlor games.
+
+00:06:53.100 --> 00:06:54.905 align:middle line:84%
+They come from things
+like chess or poker.
+
+00:06:54.905 --> 00:06:56.280 align:middle line:84%
+But in the real
+world, when we're
+
+00:06:56.280 --> 00:06:58.200 align:middle line:84%
+analyzing economic
+situations, we're
+
+00:06:58.200 --> 00:07:00.340 align:middle line:84%
+much more often in the
+incomplete information case.
+
+00:07:00.340 --> 00:07:02.620 align:middle line:84%
+So let's give a few
+examples of that.
+
+00:07:02.620 --> 00:07:12.745 align:middle line:90%
+
+
+00:07:12.745 --> 00:07:13.620 align:middle line:90%
+Was there a question?
+
+00:07:13.620 --> 00:07:14.560 align:middle line:90%
+Yeah.
+
+00:07:14.560 --> 00:07:15.587 align:middle line:90%
+AUDIENCE: No, nevermind.
+
+00:07:15.587 --> 00:07:16.920 align:middle line:90%
+IAN BALL: You're welcome to ask.
+
+00:07:16.920 --> 00:07:18.260 align:middle line:84%
+AUDIENCE: Oh, I thought you
+were asking for example.
+
+00:07:18.260 --> 00:07:19.052 align:middle line:90%
+IAN BALL: Oh, sure.
+
+00:07:19.052 --> 00:07:20.040 align:middle line:90%
+Give an example, yeah.
+
+00:07:20.040 --> 00:07:21.373 align:middle line:90%
+Sorry, sometimes I'm rhetorical.
+
+00:07:21.373 --> 00:07:22.147 align:middle line:90%
+It's not clear.
+
+00:07:22.147 --> 00:07:23.980 align:middle line:84%
+You can always answer
+any question you want.
+
+00:07:23.980 --> 00:07:25.938 align:middle line:84%
+And if I didn't intend
+it, that's totally fine.
+
+00:07:25.938 --> 00:07:27.302 align:middle line:90%
+Yeah, go ahead.
+
+00:07:27.302 --> 00:07:28.760 align:middle line:84%
+AUDIENCE: Would
+one of them be when
+
+00:07:28.760 --> 00:07:31.385 align:middle line:84%
+there's price haggling and they
+don't know each other's values?
+
+00:07:31.385 --> 00:07:32.135 align:middle line:90%
+IAN BALL: Exactly.
+
+00:07:32.135 --> 00:07:33.100 align:middle line:90%
+That's a great example.
+
+00:07:33.100 --> 00:07:36.153 align:middle line:90%
+And actually, that fits in.
+
+00:07:36.153 --> 00:07:38.820 align:middle line:84%
+The first example I was going to
+give is a special case of that.
+
+00:07:38.820 --> 00:07:41.580 align:middle line:84%
+So let me give this is the
+kind of classic example.
+
+00:07:41.580 --> 00:07:43.540 align:middle line:84%
+And it exactly fits
+into your setting.
+
+00:07:43.540 --> 00:07:45.850 align:middle line:84%
+And this, I would say
+is buying a used car.
+
+00:07:45.850 --> 00:07:48.110 align:middle line:84%
+And of course, price
+haggling over the used car.
+
+00:07:48.110 --> 00:07:52.057 align:middle line:90%
+
+
+00:07:52.057 --> 00:07:54.390 align:middle line:84%
+Let's say we're haggling over
+the price of the used car.
+
+00:07:54.390 --> 00:07:55.215 align:middle line:90%
+What don't we know?
+
+00:07:55.215 --> 00:07:56.590 align:middle line:84%
+Well, you brought
+up one example.
+
+00:07:56.590 --> 00:07:59.350 align:middle line:84%
+We don't know each player's
+valuation for the car.
+
+00:07:59.350 --> 00:08:02.070 align:middle line:84%
+And we can be a little
+more specific, right?
+
+00:08:02.070 --> 00:08:04.502 align:middle line:84%
+Let's say a salesperson
+is selling you a used car.
+
+00:08:04.502 --> 00:08:06.710 align:middle line:84%
+There's something they know
+that you don't, probably.
+
+00:08:06.710 --> 00:08:09.770 align:middle line:84%
+What might they know that
+you don't know about the car?
+
+00:08:09.770 --> 00:08:11.130 align:middle line:90%
+Yes, in the second row?
+
+00:08:11.130 --> 00:08:12.450 align:middle line:90%
+AUDIENCE: The condition?
+
+00:08:12.450 --> 00:08:13.908 align:middle line:84%
+IAN BALL: The
+condition of the car.
+
+00:08:13.908 --> 00:08:16.250 align:middle line:84%
+So in this case,
+the seller, maybe
+
+00:08:16.250 --> 00:08:18.225 align:middle line:84%
+they're an experienced
+mechanic or auto dealer.
+
+00:08:18.225 --> 00:08:19.350 align:middle line:90%
+They've seen a lot of cars.
+
+00:08:19.350 --> 00:08:21.370 align:middle line:84%
+They've examined
+the car closely.
+
+00:08:21.370 --> 00:08:23.270 align:middle line:84%
+You maybe don't know
+a lot about cars.
+
+00:08:23.270 --> 00:08:26.770 align:middle line:84%
+So often, the seller
+knows whether there's
+
+00:08:26.770 --> 00:08:27.882 align:middle line:90%
+a problem with the engine.
+
+00:08:27.882 --> 00:08:30.090 align:middle line:84%
+They know whether it's been
+making a sound every time
+
+00:08:30.090 --> 00:08:30.790 align:middle line:90%
+they drive it.
+
+00:08:30.790 --> 00:08:35.470 align:middle line:84%
+So the seller knows the
+condition of the car.
+
+00:08:35.470 --> 00:08:40.289 align:middle line:90%
+
+
+00:08:40.289 --> 00:08:41.970 align:middle line:84%
+And that's probably
+relevant, actually,
+
+00:08:41.970 --> 00:08:43.580 align:middle line:90%
+to both of your valuations.
+
+00:08:43.580 --> 00:08:45.200 align:middle line:84%
+If it's a high quality
+car, the seller
+
+00:08:45.200 --> 00:08:46.700 align:middle line:84%
+probably values it
+more because they
+
+00:08:46.700 --> 00:08:47.950 align:middle line:90%
+could sell it to someone else.
+
+00:08:47.950 --> 00:08:50.100 align:middle line:84%
+The buyer probably
+values it more as well.
+
+00:08:50.100 --> 00:08:51.820 align:middle line:84%
+I'd argue the
+buyer probably also
+
+00:08:51.820 --> 00:08:53.700 align:middle line:90%
+has some private information.
+
+00:08:53.700 --> 00:08:55.727 align:middle line:90%
+What does the buyer know?
+
+00:08:55.727 --> 00:08:58.060 align:middle line:84%
+And these are things-- when
+I say the seller knows this,
+
+00:08:58.060 --> 00:08:59.040 align:middle line:90%
+but the buyer doesn't.
+
+00:08:59.040 --> 00:09:05.510 align:middle line:90%
+
+
+00:09:05.510 --> 00:09:07.260 align:middle line:84%
+And of course, these
+things aren't binary.
+
+00:09:07.260 --> 00:09:09.302 align:middle line:84%
+The buyer probably knows
+something about the car.
+
+00:09:09.302 --> 00:09:11.515 align:middle line:84%
+They can look at it and
+see if it's totally dented.
+
+00:09:11.515 --> 00:09:14.140 align:middle line:84%
+They can see that, but there's
+probably some aspects of the car
+
+00:09:14.140 --> 00:09:16.245 align:middle line:84%
+that they can't see
+or can't observe.
+
+00:09:16.245 --> 00:09:17.120 align:middle line:90%
+What about the buyer?
+
+00:09:17.120 --> 00:09:18.280 align:middle line:84%
+What is something
+the buyer may know?
+
+00:09:18.280 --> 00:09:18.980 align:middle line:90%
+Yeah.
+
+00:09:18.980 --> 00:09:22.580 align:middle line:84%
+AUDIENCE: The buyer knows
+how much they want a car.
+
+00:09:22.580 --> 00:09:24.300 align:middle line:84%
+I feel like that
+informs how much they'd
+
+00:09:24.300 --> 00:09:25.360 align:middle line:90%
+be willing to pay for it.
+
+00:09:25.360 --> 00:09:25.740 align:middle line:90%
+IAN BALL: Exactly.
+
+00:09:25.740 --> 00:09:27.560 align:middle line:84%
+So the buyer knows-- and this
+is exactly what you mentioned
+
+00:09:27.560 --> 00:09:29.935 align:middle line:84%
+in the front row-- they know
+their valuation for the car.
+
+00:09:29.935 --> 00:09:32.923 align:middle line:84%
+Buyer knows, or at
+least they know--
+
+00:09:32.923 --> 00:09:34.840 align:middle line:84%
+maybe they don't know
+their valuation exactly,
+
+00:09:34.840 --> 00:09:36.140 align:middle line:90%
+but they know--
+
+00:09:36.140 --> 00:09:37.800 align:middle line:84%
+maybe I'll say how
+much they need it.
+
+00:09:37.800 --> 00:09:40.060 align:middle line:90%
+
+
+00:09:40.060 --> 00:09:42.310 align:middle line:84%
+The reason I don't say they
+don't know their valuation
+
+00:09:42.310 --> 00:09:44.482 align:middle line:84%
+is if they don't know if
+the car is broken or not,
+
+00:09:44.482 --> 00:09:46.190 align:middle line:84%
+then they probably
+don't know exactly how
+
+00:09:46.190 --> 00:09:47.610 align:middle line:90%
+much it's really worth to them.
+
+00:09:47.610 --> 00:09:50.910 align:middle line:84%
+But they know they have a job
+they need to get to tomorrow,
+
+00:09:50.910 --> 00:09:52.270 align:middle line:90%
+and they have to get there.
+
+00:09:52.270 --> 00:09:54.630 align:middle line:84%
+And they know they went to
+the last three dealerships,
+
+00:09:54.630 --> 00:09:56.297 align:middle line:84%
+and they couldn't
+find a car they liked.
+
+00:09:56.297 --> 00:09:58.297 align:middle line:84%
+Or maybe they know that
+they like the color red,
+
+00:09:58.297 --> 00:10:00.422 align:middle line:84%
+and this car is red-- or
+they hate the color brown,
+
+00:10:00.422 --> 00:10:01.850 align:middle line:84%
+and that's why
+they value it less.
+
+00:10:01.850 --> 00:10:04.183 align:middle line:84%
+There's a lot of aspects of
+the buyer's preferences that
+
+00:10:04.183 --> 00:10:05.890 align:middle line:84%
+the buyer knows, but
+the seller doesn't.
+
+00:10:05.890 --> 00:10:14.150 align:middle line:90%
+
+
+00:10:14.150 --> 00:10:15.670 align:middle line:84%
+And notice how this
+is fundamentally
+
+00:10:15.670 --> 00:10:19.850 align:middle line:84%
+different from the imperfect
+information we see in poker.
+
+00:10:19.850 --> 00:10:23.410 align:middle line:84%
+In poker, yes, I don't know
+if you have queens or kings.
+
+00:10:23.410 --> 00:10:24.890 align:middle line:84%
+But when you sit
+down at the table,
+
+00:10:24.890 --> 00:10:26.723 align:middle line:84%
+we basically all know
+the game we're playing
+
+00:10:26.723 --> 00:10:30.310 align:middle line:84%
+and we all know the preferences
+of the other players.
+
+00:10:30.310 --> 00:10:34.830 align:middle line:84%
+Another great example
+would be health insurance--
+
+00:10:34.830 --> 00:10:38.923 align:middle line:90%
+so also buying health insurance.
+
+00:10:38.923 --> 00:10:40.840 align:middle line:84%
+I would argue in this
+case probably the seller
+
+00:10:40.840 --> 00:10:44.640 align:middle line:84%
+and the buyer know some things
+that the other party doesn't
+
+00:10:44.640 --> 00:10:47.520 align:middle line:90%
+know very well.
+
+00:10:47.520 --> 00:10:48.643 align:middle line:90%
+Any thoughts here?
+
+00:10:48.643 --> 00:10:50.560 align:middle line:84%
+Certainly the buyer
+probably knows some things
+
+00:10:50.560 --> 00:10:53.420 align:middle line:90%
+the seller doesn't know.
+
+00:10:53.420 --> 00:10:53.960 align:middle line:90%
+Yeah.
+
+00:10:53.960 --> 00:10:57.230 align:middle line:84%
+AUDIENCE: The buyer knows
+his own medical history.
+
+00:10:57.230 --> 00:10:57.980 align:middle line:90%
+IAN BALL: Exactly.
+
+00:10:57.980 --> 00:10:59.620 align:middle line:84%
+So the buyer knows
+medical history.
+
+00:10:59.620 --> 00:11:04.520 align:middle line:90%
+
+
+00:11:04.520 --> 00:11:05.817 align:middle line:90%
+And again, this is not binary.
+
+00:11:05.817 --> 00:11:07.900 align:middle line:84%
+If you buy health insurance
+in the private market,
+
+00:11:07.900 --> 00:11:09.140 align:middle line:84%
+the seller is
+concerned about this.
+
+00:11:09.140 --> 00:11:10.240 align:middle line:84%
+And they're going to
+have you fill out a form.
+
+00:11:10.240 --> 00:11:11.800 align:middle line:84%
+And they're going to have a
+doctor go to your house and do
+
+00:11:11.800 --> 00:11:12.773 align:middle line:90%
+a 30-minute evaluation.
+
+00:11:12.773 --> 00:11:14.940 align:middle line:84%
+But of course, that's not
+going to cover everything.
+
+00:11:14.940 --> 00:11:17.523 align:middle line:84%
+You might know that last week,
+you started feeling a bit sick,
+
+00:11:17.523 --> 00:11:19.607 align:middle line:84%
+and that's why you're
+buying the health insurance.
+
+00:11:19.607 --> 00:11:22.080 align:middle line:84%
+Or you might know about a
+family history of a condition
+
+00:11:22.080 --> 00:11:24.440 align:middle line:84%
+that the health insurer
+doesn't know about.
+
+00:11:24.440 --> 00:11:26.420 align:middle line:84%
+And this is certainly
+relevant to both of you.
+
+00:11:26.420 --> 00:11:28.220 align:middle line:84%
+It's relevant to how
+much you value insurance,
+
+00:11:28.220 --> 00:11:30.512 align:middle line:84%
+because the sicker you are,
+the more valuable insurance
+
+00:11:30.512 --> 00:11:31.160 align:middle line:90%
+is to you.
+
+00:11:31.160 --> 00:11:34.020 align:middle line:84%
+It's also relevant to how costly
+the insurance is to the seller.
+
+00:11:34.020 --> 00:11:35.940 align:middle line:84%
+If the seller insures
+a very sick person,
+
+00:11:35.940 --> 00:11:37.530 align:middle line:84%
+they're going to have to
+be on the hook for a lot
+
+00:11:37.530 --> 00:11:38.697 align:middle line:90%
+of different doctor's bills.
+
+00:11:38.697 --> 00:11:41.730 align:middle line:84%
+And this is one reason health
+insurance markets often
+
+00:11:41.730 --> 00:11:42.750 align:middle line:90%
+don't run very well.
+
+00:11:42.750 --> 00:11:47.010 align:middle line:84%
+I'd argue the seller
+probably, even in this case,
+
+00:11:47.010 --> 00:11:50.850 align:middle line:90%
+maybe knows some things.
+
+00:11:50.850 --> 00:11:55.330 align:middle line:84%
+This is not the main missing
+information in health insurance
+
+00:11:55.330 --> 00:11:57.930 align:middle line:84%
+markets, but I think there's
+probably some things they know.
+
+00:11:57.930 --> 00:12:00.013 align:middle line:84%
+AUDIENCE: Could the seller
+know that their company
+
+00:12:00.013 --> 00:12:02.050 align:middle line:84%
+is about to do a
+discount next month?
+
+00:12:02.050 --> 00:12:03.110 align:middle line:90%
+Does it tell the buyer?
+
+00:12:03.110 --> 00:12:03.330 align:middle line:90%
+IAN BALL: Great.
+
+00:12:03.330 --> 00:12:04.230 align:middle line:90%
+That's a good thing.
+
+00:12:04.230 --> 00:12:06.070 align:middle line:84%
+So one thing-- that's
+in a dynamic context.
+
+00:12:06.070 --> 00:12:07.710 align:middle line:84%
+But certainly in
+a dynamic context,
+
+00:12:07.710 --> 00:12:10.325 align:middle line:84%
+the sellers know the
+prices next period.
+
+00:12:10.325 --> 00:12:11.450 align:middle line:90%
+This is certainly relevant.
+
+00:12:11.450 --> 00:12:13.990 align:middle line:84%
+These clothing stores always
+do these regular discounts.
+
+00:12:13.990 --> 00:12:15.490 align:middle line:84%
+If you go and buy
+something-- if you
+
+00:12:15.490 --> 00:12:16.330 align:middle line:84%
+knew that they
+were going to have
+
+00:12:16.330 --> 00:12:18.970 align:middle line:84%
+a 15% discount the next day,
+you probably wouldn't buy.
+
+00:12:18.970 --> 00:12:20.370 align:middle line:84%
+And they usually don't
+tell you that the discount
+
+00:12:20.370 --> 00:12:21.210 align:middle line:90%
+is coming in the future.
+
+00:12:21.210 --> 00:12:22.470 align:middle line:84%
+They announced it
+when it started.
+
+00:12:22.470 --> 00:12:23.762 align:middle line:90%
+They don't tell you in advance.
+
+00:12:23.762 --> 00:12:27.270 align:middle line:84%
+So the seller might know
+things about future pricing.
+
+00:12:27.270 --> 00:12:30.330 align:middle line:90%
+
+
+00:12:30.330 --> 00:12:32.910 align:middle line:84%
+And maybe this is a bit more
+of a behavioral, non-rational
+
+00:12:32.910 --> 00:12:35.410 align:middle line:84%
+story, but I would argue that
+when you buy health insurance,
+
+00:12:35.410 --> 00:12:37.030 align:middle line:90%
+it's very, very complicated.
+
+00:12:37.030 --> 00:12:39.070 align:middle line:84%
+The exact quality of
+the network you have
+
+00:12:39.070 --> 00:12:42.290 align:middle line:84%
+is very, very
+difficult to untangle.
+
+00:12:42.290 --> 00:12:44.870 align:middle line:84%
+So technically, when you buy a
+health insurance plan, what's
+
+00:12:44.870 --> 00:12:47.710 align:middle line:84%
+relevant to you is
+every single doctor
+
+00:12:47.710 --> 00:12:50.370 align:middle line:84%
+in the world who's covered
+by the plan and who's not.
+
+00:12:50.370 --> 00:12:52.150 align:middle line:84%
+And more precisely,
+exactly how much
+
+00:12:52.150 --> 00:12:55.750 align:middle line:84%
+your copay is at every single
+doctor maybe in the world.
+
+00:12:55.750 --> 00:12:57.490 align:middle line:84%
+You probably don't
+know that that well,
+
+00:12:57.490 --> 00:12:59.490 align:middle line:84%
+even if you pore
+through the contract.
+
+00:12:59.490 --> 00:13:02.510 align:middle line:84%
+The seller probably has
+a much better idea of,
+
+00:13:02.510 --> 00:13:03.710 align:middle line:90%
+maybe what I'll say--
+
+00:13:03.710 --> 00:13:06.975 align:middle line:90%
+the network coverage.
+
+00:13:06.975 --> 00:13:08.350 align:middle line:84%
+Or what they
+certainly know about
+
+00:13:08.350 --> 00:13:13.070 align:middle line:84%
+is when you apply to get
+reimbursed for a treatment, how
+
+00:13:13.070 --> 00:13:15.790 align:middle line:84%
+cumbersome that process
+is, and what the rejection
+
+00:13:15.790 --> 00:13:16.850 align:middle line:90%
+rate is of the insurer.
+
+00:13:16.850 --> 00:13:18.350 align:middle line:84%
+This is something
+the insurer knows.
+
+00:13:18.350 --> 00:13:21.070 align:middle line:84%
+Some insurers might be a bit
+more lenient than others.
+
+00:13:21.070 --> 00:13:22.230 align:middle line:90%
+They privately know that.
+
+00:13:22.230 --> 00:13:24.050 align:middle line:84%
+Maybe you've gone on Reddit
+and read a bit about it,
+
+00:13:24.050 --> 00:13:26.570 align:middle line:84%
+but you probably don't have
+full information about that.
+
+00:13:26.570 --> 00:13:29.590 align:middle line:90%
+
+
+00:13:29.590 --> 00:13:33.120 align:middle line:90%
+Let's do a few more examples.
+
+00:13:33.120 --> 00:13:35.800 align:middle line:90%
+What about in an auction?
+
+00:13:35.800 --> 00:13:37.080 align:middle line:90%
+Context?
+
+00:13:37.080 --> 00:13:39.180 align:middle line:84%
+Well, here it's
+the classic case.
+
+00:13:39.180 --> 00:13:40.900 align:middle line:84%
+When the bidders show
+up to an auction,
+
+00:13:40.900 --> 00:13:43.560 align:middle line:84%
+the bidders generally
+know how much
+
+00:13:43.560 --> 00:13:45.157 align:middle line:84%
+they value the item
+being auctioned,
+
+00:13:45.157 --> 00:13:46.740 align:middle line:84%
+but the other bidders
+don't know that.
+
+00:13:46.740 --> 00:13:52.620 align:middle line:84%
+So each bidder knows
+her value for the good.
+
+00:13:52.620 --> 00:13:58.552 align:middle line:90%
+
+
+00:13:58.552 --> 00:14:00.760 align:middle line:84%
+And of course, this value
+could reflect a few things.
+
+00:14:00.760 --> 00:14:02.540 align:middle line:84%
+If I'm bidding against
+someone in auction,
+
+00:14:02.540 --> 00:14:03.840 align:middle line:84%
+their value might be
+high because they just
+
+00:14:03.840 --> 00:14:05.660 align:middle line:84%
+love this painting or
+maybe they're just really,
+
+00:14:05.660 --> 00:14:06.220 align:middle line:90%
+really rich.
+
+00:14:06.220 --> 00:14:07.360 align:middle line:84%
+Or maybe they just
+got all this money
+
+00:14:07.360 --> 00:14:08.693 align:middle line:90%
+and they have to spend it today.
+
+00:14:08.693 --> 00:14:10.540 align:middle line:84%
+There's all these
+stories that could go on,
+
+00:14:10.540 --> 00:14:12.520 align:middle line:84%
+but their willingness
+to pay for the item
+
+00:14:12.520 --> 00:14:16.000 align:middle line:84%
+is something that they
+know that I don't know.
+
+00:14:16.000 --> 00:14:17.640 align:middle line:84%
+And then a classic
+case that we've also
+
+00:14:17.640 --> 00:14:21.920 align:middle line:84%
+discussed so far is maybe
+bargaining negotiation
+
+00:14:21.920 --> 00:14:22.940 align:middle line:90%
+more broadly.
+
+00:14:22.940 --> 00:14:25.760 align:middle line:90%
+
+
+00:14:25.760 --> 00:14:29.560 align:middle line:84%
+Let's say we gave the example of
+bargaining over a peace treaty.
+
+00:14:29.560 --> 00:14:31.692 align:middle line:84%
+When both sides sit
+down at the table,
+
+00:14:31.692 --> 00:14:33.650 align:middle line:84%
+they don't really know
+what terms of the treaty
+
+00:14:33.650 --> 00:14:34.650 align:middle line:90%
+are acceptable.
+
+00:14:34.650 --> 00:14:36.510 align:middle line:84%
+If I'm negotiating
+with a foreign leader--
+
+00:14:36.510 --> 00:14:38.050 align:middle line:90%
+I would never be doing that--
+
+00:14:38.050 --> 00:14:40.350 align:middle line:84%
+they know their political
+constraints at home.
+
+00:14:40.350 --> 00:14:42.210 align:middle line:84%
+They know what kind of deal they
+can make that would get them
+
+00:14:42.210 --> 00:14:42.970 align:middle line:90%
+in trouble or not.
+
+00:14:42.970 --> 00:14:44.470 align:middle line:84%
+They might know
+facts on the ground.
+
+00:14:44.470 --> 00:14:47.010 align:middle line:84%
+They might know things about
+the condition of their soldiers
+
+00:14:47.010 --> 00:14:49.302 align:middle line:84%
+and their army that are all
+relevant to the negotiation
+
+00:14:49.302 --> 00:14:51.370 align:middle line:84%
+that I, as the
+counterparty, don't know.
+
+00:14:51.370 --> 00:14:55.650 align:middle line:84%
+So there's just tons
+of private information.
+
+00:14:55.650 --> 00:15:00.870 align:middle line:84%
+I'll just say about
+really, what is it about?
+
+00:15:00.870 --> 00:15:04.290 align:middle line:84%
+It's about their
+preferences over the terms
+
+00:15:04.290 --> 00:15:06.310 align:middle line:84%
+of the negotiation,
+over terms of the deal.
+
+00:15:06.310 --> 00:15:10.490 align:middle line:90%
+
+
+00:15:10.490 --> 00:15:13.890 align:middle line:84%
+So I think it's nice to
+step back here and pause
+
+00:15:13.890 --> 00:15:16.730 align:middle line:84%
+and look at the
+history of game theory.
+
+00:15:16.730 --> 00:15:19.430 align:middle line:84%
+Game theory started-- as I
+said earlier in the course,
+
+00:15:19.430 --> 00:15:21.070 align:middle line:84%
+it was studied by
+mathematicians.
+
+00:15:21.070 --> 00:15:23.810 align:middle line:84%
+They were analyzing things like
+chess and checkers and poker,
+
+00:15:23.810 --> 00:15:26.210 align:middle line:84%
+and they presented this
+theory of complete information
+
+00:15:26.210 --> 00:15:30.020 align:middle line:84%
+that did a very good job of
+capturing games like chess
+
+00:15:30.020 --> 00:15:31.140 align:middle line:90%
+and checkers and poker.
+
+00:15:31.140 --> 00:15:32.515 align:middle line:90%
+But there was this folk wisdom.
+
+00:15:32.515 --> 00:15:34.140 align:middle line:84%
+There was this view
+that we could never
+
+00:15:34.140 --> 00:15:36.120 align:middle line:84%
+apply game theory
+to the real world,
+
+00:15:36.120 --> 00:15:38.800 align:middle line:84%
+to things like this because the
+game isn't common knowledge.
+
+00:15:38.800 --> 00:15:40.980 align:middle line:84%
+There's just so much
+information that we
+
+00:15:40.980 --> 00:15:42.813 align:middle line:84%
+don't know that we can
+never apply the tools
+
+00:15:42.813 --> 00:15:45.460 align:middle line:84%
+and the rigor of game
+theoretic reasoning.
+
+00:15:45.460 --> 00:15:49.360 align:middle line:84%
+And there was a big
+breakthrough in the '60s.
+
+00:15:49.360 --> 00:15:55.980 align:middle line:84%
+So the breakthrough
+came with Harsanyi
+
+00:15:55.980 --> 00:16:01.420 align:middle line:84%
+in 1967, 1968, who
+presented a framework
+
+00:16:01.420 --> 00:16:05.553 align:middle line:84%
+for analyzing situations
+like this using game theory.
+
+00:16:05.553 --> 00:16:07.720 align:middle line:84%
+And I think this was a
+turning point in game theory,
+
+00:16:07.720 --> 00:16:09.140 align:middle line:84%
+where before that,
+it was largely
+
+00:16:09.140 --> 00:16:10.223 align:middle line:90%
+studied by mathematicians.
+
+00:16:10.223 --> 00:16:12.557 align:middle line:84%
+And then once people realized
+that this is the right way
+
+00:16:12.557 --> 00:16:15.040 align:middle line:84%
+to think about health insurance
+markets or bargaining,
+
+00:16:15.040 --> 00:16:16.940 align:middle line:84%
+all of a sudden economists
+became much more interested
+
+00:16:16.940 --> 00:16:19.120 align:middle line:84%
+in it, and the nature of
+the field kind of shifted.
+
+00:16:19.120 --> 00:16:22.740 align:middle line:84%
+And Harsanyi later won the
+Nobel Prize for his work here.
+
+00:16:22.740 --> 00:16:27.830 align:middle line:84%
+So I think Harsanyi's key
+insight, which was later
+
+00:16:27.830 --> 00:16:30.510 align:middle line:84%
+formalized by others,
+is that we can
+
+00:16:30.510 --> 00:16:43.070 align:middle line:84%
+model incomplete
+information like we
+
+00:16:43.070 --> 00:16:45.530 align:middle line:90%
+model imperfect information.
+
+00:16:45.530 --> 00:16:49.990 align:middle line:90%
+
+
+00:16:49.990 --> 00:16:53.350 align:middle line:84%
+So in other words, I
+think as a sentence,
+
+00:16:53.350 --> 00:16:54.850 align:middle line:84%
+this doesn't really
+make much sense,
+
+00:16:54.850 --> 00:16:55.933 align:middle line:90%
+so let's say what we mean.
+
+00:16:55.933 --> 00:16:57.750 align:middle line:84%
+What Harsanyi said
+is maybe we can
+
+00:16:57.750 --> 00:17:00.870 align:middle line:84%
+model negotiation and
+health insurance the way
+
+00:17:00.870 --> 00:17:02.870 align:middle line:90%
+we model poker.
+
+00:17:02.870 --> 00:17:05.589 align:middle line:84%
+So why don't we think about
+someone's health status
+
+00:17:05.589 --> 00:17:11.470 align:middle line:84%
+in healthcare or a military
+leader's private information
+
+00:17:11.470 --> 00:17:13.630 align:middle line:84%
+about their army
+the way we model
+
+00:17:13.630 --> 00:17:16.829 align:middle line:90%
+your hand in a game of poker?
+
+00:17:16.829 --> 00:17:18.470 align:middle line:84%
+So the key is that
+we don't literally
+
+00:17:18.470 --> 00:17:21.710 align:middle line:84%
+have a dealer who's
+dealing you cards,
+
+00:17:21.710 --> 00:17:24.190 align:middle line:84%
+but we can model this
+private information
+
+00:17:24.190 --> 00:17:28.160 align:middle line:84%
+as the move of a metaphorical
+dealer, or metaphorical move
+
+00:17:28.160 --> 00:17:31.040 align:middle line:84%
+by nature who deals people
+their private information.
+
+00:17:31.040 --> 00:17:43.520 align:middle line:84%
+So Sonia's idea is that we can
+have a metaphorical first move
+
+00:17:43.520 --> 00:17:44.402 align:middle line:90%
+by nature.
+
+00:17:44.402 --> 00:17:45.860 align:middle line:84%
+And I want you to
+think about this.
+
+00:17:45.860 --> 00:17:46.960 align:middle line:84%
+I think the best way
+to think about this
+
+00:17:46.960 --> 00:17:49.002 align:middle line:84%
+is nature is playing the
+role of the card dealer.
+
+00:17:49.002 --> 00:17:51.680 align:middle line:84%
+But what they're dealing
+you is your health status
+
+00:17:51.680 --> 00:17:54.440 align:middle line:84%
+or how much you value the
+painting or the condition
+
+00:17:54.440 --> 00:17:55.680 align:middle line:90%
+of your army.
+
+00:17:55.680 --> 00:17:59.040 align:middle line:84%
+And after nature
+makes that deal,
+
+00:17:59.040 --> 00:18:01.840 align:middle line:84%
+then we can analyze
+the game like a game
+
+00:18:01.840 --> 00:18:03.500 align:middle line:90%
+of imperfect information.
+
+00:18:03.500 --> 00:18:08.880 align:middle line:90%
+
+
+00:18:08.880 --> 00:18:16.840 align:middle line:84%
+Now, I think a challenge here
+is that this is metaphorical.
+
+00:18:16.840 --> 00:18:20.920 align:middle line:84%
+So I think in poker,
+it's very clear
+
+00:18:20.920 --> 00:18:23.570 align:middle line:84%
+how we can reason
+through a situation
+
+00:18:23.570 --> 00:18:25.790 align:middle line:84%
+before the cards are dealt.
+If I'm playing poker,
+
+00:18:25.790 --> 00:18:28.390 align:middle line:84%
+I'm sitting at the table,
+I don't have the cards yet.
+
+00:18:28.390 --> 00:18:29.750 align:middle line:90%
+The dealer deals me a card.
+
+00:18:29.750 --> 00:18:31.000 align:middle line:90%
+I know that's going to happen.
+
+00:18:31.000 --> 00:18:33.090 align:middle line:84%
+And I can think about
+when that's going on.
+
+00:18:33.090 --> 00:18:36.610 align:middle line:84%
+It's a bit hard to think about
+you buying health insurance
+
+00:18:36.610 --> 00:18:41.230 align:middle line:84%
+at the stage before nature
+dealt you your health status.
+
+00:18:41.230 --> 00:18:43.610 align:middle line:84%
+There is this subtlety
+in how we interpret it,
+
+00:18:43.610 --> 00:18:46.250 align:middle line:84%
+but despite the difficulty
+of interpretation-- so maybe
+
+00:18:46.250 --> 00:18:49.590 align:middle line:84%
+I'll say this creates some
+interpretational difficulties.
+
+00:18:49.590 --> 00:18:55.170 align:middle line:90%
+
+
+00:18:55.170 --> 00:18:57.610 align:middle line:84%
+And we'll see those
+throughout the course.
+
+00:18:57.610 --> 00:19:02.170 align:middle line:84%
+But nevertheless, we can analyze
+these things mathematically
+
+00:19:02.170 --> 00:19:03.790 align:middle line:90%
+and we can make some progress.
+
+00:19:03.790 --> 00:19:07.810 align:middle line:84%
+One difficulty, I guess, in
+the first group by nature
+
+00:19:07.810 --> 00:19:10.730 align:middle line:84%
+is we have to specify the
+probability distribution
+
+00:19:10.730 --> 00:19:12.167 align:middle line:90%
+over what nature chooses.
+
+00:19:12.167 --> 00:19:14.750 align:middle line:84%
+That's a lot easier when nature
+is drawing a card from a deck.
+
+00:19:14.750 --> 00:19:15.708 align:middle line:90%
+We all understand that.
+
+00:19:15.708 --> 00:19:18.167 align:middle line:84%
+When nature is drawing your
+health status or your valuation
+
+00:19:18.167 --> 00:19:20.190 align:middle line:84%
+for a good, that becomes
+a bit more challenging.
+
+00:19:20.190 --> 00:19:24.460 align:middle line:84%
+So one challenge is that we
+have to specify the distribution
+
+00:19:24.460 --> 00:19:29.000 align:middle line:90%
+over nature's moves.
+
+00:19:29.000 --> 00:19:33.780 align:middle line:90%
+
+
+00:19:33.780 --> 00:19:39.020 align:middle line:84%
+But let's see if we can get into
+this and start analyzing this.
+
+00:19:39.020 --> 00:19:41.120 align:middle line:84%
+So I could present the
+whole general model,
+
+00:19:41.120 --> 00:19:43.680 align:middle line:84%
+but I think it's very
+complicated at first.
+
+00:19:43.680 --> 00:19:46.160 align:middle line:84%
+And you might say, why do we
+need this complicated model?
+
+00:19:46.160 --> 00:19:47.702 align:middle line:84%
+So let's start with
+an example to try
+
+00:19:47.702 --> 00:19:49.360 align:middle line:84%
+to motivate why
+things are subtle
+
+00:19:49.360 --> 00:19:53.020 align:middle line:84%
+and why we actually need to
+do some work to model this.
+
+00:19:53.020 --> 00:19:55.168 align:middle line:84%
+So let's think about
+a classic example.
+
+00:19:55.168 --> 00:19:56.960 align:middle line:84%
+Let's say we're working
+on a group project.
+
+00:19:56.960 --> 00:19:59.780 align:middle line:90%
+
+
+00:19:59.780 --> 00:20:01.720 align:middle line:84%
+And let's say we
+have two players.
+
+00:20:01.720 --> 00:20:05.860 align:middle line:90%
+
+
+00:20:05.860 --> 00:20:10.780 align:middle line:84%
+And I'll call them i
+equals 1 and i equals 2.
+
+00:20:10.780 --> 00:20:18.260 align:middle line:84%
+And each player, i, is going to
+choose effort on the project.
+
+00:20:18.260 --> 00:20:23.670 align:middle line:90%
+I'm going to choose effort ei.
+
+00:20:23.670 --> 00:20:25.510 align:middle line:84%
+The player i, they
+choose effort ei.
+
+00:20:25.510 --> 00:20:28.270 align:middle line:84%
+And let's say that's a
+number between 0 and 1.
+
+00:20:28.270 --> 00:20:29.870 align:middle line:84%
+So 0 is they don't
+work at all, 1
+
+00:20:29.870 --> 00:20:33.230 align:middle line:84%
+is they work as hard
+as they possibly can.
+
+00:20:33.230 --> 00:20:39.750 align:middle line:84%
+And now we're going to say
+the payoffs to player i--
+
+00:20:39.750 --> 00:20:42.150 align:middle line:84%
+well, player i's payoff
+depends on how well
+
+00:20:42.150 --> 00:20:44.950 align:middle line:84%
+the project turns out
+minus the cost they
+
+00:20:44.950 --> 00:20:47.290 align:middle line:90%
+have to bear to exert effort.
+
+00:20:47.290 --> 00:20:50.550 align:middle line:90%
+Let me see if I had 1/2 in here.
+
+00:20:50.550 --> 00:20:59.010 align:middle line:84%
+So let's say that their payoff
+is e1 times e2 minus ei squared.
+
+00:20:59.010 --> 00:21:02.190 align:middle line:90%
+
+
+00:21:02.190 --> 00:21:06.590 align:middle line:84%
+So what this says is e1 times
+e2-- the product of the effort
+
+00:21:06.590 --> 00:21:08.190 align:middle line:84%
+that the two
+players put in, this
+
+00:21:08.190 --> 00:21:12.470 align:middle line:84%
+is going to represent basically
+how good the project is,
+
+00:21:12.470 --> 00:21:13.770 align:middle line:90%
+how good the output is.
+
+00:21:13.770 --> 00:21:16.990 align:middle line:90%
+
+
+00:21:16.990 --> 00:21:18.550 align:middle line:90%
+And this is the cost of effort.
+
+00:21:18.550 --> 00:21:22.170 align:middle line:90%
+
+
+00:21:22.170 --> 00:21:27.190 align:middle line:84%
+So notice, if I'm player i,
+my effort ei affects my cost.
+
+00:21:27.190 --> 00:21:29.530 align:middle line:84%
+And it also affects the
+quality of the output.
+
+00:21:29.530 --> 00:21:31.193 align:middle line:84%
+The other player's
+effort affects
+
+00:21:31.193 --> 00:21:32.610 align:middle line:84%
+the quality of the
+output, but not
+
+00:21:32.610 --> 00:21:34.890 align:middle line:84%
+my cost, because I don't
+bear the cost for the effort
+
+00:21:34.890 --> 00:21:37.210 align:middle line:84%
+that the other
+player is putting in.
+
+00:21:37.210 --> 00:21:39.170 align:middle line:84%
+This is a pretty
+simple game to analyze,
+
+00:21:39.170 --> 00:21:42.570 align:middle line:84%
+but the trick is we're now
+going to put a theta up here,
+
+00:21:42.570 --> 00:21:45.290 align:middle line:84%
+where theta is going to
+be a state that represents
+
+00:21:45.290 --> 00:21:46.398 align:middle line:90%
+how hard the project is.
+
+00:21:46.398 --> 00:21:48.190 align:middle line:84%
+When you get working
+on something together,
+
+00:21:48.190 --> 00:21:53.410 align:middle line:84%
+you often don't know
+how hard this task is.
+
+00:21:53.410 --> 00:21:58.150 align:middle line:84%
+So theta is going to represent
+the difficulty of the project.
+
+00:21:58.150 --> 00:22:01.510 align:middle line:84%
+Actually, a higher theta
+means the project is easier.
+
+00:22:01.510 --> 00:22:04.550 align:middle line:84%
+So maybe I'll think of theta
+as how easy the project is.
+
+00:22:04.550 --> 00:22:11.130 align:middle line:90%
+
+
+00:22:11.130 --> 00:22:17.900 align:middle line:84%
+So as a simple case, we could
+say maybe two values, theta H
+
+00:22:17.900 --> 00:22:21.220 align:middle line:84%
+and theta L. So these are
+the two possible values
+
+00:22:21.220 --> 00:22:22.620 align:middle line:90%
+theta could take.
+
+00:22:22.620 --> 00:22:25.900 align:middle line:84%
+Theta H is a low value because
+if the project is hard,
+
+00:22:25.900 --> 00:22:27.360 align:middle line:84%
+when you put in
+this much effort,
+
+00:22:27.360 --> 00:22:29.180 align:middle line:90%
+you don't get very much output.
+
+00:22:29.180 --> 00:22:32.160 align:middle line:84%
+If the project is
+easy, theta L--
+
+00:22:32.160 --> 00:22:34.060 align:middle line:84%
+and I guess I'm so
+used to high and low.
+
+00:22:34.060 --> 00:22:35.920 align:middle line:90%
+So easy-- theta H, theta e.
+
+00:22:35.920 --> 00:22:38.900 align:middle line:84%
+If the project is easy,
+then you get more output
+
+00:22:38.900 --> 00:22:41.965 align:middle line:90%
+for the same level of effort.
+
+00:22:41.965 --> 00:22:43.340 align:middle line:84%
+The problem is
+you probably don't
+
+00:22:43.340 --> 00:22:46.120 align:middle line:90%
+know how hard the project is.
+
+00:22:46.120 --> 00:22:49.420 align:middle line:90%
+
+
+00:22:49.420 --> 00:22:52.320 align:middle line:84%
+Let's think through
+a few cases here.
+
+00:22:52.320 --> 00:22:56.100 align:middle line:90%
+
+
+00:22:56.100 --> 00:23:01.960 align:middle line:84%
+So the easy case, case one
+would be no one knows theta.
+
+00:23:01.960 --> 00:23:06.180 align:middle line:90%
+
+
+00:23:06.180 --> 00:23:07.860 align:middle line:84%
+If no one knows
+theta, and they just
+
+00:23:07.860 --> 00:23:10.220 align:middle line:84%
+believe theta follows
+some distribution,
+
+00:23:10.220 --> 00:23:13.150 align:middle line:84%
+then we can analyze
+this as a classic game,
+
+00:23:13.150 --> 00:23:16.790 align:middle line:84%
+because at the beginning of the
+game, information is symmetric.
+
+00:23:16.790 --> 00:23:18.810 align:middle line:84%
+So here, this would
+be symmetric info.
+
+00:23:18.810 --> 00:23:23.030 align:middle line:90%
+
+
+00:23:23.030 --> 00:23:24.830 align:middle line:84%
+If no one knows
+theta, then there's
+
+00:23:24.830 --> 00:23:27.190 align:middle line:84%
+no information that one player
+knows that another player
+
+00:23:27.190 --> 00:23:28.230 align:middle line:90%
+doesn't know.
+
+00:23:28.230 --> 00:23:29.670 align:middle line:90%
+But the harder case--
+
+00:23:29.670 --> 00:23:33.610 align:middle line:84%
+let's look at case 2 where
+only player one knows theta.
+
+00:23:33.610 --> 00:23:46.150 align:middle line:90%
+
+
+00:23:46.150 --> 00:23:49.990 align:middle line:84%
+So if only player 1
+knows theta, let's
+
+00:23:49.990 --> 00:23:54.870 align:middle line:84%
+see if we can start
+analyzing this game.
+
+00:23:54.870 --> 00:23:58.590 align:middle line:84%
+Well, in case two,
+player 1 is going
+
+00:23:58.590 --> 00:24:00.910 align:middle line:84%
+to possibly make a
+different choice depending
+
+00:24:00.910 --> 00:24:03.110 align:middle line:90%
+on how hard the project is.
+
+00:24:03.110 --> 00:24:12.760 align:middle line:84%
+So player 1 is going to make
+maybe one choice, e1 of theta H,
+
+00:24:12.760 --> 00:24:16.840 align:middle line:84%
+and a different choice, e2
+of theta L. If player 1 knows
+
+00:24:16.840 --> 00:24:19.287 align:middle line:84%
+how hard the project is,
+if the project is hard,
+
+00:24:19.287 --> 00:24:21.120 align:middle line:84%
+they might find it not
+as worthwhile to work
+
+00:24:21.120 --> 00:24:22.320 align:middle line:90%
+on the project.
+
+00:24:22.320 --> 00:24:24.580 align:middle line:84%
+This should be E1, and
+this should be easy,
+
+00:24:24.580 --> 00:24:27.338 align:middle line:90%
+so everything's wrong here.
+
+00:24:27.338 --> 00:24:28.880 align:middle line:84%
+If they know the
+project's easy, they
+
+00:24:28.880 --> 00:24:30.560 align:middle line:84%
+might choose a different
+level of effort.
+
+00:24:30.560 --> 00:24:31.800 align:middle line:84%
+So we're going to have
+to capture that when
+
+00:24:31.800 --> 00:24:33.960 align:middle line:84%
+we think about a player's
+strategy in the game.
+
+00:24:33.960 --> 00:24:37.880 align:middle line:84%
+Player 1's strategy might depend
+on how hard the project is.
+
+00:24:37.880 --> 00:24:40.880 align:middle line:90%
+But now let's look at player 2.
+
+00:24:40.880 --> 00:24:41.900 align:middle line:90%
+What should player 2 do?
+
+00:24:41.900 --> 00:24:44.400 align:middle line:84%
+Let's imagine you are
+in this situation.
+
+00:24:44.400 --> 00:24:47.360 align:middle line:84%
+You don't know how
+hard the project is,
+
+00:24:47.360 --> 00:24:50.480 align:middle line:84%
+and you're thinking
+about how hard to work.
+
+00:24:50.480 --> 00:24:51.120 align:middle line:90%
+I don't know.
+
+00:24:51.120 --> 00:24:53.328 align:middle line:84%
+I think there's some
+information that's missing here.
+
+00:24:53.328 --> 00:24:55.320 align:middle line:84%
+There's something
+you need to know.
+
+00:24:55.320 --> 00:24:58.580 align:middle line:84%
+So we've said they don't
+know how hard the project is.
+
+00:24:58.580 --> 00:25:05.640 align:middle line:90%
+
+
+00:25:05.640 --> 00:25:06.780 align:middle line:90%
+So they don't know theta.
+
+00:25:06.780 --> 00:25:10.940 align:middle line:90%
+
+
+00:25:10.940 --> 00:25:12.690 align:middle line:84%
+But I think we're
+missing some information
+
+00:25:12.690 --> 00:25:16.570 align:middle line:90%
+to see how they should behave.
+
+00:25:16.570 --> 00:25:17.448 align:middle line:90%
+I don't know theta.
+
+00:25:17.448 --> 00:25:17.990 align:middle line:90%
+I don't know.
+
+00:25:17.990 --> 00:25:22.210 align:middle line:84%
+How would you approach
+this if you were player 2?
+
+00:25:22.210 --> 00:25:23.330 align:middle line:90%
+Yeah.
+
+00:25:23.330 --> 00:25:26.810 align:middle line:84%
+AUDIENCE: Maybe in terms
+of a security strategy.
+
+00:25:26.810 --> 00:25:28.970 align:middle line:90%
+IAN BALL: OK.
+
+00:25:28.970 --> 00:25:31.450 align:middle line:84%
+AUDIENCE: Let's try to minimize
+the possibility that it
+
+00:25:31.450 --> 00:25:33.250 align:middle line:90%
+goes wrong, given that--
+
+00:25:33.250 --> 00:25:36.130 align:middle line:90%
+I don't know if it's a--
+
+00:25:36.130 --> 00:25:36.930 align:middle line:90%
+I'm not sure.
+
+00:25:36.930 --> 00:25:37.950 align:middle line:84%
+IAN BALL: So that
+would be one way.
+
+00:25:37.950 --> 00:25:39.650 align:middle line:84%
+No, I think that would
+be a reasonable answer.
+
+00:25:39.650 --> 00:25:41.590 align:middle line:84%
+We're not going to pursue
+that too much in this course,
+
+00:25:41.590 --> 00:25:42.750 align:middle line:84%
+but that's something
+that people do.
+
+00:25:42.750 --> 00:25:44.292 align:middle line:84%
+And that's one thing
+you could study.
+
+00:25:44.292 --> 00:25:46.450 align:middle line:90%
+Yeah?
+
+00:25:46.450 --> 00:25:48.370 align:middle line:84%
+AUDIENCE: If you know
+how much player 1 cares
+
+00:25:48.370 --> 00:25:51.670 align:middle line:84%
+about the project, you could
+use backwards induction.
+
+00:25:51.670 --> 00:25:54.428 align:middle line:84%
+If player 1 knows theta
+and player 1 cares a lot,
+
+00:25:54.428 --> 00:25:56.970 align:middle line:84%
+you will know that player 1 is
+just going to do the projects,
+
+00:25:56.970 --> 00:25:58.110 align:middle line:84%
+and you don't have
+to do anything.
+
+00:25:58.110 --> 00:25:59.050 align:middle line:84%
+IAN BALL: So I think
+the first thing you
+
+00:25:59.050 --> 00:25:59.990 align:middle line:90%
+said there was really crucial.
+
+00:25:59.990 --> 00:26:01.530 align:middle line:84%
+You said, if player
+1 knows theta,
+
+00:26:01.530 --> 00:26:03.370 align:middle line:90%
+and then you reason from that.
+
+00:26:03.370 --> 00:26:05.640 align:middle line:84%
+But does player 2 know
+that player 1 knows theta?
+
+00:26:05.640 --> 00:26:07.390 align:middle line:84%
+Well, we need to make
+a choice about that.
+
+00:26:07.390 --> 00:26:08.640 align:middle line:90%
+So this is the crucial thing.
+
+00:26:08.640 --> 00:26:10.580 align:middle line:84%
+It's not just
+enough to say, I've
+
+00:26:10.580 --> 00:26:12.760 align:middle line:84%
+said player 2 doesn't know
+whether project is hard.
+
+00:26:12.760 --> 00:26:14.160 align:middle line:84%
+But you immediately
+gave it away.
+
+00:26:14.160 --> 00:26:15.600 align:middle line:84%
+When you're
+reasoning about this,
+
+00:26:15.600 --> 00:26:19.000 align:middle line:84%
+I need to think through how
+hard is player 1 going to work?
+
+00:26:19.000 --> 00:26:20.500 align:middle line:84%
+But how hard player
+1 works is going
+
+00:26:20.500 --> 00:26:23.880 align:middle line:84%
+to depend on whether player 1
+knows how hard the project is.
+
+00:26:23.880 --> 00:26:24.820 align:middle line:90%
+So I need to think.
+
+00:26:24.820 --> 00:26:26.860 align:middle line:84%
+Here's a question
+for the analysis.
+
+00:26:26.860 --> 00:26:32.880 align:middle line:84%
+Does player 2 know whether
+player one knows theta?
+
+00:26:32.880 --> 00:26:41.660 align:middle line:90%
+
+
+00:26:41.660 --> 00:26:45.340 align:middle line:84%
+Because that's going to affect
+the way that player 1 moves,
+
+00:26:45.340 --> 00:26:49.020 align:middle line:84%
+and therefore, affect the
+best thing for player 2.
+
+00:26:49.020 --> 00:26:51.480 align:middle line:84%
+But now I think we're
+getting into a regress.
+
+00:26:51.480 --> 00:26:52.720 align:middle line:90%
+Let's say you're player 1.
+
+00:26:52.720 --> 00:26:55.100 align:middle line:84%
+How are you thinking
+through this?
+
+00:26:55.100 --> 00:26:58.820 align:middle line:84%
+What's relevant now for player
+1 when they're trying to think?
+
+00:26:58.820 --> 00:27:01.260 align:middle line:90%
+We know player 1 knows theta.
+
+00:27:01.260 --> 00:27:02.680 align:middle line:84%
+But player 1 needs
+to think, well,
+
+00:27:02.680 --> 00:27:04.780 align:middle line:84%
+how hard is player
+2 going to work?
+
+00:27:04.780 --> 00:27:07.070 align:middle line:84%
+But how hard player
+2 works depends on
+
+00:27:07.070 --> 00:27:10.390 align:middle line:84%
+whether player 2 knows
+whether player 1 knows theta.
+
+00:27:10.390 --> 00:27:14.910 align:middle line:84%
+So now we have to think
+from player 1's perspective,
+
+00:27:14.910 --> 00:27:21.150 align:middle line:84%
+does player 1 know
+whether player 2 knows
+
+00:27:21.150 --> 00:27:22.770 align:middle line:90%
+whether player 1 knows theta?
+
+00:27:22.770 --> 00:27:36.550 align:middle line:90%
+
+
+00:27:36.550 --> 00:27:40.510 align:middle line:84%
+And I think you can see
+where this is going, right?
+
+00:27:40.510 --> 00:27:42.870 align:middle line:84%
+We care about what the
+other player is going to do.
+
+00:27:42.870 --> 00:27:45.350 align:middle line:84%
+What they do depends on their
+beliefs about what I know,
+
+00:27:45.350 --> 00:27:47.990 align:middle line:84%
+but also their beliefs about
+what I know that they know
+
+00:27:47.990 --> 00:27:50.615 align:middle line:84%
+and my beliefs about what they
+know that I know that they know,
+
+00:27:50.615 --> 00:27:54.750 align:middle line:90%
+and it unravels here.
+
+00:27:54.750 --> 00:27:59.098 align:middle line:84%
+So we need a way to
+get a handle on this.
+
+00:27:59.098 --> 00:28:01.390 align:middle line:84%
+And I think this was what
+was seen as the key challenge
+
+00:28:01.390 --> 00:28:02.130 align:middle line:90%
+to these games.
+
+00:28:02.130 --> 00:28:03.505 align:middle line:84%
+At first, you
+might think, all we
+
+00:28:03.505 --> 00:28:05.683 align:middle line:84%
+need to specify is
+what each player knows
+
+00:28:05.683 --> 00:28:07.600 align:middle line:84%
+about theta, about the
+state of the world, how
+
+00:28:07.600 --> 00:28:08.840 align:middle line:90%
+hard the project is.
+
+00:28:08.840 --> 00:28:11.700 align:middle line:84%
+But we soon realize that
+to fully analyze the game,
+
+00:28:11.700 --> 00:28:14.120 align:middle line:84%
+we need to take a stance
+on what each player knows
+
+00:28:14.120 --> 00:28:16.200 align:middle line:84%
+about what other
+people know, and what
+
+00:28:16.200 --> 00:28:19.320 align:middle line:84%
+other people know about what
+other people know, and so on.
+
+00:28:19.320 --> 00:28:22.360 align:middle line:84%
+And so the key takeaway
+here is that we really
+
+00:28:22.360 --> 00:28:26.400 align:middle line:84%
+need to distinguish two
+different aspects of the game.
+
+00:28:26.400 --> 00:28:28.700 align:middle line:84%
+So I think this motivates
+a key distinction.
+
+00:28:28.700 --> 00:28:32.120 align:middle line:90%
+
+
+00:28:32.120 --> 00:28:34.920 align:middle line:90%
+I need another arrow here.
+
+00:28:34.920 --> 00:28:45.000 align:middle line:84%
+Between the physical state
+theta, this is, in this example,
+
+00:28:45.000 --> 00:28:46.420 align:middle line:90%
+how hard the project is.
+
+00:28:46.420 --> 00:28:48.770 align:middle line:84%
+It's totally outside the
+minds of the players.
+
+00:28:48.770 --> 00:28:50.020 align:middle line:90%
+It's either hard or it's easy.
+
+00:28:50.020 --> 00:28:53.200 align:middle line:84%
+That's just some fact of
+the world, fact of nature.
+
+00:28:53.200 --> 00:28:56.360 align:middle line:84%
+But then we also need to think
+about maybe the mental state
+
+00:28:56.360 --> 00:29:08.347 align:middle line:84%
+of each player, which maybe
+before we saw this example,
+
+00:29:08.347 --> 00:29:10.180 align:middle line:84%
+we might have thought,
+oh, mental state just
+
+00:29:10.180 --> 00:29:12.080 align:middle line:90%
+means their belief about theta.
+
+00:29:12.080 --> 00:29:14.500 align:middle line:84%
+But now it really
+means their belief
+
+00:29:14.500 --> 00:29:16.403 align:middle line:84%
+about the mental state
+of the other player.
+
+00:29:16.403 --> 00:29:17.820 align:middle line:84%
+And in general,
+we're going to try
+
+00:29:17.820 --> 00:29:21.980 align:middle line:84%
+to have this mental state
+capture all the relevant beliefs
+
+00:29:21.980 --> 00:29:24.460 align:middle line:84%
+about the physical state and
+also about the mental state
+
+00:29:24.460 --> 00:29:25.980 align:middle line:90%
+of the other player.
+
+00:29:25.980 --> 00:29:28.900 align:middle line:84%
+And that's the direction
+we're going to go now
+
+00:29:28.900 --> 00:29:31.220 align:middle line:90%
+with this formal setup.
+
+00:29:31.220 --> 00:29:33.400 align:middle line:90%
+Any questions about this?
+
+00:29:33.400 --> 00:29:35.280 align:middle line:84%
+So I don't expect people
+to see the solution,
+
+00:29:35.280 --> 00:29:36.420 align:middle line:84%
+but just to see that
+there's a problem
+
+00:29:36.420 --> 00:29:37.880 align:middle line:90%
+is the goal of this example.
+
+00:29:37.880 --> 00:30:13.727 align:middle line:90%
+
+
+00:30:13.727 --> 00:30:15.310 align:middle line:84%
+So now we're going
+to formally present
+
+00:30:15.310 --> 00:30:18.893 align:middle line:84%
+our model of a game that can
+capture incomplete information.
+
+00:30:18.893 --> 00:30:20.810 align:middle line:84%
+And we're going to be
+using Bayes' rule a lot,
+
+00:30:20.810 --> 00:30:22.890 align:middle line:84%
+so these games are often
+called Bayesian games.
+
+00:30:22.890 --> 00:30:27.710 align:middle line:90%
+
+
+00:30:27.710 --> 00:30:32.230 align:middle line:84%
+So how do we try to capture
+a situation like this?
+
+00:30:32.230 --> 00:30:34.210 align:middle line:84%
+Well, first we're going
+to have the players.
+
+00:30:34.210 --> 00:30:38.830 align:middle line:90%
+
+
+00:30:38.830 --> 00:30:41.390 align:middle line:90%
+i equals 1 up to n.
+
+00:30:41.390 --> 00:30:43.630 align:middle line:84%
+And then we're going
+to have the actions.
+
+00:30:43.630 --> 00:30:49.390 align:middle line:84%
+So each player-- so
+player i is going
+
+00:30:49.390 --> 00:30:51.730 align:middle line:84%
+to choose some action
+in some action set.
+
+00:30:51.730 --> 00:31:01.560 align:middle line:90%
+
+
+00:31:01.560 --> 00:31:04.080 align:middle line:84%
+So just like in
+repeated games, if we
+
+00:31:04.080 --> 00:31:05.777 align:middle line:84%
+were to call this
+a strategy set,
+
+00:31:05.777 --> 00:31:07.360 align:middle line:84%
+we would then run
+into issues, because
+
+00:31:07.360 --> 00:31:08.560 align:middle line:84%
+in the meta-Bayesian
+game, there's
+
+00:31:08.560 --> 00:31:10.020 align:middle line:84%
+going to be a different
+notion of strategy.
+
+00:31:10.020 --> 00:31:12.228 align:middle line:84%
+So I want to use the term
+action instead of strategy.
+
+00:31:12.228 --> 00:31:14.960 align:middle line:84%
+I think the notes talk
+about Bayesian games
+
+00:31:14.960 --> 00:31:17.132 align:middle line:84%
+with Bayesian extensive
+form games at this part.
+
+00:31:17.132 --> 00:31:19.340 align:middle line:84%
+We're not going to talk
+about that, at least for now.
+
+00:31:19.340 --> 00:31:21.280 align:middle line:84%
+So we're going to think of this
+as just a simultaneous move
+
+00:31:21.280 --> 00:31:21.440 align:middle line:90%
+game.
+
+00:31:21.440 --> 00:31:23.898 align:middle line:84%
+We're each choosing an action,
+just like we did over there.
+
+00:31:23.898 --> 00:31:26.960 align:middle line:90%
+We each choose how hard to work.
+
+00:31:26.960 --> 00:31:32.360 align:middle line:84%
+But then there's going to be
+some state of nature, maybe
+
+00:31:32.360 --> 00:31:39.620 align:middle line:84%
+our physical state or sometimes
+called a state of nature.
+
+00:31:39.620 --> 00:31:45.480 align:middle line:90%
+
+
+00:31:45.480 --> 00:31:49.833 align:middle line:84%
+theta, which is going to
+be in some set, Big Theta.
+
+00:31:49.833 --> 00:31:51.500 align:middle line:84%
+I don't know if we've
+used theta before.
+
+00:31:51.500 --> 00:31:54.723 align:middle line:84%
+When I write theta, it just
+looks like an H inside a circle.
+
+00:31:54.723 --> 00:31:56.390 align:middle line:84%
+But that's so we can
+see the difference.
+
+00:31:56.390 --> 00:31:58.550 align:middle line:84%
+Little theta is like this,
+big theta is like this.
+
+00:31:58.550 --> 00:32:00.330 align:middle line:84%
+So I know it looks
+weird, but that's
+
+00:32:00.330 --> 00:32:02.690 align:middle line:90%
+how I write it on the board.
+
+00:32:02.690 --> 00:32:05.290 align:middle line:84%
+And just so we
+understand, how we map it
+
+00:32:05.290 --> 00:32:08.530 align:middle line:84%
+into our example over there--
+there we had two players.
+
+00:32:08.530 --> 00:32:13.850 align:middle line:84%
+Each player's action was some
+effort level between 0 and 1.
+
+00:32:13.850 --> 00:32:15.810 align:middle line:84%
+And the physical state
+was the difficulty
+
+00:32:15.810 --> 00:32:18.430 align:middle line:84%
+of the project, which over
+there, there were two states.
+
+00:32:18.430 --> 00:32:21.090 align:middle line:84%
+It could either be a difficult
+project; H, hard project;
+
+00:32:21.090 --> 00:32:22.810 align:middle line:90%
+or an easy project, theta e--
+
+00:32:22.810 --> 00:32:25.928 align:middle line:90%
+an easy project.
+
+00:32:25.928 --> 00:32:27.470 align:middle line:84%
+And then we're going
+to need payoffs,
+
+00:32:27.470 --> 00:32:28.970 align:middle line:90%
+just like we had over there.
+
+00:32:28.970 --> 00:32:35.450 align:middle line:84%
+So then we're going to
+have utility for player i.
+
+00:32:35.450 --> 00:32:37.490 align:middle line:84%
+This is going to
+depend on the actions
+
+00:32:37.490 --> 00:32:39.690 align:middle line:84%
+that every player takes,
+but also potentially
+
+00:32:39.690 --> 00:32:40.910 align:middle line:90%
+on the state of the world.
+
+00:32:40.910 --> 00:32:43.370 align:middle line:84%
+So just like over
+here, my payoff
+
+00:32:43.370 --> 00:32:47.053 align:middle line:84%
+depended on my own effort level,
+my opponent's effort level,
+
+00:32:47.053 --> 00:32:48.470 align:middle line:84%
+and also the state
+of the project,
+
+00:32:48.470 --> 00:32:49.750 align:middle line:90%
+how hard the project was.
+
+00:32:49.750 --> 00:32:52.170 align:middle line:84%
+So over here, in the
+more abstract context,
+
+00:32:52.170 --> 00:32:56.300 align:middle line:84%
+UI is going to be a function
+of A1 all the way up
+
+00:32:56.300 --> 00:32:58.460 align:middle line:84%
+to An, the actions
+of every player,
+
+00:32:58.460 --> 00:33:02.620 align:middle line:90%
+times the set capital theta.
+
+00:33:02.620 --> 00:33:09.580 align:middle line:84%
+And it's going to go to R
+for each L. So this is going
+
+00:33:09.580 --> 00:33:12.420 align:middle line:84%
+to give me a real numbered
+payoff that depends on what
+
+00:33:12.420 --> 00:33:14.940 align:middle line:84%
+player 1 does, what
+player 2 does, all
+
+00:33:14.940 --> 00:33:16.480 align:middle line:84%
+the way up to what
+player n does,
+
+00:33:16.480 --> 00:33:19.300 align:middle line:84%
+and also the value of
+the physical state--
+
+00:33:19.300 --> 00:33:22.360 align:middle line:84%
+in this example, whether
+the project is easy or hard.
+
+00:33:22.360 --> 00:33:25.380 align:middle line:90%
+
+
+00:33:25.380 --> 00:33:27.580 align:middle line:84%
+But what we see
+from that game is
+
+00:33:27.580 --> 00:33:29.900 align:middle line:84%
+we haven't specified
+enough yet because we also
+
+00:33:29.900 --> 00:33:32.460 align:middle line:84%
+have to think about the mental
+states, what players know
+
+00:33:32.460 --> 00:33:34.060 align:middle line:90%
+about other players.
+
+00:33:34.060 --> 00:33:38.200 align:middle line:84%
+And Harsanyi's key trick is to
+introduce this abstract object,
+
+00:33:38.200 --> 00:33:39.780 align:middle line:90%
+which we call a type.
+
+00:33:39.780 --> 00:33:41.260 align:middle line:84%
+And the type of
+a player is going
+
+00:33:41.260 --> 00:33:43.548 align:middle line:84%
+to capture their
+complete mental state.
+
+00:33:43.548 --> 00:33:45.840 align:middle line:84%
+It could be their beliefs
+about the state of the world.
+
+00:33:45.840 --> 00:33:47.882 align:middle line:84%
+It could be their beliefs
+about the other player.
+
+00:33:47.882 --> 00:33:49.340 align:middle line:90%
+It could be all these things.
+
+00:33:49.340 --> 00:34:03.350 align:middle line:84%
+So we're going to say player
+i has a type, ti, which
+
+00:34:03.350 --> 00:34:06.390 align:middle line:90%
+is in some set, capital TI.
+
+00:34:06.390 --> 00:34:13.010 align:middle line:84%
+So this is called
+player i's type space.
+
+00:34:13.010 --> 00:34:16.909 align:middle line:90%
+
+
+00:34:16.909 --> 00:34:19.750 align:middle line:84%
+And type is a weird
+terminology, but you
+
+00:34:19.750 --> 00:34:22.713 align:middle line:84%
+can say there's the type of
+the player who knows the state.
+
+00:34:22.713 --> 00:34:25.130 align:middle line:84%
+There's the type of the player
+who doesn't know the state.
+
+00:34:25.130 --> 00:34:26.150 align:middle line:84%
+There's the type
+of the player who
+
+00:34:26.150 --> 00:34:27.889 align:middle line:84%
+knows the other player
+knows the state,
+
+00:34:27.889 --> 00:34:29.292 align:middle line:90%
+but doesn't know the state.
+
+00:34:29.292 --> 00:34:31.750 align:middle line:84%
+We just think of these players
+with different mental states
+
+00:34:31.750 --> 00:34:34.130 align:middle line:90%
+as different types of players.
+
+00:34:34.130 --> 00:34:38.389 align:middle line:90%
+
+
+00:34:38.389 --> 00:34:40.230 align:middle line:84%
+And what we're
+missing here is what's
+
+00:34:40.230 --> 00:34:45.290 align:middle line:84%
+the connection between the types
+and the state of the world.
+
+00:34:45.290 --> 00:34:47.330 align:middle line:84%
+And we're going to
+capture that with a prior.
+
+00:34:47.330 --> 00:34:58.440 align:middle line:84%
+So the last component here is
+going to be a distribution, P.
+
+00:34:58.440 --> 00:35:00.800 align:middle line:84%
+But it's not enough just
+to say the distribution
+
+00:35:00.800 --> 00:35:03.200 align:middle line:84%
+of the physical
+state, but we also
+
+00:35:03.200 --> 00:35:05.880 align:middle line:84%
+have to specify the distribution
+of the players types.
+
+00:35:05.880 --> 00:35:09.840 align:middle line:84%
+And more generally, we have
+to specify the distribution
+
+00:35:09.840 --> 00:35:13.420 align:middle line:84%
+over the combination of
+natural states and types.
+
+00:35:13.420 --> 00:35:15.040 align:middle line:84%
+So this distribution,
+P, is going
+
+00:35:15.040 --> 00:35:23.240 align:middle line:84%
+to be over theta
+cross T1 cross tn.
+
+00:35:23.240 --> 00:35:24.640 align:middle line:84%
+So it's going to
+tell us, what is
+
+00:35:24.640 --> 00:35:28.400 align:middle line:84%
+the probability that the
+physical state is this?
+
+00:35:28.400 --> 00:35:31.320 align:middle line:84%
+Player one's mental state
+is something, all the way up
+
+00:35:31.320 --> 00:35:34.280 align:middle line:84%
+to player N's mental state
+being something over here.
+
+00:35:34.280 --> 00:35:38.720 align:middle line:84%
+I think this is a bit
+abstract, so let's try
+
+00:35:38.720 --> 00:35:41.460 align:middle line:90%
+to go through our example.
+
+00:35:41.460 --> 00:35:42.880 align:middle line:90%
+Maybe I'll give one.
+
+00:35:42.880 --> 00:35:48.290 align:middle line:84%
+Yeah, so let's go try to
+capture this in our example,
+
+00:35:48.290 --> 00:35:52.610 align:middle line:84%
+where I didn't
+specify everything.
+
+00:35:52.610 --> 00:35:57.970 align:middle line:84%
+Let's say, does player 2 know
+whether player 1 knows theta?
+
+00:35:57.970 --> 00:36:01.930 align:middle line:84%
+We're going to say
+for this example yes.
+
+00:36:01.930 --> 00:36:04.290 align:middle line:84%
+And does player 1 know
+whether player 2 knows
+
+00:36:04.290 --> 00:36:05.752 align:middle line:90%
+whether player 1 knows theta.
+
+00:36:05.752 --> 00:36:06.710 align:middle line:90%
+We're going to say yes.
+
+00:36:06.710 --> 00:36:07.990 align:middle line:84%
+So we could make it
+more complicated,
+
+00:36:07.990 --> 00:36:10.330 align:middle line:84%
+but we're going to say all
+these things are known.
+
+00:36:10.330 --> 00:36:15.050 align:middle line:84%
+So in this example, player
+1 knows the state theta.
+
+00:36:15.050 --> 00:36:18.250 align:middle line:84%
+Player 2 doesn't
+know the state theta,
+
+00:36:18.250 --> 00:36:21.518 align:middle line:84%
+but they do know that player
+1 knows the state theta.
+
+00:36:21.518 --> 00:36:23.810 align:middle line:84%
+And we're going to try to
+capture that in our framework
+
+00:36:23.810 --> 00:36:24.470 align:middle line:90%
+over here.
+
+00:36:24.470 --> 00:36:27.530 align:middle line:84%
+So the first, I think,
+challenging step
+
+00:36:27.530 --> 00:36:29.530 align:middle line:84%
+whenever we set up these
+models, the first thing
+
+00:36:29.530 --> 00:36:30.790 align:middle line:90%
+is to specify the state.
+
+00:36:30.790 --> 00:36:32.357 align:middle line:90%
+That's easy-- the state theta.
+
+00:36:32.357 --> 00:36:34.190 align:middle line:84%
+And then we have to
+specify the type spaces,
+
+00:36:34.190 --> 00:36:35.510 align:middle line:90%
+and that's always a bit harder.
+
+00:36:35.510 --> 00:36:36.953 align:middle line:84%
+So let's go through
+this example.
+
+00:36:36.953 --> 00:36:38.370 align:middle line:84%
+What is the safe
+space theta going
+
+00:36:38.370 --> 00:36:41.570 align:middle line:84%
+to be if we want to capture our
+example of the group project
+
+00:36:41.570 --> 00:36:44.530 align:middle line:90%
+over there?
+
+00:36:44.530 --> 00:36:48.910 align:middle line:84%
+What were the physical
+states in that example?
+
+00:36:48.910 --> 00:36:50.350 align:middle line:90%
+Yeah.
+
+00:36:50.350 --> 00:36:51.010 align:middle line:90%
+Right.
+
+00:36:51.010 --> 00:36:52.150 align:middle line:90%
+So we just have--
+
+00:36:52.150 --> 00:36:55.070 align:middle line:84%
+and actually, theta H and
+theta E. I wrote it wrong.
+
+00:36:55.070 --> 00:36:57.868 align:middle line:84%
+So often we do high
+and low, but here,
+
+00:36:57.868 --> 00:37:00.410 align:middle line:84%
+let's think of it the project
+is hard or the project is easy.
+
+00:37:00.410 --> 00:37:01.827 align:middle line:84%
+These are the two
+physical states.
+
+00:37:01.827 --> 00:37:03.828 align:middle line:90%
+Did I write--
+
+00:37:03.828 --> 00:37:04.370 align:middle line:90%
+I don't know.
+
+00:37:04.370 --> 00:37:07.390 align:middle line:84%
+I did originally make a
+mistake, so that's on me.
+
+00:37:07.390 --> 00:37:10.850 align:middle line:84%
+But now the hard thing
+is specifying the types.
+
+00:37:10.850 --> 00:37:12.270 align:middle line:90%
+This is always the challenge.
+
+00:37:12.270 --> 00:37:16.605 align:middle line:84%
+So the next step is
+to specify T1 and T2.
+
+00:37:16.605 --> 00:37:18.230 align:middle line:84%
+So I think the question
+you have to ask
+
+00:37:18.230 --> 00:37:22.950 align:middle line:84%
+yourself is, how many
+distinct mental states does
+
+00:37:22.950 --> 00:37:26.070 align:middle line:90%
+each player have?
+
+00:37:26.070 --> 00:37:26.650 align:middle line:90%
+Any thoughts?
+
+00:37:26.650 --> 00:37:29.510 align:middle line:90%
+Let's think about player 1.
+
+00:37:29.510 --> 00:37:32.670 align:middle line:90%
+So we know that player 1--
+
+00:37:32.670 --> 00:37:35.270 align:middle line:90%
+player 1 knows the state.
+
+00:37:35.270 --> 00:37:42.550 align:middle line:84%
+So what are some distinct mental
+states that player 1 could have?
+
+00:37:42.550 --> 00:37:44.860 align:middle line:90%
+Yeah.
+
+00:37:44.860 --> 00:37:46.280 align:middle line:90%
+AUDIENCE: Player 2 [INAUDIBLE].
+
+00:37:46.280 --> 00:37:50.000 align:middle line:84%
+Player 1 can know about
+player 2 but doesn't
+
+00:37:50.000 --> 00:37:52.280 align:middle line:84%
+know that player 1
+knows [INAUDIBLE].
+
+00:37:52.280 --> 00:37:53.660 align:middle line:84%
+IAN BALL: So there's a lot
+of things that could happen,
+
+00:37:53.660 --> 00:37:55.243 align:middle line:84%
+and this is why I
+tried to simplify it
+
+00:37:55.243 --> 00:37:57.560 align:middle line:84%
+by saying we're going to
+assume that player 1 does
+
+00:37:57.560 --> 00:38:00.313 align:middle line:84%
+know whether player
+two knows the state.
+
+00:38:00.313 --> 00:38:00.980 align:middle line:90%
+So you're right.
+
+00:38:00.980 --> 00:38:02.060 align:middle line:84%
+If we really wanted
+to get general,
+
+00:38:02.060 --> 00:38:03.227 align:middle line:90%
+we'd have to deal with that.
+
+00:38:03.227 --> 00:38:05.560 align:middle line:84%
+But we're going to assume
+player 1-- these higher order
+
+00:38:05.560 --> 00:38:06.340 align:middle line:90%
+beliefs are known.
+
+00:38:06.340 --> 00:38:07.980 align:middle line:84%
+We're going to make it
+as simple as possible.
+
+00:38:07.980 --> 00:38:09.660 align:middle line:84%
+So player 1 does know
+all these things,
+
+00:38:09.660 --> 00:38:11.640 align:middle line:84%
+but I would still
+argue there's certainly
+
+00:38:11.640 --> 00:38:14.440 align:middle line:84%
+two different mental
+states player 1 could have.
+
+00:38:14.440 --> 00:38:16.020 align:middle line:84%
+What are these
+two mental states?
+
+00:38:16.020 --> 00:38:19.000 align:middle line:84%
+We said player one knows the
+state, but what does that mean?
+
+00:38:19.000 --> 00:38:21.012 align:middle line:90%
+What could player 1 believe?
+
+00:38:21.012 --> 00:38:22.720 align:middle line:84%
+If they know the state,
+well, either they
+
+00:38:22.720 --> 00:38:25.357 align:middle line:84%
+know the state is easy or
+they know the state is hard.
+
+00:38:25.357 --> 00:38:26.940 align:middle line:84%
+So there's at least
+two mental states.
+
+00:38:26.940 --> 00:38:28.400 align:middle line:84%
+There's the type
+of player 1 where
+
+00:38:28.400 --> 00:38:30.017 align:middle line:84%
+they know this is
+a hard project,
+
+00:38:30.017 --> 00:38:31.600 align:middle line:84%
+and there's the other
+type of player 1
+
+00:38:31.600 --> 00:38:33.720 align:middle line:84%
+where they know this
+is an easy project.
+
+00:38:33.720 --> 00:38:36.220 align:middle line:84%
+So in this case, if we really
+went down this rabbit hole,
+
+00:38:36.220 --> 00:38:37.500 align:middle line:90%
+we'd have to make it harder.
+
+00:38:37.500 --> 00:38:42.130 align:middle line:84%
+But in this simplest example,
+there's actually only two types.
+
+00:38:42.130 --> 00:38:44.930 align:middle line:84%
+And they exactly correspond
+to the mental state
+
+00:38:44.930 --> 00:38:48.670 align:middle line:84%
+where player one sees or
+knows the project is easy
+
+00:38:48.670 --> 00:38:52.370 align:middle line:84%
+and the mental state where they
+see or know the project is hard.
+
+00:38:52.370 --> 00:38:54.270 align:middle line:84%
+There's a pretty close
+correspondence here,
+
+00:38:54.270 --> 00:38:57.290 align:middle line:84%
+but to keep the distinction
+clear, let's call this tH
+
+00:38:57.290 --> 00:38:59.170 align:middle line:90%
+and tE.
+
+00:38:59.170 --> 00:39:01.930 align:middle line:84%
+So the interpretation
+is if player 1's type
+
+00:39:01.930 --> 00:39:03.870 align:middle line:90%
+is tH, what does that mean?
+
+00:39:03.870 --> 00:39:06.170 align:middle line:84%
+That means player 1 knows
+the project is hard.
+
+00:39:06.170 --> 00:39:08.210 align:middle line:84%
+Notice that's different
+from saying the state
+
+00:39:08.210 --> 00:39:11.050 align:middle line:84%
+is theta H. When I say the
+state is theta H, that's
+
+00:39:11.050 --> 00:39:14.090 align:middle line:84%
+a statement about whether the
+project is actually hard or not.
+
+00:39:14.090 --> 00:39:16.610 align:middle line:84%
+When I say that
+player 1's type is tH,
+
+00:39:16.610 --> 00:39:20.690 align:middle line:84%
+that's a statement about what
+player 1 knows or believes
+
+00:39:20.690 --> 00:39:21.830 align:middle line:90%
+about the state.
+
+00:39:21.830 --> 00:39:24.570 align:middle line:90%
+
+
+00:39:24.570 --> 00:39:27.050 align:middle line:90%
+What about player 2 here?
+
+00:39:27.050 --> 00:39:29.070 align:middle line:84%
+It turns out in this
+really simple case,
+
+00:39:29.070 --> 00:39:31.170 align:middle line:84%
+there's only one mental
+state for player 2,
+
+00:39:31.170 --> 00:39:34.570 align:middle line:84%
+because they don't know whether
+the project is hard or easy.
+
+00:39:34.570 --> 00:39:39.010 align:middle line:84%
+They do know that player 1
+knows that, so they show up
+
+00:39:39.010 --> 00:39:40.040 align:middle line:90%
+and they play the game.
+
+00:39:40.040 --> 00:39:42.540 align:middle line:84%
+There's only one possible
+type, so maybe we'll
+
+00:39:42.540 --> 00:39:49.732 align:middle line:84%
+just call this t0 to show They
+don't really know anything.
+
+00:39:49.732 --> 00:39:52.100 align:middle line:84%
+So we now have specified
+the physical states
+
+00:39:52.100 --> 00:39:53.280 align:middle line:90%
+and the mental states.
+
+00:39:53.280 --> 00:39:54.800 align:middle line:84%
+We could have made it
+much more complicated.
+
+00:39:54.800 --> 00:39:57.258 align:middle line:84%
+If there was uncertainty about
+what the other players knew,
+
+00:39:57.258 --> 00:39:59.600 align:middle line:84%
+we'd have to model
+larger type spaces.
+
+00:39:59.600 --> 00:40:03.140 align:middle line:84%
+But for the simple example,
+we've made it quite nice.
+
+00:40:03.140 --> 00:40:10.660 align:middle line:84%
+And let's also assume that
+theta H and theta L and theta
+
+00:40:10.660 --> 00:40:12.760 align:middle line:90%
+E are equally likely.
+
+00:40:12.760 --> 00:40:17.180 align:middle line:90%
+
+
+00:40:17.180 --> 00:40:19.300 align:middle line:84%
+And this is known
+among the players.
+
+00:40:19.300 --> 00:40:23.220 align:middle line:84%
+So to be clear, player
+2 knows that it's
+
+00:40:23.220 --> 00:40:26.100 align:middle line:84%
+equally likely that the
+project is hard or easy.
+
+00:40:26.100 --> 00:40:28.720 align:middle line:84%
+They know that player 1 knows
+that the project is hard
+
+00:40:28.720 --> 00:40:31.220 align:middle line:84%
+or knows that it's easy, but
+they don't know anything else.
+
+00:40:31.220 --> 00:40:36.500 align:middle line:84%
+So now the challenge is, can we
+describe this distribution, P?
+
+00:40:36.500 --> 00:40:38.630 align:middle line:84%
+So this distribution,
+P, is going
+
+00:40:38.630 --> 00:40:44.150 align:middle line:84%
+to be a distribution over
+theta cross T1 cross T2.
+
+00:40:44.150 --> 00:40:48.610 align:middle line:84%
+So what we need to specify is
+four different probabilities.
+
+00:40:48.610 --> 00:40:57.950 align:middle line:84%
+So we need to say, what's the
+probability of theta H, tH, t0;
+
+00:40:57.950 --> 00:41:04.790 align:middle line:90%
+theta H, tL, t0; theta E--
+
+00:41:04.790 --> 00:41:07.110 align:middle line:90%
+I keep Messing this up.
+
+00:41:07.110 --> 00:41:15.090 align:middle line:90%
+tH, t0, and theta E tE t0.
+
+00:41:15.090 --> 00:41:17.670 align:middle line:90%
+
+
+00:41:17.670 --> 00:41:20.490 align:middle line:84%
+So sometimes these are
+called states of the world.
+
+00:41:20.490 --> 00:41:22.830 align:middle line:84%
+The distinction is theta
+is a state of nature
+
+00:41:22.830 --> 00:41:24.190 align:middle line:90%
+or physical state.
+
+00:41:24.190 --> 00:41:25.870 align:middle line:84%
+The state of the
+whole world specifies
+
+00:41:25.870 --> 00:41:28.510 align:middle line:84%
+both the physical state
+and the mental states.
+
+00:41:28.510 --> 00:41:30.890 align:middle line:84%
+So these are the four
+possible states of the world,
+
+00:41:30.890 --> 00:41:32.150 align:middle line:90%
+and let's interpret them.
+
+00:41:32.150 --> 00:41:34.250 align:middle line:84%
+Let's look at the second
+one-- just an example.
+
+00:41:34.250 --> 00:41:37.160 align:middle line:84%
+This is the state of the world
+where the state of nature
+
+00:41:37.160 --> 00:41:40.360 align:middle line:84%
+is theta H. So the
+project is hard.
+
+00:41:40.360 --> 00:41:43.240 align:middle line:84%
+The player one's
+mental state is te.
+
+00:41:43.240 --> 00:41:47.000 align:middle line:84%
+That means player 1 believes
+that the project is easy.
+
+00:41:47.000 --> 00:41:49.560 align:middle line:84%
+And player two's mental
+state is just T0.
+
+00:41:49.560 --> 00:41:51.180 align:middle line:84%
+They believe what
+they always believe.
+
+00:41:51.180 --> 00:41:52.972 align:middle line:84%
+They don't really have
+anything to believe.
+
+00:41:52.972 --> 00:41:54.880 align:middle line:84%
+They just have the
+one thing they know.
+
+00:41:54.880 --> 00:41:58.983 align:middle line:84%
+So what we want to do is we
+need to assign probabilities
+
+00:41:58.983 --> 00:42:00.400 align:middle line:84%
+to each of these
+four things based
+
+00:42:00.400 --> 00:42:02.280 align:middle line:90%
+on the story we've told so far.
+
+00:42:02.280 --> 00:42:07.040 align:middle line:84%
+So any thoughts on what this
+probability distribution, P,
+
+00:42:07.040 --> 00:42:09.360 align:middle line:90%
+is going to be here?
+
+00:42:09.360 --> 00:42:10.340 align:middle line:90%
+Yes, back here.
+
+00:42:10.340 --> 00:42:14.380 align:middle line:84%
+AUDIENCE: Would it
+be 1/2, 0, 0, 1/2?
+
+00:42:14.380 --> 00:42:15.380 align:middle line:90%
+IAN BALL: Exactly right.
+
+00:42:15.380 --> 00:42:19.240 align:middle line:90%
+
+
+00:42:19.240 --> 00:42:23.480 align:middle line:84%
+So can you explain a little
+bit how you got that?
+
+00:42:23.480 --> 00:42:24.280 align:middle line:90%
+AUDIENCE: For sure.
+
+00:42:24.280 --> 00:42:27.760 align:middle line:84%
+So if the state of
+the world theta H is--
+
+00:42:27.760 --> 00:42:30.577 align:middle line:84%
+let's just say theta is
+theta H. That means we know--
+
+00:42:30.577 --> 00:42:31.660 align:middle line:90%
+IAN BALL: State of nature.
+
+00:42:31.660 --> 00:42:32.785 align:middle line:90%
+Sorry, It's very confusing.
+
+00:42:32.785 --> 00:42:35.610 align:middle line:84%
+Yeah, if the state of nature
+is theta H. Yeah, exactly.
+
+00:42:35.610 --> 00:42:37.420 align:middle line:84%
+I may, have said
+it wrong myself.
+
+00:42:37.420 --> 00:42:38.150 align:middle line:90%
+Yeah.
+
+00:42:38.150 --> 00:42:40.150 align:middle line:84%
+AUDIENCE: Anyway, then,
+with absolute certainty,
+
+00:42:40.150 --> 00:42:42.570 align:middle line:84%
+we know that player 1 knows
+that the state of nature
+
+00:42:42.570 --> 00:42:44.940 align:middle line:84%
+is theta H, which
+means they have tH.
+
+00:42:44.940 --> 00:42:45.690 align:middle line:90%
+IAN BALL: Exactly.
+
+00:42:45.690 --> 00:42:47.607 align:middle line:84%
+AUDIENCE: It's not
+possible for them to have t
+
+00:42:47.607 --> 00:42:50.670 align:middle line:84%
+and it's this mismatch, which
+is why that gives probability 0.
+
+00:42:50.670 --> 00:42:53.820 align:middle line:84%
+And then you flip the labels and
+everything else is symmetric.
+
+00:42:53.820 --> 00:42:54.570 align:middle line:90%
+IAN BALL: Exactly.
+
+00:42:54.570 --> 00:42:57.170 align:middle line:90%
+Exactly right.
+
+00:42:57.170 --> 00:43:00.090 align:middle line:84%
+I guess it's a hidden implicit
+assumption that when we say
+
+00:43:00.090 --> 00:43:03.170 align:middle line:84%
+player 1-- well, this
+is what it means--
+
+00:43:03.170 --> 00:43:05.590 align:middle line:84%
+to know the state means when
+you think the state is high,
+
+00:43:05.590 --> 00:43:06.830 align:middle line:90%
+it's actually high or hard.
+
+00:43:06.830 --> 00:43:09.205 align:middle line:84%
+And when you think the state
+is easy, it's actually easy.
+
+00:43:09.205 --> 00:43:12.570 align:middle line:84%
+Otherwise, you wouldn't
+know the state at all.
+
+00:43:12.570 --> 00:43:17.610 align:middle line:84%
+OK, let's do maybe
+one more example
+
+00:43:17.610 --> 00:43:22.110 align:middle line:84%
+to make sure we can understand
+what's going on here.
+
+00:43:22.110 --> 00:43:51.020 align:middle line:90%
+
+
+00:43:51.020 --> 00:43:58.620 align:middle line:84%
+So let's consider maybe
+example two, where we'll try
+
+00:43:58.620 --> 00:43:59.880 align:middle line:90%
+to be a little more realistic.
+
+00:43:59.880 --> 00:44:01.940 align:middle line:84%
+Probably player
+1 can't perfectly
+
+00:44:01.940 --> 00:44:04.653 align:middle line:84%
+tell whether the
+project is easy or hard,
+
+00:44:04.653 --> 00:44:06.320 align:middle line:84%
+but they have some
+information about it.
+
+00:44:06.320 --> 00:44:09.300 align:middle line:84%
+So what we're
+going to imagine is
+
+00:44:09.300 --> 00:44:14.420 align:middle line:84%
+player 1 gets a signal about
+the difficulty of the state.
+
+00:44:14.420 --> 00:44:16.690 align:middle line:84%
+And so player 1 has
+some information
+
+00:44:16.690 --> 00:44:18.440 align:middle line:84%
+about whether the
+project is easy or hard,
+
+00:44:18.440 --> 00:44:21.100 align:middle line:90%
+but they don't know it for sure.
+
+00:44:21.100 --> 00:44:25.500 align:middle line:84%
+And more specifically-- so
+let's say player 1-- sometimes
+
+00:44:25.500 --> 00:44:29.910 align:middle line:90%
+we say gets a signal.
+
+00:44:29.910 --> 00:44:34.948 align:middle line:84%
+And that's a statistical way of
+looking at it, but you sit down,
+
+00:44:34.948 --> 00:44:36.490 align:middle line:84%
+you try to start
+doing your homework.
+
+00:44:36.490 --> 00:44:39.470 align:middle line:84%
+You think, I think it's
+probably hard, but I'm not sure.
+
+00:44:39.470 --> 00:44:42.205 align:middle line:84%
+And you maybe assign some
+probability to how hard it is.
+
+00:44:42.205 --> 00:44:44.330 align:middle line:84%
+And that's what we're going
+to try to capture here.
+
+00:44:44.330 --> 00:44:47.550 align:middle line:90%
+
+
+00:44:47.550 --> 00:44:53.630 align:middle line:84%
+I'm going to say
+with accuracy, q,
+
+00:44:53.630 --> 00:45:00.550 align:middle line:84%
+where q is going to
+be between 1/2 and 1.
+
+00:45:00.550 --> 00:45:04.610 align:middle line:84%
+So what this means is-- let
+me just draw this mapping.
+
+00:45:04.610 --> 00:45:19.570 align:middle line:90%
+
+
+00:45:19.570 --> 00:45:20.890 align:middle line:90%
+I run out of arrows here.
+
+00:45:20.890 --> 00:45:27.330 align:middle line:90%
+
+
+00:45:27.330 --> 00:45:30.268 align:middle line:84%
+So what I'm
+representing here is I'm
+
+00:45:30.268 --> 00:45:31.810 align:middle line:84%
+going to think of
+theta H and theta L
+
+00:45:31.810 --> 00:45:33.650 align:middle line:84%
+as the true difficulty
+of the project.
+
+00:45:33.650 --> 00:45:36.570 align:middle line:84%
+And I'm going to think of
+tH and tL as the signal
+
+00:45:36.570 --> 00:45:40.170 align:middle line:84%
+that player 1 gets about the
+difficulty of the project.
+
+00:45:40.170 --> 00:45:43.690 align:middle line:84%
+And if the project is hard,
+then most of the time,
+
+00:45:43.690 --> 00:45:47.450 align:middle line:84%
+player 1 gets this signal that's
+indicative of it being hard--
+
+00:45:47.450 --> 00:45:48.930 align:middle line:90%
+indeed, with probability q.
+
+00:45:48.930 --> 00:45:52.510 align:middle line:84%
+But with probability 1 minus
+q, it's deceptively hard.
+
+00:45:52.510 --> 00:45:54.150 align:middle line:84%
+It's actually hard,
+but it looks easy.
+
+00:45:54.150 --> 00:45:55.470 align:middle line:90%
+And they get the wrong signal.
+
+00:45:55.470 --> 00:45:57.790 align:middle line:84%
+And then we have the
+same thing over here.
+
+00:45:57.790 --> 00:46:01.330 align:middle line:84%
+So let's just understand--
+if I allow q to be 1,
+
+00:46:01.330 --> 00:46:03.530 align:middle line:84%
+then if the project
+is hard, they always
+
+00:46:03.530 --> 00:46:04.813 align:middle line:90%
+get the signal that it's hard.
+
+00:46:04.813 --> 00:46:07.230 align:middle line:84%
+And I'm just going to say all
+day long, they get it wrong.
+
+00:46:07.230 --> 00:46:11.050 align:middle line:90%
+
+
+00:46:11.050 --> 00:46:12.550 align:middle line:84%
+Similarly, when the
+project is easy,
+
+00:46:12.550 --> 00:46:15.090 align:middle line:84%
+they always get this signal
+that suggests it's easy.
+
+00:46:15.090 --> 00:46:17.850 align:middle line:84%
+So the case of q equals 1
+is exactly what we already
+
+00:46:17.850 --> 00:46:19.290 align:middle line:90%
+studied over here.
+
+00:46:19.290 --> 00:46:22.150 align:middle line:84%
+But now we're going to
+generalize to this case,
+
+00:46:22.150 --> 00:46:23.220 align:middle line:90%
+what if q was 1/2?
+
+00:46:23.220 --> 00:46:24.470 align:middle line:90%
+What would that correspond to?
+
+00:46:24.470 --> 00:46:27.060 align:middle line:90%
+
+
+00:46:27.060 --> 00:46:27.718 align:middle line:90%
+Yeah.
+
+00:46:27.718 --> 00:46:29.260 align:middle line:84%
+AUDIENCE: You're
+right half the time.
+
+00:46:29.260 --> 00:46:30.140 align:middle line:90%
+IAN BALL: Right.
+
+00:46:30.140 --> 00:46:32.420 align:middle line:84%
+And if the prior--
+since we said it's
+
+00:46:32.420 --> 00:46:34.720 align:middle line:84%
+equally likely to
+be hard and easy,
+
+00:46:34.720 --> 00:46:36.900 align:middle line:84%
+it actually means
+you know nothing.
+
+00:46:36.900 --> 00:46:41.932 align:middle line:84%
+If you have a signal
+when the state is hard,
+
+00:46:41.932 --> 00:46:44.140 align:middle line:84%
+it gives you each signal
+realization with probability
+
+00:46:44.140 --> 00:46:44.400 align:middle line:90%
+1/2.
+
+00:46:44.400 --> 00:46:46.560 align:middle line:84%
+And when it's easy, you get each
+signal with probability 1/2,
+
+00:46:46.560 --> 00:46:48.560 align:middle line:84%
+then it's not giving you
+any information at all.
+
+00:46:48.560 --> 00:46:50.100 align:middle line:84%
+So you're just
+totally uninformed.
+
+00:46:50.100 --> 00:46:53.860 align:middle line:84%
+Your gut is totally
+useless, which is maybe
+
+00:46:53.860 --> 00:46:55.760 align:middle line:90%
+for retail stock traders.
+
+00:46:55.760 --> 00:46:58.880 align:middle line:84%
+That's a pretty good model
+of how they trade stocks.
+
+00:46:58.880 --> 00:47:03.660 align:middle line:84%
+So let's now try to capture
+this model, this example
+
+00:47:03.660 --> 00:47:05.040 align:middle line:90%
+within our model over here.
+
+00:47:05.040 --> 00:47:07.800 align:middle line:84%
+So it turns out the type space
+are going to be the same,
+
+00:47:07.800 --> 00:47:09.400 align:middle line:84%
+but the interpretation
+is different.
+
+00:47:09.400 --> 00:47:13.460 align:middle line:84%
+So we still have, for
+player 1, two types--
+
+00:47:13.460 --> 00:47:15.360 align:middle line:90%
+the hard type and the easy type.
+
+00:47:15.360 --> 00:47:17.460 align:middle line:84%
+But now the hard
+type, we don't mean
+
+00:47:17.460 --> 00:47:19.760 align:middle line:84%
+you know for certain
+the project is hard.
+
+00:47:19.760 --> 00:47:22.100 align:middle line:84%
+What we mean is based
+on the evidence you see,
+
+00:47:22.100 --> 00:47:25.190 align:middle line:84%
+it's more likely than not
+that the project is hard.
+
+00:47:25.190 --> 00:47:29.270 align:middle line:84%
+And similarly, the
+type tE suggests
+
+00:47:29.270 --> 00:47:31.410 align:middle line:84%
+that player 1 looks
+at the project,
+
+00:47:31.410 --> 00:47:33.790 align:middle line:84%
+they think it's probably
+easy, but they're not certain
+
+00:47:33.790 --> 00:47:34.530 align:middle line:90%
+that it's easy.
+
+00:47:34.530 --> 00:47:37.750 align:middle line:84%
+And they can actually compute
+the probability that it's easy.
+
+00:47:37.750 --> 00:47:39.990 align:middle line:90%
+So now let's represent this.
+
+00:47:39.990 --> 00:47:51.190 align:middle line:84%
+We're going to represent this
+with the distribution, P,
+
+00:47:51.190 --> 00:47:55.850 align:middle line:90%
+over theta cross t1 cross t2.
+
+00:47:55.850 --> 00:47:58.470 align:middle line:90%
+
+
+00:47:58.470 --> 00:47:59.790 align:middle line:90%
+So what is it going to be?
+
+00:47:59.790 --> 00:48:01.030 align:middle line:90%
+Let's write it down.
+
+00:48:01.030 --> 00:48:05.710 align:middle line:90%
+Again, we have theta H, tH, t0.
+
+00:48:05.710 --> 00:48:12.430 align:middle line:90%
+We have theta H, tE, t0.
+
+00:48:12.430 --> 00:48:23.200 align:middle line:84%
+We have theta E, tH, t0,
+and we have theta E, tE, t0.
+
+00:48:23.200 --> 00:48:25.700 align:middle line:84%
+I guess it got progressively
+smaller as I ran out of space.
+
+00:48:25.700 --> 00:48:28.610 align:middle line:90%
+
+
+00:48:28.610 --> 00:48:30.240 align:middle line:84%
+So now what are
+the probabilities
+
+00:48:30.240 --> 00:48:35.540 align:middle line:84%
+that we're going to
+assign to each of these?
+
+00:48:35.540 --> 00:48:39.880 align:middle line:90%
+
+
+00:48:39.880 --> 00:48:40.520 align:middle line:90%
+Yeah.
+
+00:48:40.520 --> 00:48:42.812 align:middle line:84%
+AUDIENCE: Just to make sure
+there is equal probability,
+
+00:48:42.812 --> 00:48:44.000 align:middle line:90%
+that it actually is hard.
+
+00:48:44.000 --> 00:48:45.310 align:middle line:84%
+IAN BALL: We're going to
+maintain that assumption, so
+
+00:48:45.310 --> 00:48:46.440 align:middle line:90%
+a good question.
+
+00:48:46.440 --> 00:48:47.840 align:middle line:90%
+Let's maintain this assumption.
+
+00:48:47.840 --> 00:48:50.080 align:middle line:90%
+I didn't say that.
+
+00:48:50.080 --> 00:48:51.080 align:middle line:90%
+Second row, yeah.
+
+00:48:51.080 --> 00:48:53.800 align:middle line:84%
+AUDIENCE: So for the first
+one, there's a 1/2 chance that
+
+00:48:53.800 --> 00:48:54.920 align:middle line:90%
+it's hard.
+
+00:48:54.920 --> 00:49:00.320 align:middle line:84%
+And then as tdH,
+that's going to be q.
+
+00:49:00.320 --> 00:49:02.960 align:middle line:84%
+IAN BALL: So what's the
+probability of this?
+
+00:49:02.960 --> 00:49:04.400 align:middle line:90%
+AUDIENCE: That's 1/2 q.
+
+00:49:04.400 --> 00:49:06.440 align:middle line:90%
+IAN BALL: 1/2 q, exactly.
+
+00:49:06.440 --> 00:49:09.337 align:middle line:90%
+AUDIENCE: [INAUDIBLE] 1 minus q.
+
+00:49:09.337 --> 00:49:09.920 align:middle line:90%
+IAN BALL: Yes.
+
+00:49:09.920 --> 00:49:12.893 align:middle line:84%
+AUDIENCE: And then 1/2 minus
+q and then [INAUDIBLE].
+
+00:49:12.893 --> 00:49:13.560 align:middle line:90%
+IAN BALL: Great.
+
+00:49:13.560 --> 00:49:19.440 align:middle line:90%
+
+
+00:49:19.440 --> 00:49:21.250 align:middle line:84%
+So it's going to be
+like this, because what
+
+00:49:21.250 --> 00:49:23.417 align:middle line:84%
+has to happen for this to
+be the state of the world?
+
+00:49:23.417 --> 00:49:25.610 align:middle line:84%
+Well, first, the
+project has to be hard.
+
+00:49:25.610 --> 00:49:27.930 align:middle line:84%
+And we know that happens
+with probability 1/2.
+
+00:49:27.930 --> 00:49:30.550 align:middle line:84%
+But further, not only
+is the project hard,
+
+00:49:30.550 --> 00:49:32.730 align:middle line:84%
+but player 1 gets
+the signal that's
+
+00:49:32.730 --> 00:49:34.610 align:middle line:90%
+indicative of it being hard.
+
+00:49:34.610 --> 00:49:37.530 align:middle line:84%
+And when the state's actually
+hard, how likely is that?
+
+00:49:37.530 --> 00:49:41.890 align:middle line:90%
+That's probability q.
+
+00:49:41.890 --> 00:49:45.390 align:middle line:84%
+And then down here, well,
+we're going to say, well,
+
+00:49:45.390 --> 00:49:48.990 align:middle line:84%
+there's still a probability
+1/2 that it's actually hard.
+
+00:49:48.990 --> 00:49:51.497 align:middle line:84%
+But now what's the probability
+they get the easy signal?
+
+00:49:51.497 --> 00:49:53.330 align:middle line:84%
+So they get misled,
+they get the signal that
+
+00:49:53.330 --> 00:49:55.510 align:middle line:84%
+suggests the project's
+easy even when it's hard.
+
+00:49:55.510 --> 00:49:56.710 align:middle line:90%
+That's still possible.
+
+00:49:56.710 --> 00:49:58.250 align:middle line:84%
+It's less likely,
+but it's possible.
+
+00:49:58.250 --> 00:50:00.810 align:middle line:84%
+That has probability 1 minus
+q, and we have to multiply that
+
+00:50:00.810 --> 00:50:01.310 align:middle line:90%
+by 1/2.
+
+00:50:01.310 --> 00:50:03.930 align:middle line:90%
+
+
+00:50:03.930 --> 00:50:08.210 align:middle line:84%
+Notice here if we sum the
+first two, we get 1/2,
+
+00:50:08.210 --> 00:50:11.090 align:middle line:84%
+which makes sense because the
+sum of the first two is exactly
+
+00:50:11.090 --> 00:50:13.130 align:middle line:84%
+the probability that
+the state is hard,
+
+00:50:13.130 --> 00:50:16.610 align:middle line:84%
+because given the state is
+hard, we're summing over
+
+00:50:16.610 --> 00:50:18.580 align:middle line:90%
+the additional types.
+
+00:50:18.580 --> 00:50:20.260 align:middle line:90%
+Let's look at the extreme cases.
+
+00:50:20.260 --> 00:50:24.340 align:middle line:84%
+If q goes to 1,
+what happens here?
+
+00:50:24.340 --> 00:50:25.840 align:middle line:84%
+Well, now we're
+just back over here.
+
+00:50:25.840 --> 00:50:26.715 align:middle line:90%
+This is what we said.
+
+00:50:26.715 --> 00:50:29.340 align:middle line:84%
+This is the special case where
+player 1 perfectly observes
+
+00:50:29.340 --> 00:50:30.760 align:middle line:90%
+the difficulty of the project.
+
+00:50:30.760 --> 00:50:31.760 align:middle line:90%
+What if q goes to 1/2?
+
+00:50:31.760 --> 00:50:36.700 align:middle line:90%
+
+
+00:50:36.700 --> 00:50:37.500 align:middle line:90%
+Yeah.
+
+00:50:37.500 --> 00:50:40.040 align:middle line:84%
+AUDIENCE: q goes to half,
+then each of the pairs,
+
+00:50:40.040 --> 00:50:44.602 align:middle line:84%
+like the data pairs are
+approximately going to be 1.
+
+00:50:44.602 --> 00:50:46.060 align:middle line:84%
+IAN BALL: So
+basically everything's
+
+00:50:46.060 --> 00:50:48.393 align:middle line:84%
+a fourth because now your
+signal doesn't really give you
+
+00:50:48.393 --> 00:50:49.860 align:middle line:90%
+any information about this.
+
+00:50:49.860 --> 00:50:51.660 align:middle line:84%
+If the project is
+actually hard, you're
+
+00:50:51.660 --> 00:50:53.327 align:middle line:84%
+equally likely to get
+these two signals.
+
+00:50:53.327 --> 00:50:55.420 align:middle line:84%
+And just everything
+is going to be 1/4.
+
+00:50:55.420 --> 00:50:56.260 align:middle line:90%
+Yes.
+
+00:50:56.260 --> 00:50:59.020 align:middle line:84%
+AUDIENCE: Is player
+1 aware of their own,
+
+00:50:59.020 --> 00:51:01.340 align:middle line:90%
+or does that even matter?
+
+00:51:01.340 --> 00:51:02.880 align:middle line:84%
+IAN BALL: No, it
+really does matter.
+
+00:51:02.880 --> 00:51:06.220 align:middle line:84%
+So this is the subtle
+thing here that this
+
+00:51:06.220 --> 00:51:09.900 align:middle line:84%
+is where the implicit assumption
+here-- and this is where it gets
+
+00:51:09.900 --> 00:51:12.820 align:middle line:84%
+a little subtle-- is that
+the distribution, P, is
+
+00:51:12.820 --> 00:51:14.260 align:middle line:90%
+common knowledge.
+
+00:51:14.260 --> 00:51:17.150 align:middle line:84%
+So player 1 knows
+their own type,
+
+00:51:17.150 --> 00:51:22.430 align:middle line:84%
+and they know the set of
+possible types the players have.
+
+00:51:22.430 --> 00:51:25.310 align:middle line:84%
+And they know the
+distribution over the types.
+
+00:51:25.310 --> 00:51:27.643 align:middle line:84%
+Now, you might say,
+is that a restriction?
+
+00:51:27.643 --> 00:51:30.310 align:middle line:84%
+It turns out there's some really
+subtle mathematical points that
+
+00:51:30.310 --> 00:51:35.630 align:middle line:84%
+argue that, as long as you
+make the type space big enough,
+
+00:51:35.630 --> 00:51:36.730 align:middle line:90%
+the P is a little tricky.
+
+00:51:36.730 --> 00:51:38.470 align:middle line:84%
+Basically, you can make
+the type space big enough
+
+00:51:38.470 --> 00:51:39.950 align:middle line:84%
+and you can capture
+everything, but it's
+
+00:51:39.950 --> 00:51:41.550 align:middle line:84%
+quite a subtle point
+about what's known
+
+00:51:41.550 --> 00:51:42.425 align:middle line:90%
+and what's not known.
+
+00:51:42.425 --> 00:51:45.550 align:middle line:84%
+And we're getting into this very
+abstract area of epistemic game
+
+00:51:45.550 --> 00:51:49.870 align:middle line:84%
+theory that gets into logic and
+really subtleties about what
+
+00:51:49.870 --> 00:51:51.230 align:middle line:90%
+belief and what knowledge is.
+
+00:51:51.230 --> 00:51:56.670 align:middle line:84%
+But the assumption here is that
+P is known by everyone, yeah.
+
+00:51:56.670 --> 00:51:57.170 align:middle line:90%
+OK.
+
+00:51:57.170 --> 00:52:01.510 align:middle line:84%
+So the next thing
+we want to do is
+
+00:52:01.510 --> 00:52:09.330 align:middle line:84%
+let's now think about
+behavior in this game.
+
+00:52:09.330 --> 00:52:11.410 align:middle line:84%
+So far, I've just
+defined the game.
+
+00:52:11.410 --> 00:52:12.732 align:middle line:90%
+We now have to define--
+
+00:52:12.732 --> 00:52:14.440 align:middle line:84%
+the remaining time,
+we're going to define
+
+00:52:14.440 --> 00:52:15.780 align:middle line:90%
+an equilibrium of this game.
+
+00:52:15.780 --> 00:52:23.640 align:middle line:90%
+
+
+00:52:23.640 --> 00:52:26.200 align:middle line:84%
+So far, I've just defined
+what a Bayesian game is.
+
+00:52:26.200 --> 00:52:29.000 align:middle line:84%
+Let's now define what an
+equilibrium of a Bayesian game
+
+00:52:29.000 --> 00:52:29.500 align:middle line:90%
+is.
+
+00:52:29.500 --> 00:52:31.220 align:middle line:84%
+The first step is to
+define equilibrium.
+
+00:52:31.220 --> 00:52:33.160 align:middle line:84%
+You always have to define
+what a strategy is.
+
+00:52:33.160 --> 00:52:38.280 align:middle line:84%
+So now let's define a
+strategy in a Bayesian game.
+
+00:52:38.280 --> 00:52:40.600 align:middle line:84%
+Now a strategy,
+remember, is always
+
+00:52:40.600 --> 00:52:42.640 align:middle line:90%
+a complete contingent plan.
+
+00:52:42.640 --> 00:52:45.960 align:middle line:84%
+It specifies what action you
+take as a function of things
+
+00:52:45.960 --> 00:52:48.320 align:middle line:84%
+that you can observe,
+things that you know.
+
+00:52:48.320 --> 00:52:55.600 align:middle line:84%
+So in this case, for
+player i, a strategy
+
+00:52:55.600 --> 00:53:03.260 align:middle line:84%
+is a function,
+si, from ti to Ai.
+
+00:53:03.260 --> 00:53:05.840 align:middle line:90%
+
+
+00:53:05.840 --> 00:53:07.280 align:middle line:90%
+So let's visualize it down here.
+
+00:53:07.280 --> 00:53:12.200 align:middle line:84%
+We have some type, ti, and
+that gets mapped to si of t.
+
+00:53:12.200 --> 00:53:15.180 align:middle line:90%
+
+
+00:53:15.180 --> 00:53:17.380 align:middle line:84%
+So what this complete
+contingent plan says
+
+00:53:17.380 --> 00:53:21.220 align:middle line:84%
+is it says if I'm player i,
+if my mental state is ti,
+
+00:53:21.220 --> 00:53:24.580 align:middle line:84%
+this is the action
+I'm going to take.
+
+00:53:24.580 --> 00:53:26.040 align:middle line:84%
+If I have a different
+mental state,
+
+00:53:26.040 --> 00:53:29.940 align:middle line:84%
+I can potentially take
+a different action.
+
+00:53:29.940 --> 00:53:33.220 align:middle line:84%
+My strategy can't depend on the
+mental states of anyone else
+
+00:53:33.220 --> 00:53:35.440 align:middle line:84%
+or on the state of the world
+or the state of nature,
+
+00:53:35.440 --> 00:53:36.982 align:middle line:84%
+because I don't
+observe those things.
+
+00:53:36.982 --> 00:53:38.980 align:middle line:84%
+All I know is player
+i is my mental state,
+
+00:53:38.980 --> 00:53:41.980 align:middle line:84%
+so the only thing I can
+contingent condition my action
+
+00:53:41.980 --> 00:53:43.600 align:middle line:90%
+on is my own mental state.
+
+00:53:43.600 --> 00:53:45.180 align:middle line:84%
+And that's exactly
+why this function
+
+00:53:45.180 --> 00:53:48.040 align:middle line:84%
+depends on my mental state, but
+on no one else's mental state.
+
+00:53:48.040 --> 00:53:51.420 align:middle line:90%
+
+
+00:53:51.420 --> 00:53:56.380 align:middle line:84%
+I think there's one subtlety
+here in interpretation,
+
+00:53:56.380 --> 00:53:58.220 align:middle line:90%
+which is that--
+
+00:53:58.220 --> 00:54:16.293 align:middle line:84%
+I'll say note, player i actually
+has one mental state slash type.
+
+00:54:16.293 --> 00:54:18.710 align:middle line:84%
+So this is where I mentioned
+the interpretive difficulties
+
+00:54:18.710 --> 00:54:19.830 align:middle line:90%
+we get into.
+
+00:54:19.830 --> 00:54:22.363 align:middle line:84%
+I'm calling this a
+complete contingent plan,
+
+00:54:22.363 --> 00:54:24.030 align:middle line:84%
+but it's never clear
+when you would make
+
+00:54:24.030 --> 00:54:25.280 align:middle line:90%
+this complete contingent plan.
+
+00:54:25.280 --> 00:54:27.390 align:middle line:84%
+You'd have to make this
+complete contingent plan
+
+00:54:27.390 --> 00:54:29.710 align:middle line:84%
+before you know
+what your type is.
+
+00:54:29.710 --> 00:54:32.910 align:middle line:84%
+And it's very hard with
+these intrinsic preferences.
+
+00:54:32.910 --> 00:54:33.910 align:middle line:90%
+You're born.
+
+00:54:33.910 --> 00:54:36.350 align:middle line:84%
+Let's say you like the color
+red in our car example.
+
+00:54:36.350 --> 00:54:37.390 align:middle line:84%
+Formally, what you'd
+have to do here
+
+00:54:37.390 --> 00:54:39.390 align:middle line:84%
+is make a strategy that
+said, if I were born
+
+00:54:39.390 --> 00:54:41.230 align:middle line:84%
+and I liked the color
+blue, what would I do?
+
+00:54:41.230 --> 00:54:42.930 align:middle line:84%
+If I were born differently
+and liked the color red,
+
+00:54:42.930 --> 00:54:43.597 align:middle line:90%
+what would I do?
+
+00:54:43.597 --> 00:54:46.830 align:middle line:84%
+It's a bit weird to
+think about, but I
+
+00:54:46.830 --> 00:54:48.550 align:middle line:84%
+think the role of
+this assumption
+
+00:54:48.550 --> 00:54:50.830 align:middle line:84%
+really is that, yes,
+player i is only
+
+00:54:50.830 --> 00:54:52.872 align:middle line:84%
+going to have a
+single realized type,
+
+00:54:52.872 --> 00:54:54.830 align:middle line:84%
+and they're going to take
+a single action based
+
+00:54:54.830 --> 00:54:55.893 align:middle line:90%
+on that type.
+
+00:54:55.893 --> 00:54:58.310 align:middle line:84%
+But the reason we have to
+specify this complete contingent
+
+00:54:58.310 --> 00:55:00.590 align:middle line:84%
+plan is that the
+other players don't
+
+00:55:00.590 --> 00:55:01.847 align:middle line:90%
+know what type player i has.
+
+00:55:01.847 --> 00:55:03.430 align:middle line:84%
+So the other players
+are going to have
+
+00:55:03.430 --> 00:55:05.710 align:middle line:84%
+to form beliefs about
+player i's type,
+
+00:55:05.710 --> 00:55:08.720 align:middle line:84%
+and then form beliefs about
+what actions player i takes.
+
+00:55:08.720 --> 00:55:10.680 align:middle line:90%
+And the other players need to--
+
+00:55:10.680 --> 00:55:13.420 align:middle line:84%
+so what this represents is
+what the other players believe
+
+00:55:13.420 --> 00:55:16.160 align:middle line:84%
+player i will do when
+player i's type is ti,
+
+00:55:16.160 --> 00:55:19.400 align:middle line:84%
+even if player i wakes up
+and their type is not ti.
+
+00:55:19.400 --> 00:55:22.760 align:middle line:84%
+Maybe a little philosophical
+digression, but let's
+
+00:55:22.760 --> 00:55:25.120 align:middle line:90%
+just stop there.
+
+00:55:25.120 --> 00:55:25.680 align:middle line:90%
+Yes.
+
+00:55:25.680 --> 00:55:29.720 align:middle line:84%
+AUDIENCE: So does that mean
+like the strategy is basically
+
+00:55:29.720 --> 00:55:31.320 align:middle line:90%
+information that everybody has?
+
+00:55:31.320 --> 00:55:35.200 align:middle line:84%
+Everyone knows everyone
+else's strategy.
+
+00:55:35.200 --> 00:55:36.620 align:middle line:90%
+IAN BALL: So this is a subtlety.
+
+00:55:36.620 --> 00:55:41.460 align:middle line:84%
+Normally in game theory, we
+make knowledge assumptions,
+
+00:55:41.460 --> 00:55:44.320 align:middle line:84%
+not about what people do,
+but about what people know
+
+00:55:44.320 --> 00:55:45.980 align:middle line:90%
+and about the circumstance.
+
+00:55:45.980 --> 00:55:50.720 align:middle line:84%
+And then we define a solution
+concept, like an equilibrium.
+
+00:55:50.720 --> 00:55:53.860 align:middle line:84%
+So yeah, do people know this
+is always a subtle thing?
+
+00:55:53.860 --> 00:55:57.120 align:middle line:84%
+Do people know the strategies
+that are chosen in equilibrium?
+
+00:55:57.120 --> 00:56:01.980 align:middle line:84%
+I don't think we would
+formally say people know them.
+
+00:56:01.980 --> 00:56:07.570 align:middle line:84%
+We would say that equilibrium
+specifies the beliefs
+
+00:56:07.570 --> 00:56:09.890 align:middle line:84%
+that players have, and
+a demand of equilibrium
+
+00:56:09.890 --> 00:56:11.370 align:middle line:84%
+is that those
+beliefs are correct.
+
+00:56:11.370 --> 00:56:13.930 align:middle line:84%
+But we don't literally-- if we
+wanted to model the game where
+
+00:56:13.930 --> 00:56:16.130 align:middle line:84%
+you actually observed
+players strategies, that
+
+00:56:16.130 --> 00:56:18.330 align:middle line:90%
+would be a different game.
+
+00:56:18.330 --> 00:56:19.810 align:middle line:84%
+We generally only
+model knowledge
+
+00:56:19.810 --> 00:56:21.830 align:middle line:84%
+about exogenous
+things from nature.
+
+00:56:21.830 --> 00:56:23.490 align:middle line:84%
+We don't really
+think about knowledge
+
+00:56:23.490 --> 00:56:28.890 align:middle line:84%
+about what other rational
+players do because that's just
+
+00:56:28.890 --> 00:56:31.250 align:middle line:84%
+not a probabilistic process
+in the same way that's
+
+00:56:31.250 --> 00:56:31.990 align:middle line:90%
+in their control.
+
+00:56:31.990 --> 00:56:33.850 align:middle line:84%
+This gets into weird things
+about free will and all
+
+00:56:33.850 --> 00:56:34.230 align:middle line:90%
+these things.
+
+00:56:34.230 --> 00:56:36.022 align:middle line:84%
+But the point is, we
+don't assume knowledge
+
+00:56:36.022 --> 00:56:39.090 align:middle line:90%
+of other people's strategies.
+
+00:56:39.090 --> 00:56:41.930 align:middle line:84%
+In equilibrium, people's beliefs
+about other people's strategies
+
+00:56:41.930 --> 00:56:42.630 align:middle line:90%
+will be correct.
+
+00:56:42.630 --> 00:56:45.450 align:middle line:84%
+And that's very similar, but I
+would say slightly different.
+
+00:56:45.450 --> 00:56:47.090 align:middle line:84%
+AUDIENCE: So where
+does the part come
+
+00:56:47.090 --> 00:56:50.590 align:middle line:84%
+in where other players
+have to understand, oh,
+
+00:56:50.590 --> 00:56:53.368 align:middle line:90%
+if player i is born like red--
+
+00:56:53.368 --> 00:56:54.910 align:middle line:84%
+IAN BALL: When we
+define equilibrium.
+
+00:56:54.910 --> 00:56:56.150 align:middle line:84%
+So I haven't defined
+equilibrium yet,
+
+00:56:56.150 --> 00:56:57.750 align:middle line:84%
+so we'll see when we
+define equilibrium.
+
+00:56:57.750 --> 00:56:58.292 align:middle line:90%
+That's great.
+
+00:56:58.292 --> 00:56:59.610 align:middle line:90%
+That's a great question.
+
+00:56:59.610 --> 00:57:03.247 align:middle line:84%
+OK, so the final step when
+to define equilibrium is you
+
+00:57:03.247 --> 00:57:05.080 align:middle line:84%
+have to say a little
+bit more about beliefs.
+
+00:57:05.080 --> 00:57:07.700 align:middle line:84%
+So let's put ourselves in
+the position of player i.
+
+00:57:07.700 --> 00:57:08.960 align:middle line:90%
+Suppose I'm player i.
+
+00:57:08.960 --> 00:57:12.540 align:middle line:90%
+
+
+00:57:12.540 --> 00:57:15.980 align:middle line:90%
+What I know is I know my type.
+
+00:57:15.980 --> 00:57:19.140 align:middle line:90%
+So let's say my type is ti.
+
+00:57:19.140 --> 00:57:20.660 align:middle line:84%
+Now I have to
+decide how to play.
+
+00:57:20.660 --> 00:57:22.780 align:middle line:84%
+I have to decide
+what action to take.
+
+00:57:22.780 --> 00:57:25.340 align:middle line:84%
+But the action for
+me is going to depend
+
+00:57:25.340 --> 00:57:26.660 align:middle line:90%
+on a lot of other things.
+
+00:57:26.660 --> 00:57:28.340 align:middle line:84%
+So the first step
+is what I need to do
+
+00:57:28.340 --> 00:57:37.980 align:middle line:84%
+is I need to form beliefs about
+theta and about t negative i.
+
+00:57:37.980 --> 00:57:42.420 align:middle line:84%
+I need to form beliefs about
+the state of nature theta
+
+00:57:42.420 --> 00:57:46.220 align:middle line:84%
+and about the types
+of other players.
+
+00:57:46.220 --> 00:57:49.440 align:middle line:84%
+In this model, why do I need
+to form beliefs about theta?
+
+00:57:49.440 --> 00:57:50.880 align:middle line:90%
+Why do I care about theta?
+
+00:57:50.880 --> 00:57:53.060 align:middle line:84%
+Well, theta directly
+affects my payoffs.
+
+00:57:53.060 --> 00:57:54.960 align:middle line:84%
+So going back to the
+example over here,
+
+00:57:54.960 --> 00:57:57.320 align:middle line:84%
+I need to form beliefs about
+how hard the project is.
+
+00:57:57.320 --> 00:57:58.920 align:middle line:84%
+Because if the project
+is really hard,
+
+00:57:58.920 --> 00:58:00.378 align:middle line:84%
+I might not want
+to work very hard.
+
+00:58:00.378 --> 00:58:01.870 align:middle line:90%
+It may not be worth it.
+
+00:58:01.870 --> 00:58:03.870 align:middle line:84%
+The second, subtler
+thing is, why do I
+
+00:58:03.870 --> 00:58:06.792 align:middle line:84%
+need to form beliefs about
+other players' mental states?
+
+00:58:06.792 --> 00:58:08.250 align:middle line:84%
+Let's think of the
+project example.
+
+00:58:08.250 --> 00:58:10.550 align:middle line:84%
+Why do I care what
+another player thinks
+
+00:58:10.550 --> 00:58:12.050 align:middle line:90%
+about how hard the project is?
+
+00:58:12.050 --> 00:58:15.270 align:middle line:90%
+
+
+00:58:15.270 --> 00:58:16.010 align:middle line:90%
+Yeah, up front.
+
+00:58:16.010 --> 00:58:17.770 align:middle line:84%
+AUDIENCE: They'll probably
+adjust their effort for you.
+
+00:58:17.770 --> 00:58:18.520 align:middle line:90%
+IAN BALL: Exactly.
+
+00:58:18.520 --> 00:58:20.930 align:middle line:84%
+So I care about
+their mental states,
+
+00:58:20.930 --> 00:58:23.498 align:middle line:84%
+not because their mental states
+directly affect my payoff,
+
+00:58:23.498 --> 00:58:25.790 align:middle line:84%
+but because their mental
+states will affect the actions
+
+00:58:25.790 --> 00:58:27.710 align:middle line:84%
+that they take, and the
+actions that they take
+
+00:58:27.710 --> 00:58:29.470 align:middle line:90%
+will affect my payoff.
+
+00:58:29.470 --> 00:58:31.390 align:middle line:84%
+And this is where, going
+back to your question
+
+00:58:31.390 --> 00:58:34.350 align:middle line:84%
+about the red-blue thing,
+I'm forming beliefs
+
+00:58:34.350 --> 00:58:36.750 align:middle line:84%
+about their mental states,
+and then their strategy
+
+00:58:36.750 --> 00:58:37.990 align:middle line:84%
+is going to specify
+what they actually
+
+00:58:37.990 --> 00:58:39.198 align:middle line:90%
+do under those mental states.
+
+00:58:39.198 --> 00:58:41.870 align:middle line:84%
+So it's that combination that's
+going to give me information.
+
+00:58:41.870 --> 00:58:47.230 align:middle line:84%
+So the first thing is we have
+to learn how to use Bayes' rule.
+
+00:58:47.230 --> 00:58:48.770 align:middle line:90%
+To do this, we use Bayes' rule.
+
+00:58:48.770 --> 00:59:05.560 align:middle line:90%
+
+
+00:59:05.560 --> 00:59:07.000 align:middle line:90%
+We'll write something like this.
+
+00:59:07.000 --> 00:59:08.320 align:middle line:90%
+What does this mean?
+
+00:59:08.320 --> 00:59:14.080 align:middle line:84%
+Pi says I'm player i. ti says
+this is my mental state, ti.
+
+00:59:14.080 --> 00:59:15.977 align:middle line:84%
+Given that this is
+my mental state,
+
+00:59:15.977 --> 00:59:17.560 align:middle line:84%
+I want to say, what
+is the probability
+
+00:59:17.560 --> 00:59:19.960 align:middle line:84%
+that the state of
+nature is theta
+
+00:59:19.960 --> 00:59:23.160 align:middle line:84%
+and the mental states of
+all my opponents are ti?
+
+00:59:23.160 --> 00:59:23.725 align:middle line:90%
+OK.
+
+00:59:23.725 --> 00:59:25.600 align:middle line:84%
+And this is going to be
+a classic application
+
+00:59:25.600 --> 00:59:26.460 align:middle line:90%
+of Bayes' rule.
+
+00:59:26.460 --> 00:59:28.582 align:middle line:84%
+I hope people have
+seen this before.
+
+00:59:28.582 --> 00:59:30.040 align:middle line:84%
+If you haven't, it
+may be something
+
+00:59:30.040 --> 00:59:33.120 align:middle line:84%
+you have to brush
+up on a little bit.
+
+00:59:33.120 --> 00:59:34.240 align:middle line:90%
+But what is this?
+
+00:59:34.240 --> 00:59:38.600 align:middle line:84%
+Well, the probability of A given
+B is the probability of A and B,
+
+00:59:38.600 --> 00:59:41.360 align:middle line:84%
+divided by the probability of B.
+This is what Bayes' rule says.
+
+00:59:41.360 --> 00:59:44.520 align:middle line:84%
+And I'm going to go over it too
+fast, so if you haven't seen it,
+
+00:59:44.520 --> 00:59:45.440 align:middle line:90%
+this won't make sense.
+
+00:59:45.440 --> 00:59:46.660 align:middle line:84%
+I think you'll have to
+study it on your own.
+
+00:59:46.660 --> 00:59:48.033 align:middle line:90%
+I'm happy to talk after class.
+
+00:59:48.033 --> 00:59:49.200 align:middle line:90%
+So what are we going to get?
+
+00:59:49.200 --> 00:59:53.080 align:middle line:84%
+On the top, we're going to have
+the probability that my type is
+
+00:59:53.080 --> 00:59:55.180 align:middle line:84%
+ti and this is the
+state of the world,
+
+00:59:55.180 --> 01:00:01.210 align:middle line:84%
+so we're going to get
+theta ti, t negative i.
+
+01:00:01.210 --> 01:00:04.970 align:middle line:84%
+On the bottom, we want
+the probability of ti.
+
+01:00:04.970 --> 01:00:06.230 align:middle line:90%
+This is a little more subtle.
+
+01:00:06.230 --> 01:00:12.690 align:middle line:84%
+It's going to be a sum over all
+maybe theta prime, t negative i
+
+01:00:12.690 --> 01:00:16.230 align:middle line:90%
+prime p of theta prime.
+
+01:00:16.230 --> 01:00:25.410 align:middle line:90%
+
+
+01:00:25.410 --> 01:00:30.450 align:middle line:84%
+And in words, this is
+the probability of ti.
+
+01:00:30.450 --> 01:00:37.490 align:middle line:90%
+
+
+01:00:37.490 --> 01:00:41.130 align:middle line:84%
+So Bayes' rule is what
+allows me to leverage
+
+01:00:41.130 --> 01:00:43.410 align:middle line:84%
+the prior distribution,
+P, which, as we said,
+
+01:00:43.410 --> 01:00:47.570 align:middle line:84%
+everyone knows to update my
+beliefs and form my beliefs
+
+01:00:47.570 --> 01:00:51.210 align:middle line:84%
+and assign probabilities
+to the state of nature
+
+01:00:51.210 --> 01:00:53.210 align:middle line:84%
+and to other people's
+mental states
+
+01:00:53.210 --> 01:00:55.170 align:middle line:84%
+as a function of
+my mental state.
+
+01:00:55.170 --> 01:00:57.340 align:middle line:84%
+And in general, this
+probability here
+
+01:00:57.340 --> 01:00:58.760 align:middle line:90%
+could vary with my mental state.
+
+01:00:58.760 --> 01:01:00.177 align:middle line:84%
+If I had a different
+mental state,
+
+01:01:00.177 --> 01:01:02.540 align:middle line:84%
+I would form different beliefs
+about the other players.
+
+01:01:02.540 --> 01:01:05.620 align:middle line:84%
+OK, so now I think we
+can finally write down
+
+01:01:05.620 --> 01:01:09.180 align:middle line:90%
+the definition of equilibrium.
+
+01:01:09.180 --> 01:01:13.500 align:middle line:90%
+So let's maybe go down here.
+
+01:01:13.500 --> 01:01:15.540 align:middle line:84%
+It's a bit of a long
+definition, so I really
+
+01:01:15.540 --> 01:01:17.725 align:middle line:84%
+just want to spend the
+last 15 minutes just
+
+01:01:17.725 --> 01:01:19.100 align:middle line:84%
+writing down one
+equation to make
+
+01:01:19.100 --> 01:01:20.400 align:middle line:90%
+sure we really understand it.
+
+01:01:20.400 --> 01:01:28.260 align:middle line:90%
+
+
+01:01:28.260 --> 01:01:31.660 align:middle line:84%
+So we have our Bayesian
+game over there.
+
+01:01:31.660 --> 01:01:33.240 align:middle line:90%
+And here's our definition.
+
+01:01:33.240 --> 01:01:36.780 align:middle line:90%
+
+
+01:01:36.780 --> 01:01:50.960 align:middle line:84%
+So a strategy profile, s star,
+which equals s1 star 2sn star--
+
+01:01:50.960 --> 01:01:52.960 align:middle line:84%
+so as usual,
+throughout the course,
+
+01:01:52.960 --> 01:01:54.700 align:middle line:84%
+whenever we define
+an equilibrium,
+
+01:01:54.700 --> 01:01:57.660 align:middle line:84%
+the object that an equilibrium
+is is always a strategy profile.
+
+01:01:57.660 --> 01:02:00.040 align:middle line:84%
+It's a specification of a
+strategy for each player.
+
+01:02:00.040 --> 01:02:03.775 align:middle line:90%
+So a strategy profile is a--
+
+01:02:03.775 --> 01:02:04.900 align:middle line:90%
+well, what do we call this?
+
+01:02:04.900 --> 01:02:07.660 align:middle line:84%
+Well, it's a Nash equilibrium
+in a Bayesian game.
+
+01:02:07.660 --> 01:02:09.660 align:middle line:84%
+So we call that a
+Bayesian Nash equilibrium.
+
+01:02:09.660 --> 01:02:11.040 align:middle line:90%
+We just put the words together.
+
+01:02:11.040 --> 01:02:12.900 align:middle line:84%
+It's a Bayesian
+Nash equilibrium.
+
+01:02:12.900 --> 01:02:25.160 align:middle line:90%
+
+
+01:02:25.160 --> 01:02:28.300 align:middle line:84%
+Well, what's the basic
+idea about equilibrium?
+
+01:02:28.300 --> 01:02:32.520 align:middle line:84%
+In equilibrium, every player
+is choosing their action
+
+01:02:32.520 --> 01:02:35.900 align:middle line:84%
+optimally given the beliefs they
+have about the other players
+
+01:02:35.900 --> 01:02:37.220 align:middle line:90%
+and those beliefs are correct.
+
+01:02:37.220 --> 01:02:39.840 align:middle line:84%
+So we want to make sure that
+everyone is behaving optimally,
+
+01:02:39.840 --> 01:02:42.000 align:middle line:84%
+given the way everyone
+else is behaving.
+
+01:02:42.000 --> 01:02:44.600 align:middle line:84%
+So I think the first
+step is to figure out
+
+01:02:44.600 --> 01:02:46.400 align:middle line:90%
+what we need to quantify over.
+
+01:02:46.400 --> 01:02:49.600 align:middle line:84%
+So what we want to consider is
+we want to say for every player
+
+01:02:49.600 --> 01:02:51.930 align:middle line:84%
+and for every mental state
+that player could have,
+
+01:02:51.930 --> 01:02:53.130 align:middle line:90%
+they're behaving optimally.
+
+01:02:53.130 --> 01:03:11.850 align:middle line:84%
+So if for every player i and
+for every type ti in capital Ti,
+
+01:03:11.850 --> 01:03:13.512 align:middle line:84%
+the following
+holds-- so just let's
+
+01:03:13.512 --> 01:03:15.470 align:middle line:84%
+understand in words what
+we want to write here.
+
+01:03:15.470 --> 01:03:16.845 align:middle line:84%
+What we want to
+capture down here
+
+01:03:16.845 --> 01:03:21.970 align:middle line:84%
+is to say that when player
+i has mental state ti,
+
+01:03:21.970 --> 01:03:25.645 align:middle line:84%
+the action they're choosing is
+optimal given their beliefs.
+
+01:03:25.645 --> 01:03:27.770 align:middle line:84%
+And because we're requiring
+that for every player i
+
+01:03:27.770 --> 01:03:32.170 align:middle line:84%
+and for every type ti,
+that's capturing what we want
+
+01:03:32.170 --> 01:03:35.850 align:middle line:84%
+So first, let's compute
+what is the expected payoff
+
+01:03:35.850 --> 01:03:37.953 align:middle line:90%
+of the player of type ti?
+
+01:03:37.953 --> 01:03:39.370 align:middle line:84%
+So what we're going
+to do is we're
+
+01:03:39.370 --> 01:03:40.830 align:middle line:90%
+going to take an expectation.
+
+01:03:40.830 --> 01:03:44.690 align:middle line:90%
+
+
+01:03:44.690 --> 01:03:47.050 align:middle line:84%
+And when I write this,
+I'm going to probably need
+
+01:03:47.050 --> 01:03:47.910 align:middle line:90%
+a bit more space.
+
+01:03:47.910 --> 01:03:51.300 align:middle line:90%
+
+
+01:03:51.300 --> 01:03:53.380 align:middle line:84%
+I'm going to put
+something in here.
+
+01:03:53.380 --> 01:03:56.060 align:middle line:84%
+But what I'm writing when I
+write the expectation given
+
+01:03:56.060 --> 01:04:00.060 align:middle line:84%
+ti is I'm saying,
+given ti, I can
+
+01:04:00.060 --> 01:04:02.100 align:middle line:84%
+compute conditional
+probabilities
+
+01:04:02.100 --> 01:04:04.260 align:middle line:90%
+of these other things.
+
+01:04:04.260 --> 01:04:06.380 align:middle line:84%
+And what I'm going
+to put in here
+
+01:04:06.380 --> 01:04:09.345 align:middle line:84%
+is going to be a
+function of these things.
+
+01:04:09.345 --> 01:04:11.220 align:middle line:84%
+And I'm computing the
+conditional expectation
+
+01:04:11.220 --> 01:04:14.220 align:middle line:84%
+of that quantity
+given my type, ti.
+
+01:04:14.220 --> 01:04:17.500 align:middle line:84%
+So what I want to put in
+here is my payoff when we all
+
+01:04:17.500 --> 01:04:20.180 align:middle line:90%
+follow these strategies.
+
+01:04:20.180 --> 01:04:21.500 align:middle line:90%
+So it's going to be my payoff.
+
+01:04:21.500 --> 01:04:23.340 align:middle line:90%
+I'm player i.
+
+01:04:23.340 --> 01:04:27.820 align:middle line:84%
+Now, my payoff depends on
+the actions that we all take
+
+01:04:27.820 --> 01:04:31.420 align:middle line:84%
+and the state of the
+world, the state of nature.
+
+01:04:31.420 --> 01:04:35.020 align:middle line:84%
+So my player 1's action
+is going to be what?
+
+01:04:35.020 --> 01:04:42.378 align:middle line:84%
+Well, player 1's action is
+going to be s1 star of t1.
+
+01:04:42.378 --> 01:04:44.420 align:middle line:84%
+And this is exactly
+reflecting the point we made.
+
+01:04:44.420 --> 01:04:47.500 align:middle line:84%
+Why do I, as player i, care
+about player 1's mental state,
+
+01:04:47.500 --> 01:04:48.690 align:middle line:90%
+about their t1?
+
+01:04:48.690 --> 01:04:50.190 align:middle line:84%
+Because their t1
+affects the action
+
+01:04:50.190 --> 01:04:54.150 align:middle line:84%
+that they're taking under this
+equilibrium strategy profile.
+
+01:04:54.150 --> 01:05:00.750 align:middle line:84%
+And then it's going to go all
+the way up to sn star of tn.
+
+01:05:00.750 --> 01:05:02.410 align:middle line:90%
+Now, it's tricky.
+
+01:05:02.410 --> 01:05:04.587 align:middle line:84%
+One of these things--
+the i position here
+
+01:05:04.587 --> 01:05:06.670 align:middle line:84%
+is actually something I'm
+controlling as player i.
+
+01:05:06.670 --> 01:05:08.590 align:middle line:84%
+But for everyone
+other than player i,
+
+01:05:08.590 --> 01:05:11.710 align:middle line:84%
+these are random things that
+I'm forming beliefs about.
+
+01:05:11.710 --> 01:05:13.390 align:middle line:84%
+So here, we have
+the action profile.
+
+01:05:13.390 --> 01:05:17.830 align:middle line:84%
+And then the final
+thing is the theta.
+
+01:05:17.830 --> 01:05:22.980 align:middle line:84%
+So what you can think of in here
+is if the state of the world--
+
+01:05:22.980 --> 01:05:25.230 align:middle line:84%
+not the state of nature, but
+if the state of the world
+
+01:05:25.230 --> 01:05:29.910 align:middle line:84%
+is theta T1 all the way up to
+tn, then under the strategy
+
+01:05:29.910 --> 01:05:32.470 align:middle line:84%
+profile, these are the
+actions that all the players
+
+01:05:32.470 --> 01:05:33.710 align:middle line:90%
+are going to take.
+
+01:05:33.710 --> 01:05:35.510 align:middle line:90%
+This is the state of nature.
+
+01:05:35.510 --> 01:05:37.930 align:middle line:84%
+And therefore, player
+i's payoff is this.
+
+01:05:37.930 --> 01:05:40.690 align:middle line:84%
+And player i is simply computing
+expectations over that.
+
+01:05:40.690 --> 01:05:43.230 align:middle line:90%
+
+
+01:05:43.230 --> 01:05:44.310 align:middle line:90%
+Questions about that?
+
+01:05:44.310 --> 01:05:48.360 align:middle line:84%
+So we want to
+compare that to what
+
+01:05:48.360 --> 01:05:50.360 align:middle line:90%
+happens if player i deviates.
+
+01:05:50.360 --> 01:05:54.460 align:middle line:84%
+So what I want is I want to now
+compute the same expected payoff
+
+01:05:54.460 --> 01:05:57.503 align:middle line:84%
+if player i chooses some
+action-- let's say Ai prime.
+
+01:05:57.503 --> 01:05:58.920 align:middle line:84%
+And we're going
+to want this to be
+
+01:05:58.920 --> 01:06:06.360 align:middle line:90%
+true for all actions Ai prime.
+
+01:06:06.360 --> 01:06:12.560 align:middle line:84%
+So it's also going to be a
+conditional expectation given
+
+01:06:12.560 --> 01:06:14.240 align:middle line:90%
+ti.
+
+01:06:14.240 --> 01:06:17.600 align:middle line:84%
+And it's a little tricky
+that the i component here
+
+01:06:17.600 --> 01:06:19.160 align:middle line:84%
+is hidden amongst
+the rest, so I want
+
+01:06:19.160 --> 01:06:21.200 align:middle line:90%
+to reorganize this a little bit.
+
+01:06:21.200 --> 01:06:25.320 align:middle line:84%
+So another way of writing
+this which is useful
+
+01:06:25.320 --> 01:06:34.738 align:middle line:84%
+is to write this as si star ti,
+s negative i star t negative i.
+
+01:06:34.738 --> 01:06:36.280 align:middle line:84%
+This is just notation
+where I'm going
+
+01:06:36.280 --> 01:06:40.720 align:middle line:84%
+to put player i first and put
+everyone else's grouped together
+
+01:06:40.720 --> 01:06:42.040 align:middle line:90%
+over here.
+
+01:06:42.040 --> 01:06:44.450 align:middle line:84%
+This is really, I think,
+misleading notation when I write
+
+01:06:44.450 --> 01:06:47.218 align:middle line:84%
+s negative i of t negative
+i, because really, this
+
+01:06:47.218 --> 01:06:49.010 align:middle line:84%
+is a collection of
+functions, each of which
+
+01:06:49.010 --> 01:06:50.810 align:middle line:84%
+depends on a single
+player's type.
+
+01:06:50.810 --> 01:06:53.150 align:middle line:90%
+So this is s2 star.
+
+01:06:53.150 --> 01:06:55.010 align:middle line:90%
+Let's say player i is 1.
+
+01:06:55.010 --> 01:06:59.750 align:middle line:84%
+This is s2 star of t2, s3 star
+of t3, s4 star of t4, and so on.
+
+01:06:59.750 --> 01:07:02.370 align:middle line:84%
+It's a little subtle, but
+that's what's going on here.
+
+01:07:02.370 --> 01:07:05.410 align:middle line:84%
+And then what do
+I have over here?
+
+01:07:05.410 --> 01:07:06.210 align:middle line:90%
+Well, I'm player i.
+
+01:07:06.210 --> 01:07:09.330 align:middle line:84%
+I'm unilaterally
+deviating, so instead
+
+01:07:09.330 --> 01:07:12.950 align:middle line:84%
+of taking action si star of
+ti, which I'm supposed to take,
+
+01:07:12.950 --> 01:07:15.370 align:middle line:84%
+I'm instead choosing
+action Ai prime.
+
+01:07:15.370 --> 01:07:19.130 align:middle line:84%
+So we have Ai prime here,
+but everyone else's action
+
+01:07:19.130 --> 01:07:20.410 align:middle line:90%
+is still the same.
+
+01:07:20.410 --> 01:07:29.090 align:middle line:84%
+So they're still having s
+negative i star t negative i,
+
+01:07:29.090 --> 01:07:32.170 align:middle line:84%
+but then my payoff also
+depends on the state.
+
+01:07:32.170 --> 01:07:33.310 align:middle line:90%
+So we have the state here.
+
+01:07:33.310 --> 01:07:36.570 align:middle line:90%
+
+
+01:07:36.570 --> 01:07:39.830 align:middle line:90%
+And this is our definition.
+
+01:07:39.830 --> 01:07:42.900 align:middle line:90%
+
+
+01:07:42.900 --> 01:07:44.940 align:middle line:84%
+And this is to return
+to this question of do I
+
+01:07:44.940 --> 01:07:46.020 align:middle line:90%
+like blue or red?
+
+01:07:46.020 --> 01:07:50.363 align:middle line:84%
+When I'm player i, I'm forming
+beliefs about the other player.
+
+01:07:50.363 --> 01:07:52.280 align:middle line:84%
+And I might not know if
+they like blue or red.
+
+01:07:52.280 --> 01:07:53.620 align:middle line:84%
+So I'm taking into
+account there's
+
+01:07:53.620 --> 01:07:55.328 align:middle line:84%
+some probability they
+like blue, and this
+
+01:07:55.328 --> 01:07:56.380 align:middle line:90%
+is the action they take.
+
+01:07:56.380 --> 01:07:57.720 align:middle line:84%
+There's some probability
+they like red,
+
+01:07:57.720 --> 01:07:58.920 align:middle line:90%
+this is the action they take.
+
+01:07:58.920 --> 01:08:00.480 align:middle line:84%
+Even though when they
+wake up in the morning,
+
+01:08:00.480 --> 01:08:02.147 align:middle line:84%
+they either like blue
+or red and they're
+
+01:08:02.147 --> 01:08:03.600 align:middle line:90%
+going to take a single action.
+
+01:08:03.600 --> 01:08:04.100 align:middle line:90%
+Yes.
+
+01:08:04.100 --> 01:08:06.940 align:middle line:84%
+AUDIENCE: Is there a reason why
+we have the condition that's
+
+01:08:06.940 --> 01:08:11.860 align:middle line:84%
+given ti, based on the fact that
+it can only technically have
+
+01:08:11.860 --> 01:08:14.860 align:middle line:90%
+your si star for a certain ti?
+
+01:08:14.860 --> 01:08:19.979 align:middle line:84%
+And then you need to pin down
+your own mental state before you
+
+01:08:19.979 --> 01:08:21.240 align:middle line:90%
+come up with a strategy?
+
+01:08:21.240 --> 01:08:23.103 align:middle line:90%
+
+
+01:08:23.103 --> 01:08:25.520 align:middle line:84%
+IAN BALL: So I think there's
+two separate questions there.
+
+01:08:25.520 --> 01:08:31.300 align:middle line:84%
+One question is, why is
+the domain of s1 star t1?
+
+01:08:31.300 --> 01:08:33.399 align:middle line:84%
+And why do I have this
+conditioning here?
+
+01:08:33.399 --> 01:08:34.760 align:middle line:90%
+So it's two questions.
+
+01:08:34.760 --> 01:08:36.380 align:middle line:84%
+One is, why is a
+strategy a function
+
+01:08:36.380 --> 01:08:38.000 align:middle line:90%
+from my type to my action?
+
+01:08:38.000 --> 01:08:41.970 align:middle line:84%
+It's because the only
+thing I know is my type,
+
+01:08:41.970 --> 01:08:44.609 align:middle line:84%
+so the only thing that my action
+can depend on is my own type.
+
+01:08:44.609 --> 01:08:46.090 align:middle line:84%
+It can't depend on
+things I don't observe.
+
+01:08:46.090 --> 01:08:47.830 align:middle line:84%
+Just like in poker,
+my strategy can't
+
+01:08:47.830 --> 01:08:50.380 align:middle line:84%
+be bet if my hand is higher
+than the other person,
+
+01:08:50.380 --> 01:08:51.630 align:middle line:90%
+because I don't know his hand.
+
+01:08:51.630 --> 01:08:52.930 align:middle line:84%
+So of course, that would
+be a great strategy.
+
+01:08:52.930 --> 01:08:54.347 align:middle line:84%
+But it's not a
+legitimate strategy
+
+01:08:54.347 --> 01:08:56.890 align:middle line:84%
+because I don't know what
+the other player's hand is.
+
+01:08:56.890 --> 01:09:00.590 align:middle line:84%
+So that's why s1 star is defined
+as a function of player 1's
+
+01:09:00.590 --> 01:09:01.710 align:middle line:90%
+type only.
+
+01:09:01.710 --> 01:09:03.590 align:middle line:84%
+Now we go here,
+and this is let's
+
+01:09:03.590 --> 01:09:05.930 align:middle line:90%
+think about the decision stage.
+
+01:09:05.930 --> 01:09:08.770 align:middle line:84%
+When I wake up and make a
+decision, I know something.
+
+01:09:08.770 --> 01:09:10.470 align:middle line:90%
+I know my own mental state.
+
+01:09:10.470 --> 01:09:12.840 align:middle line:84%
+If I'm player i, I know
+my mental state, ti.
+
+01:09:12.840 --> 01:09:14.090 align:middle line:90%
+And that gives me information.
+
+01:09:14.090 --> 01:09:16.090 align:middle line:84%
+I'm going to update my
+beliefs based upon that.
+
+01:09:16.090 --> 01:09:19.170 align:middle line:84%
+So in the same way, going
+back to our example here,
+
+01:09:19.170 --> 01:09:20.975 align:middle line:84%
+when player 1 knows
+the project is hard,
+
+01:09:20.975 --> 01:09:23.350 align:middle line:84%
+they have a different belief
+about whether the project is
+
+01:09:23.350 --> 01:09:25.670 align:middle line:84%
+hard than if they wake up and
+they know the project is easy.
+
+01:09:25.670 --> 01:09:27.810 align:middle line:84%
+And they're going to behave
+differently in those situations.
+
+01:09:27.810 --> 01:09:29.229 align:middle line:90%
+This is exactly reflecting that.
+
+01:09:29.229 --> 01:09:32.390 align:middle line:84%
+It's reflecting the fact that
+my mental state controls what
+
+01:09:32.390 --> 01:09:34.430 align:middle line:90%
+I believe about this theta.
+
+01:09:34.430 --> 01:09:39.090 align:middle line:84%
+So just to understand, if we
+put in a different ti here,
+
+01:09:39.090 --> 01:09:40.729 align:middle line:84%
+this conditional
+expectation would
+
+01:09:40.729 --> 01:09:44.729 align:middle line:84%
+change because the belief about
+theta and about everyone else's
+
+01:09:44.729 --> 01:09:48.250 align:middle line:84%
+mental states could be different
+if this ti were a different ti--
+
+01:09:48.250 --> 01:09:51.250 align:middle line:90%
+if it were ti prime.
+
+01:09:51.250 --> 01:09:53.290 align:middle line:84%
+AUDIENCE: ti and
+ti prime basically
+
+01:09:53.290 --> 01:09:58.570 align:middle line:84%
+lead to different vectors of
+probabilities for other people's
+
+01:09:58.570 --> 01:09:59.862 align:middle line:90%
+mental states as well as theta.
+
+01:09:59.862 --> 01:10:00.862 align:middle line:90%
+IAN BALL: Exactly right.
+
+01:10:00.862 --> 01:10:02.970 align:middle line:84%
+So remember we wrote
+down this formula here.
+
+01:10:02.970 --> 01:10:05.930 align:middle line:84%
+This is really a whole
+vector because once I fix ti,
+
+01:10:05.930 --> 01:10:08.810 align:middle line:84%
+I can vary the theta
+and the t negative I.
+
+01:10:08.810 --> 01:10:10.870 align:middle line:84%
+So it's really a vector
+of probabilities.
+
+01:10:10.870 --> 01:10:14.250 align:middle line:84%
+It's a lottery over everything I
+don't know, over all the theta t
+
+01:10:14.250 --> 01:10:15.418 align:middle line:90%
+negative i pairs.
+
+01:10:15.418 --> 01:10:17.210 align:middle line:84%
+AUDIENCE: So this is
+kind of similar to how
+
+01:10:17.210 --> 01:10:19.310 align:middle line:90%
+we talked about belief.
+
+01:10:19.310 --> 01:10:21.610 align:middle line:84%
+IAN BALL: No, it's
+exactly a belief.
+
+01:10:21.610 --> 01:10:23.770 align:middle line:84%
+What we're talking about
+precisely is given my ti,
+
+01:10:23.770 --> 01:10:24.655 align:middle line:90%
+I form beliefs.
+
+01:10:24.655 --> 01:10:26.530 align:middle line:84%
+The tricky thing is what
+I form beliefs about
+
+01:10:26.530 --> 01:10:30.010 align:middle line:90%
+is t1 to tn and theta.
+
+01:10:30.010 --> 01:10:33.730 align:middle line:84%
+My belief about t1 to tn by
+itself isn't that useful,
+
+01:10:33.730 --> 01:10:35.253 align:middle line:84%
+but when combined
+with the strategy
+
+01:10:35.253 --> 01:10:36.920 align:middle line:84%
+the opponents and the
+other players use,
+
+01:10:36.920 --> 01:10:37.980 align:middle line:90%
+now it becomes useful.
+
+01:10:37.980 --> 01:10:40.700 align:middle line:84%
+Just knowing that the other
+player's mental state is
+
+01:10:40.700 --> 01:10:42.680 align:middle line:90%
+t2 prime doesn't tell me much.
+
+01:10:42.680 --> 01:10:45.700 align:middle line:84%
+But in equilibrium, I
+correctly anticipate
+
+01:10:45.700 --> 01:10:47.820 align:middle line:84%
+that they're using
+the strategy s2 star,
+
+01:10:47.820 --> 01:10:50.100 align:middle line:84%
+so I can anticipate that
+the action they take
+
+01:10:50.100 --> 01:10:52.560 align:middle line:90%
+is s2 star of t2 double prime.
+
+01:10:52.560 --> 01:10:55.220 align:middle line:84%
+And then that gives
+me information.
+
+01:10:55.220 --> 01:10:56.180 align:middle line:90%
+Any other questions?
+
+01:10:56.180 --> 01:10:57.640 align:middle line:84%
+AUDIENCE: Yeah, I
+think you did just say.
+
+01:10:57.640 --> 01:10:57.900 align:middle line:90%
+IAN BALL: No, no.
+
+01:10:57.900 --> 01:10:58.620 align:middle line:90%
+This is good.
+
+01:10:58.620 --> 01:11:03.500 align:middle line:84%
+AUDIENCE: [INAUDIBLE] another
+player has, for example, belief
+
+01:11:03.500 --> 01:11:06.980 align:middle line:84%
+or not belief type t2, then
+they're going to do this action.
+
+01:11:06.980 --> 01:11:08.603 align:middle line:90%
+We can't know that for sure.
+
+01:11:08.603 --> 01:11:10.020 align:middle line:84%
+IAN BALL: So this
+is getting into,
+
+01:11:10.020 --> 01:11:11.478 align:middle line:84%
+I guess, the notion
+of equilibrium.
+
+01:11:11.478 --> 01:11:16.957 align:middle line:90%
+
+
+01:11:16.957 --> 01:11:19.540 align:middle line:84%
+I think the short answer is yes
+if you want to get the problem
+
+01:11:19.540 --> 01:11:21.460 align:middle line:84%
+right, if you want to be really
+subtle about what knowledge
+
+01:11:21.460 --> 01:11:22.040 align:middle line:90%
+means.
+
+01:11:22.040 --> 01:11:25.580 align:middle line:90%
+
+
+01:11:25.580 --> 01:11:28.500 align:middle line:84%
+I guess one way of calling this
+a Bayes Nash equilibrium is
+
+01:11:28.500 --> 01:11:31.300 align:middle line:84%
+if we all believe that these
+are the strategy profiles we're
+
+01:11:31.300 --> 01:11:33.950 align:middle line:84%
+employing, then no
+one has an incentive
+
+01:11:33.950 --> 01:11:37.870 align:middle line:84%
+to deviate from the
+way they're behaving.
+
+01:11:37.870 --> 01:11:40.750 align:middle line:84%
+So it's capturing the
+idea of Nash equilibrium
+
+01:11:40.750 --> 01:11:42.430 align:middle line:90%
+that I'm believing.
+
+01:11:42.430 --> 01:11:44.490 align:middle line:84%
+So just like in Nash--
+in Nash, we say,
+
+01:11:44.490 --> 01:11:47.030 align:middle line:84%
+I'm believing my opponents
+are following this strategy.
+
+01:11:47.030 --> 01:11:50.110 align:middle line:84%
+And given that belief,
+I'm behaving optimally.
+
+01:11:50.110 --> 01:11:53.110 align:middle line:84%
+If I believe that my opponents
+all follow this strategy
+
+01:11:53.110 --> 01:11:55.390 align:middle line:84%
+profiles, then
+it's optimal for me
+
+01:11:55.390 --> 01:11:57.355 align:middle line:90%
+to follow my strategy profile.
+
+01:11:57.355 --> 01:11:58.730 align:middle line:84%
+And then that
+works for everyone,
+
+01:11:58.730 --> 01:12:01.030 align:middle line:90%
+so we have this consistency.
+
+01:12:01.030 --> 01:12:04.110 align:middle line:84%
+But I guess I would say
+there's a bit of a distinction
+
+01:12:04.110 --> 01:12:07.670 align:middle line:90%
+between maybe this is a point.
+
+01:12:07.670 --> 01:12:14.710 align:middle line:84%
+Given ti, I form beliefs
+about t1 to tn and theta.
+
+01:12:14.710 --> 01:12:17.610 align:middle line:84%
+These are totally outside
+the control of people.
+
+01:12:17.610 --> 01:12:19.330 align:middle line:84%
+This is just something
+about the world.
+
+01:12:19.330 --> 01:12:20.790 align:middle line:90%
+I can form those beliefs.
+
+01:12:20.790 --> 01:12:22.350 align:middle line:84%
+Then the mapping
+from their types
+
+01:12:22.350 --> 01:12:24.150 align:middle line:84%
+to the actions they
+actually take-- that's
+
+01:12:24.150 --> 01:12:26.170 align:middle line:84%
+something that's under control
+of a rational decision maker.
+
+01:12:26.170 --> 01:12:27.378 align:middle line:90%
+And we view that differently.
+
+01:12:27.378 --> 01:12:29.390 align:middle line:84%
+So generally, I guess
+this gets to a broader
+
+01:12:29.390 --> 01:12:30.330 align:middle line:90%
+point of game theory.
+
+01:12:30.330 --> 01:12:33.240 align:middle line:84%
+We view a fundamental difference
+between when I form beliefs
+
+01:12:33.240 --> 01:12:38.445 align:middle line:84%
+about whether a dealt hand
+is going to be kings or aces
+
+01:12:38.445 --> 01:12:40.820 align:middle line:84%
+and whether my opponent is
+going to bet a certain amount,
+
+01:12:40.820 --> 01:12:42.860 align:middle line:84%
+because one is the choice
+of a rational player
+
+01:12:42.860 --> 01:12:45.193 align:middle line:84%
+and the other is just something
+that's chosen by nature.
+
+01:12:45.193 --> 01:12:47.400 align:middle line:84%
+So we maintain a distinction
+there in game theory.
+
+01:12:47.400 --> 01:12:49.663 align:middle line:84%
+AUDIENCE: You know how
+another player will
+
+01:12:49.663 --> 01:12:51.080 align:middle line:84%
+play given a certain
+hand, but you
+
+01:12:51.080 --> 01:12:54.960 align:middle line:84%
+don't know whether they
+actually have that hand.
+
+01:12:54.960 --> 01:12:59.360 align:middle line:84%
+IAN BALL: Yeah, I would
+say you have beliefs
+
+01:12:59.360 --> 01:13:01.120 align:middle line:90%
+about the hand they will have.
+
+01:13:01.120 --> 01:13:03.810 align:middle line:84%
+And then in equilibrium,
+the equilibrium
+
+01:13:03.810 --> 01:13:05.560 align:middle line:84%
+describes consistent
+beliefs about the way
+
+01:13:05.560 --> 01:13:07.050 align:middle line:90%
+they're going to play.
+
+01:13:07.050 --> 01:13:08.800 align:middle line:84%
+But I guess maybe
+another way of saying it
+
+01:13:08.800 --> 01:13:12.520 align:middle line:90%
+is if I change the strategies--
+
+01:13:12.520 --> 01:13:14.640 align:middle line:84%
+so yeah, this is
+maybe the key point.
+
+01:13:14.640 --> 01:13:18.100 align:middle line:84%
+This is independent
+of strategies.
+
+01:13:18.100 --> 01:13:21.440 align:middle line:84%
+The probability I assign to the
+other player having this type
+
+01:13:21.440 --> 01:13:23.585 align:middle line:84%
+is totally independent
+of how they play.
+
+01:13:23.585 --> 01:13:25.460 align:middle line:84%
+This is not a statement
+about their behavior.
+
+01:13:25.460 --> 01:13:27.320 align:middle line:84%
+This is just a statement
+about the world.
+
+01:13:27.320 --> 01:13:29.740 align:middle line:84%
+Equilibrium is now a
+statement about behavior.
+
+01:13:29.740 --> 01:13:31.870 align:middle line:84%
+But there's this fundamental
+difference there.
+
+01:13:31.870 --> 01:13:34.488 align:middle line:84%
+But these are subtle things,
+so these are great questions
+
+01:13:34.488 --> 01:13:35.030 align:middle line:90%
+to be asking.
+
+01:13:35.030 --> 01:13:35.530 align:middle line:90%
+Yes.
+
+01:13:35.530 --> 01:13:37.910 align:middle line:90%
+AUDIENCE: So that just means--
+
+01:13:37.910 --> 01:13:40.750 align:middle line:84%
+so here, this is just over
+other people's beliefs.
+
+01:13:40.750 --> 01:13:42.850 align:middle line:84%
+But then here, it's
+like what you actually
+
+01:13:42.850 --> 01:13:45.760 align:middle line:84%
+think of what other
+people are thinking.
+
+01:13:45.760 --> 01:13:46.510 align:middle line:90%
+IAN BALL: Exactly.
+
+01:13:46.510 --> 01:13:50.730 align:middle line:84%
+So by definition
+of my mental state,
+
+01:13:50.730 --> 01:13:52.690 align:middle line:84%
+my mental state
+defines the beliefs
+
+01:13:52.690 --> 01:13:54.930 align:middle line:84%
+I have about other
+people's mental states.
+
+01:13:54.930 --> 01:13:58.130 align:middle line:84%
+But that alone doesn't
+allow me to form beliefs
+
+01:13:58.130 --> 01:14:00.255 align:middle line:84%
+about other people's actions,
+because in general, I
+
+01:14:00.255 --> 01:14:02.172 align:middle line:84%
+don't know the mapping
+from their mental state
+
+01:14:02.172 --> 01:14:03.010 align:middle line:90%
+to their actions.
+
+01:14:03.010 --> 01:14:08.170 align:middle line:84%
+We've defined equilibrium to
+be a profile of strategies that
+
+01:14:08.170 --> 01:14:10.490 align:middle line:84%
+allows me to link my beliefs
+about their mental states
+
+01:14:10.490 --> 01:14:12.550 align:middle line:84%
+to my beliefs about
+their actions,
+
+01:14:12.550 --> 01:14:14.810 align:middle line:84%
+and we apply the classical
+idea of Nash equilibrium
+
+01:14:14.810 --> 01:14:17.890 align:middle line:84%
+that says that this
+method of behavior
+
+01:14:17.890 --> 01:14:19.970 align:middle line:84%
+is stable and
+consistent, in the sense
+
+01:14:19.970 --> 01:14:22.450 align:middle line:84%
+that if everyone correctly
+believes that everyone's playing
+
+01:14:22.450 --> 01:14:24.450 align:middle line:84%
+this way, then no one's
+going to want to deviate
+
+01:14:24.450 --> 01:14:27.290 align:middle line:90%
+from this method of playing.
+
+01:14:27.290 --> 01:14:29.100 align:middle line:84%
+AUDIENCE: So this
+is based on what
+
+01:14:29.100 --> 01:14:32.060 align:middle line:84%
+you think other people
+are going to play,
+
+01:14:32.060 --> 01:14:34.340 align:middle line:84%
+but you already
+based that on what
+
+01:14:34.340 --> 01:14:35.840 align:middle line:90%
+you think their beliefs will be.
+
+01:14:35.840 --> 01:14:39.340 align:middle line:90%
+
+
+01:14:39.340 --> 01:14:40.860 align:middle line:90%
+IAN BALL: Yeah.
+
+01:14:40.860 --> 01:14:49.980 align:middle line:84%
+I would say-- yeah, I think the
+short answer is this calculation
+
+01:14:49.980 --> 01:14:51.280 align:middle line:90%
+is not an equilibrium object.
+
+01:14:51.280 --> 01:14:53.980 align:middle line:84%
+This is a calculation that's
+a property of the game itself.
+
+01:14:53.980 --> 01:14:56.820 align:middle line:84%
+This calculation is a
+property of the strategies
+
+01:14:56.820 --> 01:14:58.355 align:middle line:90%
+and of the equilibrium concept.
+
+01:14:58.355 --> 01:14:59.480 align:middle line:90%
+Maybe I'll just stop there.
+
+01:14:59.480 --> 01:15:02.420 align:middle line:84%
+And let me say one more
+thing that maybe is useful,
+
+01:15:02.420 --> 01:15:06.860 align:middle line:84%
+to see how we can tie this in to
+our notion of Nash equilibrium.
+
+01:15:06.860 --> 01:15:24.380 align:middle line:90%
+
+
+01:15:24.380 --> 01:15:26.750 align:middle line:84%
+Actually, one thing I
+should have said before--
+
+01:15:26.750 --> 01:15:30.988 align:middle line:84%
+when we're computing these
+conditional expectations,
+
+01:15:30.988 --> 01:15:33.030 align:middle line:84%
+you get into some weird
+issues when you condition
+
+01:15:33.030 --> 01:15:34.290 align:middle line:90%
+on 0 probability events.
+
+01:15:34.290 --> 01:15:35.748 align:middle line:84%
+So what I've of
+assumed throughout,
+
+01:15:35.748 --> 01:15:36.873 align:middle line:90%
+and maybe I'll say it now--
+
+01:15:36.873 --> 01:15:38.110 align:middle line:90%
+I should have said it before.
+
+01:15:38.110 --> 01:15:41.610 align:middle line:84%
+Assume that this distribution,
+P, is strictly positive.
+
+01:15:41.610 --> 01:15:46.710 align:middle line:90%
+
+
+01:15:46.710 --> 01:15:48.270 align:middle line:84%
+So it assigns
+positive probability
+
+01:15:48.270 --> 01:15:56.550 align:middle line:84%
+to everything, every
+combination of states and types.
+
+01:15:56.550 --> 01:15:57.078 align:middle line:90%
+Say again?
+
+01:15:57.078 --> 01:15:58.870 align:middle line:84%
+AUDIENCE: The simple
+case in the beginning.
+
+01:15:58.870 --> 01:15:59.530 align:middle line:90%
+IAN BALL: Good, OK.
+
+01:15:59.530 --> 01:16:01.488 align:middle line:84%
+So I was going to try to
+avoid that simplicity.
+
+01:16:01.488 --> 01:16:02.570 align:middle line:90%
+But no, no.
+
+01:16:02.570 --> 01:16:03.330 align:middle line:90%
+So let me say no.
+
+01:16:03.330 --> 01:16:05.830 align:middle line:84%
+So when I say strictly positive,
+really what I mean is--
+
+01:16:05.830 --> 01:16:07.050 align:middle line:90%
+you're exactly right.
+
+01:16:07.050 --> 01:16:10.330 align:middle line:90%
+
+
+01:16:10.330 --> 01:16:10.830 align:middle line:90%
+Yeah.
+
+01:16:10.830 --> 01:16:13.745 align:middle line:90%
+
+
+01:16:13.745 --> 01:16:14.370 align:middle line:90%
+I should do it.
+
+01:16:14.370 --> 01:16:16.245 align:middle line:84%
+I was going to skip a
+step, but you're right.
+
+01:16:16.245 --> 01:16:17.290 align:middle line:90%
+It's good not to.
+
+01:16:17.290 --> 01:16:21.760 align:middle line:90%
+
+
+01:16:21.760 --> 01:16:23.010 align:middle line:90%
+So this is really what I mean.
+
+01:16:23.010 --> 01:16:25.540 align:middle line:84%
+It's not that every combination
+has positive probability,
+
+01:16:25.540 --> 01:16:27.923 align:middle line:84%
+but every type of every player
+gets positive probability.
+
+01:16:27.923 --> 01:16:29.840 align:middle line:84%
+And the reason I didn't
+want to write this out
+
+01:16:29.840 --> 01:16:30.900 align:middle line:90%
+is what does this mean?
+
+01:16:30.900 --> 01:16:32.720 align:middle line:84%
+I have to take a summation
+in order to compute this.
+
+01:16:32.720 --> 01:16:34.637 align:middle line:84%
+This is a summation over
+all the other things.
+
+01:16:34.637 --> 01:16:36.480 align:middle line:84%
+So it's true that
+there are some 0s here,
+
+01:16:36.480 --> 01:16:40.040 align:middle line:84%
+but the probability that
+player 2 has type 0 is 1.
+
+01:16:40.040 --> 01:16:42.562 align:middle line:84%
+The probability that
+player 1 has type H is 1/2,
+
+01:16:42.562 --> 01:16:45.020 align:middle line:84%
+and the probability that the
+other player is type E is 1/2.
+
+01:16:45.020 --> 01:16:47.020 align:middle line:84%
+So that's really what I mean
+by positive probability.
+
+01:16:47.020 --> 01:16:48.400 align:middle line:84%
+And that's actually about
+loss, because if something
+
+01:16:48.400 --> 01:16:49.720 align:middle line:84%
+has 0 probability, I
+can just throw it out
+
+01:16:49.720 --> 01:16:51.363 align:middle line:84%
+and not include it
+in the type space.
+
+01:16:51.363 --> 01:16:52.780 align:middle line:84%
+So thanks for
+catching me on that.
+
+01:16:52.780 --> 01:16:55.020 align:middle line:84%
+I tried to skip a step,
+but you kept me honest.
+
+01:16:55.020 --> 01:16:56.120 align:middle line:90%
+Good.
+
+01:16:56.120 --> 01:16:58.500 align:middle line:84%
+And you'll see that's because
+when I'm conditioning,
+
+01:16:58.500 --> 01:17:00.957 align:middle line:84%
+I'm conditioning on an
+event about my type alone.
+
+01:17:00.957 --> 01:17:02.540 align:middle line:84%
+I'm not conditioning
+on richer things,
+
+01:17:02.540 --> 01:17:07.320 align:middle line:84%
+and that's why I only need that
+to be positive probability.
+
+01:17:07.320 --> 01:17:09.620 align:middle line:84%
+So if we want to understand
+what's going on here,
+
+01:17:09.620 --> 01:17:14.480 align:middle line:84%
+one thing we could do is we
+could define a new utility
+
+01:17:14.480 --> 01:17:16.460 align:middle line:84%
+function directly
+over strategies.
+
+01:17:16.460 --> 01:17:18.320 align:middle line:84%
+So we could try to
+reduce this game
+
+01:17:18.320 --> 01:17:20.260 align:middle line:84%
+and express it purely
+in strategic form.
+
+01:17:20.260 --> 01:17:22.060 align:middle line:90%
+So we could say--
+
+01:17:22.060 --> 01:17:27.060 align:middle line:84%
+I'm going to write
+capital ui of s1 up to sN.
+
+01:17:27.060 --> 01:17:28.940 align:middle line:84%
+And this is going
+to say, what is my
+
+01:17:28.940 --> 01:17:34.260 align:middle line:84%
+ex ante expected utility if we
+all follow these strategies?
+
+01:17:34.260 --> 01:17:36.300 align:middle line:84%
+And now I'm going to
+take an expectation not
+
+01:17:36.300 --> 01:17:40.540 align:middle line:84%
+conditional on ti-- just
+an expectation before we
+
+01:17:40.540 --> 01:17:42.140 align:middle line:90%
+learn any of our types.
+
+01:17:42.140 --> 01:17:54.820 align:middle line:84%
+And it's going to be ui
+of s1 t1 and tN theta,
+
+01:17:54.820 --> 01:17:56.660 align:middle line:84%
+where here, the
+expectation is just
+
+01:17:56.660 --> 01:17:59.140 align:middle line:84%
+with respect to this
+probability distribution, P,
+
+01:17:59.140 --> 01:18:01.820 align:middle line:84%
+here, because the probability
+distribution, P, specifies
+
+01:18:01.820 --> 01:18:05.038 align:middle line:84%
+the joint distribution
+of t1 up to tN and theta,
+
+01:18:05.038 --> 01:18:07.080 align:middle line:84%
+so it makes sense to talk
+about this expectation.
+
+01:18:07.080 --> 01:18:08.660 align:middle line:84%
+It's a bit of a weird
+object to think about
+
+01:18:08.660 --> 01:18:10.500 align:middle line:84%
+because this is this
+weird calculation that you
+
+01:18:10.500 --> 01:18:12.000 align:middle line:84%
+make before you're
+born and you know
+
+01:18:12.000 --> 01:18:13.280 align:middle line:90%
+whether you like blue or red.
+
+01:18:13.280 --> 01:18:15.620 align:middle line:84%
+It's a weird thing,
+but we can define this.
+
+01:18:15.620 --> 01:18:18.780 align:middle line:84%
+So now once we've defined this,
+we have a classic strategic form
+
+01:18:18.780 --> 01:18:19.320 align:middle line:90%
+game.
+
+01:18:19.320 --> 01:18:22.070 align:middle line:84%
+We can say what is the expected
+utility of each player,
+
+01:18:22.070 --> 01:18:25.870 align:middle line:84%
+i, as a function of the
+strategies that are used?
+
+01:18:25.870 --> 01:18:28.690 align:middle line:90%
+And now we have a theorem--
+
+01:18:28.690 --> 01:18:30.550 align:middle line:90%
+it's a pretty basic theorem.
+
+01:18:30.550 --> 01:18:45.470 align:middle line:84%
+But we say that a strategy
+profile, s star, equals s1 star
+
+01:18:45.470 --> 01:18:53.790 align:middle line:84%
+to sN star, is a Bayes Nash
+equilibrium of the Bayesian game
+
+01:18:53.790 --> 01:19:02.430 align:middle line:84%
+if and only if s star
+is a Nash equilibrium
+
+01:19:02.430 --> 01:19:04.610 align:middle line:84%
+of the strategic form
+game defined here.
+
+01:19:04.610 --> 01:19:26.080 align:middle line:90%
+
+
+01:19:26.080 --> 01:19:28.000 align:middle line:84%
+And I think this is a
+good homework exercise
+
+01:19:28.000 --> 01:19:32.220 align:middle line:84%
+to try to go through
+and verify this.
+
+01:19:32.220 --> 01:19:33.100 align:middle line:90%
+Yes.
+
+01:19:33.100 --> 01:19:35.292 align:middle line:90%
+AUDIENCE: [INAUDIBLE]
+
+01:19:35.292 --> 01:19:37.500 align:middle line:84%
+IAN BALL: All of these are
+implicitly defined over p.
+
+01:19:37.500 --> 01:19:38.890 align:middle line:90%
+Maybe I'll put p here.
+
+01:19:38.890 --> 01:19:40.640 align:middle line:84%
+But I guess the point
+I was trying to make
+
+01:19:40.640 --> 01:19:44.280 align:middle line:84%
+is that this is a
+conditional expectation using
+
+01:19:44.280 --> 01:19:47.360 align:middle line:84%
+conditional
+probabilities given ti.
+
+01:19:47.360 --> 01:19:50.720 align:middle line:84%
+This is an unconditional
+expectation
+
+01:19:50.720 --> 01:19:53.880 align:middle line:84%
+using unconditional
+probabilities over P.
+
+01:19:53.880 --> 01:19:55.680 align:middle line:84%
+That's the only point
+I wanted to make.
+
+01:19:55.680 --> 01:19:57.800 align:middle line:84%
+AUDIENCE: Based on
+the p in Bayes' rule.
+
+01:19:57.800 --> 01:20:00.200 align:middle line:90%
+IAN BALL: It's the same p, yeah.
+
+01:20:00.200 --> 01:20:03.280 align:middle line:84%
+Sorry, this is the P
+based on Bayes' rule.
+
+01:20:03.280 --> 01:20:04.840 align:middle line:90%
+P is a distribution.
+
+01:20:04.840 --> 01:20:08.183 align:middle line:84%
+Using P, I can compute
+conditional probabilities here.
+
+01:20:08.183 --> 01:20:09.600 align:middle line:84%
+Here, I don't even
+have to compute
+
+01:20:09.600 --> 01:20:11.560 align:middle line:84%
+conditional probabilities
+because P is already
+
+01:20:11.560 --> 01:20:15.380 align:middle line:84%
+a distribution over
+t1 up to tN and theta.
+
+01:20:15.380 --> 01:20:22.810 align:middle line:90%
+
+
+01:20:22.810 --> 01:20:26.370 align:middle line:84%
+And maybe just two words
+about the intuition for this.
+
+01:20:26.370 --> 01:20:31.810 align:middle line:84%
+What this says is whatever type
+I have, I'm behaving optimally.
+
+01:20:31.810 --> 01:20:34.130 align:middle line:84%
+This is saying, let's
+imagine I'm in the position
+
+01:20:34.130 --> 01:20:37.770 align:middle line:90%
+before I learn my type.
+
+01:20:37.770 --> 01:20:40.770 align:middle line:84%
+it's saying that my
+complete contingent plan is
+
+01:20:40.770 --> 01:20:43.930 align:middle line:84%
+optimal in expectation, but
+my complete contingent plan
+
+01:20:43.930 --> 01:20:46.870 align:middle line:84%
+is only optimal if, at every
+realization of my type,
+
+01:20:46.870 --> 01:20:48.010 align:middle line:90%
+it's optimal.
+
+01:20:48.010 --> 01:20:50.690 align:middle line:84%
+And that's the connection,
+that if I anticipate
+
+01:20:50.690 --> 01:20:53.110 align:middle line:84%
+that I'm going to make a mistake
+at some type realization,
+
+01:20:53.110 --> 01:20:56.050 align:middle line:84%
+then there must be a mistake
+in my complete contingent plan.
+
+01:20:56.050 --> 01:20:57.130 align:middle line:84%
+And that's the
+connection here, but I
+
+01:20:57.130 --> 01:20:58.672 align:middle line:84%
+think it's good to
+maybe write it out
+
+01:20:58.672 --> 01:20:59.910 align:middle line:90%
+in algebra as an exercise.
+
+01:20:59.910 --> 01:21:00.510 align:middle line:90%
+But let me stop there.
+
+01:21:00.510 --> 01:21:02.177 align:middle line:84%
+I'm happy to stick
+around for questions,
+
+01:21:02.177 --> 01:21:03.350 align:middle line:90%
+but let me conclude there.
+
+01:21:03.350 --> 01:21:05.670 align:middle line:90%
+And I know this is abstract.
+
+01:21:05.670 --> 01:21:07.990 align:middle line:84%
+It's natural for this
+not to make so much sense
+
+01:21:07.990 --> 01:21:10.407 align:middle line:84%
+the first time, but I think
+doing problem sets will really
+
+01:21:10.407 --> 01:21:11.070 align:middle line:90%
+reinforce this.
+
+01:21:11.070 --> 01:21:12.620 align:middle line:90%
+Thanks.
+
+01:21:12.620 --> 01:21:15.000 align:middle line:90%

@@ -1,0 +1,5577 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:02.440 align:middle line:90%
+[SQUEAKING]
+
+00:00:02.440 --> 00:00:03.895 align:middle line:90%
+[RUSTLING]
+
+00:00:03.895 --> 00:00:04.865 align:middle line:90%
+[CLICKING]
+
+00:00:04.865 --> 00:00:09.020 align:middle line:90%
+
+
+00:00:09.020 --> 00:00:10.520 align:middle line:84%
+PROFESSOR: So then
+let's get started
+
+00:00:10.520 --> 00:00:13.920 align:middle line:84%
+with our second-to-last
+topic today, which
+
+00:00:13.920 --> 00:00:16.420 align:middle line:84%
+is going to be something
+called cheap talk.
+
+00:00:16.420 --> 00:00:21.040 align:middle line:90%
+
+
+00:00:21.040 --> 00:00:23.460 align:middle line:84%
+I think it's good to have
+some context for this.
+
+00:00:23.460 --> 00:00:26.280 align:middle line:84%
+So far, we've looked
+at signaling games.
+
+00:00:26.280 --> 00:00:32.439 align:middle line:84%
+And so let's recall that when
+we looked at signaling games,
+
+00:00:32.439 --> 00:00:35.560 align:middle line:84%
+people with private information
+were conveying information
+
+00:00:35.560 --> 00:00:38.820 align:middle line:84%
+to some other party
+through costly actions.
+
+00:00:38.820 --> 00:00:54.280 align:middle line:84%
+So under signaling, info
+is conveyed through costly
+
+00:00:54.280 --> 00:00:56.860 align:middle line:84%
+or we might also say
+payoff-relevant actions.
+
+00:00:56.860 --> 00:01:03.360 align:middle line:90%
+
+
+00:01:03.360 --> 00:01:05.880 align:middle line:84%
+So one way to convey information
+about how smart you are
+
+00:01:05.880 --> 00:01:08.222 align:middle line:84%
+or how good of an employee
+you are is to go to college.
+
+00:01:08.222 --> 00:01:10.680 align:middle line:84%
+And the whole point of that
+model was that going to college
+
+00:01:10.680 --> 00:01:12.560 align:middle line:84%
+is costly and
+differentially costly
+
+00:01:12.560 --> 00:01:13.860 align:middle line:90%
+for different kinds of people.
+
+00:01:13.860 --> 00:01:16.560 align:middle line:84%
+Or when a firm was
+conveying information
+
+00:01:16.560 --> 00:01:19.520 align:middle line:84%
+about the quality of an item,
+they were setting a price.
+
+00:01:19.520 --> 00:01:21.420 align:middle line:84%
+And maybe a price
+isn't directly costly,
+
+00:01:21.420 --> 00:01:23.600 align:middle line:84%
+but it is payoff relevant,
+because the price I set
+
+00:01:23.600 --> 00:01:28.520 align:middle line:84%
+affects how much money I get if
+you actually accept my offer.
+
+00:01:28.520 --> 00:01:31.320 align:middle line:84%
+But in the real world, we
+see a lot of information
+
+00:01:31.320 --> 00:01:33.702 align:middle line:84%
+conveyed not through
+costly actions,
+
+00:01:33.702 --> 00:01:35.660 align:middle line:84%
+but just through speech,
+through communication.
+
+00:01:35.660 --> 00:01:36.785 align:middle line:90%
+We send messages to people.
+
+00:01:36.785 --> 00:01:37.460 align:middle line:90%
+We use words.
+
+00:01:37.460 --> 00:01:38.760 align:middle line:90%
+We talk to people.
+
+00:01:38.760 --> 00:01:42.100 align:middle line:84%
+And the question is, when
+there's a conflict of interest,
+
+00:01:42.100 --> 00:01:45.860 align:middle line:84%
+can we also convey information
+through costless actions?
+
+00:01:45.860 --> 00:01:47.520 align:middle line:84%
+So today, the
+difference is we're
+
+00:01:47.520 --> 00:02:00.350 align:middle line:84%
+going to look at conveying
+information through costless--
+
+00:02:00.350 --> 00:02:02.350 align:middle line:84%
+and sometimes, instead
+of calling these actions,
+
+00:02:02.350 --> 00:02:03.310 align:middle line:90%
+you might call them messages.
+
+00:02:03.310 --> 00:02:05.602 align:middle line:84%
+Because we usually think of
+speech or words or messages
+
+00:02:05.602 --> 00:02:06.350 align:middle line:90%
+as being costly.
+
+00:02:06.350 --> 00:02:10.250 align:middle line:90%
+
+
+00:02:10.250 --> 00:02:11.850 align:middle line:84%
+Now, there are
+certainly some contexts
+
+00:02:11.850 --> 00:02:13.142 align:middle line:90%
+where this isn't going to work.
+
+00:02:13.142 --> 00:02:16.130 align:middle line:84%
+If we think of the job
+market signaling example,
+
+00:02:16.130 --> 00:02:18.680 align:middle line:84%
+the firm could ask you how
+good of an employee are you.
+
+00:02:18.680 --> 00:02:20.930 align:middle line:84%
+Well, everyone's going to
+say they're a good employee.
+
+00:02:20.930 --> 00:02:23.610 align:middle line:84%
+So there are some contexts where
+we really need a costly action
+
+00:02:23.610 --> 00:02:25.030 align:middle line:90%
+in order to make it credible.
+
+00:02:25.030 --> 00:02:26.890 align:middle line:84%
+The information that
+we're going to convey.
+
+00:02:26.890 --> 00:02:28.810 align:middle line:84%
+There are other situations
+where it's clear
+
+00:02:28.810 --> 00:02:30.550 align:middle line:90%
+that communication is credible.
+
+00:02:30.550 --> 00:02:32.217 align:middle line:84%
+If our interests are
+completely aligned.
+
+00:02:32.217 --> 00:02:34.383 align:middle line:84%
+Then of course, we can
+communicate freely and that's
+
+00:02:34.383 --> 00:02:36.810 align:middle line:84%
+not going to be difficult. So
+the point of the model today
+
+00:02:36.810 --> 00:02:38.610 align:middle line:84%
+is going to show that
+sometimes, there will
+
+00:02:38.610 --> 00:02:40.110 align:middle line:90%
+be a misalignment of interests.
+
+00:02:40.110 --> 00:02:41.693 align:middle line:84%
+There will be a
+conflict of interests.
+
+00:02:41.693 --> 00:02:44.090 align:middle line:84%
+Yet nevertheless, some
+kind of communication
+
+00:02:44.090 --> 00:02:46.410 align:middle line:84%
+can be credible, in
+contrast to the model
+
+00:02:46.410 --> 00:02:48.830 align:middle line:84%
+of telling the employer
+that you're a good employee.
+
+00:02:48.830 --> 00:02:51.372 align:middle line:84%
+So that's going to be the model
+we're going to look at today.
+
+00:02:51.372 --> 00:02:55.250 align:middle line:90%
+
+
+00:02:55.250 --> 00:03:00.050 align:middle line:84%
+So this model is based on a
+paper by Crawford and Sobel
+
+00:03:00.050 --> 00:03:01.810 align:middle line:90%
+in 1982.
+
+00:03:01.810 --> 00:03:08.050 align:middle line:84%
+So we're getting closer
+to modern topics.
+
+00:03:08.050 --> 00:03:10.970 align:middle line:84%
+And we're going to think of--
+this is a game between a sender.
+
+00:03:10.970 --> 00:03:14.810 align:middle line:84%
+We call them sender
+and receiver.
+
+00:03:14.810 --> 00:03:16.830 align:middle line:90%
+But these are abstract labels.
+
+00:03:16.830 --> 00:03:18.330 align:middle line:84%
+I want you to
+think of the sender
+
+00:03:18.330 --> 00:03:22.730 align:middle line:84%
+as an advisor and the
+receiver as a decision maker.
+
+00:03:22.730 --> 00:03:25.930 align:middle line:84%
+And the presidential advisor
+might collect information
+
+00:03:25.930 --> 00:03:28.730 align:middle line:84%
+and make a recommendation
+to the president about what
+
+00:03:28.730 --> 00:03:31.690 align:middle line:84%
+tax policy should be, or to
+the Fed about what the interest
+
+00:03:31.690 --> 00:03:35.070 align:middle line:84%
+rate should be, or, how much we
+should spend on the military.
+
+00:03:35.070 --> 00:03:37.590 align:middle line:84%
+And the idea is that
+the sender, the advisor,
+
+00:03:37.590 --> 00:03:39.723 align:middle line:84%
+has more information
+than the decision maker,
+
+00:03:39.723 --> 00:03:41.390 align:middle line:84%
+because the decision
+maker is very busy.
+
+00:03:41.390 --> 00:03:43.030 align:middle line:84%
+The CEO can't know
+about everything.
+
+00:03:43.030 --> 00:03:46.890 align:middle line:84%
+They talk to a consultant
+or a researcher
+
+00:03:46.890 --> 00:03:50.270 align:middle line:84%
+who's going to be very informed
+about this particular issue.
+
+00:03:50.270 --> 00:03:51.270 align:middle line:90%
+So how do we model this?
+
+00:03:51.270 --> 00:03:59.570 align:middle line:84%
+Well, the sender is going to
+privately observe what We're
+
+00:03:59.570 --> 00:04:02.410 align:middle line:90%
+going to call maybe a state.
+
+00:04:02.410 --> 00:04:07.010 align:middle line:84%
+Or this could also be
+called their type t in 0, 1.
+
+00:04:07.010 --> 00:04:10.170 align:middle line:84%
+So we're going to think of
+this in our economic example.
+
+00:04:10.170 --> 00:04:11.907 align:middle line:90%
+How good is the economy?
+
+00:04:11.907 --> 00:04:13.490 align:middle line:84%
+What's the ideal
+amount of spending we
+
+00:04:13.490 --> 00:04:14.747 align:middle line:90%
+should spend on the military?
+
+00:04:14.747 --> 00:04:15.830 align:middle line:90%
+What's the ideal tax rate?
+
+00:04:15.830 --> 00:04:17.330 align:middle line:84%
+So this makes sense
+for any decision
+
+00:04:17.330 --> 00:04:20.769 align:middle line:84%
+where there's this
+one-dimensional choice
+
+00:04:20.769 --> 00:04:22.770 align:middle line:90%
+that we have to make.
+
+00:04:22.770 --> 00:04:25.490 align:middle line:84%
+We can think of this usually
+as the state of the world.
+
+00:04:25.490 --> 00:04:27.470 align:middle line:84%
+But we'll also call
+it the sender's type,
+
+00:04:27.470 --> 00:04:30.370 align:middle line:84%
+because this is private
+information that the sender has.
+
+00:04:30.370 --> 00:04:32.890 align:middle line:84%
+And then the sender, after
+observing their type t,
+
+00:04:32.890 --> 00:04:37.850 align:middle line:90%
+is going to send a message m--
+
+00:04:37.850 --> 00:04:41.250 align:middle line:84%
+we'll just call it, in
+some abstract set, big M--
+
+00:04:41.250 --> 00:04:43.170 align:middle line:90%
+to the receiver.
+
+00:04:43.170 --> 00:04:48.670 align:middle line:84%
+And then the receiver is
+going to observe M but not t.
+
+00:04:48.670 --> 00:04:51.220 align:middle line:84%
+The whole point is if the
+receiver, the decision maker,
+
+00:04:51.220 --> 00:04:52.660 align:middle line:84%
+understood the
+state of the world,
+
+00:04:52.660 --> 00:04:54.120 align:middle line:84%
+knew what the
+right decision was,
+
+00:04:54.120 --> 00:04:56.380 align:middle line:84%
+they wouldn't need help
+from the advisor anyway.
+
+00:04:56.380 --> 00:04:58.140 align:middle line:84%
+So they don't
+directly observe t,
+
+00:04:58.140 --> 00:05:01.500 align:middle line:84%
+but they do observe this message
+that's sent by the sender.
+
+00:05:01.500 --> 00:05:07.820 align:middle line:84%
+And then after that, they choose
+an action or decision which
+
+00:05:07.820 --> 00:05:08.980 align:middle line:90%
+we'll call y.
+
+00:05:08.980 --> 00:05:12.540 align:middle line:84%
+And that's going to
+be a real number.
+
+00:05:12.540 --> 00:05:14.002 align:middle line:90%
+So maybe I'll say--
+
+00:05:14.002 --> 00:05:15.960 align:middle line:84%
+I don't know if I've used
+this notation before.
+
+00:05:15.960 --> 00:05:17.560 align:middle line:84%
+This is just the
+set of real numbers.
+
+00:05:17.560 --> 00:05:20.780 align:middle line:90%
+
+
+00:05:20.780 --> 00:05:22.460 align:middle line:84%
+Now, whenever we
+talk about something
+
+00:05:22.460 --> 00:05:25.300 align:middle line:84%
+being privately observed, we
+need to specify the distribution
+
+00:05:25.300 --> 00:05:26.290 align:middle line:90%
+from which this comes.
+
+00:05:26.290 --> 00:05:28.540 align:middle line:84%
+And we're going to assume
+that the state, just to make
+
+00:05:28.540 --> 00:05:32.460 align:middle line:90%
+things easy, is uniform.
+
+00:05:32.460 --> 00:05:34.880 align:middle line:84%
+So just to be clear, the
+sender knows what the state is.
+
+00:05:34.880 --> 00:05:35.980 align:middle line:90%
+They know their type.
+
+00:05:35.980 --> 00:05:39.120 align:middle line:84%
+The uniform distribution is
+relevant to the receiver.
+
+00:05:39.120 --> 00:05:41.840 align:middle line:84%
+The receiver believes that this
+state is uniformly distributed,
+
+00:05:41.840 --> 00:05:45.100 align:middle line:84%
+but they don't know what the
+actual value of the state is.
+
+00:05:45.100 --> 00:05:46.560 align:middle line:90%
+I'll say uniformly distributed.
+
+00:05:46.560 --> 00:05:51.340 align:middle line:90%
+
+
+00:05:51.340 --> 00:05:52.892 align:middle line:90%
+And now let me specify payoffs.
+
+00:05:52.892 --> 00:05:54.600 align:middle line:84%
+Of course, this is a
+very stylized model,
+
+00:05:54.600 --> 00:05:57.300 align:middle line:84%
+but I think it captures a
+lot of policy disagreements
+
+00:05:57.300 --> 00:05:58.380 align:middle line:90%
+that we have.
+
+00:05:58.380 --> 00:06:03.460 align:middle line:84%
+So the sender, their payoff
+u s depends on the decision y
+
+00:06:03.460 --> 00:06:08.220 align:middle line:84%
+that the receiver takes and
+also t, the state of the world.
+
+00:06:08.220 --> 00:06:09.440 align:middle line:90%
+And same for the receiver.
+
+00:06:09.440 --> 00:06:13.460 align:middle line:90%
+
+
+00:06:13.460 --> 00:06:16.100 align:middle line:84%
+And what we're going to
+imagine for the receiver,
+
+00:06:16.100 --> 00:06:18.060 align:middle line:84%
+to make things simple,
+is the receiver just
+
+00:06:18.060 --> 00:06:22.540 align:middle line:84%
+wants to match their decision
+with the state of the world.
+
+00:06:22.540 --> 00:06:25.100 align:middle line:84%
+So we could think of
+the state of the world
+
+00:06:25.100 --> 00:06:30.700 align:middle line:84%
+might be some measure of
+how close the economy is
+
+00:06:30.700 --> 00:06:32.140 align:middle line:90%
+to a recession.
+
+00:06:32.140 --> 00:06:37.260 align:middle line:84%
+And y might be how much we're
+planning to cut interest rates.
+
+00:06:37.260 --> 00:06:40.260 align:middle line:84%
+Or t might be the
+severity or the risk
+
+00:06:40.260 --> 00:06:43.860 align:middle line:84%
+of some military conflict, and
+y might be the spending level
+
+00:06:43.860 --> 00:06:45.320 align:middle line:90%
+that we spend on that conflict.
+
+00:06:45.320 --> 00:06:47.520 align:middle line:84%
+And the idea is, these
+things move together.
+
+00:06:47.520 --> 00:06:49.660 align:middle line:84%
+The higher the state, the
+higher the ideal decision
+
+00:06:49.660 --> 00:06:50.540 align:middle line:90%
+for the receiver.
+
+00:06:50.540 --> 00:06:55.780 align:middle line:84%
+So we'll formally model this
+with the quadratic loss function
+
+00:06:55.780 --> 00:06:57.300 align:middle line:90%
+that we said before.
+
+00:06:57.300 --> 00:06:59.540 align:middle line:84%
+So this means what the
+receiver would love to do
+
+00:06:59.540 --> 00:07:01.695 align:middle line:84%
+is have the decision
+exactly match the state.
+
+00:07:01.695 --> 00:07:03.820 align:middle line:84%
+So we can think of the
+state as basically measuring
+
+00:07:03.820 --> 00:07:06.180 align:middle line:84%
+what would be the ideal
+decision for the receiver
+
+00:07:06.180 --> 00:07:07.965 align:middle line:90%
+if they could observe the state.
+
+00:07:07.965 --> 00:07:09.340 align:middle line:84%
+And then the
+receiver experiences
+
+00:07:09.340 --> 00:07:11.900 align:middle line:84%
+a loss that's equal
+to the difference
+
+00:07:11.900 --> 00:07:14.243 align:middle line:84%
+between their decision
+and the state squared.
+
+00:07:14.243 --> 00:07:16.160 align:middle line:84%
+So how far off the
+decision is from the state.
+
+00:07:16.160 --> 00:07:16.700 align:middle line:90%
+Yes.
+
+00:07:16.700 --> 00:07:18.200 align:middle line:84%
+AUDIENCE: So
+basically, the decision
+
+00:07:18.200 --> 00:07:20.420 align:middle line:84%
+is just a reflection of
+what the receiver believes
+
+00:07:20.420 --> 00:07:21.600 align:middle line:90%
+that the state is?
+
+00:07:21.600 --> 00:07:24.740 align:middle line:90%
+
+
+00:07:24.740 --> 00:07:27.660 align:middle line:84%
+PROFESSOR: It's true that their
+preferences over the decision
+
+00:07:27.660 --> 00:07:29.565 align:middle line:84%
+depend on their beliefs
+about the state.
+
+00:07:29.565 --> 00:07:31.940 align:middle line:84%
+AUDIENCE: But [INAUDIBLE]
+exactly match the state, right?
+
+00:07:31.940 --> 00:07:33.620 align:middle line:90%
+So it should be--
+
+00:07:33.620 --> 00:07:37.100 align:middle line:84%
+so is the decision
+supposed to be a state?
+
+00:07:37.100 --> 00:07:38.380 align:middle line:90%
+PROFESSOR: No, I wouldn't.
+
+00:07:38.380 --> 00:07:42.240 align:middle line:84%
+I think maybe one way of
+interpreting this is, OK,
+
+00:07:42.240 --> 00:07:44.140 align:middle line:84%
+if we want to think
+of a richer model,
+
+00:07:44.140 --> 00:07:47.180 align:middle line:84%
+probably the state
+is really a very rich
+
+00:07:47.180 --> 00:07:48.740 align:middle line:90%
+multidimensional object.
+
+00:07:48.740 --> 00:07:51.700 align:middle line:84%
+But we're going to denote the
+state-- the aspect of the state
+
+00:07:51.700 --> 00:07:54.630 align:middle line:84%
+that matters is what the ideal
+decision is in that state.
+
+00:07:54.630 --> 00:07:56.380 align:middle line:84%
+So I think maybe the
+better interpretation
+
+00:07:56.380 --> 00:07:58.300 align:middle line:84%
+is, when we write
+t, what we really
+
+00:07:58.300 --> 00:08:02.100 align:middle line:84%
+mean is, what is the
+receiver's ideal decision given
+
+00:08:02.100 --> 00:08:03.160 align:middle line:90%
+the state of the world?
+
+00:08:03.160 --> 00:08:05.680 align:middle line:84%
+So maybe the economy
+has many dimensions.
+
+00:08:05.680 --> 00:08:10.460 align:middle line:84%
+But think of t saying the ideal
+interest rate for the Fed to set
+
+00:08:10.460 --> 00:08:14.420 align:middle line:84%
+is 3% and y being the interest
+rate the Fed actually sets.
+
+00:08:14.420 --> 00:08:15.380 align:middle line:90%
+Does that make sense?
+
+00:08:15.380 --> 00:08:15.660 align:middle line:90%
+AUDIENCE: Yeah.
+
+00:08:15.660 --> 00:08:16.740 align:middle line:90%
+PROFESSOR: OK, great.
+
+00:08:16.740 --> 00:08:18.040 align:middle line:90%
+So now what about the sender?
+
+00:08:18.040 --> 00:08:20.280 align:middle line:84%
+Well, if the sender and receiver
+have the same preferences,
+
+00:08:20.280 --> 00:08:21.440 align:middle line:84%
+this would be a
+really easy problem.
+
+00:08:21.440 --> 00:08:23.732 align:middle line:84%
+Of course the advisor is
+going to just reveal the state
+
+00:08:23.732 --> 00:08:25.780 align:middle line:84%
+and allow the receiver
+to make a good decision.
+
+00:08:25.780 --> 00:08:27.700 align:middle line:84%
+But often, advisors
+and decision makers
+
+00:08:27.700 --> 00:08:29.040 align:middle line:90%
+have misaligned interests.
+
+00:08:29.040 --> 00:08:30.457 align:middle line:84%
+And the way we're
+going to capture
+
+00:08:30.457 --> 00:08:36.306 align:middle line:84%
+that here is we're going to
+say the sender's preferences
+
+00:08:36.306 --> 00:08:39.020 align:middle line:90%
+is like this, where beta--
+
+00:08:39.020 --> 00:08:40.159 align:middle line:90%
+I'll put it down here--
+
+00:08:40.159 --> 00:08:42.990 align:middle line:90%
+
+
+00:08:42.990 --> 00:08:44.630 align:middle line:90%
+is greater than 0.
+
+00:08:44.630 --> 00:08:46.970 align:middle line:84%
+So here, beta is
+called the bias.
+
+00:08:46.970 --> 00:08:51.230 align:middle line:90%
+
+
+00:08:51.230 --> 00:08:53.230 align:middle line:84%
+This is the bias that
+the sender or the advisor
+
+00:08:53.230 --> 00:08:55.350 align:middle line:84%
+has relative to
+the decision maker.
+
+00:08:55.350 --> 00:08:58.310 align:middle line:84%
+So notice that, well,
+the receiver always
+
+00:08:58.310 --> 00:09:01.230 align:middle line:84%
+wants to match the
+decision with the state.
+
+00:09:01.230 --> 00:09:04.670 align:middle line:84%
+The sender would like to match
+the decision not with the state,
+
+00:09:04.670 --> 00:09:07.750 align:middle line:84%
+but with the state
+plus this bias beta.
+
+00:09:07.750 --> 00:09:10.670 align:middle line:84%
+So notice some characteristics
+of this misalignment
+
+00:09:10.670 --> 00:09:12.150 align:middle line:90%
+of interest.
+
+00:09:12.150 --> 00:09:14.350 align:middle line:84%
+Both the sender and
+the receiver agree
+
+00:09:14.350 --> 00:09:19.070 align:middle line:84%
+that when the state is higher,
+a higher decision is warranted.
+
+00:09:19.070 --> 00:09:22.590 align:middle line:84%
+What they disagree about is the
+exact value of the decision.
+
+00:09:22.590 --> 00:09:24.950 align:middle line:84%
+So whatever the state
+is, the sender always
+
+00:09:24.950 --> 00:09:27.288 align:middle line:84%
+thinks the decision should
+be a little bit higher
+
+00:09:27.288 --> 00:09:28.330 align:middle line:90%
+than the receiver thinks.
+
+00:09:28.330 --> 00:09:31.027 align:middle line:84%
+And I think this is consistent
+with a lot of policy
+
+00:09:31.027 --> 00:09:31.610 align:middle line:90%
+disagreements.
+
+00:09:31.610 --> 00:09:32.970 align:middle line:84%
+Let's take the
+example of the Fed.
+
+00:09:32.970 --> 00:09:35.345 align:middle line:84%
+There are some people who are
+more hawkish or more dovish
+
+00:09:35.345 --> 00:09:35.887 align:middle line:90%
+on inflation.
+
+00:09:35.887 --> 00:09:38.178 align:middle line:84%
+So some people always tend
+to want lower interest rates
+
+00:09:38.178 --> 00:09:38.970 align:middle line:90%
+than someone else.
+
+00:09:38.970 --> 00:09:41.370 align:middle line:84%
+But everyone agrees that when
+the economy is in worse shape,
+
+00:09:41.370 --> 00:09:42.950 align:middle line:84%
+we should tend to
+cut interest rates,
+
+00:09:42.950 --> 00:09:44.410 align:middle line:84%
+and when the economy
+is doing well,
+
+00:09:44.410 --> 00:09:45.952 align:middle line:84%
+maybe we should
+raise interest rates.
+
+00:09:45.952 --> 00:09:48.910 align:middle line:84%
+So they all agree about the
+directional effect of the state
+
+00:09:48.910 --> 00:09:50.170 align:middle line:90%
+on the ideal decision.
+
+00:09:50.170 --> 00:09:53.210 align:middle line:84%
+They just disagree slightly
+about what the level is.
+
+00:09:53.210 --> 00:09:55.550 align:middle line:84%
+And the sender always
+wants a decision
+
+00:09:55.550 --> 00:09:58.710 align:middle line:84%
+that's higher than what
+the receiver wants exactly
+
+00:09:58.710 --> 00:10:00.790 align:middle line:90%
+by this amount beta.
+
+00:10:00.790 --> 00:10:02.870 align:middle line:84%
+So the larger beta
+is, the greater
+
+00:10:02.870 --> 00:10:05.890 align:middle line:84%
+the disagreement between
+the sender and the receiver.
+
+00:10:05.890 --> 00:10:06.890 align:middle line:90%
+OK, so here's our model.
+
+00:10:06.890 --> 00:10:09.930 align:middle line:84%
+Any questions about
+the model so far?
+
+00:10:09.930 --> 00:10:11.270 align:middle line:90%
+Yes.
+
+00:10:11.270 --> 00:10:14.330 align:middle line:84%
+AUDIENCE: Does beta just
+depend on who the sender is?
+
+00:10:14.330 --> 00:10:17.168 align:middle line:84%
+It's not like distributed,
+it's just like [INAUDIBLE]?
+
+00:10:17.168 --> 00:10:18.210 align:middle line:90%
+PROFESSOR: Good question.
+
+00:10:18.210 --> 00:10:20.030 align:middle line:84%
+So you could imagine
+a richer model
+
+00:10:20.030 --> 00:10:23.150 align:middle line:84%
+where the decision maker doesn't
+know the political biases
+
+00:10:23.150 --> 00:10:24.210 align:middle line:90%
+of the advisor.
+
+00:10:24.210 --> 00:10:25.430 align:middle line:84%
+And that's actually an
+interesting extension
+
+00:10:25.430 --> 00:10:26.410 align:middle line:90%
+that people have looked at.
+
+00:10:26.410 --> 00:10:28.910 align:middle line:84%
+But for today, we're going to
+assume beta is commonly known.
+
+00:10:28.910 --> 00:10:30.210 align:middle line:90%
+So I hire this advisor.
+
+00:10:30.210 --> 00:10:33.310 align:middle line:84%
+I know that my
+advisor always tends
+
+00:10:33.310 --> 00:10:34.650 align:middle line:90%
+to have this policy preference.
+
+00:10:34.650 --> 00:10:35.170 align:middle line:90%
+And this is known.
+
+00:10:35.170 --> 00:10:36.930 align:middle line:84%
+What I don't know is the
+true state of the world.
+
+00:10:36.930 --> 00:10:37.450 align:middle line:90%
+Good question.
+
+00:10:37.450 --> 00:10:38.330 align:middle line:90%
+Any other questions?
+
+00:10:38.330 --> 00:10:40.950 align:middle line:90%
+
+
+00:10:40.950 --> 00:10:42.370 align:middle line:90%
+OK, so it's a game.
+
+00:10:42.370 --> 00:10:45.130 align:middle line:84%
+Let's first think about what
+strategies are in this game.
+
+00:10:45.130 --> 00:10:51.390 align:middle line:90%
+
+
+00:10:51.390 --> 00:10:55.010 align:middle line:84%
+So the sender, they observe
+the state of the world
+
+00:10:55.010 --> 00:10:56.790 align:middle line:90%
+or they observe their type t.
+
+00:10:56.790 --> 00:10:59.870 align:middle line:84%
+And they choose what message
+to send to the receiver.
+
+00:10:59.870 --> 00:11:09.430 align:middle line:84%
+So a strategy for the sender
+is a function m from 0, 1
+
+00:11:09.430 --> 00:11:15.030 align:middle line:84%
+to this abstract set of messages
+M. Maybe we'll go into here just
+
+00:11:15.030 --> 00:11:17.190 align:middle line:90%
+to understand what goes on.
+
+00:11:17.190 --> 00:11:20.950 align:middle line:84%
+So what this says is if I see
+that the state is, say, 0.3,
+
+00:11:20.950 --> 00:11:23.150 align:middle line:84%
+this is the message
+I send, m of 0.3.
+
+00:11:23.150 --> 00:11:25.150 align:middle line:84%
+If I see that the
+state is 0.7, then I
+
+00:11:25.150 --> 00:11:28.790 align:middle line:84%
+might send a different
+message, m of 0.7.
+
+00:11:28.790 --> 00:11:31.670 align:middle line:84%
+Now, the receiver's strategy,
+well, what do they do?
+
+00:11:31.670 --> 00:11:33.050 align:middle line:90%
+They see the message.
+
+00:11:33.050 --> 00:11:34.870 align:middle line:84%
+And based on the
+message that they see,
+
+00:11:34.870 --> 00:11:36.750 align:middle line:90%
+they choose a decision to make.
+
+00:11:36.750 --> 00:11:41.560 align:middle line:84%
+So for the receiver, a
+strategy is a function y from M
+
+00:11:41.560 --> 00:11:48.480 align:middle line:84%
+to we'll say R. Just to
+understand what's going on,
+
+00:11:48.480 --> 00:11:50.480 align:middle line:90%
+I'll write it like this.
+
+00:11:50.480 --> 00:11:54.200 align:middle line:84%
+So the receiver says, if I get
+a message m from my advisor,
+
+00:11:54.200 --> 00:11:56.540 align:middle line:84%
+this is the decision I'm
+going to take, y of m.
+
+00:11:56.540 --> 00:12:02.920 align:middle line:90%
+
+
+00:12:02.920 --> 00:12:08.000 align:middle line:84%
+And the solution concept
+we're going to work with
+
+00:12:08.000 --> 00:12:09.700 align:middle line:90%
+is going to be PBE, as before--
+
+00:12:09.700 --> 00:12:11.900 align:middle line:90%
+Perfect Bayesian Equilibrium.
+
+00:12:11.900 --> 00:12:14.920 align:middle line:90%
+
+
+00:12:14.920 --> 00:12:18.800 align:middle line:84%
+Now, let's start
+by analyzing how
+
+00:12:18.800 --> 00:12:21.400 align:middle line:90%
+things work for the receiver.
+
+00:12:21.400 --> 00:12:24.000 align:middle line:84%
+So with perfect Bayesian
+equilibrium, whatever
+
+00:12:24.000 --> 00:12:25.880 align:middle line:84%
+message the receiver
+sees, they're
+
+00:12:25.880 --> 00:12:28.480 align:middle line:84%
+going to update their belief
+and then behave optimally
+
+00:12:28.480 --> 00:12:30.760 align:middle line:90%
+given their updated belief.
+
+00:12:30.760 --> 00:12:41.520 align:middle line:84%
+So let's just
+remember that whenever
+
+00:12:41.520 --> 00:12:43.540 align:middle line:84%
+we work with perfect
+Bayesian equilibrium,
+
+00:12:43.540 --> 00:12:48.000 align:middle line:84%
+we have to distinguish between
+the messages that occur on path
+
+00:12:48.000 --> 00:12:50.440 align:middle line:84%
+and the messages that
+don't occur on path.
+
+00:12:50.440 --> 00:12:55.080 align:middle line:84%
+So a message m is on path if,
+in a given strategy profile,
+
+00:12:55.080 --> 00:12:57.880 align:middle line:84%
+there's some state of the
+world where the sender actually
+
+00:12:57.880 --> 00:12:59.360 align:middle line:90%
+sends that message.
+
+00:12:59.360 --> 00:13:02.080 align:middle line:84%
+And a message is off path
+if that message is not
+
+00:13:02.080 --> 00:13:05.240 align:middle line:84%
+supposed to be sent in
+any state of the world.
+
+00:13:05.240 --> 00:13:08.280 align:middle line:84%
+So if the receiver sees
+an on-path message m,
+
+00:13:08.280 --> 00:13:09.540 align:middle line:90%
+they apply Bayes' rule.
+
+00:13:09.540 --> 00:13:15.240 align:middle line:90%
+
+
+00:13:15.240 --> 00:13:18.920 align:middle line:84%
+And then using Bayes' rule,
+they have an updated belief
+
+00:13:18.920 --> 00:13:21.000 align:middle line:90%
+about the state of the world t.
+
+00:13:21.000 --> 00:13:23.340 align:middle line:84%
+But because of the nature
+of our preference relation,
+
+00:13:23.340 --> 00:13:25.520 align:middle line:84%
+the nature of our
+utility function,
+
+00:13:25.520 --> 00:13:27.160 align:middle line:84%
+the receiver always
+wants to take
+
+00:13:27.160 --> 00:13:29.720 align:middle line:84%
+the decision that's
+equal to their updated
+
+00:13:29.720 --> 00:13:31.600 align:middle line:90%
+expectation of the state.
+
+00:13:31.600 --> 00:13:33.760 align:middle line:90%
+So they apply Bayes' rule.
+
+00:13:33.760 --> 00:13:40.267 align:middle line:84%
+They can now compute maybe
+I'll say E of t given m.
+
+00:13:40.267 --> 00:13:41.100 align:middle line:90%
+What does this mean?
+
+00:13:41.100 --> 00:13:43.000 align:middle line:90%
+It says, I observe m.
+
+00:13:43.000 --> 00:13:45.600 align:middle line:84%
+I update my beliefs about
+the state of the world.
+
+00:13:45.600 --> 00:13:47.273 align:middle line:84%
+And I'm now going
+to compute what
+
+00:13:47.273 --> 00:13:49.440 align:middle line:84%
+I think the expected value
+of the state of the world
+
+00:13:49.440 --> 00:13:52.320 align:middle line:90%
+is given my updated beliefs.
+
+00:13:52.320 --> 00:13:54.560 align:middle line:84%
+And it's always going
+to be optimal for them
+
+00:13:54.560 --> 00:13:57.040 align:middle line:90%
+to take this as their decision.
+
+00:13:57.040 --> 00:13:59.040 align:middle line:84%
+Compute that, and
+in fact, that's
+
+00:13:59.040 --> 00:14:00.520 align:middle line:90%
+going to be their decision.
+
+00:14:00.520 --> 00:14:02.770 align:middle line:84%
+They're going to update their
+beliefs about the state,
+
+00:14:02.770 --> 00:14:06.200 align:middle line:84%
+compute an expectation and set
+their decision equal to that.
+
+00:14:06.200 --> 00:14:13.960 align:middle line:84%
+Off pat, well, the
+beliefs over 0, 1
+
+00:14:13.960 --> 00:14:20.280 align:middle line:84%
+are unconstrained because
+we can't apply Bayes' rule.
+
+00:14:20.280 --> 00:14:24.200 align:middle line:84%
+So off path, the receiver
+can believe anything
+
+00:14:24.200 --> 00:14:26.520 align:middle line:90%
+about the state between 0 and 1.
+
+00:14:26.520 --> 00:14:28.720 align:middle line:84%
+So the key question
+is, what decisions
+
+00:14:28.720 --> 00:14:31.970 align:middle line:84%
+could the receiver take if
+they see an off-path message m?
+
+00:14:31.970 --> 00:14:34.170 align:middle line:84%
+What are the range
+of decisions that are
+
+00:14:34.170 --> 00:14:35.750 align:middle line:90%
+consistent with some belief?
+
+00:14:35.750 --> 00:14:40.290 align:middle line:90%
+
+
+00:14:40.290 --> 00:14:40.790 align:middle line:90%
+Yeah.
+
+00:14:40.790 --> 00:14:42.210 align:middle line:90%
+AUDIENCE: Just the real numbers.
+
+00:14:42.210 --> 00:14:44.830 align:middle line:84%
+PROFESSOR: So we might think
+it's all the real numbers.
+
+00:14:44.830 --> 00:14:47.038 align:middle line:84%
+But is there any belief
+that's consistent with taking
+
+00:14:47.038 --> 00:14:48.070 align:middle line:90%
+decision y equals 2?
+
+00:14:48.070 --> 00:14:50.690 align:middle line:90%
+
+
+00:14:50.690 --> 00:14:53.570 align:middle line:90%
+We know t lives in 0, 1.
+
+00:14:53.570 --> 00:14:56.850 align:middle line:84%
+So the point is-- and this
+is kind of a subtle point--
+
+00:14:56.850 --> 00:15:00.630 align:middle line:84%
+the point is, I can form any
+belief I want about the state.
+
+00:15:00.630 --> 00:15:02.757 align:middle line:84%
+But we know the state
+lies between 0 and 1.
+
+00:15:02.757 --> 00:15:05.090 align:middle line:84%
+So the most pessimistic belief
+I could have is the state
+
+00:15:05.090 --> 00:15:06.530 align:middle line:90%
+is definitely 0.
+
+00:15:06.530 --> 00:15:08.495 align:middle line:84%
+And the most
+optimistic-- or here
+
+00:15:08.495 --> 00:15:09.870 align:middle line:84%
+it's not clear
+what's optimistic,
+
+00:15:09.870 --> 00:15:11.970 align:middle line:84%
+but the highest belief I
+could have is the state
+
+00:15:11.970 --> 00:15:13.010 align:middle line:90%
+is certainly 1.
+
+00:15:13.010 --> 00:15:15.130 align:middle line:84%
+And in those two cases I
+would take the decision
+
+00:15:15.130 --> 00:15:17.190 align:middle line:90%
+y equals 0 and y equals 1.
+
+00:15:17.190 --> 00:15:26.450 align:middle line:84%
+So I'm always going
+to take some decision.
+
+00:15:26.450 --> 00:15:29.190 align:middle line:84%
+y that's always going
+to be between 0 and 1,
+
+00:15:29.190 --> 00:15:30.690 align:middle line:84%
+because those are
+the decisions that
+
+00:15:30.690 --> 00:15:33.170 align:middle line:84%
+are consistent with some
+belief about the state.
+
+00:15:33.170 --> 00:15:35.850 align:middle line:84%
+Any decision in here
+can be justified
+
+00:15:35.850 --> 00:15:37.142 align:middle line:90%
+by some belief about the state.
+
+00:15:37.142 --> 00:15:39.392 align:middle line:84%
+I could take decision 1/2
+because I think the state is
+
+00:15:39.392 --> 00:15:40.230 align:middle line:90%
+certain to be 1/2.
+
+00:15:40.230 --> 00:15:42.022 align:middle line:90%
+Or maybe I think it's uniform.
+
+00:15:42.022 --> 00:15:43.230 align:middle line:90%
+Those are all going to be OK.
+
+00:15:43.230 --> 00:15:47.930 align:middle line:90%
+
+
+00:15:47.930 --> 00:15:50.090 align:middle line:84%
+It's going to turn
+out, as we'll see,
+
+00:15:50.090 --> 00:15:52.977 align:middle line:84%
+that the off-path
+beliefs are not
+
+00:15:52.977 --> 00:15:54.810 align:middle line:84%
+going to play as big
+of a role in this model
+
+00:15:54.810 --> 00:15:56.898 align:middle line:84%
+as they did in the
+signaling model.
+
+00:15:56.898 --> 00:15:58.190 align:middle line:90%
+But we'll see that a bit later.
+
+00:15:58.190 --> 00:16:01.130 align:middle line:84%
+So let's start with,
+just to build intuition,
+
+00:16:01.130 --> 00:16:05.268 align:middle line:90%
+a really simple equilibrium.
+
+00:16:05.268 --> 00:16:06.810 align:middle line:84%
+And the simplest
+equilibrium would be
+
+00:16:06.810 --> 00:16:08.510 align:middle line:90%
+a no-communication equilibrium.
+
+00:16:08.510 --> 00:16:17.935 align:middle line:90%
+
+
+00:16:17.935 --> 00:16:19.810 align:middle line:84%
+Now, when I say no
+communication, what I mean
+
+00:16:19.810 --> 00:16:21.435 align:middle line:84%
+is no information is
+actually conveyed.
+
+00:16:21.435 --> 00:16:22.810 align:middle line:84%
+Of course, they're
+actually going
+
+00:16:22.810 --> 00:16:24.690 align:middle line:84%
+to send a message
+because they have to.
+
+00:16:24.690 --> 00:16:26.695 align:middle line:84%
+But one thing the
+advisor could do
+
+00:16:26.695 --> 00:16:28.070 align:middle line:84%
+is they could be
+a broken record.
+
+00:16:28.070 --> 00:16:29.890 align:middle line:84%
+They could just always
+send the same message.
+
+00:16:29.890 --> 00:16:31.430 align:middle line:84%
+And if they always
+send the same message,
+
+00:16:31.430 --> 00:16:32.790 align:middle line:84%
+no matter the
+state of the world,
+
+00:16:32.790 --> 00:16:35.498 align:middle line:84%
+then that message doesn't convey
+any information about the state.
+
+00:16:35.498 --> 00:16:37.630 align:middle line:84%
+So let's look at this kind
+of boring equilibrium.
+
+00:16:37.630 --> 00:16:44.080 align:middle line:84%
+Well, what is-- let's fix some
+message I'll call m* in m.
+
+00:16:44.080 --> 00:16:46.330 align:middle line:84%
+This is going to be the
+message that the sender always
+
+00:16:46.330 --> 00:16:48.930 align:middle line:84%
+sends, no matter the
+state of the world.
+
+00:16:48.930 --> 00:17:00.770 align:middle line:84%
+So the sender's strategy is m
+of t equals m* for all t in 01.
+
+00:17:00.770 --> 00:17:02.870 align:middle line:84%
+So going to our
+economic example,
+
+00:17:02.870 --> 00:17:05.470 align:middle line:84%
+if they see the economy's great,
+they say cut interest rates.
+
+00:17:05.470 --> 00:17:07.970 align:middle line:84%
+If they see the economy is bad,
+they say cut interest rates.
+
+00:17:07.970 --> 00:17:09.770 align:middle line:84%
+And therefore, what
+they say conveys
+
+00:17:09.770 --> 00:17:13.450 align:middle line:90%
+no information about the state.
+
+00:17:13.450 --> 00:17:15.490 align:middle line:84%
+Now let's try to compute
+what the receiver is
+
+00:17:15.490 --> 00:17:17.569 align:middle line:90%
+going to do in this case.
+
+00:17:17.569 --> 00:17:22.690 align:middle line:84%
+So let's now look
+at the receiver.
+
+00:17:22.690 --> 00:17:29.300 align:middle line:84%
+And what happens if the
+receiver sees the message m*?
+
+00:17:29.300 --> 00:17:32.260 align:middle line:84%
+What beliefs does the receiver
+form about the state if they get
+
+00:17:32.260 --> 00:17:33.220 align:middle line:90%
+this message m*?
+
+00:17:33.220 --> 00:17:37.568 align:middle line:90%
+
+
+00:17:37.568 --> 00:17:38.400 align:middle line:90%
+Yeah.
+
+00:17:38.400 --> 00:17:39.900 align:middle line:84%
+AUDIENCE: Were they
+just going to be
+
+00:17:39.900 --> 00:17:42.668 align:middle line:84%
+left with the prior, which is
+that t is distributed over 0, 1?
+
+00:17:42.668 --> 00:17:43.460 align:middle line:90%
+PROFESSOR: Exactly.
+
+00:17:43.460 --> 00:17:44.380 align:middle line:84%
+They'd just be left
+with the prior,
+
+00:17:44.380 --> 00:17:45.740 align:middle line:84%
+because they know whatever
+the state is, they're
+
+00:17:45.740 --> 00:17:46.640 align:middle line:90%
+going to get this message.
+
+00:17:46.640 --> 00:17:47.880 align:middle line:90%
+This hasn't told them anything.
+
+00:17:47.880 --> 00:17:48.860 align:middle line:84%
+If you always say
+the same thing,
+
+00:17:48.860 --> 00:17:50.480 align:middle line:84%
+you haven't revealed
+anything to me.
+
+00:17:50.480 --> 00:17:53.140 align:middle line:84%
+So my beliefs are the
+same as the prior.
+
+00:17:53.140 --> 00:17:59.200 align:middle line:84%
+So if I see m*, maybe we could
+say retains prior beliefs.
+
+00:17:59.200 --> 00:18:02.100 align:middle line:90%
+
+
+00:18:02.100 --> 00:18:04.020 align:middle line:84%
+That is, I still think
+the state is uniformly
+
+00:18:04.020 --> 00:18:05.860 align:middle line:90%
+distributed over 0, 1.
+
+00:18:05.860 --> 00:18:09.060 align:middle line:84%
+And the average state
+is therefore 1/2.
+
+00:18:09.060 --> 00:18:12.000 align:middle line:84%
+So the best decision for
+me is to take y equals 1/2.
+
+00:18:12.000 --> 00:18:14.400 align:middle line:84%
+So it retains prior
+beliefs and they take--
+
+00:18:14.400 --> 00:18:20.060 align:middle line:90%
+so y of m* equals 1/2.
+
+00:18:20.060 --> 00:18:22.140 align:middle line:84%
+So this looks good
+for equilibrium.
+
+00:18:22.140 --> 00:18:23.680 align:middle line:90%
+But we still have to worry.
+
+00:18:23.680 --> 00:18:27.980 align:middle line:84%
+Well, we have to say, what does
+the receiver do if they see
+
+00:18:27.980 --> 00:18:31.182 align:middle line:84%
+a message m That's
+not equal to m*?
+
+00:18:31.182 --> 00:18:33.140 align:middle line:84%
+They don't really know
+what to do in this case,
+
+00:18:33.140 --> 00:18:36.042 align:middle line:84%
+because they were expecting
+to always see the message m*.
+
+00:18:36.042 --> 00:18:37.500 align:middle line:84%
+They can't really
+apply Bayes' rule
+
+00:18:37.500 --> 00:18:39.980 align:middle line:84%
+here because they'd
+be dividing by 0.
+
+00:18:39.980 --> 00:18:41.840 align:middle line:90%
+So there's a lot of flexibility.
+
+00:18:41.840 --> 00:18:44.740 align:middle line:90%
+
+
+00:18:44.740 --> 00:18:48.220 align:middle line:84%
+You might say, oh, well, let's
+just choose y arbitrarily.
+
+00:18:48.220 --> 00:18:54.780 align:middle line:84%
+But what could go wrong if we
+just chose y arbitrarily here
+
+00:18:54.780 --> 00:18:55.860 align:middle line:90%
+for the receiver?
+
+00:18:55.860 --> 00:19:03.838 align:middle line:84%
+Let's say we chose y
+equals 1/3 or something.
+
+00:19:03.838 --> 00:19:04.880 align:middle line:90%
+What could go wrong here?
+
+00:19:04.880 --> 00:19:05.380 align:middle line:90%
+Yeah.
+
+00:19:05.380 --> 00:19:07.005 align:middle line:84%
+AUDIENCE: Maybe the
+sender will-- like,
+
+00:19:07.005 --> 00:19:08.660 align:middle line:84%
+that would be a
+profitable deviation.
+
+00:19:08.660 --> 00:19:09.360 align:middle line:90%
+PROFESSOR: Exactly right.
+
+00:19:09.360 --> 00:19:11.360 align:middle line:84%
+So whenever we're choosing
+the off-path behavior
+
+00:19:11.360 --> 00:19:13.620 align:middle line:84%
+by the receiver, we
+have to keep in mind
+
+00:19:13.620 --> 00:19:15.620 align:middle line:84%
+that we don't want
+to choose behavior
+
+00:19:15.620 --> 00:19:18.527 align:middle line:84%
+that will introduce a profitable
+deviation for the sender.
+
+00:19:18.527 --> 00:19:20.860 align:middle line:84%
+In this equilibrium, the
+sender is only supposed to send
+
+00:19:20.860 --> 00:19:22.140 align:middle line:90%
+the message m*.
+
+00:19:22.140 --> 00:19:25.180 align:middle line:84%
+So we want to make sure that the
+sender never wants to deviate
+
+00:19:25.180 --> 00:19:27.500 align:middle line:84%
+to send any message
+other than m*.
+
+00:19:27.500 --> 00:19:28.520 align:middle line:90%
+So how can we be sure?
+
+00:19:28.520 --> 00:19:31.260 align:middle line:84%
+How could we choose y of m to
+be sure that the sender never
+
+00:19:31.260 --> 00:19:32.040 align:middle line:90%
+wants to deviate?
+
+00:19:32.040 --> 00:19:32.660 align:middle line:90%
+Yeah.
+
+00:19:32.660 --> 00:19:35.180 align:middle line:84%
+AUDIENCE: You could make it so
+that the difference between--
+
+00:19:35.180 --> 00:19:39.318 align:middle line:84%
+you get the same utility
+from getting m* and r.
+
+00:19:39.318 --> 00:19:40.360 align:middle line:90%
+PROFESSOR: Exactly right.
+
+00:19:40.360 --> 00:19:43.220 align:middle line:84%
+And how could we make sure
+they get the same utility?
+
+00:19:43.220 --> 00:19:45.260 align:middle line:84%
+AUDIENCE: I don't
+know exactly, but it's
+
+00:19:45.260 --> 00:19:46.785 align:middle line:90%
+depending on beta, right?
+
+00:19:46.785 --> 00:19:48.660 align:middle line:84%
+PROFESSOR: I think you're
+on the right track.
+
+00:19:48.660 --> 00:19:49.560 align:middle line:90%
+There's even a simpler answer.
+
+00:19:49.560 --> 00:19:50.200 align:middle line:90%
+So you're exactly right.
+
+00:19:50.200 --> 00:19:52.040 align:middle line:84%
+We want to make sure that
+if they deviate to this,
+
+00:19:52.040 --> 00:19:53.800 align:middle line:84%
+the sender gets exactly
+the same utility.
+
+00:19:53.800 --> 00:19:54.675 align:middle line:90%
+But what could it be?
+
+00:19:54.675 --> 00:19:55.300 align:middle line:90%
+Yeah.
+
+00:19:55.300 --> 00:19:56.240 align:middle line:90%
+It could just be 1/2.
+
+00:19:56.240 --> 00:19:57.720 align:middle line:84%
+So what they could do
+is they could say, look,
+
+00:19:57.720 --> 00:19:59.540 align:middle line:84%
+if I see any other
+message, I'm going
+
+00:19:59.540 --> 00:20:00.940 align:middle line:90%
+to do exactly the same thing.
+
+00:20:00.940 --> 00:20:03.160 align:middle line:84%
+I'm just going to
+choose ym equals 1/2.
+
+00:20:03.160 --> 00:20:04.805 align:middle line:84%
+I'm going to maintain
+my prior belief.
+
+00:20:04.805 --> 00:20:06.180 align:middle line:84%
+So let's understand
+the structure
+
+00:20:06.180 --> 00:20:08.400 align:middle line:84%
+of this no-communication
+equilibrium.
+
+00:20:08.400 --> 00:20:10.820 align:middle line:84%
+The receiver says, whatever
+message you send me
+
+00:20:10.820 --> 00:20:12.120 align:middle line:90%
+I'm going to do the same thing.
+
+00:20:12.120 --> 00:20:14.180 align:middle line:84%
+I'm going to
+completely ignore you.
+
+00:20:14.180 --> 00:20:15.740 align:middle line:84%
+And the sender says,
+well, if you're
+
+00:20:15.740 --> 00:20:18.200 align:middle line:84%
+going to ignore what I say,
+it doesn't matter what I say.
+
+00:20:18.200 --> 00:20:20.950 align:middle line:84%
+So I might as well always
+send the message m*.
+
+00:20:20.950 --> 00:20:23.310 align:middle line:84%
+And this kind of sometimes
+goes over the name-- this
+
+00:20:23.310 --> 00:20:25.830 align:middle line:90%
+is sometimes called babbling.
+
+00:20:25.830 --> 00:20:27.910 align:middle line:84%
+So in this equilibrium,
+the receiver
+
+00:20:27.910 --> 00:20:30.090 align:middle line:84%
+is treating his advisor's
+words as just babbles.
+
+00:20:30.090 --> 00:20:30.930 align:middle line:90%
+I don't care what you say.
+
+00:20:30.930 --> 00:20:32.330 align:middle line:84%
+It's not going to
+change my belief.
+
+00:20:32.330 --> 00:20:34.770 align:middle line:84%
+I'm just going to ignore what
+you say and do the same thing.
+
+00:20:34.770 --> 00:20:36.410 align:middle line:84%
+And therefore, the
+advisor says, well,
+
+00:20:36.410 --> 00:20:39.750 align:middle line:84%
+I might as well always
+send this message m*.
+
+00:20:39.750 --> 00:20:42.277 align:middle line:90%
+So indeed, this satisfies--
+
+00:20:42.277 --> 00:20:44.110 align:middle line:84%
+let's just check what
+we would have to check
+
+00:20:44.110 --> 00:20:45.610 align:middle line:90%
+to make sure this equilibrium.
+
+00:20:45.610 --> 00:20:53.990 align:middle line:84%
+We'd have to check sender
+optimality, receiver optimality,
+
+00:20:53.990 --> 00:20:55.450 align:middle line:90%
+and belief consistency.
+
+00:20:55.450 --> 00:20:59.722 align:middle line:90%
+
+
+00:20:59.722 --> 00:21:00.930 align:middle line:90%
+I've been a little imprecise.
+
+00:21:00.930 --> 00:21:03.370 align:middle line:84%
+I haven't really written
+what the beliefs are here.
+
+00:21:03.370 --> 00:21:05.770 align:middle line:84%
+But naturally, the
+beliefs could be,
+
+00:21:05.770 --> 00:21:07.770 align:middle line:84%
+I just think the state
+is uniformly distributed
+
+00:21:07.770 --> 00:21:09.270 align:middle line:90%
+if I see any other message.
+
+00:21:09.270 --> 00:21:12.830 align:middle line:84%
+And then we can see that each
+of these three conditions
+
+00:21:12.830 --> 00:21:14.978 align:middle line:90%
+is going to be satisfied.
+
+00:21:14.978 --> 00:21:16.770 align:middle line:84%
+This is not a very
+interesting equilibrium,
+
+00:21:16.770 --> 00:21:18.437 align:middle line:84%
+but it's just good
+to see there's always
+
+00:21:18.437 --> 00:21:21.190 align:middle line:84%
+an equilibrium like this,
+where our words just don't have
+
+00:21:21.190 --> 00:21:24.550 align:middle line:90%
+any meaning And no one listens.
+
+00:21:24.550 --> 00:21:25.957 align:middle line:90%
+Well, that's one extreme.
+
+00:21:25.957 --> 00:21:27.290 align:middle line:90%
+Let's see if we could do better.
+
+00:21:27.290 --> 00:21:30.950 align:middle line:84%
+We might want to have
+perfect communication.
+
+00:21:30.950 --> 00:21:32.430 align:middle line:84%
+So what about an
+equilibrium where
+
+00:21:32.430 --> 00:21:33.810 align:middle line:90%
+there's perfect communication?
+
+00:21:33.810 --> 00:21:37.245 align:middle line:90%
+
+
+00:21:37.245 --> 00:21:39.870 align:middle line:84%
+So you might think, well, if the
+advisor and the decision maker
+
+00:21:39.870 --> 00:21:41.070 align:middle line:84%
+have a pretty good
+relationship, what
+
+00:21:41.070 --> 00:21:42.737 align:middle line:84%
+should happen is the
+advisor should just
+
+00:21:42.737 --> 00:21:44.750 align:middle line:90%
+say this is what the state is.
+
+00:21:44.750 --> 00:21:49.990 align:middle line:84%
+So could there be an equilibrium
+where the message m of t
+
+00:21:49.990 --> 00:21:51.150 align:middle line:90%
+just equals t?
+
+00:21:51.150 --> 00:21:54.950 align:middle line:84%
+So the advisor says, this is
+the state, make a decision.
+
+00:21:54.950 --> 00:21:55.870 align:middle line:90%
+Any thoughts?
+
+00:21:55.870 --> 00:21:59.190 align:middle line:84%
+Could we make this
+an equilibrium?
+
+00:21:59.190 --> 00:22:00.003 align:middle line:90%
+Yeah, maybe?
+
+00:22:00.003 --> 00:22:01.670 align:middle line:84%
+AUDIENCE: It would
+not be an equilibrium
+
+00:22:01.670 --> 00:22:06.810 align:middle line:84%
+because the receiver would just
+act with y equals t as a result.
+
+00:22:06.810 --> 00:22:10.550 align:middle line:84%
+And then the sender is losing
+some amount because y does not
+
+00:22:10.550 --> 00:22:12.162 align:middle line:90%
+equal t plus beta.
+
+00:22:12.162 --> 00:22:12.870 align:middle line:90%
+PROFESSOR: Right.
+
+00:22:12.870 --> 00:22:13.510 align:middle line:90%
+Let's work through it.
+
+00:22:13.510 --> 00:22:15.302 align:middle line:84%
+If we tried to-- this
+is not going to work,
+
+00:22:15.302 --> 00:22:16.290 align:middle line:90%
+but let's go ahead.
+
+00:22:16.290 --> 00:22:17.957 align:middle line:84%
+If we tried to have
+an equilibrium where
+
+00:22:17.957 --> 00:22:20.030 align:middle line:84%
+this was the messaging
+strategy of the sender,
+
+00:22:20.030 --> 00:22:21.790 align:middle line:84%
+well, this looks great
+for the receiver.
+
+00:22:21.790 --> 00:22:25.010 align:middle line:84%
+What is the receiver
+y of t going to be?
+
+00:22:25.010 --> 00:22:26.270 align:middle line:90%
+Let's be clear here.
+
+00:22:26.270 --> 00:22:28.930 align:middle line:84%
+The receiver's strategy is
+not a function of the state.
+
+00:22:28.930 --> 00:22:30.252 align:middle line:90%
+It's a function of the message.
+
+00:22:30.252 --> 00:22:32.210 align:middle line:84%
+But here, the message is
+the same as the state.
+
+00:22:32.210 --> 00:22:34.230 align:middle line:90%
+So that's why I'm writing t.
+
+00:22:34.230 --> 00:22:37.070 align:middle line:84%
+Or actually, maybe
+I'll still write m.
+
+00:22:37.070 --> 00:22:38.650 align:middle line:84%
+Eh, torn about which
+notation to use.
+
+00:22:38.650 --> 00:22:40.110 align:middle line:90%
+It doesn't make a difference.
+
+00:22:40.110 --> 00:22:42.030 align:middle line:90%
+I'll write m.
+
+00:22:42.030 --> 00:22:43.750 align:middle line:84%
+In this case, when
+they see a message m,
+
+00:22:43.750 --> 00:22:46.990 align:middle line:84%
+they're going to say, well,
+that means the state t equals m.
+
+00:22:46.990 --> 00:22:51.950 align:middle line:84%
+So their best decision is
+just going to be m, right?
+
+00:22:51.950 --> 00:22:55.990 align:middle line:84%
+But now let's put yourself
+in the shoes of the sender.
+
+00:22:55.990 --> 00:22:58.530 align:middle line:84%
+And let's say you see
+that the state is t.
+
+00:22:58.530 --> 00:23:03.010 align:middle line:90%
+
+
+00:23:03.010 --> 00:23:04.510 align:middle line:84%
+If you were the
+sender, what message
+
+00:23:04.510 --> 00:23:06.590 align:middle line:84%
+would you send to
+the decision maker?
+
+00:23:06.590 --> 00:23:10.952 align:middle line:90%
+
+
+00:23:10.952 --> 00:23:13.030 align:middle line:90%
+AUDIENCE: t plus beta.
+
+00:23:13.030 --> 00:23:14.430 align:middle line:90%
+PROFESSOR: Exactly.
+
+00:23:14.430 --> 00:23:16.872 align:middle line:90%
+So you know the state is t.
+
+00:23:16.872 --> 00:23:18.330 align:middle line:84%
+Well, why don't
+you just say, look,
+
+00:23:18.330 --> 00:23:21.850 align:middle line:84%
+you're going to tell your
+advisor m equals t plus beta?
+
+00:23:21.850 --> 00:23:25.590 align:middle line:90%
+
+
+00:23:25.590 --> 00:23:28.850 align:middle line:84%
+And I think we see
+this all the time.
+
+00:23:28.850 --> 00:23:30.697 align:middle line:84%
+If someone's more of
+an interventionist
+
+00:23:30.697 --> 00:23:33.030 align:middle line:84%
+and they know that the president
+is less interventionist
+
+00:23:33.030 --> 00:23:35.050 align:middle line:84%
+and they want them to intervene
+in the conflict, they don't say,
+
+00:23:35.050 --> 00:23:35.810 align:middle line:90%
+I'm interventionist.
+
+00:23:35.810 --> 00:23:37.970 align:middle line:84%
+They say, oh, this conflict
+is just really serious.
+
+00:23:37.970 --> 00:23:38.870 align:middle line:84%
+It's really important
+you intervene.
+
+00:23:38.870 --> 00:23:40.370 align:middle line:84%
+I'm not saying it because
+I'm interventionist.
+
+00:23:40.370 --> 00:23:41.470 align:middle line:84%
+It's just the nature
+of the conflict
+
+00:23:41.470 --> 00:23:43.090 align:middle line:84%
+means we really
+have to intervene.
+
+00:23:43.090 --> 00:23:45.813 align:middle line:84%
+Or someone who always
+wants to cut interest rates
+
+00:23:45.813 --> 00:23:48.230 align:middle line:84%
+isn't going to say, oh, let's
+cut interest rates because I
+
+00:23:48.230 --> 00:23:50.270 align:middle line:90%
+love cutting interest rates.
+
+00:23:50.270 --> 00:23:52.215 align:middle line:84%
+They're going to
+say, inflation's
+
+00:23:52.215 --> 00:23:53.090 align:middle line:90%
+not really a problem.
+
+00:23:53.090 --> 00:23:54.673 align:middle line:84%
+We're not really
+having any inflation.
+
+00:23:54.673 --> 00:23:56.190 align:middle line:84%
+I think this is
+what you should do.
+
+00:23:56.190 --> 00:23:58.670 align:middle line:84%
+So the sender has an
+incentive to misrepresent
+
+00:23:58.670 --> 00:24:01.890 align:middle line:84%
+what the state is in order
+to get their ideal decision.
+
+00:24:01.890 --> 00:24:03.910 align:middle line:84%
+Because they know if
+the receiver believes
+
+00:24:03.910 --> 00:24:05.670 align:middle line:84%
+the state is
+actually t plus beta,
+
+00:24:05.670 --> 00:24:07.890 align:middle line:84%
+then the receiver will
+take decision t plus beta,
+
+00:24:07.890 --> 00:24:10.098 align:middle line:84%
+and that will give the sender
+exactly what they want.
+
+00:24:10.098 --> 00:24:12.840 align:middle line:84%
+So we see that indeed, this
+cannot be an equilibrium,
+
+00:24:12.840 --> 00:24:14.757 align:middle line:84%
+because the sender has
+a profitable deviation,
+
+00:24:14.757 --> 00:24:16.715 align:middle line:84%
+and then the receiver
+won't trust the messages,
+
+00:24:16.715 --> 00:24:17.900 align:middle line:90%
+and everything breaks down.
+
+00:24:17.900 --> 00:24:19.660 align:middle line:90%
+So not an equilibrium.
+
+00:24:19.660 --> 00:24:25.800 align:middle line:90%
+
+
+00:24:25.800 --> 00:24:27.600 align:middle line:84%
+But now we have a
+bit of a puzzle.
+
+00:24:27.600 --> 00:24:30.120 align:middle line:84%
+We definitely see communication
+in practice between people
+
+00:24:30.120 --> 00:24:32.960 align:middle line:90%
+who have misaligned interests.
+
+00:24:32.960 --> 00:24:35.420 align:middle line:84%
+We don't just see this
+no-communication equilibrium.
+
+00:24:35.420 --> 00:24:37.400 align:middle line:84%
+So the question is,
+well, if we can't
+
+00:24:37.400 --> 00:24:39.667 align:middle line:84%
+get a perfect
+communication equilibrium,
+
+00:24:39.667 --> 00:24:42.000 align:middle line:84%
+maybe it's possible to have
+an equilibrium where we have
+
+00:24:42.000 --> 00:24:43.420 align:middle line:90%
+some partial communication.
+
+00:24:43.420 --> 00:24:44.940 align:middle line:84%
+We don't perfectly
+reveal the state,
+
+00:24:44.940 --> 00:24:47.420 align:middle line:84%
+but we provide some valuable
+information about the state.
+
+00:24:47.420 --> 00:24:49.980 align:middle line:84%
+And that's going to be the
+key idea of this paper.
+
+00:24:49.980 --> 00:24:52.800 align:middle line:90%
+
+
+00:24:52.800 --> 00:24:56.520 align:middle line:84%
+So let's our goal is to
+find, well, maybe not
+
+00:24:56.520 --> 00:24:59.680 align:middle line:84%
+perfectly informative
+equilibria, but partially
+
+00:24:59.680 --> 00:25:01.100 align:middle line:90%
+informative equilibrium.
+
+00:25:01.100 --> 00:25:12.040 align:middle line:90%
+
+
+00:25:12.040 --> 00:25:14.538 align:middle line:84%
+Let's start with a
+really simple case.
+
+00:25:14.538 --> 00:25:16.080 align:middle line:84%
+I guess the simplest
+possible message
+
+00:25:16.080 --> 00:25:18.360 align:middle line:84%
+you could send about
+some real valued state
+
+00:25:18.360 --> 00:25:20.360 align:middle line:84%
+is you could say the
+state's either high or low.
+
+00:25:20.360 --> 00:25:22.361 align:middle line:84%
+You could just say it's
+either above a threshold
+
+00:25:22.361 --> 00:25:23.380 align:middle line:90%
+or below a threshold.
+
+00:25:23.380 --> 00:25:28.200 align:middle line:84%
+So let's see if we
+can work with that.
+
+00:25:28.200 --> 00:25:32.160 align:middle line:84%
+So the state is here
+between 0 and 1.
+
+00:25:32.160 --> 00:25:34.280 align:middle line:84%
+And let's say we
+choose some threshold.
+
+00:25:34.280 --> 00:25:36.520 align:middle line:90%
+We'll call this threshold t1.
+
+00:25:36.520 --> 00:25:39.520 align:middle line:84%
+And what's the
+sender going to do?
+
+00:25:39.520 --> 00:25:41.447 align:middle line:84%
+If they see the
+state is below t1,
+
+00:25:41.447 --> 00:25:42.780 align:middle line:90%
+they're going to send a message.
+
+00:25:42.780 --> 00:25:44.640 align:middle line:84%
+Maybe we'll call the
+message L. They're
+
+00:25:44.640 --> 00:25:45.980 align:middle line:90%
+going to say the state is low.
+
+00:25:45.980 --> 00:25:48.280 align:middle line:90%
+The state is below T1.
+
+00:25:48.280 --> 00:25:50.520 align:middle line:84%
+And if they see the
+state is above T1,
+
+00:25:50.520 --> 00:25:55.640 align:middle line:84%
+they're going to send a message
+H saying the state is high.
+
+00:25:55.640 --> 00:25:59.515 align:middle line:84%
+And we want to see if this
+could be an equilibrium.
+
+00:25:59.515 --> 00:26:01.640 align:middle line:84%
+You might worry because
+you might think, well, wait
+
+00:26:01.640 --> 00:26:02.600 align:middle line:90%
+a second.
+
+00:26:02.600 --> 00:26:05.960 align:middle line:84%
+Isn't the sender going to
+want to lie and pretend
+
+00:26:05.960 --> 00:26:07.520 align:middle line:84%
+the state is high
+when sometimes it's
+
+00:26:07.520 --> 00:26:10.372 align:middle line:84%
+not in order to get their
+higher preferred decision?
+
+00:26:10.372 --> 00:26:12.080 align:middle line:84%
+That's a good intuition,
+but it turns out
+
+00:26:12.080 --> 00:26:14.788 align:middle line:84%
+we can get this to work, which I
+think is maybe a bit surprising.
+
+00:26:14.788 --> 00:26:16.360 align:middle line:90%
+So let's go through this.
+
+00:26:16.360 --> 00:26:20.880 align:middle line:84%
+So what is y of L going to
+be and y of H going to be?
+
+00:26:20.880 --> 00:26:23.723 align:middle line:84%
+So t1 Is a parameter that
+we're going to solve for.
+
+00:26:23.723 --> 00:26:25.640 align:middle line:84%
+So we're going to look
+for an equilibrium that
+
+00:26:25.640 --> 00:26:27.628 align:middle line:84%
+has this form for
+some parameter t1.
+
+00:26:27.628 --> 00:26:29.420 align:middle line:84%
+And this is what we're
+going to figure out.
+
+00:26:29.420 --> 00:26:34.060 align:middle line:84%
+So what happens if the
+receiver sees the message L?
+
+00:26:34.060 --> 00:26:36.800 align:middle line:84%
+Well, the receiver knows
+that the state is somewhere
+
+00:26:36.800 --> 00:26:38.480 align:middle line:90%
+between 0 and T1.
+
+00:26:38.480 --> 00:26:41.920 align:middle line:84%
+And they know it's uniformly
+distributed between 0 and T1.
+
+00:26:41.920 --> 00:26:43.853 align:middle line:84%
+So what do they think
+is the average expected?
+
+00:26:43.853 --> 00:26:45.520 align:middle line:84%
+What do they think
+is the expected state
+
+00:26:45.520 --> 00:26:46.580 align:middle line:90%
+when they see message L?
+
+00:26:46.580 --> 00:26:47.487 align:middle line:90%
+Yeah.
+
+00:26:47.487 --> 00:26:48.320 align:middle line:90%
+AUDIENCE: 1/2 of t1.
+
+00:26:48.320 --> 00:26:49.883 align:middle line:90%
+PROFESSOR: 1/2 of t1.
+
+00:26:49.883 --> 00:26:51.800 align:middle line:84%
+Because they're going
+to say, look, all you've
+
+00:26:51.800 --> 00:26:53.400 align:middle line:90%
+told me is the state's here.
+
+00:26:53.400 --> 00:26:54.740 align:middle line:90%
+It's uniformly distributed.
+
+00:26:54.740 --> 00:26:57.580 align:middle line:84%
+So on average, it's the
+midpoint of this interval,
+
+00:26:57.580 --> 00:26:59.640 align:middle line:90%
+which is t1 over 2.
+
+00:26:59.640 --> 00:27:02.640 align:middle line:84%
+Conversely, if the receiver
+gets the message high,
+
+00:27:02.640 --> 00:27:05.530 align:middle line:84%
+they're going to say, OK,
+the state is uniformly
+
+00:27:05.530 --> 00:27:09.410 align:middle line:90%
+distributed between t1 and 1.
+
+00:27:09.410 --> 00:27:11.370 align:middle line:84%
+So my updated
+expectation of the state
+
+00:27:11.370 --> 00:27:13.410 align:middle line:84%
+is just the midpoint
+of this interval, which
+
+00:27:13.410 --> 00:27:15.370 align:middle line:90%
+is the average of t1 and 1.
+
+00:27:15.370 --> 00:27:19.790 align:middle line:84%
+So this is just going
+to be T1 plus 1 over 2.
+
+00:27:19.790 --> 00:27:24.290 align:middle line:90%
+
+
+00:27:24.290 --> 00:27:26.750 align:middle line:90%
+Now, we're not done yet.
+
+00:27:26.750 --> 00:27:32.672 align:middle line:90%
+
+
+00:27:32.672 --> 00:27:34.130 align:middle line:84%
+We still have to
+worry what happens
+
+00:27:34.130 --> 00:27:38.533 align:middle line:84%
+if they get a message that's
+neither L nor H, right?
+
+00:27:38.533 --> 00:27:40.450 align:middle line:84%
+But there's kind of a
+trick that we can always
+
+00:27:40.450 --> 00:27:43.288 align:middle line:84%
+use that goes back to
+what we did over here.
+
+00:27:43.288 --> 00:27:45.330 align:middle line:84%
+The trick was, if we see
+a message that we're not
+
+00:27:45.330 --> 00:27:47.150 align:middle line:84%
+supposed to see, we
+can just treat it
+
+00:27:47.150 --> 00:27:49.150 align:middle line:84%
+as if it were a message
+we were supposed to see.
+
+00:27:49.150 --> 00:27:51.330 align:middle line:84%
+And that's never going to
+be a profitable deviation.
+
+00:27:51.330 --> 00:27:53.750 align:middle line:84%
+So in this case, the
+receiver can say, look,
+
+00:27:53.750 --> 00:27:55.890 align:middle line:84%
+if you send me any
+message other than L or H,
+
+00:27:55.890 --> 00:28:00.330 align:middle line:84%
+I'm just going to treat that
+as if you had sent me L. So
+
+00:28:00.330 --> 00:28:03.570 align:middle line:90%
+it's going to be t1 over 2.
+
+00:28:03.570 --> 00:28:08.508 align:middle line:84%
+So as if m equals
+L. And then there's
+
+00:28:08.508 --> 00:28:11.050 align:middle line:84%
+never a reason for the sender
+to deviate to any message other
+
+00:28:11.050 --> 00:28:13.463 align:middle line:84%
+than L or H, because if they
+send a message other than L
+
+00:28:13.463 --> 00:28:15.630 align:middle line:84%
+or H, it's just as if they're
+sending the message L.
+
+00:28:15.630 --> 00:28:17.922 align:middle line:84%
+So they might as well send
+the message L to begin with.
+
+00:28:17.922 --> 00:28:21.690 align:middle line:84%
+And this is a
+common kind of trick
+
+00:28:21.690 --> 00:28:24.770 align:middle line:90%
+that's used in cheap talk games.
+
+00:28:24.770 --> 00:28:27.165 align:middle line:84%
+I want to emphasize, I don't
+want to create confusion
+
+00:28:27.165 --> 00:28:27.790 align:middle line:90%
+with signaling.
+
+00:28:27.790 --> 00:28:30.370 align:middle line:84%
+So I want to say
+this is a trick that
+
+00:28:30.370 --> 00:28:31.710 align:middle line:90%
+doesn't work with signaling.
+
+00:28:31.710 --> 00:28:39.868 align:middle line:90%
+
+
+00:28:39.868 --> 00:28:41.410 align:middle line:84%
+Let's just understand
+this, because I
+
+00:28:41.410 --> 00:28:42.650 align:middle line:84%
+don't want to create
+confusion going back
+
+00:28:42.650 --> 00:28:43.810 align:middle line:90%
+to the signaling game.
+
+00:28:43.810 --> 00:28:45.670 align:middle line:84%
+What if, in the
+employment context,
+
+00:28:45.670 --> 00:28:47.450 align:middle line:84%
+the employer said,
+OK, you're supposed
+
+00:28:47.450 --> 00:28:48.975 align:middle line:90%
+to get this level of education?
+
+00:28:48.975 --> 00:28:50.850 align:middle line:84%
+If you don't go to
+school, I'll just treat it
+
+00:28:50.850 --> 00:28:51.892 align:middle line:90%
+as if you went to school.
+
+00:28:51.892 --> 00:28:54.343 align:middle line:84%
+And that shouldn't be
+a profitable deviation.
+
+00:28:54.343 --> 00:28:56.010 align:middle line:84%
+That's not going to
+work, because they'd
+
+00:28:56.010 --> 00:28:58.470 align:middle line:84%
+much rather not go to school
+and form the same beliefs.
+
+00:28:58.470 --> 00:29:00.050 align:middle line:84%
+So crucial reason
+this trick works
+
+00:29:00.050 --> 00:29:04.090 align:middle line:84%
+is if I can send a
+message L and message m
+
+00:29:04.090 --> 00:29:06.930 align:middle line:84%
+and get the same decision, I'm
+indifferent between those two
+
+00:29:06.930 --> 00:29:07.810 align:middle line:90%
+things.
+
+00:29:07.810 --> 00:29:09.938 align:middle line:84%
+But if the message
+itself were costly,
+
+00:29:09.938 --> 00:29:11.730 align:middle line:84%
+then I wouldn't
+necessarily be indifferent,
+
+00:29:11.730 --> 00:29:14.188 align:middle line:84%
+because I'd have to take into
+account not only the decision
+
+00:29:14.188 --> 00:29:16.830 align:middle line:84%
+it induced, but the cost
+of the message I'm sending.
+
+00:29:16.830 --> 00:29:19.050 align:middle line:84%
+So this is a crucial
+difference between a model
+
+00:29:19.050 --> 00:29:22.035 align:middle line:84%
+with payoff-irrelevant
+messages and a model where
+
+00:29:22.035 --> 00:29:23.910 align:middle line:84%
+the actions I'm choosing
+are payoff-relevant.
+
+00:29:23.910 --> 00:29:25.285 align:middle line:84%
+I that's a bit of
+a subtle point.
+
+00:29:25.285 --> 00:29:27.570 align:middle line:84%
+So any questions
+on that difference?
+
+00:29:27.570 --> 00:29:28.530 align:middle line:90%
+Yes.
+
+00:29:28.530 --> 00:29:31.017 align:middle line:84%
+AUDIENCE: Could you
+repeat the example?
+
+00:29:31.017 --> 00:29:32.350 align:middle line:90%
+PROFESSOR: The employee example?
+
+00:29:32.350 --> 00:29:32.850 align:middle line:90%
+Yeah.
+
+00:29:32.850 --> 00:29:34.690 align:middle line:84%
+So in the employee
+example, let's say we're
+
+00:29:34.690 --> 00:29:37.050 align:middle line:90%
+doing the job market signaling.
+
+00:29:37.050 --> 00:29:39.530 align:middle line:84%
+And everyone is supposed
+to get-- let's look
+
+00:29:39.530 --> 00:29:43.010 align:middle line:84%
+at the pooling equilibrium,
+where everyone goes to college
+
+00:29:43.010 --> 00:29:44.410 align:middle line:90%
+and gets a certain wage.
+
+00:29:44.410 --> 00:29:45.890 align:middle line:84%
+And the employer
+says, OK, if you
+
+00:29:45.890 --> 00:29:47.790 align:middle line:84%
+choose any other
+level of education,
+
+00:29:47.790 --> 00:29:51.310 align:middle line:84%
+I'm going to treat it as
+if you'd gone to college.
+
+00:29:51.310 --> 00:29:54.370 align:middle line:84%
+And I'll pay you the same wage
+as if you'd gone to college.
+
+00:29:54.370 --> 00:29:57.870 align:middle line:84%
+Well now, the student is
+going to say, wait a second.
+
+00:29:57.870 --> 00:30:01.100 align:middle line:84%
+If I can instead of going
+to college not go to college
+
+00:30:01.100 --> 00:30:03.753 align:middle line:84%
+and get the same wage,
+I'm strictly better off.
+
+00:30:03.753 --> 00:30:06.420 align:middle line:84%
+And the difference here is, even
+though those two actions induce
+
+00:30:06.420 --> 00:30:08.640 align:middle line:84%
+the same decision
+by the receiver,
+
+00:30:08.640 --> 00:30:10.540 align:middle line:84%
+the actions themselves
+have different costs.
+
+00:30:10.540 --> 00:30:12.957 align:middle line:84%
+And therefore, the student
+would rather not go to college.
+
+00:30:12.957 --> 00:30:16.420 align:middle line:84%
+Here, the message
+L and the message m
+
+00:30:16.420 --> 00:30:17.633 align:middle line:90%
+induce the same decision.
+
+00:30:17.633 --> 00:30:19.300 align:middle line:84%
+But in this case, the
+sender is actually
+
+00:30:19.300 --> 00:30:20.800 align:middle line:84%
+indifferent between
+those two things
+
+00:30:20.800 --> 00:30:24.120 align:middle line:84%
+because the message itself
+doesn't directly have a cost.
+
+00:30:24.120 --> 00:30:25.380 align:middle line:90%
+Does that clear things up?
+
+00:30:25.380 --> 00:30:26.340 align:middle line:90%
+Yeah, great.
+
+00:30:26.340 --> 00:30:27.840 align:middle line:90%
+OK.
+
+00:30:27.840 --> 00:30:30.600 align:middle line:90%
+
+
+00:30:30.600 --> 00:30:34.500 align:middle line:84%
+And actually, that's why
+what I said earlier--
+
+00:30:34.500 --> 00:30:36.380 align:middle line:84%
+off-path beliefs and
+belief consistency
+
+00:30:36.380 --> 00:30:38.672 align:middle line:84%
+don't really make a big
+difference in cheap talk games.
+
+00:30:38.672 --> 00:30:40.100 align:middle line:84%
+And everything we
+do is basically
+
+00:30:40.100 --> 00:30:41.767 align:middle line:84%
+the same as just doing
+Nash equilibrium.
+
+00:30:41.767 --> 00:30:43.160 align:middle line:90%
+But that's a subtle point.
+
+00:30:43.160 --> 00:30:44.160 align:middle line:90%
+That's not so important.
+
+00:30:44.160 --> 00:30:45.575 align:middle line:90%
+So here we are.
+
+00:30:45.575 --> 00:30:47.200 align:middle line:84%
+Let's see if this is
+going to work out.
+
+00:30:47.200 --> 00:30:49.780 align:middle line:84%
+We've specified the
+receiver strategy.
+
+00:30:49.780 --> 00:30:52.580 align:middle line:84%
+And now we have to
+check that the sender is
+
+00:30:52.580 --> 00:30:56.100 align:middle line:84%
+willing to send these messages
+as they're supposed to.
+
+00:30:56.100 --> 00:30:57.900 align:middle line:84%
+So what's the sender
+supposed to do?
+
+00:30:57.900 --> 00:31:02.660 align:middle line:84%
+If they see any state
+here, they send message L.
+
+00:31:02.660 --> 00:31:05.940 align:middle line:84%
+And if they see any state
+here, they send message H.
+
+00:31:05.940 --> 00:31:07.740 align:middle line:84%
+So how can that be
+optimal for them?
+
+00:31:07.740 --> 00:31:11.340 align:middle line:84%
+Well, what must be true if
+the state is exactly t1?
+
+00:31:11.340 --> 00:31:12.320 align:middle line:90%
+So let's ask this.
+
+00:31:12.320 --> 00:31:18.580 align:middle line:90%
+
+
+00:31:18.580 --> 00:31:20.660 align:middle line:84%
+What must be true
+about the sender
+
+00:31:20.660 --> 00:31:21.880 align:middle line:90%
+if the state is exactly t1?
+
+00:31:21.880 --> 00:31:22.540 align:middle line:90%
+Yes.
+
+00:31:22.540 --> 00:31:24.665 align:middle line:84%
+AUDIENCE: The sender is
+indifferent between sending
+
+00:31:24.665 --> 00:31:25.360 align:middle line:90%
+L and sending H.
+
+00:31:25.360 --> 00:31:26.220 align:middle line:84%
+PROFESSOR: They have
+to be indifferent.
+
+00:31:26.220 --> 00:31:28.938 align:middle line:84%
+Because if the state were
+just a little bit to the left,
+
+00:31:28.938 --> 00:31:31.480 align:middle line:84%
+they'd want to send L. And if
+it's a little bit to the right,
+
+00:31:31.480 --> 00:31:32.820 align:middle line:90%
+they'd want to send m.
+
+00:31:32.820 --> 00:31:35.220 align:middle line:84%
+So the only way they can
+have those preferences
+
+00:31:35.220 --> 00:31:38.700 align:middle line:84%
+is if at t1, they're exactly
+indifferent between sending
+
+00:31:38.700 --> 00:31:42.720 align:middle line:84%
+the message L and the message
+H. So the idea is here,
+
+00:31:42.720 --> 00:31:44.380 align:middle line:84%
+I'm going to be
+exactly indifferent.
+
+00:31:44.380 --> 00:31:46.200 align:middle line:84%
+And if the state is
+anywhere to the left,
+
+00:31:46.200 --> 00:31:49.500 align:middle line:84%
+I want to send L and anywhere
+to the right I want to send H.
+
+00:31:49.500 --> 00:31:53.000 align:middle line:84%
+So what we need is we
+must have indifference.
+
+00:31:53.000 --> 00:31:57.180 align:middle line:90%
+
+
+00:31:57.180 --> 00:32:01.020 align:middle line:90%
+So let's work this out.
+
+00:32:01.020 --> 00:32:04.520 align:middle line:84%
+Well, that means when
+the state is t1--
+
+00:32:04.520 --> 00:32:09.300 align:middle line:90%
+
+
+00:32:09.300 --> 00:32:10.800 align:middle line:84%
+maybe we'll write
+it graphically.
+
+00:32:10.800 --> 00:32:26.308 align:middle line:90%
+What we must have is y of L.
+
+00:32:26.308 --> 00:32:27.600 align:middle line:90%
+Maybe we'll put negatives here.
+
+00:32:27.600 --> 00:32:28.940 align:middle line:90%
+It doesn't matter.
+
+00:32:28.940 --> 00:32:33.500 align:middle line:84%
+So if I know the state is
+t1, if I send the message L,
+
+00:32:33.500 --> 00:32:36.380 align:middle line:84%
+the receiver is going
+to take decision y of L.
+
+00:32:36.380 --> 00:32:38.580 align:middle line:84%
+And this is going
+to be my utility.
+
+00:32:38.580 --> 00:32:40.860 align:middle line:84%
+If I send the message
+H, the receiver
+
+00:32:40.860 --> 00:32:42.940 align:middle line:84%
+is going to take the
+decision yH and this
+
+00:32:42.940 --> 00:32:44.340 align:middle line:90%
+is going to be my utility.
+
+00:32:44.340 --> 00:32:46.590 align:middle line:84%
+So in order for me to be
+indifferent between these two
+
+00:32:46.590 --> 00:32:49.270 align:middle line:84%
+things, I need these
+two formulas to agree.
+
+00:32:49.270 --> 00:32:51.020 align:middle line:84%
+But let's look at it
+graphically because I
+
+00:32:51.020 --> 00:32:53.590 align:middle line:90%
+think that's a bit clearer.
+
+00:32:53.590 --> 00:32:59.830 align:middle line:84%
+Well, graphically, we have
+a quadratic loss function.
+
+00:32:59.830 --> 00:33:01.430 align:middle line:90%
+I'm the sender.
+
+00:33:01.430 --> 00:33:05.415 align:middle line:90%
+I know the state is t1.
+
+00:33:05.415 --> 00:33:06.790 align:middle line:84%
+What I'm going to
+graph is, well,
+
+00:33:06.790 --> 00:33:09.350 align:middle line:84%
+what does my utility
+look like as a function
+
+00:33:09.350 --> 00:33:11.310 align:middle line:90%
+of the decision y that's taken?
+
+00:33:11.310 --> 00:33:13.570 align:middle line:84%
+Well, my utility is going
+to look something like this.
+
+00:33:13.570 --> 00:33:16.190 align:middle line:90%
+
+
+00:33:16.190 --> 00:33:20.590 align:middle line:84%
+Here it's actually
+going to be 0.
+
+00:33:20.590 --> 00:33:24.710 align:middle line:84%
+So if the decision y is
+exactly t1 plus beta,
+
+00:33:24.710 --> 00:33:26.890 align:middle line:84%
+well, that's the best
+thing that I can get.
+
+00:33:26.890 --> 00:33:29.710 align:middle line:84%
+The decision exactly
+matches t1 plus beta.
+
+00:33:29.710 --> 00:33:33.070 align:middle line:84%
+The difference between the
+decision and t1 plus beta is 0.
+
+00:33:33.070 --> 00:33:34.230 align:middle line:90%
+My loss is 0.
+
+00:33:34.230 --> 00:33:36.910 align:middle line:84%
+And that's the best
+possible thing I could get.
+
+00:33:36.910 --> 00:33:39.490 align:middle line:84%
+If the decision is
+higher than t1 plus beta,
+
+00:33:39.490 --> 00:33:42.190 align:middle line:84%
+well, I'm going to experience
+a loss that's quadratic.
+
+00:33:42.190 --> 00:33:43.990 align:middle line:84%
+And if it's lower
+than t1 plus beta,
+
+00:33:43.990 --> 00:33:47.350 align:middle line:84%
+I'm also going to experience
+a loss that's quadratic.
+
+00:33:47.350 --> 00:33:51.750 align:middle line:84%
+Now, the nice thing about the
+quadratic is it's symmetric.
+
+00:33:51.750 --> 00:33:52.890 align:middle line:90%
+So what we need--
+
+00:33:52.890 --> 00:34:02.550 align:middle line:90%
+
+
+00:34:02.550 --> 00:34:04.870 align:middle line:84%
+well, we need the picture
+to look something like this.
+
+00:34:04.870 --> 00:34:07.710 align:middle line:84%
+We need the sender to be
+indifferent between the decision
+
+00:34:07.710 --> 00:34:09.870 align:middle line:90%
+yL and the decision yH.
+
+00:34:09.870 --> 00:34:12.630 align:middle line:84%
+And what that means is
+the utility function
+
+00:34:12.630 --> 00:34:16.550 align:middle line:84%
+has to take the same value
+at these two decisions.
+
+00:34:16.550 --> 00:34:18.909 align:middle line:84%
+It crosses through the
+same horizontal line.
+
+00:34:18.909 --> 00:34:21.270 align:middle line:84%
+But because of
+symmetry, this is only
+
+00:34:21.270 --> 00:34:24.989 align:middle line:84%
+going to happen if t1 plus
+beta is exactly halfway
+
+00:34:24.989 --> 00:34:28.909 align:middle line:90%
+between these two points.
+
+00:34:28.909 --> 00:34:31.469 align:middle line:84%
+If t1 plus beta
+was closer to yL,
+
+00:34:31.469 --> 00:34:34.949 align:middle line:84%
+then the sender would rather
+induce the decision yL.
+
+00:34:34.949 --> 00:34:37.230 align:middle line:84%
+And if t1 plus beta
+was closer to yH,
+
+00:34:37.230 --> 00:34:39.350 align:middle line:84%
+they'd rather induce
+the decision yH.
+
+00:34:39.350 --> 00:34:40.858 align:middle line:90%
+So we could do it algebraically.
+
+00:34:40.858 --> 00:34:42.650 align:middle line:84%
+But I think it's clearer
+to do it this way.
+
+00:34:42.650 --> 00:34:49.550 align:middle line:84%
+So what we see is t1
+plus beta must be halfway
+
+00:34:49.550 --> 00:34:51.110 align:middle line:90%
+between these two things.
+
+00:34:51.110 --> 00:34:58.590 align:middle line:84%
+So it must be yL
+plus y of H over 2.
+
+00:34:58.590 --> 00:35:00.570 align:middle line:84%
+Now let's do just a
+little bit of algebra.
+
+00:35:00.570 --> 00:35:03.390 align:middle line:90%
+
+
+00:35:03.390 --> 00:35:06.290 align:middle line:84%
+Maybe let's multiply both sides
+by 2 to make it a little easier.
+
+00:35:06.290 --> 00:35:12.350 align:middle line:84%
+We have 2t1 plus 2 beta is
+equal to y of L plus y of H.
+
+00:35:12.350 --> 00:35:13.810 align:middle line:90%
+And let's just plug these in.
+
+00:35:13.810 --> 00:35:17.790 align:middle line:90%
+So y of L is t1 over 2.
+
+00:35:17.790 --> 00:35:22.410 align:middle line:90%
+y of H is t1 plus 1 over 2.
+
+00:35:22.410 --> 00:35:25.750 align:middle line:90%
+
+
+00:35:25.750 --> 00:35:30.390 align:middle line:90%
+And that's t1 plus 1/2.
+
+00:35:30.390 --> 00:35:34.230 align:middle line:84%
+I just put the t1 over 2
+and t1 over two together.
+
+00:35:34.230 --> 00:35:39.870 align:middle line:84%
+And now let's do a
+final simplification.
+
+00:35:39.870 --> 00:35:49.330 align:middle line:90%
+Get t1 equals 1/2 minus 2 beta.
+
+00:35:49.330 --> 00:35:53.910 align:middle line:90%
+
+
+00:35:53.910 --> 00:35:58.370 align:middle line:84%
+So let's see if we can
+visualize what this looks like.
+
+00:35:58.370 --> 00:36:01.870 align:middle line:90%
+
+
+00:36:01.870 --> 00:36:04.050 align:middle line:84%
+If beta is 0, let's
+start with that case.
+
+00:36:04.050 --> 00:36:05.390 align:middle line:90%
+That's the easiest case.
+
+00:36:05.390 --> 00:36:10.430 align:middle line:84%
+If beta is 0, then
+t1 equals 1/2.
+
+00:36:10.430 --> 00:36:12.430 align:middle line:84%
+So that means that
+the sender just says,
+
+00:36:12.430 --> 00:36:16.390 align:middle line:84%
+is the state above
+average or below average?
+
+00:36:16.390 --> 00:36:22.810 align:middle line:84%
+But if beta gets larger,
+then t1 has to be below 1/2.
+
+00:36:22.810 --> 00:36:25.510 align:middle line:90%
+
+
+00:36:25.510 --> 00:36:29.130 align:middle line:84%
+So this interval is
+smaller than this interval.
+
+00:36:29.130 --> 00:36:35.750 align:middle line:90%
+
+
+00:36:35.750 --> 00:36:40.790 align:middle line:84%
+Do you have some intuition
+for why these intervals are
+
+00:36:40.790 --> 00:36:44.230 align:middle line:90%
+kind of asymmetric in this way?
+
+00:36:44.230 --> 00:36:47.520 align:middle line:84%
+Why is it that the
+interval on the right
+
+00:36:47.520 --> 00:36:51.540 align:middle line:84%
+is larger than the
+interval on the left?
+
+00:36:51.540 --> 00:36:56.240 align:middle line:90%
+
+
+00:36:56.240 --> 00:36:57.360 align:middle line:90%
+Yeah.
+
+00:36:57.360 --> 00:37:02.200 align:middle line:84%
+AUDIENCE: There's going to be
+certain kind of values that are
+
+00:37:02.200 --> 00:37:07.420 align:middle line:84%
+right below 1/2 where with
+the bias in mind, our sender,
+
+00:37:07.420 --> 00:37:11.640 align:middle line:84%
+they'd be more incentivized
+if the responder played high
+
+00:37:11.640 --> 00:37:13.300 align:middle line:90%
+or believed that it was high.
+
+00:37:13.300 --> 00:37:16.020 align:middle line:84%
+And so for that kind of
+small range of values,
+
+00:37:16.020 --> 00:37:18.818 align:middle line:84%
+that's why t1 is
+biased below 1/2.
+
+00:37:18.818 --> 00:37:19.860 align:middle line:90%
+PROFESSOR: Exactly right.
+
+00:37:19.860 --> 00:37:20.360 align:middle line:90%
+Yeah.
+
+00:37:20.360 --> 00:37:24.200 align:middle line:84%
+So if it was symmetric,
+then at the midpoint,
+
+00:37:24.200 --> 00:37:26.660 align:middle line:84%
+the sender would always want
+to say the state is high.
+
+00:37:26.660 --> 00:37:28.160 align:middle line:84%
+So we have to create
+these intervals
+
+00:37:28.160 --> 00:37:32.040 align:middle line:84%
+to be asymmetric to ensure
+that the sender isn't tempted
+
+00:37:32.040 --> 00:37:32.742 align:middle line:90%
+to say high.
+
+00:37:32.742 --> 00:37:34.200 align:middle line:84%
+And effectively
+what we're doing is
+
+00:37:34.200 --> 00:37:40.040 align:middle line:84%
+we're shifting the midpoint left
+in order to counter that bias.
+
+00:37:40.040 --> 00:37:43.080 align:middle line:84%
+So one way I like to
+maybe think about it
+
+00:37:43.080 --> 00:37:46.160 align:middle line:84%
+is, this interval
+is smaller, which
+
+00:37:46.160 --> 00:37:48.680 align:middle line:84%
+means the sender is giving
+more precise information
+
+00:37:48.680 --> 00:37:50.080 align:middle line:90%
+about the state.
+
+00:37:50.080 --> 00:37:52.758 align:middle line:84%
+So in order to deter the sender
+from claiming the state is high,
+
+00:37:52.758 --> 00:37:54.800 align:middle line:84%
+what we're saying is,
+well, if you say it's high,
+
+00:37:54.800 --> 00:37:56.820 align:middle line:84%
+you're not able to convey
+very much information,
+
+00:37:56.820 --> 00:37:59.237 align:middle line:84%
+and therefore the decision
+isn't going to be very precise.
+
+00:37:59.237 --> 00:38:01.200 align:middle line:84%
+So the sender is
+trading off the bias
+
+00:38:01.200 --> 00:38:04.140 align:middle line:84%
+of the decision against the
+informativeness of the decision.
+
+00:38:04.140 --> 00:38:06.200 align:middle line:84%
+That's one way of
+thinking about it.
+
+00:38:06.200 --> 00:38:07.460 align:middle line:90%
+And then one final thing.
+
+00:38:07.460 --> 00:38:08.560 align:middle line:90%
+Wait a second.
+
+00:38:08.560 --> 00:38:11.200 align:middle line:90%
+t1 needs to be between 0 and 1.
+
+00:38:11.200 --> 00:38:12.840 align:middle line:84%
+So we immediately
+see that beta has
+
+00:38:12.840 --> 00:38:15.708 align:middle line:84%
+to be pretty small in order
+for this to make sense at all.
+
+00:38:15.708 --> 00:38:16.500 align:middle line:90%
+Is that a question?
+
+00:38:16.500 --> 00:38:17.080 align:middle line:90%
+Yeah.
+
+00:38:17.080 --> 00:38:18.040 align:middle line:84%
+AUDIENCE: Can you
+explain the whole thing
+
+00:38:18.040 --> 00:38:20.000 align:middle line:84%
+about biasness
+about the decision,
+
+00:38:20.000 --> 00:38:25.800 align:middle line:84%
+and what benefit there is from
+the decision in the lower part
+
+00:38:25.800 --> 00:38:30.015 align:middle line:90%
+versus being biased in favor?
+
+00:38:30.015 --> 00:38:31.140 align:middle line:90%
+PROFESSOR: I guess that's--
+
+00:38:31.140 --> 00:38:33.800 align:middle line:90%
+
+
+00:38:33.800 --> 00:38:36.840 align:middle line:84%
+I mean, I think that
+maybe another way
+
+00:38:36.840 --> 00:38:44.680 align:middle line:84%
+of saying it is by having
+this interval larger,
+
+00:38:44.680 --> 00:38:47.200 align:middle line:84%
+we're basically shifting the
+midpoint of this interval
+
+00:38:47.200 --> 00:38:48.720 align:middle line:90%
+farther away from me.
+
+00:38:48.720 --> 00:38:52.820 align:middle line:84%
+So as the person right
+at the threshold,
+
+00:38:52.820 --> 00:38:56.240 align:middle line:84%
+I'm tempted to claim the state
+as high just because I'm biased
+
+00:38:56.240 --> 00:38:58.640 align:middle line:84%
+and I want the
+state to be higher.
+
+00:38:58.640 --> 00:39:01.620 align:middle line:84%
+But as we enlarge
+this right interval,
+
+00:39:01.620 --> 00:39:03.935 align:middle line:84%
+well, the decision that
+is induced when I say high
+
+00:39:03.935 --> 00:39:06.560 align:middle line:84%
+starts getting higher and higher
+because the interval is so big
+
+00:39:06.560 --> 00:39:08.540 align:middle line:84%
+and the midpoint is moving
+farther to the right.
+
+00:39:08.540 --> 00:39:10.040 align:middle line:84%
+And eventually, in
+the extreme case,
+
+00:39:10.040 --> 00:39:13.840 align:middle line:84%
+the interval is going to be so
+big that I actually don't want
+
+00:39:13.840 --> 00:39:15.250 align:middle line:90%
+to send the higher message.
+
+00:39:15.250 --> 00:39:17.500 align:middle line:84%
+And the interval is going
+to be just the right length.
+
+00:39:17.500 --> 00:39:19.180 align:middle line:84%
+That kind of balances
+those forces.
+
+00:39:19.180 --> 00:39:21.280 align:middle line:84%
+So maybe I guess the
+point that I'm making
+
+00:39:21.280 --> 00:39:24.120 align:middle line:84%
+is the length of the
+interval determines
+
+00:39:24.120 --> 00:39:25.680 align:middle line:84%
+how far the midpoint
+of the interval
+
+00:39:25.680 --> 00:39:27.460 align:middle line:84%
+is from the endpoint
+of the interval.
+
+00:39:27.460 --> 00:39:28.620 align:middle line:84%
+And if we made that
+interval really,
+
+00:39:28.620 --> 00:39:30.520 align:middle line:84%
+really big, then the
+midpoint of that interval
+
+00:39:30.520 --> 00:39:32.820 align:middle line:84%
+is going to be really, really
+far away from its left point.
+
+00:39:32.820 --> 00:39:34.612 align:middle line:84%
+And in fact, it's going
+to be too high even
+
+00:39:34.612 --> 00:39:36.200 align:middle line:90%
+for the biased sender.
+
+00:39:36.200 --> 00:39:38.339 align:middle line:84%
+So we have to balance
+these just right.
+
+00:39:38.339 --> 00:39:38.881 align:middle line:90%
+AUDIENCE: OK.
+
+00:39:38.881 --> 00:39:41.530 align:middle line:90%
+
+
+00:39:41.530 --> 00:39:43.530 align:middle line:84%
+PROFESSOR: So I
+interpret the midpoint
+
+00:39:43.530 --> 00:39:46.190 align:middle line:84%
+being far away from
+the point as saying,
+
+00:39:46.190 --> 00:39:48.648 align:middle line:84%
+because I'm not revealing much
+information about the state,
+
+00:39:48.648 --> 00:39:50.523 align:middle line:84%
+the receiver's updated
+belief about the state
+
+00:39:50.523 --> 00:39:51.870 align:middle line:90%
+is very far from the true state.
+
+00:39:51.870 --> 00:39:55.690 align:middle line:84%
+But maybe that's
+not so important.
+
+00:39:55.690 --> 00:39:58.490 align:middle line:84%
+So one observation
+here is that--
+
+00:39:58.490 --> 00:40:09.170 align:middle line:84%
+note that this only works
+if 2 beta is less than 1/2,
+
+00:40:09.170 --> 00:40:11.270 align:middle line:84%
+which means beta
+is less than 1/4.
+
+00:40:11.270 --> 00:40:13.883 align:middle line:90%
+
+
+00:40:13.883 --> 00:40:15.050 align:middle line:90%
+AUDIENCE: I have a question.
+
+00:40:15.050 --> 00:40:16.327 align:middle line:90%
+PROFESSOR: Yeah, absolutely.
+
+00:40:16.327 --> 00:40:17.410 align:middle line:90%
+Yeah, questions are great.
+
+00:40:17.410 --> 00:40:17.910 align:middle line:90%
+Yeah.
+
+00:40:17.910 --> 00:40:20.290 align:middle line:84%
+AUDIENCE: If t1
+moves to the left,
+
+00:40:20.290 --> 00:40:23.410 align:middle line:84%
+then the midpoint of
+the right interval
+
+00:40:23.410 --> 00:40:25.542 align:middle line:84%
+goes down because
+it's 1 plus t1.
+
+00:40:25.542 --> 00:40:26.250 align:middle line:90%
+PROFESSOR: Right.
+
+00:40:26.250 --> 00:40:28.970 align:middle line:84%
+So what I'm thinking about
+is the relative position
+
+00:40:28.970 --> 00:40:30.930 align:middle line:90%
+of the midpoint relative to t1.
+
+00:40:30.930 --> 00:40:33.930 align:middle line:84%
+So what happens is if I move
+t1 to the left, t1 moves
+
+00:40:33.930 --> 00:40:36.250 align:middle line:90%
+to the left by, say, an inch.
+
+00:40:36.250 --> 00:40:39.330 align:middle line:84%
+The midpoint moves to the
+left by only half an inch.
+
+00:40:39.330 --> 00:40:43.970 align:middle line:84%
+So the difference between the
+endpoint and the midpoint grows.
+
+00:40:43.970 --> 00:40:46.250 align:middle line:84%
+AUDIENCE: And then
+at a certain point,
+
+00:40:46.250 --> 00:40:50.890 align:middle line:84%
+because of the way the
+receiver is going to respond,
+
+00:40:50.890 --> 00:40:53.618 align:middle line:84%
+it's a smaller difference
+from the left side?
+
+00:40:53.618 --> 00:40:54.410 align:middle line:90%
+PROFESSOR: Exactly.
+
+00:40:54.410 --> 00:40:55.590 align:middle line:84%
+And that's exactly
+what we've done here.
+
+00:40:55.590 --> 00:40:58.010 align:middle line:84%
+We found-- I mean, this
+formula is exactly telling us
+
+00:40:58.010 --> 00:40:59.458 align:middle line:90%
+where that point has to be.
+
+00:40:59.458 --> 00:41:01.750 align:middle line:84%
+So you're right, maybe I
+should have been more precise.
+
+00:41:01.750 --> 00:41:06.310 align:middle line:84%
+It's true as I move t1 left that
+the high decision gets smaller.
+
+00:41:06.310 --> 00:41:08.130 align:middle line:84%
+But it doesn't get
+smaller fast enough,
+
+00:41:08.130 --> 00:41:12.110 align:middle line:84%
+because when you move
+the endpoint by 1,
+
+00:41:12.110 --> 00:41:14.465 align:middle line:84%
+you only move the
+average by 1/2.
+
+00:41:14.465 --> 00:41:16.590 align:middle line:84%
+And that's exactly-- I
+mean, you can see that here.
+
+00:41:16.590 --> 00:41:23.210 align:middle line:84%
+So I guess what I'm saying is
+y of H is t1 plus 1 over 2.
+
+00:41:23.210 --> 00:41:24.650 align:middle line:90%
+If we shrink t1--
+
+00:41:24.650 --> 00:41:29.650 align:middle line:84%
+if we reduce t1 by a little
+bit, then we reduce y of H
+
+00:41:29.650 --> 00:41:30.870 align:middle line:90%
+by only half of that.
+
+00:41:30.870 --> 00:41:34.250 align:middle line:84%
+But t1 gets reduced
+by the full amount.
+
+00:41:34.250 --> 00:41:36.558 align:middle line:84%
+AUDIENCE: And then so is the
+idea that the left side is
+
+00:41:36.558 --> 00:41:38.850 align:middle line:84%
+smaller than the right side
+also just based on the idea
+
+00:41:38.850 --> 00:41:40.610 align:middle line:90%
+that there's a beta?
+
+00:41:40.610 --> 00:41:41.730 align:middle line:90%
+PROFESSOR: Exactly, yeah.
+
+00:41:41.730 --> 00:41:43.770 align:middle line:84%
+I mean, I guess very
+simply, all it's
+
+00:41:43.770 --> 00:41:47.810 align:middle line:84%
+saying is we're
+choosing the intervals
+
+00:41:47.810 --> 00:41:50.853 align:middle line:84%
+so that the midpoint of the
+left interval and the midpoint
+
+00:41:50.853 --> 00:41:53.270 align:middle line:84%
+of the right interval-- if we
+look at those two midpoints,
+
+00:41:53.270 --> 00:41:57.570 align:middle line:84%
+they average to the
+cutoff point plus beta.
+
+00:41:57.570 --> 00:42:01.430 align:middle line:84%
+And that's exactly
+what we wrote here.
+
+00:42:01.430 --> 00:42:04.330 align:middle line:84%
+I mean, this is
+the key condition.
+
+00:42:04.330 --> 00:42:06.250 align:middle line:90%
+Yes.
+
+00:42:06.250 --> 00:42:09.110 align:middle line:84%
+AUDIENCE: Is the responder
+aware of the bias?
+
+00:42:09.110 --> 00:42:13.490 align:middle line:84%
+And if so, are they incentivized
+change their behavior,
+
+00:42:13.490 --> 00:42:16.050 align:middle line:84%
+given that the sender is going
+to be lying part of the time
+
+00:42:16.050 --> 00:42:16.990 align:middle line:90%
+when they say high?
+
+00:42:16.990 --> 00:42:17.670 align:middle line:90%
+PROFESSOR: OK, great question.
+
+00:42:17.670 --> 00:42:19.462 align:middle line:84%
+So first, this goes to
+an earlier question.
+
+00:42:19.462 --> 00:42:21.770 align:middle line:90%
+They do know the bias exactly.
+
+00:42:21.770 --> 00:42:23.610 align:middle line:90%
+And this is an equilibrium.
+
+00:42:23.610 --> 00:42:27.565 align:middle line:84%
+So they recognize what
+the sender is doing.
+
+00:42:27.565 --> 00:42:29.190 align:middle line:84%
+But I wouldn't say
+the sender is lying.
+
+00:42:29.190 --> 00:42:30.648 align:middle line:84%
+I mean, what the
+sender is doing is
+
+00:42:30.648 --> 00:42:33.140 align:middle line:84%
+the sender is telling them
+whether or not the state is
+
+00:42:33.140 --> 00:42:35.300 align:middle line:90%
+below t1 or above t1.
+
+00:42:35.300 --> 00:42:38.780 align:middle line:84%
+And given that message, the
+receiver is behaving optimally.
+
+00:42:38.780 --> 00:42:41.860 align:middle line:84%
+Because if they
+get the message L,
+
+00:42:41.860 --> 00:42:43.580 align:middle line:84%
+whatever the bias
+of the sender, they
+
+00:42:43.580 --> 00:42:47.460 align:middle line:84%
+believe that the
+sender's message means
+
+00:42:47.460 --> 00:42:50.080 align:middle line:84%
+the state is uniform
+over this interval.
+
+00:42:50.080 --> 00:42:52.205 align:middle line:84%
+And therefore, their optimal
+decision is t1 over 2.
+
+00:42:52.205 --> 00:42:54.497 align:middle line:84%
+So I mean, you're thinking
+exactly about the right way.
+
+00:42:54.497 --> 00:42:56.500 align:middle line:84%
+This is what the
+equilibrium is capturing.
+
+00:42:56.500 --> 00:42:58.840 align:middle line:84%
+But the receiver doesn't have
+any incentive to deviate.
+
+00:42:58.840 --> 00:42:59.340 align:middle line:90%
+Yeah.
+
+00:42:59.340 --> 00:42:59.960 align:middle line:90%
+AUDIENCE: That makes sense.
+
+00:42:59.960 --> 00:43:00.220 align:middle line:90%
+PROFESSOR: Yeah.
+
+00:43:00.220 --> 00:43:01.240 align:middle line:90%
+Yes, other questions?
+
+00:43:01.240 --> 00:43:04.272 align:middle line:84%
+AUDIENCE: So does
+the receiver know t1?
+
+00:43:04.272 --> 00:43:05.480 align:middle line:90%
+PROFESSOR: Oh, good question.
+
+00:43:05.480 --> 00:43:06.300 align:middle line:90%
+Yes.
+
+00:43:06.300 --> 00:43:09.560 align:middle line:84%
+So t1 is a parameter
+of the equilibrium.
+
+00:43:09.560 --> 00:43:10.880 align:middle line:90%
+So t1 is going to be known.
+
+00:43:10.880 --> 00:43:12.180 align:middle line:90%
+And the reason is we--
+
+00:43:12.180 --> 00:43:14.480 align:middle line:84%
+or this gets into a subtle
+question of what's known.
+
+00:43:14.480 --> 00:43:19.460 align:middle line:84%
+But in equilibrium, when
+the equilibrium is played,
+
+00:43:19.460 --> 00:43:21.460 align:middle line:84%
+the players have correct
+beliefs about what
+
+00:43:21.460 --> 00:43:22.740 align:middle line:90%
+the other players are doing.
+
+00:43:22.740 --> 00:43:25.420 align:middle line:84%
+So the receiver
+believes that the sender
+
+00:43:25.420 --> 00:43:27.380 align:middle line:84%
+is following this
+equilibrium strategy
+
+00:43:27.380 --> 00:43:29.120 align:middle line:90%
+for this particular value of t1.
+
+00:43:29.120 --> 00:43:31.980 align:middle line:84%
+So the receiver, in
+a sense, knows t1.
+
+00:43:31.980 --> 00:43:33.060 align:middle line:90%
+Yeah.
+
+00:43:33.060 --> 00:43:35.700 align:middle line:90%
+Yeah.
+
+00:43:35.700 --> 00:43:37.358 align:middle line:84%
+So I guess we have
+to be careful.
+
+00:43:37.358 --> 00:43:38.900 align:middle line:84%
+I was writing down
+all these formulas
+
+00:43:38.900 --> 00:43:40.840 align:middle line:84%
+to try to derive
+the value of t1.
+
+00:43:40.840 --> 00:43:43.620 align:middle line:84%
+But once I've solved for t1,
+formally, the equilibrium
+
+00:43:43.620 --> 00:43:46.055 align:middle line:90%
+is this exact value of t1.
+
+00:43:46.055 --> 00:43:47.680 align:middle line:84%
+It's not an abstract
+parameter anymore.
+
+00:43:47.680 --> 00:43:49.000 align:middle line:90%
+It has to be 1/2 minus 2 beta.
+
+00:43:49.000 --> 00:43:50.708 align:middle line:84%
+Otherwise, the
+equilibrium wouldn't work.
+
+00:43:50.708 --> 00:43:51.580 align:middle line:90%
+Yeah.
+
+00:43:51.580 --> 00:43:52.260 align:middle line:90%
+Great.
+
+00:43:52.260 --> 00:43:55.240 align:middle line:84%
+So we said this only works
+if beta is less than 1/4.
+
+00:43:55.240 --> 00:43:58.420 align:middle line:84%
+And indeed, you can show that
+if beta is more than 1/4,
+
+00:43:58.420 --> 00:44:02.860 align:middle line:84%
+the only equilibrium is the bad
+no-communication equilibrium
+
+00:44:02.860 --> 00:44:03.900 align:middle line:90%
+over here.
+
+00:44:03.900 --> 00:44:06.620 align:middle line:84%
+So let's make this
+point over here.
+
+00:44:06.620 --> 00:44:14.140 align:middle line:84%
+If beta is greater
+than or equal to 1/4,
+
+00:44:14.140 --> 00:44:22.680 align:middle line:84%
+no communication is
+the only equilibrium.
+
+00:44:22.680 --> 00:44:28.780 align:middle line:90%
+
+
+00:44:28.780 --> 00:44:32.007 align:middle line:84%
+Now, when I say only, I mean,
+the message m* that we use could
+
+00:44:32.007 --> 00:44:34.340 align:middle line:84%
+be a different message, but
+we're never going to be able
+
+00:44:34.340 --> 00:44:35.480 align:middle line:90%
+to convey information.
+
+00:44:35.480 --> 00:44:37.020 align:middle line:84%
+And the point here
+is the bias is
+
+00:44:37.020 --> 00:44:40.972 align:middle line:84%
+so strong that it's impossible
+to credibly convey information.
+
+00:44:40.972 --> 00:44:43.180 align:middle line:84%
+And you can think of this
+in the extreme case as kind
+
+00:44:43.180 --> 00:44:46.120 align:middle line:84%
+of like the story of the worker
+who goes to the firm and says,
+
+00:44:46.120 --> 00:44:47.500 align:middle line:90%
+I'm a good worker.
+
+00:44:47.500 --> 00:44:50.140 align:middle line:84%
+If the advisor has such a
+bias relative to the receiver
+
+00:44:50.140 --> 00:44:51.973 align:middle line:84%
+and they always want
+higher decisions,
+
+00:44:51.973 --> 00:44:54.140 align:middle line:84%
+the receiver just can't
+listen to anything they say.
+
+00:44:54.140 --> 00:44:55.940 align:middle line:84%
+And therefore, the
+only equilibrium
+
+00:44:55.940 --> 00:44:58.300 align:middle line:90%
+is going to be no communication.
+
+00:44:58.300 --> 00:45:02.660 align:middle line:84%
+If beta is less than 1/4,
+well, we can have some coarse
+
+00:45:02.660 --> 00:45:06.020 align:middle line:84%
+communication where we reveal
+what the state is above or below
+
+00:45:06.020 --> 00:45:07.540 align:middle line:90%
+this threshold.
+
+00:45:07.540 --> 00:45:10.860 align:middle line:84%
+But we might ask, well, can we
+convey even more information?
+
+00:45:10.860 --> 00:45:13.802 align:middle line:84%
+Could we have more precise
+information conveyed?
+
+00:45:13.802 --> 00:45:16.260 align:middle line:84%
+Do you have ideas how we might
+get beyond this case of just
+
+00:45:16.260 --> 00:45:19.860 align:middle line:84%
+above or below a threshold
+and actually convey--
+
+00:45:19.860 --> 00:45:24.600 align:middle line:84%
+how might we convey even more
+information in equilibrium?
+
+00:45:24.600 --> 00:45:25.100 align:middle line:90%
+Yeah.
+
+00:45:25.100 --> 00:45:25.695 align:middle line:90%
+Yeah.
+
+00:45:25.695 --> 00:45:26.820 align:middle line:90%
+AUDIENCE: I had a question.
+
+00:45:26.820 --> 00:45:29.830 align:middle line:84%
+So I was just wondering, for the
+utility functions, because we
+
+00:45:29.830 --> 00:45:33.650 align:middle line:84%
+say that t is between 0 and 1
+and then we also have this bias,
+
+00:45:33.650 --> 00:45:37.302 align:middle line:84%
+is the sender always
+incentivized to--
+
+00:45:37.302 --> 00:45:41.490 align:middle line:84%
+like if t plus beta is
+ever greater than 1,
+
+00:45:41.490 --> 00:45:45.923 align:middle line:84%
+wouldn't that mean their
+utility is always negative?
+
+00:45:45.923 --> 00:45:46.590 align:middle line:90%
+PROFESSOR: Yeah.
+
+00:45:46.590 --> 00:45:48.610 align:middle line:84%
+So one thing is I
+wouldn't-- yeah,
+
+00:45:48.610 --> 00:45:51.750 align:middle line:90%
+this is maybe a good point.
+
+00:45:51.750 --> 00:45:54.350 align:middle line:84%
+You might worry-- the way
+we've written the game,
+
+00:45:54.350 --> 00:45:56.867 align:middle line:84%
+the utilities are
+actually always negative.
+
+00:45:56.867 --> 00:45:59.450 align:middle line:84%
+Remember, with utilities, we can
+always add a constant to them
+
+00:45:59.450 --> 00:46:00.950 align:middle line:84%
+and it doesn't
+really change things.
+
+00:46:00.950 --> 00:46:02.910 align:middle line:84%
+So you might be thinking,
+oh they'd rather not
+
+00:46:02.910 --> 00:46:03.785 align:middle line:90%
+play the game at all.
+
+00:46:03.785 --> 00:46:05.950 align:middle line:84%
+They'd rather just
+not participate.
+
+00:46:05.950 --> 00:46:09.070 align:middle line:84%
+You could imagine
+the utility being 100
+
+00:46:09.070 --> 00:46:11.570 align:middle line:90%
+minus this and 100 minus this.
+
+00:46:11.570 --> 00:46:14.470 align:middle line:84%
+And then the utilities
+would always be positive.
+
+00:46:14.470 --> 00:46:18.083 align:middle line:84%
+So you can always--
+the sender is only
+
+00:46:18.083 --> 00:46:19.750 align:middle line:84%
+looking at differences
+in utilities, not
+
+00:46:19.750 --> 00:46:20.765 align:middle line:90%
+the absolute levels.
+
+00:46:20.765 --> 00:46:22.390 align:middle line:84%
+So we could always
+shift up the utility
+
+00:46:22.390 --> 00:46:23.810 align:middle line:84%
+and it's not going to
+make any difference.
+
+00:46:23.810 --> 00:46:24.310 align:middle line:90%
+Yeah.
+
+00:46:24.310 --> 00:46:26.550 align:middle line:84%
+So if you wanted, we
+could call this 100
+
+00:46:26.550 --> 00:46:31.870 align:middle line:84%
+minus this and 100 minus this,
+and it wouldn't change anything.
+
+00:46:31.870 --> 00:46:33.590 align:middle line:90%
+Hopefully that answers that.
+
+00:46:33.590 --> 00:46:35.050 align:middle line:90%
+So any ideas?
+
+00:46:35.050 --> 00:46:37.065 align:middle line:84%
+We have this
+equilibrium where I just
+
+00:46:37.065 --> 00:46:39.690 align:middle line:84%
+say the state is either below a
+threshold or above a threshold.
+
+00:46:39.690 --> 00:46:41.510 align:middle line:84%
+How could we maybe convey
+more precise information
+
+00:46:41.510 --> 00:46:42.177 align:middle line:90%
+about the state?
+
+00:46:42.177 --> 00:46:42.677 align:middle line:90%
+Yeah.
+
+00:46:42.677 --> 00:46:44.385 align:middle line:84%
+AUDIENCE: Still along
+the threshold idea,
+
+00:46:44.385 --> 00:46:46.350 align:middle line:84%
+but is it possible to
+have low, medium, high?
+
+00:46:46.350 --> 00:46:47.330 align:middle line:84%
+PROFESSOR: I think
+that's a natural thing.
+
+00:46:47.330 --> 00:46:48.650 align:middle line:84%
+Why don't you just say
+it's low, medium, high?
+
+00:46:48.650 --> 00:46:51.230 align:middle line:84%
+Or maybe we could go a step
+further and split it up and say
+
+00:46:51.230 --> 00:46:53.470 align:middle line:84%
+it's either really low or a
+little bit low or a little bit
+
+00:46:53.470 --> 00:46:54.303 align:middle line:90%
+high or really high.
+
+00:46:54.303 --> 00:46:55.810 align:middle line:84%
+And it's not clear
+where this stops.
+
+00:46:55.810 --> 00:46:56.650 align:middle line:90%
+We could do a lot of this.
+
+00:46:56.650 --> 00:46:57.950 align:middle line:90%
+So that's going to be the idea.
+
+00:46:57.950 --> 00:47:01.030 align:middle line:84%
+And these are called
+partition equilibria.
+
+00:47:01.030 --> 00:47:02.890 align:middle line:90%
+Maybe I'll erase this.
+
+00:47:02.890 --> 00:47:17.167 align:middle line:90%
+
+
+00:47:17.167 --> 00:47:18.750 align:middle line:84%
+So more generally,
+we're going to look
+
+00:47:18.750 --> 00:47:25.130 align:middle line:84%
+at what are called
+partitional equilibria.
+
+00:47:25.130 --> 00:47:29.830 align:middle line:90%
+
+
+00:47:29.830 --> 00:47:32.470 align:middle line:84%
+This was a special case of
+a partitional equilibrium
+
+00:47:32.470 --> 00:47:34.145 align:middle line:90%
+where we just had two cells.
+
+00:47:34.145 --> 00:47:36.270 align:middle line:84%
+We had two messages that
+said either below or above
+
+00:47:36.270 --> 00:47:37.170 align:middle line:90%
+a threshold.
+
+00:47:37.170 --> 00:47:41.670 align:middle line:84%
+But more generally,
+here's our interval 0, 1.
+
+00:47:41.670 --> 00:47:43.170 align:middle line:84%
+Why don't we do
+something like this?
+
+00:47:43.170 --> 00:47:47.150 align:middle line:90%
+We could say t1, t2.
+
+00:47:47.150 --> 00:47:48.830 align:middle line:90%
+Maybe it keeps going.
+
+00:47:48.830 --> 00:47:51.410 align:middle line:90%
+tk minus 1.
+
+00:47:51.410 --> 00:47:54.950 align:middle line:90%
+
+
+00:47:54.950 --> 00:47:58.190 align:middle line:84%
+And we could say either the
+state is in this interval
+
+00:47:58.190 --> 00:48:01.310 align:middle line:84%
+or it's in this interval
+or it's in this interval.
+
+00:48:01.310 --> 00:48:04.330 align:middle line:84%
+It keeps going-- or this
+interval or this interval.
+
+00:48:04.330 --> 00:48:06.830 align:middle line:84%
+So basically our
+message by the sender
+
+00:48:06.830 --> 00:48:10.110 align:middle line:84%
+is going to reveal which of
+these intervals the state is in.
+
+00:48:10.110 --> 00:48:12.670 align:middle line:84%
+And as the number of
+intervals gets really big
+
+00:48:12.670 --> 00:48:14.510 align:middle line:84%
+and each of the intervals
+gets really small,
+
+00:48:14.510 --> 00:48:16.593 align:middle line:84%
+we're actually converging
+to more and more precise
+
+00:48:16.593 --> 00:48:18.230 align:middle line:90%
+communication.
+
+00:48:18.230 --> 00:48:22.150 align:middle line:84%
+So let's understand
+what's going on here.
+
+00:48:22.150 --> 00:48:26.910 align:middle line:84%
+It's kind of convenient to
+call this t0 and call this tk.
+
+00:48:26.910 --> 00:48:30.590 align:middle line:84%
+So formally, I'm going to look
+at a partitional equilibrium
+
+00:48:30.590 --> 00:48:31.570 align:middle line:90%
+with k cells.
+
+00:48:31.570 --> 00:48:34.710 align:middle line:84%
+So this is a k-cell
+partitional equilibrium
+
+00:48:34.710 --> 00:48:37.450 align:middle line:84%
+where k is greater
+than or equal to 2.
+
+00:48:37.450 --> 00:48:41.990 align:middle line:90%
+
+
+00:48:41.990 --> 00:48:45.110 align:middle line:84%
+So we have the first cell, the
+second cell, the third cell,
+
+00:48:45.110 --> 00:48:47.190 align:middle line:90%
+all the way up to the k-th cell.
+
+00:48:47.190 --> 00:48:49.150 align:middle line:84%
+And that means we're
+going to have k messages.
+
+00:48:49.150 --> 00:48:50.050 align:middle line:90%
+And let's label them.
+
+00:48:50.050 --> 00:48:53.710 align:middle line:84%
+Let's just call this
+message 1, message 2,
+
+00:48:53.710 --> 00:48:55.335 align:middle line:90%
+all the way to message k.
+
+00:48:55.335 --> 00:48:56.710 align:middle line:84%
+So what the sender
+is going to do
+
+00:48:56.710 --> 00:48:59.335 align:middle line:84%
+is they're going to look at the
+state and they're going to say,
+
+00:48:59.335 --> 00:49:00.990 align:middle line:84%
+well, if the state
+is between 0 and t1,
+
+00:49:00.990 --> 00:49:02.870 align:middle line:90%
+I'm going to send message m1.
+
+00:49:02.870 --> 00:49:06.390 align:middle line:84%
+If it's between t1 and t2
+I'm going to send message m2.
+
+00:49:06.390 --> 00:49:07.950 align:middle line:84%
+If it's between t2
+and t3, I'm going
+
+00:49:07.950 --> 00:49:10.250 align:middle line:84%
+to send message m3,
+all the way up to mk.
+
+00:49:10.250 --> 00:49:15.150 align:middle line:90%
+
+
+00:49:15.150 --> 00:49:17.790 align:middle line:90%
+And maybe I'll call this y1.
+
+00:49:17.790 --> 00:49:19.800 align:middle line:84%
+If the receiver sees
+message m1, they're
+
+00:49:19.800 --> 00:49:21.460 align:middle line:90%
+going to take decision y1.
+
+00:49:21.460 --> 00:49:26.720 align:middle line:84%
+If they see m2, they're
+going to take y2, and so on.
+
+00:49:26.720 --> 00:49:31.520 align:middle line:84%
+So formally, what I mean is
+yk is equal to y of m of k.
+
+00:49:31.520 --> 00:49:35.560 align:middle line:84%
+But this is just
+cleaner notation.
+
+00:49:35.560 --> 00:49:39.400 align:middle line:84%
+And again, we're going to try to
+solve for these parameter values
+
+00:49:39.400 --> 00:49:42.560 align:middle line:84%
+t1 up to tk minus 1, we're going
+to solve for these thresholds
+
+00:49:42.560 --> 00:49:45.523 align:middle line:84%
+to see if we can make
+this an equilibrium.
+
+00:49:45.523 --> 00:49:46.940 align:middle line:84%
+So what's going
+to have to happen?
+
+00:49:46.940 --> 00:49:49.660 align:middle line:84%
+Well first, let's use
+receiver optimality.
+
+00:49:49.660 --> 00:49:54.800 align:middle line:90%
+
+
+00:49:54.800 --> 00:49:57.560 align:middle line:84%
+Receiver optimality says,
+well, when the receiver gets
+
+00:49:57.560 --> 00:50:00.480 align:middle line:84%
+this message m1, they know
+the state is somewhere
+
+00:50:00.480 --> 00:50:02.360 align:middle line:90%
+between 0 and t1.
+
+00:50:02.360 --> 00:50:04.520 align:middle line:84%
+And they believe, in fact,
+the state is uniformly
+
+00:50:04.520 --> 00:50:06.320 align:middle line:90%
+distributed between 0 and t1.
+
+00:50:06.320 --> 00:50:09.160 align:middle line:84%
+So their updated belief
+about the expected state
+
+00:50:09.160 --> 00:50:11.200 align:middle line:84%
+is that it's the
+midpoint of this.
+
+00:50:11.200 --> 00:50:13.800 align:middle line:84%
+So in each case, the
+receiver's decision
+
+00:50:13.800 --> 00:50:17.200 align:middle line:84%
+must be the midpoint of
+the cell that they're
+
+00:50:17.200 --> 00:50:18.260 align:middle line:90%
+told the state is in.
+
+00:50:18.260 --> 00:50:22.700 align:middle line:84%
+So in math language, what
+we would say is yk or yj--
+
+00:50:22.700 --> 00:50:25.680 align:middle line:90%
+
+
+00:50:25.680 --> 00:50:27.760 align:middle line:84%
+let's make sure we
+get this right-- is
+
+00:50:27.760 --> 00:50:37.720 align:middle line:84%
+going to be equal to tj
+minus 1 plus tj over 2.
+
+00:50:37.720 --> 00:50:40.360 align:middle line:84%
+Because when they
+get message mj,
+
+00:50:40.360 --> 00:50:46.400 align:middle line:84%
+they learn that the state is
+between tj minus 1 and tj.
+
+00:50:46.400 --> 00:50:49.040 align:middle line:84%
+So maybe we'll say
+this here, because they
+
+00:50:49.040 --> 00:50:58.780 align:middle line:84%
+learn that the state t is
+between tj minus 1 t and tj.
+
+00:50:58.780 --> 00:51:02.480 align:middle line:90%
+
+
+00:51:02.480 --> 00:51:04.280 align:middle line:90%
+OK?
+
+00:51:04.280 --> 00:51:08.280 align:middle line:84%
+So that gives us a formula
+for each of these decisions.
+
+00:51:08.280 --> 00:51:13.500 align:middle line:84%
+This is for j equals
+1 all the way up to k.
+
+00:51:13.500 --> 00:51:16.720 align:middle line:90%
+
+
+00:51:16.720 --> 00:51:25.320 align:middle line:84%
+And then what does sender
+optimality tell us?
+
+00:51:25.320 --> 00:51:27.200 align:middle line:84%
+Well, it's going to
+be the same idea.
+
+00:51:27.200 --> 00:51:30.080 align:middle line:84%
+At each of these
+split points, we
+
+00:51:30.080 --> 00:51:33.080 align:middle line:84%
+want the sender to be
+indifferent between sending
+
+00:51:33.080 --> 00:51:35.120 align:middle line:84%
+the lower message and
+the higher message.
+
+00:51:35.120 --> 00:51:37.040 align:middle line:84%
+So when the state
+is t1, the sender
+
+00:51:37.040 --> 00:51:39.400 align:middle line:84%
+should be indifferent
+between m1 and m2.
+
+00:51:39.400 --> 00:51:41.720 align:middle line:84%
+When the state is t2,
+the sender should be
+
+00:51:41.720 --> 00:51:43.480 align:middle line:90%
+indifferent between m2 and m3.
+
+00:51:43.480 --> 00:51:45.720 align:middle line:84%
+All the way up when the
+state is tk minus 1,
+
+00:51:45.720 --> 00:51:48.840 align:middle line:84%
+they should be indifferent
+between mk minus 1 and mk.
+
+00:51:48.840 --> 00:51:55.800 align:middle line:84%
+So what that means is
+that tj plus beta should
+
+00:51:55.800 --> 00:52:08.380 align:middle line:84%
+be the midpoint of yj
+and yj plus 1 over 2.
+
+00:52:08.380 --> 00:52:12.160 align:middle line:84%
+Let's make sure we got kind of
+the fence post problem right.
+
+00:52:12.160 --> 00:52:13.810 align:middle line:84%
+When the state is
+t1, we should be
+
+00:52:13.810 --> 00:52:18.670 align:middle line:84%
+indifferent between m1 and
+m2, which is yj and yj plus 1.
+
+00:52:18.670 --> 00:52:21.650 align:middle line:90%
+So that makes sense.
+
+00:52:21.650 --> 00:52:24.130 align:middle line:90%
+And if we did a little more--
+
+00:52:24.130 --> 00:52:32.850 align:middle line:84%
+and this must be true for
+j equals 1 to k minus 1.
+
+00:52:32.850 --> 00:52:37.170 align:middle line:84%
+Notice we have k
+conditions for the receiver
+
+00:52:37.170 --> 00:52:39.170 align:middle line:90%
+because we have k cells.
+
+00:52:39.170 --> 00:52:41.730 align:middle line:84%
+We have k minus 1
+conditions for the sender
+
+00:52:41.730 --> 00:52:44.275 align:middle line:84%
+because we have k
+minus 1 split points.
+
+00:52:44.275 --> 00:52:46.150 align:middle line:84%
+This is the classic kind
+of fence post issue,
+
+00:52:46.150 --> 00:52:52.570 align:middle line:84%
+that k minus 1 cuts
+gives us k pieces.
+
+00:52:52.570 --> 00:52:54.290 align:middle line:90%
+So we could do a bit of algebra.
+
+00:52:54.290 --> 00:52:57.670 align:middle line:84%
+I don't think we really need
+to go through all the algebra.
+
+00:52:57.670 --> 00:53:00.990 align:middle line:84%
+Let me just kind of describe
+what you're going to find.
+
+00:53:00.990 --> 00:53:05.410 align:middle line:90%
+
+
+00:53:05.410 --> 00:53:06.970 align:middle line:84%
+So maybe I'll just
+say mathematically
+
+00:53:06.970 --> 00:53:10.730 align:middle line:90%
+what this is called is--
+
+00:53:10.730 --> 00:53:25.810 align:middle line:84%
+OK, we get kind of a
+system of equations for t1
+
+00:53:25.810 --> 00:53:29.410 align:middle line:90%
+through tk minus 1.
+
+00:53:29.410 --> 00:53:31.930 align:middle line:84%
+Remember, we already did
+the case of k equals 2.
+
+00:53:31.930 --> 00:53:35.170 align:middle line:84%
+And in the case of k equals
+2, we just solve for t1.
+
+00:53:35.170 --> 00:53:39.390 align:middle line:84%
+But more generally, we have
+to solve for k minus 1 values.
+
+00:53:39.390 --> 00:53:44.930 align:middle line:90%
+
+
+00:53:44.930 --> 00:53:50.310 align:middle line:84%
+But I want to just maybe
+convey the idea intuitively.
+
+00:53:50.310 --> 00:53:53.690 align:middle line:90%
+
+
+00:53:53.690 --> 00:53:55.190 align:middle line:84%
+Here's how I like
+to think about it.
+
+00:53:55.190 --> 00:53:57.890 align:middle line:84%
+We could do the algebra, but
+let's just think about it.
+
+00:53:57.890 --> 00:54:00.650 align:middle line:84%
+Let's look at
+adjacent cells, OK?
+
+00:54:00.650 --> 00:54:03.250 align:middle line:84%
+And let's look at what happens
+when the state is here.
+
+00:54:03.250 --> 00:54:04.330 align:middle line:90%
+OK?
+
+00:54:04.330 --> 00:54:08.930 align:middle line:84%
+Well, if these adjacent
+cells had the same length,
+
+00:54:08.930 --> 00:54:10.410 align:middle line:90%
+would this--
+
+00:54:10.410 --> 00:54:12.530 align:middle line:90%
+let's call this tj.
+
+00:54:12.530 --> 00:54:14.770 align:middle line:84%
+Would the sender be
+indifferent between getting
+
+00:54:14.770 --> 00:54:15.910 align:middle line:90%
+this point and this point?
+
+00:54:15.910 --> 00:54:16.910 align:middle line:90%
+Which would they prefer?
+
+00:54:16.910 --> 00:54:22.530 align:middle line:90%
+
+
+00:54:22.530 --> 00:54:27.370 align:middle line:84%
+Well, these two decisions
+are equidistant from tj.
+
+00:54:27.370 --> 00:54:28.830 align:middle line:90%
+But the sender is biased.
+
+00:54:28.830 --> 00:54:33.710 align:middle line:84%
+The sender prefers the decision
+that's closest to tj plus beta.
+
+00:54:33.710 --> 00:54:37.730 align:middle line:84%
+So the sender would always
+prefer the higher decision.
+
+00:54:37.730 --> 00:54:42.410 align:middle line:84%
+So what we need is
+we need tj plus beta
+
+00:54:42.410 --> 00:54:47.730 align:middle line:84%
+to be equal to the average
+of these two points.
+
+00:54:47.730 --> 00:54:51.570 align:middle line:84%
+So what we need to do is we need
+the average of these two points
+
+00:54:51.570 --> 00:55:03.302 align:middle line:90%
+to shift right by beta.
+
+00:55:03.302 --> 00:55:06.010 align:middle line:84%
+Because if we want the sender to
+be indifferent between these two
+
+00:55:06.010 --> 00:55:08.060 align:middle line:84%
+points, they shouldn't
+average to tj.
+
+00:55:08.060 --> 00:55:12.500 align:middle line:84%
+They should average
+to tj plus beta.
+
+00:55:12.500 --> 00:55:15.920 align:middle line:84%
+So what we want to do is we
+want to move out this interval,
+
+00:55:15.920 --> 00:55:18.940 align:middle line:84%
+make this interval longer, until
+the average has shifted right
+
+00:55:18.940 --> 00:55:20.340 align:middle line:90%
+by beta.
+
+00:55:20.340 --> 00:55:24.900 align:middle line:84%
+But we're only
+moving this point.
+
+00:55:24.900 --> 00:55:27.380 align:middle line:90%
+This point is staying fixed.
+
+00:55:27.380 --> 00:55:29.420 align:middle line:84%
+So if we want the
+average to go up by beta,
+
+00:55:29.420 --> 00:55:31.800 align:middle line:84%
+we have to increase
+this point by 2 beta.
+
+00:55:31.800 --> 00:55:39.590 align:middle line:90%
+
+
+00:55:39.590 --> 00:55:41.885 align:middle line:84%
+AUDIENCE: Why are we
+keeping the left point?
+
+00:55:41.885 --> 00:55:42.760 align:middle line:90%
+PROFESSOR: Say again.
+
+00:55:42.760 --> 00:55:45.427 align:middle line:84%
+AUDIENCE: Why is the
+left point fixed?
+
+00:55:45.427 --> 00:55:47.760 align:middle line:84%
+PROFESSOR: We're basically
+solving the equation forward.
+
+00:55:47.760 --> 00:55:51.280 align:middle line:84%
+We're saying, let's suppose
+the left interval is like this.
+
+00:55:51.280 --> 00:55:52.840 align:middle line:84%
+How big should the
+next interval be?
+
+00:55:52.840 --> 00:55:55.820 align:middle line:84%
+AUDIENCE: OK,
+because [INAUDIBLE].
+
+00:55:55.820 --> 00:55:59.860 align:middle line:84%
+PROFESSOR: So we have to
+increase this point by 2 beta
+
+00:55:59.860 --> 00:56:01.940 align:middle line:90%
+to increase the average by beta.
+
+00:56:01.940 --> 00:56:04.340 align:middle line:84%
+But how can we increase the
+midpoint of this interval
+
+00:56:04.340 --> 00:56:04.977 align:middle line:90%
+by 2 beta?
+
+00:56:04.977 --> 00:56:07.060 align:middle line:84%
+How much do we have to
+increase the right endpoint
+
+00:56:07.060 --> 00:56:10.900 align:middle line:84%
+to get the midpoint
+to go up by 2 beta?
+
+00:56:10.900 --> 00:56:11.560 align:middle line:90%
+4 beta.
+
+00:56:11.560 --> 00:56:16.620 align:middle line:84%
+So that means this has
+to go up by 4 beta.
+
+00:56:16.620 --> 00:56:18.620 align:middle line:84%
+We could do the algebra,
+but I just kind of like
+
+00:56:18.620 --> 00:56:19.500 align:middle line:90%
+to think it through.
+
+00:56:19.500 --> 00:56:24.027 align:middle line:84%
+So what we indeed have is
+the general formula is this.
+
+00:56:24.027 --> 00:56:25.860 align:middle line:84%
+And you can solve it,
+but I think it's nicer
+
+00:56:25.860 --> 00:56:28.740 align:middle line:90%
+to think of it like this.
+
+00:56:28.740 --> 00:56:29.800 align:middle line:90%
+Let's write it this way.
+
+00:56:29.800 --> 00:56:40.620 align:middle line:90%
+
+
+00:56:40.620 --> 00:56:42.460 align:middle line:90%
+So we're comparing the lengths--
+
+00:56:42.460 --> 00:56:45.540 align:middle line:90%
+ah, no, no, that's wrong.
+
+00:56:45.540 --> 00:56:46.840 align:middle line:90%
+Sorry, let me rewrite this.
+
+00:56:46.840 --> 00:56:59.100 align:middle line:90%
+
+
+00:56:59.100 --> 00:57:03.020 align:middle line:84%
+So we get this formula,
+which compares the lengths
+
+00:57:03.020 --> 00:57:05.180 align:middle line:90%
+of the consecutive intervals.
+
+00:57:05.180 --> 00:57:12.120 align:middle line:84%
+So in our picture here,
+this is an interval length.
+
+00:57:12.120 --> 00:57:16.780 align:middle line:90%
+
+
+00:57:16.780 --> 00:57:18.760 align:middle line:84%
+This is the next
+interval length.
+
+00:57:18.760 --> 00:57:23.060 align:middle line:90%
+
+
+00:57:23.060 --> 00:57:25.280 align:middle line:84%
+And what we're saying is,
+as we move to the right,
+
+00:57:25.280 --> 00:57:26.900 align:middle line:84%
+the next interval
+moving to the right
+
+00:57:26.900 --> 00:57:30.288 align:middle line:84%
+must be as long as the interval
+to the left plus 2 beta
+
+00:57:30.288 --> 00:57:32.080 align:middle line:84%
+through the argument
+that we did over here.
+
+00:57:32.080 --> 00:57:33.033 align:middle line:90%
+Yeah.
+
+00:57:33.033 --> 00:57:34.700 align:middle line:84%
+AUDIENCE: When you
+originally first drew
+
+00:57:34.700 --> 00:57:38.900 align:middle line:84%
+the picture, that was saying
+like tj plus 1 minus tj was
+
+00:57:38.900 --> 00:57:41.440 align:middle line:84%
+the same length as tj minus
+[INAUDIBLE] tj minus 1
+
+00:57:41.440 --> 00:57:42.220 align:middle line:90%
+[INAUDIBLE].
+
+00:57:42.220 --> 00:57:43.532 align:middle line:90%
+And then basically [INAUDIBLE].
+
+00:57:43.532 --> 00:57:44.240 align:middle line:90%
+PROFESSOR: Right.
+
+00:57:44.240 --> 00:57:47.500 align:middle line:84%
+So formally in this
+picture, I fixed tj minus 1.
+
+00:57:47.500 --> 00:57:48.820 align:middle line:90%
+I fixed tj.
+
+00:57:48.820 --> 00:57:51.793 align:middle line:84%
+And I was saying, how
+big must tj plus 1 be?
+
+00:57:51.793 --> 00:57:53.960 align:middle line:84%
+Maybe it would have been
+easier just to the algebra.
+
+00:57:53.960 --> 00:57:55.280 align:middle line:90%
+But I find this clearer.
+
+00:57:55.280 --> 00:57:56.740 align:middle line:90%
+Yeah.
+
+00:57:56.740 --> 00:57:57.860 align:middle line:90%
+OK.
+
+00:57:57.860 --> 00:57:59.820 align:middle line:90%
+And actually, we can check.
+
+00:57:59.820 --> 00:58:02.470 align:middle line:84%
+Let's go back to our
+example over here.
+
+00:58:02.470 --> 00:58:05.210 align:middle line:84%
+When t1 was equal
+to 1/2 minus 2 beta,
+
+00:58:05.210 --> 00:58:08.070 align:middle line:84%
+what were the lengths
+of these intervals?
+
+00:58:08.070 --> 00:58:13.790 align:middle line:84%
+This interval was
+1/2 minus 2 beta.
+
+00:58:13.790 --> 00:58:15.090 align:middle line:90%
+What was the other interval?
+
+00:58:15.090 --> 00:58:18.070 align:middle line:90%
+
+
+00:58:18.070 --> 00:58:21.030 align:middle line:90%
+Well, it's 1 minus that, right?
+
+00:58:21.030 --> 00:58:30.870 align:middle line:84%
+1 minus 1/2 minus 2 beta,
+which equals 1/2 plus 2 beta.
+
+00:58:30.870 --> 00:58:33.630 align:middle line:84%
+So indeed, that formula
+held in this special case.
+
+00:58:33.630 --> 00:58:35.990 align:middle line:84%
+What that midpoint was
+doing is it was exactly
+
+00:58:35.990 --> 00:58:38.270 align:middle line:84%
+ensuring that the
+length of this interval
+
+00:58:38.270 --> 00:58:40.930 align:middle line:84%
+was exactly the length of
+this interval plus 4 beta.
+
+00:58:40.930 --> 00:58:43.790 align:middle line:90%
+
+
+00:58:43.790 --> 00:58:45.790 align:middle line:84%
+And where did beta
+over 4 come in?
+
+00:58:45.790 --> 00:58:48.610 align:middle line:84%
+Well, 4 beta has
+to be less than 1.
+
+00:58:48.610 --> 00:58:50.290 align:middle line:90%
+And that's where it comes from.
+
+00:58:50.290 --> 00:58:53.030 align:middle line:90%
+
+
+00:58:53.030 --> 00:58:57.390 align:middle line:84%
+So now we can see what the
+structure of the equilibria
+
+00:58:57.390 --> 00:59:02.590 align:middle line:84%
+have to look like if we you
+want to draw it more carefully.
+
+00:59:02.590 --> 00:59:04.270 align:middle line:84%
+As we move to the
+right, the intervals
+
+00:59:04.270 --> 00:59:06.650 align:middle line:84%
+are going to keep getting
+bigger by a fixed amount.
+
+00:59:06.650 --> 00:59:10.950 align:middle line:84%
+So it's going to be
+something like this.
+
+00:59:10.950 --> 00:59:13.190 align:middle line:84%
+The first interval
+has some length delta.
+
+00:59:13.190 --> 00:59:15.990 align:middle line:84%
+The next interval has some
+length delta plus 4 beta.
+
+00:59:15.990 --> 00:59:18.630 align:middle line:84%
+And the next interval has
+some length delta plus 8 beta.
+
+00:59:18.630 --> 00:59:20.590 align:middle line:90%
+And we can keep going.
+
+00:59:20.590 --> 00:59:24.430 align:middle line:84%
+And then we have to make sure
+that everything works out
+
+00:59:24.430 --> 00:59:26.830 align:middle line:84%
+at the right interval and
+everything comes together.
+
+00:59:26.830 --> 00:59:29.270 align:middle line:90%
+So what's the takeaway?
+
+00:59:29.270 --> 00:59:32.390 align:middle line:90%
+What we actually find--
+
+00:59:32.390 --> 00:59:34.450 align:middle line:84%
+let me just give the
+statement over here.
+
+00:59:34.450 --> 00:59:45.750 align:middle line:90%
+
+
+00:59:45.750 --> 00:59:49.310 align:middle line:84%
+So it can be shown-- we
+won't go through it--
+
+00:59:49.310 --> 01:00:04.510 align:middle line:84%
+that there exists a partitional
+equilibrium with k cells
+
+01:00:04.510 --> 01:00:19.370 align:middle line:84%
+if and only if
+beta is less than--
+
+01:00:19.370 --> 01:00:26.412 align:middle line:90%
+
+
+01:00:26.412 --> 01:00:27.870 align:middle line:84%
+and I think this
+formula can really
+
+01:00:27.870 --> 01:00:29.970 align:middle line:84%
+capture a lot of the key
+insights of the paper.
+
+01:00:29.970 --> 01:00:32.463 align:middle line:84%
+So let's try to understand
+what's going on.
+
+01:00:32.463 --> 01:00:34.630 align:middle line:84%
+First, let's check that
+this is consistent with what
+
+01:00:34.630 --> 01:00:35.830 align:middle line:90%
+we did before.
+
+01:00:35.830 --> 01:00:38.310 align:middle line:90%
+So what if we put in k equals 2?
+
+01:00:38.310 --> 01:00:43.030 align:middle line:84%
+With k equals 2, we're back to
+the case, we already looked at.
+
+01:00:43.030 --> 01:00:46.190 align:middle line:84%
+And with k equals 2, the theorem
+says there exists a partitional
+
+01:00:46.190 --> 01:00:50.510 align:middle line:84%
+equilibrium with two cells if
+and only if beta is less than 1
+
+01:00:50.510 --> 01:00:54.590 align:middle line:84%
+over 2 times 2 times
+1, which is 1/4.
+
+01:00:54.590 --> 01:00:57.640 align:middle line:84%
+So indeed, it agrees with
+what we got over here.
+
+01:00:57.640 --> 01:01:00.520 align:middle line:84%
+More generally, we get
+a formula like this.
+
+01:01:00.520 --> 01:01:01.580 align:middle line:90%
+So what does it say?
+
+01:01:01.580 --> 01:01:05.640 align:middle line:84%
+Well, as k increases,
+communication
+
+01:01:05.640 --> 01:01:07.560 align:middle line:90%
+becomes more precise.
+
+01:01:07.560 --> 01:01:10.560 align:middle line:84%
+As k increases, we're
+partitioning the state
+
+01:01:10.560 --> 01:01:14.120 align:middle line:84%
+into smaller and smaller
+cells, and therefore conveying
+
+01:01:14.120 --> 01:01:16.260 align:middle line:84%
+more and more precise
+information about the state.
+
+01:01:16.260 --> 01:01:27.560 align:middle line:90%
+
+
+01:01:27.560 --> 01:01:29.900 align:middle line:84%
+So if we want more
+precise communication,
+
+01:01:29.900 --> 01:01:32.760 align:middle line:84%
+what it's telling us is
+beta has to be even smaller.
+
+01:01:32.760 --> 01:01:37.220 align:middle line:90%
+So that requires less bias.
+
+01:01:37.220 --> 01:01:43.880 align:middle line:90%
+
+
+01:01:43.880 --> 01:01:50.600 align:middle line:84%
+So what we see is that the
+less bias that the agent is,
+
+01:01:50.600 --> 01:01:52.920 align:middle line:84%
+the more precisely it's
+possible for the sender
+
+01:01:52.920 --> 01:01:55.480 align:middle line:84%
+to communicate with
+that agent and more
+
+01:01:55.480 --> 01:01:58.280 align:middle line:84%
+we can split the state space
+into these very, very tiny cells
+
+01:01:58.280 --> 01:02:01.120 align:middle line:84%
+and convey more and more
+precise information.
+
+01:02:01.120 --> 01:02:03.100 align:middle line:84%
+And in the limiting case,
+when there's no bias,
+
+01:02:03.100 --> 01:02:04.933 align:middle line:84%
+we can basically perfectly
+reveal the state.
+
+01:02:04.933 --> 01:02:05.768 align:middle line:90%
+Yes.
+
+01:02:05.768 --> 01:02:07.560 align:middle line:84%
+AUDIENCE: Can you
+explain a little bit more
+
+01:02:07.560 --> 01:02:10.200 align:middle line:84%
+about the reasoning between
+precise communication
+
+01:02:10.200 --> 01:02:14.132 align:middle line:84%
+coming from less bias
+or the last arrow?
+
+01:02:14.132 --> 01:02:14.840 align:middle line:90%
+PROFESSOR: Right.
+
+01:02:14.840 --> 01:02:17.440 align:middle line:84%
+So I'm saying the last arrow
+comes from this equation.
+
+01:02:17.440 --> 01:02:23.040 align:middle line:84%
+If k grows-- so we want to have
+an equilibrium with more cells--
+
+01:02:23.040 --> 01:02:25.760 align:middle line:84%
+then this inequality
+has to be satisfied.
+
+01:02:25.760 --> 01:02:29.600 align:middle line:84%
+Because k is on the bottom of
+this fraction, as k goes up,
+
+01:02:29.600 --> 01:02:31.120 align:middle line:90%
+this fraction gets smaller.
+
+01:02:31.120 --> 01:02:32.717 align:middle line:84%
+And therefore, beta
+has to be smaller
+
+01:02:32.717 --> 01:02:34.300 align:middle line:84%
+in order for this
+equilibrium to work.
+
+01:02:34.300 --> 01:02:35.717 align:middle line:84%
+AUDIENCE: Is there
+a reason that's
+
+01:02:35.717 --> 01:02:37.440 align:middle line:90%
+not related to this inequality?
+
+01:02:37.440 --> 01:02:38.980 align:middle line:90%
+PROFESSOR: Oh, yeah.
+
+01:02:38.980 --> 01:02:41.560 align:middle line:84%
+I think the reason not
+related to the inequality
+
+01:02:41.560 --> 01:02:46.560 align:middle line:84%
+is that when we provide really,
+really precise information
+
+01:02:46.560 --> 01:02:50.680 align:middle line:84%
+about the state, it becomes
+very tempting for the sender
+
+01:02:50.680 --> 01:02:54.320 align:middle line:84%
+to misreport and claim the
+state is higher than it is.
+
+01:02:54.320 --> 01:02:57.640 align:middle line:84%
+So think of the logic
+of that opening case
+
+01:02:57.640 --> 01:02:59.020 align:middle line:90%
+where we fully reveal the state.
+
+01:02:59.020 --> 01:03:00.770 align:middle line:84%
+If we basically say
+what the state is down
+
+01:03:00.770 --> 01:03:02.540 align:middle line:84%
+to really, really
+strong precision,
+
+01:03:02.540 --> 01:03:03.420 align:middle line:90%
+what's the sender going to do?
+
+01:03:03.420 --> 01:03:04.940 align:middle line:84%
+They're just going to
+claim the state is higher,
+
+01:03:04.940 --> 01:03:06.815 align:middle line:84%
+they're going to claim
+it's in a higher cell,
+
+01:03:06.815 --> 01:03:09.840 align:middle line:84%
+and they're going to
+benefit from that.
+
+01:03:09.840 --> 01:03:12.160 align:middle line:84%
+If they're less biased,
+then it's feasible for us
+
+01:03:12.160 --> 01:03:14.180 align:middle line:84%
+to split the state space
+into very fine cells,
+
+01:03:14.180 --> 01:03:17.995 align:middle line:84%
+and the sender won't have
+an incentive to deviate.
+
+01:03:17.995 --> 01:03:19.620 align:middle line:84%
+So I guess one final
+picture I'll show.
+
+01:03:19.620 --> 01:03:21.537 align:middle line:84%
+And I know this lecture
+is maybe a bit harder,
+
+01:03:21.537 --> 01:03:26.240 align:middle line:84%
+so I think I'll end maybe
+5 or 10 minutes early.
+
+01:03:26.240 --> 01:03:29.040 align:middle line:84%
+But what we can
+look at is I think
+
+01:03:29.040 --> 01:03:32.080 align:middle line:84%
+it's helpful to look
+at the space of biases.
+
+01:03:32.080 --> 01:03:34.320 align:middle line:90%
+So let's look at beta.
+
+01:03:34.320 --> 01:03:38.400 align:middle line:84%
+And let's see what's
+possible in this game.
+
+01:03:38.400 --> 01:03:41.400 align:middle line:90%
+So here, we have 1/4.
+
+01:03:41.400 --> 01:03:44.860 align:middle line:84%
+And if beta is up here, then
+no communication is possible.
+
+01:03:44.860 --> 01:03:57.520 align:middle line:90%
+
+
+01:03:57.520 --> 01:03:59.148 align:middle line:84%
+The agent is so
+biased that there's
+
+01:03:59.148 --> 01:04:01.440 align:middle line:84%
+no equilibrium in which any
+information about the state
+
+01:04:01.440 --> 01:04:02.220 align:middle line:90%
+is revealed.
+
+01:04:02.220 --> 01:04:05.000 align:middle line:84%
+That's what we already
+said over there.
+
+01:04:05.000 --> 01:04:06.660 align:middle line:90%
+Let's get the numbers right.
+
+01:04:06.660 --> 01:04:11.546 align:middle line:84%
+If we have 3, we have
+6, it's already 1/12.
+
+01:04:11.546 --> 01:04:16.240 align:middle line:84%
+Yeah, I think we'll get
+down to something like 1/12.
+
+01:04:16.240 --> 01:04:27.360 align:middle line:84%
+So here, there is a
+two-cell equilibrium only.
+
+01:04:27.360 --> 01:04:29.880 align:middle line:84%
+If the bias is
+between 1/12 and 1/4,
+
+01:04:29.880 --> 01:04:33.182 align:middle line:84%
+then the only equilibrium
+that can be shown is the kind
+
+01:04:33.182 --> 01:04:35.640 align:middle line:84%
+of equilibrium we described,
+where you either say the state
+
+01:04:35.640 --> 01:04:37.140 align:middle line:90%
+is above or below a threshold.
+
+01:04:37.140 --> 01:04:39.792 align:middle line:90%
+
+
+01:04:39.792 --> 01:04:42.000 align:middle line:84%
+And we're going to keep
+going down and down and down.
+
+01:04:42.000 --> 01:04:44.360 align:middle line:84%
+And then here in
+this case, we're
+
+01:04:44.360 --> 01:04:49.810 align:middle line:84%
+going to have a two-cell and
+a three-cell equilibrium.
+
+01:04:49.810 --> 01:04:51.690 align:middle line:84%
+So for a lower
+level of bias, there
+
+01:04:51.690 --> 01:04:53.970 align:middle line:84%
+will be a two-cell equilibrium,
+where the sender just
+
+01:04:53.970 --> 01:04:56.290 align:middle line:84%
+says the state's above
+or below a threshold.
+
+01:04:56.290 --> 01:04:58.770 align:middle line:84%
+There will also be a
+three-cell equilibria,
+
+01:04:58.770 --> 01:05:02.370 align:middle line:84%
+where the sender says the state
+is either low, medium, or high.
+
+01:05:02.370 --> 01:05:02.990 align:middle line:90%
+But that's it.
+
+01:05:02.990 --> 01:05:04.290 align:middle line:90%
+There's nothing else.
+
+01:05:04.290 --> 01:05:06.130 align:middle line:84%
+And then if we get
+down to here, there's
+
+01:05:06.130 --> 01:05:09.290 align:middle line:84%
+going to be a two-cell, a
+three-cell, and a four-cell.
+
+01:05:09.290 --> 01:05:13.210 align:middle line:84%
+And as we keep
+going, as beta keeps
+
+01:05:13.210 --> 01:05:16.070 align:middle line:84%
+getting smaller and smaller,
+the set of equilibria grows.
+
+01:05:16.070 --> 01:05:17.510 align:middle line:84%
+We have more and
+more equilibria.
+
+01:05:17.510 --> 01:05:19.468 align:middle line:84%
+And we have equilibria
+with more and more cells
+
+01:05:19.468 --> 01:05:21.570 align:middle line:84%
+that provide more and more
+precise communication.
+
+01:05:21.570 --> 01:05:23.990 align:middle line:84%
+And the limit as beta
+gets really close to 0,
+
+01:05:23.990 --> 01:05:26.070 align:middle line:84%
+we have very
+informative equilibria.
+
+01:05:26.070 --> 01:05:43.810 align:middle line:90%
+
+
+01:05:43.810 --> 01:05:48.050 align:middle line:84%
+And maybe one final
+observation I'll make
+
+01:05:48.050 --> 01:05:52.570 align:middle line:84%
+is let's suppose beta is
+small enough so that there's
+
+01:05:52.570 --> 01:05:53.810 align:middle line:90%
+a range of equilibria.
+
+01:05:53.810 --> 01:05:56.630 align:middle line:84%
+There's a one-cell, there's a
+two-cell, there's a three-cell,
+
+01:05:56.630 --> 01:05:57.570 align:middle line:90%
+there's a four-cell.
+
+01:05:57.570 --> 01:06:00.410 align:middle line:84%
+The question is,
+which equilibrium
+
+01:06:00.410 --> 01:06:01.670 align:middle line:90%
+is best for the players?
+
+01:06:01.670 --> 01:06:10.705 align:middle line:90%
+
+
+01:06:10.705 --> 01:06:11.830 align:middle line:90%
+And the intuition for this.
+
+01:06:11.830 --> 01:06:14.117 align:middle line:84%
+Let's say we're in a case--
+let's say beta is here.
+
+01:06:14.117 --> 01:06:15.950 align:middle line:84%
+So we have both a
+two-cell and a three-cell.
+
+01:06:15.950 --> 01:06:16.750 align:middle line:90%
+What do you think is better?
+
+01:06:16.750 --> 01:06:17.347 align:middle line:90%
+Yeah.
+
+01:06:17.347 --> 01:06:18.430 align:middle line:90%
+Or do you have a question?
+
+01:06:18.430 --> 01:06:18.610 align:middle line:90%
+Yeah.
+
+01:06:18.610 --> 01:06:20.050 align:middle line:84%
+AUDIENCE: I was going to say,
+I think for the receiver,
+
+01:06:20.050 --> 01:06:21.630 align:middle line:84%
+it's probably better
+to have more cells.
+
+01:06:21.630 --> 01:06:22.790 align:middle line:90%
+So they're getting closer.
+
+01:06:22.790 --> 01:06:23.832 align:middle line:90%
+PROFESSOR: Exactly right.
+
+01:06:23.832 --> 01:06:25.690 align:middle line:84%
+So it's definitely
+better for the receiver,
+
+01:06:25.690 --> 01:06:28.230 align:middle line:84%
+because if there's more
+cells in the equilibrium,
+
+01:06:28.230 --> 01:06:29.490 align:middle line:84%
+the receiver is just
+getting more information
+
+01:06:29.490 --> 01:06:30.250 align:middle line:90%
+about the state.
+
+01:06:30.250 --> 01:06:33.025 align:middle line:84%
+And therefore, they're able to
+make more accurate decisions.
+
+01:06:33.025 --> 01:06:35.650 align:middle line:84%
+It may be less obvious, but it's
+actually better for the sender
+
+01:06:35.650 --> 01:06:36.490 align:middle line:90%
+as well.
+
+01:06:36.490 --> 01:06:45.410 align:middle line:84%
+So it turns out the
+highest k is best for both
+
+01:06:45.410 --> 01:06:48.010 align:middle line:90%
+the sender and the receiver.
+
+01:06:48.010 --> 01:06:50.640 align:middle line:84%
+So for any value of beta,
+depending on the value of beta,
+
+01:06:50.640 --> 01:06:52.390 align:middle line:84%
+there's going to be a
+range of equilibria.
+
+01:06:52.390 --> 01:06:54.230 align:middle line:84%
+There's going to be some
+uninformative equilibria.
+
+01:06:54.230 --> 01:06:55.850 align:middle line:84%
+In fact, there's always the
+babbling equilibrium where
+
+01:06:55.850 --> 01:06:57.050 align:middle line:90%
+you don't reveal anything.
+
+01:06:57.050 --> 01:06:59.350 align:middle line:84%
+There might be a two-cell where
+I just say it's high or low.
+
+01:06:59.350 --> 01:07:00.808 align:middle line:84%
+There might be a
+three-cell where I
+
+01:07:00.808 --> 01:07:02.230 align:middle line:90%
+say it's high, medium, or low.
+
+01:07:02.230 --> 01:07:04.930 align:middle line:84%
+A four cell-- the
+biggest number of cells
+
+01:07:04.930 --> 01:07:07.063 align:middle line:84%
+that can exist as
+in equilibrium,
+
+01:07:07.063 --> 01:07:09.230 align:middle line:84%
+that's going to be the most
+informative equilibrium.
+
+01:07:09.230 --> 01:07:11.647 align:middle line:84%
+And it turns out that's going
+to be the equilibrium that's
+
+01:07:11.647 --> 01:07:15.570 align:middle line:84%
+best for the sender and
+also for the receiver.
+
+01:07:15.570 --> 01:07:17.672 align:middle line:84%
+So maybe that's some sort
+of prediction about what
+
+01:07:17.672 --> 01:07:18.630 align:middle line:90%
+we might expect to see.
+
+01:07:18.630 --> 01:07:19.210 align:middle line:90%
+Yes, Amy.
+
+01:07:19.210 --> 01:07:20.890 align:middle line:84%
+AUDIENCE: So it makes sense
+that it's best for the receiver
+
+01:07:20.890 --> 01:07:22.290 align:middle line:84%
+just because when
+you get closer,
+
+01:07:22.290 --> 01:07:23.210 align:middle line:90%
+the receiver [INAUDIBLE].
+
+01:07:23.210 --> 01:07:23.730 align:middle line:90%
+PROFESSOR: Yeah.
+
+01:07:23.730 --> 01:07:25.480 align:middle line:84%
+AUDIENCE: And how does
+the sender benefit?
+
+01:07:25.480 --> 01:07:28.343 align:middle line:90%
+Is it also the same reason?
+
+01:07:28.343 --> 01:07:29.010 align:middle line:90%
+PROFESSOR: Yeah.
+
+01:07:29.010 --> 01:07:35.250 align:middle line:84%
+It's actually a property
+of the quadratic law.
+
+01:07:35.250 --> 01:07:39.370 align:middle line:84%
+So I think the intuition is that
+because the receiver is always
+
+01:07:39.370 --> 01:07:42.380 align:middle line:84%
+matching the decision with
+their expectation of the state,
+
+01:07:42.380 --> 01:07:46.120 align:middle line:84%
+the sender can never
+shift the decision.
+
+01:07:46.120 --> 01:07:48.160 align:middle line:84%
+So we're getting into
+a technical point.
+
+01:07:48.160 --> 01:07:50.220 align:middle line:84%
+But it turns out the
+expected decision is always
+
+01:07:50.220 --> 01:07:53.820 align:middle line:84%
+going to be equal to
+the expected state.
+
+01:07:53.820 --> 01:07:57.140 align:middle line:84%
+And as the cells get
+smaller, the benefit
+
+01:07:57.140 --> 01:07:59.200 align:middle line:84%
+is that the state is
+conveyed more precisely,
+
+01:07:59.200 --> 01:08:01.100 align:middle line:84%
+and therefore
+higher decisions are
+
+01:08:01.100 --> 01:08:03.200 align:middle line:84%
+taken in higher states and the
+lower decisions in lower states.
+
+01:08:03.200 --> 01:08:05.075 align:middle line:84%
+And that's going to be
+better for the sender.
+
+01:08:05.075 --> 01:08:07.640 align:middle line:84%
+But the basic
+intuition is that the--
+
+01:08:07.640 --> 01:08:10.940 align:middle line:90%
+
+
+01:08:10.940 --> 01:08:13.940 align:middle line:84%
+I guess the formal answer would
+be it's like a bias variance
+
+01:08:13.940 --> 01:08:15.580 align:middle line:90%
+decomposition.
+
+01:08:15.580 --> 01:08:19.300 align:middle line:84%
+You can express the expected
+loss as the bias of the error
+
+01:08:19.300 --> 01:08:20.677 align:middle line:90%
+and the variance of the error.
+
+01:08:20.677 --> 01:08:22.260 align:middle line:84%
+And the bias is fixed
+and the variance
+
+01:08:22.260 --> 01:08:23.279 align:middle line:90%
+you're going to make smaller.
+
+01:08:23.279 --> 01:08:25.237 align:middle line:84%
+But I'm happy to talk
+more offline, if you want
+
+01:08:25.237 --> 01:08:28.220 align:middle line:90%
+to go into that in more depth.
+
+01:08:28.220 --> 01:08:30.200 align:middle line:84%
+So I think that was a
+bit of a harder lecture,
+
+01:08:30.200 --> 01:08:30.840 align:middle line:90%
+so let me stop there.
+
+01:08:30.840 --> 01:08:32.080 align:middle line:84%
+I know we're near the
+end of the semester.
+
+01:08:32.080 --> 01:08:33.420 align:middle line:90%
+I'll give people an early stop.
+
+01:08:33.420 --> 01:08:36.890 align:middle line:84%
+And I will see everyone on
+Tuesday for the last lecture.
+
+01:08:36.890 --> 01:08:40.000 align:middle line:90%

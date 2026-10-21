@@ -1,0 +1,5909 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:02.444 align:middle line:90%
+[SQUEAKING]
+
+00:00:02.444 --> 00:00:04.388 align:middle line:90%
+[RUSTLING]
+
+00:00:04.388 --> 00:00:06.332 align:middle line:90%
+[CLICKING]
+
+00:00:06.332 --> 00:00:10.827 align:middle line:90%
+
+
+00:00:10.827 --> 00:00:13.160 align:middle line:84%
+IAN BALL: So today, I want
+to say just a little bit more
+
+00:00:13.160 --> 00:00:15.840 align:middle line:84%
+about revenue equivalence,
+or the revenue formula
+
+00:00:15.840 --> 00:00:16.700 align:middle line:90%
+that we wrote down.
+
+00:00:16.700 --> 00:00:19.920 align:middle line:84%
+And I think this will be useful
+for the problem set and the quiz
+
+00:00:19.920 --> 00:00:21.400 align:middle line:90%
+on Friday.
+
+00:00:21.400 --> 00:00:23.880 align:middle line:84%
+And then I'm going to talk
+about an application of auctions
+
+00:00:23.880 --> 00:00:27.140 align:middle line:84%
+to display advertising auctions,
+like the kinds of auctions--
+
+00:00:27.140 --> 00:00:31.009 align:middle line:84%
+the keyword auctions that
+Google does commonly today.
+
+00:00:31.009 --> 00:00:32.759 align:middle line:84%
+Just to remind you of
+this revenue formula
+
+00:00:32.759 --> 00:00:36.520 align:middle line:84%
+that we computed, we were
+looking at a single item
+
+00:00:36.520 --> 00:00:37.520 align:middle line:90%
+auction.
+
+00:00:37.520 --> 00:00:41.080 align:middle line:84%
+And we had this formula--
+maybe I'll write it down here--
+
+00:00:41.080 --> 00:00:44.520 align:middle line:84%
+where we said Ti
+hat of Vi, which
+
+00:00:44.520 --> 00:00:47.360 align:middle line:84%
+was the equilibrium
+expected payment
+
+00:00:47.360 --> 00:00:54.980 align:middle line:84%
+by a bidder with valuation
+Vi, was equal to this.
+
+00:00:54.980 --> 00:01:01.602 align:middle line:90%
+
+
+00:01:01.602 --> 00:01:04.360 align:middle line:84%
+So we said the expected payment
+of a bidder with valuation
+
+00:01:04.360 --> 00:01:08.040 align:middle line:84%
+Vi in this equilibrium is
+equal to the expected payment
+
+00:01:08.040 --> 00:01:12.320 align:middle line:84%
+of bidder i when she has the
+lowest possible valuation
+
+00:01:12.320 --> 00:01:16.400 align:middle line:84%
+plus this integral of maybe
+this mysterious term of x
+
+00:01:16.400 --> 00:01:19.920 align:middle line:84%
+times the derivative of
+this function, q hat--
+
+00:01:19.920 --> 00:01:21.600 align:middle line:84%
+where, remember, this
+is the derivative
+
+00:01:21.600 --> 00:01:25.620 align:middle line:90%
+of the allocation probability.
+
+00:01:25.620 --> 00:01:33.000 align:middle line:90%
+
+
+00:01:33.000 --> 00:01:36.160 align:middle line:84%
+So I just want to highlight
+a few assumptions that
+
+00:01:36.160 --> 00:01:37.575 align:middle line:84%
+were required to
+get this result.
+
+00:01:37.575 --> 00:01:39.200 align:middle line:84%
+And the problem set
+is going to explore
+
+00:01:39.200 --> 00:01:41.242 align:middle line:84%
+some ways this assumption,
+this result can break.
+
+00:01:41.242 --> 00:01:41.760 align:middle line:90%
+Yes.
+
+00:01:41.760 --> 00:01:43.080 align:middle line:84%
+AUDIENCE: Is there a
+reason why the lower
+
+00:01:43.080 --> 00:01:44.160 align:middle line:90%
+bound is on the integral?
+
+00:01:44.160 --> 00:01:44.910 align:middle line:90%
+IAN BALL: Ah, yes.
+
+00:01:44.910 --> 00:01:46.840 align:middle line:84%
+That should be V
+lower bar, sorry.
+
+00:01:46.840 --> 00:01:49.000 align:middle line:90%
+Yeah, thanks.
+
+00:01:49.000 --> 00:01:52.440 align:middle line:84%
+So a few assumptions we
+made-- one was the assumption
+
+00:01:52.440 --> 00:01:59.910 align:middle line:90%
+of independent private values.
+
+00:01:59.910 --> 00:02:03.730 align:middle line:90%
+
+
+00:02:03.730 --> 00:02:05.530 align:middle line:84%
+Statistical
+independence, it says
+
+00:02:05.530 --> 00:02:07.410 align:middle line:84%
+one bidder's valuation
+is statistically
+
+00:02:07.410 --> 00:02:10.490 align:middle line:84%
+independent of another
+bidder's valuation.
+
+00:02:10.490 --> 00:02:13.710 align:middle line:84%
+Private values-- private
+is a confusing term.
+
+00:02:13.710 --> 00:02:20.010 align:middle line:84%
+I think maybe known values is
+maybe a more descriptive term.
+
+00:02:20.010 --> 00:02:22.090 align:middle line:84%
+It means that each
+bidder knows exactly how
+
+00:02:22.090 --> 00:02:23.450 align:middle line:90%
+much they value the good.
+
+00:02:23.450 --> 00:02:25.490 align:middle line:84%
+Information that
+another bidder has
+
+00:02:25.490 --> 00:02:28.043 align:middle line:84%
+is not relevant to my
+valuation of the item.
+
+00:02:28.043 --> 00:02:29.710 align:middle line:84%
+And I still think
+that's a bit abstract,
+
+00:02:29.710 --> 00:02:30.730 align:middle line:84%
+so I'm going to
+go over an example
+
+00:02:30.730 --> 00:02:32.450 align:middle line:84%
+where this fails
+in a second, and I
+
+00:02:32.450 --> 00:02:36.050 align:middle line:84%
+think that should clarify
+the role of this assumption.
+
+00:02:36.050 --> 00:02:37.690 align:middle line:90%
+The other assumption we made--
+
+00:02:37.690 --> 00:02:41.350 align:middle line:84%
+notice we took an integral
+here over some range of values.
+
+00:02:41.350 --> 00:02:45.050 align:middle line:84%
+So another important
+assumption is that the values--
+
+00:02:45.050 --> 00:02:46.870 align:middle line:84%
+maybe I'll say live
+in an interval.
+
+00:02:46.870 --> 00:02:51.490 align:middle line:90%
+
+
+00:02:51.490 --> 00:02:53.450 align:middle line:84%
+So if instead a
+player's valuation
+
+00:02:53.450 --> 00:02:56.190 align:middle line:84%
+could only be, say, $1 or
+$2-- it's not an interval,
+
+00:02:56.190 --> 00:02:57.470 align:middle line:90%
+it's just 2 points.
+
+00:02:57.470 --> 00:03:00.350 align:middle line:84%
+Then we wouldn't be able to take
+an integral between $1 and $2,
+
+00:03:00.350 --> 00:03:02.190 align:middle line:84%
+and this formula
+would no longer hold.
+
+00:03:02.190 --> 00:03:05.570 align:middle line:84%
+And the problem set will
+show you an example of this.
+
+00:03:05.570 --> 00:03:08.290 align:middle line:84%
+One other maybe more technical
+assumption you might notice
+
+00:03:08.290 --> 00:03:12.170 align:middle line:84%
+is that, well, for this to make
+sense, this function, q hat,
+
+00:03:12.170 --> 00:03:13.230 align:middle line:90%
+has to be well behaved.
+
+00:03:13.230 --> 00:03:16.610 align:middle line:84%
+We have to be able to take
+the derivative of Q hat.
+
+00:03:16.610 --> 00:03:18.530 align:middle line:84%
+That's a more technical
+thing, so I'll just
+
+00:03:18.530 --> 00:03:25.070 align:middle line:84%
+say technical Qi hat
+is differentiable.
+
+00:03:25.070 --> 00:03:29.440 align:middle line:90%
+
+
+00:03:29.440 --> 00:03:31.190 align:middle line:84%
+I call this technical
+because it turns out
+
+00:03:31.190 --> 00:03:32.890 align:middle line:84%
+if you use a more
+involved proof,
+
+00:03:32.890 --> 00:03:35.210 align:middle line:84%
+you can get a substantially
+similar result
+
+00:03:35.210 --> 00:03:36.272 align:middle line:90%
+without this assumption.
+
+00:03:36.272 --> 00:03:38.730 align:middle line:84%
+So that's not something we're
+going to cover in the course,
+
+00:03:38.730 --> 00:03:43.090 align:middle line:84%
+but I'll just highlight that
+our proof used differentiability
+
+00:03:43.090 --> 00:03:45.730 align:middle line:84%
+of q hat, but that's not really
+necessary for the result.
+
+00:03:45.730 --> 00:03:48.170 align:middle line:84%
+But these assumptions really
+are substantive and important
+
+00:03:48.170 --> 00:03:51.730 align:middle line:90%
+for this revenue formula.
+
+00:03:51.730 --> 00:03:55.620 align:middle line:84%
+So to understand what
+private values mean,
+
+00:03:55.620 --> 00:03:59.940 align:middle line:84%
+let's look at a classic example
+without private values, which
+
+00:03:59.940 --> 00:04:02.300 align:middle line:90%
+is called a wallet auction.
+
+00:04:02.300 --> 00:04:04.640 align:middle line:84%
+I don't think anyone actually
+does auctions like this,
+
+00:04:04.640 --> 00:04:06.130 align:middle line:90%
+but it's a good illustration.
+
+00:04:06.130 --> 00:04:07.880 align:middle line:84%
+So I think there's a
+few stories for this.
+
+00:04:07.880 --> 00:04:11.140 align:middle line:84%
+The basic story is that I
+guess this happened at a bar.
+
+00:04:11.140 --> 00:04:12.600 align:middle line:90%
+You have two people at a bar.
+
+00:04:12.600 --> 00:04:14.975 align:middle line:84%
+They each get out their wallet,
+and they put their wallet
+
+00:04:14.975 --> 00:04:18.060 align:middle line:84%
+in a bowl, say, or in
+a pile on the table.
+
+00:04:18.060 --> 00:04:24.100 align:middle line:84%
+So you have player one's
+wallet and player two's wallet.
+
+00:04:24.100 --> 00:04:29.500 align:middle line:84%
+And then the players bid for
+the union of the two wallets.
+
+00:04:29.500 --> 00:04:32.420 align:middle line:84%
+So we have both our
+wallets together in a bowl.
+
+00:04:32.420 --> 00:04:34.100 align:middle line:84%
+We're now each going
+to submit a bid.
+
+00:04:34.100 --> 00:04:38.540 align:middle line:84%
+Whoever bids more gets the bowl,
+but has to pay that amount.
+
+00:04:38.540 --> 00:04:40.520 align:middle line:84%
+Now, what's special
+about this auction?
+
+00:04:40.520 --> 00:04:43.420 align:middle line:84%
+The story maybe is far-fetched,
+but the important thing
+
+00:04:43.420 --> 00:04:46.460 align:middle line:84%
+is I know as player one
+what's in my wallet,
+
+00:04:46.460 --> 00:04:48.803 align:middle line:84%
+but I don't know what's in
+the other player's wallet.
+
+00:04:48.803 --> 00:04:50.720 align:middle line:84%
+The other player knows
+what's in their wallet,
+
+00:04:50.720 --> 00:04:52.387 align:middle line:84%
+but they don't know
+what's in my wallet.
+
+00:04:52.387 --> 00:04:55.460 align:middle line:84%
+So maybe we'll call the
+amount in my wallet theta 1
+
+00:04:55.460 --> 00:04:58.220 align:middle line:84%
+and the amount in the other
+person's wallet theta 2.
+
+00:04:58.220 --> 00:05:02.980 align:middle line:84%
+And just to make it simple,
+let's say theta 1 and theta 2--
+
+00:05:02.980 --> 00:05:05.800 align:middle line:84%
+just to clarify exactly which
+assumption we're relaxing,
+
+00:05:05.800 --> 00:05:11.580 align:middle line:84%
+let's say theta 1 and theta 2
+are independent and uniform.
+
+00:05:11.580 --> 00:05:17.100 align:middle line:84%
+Independent and
+uniform over 0, 1.
+
+00:05:17.100 --> 00:05:18.280 align:middle line:90%
+That's just a normalization.
+
+00:05:18.280 --> 00:05:21.500 align:middle line:84%
+One could be $1
+billion or something.
+
+00:05:21.500 --> 00:05:31.100 align:middle line:84%
+But the key point is that their
+1 knows theta 1 but not theta 2
+
+00:05:31.100 --> 00:05:33.600 align:middle line:84%
+because they don't know what's
+in the other person's wallet.
+
+00:05:33.600 --> 00:05:36.860 align:middle line:84%
+So if I'm bidder one, I say, I
+know my wallet, say, has 0.3.
+
+00:05:36.860 --> 00:05:39.700 align:middle line:84%
+But all for all I know,
+the other person's wallet
+
+00:05:39.700 --> 00:05:41.525 align:middle line:84%
+is uniformly distributed
+between 0 and 1.
+
+00:05:41.525 --> 00:05:42.900 align:middle line:84%
+That's all I know
+because I can't
+
+00:05:42.900 --> 00:05:44.220 align:middle line:90%
+see what's in their wallet.
+
+00:05:44.220 --> 00:05:55.150 align:middle line:84%
+And symmetrically, bidder two
+knows theta 2, but not theta 1.
+
+00:05:55.150 --> 00:05:57.650 align:middle line:84%
+Now, why is this not a
+setting of private values?
+
+00:05:57.650 --> 00:05:59.150 align:middle line:90%
+Well, I do know something.
+
+00:05:59.150 --> 00:06:00.370 align:middle line:90%
+I know theta 1.
+
+00:06:00.370 --> 00:06:01.750 align:middle line:90%
+I know it's in my wallet.
+
+00:06:01.750 --> 00:06:05.790 align:middle line:84%
+But I don't know the joint
+value of our two wallets.
+
+00:06:05.790 --> 00:06:09.110 align:middle line:84%
+And more specifically,
+something the other player knows
+
+00:06:09.110 --> 00:06:13.830 align:middle line:84%
+is relevant for my valuation
+of the bowl, of the item.
+
+00:06:13.830 --> 00:06:15.730 align:middle line:84%
+So what makes it
+not private values?
+
+00:06:15.730 --> 00:06:18.850 align:middle line:84%
+So maybe I'll say here, it's
+a failure of private values.
+
+00:06:18.850 --> 00:06:24.930 align:middle line:90%
+
+
+00:06:24.930 --> 00:06:25.430 align:middle line:90%
+Why?
+
+00:06:25.430 --> 00:06:28.150 align:middle line:84%
+Because my willingness
+to pay, my valuation
+
+00:06:28.150 --> 00:06:30.690 align:middle line:84%
+depends on information
+that another player has--
+
+00:06:30.690 --> 00:06:36.710 align:middle line:84%
+or maybe more precisely,
+another player and other players
+
+00:06:36.710 --> 00:06:41.462 align:middle line:84%
+information influences
+or affects my valuation
+
+00:06:41.462 --> 00:06:43.670 align:middle line:84%
+for the item, where here,
+the item is the combination
+
+00:06:43.670 --> 00:06:44.730 align:middle line:90%
+of the two wallets.
+
+00:06:44.730 --> 00:06:48.270 align:middle line:90%
+
+
+00:06:48.270 --> 00:06:49.970 align:middle line:84%
+Maybe I'll say my
+willingness to pay.
+
+00:06:49.970 --> 00:06:55.488 align:middle line:90%
+
+
+00:06:55.488 --> 00:06:57.030 align:middle line:84%
+If the other player's
+wallet contains
+
+00:06:57.030 --> 00:06:59.750 align:middle line:84%
+$1, which only the
+other player knows,
+
+00:06:59.750 --> 00:07:02.350 align:middle line:84%
+I'd be willing to pay
+more for this bowl that
+
+00:07:02.350 --> 00:07:03.770 align:middle line:90%
+contains both of our wallets.
+
+00:07:03.770 --> 00:07:06.390 align:middle line:90%
+
+
+00:07:06.390 --> 00:07:08.370 align:middle line:90%
+Now, you might say, well, OK.
+
+00:07:08.370 --> 00:07:11.290 align:middle line:84%
+I don't know exactly
+what's in the other wallet,
+
+00:07:11.290 --> 00:07:13.010 align:middle line:90%
+but I can compute expectations.
+
+00:07:13.010 --> 00:07:15.890 align:middle line:84%
+So the naive approach
+might be, well,
+
+00:07:15.890 --> 00:07:18.695 align:middle line:84%
+let's try to treat this like a
+normal private values auction.
+
+00:07:18.695 --> 00:07:20.070 align:middle line:84%
+So here I'll write
+naive approach
+
+00:07:20.070 --> 00:07:21.445 align:middle line:84%
+to say this is
+going to be wrong.
+
+00:07:21.445 --> 00:07:24.310 align:middle line:90%
+But let's see what happens.
+
+00:07:24.310 --> 00:07:28.190 align:middle line:84%
+To the naive approach,
+if I'm player one,
+
+00:07:28.190 --> 00:07:33.390 align:middle line:84%
+what would I say is my
+willingness to pay for the bowl?
+
+00:07:33.390 --> 00:07:36.387 align:middle line:84%
+If I just looked at
+it, I know theta 1.
+
+00:07:36.387 --> 00:07:38.970 align:middle line:84%
+What's a reasonable way to say,
+what is my willingness to pay?
+
+00:07:38.970 --> 00:07:42.800 align:middle line:84%
+What is my expected value from
+the union of the two wallets
+
+00:07:42.800 --> 00:07:44.050 align:middle line:90%
+or the sum of the two wallets?
+
+00:07:44.050 --> 00:07:48.230 align:middle line:90%
+
+
+00:07:48.230 --> 00:07:49.200 align:middle line:90%
+Yeah.
+
+00:07:49.200 --> 00:07:51.240 align:middle line:84%
+AUDIENCE: Since the
+other player's value
+
+00:07:51.240 --> 00:07:53.420 align:middle line:84%
+is uniformly distributed
+between 0 and 1,
+
+00:07:53.420 --> 00:07:56.520 align:middle line:84%
+the expected value of the
+other player's value is 0.5.
+
+00:07:56.520 --> 00:07:59.660 align:middle line:84%
+So the naive approach would
+be to add 0.5 to [INAUDIBLE].
+
+00:07:59.660 --> 00:08:00.660 align:middle line:90%
+IAN BALL: Exactly right.
+
+00:08:00.660 --> 00:08:03.040 align:middle line:84%
+So you might say, OK, this is
+just a normal auction where
+
+00:08:03.040 --> 00:08:07.240 align:middle line:84%
+player one's value is theta
+1 plus 0.5 or plus 1/2.
+
+00:08:07.240 --> 00:08:13.960 align:middle line:84%
+And player two's value
+is theta 2 plus 1/2.
+
+00:08:13.960 --> 00:08:16.920 align:middle line:84%
+So I might say, look,
+we have some item,
+
+00:08:16.920 --> 00:08:18.740 align:middle line:84%
+and I have some
+private information.
+
+00:08:18.740 --> 00:08:19.700 align:middle line:90%
+I know my theta 1.
+
+00:08:19.700 --> 00:08:21.660 align:middle line:84%
+I use that to
+compute my valuation.
+
+00:08:21.660 --> 00:08:23.280 align:middle line:84%
+And let's just go
+ahead like this.
+
+00:08:23.280 --> 00:08:25.680 align:middle line:84%
+And what I want to show
+is that this auction
+
+00:08:25.680 --> 00:08:27.800 align:middle line:84%
+is going to behave
+very differently
+
+00:08:27.800 --> 00:08:30.640 align:middle line:84%
+from a private auction,
+where this is my value
+
+00:08:30.640 --> 00:08:32.360 align:middle line:84%
+and this is the
+other player's value.
+
+00:08:32.360 --> 00:08:35.159 align:middle line:90%
+So to see this, let's look at--
+
+00:08:35.159 --> 00:08:37.260 align:middle line:84%
+so fully solving this
+auction is quite involved,
+
+00:08:37.260 --> 00:08:39.059 align:middle line:84%
+and I'll leave
+that to the notes.
+
+00:08:39.059 --> 00:08:41.020 align:middle line:84%
+And we won't really cover
+that in this course.
+
+00:08:41.020 --> 00:08:42.880 align:middle line:84%
+We will cover it in
+1416 in the spring,
+
+00:08:42.880 --> 00:08:44.088 align:middle line:90%
+if you're interested in that.
+
+00:08:44.088 --> 00:08:47.760 align:middle line:84%
+But let's just imagine we
+did a second price auction.
+
+00:08:47.760 --> 00:08:51.840 align:middle line:84%
+And let's imagine that we
+looked for an equilibrium
+
+00:08:51.840 --> 00:08:55.340 align:middle line:84%
+where each player
+bids truthfully.
+
+00:08:55.340 --> 00:09:03.840 align:middle line:84%
+So let's look at a strategy
+profile where player one bids--
+
+00:09:03.840 --> 00:09:09.760 align:middle line:84%
+we could say b1 of theta 1 plus
+theta 1 plus 1/2 would be 2
+
+00:09:09.760 --> 00:09:14.920 align:middle line:84%
+of theta 2 equals
+theta 2, et cetera.
+
+00:09:14.920 --> 00:09:19.480 align:middle line:84%
+Now, if this were a private
+values auction, then
+
+00:09:19.480 --> 00:09:22.600 align:middle line:84%
+this strategy profile
+would be in equilibrium.
+
+00:09:22.600 --> 00:09:25.000 align:middle line:84%
+We already argued that in
+a classical private value
+
+00:09:25.000 --> 00:09:27.920 align:middle line:84%
+single item auction, it was
+an equilibrium for each player
+
+00:09:27.920 --> 00:09:31.360 align:middle line:84%
+to bid truthfully, to bid
+their valuation for the item.
+
+00:09:31.360 --> 00:09:33.600 align:middle line:90%
+And in fact, we argued more.
+
+00:09:33.600 --> 00:09:36.880 align:middle line:84%
+We said however the other
+player bids, it's optimal for me
+
+00:09:36.880 --> 00:09:40.800 align:middle line:84%
+to bid my valuation in
+a second price auction.
+
+00:09:40.800 --> 00:09:44.040 align:middle line:84%
+So let's see what goes
+wrong in this case.
+
+00:09:44.040 --> 00:09:49.890 align:middle line:84%
+So let's suppose that
+to make things simple,
+
+00:09:49.890 --> 00:09:55.930 align:middle line:90%
+let's say theta 1 is 0.4.
+
+00:09:55.930 --> 00:09:59.290 align:middle line:90%
+And theta 2 equals 0.3.
+
+00:09:59.290 --> 00:10:08.410 align:middle line:84%
+So if that happens, then player
+1 is supposed to bid 0.9.
+
+00:10:08.410 --> 00:10:11.530 align:middle line:84%
+And player 2 is
+supposed to bid 0.80--
+
+00:10:11.530 --> 00:10:14.770 align:middle line:90%
+0.5 plus 0.3.
+
+00:10:14.770 --> 00:10:17.730 align:middle line:84%
+So this would be
+player two's bid.
+
+00:10:17.730 --> 00:10:22.370 align:middle line:84%
+And this would be
+player one's bid.
+
+00:10:22.370 --> 00:10:29.410 align:middle line:84%
+Now, how would our reasoning for
+why bidding b1 is optimal go?
+
+00:10:29.410 --> 00:10:31.010 align:middle line:84%
+Well, if this were
+private values,
+
+00:10:31.010 --> 00:10:35.210 align:middle line:84%
+we would say, OK,
+I'm bidder one.
+
+00:10:35.210 --> 00:10:37.890 align:middle line:90%
+My valuation is 0.9.
+
+00:10:37.890 --> 00:10:40.430 align:middle line:84%
+If I bid truthfully,
+what happens?
+
+00:10:40.430 --> 00:10:43.610 align:middle line:84%
+Well, I get the
+item and I pay 0.8.
+
+00:10:43.610 --> 00:10:48.450 align:middle line:84%
+And 0.8 is less than
+0.9, so I'm doing well.
+
+00:10:48.450 --> 00:10:51.370 align:middle line:84%
+And if I deviated,
+well, if I deviate
+
+00:10:51.370 --> 00:10:53.978 align:middle line:84%
+to bid any amount
+more than 0.8, it's
+
+00:10:53.978 --> 00:10:55.270 align:middle line:90%
+not going to make a difference.
+
+00:10:55.270 --> 00:10:56.970 align:middle line:90%
+I'm still going to win.
+
+00:10:56.970 --> 00:10:58.690 align:middle line:90%
+And I'm still going to play 0.8.
+
+00:10:58.690 --> 00:11:00.850 align:middle line:84%
+And if I deviate to any
+amount less than 0.8, well,
+
+00:11:00.850 --> 00:11:03.100 align:middle line:84%
+I'm going to lose, and I'm
+going to get a payoff of 0.
+
+00:11:03.100 --> 00:11:08.190 align:middle line:84%
+So the naive argument might be,
+well, I'm bidding optimally.
+
+00:11:08.190 --> 00:11:08.870 align:middle line:90%
+Why?
+
+00:11:08.870 --> 00:11:13.210 align:middle line:90%
+Because 0.1 is greater than 0.
+
+00:11:13.210 --> 00:11:15.430 align:middle line:84%
+And maybe I should explain
+where this comes from--
+
+00:11:15.430 --> 00:11:23.217 align:middle line:90%
+0.9 minus 0.8.
+
+00:11:23.217 --> 00:11:24.550 align:middle line:90%
+So it looks like I'm doing well.
+
+00:11:24.550 --> 00:11:26.410 align:middle line:90%
+I get a payoff of 0.1.
+
+00:11:26.410 --> 00:11:27.833 align:middle line:90%
+I could do no better than 0.1.
+
+00:11:27.833 --> 00:11:28.750 align:middle line:90%
+I'm bidding optimally.
+
+00:11:28.750 --> 00:11:30.650 align:middle line:84%
+That would be the
+private values intuition.
+
+00:11:30.650 --> 00:11:32.210 align:middle line:90%
+What's wrong with this?
+
+00:11:32.210 --> 00:11:35.130 align:middle line:90%
+So everything I said was wrong.
+
+00:11:35.130 --> 00:11:35.730 align:middle line:90%
+Yeah.
+
+00:11:35.730 --> 00:11:37.730 align:middle line:84%
+AUDIENCE: Your actual
+value is negative 0.1
+
+00:11:37.730 --> 00:11:38.790 align:middle line:90%
+because the value is 0.7.
+
+00:11:38.790 --> 00:11:42.040 align:middle line:84%
+When you're bidding
+0.8, you're paying 0.9.
+
+00:11:42.040 --> 00:11:43.040 align:middle line:90%
+IAN BALL: Exactly right.
+
+00:11:43.040 --> 00:11:44.540 align:middle line:84%
+And this is getting
+at the key point
+
+00:11:44.540 --> 00:11:47.900 align:middle line:84%
+that it's not really the
+case that my value is
+
+00:11:47.900 --> 00:11:49.640 align:middle line:90%
+known to be 0.9.
+
+00:11:49.640 --> 00:11:51.777 align:middle line:84%
+That was just my expected
+value without getting
+
+00:11:51.777 --> 00:11:53.860 align:middle line:84%
+any additional information
+about the other player.
+
+00:11:53.860 --> 00:11:56.980 align:middle line:84%
+The problem is if the
+other player bids 0.8,
+
+00:11:56.980 --> 00:12:00.060 align:middle line:84%
+and the reason they bid 0.8 is
+that the value of their wallet
+
+00:12:00.060 --> 00:12:03.940 align:middle line:84%
+is 0.3, that changes the
+amount that I value the wallet.
+
+00:12:03.940 --> 00:12:05.900 align:middle line:90%
+I no longer value it at 0.9.
+
+00:12:05.900 --> 00:12:07.200 align:middle line:90%
+What do I value it at?
+
+00:12:07.200 --> 00:12:09.100 align:middle line:84%
+Well, the true value
+of the wallet to me
+
+00:12:09.100 --> 00:12:12.340 align:middle line:84%
+is the sum of theta 1 plus
+theta 2, which in this case
+
+00:12:12.340 --> 00:12:16.700 align:middle line:90%
+is going to be 0.7.
+
+00:12:16.700 --> 00:12:18.980 align:middle line:84%
+So if I bid truthfully
+here, I'm going
+
+00:12:18.980 --> 00:12:24.100 align:middle line:84%
+to pay 0.8 for something
+that's only worth 0.7 to me.
+
+00:12:24.100 --> 00:12:25.355 align:middle line:90%
+What changed?
+
+00:12:25.355 --> 00:12:27.480 align:middle line:84%
+And why is it different
+from the classical auction?
+
+00:12:27.480 --> 00:12:32.180 align:middle line:84%
+It's that, well, this 0.9 wasn't
+my true valuation of the item.
+
+00:12:32.180 --> 00:12:36.740 align:middle line:84%
+It was my belief or my
+expected value of the item.
+
+00:12:36.740 --> 00:12:39.420 align:middle line:84%
+And unfortunately, my assessment
+of the value of the item
+
+00:12:39.420 --> 00:12:42.740 align:middle line:84%
+is influenced by the other
+player's private information.
+
+00:12:42.740 --> 00:12:45.940 align:middle line:84%
+So the issue is, when I
+won, I'm winning precisely
+
+00:12:45.940 --> 00:12:47.900 align:middle line:84%
+because the other
+player's wallet doesn't
+
+00:12:47.900 --> 00:12:49.020 align:middle line:90%
+have much money in it.
+
+00:12:49.020 --> 00:12:52.540 align:middle line:84%
+And this phenomenon, which
+this is a very simple example.
+
+00:12:52.540 --> 00:12:54.540 align:middle line:84%
+Maybe you think, oh, this
+doesn't have relevance
+
+00:12:54.540 --> 00:12:57.420 align:middle line:84%
+to the real world,
+but this is actually
+
+00:12:57.420 --> 00:13:00.445 align:middle line:84%
+a really serious problem
+in a lot of real auctions,
+
+00:13:00.445 --> 00:13:02.320 align:middle line:84%
+and it's something called
+the winner's curse.
+
+00:13:02.320 --> 00:13:06.180 align:middle line:90%
+
+
+00:13:06.180 --> 00:13:07.880 align:middle line:84%
+So it sounds good
+for player one here.
+
+00:13:07.880 --> 00:13:09.320 align:middle line:90%
+Player one won the auction.
+
+00:13:09.320 --> 00:13:12.340 align:middle line:84%
+The problem is we have to
+think, why did player one win?
+
+00:13:12.340 --> 00:13:15.260 align:middle line:84%
+Well, when will player
+one win this auction?
+
+00:13:15.260 --> 00:13:16.540 align:middle line:90%
+Yeah, go ahead.
+
+00:13:16.540 --> 00:13:17.715 align:middle line:90%
+AUDIENCE: [INAUDIBLE]
+
+00:13:17.715 --> 00:13:19.340 align:middle line:84%
+IAN BALL: Yeah,
+they'll win the auction
+
+00:13:19.340 --> 00:13:21.540 align:middle line:84%
+when the other person
+bids a low amount, which
+
+00:13:21.540 --> 00:13:23.992 align:middle line:84%
+is precisely when the other
+person's valuation is low.
+
+00:13:23.992 --> 00:13:26.200 align:middle line:84%
+And the other person's wallet
+doesn't have very much.
+
+00:13:26.200 --> 00:13:28.460 align:middle line:84%
+So the winner's
+curse is that you
+
+00:13:28.460 --> 00:13:36.040 align:middle line:84%
+tend to win when the
+item is less valuable.
+
+00:13:36.040 --> 00:13:47.510 align:middle line:90%
+
+
+00:13:47.510 --> 00:13:49.330 align:middle line:84%
+And if you don't take
+this into account,
+
+00:13:49.330 --> 00:13:50.612 align:middle line:90%
+people will tend to overbid.
+
+00:13:50.612 --> 00:13:52.070 align:middle line:84%
+And the person who
+wins the auction
+
+00:13:52.070 --> 00:13:53.987 align:middle line:84%
+will tend to come away
+a loser because they'll
+
+00:13:53.987 --> 00:13:56.270 align:middle line:84%
+overpay for an item that's
+not worth very much.
+
+00:13:56.270 --> 00:13:59.470 align:middle line:84%
+Now, just a few examples where
+this has happened in practice.
+
+00:13:59.470 --> 00:14:03.350 align:middle line:84%
+And firms in the '70s and
+'80s lost tons of money making
+
+00:14:03.350 --> 00:14:04.550 align:middle line:90%
+mistakes like this.
+
+00:14:04.550 --> 00:14:07.830 align:middle line:84%
+One example would
+be oil drilling.
+
+00:14:07.830 --> 00:14:10.510 align:middle line:84%
+Could someone maybe
+walk me through how
+
+00:14:10.510 --> 00:14:13.970 align:middle line:84%
+oil drilling has anything to
+do with this wallet auction?
+
+00:14:13.970 --> 00:14:18.410 align:middle line:84%
+And why firms might be
+subject to the winner's curse?
+
+00:14:18.410 --> 00:14:20.990 align:middle line:84%
+So here we're drilling
+for oil, and we're
+
+00:14:20.990 --> 00:14:23.750 align:middle line:90%
+bidding for attractive land.
+
+00:14:23.750 --> 00:14:28.930 align:middle line:84%
+So oil drilling-- and let's
+say an auction for land.
+
+00:14:28.930 --> 00:14:31.710 align:middle line:84%
+So it's for land
+rights, I'll say.
+
+00:14:31.710 --> 00:14:33.910 align:middle line:84%
+So there's some big plot
+of land, say, in Alaska,
+
+00:14:33.910 --> 00:14:35.950 align:middle line:90%
+in the Arctic.
+
+00:14:35.950 --> 00:14:39.990 align:middle line:84%
+We are bidding for the right
+to drill for oil in that land
+
+00:14:39.990 --> 00:14:41.370 align:middle line:90%
+and with different oil firms.
+
+00:14:41.370 --> 00:14:42.045 align:middle line:90%
+Yeah.
+
+00:14:42.045 --> 00:14:43.670 align:middle line:84%
+AUDIENCE: Maybe a
+lot of firms ended up
+
+00:14:43.670 --> 00:14:46.050 align:middle line:84%
+paying more than they
+would actually get out.
+
+00:14:46.050 --> 00:14:47.800 align:middle line:84%
+IAN BALL: So that's
+exactly what happened.
+
+00:14:47.800 --> 00:14:50.190 align:middle line:90%
+And why did that happen?
+
+00:14:50.190 --> 00:14:52.930 align:middle line:84%
+AUDIENCE: I guess they
+thought it was worth more.
+
+00:14:52.930 --> 00:14:54.950 align:middle line:84%
+They got in the auction,
+and were just trying
+
+00:14:54.950 --> 00:14:57.808 align:middle line:84%
+to pay the most that
+person was selling it at.
+
+00:14:57.808 --> 00:14:59.850 align:middle line:84%
+IAN BALL: So I think we're
+along the right track.
+
+00:14:59.850 --> 00:15:02.790 align:middle line:84%
+Any other thoughts about maybe
+a little more specificity.
+
+00:15:02.790 --> 00:15:03.490 align:middle line:90%
+Yeah, in blue.
+
+00:15:03.490 --> 00:15:04.005 align:middle line:90%
+Yeah.
+
+00:15:04.005 --> 00:15:05.630 align:middle line:84%
+AUDIENCE: The person
+who's going to win
+
+00:15:05.630 --> 00:15:07.005 align:middle line:84%
+is going to be
+the one who thinks
+
+00:15:07.005 --> 00:15:08.170 align:middle line:90%
+there's the most oil there.
+
+00:15:08.170 --> 00:15:12.668 align:middle line:84%
+And assuming there's a range
+that's of people's beliefs,
+
+00:15:12.668 --> 00:15:14.210 align:middle line:84%
+and it falls somewhere
+in the middle,
+
+00:15:14.210 --> 00:15:15.770 align:middle line:84%
+they're going to
+have overvalued it.
+
+00:15:15.770 --> 00:15:16.110 align:middle line:90%
+IAN BALL: Exactly.
+
+00:15:16.110 --> 00:15:17.818 align:middle line:84%
+So the crucial thing
+here is, what are we
+
+00:15:17.818 --> 00:15:19.890 align:middle line:84%
+doing when we're a
+firm bidding on this?
+
+00:15:19.890 --> 00:15:22.390 align:middle line:84%
+We're going to make a noisy
+estimate of the amount of oil
+
+00:15:22.390 --> 00:15:23.050 align:middle line:90%
+in the land.
+
+00:15:23.050 --> 00:15:26.930 align:middle line:84%
+So the issue here is noisy
+or imprecise estimates.
+
+00:15:26.930 --> 00:15:32.870 align:middle line:90%
+
+
+00:15:32.870 --> 00:15:34.850 align:middle line:84%
+So I'm going to do a
+little testing right.
+
+00:15:34.850 --> 00:15:38.360 align:middle line:84%
+I'm going to try to
+guess or estimate
+
+00:15:38.360 --> 00:15:40.800 align:middle line:90%
+how much oil is in this land.
+
+00:15:40.800 --> 00:15:43.400 align:middle line:84%
+Every other firm is going
+to do the same thing.
+
+00:15:43.400 --> 00:15:45.960 align:middle line:84%
+If I win, what does that mean
+about my estimate relative
+
+00:15:45.960 --> 00:15:47.872 align:middle line:90%
+to everyone else's?
+
+00:15:47.872 --> 00:15:50.080 align:middle line:84%
+It means my estimate was
+higher than everyone else's.
+
+00:15:50.080 --> 00:15:52.330 align:middle line:84%
+And if my estimate was higher
+than everyone else's, it
+
+00:15:52.330 --> 00:15:54.600 align:middle line:84%
+probably means my
+estimate just was
+
+00:15:54.600 --> 00:15:57.500 align:middle line:84%
+an overestimate of the
+true value of the land,
+
+00:15:57.500 --> 00:16:00.360 align:middle line:84%
+and I'm going to end
+up paying too much.
+
+00:16:00.360 --> 00:16:01.920 align:middle line:84%
+Another example
+where this happens
+
+00:16:01.920 --> 00:16:12.120 align:middle line:84%
+is auctions for, say,
+government procurement.
+
+00:16:12.120 --> 00:16:13.660 align:middle line:90%
+So this is the analog of this.
+
+00:16:13.660 --> 00:16:14.500 align:middle line:90%
+What happens there?
+
+00:16:14.500 --> 00:16:18.440 align:middle line:84%
+The government says, we
+want to build a subway.
+
+00:16:18.440 --> 00:16:20.902 align:middle line:84%
+And now the firms are
+going to bid on the amount
+
+00:16:20.902 --> 00:16:22.860 align:middle line:84%
+that they need to get
+paid to build the subway.
+
+00:16:22.860 --> 00:16:24.940 align:middle line:84%
+So I might say, I'll
+build it for $100 million.
+
+00:16:24.940 --> 00:16:26.860 align:middle line:84%
+Someone else has outbid
+it for $110 million,
+
+00:16:26.860 --> 00:16:28.500 align:middle line:84%
+someone else has outbid
+it for $90 million.
+
+00:16:28.500 --> 00:16:30.280 align:middle line:84%
+And the government
+chooses the lowest bidder.
+
+00:16:30.280 --> 00:16:32.155 align:middle line:84%
+So these, you always
+have to be careful here.
+
+00:16:32.155 --> 00:16:37.640 align:middle line:84%
+So the winner is
+the lowest bidder
+
+00:16:37.640 --> 00:16:40.260 align:middle line:84%
+because the government wants it
+built as cheaply as possible.
+
+00:16:40.260 --> 00:16:43.240 align:middle line:84%
+Now, I think something else--
+there can be a similar winner's
+
+00:16:43.240 --> 00:16:43.740 align:middle line:90%
+curse here.
+
+00:16:43.740 --> 00:16:47.480 align:middle line:84%
+What's the story in a
+government procurement auction?
+
+00:16:47.480 --> 00:16:49.420 align:middle line:84%
+Say we're building a
+subway in New York.
+
+00:16:49.420 --> 00:16:50.320 align:middle line:90%
+Yeah.
+
+00:16:50.320 --> 00:16:53.220 align:middle line:84%
+AUDIENCE: To build a subway,
+there's unknown costs.
+
+00:16:53.220 --> 00:16:54.340 align:middle line:90%
+You're not fully certain.
+
+00:16:54.340 --> 00:16:56.215 align:middle line:84%
+And so, again, you're
+making a noisy estimate
+
+00:16:56.215 --> 00:16:59.140 align:middle line:84%
+of exactly how much it's going
+to cost to make the subway.
+
+00:16:59.140 --> 00:17:00.640 align:middle line:84%
+And then whoever
+wins is going to be
+
+00:17:00.640 --> 00:17:02.900 align:middle line:84%
+whoever had the lowest
+estimate of cost,
+
+00:17:02.900 --> 00:17:03.900 align:middle line:90%
+which is probably wrong.
+
+00:17:03.900 --> 00:17:04.900 align:middle line:90%
+IAN BALL: Exactly right.
+
+00:17:04.900 --> 00:17:06.560 align:middle line:84%
+So it's exactly
+parallel to this.
+
+00:17:06.560 --> 00:17:08.000 align:middle line:90%
+We're making noisy estimates.
+
+00:17:08.000 --> 00:17:10.140 align:middle line:84%
+Here we're estimating
+the value of something.
+
+00:17:10.140 --> 00:17:12.599 align:middle line:84%
+If I win, I probably
+overestimated the value.
+
+00:17:12.599 --> 00:17:14.800 align:middle line:84%
+Here we're estimating the
+cost of doing something.
+
+00:17:14.800 --> 00:17:17.380 align:middle line:84%
+If I won, I probably
+underestimated the cost.
+
+00:17:17.380 --> 00:17:19.460 align:middle line:84%
+So I thought it would
+only cost me $100 million,
+
+00:17:19.460 --> 00:17:23.140 align:middle line:84%
+then I build it, and it
+ends up costing a lot more.
+
+00:17:23.140 --> 00:17:25.920 align:middle line:84%
+So it's the same basic idea that
+we have imprecise estimates that
+
+00:17:25.920 --> 00:17:26.940 align:middle line:90%
+are all correlated.
+
+00:17:26.940 --> 00:17:28.800 align:middle line:84%
+There's actually a
+really nice story.
+
+00:17:28.800 --> 00:17:30.440 align:middle line:84%
+So Paul Milgrom, who did
+some famous work on this
+
+00:17:30.440 --> 00:17:31.900 align:middle line:84%
+and ultimately won
+the Nobel Prize,
+
+00:17:31.900 --> 00:17:34.810 align:middle line:84%
+said his dad was a painter and
+would always complain to him
+
+00:17:34.810 --> 00:17:36.950 align:middle line:84%
+that when he would bid
+on painting contracts,
+
+00:17:36.950 --> 00:17:38.428 align:middle line:84%
+he'd always find
+that when he won,
+
+00:17:38.428 --> 00:17:40.470 align:middle line:84%
+it cost more to paint the
+house than he expected.
+
+00:17:40.470 --> 00:17:42.450 align:middle line:84%
+It was always a bit of a
+harder job than he thought.
+
+00:17:42.450 --> 00:17:43.950 align:middle line:84%
+And Paul Milgrom
+said, oh, one day I
+
+00:17:43.950 --> 00:17:45.790 align:middle line:90%
+wanted to tell him the answer.
+
+00:17:45.790 --> 00:17:47.150 align:middle line:84%
+It turned out his father died
+before he could tell him,
+
+00:17:47.150 --> 00:17:48.150 align:middle line:90%
+so it's a sad story.
+
+00:17:48.150 --> 00:17:52.690 align:middle line:84%
+But I think it's a nice
+illustration of this phenomenon.
+
+00:17:52.690 --> 00:17:54.190 align:middle line:90%
+Any questions on that?
+
+00:17:54.190 --> 00:17:57.890 align:middle line:84%
+And then we'll move to
+another application.
+
+00:17:57.890 --> 00:18:04.330 align:middle line:84%
+So now let's move
+to big application
+
+00:18:04.330 --> 00:18:07.170 align:middle line:84%
+of auctions, which is going
+to be advertising auctions.
+
+00:18:07.170 --> 00:18:08.930 align:middle line:84%
+And by advertising,
+what I really mean
+
+00:18:08.930 --> 00:18:11.830 align:middle line:90%
+is keyword search auctions.
+
+00:18:11.830 --> 00:18:20.730 align:middle line:90%
+
+
+00:18:20.730 --> 00:18:23.250 align:middle line:84%
+And you probably see
+this all the time.
+
+00:18:23.250 --> 00:18:26.773 align:middle line:84%
+If you Google something,
+you get the organic results.
+
+00:18:26.773 --> 00:18:28.690 align:middle line:84%
+So let's just see what
+it looks like on a page
+
+00:18:28.690 --> 00:18:30.130 align:middle line:90%
+if I go to Google.
+
+00:18:30.130 --> 00:18:32.550 align:middle line:84%
+Well, I'm going to get some
+organic search results.
+
+00:18:32.550 --> 00:18:35.850 align:middle line:90%
+
+
+00:18:35.850 --> 00:18:36.990 align:middle line:90%
+What do I mean by organic?
+
+00:18:36.990 --> 00:18:39.170 align:middle line:84%
+Organic just means Google's
+algorithm is saying,
+
+00:18:39.170 --> 00:18:40.670 align:middle line:84%
+these are the
+websites that are most
+
+00:18:40.670 --> 00:18:42.530 align:middle line:90%
+relevant for what I typed in.
+
+00:18:42.530 --> 00:18:44.970 align:middle line:84%
+But then you're also going
+to have sponsored results.
+
+00:18:44.970 --> 00:18:48.450 align:middle line:90%
+You might have something here--
+
+00:18:48.450 --> 00:18:50.610 align:middle line:90%
+I'll say S for sponsored one.
+
+00:18:50.610 --> 00:18:52.670 align:middle line:90%
+Maybe something here, S2.
+
+00:18:52.670 --> 00:18:57.690 align:middle line:84%
+Maybe you'll have a
+few over here, S3, S4.
+
+00:18:57.690 --> 00:19:02.930 align:middle line:84%
+And these slots--
+if you look, they'll
+
+00:19:02.930 --> 00:19:06.650 align:middle line:84%
+be relevant to
+what you searched.
+
+00:19:06.650 --> 00:19:08.110 align:middle line:90%
+And you may not even notice--
+
+00:19:08.110 --> 00:19:10.100 align:middle line:84%
+I think you probably
+know, but a lot of people
+
+00:19:10.100 --> 00:19:11.850 align:middle line:84%
+just think of all the
+results as the same.
+
+00:19:11.850 --> 00:19:15.410 align:middle line:84%
+They don't quite recognize
+what's sponsored and what's not.
+
+00:19:15.410 --> 00:19:16.910 align:middle line:84%
+What does it mean
+if it's sponsored?
+
+00:19:16.910 --> 00:19:19.210 align:middle line:84%
+Do people know what's
+going on there?
+
+00:19:19.210 --> 00:19:21.930 align:middle line:84%
+Once they've seen
+organic and sponsored?
+
+00:19:21.930 --> 00:19:23.330 align:middle line:90%
+Yeah.
+
+00:19:23.330 --> 00:19:26.368 align:middle line:84%
+AUDIENCE: I don't know
+exactly, but [INAUDIBLE].
+
+00:19:26.368 --> 00:19:27.910 align:middle line:84%
+IAN BALL: They paid
+to have it there.
+
+00:19:27.910 --> 00:19:28.970 align:middle line:90%
+So if you notice--
+
+00:19:28.970 --> 00:19:34.210 align:middle line:84%
+let's say you Google
+Uber, just as one example.
+
+00:19:34.210 --> 00:19:38.730 align:middle line:84%
+What might you see in the
+first slot if you Google Uber?
+
+00:19:38.730 --> 00:19:41.810 align:middle line:90%
+Yeah, you often see Lyft.
+
+00:19:41.810 --> 00:19:47.130 align:middle line:84%
+And what's happening
+is Uber will probably
+
+00:19:47.130 --> 00:19:49.895 align:middle line:84%
+show up as the first
+organic result.
+
+00:19:49.895 --> 00:19:51.770 align:middle line:84%
+But the first sponsored
+result might actually
+
+00:19:51.770 --> 00:19:54.370 align:middle line:84%
+be Lyft, because Lyft
+recognizes that someone
+
+00:19:54.370 --> 00:19:58.530 align:middle line:84%
+who's searching for Uber
+is looking to rideshare.
+
+00:19:58.530 --> 00:20:02.490 align:middle line:84%
+And maybe Lyft can undermine
+them and get them to buy that.
+
+00:20:02.490 --> 00:20:04.490 align:middle line:84%
+Now, Uber might actually
+buy a slot here as well
+
+00:20:04.490 --> 00:20:05.310 align:middle line:90%
+to try to do that.
+
+00:20:05.310 --> 00:20:07.352 align:middle line:84%
+And now we might see--
+so Uber might actually
+
+00:20:07.352 --> 00:20:08.810 align:middle line:84%
+appear both in your
+organic results
+
+00:20:08.810 --> 00:20:10.018 align:middle line:90%
+and in the sponsored results.
+
+00:20:10.018 --> 00:20:13.170 align:middle line:84%
+And there's a lot of strategy
+that goes on into this.
+
+00:20:13.170 --> 00:20:16.590 align:middle line:84%
+And this is actually how Google
+makes a lot of their money--
+
+00:20:16.590 --> 00:20:18.310 align:middle line:84%
+that by having the
+best search engine,
+
+00:20:18.310 --> 00:20:19.810 align:middle line:84%
+they have a lot of
+people searching.
+
+00:20:19.810 --> 00:20:22.630 align:middle line:84%
+And firms are willing to
+pay a lot for these slots.
+
+00:20:22.630 --> 00:20:25.370 align:middle line:84%
+Now, a big insight, a
+big advance for Google
+
+00:20:25.370 --> 00:20:29.150 align:middle line:84%
+was the fact that these slots
+are responsive to the keyword.
+
+00:20:29.150 --> 00:20:37.700 align:middle line:84%
+So I'll say the
+sponsored slots depend
+
+00:20:37.700 --> 00:20:41.740 align:middle line:84%
+on the keyword, the keyword
+meaning what you Googled.
+
+00:20:41.740 --> 00:20:44.100 align:middle line:84%
+Before this, Google would
+just do banner advertisements,
+
+00:20:44.100 --> 00:20:46.392 align:middle line:84%
+where they would just have
+something on the screen that
+
+00:20:46.392 --> 00:20:47.317 align:middle line:90%
+was shown to everyone.
+
+00:20:47.317 --> 00:20:48.900 align:middle line:84%
+But that's not very
+valuable because I
+
+00:20:48.900 --> 00:20:51.067 align:middle line:84%
+might be showing an ad to
+someone who doesn't really
+
+00:20:51.067 --> 00:20:52.420 align:middle line:90%
+care about it.
+
+00:20:52.420 --> 00:20:55.412 align:middle line:84%
+These sponsored searches
+allow Google to hyper target
+
+00:20:55.412 --> 00:20:57.620 align:middle line:84%
+their ads, and therefore,
+generate a lot more revenue
+
+00:20:57.620 --> 00:20:59.020 align:middle line:90%
+from their ads.
+
+00:20:59.020 --> 00:21:01.513 align:middle line:84%
+Now, how does Google decide
+who gets to be in this slot?
+
+00:21:01.513 --> 00:21:02.680 align:middle line:90%
+Who gets to be in this slot?
+
+00:21:02.680 --> 00:21:03.847 align:middle line:90%
+Who gets to be in this slot?
+
+00:21:03.847 --> 00:21:05.800 align:middle line:84%
+They run an auction
+among the advertisers.
+
+00:21:05.800 --> 00:21:08.820 align:middle line:84%
+And this is actually,
+maybe in numerical terms,
+
+00:21:08.820 --> 00:21:11.160 align:middle line:84%
+the most important auctions
+we see in the world.
+
+00:21:11.160 --> 00:21:13.660 align:middle line:84%
+Hundreds of billions are
+raised every year doing this.
+
+00:21:13.660 --> 00:21:16.420 align:middle line:84%
+And today we're going to
+analyze a very simple model
+
+00:21:16.420 --> 00:21:20.620 align:middle line:84%
+of this sponsored
+search auction.
+
+00:21:20.620 --> 00:21:23.020 align:middle line:84%
+So just to be clear
+here, the entire auction
+
+00:21:23.020 --> 00:21:25.420 align:middle line:84%
+is designed for a
+particular keyword.
+
+00:21:25.420 --> 00:21:28.140 align:middle line:84%
+If people Google
+Lyft, then there's
+
+00:21:28.140 --> 00:21:30.473 align:middle line:84%
+going to be an auction
+for showing slots
+
+00:21:30.473 --> 00:21:31.640 align:middle line:90%
+to someone who googled Lyft.
+
+00:21:31.640 --> 00:21:33.480 align:middle line:84%
+If someone googled Uber, there
+would be a different thing.
+
+00:21:33.480 --> 00:21:35.560 align:middle line:84%
+If they googled hotel,
+there'd be something else.
+
+00:21:35.560 --> 00:21:37.435 align:middle line:84%
+So everything we're
+going to be talking about
+
+00:21:37.435 --> 00:21:38.860 align:middle line:90%
+is for a fixed keyword.
+
+00:21:38.860 --> 00:21:41.860 align:middle line:84%
+Now, why can't we just
+off-the-shelf apply
+
+00:21:41.860 --> 00:21:43.300 align:middle line:90%
+what we've done so far?
+
+00:21:43.300 --> 00:21:48.120 align:middle line:84%
+The challenge this is not
+a single item auction.
+
+00:21:48.120 --> 00:21:52.380 align:middle line:90%
+
+
+00:21:52.380 --> 00:21:53.280 align:middle line:90%
+We have many items.
+
+00:21:53.280 --> 00:21:54.840 align:middle line:84%
+We have the first slot,
+we have the second slot,
+
+00:21:54.840 --> 00:21:55.940 align:middle line:90%
+we have the third slot.
+
+00:21:55.940 --> 00:21:58.107 align:middle line:84%
+And the other thing is these
+items are not the same.
+
+00:21:58.107 --> 00:21:59.580 align:middle line:84%
+So it's not a
+single item auction.
+
+00:21:59.580 --> 00:22:04.860 align:middle line:84%
+We have multiple
+heterogeneous items.
+
+00:22:04.860 --> 00:22:06.600 align:middle line:84%
+Or maybe I'll say
+differentiated items.
+
+00:22:06.600 --> 00:22:12.933 align:middle line:90%
+
+
+00:22:12.933 --> 00:22:15.100 align:middle line:84%
+Getting shown first is a
+lot better than being shown
+
+00:22:15.100 --> 00:22:17.100 align:middle line:84%
+second, which is better
+than being shown third.
+
+00:22:17.100 --> 00:22:18.120 align:middle line:90%
+So how do we model this?
+
+00:22:18.120 --> 00:22:20.720 align:middle line:84%
+Well, we're going to write
+down a pretty simple model.
+
+00:22:20.720 --> 00:22:24.140 align:middle line:90%
+And here's our general model.
+
+00:22:24.140 --> 00:22:27.050 align:middle line:84%
+We're going to say that if your
+ad shows up in the first slot.
+
+00:22:27.050 --> 00:22:29.430 align:middle line:90%
+It's more likely to be clicked.
+
+00:22:29.430 --> 00:22:31.570 align:middle line:84%
+So in our general model,
+we have n bidders.
+
+00:22:31.570 --> 00:22:35.310 align:middle line:90%
+
+
+00:22:35.310 --> 00:22:38.830 align:middle line:90%
+I'll call them i equals 1 to n.
+
+00:22:38.830 --> 00:22:42.470 align:middle line:90%
+
+
+00:22:42.470 --> 00:22:44.667 align:middle line:84%
+And then we're going to
+have m advertising slots.
+
+00:22:44.667 --> 00:22:46.250 align:middle line:84%
+So in my example up
+here, we had four.
+
+00:22:46.250 --> 00:22:49.330 align:middle line:84%
+In general, we'll have
+m advertising slots.
+
+00:22:49.330 --> 00:22:53.510 align:middle line:90%
+
+
+00:22:53.510 --> 00:22:57.750 align:middle line:84%
+We'll call these
+j equals 1 to m.
+
+00:22:57.750 --> 00:23:00.110 align:middle line:84%
+And what distinguishes
+these slots is what we'll
+
+00:23:00.110 --> 00:23:02.590 align:middle line:90%
+call the click-through rate.
+
+00:23:02.590 --> 00:23:14.310 align:middle line:84%
+So we'll say the Click-Through
+Rate, sometimes called CTR,
+
+00:23:14.310 --> 00:23:20.070 align:middle line:90%
+are alpha 1, alpha 2, alpha m.
+
+00:23:20.070 --> 00:23:22.550 align:middle line:90%
+So what does this mean?
+
+00:23:22.550 --> 00:23:25.710 align:middle line:84%
+Alpha 1 is the click-through
+rate of the first position.
+
+00:23:25.710 --> 00:23:28.070 align:middle line:84%
+If someone shows their
+ad in the first position,
+
+00:23:28.070 --> 00:23:31.430 align:middle line:84%
+this is the probability that
+it's going to get clicked.
+
+00:23:31.430 --> 00:23:33.610 align:middle line:84%
+If someone shows their ad
+in the second position,
+
+00:23:33.610 --> 00:23:35.318 align:middle line:84%
+then the probability
+that it gets clicked
+
+00:23:35.318 --> 00:23:38.190 align:middle line:84%
+is alpha 2 all the way down to
+alpha m if it's shown in the nth
+
+00:23:38.190 --> 00:23:39.030 align:middle line:90%
+position.
+
+00:23:39.030 --> 00:23:41.310 align:middle line:84%
+Now, there's a big
+simplifying assumption here
+
+00:23:41.310 --> 00:23:43.190 align:middle line:84%
+that the probability
+that it's clicked
+
+00:23:43.190 --> 00:23:45.250 align:middle line:84%
+doesn't depend on which
+ad is shown there.
+
+00:23:45.250 --> 00:23:48.330 align:middle line:84%
+If I showed a really bad ad for
+a really undesirable product,
+
+00:23:48.330 --> 00:23:51.150 align:middle line:84%
+even if it's first, probably
+no one's going to click on it.
+
+00:23:51.150 --> 00:23:52.825 align:middle line:84%
+But if we're looking
+at products that
+
+00:23:52.825 --> 00:23:54.450 align:middle line:84%
+are pretty similar,
+like Uber and Lyft,
+
+00:23:54.450 --> 00:23:56.650 align:middle line:84%
+maybe this is a
+reasonable assumption.
+
+00:23:56.650 --> 00:23:59.710 align:middle line:90%
+
+
+00:23:59.710 --> 00:24:01.340 align:middle line:84%
+We're next going
+to assume that each
+
+00:24:01.340 --> 00:24:03.090 align:middle line:84%
+of the bidders-- we
+have to specify, well,
+
+00:24:03.090 --> 00:24:04.470 align:middle line:90%
+what do the bidders know?
+
+00:24:04.470 --> 00:24:06.303 align:middle line:84%
+Well, we're going to
+assume the bidders have
+
+00:24:06.303 --> 00:24:08.070 align:middle line:90%
+valuations per click.
+
+00:24:08.070 --> 00:24:13.870 align:middle line:84%
+So the bidders-- so
+let's say bidder i has
+
+00:24:13.870 --> 00:24:19.170 align:middle line:90%
+valuation Vi per click.
+
+00:24:19.170 --> 00:24:25.040 align:middle line:90%
+
+
+00:24:25.040 --> 00:24:27.300 align:middle line:84%
+The idea would be if someone
+clicks on my ad, well,
+
+00:24:27.300 --> 00:24:28.925 align:middle line:84%
+maybe they'll buy
+it, maybe they won't.
+
+00:24:28.925 --> 00:24:32.280 align:middle line:84%
+But the expected value to me of
+someone clicking on my ad is Vi.
+
+00:24:32.280 --> 00:24:33.760 align:middle line:84%
+Another simplifying
+assumption here
+
+00:24:33.760 --> 00:24:37.000 align:middle line:84%
+is that we're saying if
+someone clicks on it when it's
+
+00:24:37.000 --> 00:24:39.200 align:middle line:84%
+in the first position
+versus someone clicks on it
+
+00:24:39.200 --> 00:24:40.920 align:middle line:84%
+when it's in the
+second position, that's
+
+00:24:40.920 --> 00:24:42.163 align:middle line:90%
+equally valuable to me.
+
+00:24:42.163 --> 00:24:43.580 align:middle line:84%
+That may not be a
+good assumption.
+
+00:24:43.580 --> 00:24:45.205 align:middle line:84%
+Maybe if someone
+clicks on it even when
+
+00:24:45.205 --> 00:24:46.760 align:middle line:84%
+it's in a bad
+position, maybe it's
+
+00:24:46.760 --> 00:24:48.860 align:middle line:84%
+more valuable because those
+people really like it,
+
+00:24:48.860 --> 00:24:52.060 align:middle line:84%
+but we're not going
+to focus on that.
+
+00:24:52.060 --> 00:24:53.920 align:middle line:90%
+We're going to keep it simple.
+
+00:24:53.920 --> 00:24:58.200 align:middle line:90%
+So now I'm Google.
+
+00:24:58.200 --> 00:24:59.920 align:middle line:90%
+I have these m slots.
+
+00:24:59.920 --> 00:25:01.580 align:middle line:90%
+I have these i bidders.
+
+00:25:01.580 --> 00:25:03.640 align:middle line:84%
+I'm going to ask
+them to submit bids.
+
+00:25:03.640 --> 00:25:06.013 align:middle line:90%
+And I need to then choose--
+
+00:25:06.013 --> 00:25:07.180 align:middle line:90%
+so what do I need to choose?
+
+00:25:07.180 --> 00:25:08.500 align:middle line:90%
+Let's go back over here.
+
+00:25:08.500 --> 00:25:27.320 align:middle line:90%
+
+
+00:25:27.320 --> 00:25:31.380 align:middle line:84%
+So Google has-- maybe I'll call
+this auction design choices.
+
+00:25:31.380 --> 00:25:39.400 align:middle line:90%
+
+
+00:25:39.400 --> 00:25:41.800 align:middle line:84%
+So one first choice
+is, well, I'm
+
+00:25:41.800 --> 00:25:43.400 align:middle line:90%
+going to ask people to pay me.
+
+00:25:43.400 --> 00:25:45.840 align:middle line:84%
+But am I going to ask them
+to pay me every time someone
+
+00:25:45.840 --> 00:25:46.595 align:middle line:90%
+clicks on the ad?
+
+00:25:46.595 --> 00:25:48.720 align:middle line:84%
+Or am I going to ask them
+to pay me just every time
+
+00:25:48.720 --> 00:25:49.800 align:middle line:90%
+the ad is shown?
+
+00:25:49.800 --> 00:25:52.220 align:middle line:84%
+And these are two common
+models for these auctions.
+
+00:25:52.220 --> 00:25:53.740 align:middle line:90%
+One is called pay-per-click.
+
+00:25:53.740 --> 00:25:58.080 align:middle line:90%
+
+
+00:25:58.080 --> 00:26:00.140 align:middle line:84%
+And one is called
+pay-per-impression.
+
+00:26:00.140 --> 00:26:05.280 align:middle line:90%
+
+
+00:26:05.280 --> 00:26:07.340 align:middle line:84%
+An impression means the
+ad is shown to someone,
+
+00:26:07.340 --> 00:26:10.755 align:middle line:84%
+but not necessarily clicked on--
+may or may not be clicked on.
+
+00:26:10.755 --> 00:26:12.880 align:middle line:84%
+In our model, this actually
+won't make a difference
+
+00:26:12.880 --> 00:26:15.840 align:middle line:84%
+because we're assuming that the
+clickthrough rates are perfectly
+
+00:26:15.840 --> 00:26:16.865 align:middle line:90%
+known.
+
+00:26:16.865 --> 00:26:18.240 align:middle line:84%
+In a more realistic
+model, people
+
+00:26:18.240 --> 00:26:21.150 align:middle line:84%
+might be uncertain about
+these clickthrough rates,
+
+00:26:21.150 --> 00:26:22.970 align:middle line:84%
+and then it does
+make a big difference
+
+00:26:22.970 --> 00:26:25.190 align:middle line:84%
+whether it's pay-per-click
+or pay-per-impression.
+
+00:26:25.190 --> 00:26:26.610 align:middle line:84%
+I might want
+pay-per-click if I'm
+
+00:26:26.610 --> 00:26:28.870 align:middle line:84%
+really uncertain about
+how popular my ad is,
+
+00:26:28.870 --> 00:26:31.490 align:middle line:84%
+because then if my ad turns
+out to be a failure and no one
+
+00:26:31.490 --> 00:26:33.050 align:middle line:84%
+clicks on it, well,
+then at least I
+
+00:26:33.050 --> 00:26:34.230 align:middle line:90%
+don't have to pay very much.
+
+00:26:34.230 --> 00:26:35.470 align:middle line:84%
+Whereas if it's
+pay-for-impression,
+
+00:26:35.470 --> 00:26:37.550 align:middle line:84%
+well, then I'm on the hook
+to keep showing my ad.
+
+00:26:37.550 --> 00:26:39.592 align:middle line:84%
+No one's clicking on it,
+I'm still paying for it.
+
+00:26:39.592 --> 00:26:42.530 align:middle line:84%
+So you can see why it's pretty
+common to use pay-per-click.
+
+00:26:42.530 --> 00:26:44.548 align:middle line:84%
+You can think of this
+as ensuring advertisers
+
+00:26:44.548 --> 00:26:47.090 align:middle line:84%
+against having a really bad ad
+that no one wants to click on.
+
+00:26:47.090 --> 00:26:48.670 align:middle line:84%
+But in this model, that
+won't make a difference.
+
+00:26:48.670 --> 00:26:49.270 align:middle line:90%
+Yes, Amy.
+
+00:26:49.270 --> 00:26:52.170 align:middle line:84%
+AUDIENCE: But then does it
+close out on pay-per-click
+
+00:26:52.170 --> 00:26:55.245 align:middle line:84%
+if all the ads are
+pretty unpopular?
+
+00:26:55.245 --> 00:26:55.870 align:middle line:90%
+IAN BALL: Yeah.
+
+00:26:55.870 --> 00:26:59.410 align:middle line:84%
+I guess the firms would
+still have an incentive
+
+00:26:59.410 --> 00:27:02.190 align:middle line:90%
+to have good ads.
+
+00:27:02.190 --> 00:27:04.650 align:middle line:84%
+Yeah, I guess you might worry
+a little bit, maybe about
+
+00:27:04.650 --> 00:27:05.270 align:middle line:90%
+moral hazard.
+
+00:27:05.270 --> 00:27:09.290 align:middle line:90%
+
+
+00:27:09.290 --> 00:27:10.890 align:middle line:84%
+If the pay-per-click
+was too high,
+
+00:27:10.890 --> 00:27:12.682 align:middle line:84%
+then maybe firms wouldn't
+have an incentive
+
+00:27:12.682 --> 00:27:13.650 align:middle line:90%
+to improve their ads.
+
+00:27:13.650 --> 00:27:15.470 align:middle line:84%
+And I guess there is a bit of
+an incentive trade-off there,
+
+00:27:15.470 --> 00:27:16.970 align:middle line:84%
+but I think the
+firms still have a--
+
+00:27:16.970 --> 00:27:20.250 align:middle line:84%
+Google can still tell the firms,
+no one's clicking on your ad,
+
+00:27:20.250 --> 00:27:22.570 align:middle line:84%
+and the firms still want
+their ads to be clicked on.
+
+00:27:22.570 --> 00:27:24.112 align:middle line:84%
+But I agree, their
+incentives may not
+
+00:27:24.112 --> 00:27:26.090 align:middle line:84%
+be quite as strong
+in that case, yeah.
+
+00:27:26.090 --> 00:27:29.050 align:middle line:84%
+So there's a trade-off there
+between maybe insurance
+
+00:27:29.050 --> 00:27:31.983 align:middle line:90%
+and incentives, but yeah.
+
+00:27:31.983 --> 00:27:33.650 align:middle line:84%
+And over time, I think
+the firms learned
+
+00:27:33.650 --> 00:27:36.970 align:middle line:84%
+a lot about how often the
+likelihood of their ad being
+
+00:27:36.970 --> 00:27:38.010 align:middle line:90%
+clicked on.
+
+00:27:38.010 --> 00:27:39.808 align:middle line:84%
+So today, we're going
+to use pay-per-click.
+
+00:27:39.808 --> 00:27:41.350 align:middle line:84%
+Again, in our model,
+it won't matter.
+
+00:27:41.350 --> 00:27:43.100 align:middle line:84%
+But this will just
+simplify things, right?
+
+00:27:43.100 --> 00:27:45.290 align:middle line:84%
+So what does the
+auction need to say?
+
+00:27:45.290 --> 00:27:47.650 align:middle line:84%
+Well, the auction is
+going to collect the bids.
+
+00:27:47.650 --> 00:27:49.670 align:middle line:84%
+And the bids are going
+to be payments per click.
+
+00:27:49.670 --> 00:27:51.730 align:middle line:84%
+So my bid is going to
+say, think of it roughly
+
+00:27:51.730 --> 00:27:54.970 align:middle line:84%
+as how much am I willing to pay
+each time my ad is clicked on?
+
+00:27:54.970 --> 00:27:59.990 align:middle line:84%
+So we're going to collect
+these bids, b1 through bn.
+
+00:27:59.990 --> 00:28:02.890 align:middle line:90%
+
+
+00:28:02.890 --> 00:28:04.550 align:middle line:84%
+And then what do
+we need to decide?
+
+00:28:04.550 --> 00:28:06.110 align:middle line:84%
+Well, we need to
+have an allocation.
+
+00:28:06.110 --> 00:28:10.330 align:middle line:84%
+So we have slot 1,
+slot 2, up to slot m.
+
+00:28:10.330 --> 00:28:15.050 align:middle line:84%
+For each slot, we have
+to say who gets it?
+
+00:28:15.050 --> 00:28:17.320 align:middle line:84%
+So which ad is
+shown in this shot?
+
+00:28:17.320 --> 00:28:24.340 align:middle line:90%
+
+
+00:28:24.340 --> 00:28:25.920 align:middle line:90%
+And then the payment per click.
+
+00:28:25.920 --> 00:28:33.300 align:middle line:90%
+
+
+00:28:33.300 --> 00:28:35.520 align:middle line:84%
+So this is formally
+what we're choosing.
+
+00:28:35.520 --> 00:28:38.420 align:middle line:84%
+We're choosing a function
+that says, if these are the n
+
+00:28:38.420 --> 00:28:41.460 align:middle line:84%
+bids that the advertisers
+submit, who are we
+
+00:28:41.460 --> 00:28:42.900 align:middle line:90%
+going to put in the first slot?
+
+00:28:42.900 --> 00:28:45.340 align:middle line:84%
+And how much are we going to
+ask them to pay per click?
+
+00:28:45.340 --> 00:28:46.920 align:middle line:84%
+Who are we going to
+put in the second slot?
+
+00:28:46.920 --> 00:28:48.780 align:middle line:84%
+And how much are we going to
+ask them to pay per click?
+
+00:28:48.780 --> 00:28:50.280 align:middle line:90%
+All the way down to the m slot.
+
+00:28:50.280 --> 00:28:52.700 align:middle line:84%
+So that's the choice
+we have to make.
+
+00:28:52.700 --> 00:28:55.422 align:middle line:84%
+And of course, the design
+of the auction that we use
+
+00:28:55.422 --> 00:28:57.880 align:middle line:84%
+is going to affect the bidding
+behavior of the advertisers.
+
+00:28:57.880 --> 00:29:00.640 align:middle line:84%
+We could use this
+various auction format.
+
+00:29:00.640 --> 00:29:03.980 align:middle line:84%
+So today, the first auction
+format we're going to look at
+
+00:29:03.980 --> 00:29:08.060 align:middle line:84%
+is what's called a GSP, or
+generalized second price
+
+00:29:08.060 --> 00:29:08.640 align:middle line:90%
+auction.
+
+00:29:08.640 --> 00:29:18.940 align:middle line:90%
+
+
+00:29:18.940 --> 00:29:20.857 align:middle line:84%
+And I think we can maybe
+guess how this works.
+
+00:29:20.857 --> 00:29:22.607 align:middle line:84%
+You know how a second
+price auction works?
+
+00:29:22.607 --> 00:29:23.880 align:middle line:90%
+Why do we call it generalized?
+
+00:29:23.880 --> 00:29:25.463 align:middle line:84%
+Well, the classic
+second price auction
+
+00:29:25.463 --> 00:29:28.300 align:middle line:84%
+applies when there's a single
+item that we're auctioning off.
+
+00:29:28.300 --> 00:29:30.910 align:middle line:84%
+Here, we have multiple items,
+so have to generalize it.
+
+00:29:30.910 --> 00:29:33.160 align:middle line:84%
+And I think this is the most
+intuitive generalization.
+
+00:29:33.160 --> 00:29:36.460 align:middle line:84%
+Any ideas about if you had to
+think how-- let's say you're
+
+00:29:36.460 --> 00:29:37.420 align:middle line:90%
+working at Google.
+
+00:29:37.420 --> 00:29:39.360 align:middle line:84%
+Someone said, let's generalize
+the second price auction.
+
+00:29:39.360 --> 00:29:40.400 align:middle line:90%
+What might you do here?
+
+00:29:40.400 --> 00:29:44.685 align:middle line:90%
+
+
+00:29:44.685 --> 00:29:46.560 align:middle line:84%
+Well, let's first think
+about the allocation.
+
+00:29:46.560 --> 00:29:47.600 align:middle line:90%
+I think that's pretty easy.
+
+00:29:47.600 --> 00:29:49.933 align:middle line:84%
+Who do you think you're going
+to show in the first slot?
+
+00:29:49.933 --> 00:29:50.600 align:middle line:90%
+Who's that?
+
+00:29:50.600 --> 00:29:53.572 align:middle line:90%
+
+
+00:29:53.572 --> 00:29:54.780 align:middle line:90%
+AUDIENCE: The highest bidder.
+
+00:29:54.780 --> 00:29:55.720 align:middle line:84%
+IAN BALL: The highest
+bidder, right?
+
+00:29:55.720 --> 00:29:57.600 align:middle line:84%
+So the allocation
+rule makes sense.
+
+00:29:57.600 --> 00:29:59.460 align:middle line:84%
+We'll show the
+highest bidder here,
+
+00:29:59.460 --> 00:30:01.460 align:middle line:84%
+the second highest bidder
+here, all the way down
+
+00:30:01.460 --> 00:30:02.800 align:middle line:90%
+to the mth highest bidder here.
+
+00:30:02.800 --> 00:30:07.120 align:middle line:84%
+So in general, maybe
+I'll put it here.
+
+00:30:07.120 --> 00:30:08.260 align:middle line:90%
+We're in slot k.
+
+00:30:08.260 --> 00:30:17.270 align:middle line:84%
+So slot k is going to go to the
+kth highest bidder, on the m.
+
+00:30:17.270 --> 00:30:18.910 align:middle line:84%
+But now maybe the
+harder thing is,
+
+00:30:18.910 --> 00:30:20.250 align:middle line:90%
+what's the payment per click?
+
+00:30:20.250 --> 00:30:24.190 align:middle line:84%
+What's a reasonable amount to
+charge the kth highest bidder
+
+00:30:24.190 --> 00:30:27.290 align:middle line:90%
+per click?
+
+00:30:27.290 --> 00:30:28.363 align:middle line:90%
+AUDIENCE: k plus first.
+
+00:30:28.363 --> 00:30:29.030 align:middle line:90%
+IAN BALL: Right.
+
+00:30:29.030 --> 00:30:30.697 align:middle line:84%
+That's a pretty natural
+way of doing it.
+
+00:30:30.697 --> 00:30:32.450 align:middle line:84%
+We say, OK, you're the
+kth highest bidder,
+
+00:30:32.450 --> 00:30:33.670 align:middle line:90%
+so you get the k slot.
+
+00:30:33.670 --> 00:30:35.770 align:middle line:84%
+But we're not going to
+charge you your bid.
+
+00:30:35.770 --> 00:30:38.230 align:middle line:84%
+We're going to charge
+you the next highest bid.
+
+00:30:38.230 --> 00:30:42.230 align:middle line:84%
+In a second price auction, you
+can think of the second price
+
+00:30:42.230 --> 00:30:44.410 align:middle line:84%
+as the next highest
+bid after the winner.
+
+00:30:44.410 --> 00:30:46.590 align:middle line:84%
+And here, we're charging
+the next highest bid
+
+00:30:46.590 --> 00:30:49.670 align:middle line:84%
+after the person
+who wins the k slot.
+
+00:30:49.670 --> 00:30:54.830 align:middle line:84%
+So the payment-- maybe
+I'll call it pk--
+
+00:30:54.830 --> 00:30:58.410 align:middle line:90%
+is equal to k plus first.
+
+00:30:58.410 --> 00:31:03.950 align:middle line:90%
+
+
+00:31:03.950 --> 00:31:06.883 align:middle line:90%
+Highest bid.
+
+00:31:06.883 --> 00:31:08.050 align:middle line:90%
+This seems pretty intuitive.
+
+00:31:08.050 --> 00:31:12.990 align:middle line:84%
+And let's try to get a feel for
+how this works in the example.
+
+00:31:12.990 --> 00:31:16.935 align:middle line:84%
+AUDIENCE: What would happen
+in an event the last person?
+
+00:31:16.935 --> 00:31:17.810 align:middle line:90%
+IAN BALL: Good point.
+
+00:31:17.810 --> 00:31:21.630 align:middle line:84%
+So there's a question of what's
+the relationship between m
+
+00:31:21.630 --> 00:31:23.710 align:middle line:90%
+and n?
+
+00:31:23.710 --> 00:31:26.210 align:middle line:84%
+Usually the last
+person would pay--
+
+00:31:26.210 --> 00:31:30.030 align:middle line:84%
+so m may be smaller
+than n, but if m
+
+00:31:30.030 --> 00:31:32.730 align:middle line:84%
+is equal to n, the next highest
+bid, we would usually call 0.
+
+00:31:32.730 --> 00:31:34.290 align:middle line:84%
+So we can imagine
+we have the n bids.
+
+00:31:34.290 --> 00:31:36.655 align:middle line:84%
+And then imagine the n
+plus first bid is just 0.
+
+00:31:36.655 --> 00:31:38.030 align:middle line:84%
+AUDIENCE: So first
+of all, they--
+
+00:31:38.030 --> 00:31:39.572 align:middle line:84%
+IAN BALL: They
+wouldn't pay anything.
+
+00:31:39.572 --> 00:31:42.390 align:middle line:84%
+Now in reality, m is
+probably much smaller than n.
+
+00:31:42.390 --> 00:31:44.830 align:middle line:84%
+So if m is smaller than
+n, then the mth highest
+
+00:31:44.830 --> 00:31:47.270 align:middle line:84%
+bidder is going to pay the
+m plus first highest bid,
+
+00:31:47.270 --> 00:31:48.958 align:middle line:84%
+and then m plus 2,
+m plus 3, m plus 4,
+
+00:31:48.958 --> 00:31:50.250 align:middle line:90%
+they don't get anything at all.
+
+00:31:50.250 --> 00:31:51.670 align:middle line:84%
+So what you're
+describing could only
+
+00:31:51.670 --> 00:31:53.610 align:middle line:84%
+happen if there's more
+bidders than ad slots.
+
+00:31:53.610 --> 00:31:56.608 align:middle line:84%
+And that makes sense if there's
+more ad slots than bidders.
+
+00:31:56.608 --> 00:31:58.650 align:middle line:84%
+If there's as many or more
+ad slots than bidders,
+
+00:31:58.650 --> 00:32:02.230 align:middle line:84%
+then we can't really charge
+much because we can just
+
+00:32:02.230 --> 00:32:03.070 align:middle line:90%
+give them away.
+
+00:32:03.070 --> 00:32:04.930 align:middle line:90%
+But good question.
+
+00:32:04.930 --> 00:32:08.630 align:middle line:90%
+
+
+00:32:08.630 --> 00:32:09.130 align:middle line:90%
+OK.
+
+00:32:09.130 --> 00:32:12.080 align:middle line:84%
+So let's go through
+a simple example
+
+00:32:12.080 --> 00:32:21.180 align:middle line:90%
+to make sure we understand.
+
+00:32:21.180 --> 00:32:31.480 align:middle line:84%
+So let's do an example with m
+equals maybe 2 and n equals 3.
+
+00:32:31.480 --> 00:32:34.120 align:middle line:84%
+So we have three bidders
+and two ad slots.
+
+00:32:34.120 --> 00:32:35.960 align:middle line:90%
+And let's say the ad slots--
+
+00:32:35.960 --> 00:32:40.600 align:middle line:84%
+we have ad slot 1, which has
+clickthrough rate alpha 1.
+
+00:32:40.600 --> 00:32:44.840 align:middle line:84%
+And we have ad slot 2, which
+has clickthrough rate alpha 2.
+
+00:32:44.840 --> 00:32:47.780 align:middle line:84%
+And we're always assuming that
+they're in descending order,
+
+00:32:47.780 --> 00:32:50.040 align:middle line:84%
+so alpha 1 is strictly
+greater than alpha 2.
+
+00:32:50.040 --> 00:32:52.440 align:middle line:84%
+And let's say the bidders
+submit these bids.
+
+00:32:52.440 --> 00:33:04.320 align:middle line:84%
+Maybe b1 is $7, b2 is
+$8, and bid 3 is $5.
+
+00:33:04.320 --> 00:33:06.520 align:middle line:84%
+So now what's going to
+happen in this auction?
+
+00:33:06.520 --> 00:33:09.600 align:middle line:84%
+Well, the first slot is
+going to go to the bidder who
+
+00:33:09.600 --> 00:33:10.760 align:middle line:90%
+bids the most.
+
+00:33:10.760 --> 00:33:12.520 align:middle line:90%
+In this case, that's bidder 2.
+
+00:33:12.520 --> 00:33:14.720 align:middle line:84%
+So bidder 2's add is
+going to be-- they're
+
+00:33:14.720 --> 00:33:16.260 align:middle line:90%
+going to show bidder 2's add.
+
+00:33:16.260 --> 00:33:21.800 align:middle line:90%
+
+
+00:33:21.800 --> 00:33:23.872 align:middle line:84%
+And in the second
+slot, they're going
+
+00:33:23.872 --> 00:33:26.080 align:middle line:84%
+to show the second highest
+bidder, which in this case
+
+00:33:26.080 --> 00:33:26.993 align:middle line:90%
+is bidder 1.
+
+00:33:26.993 --> 00:33:28.660 align:middle line:84%
+So they're going to
+show bidder 1's add.
+
+00:33:28.660 --> 00:33:34.520 align:middle line:90%
+
+
+00:33:34.520 --> 00:33:37.400 align:middle line:84%
+And what is the payment
+per click going to be?
+
+00:33:37.400 --> 00:33:40.060 align:middle line:84%
+So maybe I'll call
+this p1 and p2.
+
+00:33:40.060 --> 00:33:44.200 align:middle line:84%
+So I'll try to use superscripts
+for positions and subscripts
+
+00:33:44.200 --> 00:33:44.940 align:middle line:90%
+for bidders.
+
+00:33:44.940 --> 00:33:47.460 align:middle line:84%
+So p1 is not
+necessarily bidder 1.
+
+00:33:47.460 --> 00:33:51.960 align:middle line:84%
+It's the payment made per
+click for the first slot.
+
+00:33:51.960 --> 00:33:55.640 align:middle line:84%
+So in this case, the
+highest bidder bid 8.
+
+00:33:55.640 --> 00:34:00.600 align:middle line:84%
+The second highest bid was
+7, so p1 is going to be 7.
+
+00:34:00.600 --> 00:34:05.640 align:middle line:84%
+So bidder 2 is going to
+have to pay $7 per click.
+
+00:34:05.640 --> 00:34:09.770 align:middle line:84%
+And now if we go to 2, well,
+the second highest bidder
+
+00:34:09.770 --> 00:34:12.850 align:middle line:84%
+is going to pay the third
+highest bid, which in this case
+
+00:34:12.850 --> 00:34:13.690 align:middle line:90%
+is 5.
+
+00:34:13.690 --> 00:34:17.210 align:middle line:90%
+So p2 is going to be 5.
+
+00:34:17.210 --> 00:34:22.290 align:middle line:90%
+This all sounds good.
+
+00:34:22.290 --> 00:34:27.350 align:middle line:84%
+But now we might ask, well, is
+it optimal to bid truthfully?
+
+00:34:27.350 --> 00:34:35.650 align:middle line:90%
+
+
+00:34:35.650 --> 00:34:37.870 align:middle line:84%
+We know in a standard
+second price auction, it is.
+
+00:34:37.870 --> 00:34:39.429 align:middle line:90%
+You should bid truthfully.
+
+00:34:39.429 --> 00:34:43.530 align:middle line:84%
+But now things are a
+little more complicated.
+
+00:34:43.530 --> 00:34:46.510 align:middle line:84%
+So let's take the
+perspective of bidder 2.
+
+00:34:46.510 --> 00:34:50.850 align:middle line:90%
+
+
+00:34:50.850 --> 00:34:53.850 align:middle line:84%
+Well, what is their
+expected profit going
+
+00:34:53.850 --> 00:34:56.429 align:middle line:90%
+to be from bidding truthfully?
+
+00:34:56.429 --> 00:34:57.910 align:middle line:84%
+That is bidding 8
+in this auction.
+
+00:34:57.910 --> 00:35:05.210 align:middle line:90%
+
+
+00:35:05.210 --> 00:35:06.430 align:middle line:90%
+I guess I haven't been clear.
+
+00:35:06.430 --> 00:35:08.230 align:middle line:90%
+Let's assume that b2 equals 8.
+
+00:35:08.230 --> 00:35:12.970 align:middle line:84%
+So let's suppose the true
+value is 8, and they bid 8.
+
+00:35:12.970 --> 00:35:16.490 align:middle line:84%
+What are they going
+to get in expectation?
+
+00:35:16.490 --> 00:35:19.370 align:middle line:90%
+Well, let's go through it.
+
+00:35:19.370 --> 00:35:21.490 align:middle line:90%
+They're being shown in slot 1.
+
+00:35:21.490 --> 00:35:25.890 align:middle line:84%
+The probability their ad
+gets clicked is alpha 1.
+
+00:35:25.890 --> 00:35:30.010 align:middle line:84%
+And each time it's clicked,
+their valuation per click is 8,
+
+00:35:30.010 --> 00:35:32.290 align:middle line:90%
+but they end up having to pay 7.
+
+00:35:32.290 --> 00:35:37.830 align:middle line:84%
+So we get alpha 1 times 8
+minus 7, which is just alpha 1.
+
+00:35:37.830 --> 00:35:40.970 align:middle line:90%
+
+
+00:35:40.970 --> 00:35:48.930 align:middle line:84%
+But let's suppose that
+instead they bid a bit less.
+
+00:35:48.930 --> 00:35:55.090 align:middle line:84%
+And let's suppose that instead
+of bidding 8, they bid 6.
+
+00:35:55.090 --> 00:36:02.550 align:middle line:84%
+So this is a bid of 8, but let's
+suppose instead they bid 6.
+
+00:36:02.550 --> 00:36:06.500 align:middle line:90%
+
+
+00:36:06.500 --> 00:36:08.580 align:middle line:84%
+Well, now, what's
+going to happen?
+
+00:36:08.580 --> 00:36:10.740 align:middle line:84%
+Now what's their
+expected payment?
+
+00:36:10.740 --> 00:36:13.560 align:middle line:84%
+Well, if they bid 6, where is
+their ad going to be shown?
+
+00:36:13.560 --> 00:36:16.860 align:middle line:90%
+
+
+00:36:16.860 --> 00:36:18.155 align:middle line:90%
+Yeah.
+
+00:36:18.155 --> 00:36:19.280 align:middle line:90%
+It will be the second slot.
+
+00:36:19.280 --> 00:36:22.500 align:middle line:84%
+If they bid 6, bidder 1 is
+going to get the first slot.
+
+00:36:22.500 --> 00:36:24.440 align:middle line:84%
+Bidder 2 is now going
+to get the second slot,
+
+00:36:24.440 --> 00:36:26.340 align:middle line:90%
+so they're going to get alpha 2.
+
+00:36:26.340 --> 00:36:30.280 align:middle line:84%
+Their value is still 8, but
+now how much do they pay?
+
+00:36:30.280 --> 00:36:34.260 align:middle line:90%
+
+
+00:36:34.260 --> 00:36:35.660 align:middle line:90%
+Yeah.
+
+00:36:35.660 --> 00:36:39.040 align:middle line:84%
+They're going to pay
+5, because now they're
+
+00:36:39.040 --> 00:36:40.040 align:middle line:90%
+getting the second slot.
+
+00:36:40.040 --> 00:36:41.940 align:middle line:84%
+They're going to pay
+the third highest bid.
+
+00:36:41.940 --> 00:36:43.400 align:middle line:90%
+The highest bid is 7.
+
+00:36:43.400 --> 00:36:45.100 align:middle line:90%
+The second highest bid is 6.
+
+00:36:45.100 --> 00:36:46.660 align:middle line:90%
+The third highest bid is 5.
+
+00:36:46.660 --> 00:36:52.620 align:middle line:90%
+
+
+00:36:52.620 --> 00:36:55.860 align:middle line:90%
+So we get 3 alpha 2.
+
+00:36:55.860 --> 00:36:58.720 align:middle line:90%
+Well, what's better?
+
+00:36:58.720 --> 00:37:01.220 align:middle line:84%
+Well, it's going to depend on
+the relative values of alpha 1
+
+00:37:01.220 --> 00:37:02.700 align:middle line:90%
+and alpha 2.
+
+00:37:02.700 --> 00:37:07.380 align:middle line:84%
+And in particular, if alpha
+2 is pretty close to alpha 1,
+
+00:37:07.380 --> 00:37:10.060 align:middle line:84%
+they're going to be much
+better off shading their bit.
+
+00:37:10.060 --> 00:37:20.080 align:middle line:84%
+So this is going to be preferred
+if alpha 2 is close to alpha 1.
+
+00:37:20.080 --> 00:37:21.880 align:middle line:84%
+It's smaller than alpha
+1, but it's close.
+
+00:37:21.880 --> 00:37:30.900 align:middle line:90%
+
+
+00:37:30.900 --> 00:37:32.900 align:middle line:84%
+And here, we see a
+fundamental difference
+
+00:37:32.900 --> 00:37:35.740 align:middle line:84%
+between a standard
+second price auction
+
+00:37:35.740 --> 00:37:37.780 align:middle line:84%
+and the generalized
+second price auction.
+
+00:37:37.780 --> 00:37:39.630 align:middle line:84%
+In the standard
+second price auction,
+
+00:37:39.630 --> 00:37:41.380 align:middle line:84%
+you want to bid
+truthfully, because if you
+
+00:37:41.380 --> 00:37:44.140 align:middle line:84%
+don't get the item,
+you don't get anything.
+
+00:37:44.140 --> 00:37:46.700 align:middle line:84%
+But in a multi-item auction,
+now it's less clear.
+
+00:37:46.700 --> 00:37:49.600 align:middle line:84%
+If you shade your bid
+instead of getting nothing,
+
+00:37:49.600 --> 00:37:50.745 align:middle line:90%
+you get the next slot.
+
+00:37:50.745 --> 00:37:53.120 align:middle line:84%
+And if the next slot is almost
+as good as the first slot,
+
+00:37:53.120 --> 00:37:54.200 align:middle line:84%
+you might as well
+shade your bid.
+
+00:37:54.200 --> 00:37:55.617 align:middle line:84%
+You might as well
+reduce your bid.
+
+00:37:55.617 --> 00:37:57.420 align:middle line:84%
+So we now have a much
+stronger temptation
+
+00:37:57.420 --> 00:38:00.240 align:middle line:84%
+to reduce your bid when the
+penalty for losing is lower.
+
+00:38:00.240 --> 00:38:02.730 align:middle line:84%
+Instead of getting nothing,
+I just go one slot down.
+
+00:38:02.730 --> 00:38:04.855 align:middle line:84%
+And in particular, when
+these slots are very close,
+
+00:38:04.855 --> 00:38:06.670 align:middle line:84%
+going one slot down
+is not very costly.
+
+00:38:06.670 --> 00:38:11.150 align:middle line:84%
+So now we need to ask, well, we
+could use this bidding format,
+
+00:38:11.150 --> 00:38:14.270 align:middle line:84%
+but then bidders have
+to spend a lot of money
+
+00:38:14.270 --> 00:38:16.810 align:middle line:84%
+trying to figure out how much
+other people are going to bid.
+
+00:38:16.810 --> 00:38:18.490 align:middle line:84%
+And their bid is going to
+depend on other people's bids,
+
+00:38:18.490 --> 00:38:19.730 align:middle line:84%
+and it's going to
+be complicated.
+
+00:38:19.730 --> 00:38:22.105 align:middle line:84%
+So maybe we want an auction
+where it's optimal for people
+
+00:38:22.105 --> 00:38:23.250 align:middle line:90%
+to just bid truthfully.
+
+00:38:23.250 --> 00:38:24.990 align:middle line:84%
+So we want a different
+generalization
+
+00:38:24.990 --> 00:38:26.615 align:middle line:84%
+of the second price
+auction than what's
+
+00:38:26.615 --> 00:38:28.365 align:middle line:84%
+called a generalized
+second price auction.
+
+00:38:28.365 --> 00:38:28.870 align:middle line:90%
+Yes.
+
+00:38:28.870 --> 00:38:31.630 align:middle line:84%
+AUDIENCE: This jsp, does
+this decrease revenue
+
+00:38:31.630 --> 00:38:34.810 align:middle line:84%
+for the auctioneer because
+everyone's going to shade?
+
+00:38:34.810 --> 00:38:38.395 align:middle line:90%
+
+
+00:38:38.395 --> 00:38:39.770 align:middle line:84%
+IAN BALL: It's a
+subtle question.
+
+00:38:39.770 --> 00:38:47.550 align:middle line:84%
+So there is an equilibrium of
+this auction that will give--
+
+00:38:47.550 --> 00:38:50.002 align:middle line:84%
+I guess you have to say,
+what is the comparison with?
+
+00:38:50.002 --> 00:38:52.210 align:middle line:84%
+The auction format that
+we're going to describe next,
+
+00:38:52.210 --> 00:38:54.150 align:middle line:84%
+the VCG auction, there
+will be an equilibrium
+
+00:38:54.150 --> 00:38:56.570 align:middle line:84%
+of this auction that will
+give the same revenue in this.
+
+00:38:56.570 --> 00:38:58.237 align:middle line:84%
+But that's in this
+very stylized example
+
+00:38:58.237 --> 00:39:00.510 align:middle line:90%
+where there's no uncertainty.
+
+00:39:00.510 --> 00:39:02.530 align:middle line:84%
+If you added some more
+realistic features,
+
+00:39:02.530 --> 00:39:04.280 align:middle line:84%
+then you have to be a
+little more careful,
+
+00:39:04.280 --> 00:39:05.590 align:middle line:90%
+and it's actually not so clear.
+
+00:39:05.590 --> 00:39:07.048 align:middle line:84%
+AUDIENCE: So the
+auctioneer doesn't
+
+00:39:07.048 --> 00:39:10.390 align:middle line:84%
+have a preference between
+the style of the second price
+
+00:39:10.390 --> 00:39:10.890 align:middle line:90%
+auction?
+
+00:39:10.890 --> 00:39:12.630 align:middle line:84%
+IAN BALL: So I think
+the question is--
+
+00:39:12.630 --> 00:39:14.450 align:middle line:84%
+some of the theorems
+say it doesn't matter.
+
+00:39:14.450 --> 00:39:16.617 align:middle line:84%
+But those theorems make
+some very strong assumptions
+
+00:39:16.617 --> 00:39:18.885 align:middle line:84%
+that people bid exactly
+according to the equilibrium.
+
+00:39:18.885 --> 00:39:21.010 align:middle line:84%
+And we know in practice
+that doesn't really happen.
+
+00:39:21.010 --> 00:39:24.750 align:middle line:84%
+So in fact, one concern there
+was, going back historically,
+
+00:39:24.750 --> 00:39:28.110 align:middle line:84%
+is people were using basically
+a version of a first price
+
+00:39:28.110 --> 00:39:29.110 align:middle line:90%
+auction of this.
+
+00:39:29.110 --> 00:39:35.150 align:middle line:84%
+And there was a suggestion that
+we should move to a second price
+
+00:39:35.150 --> 00:39:35.930 align:middle line:90%
+auction.
+
+00:39:35.930 --> 00:39:37.550 align:middle line:84%
+But the concern was, well,
+if we jump right away
+
+00:39:37.550 --> 00:39:40.230 align:middle line:84%
+to a second price auction and
+firms don't adjust their bidding
+
+00:39:40.230 --> 00:39:42.410 align:middle line:84%
+behavior, now we're going
+to lose a lot of money.
+
+00:39:42.410 --> 00:39:44.650 align:middle line:84%
+So the second price auction
+should give you as much revenue
+
+00:39:44.650 --> 00:39:45.950 align:middle line:84%
+if we play the new
+equilibrium where
+
+00:39:45.950 --> 00:39:47.130 align:middle line:90%
+people bid much differently.
+
+00:39:47.130 --> 00:39:48.190 align:middle line:84%
+But if firms don't
+know that, and they
+
+00:39:48.190 --> 00:39:49.670 align:middle line:84%
+don't react quickly
+enough, then there's
+
+00:39:49.670 --> 00:39:51.890 align:middle line:84%
+really a strong disincentive to
+move to a second price auction.
+
+00:39:51.890 --> 00:39:53.473 align:middle line:84%
+I think that's one
+issue that went on.
+
+00:39:53.473 --> 00:39:55.870 align:middle line:84%
+So there's a gap between the
+theory and the applications
+
+00:39:55.870 --> 00:39:57.470 align:middle line:90%
+here.
+
+00:39:57.470 --> 00:40:02.750 align:middle line:84%
+I guess I should say maybe
+the fundamental issue
+
+00:40:02.750 --> 00:40:04.510 align:middle line:84%
+that motivated a lot
+of this auction work
+
+00:40:04.510 --> 00:40:07.030 align:middle line:84%
+was that firms are able to
+modify their bids quickly
+
+00:40:07.030 --> 00:40:07.650 align:middle line:90%
+in real time.
+
+00:40:07.650 --> 00:40:09.933 align:middle line:84%
+So the firm submits some
+bids, their ad is shown,
+
+00:40:09.933 --> 00:40:11.850 align:middle line:84%
+and then they can change
+their bids over time.
+
+00:40:11.850 --> 00:40:13.990 align:middle line:84%
+And what was happening
+is firms were constantly
+
+00:40:13.990 --> 00:40:16.365 align:middle line:84%
+changing their bids, and these
+bids were going in cycles.
+
+00:40:16.365 --> 00:40:18.510 align:middle line:84%
+So we're modeling this
+as a one-off interaction.
+
+00:40:18.510 --> 00:40:21.323 align:middle line:84%
+If we use the auction format
+we're going to describe,
+
+00:40:21.323 --> 00:40:22.490 align:middle line:90%
+I think that's a good model.
+
+00:40:22.490 --> 00:40:24.833 align:middle line:84%
+But if people really care
+about how other people bid,
+
+00:40:24.833 --> 00:40:26.750 align:middle line:84%
+then it can make things
+a lot more complicated
+
+00:40:26.750 --> 00:40:28.590 align:middle line:84%
+when people can change
+their bids over time.
+
+00:40:28.590 --> 00:40:29.950 align:middle line:90%
+Good question.
+
+00:40:29.950 --> 00:40:34.270 align:middle line:84%
+So let's think about how else we
+can generalize the second price
+
+00:40:34.270 --> 00:40:34.770 align:middle line:90%
+auction.
+
+00:40:34.770 --> 00:40:37.910 align:middle line:84%
+And I think the key is to
+think about the second price
+
+00:40:37.910 --> 00:40:39.250 align:middle line:90%
+auction a bit differently.
+
+00:40:39.250 --> 00:40:50.710 align:middle line:90%
+
+
+00:40:50.710 --> 00:40:53.590 align:middle line:84%
+So I think the most obvious way
+to generalize the second price
+
+00:40:53.590 --> 00:40:55.410 align:middle line:84%
+auction is to say, well, what
+is a second price auction?
+
+00:40:55.410 --> 00:40:57.780 align:middle line:84%
+You pay the second highest
+bid, so let's generalize it.
+
+00:40:57.780 --> 00:40:58.900 align:middle line:90%
+You pay the next highest bid.
+
+00:40:58.900 --> 00:40:59.780 align:middle line:90%
+But let's think about it.
+
+00:40:59.780 --> 00:41:02.113 align:middle line:84%
+What's really going on in the
+second price auction a bit
+
+00:41:02.113 --> 00:41:02.640 align:middle line:90%
+differently?
+
+00:41:02.640 --> 00:41:07.320 align:middle line:90%
+
+
+00:41:07.320 --> 00:41:09.720 align:middle line:84%
+Another way of thinking
+about a second price auction
+
+00:41:09.720 --> 00:41:13.100 align:middle line:84%
+is that each bidder is asked
+to pay their externality.
+
+00:41:13.100 --> 00:41:17.080 align:middle line:90%
+
+
+00:41:17.080 --> 00:41:19.760 align:middle line:84%
+Let's understand
+what we mean by this.
+
+00:41:19.760 --> 00:41:22.500 align:middle line:84%
+So let's say the
+valuations are ordered.
+
+00:41:22.500 --> 00:41:25.260 align:middle line:90%
+It's v2 to vn.
+
+00:41:25.260 --> 00:41:28.720 align:middle line:90%
+
+
+00:41:28.720 --> 00:41:33.240 align:middle line:90%
+And let's say I'm this guy.
+
+00:41:33.240 --> 00:41:34.960 align:middle line:90%
+And I win.
+
+00:41:34.960 --> 00:41:36.360 align:middle line:90%
+So I'm the highest bidder.
+
+00:41:36.360 --> 00:41:38.193 align:middle line:84%
+Let's suppose everyone's
+bidding truthfully,
+
+00:41:38.193 --> 00:41:39.560 align:middle line:90%
+I guess, to make this argument.
+
+00:41:39.560 --> 00:41:40.520 align:middle line:90%
+I win.
+
+00:41:40.520 --> 00:41:43.380 align:middle line:84%
+I get my valuation of v1,
+and these guys all lose.
+
+00:41:43.380 --> 00:41:47.502 align:middle line:90%
+
+
+00:41:47.502 --> 00:41:51.160 align:middle line:84%
+Now, what if I weren't
+here and we just
+
+00:41:51.160 --> 00:41:54.360 align:middle line:84%
+wanted to allocate the
+good in a way that was
+
+00:41:54.360 --> 00:41:56.480 align:middle line:90%
+efficient for everyone else?
+
+00:41:56.480 --> 00:41:59.200 align:middle line:84%
+What would we do if
+bidder 1 were not here?
+
+00:41:59.200 --> 00:42:00.380 align:middle line:90%
+Who would we allocate it to?
+
+00:42:00.380 --> 00:42:03.400 align:middle line:90%
+
+
+00:42:03.400 --> 00:42:04.040 align:middle line:90%
+Bidder 2.
+
+00:42:04.040 --> 00:42:05.060 align:middle line:90%
+And what would they get?
+
+00:42:05.060 --> 00:42:06.800 align:middle line:90%
+Their evaluation would be v2.
+
+00:42:06.800 --> 00:42:18.720 align:middle line:84%
+So we can say if
+bidder 1 were gone,
+
+00:42:18.720 --> 00:42:22.720 align:middle line:84%
+then the total value that all
+the other bidders would get
+
+00:42:22.720 --> 00:42:23.820 align:middle line:90%
+would be v2.
+
+00:42:23.820 --> 00:42:29.100 align:middle line:84%
+If bidder 1 were gone, the
+item would go to bidder 2.
+
+00:42:29.100 --> 00:42:32.320 align:middle line:90%
+
+
+00:42:32.320 --> 00:42:37.400 align:middle line:90%
+And the value would be v2.
+
+00:42:37.400 --> 00:42:42.040 align:middle line:84%
+So we can think of it
+as, well, the total value
+
+00:42:42.040 --> 00:42:44.120 align:middle line:84%
+that everyone other
+than bidder 1 gets
+
+00:42:44.120 --> 00:42:47.520 align:middle line:84%
+is 0 when bidder 1 is
+here and would have been 2
+
+00:42:47.520 --> 00:42:49.520 align:middle line:90%
+if bidder 1 were not present.
+
+00:42:49.520 --> 00:42:53.080 align:middle line:84%
+So the externality that bidder
+1's presence or bitter 1's bid
+
+00:42:53.080 --> 00:42:56.250 align:middle line:84%
+imposes on everyone
+else is exactly v2,
+
+00:42:56.250 --> 00:42:58.705 align:middle line:84%
+because they take the item
+away from everyone else.
+
+00:42:58.705 --> 00:43:00.330 align:middle line:84%
+And the most efficient
+allocation of it
+
+00:43:00.330 --> 00:43:03.570 align:middle line:84%
+to everyone else would
+have been to bidder v2.
+
+00:43:03.570 --> 00:43:05.650 align:middle line:84%
+So this is the aspect of
+the second price auction
+
+00:43:05.650 --> 00:43:07.450 align:middle line:84%
+that we're next going
+to try to generalize.
+
+00:43:07.450 --> 00:43:10.090 align:middle line:84%
+We're going to try to charge
+people the externality
+
+00:43:10.090 --> 00:43:13.210 align:middle line:84%
+that their presence
+imposes on everyone else.
+
+00:43:13.210 --> 00:43:15.130 align:middle line:84%
+In this case, that
+externality happens
+
+00:43:15.130 --> 00:43:17.490 align:middle line:84%
+to be the second highest
+valuation, the second highest
+
+00:43:17.490 --> 00:43:17.990 align:middle line:90%
+bid.
+
+00:43:17.990 --> 00:43:19.590 align:middle line:84%
+But in general, it's
+not necessarily.
+
+00:43:19.590 --> 00:43:23.650 align:middle line:84%
+And that's what we'll see
+with the next auction format.
+
+00:43:23.650 --> 00:43:25.630 align:middle line:90%
+So let's look at this.
+
+00:43:25.630 --> 00:43:46.050 align:middle line:90%
+
+
+00:43:46.050 --> 00:43:57.250 align:middle line:84%
+So let's say that
+we bid b1, b2, b3.
+
+00:43:57.250 --> 00:44:01.770 align:middle line:84%
+And let's suppose that
+these are ordered like this.
+
+00:44:01.770 --> 00:44:04.050 align:middle line:90%
+And we have these slots--
+
+00:44:04.050 --> 00:44:08.250 align:middle line:90%
+1, 2, 3.
+
+00:44:08.250 --> 00:44:12.250 align:middle line:84%
+Now, if I'm the highest
+bidder, then I get slot 1.
+
+00:44:12.250 --> 00:44:14.850 align:middle line:84%
+The second highest bidder gets
+slot 2 and the third highest
+
+00:44:14.850 --> 00:44:16.130 align:middle line:90%
+bidder gets slot 3.
+
+00:44:16.130 --> 00:44:17.612 align:middle line:84%
+So here, I'm just
+assuming bidder 1
+
+00:44:17.612 --> 00:44:19.570 align:middle line:84%
+is the highest bidder,
+2 is the second highest,
+
+00:44:19.570 --> 00:44:22.250 align:middle line:90%
+and bidder 3 is next.
+
+00:44:22.250 --> 00:44:27.570 align:middle line:84%
+Well, what would happen if
+bidder 1 were not present?
+
+00:44:27.570 --> 00:44:29.630 align:middle line:84%
+If bidder 1 weren't
+here-- or in other words,
+
+00:44:29.630 --> 00:44:32.700 align:middle line:84%
+if bidder 1 just bid 0
+and didn't win anything,
+
+00:44:32.700 --> 00:44:33.950 align:middle line:90%
+what would happen to bidder 2?
+
+00:44:33.950 --> 00:44:36.250 align:middle line:90%
+Which slot would they get?
+
+00:44:36.250 --> 00:44:38.250 align:middle line:84%
+They'd move up to
+the first slot.
+
+00:44:38.250 --> 00:44:39.350 align:middle line:90%
+So they'd go up here.
+
+00:44:39.350 --> 00:44:41.930 align:middle line:90%
+
+
+00:44:41.930 --> 00:44:44.670 align:middle line:84%
+And bidder 3, similarly, would
+move up to the second slot.
+
+00:44:44.670 --> 00:44:49.490 align:middle line:90%
+
+
+00:44:49.490 --> 00:44:55.060 align:middle line:84%
+So let's now compute
+bidder 1's-- the highest
+
+00:44:55.060 --> 00:44:56.660 align:middle line:90%
+bidder's externality.
+
+00:44:56.660 --> 00:45:01.660 align:middle line:90%
+
+
+00:45:01.660 --> 00:45:04.860 align:middle line:84%
+Well, bidder 2--
+the externality is
+
+00:45:04.860 --> 00:45:07.580 align:middle line:84%
+that they're pushed down
+from alpha 1 to alpha 2
+
+00:45:07.580 --> 00:45:09.340 align:middle line:90%
+as their clickthrough rate.
+
+00:45:09.340 --> 00:45:10.980 align:middle line:90%
+So we have b2.
+
+00:45:10.980 --> 00:45:25.140 align:middle line:90%
+
+
+00:45:25.140 --> 00:45:26.820 align:middle line:90%
+So what happens?
+
+00:45:26.820 --> 00:45:29.900 align:middle line:84%
+Bidder 2 gets alpha
+2 instead of alpha 1
+
+00:45:29.900 --> 00:45:31.660 align:middle line:90%
+as their clickthrough rate.
+
+00:45:31.660 --> 00:45:33.940 align:middle line:90%
+And their value per click--
+
+00:45:33.940 --> 00:45:36.300 align:middle line:90%
+let's treat it as their bid, b2.
+
+00:45:36.300 --> 00:45:38.780 align:middle line:84%
+This is the externality
+imposed on bidder 2,
+
+00:45:38.780 --> 00:45:41.060 align:middle line:84%
+and this is the externality
+imposed on bidder 3.
+
+00:45:41.060 --> 00:45:43.380 align:middle line:84%
+Notice here, we have
+to be a little careful.
+
+00:45:43.380 --> 00:45:45.780 align:middle line:84%
+To directly compute
+the externality,
+
+00:45:45.780 --> 00:45:48.580 align:middle line:84%
+we'd have to know how much other
+people actually value the item.
+
+00:45:48.580 --> 00:45:50.120 align:middle line:84%
+So when we compute
+the externality,
+
+00:45:50.120 --> 00:45:52.540 align:middle line:84%
+we compute it as if people
+are bidding truthfully.
+
+00:45:52.540 --> 00:45:55.972 align:middle line:84%
+So I don't actually know how
+much bidder 2 values the slot,
+
+00:45:55.972 --> 00:45:58.180 align:middle line:84%
+but we're going to compute
+the externality as if they
+
+00:45:58.180 --> 00:45:59.280 align:middle line:90%
+were bidding truthfully.
+
+00:45:59.280 --> 00:46:01.080 align:middle line:84%
+So if bidder 2 were
+bidding truthfully,
+
+00:46:01.080 --> 00:46:04.540 align:middle line:84%
+then the amount they value the
+slot per click is exactly b2,
+
+00:46:04.540 --> 00:46:07.420 align:middle line:84%
+and their loss is the
+difference in clickthrough rate
+
+00:46:07.420 --> 00:46:09.060 align:middle line:90%
+times the valuation per click.
+
+00:46:09.060 --> 00:46:10.980 align:middle line:84%
+And similarly,
+b3-- their loss is
+
+00:46:10.980 --> 00:46:15.900 align:middle line:84%
+the difference in clickthrough
+rate times their valuation here.
+
+00:46:15.900 --> 00:46:20.500 align:middle line:84%
+So in general, the
+idea or the goal
+
+00:46:20.500 --> 00:46:31.400 align:middle line:84%
+is to charge each
+bidder per externality.
+
+00:46:31.400 --> 00:46:36.380 align:middle line:90%
+
+
+00:46:36.380 --> 00:46:37.880 align:middle line:84%
+Motivated by this
+simple example,
+
+00:46:37.880 --> 00:46:40.420 align:middle line:84%
+let's see if we can give a
+general formula for this auction
+
+00:46:40.420 --> 00:46:41.040 align:middle line:90%
+format.
+
+00:46:41.040 --> 00:46:55.630 align:middle line:90%
+
+
+00:46:55.630 --> 00:46:59.490 align:middle line:84%
+And this is called
+a VCG auction,
+
+00:46:59.490 --> 00:47:01.550 align:middle line:84%
+and this is named
+after three people.
+
+00:47:01.550 --> 00:47:04.870 align:middle line:84%
+Vickrey won the Nobel
+Prize for this--
+
+00:47:04.870 --> 00:47:08.090 align:middle line:90%
+Clark and Groves.
+
+00:47:08.090 --> 00:47:11.710 align:middle line:90%
+
+
+00:47:11.710 --> 00:47:13.630 align:middle line:84%
+And we can think of
+this as a different
+
+00:47:13.630 --> 00:47:18.470 align:middle line:84%
+or maybe the true generalization
+of the second price auction.
+
+00:47:18.470 --> 00:47:22.150 align:middle line:84%
+So now we get some
+bids, b1 through bn.
+
+00:47:22.150 --> 00:47:24.230 align:middle line:84%
+And we have to decide
+what to do with them.
+
+00:47:24.230 --> 00:47:26.473 align:middle line:84%
+It's helpful to have
+some notation for what's
+
+00:47:26.473 --> 00:47:28.890 align:middle line:84%
+the highest bid, what's the
+second highest bid, and so on.
+
+00:47:28.890 --> 00:47:30.890 align:middle line:84%
+It's not necessarily the
+first bidder is the highest.
+
+00:47:30.890 --> 00:47:31.848 align:middle line:90%
+So just some notation--
+
+00:47:31.848 --> 00:47:33.670 align:middle line:90%
+I'm going to write b1.
+
+00:47:33.670 --> 00:47:37.190 align:middle line:84%
+In parentheses, this is going
+to say, which among these bids
+
+00:47:37.190 --> 00:47:38.990 align:middle line:90%
+is the highest?
+
+00:47:38.990 --> 00:47:41.670 align:middle line:84%
+And then I'll write b2
+in parentheses to say,
+
+00:47:41.670 --> 00:47:43.550 align:middle line:84%
+which among these bids
+is the second highest?
+
+00:47:43.550 --> 00:47:46.470 align:middle line:84%
+All the way down
+to b in parentheses
+
+00:47:46.470 --> 00:47:48.490 align:middle line:84%
+n for the nth highest
+among the bits.
+
+00:47:48.490 --> 00:47:53.990 align:middle line:90%
+
+
+00:47:53.990 --> 00:47:56.510 align:middle line:90%
+Now I'm going to have my slots--
+
+00:47:56.510 --> 00:48:00.310 align:middle line:90%
+say, slot 1 down to slot m.
+
+00:48:00.310 --> 00:48:02.250 align:middle line:84%
+And instead of
+writing it many times,
+
+00:48:02.250 --> 00:48:04.870 align:middle line:84%
+let me just describe what
+happens to the kth slot, where
+
+00:48:04.870 --> 00:48:06.190 align:middle line:90%
+k is an arbitrary.
+
+00:48:06.190 --> 00:48:07.610 align:middle line:90%
+Or I guess I was using j before.
+
+00:48:07.610 --> 00:48:11.190 align:middle line:90%
+Maybe I'll call it the j slot.
+
+00:48:11.190 --> 00:48:13.150 align:middle line:90%
+So who gets the j slot?
+
+00:48:13.150 --> 00:48:15.990 align:middle line:84%
+Well, the j slot is going to go
+to the jth highest bidder, as
+
+00:48:15.990 --> 00:48:16.790 align:middle line:90%
+before.
+
+00:48:16.790 --> 00:48:19.150 align:middle line:84%
+So the allocation rule
+is going to be the same
+
+00:48:19.150 --> 00:48:20.610 align:middle line:90%
+as the second price auction.
+
+00:48:20.610 --> 00:48:25.470 align:middle line:84%
+I allocate the jth best good
+to the jth highest bidder.
+
+00:48:25.470 --> 00:48:37.350 align:middle line:84%
+So it's allocated
+to jth high square.
+
+00:48:37.350 --> 00:48:39.210 align:middle line:84%
+But the tricky thing
+is the payment.
+
+00:48:39.210 --> 00:48:41.910 align:middle line:90%
+So maybe I'll call it pj.
+
+00:48:41.910 --> 00:48:46.600 align:middle line:84%
+And remember, this is
+a payment per click.
+
+00:48:46.600 --> 00:48:50.380 align:middle line:90%
+Well, it's easier, I think--
+
+00:48:50.380 --> 00:48:51.720 align:middle line:90%
+I guess a little more space--
+
+00:48:51.720 --> 00:48:54.920 align:middle line:90%
+to think about alpha j pj.
+
+00:48:54.920 --> 00:48:58.240 align:middle line:84%
+Because remember,
+I want each bidder
+
+00:48:58.240 --> 00:49:00.320 align:middle line:90%
+to be charged for externality.
+
+00:49:00.320 --> 00:49:02.800 align:middle line:84%
+So what I want to set equal
+to the bidders' externality
+
+00:49:02.800 --> 00:49:04.600 align:middle line:90%
+is the actual amount they pay.
+
+00:49:04.600 --> 00:49:06.900 align:middle line:84%
+And the actual amount
+they pay is not pj.
+
+00:49:06.900 --> 00:49:08.540 align:middle line:84%
+That's the amount
+they pay per click.
+
+00:49:08.540 --> 00:49:11.005 align:middle line:84%
+So they pay pj per click
+times the probability
+
+00:49:11.005 --> 00:49:12.380 align:middle line:84%
+that they're
+actually clicked on.
+
+00:49:12.380 --> 00:49:14.200 align:middle line:84%
+That's the expected
+amount that they pay.
+
+00:49:14.200 --> 00:49:16.300 align:middle line:84%
+So this is going to be
+the expected payment.
+
+00:49:16.300 --> 00:49:21.080 align:middle line:90%
+
+
+00:49:21.080 --> 00:49:23.900 align:middle line:84%
+So later we can divide by alpha
+j and get a formula for pj,
+
+00:49:23.900 --> 00:49:25.520 align:middle line:84%
+but it's just when we're
+thinking of the externality,
+
+00:49:25.520 --> 00:49:26.460 align:middle line:90%
+it's easier to think this way.
+
+00:49:26.460 --> 00:49:27.080 align:middle line:90%
+Yes.
+
+00:49:27.080 --> 00:49:29.640 align:middle line:90%
+AUDIENCE: [INAUDIBLE] right?
+
+00:49:29.640 --> 00:49:30.995 align:middle line:90%
+IAN BALL: No.
+
+00:49:30.995 --> 00:49:32.620 align:middle line:84%
+Well, I guess it
+depends what you mean.
+
+00:49:32.620 --> 00:49:34.573 align:middle line:84%
+If alpha j is the
+probability per click
+
+00:49:34.573 --> 00:49:36.240 align:middle line:84%
+of the probability
+of a click, then this
+
+00:49:36.240 --> 00:49:38.367 align:middle line:84%
+is just the expected
+payment per click.
+
+00:49:38.367 --> 00:49:39.200 align:middle line:90%
+AUDIENCE: Per click.
+
+00:49:39.200 --> 00:49:42.015 align:middle line:84%
+IAN BALL: No, just pj is the
+payment per click, right?
+
+00:49:42.015 --> 00:49:42.640 align:middle line:90%
+AUDIENCE: Yeah.
+
+00:49:42.640 --> 00:49:44.320 align:middle line:84%
+IAN BALL: So if I
+multiply the payment
+
+00:49:44.320 --> 00:49:47.360 align:middle line:84%
+per click times my
+probability of a click,
+
+00:49:47.360 --> 00:49:49.262 align:middle line:84%
+that gives me my full
+expected payment.
+
+00:49:49.262 --> 00:49:51.720 align:middle line:84%
+If I pay 100 per click, and
+there's a 1/2 chance of getting
+
+00:49:51.720 --> 00:49:53.840 align:middle line:84%
+clicked, then my
+expected payment is 50
+
+00:49:53.840 --> 00:49:56.200 align:middle line:84%
+because there's a half chance
+I get clicked and pay 100
+
+00:49:56.200 --> 00:49:59.760 align:middle line:84%
+and a half chance I don't
+get clicked and pay nothing.
+
+00:49:59.760 --> 00:50:01.618 align:middle line:84%
+If there's multiple
+clicks, then we
+
+00:50:01.618 --> 00:50:03.160 align:middle line:84%
+could more generally
+think of alpha j
+
+00:50:03.160 --> 00:50:04.768 align:middle line:84%
+as the expected
+number of clicks.
+
+00:50:04.768 --> 00:50:07.060 align:middle line:84%
+And maybe the expected number
+of clicks is more than 1,
+
+00:50:07.060 --> 00:50:09.140 align:middle line:84%
+but in reality, each time
+a keyword is searched,
+
+00:50:09.140 --> 00:50:10.265 align:middle line:90%
+there's a different option.
+
+00:50:10.265 --> 00:50:13.080 align:middle line:90%
+
+
+00:50:13.080 --> 00:50:17.280 align:middle line:90%
+Well, that is how it used to be.
+
+00:50:17.280 --> 00:50:19.175 align:middle line:84%
+Now people have a lot
+of automated bidding.
+
+00:50:19.175 --> 00:50:21.300 align:middle line:84%
+Now people are using robots
+to bid on their behalf,
+
+00:50:21.300 --> 00:50:22.717 align:middle line:84%
+so it's a little
+more complicated.
+
+00:50:22.717 --> 00:50:24.420 align:middle line:90%
+But originally, yeah.
+
+00:50:24.420 --> 00:50:27.860 align:middle line:84%
+Maybe they were batched a
+little bit, but roughly, yeah.
+
+00:50:27.860 --> 00:50:29.943 align:middle line:84%
+You can change your bid
+very, very frequently.
+
+00:50:29.943 --> 00:50:32.360 align:middle line:84%
+AUDIENCE: If two people are
+searching for the same keyword
+
+00:50:32.360 --> 00:50:33.068 align:middle line:90%
+at the same time.
+
+00:50:33.068 --> 00:50:33.860 align:middle line:90%
+IAN BALL: Yeah, OK.
+
+00:50:33.860 --> 00:50:35.200 align:middle line:90%
+There's going to be some lag.
+
+00:50:35.200 --> 00:50:37.160 align:middle line:90%
+I think formerly what happened--
+
+00:50:37.160 --> 00:50:39.640 align:middle line:84%
+I don't know, some of
+this may be proprietary.
+
+00:50:39.640 --> 00:50:41.780 align:middle line:84%
+Firms are able to change
+their bid very quickly.
+
+00:50:41.780 --> 00:50:43.738 align:middle line:84%
+I know firms are able to
+change their bid maybe
+
+00:50:43.738 --> 00:50:44.790 align:middle line:90%
+at a second interval.
+
+00:50:44.790 --> 00:50:47.915 align:middle line:84%
+So maybe all the keywords that
+were searched in a given second
+
+00:50:47.915 --> 00:50:48.790 align:middle line:90%
+would use those bids.
+
+00:50:48.790 --> 00:50:51.930 align:middle line:84%
+And then when your bid
+changed, all the auctions
+
+00:50:51.930 --> 00:50:53.970 align:middle line:84%
+in the next second
+would use the new bid.
+
+00:50:53.970 --> 00:50:56.210 align:middle line:90%
+And there was actually--
+
+00:50:56.210 --> 00:50:59.970 align:middle line:84%
+when they used to use things
+that were not strategy proof
+
+00:50:59.970 --> 00:51:03.170 align:middle line:84%
+and people were gaming it,
+this is what would happen.
+
+00:51:03.170 --> 00:51:05.530 align:middle line:84%
+People were investing in
+technology to change their bids
+
+00:51:05.530 --> 00:51:08.230 align:middle line:84%
+and update their bids
+very, very quickly.
+
+00:51:08.230 --> 00:51:10.450 align:middle line:84%
+But yeah, probably not
+literally per auction,
+
+00:51:10.450 --> 00:51:13.572 align:middle line:84%
+but every auction in a
+second, which is a lot.
+
+00:51:13.572 --> 00:51:15.530 align:middle line:84%
+AUDIENCE: So that's why
+we're just considering,
+
+00:51:15.530 --> 00:51:17.350 align:middle line:90%
+is there one click or not?
+
+00:51:17.350 --> 00:51:18.530 align:middle line:90%
+Instead of the--
+
+00:51:18.530 --> 00:51:20.002 align:middle line:90%
+IAN BALL: Yeah.
+
+00:51:20.002 --> 00:51:21.710 align:middle line:84%
+Mathematically, it
+doesn't matter at all.
+
+00:51:21.710 --> 00:51:24.570 align:middle line:84%
+If you want to think of alpha
+j, one way of thinking of this
+
+00:51:24.570 --> 00:51:27.110 align:middle line:84%
+is this is the
+probability per click.
+
+00:51:27.110 --> 00:51:29.910 align:middle line:84%
+And maybe our bid is relevant
+for a batch of 100 auctions.
+
+00:51:29.910 --> 00:51:32.310 align:middle line:84%
+And then you could just
+multiply every alpha by 100,
+
+00:51:32.310 --> 00:51:33.370 align:middle line:84%
+and then you get
+the expected number
+
+00:51:33.370 --> 00:51:34.828 align:middle line:84%
+of clicks in this
+batch of auctions
+
+00:51:34.828 --> 00:51:37.170 align:middle line:90%
+that's relevant for a bit.
+
+00:51:37.170 --> 00:51:38.250 align:middle line:90%
+Great.
+
+00:51:38.250 --> 00:51:40.630 align:middle line:84%
+OK, so here's our
+expected payment.
+
+00:51:40.630 --> 00:51:43.990 align:middle line:84%
+And I was trying to be
+consistent about superscripts,
+
+00:51:43.990 --> 00:51:45.163 align:middle line:90%
+but I wasn't-- oh, no.
+
+00:51:45.163 --> 00:51:45.830 align:middle line:90%
+I was over here.
+
+00:51:45.830 --> 00:51:46.330 align:middle line:90%
+OK, sorry.
+
+00:51:46.330 --> 00:51:48.850 align:middle line:90%
+This should be alpha j, I guess.
+
+00:51:48.850 --> 00:51:50.850 align:middle line:84%
+I don't know if I've
+been consistent.
+
+00:51:50.850 --> 00:51:52.110 align:middle line:90%
+I wasn't consistent over here.
+
+00:51:52.110 --> 00:51:53.150 align:middle line:90%
+I'll change this.
+
+00:51:53.150 --> 00:52:02.170 align:middle line:90%
+
+
+00:52:02.170 --> 00:52:05.230 align:middle line:84%
+So this is actually right. b3
+is actually the third bidder,
+
+00:52:05.230 --> 00:52:06.390 align:middle line:90%
+so that's a subscript.
+
+00:52:06.390 --> 00:52:09.650 align:middle line:84%
+Alpha 2 is the second bid
+slot, so it's superscript.
+
+00:52:09.650 --> 00:52:11.890 align:middle line:90%
+So I think my notation is good.
+
+00:52:11.890 --> 00:52:14.410 align:middle line:84%
+So now we want to
+compute, what is
+
+00:52:14.410 --> 00:52:19.570 align:middle line:84%
+the externality that bidder j is
+imposing on the other bidders?
+
+00:52:19.570 --> 00:52:24.910 align:middle line:84%
+So the first question is,
+who is bidder j affecting?
+
+00:52:24.910 --> 00:52:26.970 align:middle line:84%
+So over here, we thought
+bidder 1 was affecting
+
+00:52:26.970 --> 00:52:30.330 align:middle line:90%
+bidder 2 and bidder 3.
+
+00:52:30.330 --> 00:52:32.470 align:middle line:84%
+Which bidders is bidder
+j's bid affecting?
+
+00:52:32.470 --> 00:52:36.157 align:middle line:84%
+If bidder j were gone, whose
+allocation would change?
+
+00:52:36.157 --> 00:52:36.990 align:middle line:90%
+Everyone afterwards?
+
+00:52:36.990 --> 00:52:37.690 align:middle line:90%
+OK, yeah.
+
+00:52:37.690 --> 00:52:41.020 align:middle line:84%
+So what we need to compute
+is, what is the externality
+
+00:52:41.020 --> 00:52:44.280 align:middle line:84%
+that bidder j is imposing
+on everyone after bidder j?
+
+00:52:44.280 --> 00:52:46.820 align:middle line:84%
+Because these people above him
+are not going to be changed.
+
+00:52:46.820 --> 00:52:49.740 align:middle line:84%
+If bidder j weren't there, those
+people are still going to win.
+
+00:52:49.740 --> 00:52:51.820 align:middle line:90%
+So it's going to be a sum.
+
+00:52:51.820 --> 00:52:55.260 align:middle line:84%
+And let's sum it over
+everyone after bidder j.
+
+00:52:55.260 --> 00:52:57.760 align:middle line:84%
+So this is the jth
+highest bidder.
+
+00:52:57.760 --> 00:53:04.523 align:middle line:84%
+We want to sum from the j plus
+first highest bidder to n.
+
+00:53:04.523 --> 00:53:05.940 align:middle line:84%
+So within our sum,
+we want to say,
+
+00:53:05.940 --> 00:53:10.845 align:middle line:84%
+what is the externality imposed
+on the kth highest bidder?
+
+00:53:10.845 --> 00:53:12.220 align:middle line:84%
+So if I'm the kth
+highest bidder,
+
+00:53:12.220 --> 00:53:19.380 align:middle line:84%
+where k is bigger than j, when
+j is here, I get the k slot.
+
+00:53:19.380 --> 00:53:23.260 align:middle line:84%
+But if j were not here,
+what slot would I get?
+
+00:53:23.260 --> 00:53:25.300 align:middle line:90%
+The k minus 1 slot.
+
+00:53:25.300 --> 00:53:28.820 align:middle line:84%
+So the externality, the
+change in my clickthrough rate
+
+00:53:28.820 --> 00:53:30.700 align:middle line:90%
+is alpha k minus.
+
+00:53:30.700 --> 00:53:34.540 align:middle line:90%
+
+
+00:53:34.540 --> 00:53:35.680 align:middle line:90%
+This is the externality.
+
+00:53:35.680 --> 00:53:38.755 align:middle line:84%
+Without j, I would have become
+the k minus first highest
+
+00:53:38.755 --> 00:53:41.380 align:middle line:84%
+bidder, and I would have gotten
+the k minus first highest slot.
+
+00:53:41.380 --> 00:53:44.842 align:middle line:84%
+With j, I'm only the kth highest
+bidder, and I get the k slot.
+
+00:53:44.842 --> 00:53:47.300 align:middle line:84%
+But I have to multiply that
+change in the clickthrough rate
+
+00:53:47.300 --> 00:53:49.292 align:middle line:90%
+times my value per click.
+
+00:53:49.292 --> 00:53:51.000 align:middle line:84%
+Again, we don't know
+that bidder's value,
+
+00:53:51.000 --> 00:53:52.417 align:middle line:84%
+but the way we
+compute externality
+
+00:53:52.417 --> 00:53:54.180 align:middle line:84%
+is as if people are
+bidding truthfully.
+
+00:53:54.180 --> 00:53:55.640 align:middle line:90%
+And we have notation.
+
+00:53:55.640 --> 00:54:00.660 align:middle line:84%
+What is our notation for the
+bid of the kth highest bidder?
+
+00:54:00.660 --> 00:54:04.960 align:middle line:84%
+It's just b to
+the superscript k.
+
+00:54:04.960 --> 00:54:09.740 align:middle line:90%
+
+
+00:54:09.740 --> 00:54:10.720 align:middle line:90%
+So this is our formula.
+
+00:54:10.720 --> 00:54:12.220 align:middle line:84%
+And this fully
+specifies the auction
+
+00:54:12.220 --> 00:54:18.540 align:middle line:84%
+because we've specified which
+bidder each slot is assigned to.
+
+00:54:18.540 --> 00:54:20.780 align:middle line:84%
+And we've specified
+the payment per click
+
+00:54:20.780 --> 00:54:22.380 align:middle line:90%
+for each of these slots.
+
+00:54:22.380 --> 00:54:24.460 align:middle line:84%
+But now let's try to
+understand a little bit what
+
+00:54:24.460 --> 00:54:25.880 align:middle line:90%
+this formula looks like.
+
+00:54:25.880 --> 00:54:27.780 align:middle line:90%
+So let's dig in a little more.
+
+00:54:27.780 --> 00:54:30.600 align:middle line:90%
+Let's go over here.
+
+00:54:30.600 --> 00:54:43.150 align:middle line:90%
+
+
+00:54:43.150 --> 00:54:45.790 align:middle line:90%
+Let's try to interpret this.
+
+00:54:45.790 --> 00:54:48.370 align:middle line:90%
+Let's divide both sides by.
+
+00:54:48.370 --> 00:54:51.110 align:middle line:90%
+
+
+00:54:51.110 --> 00:54:57.430 align:middle line:84%
+alpha J. So we're going to see
+that pj, the payment per click
+
+00:54:57.430 --> 00:55:01.590 align:middle line:84%
+in the j slot, is going
+to equal the sum of k
+
+00:55:01.590 --> 00:55:15.150 align:middle line:84%
+equals j plus 1 to n of
+bk times alpha k minus 1
+
+00:55:15.150 --> 00:55:17.290 align:middle line:90%
+divided by alpha j.
+
+00:55:17.290 --> 00:55:21.710 align:middle line:90%
+
+
+00:55:21.710 --> 00:55:23.603 align:middle line:90%
+Good.
+
+00:55:23.603 --> 00:55:29.030 align:middle line:84%
+And we can see that the amount
+that we pay in the j slot
+
+00:55:29.030 --> 00:55:31.990 align:middle line:84%
+is a sum over all
+the lower bids.
+
+00:55:31.990 --> 00:55:35.070 align:middle line:84%
+But each of the lower bids is
+multiplied by some coefficient
+
+00:55:35.070 --> 00:55:35.690 align:middle line:90%
+here.
+
+00:55:35.690 --> 00:55:37.550 align:middle line:84%
+So let's introduce
+notation for this.
+
+00:55:37.550 --> 00:55:40.830 align:middle line:90%
+Let's call this wk.
+
+00:55:40.830 --> 00:55:46.510 align:middle line:84%
+And let's see what
+we can say about wk.
+
+00:55:46.510 --> 00:55:51.790 align:middle line:84%
+Well first, wk is greater
+than or equal to 0-- in fact,
+
+00:55:51.790 --> 00:55:55.470 align:middle line:90%
+strictly greater than 0.
+
+00:55:55.470 --> 00:55:56.850 align:middle line:90%
+Why?
+
+00:55:56.850 --> 00:56:00.250 align:middle line:84%
+Well, alpha k minus 1 is
+strictly higher than alpha k.
+
+00:56:00.250 --> 00:56:01.330 align:middle line:90%
+That's our assumption.
+
+00:56:01.330 --> 00:56:04.170 align:middle line:84%
+The higher slots-- higher slot
+meaning lower numbered slot.
+
+00:56:04.170 --> 00:56:06.490 align:middle line:84%
+The higher slots have a
+higher clickthrough rate,
+
+00:56:06.490 --> 00:56:08.470 align:middle line:84%
+so each of these numbers
+is strictly positive.
+
+00:56:08.470 --> 00:56:11.150 align:middle line:84%
+Now let's try to see what
+the sum of these numbers are.
+
+00:56:11.150 --> 00:56:19.830 align:middle line:84%
+So let's look at wj plus
+1, all the way up to wn.
+
+00:56:19.830 --> 00:56:26.830 align:middle line:90%
+
+
+00:56:26.830 --> 00:56:32.430 align:middle line:84%
+Well, let's go through
+it. wj plus 1--
+
+00:56:32.430 --> 00:56:34.720 align:middle line:90%
+let's plug in j plus 1 for k.
+
+00:56:34.720 --> 00:56:38.280 align:middle line:84%
+We're going to get
+alpha j minus alpha
+
+00:56:38.280 --> 00:56:41.940 align:middle line:90%
+j plus 1 divided by alpha j.
+
+00:56:41.940 --> 00:56:45.120 align:middle line:90%
+
+
+00:56:45.120 --> 00:56:47.240 align:middle line:84%
+Plus-- well, the
+next term is going
+
+00:56:47.240 --> 00:56:56.652 align:middle line:84%
+to be alpha j plus 1 minus
+alpha j plus 2 over alpha j.
+
+00:56:56.652 --> 00:56:58.860 align:middle line:84%
+All the way-- well, what's
+the last term going to be?
+
+00:56:58.860 --> 00:57:06.160 align:middle line:84%
+We have wn here, so we're
+going to have alpha n minus 1
+
+00:57:06.160 --> 00:57:10.300 align:middle line:90%
+minus alpha n over alpha j.
+
+00:57:10.300 --> 00:57:12.960 align:middle line:90%
+
+
+00:57:12.960 --> 00:57:16.140 align:middle line:84%
+Well, alpha j is
+underneath everything,
+
+00:57:16.140 --> 00:57:18.040 align:middle line:84%
+so we can make this
+into a single fraction.
+
+00:57:18.040 --> 00:57:20.600 align:middle line:90%
+And we add alpha j plus 1--
+
+00:57:20.600 --> 00:57:23.480 align:middle line:84%
+sorry, we subtract alpha j plus
+1, and then we add it back.
+
+00:57:23.480 --> 00:57:25.647 align:middle line:84%
+We subtract alpha j plus
+2, and then we add it back.
+
+00:57:25.647 --> 00:57:27.938 align:middle line:84%
+So this is going to be what's
+called a telescoping sum.
+
+00:57:27.938 --> 00:57:29.200 align:middle line:90%
+It's going to simplify a lot.
+
+00:57:29.200 --> 00:57:34.180 align:middle line:84%
+And we're only going to get the
+first term and the last term.
+
+00:57:34.180 --> 00:57:36.720 align:middle line:90%
+
+
+00:57:36.720 --> 00:57:38.920 align:middle line:84%
+Every intermediate term
+is going to cancel.
+
+00:57:38.920 --> 00:57:43.040 align:middle line:84%
+So what we're going
+to get is alpha
+
+00:57:43.040 --> 00:57:48.140 align:middle line:90%
+j minus alpha n over alpha j.
+
+00:57:48.140 --> 00:57:52.120 align:middle line:90%
+
+
+00:57:52.120 --> 00:57:52.760 align:middle line:90%
+Yes.
+
+00:57:52.760 --> 00:57:54.135 align:middle line:84%
+AUDIENCE: What's
+the significance
+
+00:57:54.135 --> 00:57:56.400 align:middle line:84%
+of taking this sum
+if each of the terms
+
+00:57:56.400 --> 00:57:58.600 align:middle line:84%
+is multiplied by
+a different value
+
+00:57:58.600 --> 00:58:01.600 align:middle line:84%
+so it's not a
+convenience factor.
+
+00:58:01.600 --> 00:58:03.100 align:middle line:84%
+IAN BALL: Just as
+an interpretation.
+
+00:58:03.100 --> 00:58:05.340 align:middle line:84%
+so let's see in a second, and
+then I think it'll make sense.
+
+00:58:05.340 --> 00:58:05.880 align:middle line:90%
+Yeah.
+
+00:58:05.880 --> 00:58:09.080 align:middle line:84%
+So what can we say
+about this value?
+
+00:58:09.080 --> 00:58:13.200 align:middle line:84%
+Well, in general, this value
+is less than or equal to 1.
+
+00:58:13.200 --> 00:58:17.920 align:middle line:84%
+And in fact, it's going to
+equal 1 if alpha n equals 0.
+
+00:58:17.920 --> 00:58:20.880 align:middle line:84%
+So if we have fewer
+slots than bidders,
+
+00:58:20.880 --> 00:58:22.560 align:middle line:90%
+this is going to equal 1.
+
+00:58:22.560 --> 00:58:24.920 align:middle line:84%
+You might worry if there's
+fewer slots than bidders.
+
+00:58:24.920 --> 00:58:26.380 align:middle line:84%
+Are we ever going
+to divide by 0?
+
+00:58:26.380 --> 00:58:28.280 align:middle line:84%
+It turns out that
+top's going to become 0
+
+00:58:28.280 --> 00:58:29.680 align:middle line:84%
+before the bottom does.
+and we're not really
+
+00:58:29.680 --> 00:58:31.263 align:middle line:84%
+going to have to
+worry about it, but I
+
+00:58:31.263 --> 00:58:32.560 align:middle line:90%
+will go through the details.
+
+00:58:32.560 --> 00:58:34.960 align:middle line:84%
+So it turns out this is
+going to be less than
+
+00:58:34.960 --> 00:58:44.645 align:middle line:84%
+or equal to 1 with equality
+if m is strictly less than n--
+
+00:58:44.645 --> 00:58:46.520 align:middle line:84%
+if there's fewer slots
+than bidders, which is
+
+00:58:46.520 --> 00:58:48.600 align:middle line:90%
+a pretty standard phenomenon.
+
+00:58:48.600 --> 00:58:51.520 align:middle line:84%
+You have many advertisers
+wanting to advertise
+
+00:58:51.520 --> 00:58:53.020 align:middle line:90%
+on just a few limited slots.
+
+00:58:53.020 --> 00:58:56.040 align:middle line:84%
+So generally, n is going
+to be bigger than m.
+
+00:58:56.040 --> 00:59:00.960 align:middle line:84%
+And I guess the trick I've used
+here is if m is bigger than n,
+
+00:59:00.960 --> 00:59:04.360 align:middle line:84%
+well, let's just create
+null slots beyond the m.
+
+00:59:04.360 --> 00:59:07.190 align:middle line:90%
+I guess I should have said this.
+
+00:59:07.190 --> 00:59:09.440 align:middle line:84%
+We could have just stopped
+or we could say, yeah, well
+
+00:59:09.440 --> 00:59:10.780 align:middle line:84%
+there's actually an
+n plus first slot,
+
+00:59:10.780 --> 00:59:12.280 align:middle line:84%
+but it just has 0
+clickthrough rate.
+
+00:59:12.280 --> 00:59:13.300 align:middle line:90%
+It's just a fake slot.
+
+00:59:13.300 --> 00:59:16.540 align:middle line:84%
+And if we do that, then all
+these alphas are well-defined.
+
+00:59:16.540 --> 00:59:18.280 align:middle line:90%
+They're just all 0 after the m.
+
+00:59:18.280 --> 00:59:20.160 align:middle line:84%
+And if we do that, then
+we see that this sum
+
+00:59:20.160 --> 00:59:22.320 align:middle line:90%
+is going to be exactly 1.
+
+00:59:22.320 --> 00:59:23.760 align:middle line:90%
+So why did we do this sum?
+
+00:59:23.760 --> 00:59:25.760 align:middle line:90%
+The sum was for interpretation.
+
+00:59:25.760 --> 00:59:28.570 align:middle line:84%
+What is the payment
+per click that I make
+
+00:59:28.570 --> 00:59:30.890 align:middle line:90%
+if I'm the jth highest bidder?
+
+00:59:30.890 --> 00:59:32.930 align:middle line:84%
+It's a weighted
+average of all the bids
+
+00:59:32.930 --> 00:59:34.730 align:middle line:90%
+that are lower than mine.
+
+00:59:34.730 --> 00:59:37.170 align:middle line:84%
+The weights are
+non-negative, and the sum
+
+00:59:37.170 --> 00:59:39.930 align:middle line:84%
+of the weights-- well, in
+this general case here,
+
+00:59:39.930 --> 00:59:41.050 align:middle line:90%
+it's exactly 1.
+
+00:59:41.050 --> 00:59:42.670 align:middle line:84%
+So it's exactly a
+weighted average.
+
+00:59:42.670 --> 00:59:45.690 align:middle line:90%
+
+
+00:59:45.690 --> 00:59:50.810 align:middle line:84%
+And now we have a nice
+comparison because--
+
+00:59:50.810 --> 00:59:52.030 align:middle line:90%
+I'll go back over here.
+
+00:59:52.030 --> 01:00:01.770 align:middle line:90%
+
+
+01:00:01.770 --> 01:00:05.450 align:middle line:84%
+If we looked at the GSP, or
+the Generalized Second Price
+
+01:00:05.450 --> 01:00:08.570 align:middle line:90%
+auction, pj was what?
+
+01:00:08.570 --> 01:00:10.390 align:middle line:84%
+Just using our
+notation, what was pj?
+
+01:00:10.390 --> 01:00:12.550 align:middle line:84%
+What was the payment per
+click for the jth slot?
+
+01:00:12.550 --> 01:00:16.970 align:middle line:90%
+
+
+01:00:16.970 --> 01:00:17.510 align:middle line:90%
+Right.
+
+01:00:17.510 --> 01:00:26.290 align:middle line:84%
+It was the j plus
+first highest bid.
+
+01:00:26.290 --> 01:00:32.410 align:middle line:90%
+Under the VCG mechanism, pj--
+
+01:00:32.410 --> 01:00:34.470 align:middle line:84%
+well, we have this
+form over here.
+
+01:00:34.470 --> 01:00:37.010 align:middle line:90%
+But let's just check.
+
+01:00:37.010 --> 01:00:42.210 align:middle line:84%
+K ranges from j plus 1 to n, so
+these range from bj plus 1 to n.
+
+01:00:42.210 --> 01:00:57.150 align:middle line:84%
+So we get a weighted average
+of all the lower bids.
+
+01:00:57.150 --> 01:01:00.650 align:middle line:90%
+
+
+01:01:00.650 --> 01:01:04.730 align:middle line:84%
+And we can exactly see why
+the VCG-- or at least there's
+
+01:01:04.730 --> 01:01:11.030 align:middle line:84%
+some intuition for why, under
+the GSP, we see bid shading.
+
+01:01:11.030 --> 01:01:15.330 align:middle line:90%
+
+
+01:01:15.330 --> 01:01:19.550 align:middle line:84%
+And under the VCG, bidding
+truthfully is optimal.
+
+01:01:19.550 --> 01:01:29.260 align:middle line:90%
+
+
+01:01:29.260 --> 01:01:31.840 align:middle line:84%
+In short, it turned
+out in the GSP--
+
+01:01:31.840 --> 01:01:35.060 align:middle line:84%
+while it seemed like
+the right generalization
+
+01:01:35.060 --> 01:01:38.740 align:middle line:84%
+to have you pay the next highest
+bid, that was actually too high.
+
+01:01:38.740 --> 01:01:41.340 align:middle line:84%
+And as a result, people
+wanted to shade their bids.
+
+01:01:41.340 --> 01:01:44.300 align:middle line:84%
+And in a VCG, you're
+actually ask to pay
+
+01:01:44.300 --> 01:01:46.780 align:middle line:90%
+less relative to your bids.
+
+01:01:46.780 --> 01:01:48.823 align:middle line:84%
+Instead of paying
+the next highest bid,
+
+01:01:48.823 --> 01:01:50.740 align:middle line:84%
+you pay a weighted average
+of the next highest
+
+01:01:50.740 --> 01:01:53.460 align:middle line:84%
+bid, the next highest, the
+next highest, and so on.
+
+01:01:53.460 --> 01:01:57.160 align:middle line:84%
+And these later bids are
+lower than this bid here.
+
+01:01:57.160 --> 01:02:10.380 align:middle line:90%
+
+
+01:02:10.380 --> 01:02:16.140 align:middle line:84%
+In particular, let's look
+at a special case I think
+
+01:02:16.140 --> 01:02:17.320 align:middle line:90%
+is instructive.
+
+01:02:17.320 --> 01:02:21.300 align:middle line:90%
+
+
+01:02:21.300 --> 01:02:22.680 align:middle line:90%
+What if alpha 1--
+
+01:02:22.680 --> 01:02:28.533 align:middle line:90%
+
+
+01:02:28.533 --> 01:02:30.700 align:middle line:84%
+so this technically isn't
+covered by our assumptions
+
+01:02:30.700 --> 01:02:32.075 align:middle line:84%
+because we assumed
+it was strict.
+
+01:02:32.075 --> 01:02:33.580 align:middle line:84%
+But we can think
+of this as a limit.
+
+01:02:33.580 --> 01:02:36.900 align:middle line:84%
+So let's say there's n
+bidders, and the n slots
+
+01:02:36.900 --> 01:02:39.420 align:middle line:90%
+are all basically the same.
+
+01:02:39.420 --> 01:02:45.780 align:middle line:84%
+So we have n bidders and
+we have n identical slots.
+
+01:02:45.780 --> 01:02:50.500 align:middle line:90%
+How would people bid in the GSP?
+
+01:02:50.500 --> 01:02:53.280 align:middle line:84%
+Would you want to bid your
+evaluation for the slot?
+
+01:02:53.280 --> 01:02:56.060 align:middle line:84%
+How would you bid if
+you were in the GSPN
+
+01:02:56.060 --> 01:02:57.440 align:middle line:90%
+and you knew there were n slots?
+
+01:02:57.440 --> 01:03:04.580 align:middle line:90%
+
+
+01:03:04.580 --> 01:03:05.390 align:middle line:90%
+Yeah.
+
+01:03:05.390 --> 01:03:07.140 align:middle line:84%
+AUDIENCE: You could
+end up bidding nothing
+
+01:03:07.140 --> 01:03:09.580 align:middle line:84%
+and still you
+could just end up--
+
+01:03:09.580 --> 01:03:11.740 align:middle line:84%
+even if you're in
+the last slot, it
+
+01:03:11.740 --> 01:03:14.300 align:middle line:84%
+doesn't really matter because
+you'll have the same value.
+
+01:03:14.300 --> 01:03:14.967 align:middle line:90%
+IAN BALL: Right.
+
+01:03:14.967 --> 01:03:16.760 align:middle line:84%
+So here, there's
+really no scarcity.
+
+01:03:16.760 --> 01:03:17.760 align:middle line:90%
+There's n slots.
+
+01:03:17.760 --> 01:03:19.120 align:middle line:90%
+They're all equally good.
+
+01:03:19.120 --> 01:03:21.593 align:middle line:84%
+There's no competition
+between the bidders at all.
+
+01:03:21.593 --> 01:03:23.510 align:middle line:84%
+It's not like we're
+fighting for that top slot
+
+01:03:23.510 --> 01:03:25.470 align:middle line:84%
+because the next
+slot is just as good.
+
+01:03:25.470 --> 01:03:30.950 align:middle line:84%
+So we see that the GSP is going
+to induce really intense bid
+
+01:03:30.950 --> 01:03:31.450 align:middle line:90%
+shading.
+
+01:03:31.450 --> 01:03:32.610 align:middle line:84%
+People are going to
+shade their bids a lot.
+
+01:03:32.610 --> 01:03:34.870 align:middle line:84%
+In fact, people are
+generally going to bid 0.
+
+01:03:34.870 --> 01:03:35.810 align:middle line:90%
+There's no shortage?
+
+01:03:35.810 --> 01:03:36.650 align:middle line:90%
+I can just bid 0.
+
+01:03:36.650 --> 01:03:41.022 align:middle line:84%
+I'll still get one of the n
+slots, and I'm happy with that.
+
+01:03:41.022 --> 01:03:43.230 align:middle line:84%
+So you might think, well,
+how is the VCG going to get
+
+01:03:43.230 --> 01:03:44.630 align:middle line:90%
+people to be truthful at all?
+
+01:03:44.630 --> 01:03:46.630 align:middle line:84%
+How could we possibly get
+people to pay anything
+
+01:03:46.630 --> 01:03:47.870 align:middle line:90%
+if there's no scarcity?
+
+01:03:47.870 --> 01:03:53.910 align:middle line:84%
+Well, what is the payment
+rule going to be in the VCG?
+
+01:03:53.910 --> 01:03:55.390 align:middle line:84%
+Well, what are
+these weights going
+
+01:03:55.390 --> 01:03:58.030 align:middle line:84%
+to be if all the
+alphas are the same?
+
+01:03:58.030 --> 01:03:59.510 align:middle line:90%
+AUDIENCE: 0.
+
+01:03:59.510 --> 01:04:00.350 align:middle line:90%
+IAN BALL: 0.
+
+01:04:00.350 --> 01:04:03.230 align:middle line:84%
+So in fact, in the VCG
+mechanism in this special case,
+
+01:04:03.230 --> 01:04:05.470 align:middle line:84%
+people are always
+just going to pay 0.
+
+01:04:05.470 --> 01:04:08.030 align:middle line:84%
+So you might think, oh,
+VCG-- how do we get something
+
+01:04:08.030 --> 01:04:08.570 align:middle line:90%
+for nothing?
+
+01:04:08.570 --> 01:04:11.430 align:middle line:84%
+Well, it's like if people had a
+really strong incentive to shade
+
+01:04:11.430 --> 01:04:15.333 align:middle line:84%
+their bid in the
+GSP, then the VCG
+
+01:04:15.333 --> 01:04:17.750 align:middle line:84%
+is going to shade on their
+behalf and just charge everyone
+
+01:04:17.750 --> 01:04:19.208 align:middle line:84%
+0 anyway, and then
+people are going
+
+01:04:19.208 --> 01:04:20.430 align:middle line:90%
+to be willing to be truthful.
+
+01:04:20.430 --> 01:04:22.790 align:middle line:90%
+So nothing comes for free.
+
+01:04:22.790 --> 01:04:24.450 align:middle line:84%
+How do we get
+people to bid more?
+
+01:04:24.450 --> 01:04:25.750 align:middle line:84%
+They're willing to
+bid more because it's
+
+01:04:25.750 --> 01:04:26.770 align:middle line:90%
+a function of their bids.
+
+01:04:26.770 --> 01:04:27.870 align:middle line:90%
+They're asked to pay less.
+
+01:04:27.870 --> 01:04:30.790 align:middle line:84%
+And that's, I think,
+the key idea or key
+
+01:04:30.790 --> 01:04:33.130 align:middle line:90%
+insight of the VCG mechanism.
+
+01:04:33.130 --> 01:04:37.590 align:middle line:90%
+
+
+01:04:37.590 --> 01:04:42.150 align:middle line:84%
+So maybe in the last 15
+minutes, we'll try to--
+
+01:04:42.150 --> 01:04:46.710 align:middle line:84%
+I'd like to go over maybe
+the general formula for VCG
+
+01:04:46.710 --> 01:04:47.690 align:middle line:90%
+beyond this setting.
+
+01:04:47.690 --> 01:04:49.530 align:middle line:84%
+So it turns out
+the VCG mechanism,
+
+01:04:49.530 --> 01:04:51.542 align:middle line:84%
+it was applied to this
+setting of ad auctions.
+
+01:04:51.542 --> 01:04:54.250 align:middle line:84%
+But it makes sense, and it works
+in a much more abstract setting.
+
+01:04:54.250 --> 01:04:56.450 align:middle line:84%
+And we're just going to
+go over how that works.
+
+01:04:56.450 --> 01:05:10.190 align:middle line:90%
+
+
+01:05:10.190 --> 01:05:12.850 align:middle line:90%
+So now I'll say abstract VCG.
+
+01:05:12.850 --> 01:05:18.430 align:middle line:90%
+
+
+01:05:18.430 --> 01:05:21.140 align:middle line:84%
+So the general setting
+of VCG is-- well,
+
+01:05:21.140 --> 01:05:24.040 align:middle line:84%
+we're having to make some
+decision for all the bidders.
+
+01:05:24.040 --> 01:05:26.560 align:middle line:84%
+Here, the decision was
+how we match the bidders
+
+01:05:26.560 --> 01:05:28.080 align:middle line:90%
+to the ad slots.
+
+01:05:28.080 --> 01:05:32.480 align:middle line:84%
+Maybe the decision is,
+do we build a bridge?
+
+01:05:32.480 --> 01:05:34.720 align:middle line:84%
+There are many, many
+things it could be.
+
+01:05:34.720 --> 01:05:36.700 align:middle line:84%
+How we allocate some
+item among the bidders,
+
+01:05:36.700 --> 01:05:37.740 align:middle line:84%
+there could be
+many, many things.
+
+01:05:37.740 --> 01:05:39.323 align:middle line:84%
+So we're going to
+be totally abstract.
+
+01:05:39.323 --> 01:05:41.960 align:middle line:84%
+And the decision
+is just going to be
+
+01:05:41.960 --> 01:05:45.480 align:middle line:84%
+some abstract x in
+some set X. But if you
+
+01:05:45.480 --> 01:05:48.760 align:middle line:84%
+want to make it concrete,
+think of x as the allocation
+
+01:05:48.760 --> 01:05:50.062 align:middle line:90%
+of bidders to slots.
+
+01:05:50.062 --> 01:05:51.520 align:middle line:84%
+Maybe another
+classic example would
+
+01:05:51.520 --> 01:05:56.940 align:middle line:84%
+be the allocation of planes
+to airport landing slots.
+
+01:05:56.940 --> 01:05:59.440 align:middle line:84%
+This is a classic
+application of BCG.
+
+01:05:59.440 --> 01:06:01.940 align:middle line:84%
+Or maybe routing
+internet protocols,
+
+01:06:01.940 --> 01:06:03.920 align:middle line:84%
+routing packets through
+the network-- that
+
+01:06:03.920 --> 01:06:05.260 align:middle line:90%
+might be what x represents.
+
+01:06:05.260 --> 01:06:07.593 align:middle line:84%
+But the crucial thing is x
+is a collective decision that
+
+01:06:07.593 --> 01:06:11.120 align:middle line:84%
+affects everyone. x does not
+represent bidder 1 gets slot 1.
+
+01:06:11.120 --> 01:06:13.680 align:middle line:84%
+It represents the complete
+mapping of bidders
+
+01:06:13.680 --> 01:06:16.640 align:middle line:84%
+to slots or the complete
+allocation of airplanes
+
+01:06:16.640 --> 01:06:18.140 align:middle line:90%
+to landing slots, and so on.
+
+01:06:18.140 --> 01:06:21.600 align:middle line:90%
+
+
+01:06:21.600 --> 01:06:24.520 align:middle line:84%
+We now need to describe
+the bidder's preferences
+
+01:06:24.520 --> 01:06:25.740 align:middle line:90%
+or the player's preferences.
+
+01:06:25.740 --> 01:06:35.080 align:middle line:84%
+So we have-- let's say
+player i has valuation vi.
+
+01:06:35.080 --> 01:06:36.983 align:middle line:84%
+Now, before, vi
+was just a number.
+
+01:06:36.983 --> 01:06:39.400 align:middle line:84%
+When we were in a setting where
+we were allocating a good,
+
+01:06:39.400 --> 01:06:41.080 align:middle line:84%
+my valuation was
+just, how much am I
+
+01:06:41.080 --> 01:06:42.288 align:middle line:90%
+willing to pay for that good?
+
+01:06:42.288 --> 01:06:44.960 align:middle line:84%
+But now my valuation
+needs to specify
+
+01:06:44.960 --> 01:06:48.700 align:middle line:84%
+how much I value every possible
+social decision that's made.
+
+01:06:48.700 --> 01:06:50.860 align:middle line:84%
+Let me say social or
+collective decision.
+
+01:06:50.860 --> 01:06:53.520 align:middle line:90%
+
+
+01:06:53.520 --> 01:06:58.080 align:middle line:84%
+So now my valuation is a
+function, vi, from x to r.
+
+01:06:58.080 --> 01:07:00.070 align:middle line:84%
+So I'm just going to
+call it vi, but remember,
+
+01:07:00.070 --> 01:07:01.320 align:middle line:90%
+it's a much richer object now.
+
+01:07:01.320 --> 01:07:02.778 align:middle line:84%
+It's not just one
+number that says,
+
+01:07:02.778 --> 01:07:04.020 align:middle line:90%
+how much do I value an item?
+
+01:07:04.020 --> 01:07:05.640 align:middle line:84%
+It's an entire
+mapping that says,
+
+01:07:05.640 --> 01:07:10.240 align:middle line:84%
+if this is the allocation of
+bidders to auction slots, that's
+
+01:07:10.240 --> 01:07:11.460 align:middle line:90%
+how much utility I get.
+
+01:07:11.460 --> 01:07:12.560 align:middle line:84%
+If we have a
+different allocation
+
+01:07:12.560 --> 01:07:14.840 align:middle line:84%
+of bidders to auction slots,
+here's how much utility I get,
+
+01:07:14.840 --> 01:07:15.420 align:middle line:90%
+and so on.
+
+01:07:15.420 --> 01:07:15.920 align:middle line:90%
+Yeah.
+
+01:07:15.920 --> 01:07:19.450 align:middle line:84%
+AUDIENCE: What do you to
+consider how other bidders are
+
+01:07:19.450 --> 01:07:21.330 align:middle line:90%
+put in different slots?
+
+01:07:21.330 --> 01:07:22.950 align:middle line:84%
+If you're in a
+fixed auction slot,
+
+01:07:22.950 --> 01:07:25.470 align:middle line:84%
+can it just be your auction
+slot to your utility?
+
+01:07:25.470 --> 01:07:26.637 align:middle line:90%
+IAN BALL: It's a good point.
+
+01:07:26.637 --> 01:07:30.090 align:middle line:84%
+So if we're willing to impose
+more structure on x, maybe
+
+01:07:30.090 --> 01:07:32.390 align:middle line:84%
+x says, this is what you
+get, this is what you get,
+
+01:07:32.390 --> 01:07:33.310 align:middle line:90%
+this is what you got.
+
+01:07:33.310 --> 01:07:36.370 align:middle line:84%
+And my valuation only
+depends on my component of x.
+
+01:07:36.370 --> 01:07:38.130 align:middle line:84%
+But at this level
+of generality, we're
+
+01:07:38.130 --> 01:07:40.710 align:middle line:84%
+not even assuming that
+kind of structure.
+
+01:07:40.710 --> 01:07:44.372 align:middle line:84%
+And it may be that
+we want to be--
+
+01:07:44.372 --> 01:07:45.830 align:middle line:84%
+the point is, this
+is more general,
+
+01:07:45.830 --> 01:07:47.770 align:middle line:84%
+so it may be that if
+we're allocating planes
+
+01:07:47.770 --> 01:07:50.370 align:middle line:84%
+to landing slots, I also really
+like if my competitor gets
+
+01:07:50.370 --> 01:07:51.070 align:middle line:90%
+a bad slot.
+
+01:07:51.070 --> 01:07:52.510 align:middle line:84%
+I don't just care about
+getting a good slot.
+
+01:07:52.510 --> 01:07:54.250 align:middle line:84%
+So in principle, that
+could be the case.
+
+01:07:54.250 --> 01:07:56.030 align:middle line:84%
+Maybe there are ways
+we can restrict it,
+
+01:07:56.030 --> 01:07:58.150 align:middle line:84%
+but this is more general and
+it makes the notation cleaner,
+
+01:07:58.150 --> 01:08:00.025 align:middle line:84%
+so we're not going to
+impose that assumption.
+
+01:08:00.025 --> 01:08:02.450 align:middle line:84%
+But I think that's a very
+reasonable assumption.
+
+01:08:02.450 --> 01:08:04.450 align:middle line:90%
+OK.
+
+01:08:04.450 --> 01:08:07.130 align:middle line:90%
+So what are we going to do?
+
+01:08:07.130 --> 01:08:10.350 align:middle line:84%
+Well, before, in a
+second price auction,
+
+01:08:10.350 --> 01:08:12.590 align:middle line:84%
+we had this idea that people
+were bidding truthfully.
+
+01:08:12.590 --> 01:08:14.110 align:middle line:84%
+We'd also like people
+to bid truthfully.
+
+01:08:14.110 --> 01:08:15.750 align:middle line:84%
+But if we want people
+to bid truthfully,
+
+01:08:15.750 --> 01:08:16.890 align:middle line:84%
+well, we have to
+just ask them what
+
+01:08:16.890 --> 01:08:18.149 align:middle line:90%
+their valuation function is.
+
+01:08:18.149 --> 01:08:19.630 align:middle line:84%
+And that's what the
+mechanism is going to do.
+
+01:08:19.630 --> 01:08:21.172 align:middle line:84%
+We're going to say,
+everyone, tell me
+
+01:08:21.172 --> 01:08:22.550 align:middle line:90%
+what your valuation function is.
+
+01:08:22.550 --> 01:08:24.670 align:middle line:84%
+So instead of telling me just
+how much you value one item,
+
+01:08:24.670 --> 01:08:26.587 align:middle line:84%
+we're going to say, tell
+me how much you value
+
+01:08:26.587 --> 01:08:28.250 align:middle line:90%
+every possible social decision.
+
+01:08:28.250 --> 01:08:39.330 align:middle line:84%
+So the mechanism, we'll
+say, elicits reports.
+
+01:08:39.330 --> 01:08:42.930 align:middle line:84%
+And we'll often denote
+these v1 hat through vn hat.
+
+01:08:42.930 --> 01:08:44.569 align:middle line:84%
+So what's the
+interpretation here?
+
+01:08:44.569 --> 01:08:49.130 align:middle line:84%
+v1 is bidder 1's true
+valuation function.
+
+01:08:49.130 --> 01:08:53.410 align:middle line:90%
+v1 hat is effectively a bid.
+
+01:08:53.410 --> 01:08:55.290 align:middle line:84%
+It's the valuation
+function that bidder 1
+
+01:08:55.290 --> 01:08:56.770 align:middle line:90%
+reports to the mechanism.
+
+01:08:56.770 --> 01:08:58.250 align:middle line:90%
+And that may not be truthful.
+
+01:08:58.250 --> 01:09:00.667 align:middle line:84%
+We want to make sure that
+people have the right incentives
+
+01:09:00.667 --> 01:09:01.810 align:middle line:90%
+to report truthfully.
+
+01:09:01.810 --> 01:09:03.550 align:middle line:84%
+But they're reporting
+an entire function,
+
+01:09:03.550 --> 01:09:07.529 align:middle line:84%
+which may be a little bit
+confusing and abstract at first.
+
+01:09:07.529 --> 01:09:11.149 align:middle line:90%
+So what does the mechanism do?
+
+01:09:11.149 --> 01:09:26.300 align:middle line:90%
+
+
+01:09:26.300 --> 01:09:27.120 align:middle line:90%
+We have 5 minutes.
+
+01:09:27.120 --> 01:09:28.745 align:middle line:84%
+We're just going to
+write two formulas,
+
+01:09:28.745 --> 01:09:30.819 align:middle line:90%
+but they're a little long.
+
+01:09:30.819 --> 01:09:33.060 align:middle line:84%
+So just like an
+auction, a mechanism
+
+01:09:33.060 --> 01:09:34.717 align:middle line:84%
+is going to need to
+specify two things.
+
+01:09:34.717 --> 01:09:37.300 align:middle line:84%
+It's going to have to specify
+an allocation rule and a payment
+
+01:09:37.300 --> 01:09:37.800 align:middle line:90%
+rule.
+
+01:09:37.800 --> 01:09:42.340 align:middle line:90%
+
+
+01:09:42.340 --> 01:09:50.500 align:middle line:84%
+We need an allocation
+rule and a payment rule.
+
+01:09:50.500 --> 01:09:53.380 align:middle line:84%
+The allocation rule says, if
+these are the reported valuation
+
+01:09:53.380 --> 01:09:55.740 align:middle line:84%
+functions that people
+send to me, what
+
+01:09:55.740 --> 01:09:58.540 align:middle line:90%
+decision am I going to choose?
+
+01:09:58.540 --> 01:10:00.980 align:middle line:84%
+And the payment rule says,
+if these are the valuation
+
+01:10:00.980 --> 01:10:03.140 align:middle line:84%
+functions that are reported
+to me, how much am I
+
+01:10:03.140 --> 01:10:07.260 align:middle line:90%
+going to ask each agent to pay?
+
+01:10:07.260 --> 01:10:16.460 align:middle line:84%
+So the allocation rule, we
+need to define xv1 hat vn hat.
+
+01:10:16.460 --> 01:10:20.020 align:middle line:84%
+These are the valuation
+functions that are reported.
+
+01:10:20.020 --> 01:10:23.140 align:middle line:84%
+x of this is going to be the
+allocation or the decision--
+
+01:10:23.140 --> 01:10:27.340 align:middle line:90%
+allocation or decision rule.
+
+01:10:27.340 --> 01:10:28.980 align:middle line:90%
+I'll use these interchangeably.
+
+01:10:28.980 --> 01:10:32.860 align:middle line:84%
+Well, we want to allocate
+things efficiently.
+
+01:10:32.860 --> 01:10:35.300 align:middle line:90%
+So what does that mean?
+
+01:10:35.300 --> 01:10:37.620 align:middle line:84%
+This is going to
+be in the argmax--
+
+01:10:37.620 --> 01:10:40.620 align:middle line:84%
+I think the notation here
+is a little tricky-- of x
+
+01:10:40.620 --> 01:10:45.240 align:middle line:90%
+prime in x of the sum.
+
+01:10:45.240 --> 01:10:53.820 align:middle line:90%
+
+
+01:10:53.820 --> 01:10:56.180 align:middle line:84%
+So let's just
+understand what this is.
+
+01:10:56.180 --> 01:11:00.900 align:middle line:84%
+This says, if we choose
+decision x prime, what
+
+01:11:00.900 --> 01:11:04.780 align:middle line:84%
+is the sum of the players'
+utilities when we compute them,
+
+01:11:04.780 --> 01:11:06.280 align:middle line:84%
+with respect to
+what they report?
+
+01:11:06.280 --> 01:11:08.940 align:middle line:90%
+
+
+01:11:08.940 --> 01:11:11.310 align:middle line:84%
+Taking the argmax
+of this says we're
+
+01:11:11.310 --> 01:11:13.350 align:middle line:84%
+going to choose
+the decision that
+
+01:11:13.350 --> 01:11:16.285 align:middle line:84%
+maximizes the sum of
+the reported valuations.
+
+01:11:16.285 --> 01:11:17.910 align:middle line:84%
+What we'd really like
+to do is maximize
+
+01:11:17.910 --> 01:11:20.050 align:middle line:84%
+the sum of the true valuations,
+but we don't know those.
+
+01:11:20.050 --> 01:11:21.250 align:middle line:90%
+We only know the reports.
+
+01:11:21.250 --> 01:11:24.630 align:middle line:84%
+So all we can do is take in
+the reported valuation function
+
+01:11:24.630 --> 01:11:27.390 align:middle line:84%
+and choose the decision that
+makes the sum of the valuations
+
+01:11:27.390 --> 01:11:30.230 align:middle line:90%
+as large as possible.
+
+01:11:30.230 --> 01:11:31.250 align:middle line:90%
+And that's what this is.
+
+01:11:31.250 --> 01:11:32.790 align:middle line:84%
+And sometimes we
+call this x star
+
+01:11:32.790 --> 01:11:34.430 align:middle line:84%
+to denote that
+this is efficient.
+
+01:11:34.430 --> 01:11:37.710 align:middle line:90%
+
+
+01:11:37.710 --> 01:11:43.970 align:middle line:84%
+I think this is a bit abstract,
+so any questions on this?
+
+01:11:43.970 --> 01:11:44.470 align:middle line:90%
+No?
+
+01:11:44.470 --> 01:11:45.350 align:middle line:90%
+Good.
+
+01:11:45.350 --> 01:11:46.110 align:middle line:90%
+OK.
+
+01:11:46.110 --> 01:11:47.753 align:middle line:84%
+There could be
+multiple maximizers.
+
+01:11:47.753 --> 01:11:49.170 align:middle line:84%
+And we'll just
+choose one of them.
+
+01:11:49.170 --> 01:11:49.710 align:middle line:90%
+It doesn't matter.
+
+01:11:49.710 --> 01:11:51.770 align:middle line:84%
+If there's two things,
+that would be efficient.
+
+01:11:51.770 --> 01:11:56.150 align:middle line:84%
+So as an example, if we were
+in the auction context, then
+
+01:11:56.150 --> 01:12:00.170 align:middle line:84%
+this would be the allocation
+that gives the highest bidder
+
+01:12:00.170 --> 01:12:02.870 align:middle line:84%
+the first slot, the second
+highest bidder the second slot,
+
+01:12:02.870 --> 01:12:03.370 align:middle line:90%
+and so on.
+
+01:12:03.370 --> 01:12:05.430 align:middle line:84%
+That's what x star
+would represent.
+
+01:12:05.430 --> 01:12:08.870 align:middle line:84%
+And v1 hat would be the
+report of how much I
+
+01:12:08.870 --> 01:12:13.270 align:middle line:90%
+value each slot, each click.
+
+01:12:13.270 --> 01:12:16.510 align:middle line:84%
+Now, the payment rule is
+exactly what we said before.
+
+01:12:16.510 --> 01:12:20.270 align:middle line:84%
+We want to charge each
+bidder their externality.
+
+01:12:20.270 --> 01:12:27.430 align:middle line:84%
+So ti of v1 through
+vn hat is saying,
+
+01:12:27.430 --> 01:12:29.150 align:middle line:84%
+if these are the
+valuation functions that
+
+01:12:29.150 --> 01:12:30.990 align:middle line:84%
+are reported by the
+bidders, how much
+
+01:12:30.990 --> 01:12:33.230 align:middle line:90%
+are we going to charge bidder i?
+
+01:12:33.230 --> 01:12:42.230 align:middle line:84%
+We're going to charge bidder
+i informally the externality
+
+01:12:42.230 --> 01:12:45.790 align:middle line:90%
+imposed on all others.
+
+01:12:45.790 --> 01:12:50.230 align:middle line:84%
+So let's write
+that more formally.
+
+01:12:50.230 --> 01:12:52.370 align:middle line:84%
+What is the externality
+imposed on all others?
+
+01:12:52.370 --> 01:12:54.550 align:middle line:84%
+It's how well
+everyone else would
+
+01:12:54.550 --> 01:12:59.630 align:middle line:84%
+do if bidder i weren't there
+minus how well they actually do.
+
+01:12:59.630 --> 01:13:01.243 align:middle line:90%
+That's what the externality is.
+
+01:13:01.243 --> 01:13:03.410 align:middle line:84%
+So how well would they do
+if bidder i weren't there?
+
+01:13:03.410 --> 01:13:05.785 align:middle line:84%
+Well, let's just look at the
+best they could possibly do.
+
+01:13:05.785 --> 01:13:10.272 align:middle line:84%
+So the best they could possibly
+do if bidder i weren't there
+
+01:13:10.272 --> 01:13:11.380 align:middle line:90%
+would be this.
+
+01:13:11.380 --> 01:13:16.680 align:middle line:90%
+
+
+01:13:16.680 --> 01:13:18.540 align:middle line:84%
+I'm looking at everyone
+other than bidder i.
+
+01:13:18.540 --> 01:13:22.160 align:middle line:84%
+I'm using their reported
+valuation functions.
+
+01:13:22.160 --> 01:13:24.440 align:middle line:84%
+And I'm saying, if
+we chose x prime,
+
+01:13:24.440 --> 01:13:27.480 align:middle line:84%
+this is how well everyone
+but player i would do.
+
+01:13:27.480 --> 01:13:31.440 align:middle line:84%
+And let me choose the allocation
+that makes those people as well
+
+01:13:31.440 --> 01:13:32.880 align:middle line:90%
+off as possible.
+
+01:13:32.880 --> 01:13:35.360 align:middle line:84%
+So I want to maximize the
+welfare of everyone other
+
+01:13:35.360 --> 01:13:36.960 align:middle line:90%
+than bidder i.
+
+01:13:36.960 --> 01:13:39.180 align:middle line:84%
+That's what we could do
+if bitter i weren't here--
+
+01:13:39.180 --> 01:13:41.520 align:middle line:84%
+or in other words, if we
+didn't care about bitter i,
+
+01:13:41.520 --> 01:13:44.320 align:middle line:84%
+this is how well
+everyone else could do.
+
+01:13:44.320 --> 01:13:47.480 align:middle line:84%
+Now I want to subtract from
+that how well they actually do,
+
+01:13:47.480 --> 01:13:50.800 align:middle line:84%
+how well they do given
+that bidder i is present.
+
+01:13:50.800 --> 01:13:52.160 align:middle line:90%
+How well do they actually do?
+
+01:13:52.160 --> 01:13:56.280 align:middle line:84%
+Well, it's the sum
+over j not equal to i--
+
+01:13:56.280 --> 01:13:57.560 align:middle line:90%
+vj hat.
+
+01:13:57.560 --> 01:13:59.600 align:middle line:84%
+But now what I want
+to plug in here
+
+01:13:59.600 --> 01:14:03.120 align:middle line:84%
+is the decision that's
+actually chosen.
+
+01:14:03.120 --> 01:14:05.620 align:middle line:84%
+And the decision that's actually
+chosen is this one up here.
+
+01:14:05.620 --> 01:14:16.240 align:middle line:90%
+
+
+01:14:16.240 --> 01:14:18.160 align:middle line:90%
+And this is the formula.
+
+01:14:18.160 --> 01:14:19.880 align:middle line:90%
+It's a little abstract.
+
+01:14:19.880 --> 01:14:21.800 align:middle line:90%
+I'll put this in parentheses.
+
+01:14:21.800 --> 01:14:24.800 align:middle line:84%
+And if you go to the
+notes, you can see a proof
+
+01:14:24.800 --> 01:14:31.150 align:middle line:84%
+as to why using this mechanism,
+it's always optimal for bidders
+
+01:14:31.150 --> 01:14:31.900 align:middle line:90%
+to bid truthfully.
+
+01:14:31.900 --> 01:14:33.460 align:middle line:90%
+So let me just write that fact.
+
+01:14:33.460 --> 01:14:35.140 align:middle line:84%
+This is a fact
+that you can prove.
+
+01:14:35.140 --> 01:14:39.520 align:middle line:90%
+
+
+01:14:39.520 --> 01:14:56.720 align:middle line:84%
+So for each bidder i and
+each valuation function vi,
+
+01:14:56.720 --> 01:14:59.820 align:middle line:90%
+bidding vi hat equals vi.
+
+01:14:59.820 --> 01:15:03.440 align:middle line:84%
+What I mean by that is
+reporting my true valuation
+
+01:15:03.440 --> 01:15:11.310 align:middle line:84%
+to the mechanism is optimal, no
+matter how everyone else bids.
+
+01:15:11.310 --> 01:15:18.642 align:middle line:90%
+
+
+01:15:18.642 --> 01:15:20.350 align:middle line:84%
+And when I say no
+matter what others bid,
+
+01:15:20.350 --> 01:15:27.370 align:middle line:84%
+well, that's basically vj
+hat for j not equal to i.
+
+01:15:27.370 --> 01:15:30.130 align:middle line:84%
+So whatever everyone else
+other than me reports
+
+01:15:30.130 --> 01:15:34.370 align:middle line:84%
+to the mechanism, if
+my true value is vi,
+
+01:15:34.370 --> 01:15:36.585 align:middle line:84%
+bidding or reporting
+my true value vi
+
+01:15:36.585 --> 01:15:37.710 align:middle line:90%
+is going to be best for me.
+
+01:15:37.710 --> 01:15:41.010 align:middle line:84%
+It's going to be weakly
+better than any other bid.
+
+01:15:41.010 --> 01:15:46.810 align:middle line:84%
+And this is an incredible
+property of the VCG mechanism.
+
+01:15:46.810 --> 01:15:49.310 align:middle line:84%
+The proof is three lines,
+but it's a little dense,
+
+01:15:49.310 --> 01:15:52.850 align:middle line:84%
+so I encourage you to check
+the notes to see the proof.
+
+01:15:52.850 --> 01:15:56.588 align:middle line:84%
+And maybe I'll stop here
+a few minutes early.
+
+01:15:56.588 --> 01:15:59.130 align:middle line:84%
+And I'm happy to stick around
+to go over any questions people
+
+01:15:59.130 --> 01:16:01.200 align:middle line:90%
+have about VCG.
+
+01:16:01.200 --> 01:16:04.000 align:middle line:90%

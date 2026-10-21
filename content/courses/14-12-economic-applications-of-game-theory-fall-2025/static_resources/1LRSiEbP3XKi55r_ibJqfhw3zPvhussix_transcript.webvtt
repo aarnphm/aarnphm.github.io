@@ -1,0 +1,5504 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:00.994 align:middle line:90%
+[SQUEAKING]
+
+00:00:00.994 --> 00:00:01.982 align:middle line:90%
+[RUSTLING]
+
+00:00:01.982 --> 00:00:04.452 align:middle line:90%
+[CLICKING]
+
+00:00:04.452 --> 00:00:09.700 align:middle line:90%
+
+
+00:00:09.700 --> 00:00:12.520 align:middle line:84%
+IAN BALL: So today we're going
+to consider an application
+
+00:00:12.520 --> 00:00:13.840 align:middle line:90%
+of backward induction.
+
+00:00:13.840 --> 00:00:18.300 align:middle line:84%
+Today is going to be
+about negotiation.
+
+00:00:18.300 --> 00:00:23.360 align:middle line:90%
+
+
+00:00:23.360 --> 00:00:26.920 align:middle line:84%
+And the basic idea is that
+when two parties are bargaining
+
+00:00:26.920 --> 00:00:30.040 align:middle line:84%
+or negotiating, they often--
+one party might make an offer
+
+00:00:30.040 --> 00:00:31.180 align:middle line:90%
+and say, let's do this.
+
+00:00:31.180 --> 00:00:33.680 align:middle line:84%
+And then the other party might
+respond with a counteroffer,
+
+00:00:33.680 --> 00:00:34.820 align:middle line:84%
+and they might go
+back and forth.
+
+00:00:34.820 --> 00:00:36.700 align:middle line:84%
+So right now the
+government just shut down.
+
+00:00:36.700 --> 00:00:38.800 align:middle line:84%
+That's exactly what's
+happening between Trump
+
+00:00:38.800 --> 00:00:40.380 align:middle line:90%
+and the Democratic Party.
+
+00:00:40.380 --> 00:00:43.360 align:middle line:84%
+They might be countering
+offers and go back and forth
+
+00:00:43.360 --> 00:00:46.160 align:middle line:84%
+and see if they can
+eventually reach an agreement.
+
+00:00:46.160 --> 00:00:48.360 align:middle line:84%
+So the first model--
+we're going to discuss
+
+00:00:48.360 --> 00:00:50.160 align:middle line:90%
+two models of negotiation.
+
+00:00:50.160 --> 00:00:54.180 align:middle line:84%
+One is going to be about
+pretrial settlements.
+
+00:00:54.180 --> 00:01:00.570 align:middle line:90%
+
+
+00:01:00.570 --> 00:01:02.950 align:middle line:84%
+And the other is going to
+be about price haggling.
+
+00:01:02.950 --> 00:01:07.097 align:middle line:90%
+
+
+00:01:07.097 --> 00:01:09.430 align:middle line:84%
+And I think these are kind
+of illustrative applications.
+
+00:01:09.430 --> 00:01:11.530 align:middle line:84%
+Of course, we're not going
+to include all the details
+
+00:01:11.530 --> 00:01:12.447 align:middle line:90%
+of these applications.
+
+00:01:12.447 --> 00:01:15.150 align:middle line:84%
+We're going to introduce
+foundational stylized models.
+
+00:01:15.150 --> 00:01:17.610 align:middle line:84%
+But I think they can capture
+some important elements
+
+00:01:17.610 --> 00:01:18.990 align:middle line:90%
+of these issues.
+
+00:01:18.990 --> 00:01:22.450 align:middle line:90%
+So let's start with settlements.
+
+00:01:22.450 --> 00:01:24.190 align:middle line:84%
+So in many cases,
+in criminal cases,
+
+00:01:24.190 --> 00:01:29.050 align:middle line:84%
+we often have pretrial
+plea bargain bargaining.
+
+00:01:29.050 --> 00:01:33.170 align:middle line:84%
+And in civil cases, we
+often have the two parties
+
+00:01:33.170 --> 00:01:37.130 align:middle line:84%
+working together before the case
+and trying to reach a settlement
+
+00:01:37.130 --> 00:01:38.770 align:middle line:90%
+to avoid trial.
+
+00:01:38.770 --> 00:01:40.930 align:middle line:84%
+So today, let's think
+about civil cases.
+
+00:01:40.930 --> 00:01:44.290 align:middle line:84%
+I think that fits
+the model best.
+
+00:01:44.290 --> 00:01:48.010 align:middle line:84%
+And in practice, a lot of civil
+cases never make it to trial.
+
+00:01:48.010 --> 00:01:49.810 align:middle line:84%
+The two parties
+reach some settlement
+
+00:01:49.810 --> 00:01:51.590 align:middle line:90%
+before the case goes to trial.
+
+00:01:51.590 --> 00:01:54.130 align:middle line:84%
+What are some reasons
+why cases like this
+
+00:01:54.130 --> 00:01:55.510 align:middle line:90%
+often don't go to trial?
+
+00:01:55.510 --> 00:01:58.970 align:middle line:84%
+Why do we see so many
+pretrial settlements?
+
+00:01:58.970 --> 00:02:00.210 align:middle line:90%
+Any thoughts?
+
+00:02:00.210 --> 00:02:01.050 align:middle line:90%
+Yeah?
+
+00:02:01.050 --> 00:02:03.235 align:middle line:84%
+STUDENT: Both sides want
+to avoid having legal fees.
+
+00:02:03.235 --> 00:02:04.110 align:middle line:90%
+IAN BALL: Legal fees.
+
+00:02:04.110 --> 00:02:06.710 align:middle line:84%
+So legal costs are
+a big part of it.
+
+00:02:06.710 --> 00:02:08.650 align:middle line:84%
+And that's really
+what our model today
+
+00:02:08.650 --> 00:02:11.170 align:middle line:84%
+is going to focus on, that
+having a drawn-out trial
+
+00:02:11.170 --> 00:02:12.010 align:middle line:90%
+is very costly.
+
+00:02:12.010 --> 00:02:14.370 align:middle line:84%
+Did you have the same
+idea or any other--
+
+00:02:14.370 --> 00:02:15.250 align:middle line:90%
+same idea.
+
+00:02:15.250 --> 00:02:15.870 align:middle line:90%
+Anyone else?
+
+00:02:15.870 --> 00:02:19.130 align:middle line:90%
+Any other reasons?
+
+00:02:19.130 --> 00:02:20.590 align:middle line:90%
+It could be legal costs.
+
+00:02:20.590 --> 00:02:22.570 align:middle line:84%
+It could just be the
+cost of delay, which is
+
+00:02:22.570 --> 00:02:23.910 align:middle line:90%
+similar but slightly different.
+
+00:02:23.910 --> 00:02:27.170 align:middle line:84%
+It could be that even aside
+from paying the lawyers,
+
+00:02:27.170 --> 00:02:29.170 align:middle line:84%
+if we're going to be stuck
+in court for so long,
+
+00:02:29.170 --> 00:02:32.570 align:middle line:84%
+and it's going to delay our
+productive activity, that
+
+00:02:32.570 --> 00:02:35.290 align:middle line:90%
+might be costly.
+
+00:02:35.290 --> 00:02:39.270 align:middle line:84%
+Another big one could
+be risk aversion.
+
+00:02:39.270 --> 00:02:41.250 align:middle line:84%
+This is not going to
+be in our model today.
+
+00:02:41.250 --> 00:02:43.990 align:middle line:84%
+But it might be that I think
+that if we go to court,
+
+00:02:43.990 --> 00:02:46.050 align:middle line:84%
+there's a chance I
+win tons of money.
+
+00:02:46.050 --> 00:02:47.770 align:middle line:84%
+There's a chance I
+don't win anything.
+
+00:02:47.770 --> 00:02:49.570 align:middle line:84%
+So I'd rather
+accept a settlement
+
+00:02:49.570 --> 00:02:52.890 align:middle line:84%
+where I win some small
+intermediate amount of money
+
+00:02:52.890 --> 00:02:54.210 align:middle line:90%
+with certainty.
+
+00:02:54.210 --> 00:02:56.740 align:middle line:84%
+So risk aversion, and
+I should be clear here,
+
+00:02:56.740 --> 00:02:58.120 align:middle line:90%
+over monetary payoffs.
+
+00:02:58.120 --> 00:03:02.260 align:middle line:90%
+
+
+00:03:02.260 --> 00:03:04.420 align:middle line:84%
+I think this is also
+true in criminal cases
+
+00:03:04.420 --> 00:03:06.300 align:middle line:84%
+where someone might
+think, well, there's
+
+00:03:06.300 --> 00:03:08.180 align:middle line:90%
+a chance I get a life sentence.
+
+00:03:08.180 --> 00:03:10.540 align:middle line:84%
+I'd rather accept a
+plea bargain where
+
+00:03:10.540 --> 00:03:12.720 align:middle line:84%
+I'm certain to go to
+prison for five years,
+
+00:03:12.720 --> 00:03:16.100 align:middle line:84%
+rather than have a risk that
+I serve a life sentence.
+
+00:03:16.100 --> 00:03:18.460 align:middle line:84%
+And then maybe one final
+one that we often see
+
+00:03:18.460 --> 00:03:24.580 align:middle line:84%
+is about privacy and maybe
+embarrassing information
+
+00:03:24.580 --> 00:03:29.280 align:middle line:84%
+coming out, or potentially trade
+secrets being revealed at trial.
+
+00:03:29.280 --> 00:03:35.238 align:middle line:90%
+
+
+00:03:35.238 --> 00:03:37.280 align:middle line:84%
+There are some provisions
+to try to prevent this,
+
+00:03:37.280 --> 00:03:42.660 align:middle line:84%
+but I think there's
+still some risk of this.
+
+00:03:42.660 --> 00:03:45.380 align:middle line:84%
+So today, we're going to
+introduce a formal model that
+
+00:03:45.380 --> 00:03:49.420 align:middle line:84%
+can try to make some predictions
+about what kind of settlements
+
+00:03:49.420 --> 00:03:52.140 align:middle line:84%
+we'll see and how long
+negotiations will last.
+
+00:03:52.140 --> 00:03:54.480 align:middle line:84%
+Of course, this model isn't
+going to capture everything,
+
+00:03:54.480 --> 00:03:56.500 align:middle line:84%
+but it's going to be a good
+starting point for today.
+
+00:03:56.500 --> 00:03:58.000 align:middle line:84%
+So in our model,
+we're going to have
+
+00:03:58.000 --> 00:04:01.400 align:middle line:84%
+two parties who we call the
+plaintiff and the defendant.
+
+00:04:01.400 --> 00:04:04.900 align:middle line:90%
+
+
+00:04:04.900 --> 00:04:07.498 align:middle line:84%
+So the plaintiff is the party
+that's suing someone else.
+
+00:04:07.498 --> 00:04:09.540 align:middle line:84%
+So the plaintiff feels
+that they've been wronged,
+
+00:04:09.540 --> 00:04:12.260 align:middle line:84%
+and they're seeking a
+monetary settlement.
+
+00:04:12.260 --> 00:04:15.740 align:middle line:84%
+The defendant has been
+accused of wronging someone,
+
+00:04:15.740 --> 00:04:17.300 align:middle line:84%
+and they're being
+potentially asked
+
+00:04:17.300 --> 00:04:18.680 align:middle line:90%
+to pay a monetary settlement.
+
+00:04:18.680 --> 00:04:19.524 align:middle line:90%
+So let's be clear.
+
+00:04:19.524 --> 00:04:20.899 align:middle line:84%
+At the end, there's
+going to be--
+
+00:04:20.899 --> 00:04:25.540 align:middle line:84%
+if they reach some settlement,
+that's an amount of money that's
+
+00:04:25.540 --> 00:04:29.940 align:middle line:84%
+going to go from the
+defendant to the plaintiff.
+
+00:04:29.940 --> 00:04:32.980 align:middle line:84%
+So from-- maybe I'll just
+write it with arrows--
+
+00:04:32.980 --> 00:04:34.660 align:middle line:90%
+D to P.
+
+00:04:34.660 --> 00:04:36.820 align:middle line:84%
+So just to make sure
+we're on the same page,
+
+00:04:36.820 --> 00:04:41.380 align:middle line:84%
+the defendant is hoping to pay
+out a very small settlement.
+
+00:04:41.380 --> 00:04:42.980 align:middle line:84%
+The defendant
+doesn't want to have
+
+00:04:42.980 --> 00:04:47.060 align:middle line:84%
+to pay a big fine or a big
+punishment to the plaintiff.
+
+00:04:47.060 --> 00:04:49.200 align:middle line:84%
+The plaintiff is seeking
+a very large settlement
+
+00:04:49.200 --> 00:04:53.030 align:middle line:84%
+because they want to get
+paid out as much as possible.
+
+00:04:53.030 --> 00:04:56.190 align:middle line:84%
+And in this case, we're going
+to make a few simplifying
+
+00:04:56.190 --> 00:04:57.310 align:middle line:90%
+assumptions.
+
+00:04:57.310 --> 00:04:59.910 align:middle line:84%
+One of them is that
+there's no uncertainty
+
+00:04:59.910 --> 00:05:01.610 align:middle line:90%
+about the outcome of a trial.
+
+00:05:01.610 --> 00:05:09.413 align:middle line:90%
+
+
+00:05:09.413 --> 00:05:10.330 align:middle line:90%
+Why are we doing this?
+
+00:05:10.330 --> 00:05:13.325 align:middle line:84%
+Well, we want to isolate
+the effect of legal costs.
+
+00:05:13.325 --> 00:05:14.950 align:middle line:84%
+In this model, we're
+not going to worry
+
+00:05:14.950 --> 00:05:17.390 align:middle line:84%
+about risk aversion and the
+potential uncertainties that
+
+00:05:17.390 --> 00:05:18.290 align:middle line:90%
+come with trial.
+
+00:05:18.290 --> 00:05:20.707 align:middle line:84%
+So what we're going to assume
+here, to make things simple,
+
+00:05:20.707 --> 00:05:26.310 align:middle line:84%
+is that if they go to
+trial, the settlement amount
+
+00:05:26.310 --> 00:05:28.890 align:middle line:84%
+is known to be--
+will definitely be J.
+
+00:05:28.890 --> 00:05:30.238 align:middle line:90%
+And we'll use to indicate judge.
+
+00:05:30.238 --> 00:05:31.530 align:middle line:90%
+This is what the judge decides.
+
+00:05:31.530 --> 00:05:35.190 align:middle line:84%
+So both parties know if we
+go to trial the amount that's
+
+00:05:35.190 --> 00:05:36.370 align:middle line:90%
+going to be agreed upon.
+
+00:05:36.370 --> 00:05:37.953 align:middle line:84%
+So here, we're not
+thinking, you might
+
+00:05:37.953 --> 00:05:41.150 align:middle line:84%
+imagine the judge deciding
+whether the plaintiff--
+
+00:05:41.150 --> 00:05:43.170 align:middle line:84%
+whether the defendant did
+anything wrong at all.
+
+00:05:43.170 --> 00:05:45.230 align:middle line:84%
+Here, we're imagining
+that yeah, the defendant
+
+00:05:45.230 --> 00:05:46.688 align:middle line:84%
+has certainly done
+something wrong.
+
+00:05:46.688 --> 00:05:49.680 align:middle line:84%
+The question is only how
+much they have to pay.
+
+00:05:49.680 --> 00:05:52.260 align:middle line:84%
+And here, the assumption is
+that if they go to court,
+
+00:05:52.260 --> 00:05:55.920 align:middle line:84%
+the amount of the settlement
+will be some fixed amount, J.
+
+00:05:55.920 --> 00:05:59.000 align:middle line:84%
+And then we need to specify what
+the cost of going to court are.
+
+00:05:59.000 --> 00:06:02.200 align:middle line:84%
+So maybe the trial
+costs are going
+
+00:06:02.200 --> 00:06:07.937 align:middle line:84%
+to be Cp for the plaintiff
+and Cd for the defendant.
+
+00:06:07.937 --> 00:06:10.020 align:middle line:84%
+And I think in the notes
+they use capital letters.
+
+00:06:10.020 --> 00:06:11.480 align:middle line:84%
+But I find at the board
+it's hard to know what's
+
+00:06:11.480 --> 00:06:12.938 align:middle line:84%
+capital and lowercase,
+so I'll just
+
+00:06:12.938 --> 00:06:17.200 align:middle line:84%
+use a hat to indicate the
+costs if we go to trial.
+
+00:06:17.200 --> 00:06:21.200 align:middle line:84%
+But then each period that we
+negotiate before the trial also
+
+00:06:21.200 --> 00:06:21.840 align:middle line:90%
+has costs.
+
+00:06:21.840 --> 00:06:23.860 align:middle line:84%
+You don't just pay the
+lawyers when you go to trial.
+
+00:06:23.860 --> 00:06:26.277 align:middle line:84%
+If you want to try to reach a
+settlement, that, in itself,
+
+00:06:26.277 --> 00:06:26.880 align:middle line:90%
+is costly.
+
+00:06:26.880 --> 00:06:31.520 align:middle line:84%
+So we're also going to assume
+that there are per period--
+
+00:06:31.520 --> 00:06:33.760 align:middle line:84%
+and that will be clear when
+I describe the periods--
+
+00:06:33.760 --> 00:06:40.260 align:middle line:84%
+per period negotiation or
+pretrial negotiation costs.
+
+00:06:40.260 --> 00:06:44.080 align:middle line:90%
+
+
+00:06:44.080 --> 00:06:48.160 align:middle line:84%
+And these are just going to
+be cp and cd without hats.
+
+00:06:48.160 --> 00:06:50.720 align:middle line:84%
+So each period that
+we negotiate for,
+
+00:06:50.720 --> 00:06:55.140 align:middle line:84%
+the plaintiff has to pay a
+cost of cp to their lawyers,
+
+00:06:55.140 --> 00:06:59.000 align:middle line:84%
+and the defendant pays a
+cost, cd, to their lawyers.
+
+00:06:59.000 --> 00:07:01.920 align:middle line:84%
+So now let's describe the
+alternating offer structure
+
+00:07:01.920 --> 00:07:02.920 align:middle line:90%
+of this game.
+
+00:07:02.920 --> 00:07:06.300 align:middle line:84%
+This is a very common format
+that we see in reality.
+
+00:07:06.300 --> 00:07:07.180 align:middle line:90%
+You make some offer.
+
+00:07:07.180 --> 00:07:10.397 align:middle line:84%
+The other side will either
+say it's acceptable,
+
+00:07:10.397 --> 00:07:12.480 align:middle line:84%
+or they might reject your
+offer and then come back
+
+00:07:12.480 --> 00:07:15.680 align:middle line:84%
+with a counteroffer that's
+more favorable to them.
+
+00:07:15.680 --> 00:07:20.880 align:middle line:84%
+So we're going to imagine that
+we have time going-- we have 0,
+
+00:07:20.880 --> 00:07:25.640 align:middle line:84%
+period 1, period 2, period 3,
+all the way up to, let's say,
+
+00:07:25.640 --> 00:07:33.120 align:middle line:84%
+2n minus 1, 2n minus
+1, and then 2n.
+
+00:07:33.120 --> 00:07:34.680 align:middle line:84%
+And what we'll
+imagine is that it's
+
+00:07:34.680 --> 00:07:37.440 align:middle line:84%
+known that the date
+of the trial is set.
+
+00:07:37.440 --> 00:07:38.580 align:middle line:90%
+So this is the trial.
+
+00:07:38.580 --> 00:07:42.160 align:middle line:90%
+
+
+00:07:42.160 --> 00:07:47.130 align:middle line:84%
+So we know that the trial is
+going to occur in period 2n.
+
+00:07:47.130 --> 00:07:48.588 align:middle line:90%
+And if we go to trial--
+
+00:07:48.588 --> 00:07:50.130 align:middle line:84%
+when I say it will
+occur, what I mean
+
+00:07:50.130 --> 00:07:52.373 align:middle line:84%
+is if we don't reach a
+settlement before then,
+
+00:07:52.373 --> 00:07:54.790 align:middle line:84%
+then the trial occurs, and we
+know what's going to happen.
+
+00:07:54.790 --> 00:07:56.540 align:middle line:84%
+The settlement is going
+to be J, and we're
+
+00:07:56.540 --> 00:07:58.730 align:middle line:84%
+going to have to pay
+all these legal costs.
+
+00:07:58.730 --> 00:08:00.270 align:middle line:84%
+But in anticipation
+of the trial,
+
+00:08:00.270 --> 00:08:05.170 align:middle line:84%
+what we're imagining is
+there's time to have n rounds,
+
+00:08:05.170 --> 00:08:08.730 align:middle line:84%
+or 2n minus 2n periods, but
+n total rounds of alternating
+
+00:08:08.730 --> 00:08:09.650 align:middle line:90%
+offers.
+
+00:08:09.650 --> 00:08:14.410 align:middle line:84%
+So what we imagine is
+in the first period,
+
+00:08:14.410 --> 00:08:19.410 align:middle line:84%
+the plaintiff is going to be
+the one who's going to propose.
+
+00:08:19.410 --> 00:08:20.930 align:middle line:90%
+So it's a little confusing.
+
+00:08:20.930 --> 00:08:22.350 align:middle line:90%
+P is for plaintiff.
+
+00:08:22.350 --> 00:08:23.250 align:middle line:90%
+You're not proposer.
+
+00:08:23.250 --> 00:08:31.290 align:middle line:84%
+But the plaintiff, maybe I'll
+say offers, I'll call this S0.
+
+00:08:31.290 --> 00:08:35.122 align:middle line:84%
+So in period 0, they're going
+to say, look, let's just settle.
+
+00:08:35.122 --> 00:08:37.289 align:middle line:84%
+And the amount that you're
+going to have to pay me--
+
+00:08:37.289 --> 00:08:38.990 align:middle line:84%
+I'm the plaintiff,
+you're the defendant.
+
+00:08:38.990 --> 00:08:41.250 align:middle line:84%
+The amount that you're going
+to have to pay me is S0.
+
+00:08:41.250 --> 00:08:43.690 align:middle line:84%
+Do you want to
+accept this or not?
+
+00:08:43.690 --> 00:08:46.630 align:middle line:84%
+And if it's accepted, then
+you pay me this amount.
+
+00:08:46.630 --> 00:08:47.330 align:middle line:90%
+We're done.
+
+00:08:47.330 --> 00:08:49.130 align:middle line:84%
+And if it's rejected,
+we continue.
+
+00:08:49.130 --> 00:08:56.670 align:middle line:84%
+So then the defendant can choose
+either to accept or reject.
+
+00:08:56.670 --> 00:09:00.570 align:middle line:90%
+
+
+00:09:00.570 --> 00:09:02.690 align:middle line:84%
+And if the defendant
+accepts this offer,
+
+00:09:02.690 --> 00:09:03.930 align:middle line:90%
+well, now we're done.
+
+00:09:03.930 --> 00:09:05.650 align:middle line:90%
+The defendant pays S0.
+
+00:09:05.650 --> 00:09:06.790 align:middle line:90%
+We never go to court.
+
+00:09:06.790 --> 00:09:08.330 align:middle line:90%
+The game is over.
+
+00:09:08.330 --> 00:09:10.163 align:middle line:84%
+But if they reject this
+offer, well, they're
+
+00:09:10.163 --> 00:09:11.205 align:middle line:90%
+not just going to reject.
+
+00:09:11.205 --> 00:09:13.170 align:middle line:84%
+They're going to come
+back tomorrow and propose
+
+00:09:13.170 --> 00:09:14.410 align:middle line:90%
+a counteroffer.
+
+00:09:14.410 --> 00:09:16.290 align:middle line:84%
+So in the next
+period, the defendant
+
+00:09:16.290 --> 00:09:18.512 align:middle line:90%
+is going to make an offer.
+
+00:09:18.512 --> 00:09:20.970 align:middle line:84%
+And now I'll call that offer--
+they can make any offer they
+
+00:09:20.970 --> 00:09:21.510 align:middle line:90%
+want--
+
+00:09:21.510 --> 00:09:23.130 align:middle line:90%
+S1.
+
+00:09:23.130 --> 00:09:26.490 align:middle line:84%
+And this is going to
+say, let's settle now,
+
+00:09:26.490 --> 00:09:29.810 align:middle line:84%
+and I'll pay you S1
+dollars if you accept it.
+
+00:09:29.810 --> 00:09:32.150 align:middle line:84%
+And again now it's
+the plaintiff's turn
+
+00:09:32.150 --> 00:09:33.570 align:middle line:90%
+who's going to say--
+
+00:09:33.570 --> 00:09:41.420 align:middle line:84%
+who's going to choose
+either to accept or reject.
+
+00:09:41.420 --> 00:09:46.400 align:middle line:84%
+And we can see how this is
+going to keep going until--
+
+00:09:46.400 --> 00:09:46.900 align:middle line:90%
+let's see.
+
+00:09:46.900 --> 00:09:50.260 align:middle line:84%
+In even periods, the plaintiff
+is making the offers.
+
+00:09:50.260 --> 00:09:52.440 align:middle line:90%
+So 2n minus 2 is an even number.
+
+00:09:52.440 --> 00:09:54.420 align:middle line:84%
+So that means here,
+the plaintiff,
+
+00:09:54.420 --> 00:10:00.140 align:middle line:84%
+if we get to this point,
+would make an offer,
+
+00:10:00.140 --> 00:10:03.020 align:middle line:90%
+let's say, s2n minus 2.
+
+00:10:03.020 --> 00:10:04.700 align:middle line:84%
+And again, in this
+case, the defendant
+
+00:10:04.700 --> 00:10:07.460 align:middle line:84%
+is going to choose
+to accept or reject.
+
+00:10:07.460 --> 00:10:09.740 align:middle line:90%
+If it's rejected, we move here.
+
+00:10:09.740 --> 00:10:11.300 align:middle line:90%
+Now it's the defendant's turn.
+
+00:10:11.300 --> 00:10:14.020 align:middle line:84%
+They're going to make
+this last offer--
+
+00:10:14.020 --> 00:10:18.340 align:middle line:84%
+S2n minus 1, and
+the plaintiff is
+
+00:10:18.340 --> 00:10:22.700 align:middle line:84%
+going to choose whether to
+accept or reject that offer.
+
+00:10:22.700 --> 00:10:24.700 align:middle line:84%
+And this is only00 and
+only in this last period
+
+00:10:24.700 --> 00:10:25.575 align:middle line:90%
+are things different.
+
+00:10:25.575 --> 00:10:29.320 align:middle line:84%
+So in this last period, if
+the offer is accepted, great.
+
+00:10:29.320 --> 00:10:30.620 align:middle line:90%
+It's over as before.
+
+00:10:30.620 --> 00:10:33.360 align:middle line:84%
+But if it's rejected, well,
+now the trial is here.
+
+00:10:33.360 --> 00:10:36.240 align:middle line:84%
+So instead of going to one
+more round of negotiation,
+
+00:10:36.240 --> 00:10:38.100 align:middle line:84%
+we just go to trial,
+and we see what
+
+00:10:38.100 --> 00:10:39.440 align:middle line:90%
+the outcomes are going to be.
+
+00:10:39.440 --> 00:10:42.070 align:middle line:90%
+
+
+00:10:42.070 --> 00:10:48.870 align:middle line:84%
+So just so we understand the
+costs, the Cp hat and Cd hat
+
+00:10:48.870 --> 00:10:51.310 align:middle line:84%
+cost, the trial costs,
+are only realized
+
+00:10:51.310 --> 00:10:53.630 align:middle line:90%
+if we actually go to trial.
+
+00:10:53.630 --> 00:10:58.190 align:middle line:84%
+Whereas, the per period
+negotiation costs
+
+00:10:58.190 --> 00:11:01.470 align:middle line:84%
+are realized in every period
+until we reach a settlement.
+
+00:11:01.470 --> 00:11:04.790 align:middle line:90%
+So here, we have Cp Cd.
+
+00:11:04.790 --> 00:11:08.990 align:middle line:90%
+Here, we have Cp Cd and so on.
+
+00:11:08.990 --> 00:11:13.825 align:middle line:84%
+So just so we understand, if we
+were to settle in this period 0,
+
+00:11:13.825 --> 00:11:15.950 align:middle line:84%
+we would have only had to
+negotiate for exactly one
+
+00:11:15.950 --> 00:11:16.770 align:middle line:90%
+period.
+
+00:11:16.770 --> 00:11:19.030 align:middle line:84%
+So we'd each bear
+these costs only once.
+
+00:11:19.030 --> 00:11:22.030 align:middle line:84%
+But if we settled in, say, the
+third period, period three,
+
+00:11:22.030 --> 00:11:24.010 align:middle line:84%
+well, it's tricky
+because we started at 0.
+
+00:11:24.010 --> 00:11:25.630 align:middle line:84%
+So if we settled
+here, then we've
+
+00:11:25.630 --> 00:11:29.050 align:middle line:84%
+had to negotiate
+1, 2, 3, 4 periods.
+
+00:11:29.050 --> 00:11:31.750 align:middle line:84%
+And that means we'll each
+have to pay four times our
+
+00:11:31.750 --> 00:11:34.830 align:middle line:90%
+per period negotiation costs.
+
+00:11:34.830 --> 00:11:36.950 align:middle line:84%
+If we were to all
+the way go to trial,
+
+00:11:36.950 --> 00:11:39.250 align:middle line:84%
+we're going to have to
+pay our trial costs,
+
+00:11:39.250 --> 00:11:42.250 align:middle line:84%
+and we've negotiated
+each of these periods.
+
+00:11:42.250 --> 00:11:46.870 align:middle line:84%
+So we'll each have to pay 2n for
+the 2n negotiation periods times
+
+00:11:46.870 --> 00:11:48.810 align:middle line:84%
+our per period
+negotiation costs,
+
+00:11:48.810 --> 00:11:53.390 align:middle line:90%
+plus the cost of going to trial.
+
+00:11:53.390 --> 00:11:54.750 align:middle line:90%
+So this is the game.
+
+00:11:54.750 --> 00:11:58.470 align:middle line:84%
+And now what we'd like to
+do is analyze this game
+
+00:11:58.470 --> 00:12:01.110 align:middle line:90%
+using backward induction.
+
+00:12:01.110 --> 00:12:05.030 align:middle line:84%
+Any questions on the
+setup of the game?
+
+00:12:05.030 --> 00:12:09.150 align:middle line:84%
+So let's first just recall
+what backward induction
+
+00:12:09.150 --> 00:12:11.990 align:middle line:90%
+is going to deliver for us.
+
+00:12:11.990 --> 00:12:14.750 align:middle line:84%
+So we're going to apply
+backward induction.
+
+00:12:14.750 --> 00:12:20.410 align:middle line:84%
+What this is going to give us
+is a special Nash equilibrium.
+
+00:12:20.410 --> 00:12:24.710 align:middle line:90%
+
+
+00:12:24.710 --> 00:12:26.810 align:middle line:84%
+Remember, first
+we have to think,
+
+00:12:26.810 --> 00:12:29.270 align:middle line:84%
+are we allowed to apply
+backward induction?
+
+00:12:29.270 --> 00:12:30.830 align:middle line:84%
+Well, backward
+induction only can
+
+00:12:30.830 --> 00:12:34.550 align:middle line:84%
+be applied to games with
+extensive form games
+
+00:12:34.550 --> 00:12:36.600 align:middle line:90%
+with perfect information.
+
+00:12:36.600 --> 00:12:38.558 align:middle line:84%
+And here, we have
+perfect information
+
+00:12:38.558 --> 00:12:40.600 align:middle line:84%
+because there's no point
+in the negotiation where
+
+00:12:40.600 --> 00:12:43.640 align:middle line:84%
+someone doesn't know what
+someone else did previously.
+
+00:12:43.640 --> 00:12:45.460 align:middle line:84%
+Everything is
+observed in this game.
+
+00:12:45.460 --> 00:12:48.000 align:middle line:84%
+So we're allowed to
+apply backward induction.
+
+00:12:48.000 --> 00:12:49.680 align:middle line:84%
+The problem with
+games like this is
+
+00:12:49.680 --> 00:12:52.200 align:middle line:84%
+that there are many, many
+Nash equilibria that may
+
+00:12:52.200 --> 00:12:55.320 align:middle line:90%
+involve non-credible threats.
+
+00:12:55.320 --> 00:12:58.080 align:middle line:84%
+So backward induction is going
+to give us this very special
+
+00:12:58.080 --> 00:12:59.380 align:middle line:90%
+Nash equilibrium.
+
+00:12:59.380 --> 00:13:02.960 align:middle line:84%
+And sometimes the term we use--
+maybe another way of saying
+
+00:13:02.960 --> 00:13:05.500 align:middle line:84%
+special is it's going to
+be a Nash equilibrium,
+
+00:13:05.500 --> 00:13:07.840 align:middle line:84%
+but it's also going to have
+this property that's often
+
+00:13:07.840 --> 00:13:09.660 align:middle line:90%
+called sequential optimality.
+
+00:13:09.660 --> 00:13:15.440 align:middle line:90%
+
+
+00:13:15.440 --> 00:13:17.760 align:middle line:84%
+Remember, our key
+observation from last class
+
+00:13:17.760 --> 00:13:20.960 align:middle line:84%
+was that Nash
+equilibrium by itself
+
+00:13:20.960 --> 00:13:23.940 align:middle line:84%
+doesn't necessarily imply
+sequential optimality.
+
+00:13:23.940 --> 00:13:27.200 align:middle line:84%
+That is, it may be under
+some Nash equilibria
+
+00:13:27.200 --> 00:13:30.760 align:middle line:84%
+that players are behaving
+suboptimally at contingencies
+
+00:13:30.760 --> 00:13:33.080 align:middle line:90%
+that are not reached.
+
+00:13:33.080 --> 00:13:36.520 align:middle line:84%
+And sequential optimality
+imposes the stronger condition
+
+00:13:36.520 --> 00:13:42.380 align:middle line:84%
+that we have optimal play
+at every contingency.
+
+00:13:42.380 --> 00:13:47.160 align:middle line:90%
+
+
+00:13:47.160 --> 00:13:49.280 align:middle line:84%
+Particular, even
+those contingencies
+
+00:13:49.280 --> 00:13:50.340 align:middle line:90%
+that are not reached.
+
+00:13:50.340 --> 00:13:58.760 align:middle line:90%
+
+
+00:13:58.760 --> 00:14:00.360 align:middle line:84%
+So Nash equilibrium
+is already going
+
+00:14:00.360 --> 00:14:02.760 align:middle line:84%
+to take care of the
+contingencies that we do reach.
+
+00:14:02.760 --> 00:14:05.880 align:middle line:84%
+Nash equilibrium is already
+going to require optimal play
+
+00:14:05.880 --> 00:14:07.480 align:middle line:90%
+at those contingencies.
+
+00:14:07.480 --> 00:14:09.240 align:middle line:84%
+But Nash equilibrium
+doesn't actually
+
+00:14:09.240 --> 00:14:13.240 align:middle line:84%
+impose many constraints on
+these unreached contingencies.
+
+00:14:13.240 --> 00:14:15.840 align:middle line:84%
+And what sequential
+optimality does, or requires,
+
+00:14:15.840 --> 00:14:18.520 align:middle line:84%
+is that players are
+playing optimal even there.
+
+00:14:18.520 --> 00:14:22.040 align:middle line:84%
+Because if players were
+not playing optimal
+
+00:14:22.040 --> 00:14:24.560 align:middle line:84%
+at some contingency,
+that would capture
+
+00:14:24.560 --> 00:14:26.373 align:middle line:84%
+what we think of as
+a noncredible threat.
+
+00:14:26.373 --> 00:14:28.040 align:middle line:84%
+That would mean a
+player was threatening
+
+00:14:28.040 --> 00:14:31.260 align:middle line:84%
+to behave in such a way that
+would not be optimal for them
+
+00:14:31.260 --> 00:14:33.090 align:middle line:84%
+or credible for them
+to follow through
+
+00:14:33.090 --> 00:14:35.950 align:middle line:84%
+on if that contingency
+were actually reached.
+
+00:14:35.950 --> 00:14:38.570 align:middle line:90%
+
+
+00:14:38.570 --> 00:14:41.210 align:middle line:84%
+Now, a key thing to
+keep in mind here
+
+00:14:41.210 --> 00:14:44.530 align:middle line:84%
+is that what backward induction
+gives us is a Nash equilibrium.
+
+00:14:44.530 --> 00:14:47.050 align:middle line:84%
+So it's going to give
+us a strategy profile.
+
+00:14:47.050 --> 00:14:49.930 align:middle line:84%
+So often, when people
+analyze a game like this,
+
+00:14:49.930 --> 00:14:54.590 align:middle line:84%
+it's tempting to say, oh the
+answer is we settle in period 5,
+
+00:14:54.590 --> 00:14:56.610 align:middle line:84%
+and this is the
+amount of payments.
+
+00:14:56.610 --> 00:14:58.770 align:middle line:84%
+That's an outcome of
+the game, but that's not
+
+00:14:58.770 --> 00:15:00.830 align:middle line:84%
+a complete description
+of the strategies.
+
+00:15:00.830 --> 00:15:02.770 align:middle line:84%
+So a Nash equilibrium
+is going to have
+
+00:15:02.770 --> 00:15:05.650 align:middle line:84%
+to specify the player's
+complete contingent plans
+
+00:15:05.650 --> 00:15:06.710 align:middle line:90%
+throughout the game.
+
+00:15:06.710 --> 00:15:08.930 align:middle line:84%
+And that means that the
+strategies in games like this
+
+00:15:08.930 --> 00:15:11.610 align:middle line:84%
+are much, much more complicated
+than the actual outcome that's
+
+00:15:11.610 --> 00:15:13.210 align:middle line:84%
+reached, which might
+just be we settle
+
+00:15:13.210 --> 00:15:15.610 align:middle line:90%
+for this amount in this period.
+
+00:15:15.610 --> 00:15:17.075 align:middle line:90%
+OK, so let's get into it.
+
+00:15:17.075 --> 00:15:18.450 align:middle line:84%
+It's backward
+induction, so we're
+
+00:15:18.450 --> 00:15:21.170 align:middle line:84%
+going to work backwards,
+not surprisingly.
+
+00:15:21.170 --> 00:15:24.610 align:middle line:84%
+And let's start
+with-- well, you might
+
+00:15:24.610 --> 00:15:26.030 align:middle line:90%
+say we're working backwards.
+
+00:15:26.030 --> 00:15:28.770 align:middle line:84%
+Let's start in
+period 2n minus 1.
+
+00:15:28.770 --> 00:15:31.630 align:middle line:84%
+But actually, even
+within period 2n minus 1,
+
+00:15:31.630 --> 00:15:33.410 align:middle line:90%
+we have sequential moves.
+
+00:15:33.410 --> 00:15:36.330 align:middle line:84%
+First, the defendant
+makes an offer,
+
+00:15:36.330 --> 00:15:38.012 align:middle line:90%
+and then the proposer responds.
+
+00:15:38.012 --> 00:15:39.970 align:middle line:84%
+So if we want to work
+backwards, we're actually
+
+00:15:39.970 --> 00:15:42.030 align:middle line:84%
+going to split this
+last period up into two,
+
+00:15:42.030 --> 00:15:46.290 align:middle line:84%
+and we're going to work in the
+second part of the last period.
+
+00:15:46.290 --> 00:15:56.210 align:middle line:84%
+So we're going to say suppose
+we're in period 2n minus 1.
+
+00:15:56.210 --> 00:16:00.750 align:middle line:84%
+And the contingency we're
+at as the plaintiff,
+
+00:16:00.750 --> 00:16:05.650 align:middle line:84%
+is that we're facing some
+offer from the defendant.
+
+00:16:05.650 --> 00:16:12.970 align:middle line:84%
+So given some
+offer, S2n minus 1--
+
+00:16:12.970 --> 00:16:14.990 align:middle line:84%
+this is an offer
+by the defendant--
+
+00:16:14.990 --> 00:16:17.530 align:middle line:90%
+
+
+00:16:17.530 --> 00:16:19.190 align:middle line:90%
+the proposer has two choices.
+
+00:16:19.190 --> 00:16:22.010 align:middle line:90%
+
+
+00:16:22.010 --> 00:16:26.850 align:middle line:84%
+They can either
+accept the offer,
+
+00:16:26.850 --> 00:16:29.860 align:middle line:90%
+or they can reject the offer.
+
+00:16:29.860 --> 00:16:33.340 align:middle line:84%
+I should point out here that
+I'm being a little sloppy.
+
+00:16:33.340 --> 00:16:36.460 align:middle line:84%
+I'm saying suppose
+the proposer receives
+
+00:16:36.460 --> 00:16:38.820 align:middle line:90%
+an offer of S2n minus 1.
+
+00:16:38.820 --> 00:16:42.000 align:middle line:84%
+But technically, this doesn't
+specify the full contingency.
+
+00:16:42.000 --> 00:16:44.580 align:middle line:84%
+What would I need to
+specify if I wanted to say--
+
+00:16:44.580 --> 00:16:46.620 align:middle line:84%
+if I were to write out
+this whole game tree,
+
+00:16:46.620 --> 00:16:48.840 align:middle line:84%
+and I want to figure out
+where I am in the game tree,
+
+00:16:48.840 --> 00:16:51.840 align:middle line:84%
+what is this contingency going
+to specify within the tree?
+
+00:16:51.840 --> 00:16:56.140 align:middle line:90%
+
+
+00:16:56.140 --> 00:17:00.860 align:middle line:84%
+It's not just enough to specify
+the offer in the last period.
+
+00:17:00.860 --> 00:17:01.580 align:middle line:90%
+Yeah?
+
+00:17:01.580 --> 00:17:03.380 align:middle line:84%
+STUDENT: Maybe that you need
+to know everyone before?
+
+00:17:03.380 --> 00:17:04.339 align:middle line:84%
+IAN BALL: Everything
+that happened before.
+
+00:17:04.339 --> 00:17:07.079 align:middle line:84%
+Because we know in a tree, when
+we're at a node in the tree,
+
+00:17:07.079 --> 00:17:09.380 align:middle line:84%
+that node tells us the
+entire path through the tree.
+
+00:17:09.380 --> 00:17:12.060 align:middle line:84%
+So technically, a contingency
+would be something
+
+00:17:12.060 --> 00:17:15.819 align:middle line:84%
+like, the plaintiff made this
+offer in the zeroth period,
+
+00:17:15.819 --> 00:17:17.118 align:middle line:90%
+and it was rejected.
+
+00:17:17.118 --> 00:17:19.160 align:middle line:84%
+The defendant made this
+offer in the next period.
+
+00:17:19.160 --> 00:17:20.000 align:middle line:90%
+It was rejected.
+
+00:17:20.000 --> 00:17:22.660 align:middle line:84%
+The plaintiff made this offer,
+and it was rejected, and so on.
+
+00:17:22.660 --> 00:17:25.500 align:middle line:84%
+But what I implicitly
+mean here is
+
+00:17:25.500 --> 00:17:27.589 align:middle line:84%
+there's a lot of
+different contingencies,
+
+00:17:27.589 --> 00:17:29.470 align:middle line:84%
+but the incentives
+of the plaintiff
+
+00:17:29.470 --> 00:17:32.070 align:middle line:84%
+are going to be the same at
+all the contingencies where
+
+00:17:32.070 --> 00:17:33.370 align:middle line:90%
+this is the offer that's made.
+
+00:17:33.370 --> 00:17:35.328 align:middle line:84%
+So I'm basically grouping
+all the contingencies
+
+00:17:35.328 --> 00:17:37.430 align:middle line:84%
+in my head and reasoning
+about all of them
+
+00:17:37.430 --> 00:17:38.850 align:middle line:90%
+together at the same time.
+
+00:17:38.850 --> 00:17:42.633 align:middle line:84%
+Because at this point, if
+you're offering me S2n minus 1,
+
+00:17:42.633 --> 00:17:45.050 align:middle line:84%
+I don't really care what you
+offered me three periods ago.
+
+00:17:45.050 --> 00:17:46.050 align:middle line:90%
+That's not on the table.
+
+00:17:46.050 --> 00:17:48.050 align:middle line:84%
+So it's not relevant
+to my optimal decision.
+
+00:17:48.050 --> 00:17:49.790 align:middle line:84%
+But if I wanted to
+be really precise,
+
+00:17:49.790 --> 00:17:52.110 align:middle line:84%
+I could, in principle,
+behave differently
+
+00:17:52.110 --> 00:17:54.950 align:middle line:90%
+at different contingencies.
+
+00:17:54.950 --> 00:17:58.030 align:middle line:84%
+So now let's carefully
+write down my payoffs.
+
+00:17:58.030 --> 00:18:03.110 align:middle line:84%
+If I accept this offer
+as the plaintiff,
+
+00:18:03.110 --> 00:18:05.870 align:middle line:84%
+what are my payoffs going
+to be, my total payoffs,
+
+00:18:05.870 --> 00:18:08.170 align:middle line:84%
+taking into account the
+settlement, my legal costs,
+
+00:18:08.170 --> 00:18:08.930 align:middle line:90%
+all these things?
+
+00:18:08.930 --> 00:18:15.970 align:middle line:90%
+
+
+00:18:15.970 --> 00:18:16.470 align:middle line:90%
+Yeah?
+
+00:18:16.470 --> 00:18:24.785 align:middle line:84%
+STUDENT: [INAUDIBLE] be s2n
+minus 1 minus Cp times 2n S2.
+
+00:18:24.785 --> 00:18:25.410 align:middle line:90%
+IAN BALL: Yeah.
+
+00:18:25.410 --> 00:18:29.150 align:middle line:84%
+I think 2n minus 1
+because we started at 0.
+
+00:18:29.150 --> 00:18:30.730 align:middle line:90%
+Well, let's go over it.
+
+00:18:30.730 --> 00:18:31.230 align:middle line:90%
+Yeah?
+
+00:18:31.230 --> 00:18:34.810 align:middle line:84%
+STUDENT: That would be-- the
+2n minus 2 is the 2n minus
+
+00:18:34.810 --> 00:18:35.725 align:middle line:90%
+[INAUDIBLE].
+
+00:18:35.725 --> 00:18:36.350 align:middle line:90%
+IAN BALL: Yeah.
+
+00:18:36.350 --> 00:18:38.610 align:middle line:84%
+So it'll be-- so I'll just
+write it, and then I'll explain.
+
+00:18:38.610 --> 00:18:39.443 align:middle line:90%
+But yeah, it's easy.
+
+00:18:39.443 --> 00:18:41.750 align:middle line:84%
+And I might get confused with
+some of these fence posts
+
+00:18:41.750 --> 00:18:42.250 align:middle line:90%
+issues.
+
+00:18:42.250 --> 00:18:46.690 align:middle line:84%
+But I think it's going
+to be Cp times 2n.
+
+00:18:46.690 --> 00:18:50.270 align:middle line:90%
+
+
+00:18:50.270 --> 00:18:50.930 align:middle line:90%
+Why is this?
+
+00:18:50.930 --> 00:18:53.350 align:middle line:90%
+Well, we're in period n minus 1.
+
+00:18:53.350 --> 00:18:56.510 align:middle line:84%
+If I accept the
+offer, then I'm going
+
+00:18:56.510 --> 00:18:58.950 align:middle line:84%
+to get a settlement
+of S2n and minus 1.
+
+00:18:58.950 --> 00:19:01.890 align:middle line:84%
+But I've also had to
+pay my legal fees.
+
+00:19:01.890 --> 00:19:05.070 align:middle line:84%
+I'm the plaintiff, so my
+legal fees are Cp per period.
+
+00:19:05.070 --> 00:19:08.390 align:middle line:84%
+And we negotiated in period
+0 and period 1 and period 2
+
+00:19:08.390 --> 00:19:11.570 align:middle line:84%
+and period 3, all the way
+up to period 2n minus 1.
+
+00:19:11.570 --> 00:19:13.490 align:middle line:84%
+You might say that's
+2n minus 1 periods.
+
+00:19:13.490 --> 00:19:14.850 align:middle line:90%
+But remember, we started at 0.
+
+00:19:14.850 --> 00:19:22.040 align:middle line:84%
+So we actually have 2n
+periods of negotiation costs.
+
+00:19:22.040 --> 00:19:24.760 align:middle line:84%
+And then what if I
+reject the offer?
+
+00:19:24.760 --> 00:19:25.780 align:middle line:90%
+What's going to happen?
+
+00:19:25.780 --> 00:19:29.000 align:middle line:90%
+
+
+00:19:29.000 --> 00:19:29.640 align:middle line:90%
+Yeah?
+
+00:19:29.640 --> 00:19:30.813 align:middle line:90%
+STUDENT: J minus p hat.
+
+00:19:30.813 --> 00:19:31.480 align:middle line:90%
+IAN BALL: Right.
+
+00:19:31.480 --> 00:19:33.273 align:middle line:90%
+And we can't forget--
+
+00:19:33.273 --> 00:19:34.940 align:middle line:84%
+I've already-- I mean,
+it's a sunk cost,
+
+00:19:34.940 --> 00:19:36.190 align:middle line:90%
+but then we have this as well.
+
+00:19:36.190 --> 00:19:42.400 align:middle line:84%
+So it's going to be J minus
+Cp hat minus cp times 2n.
+
+00:19:42.400 --> 00:19:43.260 align:middle line:90%
+What does this mean?
+
+00:19:43.260 --> 00:19:47.600 align:middle line:84%
+Well, if I reject the offer,
+we're going to go to court.
+
+00:19:47.600 --> 00:19:50.360 align:middle line:84%
+I get a judgment of
+J, as the plaintiff.
+
+00:19:50.360 --> 00:19:52.860 align:middle line:84%
+I have to additionally
+pay all the court costs.
+
+00:19:52.860 --> 00:19:54.780 align:middle line:84%
+And then I have all
+these costs from before.
+
+00:19:54.780 --> 00:19:56.822 align:middle line:84%
+But I think what people
+are kind of jumping ahead
+
+00:19:56.822 --> 00:19:58.140 align:middle line:90%
+is these don't really matter.
+
+00:19:58.140 --> 00:20:00.200 align:middle line:90%
+So we can circle these.
+
+00:20:00.200 --> 00:20:03.920 align:middle line:84%
+At this point, these are
+what are called sunk costs.
+
+00:20:03.920 --> 00:20:06.380 align:middle line:84%
+I've already paid
+all of these costs.
+
+00:20:06.380 --> 00:20:09.140 align:middle line:84%
+So in my decision today of
+whether to accept or reject,
+
+00:20:09.140 --> 00:20:11.640 align:middle line:84%
+these aren't actually going to
+have any bearing on my choice
+
+00:20:11.640 --> 00:20:12.940 align:middle line:90%
+because I pay them either way.
+
+00:20:12.940 --> 00:20:13.900 align:middle line:90%
+I've already paid them.
+
+00:20:13.900 --> 00:20:15.150 align:middle line:90%
+I've already paid the lawyers.
+
+00:20:15.150 --> 00:20:16.760 align:middle line:84%
+The only choice
+I really have is,
+
+00:20:16.760 --> 00:20:23.800 align:middle line:84%
+am I going to pay this
+additional trial fee, Cp hat?
+
+00:20:23.800 --> 00:20:25.120 align:middle line:90%
+Great.
+
+00:20:25.120 --> 00:20:29.600 align:middle line:84%
+So now if we compare
+these two payouts,
+
+00:20:29.600 --> 00:20:32.300 align:middle line:84%
+when should the plaintiff
+accept the offer?
+
+00:20:32.300 --> 00:20:36.512 align:middle line:84%
+What kind of offers should
+the plaintiff accept?
+
+00:20:36.512 --> 00:20:38.220 align:middle line:84%
+Well, intuitively,
+they're the plaintiff.
+
+00:20:38.220 --> 00:20:39.020 align:middle line:90%
+They want more money.
+
+00:20:39.020 --> 00:20:41.478 align:middle line:84%
+So we always think the plaintiff
+should accept-- let's just
+
+00:20:41.478 --> 00:20:42.380 align:middle line:90%
+write this down here.
+
+00:20:42.380 --> 00:20:44.380 align:middle line:84%
+It's always going to take
+this form that they're
+
+00:20:44.380 --> 00:20:50.560 align:middle line:84%
+going to accept, if and only
+if, or maybe I'll say use
+
+00:20:50.560 --> 00:20:55.480 align:middle line:84%
+arrows-- if and
+only if S2n minus 1
+
+00:20:55.480 --> 00:20:57.700 align:middle line:84%
+is greater than or
+equal to some threshold.
+
+00:20:57.700 --> 00:21:01.160 align:middle line:84%
+Let me denote this threshold
+as S2n minus 1 star.
+
+00:21:01.160 --> 00:21:04.000 align:middle line:84%
+And this is just-- we know this
+is generally how things are.
+
+00:21:04.000 --> 00:21:06.787 align:middle line:84%
+If you're the plaintiff, this
+is how much you get paid.
+
+00:21:06.787 --> 00:21:08.620 align:middle line:84%
+Getting offered more
+money is always better.
+
+00:21:08.620 --> 00:21:10.078 align:middle line:84%
+So it makes sense
+that you're going
+
+00:21:10.078 --> 00:21:12.160 align:middle line:84%
+to accept if the
+offer is high enough,
+
+00:21:12.160 --> 00:21:14.520 align:middle line:84%
+and you're going to reject
+if the offer is too low.
+
+00:21:14.520 --> 00:21:17.970 align:middle line:84%
+The question is, what is
+this critical threshold?
+
+00:21:17.970 --> 00:21:19.770 align:middle line:84%
+What's the amount that
+you have to offer me
+
+00:21:19.770 --> 00:21:24.930 align:middle line:84%
+as the plaintiff for me
+to accept your offer?
+
+00:21:24.930 --> 00:21:25.550 align:middle line:90%
+Yeah?
+
+00:21:25.550 --> 00:21:27.270 align:middle line:90%
+STUDENT: J minus Cp hat.
+
+00:21:27.270 --> 00:21:28.690 align:middle line:90%
+IAN BALL: Right.
+
+00:21:28.690 --> 00:21:30.050 align:middle line:90%
+J minus Cp hat.
+
+00:21:30.050 --> 00:21:32.347 align:middle line:90%
+
+
+00:21:32.347 --> 00:21:33.930 align:middle line:84%
+And you might say,
+well, we have to be
+
+00:21:33.930 --> 00:21:37.200 align:middle line:84%
+a little careful if the offer
+is exactly equal to this.
+
+00:21:37.200 --> 00:21:37.950 align:middle line:90%
+Maybe I'll accept.
+
+00:21:37.950 --> 00:21:38.537 align:middle line:90%
+Maybe I won't.
+
+00:21:38.537 --> 00:21:40.370 align:middle line:84%
+We're going to make the
+convention that when
+
+00:21:40.370 --> 00:21:41.590 align:middle line:90%
+indifferent, I always accept.
+
+00:21:41.590 --> 00:21:43.382 align:middle line:84%
+And this is what we
+have to do to make sure
+
+00:21:43.382 --> 00:21:44.890 align:middle line:90%
+that equilibrium exists.
+
+00:21:44.890 --> 00:21:46.890 align:middle line:84%
+But notice what's
+interesting here.
+
+00:21:46.890 --> 00:21:48.750 align:middle line:84%
+What is the plaintiff
+willing to accept?
+
+00:21:48.750 --> 00:21:50.530 align:middle line:84%
+They're willing to
+accept some offers that
+
+00:21:50.530 --> 00:21:52.250 align:middle line:84%
+are strictly less
+than the amount
+
+00:21:52.250 --> 00:21:53.930 align:middle line:90%
+that they would get in court.
+
+00:21:53.930 --> 00:21:55.350 align:middle line:90%
+So what does this reflect?
+
+00:21:55.350 --> 00:21:57.370 align:middle line:84%
+This reflects the cost
+of going to court.
+
+00:21:57.370 --> 00:21:59.730 align:middle line:84%
+If you say, look, I'm
+not going to pay you
+
+00:21:59.730 --> 00:22:01.330 align:middle line:90%
+as much as you'll get in court.
+
+00:22:01.330 --> 00:22:02.413 align:middle line:90%
+I'll pay you a bit less.
+
+00:22:02.413 --> 00:22:04.330 align:middle line:84%
+But it's still worth it
+for you because if you
+
+00:22:04.330 --> 00:22:07.170 align:middle line:84%
+accept my lowball
+offer, you get to avoid
+
+00:22:07.170 --> 00:22:09.130 align:middle line:90%
+the cost of going to court.
+
+00:22:09.130 --> 00:22:11.890 align:middle line:84%
+So we can see the
+higher that Cp hat
+
+00:22:11.890 --> 00:22:14.850 align:middle line:84%
+is, the weaker the
+bargaining position
+
+00:22:14.850 --> 00:22:17.157 align:middle line:84%
+of the plaintiff,
+the lower the offer
+
+00:22:17.157 --> 00:22:19.740 align:middle line:84%
+that they're going to be willing
+to accept because they really
+
+00:22:19.740 --> 00:22:23.060 align:middle line:84%
+don't want to go to court
+and pay this enormous fee.
+
+00:22:23.060 --> 00:22:28.020 align:middle line:84%
+So now we go back
+one step earlier.
+
+00:22:28.020 --> 00:22:30.080 align:middle line:84%
+We're still in
+period 2n minus 1.
+
+00:22:30.080 --> 00:22:35.600 align:middle line:84%
+But now let's think about
+the defendant's choice.
+
+00:22:35.600 --> 00:22:39.752 align:middle line:90%
+
+
+00:22:39.752 --> 00:22:41.460 align:middle line:84%
+Now the question is,
+how much should they
+
+00:22:41.460 --> 00:22:46.660 align:middle line:84%
+offer, anticipating
+that the plaintiff will
+
+00:22:46.660 --> 00:22:50.840 align:middle line:84%
+accept their offer exactly
+under these conditions?
+
+00:22:50.840 --> 00:22:54.180 align:middle line:90%
+
+
+00:22:54.180 --> 00:22:58.220 align:middle line:84%
+Well, intuitively, they
+want to make the smallest
+
+00:22:58.220 --> 00:23:00.360 align:middle line:90%
+offer that will be accepted.
+
+00:23:00.360 --> 00:23:02.920 align:middle line:84%
+They want to pay the least
+amount that they have to.
+
+00:23:02.920 --> 00:23:06.260 align:middle line:84%
+So it's going to be optimal
+for them to choose S2n minus 1
+
+00:23:06.260 --> 00:23:08.920 align:middle line:90%
+equals S2n minus 1 star.
+
+00:23:08.920 --> 00:23:12.740 align:middle line:90%
+
+
+00:23:12.740 --> 00:23:15.850 align:middle line:84%
+They could offer to pay
+strictly more than this.
+
+00:23:15.850 --> 00:23:18.100 align:middle line:84%
+That will still be accepted,
+but that's worse for them
+
+00:23:18.100 --> 00:23:21.060 align:middle line:84%
+because they don't want
+to pay out very much.
+
+00:23:21.060 --> 00:23:23.945 align:middle line:84%
+I think it's a little tricky,
+though, because they might also
+
+00:23:23.945 --> 00:23:25.320 align:middle line:84%
+want their offer
+to get rejected.
+
+00:23:25.320 --> 00:23:26.940 align:middle line:84%
+So we still have to
+be a little careful.
+
+00:23:26.940 --> 00:23:27.440 align:middle line:90%
+Let's see.
+
+00:23:27.440 --> 00:23:29.000 align:middle line:90%
+What if the offer gets rejected?
+
+00:23:29.000 --> 00:23:31.415 align:middle line:90%
+
+
+00:23:31.415 --> 00:23:33.540 align:middle line:84%
+We're claiming that they
+want to make an offer that
+
+00:23:33.540 --> 00:23:34.915 align:middle line:84%
+will be accepted,
+but we actually
+
+00:23:34.915 --> 00:23:38.180 align:middle line:84%
+have to see what happens
+if it gets rejected.
+
+00:23:38.180 --> 00:23:40.100 align:middle line:84%
+It turns out, if
+it gets rejected--
+
+00:23:40.100 --> 00:23:42.740 align:middle line:84%
+and let's just
+work this through--
+
+00:23:42.740 --> 00:23:51.780 align:middle line:84%
+this will be accepted, and then
+they will get minus S2n minus 1
+
+00:23:51.780 --> 00:23:55.880 align:middle line:90%
+star minus cD 2n.
+
+00:23:55.880 --> 00:23:58.608 align:middle line:90%
+
+
+00:23:58.608 --> 00:24:00.900 align:middle line:84%
+And what if they were to make
+some different offer that
+
+00:24:00.900 --> 00:24:02.620 align:middle line:90%
+were rejected?
+
+00:24:02.620 --> 00:24:05.840 align:middle line:90%
+What would their payout--
+
+00:24:05.840 --> 00:24:08.530 align:middle line:90%
+what would their payoff be?
+
+00:24:08.530 --> 00:24:09.030 align:middle line:90%
+Yeah?
+
+00:24:09.030 --> 00:24:14.600 align:middle line:84%
+STUDENT: Minus J
+[INAUDIBLE] 2n minus C hat.
+
+00:24:14.600 --> 00:24:15.350 align:middle line:90%
+IAN BALL: Exactly.
+
+00:24:15.350 --> 00:24:17.610 align:middle line:84%
+So if they make an
+offer that's rejected,
+
+00:24:17.610 --> 00:24:19.070 align:middle line:84%
+then they're going
+to go to court.
+
+00:24:19.070 --> 00:24:21.950 align:middle line:84%
+And that means they're
+going to lose J.
+
+00:24:21.950 --> 00:24:37.070 align:middle line:84%
+They're going to lose CD hat,
+and they're going to lose CD 2n
+
+00:24:37.070 --> 00:24:39.270 align:middle line:90%
+But this is clearly worse.
+
+00:24:39.270 --> 00:24:42.270 align:middle line:84%
+Because if they go to court,
+they have to pay more.
+
+00:24:42.270 --> 00:24:44.850 align:middle line:84%
+They pay J rather
+than J minus Cp hat,
+
+00:24:44.850 --> 00:24:46.530 align:middle line:84%
+and they have to pay
+the cost of court.
+
+00:24:46.530 --> 00:24:48.870 align:middle line:90%
+So this is kind of extra bad.
+
+00:24:48.870 --> 00:24:54.850 align:middle line:84%
+So they pay more, and
+they pay the court costs.
+
+00:24:54.850 --> 00:24:59.590 align:middle line:90%
+
+
+00:24:59.590 --> 00:25:03.285 align:middle line:84%
+And we'll see throughout
+that it's never really going
+
+00:25:03.285 --> 00:25:04.910 align:middle line:84%
+to be optimal for
+people to make offers
+
+00:25:04.910 --> 00:25:06.190 align:middle line:90%
+that are going to be rejected.
+
+00:25:06.190 --> 00:25:09.550 align:middle line:84%
+It's always just going to
+make things worse for them.
+
+00:25:09.550 --> 00:25:13.050 align:middle line:84%
+So indeed, this is going to
+be the best choice for CD.
+
+00:25:13.050 --> 00:25:16.450 align:middle line:90%
+
+
+00:25:16.450 --> 00:25:22.790 align:middle line:84%
+Now let's try to go one step
+back and see what's going
+
+00:25:22.790 --> 00:25:26.830 align:middle line:90%
+to happen in period 2n minus 2.
+
+00:25:26.830 --> 00:25:28.970 align:middle line:84%
+So maybe I'll come
+back over here.
+
+00:25:28.970 --> 00:25:32.630 align:middle line:90%
+
+
+00:25:32.630 --> 00:25:34.970 align:middle line:84%
+And then hopefully, we'll
+be able to see a pattern.
+
+00:25:34.970 --> 00:25:41.390 align:middle line:90%
+
+
+00:25:41.390 --> 00:25:47.530 align:middle line:84%
+So now let's go to
+period 2n minus 2.
+
+00:25:47.530 --> 00:25:50.350 align:middle line:90%
+
+
+00:25:50.350 --> 00:25:57.110 align:middle line:90%
+And our conjecture is that the--
+
+00:25:57.110 --> 00:26:00.230 align:middle line:84%
+I have to do it right
+here-- the defendant is
+
+00:26:00.230 --> 00:26:07.150 align:middle line:84%
+going to accept an offer of
+S2n minus 2, if and only if,
+
+00:26:07.150 --> 00:26:08.500 align:middle line:90%
+S2n minus 2.
+
+00:26:08.500 --> 00:26:09.400 align:middle line:90%
+Well, let's see.
+
+00:26:09.400 --> 00:26:13.940 align:middle line:84%
+I'm the defendant now, so I'm
+willing to accept low offers.
+
+00:26:13.940 --> 00:26:17.280 align:middle line:84%
+The plaintiff was willing
+to accept high offers.
+
+00:26:17.280 --> 00:26:21.560 align:middle line:84%
+The defendant is willing
+to accept low offers.
+
+00:26:21.560 --> 00:26:25.080 align:middle line:84%
+So there's going to be some
+threshold, S2n minus 2 star,
+
+00:26:25.080 --> 00:26:28.320 align:middle line:84%
+such that the defendant will
+accept if they're offered
+
+00:26:28.320 --> 00:26:30.453 align:middle line:90%
+to pay a small enough amount.
+
+00:26:30.453 --> 00:26:31.620 align:middle line:90%
+Is there an issue over here?
+
+00:26:31.620 --> 00:26:31.840 align:middle line:90%
+Yeah?
+
+00:26:31.840 --> 00:26:33.215 align:middle line:84%
+STUDENT: Yeah, I
+have a question.
+
+00:26:33.215 --> 00:26:34.023 align:middle line:90%
+IAN BALL: Yes,
+
+00:26:34.023 --> 00:26:35.440 align:middle line:84%
+STUDENT: Basically,
+the comparison
+
+00:26:35.440 --> 00:26:38.620 align:middle line:84%
+between [INAUDIBLE] giving
+an offer and being rejected.
+
+00:26:38.620 --> 00:26:42.280 align:middle line:84%
+So getting an offer, they have
+to pay S2m minus 1 star, which
+
+00:26:42.280 --> 00:26:44.800 align:middle line:90%
+is J minus Cp versus--
+
+00:26:44.800 --> 00:26:46.655 align:middle line:90%
+oh, J plus.
+
+00:26:46.655 --> 00:26:47.280 align:middle line:90%
+IAN BALL: Yeah.
+
+00:26:47.280 --> 00:26:49.030 align:middle line:84%
+So we have to be careful
+with the minuses.
+
+00:26:49.030 --> 00:26:56.140 align:middle line:84%
+So this is going to be
+minus J plus Cp hat.
+
+00:26:56.140 --> 00:26:58.185 align:middle line:84%
+STUDENT: So does it
+depend on how Cp is?
+
+00:26:58.185 --> 00:26:59.060 align:middle line:90%
+IAN BALL: It doesn't.
+
+00:26:59.060 --> 00:26:59.920 align:middle line:84%
+And that's why--
+and this is what
+
+00:26:59.920 --> 00:27:02.040 align:middle line:84%
+I meant about it's kind
+of doubly bad for them.
+
+00:27:02.040 --> 00:27:05.100 align:middle line:84%
+Because if their
+offer is rejected,
+
+00:27:05.100 --> 00:27:08.230 align:middle line:84%
+they're going to have to pay the
+full settlement, J, in court.
+
+00:27:08.230 --> 00:27:11.630 align:middle line:84%
+So going the defendant will
+have to pay more in court.
+
+00:27:11.630 --> 00:27:14.472 align:middle line:84%
+And on top of that, they'll
+have to pay their legal fees.
+
+00:27:14.472 --> 00:27:15.930 align:middle line:84%
+So the difference
+between these two
+
+00:27:15.930 --> 00:27:18.510 align:middle line:84%
+is actually the sum
+of Cp hat and Cd hat.
+
+00:27:18.510 --> 00:27:20.430 align:middle line:84%
+It's not about the
+relationship between them.
+
+00:27:20.430 --> 00:27:20.650 align:middle line:90%
+Yeah.
+
+00:27:20.650 --> 00:27:21.350 align:middle line:90%
+Good point.
+
+00:27:21.350 --> 00:27:23.058 align:middle line:84%
+So just to be clear
+what the argument is.
+
+00:27:23.058 --> 00:27:26.070 align:middle line:84%
+The argument is, I could make
+some offer that's rejected.
+
+00:27:26.070 --> 00:27:28.630 align:middle line:84%
+If it's rejected, the amount
+that I offer doesn't matter.
+
+00:27:28.630 --> 00:27:30.430 align:middle line:90%
+All that matters, it's rejected.
+
+00:27:30.430 --> 00:27:33.450 align:middle line:84%
+And we've shown that that's
+worse than making this offer.
+
+00:27:33.450 --> 00:27:36.478 align:middle line:84%
+The alternative is I can make
+an offer that will be accepted.
+
+00:27:36.478 --> 00:27:38.270 align:middle line:84%
+But to make an offer
+that will be accepted,
+
+00:27:38.270 --> 00:27:39.972 align:middle line:84%
+I'd have to offer
+even more than this.
+
+00:27:39.972 --> 00:27:41.430 align:middle line:84%
+And that is certainly
+worse for me.
+
+00:27:41.430 --> 00:27:44.490 align:middle line:84%
+So the best thing I can do
+is offer the smallest amount
+
+00:27:44.490 --> 00:27:46.110 align:middle line:90%
+that will be accepted.
+
+00:27:46.110 --> 00:27:53.150 align:middle line:90%
+
+
+00:27:53.150 --> 00:28:07.970 align:middle line:84%
+So now what our guess is that
+the structure in period 2n minus
+
+00:28:07.970 --> 00:28:09.690 align:middle line:84%
+2 is going to be
+something like this.
+
+00:28:09.690 --> 00:28:12.148 align:middle line:84%
+The defendant is going to have
+some threshold where they're
+
+00:28:12.148 --> 00:28:14.450 align:middle line:84%
+going to say, look,
+I'll accept the offer if
+
+00:28:14.450 --> 00:28:16.370 align:middle line:84%
+and only if it's small
+enough, if and only
+
+00:28:16.370 --> 00:28:18.385 align:middle line:90%
+if it's below some threshold.
+
+00:28:18.385 --> 00:28:20.510 align:middle line:84%
+And then let's think about
+the plaintiff's problem.
+
+00:28:20.510 --> 00:28:22.218 align:middle line:84%
+We could go through
+the algebra to check.
+
+00:28:22.218 --> 00:28:27.370 align:middle line:84%
+But you can see that the
+plaintiff wants the offer
+
+00:28:27.370 --> 00:28:30.490 align:middle line:84%
+to be, the settlement to
+be as large as possible.
+
+00:28:30.490 --> 00:28:33.010 align:middle line:84%
+But if it's too large,
+it won't be accepted.
+
+00:28:33.010 --> 00:28:36.010 align:middle line:84%
+So they want to make the largest
+demand, the largest settlement
+
+00:28:36.010 --> 00:28:37.250 align:middle line:90%
+that will be accepted.
+
+00:28:37.250 --> 00:28:40.770 align:middle line:84%
+And that's precisely
+S2n minus 2 star.
+
+00:28:40.770 --> 00:28:43.273 align:middle line:84%
+So all we have to do
+is find this number.
+
+00:28:43.273 --> 00:28:44.690 align:middle line:84%
+And that's how
+these games reduce.
+
+00:28:44.690 --> 00:28:47.570 align:middle line:84%
+At each stage, one side is
+going to accept if and only
+
+00:28:47.570 --> 00:28:50.430 align:middle line:84%
+if the offer is above
+or below some threshold.
+
+00:28:50.430 --> 00:28:52.830 align:middle line:84%
+And the name of the game is
+finding these thresholds.
+
+00:28:52.830 --> 00:28:56.010 align:middle line:90%
+
+
+00:28:56.010 --> 00:28:56.910 align:middle line:90%
+So let's see.
+
+00:28:56.910 --> 00:29:03.140 align:middle line:84%
+Well, let's try to understand
+what this threshold needs to be,
+
+00:29:03.140 --> 00:29:04.580 align:middle line:90%
+by let's--
+
+00:29:04.580 --> 00:29:06.020 align:middle line:90%
+what's going up here.
+
+00:29:06.020 --> 00:29:07.500 align:middle line:84%
+So the threshold
+needs to be such
+
+00:29:07.500 --> 00:29:11.620 align:middle line:84%
+that they're indifferent
+between accepting this offer
+
+00:29:11.620 --> 00:29:12.822 align:middle line:90%
+and rejecting it.
+
+00:29:12.822 --> 00:29:14.280 align:middle line:84%
+That has to be true
+at a threshold.
+
+00:29:14.280 --> 00:29:15.560 align:middle line:84%
+Because if they
+weren't indifferent,
+
+00:29:15.560 --> 00:29:17.500 align:middle line:84%
+there's no way that
+could be the threshold.
+
+00:29:17.500 --> 00:29:26.580 align:middle line:84%
+So if they accept this offer,
+what are they going to get?
+
+00:29:26.580 --> 00:29:29.180 align:middle line:84%
+They're the defendant,
+so they have to pay it.
+
+00:29:29.180 --> 00:29:34.740 align:middle line:84%
+So they're going to get
+minus S2n minus 2 star
+
+00:29:34.740 --> 00:29:38.660 align:middle line:84%
+minus all the legal
+fees that they have.
+
+00:29:38.660 --> 00:29:44.660 align:middle line:84%
+So that's minus CD
+times 2n minus 1.
+
+00:29:44.660 --> 00:29:46.120 align:middle line:90%
+So now we're one period earlier.
+
+00:29:46.120 --> 00:29:47.660 align:middle line:84%
+So if we accept a
+settlement here,
+
+00:29:47.660 --> 00:29:50.780 align:middle line:84%
+we don't have to pay legal
+fees in the last period.
+
+00:29:50.780 --> 00:29:53.200 align:middle line:84%
+And this is how much we're
+going to have to pay.
+
+00:29:53.200 --> 00:29:55.100 align:middle line:84%
+So we have a negative
+sign in front.
+
+00:29:55.100 --> 00:29:58.208 align:middle line:84%
+What happens if we
+reject this offer?
+
+00:29:58.208 --> 00:30:00.500 align:middle line:84%
+Well, this is where backward
+induction comes into play.
+
+00:30:00.500 --> 00:30:02.260 align:middle line:84%
+Because in general,
+I don't know what
+
+00:30:02.260 --> 00:30:04.720 align:middle line:84%
+happens, what my payoff is
+from rejecting this offer,
+
+00:30:04.720 --> 00:30:06.620 align:middle line:84%
+because it depends on
+what's then offered
+
+00:30:06.620 --> 00:30:07.800 align:middle line:90%
+to me in the next period.
+
+00:30:07.800 --> 00:30:09.500 align:middle line:84%
+But because we've already
+used backward induction
+
+00:30:09.500 --> 00:30:10.700 align:middle line:84%
+in the next period,
+we know what's
+
+00:30:10.700 --> 00:30:12.158 align:middle line:84%
+going to happen in
+the next period.
+
+00:30:12.158 --> 00:30:14.860 align:middle line:84%
+In the next period,
+the plaintiff
+
+00:30:14.860 --> 00:30:17.700 align:middle line:90%
+is going to offer exactly this.
+
+00:30:17.700 --> 00:30:19.500 align:middle line:84%
+And then it's going
+to be optimal for me,
+
+00:30:19.500 --> 00:30:21.500 align:middle line:90%
+as the defendant, to accept it.
+
+00:30:21.500 --> 00:30:23.820 align:middle line:84%
+So if I wait till
+the next period,
+
+00:30:23.820 --> 00:30:28.660 align:middle line:84%
+I'm going to have to pay
+negative S2n minus 1 star
+
+00:30:28.660 --> 00:30:30.500 align:middle line:84%
+minus-- what are
+my legal fees if I
+
+00:30:30.500 --> 00:30:32.560 align:middle line:90%
+accept this in the next period?
+
+00:30:32.560 --> 00:30:36.240 align:middle line:90%
+
+
+00:30:36.240 --> 00:30:36.740 align:middle line:90%
+Yeah?
+
+00:30:36.740 --> 00:30:38.397 align:middle line:84%
+STUDENT: [INAUDIBLE]
+CD times 2n.
+
+00:30:38.397 --> 00:30:39.480 align:middle line:90%
+IAN BALL: Times 2n, right?
+
+00:30:39.480 --> 00:30:41.522 align:middle line:84%
+Because if I reject today
+and wait till tomorrow,
+
+00:30:41.522 --> 00:30:44.120 align:middle line:84%
+I have one more
+period of negotiation.
+
+00:30:44.120 --> 00:30:46.960 align:middle line:84%
+So that means it's
+going to be CD times 2n.
+
+00:30:46.960 --> 00:30:49.500 align:middle line:90%
+
+
+00:30:49.500 --> 00:30:51.300 align:middle line:90%
+And now we see the pattern.
+
+00:30:51.300 --> 00:30:52.860 align:middle line:90%
+What are we going to find?
+
+00:30:52.860 --> 00:30:59.150 align:middle line:84%
+We're going to find
+that S2n minus 2 star
+
+00:30:59.150 --> 00:31:13.390 align:middle line:90%
+equals S2n minus 1 star plus CD.
+
+00:31:13.390 --> 00:31:14.170 align:middle line:90%
+That's right.
+
+00:31:14.170 --> 00:31:25.150 align:middle line:90%
+
+
+00:31:25.150 --> 00:31:35.230 align:middle line:84%
+Yes, that's right, which we
+can do our math over here.
+
+00:31:35.230 --> 00:31:41.810 align:middle line:84%
+And this is J minus
+Cp hat plus CD.
+
+00:31:41.810 --> 00:31:46.270 align:middle line:90%
+
+
+00:31:46.270 --> 00:31:47.130 align:middle line:90%
+Why is it a plus?
+
+00:31:47.130 --> 00:31:50.310 align:middle line:84%
+We could try to go
+through the algebra.
+
+00:31:50.310 --> 00:31:56.280 align:middle line:84%
+But can we just reason through
+this, why we get a plus CD here?
+
+00:31:56.280 --> 00:31:59.280 align:middle line:84%
+Why am I, as the defendant,
+willing to accept
+
+00:31:59.280 --> 00:32:02.240 align:middle line:84%
+a settlement that's strictly
+higher than the settlement I
+
+00:32:02.240 --> 00:32:03.580 align:middle line:90%
+would get tomorrow?
+
+00:32:03.580 --> 00:32:04.080 align:middle line:90%
+Yeah?
+
+00:32:04.080 --> 00:32:07.180 align:middle line:84%
+STUDENT: Because you're
+not going to tomorrow.
+
+00:32:07.180 --> 00:32:10.180 align:middle line:84%
+So you're not going to have
+the CD from the next period.
+
+00:32:10.180 --> 00:32:11.440 align:middle line:90%
+So you're adding it back.
+
+00:32:11.440 --> 00:32:12.440 align:middle line:90%
+IAN BALL: Exactly right.
+
+00:32:12.440 --> 00:32:14.100 align:middle line:90%
+So what am I saying?
+
+00:32:14.100 --> 00:32:16.100 align:middle line:84%
+I'm saying, look, I
+can wait till tomorrow,
+
+00:32:16.100 --> 00:32:17.720 align:middle line:84%
+and then I have to
+pay you this much.
+
+00:32:17.720 --> 00:32:20.160 align:middle line:84%
+That's going to be the outcome
+of negotiation tomorrow.
+
+00:32:20.160 --> 00:32:21.940 align:middle line:84%
+But if I pay you
+an amount today,
+
+00:32:21.940 --> 00:32:25.100 align:middle line:84%
+I save one unit of
+negotiation costs.
+
+00:32:25.100 --> 00:32:27.680 align:middle line:84%
+So I'm actually willing
+to pay more today, I'm
+
+00:32:27.680 --> 00:32:29.320 align:middle line:84%
+willing to get a
+worse offer today
+
+00:32:29.320 --> 00:32:33.960 align:middle line:84%
+because I'm saving the legal
+costs of going tomorrow.
+
+00:32:33.960 --> 00:32:37.960 align:middle line:84%
+And you can see how
+these enter differently.
+
+00:32:37.960 --> 00:32:40.880 align:middle line:84%
+The plaintiff was also
+willing to accept a worse
+
+00:32:40.880 --> 00:32:42.760 align:middle line:90%
+offer to save on legal costs.
+
+00:32:42.760 --> 00:32:45.040 align:middle line:84%
+But for the plaintiff,
+a worse offer
+
+00:32:45.040 --> 00:32:48.000 align:middle line:84%
+is a smaller settlement because
+they get paid the settlement.
+
+00:32:48.000 --> 00:32:50.560 align:middle line:84%
+For the defendant, they're
+willing to accept a worse
+
+00:32:50.560 --> 00:32:51.900 align:middle line:90%
+offer to save on legal fees.
+
+00:32:51.900 --> 00:32:53.823 align:middle line:84%
+But for them, a worse
+offer means paying more.
+
+00:32:53.823 --> 00:32:55.740 align:middle line:84%
+So if I'm the defendant,
+I'm basically saying,
+
+00:32:55.740 --> 00:32:59.000 align:middle line:84%
+look, I'll pay you off to save
+me the money of going to court.
+
+00:32:59.000 --> 00:33:02.460 align:middle line:84%
+And the plaintiff is saying,
+you better pay me a lot.
+
+00:33:02.460 --> 00:33:05.580 align:middle line:90%
+
+
+00:33:05.580 --> 00:33:06.080 align:middle line:90%
+Sorry.
+
+00:33:06.080 --> 00:33:07.640 align:middle line:84%
+I'll accept not
+paying you very much
+
+00:33:07.640 --> 00:33:11.480 align:middle line:84%
+in order to avoid
+going to court.
+
+00:33:11.480 --> 00:33:13.640 align:middle line:84%
+I'll accept you not
+paying me very much
+
+00:33:13.640 --> 00:33:16.560 align:middle line:90%
+to avoid going to court.
+
+00:33:16.560 --> 00:33:20.740 align:middle line:84%
+So now I think we can
+keep doing this all day.
+
+00:33:20.740 --> 00:33:22.740 align:middle line:84%
+But I think we're going
+to see a pattern emerge.
+
+00:33:22.740 --> 00:33:25.040 align:middle line:84%
+So let's see if we can guess
+what the pattern is going
+
+00:33:25.040 --> 00:33:28.220 align:middle line:90%
+to be for these thresholds.
+
+00:33:28.220 --> 00:33:33.240 align:middle line:90%
+
+
+00:33:33.240 --> 00:33:35.880 align:middle line:84%
+So it's always easy
+to get off by one.
+
+00:33:35.880 --> 00:33:36.960 align:middle line:90%
+Let's see.
+
+00:33:36.960 --> 00:33:37.860 align:middle line:90%
+I've done it right.
+
+00:33:37.860 --> 00:33:40.880 align:middle line:90%
+Let's look at the--
+
+00:33:40.880 --> 00:33:43.120 align:middle line:90%
+we started in an odd period.
+
+00:33:43.120 --> 00:33:48.280 align:middle line:84%
+So we have the odd periods
+and the even periods.
+
+00:33:48.280 --> 00:33:59.010 align:middle line:84%
+In the odd periods, the
+defendant is going to propose S.
+
+00:33:59.010 --> 00:34:12.130 align:middle line:84%
+Let's say the odd period
+is 2n minus 2k minus 1.
+
+00:34:12.130 --> 00:34:16.929 align:middle line:84%
+And in the even period,
+it's 2n minus 2k.
+
+00:34:16.929 --> 00:34:22.389 align:middle line:84%
+And here, we're going to have
+k greater than or equal to 1.
+
+00:34:22.389 --> 00:34:25.570 align:middle line:90%
+
+
+00:34:25.570 --> 00:34:28.710 align:middle line:84%
+So here, let's just
+write down the formula
+
+00:34:28.710 --> 00:34:30.850 align:middle line:84%
+and then check that
+we have it right.
+
+00:34:30.850 --> 00:34:37.330 align:middle line:84%
+I think the defendant is
+going to propose J minus.
+
+00:34:37.330 --> 00:34:48.010 align:middle line:84%
+Cp hat plus k minus
+1 of k CD minus CP.
+
+00:34:48.010 --> 00:35:00.290 align:middle line:84%
+And here, I think the
+plaintiff is going
+
+00:35:00.290 --> 00:35:08.670 align:middle line:90%
+to propose one step earlier.
+
+00:35:08.670 --> 00:35:14.570 align:middle line:90%
+
+
+00:35:14.570 --> 00:35:16.610 align:middle line:90%
+Let's check if I did this right.
+
+00:35:16.610 --> 00:35:21.450 align:middle line:90%
+So let's first try k equals 1.
+
+00:35:21.450 --> 00:35:25.090 align:middle line:84%
+If k equals 1, we're
+in period 2n minus 1.
+
+00:35:25.090 --> 00:35:31.090 align:middle line:84%
+So we better get J minus CP hat,
+And that's exactly what we get.
+
+00:35:31.090 --> 00:35:41.170 align:middle line:84%
+If k equals 1 down here,
+we're in 2n minus 2,
+
+00:35:41.170 --> 00:35:45.070 align:middle line:84%
+and we better get J
+minus CP hat plus CD.
+
+00:35:45.070 --> 00:35:47.630 align:middle line:90%
+So think that looks correct.
+
+00:35:47.630 --> 00:35:54.500 align:middle line:90%
+
+
+00:35:54.500 --> 00:35:58.620 align:middle line:84%
+And then let's just check
+what's happening here--
+
+00:35:58.620 --> 00:36:03.980 align:middle line:84%
+accepts if and only if,
+and here the defendant
+
+00:36:03.980 --> 00:36:07.300 align:middle line:90%
+accepts if and only if.
+
+00:36:07.300 --> 00:36:10.940 align:middle line:84%
+Well, in these periods they're
+going to accept if and only if.
+
+00:36:10.940 --> 00:36:14.780 align:middle line:84%
+Well, the plaintiff is the
+one who receives the money,
+
+00:36:14.780 --> 00:36:17.500 align:middle line:84%
+is only going to accept it
+if it's large enough, if
+
+00:36:17.500 --> 00:36:19.500 align:middle line:84%
+and only if the
+settlement is greater than
+
+00:36:19.500 --> 00:36:22.340 align:middle line:90%
+or equal to this number here.
+
+00:36:22.340 --> 00:36:24.340 align:middle line:84%
+And the defendant is going
+to accept if and only
+
+00:36:24.340 --> 00:36:27.160 align:middle line:84%
+if f is less than or
+equal to this number here.
+
+00:36:27.160 --> 00:36:30.940 align:middle line:90%
+
+
+00:36:30.940 --> 00:36:35.180 align:middle line:84%
+So the defendant is proposing
+the smallest settlement amount
+
+00:36:35.180 --> 00:36:38.420 align:middle line:84%
+that will be accepted because
+they like low settlement
+
+00:36:38.420 --> 00:36:40.100 align:middle line:90%
+amounts.
+
+00:36:40.100 --> 00:36:43.420 align:middle line:84%
+And here, the plaintiff is
+proposing the largest settlement
+
+00:36:43.420 --> 00:36:46.260 align:middle line:84%
+amount that will be
+accepted because they like
+
+00:36:46.260 --> 00:36:48.320 align:middle line:90%
+to receive high settlements.
+
+00:36:48.320 --> 00:36:52.900 align:middle line:90%
+
+
+00:36:52.900 --> 00:36:56.620 align:middle line:90%
+So this is the strategies.
+
+00:36:56.620 --> 00:36:59.820 align:middle line:84%
+We specified all the strategies
+at every contingency.
+
+00:36:59.820 --> 00:37:02.220 align:middle line:84%
+But let's now compute
+what actually happens.
+
+00:37:02.220 --> 00:37:06.040 align:middle line:84%
+The strategies say, in every
+contingency what do people do?
+
+00:37:06.040 --> 00:37:08.870 align:middle line:84%
+But what actually
+happens in this big game?
+
+00:37:08.870 --> 00:37:10.120 align:middle line:90%
+We made it really complicated.
+
+00:37:10.120 --> 00:37:13.800 align:middle line:84%
+But what happens is actually
+going to be pretty simple.
+
+00:37:13.800 --> 00:37:18.940 align:middle line:90%
+
+
+00:37:18.940 --> 00:37:24.040 align:middle line:84%
+You want to see what is
+actually going to happen?
+
+00:37:24.040 --> 00:37:28.420 align:middle line:90%
+
+
+00:37:28.420 --> 00:37:29.958 align:middle line:84%
+So when are they
+going to settle?
+
+00:37:29.958 --> 00:37:31.000 align:middle line:90%
+Are they going to settle?
+
+00:37:31.000 --> 00:37:37.900 align:middle line:90%
+
+
+00:37:37.900 --> 00:37:38.680 align:middle line:90%
+Do we go to trial?
+
+00:37:38.680 --> 00:37:39.160 align:middle line:90%
+What happens?
+
+00:37:39.160 --> 00:37:40.243 align:middle line:90%
+We have the strategy here.
+
+00:37:40.243 --> 00:37:41.797 align:middle line:84%
+We just have to
+figure out what's
+
+00:37:41.797 --> 00:37:42.880 align:middle line:90%
+actually going to be done.
+
+00:37:42.880 --> 00:37:52.510 align:middle line:90%
+
+
+00:37:52.510 --> 00:37:55.190 align:middle line:84%
+Well, let's start in the first
+period, and let's go through it.
+
+00:37:55.190 --> 00:37:59.170 align:middle line:84%
+In period 0, what
+is going to happen?
+
+00:37:59.170 --> 00:38:03.310 align:middle line:90%
+Well, period 0 means k equals n.
+
+00:38:03.310 --> 00:38:06.790 align:middle line:84%
+So the plaintiff is going to
+propose this settlement amount,
+
+00:38:06.790 --> 00:38:10.770 align:middle line:84%
+J minus Cp hat plus n
+minus 1 times this plus Cd.
+
+00:38:10.770 --> 00:38:14.830 align:middle line:90%
+
+
+00:38:14.830 --> 00:38:17.830 align:middle line:84%
+And then the defendant's
+going to accept it.
+
+00:38:17.830 --> 00:38:19.390 align:middle line:90%
+So that's it.
+
+00:38:19.390 --> 00:38:21.230 align:middle line:84%
+So the outcome is
+actually very simple.
+
+00:38:21.230 --> 00:38:28.670 align:middle line:84%
+The outcome is we settle
+in period 0 for this amount
+
+00:38:28.670 --> 00:38:29.290 align:middle line:90%
+down here.
+
+00:38:29.290 --> 00:38:50.662 align:middle line:90%
+
+
+00:38:50.662 --> 00:38:51.620 align:middle line:90%
+Yeah, this looks right.
+
+00:38:51.620 --> 00:38:54.640 align:middle line:84%
+I'm just making sure I'm
+not off by one index.
+
+00:38:54.640 --> 00:38:57.580 align:middle line:84%
+So can we try to
+interpret this amount?
+
+00:38:57.580 --> 00:39:00.200 align:middle line:90%
+
+
+00:39:00.200 --> 00:39:02.380 align:middle line:84%
+How does this
+amount compare to J?
+
+00:39:02.380 --> 00:39:16.320 align:middle line:90%
+
+
+00:39:16.320 --> 00:39:19.200 align:middle line:84%
+Well, we see that
+the settlement is
+
+00:39:19.200 --> 00:39:25.080 align:middle line:84%
+going to be smaller if
+Cp hat is really big.
+
+00:39:25.080 --> 00:39:27.400 align:middle line:84%
+So this settlement
+is going to tend
+
+00:39:27.400 --> 00:39:35.200 align:middle line:90%
+to be smaller if Cp hat is big.
+
+00:39:35.200 --> 00:39:42.360 align:middle line:84%
+And it's going to tend to be
+bigger if Cd minus Cp is large.
+
+00:39:42.360 --> 00:39:53.440 align:middle line:90%
+
+
+00:39:53.440 --> 00:39:55.060 align:middle line:84%
+So do we have
+intuition for this?
+
+00:39:55.060 --> 00:39:58.040 align:middle line:90%
+
+
+00:39:58.040 --> 00:39:59.160 align:middle line:90%
+Well, let's see.
+
+00:39:59.160 --> 00:40:03.760 align:middle line:84%
+If Cd minus Cp is large,
+that means the defendant
+
+00:40:03.760 --> 00:40:07.400 align:middle line:90%
+has higher negotiation costs.
+
+00:40:07.400 --> 00:40:11.520 align:middle line:84%
+And that means the defendant
+is at a strategic disadvantage.
+
+00:40:11.520 --> 00:40:14.840 align:middle line:84%
+The fact that they have
+high negotiation costs
+
+00:40:14.840 --> 00:40:18.343 align:middle line:84%
+means the other side can
+drive a hard bargain.
+
+00:40:18.343 --> 00:40:19.760 align:middle line:84%
+And because of
+that, the defendant
+
+00:40:19.760 --> 00:40:22.800 align:middle line:84%
+is going to have to end up
+paying a larger settlement.
+
+00:40:22.800 --> 00:40:26.180 align:middle line:84%
+Notice that it's not only
+big if Cd minus Cp is big,
+
+00:40:26.180 --> 00:40:28.600 align:middle line:84%
+but it also depends on
+how far away the trial is.
+
+00:40:28.600 --> 00:40:31.120 align:middle line:84%
+So if the trial is
+really far away,
+
+00:40:31.120 --> 00:40:34.360 align:middle line:84%
+then the defendant
+is really in trouble
+
+00:40:34.360 --> 00:40:37.323 align:middle line:84%
+because the defendant's
+higher legal fees per period
+
+00:40:37.323 --> 00:40:39.490 align:middle line:84%
+could really add up over
+the many, many periods that
+
+00:40:39.490 --> 00:40:41.330 align:middle line:90%
+going to trial.
+
+00:40:41.330 --> 00:40:44.330 align:middle line:84%
+On the other hand, if
+the plaintiffs cost
+
+00:40:44.330 --> 00:40:47.050 align:middle line:84%
+of going to trial is
+really, really high,
+
+00:40:47.050 --> 00:40:50.050 align:middle line:84%
+then the settlement is going to
+be smaller because this is going
+
+00:40:50.050 --> 00:40:52.430 align:middle line:90%
+to advantage the defendant.
+
+00:40:52.430 --> 00:40:53.930 align:middle line:84%
+They're not going
+to have to pay out
+
+00:40:53.930 --> 00:40:57.090 align:middle line:84%
+as much if they can drive a
+hard bargain to the plaintiff
+
+00:40:57.090 --> 00:40:58.770 align:middle line:90%
+in the last period.
+
+00:40:58.770 --> 00:41:00.250 align:middle line:90%
+But here's one kind of puzzle.
+
+00:41:00.250 --> 00:41:01.790 align:middle line:90%
+What happened to Cd hat?
+
+00:41:01.790 --> 00:41:08.490 align:middle line:90%
+
+
+00:41:08.490 --> 00:41:09.690 align:middle line:90%
+It doesn't appear at all.
+
+00:41:09.690 --> 00:41:15.030 align:middle line:84%
+So why does it not
+depend at all on Cd hat?
+
+00:41:15.030 --> 00:41:19.850 align:middle line:90%
+
+
+00:41:19.850 --> 00:41:20.490 align:middle line:90%
+Yeah?
+
+00:41:20.490 --> 00:41:22.365 align:middle line:84%
+STUDENT: I'd say that
+the plaintiff is always
+
+00:41:22.365 --> 00:41:24.810 align:middle line:84%
+going to accept on the last
+day, so the cost of trial
+
+00:41:24.810 --> 00:41:26.792 align:middle line:90%
+is never realized.
+
+00:41:26.792 --> 00:41:27.750 align:middle line:90%
+IAN BALL: That's right.
+
+00:41:27.750 --> 00:41:31.130 align:middle line:84%
+But we also never get
+to the fifth period.
+
+00:41:31.130 --> 00:41:33.998 align:middle line:84%
+But the costs that
+we would incur
+
+00:41:33.998 --> 00:41:35.790 align:middle line:84%
+if we get to the fifth
+period also show up.
+
+00:41:35.790 --> 00:41:37.830 align:middle line:84%
+So I think that's
+part of the way there.
+
+00:41:37.830 --> 00:41:38.650 align:middle line:90%
+Yeah?
+
+00:41:38.650 --> 00:41:41.030 align:middle line:84%
+STUDENT: Because the defendant
+is the last proposer.
+
+00:41:41.030 --> 00:41:43.990 align:middle line:84%
+So they can base it on what
+the plaintiff will accept.
+
+00:41:43.990 --> 00:41:44.990 align:middle line:90%
+IAN BALL: Exactly right.
+
+00:41:44.990 --> 00:41:46.950 align:middle line:84%
+So if we actually
+change the timing here--
+
+00:41:46.950 --> 00:41:48.370 align:middle line:84%
+and this is one issue with
+these bargaining games
+
+00:41:48.370 --> 00:41:50.037 align:middle line:84%
+that sometimes the
+details matter a lot.
+
+00:41:50.037 --> 00:41:53.270 align:middle line:84%
+If we had an odd number
+of periods before trial,
+
+00:41:53.270 --> 00:41:54.270 align:middle line:90%
+this would kind of flip.
+
+00:41:54.270 --> 00:41:57.770 align:middle line:84%
+And we would care about
+Cd hat, not Cp hat.
+
+00:41:57.770 --> 00:42:01.650 align:middle line:84%
+And the reason is
+that the defendant
+
+00:42:01.650 --> 00:42:05.150 align:middle line:84%
+is the one able to exploit
+the plaintiff's cost of trial
+
+00:42:05.150 --> 00:42:06.570 align:middle line:84%
+because the defendant
+gets to make
+
+00:42:06.570 --> 00:42:08.505 align:middle line:90%
+the last offer before trial.
+
+00:42:08.505 --> 00:42:10.130 align:middle line:84%
+So because the
+defendant is the one who
+
+00:42:10.130 --> 00:42:13.050 align:middle line:84%
+makes the last offer before
+trial, the defendant can say,
+
+00:42:13.050 --> 00:42:14.950 align:middle line:84%
+you better give me
+a really good deal.
+
+00:42:14.950 --> 00:42:16.690 align:middle line:84%
+Otherwise, we're
+going to have to pay
+
+00:42:16.690 --> 00:42:18.028 align:middle line:90%
+this high cost to go to trial.
+
+00:42:18.028 --> 00:42:19.070 align:middle line:90%
+It's interesting, though.
+
+00:42:19.070 --> 00:42:21.770 align:middle line:84%
+I mean, the defendant also pays
+a high cost to go to trial.
+
+00:42:21.770 --> 00:42:26.232 align:middle line:84%
+But they're able to exploit the
+rationality of the plaintiff
+
+00:42:26.232 --> 00:42:27.690 align:middle line:84%
+and make them an
+offer that they're
+
+00:42:27.690 --> 00:42:30.010 align:middle line:84%
+going to have to accept, and
+therefore, take advantage
+
+00:42:30.010 --> 00:42:31.110 align:middle line:90%
+of their bargaining power.
+
+00:42:31.110 --> 00:42:34.010 align:middle line:90%
+
+
+00:42:34.010 --> 00:42:36.100 align:middle line:90%
+Great.
+
+00:42:36.100 --> 00:42:38.260 align:middle line:90%
+So I guess a few takeaways--
+
+00:42:38.260 --> 00:42:39.820 align:middle line:84%
+this model suggests
+that we shouldn't
+
+00:42:39.820 --> 00:42:42.700 align:middle line:84%
+have drawn-out negotiations,
+that the settlement should
+
+00:42:42.700 --> 00:42:43.820 align:middle line:90%
+end right away.
+
+00:42:43.820 --> 00:42:47.420 align:middle line:84%
+But notice that the potential
+length of the negotiation
+
+00:42:47.420 --> 00:42:48.640 align:middle line:90%
+affects the outcome.
+
+00:42:48.640 --> 00:42:50.980 align:middle line:84%
+So even though we settle
+in the very first period,
+
+00:42:50.980 --> 00:42:54.420 align:middle line:84%
+the potential to have a very
+long, drawn-out negotiation
+
+00:42:54.420 --> 00:42:58.033 align:middle line:84%
+drives the amount that we
+settle for in this first period.
+
+00:42:58.033 --> 00:42:58.700 align:middle line:90%
+One final thing.
+
+00:42:58.700 --> 00:43:00.860 align:middle line:84%
+If on an exam you're
+asked about this,
+
+00:43:00.860 --> 00:43:03.640 align:middle line:84%
+the strategy is not we
+settle in the first period.
+
+00:43:03.640 --> 00:43:05.720 align:middle line:84%
+The strategy is this
+really complicated thing.
+
+00:43:05.720 --> 00:43:08.460 align:middle line:84%
+The outcome is that we
+settle in the first period.
+
+00:43:08.460 --> 00:43:11.920 align:middle line:84%
+Now, in reality, we often see
+long drawn-out negotiations.
+
+00:43:11.920 --> 00:43:14.380 align:middle line:84%
+So I think it's often very
+helpful in economic models
+
+00:43:14.380 --> 00:43:15.780 align:middle line:90%
+to say, what's missing?
+
+00:43:15.780 --> 00:43:17.680 align:middle line:84%
+Why is it that in
+reality-- let's
+
+00:43:17.680 --> 00:43:19.180 align:middle line:84%
+say Trump and the
+Democrats, I think
+
+00:43:19.180 --> 00:43:21.680 align:middle line:84%
+they're going to be negotiating
+for a pretty long time would
+
+00:43:21.680 --> 00:43:23.220 align:middle line:90%
+be my guess.
+
+00:43:23.220 --> 00:43:25.220 align:middle line:84%
+That's completely consistent
+with the prediction
+
+00:43:25.220 --> 00:43:26.040 align:middle line:90%
+of this model.
+
+00:43:26.040 --> 00:43:28.580 align:middle line:84%
+So what do you think is
+missing in this model that
+
+00:43:28.580 --> 00:43:30.800 align:middle line:84%
+explains why everything
+ends in the first period?
+
+00:43:30.800 --> 00:43:31.540 align:middle line:90%
+Yeah?
+
+00:43:31.540 --> 00:43:33.480 align:middle line:84%
+STUDENT: Uncertainty
+about what J actually is.
+
+00:43:33.480 --> 00:43:34.230 align:middle line:90%
+IAN BALL: Exactly.
+
+00:43:34.230 --> 00:43:36.578 align:middle line:84%
+An uncertainty about the
+preferences of the other side,
+
+00:43:36.578 --> 00:43:37.870 align:middle line:90%
+what they're willing to accept.
+
+00:43:37.870 --> 00:43:39.990 align:middle line:84%
+Here, we all know exactly
+what the other side
+
+00:43:39.990 --> 00:43:42.670 align:middle line:84%
+is going to accept, and
+we can push them just
+
+00:43:42.670 --> 00:43:44.643 align:middle line:84%
+to the brink of
+acceptance at every round.
+
+00:43:44.643 --> 00:43:47.310 align:middle line:84%
+And therefore, there's no reason
+for things to evolve over time.
+
+00:43:47.310 --> 00:43:51.070 align:middle line:84%
+The reason that we often have
+delay and impasses in bargaining
+
+00:43:51.070 --> 00:43:55.150 align:middle line:84%
+is that we don't know what the
+other side is willing to accept,
+
+00:43:55.150 --> 00:43:57.150 align:middle line:84%
+and we might want to make
+them a really bad deal
+
+00:43:57.150 --> 00:44:01.550 align:middle line:84%
+early on on the off chance
+that they end up not
+
+00:44:01.550 --> 00:44:03.100 align:middle line:90%
+being who we thought they were.
+
+00:44:03.100 --> 00:44:05.350 align:middle line:84%
+And we'll see later in the
+course models of bargaining
+
+00:44:05.350 --> 00:44:07.230 align:middle line:84%
+with incomplete
+information or uncertainty
+
+00:44:07.230 --> 00:44:08.607 align:middle line:84%
+about the opponent's
+preferences.
+
+00:44:08.607 --> 00:44:10.690 align:middle line:84%
+And that will exactly lead
+to delay in bargaining.
+
+00:44:10.690 --> 00:44:12.440 align:middle line:84%
+Imagine you were
+negotiating with someone,
+
+00:44:12.440 --> 00:44:14.565 align:middle line:84%
+and you didn't know if they
+were a tough negotiator
+
+00:44:14.565 --> 00:44:15.470 align:middle line:90%
+or a soft negotiator.
+
+00:44:15.470 --> 00:44:17.470 align:middle line:84%
+You might want to make a
+really ridiculous offer
+
+00:44:17.470 --> 00:44:19.762 align:middle line:84%
+in the first period that only
+the soft negotiator would
+
+00:44:19.762 --> 00:44:22.053 align:middle line:84%
+accept, but that you know
+the hard negotiator would not
+
+00:44:22.053 --> 00:44:22.590 align:middle line:90%
+accept.
+
+00:44:22.590 --> 00:44:25.007 align:middle line:84%
+And then move to the next
+period and change your strategy.
+
+00:44:25.007 --> 00:44:27.245 align:middle line:84%
+So that's the basic
+idea of what goes
+
+00:44:27.245 --> 00:44:28.870 align:middle line:84%
+on when you have
+incomplete information
+
+00:44:28.870 --> 00:44:30.590 align:middle line:90%
+about the other players.
+
+00:44:30.590 --> 00:44:36.630 align:middle line:84%
+OK, let's now move to the
+second bargaining situation
+
+00:44:36.630 --> 00:44:39.650 align:middle line:84%
+today, which is going to
+be haggling over the price.
+
+00:44:39.650 --> 00:44:47.590 align:middle line:90%
+
+
+00:44:47.590 --> 00:44:50.640 align:middle line:84%
+So now we're going
+to imagine that--
+
+00:44:50.640 --> 00:44:52.170 align:middle line:90%
+we'll call this price haggling.
+
+00:44:52.170 --> 00:44:56.590 align:middle line:90%
+
+
+00:44:56.590 --> 00:45:02.590 align:middle line:84%
+Let's suppose that we
+have a seller and a buyer.
+
+00:45:02.590 --> 00:45:10.430 align:middle line:84%
+And the seller just
+wants to get paid.
+
+00:45:10.430 --> 00:45:13.110 align:middle line:84%
+They're negotiating over
+the price of some item.
+
+00:45:13.110 --> 00:45:16.550 align:middle line:84%
+So if they trade at
+price p, then the seller,
+
+00:45:16.550 --> 00:45:19.510 align:middle line:84%
+their utility is going to be
+the price p that they get.
+
+00:45:19.510 --> 00:45:22.830 align:middle line:84%
+The buyer's utility is
+going to be v minus p.
+
+00:45:22.830 --> 00:45:27.630 align:middle line:84%
+So that means p is
+the price, and v is
+
+00:45:27.630 --> 00:45:29.090 align:middle line:90%
+the buyer's value for the good.
+
+00:45:29.090 --> 00:45:33.360 align:middle line:90%
+
+
+00:45:33.360 --> 00:45:36.280 align:middle line:84%
+So notice here, we're assuming
+that it doesn't cost anything
+
+00:45:36.280 --> 00:45:38.060 align:middle line:84%
+for the seller to
+produce the good.
+
+00:45:38.060 --> 00:45:39.393 align:middle line:90%
+That's a simplifying assumption.
+
+00:45:39.393 --> 00:45:40.518 align:middle line:90%
+It's already been produced.
+
+00:45:40.518 --> 00:45:42.300 align:middle line:84%
+Maybe they can't resell
+it to anyone else.
+
+00:45:42.300 --> 00:45:43.580 align:middle line:90%
+They're just stuck with it.
+
+00:45:43.580 --> 00:45:46.160 align:middle line:84%
+So the seller values
+the good at 0.
+
+00:45:46.160 --> 00:45:50.600 align:middle line:84%
+They're thinking of selling it
+to the buyer who values it at v,
+
+00:45:50.600 --> 00:45:53.240 align:middle line:84%
+and they're trying to haggle
+over what the price should be.
+
+00:45:53.240 --> 00:45:55.000 align:middle line:84%
+So first of all, let's
+just make sure we
+
+00:45:55.000 --> 00:45:58.540 align:middle line:84%
+understand what's a reasonable
+range of what the price can be?
+
+00:45:58.540 --> 00:46:00.940 align:middle line:84%
+So I think there's some
+price that we can rule out.
+
+00:46:00.940 --> 00:46:04.240 align:middle line:90%
+How low could the price be?
+
+00:46:04.240 --> 00:46:06.515 align:middle line:84%
+What's the lowest it
+could possibly be?
+
+00:46:06.515 --> 00:46:08.140 align:middle line:84%
+Well, actually, it
+could be pretty low.
+
+00:46:08.140 --> 00:46:10.473 align:middle line:84%
+I think it could go all the
+way down to 0, in principle.
+
+00:46:10.473 --> 00:46:13.280 align:middle line:84%
+It's certainly not going
+to be less than 0, though.
+
+00:46:13.280 --> 00:46:15.520 align:middle line:84%
+Because if it was
+less than 0, well,
+
+00:46:15.520 --> 00:46:18.800 align:middle line:84%
+the seller would never accept
+being paid a negative price.
+
+00:46:18.800 --> 00:46:20.520 align:middle line:84%
+What about the
+highest price that we
+
+00:46:20.520 --> 00:46:23.780 align:middle line:90%
+would expect to see here?
+
+00:46:23.780 --> 00:46:24.280 align:middle line:90%
+Yeah?
+
+00:46:24.280 --> 00:46:24.960 align:middle line:90%
+STUDENT: v.
+
+00:46:24.960 --> 00:46:26.877 align:middle line:84%
+IAN BALL: v. It certainly
+can't be more than v
+
+00:46:26.877 --> 00:46:31.640 align:middle line:84%
+because the buyer would
+never accept a price above v.
+
+00:46:31.640 --> 00:46:38.280 align:middle line:84%
+So we can, at first pass, just
+by basic individual rationality
+
+00:46:38.280 --> 00:46:40.680 align:middle line:84%
+concerns, see that the price
+is going to be somewhere
+
+00:46:40.680 --> 00:46:42.480 align:middle line:84%
+between 0 and v,
+and both players
+
+00:46:42.480 --> 00:46:44.520 align:middle line:84%
+are going to get some
+non-negative utility.
+
+00:46:44.520 --> 00:46:47.160 align:middle line:84%
+But the question is, where
+is it between 0 and v?
+
+00:46:47.160 --> 00:46:50.000 align:middle line:84%
+The seller would love it
+to be very close to v,
+
+00:46:50.000 --> 00:46:52.360 align:middle line:84%
+and basically leave
+the buyer with nothing
+
+00:46:52.360 --> 00:46:54.560 align:middle line:84%
+and charge them their full
+valuation for the good.
+
+00:46:54.560 --> 00:46:57.133 align:middle line:84%
+The buyer would love
+to pay a price that's
+
+00:46:57.133 --> 00:46:58.800 align:middle line:84%
+really, really low,
+so that they can get
+
+00:46:58.800 --> 00:47:00.240 align:middle line:90%
+all the value from the good.
+
+00:47:00.240 --> 00:47:02.720 align:middle line:84%
+And we're going to try to make
+some predictions about where
+
+00:47:02.720 --> 00:47:05.880 align:middle line:84%
+within this interval
+the price can be.
+
+00:47:05.880 --> 00:47:08.000 align:middle line:84%
+Notice this is kind
+of a common situation
+
+00:47:08.000 --> 00:47:11.440 align:middle line:84%
+that we generally
+only expect that goods
+
+00:47:11.440 --> 00:47:13.720 align:middle line:84%
+are going to be exchanged
+when the seller values
+
+00:47:13.720 --> 00:47:15.640 align:middle line:90%
+the good more than the buyer.
+
+00:47:15.640 --> 00:47:18.820 align:middle line:84%
+And we generally expect the
+price to be somewhere between--
+
+00:47:18.820 --> 00:47:21.320 align:middle line:84%
+sorry-- when the seller values
+the good less than the buyer.
+
+00:47:21.320 --> 00:47:22.945 align:middle line:84%
+And we expect the
+price to be somewhere
+
+00:47:22.945 --> 00:47:24.720 align:middle line:84%
+between what the
+seller values it at
+
+00:47:24.720 --> 00:47:26.370 align:middle line:90%
+and what the buyer values it at.
+
+00:47:26.370 --> 00:47:29.290 align:middle line:84%
+And here, what the
+seller values it at is 0.
+
+00:47:29.290 --> 00:47:33.450 align:middle line:84%
+You can think of this
+as the seller's value,
+
+00:47:33.450 --> 00:47:36.810 align:middle line:90%
+and this is the buyer's value.
+
+00:47:36.810 --> 00:47:38.435 align:middle line:90%
+So the buyer does value it more.
+
+00:47:38.435 --> 00:47:40.310 align:middle line:84%
+That's why it makes
+sense for them to buy it.
+
+00:47:40.310 --> 00:47:43.330 align:middle line:84%
+But where the price lies
+between these two valuations
+
+00:47:43.330 --> 00:47:44.350 align:middle line:90%
+is the name of the game.
+
+00:47:44.350 --> 00:47:46.668 align:middle line:84%
+That's what we're
+trying to figure out.
+
+00:47:46.668 --> 00:47:48.210 align:middle line:84%
+Now, what we're also
+going to imagine
+
+00:47:48.210 --> 00:47:52.210 align:middle line:90%
+is that there's a cost of delay.
+
+00:47:52.210 --> 00:47:54.770 align:middle line:84%
+But we're going to model the
+cost of delay a bit differently.
+
+00:47:54.770 --> 00:47:57.490 align:middle line:84%
+Here, we model the cost of
+delay as an additive cost.
+
+00:47:57.490 --> 00:48:02.130 align:middle line:84%
+Each period we had to pay
+a lawyer some daily fee,
+
+00:48:02.130 --> 00:48:03.610 align:middle line:90%
+and that had a cost.
+
+00:48:03.610 --> 00:48:05.490 align:middle line:84%
+Here, we're going to
+say the cost of delay,
+
+00:48:05.490 --> 00:48:08.750 align:middle line:84%
+we're going to use what's
+called discounting.
+
+00:48:08.750 --> 00:48:11.930 align:middle line:90%
+
+
+00:48:11.930 --> 00:48:20.570 align:middle line:84%
+So the idea is that if
+we trade in period t,
+
+00:48:20.570 --> 00:48:22.970 align:middle line:84%
+then the utilities
+we actually get
+
+00:48:22.970 --> 00:48:32.300 align:middle line:84%
+would be delta p for the
+seller, and delta v minus p
+
+00:48:32.300 --> 00:48:41.600 align:middle line:84%
+for the buyer to the t, where
+delta is between 0 and 1.
+
+00:48:41.600 --> 00:48:44.260 align:middle line:90%
+
+
+00:48:44.260 --> 00:48:46.760 align:middle line:84%
+So here-- you may have seen
+this in other economics courses.
+
+00:48:46.760 --> 00:48:49.540 align:middle line:84%
+Delta is called our
+discount factor.
+
+00:48:49.540 --> 00:48:51.780 align:middle line:84%
+And what this says
+is each period
+
+00:48:51.780 --> 00:48:55.540 align:middle line:84%
+we wait our utilities get
+multiplied by this number
+
+00:48:55.540 --> 00:48:56.800 align:middle line:90%
+delta, which is less than 1.
+
+00:48:56.800 --> 00:48:59.140 align:middle line:90%
+And therefore, they get smaller.
+
+00:48:59.140 --> 00:49:02.820 align:middle line:84%
+So if t is really, really
+big, then the seller
+
+00:49:02.820 --> 00:49:05.000 align:middle line:84%
+doesn't get the full
+utility from the price.
+
+00:49:05.000 --> 00:49:07.080 align:middle line:84%
+They get that times
+delta to the t
+
+00:49:07.080 --> 00:49:08.660 align:middle line:84%
+because each period
+they have to wait
+
+00:49:08.660 --> 00:49:10.500 align:middle line:84%
+beyond the zeroth
+period they incur
+
+00:49:10.500 --> 00:49:13.140 align:middle line:84%
+this multiplicative
+discount of delta.
+
+00:49:13.140 --> 00:49:14.360 align:middle line:90%
+And similarly, for the buyer.
+
+00:49:14.360 --> 00:49:17.740 align:middle line:84%
+They incur this multiplicative
+discount of delta.
+
+00:49:17.740 --> 00:49:22.860 align:middle line:84%
+So let's understand if
+delta is very close to 1,
+
+00:49:22.860 --> 00:49:27.420 align:middle line:84%
+then that would indicate that
+the players are quite patient.
+
+00:49:27.420 --> 00:49:30.220 align:middle line:84%
+Because as time
+passes, delta to the t
+
+00:49:30.220 --> 00:49:34.020 align:middle line:84%
+doesn't get smaller that quickly
+if delta is very close to 1.
+
+00:49:34.020 --> 00:49:37.860 align:middle line:84%
+If delta is very close to 0, the
+players are extremely impatient.
+
+00:49:37.860 --> 00:49:41.980 align:middle line:84%
+And as time passes, their
+utility is going to drop a lot.
+
+00:49:41.980 --> 00:49:44.340 align:middle line:84%
+And therefore, the cost of
+delay becomes very high.
+
+00:49:44.340 --> 00:49:49.820 align:middle line:84%
+So maybe I'll-- you can
+say this in a few ways.
+
+00:49:49.820 --> 00:49:54.220 align:middle line:84%
+You might say low delta
+is another way of saying
+
+00:49:54.220 --> 00:49:57.340 align:middle line:90%
+the players are impatient.
+
+00:49:57.340 --> 00:49:59.840 align:middle line:84%
+Or another way of saying that
+is the cost of delay is high.
+
+00:49:59.840 --> 00:50:04.220 align:middle line:90%
+
+
+00:50:04.220 --> 00:50:06.620 align:middle line:84%
+And then conversely,
+if we have high delta,
+
+00:50:06.620 --> 00:50:09.340 align:middle line:84%
+the players are very patient,
+and the cost of delay
+
+00:50:09.340 --> 00:50:10.320 align:middle line:90%
+is not very high.
+
+00:50:10.320 --> 00:50:14.900 align:middle line:90%
+
+
+00:50:14.900 --> 00:50:16.460 align:middle line:84%
+Sometimes we think
+of delta as being
+
+00:50:16.460 --> 00:50:17.668 align:middle line:90%
+related to the interest rate.
+
+00:50:17.668 --> 00:50:20.372 align:middle line:84%
+So in a financial context,
+the cost of delay with money
+
+00:50:20.372 --> 00:50:21.830 align:middle line:84%
+is the interest
+rate that you could
+
+00:50:21.830 --> 00:50:24.310 align:middle line:84%
+have gotten by putting that
+money in a bank account
+
+00:50:24.310 --> 00:50:26.410 align:middle line:84%
+or getting some
+return in equities.
+
+00:50:26.410 --> 00:50:29.270 align:middle line:90%
+
+
+00:50:29.270 --> 00:50:34.990 align:middle line:84%
+And now we're going to assume
+that time proceeds just as
+
+00:50:34.990 --> 00:50:35.490 align:middle line:90%
+before.
+
+00:50:35.490 --> 00:50:44.878 align:middle line:90%
+
+
+00:50:44.878 --> 00:50:46.670 align:middle line:84%
+So I think this is kind
+of exactly what you
+
+00:50:46.670 --> 00:50:48.087 align:middle line:84%
+see if you go a
+market, especially
+
+00:50:48.087 --> 00:50:50.510 align:middle line:84%
+in developing countries and
+there aren't posted prices.
+
+00:50:50.510 --> 00:50:51.770 align:middle line:84%
+You, as the buyer,
+go up and you say,
+
+00:50:51.770 --> 00:50:52.690 align:middle line:90%
+I'm willing to pay you this.
+
+00:50:52.690 --> 00:50:53.570 align:middle line:90%
+And they say, oh, no.
+
+00:50:53.570 --> 00:50:54.490 align:middle line:90%
+You need to pay me this much.
+
+00:50:54.490 --> 00:50:56.698 align:middle line:84%
+And then you counteroffer,
+and you go back and forth.
+
+00:50:56.698 --> 00:50:59.670 align:middle line:84%
+And even in developed
+countries, this certainly
+
+00:50:59.670 --> 00:51:01.950 align:middle line:84%
+happens if we're negotiating
+on some big deal.
+
+00:51:01.950 --> 00:51:03.370 align:middle line:90%
+It doesn't happen at Starbucks.
+
+00:51:03.370 --> 00:51:04.870 align:middle line:84%
+You're probably not going
+to be able to negotiate over
+
+00:51:04.870 --> 00:51:05.912 align:middle line:90%
+the price of your coffee.
+
+00:51:05.912 --> 00:51:07.590 align:middle line:84%
+But if you're getting
+hired at a firm,
+
+00:51:07.590 --> 00:51:09.230 align:middle line:84%
+or if you're making
+a merger, people
+
+00:51:09.230 --> 00:51:13.030 align:middle line:84%
+do negotiate all
+the time on prices.
+
+00:51:13.030 --> 00:51:18.550 align:middle line:84%
+So 2n minus 2, 2n
+minus 1, and then 2n.
+
+00:51:18.550 --> 00:51:21.190 align:middle line:84%
+And the order I think
+we're going to assume
+
+00:51:21.190 --> 00:51:26.350 align:middle line:84%
+is the seller makes
+the first offer.
+
+00:51:26.350 --> 00:51:30.958 align:middle line:84%
+So here, the seller
+offers a price, P0.
+
+00:51:30.958 --> 00:51:32.750 align:middle line:84%
+So instead of offering
+a settlement amount,
+
+00:51:32.750 --> 00:51:34.070 align:middle line:90%
+they're offering a price.
+
+00:51:34.070 --> 00:51:37.650 align:middle line:84%
+The buyer can either
+accept or reject.
+
+00:51:37.650 --> 00:51:42.550 align:middle line:90%
+
+
+00:51:42.550 --> 00:51:44.010 align:middle line:90%
+If it's accepted, we're done.
+
+00:51:44.010 --> 00:51:45.510 align:middle line:84%
+If it's rejected,
+now the buyer gets
+
+00:51:45.510 --> 00:51:48.710 align:middle line:84%
+to make a counteroffer
+of P1, and the seller
+
+00:51:48.710 --> 00:51:50.630 align:middle line:90%
+can accept or reject.
+
+00:51:50.630 --> 00:51:55.070 align:middle line:84%
+And we're going to go on like
+this, all the way up to seller
+
+00:51:55.070 --> 00:51:57.950 align:middle line:90%
+making an offer P2n minus 2.
+
+00:51:57.950 --> 00:52:00.990 align:middle line:84%
+Buyer making an
+offer P2n minus 1.
+
+00:52:00.990 --> 00:52:04.570 align:middle line:84%
+And then we're going to assume
+at period 2n, the world ends.
+
+00:52:04.570 --> 00:52:05.410 align:middle line:90%
+Or just, that's it.
+
+00:52:05.410 --> 00:52:06.630 align:middle line:90%
+We both get 0.
+
+00:52:06.630 --> 00:52:14.590 align:middle line:84%
+So if we wait this long,
+we get payoffs of 0, 0.
+
+00:52:14.590 --> 00:52:16.720 align:middle line:84%
+This seems like a
+strange assumption.
+
+00:52:16.720 --> 00:52:18.417 align:middle line:84%
+The real reason is
+that we don't quite
+
+00:52:18.417 --> 00:52:20.000 align:middle line:84%
+have the tools to
+analyze what happens
+
+00:52:20.000 --> 00:52:21.880 align:middle line:90%
+if it could go on indefinitely.
+
+00:52:21.880 --> 00:52:24.902 align:middle line:84%
+But it turns out that if you
+take n to be really, really big,
+
+00:52:24.902 --> 00:52:26.360 align:middle line:84%
+the predictions
+that we'll get will
+
+00:52:26.360 --> 00:52:27.777 align:middle line:84%
+be very similar
+to the predictions
+
+00:52:27.777 --> 00:52:29.380 align:middle line:84%
+if there's an
+indefinite end date.
+
+00:52:29.380 --> 00:52:32.320 align:middle line:84%
+So as I tell the story of the
+tourists get off the tour bus
+
+00:52:32.320 --> 00:52:34.852 align:middle line:84%
+at the market, and the tour
+bus is leaving in 2n periods,
+
+00:52:34.852 --> 00:52:37.060 align:middle line:84%
+and this is the last chance
+for them to make a trade.
+
+00:52:37.060 --> 00:52:40.260 align:middle line:84%
+But are they really-- or people
+say the ice cream cone melts.
+
+00:52:40.260 --> 00:52:43.040 align:middle line:84%
+But yeah, I don't know how
+compelling this exact end
+
+00:52:43.040 --> 00:52:45.960 align:middle line:84%
+date is, and we'll talk about
+relaxing that assumption later
+
+00:52:45.960 --> 00:52:46.460 align:middle line:90%
+on.
+
+00:52:46.460 --> 00:52:49.900 align:middle line:90%
+
+
+00:52:49.900 --> 00:52:56.780 align:middle line:84%
+So now let's try to
+start analyzing this.
+
+00:52:56.780 --> 00:53:12.240 align:middle line:90%
+
+
+00:53:12.240 --> 00:53:20.770 align:middle line:84%
+So let's start, as usual,
+in period 2n minus 1.
+
+00:53:20.770 --> 00:53:25.590 align:middle line:84%
+And now what is the
+seller going to accept?
+
+00:53:25.590 --> 00:53:28.410 align:middle line:90%
+
+
+00:53:28.410 --> 00:53:30.630 align:middle line:90%
+So we're in period 2n minus 1.
+
+00:53:30.630 --> 00:53:33.170 align:middle line:84%
+The world is going
+to end tomorrow.
+
+00:53:33.170 --> 00:53:34.590 align:middle line:90%
+The buyer makes an offer.
+
+00:53:34.590 --> 00:53:38.810 align:middle line:84%
+What prices will the seller
+be willing to accept?
+
+00:53:38.810 --> 00:53:43.410 align:middle line:84%
+So they'll accept if and only if
+the offered price, P2n minus 1,
+
+00:53:43.410 --> 00:53:45.230 align:middle line:84%
+is greater than
+or equal to what?
+
+00:53:45.230 --> 00:53:54.330 align:middle line:90%
+
+
+00:53:54.330 --> 00:53:55.110 align:middle line:90%
+Any thoughts?
+
+00:53:55.110 --> 00:53:58.010 align:middle line:90%
+
+
+00:53:58.010 --> 00:53:59.150 align:middle line:90%
+So you're the seller.
+
+00:53:59.150 --> 00:54:01.510 align:middle line:84%
+The buyer says, I'm going to
+pay you this amount for it.
+
+00:54:01.510 --> 00:54:03.177 align:middle line:84%
+You say, well, either
+I can accept this,
+
+00:54:03.177 --> 00:54:05.450 align:middle line:84%
+or I can reject it
+and get a payoff of 0.
+
+00:54:05.450 --> 00:54:07.110 align:middle line:90%
+So what am I willing to accept?
+
+00:54:07.110 --> 00:54:07.610 align:middle line:90%
+Yeah?
+
+00:54:07.610 --> 00:54:09.010 align:middle line:90%
+STUDENT: Won't it just be 0?
+
+00:54:09.010 --> 00:54:11.650 align:middle line:84%
+IAN BALL: Yeah,
+anything that's above 0.
+
+00:54:11.650 --> 00:54:13.350 align:middle line:90%
+Exactly 0, we can argue about.
+
+00:54:13.350 --> 00:54:16.370 align:middle line:84%
+But we'll say if and only if
+it's greater than or equal to 0.
+
+00:54:16.370 --> 00:54:18.970 align:middle line:84%
+So if you offer me any
+non-negative price,
+
+00:54:18.970 --> 00:54:22.850 align:middle line:84%
+my choice is I accept it, or I
+wait till tomorrow and I get 0.
+
+00:54:22.850 --> 00:54:24.650 align:middle line:84%
+So any positive amount
+you give me, I'm
+
+00:54:24.650 --> 00:54:27.250 align:middle line:84%
+willing to accept because it's
+better than getting 0 tomorrow.
+
+00:54:27.250 --> 00:54:29.610 align:middle line:84%
+And given that, what is
+the buyer going to offer?
+
+00:54:29.610 --> 00:54:31.330 align:middle line:84%
+So again, we're
+working backwards.
+
+00:54:31.330 --> 00:54:33.377 align:middle line:90%
+What will the buyer offer?
+
+00:54:33.377 --> 00:54:34.710 align:middle line:90%
+How much will they offer to pay?
+
+00:54:34.710 --> 00:54:40.410 align:middle line:90%
+
+
+00:54:40.410 --> 00:54:42.417 align:middle line:84%
+It's a good position
+for the buyer, right?
+
+00:54:42.417 --> 00:54:43.750 align:middle line:90%
+They're going to offer to pay 0.
+
+00:54:43.750 --> 00:54:47.370 align:middle line:90%
+
+
+00:54:47.370 --> 00:54:50.130 align:middle line:84%
+If I know that the seller
+will accept any price,
+
+00:54:50.130 --> 00:54:54.090 align:middle line:84%
+I'll offer the smallest
+price they'll accept.
+
+00:54:54.090 --> 00:54:56.810 align:middle line:90%
+What's the story here?
+
+00:54:56.810 --> 00:54:58.975 align:middle line:84%
+I come at the end of
+the day, think about--
+
+00:54:58.975 --> 00:55:00.350 align:middle line:84%
+I mean, we see
+this all the time.
+
+00:55:00.350 --> 00:55:00.892 align:middle line:90%
+It's a store.
+
+00:55:00.892 --> 00:55:03.190 align:middle line:90%
+They have one croissant left.
+
+00:55:03.190 --> 00:55:04.270 align:middle line:90%
+They're about to close.
+
+00:55:04.270 --> 00:55:06.210 align:middle line:84%
+Or maybe they have tons
+of croissants left.
+
+00:55:06.210 --> 00:55:07.725 align:middle line:84%
+I know if they
+don't sell it to me,
+
+00:55:07.725 --> 00:55:09.350 align:middle line:84%
+they're not going to
+sell it to anyone.
+
+00:55:09.350 --> 00:55:10.520 align:middle line:90%
+It'll go stale tomorrow.
+
+00:55:10.520 --> 00:55:11.700 align:middle line:90%
+I can make a pretty good--
+
+00:55:11.700 --> 00:55:13.200 align:middle line:84%
+I'm in a pretty strong
+bargaining position.
+
+00:55:13.200 --> 00:55:14.880 align:middle line:84%
+I can say, just give it
+to me for a price of 0.
+
+00:55:14.880 --> 00:55:16.297 align:middle line:84%
+And we see bakeries
+have discounts
+
+00:55:16.297 --> 00:55:19.220 align:middle line:84%
+at the end of the day
+for exactly this reason.
+
+00:55:19.220 --> 00:55:22.660 align:middle line:84%
+But now let's go to
+period 2n minus 2.
+
+00:55:22.660 --> 00:55:27.260 align:middle line:84%
+Now the buyer is
+making an offer.
+
+00:55:27.260 --> 00:55:29.060 align:middle line:90%
+Sorry.
+
+00:55:29.060 --> 00:55:30.380 align:middle line:90%
+The seller is making an offer.
+
+00:55:30.380 --> 00:55:32.880 align:middle line:84%
+So the buyer is choosing whether
+to accept the offer or not.
+
+00:55:32.880 --> 00:55:36.020 align:middle line:90%
+
+
+00:55:36.020 --> 00:55:38.420 align:middle line:84%
+And what offers will
+the buyer accept?
+
+00:55:38.420 --> 00:55:45.180 align:middle line:84%
+So the buyer will accept if the
+price, pt, offered by the seller
+
+00:55:45.180 --> 00:55:48.620 align:middle line:90%
+is small enough.
+
+00:55:48.620 --> 00:55:49.940 align:middle line:90%
+Yeah, question or-- yeah?
+
+00:55:49.940 --> 00:55:52.573 align:middle line:84%
+STUDENT: Is the buyer's value
+of the good known to the seller?
+
+00:55:52.573 --> 00:55:53.240 align:middle line:90%
+IAN BALL: It is.
+
+00:55:53.240 --> 00:55:54.573 align:middle line:90%
+And that's a crucial assumption.
+
+00:55:54.573 --> 00:55:56.140 align:middle line:90%
+So it is known.
+
+00:55:56.140 --> 00:55:58.463 align:middle line:84%
+And in reality, you might
+think it wouldn't be known.
+
+00:55:58.463 --> 00:55:59.880 align:middle line:84%
+And towards the
+end of the course,
+
+00:55:59.880 --> 00:56:01.520 align:middle line:84%
+we'll talk about incomplete
+information bargaining.
+
+00:56:01.520 --> 00:56:03.080 align:middle line:90%
+But it comes really messy.
+
+00:56:03.080 --> 00:56:04.447 align:middle line:90%
+But yes, v is known.
+
+00:56:04.447 --> 00:56:05.280 align:middle line:90%
+That's a good point.
+
+00:56:05.280 --> 00:56:06.560 align:middle line:90%
+And delta is also known.
+
+00:56:06.560 --> 00:56:11.060 align:middle line:90%
+
+
+00:56:11.060 --> 00:56:15.220 align:middle line:84%
+So here, we're going
+to have, say, Pt star.
+
+00:56:15.220 --> 00:56:20.020 align:middle line:84%
+The buyer will accept if
+the price is low enough.
+
+00:56:20.020 --> 00:56:25.300 align:middle line:84%
+And let's try to compute
+what Pt star has to be.
+
+00:56:25.300 --> 00:56:28.420 align:middle line:84%
+So as usual, Pt star is going
+to be defined by an indifference
+
+00:56:28.420 --> 00:56:29.300 align:middle line:90%
+condition.
+
+00:56:29.300 --> 00:56:31.540 align:middle line:84%
+The highest price they'll
+accept is the price
+
+00:56:31.540 --> 00:56:34.180 align:middle line:84%
+where if they accept
+it, they do just as well
+
+00:56:34.180 --> 00:56:37.540 align:middle line:84%
+as if they were to reject
+it and wait until tomorrow.
+
+00:56:37.540 --> 00:56:42.660 align:middle line:84%
+So let's look at what happens
+if they were to accept a price
+
+00:56:42.660 --> 00:56:50.940 align:middle line:84%
+of Pt star, then they're going
+to get delta to the 2n minus 2
+
+00:56:50.940 --> 00:56:54.360 align:middle line:90%
+of v minus Pt star.
+
+00:56:54.360 --> 00:57:00.900 align:middle line:90%
+
+
+00:57:00.900 --> 00:57:02.160 align:middle line:90%
+So that's if they accept.
+
+00:57:02.160 --> 00:57:06.190 align:middle line:90%
+
+
+00:57:06.190 --> 00:57:07.610 align:middle line:90%
+What if they reject the offer?
+
+00:57:07.610 --> 00:57:11.550 align:middle line:90%
+
+
+00:57:11.550 --> 00:57:16.122 align:middle line:84%
+If they reject the offer, then
+tomorrow they get to propose,
+
+00:57:16.122 --> 00:57:17.330 align:middle line:90%
+and they're in a great shape.
+
+00:57:17.330 --> 00:57:21.350 align:middle line:84%
+We already said tomorrow they're
+going to offer a price of 0,
+
+00:57:21.350 --> 00:57:23.030 align:middle line:90%
+and it's going to be accepted.
+
+00:57:23.030 --> 00:57:26.590 align:middle line:84%
+So that means tomorrow they're
+going to get delta to the 2n
+
+00:57:26.590 --> 00:57:34.590 align:middle line:84%
+minus 1 times v. Really,
+it's minus v PT plus 1 star.
+
+00:57:34.590 --> 00:57:39.130 align:middle line:84%
+Or I guess I should say,
+here, t equals 2n minus 2.
+
+00:57:39.130 --> 00:57:43.470 align:middle line:84%
+But I'm just writing t
+because it's a bit cleaner.
+
+00:57:43.470 --> 00:57:47.270 align:middle line:84%
+And once again, we can see that
+we can simplify these discount
+
+00:57:47.270 --> 00:57:48.430 align:middle line:90%
+factors a lot.
+
+00:57:48.430 --> 00:57:51.950 align:middle line:84%
+Because we can factor out delta
+to the 2n minus 1 from both
+
+00:57:51.950 --> 00:57:52.490 align:middle line:90%
+terms.
+
+00:57:52.490 --> 00:57:55.590 align:middle line:84%
+And this makes sense because the
+question is, do I take it today,
+
+00:57:55.590 --> 00:57:56.882 align:middle line:90%
+or do I wait till tomorrow?
+
+00:57:56.882 --> 00:57:59.090 align:middle line:84%
+There's really only one
+discount factor that matters.
+
+00:57:59.090 --> 00:58:01.090 align:middle line:84%
+It's the discounting
+between today and tomorrow.
+
+00:58:01.090 --> 00:58:03.510 align:middle line:84%
+So we can equivalently--
+we can cancel things out,
+
+00:58:03.510 --> 00:58:06.720 align:middle line:90%
+and we can say--
+
+00:58:06.720 --> 00:58:08.960 align:middle line:90%
+and just put a delta here.
+
+00:58:08.960 --> 00:58:11.980 align:middle line:84%
+So we divide by delta
+to the 2n minus 2.
+
+00:58:11.980 --> 00:58:14.760 align:middle line:90%
+
+
+00:58:14.760 --> 00:58:21.160 align:middle line:84%
+So what we get is v. And maybe
+I'll write the general formula--
+
+00:58:21.160 --> 00:58:25.540 align:middle line:90%
+v minus Pt star equals delta.
+
+00:58:25.540 --> 00:58:36.600 align:middle line:90%
+
+
+00:58:36.600 --> 00:58:41.400 align:middle line:84%
+In period t, in an even
+period where I'm the buyer,
+
+00:58:41.400 --> 00:58:44.640 align:middle line:84%
+I can either get
+this utility today,
+
+00:58:44.640 --> 00:58:47.025 align:middle line:84%
+or I can wait till tomorrow
+and get this utility
+
+00:58:47.025 --> 00:58:48.400 align:middle line:84%
+where the price
+I get tomorrow is
+
+00:58:48.400 --> 00:58:50.858 align:middle line:84%
+going to depend on what we've
+already computed for tomorrow
+
+00:58:50.858 --> 00:58:51.980 align:middle line:90%
+using backward induction.
+
+00:58:51.980 --> 00:58:55.680 align:middle line:90%
+
+
+00:58:55.680 --> 00:58:59.620 align:middle line:84%
+And if we try to solve
+for this, we'll get Pt.
+
+00:58:59.620 --> 00:59:19.000 align:middle line:90%
+
+
+00:59:19.000 --> 00:59:23.680 align:middle line:84%
+Now, let's ask, how does this
+Pt star, this threshold price,
+
+00:59:23.680 --> 00:59:25.460 align:middle line:90%
+compare to Pt plus 1?
+
+00:59:25.460 --> 00:59:33.480 align:middle line:90%
+
+
+00:59:33.480 --> 00:59:35.940 align:middle line:84%
+Is it bigger or
+smaller than Pt plus 1?
+
+00:59:35.940 --> 00:59:44.080 align:middle line:90%
+
+
+00:59:44.080 --> 00:59:49.760 align:middle line:84%
+Well, it's bigger because Pt
+is a weighted average of Pt
+
+00:59:49.760 --> 00:59:52.480 align:middle line:84%
+plus 1 and the
+number v. But we know
+
+00:59:52.480 --> 00:59:55.120 align:middle line:84%
+v is always bigger than
+or equal to Pt plus 1.
+
+00:59:55.120 --> 00:59:57.960 align:middle line:84%
+So that means this is strictly
+greater than Pt plus 1.
+
+00:59:57.960 --> 01:00:00.970 align:middle line:84%
+And let's try to think through
+the intuition for this.
+
+01:00:00.970 --> 01:00:03.450 align:middle line:90%
+Again, it's about discounting.
+
+01:00:03.450 --> 01:00:07.290 align:middle line:84%
+I'm willing to accept a
+price that's higher today
+
+01:00:07.290 --> 01:00:09.810 align:middle line:84%
+than I would get tomorrow
+for the classic reason
+
+01:00:09.810 --> 01:00:13.610 align:middle line:84%
+that if I wait till tomorrow,
+I'd have to pay a cost of delay.
+
+01:00:13.610 --> 01:00:15.970 align:middle line:84%
+So I'm willing to accept
+a worse deal today
+
+01:00:15.970 --> 01:00:17.530 align:middle line:84%
+than I would get
+tomorrow in order
+
+01:00:17.530 --> 01:00:19.170 align:middle line:90%
+to avoid the cost of delay.
+
+01:00:19.170 --> 01:00:23.570 align:middle line:84%
+For me, a worse deal is a higher
+price because I'm the buyer.
+
+01:00:23.570 --> 01:00:26.010 align:middle line:84%
+So I started out with
+a case of 2n minus 2,
+
+01:00:26.010 --> 01:00:28.890 align:middle line:84%
+but you can see that this
+formula actually holds for any
+
+01:00:28.890 --> 01:00:29.870 align:middle line:90%
+even period.
+
+01:00:29.870 --> 01:00:33.130 align:middle line:90%
+
+
+01:00:33.130 --> 01:00:35.690 align:middle line:84%
+For any even period
+t, the buyer is
+
+01:00:35.690 --> 01:00:38.330 align:middle line:84%
+going to accept if the
+price is below a threshold.
+
+01:00:38.330 --> 01:00:43.490 align:middle line:84%
+The seller is then going to
+offer exactly that threshold.
+
+01:00:43.490 --> 01:00:46.710 align:middle line:84%
+And the threshold is
+defined by this formula.
+
+01:00:46.710 --> 01:00:52.650 align:middle line:90%
+
+
+01:00:52.650 --> 01:00:56.850 align:middle line:84%
+Now, let's try to
+look at odd periods t.
+
+01:00:56.850 --> 01:01:00.530 align:middle line:84%
+If we're in an odd
+period t, now it
+
+01:01:00.530 --> 01:01:05.530 align:middle line:84%
+is the seller who's deciding
+whether to accept or reject.
+
+01:01:05.530 --> 01:01:11.370 align:middle line:84%
+The seller is going to
+accept if Pt is greater
+
+01:01:11.370 --> 01:01:15.810 align:middle line:90%
+than or equal to Pt star.
+
+01:01:15.810 --> 01:01:19.890 align:middle line:84%
+And now can we get a formula
+for what Pt star is going to be?
+
+01:01:19.890 --> 01:01:23.850 align:middle line:84%
+It has to say that the seller
+is indifferent between selling
+
+01:01:23.850 --> 01:01:28.130 align:middle line:84%
+at a price of Pt star today
+or waiting until tomorrow.
+
+01:01:28.130 --> 01:01:32.010 align:middle line:84%
+If they sell at Pt
+star today, they
+
+01:01:32.010 --> 01:01:35.110 align:middle line:90%
+get Pt star in discounted terms.
+
+01:01:35.110 --> 01:01:36.790 align:middle line:84%
+What happens if they
+wait till tomorrow?
+
+01:01:36.790 --> 01:01:43.290 align:middle line:90%
+
+
+01:01:43.290 --> 01:01:49.110 align:middle line:84%
+Well, they get delta
+times Pt plus 1 star.
+
+01:01:49.110 --> 01:01:52.570 align:middle line:90%
+
+
+01:01:52.570 --> 01:01:55.797 align:middle line:84%
+If I wait till tomorrow, we
+know from backward induction
+
+01:01:55.797 --> 01:01:57.380 align:middle line:84%
+that the good is
+going to be exchanged
+
+01:01:57.380 --> 01:01:59.260 align:middle line:90%
+at a price of Pt plus 1 star.
+
+01:01:59.260 --> 01:02:01.120 align:middle line:84%
+But I have to discount
+that by delta,
+
+01:02:01.120 --> 01:02:03.880 align:middle line:84%
+and I'm going to be exactly
+indifferent if this holds.
+
+01:02:03.880 --> 01:02:06.540 align:middle line:90%
+
+
+01:02:06.540 --> 01:02:12.520 align:middle line:84%
+So if you want to be kind
+of really mathy about it,
+
+01:02:12.520 --> 01:02:14.760 align:middle line:84%
+we have a solution, but
+it's a bit of a mess.
+
+01:02:14.760 --> 01:02:18.980 align:middle line:90%
+
+
+01:02:18.980 --> 01:02:20.280 align:middle line:90%
+So what we know--
+
+01:02:20.280 --> 01:02:27.260 align:middle line:90%
+
+
+01:02:27.260 --> 01:02:29.400 align:middle line:84%
+so how do we compute
+our solution?
+
+01:02:29.400 --> 01:02:30.860 align:middle line:90%
+We just work backwards.
+
+01:02:30.860 --> 01:02:34.940 align:middle line:84%
+We know-- we argued that
+the price that's going to be
+
+01:02:34.940 --> 01:02:38.380 align:middle line:84%
+determined in period 2n
+minus 1 is exactly 0.
+
+01:02:38.380 --> 01:02:40.580 align:middle line:84%
+And then we have a
+sequence of recursions
+
+01:02:40.580 --> 01:02:45.660 align:middle line:84%
+that allow us to compute what
+Pt must be if we know Pt plus 1,
+
+01:02:45.660 --> 01:02:48.220 align:middle line:84%
+what Pt is if we know
+Pt plus 1, and we have
+
+01:02:48.220 --> 01:02:51.220 align:middle line:84%
+two different formulas depending
+on whether if t is even or odd.
+
+01:02:51.220 --> 01:02:53.380 align:middle line:84%
+So technically, we
+could start at the end
+
+01:02:53.380 --> 01:02:56.380 align:middle line:90%
+and work our way backwards.
+
+01:02:56.380 --> 01:02:59.560 align:middle line:84%
+Then we're going to have
+some really messy formulas.
+
+01:02:59.560 --> 01:03:00.760 align:middle line:90%
+It's going to get ugly.
+
+01:03:00.760 --> 01:03:02.718 align:middle line:84%
+So I'm not going to go
+through all the algebra,
+
+01:03:02.718 --> 01:03:05.600 align:middle line:84%
+but I just want to show you
+what we're going to find,
+
+01:03:05.600 --> 01:03:08.680 align:middle line:84%
+so what's the
+limit of this game.
+
+01:03:08.680 --> 01:03:20.900 align:middle line:90%
+
+
+01:03:20.900 --> 01:03:23.620 align:middle line:84%
+So we can compute
+the full strategy.
+
+01:03:23.620 --> 01:03:27.900 align:middle line:90%
+The outcome is going to be--
+
+01:03:27.900 --> 01:03:37.140 align:middle line:84%
+well, in period 0, the
+seller offers P0 star,
+
+01:03:37.140 --> 01:03:41.940 align:middle line:84%
+and the buyer
+accepts, where P0 star
+
+01:03:41.940 --> 01:03:43.980 align:middle line:84%
+is determined by
+starting at the end
+
+01:03:43.980 --> 01:03:46.980 align:middle line:84%
+and working all
+the way backwards.
+
+01:03:46.980 --> 01:03:49.160 align:middle line:90%
+So once again, we see no delay.
+
+01:03:49.160 --> 01:03:52.990 align:middle line:90%
+
+
+01:03:52.990 --> 01:03:54.410 align:middle line:84%
+And this already
+came up earlier.
+
+01:03:54.410 --> 01:03:56.170 align:middle line:84%
+What's the reason
+that we have no delay?
+
+01:03:56.170 --> 01:04:01.070 align:middle line:84%
+Why do we not see this
+protracted negotiation
+
+01:04:01.070 --> 01:04:02.890 align:middle line:84%
+over the price that's
+going to be paid?
+
+01:04:02.890 --> 01:04:08.027 align:middle line:90%
+
+
+01:04:08.027 --> 01:04:09.610 align:middle line:84%
+What's kind of missing
+from the model?
+
+01:04:09.610 --> 01:04:11.930 align:middle line:84%
+I think someone
+already brought it up.
+
+01:04:11.930 --> 01:04:12.430 align:middle line:90%
+Yeah?
+
+01:04:12.430 --> 01:04:14.390 align:middle line:84%
+STUDENT: They have perfect
+information so they
+
+01:04:14.390 --> 01:04:15.740 align:middle line:90%
+can see what happens in there.
+
+01:04:15.740 --> 01:04:16.490 align:middle line:90%
+IAN BALL: Exactly.
+
+01:04:16.490 --> 01:04:17.948 align:middle line:84%
+In reality, when
+you're negotiating
+
+01:04:17.948 --> 01:04:20.390 align:middle line:84%
+with a price for someone,
+you don't know their value,
+
+01:04:20.390 --> 01:04:23.130 align:middle line:84%
+v. You don't know exactly how
+much they're willing to pay.
+
+01:04:23.130 --> 01:04:25.710 align:middle line:84%
+We've made this really
+stylized assumption
+
+01:04:25.710 --> 01:04:28.630 align:middle line:84%
+that everyone knows
+the buyer's willingness
+
+01:04:28.630 --> 01:04:30.430 align:middle line:84%
+to pay-- exactly the
+most the buyer is
+
+01:04:30.430 --> 01:04:31.440 align:middle line:90%
+willing to pay for this.
+
+01:04:31.440 --> 01:04:33.690 align:middle line:84%
+That would make-- say you're
+negotiating over a house.
+
+01:04:33.690 --> 01:04:36.390 align:middle line:84%
+It would be really
+easy if you understood
+
+01:04:36.390 --> 01:04:38.710 align:middle line:84%
+exactly how much this
+family was willing to pay
+
+01:04:38.710 --> 01:04:39.490 align:middle line:90%
+to buy this house.
+
+01:04:39.490 --> 01:04:42.330 align:middle line:84%
+In reality, we don't know that,
+and that's why we see delay.
+
+01:04:42.330 --> 01:04:45.730 align:middle line:84%
+But in this benchmark model,
+with complete information,
+
+01:04:45.730 --> 01:04:46.775 align:middle line:90%
+we see no delay.
+
+01:04:46.775 --> 01:04:49.150 align:middle line:84%
+I think this is an example of
+where an economic model can
+
+01:04:49.150 --> 01:04:51.360 align:middle line:84%
+be useful, even if
+it gives us results
+
+01:04:51.360 --> 01:04:52.620 align:middle line:90%
+that are counterintuitive.
+
+01:04:52.620 --> 01:04:57.240 align:middle line:84%
+Because what it can show
+us is it can tell us--
+
+01:04:57.240 --> 01:05:00.100 align:middle line:84%
+demonstrate the importance
+of certain features.
+
+01:05:00.100 --> 01:05:04.280 align:middle line:84%
+What this tells us is that the
+driver of delay in bargaining
+
+01:05:04.280 --> 01:05:08.388 align:middle line:84%
+is really incomplete information
+about people's preferences.
+
+01:05:08.388 --> 01:05:09.180 align:middle line:90%
+How do we see this?
+
+01:05:09.180 --> 01:05:11.540 align:middle line:84%
+Well, we see if there were
+no incomplete information,
+
+01:05:11.540 --> 01:05:12.580 align:middle line:90%
+we would have no delay.
+
+01:05:12.580 --> 01:05:14.740 align:middle line:84%
+And this shows us that something
+must be missing from the model.
+
+01:05:14.740 --> 01:05:16.820 align:middle line:84%
+And I guess we suspect it's
+incomplete information.
+
+01:05:16.820 --> 01:05:18.070 align:middle line:90%
+And we can see that the later.
+
+01:05:18.070 --> 01:05:19.720 align:middle line:90%
+We can model that later.
+
+01:05:19.720 --> 01:05:24.220 align:middle line:84%
+I want to describe,
+though, briefly,
+
+01:05:24.220 --> 01:05:33.520 align:middle line:84%
+what's the limiting
+case if n is very large?
+
+01:05:33.520 --> 01:05:35.160 align:middle line:84%
+And I explained
+this is what we're
+
+01:05:35.160 --> 01:05:37.960 align:middle line:84%
+going to converge to if we
+looked at the infinite horizon
+
+01:05:37.960 --> 01:05:40.060 align:middle line:90%
+model.
+
+01:05:40.060 --> 01:05:54.320 align:middle line:84%
+And it turns out that P0
+star is going to be 1 over 1
+
+01:05:54.320 --> 01:06:01.120 align:middle line:90%
+plus delta times v.
+
+01:06:01.120 --> 01:06:03.383 align:middle line:90%
+Let's try to interpret this.
+
+01:06:03.383 --> 01:06:04.300 align:middle line:90%
+And this is the case--
+
+01:06:04.300 --> 01:06:06.940 align:middle line:84%
+I should say in our model,
+the seller moves first.
+
+01:06:06.940 --> 01:06:15.040 align:middle line:90%
+
+
+01:06:15.040 --> 01:06:17.660 align:middle line:84%
+What if we had said had
+the buyer proposed first?
+
+01:06:17.660 --> 01:06:24.000 align:middle line:90%
+
+
+01:06:24.000 --> 01:06:26.440 align:middle line:84%
+We can also compute
+what P0 star is.
+
+01:06:26.440 --> 01:06:27.820 align:middle line:90%
+Any guesses if the buyer--
+
+01:06:27.820 --> 01:06:29.440 align:middle line:84%
+So we're still
+looking at the limit
+
+01:06:29.440 --> 01:06:33.560 align:middle line:84%
+where we could, in principle,
+negotiate for a very long time.
+
+01:06:33.560 --> 01:06:35.320 align:middle line:84%
+This is the price that
+the seller is going
+
+01:06:35.320 --> 01:06:38.000 align:middle line:90%
+to offer if they propose first.
+
+01:06:38.000 --> 01:06:40.780 align:middle line:84%
+What if the buyer
+got to propose first?
+
+01:06:40.780 --> 01:06:45.712 align:middle line:84%
+Any guesses on whether this
+price would be higher or lower?
+
+01:06:45.712 --> 01:06:47.170 align:middle line:84%
+Again, we can do
+the algebra, but I
+
+01:06:47.170 --> 01:06:49.930 align:middle line:84%
+think it's a lot better to
+think through these things
+
+01:06:49.930 --> 01:06:52.570 align:middle line:90%
+intuitively.
+
+01:06:52.570 --> 01:06:55.070 align:middle line:84%
+Would you rather go first
+or not in this negotiation?
+
+01:06:55.070 --> 01:06:59.930 align:middle line:90%
+
+
+01:06:59.930 --> 01:07:02.310 align:middle line:90%
+Any intuition?
+
+01:07:02.310 --> 01:07:05.890 align:middle line:90%
+
+
+01:07:05.890 --> 01:07:09.090 align:middle line:90%
+It's not so easy?
+
+01:07:09.090 --> 01:07:13.450 align:middle line:84%
+It turns out going first
+is generally an advantage.
+
+01:07:13.450 --> 01:07:15.570 align:middle line:84%
+And the reason is
+that if I go first,
+
+01:07:15.570 --> 01:07:19.850 align:middle line:84%
+I can take advantage of the fact
+that, yes, we both experience
+
+01:07:19.850 --> 01:07:20.950 align:middle line:90%
+a cost of delay.
+
+01:07:20.950 --> 01:07:22.650 align:middle line:84%
+But, in particular,
+the other party
+
+01:07:22.650 --> 01:07:24.270 align:middle line:90%
+experiences a cost of delay.
+
+01:07:24.270 --> 01:07:26.450 align:middle line:84%
+And therefore, they must
+be willing to accept offers
+
+01:07:26.450 --> 01:07:29.030 align:middle line:90%
+that aren't that good for them.
+
+01:07:29.030 --> 01:07:30.942 align:middle line:84%
+So if I go first,
+I can say, look,
+
+01:07:30.942 --> 01:07:32.650 align:middle line:84%
+I'm going to give you
+a pretty bad offer,
+
+01:07:32.650 --> 01:07:34.450 align:middle line:84%
+and I know you're going
+to have to accept it.
+
+01:07:34.450 --> 01:07:35.890 align:middle line:84%
+Because if you don't
+accept it, you're
+
+01:07:35.890 --> 01:07:37.570 align:middle line:84%
+going to have to pay
+the cost of delay.
+
+01:07:37.570 --> 01:07:39.715 align:middle line:84%
+And this gives kind of
+a first mover advantage.
+
+01:07:39.715 --> 01:07:41.090 align:middle line:84%
+And it turns out
+what we're going
+
+01:07:41.090 --> 01:07:46.890 align:middle line:84%
+to get here is P0 star is
+going to be delta over 1
+
+01:07:46.890 --> 01:07:48.330 align:middle line:90%
+plus delta times v.
+
+01:07:48.330 --> 01:07:52.250 align:middle line:84%
+So if the buyer goes first, the
+price the buyer is going to get
+
+01:07:52.250 --> 01:07:55.235 align:middle line:84%
+is going to be strictly
+smaller by a factor of delta
+
+01:07:55.235 --> 01:07:56.610 align:middle line:84%
+relative to what
+the seller would
+
+01:07:56.610 --> 01:07:59.290 align:middle line:90%
+get if the seller went first.
+
+01:07:59.290 --> 01:08:02.070 align:middle line:84%
+And here, we can see
+the role of discounting.
+
+01:08:02.070 --> 01:08:04.270 align:middle line:90%
+What happens if delta goes to 1?
+
+01:08:04.270 --> 01:08:08.050 align:middle line:90%
+
+
+01:08:08.050 --> 01:08:12.450 align:middle line:84%
+If delta goes to 1,
+the price the seller
+
+01:08:12.450 --> 01:08:17.170 align:middle line:84%
+gets if they go first
+converges to v over 2.
+
+01:08:17.170 --> 01:08:19.770 align:middle line:84%
+And the price the buyer
+gets if they go first also
+
+01:08:19.770 --> 01:08:21.609 align:middle line:90%
+converges to v over 2.
+
+01:08:21.609 --> 01:08:24.250 align:middle line:84%
+So we see as delta goes
+to 1, and the players
+
+01:08:24.250 --> 01:08:28.270 align:middle line:84%
+become very impatient, the first
+mover advantage disappears.
+
+01:08:28.270 --> 01:08:43.560 align:middle line:90%
+
+
+01:08:43.560 --> 01:08:45.560 align:middle line:84%
+Can someone see-- if they
+can provide intuition,
+
+01:08:45.560 --> 01:08:50.260 align:middle line:84%
+why does the first mover
+advantage disappear
+
+01:08:50.260 --> 01:08:52.080 align:middle line:90%
+if delta goes to 1?
+
+01:08:52.080 --> 01:08:52.580 align:middle line:90%
+Yeah?
+
+01:08:52.580 --> 01:08:54.497 align:middle line:84%
+STUDENT: Just to make
+sure, when delta goes 1,
+
+01:08:54.497 --> 01:08:56.319 align:middle line:84%
+they both are very
+patient [INAUDIBLE].
+
+01:08:56.319 --> 01:08:57.319 align:middle line:90%
+IAN BALL: Exactly right.
+
+01:08:57.319 --> 01:08:59.420 align:middle line:84%
+STUDENT: [INAUDIBLE]
+if they don't
+
+01:08:59.420 --> 01:09:02.420 align:middle line:90%
+care about waiting [INAUDIBLE].
+
+01:09:02.420 --> 01:09:03.140 align:middle line:90%
+IAN BALL: Right.
+
+01:09:03.140 --> 01:09:06.740 align:middle line:84%
+If we get very, very patient,
+then it shouldn't really
+
+01:09:06.740 --> 01:09:08.660 align:middle line:90%
+matter who goes first.
+
+01:09:08.660 --> 01:09:11.000 align:middle line:84%
+Because tomorrow the other
+person gets to go first.
+
+01:09:11.000 --> 01:09:13.380 align:middle line:84%
+And tomorrow isn't that
+much different than today
+
+01:09:13.380 --> 01:09:15.200 align:middle line:90%
+if delta gets very close to 1.
+
+01:09:15.200 --> 01:09:17.805 align:middle line:84%
+Remember, another interpretation
+of delta going to 1,
+
+01:09:17.805 --> 01:09:19.180 align:middle line:84%
+one interpretation
+is the players
+
+01:09:19.180 --> 01:09:20.979 align:middle line:90%
+are literally more patient.
+
+01:09:20.979 --> 01:09:23.420 align:middle line:84%
+Another interpretation
+is they can make offers
+
+01:09:23.420 --> 01:09:25.300 align:middle line:90%
+in very rapid succession.
+
+01:09:25.300 --> 01:09:28.700 align:middle line:84%
+So it could be that the reason
+period 1 is not very discounted
+
+01:09:28.700 --> 01:09:31.649 align:middle line:84%
+relative to period 0 is that
+the offer made in period 1
+
+01:09:31.649 --> 01:09:33.399 align:middle line:84%
+happens right after
+the offer in period 0.
+
+01:09:33.399 --> 01:09:35.040 align:middle line:84%
+They happen in really
+quick succession.
+
+01:09:35.040 --> 01:09:37.020 align:middle line:84%
+And intuitively, if
+we're making alternating
+
+01:09:37.020 --> 01:09:39.020 align:middle line:84%
+offers every millisecond,
+it shouldn't really
+
+01:09:39.020 --> 01:09:40.158 align:middle line:90%
+matter who goes first.
+
+01:09:40.158 --> 01:09:41.450 align:middle line:90%
+And that's exactly what we see.
+
+01:09:41.450 --> 01:09:44.069 align:middle line:84%
+The first mover
+advantage disappears.
+
+01:09:44.069 --> 01:09:46.830 align:middle line:84%
+Let me just to
+conclude, try to derive,
+
+01:09:46.830 --> 01:09:49.930 align:middle line:84%
+give a heuristic derivation
+of these limiting formulas,
+
+01:09:49.930 --> 01:09:51.490 align:middle line:90%
+and then we'll conclude.
+
+01:09:51.490 --> 01:10:07.230 align:middle line:84%
+So let's-- so how can we
+try to solve for, let's say,
+
+01:10:07.230 --> 01:10:08.050 align:middle line:90%
+the first formula?
+
+01:10:08.050 --> 01:10:12.650 align:middle line:84%
+So let's say the
+seller proposes.
+
+01:10:12.650 --> 01:10:16.750 align:middle line:90%
+
+
+01:10:16.750 --> 01:10:33.150 align:middle line:84%
+Then what we expect is if the
+seller proposes, and we're
+
+01:10:33.150 --> 01:10:36.630 align:middle line:84%
+taking the limit as
+the number of periods
+
+01:10:36.630 --> 01:10:40.550 align:middle line:84%
+get very large, then the
+difference between period
+
+01:10:40.550 --> 01:10:44.950 align:middle line:84%
+0 and period 2, we think that
+it should get very, very close.
+
+01:10:44.950 --> 01:10:48.550 align:middle line:84%
+Because in period 2, we have
+a billion periods to go.
+
+01:10:48.550 --> 01:10:51.510 align:middle line:84%
+In period 0, we have a
+billion plus 2 periods to go.
+
+01:10:51.510 --> 01:10:54.630 align:middle line:84%
+Since it's a billion, they
+should be pretty similar.
+
+01:10:54.630 --> 01:10:55.930 align:middle line:90%
+This is a heuristic derivation.
+
+01:10:55.930 --> 01:10:59.230 align:middle line:84%
+And now let's plug this in
+and see what we can get.
+
+01:10:59.230 --> 01:11:05.070 align:middle line:84%
+So we get P0 star
+from this recursion
+
+01:11:05.070 --> 01:11:11.450 align:middle line:84%
+is equal to 1 minus delta times
+v plus delta times P1 star.
+
+01:11:11.450 --> 01:11:14.790 align:middle line:90%
+
+
+01:11:14.790 --> 01:11:21.230 align:middle line:84%
+But then using this formula,
+we know that P1 star
+
+01:11:21.230 --> 01:11:26.850 align:middle line:90%
+equals delta times P2 star.
+
+01:11:26.850 --> 01:11:30.710 align:middle line:84%
+I'm just applying this
+formula with t equals 0,
+
+01:11:30.710 --> 01:11:33.470 align:middle line:84%
+and then I'm applying this
+formula with t equals 1.
+
+01:11:33.470 --> 01:11:38.560 align:middle line:84%
+So now let's plug
+this into here,
+
+01:11:38.560 --> 01:11:48.120 align:middle line:84%
+and we get P0 star equals 1
+minus delta v plus delta squared
+
+01:11:48.120 --> 01:11:48.980 align:middle line:90%
+P2 star.
+
+01:11:48.980 --> 01:11:56.240 align:middle line:90%
+
+
+01:11:56.240 --> 01:12:00.120 align:middle line:84%
+Now, in general, P0 star and P2
+star are going to be different.
+
+01:12:00.120 --> 01:12:03.592 align:middle line:84%
+But in the limit as n goes
+to infinity, P0 and P2 star
+
+01:12:03.592 --> 01:12:05.300 align:middle line:84%
+are going to look
+really, really similar.
+
+01:12:05.300 --> 01:12:07.240 align:middle line:84%
+And the reason is
+that, again, if there's
+
+01:12:07.240 --> 01:12:10.180 align:middle line:84%
+many, many periods ahead of us,
+a billion periods and a billion
+
+01:12:10.180 --> 01:12:12.180 align:middle line:84%
+plus 2 periods, it should
+be basically the same.
+
+01:12:12.180 --> 01:12:15.780 align:middle line:84%
+So let's squint and
+make this P0 star.
+
+01:12:15.780 --> 01:12:18.640 align:middle line:90%
+
+
+01:12:18.640 --> 01:12:20.480 align:middle line:90%
+Now let's try to solve this.
+
+01:12:20.480 --> 01:12:24.500 align:middle line:90%
+We bring this to the other side.
+
+01:12:24.500 --> 01:12:34.120 align:middle line:84%
+So we get 1 minus delta
+squared P0 star equals
+
+01:12:34.120 --> 01:12:40.840 align:middle line:84%
+1 minus delta v. And now there's
+one kind of trick that I think
+
+01:12:40.840 --> 01:12:43.220 align:middle line:84%
+is kind of good to
+remember on problem sets.
+
+01:12:43.220 --> 01:12:46.740 align:middle line:84%
+It's not so clear if
+we solve for this,
+
+01:12:46.740 --> 01:12:51.920 align:middle line:84%
+we get P0 star equals 1 minus
+delta over 1 minus delta
+
+01:12:51.920 --> 01:12:54.960 align:middle line:90%
+squared times v. Uh-oh.
+
+01:12:54.960 --> 01:12:58.500 align:middle line:84%
+That's not the formula we
+got, but it simplifies.
+
+01:12:58.500 --> 01:12:59.000 align:middle line:90%
+Yeah?
+
+01:12:59.000 --> 01:12:59.720 align:middle line:90%
+STUDENT: Factor.
+
+01:12:59.720 --> 01:13:01.040 align:middle line:90%
+IAN BALL: We can factor, right?
+
+01:13:01.040 --> 01:13:05.360 align:middle line:84%
+1 minus delta squared is just 1
+minus delta times 1 plus delta.
+
+01:13:05.360 --> 01:13:08.840 align:middle line:84%
+The 1 minus deltas cancel,
+and we exactly get 1 over 1
+
+01:13:08.840 --> 01:13:13.450 align:middle line:84%
+plus delta times v.
+So again, I don't
+
+01:13:13.450 --> 01:13:15.200 align:middle line:84%
+want to make the problem
+set for the exams
+
+01:13:15.200 --> 01:13:17.360 align:middle line:84%
+all about doing algebra,
+but this is one trick
+
+01:13:17.360 --> 01:13:18.660 align:middle line:90%
+that I think is good to know.
+
+01:13:18.660 --> 01:13:21.515 align:middle line:90%
+
+
+01:13:21.515 --> 01:13:24.140 align:middle line:84%
+Let me stop there-- a little bit
+early, but I think we're good.
+
+01:13:24.140 --> 01:13:28.000 align:middle line:84%
+And we'll continue on Tuesday
+with subgame perfect Nash
+
+01:13:28.000 --> 01:13:28.840 align:middle line:90%
+equilibrium.
+
+01:13:28.840 --> 01:13:30.710 align:middle line:90%
+I'll see you then.
+
+01:13:30.710 --> 01:13:34.000 align:middle line:90%

@@ -1,0 +1,6362 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:01.428 align:middle line:90%
+[SQUEAKING]
+
+00:00:01.428 --> 00:00:01.928 align:middle line:90%
+
+
+00:00:01.928 --> 00:00:03.832 align:middle line:90%
+[RUSTLING]
+
+00:00:03.832 --> 00:00:05.260 align:middle line:90%
+[CLICKING]
+
+00:00:05.260 --> 00:00:08.942 align:middle line:90%
+
+
+00:00:08.942 --> 00:00:10.400 align:middle line:84%
+IAN BALL: Today
+we're going to talk
+
+00:00:10.400 --> 00:00:12.560 align:middle line:90%
+about imperfect competition.
+
+00:00:12.560 --> 00:00:17.780 align:middle line:84%
+I want to start with just a
+small review of what we've done,
+
+00:00:17.780 --> 00:00:19.700 align:middle line:84%
+and then we'll move to
+imperfect competition.
+
+00:00:19.700 --> 00:00:21.158 align:middle line:84%
+I think this fits
+in with a broader
+
+00:00:21.158 --> 00:00:24.480 align:middle line:84%
+theme of the course where or a
+broader approach in the course
+
+00:00:24.480 --> 00:00:26.880 align:middle line:84%
+where we're going to start
+with some simple examples
+
+00:00:26.880 --> 00:00:28.680 align:middle line:90%
+to try to motivate the theory.
+
+00:00:28.680 --> 00:00:31.280 align:middle line:84%
+Then we'll dig deep
+into the theory
+
+00:00:31.280 --> 00:00:33.360 align:middle line:84%
+and maybe prove some
+theorems, and then we'll
+
+00:00:33.360 --> 00:00:35.880 align:middle line:84%
+apply the theory to some
+substantive economic
+
+00:00:35.880 --> 00:00:36.497 align:middle line:90%
+applications.
+
+00:00:36.497 --> 00:00:38.080 align:middle line:84%
+Today is going to
+be one of those days
+
+00:00:38.080 --> 00:00:40.800 align:middle line:84%
+where we dig into a substantive
+economic application.
+
+00:00:40.800 --> 00:00:43.180 align:middle line:84%
+So if you don't have much
+of an econ background,
+
+00:00:43.180 --> 00:00:46.100 align:middle line:84%
+some of what we covered
+today may be new to you.
+
+00:00:46.100 --> 00:00:47.820 align:middle line:84%
+If you have take a
+lot of econ courses,
+
+00:00:47.820 --> 00:00:50.120 align:middle line:90%
+this may be a bit of a review.
+
+00:00:50.120 --> 00:00:52.600 align:middle line:84%
+But just a reminder of
+what we've done so far,
+
+00:00:52.600 --> 00:00:55.440 align:middle line:84%
+we've been studying
+strategic form games,
+
+00:00:55.440 --> 00:00:59.090 align:middle line:84%
+and we've looked at
+various solution concepts.
+
+00:00:59.090 --> 00:01:01.650 align:middle line:84%
+And we've said that, in
+a strategic form game,
+
+00:01:01.650 --> 00:01:06.050 align:middle line:84%
+we applied this procedure of
+iterated elimination of strictly
+
+00:01:06.050 --> 00:01:07.730 align:middle line:90%
+dominated strategies.
+
+00:01:07.730 --> 00:01:13.390 align:middle line:84%
+And we generated these
+nested sets of strategies.
+
+00:01:13.390 --> 00:01:15.270 align:middle line:84%
+And at the end, we
+got to S infinity.
+
+00:01:15.270 --> 00:01:18.090 align:middle line:84%
+And remember, what we said
+is that stronger assumptions
+
+00:01:18.090 --> 00:01:20.610 align:middle line:84%
+about rationality
+and higher-order
+
+00:01:20.610 --> 00:01:23.930 align:middle line:84%
+knowledge of rationality allowed
+us to get sharper predictions
+
+00:01:23.930 --> 00:01:26.250 align:middle line:90%
+about how players will play.
+
+00:01:26.250 --> 00:01:29.170 align:middle line:84%
+And at the end, when
+we get to S infinity,
+
+00:01:29.170 --> 00:01:33.250 align:middle line:84%
+what we further know
+is that a subset
+
+00:01:33.250 --> 00:01:36.130 align:middle line:84%
+of the rationalizable
+strategies are-- maybe
+
+00:01:36.130 --> 00:01:38.250 align:middle line:84%
+I'll jump down to what
+we showed last time.
+
+00:01:38.250 --> 00:01:45.130 align:middle line:84%
+We showed these
+two relationships.
+
+00:01:45.130 --> 00:01:48.610 align:middle line:84%
+So we showed that every
+dominant strategy equilibrium
+
+00:01:48.610 --> 00:01:51.610 align:middle line:84%
+is a Nash equilibrium,
+specifically a pure strategy
+
+00:01:51.610 --> 00:01:53.050 align:middle line:90%
+Nash equilibrium.
+
+00:01:53.050 --> 00:01:55.050 align:middle line:84%
+And we showed that
+every pure strategy Nash
+
+00:01:55.050 --> 00:01:58.730 align:middle line:90%
+equilibrium is rationalizable.
+
+00:01:58.730 --> 00:02:00.690 align:middle line:84%
+But there's actually
+one more inequality--
+
+00:02:00.690 --> 00:02:02.530 align:middle line:90%
+or inclusion we can put here.
+
+00:02:02.530 --> 00:02:06.250 align:middle line:84%
+And here I'll put
+mixed-strategy Nash equilibrium
+
+00:02:06.250 --> 00:02:09.050 align:middle line:90%
+with positive probability.
+
+00:02:09.050 --> 00:02:11.990 align:middle line:84%
+So let me define
+what I did here.
+
+00:02:11.990 --> 00:02:14.850 align:middle line:84%
+And the proof of this inclusion
+is quite similar to the proof
+
+00:02:14.850 --> 00:02:18.210 align:middle line:84%
+that we did in
+class last Thursday.
+
+00:02:18.210 --> 00:02:20.330 align:middle line:84%
+So I'd encourage you to
+go through the argument
+
+00:02:20.330 --> 00:02:22.190 align:middle line:84%
+and see if you can
+extend it to this case.
+
+00:02:22.190 --> 00:02:26.530 align:middle line:84%
+So here what I mean is this is
+the set of all strategy profiles
+
+00:02:26.530 --> 00:02:34.530 align:middle line:84%
+that are played with
+positive probability
+
+00:02:34.530 --> 00:02:37.270 align:middle line:84%
+in some mixed-strategy
+Nash equilibrium.
+
+00:02:37.270 --> 00:02:52.050 align:middle line:90%
+
+
+00:02:52.050 --> 00:02:54.070 align:middle line:84%
+So just to make sure
+we're on the same page,
+
+00:02:54.070 --> 00:02:57.780 align:middle line:84%
+why is it the case that every
+pure strategy Nash equilibrium
+
+00:02:57.780 --> 00:02:59.620 align:middle line:90%
+is an element of this set?
+
+00:02:59.620 --> 00:03:01.980 align:middle line:84%
+Why is every pure
+strategy Nash equilibrium
+
+00:03:01.980 --> 00:03:05.060 align:middle line:84%
+in this set of positive
+probability mixed-strategy Nash
+
+00:03:05.060 --> 00:03:06.320 align:middle line:90%
+equilibrium profiles?
+
+00:03:06.320 --> 00:03:10.220 align:middle line:90%
+
+
+00:03:10.220 --> 00:03:10.900 align:middle line:90%
+Yeah.
+
+00:03:10.900 --> 00:03:12.525 align:middle line:84%
+AUDIENCE: I don't
+remember [INAUDIBLE].
+
+00:03:12.525 --> 00:03:14.000 align:middle line:90%
+IAN BALL: That's fine, yeah.
+
+00:03:14.000 --> 00:03:15.820 align:middle line:84%
+AUDIENCE: [INAUDIBLE]
+strategy [INAUDIBLE].
+
+00:03:15.820 --> 00:03:16.520 align:middle line:90%
+IAN BALL: Yeah, exactly.
+
+00:03:16.520 --> 00:03:18.145 align:middle line:84%
+Every pure strategy
+and mixed strategy,
+
+00:03:18.145 --> 00:03:19.240 align:middle line:90%
+so that's the first step.
+
+00:03:19.240 --> 00:03:21.180 align:middle line:84%
+And then the second
+step is to say, well,
+
+00:03:21.180 --> 00:03:24.140 align:middle line:84%
+if something is a pure
+strategy Nash equilibrium,
+
+00:03:24.140 --> 00:03:27.260 align:middle line:84%
+it's also a mixed-strategy Nash
+equilibrium where everyone just
+
+00:03:27.260 --> 00:03:29.660 align:middle line:84%
+plays their component
+of that strategy profile
+
+00:03:29.660 --> 00:03:31.220 align:middle line:90%
+with probability 1.
+
+00:03:31.220 --> 00:03:34.100 align:middle line:84%
+So since that's also a
+mixed-strategy Nash equilibrium,
+
+00:03:34.100 --> 00:03:37.540 align:middle line:84%
+is this strategy profile played
+with positive probability
+
+00:03:37.540 --> 00:03:39.520 align:middle line:84%
+in some mixed-strategy
+Nash equilibrium?
+
+00:03:39.520 --> 00:03:42.260 align:middle line:84%
+Yes, in fact, it's
+played with probability 1
+
+00:03:42.260 --> 00:03:44.560 align:middle line:84%
+in a particular mixed-strategy
+Nash equilibrium.
+
+00:03:44.560 --> 00:03:47.360 align:middle line:84%
+So it's clear that this
+is a subset of this.
+
+00:03:47.360 --> 00:03:49.380 align:middle line:84%
+The argument that this
+is a subset of this
+
+00:03:49.380 --> 00:03:51.143 align:middle line:90%
+is maybe a little more involved.
+
+00:03:51.143 --> 00:03:53.060 align:middle line:84%
+But as I said, it's quite
+similar to the proof
+
+00:03:53.060 --> 00:03:54.540 align:middle line:90%
+we did last week.
+
+00:03:54.540 --> 00:03:56.740 align:middle line:84%
+OK, so that's the
+theory up to the point
+
+00:03:56.740 --> 00:03:58.100 align:middle line:90%
+that we've done so far.
+
+00:03:58.100 --> 00:04:01.780 align:middle line:84%
+And let me now move to the
+main application for today,
+
+00:04:01.780 --> 00:04:03.680 align:middle line:90%
+which is imperfect competition.
+
+00:04:03.680 --> 00:04:13.340 align:middle line:90%
+
+
+00:04:13.340 --> 00:04:15.422 align:middle line:84%
+And to understand
+imperfect competition,
+
+00:04:15.422 --> 00:04:17.339 align:middle line:84%
+I think it's helpful to
+think of it as falling
+
+00:04:17.339 --> 00:04:19.420 align:middle line:90%
+between two extreme cases.
+
+00:04:19.420 --> 00:04:22.079 align:middle line:84%
+So on the one hand, we
+have perfect competition.
+
+00:04:22.079 --> 00:04:28.980 align:middle line:90%
+
+
+00:04:28.980 --> 00:04:32.040 align:middle line:84%
+And then at the other
+extreme, we have monopoly.
+
+00:04:32.040 --> 00:04:34.660 align:middle line:90%
+
+
+00:04:34.660 --> 00:04:37.760 align:middle line:84%
+And then imperfect competition
+falls somewhere in between.
+
+00:04:37.760 --> 00:04:38.680 align:middle line:90%
+So I'll put it here.
+
+00:04:38.680 --> 00:04:46.500 align:middle line:90%
+
+
+00:04:46.500 --> 00:04:50.720 align:middle line:84%
+Now, formally defining these
+concepts can be a little tricky,
+
+00:04:50.720 --> 00:04:52.890 align:middle line:84%
+but let me give some
+ideas about what we mean.
+
+00:04:52.890 --> 00:04:54.265 align:middle line:84%
+And again, people
+use these terms
+
+00:04:54.265 --> 00:04:56.723 align:middle line:84%
+in slightly different meanings,
+in slightly different ways,
+
+00:04:56.723 --> 00:04:57.830 align:middle line:90%
+in different contexts.
+
+00:04:57.830 --> 00:04:59.750 align:middle line:84%
+But perfect
+competition, we normally
+
+00:04:59.750 --> 00:05:02.730 align:middle line:84%
+think of that as a setting
+where there's many small firms.
+
+00:05:02.730 --> 00:05:08.630 align:middle line:90%
+
+
+00:05:08.630 --> 00:05:11.370 align:middle line:84%
+Monopoly is a situation
+where we just have one firm.
+
+00:05:11.370 --> 00:05:14.790 align:middle line:84%
+They're the only firm offering
+a particular good or product.
+
+00:05:14.790 --> 00:05:18.408 align:middle line:90%
+So here, we have one firm.
+
+00:05:18.408 --> 00:05:19.950 align:middle line:84%
+Usually, that one
+firm would be large
+
+00:05:19.950 --> 00:05:21.670 align:middle line:90%
+since they're the only firm.
+
+00:05:21.670 --> 00:05:24.690 align:middle line:84%
+And then imperfect competition
+lies somewhere in between.
+
+00:05:24.690 --> 00:05:28.350 align:middle line:84%
+We normally think that there
+are maybe a few large firms.
+
+00:05:28.350 --> 00:05:30.910 align:middle line:84%
+This is sometimes
+also called oligopoly.
+
+00:05:30.910 --> 00:05:34.250 align:middle line:90%
+So a few maybe large firms.
+
+00:05:34.250 --> 00:05:39.030 align:middle line:90%
+
+
+00:05:39.030 --> 00:05:42.130 align:middle line:84%
+And the implication of this is
+that, in perfect competition,
+
+00:05:42.130 --> 00:05:44.910 align:middle line:84%
+when we have many
+small firms, each firm
+
+00:05:44.910 --> 00:05:46.570 align:middle line:90%
+is what's called a price taker.
+
+00:05:46.570 --> 00:05:51.590 align:middle line:90%
+
+
+00:05:51.590 --> 00:05:52.690 align:middle line:90%
+What do I mean by that?
+
+00:05:52.690 --> 00:05:54.650 align:middle line:90%
+I'm some small firm in a market.
+
+00:05:54.650 --> 00:05:58.190 align:middle line:84%
+I can't influence what the
+market price is for the product
+
+00:05:58.190 --> 00:05:59.470 align:middle line:90%
+that I'm selling.
+
+00:05:59.470 --> 00:06:01.710 align:middle line:84%
+So the classic
+example of this would
+
+00:06:01.710 --> 00:06:05.690 align:middle line:84%
+be maybe commodities
+markets, like wheat or corn.
+
+00:06:05.690 --> 00:06:08.750 align:middle line:90%
+
+
+00:06:08.750 --> 00:06:13.030 align:middle line:84%
+So if I'm a small farmer and
+I'm choosing how much corn
+
+00:06:13.030 --> 00:06:15.870 align:middle line:84%
+to produce or to sell
+in the market this year,
+
+00:06:15.870 --> 00:06:19.670 align:middle line:84%
+my decision about how much
+my particular farm produces
+
+00:06:19.670 --> 00:06:23.190 align:middle line:84%
+is unlikely to affect the
+global market price for corn
+
+00:06:23.190 --> 00:06:25.750 align:middle line:84%
+because there's many, many
+firms and many, many farms
+
+00:06:25.750 --> 00:06:27.830 align:middle line:84%
+in the world that
+are producing corn.
+
+00:06:27.830 --> 00:06:29.430 align:middle line:84%
+And another important
+aspect of this
+
+00:06:29.430 --> 00:06:31.930 align:middle line:84%
+is that these are
+homogeneous products,
+
+00:06:31.930 --> 00:06:35.270 align:middle line:84%
+and that's another
+common attribute
+
+00:06:35.270 --> 00:06:37.470 align:middle line:90%
+of perfect competition.
+
+00:06:37.470 --> 00:06:40.070 align:middle line:84%
+If we're all producing
+corn, but my corn
+
+00:06:40.070 --> 00:06:42.650 align:middle line:84%
+is special and better
+than everyone else's corn.
+
+00:06:42.650 --> 00:06:45.230 align:middle line:84%
+Now, I might not be such
+a small player anymore.
+
+00:06:45.230 --> 00:06:48.000 align:middle line:90%
+
+
+00:06:48.000 --> 00:06:50.260 align:middle line:84%
+Then in the case of
+imperfect competition,
+
+00:06:50.260 --> 00:06:52.480 align:middle line:84%
+where we have a few
+large firms, we normally
+
+00:06:52.480 --> 00:06:55.540 align:middle line:84%
+think of what we say is that
+these firms have market power.
+
+00:06:55.540 --> 00:06:58.400 align:middle line:90%
+
+
+00:06:58.400 --> 00:07:00.840 align:middle line:90%
+What does market power mean?
+
+00:07:00.840 --> 00:07:02.873 align:middle line:84%
+It's really the opposite
+of being a price taker.
+
+00:07:02.873 --> 00:07:05.040 align:middle line:84%
+Though, we can think of
+this kind of as a continuum.
+
+00:07:05.040 --> 00:07:08.400 align:middle line:84%
+With a price taker, I have
+no control over the market
+
+00:07:08.400 --> 00:07:10.480 align:middle line:90%
+price for some item.
+
+00:07:10.480 --> 00:07:13.800 align:middle line:84%
+If I have market power,
+then my production decisions
+
+00:07:13.800 --> 00:07:16.800 align:middle line:84%
+can have some effect on what
+the market price will be.
+
+00:07:16.800 --> 00:07:18.620 align:middle line:84%
+So when we have a
+few large firms,
+
+00:07:18.620 --> 00:07:22.560 align:middle line:84%
+if someone floods the market
+with a lot of their goods,
+
+00:07:22.560 --> 00:07:25.000 align:middle line:84%
+then the market price
+of that good may fall.
+
+00:07:25.000 --> 00:07:26.960 align:middle line:84%
+That's an example
+of market power.
+
+00:07:26.960 --> 00:07:28.400 align:middle line:84%
+So if there's a
+few countries that
+
+00:07:28.400 --> 00:07:31.800 align:middle line:84%
+produce oil in the world and
+one of them, say Saudi Arabia,
+
+00:07:31.800 --> 00:07:34.180 align:middle line:84%
+produces much, much
+more oil this year,
+
+00:07:34.180 --> 00:07:36.680 align:middle line:84%
+then that's probably going to
+have some effect on the market
+
+00:07:36.680 --> 00:07:37.380 align:middle line:90%
+price for oil.
+
+00:07:37.380 --> 00:07:41.800 align:middle line:84%
+It's probably going to bring
+down the market price for oil.
+
+00:07:41.800 --> 00:07:45.000 align:middle line:84%
+When we have a few large firms,
+maybe an example of this,
+
+00:07:45.000 --> 00:07:48.220 align:middle line:84%
+there's different degrees
+of imperfect competition.
+
+00:07:48.220 --> 00:07:53.380 align:middle line:84%
+But maybe I think cell phone
+companies are a good example.
+
+00:07:53.380 --> 00:07:56.240 align:middle line:84%
+In the US, you maybe have two or
+three large cell phone carriers
+
+00:07:56.240 --> 00:07:58.200 align:middle line:90%
+that have their large networks.
+
+00:07:58.200 --> 00:07:59.920 align:middle line:84%
+But we don't have a
+lot of small firms,
+
+00:07:59.920 --> 00:08:02.920 align:middle line:84%
+and there's some
+barriers to entry.
+
+00:08:02.920 --> 00:08:07.920 align:middle line:84%
+Another example of market
+power could be due to location.
+
+00:08:07.920 --> 00:08:10.120 align:middle line:84%
+So it may be that
+even if there's
+
+00:08:10.120 --> 00:08:12.560 align:middle line:84%
+a lot of firms
+producing a good, there
+
+00:08:12.560 --> 00:08:14.320 align:middle line:84%
+may only be a small
+number of firms
+
+00:08:14.320 --> 00:08:17.040 align:middle line:90%
+producing in a particular area.
+
+00:08:17.040 --> 00:08:18.960 align:middle line:84%
+And this is going to
+be really relevant when
+
+00:08:18.960 --> 00:08:21.320 align:middle line:90%
+transportation costs are high.
+
+00:08:21.320 --> 00:08:25.080 align:middle line:84%
+So for instance,
+maybe there's a lot
+
+00:08:25.080 --> 00:08:27.960 align:middle line:84%
+of coffee shops in the
+world, but right around MIT,
+
+00:08:27.960 --> 00:08:29.600 align:middle line:90%
+there may only be a few.
+
+00:08:29.600 --> 00:08:31.780 align:middle line:84%
+And if you take your
+coffee over long distances,
+
+00:08:31.780 --> 00:08:32.900 align:middle line:90%
+it's going to get cold.
+
+00:08:32.900 --> 00:08:35.340 align:middle line:84%
+So you're not really considering
+a coffee shop in New York
+
+00:08:35.340 --> 00:08:37.048 align:middle line:84%
+even if New York,
+maybe has better coffee
+
+00:08:37.048 --> 00:08:39.120 align:middle line:90%
+than some places in Boston.
+
+00:08:39.120 --> 00:08:41.039 align:middle line:84%
+Another source of
+market power could
+
+00:08:41.039 --> 00:08:44.770 align:middle line:90%
+be product differentiation.
+
+00:08:44.770 --> 00:08:47.650 align:middle line:84%
+And this is what I was getting
+at with the corn example.
+
+00:08:47.650 --> 00:08:49.250 align:middle line:84%
+Corn is the opposite
+case where we
+
+00:08:49.250 --> 00:08:50.970 align:middle line:90%
+don't see much differentiation.
+
+00:08:50.970 --> 00:08:52.650 align:middle line:90%
+But let's think about Apple.
+
+00:08:52.650 --> 00:08:55.530 align:middle line:84%
+There's a lot of different
+companies that produce phones,
+
+00:08:55.530 --> 00:09:00.010 align:middle line:84%
+but you might find Apple iPhones
+to be a different product
+
+00:09:00.010 --> 00:09:02.090 align:middle line:84%
+than a Samsung phone
+or a Google phone
+
+00:09:02.090 --> 00:09:03.710 align:middle line:84%
+or a phone produced
+by another firm.
+
+00:09:03.710 --> 00:09:05.570 align:middle line:84%
+So even if there are
+many companies that
+
+00:09:05.570 --> 00:09:08.890 align:middle line:84%
+are producing a smartphone,
+if these companies
+
+00:09:08.890 --> 00:09:10.968 align:middle line:84%
+produce slightly
+differentiated products,
+
+00:09:10.968 --> 00:09:13.010 align:middle line:84%
+then Apple has a bit of
+flexibility in what price
+
+00:09:13.010 --> 00:09:13.950 align:middle line:90%
+it charges.
+
+00:09:13.950 --> 00:09:16.937 align:middle line:84%
+If an iPhone is a bit more
+expensive than a Samsung phone,
+
+00:09:16.937 --> 00:09:18.770 align:middle line:84%
+a lot of people will
+still choose that phone
+
+00:09:18.770 --> 00:09:20.070 align:middle line:90%
+because they like Apple more.
+
+00:09:20.070 --> 00:09:22.730 align:middle line:84%
+And the same with Samsung, there
+may be some Samsung loyalists
+
+00:09:22.730 --> 00:09:24.090 align:middle line:90%
+out there.
+
+00:09:24.090 --> 00:09:26.770 align:middle line:84%
+And then monopoly is the
+case, the extreme case
+
+00:09:26.770 --> 00:09:28.690 align:middle line:90%
+where we have a single firm.
+
+00:09:28.690 --> 00:09:30.470 align:middle line:90%
+So they still have market power.
+
+00:09:30.470 --> 00:09:32.610 align:middle line:84%
+Maybe they have
+extreme market power.
+
+00:09:32.610 --> 00:09:35.030 align:middle line:84%
+It's always hard to find an
+example of a pure monopoly,
+
+00:09:35.030 --> 00:09:35.810 align:middle line:90%
+but can you think of any?
+
+00:09:35.810 --> 00:09:37.310 align:middle line:84%
+Are there any cases
+that you've come
+
+00:09:37.310 --> 00:09:39.850 align:middle line:84%
+across where you think there's
+really only one firm that's
+
+00:09:39.850 --> 00:09:42.810 align:middle line:84%
+selling a particular good or
+offering a certain service
+
+00:09:42.810 --> 00:09:45.930 align:middle line:90%
+or product?
+
+00:09:45.930 --> 00:09:46.782 align:middle line:90%
+Yeah.
+
+00:09:46.782 --> 00:09:47.490 align:middle line:90%
+AUDIENCE: Subway.
+
+00:09:47.490 --> 00:09:49.407 align:middle line:84%
+IAN BALL: The subway is
+a great example, yeah.
+
+00:09:49.407 --> 00:09:51.690 align:middle line:90%
+
+
+00:09:51.690 --> 00:09:56.850 align:middle line:84%
+So the subway, say
+the MBTA in Boston.
+
+00:09:56.850 --> 00:09:58.562 align:middle line:90%
+There's only one game in town.
+
+00:09:58.562 --> 00:10:00.270 align:middle line:84%
+You can't just, as a
+private company say,
+
+00:10:00.270 --> 00:10:01.978 align:middle line:84%
+I'm going to start
+digging up the streets
+
+00:10:01.978 --> 00:10:03.850 align:middle line:84%
+and building my
+own subway system.
+
+00:10:03.850 --> 00:10:06.230 align:middle line:84%
+Now, of course, what
+counts as a monopoly,
+
+00:10:06.230 --> 00:10:08.730 align:middle line:84%
+it always depends on what we
+consider a close substitute.
+
+00:10:08.730 --> 00:10:11.090 align:middle line:84%
+So it is true that, instead
+of taking the subway,
+
+00:10:11.090 --> 00:10:13.630 align:middle line:84%
+you could take a Bluebike,
+or you could take a Lyft.
+
+00:10:13.630 --> 00:10:15.310 align:middle line:84%
+That's some kind
+of a substitute.
+
+00:10:15.310 --> 00:10:17.210 align:middle line:84%
+But in terms of
+getting on a train that
+
+00:10:17.210 --> 00:10:19.210 align:middle line:84%
+goes quickly underground
+and doesn't have
+
+00:10:19.210 --> 00:10:20.770 align:middle line:84%
+any contact with
+traffic, that really
+
+00:10:20.770 --> 00:10:24.050 align:middle line:84%
+is something that only the
+MBTA, only a government monopoly
+
+00:10:24.050 --> 00:10:25.310 align:middle line:90%
+is able to provide.
+
+00:10:25.310 --> 00:10:26.590 align:middle line:90%
+What are some other examples?
+
+00:10:26.590 --> 00:10:27.110 align:middle line:90%
+Yeah.
+
+00:10:27.110 --> 00:10:28.790 align:middle line:84%
+AUDIENCE: This is
+more of a monopsony,
+
+00:10:28.790 --> 00:10:31.110 align:middle line:84%
+but if you're in
+a coal mining town
+
+00:10:31.110 --> 00:10:33.490 align:middle line:84%
+and there's only
+one mining company.
+
+00:10:33.490 --> 00:10:36.373 align:middle line:84%
+IAN BALL: Right,
+that's a great example.
+
+00:10:36.373 --> 00:10:38.290 align:middle line:84%
+Yeah, maybe monopsony,
+maybe I won't put it up
+
+00:10:38.290 --> 00:10:39.830 align:middle line:84%
+here just to avoid
+confusion with monopsony.
+
+00:10:39.830 --> 00:10:42.163 align:middle line:84%
+But that's the case where
+you're the only buyer in town.
+
+00:10:42.163 --> 00:10:45.020 align:middle line:90%
+You're the consumer of labor.
+
+00:10:45.020 --> 00:10:47.740 align:middle line:84%
+Maybe, in that
+context, if there's
+
+00:10:47.740 --> 00:10:50.003 align:middle line:84%
+a labor market in that town,
+if there's a labor union,
+
+00:10:50.003 --> 00:10:51.920 align:middle line:84%
+that might be a monopoly
+in that town as well.
+
+00:10:51.920 --> 00:10:53.740 align:middle line:84%
+But that's a great
+example of a monopsony.
+
+00:10:53.740 --> 00:10:54.550 align:middle line:90%
+Yeah, in the back.
+
+00:10:54.550 --> 00:10:56.300 align:middle line:84%
+AUDIENCE: Normally,
+like private companies
+
+00:10:56.300 --> 00:10:59.420 align:middle line:84%
+are contracted for power or
+something by the government.
+
+00:10:59.420 --> 00:11:01.340 align:middle line:84%
+IAN BALL: Yeah, so
+often, utilities, and I
+
+00:11:01.340 --> 00:11:02.820 align:middle line:90%
+put cell phones up here.
+
+00:11:02.820 --> 00:11:04.440 align:middle line:90%
+It's a close call.
+
+00:11:04.440 --> 00:11:08.860 align:middle line:84%
+But some utilities,
+especially in a local market,
+
+00:11:08.860 --> 00:11:10.487 align:middle line:84%
+if you have an
+apartment here in Boston
+
+00:11:10.487 --> 00:11:12.820 align:middle line:84%
+and you try to find your
+internet provider or your phone
+
+00:11:12.820 --> 00:11:13.320 align:middle line:90%
+provider--
+
+00:11:13.320 --> 00:11:15.720 align:middle line:84%
+I guess, people don't have
+landline phones anymore.
+
+00:11:15.720 --> 00:11:17.460 align:middle line:84%
+But your internet
+provider, you may only
+
+00:11:17.460 --> 00:11:19.348 align:middle line:90%
+have one effective option.
+
+00:11:19.348 --> 00:11:20.640 align:middle line:90%
+So that's another good example.
+
+00:11:20.640 --> 00:11:21.080 align:middle line:90%
+Yeah.
+
+00:11:21.080 --> 00:11:23.372 align:middle line:84%
+AUDIENCE: I'm not sure if
+that is imperfect competition
+
+00:11:23.372 --> 00:11:26.380 align:middle line:84%
+or monopoly, but pharmaceutical
+companies and drugs they make.
+
+00:11:26.380 --> 00:11:28.775 align:middle line:84%
+IAN BALL: Great, so I
+think, again, there's
+
+00:11:28.775 --> 00:11:31.400 align:middle line:84%
+sometimes blurry lines between
+imperfect competition, monopoly.
+
+00:11:31.400 --> 00:11:33.920 align:middle line:84%
+But I think a great example
+of this would be a patent.
+
+00:11:33.920 --> 00:11:37.320 align:middle line:84%
+So if I'm a private company
+and I produce a drug,
+
+00:11:37.320 --> 00:11:39.245 align:middle line:84%
+I spend a lot of money
+developing this drug,
+
+00:11:39.245 --> 00:11:41.620 align:middle line:84%
+I'm then given a certain period
+of time by the government
+
+00:11:41.620 --> 00:11:43.800 align:middle line:84%
+where I'm the exclusive
+supplier of that drug.
+
+00:11:43.800 --> 00:11:47.157 align:middle line:84%
+Now, again, whether a monopolist
+or not might depend on,
+
+00:11:47.157 --> 00:11:48.740 align:middle line:84%
+well, is there a
+very close substitute
+
+00:11:48.740 --> 00:11:50.740 align:middle line:84%
+for that drug that's
+offered by another company?
+
+00:11:50.740 --> 00:11:53.300 align:middle line:84%
+But if I really come along
+with a completely new drug,
+
+00:11:53.300 --> 00:11:55.162 align:middle line:90%
+I have a government monopoly.
+
+00:11:55.162 --> 00:11:56.620 align:middle line:84%
+The government
+says, no one else is
+
+00:11:56.620 --> 00:11:57.940 align:middle line:84%
+allowed to produce
+the drug that you're
+
+00:11:57.940 --> 00:12:00.100 align:middle line:84%
+producing for some period of
+time, and the goal of that
+
+00:12:00.100 --> 00:12:02.468 align:middle line:84%
+is to give firms the incentive
+to invest in these drugs
+
+00:12:02.468 --> 00:12:04.260 align:middle line:84%
+because developing them
+is quite expensive.
+
+00:12:04.260 --> 00:12:05.960 align:middle line:90%
+Any final examples?
+
+00:12:05.960 --> 00:12:08.100 align:middle line:90%
+These are all good.
+
+00:12:08.100 --> 00:12:09.760 align:middle line:84%
+I think another
+big one is sports.
+
+00:12:09.760 --> 00:12:13.260 align:middle line:84%
+So the NFL, the MLB, there was
+actually a Supreme Court ruling
+
+00:12:13.260 --> 00:12:16.540 align:middle line:84%
+that gave the MLB an
+official exemption
+
+00:12:16.540 --> 00:12:19.140 align:middle line:90%
+from anti-monopoly laws.
+
+00:12:19.140 --> 00:12:23.660 align:middle line:84%
+So the NFL, we take it
+for granted that there's
+
+00:12:23.660 --> 00:12:25.460 align:middle line:90%
+a draft for the NFL.
+
+00:12:25.460 --> 00:12:27.140 align:middle line:84%
+Why is there not a
+draft when you guys
+
+00:12:27.140 --> 00:12:29.820 align:middle line:84%
+are trying to get jobs at tech
+companies after you graduate?
+
+00:12:29.820 --> 00:12:31.500 align:middle line:84%
+Well, they wouldn't all
+participate in a draft.
+
+00:12:31.500 --> 00:12:32.680 align:middle line:84%
+They're competing
+against each other.
+
+00:12:32.680 --> 00:12:34.222 align:middle line:84%
+So the reason why
+we can have a draft
+
+00:12:34.222 --> 00:12:36.020 align:middle line:84%
+is that it's legal
+for these firms
+
+00:12:36.020 --> 00:12:39.570 align:middle line:84%
+to band together and enter
+this collective agreement
+
+00:12:39.570 --> 00:12:41.590 align:middle line:84%
+where they all engage
+in a draft and they
+
+00:12:41.590 --> 00:12:43.328 align:middle line:84%
+agree to follow the
+rules of this draft.
+
+00:12:43.328 --> 00:12:45.870 align:middle line:84%
+If Google and Facebook tried to
+have a draft for MIT students
+
+00:12:45.870 --> 00:12:47.950 align:middle line:84%
+after you graduated and
+have first-round picks
+
+00:12:47.950 --> 00:12:50.710 align:middle line:84%
+and second-round picks, that
+would violate antitrust laws.
+
+00:12:50.710 --> 00:12:53.670 align:middle line:84%
+But the NFL and the
+MLB, et cetera have
+
+00:12:53.670 --> 00:12:55.650 align:middle line:84%
+gotten a special
+government exemption,
+
+00:12:55.650 --> 00:12:57.990 align:middle line:84%
+and that allows them
+to do various things,
+
+00:12:57.990 --> 00:13:00.210 align:middle line:84%
+bargain with broadcasters
+in a collective way,
+
+00:13:00.210 --> 00:13:02.065 align:middle line:84%
+have things like a
+draft, have restrictions
+
+00:13:02.065 --> 00:13:04.190 align:middle line:84%
+on the building of new
+stadiums and the development
+
+00:13:04.190 --> 00:13:05.350 align:middle line:90%
+of new teams.
+
+00:13:05.350 --> 00:13:07.540 align:middle line:84%
+OK, so this is a bit
+of actual economics,
+
+00:13:07.540 --> 00:13:09.290 align:middle line:84%
+maybe more applied
+economics for us today.
+
+00:13:09.290 --> 00:13:12.493 align:middle line:84%
+But now let's move into some of
+the classical theoretical models
+
+00:13:12.493 --> 00:13:13.410 align:middle line:90%
+that can explain this.
+
+00:13:13.410 --> 00:13:15.190 align:middle line:84%
+Maybe one more, I
+guess, I had in my notes
+
+00:13:15.190 --> 00:13:18.390 align:middle line:84%
+that I didn't say would
+be the US postal Service.
+
+00:13:18.390 --> 00:13:20.170 align:middle line:84%
+Again, it's a bit of
+a partial monopoly.
+
+00:13:20.170 --> 00:13:23.530 align:middle line:84%
+There's very specific services
+that no one else can provide,
+
+00:13:23.530 --> 00:13:25.710 align:middle line:84%
+but it does compete
+with, say, UPS and FedEx
+
+00:13:25.710 --> 00:13:26.890 align:middle line:90%
+for certain other services.
+
+00:13:26.890 --> 00:13:29.570 align:middle line:84%
+So some of these things are
+a bit-- are not so clear cut.
+
+00:13:29.570 --> 00:13:31.730 align:middle line:84%
+And of course, when
+firms go to court,
+
+00:13:31.730 --> 00:13:33.470 align:middle line:84%
+this is exactly what
+they argue about.
+
+00:13:33.470 --> 00:13:36.070 align:middle line:84%
+So firms love to argue
+that there are actually
+
+00:13:36.070 --> 00:13:38.010 align:middle line:84%
+a lot of close substitutes
+for their products,
+
+00:13:38.010 --> 00:13:39.910 align:middle line:84%
+and they're not really a
+monopolist in this small market
+
+00:13:39.910 --> 00:13:42.452 align:middle line:84%
+because really they're operating
+in this much broader market.
+
+00:13:42.452 --> 00:13:44.908 align:middle line:84%
+So firms always want to argue
+that the market they're in
+
+00:13:44.908 --> 00:13:46.950 align:middle line:84%
+is not some narrowly
+defined market where they're
+
+00:13:46.950 --> 00:13:49.792 align:middle line:84%
+the only player but, in fact,
+a much broader market where
+
+00:13:49.792 --> 00:13:51.250 align:middle line:84%
+there's other forms
+of competition.
+
+00:13:51.250 --> 00:13:52.470 align:middle line:84%
+So if I were the
+subway and I wanted
+
+00:13:52.470 --> 00:13:53.890 align:middle line:84%
+to say I'm not a
+monopolist, I would say,
+
+00:13:53.890 --> 00:13:55.432 align:middle line:84%
+no, I'm in the
+transportation market,
+
+00:13:55.432 --> 00:13:57.270 align:middle line:84%
+and there's tons of
+forms of transportation
+
+00:13:57.270 --> 00:13:59.170 align:middle line:84%
+whereas if I wanted to argue
+that they were monopolist,
+
+00:13:59.170 --> 00:13:59.750 align:middle line:90%
+I might say--
+
+00:13:59.750 --> 00:14:04.590 align:middle line:84%
+I might define transportation
+a lot more narrowly.
+
+00:14:04.590 --> 00:14:06.170 align:middle line:84%
+So now that we have
+that background,
+
+00:14:06.170 --> 00:14:09.990 align:middle line:84%
+let's get into a few classical
+game-theoretic models that
+
+00:14:09.990 --> 00:14:12.190 align:middle line:84%
+try to understand the
+interaction of firms
+
+00:14:12.190 --> 00:14:14.470 align:middle line:84%
+in imperfect competition
+and in monopoly.
+
+00:14:14.470 --> 00:14:16.830 align:middle line:84%
+And the first ingredient
+for these models
+
+00:14:16.830 --> 00:14:20.228 align:middle line:84%
+is going to be defining
+what demand is.
+
+00:14:20.228 --> 00:14:22.770 align:middle line:84%
+So again, if you take an econ
+class, you will have seen this.
+
+00:14:22.770 --> 00:14:25.310 align:middle line:84%
+But demand captures
+at a given price,
+
+00:14:25.310 --> 00:14:28.510 align:middle line:84%
+how many units of a product
+am I willing to purchase?
+
+00:14:28.510 --> 00:14:31.350 align:middle line:84%
+And naturally, your
+demand for a product
+
+00:14:31.350 --> 00:14:32.950 align:middle line:90%
+is going to depend on the price.
+
+00:14:32.950 --> 00:14:35.040 align:middle line:84%
+Generally, people will
+buy more of something
+
+00:14:35.040 --> 00:14:37.647 align:middle line:84%
+if the price of
+that good is lower.
+
+00:14:37.647 --> 00:14:39.480 align:middle line:84%
+But let's go through a
+really simple example
+
+00:14:39.480 --> 00:14:41.317 align:middle line:84%
+to try to make
+this more concrete.
+
+00:14:41.317 --> 00:14:43.900 align:middle line:84%
+Let's think about-- let's say
+it can be the demand for apples.
+
+00:14:43.900 --> 00:14:45.020 align:middle line:90%
+It doesn't really matter.
+
+00:14:45.020 --> 00:14:47.562 align:middle line:84%
+And let's say, in this economy,
+there's only three consumers.
+
+00:14:47.562 --> 00:14:51.000 align:middle line:84%
+We'll call them consumer 1,
+consumer 2, and consumer 3.
+
+00:14:51.000 --> 00:14:56.238 align:middle line:84%
+And apples, I would say, are not
+an infinitely divisible good.
+
+00:14:56.238 --> 00:14:57.780 align:middle line:84%
+I mean, you could
+sell half an Apple,
+
+00:14:57.780 --> 00:14:58.780 align:middle line:90%
+but that's really not done.
+
+00:14:58.780 --> 00:15:00.040 align:middle line:84%
+We're going to
+think of these as--
+
+00:15:00.040 --> 00:15:02.290 align:middle line:84%
+you're only going to be able
+to buy 1, 2, or 3 apples.
+
+00:15:02.290 --> 00:15:05.620 align:middle line:84%
+You can't buy 1.75, or you
+can't buy a lottery over apples.
+
+00:15:05.620 --> 00:15:08.080 align:middle line:84%
+Though, maybe you
+could at some point.
+
+00:15:08.080 --> 00:15:10.040 align:middle line:84%
+So let's look at
+consumer 1, and let's say
+
+00:15:10.040 --> 00:15:13.780 align:middle line:84%
+that their valuation for the
+first apple they get is $1.
+
+00:15:13.780 --> 00:15:16.600 align:middle line:84%
+That's how much it's worth
+to them to get an apple.
+
+00:15:16.600 --> 00:15:18.360 align:middle line:90%
+But they only want 1 Apple.
+
+00:15:18.360 --> 00:15:20.480 align:middle line:84%
+Once they get that
+first apple, the value
+
+00:15:20.480 --> 00:15:23.240 align:middle line:84%
+they get from a second
+Apple, the marginal value
+
+00:15:23.240 --> 00:15:25.080 align:middle line:84%
+of an additional
+Apple drops to 0
+
+00:15:25.080 --> 00:15:26.678 align:middle line:84%
+because they're just
+not that hungry.
+
+00:15:26.678 --> 00:15:28.220 align:middle line:84%
+And apples are
+perishable, so they're
+
+00:15:28.220 --> 00:15:30.280 align:middle line:84%
+not-- it's going to
+go bad by next week
+
+00:15:30.280 --> 00:15:32.800 align:middle line:90%
+when they want another apple.
+
+00:15:32.800 --> 00:15:34.400 align:middle line:90%
+Then we have consumer two.
+
+00:15:34.400 --> 00:15:37.460 align:middle line:84%
+They are similar to consumer 1
+in that they only value 1 Apple,
+
+00:15:37.460 --> 00:15:39.560 align:middle line:84%
+but they value that
+first Apple a bit more.
+
+00:15:39.560 --> 00:15:42.080 align:middle line:84%
+So for consumer 2, let's
+say that first Apple
+
+00:15:42.080 --> 00:15:44.360 align:middle line:90%
+is worth $2 to them.
+
+00:15:44.360 --> 00:15:46.220 align:middle line:84%
+But again, they
+only need 1 Apple,
+
+00:15:46.220 --> 00:15:50.320 align:middle line:84%
+so after that, their
+value drops to 0.
+
+00:15:50.320 --> 00:15:52.720 align:middle line:84%
+And then consumer three
+really loves apples.
+
+00:15:52.720 --> 00:15:55.880 align:middle line:84%
+And for them, the
+first Apple is worth 3,
+
+00:15:55.880 --> 00:15:58.960 align:middle line:84%
+and they actually would even be
+willing to get a second apple.
+
+00:15:58.960 --> 00:16:00.760 align:middle line:84%
+Once they have the
+first, the second one
+
+00:16:00.760 --> 00:16:03.800 align:middle line:84%
+isn't quite as valuable, but
+it does have positive value.
+
+00:16:03.800 --> 00:16:06.760 align:middle line:84%
+So that's going to be $1 for
+the second apple and then 0
+
+00:16:06.760 --> 00:16:07.300 align:middle line:90%
+after that.
+
+00:16:07.300 --> 00:16:09.200 align:middle line:84%
+And after that, it's
+going to keep being 0.
+
+00:16:09.200 --> 00:16:14.040 align:middle line:84%
+They don't all of a sudden
+want the 10th apple.
+
+00:16:14.040 --> 00:16:18.920 align:middle line:84%
+So once we understand the
+individual consumers' demand,
+
+00:16:18.920 --> 00:16:21.108 align:middle line:84%
+we can put it together to
+create a market demand,
+
+00:16:21.108 --> 00:16:23.400 align:middle line:84%
+but let's just make sure we
+understand the individual's
+
+00:16:23.400 --> 00:16:23.900 align:middle line:90%
+demand.
+
+00:16:23.900 --> 00:16:29.040 align:middle line:84%
+So let's say I'm consumer 3,
+and the price of apples is $4.
+
+00:16:29.040 --> 00:16:30.710 align:middle line:90%
+How many apples will I demand?
+
+00:16:30.710 --> 00:16:33.490 align:middle line:90%
+
+
+00:16:33.490 --> 00:16:34.350 align:middle line:90%
+None, right?
+
+00:16:34.350 --> 00:16:36.990 align:middle line:84%
+Because even this first
+apple is not worth it to me,
+
+00:16:36.990 --> 00:16:40.130 align:middle line:84%
+so if the price is $4, I'm not
+going to purchase any apples.
+
+00:16:40.130 --> 00:16:42.410 align:middle line:84%
+But if the price is
+$2, then I'm going
+
+00:16:42.410 --> 00:16:45.570 align:middle line:84%
+to buy exactly 1 apple because
+the first Apple is worth 3
+
+00:16:45.570 --> 00:16:49.650 align:middle line:84%
+to me, so it's worth it for me
+to buy that first apple at $2.
+
+00:16:49.650 --> 00:16:51.890 align:middle line:84%
+But now, once I've
+already bought 1 Apple,
+
+00:16:51.890 --> 00:16:55.530 align:middle line:84%
+the additional value I get
+from a second Apple is only $1,
+
+00:16:55.530 --> 00:16:57.330 align:middle line:84%
+but I'd have to
+pay $2 to get it,
+
+00:16:57.330 --> 00:16:59.690 align:middle line:84%
+and therefore it's
+not worth it for me.
+
+00:16:59.690 --> 00:17:01.710 align:middle line:84%
+So using each of
+these individuals,
+
+00:17:01.710 --> 00:17:04.470 align:middle line:84%
+we can compute each of
+these individual's demand.
+
+00:17:04.470 --> 00:17:07.190 align:middle line:84%
+So this is going to yield
+an individual demand.
+
+00:17:07.190 --> 00:17:11.690 align:middle line:90%
+
+
+00:17:11.690 --> 00:17:15.329 align:middle line:84%
+But if I'm a firm and I'm
+considering what price to charge
+
+00:17:15.329 --> 00:17:18.730 align:middle line:84%
+for my apples, I don't really
+care about individual demand.
+
+00:17:18.730 --> 00:17:20.810 align:middle line:84%
+I don't care if James
+is buying my apple.
+
+00:17:20.810 --> 00:17:22.810 align:middle line:84%
+I care about how many
+people in the whole market
+
+00:17:22.810 --> 00:17:24.150 align:middle line:90%
+are going to buy my apples.
+
+00:17:24.150 --> 00:17:27.190 align:middle line:84%
+So what's relevant to the firm
+is not the individual demand,
+
+00:17:27.190 --> 00:17:28.710 align:middle line:84%
+but what's called
+the market demand.
+
+00:17:28.710 --> 00:17:30.835 align:middle line:84%
+And that's what we're going
+to try to capture here.
+
+00:17:30.835 --> 00:17:34.010 align:middle line:84%
+So what is the market
+demand for apples
+
+00:17:34.010 --> 00:17:38.610 align:middle line:84%
+in this very simple market
+that only has three consumers?
+
+00:17:38.610 --> 00:17:40.530 align:middle line:84%
+Well, what we're
+going to do is we're
+
+00:17:40.530 --> 00:17:43.890 align:middle line:84%
+going to need to plot
+the demand for apples
+
+00:17:43.890 --> 00:17:45.850 align:middle line:90%
+as a function of the price.
+
+00:17:45.850 --> 00:17:48.010 align:middle line:84%
+And there's a long
+convention in economics
+
+00:17:48.010 --> 00:17:50.690 align:middle line:84%
+that we always put price
+on the vertical axis.
+
+00:17:50.690 --> 00:17:53.730 align:middle line:84%
+So if you think of quantity
+as a function of price,
+
+00:17:53.730 --> 00:17:55.610 align:middle line:84%
+that may feel kind
+of backwards to you
+
+00:17:55.610 --> 00:17:59.930 align:middle line:84%
+from the way it's done
+in math, but this is just
+
+00:17:59.930 --> 00:18:01.267 align:middle line:90%
+a historical convention.
+
+00:18:01.267 --> 00:18:03.350 align:middle line:84%
+Some people argue that
+there's good reason for it.
+
+00:18:03.350 --> 00:18:05.230 align:middle line:84%
+But we'll just take
+it as a convention,
+
+00:18:05.230 --> 00:18:07.230 align:middle line:84%
+and we're always going
+to write things this way.
+
+00:18:07.230 --> 00:18:09.530 align:middle line:90%
+So we have price and quantity.
+
+00:18:09.530 --> 00:18:13.650 align:middle line:84%
+And on the vertical axis,
+let me make some marks.
+
+00:18:13.650 --> 00:18:15.610 align:middle line:84%
+By drawing won't be
+perfect, but let's
+
+00:18:15.610 --> 00:18:19.950 align:middle line:90%
+say this is $1, $2, $3, $4, $5.
+
+00:18:19.950 --> 00:18:22.930 align:middle line:90%
+
+
+00:18:22.930 --> 00:18:26.580 align:middle line:84%
+So what we want to do
+is, for each price,
+
+00:18:26.580 --> 00:18:29.620 align:middle line:84%
+we want to compute what is
+the total quantity demanded
+
+00:18:29.620 --> 00:18:32.620 align:middle line:90%
+at that price by the market?
+
+00:18:32.620 --> 00:18:36.380 align:middle line:84%
+So if the price is 5, what
+is the total market demand
+
+00:18:36.380 --> 00:18:37.240 align:middle line:90%
+for apples?
+
+00:18:37.240 --> 00:18:39.800 align:middle line:90%
+
+
+00:18:39.800 --> 00:18:40.300 align:middle line:90%
+AUDIENCE: 0.
+
+00:18:40.300 --> 00:18:41.092 align:middle line:90%
+IAN BALL: 0, right?
+
+00:18:41.092 --> 00:18:42.500 align:middle line:90%
+No one's willing to buy at 5.
+
+00:18:42.500 --> 00:18:45.220 align:middle line:84%
+And in fact, no one's
+willing to buy at 4 either.
+
+00:18:45.220 --> 00:18:48.000 align:middle line:84%
+So if we start up
+here, demand is just 0.
+
+00:18:48.000 --> 00:18:50.080 align:middle line:84%
+I'll try to make it
+shaded so you can see it.
+
+00:18:50.080 --> 00:18:51.160 align:middle line:90%
+It's 0, 0, 0.
+
+00:18:51.160 --> 00:18:53.180 align:middle line:90%
+But then something happens at 3.
+
+00:18:53.180 --> 00:18:59.140 align:middle line:84%
+When the price drops down to 3,
+well, now this person, player 3,
+
+00:18:59.140 --> 00:19:01.800 align:middle line:84%
+is willing to buy
+exactly 1 apple.
+
+00:19:01.800 --> 00:19:06.160 align:middle line:84%
+So the market demand is going to
+jump to 1 when the price hits 3.
+
+00:19:06.160 --> 00:19:10.340 align:middle line:84%
+And I should put
+some marks here.
+
+00:19:10.340 --> 00:19:14.780 align:middle line:84%
+So here, maybe I'll put
+it at a line like this,
+
+00:19:14.780 --> 00:19:19.860 align:middle line:84%
+it's going to jump up to 1
+apple when the price hits 3.
+
+00:19:19.860 --> 00:19:22.140 align:middle line:90%
+And then it's going to stay.
+
+00:19:22.140 --> 00:19:26.460 align:middle line:84%
+If the price is, say,
+250, well, that's
+
+00:19:26.460 --> 00:19:28.880 align:middle line:84%
+going to make the third
+consumer pretty happy.
+
+00:19:28.880 --> 00:19:30.860 align:middle line:84%
+If the price is
+now only 250, he's
+
+00:19:30.860 --> 00:19:34.040 align:middle line:84%
+actually going to make a surplus
+from this first purchase,
+
+00:19:34.040 --> 00:19:36.460 align:middle line:84%
+but it's not going to entice
+him to buy another apple.
+
+00:19:36.460 --> 00:19:38.940 align:middle line:84%
+And it's also not going to
+entice either of these players
+
+00:19:38.940 --> 00:19:39.960 align:middle line:90%
+to buy an apple.
+
+00:19:39.960 --> 00:19:42.100 align:middle line:84%
+So the demand is
+going to be constant
+
+00:19:42.100 --> 00:19:44.260 align:middle line:90%
+until we hit a price of 2.
+
+00:19:44.260 --> 00:19:48.900 align:middle line:84%
+And then at a price of 2, how
+many apples will be demanded?
+
+00:19:48.900 --> 00:19:51.780 align:middle line:84%
+Now 2 because the
+third player is still
+
+00:19:51.780 --> 00:19:53.980 align:middle line:84%
+going to demand an Apple,
+but now the second player
+
+00:19:53.980 --> 00:19:56.580 align:middle line:84%
+is going to demand
+one apple as well.
+
+00:19:56.580 --> 00:20:01.480 align:middle line:84%
+So now we're going to have
+this step again up to 2.
+
+00:20:01.480 --> 00:20:02.980 align:middle line:84%
+OK, I think you can
+see the pattern,
+
+00:20:02.980 --> 00:20:04.647 align:middle line:84%
+but let's try to
+understand what happens
+
+00:20:04.647 --> 00:20:07.740 align:middle line:90%
+when we get to a price of one.
+
+00:20:07.740 --> 00:20:09.220 align:middle line:84%
+Now what is demand
+going to be when
+
+00:20:09.220 --> 00:20:13.460 align:middle line:84%
+the price gets to be 1 or
+maybe a little bit below 1?
+
+00:20:13.460 --> 00:20:14.780 align:middle line:90%
+Now it's 4.
+
+00:20:14.780 --> 00:20:16.060 align:middle line:90%
+And notice what happens.
+
+00:20:16.060 --> 00:20:18.500 align:middle line:84%
+When the price hits
+1, the first player
+
+00:20:18.500 --> 00:20:20.900 align:middle line:84%
+is now willing to buy
+1 apple, but that's not
+
+00:20:20.900 --> 00:20:22.180 align:middle line:90%
+the only thing that happens.
+
+00:20:22.180 --> 00:20:25.310 align:middle line:84%
+Now the third player is willing
+to buy a second apple instead
+
+00:20:25.310 --> 00:20:26.370 align:middle line:90%
+of only 1 apple.
+
+00:20:26.370 --> 00:20:28.570 align:middle line:84%
++ now demand increases
+for two reasons.
+
+00:20:28.570 --> 00:20:31.190 align:middle line:84%
+We have new consumers entering
+the market choosing to buy
+
+00:20:31.190 --> 00:20:32.630 align:middle line:90%
+who didn't previously buy.
+
+00:20:32.630 --> 00:20:34.830 align:middle line:84%
+And we also have
+this apple lover
+
+00:20:34.830 --> 00:20:37.470 align:middle line:84%
+increasing the number of apples
+that he buys from 1 apple
+
+00:20:37.470 --> 00:20:38.630 align:middle line:90%
+to 2 apples.
+
+00:20:38.630 --> 00:20:42.390 align:middle line:84%
+So now it's going
+to jump up to 4,
+
+00:20:42.390 --> 00:20:45.130 align:middle line:84%
+and then it's going
+to stay like this.
+
+00:20:45.130 --> 00:20:49.510 align:middle line:84%
+So we have some jumps
+in the demand curve,
+
+00:20:49.510 --> 00:20:52.270 align:middle line:90%
+and it looks like this.
+
+00:20:52.270 --> 00:20:53.950 align:middle line:90%
+So that's our demand curve.
+
+00:20:53.950 --> 00:20:56.910 align:middle line:84%
+It looks kind of
+jagged, and the reason
+
+00:20:56.910 --> 00:21:00.190 align:middle line:84%
+is that we're only considering
+a market with three people.
+
+00:21:00.190 --> 00:21:01.950 align:middle line:84%
+But if I'm a supermarket
+selling apples,
+
+00:21:01.950 --> 00:21:04.770 align:middle line:84%
+I'm, hopefully, selling to
+more than just three people.
+
+00:21:04.770 --> 00:21:06.670 align:middle line:84%
+So in reality, we're
+going to be aggregating
+
+00:21:06.670 --> 00:21:08.290 align:middle line:90%
+a lot of these individuals.
+
+00:21:08.290 --> 00:21:09.910 align:middle line:84%
+And the more
+individuals we aggregate
+
+00:21:09.910 --> 00:21:11.730 align:middle line:84%
+as we change the
+scale of our graph,
+
+00:21:11.730 --> 00:21:13.410 align:middle line:84%
+it's going to get
+smoother and smoother.
+
+00:21:13.410 --> 00:21:22.750 align:middle line:84%
+So in our idealized model,
+with maybe many consumers,
+
+00:21:22.750 --> 00:21:27.678 align:middle line:84%
+we're going to visualize this
+as a continuous function.
+
+00:21:27.678 --> 00:21:29.970 align:middle line:84%
+Now, you might argue, well,
+it's still really discrete.
+
+00:21:29.970 --> 00:21:31.730 align:middle line:84%
+Prices are discrete,
+people are discrete.
+
+00:21:31.730 --> 00:21:34.210 align:middle line:84%
+But to make the
+math a bit cleaner,
+
+00:21:34.210 --> 00:21:35.990 align:middle line:84%
+I think not much
+is lost, and a lot
+
+00:21:35.990 --> 00:21:37.990 align:middle line:84%
+is actually gained in
+terms of tractability
+
+00:21:37.990 --> 00:21:39.410 align:middle line:90%
+if we make it continuous.
+
+00:21:39.410 --> 00:21:42.590 align:middle line:84%
+So we might think of a demand
+function that looks something
+
+00:21:42.590 --> 00:21:46.870 align:middle line:90%
+like this just as an example.
+
+00:21:46.870 --> 00:21:49.190 align:middle line:84%
+So again, the
+interpretation is the same--
+
+00:21:49.190 --> 00:21:52.110 align:middle line:84%
+as the price goes down,
+the total number of apples
+
+00:21:52.110 --> 00:21:53.790 align:middle line:90%
+demanded increases.
+
+00:21:53.790 --> 00:21:56.010 align:middle line:84%
+And again, it increases
+for different reasons.
+
+00:21:56.010 --> 00:21:58.350 align:middle line:84%
+It can increase because
+some consumers start
+
+00:21:58.350 --> 00:22:00.350 align:middle line:84%
+buying who didn't
+previously buy,
+
+00:22:00.350 --> 00:22:04.070 align:middle line:84%
+and other consumers increase the
+number that they actually buy.
+
+00:22:04.070 --> 00:22:06.870 align:middle line:84%
+So we're going to call
+this the demand function,
+
+00:22:06.870 --> 00:22:15.030 align:middle line:84%
+and we think of this
+as a function Q of P.
+
+00:22:15.030 --> 00:22:18.090 align:middle line:84%
+So I always have to turn my
+head when I think about this.
+
+00:22:18.090 --> 00:22:20.360 align:middle line:84%
+We have price on
+the vertical axis.
+
+00:22:20.360 --> 00:22:22.080 align:middle line:84%
+We have demand,
+the total quantity
+
+00:22:22.080 --> 00:22:24.400 align:middle line:90%
+demanded on the horizontal axis.
+
+00:22:24.400 --> 00:22:27.240 align:middle line:90%
+And Q is a function of P.
+
+00:22:27.240 --> 00:22:30.680 align:middle line:84%
+Now, it's also sometimes helpful
+to think of it the other way,
+
+00:22:30.680 --> 00:22:35.580 align:middle line:84%
+to think if I wanted a certain
+number of apples to me demanded,
+
+00:22:35.580 --> 00:22:38.200 align:middle line:84%
+what is the price that I
+would have to set in order
+
+00:22:38.200 --> 00:22:39.920 align:middle line:90%
+to ensure that was the demand?
+
+00:22:39.920 --> 00:22:43.160 align:middle line:84%
+So instead of thinking of
+the function from prices
+
+00:22:43.160 --> 00:22:45.920 align:middle line:84%
+to quantities, we can
+think of it the other way--
+
+00:22:45.920 --> 00:22:48.720 align:middle line:90%
+from quantities to prices.
+
+00:22:48.720 --> 00:22:52.640 align:middle line:84%
+And we sometimes
+call this P of Q.
+
+00:22:52.640 --> 00:22:55.280 align:middle line:84%
+And this is often called
+the inverse demand function
+
+00:22:55.280 --> 00:22:57.940 align:middle line:84%
+because, mathematically,
+this is just the inverse.
+
+00:22:57.940 --> 00:23:01.440 align:middle line:84%
+If we think of Q of P as
+just a function, then P of Q
+
+00:23:01.440 --> 00:23:03.780 align:middle line:84%
+is literally the inverse
+of that function.
+
+00:23:03.780 --> 00:23:13.320 align:middle line:90%
+
+
+00:23:13.320 --> 00:23:15.640 align:middle line:84%
+So in problem sets and
+when we set things up,
+
+00:23:15.640 --> 00:23:18.200 align:middle line:84%
+sometimes we'll
+describe demand in terms
+
+00:23:18.200 --> 00:23:21.320 align:middle line:84%
+of the demand function, the
+demand as a function of price.
+
+00:23:21.320 --> 00:23:24.060 align:middle line:84%
+And sometimes, we'll write
+down the inverse demand,
+
+00:23:24.060 --> 00:23:27.120 align:middle line:84%
+which is the price as
+a function of quantity.
+
+00:23:27.120 --> 00:23:29.600 align:middle line:84%
+These are just different
+mathematical representations
+
+00:23:29.600 --> 00:23:31.400 align:middle line:84%
+of exactly the
+same object, which
+
+00:23:31.400 --> 00:23:35.480 align:middle line:84%
+is a correspondence between
+prices and quantities.
+
+00:23:35.480 --> 00:23:36.740 align:middle line:90%
+Any questions on this?
+
+00:23:36.740 --> 00:23:39.800 align:middle line:90%
+
+
+00:23:39.800 --> 00:23:42.840 align:middle line:84%
+So now that we've
+set up demand, we'll
+
+00:23:42.840 --> 00:23:44.420 align:middle line:90%
+start with the monopoly problem.
+
+00:23:44.420 --> 00:23:45.962 align:middle line:84%
+The monopoly problem
+is a bit easier.
+
+00:23:45.962 --> 00:23:47.587 align:middle line:84%
+We don't really have
+to do game theory.
+
+00:23:47.587 --> 00:23:49.860 align:middle line:84%
+And you've probably seen
+this in other econ courses.
+
+00:23:49.860 --> 00:23:51.277 align:middle line:84%
+And then we'll
+move to competition
+
+00:23:51.277 --> 00:23:53.400 align:middle line:84%
+where we really have
+to take into account
+
+00:23:53.400 --> 00:23:55.060 align:middle line:90%
+interaction between the firms.
+
+00:23:55.060 --> 00:24:02.640 align:middle line:90%
+
+
+00:24:02.640 --> 00:24:05.100 align:middle line:84%
+So now let's look at
+the monopoly problem.
+
+00:24:05.100 --> 00:24:11.360 align:middle line:90%
+
+
+00:24:11.360 --> 00:24:13.400 align:middle line:84%
+So what we imagine
+is I'm a monopolist.
+
+00:24:13.400 --> 00:24:16.690 align:middle line:84%
+I'm the only person
+selling some good.
+
+00:24:16.690 --> 00:24:18.490 align:middle line:84%
+Say it's apples,
+but usually, that's
+
+00:24:18.490 --> 00:24:20.650 align:middle line:90%
+not a good example of monopoly.
+
+00:24:20.650 --> 00:24:22.650 align:middle line:84%
+And what we're
+going to assume is
+
+00:24:22.650 --> 00:24:33.410 align:middle line:84%
+that the monopolist has some
+constant marginal cost c, which
+
+00:24:33.410 --> 00:24:36.290 align:middle line:90%
+is greater than or equal to 0.
+
+00:24:36.290 --> 00:24:38.710 align:middle line:84%
+What do I mean by
+constant marginal cost?
+
+00:24:38.710 --> 00:24:42.170 align:middle line:84%
+What I mean is if
+the monopolist wants
+
+00:24:42.170 --> 00:24:50.130 align:middle line:84%
+to produce Q units of a good,
+then the cost of those Q units
+
+00:24:50.130 --> 00:24:59.690 align:middle line:90%
+is just c times Q.
+
+00:24:59.690 --> 00:25:03.810 align:middle line:84%
+So here, Q is just a
+number, c is just a number.
+
+00:25:03.810 --> 00:25:06.070 align:middle line:84%
+We might think
+that, at some point,
+
+00:25:06.070 --> 00:25:08.670 align:middle line:84%
+it becomes really costly to
+produce an additional unit.
+
+00:25:08.670 --> 00:25:11.850 align:middle line:84%
+So often, we think that costs
+in general, at some scales,
+
+00:25:11.850 --> 00:25:15.913 align:middle line:84%
+become convex eventually, that
+if you have to really increase
+
+00:25:15.913 --> 00:25:17.330 align:middle line:84%
+production and
+start hiring people
+
+00:25:17.330 --> 00:25:19.370 align:middle line:84%
+to work overtime and
+plant the apples too
+
+00:25:19.370 --> 00:25:21.830 align:middle line:84%
+close to each other in the
+farmland and all these things,
+
+00:25:21.830 --> 00:25:23.152 align:middle line:90%
+costs become convex.
+
+00:25:23.152 --> 00:25:25.110 align:middle line:84%
+That's probably realistic
+in a lot of settings,
+
+00:25:25.110 --> 00:25:27.930 align:middle line:84%
+but let's stick to constant
+marginal cost for now
+
+00:25:27.930 --> 00:25:29.870 align:middle line:84%
+over a certain
+range of production.
+
+00:25:29.870 --> 00:25:32.450 align:middle line:84%
+That's probably
+pretty realistic.
+
+00:25:32.450 --> 00:25:35.025 align:middle line:84%
+And now we have to
+specify the demand.
+
+00:25:35.025 --> 00:25:36.650 align:middle line:84%
+So let's understand
+here the difference
+
+00:25:36.650 --> 00:25:46.170 align:middle line:84%
+that these are assumptions about
+the firm, which in this case
+
+00:25:46.170 --> 00:25:47.850 align:middle line:90%
+is a monopolist.
+
+00:25:47.850 --> 00:25:50.250 align:middle line:84%
+And now, when we write
+down things about demand,
+
+00:25:50.250 --> 00:25:52.750 align:middle line:84%
+we're not making assumptions
+about the firm anymore.
+
+00:25:52.750 --> 00:25:56.090 align:middle line:84%
+We're making assumptions about
+the population of consumers who
+
+00:25:56.090 --> 00:25:57.952 align:middle line:90%
+are buying that firm's product.
+
+00:25:57.952 --> 00:25:59.410 align:middle line:84%
+So what we're going
+to assume, just
+
+00:25:59.410 --> 00:26:02.490 align:middle line:84%
+to make the math
+pretty easy, is we'll
+
+00:26:02.490 --> 00:26:10.010 align:middle line:84%
+assume that our demand
+is Q of P equals--
+
+00:26:10.010 --> 00:26:13.740 align:middle line:84%
+well, we want to
+just say 1 minus P,
+
+00:26:13.740 --> 00:26:17.332 align:middle line:84%
+so that as the price goes
+up, the demand goes down.
+
+00:26:17.332 --> 00:26:18.040 align:middle line:90%
+That makes sense.
+
+00:26:18.040 --> 00:26:20.900 align:middle line:84%
+People buy less when
+the price is higher.
+
+00:26:20.900 --> 00:26:23.920 align:middle line:84%
+But the problem is, well, if
+the price gets really high,
+
+00:26:23.920 --> 00:26:25.660 align:middle line:84%
+then this demand
+would be negative.
+
+00:26:25.660 --> 00:26:27.120 align:middle line:90%
+And that's a problem.
+
+00:26:27.120 --> 00:26:28.960 align:middle line:84%
+We don't think that
+demand is ever negative.
+
+00:26:28.960 --> 00:26:33.340 align:middle line:84%
+So we're going to write
+the maximum of 1 minus P
+
+00:26:33.340 --> 00:26:38.020 align:middle line:84%
+And 0 so that, once the price
+gets high enough, specifically
+
+00:26:38.020 --> 00:26:42.040 align:middle line:84%
+when the price gets above 1,
+demand is just going to be 0.
+
+00:26:42.040 --> 00:26:43.640 align:middle line:84%
+No one's willing to
+buy at that price,
+
+00:26:43.640 --> 00:26:46.260 align:middle line:84%
+but demand won't
+actually become negative.
+
+00:26:46.260 --> 00:26:49.340 align:middle line:84%
+Now, when we solve
+things, we often
+
+00:26:49.340 --> 00:26:52.620 align:middle line:84%
+kind of cheat a little bit,
+and we forget about the max.
+
+00:26:52.620 --> 00:26:55.860 align:middle line:84%
+And we hope that, at the
+end, the prices we consider
+
+00:26:55.860 --> 00:26:57.640 align:middle line:84%
+won't be big enough
+that this matters.
+
+00:26:57.640 --> 00:27:01.185 align:middle line:84%
+So what we'll often do is we'll
+reason as if the max isn't here
+
+00:27:01.185 --> 00:27:03.060 align:middle line:84%
+and hope that at the
+end, our answer involves
+
+00:27:03.060 --> 00:27:04.660 align:middle line:90%
+a price that's less than 1.
+
+00:27:04.660 --> 00:27:07.000 align:middle line:84%
+And if it does, that's
+not going to be a problem.
+
+00:27:07.000 --> 00:27:08.640 align:middle line:84%
+But if we found a
+price greater than 1,
+
+00:27:08.640 --> 00:27:09.920 align:middle line:90%
+then we'd have some issues.
+
+00:27:09.920 --> 00:27:11.820 align:middle line:84%
+So that's just something
+to keep in mind
+
+00:27:11.820 --> 00:27:15.580 align:middle line:84%
+when you're working with these
+kinds of demand functions.
+
+00:27:15.580 --> 00:27:23.580 align:middle line:84%
+And let's remind us that this
+is an assumption, well, not just
+
+00:27:23.580 --> 00:27:26.680 align:middle line:84%
+about one consumer because
+we have many, many consumers,
+
+00:27:26.680 --> 00:27:29.120 align:middle line:84%
+so it's assumption about
+the population of consumers.
+
+00:27:29.120 --> 00:27:35.820 align:middle line:90%
+
+
+00:27:35.820 --> 00:27:38.700 align:middle line:84%
+Sometimes hear about demand-side
+and supply-side economics.
+
+00:27:38.700 --> 00:27:41.380 align:middle line:84%
+These are assumptions about
+the supply side, the supplier
+
+00:27:41.380 --> 00:27:43.100 align:middle line:84%
+of the good, and
+these are assumptions
+
+00:27:43.100 --> 00:27:47.380 align:middle line:84%
+about the demand side, the
+consumers who consume the good.
+
+00:27:47.380 --> 00:27:49.393 align:middle line:84%
+So now let's draw
+this, and I want
+
+00:27:49.393 --> 00:27:50.560 align:middle line:90%
+to be a little more precise.
+
+00:27:50.560 --> 00:27:52.400 align:middle line:84%
+Not only is c greater
+than or equal to 0,
+
+00:27:52.400 --> 00:27:55.780 align:middle line:84%
+but let's actually say
+it's between 0 and 1.
+
+00:27:55.780 --> 00:27:57.780 align:middle line:84%
+It's going to make
+things a bit easier.
+
+00:27:57.780 --> 00:28:01.100 align:middle line:84%
+It could be exactly 0, but let's
+say it's strictly positive,
+
+00:28:01.100 --> 00:28:03.940 align:middle line:90%
+and it's between 0 and 1.
+
+00:28:03.940 --> 00:28:06.680 align:middle line:90%
+So now let's draw this demand.
+
+00:28:06.680 --> 00:28:09.750 align:middle line:90%
+
+
+00:28:09.750 --> 00:28:13.510 align:middle line:84%
+So as usual, I'm going to have
+quantity on the horizontal axis
+
+00:28:13.510 --> 00:28:15.330 align:middle line:90%
+and price on the vertical axis.
+
+00:28:15.330 --> 00:28:18.150 align:middle line:90%
+
+
+00:28:18.150 --> 00:28:23.430 align:middle line:90%
+And let me mark 1 and 1.
+
+00:28:23.430 --> 00:28:25.810 align:middle line:84%
+Of course, this just
+makes the numbers easy,
+
+00:28:25.810 --> 00:28:28.330 align:middle line:84%
+but if you want to think of
+this depending on the product,
+
+00:28:28.330 --> 00:28:31.810 align:middle line:84%
+maybe this is $0.01 or
+$1 or $100 or $1,000,
+
+00:28:31.810 --> 00:28:33.090 align:middle line:90%
+but we'll just call it 1.
+
+00:28:33.090 --> 00:28:34.710 align:middle line:84%
+And similarly,
+maybe this is tons
+
+00:28:34.710 --> 00:28:36.760 align:middle line:90%
+of apples or bushels of apples.
+
+00:28:36.760 --> 00:28:38.510 align:middle line:84%
+It could be various
+things, but we'll just
+
+00:28:38.510 --> 00:28:41.510 align:middle line:90%
+use these simple units here.
+
+00:28:41.510 --> 00:28:43.010 align:middle line:84%
+And what does this
+demand look like?
+
+00:28:43.010 --> 00:28:45.750 align:middle line:84%
+Well, if the price
+is greater than 1,
+
+00:28:45.750 --> 00:28:48.110 align:middle line:84%
+then no one's willing
+to buy at all.
+
+00:28:48.110 --> 00:28:54.470 align:middle line:84%
+So the demand looks like
+that until we get to 1.
+
+00:28:54.470 --> 00:28:58.790 align:middle line:84%
+If the price is exactly
+1, then demand is 0.
+
+00:28:58.790 --> 00:29:02.570 align:middle line:84%
+And on the other hand, if the
+price is 0, then demand is 1.
+
+00:29:02.570 --> 00:29:05.070 align:middle line:84%
+So we know that there's-- here's
+another point on the demand
+
+00:29:05.070 --> 00:29:06.070 align:middle line:90%
+curve.
+
+00:29:06.070 --> 00:29:08.170 align:middle line:84%
+And because of the
+form of our demand,
+
+00:29:08.170 --> 00:29:10.095 align:middle line:84%
+this is what's called
+a linear demand.
+
+00:29:10.095 --> 00:29:11.470 align:middle line:84%
+So the demand
+curve is just going
+
+00:29:11.470 --> 00:29:14.510 align:middle line:84%
+to be a straight line that
+connects our point here
+
+00:29:14.510 --> 00:29:15.950 align:middle line:90%
+and our point here.
+
+00:29:15.950 --> 00:29:19.110 align:middle line:84%
+So maybe I'll draw it
+something like this.
+
+00:29:19.110 --> 00:29:23.710 align:middle line:84%
+If my axes were straight,
+this should be, I guess,
+
+00:29:23.710 --> 00:29:24.810 align:middle line:90%
+an isosceles triangle.
+
+00:29:24.810 --> 00:29:27.750 align:middle line:84%
+But maybe I haven't
+done it quite right.
+
+00:29:27.750 --> 00:29:34.710 align:middle line:84%
+OK, and just so we understand,
+at any price P here,
+
+00:29:34.710 --> 00:29:38.530 align:middle line:84%
+this value is Q of
+P, let's understand.
+
+00:29:38.530 --> 00:29:41.230 align:middle line:84%
+So at this price here,
+I walk horizontally
+
+00:29:41.230 --> 00:29:44.210 align:middle line:84%
+to the value of the function
+Q of P. I come down,
+
+00:29:44.210 --> 00:29:46.710 align:middle line:84%
+and that's the value Q of P
+here, which is, in this case,
+
+00:29:46.710 --> 00:29:50.190 align:middle line:90%
+is exactly 1 minus P.
+
+00:29:50.190 --> 00:29:53.790 align:middle line:84%
+So now I need to represent
+one more thing on the graph.
+
+00:29:53.790 --> 00:29:55.630 align:middle line:84%
+So far, the graph
+is only representing
+
+00:29:55.630 --> 00:29:57.270 align:middle line:90%
+the demand side of the market.
+
+00:29:57.270 --> 00:30:00.130 align:middle line:84%
+Now, I also want to
+represent the firm's costs.
+
+00:30:00.130 --> 00:30:05.900 align:middle line:84%
+So let me put c here, and I'll
+draw a horizontal line here.
+
+00:30:05.900 --> 00:30:09.220 align:middle line:84%
+So this is going to represent
+the firm's cost of production.
+
+00:30:09.220 --> 00:30:11.800 align:middle line:90%
+
+
+00:30:11.800 --> 00:30:16.840 align:middle line:84%
+And now let's understand, if the
+firm were to set a price of P,
+
+00:30:16.840 --> 00:30:18.340 align:middle line:90%
+what would their profits be?
+
+00:30:18.340 --> 00:30:21.640 align:middle line:90%
+So let's try to write this down.
+
+00:30:21.640 --> 00:30:24.320 align:middle line:84%
+I want to understand
+what is pi of P?
+
+00:30:24.320 --> 00:30:26.920 align:middle line:84%
+So this is-- suppose
+I'm the monopolist.
+
+00:30:26.920 --> 00:30:29.120 align:middle line:90%
+I choose to set a price of p.
+
+00:30:29.120 --> 00:30:30.900 align:middle line:90%
+What are my profits going to be?
+
+00:30:30.900 --> 00:30:32.340 align:middle line:90%
+If I set this price of p?
+
+00:30:32.340 --> 00:30:35.920 align:middle line:90%
+
+
+00:30:35.920 --> 00:30:38.520 align:middle line:84%
+Well, let's break it
+down into two parts.
+
+00:30:38.520 --> 00:30:41.840 align:middle line:84%
+The first is my profit
+per unit that I sell.
+
+00:30:41.840 --> 00:30:45.440 align:middle line:84%
+So for each unit that I sell,
+I sell it at a price of p,
+
+00:30:45.440 --> 00:30:48.120 align:middle line:84%
+but I have to pay a
+cost of c to produce it.
+
+00:30:48.120 --> 00:30:53.140 align:middle line:84%
+So my profit per
+unit is p minus c.
+
+00:30:53.140 --> 00:30:59.200 align:middle line:90%
+
+
+00:30:59.200 --> 00:31:01.860 align:middle line:84%
+But then the question is I'm
+getting this profit per unit.
+
+00:31:01.860 --> 00:31:03.720 align:middle line:84%
+But how many units
+do I actually sell?
+
+00:31:03.720 --> 00:31:07.020 align:middle line:84%
+So it's going to be p
+minus c times Q of p.
+
+00:31:07.020 --> 00:31:11.640 align:middle line:90%
+
+
+00:31:11.640 --> 00:31:13.480 align:middle line:84%
+And now we see the
+basic trade-off
+
+00:31:13.480 --> 00:31:15.200 align:middle line:90%
+that the monopolist faces.
+
+00:31:15.200 --> 00:31:18.480 align:middle line:84%
+What happens when the
+monopolist raises their price?
+
+00:31:18.480 --> 00:31:22.800 align:middle line:84%
+They increase their
+profit per unit.
+
+00:31:22.800 --> 00:31:25.080 align:middle line:84%
+If I increase the price of
+apples, each apple I sell
+
+00:31:25.080 --> 00:31:25.780 align:middle line:90%
+is great for me.
+
+00:31:25.780 --> 00:31:28.120 align:middle line:84%
+I'm making a lot of money
+on each apple I sell.
+
+00:31:28.120 --> 00:31:30.600 align:middle line:84%
+But when I raise
+that price, I'm not
+
+00:31:30.600 --> 00:31:32.080 align:middle line:90%
+going to sell as many apples.
+
+00:31:32.080 --> 00:31:34.440 align:middle line:84%
+So the number of units
+that I sell goes down.
+
+00:31:34.440 --> 00:31:36.400 align:middle line:84%
+And the basic trade-off
+for the monopolist
+
+00:31:36.400 --> 00:31:39.760 align:middle line:84%
+is to balance these two
+effects, the per-unit profits
+
+00:31:39.760 --> 00:31:44.360 align:middle line:84%
+against the total number
+of units that are sold.
+
+00:31:44.360 --> 00:31:49.260 align:middle line:84%
+And let's write this, for
+prices that are between 0 and 1,
+
+00:31:49.260 --> 00:31:52.060 align:middle line:84%
+this is going to take
+the form like this.
+
+00:31:52.060 --> 00:31:58.000 align:middle line:84%
+So in general, Q of p is the
+maximum of 1 minus p and 0.
+
+00:31:58.000 --> 00:32:00.650 align:middle line:84%
+But as long as p is not
+too big, then this is just
+
+00:32:00.650 --> 00:32:02.290 align:middle line:90%
+going to reduce to 1 minus p.
+
+00:32:02.290 --> 00:32:05.850 align:middle line:84%
+And I can substitute
+this in here.
+
+00:32:05.850 --> 00:32:08.450 align:middle line:84%
+Now we can nicely
+see this graphically.
+
+00:32:08.450 --> 00:32:11.130 align:middle line:84%
+Graphically, if I
+look at this price p,
+
+00:32:11.130 --> 00:32:19.410 align:middle line:84%
+well, this is going to be
+the amount that I sell.
+
+00:32:19.410 --> 00:32:22.170 align:middle line:84%
+And p minus c is
+my profit per unit.
+
+00:32:22.170 --> 00:32:28.850 align:middle line:84%
+So what I see is I can
+actually shade in my profit
+
+00:32:28.850 --> 00:32:31.490 align:middle line:90%
+as this square or rectangle.
+
+00:32:31.490 --> 00:32:41.090 align:middle line:84%
+So the shaded rectangle
+equals profit.
+
+00:32:41.090 --> 00:32:42.890 align:middle line:84%
+Let's make sure
+we understand it.
+
+00:32:42.890 --> 00:32:45.010 align:middle line:84%
+I could actually look
+at the entire rectangle
+
+00:32:45.010 --> 00:32:47.170 align:middle line:84%
+all the way down to
+the horizontal axis.
+
+00:32:47.170 --> 00:32:50.930 align:middle line:84%
+That would represent revenue
+because that entire rectangle,
+
+00:32:50.930 --> 00:32:57.630 align:middle line:84%
+its area is its height, which
+is the price, times its width,
+
+00:32:57.630 --> 00:32:59.250 align:middle line:90%
+which is the demand.
+
+00:32:59.250 --> 00:33:02.570 align:middle line:84%
+So the entire rectangle
+tells me the price
+
+00:33:02.570 --> 00:33:04.650 align:middle line:90%
+times the amount that I sell.
+
+00:33:04.650 --> 00:33:05.630 align:middle line:90%
+That's revenue.
+
+00:33:05.630 --> 00:33:07.690 align:middle line:84%
+That's the amount
+of money I take in.
+
+00:33:07.690 --> 00:33:09.370 align:middle line:84%
+But I'm not counting
+this little part
+
+00:33:09.370 --> 00:33:11.770 align:middle line:84%
+of the rectangle in
+my profit because this
+
+00:33:11.770 --> 00:33:14.650 align:middle line:84%
+is the cost I have to pay
+to produce that amount.
+
+00:33:14.650 --> 00:33:22.330 align:middle line:84%
+So remember, profit is profit
+which equals revenue minus cost,
+
+00:33:22.330 --> 00:33:24.930 align:middle line:84%
+revenue meaning the total
+amount of money that I take
+
+00:33:24.930 --> 00:33:27.770 align:middle line:84%
+in and cost being
+the amount that I
+
+00:33:27.770 --> 00:33:31.130 align:middle line:84%
+have to pay in order to
+produce the amount that I sell.
+
+00:33:31.130 --> 00:33:33.510 align:middle line:84%
+So I don't want to make
+the graph too ugly,
+
+00:33:33.510 --> 00:33:36.890 align:middle line:90%
+but this would be the cost.
+
+00:33:36.890 --> 00:33:39.610 align:middle line:84%
+I have to pay a
+cost of c per unit,
+
+00:33:39.610 --> 00:33:43.930 align:middle line:84%
+and then the width here is the
+number of units that I sell.
+
+00:33:43.930 --> 00:33:45.750 align:middle line:84%
+So what is the
+monopolist trying to do?
+
+00:33:45.750 --> 00:33:47.330 align:middle line:84%
+They're trying to
+choose this price
+
+00:33:47.330 --> 00:33:50.210 align:middle line:90%
+p to maximize their profit.
+
+00:33:50.210 --> 00:33:54.370 align:middle line:84%
+That is, choose this price
+p to make this rectangle--
+
+00:33:54.370 --> 00:33:57.923 align:middle line:84%
+to make the area of this
+rectangle as large as possible.
+
+00:33:57.923 --> 00:34:00.340 align:middle line:84%
+Now, let's just understand
+some extreme cases, some things
+
+00:34:00.340 --> 00:34:01.580 align:middle line:90%
+they wouldn't want to do.
+
+00:34:01.580 --> 00:34:03.980 align:middle line:84%
+What if they set
+the price to be 1?
+
+00:34:03.980 --> 00:34:06.260 align:middle line:90%
+What would their profit be?
+
+00:34:06.260 --> 00:34:06.960 align:middle line:90%
+0, right?
+
+00:34:06.960 --> 00:34:09.980 align:middle line:84%
+If they set the price to
+1, no one's going to buy.
+
+00:34:09.980 --> 00:34:12.659 align:middle line:90%
+What if they set the price to c?
+
+00:34:12.659 --> 00:34:14.659 align:middle line:90%
+Then their profit is also 0.
+
+00:34:14.659 --> 00:34:16.219 align:middle line:84%
+A lot of people
+are going to buy,
+
+00:34:16.219 --> 00:34:18.679 align:middle line:84%
+but if they're charging
+exactly what their cost is,
+
+00:34:18.679 --> 00:34:19.940 align:middle line:90%
+they're not making any money.
+
+00:34:19.940 --> 00:34:22.260 align:middle line:84%
+And in fact, if they
+set a price below c,
+
+00:34:22.260 --> 00:34:24.820 align:middle line:84%
+they'd actually be losing money
+because their revenue would
+
+00:34:24.820 --> 00:34:26.940 align:middle line:90%
+be smaller than their cost.
+
+00:34:26.940 --> 00:34:28.820 align:middle line:84%
+So it's pretty clear
+that the price should
+
+00:34:28.820 --> 00:34:31.168 align:middle line:90%
+be somewhere between 1 and c.
+
+00:34:31.168 --> 00:34:32.960 align:middle line:84%
+And let's actually
+figure out what that is.
+
+00:34:32.960 --> 00:34:39.179 align:middle line:84%
+So let's now find the
+optimal monopoly price.
+
+00:34:39.179 --> 00:34:41.520 align:middle line:84%
+So maybe I'll call it
+the monopoly problem.
+
+00:34:41.520 --> 00:34:45.802 align:middle line:90%
+
+
+00:34:45.802 --> 00:34:47.260 align:middle line:84%
+Well, what is the
+monopolist doing?
+
+00:34:47.260 --> 00:34:53.340 align:middle line:84%
+They're maximizing
+over the price p
+
+00:34:53.340 --> 00:35:00.060 align:middle line:84%
+of pi of p, which equals
+p minus c times 1 minus p.
+
+00:35:00.060 --> 00:35:02.040 align:middle line:84%
+Now, again, you
+could say I'm not--
+
+00:35:02.040 --> 00:35:05.260 align:middle line:84%
+this is not quite correct
+because, technically,
+
+00:35:05.260 --> 00:35:07.220 align:middle line:84%
+for some prices
+they might choose,
+
+00:35:07.220 --> 00:35:09.980 align:middle line:84%
+this is not a
+reflection of demand.
+
+00:35:09.980 --> 00:35:13.780 align:middle line:84%
+But this is the correct formula
+for the reasonable range
+
+00:35:13.780 --> 00:35:15.640 align:middle line:90%
+of prices between 0 and 1.
+
+00:35:15.640 --> 00:35:17.700 align:middle line:84%
+And if I check at the
+end that the price I get
+
+00:35:17.700 --> 00:35:20.360 align:middle line:84%
+is between 0 and 1, then
+everything's going to be OK.
+
+00:35:20.360 --> 00:35:22.540 align:middle line:84%
+But recognize that
+I'm not literally
+
+00:35:22.540 --> 00:35:25.420 align:middle line:84%
+claiming that if my
+price is 10, then
+
+00:35:25.420 --> 00:35:28.220 align:middle line:84%
+my profit is going
+to be negative
+
+00:35:28.220 --> 00:35:30.120 align:middle line:84%
+because if I set a
+price of 10, in fact,
+
+00:35:30.120 --> 00:35:34.500 align:middle line:84%
+my profit will be 0 because no
+one's going to buy the good.
+
+00:35:34.500 --> 00:35:36.960 align:middle line:84%
+Well, how do we maximize a
+single variable function?
+
+00:35:36.960 --> 00:35:39.420 align:middle line:84%
+We take derivatives
+and set them to 0.
+
+00:35:39.420 --> 00:35:42.480 align:middle line:84%
+You can check that this is
+going to be a concave function.
+
+00:35:42.480 --> 00:35:44.020 align:middle line:84%
+So if we set the
+derivative to 0,
+
+00:35:44.020 --> 00:35:46.460 align:middle line:84%
+we'll actually
+find the maximizer.
+
+00:35:46.460 --> 00:35:50.140 align:middle line:84%
+And so the derivative
+pi prime of p,
+
+00:35:50.140 --> 00:35:53.150 align:middle line:84%
+well, we're just going
+to use the product rule.
+
+00:35:53.150 --> 00:35:56.910 align:middle line:84%
+So we take the derivative of
+the first term times the second.
+
+00:35:56.910 --> 00:35:59.230 align:middle line:84%
+The derivative of
+the first term is 1.
+
+00:35:59.230 --> 00:36:01.210 align:middle line:84%
+So we just multiply
+that by the second term,
+
+00:36:01.210 --> 00:36:03.910 align:middle line:90%
+and we get 1 minus p.
+
+00:36:03.910 --> 00:36:07.070 align:middle line:84%
+Then we have the
+first term p minus c
+
+00:36:07.070 --> 00:36:09.670 align:middle line:84%
+times the derivative of
+the second term, which
+
+00:36:09.670 --> 00:36:11.350 align:middle line:90%
+is negative 1.
+
+00:36:11.350 --> 00:36:13.470 align:middle line:90%
+So we get negative 1 here.
+
+00:36:13.470 --> 00:36:17.170 align:middle line:84%
+So we get 1 minus p plus
+minus 1 times p minus c.
+
+00:36:17.170 --> 00:36:19.230 align:middle line:90%
+Let's try to simplify this.
+
+00:36:19.230 --> 00:36:26.310 align:middle line:84%
+Well, we're actually
+going to get 1 plus c.
+
+00:36:26.310 --> 00:36:27.550 align:middle line:90%
+minus 2p.
+
+00:36:27.550 --> 00:36:32.110 align:middle line:90%
+
+
+00:36:32.110 --> 00:36:39.230 align:middle line:84%
+So we want to set this to 0
+and solve for 0 equals this.
+
+00:36:39.230 --> 00:36:42.470 align:middle line:84%
+We're going to pull the 2p to
+the other side and divide by p.
+
+00:36:42.470 --> 00:36:46.350 align:middle line:84%
+And what we can see is that
+the monopoly price p star
+
+00:36:46.350 --> 00:36:49.110 align:middle line:90%
+is going to be 1 plus c over 2.
+
+00:36:49.110 --> 00:36:52.150 align:middle line:90%
+
+
+00:36:52.150 --> 00:36:53.970 align:middle line:84%
+So in fact, it
+will be the price.
+
+00:36:53.970 --> 00:36:56.430 align:middle line:84%
+What is 1 plus c over
+2, geometrically?
+
+00:36:56.430 --> 00:37:00.070 align:middle line:84%
+It's the midpoint
+between 1 and c.
+
+00:37:00.070 --> 00:37:03.470 align:middle line:84%
+And if you draw this
+correctly, the optimal price 1
+
+00:37:03.470 --> 00:37:07.430 align:middle line:84%
+plus c over 2 will, actually,
+make this rectangle a square.
+
+00:37:07.430 --> 00:37:10.190 align:middle line:84%
+I won't try to show it here
+because I think my picture isn't
+
+00:37:10.190 --> 00:37:12.350 align:middle line:84%
+exactly to scale,
+but what you'll find
+
+00:37:12.350 --> 00:37:16.830 align:middle line:90%
+is that this will be a square.
+
+00:37:16.830 --> 00:37:20.090 align:middle line:84%
+And this is actually
+a nice geometric fact.
+
+00:37:20.090 --> 00:37:21.825 align:middle line:84%
+So you could do all
+the calculus here.
+
+00:37:21.825 --> 00:37:23.450 align:middle line:84%
+I mean, it's not too
+hard in this case,
+
+00:37:23.450 --> 00:37:24.950 align:middle line:90%
+but it sometimes gets messier.
+
+00:37:24.950 --> 00:37:32.950 align:middle line:84%
+One way to think about this is,
+well, p minus c plus 1 minus p,
+
+00:37:32.950 --> 00:37:35.150 align:middle line:90%
+that turns out to be constant.
+
+00:37:35.150 --> 00:37:37.350 align:middle line:84%
+So what you're actually
+being asked to do here
+
+00:37:37.350 --> 00:37:41.230 align:middle line:84%
+is to find a rectangle
+of maximal area
+
+00:37:41.230 --> 00:37:43.470 align:middle line:90%
+given a fixed perimeter.
+
+00:37:43.470 --> 00:37:45.590 align:middle line:84%
+So this is just a reflection
+of the geometric fact
+
+00:37:45.590 --> 00:37:47.870 align:middle line:84%
+that if I fix a
+perimeter, and I ask
+
+00:37:47.870 --> 00:37:50.460 align:middle line:84%
+you to find the rectangle
+of largest area,
+
+00:37:50.460 --> 00:37:52.460 align:middle line:84%
+given that perimeter,
+it's going to be a square.
+
+00:37:52.460 --> 00:37:56.040 align:middle line:84%
+So that's actually why
+we get a square here.
+
+00:37:56.040 --> 00:37:59.480 align:middle line:84%
+But that's just a
+fact to keep in mind.
+
+00:37:59.480 --> 00:38:02.440 align:middle line:90%
+So now we found p star.
+
+00:38:02.440 --> 00:38:05.360 align:middle line:90%
+Let's now find Q star.
+
+00:38:05.360 --> 00:38:09.800 align:middle line:84%
+So Q of p star is
+going to be what?
+
+00:38:09.800 --> 00:38:13.120 align:middle line:90%
+Well, q of p is just 1 minus p.
+
+00:38:13.120 --> 00:38:21.980 align:middle line:84%
+So we're going to get 1
+minus 1 plus c over 2.
+
+00:38:21.980 --> 00:38:24.560 align:middle line:90%
+
+
+00:38:24.560 --> 00:38:28.880 align:middle line:84%
+And if we simplify that, we
+can think of this as 2 over 2.
+
+00:38:28.880 --> 00:38:33.880 align:middle line:84%
+So we're going to
+get 1 minus c over 2.
+
+00:38:33.880 --> 00:38:37.520 align:middle line:84%
+So what this says is, it's going
+to be optimal for the monopolist
+
+00:38:37.520 --> 00:38:42.360 align:middle line:84%
+to set a price of 1 plus c over
+2, and when they set that price,
+
+00:38:42.360 --> 00:38:44.120 align:middle line:84%
+the number of units
+they're going to sell
+
+00:38:44.120 --> 00:38:45.480 align:middle line:90%
+is 1 minus c over 2.
+
+00:38:45.480 --> 00:38:48.235 align:middle line:90%
+
+
+00:38:48.235 --> 00:38:49.860 align:middle line:84%
+Now, the first thing
+we should observe,
+
+00:38:49.860 --> 00:38:52.760 align:middle line:84%
+which I think makes
+sense, is that the price
+
+00:38:52.760 --> 00:38:55.160 align:middle line:84%
+the monopolist finds
+it optimal to charge
+
+00:38:55.160 --> 00:38:57.905 align:middle line:84%
+is increasing in their
+production costs.
+
+00:38:57.905 --> 00:38:58.780 align:middle line:90%
+And this makes sense.
+
+00:38:58.780 --> 00:39:00.322 align:middle line:84%
+So whenever you
+solve these problems,
+
+00:39:00.322 --> 00:39:02.375 align:middle line:84%
+I think it's good to go
+through the intuition.
+
+00:39:02.375 --> 00:39:04.000 align:middle line:84%
+Does it make sense
+that, when something
+
+00:39:04.000 --> 00:39:07.220 align:middle line:84%
+is more expensive to produce,
+I charge a higher price?
+
+00:39:07.220 --> 00:39:08.760 align:middle line:84%
+Yeah, that certainly
+makes sense.
+
+00:39:08.760 --> 00:39:11.440 align:middle line:84%
+And in fact, it's often
+helpful to decompose
+
+00:39:11.440 --> 00:39:15.800 align:middle line:90%
+this in a very special way.
+
+00:39:15.800 --> 00:39:23.880 align:middle line:84%
+So we can actually write this
+as c plus 1 minus c over 2.
+
+00:39:23.880 --> 00:39:25.340 align:middle line:90%
+Let's check that that agrees.
+
+00:39:25.340 --> 00:39:28.720 align:middle line:90%
+This is 1/2 plus 1/2 half of c.
+
+00:39:28.720 --> 00:39:34.040 align:middle line:84%
+And this is c minus c over
+2, so we still have 1/2 c.
+
+00:39:34.040 --> 00:39:35.100 align:middle line:90%
+And then we have a 1/2.
+
+00:39:35.100 --> 00:39:38.840 align:middle line:90%
+So the algebra works out.
+
+00:39:38.840 --> 00:39:42.200 align:middle line:84%
+And it's helpful to decompose
+it this way because c
+
+00:39:42.200 --> 00:39:45.280 align:middle line:90%
+is the cost of production.
+
+00:39:45.280 --> 00:39:47.490 align:middle line:90%
+So this term has a name.
+
+00:39:47.490 --> 00:39:53.290 align:middle line:84%
+Has anyone heard what we
+might call this term here?
+
+00:39:53.290 --> 00:39:54.750 align:middle line:90%
+This is often called the markup.
+
+00:39:54.750 --> 00:39:55.917 align:middle line:90%
+And you might talk about it.
+
+00:39:55.917 --> 00:39:58.550 align:middle line:84%
+You go to a store, say, wow,
+that's a really high markup.
+
+00:39:58.550 --> 00:40:00.675 align:middle line:84%
+If you go to a restaurant,
+I could buy this chicken
+
+00:40:00.675 --> 00:40:02.270 align:middle line:84%
+at a grocery store
+for this price.
+
+00:40:02.270 --> 00:40:03.670 align:middle line:84%
+But this restaurant is
+charging a lot more.
+
+00:40:03.670 --> 00:40:04.420 align:middle line:90%
+That's the markup.
+
+00:40:04.420 --> 00:40:06.930 align:middle line:84%
+It's the difference between
+the price you're paying
+
+00:40:06.930 --> 00:40:09.350 align:middle line:84%
+and the cost that they're
+actually paying to produce it.
+
+00:40:09.350 --> 00:40:11.110 align:middle line:90%
+So this is called the markup.
+
+00:40:11.110 --> 00:40:13.850 align:middle line:90%
+
+
+00:40:13.850 --> 00:40:16.770 align:middle line:84%
+So we see that monopolists
+charge a markup.
+
+00:40:16.770 --> 00:40:20.270 align:middle line:84%
+They don't charge a price equal
+to their cost of production.
+
+00:40:20.270 --> 00:40:22.530 align:middle line:84%
+They charge a price
+that's strictly higher
+
+00:40:22.530 --> 00:40:23.933 align:middle line:90%
+than their cost of production.
+
+00:40:23.933 --> 00:40:25.850 align:middle line:84%
+And that's because they're
+taking advantage of
+
+00:40:25.850 --> 00:40:29.330 align:middle line:84%
+or exploiting their
+monopoly power.
+
+00:40:29.330 --> 00:40:30.690 align:middle line:90%
+Great.
+
+00:40:30.690 --> 00:40:34.250 align:middle line:84%
+So now let's move to
+the actual game theory
+
+00:40:34.250 --> 00:40:40.950 align:middle line:84%
+and think about what happens
+if we have multiple firms.
+
+00:40:40.950 --> 00:40:50.290 align:middle line:90%
+
+
+00:40:50.290 --> 00:40:52.790 align:middle line:84%
+So now what if there
+are multiple firms?
+
+00:40:52.790 --> 00:41:06.210 align:middle line:90%
+
+
+00:41:06.210 --> 00:41:10.610 align:middle line:84%
+Well, we have to think, how are
+these firms going to compete?
+
+00:41:10.610 --> 00:41:12.650 align:middle line:84%
+It's not so clear
+what they're doing.
+
+00:41:12.650 --> 00:41:15.650 align:middle line:84%
+And we're actually going to
+study two classical models
+
+00:41:15.650 --> 00:41:17.570 align:middle line:90%
+of how firms compete.
+
+00:41:17.570 --> 00:41:23.230 align:middle line:84%
+So one model is what's
+called quantity competition.
+
+00:41:23.230 --> 00:41:28.085 align:middle line:90%
+
+
+00:41:28.085 --> 00:41:30.210 align:middle line:84%
+And here, I think the model
+you should have in mind
+
+00:41:30.210 --> 00:41:31.390 align:middle line:90%
+is you're a farmer.
+
+00:41:31.390 --> 00:41:32.790 align:middle line:90%
+You think of two farmers.
+
+00:41:32.790 --> 00:41:35.810 align:middle line:84%
+They're choosing how many
+apples to bring to the market.
+
+00:41:35.810 --> 00:41:37.930 align:middle line:84%
+And once they get to
+the market, the price
+
+00:41:37.930 --> 00:41:39.570 align:middle line:84%
+that they can get at
+the market depends
+
+00:41:39.570 --> 00:41:41.810 align:middle line:84%
+on how many apples people
+bring to the market.
+
+00:41:41.810 --> 00:41:45.020 align:middle line:84%
+So here, in quantity
+competition,
+
+00:41:45.020 --> 00:41:46.560 align:middle line:90%
+firms choose quantities.
+
+00:41:46.560 --> 00:41:52.380 align:middle line:90%
+
+
+00:41:52.380 --> 00:41:54.840 align:middle line:84%
+And then the market
+chooses the price.
+
+00:41:54.840 --> 00:41:58.140 align:middle line:90%
+
+
+00:41:58.140 --> 00:42:01.140 align:middle line:90%
+Maybe sets price.
+
+00:42:01.140 --> 00:42:03.780 align:middle line:84%
+So this is the oil
+example I gave earlier.
+
+00:42:03.780 --> 00:42:06.260 align:middle line:84%
+If the US-- say, I gave
+Saudi Arabia before.
+
+00:42:06.260 --> 00:42:08.140 align:middle line:84%
+Let's say the US,
+if the US increases
+
+00:42:08.140 --> 00:42:10.580 align:middle line:84%
+its oil or its
+natural gas production
+
+00:42:10.580 --> 00:42:13.860 align:middle line:84%
+and floods the market, that's
+going to decrease the market
+
+00:42:13.860 --> 00:42:15.300 align:middle line:90%
+price of oil.
+
+00:42:15.300 --> 00:42:17.020 align:middle line:84%
+So the US isn't
+just saying this is
+
+00:42:17.020 --> 00:42:19.100 align:middle line:90%
+the price of oil I'm charging.
+
+00:42:19.100 --> 00:42:20.700 align:middle line:84%
+They produce more
+oil, and then they
+
+00:42:20.700 --> 00:42:23.420 align:middle line:84%
+have to take the price
+that they're given.
+
+00:42:23.420 --> 00:42:25.415 align:middle line:84%
+So that's the model of
+quantity competition.
+
+00:42:25.415 --> 00:42:27.540 align:middle line:84%
+The other model is maybe
+the more traditional model
+
+00:42:27.540 --> 00:42:31.900 align:middle line:84%
+that you think of
+price competition,
+
+00:42:31.900 --> 00:42:34.520 align:middle line:84%
+where, here, firms
+choose prices.
+
+00:42:34.520 --> 00:42:36.220 align:middle line:84%
+You have two stores
+side by side.
+
+00:42:36.220 --> 00:42:37.780 align:middle line:84%
+They each post a
+sign that says, this
+
+00:42:37.780 --> 00:42:41.380 align:middle line:84%
+is how much it costs to
+buy this item at our store.
+
+00:42:41.380 --> 00:42:44.880 align:middle line:90%
+So here, firms choose prices.
+
+00:42:44.880 --> 00:42:49.980 align:middle line:90%
+
+
+00:42:49.980 --> 00:42:53.220 align:middle line:84%
+And then those prices determine
+how much consumers actually
+
+00:42:53.220 --> 00:42:55.060 align:middle line:90%
+buy from each store.
+
+00:42:55.060 --> 00:42:58.500 align:middle line:84%
+So then you could say
+the market sets demand.
+
+00:42:58.500 --> 00:43:01.140 align:middle line:90%
+Or I'll say quantities--
+
+00:43:01.140 --> 00:43:07.900 align:middle line:84%
+maybe I'll say the
+market chooses demand--
+
+00:43:07.900 --> 00:43:09.000 align:middle line:90%
+or chooses quantity.
+
+00:43:09.000 --> 00:43:11.860 align:middle line:90%
+
+
+00:43:11.860 --> 00:43:13.143 align:middle line:90%
+So I see two stores.
+
+00:43:13.143 --> 00:43:15.560 align:middle line:84%
+They each have a sign that
+says how much they're charging.
+
+00:43:15.560 --> 00:43:18.100 align:middle line:84%
+And I choose which
+store to go to.
+
+00:43:18.100 --> 00:43:20.140 align:middle line:84%
+So I think these are
+two very natural ways
+
+00:43:20.140 --> 00:43:23.108 align:middle line:90%
+of thinking about competition.
+
+00:43:23.108 --> 00:43:24.900 align:middle line:84%
+We're going to find in
+the next few minutes
+
+00:43:24.900 --> 00:43:27.300 align:middle line:84%
+that these actually give
+very different answers.
+
+00:43:27.300 --> 00:43:31.060 align:middle line:84%
+So I think there's
+the math, which allows
+
+00:43:31.060 --> 00:43:33.112 align:middle line:90%
+us to analyze these two models.
+
+00:43:33.112 --> 00:43:34.820 align:middle line:84%
+And then I think the
+job of the economist
+
+00:43:34.820 --> 00:43:36.860 align:middle line:84%
+is to try to figure out
+which of these models
+
+00:43:36.860 --> 00:43:39.990 align:middle line:84%
+is more appropriate in
+a particular situation.
+
+00:43:39.990 --> 00:43:42.150 align:middle line:84%
+Because they both
+seem reasonable,
+
+00:43:42.150 --> 00:43:43.822 align:middle line:84%
+and I gave a few
+examples of markets
+
+00:43:43.822 --> 00:43:45.530 align:middle line:84%
+that might fit one
+better than the other,
+
+00:43:45.530 --> 00:43:47.930 align:middle line:84%
+but whenever we have two models
+that both seem reasonable,
+
+00:43:47.930 --> 00:43:49.050 align:middle line:84%
+they give very
+different results,
+
+00:43:49.050 --> 00:43:51.508 align:middle line:84%
+we really have to think hard
+about which is the right model
+
+00:43:51.508 --> 00:43:53.510 align:middle line:84%
+to capture the situation
+we have in mind.
+
+00:43:53.510 --> 00:43:56.350 align:middle line:84%
+So it turns out
+this one came first.
+
+00:43:56.350 --> 00:43:59.855 align:middle line:90%
+This is a model by Cournot.
+
+00:43:59.855 --> 00:44:01.230 align:middle line:84%
+It's easy to
+remember these dates
+
+00:44:01.230 --> 00:44:02.810 align:middle line:90%
+because they mirror each other.
+
+00:44:02.810 --> 00:44:05.153 align:middle line:90%
+This was in 1838.
+
+00:44:05.153 --> 00:44:07.070 align:middle line:84%
+And then, in this model,
+the price competition
+
+00:44:07.070 --> 00:44:10.920 align:middle line:84%
+is by Bertrand, and
+this is actually 1883.
+
+00:44:10.920 --> 00:44:12.670 align:middle line:84%
+I mean, the dates don't
+matter, but I just
+
+00:44:12.670 --> 00:44:16.430 align:middle line:84%
+think it's fun that the
+dates are like that.
+
+00:44:16.430 --> 00:44:19.450 align:middle line:84%
+And Cournot came along,
+wrote down this model.
+
+00:44:19.450 --> 00:44:23.530 align:middle line:84%
+He was motivated by,
+actually, spring water,
+
+00:44:23.530 --> 00:44:26.695 align:middle line:84%
+these two firms that were
+sitting on a spring and were,
+
+00:44:26.695 --> 00:44:29.070 align:middle line:84%
+I don't know, bottling or I
+don't know how water was sold
+
+00:44:29.070 --> 00:44:32.510 align:middle line:84%
+in the 1800s, putting water
+into buckets and selling it.
+
+00:44:32.510 --> 00:44:35.230 align:middle line:84%
+And then Bertrand
+wrote an angry article
+
+00:44:35.230 --> 00:44:37.670 align:middle line:84%
+a few years later saying,
+this is a crazy way
+
+00:44:37.670 --> 00:44:38.730 align:middle line:90%
+to model competition.
+
+00:44:38.730 --> 00:44:40.890 align:middle line:90%
+Firms don't choose quantities.
+
+00:44:40.890 --> 00:44:41.973 align:middle line:90%
+They choose prices.
+
+00:44:41.973 --> 00:44:44.390 align:middle line:84%
+And today, modern industrial
+organization economists still
+
+00:44:44.390 --> 00:44:46.550 align:middle line:84%
+think about different ways
+of modeling competition
+
+00:44:46.550 --> 00:44:48.210 align:middle line:84%
+and what's the right
+way to think about it.
+
+00:44:48.210 --> 00:44:50.330 align:middle line:84%
+There's no right way, but
+in different situations,
+
+00:44:50.330 --> 00:44:51.430 align:middle line:90%
+which one is better.
+
+00:44:51.430 --> 00:44:55.310 align:middle line:84%
+OK, So let's go through
+these formal models.
+
+00:44:55.310 --> 00:44:56.730 align:middle line:90%
+So we'll start with Cournot.
+
+00:44:56.730 --> 00:44:58.810 align:middle line:90%
+We'll go chronologically.
+
+00:44:58.810 --> 00:45:08.950 align:middle line:90%
+
+
+00:45:08.950 --> 00:45:11.310 align:middle line:84%
+So this is sometimes known
+as quantity competition.
+
+00:45:11.310 --> 00:45:13.450 align:middle line:84%
+Sometimes called
+Cournot competition.
+
+00:45:13.450 --> 00:45:14.490 align:middle line:90%
+Those are synonymous.
+
+00:45:14.490 --> 00:45:17.650 align:middle line:84%
+So maybe here I'll call
+it Cournot competition.
+
+00:45:17.650 --> 00:45:22.190 align:middle line:90%
+
+
+00:45:22.190 --> 00:45:23.410 align:middle line:90%
+So what's the model?
+
+00:45:23.410 --> 00:45:29.830 align:middle line:84%
+We have two firms, and we'll
+call those firms 1 and 2.
+
+00:45:29.830 --> 00:45:32.950 align:middle line:84%
+And each firm has the same
+constant marginal cost
+
+00:45:32.950 --> 00:45:34.960 align:middle line:90%
+of production.
+
+00:45:34.960 --> 00:45:46.580 align:middle line:84%
+So we'll say constant
+marginal cost c at both firms.
+
+00:45:46.580 --> 00:45:50.320 align:middle line:90%
+
+
+00:45:50.320 --> 00:45:53.740 align:middle line:84%
+And let's assume c is between
+0 and 1, just as we did before.
+
+00:45:53.740 --> 00:45:57.920 align:middle line:90%
+
+
+00:45:57.920 --> 00:46:01.153 align:middle line:90%
+And now we have market demand.
+
+00:46:01.153 --> 00:46:03.320 align:middle line:84%
+We're actually going to
+look at the inverse demand--
+
+00:46:03.320 --> 00:46:05.487 align:middle line:84%
+because it's a bit more
+convenient in this setting--
+
+00:46:05.487 --> 00:46:11.330 align:middle line:90%
+
+
+00:46:11.330 --> 00:46:16.720 align:middle line:90%
+P of q equals 1 minus q.
+
+00:46:16.720 --> 00:46:19.560 align:middle line:84%
+But notice here that this
+inverse demand is actually
+
+00:46:19.560 --> 00:46:22.120 align:middle line:84%
+exactly the same
+demand we had before.
+
+00:46:22.120 --> 00:46:25.240 align:middle line:84%
+Because if p of Q
+equals 1 minus q, well,
+
+00:46:25.240 --> 00:46:27.680 align:middle line:84%
+how do I-- let's
+solve for Q. That
+
+00:46:27.680 --> 00:46:30.240 align:middle line:90%
+means Q is equal to 1 minus p.
+
+00:46:30.240 --> 00:46:32.560 align:middle line:84%
+So this is exactly
+the inverse demand
+
+00:46:32.560 --> 00:46:35.880 align:middle line:84%
+that is associated with
+this demand over here.
+
+00:46:35.880 --> 00:46:39.520 align:middle line:84%
+So these are just two
+different ways of writing it.
+
+00:46:39.520 --> 00:46:44.080 align:middle line:84%
+And again with the understanding
+that if quantity gets too big,
+
+00:46:44.080 --> 00:46:45.260 align:middle line:90%
+then the price is just 0.
+
+00:46:45.260 --> 00:46:46.760 align:middle line:84%
+So if I want it to
+be really formal,
+
+00:46:46.760 --> 00:46:52.860 align:middle line:84%
+I would say the maximum
+of 1 minus q and 0.
+
+00:46:52.860 --> 00:46:57.680 align:middle line:90%
+
+
+00:46:57.680 --> 00:46:59.760 align:middle line:90%
+But this is a crucial point.
+
+00:46:59.760 --> 00:47:04.140 align:middle line:84%
+This Q here is the
+market quantity.
+
+00:47:04.140 --> 00:47:10.080 align:middle line:90%
+
+
+00:47:10.080 --> 00:47:13.960 align:middle line:84%
+So the price at the
+market depends on how much
+
+00:47:13.960 --> 00:47:16.360 align:middle line:90%
+water is brought to market.
+
+00:47:16.360 --> 00:47:18.840 align:middle line:84%
+But the amount of water or
+apples brought to market
+
+00:47:18.840 --> 00:47:22.600 align:middle line:84%
+depends on the entire market,
+not just an individual firm.
+
+00:47:22.600 --> 00:47:28.760 align:middle line:84%
+So the crucial thing here
+is that, each firm i,
+
+00:47:28.760 --> 00:47:32.910 align:middle line:90%
+chooses a quantity qi.
+
+00:47:32.910 --> 00:47:35.970 align:middle line:84%
+So firm 1 chooses
+their quantity, q1.
+
+00:47:35.970 --> 00:47:38.490 align:middle line:84%
+And firm 2 chooses
+their quantity, q2.
+
+00:47:38.490 --> 00:47:40.543 align:middle line:90%
+And notice this is lowercase.
+
+00:47:40.543 --> 00:47:43.210 align:middle line:84%
+So we're generally going to use
+lowercase to denote the quantity
+
+00:47:43.210 --> 00:47:45.810 align:middle line:90%
+chosen by a particular firm.
+
+00:47:45.810 --> 00:47:50.610 align:middle line:84%
+But the individual choices of
+the firms, when added together,
+
+00:47:50.610 --> 00:47:52.770 align:middle line:84%
+determine what the
+market demand is.
+
+00:47:52.770 --> 00:47:56.530 align:middle line:84%
+So in this case, the
+market quantity Q
+
+00:47:56.530 --> 00:47:59.930 align:middle line:84%
+is going to be the sum of the
+amount produced by each firm.
+
+00:47:59.930 --> 00:48:04.510 align:middle line:84%
+So this is going
+to be q1 plus q2.
+
+00:48:04.510 --> 00:48:13.170 align:middle line:90%
+
+
+00:48:13.170 --> 00:48:15.970 align:middle line:84%
+And the final assumption--
+maybe I'll write it explicitly
+
+00:48:15.970 --> 00:48:18.110 align:middle line:90%
+is that firms maximize profits.
+
+00:48:18.110 --> 00:48:20.930 align:middle line:90%
+
+
+00:48:20.930 --> 00:48:22.730 align:middle line:84%
+Expected profit--
+or I guess there's
+
+00:48:22.730 --> 00:48:26.130 align:middle line:90%
+no [INAUDIBLE] say profit.
+
+00:48:26.130 --> 00:48:28.730 align:middle line:84%
+Now, remember, this is
+an important assumption.
+
+00:48:28.730 --> 00:48:31.050 align:middle line:84%
+Going back to what we said
+before, when we set up
+
+00:48:31.050 --> 00:48:34.850 align:middle line:84%
+game theory, we said what
+people maximize is utility,
+
+00:48:34.850 --> 00:48:37.450 align:middle line:84%
+and utility is not
+always the same as money.
+
+00:48:37.450 --> 00:48:39.890 align:middle line:84%
+So another way of saying
+firms maximize profit
+
+00:48:39.890 --> 00:48:42.930 align:middle line:90%
+is that firms are risk neutral.
+
+00:48:42.930 --> 00:48:45.250 align:middle line:84%
+Their von
+Neumann-Morgenstern utility
+
+00:48:45.250 --> 00:48:48.450 align:middle line:84%
+function as a function
+of money is just linear.
+
+00:48:48.450 --> 00:48:50.090 align:middle line:90%
+Is this a reasonable assumption?
+
+00:48:50.090 --> 00:48:51.030 align:middle line:90%
+In some contexts, yes.
+
+00:48:51.030 --> 00:48:52.225 align:middle line:90%
+In other contexts, no.
+
+00:48:52.225 --> 00:48:53.850 align:middle line:84%
+So maybe in other
+contexts, we'd really
+
+00:48:53.850 --> 00:48:56.742 align:middle line:84%
+want to think of a firm that's
+risk averse over their profits.
+
+00:48:56.742 --> 00:48:58.950 align:middle line:84%
+But in this model, we're
+assuming their risk neutral.
+
+00:48:58.950 --> 00:49:02.610 align:middle line:84%
+So all they're trying to
+do is maximize profits.
+
+00:49:02.610 --> 00:49:06.250 align:middle line:84%
+OK, so now let's write
+down what the profits are.
+
+00:49:06.250 --> 00:49:08.410 align:middle line:90%
+So let's look at firm 1.
+
+00:49:08.410 --> 00:49:10.930 align:middle line:84%
+It's easier to reason from
+one firm's perspective.
+
+00:49:10.930 --> 00:49:13.930 align:middle line:84%
+Though, it's always
+going to be symmetric.
+
+00:49:13.930 --> 00:49:18.290 align:middle line:84%
+I'm going to write
+pi 1 of q1, q2.
+
+00:49:18.290 --> 00:49:20.010 align:middle line:84%
+So let's just
+understand pi is often
+
+00:49:20.010 --> 00:49:23.170 align:middle line:84%
+used for profits just because
+it's the Greek pi, like p
+
+00:49:23.170 --> 00:49:24.450 align:middle line:90%
+for profit.
+
+00:49:24.450 --> 00:49:26.070 align:middle line:84%
+And we already
+used p for prices,
+
+00:49:26.070 --> 00:49:28.100 align:middle line:90%
+so we use pi for profits.
+
+00:49:28.100 --> 00:49:30.380 align:middle line:84%
+What I want to
+understand is I'm firm 1.
+
+00:49:30.380 --> 00:49:33.780 align:middle line:84%
+What is the profit
+that I get if I
+
+00:49:33.780 --> 00:49:36.300 align:middle line:84%
+produce a quantity of
+q1 and the other firm
+
+00:49:36.300 --> 00:49:39.020 align:middle line:90%
+produces a quantity of q2?
+
+00:49:39.020 --> 00:49:40.660 align:middle line:90%
+Well, let's understand this.
+
+00:49:40.660 --> 00:49:43.680 align:middle line:84%
+Well, just as before, we can
+decompose this into two parts.
+
+00:49:43.680 --> 00:49:47.240 align:middle line:84%
+We have to keep track
+of my profit per unit,
+
+00:49:47.240 --> 00:49:49.402 align:middle line:84%
+and then the number
+of units I have.
+
+00:49:49.402 --> 00:49:50.860 align:middle line:84%
+The number of units
+I have is easy.
+
+00:49:50.860 --> 00:49:51.920 align:middle line:90%
+Let's write that down.
+
+00:49:51.920 --> 00:49:56.700 align:middle line:84%
+That's q1-- q1, the
+number of units I sell.
+
+00:49:56.700 --> 00:50:01.100 align:middle line:84%
+But then what is going
+to be my profit per unit?
+
+00:50:01.100 --> 00:50:02.860 align:middle line:90%
+Thoughts here?
+
+00:50:02.860 --> 00:50:06.680 align:middle line:84%
+So what do I want
+to multiply q1 by?
+
+00:50:06.680 --> 00:50:10.723 align:middle line:90%
+AUDIENCE: 1 minus q1 plus q2.
+
+00:50:10.723 --> 00:50:12.640 align:middle line:84%
+IAN BALL: Yes, there's
+a parentheses in there.
+
+00:50:12.640 --> 00:50:13.223 align:middle line:90%
+Yeah, exactly.
+
+00:50:13.223 --> 00:50:15.980 align:middle line:90%
+So let me write it--
+
+00:50:15.980 --> 00:50:18.300 align:middle line:90%
+let me first write it as this.
+
+00:50:18.300 --> 00:50:21.860 align:middle line:84%
+And then I'll break it down
+in the way you suggested.
+
+00:50:21.860 --> 00:50:24.900 align:middle line:84%
+So q1 is the amount
+I'm producing.
+
+00:50:24.900 --> 00:50:26.900 align:middle line:90%
+What is my profit per unit?
+
+00:50:26.900 --> 00:50:28.660 align:middle line:84%
+Well, my profit
+is just the price
+
+00:50:28.660 --> 00:50:32.380 align:middle line:84%
+that I'm able to sell it for
+minus the cost of production.
+
+00:50:32.380 --> 00:50:34.620 align:middle line:84%
+But the tricky thing here
+is, what is the price?
+
+00:50:34.620 --> 00:50:37.700 align:middle line:84%
+Well, the price is determined
+by the market demand.
+
+00:50:37.700 --> 00:50:41.580 align:middle line:84%
+And therefore, it's p of
+the market quantity-- sorry,
+
+00:50:41.580 --> 00:50:43.240 align:middle line:84%
+not market demand,
+market quantity--
+
+00:50:43.240 --> 00:50:46.900 align:middle line:84%
+which is the sum of q1
+plus q2, the market supply.
+
+00:50:46.900 --> 00:50:49.300 align:middle line:84%
+And this is what makes
+this a game theory problem.
+
+00:50:49.300 --> 00:50:53.140 align:middle line:84%
+Because how will I do as
+firm 1 depends not only
+
+00:50:53.140 --> 00:50:55.560 align:middle line:84%
+on what I produce and
+what I bring to market,
+
+00:50:55.560 --> 00:50:58.620 align:middle line:84%
+but also on what my opponent
+brings to market, q2.
+
+00:50:58.620 --> 00:51:01.780 align:middle line:84%
+Why does it matter how
+much my opponent produces?
+
+00:51:01.780 --> 00:51:03.660 align:middle line:84%
+Because how much my
+opponent produces
+
+00:51:03.660 --> 00:51:06.580 align:middle line:84%
+affects the price at
+which I sell my goods.
+
+00:51:06.580 --> 00:51:08.500 align:middle line:84%
+So now we have a
+strategic interaction
+
+00:51:08.500 --> 00:51:11.180 align:middle line:90%
+between the two firms.
+
+00:51:11.180 --> 00:51:13.200 align:middle line:84%
+And let's write
+this out once more.
+
+00:51:13.200 --> 00:51:19.820 align:middle line:84%
+We have q1 times, well, p of
+q1 plus q2 is just 1 minus--
+
+00:51:19.820 --> 00:51:21.560 align:middle line:90%
+in parentheses q1 plus q2.
+
+00:51:21.560 --> 00:51:26.530 align:middle line:84%
+So that's 1 minus
+q1 minus q2 minus c.
+
+00:51:26.530 --> 00:51:31.670 align:middle line:90%
+
+
+00:51:31.670 --> 00:51:33.530 align:middle line:84%
+So now it doesn't really
+make sense to say,
+
+00:51:33.530 --> 00:51:35.228 align:middle line:90%
+what is my optimal quantity?
+
+00:51:35.228 --> 00:51:37.770 align:middle line:84%
+With the monopolist, we just
+said what price should I charge?
+
+00:51:37.770 --> 00:51:38.670 align:middle line:90%
+That was easy.
+
+00:51:38.670 --> 00:51:43.590 align:middle line:84%
+Now the optimal quantity for
+me depends upon the quantity
+
+00:51:43.590 --> 00:51:45.910 align:middle line:90%
+that the other firm produces.
+
+00:51:45.910 --> 00:51:48.370 align:middle line:84%
+So instead of just talking
+about an optimal quantity,
+
+00:51:48.370 --> 00:51:49.970 align:middle line:84%
+we have to talk about
+a best response.
+
+00:51:49.970 --> 00:51:51.130 align:middle line:90%
+Now we have a game.
+
+00:51:51.130 --> 00:51:52.750 align:middle line:90%
+Let's understand this as a game.
+
+00:51:52.750 --> 00:51:55.510 align:middle line:84%
+A strategy for firm
+1 is a quantity.
+
+00:51:55.510 --> 00:51:57.990 align:middle line:84%
+A strategy for firm
+2 is also a quantity.
+
+00:51:57.990 --> 00:52:00.810 align:middle line:84%
+And the utility of firm
+1 is given like this.
+
+00:52:00.810 --> 00:52:03.450 align:middle line:84%
+And we can symmetrically write
+down the utility for firm 2.
+
+00:52:03.450 --> 00:52:06.550 align:middle line:84%
+So now we have a game, and we
+can talk about best responses.
+
+00:52:06.550 --> 00:52:15.030 align:middle line:84%
+So a best response by firm 1 to
+a quantity q2 is equal to what?
+
+00:52:15.030 --> 00:52:16.110 align:middle line:90%
+Well?
+
+00:52:16.110 --> 00:52:18.950 align:middle line:84%
+We need to maximize
+this expression.
+
+00:52:18.950 --> 00:52:21.370 align:middle line:84%
+And this kind of
+expression comes up a lot.
+
+00:52:21.370 --> 00:52:22.970 align:middle line:84%
+So I want to-- you
+can do the algebra,
+
+00:52:22.970 --> 00:52:24.845 align:middle line:84%
+but I think it's nice
+to know a little trick.
+
+00:52:24.845 --> 00:52:28.230 align:middle line:84%
+So if you're ever
+maximizing something
+
+00:52:28.230 --> 00:52:30.130 align:middle line:90%
+like this where a is positive--
+
+00:52:30.130 --> 00:52:32.870 align:middle line:90%
+
+
+00:52:32.870 --> 00:52:37.590 align:middle line:84%
+so I'm choosing x, to
+maximize x times a minus x,
+
+00:52:37.590 --> 00:52:39.370 align:middle line:84%
+you can just derive
+this with calculus.
+
+00:52:39.370 --> 00:52:41.990 align:middle line:84%
+But what you'll find
+is x equals a over 2.
+
+00:52:41.990 --> 00:52:43.430 align:middle line:90%
+That's always the optimum.
+
+00:52:43.430 --> 00:52:45.797 align:middle line:84%
+And this kind of form
+comes up again and again.
+
+00:52:45.797 --> 00:52:47.630 align:middle line:84%
+So it's just a nice
+thing to know right away
+
+00:52:47.630 --> 00:52:49.510 align:middle line:90%
+for exams and quizzes.
+
+00:52:49.510 --> 00:52:53.190 align:middle line:84%
+Again, it's the fact
+that a rectangle
+
+00:52:53.190 --> 00:52:56.890 align:middle line:84%
+of constant perimeter, its
+area is maximized by a square.
+
+00:52:56.890 --> 00:52:59.693 align:middle line:84%
+If I take x equals a over
+2, then both of these terms
+
+00:52:59.693 --> 00:53:00.610 align:middle line:90%
+are equal to a over 2.
+
+00:53:00.610 --> 00:53:01.693 align:middle line:90%
+That's the geometry of it.
+
+00:53:01.693 --> 00:53:03.410 align:middle line:90%
+You can do calculus to solve it.
+
+00:53:03.410 --> 00:53:05.810 align:middle line:84%
+But now we can immediately
+find what my best response is.
+
+00:53:05.810 --> 00:53:08.890 align:middle line:84%
+We just have to be careful
+to figure out what the a is.
+
+00:53:08.890 --> 00:53:11.470 align:middle line:84%
+So we have to think,
+OK, I'm firm 1.
+
+00:53:11.470 --> 00:53:13.030 align:middle line:90%
+I'm choosing q1.
+
+00:53:13.030 --> 00:53:15.990 align:middle line:84%
+So from my perspective, what
+part of this do I control?
+
+00:53:15.990 --> 00:53:19.430 align:middle line:84%
+And what part of
+this is a constant?
+
+00:53:19.430 --> 00:53:20.240 align:middle line:90%
+Yeah.
+
+00:53:20.240 --> 00:53:22.878 align:middle line:84%
+AUDIENCE: q1 is
+controlled [INAUDIBLE].
+
+00:53:22.878 --> 00:53:24.420 align:middle line:84%
+IAN BALL: Right, so
+q1 is controlled.
+
+00:53:24.420 --> 00:53:29.420 align:middle line:84%
+So the a here is 1
+minus q2 minus c.
+
+00:53:29.420 --> 00:53:33.320 align:middle line:84%
+We can think of this as
+the constant a minus q1
+
+00:53:33.320 --> 00:53:36.000 align:middle line:90%
+where a is 1 minus q2 minus c.
+
+00:53:36.000 --> 00:53:39.520 align:middle line:84%
+So if I just do this out, I see
+that my best response is 1 minus
+
+00:53:39.520 --> 00:53:42.540 align:middle line:90%
+q2 minus c divided by 2.
+
+00:53:42.540 --> 00:53:51.520 align:middle line:90%
+
+
+00:53:51.520 --> 00:53:54.400 align:middle line:84%
+OK, and again, let's
+ask if this makes sense.
+
+00:53:54.400 --> 00:53:58.000 align:middle line:84%
+So as before, we see
+that the amount I produce
+
+00:53:58.000 --> 00:54:00.000 align:middle line:90%
+is decreasing in the cost.
+
+00:54:00.000 --> 00:54:02.785 align:middle line:84%
+So if the cost of production
+is higher, I produce less.
+
+00:54:02.785 --> 00:54:03.660 align:middle line:90%
+Does this make sense?
+
+00:54:03.660 --> 00:54:05.700 align:middle line:84%
+Can someone give
+intuition for this?
+
+00:54:05.700 --> 00:54:08.360 align:middle line:84%
+Why do I want to produce less
+when the cost of production
+
+00:54:08.360 --> 00:54:09.020 align:middle line:90%
+is higher?
+
+00:54:09.020 --> 00:54:12.198 align:middle line:90%
+
+
+00:54:12.198 --> 00:54:13.740 align:middle line:84%
+Why don't I just
+keep producing more?
+
+00:54:13.740 --> 00:54:17.760 align:middle line:90%
+
+
+00:54:17.760 --> 00:54:18.300 align:middle line:90%
+Thoughts?
+
+00:54:18.300 --> 00:54:21.040 align:middle line:90%
+
+
+00:54:21.040 --> 00:54:24.520 align:middle line:84%
+Well, my amount of production
+affects the market price.
+
+00:54:24.520 --> 00:54:27.440 align:middle line:84%
+So if the cost is really high,
+it's only worth it for me
+
+00:54:27.440 --> 00:54:29.560 align:middle line:84%
+to produce if the
+market price is high,
+
+00:54:29.560 --> 00:54:31.380 align:middle line:84%
+which means I can't
+keep producing a lot.
+
+00:54:31.380 --> 00:54:33.520 align:middle line:84%
+Otherwise, I'd pull the
+market price down too low.
+
+00:54:33.520 --> 00:54:36.760 align:middle line:84%
+So again, a higher cost
+means I produce less simply
+
+00:54:36.760 --> 00:54:41.040 align:middle line:84%
+because I require a higher
+price to make it worth it.
+
+00:54:41.040 --> 00:54:44.000 align:middle line:84%
+And then it's also
+decreasing in q2.
+
+00:54:44.000 --> 00:54:46.640 align:middle line:84%
+So the more that my
+competitor produces,
+
+00:54:46.640 --> 00:54:48.400 align:middle line:90%
+the less that I produce.
+
+00:54:48.400 --> 00:54:49.420 align:middle line:90%
+Does that make sense?
+
+00:54:49.420 --> 00:54:56.440 align:middle line:90%
+
+
+00:54:56.440 --> 00:54:58.240 align:middle line:90%
+Well, if my-- yeah.
+
+00:54:58.240 --> 00:54:58.920 align:middle line:90%
+Go ahead.
+
+00:54:58.920 --> 00:55:00.295 align:middle line:84%
+AUDIENCE: They
+are producing more
+
+00:55:00.295 --> 00:55:01.580 align:middle line:90%
+than the price is going down.
+
+00:55:01.580 --> 00:55:02.580 align:middle line:90%
+IAN BALL: Exactly right.
+
+00:55:02.580 --> 00:55:05.400 align:middle line:84%
+So the more they produce,
+the lower the price
+
+00:55:05.400 --> 00:55:07.940 align:middle line:84%
+I'm going to face for a given
+amount of my production.
+
+00:55:07.940 --> 00:55:10.840 align:middle line:84%
+And therefore, it's optimal
+for me to produce less.
+
+00:55:10.840 --> 00:55:13.980 align:middle line:84%
+So now we've computed
+the best responses.
+
+00:55:13.980 --> 00:55:15.480 align:middle line:84%
+I've only done it
+one way, but we
+
+00:55:15.480 --> 00:55:17.570 align:middle line:84%
+can see what it's going
+to be for the other firm.
+
+00:55:17.570 --> 00:55:20.390 align:middle line:84%
+BR2 of q1 is just
+going to be symmetric.
+
+00:55:20.390 --> 00:55:24.570 align:middle line:84%
+It's going to be 1
+minus q1 minus c over 2.
+
+00:55:24.570 --> 00:55:28.850 align:middle line:84%
+So if I'm firm 2 and firm 1
+is choosing a quantity of q1,
+
+00:55:28.850 --> 00:55:33.130 align:middle line:84%
+this is the optimal quantity
+for firm 2 to produce.
+
+00:55:33.130 --> 00:55:36.770 align:middle line:84%
+And now I want to solve
+for an equilibrium, which
+
+00:55:36.770 --> 00:55:40.530 align:middle line:90%
+means I need--
+
+00:55:40.530 --> 00:55:42.190 align:middle line:84%
+maybe I'll just
+write it like this.
+
+00:55:42.190 --> 00:55:47.250 align:middle line:90%
+
+
+00:55:47.250 --> 00:55:49.930 align:middle line:90%
+Maybe I'll put these in here.
+
+00:55:49.930 --> 00:55:51.910 align:middle line:84%
+So what is my
+equilibrium condition?
+
+00:55:51.910 --> 00:55:55.370 align:middle line:84%
+In equilibrium, each firm
+is playing a best response
+
+00:55:55.370 --> 00:55:57.610 align:middle line:90%
+to the other firm's quantity.
+
+00:55:57.610 --> 00:56:01.210 align:middle line:84%
+So I need q1 star, what
+firm 1 is choosing,
+
+00:56:01.210 --> 00:56:05.330 align:middle line:84%
+to be a best response to
+what q2, firm 2, is choosing.
+
+00:56:05.330 --> 00:56:08.770 align:middle line:84%
+And I need the amount of
+produced by firm 2, q2 star,
+
+00:56:08.770 --> 00:56:11.490 align:middle line:84%
+to be a best response for
+firm 2 to the amount produced
+
+00:56:11.490 --> 00:56:14.290 align:middle line:90%
+by firm 1.
+
+00:56:14.290 --> 00:56:17.450 align:middle line:84%
+So I now have a
+system of equations.
+
+00:56:17.450 --> 00:56:19.610 align:middle line:84%
+But let's understand,
+my system of equations
+
+00:56:19.610 --> 00:56:21.770 align:middle line:90%
+is a linear system of equations.
+
+00:56:21.770 --> 00:56:24.930 align:middle line:84%
+And it has two equations
+and two unknowns.
+
+00:56:24.930 --> 00:56:27.770 align:middle line:84%
+And in general, we can solve
+those systems pretty easily.
+
+00:56:27.770 --> 00:56:30.610 align:middle line:84%
+We could go through the algebra,
+but I'll spare you the algebra.
+
+00:56:30.610 --> 00:56:37.730 align:middle line:84%
+And what we'll get is q1
+star equals q2 star equals
+
+00:56:37.730 --> 00:56:39.830 align:middle line:90%
+1 minus c over 3.
+
+00:56:39.830 --> 00:56:51.370 align:middle line:90%
+
+
+00:56:51.370 --> 00:56:53.130 align:middle line:84%
+And let's ask,
+what is the market
+
+00:56:53.130 --> 00:56:55.770 align:middle line:90%
+price going to be in this case?
+
+00:56:55.770 --> 00:57:03.530 align:middle line:84%
+Well, the market price is going
+to be 1 minus q1 minus q2.
+
+00:57:03.530 --> 00:57:06.570 align:middle line:84%
+But each of these
+is 1 minus c over 3,
+
+00:57:06.570 --> 00:57:08.370 align:middle line:90%
+but I subtract that twice.
+
+00:57:08.370 --> 00:57:14.440 align:middle line:90%
+So I get 1 minus 2/3 1 minus c.
+
+00:57:14.440 --> 00:57:18.620 align:middle line:90%
+
+
+00:57:18.620 --> 00:57:21.460 align:middle line:84%
+And again, it's
+nice to pull c out.
+
+00:57:21.460 --> 00:57:23.040 align:middle line:90%
+So we can do a little trick.
+
+00:57:23.040 --> 00:57:24.100 align:middle line:90%
+This is c.
+
+00:57:24.100 --> 00:57:26.140 align:middle line:90%
+Let's add c and subtract c.
+
+00:57:26.140 --> 00:57:31.200 align:middle line:84%
+And what we get is c
+plus 1 minus c over 3.
+
+00:57:31.200 --> 00:57:42.740 align:middle line:90%
+
+
+00:57:42.740 --> 00:57:45.140 align:middle line:84%
+So one thing we can
+make a comparison
+
+00:57:45.140 --> 00:57:46.340 align:middle line:90%
+with our monopoly case.
+
+00:57:46.340 --> 00:57:49.020 align:middle line:84%
+In our monopoly case where
+we had only one firm,
+
+00:57:49.020 --> 00:57:52.420 align:middle line:84%
+the markup was 1
+minus c1 over 2.
+
+00:57:52.420 --> 00:57:55.020 align:middle line:84%
+Here, when we have two
+firms competing in Cournot,
+
+00:57:55.020 --> 00:57:57.420 align:middle line:90%
+the markup is 1 minus c over 3.
+
+00:57:57.420 --> 00:58:03.260 align:middle line:84%
+So we see that we have a smaller
+markup, which maybe makes sense.
+
+00:58:03.260 --> 00:58:05.540 align:middle line:84%
+And we can actually
+generalize this.
+
+00:58:05.540 --> 00:58:09.120 align:middle line:84%
+So let's understand
+it intuitively.
+
+00:58:09.120 --> 00:58:22.980 align:middle line:90%
+
+
+00:58:22.980 --> 00:58:31.560 align:middle line:84%
+So let's look at the
+general case with n firms.
+
+00:58:31.560 --> 00:58:34.022 align:middle line:90%
+
+
+00:58:34.022 --> 00:58:35.980 align:middle line:84%
+And this we can actually
+just guess by the form
+
+00:58:35.980 --> 00:58:36.730 align:middle line:90%
+that we have here.
+
+00:58:36.730 --> 00:58:39.120 align:middle line:84%
+So I'm not going to go
+through the derivation,
+
+00:58:39.120 --> 00:58:42.100 align:middle line:84%
+but I'm just going to
+write down the answer.
+
+00:58:42.100 --> 00:58:44.660 align:middle line:84%
+And it's pretty easy to check
+using the same argument.
+
+00:58:44.660 --> 00:58:46.580 align:middle line:90%
+So we have n firms.
+
+00:58:46.580 --> 00:58:50.260 align:middle line:84%
+How much is each firm
+going to produce?
+
+00:58:50.260 --> 00:58:54.220 align:middle line:84%
+Maybe I'll write q1
+star equals qn star.
+
+00:58:54.220 --> 00:58:56.140 align:middle line:84%
+So it turns out
+with n firms, we're
+
+00:58:56.140 --> 00:58:57.880 align:middle line:84%
+going to have a
+symmetric equilibrium,
+
+00:58:57.880 --> 00:59:00.620 align:middle line:84%
+every firm is going to
+produce the same amount,
+
+00:59:00.620 --> 00:59:03.200 align:middle line:84%
+and based on our
+pattern, with two firms,
+
+00:59:03.200 --> 00:59:05.980 align:middle line:84%
+they each produce
+1 minus c over 3.
+
+00:59:05.980 --> 00:59:10.230 align:middle line:84%
+And notice in the
+monopoly case, we got--
+
+00:59:10.230 --> 00:59:11.430 align:middle line:90%
+did we solve for q?
+
+00:59:11.430 --> 00:59:14.082 align:middle line:90%
+1 minus c over 2.
+
+00:59:14.082 --> 00:59:16.290 align:middle line:84%
+Now, in the monopoly case,
+they were choosing prices.
+
+00:59:16.290 --> 00:59:17.870 align:middle line:84%
+But actually, with a
+monopolist, whether you choose
+
+00:59:17.870 --> 00:59:20.190 align:middle line:84%
+price or quantity doesn't
+make a difference.
+
+00:59:20.190 --> 00:59:22.390 align:middle line:84%
+So with one firm, we
+got 1 minus c over 2.
+
+00:59:22.390 --> 00:59:25.593 align:middle line:84%
+With two firms, we
+got 1 minus c over 3.
+
+00:59:25.593 --> 00:59:27.010 align:middle line:84%
+It's a pretty clear
+pattern there.
+
+00:59:27.010 --> 00:59:31.070 align:middle line:84%
+It's always 1 minus c divided
+by the number of firms plus 1.
+
+00:59:31.070 --> 00:59:36.843 align:middle line:84%
+So this is 1 minus
+c over n plus 1.
+
+00:59:36.843 --> 00:59:38.010 align:middle line:90%
+So I think this makes sense.
+
+00:59:38.010 --> 00:59:40.670 align:middle line:84%
+Let's again go
+through our intuition.
+
+00:59:40.670 --> 00:59:43.250 align:middle line:84%
+Each firm produces less
+when the cost is higher.
+
+00:59:43.250 --> 00:59:44.430 align:middle line:90%
+That makes sense.
+
+00:59:44.430 --> 00:59:47.670 align:middle line:84%
+Each firm also produces less
+when the number of other firms
+
+00:59:47.670 --> 00:59:48.630 align:middle line:90%
+goes up.
+
+00:59:48.630 --> 00:59:53.070 align:middle line:84%
+So the more firms there are,
+the less each firm produces.
+
+00:59:53.070 --> 00:59:55.910 align:middle line:84%
+And the reason is that
+the residual demand
+
+00:59:55.910 --> 00:59:57.610 align:middle line:90%
+that they can capture is lower.
+
+00:59:57.610 --> 01:00:00.652 align:middle line:84%
+The other firms are already
+capturing a lot of the market.
+
+01:00:00.652 --> 01:00:03.110 align:middle line:84%
+Or another way of saying it
+is, the other firms are already
+
+01:00:03.110 --> 01:00:04.950 align:middle line:90%
+dragging down the price.
+
+01:00:04.950 --> 01:00:08.230 align:middle line:84%
+So I don't want to
+bring so much more.
+
+01:00:08.230 --> 01:00:13.950 align:middle line:84%
+It's also good, though, to look
+at the total market quantity.
+
+01:00:13.950 --> 01:00:22.310 align:middle line:84%
+So Q star which equals q1
+star up to qn star is--
+
+01:00:22.310 --> 01:00:24.770 align:middle line:84%
+let's sum up the amount
+produced by each firm.
+
+01:00:24.770 --> 01:00:27.950 align:middle line:84%
+So we can look at the total
+amount produced by the market.
+
+01:00:27.950 --> 01:00:35.350 align:middle line:84%
+And what we're going to get is
+n over n plus 1 times 1 over c.
+
+01:00:35.350 --> 01:00:40.230 align:middle line:84%
+So what we see is that
+this is decreasing in n,
+
+01:00:40.230 --> 01:00:42.710 align:middle line:90%
+but this is increasing in n.
+
+01:00:42.710 --> 01:00:46.350 align:middle line:84%
+So when there's more firms,
+each firm produces less.
+
+01:00:46.350 --> 01:00:48.990 align:middle line:84%
+But the total amount
+produced by all firms
+
+01:00:48.990 --> 01:00:50.870 align:middle line:90%
+is actually increasing.
+
+01:00:50.870 --> 01:00:56.110 align:middle line:84%
+And as n gets really large,
+what is this going to approach?
+
+01:00:56.110 --> 01:00:58.510 align:middle line:84%
+Just 1 minus c because
+n over n plus 1
+
+01:00:58.510 --> 01:01:00.470 align:middle line:90%
+is going to converge to 1.
+
+01:01:00.470 --> 01:01:02.310 align:middle line:90%
+So we just get 1 minus c.
+
+01:01:02.310 --> 01:01:05.880 align:middle line:84%
+So I'll say, and this
+converges to 1 minus c as n
+
+01:01:05.880 --> 01:01:06.780 align:middle line:90%
+goes to infinity.
+
+01:01:06.780 --> 01:01:11.360 align:middle line:90%
+
+
+01:01:11.360 --> 01:01:15.400 align:middle line:90%
+And what about the market price?
+
+01:01:15.400 --> 01:01:18.400 align:middle line:84%
+Remember, it doesn't make sense
+to talk about the firm's price
+
+01:01:18.400 --> 01:01:20.700 align:middle line:84%
+because they're all
+selling at the same price.
+
+01:01:20.700 --> 01:01:24.380 align:middle line:84%
+So there's a firm quantity
+and a market quantity,
+
+01:01:24.380 --> 01:01:25.820 align:middle line:90%
+but there's only a market price.
+
+01:01:25.820 --> 01:01:29.880 align:middle line:84%
+There's no individual
+firm price in this model.
+
+01:01:29.880 --> 01:01:32.420 align:middle line:90%
+Again, we can see the pattern.
+
+01:01:32.420 --> 01:01:36.220 align:middle line:84%
+This is going to be c plus
+1 minus c over n plus 1.
+
+01:01:36.220 --> 01:01:39.600 align:middle line:90%
+
+
+01:01:39.600 --> 01:01:41.740 align:middle line:90%
+And this is decreasing in it.
+
+01:01:41.740 --> 01:01:45.000 align:middle line:90%
+
+
+01:01:45.000 --> 01:01:46.620 align:middle line:84%
+And again, I think
+this makes sense.
+
+01:01:46.620 --> 01:01:50.160 align:middle line:84%
+The more firms there
+are, the stiffer
+
+01:01:50.160 --> 01:01:52.640 align:middle line:84%
+the competition
+between the firms,
+
+01:01:52.640 --> 01:01:56.080 align:middle line:90%
+and the lower the price is.
+
+01:01:56.080 --> 01:02:03.040 align:middle line:84%
+And in fact, what happens to
+the markup as n gets really big?
+
+01:02:03.040 --> 01:02:05.025 align:middle line:90%
+The markup goes to 0.
+
+01:02:05.025 --> 01:02:06.400 align:middle line:84%
+So what we see is
+that the market
+
+01:02:06.400 --> 01:02:13.000 align:middle line:84%
+price in this case converges
+to c as n goes to infinity.
+
+01:02:13.000 --> 01:02:15.880 align:middle line:84%
+And this exactly captures
+perfect competition.
+
+01:02:15.880 --> 01:02:18.880 align:middle line:84%
+So when there are many, many
+firms competing with each other,
+
+01:02:18.880 --> 01:02:22.680 align:middle line:84%
+they no longer have the market
+power to charge a markup.
+
+01:02:22.680 --> 01:02:25.000 align:middle line:84%
+And in the limit, as we
+have many, many firms,
+
+01:02:25.000 --> 01:02:27.400 align:middle line:90%
+every single firm--
+
+01:02:27.400 --> 01:02:29.920 align:middle line:84%
+well, every firm is going
+to produce a quantity such
+
+01:02:29.920 --> 01:02:34.480 align:middle line:84%
+that the market price is
+exactly equal to cost of c.
+
+01:02:34.480 --> 01:02:41.480 align:middle line:84%
+And can anyone
+interpret 1 minus c?
+
+01:02:41.480 --> 01:02:44.700 align:middle line:84%
+Why do we get 1 minus c as
+the quantity in this case?
+
+01:02:44.700 --> 01:02:48.863 align:middle line:90%
+
+
+01:02:48.863 --> 01:02:50.280 align:middle line:84%
+It turns out this
+is what we might
+
+01:02:50.280 --> 01:02:51.820 align:middle line:90%
+call the efficient quantity.
+
+01:02:51.820 --> 01:02:58.053 align:middle line:90%
+
+
+01:02:58.053 --> 01:02:59.220 align:middle line:90%
+What do I mean by efficient?
+
+01:02:59.220 --> 01:03:02.450 align:middle line:84%
+Well, if it costs c
+to produce a good,
+
+01:03:02.450 --> 01:03:04.590 align:middle line:84%
+for whom is it efficient
+to buy the good?
+
+01:03:04.590 --> 01:03:07.570 align:middle line:84%
+It's efficient for people to
+buy the good if they value it
+
+01:03:07.570 --> 01:03:09.930 align:middle line:84%
+more than the cost
+of production.
+
+01:03:09.930 --> 01:03:13.450 align:middle line:84%
+But our demand curve
+exactly tells us
+
+01:03:13.450 --> 01:03:16.050 align:middle line:84%
+that the number of
+people who value
+
+01:03:16.050 --> 01:03:18.690 align:middle line:84%
+the product, or more
+precisely, the number of units
+
+01:03:18.690 --> 01:03:21.650 align:middle line:84%
+of the product that have
+marginal utility above c
+
+01:03:21.650 --> 01:03:23.173 align:middle line:90%
+is exactly 1 minus c.
+
+01:03:23.173 --> 01:03:24.590 align:middle line:84%
+So what happens
+when we have many,
+
+01:03:24.590 --> 01:03:27.450 align:middle line:84%
+many firms is we converge
+to an efficient outcome.
+
+01:03:27.450 --> 01:03:30.527 align:middle line:84%
+The market price is
+exactly c, and the amount
+
+01:03:30.527 --> 01:03:32.610 align:middle line:84%
+that's produced and consumed
+is exactly the amount
+
+01:03:32.610 --> 01:03:35.810 align:middle line:84%
+that it's efficient to
+produce and consume.
+
+01:03:35.810 --> 01:03:39.950 align:middle line:84%
+People who value each unit at
+more than c are going to buy it,
+
+01:03:39.950 --> 01:03:43.370 align:middle line:84%
+and people who don't value it
+at more than c don't buy it.
+
+01:03:43.370 --> 01:03:47.730 align:middle line:84%
+So we see this is an
+initial illustration
+
+01:03:47.730 --> 01:03:55.190 align:middle line:84%
+that perfect competition
+leads us to efficiency.
+
+01:03:55.190 --> 01:03:57.850 align:middle line:90%
+
+
+01:03:57.850 --> 01:04:00.170 align:middle line:84%
+And here, perfect
+competition meaning the limit
+
+01:04:00.170 --> 01:04:02.870 align:middle line:84%
+as the number of identical
+firms grows very, very large.
+
+01:04:02.870 --> 01:04:12.090 align:middle line:90%
+
+
+01:04:12.090 --> 01:04:14.030 align:middle line:90%
+Great, any questions about this?
+
+01:04:14.030 --> 01:04:17.850 align:middle line:90%
+
+
+01:04:17.850 --> 01:04:18.370 align:middle line:90%
+Yeah.
+
+01:04:18.370 --> 01:04:24.650 align:middle line:84%
+AUDIENCE: Compared to some other
+quantity other than 1 minus c,
+
+01:04:24.650 --> 01:04:26.985 align:middle line:84%
+why are those other
+quantities inefficient?
+
+01:04:26.985 --> 01:04:28.610 align:middle line:84%
+IAN BALL: Great, so
+let's look at the--
+
+01:04:28.610 --> 01:04:35.113 align:middle line:84%
+do we have a demand
+curve somewhere?
+
+01:04:35.113 --> 01:04:36.530 align:middle line:84%
+I forget if I've
+erased something.
+
+01:04:36.530 --> 01:04:38.970 align:middle line:90%
+I may have erased it.
+
+01:04:38.970 --> 01:04:41.530 align:middle line:84%
+So let me just draw
+a little curve here.
+
+01:04:41.530 --> 01:04:45.890 align:middle line:84%
+So one way to interpret, this
+comes down to how we interpret
+
+01:04:45.890 --> 01:04:56.355 align:middle line:84%
+demand Q of P. So what
+Q of P means, let's
+
+01:04:56.355 --> 01:04:57.730 align:middle line:84%
+imagine just to
+make the argument
+
+01:04:57.730 --> 01:05:00.800 align:middle line:84%
+simpler that everyone only
+consumes one unit of the good.
+
+01:05:00.800 --> 01:05:02.720 align:middle line:84%
+So when demand's going
+up, as price drops,
+
+01:05:02.720 --> 01:05:04.752 align:middle line:84%
+it's because more people
+are choosing to buy,
+
+01:05:04.752 --> 01:05:06.960 align:middle line:84%
+not because a single person
+is buying multiple units.
+
+01:05:06.960 --> 01:05:09.460 align:middle line:84%
+The argument goes through, but
+that'll just make it simpler.
+
+01:05:09.460 --> 01:05:12.940 align:middle line:84%
+So what Q of P is,
+it's the number
+
+01:05:12.940 --> 01:05:16.020 align:middle line:84%
+of people who are willing
+to buy at price p.
+
+01:05:16.020 --> 01:05:23.090 align:middle line:90%
+
+
+01:05:23.090 --> 01:05:25.340 align:middle line:84%
+But let's think this through
+a little bit differently.
+
+01:05:25.340 --> 01:05:27.540 align:middle line:90%
+Who's willing to buy at price p?
+
+01:05:27.540 --> 01:05:30.980 align:middle line:84%
+It's people whose value
+for the good is at least p.
+
+01:05:30.980 --> 01:05:33.700 align:middle line:84%
+So another way of thinking of
+demand Q of P is-- actually,
+
+01:05:33.700 --> 01:05:35.460 align:middle line:90%
+it's the number of people--
+
+01:05:35.460 --> 01:05:40.760 align:middle line:84%
+it's the number with
+value at least p.
+
+01:05:40.760 --> 01:05:43.620 align:middle line:90%
+
+
+01:05:43.620 --> 01:05:46.500 align:middle line:84%
+It's the number of people who
+say, for them, the apple is
+
+01:05:46.500 --> 01:05:48.500 align:middle line:90%
+worth at least p.
+
+01:05:48.500 --> 01:05:52.940 align:middle line:84%
+But that means that Q of
+c, which in our example
+
+01:05:52.940 --> 01:05:56.220 align:middle line:84%
+is exactly 1 minus c,
+it's the demand at c,
+
+01:05:56.220 --> 01:06:00.960 align:middle line:84%
+is exactly the number of people
+whose value is at least cost.
+
+01:06:00.960 --> 01:06:07.940 align:middle line:90%
+
+
+01:06:07.940 --> 01:06:11.000 align:middle line:84%
+So this captures-- if we look
+at everyone in the population,
+
+01:06:11.000 --> 01:06:13.820 align:middle line:84%
+some people value the good at
+more than it costs to produce.
+
+01:06:13.820 --> 01:06:16.280 align:middle line:84%
+Some people valued at less
+than it cost to produce.
+
+01:06:16.280 --> 01:06:19.020 align:middle line:84%
+The efficient
+allocation is for people
+
+01:06:19.020 --> 01:06:21.940 align:middle line:84%
+to get the good exactly if
+their value for the good
+
+01:06:21.940 --> 01:06:24.180 align:middle line:84%
+exceeds the cost
+of producing it.
+
+01:06:24.180 --> 01:06:26.577 align:middle line:84%
+And in this case, that
+turns out to be 1 minus c.
+
+01:06:26.577 --> 01:06:28.660 align:middle line:84%
+It's the number of people
+whose value for the good
+
+01:06:28.660 --> 01:06:31.100 align:middle line:90%
+is more than 1 minus c.
+
+01:06:31.100 --> 01:06:32.040 align:middle line:90%
+Any other questions?
+
+01:06:32.040 --> 01:06:34.860 align:middle line:90%
+
+
+01:06:34.860 --> 01:06:36.700 align:middle line:84%
+Great, OK, so now
+that we've done
+
+01:06:36.700 --> 01:06:39.140 align:middle line:84%
+Cournot in the last
+few minutes, let's
+
+01:06:39.140 --> 01:06:41.900 align:middle line:90%
+move to Bertrand competition.
+
+01:06:41.900 --> 01:06:46.860 align:middle line:90%
+So maybe come down.
+
+01:06:46.860 --> 01:06:50.307 align:middle line:84%
+No, I guess I'm going to
+get stuck with these boards.
+
+01:06:50.307 --> 01:06:51.640 align:middle line:90%
+I'll come all the way over here.
+
+01:06:51.640 --> 01:07:11.150 align:middle line:90%
+
+
+01:07:11.150 --> 01:07:15.870 align:middle line:84%
+So now let's look at
+Bertrand competition.
+
+01:07:15.870 --> 01:07:17.970 align:middle line:84%
+So almost everything's
+the same as before.
+
+01:07:17.970 --> 01:07:19.390 align:middle line:90%
+We still have two firms.
+
+01:07:19.390 --> 01:07:21.550 align:middle line:84%
+They still have constant
+marginal cost of c,
+
+01:07:21.550 --> 01:07:24.310 align:middle line:84%
+and demand still takes the
+same firm-- the same form.
+
+01:07:24.310 --> 01:07:28.890 align:middle line:84%
+So firms, I'll just write
+it quickly, firms 1 and 2.
+
+01:07:28.890 --> 01:07:32.470 align:middle line:90%
+
+
+01:07:32.470 --> 01:07:34.530 align:middle line:90%
+Constant marginal cost c.
+
+01:07:34.530 --> 01:07:38.110 align:middle line:90%
+
+
+01:07:38.110 --> 01:07:40.010 align:middle line:90%
+And the market demand.
+
+01:07:40.010 --> 01:07:45.358 align:middle line:90%
+
+
+01:07:45.358 --> 01:07:47.150 align:middle line:84%
+And this time it's more
+convenient to write
+
+01:07:47.150 --> 01:07:51.510 align:middle line:84%
+it this way, the demand Q
+of P equals the max of 1
+
+01:07:51.510 --> 01:07:55.030 align:middle line:90%
+minus p and 0.
+
+01:07:55.030 --> 01:08:01.230 align:middle line:84%
+And c where c is
+between 0 and 1.
+
+01:08:01.230 --> 01:08:02.870 align:middle line:84%
+But now the difference
+with Bertrand
+
+01:08:02.870 --> 01:08:05.770 align:middle line:84%
+is that we imagine that, instead
+of firms choosing quantities,
+
+01:08:05.770 --> 01:08:08.790 align:middle line:90%
+they choose prices.
+
+01:08:08.790 --> 01:08:20.417 align:middle line:84%
+So each firm i
+chooses a price pi.
+
+01:08:20.417 --> 01:08:22.750 align:middle line:84%
+And now we have to try to
+understand, what are consumers
+
+01:08:22.750 --> 01:08:23.750 align:middle line:90%
+going to do?
+
+01:08:23.750 --> 01:08:26.950 align:middle line:84%
+If firm 1 charges a
+price of p1 and firm 2
+
+01:08:26.950 --> 01:08:31.750 align:middle line:84%
+chooses a price of p2, what
+would you do as a consumer?
+
+01:08:31.750 --> 01:08:34.950 align:middle line:90%
+Which firm would you buy from?
+
+01:08:34.950 --> 01:08:36.210 align:middle line:90%
+The firm with the lower price.
+
+01:08:36.210 --> 01:08:41.630 align:middle line:84%
+So our assumption is going to be
+that, whenever the firms charge
+
+01:08:41.630 --> 01:08:46.910 align:middle line:84%
+different prices, all consumers
+buy from the lower-priced firm.
+
+01:08:46.910 --> 01:08:48.670 align:middle line:90%
+And how many units do they buy?
+
+01:08:48.670 --> 01:08:53.080 align:middle line:84%
+Well, they buy from the market
+demand at that lower price.
+
+01:08:53.080 --> 01:09:01.420 align:middle line:84%
+So let's see if we can
+write down a formula.
+
+01:09:01.420 --> 01:09:07.760 align:middle line:90%
+
+
+01:09:07.760 --> 01:09:10.660 align:middle line:84%
+So mathematically, so we
+understand, this is a story.
+
+01:09:10.660 --> 01:09:12.100 align:middle line:90%
+This is the motivating story.
+
+01:09:12.100 --> 01:09:14.040 align:middle line:84%
+But mathematically,
+this is just a game.
+
+01:09:14.040 --> 01:09:16.760 align:middle line:84%
+And we have to specify the
+strategies and the payoffs.
+
+01:09:16.760 --> 01:09:18.520 align:middle line:84%
+We've already specified
+the strategies
+
+01:09:18.520 --> 01:09:21.279 align:middle line:84%
+because what each firm
+chooses is a price.
+
+01:09:21.279 --> 01:09:24.000 align:middle line:84%
+So to finish specifying this
+mathematically as a game,
+
+01:09:24.000 --> 01:09:26.840 align:middle line:84%
+we need to say, what
+is each firm's payoff
+
+01:09:26.840 --> 01:09:30.000 align:middle line:84%
+as a function of the
+price she charges
+
+01:09:30.000 --> 01:09:32.880 align:middle line:84%
+and the price that the
+other firm charges?
+
+01:09:32.880 --> 01:09:33.700 align:middle line:90%
+So let's do it.
+
+01:09:33.700 --> 01:09:37.560 align:middle line:84%
+It's symmetric, so let's do it
+from the perspective of firm 1.
+
+01:09:37.560 --> 01:09:42.120 align:middle line:84%
+What I want to understand
+is pi 1 of p1, p2.
+
+01:09:42.120 --> 01:09:45.300 align:middle line:84%
+So as before, we're going
+to use pi to denote profit.
+
+01:09:45.300 --> 01:09:48.920 align:middle line:84%
+I'm going to write pi 1 to
+say this is firm 1's profit.
+
+01:09:48.920 --> 01:09:51.800 align:middle line:84%
+But now from 1's profit is not
+a function of the quantities
+
+01:09:51.800 --> 01:09:57.000 align:middle line:84%
+we choose, but it's a function
+of the prices that we choose.
+
+01:09:57.000 --> 01:10:00.400 align:middle line:84%
+And this is going to take
+a different form depending
+
+01:10:00.400 --> 01:10:02.500 align:middle line:84%
+on the relative
+values of p1 and p2.
+
+01:10:02.500 --> 01:10:04.320 align:middle line:84%
+So let me break
+this up into cases.
+
+01:10:04.320 --> 01:10:07.240 align:middle line:84%
+There's going to be the case
+where p1 is less than p2.
+
+01:10:07.240 --> 01:10:10.320 align:middle line:84%
+There's going to be the one
+where-- case where p1 equals p2
+
+01:10:10.320 --> 01:10:12.500 align:middle line:84%
+and the case where p1
+is greater than p2.
+
+01:10:12.500 --> 01:10:14.933 align:middle line:90%
+
+
+01:10:14.933 --> 01:10:16.600 align:middle line:84%
+All right, so let's
+try to fill this in.
+
+01:10:16.600 --> 01:10:18.183 align:middle line:84%
+I think this is the
+easiest case here.
+
+01:10:18.183 --> 01:10:20.280 align:middle line:84%
+So if I charge more
+than my opponent,
+
+01:10:20.280 --> 01:10:23.200 align:middle line:90%
+what is my profit going to be?
+
+01:10:23.200 --> 01:10:23.860 align:middle line:90%
+Just 0, right?
+
+01:10:23.860 --> 01:10:27.400 align:middle line:90%
+I'm not going to sell anything.
+
+01:10:27.400 --> 01:10:29.880 align:middle line:90%
+So I get 0 here.
+
+01:10:29.880 --> 01:10:31.180 align:middle line:90%
+Now let's do this case.
+
+01:10:31.180 --> 01:10:34.400 align:middle line:84%
+If I charge less than
+my opponent, well,
+
+01:10:34.400 --> 01:10:37.593 align:middle line:84%
+now let's first-- let's
+break it up into two pieces
+
+01:10:37.593 --> 01:10:38.260 align:middle line:90%
+as we always do.
+
+01:10:38.260 --> 01:10:41.400 align:middle line:84%
+We need to think about,
+what is my profit per unit?
+
+01:10:41.400 --> 01:10:44.480 align:middle line:84%
+And then what is the number
+of units I'm going to sell?
+
+01:10:44.480 --> 01:10:49.230 align:middle line:84%
+So my profit per unit is
+going to be p1 minus c.
+
+01:10:49.230 --> 01:10:54.570 align:middle line:84%
+I'm selling at a price
+of p1, and my cost is c.
+
+01:10:54.570 --> 01:10:57.210 align:middle line:84%
+And notice how this is
+dual to what we did before.
+
+01:10:57.210 --> 01:10:59.890 align:middle line:84%
+Before, I directly
+chose quantity,
+
+01:10:59.890 --> 01:11:02.730 align:middle line:84%
+but the price depended on
+what the other person did.
+
+01:11:02.730 --> 01:11:05.290 align:middle line:84%
+Here, I directly choose
+price, but the quantity
+
+01:11:05.290 --> 01:11:08.370 align:middle line:84%
+depends on what the other
+person does and also what I do.
+
+01:11:08.370 --> 01:11:12.510 align:middle line:90%
+So what is going to go in here?
+
+01:11:12.510 --> 01:11:17.650 align:middle line:84%
+What is going to be the
+quantity I sell at price p1?
+
+01:11:17.650 --> 01:11:20.553 align:middle line:84%
+Well, everyone, if they buy,
+is going to buy from me.
+
+01:11:20.553 --> 01:11:21.970 align:middle line:84%
+So the amount that
+I sell is going
+
+01:11:21.970 --> 01:11:25.130 align:middle line:84%
+to be the market demand
+at a price of p1.
+
+01:11:25.130 --> 01:11:29.090 align:middle line:84%
+But we already said the market
+demand at a price of p is just 1
+
+01:11:29.090 --> 01:11:30.130 align:middle line:90%
+minus p.
+
+01:11:30.130 --> 01:11:33.690 align:middle line:84%
+So we're going to
+get 1 minus p1,
+
+01:11:33.690 --> 01:11:36.198 align:middle line:84%
+again, assuming
+p1 is less than 1,
+
+01:11:36.198 --> 01:11:37.990 align:middle line:84%
+but we're going to be
+a little sloppy here.
+
+01:11:37.990 --> 01:11:42.090 align:middle line:90%
+
+
+01:11:42.090 --> 01:11:45.850 align:middle line:84%
+And now we see the same central
+trade off but in the other way.
+
+01:11:45.850 --> 01:11:48.670 align:middle line:84%
+If I raise my price,
+I get more per unit,
+
+01:11:48.670 --> 01:11:50.890 align:middle line:84%
+but the number of
+units I sell goes down.
+
+01:11:50.890 --> 01:11:51.830 align:middle line:90%
+What about this case?
+
+01:11:51.830 --> 01:11:52.430 align:middle line:90%
+This is a little tricky.
+
+01:11:52.430 --> 01:11:53.680 align:middle line:90%
+We have to make an assumption.
+
+01:11:53.680 --> 01:11:57.530 align:middle line:84%
+What happens if both firms
+charge exactly the same price?
+
+01:11:57.530 --> 01:11:58.050 align:middle line:90%
+Yeah.
+
+01:11:58.050 --> 01:11:59.490 align:middle line:84%
+AUDIENCE: You both get
+half of the market.
+
+01:11:59.490 --> 01:12:00.530 align:middle line:84%
+IAN BALL: Right, that's
+the standard assumption
+
+01:12:00.530 --> 01:12:02.250 align:middle line:84%
+that if consumers are
+indifferent, maybe
+
+01:12:02.250 --> 01:12:05.470 align:middle line:84%
+they're randomize, maybe they,
+whatever, for whatever reason,
+
+01:12:05.470 --> 01:12:06.650 align:middle line:90%
+it's going to be half/half.
+
+01:12:06.650 --> 01:12:12.530 align:middle line:84%
+So it's going to be p1 minus
+c times 1 minus p1 over 2.
+
+01:12:12.530 --> 01:12:15.250 align:middle line:84%
+So we're both charging
+the same price p1.
+
+01:12:15.250 --> 01:12:18.650 align:middle line:84%
+The market demand is 1 minus
+p1, but I get half of that,
+
+01:12:18.650 --> 01:12:21.330 align:middle line:84%
+and my opponent
+gets half of that.
+
+01:12:21.330 --> 01:12:23.470 align:middle line:84%
+So now, mathematically,
+we're done.
+
+01:12:23.470 --> 01:12:26.330 align:middle line:90%
+We've described the game.
+
+01:12:26.330 --> 01:12:29.570 align:middle line:84%
+Now what we want to understand
+is the best response.
+
+01:12:29.570 --> 01:12:34.490 align:middle line:84%
+So now let me understand
+the best response of firm 1
+
+01:12:34.490 --> 01:12:37.730 align:middle line:90%
+to a price of p2.
+
+01:12:37.730 --> 01:12:39.450 align:middle line:84%
+And there's going
+to be a few cases
+
+01:12:39.450 --> 01:12:41.090 align:middle line:90%
+we have to be careful about.
+
+01:12:41.090 --> 01:12:43.250 align:middle line:90%
+So let's break this down.
+
+01:12:43.250 --> 01:12:46.300 align:middle line:84%
+The first case is if
+p2 is less than c.
+
+01:12:46.300 --> 01:12:49.500 align:middle line:90%
+Next case is p2 equals c.
+
+01:12:49.500 --> 01:12:52.040 align:middle line:90%
+Next case is c is less than p2.
+
+01:12:52.040 --> 01:12:54.860 align:middle line:90%
+
+
+01:12:54.860 --> 01:12:56.380 align:middle line:84%
+And this is going
+to be a final case
+
+01:12:56.380 --> 01:12:57.740 align:middle line:90%
+at the end, which I'll get to.
+
+01:12:57.740 --> 01:13:00.620 align:middle line:84%
+But let's go through
+it step by step.
+
+01:13:00.620 --> 01:13:05.140 align:middle line:84%
+What if my opponent charges
+a price less than c?
+
+01:13:05.140 --> 01:13:07.420 align:middle line:90%
+Strictly less than c.
+
+01:13:07.420 --> 01:13:08.880 align:middle line:84%
+What price would
+I like to charge?
+
+01:13:08.880 --> 01:13:09.380 align:middle line:90%
+Yeah.
+
+01:13:09.380 --> 01:13:10.797 align:middle line:84%
+AUDIENCE: Well,
+at that point, you
+
+01:13:10.797 --> 01:13:14.020 align:middle line:84%
+should just not because
+if you compete with them
+
+01:13:14.020 --> 01:13:15.860 align:middle line:84%
+and actually get
+customers, you're not
+
+01:13:15.860 --> 01:13:17.280 align:middle line:90%
+going to be making any money.
+
+01:13:17.280 --> 01:13:19.020 align:middle line:84%
+IAN BALL: Great,
+so the only way I'm
+
+01:13:19.020 --> 01:13:20.660 align:middle line:84%
+going to be able
+to sell to anyone
+
+01:13:20.660 --> 01:13:24.780 align:middle line:84%
+is if I charge a price
+that's at most p2,
+
+01:13:24.780 --> 01:13:27.140 align:middle line:84%
+but that price is already
+below c, so I'm definitely
+
+01:13:27.140 --> 01:13:28.200 align:middle line:90%
+going to lose money.
+
+01:13:28.200 --> 01:13:30.380 align:middle line:84%
+So the best I can do
+is get a payoff of 0.
+
+01:13:30.380 --> 01:13:34.940 align:middle line:84%
+But what price will ensure
+that I get a payoff of 0?
+
+01:13:34.940 --> 01:13:38.180 align:middle line:84%
+Well, 0 actually would not
+be a very good price to set.
+
+01:13:38.180 --> 01:13:39.120 align:middle line:90%
+I need to charge.
+
+01:13:39.120 --> 01:13:42.540 align:middle line:84%
+Well, let's see, there's a
+lot of things I could do.
+
+01:13:42.540 --> 01:13:46.940 align:middle line:90%
+I can actually charge.
+
+01:13:46.940 --> 01:13:50.100 align:middle line:84%
+It's a little tricky, but
+actually, anything above p2
+
+01:13:50.100 --> 01:13:51.058 align:middle line:90%
+is going to work.
+
+01:13:51.058 --> 01:13:52.600 align:middle line:84%
+So maybe I'll write
+it down as a set.
+
+01:13:52.600 --> 01:13:55.380 align:middle line:84%
+I mean, we're being a
+little careful here.
+
+01:13:55.380 --> 01:13:57.300 align:middle line:84%
+If my opponent
+charges p2, you're
+
+01:13:57.300 --> 01:13:59.632 align:middle line:84%
+exactly right that my
+goal is to sell nothing
+
+01:13:59.632 --> 01:14:01.340 align:middle line:84%
+because the only way
+I can sell something
+
+01:14:01.340 --> 01:14:02.820 align:middle line:90%
+is if I'm losing money.
+
+01:14:02.820 --> 01:14:04.700 align:middle line:84%
+How do I ensure
+that I sell nothing?
+
+01:14:04.700 --> 01:14:07.260 align:middle line:84%
+Well, I don't even want to
+charge p2 because then I'll
+
+01:14:07.260 --> 01:14:08.857 align:middle line:90%
+get half the market.
+
+01:14:08.857 --> 01:14:10.440 align:middle line:84%
+And then I'll lose
+money on that half.
+
+01:14:10.440 --> 01:14:14.140 align:middle line:84%
+So it has to be strictly
+above p2, so anything
+
+01:14:14.140 --> 01:14:16.160 align:middle line:84%
+strictly above P2
+up to infinity.
+
+01:14:16.160 --> 01:14:20.040 align:middle line:84%
+So I'm using round parentheses
+to denote strict inequalities.
+
+01:14:20.040 --> 01:14:22.700 align:middle line:90%
+
+
+01:14:22.700 --> 01:14:25.740 align:middle line:84%
+Now, in particular, I mean, one
+thing that's weird about this
+
+01:14:25.740 --> 01:14:29.300 align:middle line:84%
+is s might be willing to charge
+a price below cost, which
+
+01:14:29.300 --> 01:14:31.257 align:middle line:84%
+seems really strange,
+but I'm willing to do it
+
+01:14:31.257 --> 01:14:33.340 align:middle line:84%
+as long as the other
+person's price is even lower,
+
+01:14:33.340 --> 01:14:36.180 align:middle line:84%
+and I'm not actually
+going to sell.
+
+01:14:36.180 --> 01:14:41.070 align:middle line:84%
+What if my opponent
+charges exactly c?
+
+01:14:41.070 --> 01:14:42.130 align:middle line:90%
+Now what do I--
+
+01:14:42.130 --> 01:14:45.310 align:middle line:90%
+
+
+01:14:45.310 --> 01:14:48.365 align:middle line:90%
+what am I willing to charge?
+
+01:14:48.365 --> 01:14:49.990 align:middle line:84%
+Again, I'm not going
+to be able to make
+
+01:14:49.990 --> 01:14:53.470 align:middle line:84%
+any money because the best I can
+do is sell it at a price of c,
+
+01:14:53.470 --> 01:14:54.550 align:middle line:90%
+and my cost is c.
+
+01:14:54.550 --> 01:14:56.410 align:middle line:84%
+So I'm not going to
+make a positive profit.
+
+01:14:56.410 --> 01:14:59.110 align:middle line:84%
+But I want to make sure I
+don't make a negative profit.
+
+01:14:59.110 --> 01:15:00.010 align:middle line:90%
+So what should I do?
+
+01:15:00.010 --> 01:15:00.787 align:middle line:90%
+Yeah, over here.
+
+01:15:00.787 --> 01:15:02.370 align:middle line:84%
+AUDIENCE: Anywhere
+from c to infinity.
+
+01:15:02.370 --> 01:15:03.310 align:middle line:84%
+IAN BALL: Exactly,
+and in this case,
+
+01:15:03.310 --> 01:15:05.365 align:middle line:84%
+can I charge a price
+of c exactly or not?
+
+01:15:05.365 --> 01:15:05.990 align:middle line:90%
+AUDIENCE: Yeah.
+
+01:15:05.990 --> 01:15:06.657 align:middle line:90%
+IAN BALL: I can?
+
+01:15:06.657 --> 01:15:08.870 align:middle line:84%
+And why is that different
+from this case here?
+
+01:15:08.870 --> 01:15:11.830 align:middle line:84%
+AUDIENCE: You charge [INAUDIBLE]
+probability 0 at the same time.
+
+01:15:11.830 --> 01:15:14.213 align:middle line:84%
+IAN BALL: Exactly, so here
+we have a closed parenthesis,
+
+01:15:14.213 --> 01:15:15.130 align:middle line:90%
+and it goes like this.
+
+01:15:15.130 --> 01:15:16.050 align:middle line:90%
+Notice the difference.
+
+01:15:16.050 --> 01:15:18.470 align:middle line:84%
+If I charge exactly the
+same price as my opponent,
+
+01:15:18.470 --> 01:15:20.270 align:middle line:90%
+I get half the market.
+
+01:15:20.270 --> 01:15:22.430 align:middle line:84%
+If their price is
+strictly below c, then
+
+01:15:22.430 --> 01:15:25.030 align:middle line:84%
+getting half the market means
+I lose money because I'm losing
+
+01:15:25.030 --> 01:15:26.990 align:middle line:90%
+money on every unit I sell.
+
+01:15:26.990 --> 01:15:28.790 align:middle line:84%
+Here, getting half
+the market gives me
+
+01:15:28.790 --> 01:15:31.390 align:middle line:84%
+a profit of exactly 0
+because each unit I sell
+
+01:15:31.390 --> 01:15:32.950 align:middle line:90%
+is exactly at a price of c.
+
+01:15:32.950 --> 01:15:37.222 align:middle line:90%
+
+
+01:15:37.222 --> 01:15:42.470 align:middle line:84%
+Now, OK, maybe to make
+the cases a little easier,
+
+01:15:42.470 --> 01:15:47.090 align:middle line:84%
+let's say I'm just going to say
+c is less than a 1/3 just to--
+
+01:15:47.090 --> 01:15:49.590 align:middle line:84%
+so I don't have to deal with
+really complicated inequalities
+
+01:15:49.590 --> 01:15:49.810 align:middle line:90%
+here.
+
+01:15:49.810 --> 01:15:51.435 align:middle line:84%
+So let's just say c
+is less than a 1/3.
+
+01:15:51.435 --> 01:15:53.070 align:middle line:90%
+It's not so important.
+
+01:15:53.070 --> 01:15:57.110 align:middle line:84%
+So now what happens if my
+opponent charges strictly
+
+01:15:57.110 --> 01:16:01.430 align:middle line:84%
+more than c but less than or
+equal to 1 minus c over 2?
+
+01:16:01.430 --> 01:16:03.870 align:middle line:84%
+The 1 minus c over
+2 is not-- you'll
+
+01:16:03.870 --> 01:16:07.870 align:middle line:90%
+see later why that comes up.
+
+01:16:07.870 --> 01:16:09.430 align:middle line:90%
+No, 1 plus c over 2, sorry.
+
+01:16:09.430 --> 01:16:15.790 align:middle line:90%
+
+
+01:16:15.790 --> 01:16:18.227 align:middle line:90%
+So actually, I don't need--
+
+01:16:18.227 --> 01:16:19.810 align:middle line:84%
+sorry, I don't need
+c less than a 1/3.
+
+01:16:19.810 --> 01:16:20.990 align:middle line:90%
+Never mind, ignore that.
+
+01:16:20.990 --> 01:16:22.750 align:middle line:84%
+I made a mistake,
+and then that caused
+
+01:16:22.750 --> 01:16:24.708 align:middle line:84%
+me to make another mistake
+conditional on that.
+
+01:16:24.708 --> 01:16:28.850 align:middle line:84%
+So now my opponent's price
+is strictly greater than c.
+
+01:16:28.850 --> 01:16:30.210 align:middle line:90%
+What price do I want to charge?
+
+01:16:30.210 --> 01:16:37.602 align:middle line:90%
+
+
+01:16:37.602 --> 01:16:39.060 align:middle line:84%
+Well, they're
+charging more than c,
+
+01:16:39.060 --> 01:16:41.640 align:middle line:84%
+so I can certainly
+make positive profit.
+
+01:16:41.640 --> 01:16:42.573 align:middle line:90%
+But what's my goal?
+
+01:16:42.573 --> 01:16:43.740 align:middle line:90%
+What do I want to try to do?
+
+01:16:43.740 --> 01:16:46.840 align:middle line:90%
+
+
+01:16:46.840 --> 01:16:47.600 align:middle line:90%
+Yeah.
+
+01:16:47.600 --> 01:16:50.260 align:middle line:84%
+AUDIENCE: Charge as small
+under p2 as possible.
+
+01:16:50.260 --> 01:16:51.912 align:middle line:84%
+IAN BALL: I want to
+just undercut them.
+
+01:16:51.912 --> 01:16:54.120 align:middle line:84%
+And that creates a problem
+here because, however much
+
+01:16:54.120 --> 01:16:56.620 align:middle line:84%
+undercut them, I could undercut
+them by a little bit less.
+
+01:16:56.620 --> 01:16:58.480 align:middle line:90%
+Let's just say I charge $1 less.
+
+01:16:58.480 --> 01:16:59.980 align:middle line:84%
+Well, I'd rather
+charge 1 cent less.
+
+01:16:59.980 --> 01:17:01.540 align:middle line:84%
+I'd rather charge
+1/2 a cent less.
+
+01:17:01.540 --> 01:17:04.060 align:middle line:84%
+So it turns out,
+technically, it's empty.
+
+01:17:04.060 --> 01:17:06.220 align:middle line:84%
+There's not a best response
+because whatever I do,
+
+01:17:06.220 --> 01:17:08.387 align:middle line:84%
+I could do strictly better
+because I could-- indeed,
+
+01:17:08.387 --> 01:17:11.120 align:middle line:84%
+my goal is to undercut them
+by the smallest amount,
+
+01:17:11.120 --> 01:17:13.080 align:middle line:84%
+and I can't undercut
+them by 0 because then I
+
+01:17:13.080 --> 01:17:14.300 align:middle line:90%
+only get half the market.
+
+01:17:14.300 --> 01:17:15.860 align:middle line:84%
+So I really want
+to be strictly--
+
+01:17:15.860 --> 01:17:16.818 align:middle line:90%
+it's the classic thing.
+
+01:17:16.818 --> 01:17:19.300 align:middle line:84%
+What's the biggest number
+that's strictly less than 1?
+
+01:17:19.300 --> 01:17:20.548 align:middle line:90%
+Well, it doesn't exist.
+
+01:17:20.548 --> 01:17:22.840 align:middle line:84%
+Now, as soon as I write this
+down, I think you should--
+
+01:17:22.840 --> 01:17:25.060 align:middle line:84%
+some warning bells should go
+off, and you should say, well,
+
+01:17:25.060 --> 01:17:26.600 align:middle line:84%
+is all this analysis
+being driven
+
+01:17:26.600 --> 01:17:29.640 align:middle line:84%
+by some weird things about the
+real numbers and limits not
+
+01:17:29.640 --> 01:17:30.880 align:middle line:90%
+existing?
+
+01:17:30.880 --> 01:17:33.040 align:middle line:84%
+Or is this really something
+about the real world?
+
+01:17:33.040 --> 01:17:34.560 align:middle line:84%
+And you should ask,
+well, what would
+
+01:17:34.560 --> 01:17:37.320 align:middle line:84%
+happen if we required prices
+to be on a finite grid
+
+01:17:37.320 --> 01:17:39.338 align:middle line:84%
+and say prices have to
+be denominated in cents?
+
+01:17:39.338 --> 01:17:40.880 align:middle line:84%
+And it turns out
+that the conclusions
+
+01:17:40.880 --> 01:17:42.080 align:middle line:90%
+will be basically the same.
+
+01:17:42.080 --> 01:17:45.200 align:middle line:84%
+So whenever you have this
+sinking feeling that there's
+
+01:17:45.200 --> 01:17:47.540 align:middle line:84%
+some weird math going on,
+you should ask this question,
+
+01:17:47.540 --> 01:17:48.220 align:middle line:90%
+and people have.
+
+01:17:48.220 --> 01:17:49.845 align:middle line:84%
+And it turns out the
+answer's the same,
+
+01:17:49.845 --> 01:17:51.720 align:middle line:84%
+so that's why we're
+not too concerned.
+
+01:17:51.720 --> 01:17:54.280 align:middle line:84%
+OK, and then the
+final case, this
+
+01:17:54.280 --> 01:18:01.740 align:middle line:84%
+is the trickiest one where p2 is
+greater than one plus c over 2.
+
+01:18:01.740 --> 01:18:05.000 align:middle line:90%
+This is a bit tricky.
+
+01:18:05.000 --> 01:18:08.220 align:middle line:84%
+But what do I want
+to do in this case?
+
+01:18:08.220 --> 01:18:12.880 align:middle line:84%
+You might think I want to
+just undercut my opponent.
+
+01:18:12.880 --> 01:18:16.680 align:middle line:84%
+But it turns out that's
+not the case here.
+
+01:18:16.680 --> 01:18:19.500 align:middle line:84%
+So let's recall in the monopoly
+case where this demand function,
+
+01:18:19.500 --> 01:18:22.520 align:middle line:84%
+if I'm a monopolist, what is the
+optimal price for me to charge
+
+01:18:22.520 --> 01:18:24.880 align:middle line:90%
+as a monopolist?
+
+01:18:24.880 --> 01:18:28.263 align:middle line:84%
+It turns out it's
+exactly 1 plus c over 2.
+
+01:18:28.263 --> 01:18:29.680 align:middle line:84%
+If I were a
+monopolist, that would
+
+01:18:29.680 --> 01:18:32.250 align:middle line:90%
+be the best price to charge.
+
+01:18:32.250 --> 01:18:34.210 align:middle line:84%
+So let's say my
+opponent is charging
+
+01:18:34.210 --> 01:18:36.210 align:middle line:90%
+a ridiculously high price.
+
+01:18:36.210 --> 01:18:38.690 align:middle line:84%
+Well, then it's as
+if I'm a monopolist.
+
+01:18:38.690 --> 01:18:41.490 align:middle line:84%
+And what I actually want
+to do is charge exactly
+
+01:18:41.490 --> 01:18:43.890 align:middle line:84%
+the monopoly price
+of 1 plus c over 2.
+
+01:18:43.890 --> 01:18:49.490 align:middle line:90%
+
+
+01:18:49.490 --> 01:18:51.570 align:middle line:84%
+So notice where this
+undercutting argument
+
+01:18:51.570 --> 01:18:52.190 align:middle line:90%
+breaks down.
+
+01:18:52.190 --> 01:18:54.380 align:middle line:84%
+You might think, oh, I
+want to just undercut them.
+
+01:18:54.380 --> 01:18:56.130 align:middle line:84%
+But that is assuming
+that they're charging
+
+01:18:56.130 --> 01:18:57.510 align:middle line:90%
+a pretty reasonable price.
+
+01:18:57.510 --> 01:18:59.410 align:middle line:84%
+If they're charging
+such a high price
+
+01:18:59.410 --> 01:19:02.170 align:middle line:84%
+that if I just undercut them,
+no one's going to buy from me,
+
+01:19:02.170 --> 01:19:04.470 align:middle line:84%
+then just undercutting
+them no longer makes sense.
+
+01:19:04.470 --> 01:19:07.830 align:middle line:84%
+So if they're charging strictly
+more than the monopoly price,
+
+01:19:07.830 --> 01:19:09.890 align:middle line:84%
+then I can just charge
+the monopoly price.
+
+01:19:09.890 --> 01:19:13.250 align:middle line:84%
+I'm charging less than them,
+so I get the whole market.
+
+01:19:13.250 --> 01:19:15.490 align:middle line:84%
+And in fact, I get the
+highest possible profit
+
+01:19:15.490 --> 01:19:17.770 align:middle line:84%
+because I get exactly
+the monopoly profit.
+
+01:19:17.770 --> 01:19:20.670 align:middle line:84%
+So here, you get
+the monopoly profit.
+
+01:19:20.670 --> 01:19:24.410 align:middle line:90%
+
+
+01:19:24.410 --> 01:19:26.170 align:middle line:90%
+So now we can work this all out.
+
+01:19:26.170 --> 01:19:28.910 align:middle line:84%
+We understand the best
+response of firm 1 to firm 2.
+
+01:19:28.910 --> 01:19:31.510 align:middle line:84%
+We can compute firm 2's
+best response to firm 1.
+
+01:19:31.510 --> 01:19:33.230 align:middle line:84%
+But it turns out, if
+we do all the math,
+
+01:19:33.230 --> 01:19:41.050 align:middle line:84%
+there's a unique
+equilibrium in which p1 star
+
+01:19:41.050 --> 01:19:44.890 align:middle line:90%
+equals P2 star equals c.
+
+01:19:44.890 --> 01:19:47.010 align:middle line:90%
+So we both charge exactly c.
+
+01:19:47.010 --> 01:19:50.645 align:middle line:84%
+And we can check, it's easy to
+see that this is an equilibrium.
+
+01:19:50.645 --> 01:19:52.270 align:middle line:84%
+Showing it's unique
+is a bit more work,
+
+01:19:52.270 --> 01:19:56.050 align:middle line:84%
+but seeing it's an equilibrium,
+if my opponent charges c,
+
+01:19:56.050 --> 01:19:58.290 align:middle line:90%
+I'm willing to charge c.
+
+01:19:58.290 --> 01:20:02.130 align:middle line:84%
+And therefore, if we each charge
+c, this is an equilibrium.
+
+01:20:02.130 --> 01:20:04.490 align:middle line:84%
+Now, notice a
+fundamental difference
+
+01:20:04.490 --> 01:20:06.290 align:middle line:90%
+between Cournot and Bertrand.
+
+01:20:06.290 --> 01:20:09.050 align:middle line:84%
+With Cournot, each
+time we added a firm,
+
+01:20:09.050 --> 01:20:12.290 align:middle line:84%
+the price got closer and closer
+to the efficient price of c.
+
+01:20:12.290 --> 01:20:14.330 align:middle line:84%
+With Bertrand, it
+only takes two.
+
+01:20:14.330 --> 01:20:16.410 align:middle line:84%
+As soon as we had
+two firms competing,
+
+01:20:16.410 --> 01:20:19.410 align:middle line:84%
+this undercutting motive was
+so strong that we immediately
+
+01:20:19.410 --> 01:20:23.450 align:middle line:84%
+got down to the efficient price
+of price equals marginal cost.
+
+01:20:23.450 --> 01:20:26.720 align:middle line:84%
+All right, I'll end there, and
+I'll see everyone on Thursday.
+
+01:20:26.720 --> 01:20:30.000 align:middle line:90%
