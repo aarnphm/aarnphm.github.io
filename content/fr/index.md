@@ -25,4 +25,8 @@ début de l'été : [[fr/episode-13|épisode 13, petit bobo]], parties du corps,
 
 météo et projets : [[fr/episode-14|épisode 14, beau et chaud]], températures, futur proche et vêtements selon le temps.
 
+repas et préférences : [[fr/episode-15|épisode 15, on casse la croute]], invitations, ingrédients, quantités et gouts.
+
+bilan d'été : [[fr/episode-16|épisode 16]], réponses de révision et jeu des pages 118–119.
+
 vue d'ensemble : [[fr/parcours.canvas|carte des notes]].
