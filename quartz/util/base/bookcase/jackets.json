@@ -143,29 +143,37 @@
       "isbn": "9783883312613",
       "publisher": "Akademie der Künste",
       "page": "https://basics09.de/projekte/the-ai-anarchies-book",
-      "source": "https://basics09.de/media/pages/projekte/the-ai-anarchies-book/75d1ab5b57-1742561458/250129_basics09_theaianarchiesbook_c_waldemarsalesski_13-2048x-q80.webp",
-      "sourceSha256": "8e9f569519265743d62597f81ff2394076b4a3b86f7d0242194817cd0f12dcb6",
+      "source": "https://basics09.de/media/pages/projekte/the-ai-anarchies-book/75d1ab5b57-1742561458/250129_basics09_theaianarchiesbook_c_waldemarsalesski_13.jpg",
+      "sourceSha256": "df9e6ac9d0041da1f00fae05fede1ff80e0477dfa0f75ed49f50e58b4fe60033",
       "posterSha256": "14b180f299cc5bb650428b1242c35c90143d51014bd253530a0e8cae0bd7267a",
       "perspective": {
         "width": 80,
         "height": 1000,
         "points": [
-          { "source": [402, 896], "target": [0, 0] },
-          { "source": [409, 816], "target": [79, 0] },
-          { "source": [973, 1541], "target": [79, 999] },
-          { "source": [950, 1620], "target": [0, 999] }
+          { "source": [588.867188, 1312.5], "target": [0, 0] },
+          { "source": [599.121094, 1195.3125], "target": [79, 0] },
+          { "source": [1425.292969, 2257.324219], "target": [79, 999] },
+          { "source": [1391.601562, 2373.046875], "target": [0, 999] }
         ]
       },
       "crop": { "left": 0, "top": 8, "width": 80, "height": 976 },
       "editionEvidence": "Designer Basics09 project photograph has identical black front, stacked title, generated grey blob image, editors and layout. Official Akademie der Künste publication announcement confirms designers and ISBN9783883312613. Genuine diagonal spine photograph rectified via homography; no text redrawn. Retains original light falloff and rounded binding edges. Root must support recorded perspective step before extract. Decorative photographed board lip at very bottom cropped out. Front normalized in cover audit: Crop grey promotional canvas and shadow outside actual flat black front. Printed artwork and verified spine edition remain identical.",
       "sourceKind": "designer-photograph-rectified",
-      "artwork": "the-ai-anarchies-book-8e9f56951926.webp",
+      "artwork": "the-ai-anarchies-book-original-3000-low.webp",
       "height": 320,
-      "artworkSha256": "763a2e540c34d09d15b437be7d581417a7f6250b9d41c68e07cdd9af00743286",
-      "detailArtwork": "the-ai-anarchies-book-detail-0d6906219048045e.webp",
-      "detailArtworkSha256": "0d6906219048045effe2c6094b8aa6ea990150fe7de72c1704d82023cf996925",
-      "detailWidth": 72,
-      "detailHeight": 886
+      "qualityUpgradeEvidence": {
+        "previousSource": "https://basics09.de/media/pages/projekte/the-ai-anarchies-book/75d1ab5b57-1742561458/250129_basics09_theaianarchiesbook_c_waldemarsalesski_13-2048x-q80.webp",
+        "previousSourceSha256": "8e9f569519265743d62597f81ff2394076b4a3b86f7d0242194817cd0f12dcb6",
+        "previousSourceDimensions": "2048x2048",
+        "newSourceDimensions": "3000x3000",
+        "preservedSourcePage": "https://basics09.de/projekte/the-ai-anarchies-book",
+        "method": "The original source pixels were retained. Perspective source corners were scaled by the exact image-dimension ratio; target plane and crop remain the accepted face."
+      },
+      "artworkSha256": "949fad814a2c24300684a7e1a261c9247feb53a809d4c5706751a9d970350c9d",
+      "detailArtwork": "the-ai-anarchies-book-detail-1f7aeb1661f16501.webp",
+      "detailArtworkSha256": "1f7aeb1661f1650134b342a8381bfcf79cf53a544a2e25cd36608ba07ef3d6db",
+      "detailWidth": 104,
+      "detailHeight": 1280
     },
     {
       "id": "what-we-can-know",
@@ -605,30 +613,30 @@
       "isbn": null,
       "editionEvidence": "One photograph shows matching white front with orange leaf/stone/blue box design and whole printed spine. Oxford imprint and author Blackburn visible. Jacketed hardcover, exact ISBN/printing unverified; listing now404. Store nullISBN. Spine retains all letters, leaf/stone illustration and OXFORD, with original paper toning and crease shading.",
       "page": "https://pangobooks.com/titles/think-2/ebaa48db-01ca-406a-89e5-9312df23c95a-usXMfg0BqVdHc3htOxyUx7sWPX53",
-      "source": "https://images.pangobooks.com/images/68293030-4c1c-4dcf-a68d-8faee85c1ce6?crop=1%3A1&quality=85&width=800",
-      "sourceSha256": "aa26c848bada6eaf1d627a6ad83ece463c75ae07c7cf8232febd4a6fc3458fbf",
+      "source": "https://images.pangobooks.com/images/68293030-4c1c-4dcf-a68d-8faee85c1ce6",
+      "sourceSha256": "2d1c261cca961f90bc7d1591217c8569642e32f7c38279d64da470b956720946",
       "poster": "library/posters/think.jpg",
       "posterSha256": "1a34620ff991c8cc29a4f55a9e6d2b3cad6baeaf0536ceb34a10fe41d34b0f47",
       "crop": { "left": 0, "top": 0, "width": 90, "height": 740 },
-      "artwork": "think-round-10-sampling.webp",
+      "artwork": "think-round-19-quality-native-1080.webp",
       "height": 320,
       "perspective": {
         "width": 90,
         "height": 740,
         "points": [
-          { "source": [296, 31], "target": [0, 0] },
-          { "source": [429, 38], "target": [89, 0] },
-          { "source": [405, 765], "target": [89, 739] },
-          { "source": [307, 771], "target": [0, 739] }
+          { "source": [41.85, 679.4], "target": [0, 0] },
+          { "source": [51.3, 499.85], "target": [89, 0] },
+          { "source": [1032.75, 532.25], "target": [89, 739] },
+          { "source": [1040.85, 664.55], "target": [0, 739] }
         ]
       },
-      "sourceKind": "original-photograph-rectified",
-      "artworkSha256": "8275d3a1d53fcb96fa9748d2e28aee650d405edf11967407a0d6274dcee4506a",
-      "detailArtwork": "think-detail-38d30f218edf773f.webp",
-      "detailArtworkSha256": "38d30f218edf773f1247493b628f3fffe2e1580a5fa2ebd7a696858be55beba7",
-      "detailWidth": 88,
-      "detailHeight": 727,
-      "sampling": "independent"
+      "sourceKind": "untransformed PangoBooks original image with the same full-copy photograph as the previously verified 800x800 rendition",
+      "sampling": "independent",
+      "detailArtwork": "think-detail-1d03c14deb60451b.webp",
+      "detailArtworkSha256": "1d03c14deb60451bd2abd3d310f36c6be087a354e38e66dfc4387906820fde2b",
+      "detailWidth": 119,
+      "detailHeight": 980,
+      "artworkSha256": "b24665d689b35430bac2fa75ceec24552f0443abad8789cbbe8d94c4ec272fef"
     },
     {
       "id": "tomorrow-and-tomorrow-and-tomorrow",
@@ -1669,30 +1677,38 @@
       "isbn": "9780062457714",
       "editionEvidence": "Same physical photograph pairs authentic Harper dust-jacket spine with matching orange front, pale bestseller stripe and white Everything Is F*cked author badge. Seller identifies hardcover ISBN 9780062457714; this is an edition-design match, without a readable ISBN on the physical image or known printing. Curvature and warm light remain visible.",
       "page": "https://www.ebay.com/itm/116117430722",
-      "source": "https://i.ebayimg.com/images/g/u24AAOSwPcZl~8r6/s-l960.jpg",
-      "sourceSha256": "d366d12175ceec539b4f5f8711eb7eeb3677c4adae4aa2ff832fabb79d874b81",
+      "source": "https://i.ebayimg.com/images/g/u24AAOSwPcZl~8r6/s-l1600.jpg",
+      "sourceSha256": "1c40f1c4c4e2b5a3a317117b4651cc27408bcfe87112ecedfcae5ba5152ee8c5",
       "poster": "library/posters/the-subtle-art-of-not-giving-a-fuck.jpg",
       "posterSha256": "10eb49a35aeef9378e7344d7868705c1093920c7b6855a27be66bf51cca7d0f4",
       "crop": { "left": 0, "top": 0, "width": 70, "height": 816 },
-      "artwork": "the-subtle-art-of-not-giving-a-fuck-round-10-sampling.webp",
+      "artwork": "the-subtle-art-of-not-giving-a-fuck-original-1200x1600-low.webp",
       "height": 320,
       "perspective": {
         "width": 70,
         "height": 816,
         "points": [
-          { "source": [200, 76], "target": [0, 0] },
-          { "source": [276, 78], "target": [69, 0] },
-          { "source": [277, 893], "target": [69, 815] },
-          { "source": [214, 893], "target": [0, 815] }
+          { "source": [333.333333, 126.666667], "target": [0, 0] },
+          { "source": [460, 130], "target": [69, 0] },
+          { "source": [461.666667, 1488.333333], "target": [69, 815] },
+          { "source": [356.666667, 1488.333333], "target": [0, 815] }
         ]
       },
       "sourceKind": "original-photograph-rectified",
-      "artworkSha256": "ec9264bb27078abab7b934a1bbbb5180fb69bd1b7ef7cccd2a27a520c0255ef6",
-      "detailArtwork": "the-subtle-art-of-not-giving-a-fuck-detail-ca2f9a5f8eda03eb.webp",
-      "detailArtworkSha256": "ca2f9a5f8eda03eb86d27ebdff3c9953bd2455b8ba4a92d12a99ccc5f1f73c1a",
-      "detailWidth": 69,
-      "detailHeight": 815,
-      "sampling": "independent"
+      "sampling": "independent",
+      "qualityUpgradeEvidence": {
+        "previousSource": "https://i.ebayimg.com/images/g/u24AAOSwPcZl~8r6/s-l960.jpg",
+        "previousSourceSha256": "d366d12175ceec539b4f5f8711eb7eeb3677c4adae4aa2ff832fabb79d874b81",
+        "previousSourceDimensions": "720x960",
+        "newSourceDimensions": "1200x1600",
+        "preservedSourcePage": "https://www.ebay.com/itm/116117430722",
+        "method": "The original source pixels were retained. Perspective source corners were scaled by the exact image-dimension ratio; target plane and crop remain the accepted face."
+      },
+      "artworkSha256": "47d2b486edf8b622d68534247d5d6a2a28089d09b1c8aed24a5c03d754e10856",
+      "detailArtwork": "the-subtle-art-of-not-giving-a-fuck-detail-a08128c9a3cc4abd.webp",
+      "detailArtworkSha256": "a08128c9a3cc4abdb850ea923b6a596225adb0bb423a42b00587929be126c936",
+      "detailWidth": 109,
+      "detailHeight": 1280
     },
     {
       "id": "the-uninhabitable-earth",
@@ -5938,6 +5954,310 @@
       "detailArtworkSha256": "013585c20924d3e201e1f2f4e9c610943b0da0134b4f9d37dd31e3234bb03e5e",
       "detailWidth": 140,
       "detailHeight": 915
+    },
+    {
+      "id": "a-little-life-anchor-2016-9780804172707-ebay-copy-v2",
+      "title": "A Little Life",
+      "author": "Hanya Yanagihara",
+      "publisher": "Anchor Books",
+      "isbn": "9780804172707",
+      "editionEvidence": "The exact eBay listing identifies this physical trade paperback as the first Anchor Books edition. Its same-copy copyright page states “First Anchor Books Edition, January 2016” and Anchor Trade Paperback ISBN 978-0-8041-7270-7. Gallery photo 1 shows the assigned Peter Hujar front; photo 3 shows the spine; photo 5 shows the copyright page. The title page gives the same work and author.",
+      "page": "https://www.ebay.com/itm/168624081260",
+      "source": "https://i.ebayimg.com/images/g/gRYAAeSwS~Jqaq0j/s-l1600.webp",
+      "sourceSha256": "1a7a0c19137fa6df914ce9c12fa76b22f3eec7edb777927facc8212b258f38b6",
+      "sourceKind": "Copy-specific photograph shows the complete printed spine face and both ends of its printed design; its photo frame crops a small amount of the unprinted top edge. The same listing gallery contains the matching full front and copyright page, and a second 2016 ISBN-matched physical copy is recorded as corroborating design evidence.",
+      "poster": "library/posters/a-little-life.jpg",
+      "posterSha256": "1242e413388ab8c18dfd8a2cf75ebe654ae579bc76e053f9cba7623dfdbde777",
+      "crop": { "left": 0, "top": 0, "width": 269, "height": 1580 },
+      "height": 320,
+      "artwork": "a-little-life-anchor-2016-9780804172707-ebay-copy-v2-spine.webp",
+      "perspective": {
+        "width": 269,
+        "height": 1580,
+        "points": [
+          { "source": [250, 0], "target": [0, 0] },
+          { "source": [503, 0], "target": [268, 0] },
+          { "source": [486, 1580], "target": [268, 1579] },
+          { "source": [218, 1580], "target": [0, 1579] }
+        ]
+      },
+      "artworkSha256": "f4c658bf52ab4f3775fba66a8087a1f20ac176f39e151c84b3356afc6b1acdb8",
+      "detailArtwork": "a-little-life-anchor-2016-9780804172707-ebay-copy-v2-detail-be3b0b3dae0993c0.webp",
+      "detailArtworkSha256": "be3b0b3dae0993c012f54b6bde4587d8f8f0532898c6a37967ba0eac216a8ead",
+      "detailWidth": 217,
+      "detailHeight": 1280
+    },
+    {
+      "id": "brothers-karamazov-picador-bicentennial-2021-9781250788450-r19-lunad-printed-face",
+      "title": "The Brothers Karamazov",
+      "author": "Fyodor Dostoevsky",
+      "publisher": "Picador",
+      "isbn": "9781250788450",
+      "editionEvidence": "Etsy listing 4463646249 shows the assigned Picador Bicentennial front (frame 12), publication/copyright and ISBN 978-1-250-78845-0 (frames 8 and 10), and the same ISBN on the rear barcode (frame 11). The listing's single physical copy is visible across its gallery; a matching cover scuff joins the front and frame 05 spine photo. The gallery's copyright page identifies the first Picador paperback edition, 2021, translated by Richard Pevear and Larissa Volokhonsky.",
+      "page": "https://www.etsy.com/listing/4463646249/the-brothers-karamazov-bicentennial",
+      "source": "https://i.etsystatic.com/12035556/r/il/d7ac84/7798743145/il_fullxfull.7798743145_kw9o.jpg",
+      "sourceSha256": "2ecb6d7e389df3eb524002d5c5476adacedecb3d5a352fa5c43128d9d467e6dc",
+      "sourceKind": "Etsy seller gallery frame 05, fullxfull JPEG, native 2250x3000. The single photographed copy shows the complete printed spine face from its physical head to the image boundary. The photo cuts off the small unprinted physical tail margin; its full physical tail contour is unverified.",
+      "poster": "library/posters/the-brothers-karamazov.jpg",
+      "posterSha256": "ea8949282f36b94336930fb412582684862094f9fd1a0d9f3ae244c6b8881de9",
+      "crop": { "left": 0, "top": 0, "width": 256, "height": 1280 },
+      "rotation": 0,
+      "artwork": "brothers-karamazov-picador-bicentennial-2021-9781250788450-r19-lunad-printed-face.webp",
+      "height": 320,
+      "perspective": {
+        "width": 256,
+        "height": 1280,
+        "points": [
+          { "source": [585, 600], "target": [0, 0] },
+          { "source": [1140, 620], "target": [255, 0] },
+          { "source": [1090, 2999], "target": [255, 1279] },
+          { "source": [660, 2999], "target": [0, 1279] }
+        ]
+      },
+      "sampling": "independent",
+      "edgeEvidence": "Pixel-measured from native Etsy frame 05. The spine face head corners are (585,600) and (1140,620); the photo boundary at y=2999 intersects the outer and hinge edges at approximately x=660 and x=1090. The registered quadrilateral includes the cream Bicentennial Edition band, complete title, author, and Picador imprint. The image ends before the small unprinted physical tail margin, so total physical tail contour is unverified. No tabletop/background pixels are included in the chosen quadrilateral.",
+      "detailArtwork": "brothers-karamazov-picador-bicentennial-2021-9781250788450-r19-lunad-printed-face-detail-c0ba6e9a4bf01f8c.webp",
+      "detailArtworkSha256": "c0ba6e9a4bf01f8ca40c939b80eee68a6f684ac69d48d32ebfb17f25f7823f99",
+      "detailWidth": 256,
+      "detailHeight": 1280,
+      "artworkSha256": "58d575ace4034780b5109fe67e7b72ab419fc54b5420ace000354206cdd08512"
+    },
+    {
+      "id": "sexual-personae-r19-cross-copy",
+      "title": "Sexual Personae",
+      "author": "Camille Paglia",
+      "publisher": "Vintage",
+      "isbn": "9780679735793",
+      "editionEvidence": "Separate matching physical copies independently show the split-face Vintage front and First Vintage Books Edition, September 1991, ISBN 0-679-73579-8. Head/title/portrait/author band come together from Etsy copy; lower field, imprint and tail from eBay copy. Cross-copy reconstruction, not a claim of one complete photograph.",
+      "page": "https://www.etsy.com/listing/4375528693/sexual-personae-by-camille-paglia-1991",
+      "source": "https://i.etsystatic.com/7326392/r/il/5f9f33/7228146102/il_fullxfull.7228146102_bdm5.jpg",
+      "sourceSha256": "4cca8980e98b2e3a336e110db30bfbb93cd485846ccdcccaeccd7812a7ef4d31",
+      "poster": "library/posters/sexual-personae.jpg",
+      "posterSha256": "06055fbf3ed8314db649036576d744361308a8cdba17496b2518080c28abf9ad",
+      "crop": { "left": 0, "top": 0, "width": 140, "height": 1280 },
+      "height": 320,
+      "artwork": "sexual-personae-r19-cross-copy.webp",
+      "vectorSource": {
+        "kind": "reference-reconstruction",
+        "file": "quartz/util/base/bookcase/spine-sources/sexual-personae-r19-cross-copy.svg",
+        "sha256": "aabbac7d7b9ef5c236b5c9cd1a762164a0c653db2ddac3e59b674d95fb97847a",
+        "detailWidth": 140,
+        "provenance": "Two measured complete regions of same edition, with shared unprinted blue-field registration. No individual glyph insertion or invented type. See geometry.json and prepare.mjs.",
+        "extraction": "docs/verification/bookcase-spine-art/candidates/round-19-root-sexual/prepare.mjs",
+        "corroboration": [
+          {
+            "page": "https://www.etsy.com/listing/4375528693/sexual-personae-by-camille-paglia-1991",
+            "source": "https://i.etsystatic.com/7326392/r/il/0e2f2b/7228146116/il_fullxfull.7228146116_smyd.jpg",
+            "file": "docs/verification/bookcase-spine-art/masters/ca58e5f130b02853ec0786b49dde68d1aaa1c679d2032e0869bcfde6f8476171.jpg",
+            "sha256": "ca58e5f130b02853ec0786b49dde68d1aaa1c679d2032e0869bcfde6f8476171"
+          },
+          {
+            "page": "https://www.ebay.com/itm/177319102122",
+            "file": "docs/verification/bookcase-spine-art/masters/4443baa2e3e1e8221b7ea20f400b1c142e02a7a292082e75f3ad331d1c7bfc25.webp",
+            "sha256": "4443baa2e3e1e8221b7ea20f400b1c142e02a7a292082e75f3ad331d1c7bfc25"
+          },
+          {
+            "page": "https://www.ebay.com/itm/177319102122",
+            "file": "docs/verification/bookcase-spine-art/masters/2351f0bde9737b565325fd0b1a02942de5917194bca647900c282389fcb4db30.webp",
+            "sha256": "2351f0bde9737b565325fd0b1a02942de5917194bca647900c282389fcb4db30"
+          }
+        ]
+      },
+      "detailWidth": 140,
+      "detailHeight": 1280,
+      "artworkSha256": "2563bc7c4f7830fc357118a71d0ddce248548f1484296e1119737bf24951fac6",
+      "detailArtwork": "sexual-personae-r19-cross-copy-detail-01bf197227141661.webp",
+      "detailArtworkSha256": "01bf1972271416610631cdf3daafe17120e3e42504941e0310baedee2669951d"
+    },
+    {
+      "id": "going-infinite-allen-lane-2023-9780241651117-owner-copy",
+      "title": "Going Infinite: The Rise and Fall of a New Tycoon",
+      "author": "Michael Lewis",
+      "publisher": "Allen Lane",
+      "isbn": "9780241651117",
+      "editionEvidence": "AbeBooks listing 31949831085 identifies the physical book as the first edition, Allen Lane hardcover, 2023, ISBN 9780241651117. Its first gallery photo shows the exact black jacket with gold dots, gold-outline title, author lettering, and silhouetted figure in the assigned poster; the removable red signed-copy sticker appears only on the photographed copy. The same listing's second photo is the title page with the Allen Lane imprint and matching title/author.",
+      "page": "https://www.abebooks.co.uk/first-edition/Going-Infinite-Rise-Fall-New-Tycoon/31949831085/bd",
+      "source": "https://pictures.abebooks.com/inventory/31949831085.jpg",
+      "sourceSha256": "e1ae1db5c8232f2a3517270be6edd383ae0adce63539cfa6e33402c6d841c522",
+      "sourceKind": "Same-copy physical photo shows the full spine with head and heel, plus the matching front design. The jacket spine curves inward toward the hinge; mesh boundaries follow the observed face. The crop excludes the front board and surrounding white background.",
+      "poster": "library/posters/going-infinite.jpg",
+      "posterSha256": "efc4e4209e1bc55ae3c7e0c6a6c6038625005124f8ad60ad6054075b2c58cddf",
+      "crop": { "left": 0, "top": 0, "width": 48, "height": 1152 },
+      "height": 320,
+      "artwork": "going-infinite-allen-lane-2023-9780241651117-owner-copy-curved-spine.webp",
+      "mesh": {
+        "kind": "boundary-curves-spine",
+        "interpolation": "bilinear",
+        "width": 48,
+        "height": 1152,
+        "boundaries": {
+          "top": [
+            [0, 218, 81],
+            [0.25, 232, 78],
+            [0.5, 248, 76],
+            [0.75, 263, 74],
+            [1, 279, 71]
+          ],
+          "bottom": [
+            [0, 204, 1233],
+            [0.25, 216, 1238],
+            [0.5, 229, 1243],
+            [0.75, 242, 1246],
+            [1, 255, 1249]
+          ],
+          "left": [
+            [0, 218, 81],
+            [0.04, 208, 128],
+            [0.13, 204, 232],
+            [0.25, 201, 371],
+            [0.375, 200, 510],
+            [0.5, 199, 649],
+            [0.625, 199, 788],
+            [0.75, 199, 927],
+            [0.875, 200, 1066],
+            [0.96, 202, 1169],
+            [1, 204, 1233]
+          ],
+          "right": [
+            [0, 279, 71],
+            [0.04, 278, 118],
+            [0.13, 276, 223],
+            [0.25, 273, 362],
+            [0.375, 270, 501],
+            [0.5, 267, 640],
+            [0.625, 264, 779],
+            [0.75, 261, 918],
+            [0.875, 258, 1057],
+            [0.96, 256, 1163],
+            [1, 255, 1249]
+          ]
+        }
+      },
+      "artworkSha256": "44a7525cb7597a272ce5057e6984dfdfe0c73e3a87e7bfbdf1c44e861a6ab567",
+      "detailArtwork": "going-infinite-allen-lane-2023-9780241651117-owner-copy-detail-89fcc0baf04c4fd8.webp",
+      "detailArtworkSha256": "89fcc0baf04c4fd8585d49f6eb30c990d4d2ece16ab78067050cedddc4d526a8",
+      "detailWidth": 48,
+      "detailHeight": 1152
+    },
+    {
+      "id": "tuesdays-with-morrie-crown-25th-9780767905923-r19-lunad-printed-face",
+      "title": "Tuesdays with Morrie",
+      "author": "Mitch Albom",
+      "publisher": "Crown",
+      "isbn": "9780767905923",
+      "editionEvidence": "One Pango seller gallery (listing https://pangobooks.com/books/9317ee4f-d402-4151-8e91-572d08abfa16-yD0XiO0GoFRWgI0iZ9k7WRugWam1) shows a single copy across all evidence photos. Native photo 1 is the matching 25th-anniversary cover, including the round gold 25TH ANNIVERSARY EDITION seal, red frame, and 'With a New Afterword by the Author'. Native photo 2 shows that same exact cover and the complete spine on one copy. Native photo 3 shows the back with ISBN 978-0-7679-0592-3. Native photo 5 shows copyright 1997, 2017, 2022, publication by Crown (an imprint of Random House), and ISBN 978-0-7679-0592-3. The publisher's page at https://www.penguinrandomhouse.com/books/1588/tuesdays-with-morrie-by-mitch-albom/ identifies ISBN 9780767905923 and describes the special 25th anniversary edition with a new afterword.",
+      "page": "https://pangobooks.com/books/9317ee4f-d402-4151-8e91-572d08abfa16-yD0XiO0GoFRWgI0iZ9k7WRugWam1",
+      "source": "https://images2.pangobooks.com/images/8c4e0516-bc0c-4b87-9462-9b3a44a02b54",
+      "sourceSha256": "33bf66cbd2ec45be14a0a66a98eeabb40922e1a820c9e77d37c968e5a60d0bff",
+      "sourceKind": "Pango seller gallery photo 2, original JPEG 1080x1080. One physical copy shows the 25th-anniversary front cover and full spine from head to tail. The spine contains 'tuesdays with Morrie', 'Mitch Albom', and the small Crown colophon at the tail. Both physical ends and the full printed plane are visible. The photo includes surrounding wall/table pixels outside the registered spine polygon only.",
+      "poster": "library/posters/tuesdays-with-morrie.jpg",
+      "posterSha256": "7d2c984197273ed464365bafe5de2309c05afd1978d1c98b703bafaa82dd13bd",
+      "crop": { "left": 0, "top": 0, "width": 64, "height": 960 },
+      "rotation": 0,
+      "artwork": "tuesdays-with-morrie-crown-25th-9780767905923-r19-lunad-printed-face.webp",
+      "height": 320,
+      "perspective": {
+        "width": 64,
+        "height": 960,
+        "points": [
+          { "source": [322, 102], "target": [0, 0] },
+          { "source": [379, 104], "target": [63, 0] },
+          { "source": [380, 971], "target": [63, 959] },
+          { "source": [323, 962], "target": [0, 959] }
+        ]
+      },
+      "sampling": "independent",
+      "edgeEvidence": "Measured on the original Pango JPEG 1080x1080. Spine head corners are approximately (322,102) and (379,104); tail corners are approximately (323,962) and (380,971). The quadrilateral covers the red printed spine face, including all of 'tuesdays with Morrie', all of 'Mitch Albom', and the Crown colophon. Both ends are visible with a small unprinted outer margin; the surrounding wall, tabletop, hinge/front-cover border, and background stay outside the registered plane.",
+      "detailArtwork": "tuesdays-with-morrie-crown-25th-9780767905923-r19-lunad-printed-face-detail-86ef6b40463292ea.webp",
+      "detailArtworkSha256": "86ef6b40463292ea423e42abb37e4fe5903651c171ceba1e2cdb791648e549c9",
+      "detailWidth": 57,
+      "detailHeight": 860,
+      "artworkSha256": "2f521529bb34bf3e87f7a14652f162b6ad3242df38ea499847201682af1ec7a0"
+    },
+    {
+      "id": "finnegans-wake-penguin-1999-isbn-9780141181264-r20",
+      "title": "Finnegans Wake",
+      "author": "James Joyce",
+      "publisher": "Penguin Classics",
+      "isbn": "9780141181264",
+      "editionEvidence": "AbeBooks seller listing 32521508242 identifies the Penguin Classics 1999 paperback and ISBN 9780141181264. Photo 1 in its three-image gallery shows the same red Book of Kells front design as the pinned poster. Photo 2 shows the back of the same physical copy and prints ISBN 978-0-14-118126-4. Photo 3 shows that copy's complete cream spine face, including JAMES JOYCE, Finnegans Wake, the Penguin mark at the foot, and both head and tail. The spine source is a native seller photograph, not a catalog render.",
+      "page": "https://www.abebooks.com/servlet/BookDetailsPL?bi=32521508242",
+      "source": "https://pictures.abebooks.com/inventory/32521508242_3.jpg",
+      "sourceSha256": "36b1095214cd066d05d4743e1ef0b96f683986f9adcf29eb8b570d3e86d2b81f",
+      "sourceKind": "AbeBooks seller-original gallery photo 3 of 3, downloaded as a 1600x1600 native JPEG from the observed inventory asset ID. Its visible printed spine lettering, publisher mark, head and tail remain present in the camera pixels.",
+      "poster": "library/posters/finnegans-wake.jpg",
+      "posterSha256": "c7ea2473872d89187b743bcc4f71a6b32fd28c96e51b6e8c3aa5a11c62d036db",
+      "crop": { "left": 0, "top": 0, "width": 256, "height": 1536 },
+      "height": 320,
+      "artwork": "finnegans-wake-penguin-1999-9780141181264-r20.webp",
+      "perspective": {
+        "width": 256,
+        "height": 1536,
+        "points": [
+          { "source": [443, 64], "target": [0, 0] },
+          { "source": [698, 47], "target": [255, 0] },
+          { "source": [1063, 1546], "target": [255, 1535] },
+          { "source": [807, 1597], "target": [0, 1535] }
+        ]
+      },
+      "lowPerspective": {
+        "width": 256,
+        "height": 1536,
+        "points": [
+          { "source": [443, 64], "target": [0, 0] },
+          { "source": [698, 47], "target": [255, 0] },
+          { "source": [1063, 1546], "target": [255, 1535] },
+          { "source": [807, 1597], "target": [0, 1535] }
+        ]
+      },
+      "sampling": "independent",
+      "artworkSha256": "f41ec6e7ce48587d7e2f3b8817aad98510e851f37d9b8d3da1eda198b6b2371a",
+      "detailArtwork": "finnegans-wake-penguin-1999-isbn-9780141181264-r20-detail-972a6cb92f88e7c0.webp",
+      "detailArtworkSha256": "972a6cb92f88e7c087278a9ff8c3f0f1af613acadd93682a9e5a79755deb23ea",
+      "detailWidth": 213,
+      "detailHeight": 1280
+    },
+    {
+      "id": "the-comedians-viking-1966-mask-jacket-2nd-printing-r20",
+      "title": "The Comedians",
+      "author": "Graham Greene",
+      "publisher": "The Viking Press",
+      "editionEvidence": "AbeBooks seller listing 31503963458 identifies a 1966 Viking Press first American edition, second printing, with dust jacket. Gallery photo 1 shows the same mask design and jacket typography as the pinned poster. Photo 2 shows the complete dust-jacket front and back and a glare-free printed spine. Photo 5 prints Second Printing February 1966 and Published in 1966 by The Viking Press, Inc. This is a separate physical copy in the same jacket design; the exact pinned Nocloo copy has the same design but glare crosses its spine text.",
+      "page": "https://www.abebooks.com/first-edition/Comedians-Graham-Greene-Viking-Press-New/31503963458/bd",
+      "source": "https://pictures.abebooks.com/inventory/31503963458_2.jpg",
+      "sourceSha256": "60a90ff3206155aa87e382cf6d444e5c6423d5242d7d1632549a77299744ee45",
+      "sourceKind": "AbeBooks seller-original gallery photo 2 of 5, native 1014x2000 JPEG. The photograph shows the complete physical dust-jacket spine between the green back and mask-design front. The printed Graham Greene name, The Comedians title, and Viking mark are legible, with no glare across the text.",
+      "poster": "library/posters/the-comedians.jpg",
+      "posterSha256": "cecc2f2256798cac8f17de76c02e4144f2f92f8c9556b35122096fa8dc97ba13",
+      "crop": { "left": 0, "top": 0, "width": 236, "height": 1870 },
+      "height": 320,
+      "artwork": "the-comedians-viking-1966-mask-jacket-2nd-printing-r20.webp",
+      "perspective": {
+        "width": 236,
+        "height": 1870,
+        "points": [
+          { "source": [270, 54], "target": [0, 0] },
+          { "source": [638, 69], "target": [235, 0] },
+          { "source": [562, 1958], "target": [235, 1869] },
+          { "source": [324, 1935], "target": [0, 1869] }
+        ]
+      },
+      "lowPerspective": {
+        "width": 236,
+        "height": 1870,
+        "points": [
+          { "source": [270, 54], "target": [0, 0] },
+          { "source": [638, 69], "target": [235, 0] },
+          { "source": [562, 1958], "target": [235, 1869] },
+          { "source": [324, 1935], "target": [0, 1869] }
+        ]
+      },
+      "sampling": "independent",
+      "artworkSha256": "4ed52da8c7f6f2db0683badc6fbc3a23a545b2b34812d612864ccfee0ba10936",
+      "detailArtwork": "the-comedians-viking-1966-mask-jacket-2nd-printing-r20-detail-718b79a77936b809.webp",
+      "detailArtworkSha256": "718b79a77936b809f67ab78680038ae59c4ab11dd4881207aa19ac2814f50eec",
+      "detailWidth": 161,
+      "detailHeight": 1280
     }
   ]
 }
