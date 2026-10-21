@@ -4,6 +4,30 @@ import type { ProcessedContent } from '../plugins/vfile'
 import type { ChangeEvent } from '../types/plugin'
 import { hasHastClass, readTranscludeTarget } from './transclude-props'
 
+export function transclusionDependencies(
+  content: ProcessedContent[],
+): { source: string; consumer: string }[] {
+  const slugs = new Set(content.map(([, file]) => file.data.slug))
+  const bases = content
+    .flatMap(([, file]) => (file.data.bases && file.data.slug ? [file.data.slug] : []))
+    .sort((a, b) => b.length - a.length)
+  const edges = new Map<string, { source: string; consumer: string }>()
+  for (const [tree, file] of content) {
+    const consumer = file.data.slug
+    if (!consumer) continue
+    visit(tree, 'element', node => {
+      if (node.tagName !== 'blockquote' || !hasHastClass(node, 'transclude')) return
+      const target = readTranscludeTarget(node)?.targetSlug
+      if (!target) return
+      const source = slugs.has(target)
+        ? target
+        : (bases.find(base => target.startsWith(`${base}/`)) ?? target)
+      edges.set(JSON.stringify([source, consumer]), { source, consumer })
+    })
+  }
+  return [...edges.values()]
+}
+
 export function transclusionChangeEvents(
   content: ProcessedContent[],
   events: ChangeEvent[],
@@ -24,7 +48,7 @@ export function transclusionChangeEvents(
     touchedPaths.add(resolve(contentDirectory, event.path))
   }
 
-  for (const [tree, file] of content) {
+  for (const [, file] of content) {
     const slug = file.data.slug
     if (!slug) continue
     if (
@@ -36,17 +60,11 @@ export function transclusionChangeEvents(
     ) {
       affected.add(slug)
     }
-    visit(tree, 'element', node => {
-      if (node.tagName !== 'blockquote' || !hasHastClass(node, 'transclude')) return
-      const target = readTranscludeTarget(node)?.targetSlug
-      if (!target) return
-      const owner = bySlug.has(target)
-        ? target
-        : (bases.find(base => target.startsWith(`${base}/`)) ?? target)
-      const parents = dependents.get(owner) ?? new Set<string>()
-      parents.add(slug)
-      dependents.set(owner, parents)
-    })
+  }
+  for (const { source, consumer } of transclusionDependencies(content)) {
+    const parents = dependents.get(source) ?? new Set<string>()
+    parents.add(consumer)
+    dependents.set(source, parents)
   }
 
   // Base queries and backlinks can change when any file in their input corpus changes.
