@@ -32,7 +32,6 @@ def main() -> int:
   a = ap.parse_args()
   tab = Tab(Session(f'base-perf-probe-{os.getpid()}'), a.url)
   try:
-    tab.bring_to_front()
     time.sleep(a.wait / 1000)
     print(json.dumps(tab.evaluate(a.expr or DEFAULT, 40000), indent=2))
     if a.shot:

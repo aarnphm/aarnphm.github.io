@@ -57,6 +57,41 @@ RECLAIM_ERRORS = (
 )
 
 
+class TabHidden(Exception):
+  pass
+
+
+def poll_visible(tab: Tab, probe, limit_ms: float, what: str, every: float = 0.5):
+  """Polls `probe` until it returns a value other than None; returns (value, visible ms) or
+  (None, ms) at the limit. Time while the tab is hidden does not count: a hidden tab (the bench
+  window fully occluded, minimised, on another space, or the screen locked) gets no animation
+  frames and every scenario step awaits one. The bench re-activates the tab and waits up to
+  BP_VISIBLE_WAIT for it to show, then gives the rep up with a reason."""
+  visible_wait = float(os.environ.get('BP_VISIBLE_WAIT') or 600)
+  spent = 0.0
+  last = time.monotonic()
+  hidden_since = None
+  while True:
+    value = probe()
+    if value is not None:
+      return value, spent * 1000
+    now = time.monotonic()
+    if tab.visible():
+      spent += now - last
+      hidden_since = None
+    else:
+      if hidden_since is None:
+        hidden_since = now
+        print(f'{what}: tab hidden; keep part of the bench window on screen', file=sys.stderr)
+      elif now - hidden_since > visible_wait:
+        raise TabHidden(f'{what}: tab hidden for {int(visible_wait)} s')
+      tab.activate()
+    last = now
+    if spent * 1000 > limit_ms:
+      return None, spent * 1000
+    time.sleep(every)
+
+
 def run_once(
   tab: Tab,
   base: str,
@@ -67,25 +102,27 @@ def run_once(
   out: str,
   limit_ms: int,
 ) -> dict:
-  tab.bring_to_front()
-  # A hidden tab (Helium's window occluded, minimised, on another space, or the screen locked)
-  # gets no animation frames, and every step awaits one: wait for it to show, then give up on
-  # the rep with a reason instead of hanging on each step.
-  t_vis = time.monotonic()
-  while tab.evaluate('document.visibilityState', 30000) != 'visible':
-    if time.monotonic() - t_vis > float(os.environ.get('BP_VISIBLE_WAIT') or 600):
-      return {'rep': rep, 'skipped': 'tab hidden: Helium is not on screen'}
-    print('Helium tab hidden (window occluded or screen locked); waiting', file=sys.stderr)
-    time.sleep(15)
-    tab.bring_to_front()
+  tab.activate()
+  try:
+    return measure(tab, base, name, scenario, rep, reps, out, limit_ms)
+  except TabHidden as e:
+    return {'rep': rep, 'skipped': str(e)}
+
+
+def measure(tab, base, name, scenario, rep, reps, out, limit_ms) -> dict:
   try:
     tab.goto(base + scenario['path'])
   except CuaError:
     # The worker route answers empty under load now and then; one retry after a pause.
     time.sleep(3)
     tab.goto(base + scenario['path'])
-  ready_ms = tab.wait_ready(scenario['ready'], limit_ms)
-  if ready_ms is None:
+  ready_probe = (
+    f'(() => {{ try {{ return !!({scenario["ready"]}) }} catch {{ return false }} }})()'
+  )
+  ready, ready_ms = poll_visible(
+    tab, lambda: True if tab.evaluate(ready_probe, 30000) else None, limit_ms, 'ready', 0.1
+  )
+  if ready is None:
     return {'rep': rep, 'skipped': f'not ready after {limit_ms} ms'}
   tab.evaluate(PRELUDE)
   time.sleep(scenario.get('settle', 800) / 1000)
@@ -101,14 +138,11 @@ def run_once(
     'return 1 })()',
     30000,
   )
-  t_script = time.monotonic()
-  while True:
-    run = tab.evaluate('window.__bpResult', 30000)
-    if run is not None:
-      break
-    if time.monotonic() - t_script > 120:
-      raise CuaError('scenario script did not finish in 120 s')
-    time.sleep(0.5)
+  run, _ = poll_visible(
+    tab, lambda: tab.evaluate('window.__bpResult', 30000), 120000, 'script'
+  )
+  if run is None:
+    raise CuaError('scenario script did not finish in 120 s')
   if 'err' in run:
     raise CuaError(f'scenario script: {run["err"][:300]}')
   run = run['ok']
@@ -234,7 +268,10 @@ def main() -> int:
     lock = open(LOCK_PATH, 'r')
   print(f'waiting for {LOCK_PATH}', file=sys.stderr)
   fcntl.flock(lock, fcntl.LOCK_EX)
-  session = Session(a.session)
+  # One session per invocation: a session the broker could not clean up refuses every later
+  # tabs.new under the same name, which must not reach the next bench.
+  session = Session(f'{a.session}-{os.getpid()}')
+  results['meta']['session'] = session.name
 
   def fresh_tab() -> Tab:
     try:
