@@ -42,7 +42,7 @@
 }
 
 .tri-be-controls.tri-dist-controls {
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   justify-content: flex-start;
   inline-size: 100%;
 }
@@ -93,12 +93,6 @@
   overflow: hidden;
   font-size: 0.62rem;
   white-space: nowrap;
-
-  &[data-active='true'] {
-    border-color: var(--tri-be-category-color);
-    background: var(--tri-be-category-color);
-    color: var(--light);
-  }
 }
 
 .tri-be-cats .tri-map-tab {

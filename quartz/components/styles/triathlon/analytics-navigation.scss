@@ -38,12 +38,50 @@
   }
 }
 
-.tri-analytics-search-wrap {
+.tri-analytics-controls {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 0.4rem;
   flex: 1 1 auto;
   min-width: 0;
+}
+
+.tri-ana-chapters {
+  display: flex;
+  gap: 1.1rem;
+  margin-right: auto;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tri-ana-chapter-tab {
+  appearance: none;
+  flex: none;
+  padding: 0.2rem 0;
+  font-family: var(--codeFont);
+  font-size: 0.78rem;
+  color: var(--gray);
+  background: none;
+  border: 0;
+  border-radius: var(--radius-none);
+  cursor: pointer;
+
+  &:hover,
+  &[aria-selected='true'] {
+    color: var(--dark);
+  }
+
+  &[aria-selected='true'] {
+    text-decoration: underline;
+    text-underline-offset: 0.3em;
+  }
+
+  &:focus-visible {
+    outline: 1px solid color-mix(in srgb, var(--tri-accent) 68%, transparent);
+    outline-offset: 2px;
+  }
 }
 
 .tri-ana-compare-toggle {
@@ -90,11 +128,6 @@
 }
 
 @media all and (max-width: 48rem) {
-  .tri-analytics-search-wrap {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-  }
-
   .tri-ana-search {
     --tri-search-scale: 0.72;
     --tri-search-height: 1.65rem;
@@ -280,20 +313,6 @@
   color: var(--gray);
 }
 
-.tri-ana-block--flash {
-  animation: tri-ana-flash 0.9s ease;
-}
-
-@keyframes tri-ana-flash {
-  0%,
-  100% {
-    background: transparent;
-  }
-  30% {
-    background: color-mix(in srgb, var(--secondary) 16%, transparent);
-  }
-}
-
 .tri-ana-title {
   font-size: 0.8rem;
   color: var(--dark);
@@ -360,20 +379,75 @@
     grid-auto-rows: max-content;
     align-content: start;
     align-items: stretch;
-    column-gap: 1.8rem;
-    row-gap: 1.5rem;
+    column-gap: 3rem;
+    row-gap: 2.2rem;
 
-    > * {
+    > *,
+    > .tri-ana-chapter > * {
       grid-column: 1 / -1;
     }
 
-    > .tri-ana-block[data-chart='vo2max']:not(:empty),
-    > .tri-ana-block[data-chart='lactate']:not(:empty) {
+    > .tri-ana-chapter
+      > .tri-ana-block:is(
+        [data-chart='vo2max'],
+        [data-chart='lactate'],
+        [data-chart='gauge'],
+        [data-chart='readiness']
+      ):not(:empty) {
       grid-column: auto;
       content-visibility: visible;
       contain-intrinsic-size: none;
     }
   }
+}
+
+// Chapters only group blocks for the tabs; the blocks lay out as if the wrapper were absent.
+.tri-ana-chapter:not([hidden]) {
+  display: contents;
+}
+
+.tri-ana-chapter > .tri-ana-block:not(:empty) ~ .tri-ana-block:not(:empty) {
+  padding-top: 2.2rem;
+  border-top: 1px solid color-mix(in srgb, var(--gray) 18%, transparent);
+}
+
+.tri-ana-block:not(.tri-ana-block--method) :is(.tri-accl-method, .tri-ftp-note, .tri-ftp-source) {
+  display: none;
+}
+
+.tri-ana-method-toggle {
+  appearance: none;
+  display: block;
+  margin-top: 0.7rem;
+  padding: 0;
+  font-family: var(--codeFont);
+  font-size: 0.62rem;
+  color: var(--gray);
+  background: none;
+  border: 0;
+  cursor: pointer;
+
+  &::after {
+    content: ' ↓';
+  }
+
+  &[aria-expanded='true']::after {
+    content: ' ↑';
+  }
+
+  &:hover {
+    color: var(--dark);
+  }
+}
+
+// Selected controls inside panels read as ink with an underline, like the kg/lb switch.
+.tri-analytics
+  .tri-ana-chapter
+  :is([aria-pressed='true'], [aria-selected='true']):not(.tri-ana-ritem) {
+  color: var(--dark);
+  background: transparent;
+  border-color: var(--lightgray);
+  box-shadow: inset 0 -1px 0 currentColor;
 }
 
 .tri-ana-block-title {

@@ -5,7 +5,6 @@ import { toText } from 'hast-util-to-text'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import renderToString from 'preact-render-to-string'
-import type { TrainingPlan } from '../../plugins/stores/training'
 import type { TriathlonMaintenance } from '../../util/triathlon-maintenance'
 import type { TriathlonRenderData } from '../triathlon/render-data'
 import { buildAnalytics } from '../../plugins/stores/analytics'
@@ -18,30 +17,8 @@ import {
   GearPanel,
   OnTreePanel,
   ToolsPanel,
-  TrainingPanel,
   TriathlonSubnav,
 } from './triathlon-panels'
-
-const plans: TrainingPlan[] = [
-  {
-    id: 'olympic-2026',
-    meta: 'Toronto Olympic',
-    distance: 'olympic',
-    date: '2026-07-26',
-    target: 'sub-3',
-    author: 'Coach One',
-    html: '<h2>Build</h2><h3>Week one</h3><p>Ride and run.</p>',
-  },
-  {
-    id: 'sprint-2026',
-    meta: 'Montreal Sprint',
-    distance: 'sprint',
-    date: '2026-06-10',
-    target: 'finish',
-    author: '',
-    html: '<h2>Base</h2>',
-  },
-]
 
 const analytics = buildAnalytics(null)
 analytics.body.composition.push({
@@ -56,7 +33,6 @@ analytics.body.composition.push({
 })
 const renderData: TriathlonRenderData = {
   analytics,
-  plans,
   weather: {
     forecastStart: '2026-08-17T13:00:00.000Z',
     latitude: 43.64,
@@ -158,7 +134,7 @@ test('overview analytics markup retains empty lazy placeholders', () => {
 test('subpage navigation links remain native pointer targets for the shared bracket cursor', () => {
   const root = rendered(<TriathlonSubnav active="analytics" root="" />)
   const links = elements(root, element => classes(element).includes('tri-subnav-link'))
-  assert.equal(links.length, 8)
+  assert.equal(links.length, 6)
   assert.ok(links.every(link => link.tagName === 'a' && typeof link.properties?.href === 'string'))
   assert.ok(links.every(link => !('dataSiteCursorAction' in (link.properties ?? {}))))
   assert.equal(links.filter(link => link.properties?.ariaCurrent === 'page').length, 1)
@@ -173,9 +149,7 @@ test('section hints show the existing chords without replacing translated link l
     ['../../triathlon/calc', 'g c'],
     ['../../triathlon/analytics', 'g a'],
     ['../../triathlon/maps', 'g m'],
-    ['../../triathlon/training', 'g t'],
     ['../../triathlon/calendar', 'g e'],
-    ['../../triathlon/feed', 'g f'],
     ['../../triathlon/on', 'g o'],
   ]
   assert.deepEqual(
@@ -193,28 +167,8 @@ test('section hints show the existing chords without replacing translated link l
   )
   assert.equal(
     elements(root, element => typeof element.properties?.dataI18n === 'string').length,
-    8,
+    6,
   )
-})
-
-test('dedicated training markup contains plan rows, selected document, and heading tree', () => {
-  const root = rendered(<TrainingPanel page renderData={renderData} />)
-  assert.equal(elements(root, element => element.properties?.dataTriSsr === 'true').length, 3)
-  assert.equal(elements(root, element => element.properties?.dataPlan != null).length, plans.length)
-  assert.equal(
-    elements(root, element => element.properties?.id === 'tri-h-olympic-2026-0').length,
-    1,
-  )
-  assert.equal(
-    elements(root, element => element.properties?.dataTarget === 'tri-h-olympic-2026-0').length,
-    1,
-  )
-})
-
-test('overview training markup keeps its list, tree, and document empty', () => {
-  const root = rendered(<TrainingPanel />)
-  assert.equal(elements(root, element => element.properties?.dataTriSsr === 'true').length, 0)
-  assert.equal(elements(root, element => element.properties?.dataPlan != null).length, 0)
 })
 
 test('gear surfaces attach lifetime mileage to both bikes and each pair of running shoes', () => {

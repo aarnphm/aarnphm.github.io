@@ -30,7 +30,6 @@ import { setupGearRatios } from '../tools/gear-ratios'
 import { setupPaceForecast } from '../tools/pace-forecast'
 import { setupTirePressure } from '../tools/tire-pressure'
 import { setupToolsTabs } from '../tools/tools-tabs'
-import { setupTraining } from '../training/controller'
 import { createTriathlonContext } from './context'
 import { readTriPanelsFullscreen } from './preferences'
 
@@ -78,7 +77,6 @@ export const mountTriathlon = (signal: AbortSignal): MountedTriathlon => {
     addCleanup(setupCheat(root, context))
     addCleanup(setupAnalytics(root, context))
     addCleanup(setupFeed(root, context))
-    addCleanup(setupTraining(root, context))
     addCleanup(setupMap(root, context))
     addCleanup(setupAxisLabels(root))
     addCleanup(setupShortcuts(root))

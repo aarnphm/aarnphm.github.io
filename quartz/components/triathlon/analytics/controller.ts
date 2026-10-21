@@ -3,7 +3,7 @@ import type { ActivityKind } from '../../../plugins/stores/strava'
 import type { StravaActivityDetail } from '../../../plugins/stores/strava'
 import type { DetailPayload } from '../activity/data'
 import type { TriathlonContext } from '../runtime/context'
-import type { AnalyticsPanelRender } from './catalog'
+import type { AnalyticsChapterKey, AnalyticsPanelRender } from './catalog'
 import { start } from '../../../functional'
 import { activityCompareColor } from '../../../util/triathlon-card'
 import { buildActivityAnalyzeButton } from '../../../util/triathlon-card'
@@ -14,8 +14,6 @@ import { dur } from '../../../util/triathlon-card'
 import { powerViewActivity } from '../../../util/triathlon-card'
 import { activityComparisonEmbed } from '../../../util/triathlon-comparison'
 import { decodeActivityComparisonAnchor } from '../../../util/triathlon-comparison'
-import { glossFor } from '../../../util/triathlon-i18n'
-import { glossKeys } from '../../../util/triathlon-i18n'
 import { isRecord } from '../../../util/type-guards'
 import { onCardToggle } from '../activity/comparison'
 import { setActivityExpanded } from '../activity/comparison'
@@ -30,23 +28,22 @@ import { svg } from '../runtime/dom'
 import { TRI_POWER_FILTER_EVENT } from '../runtime/preferences'
 import { wireEmbedCopy } from '../shell/timeline'
 import { TRI_ANALYTICS_BOOT_CLASS } from './boot'
+import { ANALYTICS_CHAPTERS } from './catalog'
+import { analyticsChapterFromHash } from './catalog'
 import { analyticsPanelDefinition } from './catalog'
+import { DEFAULT_ANALYTICS_CHAPTER } from './catalog'
 import { initialAnalyticsModel, updateAnalytics } from './model'
 import { analyticsForRange, defaultAnalyticsRange } from './range'
-import { activityCommandHints } from './search'
-import { activityQueryTokens } from './search'
 import { activityResultItem } from './search'
 import { activityResultItems } from './search'
 import { detailHead } from './search'
-import { GLOSS_CHART } from './search'
-import { matchesActivityTokens } from './search'
-import { matchesActivityQuery } from './search'
-import { parseActivityQuery } from './search'
-import { SEARCH_SECTIONS } from './search'
 import { setActivityResultSelection } from './search'
-import { sortActivitiesBy } from './search'
 
 const RENDER_SLICE_MS = 8
+// Methodology notes stay folded behind a per-panel toggle so the numbers lead.
+const METHOD_NOTES = '.tri-accl-method, .tri-ftp-note, .tri-ftp-source'
+const isChapter = (value: string | undefined): value is AnalyticsChapterKey =>
+  ANALYTICS_CHAPTERS.some(chapter => chapter.key === value)
 
 export const setupAnalytics = (
   root: HTMLElement,
@@ -57,7 +54,6 @@ export const setupAnalytics = (
   const scrim = root.querySelector<HTMLElement>('.tri-analytics-scrim')
   const closeBtn = root.querySelector<HTMLElement>('.tri-ana-close')
   const title = root.querySelector<HTMLElement>('.tri-ana-title')
-  const search = root.querySelector<HTMLInputElement>('.tri-ana-search')
   const results = root.querySelector<HTMLElement>('.tri-ana-results')
   const compareToggle = root.querySelector<HTMLButtonElement>('.tri-ana-compare-toggle')
   const pageMode = root.dataset.triView === 'analytics'
@@ -74,9 +70,18 @@ export const setupAnalytics = (
   let compareCleanup: (() => void) | null = null
   let activityCleanup: (() => void) | null = null
   let detailGeneration = 0
-  let flashTimer: number | null = null
   let comparisonScrollTop = 0
   let renderFrame = 0
+  const chapterTabs = Array.from(
+    panel.querySelectorAll<HTMLButtonElement>('[data-analytics-chapter-tab]'),
+  )
+  const chapterPanels = Array.from(panel.querySelectorAll<HTMLElement>('[data-analytics-chapter]'))
+  let chapter: AnalyticsChapterKey = pageMode
+    ? analyticsChapterFromHash(window.location.hash)
+    : DEFAULT_ANALYTICS_CHAPTER
+  // Only the open chapter renders; the others catch up to the current version when opened.
+  const renderedVersion = new WeakMap<HTMLElement, number>()
+  let renderVersion = 0
 
   const finishPageBoot = (): void => {
     if (pageMode) document.documentElement.classList.remove(TRI_ANALYTICS_BOOT_CLASS)
@@ -95,9 +100,18 @@ export const setupAnalytics = (
     if (!definition) return
     panelCleanups.get(block)?.()
     panelCleanups.delete(block)
+    renderedVersion.set(block, renderVersion)
     try {
       const view = panelView(definition.render(d, context))
       block.replaceChildren(view.element)
+      if (view.element.querySelector(METHOD_NOTES))
+        block.appendChild(
+          el('button', 'tri-ana-method-toggle', context.formatter.text('method'), {
+            type: 'button',
+            'aria-expanded': String(block.classList.contains('tri-ana-block--method')),
+            'data-i18n': 'method',
+          }),
+        )
       const cleanup = view.mount?.()
       if (cleanup) panelCleanups.set(block, cleanup)
       block.dataset.triHydrated = 'true'
@@ -105,14 +119,18 @@ export const setupAnalytics = (
       block.dataset.triHydrated = 'failed'
     }
   }
-  const render = (source: Analytics) => {
-    const d = analyticsForRange(source, program.retrieve().range)
-    data = d
+  const renderChapter = () => {
+    const d = data
+    if (!d) return
     if (renderFrame !== 0) {
       window.cancelAnimationFrame(renderFrame)
       renderFrame = 0
     }
-    const pending = Array.from(panel.querySelectorAll<HTMLElement>('.tri-ana-block'))
+    const scope =
+      chapterPanels.find(section => section.dataset.analyticsChapter === chapter) ?? panel
+    const pending = Array.from(scope.querySelectorAll<HTMLElement>('.tri-ana-block')).filter(
+      block => renderedVersion.get(block) !== renderVersion,
+    )
     const step = () => {
       renderFrame = 0
       const deadline = performance.now() + RENDER_SLICE_MS
@@ -131,6 +149,11 @@ export const setupAnalytics = (
       if (panel.classList.contains('tri-analytics--searching')) renderSearch()
     }
     step()
+  }
+  const render = (source: Analytics) => {
+    data = analyticsForRange(source, program.retrieve().range)
+    renderVersion += 1
+    renderChapter()
   }
   const load = () => {
     const status = program.retrieve().status
@@ -162,7 +185,6 @@ export const setupAnalytics = (
   const toMain = () => {
     closeDetail()
     setCompareMode(false)
-    if (search) search.value = ''
     panel.classList.remove('tri-analytics--searching')
     if (results) {
       results.replaceChildren()
@@ -340,18 +362,6 @@ export const setupAnalytics = (
     back.addEventListener('click', closeDetail, { once: true })
   }
 
-  const scrollToChart = (chart: string) => {
-    const block = panel.querySelector<HTMLElement>(`.tri-ana-block[data-chart="${chart}"]`)
-    if (search) search.value = ''
-    panel.classList.remove('tri-analytics--searching')
-    block?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    block?.classList.add('tri-ana-block--flash')
-    if (flashTimer != null) window.clearTimeout(flashTimer)
-    flashTimer = window.setTimeout(() => {
-      flashTimer = null
-      block?.classList.remove('tri-ana-block--flash')
-    }, 900)
-  }
   const resultItems = (): HTMLElement[] => activityResultItems(results)
   const setSel = (i: number) => {
     program.dispatch({ type: 'select-result', index: setActivityResultSelection(results, i) })
@@ -434,91 +444,36 @@ export const setupAnalytics = (
     program.dispatch({ type: 'toggle-comparison-activity', id })
   }
   const activate = (it: HTMLElement | undefined) => {
-    if (!it) return
-    if (it.dataset.chart) scrollToChart(it.dataset.chart)
-    else if (it.dataset.id) {
-      if (inCompareMode()) toggleCompareActivity(it.dataset.id)
-      else program.dispatch({ type: 'show-activity', id: it.dataset.id })
-    } else if (it.dataset.insert) {
-      const tokens = activityQueryTokens(search!.value)
-      tokens[tokens.length - 1] = it.dataset.insert
-      search!.value = tokens.join(' ') + (it.dataset.insert.endsWith(':') ? '' : ' ')
-      search!.focus()
-      runSearch()
-    }
+    const id = it?.dataset.id
+    if (!id) return
+    if (inCompareMode()) toggleCompareActivity(id)
+    else program.dispatch({ type: 'show-activity', id })
   }
   const renderSearch = () => {
-    if (!search || !results) return
-    const q = program.retrieve().query.trim().toLowerCase()
+    if (!results) return
+    // picking re-renders the list; keep keyboard focus on the row that was picked
+    const focusedId =
+      document.activeElement instanceof HTMLElement && results.contains(document.activeElement)
+        ? document.activeElement.dataset.id
+        : undefined
     results.replaceChildren()
-    if (!q && !inCompareMode()) {
+    if (!inCompareMode()) {
       panel.classList.remove('tri-analytics--searching')
       results.setAttribute('aria-hidden', 'true')
       return
     }
     panel.classList.add('tri-analytics--searching')
     results.setAttribute('aria-hidden', 'false')
-    if (inCompareMode()) results.appendChild(comparePicker())
-    const resultList = inCompareMode()
-      ? el('div', 'tri-compare-activity-list', undefined, { 'data-keyboard-scroll': '' })
-      : results
-    if (inCompareMode()) results.appendChild(resultList)
-    const rawTokens = activityQueryTokens(q)
-    const query = parseActivityQuery(rawTokens)
-    const { filterSport, filterEnvironment, filterDate, sortKey, tokens } = query
-
-    const metrics: HTMLElement[] = []
-    const lastToken = rawTokens[rawTokens.length - 1] ?? ''
-    const hints = rawTokens.length ? activityCommandHints(lastToken, 'activities') : []
-
-    if (!inCompareMode() && !filterSport && !filterEnvironment && !filterDate && !sortKey) {
-      for (const s of SEARCH_SECTIONS)
-        if (
-          matchesActivityTokens(
-            `${s.label} ${context.formatter.text(s.label)} ${s.hay}`.toLowerCase(),
-            tokens,
-          )
-        ) {
-          const it = activityResultItem(context.formatter.text(s.label), 'section')
-          it.dataset.chart = s.chart
-          metrics.push(it)
-        }
-      for (const key of glossKeys()) {
-        const g = glossFor(context.presentation.locale, key)
-        if (g && matchesActivityTokens(`${key} ${g.term} ${g.def}`.toLowerCase(), tokens)) {
-          const it = activityResultItem(g.term, g.def)
-          it.dataset.chart = GLOSS_CHART[key] ?? 'pmc'
-          metrics.push(it)
-        }
-      }
-    }
-
-    const acts = sortActivitiesBy(
-      (data?.activities ?? []).filter(a => {
-        if (!matchesActivityQuery(a, query)) return false
-        if (inCompareMode()) {
-          const activity = detailData?.details[String(a.id)]
-          if (!compareActivityEligible(activity)) return false
-          const sport = compareSport()
-          if (sport && a.sport !== sport) return false
-        }
-        return true
-      }),
-      sortKey,
+    results.appendChild(comparePicker())
+    const resultList = el('div', 'tri-compare-activity-list', undefined, {
+      'data-keyboard-scroll': '',
+    })
+    results.appendChild(resultList)
+    const sport = compareSport()
+    const acts = (data?.activities ?? []).filter(
+      a =>
+        compareActivityEligible(detailData?.details[String(a.id)]) && (!sport || a.sport === sport),
     )
-
-    if (hints.length) {
-      const grp = el('div', 'tri-ana-rgroup')
-      grp.appendChild(el('div', 'tri-ana-rlabel', 'suggestions'))
-      for (const it of hints) grp.appendChild(it)
-      resultList.appendChild(grp)
-    }
-    if (metrics.length) {
-      const grp = el('div', 'tri-ana-rgroup')
-      grp.appendChild(el('div', 'tri-ana-rlabel', context.formatter.text('metrics & terms')))
-      for (const it of metrics.slice(0, 8)) grp.appendChild(it)
-      resultList.appendChild(grp)
-    }
     if (acts.length) {
       const grp = el('div', 'tri-ana-rgroup')
       grp.appendChild(el('div', 'tri-ana-rlabel', context.formatter.text('activities')))
@@ -530,26 +485,27 @@ export const setupAnalytics = (
           (a.cadence ? (a.sport === 'run' ? ` · ${a.cadence * 2} spm` : ` · ${a.cadence} rpm`) : '')
         const it = activityResultItem(head, sub)
         it.dataset.id = String(a.id)
-        if (inCompareMode()) {
-          const selected = comparisonIds().indexOf(it.dataset.id)
-          const chosen = selected >= 0
-          it.setAttribute('aria-pressed', String(chosen))
-          it.classList.toggle('tri-ana-ritem--chosen', chosen)
-          if (chosen) {
-            it.style.setProperty('--tri-compare-color', activityCompareColor(selected))
-            head.prepend(el('span', 'tri-compare-swatch', undefined, { 'aria-hidden': 'true' }))
-          }
+        const selected = comparisonIds().indexOf(it.dataset.id)
+        const chosen = selected >= 0
+        it.setAttribute('aria-pressed', String(chosen))
+        it.classList.toggle('tri-ana-ritem--chosen', chosen)
+        if (chosen) {
+          it.style.setProperty('--tri-compare-color', activityCompareColor(selected))
+          head.prepend(el('span', 'tri-compare-swatch', undefined, { 'aria-hidden': 'true' }))
         }
         grp.appendChild(it)
       }
       resultList.appendChild(grp)
-    }
-    if (!metrics.length && !acts.length && !hints.length)
-      resultList.appendChild(el('div', 'tri-ana-empty', context.formatter.text('no matches')))
-    setSel(0)
+    } else resultList.appendChild(el('div', 'tri-ana-empty', context.formatter.text('no matches')))
+    const index = Math.max(
+      0,
+      resultItems().findIndex(item => item.dataset.id === focusedId),
+    )
+    setSel(index)
+    if (focusedId) resultItems()[index]?.focus({ preventScroll: true })
   }
-  const runSearch = (): void => {
-    program.dispatch({ type: 'query', value: search?.value ?? '' })
+  const refreshPicker = (): void => {
+    program.dispatch({ type: 'query', value: '' })
   }
   const onResultsClick = (event: MouseEvent) => {
     if (!(event.target instanceof Element)) return
@@ -567,8 +523,8 @@ export const setupAnalytics = (
     }
     activate(event.target.closest<HTMLElement>('.tri-ana-ritem') ?? undefined)
   }
-  const onSearchKey = (event: KeyboardEvent) => {
-    if (!panel.classList.contains('tri-analytics--searching')) return
+  const onPickerKey = (event: KeyboardEvent) => {
+    if (!inCompareMode()) return
     if (
       event.key === 'Enter' &&
       event.shiftKey &&
@@ -586,16 +542,22 @@ export const setupAnalytics = (
     ) {
       event.preventDefault()
       setSel(program.retrieve().selectedResult + 1)
+      resultItems()[program.retrieve().selectedResult]?.focus({ preventScroll: true })
     } else if (
       event.key === 'ArrowUp' ||
       (event.ctrlKey && (event.key === 'p' || event.key === 'P'))
     ) {
       event.preventDefault()
       setSel(program.retrieve().selectedResult - 1)
+      resultItems()[program.retrieve().selectedResult]?.focus({ preventScroll: true })
     } else if (event.key === 'Enter') {
       event.preventDefault()
       const its = resultItems()
-      activate(its[program.retrieve().selectedResult] ?? its[0])
+      activate(
+        its.find(item => item === document.activeElement) ??
+          its[program.retrieve().selectedResult] ??
+          its[0],
+      )
     }
   }
 
@@ -634,8 +596,8 @@ export const setupAnalytics = (
         }
         return
       }
-      runSearch()
-      search?.focus()
+      refreshPicker()
+      resultItems()[0]?.focus({ preventScroll: true })
     })
   }
   const onCompareToggle = () => {
@@ -648,6 +610,67 @@ export const setupAnalytics = (
     panel.setAttribute('aria-hidden', 'false')
     load()
     panel.focus({ preventScroll: true })
+  }
+  const selectChapter = (next: AnalyticsChapterKey, updateHash: boolean, focus: boolean) => {
+    chapter = next
+    for (const tab of chapterTabs) {
+      const active = tab.dataset.analyticsChapterTab === next
+      tab.setAttribute('aria-selected', String(active))
+      tab.tabIndex = active ? 0 : -1
+      if (active && focus) tab.focus({ preventScroll: true })
+    }
+    for (const section of chapterPanels) section.hidden = section.dataset.analyticsChapter !== next
+    body?.scrollTo({ top: 0 })
+    renderChapter()
+    if (!updateHash || !pageMode) return
+    const url = new URL(window.location.href)
+    url.hash = next === DEFAULT_ANALYTICS_CHAPTER ? '' : next
+    window.history.replaceState(window.history.state, '', url)
+  }
+  const onChapterClick = (event: MouseEvent) => {
+    const tab =
+      event.target instanceof Element
+        ? event.target.closest<HTMLButtonElement>('[data-analytics-chapter-tab]')
+        : null
+    const next = tab?.dataset.analyticsChapterTab
+    if (!isChapter(next)) return
+    if (
+      inCompareMode() ||
+      panel.classList.contains('tri-analytics--detail') ||
+      panel.classList.contains('tri-analytics--comparison')
+    )
+      toMain()
+    selectChapter(next, true, false)
+  }
+  const onChapterKey = (event: KeyboardEvent) => {
+    if (!(event.target instanceof HTMLButtonElement)) return
+    const current = chapterTabs.indexOf(event.target)
+    if (current < 0) return
+    const next =
+      event.key === 'Home'
+        ? 0
+        : event.key === 'End'
+          ? chapterTabs.length - 1
+          : event.key === 'ArrowLeft'
+            ? (current - 1 + chapterTabs.length) % chapterTabs.length
+            : event.key === 'ArrowRight'
+              ? (current + 1) % chapterTabs.length
+              : -1
+    const value = chapterTabs[next]?.dataset.analyticsChapterTab
+    if (!isChapter(value)) return
+    event.preventDefault()
+    selectChapter(value, true, true)
+  }
+  const onHashChange = () => {
+    const next = analyticsChapterFromHash(window.location.hash)
+    if (next !== chapter) selectChapter(next, false, false)
+  }
+  const onMethodToggle = (event: MouseEvent) => {
+    const toggle =
+      event.target instanceof Element ? event.target.closest('.tri-ana-method-toggle') : null
+    const block = toggle?.closest<HTMLElement>('.tri-ana-block')
+    if (!toggle || !block) return
+    toggle.setAttribute('aria-expanded', String(block.classList.toggle('tri-ana-block--method')))
   }
   const onComparisonFill = (event: Event) => {
     if (!(event instanceof CustomEvent) || !isRecord(event.detail)) return
@@ -691,11 +714,6 @@ export const setupAnalytics = (
     if (event.defaultPrevented || event.key !== 'Escape') return
     if (panel.classList.contains('tri-analytics--detail')) {
       closeDetail()
-      return
-    }
-    if (search && search.value) {
-      search.value = ''
-      runSearch()
       return
     }
     if (inCompareMode()) {
@@ -758,7 +776,9 @@ export const setupAnalytics = (
     program.dispatch({ type: 'show-activity', id: request.activityId })
   })
 
+  if (chapter !== DEFAULT_ANALYTICS_CHAPTER) selectChapter(chapter, false, false)
   if (pageMode) {
+    window.addEventListener('hashchange', onHashChange)
     load()
   } else {
     btn?.addEventListener('click', open)
@@ -766,10 +786,14 @@ export const setupAnalytics = (
     title?.addEventListener('click', toMain)
     scrim?.addEventListener('click', close)
   }
-  search?.addEventListener('input', runSearch)
-  search?.addEventListener('keydown', onSearchKey)
   compareToggle?.addEventListener('click', onCompareToggle)
+  for (const tab of chapterTabs) {
+    tab.addEventListener('click', onChapterClick)
+    tab.addEventListener('keydown', onChapterKey)
+  }
+  body?.addEventListener('click', onMethodToggle)
   results?.addEventListener('click', onResultsClick)
+  results?.addEventListener('keydown', onPickerKey)
   detail?.addEventListener('click', onCardToggle)
   document.addEventListener('keydown', onKey)
   window.addEventListener('tri:comparison-fill', onComparisonFill)
@@ -784,7 +808,7 @@ export const setupAnalytics = (
     }
     if (comparisonVisible) showComparison()
     else if (activityId) showActivity(activityId)
-    else if (inCompareMode()) runSearch()
+    else if (inCompareMode()) refreshPicker()
   }
   window.addEventListener('tri:unit', onUnitChange)
   window.addEventListener('tri:locale', onUnitChange)
@@ -797,10 +821,15 @@ export const setupAnalytics = (
     closeBtn?.removeEventListener('click', close)
     title?.removeEventListener('click', toMain)
     scrim?.removeEventListener('click', close)
-    search?.removeEventListener('input', runSearch)
-    search?.removeEventListener('keydown', onSearchKey)
     compareToggle?.removeEventListener('click', onCompareToggle)
+    for (const tab of chapterTabs) {
+      tab.removeEventListener('click', onChapterClick)
+      tab.removeEventListener('keydown', onChapterKey)
+    }
+    body?.removeEventListener('click', onMethodToggle)
+    window.removeEventListener('hashchange', onHashChange)
     results?.removeEventListener('click', onResultsClick)
+    results?.removeEventListener('keydown', onPickerKey)
     detail?.removeEventListener('click', onCardToggle)
     document.removeEventListener('keydown', onKey)
     window.removeEventListener('tri:comparison-fill', onComparisonFill)
@@ -815,6 +844,5 @@ export const setupAnalytics = (
     panelCleanups.clear()
     program.stop()
     if (renderFrame !== 0) window.cancelAnimationFrame(renderFrame)
-    if (flashTimer != null) window.clearTimeout(flashTimer)
   }
 }

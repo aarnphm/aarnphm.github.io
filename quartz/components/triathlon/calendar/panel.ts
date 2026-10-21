@@ -17,7 +17,6 @@ export const setupCalendarPanel = (root: HTMLElement): (() => void) | null => {
       ['tri-analytics-open', '.tri-analytics .tri-ana-close'],
       ['tri-calc-open', '.tri-calc-close'],
       ['tri-map-open', '.tri-map-close'],
-      ['tri-training-open', '.tri-training-close'],
     ]) {
       if (root.classList.contains(openClass))
         root.querySelector<HTMLButtonElement>(selector)?.click()

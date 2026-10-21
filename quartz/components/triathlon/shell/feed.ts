@@ -18,7 +18,7 @@ import { el } from '../runtime/dom'
 import { TRI_POWER_FILTER_EVENT } from '../runtime/preferences'
 
 export const setupFeed = (root: HTMLElement, context: TriathlonContext): (() => void) | null => {
-  if (root.dataset.triView !== 'feed') return null
+  if (root.dataset.triView !== 'on') return null
   const feed = root.querySelector<HTMLElement>('.tri-feed')
   const list = root.querySelector<HTMLElement>('.tri-feed-list')
   const search = root.querySelector<HTMLInputElement>('.tri-feed-search')
@@ -29,8 +29,10 @@ export const setupFeed = (root: HTMLElement, context: TriathlonContext): (() => 
   const detailPath = root.dataset.detailPath
   const datePrefix = root.dataset.feedPrefix ?? ''
   if (!feed || !list || !search || !searchWrap || !results || !analyticsPath) return null
+  const modeButtons = Array.from(feed.querySelectorAll<HTMLButtonElement>('[data-on-mode-select]'))
 
   let live = true
+  let requested = false
   let acts: ActivitySummary[] = []
   let openId: string | null = null
   let selIndex = -1
@@ -232,7 +234,7 @@ export const setupFeed = (root: HTMLElement, context: TriathlonContext): (() => 
     if (reopen) expand(reopen)
   }
   const onKey = (e: KeyboardEvent) => {
-    if (e.key !== 'Escape') return
+    if (e.key !== 'Escape' || feed.dataset.onMode !== 'feed') return
     if (search.value) {
       search.value = ''
       onSearch()
@@ -273,7 +275,47 @@ export const setupFeed = (root: HTMLElement, context: TriathlonContext): (() => 
     row?.querySelector<HTMLButtonElement>('.tri-feed-head')?.focus({ preventScroll: true })
   })
 
+  const load = () => {
+    if (requested) return
+    requested = true
+    void context.resources.analytics.load(analyticsPath).then(result => {
+      if (!live) return
+      if (result.status === 'ready') {
+        acts = (result.value.activities ?? []).filter(activity =>
+          activity.date.startsWith(datePrefix),
+        )
+        renderList()
+      } else if (result.status === 'error') {
+        list.setAttribute('aria-busy', 'false')
+        list.replaceChildren(el('div', 'tri-ana-empty', context.formatter.text('no data')))
+      }
+    })
+  }
+  const setMode = (mode: 'log' | 'feed') => {
+    feed.dataset.onMode = mode
+    for (const button of modeButtons)
+      button.setAttribute('aria-pressed', String(button.dataset.onModeSelect === mode))
+    const url = new URL(window.location.href)
+    if (mode === 'feed') url.searchParams.set('view', 'feed')
+    else url.searchParams.delete('view')
+    if (url.href !== window.location.href)
+      window.history.replaceState(window.history.state, '', url)
+    if (mode === 'feed') load()
+    else {
+      collapse()
+      hideSuggestions()
+    }
+  }
+  const onModeClick = (event: MouseEvent) => {
+    const select = (event.target as HTMLElement).closest<HTMLElement>('[data-on-mode-select]')
+    if (select) setMode(select.dataset.onModeSelect === 'feed' ? 'feed' : 'log')
+  }
+  const onReveal = () => setMode('feed')
+  setMode(new URLSearchParams(window.location.search).get('view') === 'feed' ? 'feed' : 'log')
+
   list.addEventListener('click', onListClick)
+  for (const button of modeButtons) button.addEventListener('click', onModeClick)
+  search.addEventListener('tri:search-reveal', onReveal)
   list.addEventListener('mouseover', onOver)
   list.addEventListener('mouseout', onOut)
   search.addEventListener('input', onSearch)
@@ -284,23 +326,12 @@ export const setupFeed = (root: HTMLElement, context: TriathlonContext): (() => 
   window.addEventListener(TRI_POWER_FILTER_EVENT, onUnit)
   document.addEventListener('keydown', onKey)
 
-  void context.resources.analytics.load(analyticsPath).then(result => {
-    if (!live) return
-    if (result.status === 'ready') {
-      acts = (result.value.activities ?? []).filter(activity =>
-        activity.date.startsWith(datePrefix),
-      )
-      renderList()
-    } else if (result.status === 'error') {
-      list.setAttribute('aria-busy', 'false')
-      list.replaceChildren(el('div', 'tri-ana-empty', context.formatter.text('no data')))
-    }
-  })
-
   return () => {
     live = false
     marquee.stop()
     list.removeEventListener('click', onListClick)
+    for (const button of modeButtons) button.removeEventListener('click', onModeClick)
+    search.removeEventListener('tri:search-reveal', onReveal)
     list.removeEventListener('mouseover', onOver)
     list.removeEventListener('mouseout', onOut)
     search.removeEventListener('input', onSearch)

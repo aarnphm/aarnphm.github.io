@@ -134,6 +134,22 @@
   flex: none;
 }
 
+.tri-tree[data-on-mode='log'] :is(.tri-feed-search-wrap, .tri-feed-count, .tri-feed-list),
+.tri-tree[data-on-mode='feed'] :is(.tri-tree-count, .tri-tree-list) {
+  display: none;
+}
+
+.tri-tree-count {
+  margin-right: auto;
+  font-family: var(--codeFont);
+  font-size: 0.62rem;
+  color: var(--gray);
+}
+
+.tri-feed-bar > .tri-on-modes {
+  align-self: center;
+}
+
 .tri-feed-search-wrap {
   position: relative;
   display: flex;
