@@ -83,9 +83,19 @@ def run_once(url: str, report_path: str | None) -> dict:
   return out
 
 
+SANDBOX_SKIP = (
+  'skipped: a headless Helium aborts in TransformProcessType inside the codex seatbelt '
+  '(one "Helium quit unexpectedly" dialog per run); measure Lighthouse outside the sandbox'
+)
+
+
 def run(
   url: str, runs: int, out_dir: str | None = None, name: str = 'page'
 ) -> list[dict]:
+  # CODEX_SANDBOX marks the worker's seatbelt: chrome-launcher's Helium cannot register with
+  # the window server there and dies on launch, retried once per run.
+  if os.environ.get('CODEX_SANDBOX'):
+    return [{'error': SANDBOX_SKIP}]
   results = []
   for i in range(runs):
     path = (

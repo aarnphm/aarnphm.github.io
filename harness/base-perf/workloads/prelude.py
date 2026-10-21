@@ -39,7 +39,14 @@ __bp.hoverEach = async (els) => { for (const el of els) { __bp.sync(() => __bp.h
 __bp.scrollBy = async (el, dy, n) => { for (let i = 0; i < n; i++) { __bp.sync(() => { el.scrollTop += dy; el.dispatchEvent(new Event('scroll')) }); await __bp.raf() } }
 __bp.pageScroll = async (dy, n) => __bp.scrollBy(document.scrollingElement, dy, n)
 __bp.escape = () => { for (const t of [document, document.activeElement]) t?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })) }
+__bp.wheelXY = (el, x, y, deltaX, deltaY, extra = {}) => el.dispatchEvent(new WheelEvent('wheel', { clientX: x, clientY: y, deltaX, deltaY, deltaMode: 0, bubbles: true, cancelable: true, ...extra }))
+__bp.key = (el, key, extra = {}) => el.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true, ...extra }))
+// Typing: one input event per character, the way a keyboard delivers them; clearing is one event.
+__bp.typeInto = async (input, text, gap = 90) => { for (const ch of text) { __bp.sync(() => { input.value += ch; input.dispatchEvent(new InputEvent('input', { bubbles: true, data: ch, inputType: 'insertText' })) }); await __bp.sleep(gap) } }
+__bp.clearInput = input => __bp.sync(() => { input.value = ''; input.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'deleteContentBackward' })) })
+// Search scenarios measure the lexical filter; a stored semantic preference is switched off and restored.
+__bp.lexical = () => { const bar = document.querySelector('#base-search-bar'); if (bar?.dataset.mode !== 'semantic') return () => {}; bar.querySelector('.mode-option[data-mode="lexical"]')?.click(); return () => bar.querySelector('.mode-option[data-mode="semantic"]')?.click() }
 __bp.result = () => ({ steps: __bp.steps.splice(0), checks: { ...__bp.checks }, notes: { ...__bp.notes, visibility: document.visibilityState } })
 """
 
-HELPERS = 'const { step, raf, sleep, wheel, pointer, hover, unhover, hoverEach, scrollBy, pageScroll, escape, check, note, sync } = __bp'
+HELPERS = 'const { step, raf, sleep, wheel, wheelXY, key, typeInto, clearInput, lexical, pointer, hover, unhover, hoverEach, scrollBy, pageScroll, escape, check, note, sync } = __bp'

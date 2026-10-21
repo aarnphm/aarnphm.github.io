@@ -5,14 +5,19 @@
 """harness/base-perf/compare.py <baseline-dir> <candidate-dir>
 Writes compare.md and compare.json next to the candidate and prints the table. Exit 0 when every
 scenario present in both runs is ACCEPT (primary metric better than the baseline's best rep, no
-guard metric worse than its worst rep, no check newly broken), 3 otherwise."""
+guard metric worse than its worst rep, no check newly broken; the vault and views scenarios also
+guard worst_frame_ms, fps_min, longtask_ms, loaf_block_ms and each step's worst frame), 3 otherwise."""
 
 import json
 import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from scenarios import GROUPS  # noqa: E402
 from stats import compare, render_compare  # noqa: E402
+
+# The scene views gate on smoothness as well as on time (stats.SMOOTH_GUARDS).
+SMOOTH = frozenset(GROUPS['vault'] + GROUPS['views'])
 
 
 def main() -> int:
@@ -24,7 +29,7 @@ def main() -> int:
     base = json.load(f)
   with open(os.path.join(b, 'results.json')) as f:
     cand = json.load(f)
-  cmp = compare(base, cand)
+  cmp = compare(base, cand, SMOOTH)
   # A run measured on a saturated machine decides nothing; it can only be measured again.
   if base['meta'].get('load_high') or cand['meta'].get('load_high'):
     for c in cmp.values():

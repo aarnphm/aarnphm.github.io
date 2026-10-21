@@ -71,6 +71,10 @@ separately.
 - Post-terminal events, unfinished tools, changed conversation IDs and stale
   assistant responses after later activity must not satisfy transport admission.
 - Coordinator calls must disable detached automatic naming jobs.
+- Renderer boundary: when shelf and detail use the same SVG URL, an image error
+  must not retry that identical URL as a low-tier fallback. The failed artwork
+  must settle into visible text fallback. The renderer owns this guard and its
+  missing-asset browser proof; model reviews and codec replays cannot verify it.
 
 Run `bash harness/bookcase-spines/scripts/run.sh test`. Evidence is written under
 `docs/verification/bookcase-spine-harness/artifacts/e2e/` with exact CLI inputs and

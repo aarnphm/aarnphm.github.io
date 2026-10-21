@@ -145,7 +145,9 @@ def validate_review(
     result.defects
     or not all(asdict(result.categories).values())
     or not all(
-      value for tier in asdict(result.tiers).values() for value in tier.values()
+      value
+      for tier in asdict(result.tiers).values()
+      for value in tier.values()
     )
   ):
     raise ValueError('Passing review contains failed categories or defects')

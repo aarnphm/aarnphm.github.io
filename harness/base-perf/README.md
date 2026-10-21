@@ -47,10 +47,17 @@ uncollected, which the medians absorb.
 its own instance): `lh_score`, `lh_fcp_ms`, `lh_lcp_ms`, `lh_si_ms`, `lh_tti_ms`, `lh_tbt_ms`,
 `lh_fid_ms`, `lh_main_ms`, `lh_js_ms`, `lh_cls`, `lh_dom`, `lh_bytes_kb`, as medians over the N
 runs. The climb's baseline and final `ab` use 2 runs; a single run's TBT swings about 20 percent.
+Inside the codex seatbelt (`CODEX_SANDBOX` set) Lighthouse is skipped with a note: chrome-launcher's
+headless Helium aborts in `TransformProcessType` → `_RegisterApplication` there (SIGABRT 0.2 s after
+launch, a "Helium quit unexpectedly" dialog per run), so a worker's `ab` carries no Lighthouse
+medians and the coordinator measures them outside the sandbox.
 
 A candidate is ACCEPT when its primary median beats the baseline's best rep, no guard metric
 (`task_ms`, `longtask_ms`, `ready_ms`, `frames_dropped`, `nodes`, `listeners`, `heap_mb`) lands
-above the baseline's worst rep, and no check broke. `dom_heap_mb` and `documents` are reported
+above the baseline's worst rep, and no check broke. The vault and views scenarios also guard
+smoothness (`stats.SMOOTH_GUARDS`): `worst_frame_ms`, `fps_min`, `longtask_ms` and `loaf_block_ms`
+stay inside the baseline's range, and no step's median worst frame passes both its worst baseline
+rep and 32 ms (`stutter:<step>`). `dom_heap_mb` and `documents` are reported
 only: detached documents from earlier reps stay in the Blink heap until collected (one run read 50
 to 171 MB across reps), so a run-to-run median says little; a steady climb across the reps of one
 run is the leak signal. `fps_min` and `lh_score`
@@ -60,12 +67,12 @@ stashed baseline back to back.
 
 ## Workers
 
-| climb       | group       | scenarios                                                   | worker          |
-| ----------- | ----------- | ----------------------------------------------------------- | --------------- |
-| `vault`     | `vault`     | vault, vault-directors, cards-films, kanban                 | sol (default)   |
-| `views`     | `views`     | bookcase, cards-books, table-to-read, table-ideas           | astra (default) |
-| `triathlon` | `triathlon` | tri-hub, tri-day, tri-analytics, tri-calendar, tri-training | sol (default)   |
-| `maps`      | `maps`      | tri-maps, places-map                                        | astra (default) |
+| climb       | group       | scenarios                                                                            | worker          |
+| ----------- | ----------- | ------------------------------------------------------------------------------------ | --------------- |
+| `vault`     | `vault`     | vault, vault-directors, cards-films, kanban                                          | sol (default)   |
+| `views`     | `views`     | bookcase, bookcase-preview, bookcase-search, cards-books, table-to-read, table-ideas | astra (default) |
+| `triathlon` | `triathlon` | tri-hub, tri-day, tri-analytics, tri-calendar, tri-training                          | sol (default)   |
+| `maps`      | `maps`      | tri-maps, places-map                                                                 | astra (default) |
 
 Workers: `sol` (codex exec, gpt-6.1-sol) and `astra` (codex exec, gpt-6-astra) at
 `BP_CODEX_EFFORT` (medium) in a workspace-write sandbox; `fable` (`claude -p --bare`,
