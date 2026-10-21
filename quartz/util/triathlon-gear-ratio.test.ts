@@ -8,7 +8,6 @@ import {
   CERAMICSPEED_TEST_OUTPUT_WATTS,
   GEAR_CASSETTE_PRESET_GROUPS,
   formatGearEfficiencyDeltaPercent,
-  gearEfficiencyDeltaPercent,
   gearCassettePreset,
   gearRatioMatrix,
 } from './triathlon-gear-ratio'
@@ -87,9 +86,11 @@ test('one-by drivetrains align around the center of the cassette', () => {
 })
 
 test('drivetrain efficiency preserves and formats its signed difference from ideal', () => {
-  assert.equal(gearEfficiencyDeltaPercent(96.5), -3.5)
-  assert.equal(gearEfficiencyDeltaPercent(98.6), -1.4)
-  assert.equal(gearEfficiencyDeltaPercent(100), 0)
+  assert.equal(formatGearEfficiencyDeltaPercent(96.5, 1), '-3.5')
+  assert.equal(formatGearEfficiencyDeltaPercent(98.6, 1), '-1.4')
+  assert.equal(formatGearEfficiencyDeltaPercent(100, 1), '0.0')
+  assert.equal(formatGearEfficiencyDeltaPercent(98.6, 15), '-1.400000000000000')
+  assert.equal(formatGearEfficiencyDeltaPercent(100 - 1e-7, 1), '0.0')
   assert.equal(formatGearEfficiencyDeltaPercent(96.4786, 2), '-3.52')
   assert.equal(formatGearEfficiencyDeltaPercent(98.6044, 3), '-1.396')
   assert.equal(formatGearEfficiencyDeltaPercent(100.125, 2), '+0.13')
