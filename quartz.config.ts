@@ -3,7 +3,7 @@ import * as Component from './quartz/components'
 import * as Plugin from './quartz/plugins'
 
 const arena = false
-const slides = false
+const slides = true
 
 const configuration: GlobalConfiguration = {
   pageTitle: "Aaron's notes",

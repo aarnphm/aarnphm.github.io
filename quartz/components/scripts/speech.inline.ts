@@ -1,15 +1,33 @@
-import { SPEECH_MODEL_INFO } from '../../util/speech-protocol'
+import {
+  DEFAULT_SPEECH_MODEL,
+  PHONON_MODELS,
+  SPEECH_MODEL_IDS,
+  SPEECH_MODEL_INFO,
+  isSpeechModelId,
+  speechModelLabel,
+  type SpeechModelId,
+} from '../../util/speech-protocol'
 import { registerEscapeHandler } from './escape-handler'
 import { speechRuntime } from './speech-runtime'
-import { createSpeechSpeed, type SpeechSpeed } from './speech-speed'
+import { createSpeechPicker, createSpeechSpeed, type SpeechSpeed } from './speech-speed'
 
 const SPEECH_SPEED_KEY = 'garden:speech-speed'
+const SPEECH_MODEL_KEY = 'garden:speech-model'
 
 function savedSpeed(): SpeechSpeed {
   try {
     return localStorage.getItem(SPEECH_SPEED_KEY) === '0.8' ? '0.8' : '1'
   } catch {
     return '1'
+  }
+}
+
+function savedModel(): SpeechModelId {
+  try {
+    const value = localStorage.getItem(SPEECH_MODEL_KEY)
+    return isSpeechModelId(value) ? value : DEFAULT_SPEECH_MODEL
+  } catch {
+    return DEFAULT_SPEECH_MODEL
   }
 }
 
@@ -20,7 +38,9 @@ document.addEventListener('nav', () => {
   const root = firstPhrase.closest<HTMLElement>('.flashcards-root, article')
   if (!root || document.getElementById('speech-settings')) return
   const listeners = new AbortController()
-  const runtime = speechRuntime(firstPhrase.dataset.speechModelBaseUrl)
+  const modelBaseUrl = firstPhrase.dataset.speechModelBaseUrl
+  let model = savedModel()
+  let runtime = speechRuntime(modelBaseUrl, model)
 
   const controls = document.createElement('aside')
   controls.id = 'speech-settings'
@@ -73,25 +93,58 @@ document.addEventListener('nav', () => {
   const details = document.createElement('details')
   details.className = 'speech-model-details'
   const summary = document.createElement('summary')
-  const downloadMb = Math.ceil(SPEECH_MODEL_INFO.downloadBytes / 1_000_000)
-  summary.textContent = `Voix française synthétique · ${downloadMb} Mo au premier clic`
   const explanation = document.createElement('p')
-  const modelLink = document.createElement('a')
-  modelLink.href = SPEECH_MODEL_INFO.sourceUrl
-  modelLink.textContent = `${SPEECH_MODEL_INFO.label}, voix ${SPEECH_MODEL_INFO.voice}`
-  explanation.append(
-    modelLink,
-    document.createTextNode(
-      `. Au premier clic, environ ${downloadMb} Mo sont téléchargés, puis gardés en cache si le navigateur le permet. Votre texte reste sur cet appareil. Cette voix n'est pas une référence d'accent québécois.`,
-    ),
-  )
+  const describeModel = () => {
+    const phonon = model === 'supertonic-2' ? undefined : PHONON_MODELS[model]
+    const info = phonon ?? SPEECH_MODEL_INFO
+    const downloadMb = Math.ceil(info.downloadBytes / 1_000_000)
+    summary.textContent = `Voix française synthétique · ${downloadMb} Mo au premier clic`
+    const modelLink = document.createElement('a')
+    modelLink.href = info.sourceUrl
+    modelLink.textContent = phonon
+      ? `${phonon.label}, voix par défaut, licence ${phonon.license}`
+      : `${SPEECH_MODEL_INFO.label}, voix ${SPEECH_MODEL_INFO.voice}`
+    explanation.replaceChildren(
+      modelLink,
+      document.createTextNode(
+        `. Au premier clic, environ ${downloadMb} Mo sont téléchargés, puis gardés en cache si le navigateur le permet. Votre texte reste sur cet appareil. Cette voix n'est pas une référence d'accent québécois.`,
+      ),
+    )
+  }
+  describeModel()
   details.append(summary, explanation)
   const status = document.createElement('p')
   status.className = 'speech-status'
   status.setAttribute('role', 'status')
   status.setAttribute('aria-live', 'polite')
   status.hidden = true
-  controls.append(header, row, details, status)
+  const modelPicker = createSpeechPicker({
+    id: 'speech-model-options',
+    label: 'Modèle',
+    menuLabel: 'Modèle vocal',
+    choices: SPEECH_MODEL_IDS.map(id => [id, speechModelLabel(id)]),
+    initial: model,
+    select: value => {
+      if (value === model) return
+      stop()
+      model = value
+      try {
+        localStorage.setItem(SPEECH_MODEL_KEY, model)
+      } catch {
+        // The choice still applies to this page.
+      }
+      if (runtime.onProgress === onProgress) runtime.onProgress = undefined
+      runtime = speechRuntime(modelBaseUrl, model)
+      runtime.onProgress = onProgress
+      describeModel()
+      void runtime.client.warmCached()
+    },
+    signal: listeners.signal,
+  })
+  const modelRow = document.createElement('div')
+  modelRow.className = 'speech-controls-row'
+  modelRow.append(modelPicker.element)
+  controls.append(header, row, modelRow, details, status)
   const card = root.querySelector('.flashcards-card')
   document.body.append(controls)
 
@@ -104,6 +157,7 @@ document.addEventListener('nav', () => {
           document.activeElement instanceof HTMLElement ? document.activeElement : undefined
       } else {
         speedPicker.close()
+        modelPicker.close()
         if (controls.contains(document.activeElement) && previousFocus?.isConnected)
           previousFocus.focus({ preventScroll: true })
       }
@@ -141,6 +195,7 @@ document.addEventListener('nav', () => {
       state,
       text: phrase?.dataset.speechText?.trim() ?? '',
       lang: phrase?.closest<HTMLElement>('[lang]')?.lang || controls.lang,
+      phrase,
     }
     document.dispatchEvent(new CustomEvent('speech', { detail }))
   }
@@ -243,8 +298,17 @@ document.addEventListener('nav', () => {
   player.addEventListener(
     'playing',
     () => {
-      if (active)
-        active.dataset.speechLatencyMs = String(Math.round(performance.now() - requestedAt))
+      if (!active) return
+      active.dataset.speechLatencyMs = String(Math.round(performance.now() - requestedAt))
+      const text = active.closest<HTMLElement>('.speech-phrase')?.dataset.speechText?.trim()
+      const timing = text ? runtime.timings.get(text) : undefined
+      active.dataset.speechModel = model
+      if (timing) {
+        active.dataset.speechSynthMs = String(Math.round(timing.totalMs))
+        active.dataset.speechFirstAudioMs = String(Math.round(timing.firstAudioMs))
+        active.dataset.speechAudioMs = String(Math.round(timing.audioMs))
+        active.dataset.speechDevice = timing.device
+      }
     },
     { signal: listeners.signal },
   )

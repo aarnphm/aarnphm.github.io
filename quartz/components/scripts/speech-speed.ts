@@ -2,21 +2,54 @@ import { autoUpdate, computePosition, flip, offset, shift } from '@floating-ui/d
 
 export type SpeechSpeed = '1' | '0.8'
 
+type SpeechPicker = { element: HTMLElement; close: (restoreFocus?: boolean) => void }
+
 export function createSpeechSpeed(
   initial: SpeechSpeed,
   select: (value: SpeechSpeed) => void,
   signal: AbortSignal,
-): { element: HTMLElement; close: (restoreFocus?: boolean) => void } {
+): SpeechPicker {
+  return createSpeechPicker({
+    id: 'speech-speed-options',
+    label: 'Vitesse',
+    menuLabel: 'Vitesse de lecture',
+    choices: [
+      ['1', '1×'],
+      ['0.8', '0,8×'],
+    ],
+    initial,
+    select,
+    signal,
+  })
+}
+
+export function createSpeechPicker<T extends string>({
+  id,
+  label: labelText,
+  menuLabel,
+  choices,
+  initial,
+  select,
+  signal,
+}: {
+  id: string
+  label: string
+  menuLabel: string
+  choices: [T, string][]
+  initial: T
+  select: (value: T) => void
+  signal: AbortSignal
+}): SpeechPicker {
   const picker = document.createElement('div')
   picker.className = 'speech-speed'
   const label = document.createElement('span')
-  label.textContent = 'Vitesse'
+  label.textContent = labelText
   const trigger = document.createElement('button')
   trigger.type = 'button'
   trigger.className = 'speech-speed-trigger'
   trigger.setAttribute('aria-haspopup', 'listbox')
   trigger.setAttribute('aria-expanded', 'false')
-  trigger.setAttribute('aria-controls', 'speech-speed-options')
+  trigger.setAttribute('aria-controls', id)
   const value = document.createElement('span')
   const chevron = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
   chevron.setAttribute('viewBox', '0 0 16 16')
@@ -26,12 +59,12 @@ export function createSpeechSpeed(
   chevron.append(path)
   trigger.append(value, chevron)
   const menu = document.createElement('div')
-  menu.id = 'speech-speed-options'
+  menu.id = id
   menu.className = 'speech-speed-menu'
   menu.setAttribute('role', 'listbox')
-  menu.setAttribute('aria-label', 'Vitesse de lecture')
+  menu.setAttribute('aria-label', menuLabel)
   menu.popover = 'manual'
-  const options: { button: HTMLButtonElement; value: SpeechSpeed; label: string }[] = []
+  const options: { button: HTMLButtonElement; value: T; label: string }[] = []
   let stopPositioning: (() => void) | undefined
   const close = (restoreFocus = false) => {
     stopPositioning?.()
@@ -40,22 +73,18 @@ export function createSpeechSpeed(
     trigger.setAttribute('aria-expanded', 'false')
     if (restoreFocus) trigger.focus({ preventScroll: true })
   }
-  const update = (selected: SpeechSpeed) => {
+  const update = (selected: T) => {
     for (const option of options) {
       const active = option.value === selected
       option.button.setAttribute('aria-selected', String(active))
       option.button.tabIndex = active ? 0 : -1
       if (active) {
         value.textContent = option.label
-        trigger.setAttribute('aria-label', `Vitesse de lecture : ${option.label}`)
+        trigger.setAttribute('aria-label', `${menuLabel} : ${option.label}`)
       }
     }
   }
-  for (const [speed, text] of [
-    ['1', '1×'],
-    ['0.8', '0,8×'],
-  ]) {
-    if (speed !== '1' && speed !== '0.8') continue
+  for (const [choice, text] of choices) {
     const button = document.createElement('button')
     button.type = 'button'
     button.className = 'speech-speed-option'
@@ -68,13 +97,13 @@ export function createSpeechSpeed(
     button.addEventListener(
       'click',
       () => {
-        update(speed)
-        select(speed)
+        update(choice)
+        select(choice)
         close(true)
       },
       { signal },
     )
-    options.push({ button, value: speed, label: text })
+    options.push({ button, value: choice, label: text })
     menu.append(button)
   }
   update(initial)

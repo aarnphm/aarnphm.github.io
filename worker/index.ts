@@ -794,10 +794,12 @@ export default {
         return new Response('method not allowed', { status: 405 })
       if (localRequest) {
         const localModel = await env.ASSETS.fetch(request)
-        return withHeaders(localModel, {
-          'Access-Control-Allow-Origin': '*',
-          'Cache-Control': 'no-store',
-        })
+        // Speech weights exceed the 25 MiB asset limit, so in dev they live only in local R2.
+        if (localModel.status !== 404)
+          return withHeaders(localModel, {
+            'Access-Control-Allow-Origin': '*',
+            'Cache-Control': 'no-store',
+          })
       }
       const cacheControl = url.pathname.endsWith('/latest.json')
         ? 'public, max-age=60, must-revalidate'

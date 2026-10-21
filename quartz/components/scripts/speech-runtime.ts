@@ -1,9 +1,19 @@
-import { SPEECH_MODEL_INFO } from '../../util/speech-protocol'
+import {
+  PHONON_MODELS,
+  SPEECH_MODEL_INFO,
+  type SpeechModelId,
+  type SpeechTiming,
+} from '../../util/speech-protocol'
 import { SpeechClient } from './speech-client'
+import { PhononClient } from './speech-phonon-client'
 
 const MAX_AUDIO_CACHE = 32
 const MAX_STORED_AUDIO_BYTES = 2_000_000
-const AUDIO_CACHE_NAME = `garden-speech-audio-${SPEECH_MODEL_INFO.revision}-${SPEECH_MODEL_INFO.voice}-v2`
+
+function audioCacheName(model: SpeechModelId): string {
+  const info = model === 'supertonic-2' ? SPEECH_MODEL_INFO : PHONON_MODELS[model]
+  return `garden-speech-audio-${info.revision}-${info.voice}-v2`
+}
 
 function wavBlob(audio: Float32Array, samplingRate: number): Blob {
   const bytes = new ArrayBuffer(44 + audio.length * 2)
@@ -34,21 +44,30 @@ function wavBlob(audio: Float32Array, samplingRate: number): Blob {
 
 class SpeechRuntime {
   onProgress: ((message: string) => void) | undefined
-  readonly client: SpeechClient
+  readonly client: SpeechClient | PhononClient
   private audio = new Map<string, string>()
   private preparing = new Map<string, Promise<string>>()
   private storage: Promise<Cache | undefined> | undefined
   private disposed = false
   private prefetching = false
+  /** Synthesis timings and clip length per phrase, kept for latency evidence. */
+  readonly timings = new Map<string, SpeechTiming & { audioMs: number }>()
 
-  constructor(readonly modelBaseUrl: string | undefined) {
-    this.client = new SpeechClient(message => this.onProgress?.(message), { modelBaseUrl })
+  constructor(
+    readonly modelBaseUrl: string | undefined,
+    readonly model: SpeechModelId,
+  ) {
+    const progress = (message: string) => this.onProgress?.(message)
+    this.client =
+      model === 'supertonic-2'
+        ? new SpeechClient(progress, { modelBaseUrl })
+        : new PhononClient(model, progress)
   }
 
   private openStorage(): Promise<Cache | undefined> {
     this.storage ??=
       'caches' in window
-        ? caches.open(AUDIO_CACHE_NAME).catch(() => undefined)
+        ? caches.open(audioCacheName(this.model)).catch(() => undefined)
         : Promise.resolve(undefined)
     return this.storage
   }
@@ -116,6 +135,10 @@ class SpeechRuntime {
     let blob = await this.storedAudio(key)
     if (!blob) {
       const result = await this.client.synthesize(text)
+      this.timings.set(text, {
+        ...result.timing,
+        audioMs: (result.audio.length / result.samplingRate) * 1_000,
+      })
       blob = wavBlob(result.audio, result.samplingRate)
       void this.storeAudio(key, blob)
     }
@@ -142,10 +165,17 @@ class SpeechRuntime {
 
 let sharedRuntime: SpeechRuntime | undefined
 
-export function speechRuntime(modelBaseUrl?: string): SpeechRuntime {
-  if (!sharedRuntime || sharedRuntime.modelBaseUrl !== modelBaseUrl) {
+export function speechRuntime(
+  modelBaseUrl: string | undefined,
+  model: SpeechModelId,
+): SpeechRuntime {
+  if (
+    !sharedRuntime ||
+    sharedRuntime.modelBaseUrl !== modelBaseUrl ||
+    sharedRuntime.model !== model
+  ) {
     sharedRuntime?.dispose()
-    sharedRuntime = new SpeechRuntime(modelBaseUrl)
+    sharedRuntime = new SpeechRuntime(modelBaseUrl, model)
   }
   return sharedRuntime
 }
