@@ -1,0 +1,385 @@
+@use '../../../styles/variables.scss' as *;
+
+// --- home schedule: src slots, marks ---
+.course-spine-table {
+  .course-c-src,
+  .course-c-marks {
+    width: 1%;
+    white-space: nowrap;
+    overflow-wrap: normal;
+  }
+
+  .course-c-marks {
+    text-align: right;
+  }
+
+  .course-slots {
+    display: inline-grid;
+    grid-auto-flow: column;
+    // the 1% src column squeezes auto tracks down to the slot min-width; keep the duration whole
+    grid-auto-columns: max-content;
+    gap: var(--space-2);
+    font-family: var(--codeFont);
+    font-size: var(--text-meta);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .course-slot {
+    min-width: 3ch;
+    text-align: center;
+    white-space: nowrap;
+    color: var(--dark);
+  }
+
+  .course-slot--empty {
+    color: var(--gray);
+  }
+
+  // below 24rem the slots move under the topic; otherwise the line stays out of the tree
+  .course-unit-src {
+    display: none;
+  }
+
+  @container course-spine (max-width: 36rem) {
+    .course-c-marks {
+      display: none;
+    }
+  }
+
+  @container course-spine (max-width: 24rem) {
+    .course-unit-src {
+      display: grid;
+      grid-auto-flow: column;
+      justify-content: start;
+      gap: var(--space-2);
+      margin-top: var(--space-1);
+      font-family: var(--codeFont);
+      font-size: var(--text-meta);
+      font-variant-numeric: tabular-nums;
+    }
+  }
+}
+
+// The renderer resolves the course layout once; dynamic drawings must not invalidate this shell.
+#quartz-root[data-course-crumb] {
+  > section.header,
+  .header-content {
+    display: contents;
+  }
+
+  // the stacked-notes toggle and the keybind hint would otherwise stack 42px above the page
+  .header-content > .breadcrumb-container,
+  .header-content > .stacked-buttons,
+  .header-content > .keybind,
+  .header-content > .darkmode,
+  .header-content > .search > .search-button {
+    display: none;
+  }
+
+  .course-watch-body {
+    top: 0;
+    height: 100dvh;
+  }
+
+  // stacked course pages (unit bar, title, byline, notes, resource body, the unit footer,
+  // license, backlinks) share the home's 66rem centred column; the pdf strip keeps its bleed
+  > .page-body-grid {
+    > .page-header > :not(.course-resource-strip),
+    > .page-content > .main-col,
+    > .page-content > .course-reading-split,
+    > .page-content > .course-resource,
+    > .page-footer > * {
+      inline-size: 100%;
+      max-inline-size: 66rem;
+      justify-self: center;
+    }
+
+    // the notes + workspace split spans 5 / -3, wider than 66rem on a wide screen, where
+    // centring would push the notes off the title's edge; it starts at that edge instead.
+    // At 1400px and below it spans 3 / -3, where `start` pulls the notes left of the title.
+    @media (min-width: 1401px) {
+      > .page-content > .course-reading-split {
+        justify-self: start;
+      }
+    }
+  }
+}
+
+// --- unit bar extras: the crumb group, the fold button ---
+.course-unit-bar {
+  // the bar's runs differ in box height (the toggles keep the 1.75rem control height), so
+  // they share the text baseline rather than the box centre
+  align-items: baseline;
+
+  // read/problems and the page action stay together at the end of the bar
+  .course-unit-actions {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-1) var(--space-3);
+    margin-left: auto;
+
+    > .course-action {
+      margin-left: 0;
+    }
+
+    @media all and ($mobile) {
+      margin-left: 0;
+    }
+  }
+
+  .course-crumb {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: baseline;
+  }
+
+  .course-unit-dates {
+    color: var(--darkgray);
+  }
+
+  button.course-fold {
+    appearance: none;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+
+    &[aria-pressed='true'] {
+      text-decoration-color: var(--dark);
+      text-decoration-style: double;
+    }
+  }
+}
+
+// byline cell under the tags: label and path at the byline's one size
+.byline .course-unit-notes {
+  p {
+    margin: 0;
+    font-family: var(--codeFont);
+    text-transform: lowercase;
+  }
+
+  a {
+    color: var(--dark);
+  }
+}
+
+// --- LaTeX notes: generated from the OCW source (docs/plans/course-resources.md §4) ---
+article.course-notes {
+  blockquote.callout[data-callout-metadata='latex'] {
+    --color: var(--dark);
+    --border: var(--dark);
+    --bg: transparent;
+
+    margin: 1rem 0;
+    padding: 0 var(--space-3);
+    border: 1px solid var(--dark);
+    border-radius: var(--radius-none);
+    background: transparent;
+    color: var(--dark);
+
+    &::before {
+      content: none;
+    }
+
+    & > .callout-title {
+      align-items: baseline;
+      padding: var(--space-3) 0 0;
+      color: var(--dark);
+    }
+
+    & > .callout-title:last-child,
+    &.is-collapsed > .callout-title {
+      padding-bottom: var(--space-3);
+    }
+  }
+
+  // the `p. k` pointer to the lecture PDF
+  blockquote.callout[data-callout-metadata='latex']
+    > .callout-content
+    > p:last-child
+    > a:only-child {
+    font-family: var(--codeFont);
+    font-size: var(--text-meta);
+    color: var(--darkgray);
+  }
+
+  a.latex-eq {
+    display: block;
+    position: relative;
+    top: -4rem;
+    visibility: hidden;
+  }
+
+  img[src*='/static_resources/latex/'] {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    margin: var(--space-4) auto;
+    border-radius: 0;
+  }
+
+  :root[saved-theme='dark'] & img[src*='/static_resources/latex/'] {
+    filter: invert(0.88) hue-rotate(180deg);
+  }
+}
+
+.course-latex {
+  margin-top: var(--space-6);
+  border: 1px solid var(--dark);
+  font-size: var(--text-ui);
+
+  summary {
+    padding: 0.4rem 0.75rem;
+    font-family: var(--codeFont);
+    font-size: var(--text-meta);
+    text-transform: lowercase;
+    color: var(--dark);
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: 2px solid var(--dark);
+      outline-offset: -2px;
+    }
+  }
+
+  &[open] summary {
+    border-bottom: 1px solid var(--course-line);
+  }
+
+  .course-latex-tools {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2) 0.75rem;
+    font-family: var(--codeFont);
+    font-size: var(--text-meta);
+
+    .course-count {
+      flex: 1 1 auto;
+      margin: 0;
+    }
+
+    button {
+      appearance: none;
+      min-height: var(--course-control-height);
+      padding: 0 var(--space-2);
+      border: 1px solid var(--course-line);
+      border-radius: var(--radius-none);
+      background: transparent;
+      color: var(--dark);
+      font: inherit;
+      text-transform: lowercase;
+      cursor: pointer;
+
+      &:focus-visible {
+        outline: 2px solid var(--dark);
+        outline-offset: 2px;
+      }
+    }
+  }
+
+  .course-latex-pre {
+    max-height: 60vh;
+    margin: 0;
+    padding: var(--space-3) 0.75rem;
+    overflow: auto;
+    border: 0;
+    border-top: 1px solid var(--course-line);
+    border-radius: 0;
+    background: var(--course-surface);
+    font-size: var(--text-meta);
+    line-height: 1.5;
+    tab-size: 2;
+
+    code {
+      display: block;
+      padding: 0;
+      background: transparent;
+      white-space: pre;
+    }
+  }
+}
+
+// --- vendored pages/<name>: crumb and description above the article ---
+.course-page {
+  --course-line: color-mix(in srgb, var(--gray) 55%, transparent);
+  --course-control-height: 1.75rem;
+
+  .course-page-head {
+    margin: 0 0 var(--space-4);
+  }
+
+  .course-page-links {
+    margin: 0;
+  }
+}
+
+// a file path inside a meta line takes the line's size; the base `code` rule pins 14px
+code.course-path {
+  font-size: inherit;
+}
+
+// --- pages/calendar: the shared month calendar over the vendored table ---
+// a month takes the course home's frame: 66rem, centred on the full column
+.page:has(> .page-body-grid > .page-content > .course-page > .course-calendar) {
+  > .header > .header-content,
+  > .page-body-grid > .page-content > .course-page {
+    grid-column: 3 / -3;
+    inline-size: 100%;
+    max-inline-size: 66rem;
+    justify-self: center;
+  }
+}
+
+.course-calendar {
+  --control-focus: var(--dark);
+
+  .g-calendar-day-header h3 {
+    font-size: 1em;
+  }
+
+  a.g-event {
+    text-decoration: none;
+  }
+}
+
+.course-calendar-due {
+  color: var(--darkgray);
+  font-family: var(--codeFont);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.course-calendar-foot {
+  margin-top: var(--space-3);
+  color: var(--darkgray);
+  font: 400 var(--text-meta) / 1.5 var(--codeFont);
+
+  p {
+    margin: var(--space-2) 0 0;
+  }
+
+  code {
+    padding: 0;
+    background: transparent;
+  }
+}
+
+.course-calendar-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin: 0;
+  }
+}
