@@ -54,9 +54,6 @@
   position: absolute;
   bottom: calc(100% + 0.2rem);
   left: 50%;
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
   width: max-content;
   max-width: min(15rem, calc(100vw - 2rem));
   padding: 0.4rem 0.55rem;
@@ -81,7 +78,6 @@
 
   .garden-pet:is(.is-reminding, .is-speaking) & {
     opacity: 1;
-    pointer-events: auto;
     transform: translateX(calc(-50% + var(--pet-bubble-x, 0px)));
   }
 
@@ -90,10 +86,6 @@
     max-width: min(18rem, calc(100vw - 2rem));
     text-wrap: pretty;
     white-space: normal;
-  }
-
-  .garden-pet.is-speaking & .garden-pet-close {
-    display: none;
   }
 
   // On the trail the pet is drawn in the scene and the root keeps the hidden vector's box: the
@@ -108,25 +100,5 @@
     top: var(--pet-trail-foot, calc(100% + 0.2rem));
     bottom: auto;
     transform-origin: 0 0;
-  }
-}
-
-.garden-pet-close {
-  display: inline-grid;
-  place-items: center;
-  width: 1.25rem;
-  height: 1.25rem;
-  border: 0;
-  border-radius: 999px;
-  background: transparent;
-  color: inherit;
-  cursor: pointer;
-  font: inherit;
-  line-height: 1;
-  padding: 0;
-
-  &:hover,
-  &:focus-visible {
-    background: var(--lightgray);
   }
 }

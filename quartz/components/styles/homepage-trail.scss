@@ -138,18 +138,6 @@ body[data-slug='index']:has(.homepage-trail-toggle[aria-expanded='true']) {
     border: 0;
     background: var(--light);
   }
-
-  .garden-pet-close {
-    &:hover,
-    &:focus-visible {
-      background: transparent;
-      color: var(--secondary);
-    }
-    &:focus-visible {
-      outline: 2px solid var(--secondary);
-      outline-offset: 2px;
-    }
-  }
 }
 @media (min-width: 601px) and (hover: hover) and (pointer: fine) {
   .homepage-trail-toggle {
