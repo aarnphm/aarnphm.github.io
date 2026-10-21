@@ -49,11 +49,11 @@ while $\alpha \ge 0$, in radians inside the sine. Below the horizon it drops at 
 
 Cloud streaks follow a velocity field. Three plane waves set a stream function. Wave $i$ has wavevector $(k_x, k_y)$, frequency $\omega$, phase $\phi$, and amplitude $6 / \lVert k \rVert$:
 
-| $k_x$ | $k_y$ | $\omega$ | $\phi$ |
-| ---: | ---: | ---: | ---: |
-| $0.006$ | $0.014$ | $0.11$ | $0.4$ |
-| $-0.013$ | $0.021$ | $-0.17$ | $2.1$ |
-| $0.024$ | $-0.017$ | $0.23$ | $4.4$ |
+|    $k_x$ |    $k_y$ | $\omega$ | $\phi$ |
+| -------: | -------: | -------: | -----: |
+|  $0.006$ |  $0.014$ |   $0.11$ |  $0.4$ |
+| $-0.013$ |  $0.021$ |  $-0.17$ |  $2.1$ |
+|  $0.024$ | $-0.017$ |   $0.23$ |  $4.4$ |
 
 On top of a base drift $(24, 2)$, the field adds Lamb–Oseen vortices. At offset $(x, y)$, core radius $c$, circulation $\Gamma$ and sink strength $s$,
 
