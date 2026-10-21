@@ -1,0 +1,174 @@
+@use '../../../styles/variables.scss' as *;
+
+.press-kit[data-transparent='true'] .press-kit-frame {
+  background-color: #505050;
+  background-image: conic-gradient(#686868 25%, transparent 0 50%, #686868 0 75%, transparent 0);
+  background-size: 1rem 1rem;
+}
+
+.press-kit-header {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: calc(var(--pk-control) + 0.5rem + 1px);
+  padding-block: 0.25rem;
+  padding-inline: var(--pk-pad);
+  border-bottom: 1px solid var(--pk-line);
+  font-family: var(--codeFont);
+  font-size: 0.7rem;
+
+  > #press-kit-title {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--dark);
+  }
+
+  // The site header's `header > :nth-last-child(2)` rule would push the tabs to the right.
+  > .press-kit-tabs {
+    margin-inline: 0 auto;
+  }
+
+  > .press-kit-close {
+    flex: none;
+    width: var(--pk-control);
+    height: var(--pk-control);
+    // Pull the hit area outward so the 1rem glyph, not the button box, meets the inset.
+    margin-inline-end: calc((1rem - var(--pk-control)) / 2);
+
+    svg {
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+}
+
+.press-kit-tabs {
+  display: flex;
+  gap: 0.15rem;
+}
+
+.press-kit-tab {
+  align-items: center;
+  min-height: calc(var(--pk-control) - 0.25rem);
+  padding: 0 0.55rem;
+  color: var(--darkgray);
+  background: transparent;
+  font-family: var(--codeFont);
+  font-size: 0.7rem;
+
+  &[aria-selected='true'] {
+    color: var(--dark);
+    background: var(--pk-selected);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &[aria-selected='false']:hover {
+      color: var(--dark);
+      background: var(--pk-surface);
+    }
+  }
+}
+
+.press-kit-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 21rem;
+  flex: 1 1 auto;
+  min-height: 0;
+
+  @media #{$mobile} {
+    grid-template-columns: minmax(0, 1fr);
+    overflow-y: auto;
+  }
+}
+
+.press-kit-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 1.25rem;
+  border-right: 1px solid var(--pk-line);
+  background: var(--pk-surface);
+
+  @media #{$mobile} {
+    padding: 0.75rem;
+    border-right: 0;
+    border-bottom: 1px solid var(--pk-line);
+  }
+}
+
+.press-kit-frame {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: min(68dvh, 40rem);
+  min-height: 0;
+
+  @media #{$mobile} {
+    height: 42dvh;
+  }
+}
+
+// Width and height stay auto so the canvas scales inside the frame at its own ratio.
+.press-kit-canvas {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  outline: 1px solid var(--pk-line);
+}
+
+.press-kit-unfurl {
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 30rem);
+  border: 1px solid var(--pk-line);
+  background: var(--light);
+}
+
+.press-kit-unfurl-image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1200 / 630;
+  object-fit: cover;
+  border-bottom: 1px solid var(--pk-line);
+  background: var(--pk-surface);
+}
+
+.press-kit-unfurl-text {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.5rem 0.65rem 0.6rem;
+}
+
+.press-kit-unfurl-site {
+  color: var(--darkgray);
+  font-family: var(--codeFont);
+  font-size: 0.6rem;
+}
+
+.press-kit-unfurl-title {
+  color: var(--dark);
+  font-size: 0.85rem;
+  line-height: 1.3;
+}
+
+.press-kit-caption {
+  color: var(--darkgray);
+  font-family: var(--codeFont);
+  font-size: 0.6rem;
+  font-variant-numeric: tabular-nums;
+}
