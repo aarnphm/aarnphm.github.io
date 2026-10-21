@@ -109,8 +109,13 @@ export function renderStravaActivities(root: Root, slug: FullSlug): void {
     const hours = Object.values(summary.totals).reduce((s, sum) => s + sum.movingTimeS, 0) / 3600
     node.children = [
       h('div.strava-activities-head', [
-        h('span.strava-activities-title', 'latest activities'),
-        h('a.strava-activities-source', { href: profile }, 'strava'),
+        h('a.internal.strava-activities-title', { href: joinSegments(root, 'triathlon') }, [
+          'latest activities',
+        ]),
+        h('span.strava-activities-meta', [
+          h('span', ['synced ', h('time', { dateTime: synced }, dayLabel(synced, false))]),
+          h('a.strava-activities-source', { href: profile }, 'strava'),
+        ]),
       ]),
       h('div.strava-activities-grid', [
         h('div.strava-activities-cols', { ariaHidden: 'true' }, [
@@ -127,7 +132,6 @@ export function renderStravaActivities(root: Root, slug: FullSlug): void {
       ]),
       h('div.strava-activities-foot', [
         h('span', `${summary.year}: ${[...kinds, `${Math.round(hours)} h`].join(', ')}`),
-        h('span', ['synced ', h('time', { dateTime: synced }, dayLabel(synced, false))]),
       ]),
     ]
     return SKIP
