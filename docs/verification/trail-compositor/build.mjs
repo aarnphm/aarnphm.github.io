@@ -32,7 +32,7 @@ const patches = {
   name: 'verify',
   setup(plugin) {
     if (!verify) return
-    plugin.onLoad({ filter: /scene-compositor\.ts$/ }, ({ path: file }) => ({
+    plugin.onLoad({ filter: /scene-compositor[\\/]paint-scene\.ts$/ }, ({ path: file }) => ({
       contents: injectVerifier(readFileSync(file, 'utf8')),
       loader: 'ts',
     }))
