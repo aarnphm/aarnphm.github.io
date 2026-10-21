@@ -233,11 +233,11 @@
     {
       "id": "6f22d47be6826275",
       "type": "group",
-      "label": "été · épisodes 13–14",
+      "label": "été · épisodes 13–16",
       "x": 2880,
       "y": 480,
       "width": 640,
-      "height": 1000,
+      "height": 1920,
       "color": "1"
     },
     {
@@ -265,7 +265,7 @@
       "type": "group",
       "label": "pratique · octobre 2026",
       "x": 2880,
-      "y": 1600,
+      "y": 2520,
       "width": 640,
       "height": 1460,
       "color": "3"
@@ -275,7 +275,7 @@
       "type": "file",
       "file": "fr/practices/261004.md",
       "x": 2920,
-      "y": 1680,
+      "y": 2600,
       "width": 560,
       "height": 380,
       "color": "3"
@@ -285,7 +285,7 @@
       "type": "file",
       "file": "fr/practices/261009.md",
       "x": 2920,
-      "y": 2140,
+      "y": 3060,
       "width": 560,
       "height": 380,
       "color": "3"
@@ -295,7 +295,7 @@
       "type": "file",
       "file": "fr/practices/261012.md",
       "x": 2920,
-      "y": 2600,
+      "y": 3520,
       "width": 560,
       "height": 380,
       "color": "3"
@@ -307,7 +307,7 @@
       "x": 3600,
       "y": 480,
       "width": 1360,
-      "height": 3300,
+      "height": 3840,
       "color": "6"
     },
     {
@@ -617,6 +617,45 @@
       "width": 560,
       "height": 380,
       "color": "1"
+    },
+    {
+      "id": "7d45a2cef18d73f8",
+      "type": "file",
+      "file": "fr/episode-15.md",
+      "x": 2920,
+      "y": 1480,
+      "width": 560,
+      "height": 380,
+      "color": "1"
+    },
+    {
+      "id": "8dbd69acf2f94c74",
+      "type": "file",
+      "file": "fr/episode-16.md",
+      "x": 2920,
+      "y": 1940,
+      "width": 560,
+      "height": 380,
+      "color": "1"
+    },
+    {
+      "id": "7e6f74786870ec9e",
+      "type": "file",
+      "file": "fr/lessons/261020.md",
+      "x": 3640,
+      "y": 3800,
+      "width": 560,
+      "height": 380,
+      "color": "6"
+    },
+    {
+      "id": "d9135884a541666b",
+      "type": "text",
+      "text": "Reprend : [[fr/episode-14|14]].",
+      "x": 3640,
+      "y": 4192,
+      "width": 560,
+      "height": 66
     }
   ],
   "edges": [
@@ -688,6 +727,20 @@
       "fromNode": "3792fcb2078e5b58",
       "toNode": "a2f86a9ac048c23f",
       "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "5a7ae90df77ed251",
+      "fromNode": "a2f86a9ac048c23f",
+      "fromSide": "bottom",
+      "toNode": "7d45a2cef18d73f8",
+      "toSide": "top"
+    },
+    {
+      "id": "d556eed39765aa58",
+      "fromNode": "7d45a2cef18d73f8",
+      "fromSide": "bottom",
+      "toNode": "8dbd69acf2f94c74",
       "toSide": "top"
     }
   ]
