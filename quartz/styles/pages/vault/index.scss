@@ -1,0 +1,123 @@
+.vault-index {
+  grid-area: index;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  border-block-start: 1px solid var(--vault-line);
+}
+
+.vault-index-group {
+  // The heading holds the top of the pane while its rows scroll under it, and the next group's
+  // heading pushes it off; the last heading stays put at the end of the list.
+  .base-list-group-header {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 0.75rem minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.75rem;
+    background: var(--light);
+    min-height: 2.125rem;
+    margin: 0;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--vault-line);
+    color: var(--darkgray);
+    font: 400 var(--text-meta, 0.75rem) / 1.4 var(--codeFont);
+    list-style: none;
+    cursor: pointer;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &::before {
+      content: '+';
+    }
+  }
+
+  &[open] > summary::before {
+    content: '−';
+  }
+}
+
+.vault-index-count {
+  font-variant-numeric: tabular-nums;
+}
+
+.vault-index-list {
+  display: grid;
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  border-block-end: 1px solid var(--vault-line);
+  background: var(--vault-line);
+  list-style: none;
+}
+
+.vault .vault-index-list > li {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  // The shared base-list row draws its own bottom rule; here the 1px grid gap is the rule.
+  border: 0;
+  background: var(--light);
+  transition: none;
+
+  &[data-current] {
+    background: var(--vault-selected);
+  }
+}
+
+.vault-entry-select {
+  display: grid;
+  gap: 0.1rem;
+  width: 100%;
+  min-width: 0;
+  padding: 0.6rem 0.75rem;
+  border: 0;
+  border-radius: 0;
+  color: var(--dark);
+  background: transparent;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover .vault-entry-title {
+      text-decoration: underline;
+    }
+  }
+}
+
+.vault-entry-title,
+.vault-entry-byline {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vault-entry-title {
+  font-size: var(--text-ui, 0.875rem);
+  line-height: 1.3;
+}
+
+.vault-entry-byline {
+  color: var(--darkgray);
+  font: var(--text-meta, 0.75rem) / 1.3 var(--codeFont);
+}
+
+// The card shows the current row's record; the row keeps it for search and assistive tech.
+.vault-entry-detail {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  content-visibility: hidden;
+  contain: strict;
+}

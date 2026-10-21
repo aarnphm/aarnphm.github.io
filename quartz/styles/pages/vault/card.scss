@@ -1,0 +1,149 @@
+.vault-card {
+  width: min(56rem, calc(100vw - 2rem));
+  max-width: none;
+  max-height: calc(100dvh - 2rem);
+  padding: 0;
+  overflow: auto;
+  border: 1px solid var(--vault-line, var(--gray));
+  border-radius: 0;
+  color: var(--dark);
+  background: var(--light);
+  overscroll-behavior: contain;
+
+  &::backdrop {
+    background: color-mix(in srgb, var(--light) 80%, transparent);
+  }
+
+  &[open] {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    animation: vault-card-in 220ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+}
+
+.vault-card-toolbar,
+.vault-card-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  color: var(--darkgray);
+  font: var(--text-meta, 0.75rem) var(--codeFont);
+  font-variant-numeric: tabular-nums;
+}
+
+.vault-card-content {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  align-items: start;
+  gap: 1.5rem;
+  min-height: 0;
+  padding: 0 1.5rem 0.75rem;
+}
+
+.vault-card-poster {
+  margin: 0;
+  perspective: 1200px;
+
+  img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    border: 1px solid var(--dark);
+    background: var(--vault-surface, var(--lightgray));
+  }
+
+  &[data-empty] img {
+    visibility: hidden;
+  }
+}
+
+.vault-card-record {
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: 0.75rem;
+  min-width: 0;
+
+  h2 {
+    margin: 0;
+  }
+}
+
+.vault-card-title {
+  color: var(--dark);
+  font-family: var(--titleFont);
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 1.2;
+  text-decoration: none;
+  background: transparent;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      color: var(--dark);
+      background: transparent;
+      text-decoration: underline;
+    }
+  }
+}
+
+.vault-card-detail,
+.vault-entry-detail {
+  .vault-label-line {
+    margin: 0;
+    padding: 0.35rem 0.5rem;
+    border: 1px solid var(--darkgray);
+    color: var(--dark);
+    font: var(--text-meta, 0.75rem) / 1.4 var(--codeFont);
+    letter-spacing: 0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .vault-props {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: 0.2rem 0.75rem;
+    margin: 0.75rem 0 0;
+    font: var(--text-meta, 0.75rem) / 1.45 var(--codeFont);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .vault-prop {
+    display: contents;
+  }
+
+  dt {
+    margin: 0;
+    color: var(--darkgray);
+  }
+
+  dd {
+    margin: 0;
+    min-width: 0;
+    color: var(--dark);
+    overflow-wrap: anywhere;
+  }
+
+  .vault-description {
+    margin: 0.75rem 0 0;
+    color: var(--darkgray);
+    font-family: var(--bodyFont);
+    font-size: var(--text-ui, 0.875rem);
+    line-height: 1.5;
+  }
+}
+
+@keyframes vault-card-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes vault-lid-in {
+  from {
+    opacity: 0;
+  }
+}
