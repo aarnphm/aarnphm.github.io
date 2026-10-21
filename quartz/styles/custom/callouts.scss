@@ -1,0 +1,327 @@
+@use '../variables.scss' as *;
+
+.callout {
+  --callout-color: inherit;
+  border: 0px solid light-dark(rgba(32, 94, 166, 0.25), rgba(67, 133, 190, 0.25));
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+  border-start-start-radius: 0px;
+  border-start-end-radius: 0px;
+  border-end-start-radius: 0px;
+  border-end-end-radius: 0px;
+
+  &[data-callout] {
+    --color: rgba(156, 207, 216, 1);
+    --border: rgba(156, 207, 216, 0.46);
+    --bg: rgba(156, 207, 216, 0.14);
+  }
+  &[data-callout='proposition'],
+  &[data-callout='propos'],
+  &[data-callout='theorem'],
+  &[data-callout='math'],
+  &[data-callout='abstract'] {
+    --color: var(--pine);
+    --border: rgba(40, 105, 131, 0.46);
+    --bg: rgba(40, 105, 131, 0.14);
+  }
+  &[data-callout='quote'],
+  &[data-callout='info'],
+  &[data-callout='todo'] {
+    --color: rgba(196, 167, 231, 1);
+    --border: rgba(196, 167, 231, 0.46);
+    --bg: rgba(196, 167, 231, 0.14);
+  }
+  &[data-callout='tip'] {
+    --color: rgba(62, 143, 176, 1);
+    --border: rgba(62, 143, 176, 0.46);
+    --bg: rgba(62, 143, 176, 0.14);
+  }
+  &[data-callout='success'] {
+    --color: var(--foam);
+    --border: rgba(86, 148, 159, 0.46);
+    --bg: rgba(86, 148, 159, 0.14);
+  }
+  &[data-callout='question'] {
+    --color: rgba(246, 193, 119, 1);
+    --border: rgba(246, 193, 119, 0.46);
+    --bg: rgba(246, 193, 119, 0.14);
+  }
+  &[data-callout='warning'] {
+    --color: var(--gold);
+    --border: rgba(234, 157, 52, 0.39);
+    --bg: rgba(234, 157, 52, 0.14);
+  }
+  &[data-callout='failure'],
+  &[data-callout='danger'],
+  &[data-callout='bug'] {
+    --color: var(--tertiary);
+    --border: rgba(180, 99, 122, 0.46);
+    --bg: rgba(180, 99, 122, 0.14);
+  }
+}
+
+.callout .callout-title {
+  border: 0px light-dark(rgb(32, 94, 166), rgb(67, 133, 190));
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+  border-start-start-radius: 0px;
+  border-start-end-radius: 0px;
+  border-end-start-radius: 0px;
+  border-end-end-radius: 0px;
+}
+
+.callout .callout-title > .callout-title-inner > p {
+  color: light-dark(rgb(32, 94, 166), rgb(67, 133, 190));
+  font-weight: 600;
+}
+
+.callout > .callout-content {
+  background-color: rgba(0, 0, 0, 0);
+  padding: 0px;
+}
+
+.callout[data-callout] {
+  --callout-color: inherit;
+  border-radius: var(--radius-none);
+  background: transparent;
+  border: 1px solid var(--dark);
+}
+
+blockquote.callout {
+  .callout-title > .callout-title-inner > p {
+    color: var(--dark);
+  }
+  &[data-callout] {
+    --color: rgb(var(--callout-info));
+  }
+  &[data-callout='note'] {
+    --color: rgb(var(--callout-default));
+  }
+  &[data-callout='proposition'],
+  &[data-callout='propos'],
+  &[data-callout='theorem'],
+  &[data-callout='math'],
+  &[data-callout='abstract'] {
+    --color: rgb(var(--callout-summary));
+  }
+  &[data-callout='info'] {
+    --color: rgb(var(--callout-info));
+  }
+  &[data-callout='todo'] {
+    --color: rgb(var(--callout-todo));
+  }
+  &[data-callout='tip'] {
+    --color: rgb(var(--callout-tip));
+  }
+  &[data-callout='success'] {
+    --color: rgb(var(--callout-success));
+  }
+  &[data-callout='question'] {
+    --color: rgb(var(--callout-question));
+  }
+  &[data-callout='warning'] {
+    --color: rgb(var(--callout-warning));
+  }
+  &[data-callout='failure'] {
+    --color: rgb(var(--callout-fail));
+  }
+  &[data-callout='danger'] {
+    --color: rgb(var(--callout-bug));
+  }
+  &[data-callout='bug'] {
+    --color: rgb(var(--callout-bug));
+  }
+  &[data-callout='example'] {
+    --color: rgb(var(--callout-example));
+  }
+  &[data-callout='quote'] {
+    --color: rgb(var(--callout-quote));
+  }
+}
+
+blockquote.callout.callout-math,
+blockquote.callout:is(
+    [data-callout='math'],
+    [data-callout='proof'],
+    [data-callout='lemma'],
+    [data-callout='theorem'],
+    [data-callout='theory'],
+    [data-callout='proposition'],
+    [data-callout='propos'],
+    [data-callout='definition'],
+    [data-callout='corollary'],
+    [data-callout='conjecture'],
+    [data-callout='claim'],
+    [data-callout='axiom']
+  ) {
+  --color: var(--dark);
+  --border: var(--dark);
+  --bg: transparent;
+
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-none);
+  color: var(--dark);
+  margin: 1rem 0;
+  overflow: visible;
+  padding: 0 var(--space-3);
+
+  &::before {
+    content: '';
+  }
+
+  & > .callout-title {
+    align-items: baseline;
+    color: var(--dark);
+    padding: var(--space-3) 0 0;
+  }
+
+  & > .callout-title:last-child,
+  &.is-collapsed > .callout-title {
+    padding-bottom: var(--space-3);
+  }
+
+  & > .callout-title > .fold-callout-icon {
+    color: var(--darkgray);
+    margin-left: auto;
+  }
+
+  .callout-title > .callout-title-inner {
+    color: var(--dark);
+    font-family: var(--bodyFont);
+    font-style: italic;
+    font-weight: $semiBoldWeight;
+    line-height: 1.6rem;
+  }
+
+  .callout-title > .callout-title-inner > p {
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    font-style: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+    margin: 0;
+  }
+
+  & > .callout-content {
+    background: transparent;
+    border: 0;
+    color: var(--dark);
+    margin: 0;
+    overflow: visible;
+    // visible children report max-content widths; cap the single column so wide display math scrolls
+    grid-template-columns: minmax(0, 1fr);
+    padding: var(--space-2) 0 var(--space-3);
+  }
+
+  // children stay overflow: visible, so the zero-height content box must clip them itself
+  &.is-collapsed > .callout-content {
+    padding-bottom: 0;
+    padding-top: 0;
+    overflow: hidden;
+    visibility: hidden;
+  }
+
+  & > .callout-content > * {
+    overflow: visible;
+  }
+
+  // keep display math scrolling inside the callout instead of widening the page on phones
+  & > .callout-content > .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  & > .callout-content > :first-child {
+    margin-top: 0;
+  }
+
+  & > .callout-content > :last-child {
+    margin-bottom: 0;
+  }
+
+  .math-proof-label {
+    font-style: italic;
+  }
+
+  .math-proof {
+    display: grid;
+    gap: var(--space-2);
+    margin: var(--space-3) 0 0;
+  }
+
+  .math-proof-row {
+    align-items: baseline;
+    column-gap: var(--space-4);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(12rem, max-content);
+    margin: 0;
+  }
+
+  .math-proof-row:not(.has-reason) > .math-proof-step {
+    grid-column: 1 / -1;
+  }
+
+  .math-proof-step,
+  .math-proof-reason {
+    min-width: 0;
+  }
+
+  .math-proof-step > :first-child,
+  .math-proof-reason > :first-child {
+    margin-top: 0;
+  }
+
+  .math-proof-step > :last-child,
+  .math-proof-reason > :last-child {
+    margin-bottom: 0;
+  }
+
+  .math-proof-reason {
+    color: var(--gray);
+    font-size: 0.95em;
+    text-align: left;
+  }
+
+  .katex-display {
+    margin: var(--space-4) 0;
+  }
+}
+
+@media all and (max-width: 700px) {
+  blockquote.callout.callout-math,
+  blockquote.callout:is(
+      [data-callout='math'],
+      [data-callout='proof'],
+      [data-callout='lemma'],
+      [data-callout='theorem'],
+      [data-callout='theory'],
+      [data-callout='proposition'],
+      [data-callout='propos'],
+      [data-callout='definition'],
+      [data-callout='corollary'],
+      [data-callout='conjecture'],
+      [data-callout='claim'],
+      [data-callout='axiom']
+    ) {
+    .math-proof-row {
+      display: block;
+    }
+
+    .math-proof-reason {
+      margin-top: var(--space-1);
+    }
+  }
+}
+
+blockquote.callout.callout-math[data-callout='proof'],
+blockquote.callout[data-callout='proof'] {
+  .callout-title > .callout-title-inner {
+    font-weight: $normalWeight;
+  }
+}

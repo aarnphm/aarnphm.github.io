@@ -1,0 +1,489 @@
+@use '../variables.scss' as *;
+@use '../mixin.scss' as *;
+
+hgroup {
+  & > .description {
+    overflow: hidden;
+    white-space: break-spaces;
+    text-overflow: ellipsis;
+    font-style: italic;
+    font-weight: 300;
+    display: -webkit-box;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  .katex {
+    font-size: 1em;
+    margin-left: 0.2em;
+    margin-right: 0.2em;
+  }
+
+  code {
+    font-size: 0.92em;
+  }
+}
+
+pre.poem,
+pre.poetry {
+  border: none;
+  position: unset;
+  font-family:
+    var(--titleFont),
+    Gill Sans,
+    Gill Sans MT,
+    Calibri,
+    sans-serif;
+  background: inherit;
+  font-size: 1rem;
+  line-height: 2;
+  -webkit-text-size-adjust: 100%;
+  font-feature-settings: normal;
+  font-variation-settings: normal;
+
+  .diff-add,
+  .diff-del,
+  del {
+    font-family: inherit;
+  }
+
+  .diff-add {
+    background-color: rgba(120, 200, 150, 0.25);
+  }
+
+  .diff-del {
+    background-color: rgba(220, 140, 140, 0.2);
+  }
+
+  &[data-language='vi'] {
+    font-family: 'Playfair Display' !important;
+  }
+}
+
+li[id^='user-content-fn-'] {
+  &:hover {
+    a[data-footnote-backref] {
+      visibility: visible;
+    }
+  }
+}
+
+a {
+  &[data-footnote-backref] {
+    font-family: 'Berkeley Mono';
+    text-decoration: none;
+    background: inherit;
+    cursor: pointer;
+    &:hover {
+      color: var(--darkgray);
+    }
+  }
+
+  &[data-role='anchor'] {
+    background-image: unset;
+    background-color: unset;
+    margin-left: 0.35rem;
+  }
+
+  &:hover {
+    .min-links,
+    &[data-tag] > .title,
+    &[data-backlink] > .small {
+      @include dagHighlights;
+    }
+  }
+
+  &.result-card {
+    text-decoration: none;
+
+    ul > li > p {
+      background-color: initial !important;
+      border-radius: var(--radius-none) !important;
+
+      @include links;
+    }
+  }
+
+  &.internal.tag-link {
+    text-decoration: none;
+    display: inline;
+    padding: 3px;
+    margin: -1px;
+    box-shadow:
+      0px 1px 0px 1px var(--light) inset,
+      0px 1px 0px 2px var(--telescope-border) inset;
+
+    &:hover {
+      box-shadow:
+        0px 1px 0px 0px var(--light) inset,
+        0px 1px 0px 1px var(--telescope-border) inset;
+      border-bottom: 1px solid var(--telescope-border);
+      color: var(--darkgray);
+      background: initial;
+    }
+  }
+
+  &.anchor-like {
+    @include links;
+    @include indicatorHook;
+  }
+
+  &[class~='landing-links'],
+  &.internal[class~='landing-links'] {
+    font-weight: inherit;
+    cursor: pointer;
+  }
+}
+
+blockquote:not(:where(.arena-reader blockquote, .twitter-post blockquote, .pdf-mark-card-quote)) {
+  border-left: none;
+  padding-left: 0;
+  margin: 1.5rem 0 1.5rem 2.5rem;
+
+  &:not([class~='callout']):not([class~='transclude']):not([class~='quotes']) {
+    position: relative;
+
+    &::before {
+      content: '“' / '';
+      position: absolute;
+      left: -2.5rem;
+      top: -0.1em;
+      font-family: Georgia, serif;
+      font-size: 3rem;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 1;
+      color: color-mix(in srgb, var(--gray) 80%, var(--foam));
+
+      [data-slug='friends'] &,
+      [data-slug='quotes'] & {
+        content: none;
+        display: none;
+      }
+    }
+  }
+
+  @media all and ($mobile) {
+    margin-left: 1.75rem;
+
+    &:not([class~='callout']):not([class~='transclude']):not([class~='quotes'])::before {
+      left: -1.75rem;
+      font-size: 2.5rem;
+    }
+  }
+}
+
+.transclude-ref {
+  display: flex;
+  flex-direction: row;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  border: 0px solid var(--lightgray);
+  border-bottom-width: 1px;
+  align-items: baseline;
+  justify-content: space-between;
+
+  & > ul.metadata {
+    list-style: none;
+    padding-left: 0;
+    display: flex;
+    gap: 0.5rem;
+    margin: 0;
+  }
+
+  .transclude-title-link {
+    svg {
+      opacity: 0.35;
+      transition: opacity 0.2s ease;
+      color: var(--gray);
+    }
+
+    &:hover {
+      svg {
+        opacity: 1;
+        cursor: pointer;
+        color: var(--darkgray);
+      }
+    }
+  }
+}
+
+p.text,
+div.text {
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+  padding-left: 1rem;
+
+  font-style: italic;
+  border: 0px solid var(--lightgray);
+  border-top-width: 1px;
+  border-bottom-width: 1px;
+}
+
+section {
+  background-color: inherit;
+}
+
+section[data-references] {
+  ul,
+  ol {
+    list-style-type: none;
+  }
+
+  & > #reference-label {
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  & > ul {
+    margin-bottom: 2rem;
+  }
+}
+
+section[data-footnotes] {
+  & > #footnote-label.sr-only {
+    margin-bottom: 0.5rem;
+  }
+
+  & > ol {
+    margin-bottom: 2rem;
+  }
+
+  @media all and ($mobile) {
+    display: block;
+  }
+}
+
+@media all and ($mobile) {
+  .page-title {
+    display: none;
+  }
+}
+
+hr {
+  width: 100%;
+  height: 1px;
+  margin: 2rem 0;
+  display: block;
+  border: 0;
+  background: none;
+  text-align: center;
+  overflow: visible;
+
+  &::after {
+    content: '\2042';
+    display: inline-block;
+    letter-spacing: 1.25em;
+    color: var(--dark);
+    position: relative;
+
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transform: translateY(calc(-1 * var(--rail-width) / 2));
+    font-size: 1.2em;
+  }
+}
+
+.collapsible-header-hr hr {
+  margin: 0;
+}
+
+#quartz-root {
+  isolation: isolate;
+}
+
+#quartz-root > section[class~='header'] {
+  background: var(--light);
+  z-index: 99999;
+
+  @media all and ($tablet), all and ($desktop) {
+    body[data-slug*='stream'] & {
+      background: transparent;
+      pointer-events: none;
+
+      > .header-content {
+        pointer-events: auto;
+      }
+    }
+  }
+}
+
+body {
+  & {
+    --animation-duration: #{$base-duration}s;
+    --max-animation-duration: #{$base-duration + $max-delay}s;
+  }
+
+  &[data-language='vi'] {
+    article {
+      --headerFont: 'Playfair Display', var(--headerFont);
+      --bodyFont: 'Playfair Display', var(--bodyFont);
+      --codeFont: 'Playfair Display', var(--codeFont);
+    }
+  }
+
+  &[data-slug='index'] {
+    section[class~='header'] {
+      border-bottom: none;
+    }
+
+    .center {
+      --index-border-width: 1px;
+      position: relative;
+      border: none;
+
+      &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        border: var(--index-border-width) solid var(--darkgray);
+        pointer-events: none;
+        z-index: -1;
+      }
+    }
+  }
+}
+
+.preview-container {
+  flex-grow: 1;
+}
+
+.article-title {
+  font-size: 2.6rem;
+  font-weight: 800;
+  margin-top: 0;
+  font-family: var(--headerFont);
+
+  & > a {
+    outline: none;
+  }
+}
+
+// A class selector here: `[class~=…] *` makes every class change on the page restyle the whole document.
+.page-header:not(aside.sidepanel-container *) {
+  padding-top: var(--sidepanel-padding);
+}
+
+#quartz-root > .page-body-grid > .page-header:has(> .byline) {
+  overflow-x: clip;
+}
+
+.page-footer,
+.byline {
+  border: 0px solid var(--lightgray);
+  border-top-width: 1px;
+  border-bottom-width: 1px;
+  margin-bottom: 2.5rem;
+}
+
+.page-footer {
+  padding-top: 2rem;
+  margin-top: 2rem;
+  margin-bottom: 0;
+  border-bottom-width: 0px;
+
+  &:empty {
+    display: none;
+  }
+}
+
+.byline {
+  grid-column: var(--layout-byline-column);
+  display: grid;
+  grid-template-columns: var(--layout-byline-template);
+  align-items: start;
+  font-size: 0.8rem;
+  line-height: 1.8em;
+
+  h2 {
+    margin: 0;
+    font-size: 0.6rem;
+    font-weight: 400;
+
+    color: rgba(var(--darkgray), 0.15);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    font-weight: 300;
+  }
+
+  & > * {
+    padding-right: 1rem;
+    padding-left: 1rem;
+    padding-block: 1rem;
+
+    &:last-child {
+      border-left: 1px solid var(--lightgray);
+      padding-left: 1rem;
+    }
+  }
+
+  .tags {
+    flex-grow: 1;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+}
+
+#quartz-root > .page-body-grid > .page-header > .byline {
+  position: relative;
+  border-top-width: 0;
+  border-bottom-width: 0;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    left: -100vw;
+    right: -100vw;
+    height: 1px;
+    background: var(--lightgray);
+    pointer-events: none;
+  }
+
+  &::before {
+    top: 0;
+  }
+
+  &::after {
+    bottom: 0;
+  }
+}
+
+#stacked-notes-container .stacked-note {
+  .stacked-content .byline {
+    display: none;
+    grid-column: auto;
+  }
+
+  .graph-local,
+  .graph.local-graph-only {
+    display: none;
+  }
+}
+
+@media all and ($mobile) {
+  .byline {
+    & > * {
+      &:last-child {
+        border-left: 0;
+        border-top: 1px solid var(--lightgray);
+      }
+    }
+  }
+}
+
+footer[class~='menu'] {
+  border-top-width: 0px;
+}
