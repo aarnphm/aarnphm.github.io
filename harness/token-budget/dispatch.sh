@@ -4,6 +4,7 @@
 # Each <run-dir>/<slug>/brief.md becomes <slug>/<worker>/task.txt; the run writes events.ndjson,
 # stderr.txt and exit-code there (Codex and Claude also write last-message.txt). Workers read the tree at
 # TB_WORKSPACE (default: this checkout), so a `w` worktree can be the source as well.
+# TB_ARGON_TIMEOUT sets Argon's wall-clock limit in seconds (7200; 0 waits until completion).
 set -eu
 HERE=$(cd "$(dirname "$0")" && pwd)
 WS=${TB_WORKSPACE:-$(git -C "$HERE" rev-parse --show-toplevel)}
@@ -32,6 +33,10 @@ case $W in
     WSID=$(rg -m1 '^CLAUDE_WORKSPACE_ID=' "$ENV" | cut -d= -f2- | tr -d "\"'" || true)
     ;;
   argon)
+    TB_ARGON_TIMEOUT=${TB_ARGON_TIMEOUT:-7200}
+    case $TB_ARGON_TIMEOUT in
+      *[!0-9]*) echo "TB_ARGON_TIMEOUT must be a nonnegative integer in seconds (0 means unlimited)" >&2; exit 2 ;;
+    esac
     ID='argon:gemini-4-argon-high'
     CONSTRAINT='common-caller'
     TEXT='Optimise for the most common caller: the production importers listed below should keep a trivial default call, even if the interface keeps a few more names. Group the implementation so that the change you expect most often touches one file.'
@@ -82,7 +87,8 @@ EOF
     argon)
       # agy can keep running after its result event; stop this run (and only it) after a grace period.
       ( cd "$d"
-        argon --workspace "$WS" --browser none --stream --timeout 1800 \
+        printf '%s\n' "$TB_ARGON_TIMEOUT" > timeout-seconds
+        argon --workspace "$WS" --browser none --stream --timeout "$TB_ARGON_TIMEOUT" \
           < task.txt > events.ndjson 2> stderr.txt &
         pid=$!
         while kill -0 "$pid" 2> /dev/null; do
