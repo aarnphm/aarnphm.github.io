@@ -12,7 +12,9 @@ HERE=$(cd "$(dirname "$0")" && pwd)
 WS=$(git -C "$HERE" rev-parse --show-toplevel)
 [ $# -eq 5 ] || { sed -n '2,8p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 2; }
 RUN=$1; NAME=$2; GROUP=$3; PORT=$4; WORKER=$5
-RUNSH="harness/base-perf/scripts/run.sh"
+# The harness is the main checkout's, by absolute path: a worker's branch may predate it and the
+# worker must never edit it; the codex sandbox can execute outside its worktree.
+RUNSH="$HERE/scripts/run.sh"
 
 case $GROUP in
   vault) OWNED='`quartz/components/scripts/base-vault.inline.ts`, `quartz/util/base/vault/**`, `quartz/styles/pages/vault.scss`, `quartz/styles/pages/vault/**`, `quartz/components/scripts/base-kanban.inline.ts`, `quartz/util/base/kanban*`' ;;
@@ -37,13 +39,13 @@ COMMIT=$(git -C "$WT" rev-parse --short HEAD)
 git -C "$WT" status --short > "$RUN_DIR/status-before.txt"
 
 echo "baseline: $NAME ($GROUP) at $URL" >&2
-( cd "$WT" && "$HERE/bench.py" --base-url "$URL" --group "$GROUP" --reps 5 --out "$RUN_DIR/baseline" --session "bp-$NAME" ) > "$RUN_DIR/baseline.log" 2>&1
+( cd "$WT" && "$HERE/bench.py" --base-url "$URL" --group "$GROUP" --reps 5 --lighthouse 2 --out "$RUN_DIR/baseline" --session "bp-$NAME" ) > "$RUN_DIR/baseline.log" 2>&1
 ( cd "$WT" && "$HERE/scripts/run.sh" check "$NAME" ) > "$RUN_DIR/baseline/checks.txt" 2>&1 || true
 
 sed -e "s|{{GROUP}}|$GROUP|g" -e "s|{{WORKTREE}}|$WT|g" -e "s|{{BRANCH}}|$BRANCH|g" -e "s|{{COMMIT}}|$COMMIT|g" \
     -e "s|{{WORKER}}|$WORKER|g" -e "s|{{URL}}|$URL|g" -e "s|{{RUN}}|$RUNSH|g" -e "s|{{NAME}}|$NAME|g" \
     -e "s|{{SCENARIOS}}|$SCENARIOS|g" -e "s|{{RUN_DIR}}|$RUN_DIR|g" -e "s|{{MAX_EXPERIMENTS}}|${BP_MAX_EXPERIMENTS:-8}|g" \
-    -e "s|{{OWNED}}|$OWNED|g" "$HERE/task.md" > "$RUN_DIR/task.txt"
+    -e "s|{{OWNED}}|$OWNED|g" -e "s|{{HARNESS}}|$HERE|g" "$HERE/task.md" > "$RUN_DIR/task.txt"
 : > "$RUN_DIR/experiments.md"
 rm -f "$RUN_DIR/exit-code"
 
@@ -68,7 +70,7 @@ case $WORKER in
     ( cd "$WT" && ANTHROPIC_API_KEY=$KEY ANTHROPIC_CUSTOM_HEADERS=${WSID:+"anthropic-workspace-id: $WSID"} \
       claude -p --bare --no-session-persistence --model claude-fable-5-1 --effort "${BP_FABLE_EFFORT:-medium}" \
         --output-format stream-json --verbose --max-budget-usd "${BP_BUDGET_USD:-60}" --permission-mode dontAsk \
-        --allowedTools 'Read' 'Edit' 'Write' 'Grep' 'Glob' 'Bash(harness/base-perf/*)' 'Bash(rg *)' 'Bash(fd *)' \
+        --allowedTools 'Read' 'Edit' 'Write' 'Grep' 'Glob' "Bash($HERE/*)" 'Bash(rg *)' 'Bash(fd *)' \
           'Bash(sed -n *)' 'Bash(cat *)' 'Bash(head *)' 'Bash(tail *)' 'Bash(wc *)' 'Bash(ls *)' 'Bash(git status*)' \
           'Bash(git diff*)' 'Bash(git log *)' 'Bash(git show *)' 'Bash(git checkout -- *)' 'Bash(pnpm exec tsgo *)' \
           'Bash(pnpm exec oxlint *)' 'Bash(pnpm exec oxfmt *)' 'Bash(pnpm test *)' 'Bash(curl *)' \

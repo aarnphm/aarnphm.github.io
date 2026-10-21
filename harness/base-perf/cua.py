@@ -190,7 +190,11 @@ class Tab:
   def metrics(self) -> dict:
     keys = {
       'Nodes',
+      'Documents',
+      'JSEventListeners',
+      'LayoutObjects',
       'JSHeapUsedSize',
+      'JSHeapTotalSize',
       'LayoutCount',
       'RecalcStyleCount',
       'LayoutDuration',
@@ -203,6 +207,11 @@ class Tab:
       for m in self.command('Performance.getMetrics')['metrics']
       if m['name'] in keys
     }
+
+  def heap_usage(self) -> dict:
+    """Runtime.getHeapUsage: usedSize/totalSize are V8, embedderHeapUsedSize is Blink's Oilpan
+    heap (DOM, style, layout objects), which Performance.getMetrics does not report."""
+    return self.command('Runtime.getHeapUsage')
 
   def screenshot(self) -> bytes:
     return self.s.image('await repl.emitImage(await tab.screenshot())', 30000)

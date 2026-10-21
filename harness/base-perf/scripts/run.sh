@@ -13,13 +13,14 @@
 #                                                        sol,astra,sol,astra (vault, views, triathlon, maps)
 #   land <run-dir>/<name>                                apply changes.patch to this checkout's index
 #   probe <url> [...]                                    probe.py
+#   lighthouse <url> [--runs N] [--out dir]              lighthouse.py
 # Names are worktrees (harness/base-perf/worktree.sh); the bench always runs in the real Helium
 # profile through the CUA broker, one task tab per run.
 set -eu
 HERE=$(cd "$(dirname "$0")/.." && pwd)
 WS=$(git -C "$HERE" rev-parse --show-toplevel)
 cmd=${1:-}
-[ -n "$cmd" ] || { sed -n '3,16p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 2; }
+[ -n "$cmd" ] || { sed -n '3,17p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 2; }
 shift
 group_of() { cat "$("$HERE/worktree.sh" path "$1")/.base-perf/group" 2> /dev/null || echo "$1"; }
 
@@ -34,6 +35,7 @@ case $cmd in
   compare) exec "$HERE/compare.py" "$@" ;;
   wait-build) exec "$HERE/worktree.sh" wait-build "$1" ;;
   probe) exec "$HERE/probe.py" "$@" ;;
+  lighthouse) exec "$HERE/lighthouse.py" "$@" ;;
   climb) exec "$HERE/climb.sh" "$@" ;;
   check)
     wt=$("$HERE/worktree.sh" path "$1")
@@ -54,10 +56,10 @@ case $cmd in
   ab)
     name=$1; out=$2
     wt=$("$HERE/worktree.sh" path "$name")
-    "$0" bench "$name" "$out/candidate" --reps 5
+    "$0" bench "$name" "$out/candidate" --reps 5 --lighthouse 2
     ( cd "$wt" && git stash push --include-untracked -q -m "base-perf ab $name" )
     "$HERE/worktree.sh" wait-build "$name"
-    "$0" bench "$name" "$out/baseline" --reps 5 || true
+    "$0" bench "$name" "$out/baseline" --reps 5 --lighthouse 2 || true
     ( cd "$wt" && git stash pop -q )
     "$HERE/worktree.sh" wait-build "$name"
     "$0" compare "$out/baseline" "$out/candidate"
