@@ -7,8 +7,16 @@ Optional model CLIs retain their own installed runtimes.
 
 Every visible region, including lettering, photography and texture, must be vector
 geometry in the SVG master. No bitmap, external resource or live font is allowed.
-The browser-facing exports keep the current shelf (96 × 320, q80) and detail
-(256 × 1280, q84) ceilings and never exceed reference dimensions.
+The viewBox must be exactly `0 0 WIDTH HEIGHT`, using the native reference's
+positive pixel dimensions. Delivery metadata can then reproduce that same viewBox
+in an SVG view fragment. Shifted origins and scaled coordinate frames are rejected
+before replacing a candidate. Existing historical receipts are never rewritten.
+Inspection images keep the shelf (96 × 320) and detail (256 × 1280) ceilings
+and never exceed reference dimensions. They default to lossless WebP so thin
+coloured strokes remain faithful to the rendered SVG. For lossy raster delivery,
+set `exports.encoding` to `lossy-webp` and shelf/detail quality to 80/84; lossless
+encoding requires both quality fields to be null. The encoding enters the replay
+recipe. SVG delivery uses the accepted master, not its proof-image files.
 
 | Role                       | Default                                           |
 | -------------------------- | ------------------------------------------------- |
@@ -23,8 +31,46 @@ Sol Medium remains selectable: in a separate config set `trace` to
 `{"provider":"sol","model":"gpt-6.1-sol","effort":"medium"}`, then pass that
 file to `plan --config`. `prepare` follows the planned role when `--provider` is
 omitted. No provider substitution or paid usage override happens on account errors.
-Version 2 policy requires a fresh plan; earlier run directories remain historical
+Version 4 policy requires a fresh plan; earlier run directories remain historical
 evidence and are never rewritten to satisfy the new reviewer requirements.
+
+Each reviewer must explicitly confirm source correspondence and full-face coverage
+at shelf and detail sizes, alongside the six visual categories. Blank bands,
+clipping and an inset source image fail this check unless present in the reference.
+Requests bind the job, invocation, input, exact image manifest, candidate and rubric.
+Duplicate JSON keys are rejected rather than silently replacing a binding.
+
+Artwork acceptance covers these supplied rasters. The export manifest always sets
+`renderedPlacementVerified: false` and `productionPublished: false`. Before publishing,
+the consuming renderer must separately verify the complete painted face on the
+served shelf and preview, across the required viewport and appearance matrix.
+Record the requested `img.src` as well as `currentSrc`: Chromium can omit an SVG
+view fragment from `currentSrc` even when the fragment affects rendering. Pixel
+comparison evidence must be a decoded, verified PNG, since a `.png` filename alone
+does not establish lossless encoding. Keep this placement receipt alongside the
+artwork receipt and bind it to the actual renderer revision and artifact hashes.
+Convert embedded screenshot ICC profiles to the reference colour space before
+comparing pixels; a lossless Display P3 screenshot still needs conversion to sRGB
+when the reference uses sRGB.
+
+`request.modelSelection` records the requested model and effort.
+`model-provenance.json` records the observed model, its source and the raw output
+hash. Codex's current JSON stream does not report its model, so its observed model
+remains null. Argon must confirm its configured model; Grok tracing must confirm
+Extra High and 500K without Fast. Argon/Caw calls disable automatic conversation
+naming so a detached naming call cannot escape the coordinator's call budget.
+
+Grok is also selectable with trace provider `caw`, model
+`grok-4.7[context=500k,reasoning_effort=xhigh,fast=false]`, effort `null`, and
+reviewers `["astra", "opus", "sol"]`. Sol replaces Caw's review slot because Caw
+implements that trace. Trace workers may write scripts and a candidate SVG inside
+their isolated invocation directory. They can return a hashed `svgFile` instead
+of putting path geometry in their final response. The coordinator rejects files
+outside the bound invocation, wrong hashes, and files over the existing SVG limit.
+Reviewers retain read-only execution and inspect both raster export tiers. Grok
+also writes its full response JSON to the request's `resultFile`; native terminal
+completion, model selection and the invocation-bound JSON file are checked
+separately. The raw terminal remains available when it contains extra prose.
 
 ## Invoke
 
@@ -77,6 +123,10 @@ available front/reference hash is checked. References are the already admitted
 detail artwork. Original source URLs/hashes and edition evidence remain provenance;
 the harness neither fetches new sources nor changes edition decisions or fronts.
 
+For catalogue entries delivered as SVG, planning reads the retained native image
+from `vectorSource.reference`. Missing reference metadata rejects admission. The
+delivered SVG stays separate from the source pixels used by a future trace.
+
 A custom `--input input.json` accepts `{ "version": 1, "jobs": [...] }`. Each job
 has `id`, `title`, `notes`, `source`, `reference`, `front`, and `blockedReason`.
 `source` is `{ "url", "sha256", "evidence" }`; file pins are `{ "file", "sha256" }`.
@@ -112,12 +162,14 @@ review receipts stay in the run. Argon and Caw responses are inspected with thei
 skills' native inspection helpers. A zero exit without a complete terminal result
 cannot satisfy review. Model usage is preserved when reported.
 
-Sol and Astra use read-only sandbox mode with user config disabled. Caw uses ask mode,
-without `--force` or blanket MCP approval. Argon receives a read-only assignment;
-that prompt does not create an OS sandbox. All providers receive explicit instructions
-to avoid browsers, edits and further delegation. Fresh invocation directories and
-bounded process groups separate their output. Account access is checked only by a
-live call; `doctor` checks executable/helper availability.
+Sol tracing uses workspace-write sandbox mode in its invocation directory. Sol and
+Astra reviews use read-only sandbox mode with user config disabled. Caw uses ask
+mode, without `--force` or blanket MCP approval. Argon and Caw tracing assignments
+allow scripts and candidate files only inside their invocation directory; review
+assignments allow no edits. Those prompts do not create an OS sandbox. All providers
+receive instructions to avoid browsers and further delegation. Fresh invocation
+directories and bounded process groups separate their output. Account access is
+checked only by a live call; `doctor` checks executable/helper availability.
 
 Opus uses the installed Claude CLI in bare, restricted mode, with only the `Read`
 tool and no MCP servers, shell or edits. Its adapter requires `CLAUDE_API_KEY`

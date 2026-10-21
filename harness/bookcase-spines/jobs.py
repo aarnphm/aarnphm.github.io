@@ -33,6 +33,39 @@ from schema import (
 from svg import rasterize
 
 
+def trace_svg(state: State, job: Job, result: Trace) -> str:
+  artifact = result.svgFile
+  if artifact is None:
+    return result.svg
+  if result.svg:
+    raise ValueError('Supply inline SVG or an SVG file, never both')
+  file = Path(artifact.file).resolve(strict=True)
+  relative = file.relative_to((Path(state.run) / 'invocations').resolve())
+  if len(relative.parts) < 2:
+    raise ValueError('SVG file must belong to an invocation')
+  UUID(relative.parts[0])
+  request = read_json(
+    Path(state.run) / 'invocations' / relative.parts[0] / 'request.json'
+  )
+  if (
+    not isinstance(request, dict)
+    or request.get('stage') != 'trace'
+    or request.get('inputFingerprint') != job.inputFingerprint
+    or request.get('provider') != state.config.trace.provider
+  ):
+    raise ValueError('SVG file belongs to a different trace request')
+  if (
+    not file.is_file() or file.stat().st_size > state.config.limits.maxSvgBytes
+  ):
+    raise ValueError(
+      'SVG file exceeds the byte budget or is not a regular file'
+    )
+  data = file.read_bytes()
+  if sha(data) != artifact.sha256:
+    raise ValueError('SVG file hash differs')
+  return data.decode('utf-8')
+
+
 def submit(
   state: State, job: Job, response: object, count_attempt: bool = True
 ) -> None:
@@ -48,6 +81,7 @@ def submit(
     if (
       not result.unresolved
       or result.svg
+      or result.svgFile
       or any(not item.strip() for item in result.unresolved)
     ):
       raise ValueError('Blocked trace needs evidence gaps and no SVG')
@@ -55,8 +89,9 @@ def submit(
   else:
     if not job.input.reference or job.input.blockedReason:
       raise ValueError('Unadmitted source')
+    svg = trace_svg(state, job, result)
     if (
-      not result.svg.strip()
+      not svg.strip()
       or not result.provenance
       or any(not item.strip() for item in result.provenance)
       or result.unresolved
@@ -64,7 +99,7 @@ def submit(
       raise ValueError('Candidate lacks provenance or has unresolved regions')
     directory = Path(state.run) / 'attempts' / job.input.id / str(uuid4())
     candidate = rasterize(
-      result.svg,
+      svg,
       Path(job.input.reference.file),
       directory,
       state.config,
@@ -107,7 +142,11 @@ def validate_review(
       'Review did not inspect exactly the supplied image hashes'
     )
   if result.verdict == 'pass' and (
-    result.defects or not all(asdict(result.categories).values())
+    result.defects
+    or not all(asdict(result.categories).values())
+    or not all(
+      value for tier in asdict(result.tiers).values() for value in tier.values()
+    )
   ):
     raise ValueError('Passing review contains failed categories or defects')
   if result.verdict != 'pass' and not result.defects:
@@ -132,6 +171,8 @@ def validate_review(
   request = read_json(directory / 'request.json')
   if (
     not isinstance(request, dict)
+    or request.get('invocation') != invocation
+    or request.get('directory') != str(directory)
     or request.get('provider') != provider
     or request.get('stage') != 'verify'
     or request.get('inputFingerprint') != job.inputFingerprint
@@ -140,6 +181,13 @@ def validate_review(
   bound = request.get('request')
   if (
     not isinstance(bound, dict)
+    or bound.get('jobId') != job.input.id
+    or bound.get('inputFingerprint') != job.inputFingerprint
+    or bound.get('images')
+    != [
+      asdict(value)
+      for value in [job.input.reference, candidate.shelf, candidate.detail]
+    ]
     or bound.get('candidateSha256') != candidate.master.sha256
     or bound.get('rubricSha256') != rubric
   ):
@@ -237,6 +285,7 @@ def verify(state: State, job: Job) -> None:
       'detail': replay.detail.sha256,
       'deterministic': 'pass',
       'visual': job.status,
+      'renderedPlacementVerified': False,
     },
   )
 
@@ -294,6 +343,7 @@ def export_bundle(state: State) -> dict[str, object]:
     'accepted': len(entries),
     'complete': len(entries) == len(state.jobs),
     'productionPublished': False,
+    'renderedPlacementVerified': False,
     'entries': entries,
   }
   write_json(directory / 'manifest.json', receipt)

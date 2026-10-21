@@ -20,7 +20,37 @@ from files import (
   save_state,
   sha,
 )
-from schema import Config, InputJob, Inputs, Job, Pin, Source, State, decode
+from schema import (
+  Config,
+  InputJob,
+  Inputs,
+  Job,
+  Pin,
+  Source,
+  State,
+  decode,
+  mapping,
+)
+from svg import dimensions
+
+
+def reference_pin(entry: dict[str, object]) -> Pin:
+  if entry.get('delivery') == 'svg':
+    reference = decode(
+      Pin, mapping(entry.get('vectorSource')).get('reference')
+    )
+    return Pin(str(REPOSITORY / reference.file), reference.sha256)
+  reference = decode(
+    Pin,
+    {
+      'file': entry.get('detailArtwork'),
+      'sha256': entry.get('detailArtworkSha256'),
+    },
+  )
+  return Pin(
+    str(REPOSITORY / 'quartz/static/bookcase-spines' / reference.file),
+    reference.sha256,
+  )
 
 
 def garden_input() -> tuple[list[InputJob], list[Pin]]:
@@ -47,12 +77,7 @@ def garden_input() -> tuple[list[InputJob], list[Pin]]:
       entry['title'],
       [entry['poster']],
       Source(entry['source'], entry['sourceSha256'], entry['editionEvidence']),
-      Pin(
-        str(
-          REPOSITORY / 'quartz/static/bookcase-spines' / entry['detailArtwork']
-        ),
-        entry['detailArtworkSha256'],
-      ),
+      reference_pin(entry),
       Pin(
         str(REPOSITORY / 'content' / entry['poster']), entry['posterSha256']
       ),
@@ -118,6 +143,8 @@ def plan(
           ).resolve()
         )
         check_pin(value)
+    if entry.reference:
+      dimensions(Path(entry.reference.file))
     reason = entry.blockedReason
     if not entry.source or not entry.reference or not entry.front:
       reason = reason or 'Missing edition evidence, reference or front.'

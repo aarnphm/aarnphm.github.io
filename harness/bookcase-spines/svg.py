@@ -172,10 +172,11 @@ def inspect_svg(svg: str, limits: Limits) -> tuple[float, float]:
   if (
     len(box) != 4
     or any(not math.isfinite(value) for value in box)
+    or box[:2] != [0, 0]
     or box[2] <= 0
     or box[3] <= 0
   ):
-    raise ValueError('SVG needs a positive finite viewBox')
+    raise ValueError('SVG needs a zero-origin, positive finite viewBox')
   return box[2], box[3]
 
 
@@ -239,8 +240,8 @@ def rasterize(
 ) -> Candidate:
   shape = inspect_svg(svg, config.limits)
   width, height = dimensions(reference)
-  if abs(shape[0] / shape[1] - width / height) > 0.000001:
-    raise ValueError('SVG viewBox must preserve the reference aspect ratio')
+  if shape != (width, height):
+    raise ValueError('SVG viewBox dimensions must equal the native reference')
   directory.mkdir(parents=True)
   master = directory / 'master.svg'
   atomic(master, svg)
@@ -289,7 +290,18 @@ def rasterize(
       config,
     )
     native(
-      ['cwebp', '-quiet', '-q', str(tier.quality), str(png), '-o', str(webp)],
+      [
+        'cwebp',
+        '-quiet',
+        *(
+          ['-lossless']
+          if config.exports.encoding == 'lossless-webp'
+          else ['-q', str(tier.quality)]
+        ),
+        str(png),
+        '-o',
+        str(webp),
+      ],
       directory / f'encode-{name}',
       config,
     )

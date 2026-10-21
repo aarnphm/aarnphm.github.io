@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 4,
   "trace": { "provider": "argon", "model": "gemini-4-argon-high", "effort": null },
   "reviewers": ["astra", "opus", "caw"],
   "providers": {
@@ -22,7 +22,8 @@
     "maxRasterMs": 30000
   },
   "exports": {
-    "shelf": { "width": 96, "height": 320, "quality": 80 },
-    "detail": { "width": 256, "height": 1280, "quality": 84 }
+    "encoding": "lossless-webp",
+    "shelf": { "width": 96, "height": 320, "quality": null },
+    "detail": { "width": 256, "height": 1280, "quality": null }
   }
 }

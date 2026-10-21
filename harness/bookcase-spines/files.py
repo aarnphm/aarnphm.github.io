@@ -10,10 +10,10 @@ import hashlib
 import json
 import os
 from pathlib import Path
-from typing import Iterator
+from typing import Generator
 from uuid import uuid4
 
-from schema import Job, Pin, State, decode
+from schema import Job, Pin, State, decode, strict_json
 
 HARNESS = Path(__file__).resolve().parent
 REPOSITORY = HARNESS.parents[1]
@@ -44,7 +44,7 @@ def sha(value: bytes | str) -> str:
 
 
 def read_json(file: Path) -> object:
-  return json.loads(file.read_text())
+  return strict_json(file.read_text())
 
 
 def pin(file: Path) -> Pin:
@@ -127,7 +127,7 @@ def save_state(state: State, event: str, detail: object = None) -> None:
 
 
 @contextmanager
-def guard(directory: Path) -> Iterator[None]:
+def guard(directory: Path) -> Generator[None]:
   with (directory / 'coordinator.guard').open('a') as handle:
     try:
       fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -140,7 +140,7 @@ def guard(directory: Path) -> Iterator[None]:
 
 
 @contextmanager
-def locked(directory: Path) -> Iterator[None]:
+def locked(directory: Path) -> Generator[None]:
   with guard(directory):
     marker = directory / 'coordinator.lock'
     with marker.open('x') as stream:
