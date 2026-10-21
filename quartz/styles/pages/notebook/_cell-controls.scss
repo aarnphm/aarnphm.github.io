@@ -1,0 +1,600 @@
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-language-badge {
+    --notebook-language-color: var(--secondary);
+    --notebook-language-badge-width: 1.42rem;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 var(--notebook-language-badge-width);
+    box-sizing: border-box;
+    width: var(--notebook-language-badge-width);
+    height: 1.05rem;
+    min-width: var(--notebook-language-badge-width);
+    max-width: var(--notebook-language-badge-width);
+    padding: 0;
+    overflow: hidden;
+    border-radius: var(--radius-none);
+    color: var(--darkgray);
+    font-family: var(--codeFont);
+    font-size: 0.64rem;
+    line-height: 1;
+    white-space: nowrap;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-language-badge-python {
+    --notebook-language-color: #3776ab;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-language-badge-python .notebook-language-icon {
+    height: 1.05rem;
+    background: transparent;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-language-badge-javascript {
+    --notebook-language-color: #c7922b;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-language-badge-typescript {
+    --notebook-language-color: #3178c6;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-language-badge-java {
+    --notebook-language-color: #b7472a;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-language-badge-go {
+    --notebook-language-color: #007d9c;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-language-badge-c,
+  .notebook-language-badge-cpp {
+    --notebook-language-color: #555a9b;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-language-badge-rust {
+    --notebook-language-color: #8c4a2f;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-language-badge-bash {
+    --notebook-language-color: #4f7d3f;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-language-badge-wasm {
+    --notebook-language-color: #654ff0;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-language-badge-html {
+    --notebook-language-color: #d94a25;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-language-badge-css {
+    --notebook-language-color: #1572b6;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-language-badge-json,
+  .notebook-language-badge-csv {
+    --notebook-language-color: #5b6472;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-language-badge-markdown {
+    --notebook-language-color: #46637f;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-language-badge-zig {
+    --notebook-language-color: #d88a27;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-language-badge-ocaml {
+    --notebook-language-color: #c75f22;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-language-badge-text {
+    --notebook-language-color: #69707a;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-language-icon {
+    display: inline-grid;
+    place-items: center;
+    flex: 0 0 auto;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 100%;
+    height: 0.82rem;
+    padding: 0;
+    border-radius: var(--radius-none);
+    color: color-mix(in srgb, var(--notebook-language-color) 88%, var(--dark));
+    font-size: 0.5rem;
+    font-weight: 700;
+    letter-spacing: 0;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-language-svg {
+    display: block;
+    width: 0.72rem;
+    height: 0.72rem;
+    overflow: visible;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-python-icon {
+    width: 0.92rem;
+    height: 0.98rem;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-go-icon {
+    width: 1.18rem;
+    height: 0.45rem;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-c-icon,
+  .notebook-cpp-icon {
+    width: 0.72rem;
+    height: 0.82rem;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-rust-icon {
+    width: 0.82rem;
+    height: 0.82rem;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-ocaml-icon {
+    width: 0.84rem;
+    height: 0.74rem;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-language-text {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: clip;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-language-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-cell-actions {
+    position: absolute;
+    top: calc(var(--notebook-shell-padding) - var(--notebook-action-height) + 1px);
+    left: calc(
+      var(--notebook-shell-padding) + var(--notebook-gutter-width) + var(--notebook-code-gap)
+    );
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.16rem;
+    box-sizing: border-box;
+    height: var(--notebook-action-height);
+    min-height: var(--notebook-action-height);
+    padding: 0.07rem 0.16rem;
+    border: 1px solid var(--lightgray);
+    border-bottom: 0;
+    border-radius: var(--radius-none) var(--radius-none) 0 0;
+    background: var(--notebook-code-surface);
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-code-cell[data-notebook-editing] > .notebook-cell-actions {
+    background: var(--notebook-editor-surface);
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-execution-prompt {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.2rem;
+    color: var(--gray);
+    font-family: var(--codeFont);
+    font-size: 0.78rem;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    white-space: nowrap;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-runtime button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 1.75rem;
+    padding: 0.2rem 0.55rem;
+    border: 1px solid var(--lightgray);
+    border-radius: var(--radius-none);
+    background: transparent;
+    color: var(--dark);
+    font-family: var(--bodyFont);
+    font-size: 0.82rem;
+    line-height: 1.2;
+    cursor: pointer;
+    transition:
+      background-color 140ms ease,
+      border-color 140ms ease,
+      color 140ms ease,
+      opacity 140ms ease,
+      scale 140ms ease;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-runtime button:hover:not(:disabled),
+  .notebook-runtime button:focus-visible {
+    border-color: var(--darkgray);
+    background: var(--highlight);
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-runtime button[aria-pressed='true'] {
+    border-color: var(--darkgray);
+    background: var(--highlight);
+    color: var(--dark);
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-runtime button:active:not(:disabled) {
+    scale: 0.96;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-runtime button:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-runtime button[hidden],
+  .notebook-cell-actions button[hidden],
+  .notebook-local-source-status[hidden] {
+    display: none;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-cell-actions button {
+    display: inline-grid;
+    place-items: center;
+    width: 1.05rem;
+    height: 1.05rem;
+    min-height: 1.05rem;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-none);
+    background: transparent;
+    color: var(--gray);
+    line-height: 0;
+    transition:
+      background-color 140ms ease,
+      color 140ms ease,
+      opacity 140ms ease,
+      scale 140ms ease;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-cell-actions button:active:not(:disabled) {
+    scale: 0.96;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-code-cell:not([data-notebook-editing])
+    > .notebook-cell-actions
+    button[data-notebook-vim-cell] {
+    display: none;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-cell-actions button[data-notebook-vim-cell] {
+    opacity: 0.45;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-cell-actions button[data-notebook-vim-cell][aria-pressed='true'] {
+    background: color-mix(in srgb, #7db643 18%, var(--notebook-code-surface));
+    color: #367533;
+    opacity: 1;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-code-cell[data-notebook-editing]
+    > .notebook-cell-actions
+    button[data-notebook-vim-cell][aria-pressed='true'] {
+    background: color-mix(in srgb, #7db643 18%, var(--notebook-editor-surface));
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-cell-actions button:hover:not(:disabled),
+  .notebook-cell-actions button:focus-visible {
+    background: var(--highlight);
+    color: var(--dark);
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-cell-actions button:disabled {
+    opacity: 0.35;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-icon-button svg {
+    display: block;
+    width: 0.82rem;
+    height: 0.82rem;
+    overflow: visible;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-icon-button .notebook-vim-icon {
+    width: 0.68rem;
+    height: 0.82rem;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-icon-button svg path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-icon-button .notebook-vim-icon path {
+    fill: currentColor;
+    stroke: none;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-icon-button[aria-pressed='true'] .notebook-vim-icon-left {
+    fill: #16b0ed;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-icon-button[aria-pressed='true'] .notebook-vim-icon-cross {
+    fill: #7db643;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-icon-button[aria-pressed='true'] .notebook-vim-icon-right {
+    fill: #367533;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-icon-button .notebook-debug-icon-core {
+    fill: var(--color-orange);
+    stroke: none;
+    opacity: 0;
+    transition: opacity 140ms ease;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-icon-button[aria-pressed='true'] .notebook-debug-icon-core {
+    opacity: 1;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-local-source-status {
+    display: inline-flex;
+    align-items: center;
+    width: 0.38rem;
+    height: 0.38rem;
+    min-width: 0.38rem;
+    min-height: 0.38rem;
+    margin: 0 0.16rem;
+    border-radius: 999px;
+    background: var(--gray);
+    line-height: 1;
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-local-source-status[data-notebook-source-state='edited'] {
+    background: var(--secondary);
+  }
+}
+
+article.notebook-page,
+article.notebook-runtime-page,
+.slides-root {
+  .notebook-runtime-status {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.75rem;
+    color: var(--gray);
+    font-family: var(--codeFont);
+    font-size: 0.74rem;
+    line-height: 1;
+  }
+}
