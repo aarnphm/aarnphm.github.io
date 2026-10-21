@@ -24,24 +24,24 @@ DEFAULT = """(() => { const c = {}; for (const e of document.querySelectorAll('[
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser()
-    ap.add_argument('url')
-    ap.add_argument('--wait', type=int, default=8000)
-    ap.add_argument('--eval', dest='expr')
-    ap.add_argument('--shot')
-    a = ap.parse_args()
-    tab = Tab(Session(f'base-perf-probe-{os.getpid()}'), a.url)
-    try:
-        tab.bring_to_front()
-        time.sleep(a.wait / 1000)
-        print(json.dumps(tab.evaluate(a.expr or DEFAULT, 40000), indent=2))
-        if a.shot:
-            with open(a.shot, 'wb') as f:
-                f.write(tab.screenshot())
-    finally:
-        tab.finish()
-    return 0
+  ap = argparse.ArgumentParser()
+  ap.add_argument('url')
+  ap.add_argument('--wait', type=int, default=8000)
+  ap.add_argument('--eval', dest='expr')
+  ap.add_argument('--shot')
+  a = ap.parse_args()
+  tab = Tab(Session(f'base-perf-probe-{os.getpid()}'), a.url)
+  try:
+    tab.bring_to_front()
+    time.sleep(a.wait / 1000)
+    print(json.dumps(tab.evaluate(a.expr or DEFAULT, 40000), indent=2))
+    if a.shot:
+      with open(a.shot, 'wb') as f:
+        f.write(tab.screenshot())
+  finally:
+    tab.finish()
+  return 0
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+  sys.exit(main())

@@ -13,18 +13,18 @@ TabFS for discovery and raw CDP for the page.
 
 ## Pieces
 
-| file            | role                                                                         |
-| --------------- | ---------------------------------------------------------------------------- |
-| `scenarios.py`  | the fixed workloads: page, ready predicate, in-page script; groups per climb |
-| `bench.py`      | loads each page in a task tab, runs the script, records metrics and a shot   |
-| `stats.py`      | medians and ranges, ACCEPT/REJECT between two runs                           |
-| `compare.py`    | `compare <baseline> <candidate>`                                             |
-| `probe.py`      | evaluate an expression in a page the way the bench sees it                   |
-| `cua.py`        | the broker client (Unix socket, newline JSON, persistent REPL session)       |
-| `worktree.sh`   | a worker's `w` worktree, linked node_modules, cloned cache, own dev watcher  |
-| `climb.sh`      | one worker end to end: baseline, task, model run, patch                      |
-| `task.md`       | the assignment template                                                      |
-| `scripts/run.sh`| the entry point the workers call                                             |
+| file             | role                                                                         |
+| ---------------- | ---------------------------------------------------------------------------- |
+| `scenarios.py`   | the fixed workloads: page, ready predicate, in-page script; groups per climb |
+| `bench.py`       | loads each page in a task tab, runs the script, records metrics and a shot   |
+| `stats.py`       | medians and ranges, ACCEPT/REJECT between two runs                           |
+| `compare.py`     | `compare <baseline> <candidate>`                                             |
+| `probe.py`       | evaluate an expression in a page the way the bench sees it                   |
+| `cua.py`         | the broker client (Unix socket, newline JSON, persistent REPL session)       |
+| `worktree.sh`    | a worker's `w` worktree, linked node_modules, cloned cache, own dev watcher  |
+| `climb.sh`       | one worker end to end: baseline, task, model run, patch                      |
+| `task.md`        | the assignment template                                                      |
+| `scripts/run.sh` | the entry point the workers call                                             |
 
 ## Metrics
 
@@ -39,12 +39,12 @@ candidate and stashed baseline back to back.
 
 ## Workers
 
-| climb       | group       | scenarios                                                     | worker                 |
-| ----------- | ----------- | ------------------------------------------------------------- | ---------------------- |
-| `vault`     | `vault`     | vault, vault-directors, cards-films, kanban                   | sol (default)          |
-| `views`     | `views`     | bookcase, cards-books, table-to-read, table-ideas             | astra (default)        |
-| `triathlon` | `triathlon` | tri-hub, tri-day, tri-analytics, tri-calendar, tri-training   | sol (default)          |
-| `maps`      | `maps`      | tri-maps, places-map                                          | astra (default)        |
+| climb       | group       | scenarios                                                   | worker          |
+| ----------- | ----------- | ----------------------------------------------------------- | --------------- |
+| `vault`     | `vault`     | vault, vault-directors, cards-films, kanban                 | sol (default)   |
+| `views`     | `views`     | bookcase, cards-books, table-to-read, table-ideas           | astra (default) |
+| `triathlon` | `triathlon` | tri-hub, tri-day, tri-analytics, tri-calendar, tri-training | sol (default)   |
+| `maps`      | `maps`      | tri-maps, places-map                                        | astra (default) |
 
 Workers: `sol` (codex exec, gpt-6.1-sol) and `astra` (codex exec, gpt-6-astra) at
 `BP_CODEX_EFFORT` (medium) in a workspace-write sandbox; `fable` (`claude -p --bare`,

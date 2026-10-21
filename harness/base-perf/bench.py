@@ -32,119 +32,184 @@ from stats import render_summary, summarize  # noqa: E402
 
 
 def sh(cmd: list[str]) -> str:
-    try:
-        return subprocess.run(cmd, capture_output=True, text=True, check=False).stdout.strip()
-    except OSError:
-        return ''
+  try:
+    return subprocess.run(
+      cmd, capture_output=True, text=True, check=False
+    ).stdout.strip()
+  except OSError:
+    return ''
 
 
-def run_once(tab: Tab, base: str, name: str, scenario: dict, rep: int, reps: int, out: str, limit_ms: int) -> dict:
-    tab.bring_to_front()
-    try:
-        tab.goto(base + scenario['path'])
-    except CuaError:
-        # The worker route answers empty under load now and then; one retry after a pause.
-        time.sleep(3)
-        tab.goto(base + scenario['path'])
-    ready_ms = tab.wait_ready(scenario['ready'], limit_ms)
-    if ready_ms is None:
-        return {'rep': rep, 'skipped': f'not ready after {limit_ms} ms'}
-    tab.evaluate(PRELUDE)
-    time.sleep(scenario.get('settle', 800) / 1000)
-    before = tab.metrics()
-    longtasks_before = tab.evaluate('__bp.longtasks.length')
-    run = tab.evaluate(f"(async () => {{ {scenario['script']} }})()", 60000)
-    time.sleep(0.2)
-    after = tab.metrics()
-    longtasks = tab.evaluate(f'__bp.longtasks.slice({longtasks_before})')
-    if rep == reps - 1:
-        with open(os.path.join(out, f'{name}.png'), 'wb') as f:
-            f.write(tab.screenshot())
-    d = lambda k: after[k] - before[k]
-    steps = run['steps']
-    return {
-        'rep': rep,
-        'ready_ms': round(ready_ms, 1),
-        'interaction_ms': round(sum(s['frame_ms'] for s in steps), 1),
-        'sync_ms': round(sum(s['sync_ms'] for s in steps), 1),
-        'task_ms': round(d('TaskDuration') * 1000, 1),
-        'script_ms': round(d('ScriptDuration') * 1000, 1),
-        'layout_ms': round(d('LayoutDuration') * 1000, 1),
-        'style_ms': round(d('RecalcStyleDuration') * 1000, 1),
-        'layouts': d('LayoutCount'),
-        'recalcs': d('RecalcStyleCount'),
-        'longtasks': len(longtasks),
-        'longtask_ms': round(sum(longtasks), 1),
-        'nodes': after['Nodes'],
-        'heap_mb': round(after['JSHeapUsedSize'] / 1048576, 1),
-        'steps': steps,
-        'checks': run['checks'],
-        'notes': run['notes'],
-    }
+RECLAIM_ERRORS = ('STALE_HANDLE', 'BROWSER_DISCONNECTED', 'EXECUTION_TIMEOUT', 'detached')
+
+
+def run_once(
+  tab: Tab,
+  base: str,
+  name: str,
+  scenario: dict,
+  rep: int,
+  reps: int,
+  out: str,
+  limit_ms: int,
+) -> dict:
+  tab.bring_to_front()
+  try:
+    tab.goto(base + scenario['path'])
+  except CuaError:
+    # The worker route answers empty under load now and then; one retry after a pause.
+    time.sleep(3)
+    tab.goto(base + scenario['path'])
+  ready_ms = tab.wait_ready(scenario['ready'], limit_ms)
+  if ready_ms is None:
+    return {'rep': rep, 'skipped': f'not ready after {limit_ms} ms'}
+  tab.evaluate(PRELUDE)
+  time.sleep(scenario.get('settle', 800) / 1000)
+  # Nodes counts the previous document until it is collected (one rep read 71000 instead of
+  # 35500); a GC before the first reading keeps nodes and heap comparable across reps.
+  tab.command('HeapProfiler.collectGarbage')
+  before = tab.metrics()
+  longtasks_before = tab.evaluate('__bp.longtasks.length')
+  run = tab.evaluate(f'(async () => {{ {scenario["script"]} }})()', 60000)
+  time.sleep(0.2)
+  after = tab.metrics()
+  longtasks = tab.evaluate(f'__bp.longtasks.slice({longtasks_before})')
+  if rep == reps - 1:
+    with open(os.path.join(out, f'{name}.png'), 'wb') as f:
+      f.write(tab.screenshot())
+  d = lambda k: after[k] - before[k]
+  steps = run['steps']
+  return {
+    'rep': rep,
+    'ready_ms': round(ready_ms, 1),
+    'interaction_ms': round(sum(s['frame_ms'] for s in steps), 1),
+    'sync_ms': round(sum(s['sync_ms'] for s in steps), 1),
+    'task_ms': round(d('TaskDuration') * 1000, 1),
+    'script_ms': round(d('ScriptDuration') * 1000, 1),
+    'layout_ms': round(d('LayoutDuration') * 1000, 1),
+    'style_ms': round(d('RecalcStyleDuration') * 1000, 1),
+    'layouts': d('LayoutCount'),
+    'recalcs': d('RecalcStyleCount'),
+    'longtasks': len(longtasks),
+    'longtask_ms': round(sum(longtasks), 1),
+    'nodes': after['Nodes'],
+    'heap_mb': round(after['JSHeapUsedSize'] / 1048576, 1),
+    'steps': steps,
+    'checks': run['checks'],
+    'notes': run['notes'],
+  }
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser()
-    ap.add_argument('--out', required=True)
-    ap.add_argument('--base-url', default='http://localhost:8080')
-    ap.add_argument('--reps', type=int, default=3)
-    ap.add_argument('--scenario')
-    ap.add_argument('--group', choices=sorted(GROUPS))
-    ap.add_argument('--session', default=f'base-perf-{os.getpid()}')
-    ap.add_argument('--width', type=int, default=1440)
-    ap.add_argument('--height', type=int, default=900)
-    ap.add_argument('--ready-timeout', type=int, default=90000)
-    a = ap.parse_args()
-    names = a.scenario.split(',') if a.scenario else GROUPS[a.group] if a.group else list(SCENARIOS)
-    unknown = [n for n in names if n not in SCENARIOS]
-    if unknown:
-        print(f'unknown scenario {unknown}', file=sys.stderr)
-        return 2
-    os.makedirs(a.out, exist_ok=True)
-    base = a.base_url.rstrip('/')
-    results = {
-        'meta': {
-            'base_url': base, 'date': datetime.now(timezone.utc).isoformat(timespec='seconds'), 'reps': a.reps,
-            'commit': sh(['git', 'rev-parse', '--short', 'HEAD']),
-            'dirty': len([l for l in sh(['git', 'status', '--porcelain']).splitlines() if l]),
-            'viewport': f'{a.width}x{a.height}', 'browser': 'helium (cua)', 'session': a.session,
-        },
-        'scenarios': {},
-    }
-    session = Session(a.session)
+  ap = argparse.ArgumentParser()
+  ap.add_argument('--out', required=True)
+  ap.add_argument('--base-url', default='http://localhost:8080')
+  ap.add_argument('--reps', type=int, default=3)
+  ap.add_argument('--scenario')
+  ap.add_argument('--group', choices=sorted(GROUPS))
+  ap.add_argument('--session', default=f'base-perf-{os.getpid()}')
+  ap.add_argument('--width', type=int, default=1440)
+  ap.add_argument('--height', type=int, default=900)
+  ap.add_argument('--ready-timeout', type=int, default=90000)
+  a = ap.parse_args()
+  names = (
+    a.scenario.split(',')
+    if a.scenario
+    else GROUPS[a.group]
+    if a.group
+    else list(SCENARIOS)
+  )
+  unknown = [n for n in names if n not in SCENARIOS]
+  if unknown:
+    print(f'unknown scenario {unknown}', file=sys.stderr)
+    return 2
+  os.makedirs(a.out, exist_ok=True)
+  base = a.base_url.rstrip('/')
+  results = {
+    'meta': {
+      'base_url': base,
+      'date': datetime.now(timezone.utc).isoformat(timespec='seconds'),
+      'reps': a.reps,
+      'commit': sh(['git', 'rev-parse', '--short', 'HEAD']),
+      'dirty': len([
+        l for l in sh(['git', 'status', '--porcelain']).splitlines() if l
+      ]),
+      'viewport': f'{a.width}x{a.height}',
+      'browser': 'helium (cua)',
+      'session': a.session,
+    },
+    'scenarios': {},
+  }
+  session = Session(a.session)
+
+  def fresh_tab() -> Tab:
     try:
-        tab = Tab(session, base + '/', width=a.width, height=a.height)
+      return Tab(session, base + '/', width=a.width, height=a.height)
     except CuaError as e:
-        # The extension reconnects within seconds after a service-worker restart.
-        print(f'tab: {e}; retrying', file=sys.stderr)
-        time.sleep(5)
-        tab = Tab(session, base + '/', width=a.width, height=a.height)
+      # The extension reconnects within seconds after a service-worker restart.
+      print(f'tab: {e}; retrying', file=sys.stderr)
+      time.sleep(5)
+      return Tab(session, base + '/', width=a.width, height=a.height)
+
+  tab = fresh_tab()
+  reclaims = 0
+  try:
+    for name in names:
+      scenario = SCENARIOS[name]
+      reps = []
+      for rep in range(a.reps):
+        for attempt in range(2):
+          try:
+            r = run_once(
+              tab, base, name, scenario, rep, a.reps, a.out, a.ready_timeout
+            )
+            break
+          except CuaError as e:
+            msg = str(e)
+            # The extension drops the lease when the tab's debugger detaches (service-worker
+            # restart, a dismissed debugging bar); the tab is still ours, so close it and
+            # open a new one rather than failing every rep that follows.
+            if attempt == 0 and any(k in msg for k in RECLAIM_ERRORS):
+              print(f'{name} rep {rep}: {msg[:80]}; reclaiming the tab', file=sys.stderr)
+              reclaims += 1
+              try:
+                tab.finish()
+              except CuaError:
+                pass
+              time.sleep(3)
+              tab = fresh_tab()
+              continue
+            r = {'rep': rep, 'error': msg[:500]}
+            break
+        reps.append(r)
+        print(
+          f'{name} rep {rep}: '
+          + (
+            r.get('error')
+            or r.get('skipped')
+            or f'{r["interaction_ms"]} ms interaction, {r["task_ms"]} ms task, {r["longtasks"]} long tasks'
+          ),
+          file=sys.stderr,
+        )
+      results['scenarios'][name] = {
+        'path': scenario['path'],
+        'reps': reps,
+        'summary': summarize(reps),
+      }
+  finally:
     try:
-        for name in names:
-            scenario = SCENARIOS[name]
-            reps = []
-            for rep in range(a.reps):
-                try:
-                    r = run_once(tab, base, name, scenario, rep, a.reps, a.out, a.ready_timeout)
-                except CuaError as e:
-                    r = {'rep': rep, 'error': str(e)[:500]}
-                reps.append(r)
-                print(f"{name} rep {rep}: " + (r.get('error') or r.get('skipped') or
-                      f"{r['interaction_ms']} ms interaction, {r['task_ms']} ms task, {r['longtasks']} long tasks"), file=sys.stderr)
-            results['scenarios'][name] = {'path': scenario['path'], 'reps': reps, 'summary': summarize(reps)}
-    finally:
-        try:
-            tab.finish()
-        except CuaError as e:
-            print(f'cleanup: {e}', file=sys.stderr)
-    with open(os.path.join(a.out, 'results.json'), 'w') as f:
-        json.dump(results, f, indent=2)
-    text = render_summary(results)
-    with open(os.path.join(a.out, 'summary.md'), 'w') as f:
-        f.write(text)
-    print(text)
-    return 0
+      tab.finish()
+    except CuaError as e:
+      print(f'cleanup: {e}', file=sys.stderr)
+  results['meta']['reclaims'] = reclaims
+  with open(os.path.join(a.out, 'results.json'), 'w') as f:
+    json.dump(results, f, indent=2)
+  text = render_summary(results)
+  with open(os.path.join(a.out, 'summary.md'), 'w') as f:
+    f.write(text)
+  print(text)
+  return 0
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+  sys.exit(main())

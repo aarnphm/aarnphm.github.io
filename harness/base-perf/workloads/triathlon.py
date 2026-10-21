@@ -4,9 +4,15 @@ from .prelude import HELPERS
 from .bases import mapbox
 
 tri_maps = {
-    **mapbox('/triathlon/maps', r"""document.querySelector('.tri-map canvas.mapboxgl-canvas') && document.querySelectorAll('.tri-map-mode').length > 0""", 4000),
+  **mapbox(
+    '/triathlon/maps',
+    r"""document.querySelector('.tri-map canvas.mapboxgl-canvas') && document.querySelectorAll('.tri-map-mode').length > 0""",
+    4000,
+  )
 }
-tri_maps['script'] = HELPERS + r"""
+tri_maps['script'] = (
+  HELPERS
+  + r"""
     const modes = [...document.querySelectorAll('.tri-map-mode')]
     const sports = [...document.querySelectorAll('.tri-map-sport')]
     await step('modes', async () => { for (const b of modes) { sync(() => b.click()); await sleep(400) } })
@@ -22,12 +28,14 @@ tri_maps['script'] = HELPERS + r"""
     check('modes', modes.length > 2)
     return __bp.result()
     """
+)
 
 tri_hub = {
-    'path': '/triathlon',
-    'ready': r"""document.querySelectorAll('.tri-bar').length > 20 && document.querySelectorAll('.tri-calendar-day').length > 100""",
-    'settle': 2000,
-    'script': HELPERS + r"""
+  'path': '/triathlon',
+  'ready': r"""document.querySelectorAll('.tri-bar').length > 20 && document.querySelectorAll('.tri-calendar-day').length > 100""",
+  'settle': 2000,
+  'script': HELPERS
+  + r"""
     await step('scroll-down', () => pageScroll(400, 25))
     const bars = [...document.querySelectorAll('.tri-bar')].slice(0, 40)
     await step('hover-bars', () => hoverEach(bars))
@@ -45,10 +53,11 @@ tri_hub = {
 }
 
 tri_day = {
-    'path': '/triathlon/on/2026/10/20',
-    'ready': r"""document.querySelectorAll('.tri-cax-stage').length > 3 && document.querySelectorAll('.tri-workout-analysis-tab').length > 2""",
-    'settle': 2500,
-    'script': HELPERS + r"""
+  'path': '/triathlon/on/2026/10/20',
+  'ready': r"""document.querySelectorAll('.tri-cax-stage').length > 3 && document.querySelectorAll('.tri-workout-analysis-tab').length > 2""",
+  'settle': 2500,
+  'script': HELPERS
+  + r"""
     await step('scroll-down', () => pageScroll(400, 25))
     const stages = [...document.querySelectorAll('.tri-cax-stage')].slice(0, 6)
     await step('scrub-charts', async () => { for (const s of stages) { const r = s.getBoundingClientRect(); for (let i = 0; i <= 20; i++) { const x = r.left + (r.width * i) / 20; sync(() => s.dispatchEvent(new PointerEvent('pointermove', { clientX: x, clientY: r.top + r.height / 2, bubbles: true, pointerType: 'mouse' }))); await raf() } unhover(s) } })
@@ -66,10 +75,11 @@ tri_day = {
 }
 
 tri_analytics = {
-    'path': '/triathlon/analytics',
-    'ready': r"""document.querySelectorAll('.tri-pmc-hit').length > 50 && document.querySelectorAll('.tri-trend-dot').length > 50""",
-    'settle': 2500,
-    'script': HELPERS + r"""
+  'path': '/triathlon/analytics',
+  'ready': r"""document.querySelectorAll('.tri-pmc-hit').length > 50 && document.querySelectorAll('.tri-trend-dot').length > 50""",
+  'settle': 2500,
+  'script': HELPERS
+  + r"""
     await step('scroll-down', () => pageScroll(400, 25))
     const hits = [...document.querySelectorAll('.tri-pmc-hit')].slice(0, 60)
     await step('hover-pmc', () => hoverEach(hits))
@@ -86,10 +96,11 @@ tri_analytics = {
 }
 
 tri_calendar = {
-    'path': '/triathlon/calendar',
-    'ready': r"""document.querySelectorAll('.tri-calendar-day').length > 100 && document.querySelectorAll('.tri-calendar-event').length > 0""",
-    'settle': 1500,
-    'script': HELPERS + r"""
+  'path': '/triathlon/calendar',
+  'ready': r"""document.querySelectorAll('.tri-calendar-day').length > 100 && document.querySelectorAll('.tri-calendar-event').length > 0""",
+  'settle': 1500,
+  'script': HELPERS
+  + r"""
     await step('scroll-down', () => pageScroll(400, 20))
     const days = [...document.querySelectorAll('.tri-calendar-day:not([aria-hidden])')].slice(0, 80)
     await step('hover-days', () => hoverEach(days))
@@ -106,10 +117,11 @@ tri_calendar = {
 }
 
 tri_training = {
-    'path': '/triathlon/training',
-    'ready': r"""document.querySelector('.tri-training-list') && document.querySelectorAll('.tri-key').length > 5""",
-    'settle': 1500,
-    'script': HELPERS + r"""
+  'path': '/triathlon/training',
+  'ready': r"""document.querySelector('.tri-training-list') && document.querySelectorAll('.tri-key').length > 5""",
+  'settle': 1500,
+  'script': HELPERS
+  + r"""
     await step('scroll-down', () => pageScroll(400, 20))
     const search = document.querySelector('.tri-training-search input, input.tri-training-search, .tri-ana-search input')
     await step('search-type', async () => { if (search) { search.focus(); for (const ch of 'threshold') { sync(() => { search.value += ch; search.dispatchEvent(new Event('input', { bubbles: true })) }); await sleep(60) } } })

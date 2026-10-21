@@ -29,4 +29,4 @@ __bp.escape = () => { for (const t of [document, document.activeElement]) t?.dis
 __bp.result = () => ({ steps: __bp.steps.splice(0), checks: { ...__bp.checks }, notes: { ...__bp.notes, visibility: document.visibilityState } })
 """
 
-HELPERS = "const { step, raf, sleep, wheel, pointer, hover, unhover, hoverEach, scrollBy, pageScroll, escape, check, note, sync } = __bp"
+HELPERS = 'const { step, raf, sleep, wheel, pointer, hover, unhover, hoverEach, scrollBy, pageScroll, escape, check, note, sync } = __bp'

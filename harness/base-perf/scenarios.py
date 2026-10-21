@@ -5,32 +5,45 @@ anything. `node`-free: these strings go to the page through the CUA broker (see 
 
 from workloads.bases import bookcase, cards, kanban, places_map, table, vault
 from workloads.prelude import HELPERS, PRELUDE
-from workloads.triathlon import tri_analytics, tri_calendar, tri_day, tri_hub, tri_maps, tri_training
+from workloads.triathlon import (
+  tri_analytics,
+  tri_calendar,
+  tri_day,
+  tri_hub,
+  tri_maps,
+  tri_training,
+)
 
 __all__ = ['GROUPS', 'HELPERS', 'PRELUDE', 'SCENARIOS']
 
 SCENARIOS = {
-    'vault': vault,
-    'vault-directors': {**vault, 'path': '/cinematheque/directors'},
-    'cards-films': cards('/cinematheque/gallery'),
-    'kanban': kanban,
-    'bookcase': bookcase,
-    'cards-books': cards('/antilibrary/gallery'),
-    'table-to-read': table('/antilibrary/to-read'),
-    'table-ideas': table('/ideas'),
-    'places-map': places_map,
-    'tri-hub': tri_hub,
-    'tri-day': tri_day,
-    'tri-analytics': tri_analytics,
-    'tri-calendar': tri_calendar,
-    'tri-training': tri_training,
-    'tri-maps': tri_maps,
+  'vault': vault,
+  'vault-directors': {**vault, 'path': '/cinematheque/directors'},
+  'cards-films': cards('/cinematheque/gallery'),
+  'kanban': kanban,
+  'bookcase': bookcase,
+  'cards-books': cards('/antilibrary/gallery'),
+  'table-to-read': table('/antilibrary/to-read'),
+  'table-ideas': table('/ideas'),
+  'places-map': places_map,
+  'tri-hub': tri_hub,
+  'tri-day': tri_day,
+  'tri-analytics': tri_analytics,
+  'tri-calendar': tri_calendar,
+  'tri-training': tri_training,
+  'tri-maps': tri_maps,
 }
 
 # Worker groups: each climb owns a set of scenarios and the files behind them.
 GROUPS = {
-    'vault': ['vault', 'vault-directors', 'cards-films', 'kanban'],
-    'views': ['bookcase', 'cards-books', 'table-to-read', 'table-ideas'],
-    'triathlon': ['tri-hub', 'tri-day', 'tri-analytics', 'tri-calendar', 'tri-training'],
-    'maps': ['tri-maps', 'places-map'],
+  'vault': ['vault', 'vault-directors', 'cards-films', 'kanban'],
+  'views': ['bookcase', 'cards-books', 'table-to-read', 'table-ideas'],
+  'triathlon': [
+    'tri-hub',
+    'tri-day',
+    'tri-analytics',
+    'tri-calendar',
+    'tri-training',
+  ],
+  'maps': ['tri-maps', 'places-map'],
 }

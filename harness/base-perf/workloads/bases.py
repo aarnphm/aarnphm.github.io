@@ -3,10 +3,11 @@
 from .prelude import HELPERS
 
 vault = {
-    'path': '/cinematheque',
-    'ready': r"""document.querySelector('[data-vault-ready] .vault-viewport .vault-scaler > svg.vault-scene') && document.querySelectorAll('.vault-entry-select').length > 0""",
-    'settle': 1500,
-    'script': HELPERS + r"""
+  'path': '/cinematheque',
+  'ready': r"""document.querySelector('[data-vault-ready] .vault-viewport .vault-scaler > svg.vault-scene') && document.querySelectorAll('.vault-entry-select').length > 0""",
+  'settle': 1500,
+  'script': HELPERS
+  + r"""
     const viewport = document.querySelector('.vault-viewport')
     const scaler = viewport.querySelector('.vault-scaler')
     const svg = scaler.querySelector('svg')
@@ -32,10 +33,11 @@ vault = {
 }
 
 bookcase = {
-    'path': '/antilibrary',
-    'ready': r"""document.querySelector('.bookcase-viewport .bookcase-world') && document.querySelectorAll('.bc-cover').length > 10 && document.querySelectorAll('.bookcase-entry-link').length > 0""",
-    'settle': 1500,
-    'script': HELPERS + r"""
+  'path': '/antilibrary',
+  'ready': r"""document.querySelector('.bookcase-viewport .bookcase-world') && document.querySelectorAll('.bc-cover').length > 10 && document.querySelectorAll('.bookcase-entry-link').length > 0""",
+  'settle': 1500,
+  'script': HELPERS
+  + r"""
     const viewport = document.querySelector('.bookcase-viewport')
     const r = viewport.getBoundingClientRect()
     const cx = r.left + r.width / 2, cy = r.top + r.height / 2
@@ -65,11 +67,12 @@ bookcase = {
 
 
 def cards(path):
-    return {
-        'path': path,
-        'ready': r"""document.querySelector('.base-view') && document.querySelectorAll('.base-view a[href]').length > 10""",
-        'settle': 800,
-        'script': HELPERS + r"""
+  return {
+    'path': path,
+    'ready': r"""document.querySelector('.base-view') && document.querySelectorAll('.base-view a[href]').length > 10""",
+    'settle': 800,
+    'script': HELPERS
+    + r"""
     await step('scroll-down', () => pageScroll(300, 20))
     await step('scroll-up', () => pageScroll(-300, 20))
     const links = [...document.querySelectorAll('.base-view a[href]')].slice(0, 16)
@@ -77,15 +80,16 @@ def cards(path):
     check('cards', links.length === 16)
     return __bp.result()
     """,
-    }
+  }
 
 
 def table(path):
-    return {
-        'path': path,
-        'ready': r"""document.querySelector('.base-table') && document.querySelectorAll('.base-table-cell-content').length > 10""",
-        'settle': 800,
-        'script': HELPERS + r"""
+  return {
+    'path': path,
+    'ready': r"""document.querySelector('.base-table') && document.querySelectorAll('.base-table-cell-content').length > 10""",
+    'settle': 800,
+    'script': HELPERS
+    + r"""
     await step('scroll-down', () => pageScroll(300, 20))
     const heads = [...document.querySelectorAll('.base-table th, .base-table thead button')].slice(0, 3)
     await step('sort-clicks', async () => { for (const h of heads) { sync(() => h.click()); await sleep(80); sync(() => h.click()); await sleep(80) } })
@@ -96,14 +100,15 @@ def table(path):
     check('rows', rows.length > 8)
     return __bp.result()
     """,
-    }
+  }
 
 
 kanban = {
-    'path': '/cinematheque/analysis',
-    'ready': r"""document.querySelector('.base-view') && document.querySelectorAll('.base-view a[href]').length > 5""",
-    'settle': 800,
-    'script': HELPERS + r"""
+  'path': '/cinematheque/analysis',
+  'ready': r"""document.querySelector('.base-view') && document.querySelectorAll('.base-view a[href]').length > 5""",
+  'settle': 800,
+  'script': HELPERS
+  + r"""
     const board = document.querySelector('.base-kanban, .base-view')
     await step('scroll-x', async () => { for (let i = 0; i < 12; i++) { sync(() => { board.scrollLeft += 200 }); await raf() } })
     await step('scroll-y', () => pageScroll(300, 12))
@@ -116,12 +121,13 @@ kanban = {
 
 
 def mapbox(path, ready, settle=2500):
-    # Pan and zoom on a mapbox canvas; the pointer path goes through the canvas's own listeners.
-    return {
-        'path': path,
-        'ready': ready,
-        'settle': settle,
-        'script': HELPERS + r"""
+  # Pan and zoom on a mapbox canvas; the pointer path goes through the canvas's own listeners.
+  return {
+    'path': path,
+    'ready': ready,
+    'settle': settle,
+    'script': HELPERS
+    + r"""
     const el = document.querySelector('.mapboxgl-canvas, .base-map canvas, .tri-map canvas')
     const r = el.getBoundingClientRect()
     const cx = r.left + r.width / 2, cy = r.top + r.height / 2
@@ -132,7 +138,11 @@ def mapbox(path, ready, settle=2500):
     check('canvas', el.width > 0)
     return __bp.result()
     """,
-    }
+  }
 
 
-places_map = mapbox('/places-to-go', r"""document.querySelector('.base-map canvas.mapboxgl-canvas')""", 4000)
+places_map = mapbox(
+  '/places-to-go',
+  r"""document.querySelector('.base-map canvas.mapboxgl-canvas')""",
+  4000,
+)
