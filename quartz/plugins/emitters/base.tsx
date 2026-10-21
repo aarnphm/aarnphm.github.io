@@ -1,4 +1,5 @@
 import { access } from 'node:fs/promises'
+import type { BaseGeoPayload } from '../../util/base/geo-types'
 import { defaultContentPageLayout, sharedPageComponents } from '../../../quartz.layout'
 import { FullPageLayout } from '../../cfg'
 import { Content, BaseSearchBar, BaseViewSelector } from '../../components'
@@ -19,6 +20,7 @@ import {
   baseEmbeddingsManifestPath,
   baseEmbeddingsTextSlug,
 } from '../../util/base/embeddings'
+import { buildBaseGeoPayload } from '../../util/base/geo-payload'
 import {
   BaseRenderPlan,
   BaseViewPartialState,
@@ -55,6 +57,8 @@ async function emitBaseView(
   fileData.slug = slug
   fileData.htmlAst = renderedView.tree
   if (semanticManifest) fileData.basesSemantic = { manifest: semanticManifest }
+  const basesGeo = buildBaseGeoPayload(plan.baseData.basesConfig, allFiles, plan.memberSlugs)
+  if (basesGeo) fileData.basesGeo = basesGeo
   const frontmatter = fileData.frontmatter
   const title =
     typeof frontmatter?.title === 'string' && frontmatter.title.length > 0
@@ -257,6 +261,7 @@ declare module 'vfile' {
     basesMetadata: BaseMetadata
     /** Set when an offline vector index exists for this base; the search bar shows the semantic toggle. */
     basesSemantic?: { manifest: string }
+    basesGeo?: BaseGeoPayload
     basesDiagnostics?: BaseExpressionDiagnostic[]
     basesExpressions?: BasesExpressions
     basesQueryDocument?: BaseQueryDocument

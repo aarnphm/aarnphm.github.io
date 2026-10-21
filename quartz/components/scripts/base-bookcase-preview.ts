@@ -198,7 +198,8 @@ export function createHardcoverPreview(root: HTMLElement, signal: AbortSignal) {
       spineImage.hidden = true
       delete spine.dataset.artReady
       delete spineImage.dataset.spineResolution
-      if (lowSpine && spineImage.src === detailSpine) spineImage.src = lowSpine
+      if (lowSpine && lowSpine !== detailSpine && spineImage.src === detailSpine)
+        spineImage.src = lowSpine
     },
     { signal },
   )
