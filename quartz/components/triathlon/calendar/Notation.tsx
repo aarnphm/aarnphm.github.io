@@ -58,6 +58,36 @@ const CARDS: Record<NotationSport, NotationCard[]> = {
         '4 × 50 m (25 drill / 25 swim) → practice the cue for 25 m, then swim normally for 25 m.',
     },
     {
+      term: '3-point',
+      meaning:
+        'Freestyle drill: on each recovery, touch your hip, then your armpit, then the side of your head before the hand enters. It trains a high, relaxed elbow.',
+      example: '4 × 50 m (25 3-point / 25 swim) → 25 m of touches, then 25 m of full stroke.',
+    },
+    {
+      term: 'catch-up · fingertip drag',
+      meaning:
+        'Catch-up: the lead hand waits in front until the other hand arrives, which lengthens the stroke. Fingertip drag: drag the fingertips along the surface on the recovery to keep the elbow high.',
+      example: '8 × 25 m catch-up → keep the lead arm still until the recovering hand touches it.',
+    },
+    {
+      term: '6-kick switch · scull',
+      meaning:
+        '6-kick switch: kick six times on your side, then take one stroke to roll to the other side. Sculling: small figure-eight hand movements that train the feel of the water at the catch.',
+      example: '4 × 25 m 6-kick switch → breathe while on your side, then switch with one stroke.',
+    },
+    {
+      term: 'tarzan · single-arm',
+      meaning:
+        'Tarzan: head-up freestyle with the eyes forward, which trains a fast catch and open-water sighting. Single-arm: stroke with one arm while the other rests at your side or in front, and breathe to the side of the resting arm.',
+      example: '4 × 50 m (25 R arm / 25 L arm) → right arm only for 25 m, then left arm only.',
+    },
+    {
+      term: 'PB · paddles · fins',
+      meaning:
+        'Equipment. A pull buoy (PB) holds the legs up for pull sets; paddles enlarge the hand to load the catch; fins add propulsion for kick and drill work.',
+      example: '4 × 100 m pull w/ PB + paddles → arms only, with the buoy between the thighs.',
+    },
+    {
       term: '2 × (4 × 50 m)',
       meaning:
         'Repeat the whole bracket twice. Keep the specified rest between repeats and between rounds.',
@@ -68,6 +98,30 @@ const CARDS: Record<NotationSport, NotationCard[]> = {
       meaning:
         'Read the distance unit and pool length. Swim pace is often time per 100 metres or 100 yards.',
       example: '1:45/100 m → 105 seconds per 100 metres.',
+    },
+    {
+      term: 'b3 · b5 · bilateral',
+      meaning:
+        'Breathing pattern: b3 means a breath every third stroke, so the breathing side alternates. b5 means every fifth stroke.',
+      example: '200 m b3 → breathe to the left, then to the right, every third stroke.',
+    },
+    {
+      term: 'sight',
+      meaning:
+        'Open water: lift the eyes forward to find the buoy, then turn the head to breathe. Sight every 6–8 strokes.',
+      example: '400 m, sight every 6 → look forward once in every six strokes.',
+    },
+    {
+      term: 'CSS',
+      meaning:
+        'Critical swim speed: an estimate of the pace you can hold for about 30 minutes, from a 400 m and a 200 m time trial. Sets use it as a pace target.',
+      example: 'CSS = 200 m ÷ (T400 − T200). 6:40 and 3:10 → 200 m in 210 s → 1:45/100 m.',
+    },
+    {
+      term: 'SWOLF · SPL',
+      meaning:
+        'SWOLF is the time for one length plus the strokes in that length; a lower score is more efficient. SPL is strokes per length.',
+      example: '25 m in 22 s with 16 strokes → SWOLF 38, SPL 16.',
     },
   ],
   bike: [
