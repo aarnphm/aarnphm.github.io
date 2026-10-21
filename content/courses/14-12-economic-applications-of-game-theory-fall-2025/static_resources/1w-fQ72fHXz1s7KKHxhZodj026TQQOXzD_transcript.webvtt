@@ -1,0 +1,5550 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:00.998 align:middle line:90%
+
+
+00:00:00.998 --> 00:00:02.492 align:middle line:90%
+[SQUEAKING]
+
+00:00:02.492 --> 00:00:03.488 align:middle line:90%
+[RUSTLING]
+
+00:00:03.488 --> 00:00:06.974 align:middle line:90%
+[CLICKING]
+
+00:00:06.974 --> 00:00:09.480 align:middle line:90%
+
+
+00:00:09.480 --> 00:00:10.180 align:middle line:90%
+IAN BALL: Great.
+
+00:00:10.180 --> 00:00:12.722 align:middle line:84%
+So today, we're going to talk
+about something called the folk
+
+00:00:12.722 --> 00:00:15.760 align:middle line:90%
+theorem.
+
+00:00:15.760 --> 00:00:18.240 align:middle line:84%
+So I'll warn you that the
+class today is a little more
+
+00:00:18.240 --> 00:00:20.520 align:middle line:84%
+in the theoretical side,
+and then on Thursday,
+
+00:00:20.520 --> 00:00:23.520 align:middle line:84%
+we'll move back to a
+substantive application.
+
+00:00:23.520 --> 00:00:29.240 align:middle line:84%
+And the folk theorem, in short,
+says that in infinitely repeated
+
+00:00:29.240 --> 00:00:49.760 align:middle line:84%
+games, we often say anything
+can happen if the players are
+
+00:00:49.760 --> 00:00:50.860 align:middle line:90%
+sufficiently patient.
+
+00:00:50.860 --> 00:01:03.672 align:middle line:90%
+
+
+00:01:03.672 --> 00:01:05.880 align:middle line:84%
+Of course, we're going to
+be more precise about this.
+
+00:01:05.880 --> 00:01:08.880 align:middle line:84%
+When we say anything
+can happen--
+
+00:01:08.880 --> 00:01:10.760 align:middle line:84%
+say a little more,
+what we really
+
+00:01:10.760 --> 00:01:14.520 align:middle line:84%
+mean is any outcome
+of the game can
+
+00:01:14.520 --> 00:01:18.240 align:middle line:84%
+be sustained as a subgame
+perfect Nash equilibrium.
+
+00:01:18.240 --> 00:01:20.820 align:middle line:84%
+So maybe I'll say, when I
+say anything can happen,
+
+00:01:20.820 --> 00:01:26.800 align:middle line:84%
+what I really mean
+is any outcome can be
+
+00:01:26.800 --> 00:01:29.360 align:middle line:90%
+induced by a subgame perfect--
+
+00:01:29.360 --> 00:01:35.340 align:middle line:84%
+can be induced by a subgame
+perfect Nash equilibrium.
+
+00:01:35.340 --> 00:01:38.160 align:middle line:90%
+
+
+00:01:38.160 --> 00:01:41.360 align:middle line:84%
+An example of this we saw is
+in the prisoner's dilemma.
+
+00:01:41.360 --> 00:01:45.240 align:middle line:84%
+The outcome cooperate-cooperate
+could be induced as a subgame
+
+00:01:45.240 --> 00:01:48.520 align:middle line:84%
+perfect Nash equilibrium, but
+we showed that was only true
+
+00:01:48.520 --> 00:01:52.080 align:middle line:84%
+if the discount factor
+delta was at least 1/3.
+
+00:01:52.080 --> 00:01:55.160 align:middle line:84%
+And that's going to be a
+common theme here that anything
+
+00:01:55.160 --> 00:01:58.430 align:middle line:84%
+can happen if the players
+are patient enough,
+
+00:01:58.430 --> 00:02:03.008 align:middle line:84%
+and that means that the discount
+factor delta is large enough.
+
+00:02:03.008 --> 00:02:04.550 align:middle line:84%
+Now of course, not
+literally anything
+
+00:02:04.550 --> 00:02:07.790 align:middle line:84%
+can happen-- so we'll see, there
+are some constraints on this,
+
+00:02:07.790 --> 00:02:09.949 align:middle line:84%
+but today, we're going to
+give a number of theorems
+
+00:02:09.949 --> 00:02:11.009 align:middle line:90%
+of this flavor.
+
+00:02:11.009 --> 00:02:13.350 align:middle line:84%
+And I think you can see
+how this question arose.
+
+00:02:13.350 --> 00:02:16.830 align:middle line:84%
+Last class, we constructed a
+special subgame perfect Nash
+
+00:02:16.830 --> 00:02:19.150 align:middle line:84%
+equilibrium that
+sustained cooperation.
+
+00:02:19.150 --> 00:02:21.190 align:middle line:84%
+But in a more
+complicated game, you
+
+00:02:21.190 --> 00:02:23.610 align:middle line:84%
+keep constructing subgame
+perfect Nash equilibria,
+
+00:02:23.610 --> 00:02:26.150 align:middle line:84%
+and the question is,
+well, where does it stop?
+
+00:02:26.150 --> 00:02:28.015 align:middle line:84%
+Is there some other
+outcome that--
+
+00:02:28.015 --> 00:02:29.390 align:middle line:84%
+could it be
+constructed, achieved
+
+00:02:29.390 --> 00:02:31.370 align:middle line:84%
+by some subgame perfect
+Nash equilibrium?
+
+00:02:31.370 --> 00:02:32.990 align:middle line:84%
+Or is there some
+fundamental barrier
+
+00:02:32.990 --> 00:02:35.490 align:middle line:84%
+to inducing that as a subgame
+perfect Nash equilibrium?
+
+00:02:35.490 --> 00:02:37.490 align:middle line:84%
+And this theorem helps
+us address that question.
+
+00:02:37.490 --> 00:02:39.490 align:middle line:84%
+No matter how many
+equilibria we construct,
+
+00:02:39.490 --> 00:02:41.610 align:middle line:84%
+there's still the question
+of, are we missing something?
+
+00:02:41.610 --> 00:02:42.410 align:middle line:90%
+Is there something more?
+
+00:02:42.410 --> 00:02:44.202 align:middle line:84%
+And that's what this
+theorem is getting at.
+
+00:02:44.202 --> 00:02:45.720 align:middle line:84%
+The name-- I should
+say a little bit
+
+00:02:45.720 --> 00:02:46.970 align:middle line:90%
+about the name of the theorem.
+
+00:02:46.970 --> 00:02:48.970 align:middle line:84%
+It's not very
+informative, folk theorem.
+
+00:02:48.970 --> 00:02:53.310 align:middle line:84%
+What it refers to is the fact
+that this was intuited by game
+
+00:02:53.310 --> 00:02:55.450 align:middle line:84%
+theorists in the
+1950s and the 1960s.
+
+00:02:55.450 --> 00:02:57.390 align:middle line:84%
+Everyone thought this
+was true, but no one
+
+00:02:57.390 --> 00:02:58.690 align:middle line:90%
+had given a formal proof.
+
+00:02:58.690 --> 00:03:01.927 align:middle line:84%
+So it was described as folk
+wisdom, and today in economics,
+
+00:03:01.927 --> 00:03:03.510 align:middle line:84%
+people often talk
+about a folk theorem
+
+00:03:03.510 --> 00:03:07.163 align:middle line:84%
+to mean a theorem of this form,
+but, of course, that really
+
+00:03:07.163 --> 00:03:08.330 align:middle line:90%
+has nothing to do with folk.
+
+00:03:08.330 --> 00:03:10.730 align:middle line:84%
+Folk is just about--
+an historical axiom
+
+00:03:10.730 --> 00:03:13.030 align:middle line:90%
+about this result.
+
+00:03:13.030 --> 00:03:15.850 align:middle line:84%
+And then in the '70s and '80s,
+this was ultimately formalized--
+
+00:03:15.850 --> 00:03:18.070 align:middle line:84%
+one of my colleagues here
+at MIT, Drew Fudenberg,
+
+00:03:18.070 --> 00:03:21.510 align:middle line:84%
+formalized a version of this
+theorem in 1986 in a very famous
+
+00:03:21.510 --> 00:03:22.990 align:middle line:90%
+paper.
+
+00:03:22.990 --> 00:03:28.870 align:middle line:84%
+So let's start the
+setting for this.
+
+00:03:28.870 --> 00:03:30.790 align:middle line:84%
+Well, when we say any
+outcome can be induced
+
+00:03:30.790 --> 00:03:32.350 align:middle line:84%
+or anything can
+happen, what we're
+
+00:03:32.350 --> 00:03:35.190 align:middle line:90%
+really interested in is payoffs.
+
+00:03:35.190 --> 00:03:39.748 align:middle line:84%
+So let's start with
+a simple example.
+
+00:03:39.748 --> 00:03:41.290 align:middle line:84%
+Let's look at the
+prisoner's dilemma.
+
+00:03:41.290 --> 00:03:46.990 align:middle line:90%
+
+
+00:03:46.990 --> 00:03:51.430 align:middle line:84%
+And let's just recall the
+basic payoffs we had here.
+
+00:03:51.430 --> 00:03:56.020 align:middle line:90%
+We had CD, CD and we had 2, 2.
+
+00:03:56.020 --> 00:04:01.272 align:middle line:90%
+
+
+00:04:01.272 --> 00:04:02.980 align:middle line:84%
+And it's going to be
+helpful to visualize
+
+00:04:02.980 --> 00:04:04.760 align:middle line:90%
+these payoffs geometrically.
+
+00:04:04.760 --> 00:04:08.100 align:middle line:84%
+So what I want to do is I
+want to plot these payoff
+
+00:04:08.100 --> 00:04:10.820 align:middle line:90%
+vectors on a graph.
+
+00:04:10.820 --> 00:04:12.840 align:middle line:84%
+And these payoff vectors
+have two components,
+
+00:04:12.840 --> 00:04:14.040 align:middle line:90%
+one for each player.
+
+00:04:14.040 --> 00:04:16.420 align:middle line:84%
+So these vectors are going
+to live in the plane,
+
+00:04:16.420 --> 00:04:18.680 align:middle line:84%
+in Euclidean space
+of two dimensions.
+
+00:04:18.680 --> 00:04:20.480 align:middle line:84%
+So let me draw a
+graph over here.
+
+00:04:20.480 --> 00:04:24.180 align:middle line:90%
+
+
+00:04:24.180 --> 00:04:26.520 align:middle line:84%
+And let's see, we need to
+go from 3 to negative 1.
+
+00:04:26.520 --> 00:04:30.640 align:middle line:84%
+So let's see how my
+drawing skills are.
+
+00:04:30.640 --> 00:04:34.340 align:middle line:90%
+
+
+00:04:34.340 --> 00:04:36.820 align:middle line:90%
+Not perfect OK.
+
+00:04:36.820 --> 00:04:39.460 align:middle line:90%
+So let's first plot 2, 2.
+
+00:04:39.460 --> 00:04:42.140 align:middle line:84%
+So that's going to
+be this point here.
+
+00:04:42.140 --> 00:04:45.100 align:middle line:90%
+Let's plot negative 1, 3.
+
+00:04:45.100 --> 00:04:46.580 align:middle line:90%
+That's going to be here.
+
+00:04:46.580 --> 00:04:49.220 align:middle line:90%
+3, negative 1, here.
+
+00:04:49.220 --> 00:04:51.800 align:middle line:90%
+And then 0, 0 here.
+
+00:04:51.800 --> 00:04:56.860 align:middle line:90%
+
+
+00:04:56.860 --> 00:05:01.240 align:middle line:84%
+So these are some
+payoffs that we can have.
+
+00:05:01.240 --> 00:05:05.600 align:middle line:84%
+And it turns out, it's going
+to be helpful to connect these.
+
+00:05:05.600 --> 00:05:11.940 align:middle line:90%
+
+
+00:05:11.940 --> 00:05:15.820 align:middle line:84%
+So what we're interested in in
+the prisoner's dilemma is what
+
+00:05:15.820 --> 00:05:19.780 align:middle line:84%
+payoff vectors can we
+achieve with some subgame
+
+00:05:19.780 --> 00:05:21.340 align:middle line:90%
+perfect Nash equilibrium?
+
+00:05:21.340 --> 00:05:24.180 align:middle line:84%
+So maybe I'll put
+the question here.
+
+00:05:24.180 --> 00:05:35.460 align:middle line:84%
+What payoff vectors
+can be achieved
+
+00:05:35.460 --> 00:05:37.880 align:middle line:84%
+by some subgame perfect
+Nash equilibrium?
+
+00:05:37.880 --> 00:05:40.620 align:middle line:90%
+
+
+00:05:40.620 --> 00:05:43.060 align:middle line:84%
+So I think one of
+them is pretty easy.
+
+00:05:43.060 --> 00:05:44.660 align:middle line:90%
+What about 0, 0?
+
+00:05:44.660 --> 00:05:49.140 align:middle line:84%
+Can we achieve this payoff, 0,
+0, in a subgame perfect Nash
+
+00:05:49.140 --> 00:05:49.920 align:middle line:90%
+equilibrium?
+
+00:05:49.920 --> 00:05:52.402 align:middle line:90%
+
+
+00:05:52.402 --> 00:05:53.610 align:middle line:90%
+Well, this one's pretty easy.
+
+00:05:53.610 --> 00:05:56.250 align:middle line:84%
+We know there's an equilibrium
+where we just always defect
+
+00:05:56.250 --> 00:05:57.530 align:middle line:90%
+every period.
+
+00:05:57.530 --> 00:05:59.590 align:middle line:84%
+And if we always
+defect every period,
+
+00:05:59.590 --> 00:06:02.162 align:middle line:84%
+that's just repeating the
+stage game Nash equilibrium.
+
+00:06:02.162 --> 00:06:04.370 align:middle line:84%
+We argued last class, that
+was a subgame perfect Nash
+
+00:06:04.370 --> 00:06:07.590 align:middle line:84%
+equilibrium, and then we get
+the payoff 0, 0 every period.
+
+00:06:07.590 --> 00:06:09.410 align:middle line:84%
+So that's something
+we can achieve.
+
+00:06:09.410 --> 00:06:11.250 align:middle line:90%
+What about 2, 2?
+
+00:06:11.250 --> 00:06:12.350 align:middle line:90%
+Can this be achieved?
+
+00:06:12.350 --> 00:06:17.570 align:middle line:90%
+
+
+00:06:17.570 --> 00:06:21.650 align:middle line:84%
+So 2, 2 is the payoff
+if we both cooperate.
+
+00:06:21.650 --> 00:06:24.530 align:middle line:84%
+Well, we showed last class
+that if we're patient enough,
+
+00:06:24.530 --> 00:06:27.770 align:middle line:84%
+we can find an equilibrium
+where both players cooperate.
+
+00:06:27.770 --> 00:06:32.630 align:middle line:84%
+But I've been a little, maybe,
+sloppy here in that, well,
+
+00:06:32.630 --> 00:06:34.650 align:middle line:84%
+why is that called
+a payoff of 2, 2?
+
+00:06:34.650 --> 00:06:36.690 align:middle line:84%
+The way we've written
+it so far, suppose
+
+00:06:36.690 --> 00:06:38.350 align:middle line:90%
+we both cooperate every period.
+
+00:06:38.350 --> 00:06:46.610 align:middle line:90%
+
+
+00:06:46.610 --> 00:06:48.982 align:middle line:84%
+Then what our payoffs
+are-- technically,
+
+00:06:48.982 --> 00:06:50.190 align:middle line:90%
+what is each player's payoff?
+
+00:06:50.190 --> 00:06:55.730 align:middle line:84%
+Well technically, it's 2 today,
+plus delta to the 2 tomorrow,
+
+00:06:55.730 --> 00:06:59.250 align:middle line:84%
+plus delta squared times
+2 the next day, and so on.
+
+00:06:59.250 --> 00:07:02.552 align:middle line:90%
+And this is not necessarily 2.
+
+00:07:02.552 --> 00:07:03.510 align:middle line:90%
+In fact, it won't be 2.
+
+00:07:03.510 --> 00:07:04.730 align:middle line:90%
+What is this going to be?
+
+00:07:04.730 --> 00:07:06.790 align:middle line:84%
+Well, we did the
+algebra last class.
+
+00:07:06.790 --> 00:07:08.730 align:middle line:90%
+We can factor out the 2.
+
+00:07:08.730 --> 00:07:10.450 align:middle line:84%
+And then we have 2
+times this series,
+
+00:07:10.450 --> 00:07:13.730 align:middle line:84%
+1 plus delta plus delta
+squared and so on,
+
+00:07:13.730 --> 00:07:16.190 align:middle line:84%
+and this is a geometric
+series and we can compute it,
+
+00:07:16.190 --> 00:07:20.970 align:middle line:84%
+and what we get is 2
+over 1 minus delta.
+
+00:07:20.970 --> 00:07:23.210 align:middle line:84%
+So intuitively, we want to
+say, if the players always
+
+00:07:23.210 --> 00:07:26.150 align:middle line:84%
+cooperate their payoff
+is 2 every period,
+
+00:07:26.150 --> 00:07:28.930 align:middle line:84%
+and we want to say that's
+what their payoff is.
+
+00:07:28.930 --> 00:07:31.050 align:middle line:84%
+But the problem is, the
+payoff they actually get
+
+00:07:31.050 --> 00:07:32.650 align:middle line:90%
+depends on delta.
+
+00:07:32.650 --> 00:07:35.090 align:middle line:84%
+And we're interested in the
+case where delta becomes
+
+00:07:35.090 --> 00:07:37.330 align:middle line:84%
+very close to 1, in
+which case, this payoff
+
+00:07:37.330 --> 00:07:38.890 align:middle line:84%
+is going to get
+really, really big.
+
+00:07:38.890 --> 00:07:41.570 align:middle line:84%
+But it seems weird to say, well,
+their average-- their payoff is
+
+00:07:41.570 --> 00:07:44.090 align:middle line:84%
+a lot bigger than 2 because
+2 is the highest payoff they
+
+00:07:44.090 --> 00:07:45.330 align:middle line:90%
+can get in the stage game.
+
+00:07:45.330 --> 00:07:48.500 align:middle line:84%
+And the issue is that we're
+missing a normalization.
+
+00:07:48.500 --> 00:07:51.200 align:middle line:84%
+What we really want to keep
+track of is the average payoff.
+
+00:07:51.200 --> 00:07:54.240 align:middle line:84%
+That weighted average payoff,
+not the sum of the payoffs.
+
+00:07:54.240 --> 00:07:59.120 align:middle line:84%
+So what we're going to do,
+starting today, moving forward
+
+00:07:59.120 --> 00:08:02.300 align:middle line:84%
+is instead of looking at the
+sum of the discounted payoffs,
+
+00:08:02.300 --> 00:08:04.660 align:middle line:84%
+we're going to look at the
+average discounted payoffs.
+
+00:08:04.660 --> 00:08:15.800 align:middle line:90%
+
+
+00:08:15.800 --> 00:08:18.500 align:middle line:84%
+And the basic issue is,
+before, what did we do?
+
+00:08:18.500 --> 00:08:21.320 align:middle line:90%
+
+
+00:08:21.320 --> 00:08:25.320 align:middle line:84%
+We computed a payoff stream
+by saying payoffs are delta--
+
+00:08:25.320 --> 00:08:41.240 align:middle line:84%
+or, say, for player 1, u1 of
+a1 plus delta u1 of a2, 0,
+
+00:08:41.240 --> 00:08:41.980 align:middle line:90%
+and so on.
+
+00:08:41.980 --> 00:08:45.600 align:middle line:84%
+So before, what we said is if
+the action profile in period 0
+
+00:08:45.600 --> 00:08:49.880 align:middle line:84%
+is a0, the action profile
+in period 1 is a1,
+
+00:08:49.880 --> 00:08:52.880 align:middle line:84%
+the action profile in
+period 2 is a2, and so on.
+
+00:08:52.880 --> 00:08:57.200 align:middle line:84%
+Then we said player 1's
+discounted payoff is just
+
+00:08:57.200 --> 00:09:00.100 align:middle line:84%
+their payoff in the first
+period, in the 0th period,
+
+00:09:00.100 --> 00:09:02.480 align:middle line:84%
+plus delta times their
+payoff in the first period,
+
+00:09:02.480 --> 00:09:04.940 align:middle line:84%
+plus delta squared times their
+payoff in the second period,
+
+00:09:04.940 --> 00:09:06.800 align:middle line:90%
+and so on.
+
+00:09:06.800 --> 00:09:14.040 align:middle line:84%
+But the issue is that there's
+too much weight going on here.
+
+00:09:14.040 --> 00:09:17.520 align:middle line:84%
+And what we now
+want to look at is
+
+00:09:17.520 --> 00:09:21.800 align:middle line:84%
+what's called the
+average payoff, which
+
+00:09:21.800 --> 00:09:26.000 align:middle line:84%
+means we're just going to
+scale this by 1 minus delta.
+
+00:09:26.000 --> 00:09:29.600 align:middle line:84%
+So the average payoff is
+going to be 1 minus delta,
+
+00:09:29.600 --> 00:09:31.540 align:middle line:84%
+and then let me write
+this as a summation.
+
+00:09:31.540 --> 00:09:34.640 align:middle line:84%
+So 1 minus delta
+times the sum from t
+
+00:09:34.640 --> 00:09:40.420 align:middle line:84%
+equals 0 to infinity of
+delta to the t u1 of a t.
+
+00:09:40.420 --> 00:09:42.620 align:middle line:84%
+And maybe I'll say ui if
+I want to be more general.
+
+00:09:42.620 --> 00:09:48.350 align:middle line:90%
+
+
+00:09:48.350 --> 00:09:51.450 align:middle line:84%
+Why this mysterious
+1 minus delta?
+
+00:09:51.450 --> 00:09:54.190 align:middle line:90%
+
+
+00:09:54.190 --> 00:09:58.750 align:middle line:84%
+Well, it's to undo the 1 over 1
+minus delta that we had before.
+
+00:09:58.750 --> 00:10:02.270 align:middle line:84%
+So the issue is that this is
+actually a weighted average,
+
+00:10:02.270 --> 00:10:05.070 align:middle line:90%
+but the weights don't sum to 1.
+
+00:10:05.070 --> 00:10:07.790 align:middle line:84%
+1 plus delta plus delta
+squared and so on actually
+
+00:10:07.790 --> 00:10:09.850 align:middle line:90%
+sums to 1 over 1 minus delta.
+
+00:10:09.850 --> 00:10:12.210 align:middle line:84%
+So we're just going
+to normalize things
+
+00:10:12.210 --> 00:10:14.410 align:middle line:90%
+so that things make sense.
+
+00:10:14.410 --> 00:10:19.310 align:middle line:84%
+And the way we can see
+if this is a constant--
+
+00:10:19.310 --> 00:10:23.710 align:middle line:84%
+so let's say this is the same
+number ui every period, then
+
+00:10:23.710 --> 00:10:25.630 align:middle line:84%
+what we'd like is
+the average payoff
+
+00:10:25.630 --> 00:10:27.030 align:middle line:90%
+to just equal this number.
+
+00:10:27.030 --> 00:10:29.410 align:middle line:84%
+If I get the same payoff
+every single period,
+
+00:10:29.410 --> 00:10:32.650 align:middle line:84%
+we'd like my average discounted
+payoff to equal that number.
+
+00:10:32.650 --> 00:10:34.950 align:middle line:84%
+And we can see, that's
+going to work here
+
+00:10:34.950 --> 00:10:37.170 align:middle line:84%
+because-- this chalk
+is not very good.
+
+00:10:37.170 --> 00:10:41.510 align:middle line:90%
+
+
+00:10:41.510 --> 00:10:44.750 align:middle line:84%
+If we plug this number
+in here, what do we get?
+
+00:10:44.750 --> 00:10:51.630 align:middle line:84%
+We get 1 minus delta times
+ui bar times the sum from t
+
+00:10:51.630 --> 00:10:54.590 align:middle line:84%
+equals 0 to infinity
+of delta to the t.
+
+00:10:54.590 --> 00:10:57.390 align:middle line:84%
+So all I've done is I've
+said if this is a constant,
+
+00:10:57.390 --> 00:11:00.190 align:middle line:84%
+let me pull it out to the
+front of the summation.
+
+00:11:00.190 --> 00:11:03.990 align:middle line:84%
+And now, well, we know that
+this series is exactly 1 over 1
+
+00:11:03.990 --> 00:11:08.130 align:middle line:84%
+minus delta, so we
+exactly get ui bar.
+
+00:11:08.130 --> 00:11:12.510 align:middle line:90%
+
+
+00:11:12.510 --> 00:11:15.670 align:middle line:84%
+So all we've done is
+multiplied the payoffs
+
+00:11:15.670 --> 00:11:17.850 align:middle line:90%
+we used before by a constant.
+
+00:11:17.850 --> 00:11:20.062 align:middle line:84%
+That's not going to change
+anyone's preferences.
+
+00:11:20.062 --> 00:11:22.270 align:middle line:84%
+It's not going to change
+whether anything is actually
+
+00:11:22.270 --> 00:11:24.030 align:middle line:84%
+in equilibrium, but
+it's going to make
+
+00:11:24.030 --> 00:11:27.250 align:middle line:84%
+it more convenient to keep track
+of how the players are doing,
+
+00:11:27.250 --> 00:11:29.930 align:middle line:84%
+because we want, if they
+play cooperate every period,
+
+00:11:29.930 --> 00:11:31.930 align:middle line:84%
+and therefore, get a
+payoff of 2 every period,
+
+00:11:31.930 --> 00:11:35.030 align:middle line:84%
+we'd like to call that a payoff
+of 2 in the repeated game,
+
+00:11:35.030 --> 00:11:38.830 align:middle line:84%
+and we'd like that not to
+depend on the discount factor.
+
+00:11:38.830 --> 00:11:42.020 align:middle line:84%
+So here, we're going to
+look at average payoffs.
+
+00:11:42.020 --> 00:11:45.940 align:middle line:84%
+And we indeed see that
+if the player has played
+
+00:11:45.940 --> 00:11:49.760 align:middle line:84%
+defect every period, then
+they get 0 every period,
+
+00:11:49.760 --> 00:11:51.740 align:middle line:84%
+their average payoff
+is 0, and this
+
+00:11:51.740 --> 00:11:54.717 align:middle line:84%
+can be achieved as a subgame
+perfect Nash equilibrium.
+
+00:11:54.717 --> 00:11:56.300 align:middle line:84%
+We also know that
+this can be achieved
+
+00:11:56.300 --> 00:11:58.040 align:middle line:84%
+as a subgame
+perfect equilibrium,
+
+00:11:58.040 --> 00:12:01.620 align:middle line:84%
+cooperate every period
+if delta is large enough.
+
+00:12:01.620 --> 00:12:03.780 align:middle line:84%
+What about other
+payoff vectors in here?
+
+00:12:03.780 --> 00:12:07.700 align:middle line:84%
+Do people have any guesses about
+what about a payoff vector here?
+
+00:12:07.700 --> 00:12:11.620 align:middle line:84%
+Could I achieve that
+in a equilibrium?
+
+00:12:11.620 --> 00:12:12.420 align:middle line:90%
+There's no chance.
+
+00:12:12.420 --> 00:12:12.920 align:middle line:90%
+Why?
+
+00:12:12.920 --> 00:12:14.780 align:middle line:90%
+I see people shaking their head.
+
+00:12:14.780 --> 00:12:17.073 align:middle line:84%
+AUDIENCE: It's not
+in the outcomes.
+
+00:12:17.073 --> 00:12:17.740 align:middle line:90%
+IAN BALL: Right.
+
+00:12:17.740 --> 00:12:22.620 align:middle line:84%
+So in each stage game, I'm only
+getting one of these vectors.
+
+00:12:22.620 --> 00:12:24.720 align:middle line:84%
+So there's no way I can
+get something up here.
+
+00:12:24.720 --> 00:12:26.220 align:middle line:84%
+And more precisely,
+what's happening
+
+00:12:26.220 --> 00:12:29.340 align:middle line:84%
+is if in each stage
+game, in each period,
+
+00:12:29.340 --> 00:12:32.900 align:middle line:84%
+I'm getting one of these, then
+my average payoff has to be
+
+00:12:32.900 --> 00:12:34.740 align:middle line:90%
+an average of these vectors.
+
+00:12:34.740 --> 00:12:37.660 align:middle line:84%
+And that's exactly what
+this dotted region is.
+
+00:12:37.660 --> 00:12:43.540 align:middle line:84%
+So the region in here is
+exactly the collection
+
+00:12:43.540 --> 00:12:45.860 align:middle line:90%
+of averages of these points.
+
+00:12:45.860 --> 00:12:48.680 align:middle line:84%
+So this may be a little hard
+to geometrically intuit,
+
+00:12:48.680 --> 00:12:53.140 align:middle line:84%
+but just as a simple example,
+let's take this point.
+
+00:12:53.140 --> 00:12:56.620 align:middle line:84%
+This point is halfway
+between 0, 0 and 2, 2.
+
+00:12:56.620 --> 00:12:59.900 align:middle line:84%
+It's the point 1, 1, and I
+didn't draw that very well, it
+
+00:12:59.900 --> 00:13:02.380 align:middle line:90%
+should be about here.
+
+00:13:02.380 --> 00:13:05.480 align:middle line:84%
+How could I get an average
+payoff of 1, 1 in this game?
+
+00:13:05.480 --> 00:13:09.780 align:middle line:90%
+
+
+00:13:09.780 --> 00:13:11.560 align:middle line:84%
+Just-- without thinking
+about equilibrium?
+
+00:13:11.560 --> 00:13:12.060 align:middle line:90%
+Yeah?
+
+00:13:12.060 --> 00:13:13.955 align:middle line:84%
+AUDIENCE: Just half
+0, 0, half 2, 2.
+
+00:13:13.955 --> 00:13:14.580 align:middle line:90%
+IAN BALL: Yeah.
+
+00:13:14.580 --> 00:13:16.260 align:middle line:84%
+So if roughly, if
+half the time I
+
+00:13:16.260 --> 00:13:19.220 align:middle line:84%
+played 0, 0 and half the
+time-- so half the time I
+
+00:13:19.220 --> 00:13:21.300 align:middle line:84%
+played defect, defect
+and half the time
+
+00:13:21.300 --> 00:13:24.060 align:middle line:84%
+we played cooperate, cooperate
+then that would average out
+
+00:13:24.060 --> 00:13:26.580 align:middle line:84%
+to 1, 1 We have to be a little
+careful with discounting
+
+00:13:26.580 --> 00:13:30.340 align:middle line:84%
+because if actually, if I
+played cooperate here, defect
+
+00:13:30.340 --> 00:13:32.500 align:middle line:84%
+here, cooperate here, it
+wouldn't quite work out
+
+00:13:32.500 --> 00:13:34.568 align:middle line:84%
+because of discounting,
+but we could either mix
+
+00:13:34.568 --> 00:13:36.110 align:middle line:84%
+or we could be a
+little more careful,
+
+00:13:36.110 --> 00:13:37.730 align:middle line:90%
+but it's possible to do this.
+
+00:13:37.730 --> 00:13:39.610 align:middle line:84%
+And it turns out,
+any point in here
+
+00:13:39.610 --> 00:13:42.170 align:middle line:84%
+can be achieved as
+some randomization
+
+00:13:42.170 --> 00:13:45.490 align:middle line:84%
+or some weighted average of
+the different payoff vectors.
+
+00:13:45.490 --> 00:13:46.110 align:middle line:90%
+OK.
+
+00:13:46.110 --> 00:13:50.770 align:middle line:84%
+So now the question is,
+which payoff in here
+
+00:13:50.770 --> 00:13:53.570 align:middle line:84%
+could be achieved by
+some subgame perfect Nash
+
+00:13:53.570 --> 00:13:54.310 align:middle line:90%
+equilibrium?
+
+00:13:54.310 --> 00:13:57.010 align:middle line:84%
+So what we first said is
+we've narrowed it down
+
+00:13:57.010 --> 00:13:58.310 align:middle line:90%
+to this shaded region.
+
+00:13:58.310 --> 00:14:01.130 align:middle line:84%
+There's no way a vector
+outside of this shaded region
+
+00:14:01.130 --> 00:14:03.750 align:middle line:84%
+could be achieved by a subgame
+perfect Nash equilibrium
+
+00:14:03.750 --> 00:14:05.570 align:middle line:90%
+because it's not even feasible.
+
+00:14:05.570 --> 00:14:09.790 align:middle line:84%
+And this shaded region is
+called the feasible set.
+
+00:14:09.790 --> 00:14:17.250 align:middle line:90%
+
+
+00:14:17.250 --> 00:14:20.590 align:middle line:84%
+So these are the payoffs that
+are just-- they're feasible,
+
+00:14:20.590 --> 00:14:23.890 align:middle line:84%
+it's possible to achieve
+them as some average
+
+00:14:23.890 --> 00:14:25.688 align:middle line:90%
+of these other payoff vectors.
+
+00:14:25.688 --> 00:14:27.730 align:middle line:84%
+But I argue that we probably
+can't get everything
+
+00:14:27.730 --> 00:14:28.830 align:middle line:90%
+in the feasible set.
+
+00:14:28.830 --> 00:14:30.970 align:middle line:84%
+I think there's some
+points in the feasible set
+
+00:14:30.970 --> 00:14:32.570 align:middle line:84%
+that I don't see how
+we could get them
+
+00:14:32.570 --> 00:14:34.390 align:middle line:84%
+as a subgame perfect
+Nash equilibrium.
+
+00:14:34.390 --> 00:14:35.150 align:middle line:90%
+Any thoughts?
+
+00:14:35.150 --> 00:14:39.650 align:middle line:84%
+What points in here
+seem unrealistic to you?
+
+00:14:39.650 --> 00:14:41.530 align:middle line:84%
+So we've already
+gotten this point.
+
+00:14:41.530 --> 00:14:42.902 align:middle line:90%
+We've already gotten this point.
+
+00:14:42.902 --> 00:14:44.610 align:middle line:84%
+What's the point here
+that we could never
+
+00:14:44.610 --> 00:14:48.370 align:middle line:84%
+sustain as an average payoff
+of a subgame perfect Nash
+
+00:14:48.370 --> 00:14:49.150 align:middle line:90%
+equilibrium?
+
+00:14:49.150 --> 00:14:54.250 align:middle line:90%
+
+
+00:14:54.250 --> 00:14:55.210 align:middle line:90%
+Yeah?
+
+00:14:55.210 --> 00:14:56.960 align:middle line:84%
+AUDIENCE: One of the
+other two points just
+
+00:14:56.960 --> 00:15:00.050 align:middle line:84%
+because why would a player
+keep on playing for strategy?
+
+00:15:00.050 --> 00:15:00.662 align:middle line:90%
+IAN BALL: OK.
+
+00:15:00.662 --> 00:15:02.450 align:middle line:90%
+So these points here?
+
+00:15:02.450 --> 00:15:03.110 align:middle line:90%
+I agree.
+
+00:15:03.110 --> 00:15:05.860 align:middle line:84%
+And what's your
+intuition for this?
+
+00:15:05.860 --> 00:15:07.110 align:middle line:90%
+So let's focus on one of them.
+
+00:15:07.110 --> 00:15:09.050 align:middle line:90%
+Let's focus on this point here--
+
+00:15:09.050 --> 00:15:10.070 align:middle line:90%
+I have too many arrows.
+
+00:15:10.070 --> 00:15:11.570 align:middle line:90%
+Let me erase these arrows.
+
+00:15:11.570 --> 00:15:12.850 align:middle line:90%
+And let's focus on this one.
+
+00:15:12.850 --> 00:15:14.050 align:middle line:90%
+OK.
+
+00:15:14.050 --> 00:15:17.710 align:middle line:90%
+AUDIENCE: So player--
+
+00:15:17.710 --> 00:15:19.313 align:middle line:90%
+IAN BALL: 3, negative 1, yeah.
+
+00:15:19.313 --> 00:15:20.730 align:middle line:84%
+AUDIENCE: Player
+2 would just keep
+
+00:15:20.730 --> 00:15:22.378 align:middle line:84%
+on cooperating because
+they would just
+
+00:15:22.378 --> 00:15:24.170 align:middle line:84%
+get the worst payoff
+every time, and they'd
+
+00:15:24.170 --> 00:15:25.260 align:middle line:90%
+start defecting instead.
+
+00:15:25.260 --> 00:15:26.010 align:middle line:90%
+IAN BALL: Exactly.
+
+00:15:26.010 --> 00:15:27.990 align:middle line:84%
+So this seems
+really unrealistic.
+
+00:15:27.990 --> 00:15:30.610 align:middle line:84%
+It seems like we can't get
+this because player 2 is
+
+00:15:30.610 --> 00:15:33.100 align:middle line:90%
+getting a payoff of negative 1.
+
+00:15:33.100 --> 00:15:36.880 align:middle line:84%
+But what if player 2 just
+always played defect?
+
+00:15:36.880 --> 00:15:41.080 align:middle line:84%
+If player 2 always plays
+defect, then they always
+
+00:15:41.080 --> 00:15:43.600 align:middle line:90%
+get at least a payoff of 0.
+
+00:15:43.600 --> 00:15:46.480 align:middle line:84%
+So there's no way there could be
+an equilibrium where player 2 is
+
+00:15:46.480 --> 00:15:48.240 align:middle line:90%
+getting less than 0.
+
+00:15:48.240 --> 00:15:50.880 align:middle line:84%
+So in fact, we can
+rule out everything
+
+00:15:50.880 --> 00:15:53.320 align:middle line:84%
+below this horizontal
+axis, because anything
+
+00:15:53.320 --> 00:15:56.000 align:middle line:84%
+below this horizontal
+axis is giving player 2
+
+00:15:56.000 --> 00:15:59.120 align:middle line:90%
+a payoff strictly below 0.
+
+00:15:59.120 --> 00:15:59.900 align:middle line:90%
+But let's look.
+
+00:15:59.900 --> 00:16:02.600 align:middle line:84%
+If player 2 just
+always plays defect,
+
+00:16:02.600 --> 00:16:05.320 align:middle line:84%
+then, well, they either get
+3 if the other player plays
+
+00:16:05.320 --> 00:16:08.660 align:middle line:84%
+cooperate, or they get 0 if
+the other player plays defect,
+
+00:16:08.660 --> 00:16:10.540 align:middle line:84%
+but whatever happens,
+they get at least 0,
+
+00:16:10.540 --> 00:16:12.920 align:middle line:84%
+so there's no way they'd be
+willing to give themselves
+
+00:16:12.920 --> 00:16:14.320 align:middle line:90%
+a payoff this bad.
+
+00:16:14.320 --> 00:16:16.900 align:middle line:90%
+What about the region over here?
+
+00:16:16.900 --> 00:16:17.400 align:middle line:90%
+Yeah?
+
+00:16:17.400 --> 00:16:18.900 align:middle line:84%
+AUDIENCE: By symmetry,
+we won't ever
+
+00:16:18.900 --> 00:16:24.000 align:middle line:84%
+have player 1 playing anything
+that doesn't give them a--
+
+00:16:24.000 --> 00:16:26.160 align:middle line:84%
+that doesn't give them
+a non-negative payoff.
+
+00:16:26.160 --> 00:16:26.560 align:middle line:90%
+IAN BALL: Exactly.
+
+00:16:26.560 --> 00:16:27.400 align:middle line:90%
+So it's the same issue.
+
+00:16:27.400 --> 00:16:28.880 align:middle line:84%
+Here, it's player
+1 who's not going
+
+00:16:28.880 --> 00:16:31.520 align:middle line:84%
+to want to do this because
+player 1 can always
+
+00:16:31.520 --> 00:16:33.440 align:middle line:90%
+play defect every period.
+
+00:16:33.440 --> 00:16:35.880 align:middle line:84%
+And if they do that,
+sometimes they get 3,
+
+00:16:35.880 --> 00:16:38.900 align:middle line:84%
+sometimes they get 0, but
+either way, they get at least 0,
+
+00:16:38.900 --> 00:16:41.320 align:middle line:84%
+so why would they ever
+play in an equilibrium
+
+00:16:41.320 --> 00:16:43.200 align:middle line:84%
+where they're
+getting less than 0?
+
+00:16:43.200 --> 00:16:48.240 align:middle line:84%
+So we've kind of narrowed things
+down to this inner region, which
+
+00:16:48.240 --> 00:16:49.620 align:middle line:90%
+maybe I'll shade darker.
+
+00:16:49.620 --> 00:16:58.680 align:middle line:90%
+
+
+00:16:58.680 --> 00:17:03.980 align:middle line:84%
+So this is a subset
+of the feasible set.
+
+00:17:03.980 --> 00:17:05.579 align:middle line:84%
+The entire region
+is the feasible set,
+
+00:17:05.579 --> 00:17:07.640 align:middle line:84%
+but I've thrown out this
+region and this region
+
+00:17:07.640 --> 00:17:10.800 align:middle line:90%
+to get the darker region here.
+
+00:17:10.800 --> 00:17:13.880 align:middle line:84%
+And it turns out that any
+point in this darker region
+
+00:17:13.880 --> 00:17:18.480 align:middle line:84%
+can indeed be achieved by some
+subgame perfect Nash equilibrium
+
+00:17:18.480 --> 00:17:20.582 align:middle line:84%
+if the players are
+patient enough.
+
+00:17:20.582 --> 00:17:22.540 align:middle line:84%
+And that's going to be
+the result that we show.
+
+00:17:22.540 --> 00:17:25.880 align:middle line:84%
+So it's clear that we can't get
+anything outside this region.
+
+00:17:25.880 --> 00:17:27.220 align:middle line:90%
+That's what I just argued.
+
+00:17:27.220 --> 00:17:29.790 align:middle line:84%
+The hard part is showing
+that we can get anything
+
+00:17:29.790 --> 00:17:31.290 align:middle line:84%
+inside this region,
+and that's going
+
+00:17:31.290 --> 00:17:32.998 align:middle line:84%
+to be an implication
+of the folk theorem,
+
+00:17:32.998 --> 00:17:35.250 align:middle line:84%
+but the folk theorem doesn't
+apply just to this game,
+
+00:17:35.250 --> 00:17:37.318 align:middle line:84%
+it applies to any
+abstract game, and that's
+
+00:17:37.318 --> 00:17:38.610 align:middle line:90%
+what we're going to state here.
+
+00:17:38.610 --> 00:17:39.250 align:middle line:90%
+So any questions?
+
+00:17:39.250 --> 00:17:41.070 align:middle line:84%
+I think this is a little more
+abstract than some things
+
+00:17:41.070 --> 00:17:41.778 align:middle line:90%
+we've been doing.
+
+00:17:41.778 --> 00:17:45.245 align:middle line:84%
+So if anything about
+this setup is unclear,
+
+00:17:45.245 --> 00:17:46.370 align:middle line:90%
+this is a good time to ask.
+
+00:17:46.370 --> 00:17:46.950 align:middle line:90%
+Yeah, great.
+
+00:17:46.950 --> 00:17:48.658 align:middle line:84%
+AUDIENCE: Is there a
+different definition
+
+00:17:48.658 --> 00:17:52.162 align:middle line:84%
+for the subset of the feasible
+set that we actually--
+
+00:17:52.162 --> 00:17:53.370 align:middle line:90%
+IAN BALL: This shaded region?
+
+00:17:53.370 --> 00:17:53.750 align:middle line:90%
+Yeah.
+
+00:17:53.750 --> 00:17:56.070 align:middle line:84%
+So often this is called--
+and we'll do a few different
+
+00:17:56.070 --> 00:17:58.965 align:middle line:90%
+versions of--
+
+00:17:58.965 --> 00:18:01.590 align:middle line:84%
+so let me just preface this by
+saying the prisoner's dilemma is
+
+00:18:01.590 --> 00:18:02.650 align:middle line:90%
+very special.
+
+00:18:02.650 --> 00:18:04.970 align:middle line:84%
+So if you try to get
+intuition about this set,
+
+00:18:04.970 --> 00:18:07.927 align:middle line:84%
+you can get misled because it
+happens to be certain things--
+
+00:18:07.927 --> 00:18:09.010 align:middle line:90%
+yeah, it's a special case.
+
+00:18:09.010 --> 00:18:12.270 align:middle line:84%
+But this is often called the
+set of payoffs that are feasible
+
+00:18:12.270 --> 00:18:13.988 align:middle line:90%
+and individually rational.
+
+00:18:13.988 --> 00:18:15.530 align:middle line:84%
+I don't really like
+that terminology,
+
+00:18:15.530 --> 00:18:17.655 align:middle line:84%
+but that's often the
+terminology that's used, yeah.
+
+00:18:17.655 --> 00:18:19.570 align:middle line:84%
+So the whole set is
+the feasible set,
+
+00:18:19.570 --> 00:18:22.382 align:middle line:84%
+the dark set this is the
+feasible set together
+
+00:18:22.382 --> 00:18:24.590 align:middle line:84%
+with the constraint that
+the payoffs are individually
+
+00:18:24.590 --> 00:18:26.350 align:middle line:90%
+rational.
+
+00:18:26.350 --> 00:18:28.370 align:middle line:84%
+And I should point
+out, the 0 here,
+
+00:18:28.370 --> 00:18:29.850 align:middle line:90%
+there's nothing magical about 0.
+
+00:18:29.850 --> 00:18:31.950 align:middle line:84%
+0 only comes up
+because that's what
+
+00:18:31.950 --> 00:18:34.810 align:middle line:84%
+you get if you defect-- if
+you-- yeah, if you defect.
+
+00:18:34.810 --> 00:18:37.197 align:middle line:90%
+So it could be shifted a bit.
+
+00:18:37.197 --> 00:18:38.530 align:middle line:90%
+There's nothing magical about 0.
+
+00:18:38.530 --> 00:18:41.190 align:middle line:84%
+It just happens to be
+that way in this game.
+
+00:18:41.190 --> 00:18:41.730 align:middle line:90%
+OK.
+
+00:18:41.730 --> 00:18:46.910 align:middle line:84%
+So Now let's try to get
+to the kinds of results
+
+00:18:46.910 --> 00:18:48.010 align:middle line:90%
+that we're interested in.
+
+00:18:48.010 --> 00:18:50.670 align:middle line:90%
+
+
+00:18:50.670 --> 00:18:54.910 align:middle line:84%
+So let's-- first, let me be
+a bit more formal about this
+
+00:18:54.910 --> 00:18:56.070 align:middle line:90%
+feasible set.
+
+00:18:56.070 --> 00:19:04.687 align:middle line:84%
+So let's let G be a
+finite stage game.
+
+00:19:04.687 --> 00:19:06.270 align:middle line:84%
+So it could be the
+prisoner's dilemma,
+
+00:19:06.270 --> 00:19:09.550 align:middle line:90%
+but it could be something else.
+
+00:19:09.550 --> 00:19:11.950 align:middle line:84%
+And now I want to
+formally define
+
+00:19:11.950 --> 00:19:13.090 align:middle line:90%
+what this feasible set is.
+
+00:19:13.090 --> 00:19:14.970 align:middle line:84%
+I just showed it
+graphically in the example,
+
+00:19:14.970 --> 00:19:16.550 align:middle line:90%
+but let's formally define this.
+
+00:19:16.550 --> 00:19:24.660 align:middle line:84%
+So the feasible payoff set,
+maybe I'll call it V of G
+
+00:19:24.660 --> 00:19:29.600 align:middle line:84%
+because it's the set of payoff
+vectors V. Well, what is it?
+
+00:19:29.600 --> 00:19:34.180 align:middle line:90%
+
+
+00:19:34.180 --> 00:19:38.540 align:middle line:84%
+It's the collection
+of all averages
+
+00:19:38.540 --> 00:19:42.020 align:middle line:90%
+over payoff vectors in here.
+
+00:19:42.020 --> 00:19:46.080 align:middle line:84%
+So what it is it's
+the set of all sums--
+
+00:19:46.080 --> 00:20:02.460 align:middle line:90%
+
+
+00:20:02.460 --> 00:20:06.660 align:middle line:84%
+OK, this is a lot of notation,
+so let's go through it slowly.
+
+00:20:06.660 --> 00:20:10.780 align:middle line:84%
+What is u of a? u of
+is a payoff vector
+
+00:20:10.780 --> 00:20:14.940 align:middle line:84%
+that the players get if the
+action profile a is played.
+
+00:20:14.940 --> 00:20:17.440 align:middle line:90%
+So this is an action profile.
+
+00:20:17.440 --> 00:20:21.620 align:middle line:90%
+
+
+00:20:21.620 --> 00:20:23.740 align:middle line:84%
+And let's just make sure
+we understand, u of a,
+
+00:20:23.740 --> 00:20:25.200 align:middle line:90%
+what space does that live?
+
+00:20:25.200 --> 00:20:29.480 align:middle line:84%
+So let's say G is a finite
+stage game with n players.
+
+00:20:29.480 --> 00:20:34.260 align:middle line:90%
+
+
+00:20:34.260 --> 00:20:38.260 align:middle line:84%
+So u of a, what kind
+of object is this?
+
+00:20:38.260 --> 00:20:38.780 align:middle line:90%
+Yeah?
+
+00:20:38.780 --> 00:20:40.277 align:middle line:90%
+AUDIENCE: A vector in R n.
+
+00:20:40.277 --> 00:20:41.360 align:middle line:90%
+IAN BALL: A vector in R n.
+
+00:20:41.360 --> 00:20:42.900 align:middle line:90%
+It's a vector with n components.
+
+00:20:42.900 --> 00:20:44.460 align:middle line:90%
+Because u of a--
+
+00:20:44.460 --> 00:20:50.700 align:middle line:84%
+remember, this is just u1 of
+a, all the way up to un of a.
+
+00:20:50.700 --> 00:20:54.020 align:middle line:84%
+So this is a vector that lists
+what is player 1's payoff.
+
+00:20:54.020 --> 00:20:55.220 align:middle line:90%
+If the action a--
+
+00:20:55.220 --> 00:20:57.180 align:middle line:84%
+profile a is chosen,
+all the way up
+
+00:20:57.180 --> 00:21:01.220 align:middle line:84%
+to what is player n's payoff if
+the action profile a is chosen?
+
+00:21:01.220 --> 00:21:05.140 align:middle line:84%
+So we have an action profile,
+we have a payoff vector.
+
+00:21:05.140 --> 00:21:06.860 align:middle line:84%
+And now we're
+taking a summation.
+
+00:21:06.860 --> 00:21:09.940 align:middle line:84%
+We're summing over
+all action profiles.
+
+00:21:09.940 --> 00:21:13.100 align:middle line:84%
+So just like over here, maybe
+we could achieve this point
+
+00:21:13.100 --> 00:21:17.000 align:middle line:84%
+as a weighted average of this
+point, this point, this point,
+
+00:21:17.000 --> 00:21:17.840 align:middle line:90%
+and this point.
+
+00:21:17.840 --> 00:21:19.460 align:middle line:84%
+That's exactly what
+we're doing here.
+
+00:21:19.460 --> 00:21:23.260 align:middle line:84%
+We're taking an average
+over these payoff vectors,
+
+00:21:23.260 --> 00:21:26.460 align:middle line:84%
+we're summing over all
+the action profiles
+
+00:21:26.460 --> 00:21:28.900 align:middle line:90%
+with possibly some weights.
+
+00:21:28.900 --> 00:21:32.160 align:middle line:84%
+And the weights have to be
+non-negative and sum to 1.
+
+00:21:32.160 --> 00:21:34.980 align:middle line:84%
+So that's what I mean when I
+say p is an element of delta A.
+
+00:21:34.980 --> 00:21:46.800 align:middle line:84%
+That just means p is a
+probability distribution over a.
+
+00:21:46.800 --> 00:21:50.300 align:middle line:90%
+
+
+00:21:50.300 --> 00:21:52.380 align:middle line:84%
+And the feasible
+set V of G consists
+
+00:21:52.380 --> 00:21:56.620 align:middle line:90%
+of all of these averages.
+
+00:21:56.620 --> 00:21:57.900 align:middle line:90%
+OK.
+
+00:21:57.900 --> 00:21:58.400 align:middle line:90%
+Great.
+
+00:21:58.400 --> 00:22:01.140 align:middle line:90%
+So we have that notation.
+
+00:22:01.140 --> 00:22:04.140 align:middle line:84%
+And now I think we can--
+we're ready to state
+
+00:22:04.140 --> 00:22:10.400 align:middle line:90%
+the form of the folk theorem.
+
+00:22:10.400 --> 00:22:12.560 align:middle line:84%
+I want to remind you of
+one more piece of notation.
+
+00:22:12.560 --> 00:22:15.900 align:middle line:90%
+
+
+00:22:15.900 --> 00:22:18.460 align:middle line:84%
+Remember that G of
+delta is our notation
+
+00:22:18.460 --> 00:22:22.770 align:middle line:84%
+for the infinitely repeated
+game where the stage game is G
+
+00:22:22.770 --> 00:22:25.570 align:middle line:84%
+and the discount
+factor is delta.
+
+00:22:25.570 --> 00:22:27.630 align:middle line:90%
+So this is the--
+
+00:22:27.630 --> 00:22:38.950 align:middle line:90%
+
+
+00:22:38.950 --> 00:22:43.750 align:middle line:84%
+with the stage game G and
+discount factor delta.
+
+00:22:43.750 --> 00:22:49.130 align:middle line:90%
+
+
+00:22:49.130 --> 00:22:51.230 align:middle line:90%
+So just a reminder here.
+
+00:22:51.230 --> 00:22:53.090 align:middle line:84%
+In general, the feasible
+set is pretty hard
+
+00:22:53.090 --> 00:22:56.330 align:middle line:84%
+to visualize because it
+lives in n-dimensional space.
+
+00:22:56.330 --> 00:22:58.492 align:middle line:84%
+But in a two-player game
+it lives in the plane,
+
+00:22:58.492 --> 00:22:59.950 align:middle line:84%
+and it's a lot
+easier to visualize.
+
+00:22:59.950 --> 00:23:04.033 align:middle line:84%
+If there are three players,
+we'd be in normal space,
+
+00:23:04.033 --> 00:23:05.950 align:middle line:84%
+three-dimensional space,
+and then beyond that,
+
+00:23:05.950 --> 00:23:07.890 align:middle line:90%
+it's kind of tricky.
+
+00:23:07.890 --> 00:23:08.390 align:middle line:90%
+OK.
+
+00:23:08.390 --> 00:23:10.890 align:middle line:84%
+So let's state-- what
+I'm going to do here
+
+00:23:10.890 --> 00:23:14.910 align:middle line:84%
+is state-- maybe what I'll call
+is the folk theorem template.
+
+00:23:14.910 --> 00:23:23.185 align:middle line:90%
+
+
+00:23:23.185 --> 00:23:25.810 align:middle line:84%
+So we're going to state a lot of
+different versions of the folk
+
+00:23:25.810 --> 00:23:27.250 align:middle line:84%
+theorem, and it's
+easy to get caught up
+
+00:23:27.250 --> 00:23:28.910 align:middle line:84%
+in the details of these
+different versions.
+
+00:23:28.910 --> 00:23:30.952 align:middle line:84%
+So I don't want to get
+distracted by the details.
+
+00:23:30.952 --> 00:23:33.170 align:middle line:84%
+I want us to understand
+just the general structure
+
+00:23:33.170 --> 00:23:36.010 align:middle line:84%
+of this theorem, and then we'll
+go through some special cases.
+
+00:23:36.010 --> 00:23:39.010 align:middle line:84%
+So the folk theorem
+template is as follows.
+
+00:23:39.010 --> 00:23:42.670 align:middle line:84%
+It says-- here's the statement,
+let G be a stage game.
+
+00:23:42.670 --> 00:23:49.635 align:middle line:90%
+
+
+00:23:49.635 --> 00:23:51.010 align:middle line:84%
+And now what we're
+going to do is
+
+00:23:51.010 --> 00:23:55.810 align:middle line:84%
+we're going to pick a feasible
+payoff vector associated
+
+00:23:55.810 --> 00:23:57.050 align:middle line:90%
+to this stage game.
+
+00:23:57.050 --> 00:24:06.490 align:middle line:84%
+So let's let v be
+in V of G. So this
+
+00:24:06.490 --> 00:24:14.210 align:middle line:84%
+means that v is a feasible
+payoff vector in this game G.
+
+00:24:14.210 --> 00:24:18.160 align:middle line:84%
+And then, here, we're going to
+say under certain assumptions,
+
+00:24:18.160 --> 00:24:19.180 align:middle line:90%
+which are going to vary.
+
+00:24:19.180 --> 00:24:26.182 align:middle line:90%
+
+
+00:24:26.182 --> 00:24:27.640 align:middle line:84%
+So under certain
+assumptions, we're
+
+00:24:27.640 --> 00:24:29.223 align:middle line:84%
+going to get the
+following conclusion.
+
+00:24:29.223 --> 00:24:30.880 align:middle line:90%
+Well, what do we want?
+
+00:24:30.880 --> 00:24:35.320 align:middle line:84%
+We want to achieve
+v as the outcome
+
+00:24:35.320 --> 00:24:37.400 align:middle line:84%
+of some subgame
+perfect equilibrium
+
+00:24:37.400 --> 00:24:40.720 align:middle line:84%
+whenever the players are
+sufficiently patient.
+
+00:24:40.720 --> 00:24:43.020 align:middle line:84%
+So we're going to say
+under certain assumptions--
+
+00:24:43.020 --> 00:24:45.520 align:middle line:84%
+well, what does it mean to say
+they're sufficiently patient?
+
+00:24:45.520 --> 00:24:48.240 align:middle line:84%
+Well, we just need delta
+to be large enough.
+
+00:24:48.240 --> 00:24:50.180 align:middle line:84%
+So there's going to
+be some cutoff delta,
+
+00:24:50.180 --> 00:24:52.600 align:middle line:84%
+and we want delta to be
+larger than that cutoff.
+
+00:24:52.600 --> 00:25:04.400 align:middle line:84%
+So under certain assumptions,
+there exists delta bar in 0, 1.
+
+00:25:04.400 --> 00:25:06.702 align:middle line:84%
+So this is going to be our
+cutoff level of patience.
+
+00:25:06.702 --> 00:25:09.160 align:middle line:84%
+And we're going to be interested
+in what happens when delta
+
+00:25:09.160 --> 00:25:10.560 align:middle line:90%
+is larger than this cutoff.
+
+00:25:10.560 --> 00:25:19.200 align:middle line:84%
+So there exists a cutoff, delta
+bar, such that for all delta
+
+00:25:19.200 --> 00:25:21.480 align:middle line:90%
+greater than delta bar.
+
+00:25:21.480 --> 00:25:23.240 align:middle line:84%
+So, so far, I think
+it's kind of mathy,
+
+00:25:23.240 --> 00:25:24.740 align:middle line:84%
+but we really haven't
+done anything.
+
+00:25:24.740 --> 00:25:27.480 align:middle line:84%
+We're just saying, for all--
+as long as the players are
+
+00:25:27.480 --> 00:25:32.780 align:middle line:84%
+patient enough, formally there's
+some number-- maybe it's 0.7,
+
+00:25:32.780 --> 00:25:34.560 align:middle line:84%
+maybe it's 0.3, and
+we're going to say
+
+00:25:34.560 --> 00:25:36.200 align:middle line:84%
+as long as the discount
+factor delta is
+
+00:25:36.200 --> 00:25:38.320 align:middle line:90%
+larger than that, what happens?
+
+00:25:38.320 --> 00:25:41.720 align:middle line:84%
+Well, what we want
+is we want v to be
+
+00:25:41.720 --> 00:25:45.880 align:middle line:84%
+induced by some subgame
+perfect Nash equilibrium.
+
+00:25:45.880 --> 00:25:58.880 align:middle line:84%
+So the game G of delta has a
+subgame perfect Nash equilibrium
+
+00:25:58.880 --> 00:26:09.200 align:middle line:84%
+that yields payoff
+vector v. So we're
+
+00:26:09.200 --> 00:26:11.975 align:middle line:84%
+going to talk later about what
+these certain assumptions are,
+
+00:26:11.975 --> 00:26:13.350 align:middle line:84%
+but I just want
+us to understand,
+
+00:26:13.350 --> 00:26:16.590 align:middle line:84%
+at a high level, what
+the theorem is saying.
+
+00:26:16.590 --> 00:26:19.350 align:middle line:84%
+We fixed our stage
+game, and we fixed
+
+00:26:19.350 --> 00:26:20.650 align:middle line:90%
+our vector that's feasible.
+
+00:26:20.650 --> 00:26:23.910 align:middle line:84%
+So this is some vector that
+lives in this set over here.
+
+00:26:23.910 --> 00:26:26.350 align:middle line:84%
+And what we want to
+conclude is that as long
+
+00:26:26.350 --> 00:26:28.670 align:middle line:84%
+as the players are
+patient enough--
+
+00:26:28.670 --> 00:26:31.190 align:middle line:84%
+so as long as delta
+is high enough,
+
+00:26:31.190 --> 00:26:34.605 align:middle line:84%
+if we look at the infinitely
+repeated game G of delta--
+
+00:26:34.605 --> 00:26:36.230 align:middle line:84%
+so this is the
+infinitely repeated game
+
+00:26:36.230 --> 00:26:39.210 align:middle line:84%
+where we play the stage
+game G every period,
+
+00:26:39.210 --> 00:26:42.030 align:middle line:84%
+and the discount
+factor we use is delta.
+
+00:26:42.030 --> 00:26:48.110 align:middle line:84%
+In that game, there exists a
+subgame perfect Nash equilibrium
+
+00:26:48.110 --> 00:26:50.130 align:middle line:84%
+that yields v. What
+do I mean by that?
+
+00:26:50.130 --> 00:26:52.550 align:middle line:84%
+Well, in the subgame
+perfect Nash equilibrium,
+
+00:26:52.550 --> 00:26:54.530 align:middle line:84%
+we can compute what
+actually happens.
+
+00:26:54.530 --> 00:26:57.190 align:middle line:84%
+There's going to be some
+sequence of action profiles
+
+00:26:57.190 --> 00:26:58.910 align:middle line:84%
+that are played
+every period, and we
+
+00:26:58.910 --> 00:27:02.030 align:middle line:84%
+can compute what payoffs
+every single player gets
+
+00:27:02.030 --> 00:27:03.350 align:middle line:90%
+from that equilibrium.
+
+00:27:03.350 --> 00:27:10.390 align:middle line:84%
+And we want those
+payoffs to exactly be v.
+
+00:27:10.390 --> 00:27:15.670 align:middle line:84%
+So let's just-- to
+make sure we see--
+
+00:27:15.670 --> 00:27:19.430 align:middle line:90%
+I think this is a bit abstract.
+
+00:27:19.430 --> 00:27:23.490 align:middle line:84%
+We showed a version of this, a
+special case of this last class.
+
+00:27:23.490 --> 00:27:28.010 align:middle line:84%
+So last class, we looked
+at the prisoner's dilemma,
+
+00:27:28.010 --> 00:27:32.190 align:middle line:90%
+and we looked at v equals 2, 2.
+
+00:27:32.190 --> 00:27:34.550 align:middle line:90%
+And what we showed is that--
+
+00:27:34.550 --> 00:27:36.950 align:middle line:84%
+or an implication of
+what we showed last class
+
+00:27:36.950 --> 00:27:40.870 align:middle line:84%
+is that we could
+achieve v equals 2,
+
+00:27:40.870 --> 00:27:43.950 align:middle line:84%
+2 as a subgame perfect
+Nash equilibrium
+
+00:27:43.950 --> 00:27:45.090 align:middle line:90%
+for delta large enough.
+
+00:27:45.090 --> 00:27:51.970 align:middle line:84%
+What was the value of delta bar
+that we established last class?
+
+00:27:51.970 --> 00:27:53.590 align:middle line:90%
+Anyone remember?
+
+00:27:53.590 --> 00:27:56.590 align:middle line:84%
+So we showed a
+special case of this.
+
+00:27:56.590 --> 00:27:58.350 align:middle line:84%
+For the particular
+choice of v equals
+
+00:27:58.350 --> 00:28:01.170 align:middle line:84%
+2, 2, what we did last
+class implied this.
+
+00:28:01.170 --> 00:28:03.410 align:middle line:84%
+What was the value of delta
+bar that we could use?
+
+00:28:03.410 --> 00:28:06.410 align:middle line:90%
+
+
+00:28:06.410 --> 00:28:06.910 align:middle line:90%
+Yeah?
+
+00:28:06.910 --> 00:28:07.350 align:middle line:90%
+AUDIENCE: 1/3.
+
+00:28:07.350 --> 00:28:08.390 align:middle line:90%
+IAN BALL: 1/3, exactly.
+
+00:28:08.390 --> 00:28:15.540 align:middle line:90%
+
+
+00:28:15.540 --> 00:28:19.460 align:middle line:84%
+What we said is, in
+the infinitely repeated
+
+00:28:19.460 --> 00:28:22.000 align:middle line:84%
+prisoner's dilemma with
+discount factor delta,
+
+00:28:22.000 --> 00:28:24.180 align:middle line:84%
+as long as delta
+was at least 1/3,
+
+00:28:24.180 --> 00:28:27.180 align:middle line:84%
+there was a subgame perfect Nash
+equilibrium in which the players
+
+00:28:27.180 --> 00:28:28.400 align:middle line:90%
+always cooperated.
+
+00:28:28.400 --> 00:28:30.233 align:middle line:84%
+And when they always
+cooperated, the payoff
+
+00:28:30.233 --> 00:28:31.900 align:middle line:84%
+vector that they got,
+the average payoff
+
+00:28:31.900 --> 00:28:34.260 align:middle line:90%
+vector was, indeed, 2, 2.
+
+00:28:34.260 --> 00:28:36.740 align:middle line:84%
+The folk theorem goes
+a lot more beyond that
+
+00:28:36.740 --> 00:28:40.540 align:middle line:84%
+because it looks at
+any feasible vector v,
+
+00:28:40.540 --> 00:28:44.060 align:middle line:84%
+just the particular one,
+2, 2, and it applies
+
+00:28:44.060 --> 00:28:50.560 align:middle line:84%
+not just to the prisoner's
+dilemma, but to any game G. Now,
+
+00:28:50.560 --> 00:28:52.500 align:middle line:84%
+just to make sure we're
+on the same page here,
+
+00:28:52.500 --> 00:28:55.260 align:middle line:84%
+I've put in brackets here
+under certain assumptions.
+
+00:28:55.260 --> 00:28:57.163 align:middle line:84%
+We certainly need
+some assumptions.
+
+00:28:57.163 --> 00:28:58.580 align:middle line:84%
+So why would this
+theorem-- how do
+
+00:28:58.580 --> 00:28:59.830 align:middle line:90%
+we know this wouldn't be true?
+
+00:28:59.830 --> 00:29:02.780 align:middle line:84%
+What if I covered up
+these certain assumptions
+
+00:29:02.780 --> 00:29:06.300 align:middle line:84%
+and we just look over here
+at our discussion before,
+
+00:29:06.300 --> 00:29:08.800 align:middle line:84%
+why would the theorem be false
+without further assumptions?
+
+00:29:08.800 --> 00:29:13.980 align:middle line:90%
+
+
+00:29:13.980 --> 00:29:15.320 align:middle line:90%
+Do you remember what we showed?
+
+00:29:15.320 --> 00:29:17.820 align:middle line:84%
+There were some feasible points
+that couldn't be achieved.
+
+00:29:17.820 --> 00:29:22.220 align:middle line:84%
+We already showed that a
+point down here and a point up
+
+00:29:22.220 --> 00:29:25.140 align:middle line:84%
+here could not be implemented
+by any subgame perfect Nash
+
+00:29:25.140 --> 00:29:25.920 align:middle line:90%
+equilibrium.
+
+00:29:25.920 --> 00:29:28.768 align:middle line:84%
+So it must be the case
+that those points are
+
+00:29:28.768 --> 00:29:31.060 align:middle line:84%
+going to violate whatever
+these certain assumptions are
+
+00:29:31.060 --> 00:29:32.447 align:middle line:90%
+that we're going to put in here.
+
+00:29:32.447 --> 00:29:34.780 align:middle line:84%
+And then we're going to
+consider a few different classes
+
+00:29:34.780 --> 00:29:38.620 align:middle line:90%
+of these assumptions.
+
+00:29:38.620 --> 00:29:42.460 align:middle line:84%
+All right, so let's now try
+to do a few different versions
+
+00:29:42.460 --> 00:29:45.380 align:middle line:90%
+of the folk theorem.
+
+00:29:45.380 --> 00:29:51.217 align:middle line:84%
+So the way this is kind of
+developed is there are--
+
+00:29:51.217 --> 00:29:52.800 align:middle line:84%
+I want people to be
+able to read this,
+
+00:29:52.800 --> 00:29:58.580 align:middle line:84%
+so let me just leave this
+here and start a new board.
+
+00:29:58.580 --> 00:30:00.820 align:middle line:84%
+So we want to be
+able to see this.
+
+00:30:00.820 --> 00:30:01.960 align:middle line:90%
+So let's go here.
+
+00:30:01.960 --> 00:30:13.970 align:middle line:90%
+
+
+00:30:13.970 --> 00:30:17.470 align:middle line:84%
+So generally, if we make
+really strong assumptions,
+
+00:30:17.470 --> 00:30:19.470 align:middle line:84%
+then the theorem is going
+to be easier to prove,
+
+00:30:19.470 --> 00:30:21.053 align:middle line:84%
+but it's not going
+to get us this far.
+
+00:30:21.053 --> 00:30:24.648 align:middle line:84%
+And the way of the theory
+has developed is over time,
+
+00:30:24.648 --> 00:30:26.690 align:middle line:84%
+these assumptions have
+been weakened and weakened
+
+00:30:26.690 --> 00:30:28.710 align:middle line:84%
+to make the theorem
+stronger and stronger,
+
+00:30:28.710 --> 00:30:30.890 align:middle line:84%
+but then that means
+the arguments are often
+
+00:30:30.890 --> 00:30:31.590 align:middle line:90%
+more complex.
+
+00:30:31.590 --> 00:30:34.050 align:middle line:84%
+So we're going to start
+with a really easy version.
+
+00:30:34.050 --> 00:30:39.030 align:middle line:84%
+And this is going to be called
+the Nash reversion folk theorem.
+
+00:30:39.030 --> 00:30:49.130 align:middle line:90%
+
+
+00:30:49.130 --> 00:30:52.210 align:middle line:84%
+And this one we can
+prove pretty easily.
+
+00:30:52.210 --> 00:30:54.330 align:middle line:84%
+So what is the certain
+assumptions that we're
+
+00:30:54.330 --> 00:30:58.090 align:middle line:90%
+going to need for this version?
+
+00:30:58.090 --> 00:31:00.230 align:middle line:90%
+So the assumptions are--
+
+00:31:00.230 --> 00:31:04.770 align:middle line:90%
+
+
+00:31:04.770 --> 00:31:07.410 align:middle line:84%
+so these are going to be
+assumptions about the game G
+
+00:31:07.410 --> 00:31:10.650 align:middle line:84%
+and about this payoff vector
+v. And our assumption is
+
+00:31:10.650 --> 00:31:18.570 align:middle line:84%
+going to be, there exists
+a Nash equilibrium--
+
+00:31:18.570 --> 00:31:31.970 align:middle line:84%
+maybe I'll call it a NE G such
+that vi is greater than ui
+
+00:31:31.970 --> 00:31:34.590 align:middle line:90%
+and a NE for all players i.
+
+00:31:34.590 --> 00:31:47.948 align:middle line:90%
+
+
+00:31:47.948 --> 00:31:49.490 align:middle line:84%
+So we know that
+we're not going to be
+
+00:31:49.490 --> 00:31:52.610 align:middle line:84%
+able to achieve every
+payoff vector v. We
+
+00:31:52.610 --> 00:31:54.850 align:middle line:84%
+need some restrictions on
+this payoff vector v. This
+
+00:31:54.850 --> 00:31:56.890 align:middle line:84%
+is one restriction
+we could have.
+
+00:31:56.890 --> 00:32:00.610 align:middle line:84%
+We say our theorem is
+going to be true if we
+
+00:32:00.610 --> 00:32:02.680 align:middle line:90%
+have the following assumption.
+
+00:32:02.680 --> 00:32:05.200 align:middle line:84%
+There exists some
+Nash equilibrium
+
+00:32:05.200 --> 00:32:12.000 align:middle line:84%
+a NE of the stage game G
+such that every player i
+
+00:32:12.000 --> 00:32:15.120 align:middle line:84%
+gets strictly higher
+payoff under v
+
+00:32:15.120 --> 00:32:18.920 align:middle line:84%
+than they do under
+that Nash equilibrium.
+
+00:32:18.920 --> 00:32:22.000 align:middle line:84%
+So let's try to-- it's
+a little abstract.
+
+00:32:22.000 --> 00:32:23.640 align:middle line:90%
+Let's apply it here.
+
+00:32:23.640 --> 00:32:26.840 align:middle line:84%
+If we apply this assumption
+to the prisoner's dilemma,
+
+00:32:26.840 --> 00:32:27.860 align:middle line:90%
+what set will we get?
+
+00:32:27.860 --> 00:32:30.240 align:middle line:84%
+What will be the set of
+v's that are feasible
+
+00:32:30.240 --> 00:32:31.980 align:middle line:84%
+and also satisfy
+this assumption?
+
+00:32:31.980 --> 00:32:34.600 align:middle line:90%
+
+
+00:32:34.600 --> 00:32:35.760 align:middle line:90%
+Well, let's go through it.
+
+00:32:35.760 --> 00:32:38.240 align:middle line:84%
+In the prisoner's
+dilemma, we know
+
+00:32:38.240 --> 00:32:39.580 align:middle line:90%
+what the Nash equilibrium is.
+
+00:32:39.580 --> 00:32:43.080 align:middle line:84%
+What is the Nash equilibrium
+of the prisoner's dilemma?
+
+00:32:43.080 --> 00:32:44.040 align:middle line:90%
+DD.
+
+00:32:44.040 --> 00:32:46.260 align:middle line:84%
+They both play D.
+So in that context,
+
+00:32:46.260 --> 00:32:49.760 align:middle line:84%
+if they both play D,
+then what is each player
+
+00:32:49.760 --> 00:32:52.760 align:middle line:90%
+get in that Nash equilibrium?
+
+00:32:52.760 --> 00:32:54.720 align:middle line:90%
+0.
+
+00:32:54.720 --> 00:32:56.580 align:middle line:84%
+So in the context of
+the prisoner's dilemma,
+
+00:32:56.580 --> 00:33:01.440 align:middle line:84%
+this assumption says we need
+vi to be strictly greater
+
+00:33:01.440 --> 00:33:04.040 align:middle line:90%
+than 0 for every player i.
+
+00:33:04.040 --> 00:33:06.080 align:middle line:84%
+So notice that this
+assumption exactly
+
+00:33:06.080 --> 00:33:07.480 align:middle line:84%
+gives us the darkly
+shaded region
+
+00:33:07.480 --> 00:33:10.960 align:middle line:84%
+up here because the
+set of feasible v's
+
+00:33:10.960 --> 00:33:13.840 align:middle line:84%
+that satisfy these assumption
+are exactly the v's
+
+00:33:13.840 --> 00:33:18.240 align:middle line:84%
+that are strictly greater than 0
+here and strictly greater than 0
+
+00:33:18.240 --> 00:33:20.980 align:middle line:84%
+here, and we exactly
+get this shaded region.
+
+00:33:20.980 --> 00:33:25.040 align:middle line:84%
+So now we see that this
+assumption will rule out
+
+00:33:25.040 --> 00:33:28.063 align:middle line:90%
+these bad points over here.
+
+00:33:28.063 --> 00:33:29.480 align:middle line:84%
+All right, so now,
+let's see if we
+
+00:33:29.480 --> 00:33:34.200 align:middle line:84%
+can give a proof of the
+theorem under this assumption.
+
+00:33:34.200 --> 00:33:36.580 align:middle line:90%
+Let me start a new board.
+
+00:33:36.580 --> 00:33:56.600 align:middle line:90%
+
+
+00:33:56.600 --> 00:34:02.470 align:middle line:84%
+So let's give a proof of
+the natural version, which
+
+00:34:02.470 --> 00:34:05.230 align:middle line:84%
+I'm kind of giving away how
+we prove it, folk theorem.
+
+00:34:05.230 --> 00:34:07.130 align:middle line:84%
+And proving it in
+general is a bit tricky,
+
+00:34:07.130 --> 00:34:08.449 align:middle line:90%
+so let's simplify things.
+
+00:34:08.449 --> 00:34:17.310 align:middle line:84%
+Let's look at the special case
+where v, this payoff vector,
+
+00:34:17.310 --> 00:34:31.590 align:middle line:84%
+is equal to u of a star for
+some action profile a star.
+
+00:34:31.590 --> 00:34:34.989 align:middle line:84%
+So in general, v might
+be only achievable
+
+00:34:34.989 --> 00:34:37.025 align:middle line:84%
+by some lottery over
+action profiles.
+
+00:34:37.025 --> 00:34:38.650 align:middle line:84%
+And then we have to
+worry about mixing,
+
+00:34:38.650 --> 00:34:39.929 align:middle line:90%
+and it gets a little tricky.
+
+00:34:39.929 --> 00:34:42.590 align:middle line:84%
+So let's just focus
+on a payoff vector
+
+00:34:42.590 --> 00:34:47.590 align:middle line:84%
+v that is achieved by some
+action profile a star,
+
+00:34:47.590 --> 00:34:50.429 align:middle line:84%
+and let's just understand
+what we want to prove here.
+
+00:34:50.429 --> 00:34:53.190 align:middle line:84%
+So our assumption
+is that there's
+
+00:34:53.190 --> 00:34:56.750 align:middle line:84%
+some Nash equilibrium
+that gives each player i
+
+00:34:56.750 --> 00:35:00.390 align:middle line:84%
+strictly lower
+payoffs than what they
+
+00:35:00.390 --> 00:35:04.550 align:middle line:84%
+get under this vector v.
+And what we want to show
+
+00:35:04.550 --> 00:35:08.550 align:middle line:84%
+is that there's some subgame
+perfect Nash equilibrium that
+
+00:35:08.550 --> 00:35:11.948 align:middle line:84%
+yields this vector v at least if
+the players are patient enough.
+
+00:35:11.948 --> 00:35:13.990 align:middle line:84%
+So we want to say that as
+long as the players are
+
+00:35:13.990 --> 00:35:16.990 align:middle line:84%
+patient enough, we can
+construct a subgame perfect Nash
+
+00:35:16.990 --> 00:35:21.150 align:middle line:84%
+equilibrium of the repeated
+game that delivers this payoff
+
+00:35:21.150 --> 00:35:23.990 align:middle line:90%
+vector to the players.
+
+00:35:23.990 --> 00:35:32.430 align:middle line:84%
+So what we need to do is we
+need to construct an SPNE.
+
+00:35:32.430 --> 00:35:36.310 align:middle line:84%
+Well, we want to construct an
+SPNE that gives this payoff
+
+00:35:36.310 --> 00:35:37.890 align:middle line:90%
+vector to the players.
+
+00:35:37.890 --> 00:35:39.910 align:middle line:84%
+Well, the easiest way
+to do that is if we just
+
+00:35:39.910 --> 00:35:41.830 align:middle line:90%
+play a star every period.
+
+00:35:41.830 --> 00:35:45.670 align:middle line:84%
+So what we want is to construct
+an SPNE that induces the outcome
+
+00:35:45.670 --> 00:35:46.890 align:middle line:90%
+a star every period.
+
+00:35:46.890 --> 00:35:56.780 align:middle line:90%
+
+
+00:35:56.780 --> 00:35:58.400 align:middle line:84%
+If it induces a
+star every period,
+
+00:35:58.400 --> 00:36:01.420 align:middle line:84%
+then certainly the players
+are going to get u of a star
+
+00:36:01.420 --> 00:36:03.900 align:middle line:84%
+every period, and therefore,
+the average payoff vector
+
+00:36:03.900 --> 00:36:05.440 align:middle line:90%
+will certainly be bv.
+
+00:36:05.440 --> 00:36:07.240 align:middle line:84%
+So then we'll be done
+if we can show this.
+
+00:36:07.240 --> 00:36:12.340 align:middle line:90%
+
+
+00:36:12.340 --> 00:36:16.115 align:middle line:84%
+Now this may not work unless
+delta is large enough,
+
+00:36:16.115 --> 00:36:18.240 align:middle line:84%
+so we're going to have to
+be a little careful here,
+
+00:36:18.240 --> 00:36:20.980 align:middle line:90%
+but does anyone have any ideas?
+
+00:36:20.980 --> 00:36:23.300 align:middle line:90%
+This is the only thing we know.
+
+00:36:23.300 --> 00:36:27.000 align:middle line:84%
+So how could we use this fact
+to try to construct our SPNE?
+
+00:36:27.000 --> 00:36:28.980 align:middle line:90%
+Any thoughts here?
+
+00:36:28.980 --> 00:36:31.720 align:middle line:84%
+And maybe the name "Nash
+reversion" is a bit of a hint.
+
+00:36:31.720 --> 00:36:39.020 align:middle line:90%
+
+
+00:36:39.020 --> 00:36:41.060 align:middle line:84%
+So let's just think
+through it intuitively.
+
+00:36:41.060 --> 00:36:43.900 align:middle line:84%
+We want the players to
+play a star every period.
+
+00:36:43.900 --> 00:36:46.580 align:middle line:84%
+The problem is that a star
+is not necessarily a Nash
+
+00:36:46.580 --> 00:36:48.660 align:middle line:90%
+equilibrium of the stage game.
+
+00:36:48.660 --> 00:36:51.260 align:middle line:84%
+So it may be that when
+we're trying to play a star,
+
+00:36:51.260 --> 00:36:53.700 align:middle line:84%
+some player could
+deviate and strictly
+
+00:36:53.700 --> 00:36:56.140 align:middle line:90%
+increase their payoff today.
+
+00:36:56.140 --> 00:36:58.940 align:middle line:84%
+So we have to have some
+way to discourage that
+
+00:36:58.940 --> 00:37:03.020 align:middle line:84%
+by punishing that player
+if that player deviates.
+
+00:37:03.020 --> 00:37:05.400 align:middle line:84%
+Any ideas about how
+we could punish them?
+
+00:37:05.400 --> 00:37:10.140 align:middle line:90%
+
+
+00:37:10.140 --> 00:37:12.180 align:middle line:90%
+Yeah?
+
+00:37:12.180 --> 00:37:14.620 align:middle line:84%
+AUDIENCE: Revert to the
+earlier Nash equilibrium--
+
+00:37:14.620 --> 00:37:15.720 align:middle line:84%
+IAN BALL: There you go,
+it's right in the name.
+
+00:37:15.720 --> 00:37:16.600 align:middle line:90%
+Revert to Nash.
+
+00:37:16.600 --> 00:37:20.620 align:middle line:84%
+So what this tells us is
+that this Nash equilibrium
+
+00:37:20.620 --> 00:37:22.340 align:middle line:90%
+is going to be a punishment.
+
+00:37:22.340 --> 00:37:24.980 align:middle line:84%
+It's a punishment because it
+gives a strictly lower payoff
+
+00:37:24.980 --> 00:37:26.500 align:middle line:90%
+to every player.
+
+00:37:26.500 --> 00:37:28.840 align:middle line:90%
+So here's our strategy profile.
+
+00:37:28.840 --> 00:37:34.660 align:middle line:90%
+
+
+00:37:34.660 --> 00:37:40.980 align:middle line:84%
+Well, first, we just all play
+a star until someone deviates.
+
+00:37:40.980 --> 00:37:47.900 align:middle line:84%
+So I'll say each
+player i plays--
+
+00:37:47.900 --> 00:37:50.152 align:middle line:84%
+well, a star is
+an action profile,
+
+00:37:50.152 --> 00:37:52.610 align:middle line:84%
+so player i is going to play
+their component of that action
+
+00:37:52.610 --> 00:37:53.110 align:middle line:90%
+profile.
+
+00:37:53.110 --> 00:37:57.790 align:middle line:84%
+Is going to play ai star
+until someone deviates.
+
+00:37:57.790 --> 00:38:02.610 align:middle line:90%
+
+
+00:38:02.610 --> 00:38:05.250 align:middle line:84%
+So if you remember, the formal
+way to write down a strategy
+
+00:38:05.250 --> 00:38:08.010 align:middle line:84%
+is to define all the histories,
+and look at this function s,
+
+00:38:08.010 --> 00:38:09.030 align:middle line:90%
+and it's a real mess.
+
+00:38:09.030 --> 00:38:11.710 align:middle line:84%
+So I'm going to define things
+informally just using words.
+
+00:38:11.710 --> 00:38:14.252 align:middle line:84%
+And if you have any questions
+about what these mean formally,
+
+00:38:14.252 --> 00:38:16.050 align:middle line:84%
+you can ask and I'll
+be happy to answer.
+
+00:38:16.050 --> 00:38:17.930 align:middle line:84%
+So first, each player
+i is going to play
+
+00:38:17.930 --> 00:38:21.650 align:middle line:84%
+their component of a star
+until someone deviates.
+
+00:38:21.650 --> 00:38:24.930 align:middle line:90%
+And then what happens?
+
+00:38:24.930 --> 00:38:35.050 align:middle line:84%
+If someone has deviated,
+what does player i do?
+
+00:38:35.050 --> 00:38:37.450 align:middle line:84%
+Well, if someone
+has deviated, we
+
+00:38:37.450 --> 00:38:42.250 align:middle line:90%
+revert to this Nash equilibrium.
+
+00:38:42.250 --> 00:38:53.350 align:middle line:84%
+So each player i plays their
+component of that stage game
+
+00:38:53.350 --> 00:38:56.910 align:middle line:90%
+nash equilibrium. ai NE.
+
+00:38:56.910 --> 00:39:08.170 align:middle line:90%
+
+
+00:39:08.170 --> 00:39:09.710 align:middle line:84%
+So let's just see
+where we are here.
+
+00:39:09.710 --> 00:39:12.450 align:middle line:90%
+I've defined a strategy profile.
+
+00:39:12.450 --> 00:39:15.190 align:middle line:84%
+Let's just check, if we
+follow this strategy profile,
+
+00:39:15.190 --> 00:39:17.670 align:middle line:84%
+indeed, we're going to
+get a star every period,
+
+00:39:17.670 --> 00:39:20.090 align:middle line:84%
+because in the first period--
+or in the zeroth period,
+
+00:39:20.090 --> 00:39:22.290 align:middle line:84%
+every player is going
+to play ai star.
+
+00:39:22.290 --> 00:39:24.910 align:middle line:84%
+And then in the next period,
+since no one's deviated,
+
+00:39:24.910 --> 00:39:26.637 align:middle line:84%
+every player plays
+ai star, and then
+
+00:39:26.637 --> 00:39:28.470 align:middle line:84%
+the next period, the
+next period, and so on.
+
+00:39:28.470 --> 00:39:32.410 align:middle line:84%
+So it's true that if the players
+follow this strategy profile--
+
+00:39:32.410 --> 00:39:33.810 align:middle line:90%
+ooh, I missed a y.
+
+00:39:33.810 --> 00:39:36.330 align:middle line:84%
+If the players follow
+this strategy profile,
+
+00:39:36.330 --> 00:39:39.830 align:middle line:84%
+then indeed, a star is going
+to be played every period,
+
+00:39:39.830 --> 00:39:43.610 align:middle line:84%
+and therefore, the payoff we're
+going to get is v. The issue is,
+
+00:39:43.610 --> 00:39:46.170 align:middle line:84%
+this may not be a subgame
+perfect Nash equilibrium.
+
+00:39:46.170 --> 00:39:49.490 align:middle line:84%
+So we have to check that this
+strategy profile actually
+
+00:39:49.490 --> 00:39:52.070 align:middle line:84%
+constitutes a subgame
+perfect Nash equilibrium.
+
+00:39:52.070 --> 00:39:54.730 align:middle line:84%
+And indeed, it's not going
+to be a subgame perfect Nash
+
+00:39:54.730 --> 00:39:58.375 align:middle line:84%
+equilibrium if the discount
+factor delta is too low.
+
+00:39:58.375 --> 00:39:59.750 align:middle line:84%
+If the players
+are too impatient,
+
+00:39:59.750 --> 00:40:00.833 align:middle line:90%
+this is not going to work.
+
+00:40:00.833 --> 00:40:03.330 align:middle line:84%
+So what we need to
+show is that as long
+
+00:40:03.330 --> 00:40:05.490 align:middle line:84%
+as the players are
+patient enough,
+
+00:40:05.490 --> 00:40:07.410 align:middle line:84%
+this strategy
+profile will indeed
+
+00:40:07.410 --> 00:40:09.830 align:middle line:84%
+constitute a subgame
+perfect Nash equilibrium,
+
+00:40:09.830 --> 00:40:11.450 align:middle line:90%
+so let's check that.
+
+00:40:11.450 --> 00:40:12.150 align:middle line:90%
+Any questions?
+
+00:40:12.150 --> 00:40:17.210 align:middle line:84%
+I think I-- this may
+seem a little abstract.
+
+00:40:17.210 --> 00:40:18.670 align:middle line:90%
+OK.
+
+00:40:18.670 --> 00:40:20.350 align:middle line:90%
+So let's go down here.
+
+00:40:20.350 --> 00:40:40.330 align:middle line:90%
+
+
+00:40:40.330 --> 00:40:42.970 align:middle line:84%
+So we want to check that this
+is a subgame perfect Nash
+
+00:40:42.970 --> 00:40:45.680 align:middle line:90%
+equilibrium.
+
+00:40:45.680 --> 00:40:49.000 align:middle line:84%
+Or-- in fact, it's only going
+to be a subgame perfect Nash
+
+00:40:49.000 --> 00:40:50.540 align:middle line:84%
+equilibrium for
+delta large enough.
+
+00:40:50.540 --> 00:40:51.980 align:middle line:90%
+So we'll check maybe whether--
+
+00:40:51.980 --> 00:40:59.583 align:middle line:90%
+
+
+00:40:59.583 --> 00:41:01.000 align:middle line:84%
+so remember,
+whenever you're asked
+
+00:41:01.000 --> 00:41:03.800 align:middle line:84%
+to check whether
+something is an SPNE,
+
+00:41:03.800 --> 00:41:05.520 align:middle line:90%
+we always follow the same steps.
+
+00:41:05.520 --> 00:41:07.880 align:middle line:84%
+We're going to apply the
+one-shot deviation principle.
+
+00:41:07.880 --> 00:41:10.080 align:middle line:84%
+So we're going to
+check if any player has
+
+00:41:10.080 --> 00:41:12.440 align:middle line:90%
+a profitable one-shot deviation.
+
+00:41:12.440 --> 00:41:14.803 align:middle line:84%
+We have to do that at
+every single history.
+
+00:41:14.803 --> 00:41:16.720 align:middle line:84%
+But in general, there's
+way too many histories
+
+00:41:16.720 --> 00:41:21.320 align:middle line:84%
+to look at, so remember, the key
+step is to group our histories.
+
+00:41:21.320 --> 00:41:24.560 align:middle line:84%
+And here, we naturally see
+two groups of histories.
+
+00:41:24.560 --> 00:41:26.960 align:middle line:84%
+There's the histories
+where no one's deviated
+
+00:41:26.960 --> 00:41:29.040 align:middle line:84%
+and the histories where
+someone's deviated.
+
+00:41:29.040 --> 00:41:37.100 align:middle line:84%
+So as usual, we're going
+to group our histories
+
+00:41:37.100 --> 00:41:39.392 align:middle line:90%
+into categories 1 and 2.
+
+00:41:39.392 --> 00:41:41.100 align:middle line:84%
+And it's actually
+easier to start with 2,
+
+00:41:41.100 --> 00:41:42.400 align:middle line:90%
+so let's start with 2.
+
+00:41:42.400 --> 00:41:43.660 align:middle line:90%
+Someone has deviated.
+
+00:41:43.660 --> 00:41:48.400 align:middle line:90%
+
+
+00:41:48.400 --> 00:41:49.980 align:middle line:90%
+And here, no one has deviated.
+
+00:41:49.980 --> 00:41:55.840 align:middle line:90%
+
+
+00:41:55.840 --> 00:41:58.600 align:middle line:84%
+So if someone has
+deviated, how are we
+
+00:41:58.600 --> 00:42:03.680 align:middle line:84%
+supposed to play from here on
+out under this strategy profile?
+
+00:42:03.680 --> 00:42:06.720 align:middle line:84%
+If someone has deviated,
+what we do is we
+
+00:42:06.720 --> 00:42:12.080 align:middle line:84%
+just play the stage game Nash
+equilibrium every single period.
+
+00:42:12.080 --> 00:42:15.140 align:middle line:84%
+And we know that this must be
+an equilibrium of the subgame
+
+00:42:15.140 --> 00:42:17.600 align:middle line:84%
+because we know that it's
+always a subgame perfect Nash
+
+00:42:17.600 --> 00:42:20.780 align:middle line:84%
+equilibrium to just play the
+stage game Nash every period.
+
+00:42:20.780 --> 00:42:33.727 align:middle line:90%
+
+
+00:42:33.727 --> 00:42:35.560 align:middle line:84%
+So if someone has
+deviated, what we're doing
+
+00:42:35.560 --> 00:42:39.800 align:middle line:84%
+is we're playing a NE
+forever after regardless
+
+00:42:39.800 --> 00:42:42.600 align:middle line:90%
+of what people do in the past.
+
+00:42:42.600 --> 00:42:43.850 align:middle line:90%
+Maybe I'll say no matter what.
+
+00:42:43.850 --> 00:42:44.810 align:middle line:90%
+That's key.
+
+00:42:44.810 --> 00:42:50.070 align:middle line:90%
+
+
+00:42:50.070 --> 00:42:52.350 align:middle line:90%
+Why do I say no matter what?
+
+00:42:52.350 --> 00:42:55.110 align:middle line:84%
+if someone has deviated, we're
+supposed to play the Nash
+
+00:42:55.110 --> 00:42:56.550 align:middle line:90%
+equilibrium from here on out.
+
+00:42:56.550 --> 00:42:58.997 align:middle line:84%
+Once someone is deviated,
+that can never change.
+
+00:42:58.997 --> 00:43:00.830 align:middle line:84%
+Whatever we do tomorrow,
+it's still the case
+
+00:43:00.830 --> 00:43:02.788 align:middle line:84%
+that someone has deviated,
+and therefore, we're
+
+00:43:02.788 --> 00:43:06.990 align:middle line:84%
+going to play the stage
+game Nash equilibrium.
+
+00:43:06.990 --> 00:43:10.230 align:middle line:84%
+And we've already
+argued that this
+
+00:43:10.230 --> 00:43:13.452 align:middle line:90%
+has to be a subgame perfect--
+
+00:43:13.452 --> 00:43:15.410 align:middle line:84%
+this has to be an
+equilibrium of the stage game
+
+00:43:15.410 --> 00:43:18.750 align:middle line:84%
+because there's no way you can
+benefit by deviating from a Nash
+
+00:43:18.750 --> 00:43:20.830 align:middle line:84%
+equilibrium, and
+because future play is
+
+00:43:20.830 --> 00:43:22.350 align:middle line:90%
+independent of past play.
+
+00:43:22.350 --> 00:43:24.910 align:middle line:90%
+So this is the easy case.
+
+00:43:24.910 --> 00:43:28.390 align:middle line:90%
+This is always going to work.
+
+00:43:28.390 --> 00:43:31.350 align:middle line:90%
+What if no one has deviated?
+
+00:43:31.350 --> 00:43:37.550 align:middle line:84%
+Well, as usual, let's
+look at two things.
+
+00:43:37.550 --> 00:43:40.070 align:middle line:84%
+Let's suppose no one
+has deviated, and let's
+
+00:43:40.070 --> 00:43:42.790 align:middle line:84%
+focus on player i,
+and let's compare
+
+00:43:42.790 --> 00:43:46.130 align:middle line:84%
+what player I is supposed to
+do to a one-shot deviation.
+
+00:43:46.130 --> 00:43:47.810 align:middle line:84%
+So as we always say,
+we're going to say,
+
+00:43:47.810 --> 00:43:51.070 align:middle line:84%
+what happens if they
+follow the strategy profile
+
+00:43:51.070 --> 00:43:55.390 align:middle line:84%
+or if they choose a
+one-shot deviation.
+
+00:43:55.390 --> 00:43:58.310 align:middle line:84%
+So what happens if
+no one has deviated,
+
+00:43:58.310 --> 00:44:02.070 align:middle line:84%
+and player i follows
+the strategy profile,
+
+00:44:02.070 --> 00:44:05.290 align:middle line:84%
+and then everyone else follows
+the strategy profile thereafter?
+
+00:44:05.290 --> 00:44:11.110 align:middle line:84%
+What's going to happen
+under this strategy profile?
+
+00:44:11.110 --> 00:44:11.950 align:middle line:90%
+Yeah?
+
+00:44:11.950 --> 00:44:14.223 align:middle line:84%
+AUDIENCE: Payoff is going
+to be that vector v.
+
+00:44:14.223 --> 00:44:14.890 align:middle line:90%
+IAN BALL: It is.
+
+00:44:14.890 --> 00:44:16.850 align:middle line:84%
+And let's just first say what
+the outcome is going to be,
+
+00:44:16.850 --> 00:44:18.190 align:middle line:84%
+and then we can talk
+about payoffs, yeah.
+
+00:44:18.190 --> 00:44:19.773 align:middle line:84%
+AUDIENCE: The outcome
+is that everyone
+
+00:44:19.773 --> 00:44:23.648 align:middle line:84%
+is playing like whatever
+goes along the vector--
+
+00:44:23.648 --> 00:44:25.190 align:middle line:84%
+IAN BALL: Yeah, so
+we had it up here.
+
+00:44:25.190 --> 00:44:27.110 align:middle line:84%
+a star, that's the
+notation we have, yeah.
+
+00:44:27.110 --> 00:44:30.950 align:middle line:84%
+So we're going to get a
+star today, a star tomorrow,
+
+00:44:30.950 --> 00:44:33.210 align:middle line:90%
+a star the next day, and so on.
+
+00:44:33.210 --> 00:44:36.000 align:middle line:90%
+
+
+00:44:36.000 --> 00:44:41.060 align:middle line:84%
+Now, what happens if player i
+chooses a one-shot deviation
+
+00:44:41.060 --> 00:44:42.860 align:middle line:90%
+at this history?
+
+00:44:42.860 --> 00:44:45.700 align:middle line:84%
+Well, before, we
+were looking at games
+
+00:44:45.700 --> 00:44:47.460 align:middle line:84%
+that only had two
+actions, so there was
+
+00:44:47.460 --> 00:44:49.122 align:middle line:90%
+only one possible deviation.
+
+00:44:49.122 --> 00:44:51.580 align:middle line:84%
+Now there's actually a lot of
+different one-shot deviations
+
+00:44:51.580 --> 00:44:54.420 align:middle line:84%
+because player i could
+deviate to any possible action
+
+00:44:54.420 --> 00:44:55.200 align:middle line:90%
+in the game.
+
+00:44:55.200 --> 00:44:56.500 align:middle line:90%
+So we have to be more precise.
+
+00:44:56.500 --> 00:44:59.100 align:middle line:84%
+Let's say a one-shot
+deviation, maybe
+
+00:44:59.100 --> 00:45:04.420 align:middle line:84%
+we'll call this ai prime to
+show that it's a deviation.
+
+00:45:04.420 --> 00:45:07.380 align:middle line:84%
+So let's look at what
+happens if at this history,
+
+00:45:07.380 --> 00:45:10.980 align:middle line:84%
+player i deviates
+to ai prime today,
+
+00:45:10.980 --> 00:45:13.220 align:middle line:84%
+and then follows their
+strategy profile,
+
+00:45:13.220 --> 00:45:15.540 align:middle line:90%
+their strategy forever after?
+
+00:45:15.540 --> 00:45:17.540 align:middle line:84%
+So first, let's see
+what happens today.
+
+00:45:17.540 --> 00:45:21.760 align:middle line:84%
+Well, player i is choosing
+a unilateral deviation.
+
+00:45:21.760 --> 00:45:28.700 align:middle line:84%
+So today, we're going to have
+ai prime a negative i star.
+
+00:45:28.700 --> 00:45:29.900 align:middle line:90%
+What does this mean?
+
+00:45:29.900 --> 00:45:32.362 align:middle line:84%
+Everyone else is still
+playing according to a star.
+
+00:45:32.362 --> 00:45:33.820 align:middle line:84%
+That's what they're
+supposed to do.
+
+00:45:33.820 --> 00:45:35.940 align:middle line:84%
+Player i is the only
+one who's deviated,
+
+00:45:35.940 --> 00:45:39.980 align:middle line:84%
+and they've deviated exactly
+to this action ai prime.
+
+00:45:39.980 --> 00:45:42.000 align:middle line:84%
+That's their one-shot
+deviation today.
+
+00:45:42.000 --> 00:45:44.140 align:middle line:84%
+There's a lot of different
+one-shot deviations
+
+00:45:44.140 --> 00:45:46.400 align:middle line:84%
+corresponding to different
+choices of ai prime,
+
+00:45:46.400 --> 00:45:47.900 align:middle line:84%
+and we're going to
+have to make sure
+
+00:45:47.900 --> 00:45:50.340 align:middle line:84%
+that none of those
+deviations is profitable.
+
+00:45:50.340 --> 00:45:54.940 align:middle line:84%
+What happens in the
+next period, then?
+
+00:45:54.940 --> 00:45:55.740 align:middle line:90%
+Yeah, in the front.
+
+00:45:55.740 --> 00:45:57.755 align:middle line:90%
+AUDIENCE: The second [INAUDIBLE]
+
+00:45:57.755 --> 00:45:58.380 align:middle line:90%
+IAN BALL: Yeah.
+
+00:45:58.380 --> 00:46:00.700 align:middle line:84%
+So let's just say, what is
+the action profile here?
+
+00:46:00.700 --> 00:46:02.300 align:middle line:90%
+AUDIENCE: [INAUDIBLE]
+
+00:46:02.300 --> 00:46:03.260 align:middle line:90%
+IAN BALL: Exactly.
+
+00:46:03.260 --> 00:46:06.460 align:middle line:84%
+Now we go to a NE because
+we're playing Nash reversion.
+
+00:46:06.460 --> 00:46:09.860 align:middle line:84%
+Tomorrow we say, wait,
+player i is deviated.
+
+00:46:09.860 --> 00:46:12.820 align:middle line:84%
+From here on out, we're going
+to play the stage game Nash,
+
+00:46:12.820 --> 00:46:17.780 align:middle line:90%
+and we get a NE and dot-dot-dot.
+
+00:46:17.780 --> 00:46:20.420 align:middle line:84%
+So now we see the
+classic trade-off.
+
+00:46:20.420 --> 00:46:23.980 align:middle line:90%
+Player i might potentially--
+
+00:46:23.980 --> 00:46:25.140 align:middle line:90%
+maybe I'll say plus.
+
+00:46:25.140 --> 00:46:30.260 align:middle line:84%
+They might benefit today because
+by choosing action ai prime,
+
+00:46:30.260 --> 00:46:33.300 align:middle line:84%
+they might strictly increase
+their stage game payoff,
+
+00:46:33.300 --> 00:46:35.950 align:middle line:84%
+but by doing that, they're going
+to be punished in the future.
+
+00:46:35.950 --> 00:46:38.930 align:middle line:90%
+
+
+00:46:38.930 --> 00:46:40.810 align:middle line:84%
+I'm going to put
+a negative here.
+
+00:46:40.810 --> 00:46:41.910 align:middle line:90%
+How is this a punishment?
+
+00:46:41.910 --> 00:46:46.810 align:middle line:84%
+Why do we know that this is
+worse for player i than this?
+
+00:46:46.810 --> 00:46:47.410 align:middle line:90%
+Yeah?
+
+00:46:47.410 --> 00:46:49.770 align:middle line:84%
+AUDIENCE: Because they defined
+over here that vi is strictly--
+
+00:46:49.770 --> 00:46:50.810 align:middle line:90%
+IAN BALL: Exactly this.
+
+00:46:50.810 --> 00:46:54.230 align:middle line:84%
+This exactly tells us that if we
+revert to the Nash equilibrium,
+
+00:46:54.230 --> 00:46:56.370 align:middle line:84%
+that will be a punishment
+for the player.
+
+00:46:56.370 --> 00:46:58.750 align:middle line:84%
+So now-- we'll go through
+the algebra in a second,
+
+00:46:58.750 --> 00:47:00.770 align:middle line:84%
+but we should just see
+pretty intuitively,
+
+00:47:00.770 --> 00:47:04.330 align:middle line:84%
+if delta is high enough, and
+the players are patient enough,
+
+00:47:04.330 --> 00:47:07.050 align:middle line:84%
+the one-shot gain
+from this deviation
+
+00:47:07.050 --> 00:47:08.930 align:middle line:84%
+is going to be
+outweighed by the forever
+
+00:47:08.930 --> 00:47:10.850 align:middle line:84%
+after loss that the
+player-- that the player i
+
+00:47:10.850 --> 00:47:12.030 align:middle line:90%
+is going to experience.
+
+00:47:12.030 --> 00:47:14.530 align:middle line:84%
+So we can use the threat
+of punishing players
+
+00:47:14.530 --> 00:47:17.690 align:middle line:84%
+if they deviate to
+discipline their behavior
+
+00:47:17.690 --> 00:47:20.510 align:middle line:84%
+and prevent them from
+deviating today from a star,
+
+00:47:20.510 --> 00:47:23.170 align:middle line:84%
+even though a star is
+not necessarily a Nash
+
+00:47:23.170 --> 00:47:24.750 align:middle line:90%
+equilibrium of the stage game.
+
+00:47:24.750 --> 00:47:28.690 align:middle line:90%
+
+
+00:47:28.690 --> 00:47:33.430 align:middle line:84%
+Let's actually write this
+difference out more formally.
+
+00:47:33.430 --> 00:47:38.210 align:middle line:90%
+So let's look at--
+
+00:47:38.210 --> 00:47:42.730 align:middle line:90%
+maybe-- I'm going to do.
+
+00:47:42.730 --> 00:47:52.610 align:middle line:84%
+So let's write down
+the gain for player i
+
+00:47:52.610 --> 00:47:58.310 align:middle line:84%
+from a one-shot deviation to
+ai prime-- it's a deviation,
+
+00:47:58.310 --> 00:48:01.170 align:middle line:84%
+so it can't be equal
+to ai star, otherwise
+
+00:48:01.170 --> 00:48:02.350 align:middle line:90%
+it wouldn't be a deviation.
+
+00:48:02.350 --> 00:48:05.410 align:middle line:90%
+
+
+00:48:05.410 --> 00:48:12.410 align:middle line:84%
+So let's define this
+as delta i ai prime.
+
+00:48:12.410 --> 00:48:16.110 align:middle line:84%
+This says if I'm player i, and I
+follow this one-shot deviation,
+
+00:48:16.110 --> 00:48:16.910 align:middle line:90%
+how much do I gain?
+
+00:48:16.910 --> 00:48:17.952 align:middle line:90%
+A gain could be negative.
+
+00:48:17.952 --> 00:48:19.730 align:middle line:84%
+So I'm just saying
+what is gain, but gain
+
+00:48:19.730 --> 00:48:21.370 align:middle line:90%
+could be positive or negative.
+
+00:48:21.370 --> 00:48:24.290 align:middle line:90%
+Well, let's look at it.
+
+00:48:24.290 --> 00:48:26.130 align:middle line:84%
+Well, we want to
+write out-- we just
+
+00:48:26.130 --> 00:48:28.690 align:middle line:84%
+want to look at all
+these payoff differences.
+
+00:48:28.690 --> 00:48:31.780 align:middle line:84%
+So today, my gain is
+exactly this difference.
+
+00:48:31.780 --> 00:48:40.420 align:middle line:84%
+So today, it's ui of ai prime
+a negative i star minus ui
+
+00:48:40.420 --> 00:48:43.360 align:middle line:90%
+ai star.
+
+00:48:43.360 --> 00:48:46.180 align:middle line:84%
+So today, I get this
+instead of this,
+
+00:48:46.180 --> 00:48:47.678 align:middle line:90%
+so my gain is this minus this.
+
+00:48:47.678 --> 00:48:49.220 align:middle line:84%
+Could be positive,
+could be negative,
+
+00:48:49.220 --> 00:48:51.140 align:middle line:84%
+but we're going to
+say that's the gain.
+
+00:48:51.140 --> 00:48:54.240 align:middle line:90%
+
+
+00:48:54.240 --> 00:49:10.800 align:middle line:84%
+And then forever
+after, I get ui this.
+
+00:49:10.800 --> 00:49:14.960 align:middle line:90%
+
+
+00:49:14.960 --> 00:49:19.280 align:middle line:84%
+Now it turns out that when we're
+working with average payoffs,
+
+00:49:19.280 --> 00:49:21.800 align:middle line:84%
+we get a really-- this
+really simple algebra here.
+
+00:49:21.800 --> 00:49:24.680 align:middle line:84%
+So first, I haven't put
+the coefficients in front.
+
+00:49:24.680 --> 00:49:26.060 align:middle line:90%
+This is what happens today.
+
+00:49:26.060 --> 00:49:27.980 align:middle line:84%
+So if this is what
+happens today,
+
+00:49:27.980 --> 00:49:30.920 align:middle line:84%
+what needs to be
+in front of this
+
+00:49:30.920 --> 00:49:33.697 align:middle line:84%
+if I'm interested in
+average discounted payoff?
+
+00:49:33.697 --> 00:49:35.780 align:middle line:84%
+I don't know if we still
+have the formula up here,
+
+00:49:35.780 --> 00:49:38.160 align:middle line:84%
+but remember, with average
+discounted payoff, we-- yeah?
+
+00:49:38.160 --> 00:49:39.160 align:middle line:90%
+AUDIENCE: 1 minus delta.
+
+00:49:39.160 --> 00:49:40.160 align:middle line:90%
+IAN BALL: 1 minus delta.
+
+00:49:40.160 --> 00:49:41.720 align:middle line:90%
+Exactly.
+
+00:49:41.720 --> 00:49:45.280 align:middle line:84%
+Because with average, it's
+1 minus delta times 1 today,
+
+00:49:45.280 --> 00:49:46.920 align:middle line:84%
+1 minus delta times
+delta tomorrow,
+
+00:49:46.920 --> 00:49:50.360 align:middle line:84%
+1 minus delta times delta
+squared in the future.
+
+00:49:50.360 --> 00:49:52.160 align:middle line:84%
+And maybe this is a
+bit harder to see,
+
+00:49:52.160 --> 00:49:58.120 align:middle line:84%
+but if this is what
+happens forever after,
+
+00:49:58.120 --> 00:50:03.280 align:middle line:84%
+it turns out that this is
+actually going to be just delta.
+
+00:50:03.280 --> 00:50:05.520 align:middle line:84%
+And one way to see
+this is that we're
+
+00:50:05.520 --> 00:50:07.560 align:middle line:90%
+working with average payoffs.
+
+00:50:07.560 --> 00:50:10.622 align:middle line:84%
+So if this is how much weight
+we put on what happens today,
+
+00:50:10.622 --> 00:50:12.080 align:middle line:84%
+then all the rest
+of the weight has
+
+00:50:12.080 --> 00:50:14.320 align:middle line:84%
+to be on what happens
+forever after.
+
+00:50:14.320 --> 00:50:18.800 align:middle line:84%
+But if we want to formally
+see this, let's write it down.
+
+00:50:18.800 --> 00:50:24.960 align:middle line:84%
+Well, this is-- let's just see
+how we get this coefficient.
+
+00:50:24.960 --> 00:50:27.150 align:middle line:84%
+So where does this
+coefficient come from?
+
+00:50:27.150 --> 00:50:34.030 align:middle line:84%
+Well really, it's 1 minus
+delta times delta plus delta
+
+00:50:34.030 --> 00:50:37.070 align:middle line:84%
+squared plus delta
+cubed plus our--
+
+00:50:37.070 --> 00:50:37.830 align:middle line:90%
+right?
+
+00:50:37.830 --> 00:50:39.030 align:middle line:90%
+How do we see this?
+
+00:50:39.030 --> 00:50:42.390 align:middle line:84%
+Because this is the
+gain I get tomorrow.
+
+00:50:42.390 --> 00:50:45.430 align:middle line:84%
+The gain I get tomorrow is
+multiplied by 1 minus delta
+
+00:50:45.430 --> 00:50:48.790 align:middle line:84%
+up front, and then delta to
+discount it for tomorrow.
+
+00:50:48.790 --> 00:50:51.510 align:middle line:84%
+Then the day after
+tomorrow is delta squared.
+
+00:50:51.510 --> 00:50:54.230 align:middle line:84%
+Then the day after that
+is delta cubed, and so on.
+
+00:50:54.230 --> 00:50:56.150 align:middle line:84%
+So if I really
+write this out, it's
+
+00:50:56.150 --> 00:51:00.470 align:middle line:84%
+this gain I experience
+times this entire sum.
+
+00:51:00.470 --> 00:51:04.510 align:middle line:84%
+Any questions on
+where I got this?
+
+00:51:04.510 --> 00:51:10.130 align:middle line:84%
+So maybe to make it parallel,
+this is 1 minus delta times 1.
+
+00:51:10.130 --> 00:51:12.430 align:middle line:84%
+So what happens today
+is 1 minus delta times
+
+00:51:12.430 --> 00:51:14.710 align:middle line:90%
+the undiscounted value of 1.
+
+00:51:14.710 --> 00:51:16.810 align:middle line:84%
+What happens in the
+future is 1 minus delta,
+
+00:51:16.810 --> 00:51:18.870 align:middle line:84%
+but I have to discount
+it by delta for tomorrow,
+
+00:51:18.870 --> 00:51:20.910 align:middle line:90%
+delta squared, and so on.
+
+00:51:20.910 --> 00:51:23.950 align:middle line:90%
+But what is this reduced to?
+
+00:51:23.950 --> 00:51:26.030 align:middle line:90%
+Well, this is actually--
+
+00:51:26.030 --> 00:51:28.270 align:middle line:84%
+let's write it, let's
+just do a little algebra.
+
+00:51:28.270 --> 00:51:31.950 align:middle line:84%
+This is 1 minus delta
+times delta times-- well,
+
+00:51:31.950 --> 00:51:34.270 align:middle line:84%
+I'm just factoring
+out 1 delta from here.
+
+00:51:34.270 --> 00:51:40.570 align:middle line:84%
+Then I get 1 plus delta plus
+delta squared and so on.
+
+00:51:40.570 --> 00:51:43.310 align:middle line:90%
+
+
+00:51:43.310 --> 00:51:47.670 align:middle line:84%
+But this is just 1
+over 1 minus delta.
+
+00:51:47.670 --> 00:51:51.150 align:middle line:84%
+So these cancel, and
+then I get delta.
+
+00:51:51.150 --> 00:51:54.070 align:middle line:84%
+So if you follow the
+geometric series,
+
+00:51:54.070 --> 00:51:55.570 align:middle line:84%
+that's one way of
+thinking about it.
+
+00:51:55.570 --> 00:51:56.987 align:middle line:84%
+The other way of
+thinking about it
+
+00:51:56.987 --> 00:51:59.930 align:middle line:84%
+is whenever we're using delta
+and average discounted payoffs,
+
+00:51:59.930 --> 00:52:02.790 align:middle line:84%
+I put 1 minus delta
+on today and delta
+
+00:52:02.790 --> 00:52:04.770 align:middle line:84%
+on everything that
+happens after today.
+
+00:52:04.770 --> 00:52:07.390 align:middle line:90%
+
+
+00:52:07.390 --> 00:52:10.590 align:middle line:84%
+And you can see here, as
+delta gets close to 1,
+
+00:52:10.590 --> 00:52:15.110 align:middle line:84%
+today is relatively unimportant
+relative to the infinite future.
+
+00:52:15.110 --> 00:52:17.070 align:middle line:84%
+Let's be clear,
+it's always the case
+
+00:52:17.070 --> 00:52:18.950 align:middle line:84%
+that today matters
+more than tomorrow.
+
+00:52:18.950 --> 00:52:21.150 align:middle line:84%
+I'm not comparing
+today to tomorrow.
+
+00:52:21.150 --> 00:52:24.360 align:middle line:84%
+I'm comparing today to
+everything after today.
+
+00:52:24.360 --> 00:52:25.880 align:middle line:84%
+Tomorrow, the day
+after tomorrow,
+
+00:52:25.880 --> 00:52:27.880 align:middle line:84%
+the day after the day
+after tomorrow, and so on.
+
+00:52:27.880 --> 00:52:35.940 align:middle line:90%
+
+
+00:52:35.940 --> 00:52:39.180 align:middle line:90%
+Well, what do we know?
+
+00:52:39.180 --> 00:52:43.740 align:middle line:90%
+We know that this is negative.
+
+00:52:43.740 --> 00:52:45.020 align:middle line:90%
+Why?
+
+00:52:45.020 --> 00:52:49.060 align:middle line:90%
+Well, our assumption over here.
+
+00:52:49.060 --> 00:52:52.380 align:middle line:84%
+We know that what I get
+from the Nash equilibrium
+
+00:52:52.380 --> 00:52:55.240 align:middle line:84%
+is strictly worse than
+what I get under a star.
+
+00:52:55.240 --> 00:52:59.180 align:middle line:90%
+
+
+00:52:59.180 --> 00:53:01.700 align:middle line:84%
+So if this is negative,
+I claim that this
+
+00:53:01.700 --> 00:53:04.060 align:middle line:84%
+is going to be less
+than or equal to 0
+
+00:53:04.060 --> 00:53:05.480 align:middle line:90%
+if delta is large enough.
+
+00:53:05.480 --> 00:53:10.540 align:middle line:90%
+
+
+00:53:10.540 --> 00:53:12.080 align:middle line:90%
+Anyone walk me through why--
+
+00:53:12.080 --> 00:53:16.620 align:middle line:90%
+
+
+00:53:16.620 --> 00:53:19.485 align:middle line:90%
+why this is true?
+
+00:53:19.485 --> 00:53:20.860 align:middle line:84%
+In fact, it's
+going to be-- maybe
+
+00:53:20.860 --> 00:53:25.940 align:middle line:84%
+to make the argument clearer,
+I'll say it strictly negative.
+
+00:53:25.940 --> 00:53:26.838 align:middle line:90%
+Yeah?
+
+00:53:26.838 --> 00:53:28.880 align:middle line:84%
+AUDIENCE: I mean, if you
+make a really large sum,
+
+00:53:28.880 --> 00:53:30.280 align:middle line:90%
+the first term goes to 0.
+
+00:53:30.280 --> 00:53:30.540 align:middle line:90%
+IAN BALL: Exactly.
+
+00:53:30.540 --> 00:53:31.500 align:middle line:90%
+That's the argument.
+
+00:53:31.500 --> 00:53:32.660 align:middle line:84%
+Whatever this is,
+we don't really
+
+00:53:32.660 --> 00:53:35.035 align:middle line:84%
+care what this is, we just
+make delta really, really big.
+
+00:53:35.035 --> 00:53:36.580 align:middle line:90%
+Then this is basically 0.
+
+00:53:36.580 --> 00:53:39.020 align:middle line:84%
+So this whole term--
+first term is basically 0,
+
+00:53:39.020 --> 00:53:42.308 align:middle line:84%
+but then this term is negative,
+and if delta is close to 1,
+
+00:53:42.308 --> 00:53:44.600 align:middle line:84%
+then we're basically getting
+all of this negative term,
+
+00:53:44.600 --> 00:53:47.220 align:middle line:84%
+so we're going to get
+something strictly negative.
+
+00:53:47.220 --> 00:53:50.060 align:middle line:84%
+We could carefully write out the
+algebra and find the exact bound
+
+00:53:50.060 --> 00:53:50.860 align:middle line:90%
+and be done.
+
+00:53:50.860 --> 00:53:53.780 align:middle line:90%
+
+
+00:53:53.780 --> 00:53:59.900 align:middle line:84%
+But really, I guess what we've
+shown is that for each player i,
+
+00:53:59.900 --> 00:54:03.140 align:middle line:84%
+and for each possible
+deviation ai prime,
+
+00:54:03.140 --> 00:54:04.720 align:middle line:84%
+there's some delta
+large enough--
+
+00:54:04.720 --> 00:54:10.758 align:middle line:84%
+let me say maybe delta greater
+than delta i of ai prime.
+
+00:54:10.758 --> 00:54:13.300 align:middle line:84%
+So really, what this argument
+is showing is I can choose some
+
+00:54:13.300 --> 00:54:15.940 align:middle line:84%
+threshold-- maybe
+I'll put a bar--
+
+00:54:15.940 --> 00:54:20.690 align:middle line:84%
+delta i of ai prime so that if
+delta is above this threshold,
+
+00:54:20.690 --> 00:54:23.610 align:middle line:84%
+then this particular
+one-shot deviation for player
+
+00:54:23.610 --> 00:54:27.450 align:middle line:90%
+i is not profitable.
+
+00:54:27.450 --> 00:54:32.050 align:middle line:84%
+So how do I get my
+threshold delta bar
+
+00:54:32.050 --> 00:54:33.610 align:middle line:90%
+from the theorem statement?
+
+00:54:33.610 --> 00:54:35.790 align:middle line:84%
+Right now I have a lot
+of different deltas.
+
+00:54:35.790 --> 00:54:38.630 align:middle line:84%
+I have a different delta for
+each player i in each deviation,
+
+00:54:38.630 --> 00:54:40.447 align:middle line:84%
+and I'm saying if
+delta is above that,
+
+00:54:40.447 --> 00:54:42.030 align:middle line:84%
+then this deviation
+is not profitable.
+
+00:54:42.030 --> 00:54:42.410 align:middle line:90%
+Yeah?
+
+00:54:42.410 --> 00:54:43.510 align:middle line:90%
+AUDIENCE: Just take the maximum.
+
+00:54:43.510 --> 00:54:45.302 align:middle line:84%
+IAN BALL: Take the
+maximum of all of these.
+
+00:54:45.302 --> 00:54:48.930 align:middle line:84%
+So what I know is if delta
+is bigger than this number,
+
+00:54:48.930 --> 00:54:51.767 align:middle line:84%
+I know this particular
+deviation is not profitable.
+
+00:54:51.767 --> 00:54:53.350 align:middle line:84%
+But there's another
+deviation as well,
+
+00:54:53.350 --> 00:54:55.267 align:middle line:84%
+and I have to make sure
+that's not profitable,
+
+00:54:55.267 --> 00:54:58.010 align:middle line:84%
+but that other deviation also
+has some threshold delta.
+
+00:54:58.010 --> 00:55:01.322 align:middle line:84%
+And if I just take the maximum
+of all these thresholds,
+
+00:55:01.322 --> 00:55:04.030 align:middle line:84%
+then if delta is larger than the
+maximum of all these thresholds,
+
+00:55:04.030 --> 00:55:06.030 align:middle line:84%
+then it's definitely the
+case that none of these
+
+00:55:06.030 --> 00:55:06.810 align:middle line:90%
+is profitable.
+
+00:55:06.810 --> 00:55:09.665 align:middle line:84%
+And here, you can see, if
+you're mathematically inclined,
+
+00:55:09.665 --> 00:55:11.290 align:middle line:84%
+finiteness is playing
+an important role
+
+00:55:11.290 --> 00:55:12.957 align:middle line:84%
+here because I can
+only take the maximum
+
+00:55:12.957 --> 00:55:15.650 align:middle line:90%
+over finitely many things.
+
+00:55:15.650 --> 00:55:18.050 align:middle line:90%
+So this is the argument.
+
+00:55:18.050 --> 00:55:20.810 align:middle line:84%
+Just intuitively,
+take delta big enough,
+
+00:55:20.810 --> 00:55:23.930 align:middle line:84%
+and all of these deviations
+are going to be unprofitable.
+
+00:55:23.930 --> 00:55:27.370 align:middle line:84%
+All right, let me-- so that's
+the proof of the Nash reversion
+
+00:55:27.370 --> 00:55:28.070 align:middle line:90%
+folk theorem.
+
+00:55:28.070 --> 00:55:29.630 align:middle line:90%
+Any questions on that?
+
+00:55:29.630 --> 00:55:34.770 align:middle line:90%
+
+
+00:55:34.770 --> 00:55:36.210 align:middle line:90%
+You look confused, tired.
+
+00:55:36.210 --> 00:55:37.290 align:middle line:90%
+OK.
+
+00:55:37.290 --> 00:55:40.130 align:middle line:90%
+So now let's do--
+
+00:55:40.130 --> 00:55:41.230 align:middle line:90%
+go a little farther.
+
+00:55:41.230 --> 00:55:44.410 align:middle line:90%
+
+
+00:55:44.410 --> 00:55:46.635 align:middle line:90%
+Maybe I'll call it--
+
+00:55:46.635 --> 00:55:48.510 align:middle line:84%
+actually, I'm going to
+save some board space,
+
+00:55:48.510 --> 00:55:50.090 align:middle line:84%
+I'm just going to
+go straight to here.
+
+00:55:50.090 --> 00:55:51.632 align:middle line:84%
+So I'm going to look
+at now what I'll
+
+00:55:51.632 --> 00:56:00.090 align:middle line:84%
+call the individualized
+nash reversion folk theorem.
+
+00:56:00.090 --> 00:56:02.210 align:middle line:84%
+So before, we just
+said we're going
+
+00:56:02.210 --> 00:56:05.290 align:middle line:84%
+to punish everyone by going
+to this Nash equilibrium.
+
+00:56:05.290 --> 00:56:08.670 align:middle line:84%
+But in general, games often
+have multiple Nash equilibria,
+
+00:56:08.670 --> 00:56:12.010 align:middle line:84%
+and we saw with the Boston game
+that one Nash equilibrium might
+
+00:56:12.010 --> 00:56:14.970 align:middle line:84%
+be good for one player and a
+different Nash equilibrium might
+
+00:56:14.970 --> 00:56:16.720 align:middle line:90%
+be good for another player.
+
+00:56:16.720 --> 00:56:18.880 align:middle line:84%
+So we don't actually
+need to punish everyone
+
+00:56:18.880 --> 00:56:21.200 align:middle line:90%
+with the same Nash equilibrium.
+
+00:56:21.200 --> 00:56:24.120 align:middle line:84%
+So the idea of the
+individualized Nash reversion
+
+00:56:24.120 --> 00:56:26.680 align:middle line:84%
+folk theorem is that
+for each player,
+
+00:56:26.680 --> 00:56:28.560 align:middle line:84%
+we need some Nash
+equilibrium that we'll
+
+00:56:28.560 --> 00:56:31.840 align:middle line:84%
+use if that player deviates, but
+that might be a different Nash
+
+00:56:31.840 --> 00:56:34.960 align:middle line:84%
+equilibrium than what we use
+if another player deviates.
+
+00:56:34.960 --> 00:56:39.040 align:middle line:90%
+So now, let's say--
+
+00:56:39.040 --> 00:56:40.820 align:middle line:90%
+let's just rearrange this.
+
+00:56:40.820 --> 00:56:45.382 align:middle line:90%
+
+
+00:56:45.382 --> 00:56:46.340 align:middle line:90%
+Now maybe I'm erasing--
+
+00:56:46.340 --> 00:56:48.298 align:middle line:84%
+I think now at this point,
+I might as well just
+
+00:56:48.298 --> 00:56:49.160 align:middle line:90%
+start from scratch.
+
+00:56:49.160 --> 00:56:50.640 align:middle line:90%
+OK.
+
+00:56:50.640 --> 00:57:06.240 align:middle line:84%
+Let's say for each player i,
+there exists a Nash equilibrium
+
+00:57:06.240 --> 00:57:12.680 align:middle line:84%
+a NE, comma, i of G. So this
+is an individualized Nash
+
+00:57:12.680 --> 00:57:14.320 align:middle line:90%
+equilibrium.
+
+00:57:14.320 --> 00:57:30.200 align:middle line:84%
+Such that-- so what
+does this tell me?
+
+00:57:30.200 --> 00:57:34.560 align:middle line:84%
+It says for every player i, I
+can find some Nash equilibrium
+
+00:57:34.560 --> 00:57:37.160 align:middle line:84%
+in the stage game-- it could
+be the same Nash equilibrium
+
+00:57:37.160 --> 00:57:39.760 align:middle line:84%
+for everyone, but it
+doesn't have to be--
+
+00:57:39.760 --> 00:57:44.000 align:middle line:84%
+such that that player i does
+worse under this particular Nash
+
+00:57:44.000 --> 00:57:45.700 align:middle line:90%
+equilibrium than under vi.
+
+00:57:45.700 --> 00:57:49.400 align:middle line:90%
+
+
+00:57:49.400 --> 00:57:57.640 align:middle line:84%
+So notice, this is
+a weaker assumption
+
+00:57:57.640 --> 00:58:00.680 align:middle line:84%
+because it may not be
+that there's a single Nash
+
+00:58:00.680 --> 00:58:02.970 align:middle line:84%
+equilibrium that
+satisfies this property,
+
+00:58:02.970 --> 00:58:04.720 align:middle line:84%
+but there may be
+different Nash equilibria
+
+00:58:04.720 --> 00:58:05.500 align:middle line:90%
+for different players.
+
+00:58:05.500 --> 00:58:07.560 align:middle line:84%
+There might be one Nash
+equilibrium for player 1
+
+00:58:07.560 --> 00:58:09.240 align:middle line:84%
+that player 1
+really doesn't like,
+
+00:58:09.240 --> 00:58:11.920 align:middle line:84%
+and a different Nash equilibrium
+that player 2 doesn't like.
+
+00:58:11.920 --> 00:58:13.400 align:middle line:90%
+And the idea is very simple.
+
+00:58:13.400 --> 00:58:15.800 align:middle line:84%
+How do I discourage
+player one from deviating?
+
+00:58:15.800 --> 00:58:17.503 align:middle line:84%
+I say if player
+1 deviates, we're
+
+00:58:17.503 --> 00:58:18.920 align:middle line:84%
+going to play the
+Nash equilibrium
+
+00:58:18.920 --> 00:58:20.520 align:middle line:90%
+that player 1 doesn't like.
+
+00:58:20.520 --> 00:58:22.280 align:middle line:84%
+And if player 2
+deviates, we're going
+
+00:58:22.280 --> 00:58:24.920 align:middle line:84%
+to play the Nash equilibrium
+that player 2 doesn't like.
+
+00:58:24.920 --> 00:58:27.160 align:middle line:84%
+And that way, neither
+player wants to deviate.
+
+00:58:27.160 --> 00:58:31.680 align:middle line:84%
+So we're going to use
+individualized punishments.
+
+00:58:31.680 --> 00:58:34.300 align:middle line:90%
+So do I have-- let's see.
+
+00:58:34.300 --> 00:58:38.320 align:middle line:90%
+
+
+00:58:38.320 --> 00:58:39.180 align:middle line:90%
+Yeah, great.
+
+00:58:39.180 --> 00:58:43.640 align:middle line:90%
+
+
+00:58:43.640 --> 00:58:46.420 align:middle line:84%
+So here, I think using the old
+board will actually be helpful.
+
+00:58:46.420 --> 00:58:51.400 align:middle line:84%
+Let's prove the individualized
+Nash reversion folk theorem.
+
+00:58:51.400 --> 00:58:54.760 align:middle line:84%
+Again, in the
+special case that v
+
+00:58:54.760 --> 00:58:58.120 align:middle line:84%
+equals u of a star for
+some action profile a star.
+
+00:58:58.120 --> 00:59:01.140 align:middle line:84%
+So now, we just need
+to change step 2.
+
+00:59:01.140 --> 00:59:14.070 align:middle line:90%
+
+
+00:59:14.070 --> 00:59:18.178 align:middle line:84%
+So as before, we start by just
+playing a star every period,
+
+00:59:18.178 --> 00:59:20.470 align:middle line:84%
+but now the structure of the
+punishments are different.
+
+00:59:20.470 --> 00:59:23.790 align:middle line:90%
+And maybe I'll say 2i.
+
+00:59:23.790 --> 00:59:33.730 align:middle line:84%
+So if player i
+deviates, what do we do?
+
+00:59:33.730 --> 00:59:40.310 align:middle line:90%
+
+
+00:59:40.310 --> 00:59:43.210 align:middle line:84%
+Which Nash equilibrium
+do we play?
+
+00:59:43.210 --> 00:59:46.950 align:middle line:90%
+
+
+00:59:46.950 --> 00:59:48.710 align:middle line:84%
+Well, if player
+i deviates, we're
+
+00:59:48.710 --> 00:59:50.790 align:middle line:84%
+going to play this
+Nash equilibrium
+
+00:59:50.790 --> 00:59:53.310 align:middle line:90%
+that player i doesn't like.
+
+00:59:53.310 --> 00:59:55.850 align:middle line:84%
+So maybe I'll say
+every player j.
+
+00:59:55.850 --> 01:00:13.270 align:middle line:90%
+
+
+01:00:13.270 --> 01:00:16.270 align:middle line:90%
+So what does this mean?
+
+01:00:16.270 --> 01:00:18.910 align:middle line:84%
+The i here says it's
+the Nash equilibrium
+
+01:00:18.910 --> 01:00:20.950 align:middle line:90%
+that player i doesn't like.
+
+01:00:20.950 --> 01:00:24.550 align:middle line:84%
+And that itself is
+an action profile.
+
+01:00:24.550 --> 01:00:28.150 align:middle line:84%
+So player j is going to play
+player j's component of the Nash
+
+01:00:28.150 --> 01:00:30.210 align:middle line:84%
+equilibrium that
+player i doesn't like.
+
+01:00:30.210 --> 01:00:34.092 align:middle line:90%
+
+
+01:00:34.092 --> 01:00:35.550 align:middle line:84%
+And then the same
+argument is going
+
+01:00:35.550 --> 01:00:38.270 align:middle line:84%
+to go through because when
+player AI contemplates
+
+01:00:38.270 --> 01:00:40.365 align:middle line:84%
+a unilateral one-shot
+deviation, they
+
+01:00:40.365 --> 01:00:41.990 align:middle line:84%
+recognize that if
+they deviate, they're
+
+01:00:41.990 --> 01:00:44.950 align:middle line:84%
+going to get punished with
+their own personalized Nash
+
+01:00:44.950 --> 01:00:48.370 align:middle line:84%
+equilibrium forever, and
+if they're patient enough,
+
+01:00:48.370 --> 01:00:50.873 align:middle line:84%
+they're going to be
+deterred by that.
+
+01:00:50.873 --> 01:00:52.290 align:middle line:84%
+There's a few
+issues here, though.
+
+01:00:52.290 --> 01:00:53.590 align:middle line:90%
+We have to be careful.
+
+01:00:53.590 --> 01:00:56.570 align:middle line:84%
+We have to define this
+a little more carefully.
+
+01:00:56.570 --> 01:00:59.830 align:middle line:84%
+So what happens if
+a player deviates
+
+01:00:59.830 --> 01:01:02.390 align:middle line:84%
+and then and then another
+player deviates, what do we do?
+
+01:01:02.390 --> 01:01:07.060 align:middle line:84%
+We have to be kind of
+careful about that.
+
+01:01:07.060 --> 01:01:09.840 align:middle line:90%
+And it turns out, the trick is--
+
+01:01:09.840 --> 01:01:12.540 align:middle line:90%
+
+
+01:01:12.540 --> 01:01:15.060 align:middle line:84%
+you only look at
+who deviated first.
+
+01:01:15.060 --> 01:01:18.160 align:middle line:84%
+Once there's one deviation, we
+use that punishment forever.
+
+01:01:18.160 --> 01:01:20.580 align:middle line:84%
+So if I want to be
+more precise, I'll say,
+
+01:01:20.580 --> 01:01:22.860 align:middle line:84%
+instead of if player
+i deviates, I'll
+
+01:01:22.860 --> 01:01:32.020 align:middle line:84%
+say if there has
+been a deviation,
+
+01:01:32.020 --> 01:01:35.860 align:middle line:84%
+there's been some deviation,
+and the first player to deviate
+
+01:01:35.860 --> 01:01:37.020 align:middle line:90%
+was player i.
+
+01:01:37.020 --> 01:01:38.680 align:middle line:84%
+So if I look back
+in the history,
+
+01:01:38.680 --> 01:01:41.700 align:middle line:84%
+it could be that there were
+many, many different deviations.
+
+01:01:41.700 --> 01:01:44.140 align:middle line:84%
+But all I'm going to say is
+where was the first deviation
+
+01:01:44.140 --> 01:01:44.960 align:middle line:90%
+and who did it?
+
+01:01:44.960 --> 01:01:50.260 align:middle line:90%
+
+
+01:01:50.260 --> 01:01:53.440 align:middle line:90%
+And player i deviated first.
+
+01:01:53.440 --> 01:02:02.260 align:middle line:90%
+
+
+01:02:02.260 --> 01:02:04.000 align:middle line:90%
+Then this is what we play.
+
+01:02:04.000 --> 01:02:07.740 align:middle line:90%
+
+
+01:02:07.740 --> 01:02:09.020 align:middle line:90%
+So we're getting close.
+
+01:02:09.020 --> 01:02:11.660 align:middle line:84%
+I'd argue there's still a
+little imprecision here.
+
+01:02:11.660 --> 01:02:12.720 align:middle line:90%
+What could go wrong?
+
+01:02:12.720 --> 01:02:14.760 align:middle line:84%
+What's the one issue
+with this definition?
+
+01:02:14.760 --> 01:02:15.930 align:middle line:90%
+I said I look back.
+
+01:02:15.930 --> 01:02:16.680 align:middle line:90%
+So how do we play?
+
+01:02:16.680 --> 01:02:18.940 align:middle line:84%
+We look back, we see
+if anyone's deviated,
+
+01:02:18.940 --> 01:02:21.180 align:middle line:84%
+and then we see
+who deviated first,
+
+01:02:21.180 --> 01:02:23.340 align:middle line:90%
+and then we punish that person.
+
+01:02:23.340 --> 01:02:27.100 align:middle line:90%
+But what could go wrong here?
+
+01:02:27.100 --> 01:02:29.580 align:middle line:84%
+How do we know who
+deviated first?
+
+01:02:29.580 --> 01:02:32.300 align:middle line:84%
+What if two people
+deviated at the same time?
+
+01:02:32.300 --> 01:02:35.620 align:middle line:84%
+What if, in the 0th period,
+two players deviate.
+
+01:02:35.620 --> 01:02:37.500 align:middle line:84%
+Now we're in period
+1, we look back,
+
+01:02:37.500 --> 01:02:42.900 align:middle line:84%
+we say both players deviate at
+the same time, who do we punish?
+
+01:02:42.900 --> 01:02:44.820 align:middle line:90%
+Any thoughts?
+
+01:02:44.820 --> 01:02:45.500 align:middle line:90%
+Yeah?
+
+01:02:45.500 --> 01:02:47.200 align:middle line:84%
+AUDIENCE: Randomly
+choose which one?
+
+01:02:47.200 --> 01:02:49.742 align:middle line:84%
+IAN BALL: You could randomly
+choose, that would be one thing.
+
+01:02:49.742 --> 01:02:52.660 align:middle line:84%
+So if let's say two players
+deviated simultaneously first,
+
+01:02:52.660 --> 01:02:54.390 align:middle line:84%
+then half the time
+I'll punish one
+
+01:02:54.390 --> 01:02:56.610 align:middle line:84%
+and half the time
+I'll punish another.
+
+01:02:56.610 --> 01:02:58.860 align:middle line:84%
+That's a great idea, that's
+one thing that could work.
+
+01:02:58.860 --> 01:03:00.360 align:middle line:84%
+It turns out, it
+doesn't even matter
+
+01:03:00.360 --> 01:03:06.050 align:middle line:84%
+what you do as long as you
+play some Nash equilibrium.
+
+01:03:06.050 --> 01:03:10.410 align:middle line:84%
+And the reason is, that
+no one can unilaterally
+
+01:03:10.410 --> 01:03:12.530 align:middle line:90%
+cause two people to deviate.
+
+01:03:12.530 --> 01:03:14.130 align:middle line:84%
+So when players
+are contemplating
+
+01:03:14.130 --> 01:03:16.315 align:middle line:84%
+whether they should
+unilaterally deviate,
+
+01:03:16.315 --> 01:03:17.690 align:middle line:84%
+they don't ever
+take into account
+
+01:03:17.690 --> 01:03:19.230 align:middle line:84%
+what happens if two
+players deviate at once,
+
+01:03:19.230 --> 01:03:21.188 align:middle line:84%
+but I think your suggestion
+is the easiest one.
+
+01:03:21.188 --> 01:03:30.970 align:middle line:84%
+So we'll say over here, note, or
+randomize if two players deviate
+
+01:03:30.970 --> 01:03:31.950 align:middle line:90%
+simultaneously.
+
+01:03:31.950 --> 01:03:46.210 align:middle line:90%
+
+
+01:03:46.210 --> 01:03:49.130 align:middle line:84%
+So under this strategy,
+we just each play a star
+
+01:03:49.130 --> 01:03:50.890 align:middle line:84%
+until we see
+someone's deviated, we
+
+01:03:50.890 --> 01:03:53.770 align:middle line:84%
+look who that person is, we
+play the Nash equilibrium that's
+
+01:03:53.770 --> 01:03:56.450 align:middle line:84%
+bad for that player, and then
+we display that Nash equilibrium
+
+01:03:56.450 --> 01:03:59.270 align:middle line:84%
+forever after regardless
+of what happens again.
+
+01:03:59.270 --> 01:04:00.550 align:middle line:90%
+Someone else might deviate.
+
+01:04:00.550 --> 01:04:01.070 align:middle line:90%
+Who cares?
+
+01:04:01.070 --> 01:04:03.010 align:middle line:84%
+We just stick with
+our Nash equilibrium.
+
+01:04:03.010 --> 01:04:04.510 align:middle line:84%
+And because it's a
+Nash equilibrium,
+
+01:04:04.510 --> 01:04:06.760 align:middle line:84%
+you can check that no one
+has an incentive to deviate.
+
+01:04:06.760 --> 01:04:09.210 align:middle line:90%
+
+
+01:04:09.210 --> 01:04:11.290 align:middle line:84%
+Or I'll say if more
+than one, there
+
+01:04:11.290 --> 01:04:14.730 align:middle line:84%
+could be many
+players [INAUDIBLE].
+
+01:04:14.730 --> 01:04:15.910 align:middle line:90%
+Any questions about this?
+
+01:04:15.910 --> 01:04:18.930 align:middle line:90%
+
+
+01:04:18.930 --> 01:04:19.430 align:middle line:90%
+OK.
+
+01:04:19.430 --> 01:04:24.610 align:middle line:84%
+So now we're going to go to the
+final folk theorem, the deepest
+
+01:04:24.610 --> 01:04:25.750 align:middle line:90%
+folk theorem, I guess.
+
+01:04:25.750 --> 01:04:29.610 align:middle line:90%
+
+
+01:04:29.610 --> 01:04:34.810 align:middle line:84%
+And this is really what was
+in that paper from 1986.
+
+01:04:34.810 --> 01:04:41.370 align:middle line:84%
+And the question is, can
+we use harsher punishments
+
+01:04:41.370 --> 01:04:42.550 align:middle line:90%
+than Nash equilibrium?
+
+01:04:42.550 --> 01:04:53.010 align:middle line:90%
+
+
+01:04:53.010 --> 01:04:56.290 align:middle line:84%
+So, so far, the way we've always
+punished players for deviating
+
+01:04:56.290 --> 01:04:58.250 align:middle line:90%
+is by reverting to Nash.
+
+01:04:58.250 --> 01:05:01.620 align:middle line:84%
+Either we revert to the same
+stage game Nash equilibrium
+
+01:05:01.620 --> 01:05:03.960 align:middle line:84%
+regardless of who
+deviated, or we
+
+01:05:03.960 --> 01:05:07.400 align:middle line:84%
+revert to an individualized
+Nash equilibrium
+
+01:05:07.400 --> 01:05:12.000 align:middle line:84%
+that depends on the
+identity of the deviator.
+
+01:05:12.000 --> 01:05:15.160 align:middle line:84%
+But the question is, can
+we punish even more harshly
+
+01:05:15.160 --> 01:05:16.260 align:middle line:90%
+than Nash equilibrium?
+
+01:05:16.260 --> 01:05:18.940 align:middle line:84%
+And indeed, there are some
+games where we want to do that.
+
+01:05:18.940 --> 01:05:20.520 align:middle line:84%
+We talked about in
+Cournot, the way
+
+01:05:20.520 --> 01:05:23.520 align:middle line:84%
+that we often see punishments
+is that one player floods
+
+01:05:23.520 --> 01:05:24.560 align:middle line:90%
+the market.
+
+01:05:24.560 --> 01:05:26.440 align:middle line:84%
+One player produces
+a lot of goods
+
+01:05:26.440 --> 01:05:28.200 align:middle line:90%
+to bring down the market price.
+
+01:05:28.200 --> 01:05:30.160 align:middle line:84%
+But that in itself is
+not a Nash equilibrium
+
+01:05:30.160 --> 01:05:34.200 align:middle line:84%
+because that player is
+doing really badly as well.
+
+01:05:34.200 --> 01:05:38.440 align:middle line:84%
+So the question is, how can
+we use harsher punishments?
+
+01:05:38.440 --> 01:05:40.780 align:middle line:90%
+And here's the challenge.
+
+01:05:40.780 --> 01:05:46.280 align:middle line:90%
+
+
+01:05:46.280 --> 01:05:48.840 align:middle line:84%
+What was nice is if the
+punishments were themselves
+
+01:05:48.840 --> 01:05:53.360 align:middle line:84%
+Nash equilibria, then the
+punishments were self-enforcing.
+
+01:05:53.360 --> 01:05:56.140 align:middle line:84%
+Once we went to that punishment,
+no one wanted to deviate.
+
+01:05:56.140 --> 01:06:09.380 align:middle line:84%
+But the challenge is, who
+punishes the punisher for dv?
+
+01:06:09.380 --> 01:06:12.460 align:middle line:90%
+
+
+01:06:12.460 --> 01:06:13.960 align:middle line:84%
+The problem is, if
+we want to impose
+
+01:06:13.960 --> 01:06:15.360 align:middle line:84%
+a really harsh
+punishment-- let's
+
+01:06:15.360 --> 01:06:18.200 align:middle line:84%
+say player 1 wants to
+really punish player 2,
+
+01:06:18.200 --> 01:06:21.280 align:middle line:84%
+that punishment might be
+really costly for player 1.
+
+01:06:21.280 --> 01:06:23.960 align:middle line:84%
+But that means player 1 might
+not want to actually carry out
+
+01:06:23.960 --> 01:06:25.577 align:middle line:90%
+their punishment.
+
+01:06:25.577 --> 01:06:27.160 align:middle line:84%
+So we have to make
+sure that we punish
+
+01:06:27.160 --> 01:06:28.680 align:middle line:84%
+the punisher if
+they don't actually
+
+01:06:28.680 --> 01:06:30.160 align:middle line:90%
+carry out the punishment.
+
+01:06:30.160 --> 01:06:32.260 align:middle line:84%
+But now we get into
+this infinite regress.
+
+01:06:32.260 --> 01:06:33.640 align:middle line:84%
+Whoever's punishing
+the punisher,
+
+01:06:33.640 --> 01:06:35.640 align:middle line:84%
+they might not want to
+carry out that punishment
+
+01:06:35.640 --> 01:06:37.220 align:middle line:84%
+because that might
+hurt themselves.
+
+01:06:37.220 --> 01:06:39.560 align:middle line:84%
+So we have to have a way
+to punish the punisher--
+
+01:06:39.560 --> 01:06:42.680 align:middle line:84%
+the person who punishes
+the punisher, and then see,
+
+01:06:42.680 --> 01:06:44.420 align:middle line:90%
+we get into difficulty.
+
+01:06:44.420 --> 01:06:45.300 align:middle line:90%
+So it's hard.
+
+01:06:45.300 --> 01:06:47.460 align:middle line:84%
+What we want to do is
+we want to say player 1,
+
+01:06:47.460 --> 01:06:49.740 align:middle line:84%
+we don't want you to
+deviate because if you do,
+
+01:06:49.740 --> 01:06:51.320 align:middle line:90%
+player 2 is going to punish you.
+
+01:06:51.320 --> 01:06:53.240 align:middle line:84%
+But then we have to say, and
+if player 2 doesn't punish you
+
+01:06:53.240 --> 01:06:54.993 align:middle line:84%
+as she's supposed to,
+then another player
+
+01:06:54.993 --> 01:06:56.160 align:middle line:90%
+is going to punish player 2.
+
+01:06:56.160 --> 01:06:58.077 align:middle line:84%
+And then we're going to
+get into these cycles.
+
+01:06:58.077 --> 01:06:59.690 align:middle line:84%
+So it's going to
+be quite tricky.
+
+01:06:59.690 --> 01:07:03.870 align:middle line:84%
+And I think for a while, this is
+why it took people a long time
+
+01:07:03.870 --> 01:07:09.190 align:middle line:84%
+to figure this out, how can we
+figure out these punishments?
+
+01:07:09.190 --> 01:07:11.950 align:middle line:84%
+And it turns out, the
+kind of solution, I guess,
+
+01:07:11.950 --> 01:07:19.590 align:middle line:84%
+the simple solution is that we
+want to do two things at once.
+
+01:07:19.590 --> 01:07:25.110 align:middle line:84%
+Our strategy is going
+to have two components.
+
+01:07:25.110 --> 01:07:27.570 align:middle line:84%
+The first component is
+we punish deviations.
+
+01:07:27.570 --> 01:07:30.990 align:middle line:90%
+
+
+01:07:30.990 --> 01:07:34.450 align:middle line:84%
+If someone deviates, the
+other players punish them.
+
+01:07:34.450 --> 01:07:35.630 align:middle line:90%
+That's easy.
+
+01:07:35.630 --> 01:07:41.470 align:middle line:84%
+But then, instead of thinking
+about punishing the punisher
+
+01:07:41.470 --> 01:07:43.168 align:middle line:84%
+for not carrying
+out the punishment,
+
+01:07:43.168 --> 01:07:45.710 align:middle line:84%
+the trick is actually to reward
+the punisher for carrying out
+
+01:07:45.710 --> 01:07:46.570 align:middle line:90%
+the punishment.
+
+01:07:46.570 --> 01:07:59.750 align:middle line:90%
+
+
+01:07:59.750 --> 01:08:03.010 align:middle line:84%
+So the general structure
+is, if anyone deviates,
+
+01:08:03.010 --> 01:08:04.895 align:middle line:90%
+everyone else punishes them.
+
+01:08:04.895 --> 01:08:06.270 align:middle line:84%
+And then if those
+people actually
+
+01:08:06.270 --> 01:08:08.710 align:middle line:84%
+punish as they're supposed
+to, then we reward the people
+
+01:08:08.710 --> 01:08:10.270 align:middle line:90%
+for punishing.
+
+01:08:10.270 --> 01:08:14.410 align:middle line:84%
+And this is kind of a high-level
+idea of how we approach it,
+
+01:08:14.410 --> 01:08:18.149 align:middle line:84%
+and let's go a
+little more formally.
+
+01:08:18.149 --> 01:08:20.990 align:middle line:84%
+So to be a little
+more formal, we
+
+01:08:20.990 --> 01:08:33.670 align:middle line:84%
+want to say, well, what is
+the harshest punishment, say,
+
+01:08:33.670 --> 01:08:34.490 align:middle line:90%
+on player i?
+
+01:08:34.490 --> 01:08:38.029 align:middle line:90%
+
+
+01:08:38.029 --> 01:08:39.890 align:middle line:84%
+So let's say player
+I has deviated.
+
+01:08:39.890 --> 01:08:41.430 align:middle line:90%
+We want to punish them.
+
+01:08:41.430 --> 01:08:47.870 align:middle line:84%
+What's the harshest way
+we can punish player i?
+
+01:08:47.870 --> 01:09:02.300 align:middle line:84%
+Well, intuitively, players, we
+want to choose a negative i.
+
+01:09:02.300 --> 01:09:03.939 align:middle line:84%
+So a negative i,
+these are the actions
+
+01:09:03.939 --> 01:09:05.460 align:middle line:90%
+of everyone but player i.
+
+01:09:05.460 --> 01:09:15.279 align:middle line:84%
+We want to choose a negative i
+to make player i as worse off.
+
+01:09:15.279 --> 01:09:23.779 align:middle line:90%
+
+
+01:09:23.779 --> 01:09:27.380 align:middle line:84%
+But this is kind of
+tricky because how bad
+
+01:09:27.380 --> 01:09:28.479 align:middle line:90%
+is this for player i?
+
+01:09:28.479 --> 01:09:32.100 align:middle line:84%
+Well, it depends
+what player i does.
+
+01:09:32.100 --> 01:09:35.580 align:middle line:84%
+So we have to think, what's the
+worst way to punish player i?
+
+01:09:35.580 --> 01:09:37.180 align:middle line:84%
+We as players
+other than player i
+
+01:09:37.180 --> 01:09:39.460 align:middle line:84%
+are going to choose
+this action profile,
+
+01:09:39.460 --> 01:09:41.460 align:middle line:84%
+but we don't know how
+bad this is because it
+
+01:09:41.460 --> 01:09:44.180 align:middle line:90%
+depends how player i responds.
+
+01:09:44.180 --> 01:09:47.340 align:middle line:84%
+But the trick is to say,
+well, let's suppose player i
+
+01:09:47.340 --> 01:09:48.939 align:middle line:90%
+responds optimally.
+
+01:09:48.939 --> 01:09:51.460 align:middle line:84%
+So let's say we choose
+a negative i, and then
+
+01:09:51.460 --> 01:09:54.040 align:middle line:84%
+player i chooses the
+action that's best for him
+
+01:09:54.040 --> 01:09:54.860 align:middle line:90%
+given a negative i.
+
+01:09:54.860 --> 01:09:58.220 align:middle line:84%
+We want to make that
+as bad as possible.
+
+01:09:58.220 --> 01:10:02.820 align:middle line:84%
+So let's say we
+choose a negative i,
+
+01:10:02.820 --> 01:10:04.460 align:middle line:90%
+how much can this hurt player i?
+
+01:10:04.460 --> 01:10:09.340 align:middle line:84%
+Well, player i can
+get the max over ai
+
+01:10:09.340 --> 01:10:14.780 align:middle line:90%
+of ui of ai a negative i.
+
+01:10:14.780 --> 01:10:17.920 align:middle line:90%
+So this is the punishment.
+
+01:10:17.920 --> 01:10:22.340 align:middle line:90%
+
+
+01:10:22.340 --> 01:10:25.380 align:middle line:84%
+Everyone other than i is
+trying to punish player i.
+
+01:10:25.380 --> 01:10:28.120 align:middle line:84%
+But player i is saying, well, if
+this is how you're punishing me,
+
+01:10:28.120 --> 01:10:30.260 align:middle line:84%
+I'm going to choose
+my action to make
+
+01:10:30.260 --> 01:10:33.140 align:middle line:90%
+my payoff as high as possible.
+
+01:10:33.140 --> 01:10:35.820 align:middle line:84%
+So we can think of this
+number as representing
+
+01:10:35.820 --> 01:10:38.740 align:middle line:90%
+the strength of the punishment.
+
+01:10:38.740 --> 01:10:51.210 align:middle line:84%
+So let's think of this as maybe
+the severity of a negative i
+
+01:10:51.210 --> 01:10:52.270 align:middle line:90%
+as a punishment.
+
+01:10:52.270 --> 01:10:56.010 align:middle line:90%
+
+
+01:10:56.010 --> 01:10:58.910 align:middle line:84%
+The lower this is, the
+more severe the punishment.
+
+01:10:58.910 --> 01:11:03.690 align:middle line:90%
+
+
+01:11:03.690 --> 01:11:04.830 align:middle line:90%
+So any ideas here?
+
+01:11:04.830 --> 01:11:10.050 align:middle line:84%
+How can we make this
+punishment as bad as possible?
+
+01:11:10.050 --> 01:11:14.430 align:middle line:84%
+Well, if this is the
+severity of this punishment,
+
+01:11:14.430 --> 01:11:18.250 align:middle line:84%
+let's just make this
+payoff as low as possible.
+
+01:11:18.250 --> 01:11:24.987 align:middle line:84%
+So the trick is to now take
+the minimum over a negative i.
+
+01:11:24.987 --> 01:11:26.570 align:middle line:84%
+Let's go through
+this slowly because I
+
+01:11:26.570 --> 01:11:28.490 align:middle line:90%
+think this is a bit tricky.
+
+01:11:28.490 --> 01:11:33.890 align:middle line:84%
+If we choose a negative i, this
+is how well player i can do.
+
+01:11:33.890 --> 01:11:36.490 align:middle line:84%
+By minimizing over this, we're
+choosing the worst possible
+
+01:11:36.490 --> 01:11:37.310 align:middle line:90%
+punishment.
+
+01:11:37.310 --> 01:11:38.950 align:middle line:84%
+We're choosing
+the action profile
+
+01:11:38.950 --> 01:11:41.890 align:middle line:84%
+so that even when player
+i plays optimally,
+
+01:11:41.890 --> 01:11:45.730 align:middle line:84%
+their payoff is as
+low as possible.
+
+01:11:45.730 --> 01:11:47.830 align:middle line:84%
+And we're going to
+need a word for this.
+
+01:11:47.830 --> 01:11:50.610 align:middle line:84%
+This is going to
+be vi lower bar.
+
+01:11:50.610 --> 01:11:53.650 align:middle line:84%
+This is basically the
+worst possible punishment
+
+01:11:53.650 --> 01:11:55.070 align:middle line:90%
+we can impose on player i.
+
+01:11:55.070 --> 01:12:04.090 align:middle line:90%
+
+
+01:12:04.090 --> 01:12:09.990 align:middle line:84%
+And this is called
+the pure minmax value.
+
+01:12:09.990 --> 01:12:14.210 align:middle line:90%
+
+
+01:12:14.210 --> 01:12:17.570 align:middle line:84%
+So this is often called
+minmaxing player i.
+
+01:12:17.570 --> 01:12:20.570 align:middle line:84%
+It means everyone else
+gets together and chooses
+
+01:12:20.570 --> 01:12:25.630 align:middle line:84%
+the action that makes player
+i's payoff as low as possible
+
+01:12:25.630 --> 01:12:29.730 align:middle line:84%
+assuming that player i best
+responds to this punishment.
+
+01:12:29.730 --> 01:12:33.790 align:middle line:84%
+So now we can state the final
+version of the folk theorem.
+
+01:12:33.790 --> 01:12:36.830 align:middle line:84%
+Maybe I'll put it here,
+and then we'll conclude.
+
+01:12:36.830 --> 01:12:53.480 align:middle line:90%
+
+
+01:12:53.480 --> 01:13:00.900 align:middle line:84%
+So this is maybe called the
+pure minmax folk theorem.
+
+01:13:00.900 --> 01:13:09.400 align:middle line:90%
+
+
+01:13:09.400 --> 01:13:11.545 align:middle line:84%
+And in the Nash
+reversion folk theorem,
+
+01:13:11.545 --> 01:13:12.920 align:middle line:84%
+we just had to
+make sure we could
+
+01:13:12.920 --> 01:13:16.200 align:middle line:84%
+punish player i by reverting
+to the Nash equilibrium.
+
+01:13:16.200 --> 01:13:19.800 align:middle line:84%
+Here, we're going to make sure
+we can punish player i by using
+
+01:13:19.800 --> 01:13:21.520 align:middle line:90%
+the worst possible punishment.
+
+01:13:21.520 --> 01:13:27.920 align:middle line:84%
+So the condition, the
+assumption is simply
+
+01:13:27.920 --> 01:13:32.120 align:middle line:84%
+going to be that vi is
+greater than vi lower
+
+01:13:32.120 --> 01:13:34.740 align:middle line:90%
+bar for all players i.
+
+01:13:34.740 --> 01:13:40.200 align:middle line:90%
+
+
+01:13:40.200 --> 01:13:42.960 align:middle line:84%
+And it turns out that this
+assumption is weaker than all
+
+01:13:42.960 --> 01:13:45.260 align:middle line:84%
+of the other assumptions,
+and as a result,
+
+01:13:45.260 --> 01:13:48.440 align:middle line:84%
+this version of the minmax of
+the folk theorem is stronger.
+
+01:13:48.440 --> 01:13:52.520 align:middle line:84%
+There's a larger range of v's
+that satisfy this condition.
+
+01:13:52.520 --> 01:13:54.600 align:middle line:84%
+Because vi may
+not, in this case,
+
+01:13:54.600 --> 01:13:57.040 align:middle line:84%
+be higher than any Nash
+equilibrium payoff,
+
+01:13:57.040 --> 01:14:02.880 align:middle line:84%
+but it is higher than this worst
+possible punishment over here.
+
+01:14:02.880 --> 01:14:05.420 align:middle line:84%
+It turns out, we need
+one technical condition,
+
+01:14:05.420 --> 01:14:07.720 align:middle line:84%
+so I'll write this
+in parentheses.
+
+01:14:07.720 --> 01:14:09.480 align:middle line:90%
+And V of G--
+
+01:14:09.480 --> 01:14:13.440 align:middle line:84%
+remember, V of G is the set
+of feasible payoff vectors,
+
+01:14:13.440 --> 01:14:15.760 align:middle line:90%
+has full rank.
+
+01:14:15.760 --> 01:14:17.500 align:middle line:84%
+This is a technical
+assumption that--
+
+01:14:17.500 --> 01:14:20.800 align:middle line:90%
+
+
+01:14:20.800 --> 01:14:21.380 align:middle line:90%
+it's fine.
+
+01:14:21.380 --> 01:14:22.980 align:middle line:84%
+It's not covered-- it's
+not going to be tested,
+
+01:14:22.980 --> 01:14:24.760 align:middle line:84%
+I just don't want to
+write something wrong
+
+01:14:24.760 --> 01:14:28.440 align:middle line:84%
+and have people complaining,
+so there is one assumption.
+
+01:14:28.440 --> 01:14:31.020 align:middle line:84%
+And this comes from
+the paper from 1986,
+
+01:14:31.020 --> 01:14:33.720 align:middle line:84%
+so now we're really
+getting to the frontier.
+
+01:14:33.720 --> 01:14:38.160 align:middle line:84%
+And let me just give you
+a really simple outline
+
+01:14:38.160 --> 01:14:41.750 align:middle line:84%
+of the proof following
+what we described.
+
+01:14:41.750 --> 01:14:47.590 align:middle line:84%
+So the proof sketch, now there's
+going to be three stages.
+
+01:14:47.590 --> 01:14:51.070 align:middle line:84%
+So initially, everyone's
+going to play--
+
+01:14:51.070 --> 01:14:53.350 align:middle line:84%
+maybe I'll just write
+it a bit more simply.
+
+01:14:53.350 --> 01:14:54.990 align:middle line:90%
+We play a star.
+
+01:14:54.990 --> 01:14:56.870 align:middle line:84%
+Remember, a star,
+as usual, is going
+
+01:14:56.870 --> 01:14:59.030 align:middle line:84%
+to be the action
+profile that gives us
+
+01:14:59.030 --> 01:15:01.430 align:middle line:84%
+the payoff vector v.
+We're going to play
+
+01:15:01.430 --> 01:15:03.410 align:middle line:90%
+a star until a deviation.
+
+01:15:03.410 --> 01:15:11.430 align:middle line:90%
+
+
+01:15:11.430 --> 01:15:15.990 align:middle line:84%
+And then we have to specify what
+happens if player i deviates.
+
+01:15:15.990 --> 01:15:20.010 align:middle line:84%
+And it turns out, there's going
+to be two components of this.
+
+01:15:20.010 --> 01:15:24.430 align:middle line:90%
+
+
+01:15:24.430 --> 01:15:26.670 align:middle line:84%
+You might say, oh,
+if player i deviates,
+
+01:15:26.670 --> 01:15:30.190 align:middle line:84%
+then we're just going to impose
+the worst possible punishment
+
+01:15:30.190 --> 01:15:31.650 align:middle line:90%
+on player i forever.
+
+01:15:31.650 --> 01:15:33.150 align:middle line:84%
+But the problem is,
+people might not
+
+01:15:33.150 --> 01:15:34.670 align:middle line:84%
+want to carry out
+that punishment
+
+01:15:34.670 --> 01:15:36.930 align:middle line:84%
+because it may be very
+costly for them to punish.
+
+01:15:36.930 --> 01:15:39.130 align:middle line:84%
+Remember, we have to also
+reward the punishers.
+
+01:15:39.130 --> 01:15:51.010 align:middle line:84%
+So the trick is we kind of
+minmax Player i for n periods.
+
+01:15:51.010 --> 01:15:54.390 align:middle line:90%
+
+
+01:15:54.390 --> 01:15:57.370 align:middle line:84%
+And then, if we get
+through this stage,
+
+01:15:57.370 --> 01:16:00.570 align:middle line:84%
+we reward everyone for actually
+carrying out the punishment.
+
+01:16:00.570 --> 01:16:10.910 align:middle line:90%
+
+
+01:16:10.910 --> 01:16:15.030 align:middle line:90%
+Forever after.
+
+01:16:15.030 --> 01:16:18.070 align:middle line:84%
+But the structure of this is
+a little more complicated.
+
+01:16:18.070 --> 01:16:22.190 align:middle line:90%
+So first, we play a star.
+
+01:16:22.190 --> 01:16:23.788 align:middle line:84%
+Then we're going
+to minmax, meaning
+
+01:16:23.788 --> 01:16:25.830 align:middle line:84%
+impose the harshest possible
+punishment on player
+
+01:16:25.830 --> 01:16:27.910 align:middle line:90%
+i for n periods.
+
+01:16:27.910 --> 01:16:30.190 align:middle line:84%
+And then, if we
+actually carry that out,
+
+01:16:30.190 --> 01:16:32.630 align:middle line:84%
+we reward the punishers
+forever after.
+
+01:16:32.630 --> 01:16:36.310 align:middle line:84%
+But if at any stage
+any player deviates,
+
+01:16:36.310 --> 01:16:38.620 align:middle line:84%
+we go back to the
+beginning of stage IIi.
+
+01:16:38.620 --> 01:16:40.600 align:middle line:84%
+If player j deviates
+at any point,
+
+01:16:40.600 --> 01:16:43.340 align:middle line:84%
+now we minmax player
+j for n periods
+
+01:16:43.340 --> 01:16:45.380 align:middle line:90%
+and then reward the punishers.
+
+01:16:45.380 --> 01:16:47.260 align:middle line:84%
+If any of the
+punishers deviate, we
+
+01:16:47.260 --> 01:16:50.020 align:middle line:84%
+go back to the beginning of that
+for that corresponding punisher.
+
+01:16:50.020 --> 01:16:51.863 align:middle line:84%
+So if at any stage--
+and I'm not going
+
+01:16:51.863 --> 01:16:54.280 align:middle line:84%
+to write this on the board,
+but I'll just say it in words.
+
+01:16:54.280 --> 01:16:58.020 align:middle line:84%
+If at any stage of this strategy
+profile a player deviates,
+
+01:16:58.020 --> 01:17:00.940 align:middle line:84%
+we start this sequence
+for that player.
+
+01:17:00.940 --> 01:17:03.500 align:middle line:84%
+We minmax them for
+n periods, and then
+
+01:17:03.500 --> 01:17:05.800 align:middle line:84%
+we reward the players for
+carrying out that punishment.
+
+01:17:05.800 --> 01:17:09.020 align:middle line:84%
+And if someone else deviates,
+we go back and do it again.
+
+01:17:09.020 --> 01:17:12.140 align:middle line:84%
+And this is a much more
+complicated structure.
+
+01:17:12.140 --> 01:17:16.520 align:middle line:84%
+People who are still professors
+at MIT came up with this,
+
+01:17:16.520 --> 01:17:19.040 align:middle line:84%
+and this is getting
+to the frontier here,
+
+01:17:19.040 --> 01:17:20.960 align:middle line:84%
+and this is much
+harder to deal with.
+
+01:17:20.960 --> 01:17:24.140 align:middle line:84%
+But let me-- so I'll say, I
+wouldn't expect you to be able
+
+01:17:24.140 --> 01:17:28.300 align:middle line:84%
+to fully understand this proof
+on an exam, but we may ask--
+
+01:17:28.300 --> 01:17:30.620 align:middle line:84%
+I may ask a little bit
+about it on a problem set.
+
+01:17:30.620 --> 01:17:34.490 align:middle line:84%
+So let me stop there, and I
+will see everyone on Thursday.
+
+01:17:34.490 --> 01:17:38.000 align:middle line:90%

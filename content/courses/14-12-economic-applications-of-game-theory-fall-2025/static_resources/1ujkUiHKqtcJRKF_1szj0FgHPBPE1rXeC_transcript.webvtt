@@ -1,0 +1,5143 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:03.368 align:middle line:90%
+[SQUEAKING]
+
+00:00:03.368 --> 00:00:04.324 align:middle line:90%
+[RUSTLING]
+
+00:00:04.324 --> 00:00:05.280 align:middle line:90%
+[CLICKING]
+
+00:00:05.280 --> 00:00:09.347 align:middle line:90%
+
+
+00:00:09.347 --> 00:00:10.180 align:middle line:90%
+IAN BALL: OK, great.
+
+00:00:10.180 --> 00:00:13.440 align:middle line:84%
+So let's now say a little bit
+about what this course is.
+
+00:00:13.440 --> 00:00:16.400 align:middle line:84%
+This is a course on game theory
+or on the economic applications
+
+00:00:16.400 --> 00:00:17.440 align:middle line:90%
+of game theory.
+
+00:00:17.440 --> 00:00:19.080 align:middle line:84%
+So I think a natural
+starting point
+
+00:00:19.080 --> 00:00:21.760 align:middle line:90%
+is to ask what is game theory.
+
+00:00:21.760 --> 00:00:23.840 align:middle line:84%
+Well, here's two
+definitions, both from people
+
+00:00:23.840 --> 00:00:27.320 align:middle line:84%
+who've won the Nobel Prize
+for their work in game theory.
+
+00:00:27.320 --> 00:00:28.880 align:middle line:84%
+The first is by
+Roger Myerson, who
+
+00:00:28.880 --> 00:00:32.800 align:middle line:84%
+says that game theory is the
+study of mathematical models
+
+00:00:32.800 --> 00:00:38.160 align:middle line:84%
+of conflict and cooperation
+between intelligent, rational
+
+00:00:38.160 --> 00:00:40.120 align:middle line:90%
+decision makers.
+
+00:00:40.120 --> 00:00:42.660 align:middle line:84%
+Robert Aumann, also
+a Nobel laureate,
+
+00:00:42.660 --> 00:00:45.400 align:middle line:84%
+gives just a briefer
+definition, which I think
+
+00:00:45.400 --> 00:00:47.560 align:middle line:90%
+encapsulates the key ideas.
+
+00:00:47.560 --> 00:00:49.440 align:middle line:84%
+It's interactive
+decision theory.
+
+00:00:49.440 --> 00:00:51.970 align:middle line:84%
+It's about people
+making decisions
+
+00:00:51.970 --> 00:00:53.220 align:middle line:90%
+when their decisions interact.
+
+00:00:53.220 --> 00:00:55.500 align:middle line:84%
+What does it mean for people's
+decisions to interact?
+
+00:00:55.500 --> 00:00:57.180 align:middle line:84%
+Well, I think the best way
+to see it is just an example.
+
+00:00:57.180 --> 00:00:58.847 align:middle line:84%
+So we're going to
+play a game as a class
+
+00:00:58.847 --> 00:01:00.440 align:middle line:84%
+to see what it means
+to be a hopefully
+
+00:01:00.440 --> 00:01:03.290 align:middle line:84%
+rational and intelligent
+interacting decision maker.
+
+00:01:03.290 --> 00:01:05.540 align:middle line:84%
+And then after that, I'll
+get into the formal material
+
+00:01:05.540 --> 00:01:06.300 align:middle line:90%
+on the board.
+
+00:01:06.300 --> 00:01:07.800 align:middle line:84%
+So to play games
+in the class, we're
+
+00:01:07.800 --> 00:01:10.365 align:middle line:84%
+going to use a
+platform called Moblab.
+
+00:01:10.365 --> 00:01:12.740 align:middle line:84%
+So let me just describe the
+game and then I'll hit Begin.
+
+00:01:12.740 --> 00:01:14.900 align:middle line:84%
+You're each going to be assigned
+a random number between 1
+
+00:01:14.900 --> 00:01:15.460 align:middle line:90%
+and 100.
+
+00:01:15.460 --> 00:01:16.680 align:middle line:90%
+It's going to be an integer.
+
+00:01:16.680 --> 00:01:19.080 align:middle line:84%
+And then you're each going to
+make a guess, which is also
+
+00:01:19.080 --> 00:01:20.500 align:middle line:90%
+a number between 1 and 100.
+
+00:01:20.500 --> 00:01:21.760 align:middle line:90%
+The winner of the game--
+
+00:01:21.760 --> 00:01:24.240 align:middle line:84%
+I'm sorry, there's no
+real prizes but pride--
+
+00:01:24.240 --> 00:01:26.800 align:middle line:84%
+the winner of the game is the
+person who guesses closest
+
+00:01:26.800 --> 00:01:30.085 align:middle line:84%
+to 2/3 of the average of
+everyone's number in the class.
+
+00:01:30.085 --> 00:01:31.960 align:middle line:84%
+AUDIENCE: The number
+they guess or the number
+
+00:01:31.960 --> 00:01:33.267 align:middle line:90%
+they were assigned?
+
+00:01:33.267 --> 00:01:34.600 align:middle line:90%
+IAN BALL: The number they guess.
+
+00:01:34.600 --> 00:01:35.740 align:middle line:90%
+So you're assigned a number.
+
+00:01:35.740 --> 00:01:36.240 align:middle line:90%
+Only you know that.
+
+00:01:36.240 --> 00:01:37.500 align:middle line:90%
+No one else knows that number.
+
+00:01:37.500 --> 00:01:38.708 align:middle line:90%
+You're going to make a guess.
+
+00:01:38.708 --> 00:01:41.800 align:middle line:84%
+And the winning guess is the
+guess that's closest to 2/3
+
+00:01:41.800 --> 00:01:44.060 align:middle line:84%
+of the average of everyone
+in the class's guess.
+
+00:01:44.060 --> 00:01:44.760 align:middle line:90%
+Yes.
+
+00:01:44.760 --> 00:01:45.720 align:middle line:84%
+AUDIENCE: Is
+everyone's number drawn
+
+00:01:45.720 --> 00:01:46.887 align:middle line:90%
+from a uniform distribution?
+
+00:01:46.887 --> 00:01:47.947 align:middle line:90%
+IAN BALL: Yes.
+
+00:01:47.947 --> 00:01:48.780 align:middle line:90%
+Any other questions?
+
+00:01:48.780 --> 00:01:49.080 align:middle line:90%
+Yes.
+
+00:01:49.080 --> 00:01:49.840 align:middle line:84%
+AUDIENCE: What's
+the range again?
+
+00:01:49.840 --> 00:01:50.920 align:middle line:90%
+IAN BALL: 1 to 100.
+
+00:01:50.920 --> 00:01:51.480 align:middle line:90%
+Yeah.
+
+00:01:51.480 --> 00:01:52.660 align:middle line:90%
+Any other questions?
+
+00:01:52.660 --> 00:01:54.700 align:middle line:84%
+I think these details
+should be there,
+
+00:01:54.700 --> 00:01:56.938 align:middle line:84%
+but sometimes they're
+a little imprecise
+
+00:01:56.938 --> 00:01:57.980 align:middle line:90%
+in the way they write it.
+
+00:01:57.980 --> 00:01:59.540 align:middle line:90%
+OK, so let's begin.
+
+00:01:59.540 --> 00:02:04.680 align:middle line:90%
+
+
+00:02:04.680 --> 00:02:05.760 align:middle line:90%
+All right.
+
+00:02:05.760 --> 00:02:07.800 align:middle line:90%
+Here we are.
+
+00:02:07.800 --> 00:02:08.660 align:middle line:90%
+So let's see.
+
+00:02:08.660 --> 00:02:11.172 align:middle line:84%
+So here on the
+horizontal axis are
+
+00:02:11.172 --> 00:02:12.380 align:middle line:90%
+the guesses that people made.
+
+00:02:12.380 --> 00:02:13.797 align:middle line:84%
+Again, to clarify,
+not the numbers
+
+00:02:13.797 --> 00:02:15.820 align:middle line:84%
+you got, but the guesses
+that people are making.
+
+00:02:15.820 --> 00:02:18.487 align:middle line:84%
+And on the vertical axis, we're
+showing the percentage of people
+
+00:02:18.487 --> 00:02:20.000 align:middle line:90%
+who made that particular guess.
+
+00:02:20.000 --> 00:02:20.987 align:middle line:90%
+So we have a few.
+
+00:02:20.987 --> 00:02:22.820 align:middle line:84%
+It's a bit maybe hard
+to see with the color,
+
+00:02:22.820 --> 00:02:24.600 align:middle line:84%
+but we have a few
+summary statistics here.
+
+00:02:24.600 --> 00:02:29.160 align:middle line:84%
+We see that the
+average was 36 roughly.
+
+00:02:29.160 --> 00:02:31.720 align:middle line:84%
+And that's the dotted
+purple line here.
+
+00:02:31.720 --> 00:02:35.640 align:middle line:84%
+And the winning guess was the
+guess that was closest to 2/3
+
+00:02:35.640 --> 00:02:38.080 align:middle line:90%
+of 36, so about 24.
+
+00:02:38.080 --> 00:02:40.640 align:middle line:90%
+And we see that guess is here.
+
+00:02:40.640 --> 00:02:44.160 align:middle line:84%
+Does anyone want to share
+their thought process?
+
+00:02:44.160 --> 00:02:46.660 align:middle line:84%
+Maybe someone who was
+quite high up here,
+
+00:02:46.660 --> 00:02:48.560 align:middle line:90%
+what they were thinking.
+
+00:02:48.560 --> 00:02:49.220 align:middle line:90%
+Or low?
+
+00:02:49.220 --> 00:02:54.543 align:middle line:84%
+Anyone who's willing to share
+what they were thinking about?
+
+00:02:54.543 --> 00:02:55.460 align:middle line:90%
+What about the winner?
+
+00:02:55.460 --> 00:02:56.960 align:middle line:84%
+They should be able
+to come forward.
+
+00:02:56.960 --> 00:02:57.650 align:middle line:90%
+Who won?
+
+00:02:57.650 --> 00:02:58.150 align:middle line:90%
+Yes.
+
+00:02:58.150 --> 00:02:58.650 align:middle line:90%
+You won.
+
+00:02:58.650 --> 00:03:00.617 align:middle line:84%
+OK, tell me, what
+was your reasoning?
+
+00:03:00.617 --> 00:03:02.450 align:middle line:84%
+AUDIENCE: I wouldn't
+replicate the strategy.
+
+00:03:02.450 --> 00:03:03.890 align:middle line:90%
+I think it's not the best idea.
+
+00:03:03.890 --> 00:03:07.790 align:middle line:84%
+But what I did was put the
+mean of a uniform distribution
+
+00:03:07.790 --> 00:03:09.730 align:middle line:84%
+from 0 to 100 would
+probably be around 50.
+
+00:03:09.730 --> 00:03:10.478 align:middle line:90%
+IAN BALL: Yeah.
+
+00:03:10.478 --> 00:03:11.770 align:middle line:90%
+AUDIENCE: I'd take 2/3 of that.
+
+00:03:11.770 --> 00:03:13.478 align:middle line:84%
+But I thought probably
+other people would
+
+00:03:13.478 --> 00:03:15.030 align:middle line:90%
+be thinking the same thing.
+
+00:03:15.030 --> 00:03:17.570 align:middle line:84%
+So I downscaled it
+a bit more by 2/3.
+
+00:03:17.570 --> 00:03:18.590 align:middle line:90%
+IAN BALL: Great.
+
+00:03:18.590 --> 00:03:19.090 align:middle line:90%
+Great.
+
+00:03:19.090 --> 00:03:21.330 align:middle line:84%
+So you're showing the foundation
+of game theoretic reasoning,
+
+00:03:21.330 --> 00:03:23.010 align:middle line:84%
+what we talked about,
+interactive decision making.
+
+00:03:23.010 --> 00:03:24.590 align:middle line:84%
+You didn't just think
+about your number.
+
+00:03:24.590 --> 00:03:26.330 align:middle line:84%
+You had to think about
+other people's numbers.
+
+00:03:26.330 --> 00:03:28.470 align:middle line:84%
+And then you had to think about
+what other people will do given
+
+00:03:28.470 --> 00:03:29.450 align:middle line:90%
+the numbers that they got.
+
+00:03:29.450 --> 00:03:31.290 align:middle line:84%
+And you adjusted your
+strategy accordingly.
+
+00:03:31.290 --> 00:03:33.670 align:middle line:84%
+And in this case, it
+worked out pretty well.
+
+00:03:33.670 --> 00:03:37.430 align:middle line:84%
+Anyone else want to share
+maybe a bid they're happy with,
+
+00:03:37.430 --> 00:03:39.630 align:middle line:84%
+a bid they feel they
+made a mistake on?
+
+00:03:39.630 --> 00:03:42.430 align:middle line:90%
+Any other thoughts?
+
+00:03:42.430 --> 00:03:43.150 align:middle line:90%
+Yes.
+
+00:03:43.150 --> 00:03:44.772 align:middle line:90%
+AUDIENCE: I did 26.
+
+00:03:44.772 --> 00:03:45.480 align:middle line:90%
+IAN BALL: 26, OK.
+
+00:03:45.480 --> 00:03:46.510 align:middle line:90%
+So you were pretty close, yeah?
+
+00:03:46.510 --> 00:03:47.050 align:middle line:90%
+AUDIENCE: Yeah.
+
+00:03:47.050 --> 00:03:48.467 align:middle line:84%
+I thought maybe
+something like 30,
+
+00:03:48.467 --> 00:03:50.150 align:middle line:84%
+and then figured
+that I was probably
+
+00:03:50.150 --> 00:03:52.650 align:middle line:84%
+wrong in whatever reason I would
+have, so I just lowered it.
+
+00:03:52.650 --> 00:03:54.010 align:middle line:90%
+IAN BALL: OK that's fair.
+
+00:03:54.010 --> 00:03:55.410 align:middle line:84%
+I mean, maybe they don't
+want to out themselves,
+
+00:03:55.410 --> 00:03:56.410 align:middle line:90%
+but I'm kind of curious.
+
+00:03:56.410 --> 00:03:59.170 align:middle line:84%
+People that guessed very high,
+any reasoning about that?
+
+00:03:59.170 --> 00:04:00.290 align:middle line:84%
+No, maybe they don't
+want to say anything.
+
+00:04:00.290 --> 00:04:02.570 align:middle line:84%
+OK, let's play it one more
+time and see what happens.
+
+00:04:02.570 --> 00:04:06.395 align:middle line:90%
+
+
+00:04:06.395 --> 00:04:09.110 align:middle line:84%
+Ah, so quite
+different this time.
+
+00:04:09.110 --> 00:04:15.618 align:middle line:84%
+So now the average was 21 and
+the winning choice was 14.
+
+00:04:15.618 --> 00:04:16.410 align:middle line:90%
+That's interesting.
+
+00:04:16.410 --> 00:04:17.970 align:middle line:90%
+So this happens every year.
+
+00:04:17.970 --> 00:04:19.670 align:middle line:90%
+So people are very consistent.
+
+00:04:19.670 --> 00:04:21.850 align:middle line:84%
+So the distribution
+has changed a bit.
+
+00:04:21.850 --> 00:04:24.550 align:middle line:84%
+So some people must have
+decided to bid less this time.
+
+00:04:24.550 --> 00:04:29.790 align:middle line:84%
+Anyone who bid less this time,
+do they want to share why?
+
+00:04:29.790 --> 00:04:31.150 align:middle line:90%
+Very quiet.
+
+00:04:31.150 --> 00:04:33.478 align:middle line:90%
+Anyone?
+
+00:04:33.478 --> 00:04:37.510 align:middle line:84%
+AUDIENCE: It's basically tho
+idea that you would keep getting
+
+00:04:37.510 --> 00:04:41.990 align:middle line:84%
+2/3 and 2/3 and 2/3 of what you
+previously thought like would be
+
+00:04:41.990 --> 00:04:42.830 align:middle line:90%
+a good guess.
+
+00:04:42.830 --> 00:04:43.372 align:middle line:90%
+IAN BALL: OK.
+
+00:04:43.372 --> 00:04:44.455 align:middle line:90%
+Can you say a little more?
+
+00:04:44.455 --> 00:04:46.330 align:middle line:84%
+So you thought something
+was a good guess,
+
+00:04:46.330 --> 00:04:47.705 align:middle line:84%
+and now you're
+bidding even less.
+
+00:04:47.705 --> 00:04:48.710 align:middle line:90%
+And why is that?
+
+00:04:48.710 --> 00:04:50.350 align:middle line:84%
+AUDIENCE: Like I
+initially thought
+
+00:04:50.350 --> 00:04:50.810 align:middle line:90%
+something was a good guess.
+
+00:04:50.810 --> 00:04:53.030 align:middle line:84%
+And then I was like, OK,
+but if I think this, then
+
+00:04:53.030 --> 00:04:54.530 align:middle line:84%
+what if other people
+think the same?
+
+00:04:54.530 --> 00:04:56.750 align:middle line:84%
+So I'm going to
+give 2/3 of that.
+
+00:04:56.750 --> 00:04:58.085 align:middle line:90%
+But then 2/3 again of that.
+
+00:04:58.085 --> 00:04:59.710 align:middle line:84%
+And then I'm going
+to give 2/3 of that.
+
+00:04:59.710 --> 00:05:00.950 align:middle line:90%
+IAN BALL: Right.
+
+00:05:00.950 --> 00:05:03.390 align:middle line:84%
+So what we see is that
+interactive decision making
+
+00:05:03.390 --> 00:05:04.690 align:middle line:90%
+sometimes creates this regress.
+
+00:05:04.690 --> 00:05:06.810 align:middle line:84%
+So first, I have to
+think about my number.
+
+00:05:06.810 --> 00:05:07.950 align:middle line:90%
+That's certainly relevant.
+
+00:05:07.950 --> 00:05:08.990 align:middle line:84%
+Then I have to try
+to think about what
+
+00:05:08.990 --> 00:05:10.312 align:middle line:90%
+other people are going to do.
+
+00:05:10.312 --> 00:05:12.270 align:middle line:84%
+So I have to think about
+what number they have.
+
+00:05:12.270 --> 00:05:14.670 align:middle line:84%
+But now I have to put myself in
+the shoes of those other people
+
+00:05:14.670 --> 00:05:15.950 align:middle line:90%
+and say, what are they bidding?
+
+00:05:15.950 --> 00:05:17.158 align:middle line:90%
+What are they going to guess?
+
+00:05:17.158 --> 00:05:19.510 align:middle line:84%
+Well, they're thinking
+about what I'm doing.
+
+00:05:19.510 --> 00:05:20.970 align:middle line:84%
+But when they try to think
+about what I'm doing,
+
+00:05:20.970 --> 00:05:22.810 align:middle line:84%
+they have to think about what I
+think about what they're doing.
+
+00:05:22.810 --> 00:05:23.510 align:middle line:84%
+So I have think
+about what would they
+
+00:05:23.510 --> 00:05:24.770 align:middle line:84%
+think about what I
+think what they think.
+
+00:05:24.770 --> 00:05:26.310 align:middle line:84%
+And all of a sudden, it
+gets very, very hard.
+
+00:05:26.310 --> 00:05:28.875 align:middle line:84%
+And this is exactly what game
+theory is trying to address.
+
+00:05:28.875 --> 00:05:30.250 align:middle line:84%
+I think for a
+while historically,
+
+00:05:30.250 --> 00:05:31.330 align:middle line:84%
+if you go back to the
+history of thought,
+
+00:05:31.330 --> 00:05:33.770 align:middle line:84%
+people thought, it's
+just an infinite regress.
+
+00:05:33.770 --> 00:05:36.210 align:middle line:84%
+There's no way we can try
+to analyze games like this.
+
+00:05:36.210 --> 00:05:37.990 align:middle line:84%
+And game theory is
+a formal way to try
+
+00:05:37.990 --> 00:05:40.470 align:middle line:84%
+to think about this kind
+of reasoning process.
+
+00:05:40.470 --> 00:05:42.150 align:middle line:90%
+This also happens every year.
+
+00:05:42.150 --> 00:05:45.390 align:middle line:84%
+A lot of people shift to
+100 after we talk about it.
+
+00:05:45.390 --> 00:05:47.137 align:middle line:90%
+Why?
+
+00:05:47.137 --> 00:05:48.970 align:middle line:84%
+I think some people are
+kind of mischievous.
+
+00:05:48.970 --> 00:05:51.345 align:middle line:84%
+They want to try to shift
+the results and get it wrong.
+
+00:05:51.345 --> 00:05:53.470 align:middle line:84%
+So I think this highlights
+a really important thing
+
+00:05:53.470 --> 00:05:55.512 align:middle line:84%
+about game theory, that
+when we study game theory
+
+00:05:55.512 --> 00:05:58.590 align:middle line:84%
+and when we analyze a game,
+a really important modeling
+
+00:05:58.590 --> 00:06:02.030 align:middle line:84%
+choice is writing down what
+people's preferences actually
+
+00:06:02.030 --> 00:06:03.572 align:middle line:90%
+are, what people want.
+
+00:06:03.572 --> 00:06:06.030 align:middle line:84%
+So if you analyze this game
+assuming that people's goal was
+
+00:06:06.030 --> 00:06:08.470 align:middle line:84%
+to win, your predictions
+might be wrong
+
+00:06:08.470 --> 00:06:10.510 align:middle line:84%
+if some people's goal
+is not actually to win.
+
+00:06:10.510 --> 00:06:11.968 align:middle line:84%
+So I think some
+people's goal might
+
+00:06:11.968 --> 00:06:14.170 align:middle line:84%
+be to make my prediction
+look a little silly
+
+00:06:14.170 --> 00:06:16.650 align:middle line:84%
+or to make their friends
+laugh or to mess with things.
+
+00:06:16.650 --> 00:06:17.690 align:middle line:90%
+That's fine.
+
+00:06:17.690 --> 00:06:18.890 align:middle line:90%
+That's their preference.
+
+00:06:18.890 --> 00:06:20.870 align:middle line:84%
+But we need to make
+sure we accurately
+
+00:06:20.870 --> 00:06:23.090 align:middle line:84%
+capture people's preferences
+when we model games.
+
+00:06:23.090 --> 00:06:24.590 align:middle line:84%
+Because if we don't,
+our predictions
+
+00:06:24.590 --> 00:06:26.030 align:middle line:90%
+are obviously going to be wrong.
+
+00:06:26.030 --> 00:06:26.990 align:middle line:84%
+Another thing,
+though, that we have
+
+00:06:26.990 --> 00:06:29.710 align:middle line:84%
+to keep in mind is, especially
+when comparing the results we
+
+00:06:29.710 --> 00:06:32.730 align:middle line:84%
+get in a lab or in a classroom
+setting to the real world,
+
+00:06:32.730 --> 00:06:34.225 align:middle line:84%
+is that the stakes
+really matter.
+
+00:06:34.225 --> 00:06:36.350 align:middle line:84%
+So we have a lot of students--
+maybe a few students
+
+00:06:36.350 --> 00:06:37.517 align:middle line:90%
+who are kind of mischievous.
+
+00:06:37.517 --> 00:06:39.897 align:middle line:84%
+If you won $10 for
+guessing, well, I
+
+00:06:39.897 --> 00:06:42.230 align:middle line:84%
+think some of those students
+wouldn't be so mischievous.
+
+00:06:42.230 --> 00:06:44.330 align:middle line:84%
+And if you won
+$100,000 for winning,
+
+00:06:44.330 --> 00:06:46.290 align:middle line:84%
+I think very few students
+would be mischievous.
+
+00:06:46.290 --> 00:06:48.830 align:middle line:84%
+And I think once we get high
+enough, essentially no students
+
+00:06:48.830 --> 00:06:50.190 align:middle line:90%
+would be mischievous.
+
+00:06:50.190 --> 00:06:52.372 align:middle line:84%
+So the stakes and what you
+actually get for winning
+
+00:06:52.372 --> 00:06:53.830 align:middle line:84%
+are going to affect
+the preferences
+
+00:06:53.830 --> 00:06:56.510 align:middle line:90%
+that people have in this game.
+
+00:06:56.510 --> 00:06:58.090 align:middle line:90%
+So let's move on.
+
+00:06:58.090 --> 00:07:00.170 align:middle line:84%
+The plan is to move on
+to the formal analysis,
+
+00:07:00.170 --> 00:07:03.773 align:middle line:84%
+unless there are any
+questions about this game.
+
+00:07:03.773 --> 00:07:06.190 align:middle line:84%
+I should say this is sometimes
+called the Keynesian beauty
+
+00:07:06.190 --> 00:07:06.650 align:middle line:90%
+contest.
+
+00:07:06.650 --> 00:07:08.390 align:middle line:84%
+So if you want to google
+it or read about it,
+
+00:07:08.390 --> 00:07:09.410 align:middle line:90%
+that's what it's often called.
+
+00:07:09.410 --> 00:07:09.910 align:middle line:90%
+Yes.
+
+00:07:09.910 --> 00:07:12.550 align:middle line:84%
+AUDIENCE: So the average
+wasn't the average
+
+00:07:12.550 --> 00:07:16.490 align:middle line:84%
+of numbers randomly assigned
+by the game to everyone,
+
+00:07:16.490 --> 00:07:18.250 align:middle line:90%
+but the average of the choices?
+
+00:07:18.250 --> 00:07:19.250 align:middle line:90%
+IAN BALL: Exactly right.
+
+00:07:19.250 --> 00:07:20.630 align:middle line:84%
+So with this many
+people, the average
+
+00:07:20.630 --> 00:07:22.670 align:middle line:84%
+of the numbers that people
+got is almost certain
+
+00:07:22.670 --> 00:07:24.750 align:middle line:90%
+to be very close to 50.
+
+00:07:24.750 --> 00:07:27.250 align:middle line:84%
+But this average is
+the average choice,
+
+00:07:27.250 --> 00:07:29.890 align:middle line:84%
+so the average guess
+of people in the class.
+
+00:07:29.890 --> 00:07:32.750 align:middle line:84%
+And that's why when we
+move from the first round
+
+00:07:32.750 --> 00:07:35.330 align:middle line:84%
+to the second round, I didn't
+see all the realizations,
+
+00:07:35.330 --> 00:07:37.990 align:middle line:84%
+but it's likely that the average
+number that people received
+
+00:07:37.990 --> 00:07:39.870 align:middle line:84%
+was basically the same
+in the two rounds.
+
+00:07:39.870 --> 00:07:41.700 align:middle line:84%
+But the average guess
+changed dramatically
+
+00:07:41.700 --> 00:07:43.950 align:middle line:84%
+because people behaved
+differently in the second round
+
+00:07:43.950 --> 00:07:45.310 align:middle line:90%
+after we had this discussion.
+
+00:07:45.310 --> 00:07:46.685 align:middle line:90%
+And we could keep doing this.
+
+00:07:46.685 --> 00:07:47.810 align:middle line:90%
+We have limited class time.
+
+00:07:47.810 --> 00:07:49.370 align:middle line:84%
+But my guess if we
+played this 10 times,
+
+00:07:49.370 --> 00:07:51.453 align:middle line:84%
+we might see people getting
+very, very close to 0.
+
+00:07:51.453 --> 00:07:55.190 align:middle line:84%
+And my guess is then some people
+at 100 to mess with things.
+
+00:07:55.190 --> 00:07:57.370 align:middle line:84%
+Was there a question
+here or comment?
+
+00:07:57.370 --> 00:07:58.477 align:middle line:90%
+Yeah.
+
+00:07:58.477 --> 00:07:59.810 align:middle line:90%
+AUDIENCE: I didn't get a number.
+
+00:07:59.810 --> 00:08:00.860 align:middle line:90%
+It was just guest.
+
+00:08:00.860 --> 00:08:03.110 align:middle line:84%
+I don't know if there was a
+big number assigned to it.
+
+00:08:03.110 --> 00:08:04.390 align:middle line:90%
+IAN BALL: Oh, maybe I'm--
+
+00:08:04.390 --> 00:08:05.010 align:middle line:90%
+oh yeah, you're right.
+
+00:08:05.010 --> 00:08:05.510 align:middle line:90%
+Sorry.
+
+00:08:05.510 --> 00:08:06.710 align:middle line:90%
+There's no number.
+
+00:08:06.710 --> 00:08:07.670 align:middle line:90%
+Yeah, good point.
+
+00:08:07.670 --> 00:08:09.530 align:middle line:84%
+I'm getting ahead to
+the next game we play.
+
+00:08:09.530 --> 00:08:09.810 align:middle line:90%
+You're right.
+
+00:08:09.810 --> 00:08:09.950 align:middle line:90%
+Sorry.
+
+00:08:09.950 --> 00:08:11.200 align:middle line:90%
+You weren't assigned a number.
+
+00:08:11.200 --> 00:08:12.490 align:middle line:90%
+Yeah, sorry.
+
+00:08:12.490 --> 00:08:14.230 align:middle line:90%
+That was very confusing.
+
+00:08:14.230 --> 00:08:16.850 align:middle line:84%
+We play another game where you
+get a number, and fair enough.
+
+00:08:16.850 --> 00:08:18.058 align:middle line:90%
+Yeah, you don't get a number.
+
+00:08:18.058 --> 00:08:19.020 align:middle line:90%
+There's no uniformity.
+
+00:08:19.020 --> 00:08:19.770 align:middle line:90%
+Yeah, fair enough.
+
+00:08:19.770 --> 00:08:22.470 align:middle line:90%
+OK, I'm getting ahead of myself.
+
+00:08:22.470 --> 00:08:25.150 align:middle line:90%
+Thanks for the clarification.
+
+00:08:25.150 --> 00:08:28.530 align:middle line:90%
+OK, let us get to the board.
+
+00:08:28.530 --> 00:08:50.700 align:middle line:90%
+
+
+00:08:50.700 --> 00:08:51.240 align:middle line:90%
+There we go.
+
+00:08:51.240 --> 00:08:53.220 align:middle line:84%
+So on the problem set, you'll
+analyze a variant of this game
+
+00:08:53.220 --> 00:08:54.040 align:middle line:90%
+where you'll get a number.
+
+00:08:54.040 --> 00:08:54.960 align:middle line:90%
+So that'll be coming.
+
+00:08:54.960 --> 00:09:10.500 align:middle line:90%
+
+
+00:09:10.500 --> 00:09:11.680 align:middle line:90%
+Let's open this up.
+
+00:09:11.680 --> 00:09:32.380 align:middle line:90%
+
+
+00:09:32.380 --> 00:09:35.820 align:middle line:90%
+OK, so let's get started.
+
+00:09:35.820 --> 00:09:38.340 align:middle line:84%
+So first let me say a little
+bit more about what we said
+
+00:09:38.340 --> 00:09:43.900 align:middle line:84%
+was the definition
+of game theory
+
+00:09:43.900 --> 00:09:52.020 align:middle line:84%
+which we said was the study of
+interacting rational decision
+
+00:09:52.020 --> 00:09:52.680 align:middle line:90%
+makers.
+
+00:09:52.680 --> 00:10:03.300 align:middle line:90%
+
+
+00:10:03.300 --> 00:10:06.860 align:middle line:84%
+So let's break down each of
+the terms in this definition.
+
+00:10:06.860 --> 00:10:10.180 align:middle line:84%
+Let's go backwards from
+easiest to hardest.
+
+00:10:10.180 --> 00:10:12.220 align:middle line:84%
+So I think the basic
+thing is that we're
+
+00:10:12.220 --> 00:10:13.600 align:middle line:90%
+studying decision makers.
+
+00:10:13.600 --> 00:10:15.520 align:middle line:84%
+We're studying people
+who make decisions.
+
+00:10:15.520 --> 00:10:17.360 align:middle line:84%
+And that means people
+are making choices.
+
+00:10:17.360 --> 00:10:19.020 align:middle line:84%
+So another good
+word for decision
+
+00:10:19.020 --> 00:10:20.640 align:middle line:84%
+that we'll use a
+lot in the course
+
+00:10:20.640 --> 00:10:23.180 align:middle line:84%
+is people are making
+either choices
+
+00:10:23.180 --> 00:10:26.860 align:middle line:84%
+or we might also
+call it actions.
+
+00:10:26.860 --> 00:10:29.060 align:middle line:84%
+And game theory is a
+very abstract, general
+
+00:10:29.060 --> 00:10:32.860 align:middle line:84%
+mathematical theory that applies
+to a huge range of choices
+
+00:10:32.860 --> 00:10:33.820 align:middle line:90%
+and actions.
+
+00:10:33.820 --> 00:10:35.460 align:middle line:84%
+So in the game you
+just played, where
+
+00:10:35.460 --> 00:10:39.900 align:middle line:84%
+you chose a number to guess,
+that was an example of a choice.
+
+00:10:39.900 --> 00:10:42.518 align:middle line:84%
+Whether you go to MIT is another
+example of a choice or action
+
+00:10:42.518 --> 00:10:44.060 align:middle line:84%
+that we could analyze
+in game theory.
+
+00:10:44.060 --> 00:10:49.580 align:middle line:84%
+What price a firm sets is
+another example of a choice.
+
+00:10:49.580 --> 00:10:52.500 align:middle line:84%
+Which country you move
+to, what job you choose,
+
+00:10:52.500 --> 00:10:54.045 align:middle line:84%
+how many hours a
+week you work, these
+
+00:10:54.045 --> 00:10:56.180 align:middle line:84%
+are all these
+different questions--
+
+00:10:56.180 --> 00:10:58.540 align:middle line:84%
+what platform a political
+party chooses coming up
+
+00:10:58.540 --> 00:11:00.560 align:middle line:84%
+to an election, who
+someone votes for,
+
+00:11:00.560 --> 00:11:03.260 align:middle line:84%
+these are all actions or
+choices that people make.
+
+00:11:03.260 --> 00:11:05.580 align:middle line:84%
+And the generality and
+abstractness of game theory
+
+00:11:05.580 --> 00:11:08.163 align:middle line:84%
+is what allows it to be applied
+to so many different settings.
+
+00:11:08.163 --> 00:11:09.747 align:middle line:84%
+And throughout the
+course, we're going
+
+00:11:09.747 --> 00:11:11.940 align:middle line:84%
+to talk about various
+applications of game theory,
+
+00:11:11.940 --> 00:11:13.460 align:middle line:84%
+mainly within
+economics, but also
+
+00:11:13.460 --> 00:11:16.260 align:middle line:84%
+to some things beyond economics,
+like political science
+
+00:11:16.260 --> 00:11:19.380 align:middle line:90%
+and political bargaining.
+
+00:11:19.380 --> 00:11:20.872 align:middle line:90%
+What does rational mean?
+
+00:11:20.872 --> 00:11:23.080 align:middle line:84%
+So this is certainly a
+sticking point of game theory.
+
+00:11:23.080 --> 00:11:25.120 align:middle line:84%
+If you've mentioned
+game theory to someone,
+
+00:11:25.120 --> 00:11:26.500 align:middle line:84%
+whenever I'm on a
+plane and people ask me
+
+00:11:26.500 --> 00:11:28.000 align:middle line:84%
+what I do and I say
+I'm a game theorist,
+
+00:11:28.000 --> 00:11:29.320 align:middle line:90%
+I always get the same response.
+
+00:11:29.320 --> 00:11:30.700 align:middle line:90%
+But aren't people not rational?
+
+00:11:30.700 --> 00:11:33.260 align:middle line:84%
+You probably don't get asked
+about game theory on planes
+
+00:11:33.260 --> 00:11:37.260 align:middle line:84%
+as much as I do, but
+maybe someday you will.
+
+00:11:37.260 --> 00:11:41.100 align:middle line:84%
+And I want to be cautious about
+how we interpret rationality.
+
+00:11:41.100 --> 00:11:43.780 align:middle line:84%
+In some contexts, this
+is a very bad assumption.
+
+00:11:43.780 --> 00:11:46.500 align:middle line:90%
+There's no question about that.
+
+00:11:46.500 --> 00:11:49.060 align:middle line:84%
+But in other contexts, I
+think it's a better assumption
+
+00:11:49.060 --> 00:11:51.100 align:middle line:90%
+than people might think.
+
+00:11:51.100 --> 00:11:53.300 align:middle line:84%
+And the reason for
+that is that the way
+
+00:11:53.300 --> 00:11:55.763 align:middle line:84%
+we use the term rationality
+within game theory
+
+00:11:55.763 --> 00:11:57.180 align:middle line:84%
+is a bit different
+than the way we
+
+00:11:57.180 --> 00:11:59.860 align:middle line:84%
+use it colloquially
+in everyday language.
+
+00:11:59.860 --> 00:12:04.360 align:middle line:84%
+So what you might often hear
+someone on the street say is,
+
+00:12:04.360 --> 00:12:07.140 align:middle line:84%
+it's so irrational
+for this person
+
+00:12:07.140 --> 00:12:10.900 align:middle line:84%
+to like this
+political candidate.
+
+00:12:10.900 --> 00:12:12.380 align:middle line:84%
+In our model of
+rational choice, we
+
+00:12:12.380 --> 00:12:15.060 align:middle line:84%
+would never say someone's
+preferences are irrational.
+
+00:12:15.060 --> 00:12:17.160 align:middle line:84%
+If that's what they like,
+that's what they like.
+
+00:12:17.160 --> 00:12:18.660 align:middle line:84%
+So rationality, I
+think a better way
+
+00:12:18.660 --> 00:12:21.520 align:middle line:84%
+to think of it is it's
+really about consistency.
+
+00:12:21.520 --> 00:12:24.877 align:middle line:90%
+
+
+00:12:24.877 --> 00:12:26.460 align:middle line:84%
+The agents in the
+models that we study
+
+00:12:26.460 --> 00:12:29.180 align:middle line:84%
+are going to act
+towards achieving
+
+00:12:29.180 --> 00:12:30.860 align:middle line:90%
+some consistent objective.
+
+00:12:30.860 --> 00:12:32.880 align:middle line:84%
+You might disagree with
+the objective they have.
+
+00:12:32.880 --> 00:12:33.860 align:middle line:84%
+They might like a
+different flavor
+
+00:12:33.860 --> 00:12:35.818 align:middle line:84%
+of ice cream or a different
+political candidate
+
+00:12:35.818 --> 00:12:38.260 align:middle line:84%
+or put different weight
+on income and leisure.
+
+00:12:38.260 --> 00:12:39.322 align:middle line:90%
+That's fine.
+
+00:12:39.322 --> 00:12:41.280 align:middle line:84%
+We don't all have to have
+the same preferences,
+
+00:12:41.280 --> 00:12:44.660 align:middle line:84%
+but the assumption is
+that people consistently
+
+00:12:44.660 --> 00:12:48.340 align:middle line:84%
+act with an eye towards these
+preferences that they do have.
+
+00:12:48.340 --> 00:12:53.020 align:middle line:84%
+So sometimes, there's a phrase
+that we say and I like to say is
+
+00:12:53.020 --> 00:12:54.880 align:middle line:84%
+that preferences
+cannot be irrational.
+
+00:12:54.880 --> 00:13:01.820 align:middle line:90%
+
+
+00:13:01.820 --> 00:13:05.020 align:middle line:84%
+What can be rational in the
+context of game theory choices
+
+00:13:05.020 --> 00:13:06.540 align:middle line:90%
+giving preferences.
+
+00:13:06.540 --> 00:13:09.333 align:middle line:84%
+So liking chocolate ice
+cream is not irrational.
+
+00:13:09.333 --> 00:13:12.000 align:middle line:84%
+Even if you really like vanilla,
+if your friend likes chocolate,
+
+00:13:12.000 --> 00:13:12.480 align:middle line:90%
+that's fine.
+
+00:13:12.480 --> 00:13:13.500 align:middle line:84%
+But if your friend
+likes chocolate
+
+00:13:13.500 --> 00:13:15.100 align:middle line:84%
+and they choose
+vanilla, we would
+
+00:13:15.100 --> 00:13:17.058 align:middle line:84%
+call that choice irrational
+because they're not
+
+00:13:17.058 --> 00:13:19.140 align:middle line:90%
+maximizing their objective.
+
+00:13:19.140 --> 00:13:23.060 align:middle line:84%
+Now, consistency-- now
+I've shifted the goalposts.
+
+00:13:23.060 --> 00:13:24.700 align:middle line:84%
+Instead of trying to
+defend rationality
+
+00:13:24.700 --> 00:13:26.340 align:middle line:84%
+as a game theory
+assumption, I'm now
+
+00:13:26.340 --> 00:13:28.740 align:middle line:90%
+trying to mention consistency.
+
+00:13:28.740 --> 00:13:31.520 align:middle line:84%
+Again, sometimes it applies,
+sometimes it doesn't.
+
+00:13:31.520 --> 00:13:34.900 align:middle line:84%
+My guess is your preferences
+today as 20-year-olds are very
+
+00:13:34.900 --> 00:13:37.570 align:middle line:84%
+different from the preferences
+you had 18 years ago.
+
+00:13:37.570 --> 00:13:40.170 align:middle line:84%
+So if we're looking at a model
+of people's choices over life,
+
+00:13:40.170 --> 00:13:42.175 align:middle line:84%
+this probably isn't a
+very good description,
+
+00:13:42.175 --> 00:13:44.050 align:middle line:84%
+or at least we might
+need to enrich the model
+
+00:13:44.050 --> 00:13:44.885 align:middle line:90%
+to capture that.
+
+00:13:44.885 --> 00:13:47.010 align:middle line:84%
+But if we're looking at
+your choices or preferences
+
+00:13:47.010 --> 00:13:51.610 align:middle line:84%
+today and tomorrow, it probably
+is a pretty good assumption.
+
+00:13:51.610 --> 00:13:53.003 align:middle line:90%
+And then interacting.
+
+00:13:53.003 --> 00:13:55.170 align:middle line:84%
+This is the key thing that
+distinguishes game theory
+
+00:13:55.170 --> 00:13:57.690 align:middle line:84%
+from a lot of other
+decision problems
+
+00:13:57.690 --> 00:13:59.350 align:middle line:90%
+that we study in economics.
+
+00:13:59.350 --> 00:14:01.530 align:middle line:84%
+And it's exactly what we
+saw in this first game.
+
+00:14:01.530 --> 00:14:04.630 align:middle line:84%
+It's that multiple people
+are making decisions.
+
+00:14:04.630 --> 00:14:05.790 align:middle line:90%
+But it's more than that.
+
+00:14:05.790 --> 00:14:08.308 align:middle line:84%
+There are a lot of situations
+where we all make decisions,
+
+00:14:08.308 --> 00:14:10.350 align:middle line:84%
+but there's no interaction
+between the decisions.
+
+00:14:10.350 --> 00:14:12.392 align:middle line:84%
+So we don't really have
+to take into account what
+
+00:14:12.392 --> 00:14:13.625 align:middle line:90%
+decisions other people make.
+
+00:14:13.625 --> 00:14:15.250 align:middle line:84%
+What distinguishes
+game theory and what
+
+00:14:15.250 --> 00:14:17.050 align:middle line:84%
+I mean by interacting
+decisions is
+
+00:14:17.050 --> 00:14:19.770 align:middle line:84%
+that when I'm choosing what
+decision to make myself,
+
+00:14:19.770 --> 00:14:22.850 align:middle line:84%
+I have to take into account what
+other people are going to do.
+
+00:14:22.850 --> 00:14:26.570 align:middle line:84%
+Because what other people
+do affects my preferences.
+
+00:14:26.570 --> 00:14:29.410 align:middle line:84%
+So this is often called--
+the situation is often called
+
+00:14:29.410 --> 00:14:31.150 align:middle line:90%
+strategic interdependence.
+
+00:14:31.150 --> 00:14:38.850 align:middle line:90%
+
+
+00:14:38.850 --> 00:14:43.130 align:middle line:84%
+What's best for me depends
+upon what other people do.
+
+00:14:43.130 --> 00:14:44.810 align:middle line:84%
+So a classic example
+where this is used
+
+00:14:44.810 --> 00:14:47.450 align:middle line:84%
+would be penalty kicks
+or tennis serves.
+
+00:14:47.450 --> 00:14:49.530 align:middle line:84%
+Should the shooter
+shoot left or right?
+
+00:14:49.530 --> 00:14:52.010 align:middle line:84%
+Well, there's no inherent
+reason to shoot left or right.
+
+00:14:52.010 --> 00:14:54.210 align:middle line:84%
+But whether they should
+shoot left or right
+
+00:14:54.210 --> 00:14:56.550 align:middle line:84%
+depends upon which way the
+goalie is going to dive
+
+00:14:56.550 --> 00:14:59.550 align:middle line:84%
+or which way the tennis serve
+receiver is planning to play.
+
+00:14:59.550 --> 00:15:01.952 align:middle line:84%
+The best action for one
+player depends upon what
+
+00:15:01.952 --> 00:15:02.910 align:middle line:90%
+other people are doing.
+
+00:15:02.910 --> 00:15:06.090 align:middle line:84%
+And that's going to be
+what we study today.
+
+00:15:06.090 --> 00:15:08.010 align:middle line:90%
+So that's this course.
+
+00:15:08.010 --> 00:15:09.850 align:middle line:90%
+What about this class today?
+
+00:15:09.850 --> 00:15:13.690 align:middle line:84%
+We're actually going to drop
+interacting and just study
+
+00:15:13.690 --> 00:15:15.640 align:middle line:84%
+a single rational
+decision maker.
+
+00:15:15.640 --> 00:15:17.390 align:middle line:84%
+That's going to be our
+baseline for today.
+
+00:15:17.390 --> 00:15:19.650 align:middle line:84%
+Because before we can
+study how rational decision
+
+00:15:19.650 --> 00:15:22.410 align:middle line:84%
+makers interact, we have to
+study how rational decision
+
+00:15:22.410 --> 00:15:25.077 align:middle line:90%
+makers act in isolation.
+
+00:15:25.077 --> 00:15:27.410 align:middle line:84%
+So today-- and then the rest
+of the course will be about
+
+00:15:27.410 --> 00:15:29.863 align:middle line:90%
+interaction--
+
+00:15:29.863 --> 00:15:31.530 align:middle line:84%
+today we're going to
+study what's called
+
+00:15:31.530 --> 00:15:35.410 align:middle line:90%
+individual decision making.
+
+00:15:35.410 --> 00:15:38.730 align:middle line:84%
+Of course, up here, we
+still have individuals.
+
+00:15:38.730 --> 00:15:40.410 align:middle line:84%
+But the key is that
+they're interacting
+
+00:15:40.410 --> 00:15:41.270 align:middle line:90%
+with other individuals.
+
+00:15:41.270 --> 00:15:42.830 align:middle line:84%
+So maybe individual
+is not the best term,
+
+00:15:42.830 --> 00:15:43.910 align:middle line:90%
+but this is what's used.
+
+00:15:43.910 --> 00:15:46.870 align:middle line:84%
+We're going to study
+individual decision making.
+
+00:15:46.870 --> 00:15:50.890 align:middle line:90%
+
+
+00:15:50.890 --> 00:15:52.890 align:middle line:84%
+I want to make one final
+comment about the scope
+
+00:15:52.890 --> 00:15:55.570 align:middle line:84%
+of game theory, which
+is the question of who's
+
+00:15:55.570 --> 00:15:57.730 align:middle line:90%
+taking these actions.
+
+00:15:57.730 --> 00:16:00.603 align:middle line:84%
+We often think of it as an
+individual making choices.
+
+00:16:00.603 --> 00:16:02.270 align:middle line:84%
+But it can be applied
+much more broadly.
+
+00:16:02.270 --> 00:16:05.110 align:middle line:84%
+So there's a lot of applications
+of game theory to evolution,
+
+00:16:05.110 --> 00:16:06.970 align:middle line:84%
+where we think of
+animals or species
+
+00:16:06.970 --> 00:16:08.830 align:middle line:84%
+kind of collectively
+taking actions.
+
+00:16:08.830 --> 00:16:11.730 align:middle line:84%
+We might also think about firms
+or organizations, governments
+
+00:16:11.730 --> 00:16:14.510 align:middle line:84%
+taking actions,
+committees taking actions.
+
+00:16:14.510 --> 00:16:17.948 align:middle line:84%
+And I think now with the rise
+of artificial intelligence,
+
+00:16:17.948 --> 00:16:19.490 align:middle line:84%
+there's a lot of
+interest in thinking
+
+00:16:19.490 --> 00:16:21.610 align:middle line:84%
+of the agents in
+our models as being
+
+00:16:21.610 --> 00:16:24.343 align:middle line:84%
+an LLM or some algorithm
+that's taking an action
+
+00:16:24.343 --> 00:16:25.510 align:middle line:90%
+and interacting with people.
+
+00:16:25.510 --> 00:16:29.530 align:middle line:84%
+So one view that is
+kind of becoming common,
+
+00:16:29.530 --> 00:16:32.002 align:middle line:84%
+we can debate about it, is that
+the rationality assumptions
+
+00:16:32.002 --> 00:16:34.210 align:middle line:84%
+of game theory become more
+useful and more compelling
+
+00:16:34.210 --> 00:16:35.810 align:middle line:84%
+in a world of
+artificial intelligence.
+
+00:16:35.810 --> 00:16:37.602 align:middle line:84%
+We can debate about
+that, but that's a view
+
+00:16:37.602 --> 00:16:39.810 align:middle line:90%
+that some people express.
+
+00:16:39.810 --> 00:16:43.890 align:middle line:84%
+OK, so here we are,
+individual decision making.
+
+00:16:43.890 --> 00:16:46.310 align:middle line:84%
+Let's start with a
+very simple problem--
+
+00:16:46.310 --> 00:16:48.930 align:middle line:90%
+
+
+00:16:48.930 --> 00:16:51.470 align:middle line:84%
+a simple what I might call
+decision or choice problem.
+
+00:16:51.470 --> 00:16:54.810 align:middle line:90%
+
+
+00:16:54.810 --> 00:16:55.790 align:middle line:90%
+Nothing deep here.
+
+00:16:55.790 --> 00:16:57.582 align:middle line:84%
+Nothing that interesting
+about the problem.
+
+00:16:57.582 --> 00:16:59.730 align:middle line:84%
+But I just want to show
+how we can set it up.
+
+00:16:59.730 --> 00:17:02.290 align:middle line:84%
+So let's say that you're
+choosing between three things.
+
+00:17:02.290 --> 00:17:05.450 align:middle line:84%
+Let's say you're at a cafe and
+it's coffee, espresso, and tea.
+
+00:17:05.450 --> 00:17:10.690 align:middle line:90%
+So we have three choices--
+
+00:17:10.690 --> 00:17:16.690 align:middle line:84%
+Coffee which I'll label C,
+espresso which I'll label E,
+
+00:17:16.690 --> 00:17:19.095 align:middle line:90%
+and tea, which I'll label T.
+
+00:17:19.095 --> 00:17:20.470 align:middle line:84%
+And let's not
+think about prices.
+
+00:17:20.470 --> 00:17:22.030 align:middle line:84%
+Of course, maybe
+coffee is cheaper.
+
+00:17:22.030 --> 00:17:23.630 align:middle line:84%
+But for now, let's not
+think about prices.
+
+00:17:23.630 --> 00:17:24.470 align:middle line:90%
+You just get a choice.
+
+00:17:24.470 --> 00:17:25.345 align:middle line:90%
+Your friend's paying.
+
+00:17:25.345 --> 00:17:28.052 align:middle line:84%
+You're choosing between
+these three things.
+
+00:17:28.052 --> 00:17:30.010 align:middle line:84%
+The first component that
+we need to think about
+
+00:17:30.010 --> 00:17:32.428 align:middle line:84%
+in this decision problem is,
+what are these preferences?
+
+00:17:32.428 --> 00:17:33.970 align:middle line:84%
+Remember, we said
+that we're studying
+
+00:17:33.970 --> 00:17:37.730 align:middle line:84%
+decision makers who consistently
+maximize some of preference.
+
+00:17:37.730 --> 00:17:40.670 align:middle line:84%
+So we need to specify
+this agent's preferences.
+
+00:17:40.670 --> 00:17:44.912 align:middle line:90%
+
+
+00:17:44.912 --> 00:17:46.370 align:middle line:84%
+And in this case,
+their preferences
+
+00:17:46.370 --> 00:17:49.730 align:middle line:84%
+are going to specify some
+ordering among these three
+
+00:17:49.730 --> 00:17:50.550 align:middle line:90%
+choices.
+
+00:17:50.550 --> 00:17:52.850 align:middle line:84%
+So a great way to represent
+this in this context
+
+00:17:52.850 --> 00:17:57.150 align:middle line:84%
+would be C better
+than E better than T.
+
+00:17:57.150 --> 00:17:59.650 align:middle line:84%
+So these are probably
+my preferences.
+
+00:17:59.650 --> 00:18:00.810 align:middle line:90%
+What does this mean?
+
+00:18:00.810 --> 00:18:04.930 align:middle line:84%
+It means I prefer drinking
+coffee to drinking espresso.
+
+00:18:04.930 --> 00:18:07.783 align:middle line:84%
+I prefer drinking
+espresso to drinking tea.
+
+00:18:07.783 --> 00:18:09.950 align:middle line:84%
+And the way I've written
+this suggests transitivity,
+
+00:18:09.950 --> 00:18:11.970 align:middle line:84%
+which you will assume
+that if I prefer coffee
+
+00:18:11.970 --> 00:18:14.330 align:middle line:84%
+to espresso and
+espresso to tea, then
+
+00:18:14.330 --> 00:18:16.290 align:middle line:84%
+I must also prefer
+coffee to tea.
+
+00:18:16.290 --> 00:18:17.790 align:middle line:84%
+I won't write that
+out explicitly,
+
+00:18:17.790 --> 00:18:19.430 align:middle line:90%
+but that's implied by this.
+
+00:18:19.430 --> 00:18:22.050 align:middle line:84%
+And there's an implicit
+transitivity assumption
+
+00:18:22.050 --> 00:18:25.370 align:middle line:90%
+that we're making.
+
+00:18:25.370 --> 00:18:26.997 align:middle line:84%
+But I think this
+actually raises kind
+
+00:18:26.997 --> 00:18:28.580 align:middle line:84%
+of a difficult
+philosophical question.
+
+00:18:28.580 --> 00:18:30.600 align:middle line:84%
+What does it mean to
+prefer coffee to espresso?
+
+00:18:30.600 --> 00:18:32.360 align:middle line:90%
+What is a preference?
+
+00:18:32.360 --> 00:18:34.240 align:middle line:90%
+Philosophers talk about this.
+
+00:18:34.240 --> 00:18:36.682 align:middle line:84%
+Maybe people who study
+cognitive sciences go to the lab
+
+00:18:36.682 --> 00:18:38.640 align:middle line:84%
+and they try to measure
+people's brain activity
+
+00:18:38.640 --> 00:18:40.240 align:middle line:84%
+and say, oh, when
+you drink coffee,
+
+00:18:40.240 --> 00:18:42.427 align:middle line:90%
+a different neuron activates.
+
+00:18:42.427 --> 00:18:44.760 align:middle line:84%
+Philosophers will get into
+these long debates about what
+
+00:18:44.760 --> 00:18:46.040 align:middle line:90%
+it means to have a preference.
+
+00:18:46.040 --> 00:18:49.280 align:middle line:84%
+In economics, we take a
+much more operational view
+
+00:18:49.280 --> 00:18:50.190 align:middle line:90%
+of preferences.
+
+00:18:50.190 --> 00:18:50.940 align:middle line:90%
+What does it mean?
+
+00:18:50.940 --> 00:18:52.340 align:middle line:90%
+And it's almost tautological.
+
+00:18:52.340 --> 00:18:55.000 align:middle line:84%
+What does it mean that I
+prefer coffee to espresso?
+
+00:18:55.000 --> 00:18:57.360 align:middle line:84%
+It means when I'm faced
+with a choice between coffee
+
+00:18:57.360 --> 00:18:59.067 align:middle line:90%
+and espresso, I choose coffee.
+
+00:18:59.067 --> 00:18:59.900 align:middle line:90%
+That's all it means.
+
+00:18:59.900 --> 00:19:03.320 align:middle line:84%
+So this is the decision based
+view of preferences that's
+
+00:19:03.320 --> 00:19:04.760 align:middle line:90%
+predominant in economics.
+
+00:19:04.760 --> 00:19:07.140 align:middle line:84%
+So let's say what is
+the meaning of this?
+
+00:19:07.140 --> 00:19:12.640 align:middle line:90%
+
+
+00:19:12.640 --> 00:19:15.480 align:middle line:84%
+The meaning is that if I'm
+given a choice between coffee
+
+00:19:15.480 --> 00:19:21.198 align:middle line:90%
+and espresso, I choose coffee.
+
+00:19:21.198 --> 00:19:22.740 align:middle line:84%
+I'm not going to be
+too precise here.
+
+00:19:22.740 --> 00:19:25.280 align:middle line:84%
+We might argue about
+strict preferences
+
+00:19:25.280 --> 00:19:26.420 align:middle line:90%
+versus weak preferences.
+
+00:19:26.420 --> 00:19:28.460 align:middle line:84%
+And maybe we can be
+indifferent between things.
+
+00:19:28.460 --> 00:19:31.440 align:middle line:84%
+But for now, let's just think
+about strict preferences.
+
+00:19:31.440 --> 00:19:34.060 align:middle line:84%
+And preferences are a
+pairwise object, right?
+
+00:19:34.060 --> 00:19:36.080 align:middle line:84%
+So a preference says
+for any two things,
+
+00:19:36.080 --> 00:19:37.700 align:middle line:90%
+which do I prefer between them?
+
+00:19:37.700 --> 00:19:40.033 align:middle line:84%
+So one way of thinking about
+what we mean by preferences
+
+00:19:40.033 --> 00:19:42.080 align:middle line:84%
+is we're describing
+what an agent would
+
+00:19:42.080 --> 00:19:46.373 align:middle line:84%
+choose from any pair or any
+menu containing two items.
+
+00:19:46.373 --> 00:19:48.040 align:middle line:84%
+And then from that
+primitive preference,
+
+00:19:48.040 --> 00:19:52.240 align:middle line:84%
+we can talk about what they
+would choose in richer problems.
+
+00:19:52.240 --> 00:19:56.880 align:middle line:84%
+Now, an issue is that these
+little squiggly inequality signs
+
+00:19:56.880 --> 00:19:58.420 align:middle line:90%
+are kind of messy to deal with.
+
+00:19:58.420 --> 00:20:00.840 align:middle line:84%
+So it often becomes more
+convenient in economics
+
+00:20:00.840 --> 00:20:03.880 align:middle line:84%
+to use a utility
+representation of preferences.
+
+00:20:03.880 --> 00:20:05.500 align:middle line:84%
+So let me go to a
+new board for this.
+
+00:20:05.500 --> 00:20:07.220 align:middle line:84%
+And this didn't
+go all the way up.
+
+00:20:07.220 --> 00:20:08.120 align:middle line:90%
+Let's see.
+
+00:20:08.120 --> 00:20:08.780 align:middle line:90%
+There we go.
+
+00:20:08.780 --> 00:20:12.680 align:middle line:90%
+
+
+00:20:12.680 --> 00:20:14.940 align:middle line:84%
+And I'll define the word
+ordinal in a second.
+
+00:20:14.940 --> 00:20:19.560 align:middle line:84%
+But I'm going to talk
+about an ordinal utility
+
+00:20:19.560 --> 00:20:21.620 align:middle line:90%
+representation of preferences.
+
+00:20:21.620 --> 00:20:31.800 align:middle line:90%
+
+
+00:20:31.800 --> 00:20:32.860 align:middle line:90%
+Why do we use this?
+
+00:20:32.860 --> 00:20:34.560 align:middle line:90%
+Well, it's just more convenient.
+
+00:20:34.560 --> 00:20:36.380 align:middle line:84%
+Especially when we
+have a lot of things,
+
+00:20:36.380 --> 00:20:38.920 align:middle line:84%
+specifying all my pairwise
+preferences between these things
+
+00:20:38.920 --> 00:20:40.280 align:middle line:90%
+can get kind of cumbersome.
+
+00:20:40.280 --> 00:20:43.880 align:middle line:84%
+So what we do is we just specify
+a function called a utility
+
+00:20:43.880 --> 00:20:44.420 align:middle line:90%
+function.
+
+00:20:44.420 --> 00:20:46.100 align:middle line:84%
+So let's give just
+an example here.
+
+00:20:46.100 --> 00:20:53.760 align:middle line:84%
+So maybe my utility function
+is u of C equals 5, u of E
+
+00:20:53.760 --> 00:20:59.800 align:middle line:90%
+equals 4, and u of T equals 1.
+
+00:20:59.800 --> 00:21:02.360 align:middle line:84%
+This should be one
+utility representation
+
+00:21:02.360 --> 00:21:03.680 align:middle line:90%
+of these preferences.
+
+00:21:03.680 --> 00:21:06.600 align:middle line:84%
+Why do these utilities
+represent these preferences?
+
+00:21:06.600 --> 00:21:08.760 align:middle line:90%
+Well, do I prefer C to E?
+
+00:21:08.760 --> 00:21:11.280 align:middle line:84%
+Yes, because the
+utility assigned to C
+
+00:21:11.280 --> 00:21:13.880 align:middle line:84%
+is higher than the
+utility assigned to E.
+
+00:21:13.880 --> 00:21:15.680 align:middle line:90%
+Do I prefer E to T?
+
+00:21:15.680 --> 00:21:18.440 align:middle line:84%
+Well, yes, because the
+utility assigned to E
+
+00:21:18.440 --> 00:21:21.200 align:middle line:84%
+is strictly greater than
+the utility assigned to T.
+
+00:21:21.200 --> 00:21:23.140 align:middle line:84%
+And if we have a utility
+function like this,
+
+00:21:23.140 --> 00:21:26.560 align:middle line:84%
+you can check that our induced
+preferences are going to satisfy
+
+00:21:26.560 --> 00:21:27.580 align:middle line:90%
+transitivity as well.
+
+00:21:27.580 --> 00:21:29.420 align:middle line:84%
+Because if one number
+is bigger than another
+
+00:21:29.420 --> 00:21:31.587 align:middle line:84%
+and that other number is
+bigger than a third number,
+
+00:21:31.587 --> 00:21:35.440 align:middle line:84%
+then the first number is
+bigger than the third number.
+
+00:21:35.440 --> 00:21:39.400 align:middle line:84%
+But we have an issue here that
+this is only a representation.
+
+00:21:39.400 --> 00:21:41.780 align:middle line:84%
+So I can also write down an
+alternative utility function.
+
+00:21:41.780 --> 00:21:44.320 align:middle line:90%
+Maybe I'll call this u1.
+
+00:21:44.320 --> 00:21:49.300 align:middle line:84%
+Let me now write down a utility
+function u2 that's this.
+
+00:21:49.300 --> 00:21:59.692 align:middle line:90%
+
+
+00:21:59.692 --> 00:22:00.900 align:middle line:90%
+What about these preferences?
+
+00:22:00.900 --> 00:22:02.442 align:middle line:84%
+Are these the same
+preferences or are
+
+00:22:02.442 --> 00:22:06.400 align:middle line:84%
+these different preferences
+than the first utility function?
+
+00:22:06.400 --> 00:22:07.760 align:middle line:90%
+What do people think?
+
+00:22:07.760 --> 00:22:11.285 align:middle line:84%
+I don't think there's
+really one right answer.
+
+00:22:11.285 --> 00:22:13.160 align:middle line:84%
+AUDIENCE: In a marginal
+sense, it's the same.
+
+00:22:13.160 --> 00:22:14.243 align:middle line:90%
+IAN BALL: The same, right?
+
+00:22:14.243 --> 00:22:17.860 align:middle line:84%
+So it is true that if this
+were my utility representation,
+
+00:22:17.860 --> 00:22:22.440 align:middle line:84%
+it still says I prefer
+C to E, I prefer E to T,
+
+00:22:22.440 --> 00:22:26.400 align:middle line:84%
+and I prefer C to T. So this is
+an alternative representation
+
+00:22:26.400 --> 00:22:27.760 align:middle line:90%
+of the same preferences.
+
+00:22:27.760 --> 00:22:31.620 align:middle line:84%
+And this is what we mean by an
+ordinal utility representation.
+
+00:22:31.620 --> 00:22:34.640 align:middle line:90%
+Only the order matters.
+
+00:22:34.640 --> 00:22:35.500 align:middle line:90%
+Let me say this.
+
+00:22:35.500 --> 00:22:46.360 align:middle line:90%
+
+
+00:22:46.360 --> 00:22:47.820 align:middle line:84%
+And because only
+the order matters,
+
+00:22:47.820 --> 00:22:49.720 align:middle line:90%
+that has a few implications.
+
+00:22:49.720 --> 00:22:54.280 align:middle line:84%
+The first is that there's
+many utility representations
+
+00:22:54.280 --> 00:22:55.540 align:middle line:90%
+of the same preferences.
+
+00:22:55.540 --> 00:22:58.320 align:middle line:90%
+
+
+00:22:58.320 --> 00:23:00.220 align:middle line:90%
+Many ordinal representations.
+
+00:23:00.220 --> 00:23:12.600 align:middle line:90%
+
+
+00:23:12.600 --> 00:23:14.760 align:middle line:84%
+And a second I think
+more subtle point
+
+00:23:14.760 --> 00:23:17.960 align:middle line:84%
+is that the units and the
+values in the utility function
+
+00:23:17.960 --> 00:23:18.860 align:middle line:90%
+don't have meaning.
+
+00:23:18.860 --> 00:23:27.858 align:middle line:90%
+
+
+00:23:27.858 --> 00:23:29.900 align:middle line:84%
+In fact, what are the
+units of utility functions?
+
+00:23:29.900 --> 00:23:31.220 align:middle line:84%
+They don't really have
+a unit that makes sense.
+
+00:23:31.220 --> 00:23:33.060 align:middle line:84%
+Sometimes we call
+the units utils.
+
+00:23:33.060 --> 00:23:37.440 align:middle line:90%
+
+
+00:23:37.440 --> 00:23:40.745 align:middle line:84%
+But from a purely
+preference standpoint,
+
+00:23:40.745 --> 00:23:42.620 align:middle line:84%
+you might look at this
+and you might say, oh,
+
+00:23:42.620 --> 00:23:44.780 align:middle line:84%
+I like C more in this
+world than in this world.
+
+00:23:44.780 --> 00:23:47.480 align:middle line:84%
+But no, the way we think
+about ordinal representations
+
+00:23:47.480 --> 00:23:50.252 align:middle line:84%
+is that what matters
+are your preferences.
+
+00:23:50.252 --> 00:23:51.960 align:middle line:84%
+And there's a convenient
+mathematical way
+
+00:23:51.960 --> 00:23:53.722 align:middle line:90%
+to represent them like this.
+
+00:23:53.722 --> 00:23:55.680 align:middle line:84%
+And this is another
+convenient mathematical way
+
+00:23:55.680 --> 00:23:56.740 align:middle line:90%
+to represent them.
+
+00:23:56.740 --> 00:23:58.660 align:middle line:84%
+And they represent
+the same preferences.
+
+00:23:58.660 --> 00:24:00.160 align:middle line:84%
+And there's no
+meaning associated
+
+00:24:00.160 --> 00:24:02.740 align:middle line:84%
+with these utility functions
+in this ordinal world.
+
+00:24:02.740 --> 00:24:03.240 align:middle line:90%
+Yes.
+
+00:24:03.240 --> 00:24:05.920 align:middle line:84%
+AUDIENCE: Would you have to
+specify a null option, then?
+
+00:24:05.920 --> 00:24:09.760 align:middle line:84%
+Let's say if the utility
+is negative 100 for T,
+
+00:24:09.760 --> 00:24:12.520 align:middle line:84%
+would you have to specify that
+they could also choose nothing?
+
+00:24:12.520 --> 00:24:14.062 align:middle line:84%
+IAN BALL: Great,
+that's a good point.
+
+00:24:14.062 --> 00:24:16.590 align:middle line:84%
+So when we write a choice
+problem, it's really crucial--
+
+00:24:16.590 --> 00:24:19.257 align:middle line:84%
+and it's implicit in what I did,
+but I didn't say it explicitly,
+
+00:24:19.257 --> 00:24:22.990 align:middle line:84%
+so thanks for bringing this up--
+that I can make only one choice,
+
+00:24:22.990 --> 00:24:25.343 align:middle line:84%
+and every possible
+choice is included.
+
+00:24:25.343 --> 00:24:28.010 align:middle line:84%
+So if you have four options, if
+only three of them are included,
+
+00:24:28.010 --> 00:24:30.718 align:middle line:84%
+that's not going to capture your
+preference problem-- your choice
+
+00:24:30.718 --> 00:24:31.370 align:middle line:90%
+problem.
+
+00:24:31.370 --> 00:24:33.402 align:middle line:84%
+So really, if I
+were being careful,
+
+00:24:33.402 --> 00:24:35.610 align:middle line:84%
+probably this is actually
+a more complicated problem.
+
+00:24:35.610 --> 00:24:38.150 align:middle line:84%
+And there's a third option,
+which is not drinking any drink.
+
+00:24:38.150 --> 00:24:40.410 align:middle line:84%
+And I should really
+specify the utility here.
+
+00:24:40.410 --> 00:24:42.150 align:middle line:84%
+So in this simple
+thing I'm imagining
+
+00:24:42.150 --> 00:24:44.650 align:middle line:84%
+for some reason you have to
+make one of these three choices.
+
+00:24:44.650 --> 00:24:45.090 align:middle line:90%
+But you're right.
+
+00:24:45.090 --> 00:24:46.965 align:middle line:84%
+In general, when we
+model a choice problem,
+
+00:24:46.965 --> 00:24:49.590 align:middle line:84%
+it's important to capture every
+possible choice the agent could
+
+00:24:49.590 --> 00:24:50.270 align:middle line:90%
+make.
+
+00:24:50.270 --> 00:24:53.670 align:middle line:84%
+On the other side, indeed,
+if it's possible for me
+
+00:24:53.670 --> 00:24:55.390 align:middle line:84%
+to choose both
+coffee and espresso,
+
+00:24:55.390 --> 00:24:57.070 align:middle line:84%
+then that needs to
+be formally modeled
+
+00:24:57.070 --> 00:25:00.330 align:middle line:84%
+as another choice, the bundle
+where I get coffee and espresso,
+
+00:25:00.330 --> 00:25:02.390 align:middle line:84%
+because that's a separate
+choice that I can make.
+
+00:25:02.390 --> 00:25:04.150 align:middle line:90%
+Good point.
+
+00:25:04.150 --> 00:25:06.790 align:middle line:84%
+OK, so this is ordinal
+utility representations.
+
+00:25:06.790 --> 00:25:09.070 align:middle line:84%
+And now I'm going to
+move to the opposite,
+
+00:25:09.070 --> 00:25:10.170 align:middle line:90%
+cardinal representations.
+
+00:25:10.170 --> 00:25:12.850 align:middle line:84%
+And everything I said here
+is going to go the other way.
+
+00:25:12.850 --> 00:25:14.010 align:middle line:90%
+So let's be really clear.
+
+00:25:14.010 --> 00:25:15.190 align:middle line:84%
+Everything I just
+said is going to be
+
+00:25:15.190 --> 00:25:16.410 align:middle line:90%
+wrong in a different context.
+
+00:25:16.410 --> 00:25:18.910 align:middle line:90%
+So let's be very careful.
+
+00:25:18.910 --> 00:25:21.430 align:middle line:90%
+So this is ordinal.
+
+00:25:21.430 --> 00:25:25.290 align:middle line:84%
+The issue is that
+often in game theory,
+
+00:25:25.290 --> 00:25:27.510 align:middle line:84%
+we face decisions
+under uncertainty.
+
+00:25:27.510 --> 00:25:29.430 align:middle line:84%
+And when we face decisions
+under uncertainty,
+
+00:25:29.430 --> 00:25:32.110 align:middle line:84%
+we need to model preferences
+a bit differently.
+
+00:25:32.110 --> 00:25:34.890 align:middle line:84%
+So let's now move to
+decisions under uncertainty.
+
+00:25:34.890 --> 00:25:41.830 align:middle line:90%
+
+
+00:25:41.830 --> 00:25:43.910 align:middle line:84%
+What is a decision
+under uncertainty mean?
+
+00:25:43.910 --> 00:25:46.510 align:middle line:84%
+It means when I make
+a choice, I don't
+
+00:25:46.510 --> 00:25:48.510 align:middle line:84%
+know exactly what the
+consequence of that choice
+
+00:25:48.510 --> 00:25:49.350 align:middle line:90%
+will be.
+
+00:25:49.350 --> 00:25:51.670 align:middle line:84%
+When I buy an index
+fund or buy a stock,
+
+00:25:51.670 --> 00:25:54.630 align:middle line:84%
+I don't know whether that stock
+is going to go up or down.
+
+00:25:54.630 --> 00:25:56.350 align:middle line:84%
+I can't choose-- of
+course, if I could
+
+00:25:56.350 --> 00:25:58.610 align:middle line:84%
+choose the stock that made more
+money, I would choose that one.
+
+00:25:58.610 --> 00:25:59.652 align:middle line:90%
+But that's not my choice.
+
+00:25:59.652 --> 00:26:02.377 align:middle line:84%
+I'm choosing one stock that has
+some distribution over outcomes
+
+00:26:02.377 --> 00:26:04.210 align:middle line:84%
+that I don't know what
+the outcomes will be.
+
+00:26:04.210 --> 00:26:05.570 align:middle line:84%
+And then I might
+choose another stock.
+
+00:26:05.570 --> 00:26:08.230 align:middle line:84%
+And again, I don't know exactly
+what the outcome of that stock
+
+00:26:08.230 --> 00:26:08.890 align:middle line:90%
+will be.
+
+00:26:08.890 --> 00:26:11.270 align:middle line:84%
+And that's what we
+mean by uncertainty.
+
+00:26:11.270 --> 00:26:14.333 align:middle line:84%
+So let's look at, again, a
+very, very simple problem, not
+
+00:26:14.333 --> 00:26:15.750 align:middle line:84%
+economically
+interesting, but just
+
+00:26:15.750 --> 00:26:18.633 align:middle line:84%
+to convey the ideas, which is
+the choice of how to get home.
+
+00:26:18.633 --> 00:26:20.550 align:middle line:84%
+Let's say you're choosing
+whether to walk home
+
+00:26:20.550 --> 00:26:21.910 align:middle line:90%
+or to take the subway.
+
+00:26:21.910 --> 00:26:27.670 align:middle line:84%
+So you can either walk
+home or take the subway.
+
+00:26:27.670 --> 00:26:29.763 align:middle line:84%
+Maybe we'll call that
+and we'll call this W.
+
+00:26:29.763 --> 00:26:31.930 align:middle line:84%
+And again, here we're
+assuming you have to get home.
+
+00:26:31.930 --> 00:26:33.810 align:middle line:84%
+Maybe there's a third option
+where you stay at work all day.
+
+00:26:33.810 --> 00:26:35.690 align:middle line:84%
+But we're not going
+to model that.
+
+00:26:35.690 --> 00:26:41.528 align:middle line:90%
+
+
+00:26:41.528 --> 00:26:43.570 align:middle line:84%
+And now why is this a
+decision under uncertainty?
+
+00:26:43.570 --> 00:26:45.130 align:middle line:84%
+Well, you don't know what the
+weather is going to be like.
+
+00:26:45.130 --> 00:26:46.838 align:middle line:84%
+You have a long walk
+home, so the weather
+
+00:26:46.838 --> 00:26:48.190 align:middle line:90%
+could change as you walk home.
+
+00:26:48.190 --> 00:26:50.607 align:middle line:84%
+And we're going to assume
+there's two ways the world could
+
+00:26:50.607 --> 00:26:51.130 align:middle line:90%
+be again.
+
+00:26:51.130 --> 00:26:52.350 align:middle line:84%
+Weather it's more
+complicated, but this
+
+00:26:52.350 --> 00:26:54.010 align:middle line:90%
+is a simplification of reality.
+
+00:26:54.010 --> 00:26:55.970 align:middle line:84%
+It could be sunny or
+it could be rainy.
+
+00:26:55.970 --> 00:26:58.338 align:middle line:90%
+
+
+00:26:58.338 --> 00:27:00.630 align:middle line:84%
+Maybe we should really model
+every possible temperature
+
+00:27:00.630 --> 00:27:02.530 align:middle line:84%
+and every possible
+level of precipitation,
+
+00:27:02.530 --> 00:27:04.350 align:middle line:90%
+but we're not going to do that.
+
+00:27:04.350 --> 00:27:08.410 align:middle line:84%
+And the way things work
+is when it's sunny,
+
+00:27:08.410 --> 00:27:11.570 align:middle line:84%
+you'd rather walk home
+and when it's rainy,
+
+00:27:11.570 --> 00:27:13.630 align:middle line:90%
+you'd rather take the subway.
+
+00:27:13.630 --> 00:27:15.830 align:middle line:84%
+So maybe I'll write
+this over here.
+
+00:27:15.830 --> 00:27:22.430 align:middle line:90%
+If sunny, you prefer--
+
+00:27:22.430 --> 00:27:25.590 align:middle line:84%
+and I think sometimes I call
+this the T to avoid the S.
+
+00:27:25.590 --> 00:27:32.470 align:middle line:84%
+Let's call this the T. Maybe
+TA, just so we don't see the two
+
+00:27:32.470 --> 00:27:33.670 align:middle line:90%
+S's.
+
+00:27:33.670 --> 00:27:35.190 align:middle line:90%
+Sunny, you prefer to walk home.
+
+00:27:35.190 --> 00:27:42.345 align:middle line:84%
+And if rainy, you
+prefer to take the T.
+
+00:27:42.345 --> 00:27:43.970 align:middle line:84%
+So how would you
+approach this problem?
+
+00:27:43.970 --> 00:27:46.470 align:middle line:84%
+And this is a very
+simple problem,
+
+00:27:46.470 --> 00:27:48.843 align:middle line:84%
+a simple choice people
+make all the time.
+
+00:27:48.843 --> 00:27:50.010 align:middle line:90%
+How would you approach this?
+
+00:27:50.010 --> 00:27:53.670 align:middle line:90%
+
+
+00:27:53.670 --> 00:27:57.670 align:middle line:84%
+What do you do when you-- do
+you just randomly go home or do
+
+00:27:57.670 --> 00:28:00.630 align:middle line:90%
+you think a little bit?
+
+00:28:00.630 --> 00:28:01.370 align:middle line:90%
+What's relevant?
+
+00:28:01.370 --> 00:28:03.910 align:middle line:84%
+What do you need to know
+to approach this problem?
+
+00:28:03.910 --> 00:28:04.630 align:middle line:90%
+Yeah.
+
+00:28:04.630 --> 00:28:05.610 align:middle line:84%
+AUDIENCE: You check
+the weather app.
+
+00:28:05.610 --> 00:28:07.110 align:middle line:84%
+IAN BALL: You check
+the weather app.
+
+00:28:07.110 --> 00:28:08.277 align:middle line:90%
+And what does that tell you?
+
+00:28:08.277 --> 00:28:09.652 align:middle line:84%
+AUDIENCE: If it's
+sunny or rainy.
+
+00:28:09.652 --> 00:28:10.230 align:middle line:90%
+IAN BALL: OK.
+
+00:28:10.230 --> 00:28:12.328 align:middle line:84%
+And it might tell
+you-- and really, it
+
+00:28:12.328 --> 00:28:14.370 align:middle line:84%
+might give you some-- or
+do you want to go ahead?
+
+00:28:14.370 --> 00:28:14.630 align:middle line:90%
+Yeah.
+
+00:28:14.630 --> 00:28:15.850 align:middle line:84%
+AUDIENCE: It'd be
+how likely it is.
+
+00:28:15.850 --> 00:28:16.110 align:middle line:90%
+IAN BALL: Yeah.
+
+00:28:16.110 --> 00:28:17.730 align:middle line:84%
+It's going to tell you--
+it might say sun or rain,
+
+00:28:17.730 --> 00:28:19.610 align:middle line:84%
+but also it might give you
+a likelihood of sun or rain.
+
+00:28:19.610 --> 00:28:21.032 align:middle line:84%
+And oftentimes,
+you're not certain
+
+00:28:21.032 --> 00:28:22.490 align:middle line:84%
+if it's going to
+be sunny or rainy.
+
+00:28:22.490 --> 00:28:23.573 align:middle line:90%
+You have some uncertainty.
+
+00:28:23.573 --> 00:28:25.450 align:middle line:84%
+That's the key thing
+that we're having here.
+
+00:28:25.450 --> 00:28:28.088 align:middle line:84%
+So this problem, if you knew
+the weather, would be very easy.
+
+00:28:28.088 --> 00:28:30.130 align:middle line:84%
+If you knew for certain
+it was going to be sunny,
+
+00:28:30.130 --> 00:28:31.310 align:middle line:90%
+we know you'd walk home.
+
+00:28:31.310 --> 00:28:32.890 align:middle line:84%
+And if you knew for certain
+it was going to rain,
+
+00:28:32.890 --> 00:28:33.670 align:middle line:90%
+you'd take the T.
+
+00:28:33.670 --> 00:28:35.418 align:middle line:84%
+The issue is that
+you have uncertainty.
+
+00:28:35.418 --> 00:28:37.710 align:middle line:84%
+And indeed, when you check
+the weather app, what you do
+
+00:28:37.710 --> 00:28:38.930 align:middle line:90%
+is you form beliefs.
+
+00:28:38.930 --> 00:28:41.550 align:middle line:84%
+And this is going to be
+kind of a foundational idea
+
+00:28:41.550 --> 00:28:53.810 align:middle line:84%
+in this course, that in the face
+of uncertainty, what do you do?
+
+00:28:53.810 --> 00:28:54.770 align:middle line:90%
+You form beliefs.
+
+00:28:54.770 --> 00:28:57.350 align:middle line:90%
+
+
+00:28:57.350 --> 00:29:00.070 align:middle line:84%
+So in game theory, we take a
+fundamentally Bayesian view
+
+00:29:00.070 --> 00:29:00.890 align:middle line:90%
+of the world.
+
+00:29:00.890 --> 00:29:02.290 align:middle line:84%
+When we have
+uncertainty, we say,
+
+00:29:02.290 --> 00:29:04.930 align:middle line:84%
+well, we don't know whether
+it's going to be sunny or rainy.
+
+00:29:04.930 --> 00:29:06.597 align:middle line:84%
+But we might say
+something like, there's
+
+00:29:06.597 --> 00:29:08.260 align:middle line:90%
+a 20% chance that it's sunny.
+
+00:29:08.260 --> 00:29:09.600 align:middle line:90%
+So we'll assign beliefs.
+
+00:29:09.600 --> 00:29:12.300 align:middle line:84%
+And in this case, let's
+represent our belief
+
+00:29:12.300 --> 00:29:15.180 align:middle line:84%
+by the probability
+p that it's sunny.
+
+00:29:15.180 --> 00:29:18.500 align:middle line:84%
+And then correspondingly, we
+have the probability 1 minus
+
+00:29:18.500 --> 00:29:21.100 align:middle line:90%
+p that it's raining.
+
+00:29:21.100 --> 00:29:23.220 align:middle line:90%
+So these are my beliefs.
+
+00:29:23.220 --> 00:29:23.760 align:middle line:90%
+OK?
+
+00:29:23.760 --> 00:29:27.180 align:middle line:84%
+And now I'm going to fill
+in some utilities here.
+
+00:29:27.180 --> 00:29:35.740 align:middle line:90%
+I'm going to say 7, 2, 5, 5.
+
+00:29:35.740 --> 00:29:38.080 align:middle line:84%
+So this is a representation
+of my preferences.
+
+00:29:38.080 --> 00:29:41.180 align:middle line:84%
+And indeed, when it's sunny, I
+prefer walking to taking the T.
+
+00:29:41.180 --> 00:29:46.620 align:middle line:84%
+And when it's rainy, I prefer
+taking the T to walking.
+
+00:29:46.620 --> 00:29:48.820 align:middle line:84%
+So now we've
+written things down.
+
+00:29:48.820 --> 00:29:49.680 align:middle line:90%
+Now I'd ask again.
+
+00:29:49.680 --> 00:29:52.220 align:middle line:84%
+Now we've specified our
+beliefs, which would you choose?
+
+00:29:52.220 --> 00:29:55.066 align:middle line:84%
+How would you
+approach this choice?
+
+00:29:55.066 --> 00:29:56.683 align:middle line:84%
+AUDIENCE: Find an
+expected utility.
+
+00:29:56.683 --> 00:29:58.100 align:middle line:84%
+IAN BALL: So in
+this course, we're
+
+00:29:58.100 --> 00:29:59.560 align:middle line:84%
+going to assume
+expected utility.
+
+00:29:59.560 --> 00:30:01.840 align:middle line:84%
+But I want to point out
+that that's not so obvious.
+
+00:30:01.840 --> 00:30:03.760 align:middle line:84%
+One thing you might say
+you might say, look,
+
+00:30:03.760 --> 00:30:06.460 align:middle line:90%
+I'm an optimistic person.
+
+00:30:06.460 --> 00:30:10.180 align:middle line:84%
+If I walk, the best thing
+that can happen is I get 7.
+
+00:30:10.180 --> 00:30:12.820 align:middle line:84%
+If I take the T, the best thing
+that can happen is I get 5.
+
+00:30:12.820 --> 00:30:14.120 align:middle line:90%
+7 is higher than 5.
+
+00:30:14.120 --> 00:30:15.020 align:middle line:90%
+I'm going to walk.
+
+00:30:15.020 --> 00:30:16.493 align:middle line:90%
+I'm an optimistic person.
+
+00:30:16.493 --> 00:30:18.160 align:middle line:84%
+You might say, I'm a
+pessimistic person.
+
+00:30:18.160 --> 00:30:21.060 align:middle line:84%
+I'm really afraid of
+the worst-case outcome.
+
+00:30:21.060 --> 00:30:23.340 align:middle line:90%
+So when I walk, I could get 2.
+
+00:30:23.340 --> 00:30:25.560 align:middle line:84%
+When I take the T, the
+worst I can get is 5.
+
+00:30:25.560 --> 00:30:27.763 align:middle line:84%
+That's better, so I'm
+going to take the T.
+
+00:30:27.763 --> 00:30:29.180 align:middle line:84%
+I think the view
+in game theory is
+
+00:30:29.180 --> 00:30:31.540 align:middle line:84%
+that optimism and
+pessimism are better
+
+00:30:31.540 --> 00:30:33.740 align:middle line:90%
+reflected in your beliefs.
+
+00:30:33.740 --> 00:30:36.980 align:middle line:84%
+And we're generally going to
+assume in this course expected
+
+00:30:36.980 --> 00:30:37.640 align:middle line:90%
+utility.
+
+00:30:37.640 --> 00:30:42.660 align:middle line:90%
+
+
+00:30:42.660 --> 00:30:44.900 align:middle line:84%
+But I want to point out
+that this is an assumption.
+
+00:30:44.900 --> 00:30:46.760 align:middle line:90%
+There's an axiomatic foundation.
+
+00:30:46.760 --> 00:30:49.220 align:middle line:84%
+So decision theorists think
+a lot about the question,
+
+00:30:49.220 --> 00:30:51.340 align:middle line:84%
+why should we use
+expected utility?
+
+00:30:51.340 --> 00:30:53.860 align:middle line:84%
+Or more concretely, if
+we assume that agents
+
+00:30:53.860 --> 00:30:56.753 align:middle line:84%
+use expected utility, what
+assumption are we making?
+
+00:30:56.753 --> 00:30:58.420 align:middle line:84%
+What does that mean
+about their behavior
+
+00:30:58.420 --> 00:30:59.753 align:middle line:90%
+when we assume expected utility?
+
+00:30:59.753 --> 00:31:01.300 align:middle line:84%
+How restrictive is
+that assumption?
+
+00:31:01.300 --> 00:31:03.283 align:middle line:84%
+And there's an appendix
+in the lecture notes
+
+00:31:03.283 --> 00:31:04.700 align:middle line:84%
+that's posted
+online where you can
+
+00:31:04.700 --> 00:31:07.840 align:middle line:84%
+look at this axiomatic approach
+to expected utility theory.
+
+00:31:07.840 --> 00:31:09.340 align:middle line:84%
+But in this course,
+we're just going
+
+00:31:09.340 --> 00:31:12.400 align:middle line:84%
+to take it as given that people
+always use expected utility.
+
+00:31:12.400 --> 00:31:13.400 align:middle line:90%
+So what does that mean?
+
+00:31:13.400 --> 00:31:16.020 align:middle line:90%
+It's two steps.
+
+00:31:16.020 --> 00:31:17.520 align:middle line:90%
+First, they form beliefs.
+
+00:31:17.520 --> 00:31:27.123 align:middle line:90%
+
+
+00:31:27.123 --> 00:31:28.540 align:middle line:84%
+Now, how reasonable
+is it to think
+
+00:31:28.540 --> 00:31:30.260 align:middle line:84%
+that people form
+beliefs about the thing
+
+00:31:30.260 --> 00:31:31.440 align:middle line:90%
+they're uncertain about?
+
+00:31:31.440 --> 00:31:33.420 align:middle line:84%
+Well, I think it
+depends on the context.
+
+00:31:33.420 --> 00:31:35.557 align:middle line:84%
+In this problem, I think
+it's very reasonable.
+
+00:31:35.557 --> 00:31:36.640 align:middle line:90%
+You open your weather app.
+
+00:31:36.640 --> 00:31:39.040 align:middle line:84%
+It gives you some
+probability of rain or sun.
+
+00:31:39.040 --> 00:31:40.680 align:middle line:84%
+You might think, oh, I don't
+really trust the weather app.
+
+00:31:40.680 --> 00:31:42.200 align:middle line:84%
+It always overestimates
+or underestimates.
+
+00:31:42.200 --> 00:31:42.908 align:middle line:90%
+You might adjust.
+
+00:31:42.908 --> 00:31:44.300 align:middle line:90%
+But you'll form your belief.
+
+00:31:44.300 --> 00:31:49.140 align:middle line:84%
+But if I said, form
+your belief about what
+
+00:31:49.140 --> 00:31:51.540 align:middle line:84%
+is the probability
+that in 15 years
+
+00:31:51.540 --> 00:31:54.460 align:middle line:84%
+your income will be
+between these two numbers.
+
+00:31:54.460 --> 00:31:56.402 align:middle line:84%
+That's pretty hard to
+form beliefs about.
+
+00:31:56.402 --> 00:31:57.860 align:middle line:84%
+So I think this
+assumption that you
+
+00:31:57.860 --> 00:32:00.020 align:middle line:84%
+start by forming beliefs
+about what you don't know
+
+00:32:00.020 --> 00:32:03.120 align:middle line:84%
+is a very realistic assumption
+in very simple problems.
+
+00:32:03.120 --> 00:32:05.500 align:middle line:84%
+But as we get to very, very
+rich problems and complicated
+
+00:32:05.500 --> 00:32:08.300 align:middle line:84%
+problems, you might
+worry that this is not
+
+00:32:08.300 --> 00:32:09.680 align:middle line:90%
+a very well-founded assumption.
+
+00:32:09.680 --> 00:32:11.600 align:middle line:84%
+When we get to
+complicated choices,
+
+00:32:11.600 --> 00:32:15.180 align:middle line:84%
+maybe your choice about
+what job to take today
+
+00:32:15.180 --> 00:32:16.780 align:middle line:84%
+depend on your belief
+about how likely
+
+00:32:16.780 --> 00:32:20.380 align:middle line:84%
+it is that you have a grandchild
+in 40 years who's short on money
+
+00:32:20.380 --> 00:32:23.840 align:middle line:84%
+and needs the money that you
+saved based on your job today.
+
+00:32:23.840 --> 00:32:24.800 align:middle line:90%
+Or let's go deeper.
+
+00:32:24.800 --> 00:32:26.740 align:middle line:84%
+What's the probability
+that in 10 generations,
+
+00:32:26.740 --> 00:32:31.020 align:middle line:84%
+your 10th degree grandchild
+is going to be short on money?
+
+00:32:31.020 --> 00:32:32.980 align:middle line:84%
+Wow, that's really hard
+to form beliefs about.
+
+00:32:32.980 --> 00:32:35.480 align:middle line:84%
+So in that context, maybe this
+is an unrealistic assumption,
+
+00:32:35.480 --> 00:32:36.500 align:middle line:84%
+but it's going to
+be the assumption we
+
+00:32:36.500 --> 00:32:37.200 align:middle line:90%
+make in this class.
+
+00:32:37.200 --> 00:32:39.450 align:middle line:84%
+And we're going to apply
+this to models where we think
+
+00:32:39.450 --> 00:32:40.740 align:middle line:90%
+it's a reasonable assumption.
+
+00:32:40.740 --> 00:32:42.940 align:middle line:84%
+And then the next
+thing that you do,
+
+00:32:42.940 --> 00:32:44.440 align:middle line:84%
+given that you
+formed your beliefs,
+
+00:32:44.440 --> 00:32:46.880 align:middle line:84%
+is you compute your expected
+utility from each choice.
+
+00:32:46.880 --> 00:32:55.980 align:middle line:90%
+
+
+00:32:55.980 --> 00:32:57.620 align:middle line:84%
+But now we have a
+bit of an issue.
+
+00:32:57.620 --> 00:33:00.980 align:middle line:84%
+Because I set up here when I
+talked about ordinal utility
+
+00:33:00.980 --> 00:33:04.338 align:middle line:84%
+representations that the
+numbers didn't matter.
+
+00:33:04.338 --> 00:33:06.380 align:middle line:84%
+But now all of a sudden,
+the numbers will matter.
+
+00:33:06.380 --> 00:33:09.620 align:middle line:84%
+Because when I compute the
+expectation, my expected utility
+
+00:33:09.620 --> 00:33:12.940 align:middle line:84%
+from walking, if
+7 were 700, that's
+
+00:33:12.940 --> 00:33:15.500 align:middle line:84%
+going to change my
+expected utility.
+
+00:33:15.500 --> 00:33:19.140 align:middle line:84%
+So we have to really crucially
+understand that in this model,
+
+00:33:19.140 --> 00:33:20.880 align:middle line:90%
+these utilities are different.
+
+00:33:20.880 --> 00:33:23.300 align:middle line:84%
+These are no longer
+ordinal utilities.
+
+00:33:23.300 --> 00:33:28.420 align:middle line:84%
+So in the decision making
+under uncertainty--
+
+00:33:28.420 --> 00:33:43.220 align:middle line:84%
+so in this context, utility is
+cardinal as opposed to ordinal.
+
+00:33:43.220 --> 00:33:46.000 align:middle line:84%
+Ordinal means only
+the order matters.
+
+00:33:46.000 --> 00:33:48.240 align:middle line:84%
+That's where the word
+ordinal comes from.
+
+00:33:48.240 --> 00:33:52.020 align:middle line:84%
+Cardinal means the size or
+the actual numbers matter.
+
+00:33:52.020 --> 00:33:55.300 align:middle line:84%
+And the way we
+distinguish this is we
+
+00:33:55.300 --> 00:33:57.180 align:middle line:84%
+say that this
+utility function here
+
+00:33:57.180 --> 00:33:59.830 align:middle line:84%
+is a Von Neumann-Morgenstern
+utility function.
+
+00:33:59.830 --> 00:34:12.929 align:middle line:90%
+
+
+00:34:12.929 --> 00:34:14.750 align:middle line:84%
+And basically,
+throughout this course,
+
+00:34:14.750 --> 00:34:17.130 align:middle line:84%
+we're going to focus on
+this case of uncertainty.
+
+00:34:17.130 --> 00:34:20.090 align:middle line:84%
+And essentially, all the
+utility functions we work with
+
+00:34:20.090 --> 00:34:23.810 align:middle line:84%
+are going to be cardinal utility
+functions or Von Neumann utility
+
+00:34:23.810 --> 00:34:26.630 align:middle line:84%
+functions rather than
+ordinal utility functions.
+
+00:34:26.630 --> 00:34:29.290 align:middle line:84%
+And just to understand
+the landscape,
+
+00:34:29.290 --> 00:34:33.190 align:middle line:84%
+up here, we didn't make any
+expected utility assumptions.
+
+00:34:33.190 --> 00:34:34.889 align:middle line:84%
+This was a very
+abstract approach
+
+00:34:34.889 --> 00:34:36.650 align:middle line:90%
+to any preference problem.
+
+00:34:36.650 --> 00:34:38.370 align:middle line:84%
+When we're in the
+world of uncertainty
+
+00:34:38.370 --> 00:34:41.889 align:middle line:84%
+and we restrict attention to
+expected utility preferences,
+
+00:34:41.889 --> 00:34:43.550 align:middle line:84%
+in that more
+restricted environment,
+
+00:34:43.550 --> 00:34:45.050 align:middle line:84%
+we're always going
+to work with what
+
+00:34:45.050 --> 00:34:46.889 align:middle line:84%
+are called Von
+Neumann-Morgenstern utility
+
+00:34:46.889 --> 00:34:51.610 align:middle line:84%
+functions, where the numerical
+value actually matters.
+
+00:34:51.610 --> 00:34:54.010 align:middle line:84%
+So let's see how we would
+approach this problem
+
+00:34:54.010 --> 00:34:56.210 align:middle line:90%
+in this VNM context.
+
+00:34:56.210 --> 00:34:58.330 align:middle line:90%
+So we have two choices.
+
+00:34:58.330 --> 00:35:03.432 align:middle line:84%
+We have walking
+and taking the T.
+
+00:35:03.432 --> 00:35:04.890 align:middle line:84%
+And what I'm
+generally going to use
+
+00:35:04.890 --> 00:35:07.930 align:middle line:84%
+is this Von Neumann-Morgenstern
+utility function u.
+
+00:35:07.930 --> 00:35:11.330 align:middle line:90%
+This is a small u.
+
+00:35:11.330 --> 00:35:13.670 align:middle line:84%
+But then when I compute
+expected utilities,
+
+00:35:13.670 --> 00:35:15.750 align:middle line:84%
+your expected utility
+is going to be a big U.
+
+00:35:15.750 --> 00:35:19.530 align:middle line:84%
+So I'm going to now
+compute here U of walking
+
+00:35:19.530 --> 00:35:22.690 align:middle line:84%
+and U of taken the T.
+And this is a big U.
+
+00:35:22.690 --> 00:35:25.190 align:middle line:84%
+And of course with handwriting,
+it's not obvious what it is.
+
+00:35:25.190 --> 00:35:27.315 align:middle line:84%
+So if you're ever
+unsure, you can ask me.
+
+00:35:27.315 --> 00:35:28.690 align:middle line:84%
+But let's make
+sure we understand
+
+00:35:28.690 --> 00:35:32.050 align:middle line:84%
+that these functions are
+defined for different objects.
+
+00:35:32.050 --> 00:35:35.370 align:middle line:84%
+My cardinal utility
+tells me what
+
+00:35:35.370 --> 00:35:38.130 align:middle line:84%
+is my utility from
+walking when it's sunny?
+
+00:35:38.130 --> 00:35:40.310 align:middle line:84%
+What is my utility from
+walking when it's rainy?
+
+00:35:40.310 --> 00:35:42.450 align:middle line:84%
+And it gives me
+these four numbers.
+
+00:35:42.450 --> 00:35:46.930 align:middle line:84%
+My big U, my expected
+utility, isn't assigned
+
+00:35:46.930 --> 00:35:49.850 align:middle line:90%
+to a weather-choice pair.
+
+00:35:49.850 --> 00:35:52.130 align:middle line:84%
+It's assigned just
+to the choice.
+
+00:35:52.130 --> 00:35:55.570 align:middle line:84%
+So for my big U, I can say,
+what is my expected utility
+
+00:35:55.570 --> 00:35:57.250 align:middle line:90%
+from walking?
+
+00:35:57.250 --> 00:35:59.170 align:middle line:84%
+My little you
+tells me my utility
+
+00:35:59.170 --> 00:36:01.450 align:middle line:84%
+from walking in each
+state of the world.
+
+00:36:01.450 --> 00:36:02.750 align:middle line:90%
+So let's just compute this.
+
+00:36:02.750 --> 00:36:04.378 align:middle line:90%
+It's going to be quite easy.
+
+00:36:04.378 --> 00:36:05.670 align:middle line:90%
+The math here is not the point.
+
+00:36:05.670 --> 00:36:07.850 align:middle line:90%
+It's about conceptually.
+
+00:36:07.850 --> 00:36:10.970 align:middle line:84%
+So if I walk, well, with
+probability p I get 7
+
+00:36:10.970 --> 00:36:13.170 align:middle line:84%
+and with probability
+1 minus p I get 2.
+
+00:36:13.170 --> 00:36:21.330 align:middle line:84%
+So my expected utility is p
+times 7 plus 1 minus p times 2.
+
+00:36:21.330 --> 00:36:26.410 align:middle line:84%
+And if I take the T,
+well, it's p times 5
+
+00:36:26.410 --> 00:36:30.627 align:middle line:90%
+plus 1 minus p times 5.
+
+00:36:30.627 --> 00:36:31.710 align:middle line:90%
+Well, this is easy, right?
+
+00:36:31.710 --> 00:36:33.990 align:middle line:84%
+The expectation of this
+is just going to be 5.
+
+00:36:33.990 --> 00:36:35.170 align:middle line:90%
+It's 5 either way.
+
+00:36:35.170 --> 00:36:38.210 align:middle line:90%
+So this is 5.
+
+00:36:38.210 --> 00:36:41.970 align:middle line:90%
+And then here what do I get?
+
+00:36:41.970 --> 00:36:42.690 align:middle line:90%
+I get 2.
+
+00:36:42.690 --> 00:36:45.090 align:middle line:90%
+Minus 2p, so plus 5p.
+
+00:36:45.090 --> 00:36:48.850 align:middle line:90%
+
+
+00:36:48.850 --> 00:36:50.690 align:middle line:90%
+So which do I prefer?
+
+00:36:50.690 --> 00:36:52.570 align:middle line:90%
+Well, it depends on p, right?
+
+00:36:52.570 --> 00:36:56.130 align:middle line:84%
+If p is really, really
+small-- if p gets close to 0,
+
+00:36:56.130 --> 00:36:57.810 align:middle line:90%
+then this becomes 2.
+
+00:36:57.810 --> 00:36:59.370 align:middle line:90%
+And I prefer 5 to 2.
+
+00:36:59.370 --> 00:37:01.290 align:middle line:90%
+So I prefer taking the T.
+
+00:37:01.290 --> 00:37:02.203 align:middle line:90%
+That makes sense.
+
+00:37:02.203 --> 00:37:04.370 align:middle line:84%
+If I look outside and it
+looks really, really rainy,
+
+00:37:04.370 --> 00:37:07.930 align:middle line:84%
+I'm going to take the T. If p
+is really, really high-- well,
+
+00:37:07.930 --> 00:37:09.070 align:middle line:90%
+let's say p is 1.
+
+00:37:09.070 --> 00:37:10.650 align:middle line:90%
+I know it's going to be sunny.
+
+00:37:10.650 --> 00:37:13.930 align:middle line:90%
+Then if I walk, I get 7.
+
+00:37:13.930 --> 00:37:15.430 align:middle line:90%
+Yes, if I walk, I get 7.
+
+00:37:15.430 --> 00:37:17.330 align:middle line:90%
+If I take the T, I get 5.
+
+00:37:17.330 --> 00:37:19.170 align:middle line:90%
+7 is more than 5.
+
+00:37:19.170 --> 00:37:22.370 align:middle line:90%
+So therefore, I prefer to walk.
+
+00:37:22.370 --> 00:37:24.070 align:middle line:84%
+When will I walk
+rather than take the T?
+
+00:37:24.070 --> 00:37:25.910 align:middle line:84%
+Well, I have to compare
+these two numbers.
+
+00:37:25.910 --> 00:37:29.510 align:middle line:84%
+So when is 2 plus 5p
+greater than or equal to 5?
+
+00:37:29.510 --> 00:37:30.630 align:middle line:90%
+Let's ask that question.
+
+00:37:30.630 --> 00:37:37.010 align:middle line:90%
+
+
+00:37:37.010 --> 00:37:40.410 align:middle line:84%
+Well, it's if 5p is
+greater than or equal to 3.
+
+00:37:40.410 --> 00:37:46.370 align:middle line:84%
+So if p is greater than
+or equal to 3/5, right?
+
+00:37:46.370 --> 00:37:46.870 align:middle line:90%
+All right?
+
+00:37:46.870 --> 00:37:48.410 align:middle line:90%
+Yeah.
+
+00:37:48.410 --> 00:37:50.990 align:middle line:84%
+I'm sure someone
+will check the math.
+
+00:37:50.990 --> 00:37:54.330 align:middle line:90%
+
+
+00:37:54.330 --> 00:37:56.090 align:middle line:90%
+Yeah.
+
+00:37:56.090 --> 00:37:59.010 align:middle line:84%
+AUDIENCE: Why is it
+greater than 3/5?
+
+00:37:59.010 --> 00:38:00.230 align:middle line:90%
+IAN BALL: Ah, good point.
+
+00:38:00.230 --> 00:38:04.090 align:middle line:84%
+So when p is exactly 3/5, I'm
+indifferent between the two.
+
+00:38:04.090 --> 00:38:05.710 align:middle line:90%
+So I need some word for that.
+
+00:38:05.710 --> 00:38:10.210 align:middle line:84%
+So I guess I would say I weakly
+prefer walking to taking the T
+
+00:38:10.210 --> 00:38:12.250 align:middle line:84%
+if p is greater than
+or equal to 3/5.
+
+00:38:12.250 --> 00:38:17.010 align:middle line:84%
+And I strictly prefer walking
+to taking the T if p is strictly
+
+00:38:17.010 --> 00:38:18.730 align:middle line:90%
+greater than 3/5.
+
+00:38:18.730 --> 00:38:20.490 align:middle line:84%
+AUDIENCE: But wouldn't
+that make sense
+
+00:38:20.490 --> 00:38:25.690 align:middle line:84%
+that the equal part would be
+for the T, not for walking?
+
+00:38:25.690 --> 00:38:27.290 align:middle line:90%
+IAN BALL: Sorry, say it again.
+
+00:38:27.290 --> 00:38:31.010 align:middle line:84%
+AUDIENCE: So since it's
+greater or equal, when
+
+00:38:31.010 --> 00:38:32.380 align:middle line:90%
+this happens, we walk, right?
+
+00:38:32.380 --> 00:38:33.130 align:middle line:90%
+IAN BALL: Exactly.
+
+00:38:33.130 --> 00:38:33.850 align:middle line:90%
+Yeah.
+
+00:38:33.850 --> 00:38:37.810 align:middle line:84%
+AUDIENCE: So why are we
+putting equal in walking?
+
+00:38:37.810 --> 00:38:40.770 align:middle line:84%
+Is there like-- do we
+say like when it's equal,
+
+00:38:40.770 --> 00:38:41.510 align:middle line:90%
+it's indifferent?
+
+00:38:41.510 --> 00:38:43.232 align:middle line:90%
+Do we decide which one?
+
+00:38:43.232 --> 00:38:44.190 align:middle line:90%
+IAN BALL: You're right.
+
+00:38:44.190 --> 00:38:45.690 align:middle line:84%
+So there's a bit
+of ambiguity there.
+
+00:38:45.690 --> 00:38:48.330 align:middle line:84%
+So maybe I'll put-- if this
+makes it-- let's say this, yeah.
+
+00:38:48.330 --> 00:38:51.030 align:middle line:84%
+I would say, let's focus on
+the case where p is not 3/5.
+
+00:38:51.030 --> 00:38:52.050 align:middle line:90%
+Then it's pretty clear.
+
+00:38:52.050 --> 00:38:54.110 align:middle line:84%
+When p is exactly
+3/5, you're right,
+
+00:38:54.110 --> 00:38:56.530 align:middle line:84%
+we wouldn't have an inherent
+preference for walking over
+
+00:38:56.530 --> 00:38:59.370 align:middle line:84%
+taking the T. In that case, we
+would be indifferent between
+
+00:38:59.370 --> 00:39:00.510 align:middle line:90%
+walking and taking the T.
+
+00:39:00.510 --> 00:39:03.157 align:middle line:84%
+So maybe I'll make a note
+up here and sometimes use
+
+00:39:03.157 --> 00:39:03.990 align:middle line:90%
+a squiggle for that.
+
+00:39:03.990 --> 00:39:08.570 align:middle line:84%
+So we might say W squiggle T,
+I'm indifferent between walking
+
+00:39:08.570 --> 00:39:17.290 align:middle line:84%
+and taking the T,
+exactly if p equals 3/5.
+
+00:39:17.290 --> 00:39:19.108 align:middle line:84%
+And in this case, it's
+a strict preference.
+
+00:39:19.108 --> 00:39:20.650 align:middle line:84%
+So here what this
+says, which I think
+
+00:39:20.650 --> 00:39:22.810 align:middle line:84%
+is an intuitive model
+of decision making,
+
+00:39:22.810 --> 00:39:25.970 align:middle line:84%
+that I'm going to choose to walk
+home when I check my weather app
+
+00:39:25.970 --> 00:39:28.610 align:middle line:84%
+and I think it's sufficiently
+likely that it's sunny.
+
+00:39:28.610 --> 00:39:29.910 align:middle line:90%
+How sufficiently likely?
+
+00:39:29.910 --> 00:39:32.670 align:middle line:84%
+Well, in this case, it's
+exactly 60% chance of sun
+
+00:39:32.670 --> 00:39:35.330 align:middle line:84%
+that makes it worth it
+for me to walk home.
+
+00:39:35.330 --> 00:39:37.690 align:middle line:84%
+Now, where did we
+get this number from?
+
+00:39:37.690 --> 00:39:41.402 align:middle line:84%
+It depended on the
+numerical values over here.
+
+00:39:41.402 --> 00:39:43.110 align:middle line:84%
+If these numerical
+values were different,
+
+00:39:43.110 --> 00:39:45.750 align:middle line:84%
+if I made this 700, well, then
+I'm basically always going
+
+00:39:45.750 --> 00:39:48.000 align:middle line:84%
+to walk home unless I'm
+absolutely certain, basically,
+
+00:39:48.000 --> 00:39:49.040 align:middle line:90%
+it's going to rain.
+
+00:39:49.040 --> 00:39:53.360 align:middle line:84%
+So that again shows us that the
+cardinal values of these utility
+
+00:39:53.360 --> 00:39:56.440 align:middle line:84%
+functions are going to affect
+the decisions that we make.
+
+00:39:56.440 --> 00:39:57.700 align:middle line:90%
+Any other question on this?
+
+00:39:57.700 --> 00:39:58.412 align:middle line:90%
+Yeah.
+
+00:39:58.412 --> 00:40:00.120 align:middle line:84%
+AUDIENCE: So in the
+case when it's equal,
+
+00:40:00.120 --> 00:40:03.700 align:middle line:84%
+is there-- like, now we
+use expected utility.
+
+00:40:03.700 --> 00:40:07.000 align:middle line:84%
+So you can see which
+expected utility is bigger.
+
+00:40:07.000 --> 00:40:10.240 align:middle line:84%
+But in the case it's equal, is
+there a rule we should follow?
+
+00:40:10.240 --> 00:40:12.960 align:middle line:84%
+Or based on the numbers
+we have in the grid--
+
+00:40:12.960 --> 00:40:15.173 align:middle line:84%
+IAN BALL: No, I would
+say the right way
+
+00:40:15.173 --> 00:40:16.340 align:middle line:90%
+to think about preferences--
+
+00:40:16.340 --> 00:40:18.940 align:middle line:84%
+I was being a little loose
+over there to make it quicker.
+
+00:40:18.940 --> 00:40:21.333 align:middle line:84%
+But I'd say really,
+there's three possibilities
+
+00:40:21.333 --> 00:40:22.500 align:middle line:90%
+when you compare two things.
+
+00:40:22.500 --> 00:40:24.208 align:middle line:84%
+You can strictly prefer
+one to the other.
+
+00:40:24.208 --> 00:40:26.737 align:middle line:84%
+You can strictly prefer
+the other to the first one.
+
+00:40:26.737 --> 00:40:27.820 align:middle line:90%
+Or you can be indifferent.
+
+00:40:27.820 --> 00:40:29.278 align:middle line:84%
+There's really
+three possibilities.
+
+00:40:29.278 --> 00:40:31.043 align:middle line:84%
+And when I compare my
+expected utilities,
+
+00:40:31.043 --> 00:40:32.460 align:middle line:84%
+there's again three
+possibilities.
+
+00:40:32.460 --> 00:40:34.780 align:middle line:84%
+Either one is strictly higher,
+the other is strictly higher,
+
+00:40:34.780 --> 00:40:36.100 align:middle line:90%
+or we're exactly indifferent.
+
+00:40:36.100 --> 00:40:38.650 align:middle line:84%
+And in general, when
+people are indifferent,
+
+00:40:38.650 --> 00:40:40.900 align:middle line:84%
+it's harder to make predictions
+about what they'll do.
+
+00:40:40.900 --> 00:40:41.700 align:middle line:90%
+They might randomize.
+
+00:40:41.700 --> 00:40:42.380 align:middle line:90%
+They might choose one.
+
+00:40:42.380 --> 00:40:43.100 align:middle line:90%
+They might choose the other.
+
+00:40:43.100 --> 00:40:44.600 align:middle line:84%
+We're not going to really
+take a strong stance on what
+
+00:40:44.600 --> 00:40:45.743 align:middle line:90%
+people do in that case.
+
+00:40:45.743 --> 00:40:46.660 align:middle line:90%
+Thanks for clarifying.
+
+00:40:46.660 --> 00:40:47.160 align:middle line:90%
+Yeah.
+
+00:40:47.160 --> 00:40:50.320 align:middle line:90%
+Any other questions?
+
+00:40:50.320 --> 00:40:50.900 align:middle line:90%
+All right.
+
+00:40:50.900 --> 00:40:52.600 align:middle line:84%
+So now let's be a
+bit more formal.
+
+00:40:52.600 --> 00:40:57.100 align:middle line:84%
+This was a very simple example,
+but let's formalize this a bit.
+
+00:40:57.100 --> 00:40:58.460 align:middle line:90%
+I guess I have one more board.
+
+00:40:58.460 --> 00:41:07.000 align:middle line:90%
+
+
+00:41:07.000 --> 00:41:09.400 align:middle line:90%
+So maybe I'll say VNM.
+
+00:41:09.400 --> 00:41:11.980 align:middle line:84%
+This is Von Neumann-Morgenstern
+that I said before.
+
+00:41:11.980 --> 00:41:14.100 align:middle line:84%
+And I'll call this
+the VNM setting.
+
+00:41:14.100 --> 00:41:17.423 align:middle line:90%
+
+
+00:41:17.423 --> 00:41:18.840 align:middle line:84%
+So generally, this
+is the approach
+
+00:41:18.840 --> 00:41:20.220 align:middle line:84%
+we're going to take
+in this course.
+
+00:41:20.220 --> 00:41:22.262 align:middle line:84%
+We're going to start with
+a really simple example
+
+00:41:22.262 --> 00:41:23.400 align:middle line:90%
+to motivate the theory.
+
+00:41:23.400 --> 00:41:25.905 align:middle line:84%
+We're then going to present a
+more general abstract model.
+
+00:41:25.905 --> 00:41:28.280 align:middle line:84%
+And then we're going to go
+back to more concrete and more
+
+00:41:28.280 --> 00:41:30.020 align:middle line:84%
+interesting applications
+that are more substantive.
+
+00:41:30.020 --> 00:41:31.580 align:middle line:84%
+So that's the three
+steps we'll take.
+
+00:41:31.580 --> 00:41:32.840 align:middle line:90%
+So what's the setting here?
+
+00:41:32.840 --> 00:41:36.600 align:middle line:84%
+Well, there's going to be a
+set Z, which we'll say is the--
+
+00:41:36.600 --> 00:41:41.480 align:middle line:84%
+and I'll call this
+Z1 through Zm.
+
+00:41:41.480 --> 00:41:46.980 align:middle line:84%
+And this is the set of maybe
+outcomes or consequences.
+
+00:41:46.980 --> 00:41:49.513 align:middle line:90%
+
+
+00:41:49.513 --> 00:41:51.680 align:middle line:84%
+And we have to be really
+careful about how we define
+
+00:41:51.680 --> 00:41:53.080 align:middle line:90%
+outcomes and consequences.
+
+00:41:53.080 --> 00:41:55.440 align:middle line:84%
+So in this game
+that we described,
+
+00:41:55.440 --> 00:41:57.880 align:middle line:84%
+there are actually
+four outcomes--
+
+00:41:57.880 --> 00:42:00.880 align:middle line:84%
+I walk home in the sun,
+I walk home in the rain,
+
+00:42:00.880 --> 00:42:03.520 align:middle line:84%
+I take the T in the sun, and
+I take the T in the rain.
+
+00:42:03.520 --> 00:42:06.240 align:middle line:84%
+It's important to understand
+the outcome has to capture
+
+00:42:06.240 --> 00:42:07.420 align:middle line:90%
+everything about my choice.
+
+00:42:07.420 --> 00:42:08.940 align:middle line:90%
+It's not directly my choice.
+
+00:42:08.940 --> 00:42:10.700 align:middle line:84%
+I'm not directly
+choosing outcomes.
+
+00:42:10.700 --> 00:42:13.640 align:middle line:84%
+I'm choosing effectively
+lotteries over outcomes.
+
+00:42:13.640 --> 00:42:15.640 align:middle line:84%
+And the outcome has to
+capture everything that's
+
+00:42:15.640 --> 00:42:17.880 align:middle line:90%
+relevant in the situation.
+
+00:42:17.880 --> 00:42:20.920 align:middle line:84%
+So we have this set of
+outcomes or consequences.
+
+00:42:20.920 --> 00:42:23.960 align:middle line:84%
+And then we have the Von
+Neumann-Morgenstern utility
+
+00:42:23.960 --> 00:42:26.680 align:middle line:90%
+function little u.
+
+00:42:26.680 --> 00:42:28.800 align:middle line:84%
+Now, just as we saw
+over here, little u
+
+00:42:28.800 --> 00:42:31.400 align:middle line:84%
+assigned a number to each
+of our four outcomes.
+
+00:42:31.400 --> 00:42:36.680 align:middle line:84%
+So U is going to be a
+function from Z to R.
+
+00:42:36.680 --> 00:42:38.680 align:middle line:84%
+So I'm going to use this
+function notation a lot
+
+00:42:38.680 --> 00:42:39.640 align:middle line:90%
+in the course.
+
+00:42:39.640 --> 00:42:41.760 align:middle line:84%
+When I put a letter
+and then a colon,
+
+00:42:41.760 --> 00:42:43.520 align:middle line:84%
+that means this
+is a function that
+
+00:42:43.520 --> 00:42:46.340 align:middle line:84%
+assigns to every
+item in this set,
+
+00:42:46.340 --> 00:42:49.240 align:middle line:84%
+every object in this set,
+something in this set.
+
+00:42:49.240 --> 00:42:52.932 align:middle line:84%
+So in this case, it assigns
+to every outcome Z is--
+
+00:42:52.932 --> 00:42:54.640 align:middle line:84%
+I'll write it like
+this underneath-- what
+
+00:42:54.640 --> 00:42:59.160 align:middle line:84%
+we'll call u of Z. And u
+of Z is the cardinal Von
+
+00:42:59.160 --> 00:43:04.920 align:middle line:84%
+Neumann-Morgenstern utility
+I get from the outcome Z.
+
+00:43:04.920 --> 00:43:09.800 align:middle line:84%
+Now, given the set of outcomes
+and my Von Neumann-Morgenstern
+
+00:43:09.800 --> 00:43:14.320 align:middle line:84%
+utility, we can consider
+my expected utility.
+
+00:43:14.320 --> 00:43:15.500 align:middle line:90%
+Let me write it this.
+
+00:43:15.500 --> 00:43:20.480 align:middle line:90%
+
+
+00:43:20.480 --> 00:43:22.710 align:middle line:84%
+So my expected
+utility is the big U.
+
+00:43:22.710 --> 00:43:24.460 align:middle line:84%
+And what is this going
+to be defined over?
+
+00:43:24.460 --> 00:43:27.043 align:middle line:84%
+It's really crucial that this
+is defined over a different set.
+
+00:43:27.043 --> 00:43:29.220 align:middle line:84%
+So what do I assign
+expected utilities to?
+
+00:43:29.220 --> 00:43:32.220 align:middle line:90%
+
+
+00:43:32.220 --> 00:43:32.720 align:middle line:90%
+Yeah.
+
+00:43:32.720 --> 00:43:34.960 align:middle line:84%
+AUDIENCE: Would it
+be a set of actions?
+
+00:43:34.960 --> 00:43:37.720 align:middle line:84%
+IAN BALL: So in this context,
+it was a set of actions.
+
+00:43:37.720 --> 00:43:39.520 align:middle line:84%
+But in this abstract
+model-- good question.
+
+00:43:39.520 --> 00:43:40.102 align:middle line:90%
+Yeah.
+
+00:43:40.102 --> 00:43:41.560 align:middle line:84%
+AUDIENCE: Like the
+state you're in.
+
+00:43:41.560 --> 00:43:44.780 align:middle line:84%
+IAN BALL: So I would say-- may
+be a bit of a vague question.
+
+00:43:44.780 --> 00:43:48.330 align:middle line:84%
+I would say the set of
+lotteries over outcomes.
+
+00:43:48.330 --> 00:43:49.080 align:middle line:90%
+So let's be clear.
+
+00:43:49.080 --> 00:43:51.140 align:middle line:84%
+Here, you're right, we
+were choosing actions.
+
+00:43:51.140 --> 00:43:53.360 align:middle line:84%
+We chose whether to
+walk or take the MBTA.
+
+00:43:53.360 --> 00:43:56.200 align:middle line:84%
+But the way we think about those
+actions in this abstract setting
+
+00:43:56.200 --> 00:43:58.300 align:middle line:84%
+is that each one
+corresponds to a lottery.
+
+00:43:58.300 --> 00:44:01.160 align:middle line:84%
+Walking is the lottery
+where with probability p,
+
+00:44:01.160 --> 00:44:04.440 align:middle line:84%
+I walk in the sun, and
+with probability 1 minus p,
+
+00:44:04.440 --> 00:44:06.120 align:middle line:90%
+I walk in the rain.
+
+00:44:06.120 --> 00:44:08.880 align:middle line:84%
+And similarly, the MBTA
+is a different lottery
+
+00:44:08.880 --> 00:44:11.100 align:middle line:84%
+where with probability
+p, I get this outcome,
+
+00:44:11.100 --> 00:44:13.540 align:middle line:84%
+and with probability 1
+minus p, I get this outcome.
+
+00:44:13.540 --> 00:44:15.480 align:middle line:84%
+So we need some
+notation for lotteries.
+
+00:44:15.480 --> 00:44:19.830 align:middle line:84%
+I'm going to use throughout
+the course delta of Z.
+
+00:44:19.830 --> 00:44:21.580 align:middle line:84%
+I don't want the
+notation to scare people.
+
+00:44:21.580 --> 00:44:22.520 align:middle line:84%
+It's just going
+to make it easier
+
+00:44:22.520 --> 00:44:23.980 align:middle line:90%
+for us to talk about things.
+
+00:44:23.980 --> 00:44:25.740 align:middle line:90%
+So Z is our set of outcomes.
+
+00:44:25.740 --> 00:44:29.880 align:middle line:84%
+Delta of Z is the set of
+lotteries over these outcomes.
+
+00:44:29.880 --> 00:44:34.080 align:middle line:84%
+So in this context where we only
+had two outcomes, a lottery just
+
+00:44:34.080 --> 00:44:37.260 align:middle line:84%
+specified two numbers,
+p and 1 minus p.
+
+00:44:37.260 --> 00:44:39.497 align:middle line:84%
+And because those
+numbers sum to 1,
+
+00:44:39.497 --> 00:44:41.330 align:middle line:84%
+it was really only one
+number that mattered.
+
+00:44:41.330 --> 00:44:44.350 align:middle line:84%
+Once we knew p, we were
+able to calculate 1 minus p.
+
+00:44:44.350 --> 00:44:46.790 align:middle line:84%
+But in general, we're
+looking at a situation
+
+00:44:46.790 --> 00:44:49.350 align:middle line:84%
+where there are m outcomes
+instead of just two.
+
+00:44:49.350 --> 00:44:50.530 align:middle line:90%
+So what is a lottery?
+
+00:44:50.530 --> 00:44:53.110 align:middle line:90%
+
+
+00:44:53.110 --> 00:44:57.950 align:middle line:84%
+So it contains what
+I'll call lotteries.
+
+00:44:57.950 --> 00:45:00.870 align:middle line:84%
+And again, I should be clear
+the use of lottery colloquially
+
+00:45:00.870 --> 00:45:01.955 align:middle line:90%
+is different from in econ.
+
+00:45:01.955 --> 00:45:04.330 align:middle line:84%
+We're not literally talking
+about buying lottery tickets.
+
+00:45:04.330 --> 00:45:05.790 align:middle line:84%
+We're using this
+more abstractly.
+
+00:45:05.790 --> 00:45:10.910 align:middle line:84%
+It's a vector p that specifies
+the probability of each
+
+00:45:10.910 --> 00:45:13.030 align:middle line:90%
+of these outcomes.
+
+00:45:13.030 --> 00:45:16.350 align:middle line:90%
+So p1 to pm.
+
+00:45:16.350 --> 00:45:18.910 align:middle line:84%
+The lottery says
+with probability p1,
+
+00:45:18.910 --> 00:45:20.990 align:middle line:90%
+you get consequence Z1.
+
+00:45:20.990 --> 00:45:24.510 align:middle line:84%
+With probability pm,
+you get consequence Zm.
+
+00:45:24.510 --> 00:45:25.570 align:middle line:90%
+These are probabilities.
+
+00:45:25.570 --> 00:45:27.170 align:middle line:84%
+So what has to be
+true about them?
+
+00:45:27.170 --> 00:45:28.450 align:middle line:90%
+They have to be non-negative.
+
+00:45:28.450 --> 00:45:30.070 align:middle line:84%
+You can't have
+negative probabilities.
+
+00:45:30.070 --> 00:45:33.310 align:middle line:90%
+And they have to sum to 1.
+
+00:45:33.310 --> 00:45:41.470 align:middle line:84%
+So say p1 up to pm are
+greater than or equal to 0.
+
+00:45:41.470 --> 00:45:45.770 align:middle line:90%
+And p1 plus pm equals 1.
+
+00:45:45.770 --> 00:45:50.190 align:middle line:90%
+
+
+00:45:50.190 --> 00:45:53.750 align:middle line:84%
+So delta of Z is the set of all
+of these probability vectors
+
+00:45:53.750 --> 00:45:58.510 align:middle line:84%
+or lotteries that
+satisfy these properties.
+
+00:45:58.510 --> 00:46:00.310 align:middle line:84%
+And now our expected
+utility function
+
+00:46:00.310 --> 00:46:07.830 align:middle line:84%
+u is a function
+from delta Z to R.
+
+00:46:07.830 --> 00:46:10.630 align:middle line:84%
+It says, for any lottery,
+what is my expected
+
+00:46:10.630 --> 00:46:12.630 align:middle line:90%
+utility from that lottery?
+
+00:46:12.630 --> 00:46:14.870 align:middle line:84%
+So again, using
+the notation above,
+
+00:46:14.870 --> 00:46:19.710 align:middle line:84%
+we would call a lottery p,
+and that would go to u of p.
+
+00:46:19.710 --> 00:46:21.370 align:middle line:84%
+So this distinction
+is crucial, right?
+
+00:46:21.370 --> 00:46:23.810 align:middle line:84%
+A VNM utility says
+for each outcome,
+
+00:46:23.810 --> 00:46:26.070 align:middle line:84%
+what is my utility
+from that outcome?
+
+00:46:26.070 --> 00:46:30.550 align:middle line:84%
+And expected utility big U says
+for each lottery over outcomes,
+
+00:46:30.550 --> 00:46:33.750 align:middle line:84%
+what is my expected
+utility from that lottery?
+
+00:46:33.750 --> 00:46:34.693 align:middle line:90%
+Yes, question?
+
+00:46:34.693 --> 00:46:36.110 align:middle line:84%
+AUDIENCE: Just to
+clarify, when we
+
+00:46:36.110 --> 00:46:39.390 align:middle line:84%
+say lotteries, that's what
+we're modeling your decision as
+
+00:46:39.390 --> 00:46:41.530 align:middle line:84%
+is opting into a
+specific lottery.
+
+00:46:41.530 --> 00:46:44.350 align:middle line:84%
+IAN BALL: So in the
+face of uncertainty,
+
+00:46:44.350 --> 00:46:47.270 align:middle line:84%
+we're going to imagine that
+each choice that you make
+
+00:46:47.270 --> 00:46:49.717 align:middle line:84%
+is going to induce some
+lottery of outcomes.
+
+00:46:49.717 --> 00:46:52.050 align:middle line:84%
+And we're going to represent
+the choice by that lottery.
+
+00:46:52.050 --> 00:46:54.738 align:middle line:84%
+This is an important point,
+because it could be that--
+
+00:46:54.738 --> 00:46:56.530 align:middle line:84%
+yeah, there's an embedded
+assumption there.
+
+00:46:56.530 --> 00:46:57.870 align:middle line:84%
+But I'll just say yeah,
+that's what we're assuming.
+
+00:46:57.870 --> 00:46:58.550 align:middle line:90%
+Yes.
+
+00:46:58.550 --> 00:47:01.127 align:middle line:84%
+AUDIENCE: Can you just say
+what u would be in this case?
+
+00:47:01.127 --> 00:47:01.710 align:middle line:90%
+IAN BALL: Yes.
+
+00:47:01.710 --> 00:47:03.270 align:middle line:84%
+So let me write the
+definition and then I'll
+
+00:47:03.270 --> 00:47:03.930 align:middle line:90%
+give you an example.
+
+00:47:03.930 --> 00:47:04.430 align:middle line:90%
+Exactly.
+
+00:47:04.430 --> 00:47:05.550 align:middle line:90%
+AUDIENCE: The little one.
+
+00:47:05.550 --> 00:47:06.175 align:middle line:90%
+IAN BALL: Yeah.
+
+00:47:06.175 --> 00:47:07.270 align:middle line:90%
+Yeah, exactly.
+
+00:47:07.270 --> 00:47:09.130 align:middle line:84%
+So let's first give
+the general definition.
+
+00:47:09.130 --> 00:47:10.338 align:middle line:90%
+Then I'll go to this example.
+
+00:47:10.338 --> 00:47:12.910 align:middle line:90%
+So u of p equals what?
+
+00:47:12.910 --> 00:47:16.590 align:middle line:84%
+Well, I'm just going to sum
+over all the possible outcomes.
+
+00:47:16.590 --> 00:47:18.128 align:middle line:90%
+There are m outcomes.
+
+00:47:18.128 --> 00:47:19.670 align:middle line:84%
+So I'm going to
+take-- and let me not
+
+00:47:19.670 --> 00:47:21.190 align:middle line:84%
+use summation notation,
+because I think that makes
+
+00:47:21.190 --> 00:47:22.482 align:middle line:90%
+it just seem harder than it is.
+
+00:47:22.482 --> 00:47:25.850 align:middle line:90%
+So let me write p1 u of Z1.
+
+00:47:25.850 --> 00:47:34.230 align:middle line:90%
+
+
+00:47:34.230 --> 00:47:38.550 align:middle line:84%
+So I'm saying with probability
+p1, I get outcome Z1.
+
+00:47:38.550 --> 00:47:39.970 align:middle line:90%
+And this is my utility.
+
+00:47:39.970 --> 00:47:42.230 align:middle line:84%
+And I sum it all the way
+up until I get to pn.
+
+00:47:42.230 --> 00:47:44.190 align:middle line:84%
+This is the probability
+of outcome n.
+
+00:47:44.190 --> 00:47:46.030 align:middle line:90%
+And I get utility this.
+
+00:47:46.030 --> 00:47:48.270 align:middle line:84%
+So if we wanted to
+really formally write
+
+00:47:48.270 --> 00:47:50.790 align:middle line:90%
+this in the example over here--
+
+00:47:50.790 --> 00:47:58.230 align:middle line:84%
+so in the example,
+walking corresponded
+
+00:47:58.230 --> 00:47:59.522 align:middle line:90%
+to a particular lottery, right?
+
+00:47:59.522 --> 00:48:01.480 align:middle line:84%
+Now, if I really want to
+write out the example,
+
+00:48:01.480 --> 00:48:03.450 align:middle line:84%
+I need to write out all
+four of these things.
+
+00:48:03.450 --> 00:48:11.150 align:middle line:84%
+So maybe I'll call
+these Z1, Z2, Z3, Z4.
+
+00:48:11.150 --> 00:48:11.650 align:middle line:90%
+OK?
+
+00:48:11.650 --> 00:48:14.750 align:middle line:84%
+These are the four
+consequences of my actions.
+
+00:48:14.750 --> 00:48:17.570 align:middle line:90%
+Now, what is walking here?
+
+00:48:17.570 --> 00:48:19.470 align:middle line:84%
+We need to specify
+four numbers--
+
+00:48:19.470 --> 00:48:23.550 align:middle line:90%
+p1, p2, p3, p4.
+
+00:48:23.550 --> 00:48:26.630 align:middle line:84%
+What are these four
+numbers in this example?
+
+00:48:26.630 --> 00:48:31.510 align:middle line:84%
+Well, if I walk, I either get
+this box with probability p
+
+00:48:31.510 --> 00:48:34.390 align:middle line:84%
+or this box with
+probability 1 minus p.
+
+00:48:34.390 --> 00:48:37.870 align:middle line:84%
+So of these four numbers,
+two of them are 0.
+
+00:48:37.870 --> 00:48:40.930 align:middle line:90%
+p3 and p4 are both 0.
+
+00:48:40.930 --> 00:48:44.050 align:middle line:90%
+
+
+00:48:44.050 --> 00:48:44.550 align:middle line:90%
+Why?
+
+00:48:44.550 --> 00:48:48.107 align:middle line:84%
+Because it's impossible
+for me to get
+
+00:48:48.107 --> 00:48:49.190 align:middle line:90%
+one of those consequences.
+
+00:48:49.190 --> 00:48:50.565 align:middle line:84%
+If I choose to
+walk home, there's
+
+00:48:50.565 --> 00:48:52.210 align:middle line:90%
+no way-- oh, I got unlucky.
+
+00:48:52.210 --> 00:48:55.510 align:middle line:84%
+I'm now on the T. We're not
+imagining that can happen.
+
+00:48:55.510 --> 00:48:58.030 align:middle line:84%
+What can happen is you can
+either walk home when it gets
+
+00:48:58.030 --> 00:48:59.870 align:middle line:84%
+wet or you walk
+home and you don't.
+
+00:48:59.870 --> 00:49:02.530 align:middle line:90%
+So we have Z1 is going to be p.
+
+00:49:02.530 --> 00:49:05.910 align:middle line:90%
+
+
+00:49:05.910 --> 00:49:07.830 align:middle line:90%
+1 minus p here.
+
+00:49:07.830 --> 00:49:13.030 align:middle line:84%
+And if we compute it, what
+is u of this particular p
+
+00:49:13.030 --> 00:49:14.070 align:middle line:90%
+going to be?
+
+00:49:14.070 --> 00:49:21.830 align:middle line:84%
+Well, we go through and we
+get pu of Z1 plus 1 minus pu
+
+00:49:21.830 --> 00:49:23.968 align:middle line:90%
+of Z2 plus 0 plus 0.
+
+00:49:23.968 --> 00:49:25.510 align:middle line:84%
+I'm not going to
+include the last two
+
+00:49:25.510 --> 00:49:27.350 align:middle line:90%
+terms because they disappear.
+
+00:49:27.350 --> 00:49:34.780 align:middle line:84%
+And this is going to be exactly
+what we said before, p times 7
+
+00:49:34.780 --> 00:49:38.357 align:middle line:90%
+plus 1 minus p times 2.
+
+00:49:38.357 --> 00:49:39.440 align:middle line:90%
+Which we already computed.
+
+00:49:39.440 --> 00:49:40.440 align:middle line:90%
+Any questions on that?
+
+00:49:40.440 --> 00:49:43.820 align:middle line:90%
+
+
+00:49:43.820 --> 00:49:44.780 align:middle line:90%
+Yes.
+
+00:49:44.780 --> 00:49:47.072 align:middle line:84%
+AUDIENCE: So when we're
+actually getting the value that
+
+00:49:47.072 --> 00:49:49.740 align:middle line:84%
+goes from p to a
+real number, there's
+
+00:49:49.740 --> 00:49:53.020 align:middle line:84%
+already an implicit choice, like
+here implicitly we're walking
+
+00:49:53.020 --> 00:49:55.195 align:middle line:84%
+and we're not calculating
+this particular T.
+
+00:49:55.195 --> 00:49:55.820 align:middle line:90%
+IAN BALL: Yeah.
+
+00:49:55.820 --> 00:49:59.813 align:middle line:84%
+So what I would say is in
+principle, you can evaluate--
+
+00:49:59.813 --> 00:50:02.480 align:middle line:84%
+and this is the key distinction
+between preferences and choices.
+
+00:50:02.480 --> 00:50:04.060 align:middle line:84%
+In principle, you
+could say, if I
+
+00:50:04.060 --> 00:50:06.980 align:middle line:84%
+were offered a lottery between
+these outcomes, this lottery
+
+00:50:06.980 --> 00:50:09.180 align:middle line:84%
+versus this lottery,
+what would I prefer?
+
+00:50:09.180 --> 00:50:10.440 align:middle line:90%
+Those are your preferences.
+
+00:50:10.440 --> 00:50:13.100 align:middle line:84%
+But in reality, you're given
+a limited menu of lotteries
+
+00:50:13.100 --> 00:50:14.520 align:middle line:84%
+that you can
+actually choose from.
+
+00:50:14.520 --> 00:50:16.200 align:middle line:84%
+And you're going to make a
+choice between those lotteries.
+
+00:50:16.200 --> 00:50:19.220 align:middle line:84%
+So I could say in my head, what
+would I prefer between a stock
+
+00:50:19.220 --> 00:50:22.460 align:middle line:84%
+that always pays a return of
+1,000% and a stock that always
+
+00:50:22.460 --> 00:50:23.835 align:middle line:84%
+pays a return of
+negative 1,000%?
+
+00:50:23.835 --> 00:50:25.002 align:middle line:90%
+I know which one I'd prefer.
+
+00:50:25.002 --> 00:50:26.380 align:middle line:84%
+And I can compute
+my preferences.
+
+00:50:26.380 --> 00:50:27.900 align:middle line:84%
+But there may not
+actually be a company
+
+00:50:27.900 --> 00:50:29.180 align:middle line:84%
+listed on the stock
+market that is
+
+00:50:29.180 --> 00:50:30.320 align:middle line:90%
+going to give me that lottery.
+
+00:50:30.320 --> 00:50:32.237 align:middle line:84%
+In reality, I'm going
+to face a limited choice
+
+00:50:32.237 --> 00:50:34.000 align:middle line:90%
+set, a limited menu of options.
+
+00:50:34.000 --> 00:50:35.920 align:middle line:84%
+Each of those options
+will induce a lottery,
+
+00:50:35.920 --> 00:50:37.740 align:middle line:84%
+and I'll make a choice
+among this smaller
+
+00:50:37.740 --> 00:50:38.920 align:middle line:90%
+collection of lotteries.
+
+00:50:38.920 --> 00:50:41.740 align:middle line:84%
+In this case, that collection
+had two lotteries, the walking
+
+00:50:41.740 --> 00:50:43.480 align:middle line:84%
+lottery and the
+taking the T lottery.
+
+00:50:43.480 --> 00:50:45.480 align:middle line:84%
+AUDIENCE: When you're
+calculating this function,
+
+00:50:45.480 --> 00:50:48.646 align:middle line:90%
+you've already chosen a lottery.
+
+00:50:48.646 --> 00:50:50.740 align:middle line:84%
+Or you calculate this
+function based off of that.
+
+00:50:50.740 --> 00:50:51.920 align:middle line:84%
+IAN BALL: I would
+say it's a function,
+
+00:50:51.920 --> 00:50:53.960 align:middle line:84%
+so it's defined for
+every single lottery.
+
+00:50:53.960 --> 00:50:56.860 align:middle line:84%
+I can say for every single
+lottery what my expected utility
+
+00:50:56.860 --> 00:50:59.100 align:middle line:84%
+is, even for lotteries that
+I may not have the option
+
+00:50:59.100 --> 00:51:01.740 align:middle line:90%
+to choose in a given situation.
+
+00:51:01.740 --> 00:51:02.970 align:middle line:90%
+Yes.
+
+00:51:02.970 --> 00:51:05.540 align:middle line:84%
+AUDIENCE: So even though p
+is determined on our beliefs,
+
+00:51:05.540 --> 00:51:07.660 align:middle line:84%
+when it's a function
+of big U, do we just
+
+00:51:07.660 --> 00:51:11.580 align:middle line:84%
+take it as exogenous and
+optimize based off of the things
+
+00:51:11.580 --> 00:51:12.520 align:middle line:90%
+that we can control?
+
+00:51:12.520 --> 00:51:13.520 align:middle line:90%
+IAN BALL: Good question.
+
+00:51:13.520 --> 00:51:14.820 align:middle line:84%
+So this is going to
+be a big difference
+
+00:51:14.820 --> 00:51:17.480 align:middle line:84%
+between individual decision
+making and interactive decision
+
+00:51:17.480 --> 00:51:17.980 align:middle line:90%
+making.
+
+00:51:17.980 --> 00:51:20.420 align:middle line:84%
+In individual decision making,
+all of this uncertainty
+
+00:51:20.420 --> 00:51:21.720 align:middle line:90%
+is just going to be exogenous.
+
+00:51:21.720 --> 00:51:23.200 align:middle line:84%
+And that's the model
+I've written down.
+
+00:51:23.200 --> 00:51:25.242 align:middle line:84%
+But we'll see when we get
+to interactive decision
+
+00:51:25.242 --> 00:51:27.580 align:middle line:84%
+making, well, how do I form
+beliefs about the choices
+
+00:51:27.580 --> 00:51:28.600 align:middle line:90%
+that other people make?
+
+00:51:28.600 --> 00:51:29.900 align:middle line:84%
+And then we're going
+to have to impose more
+
+00:51:29.900 --> 00:51:31.025 align:middle line:90%
+structure on these beliefs.
+
+00:51:31.025 --> 00:51:33.608 align:middle line:84%
+But for the individual context,
+we think of them as exogenous.
+
+00:51:33.608 --> 00:51:35.442 align:middle line:84%
+Through introspection,
+you form your beliefs
+
+00:51:35.442 --> 00:51:37.560 align:middle line:84%
+about what nature does,
+not what other players do.
+
+00:51:37.560 --> 00:51:38.060 align:middle line:90%
+Yep.
+
+00:51:38.060 --> 00:51:39.260 align:middle line:90%
+Thank you.
+
+00:51:39.260 --> 00:51:42.660 align:middle line:84%
+OK, so one final thing
+in the last five minutes.
+
+00:51:42.660 --> 00:51:46.420 align:middle line:84%
+There's a special case, which
+is of a lot of importance.
+
+00:51:46.420 --> 00:51:54.140 align:middle line:84%
+And I'll say the
+key special case
+
+00:51:54.140 --> 00:51:56.160 align:middle line:84%
+is going to be what we
+call money lotteries.
+
+00:51:56.160 --> 00:52:00.560 align:middle line:90%
+
+
+00:52:00.560 --> 00:52:02.060 align:middle line:84%
+So these are more
+like the lotteries
+
+00:52:02.060 --> 00:52:04.580 align:middle line:90%
+that you hear about in reality.
+
+00:52:04.580 --> 00:52:06.560 align:middle line:84%
+And why do I call
+it a special case?
+
+00:52:06.560 --> 00:52:09.580 align:middle line:84%
+Well, it's the special case
+where Z, the set of outcomes,
+
+00:52:09.580 --> 00:52:12.580 align:middle line:84%
+is just a set of
+monetary rewards.
+
+00:52:12.580 --> 00:52:17.700 align:middle line:84%
+So I'll say Z is equal to R. And
+this means the real number line.
+
+00:52:17.700 --> 00:52:19.162 align:middle line:90%
+Now, before I said Z was finite.
+
+00:52:19.162 --> 00:52:20.620 align:middle line:84%
+Here I'm going to
+be a little loose
+
+00:52:20.620 --> 00:52:22.340 align:middle line:90%
+and allow Z to be infinite.
+
+00:52:22.340 --> 00:52:25.680 align:middle line:84%
+So the outcome here is
+I get $1, I get $10,
+
+00:52:25.680 --> 00:52:26.680 align:middle line:90%
+I get a billion dollars.
+
+00:52:26.680 --> 00:52:27.762 align:middle line:90%
+These are all outcomes.
+
+00:52:27.762 --> 00:52:28.720 align:middle line:90%
+So what is the lottery?
+
+00:52:28.720 --> 00:52:31.660 align:middle line:90%
+Let's consider two lotteries.
+
+00:52:31.660 --> 00:52:35.520 align:middle line:90%
+One lottery maybe pays $10.
+
+00:52:35.520 --> 00:52:55.780 align:middle line:90%
+
+
+00:52:55.780 --> 00:52:57.700 align:middle line:84%
+So let's now consider
+two lotteries.
+
+00:52:57.700 --> 00:52:59.672 align:middle line:84%
+Now here, with
+infinitely many things,
+
+00:52:59.672 --> 00:53:00.880 align:middle line:90%
+it could be more complicated.
+
+00:53:00.880 --> 00:53:02.140 align:middle line:84%
+But I'm going to
+look at lotteries
+
+00:53:02.140 --> 00:53:04.340 align:middle line:84%
+where there's a small number
+of things that could actually
+
+00:53:04.340 --> 00:53:05.000 align:middle line:90%
+happen.
+
+00:53:05.000 --> 00:53:06.508 align:middle line:84%
+So under this
+lottery, there's only
+
+00:53:06.508 --> 00:53:07.800 align:middle line:90%
+two outcomes that could happen.
+
+00:53:07.800 --> 00:53:10.060 align:middle line:84%
+Every other outcome
+has probability 0.
+
+00:53:10.060 --> 00:53:15.460 align:middle line:84%
+Under this lottery, with
+probability 0.99, I get $10.
+
+00:53:15.460 --> 00:53:18.040 align:middle line:84%
+And with probability
+0.01, I get nothing.
+
+00:53:18.040 --> 00:53:19.340 align:middle line:90%
+I get 0.
+
+00:53:19.340 --> 00:53:24.380 align:middle line:84%
+With this lottery, I get $1,000
+with probability 0.01 and I get
+
+00:53:24.380 --> 00:53:26.620 align:middle line:90%
+0 with probability 0.99.
+
+00:53:26.620 --> 00:53:27.840 align:middle line:90%
+So two different lotteries.
+
+00:53:27.840 --> 00:53:29.240 align:middle line:90%
+They fit within our framework.
+
+00:53:29.240 --> 00:53:31.920 align:middle line:84%
+And we can compute our expected
+utility of these lotteries.
+
+00:53:31.920 --> 00:53:32.420 align:middle line:90%
+How?
+
+00:53:32.420 --> 00:53:37.620 align:middle line:84%
+Well, to do that, we need our
+VNM utility function, which
+
+00:53:37.620 --> 00:53:41.140 align:middle line:84%
+is a function, remember from
+Z to R. But in this case,
+
+00:53:41.140 --> 00:53:47.940 align:middle line:84%
+Z is just R. But let's
+understand, this is money
+
+00:53:47.940 --> 00:53:49.400 align:middle line:90%
+and this is utility.
+
+00:53:49.400 --> 00:53:53.100 align:middle line:90%
+
+
+00:53:53.100 --> 00:53:56.040 align:middle line:84%
+So which of these
+lotteries would you prefer?
+
+00:53:56.040 --> 00:53:57.040 align:middle line:90%
+There's no right answer.
+
+00:53:57.040 --> 00:53:59.660 align:middle line:84%
+Again, preferences
+are not irrational.
+
+00:53:59.660 --> 00:54:02.600 align:middle line:84%
+But what's your
+preference between these?
+
+00:54:02.600 --> 00:54:06.840 align:middle line:90%
+
+
+00:54:06.840 --> 00:54:07.340 align:middle line:90%
+Yeah.
+
+00:54:07.340 --> 00:54:08.380 align:middle line:90%
+AUDIENCE: I like the first one.
+
+00:54:08.380 --> 00:54:09.060 align:middle line:84%
+IAN BALL: You like
+the first one?
+
+00:54:09.060 --> 00:54:09.220 align:middle line:90%
+OK.
+
+00:54:09.220 --> 00:54:10.400 align:middle line:90%
+I think most people would.
+
+00:54:10.400 --> 00:54:12.980 align:middle line:90%
+And why is that?
+
+00:54:12.980 --> 00:54:19.660 align:middle line:84%
+AUDIENCE: Because I don't know,
+it seems like 1,000 divided
+
+00:54:19.660 --> 00:54:22.360 align:middle line:84%
+by whatever seems
+to be about 10,
+
+00:54:22.360 --> 00:54:25.100 align:middle line:84%
+and then it feels more
+certain because it's 0.99.
+
+00:54:25.100 --> 00:54:25.900 align:middle line:90%
+But I don't know.
+
+00:54:25.900 --> 00:54:26.200 align:middle line:90%
+IAN BALL: Right.
+
+00:54:26.200 --> 00:54:27.280 align:middle line:84%
+So that's a great way
+of thinking about it.
+
+00:54:27.280 --> 00:54:28.738 align:middle line:84%
+So the first thing
+you might say is
+
+00:54:28.738 --> 00:54:31.100 align:middle line:84%
+let's compare the expected
+values of these lotteries.
+
+00:54:31.100 --> 00:54:34.020 align:middle line:84%
+The expected value of
+this is exactly $10.
+
+00:54:34.020 --> 00:54:37.860 align:middle line:84%
+100th of 1,000 has
+expected value $10.
+
+00:54:37.860 --> 00:54:39.720 align:middle line:84%
+What's the expected
+value of this?
+
+00:54:39.720 --> 00:54:42.060 align:middle line:90%
+It's $9.90.
+
+00:54:42.060 --> 00:54:45.260 align:middle line:84%
+So this has a lower
+monetary expected value.
+
+00:54:45.260 --> 00:54:48.060 align:middle line:84%
+But despite it having a lower
+monetary expected value,
+
+00:54:48.060 --> 00:54:50.940 align:middle line:84%
+it might have a higher
+expected utility.
+
+00:54:50.940 --> 00:54:54.680 align:middle line:84%
+And many people would choose
+this lottery over this lottery
+
+00:54:54.680 --> 00:54:57.580 align:middle line:84%
+exactly because of what
+you said, it's safer.
+
+00:54:57.580 --> 00:55:01.060 align:middle line:84%
+So what's key is through our
+Von Neumann-Morgenstern utility
+
+00:55:01.060 --> 00:55:04.217 align:middle line:84%
+function u, when we
+evaluate lotteries,
+
+00:55:04.217 --> 00:55:06.300 align:middle line:84%
+we don't just compare the
+expected monetary amount
+
+00:55:06.300 --> 00:55:08.740 align:middle line:84%
+of the lotteries, we
+compare the expected utility
+
+00:55:08.740 --> 00:55:11.700 align:middle line:90%
+between the lotteries.
+
+00:55:11.700 --> 00:55:14.420 align:middle line:84%
+And what you're
+describing is what
+
+00:55:14.420 --> 00:55:18.810 align:middle line:84%
+a lot of people feature in this
+context is, I'll say often,
+
+00:55:18.810 --> 00:55:23.090 align:middle line:90%
+u is a concave function.
+
+00:55:23.090 --> 00:55:27.330 align:middle line:84%
+So if I were to draw
+u for a lot of people,
+
+00:55:27.330 --> 00:55:29.930 align:middle line:90%
+their u is something like this.
+
+00:55:29.930 --> 00:55:32.090 align:middle line:84%
+And when u is concave,
+it means people
+
+00:55:32.090 --> 00:55:34.790 align:middle line:90%
+are what we call risk averse.
+
+00:55:34.790 --> 00:55:37.970 align:middle line:90%
+
+
+00:55:37.970 --> 00:55:40.610 align:middle line:84%
+So in this case, you
+exhibited risk aversion.
+
+00:55:40.610 --> 00:55:44.210 align:middle line:84%
+You preferred this
+lottery to this lottery,
+
+00:55:44.210 --> 00:55:48.090 align:middle line:84%
+even though it had a
+smaller expected value.
+
+00:55:48.090 --> 00:55:51.410 align:middle line:84%
+And if we want to
+formally define
+
+00:55:51.410 --> 00:55:55.690 align:middle line:84%
+what does risk aversion
+mean, a risk averse person
+
+00:55:55.690 --> 00:55:59.970 align:middle line:84%
+is someone who always
+prefers a certainty
+
+00:55:59.970 --> 00:56:03.155 align:middle line:84%
+at the expected value of a
+lottery to the lottery itself.
+
+00:56:03.155 --> 00:56:05.530 align:middle line:84%
+So let me just write this
+mathematically and then explain
+
+00:56:05.530 --> 00:56:06.030 align:middle line:90%
+it.
+
+00:56:06.030 --> 00:56:12.090 align:middle line:90%
+
+
+00:56:12.090 --> 00:56:16.350 align:middle line:84%
+Someone is risk averse if
+deciding between a lottery p--
+
+00:56:16.350 --> 00:56:17.910 align:middle line:90%
+let's take this as an example.
+
+00:56:17.910 --> 00:56:19.410 align:middle line:90%
+This is one lottery p.
+
+00:56:19.410 --> 00:56:22.450 align:middle line:84%
+And another lottery that
+pays the expected value of p
+
+00:56:22.450 --> 00:56:23.690 align:middle line:90%
+with certainty.
+
+00:56:23.690 --> 00:56:26.747 align:middle line:84%
+In this case, that
+would be exactly $10.
+
+00:56:26.747 --> 00:56:28.330 align:middle line:84%
+Someone who's risk
+averse would always
+
+00:56:28.330 --> 00:56:31.290 align:middle line:84%
+prefer getting $10
+for sure to getting
+
+00:56:31.290 --> 00:56:34.670 align:middle line:84%
+a lottery whose expected
+monetary amount was $10.
+
+00:56:34.670 --> 00:56:36.610 align:middle line:84%
+And mathematically,
+that's captured
+
+00:56:36.610 --> 00:56:40.052 align:middle line:84%
+by the concavity of the
+utility function here, u.
+
+00:56:40.052 --> 00:56:41.510 align:middle line:84%
+For this to be a
+strict preference,
+
+00:56:41.510 --> 00:56:43.090 align:middle line:90%
+we need p to be non-degenerate.
+
+00:56:43.090 --> 00:56:45.630 align:middle line:84%
+1p would be you get
+something with probability 1.
+
+00:56:45.630 --> 00:56:47.550 align:middle line:84%
+So as long as it's
+non-degenerate,
+
+00:56:47.550 --> 00:56:49.870 align:middle line:84%
+this is the meaning
+of risk aversion.
+
+00:56:49.870 --> 00:56:51.830 align:middle line:84%
+And this kind of answers
+a puzzle, I mean,
+
+00:56:51.830 --> 00:56:53.790 align:middle line:84%
+going back to the 1700s
+where people said,
+
+00:56:53.790 --> 00:56:55.808 align:middle line:84%
+why would you choose this
+lottery over this one?
+
+00:56:55.808 --> 00:56:57.350 align:middle line:84%
+This one has a higher
+expected value.
+
+00:56:57.350 --> 00:56:59.570 align:middle line:84%
+And the answer is, well,
+your utility function
+
+00:56:59.570 --> 00:57:01.390 align:middle line:90%
+is not the same as money.
+
+00:57:01.390 --> 00:57:03.310 align:middle line:84%
+You don't maximize
+expected money,
+
+00:57:03.310 --> 00:57:04.910 align:middle line:90%
+you maximize expected utility.
+
+00:57:04.910 --> 00:57:08.370 align:middle line:84%
+And some people's utilities
+can be concave like this.
+
+00:57:08.370 --> 00:57:12.120 align:middle line:84%
+So let me stop there and I
+will see everyone next week.
+
+00:57:12.120 --> 00:57:16.000 align:middle line:90%

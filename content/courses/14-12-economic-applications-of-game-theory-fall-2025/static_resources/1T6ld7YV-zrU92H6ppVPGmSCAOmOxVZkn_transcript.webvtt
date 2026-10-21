@@ -1,0 +1,6232 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:01.943 align:middle line:90%
+[SQUEAKING]
+
+00:00:01.943 --> 00:00:03.867 align:middle line:90%
+[RUSTLING]
+
+00:00:03.867 --> 00:00:05.310 align:middle line:90%
+[CLICKING]
+
+00:00:05.310 --> 00:00:08.915 align:middle line:90%
+
+
+00:00:08.915 --> 00:00:11.040 align:middle line:84%
+IAN BALL: Today we're going
+to talk about something
+
+00:00:11.040 --> 00:00:12.740 align:middle line:90%
+called revenue equivalence.
+
+00:00:12.740 --> 00:00:25.080 align:middle line:90%
+
+
+00:00:25.080 --> 00:00:27.873 align:middle line:84%
+So so far, we've studied a
+few different auction formats,
+
+00:00:27.873 --> 00:00:30.040 align:middle line:84%
+and we've solved for the
+equilibria of these auction
+
+00:00:30.040 --> 00:00:30.840 align:middle line:90%
+formats.
+
+00:00:30.840 --> 00:00:34.480 align:middle line:84%
+And we found this surprising
+or peculiar finding
+
+00:00:34.480 --> 00:00:38.320 align:middle line:84%
+that the amount of revenue
+that these auctions generate
+
+00:00:38.320 --> 00:00:41.060 align:middle line:84%
+doesn't seem to depend on
+which auction format we use.
+
+00:00:41.060 --> 00:00:43.460 align:middle line:84%
+So I want to first review
+a few of those examples.
+
+00:00:43.460 --> 00:00:44.918 align:middle line:84%
+And then, today,
+we're going to try
+
+00:00:44.918 --> 00:00:46.800 align:middle line:84%
+to understand, in
+general, why this happens
+
+00:00:46.800 --> 00:00:51.120 align:middle line:84%
+and what are the limitations
+and scope of this result.
+
+00:00:51.120 --> 00:00:55.520 align:middle line:84%
+So remember, we first looked
+at the really simple case
+
+00:00:55.520 --> 00:00:59.880 align:middle line:84%
+where we had only two bidders,
+and each bidder's valuation
+
+00:00:59.880 --> 00:01:03.760 align:middle line:84%
+was uniformly and independently
+drawn from the 0, 1 interval.
+
+00:01:03.760 --> 00:01:06.080 align:middle line:84%
+So in the simple case,
+we had v1 and v2.
+
+00:01:06.080 --> 00:01:07.900 align:middle line:90%
+This is bidder 1's valuation.
+
+00:01:07.900 --> 00:01:09.680 align:middle line:90%
+This is bidder 2's valuation.
+
+00:01:09.680 --> 00:01:14.060 align:middle line:84%
+They were in 0, 1, and they
+were uniform and independent.
+
+00:01:14.060 --> 00:01:19.600 align:middle line:90%
+
+
+00:01:19.600 --> 00:01:22.240 align:middle line:84%
+And in this really
+simple case, we
+
+00:01:22.240 --> 00:01:24.005 align:middle line:84%
+looked at the
+first-price auction,
+
+00:01:24.005 --> 00:01:25.880 align:middle line:84%
+and we said that, in
+the first-price auction,
+
+00:01:25.880 --> 00:01:26.940 align:middle line:90%
+there was an equilibrium.
+
+00:01:26.940 --> 00:01:30.680 align:middle line:84%
+Maybe I'll write b
+first-price auction
+
+00:01:30.680 --> 00:01:35.560 align:middle line:84%
+where bidder i's bid, if
+their valuation was vi,
+
+00:01:35.560 --> 00:01:37.580 align:middle line:84%
+was half of their
+true valuation.
+
+00:01:37.580 --> 00:01:39.100 align:middle line:84%
+We know, in the
+first-price auction,
+
+00:01:39.100 --> 00:01:43.380 align:middle line:84%
+people bid in equilibrium less
+than their true valuation.
+
+00:01:43.380 --> 00:01:45.700 align:middle line:84%
+This is sometimes
+called bid shading.
+
+00:01:45.700 --> 00:01:48.200 align:middle line:84%
+You shade your bid
+below your valuation.
+
+00:01:48.200 --> 00:01:52.240 align:middle line:84%
+And we saw that this
+was exactly vi over 2.
+
+00:01:52.240 --> 00:01:54.880 align:middle line:84%
+And then we also found an
+equilibrium of the Second-Price
+
+00:01:54.880 --> 00:01:57.170 align:middle line:90%
+Auction, so I'll write SPA.
+
+00:01:57.170 --> 00:01:59.650 align:middle line:84%
+And in the second-price
+auction, we
+
+00:01:59.650 --> 00:02:04.510 align:middle line:84%
+observed that the amount you
+pay for the item, if you win,
+
+00:02:04.510 --> 00:02:05.710 align:middle line:90%
+doesn't depend on your bid.
+
+00:02:05.710 --> 00:02:07.512 align:middle line:84%
+It only depends on
+other people's bids.
+
+00:02:07.512 --> 00:02:08.970 align:middle line:84%
+And we gave this
+argument as to why
+
+00:02:08.970 --> 00:02:11.830 align:middle line:84%
+you should always bid truthfully
+in a second-price auction.
+
+00:02:11.830 --> 00:02:17.970 align:middle line:84%
+So here, we had bi
+of vi equals vi.
+
+00:02:17.970 --> 00:02:21.370 align:middle line:84%
+But what we noticed
+is, well, let's try
+
+00:02:21.370 --> 00:02:23.850 align:middle line:84%
+to compute in each
+case how much you
+
+00:02:23.850 --> 00:02:27.490 align:middle line:84%
+are expected to pay in
+each of these auctions.
+
+00:02:27.490 --> 00:02:31.010 align:middle line:84%
+Well, in a first-price auction,
+let's say your true valuation is
+
+00:02:31.010 --> 00:02:35.010 align:middle line:84%
+vi and this is how
+much you bid, well,
+
+00:02:35.010 --> 00:02:42.250 align:middle line:84%
+your expected payment
+is going to be
+
+00:02:42.250 --> 00:02:45.610 align:middle line:84%
+your bid times the
+probability that you actually
+
+00:02:45.610 --> 00:02:48.770 align:middle line:84%
+win the good because you only
+pay your bid when you win.
+
+00:02:48.770 --> 00:02:51.770 align:middle line:84%
+So your expected
+payment is vi over 2.
+
+00:02:51.770 --> 00:02:52.630 align:middle line:90%
+That's your bid.
+
+00:02:52.630 --> 00:02:55.610 align:middle line:84%
+And in a first-price auction,
+you pay your bid if you win.
+
+00:02:55.610 --> 00:02:59.750 align:middle line:84%
+So it's the amount you pay times
+the probability that you win.
+
+00:02:59.750 --> 00:03:03.290 align:middle line:84%
+What is the probability
+that you win in this auction
+
+00:03:03.290 --> 00:03:05.670 align:middle line:90%
+if your valuation is vi?
+
+00:03:05.670 --> 00:03:08.730 align:middle line:90%
+
+
+00:03:08.730 --> 00:03:12.050 align:middle line:84%
+So maybe I'll say
+this is going to be
+
+00:03:12.050 --> 00:03:13.670 align:middle line:90%
+the probability of winning.
+
+00:03:13.670 --> 00:03:17.050 align:middle line:90%
+
+
+00:03:17.050 --> 00:03:20.150 align:middle line:84%
+Well, this was a
+symmetric equilibrium.
+
+00:03:20.150 --> 00:03:22.530 align:middle line:84%
+So the bidder who
+wins is the bidder
+
+00:03:22.530 --> 00:03:24.130 align:middle line:90%
+who has the highest valuation.
+
+00:03:24.130 --> 00:03:27.590 align:middle line:90%
+So I'm going to win-- yeah.
+
+00:03:27.590 --> 00:03:28.423 align:middle line:90%
+AUDIENCE: v1, right?
+
+00:03:28.423 --> 00:03:30.382 align:middle line:84%
+IAN BALL: Exactly, and
+I guess here we have vi,
+
+00:03:30.382 --> 00:03:31.890 align:middle line:84%
+so it's going to
+be vi, but exactly.
+
+00:03:31.890 --> 00:03:33.450 align:middle line:90%
+Yeah, it could be 1.
+
+00:03:33.450 --> 00:03:34.310 align:middle line:90%
+Exactly right.
+
+00:03:34.310 --> 00:03:35.790 align:middle line:90%
+Why is it vi?
+
+00:03:35.790 --> 00:03:38.490 align:middle line:84%
+Well, I'm going to win
+if my value is higher
+
+00:03:38.490 --> 00:03:40.890 align:middle line:84%
+than everyone else's
+because we're all
+
+00:03:40.890 --> 00:03:42.910 align:middle line:84%
+using the same increasing
+bidding function.
+
+00:03:42.910 --> 00:03:45.410 align:middle line:84%
+What's the probability that my
+value is higher than everyone
+
+00:03:45.410 --> 00:03:46.110 align:middle line:90%
+else's?
+
+00:03:46.110 --> 00:03:48.330 align:middle line:84%
+Well, there's only two of
+us, so it's the probability
+
+00:03:48.330 --> 00:03:51.410 align:middle line:84%
+that the other bidder
+has a value below mine.
+
+00:03:51.410 --> 00:03:54.770 align:middle line:84%
+But for a uniform distribution,
+if my value is vi,
+
+00:03:54.770 --> 00:03:57.450 align:middle line:84%
+the probability that the other
+bidder's value is below vi
+
+00:03:57.450 --> 00:03:58.330 align:middle line:90%
+is just vi.
+
+00:03:58.330 --> 00:04:03.290 align:middle line:90%
+This is just, for uniform, 0, 1.
+
+00:04:03.290 --> 00:04:04.410 align:middle line:90%
+Here's my bid.
+
+00:04:04.410 --> 00:04:06.210 align:middle line:90%
+Here's my value vi.
+
+00:04:06.210 --> 00:04:08.850 align:middle line:84%
+I'm going to win if the
+other bidders value lies
+
+00:04:08.850 --> 00:04:13.170 align:middle line:84%
+in this interval, and the length
+of this interval is exactly vi.
+
+00:04:13.170 --> 00:04:15.590 align:middle line:84%
+So we multiply it by the
+probability of winning,
+
+00:04:15.590 --> 00:04:17.190 align:middle line:90%
+and we get vi squared over 2.
+
+00:04:17.190 --> 00:04:20.730 align:middle line:84%
+This is the amount that I expect
+to pay if my valuation is vi.
+
+00:04:20.730 --> 00:04:24.810 align:middle line:84%
+And then we can do a
+similar calculation here.
+
+00:04:24.810 --> 00:04:27.890 align:middle line:84%
+What is my expected
+payment in this case?
+
+00:04:27.890 --> 00:04:31.850 align:middle line:84%
+Well, we're still going
+to multiply by vi,
+
+00:04:31.850 --> 00:04:33.690 align:middle line:90%
+the probability of winning.
+
+00:04:33.690 --> 00:04:36.890 align:middle line:84%
+But now we can't just multiply
+my probability of winning times
+
+00:04:36.890 --> 00:04:39.290 align:middle line:84%
+the amount I pay if I win
+because the amount that I
+
+00:04:39.290 --> 00:04:42.170 align:middle line:84%
+pay if I win depends on
+what other people bid.
+
+00:04:42.170 --> 00:04:44.210 align:middle line:84%
+So what we have
+to multiply it by,
+
+00:04:44.210 --> 00:04:52.370 align:middle line:84%
+is not what I pay if I win,
+but my expected payment
+
+00:04:52.370 --> 00:04:53.550 align:middle line:90%
+conditional on winning.
+
+00:04:53.550 --> 00:04:59.900 align:middle line:90%
+
+
+00:04:59.900 --> 00:05:01.650 align:middle line:84%
+And this is a general
+way of breaking down
+
+00:05:01.650 --> 00:05:03.070 align:middle line:90%
+how much I expect to pay.
+
+00:05:03.070 --> 00:05:06.450 align:middle line:84%
+I only pay if I win, so the
+expected amount that I pay
+
+00:05:06.450 --> 00:05:09.810 align:middle line:84%
+is my probability
+of winning times
+
+00:05:09.810 --> 00:05:11.890 align:middle line:90%
+my expected payment if I win.
+
+00:05:11.890 --> 00:05:14.570 align:middle line:84%
+My expected payment
+conditional on winning.
+
+00:05:14.570 --> 00:05:17.210 align:middle line:84%
+Now, if I win,
+how much do I pay?
+
+00:05:17.210 --> 00:05:21.530 align:middle line:84%
+Will I pay the
+second highest bid?
+
+00:05:21.530 --> 00:05:25.650 align:middle line:84%
+If I win, the second highest bid
+is the bit of the other person,
+
+00:05:25.650 --> 00:05:28.530 align:middle line:84%
+and I know the other person
+is bidding truthfully.
+
+00:05:28.530 --> 00:05:33.850 align:middle line:84%
+So the amount that I'm going to
+pay is my opponent's valuation.
+
+00:05:33.850 --> 00:05:38.510 align:middle line:84%
+And it turns out what this is
+going to be is, well, let's see.
+
+00:05:38.510 --> 00:05:44.930 align:middle line:84%
+It's the expectation of
+maybe vj conditional on vj
+
+00:05:44.930 --> 00:05:48.050 align:middle line:90%
+being less than or equal to vi.
+
+00:05:48.050 --> 00:05:50.060 align:middle line:90%
+So I'm bidder i.
+
+00:05:50.060 --> 00:05:51.940 align:middle line:90%
+I know that my valuation is vi.
+
+00:05:51.940 --> 00:05:53.160 align:middle line:90%
+When do I win?
+
+00:05:53.160 --> 00:05:57.180 align:middle line:84%
+I win exactly if my opponent's
+value vj is less than mine.
+
+00:05:57.180 --> 00:05:59.900 align:middle line:84%
+And if I do win, I pay
+exactly their valuation
+
+00:05:59.900 --> 00:06:02.180 align:middle line:84%
+because I pay their
+bid and their bid
+
+00:06:02.180 --> 00:06:04.380 align:middle line:90%
+equals their valuation.
+
+00:06:04.380 --> 00:06:07.780 align:middle line:84%
+So we're going to get
+this formula here.
+
+00:06:07.780 --> 00:06:10.540 align:middle line:84%
+Maybe I'll erase this arrow just
+to give myself some more space.
+
+00:06:10.540 --> 00:06:13.700 align:middle line:84%
+So this is my
+probability of winning.
+
+00:06:13.700 --> 00:06:16.780 align:middle line:84%
+This is my expected payment
+conditional on winning.
+
+00:06:16.780 --> 00:06:20.360 align:middle line:84%
+And can we compute this
+conditional expectation here?
+
+00:06:20.360 --> 00:06:20.860 align:middle line:90%
+Yes.
+
+00:06:20.860 --> 00:06:22.235 align:middle line:84%
+AUDIENCE: Yes, we
+can compute it.
+
+00:06:22.235 --> 00:06:24.580 align:middle line:84%
+And actually, we can
+also think about how
+
+00:06:24.580 --> 00:06:26.900 align:middle line:84%
+vj is uniformly
+distributed from 0
+
+00:06:26.900 --> 00:06:29.580 align:middle line:84%
+to vi so that the expectation
+would just be half of vi.
+
+00:06:29.580 --> 00:06:31.080 align:middle line:84%
+IAN BALL: Exactly,
+let's be careful.
+
+00:06:31.080 --> 00:06:33.720 align:middle line:84%
+So vj is uniformly
+distributed from 0 to 1.
+
+00:06:33.720 --> 00:06:36.660 align:middle line:84%
+I mean, you're right, but
+you're saying conditional on vj
+
+00:06:36.660 --> 00:06:38.900 align:middle line:84%
+being less than or equal
+to vi, it's uniformly
+
+00:06:38.900 --> 00:06:40.520 align:middle line:90%
+distributed on 0 to vi.
+
+00:06:40.520 --> 00:06:43.463 align:middle line:84%
+And therefore,
+here's the example,
+
+00:06:43.463 --> 00:06:45.380 align:middle line:84%
+if I know that the other
+player's valuation is
+
+00:06:45.380 --> 00:06:48.020 align:middle line:84%
+below mine, well, I know
+it's somewhere in here.
+
+00:06:48.020 --> 00:06:51.320 align:middle line:84%
+And if it's uniform, Well,
+it turns out, conditionally,
+
+00:06:51.320 --> 00:06:52.653 align:middle line:90%
+it's still uniform over here.
+
+00:06:52.653 --> 00:06:53.320 align:middle line:90%
+What's its mean?
+
+00:06:53.320 --> 00:06:55.903 align:middle line:84%
+Well, it's just going to be the
+middle of this interval, which
+
+00:06:55.903 --> 00:06:57.440 align:middle line:90%
+is exactly vi over 2.
+
+00:06:57.440 --> 00:07:01.300 align:middle line:90%
+So exactly here, vi over 2.
+
+00:07:01.300 --> 00:07:03.800 align:middle line:84%
+So if I compute this
+out, what do I get?
+
+00:07:03.800 --> 00:07:07.160 align:middle line:84%
+I also get vi over 2 times
+vi, and what do I get?
+
+00:07:07.160 --> 00:07:10.420 align:middle line:90%
+vi squared over 2.
+
+00:07:10.420 --> 00:07:15.020 align:middle line:84%
+So here, this is just a recap of
+this finding we had before that,
+
+00:07:15.020 --> 00:07:17.280 align:middle line:84%
+in both the first-price and
+the second-price auction,
+
+00:07:17.280 --> 00:07:19.260 align:middle line:84%
+at least in the equilibrium
+that we looked at,
+
+00:07:19.260 --> 00:07:21.540 align:middle line:84%
+the expected payment
+made by bidder i,
+
+00:07:21.540 --> 00:07:25.340 align:middle line:84%
+when her valuation is
+vi, is exactly the same
+
+00:07:25.340 --> 00:07:26.580 align:middle line:90%
+in the two auctions.
+
+00:07:26.580 --> 00:07:29.500 align:middle line:84%
+And that seemed
+kind of puzzling.
+
+00:07:29.500 --> 00:07:31.600 align:middle line:84%
+And you wonder if
+that's a coincidence.
+
+00:07:31.600 --> 00:07:37.460 align:middle line:84%
+Well, more generally, let's
+look at the general case.
+
+00:07:37.460 --> 00:07:45.880 align:middle line:84%
+So in the general
+case, the general case,
+
+00:07:45.880 --> 00:07:47.903 align:middle line:84%
+we had n bidders
+instead of just 2,
+
+00:07:47.903 --> 00:07:50.320 align:middle line:84%
+and we didn't assume that they
+were uniformly distributed.
+
+00:07:50.320 --> 00:07:52.040 align:middle line:84%
+We allowed more
+general distribution.
+
+00:07:52.040 --> 00:07:55.820 align:middle line:84%
+So here, we had the
+valuations were v1 up to vn.
+
+00:07:55.820 --> 00:07:59.420 align:middle line:84%
+And I think what we said
+is they lived in some set v
+
+00:07:59.420 --> 00:08:08.660 align:middle line:84%
+lower bar to v upper bar where
+everything is nonnegative.
+
+00:08:08.660 --> 00:08:10.740 align:middle line:84%
+So everyone's value
+lies somewhere
+
+00:08:10.740 --> 00:08:13.980 align:middle line:84%
+between this lower bound v
+lower bar and this upper bound v
+
+00:08:13.980 --> 00:08:14.940 align:middle line:90%
+upper bar.
+
+00:08:14.940 --> 00:08:17.240 align:middle line:84%
+Up here, those bounds
+were just 0 and 1,
+
+00:08:17.240 --> 00:08:19.140 align:middle line:84%
+but here we're going
+to be more general.
+
+00:08:19.140 --> 00:08:22.260 align:middle line:84%
+And we're going to assume
+that these valuations are
+
+00:08:22.260 --> 00:08:23.200 align:middle line:90%
+independent.
+
+00:08:23.200 --> 00:08:26.140 align:middle line:90%
+
+
+00:08:26.140 --> 00:08:30.500 align:middle line:84%
+That is, the
+distribution of v2 or v3
+
+00:08:30.500 --> 00:08:33.700 align:middle line:84%
+is statistically independent
+of the distribution of v1.
+
+00:08:33.700 --> 00:08:36.580 align:middle line:84%
+But now they're drawn from
+a different distribution.
+
+00:08:36.580 --> 00:08:38.940 align:middle line:84%
+Instead of the
+uniform, we said they
+
+00:08:38.940 --> 00:08:46.910 align:middle line:84%
+have density f over this
+interval, the lower bar
+
+00:08:46.910 --> 00:08:49.150 align:middle line:90%
+to the upper bar.
+
+00:08:49.150 --> 00:08:51.790 align:middle line:84%
+And then we introduced one
+more piece of notation.
+
+00:08:51.790 --> 00:08:56.110 align:middle line:84%
+It was nice to have notation for
+the distribution of the maximum
+
+00:08:56.110 --> 00:08:58.270 align:middle line:90%
+of everyone else's valuation.
+
+00:08:58.270 --> 00:09:01.910 align:middle line:84%
+So we looked at the
+max over, let's say,
+
+00:09:01.910 --> 00:09:07.830 align:middle line:90%
+j not equal to i of vj.
+
+00:09:07.830 --> 00:09:09.930 align:middle line:90%
+So I'm holding out one bidder.
+
+00:09:09.930 --> 00:09:11.630 align:middle line:84%
+I'm taking the
+perspective of bidder i,
+
+00:09:11.630 --> 00:09:14.445 align:middle line:84%
+and I'm thinking of all the
+bidders other than bidder i.
+
+00:09:14.445 --> 00:09:16.070 align:middle line:84%
+I'm looking at all
+of their valuations,
+
+00:09:16.070 --> 00:09:17.470 align:middle line:90%
+and I'm taking the maximum.
+
+00:09:17.470 --> 00:09:19.410 align:middle line:90%
+This is another random variable.
+
+00:09:19.410 --> 00:09:21.050 align:middle line:84%
+As bidder i, I don't
+know what this is.
+
+00:09:21.050 --> 00:09:22.910 align:middle line:90%
+I can form beliefs about this.
+
+00:09:22.910 --> 00:09:25.490 align:middle line:84%
+And what we said is
+we just had notation.
+
+00:09:25.490 --> 00:09:28.590 align:middle line:84%
+We said this has cumulative
+distribution function
+
+00:09:28.590 --> 00:09:32.725 align:middle line:90%
+big G and density little g.
+
+00:09:32.725 --> 00:09:34.350 align:middle line:84%
+And we had formulas
+for what these are,
+
+00:09:34.350 --> 00:09:36.690 align:middle line:84%
+but the exact
+formulas don't matter.
+
+00:09:36.690 --> 00:09:39.070 align:middle line:84%
+It's just that we can compute
+the distribution of this.
+
+00:09:39.070 --> 00:09:40.250 align:middle line:90%
+And we gave a name to it.
+
+00:09:40.250 --> 00:09:42.110 align:middle line:84%
+The cumulative
+distribution is big G,
+
+00:09:42.110 --> 00:09:45.270 align:middle line:90%
+and the density is little g.
+
+00:09:45.270 --> 00:09:49.150 align:middle line:84%
+Notice here that everything
+here is symmetric.
+
+00:09:49.150 --> 00:09:51.790 align:middle line:84%
+So the value of i
+here doesn't matter.
+
+00:09:51.790 --> 00:09:54.150 align:middle line:84%
+If I'm bidder 1 and
+I'm thinking about,
+
+00:09:54.150 --> 00:09:56.710 align:middle line:84%
+what's the highest value
+of everyone other than me?
+
+00:09:56.710 --> 00:09:58.345 align:middle line:84%
+Or if I'm bidder
+2 and I'm saying,
+
+00:09:58.345 --> 00:10:00.470 align:middle line:84%
+what's the highest value
+of everyone other than me?
+
+00:10:00.470 --> 00:10:03.090 align:middle line:84%
+That distribution is
+going to be the same.
+
+00:10:03.090 --> 00:10:05.470 align:middle line:84%
+Maybe just make sure
+we're on the same page.
+
+00:10:05.470 --> 00:10:13.190 align:middle line:84%
+If n equals 2, what is
+the density g going to be?
+
+00:10:13.190 --> 00:10:16.530 align:middle line:84%
+If n equals 2, so
+there's two bidders.
+
+00:10:16.530 --> 00:10:17.030 align:middle line:90%
+Yeah.
+
+00:10:17.030 --> 00:10:17.550 align:middle line:90%
+AUDIENCE: f.
+
+00:10:17.550 --> 00:10:19.950 align:middle line:84%
+IAN BALL: Just f, because
+if there's two bidders,
+
+00:10:19.950 --> 00:10:23.970 align:middle line:84%
+well, what is the maximum of
+every other bidder except me?
+
+00:10:23.970 --> 00:10:25.550 align:middle line:84%
+Well, it's just
+the other person.
+
+00:10:25.550 --> 00:10:27.470 align:middle line:90%
+So this is just vj.
+
+00:10:27.470 --> 00:10:31.230 align:middle line:84%
+And we already assumed that the
+distribution of each bidder's
+
+00:10:31.230 --> 00:10:33.630 align:middle line:90%
+valuation follows density f.
+
+00:10:33.630 --> 00:10:36.350 align:middle line:84%
+So in this case, g is just going
+to reduce to f because there's
+
+00:10:36.350 --> 00:10:39.050 align:middle line:90%
+only one other bidder.
+
+00:10:39.050 --> 00:10:40.950 align:middle line:84%
+But when n is bigger
+than 2, then this
+
+00:10:40.950 --> 00:10:42.670 align:middle line:84%
+is going to be a more
+complicated form.
+
+00:10:42.670 --> 00:10:44.430 align:middle line:84%
+But the simple thing
+is the highest bidder
+
+00:10:44.430 --> 00:10:46.530 align:middle line:84%
+among my opponents, if I
+only have one opponent,
+
+00:10:46.530 --> 00:10:49.150 align:middle line:84%
+is just the value
+of my opponent.
+
+00:10:49.150 --> 00:10:50.810 align:middle line:90%
+OK, great.
+
+00:10:50.810 --> 00:10:52.750 align:middle line:84%
+So here was the general
+case, and we also
+
+00:10:52.750 --> 00:10:54.390 align:middle line:84%
+looked at the
+first-price auction
+
+00:10:54.390 --> 00:10:56.330 align:middle line:84%
+and the second-price
+auction in this case.
+
+00:10:56.330 --> 00:10:57.830 align:middle line:90%
+And we computed equilibria.
+
+00:10:57.830 --> 00:11:00.150 align:middle line:84%
+And maybe I'll start here
+with a second-price auction
+
+00:11:00.150 --> 00:11:01.310 align:middle line:90%
+because that was--
+
+00:11:01.310 --> 00:11:03.830 align:middle line:84%
+maybe that's a bit
+easier to write down.
+
+00:11:03.830 --> 00:11:07.030 align:middle line:84%
+So bi vi, and the second
+price-auction-- people
+
+00:11:07.030 --> 00:11:11.050 align:middle line:84%
+remember what our
+equilibrium was here?
+
+00:11:11.050 --> 00:11:17.110 align:middle line:90%
+
+
+00:11:17.110 --> 00:11:18.050 align:middle line:90%
+I think people know.
+
+00:11:18.050 --> 00:11:21.230 align:middle line:90%
+They just don't want to say.
+
+00:11:21.230 --> 00:11:22.850 align:middle line:84%
+If we have a
+second-price auction,
+
+00:11:22.850 --> 00:11:27.230 align:middle line:84%
+how much should you bid
+if your valuation is vi?
+
+00:11:27.230 --> 00:11:27.870 align:middle line:90%
+Yeah.
+
+00:11:27.870 --> 00:11:28.150 align:middle line:90%
+AUDIENCE: Vi
+
+00:11:28.150 --> 00:11:29.690 align:middle line:84%
+IAN BALL: Just Vi, you should
+just bid your valuation.
+
+00:11:29.690 --> 00:11:31.470 align:middle line:84%
+So it turned out, we
+gave this argument
+
+00:11:31.470 --> 00:11:33.262 align:middle line:84%
+that, in a second-price
+auction, you always
+
+00:11:33.262 --> 00:11:34.290 align:middle line:90%
+want to bid truthfully.
+
+00:11:34.290 --> 00:11:36.630 align:middle line:84%
+You always want to bid
+your valuation, exactly.
+
+00:11:36.630 --> 00:11:39.270 align:middle line:84%
+And that didn't
+depend on the details
+
+00:11:39.270 --> 00:11:41.080 align:middle line:84%
+of whether there's two
+bidders or n bidders
+
+00:11:41.080 --> 00:11:42.330 align:middle line:90%
+or what the distributions are.
+
+00:11:42.330 --> 00:11:43.730 align:middle line:90%
+That's a very robust result.
+
+00:11:43.730 --> 00:11:47.070 align:middle line:90%
+So we've got vi.
+
+00:11:47.070 --> 00:11:50.510 align:middle line:84%
+And we can, again,
+try to compute,
+
+00:11:50.510 --> 00:11:54.952 align:middle line:90%
+what is your expected payment?
+
+00:11:54.952 --> 00:11:56.410 align:middle line:84%
+OK, this is a little
+trickier here,
+
+00:11:56.410 --> 00:11:57.660 align:middle line:90%
+but let's see if we can do it.
+
+00:11:57.660 --> 00:12:03.110 align:middle line:90%
+
+
+00:12:03.110 --> 00:12:05.750 align:middle line:84%
+Well, first, let's just
+write it abstractly.
+
+00:12:05.750 --> 00:12:07.950 align:middle line:90%
+What is my expected payment?
+
+00:12:07.950 --> 00:12:10.450 align:middle line:84%
+Well, we first
+have to say, well,
+
+00:12:10.450 --> 00:12:12.450 align:middle line:84%
+there's some chance I
+don't pay anything at all.
+
+00:12:12.450 --> 00:12:14.470 align:middle line:84%
+If I lose the auction,
+I pay nothing.
+
+00:12:14.470 --> 00:12:16.230 align:middle line:84%
+So my expected
+payment, it's always
+
+00:12:16.230 --> 00:12:18.830 align:middle line:84%
+helpful to break it down
+into the probability
+
+00:12:18.830 --> 00:12:22.990 align:middle line:84%
+that I win the auction times
+the expected amount that I pay,
+
+00:12:22.990 --> 00:12:24.090 align:middle line:90%
+given that I win.
+
+00:12:24.090 --> 00:12:26.550 align:middle line:84%
+So we'll break it down
+just like we did before.
+
+00:12:26.550 --> 00:12:30.150 align:middle line:84%
+So let me first write down
+the probability that I win.
+
+00:12:30.150 --> 00:12:33.670 align:middle line:84%
+So this is, the
+probability that I win
+
+00:12:33.670 --> 00:12:37.160 align:middle line:84%
+is the probability-- well, in
+this equilibrium, everyone's
+
+00:12:37.160 --> 00:12:38.560 align:middle line:90%
+bidding their valuation.
+
+00:12:38.560 --> 00:12:40.920 align:middle line:84%
+So I'm going to win
+if my bid is highest,
+
+00:12:40.920 --> 00:12:43.880 align:middle line:84%
+which is exactly the case if my
+value is higher than everyone
+
+00:12:43.880 --> 00:12:44.480 align:middle line:90%
+else's.
+
+00:12:44.480 --> 00:12:48.040 align:middle line:84%
+So I'm going to win if the
+probability of the max of j
+
+00:12:48.040 --> 00:12:52.743 align:middle line:84%
+not equal to i of vj is
+less than or equal to vi.
+
+00:12:52.743 --> 00:12:54.660 align:middle line:84%
+And as usual, we don't
+have to be too careful.
+
+00:12:54.660 --> 00:12:55.702 align:middle line:90%
+Is it less than or equal?
+
+00:12:55.702 --> 00:12:56.782 align:middle line:90%
+Is it strictly less than.
+
+00:12:56.782 --> 00:12:59.240 align:middle line:84%
+The probability is going to be
+the same, so we don't really
+
+00:12:59.240 --> 00:13:00.120 align:middle line:90%
+have to--
+
+00:13:00.120 --> 00:13:02.740 align:middle line:84%
+it doesn't really matter
+what we write here.
+
+00:13:02.740 --> 00:13:06.320 align:middle line:84%
+So this is the
+probability that I win.
+
+00:13:06.320 --> 00:13:10.420 align:middle line:84%
+Now what is the expected
+payment conditional on winning?
+
+00:13:10.420 --> 00:13:15.240 align:middle line:84%
+So it's going to be an
+analog of this formula here.
+
+00:13:15.240 --> 00:13:17.300 align:middle line:84%
+The expected payment
+conditional on winning,
+
+00:13:17.300 --> 00:13:21.220 align:middle line:84%
+well it's going to
+be an expectation--
+
+00:13:21.220 --> 00:13:24.618 align:middle line:90%
+
+
+00:13:24.618 --> 00:13:25.660 align:middle line:90%
+a little more space here.
+
+00:13:25.660 --> 00:13:29.320 align:middle line:90%
+Let's see how small I can write.
+
+00:13:29.320 --> 00:13:31.580 align:middle line:84%
+Well, it's expectation
+conditional on me winning.
+
+00:13:31.580 --> 00:13:37.680 align:middle line:84%
+So I'm exactly going to win if
+the max over j not equal to i vj
+
+00:13:37.680 --> 00:13:40.058 align:middle line:90%
+is less than or equal to vi.
+
+00:13:40.058 --> 00:13:41.600 align:middle line:84%
+This is exactly the
+event that I win.
+
+00:13:41.600 --> 00:13:45.180 align:middle line:84%
+I'm going to win if everyone
+else's valuation is below mine.
+
+00:13:45.180 --> 00:13:48.000 align:middle line:84%
+Another way of saying that is
+the maximum over everyone else's
+
+00:13:48.000 --> 00:13:51.360 align:middle line:84%
+valuation is weakly
+smaller than mine.
+
+00:13:51.360 --> 00:13:54.280 align:middle line:84%
+And when that
+happens, how much am
+
+00:13:54.280 --> 00:13:57.280 align:middle line:84%
+I going to pay in the
+second-price auction?
+
+00:13:57.280 --> 00:13:57.880 align:middle line:90%
+Yeah.
+
+00:13:57.880 --> 00:13:59.680 align:middle line:90%
+AUDIENCE: vj.
+
+00:13:59.680 --> 00:14:01.120 align:middle line:90%
+Like, the second highest.
+
+00:14:01.120 --> 00:14:03.147 align:middle line:84%
+IAN BALL: Right, and
+we have some notation
+
+00:14:03.147 --> 00:14:03.980 align:middle line:90%
+for that right here.
+
+00:14:03.980 --> 00:14:06.140 align:middle line:84%
+It's exactly-- so
+you're exactly right.
+
+00:14:06.140 --> 00:14:08.120 align:middle line:84%
+I'm going to pay the
+second highest valuation.
+
+00:14:08.120 --> 00:14:09.920 align:middle line:84%
+But what that is
+is it's precisely
+
+00:14:09.920 --> 00:14:13.100 align:middle line:84%
+the highest among everyone other
+than me because I'm the highest.
+
+00:14:13.100 --> 00:14:14.100 align:middle line:90%
+So you're exactly right.
+
+00:14:14.100 --> 00:14:19.000 align:middle line:84%
+It is-- let's write it as this,
+max vj not equal to i of vj.
+
+00:14:19.000 --> 00:14:22.040 align:middle line:84%
+So it's crucial here, yes,
+that this is the second highest
+
+00:14:22.040 --> 00:14:22.900 align:middle line:90%
+value.
+
+00:14:22.900 --> 00:14:25.727 align:middle line:84%
+But in the event that I have
+the highest value, well,
+
+00:14:25.727 --> 00:14:27.060 align:middle line:90%
+what's the second highest value?
+
+00:14:27.060 --> 00:14:29.020 align:middle line:84%
+It's just the highest
+among everyone else.
+
+00:14:29.020 --> 00:14:31.700 align:middle line:84%
+So we exactly get
+this formula here.
+
+00:14:31.700 --> 00:14:36.160 align:middle line:90%
+
+
+00:14:36.160 --> 00:14:42.400 align:middle line:84%
+And this gets maybe
+a little messy,
+
+00:14:42.400 --> 00:14:46.240 align:middle line:84%
+but we're actually
+able to compute it.
+
+00:14:46.240 --> 00:14:47.140 align:middle line:90%
+Let's see.
+
+00:14:47.140 --> 00:14:54.440 align:middle line:84%
+So it's going to be an integral
+from v lower bar to vi.
+
+00:14:54.440 --> 00:14:56.780 align:middle line:84%
+So technically, we get into
+some conditional densities.
+
+00:14:56.780 --> 00:14:59.460 align:middle line:84%
+It gets a little messy, but let
+me just write out what we get.
+
+00:14:59.460 --> 00:15:01.720 align:middle line:90%
+We're going to get t--
+
+00:15:01.720 --> 00:15:09.900 align:middle line:84%
+maybe I'll write x, g
+of x for g of vi dx.
+
+00:15:09.900 --> 00:15:16.720 align:middle line:90%
+
+
+00:15:16.720 --> 00:15:21.120 align:middle line:84%
+So I just wrote this
+probability as g of vi
+
+00:15:21.120 --> 00:15:25.360 align:middle line:84%
+because big G is the cumulative
+distribution function associated
+
+00:15:25.360 --> 00:15:26.660 align:middle line:90%
+with this random variable.
+
+00:15:26.660 --> 00:15:29.320 align:middle line:84%
+So the probability that this
+random variable is below vi
+
+00:15:29.320 --> 00:15:30.970 align:middle line:90%
+is, by definition, g of vi.
+
+00:15:30.970 --> 00:15:33.410 align:middle line:84%
+So here, I'm just
+using a definition.
+
+00:15:33.410 --> 00:15:35.490 align:middle line:84%
+For this part, it's
+a little trickier.
+
+00:15:35.490 --> 00:15:37.750 align:middle line:84%
+I'm using what's called
+a conditional density.
+
+00:15:37.750 --> 00:15:40.090 align:middle line:84%
+I'm saying, what is
+the conditional density
+
+00:15:40.090 --> 00:15:42.730 align:middle line:84%
+of the highest value
+of my opponents,
+
+00:15:42.730 --> 00:15:46.210 align:middle line:84%
+given that their
+valuation is below vi?
+
+00:15:46.210 --> 00:15:49.170 align:middle line:84%
+And this here is my
+conditional density.
+
+00:15:49.170 --> 00:15:52.050 align:middle line:84%
+I'm integrating this
+between v lower bar and vi
+
+00:15:52.050 --> 00:15:53.810 align:middle line:84%
+because I'm focusing
+on the event
+
+00:15:53.810 --> 00:15:57.530 align:middle line:84%
+that the highest value of my
+opponents is lower than mine.
+
+00:15:57.530 --> 00:16:00.530 align:middle line:84%
+And maybe we don't need to get
+too caught up in the algebra
+
+00:16:00.530 --> 00:16:03.970 align:middle line:84%
+here, but we can just see that
+this G of vi and this G of vi
+
+00:16:03.970 --> 00:16:06.390 align:middle line:84%
+cancel, and we're going to
+get a really simple formula.
+
+00:16:06.390 --> 00:16:16.930 align:middle line:90%
+
+
+00:16:16.930 --> 00:16:23.930 align:middle line:84%
+So this is my general
+formula for how much
+
+00:16:23.930 --> 00:16:26.810 align:middle line:84%
+I expect to pay in the
+second price auction
+
+00:16:26.810 --> 00:16:29.930 align:middle line:90%
+if my valuation is vi.
+
+00:16:29.930 --> 00:16:31.110 align:middle line:90%
+Let's do one more.
+
+00:16:31.110 --> 00:16:32.710 align:middle line:90%
+Let's finish things off here.
+
+00:16:32.710 --> 00:16:36.750 align:middle line:90%
+
+
+00:16:36.750 --> 00:16:39.250 align:middle line:84%
+And as I said, if this
+conditional density is
+
+00:16:39.250 --> 00:16:41.150 align:middle line:84%
+new to you, it
+won't come up again.
+
+00:16:41.150 --> 00:16:44.350 align:middle line:84%
+So the final answer is
+maybe what's important here.
+
+00:16:44.350 --> 00:16:51.490 align:middle line:84%
+Let's just do one more, the
+bi first-price auction of vi.
+
+00:16:51.490 --> 00:16:52.630 align:middle line:90%
+We actually computed this.
+
+00:16:52.630 --> 00:16:55.295 align:middle line:90%
+Anyone remember what this was?
+
+00:16:55.295 --> 00:16:56.670 align:middle line:84%
+We computed this
+in class before.
+
+00:16:56.670 --> 00:16:58.030 align:middle line:90%
+Maybe I'll just write it down.
+
+00:16:58.030 --> 00:17:01.730 align:middle line:84%
+It turns out we had a formula
+that actually looked exactly
+
+00:17:01.730 --> 00:17:02.230 align:middle line:90%
+like this.
+
+00:17:02.230 --> 00:17:04.327 align:middle line:90%
+This was actually our formula.
+
+00:17:04.327 --> 00:17:06.410 align:middle line:84%
+So it turns out we derived
+this in class, I think,
+
+00:17:06.410 --> 00:17:07.089 align:middle line:90%
+last Thursday.
+
+00:17:07.089 --> 00:17:09.210 align:middle line:84%
+We used a differential
+equation, and we
+
+00:17:09.210 --> 00:17:13.150 align:middle line:90%
+found that it's exactly this.
+
+00:17:13.150 --> 00:17:18.170 align:middle line:90%
+
+
+00:17:18.170 --> 00:17:22.290 align:middle line:84%
+So this is just a
+formula that we had.
+
+00:17:22.290 --> 00:17:24.890 align:middle line:84%
+But now if this is
+how much I'm bidding
+
+00:17:24.890 --> 00:17:28.089 align:middle line:84%
+in a first-price auction, what
+is the expected payment that I'm
+
+00:17:28.089 --> 00:17:30.170 align:middle line:90%
+going to make?
+
+00:17:30.170 --> 00:17:34.410 align:middle line:84%
+Well, in first-price auction,
+what I pay is my bid?
+
+00:17:34.410 --> 00:17:36.930 align:middle line:84%
+So my expected payment
+is just my bid,
+
+00:17:36.930 --> 00:17:39.170 align:middle line:84%
+how much I pay,
+times the probability
+
+00:17:39.170 --> 00:17:41.170 align:middle line:84%
+that I actually
+have to pay my bid.
+
+00:17:41.170 --> 00:17:42.710 align:middle line:90%
+But when do I pay my bid?
+
+00:17:42.710 --> 00:17:45.010 align:middle line:90%
+I pay my bid when I win.
+
+00:17:45.010 --> 00:17:53.650 align:middle line:84%
+So my expected
+payment, well, it's
+
+00:17:53.650 --> 00:18:02.050 align:middle line:84%
+just bi FPA of vi, my bid times
+the probability that I win.
+
+00:18:02.050 --> 00:18:03.590 align:middle line:84%
+What is the
+probability that I win?
+
+00:18:03.590 --> 00:18:06.703 align:middle line:90%
+
+
+00:18:06.703 --> 00:18:08.370 align:middle line:84%
+Well, it's the
+probability that my value
+
+00:18:08.370 --> 00:18:09.650 align:middle line:90%
+is higher than everyone else.
+
+00:18:09.650 --> 00:18:12.230 align:middle line:84%
+It's exactly this thing we
+already computed down here,
+
+00:18:12.230 --> 00:18:13.790 align:middle line:84%
+and we have a simple
+formula for it.
+
+00:18:13.790 --> 00:18:14.830 align:middle line:90%
+It's just g of vi.
+
+00:18:14.830 --> 00:18:18.890 align:middle line:90%
+
+
+00:18:18.890 --> 00:18:22.550 align:middle line:84%
+And this is
+probability of winning.
+
+00:18:22.550 --> 00:18:25.130 align:middle line:90%
+
+
+00:18:25.130 --> 00:18:29.770 align:middle line:84%
+OK, well, we already have
+a formula for bi FPA of vi,
+
+00:18:29.770 --> 00:18:32.250 align:middle line:90%
+so let's plug in this here.
+
+00:18:32.250 --> 00:18:34.890 align:middle line:84%
+And we see that the
+G of vi cancels,
+
+00:18:34.890 --> 00:18:37.350 align:middle line:90%
+and we get the same integral.
+
+00:18:37.350 --> 00:18:44.770 align:middle line:90%
+
+
+00:18:44.770 --> 00:18:46.050 align:middle line:90%
+And we get this.
+
+00:18:46.050 --> 00:18:51.550 align:middle line:84%
+So this seems like it
+probably is not a coincidence,
+
+00:18:51.550 --> 00:18:54.990 align:middle line:84%
+that we've gotten exactly the
+same answer in both cases.
+
+00:18:54.990 --> 00:18:55.770 align:middle line:90%
+Yes.
+
+00:18:55.770 --> 00:19:00.090 align:middle line:84%
+AUDIENCE: So why is bi of
+vi this integral when we had
+
+00:19:00.090 --> 00:19:03.730 align:middle line:90%
+already said it was just vi?
+
+00:19:03.730 --> 00:19:06.770 align:middle line:84%
+IAN BALL: The key is the
+superscript here, SPA.
+
+00:19:06.770 --> 00:19:10.690 align:middle line:84%
+So in a second-price auction,
+the equilibrium bidding strategy
+
+00:19:10.690 --> 00:19:13.250 align:middle line:84%
+is for me to bid
+exactly my valuation.
+
+00:19:13.250 --> 00:19:16.470 align:middle line:84%
+So everything we did here was
+for the second-price auction.
+
+00:19:16.470 --> 00:19:18.690 align:middle line:84%
+Now we're changing cases
+here-- and I should've
+
+00:19:18.690 --> 00:19:19.830 align:middle line:90%
+been more clear about this.
+
+00:19:19.830 --> 00:19:21.780 align:middle line:84%
+Now we're moving to the
+first-price auction.
+
+00:19:21.780 --> 00:19:24.620 align:middle line:84%
+In the first-price auction,
+the equilibrium is different.
+
+00:19:24.620 --> 00:19:26.220 align:middle line:84%
+In the first price
+auction, I don't
+
+00:19:26.220 --> 00:19:27.600 align:middle line:90%
+want to bid my true valuation.
+
+00:19:27.600 --> 00:19:30.120 align:middle line:84%
+If I bid my true valuation
+in a first-price auction,
+
+00:19:30.120 --> 00:19:34.260 align:middle line:84%
+then I can never come out ahead
+because either I don't win,
+
+00:19:34.260 --> 00:19:36.620 align:middle line:84%
+or I win, but then I
+have to pay my bid.
+
+00:19:36.620 --> 00:19:38.520 align:middle line:84%
+So deriving this
+was a lot harder.
+
+00:19:38.520 --> 00:19:40.860 align:middle line:84%
+We spent basically all of
+class deriving a differential
+
+00:19:40.860 --> 00:19:41.420 align:middle line:90%
+equation.
+
+00:19:41.420 --> 00:19:42.920 align:middle line:84%
+And in the end, we
+got this formula.
+
+00:19:42.920 --> 00:19:45.597 align:middle line:84%
+So if you don't--
+this is hard to see.
+
+00:19:45.597 --> 00:19:48.180 align:middle line:84%
+This took us an hour to get to,
+but it should be in your notes
+
+00:19:48.180 --> 00:19:49.620 align:middle line:90%
+from last class.
+
+00:19:49.620 --> 00:19:51.700 align:middle line:84%
+So the answer to, why
+are these different?
+
+00:19:51.700 --> 00:19:56.180 align:middle line:84%
+These are different equilibria
+of different auctions.
+
+00:19:56.180 --> 00:20:00.260 align:middle line:84%
+But the surprising
+thing is we get
+
+00:20:00.260 --> 00:20:05.300 align:middle line:84%
+exactly the same formula for the
+expected payment in both cases.
+
+00:20:05.300 --> 00:20:07.100 align:middle line:84%
+And let's just see
+if that's consistent.
+
+00:20:07.100 --> 00:20:11.420 align:middle line:84%
+Up here, I got vi
+squared over 2.
+
+00:20:11.420 --> 00:20:13.220 align:middle line:84%
+Is this formula going
+to give me vi squared
+
+00:20:13.220 --> 00:20:14.900 align:middle line:84%
+over 2 in the really
+simple example,
+
+00:20:14.900 --> 00:20:17.540 align:middle line:90%
+in the simple uniform example?
+
+00:20:17.540 --> 00:20:21.580 align:middle line:84%
+Can we see this little
+calculus exercise?
+
+00:20:21.580 --> 00:20:24.260 align:middle line:84%
+Well, in the uniform
+example, what is g?
+
+00:20:24.260 --> 00:20:27.500 align:middle line:84%
+In our example, where we had
+two bidders, and the values
+
+00:20:27.500 --> 00:20:30.500 align:middle line:84%
+were uniformly
+distributed over 0 1?
+
+00:20:30.500 --> 00:20:32.820 align:middle line:84%
+It's just 1 because
+the first observation
+
+00:20:32.820 --> 00:20:36.660 align:middle line:84%
+that you made was that d equals
+f when we have two bidders.
+
+00:20:36.660 --> 00:20:41.100 align:middle line:84%
+But if our valuations are
+uniformly distributed,
+
+00:20:41.100 --> 00:20:42.180 align:middle line:90%
+what is f?
+
+00:20:42.180 --> 00:20:43.660 align:middle line:90%
+It's just 1.
+
+00:20:43.660 --> 00:20:46.900 align:middle line:84%
+So if we just plug in 1
+here, we get the integral
+
+00:20:46.900 --> 00:20:50.500 align:middle line:90%
+from v lower bar to vi.
+
+00:20:50.500 --> 00:20:53.540 align:middle line:84%
+Well, so let me go
+through our example.
+
+00:20:53.540 --> 00:20:59.540 align:middle line:84%
+So in our simple example,
+everything works out
+
+00:20:59.540 --> 00:21:03.020 align:middle line:90%
+because g of x equals 1.
+
+00:21:03.020 --> 00:21:06.200 align:middle line:90%
+And what is v lower bar?
+
+00:21:06.200 --> 00:21:06.700 align:middle line:90%
+AUDIENCE: 0.
+
+00:21:06.700 --> 00:21:07.880 align:middle line:90%
+IAN BALL: 0, right?
+
+00:21:07.880 --> 00:21:10.100 align:middle line:84%
+And v upper bar is 1,
+but that doesn't show up.
+
+00:21:10.100 --> 00:21:18.300 align:middle line:84%
+So now we just get the
+integral from 0 to vi of xdx.
+
+00:21:18.300 --> 00:21:20.540 align:middle line:84%
+And this is something
+people should know.
+
+00:21:20.540 --> 00:21:21.880 align:middle line:90%
+This is just the antiderivative.
+
+00:21:21.880 --> 00:21:23.860 align:middle line:84%
+This is just x squared
+over 2, so we just
+
+00:21:23.860 --> 00:21:27.660 align:middle line:90%
+get vi squared over 2.
+
+00:21:27.660 --> 00:21:31.515 align:middle line:84%
+And this just confirms the two
+formulas that we got up here.
+
+00:21:31.515 --> 00:21:32.640 align:middle line:90%
+So everything's consistent.
+
+00:21:32.640 --> 00:21:33.460 align:middle line:90%
+That's good.
+
+00:21:33.460 --> 00:21:37.040 align:middle line:84%
+And we have this kind
+of surprising finding.
+
+00:21:37.040 --> 00:21:47.780 align:middle line:84%
+So note the equilibrium
+expected payment
+
+00:21:47.780 --> 00:21:56.540 align:middle line:84%
+is the same in the first price
+auction and the second price
+
+00:21:56.540 --> 00:21:58.870 align:middle line:90%
+auction.
+
+00:21:58.870 --> 00:22:00.540 align:middle line:84%
+To be a little more
+precise, I'm talking
+
+00:22:00.540 --> 00:22:02.560 align:middle line:84%
+about a particular
+equilibrium that we computed.
+
+00:22:02.560 --> 00:22:04.282 align:middle line:90%
+But I'll be a little loose here.
+
+00:22:04.282 --> 00:22:05.740 align:middle line:84%
+The equilibrium
+expected payment is
+
+00:22:05.740 --> 00:22:10.020 align:middle line:84%
+the same in the
+first-price auction
+
+00:22:10.020 --> 00:22:13.340 align:middle line:90%
+and the second-price auction.
+
+00:22:13.340 --> 00:22:15.320 align:middle line:84%
+And notice how this
+happened came about,
+
+00:22:15.320 --> 00:22:17.870 align:middle line:84%
+getting back to the question,
+the rules of these auctions
+
+00:22:17.870 --> 00:22:19.270 align:middle line:90%
+are different.
+
+00:22:19.270 --> 00:22:22.490 align:middle line:84%
+So if the players bid the same
+way in these two auctions,
+
+00:22:22.490 --> 00:22:24.430 align:middle line:84%
+their payments would
+definitely be different.
+
+00:22:24.430 --> 00:22:27.660 align:middle line:84%
+But the equilibrium bidding
+behavior is also different.
+
+00:22:27.660 --> 00:22:29.410 align:middle line:84%
+So the rules of the
+auction are different,
+
+00:22:29.410 --> 00:22:31.050 align:middle line:84%
+the bidding behavior
+is different,
+
+00:22:31.050 --> 00:22:34.150 align:middle line:84%
+and somehow, these things
+offset in exactly the right way
+
+00:22:34.150 --> 00:22:37.830 align:middle line:84%
+that we get exactly the
+same formula in both cases.
+
+00:22:37.830 --> 00:22:39.395 align:middle line:84%
+And I think it feels,
+to me at least,
+
+00:22:39.395 --> 00:22:40.770 align:middle line:84%
+that this can't
+be a coincidence.
+
+00:22:40.770 --> 00:22:42.910 align:middle line:84%
+It seems like there's
+something else going on here.
+
+00:22:42.910 --> 00:22:44.750 align:middle line:84%
+And what's going on
+is exactly what's
+
+00:22:44.750 --> 00:22:45.958 align:middle line:90%
+called revenue equivalence.
+
+00:22:45.958 --> 00:22:47.750 align:middle line:84%
+And today, we're going
+to try to understand
+
+00:22:47.750 --> 00:22:51.410 align:middle line:84%
+more generally why and under
+what conditions this is true.
+
+00:22:51.410 --> 00:22:54.290 align:middle line:84%
+So I think this should
+be kind of a puzzle.
+
+00:22:54.290 --> 00:22:56.610 align:middle line:84%
+It's not at all clear why
+we get the same answer here.
+
+00:22:56.610 --> 00:22:58.235 align:middle line:84%
+And today, we want
+to get to the bottom
+
+00:22:58.235 --> 00:22:59.790 align:middle line:90%
+and understand this puzzle.
+
+00:22:59.790 --> 00:23:02.490 align:middle line:84%
+But this was to be
+motivation for what we do.
+
+00:23:02.490 --> 00:23:04.850 align:middle line:84%
+So if this is unclear, what
+we do won't be motivated.
+
+00:23:04.850 --> 00:23:07.190 align:middle line:84%
+So let me pause for
+some questions here.
+
+00:23:07.190 --> 00:23:08.490 align:middle line:90%
+Everything clear so far?
+
+00:23:08.490 --> 00:23:12.030 align:middle line:90%
+
+
+00:23:12.030 --> 00:23:13.150 align:middle line:90%
+OK.
+
+00:23:13.150 --> 00:23:16.110 align:middle line:84%
+Well, so far, we said
+that the equilibrium
+
+00:23:16.110 --> 00:23:20.258 align:middle line:84%
+expected payment was the
+same in these two auctions.
+
+00:23:20.258 --> 00:23:22.050 align:middle line:84%
+What if we used a
+different auction format?
+
+00:23:22.050 --> 00:23:23.350 align:middle line:84%
+Maybe we could use a
+third-price auction
+
+00:23:23.350 --> 00:23:25.090 align:middle line:84%
+or a fourth-price
+auction, all-pay auction.
+
+00:23:25.090 --> 00:23:27.270 align:middle line:84%
+There's many different
+auction formats we could use.
+
+00:23:27.270 --> 00:23:29.550 align:middle line:84%
+And we'd like our theorem
+to speak to any auction
+
+00:23:29.550 --> 00:23:30.953 align:middle line:90%
+format you could come up with.
+
+00:23:30.953 --> 00:23:33.370 align:middle line:84%
+So to do that, we have to
+think, well, what is an auction?
+
+00:23:33.370 --> 00:23:36.670 align:middle line:84%
+How can I define a
+general abstract auction?
+
+00:23:36.670 --> 00:23:38.050 align:middle line:90%
+So let's be really general.
+
+00:23:38.050 --> 00:23:40.290 align:middle line:84%
+What is-- maybe I'll call
+this a generalized auction.
+
+00:23:40.290 --> 00:23:44.590 align:middle line:90%
+
+
+00:23:44.590 --> 00:23:47.690 align:middle line:84%
+And I'm still going to be
+in this setting over here.
+
+00:23:47.690 --> 00:23:51.418 align:middle line:84%
+So I'm still assuming
+that these assumptions
+
+00:23:51.418 --> 00:23:53.710 align:middle line:84%
+about the environment, these
+assumptions about how much
+
+00:23:53.710 --> 00:23:56.670 align:middle line:84%
+each person values the item,
+but what's going to be general
+
+00:23:56.670 --> 00:23:58.890 align:middle line:84%
+is the auction
+format that we use.
+
+00:23:58.890 --> 00:24:01.590 align:middle line:90%
+
+
+00:24:01.590 --> 00:24:03.470 align:middle line:84%
+Well, at bottom,
+what is an auction?
+
+00:24:03.470 --> 00:24:06.410 align:middle line:84%
+Well, first, I have to
+specify what bids are allowed.
+
+00:24:06.410 --> 00:24:08.890 align:middle line:84%
+So far, we've allowed
+bids to be real numbers.
+
+00:24:08.890 --> 00:24:10.910 align:middle line:84%
+But you can have
+really weird auctions
+
+00:24:10.910 --> 00:24:13.770 align:middle line:84%
+where bids can only
+be multiples of 5.
+
+00:24:13.770 --> 00:24:16.270 align:middle line:84%
+Or maybe you can
+only say yes or no.
+
+00:24:16.270 --> 00:24:19.332 align:middle line:84%
+Or maybe you say I really like
+it, or I don't really like it.
+
+00:24:19.332 --> 00:24:21.290 align:middle line:84%
+There's a lot of different
+ways we could do it.
+
+00:24:21.290 --> 00:24:23.040 align:middle line:84%
+So a generalized auction
+format, first, we
+
+00:24:23.040 --> 00:24:24.570 align:middle line:90%
+have to specify the bid sets.
+
+00:24:24.570 --> 00:24:27.270 align:middle line:90%
+
+
+00:24:27.270 --> 00:24:31.630 align:middle line:90%
+B1, B2, all the way up to Bn.
+
+00:24:31.630 --> 00:24:35.770 align:middle line:84%
+So this is specifying what
+each bidder is allowed to bid.
+
+00:24:35.770 --> 00:24:38.395 align:middle line:84%
+You could think of
+these as messages.
+
+00:24:38.395 --> 00:24:40.770 align:middle line:84%
+Or there's a lot of different
+ways we can think about it,
+
+00:24:40.770 --> 00:24:43.150 align:middle line:84%
+but this is just
+the set of choices
+
+00:24:43.150 --> 00:24:45.110 align:middle line:84%
+that each bidder
+has in the auction.
+
+00:24:45.110 --> 00:24:50.610 align:middle line:84%
+And then we need to
+specify an allocation rule.
+
+00:24:50.610 --> 00:24:53.630 align:middle line:90%
+
+
+00:24:53.630 --> 00:24:55.990 align:middle line:84%
+An allocation rule
+says, well, if we
+
+00:24:55.990 --> 00:25:00.230 align:middle line:84%
+collect some bid by bidder
+1 and some bid by bidder 2
+
+00:25:00.230 --> 00:25:03.430 align:middle line:84%
+and all the way up to a bid
+by bidder n, what do we do?
+
+00:25:03.430 --> 00:25:05.670 align:middle line:84%
+Well, the auction is
+to specify two things.
+
+00:25:05.670 --> 00:25:08.310 align:middle line:84%
+The allocation rule
+is, who gets the good?
+
+00:25:08.310 --> 00:25:11.200 align:middle line:84%
+And then the payment rule is,
+how much does everyone pay?
+
+00:25:11.200 --> 00:25:13.520 align:middle line:84%
+So we'll call it the
+allocation rule and maybe
+
+00:25:13.520 --> 00:25:15.180 align:middle line:90%
+the payment or transfer rule.
+
+00:25:15.180 --> 00:25:23.080 align:middle line:90%
+
+
+00:25:23.080 --> 00:25:24.800 align:middle line:84%
+Now, for instance,
+so far, we've only
+
+00:25:24.800 --> 00:25:27.600 align:middle line:84%
+looked at auctions where, all
+the auctions we've looked at,
+
+00:25:27.600 --> 00:25:30.400 align:middle line:90%
+you only pay if you win.
+
+00:25:30.400 --> 00:25:32.640 align:middle line:84%
+But that's actually not a
+requirement of an auction.
+
+00:25:32.640 --> 00:25:35.000 align:middle line:84%
+In fact, there's something
+called an all-pay auction
+
+00:25:35.000 --> 00:25:36.440 align:middle line:84%
+where everyone
+submits their bid,
+
+00:25:36.440 --> 00:25:38.520 align:middle line:84%
+and you have to pay
+your bid whether or not
+
+00:25:38.520 --> 00:25:40.200 align:middle line:90%
+you win the item or not.
+
+00:25:40.200 --> 00:25:42.300 align:middle line:84%
+That may sound like an
+unappealing auction,
+
+00:25:42.300 --> 00:25:44.818 align:middle line:84%
+but of course, you're going to
+bid less in response to that.
+
+00:25:44.818 --> 00:25:47.360 align:middle line:84%
+So we're actually going to allow
+pretty general payment rules
+
+00:25:47.360 --> 00:25:48.400 align:middle line:90%
+and transfer rules.
+
+00:25:48.400 --> 00:25:50.160 align:middle line:84%
+We've generally looked
+at allocation rules
+
+00:25:50.160 --> 00:25:52.483 align:middle line:84%
+where the highest
+bidder gets the item.
+
+00:25:52.483 --> 00:25:53.900 align:middle line:84%
+But we could be
+even more general.
+
+00:25:53.900 --> 00:25:55.483 align:middle line:84%
+Maybe we like one
+of the bidders more,
+
+00:25:55.483 --> 00:25:57.360 align:middle line:84%
+and we want to always
+give them the item.
+
+00:25:57.360 --> 00:25:59.180 align:middle line:84%
+So in general, what
+is an allocation rule?
+
+00:25:59.180 --> 00:26:02.160 align:middle line:84%
+It's going to be a function--
+maybe I'll call it q--
+
+00:26:02.160 --> 00:26:11.000 align:middle line:84%
+from B1 plus Bn to,
+well, it's going
+
+00:26:11.000 --> 00:26:13.735 align:middle line:84%
+to take in a profile of
+bids by all the players,
+
+00:26:13.735 --> 00:26:16.360 align:middle line:84%
+and what it's going to spit out
+is it should spit out something
+
+00:26:16.360 --> 00:26:18.480 align:middle line:84%
+like, I give the
+good to player 1,
+
+00:26:18.480 --> 00:26:21.745 align:middle line:84%
+or I give the good to player 2,
+or I give the good to player n.
+
+00:26:21.745 --> 00:26:23.120 align:middle line:84%
+The problem is
+sometimes you have
+
+00:26:23.120 --> 00:26:25.240 align:middle line:84%
+to randomize because
+sometimes two bidders will
+
+00:26:25.240 --> 00:26:27.040 align:middle line:84%
+bid the same amount,
+and then we might
+
+00:26:27.040 --> 00:26:29.080 align:middle line:84%
+have to flip a coin to
+see who gets the item.
+
+00:26:29.080 --> 00:26:31.280 align:middle line:84%
+So we have to allow
+these kinds of lotteries.
+
+00:26:31.280 --> 00:26:34.080 align:middle line:84%
+So I'm going to write-- it's
+going to map to what I'll
+
+00:26:34.080 --> 00:26:37.160 align:middle line:84%
+call delta, where
+delta is just going
+
+00:26:37.160 --> 00:26:38.460 align:middle line:90%
+to be the set of lotteries.
+
+00:26:38.460 --> 00:26:44.560 align:middle line:84%
+It's going to be the set of
+all vectors q1 up to qn, where
+
+00:26:44.560 --> 00:26:47.840 align:middle line:84%
+the interpretation is, if
+these are the submitted bids,
+
+00:26:47.840 --> 00:26:50.760 align:middle line:84%
+then q1 is going to
+tell us the probability
+
+00:26:50.760 --> 00:26:52.960 align:middle line:90%
+that player 1 gets the item.
+
+00:26:52.960 --> 00:26:55.280 align:middle line:90%
+So these are going to be--
+
+00:26:55.280 --> 00:26:59.500 align:middle line:84%
+so q1 to qn is greater
+than or equal to 0.
+
+00:26:59.500 --> 00:27:06.560 align:middle line:90%
+
+
+00:27:06.560 --> 00:27:10.280 align:middle line:84%
+Now, I want to
+emphasize this here.
+
+00:27:10.280 --> 00:27:12.720 align:middle line:90%
+I don't require equality.
+
+00:27:12.720 --> 00:27:14.180 align:middle line:84%
+So what's the
+interpretation here?
+
+00:27:14.180 --> 00:27:16.388 align:middle line:84%
+What if I were to say, OK,
+if these are the bids that
+
+00:27:16.388 --> 00:27:18.640 align:middle line:84%
+are submitted, I'm going
+to allocate the good
+
+00:27:18.640 --> 00:27:22.582 align:middle line:84%
+with these probabilities that
+sum to strictly less than 1.
+
+00:27:22.582 --> 00:27:23.540 align:middle line:90%
+Could this ever happen?
+
+00:27:23.540 --> 00:27:24.740 align:middle line:90%
+What's the interpretation?
+
+00:27:24.740 --> 00:27:25.240 align:middle line:90%
+Yeah.
+
+00:27:25.240 --> 00:27:26.990 align:middle line:84%
+AUDIENCE: Well, there's
+also the situation
+
+00:27:26.990 --> 00:27:28.520 align:middle line:90%
+in which no one gets it.
+
+00:27:28.520 --> 00:27:31.840 align:middle line:84%
+IAN BALL: Right, exactly, so why
+do I have to allocate the good?
+
+00:27:31.840 --> 00:27:33.980 align:middle line:84%
+I might say-- and we
+see this in auctions--
+
+00:27:33.980 --> 00:27:35.360 align:middle line:90%
+no one's bid was high enough.
+
+00:27:35.360 --> 00:27:37.380 align:middle line:84%
+I'm not happy with the
+bids people submitted.
+
+00:27:37.380 --> 00:27:39.320 align:middle line:84%
+I'm going to keep
+the good myself.
+
+00:27:39.320 --> 00:27:43.340 align:middle line:84%
+And that would correspond to
+all of these being 0, actually.
+
+00:27:43.340 --> 00:27:47.580 align:middle line:84%
+So we allow the auctioneer
+to keep the good.
+
+00:27:47.580 --> 00:27:54.400 align:middle line:90%
+
+
+00:27:54.400 --> 00:27:59.280 align:middle line:84%
+So more formally, 1 minus the
+sum of the qi's is exactly
+
+00:27:59.280 --> 00:28:01.412 align:middle line:84%
+the probability that the
+auctioneer keeps the good.
+
+00:28:01.412 --> 00:28:03.120 align:middle line:84%
+So one way of thinking
+about this is it's
+
+00:28:03.120 --> 00:28:06.220 align:middle line:84%
+a probability distribution,
+not over bidders 1 through n,
+
+00:28:06.220 --> 00:28:08.583 align:middle line:84%
+but over the auctioneer
+and bidders 1 through n.
+
+00:28:08.583 --> 00:28:10.000 align:middle line:84%
+And it doesn't
+have to sum up to 1
+
+00:28:10.000 --> 00:28:13.200 align:middle line:84%
+because the auctioneer could get
+the good with some probability.
+
+00:28:13.200 --> 00:28:15.583 align:middle line:84%
+So this is just a
+definition of this set delta
+
+00:28:15.583 --> 00:28:16.500 align:middle line:90%
+that I'm going to use.
+
+00:28:16.500 --> 00:28:18.880 align:middle line:84%
+So delta is the set of,
+sometimes it's called,
+
+00:28:18.880 --> 00:28:20.140 align:middle line:90%
+subprobabilities.
+
+00:28:20.140 --> 00:28:22.500 align:middle line:84%
+It's like distributions
+over who gets the good.
+
+00:28:22.500 --> 00:28:25.840 align:middle line:84%
+But they might sum
+to less than 1.
+
+00:28:25.840 --> 00:28:28.680 align:middle line:84%
+Now what about a payment
+or transfer rule?
+
+00:28:28.680 --> 00:28:41.080 align:middle line:84%
+That's going to be a
+function t to Rn where,
+
+00:28:41.080 --> 00:28:44.600 align:middle line:84%
+as a function of the bids,
+I'm going to specify t1
+
+00:28:44.600 --> 00:28:47.920 align:middle line:84%
+how much player 1 has to pay
+me; T2, how much player 2 has
+
+00:28:47.920 --> 00:28:52.200 align:middle line:90%
+to pay me; and so on.
+
+00:28:52.200 --> 00:28:55.920 align:middle line:84%
+So just to make sure we
+understand what's going on,
+
+00:28:55.920 --> 00:28:58.380 align:middle line:84%
+let's look at a
+really simple example.
+
+00:28:58.380 --> 00:29:02.730 align:middle line:90%
+
+
+00:29:02.730 --> 00:29:05.530 align:middle line:84%
+Let's look at the
+first-price auction.
+
+00:29:05.530 --> 00:29:08.490 align:middle line:84%
+So in the standard
+first-price auction,
+
+00:29:08.490 --> 00:29:11.290 align:middle line:84%
+what were these bid
+sets, B1 through Bn?
+
+00:29:11.290 --> 00:29:13.390 align:middle line:90%
+What did we allow people to bid?
+
+00:29:13.390 --> 00:29:15.990 align:middle line:90%
+
+
+00:29:15.990 --> 00:29:16.490 align:middle line:90%
+Yeah.
+
+00:29:16.490 --> 00:29:18.110 align:middle line:84%
+AUDIENCE: Any real
+number that's positive.
+
+00:29:18.110 --> 00:29:20.030 align:middle line:84%
+IAN BALL: Any real number that's
+positive or maybe nonnegative.
+
+00:29:20.030 --> 00:29:21.890 align:middle line:84%
+Yeah, so I think
+it doesn't really--
+
+00:29:21.890 --> 00:29:24.390 align:middle line:84%
+the details don't matter too
+much if we allow negative bids.
+
+00:29:24.390 --> 00:29:26.848 align:middle line:84%
+But you're right, so far, we
+haven't allowed negative bids.
+
+00:29:26.848 --> 00:29:33.190 align:middle line:84%
+So in that case, we had B1
+is equal to Bn is equal to,
+
+00:29:33.190 --> 00:29:35.232 align:middle line:84%
+maybe I'll write, R
+plus, or maybe I'll
+
+00:29:35.232 --> 00:29:36.190 align:middle line:90%
+be a bit more explicit.
+
+00:29:36.190 --> 00:29:40.450 align:middle line:90%
+I'll write 0 to infinity.
+
+00:29:40.450 --> 00:29:43.190 align:middle line:84%
+So what we said is, what is
+the bid set for each player?
+
+00:29:43.190 --> 00:29:45.753 align:middle line:84%
+The bid set is just the set of
+all nonnegative real numbers.
+
+00:29:45.753 --> 00:29:47.170 align:middle line:84%
+That's what we
+allowed you to bid.
+
+00:29:47.170 --> 00:29:49.450 align:middle line:84%
+Maybe, in reality,
+maybe you can only
+
+00:29:49.450 --> 00:29:51.335 align:middle line:84%
+bid multiples of a
+set or something,
+
+00:29:51.335 --> 00:29:52.710 align:middle line:84%
+and we could add
+more complexity,
+
+00:29:52.710 --> 00:29:55.570 align:middle line:84%
+but we'll just
+allow this for now.
+
+00:29:55.570 --> 00:29:59.450 align:middle line:84%
+Now, specifying the allocation
+rule and transfer rule,
+
+00:29:59.450 --> 00:30:01.210 align:middle line:84%
+it's just a bit messy
+to write it all out
+
+00:30:01.210 --> 00:30:03.190 align:middle line:90%
+because their whole function.
+
+00:30:03.190 --> 00:30:05.370 align:middle line:84%
+So let's just go through
+an example, one example.
+
+00:30:05.370 --> 00:30:11.310 align:middle line:90%
+What if, say, n equals 2?
+
+00:30:11.310 --> 00:30:13.530 align:middle line:90%
+So we have two bidders.
+
+00:30:13.530 --> 00:30:20.450 align:middle line:84%
+Let's see if we can
+compute q of 3, 4 and t
+
+00:30:20.450 --> 00:30:23.130 align:middle line:84%
+of 3, 4, so really just
+to make sure we understand
+
+00:30:23.130 --> 00:30:24.610 align:middle line:90%
+the notation that's going on.
+
+00:30:24.610 --> 00:30:31.250 align:middle line:84%
+So if n equals 2, the
+bid set for player 1
+
+00:30:31.250 --> 00:30:33.130 align:middle line:84%
+is just a nonnegative
+real number.
+
+00:30:33.130 --> 00:30:34.850 align:middle line:84%
+The bid set for player
+2 is just the set
+
+00:30:34.850 --> 00:30:36.690 align:middle line:90%
+of nonnegative real numbers.
+
+00:30:36.690 --> 00:30:39.750 align:middle line:84%
+So the domain of the allocation
+rule and the transfer rule,
+
+00:30:39.750 --> 00:30:43.290 align:middle line:84%
+they have to say if
+bidder 1 bids this number
+
+00:30:43.290 --> 00:30:46.570 align:middle line:84%
+and bidder 2 bids this number,
+who do we allocate the good to?
+
+00:30:46.570 --> 00:30:48.810 align:middle line:84%
+And how much do
+we make them pay?
+
+00:30:48.810 --> 00:30:52.570 align:middle line:84%
+So when I write q of 3, 4,
+the interpretation of this
+
+00:30:52.570 --> 00:30:56.810 align:middle line:90%
+is 3 is the bid by bidder 1.
+
+00:30:56.810 --> 00:30:59.210 align:middle line:90%
+4 is the bid by bidder 2.
+
+00:30:59.210 --> 00:31:03.210 align:middle line:84%
+And we need to say what happens
+if bidder 1 bids 3 and bidder 2
+
+00:31:03.210 --> 00:31:04.050 align:middle line:90%
+bids 4?
+
+00:31:04.050 --> 00:31:06.175 align:middle line:84%
+And this is really just to
+check our notation here.
+
+00:31:06.175 --> 00:31:08.490 align:middle line:90%
+So what is q of 3, 4?
+
+00:31:08.490 --> 00:31:09.050 align:middle line:90%
+Yeah.
+
+00:31:09.050 --> 00:31:10.585 align:middle line:84%
+AUDIENCE: Would
+it be a 0 comma 1.
+
+00:31:10.585 --> 00:31:11.710 align:middle line:90%
+IAN BALL: 0 comma 1, right?
+
+00:31:11.710 --> 00:31:15.530 align:middle line:84%
+Because here, because bidder
+2's bid is higher than bidder
+
+00:31:15.530 --> 00:31:18.770 align:middle line:84%
+1's bid, we need to allocate
+the good to bidder 2.
+
+00:31:18.770 --> 00:31:20.350 align:middle line:90%
+And we have notation for that.
+
+00:31:20.350 --> 00:31:22.530 align:middle line:84%
+Our notation just tells
+us the probability
+
+00:31:22.530 --> 00:31:24.070 align:middle line:90%
+that each bidder gets the good.
+
+00:31:24.070 --> 00:31:25.910 align:middle line:84%
+Now probabilities
+seem a bit weird here.
+
+00:31:25.910 --> 00:31:26.750 align:middle line:90%
+They're just 0, 1.
+
+00:31:26.750 --> 00:31:28.730 align:middle line:84%
+We always give the
+good to bidder 2.
+
+00:31:28.730 --> 00:31:30.590 align:middle line:90%
+If bidder 2's bid is higher.
+
+00:31:30.590 --> 00:31:32.810 align:middle line:84%
+So this is just going
+to be the vector 0 comma
+
+00:31:32.810 --> 00:31:37.810 align:middle line:84%
+1 that says we give the good
+to bidder 1 with probability 0,
+
+00:31:37.810 --> 00:31:42.950 align:middle line:84%
+and we give the good to
+bidder 2 with probability 1.
+
+00:31:42.950 --> 00:31:48.330 align:middle line:84%
+What about the
+vector t, t of 3, 4.
+
+00:31:48.330 --> 00:31:49.550 align:middle line:90%
+What is that going to be?
+
+00:31:49.550 --> 00:31:50.050 align:middle line:90%
+Yeah.
+
+00:31:50.050 --> 00:31:50.770 align:middle line:90%
+AUDIENCE: 0, 4.
+
+00:31:50.770 --> 00:31:51.470 align:middle line:90%
+IAN BALL: 0, 4.
+
+00:31:51.470 --> 00:31:55.235 align:middle line:90%
+
+
+00:31:55.235 --> 00:31:58.380 align:middle line:84%
+This says, well,
+this first component
+
+00:31:58.380 --> 00:32:00.140 align:middle line:90%
+we might call t1 of 3, 4.
+
+00:32:00.140 --> 00:32:01.967 align:middle line:84%
+This is how much
+bidder 1 has to pay.
+
+00:32:01.967 --> 00:32:04.300 align:middle line:84%
+Well, bidder 1 got outbid,
+they're not getting the item,
+
+00:32:04.300 --> 00:32:05.940 align:middle line:90%
+and therefore they don't pay.
+
+00:32:05.940 --> 00:32:07.500 align:middle line:90%
+So they pay 0.
+
+00:32:07.500 --> 00:32:10.390 align:middle line:90%
+Bidder 2 was the highest bidder.
+
+00:32:10.390 --> 00:32:12.140 align:middle line:84%
+They're winning the
+item, and in the rules
+
+00:32:12.140 --> 00:32:15.260 align:middle line:84%
+of the first-price auction,
+they pay their bid.
+
+00:32:15.260 --> 00:32:17.580 align:middle line:90%
+So we get 0, 4.
+
+00:32:17.580 --> 00:32:21.260 align:middle line:84%
+Now, what if I were to change
+this to a second-price auction?
+
+00:32:21.260 --> 00:32:23.300 align:middle line:84%
+If I change this to a
+second-price auction,
+
+00:32:23.300 --> 00:32:24.520 align:middle line:90%
+what would change here?
+
+00:32:24.520 --> 00:32:25.255 align:middle line:90%
+Would q change?
+
+00:32:25.255 --> 00:32:25.880 align:middle line:90%
+Would t change?
+
+00:32:25.880 --> 00:32:29.060 align:middle line:90%
+What would be different?
+
+00:32:29.060 --> 00:32:29.700 align:middle line:90%
+Yeah.
+
+00:32:29.700 --> 00:32:31.242 align:middle line:84%
+AUDIENCE: q would
+not change because,
+
+00:32:31.242 --> 00:32:33.480 align:middle line:90%
+still, the person bidding 4--
+
+00:32:33.480 --> 00:32:34.580 align:middle line:90%
+well, yeah, they'll bid 4.
+
+00:32:34.580 --> 00:32:35.580 align:middle line:90%
+In this case, would win.
+
+00:32:35.580 --> 00:32:38.363 align:middle line:84%
+T would change, however, because
+they would only have to pay 3.
+
+00:32:38.363 --> 00:32:39.780 align:middle line:84%
+IAN BALL: Exactly,
+so notice, when
+
+00:32:39.780 --> 00:32:41.888 align:middle line:84%
+we compare the first-
+and second-price auction,
+
+00:32:41.888 --> 00:32:43.680 align:middle line:84%
+they actually use the
+same allocation rule.
+
+00:32:43.680 --> 00:32:45.280 align:middle line:84%
+And a lot of auctions
+use this allocation rule.
+
+00:32:45.280 --> 00:32:47.488 align:middle line:84%
+The allocation rule is pretty
+simple-- we allocate it
+
+00:32:47.488 --> 00:32:48.700 align:middle line:90%
+to the highest bidder.
+
+00:32:48.700 --> 00:32:50.600 align:middle line:84%
+They both use that
+allocation rule.
+
+00:32:50.600 --> 00:32:52.540 align:middle line:84%
+The difference between
+the first-price auction
+
+00:32:52.540 --> 00:32:54.860 align:middle line:84%
+and the second-price
+auction is the payment rule,
+
+00:32:54.860 --> 00:32:56.180 align:middle line:90%
+how much people have to pay.
+
+00:32:56.180 --> 00:32:59.980 align:middle line:84%
+And indeed, down here,
+what we would get is 0, 3.
+
+00:32:59.980 --> 00:33:01.740 align:middle line:84%
+If it were a
+second-price auction,
+
+00:33:01.740 --> 00:33:03.640 align:middle line:90%
+the first bidder got outbid.
+
+00:33:03.640 --> 00:33:06.740 align:middle line:84%
+They still lose the
+item and pay nothing.
+
+00:33:06.740 --> 00:33:08.800 align:middle line:84%
+The second bidder, in
+a second-price auction,
+
+00:33:08.800 --> 00:33:12.500 align:middle line:84%
+though, pays the-- well,
+bidder 2 is the highest bidder.
+
+00:33:12.500 --> 00:33:14.160 align:middle line:90%
+They pay the second highest bid.
+
+00:33:14.160 --> 00:33:16.520 align:middle line:84%
+Well, what's the second
+highest bid between 3 and 4?
+
+00:33:16.520 --> 00:33:17.500 align:middle line:90%
+It would just be 3.
+
+00:33:17.500 --> 00:33:19.380 align:middle line:84%
+So we'd have to
+change this 4 to a 3
+
+00:33:19.380 --> 00:33:22.230 align:middle line:84%
+if we wanted to do the
+first-price auction.
+
+00:33:22.230 --> 00:33:23.480 align:middle line:90%
+What about an all-pay auction?
+
+00:33:23.480 --> 00:33:25.522 align:middle line:84%
+What would this be if it
+were an all-pay auction?
+
+00:33:25.522 --> 00:33:28.430 align:middle line:90%
+
+
+00:33:28.430 --> 00:33:31.580 align:middle line:84%
+Well, then it would just be
+3, 4 because bidder 1 would
+
+00:33:31.580 --> 00:33:34.420 align:middle line:84%
+have to pay 3 even though they
+didn't when the good and bidder
+
+00:33:34.420 --> 00:33:35.400 align:middle line:90%
+2 would pay 4.
+
+00:33:35.400 --> 00:33:36.460 align:middle line:90%
+They'd pay their own bid.
+
+00:33:36.460 --> 00:33:39.220 align:middle line:84%
+OK, so I think we understand
+the notation here.
+
+00:33:39.220 --> 00:33:41.960 align:middle line:84%
+And now that we have this
+generalized auction format,
+
+00:33:41.960 --> 00:33:46.860 align:middle line:84%
+we want to try to understand
+these expected payments.
+
+00:33:46.860 --> 00:33:50.380 align:middle line:84%
+Now, to talk about how
+much people expect to pay,
+
+00:33:50.380 --> 00:33:52.400 align:middle line:84%
+we have to first have
+an equilibrium in mind.
+
+00:33:52.400 --> 00:33:56.018 align:middle line:84%
+This is a key conceptual
+point that, when I say--
+
+00:33:56.018 --> 00:33:57.560 align:middle line:84%
+notice when I said
+expected payments,
+
+00:33:57.560 --> 00:33:59.260 align:middle line:84%
+I said equilibrium-expected
+payments
+
+00:33:59.260 --> 00:34:01.482 align:middle line:84%
+because, just from the
+auction format alone,
+
+00:34:01.482 --> 00:34:02.940 align:middle line:84%
+we have no idea
+how much people are
+
+00:34:02.940 --> 00:34:05.860 align:middle line:84%
+going to pay until we specify
+how people actually bid.
+
+00:34:05.860 --> 00:34:09.219 align:middle line:84%
+So first, we need
+to choose or focus
+
+00:34:09.219 --> 00:34:11.560 align:middle line:84%
+our attention on an
+equilibrium of the auction.
+
+00:34:11.560 --> 00:34:13.199 align:middle line:84%
+And then, given
+that equilibrium,
+
+00:34:13.199 --> 00:34:16.139 align:middle line:84%
+we can compute how much
+people are expected to pay.
+
+00:34:16.139 --> 00:34:22.820 align:middle line:84%
+So we're going to
+consider an equilibrium,
+
+00:34:22.820 --> 00:34:28.340 align:middle line:84%
+a Bayes-Nash equilibrium of
+some generalized auction.
+
+00:34:28.340 --> 00:34:31.219 align:middle line:84%
+And let's just make sure we
+understand what kind of object
+
+00:34:31.219 --> 00:34:32.380 align:middle line:90%
+this is.
+
+00:34:32.380 --> 00:34:34.580 align:middle line:84%
+So a Bayes-Nash
+equilibrium is going
+
+00:34:34.580 --> 00:34:39.620 align:middle line:84%
+to specify
+functions-- let's see.
+
+00:34:39.620 --> 00:34:41.100 align:middle line:84%
+Usually, we use
+star, but I think
+
+00:34:41.100 --> 00:34:42.260 align:middle line:84%
+I'm actually going
+to use hats today
+
+00:34:42.260 --> 00:34:43.960 align:middle line:84%
+because we're going to have
+to take some derivatives,
+
+00:34:43.960 --> 00:34:45.739 align:middle line:84%
+and with the stars,
+it's a bit messy.
+
+00:34:45.739 --> 00:34:48.420 align:middle line:84%
+So bidder 1's
+equilibrium strategy
+
+00:34:48.420 --> 00:34:52.300 align:middle line:84%
+is going to be a
+mapping from v lower
+
+00:34:52.300 --> 00:34:58.680 align:middle line:84%
+bar to v upper bar to B1,
+all the way down to Bn hat.
+
+00:34:58.680 --> 00:35:05.740 align:middle line:90%
+
+
+00:35:05.740 --> 00:35:08.260 align:middle line:84%
+So remember, Bayes-Nash
+equilibrium is a strategy
+
+00:35:08.260 --> 00:35:10.740 align:middle line:84%
+profile, and a
+strategy profile just
+
+00:35:10.740 --> 00:35:13.300 align:middle line:84%
+specifies a strategy or a
+bidding function for each
+
+00:35:13.300 --> 00:35:14.700 align:middle line:90%
+of the players.
+
+00:35:14.700 --> 00:35:17.140 align:middle line:84%
+Notice here that, in
+general, these bid sets
+
+00:35:17.140 --> 00:35:20.120 align:middle line:84%
+could be different, and our
+strategies have to reflect that.
+
+00:35:20.120 --> 00:35:22.340 align:middle line:90%
+So what does bidder 1 do?
+
+00:35:22.340 --> 00:35:24.420 align:middle line:84%
+They know what
+their true value is.
+
+00:35:24.420 --> 00:35:27.060 align:middle line:84%
+It's somewhere between v
+lower bar and v upper bar.
+
+00:35:27.060 --> 00:35:29.180 align:middle line:84%
+And to each true value,
+their bidding function
+
+00:35:29.180 --> 00:35:31.220 align:middle line:90%
+specifies how much they bid.
+
+00:35:31.220 --> 00:35:32.420 align:middle line:90%
+Well, what is a bid?
+
+00:35:32.420 --> 00:35:34.425 align:middle line:84%
+A bid is just something
+in the set B1.
+
+00:35:34.425 --> 00:35:35.800 align:middle line:84%
+Remember this is
+really abstract.
+
+00:35:35.800 --> 00:35:38.940 align:middle line:84%
+B1 could be, I like
+it, or I don't like it.
+
+00:35:38.940 --> 00:35:41.460 align:middle line:84%
+And then my strategy would
+say, for which values,
+
+00:35:41.460 --> 00:35:43.080 align:middle line:84%
+do I tell the
+auctioneer, I like it?
+
+00:35:43.080 --> 00:35:46.100 align:middle line:84%
+And for which values, do I tell
+the auctioneer, I don't like it?
+
+00:35:46.100 --> 00:35:49.510 align:middle line:84%
+And then, all the way down to
+bidder n, whose bidding function
+
+00:35:49.510 --> 00:35:51.510 align:middle line:84%
+takes each value they
+could possibly have
+
+00:35:51.510 --> 00:35:53.667 align:middle line:84%
+and assigns it to some
+bid that's feasible,
+
+00:35:53.667 --> 00:35:55.750 align:middle line:84%
+some bid that's in the bid
+set that the auctioneer
+
+00:35:55.750 --> 00:35:57.830 align:middle line:90%
+has presented.
+
+00:35:57.830 --> 00:36:02.750 align:middle line:84%
+OK, so we're considering
+a Bayes-Nash equilibrium,
+
+00:36:02.750 --> 00:36:05.850 align:middle line:84%
+and what we're interested
+in is the payments.
+
+00:36:05.850 --> 00:36:09.130 align:middle line:84%
+We're interested in the expected
+payment that each bidder makes.
+
+00:36:09.130 --> 00:36:11.630 align:middle line:84%
+And we might also be interested
+in how likely each bidder is
+
+00:36:11.630 --> 00:36:13.030 align:middle line:90%
+to win the good.
+
+00:36:13.030 --> 00:36:18.350 align:middle line:84%
+So given this, we
+want to define what
+
+00:36:18.350 --> 00:36:26.190 align:middle line:84%
+we might call the
+equilibrium-expected allocation
+
+00:36:26.190 --> 00:36:27.010 align:middle line:90%
+and payments.
+
+00:36:27.010 --> 00:36:34.390 align:middle line:90%
+
+
+00:36:34.390 --> 00:36:39.290 align:middle line:84%
+So let's first define
+the allocation.
+
+00:36:39.290 --> 00:36:44.790 align:middle line:90%
+Maybe I'll call it Qi hat.
+
+00:36:44.790 --> 00:36:45.825 align:middle line:90%
+Let's focus on bidder 1.
+
+00:36:45.825 --> 00:36:47.950 align:middle line:84%
+I think it just makes the
+notation a little easier.
+
+00:36:47.950 --> 00:36:50.690 align:middle line:90%
+Q1 hat of v1.
+
+00:36:50.690 --> 00:36:54.510 align:middle line:90%
+
+
+00:36:54.510 --> 00:36:56.150 align:middle line:84%
+So the hat reminds
+us that this depends
+
+00:36:56.150 --> 00:36:58.030 align:middle line:90%
+on the equilibrium v1 hat.
+
+00:36:58.030 --> 00:36:59.950 align:middle line:84%
+And what I want to
+compute here is--
+
+00:36:59.950 --> 00:37:03.510 align:middle line:84%
+let's say we're playing
+this generalized auction,
+
+00:37:03.510 --> 00:37:06.870 align:middle line:84%
+and we're following this
+Bayes-Nash equilibrium.
+
+00:37:06.870 --> 00:37:08.910 align:middle line:90%
+Suppose I'm bidder 1.
+
+00:37:08.910 --> 00:37:12.030 align:middle line:84%
+Suppose my true valuation
+for the good is v1.
+
+00:37:12.030 --> 00:37:17.550 align:middle line:84%
+What is my probability or
+my expected probability
+
+00:37:17.550 --> 00:37:20.590 align:middle line:90%
+of winning the item?
+
+00:37:20.590 --> 00:37:23.670 align:middle line:84%
+Well, whether I win the
+item depends on what
+
+00:37:23.670 --> 00:37:25.130 align:middle line:90%
+other people's valuations are.
+
+00:37:25.130 --> 00:37:27.310 align:middle line:84%
+So I need to take
+an expectation.
+
+00:37:27.310 --> 00:37:33.150 align:middle line:84%
+So I'm going to take
+the expectation of--
+
+00:37:33.150 --> 00:37:36.670 align:middle line:90%
+
+
+00:37:36.670 --> 00:37:38.090 align:middle line:90%
+well, let's write this.
+
+00:37:38.090 --> 00:37:48.245 align:middle line:90%
+
+
+00:37:48.245 --> 00:37:50.370 align:middle line:84%
+Let's make sure we understand
+what's going on here.
+
+00:37:50.370 --> 00:37:54.110 align:middle line:90%
+
+
+00:37:54.110 --> 00:38:01.350 align:middle line:84%
+And I'll say this
+expectation is over v2 to vn.
+
+00:38:01.350 --> 00:38:06.070 align:middle line:84%
+Why do I not take
+expectations over v1?
+
+00:38:06.070 --> 00:38:07.130 align:middle line:90%
+Well, I know v1.
+
+00:38:07.130 --> 00:38:07.790 align:middle line:90%
+I'm bidder 1.
+
+00:38:07.790 --> 00:38:08.730 align:middle line:90%
+I know what V1 is.
+
+00:38:08.730 --> 00:38:09.590 align:middle line:84%
+So this is what's,
+I think, really
+
+00:38:09.590 --> 00:38:10.990 align:middle line:90%
+tricky about this notation.
+
+00:38:10.990 --> 00:38:13.630 align:middle line:84%
+When you see v1 in here,
+that's just a number.
+
+00:38:13.630 --> 00:38:15.030 align:middle line:90%
+That's something I know.
+
+00:38:15.030 --> 00:38:17.110 align:middle line:84%
+When you see vn, that's
+something I don't know,
+
+00:38:17.110 --> 00:38:18.630 align:middle line:84%
+and that's something
+that's random.
+
+00:38:18.630 --> 00:38:19.885 align:middle line:90%
+So think of v1.
+
+00:38:19.885 --> 00:38:21.010 align:middle line:90%
+It's just something like 2.
+
+00:38:21.010 --> 00:38:21.770 align:middle line:90%
+It's a number.
+
+00:38:21.770 --> 00:38:24.030 align:middle line:84%
+We're not taking an
+expectation over it,
+
+00:38:24.030 --> 00:38:26.970 align:middle line:84%
+but everyone else's bid--
+everyone else's value,
+
+00:38:26.970 --> 00:38:28.470 align:middle line:84%
+we are taking an
+expectation over it
+
+00:38:28.470 --> 00:38:30.390 align:middle line:84%
+because we don't
+know what it is.
+
+00:38:30.390 --> 00:38:36.870 align:middle line:84%
+So what this is saying is if my
+value is v1 as bidder 1, well,
+
+00:38:36.870 --> 00:38:40.470 align:middle line:84%
+then the amount I'm going to bid
+in equilibrium is B1 hat of v1.
+
+00:38:40.470 --> 00:38:42.800 align:middle line:84%
+That's what my equilibrium
+bidding strategy tells me
+
+00:38:42.800 --> 00:38:44.440 align:middle line:90%
+I should bid.
+
+00:38:44.440 --> 00:38:46.360 align:middle line:84%
+Now let's take the
+example of bidder n.
+
+00:38:46.360 --> 00:38:49.560 align:middle line:84%
+Well, I don't know what
+bidder n's value is,
+
+00:38:49.560 --> 00:38:52.760 align:middle line:84%
+but if their value is vn,
+then how much do they bid?
+
+00:38:52.760 --> 00:38:55.440 align:middle line:90%
+They bid vn hat of vn.
+
+00:38:55.440 --> 00:38:58.200 align:middle line:84%
+And we'll do the same for bidder
+n minus 1 and bidder n minus 3,
+
+00:38:58.200 --> 00:39:00.000 align:middle line:90%
+all the way down to bidder 2.
+
+00:39:00.000 --> 00:39:05.520 align:middle line:84%
+So what's in here is
+the profile of bids
+
+00:39:05.520 --> 00:39:07.880 align:middle line:84%
+that are submitted when we're
+following the equilibrium
+
+00:39:07.880 --> 00:39:08.740 align:middle line:90%
+strategy.
+
+00:39:08.740 --> 00:39:10.680 align:middle line:84%
+And bidder 1's
+value is v1, bidder
+
+00:39:10.680 --> 00:39:15.000 align:middle line:84%
+2's value is V2 all the way
+up to bidder n's value is vn.
+
+00:39:15.000 --> 00:39:18.840 align:middle line:84%
+Now, bidder 1 knows
+her own value, v1,
+
+00:39:18.840 --> 00:39:21.240 align:middle line:84%
+but she doesn't know
+these other values.
+
+00:39:21.240 --> 00:39:23.200 align:middle line:84%
+So that's why we
+take an expectation.
+
+00:39:23.200 --> 00:39:28.120 align:middle line:84%
+And then notice we have to
+feed in this profile of bids
+
+00:39:28.120 --> 00:39:29.798 align:middle line:90%
+into our allocation function.
+
+00:39:29.798 --> 00:39:31.340 align:middle line:84%
+And I realized I
+made a mistake here.
+
+00:39:31.340 --> 00:39:33.000 align:middle line:90%
+We need a 1 here.
+
+00:39:33.000 --> 00:39:39.680 align:middle line:84%
+Should be q1 because this
+is the profile of bids.
+
+00:39:39.680 --> 00:39:43.720 align:middle line:84%
+q1 of this profile is going
+to specify the probability
+
+00:39:43.720 --> 00:39:47.120 align:middle line:84%
+that player 1-- or bidder 1
+gets the item when this is
+
+00:39:47.120 --> 00:39:50.037 align:middle line:90%
+the submitted profile of bids.
+
+00:39:50.037 --> 00:39:51.620 align:middle line:84%
+And then we compute
+expectations here.
+
+00:39:51.620 --> 00:39:53.203 align:middle line:84%
+But I think this is
+a little abstract.
+
+00:39:53.203 --> 00:39:55.240 align:middle line:90%
+So clear-- yeah.
+
+00:39:55.240 --> 00:39:59.120 align:middle line:84%
+AUDIENCE: So player 1 can't know
+her own allocation function,
+
+00:39:59.120 --> 00:40:00.620 align:middle line:90%
+right?
+
+00:40:00.620 --> 00:40:03.693 align:middle line:84%
+Because it depends on
+other people's values.
+
+00:40:03.693 --> 00:40:04.860 align:middle line:90%
+IAN BALL: So let's be clear.
+
+00:40:04.860 --> 00:40:06.200 align:middle line:84%
+There's a key difference
+here between the function
+
+00:40:06.200 --> 00:40:07.620 align:middle line:90%
+and the value of the function.
+
+00:40:07.620 --> 00:40:09.640 align:middle line:84%
+So she does know
+the allocation rule.
+
+00:40:09.640 --> 00:40:12.280 align:middle line:84%
+She knows if these are the
+bids that are submitted,
+
+00:40:12.280 --> 00:40:14.023 align:middle line:84%
+then this is the amount
+I'm going to get.
+
+00:40:14.023 --> 00:40:15.440 align:middle line:84%
+But you're right,
+she doesn't know
+
+00:40:15.440 --> 00:40:17.773 align:middle line:84%
+the bids that are actually
+submitted because she doesn't
+
+00:40:17.773 --> 00:40:18.920 align:middle line:90%
+know how other people bid.
+
+00:40:18.920 --> 00:40:21.680 align:middle line:84%
+So this thing in
+here, she doesn't
+
+00:40:21.680 --> 00:40:23.200 align:middle line:90%
+know what value this takes.
+
+00:40:23.200 --> 00:40:26.600 align:middle line:84%
+The value this takes is going
+to depend on these bids here.
+
+00:40:26.600 --> 00:40:28.740 align:middle line:84%
+But she's able to form
+beliefs over that.
+
+00:40:28.740 --> 00:40:31.500 align:middle line:84%
+She's able to say things
+like, well, I don't know--
+
+00:40:31.500 --> 00:40:32.900 align:middle line:90%
+let's say there's two bidders--
+
+00:40:32.900 --> 00:40:34.880 align:middle line:84%
+I don't know what
+bidder 2's going to bid,
+
+00:40:34.880 --> 00:40:38.260 align:middle line:84%
+but if bidder 2 bids 5, this is
+the probability I get the good.
+
+00:40:38.260 --> 00:40:40.980 align:middle line:84%
+If bidder 2 bids 7, this is the
+probability that I get the good.
+
+00:40:40.980 --> 00:40:43.600 align:middle line:84%
+And because she has a belief
+about the distribution
+
+00:40:43.600 --> 00:40:46.160 align:middle line:84%
+from which bidder 2's
+valuations are drawn
+
+00:40:46.160 --> 00:40:49.040 align:middle line:84%
+and she believes that bidder 2's
+following bidder 2's equilibrium
+
+00:40:49.040 --> 00:40:51.740 align:middle line:84%
+strategy, she's able to
+compute an expectation here.
+
+00:40:51.740 --> 00:40:54.120 align:middle line:90%
+So she doesn't know the actual--
+
+00:40:54.120 --> 00:40:58.880 align:middle line:84%
+I guess what's also tricky
+here, it's weird to talk about--
+
+00:40:58.880 --> 00:41:00.655 align:middle line:84%
+this is a probability
+on the inside.
+
+00:41:00.655 --> 00:41:02.780 align:middle line:84%
+And then we're also taking
+an expected probability.
+
+00:41:02.780 --> 00:41:04.560 align:middle line:84%
+I know that's a little
+weird, but think
+
+00:41:04.560 --> 00:41:07.420 align:middle line:84%
+of this number as basically
+always being 0, 1 on the inside.
+
+00:41:07.420 --> 00:41:09.640 align:middle line:84%
+So we're basically saying,
+what's the probability
+
+00:41:09.640 --> 00:41:10.800 align:middle line:90%
+that I get the good?
+
+00:41:10.800 --> 00:41:12.800 align:middle line:84%
+So we're taking an
+expectation of something
+
+00:41:12.800 --> 00:41:15.240 align:middle line:84%
+that's sometimes 1--
+it's 1 if I win--
+
+00:41:15.240 --> 00:41:17.300 align:middle line:84%
+and sometimes 0--
+it's 0 if I lose.
+
+00:41:17.300 --> 00:41:20.747 align:middle line:84%
+This tie-breaking stuff is
+not really going to come up.
+
+00:41:20.747 --> 00:41:21.580 align:middle line:90%
+Any other questions?
+
+00:41:21.580 --> 00:41:25.040 align:middle line:90%
+Great, great question, OK.
+
+00:41:25.040 --> 00:41:28.080 align:middle line:84%
+Great, so this is the
+equilibrium probability
+
+00:41:28.080 --> 00:41:32.193 align:middle line:84%
+that I get the good if I'm
+bidder 1 and my valuation is v1.
+
+00:41:32.193 --> 00:41:33.860 align:middle line:84%
+Now let's do the same
+with the transfer.
+
+00:41:33.860 --> 00:41:37.360 align:middle line:84%
+So we wanted to
+find T1 hat of v1.
+
+00:41:37.360 --> 00:41:40.060 align:middle line:84%
+So this is exactly the object
+that we are computing over here.
+
+00:41:40.060 --> 00:41:42.240 align:middle line:84%
+We are saying if I'm
+bidder v1-- if I'm
+
+00:41:42.240 --> 00:41:44.458 align:middle line:84%
+bidder 1 and my
+valuation is v1, what
+
+00:41:44.458 --> 00:41:46.000 align:middle line:84%
+is the expected
+amount that I'm going
+
+00:41:46.000 --> 00:41:48.040 align:middle line:84%
+to pay in this
+particular auction,
+
+00:41:48.040 --> 00:41:50.320 align:middle line:84%
+in this particular
+equilibrium of the auction.
+
+00:41:50.320 --> 00:41:53.080 align:middle line:84%
+So again, we're going
+to take expectations.
+
+00:41:53.080 --> 00:41:56.440 align:middle line:84%
+Again, our expectations are
+going to be over v2 through vn
+
+00:41:56.440 --> 00:42:00.560 align:middle line:84%
+because those are the values
+that bidder 1 does not know.
+
+00:42:00.560 --> 00:42:07.320 align:middle line:84%
+And now we're going to write
+T1 of b1 hat v1 all the way up
+
+00:42:07.320 --> 00:42:12.320 align:middle line:90%
+to bn hat vn here.
+
+00:42:12.320 --> 00:42:14.600 align:middle line:84%
+And maybe I'll make
+it clear that this
+
+00:42:14.600 --> 00:42:22.040 align:middle line:84%
+is known where these are
+uncertain from the perspective
+
+00:42:22.040 --> 00:42:25.320 align:middle line:90%
+of bidder 1.
+
+00:42:25.320 --> 00:42:30.120 align:middle line:84%
+So we have bidder 1's bid all
+the way up to bidder n's bid.
+
+00:42:30.120 --> 00:42:32.200 align:middle line:90%
+That forms the profile of bids.
+
+00:42:32.200 --> 00:42:35.070 align:middle line:84%
+The auctioneer says, if I
+get this profile of bids,
+
+00:42:35.070 --> 00:42:37.610 align:middle line:84%
+this is how much I'm going
+to ask player 1 to pay.
+
+00:42:37.610 --> 00:42:40.570 align:middle line:84%
+And then we're
+taking expectations.
+
+00:42:40.570 --> 00:42:44.450 align:middle line:84%
+So we've now kind of
+formalized our question.
+
+00:42:44.450 --> 00:42:47.290 align:middle line:84%
+Revenue equivalence tells
+us that this function,
+
+00:42:47.290 --> 00:42:50.650 align:middle line:84%
+T1 hat of v1, seems
+to take the same form
+
+00:42:50.650 --> 00:42:52.630 align:middle line:84%
+in a lot of different
+auction formats
+
+00:42:52.630 --> 00:42:54.450 align:middle line:84%
+and a lot of
+different equilibria.
+
+00:42:54.450 --> 00:42:56.770 align:middle line:84%
+In both the equilibrium
+of the first-price auction
+
+00:42:56.770 --> 00:42:59.130 align:middle line:84%
+and the equilibrium of
+the second-price auction,
+
+00:42:59.130 --> 00:43:00.530 align:middle line:90%
+this function was the same.
+
+00:43:00.530 --> 00:43:02.810 align:middle line:84%
+And we'd like to
+understand why that is.
+
+00:43:02.810 --> 00:43:04.930 align:middle line:84%
+So that's at a high
+level what we want to.
+
+00:43:04.930 --> 00:43:08.050 align:middle line:90%
+
+
+00:43:08.050 --> 00:43:11.290 align:middle line:84%
+OK, well, we're going to have
+to use the fact that this
+
+00:43:11.290 --> 00:43:14.770 align:middle line:90%
+is a Bayes-Nash equilibrium.
+
+00:43:14.770 --> 00:43:19.250 align:middle line:84%
+So the fact that this is
+Bayes-Nash equilibrium tells me
+
+00:43:19.250 --> 00:43:19.790 align:middle line:90%
+that--
+
+00:43:19.790 --> 00:43:26.610 align:middle line:90%
+
+
+00:43:26.610 --> 00:43:30.930 align:middle line:84%
+let's take the
+perspective of bidder 1
+
+00:43:30.930 --> 00:43:32.390 align:middle line:90%
+who has a valuation of v1?
+
+00:43:32.390 --> 00:43:38.610 align:middle line:90%
+
+
+00:43:38.610 --> 00:43:51.150 align:middle line:84%
+What we know is that bidding
+b1 hat of v1 is optimal.
+
+00:43:51.150 --> 00:43:53.850 align:middle line:90%
+
+
+00:43:53.850 --> 00:43:55.770 align:middle line:84%
+Given the way everyone
+else is bidding.
+
+00:43:55.770 --> 00:44:00.610 align:middle line:84%
+I could bid whatever I want,
+but bidding b1 hat of v1
+
+00:44:00.610 --> 00:44:02.270 align:middle line:90%
+is the best possible bid for me.
+
+00:44:02.270 --> 00:44:04.390 align:middle line:84%
+It maximizes my
+expected utility.
+
+00:44:04.390 --> 00:44:07.610 align:middle line:90%
+
+
+00:44:07.610 --> 00:44:14.010 align:middle line:84%
+And a weird way you
+want to think about this
+
+00:44:14.010 --> 00:44:19.850 align:middle line:84%
+is that tells me that
+bidding b1 hat of v1
+
+00:44:19.850 --> 00:44:22.250 align:middle line:84%
+is better than any
+other bid I could make.
+
+00:44:22.250 --> 00:44:24.917 align:middle line:84%
+But these other bids, as
+you said, they're numbers.
+
+00:44:24.917 --> 00:44:25.750 align:middle line:90%
+They could be words.
+
+00:44:25.750 --> 00:44:27.542 align:middle line:84%
+We don't really know
+what these things are.
+
+00:44:27.542 --> 00:44:33.490 align:middle line:84%
+But in particular, what this
+tells us is that bidding--
+
+00:44:33.490 --> 00:44:35.810 align:middle line:84%
+and this is the
+key observation--
+
+00:44:35.810 --> 00:44:46.010 align:middle line:84%
+bidding b1 hat of
+v1 is weakly better
+
+00:44:46.010 --> 00:44:52.270 align:middle line:84%
+than bidding b1 hat of v1
+prime for all v1 prime.
+
+00:44:52.270 --> 00:44:55.450 align:middle line:90%
+
+
+00:44:55.450 --> 00:44:57.430 align:middle line:84%
+So in a sense, I haven't
+done anything here,
+
+00:44:57.430 --> 00:44:59.990 align:middle line:84%
+but this actually turns out
+to be the crucial observation.
+
+00:44:59.990 --> 00:45:03.970 align:middle line:84%
+So the point is,
+bidding b1 hat of v1
+
+00:45:03.970 --> 00:45:05.770 align:middle line:90%
+is better than any other bid.
+
+00:45:05.770 --> 00:45:08.850 align:middle line:84%
+So in particular, what's
+another bid I could make?
+
+00:45:08.850 --> 00:45:10.650 align:middle line:84%
+I could choose the
+bid that I'm supposed
+
+00:45:10.650 --> 00:45:13.210 align:middle line:84%
+to make in this equilibrium
+if my two valuation is
+
+00:45:13.210 --> 00:45:16.430 align:middle line:84%
+v1 prime. v1 prime is just
+a different valuation.
+
+00:45:16.430 --> 00:45:18.770 align:middle line:90%
+I could do that.
+
+00:45:18.770 --> 00:45:21.650 align:middle line:84%
+But following my
+equilibrium bidding strategy
+
+00:45:21.650 --> 00:45:26.810 align:middle line:84%
+must be better than this
+alternative bid b1 of v prime.
+
+00:45:26.810 --> 00:45:28.710 align:middle line:84%
+And then the name
+of the game here
+
+00:45:28.710 --> 00:45:30.460 align:middle line:84%
+is just to try to write
+out mathematically
+
+00:45:30.460 --> 00:45:34.620 align:middle line:84%
+what this means in terms
+of these functions here.
+
+00:45:34.620 --> 00:45:36.820 align:middle line:84%
+So it's very useful
+to contemplate
+
+00:45:36.820 --> 00:45:39.580 align:middle line:84%
+this particular
+alternative bid because we
+
+00:45:39.580 --> 00:45:41.240 align:middle line:90%
+can use this alternative bid.
+
+00:45:41.240 --> 00:45:44.420 align:middle line:84%
+We can express my utility from
+this alternative bid in terms
+
+00:45:44.420 --> 00:45:45.780 align:middle line:90%
+of these functions here.
+
+00:45:45.780 --> 00:45:47.480 align:middle line:90%
+And that's really the key step.
+
+00:45:47.480 --> 00:45:49.760 align:middle line:90%
+So let's come back over here.
+
+00:45:49.760 --> 00:46:06.660 align:middle line:90%
+
+
+00:46:06.660 --> 00:46:09.260 align:middle line:84%
+So I really want to emphasize
+everything we're going to do now
+
+00:46:09.260 --> 00:46:11.225 align:middle line:84%
+is just following from
+this simple observation.
+
+00:46:11.225 --> 00:46:13.600 align:middle line:84%
+So if there's any questions
+on this, I think this is key.
+
+00:46:13.600 --> 00:46:14.660 align:middle line:90%
+Yes, thank you.
+
+00:46:14.660 --> 00:46:17.940 align:middle line:84%
+AUDIENCE: So does that imply
+that for every item in the bid
+
+00:46:17.940 --> 00:46:21.373 align:middle line:84%
+set, there's some
+valuation that maps to it?
+
+00:46:21.373 --> 00:46:23.040 align:middle line:84%
+IAN BALL: That's a
+very subtle question.
+
+00:46:23.040 --> 00:46:23.998 align:middle line:90%
+It does not imply that.
+
+00:46:23.998 --> 00:46:28.202 align:middle line:90%
+
+
+00:46:28.202 --> 00:46:29.660 align:middle line:84%
+So I think you're
+basically asking,
+
+00:46:29.660 --> 00:46:31.400 align:middle line:90%
+are the bidding functions onto?
+
+00:46:31.400 --> 00:46:33.740 align:middle line:90%
+Are they subjective functions?
+
+00:46:33.740 --> 00:46:36.540 align:middle line:84%
+If they were onto, then these
+statements would be equivalent.
+
+00:46:36.540 --> 00:46:38.553 align:middle line:84%
+In general, the bidding
+function's not onto.
+
+00:46:38.553 --> 00:46:40.220 align:middle line:84%
+So it's still the
+case that this implies
+
+00:46:40.220 --> 00:46:41.760 align:middle line:90%
+this but not the converse.
+
+00:46:41.760 --> 00:46:44.580 align:middle line:84%
+So we're not using
+that assumption.
+
+00:46:44.580 --> 00:46:46.420 align:middle line:84%
+If that assumption is
+violated, then we're
+
+00:46:46.420 --> 00:46:47.700 align:middle line:84%
+actually throwing
+away information
+
+00:46:47.700 --> 00:46:49.492 align:middle line:84%
+because we're saying,
+we know that this bit
+
+00:46:49.492 --> 00:46:51.660 align:middle line:84%
+is better than every
+other bid, even bids
+
+00:46:51.660 --> 00:46:53.760 align:middle line:84%
+that no one ever
+chooses in equilibrium.
+
+00:46:53.760 --> 00:46:57.100 align:middle line:84%
+But in particular, we know
+this, so we're throwing away
+
+00:46:57.100 --> 00:46:58.640 align:middle line:90%
+information potentially.
+
+00:46:58.640 --> 00:47:00.428 align:middle line:84%
+We're not even
+considering-- it's true
+
+00:47:00.428 --> 00:47:02.720 align:middle line:84%
+that this bid is better than
+a bid that's never chosen,
+
+00:47:02.720 --> 00:47:04.600 align:middle line:84%
+but we don't even
+need to use that fact.
+
+00:47:04.600 --> 00:47:06.460 align:middle line:90%
+So we're not requiring that.
+
+00:47:06.460 --> 00:47:07.100 align:middle line:90%
+Yes.
+
+00:47:07.100 --> 00:47:11.580 align:middle line:84%
+AUDIENCE: So why can b1
+hat of v1 prime technically
+
+00:47:11.580 --> 00:47:14.880 align:middle line:84%
+just represent all other
+possible bidding strategies?
+
+00:47:14.880 --> 00:47:17.620 align:middle line:90%
+
+
+00:47:17.620 --> 00:47:19.100 align:middle line:90%
+IAN BALL: You said--
+
+00:47:19.100 --> 00:47:20.000 align:middle line:90%
+could you maybe--
+
+00:47:20.000 --> 00:47:21.580 align:middle line:90%
+I'm not sure if I quite follow.
+
+00:47:21.580 --> 00:47:23.740 align:middle line:84%
+AUDIENCE: Because there's
+infinite other bids.
+
+00:47:23.740 --> 00:47:24.698 align:middle line:90%
+IAN BALL: You're right.
+
+00:47:24.698 --> 00:47:28.660 align:middle line:84%
+So I think the key here is I'm
+just using this forward arrow.
+
+00:47:28.660 --> 00:47:30.023 align:middle line:90%
+I'm not saying that this--
+
+00:47:30.023 --> 00:47:32.440 align:middle line:84%
+that if this is true-- and
+this relates to this question--
+
+00:47:32.440 --> 00:47:33.660 align:middle line:84%
+I'm not saying if
+this is true, then
+
+00:47:33.660 --> 00:47:34.907 align:middle line:90%
+this must be in equilibrium.
+
+00:47:34.907 --> 00:47:36.240 align:middle line:90%
+I'm only going in one direction.
+
+00:47:36.240 --> 00:47:38.780 align:middle line:84%
+I'm saying, we know that
+this is an equilibrium,
+
+00:47:38.780 --> 00:47:40.780 align:middle line:84%
+and an implication
+of the fact that it's
+
+00:47:40.780 --> 00:47:43.080 align:middle line:84%
+in equilibrium, because
+it's equilibrium,
+
+00:47:43.080 --> 00:47:45.300 align:middle line:84%
+I'm better off
+bidding b hat of v1
+
+00:47:45.300 --> 00:47:47.940 align:middle line:90%
+than making any alternative bid.
+
+00:47:47.940 --> 00:47:50.500 align:middle line:84%
+So in particular, one
+implication of that is I
+
+00:47:50.500 --> 00:47:51.560 align:middle line:90%
+don't want to bid 5.
+
+00:47:51.560 --> 00:47:52.600 align:middle line:90%
+I don't a bid 3.
+
+00:47:52.600 --> 00:47:53.787 align:middle line:90%
+I don't want to bid this.
+
+00:47:53.787 --> 00:47:56.120 align:middle line:84%
+Maybe we're not considering
+all the other possible bids.
+
+00:47:56.120 --> 00:47:58.180 align:middle line:90%
+That's fine.
+
+00:47:58.180 --> 00:48:00.040 align:middle line:84%
+Maybe we're throwing
+away information here,
+
+00:48:00.040 --> 00:48:03.180 align:middle line:84%
+but it's certainly an
+implication of equilibrium
+
+00:48:03.180 --> 00:48:04.158 align:middle line:90%
+that this must hold.
+
+00:48:04.158 --> 00:48:06.200 align:middle line:84%
+AUDIENCE: When you say
+throwing away information,
+
+00:48:06.200 --> 00:48:08.660 align:middle line:90%
+what are you referring to?
+
+00:48:08.660 --> 00:48:11.780 align:middle line:84%
+IAN BALL: What I mean is the
+definition of equilibrium
+
+00:48:11.780 --> 00:48:13.820 align:middle line:84%
+tells a lot of
+things, and I'm only
+
+00:48:13.820 --> 00:48:16.700 align:middle line:84%
+using some logical
+implications of the definition
+
+00:48:16.700 --> 00:48:18.300 align:middle line:90%
+of equilibrium.
+
+00:48:18.300 --> 00:48:19.820 align:middle line:84%
+So it's like I
+have 10 equations,
+
+00:48:19.820 --> 00:48:21.460 align:middle line:90%
+and I'm only using nine of them.
+
+00:48:21.460 --> 00:48:24.240 align:middle line:84%
+And the 10th equation's true,
+but I'm just not focusing on it.
+
+00:48:24.240 --> 00:48:26.780 align:middle line:90%
+I'm not using that fact.
+
+00:48:26.780 --> 00:48:29.378 align:middle line:84%
+And maybe this
+all abstract stuff
+
+00:48:29.378 --> 00:48:31.420 align:middle line:84%
+makes more sense once we
+go through the argument.
+
+00:48:31.420 --> 00:48:35.645 align:middle line:84%
+AUDIENCE: So you're saying like
+bidding b1 hat v1 is optimal.
+
+00:48:35.645 --> 00:48:38.020 align:middle line:84%
+And there's other strategies
+that we're not comparing to.
+
+00:48:38.020 --> 00:48:39.900 align:middle line:90%
+We're just comparing two.
+
+00:48:39.900 --> 00:48:42.400 align:middle line:84%
+The bidding of b1 hat but
+with a different market.
+
+00:48:42.400 --> 00:48:45.380 align:middle line:84%
+IAN BALL: Exactly, so the
+fact that bidding b1 hat of v1
+
+00:48:45.380 --> 00:48:47.240 align:middle line:90%
+is optimal tells me a lot.
+
+00:48:47.240 --> 00:48:48.940 align:middle line:84%
+It tells me that
+bidding b1 hat of v1
+
+00:48:48.940 --> 00:48:52.020 align:middle line:84%
+is better than any other
+bid I could come up with.
+
+00:48:52.020 --> 00:48:55.780 align:middle line:84%
+But it's certainly better
+than these special bids,
+
+00:48:55.780 --> 00:48:57.520 align:middle line:84%
+and I'm only going to
+use that fact here.
+
+00:48:57.520 --> 00:48:59.280 align:middle line:84%
+Even though I know it's better
+than some other bits too,
+
+00:48:59.280 --> 00:49:00.280 align:middle line:90%
+I'm not going to worry--
+
+00:49:00.280 --> 00:49:02.300 align:middle line:84%
+I don't even need
+to use that fact.
+
+00:49:02.300 --> 00:49:06.360 align:middle line:84%
+OK, so now, as we
+said, not equivalent
+
+00:49:06.360 --> 00:49:09.303 align:middle line:84%
+but an implication of
+equilibrium is this observation.
+
+00:49:09.303 --> 00:49:11.220 align:middle line:84%
+And now we just want to
+write this observation
+
+00:49:11.220 --> 00:49:14.260 align:middle line:84%
+down mathematically
+using our notation here.
+
+00:49:14.260 --> 00:49:17.600 align:middle line:84%
+So what we want to say is,
+what is my expected utility
+
+00:49:17.600 --> 00:49:18.940 align:middle line:90%
+if I bid this?
+
+00:49:18.940 --> 00:49:20.800 align:middle line:84%
+What is my expected
+utility if I bid this?
+
+00:49:20.800 --> 00:49:22.967 align:middle line:84%
+And then we want to have
+an inequality between them.
+
+00:49:22.967 --> 00:49:25.070 align:middle line:90%
+So let's take the first.
+
+00:49:25.070 --> 00:49:32.410 align:middle line:84%
+So what is my utility
+from bidding b1 hat of v1?
+
+00:49:32.410 --> 00:49:35.310 align:middle line:90%
+
+
+00:49:35.310 --> 00:49:41.670 align:middle line:84%
+Well, it's going to be
+v1 times the probability
+
+00:49:41.670 --> 00:49:51.930 align:middle line:84%
+that I win minus my
+expected payment.
+
+00:49:51.930 --> 00:49:56.430 align:middle line:90%
+
+
+00:49:56.430 --> 00:49:57.770 align:middle line:90%
+This is what my utility is.
+
+00:49:57.770 --> 00:49:59.870 align:middle line:84%
+When I enter an auction,
+I say, well, this
+
+00:49:59.870 --> 00:50:01.550 align:middle line:90%
+is my probability of winning.
+
+00:50:01.550 --> 00:50:04.110 align:middle line:84%
+Whenever I win, I get my
+valuation for the good,
+
+00:50:04.110 --> 00:50:05.350 align:middle line:90%
+but then I have to pay.
+
+00:50:05.350 --> 00:50:07.510 align:middle line:84%
+Well, we'll just subtract
+my expected payment
+
+00:50:07.510 --> 00:50:10.310 align:middle line:84%
+because we're assuming here
+people are risk neutral.
+
+00:50:10.310 --> 00:50:13.710 align:middle line:84%
+So what is my probability of
+winning if I bid b1 hat of v1
+
+00:50:13.710 --> 00:50:15.010 align:middle line:90%
+using our notation over there?
+
+00:50:15.010 --> 00:50:22.070 align:middle line:90%
+
+
+00:50:22.070 --> 00:50:25.350 align:middle line:90%
+AUDIENCE: Just a few hat of 1.
+
+00:50:25.350 --> 00:50:26.830 align:middle line:90%
+IAN BALL: Of v1, right?
+
+00:50:26.830 --> 00:50:30.990 align:middle line:90%
+So this is q1 hat of v1.
+
+00:50:30.990 --> 00:50:33.666 align:middle line:84%
+And then what is my
+expected payment?
+
+00:50:33.666 --> 00:50:34.618 align:middle line:90%
+AUDIENCE: It would--
+
+00:50:34.618 --> 00:50:35.285 align:middle line:90%
+IAN BALL: Right.
+
+00:50:35.285 --> 00:50:40.190 align:middle line:90%
+
+
+00:50:40.190 --> 00:50:43.910 align:middle line:84%
+Now the tricky part,
+what if I instead bid--
+
+00:50:43.910 --> 00:50:45.710 align:middle line:84%
+I deviate, and
+instead of bidding
+
+00:50:45.710 --> 00:50:47.450 align:middle line:84%
+what I'm supposed to
+bid in equilibrium,
+
+00:50:47.450 --> 00:50:48.450 align:middle line:90%
+I make a different bid.
+
+00:50:48.450 --> 00:50:55.470 align:middle line:84%
+Specifically, I bid
+v1 hat of v1 prime.
+
+00:50:55.470 --> 00:50:58.810 align:middle line:84%
+Well, the crucial point
+is, what is my utility?
+
+00:50:58.810 --> 00:51:01.410 align:middle line:84%
+Well, first, I still
+have a v1 here.
+
+00:51:01.410 --> 00:51:02.770 align:middle line:90%
+Let's not get confused.
+
+00:51:02.770 --> 00:51:03.888 align:middle line:90%
+My value is still v1.
+
+00:51:03.888 --> 00:51:05.430 align:middle line:84%
+The fact that I'm
+bidding differently
+
+00:51:05.430 --> 00:51:07.250 align:middle line:84%
+doesn't change my
+value to v1 prime.
+
+00:51:07.250 --> 00:51:08.910 align:middle line:84%
+My value is still
+v1, so it's going
+
+00:51:08.910 --> 00:51:12.470 align:middle line:84%
+to be my value here, times,
+again, my probability of winning
+
+00:51:12.470 --> 00:51:16.190 align:middle line:90%
+minus my expected payment.
+
+00:51:16.190 --> 00:51:19.690 align:middle line:84%
+What is the probability of
+winning now going to be?
+
+00:51:19.690 --> 00:51:21.510 align:middle line:90%
+AUDIENCE: b1 hat v1 prime.
+
+00:51:21.510 --> 00:51:23.110 align:middle line:84%
+IAN BALL: Right,
+so I just plug in--
+
+00:51:23.110 --> 00:51:26.250 align:middle line:84%
+if I look carefully
+at this formula,
+
+00:51:26.250 --> 00:51:30.568 align:middle line:84%
+if I replace b1 hat of v1
+with b1 hat of v1 prime,
+
+00:51:30.568 --> 00:51:32.110 align:middle line:84%
+well, then that's
+just the definition
+
+00:51:32.110 --> 00:51:35.310 align:middle line:84%
+of this function
+evaluated at v1 prime.
+
+00:51:35.310 --> 00:51:45.910 align:middle line:84%
+So I'm going to get Q1
+hat v1 prime plus T1 hat.
+
+00:51:45.910 --> 00:51:46.810 align:middle line:90%
+And this makes sense.
+
+00:51:46.810 --> 00:51:48.060 align:middle line:90%
+What's the definition of this?
+
+00:51:48.060 --> 00:51:50.550 align:middle line:84%
+This tells me if I
+use bidding-- if I
+
+00:51:50.550 --> 00:51:53.070 align:middle line:84%
+use the bid b1 hat
+of v1 prime, what
+
+00:51:53.070 --> 00:51:56.270 align:middle line:90%
+is my probability of winning?
+
+00:51:56.270 --> 00:51:57.750 align:middle line:84%
+And the crucial
+thing going on here
+
+00:51:57.750 --> 00:51:59.630 align:middle line:84%
+is that my probability
+of winning only
+
+00:51:59.630 --> 00:52:01.090 align:middle line:90%
+depends on how much I bid.
+
+00:52:01.090 --> 00:52:02.930 align:middle line:84%
+It doesn't depend on
+my true valuation.
+
+00:52:02.930 --> 00:52:04.290 align:middle line:90%
+It just depends on what I bid.
+
+00:52:04.290 --> 00:52:07.230 align:middle line:84%
+So the v1 prime here is
+really reflecting my bid, not
+
+00:52:07.230 --> 00:52:09.710 align:middle line:90%
+my true valuation.
+
+00:52:09.710 --> 00:52:11.430 align:middle line:90%
+So now what do we know?
+
+00:52:11.430 --> 00:52:14.010 align:middle line:84%
+Well, we know this is greater
+than or equal to this.
+
+00:52:14.010 --> 00:52:17.060 align:middle line:84%
+And maybe I've interpreted
+things so much,
+
+00:52:17.060 --> 00:52:18.720 align:middle line:84%
+it's nicer to
+start a clean board
+
+00:52:18.720 --> 00:52:23.000 align:middle line:84%
+and just write down
+our inequality.
+
+00:52:23.000 --> 00:52:23.980 align:middle line:90%
+So what do we know?
+
+00:52:23.980 --> 00:52:34.040 align:middle line:90%
+
+
+00:52:34.040 --> 00:52:41.280 align:middle line:84%
+So what we know is that
+for all v1, v1 prime--
+
+00:52:41.280 --> 00:52:44.640 align:middle line:84%
+remember, the interpretation
+here is v1 is my true value.
+
+00:52:44.640 --> 00:52:49.200 align:middle line:84%
+v1 prime is the value that I
+pretend to have when I bid.
+
+00:52:49.200 --> 00:53:00.560 align:middle line:84%
+Well, we must have v1 Q1 hat
+of v1 T1 hat of v1 greater than
+
+00:53:00.560 --> 00:53:01.300 align:middle line:90%
+or equal to--
+
+00:53:01.300 --> 00:53:10.960 align:middle line:90%
+
+
+00:53:10.960 --> 00:53:13.140 align:middle line:84%
+so I've just brought
+that equation down here.
+
+00:53:13.140 --> 00:53:19.280 align:middle line:90%
+
+
+00:53:19.280 --> 00:53:22.480 align:middle line:84%
+And maybe it's easier
+if we say for all v1,
+
+00:53:22.480 --> 00:53:27.360 align:middle line:84%
+this holds for all v1 prime,
+just a slightly different
+
+00:53:27.360 --> 00:53:28.560 align:middle line:90%
+perspective.
+
+00:53:28.560 --> 00:53:34.120 align:middle line:90%
+
+
+00:53:34.120 --> 00:53:38.320 align:middle line:90%
+Well, what does this tell me?
+
+00:53:38.320 --> 00:53:41.480 align:middle line:84%
+Well, I have some function
+on the right side that
+
+00:53:41.480 --> 00:53:45.080 align:middle line:84%
+depends on v1 prime,
+but it's always smaller
+
+00:53:45.080 --> 00:53:47.960 align:middle line:90%
+than this left-hand side.
+
+00:53:47.960 --> 00:53:50.320 align:middle line:84%
+So in particular,
+what that tells
+
+00:53:50.320 --> 00:53:55.280 align:middle line:84%
+me is that the value
+of v1 prime that
+
+00:53:55.280 --> 00:53:59.000 align:middle line:84%
+maximizes this right-hand
+side must be V1 itself.
+
+00:53:59.000 --> 00:54:02.000 align:middle line:84%
+So that tells me that V1,
+let's use our arg max notation
+
+00:54:02.000 --> 00:54:07.820 align:middle line:84%
+is an element of the arg
+max over v1 prime of v1.
+
+00:54:07.820 --> 00:54:16.520 align:middle line:90%
+
+
+00:54:16.520 --> 00:54:17.860 align:middle line:90%
+In words, what is this saying?
+
+00:54:17.860 --> 00:54:19.960 align:middle line:84%
+It's saying if my
+true value is v1,
+
+00:54:19.960 --> 00:54:21.880 align:middle line:84%
+I could bid as if
+my valuation is
+
+00:54:21.880 --> 00:54:25.080 align:middle line:84%
+v1 prime for any other
+value of v1 prime.
+
+00:54:25.080 --> 00:54:28.200 align:middle line:84%
+But because we know that
+I'm playing an equilibrium,
+
+00:54:28.200 --> 00:54:31.440 align:middle line:84%
+the best thing for me to do
+is to bid as if I am myself,
+
+00:54:31.440 --> 00:54:34.680 align:middle line:84%
+to bid as if my value
+v1 prime is exactly v1,
+
+00:54:34.680 --> 00:54:36.700 align:middle line:84%
+and that's what this
+is telling us here.
+
+00:54:36.700 --> 00:54:40.280 align:middle line:90%
+
+
+00:54:40.280 --> 00:54:43.360 align:middle line:84%
+And now let's just compute
+the first-order condition.
+
+00:54:43.360 --> 00:54:47.503 align:middle line:84%
+So if v1 is a maximizer
+of this, then we
+
+00:54:47.503 --> 00:54:49.920 align:middle line:84%
+should be able to take the
+derivative of this with respect
+
+00:54:49.920 --> 00:54:53.700 align:middle line:84%
+to v1 prime, and then plug
+in v1 prime equals v1,
+
+00:54:53.700 --> 00:54:54.620 align:middle line:90%
+and we should get 0.
+
+00:54:54.620 --> 00:54:56.053 align:middle line:90%
+So let's do that.
+
+00:54:56.053 --> 00:54:58.220 align:middle line:84%
+So it's going to be a little
+tricky with the primes.
+
+00:54:58.220 --> 00:55:00.012 align:middle line:84%
+You have to interpret
+the primes carefully.
+
+00:55:00.012 --> 00:55:05.800 align:middle line:84%
+So this is v1 Q1 hat prime
+v1 prime minus T1 hat
+
+00:55:05.800 --> 00:55:07.680 align:middle line:90%
+prime v1 prime.
+
+00:55:07.680 --> 00:55:11.260 align:middle line:84%
+Evaluated at v1 prime
+equals v1, this should be 0.
+
+00:55:11.260 --> 00:55:15.240 align:middle line:90%
+
+
+00:55:15.240 --> 00:55:19.440 align:middle line:84%
+Sorry, the primes, this prime
+on the inside is just a symbol.
+
+00:55:19.440 --> 00:55:21.400 align:middle line:84%
+And this prime on the
+outside is a derivative.
+
+00:55:21.400 --> 00:55:24.400 align:middle line:84%
+Sorry, that can be a
+bit confusing here.
+
+00:55:24.400 --> 00:55:26.420 align:middle line:84%
+So you could call v1
+prime z if you wanted.
+
+00:55:26.420 --> 00:55:29.640 align:middle line:90%
+It wouldn't make a difference.
+
+00:55:29.640 --> 00:55:31.600 align:middle line:90%
+And what do we get?
+
+00:55:31.600 --> 00:55:35.920 align:middle line:90%
+We get v1 Q1 prime v1.
+
+00:55:35.920 --> 00:55:47.300 align:middle line:90%
+
+
+00:55:47.300 --> 00:55:48.860 align:middle line:90%
+Minus, sorry.
+
+00:55:48.860 --> 00:55:52.015 align:middle line:90%
+
+
+00:55:52.015 --> 00:55:54.640 align:middle line:84%
+So this equals 0, or I could say
+it implies that they're equal.
+
+00:55:54.640 --> 00:56:00.600 align:middle line:90%
+
+
+00:56:00.600 --> 00:56:02.640 align:middle line:90%
+Well, so a lot of work.
+
+00:56:02.640 --> 00:56:04.800 align:middle line:84%
+But now we've narrowed
+things down a lot.
+
+00:56:04.800 --> 00:56:07.770 align:middle line:84%
+I have a formula for the
+derivative of this expected
+
+00:56:07.770 --> 00:56:11.570 align:middle line:84%
+payment that I make in terms
+of my probability of getting
+
+00:56:11.570 --> 00:56:13.330 align:middle line:90%
+the good.
+
+00:56:13.330 --> 00:56:17.650 align:middle line:84%
+So now the trick is we're
+just going to integrate this.
+
+00:56:17.650 --> 00:56:21.490 align:middle line:84%
+So if this equals
+0, that tells me
+
+00:56:21.490 --> 00:56:24.730 align:middle line:84%
+that this derivative
+equals this.
+
+00:56:24.730 --> 00:56:27.035 align:middle line:84%
+So now we can just integrate
+this from v lower bar
+
+00:56:27.035 --> 00:56:27.910 align:middle line:90%
+and see what happens.
+
+00:56:27.910 --> 00:56:30.250 align:middle line:84%
+Actually, maybe I'll
+just do it right here.
+
+00:56:30.250 --> 00:56:32.530 align:middle line:90%
+So what does this tell me?
+
+00:56:32.530 --> 00:56:41.010 align:middle line:84%
+It tells me that T1 hat
+of V1 is equal to T1
+
+00:56:41.010 --> 00:56:46.690 align:middle line:84%
+hat of v lower bar plus an
+integral from v lower bar
+
+00:56:46.690 --> 00:56:50.590 align:middle line:90%
+to v1 of x--
+
+00:56:50.590 --> 00:56:56.510 align:middle line:90%
+I'll change to x.
+
+00:56:56.510 --> 00:57:01.610 align:middle line:90%
+
+
+00:57:01.610 --> 00:57:03.390 align:middle line:84%
+Again, when we
+start integrating,
+
+00:57:03.390 --> 00:57:05.150 align:middle line:90%
+you have to be careful.
+
+00:57:05.150 --> 00:57:08.323 align:middle line:84%
+I've used a new dummy
+variable here, x.
+
+00:57:08.323 --> 00:57:09.490 align:middle line:90%
+And there's a prime missing.
+
+00:57:09.490 --> 00:57:23.010 align:middle line:90%
+
+
+00:57:23.010 --> 00:57:27.590 align:middle line:84%
+OK, so this is going to be
+the key revenue formula.
+
+00:57:27.590 --> 00:57:32.170 align:middle line:90%
+
+
+00:57:32.170 --> 00:57:36.222 align:middle line:90%
+Now, why is this so powerful?
+
+00:57:36.222 --> 00:57:37.430 align:middle line:90%
+I think we want to step back.
+
+00:57:37.430 --> 00:57:40.013 align:middle line:84%
+And at first, you might say, OK,
+we just did a sea of algebra.
+
+00:57:40.013 --> 00:57:42.210 align:middle line:90%
+What's going on?
+
+00:57:42.210 --> 00:57:44.450 align:middle line:90%
+Well, what is this giving me?
+
+00:57:44.450 --> 00:57:49.850 align:middle line:84%
+It's giving me a formula for,
+if I'm player 1 and my valuation
+
+00:57:49.850 --> 00:57:53.330 align:middle line:84%
+is v1, and we're
+considering an equilibrium
+
+00:57:53.330 --> 00:57:54.930 align:middle line:90%
+of this generalized auction.
+
+00:57:54.930 --> 00:57:58.330 align:middle line:84%
+It's giving me a formula
+for the expected payment
+
+00:57:58.330 --> 00:57:59.930 align:middle line:90%
+that I make in this auction.
+
+00:57:59.930 --> 00:58:04.100 align:middle line:84%
+But let's understand,
+in general, you
+
+00:58:04.100 --> 00:58:05.850 align:middle line:84%
+might think that my
+expected payment would
+
+00:58:05.850 --> 00:58:07.290 align:middle line:90%
+depend on a lot of things.
+
+00:58:07.290 --> 00:58:09.207 align:middle line:84%
+You might think it would
+depend on the details
+
+00:58:09.207 --> 00:58:11.490 align:middle line:84%
+of the auction and all
+these complicated things.
+
+00:58:11.490 --> 00:58:14.410 align:middle line:84%
+But if we look here,
+what is it depending on?
+
+00:58:14.410 --> 00:58:17.450 align:middle line:90%
+It's depending on two things.
+
+00:58:17.450 --> 00:58:19.670 align:middle line:84%
+Can someone interpret
+these two terms?
+
+00:58:19.670 --> 00:58:23.410 align:middle line:84%
+These are the only things that
+appear on the right-hand side.
+
+00:58:23.410 --> 00:58:26.650 align:middle line:90%
+So what is this first term?
+
+00:58:26.650 --> 00:58:30.610 align:middle line:84%
+AUDIENCE: The base cost
+of beginning the auction.
+
+00:58:30.610 --> 00:58:33.810 align:middle line:84%
+IAN BALL: Yeah, so it's just the
+expected payment that the lowest
+
+00:58:33.810 --> 00:58:37.190 align:middle line:90%
+possible valuation person pays.
+
+00:58:37.190 --> 00:58:39.690 align:middle line:84%
+That's the one thing, and I
+think you could interpret it
+
+00:58:39.690 --> 00:58:41.410 align:middle line:90%
+maybe that way.
+
+00:58:41.410 --> 00:58:44.270 align:middle line:90%
+And then what is Q1 prime--
+
+00:58:44.270 --> 00:58:46.990 align:middle line:84%
+I mean, the prime, let's just
+focus on the function Q1 hat.
+
+00:58:46.990 --> 00:58:49.130 align:middle line:90%
+What is this function Q1 hat?
+
+00:58:49.130 --> 00:58:52.015 align:middle line:84%
+Can we interpret--
+what does it mean?
+
+00:58:52.015 --> 00:58:52.890 align:middle line:90%
+Yeah, maybe, I think.
+
+00:58:52.890 --> 00:58:53.170 align:middle line:90%
+Yeah.
+
+00:58:53.170 --> 00:58:54.753 align:middle line:84%
+AUDIENCE: It's the
+marginal likelihood
+
+00:58:54.753 --> 00:58:58.490 align:middle line:84%
+of winning for each
+infinitesimal change
+
+00:58:58.490 --> 00:59:01.327 align:middle line:90%
+in your valuation.
+
+00:59:01.327 --> 00:59:03.660 align:middle line:84%
+IAN BALL: I think the integral
+is making you think about
+
+00:59:03.660 --> 00:59:05.917 align:middle line:84%
+infinitesimal stuff,
+but really, it's-- oh,
+
+00:59:05.917 --> 00:59:07.500 align:middle line:84%
+you're taking the
+derivative, exactly.
+
+00:59:07.500 --> 00:59:08.220 align:middle line:90%
+Sorry, yes.
+
+00:59:08.220 --> 00:59:11.082 align:middle line:84%
+So sorry, you said, yes, that's
+the derivative of it, exactly.
+
+00:59:11.082 --> 00:59:12.540 align:middle line:84%
+And if we take the
+derivative, it's
+
+00:59:12.540 --> 00:59:15.370 align:middle line:84%
+just my probability
+of winning, exactly.
+
+00:59:15.370 --> 00:59:17.120 align:middle line:84%
+And this is the
+infinitesimal, sorry, yes.
+
+00:59:17.120 --> 00:59:19.420 align:middle line:90%
+Exactly, I forgot, yeah.
+
+00:59:19.420 --> 00:59:23.700 align:middle line:84%
+OK, so what it tells us is
+that a lot of the details
+
+00:59:23.700 --> 00:59:25.680 align:middle line:90%
+of the auction don't matter.
+
+00:59:25.680 --> 00:59:29.280 align:middle line:84%
+I mean, whether we're bidding
+what we name our bids--
+
+00:59:29.280 --> 00:59:31.920 align:middle line:84%
+notice the sets B1 through
+Bn don't even appear here.
+
+00:59:31.920 --> 00:59:34.180 align:middle line:84%
+All that matters
+is the probability
+
+00:59:34.180 --> 00:59:36.980 align:middle line:84%
+that I win the good in
+equilibrium and the amount
+
+00:59:36.980 --> 00:59:39.860 align:middle line:84%
+I pay if I'm the
+lowest-value person.
+
+00:59:39.860 --> 00:59:44.500 align:middle line:84%
+So we immediately see that only
+a few details of an auction
+
+00:59:44.500 --> 00:59:48.380 align:middle line:84%
+equilibrium pin down or uniquely
+determine the expected payment
+
+00:59:48.380 --> 00:59:49.660 align:middle line:90%
+that everyone makes.
+
+00:59:49.660 --> 00:59:52.720 align:middle line:90%
+So maybe I'll come over here.
+
+00:59:52.720 --> 01:00:12.220 align:middle line:90%
+
+
+01:00:12.220 --> 01:00:14.220 align:middle line:90%
+So what's the implication?
+
+01:00:14.220 --> 01:00:19.720 align:middle line:90%
+
+
+01:00:19.720 --> 01:00:30.420 align:middle line:84%
+That the expected
+payment by, say,
+
+01:00:30.420 --> 01:00:43.660 align:middle line:84%
+bidder 1 when the valuation
+is v1 depends only on--
+
+01:00:43.660 --> 01:00:51.620 align:middle line:84%
+well, T1 hat v lower bar,
+which is the expected payment
+
+01:00:51.620 --> 01:01:01.740 align:middle line:90%
+of the lowest valuation--
+
+01:01:01.740 --> 01:01:03.340 align:middle line:84%
+more precisely, the
+expected payment
+
+01:01:03.340 --> 01:01:06.500 align:middle line:84%
+that bidder 1 makes when
+her valuation is the lowest
+
+01:01:06.500 --> 01:01:08.580 align:middle line:90%
+possible valuation.
+
+01:01:08.580 --> 01:01:12.500 align:middle line:84%
+And we had the derivative
+here, but if it
+
+01:01:12.500 --> 01:01:14.980 align:middle line:84%
+depends on the derivative
+of Q1 hat, well,
+
+01:01:14.980 --> 01:01:16.400 align:middle line:90%
+it also depends on Q1 hat.
+
+01:01:16.400 --> 01:01:21.420 align:middle line:84%
+So it's a bit cleaner to
+say just depends on Q1 hat--
+
+01:01:21.420 --> 01:01:29.800 align:middle line:84%
+this function Q1 hat, which
+is the win probability.
+
+01:01:29.800 --> 01:01:33.860 align:middle line:90%
+
+
+01:01:33.860 --> 01:01:35.160 align:middle line:90%
+And this is an entire function.
+
+01:01:35.160 --> 01:01:38.040 align:middle line:84%
+So it's the win probability
+of every valuation.
+
+01:01:38.040 --> 01:01:47.420 align:middle line:90%
+
+
+01:01:47.420 --> 01:01:50.780 align:middle line:84%
+But the point is, in a lot
+of different equilibria
+
+01:01:50.780 --> 01:01:53.340 align:middle line:84%
+of different auction
+formats, these two values
+
+01:01:53.340 --> 01:01:55.850 align:middle line:84%
+take very-- these take
+very special values.
+
+01:01:55.850 --> 01:01:59.110 align:middle line:84%
+So in many equilibria, in
+many auctions that we've
+
+01:01:59.110 --> 01:02:01.870 align:middle line:90%
+looked at so far, what is--
+
+01:02:01.870 --> 01:02:03.170 align:middle line:90%
+so I'll just say often.
+
+01:02:03.170 --> 01:02:06.270 align:middle line:90%
+
+
+01:02:06.270 --> 01:02:14.350 align:middle line:84%
+Well, intuitively, what do
+you think T1 hat of v1 lower
+
+01:02:14.350 --> 01:02:16.570 align:middle line:90%
+bar is often going to be?
+
+01:02:16.570 --> 01:02:17.150 align:middle line:90%
+AUDIENCE: 0.
+
+01:02:17.150 --> 01:02:19.550 align:middle line:84%
+IAN BALL: 0 because,
+in most auctions,
+
+01:02:19.550 --> 01:02:22.470 align:middle line:84%
+if you have the lowest possible
+valuation for the item,
+
+01:02:22.470 --> 01:02:25.755 align:middle line:84%
+in most equilibria, well,
+you're never going to win.
+
+01:02:25.755 --> 01:02:27.130 align:middle line:84%
+And if you're
+never going to win,
+
+01:02:27.130 --> 01:02:28.590 align:middle line:90%
+you don't want to pay anything.
+
+01:02:28.590 --> 01:02:32.750 align:middle line:84%
+So often, auction equilibria
+have this property.
+
+01:02:32.750 --> 01:02:36.150 align:middle line:84%
+And now maybe this
+is a more subtle one.
+
+01:02:36.150 --> 01:02:38.910 align:middle line:90%
+What about Q1 hat?
+
+01:02:38.910 --> 01:02:42.190 align:middle line:90%
+Maybe I'll write Q1 hat of v1?
+
+01:02:42.190 --> 01:02:44.170 align:middle line:84%
+Well, in a lot of
+auction equilibria
+
+01:02:44.170 --> 01:02:48.670 align:middle line:84%
+we've looked at, which
+bidder wins the item?
+
+01:02:48.670 --> 01:02:49.690 align:middle line:90%
+It's the highest bidder.
+
+01:02:49.690 --> 01:02:51.470 align:middle line:84%
+But another way of
+saying it is it's
+
+01:02:51.470 --> 01:02:53.220 align:middle line:84%
+the bidder who bids
+the most, that's true.
+
+01:02:53.220 --> 01:02:56.710 align:middle line:84%
+But it's also the bidder whose
+valuation is the highest.
+
+01:02:56.710 --> 01:02:58.930 align:middle line:84%
+So often, when
+auctions work well,
+
+01:02:58.930 --> 01:03:01.870 align:middle line:84%
+we might think that an
+outcome of the auction
+
+01:03:01.870 --> 01:03:05.270 align:middle line:84%
+is that the bidder who values
+the item most gets the item.
+
+01:03:05.270 --> 01:03:08.350 align:middle line:84%
+But if the bidder who values
+the item most gets the item,
+
+01:03:08.350 --> 01:03:15.230 align:middle line:84%
+then what is Q hat
+1 of v1 going to be?
+
+01:03:15.230 --> 01:03:16.590 align:middle line:90%
+Well-- Yeah.
+
+01:03:16.590 --> 01:03:19.150 align:middle line:90%
+AUDIENCE: Or as an expectation--
+
+01:03:19.150 --> 01:03:20.530 align:middle line:90%
+it will either be 0 or 1.
+
+01:03:20.530 --> 01:03:22.190 align:middle line:84%
+So it's a kind of average
+of those probabilities.
+
+01:03:22.190 --> 01:03:23.530 align:middle line:84%
+IAN BALL: Its an
+expectation between 0 and 1,
+
+01:03:23.530 --> 01:03:25.613 align:middle line:84%
+so it's going to be a
+probability between 0 and 1.
+
+01:03:25.613 --> 01:03:27.470 align:middle line:90%
+Yeah, that's true.
+
+01:03:27.470 --> 01:03:28.650 align:middle line:90%
+Can we say more about it?
+
+01:03:28.650 --> 01:03:30.790 align:middle line:90%
+Yeah.
+
+01:03:30.790 --> 01:03:32.990 align:middle line:84%
+AUDIENCE: Maybe, but if
+there are n other players,
+
+01:03:32.990 --> 01:03:35.395 align:middle line:84%
+then would be v1 to
+the power of n minus 1.
+
+01:03:35.395 --> 01:03:36.770 align:middle line:84%
+IAN BALL: In the
+uniform example,
+
+01:03:36.770 --> 01:03:38.010 align:middle line:90%
+that's exactly what it would be.
+
+01:03:38.010 --> 01:03:39.510 align:middle line:84%
+But more generally,
+maybe let's just
+
+01:03:39.510 --> 01:03:41.790 align:middle line:84%
+write it would be the
+probability that everyone else's
+
+01:03:41.790 --> 01:03:43.517 align:middle line:84%
+value is below v1
+because if it goes
+
+01:03:43.517 --> 01:03:45.350 align:middle line:84%
+to the bidder with the
+highest value, what's
+
+01:03:45.350 --> 01:03:46.990 align:middle line:84%
+the probability that
+bidder 1 gets it
+
+01:03:46.990 --> 01:03:48.090 align:middle line:90%
+when the valuation is v1?
+
+01:03:48.090 --> 01:03:49.715 align:middle line:84%
+It's the probability
+that everyone else
+
+01:03:49.715 --> 01:03:50.650 align:middle line:90%
+is value is below v1.
+
+01:03:50.650 --> 01:03:57.750 align:middle line:84%
+So it's the probability that
+the max of j not equal to 1 vj
+
+01:03:57.750 --> 01:04:00.230 align:middle line:90%
+is less than or equal to v1.
+
+01:04:00.230 --> 01:04:02.870 align:middle line:84%
+And we actually have
+notation for this.
+
+01:04:02.870 --> 01:04:06.050 align:middle line:84%
+In the symmetric case,
+what is the notation?
+
+01:04:06.050 --> 01:04:06.803 align:middle line:90%
+Yeah.
+
+01:04:06.803 --> 01:04:07.470 align:middle line:90%
+AUDIENCE: Big G.
+
+01:04:07.470 --> 01:04:08.530 align:middle line:90%
+IAN BALL: Big G, right?
+
+01:04:08.530 --> 01:04:10.740 align:middle line:90%
+So this is also--
+
+01:04:10.740 --> 01:04:13.830 align:middle line:90%
+I'll write up here, big G of v1.
+
+01:04:13.830 --> 01:04:17.590 align:middle line:90%
+
+
+01:04:17.590 --> 01:04:20.070 align:middle line:90%
+So we often see that this holds.
+
+01:04:20.070 --> 01:04:24.310 align:middle line:84%
+"Often" is in quotes, but
+what we see is that these tend
+
+01:04:24.310 --> 01:04:24.810 align:middle line:90%
+to happen.
+
+01:04:24.810 --> 01:04:27.910 align:middle line:84%
+And if that happens, let's
+plug into a formula over here.
+
+01:04:27.910 --> 01:04:42.750 align:middle line:84%
+So under these conditions,
+what does T1 hat of v1 give us?
+
+01:04:42.750 --> 01:04:48.050 align:middle line:84%
+Well, what is this first
+term under those conditions?
+
+01:04:48.050 --> 01:04:48.550 align:middle line:90%
+AUDIENCE: 0.
+
+01:04:48.550 --> 01:04:50.870 align:middle line:84%
+IAN BALL: 0, OK, so
+we can forget that.
+
+01:04:50.870 --> 01:04:53.690 align:middle line:90%
+Q1 hat 1 of x is what?
+
+01:04:53.690 --> 01:04:56.950 align:middle line:90%
+
+
+01:04:56.950 --> 01:04:59.470 align:middle line:90%
+AUDIENCE: Small g of x.
+
+01:04:59.470 --> 01:05:01.227 align:middle line:84%
+IAN BALL: Right,
+so Q1 hat is big G.
+
+01:05:01.227 --> 01:05:02.810 align:middle line:84%
+And then, when we
+take the derivative,
+
+01:05:02.810 --> 01:05:09.310 align:middle line:84%
+we get small G. So what we get
+is the integral from v lower bar
+
+01:05:09.310 --> 01:05:15.070 align:middle line:90%
+to v1 of x g of x dx.
+
+01:05:15.070 --> 01:05:17.550 align:middle line:90%
+Does this look familiar?
+
+01:05:17.550 --> 01:05:19.750 align:middle line:84%
+This is exactly
+the formula we had.
+
+01:05:19.750 --> 01:05:21.850 align:middle line:84%
+So now we understand
+where it comes from.
+
+01:05:21.850 --> 01:05:24.830 align:middle line:84%
+So this is not a special
+property of first-price auctions
+
+01:05:24.830 --> 01:05:26.090 align:middle line:90%
+or second-price auctions.
+
+01:05:26.090 --> 01:05:28.790 align:middle line:84%
+Now we understand exactly
+when this is going to hold.
+
+01:05:28.790 --> 01:05:31.870 align:middle line:84%
+This is going to hold in any
+equilibrium of any auction that
+
+01:05:31.870 --> 01:05:34.230 align:middle line:90%
+satisfies these two properties.
+
+01:05:34.230 --> 01:05:39.630 align:middle line:84%
+Whenever my value is the lowest
+possible value, I pay nothing.
+
+01:05:39.630 --> 01:05:41.230 align:middle line:90%
+That's the condition here.
+
+01:05:41.230 --> 01:05:43.790 align:middle line:84%
+And if the good is
+always allocated
+
+01:05:43.790 --> 01:05:46.230 align:middle line:84%
+to the bidder with the
+highest valuation--
+
+01:05:46.230 --> 01:05:48.272 align:middle line:84%
+now, how that happens
+is going to depend
+
+01:05:48.272 --> 01:05:50.480 align:middle line:84%
+on the details of the
+equilibrium, what the bids are.
+
+01:05:50.480 --> 01:05:52.753 align:middle line:84%
+But as long as the
+auction has that property,
+
+01:05:52.753 --> 01:05:54.920 align:middle line:84%
+then the expected payments
+are going to be the same.
+
+01:05:54.920 --> 01:05:57.600 align:middle line:84%
+They're exactly going
+to take this form.
+
+01:05:57.600 --> 01:05:59.540 align:middle line:84%
+So indeed, it wasn't
+a coincidence.
+
+01:05:59.540 --> 01:06:01.960 align:middle line:84%
+It wasn't just something about
+the first- and second-price
+
+01:06:01.960 --> 01:06:02.660 align:middle line:90%
+auction.
+
+01:06:02.660 --> 01:06:03.980 align:middle line:90%
+This is a very general fact.
+
+01:06:03.980 --> 01:06:07.080 align:middle line:84%
+So I think it's
+good to understand--
+
+01:06:07.080 --> 01:06:08.280 align:middle line:90%
+I think sometimes when--
+
+01:06:08.280 --> 01:06:09.760 align:middle line:84%
+I should say exactly
+how it's done
+
+01:06:09.760 --> 01:06:11.480 align:middle line:84%
+in the notes-- revenue
+equivalents can be
+
+01:06:11.480 --> 01:06:13.317 align:middle line:90%
+stated in two different ways.
+
+01:06:13.317 --> 01:06:15.400 align:middle line:84%
+Sometimes people say only
+revenue equivalence only
+
+01:06:15.400 --> 01:06:16.692 align:middle line:90%
+holds under certain conditions.
+
+01:06:16.692 --> 01:06:17.640 align:middle line:90%
+Let's understand.
+
+01:06:17.640 --> 01:06:19.280 align:middle line:90%
+This formula always holds--
+
+01:06:19.280 --> 01:06:20.580 align:middle line:90%
+or always.
+
+01:06:20.580 --> 01:06:22.760 align:middle line:84%
+This formula holds
+quite generally,
+
+01:06:22.760 --> 01:06:25.400 align:middle line:84%
+but it reduces to
+this special form
+
+01:06:25.400 --> 01:06:26.980 align:middle line:90%
+under the additional conditions.
+
+01:06:26.980 --> 01:06:29.160 align:middle line:84%
+So you can still apply
+this formula to an auction
+
+01:06:29.160 --> 01:06:31.120 align:middle line:84%
+where the good isn't
+always allocated
+
+01:06:31.120 --> 01:06:33.300 align:middle line:84%
+to the person with
+the highest valuation
+
+01:06:33.300 --> 01:06:36.220 align:middle line:84%
+or where the lowest-valuation
+person pays a positive amount.
+
+01:06:36.220 --> 01:06:39.240 align:middle line:84%
+This formula still holds,
+but it reduces and simplifies
+
+01:06:39.240 --> 01:06:40.560 align:middle line:90%
+under those further conditions.
+
+01:06:40.560 --> 01:06:41.740 align:middle line:90%
+Yes.
+
+01:06:41.740 --> 01:06:43.240 align:middle line:84%
+AUDIENCE: Could you
+revisit the step
+
+01:06:43.240 --> 01:06:45.400 align:middle line:84%
+of how we went through
+taking the derivative
+
+01:06:45.400 --> 01:06:47.217 align:middle line:90%
+of our v1 equation?
+
+01:06:47.217 --> 01:06:47.800 align:middle line:90%
+IAN BALL: Yes.
+
+01:06:47.800 --> 01:06:49.717 align:middle line:84%
+AUDIENCE: --and getting
+to the revenue format?
+
+01:06:49.717 --> 01:06:52.480 align:middle line:84%
+IAN BALL: Yes, so
+from here to there?
+
+01:06:52.480 --> 01:06:56.040 align:middle line:84%
+OK, so you're good
+up to this point?
+
+01:06:56.040 --> 01:06:58.020 align:middle line:90%
+OK, so we're at this point.
+
+01:06:58.020 --> 01:07:00.860 align:middle line:84%
+And it's a little spread
+out, but this is 0 over here.
+
+01:07:00.860 --> 01:07:10.680 align:middle line:84%
+So the 0 over here tells me
+that v1 times q1 hat prime of v1
+
+01:07:10.680 --> 01:07:13.480 align:middle line:90%
+equals T1 hat prime of v1.
+
+01:07:13.480 --> 01:07:16.440 align:middle line:84%
+And now, yeah, I think the way
+I changed variables is tricky.
+
+01:07:16.440 --> 01:07:17.960 align:middle line:84%
+I think the best
+thing to do would
+
+01:07:17.960 --> 01:07:21.960 align:middle line:84%
+be wherever you see a
+v1, let's just put an x.
+
+01:07:21.960 --> 01:07:26.960 align:middle line:84%
+So this tells me x q1 prime
+of x equals T1 prime of x.
+
+01:07:26.960 --> 01:07:28.960 align:middle line:84%
+Now I'm going to
+integrate both sides
+
+01:07:28.960 --> 01:07:32.960 align:middle line:84%
+from x equals v lower
+bar to x equals v1.
+
+01:07:32.960 --> 01:07:38.760 align:middle line:84%
+So when I integrate
+the derivative of T1
+
+01:07:38.760 --> 01:07:44.480 align:middle line:84%
+from v lower bar to v1, I
+just get t hat of v1 minus t
+
+01:07:44.480 --> 01:07:45.560 align:middle line:90%
+hat of v lower bar.
+
+01:07:45.560 --> 01:07:48.240 align:middle line:84%
+So you could think of that
+coming to the left-hand side.
+
+01:07:48.240 --> 01:07:52.568 align:middle line:84%
+And then, when I integrate
+this, well, I exactly get this.
+
+01:07:52.568 --> 01:07:53.860 align:middle line:90%
+AUDIENCE: OK, that makes sense.
+
+01:07:53.860 --> 01:07:54.120 align:middle line:90%
+IAN BALL: Clear?
+
+01:07:54.120 --> 01:07:54.460 align:middle line:90%
+OK.
+
+01:07:54.460 --> 01:07:55.210 align:middle line:90%
+Thanks for asking.
+
+01:07:55.210 --> 01:07:56.880 align:middle line:90%
+Any other questions?
+
+01:07:56.880 --> 01:07:58.600 align:middle line:90%
+So yeah, it was tricky.
+
+01:07:58.600 --> 01:08:01.860 align:middle line:84%
+I used v1 here, but then v1
+becomes my dummy variable x.
+
+01:08:01.860 --> 01:08:03.140 align:middle line:90%
+And then I integrate up to v1.
+
+01:08:03.140 --> 01:08:06.360 align:middle line:90%
+
+
+01:08:06.360 --> 01:08:08.360 align:middle line:90%
+Any other questions?
+
+01:08:08.360 --> 01:08:10.440 align:middle line:84%
+So you might say, OK,
+this is a nice theory,
+
+01:08:10.440 --> 01:08:12.322 align:middle line:90%
+but how can we ever use this?
+
+01:08:12.322 --> 01:08:14.280 align:middle line:84%
+Well, it turns out this
+can be a convenient way
+
+01:08:14.280 --> 01:08:17.279 align:middle line:84%
+to solve for
+equilibria in auctions.
+
+01:08:17.279 --> 01:08:19.840 align:middle line:90%
+So let's go over a mini--
+
+01:08:19.840 --> 01:08:21.700 align:middle line:84%
+an application of
+revenue equivalence.
+
+01:08:21.700 --> 01:08:24.880 align:middle line:90%
+
+
+01:08:24.880 --> 01:08:27.120 align:middle line:84%
+Maybe I'll call it RET, an
+application of the Revenue
+
+01:08:27.120 --> 01:08:30.000 align:middle line:90%
+Equivalence Theorem.
+
+01:08:30.000 --> 01:08:31.380 align:middle line:90%
+Let's look at all-pay auction.
+
+01:08:31.380 --> 01:08:37.840 align:middle line:84%
+So let's do our simple case
+where we have just two bidders,
+
+01:08:37.840 --> 01:08:40.920 align:middle line:90%
+v1 and v2.
+
+01:08:40.920 --> 01:08:43.189 align:middle line:84%
+And they're in 0, 1,
+and they're uniform.
+
+01:08:43.189 --> 01:08:50.330 align:middle line:90%
+
+
+01:08:50.330 --> 01:08:52.675 align:middle line:84%
+And now, instead of considering
+the first-price auction
+
+01:08:52.675 --> 01:08:55.050 align:middle line:84%
+or the second-price auction,
+let's consider what's called
+
+01:08:55.050 --> 01:08:58.090 align:middle line:90%
+an All-Pay Auction, APA.
+
+01:08:58.090 --> 01:09:01.010 align:middle line:84%
+So in an all-pay auction,
+the allocation rule
+
+01:09:01.010 --> 01:09:03.270 align:middle line:84%
+is the same as the first-
+and second-price auction.
+
+01:09:03.270 --> 01:09:06.689 align:middle line:84%
+We allocate the good
+to the highest bidder.
+
+01:09:06.689 --> 01:09:10.510 align:middle line:84%
+So we allocate to
+highest bidder.
+
+01:09:10.510 --> 01:09:16.210 align:middle line:90%
+
+
+01:09:16.210 --> 01:09:19.350 align:middle line:84%
+But everyone has to pay their
+bids, whether they win or lose.
+
+01:09:19.350 --> 01:09:28.457 align:middle line:90%
+
+
+01:09:28.457 --> 01:09:30.290 align:middle line:84%
+So I think it should
+be quite intuitive here
+
+01:09:30.290 --> 01:09:32.649 align:middle line:84%
+that you don't want to bid
+very much in this auction
+
+01:09:32.649 --> 01:09:35.609 align:middle line:84%
+because you know you have to pay
+your bid whether or not you win.
+
+01:09:35.609 --> 01:09:40.850 align:middle line:84%
+So intuitively,
+people will bid less.
+
+01:09:40.850 --> 01:09:43.390 align:middle line:90%
+But we might guess--
+
+01:09:43.390 --> 01:09:46.410 align:middle line:90%
+
+
+01:09:46.410 --> 01:09:53.323 align:middle line:84%
+so let's guess that there's
+a symmetric equilibrium
+
+01:09:53.323 --> 01:09:53.990 align:middle line:90%
+of this auction.
+
+01:09:53.990 --> 01:09:57.050 align:middle line:84%
+Or let's look for a symmetric
+equilibrium of this auction.
+
+01:09:57.050 --> 01:09:58.590 align:middle line:90%
+So a symmetric equilibrium.
+
+01:09:58.590 --> 01:10:04.930 align:middle line:90%
+
+
+01:10:04.930 --> 01:10:06.770 align:middle line:84%
+Remember, a
+symmetric equilibrium
+
+01:10:06.770 --> 01:10:09.510 align:middle line:84%
+means both players are using
+the same bidding function.
+
+01:10:09.510 --> 01:10:11.490 align:middle line:84%
+So a symmetric
+equilibrium means we're
+
+01:10:11.490 --> 01:10:20.250 align:middle line:84%
+looking for a function beta from
+0, 1 to maybe 0 to infinity.
+
+01:10:20.250 --> 01:10:22.450 align:middle line:84%
+So we're looking for a
+symmetric equilibrium
+
+01:10:22.450 --> 01:10:25.410 align:middle line:84%
+where both players follow the
+bidding strategy beta that
+
+01:10:25.410 --> 01:10:27.290 align:middle line:84%
+says, if my valuation
+is this, I'm going
+
+01:10:27.290 --> 01:10:29.690 align:middle line:90%
+to bid beta of my valuation.
+
+01:10:29.690 --> 01:10:32.610 align:middle line:84%
+So this is what we're
+trying to solve for.
+
+01:10:32.610 --> 01:10:33.870 align:middle line:90%
+I'll go over here.
+
+01:10:33.870 --> 01:10:47.770 align:middle line:90%
+
+
+01:10:47.770 --> 01:10:50.138 align:middle line:84%
+And we're going to guess
+a symmetric equilibrium,
+
+01:10:50.138 --> 01:10:51.430 align:middle line:90%
+but with a few more properties.
+
+01:10:51.430 --> 01:10:53.805 align:middle line:84%
+I think we're going to guess
+that there's an equilibrium,
+
+01:10:53.805 --> 01:10:58.470 align:middle line:84%
+and also, beta of 0 equals 0,
+and beta is strictly increasing.
+
+01:10:58.470 --> 01:11:03.370 align:middle line:90%
+
+
+01:11:03.370 --> 01:11:06.450 align:middle line:84%
+These seem pretty
+reasonable guesses.
+
+01:11:06.450 --> 01:11:09.150 align:middle line:84%
+So we think, because the
+environment's symmetric,
+
+01:11:09.150 --> 01:11:11.410 align:middle line:84%
+maybe people use symmetric
+bidding functions.
+
+01:11:11.410 --> 01:11:14.330 align:middle line:84%
+It seems to make sense that
+if your value is higher,
+
+01:11:14.330 --> 01:11:15.450 align:middle line:90%
+you should bid more.
+
+01:11:15.450 --> 01:11:16.730 align:middle line:90%
+That makes sense.
+
+01:11:16.730 --> 01:11:20.070 align:middle line:84%
+And why do we expect
+beta of 0 to be 0?
+
+01:11:20.070 --> 01:11:23.370 align:middle line:90%
+
+
+01:11:23.370 --> 01:11:23.890 align:middle line:90%
+Yeah.
+
+01:11:23.890 --> 01:11:26.090 align:middle line:84%
+AUDIENCE: You wouldn't want
+to bid anything positive
+
+01:11:26.090 --> 01:11:28.022 align:middle line:84%
+if the item isn't
+worth anything.
+
+01:11:28.022 --> 01:11:30.230 align:middle line:84%
+IAN BALL: Especially because
+it's an all-pay auction.
+
+01:11:30.230 --> 01:11:31.750 align:middle line:84%
+I mean, that's always true,
+but in all-pay auction,
+
+01:11:31.750 --> 01:11:33.810 align:middle line:84%
+if you bid something
+positive, what happens?
+
+01:11:33.810 --> 01:11:34.630 align:middle line:90%
+You have to pay.
+
+01:11:34.630 --> 01:11:35.830 align:middle line:84%
+So you're paying
+a positive amount.
+
+01:11:35.830 --> 01:11:37.950 align:middle line:84%
+And even if you get the
+good, you don't value it.
+
+01:11:37.950 --> 01:11:40.650 align:middle line:84%
+So these seem like
+pretty safe guesses.
+
+01:11:40.650 --> 01:11:43.850 align:middle line:84%
+But let's say there is an
+equilibrium with this property.
+
+01:11:43.850 --> 01:11:46.850 align:middle line:84%
+Will our revenue equivalent
+assumptions be satisfied?
+
+01:11:46.850 --> 01:11:49.290 align:middle line:84%
+So let's check if there's an
+equilibrium of this property,
+
+01:11:49.290 --> 01:12:01.750 align:middle line:84%
+what is the expected payment by
+someone whose valuation is 0?
+
+01:12:01.750 --> 01:12:03.450 align:middle line:90%
+What's it going to be?
+
+01:12:03.450 --> 01:12:04.790 align:middle line:90%
+Just 0.
+
+01:12:04.790 --> 01:12:07.350 align:middle line:84%
+If there's an equilibrium,
+where, if my value is 0,
+
+01:12:07.350 --> 01:12:11.090 align:middle line:84%
+I bid nothing, well, then
+I'm going to pay nothing.
+
+01:12:11.090 --> 01:12:13.250 align:middle line:90%
+It's going to be 0.
+
+01:12:13.250 --> 01:12:17.690 align:middle line:84%
+And then if we're both using the
+same strictly increasing bidding
+
+01:12:17.690 --> 01:12:20.810 align:middle line:84%
+function, well, which
+bidder is the good going
+
+01:12:20.810 --> 01:12:21.830 align:middle line:90%
+to be allocated to?
+
+01:12:21.830 --> 01:12:27.350 align:middle line:90%
+
+
+01:12:27.350 --> 01:12:27.850 align:middle line:90%
+Yeah.
+
+01:12:27.850 --> 01:12:29.150 align:middle line:84%
+AUDIENCE: Whoever has
+a greater amount here.
+
+01:12:29.150 --> 01:12:30.610 align:middle line:84%
+IAN BALL: It's going to go to
+whichever bidder has the highest
+
+01:12:30.610 --> 01:12:32.902 align:middle line:84%
+value because it's going to
+go to whichever bidder bids
+
+01:12:32.902 --> 01:12:35.380 align:middle line:84%
+the most, but we're both using
+the same increasing bidding
+
+01:12:35.380 --> 01:12:36.160 align:middle line:90%
+strategy.
+
+01:12:36.160 --> 01:12:37.120 align:middle line:90%
+So who's going to bid the most?
+
+01:12:37.120 --> 01:12:38.860 align:middle line:84%
+It's going to be the person
+who has the higher value.
+
+01:12:38.860 --> 01:12:40.400 align:middle line:90%
+So it's going to be allocated--
+
+01:12:40.400 --> 01:12:54.260 align:middle line:90%
+
+
+01:12:54.260 --> 01:12:57.700 align:middle line:84%
+So the two conditions we needed
+to get the revenue formula
+
+01:12:57.700 --> 01:13:00.020 align:middle line:90%
+to simplify are satisfied.
+
+01:13:00.020 --> 01:13:02.300 align:middle line:84%
+And that means we
+immediately know
+
+01:13:02.300 --> 01:13:04.740 align:middle line:84%
+what the expected payment
+of each bidder has to be.
+
+01:13:04.740 --> 01:13:06.540 align:middle line:90%
+So what does that tell us?
+
+01:13:06.540 --> 01:13:08.840 align:middle line:84%
+Well, what is-- let's
+just focus on bidder 1.
+
+01:13:08.840 --> 01:13:10.540 align:middle line:84%
+It'll be the same
+for everyone else.
+
+01:13:10.540 --> 01:13:14.637 align:middle line:90%
+What is T1 hat of v1 then?
+
+01:13:14.637 --> 01:13:15.720 align:middle line:90%
+Well, let's go through it.
+
+01:13:15.720 --> 01:13:18.140 align:middle line:90%
+It's the integral.
+
+01:13:18.140 --> 01:13:19.680 align:middle line:90%
+Well, what is v lower bar?
+
+01:13:19.680 --> 01:13:27.100 align:middle line:84%
+It's just 0, 0 to
+v1 of x g of x dx.
+
+01:13:27.100 --> 01:13:28.280 align:middle line:90%
+What is g of x here?
+
+01:13:28.280 --> 01:13:36.668 align:middle line:90%
+
+
+01:13:36.668 --> 01:13:37.383 align:middle line:90%
+AUDIENCE: 1.
+
+01:13:37.383 --> 01:13:38.300 align:middle line:90%
+IAN BALL: It's just 1.
+
+01:13:38.300 --> 01:13:41.260 align:middle line:84%
+Remember g equals f if
+there's two bidders.
+
+01:13:41.260 --> 01:13:43.860 align:middle line:84%
+And if they're
+uniform, g is just 1.
+
+01:13:43.860 --> 01:13:45.900 align:middle line:90%
+So why?
+
+01:13:45.900 --> 01:13:49.940 align:middle line:84%
+G is the density of the highest
+valuation among my opponents.
+
+01:13:49.940 --> 01:13:51.040 align:middle line:90%
+There's only one of them.
+
+01:13:51.040 --> 01:13:52.800 align:middle line:84%
+So it's just the density of
+the uniform distribution,
+
+01:13:52.800 --> 01:13:53.580 align:middle line:90%
+which is 1.
+
+01:13:53.580 --> 01:13:54.560 align:middle line:90%
+So what do we get?
+
+01:13:54.560 --> 01:13:57.140 align:middle line:90%
+
+
+01:13:57.140 --> 01:14:01.540 align:middle line:84%
+Same formula that we
+always got before--
+
+01:14:01.540 --> 01:14:03.180 align:middle line:90%
+v1 squared over 2.
+
+01:14:03.180 --> 01:14:04.980 align:middle line:84%
+Notice, this is
+exactly what we got way
+
+01:14:04.980 --> 01:14:06.240 align:middle line:90%
+at the beginning of class.
+
+01:14:06.240 --> 01:14:08.940 align:middle line:84%
+So in general, this
+is always the formula
+
+01:14:08.940 --> 01:14:11.220 align:middle line:84%
+for the expected payment
+by a bidder with valuation
+
+01:14:11.220 --> 01:14:16.000 align:middle line:84%
+v1 in our simple two-bidder
+uniform distribution case
+
+01:14:16.000 --> 01:14:17.900 align:middle line:84%
+as long as our
+assumptions are satisfied.
+
+01:14:17.900 --> 01:14:19.360 align:middle line:90%
+But now I claim that we're done.
+
+01:14:19.360 --> 01:14:22.400 align:middle line:84%
+What must the
+bidding function be?
+
+01:14:22.400 --> 01:14:27.660 align:middle line:90%
+
+
+01:14:27.660 --> 01:14:30.020 align:middle line:84%
+So let's step back and
+see what we've done.
+
+01:14:30.020 --> 01:14:33.100 align:middle line:84%
+We've guessed that this is
+the bidding function beta.
+
+01:14:33.100 --> 01:14:36.060 align:middle line:84%
+We've said that if this is the
+bidding function beta, then
+
+01:14:36.060 --> 01:14:39.860 align:middle line:84%
+the expected payment by bidder
+1 when the valuation is v1
+
+01:14:39.860 --> 01:14:42.260 align:middle line:84%
+must exactly be
+v1 squared over 2.
+
+01:14:42.260 --> 01:14:44.740 align:middle line:90%
+Yeah.
+
+01:14:44.740 --> 01:14:46.243 align:middle line:90%
+AUDIENCE: Is it 1/2?
+
+01:14:46.243 --> 01:14:47.160 align:middle line:90%
+IAN BALL: Even easier.
+
+01:14:47.160 --> 01:14:50.540 align:middle line:90%
+It's an all-pay auction.
+
+01:14:50.540 --> 01:14:52.640 align:middle line:84%
+So another way of writing
+the expected payment--
+
+01:14:52.640 --> 01:14:58.100 align:middle line:90%
+
+
+01:14:58.100 --> 01:14:59.820 align:middle line:90%
+beta v1.
+
+01:14:59.820 --> 01:15:02.220 align:middle line:84%
+If it's an all-pay auction,
+my expected payment
+
+01:15:02.220 --> 01:15:04.780 align:middle line:84%
+is my bid because I
+always pay my bid.
+
+01:15:04.780 --> 01:15:07.580 align:middle line:84%
+So of course, that's
+my expected payment.
+
+01:15:07.580 --> 01:15:09.080 align:middle line:90%
+If I bid 2, I always pay 2.
+
+01:15:09.080 --> 01:15:10.480 align:middle line:90%
+If I bid 3, I always pay 3.
+
+01:15:10.480 --> 01:15:11.680 align:middle line:90%
+That's my expected payment.
+
+01:15:11.680 --> 01:15:14.980 align:middle line:90%
+
+
+01:15:14.980 --> 01:15:16.000 align:middle line:90%
+So what's the answer?
+
+01:15:16.000 --> 01:15:18.855 align:middle line:90%
+
+
+01:15:18.855 --> 01:15:19.980 align:middle line:90%
+AUDIENCE: j squared over 2.
+
+01:15:19.980 --> 01:15:21.480 align:middle line:84%
+IAN BALL: That's
+it, and we're done.
+
+01:15:21.480 --> 01:15:23.220 align:middle line:90%
+So we've now found--
+
+01:15:23.220 --> 01:15:25.240 align:middle line:84%
+I mean, technically
+we should verify this.
+
+01:15:25.240 --> 01:15:28.000 align:middle line:84%
+We've only said, this is
+a necessary condition,
+
+01:15:28.000 --> 01:15:28.890 align:middle line:90%
+but it is true.
+
+01:15:28.890 --> 01:15:32.470 align:middle line:90%
+So you can check if it's right.
+
+01:15:32.470 --> 01:15:37.790 align:middle line:90%
+Actually, it's v. We're done.
+
+01:15:37.790 --> 01:15:41.270 align:middle line:84%
+So revenue equivalence
+can be a convenient way
+
+01:15:41.270 --> 01:15:43.850 align:middle line:84%
+of actually solving
+for an equilibrium
+
+01:15:43.850 --> 01:15:45.350 align:middle line:84%
+because revenue
+equivalence gives us
+
+01:15:45.350 --> 01:15:47.550 align:middle line:84%
+a very simple formula
+for the expected payment
+
+01:15:47.550 --> 01:15:49.470 align:middle line:90%
+that each player makes.
+
+01:15:49.470 --> 01:15:51.150 align:middle line:84%
+This is from
+revenue equivalence.
+
+01:15:51.150 --> 01:15:53.230 align:middle line:84%
+The auction format
+gives us a relationship
+
+01:15:53.230 --> 01:15:55.630 align:middle line:84%
+between the expected
+payment and the bid.
+
+01:15:55.630 --> 01:15:57.970 align:middle line:84%
+In the all-pay auction, it's
+a very simple relationship.
+
+01:15:57.970 --> 01:16:00.510 align:middle line:84%
+The expected payment I
+make is exactly my bid.
+
+01:16:00.510 --> 01:16:03.210 align:middle line:84%
+But now if we have two
+different formulas,
+
+01:16:03.210 --> 01:16:05.950 align:middle line:84%
+two different expressions
+for T1 hat of v1,
+
+01:16:05.950 --> 01:16:08.230 align:middle line:90%
+they must both be equal.
+
+01:16:08.230 --> 01:16:09.170 align:middle line:90%
+And now we have this.
+
+01:16:09.170 --> 01:16:12.830 align:middle line:90%
+
+
+01:16:12.830 --> 01:16:14.430 align:middle line:84%
+Maybe just one
+more example to see
+
+01:16:14.430 --> 01:16:21.710 align:middle line:84%
+how we could derive
+the first-price auction
+
+01:16:21.710 --> 01:16:23.090 align:middle line:90%
+equilibrium using this.
+
+01:16:23.090 --> 01:16:30.407 align:middle line:90%
+
+
+01:16:30.407 --> 01:16:32.990 align:middle line:84%
+Basically, we're going to do the
+reverse of what we did before
+
+01:16:32.990 --> 01:16:35.070 align:middle line:90%
+at the beginning of class.
+
+01:16:35.070 --> 01:16:37.130 align:middle line:84%
+Let's consider a
+first-price auction, again,
+
+01:16:37.130 --> 01:16:39.870 align:middle line:90%
+in our simple example--
+
+01:16:39.870 --> 01:16:46.530 align:middle line:84%
+in our simple two-bidder
+uniform example.
+
+01:16:46.530 --> 01:16:52.190 align:middle line:90%
+
+
+01:16:52.190 --> 01:16:56.990 align:middle line:84%
+Well, again, if we look
+for a symmetric equilibrium
+
+01:16:56.990 --> 01:17:00.670 align:middle line:84%
+where if your value is 0, you
+bid nothing and beta is strictly
+
+01:17:00.670 --> 01:17:02.510 align:middle line:84%
+increasing, then
+our two assumptions
+
+01:17:02.510 --> 01:17:04.470 align:middle line:84%
+of revenue equivalence
+are going to hold.
+
+01:17:04.470 --> 01:17:07.390 align:middle line:90%
+And therefore, we know--
+
+01:17:07.390 --> 01:17:12.790 align:middle line:84%
+so revenue equivalence
+tells us that T1 hat of v1
+
+01:17:12.790 --> 01:17:14.860 align:middle line:90%
+equals v1 squared over 2.
+
+01:17:14.860 --> 01:17:17.110 align:middle line:84%
+That's still going to be
+true as long as the good goes
+
+01:17:17.110 --> 01:17:18.790 align:middle line:84%
+to the bidder who
+values it most,
+
+01:17:18.790 --> 01:17:21.830 align:middle line:84%
+and the bidder with
+0 value pays nothing.
+
+01:17:21.830 --> 01:17:30.610 align:middle line:84%
+But now from the auction
+format, what is T1 hat of v1?
+
+01:17:30.610 --> 01:17:33.670 align:middle line:90%
+
+
+01:17:33.670 --> 01:17:34.170 align:middle line:90%
+Yeah.
+
+01:17:34.170 --> 01:17:38.638 align:middle line:84%
+AUDIENCE: That's the probability
+of winning times the--
+
+01:17:38.638 --> 01:17:40.430 align:middle line:84%
+IAN BALL: Exactly, so
+this should be my bid
+
+01:17:40.430 --> 01:17:45.950 align:middle line:84%
+is beta of v1 times the
+probability that I win,
+
+01:17:45.950 --> 01:17:46.930 align:middle line:90%
+which is v1.
+
+01:17:46.930 --> 01:17:50.070 align:middle line:90%
+
+
+01:17:50.070 --> 01:17:51.550 align:middle line:90%
+So now we set these equal.
+
+01:17:51.550 --> 01:17:52.730 align:middle line:90%
+And indeed, we get--
+
+01:17:52.730 --> 01:17:57.190 align:middle line:90%
+
+
+01:17:57.190 --> 01:17:58.490 align:middle line:90%
+which we already derived.
+
+01:17:58.490 --> 01:18:00.755 align:middle line:90%
+So we can go back and forth.
+
+01:18:00.755 --> 01:18:02.130 align:middle line:84%
+We can solve for
+the equilibrium.
+
+01:18:02.130 --> 01:18:04.130 align:middle line:84%
+We can see that revenue
+equivalence is satisfied.
+
+01:18:04.130 --> 01:18:05.922 align:middle line:84%
+Or we can jump right
+to revenue equivalence
+
+01:18:05.922 --> 01:18:08.210 align:middle line:84%
+and use that together with
+the rules of the auction
+
+01:18:08.210 --> 01:18:10.430 align:middle line:84%
+to try to derive what
+the equilibrium bidding
+
+01:18:10.430 --> 01:18:11.650 align:middle line:90%
+behavior will be.
+
+01:18:11.650 --> 01:18:13.190 align:middle line:84%
+And this is useful
+when we confront
+
+01:18:13.190 --> 01:18:15.270 align:middle line:84%
+new auctions we haven't
+looked at before because
+
+01:18:15.270 --> 01:18:17.670 align:middle line:84%
+of how general revenue
+equivalence is.
+
+01:18:17.670 --> 01:18:21.830 align:middle line:84%
+I want to end with maybe
+one caveat about revenue
+
+01:18:21.830 --> 01:18:22.850 align:middle line:90%
+equivalence, though.
+
+01:18:22.850 --> 01:18:28.070 align:middle line:90%
+
+
+01:18:28.070 --> 01:18:31.830 align:middle line:84%
+And revenue equivalence
+is often misinterpreted.
+
+01:18:31.830 --> 01:18:33.810 align:middle line:84%
+When people interpret
+revenue equivalence,
+
+01:18:33.810 --> 01:18:35.790 align:middle line:84%
+they often say it's about the
+equivalence between auction
+
+01:18:35.790 --> 01:18:36.410 align:middle line:90%
+formats.
+
+01:18:36.410 --> 01:18:38.430 align:middle line:84%
+They say something like,
+the first price-auction
+
+01:18:38.430 --> 01:18:40.970 align:middle line:84%
+generates the same revenue
+as the second-price auction.
+
+01:18:40.970 --> 01:18:42.550 align:middle line:84%
+But if we want to
+be really precise,
+
+01:18:42.550 --> 01:18:44.590 align:middle line:84%
+revenue equivalence
+is a comparison
+
+01:18:44.590 --> 01:18:46.630 align:middle line:84%
+between an equilibrium
+of one auction
+
+01:18:46.630 --> 01:18:48.450 align:middle line:84%
+and an equilibrium
+of another auction.
+
+01:18:48.450 --> 01:18:51.670 align:middle line:90%
+So a caveat, it's not about--
+
+01:18:51.670 --> 01:18:58.670 align:middle line:84%
+so it's not about
+the auction per se.
+
+01:18:58.670 --> 01:19:01.690 align:middle line:84%
+It's about a particular
+equilibrium of the auction.
+
+01:19:01.690 --> 01:19:11.790 align:middle line:90%
+
+
+01:19:11.790 --> 01:19:14.450 align:middle line:84%
+Maybe I'll say BNE
+of the auction.
+
+01:19:14.450 --> 01:19:19.750 align:middle line:90%
+
+
+01:19:19.750 --> 01:19:23.400 align:middle line:84%
+And in fact-- we'll give some
+examples-- in a given auction
+
+01:19:23.400 --> 01:19:25.840 align:middle line:84%
+format, you could have
+multiple equilibria
+
+01:19:25.840 --> 01:19:28.198 align:middle line:84%
+that generate different
+revenue for the auctioneer
+
+01:19:28.198 --> 01:19:29.740 align:middle line:84%
+if those conditions
+aren't satisfied.
+
+01:19:29.740 --> 01:19:33.480 align:middle line:84%
+So let's make sure we
+understand these conditions
+
+01:19:33.480 --> 01:19:37.440 align:middle line:84%
+that the bidder with the
+lowest value pays nothing,
+
+01:19:37.440 --> 01:19:40.280 align:middle line:84%
+and the good is allocated to the
+bidder with the highest value.
+
+01:19:40.280 --> 01:19:43.040 align:middle line:84%
+These are not properties
+simply of the auction format.
+
+01:19:43.040 --> 01:19:45.440 align:middle line:84%
+They're properties
+of the equilibrium
+
+01:19:45.440 --> 01:19:47.160 align:middle line:84%
+together with the
+auction format.
+
+01:19:47.160 --> 01:19:49.780 align:middle line:84%
+If everyone used a
+different bidding strategy,
+
+01:19:49.780 --> 01:19:51.813 align:middle line:90%
+then this may no longer be true.
+
+01:19:51.813 --> 01:19:53.480 align:middle line:84%
+So these assumptions
+are not assumptions
+
+01:19:53.480 --> 01:19:54.980 align:middle line:90%
+about the rules of the auction.
+
+01:19:54.980 --> 01:19:57.680 align:middle line:84%
+They're assumptions about
+a particular equilibrium
+
+01:19:57.680 --> 01:19:58.740 align:middle line:90%
+of the auction.
+
+01:19:58.740 --> 01:20:00.620 align:middle line:84%
+And whenever we apply
+revenue equivalence,
+
+01:20:00.620 --> 01:20:02.912 align:middle line:84%
+we're not just comparing the
+revenue from two auctions.
+
+01:20:02.912 --> 01:20:05.120 align:middle line:84%
+We're saying, let's look
+at equilibrium of one
+
+01:20:05.120 --> 01:20:07.940 align:middle line:84%
+of this auction and
+equilibrium two of auction two,
+
+01:20:07.940 --> 01:20:10.720 align:middle line:84%
+and let's compare
+the revenue there.
+
+01:20:10.720 --> 01:20:12.100 align:middle line:84%
+So that's kind of
+a final caveat.
+
+01:20:12.100 --> 01:20:14.548 align:middle line:84%
+And we'll see some
+implications of that next week.
+
+01:20:14.548 --> 01:20:15.340 align:middle line:90%
+So I'll stop there.
+
+01:20:15.340 --> 01:20:17.030 align:middle line:90%
+Thank you.
+
+01:20:17.030 --> 01:20:20.000 align:middle line:90%

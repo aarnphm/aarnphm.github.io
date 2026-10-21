@@ -1,0 +1,6199 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:01.922 align:middle line:90%
+[SQUEAKING]
+
+00:00:01.922 --> 00:00:03.818 align:middle line:90%
+[RUSTLING]
+
+00:00:03.818 --> 00:00:05.714 align:middle line:90%
+[CLICKING]
+
+00:00:05.714 --> 00:00:11.400 align:middle line:90%
+
+
+00:00:11.400 --> 00:00:18.700 align:middle line:84%
+IAN BALL: So today the
+topic is zero-sum games.
+
+00:00:18.700 --> 00:00:24.680 align:middle line:90%
+
+
+00:00:24.680 --> 00:00:26.060 align:middle line:90%
+And what does this mean?
+
+00:00:26.060 --> 00:00:28.640 align:middle line:84%
+A zero-sum game is
+a game that features
+
+00:00:28.640 --> 00:00:32.240 align:middle line:90%
+exact conflict of interest.
+
+00:00:32.240 --> 00:00:36.580 align:middle line:84%
+So maybe I'll call it a
+complete conflict of interest.
+
+00:00:36.580 --> 00:00:45.520 align:middle line:90%
+
+
+00:00:45.520 --> 00:00:49.280 align:middle line:84%
+Another way of saying this
+is that one player's gain
+
+00:00:49.280 --> 00:00:50.780 align:middle line:90%
+is the other player's loss.
+
+00:00:50.780 --> 00:01:00.950 align:middle line:90%
+
+
+00:01:00.950 --> 00:01:03.430 align:middle line:84%
+And whenever I'm talking about
+losses and gains, remember,
+
+00:01:03.430 --> 00:01:05.410 align:middle line:84%
+this is about utilities,
+not about money.
+
+00:01:05.410 --> 00:01:06.870 align:middle line:84%
+So it could be
+about money if we're
+
+00:01:06.870 --> 00:01:10.550 align:middle line:84%
+risk neutral, but more
+specifically, one player's
+
+00:01:10.550 --> 00:01:13.930 align:middle line:84%
+utility gain is the other
+player's utility loss.
+
+00:01:13.930 --> 00:01:17.990 align:middle line:90%
+
+
+00:01:17.990 --> 00:01:21.230 align:middle line:84%
+So what are some examples where
+this is a realistic assumption?
+
+00:01:21.230 --> 00:01:25.590 align:middle line:84%
+A lot of these examples are
+actually more parlor games,
+
+00:01:25.590 --> 00:01:27.430 align:middle line:90%
+games like chess and checkers.
+
+00:01:27.430 --> 00:01:32.850 align:middle line:84%
+So if we think about, say,
+chess or checkers, what happens?
+
+00:01:32.850 --> 00:01:34.510 align:middle line:84%
+Well, assuming that
+people only care
+
+00:01:34.510 --> 00:01:35.950 align:middle line:84%
+about the winner
+of the game-- you
+
+00:01:35.950 --> 00:01:38.092 align:middle line:84%
+could imagine someone who
+just loves playing chess.
+
+00:01:38.092 --> 00:01:40.050 align:middle line:84%
+They want the game to
+last as long as possible,
+
+00:01:40.050 --> 00:01:42.010 align:middle line:84%
+or they want a
+beautiful game of chess.
+
+00:01:42.010 --> 00:01:43.150 align:middle line:84%
+But we're thinking
+about people who just
+
+00:01:43.150 --> 00:01:44.510 align:middle line:90%
+care about winning and losing.
+
+00:01:44.510 --> 00:01:46.210 align:middle line:84%
+Well, what are the
+possible outcomes?
+
+00:01:46.210 --> 00:01:50.130 align:middle line:84%
+Well, either player 1
+wins, and if player 1 wins,
+
+00:01:50.130 --> 00:01:53.630 align:middle line:84%
+we'll think of payoffs as
+being 1 and negative 1,
+
+00:01:53.630 --> 00:01:58.070 align:middle line:84%
+1 for the winner and negative
+1 for the loser, player 2.
+
+00:01:58.070 --> 00:02:01.110 align:middle line:84%
+The other option
+is player 2 wins.
+
+00:02:01.110 --> 00:02:03.550 align:middle line:84%
+And then, of course, the
+payoffs are the other way.
+
+00:02:03.550 --> 00:02:07.190 align:middle line:84%
+Negative 1 for player 1
+who lost and 1 for player 2
+
+00:02:07.190 --> 00:02:09.910 align:middle line:84%
+who won, and then the
+last possible outcome
+
+00:02:09.910 --> 00:02:12.150 align:middle line:90%
+is a draw, a tie.
+
+00:02:12.150 --> 00:02:16.590 align:middle line:84%
+And in that case, we'll
+say the payoffs are 0, 0.
+
+00:02:16.590 --> 00:02:19.270 align:middle line:84%
+So here, you can see that the
+player's interests are exactly
+
+00:02:19.270 --> 00:02:19.910 align:middle line:90%
+opposed.
+
+00:02:19.910 --> 00:02:22.850 align:middle line:84%
+In order for one
+player's payoff to go up,
+
+00:02:22.850 --> 00:02:25.310 align:middle line:84%
+the other player's
+payoff has to go down.
+
+00:02:25.310 --> 00:02:30.390 align:middle line:84%
+And in this case, the sum of the
+player's payoffs is always 0.
+
+00:02:30.390 --> 00:02:34.970 align:middle line:90%
+So we see that payoffs sum to 0.
+
+00:02:34.970 --> 00:02:38.870 align:middle line:90%
+
+
+00:02:38.870 --> 00:02:43.790 align:middle line:84%
+Another common example
+of this would be--
+
+00:02:43.790 --> 00:02:46.190 align:middle line:90%
+I should start in the outer--
+
+00:02:46.190 --> 00:02:49.870 align:middle line:84%
+games with monetary trade or
+monetary exchange, so maybe
+
+00:02:49.870 --> 00:02:51.010 align:middle line:90%
+money exchange.
+
+00:02:51.010 --> 00:02:56.660 align:middle line:90%
+
+
+00:02:56.660 --> 00:02:58.580 align:middle line:84%
+But there, we have to
+be careful if we're
+
+00:02:58.580 --> 00:03:01.060 align:middle line:84%
+playing-- if we're bargaining
+about how much money I give
+
+00:03:01.060 --> 00:03:02.880 align:middle line:84%
+to you or how much
+money you give to me,
+
+00:03:02.880 --> 00:03:04.480 align:middle line:84%
+this can still be
+a zero-sum game,
+
+00:03:04.480 --> 00:03:05.880 align:middle line:90%
+but we need two assumptions.
+
+00:03:05.880 --> 00:03:08.160 align:middle line:84%
+So I'll say under
+two conditions.
+
+00:03:08.160 --> 00:03:13.180 align:middle line:90%
+
+
+00:03:13.180 --> 00:03:16.940 align:middle line:84%
+Well, the first condition is
+that no money enters or leaves
+
+00:03:16.940 --> 00:03:17.640 align:middle line:90%
+the game.
+
+00:03:17.640 --> 00:03:19.703 align:middle line:84%
+If we're negotiating and
+then someone's parents
+
+00:03:19.703 --> 00:03:21.120 align:middle line:84%
+come along and
+give us both money,
+
+00:03:21.120 --> 00:03:22.660 align:middle line:84%
+that's not a zero-sum
+game anymore.
+
+00:03:22.660 --> 00:03:24.640 align:middle line:90%
+So there's no money in or out.
+
+00:03:24.640 --> 00:03:27.678 align:middle line:90%
+
+
+00:03:27.678 --> 00:03:29.220 align:middle line:84%
+And then what's the
+second assumption
+
+00:03:29.220 --> 00:03:32.840 align:middle line:84%
+we need in order for this to
+actually be a zero-sum game?
+
+00:03:32.840 --> 00:03:35.420 align:middle line:90%
+
+
+00:03:35.420 --> 00:03:37.740 align:middle line:90%
+Thoughts?
+
+00:03:37.740 --> 00:03:40.360 align:middle line:84%
+Well, it's important
+that we're risk neutral.
+
+00:03:40.360 --> 00:03:43.900 align:middle line:90%
+
+
+00:03:43.900 --> 00:03:46.580 align:middle line:84%
+Because if we're risk
+averse, for instance,
+
+00:03:46.580 --> 00:03:49.270 align:middle line:84%
+and the terms of our trade were
+that we're going to flip a coin,
+
+00:03:49.270 --> 00:03:51.020 align:middle line:84%
+and someone's going
+to win a lot of money,
+
+00:03:51.020 --> 00:03:53.140 align:middle line:84%
+and someone's going to
+lose a lot of money,
+
+00:03:53.140 --> 00:03:55.570 align:middle line:84%
+well, if we're both
+risk averse, that bet
+
+00:03:55.570 --> 00:03:57.850 align:middle line:84%
+might be bad for both of
+us in expected utility
+
+00:03:57.850 --> 00:04:00.530 align:middle line:84%
+because we both have a chance
+of losing a lot of money.
+
+00:04:00.530 --> 00:04:03.130 align:middle line:84%
+So the fact that no
+money comes in or out
+
+00:04:03.130 --> 00:04:06.870 align:middle line:84%
+doesn't necessarily mean that
+no utility comes in or out
+
+00:04:06.870 --> 00:04:09.050 align:middle line:84%
+unless we make the further
+assumption that players
+
+00:04:09.050 --> 00:04:10.330 align:middle line:90%
+are risk neutral.
+
+00:04:10.330 --> 00:04:12.610 align:middle line:84%
+But under these two
+assumptions, money exchange
+
+00:04:12.610 --> 00:04:14.890 align:middle line:90%
+is also going to be an example.
+
+00:04:14.890 --> 00:04:17.685 align:middle line:84%
+Now, today we're going
+backwards historically.
+
+00:04:17.685 --> 00:04:19.810 align:middle line:84%
+So zero-sum games were some
+of the first games that
+
+00:04:19.810 --> 00:04:21.312 align:middle line:90%
+were studied in game theory.
+
+00:04:21.312 --> 00:04:22.770 align:middle line:84%
+They were studied
+by mathematicians
+
+00:04:22.770 --> 00:04:26.645 align:middle line:84%
+who were motivated by situations
+like chess and checkers.
+
+00:04:26.645 --> 00:04:28.770 align:middle line:84%
+Subsequently, economists
+started getting interested
+
+00:04:28.770 --> 00:04:29.730 align:middle line:90%
+in game theory.
+
+00:04:29.730 --> 00:04:32.050 align:middle line:84%
+And in a lot of economic
+situations outside
+
+00:04:32.050 --> 00:04:34.630 align:middle line:84%
+of games, outside
+of parlor games,
+
+00:04:34.630 --> 00:04:36.030 align:middle line:90%
+the situation is not zero-sum.
+
+00:04:36.030 --> 00:04:37.330 align:middle line:84%
+And you often hear
+people in politics
+
+00:04:37.330 --> 00:04:39.570 align:middle line:84%
+talking about this, saying,
+this is not a 0 sum game.
+
+00:04:39.570 --> 00:04:41.070 align:middle line:84%
+There's some
+arrangement we can make
+
+00:04:41.070 --> 00:04:42.490 align:middle line:90%
+that makes us both better off.
+
+00:04:42.490 --> 00:04:48.010 align:middle line:84%
+So I'll say, maybe,
+in the real world,
+
+00:04:48.010 --> 00:04:50.278 align:middle line:90%
+things are often not zero-sum.
+
+00:04:50.278 --> 00:04:51.570 align:middle line:90%
+Maybe I'll say rarely zero-sum.
+
+00:04:51.570 --> 00:04:55.365 align:middle line:90%
+
+
+00:04:55.365 --> 00:04:57.240 align:middle line:84%
+And that's why game
+theory has moved on a bit
+
+00:04:57.240 --> 00:05:00.000 align:middle line:84%
+beyond zero-sum games and looked
+at things like Nash equilibrium
+
+00:05:00.000 --> 00:05:01.980 align:middle line:84%
+that can capture
+non-zero-sum games.
+
+00:05:01.980 --> 00:05:04.240 align:middle line:84%
+But mathematically,
+zero-sum games
+
+00:05:04.240 --> 00:05:06.445 align:middle line:84%
+have a very nice,
+elegant theory.
+
+00:05:06.445 --> 00:05:07.820 align:middle line:84%
+So we're going to
+cover it today.
+
+00:05:07.820 --> 00:05:11.840 align:middle line:84%
+And it does apply to a lot of
+games like chess and checkers
+
+00:05:11.840 --> 00:05:15.080 align:middle line:84%
+and poker that are
+relevant to some people.
+
+00:05:15.080 --> 00:05:15.800 align:middle line:90%
+Yes, question.
+
+00:05:15.800 --> 00:05:17.258 align:middle line:84%
+AUDIENCE: [INAUDIBLE]
+risk neutral,
+
+00:05:17.258 --> 00:05:19.693 align:middle line:84%
+that just kind of means the
+money is taken at face value?
+
+00:05:19.693 --> 00:05:21.360 align:middle line:84%
+IAN BALL: Yes, so
+formally, risk neutral
+
+00:05:21.360 --> 00:05:23.600 align:middle line:84%
+means that your von
+Neumann-Morgenstern utility
+
+00:05:23.600 --> 00:05:27.100 align:middle line:84%
+function, as a function of
+money, is a linear function.
+
+00:05:27.100 --> 00:05:30.840 align:middle line:90%
+
+
+00:05:30.840 --> 00:05:33.480 align:middle line:84%
+So that you are
+indifferent between, say,
+
+00:05:33.480 --> 00:05:37.600 align:middle line:84%
+getting $10 for sure and a
+lottery that pays you 0 with
+
+00:05:37.600 --> 00:05:40.437 align:middle line:84%
+probability 1/2 and 20
+with probability 1/2.
+
+00:05:40.437 --> 00:05:41.020 align:middle line:90%
+Good question.
+
+00:05:41.020 --> 00:05:41.853 align:middle line:90%
+Any other questions?
+
+00:05:41.853 --> 00:05:46.080 align:middle line:84%
+So I'll say over money
+maybe to be more clear.
+
+00:05:46.080 --> 00:05:47.320 align:middle line:90%
+Question or no?
+
+00:05:47.320 --> 00:05:49.120 align:middle line:90%
+No, OK.
+
+00:05:49.120 --> 00:05:49.620 align:middle line:90%
+All right.
+
+00:05:49.620 --> 00:05:51.360 align:middle line:84%
+So in the real world,
+rarely zero-sum, but maybe
+
+00:05:51.360 --> 00:05:52.527 align:middle line:90%
+I'll say something positive.
+
+00:05:52.527 --> 00:05:56.782 align:middle line:90%
+But the theory is elegant.
+
+00:05:56.782 --> 00:05:58.740 align:middle line:84%
+And if you play poker
+and you play these games,
+
+00:05:58.740 --> 00:06:00.120 align:middle line:84%
+it can often be a
+valuable benchmark
+
+00:06:00.120 --> 00:06:01.960 align:middle line:84%
+for some situations
+in the real world that
+
+00:06:01.960 --> 00:06:04.880 align:middle line:84%
+are close to strictly
+competitive, close to complete
+
+00:06:04.880 --> 00:06:08.215 align:middle line:90%
+conflicts of interest.
+
+00:06:08.215 --> 00:06:09.840 align:middle line:84%
+All right, so let's
+now formally define
+
+00:06:09.840 --> 00:06:13.960 align:middle line:90%
+what we mean by a zero-sum game.
+
+00:06:13.960 --> 00:06:16.465 align:middle line:84%
+So throughout today, when we
+talk about zero-sum games,
+
+00:06:16.465 --> 00:06:17.840 align:middle line:84%
+we're always going
+to be focusing
+
+00:06:17.840 --> 00:06:24.220 align:middle line:84%
+on finite two-player
+strategic-form games.
+
+00:06:24.220 --> 00:06:31.600 align:middle line:90%
+
+
+00:06:31.600 --> 00:06:33.580 align:middle line:84%
+Finiteness is kind of
+a technical assumption.
+
+00:06:33.580 --> 00:06:36.360 align:middle line:84%
+A lot of the results
+extend beyond finiteness.
+
+00:06:36.360 --> 00:06:38.720 align:middle line:90%
+Two-player is really essential.
+
+00:06:38.720 --> 00:06:41.320 align:middle line:84%
+Games that only have two
+players with opposed interests
+
+00:06:41.320 --> 00:06:43.160 align:middle line:84%
+behave quite differently
+than games that
+
+00:06:43.160 --> 00:06:44.285 align:middle line:90%
+have more than two players.
+
+00:06:44.285 --> 00:06:46.160 align:middle line:84%
+So this is really a
+central assumption.
+
+00:06:46.160 --> 00:06:48.950 align:middle line:84%
+And then the fact that we
+focus on strategic forms
+
+00:06:48.950 --> 00:06:50.470 align:middle line:90%
+is just a modeling choice.
+
+00:06:50.470 --> 00:06:54.150 align:middle line:84%
+A lot of games like chess and
+checkers take place over time,
+
+00:06:54.150 --> 00:06:57.410 align:middle line:84%
+and we would naturally model
+them in the extensive form.
+
+00:06:57.410 --> 00:06:59.450 align:middle line:84%
+But remember, starting
+with the extensive form,
+
+00:06:59.450 --> 00:07:02.370 align:middle line:84%
+we can always represent that
+game in the strategic form.
+
+00:07:02.370 --> 00:07:04.203 align:middle line:84%
+And we're going to
+assume that we've already
+
+00:07:04.203 --> 00:07:05.933 align:middle line:90%
+done that transformation.
+
+00:07:05.933 --> 00:07:07.350 align:middle line:84%
+So how do we
+represent these games
+
+00:07:07.350 --> 00:07:17.670 align:middle line:84%
+where we have two payoff
+functions, player 1's payoff
+
+00:07:17.670 --> 00:07:18.610 align:middle line:90%
+and player 2's payoff.
+
+00:07:18.610 --> 00:07:20.910 align:middle line:84%
+So let's just remember,
+player 1's payoff depends
+
+00:07:20.910 --> 00:07:22.830 align:middle line:84%
+on the strategy that
+player 1 chooses
+
+00:07:22.830 --> 00:07:24.990 align:middle line:84%
+and the strategy that
+player 2 chooses.
+
+00:07:24.990 --> 00:07:26.990 align:middle line:84%
+And similarly, player
+2's payoff depends
+
+00:07:26.990 --> 00:07:28.250 align:middle line:90%
+on both player's strategies.
+
+00:07:28.250 --> 00:07:31.390 align:middle line:84%
+So this is just a
+two-player game.
+
+00:07:31.390 --> 00:07:33.270 align:middle line:90%
+What makes it zero-sum?
+
+00:07:33.270 --> 00:07:34.650 align:middle line:90%
+Well, it's what you would think.
+
+00:07:34.650 --> 00:07:36.750 align:middle line:90%
+The sum of the payoffs is 0.
+
+00:07:36.750 --> 00:07:42.110 align:middle line:84%
+So this is zero-sum,
+what does this mean?
+
+00:07:42.110 --> 00:07:46.350 align:middle line:84%
+It means that player 1's
+payoff from some strategy
+
+00:07:46.350 --> 00:07:52.220 align:middle line:84%
+profile s plus player 2's
+payoff from the same strategy
+
+00:07:52.220 --> 00:07:57.040 align:middle line:84%
+profile s is 0 for every
+strategy profile s.
+
+00:07:57.040 --> 00:08:02.340 align:middle line:90%
+
+
+00:08:02.340 --> 00:08:04.800 align:middle line:84%
+And remember, this is
+a strategy profile.
+
+00:08:04.800 --> 00:08:06.800 align:middle line:84%
+So this is something
+like S1, S2.
+
+00:08:06.800 --> 00:08:09.620 align:middle line:90%
+
+
+00:08:09.620 --> 00:08:12.462 align:middle line:84%
+So when I write it down it
+looks like just one equation,
+
+00:08:12.462 --> 00:08:13.920 align:middle line:84%
+but really, we have
+many equations.
+
+00:08:13.920 --> 00:08:15.500 align:middle line:84%
+We have a separate
+equation that must
+
+00:08:15.500 --> 00:08:20.860 align:middle line:84%
+hold for any pair of strategies
+that the players play.
+
+00:08:20.860 --> 00:08:24.020 align:middle line:84%
+And now we're going to
+make a simplification.
+
+00:08:24.020 --> 00:08:28.740 align:middle line:84%
+If this is the case, then we
+can just do a little algebra.
+
+00:08:28.740 --> 00:08:32.980 align:middle line:84%
+And we see that that
+means that u2 of s
+
+00:08:32.980 --> 00:08:38.460 align:middle line:84%
+is equal to negative u1 of s
+for every strategy profile s.
+
+00:08:38.460 --> 00:08:40.539 align:middle line:84%
+The payoff or utility
+that player 2 gets
+
+00:08:40.539 --> 00:08:43.419 align:middle line:84%
+is just negative of the
+utility that player 1 gets.
+
+00:08:43.419 --> 00:08:46.410 align:middle line:84%
+And what that means is that if
+we're in a zero-sum context,
+
+00:08:46.410 --> 00:08:48.850 align:middle line:84%
+we don't really have
+two utility functions.
+
+00:08:48.850 --> 00:08:50.485 align:middle line:84%
+We really only
+have one function,
+
+00:08:50.485 --> 00:08:52.610 align:middle line:84%
+and that determines what
+the other person's utility
+
+00:08:52.610 --> 00:08:55.010 align:middle line:84%
+is because, once we know
+one player's utility,
+
+00:08:55.010 --> 00:08:57.290 align:middle line:84%
+we know that the other
+player's utility must always
+
+00:08:57.290 --> 00:08:59.770 align:middle line:90%
+be the negative of that.
+
+00:08:59.770 --> 00:09:02.010 align:middle line:84%
+So we're going to
+adopt a convention.
+
+00:09:02.010 --> 00:09:06.970 align:middle line:84%
+So here's our convention
+for zero-sum games.
+
+00:09:06.970 --> 00:09:10.490 align:middle line:84%
+We're basically only going to
+work with player 1's payoff.
+
+00:09:10.490 --> 00:09:16.010 align:middle line:90%
+So let's let u equals u1.
+
+00:09:16.010 --> 00:09:18.410 align:middle line:84%
+That's going to be
+player 1's payoff.
+
+00:09:18.410 --> 00:09:24.130 align:middle line:84%
+And that means we have in mind
+that u2 is equal to negative u.
+
+00:09:24.130 --> 00:09:26.810 align:middle line:84%
+But we're only going to keep
+track of this single-function u.
+
+00:09:26.810 --> 00:09:29.570 align:middle line:84%
+So we're going to
+focus on player 1.
+
+00:09:29.570 --> 00:09:36.410 align:middle line:84%
+And this means that u is going
+to represent player 1's gain,
+
+00:09:36.410 --> 00:09:39.510 align:middle line:84%
+but it will also
+represent player 2's loss
+
+00:09:39.510 --> 00:09:44.250 align:middle line:84%
+because a high value of u
+means a large negative value
+
+00:09:44.250 --> 00:09:46.450 align:middle line:84%
+for player 2, which
+is a loss, so this
+
+00:09:46.450 --> 00:09:50.170 align:middle line:90%
+represents player 2's gain.
+
+00:09:50.170 --> 00:09:52.530 align:middle line:84%
+So instead of thinking
+of each player--
+
+00:09:52.530 --> 00:09:53.550 align:middle line:90%
+loss, thank you.
+
+00:09:53.550 --> 00:09:57.370 align:middle line:90%
+
+
+00:09:57.370 --> 00:09:59.210 align:middle line:84%
+So instead of thinking
+of each player
+
+00:09:59.210 --> 00:10:01.490 align:middle line:84%
+as having their own utility
+function that they're
+
+00:10:01.490 --> 00:10:05.638 align:middle line:84%
+trying to maximize, we now
+just have one function u,
+
+00:10:05.638 --> 00:10:07.930 align:middle line:84%
+but now the players are doing
+different things with it.
+
+00:10:07.930 --> 00:10:13.170 align:middle line:84%
+So player 1 is
+trying to maximize u.
+
+00:10:13.170 --> 00:10:15.550 align:middle line:84%
+But player 2 is
+trying to minimize u.
+
+00:10:15.550 --> 00:10:20.210 align:middle line:90%
+
+
+00:10:20.210 --> 00:10:22.890 align:middle line:84%
+And we're going to maintain
+this throughout the course.
+
+00:10:22.890 --> 00:10:25.950 align:middle line:84%
+Now, this creates this
+asymmetry between the players.
+
+00:10:25.950 --> 00:10:27.670 align:middle line:90%
+Player 1 is the maximizer.
+
+00:10:27.670 --> 00:10:29.610 align:middle line:90%
+Player 2 is the minimizer.
+
+00:10:29.610 --> 00:10:31.542 align:middle line:84%
+I find that zero-sum
+games, it's really easy
+
+00:10:31.542 --> 00:10:33.250 align:middle line:84%
+to get yourself
+confused, so hopefully, I
+
+00:10:33.250 --> 00:10:34.430 align:middle line:90%
+won't get confused today.
+
+00:10:34.430 --> 00:10:35.930 align:middle line:84%
+I don't think what
+we're doing today
+
+00:10:35.930 --> 00:10:38.470 align:middle line:84%
+is the hardest material we're
+going to cover in the course.
+
+00:10:38.470 --> 00:10:40.387 align:middle line:84%
+But I think it probably
+is the most confusing.
+
+00:10:40.387 --> 00:10:42.572 align:middle line:84%
+It's the easiest lecture
+to get confused on.
+
+00:10:42.572 --> 00:10:44.280 align:middle line:84%
+So if you have a
+question, please do ask,
+
+00:10:44.280 --> 00:10:45.920 align:middle line:84%
+and hopefully, I
+won't confuse myself
+
+00:10:45.920 --> 00:10:48.160 align:middle line:90%
+with all these mins and maxes.
+
+00:10:48.160 --> 00:10:50.280 align:middle line:90%
+OK.
+
+00:10:50.280 --> 00:10:53.160 align:middle line:84%
+So that's going to
+be our convention.
+
+00:10:53.160 --> 00:10:56.040 align:middle line:84%
+And now let's just go over
+one really simple example
+
+00:10:56.040 --> 00:10:59.440 align:middle line:84%
+of a zero-sum game to try
+to get our bearings here.
+
+00:10:59.440 --> 00:11:03.120 align:middle line:84%
+And the classic zero-sum game
+would be Rock paper scissors.
+
+00:11:03.120 --> 00:11:04.220 align:middle line:90%
+So let's look at this.
+
+00:11:04.220 --> 00:11:08.360 align:middle line:90%
+
+
+00:11:08.360 --> 00:11:10.980 align:middle line:84%
+Now, we're going to represent
+this in strategic form.
+
+00:11:10.980 --> 00:11:13.960 align:middle line:84%
+So we're going to
+have a matrix here.
+
+00:11:13.960 --> 00:11:16.560 align:middle line:84%
+Player 1 can choose
+rock, paper, or scissors.
+
+00:11:16.560 --> 00:11:19.960 align:middle line:84%
+And player two can choose
+rock, paper, or scissors.
+
+00:11:19.960 --> 00:11:21.960 align:middle line:84%
+Now, in the past,
+when we represented
+
+00:11:21.960 --> 00:11:26.840 align:middle line:84%
+a strategic-form game, every box
+in this matrix had two numbers.
+
+00:11:26.840 --> 00:11:30.360 align:middle line:84%
+It had the payoff for player
+1 and the payoff for player 2.
+
+00:11:30.360 --> 00:11:32.400 align:middle line:84%
+But now we're going to
+follow our convention,
+
+00:11:32.400 --> 00:11:34.880 align:middle line:84%
+and we're only going to put
+one number in every box.
+
+00:11:34.880 --> 00:11:38.840 align:middle line:84%
+But that one number is going to
+represent the gain for player 1
+
+00:11:38.840 --> 00:11:40.750 align:middle line:90%
+and the loss for player 2.
+
+00:11:40.750 --> 00:11:44.310 align:middle line:84%
+So let's just fill
+this in cleverly.
+
+00:11:44.310 --> 00:11:47.530 align:middle line:84%
+Well, if we go down the
+diagonal, in this case,
+
+00:11:47.530 --> 00:11:50.270 align:middle line:84%
+everyone-- the two players
+are making the same move,
+
+00:11:50.270 --> 00:11:52.092 align:middle line:84%
+and that means the
+game ends in a tie.
+
+00:11:52.092 --> 00:11:53.550 align:middle line:84%
+So if the game ends
+in a tie, we'll
+
+00:11:53.550 --> 00:11:55.590 align:middle line:84%
+say the payoff is
+0 to both players.
+
+00:11:55.590 --> 00:11:59.250 align:middle line:84%
+So along the diagonal,
+we have 0, 0, and 0.
+
+00:11:59.250 --> 00:12:01.870 align:middle line:90%
+
+
+00:12:01.870 --> 00:12:03.670 align:middle line:84%
+Now we want to put
+a 1-- remember,
+
+00:12:03.670 --> 00:12:06.970 align:middle line:84%
+this is player 1's payoff
+whenever player 1 wins the game.
+
+00:12:06.970 --> 00:12:08.870 align:middle line:84%
+So hopefully, people
+remember the rules
+
+00:12:08.870 --> 00:12:10.010 align:middle line:90%
+for Rock paper scissors.
+
+00:12:10.010 --> 00:12:10.570 align:middle line:90%
+Let's see.
+
+00:12:10.570 --> 00:12:18.350 align:middle line:84%
+So scissors beat paper for
+player 1, so we have a 1 here.
+
+00:12:18.350 --> 00:12:22.630 align:middle line:84%
+Paper beats rock,
+so we have a 1 here.
+
+00:12:22.630 --> 00:12:27.670 align:middle line:84%
+And rock beats scissors,
+so we have a 1 here.
+
+00:12:27.670 --> 00:12:30.030 align:middle line:84%
+And in the other three
+spots, the winner
+
+00:12:30.030 --> 00:12:32.710 align:middle line:84%
+is player 2, which means
+the payoff to player 1
+
+00:12:32.710 --> 00:12:34.590 align:middle line:84%
+is negative 1 because
+player 1 is the loser.
+
+00:12:34.590 --> 00:12:37.690 align:middle line:84%
+So if player 1 plays scissors
+and player 2 plays rock,
+
+00:12:37.690 --> 00:12:40.740 align:middle line:84%
+player 1 loses,
+similarly, player 1 loses.
+
+00:12:40.740 --> 00:12:41.680 align:middle line:90%
+Player 1 loses.
+
+00:12:41.680 --> 00:12:44.442 align:middle line:90%
+
+
+00:12:44.442 --> 00:12:46.400 align:middle line:84%
+So whenever we're talking
+about zero-sum games,
+
+00:12:46.400 --> 00:12:47.520 align:middle line:84%
+you're going to see
+something like this.
+
+00:12:47.520 --> 00:12:50.260 align:middle line:84%
+You're only going to have a
+single number in every box
+
+00:12:50.260 --> 00:12:51.440 align:middle line:90%
+rather than two numbers.
+
+00:12:51.440 --> 00:12:53.100 align:middle line:84%
+But we're still
+completely specifying
+
+00:12:53.100 --> 00:12:55.500 align:middle line:84%
+the game because
+of our assumption
+
+00:12:55.500 --> 00:12:56.720 align:middle line:90%
+that that is a zero-sum game.
+
+00:12:56.720 --> 00:12:59.340 align:middle line:90%
+
+
+00:12:59.340 --> 00:13:01.340 align:middle line:84%
+So now the question
+is, how should someone
+
+00:13:01.340 --> 00:13:05.260 align:middle line:90%
+play in this, maybe how to play?
+
+00:13:05.260 --> 00:13:07.012 align:middle line:84%
+I think people
+probably know what's
+
+00:13:07.012 --> 00:13:08.720 align:middle line:84%
+a good strategy in
+Rock, paper, scissors,
+
+00:13:08.720 --> 00:13:10.680 align:middle line:90%
+but let's think it through.
+
+00:13:10.680 --> 00:13:12.180 align:middle line:84%
+One way to think
+it through is let's
+
+00:13:12.180 --> 00:13:13.920 align:middle line:84%
+take the perspective
+of player 1.
+
+00:13:13.920 --> 00:13:16.702 align:middle line:90%
+
+
+00:13:16.702 --> 00:13:19.160 align:middle line:84%
+And one thing player 1 could
+think about is they could say,
+
+00:13:19.160 --> 00:13:22.420 align:middle line:84%
+if I choose a particular move
+or a particular strategy,
+
+00:13:22.420 --> 00:13:26.060 align:middle line:84%
+what's the worst
+that can happen?
+
+00:13:26.060 --> 00:13:30.680 align:middle line:84%
+I'm going to say, what's
+the worst that can happen?
+
+00:13:30.680 --> 00:13:38.500 align:middle line:90%
+
+
+00:13:38.500 --> 00:13:41.280 align:middle line:84%
+This is a very pessimistic or
+conservative way of playing,
+
+00:13:41.280 --> 00:13:43.040 align:middle line:84%
+but it's one thing
+we can think about.
+
+00:13:43.040 --> 00:13:46.340 align:middle line:84%
+So let's say I play
+rock and I'm player 1,
+
+00:13:46.340 --> 00:13:48.080 align:middle line:84%
+what's the worst
+thing that can happen?
+
+00:13:48.080 --> 00:13:50.620 align:middle line:90%
+
+
+00:13:50.620 --> 00:13:56.260 align:middle line:84%
+Well, player 2 could play
+paper, and they would beat me.
+
+00:13:56.260 --> 00:13:59.280 align:middle line:84%
+So the worst thing,
+I'll put an arrow here.
+
+00:13:59.280 --> 00:14:05.300 align:middle line:84%
+The worst thing is
+player 2 plays paper.
+
+00:14:05.300 --> 00:14:10.100 align:middle line:84%
+And my payoff,
+therefore, is negative 1.
+
+00:14:10.100 --> 00:14:13.740 align:middle line:90%
+Negative 1 is my payoff.
+
+00:14:13.740 --> 00:14:16.180 align:middle line:84%
+Similarly, if I play paper,
+again, the worst thing
+
+00:14:16.180 --> 00:14:16.920 align:middle line:90%
+is pretty bad.
+
+00:14:16.920 --> 00:14:22.740 align:middle line:84%
+If I play paper, then my
+opponent could play scissors.
+
+00:14:22.740 --> 00:14:26.800 align:middle line:84%
+And then, again, my
+payoff is negative 1.
+
+00:14:26.800 --> 00:14:29.340 align:middle line:90%
+
+
+00:14:29.340 --> 00:14:31.073 align:middle line:84%
+And symmetrically,
+if I play scissors,
+
+00:14:31.073 --> 00:14:32.740 align:middle line:84%
+my opponent could
+play rock, and I could
+
+00:14:32.740 --> 00:14:34.040 align:middle line:90%
+get a payoff of negative 1.
+
+00:14:34.040 --> 00:14:38.330 align:middle line:90%
+
+
+00:14:38.330 --> 00:14:41.510 align:middle line:84%
+So if I'm worried about the
+worst thing that can happen
+
+00:14:41.510 --> 00:14:44.050 align:middle line:84%
+and I only look at
+these pure strategies,
+
+00:14:44.050 --> 00:14:45.370 align:middle line:90%
+it looks pretty dire.
+
+00:14:45.370 --> 00:14:48.130 align:middle line:84%
+Whatever move I make, the
+worst thing that can happen
+
+00:14:48.130 --> 00:14:50.770 align:middle line:84%
+is the other player plays
+the one move that beats me,
+
+00:14:50.770 --> 00:14:54.690 align:middle line:84%
+I lose, and therefore I
+get a payoff of negative 1.
+
+00:14:54.690 --> 00:14:57.650 align:middle line:84%
+But what if I instead
+play a mixed strategy?
+
+00:14:57.650 --> 00:14:59.090 align:middle line:84%
+Is there any mixed
+strategy that I
+
+00:14:59.090 --> 00:15:02.110 align:middle line:84%
+could play that would ensure
+that, even in the worst case,
+
+00:15:02.110 --> 00:15:04.170 align:middle line:90%
+I do pretty well?
+
+00:15:04.170 --> 00:15:05.290 align:middle line:90%
+Any thoughts?
+
+00:15:05.290 --> 00:15:06.090 align:middle line:90%
+Yeah.
+
+00:15:06.090 --> 00:15:07.632 align:middle line:84%
+AUDIENCE: [INAUDIBLE]
+[? randomize ?]
+
+00:15:07.632 --> 00:15:10.302 align:middle line:90%
+shows that you play [INAUDIBLE].
+
+00:15:10.302 --> 00:15:12.510 align:middle line:84%
+IAN BALL: Great, so let's
+look at the mixed strategy.
+
+00:15:12.510 --> 00:15:15.490 align:middle line:84%
+I'll write it down here, and
+I'll call this strategy 1/3,
+
+00:15:15.490 --> 00:15:17.090 align:middle line:90%
+1/3, 1/3.
+
+00:15:17.090 --> 00:15:20.250 align:middle line:84%
+And the meaning of this is I
+play rock with probability 1/3,
+
+00:15:20.250 --> 00:15:23.650 align:middle line:84%
+paper with probability 1/3, and
+scissors with probability 1/3.
+
+00:15:23.650 --> 00:15:27.250 align:middle line:84%
+And it's not too hard to see
+that if I play this strategy,
+
+00:15:27.250 --> 00:15:29.970 align:middle line:84%
+then whatever my
+opponent does, I'm
+
+00:15:29.970 --> 00:15:31.727 align:middle line:84%
+going to win a
+third of the time,
+
+00:15:31.727 --> 00:15:33.310 align:middle line:84%
+I'm going to lose a
+third of the time,
+
+00:15:33.310 --> 00:15:35.018 align:middle line:84%
+and I'm going to tie
+a third of the time.
+
+00:15:35.018 --> 00:15:37.720 align:middle line:84%
+And therefore, my expected
+payoff is going to be 0.
+
+00:15:37.720 --> 00:15:39.320 align:middle line:84%
+So if I fill in
+with this row what
+
+00:15:39.320 --> 00:15:43.540 align:middle line:84%
+my payoff is when I, as player
+1, use this mixed strategy.
+
+00:15:43.540 --> 00:15:46.100 align:middle line:84%
+And my opponent uses
+each of these strategies,
+
+00:15:46.100 --> 00:15:49.000 align:middle line:90%
+we're going to get 0, 0, 0.
+
+00:15:49.000 --> 00:15:51.040 align:middle line:84%
+And the mathematical
+way to do this is we're
+
+00:15:51.040 --> 00:15:55.080 align:middle line:84%
+literally taking a third of this
+row plus a third of this row
+
+00:15:55.080 --> 00:15:58.240 align:middle line:84%
+plus a third of this row, and
+when we add those rows together,
+
+00:15:58.240 --> 00:16:01.600 align:middle line:84%
+we're just going to
+get 0 at the bottom.
+
+00:16:01.600 --> 00:16:04.482 align:middle line:84%
+So here, what's the worst case,
+the worst thing that can happen?
+
+00:16:04.482 --> 00:16:06.440 align:middle line:84%
+Well, actually, in this
+case, it doesn't really
+
+00:16:06.440 --> 00:16:08.100 align:middle line:90%
+matter what my opponent does.
+
+00:16:08.100 --> 00:16:10.700 align:middle line:84%
+Whatever my opponent
+does, I get a payoff of 0.
+
+00:16:10.700 --> 00:16:22.360 align:middle line:90%
+
+
+00:16:22.360 --> 00:16:25.500 align:middle line:84%
+So this suggests, and if we
+carefully went through it,
+
+00:16:25.500 --> 00:16:27.960 align:middle line:84%
+we could see that no
+other strategy is going
+
+00:16:27.960 --> 00:16:29.480 align:middle line:90%
+to do better in the worst case.
+
+00:16:29.480 --> 00:16:32.230 align:middle line:84%
+There's going to be no
+strategy in Rock paper scissors
+
+00:16:32.230 --> 00:16:34.670 align:middle line:84%
+that ensures that I always
+get a positive payout.
+
+00:16:34.670 --> 00:16:37.470 align:middle line:84%
+So this is actually going
+to be a very good strategy
+
+00:16:37.470 --> 00:16:41.870 align:middle line:84%
+if I'm concerned about the
+worst thing that can happen.
+
+00:16:41.870 --> 00:16:43.987 align:middle line:84%
+And I don't think
+it's really obvious
+
+00:16:43.987 --> 00:16:46.570 align:middle line:84%
+why I should be worried about
+the worst thing that can happen.
+
+00:16:46.570 --> 00:16:47.987 align:middle line:84%
+I mean, it's
+reasonable, but there
+
+00:16:47.987 --> 00:16:49.590 align:middle line:84%
+are other reasonable
+things I can do.
+
+00:16:49.590 --> 00:16:51.870 align:middle line:84%
+But I promise you
+that it's going
+
+00:16:51.870 --> 00:16:55.310 align:middle line:84%
+to turn out that this turns out
+to be a very useful and powerful
+
+00:16:55.310 --> 00:16:55.905 align:middle line:90%
+way to play.
+
+00:16:55.905 --> 00:16:58.030 align:middle line:84%
+So we're going to introduce
+some formal terminology
+
+00:16:58.030 --> 00:17:00.470 align:middle line:84%
+about this kind of reasoning,
+with the promise that later
+
+00:17:00.470 --> 00:17:02.910 align:middle line:90%
+on it will be very fruitful.
+
+00:17:02.910 --> 00:17:08.270 align:middle line:84%
+So let's think about this
+worst case or reasoning.
+
+00:17:08.270 --> 00:17:11.750 align:middle line:84%
+So let's formally
+think about what is--
+
+00:17:11.750 --> 00:17:13.690 align:middle line:84%
+maybe I'll call this
+worst-case reasoning.
+
+00:17:13.690 --> 00:17:16.412 align:middle line:90%
+
+
+00:17:16.412 --> 00:17:17.829 align:middle line:84%
+Another way of
+thinking about this
+
+00:17:17.829 --> 00:17:24.532 align:middle line:84%
+is maybe safe or
+conservative or secure play.
+
+00:17:24.532 --> 00:17:25.990 align:middle line:84%
+What I want is I
+want to find a way
+
+00:17:25.990 --> 00:17:28.590 align:middle line:84%
+to play in the game so that,
+whatever my opponent does,
+
+00:17:28.590 --> 00:17:30.510 align:middle line:84%
+I'm guaranteed to
+do pretty well.
+
+00:17:30.510 --> 00:17:33.430 align:middle line:84%
+So I'm interested in what
+payoff I can guarantee, even
+
+00:17:33.430 --> 00:17:35.830 align:middle line:84%
+In the worst case, no matter
+what my opponent does.
+
+00:17:35.830 --> 00:17:38.030 align:middle line:84%
+So let's introduce
+this idea formally
+
+00:17:38.030 --> 00:17:40.950 align:middle line:84%
+in a more general case
+beyond Rock paper scissors.
+
+00:17:40.950 --> 00:17:46.990 align:middle line:84%
+So we'll think about
+player 1, so for player 1,
+
+00:17:46.990 --> 00:17:48.670 align:middle line:90%
+they're looking at gains.
+
+00:17:48.670 --> 00:17:51.948 align:middle line:84%
+So let me put player 1 here,
+and we have player 2 here.
+
+00:17:51.948 --> 00:17:54.490 align:middle line:84%
+So when player 1 thinks about
+the worst case that can happen,
+
+00:17:54.490 --> 00:17:55.865 align:middle line:84%
+they're saying,
+what is the worst
+
+00:17:55.865 --> 00:18:02.942 align:middle line:84%
+gain I can get as a function
+of my strategy sigma 1.
+
+00:18:02.942 --> 00:18:04.650 align:middle line:84%
+Now, mathematically,
+this is just saying,
+
+00:18:04.650 --> 00:18:07.070 align:middle line:84%
+well, the worst
+thing that can happen
+
+00:18:07.070 --> 00:18:09.630 align:middle line:84%
+is that my opponent plays
+a strategy that makes
+
+00:18:09.630 --> 00:18:12.870 align:middle line:90%
+my gain as small as possible.
+
+00:18:12.870 --> 00:18:20.590 align:middle line:84%
+So the worst case, I'm going
+to take a minimum over sigma 2.
+
+00:18:20.590 --> 00:18:23.250 align:middle line:84%
+Maybe I'll put-- remember
+our notation here,
+
+00:18:23.250 --> 00:18:27.980 align:middle line:84%
+that capital sigma is the set of
+mixed strategies for player 2.
+
+00:18:27.980 --> 00:18:35.180 align:middle line:84%
+And I'll write u of
+sigma 1, sigma 2.
+
+00:18:35.180 --> 00:18:37.080 align:middle line:84%
+So let's think through
+this really carefully.
+
+00:18:37.080 --> 00:18:38.980 align:middle line:90%
+We're saying I'm player 1.
+
+00:18:38.980 --> 00:18:42.220 align:middle line:84%
+Suppose I use the
+mixed strategy sigma 1.
+
+00:18:42.220 --> 00:18:44.060 align:middle line:84%
+What is the worst
+thing that can happen?
+
+00:18:44.060 --> 00:18:47.300 align:middle line:84%
+Well, the payoff I get is
+going to depend on the strategy
+
+00:18:47.300 --> 00:18:49.402 align:middle line:90%
+sigma 2 that my opponent plays.
+
+00:18:49.402 --> 00:18:50.860 align:middle line:84%
+But I'm going to
+evaluate a minimum
+
+00:18:50.860 --> 00:18:53.152 align:middle line:84%
+to think of the worst thing
+that could possibly happen,
+
+00:18:53.152 --> 00:18:56.380 align:middle line:84%
+and I'm going to call that
+my Worst Gain, WG, worst
+
+00:18:56.380 --> 00:18:57.660 align:middle line:90%
+gain from sigma 1.
+
+00:18:57.660 --> 00:19:03.940 align:middle line:90%
+
+
+00:19:03.940 --> 00:19:07.512 align:middle line:84%
+And gain reflects the fact
+that, for me, u, the payoff,
+
+00:19:07.512 --> 00:19:08.220 align:middle line:90%
+is a gain for me.
+
+00:19:08.220 --> 00:19:10.060 align:middle line:90%
+It's a good thing for me.
+
+00:19:10.060 --> 00:19:12.020 align:middle line:84%
+One observation here
+that we often make
+
+00:19:12.020 --> 00:19:14.180 align:middle line:84%
+is that I don't actually
+have to minimize over
+
+00:19:14.180 --> 00:19:15.760 align:middle line:90%
+all mixed strategies.
+
+00:19:15.760 --> 00:19:17.720 align:middle line:84%
+If I just minimized
+over pure strategies,
+
+00:19:17.720 --> 00:19:18.980 align:middle line:90%
+I'd get the same answer.
+
+00:19:18.980 --> 00:19:23.980 align:middle line:84%
+So we could also write this
+as the min over s2 and s2
+
+00:19:23.980 --> 00:19:27.370 align:middle line:90%
+of u of sigma 1, s2.
+
+00:19:27.370 --> 00:19:31.050 align:middle line:90%
+
+
+00:19:31.050 --> 00:19:33.030 align:middle line:84%
+And the reason is that
+my payoff from a mix,
+
+00:19:33.030 --> 00:19:34.710 align:middle line:84%
+if my opponent plays
+a mixed strategy,
+
+00:19:34.710 --> 00:19:37.170 align:middle line:84%
+is just the average, an
+average over the payoffs I
+
+00:19:37.170 --> 00:19:39.790 align:middle line:84%
+get if my opponent
+plays pure strategies.
+
+00:19:39.790 --> 00:19:42.503 align:middle line:84%
+So the worst thing
+that can happen
+
+00:19:42.503 --> 00:19:44.170 align:middle line:84%
+will always actually
+be a pure strategy.
+
+00:19:44.170 --> 00:19:47.170 align:middle line:84%
+Or there will be a pure
+strategy that's worst.
+
+00:19:47.170 --> 00:19:49.850 align:middle line:84%
+And now let's do things
+symmetrically for player 2.
+
+00:19:49.850 --> 00:19:51.130 align:middle line:90%
+We want to do--
+
+00:19:51.130 --> 00:19:53.170 align:middle line:84%
+think about this secure
+worst-case reasoning
+
+00:19:53.170 --> 00:19:54.010 align:middle line:90%
+for player 2.
+
+00:19:54.010 --> 00:19:56.710 align:middle line:84%
+But now player 2 is
+focused on their loss.
+
+00:19:56.710 --> 00:20:01.170 align:middle line:84%
+So I'm going to call this WL
+of sigma 2 because, remember,
+
+00:20:01.170 --> 00:20:02.890 align:middle line:84%
+these numbers in the
+matrix for player 2
+
+00:20:02.890 --> 00:20:04.930 align:middle line:84%
+correspond to
+losses to player 2.
+
+00:20:04.930 --> 00:20:08.130 align:middle line:84%
+So I want to say if I'm
+player 2 and I choose
+
+00:20:08.130 --> 00:20:11.730 align:middle line:84%
+a mixed-strategy sigma 2, what
+is the worst possible thing that
+
+00:20:11.730 --> 00:20:12.690 align:middle line:90%
+can happen?
+
+00:20:12.690 --> 00:20:14.970 align:middle line:84%
+The worst thing that
+can happen is if my loss
+
+00:20:14.970 --> 00:20:16.850 align:middle line:90%
+is as large as possible.
+
+00:20:16.850 --> 00:20:24.010 align:middle line:84%
+So I'm now going to write here a
+maximum over sigma 1 and sigma 1
+
+00:20:24.010 --> 00:20:27.440 align:middle line:90%
+of u, sigma 1, sigma 2.
+
+00:20:27.440 --> 00:20:32.160 align:middle line:84%
+This says how much I lose
+depends on what player 1 does.
+
+00:20:32.160 --> 00:20:35.000 align:middle line:84%
+And the worst possible
+loss is if player 1
+
+00:20:35.000 --> 00:20:38.360 align:middle line:84%
+chooses the strategy that makes
+my loss as large as possible.
+
+00:20:38.360 --> 00:20:41.440 align:middle line:84%
+So we have a maximum
+here and a minimum here.
+
+00:20:41.440 --> 00:20:52.520 align:middle line:84%
+And again, this is the same
+as max over s1 and s1 sigma 2.
+
+00:20:52.520 --> 00:20:58.100 align:middle line:84%
+And we might call
+this my worst loss.
+
+00:20:58.100 --> 00:21:01.902 align:middle line:90%
+
+
+00:21:01.902 --> 00:21:03.360 align:middle line:84%
+So just to check
+our understanding,
+
+00:21:03.360 --> 00:21:04.985 align:middle line:84%
+if we went back to
+this example, if I'm
+
+00:21:04.985 --> 00:21:08.960 align:middle line:84%
+player 1, if I
+played sigma 1 equals
+
+00:21:08.960 --> 00:21:14.900 align:middle line:84%
+R, what would be my worst gain
+from R In this game over here?
+
+00:21:14.900 --> 00:21:19.720 align:middle line:90%
+
+
+00:21:19.720 --> 00:21:22.340 align:middle line:84%
+It would be negative
+1 because if I play R,
+
+00:21:22.340 --> 00:21:26.520 align:middle line:84%
+the worst thing that can happen
+is my opponent plays paper,
+
+00:21:26.520 --> 00:21:28.720 align:middle line:84%
+and then I lose, and I get
+a payoff of negative 1.
+
+00:21:28.720 --> 00:21:30.840 align:middle line:84%
+On the other hand,
+the worst gain
+
+00:21:30.840 --> 00:21:33.720 align:middle line:84%
+from the mixed strategy
+a third, a third, a third
+
+00:21:33.720 --> 00:21:35.360 align:middle line:90%
+is going to be 0.
+
+00:21:35.360 --> 00:21:38.200 align:middle line:90%
+That's what we showed down here.
+
+00:21:38.200 --> 00:21:41.308 align:middle line:84%
+And similarly, for player
+2, the worst loss--
+
+00:21:41.308 --> 00:21:43.600 align:middle line:84%
+and maybe since we haven't
+worked with player two much,
+
+00:21:43.600 --> 00:21:45.200 align:middle line:90%
+let's be careful.
+
+00:21:45.200 --> 00:21:50.360 align:middle line:84%
+The worst loss for player 2,
+if they play R in this game
+
+00:21:50.360 --> 00:21:51.580 align:middle line:90%
+would be what?
+
+00:21:51.580 --> 00:21:54.080 align:middle line:84%
+Let's say I'm player
+2 and I play rock
+
+00:21:54.080 --> 00:21:58.290 align:middle line:84%
+in Rock paper scissors,
+what is my worst loss?
+
+00:21:58.290 --> 00:21:59.540 align:middle line:90%
+So we have to be careful here.
+
+00:21:59.540 --> 00:22:01.620 align:middle line:90%
+It's actually 1.
+
+00:22:01.620 --> 00:22:03.960 align:middle line:84%
+You might be tempted to say
+negative 1, but remember,
+
+00:22:03.960 --> 00:22:05.780 align:middle line:90%
+this is how much I'm losing.
+
+00:22:05.780 --> 00:22:12.200 align:middle line:84%
+So the worst case for me, if
+I'm player 2 and I play R,
+
+00:22:12.200 --> 00:22:15.520 align:middle line:84%
+well, I'm trying to
+minimize how much I lose.
+
+00:22:15.520 --> 00:22:18.800 align:middle line:84%
+So the worst loss is if
+my opponent plays paper
+
+00:22:18.800 --> 00:22:23.212 align:middle line:84%
+and I lose utility
+1, my loss is 1.
+
+00:22:23.212 --> 00:22:24.670 align:middle line:84%
+So just keep this
+in mind, and this
+
+00:22:24.670 --> 00:22:26.712 align:middle line:84%
+is why things can be a
+little bit confusing here.
+
+00:22:26.712 --> 00:22:27.670 align:middle line:90%
+Yes.
+
+00:22:27.670 --> 00:22:29.550 align:middle line:84%
+AUDIENCE: I understand
+structurally
+
+00:22:29.550 --> 00:22:33.110 align:middle line:84%
+why a mixed strategy is
+the same as pure strategy
+
+00:22:33.110 --> 00:22:35.630 align:middle line:84%
+for those formulations
+that you have there.
+
+00:22:35.630 --> 00:22:38.230 align:middle line:84%
+I want to confirm, does this
+just hold for this scheme?
+
+00:22:38.230 --> 00:22:41.630 align:middle line:84%
+Or is it a general result
+for zero-sum games?
+
+00:22:41.630 --> 00:22:46.110 align:middle line:84%
+IAN BALL: So it's a very
+general result that,
+
+00:22:46.110 --> 00:22:50.910 align:middle line:84%
+once I fix one player's
+strategy in a two-player game,
+
+00:22:50.910 --> 00:22:54.550 align:middle line:84%
+and now I want to maximize
+the payoff of the other player
+
+00:22:54.550 --> 00:22:56.470 align:middle line:84%
+or minimize the payoff
+of the other player,
+
+00:22:56.470 --> 00:23:00.670 align:middle line:84%
+that maximum or minimum will
+be achieved by a pure strategy.
+
+00:23:00.670 --> 00:23:02.590 align:middle line:84%
+More generally, in
+an n-player game,
+
+00:23:02.590 --> 00:23:05.310 align:middle line:84%
+if I fix the strategies of
+all but one of the players,
+
+00:23:05.310 --> 00:23:07.190 align:middle line:84%
+n minus 1 of the
+players, and now I
+
+00:23:07.190 --> 00:23:10.590 align:middle line:84%
+contemplate a choice of
+strategy for that last player,
+
+00:23:10.590 --> 00:23:14.090 align:middle line:84%
+that payoff will be maximized
+or minimized by a pure strategy,
+
+00:23:14.090 --> 00:23:16.310 align:middle line:84%
+maybe also by a mixed
+strategy, but in particular
+
+00:23:16.310 --> 00:23:17.650 align:middle line:90%
+by a pure strategy.
+
+00:23:17.650 --> 00:23:20.820 align:middle line:84%
+But we have to be
+really careful here.
+
+00:23:20.820 --> 00:23:24.980 align:middle line:84%
+On the other hand, it's not
+true that if I take a step back
+
+00:23:24.980 --> 00:23:28.780 align:middle line:84%
+and look at the worst case gain,
+that my best worst-case gain can
+
+00:23:28.780 --> 00:23:30.413 align:middle line:90%
+be achieved by a pure strategy.
+
+00:23:30.413 --> 00:23:31.080 align:middle line:90%
+That's not true.
+
+00:23:31.080 --> 00:23:32.788 align:middle line:84%
+And that's exactly
+what we saw over here.
+
+00:23:32.788 --> 00:23:35.800 align:middle line:84%
+Because if I restricted
+myself to a pure strategy,
+
+00:23:35.800 --> 00:23:39.160 align:middle line:84%
+then my worst-case gain
+was always negative 1.
+
+00:23:39.160 --> 00:23:41.620 align:middle line:84%
+And it was very important
+that we allowed myself
+
+00:23:41.620 --> 00:23:43.240 align:middle line:90%
+to use mixed strategies.
+
+00:23:43.240 --> 00:23:46.180 align:middle line:84%
+So mathematically,
+what's going on
+
+00:23:46.180 --> 00:23:49.580 align:middle line:84%
+is that once I fix
+one player's strategy,
+
+00:23:49.580 --> 00:23:52.020 align:middle line:84%
+the utility function as a
+function of the other player's
+
+00:23:52.020 --> 00:23:54.340 align:middle line:90%
+strategy is a linear function.
+
+00:23:54.340 --> 00:23:56.420 align:middle line:84%
+And a linear function
+over probabilities
+
+00:23:56.420 --> 00:23:59.900 align:middle line:84%
+achieves its maximum at a corner
+solution at the endpoints.
+
+00:23:59.900 --> 00:24:02.540 align:middle line:84%
+But the worst-case
+gain function, WG,
+
+00:24:02.540 --> 00:24:05.060 align:middle line:84%
+is no longer a linear
+function because it's
+
+00:24:05.060 --> 00:24:06.920 align:middle line:90%
+a minimum over linear functions.
+
+00:24:06.920 --> 00:24:09.140 align:middle line:84%
+It's actually going to
+be a concave function,
+
+00:24:09.140 --> 00:24:11.977 align:middle line:84%
+and that's mathematically
+what's going on.
+
+00:24:11.977 --> 00:24:12.560 align:middle line:90%
+Good question.
+
+00:24:12.560 --> 00:24:13.840 align:middle line:90%
+Any other questions on this?
+
+00:24:13.840 --> 00:24:19.970 align:middle line:90%
+
+
+00:24:19.970 --> 00:24:23.830 align:middle line:84%
+So we've defined, we've thought
+through worst-case reasoning.
+
+00:24:23.830 --> 00:24:26.490 align:middle line:90%
+
+
+00:24:26.490 --> 00:24:30.290 align:middle line:84%
+And now we want to go a step
+further and talk about something
+
+00:24:30.290 --> 00:24:32.330 align:middle line:84%
+called security
+strategies, which
+
+00:24:32.330 --> 00:24:34.870 align:middle line:84%
+just formalizes what we talked
+about in this game before.
+
+00:24:34.870 --> 00:24:39.290 align:middle line:90%
+
+
+00:24:39.290 --> 00:24:40.790 align:middle line:90%
+So what is a security strategy?
+
+00:24:40.790 --> 00:24:44.530 align:middle line:84%
+Well, when I'm choosing what
+strategy to play as player 1,
+
+00:24:44.530 --> 00:24:46.530 align:middle line:84%
+I evaluate each
+strategy according
+
+00:24:46.530 --> 00:24:48.170 align:middle line:90%
+to its worst-case payoff.
+
+00:24:48.170 --> 00:24:50.770 align:middle line:84%
+And I choose the
+strategy that maximizes
+
+00:24:50.770 --> 00:24:52.530 align:middle line:90%
+that worst-case payoff.
+
+00:24:52.530 --> 00:24:57.610 align:middle line:84%
+So for player 1, we
+say a strategy sigma 1
+
+00:24:57.610 --> 00:25:00.110 align:middle line:90%
+star is a security strategy.
+
+00:25:00.110 --> 00:25:06.850 align:middle line:90%
+
+
+00:25:06.850 --> 00:25:14.050 align:middle line:84%
+If the worst-case
+gain from sigma 1 star
+
+00:25:14.050 --> 00:25:16.250 align:middle line:84%
+is better than the
+worst-case gain
+
+00:25:16.250 --> 00:25:18.630 align:middle line:84%
+I would get from any
+alternative strategy.
+
+00:25:18.630 --> 00:25:30.650 align:middle line:90%
+
+
+00:25:30.650 --> 00:25:34.830 align:middle line:84%
+So I'm comparing if I use
+strategy sigma 1 star,
+
+00:25:34.830 --> 00:25:37.010 align:middle line:84%
+what is the
+worst-case gain I get?
+
+00:25:37.010 --> 00:25:39.530 align:middle line:84%
+If I use a different
+strategy, sigma 1,
+
+00:25:39.530 --> 00:25:41.910 align:middle line:84%
+what is the worst-case
+gain that I get?
+
+00:25:41.910 --> 00:25:45.010 align:middle line:84%
+And I would like the worst-case
+gain to be as large as possible.
+
+00:25:45.010 --> 00:25:48.770 align:middle line:84%
+And that's what it means
+to be a security strategy.
+
+00:25:48.770 --> 00:25:51.490 align:middle line:84%
+And then for player 2,
+things are just symmetric.
+
+00:25:51.490 --> 00:25:56.910 align:middle line:84%
+For player 2, we say sigma 2
+star is a Security Strategy.
+
+00:25:56.910 --> 00:26:00.170 align:middle line:90%
+I'll just say SS.
+
+00:26:00.170 --> 00:26:01.430 align:middle line:90%
+Let's be careful here.
+
+00:26:01.430 --> 00:26:05.510 align:middle line:84%
+Now we're worried about the
+worst-case loss of sigma 2 star.
+
+00:26:05.510 --> 00:26:10.170 align:middle line:90%
+
+
+00:26:10.170 --> 00:26:12.490 align:middle line:84%
+And for player 2,
+they're minimizing.
+
+00:26:12.490 --> 00:26:16.600 align:middle line:84%
+They care about losses, so
+sigma 2 star is best for them
+
+00:26:16.600 --> 00:26:20.120 align:middle line:84%
+if the loss is as
+small as possible.
+
+00:26:20.120 --> 00:26:22.640 align:middle line:84%
+So they want the worst-case
+loss from sigma 2 star
+
+00:26:22.640 --> 00:26:26.420 align:middle line:84%
+to be less than or equal to
+the worst-case loss from sigma
+
+00:26:26.420 --> 00:26:33.200 align:middle line:90%
+2 for all sigma 2 in sigma 2.
+
+00:26:33.200 --> 00:26:36.360 align:middle line:84%
+And here, going back to
+the question over here,
+
+00:26:36.360 --> 00:26:40.040 align:middle line:84%
+it is really important that we
+contemplate mixed strategies
+
+00:26:40.040 --> 00:26:40.540 align:middle line:90%
+here.
+
+00:26:40.540 --> 00:26:42.140 align:middle line:84%
+We can't just look
+at pure strategies.
+
+00:26:42.140 --> 00:26:48.120 align:middle line:90%
+
+
+00:26:48.120 --> 00:26:49.380 align:middle line:90%
+We have this definition.
+
+00:26:49.380 --> 00:27:06.360 align:middle line:90%
+
+
+00:27:06.360 --> 00:27:10.340 align:middle line:84%
+So it's nice to have
+some notation here.
+
+00:27:10.340 --> 00:27:12.830 align:middle line:90%
+If we think about player 1--
+
+00:27:12.830 --> 00:27:13.850 align:middle line:90%
+come down to this.
+
+00:27:13.850 --> 00:27:28.230 align:middle line:90%
+
+
+00:27:28.230 --> 00:27:30.730 align:middle line:84%
+So now that we have this
+notion of security strategies,
+
+00:27:30.730 --> 00:27:32.710 align:middle line:84%
+we can start thinking
+about payoffs.
+
+00:27:32.710 --> 00:27:35.530 align:middle line:84%
+So maybe they'll start
+thinking about secure payoffs.
+
+00:27:35.530 --> 00:27:39.790 align:middle line:90%
+
+
+00:27:39.790 --> 00:27:41.870 align:middle line:84%
+And what we want
+to give a name to
+
+00:27:41.870 --> 00:27:48.710 align:middle line:84%
+is, what is this best
+worst-case gain for player 1?
+
+00:27:48.710 --> 00:27:54.293 align:middle line:84%
+So for player 1, let's
+look at this quantity.
+
+00:27:54.293 --> 00:27:56.710 align:middle line:84%
+It's often helpful-- we'll
+call it v lower bar for reasons
+
+00:27:56.710 --> 00:27:58.270 align:middle line:90%
+that'll become clear--
+
+00:27:58.270 --> 00:28:07.790 align:middle line:84%
+is the max over sigma
+1 of WG of sigma 1.
+
+00:28:07.790 --> 00:28:14.140 align:middle line:84%
+So we think of this as
+the gain, the best gain
+
+00:28:14.140 --> 00:28:15.680 align:middle line:90%
+that player 1 can secure.
+
+00:28:15.680 --> 00:28:19.740 align:middle line:90%
+
+
+00:28:19.740 --> 00:28:21.900 align:middle line:84%
+So if we go back to our
+definition over here,
+
+00:28:21.900 --> 00:28:25.140 align:middle line:84%
+if player 1 plays a
+security strategy,
+
+00:28:25.140 --> 00:28:28.300 align:middle line:84%
+then their worst-case gain
+from that security strategy
+
+00:28:28.300 --> 00:28:31.060 align:middle line:90%
+will precisely be v lower bar.
+
+00:28:31.060 --> 00:28:33.480 align:middle line:84%
+If they chose a
+non-security strategy,
+
+00:28:33.480 --> 00:28:35.860 align:middle line:84%
+the worst-case gain would
+be strictly smaller.
+
+00:28:35.860 --> 00:28:39.380 align:middle line:84%
+But under a security
+strategy, the worst case gain
+
+00:28:39.380 --> 00:28:42.460 align:middle line:90%
+is exactly equal to v lower bar.
+
+00:28:42.460 --> 00:28:45.580 align:middle line:84%
+So one way of saying-- of
+defining a security strategy
+
+00:28:45.580 --> 00:28:47.740 align:middle line:84%
+is precisely that
+the worst-case gain
+
+00:28:47.740 --> 00:28:51.660 align:middle line:84%
+is equal to the maximum
+possible worst-case gain.
+
+00:28:51.660 --> 00:28:54.260 align:middle line:84%
+And then we can also
+define, for player 2,
+
+00:28:54.260 --> 00:28:56.900 align:middle line:90%
+what we might call v upper bar.
+
+00:28:56.900 --> 00:28:59.740 align:middle line:84%
+And that is going
+to be the minimum
+
+00:28:59.740 --> 00:29:07.500 align:middle line:84%
+over sigma 2 of the
+worst-case loss of sigma 2.
+
+00:29:07.500 --> 00:29:11.540 align:middle line:90%
+
+
+00:29:11.540 --> 00:29:23.700 align:middle line:84%
+So maybe this is the best
+worst-case loss or the best loss
+
+00:29:23.700 --> 00:29:25.520 align:middle line:90%
+that P2 can secure.
+
+00:29:25.520 --> 00:29:29.940 align:middle line:90%
+
+
+00:29:29.940 --> 00:29:33.940 align:middle line:84%
+So what this says is suppose
+player 2 plays a security
+
+00:29:33.940 --> 00:29:35.380 align:middle line:90%
+strategy.
+
+00:29:35.380 --> 00:29:38.500 align:middle line:84%
+They know that, however
+their opponent plays,
+
+00:29:38.500 --> 00:29:44.540 align:middle line:84%
+their loss is going to be
+no worse than v upper bar.
+
+00:29:44.540 --> 00:29:47.940 align:middle line:84%
+And player 1 knows that if
+they play a security strategy,
+
+00:29:47.940 --> 00:29:51.760 align:middle line:84%
+their gain is going to be
+no worse than v lower bar.
+
+00:29:51.760 --> 00:29:54.740 align:middle line:84%
+They're always going to
+get at least v lower bar.
+
+00:29:54.740 --> 00:29:57.260 align:middle line:84%
+And now we can see it starts
+to get a little confusing as we
+
+00:29:57.260 --> 00:29:59.300 align:middle line:90%
+look at the min of the max.
+
+00:29:59.300 --> 00:30:03.500 align:middle line:84%
+But what we'd like to
+understand is the relationship
+
+00:30:03.500 --> 00:30:05.300 align:middle line:90%
+between these two numbers.
+
+00:30:05.300 --> 00:30:09.170 align:middle line:84%
+So the gain that
+player 1 can secure
+
+00:30:09.170 --> 00:30:13.010 align:middle line:84%
+and the loss that
+player 2 can secure.
+
+00:30:13.010 --> 00:30:22.430 align:middle line:84%
+And let's go down here and
+try to think about this.
+
+00:30:22.430 --> 00:30:26.290 align:middle line:84%
+So the first question
+we want to understand
+
+00:30:26.290 --> 00:30:29.370 align:middle line:84%
+is, what is the relationship
+between v lower bar and v
+
+00:30:29.370 --> 00:30:29.958 align:middle line:90%
+upper bar?
+
+00:30:29.958 --> 00:30:32.250 align:middle line:84%
+Well, the way I've defined
+them kind of makes it clear.
+
+00:30:32.250 --> 00:30:34.430 align:middle line:84%
+v upper bar is going to be
+bigger than v lower bar.
+
+00:30:34.430 --> 00:30:36.570 align:middle line:90%
+But let's try to understand why.
+
+00:30:36.570 --> 00:30:41.690 align:middle line:84%
+What we want to argue
+is that v lower bar
+
+00:30:41.690 --> 00:30:43.710 align:middle line:84%
+must be smaller
+than v upper bar?
+
+00:30:43.710 --> 00:30:46.730 align:middle line:90%
+
+
+00:30:46.730 --> 00:30:48.410 align:middle line:90%
+And say again--
+
+00:30:48.410 --> 00:30:49.827 align:middle line:90%
+AUDIENCE: Is that strict?
+
+00:30:49.827 --> 00:30:50.910 align:middle line:90%
+IAN BALL: We'll see later.
+
+00:30:50.910 --> 00:30:54.610 align:middle line:84%
+It not be strict, but there's
+going to be a weak inequality.
+
+00:30:54.610 --> 00:30:57.570 align:middle line:84%
+And one way I like to
+try to think about this
+
+00:30:57.570 --> 00:30:59.070 align:middle line:90%
+is with a little graph here.
+
+00:30:59.070 --> 00:31:02.170 align:middle line:90%
+Well, let's think of P1 and P2.
+
+00:31:02.170 --> 00:31:09.540 align:middle line:84%
+And in the end,
+these will be equal.
+
+00:31:09.540 --> 00:31:11.060 align:middle line:90%
+But let's not draw it this way.
+
+00:31:11.060 --> 00:31:14.880 align:middle line:90%
+
+
+00:31:14.880 --> 00:31:16.637 align:middle line:84%
+What does v lower bar
+mean for player 1?
+
+00:31:16.637 --> 00:31:18.220 align:middle line:84%
+Let's think about
+how to interpret it.
+
+00:31:18.220 --> 00:31:21.160 align:middle line:84%
+It means player one can
+play a security strategy.
+
+00:31:21.160 --> 00:31:24.000 align:middle line:84%
+And if player 1 plays a
+security strategy, however
+
+00:31:24.000 --> 00:31:29.360 align:middle line:84%
+the other player plays, their
+payoff is at least v lower bar.
+
+00:31:29.360 --> 00:31:31.000 align:middle line:84%
+So what my security
+strategy tells me,
+
+00:31:31.000 --> 00:31:32.760 align:middle line:84%
+this gets to the
+idea of a guarantee.
+
+00:31:32.760 --> 00:31:36.200 align:middle line:84%
+It says if I'm player 1 and
+I play my security strategy,
+
+00:31:36.200 --> 00:31:38.760 align:middle line:84%
+I don't know how my
+opponent will play.
+
+00:31:38.760 --> 00:31:40.730 align:middle line:84%
+But however they
+play, my payoff is
+
+00:31:40.730 --> 00:31:41.980 align:middle line:90%
+going to be somewhere in here.
+
+00:31:41.980 --> 00:31:44.397 align:middle line:84%
+It's going to be at
+least v lower bar.
+
+00:31:44.397 --> 00:31:46.480 align:middle line:84%
+And the fact that I'm
+choosing a security strategy
+
+00:31:46.480 --> 00:31:49.140 align:middle line:84%
+means there's no way I can
+make this graph any better.
+
+00:31:49.140 --> 00:31:50.720 align:middle line:84%
+I couldn't choose
+another strategy
+
+00:31:50.720 --> 00:31:54.280 align:middle line:84%
+that would ensure that my payoff
+was strictly higher than this.
+
+00:31:54.280 --> 00:31:55.920 align:middle line:84%
+And similarly, for
+v upper bar, what
+
+00:31:55.920 --> 00:32:01.400 align:middle line:84%
+it tells me is if player 2
+plays their security strategy,
+
+00:32:01.400 --> 00:32:05.550 align:middle line:84%
+it tells me that their loss is
+always smaller than v upper bar.
+
+00:32:05.550 --> 00:32:08.270 align:middle line:84%
+So they don't know exactly how
+much they're going to lose.
+
+00:32:08.270 --> 00:32:10.250 align:middle line:84%
+It depends on what
+the other player does,
+
+00:32:10.250 --> 00:32:12.090 align:middle line:84%
+but however the
+other player plays,
+
+00:32:12.090 --> 00:32:14.490 align:middle line:84%
+they're never going to
+lose more than v upper bar.
+
+00:32:14.490 --> 00:32:19.080 align:middle line:90%
+
+
+00:32:19.080 --> 00:32:20.830 align:middle line:84%
+Now, this is a bit of
+a misleading diagram
+
+00:32:20.830 --> 00:32:22.310 align:middle line:84%
+because, in the end,
+we're going to show
+
+00:32:22.310 --> 00:32:23.610 align:middle line:90%
+these two numbers are equal.
+
+00:32:23.610 --> 00:32:28.790 align:middle line:84%
+But I think this kind of
+illustrates what goes on.
+
+00:32:28.790 --> 00:32:32.190 align:middle line:84%
+Now, how can we show
+this inequality?
+
+00:32:32.190 --> 00:32:33.670 align:middle line:84%
+What we want to
+understand is, what
+
+00:32:33.670 --> 00:32:37.650 align:middle line:84%
+would happen if each player
+played their security strategy?
+
+00:32:37.650 --> 00:32:39.310 align:middle line:84%
+So I want to give a
+graphical argument,
+
+00:32:39.310 --> 00:32:41.227 align:middle line:84%
+and then we'll give the
+mathematical argument.
+
+00:32:41.227 --> 00:32:44.790 align:middle line:84%
+But intuitively, suppose we both
+play our security strategies
+
+00:32:44.790 --> 00:32:46.570 align:middle line:84%
+or both play a
+security strategy.
+
+00:32:46.570 --> 00:32:48.750 align:middle line:84%
+We may have multiple
+security strategies.
+
+00:32:48.750 --> 00:32:52.110 align:middle line:84%
+What if both play
+security strategies?
+
+00:32:52.110 --> 00:32:55.030 align:middle line:84%
+Well, what's going to happen
+to player one's payoff?
+
+00:32:55.030 --> 00:32:57.330 align:middle line:84%
+They're playing one of
+their security strategies.
+
+00:32:57.330 --> 00:33:01.790 align:middle line:84%
+So the gain they get has
+to be somewhere in here.
+
+00:33:01.790 --> 00:33:05.010 align:middle line:84%
+But now player 2 is also
+playing their security strategy,
+
+00:33:05.010 --> 00:33:08.350 align:middle line:84%
+so the loss they experience
+must be somewhere in here.
+
+00:33:08.350 --> 00:33:10.890 align:middle line:84%
+But they're playing
+these strategies.
+
+00:33:10.890 --> 00:33:13.030 align:middle line:84%
+There's some actual
+gain and actual loss.
+
+00:33:13.030 --> 00:33:16.270 align:middle line:84%
+So what it tells us is we
+must be somewhere in this box
+
+00:33:16.270 --> 00:33:18.790 align:middle line:84%
+if we both play our
+security strategies.
+
+00:33:18.790 --> 00:33:23.070 align:middle line:84%
+And let's try to show
+that mathematically.
+
+00:33:23.070 --> 00:33:24.650 align:middle line:90%
+So let's look at what happens.
+
+00:33:24.650 --> 00:33:27.270 align:middle line:90%
+
+
+00:33:27.270 --> 00:33:29.030 align:middle line:90%
+So here's the result.
+
+00:33:29.030 --> 00:33:40.230 align:middle line:84%
+For any security strategies
+sigma 1 star and sigma 2 star,
+
+00:33:40.230 --> 00:33:46.870 align:middle line:84%
+let's try to understand, what
+is the payoff u1 star u2 star?
+
+00:33:46.870 --> 00:33:49.670 align:middle line:84%
+So player 1's playing
+their security strategy.
+
+00:33:49.670 --> 00:33:51.730 align:middle line:84%
+Player 2's playing
+their security strategy,
+
+00:33:51.730 --> 00:33:55.630 align:middle line:84%
+and we want to understand u,
+which is the gain for player 1
+
+00:33:55.630 --> 00:33:59.485 align:middle line:90%
+and the loss for player 2.
+
+00:33:59.485 --> 00:34:02.140 align:middle line:84%
+Well, what do we
+know about this?
+
+00:34:02.140 --> 00:34:06.900 align:middle line:84%
+We exactly want to go
+through this reasoning here.
+
+00:34:06.900 --> 00:34:10.540 align:middle line:84%
+Well, the loss, this is
+the loss for player 2.
+
+00:34:10.540 --> 00:34:14.020 align:middle line:84%
+So this loss can't be any
+worse than player 2's worst
+
+00:34:14.020 --> 00:34:16.580 align:middle line:90%
+loss from playing sigma 2 star.
+
+00:34:16.580 --> 00:34:26.820 align:middle line:84%
+So this must be less than
+or equal to the worst
+
+00:34:26.820 --> 00:34:27.800 align:middle line:90%
+loss of sigma 2 star.
+
+00:34:27.800 --> 00:34:28.300 align:middle line:90%
+Why?
+
+00:34:28.300 --> 00:34:30.500 align:middle line:84%
+Well, this is just
+the definition.
+
+00:34:30.500 --> 00:34:34.659 align:middle line:84%
+This says if I play sigma 2
+star, however my opponent plays,
+
+00:34:34.659 --> 00:34:38.139 align:middle line:84%
+my loss is smaller
+than the worst loss.
+
+00:34:38.139 --> 00:34:41.020 align:middle line:84%
+In particular, if my
+opponent plays sigma 1 star,
+
+00:34:41.020 --> 00:34:44.659 align:middle line:84%
+then my loss must be smaller
+than my worst-case loss
+
+00:34:44.659 --> 00:34:49.500 align:middle line:84%
+because the worst-case loss
+is as high as possible.
+
+00:34:49.500 --> 00:34:54.760 align:middle line:84%
+Then, in the other direction,
+we want to claim this.
+
+00:34:54.760 --> 00:34:59.850 align:middle line:90%
+
+
+00:34:59.850 --> 00:35:05.690 align:middle line:84%
+Well, if I play sigma 1
+star, my worst-case gain
+
+00:35:05.690 --> 00:35:07.690 align:middle line:90%
+is WG of sigma 1 star.
+
+00:35:07.690 --> 00:35:10.730 align:middle line:84%
+So that says, however
+my opponent plays,
+
+00:35:10.730 --> 00:35:13.090 align:middle line:84%
+I'm going to get a
+payoff of at least this.
+
+00:35:13.090 --> 00:35:16.190 align:middle line:84%
+So in particular, if my
+opponent plays sigma 2 star,
+
+00:35:16.190 --> 00:35:18.930 align:middle line:84%
+my payoff is going to have
+to be higher than this.
+
+00:35:18.930 --> 00:35:26.210 align:middle line:84%
+And this is v lower bar,
+and this is v upper bar.
+
+00:35:26.210 --> 00:35:29.170 align:middle line:84%
+Notice here that these middle
+inequalities didn't actually
+
+00:35:29.170 --> 00:35:31.468 align:middle line:84%
+depend on the fact that these
+were security strategies.
+
+00:35:31.468 --> 00:35:33.010 align:middle line:84%
+The middle inequalities
+just followed
+
+00:35:33.010 --> 00:35:35.850 align:middle line:84%
+from the definitions
+of worst-case loss
+
+00:35:35.850 --> 00:35:37.210 align:middle line:90%
+and worst-case gain.
+
+00:35:37.210 --> 00:35:40.210 align:middle line:84%
+But the outer equalities
+are using the fact
+
+00:35:40.210 --> 00:35:43.930 align:middle line:84%
+that sigma 1 star is a
+security strategy for player 1,
+
+00:35:43.930 --> 00:35:46.510 align:middle line:84%
+and sigma 2 star is a security
+strategy for player 2.
+
+00:35:46.510 --> 00:35:50.530 align:middle line:90%
+
+
+00:35:50.530 --> 00:35:52.890 align:middle line:84%
+I think there's one
+last way of interpreting
+
+00:35:52.890 --> 00:35:56.010 align:middle line:84%
+this that may be a bit more
+reasonable, a bit easier
+
+00:35:56.010 --> 00:35:57.240 align:middle line:90%
+to interpret.
+
+00:35:57.240 --> 00:35:59.560 align:middle line:84%
+And we can think of
+this as, what would
+
+00:35:59.560 --> 00:36:02.140 align:middle line:90%
+happen if player 1 goes first?
+
+00:36:02.140 --> 00:36:06.560 align:middle line:90%
+
+
+00:36:06.560 --> 00:36:08.080 align:middle line:90%
+And their move is observed?
+
+00:36:08.080 --> 00:36:09.980 align:middle line:84%
+And their mixed
+strategy is observed?
+
+00:36:09.980 --> 00:36:16.760 align:middle line:90%
+
+
+00:36:16.760 --> 00:36:20.840 align:middle line:84%
+Well, I claim that if player
+1 goes first and plays sigma 1
+
+00:36:20.840 --> 00:36:24.400 align:middle line:84%
+star, the worst-case gain is
+exactly what would happen.
+
+00:36:24.400 --> 00:36:24.920 align:middle line:90%
+Why?
+
+00:36:24.920 --> 00:36:27.560 align:middle line:84%
+Well, if I'm player
+1, and I go first,
+
+00:36:27.560 --> 00:36:30.600 align:middle line:84%
+and I choose sigma 1 star,
+and my opponent can see that,
+
+00:36:30.600 --> 00:36:34.440 align:middle line:84%
+well, my opponent and I have
+exactly misaligned interests.
+
+00:36:34.440 --> 00:36:37.920 align:middle line:84%
+So my opponent is going to
+try to minimize my gain.
+
+00:36:37.920 --> 00:36:40.720 align:middle line:84%
+And that's exactly what the
+worst-case gain from sigma 1
+
+00:36:40.720 --> 00:36:42.160 align:middle line:90%
+star captures.
+
+00:36:42.160 --> 00:36:44.920 align:middle line:84%
+And if I anticipate that, I
+want to choose the strategy that
+
+00:36:44.920 --> 00:36:47.520 align:middle line:84%
+will do best, taking into
+account the fact that, when
+
+00:36:47.520 --> 00:36:51.520 align:middle line:84%
+I do it, my opponent is going to
+choose the strategy that makes
+
+00:36:51.520 --> 00:36:53.680 align:middle line:90%
+me as worse off as possible.
+
+00:36:53.680 --> 00:36:57.080 align:middle line:84%
+And that's exactly what
+v lower bar represents.
+
+00:36:57.080 --> 00:36:59.040 align:middle line:84%
+Similarly, v upper bar,
+we can think of that
+
+00:36:59.040 --> 00:37:01.000 align:middle line:84%
+as representing,
+well, if P2 moves
+
+00:37:01.000 --> 00:37:16.920 align:middle line:84%
+first and their mixed
+strategy is observed,
+
+00:37:16.920 --> 00:37:18.880 align:middle line:84%
+well, now it's the
+same reasoning.
+
+00:37:18.880 --> 00:37:24.160 align:middle line:84%
+If I observably choose sigma
+2, then my opponent, player 1,
+
+00:37:24.160 --> 00:37:26.400 align:middle line:84%
+is going to try to make
+my loss as player 2
+
+00:37:26.400 --> 00:37:27.740 align:middle line:90%
+as large as possible.
+
+00:37:27.740 --> 00:37:29.760 align:middle line:84%
+They're exactly going
+to induce my payoff
+
+00:37:29.760 --> 00:37:31.360 align:middle line:90%
+of the worst-case loss.
+
+00:37:31.360 --> 00:37:35.200 align:middle line:84%
+Anticipating that, I want to try
+to make this worst-case loss as
+
+00:37:35.200 --> 00:37:39.320 align:middle line:84%
+small as possible by playing a
+security strategy, sigma 2 star.
+
+00:37:39.320 --> 00:37:41.200 align:middle line:84%
+So the inequality
+we've shown here
+
+00:37:41.200 --> 00:37:45.280 align:middle line:84%
+captures a pretty intuitive idea
+that moving first and having
+
+00:37:45.280 --> 00:37:49.160 align:middle line:84%
+your move observed is
+a weak disadvantage.
+
+00:37:49.160 --> 00:37:51.820 align:middle line:84%
+Player 1 does worse
+when they move first,
+
+00:37:51.820 --> 00:37:55.050 align:middle line:84%
+and the other player gets to see
+what they do, at least weakly,
+
+00:37:55.050 --> 00:37:57.150 align:middle line:84%
+than if player 2 moved
+first and player 1
+
+00:37:57.150 --> 00:37:59.830 align:middle line:84%
+got to observe that
+player 2 was going.
+
+00:37:59.830 --> 00:38:01.370 align:middle line:84%
+In zero-sum games,
+this makes sense.
+
+00:38:01.370 --> 00:38:02.690 align:middle line:90%
+Our interests are opposed.
+
+00:38:02.690 --> 00:38:04.590 align:middle line:84%
+If I get to see what
+you do, that's really
+
+00:38:04.590 --> 00:38:06.590 align:middle line:90%
+going to help me in general.
+
+00:38:06.590 --> 00:38:09.830 align:middle line:90%
+It can weakly help me.
+
+00:38:09.830 --> 00:38:10.810 align:middle line:90%
+Any questions on this?
+
+00:38:10.810 --> 00:38:12.927 align:middle line:84%
+I feel like this always
+is quite confusing
+
+00:38:12.927 --> 00:38:14.010 align:middle line:90%
+the first time you see it.
+
+00:38:14.010 --> 00:38:16.090 align:middle line:90%
+Any questions?
+
+00:38:16.090 --> 00:38:20.670 align:middle line:90%
+
+
+00:38:20.670 --> 00:38:23.110 align:middle line:84%
+Now, I think a lot of
+people have this intuition
+
+00:38:23.110 --> 00:38:25.190 align:middle line:84%
+that moving first is
+a strict advantage--
+
+00:38:25.190 --> 00:38:27.750 align:middle line:84%
+or a strict disadvantage,
+that if I have to move
+
+00:38:27.750 --> 00:38:29.770 align:middle line:84%
+and the other person gets
+to see what I'm doing,
+
+00:38:29.770 --> 00:38:31.253 align:middle line:84%
+they can punish
+me and exploit me,
+
+00:38:31.253 --> 00:38:32.670 align:middle line:84%
+and I'm not going
+to do very well.
+
+00:38:32.670 --> 00:38:34.923 align:middle line:84%
+And the surprising
+result that von Neumann
+
+00:38:34.923 --> 00:38:36.590 align:middle line:84%
+proved that-- we're
+now going to state--
+
+00:38:36.590 --> 00:38:39.590 align:middle line:84%
+is that it actually doesn't
+matter who goes first.
+
+00:38:39.590 --> 00:38:42.210 align:middle line:84%
+That these two values, v
+upper bar and v lower bar,
+
+00:38:42.210 --> 00:38:43.430 align:middle line:90%
+are actually equal.
+
+00:38:43.430 --> 00:38:46.390 align:middle line:84%
+And that's exactly the
+result we're going to show.
+
+00:38:46.390 --> 00:38:49.130 align:middle line:84%
+So this is a very famous theorem
+called the minimax theorem.
+
+00:38:49.130 --> 00:38:52.540 align:middle line:90%
+
+
+00:38:52.540 --> 00:38:58.180 align:middle line:84%
+And this is proven by
+von Neumann in 1928,
+
+00:38:58.180 --> 00:39:01.760 align:middle line:84%
+so notice Nash's theorem
+was proven in 1950.
+
+00:39:01.760 --> 00:39:04.480 align:middle line:84%
+So this work on zero-sum
+games came before Nash.
+
+00:39:04.480 --> 00:39:07.040 align:middle line:84%
+And so Nash, people say, is
+the founder of game theory,
+
+00:39:07.040 --> 00:39:10.380 align:middle line:84%
+but really, what he did is
+extended game theory away
+
+00:39:10.380 --> 00:39:12.720 align:middle line:84%
+from zero-sum games
+to non-zero-sum games.
+
+00:39:12.720 --> 00:39:14.940 align:middle line:84%
+Zero-sum game theory was
+actually already understood
+
+00:39:14.940 --> 00:39:16.620 align:middle line:90%
+when Nash came along.
+
+00:39:16.620 --> 00:39:26.160 align:middle line:84%
+And the theorem is, in any
+finite two-player zero-sum game.
+
+00:39:26.160 --> 00:39:29.900 align:middle line:90%
+
+
+00:39:29.900 --> 00:39:33.200 align:middle line:84%
+Well, v lower bar
+equals v upper bar.
+
+00:39:33.200 --> 00:39:36.900 align:middle line:90%
+
+
+00:39:36.900 --> 00:39:39.900 align:middle line:84%
+And now let's just write
+out exactly what that means.
+
+00:39:39.900 --> 00:39:45.980 align:middle line:84%
+So v lower bar is the
+worst-case gain of sigma 1 star.
+
+00:39:45.980 --> 00:39:54.950 align:middle line:90%
+So this is the max over sigma 1.
+
+00:39:54.950 --> 00:40:12.730 align:middle line:90%
+
+
+00:40:12.730 --> 00:40:17.650 align:middle line:84%
+Let's make sure this
+is what we mean to say.
+
+00:40:17.650 --> 00:40:21.210 align:middle line:84%
+Let's look at each of
+these inner things.
+
+00:40:21.210 --> 00:40:24.170 align:middle line:84%
+If player 1 plays
+sigma 1 and player 2
+
+00:40:24.170 --> 00:40:27.650 align:middle line:84%
+chooses sigma 2 to minimize
+player one's payoff,
+
+00:40:27.650 --> 00:40:31.830 align:middle line:84%
+this is the worst-case gain for
+player 1 from choosing sigma 1.
+
+00:40:31.830 --> 00:40:36.250 align:middle line:84%
+So this is exactly
+WG of sigma 1.
+
+00:40:36.250 --> 00:40:38.770 align:middle line:84%
+And indeed, if we then
+maximize the worst-case gain
+
+00:40:38.770 --> 00:40:42.250 align:middle line:84%
+over sigma 1, this is exactly
+the definition of v lower bar.
+
+00:40:42.250 --> 00:40:46.770 align:middle line:90%
+
+
+00:40:46.770 --> 00:40:50.090 align:middle line:84%
+And then, on the other
+hand end, if I'm player 2,
+
+00:40:50.090 --> 00:40:53.090 align:middle line:84%
+and I'm playing sigma 2,
+and my opponent chooses
+
+00:40:53.090 --> 00:40:55.930 align:middle line:84%
+sigma 1 to maximize
+my loss, this
+
+00:40:55.930 --> 00:41:00.010 align:middle line:84%
+is my worst-case loss
+from playing sigma 2.
+
+00:41:00.010 --> 00:41:03.210 align:middle line:84%
+And if I then minimize
+this over all sigma 2,
+
+00:41:03.210 --> 00:41:06.510 align:middle line:84%
+that's exactly v upper
+bar by definition.
+
+00:41:06.510 --> 00:41:14.974 align:middle line:90%
+
+
+00:41:14.974 --> 00:41:25.310 align:middle line:84%
+Now the inequality from here to
+here is what we already showed.
+
+00:41:25.310 --> 00:41:27.570 align:middle line:84%
+That's what we showed
+in class, that this
+
+00:41:27.570 --> 00:41:28.890 align:middle line:90%
+is less than or equal to this.
+
+00:41:28.890 --> 00:41:31.810 align:middle line:84%
+The content of the theorem
+is to say that, in fact, we
+
+00:41:31.810 --> 00:41:32.790 align:middle line:90%
+have equality.
+
+00:41:32.790 --> 00:41:34.690 align:middle line:84%
+So this graph I showed
+up here is wrong.
+
+00:41:34.690 --> 00:41:39.430 align:middle line:84%
+In fact, everything just
+collapses right to here.
+
+00:41:39.430 --> 00:41:42.450 align:middle line:90%
+
+
+00:41:42.450 --> 00:41:44.610 align:middle line:84%
+And let's go through
+how we interpret this
+
+00:41:44.610 --> 00:41:46.110 align:middle line:90%
+in terms of who goes first.
+
+00:41:46.110 --> 00:41:50.040 align:middle line:84%
+On the left-hand
+side, what we imagine
+
+00:41:50.040 --> 00:41:52.400 align:middle line:90%
+is player one moves first.
+
+00:41:52.400 --> 00:41:56.360 align:middle line:84%
+Their move is observed,
+and then player 2,
+
+00:41:56.360 --> 00:41:58.640 align:middle line:84%
+seeing what player 1
+does makes player 1
+
+00:41:58.640 --> 00:42:01.520 align:middle line:90%
+as worse off as possible.
+
+00:42:01.520 --> 00:42:04.800 align:middle line:84%
+So this is the case where player
+one moves observably first.
+
+00:42:04.800 --> 00:42:09.200 align:middle line:84%
+This represents what happens if
+player 2 moves observably first.
+
+00:42:09.200 --> 00:42:11.960 align:middle line:84%
+And seeing player
+2's move, player 1
+
+00:42:11.960 --> 00:42:14.440 align:middle line:84%
+then chooses what's
+optimal for player 1.
+
+00:42:14.440 --> 00:42:16.528 align:middle line:84%
+So what we said is
+that, in general, we
+
+00:42:16.528 --> 00:42:18.320 align:middle line:84%
+would expect that moving
+first for player 1
+
+00:42:18.320 --> 00:42:19.720 align:middle line:90%
+would be a disadvantage.
+
+00:42:19.720 --> 00:42:23.240 align:middle line:84%
+And indeed we showed that this
+is less than or equal to this.
+
+00:42:23.240 --> 00:42:27.560 align:middle line:84%
+What von Neumann tells us is
+that if we play optimally,
+
+00:42:27.560 --> 00:42:29.740 align:middle line:84%
+in fact, it's not a
+disadvantage at all.
+
+00:42:29.740 --> 00:42:33.160 align:middle line:84%
+It's going to do exactly as well
+as if the other player moved
+
+00:42:33.160 --> 00:42:33.700 align:middle line:90%
+first.
+
+00:42:33.700 --> 00:42:36.480 align:middle line:90%
+
+
+00:42:36.480 --> 00:42:39.540 align:middle line:84%
+Now, this common number here
+that's equal to v lower bar
+
+00:42:39.540 --> 00:42:41.300 align:middle line:84%
+and v upper bar,
+we give it a name.
+
+00:42:41.300 --> 00:42:44.990 align:middle line:84%
+And we'll call this v. It's a
+good name for something that's
+
+00:42:44.990 --> 00:42:47.430 align:middle line:84%
+equal to both v lower
+bar and v upper bar.
+
+00:42:47.430 --> 00:42:49.770 align:middle line:84%
+And this is called
+the value of the game.
+
+00:42:49.770 --> 00:42:57.110 align:middle line:90%
+
+
+00:42:57.110 --> 00:42:59.590 align:middle line:84%
+So let's try to understand
+what this means, and let's
+
+00:42:59.590 --> 00:43:01.930 align:middle line:90%
+go through a few examples.
+
+00:43:01.930 --> 00:43:23.790 align:middle line:90%
+
+
+00:43:23.790 --> 00:43:26.330 align:middle line:90%
+So what is the value of a game?
+
+00:43:26.330 --> 00:43:30.830 align:middle line:90%
+
+
+00:43:30.830 --> 00:43:32.730 align:middle line:84%
+We can think of
+it in a few ways.
+
+00:43:32.730 --> 00:43:35.510 align:middle line:90%
+
+
+00:43:35.510 --> 00:43:38.470 align:middle line:84%
+What I think it does
+is it captures--
+
+00:43:38.470 --> 00:43:47.220 align:middle line:84%
+it's an objective measure of the
+relative advantage of the two
+
+00:43:47.220 --> 00:43:48.400 align:middle line:90%
+players in this game.
+
+00:43:48.400 --> 00:43:50.940 align:middle line:90%
+
+
+00:43:50.940 --> 00:44:08.540 align:middle line:84%
+So maybe I would say of the
+fairness or relative advantage
+
+00:44:08.540 --> 00:44:09.280 align:middle line:90%
+in the game.
+
+00:44:09.280 --> 00:44:11.940 align:middle line:90%
+
+
+00:44:11.940 --> 00:44:14.500 align:middle line:84%
+So we have to put
+ourselves in the position
+
+00:44:14.500 --> 00:44:16.720 align:middle line:84%
+of before von Neumann's
+theorem was proven,
+
+00:44:16.720 --> 00:44:19.140 align:middle line:84%
+what people thought is, you
+had these games, like chess
+
+00:44:19.140 --> 00:44:21.900 align:middle line:84%
+and checkers, and
+there's not really a way
+
+00:44:21.900 --> 00:44:23.838 align:middle line:90%
+to say who has an advantage.
+
+00:44:23.838 --> 00:44:25.380 align:middle line:84%
+People would say,
+well, does player 1
+
+00:44:25.380 --> 00:44:26.400 align:middle line:90%
+have advantage or player 2?
+
+00:44:26.400 --> 00:44:28.020 align:middle line:84%
+Well, it depends who's
+better at the game.
+
+00:44:28.020 --> 00:44:29.320 align:middle line:84%
+That's what most
+people would've said.
+
+00:44:29.320 --> 00:44:30.987 align:middle line:84%
+There isn't some
+single objective number
+
+00:44:30.987 --> 00:44:34.300 align:middle line:84%
+that captures how much of
+an advantage this game has.
+
+00:44:34.300 --> 00:44:36.700 align:middle line:84%
+Von Neumann's theorem
+tells us that, in fact, no,
+
+00:44:36.700 --> 00:44:39.720 align:middle line:84%
+there is an objective measure
+that tells us, if people play,
+
+00:44:39.720 --> 00:44:42.580 align:middle line:84%
+quote, unquote, "optimally,"
+who should win the game.
+
+00:44:42.580 --> 00:44:46.180 align:middle line:84%
+In other words, how much better
+player 1 should do than player 2
+
+00:44:46.180 --> 00:44:47.500 align:middle line:90%
+if both players play optimally.
+
+00:44:47.500 --> 00:44:48.958 align:middle line:84%
+And this captures
+how fair the game
+
+00:44:48.958 --> 00:44:51.680 align:middle line:84%
+is for the two players
+or more precisely,
+
+00:44:51.680 --> 00:44:53.980 align:middle line:84%
+quantifies the size
+of the advantage
+
+00:44:53.980 --> 00:44:55.960 align:middle line:84%
+that either player
+1 or player 2 has.
+
+00:44:55.960 --> 00:44:58.900 align:middle line:90%
+
+
+00:44:58.900 --> 00:45:01.183 align:middle line:84%
+So maybe, at first,
+you might say, ah,
+
+00:45:01.183 --> 00:45:02.600 align:middle line:84%
+we've just done
+some inequalities.
+
+00:45:02.600 --> 00:45:03.800 align:middle line:90%
+There's nothing fancy here.
+
+00:45:03.800 --> 00:45:07.800 align:middle line:84%
+But one amazing implication of
+this is that chess has a value.
+
+00:45:07.800 --> 00:45:11.860 align:middle line:90%
+
+
+00:45:11.860 --> 00:45:14.880 align:middle line:84%
+Chess either-- in
+fact, we can say more.
+
+00:45:14.880 --> 00:45:20.340 align:middle line:84%
+The value in chess is actually
+either plus 1, minus 1, or 0.
+
+00:45:20.340 --> 00:45:23.360 align:middle line:84%
+Now, chess is-- yeah, chess
+is still a finite game,
+
+00:45:23.360 --> 00:45:25.060 align:middle line:90%
+so everything applies.
+
+00:45:25.060 --> 00:45:28.460 align:middle line:84%
+What this means is if
+the value of chess is 1,
+
+00:45:28.460 --> 00:45:30.780 align:middle line:84%
+that means that
+player 1 can guarantee
+
+00:45:30.780 --> 00:45:32.900 align:middle line:90%
+that they win in chess.
+
+00:45:32.900 --> 00:45:34.560 align:middle line:90%
+So who moves first in chess?
+
+00:45:34.560 --> 00:45:35.060 align:middle line:90%
+White?
+
+00:45:35.060 --> 00:45:35.840 align:middle line:90%
+I should know this.
+
+00:45:35.840 --> 00:45:36.840 align:middle line:90%
+The first player, right?
+
+00:45:36.840 --> 00:45:41.490 align:middle line:84%
+Negative 1 means player 2 can
+guarantee that they always
+
+00:45:41.490 --> 00:45:44.010 align:middle line:84%
+win in chess, the player
+with the black pieces.
+
+00:45:44.010 --> 00:45:47.733 align:middle line:84%
+And 0 means each player
+can guarantee a draw.
+
+00:45:47.733 --> 00:45:50.150 align:middle line:84%
+And von Neumann's theorem tells
+us that chess has a value,
+
+00:45:50.150 --> 00:45:51.525 align:middle line:84%
+and in fact, if
+a bit careful, it
+
+00:45:51.525 --> 00:45:55.930 align:middle line:84%
+tells us that its value must
+take one of these three numbers.
+
+00:45:55.930 --> 00:45:58.210 align:middle line:84%
+But we don't know
+which number it is.
+
+00:45:58.210 --> 00:46:00.030 align:middle line:90%
+But which one is unknown?
+
+00:46:00.030 --> 00:46:07.930 align:middle line:90%
+
+
+00:46:07.930 --> 00:46:08.790 align:middle line:90%
+How is this unknown?
+
+00:46:08.790 --> 00:46:09.665 align:middle line:90%
+I just wrote it down.
+
+00:46:09.665 --> 00:46:12.010 align:middle line:90%
+You just have to do max-min.
+
+00:46:12.010 --> 00:46:13.070 align:middle line:90%
+Why is this unknown?
+
+00:46:13.070 --> 00:46:15.690 align:middle line:90%
+
+
+00:46:15.690 --> 00:46:18.050 align:middle line:84%
+I mean, I give you--
+here's the formula.
+
+00:46:18.050 --> 00:46:19.070 align:middle line:90%
+Just write it down.
+
+00:46:19.070 --> 00:46:22.730 align:middle line:84%
+The issue is that chess
+is extremely complex.
+
+00:46:22.730 --> 00:46:24.330 align:middle line:84%
+So the set of
+strategies in chess
+
+00:46:24.330 --> 00:46:27.030 align:middle line:84%
+is bigger than the number
+of atoms in the universe.
+
+00:46:27.030 --> 00:46:30.570 align:middle line:84%
+So yeah, we could just try to
+solve this optimization problem,
+
+00:46:30.570 --> 00:46:34.550 align:middle line:84%
+but it would have an absurdly
+large number of variables.
+
+00:46:34.550 --> 00:46:36.690 align:middle line:90%
+We wouldn't be able to solve it.
+
+00:46:36.690 --> 00:46:40.380 align:middle line:84%
+But this, I think, shows us the
+power of von Neumann's theorem,
+
+00:46:40.380 --> 00:46:42.740 align:middle line:84%
+that it tells us that, in
+fact, chess has a value.
+
+00:46:42.740 --> 00:46:44.220 align:middle line:84%
+It either advantages
+one player or the other.
+
+00:46:44.220 --> 00:46:45.360 align:middle line:84%
+We just don't know
+what that value
+
+00:46:45.360 --> 00:46:47.068 align:middle line:84%
+is because we're not
+able to calculate it
+
+00:46:47.068 --> 00:46:50.240 align:middle line:90%
+because it's so complicated.
+
+00:46:50.240 --> 00:46:52.000 align:middle line:84%
+Let's go through a
+few examples of games
+
+00:46:52.000 --> 00:46:56.000 align:middle line:84%
+to try to understand
+this concept of a value.
+
+00:46:56.000 --> 00:46:59.760 align:middle line:84%
+So let's start with
+a game, let's say,
+
+00:46:59.760 --> 00:47:02.520 align:middle line:90%
+top, bottom, left, right.
+
+00:47:02.520 --> 00:47:11.280 align:middle line:84%
+And let's make this 1, 1,
+negative 4, negative 8.
+
+00:47:11.280 --> 00:47:15.040 align:middle line:84%
+So player 1 chooses
+top or bottom.
+
+00:47:15.040 --> 00:47:16.460 align:middle line:90%
+Player 2 chooses left or right.
+
+00:47:16.460 --> 00:47:18.460 align:middle line:84%
+And the question is, what
+is the value in this game?
+
+00:47:18.460 --> 00:47:20.200 align:middle line:84%
+Or another way of saying
+this is if you were going
+
+00:47:20.200 --> 00:47:21.980 align:middle line:84%
+to play this game
+and you were asked,
+
+00:47:21.980 --> 00:47:24.000 align:middle line:84%
+do you want to be
+player 1 or player 2?
+
+00:47:24.000 --> 00:47:25.420 align:middle line:84%
+Which player would
+you rather be?
+
+00:47:25.420 --> 00:47:29.840 align:middle line:90%
+
+
+00:47:29.840 --> 00:47:32.800 align:middle line:90%
+Any thoughts?
+
+00:47:32.800 --> 00:47:35.480 align:middle line:90%
+Yeah.
+
+00:47:35.480 --> 00:47:37.150 align:middle line:90%
+AUDIENCE: I forgot which--
+
+00:47:37.150 --> 00:47:38.670 align:middle line:90%
+which is 1 and 2?
+
+00:47:38.670 --> 00:47:40.910 align:middle line:84%
+IAN BALL: This is player
+1, and this is player 2.
+
+00:47:40.910 --> 00:47:44.590 align:middle line:84%
+AUDIENCE: I'd probably
+prefer to be 1.
+
+00:47:44.590 --> 00:47:47.190 align:middle line:90%
+IAN BALL: OK, and why?
+
+00:47:47.190 --> 00:47:50.030 align:middle line:84%
+AUDIENCE: [? You ?] [? can ?]
+work it all out [INAUDIBLE].
+
+00:47:50.030 --> 00:47:51.750 align:middle line:84%
+I don't [INAUDIBLE],
+but if you did
+
+00:47:51.750 --> 00:47:53.082 align:middle line:90%
+the expected value [INAUDIBLE].
+
+00:47:53.082 --> 00:47:55.290 align:middle line:84%
+IAN BALL: But I don't know,
+negative 4 or negative 8,
+
+00:47:55.290 --> 00:47:56.873 align:middle line:84%
+these are pretty big
+negative numbers.
+
+00:47:56.873 --> 00:47:59.822 align:middle line:84%
+So if I just look at it,
+I see some really big
+
+00:47:59.822 --> 00:48:00.530 align:middle line:90%
+negative numbers.
+
+00:48:00.530 --> 00:48:02.810 align:middle line:84%
+You're right, but
+I'm not convinced.
+
+00:48:02.810 --> 00:48:06.037 align:middle line:90%
+You haven't convinced me yet.
+
+00:48:06.037 --> 00:48:08.370 align:middle line:84%
+But let's notice if we just
+naively looked at this game,
+
+00:48:08.370 --> 00:48:11.350 align:middle line:84%
+we might say, oh, this is
+a good game for player 2
+
+00:48:11.350 --> 00:48:14.030 align:middle line:84%
+because, remember, a big
+negative number for player 1
+
+00:48:14.030 --> 00:48:16.430 align:middle line:84%
+means player 2's doing
+really, really well.
+
+00:48:16.430 --> 00:48:21.010 align:middle line:84%
+But the structure of the game
+affects who has an advantage.
+
+00:48:21.010 --> 00:48:22.683 align:middle line:84%
+Anyone else, how
+would they play.
+
+00:48:22.683 --> 00:48:23.850 align:middle line:90%
+Maybe in the red sweatshirt?
+
+00:48:23.850 --> 00:48:24.650 align:middle line:84%
+I don't think I've
+heard from you.
+
+00:48:24.650 --> 00:48:25.150 align:middle line:90%
+Yeah.
+
+00:48:25.150 --> 00:48:27.730 align:middle line:84%
+AUDIENCE: Player one
+plays [INAUDIBLE].
+
+00:48:27.730 --> 00:48:29.230 align:middle line:84%
+IAN BALL: Exactly,
+so even though we
+
+00:48:29.230 --> 00:48:31.702 align:middle line:84%
+have some really big
+negative numbers down here--
+
+00:48:31.702 --> 00:48:33.410 align:middle line:84%
+and notice this is
+still a zero-sum game.
+
+00:48:33.410 --> 00:48:35.110 align:middle line:84%
+I think people get
+confused, and they say, oh,
+
+00:48:35.110 --> 00:48:36.490 align:middle line:84%
+we have these really
+big negative numbers.
+
+00:48:36.490 --> 00:48:37.570 align:middle line:90%
+It's still zero-sum.
+
+00:48:37.570 --> 00:48:39.830 align:middle line:84%
+What this negative
+4 means is player 2
+
+00:48:39.830 --> 00:48:41.738 align:middle line:90%
+wins 4 if we come down here.
+
+00:48:41.738 --> 00:48:44.030 align:middle line:84%
+But because the structure of
+the game, if I'm player 1,
+
+00:48:44.030 --> 00:48:47.950 align:middle line:84%
+my security strategy
+here is T. If I
+
+00:48:47.950 --> 00:48:50.810 align:middle line:84%
+play T, whatever
+my opponent does,
+
+00:48:50.810 --> 00:48:52.790 align:middle line:90%
+I'm going to get a payoff of 1.
+
+00:48:52.790 --> 00:48:56.030 align:middle line:84%
+And if I were to play
+anything else other than T,
+
+00:48:56.030 --> 00:48:58.507 align:middle line:84%
+I wouldn't be able to
+secure a payoff of 1.
+
+00:48:58.507 --> 00:49:00.590 align:middle line:84%
+And in this case, it turns
+out player 2, actually,
+
+00:49:00.590 --> 00:49:02.870 align:middle line:84%
+anything is a security
+strategy for player 2.
+
+00:49:02.870 --> 00:49:07.830 align:middle line:84%
+And so what we see in this
+game is the value v is 1.
+
+00:49:07.830 --> 00:49:10.853 align:middle line:84%
+Player 1 by playing T
+can secure a payoff of 1,
+
+00:49:10.853 --> 00:49:12.270 align:middle line:84%
+and there's no way
+they can secure
+
+00:49:12.270 --> 00:49:13.770 align:middle line:90%
+anything higher than that.
+
+00:49:13.770 --> 00:49:16.070 align:middle line:84%
+So hopefully, this makes
+it a bit more concrete
+
+00:49:16.070 --> 00:49:17.570 align:middle line:90%
+what these numbers mean.
+
+00:49:17.570 --> 00:49:21.010 align:middle line:84%
+Let's do another example
+with a similar flavor.
+
+00:49:21.010 --> 00:49:28.950 align:middle line:90%
+
+
+00:49:28.950 --> 00:49:37.000 align:middle line:90%
+Say, well, that's a bad example.
+
+00:49:37.000 --> 00:49:47.108 align:middle line:90%
+
+
+00:49:47.108 --> 00:49:48.400 align:middle line:90%
+Well, it doesn't really matter.
+
+00:49:48.400 --> 00:49:49.480 align:middle line:84%
+We'll make all the
+numbers positive.
+
+00:49:49.480 --> 00:49:50.380 align:middle line:90%
+That's fine.
+
+00:49:50.380 --> 00:49:51.480 align:middle line:90%
+Let's look at this game.
+
+00:49:51.480 --> 00:50:01.100 align:middle line:90%
+
+
+00:50:01.100 --> 00:50:06.540 align:middle line:90%
+What is the value of this game?
+
+00:50:06.540 --> 00:50:08.757 align:middle line:84%
+Or which player-- and
+I guess, here, it's
+
+00:50:08.757 --> 00:50:10.340 align:middle line:84%
+pretty clear which
+player you'd rather
+
+00:50:10.340 --> 00:50:12.852 align:middle line:84%
+be because all the
+payoffs are positive.
+
+00:50:12.852 --> 00:50:14.560 align:middle line:84%
+So I definitely want
+to be player 1 here,
+
+00:50:14.560 --> 00:50:22.820 align:middle line:84%
+but the question is, what
+is the value of this game?
+
+00:50:22.820 --> 00:50:23.980 align:middle line:90%
+Think through it, yeah.
+
+00:50:23.980 --> 00:50:25.585 align:middle line:90%
+AUDIENCE: It'd be negative 8.
+
+00:50:25.585 --> 00:50:26.460 align:middle line:90%
+IAN BALL: Negative 8?
+
+00:50:26.460 --> 00:50:29.240 align:middle line:84%
+OK, I don't think so, but
+let's think through it.
+
+00:50:29.240 --> 00:50:30.650 align:middle line:90%
+So why negative 8?
+
+00:50:30.650 --> 00:50:34.170 align:middle line:84%
+AUDIENCE: The same
+player 2, [INAUDIBLE]
+
+00:50:34.170 --> 00:50:40.708 align:middle line:84%
+you could guarantee the
+results [INAUDIBLE], positive.
+
+00:50:40.708 --> 00:50:42.750 align:middle line:84%
+IAN BALL: This is where
+it gets really confusing.
+
+00:50:42.750 --> 00:50:46.250 align:middle line:90%
+So player 2 is trying to--
+
+00:50:46.250 --> 00:50:49.570 align:middle line:90%
+they want to minimize things.
+
+00:50:49.570 --> 00:50:51.100 align:middle line:90%
+So let's think through.
+
+00:50:51.100 --> 00:50:52.350 align:middle line:90%
+So let's just walk through it.
+
+00:50:52.350 --> 00:50:55.890 align:middle line:84%
+Let's say player 2 plays
+R. Then they're either
+
+00:50:55.890 --> 00:50:59.850 align:middle line:90%
+going to lose 23 or lose 8.
+
+00:50:59.850 --> 00:51:02.370 align:middle line:84%
+So they would want to choose
+L, and if they choose L, well,
+
+00:51:02.370 --> 00:51:06.170 align:middle line:84%
+whatever the other player does,
+the loss to player 2 is only 1.
+
+00:51:06.170 --> 00:51:07.752 align:middle line:90%
+So playing L is much better.
+
+00:51:07.752 --> 00:51:09.210 align:middle line:84%
+So it turns out,
+in this case, L is
+
+00:51:09.210 --> 00:51:12.210 align:middle line:84%
+going to be a security
+strategy for player 2.
+
+00:51:12.210 --> 00:51:14.310 align:middle line:84%
+And the value of the game
+is then going to be 1.
+
+00:51:14.310 --> 00:51:16.990 align:middle line:84%
+Player 1 gets 1, and
+player 2 loses 1.
+
+00:51:16.990 --> 00:51:18.950 align:middle line:90%
+So here, we see the value is 1.
+
+00:51:18.950 --> 00:51:23.452 align:middle line:90%
+
+
+00:51:23.452 --> 00:51:24.910 align:middle line:84%
+Now, notice an
+implication of this.
+
+00:51:24.910 --> 00:51:27.973 align:middle line:84%
+If we looked at these two games,
+if you just, at first, stared
+
+00:51:27.973 --> 00:51:29.640 align:middle line:84%
+at it, you would
+probably say, this game
+
+00:51:29.640 --> 00:51:32.560 align:middle line:84%
+is so much better for
+player 1 than this game is.
+
+00:51:32.560 --> 00:51:34.800 align:middle line:84%
+Because if I look at
+every cell of the game,
+
+00:51:34.800 --> 00:51:37.615 align:middle line:84%
+the payoff is at least
+as high in this game.
+
+00:51:37.615 --> 00:51:38.740 align:middle line:90%
+And sometimes a lot higher.
+
+00:51:38.740 --> 00:51:40.158 align:middle line:90%
+23 is a lot bigger--
+
+00:51:40.158 --> 00:51:41.700 align:middle line:84%
+or 8 is a lot bigger
+than negative 8.
+
+00:51:41.700 --> 00:51:42.980 align:middle line:90%
+23's a lot bigger than 1.
+
+00:51:42.980 --> 00:51:43.960 align:middle line:84%
+But von Neumann's
+theorem actually
+
+00:51:43.960 --> 00:51:45.335 align:middle line:84%
+tells us, no, each
+of these games
+
+00:51:45.335 --> 00:51:47.280 align:middle line:84%
+has some objective
+value that captures
+
+00:51:47.280 --> 00:51:49.480 align:middle line:84%
+the relative advantage
+of player 1 and player 2
+
+00:51:49.480 --> 00:51:51.020 align:middle line:90%
+if people play optimally.
+
+00:51:51.020 --> 00:51:54.120 align:middle line:84%
+And in fact, these two games
+have exactly the same value
+
+00:51:54.120 --> 00:51:58.040 align:middle line:84%
+even though a lot of the payoffs
+seem a lot higher in this game.
+
+00:51:58.040 --> 00:52:00.720 align:middle line:84%
+Now, would you really be
+indifferent between these games?
+
+00:52:00.720 --> 00:52:02.120 align:middle line:84%
+Well, it depends who
+you're playing against.
+
+00:52:02.120 --> 00:52:04.578 align:middle line:84%
+If you're playing against a
+computer who's really rational,
+
+00:52:04.578 --> 00:52:05.080 align:middle line:90%
+probably.
+
+00:52:05.080 --> 00:52:07.330 align:middle line:84%
+If you're playing against a
+person who makes mistakes,
+
+00:52:07.330 --> 00:52:09.140 align:middle line:84%
+maybe you'd actually
+rather play this game
+
+00:52:09.140 --> 00:52:11.182 align:middle line:84%
+because, when we calculate
+the value of the game,
+
+00:52:11.182 --> 00:52:13.665 align:middle line:84%
+there's this implicit assumption
+that people are behaving--
+
+00:52:13.665 --> 00:52:15.040 align:middle line:84%
+are very good at
+computing things
+
+00:52:15.040 --> 00:52:17.640 align:middle line:90%
+and are playing rationally.
+
+00:52:17.640 --> 00:52:19.020 align:middle line:90%
+OK, a final example.
+
+00:52:19.020 --> 00:52:27.760 align:middle line:90%
+
+
+00:52:27.760 --> 00:52:28.860 align:middle line:90%
+What about this game?
+
+00:52:28.860 --> 00:52:33.880 align:middle line:90%
+What is the value of this game?
+
+00:52:33.880 --> 00:52:35.660 align:middle line:84%
+And what would the
+security strategies be?
+
+00:52:35.660 --> 00:52:37.000 align:middle line:90%
+Yeah.
+
+00:52:37.000 --> 00:52:37.680 align:middle line:90%
+It is, yeah.
+
+00:52:37.680 --> 00:52:39.900 align:middle line:84%
+And what would the security
+strategies be here?
+
+00:52:39.900 --> 00:52:40.775 align:middle line:90%
+AUDIENCE: [INAUDIBLE]
+
+00:52:40.775 --> 00:52:42.525 align:middle line:84%
+IAN BALL: Exactly, so
+let's go through it.
+
+00:52:42.525 --> 00:52:43.600 align:middle line:90%
+So here, the value is 0.
+
+00:52:43.600 --> 00:52:45.100 align:middle line:84%
+This is a game we've
+studied before.
+
+00:52:45.100 --> 00:52:46.960 align:middle line:84%
+We've just only put
+in one number here.
+
+00:52:46.960 --> 00:52:48.640 align:middle line:90%
+Let's say I'm player 1.
+
+00:52:48.640 --> 00:52:50.620 align:middle line:84%
+Let's try to compute
+my security strategy.
+
+00:52:50.620 --> 00:52:52.840 align:middle line:84%
+Well, if I play T,
+things could go really
+
+00:52:52.840 --> 00:52:56.200 align:middle line:84%
+badly because my opponent could
+play R, and I get negative 1.
+
+00:52:56.200 --> 00:52:58.500 align:middle line:84%
+If I play B, things
+could go really badly.
+
+00:52:58.500 --> 00:53:00.960 align:middle line:84%
+My opponent could play L,
+and I would get negative 1.
+
+00:53:00.960 --> 00:53:03.920 align:middle line:84%
+But if I mix 50/50, then
+I ensure that I always get
+
+00:53:03.920 --> 00:53:07.000 align:middle line:84%
+a payoff of at least
+0, in fact, exactly 0.
+
+00:53:07.000 --> 00:53:09.120 align:middle line:84%
+And we can do similar
+reasoning for player 2
+
+00:53:09.120 --> 00:53:11.240 align:middle line:90%
+and see that the value is 0.
+
+00:53:11.240 --> 00:53:14.260 align:middle line:84%
+And in fact, each player has
+unique security strategy.
+
+00:53:14.260 --> 00:53:18.180 align:middle line:84%
+So security strategy equals
+1/2, 1/2 for each player.
+
+00:53:18.180 --> 00:53:22.600 align:middle line:90%
+
+
+00:53:22.600 --> 00:53:24.320 align:middle line:84%
+I guess, technically,
+it's 1/2 T,
+
+00:53:24.320 --> 00:53:27.690 align:middle line:84%
+1/2 B for player 1 and 1/2
+L plus 1/2 R for player 2.
+
+00:53:27.690 --> 00:53:29.830 align:middle line:84%
+So I'm being a
+little vague here.
+
+00:53:29.830 --> 00:53:30.390 align:middle line:90%
+Great.
+
+00:53:30.390 --> 00:53:30.945 align:middle line:90%
+Yes.
+
+00:53:30.945 --> 00:53:33.070 align:middle line:84%
+AUDIENCE: Is it too general
+to say that there's not
+
+00:53:33.070 --> 00:53:35.230 align:middle line:84%
+a strictly dominant
+strategy that [INAUDIBLE]
+
+00:53:35.230 --> 00:53:37.390 align:middle line:90%
+always going to be 0?
+
+00:53:37.390 --> 00:53:39.197 align:middle line:90%
+IAN BALL: No, because--
+
+00:53:39.197 --> 00:53:40.530 align:middle line:90%
+no, that's not going to be true.
+
+00:53:40.530 --> 00:53:43.710 align:middle line:84%
+So actually, in
+these cases, we only
+
+00:53:43.710 --> 00:53:48.890 align:middle line:84%
+have weak dominance,
+not strict dominance.
+
+00:53:48.890 --> 00:53:52.150 align:middle line:84%
+But in general, you can
+have much more complicated
+
+00:53:52.150 --> 00:53:54.597 align:middle line:90%
+games where--
+
+00:53:54.597 --> 00:53:56.430 align:middle line:84%
+so we'll actually see
+an example later today
+
+00:53:56.430 --> 00:53:57.770 align:middle line:90%
+of a game with that property.
+
+00:53:57.770 --> 00:53:59.350 align:middle line:90%
+But good observation.
+
+00:53:59.350 --> 00:54:02.372 align:middle line:90%
+
+
+00:54:02.372 --> 00:54:03.830 align:middle line:84%
+In fact, one player
+could even have
+
+00:54:03.830 --> 00:54:06.080 align:middle line:84%
+a strictly dominant strategy
+and still lose a lot.
+
+00:54:06.080 --> 00:54:08.330 align:middle line:84%
+It be that one strategy's
+better than everything else.
+
+00:54:08.330 --> 00:54:10.550 align:middle line:90%
+But whatever I do, I lose money.
+
+00:54:10.550 --> 00:54:13.790 align:middle line:90%
+Yeah, any other questions?
+
+00:54:13.790 --> 00:54:16.390 align:middle line:84%
+OK, so now we would
+like to connect
+
+00:54:16.390 --> 00:54:18.470 align:middle line:84%
+what we've done here
+to what we've been
+
+00:54:18.470 --> 00:54:20.190 align:middle line:90%
+doing throughout the course.
+
+00:54:20.190 --> 00:54:24.780 align:middle line:84%
+So I think it's important to
+understand that, before, what we
+
+00:54:24.780 --> 00:54:27.080 align:middle line:90%
+looked at was Nash equilibrium.
+
+00:54:27.080 --> 00:54:32.380 align:middle line:90%
+
+
+00:54:32.380 --> 00:54:37.940 align:middle line:84%
+And Nash equilibrium
+captured stability.
+
+00:54:37.940 --> 00:54:41.500 align:middle line:84%
+It said that if each player
+is playing according to a Nash
+
+00:54:41.500 --> 00:54:45.460 align:middle line:84%
+equilibrium, then this strategy
+profile is stable in the sense
+
+00:54:45.460 --> 00:54:47.860 align:middle line:84%
+that no player can do strictly
+better by unilaterally
+
+00:54:47.860 --> 00:54:50.140 align:middle line:90%
+deviating.
+
+00:54:50.140 --> 00:54:55.780 align:middle line:84%
+Security strategies capture
+something very different.
+
+00:54:55.780 --> 00:54:58.880 align:middle line:84%
+Security strategies, well, they
+capture security or safety.
+
+00:54:58.880 --> 00:55:02.020 align:middle line:90%
+
+
+00:55:02.020 --> 00:55:04.020 align:middle line:84%
+Each player is
+just thinking, how
+
+00:55:04.020 --> 00:55:06.520 align:middle line:84%
+can I play to ensure
+that, whatever happens,
+
+00:55:06.520 --> 00:55:08.195 align:middle line:90%
+I do reasonably well?
+
+00:55:08.195 --> 00:55:10.820 align:middle line:84%
+But it turns out that there's a
+tight connection between these,
+
+00:55:10.820 --> 00:55:14.260 align:middle line:84%
+and that's what our next
+result is going to say.
+
+00:55:14.260 --> 00:55:17.620 align:middle line:84%
+It's going to say that, in
+fact, in zero-sum games,
+
+00:55:17.620 --> 00:55:20.780 align:middle line:84%
+these are basically the same
+concept, that Nash equilibria
+
+00:55:20.780 --> 00:55:23.290 align:middle line:84%
+and security strategies
+coincide in zero-sum games.
+
+00:55:23.290 --> 00:55:25.290 align:middle line:84%
+Let me be more
+precise about that.
+
+00:55:25.290 --> 00:55:35.910 align:middle line:84%
+So in, as usual, any finite
+two-player zero-sum game--
+
+00:55:35.910 --> 00:55:38.730 align:middle line:90%
+
+
+00:55:38.730 --> 00:55:42.430 align:middle line:84%
+now, remember, Nash
+equilibrium always makes sense.
+
+00:55:42.430 --> 00:55:44.250 align:middle line:84%
+Security strategies
+only make sense
+
+00:55:44.250 --> 00:55:46.030 align:middle line:90%
+in two-player zero-sum games.
+
+00:55:46.030 --> 00:55:47.990 align:middle line:84%
+So it's not even
+meaningful to say,
+
+00:55:47.990 --> 00:55:50.295 align:middle line:84%
+do these concepts coincide
+beyond zero-sum games?
+
+00:55:50.295 --> 00:55:52.170 align:middle line:84%
+Because this concept
+doesn't even make sense.
+
+00:55:52.170 --> 00:55:54.350 align:middle line:84%
+But in any finite
+two-player zero-sum game,
+
+00:55:54.350 --> 00:55:57.570 align:middle line:84%
+at least both of these
+concepts make sense.
+
+00:55:57.570 --> 00:56:03.090 align:middle line:84%
+And let's say, for
+any strategy profile,
+
+00:56:03.090 --> 00:56:06.810 align:middle line:84%
+mixed-strategy profile,
+sigma 1, sigma 2.
+
+00:56:06.810 --> 00:56:11.330 align:middle line:84%
+So I fixed a game, and I
+consider an arbitrary strategy
+
+00:56:11.330 --> 00:56:13.730 align:middle line:90%
+profile, sigma 1, sigma 2.
+
+00:56:13.730 --> 00:56:16.770 align:middle line:84%
+I'm going to argue
+that sigma 1, sigma 2
+
+00:56:16.770 --> 00:56:20.690 align:middle line:84%
+is a Nash equilibrium
+if and only
+
+00:56:20.690 --> 00:56:23.370 align:middle line:84%
+if-- so I'm saying two
+statements are equivalent.
+
+00:56:23.370 --> 00:56:25.770 align:middle line:84%
+One statement is that
+this strategy profile
+
+00:56:25.770 --> 00:56:27.690 align:middle line:90%
+is a Nash equilibrium.
+
+00:56:27.690 --> 00:56:31.610 align:middle line:84%
+The other statement is that
+each component of this profile
+
+00:56:31.610 --> 00:56:33.570 align:middle line:90%
+is a security strategy.
+
+00:56:33.570 --> 00:56:38.530 align:middle line:84%
+So if and only if sigma
+1 is a security strategy
+
+00:56:38.530 --> 00:56:46.810 align:middle line:84%
+for player 1 and sigma 2 is a
+security strategy for player 2.
+
+00:56:46.810 --> 00:56:49.310 align:middle line:84%
+So this is an "if and
+only if" statement.
+
+00:56:49.310 --> 00:56:51.490 align:middle line:84%
+So let's make sure we
+understand both directions.
+
+00:56:51.490 --> 00:56:53.650 align:middle line:84%
+It says, if you
+give me a strategy
+
+00:56:53.650 --> 00:56:57.250 align:middle line:84%
+profile in a zero-sum game
+and it is a Nash equilibrium,
+
+00:56:57.250 --> 00:57:00.770 align:middle line:84%
+I can immediately conclude
+that player 1's strategy must
+
+00:57:00.770 --> 00:57:02.970 align:middle line:84%
+be a security
+strategy for player 1,
+
+00:57:02.970 --> 00:57:05.730 align:middle line:84%
+and player 2's strategy
+must be a security
+
+00:57:05.730 --> 00:57:07.930 align:middle line:90%
+strategy for player 2.
+
+00:57:07.930 --> 00:57:09.650 align:middle line:84%
+Now let's look at
+the other direction.
+
+00:57:09.650 --> 00:57:13.850 align:middle line:84%
+It says if I find a security
+strategy sigma 1 for player 1,
+
+00:57:13.850 --> 00:57:16.970 align:middle line:84%
+and I find a security
+strategy sigma 2 for player 2,
+
+00:57:16.970 --> 00:57:20.120 align:middle line:84%
+and I now consider the strategy
+profile containing these two
+
+00:57:20.120 --> 00:57:23.100 align:middle line:84%
+strategies, so player 1
+plays his security strategy,
+
+00:57:23.100 --> 00:57:25.200 align:middle line:84%
+player 2 plays her
+security strategy, then
+
+00:57:25.200 --> 00:57:28.180 align:middle line:84%
+that strategy profile is
+necessarily a Nash equilibrium.
+
+00:57:28.180 --> 00:57:31.720 align:middle line:90%
+
+
+00:57:31.720 --> 00:57:33.560 align:middle line:90%
+So it connects these two ideas.
+
+00:57:33.560 --> 00:57:36.620 align:middle line:84%
+It also has an implication
+for computation.
+
+00:57:36.620 --> 00:57:40.397 align:middle line:90%
+
+
+00:57:40.397 --> 00:57:42.480 align:middle line:84%
+Let's say you're asked on
+a problem set in an exam
+
+00:57:42.480 --> 00:57:45.440 align:middle line:84%
+to find a Nash equilibrium
+of a zero-sum game.
+
+00:57:45.440 --> 00:57:47.720 align:middle line:84%
+This theorem tells you
+one way you could do it.
+
+00:57:47.720 --> 00:57:48.620 align:middle line:90%
+How could you do it?
+
+00:57:48.620 --> 00:57:53.120 align:middle line:90%
+
+
+00:57:53.120 --> 00:57:55.627 align:middle line:84%
+AUDIENCE: I think you'd
+find a [INAUDIBLE] strategy.
+
+00:57:55.627 --> 00:57:56.460 align:middle line:90%
+IAN BALL: That's it.
+
+00:57:56.460 --> 00:57:58.268 align:middle line:90%
+You go to player 1.
+
+00:57:58.268 --> 00:58:00.060 align:middle line:84%
+You solve for player
+1's security strategy.
+
+00:58:00.060 --> 00:58:02.352 align:middle line:84%
+There might be more than one,
+but you find one of them.
+
+00:58:02.352 --> 00:58:03.600 align:middle line:90%
+You go to player 2.
+
+00:58:03.600 --> 00:58:05.800 align:middle line:84%
+You solve for player
+2's security strategies.
+
+00:58:05.800 --> 00:58:06.742 align:middle line:90%
+You find one of them.
+
+00:58:06.742 --> 00:58:07.700 align:middle line:90%
+You put those together.
+
+00:58:07.700 --> 00:58:09.800 align:middle line:90%
+Now you have a Nash equilibrium.
+
+00:58:09.800 --> 00:58:12.080 align:middle line:84%
+Now the nice story
+is that this is
+
+00:58:12.080 --> 00:58:13.560 align:middle line:84%
+computationally
+easier than finding
+
+00:58:13.560 --> 00:58:15.400 align:middle line:90%
+Nash equilibrium the other way.
+
+00:58:15.400 --> 00:58:16.540 align:middle line:90%
+That's true for computers.
+
+00:58:16.540 --> 00:58:18.510 align:middle line:84%
+I find this actually very
+rarely true on exams,
+
+00:58:18.510 --> 00:58:19.970 align:middle line:84%
+that you're better off
+taking this approach,
+
+00:58:19.970 --> 00:58:21.512 align:middle line:84%
+but if you were a
+computer, you would
+
+00:58:21.512 --> 00:58:23.910 align:middle line:84%
+find that this would be a very
+good way of computing Nash
+
+00:58:23.910 --> 00:58:24.570 align:middle line:90%
+equilibria.
+
+00:58:24.570 --> 00:58:25.995 align:middle line:90%
+But for humans, I don't know.
+
+00:58:25.995 --> 00:58:27.370 align:middle line:84%
+It's hard to find
+a good example.
+
+00:58:27.370 --> 00:58:32.910 align:middle line:84%
+But in principle, this
+gives easy computation
+
+00:58:32.910 --> 00:58:34.170 align:middle line:90%
+of Nash equilibrium.
+
+00:58:34.170 --> 00:58:37.850 align:middle line:90%
+
+
+00:58:37.850 --> 00:58:40.350 align:middle line:84%
+And what's amazing about it is
+that you can compute the Nash
+
+00:58:40.350 --> 00:58:43.790 align:middle line:84%
+equilibria by separately finding
+a strategy for the two players.
+
+00:58:43.790 --> 00:58:46.190 align:middle line:84%
+Normally, Nash equilibrium
+is about the interaction
+
+00:58:46.190 --> 00:58:47.030 align:middle line:90%
+between strategies.
+
+00:58:47.030 --> 00:58:50.030 align:middle line:84%
+And what makes finding it hard
+is what's best for one player
+
+00:58:50.030 --> 00:58:52.610 align:middle line:84%
+depends on what's best for
+what the other player does.
+
+00:58:52.610 --> 00:58:55.030 align:middle line:84%
+But this says you can
+separate this computation
+
+00:58:55.030 --> 00:58:56.590 align:middle line:84%
+into just two
+simple optimization
+
+00:58:56.590 --> 00:58:58.030 align:middle line:90%
+problems for the two players.
+
+00:58:58.030 --> 00:58:59.530 align:middle line:84%
+And then you get a
+Nash equilibrium.
+
+00:58:59.530 --> 00:59:02.910 align:middle line:84%
+So computationally,
+that's why it's very nice.
+
+00:59:02.910 --> 00:59:06.190 align:middle line:84%
+OK, I want to try to show
+you the argument for this.
+
+00:59:06.190 --> 00:59:09.310 align:middle line:90%
+It's very short, but it is--
+
+00:59:09.310 --> 00:59:10.530 align:middle line:90%
+have to be a little careful.
+
+00:59:10.530 --> 00:59:12.010 align:middle line:90%
+So let's go through it.
+
+00:59:12.010 --> 00:59:23.180 align:middle line:90%
+
+
+00:59:23.180 --> 00:59:27.820 align:middle line:84%
+So let's first show
+this direction.
+
+00:59:27.820 --> 00:59:31.300 align:middle line:84%
+So what I want to say is
+suppose I've computed a security
+
+00:59:31.300 --> 00:59:33.140 align:middle line:90%
+strategy for each player.
+
+00:59:33.140 --> 00:59:39.020 align:middle line:84%
+So let's say sigma 1 star is
+a security strategy for P1,
+
+00:59:39.020 --> 00:59:44.540 align:middle line:84%
+and sigma 2 star is a
+security strategy for P2.
+
+00:59:44.540 --> 00:59:45.520 align:middle line:90%
+I've done that.
+
+00:59:45.520 --> 00:59:49.060 align:middle line:84%
+Now what I want to argue is that
+this pair, sigma 1 star, sigma 2
+
+00:59:49.060 --> 00:59:53.910 align:middle line:84%
+star is a Nash
+equilibrium of the game.
+
+00:59:53.910 --> 01:00:00.620 align:middle line:84%
+And really, I just have to
+remember my formula over here.
+
+01:00:00.620 --> 01:00:08.260 align:middle line:84%
+So let me just look at my
+formula from over there.
+
+01:00:08.260 --> 01:00:19.820 align:middle line:84%
+I want to look at u of
+sigma 1 star, sigma 2 star.
+
+01:00:19.820 --> 01:00:26.160 align:middle line:84%
+And I immediately
+know that this is--
+
+01:00:26.160 --> 01:00:38.780 align:middle line:90%
+
+
+01:00:38.780 --> 01:00:41.980 align:middle line:90%
+should I do it the other way?
+
+01:00:41.980 --> 01:00:45.180 align:middle line:90%
+Which way are we doing?
+
+01:00:45.180 --> 01:00:46.045 align:middle line:90%
+It might help.
+
+01:00:46.045 --> 01:00:47.920 align:middle line:84%
+It might look nicer if
+I do it the other way.
+
+01:00:47.920 --> 01:00:55.060 align:middle line:90%
+
+
+01:00:55.060 --> 01:00:55.960 align:middle line:90%
+We'll start here.
+
+01:00:55.960 --> 01:01:01.460 align:middle line:84%
+OK, now, up here, we
+just had an inequality
+
+01:01:01.460 --> 01:01:04.060 align:middle line:90%
+between these statements.
+
+01:01:04.060 --> 01:01:06.640 align:middle line:84%
+But now we have an equality
+because of the minimax theorem.
+
+01:01:06.640 --> 01:01:10.180 align:middle line:84%
+So the minimax theorem tells
+us that the worst-case loss
+
+01:01:10.180 --> 01:01:13.470 align:middle line:84%
+from sigma 2 star must equal
+the worst-case gain from sigma 1
+
+01:01:13.470 --> 01:01:13.970 align:middle line:90%
+star.
+
+01:01:13.970 --> 01:01:16.330 align:middle line:84%
+And we have equality
+in this expression
+
+01:01:16.330 --> 01:01:18.250 align:middle line:90%
+from that last inequality.
+
+01:01:18.250 --> 01:01:23.530 align:middle line:84%
+And now what we want to show is
+that we have a Nash equilibrium.
+
+01:01:23.530 --> 01:01:34.830 align:middle line:84%
+Well, let's look at what happens
+if player 2 were to deviate.
+
+01:01:34.830 --> 01:01:37.590 align:middle line:90%
+
+
+01:01:37.590 --> 01:01:41.350 align:middle line:84%
+So this is what happens
+under our strategy profile.
+
+01:01:41.350 --> 01:01:43.530 align:middle line:84%
+Let's suppose that
+player 2 deviates
+
+01:01:43.530 --> 01:01:47.010 align:middle line:90%
+to some strategy sigma 2 prime.
+
+01:01:47.010 --> 01:01:56.690 align:middle line:84%
+How does this relate to the
+worst-case gain for player 1?
+
+01:01:56.690 --> 01:01:58.410 align:middle line:84%
+What can we say about
+the relationship
+
+01:01:58.410 --> 01:02:00.310 align:middle line:90%
+between this and this?
+
+01:02:00.310 --> 01:02:05.230 align:middle line:90%
+
+
+01:02:05.230 --> 01:02:05.730 align:middle line:90%
+Yeah.
+
+01:02:05.730 --> 01:02:10.010 align:middle line:84%
+AUDIENCE: [INAUDIBLE] gain
+is at least [INAUDIBLE].
+
+01:02:10.010 --> 01:02:13.460 align:middle line:84%
+IAN BALL: I think it's
+actually going to be this way.
+
+01:02:13.460 --> 01:02:15.060 align:middle line:90%
+Let's make sure.
+
+01:02:15.060 --> 01:02:16.880 align:middle line:84%
+So this is always
+really confusing.
+
+01:02:16.880 --> 01:02:21.440 align:middle line:84%
+The worst-case gain says,
+whatever my opponent does,
+
+01:02:21.440 --> 01:02:25.320 align:middle line:84%
+I'm guaranteed to get a payoff
+of at least the worst-case gain.
+
+01:02:25.320 --> 01:02:27.240 align:middle line:84%
+So one thing my
+opponent could do
+
+01:02:27.240 --> 01:02:29.560 align:middle line:84%
+is they could deviate
+to sigma 2 prime.
+
+01:02:29.560 --> 01:02:31.560 align:middle line:84%
+And if they chose sigma
+2 prime, then that's
+
+01:02:31.560 --> 01:02:32.700 align:middle line:90%
+one thing they can do.
+
+01:02:32.700 --> 01:02:34.617 align:middle line:84%
+It must be at least as
+good as the worst thing
+
+01:02:34.617 --> 01:02:37.760 align:middle line:90%
+they can do for me as player 1.
+
+01:02:37.760 --> 01:02:39.840 align:middle line:84%
+OK, now, let's try
+to get this last one.
+
+01:02:39.840 --> 01:02:41.500 align:middle line:84%
+What if player 1
+were to deviate?
+
+01:02:41.500 --> 01:02:44.560 align:middle line:90%
+
+
+01:02:44.560 --> 01:02:46.260 align:middle line:90%
+So player 1 deviates.
+
+01:02:46.260 --> 01:02:50.000 align:middle line:84%
+What's the relationship between
+this and the worst-case loss
+
+01:02:50.000 --> 01:02:51.320 align:middle line:90%
+for sigma 2 star?
+
+01:02:51.320 --> 01:02:53.020 align:middle line:84%
+It's really easy to
+get confused here.
+
+01:02:53.020 --> 01:02:55.630 align:middle line:90%
+
+
+01:02:55.630 --> 01:02:57.880 align:middle line:84%
+AUDIENCE: Would it be the
+same inequality [INAUDIBLE]?
+
+01:02:57.880 --> 01:03:00.047 align:middle line:84%
+IAN BALL: It's actually
+going to be the same, right?
+
+01:03:00.047 --> 01:03:02.640 align:middle line:84%
+Because this says
+my-- now I'm taking
+
+01:03:02.640 --> 01:03:04.560 align:middle line:90%
+the perspective of player 2.
+
+01:03:04.560 --> 01:03:08.790 align:middle line:84%
+If I play sigma 2 star as
+player 2, the worst loss for me
+
+01:03:08.790 --> 01:03:10.270 align:middle line:90%
+is this.
+
+01:03:10.270 --> 01:03:12.410 align:middle line:84%
+So if player 1
+plays sigma 1 prime,
+
+01:03:12.410 --> 01:03:15.150 align:middle line:84%
+that loss can't be as bad
+as the worst loss, which
+
+01:03:15.150 --> 01:03:17.470 align:middle line:90%
+means the loss is smaller.
+
+01:03:17.470 --> 01:03:21.030 align:middle line:84%
+Not as bad loss
+is a smaller loss.
+
+01:03:21.030 --> 01:03:28.130 align:middle line:84%
+So here, I've just used the
+definitions of worst-case loss,
+
+01:03:28.130 --> 01:03:30.930 align:middle line:84%
+and here, I'm actually
+using the min-max theorem.
+
+01:03:30.930 --> 01:03:36.483 align:middle line:90%
+
+
+01:03:36.483 --> 01:03:38.650 align:middle line:84%
+Because, in general, we
+only have inequalities here,
+
+01:03:38.650 --> 01:03:40.983 align:middle line:84%
+but the min-max theorem says
+they have to be equalities.
+
+01:03:40.983 --> 01:03:43.150 align:middle line:90%
+And now I claim that we're done.
+
+01:03:43.150 --> 01:03:45.342 align:middle line:84%
+Someone look, now we
+just have to squint.
+
+01:03:45.342 --> 01:03:47.550 align:middle line:84%
+Of course, this proof is
+pretty hard to come up with.
+
+01:03:47.550 --> 01:03:49.730 align:middle line:84%
+I've done it just
+right, so it seems easy.
+
+01:03:49.730 --> 01:03:50.830 align:middle line:90%
+It's not easy.
+
+01:03:50.830 --> 01:03:53.350 align:middle line:84%
+You have to know exactly
+where you're going.
+
+01:03:53.350 --> 01:03:57.450 align:middle line:84%
+But can someone just
+walk me through why
+
+01:03:57.450 --> 01:03:59.710 align:middle line:84%
+I've already shown that
+this is a Nash equilibrium?
+
+01:03:59.710 --> 01:04:03.270 align:middle line:84%
+If we just look
+really carefully.
+
+01:04:03.270 --> 01:04:05.350 align:middle line:90%
+I always find this confusing.
+
+01:04:05.350 --> 01:04:06.070 align:middle line:90%
+Yeah.
+
+01:04:06.070 --> 01:04:12.472 align:middle line:84%
+AUDIENCE: I mean, if you look,
+that is player 2 doing worse.
+
+01:04:12.472 --> 01:04:13.430 align:middle line:90%
+So they don't want to--
+
+01:04:13.430 --> 01:04:14.970 align:middle line:84%
+IAN BALL: OK, so are you the
+left side or the right side?
+
+01:04:14.970 --> 01:04:15.750 align:middle line:90%
+Which side are you on?
+
+01:04:15.750 --> 01:04:16.750 align:middle line:90%
+You're on the left side.
+
+01:04:16.750 --> 01:04:18.830 align:middle line:90%
+So you're here.
+
+01:04:18.830 --> 01:04:19.950 align:middle line:90%
+OK.
+
+01:04:19.950 --> 01:04:24.230 align:middle line:84%
+AUDIENCE: This is player 2
+deviating and then doing--
+
+01:04:24.230 --> 01:04:25.270 align:middle line:90%
+No, this is player 1--
+
+01:04:25.270 --> 01:04:26.110 align:middle line:84%
+IAN BALL: This is
+player 1 deviates.
+
+01:04:26.110 --> 01:04:27.010 align:middle line:90%
+So let's make sure.
+
+01:04:27.010 --> 01:04:30.052 align:middle line:84%
+If we compare here, player
+2 is doing the same thing.
+
+01:04:30.052 --> 01:04:31.510 align:middle line:84%
+And player 1,
+instead of doing what
+
+01:04:31.510 --> 01:04:33.093 align:middle line:84%
+they're supposed to
+do in equilibrium,
+
+01:04:33.093 --> 01:04:34.802 align:middle line:90%
+is deviating to sigma 1 prime.
+
+01:04:34.802 --> 01:04:36.510 align:middle line:84%
+So player 1's deviating
+and what happens?
+
+01:04:36.510 --> 01:04:38.270 align:middle line:84%
+AUDIENCE: They're doing
+worse [INAUDIBLE].
+
+01:04:38.270 --> 01:04:39.812 align:middle line:84%
+IAN BALL: They're
+doing weakly worse.
+
+01:04:39.812 --> 01:04:42.810 align:middle line:84%
+So this says any deviation
+by player 1 is unprofitable.
+
+01:04:42.810 --> 01:04:45.910 align:middle line:84%
+Player 1 does weakly worse by
+deviating from sigma 1 star
+
+01:04:45.910 --> 01:04:47.170 align:middle line:90%
+to sigma 1 prime.
+
+01:04:47.170 --> 01:04:51.110 align:middle line:84%
+And crucially, this is
+holding for all sigma
+
+01:04:51.110 --> 01:04:54.990 align:middle line:90%
+1 prime and sigma 2 prime.
+
+01:04:54.990 --> 01:04:57.750 align:middle line:84%
+OK, so what we've shown-- what
+you've argued verbally is that
+
+01:04:57.750 --> 01:04:59.970 align:middle line:84%
+player 1 cannot
+profitably deviate.
+
+01:04:59.970 --> 01:05:02.247 align:middle line:84%
+However they deviate,
+player 1 does weakly worse.
+
+01:05:02.247 --> 01:05:03.330 align:middle line:90%
+What about the other case?
+
+01:05:03.330 --> 01:05:04.670 align:middle line:90%
+What about player 2?
+
+01:05:04.670 --> 01:05:06.800 align:middle line:84%
+How does this show me that
+player 2 can't profit?
+
+01:05:06.800 --> 01:05:07.780 align:middle line:90%
+Yeah.
+
+01:05:07.780 --> 01:05:11.100 align:middle line:84%
+AUDIENCE: So on the right
+where player 2 is deviating--
+
+01:05:11.100 --> 01:05:12.160 align:middle line:90%
+IAN BALL: Yes, exactly.
+
+01:05:12.160 --> 01:05:14.940 align:middle line:84%
+AUDIENCE: And player
+1 will be doing
+
+01:05:14.940 --> 01:05:19.740 align:middle line:84%
+at least as bad or
+better [INAUDIBLE],
+
+01:05:19.740 --> 01:05:21.460 align:middle line:90%
+don't have any alternatives.
+
+01:05:21.460 --> 01:05:22.340 align:middle line:84%
+IAN BALL: So you have
+to be careful, though,
+
+01:05:22.340 --> 01:05:24.423 align:middle line:84%
+because we're interested
+in how player 2 is doing.
+
+01:05:24.423 --> 01:05:26.700 align:middle line:90%
+So player 2 was doing this.
+
+01:05:26.700 --> 01:05:27.800 align:middle line:90%
+They deviate to this.
+
+01:05:27.800 --> 01:05:29.920 align:middle line:84%
+It looks like player--
+that the payoff is higher.
+
+01:05:29.920 --> 01:05:31.200 align:middle line:84%
+But we have to
+think it's player 2.
+
+01:05:31.200 --> 01:05:32.120 align:middle line:90%
+So what does this mean?
+
+01:05:32.120 --> 01:05:34.037 align:middle line:84%
+AUDIENCE: 1's payoff is
+higher, and player 2's
+
+01:05:34.037 --> 01:05:35.678 align:middle line:90%
+is lower, or just--
+
+01:05:35.678 --> 01:05:36.720 align:middle line:90%
+IAN BALL: Exactly, right.
+
+01:05:36.720 --> 01:05:39.740 align:middle line:84%
+So this says if player 2
+deviates from sigma 2 star
+
+01:05:39.740 --> 01:05:43.060 align:middle line:84%
+to sigma 2 prime, this
+is player 2's loss.
+
+01:05:43.060 --> 01:05:45.500 align:middle line:84%
+So this is player 2's
+loss is weakly higher
+
+01:05:45.500 --> 01:05:47.700 align:middle line:90%
+than their loss in equilibrium.
+
+01:05:47.700 --> 01:05:50.480 align:middle line:84%
+That means their deviation
+makes them weakly worse off.
+
+01:05:50.480 --> 01:05:53.120 align:middle line:84%
+And therefore, neither player
+can benefit by deviating.
+
+01:05:53.120 --> 01:05:54.940 align:middle line:84%
+And therefore, we have
+a Nash equilibrium.
+
+01:05:54.940 --> 01:05:56.740 align:middle line:84%
+So you just have to string
+the inequalities together
+
+01:05:56.740 --> 01:05:57.900 align:middle line:90%
+in just the right way.
+
+01:05:57.900 --> 01:06:01.460 align:middle line:84%
+I always think it's very easy to
+get confused, but here we are.
+
+01:06:01.460 --> 01:06:03.850 align:middle line:90%
+Any questions on this?
+
+01:06:03.850 --> 01:06:08.410 align:middle line:84%
+So now we want to show
+the reverse direction.
+
+01:06:08.410 --> 01:06:13.070 align:middle line:84%
+We want to show let's start
+by saying suppose sigma 1,
+
+01:06:13.070 --> 01:06:18.270 align:middle line:90%
+sigma 2 is a Nash equilibrium.
+
+01:06:18.270 --> 01:06:20.290 align:middle line:84%
+We want to say that
+both players must
+
+01:06:20.290 --> 01:06:22.530 align:middle line:90%
+be playing security strategies.
+
+01:06:22.530 --> 01:06:26.210 align:middle line:90%
+But we're actually going to--
+
+01:06:26.210 --> 01:06:26.710 align:middle line:90%
+erase this.
+
+01:06:26.710 --> 01:06:28.950 align:middle line:84%
+We're actually going to
+prove this by contradiction.
+
+01:06:28.950 --> 01:06:30.367 align:middle line:84%
+So we have to be
+a little careful.
+
+01:06:30.367 --> 01:06:31.970 align:middle line:84%
+What we're going
+to say is to show
+
+01:06:31.970 --> 01:06:35.290 align:middle line:84%
+that if it's an equilibrium,
+both players must
+
+01:06:35.290 --> 01:06:37.150 align:middle line:90%
+be playing security strategies.
+
+01:06:37.150 --> 01:06:38.970 align:middle line:84%
+We're going to show if
+some player were not
+
+01:06:38.970 --> 01:06:40.610 align:middle line:84%
+playing a security
+strategy, then
+
+01:06:40.610 --> 01:06:43.010 align:middle line:90%
+it could not be an equilibrium.
+
+01:06:43.010 --> 01:06:49.250 align:middle line:84%
+So by symmetry,
+let's say suppose
+
+01:06:49.250 --> 01:06:56.210 align:middle line:84%
+sigma 1 is not a security
+strategy for player 1.
+
+01:06:56.210 --> 01:07:00.830 align:middle line:84%
+I Want To Show, WTS, Want
+To Show that sigma 1,
+
+01:07:00.830 --> 01:07:06.200 align:middle line:84%
+sigma 2 is not a
+Nash equilibrium.
+
+01:07:06.200 --> 01:07:08.820 align:middle line:84%
+So this is my way of saying,
+in any Nash equilibrium,
+
+01:07:08.820 --> 01:07:11.340 align:middle line:84%
+both players must be
+playing security strategies
+
+01:07:11.340 --> 01:07:14.107 align:middle line:84%
+because if some player is not
+playing a security strategy,
+
+01:07:14.107 --> 01:07:15.940 align:middle line:84%
+then it couldn't have
+been Nash equilibrium.
+
+01:07:15.940 --> 01:07:18.760 align:middle line:90%
+
+
+01:07:18.760 --> 01:07:21.803 align:middle line:84%
+Now, I'm saying, what if sigma
+1 is not a security strategy?
+
+01:07:21.803 --> 01:07:23.720 align:middle line:84%
+There's a symmetric
+argument if sigma 2 is not
+
+01:07:23.720 --> 01:07:25.160 align:middle line:90%
+a security strategy.
+
+01:07:25.160 --> 01:07:28.160 align:middle line:84%
+So one way of saying this is
+I can't find an equilibrium
+
+01:07:28.160 --> 01:07:31.040 align:middle line:84%
+where players are not
+playing security strategies.
+
+01:07:31.040 --> 01:07:34.520 align:middle line:90%
+That's one way of saying this.
+
+01:07:34.520 --> 01:07:36.120 align:middle line:90%
+And now this one--
+
+01:07:36.120 --> 01:07:36.870 align:middle line:90%
+again, it's short.
+
+01:07:36.870 --> 01:07:38.495 align:middle line:84%
+The argument's really
+short if you know
+
+01:07:38.495 --> 01:07:39.640 align:middle line:90%
+exactly where you're going.
+
+01:07:39.640 --> 01:07:40.820 align:middle line:90%
+But it's tricky.
+
+01:07:40.820 --> 01:07:43.680 align:middle line:84%
+I need to make sure I
+get it right in my notes.
+
+01:07:43.680 --> 01:07:46.040 align:middle line:90%
+So what do we know?
+
+01:07:46.040 --> 01:07:48.520 align:middle line:90%
+Let's look at sigma 1, sigma 2.
+
+01:07:48.520 --> 01:07:51.880 align:middle line:90%
+This is always what we look at.
+
+01:07:51.880 --> 01:08:01.540 align:middle line:84%
+And what's the relationship
+between this and WG of sigma 1?
+
+01:08:01.540 --> 01:08:13.120 align:middle line:90%
+
+
+01:08:13.120 --> 01:08:16.279 align:middle line:90%
+AUDIENCE: Is that [INAUDIBLE]?
+
+01:08:16.279 --> 01:08:19.040 align:middle line:90%
+IAN BALL: I think it's at least.
+
+01:08:19.040 --> 01:08:19.575 align:middle line:90%
+Let's see.
+
+01:08:19.575 --> 01:08:20.700 align:middle line:90%
+Maybe that's what you said.
+
+01:08:20.700 --> 01:08:21.340 align:middle line:90%
+Maybe I didn't hear you.
+
+01:08:21.340 --> 01:08:22.160 align:middle line:90%
+Let's check.
+
+01:08:22.160 --> 01:08:26.160 align:middle line:84%
+This is the-- if I play
+sigma 1 as player 1,
+
+01:08:26.160 --> 01:08:29.040 align:middle line:84%
+this is the worst that can
+happen to me as player 1.
+
+01:08:29.040 --> 01:08:32.140 align:middle line:84%
+So sigma 2 is one thing
+player 2 could do.
+
+01:08:32.140 --> 01:08:34.397 align:middle line:84%
+The one thing they could do
+is at least as good for me
+
+01:08:34.397 --> 01:08:35.939 align:middle line:84%
+as the worst thing
+that could happen,
+
+01:08:35.939 --> 01:08:37.560 align:middle line:90%
+so I get this inequality right.
+
+01:08:37.560 --> 01:08:41.200 align:middle line:90%
+
+
+01:08:41.200 --> 01:08:44.420 align:middle line:84%
+And because we have
+this weak inequality,
+
+01:08:44.420 --> 01:08:46.520 align:middle line:84%
+we're going to argue
+in two separate cases.
+
+01:08:46.520 --> 01:08:47.660 align:middle line:90%
+There's two possibilities.
+
+01:08:47.660 --> 01:08:51.200 align:middle line:84%
+Either this is strictly bigger
+than this, or it's equal OK.
+
+01:08:51.200 --> 01:08:53.500 align:middle line:84%
+So let me actually
+write it down like this.
+
+01:08:53.500 --> 01:08:59.138 align:middle line:90%
+
+
+01:08:59.138 --> 01:08:59.930 align:middle line:90%
+Write it like this.
+
+01:08:59.930 --> 01:09:01.972 align:middle line:84%
+So what I'm saying
+is there's two cases.
+
+01:09:01.972 --> 01:09:03.430 align:middle line:84%
+Maybe you can add
+a bit more detail
+
+01:09:03.430 --> 01:09:04.710 align:middle line:84%
+on your notes to make
+it clear, since I'm
+
+01:09:04.710 --> 01:09:05.970 align:middle line:90%
+of doing it dynamically.
+
+01:09:05.970 --> 01:09:08.930 align:middle line:84%
+But we know that this is
+weakly bigger than this.
+
+01:09:08.930 --> 01:09:10.430 align:middle line:84%
+So there's only
+two possibilities.
+
+01:09:10.430 --> 01:09:13.430 align:middle line:84%
+Either they're equal, or one is
+strictly bigger than the other.
+
+01:09:13.430 --> 01:09:15.729 align:middle line:84%
+And I want to show
+that, in either case,
+
+01:09:15.729 --> 01:09:17.229 align:middle line:84%
+we don't have a
+Nash equilibrium.
+
+01:09:17.229 --> 01:09:20.130 align:middle line:84%
+In either case, someone
+has a profitable deviation.
+
+01:09:20.130 --> 01:09:23.590 align:middle line:90%
+
+
+01:09:23.590 --> 01:09:26.850 align:middle line:84%
+I think this one is actually
+the easier direction.
+
+01:09:26.850 --> 01:09:29.870 align:middle line:90%
+
+
+01:09:29.870 --> 01:09:34.670 align:middle line:84%
+So here, I want to
+show that player 1 has
+
+01:09:34.670 --> 01:09:40.830 align:middle line:84%
+a profitable deviation, using
+the fact that sigma 1 is not
+
+01:09:40.830 --> 01:09:42.295 align:middle line:84%
+a security strategy
+for player 1.
+
+01:09:42.295 --> 01:09:43.670 align:middle line:84%
+Can anyone try to
+think through--
+
+01:09:43.670 --> 01:09:45.950 align:middle line:84%
+I think it's good to try to
+think through it before you
+
+01:09:45.950 --> 01:09:46.330 align:middle line:90%
+see it.
+
+01:09:46.330 --> 01:09:48.038 align:middle line:84%
+Otherwise, there's no
+way to remember it.
+
+01:09:48.038 --> 01:09:49.109 align:middle line:90%
+So I want to claim--
+
+01:09:49.109 --> 01:09:52.470 align:middle line:84%
+I want to argue that player
+1 has a strictly profitable
+
+01:09:52.470 --> 01:09:55.590 align:middle line:84%
+deviation, precisely because
+sigma 1 is not a security
+
+01:09:55.590 --> 01:09:56.420 align:middle line:90%
+strategy.
+
+01:09:56.420 --> 01:10:00.360 align:middle line:84%
+Anyone think through
+how we might do that?
+
+01:10:00.360 --> 01:10:01.020 align:middle line:90%
+Yeah.
+
+01:10:01.020 --> 01:10:05.780 align:middle line:84%
+AUDIENCE: Perhaps the worst gain
+of sigma 1's security strategy
+
+01:10:05.780 --> 01:10:09.100 align:middle line:84%
+is going to be greater than
+the worst case or the worst
+
+01:10:09.100 --> 01:10:12.180 align:middle line:84%
+gain of this current strategy
+that sigma 1's playing,
+
+01:10:12.180 --> 01:10:14.520 align:middle line:84%
+which means that if we switch
+to the security strategy,
+
+01:10:14.520 --> 01:10:16.047 align:middle line:90%
+we're getting a strictly--
+
+01:10:16.047 --> 01:10:17.380 align:middle line:90%
+or weakly, I guess, [INAUDIBLE].
+
+01:10:17.380 --> 01:10:19.422 align:middle line:84%
+IAN BALL: It's actually
+strictly, yeah, so great.
+
+01:10:19.422 --> 01:10:20.800 align:middle line:90%
+So exactly right.
+
+01:10:20.800 --> 01:10:23.580 align:middle line:84%
+Sigma 1 is not a
+security strategy.
+
+01:10:23.580 --> 01:10:26.440 align:middle line:84%
+So let's consider a deviation
+to a security strategy.
+
+01:10:26.440 --> 01:10:29.700 align:middle line:84%
+What happens if player 1
+deviated to a security strategy,
+
+01:10:29.700 --> 01:10:31.680 align:middle line:90%
+say, sigma 1 star?
+
+01:10:31.680 --> 01:10:32.180 align:middle line:90%
+OK.
+
+01:10:32.180 --> 01:10:36.560 align:middle line:90%
+
+
+01:10:36.560 --> 01:10:39.020 align:middle line:84%
+So I want to say, instead
+of playing sigma 1, which
+
+01:10:39.020 --> 01:10:42.020 align:middle line:84%
+we know is not a security
+strategy, let's say player
+
+01:10:42.020 --> 01:10:46.060 align:middle line:84%
+1 deviates to a security
+strategy, sigma 1 star.
+
+01:10:46.060 --> 01:10:50.340 align:middle line:84%
+And I want to show that
+player 1 does strictly better.
+
+01:10:50.340 --> 01:10:51.120 align:middle line:90%
+How do I show it?
+
+01:10:51.120 --> 01:10:54.810 align:middle line:84%
+Well, because sigma 1 is
+not a security strategy,
+
+01:10:54.810 --> 01:10:57.370 align:middle line:84%
+the worst gain from
+sigma 1 is strictly
+
+01:10:57.370 --> 01:10:59.910 align:middle line:84%
+worse than the worst gain
+from the security strategy.
+
+01:10:59.910 --> 01:11:04.750 align:middle line:90%
+
+
+01:11:04.750 --> 01:11:06.750 align:middle line:84%
+This is what it means to
+be a security strategy.
+
+01:11:06.750 --> 01:11:09.390 align:middle line:84%
+It means sigma 1 star
+maximizes the worst gain
+
+01:11:09.390 --> 01:11:11.730 align:middle line:90%
+whereas sigma 1 does not.
+
+01:11:11.730 --> 01:11:12.950 align:middle line:90%
+Now I'm almost done.
+
+01:11:12.950 --> 01:11:14.710 align:middle line:84%
+Now I just need one
+more inequality here.
+
+01:11:14.710 --> 01:11:17.510 align:middle line:84%
+How do we get this
+last inequality?
+
+01:11:17.510 --> 01:11:24.852 align:middle line:90%
+
+
+01:11:24.852 --> 01:11:26.810 align:middle line:84%
+This is the same thing
+we've always been using.
+
+01:11:26.810 --> 01:11:28.490 align:middle line:84%
+But it's always
+hard to remember.
+
+01:11:28.490 --> 01:11:31.770 align:middle line:84%
+If this is the worst that player
+1 does when they play sigma 1
+
+01:11:31.770 --> 01:11:34.530 align:middle line:84%
+star, then if player
+2 plays sigma,
+
+01:11:34.530 --> 01:11:37.570 align:middle line:84%
+player 1 must do weakly
+better than the worst thing.
+
+01:11:37.570 --> 01:11:39.630 align:middle line:84%
+And now if I tie these
+inequalities together,
+
+01:11:39.630 --> 01:11:40.670 align:middle line:90%
+what have I shown?
+
+01:11:40.670 --> 01:11:44.010 align:middle line:84%
+I've shown that player
+1 can strictly benefit
+
+01:11:44.010 --> 01:11:45.490 align:middle line:90%
+by playing sigma 1 star.
+
+01:11:45.490 --> 01:11:46.990 align:middle line:84%
+I only have a weak
+inequality here,
+
+01:11:46.990 --> 01:11:48.510 align:middle line:84%
+but I have a strict
+inequality here.
+
+01:11:48.510 --> 01:11:50.210 align:middle line:84%
+So if I link them
+all together, I've
+
+01:11:50.210 --> 01:11:53.390 align:middle line:84%
+identified a strictly profitable
+deviation for player 1.
+
+01:11:53.390 --> 01:11:56.030 align:middle line:84%
+I'm saying if player 1 is not
+playing a security strategy,
+
+01:11:56.030 --> 01:11:58.850 align:middle line:84%
+they must be able to profitably
+deviate to a security strategy.
+
+01:11:58.850 --> 01:12:01.810 align:middle line:84%
+Though, this relied on
+this assumption here.
+
+01:12:01.810 --> 01:12:05.370 align:middle line:90%
+Now let's go to the other case.
+
+01:12:05.370 --> 01:12:10.050 align:middle line:84%
+So here what I showed
+is that player 1
+
+01:12:10.050 --> 01:12:11.510 align:middle line:90%
+has a profitable deviation.
+
+01:12:11.510 --> 01:12:14.650 align:middle line:90%
+
+
+01:12:14.650 --> 01:12:18.230 align:middle line:84%
+So any guesses about
+what I might show here?
+
+01:12:18.230 --> 01:12:18.730 align:middle line:90%
+Yeah.
+
+01:12:18.730 --> 01:12:19.410 align:middle line:90%
+AUDIENCE: Player 2 has a profit.
+
+01:12:19.410 --> 01:12:21.327 align:middle line:84%
+IAN BALL: Player 2 has
+a profitable deviation.
+
+01:12:21.327 --> 01:12:26.390 align:middle line:84%
+So I want to show that player
+2 has a profitable deviation.
+
+01:12:26.390 --> 01:12:30.250 align:middle line:90%
+
+
+01:12:30.250 --> 01:12:33.870 align:middle line:90%
+Hmm, any thoughts?
+
+01:12:33.870 --> 01:12:42.690 align:middle line:84%
+How can I-- well, we
+actually just have
+
+01:12:42.690 --> 01:12:46.090 align:middle line:84%
+to unpeel the definition
+of the worst-case gain.
+
+01:12:46.090 --> 01:12:48.270 align:middle line:90%
+What is this?
+
+01:12:48.270 --> 01:12:51.090 align:middle line:84%
+Well, this is
+exactly the minimum
+
+01:12:51.090 --> 01:12:57.608 align:middle line:84%
+over sigma 2 of u
+of sigma 1, sigma 2.
+
+01:12:57.608 --> 01:12:58.900 align:middle line:90%
+And I claim we're already done.
+
+01:12:58.900 --> 01:13:00.960 align:middle line:84%
+We just have to look
+at it really carefully.
+
+01:13:00.960 --> 01:13:03.702 align:middle line:90%
+
+
+01:13:03.702 --> 01:13:07.960 align:middle line:90%
+Ah, sorry, sigma 2 prime.
+
+01:13:07.960 --> 01:13:12.160 align:middle line:84%
+How can we see that player 2 has
+a strictly profitable deviation?
+
+01:13:12.160 --> 01:13:12.680 align:middle line:90%
+Yeah.
+
+01:13:12.680 --> 01:13:15.960 align:middle line:84%
+AUDIENCE: Considering that
+currently, the sigma 2 doesn't
+
+01:13:15.960 --> 01:13:19.300 align:middle line:84%
+actually allow the
+utility to be minimized,
+
+01:13:19.300 --> 01:13:21.400 align:middle line:84%
+there's some other
+sigma 2 prime that
+
+01:13:21.400 --> 01:13:23.880 align:middle line:84%
+actually achieves the
+minimum that sigma 2 can
+
+01:13:23.880 --> 01:13:24.698 align:middle line:90%
+be replaced with.
+
+01:13:24.698 --> 01:13:25.740 align:middle line:90%
+IAN BALL: Exactly, right.
+
+01:13:25.740 --> 01:13:30.160 align:middle line:84%
+Let's choose a sigma 2 prime
+that achieves this minimum.
+
+01:13:30.160 --> 01:13:32.320 align:middle line:84%
+Then the value of this
+is going to be strictly
+
+01:13:32.320 --> 01:13:34.140 align:middle line:90%
+smaller than the value of this.
+
+01:13:34.140 --> 01:13:36.040 align:middle line:84%
+But remember, we're
+talking about player 2.
+
+01:13:36.040 --> 01:13:39.880 align:middle line:84%
+So that means player 2 has a
+deviation to sigma 2 prime that
+
+01:13:39.880 --> 01:13:43.200 align:middle line:84%
+makes their loss strictly
+smaller than their loss here.
+
+01:13:43.200 --> 01:13:44.900 align:middle line:90%
+And that means player 2 profits.
+
+01:13:44.900 --> 01:13:53.390 align:middle line:90%
+
+
+01:13:53.390 --> 01:13:54.730 align:middle line:90%
+OK, let me stop there.
+
+01:13:54.730 --> 01:13:55.550 align:middle line:84%
+This is one of
+these proofs where
+
+01:13:55.550 --> 01:13:56.510 align:middle line:84%
+I think you read
+it in a textbook,
+
+01:13:56.510 --> 01:13:57.510 align:middle line:90%
+and it's like two lines.
+
+01:13:57.510 --> 01:13:59.010 align:middle line:84%
+But unless you go
+over it really,
+
+01:13:59.010 --> 01:14:00.552 align:middle line:84%
+really slowly and
+carefully yourself,
+
+01:14:00.552 --> 01:14:02.230 align:middle line:84%
+you're never going
+to understand it.
+
+01:14:02.230 --> 01:14:04.855 align:middle line:84%
+AUDIENCE: Just to clarify, are
+you essentially saying that then
+
+01:14:04.855 --> 01:14:08.670 align:middle line:84%
+W2 will switch to the case
+where you're in [INAUDIBLE]--
+
+01:14:08.670 --> 01:14:12.367 align:middle line:84%
+in the first case, player 2
+will switch to whatever strategy
+
+01:14:12.367 --> 01:14:13.950 align:middle line:84%
+[INAUDIBLE] you're
+in the second case.
+
+01:14:13.950 --> 01:14:15.230 align:middle line:90%
+And then you have [INAUDIBLE]?
+
+01:14:15.230 --> 01:14:16.630 align:middle line:84%
+IAN BALL: No, it's not
+the case that we're
+
+01:14:16.630 --> 01:14:18.672 align:middle line:84%
+going to immediately get
+an equilibrium if player
+
+01:14:18.672 --> 01:14:20.050 align:middle line:90%
+2 deviates.
+
+01:14:20.050 --> 01:14:23.470 align:middle line:84%
+What's tricky is that,
+here, it could be that,
+
+01:14:23.470 --> 01:14:26.690 align:middle line:84%
+because player 1 is not
+playing a security strategy,
+
+01:14:26.690 --> 01:14:29.270 align:middle line:84%
+player 1 might be doing
+something really weird here.
+
+01:14:29.270 --> 01:14:32.045 align:middle line:84%
+And it could be that, given this
+really weird play by player 1,
+
+01:14:32.045 --> 01:14:33.670 align:middle line:84%
+the best thing for
+player 2 is actually
+
+01:14:33.670 --> 01:14:34.730 align:middle line:90%
+something else really weird.
+
+01:14:34.730 --> 01:14:37.330 align:middle line:84%
+So it doesn't necessarily mean
+that, when player 2 deviates,
+
+01:14:37.330 --> 01:14:39.630 align:middle line:84%
+we're going to get
+an equilibrium.
+
+01:14:39.630 --> 01:14:42.645 align:middle line:84%
+This is not necessarily a
+security strategy for player 2
+
+01:14:42.645 --> 01:14:45.270 align:middle line:84%
+because it's the strategy that
+does best against sigma 1, which
+
+01:14:45.270 --> 01:14:46.970 align:middle line:84%
+could be something
+really, really strange,
+
+01:14:46.970 --> 01:14:48.387 align:middle line:84%
+and therefore it's
+not necessarily
+
+01:14:48.387 --> 01:14:50.180 align:middle line:90%
+a security situation.
+
+01:14:50.180 --> 01:14:51.700 align:middle line:90%
+AUDIENCE: OK, [INAUDIBLE].
+
+01:14:51.700 --> 01:14:53.080 align:middle line:90%
+IAN BALL: OK, good, yes.
+
+01:14:53.080 --> 01:14:55.660 align:middle line:84%
+AUDIENCE: Is there any
+way to [INAUDIBLE] this?
+
+01:14:55.660 --> 01:14:57.260 align:middle line:90%
+IAN BALL: Is it pretty clean?
+
+01:14:57.260 --> 01:14:58.520 align:middle line:84%
+I don't know, what
+do you mean by clean?
+
+01:14:58.520 --> 01:14:58.980 align:middle line:90%
+Yeah.
+
+01:14:58.980 --> 01:15:01.647 align:middle line:84%
+AUDIENCE: I'm just like, because
+this is proof by contradiction.
+
+01:15:01.647 --> 01:15:02.540 align:middle line:90%
+IAN BALL: Oh, I see.
+
+01:15:02.540 --> 01:15:05.315 align:middle line:84%
+Yeah, I mean, I think I went
+for the shortest possible proof.
+
+01:15:05.315 --> 01:15:07.440 align:middle line:84%
+I mean, whenever you have
+a proof by contradiction,
+
+01:15:07.440 --> 01:15:09.303 align:middle line:90%
+you can always undo it.
+
+01:15:09.303 --> 01:15:10.720 align:middle line:84%
+I mean, here,
+everything's finite.
+
+01:15:10.720 --> 01:15:13.190 align:middle line:84%
+So there's not-- there's
+these math philosophy things
+
+01:15:13.190 --> 01:15:14.440 align:middle line:90%
+about proofs by contradiction.
+
+01:15:14.440 --> 01:15:16.732 align:middle line:84%
+But here, I think you can
+just pretty easily convert it
+
+01:15:16.732 --> 01:15:18.540 align:middle line:84%
+to a, quote, unquote,
+"direct proof."
+
+01:15:18.540 --> 01:15:20.900 align:middle line:90%
+We can talk more about that.
+
+01:15:20.900 --> 01:15:23.520 align:middle line:84%
+OK, so this has been
+kind of math heavy.
+
+01:15:23.520 --> 01:15:31.340 align:middle line:84%
+Let me end the last four
+minutes with a maybe more fun
+
+01:15:31.340 --> 01:15:32.400 align:middle line:90%
+application of this.
+
+01:15:32.400 --> 01:15:34.540 align:middle line:84%
+So in the past, I went
+through a really simple game
+
+01:15:34.540 --> 01:15:36.100 align:middle line:90%
+that we could solve exactly.
+
+01:15:36.100 --> 01:15:38.460 align:middle line:84%
+Here, I want to go through
+a more realistic game
+
+01:15:38.460 --> 01:15:40.660 align:middle line:84%
+and just show you
+what the answer is
+
+01:15:40.660 --> 01:15:43.180 align:middle line:84%
+because I think it's
+a nice demonstration
+
+01:15:43.180 --> 01:15:46.140 align:middle line:90%
+of the power of the theory.
+
+01:15:46.140 --> 01:15:48.625 align:middle line:84%
+So poker is too hard
+to solve, full poker.
+
+01:15:48.625 --> 01:15:50.500 align:middle line:84%
+So we're going to look
+at a really simplified
+
+01:15:50.500 --> 01:15:52.340 align:middle line:84%
+version of poker that
+von Neumann actually
+
+01:15:52.340 --> 01:15:54.720 align:middle line:84%
+came up with that's
+called von Neumann poker.
+
+01:15:54.720 --> 01:15:58.820 align:middle line:90%
+
+
+01:15:58.820 --> 01:16:01.060 align:middle line:90%
+And here's how it works.
+
+01:16:01.060 --> 01:16:04.980 align:middle line:90%
+Player 1 is going to get a hand.
+
+01:16:04.980 --> 01:16:11.550 align:middle line:84%
+So P1 gets a hand, which is
+just a number x between 0 and 1,
+
+01:16:11.550 --> 01:16:12.800 align:middle line:90%
+where higher numbers are good.
+
+01:16:12.800 --> 01:16:14.883 align:middle line:84%
+So instead of thinking of
+an actual deck of cards,
+
+01:16:14.883 --> 01:16:17.260 align:middle line:90%
+player 1 is dealt some hand--
+
+01:16:17.260 --> 01:16:21.580 align:middle line:84%
+a number between 0 and 1, and
+it states uniformly distributed.
+
+01:16:21.580 --> 01:16:28.580 align:middle line:84%
+Player 2 is dealt a hand,
+Y, That's also in 0, 1.
+
+01:16:28.580 --> 01:16:36.300 align:middle line:84%
+And then they're each
+going to ante $1.
+
+01:16:36.300 --> 01:16:38.463 align:middle line:84%
+So each player
+puts $1 in the pot.
+
+01:16:38.463 --> 01:16:40.380 align:middle line:84%
+And then we're going to
+play a very simplified
+
+01:16:40.380 --> 01:16:48.010 align:middle line:84%
+version of poker where player 1
+chooses whether to bet or check.
+
+01:16:48.010 --> 01:16:49.913 align:middle line:90%
+Checking means not betting.
+
+01:16:49.913 --> 01:16:50.830 align:middle line:90%
+Betting means betting.
+
+01:16:50.830 --> 01:16:52.538 align:middle line:84%
+And there's only one
+amount they can bet,
+
+01:16:52.538 --> 01:16:58.447 align:middle line:84%
+so the bet size is going to be
+B. And that's some fixed number.
+
+01:16:58.447 --> 01:16:59.030 align:middle line:90%
+It could be 1.
+
+01:16:59.030 --> 01:16:59.613 align:middle line:90%
+It could be 2.
+
+01:16:59.613 --> 01:17:02.450 align:middle line:90%
+It's just a fixed number.
+
+01:17:02.450 --> 01:17:05.850 align:middle line:84%
+Now if player 1
+bets, then player 2
+
+01:17:05.850 --> 01:17:08.070 align:middle line:90%
+can either call or fold.
+
+01:17:08.070 --> 01:17:12.250 align:middle line:90%
+
+
+01:17:12.250 --> 01:17:14.593 align:middle line:90%
+Really simple version of poker.
+
+01:17:14.593 --> 01:17:15.510 align:middle line:90%
+And then what happens?
+
+01:17:15.510 --> 01:17:19.610 align:middle line:84%
+Well, if player 1 checks, then
+whoever has the higher hand
+
+01:17:19.610 --> 01:17:21.850 align:middle line:90%
+wins the pot.
+
+01:17:21.850 --> 01:17:24.950 align:middle line:84%
+So I'll just write, it's a
+little vague, plus 1 minus 1.
+
+01:17:24.950 --> 01:17:27.890 align:middle line:84%
+And this means if I check,
+we just compare our hands,
+
+01:17:27.890 --> 01:17:32.530 align:middle line:84%
+and the higher hand gets one,
+and the lower hand loses one.
+
+01:17:32.530 --> 01:17:35.030 align:middle line:84%
+If player 1 bets and
+player 2 folds, well,
+
+01:17:35.030 --> 01:17:36.770 align:middle line:90%
+player 1 automatically wins.
+
+01:17:36.770 --> 01:17:40.910 align:middle line:90%
+So player 1 gets a payoff of 1.
+
+01:17:40.910 --> 01:17:43.480 align:middle line:84%
+And then, down here,
+if player 1 bets
+
+01:17:43.480 --> 01:17:46.280 align:middle line:84%
+and player two calls,
+now each person has put,
+
+01:17:46.280 --> 01:17:50.200 align:middle line:84%
+one, their ante plus their bet
+B into the pot, and the person
+
+01:17:50.200 --> 01:17:52.280 align:middle line:84%
+with the higher hand
+wins that, and the person
+
+01:17:52.280 --> 01:17:53.820 align:middle line:90%
+with the lower hand loses that.
+
+01:17:53.820 --> 01:17:57.960 align:middle line:84%
+So I'll write down
+here plus 1, b plus 1.
+
+01:17:57.960 --> 01:17:59.800 align:middle line:84%
+So when I write plus
+minus 1, it means
+
+01:17:59.800 --> 01:18:02.280 align:middle line:84%
+the payoffs depend on
+who has the higher hand.
+
+01:18:02.280 --> 01:18:04.980 align:middle line:84%
+If player 1 has the higher
+hand, they win their ante--
+
+01:18:04.980 --> 01:18:06.920 align:middle line:84%
+or really they win the
+other player's ante
+
+01:18:06.920 --> 01:18:08.640 align:middle line:90%
+and the other player's bet.
+
+01:18:08.640 --> 01:18:10.280 align:middle line:84%
+If they have the
+lower hand, then they
+
+01:18:10.280 --> 01:18:12.180 align:middle line:84%
+lose their own ante
+and their own bet.
+
+01:18:12.180 --> 01:18:15.120 align:middle line:90%
+So they get minus.
+
+01:18:15.120 --> 01:18:18.400 align:middle line:84%
+And the question is,
+how should you play?
+
+01:18:18.400 --> 01:18:20.540 align:middle line:84%
+And who has an
+advantage in this game?
+
+01:18:20.540 --> 01:18:22.180 align:middle line:84%
+Here, I'm assuming
+risk neutrality.
+
+01:18:22.180 --> 01:18:27.960 align:middle line:90%
+
+
+01:18:27.960 --> 01:18:32.820 align:middle line:84%
+So let's say the value of
+the game and how to play.
+
+01:18:32.820 --> 01:18:35.838 align:middle line:90%
+
+
+01:18:35.838 --> 01:18:37.380 align:middle line:84%
+So when I ask the
+value of the game--
+
+01:18:37.380 --> 01:18:39.172 align:middle line:84%
+let me start with a
+more informal question.
+
+01:18:39.172 --> 01:18:40.780 align:middle line:90%
+It's who has the advantage?
+
+01:18:40.780 --> 01:18:46.470 align:middle line:90%
+
+
+01:18:46.470 --> 01:18:48.210 align:middle line:84%
+And I can formalize
+that by asking,
+
+01:18:48.210 --> 01:18:51.150 align:middle line:84%
+is the value of this game
+positive or negative?
+
+01:18:51.150 --> 01:18:54.372 align:middle line:84%
+So who has the advantage
+is the vague question.
+
+01:18:54.372 --> 01:18:55.830 align:middle line:84%
+The mathematically
+precise question
+
+01:18:55.830 --> 01:18:58.510 align:middle line:84%
+is, what is the value
+of this zero-sum game?
+
+01:18:58.510 --> 01:18:59.430 align:middle line:90%
+How to play.
+
+01:18:59.430 --> 01:19:00.850 align:middle line:90%
+This is a vague question.
+
+01:19:00.850 --> 01:19:02.350 align:middle line:84%
+The mathematically
+precise thing is,
+
+01:19:02.350 --> 01:19:06.610 align:middle line:84%
+what are the security
+strategies for the two players?
+
+01:19:06.610 --> 01:19:07.110 align:middle line:90%
+So
+
+01:19:07.110 --> 01:19:09.270 align:middle line:84%
+You can see how the
+theory presented today
+
+01:19:09.270 --> 01:19:11.830 align:middle line:84%
+gives a formalization
+of these very--
+
+01:19:11.830 --> 01:19:13.990 align:middle line:90%
+of these vague concepts.
+
+01:19:13.990 --> 01:19:18.910 align:middle line:84%
+And we're running out
+of time, so maybe I'll
+
+01:19:18.910 --> 01:19:21.450 align:middle line:84%
+put this on the problem
+set to solve it.
+
+01:19:21.450 --> 01:19:22.970 align:middle line:90%
+But just maybe final thoughts.
+
+01:19:22.970 --> 01:19:25.530 align:middle line:84%
+Would you rather be player
+1 or player 2 in this game?
+
+01:19:25.530 --> 01:19:30.830 align:middle line:90%
+I think it's not at all clear.
+
+01:19:30.830 --> 01:19:32.070 align:middle line:90%
+Any thoughts?
+
+01:19:32.070 --> 01:19:32.690 align:middle line:90%
+Yeah.
+
+01:19:32.690 --> 01:19:34.510 align:middle line:84%
+AUDIENCE: I'd
+rather be player 1.
+
+01:19:34.510 --> 01:19:35.390 align:middle line:90%
+IAN BALL: Why?
+
+01:19:35.390 --> 01:19:38.590 align:middle line:84%
+AUDIENCE: Because then
+I get to set the rules
+
+01:19:38.590 --> 01:19:41.855 align:middle line:90%
+of the game [INAUDIBLE].
+
+01:19:41.855 --> 01:19:43.730 align:middle line:84%
+IAN BALL: Yeah, so here
+the bet is exogenous.
+
+01:19:43.730 --> 01:19:44.810 align:middle line:84%
+You can't control
+the size of the bet,
+
+01:19:44.810 --> 01:19:46.407 align:middle line:84%
+but you do control
+whether you bet.
+
+01:19:46.407 --> 01:19:47.490 align:middle line:90%
+And you're actually right.
+
+01:19:47.490 --> 01:19:50.130 align:middle line:84%
+In this case, it is going to be
+player 1 who has an advantage.
+
+01:19:50.130 --> 01:19:52.005 align:middle line:84%
+But the reason is actually
+this strange thing
+
+01:19:52.005 --> 01:19:54.030 align:middle line:84%
+here that if player
+1 checks, player 2
+
+01:19:54.030 --> 01:19:55.590 align:middle line:90%
+doesn't have the right to bet.
+
+01:19:55.590 --> 01:19:58.252 align:middle line:84%
+In normal poker, player 2
+can then bet after a check.
+
+01:19:58.252 --> 01:19:59.710 align:middle line:84%
+And in standard
+poker, you actually
+
+01:19:59.710 --> 01:20:01.930 align:middle line:84%
+have an advantage generally
+going second and going later.
+
+01:20:01.930 --> 01:20:03.638 align:middle line:84%
+Here, player 1 actually
+has an advantage.
+
+01:20:03.638 --> 01:20:05.670 align:middle line:84%
+So it turns out the
+value is greater than 0.
+
+01:20:05.670 --> 01:20:09.590 align:middle line:84%
+And how to play, I'll
+just say the punchline
+
+01:20:09.590 --> 01:20:12.850 align:middle line:84%
+is that, it turns out,
+player 1 sometimes bluffs.
+
+01:20:12.850 --> 01:20:17.510 align:middle line:90%
+
+
+01:20:17.510 --> 01:20:20.030 align:middle line:84%
+Meaning player one sometimes
+bets even when their hand
+
+01:20:20.030 --> 01:20:21.273 align:middle line:90%
+is really, really bad.
+
+01:20:21.273 --> 01:20:23.190 align:middle line:84%
+And I think, before this,
+people thought poker
+
+01:20:23.190 --> 01:20:24.370 align:middle line:90%
+is this psychological game.
+
+01:20:24.370 --> 01:20:27.182 align:middle line:84%
+Bluffing is this thing that's
+beyond mathematical reasoning.
+
+01:20:27.182 --> 01:20:29.390 align:middle line:84%
+And it turns out just the
+minimax theorem immediately
+
+01:20:29.390 --> 01:20:32.650 align:middle line:84%
+explains why bluffing is
+sometimes a good thing to do.
+
+01:20:32.650 --> 01:20:35.740 align:middle line:84%
+But I'll put this on the
+problem set for you to work out.
+
+01:20:35.740 --> 01:20:39.000 align:middle line:90%

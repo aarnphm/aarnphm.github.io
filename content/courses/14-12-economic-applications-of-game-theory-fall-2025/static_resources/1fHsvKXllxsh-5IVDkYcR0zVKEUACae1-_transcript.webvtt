@@ -1,0 +1,6563 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:00.985 align:middle line:90%
+
+
+00:00:00.985 --> 00:00:02.440 align:middle line:90%
+[SQUEAKING]
+
+00:00:02.440 --> 00:00:04.380 align:middle line:90%
+[RUSTLING]
+
+00:00:04.380 --> 00:00:07.775 align:middle line:90%
+[CLICKING]
+
+00:00:07.775 --> 00:00:09.540 align:middle line:90%
+
+
+00:00:09.540 --> 00:00:14.800 align:middle line:84%
+IAN BALL: So today, we're
+going to talk about signaling.
+
+00:00:14.800 --> 00:00:19.480 align:middle line:84%
+And what we did
+last week was kind
+
+00:00:19.480 --> 00:00:21.180 align:middle line:84%
+of a simple example
+of signaling,
+
+00:00:21.180 --> 00:00:23.720 align:middle line:84%
+and today, we're going to do
+a more involved application
+
+00:00:23.720 --> 00:00:25.040 align:middle line:90%
+of signaling.
+
+00:00:25.040 --> 00:00:27.380 align:middle line:90%
+So what do we mean by signaling?
+
+00:00:27.380 --> 00:00:28.840 align:middle line:90%
+What's the key idea here?
+
+00:00:28.840 --> 00:00:33.600 align:middle line:84%
+Well, we're going to look at
+games where we have two players.
+
+00:00:33.600 --> 00:00:40.040 align:middle line:90%
+We have a sender and a receiver.
+
+00:00:40.040 --> 00:00:43.180 align:middle line:84%
+And the sender has some
+private information.
+
+00:00:43.180 --> 00:00:48.280 align:middle line:90%
+
+
+00:00:48.280 --> 00:00:50.600 align:middle line:84%
+And then the sender, knowing
+their private information,
+
+00:00:50.600 --> 00:00:52.995 align:middle line:84%
+is going to make some
+choice about an actions.
+
+00:00:52.995 --> 00:00:54.620 align:middle line:84%
+They're going to then
+choose an action.
+
+00:00:54.620 --> 00:00:57.480 align:middle line:90%
+
+
+00:00:57.480 --> 00:01:00.360 align:middle line:84%
+And we often call this
+private information,
+
+00:01:00.360 --> 00:01:01.640 align:middle line:90%
+maybe the sender's type.
+
+00:01:01.640 --> 00:01:07.100 align:middle line:84%
+This is what the sender knows
+that the receiver doesn't know.
+
+00:01:07.100 --> 00:01:10.100 align:middle line:84%
+And then the receiver is
+going to observe the action
+
+00:01:10.100 --> 00:01:12.500 align:middle line:84%
+that the sender
+chooses, but they're not
+
+00:01:12.500 --> 00:01:15.700 align:middle line:84%
+going to directly observe the
+sender's private information.
+
+00:01:15.700 --> 00:01:28.500 align:middle line:84%
+So the receiver observes
+the action, but not type.
+
+00:01:28.500 --> 00:01:30.780 align:middle line:84%
+So they see what action
+the sender takes,
+
+00:01:30.780 --> 00:01:33.500 align:middle line:84%
+but they can't observe
+the private information
+
+00:01:33.500 --> 00:01:35.580 align:middle line:90%
+that the sender has.
+
+00:01:35.580 --> 00:01:37.940 align:middle line:84%
+And then based
+upon that, they're
+
+00:01:37.940 --> 00:01:39.320 align:middle line:90%
+also going to choose an action.
+
+00:01:39.320 --> 00:01:49.300 align:middle line:90%
+
+
+00:01:49.300 --> 00:01:51.780 align:middle line:84%
+So in the examples that
+we're going to look at,
+
+00:01:51.780 --> 00:01:54.940 align:middle line:84%
+the receiver, when they're
+choosing their action,
+
+00:01:54.940 --> 00:01:58.280 align:middle line:84%
+cares a lot about the
+sender's private information.
+
+00:01:58.280 --> 00:02:02.400 align:middle line:84%
+And the receiver is going to
+try to learn or infer something
+
+00:02:02.400 --> 00:02:04.520 align:middle line:84%
+about the sender's
+private information based
+
+00:02:04.520 --> 00:02:07.080 align:middle line:84%
+upon the action that
+the sender chooses.
+
+00:02:07.080 --> 00:02:09.800 align:middle line:84%
+And conversely, the
+sender cares a lot
+
+00:02:09.800 --> 00:02:12.200 align:middle line:84%
+about what the receiver
+believes about them,
+
+00:02:12.200 --> 00:02:15.200 align:middle line:84%
+and the sender is going to
+try to convey information
+
+00:02:15.200 --> 00:02:18.660 align:middle line:84%
+about their private information
+through their choice of action.
+
+00:02:18.660 --> 00:02:21.540 align:middle line:84%
+Now that's a bit abstract, so
+let's think of some examples.
+
+00:02:21.540 --> 00:02:26.000 align:middle line:90%
+
+
+00:02:26.000 --> 00:02:28.920 align:middle line:84%
+I don't know if any
+of you come across--
+
+00:02:28.920 --> 00:02:31.500 align:middle line:84%
+heard of the term
+signaling used colloquially
+
+00:02:31.500 --> 00:02:34.260 align:middle line:84%
+and heard of examples
+where this term is applied.
+
+00:02:34.260 --> 00:02:37.400 align:middle line:90%
+
+
+00:02:37.400 --> 00:02:38.540 align:middle line:90%
+So a few examples.
+
+00:02:38.540 --> 00:02:40.980 align:middle line:84%
+I guess a classic one
+would be luxury goods.
+
+00:02:40.980 --> 00:02:43.680 align:middle line:90%
+
+
+00:02:43.680 --> 00:02:46.840 align:middle line:84%
+So here, the story would be
+that the private information
+
+00:02:46.840 --> 00:02:49.560 align:middle line:84%
+that the sender has, their
+type is maybe how rich they
+
+00:02:49.560 --> 00:02:52.520 align:middle line:90%
+are, how much money they have.
+
+00:02:52.520 --> 00:02:58.660 align:middle line:84%
+The action they're choosing
+is what brand of bag to buy.
+
+00:02:58.660 --> 00:03:01.260 align:middle line:84%
+The receiver, then,
+doesn't directly
+
+00:03:01.260 --> 00:03:03.220 align:middle line:84%
+know how rich the
+sender is, but they
+
+00:03:03.220 --> 00:03:05.463 align:middle line:84%
+do observe what brand
+of item they choose.
+
+00:03:05.463 --> 00:03:07.380 align:middle line:84%
+And the receiver is going
+to make an inference
+
+00:03:07.380 --> 00:03:09.100 align:middle line:84%
+about how rich the
+person is based
+
+00:03:09.100 --> 00:03:11.780 align:middle line:84%
+upon how luxurious the
+item is that they hold.
+
+00:03:11.780 --> 00:03:15.080 align:middle line:84%
+And the sender, wanting
+to be perceived as rich,
+
+00:03:15.080 --> 00:03:18.780 align:middle line:84%
+will then choose to buy
+something luxurious.
+
+00:03:18.780 --> 00:03:20.223 align:middle line:90%
+Now, why does this work?
+
+00:03:20.223 --> 00:03:21.640 align:middle line:84%
+Well, your concern
+might be, well,
+
+00:03:21.640 --> 00:03:24.220 align:middle line:84%
+look, if everyone wants
+to be perceived as rich,
+
+00:03:24.220 --> 00:03:27.422 align:middle line:84%
+why doesn't everyone
+just buy the luxury item?
+
+00:03:27.422 --> 00:03:29.380 align:middle line:84%
+And the issue is that,
+well, they're expensive,
+
+00:03:29.380 --> 00:03:31.000 align:middle line:84%
+and only some people
+can afford them.
+
+00:03:31.000 --> 00:03:32.980 align:middle line:84%
+So a crucial aspect
+for these signals
+
+00:03:32.980 --> 00:03:35.692 align:middle line:84%
+to be credible is that the
+action people are taking
+
+00:03:35.692 --> 00:03:37.900 align:middle line:84%
+is generally going to have
+a different cost depending
+
+00:03:37.900 --> 00:03:39.200 align:middle line:90%
+on their private information.
+
+00:03:39.200 --> 00:03:41.140 align:middle line:84%
+If everyone was able to buy
+luxury items because they
+
+00:03:41.140 --> 00:03:42.682 align:middle line:84%
+were so cheap, that
+wouldn't credibly
+
+00:03:42.682 --> 00:03:43.767 align:middle line:90%
+convey that I was wealthy.
+
+00:03:43.767 --> 00:03:46.100 align:middle line:84%
+But for a very expensive item,
+because only sufficiently
+
+00:03:46.100 --> 00:03:47.475 align:middle line:84%
+wealthy people
+can buy it, that's
+
+00:03:47.475 --> 00:03:49.480 align:middle line:90%
+going to convey information.
+
+00:03:49.480 --> 00:03:52.960 align:middle line:84%
+Another classic story from
+the animal world, I guess,
+
+00:03:52.960 --> 00:03:57.270 align:middle line:90%
+is a peacock's feathers.
+
+00:03:57.270 --> 00:03:59.750 align:middle line:84%
+Any ideas about what's
+being conveyed here
+
+00:03:59.750 --> 00:04:02.770 align:middle line:84%
+and what's the role of
+the peacock's feathers?
+
+00:04:02.770 --> 00:04:06.110 align:middle line:90%
+
+
+00:04:06.110 --> 00:04:11.010 align:middle line:84%
+Why do peacocks grow very, very
+ostentatious large feathers?
+
+00:04:11.010 --> 00:04:14.090 align:middle line:84%
+Well, it's not because people
+really care about the feathers.
+
+00:04:14.090 --> 00:04:16.310 align:middle line:84%
+The idea would be that
+this is a signal of health.
+
+00:04:16.310 --> 00:04:19.110 align:middle line:84%
+So if we map this into
+our example, the sender,
+
+00:04:19.110 --> 00:04:22.150 align:middle line:84%
+one peacock privately
+has private information
+
+00:04:22.150 --> 00:04:23.670 align:middle line:90%
+about how healthy they are.
+
+00:04:23.670 --> 00:04:25.870 align:middle line:84%
+They're trying to
+attract maybe a mate,
+
+00:04:25.870 --> 00:04:28.870 align:middle line:84%
+and the mate cares about
+how healthy the peacock is.
+
+00:04:28.870 --> 00:04:31.650 align:middle line:84%
+If the peacock grows
+these enormous feathers,
+
+00:04:31.650 --> 00:04:32.650 align:middle line:90%
+that's extremely costly.
+
+00:04:32.650 --> 00:04:33.730 align:middle line:90%
+It takes a lot of energy.
+
+00:04:33.730 --> 00:04:36.250 align:middle line:90%
+You have to-- to grow this.
+
+00:04:36.250 --> 00:04:38.855 align:middle line:84%
+So by growing very, very
+large, ostentatious feathers,
+
+00:04:38.855 --> 00:04:40.230 align:middle line:84%
+they're conveying
+to the receiver
+
+00:04:40.230 --> 00:04:41.810 align:middle line:84%
+that I must be
+very, very healthy.
+
+00:04:41.810 --> 00:04:44.530 align:middle line:84%
+And the receiver doesn't
+care about the feathers,
+
+00:04:44.530 --> 00:04:46.290 align:middle line:84%
+they just care about
+underlying health,
+
+00:04:46.290 --> 00:04:49.310 align:middle line:84%
+and the feathers provide
+a signal of that.
+
+00:04:49.310 --> 00:04:52.090 align:middle line:84%
+One classic example, which
+we'll go through today,
+
+00:04:52.090 --> 00:04:55.930 align:middle line:90%
+would be college.
+
+00:04:55.930 --> 00:04:59.290 align:middle line:84%
+So this is a classic
+signaling application.
+
+00:04:59.290 --> 00:05:05.130 align:middle line:84%
+How does college fit into
+this sender/receiver model,
+
+00:05:05.130 --> 00:05:06.770 align:middle line:90%
+or how could it?
+
+00:05:06.770 --> 00:05:07.570 align:middle line:90%
+Yeah?
+
+00:05:07.570 --> 00:05:11.328 align:middle line:84%
+AUDIENCE: --show a job recruiter
+that you are aspiring--
+
+00:05:11.328 --> 00:05:12.370 align:middle line:90%
+IAN BALL: Right, exactly.
+
+00:05:12.370 --> 00:05:13.610 align:middle line:84%
+So here, your
+private information
+
+00:05:13.610 --> 00:05:15.050 align:middle line:84%
+might be how smart
+you are, how diligent
+
+00:05:15.050 --> 00:05:16.590 align:middle line:84%
+you are, how
+hardworking you are,
+
+00:05:16.590 --> 00:05:18.850 align:middle line:84%
+we could have various kind
+of positive attributes.
+
+00:05:18.850 --> 00:05:23.170 align:middle line:84%
+You're choosing whether to go
+to some difficult university
+
+00:05:23.170 --> 00:05:25.210 align:middle line:90%
+and get some demanding degree.
+
+00:05:25.210 --> 00:05:27.770 align:middle line:84%
+The receiver might
+directly care about what
+
+00:05:27.770 --> 00:05:29.937 align:middle line:84%
+you learn in your degree,
+but they might not.
+
+00:05:29.937 --> 00:05:31.770 align:middle line:84%
+It might be that your
+degree is actually not
+
+00:05:31.770 --> 00:05:34.137 align:middle line:84%
+that relevant for what
+you're doing on the job,
+
+00:05:34.137 --> 00:05:35.970 align:middle line:84%
+but they care about
+your degree because it's
+
+00:05:35.970 --> 00:05:37.427 align:middle line:90%
+a signal of how smart you are.
+
+00:05:37.427 --> 00:05:39.010 align:middle line:84%
+The idea would be
+that some people are
+
+00:05:39.010 --> 00:05:42.053 align:middle line:84%
+able to get this degree and
+pass, and other people are not,
+
+00:05:42.053 --> 00:05:43.970 align:middle line:84%
+and therefore, your
+ability to get this degree
+
+00:05:43.970 --> 00:05:50.270 align:middle line:84%
+and take this action reveals
+information about your ability.
+
+00:05:50.270 --> 00:05:55.978 align:middle line:84%
+So let's dig in a little bit
+deeper into this college example
+
+00:05:55.978 --> 00:05:58.270 align:middle line:84%
+because that's going to be
+kind of the main application
+
+00:05:58.270 --> 00:06:00.590 align:middle line:84%
+we're going to look at
+today, and this is often
+
+00:06:00.590 --> 00:06:02.690 align:middle line:84%
+goes under the name of
+job market signaling.
+
+00:06:02.690 --> 00:06:09.510 align:middle line:90%
+
+
+00:06:09.510 --> 00:06:11.910 align:middle line:84%
+So this was introduced
+in this famous paper
+
+00:06:11.910 --> 00:06:14.930 align:middle line:90%
+by Michael Spence in 1973--
+
+00:06:14.930 --> 00:06:17.770 align:middle line:84%
+I think it was actually
+his PhD dissertation,
+
+00:06:17.770 --> 00:06:19.550 align:middle line:84%
+and he ultimately
+won the Nobel Prize
+
+00:06:19.550 --> 00:06:21.388 align:middle line:84%
+for this idea, which
+we might go over today
+
+00:06:21.388 --> 00:06:22.930 align:middle line:84%
+and you might say
+it's pretty simple.
+
+00:06:22.930 --> 00:06:24.090 align:middle line:84%
+How did you get the
+Nobel Prize for that?
+
+00:06:24.090 --> 00:06:26.090 align:middle line:84%
+But I think things after
+the fact seem simple,
+
+00:06:26.090 --> 00:06:29.110 align:middle line:84%
+but coming up with them
+is often quite difficult.
+
+00:06:29.110 --> 00:06:32.970 align:middle line:84%
+So let's just observe some
+facts about the world,
+
+00:06:32.970 --> 00:06:34.330 align:middle line:90%
+about college education.
+
+00:06:34.330 --> 00:06:36.730 align:middle line:84%
+There's something called
+the college wage premium.
+
+00:06:36.730 --> 00:06:40.788 align:middle line:90%
+
+
+00:06:40.788 --> 00:06:43.330 align:middle line:84%
+And this refers to the fact that
+at least all over the world,
+
+00:06:43.330 --> 00:06:44.890 align:middle line:84%
+but let's focus in
+the United States,
+
+00:06:44.890 --> 00:06:47.550 align:middle line:84%
+people who go to college or
+complete a college degree tend
+
+00:06:47.550 --> 00:06:49.570 align:middle line:84%
+to earn more than
+people who don't.
+
+00:06:49.570 --> 00:06:51.690 align:middle line:84%
+And this is something labor
+economists study a lot
+
+00:06:51.690 --> 00:06:53.590 align:middle line:84%
+and try to give
+different estimates.
+
+00:06:53.590 --> 00:06:56.173 align:middle line:84%
+You'll see a lot of estimates
+floating around depending on how
+
+00:06:56.173 --> 00:06:58.730 align:middle line:84%
+they measure it or which
+cohort or which kind of person
+
+00:06:58.730 --> 00:07:01.410 align:middle line:84%
+they're looking at, but maybe a
+rough estimate in the US might
+
+00:07:01.410 --> 00:07:07.490 align:middle line:84%
+be something like maybe 500K
+to a million is maybe kind
+
+00:07:07.490 --> 00:07:09.190 align:middle line:84%
+of the middle-of-the-road
+estimates,
+
+00:07:09.190 --> 00:07:10.630 align:middle line:84%
+and this is in
+lifetime earnings.
+
+00:07:10.630 --> 00:07:15.827 align:middle line:90%
+
+
+00:07:15.827 --> 00:07:16.910 align:middle line:90%
+So what do I mean by this?
+
+00:07:16.910 --> 00:07:18.785 align:middle line:84%
+I mean, if you just look
+at people in the US,
+
+00:07:18.785 --> 00:07:20.730 align:middle line:84%
+you look at those who
+have college degrees,
+
+00:07:20.730 --> 00:07:23.063 align:middle line:84%
+and you compute the average
+earnings of those people who
+
+00:07:23.063 --> 00:07:25.271 align:middle line:84%
+have college degrees, and
+then you look at people who
+
+00:07:25.271 --> 00:07:27.938 align:middle line:84%
+don't have college degrees, and
+you look at the average earnings
+
+00:07:27.938 --> 00:07:30.350 align:middle line:84%
+of those people over their
+lifetime, and you compare it,
+
+00:07:30.350 --> 00:07:32.570 align:middle line:84%
+you see that people who
+go to college, on average,
+
+00:07:32.570 --> 00:07:35.877 align:middle line:84%
+earn maybe 500K to $1 million
+more over their lifetime.
+
+00:07:35.877 --> 00:07:38.210 align:middle line:84%
+As I said, there's a few
+different estimates about this.
+
+00:07:38.210 --> 00:07:41.210 align:middle line:90%
+Now the question is why.
+
+00:07:41.210 --> 00:07:43.730 align:middle line:90%
+Any thoughts about why this is?
+
+00:07:43.730 --> 00:07:48.350 align:middle line:84%
+Why do people go to
+college earn more?
+
+00:07:48.350 --> 00:07:49.370 align:middle line:90%
+You're here at college.
+
+00:07:49.370 --> 00:07:52.790 align:middle line:84%
+Maybe you partly want to earn
+more by coming to college.
+
+00:07:52.790 --> 00:07:54.410 align:middle line:90%
+Any thoughts about why this is?
+
+00:07:54.410 --> 00:07:57.190 align:middle line:90%
+
+
+00:07:57.190 --> 00:08:00.790 align:middle line:84%
+So maybe-- we often separate
+this into two different stories.
+
+00:08:00.790 --> 00:08:03.010 align:middle line:84%
+So one is what we might
+call a causal story.
+
+00:08:03.010 --> 00:08:06.430 align:middle line:90%
+
+
+00:08:06.430 --> 00:08:09.070 align:middle line:84%
+I'll just say causal, we don't
+have to put the word story.
+
+00:08:09.070 --> 00:08:10.230 align:middle line:90%
+So is it causal?
+
+00:08:10.230 --> 00:08:11.710 align:middle line:84%
+Is it causal, what
+I mean is, let's
+
+00:08:11.710 --> 00:08:14.030 align:middle line:84%
+look at someone who
+doesn't go to college.
+
+00:08:14.030 --> 00:08:16.010 align:middle line:84%
+If they chose to
+instead go to college,
+
+00:08:16.010 --> 00:08:17.430 align:middle line:90%
+would their earnings go up?
+
+00:08:17.430 --> 00:08:18.870 align:middle line:90%
+That would mean it's causal.
+
+00:08:18.870 --> 00:08:20.450 align:middle line:90%
+Or maybe it's not causal.
+
+00:08:20.450 --> 00:08:23.003 align:middle line:90%
+
+
+00:08:23.003 --> 00:08:24.670 align:middle line:84%
+Maybe someone who
+doesn't go to college,
+
+00:08:24.670 --> 00:08:26.503 align:middle line:84%
+if they did go to
+college, wouldn't actually
+
+00:08:26.503 --> 00:08:27.510 align:middle line:90%
+increase their earnings.
+
+00:08:27.510 --> 00:08:30.030 align:middle line:84%
+Now I think a lot of people
+would look at this fact
+
+00:08:30.030 --> 00:08:32.330 align:middle line:84%
+and just immediately say,
+oh, it must be causal.
+
+00:08:32.330 --> 00:08:34.850 align:middle line:84%
+If going to college-- if people
+who go to college earn more,
+
+00:08:34.850 --> 00:08:36.490 align:middle line:84%
+then it must be that if I
+choose to go to college,
+
+00:08:36.490 --> 00:08:38.032 align:middle line:84%
+that's going to
+increase my earnings,
+
+00:08:38.032 --> 00:08:39.963 align:middle line:84%
+and this is kind of
+a classic fallacy--
+
+00:08:39.963 --> 00:08:41.630 align:middle line:84%
+or potential fallacy
+when people haven't
+
+00:08:41.630 --> 00:08:44.110 align:middle line:84%
+thought so carefully about
+this data, and that's possible.
+
+00:08:44.110 --> 00:08:45.005 align:middle line:90%
+It could be causal.
+
+00:08:45.005 --> 00:08:46.630 align:middle line:84%
+But one explanation
+is it's not causal.
+
+00:08:46.630 --> 00:08:47.380 align:middle line:90%
+How could that be?
+
+00:08:47.380 --> 00:08:51.090 align:middle line:84%
+How could it be that people who
+go to college earn more money,
+
+00:08:51.090 --> 00:08:53.990 align:middle line:84%
+yet going to college wouldn't
+actually increase my earning?
+
+00:08:53.990 --> 00:08:57.610 align:middle line:90%
+How could that story make sense?
+
+00:08:57.610 --> 00:08:59.490 align:middle line:84%
+Well, the story here
+would be that, well,
+
+00:08:59.490 --> 00:09:01.610 align:middle line:84%
+the people who go to college are
+very different from the people
+
+00:09:01.610 --> 00:09:02.710 align:middle line:90%
+who don't go to college.
+
+00:09:02.710 --> 00:09:03.950 align:middle line:90%
+You have two pools of people.
+
+00:09:03.950 --> 00:09:05.830 align:middle line:84%
+You have people who go to
+college and people who don't.
+
+00:09:05.830 --> 00:09:07.788 align:middle line:84%
+People who go to college
+are just smarter, more
+
+00:09:07.788 --> 00:09:10.090 align:middle line:84%
+ambitious on average or
+have some other trait
+
+00:09:10.090 --> 00:09:12.350 align:middle line:90%
+that is hard to measure.
+
+00:09:12.350 --> 00:09:15.083 align:middle line:84%
+They do earn more, but it's
+not because they go to college,
+
+00:09:15.083 --> 00:09:16.750 align:middle line:84%
+they just happen to
+be going to college.
+
+00:09:16.750 --> 00:09:19.070 align:middle line:84%
+And this is, I guess, the
+classic story of this.
+
+00:09:19.070 --> 00:09:21.278 align:middle line:84%
+This is a problem with all
+these health studies where
+
+00:09:21.278 --> 00:09:23.050 align:middle line:84%
+they say people who
+eat five almonds a day
+
+00:09:23.050 --> 00:09:24.435 align:middle line:90%
+live five years longer.
+
+00:09:24.435 --> 00:09:25.810 align:middle line:84%
+Eating five almonds
+a day doesn't
+
+00:09:25.810 --> 00:09:27.450 align:middle line:84%
+make you live five years longer,
+but people who eat almonds
+
+00:09:27.450 --> 00:09:28.670 align:middle line:84%
+are different in a
+lot of different ways.
+
+00:09:28.670 --> 00:09:29.830 align:middle line:84%
+They eat healthily
+in other ways,
+
+00:09:29.830 --> 00:09:32.163 align:middle line:84%
+they run, they exercise, they
+do all these other things.
+
+00:09:32.163 --> 00:09:36.332 align:middle line:84%
+So it could be that though
+there's a big earnings gap,
+
+00:09:36.332 --> 00:09:37.790 align:middle line:84%
+it's not because
+you go to college,
+
+00:09:37.790 --> 00:09:39.190 align:middle line:84%
+it's just a spurious
+correlation.
+
+00:09:39.190 --> 00:09:41.820 align:middle line:84%
+So that's one
+potential explanation.
+
+00:09:41.820 --> 00:09:43.900 align:middle line:84%
+Another would be
+that it is causal.
+
+00:09:43.900 --> 00:09:46.640 align:middle line:84%
+That if I, as an individual,
+choose to go to college,
+
+00:09:46.640 --> 00:09:49.220 align:middle line:84%
+that's going to increase
+my expected earning.
+
+00:09:49.220 --> 00:09:51.820 align:middle line:84%
+And I think the best evidence
+suggests that both-- there's
+
+00:09:51.820 --> 00:09:53.400 align:middle line:84%
+an element of both
+of these at play.
+
+00:09:53.400 --> 00:09:57.940 align:middle line:84%
+There's-- maybe this we
+might call selection,
+
+00:09:57.940 --> 00:10:00.353 align:middle line:84%
+the people who go to college
+are a selected group.
+
+00:10:00.353 --> 00:10:02.020 align:middle line:84%
+They're different on
+average than people
+
+00:10:02.020 --> 00:10:03.140 align:middle line:90%
+who don't go to college.
+
+00:10:03.140 --> 00:10:06.170 align:middle line:84%
+And I frame this as
+causal versus not causal.
+
+00:10:06.170 --> 00:10:08.420 align:middle line:84%
+I think the best evidence
+suggests it's a bit of both.
+
+00:10:08.420 --> 00:10:11.020 align:middle line:84%
+That when we look at this
+earning gap between people
+
+00:10:11.020 --> 00:10:13.357 align:middle line:84%
+who go to college and people
+who don't, partly it's
+
+00:10:13.357 --> 00:10:14.440 align:middle line:90%
+attributable to selection.
+
+00:10:14.440 --> 00:10:16.240 align:middle line:84%
+Those people just
+have different skills,
+
+00:10:16.240 --> 00:10:18.360 align:middle line:84%
+and partly it's a causal
+effect of college.
+
+00:10:18.360 --> 00:10:20.120 align:middle line:84%
+But I want to drill
+down within causal,
+
+00:10:20.120 --> 00:10:22.900 align:middle line:84%
+and I think there's actually
+two different mechanisms that
+
+00:10:22.900 --> 00:10:23.920 align:middle line:90%
+could be at work here.
+
+00:10:23.920 --> 00:10:26.320 align:middle line:84%
+So let's focus on
+the causal component.
+
+00:10:26.320 --> 00:10:29.180 align:middle line:84%
+Let's just suppose that it is
+true that if I go to college,
+
+00:10:29.180 --> 00:10:31.020 align:middle line:90%
+my earnings go up.
+
+00:10:31.020 --> 00:10:32.700 align:middle line:90%
+Why might that be the case?
+
+00:10:32.700 --> 00:10:36.160 align:middle line:84%
+Why my going to college
+cause me to earn more?
+
+00:10:36.160 --> 00:10:36.660 align:middle line:90%
+Yeah?
+
+00:10:36.660 --> 00:10:37.820 align:middle line:84%
+AUDIENCE: You're
+able to learn skills
+
+00:10:37.820 --> 00:10:38.960 align:middle line:90%
+that employers might want.
+
+00:10:38.960 --> 00:10:39.627 align:middle line:90%
+IAN BALL: Great.
+
+00:10:39.627 --> 00:10:40.680 align:middle line:90%
+So.
+
+00:10:40.680 --> 00:10:42.680 align:middle line:84%
+Certainly the story that
+people who run colleges
+
+00:10:42.680 --> 00:10:44.240 align:middle line:84%
+would like to focus
+on is this story,
+
+00:10:44.240 --> 00:10:47.080 align:middle line:90%
+that it's about learning skills.
+
+00:10:47.080 --> 00:10:49.880 align:middle line:84%
+Sometimes this is called
+human capital formation,
+
+00:10:49.880 --> 00:10:52.640 align:middle line:84%
+that you go to
+school, you learn how
+
+00:10:52.640 --> 00:10:55.580 align:middle line:84%
+to code, you learn how to
+communicate with people,
+
+00:10:55.580 --> 00:10:58.360 align:middle line:84%
+you learn knowledge, information
+about the world, you mature,
+
+00:10:58.360 --> 00:11:00.878 align:middle line:84%
+various things, and these make
+you a more valuable employee.
+
+00:11:00.878 --> 00:11:02.420 align:middle line:84%
+They allow you to
+be more productive.
+
+00:11:02.420 --> 00:11:04.280 align:middle line:84%
+So this is sometimes--
+we talk about this
+
+00:11:04.280 --> 00:11:05.580 align:middle line:90%
+might be about productivity.
+
+00:11:05.580 --> 00:11:08.520 align:middle line:90%
+
+
+00:11:08.520 --> 00:11:10.480 align:middle line:84%
+But another
+possibility, which we're
+
+00:11:10.480 --> 00:11:17.580 align:middle line:84%
+going to focus on today--
+learning, is signaling.
+
+00:11:17.580 --> 00:11:22.400 align:middle line:90%
+
+
+00:11:22.400 --> 00:11:25.400 align:middle line:84%
+So the other possibility
+could be that it is causal.
+
+00:11:25.400 --> 00:11:27.188 align:middle line:84%
+Going to college
+makes me earn more,
+
+00:11:27.188 --> 00:11:29.480 align:middle line:84%
+but it's not because I actually
+learn anything valuable
+
+00:11:29.480 --> 00:11:30.380 align:middle line:90%
+in college.
+
+00:11:30.380 --> 00:11:33.360 align:middle line:84%
+It's simply because going to
+college proves to the employer
+
+00:11:33.360 --> 00:11:36.220 align:middle line:84%
+that I'm smart, and therefore,
+the employer pays me more.
+
+00:11:36.220 --> 00:11:37.140 align:middle line:90%
+It's still causal.
+
+00:11:37.140 --> 00:11:39.640 align:middle line:84%
+If I didn't go to college,
+I wouldn't earn as much.
+
+00:11:39.640 --> 00:11:41.100 align:middle line:84%
+So it is true that
+going to college
+
+00:11:41.100 --> 00:11:43.520 align:middle line:84%
+changes my expected
+earnings, but it changes it
+
+00:11:43.520 --> 00:11:45.760 align:middle line:84%
+not because I've actually
+acquired valuable skills,
+
+00:11:45.760 --> 00:11:47.510 align:middle line:84%
+but because I've
+demonstrated that I could
+
+00:11:47.510 --> 00:11:49.220 align:middle line:84%
+do a very difficult
+task, and that makes
+
+00:11:49.220 --> 00:11:50.520 align:middle line:90%
+employers want to hire me.
+
+00:11:50.520 --> 00:11:52.180 align:middle line:84%
+So one way of
+separating this, you
+
+00:11:52.180 --> 00:11:58.142 align:middle line:84%
+could imagine that a school--
+in the extreme case, you
+
+00:11:58.142 --> 00:12:00.100 align:middle line:84%
+could imagine a school
+that teaches skills that
+
+00:12:00.100 --> 00:12:02.350 align:middle line:84%
+really have no value, but
+are just really, really hard
+
+00:12:02.350 --> 00:12:03.260 align:middle line:90%
+to learn.
+
+00:12:03.260 --> 00:12:04.380 align:middle line:90%
+And you might have--
+
+00:12:04.380 --> 00:12:05.940 align:middle line:84%
+people who graduate
+from that school
+
+00:12:05.940 --> 00:12:08.190 align:middle line:84%
+might actually still do
+well in the workforce.
+
+00:12:08.190 --> 00:12:09.440 align:middle line:90%
+And maybe an example of that--
+
+00:12:09.440 --> 00:12:12.047 align:middle line:84%
+I mean, I think athletics
+are a valuable pursuit,
+
+00:12:12.047 --> 00:12:14.380 align:middle line:84%
+but you might think that
+people who succeed in athletics
+
+00:12:14.380 --> 00:12:17.422 align:middle line:84%
+are often hired by firms
+to work in finance, say.
+
+00:12:17.422 --> 00:12:19.380 align:middle line:84%
+It's not that being good
+at running makes you--
+
+00:12:19.380 --> 00:12:21.520 align:middle line:84%
+or being good at weightlifting
+makes you better at finance,
+
+00:12:21.520 --> 00:12:23.060 align:middle line:84%
+but it shows that you've
+done something very hard that
+
+00:12:23.060 --> 00:12:25.643 align:middle line:84%
+reveals something maybe about
+your diligence, your work ethic,
+
+00:12:25.643 --> 00:12:28.780 align:middle line:84%
+and that might be a reason
+why firms want to hire you.
+
+00:12:28.780 --> 00:12:30.822 align:middle line:84%
+So in reality, I think
+both are probably present,
+
+00:12:30.822 --> 00:12:33.030 align:middle line:84%
+and I think the best empirical
+evidence at the moment
+
+00:12:33.030 --> 00:12:35.200 align:middle line:84%
+suggests both of these
+mechanisms are at play,
+
+00:12:35.200 --> 00:12:36.912 align:middle line:84%
+but to highlight the
+signaling aspect,
+
+00:12:36.912 --> 00:12:38.620 align:middle line:84%
+we're going to focus
+all in on signaling,
+
+00:12:38.620 --> 00:12:40.620 align:middle line:84%
+and we're going to consider
+a model of education
+
+00:12:40.620 --> 00:12:42.780 align:middle line:84%
+where education conveys
+no valuable skills.
+
+00:12:42.780 --> 00:12:45.940 align:middle line:84%
+I want to say up front, this
+is not my view of education,
+
+00:12:45.940 --> 00:12:48.080 align:middle line:90%
+but just to highlight this--
+
+00:12:48.080 --> 00:12:50.560 align:middle line:84%
+I think we all understand
+how learning skills increases
+
+00:12:50.560 --> 00:12:51.460 align:middle line:90%
+your wage.
+
+00:12:51.460 --> 00:12:54.100 align:middle line:84%
+I think this is the novel
+element of Spence's model,
+
+00:12:54.100 --> 00:12:55.820 align:middle line:84%
+and this is what
+we want to look at.
+
+00:12:55.820 --> 00:12:57.320 align:middle line:84%
+And I will say,
+there are people who
+
+00:12:57.320 --> 00:12:59.613 align:middle line:84%
+argue that this is
+almost all of education.
+
+00:12:59.613 --> 00:13:01.280 align:middle line:84%
+It's a debate, but
+there are some people
+
+00:13:01.280 --> 00:13:03.363 align:middle line:84%
+who say this is really all
+that's what's going on.
+
+00:13:03.363 --> 00:13:04.540 align:middle line:90%
+So let's go through this.
+
+00:13:04.540 --> 00:13:06.983 align:middle line:90%
+
+
+00:13:06.983 --> 00:13:08.900 align:middle line:84%
+So one-- I'll just maybe
+make one observation,
+
+00:13:08.900 --> 00:13:11.817 align:middle line:84%
+one way that people try to
+argue it's all about signaling,
+
+00:13:11.817 --> 00:13:13.400 align:middle line:84%
+one kind of interesting
+empirical test
+
+00:13:13.400 --> 00:13:15.942 align:middle line:84%
+is they look at people who go
+to college for three and a half
+
+00:13:15.942 --> 00:13:17.497 align:middle line:90%
+years and then drop out.
+
+00:13:17.497 --> 00:13:19.080 align:middle line:84%
+Now if it's really
+about skills, you'd
+
+00:13:19.080 --> 00:13:20.880 align:middle line:84%
+think someone who goes for three
+and a half years has acquired
+
+00:13:20.880 --> 00:13:23.420 align:middle line:84%
+almost all of the skills as
+someone who goes for four years.
+
+00:13:23.420 --> 00:13:24.780 align:middle line:84%
+But if it's about
+signaling, you might think,
+
+00:13:24.780 --> 00:13:26.280 align:middle line:84%
+well, the fact that
+they dropped out
+
+00:13:26.280 --> 00:13:28.180 align:middle line:84%
+reveals a lot about who
+they are as a person,
+
+00:13:28.180 --> 00:13:29.920 align:middle line:84%
+and indeed, people who drop
+out just before graduating
+
+00:13:29.920 --> 00:13:30.540 align:middle line:90%
+earn a lot less.
+
+00:13:30.540 --> 00:13:32.620 align:middle line:84%
+And that's one argument for
+why signaling is at play,
+
+00:13:32.620 --> 00:13:34.100 align:middle line:84%
+but we can debate
+about these things.
+
+00:13:34.100 --> 00:13:34.600 align:middle line:90%
+OK.
+
+00:13:34.600 --> 00:13:39.480 align:middle line:84%
+So now let's go through our
+formal model of signaling.
+
+00:13:39.480 --> 00:13:43.560 align:middle line:84%
+So in our model we're going to
+have a sender and a receiver,
+
+00:13:43.560 --> 00:13:46.690 align:middle line:90%
+just as I said before.
+
+00:13:46.690 --> 00:13:48.440 align:middle line:84%
+And we're really going
+to simplify things.
+
+00:13:48.440 --> 00:13:51.580 align:middle line:84%
+We're going to imagine the
+sender just has two types.
+
+00:13:51.580 --> 00:13:57.400 align:middle line:84%
+They privately know they're
+type t, which is either l or h.
+
+00:13:57.400 --> 00:13:59.660 align:middle line:84%
+They're either a low
+type or a high type.
+
+00:13:59.660 --> 00:14:03.167 align:middle line:84%
+And we're going
+to think of this--
+
+00:14:03.167 --> 00:14:05.000 align:middle line:84%
+maybe we can think of
+this a bit abstractly,
+
+00:14:05.000 --> 00:14:10.380 align:middle line:84%
+but a low type is someone who
+is going to find education more
+
+00:14:10.380 --> 00:14:13.295 align:middle line:84%
+costly, and a high type is going
+to find education less costly.
+
+00:14:13.295 --> 00:14:14.920 align:middle line:84%
+We can interpret this
+in a lot of ways.
+
+00:14:14.920 --> 00:14:16.543 align:middle line:84%
+It could be about
+your intelligence,
+
+00:14:16.543 --> 00:14:17.960 align:middle line:84%
+it could be about
+your work ethic,
+
+00:14:17.960 --> 00:14:20.863 align:middle line:84%
+it could be about the quality of
+the school you went to before.
+
+00:14:20.863 --> 00:14:22.780 align:middle line:84%
+There's a lot of things
+that can go into this,
+
+00:14:22.780 --> 00:14:24.660 align:middle line:84%
+but we're just going to
+quite abstractly call
+
+00:14:24.660 --> 00:14:26.720 align:middle line:90%
+it a low type and a high type.
+
+00:14:26.720 --> 00:14:31.340 align:middle line:90%
+
+
+00:14:31.340 --> 00:14:34.360 align:middle line:84%
+And what they're
+going to choose is
+
+00:14:34.360 --> 00:14:38.080 align:middle line:84%
+they're going to choose
+a level of education.
+
+00:14:38.080 --> 00:14:41.480 align:middle line:84%
+And in reality, education kind
+of usually comes in in units.
+
+00:14:41.480 --> 00:14:44.680 align:middle line:84%
+Like, you can't-- we don't
+really think you get 862 days
+
+00:14:44.680 --> 00:14:45.260 align:middle line:90%
+of education.
+
+00:14:45.260 --> 00:14:47.160 align:middle line:84%
+We usually think you either
+get-- graduate high school
+
+00:14:47.160 --> 00:14:49.140 align:middle line:84%
+or you graduate college,
+but to make things simple,
+
+00:14:49.140 --> 00:14:50.848 align:middle line:84%
+we're going to make
+education continuous,
+
+00:14:50.848 --> 00:14:53.880 align:middle line:84%
+e, and we're just going to say
+it's a number between 0 and 1.
+
+00:14:53.880 --> 00:14:57.680 align:middle line:90%
+So you can think of this--
+
+00:14:57.680 --> 00:15:02.280 align:middle line:84%
+just a stylized model where you
+can get any continuous amount
+
+00:15:02.280 --> 00:15:02.900 align:middle line:90%
+of education.
+
+00:15:02.900 --> 00:15:07.760 align:middle line:84%
+This could be something like the
+fraction of your life you spend
+
+00:15:07.760 --> 00:15:10.000 align:middle line:90%
+being educated or something.
+
+00:15:10.000 --> 00:15:12.040 align:middle line:84%
+Now the receiver,
+we're going to think
+
+00:15:12.040 --> 00:15:18.360 align:middle line:84%
+of this as maybe a firm
+or a market of firms.
+
+00:15:18.360 --> 00:15:24.760 align:middle line:84%
+And they're going to
+observe e, but not t.
+
+00:15:24.760 --> 00:15:27.980 align:middle line:84%
+When a firm chooses to hire you,
+they see what education you got.
+
+00:15:27.980 --> 00:15:30.080 align:middle line:84%
+They don't directly
+observe this type t,
+
+00:15:30.080 --> 00:15:32.220 align:middle line:84%
+whether you're a low
+or high type person.
+
+00:15:32.220 --> 00:15:33.920 align:middle line:84%
+And then they're going
+to choose a wage.
+
+00:15:33.920 --> 00:15:38.420 align:middle line:90%
+
+
+00:15:38.420 --> 00:15:41.067 align:middle line:84%
+In reality, I think a
+lot of individual firms,
+
+00:15:41.067 --> 00:15:42.900 align:middle line:84%
+the wage is roughly set
+and they're choosing
+
+00:15:42.900 --> 00:15:43.760 align:middle line:90%
+whether to hire you or not.
+
+00:15:43.760 --> 00:15:46.332 align:middle line:84%
+There's maybe some flexibility
+over wages, but that's one way
+
+00:15:46.332 --> 00:15:47.040 align:middle line:90%
+we can think of--
+
+00:15:47.040 --> 00:15:49.457 align:middle line:84%
+I think it's helpful to think
+of this kind of as a market.
+
+00:15:49.457 --> 00:15:52.340 align:middle line:84%
+So it may be that each
+individual firm is making
+
+00:15:52.340 --> 00:15:54.143 align:middle line:84%
+a binary choice about
+whether to hire you,
+
+00:15:54.143 --> 00:15:56.560 align:middle line:84%
+but then you go to the firm
+that gives you the best offer.
+
+00:15:56.560 --> 00:16:00.900 align:middle line:84%
+So in the end, the outcome of
+the firm-- of the labor market
+
+00:16:00.900 --> 00:16:03.280 align:middle line:84%
+is that you get hired at
+some place for some wage,
+
+00:16:03.280 --> 00:16:04.660 align:middle line:84%
+and depending on
+how well you do,
+
+00:16:04.660 --> 00:16:07.620 align:middle line:84%
+that wage is determined
+by which firm hires you.
+
+00:16:07.620 --> 00:16:09.820 align:middle line:90%
+So now let's talk about payoffs.
+
+00:16:09.820 --> 00:16:11.820 align:middle line:84%
+So we're going to
+assume the sender,
+
+00:16:11.820 --> 00:16:19.100 align:middle line:90%
+their payoffs are like this.
+
+00:16:19.100 --> 00:16:21.660 align:middle line:84%
+So the sender wants
+to get paid more.
+
+00:16:21.660 --> 00:16:24.687 align:middle line:84%
+Their payoff is-- their utility
+is increasing their wage.
+
+00:16:24.687 --> 00:16:26.020 align:middle line:90%
+They don't like going to school.
+
+00:16:26.020 --> 00:16:27.800 align:middle line:84%
+Again, another maybe
+stylized assumption,
+
+00:16:27.800 --> 00:16:30.230 align:middle line:84%
+some people enjoy going to
+school and that's why they go,
+
+00:16:30.230 --> 00:16:31.970 align:middle line:84%
+but we're not going to
+have that in our model.
+
+00:16:31.970 --> 00:16:34.345 align:middle line:84%
+We're going to assume that
+people just don't like school.
+
+00:16:34.345 --> 00:16:36.970 align:middle line:84%
+And notice, the more they get
+educated, the more costly it is.
+
+00:16:36.970 --> 00:16:38.950 align:middle line:84%
+So they'd always
+rather have less school
+
+00:16:38.950 --> 00:16:41.430 align:middle line:84%
+than more school, other
+things being equal.
+
+00:16:41.430 --> 00:16:44.610 align:middle line:84%
+But now their type t appears
+in the denominator here--
+
+00:16:44.610 --> 00:16:46.390 align:middle line:84%
+and maybe I should
+be more precise.
+
+00:16:46.390 --> 00:16:50.010 align:middle line:84%
+Here, we have b, a natural
+if we did it any other way,
+
+00:16:50.010 --> 00:16:52.430 align:middle line:84%
+the low type is lower
+than the high type.
+
+00:16:52.430 --> 00:16:55.030 align:middle line:84%
+So by putting t in
+the denominator here,
+
+00:16:55.030 --> 00:16:58.350 align:middle line:84%
+what I mean is if you're a
+high type, if t is higher,
+
+00:16:58.350 --> 00:17:00.430 align:middle line:84%
+then the coefficient
+in front of this cost
+
+00:17:00.430 --> 00:17:03.450 align:middle line:84%
+is lower, and
+therefore, the cost,
+
+00:17:03.450 --> 00:17:05.790 align:middle line:84%
+or more importantly, the
+marginal cost of education
+
+00:17:05.790 --> 00:17:08.869 align:middle line:90%
+is lower for the high type.
+
+00:17:08.869 --> 00:17:10.190 align:middle line:90%
+Why might that be true?
+
+00:17:10.190 --> 00:17:12.190 align:middle line:84%
+Well, maybe they
+don't have to study
+
+00:17:12.190 --> 00:17:13.837 align:middle line:90%
+as hard to get into the school.
+
+00:17:13.837 --> 00:17:15.670 align:middle line:84%
+Maybe once they get in,
+it's easier for them
+
+00:17:15.670 --> 00:17:17.337 align:middle line:84%
+to get good grades
+and graduate, there's
+
+00:17:17.337 --> 00:17:19.790 align:middle line:84%
+many stories we can
+tell, but, again, we're
+
+00:17:19.790 --> 00:17:22.750 align:middle line:84%
+going to think of your type
+as representing how costly it
+
+00:17:22.750 --> 00:17:25.473 align:middle line:90%
+is for you to get education.
+
+00:17:25.473 --> 00:17:26.890 align:middle line:84%
+And then the
+receiver, we're going
+
+00:17:26.890 --> 00:17:29.070 align:middle line:84%
+to use a bit of a weird
+payoff specification.
+
+00:17:29.070 --> 00:17:33.650 align:middle line:90%
+
+
+00:17:33.650 --> 00:17:36.890 align:middle line:84%
+The receiver's utility
+is going to be like this.
+
+00:17:36.890 --> 00:17:38.750 align:middle line:84%
+Now, this may at first
+seem a bit strange.
+
+00:17:38.750 --> 00:17:40.542 align:middle line:84%
+What we're saying is
+the receiver's utility
+
+00:17:40.542 --> 00:17:43.130 align:middle line:84%
+is the negative of the
+difference between the wage they
+
+00:17:43.130 --> 00:17:47.330 align:middle line:84%
+actually charge and the type
+of the applicant of the sender.
+
+00:17:47.330 --> 00:17:49.410 align:middle line:84%
+And really, the reason
+we make that assumption
+
+00:17:49.410 --> 00:17:57.010 align:middle line:84%
+is the implication of this
+is that the optimal wage w is
+
+00:17:57.010 --> 00:18:02.770 align:middle line:90%
+equal to the expectation of t.
+
+00:18:02.770 --> 00:18:06.010 align:middle line:84%
+And this is just an algebraic
+fact about the quadratic loss
+
+00:18:06.010 --> 00:18:07.810 align:middle line:84%
+function, you can check
+this with algebra.
+
+00:18:07.810 --> 00:18:10.970 align:middle line:84%
+So if I don't know what t is,
+with some probability, it's low;
+
+00:18:10.970 --> 00:18:12.970 align:middle line:84%
+with some probability,
+it's high.
+
+00:18:12.970 --> 00:18:17.170 align:middle line:84%
+The optimal wage for me to set
+is exactly my expectation of t.
+
+00:18:17.170 --> 00:18:20.090 align:middle line:84%
+So if I know the person is low
+ability, it's optimal for me
+
+00:18:20.090 --> 00:18:21.490 align:middle line:90%
+to set a wage of l.
+
+00:18:21.490 --> 00:18:24.210 align:middle line:84%
+If I know they're a high
+type, h, it's optimal for me
+
+00:18:24.210 --> 00:18:25.410 align:middle line:90%
+to set a wage of h.
+
+00:18:25.410 --> 00:18:27.990 align:middle line:84%
+And if I think it's a 50/50,
+then I want to pay them exactly
+
+00:18:27.990 --> 00:18:29.395 align:middle line:90%
+1/2 l plus 1/2 h.
+
+00:18:29.395 --> 00:18:30.770 align:middle line:84%
+Now you might say,
+wait a second,
+
+00:18:30.770 --> 00:18:31.812 align:middle line:90%
+that's not what firms do.
+
+00:18:31.812 --> 00:18:33.630 align:middle line:84%
+They pay the lowest
+wage they can subject
+
+00:18:33.630 --> 00:18:35.250 align:middle line:84%
+to getting the
+worker, but again, we
+
+00:18:35.250 --> 00:18:37.250 align:middle line:84%
+can think of this as the
+outcome of competition.
+
+00:18:37.250 --> 00:18:39.270 align:middle line:84%
+So if there's many
+firms competing,
+
+00:18:39.270 --> 00:18:42.590 align:middle line:84%
+if I charge-- if I pay a
+worker less than their expected
+
+00:18:42.590 --> 00:18:46.062 align:middle line:84%
+ability, then maybe I'm going
+to lose out to another firm
+
+00:18:46.062 --> 00:18:47.770 align:middle line:84%
+and the other firm is
+going to hire them.
+
+00:18:47.770 --> 00:18:49.290 align:middle line:84%
+If I pay them more than
+their expected ability,
+
+00:18:49.290 --> 00:18:50.332 align:middle line:90%
+then I'm overpaying them.
+
+00:18:50.332 --> 00:18:53.630 align:middle line:84%
+So we can think of this as a
+reduced form representation
+
+00:18:53.630 --> 00:18:56.830 align:middle line:90%
+of a competitive labor market.
+
+00:18:56.830 --> 00:18:59.690 align:middle line:84%
+And I should say something
+about the prior here.
+
+00:18:59.690 --> 00:19:03.510 align:middle line:84%
+Let's assume that h occurs
+with probability pi and l
+
+00:19:03.510 --> 00:19:06.230 align:middle line:90%
+with 1 minus p.
+
+00:19:06.230 --> 00:19:10.150 align:middle line:84%
+So in the population, fraction
+pi of people are of type h,
+
+00:19:10.150 --> 00:19:12.870 align:middle line:84%
+are the high types, and
+fraction 1 minus pi of people
+
+00:19:12.870 --> 00:19:14.010 align:middle line:90%
+are the low types.
+
+00:19:14.010 --> 00:19:19.070 align:middle line:90%
+
+
+00:19:19.070 --> 00:19:22.450 align:middle line:84%
+OK, so now we're ready
+to analyze this game.
+
+00:19:22.450 --> 00:19:26.173 align:middle line:84%
+And the first step is always to
+write down what a strategy is.
+
+00:19:26.173 --> 00:19:28.090 align:middle line:84%
+Notice, this game is a
+little more complicated
+
+00:19:28.090 --> 00:19:30.490 align:middle line:84%
+than what we looked at
+before because now, education
+
+00:19:30.490 --> 00:19:31.530 align:middle line:90%
+is something continuous.
+
+00:19:31.530 --> 00:19:34.425 align:middle line:84%
+Before in the class on Thursday,
+we looked at this problem
+
+00:19:34.425 --> 00:19:36.550 align:middle line:84%
+where you chose, whether
+to submit an essay or not,
+
+00:19:36.550 --> 00:19:37.830 align:middle line:90%
+and that was a binary choice.
+
+00:19:37.830 --> 00:19:39.210 align:middle line:90%
+I'll make one other observation.
+
+00:19:39.210 --> 00:19:40.752 align:middle line:84%
+Last Thursday, we
+looked at something
+
+00:19:40.752 --> 00:19:44.170 align:middle line:84%
+where your private type
+affected how much you wanted
+
+00:19:44.170 --> 00:19:46.570 align:middle line:84%
+to get into a school,
+but not how costly it
+
+00:19:46.570 --> 00:19:48.127 align:middle line:90%
+was to submit an essay.
+
+00:19:48.127 --> 00:19:49.710 align:middle line:84%
+Now we're doing an
+opposite assumption
+
+00:19:49.710 --> 00:19:52.750 align:middle line:84%
+where your type doesn't affect
+how much you want to get paid.
+
+00:19:52.750 --> 00:19:55.090 align:middle line:84%
+Everyone wants to get paid
+more, but your type only
+
+00:19:55.090 --> 00:19:57.350 align:middle line:84%
+affects how costly it is
+for you to get educated,
+
+00:19:57.350 --> 00:19:59.670 align:middle line:84%
+so it's kind of the inverse
+of what we did last week.
+
+00:19:59.670 --> 00:20:03.210 align:middle line:84%
+And I think this is probably a
+pretty good model of the labor
+
+00:20:03.210 --> 00:20:07.130 align:middle line:84%
+market where most people want
+more higher wages, that's not
+
+00:20:07.130 --> 00:20:08.970 align:middle line:90%
+really what distinguishes them.
+
+00:20:08.970 --> 00:20:11.770 align:middle line:84%
+OK, so what is a strategy,
+or more precisely, what
+
+00:20:11.770 --> 00:20:14.890 align:middle line:90%
+is an assessment?
+
+00:20:14.890 --> 00:20:17.690 align:middle line:84%
+So remember, an assessment is
+a strategy profile together
+
+00:20:17.690 --> 00:20:19.130 align:middle line:90%
+with a belief system.
+
+00:20:19.130 --> 00:20:24.990 align:middle line:84%
+So we need to first say, let's
+look at the sender strategy.
+
+00:20:24.990 --> 00:20:27.150 align:middle line:84%
+What is the strategy
+for the sender?
+
+00:20:27.150 --> 00:20:30.350 align:middle line:84%
+Well, the sender chooses an
+action, a level of education
+
+00:20:30.350 --> 00:20:33.310 align:middle line:84%
+after knowing or learning
+their private type t.
+
+00:20:33.310 --> 00:20:36.430 align:middle line:84%
+So we need to specify what
+education the sender chooses
+
+00:20:36.430 --> 00:20:38.750 align:middle line:84%
+when they're the low type
+and what education they
+
+00:20:38.750 --> 00:20:40.030 align:middle line:90%
+choose when they're high type.
+
+00:20:40.030 --> 00:20:43.930 align:middle line:84%
+So we'll represent a sender
+strategy as el, comma, eh.
+
+00:20:43.930 --> 00:20:45.190 align:middle line:90%
+It's two numbers.
+
+00:20:45.190 --> 00:20:47.470 align:middle line:84%
+el says if you're
+a low type sender,
+
+00:20:47.470 --> 00:20:49.570 align:middle line:84%
+this is how much education
+I'm going to get.
+
+00:20:49.570 --> 00:20:51.990 align:middle line:84%
+eh says if I'm a
+high type sender,
+
+00:20:51.990 --> 00:20:55.790 align:middle line:84%
+this is how much education
+I'm going to get.
+
+00:20:55.790 --> 00:20:59.390 align:middle line:84%
+And yeah, I say sender, you can
+think of this as the student.
+
+00:20:59.390 --> 00:21:02.850 align:middle line:84%
+OK, what is the strategy
+for the receiver?
+
+00:21:02.850 --> 00:21:08.430 align:middle line:90%
+
+
+00:21:08.430 --> 00:21:09.670 align:middle line:90%
+This is a bit harder.
+
+00:21:09.670 --> 00:21:12.710 align:middle line:84%
+Remember, a strategy is always
+a complete contingent plan.
+
+00:21:12.710 --> 00:21:15.310 align:middle line:84%
+It says what action do you
+take as a function of what
+
+00:21:15.310 --> 00:21:17.030 align:middle line:90%
+you observe.
+
+00:21:17.030 --> 00:21:19.370 align:middle line:84%
+So in this case, the
+receiver observes your level
+
+00:21:19.370 --> 00:21:21.570 align:middle line:84%
+of education, and
+they're going to choose
+
+00:21:21.570 --> 00:21:24.350 align:middle line:84%
+what wage they set as a
+function of your education.
+
+00:21:24.350 --> 00:21:29.850 align:middle line:84%
+So formerly, the receiver is
+choosing a function w from 0, 1,
+
+00:21:29.850 --> 00:21:36.450 align:middle line:90%
+maybe I'll say to 0, infinity.
+
+00:21:36.450 --> 00:21:44.170 align:middle line:84%
+So what this says is it assigns
+to each level of education
+
+00:21:44.170 --> 00:21:49.590 align:middle line:84%
+e a wage w of e that the
+receiver or firm will pay you
+
+00:21:49.590 --> 00:21:52.370 align:middle line:84%
+if they observe that your
+education level is e.
+
+00:21:52.370 --> 00:21:55.690 align:middle line:84%
+And they have to do that for
+every single education level
+
+00:21:55.690 --> 00:21:58.570 align:middle line:90%
+0, 1.
+
+00:21:58.570 --> 00:22:00.790 align:middle line:84%
+So that describes
+a strategy profile,
+
+00:22:00.790 --> 00:22:02.930 align:middle line:84%
+but we're not done yet
+because an assessment also
+
+00:22:02.930 --> 00:22:04.430 align:middle line:90%
+specifies beliefs.
+
+00:22:04.430 --> 00:22:06.790 align:middle line:84%
+So now we also have to
+specify a belief system.
+
+00:22:06.790 --> 00:22:13.050 align:middle line:90%
+
+
+00:22:13.050 --> 00:22:16.270 align:middle line:84%
+Well, the sender already
+knows their type,
+
+00:22:16.270 --> 00:22:18.860 align:middle line:84%
+so we don't need to say anything
+about the sender's type.
+
+00:22:18.860 --> 00:22:20.980 align:middle line:84%
+We have to specify
+the receiver's beliefs
+
+00:22:20.980 --> 00:22:22.940 align:middle line:90%
+about the sender's type.
+
+00:22:22.940 --> 00:22:25.380 align:middle line:84%
+And once again,
+the receiver might
+
+00:22:25.380 --> 00:22:27.420 align:middle line:84%
+learn about the sender's
+type through the level
+
+00:22:27.420 --> 00:22:28.780 align:middle line:90%
+of education e.
+
+00:22:28.780 --> 00:22:31.840 align:middle line:84%
+So a belief system is going
+to say, what do I as the firm
+
+00:22:31.840 --> 00:22:35.320 align:middle line:84%
+believe about you as a function
+of what education I see?
+
+00:22:35.320 --> 00:22:37.360 align:middle line:84%
+If I see that you've
+got a lot of education,
+
+00:22:37.360 --> 00:22:39.040 align:middle line:84%
+what do I believe
+about your ability?
+
+00:22:39.040 --> 00:22:41.120 align:middle line:84%
+If I see that you didn't
+get very much education,
+
+00:22:41.120 --> 00:22:42.662 align:middle line:84%
+what do I believe
+about your ability?
+
+00:22:42.662 --> 00:22:45.727 align:middle line:90%
+So a belief system formerly--
+
+00:22:45.727 --> 00:22:47.560 align:middle line:84%
+maybe if we write it--
+let's start formally,
+
+00:22:47.560 --> 00:22:49.185 align:middle line:84%
+and then we'll be a
+little less formal.
+
+00:22:49.185 --> 00:22:57.220 align:middle line:90%
+
+
+00:22:57.220 --> 00:22:59.060 align:middle line:84%
+So if we're formal about
+it, a belief system
+
+00:22:59.060 --> 00:23:01.220 align:middle line:84%
+says for every
+level of education
+
+00:23:01.220 --> 00:23:04.140 align:middle line:84%
+I see, I'm going to
+form a belief which
+
+00:23:04.140 --> 00:23:06.620 align:middle line:84%
+is a probability distribution
+over your ability,
+
+00:23:06.620 --> 00:23:07.520 align:middle line:90%
+either l or h.
+
+00:23:07.520 --> 00:23:09.220 align:middle line:84%
+So the notation
+here just means this
+
+00:23:09.220 --> 00:23:12.380 align:middle line:84%
+is the set of probability
+distributions over your ability
+
+00:23:12.380 --> 00:23:14.660 align:middle line:84%
+being l and your
+ability being h.
+
+00:23:14.660 --> 00:23:19.240 align:middle line:84%
+But we can specify a
+probability distribution here
+
+00:23:19.240 --> 00:23:21.960 align:middle line:84%
+just by saying, what do I think
+is the probability that you're
+
+00:23:21.960 --> 00:23:22.845 align:middle line:90%
+a high type?
+
+00:23:22.845 --> 00:23:25.220 align:middle line:84%
+Because once we specify the
+probability you're high type,
+
+00:23:25.220 --> 00:23:27.845 align:middle line:84%
+then the probability that you're
+low type is just 1 minus that.
+
+00:23:27.845 --> 00:23:30.560 align:middle line:84%
+So we're going to
+think of this--
+
+00:23:30.560 --> 00:23:33.140 align:middle line:90%
+maybe we'll write b h e--
+
+00:23:33.140 --> 00:23:38.720 align:middle line:90%
+
+
+00:23:38.720 --> 00:23:40.520 align:middle line:90%
+so we'll just use this notation.
+
+00:23:40.520 --> 00:23:43.480 align:middle line:84%
+And this says, if I see
+that your education is e,
+
+00:23:43.480 --> 00:23:46.240 align:middle line:84%
+this is the probability that
+I think you're a high type.
+
+00:23:46.240 --> 00:23:47.918 align:middle line:84%
+And that fully
+specifies my beliefs
+
+00:23:47.918 --> 00:23:49.960 align:middle line:84%
+because the probability
+I think you're a low type
+
+00:23:49.960 --> 00:23:51.060 align:middle line:90%
+is always 1 minus that.
+
+00:23:51.060 --> 00:23:54.120 align:middle line:84%
+So maybe I'll just
+write that because b
+
+00:23:54.120 --> 00:23:57.920 align:middle line:84%
+l given e, the probability that
+I assign to you being a low type
+
+00:23:57.920 --> 00:24:01.520 align:middle line:90%
+given e, is just 1 minus b h e.
+
+00:24:01.520 --> 00:24:04.240 align:middle line:90%
+
+
+00:24:04.240 --> 00:24:06.580 align:middle line:84%
+So technically, we have to
+specify both of these things,
+
+00:24:06.580 --> 00:24:08.372 align:middle line:84%
+but we're only going
+to specify one of them
+
+00:24:08.372 --> 00:24:12.600 align:middle line:84%
+because it's pinned
+down by the other.
+
+00:24:12.600 --> 00:24:13.420 align:middle line:90%
+Great.
+
+00:24:13.420 --> 00:24:17.540 align:middle line:84%
+So now, we have to fill
+all these things in.
+
+00:24:17.540 --> 00:24:21.047 align:middle line:84%
+We have to specify the sender
+strategy, the receiver strategy,
+
+00:24:21.047 --> 00:24:23.380 align:middle line:84%
+and then the belief system,
+which is a system of beliefs
+
+00:24:23.380 --> 00:24:24.200 align:middle line:90%
+for the receiver.
+
+00:24:24.200 --> 00:24:25.400 align:middle line:90%
+Any questions on this?
+
+00:24:25.400 --> 00:24:31.660 align:middle line:90%
+
+
+00:24:31.660 --> 00:24:33.160 align:middle line:90%
+OK.
+
+00:24:33.160 --> 00:24:38.776 align:middle line:90%
+
+
+00:24:38.776 --> 00:24:40.740 align:middle line:90%
+Now what do we need to check?
+
+00:24:40.740 --> 00:24:43.320 align:middle line:84%
+So now we're going to look at
+our equilibrium conditions.
+
+00:24:43.320 --> 00:24:51.500 align:middle line:90%
+
+
+00:24:51.500 --> 00:24:53.920 align:middle line:84%
+And remember, we're
+looking for the conditions,
+
+00:24:53.920 --> 00:24:55.700 align:middle line:90%
+and these are for pbE.
+
+00:24:55.700 --> 00:24:59.100 align:middle line:84%
+Our equilibrium notion is
+perfect Bayesian equilibrium.
+
+00:24:59.100 --> 00:25:03.240 align:middle line:84%
+And we have three conditions or,
+depending on how we write it,
+
+00:25:03.240 --> 00:25:07.760 align:middle line:84%
+one is sequential optimality
+or sequential rationality.
+
+00:25:07.760 --> 00:25:16.160 align:middle line:90%
+
+
+00:25:16.160 --> 00:25:17.540 align:middle line:90%
+You might see both terms used.
+
+00:25:17.540 --> 00:25:19.457 align:middle line:84%
+Sequential optimality,
+sequential rationality,
+
+00:25:19.457 --> 00:25:20.740 align:middle line:90%
+they mean the same thing.
+
+00:25:20.740 --> 00:25:22.100 align:middle line:90%
+And then belief consistency.
+
+00:25:22.100 --> 00:25:32.960 align:middle line:90%
+
+
+00:25:32.960 --> 00:25:34.600 align:middle line:84%
+And it's helpful
+to separate this
+
+00:25:34.600 --> 00:25:43.000 align:middle line:84%
+into sequential
+optimality for the sender,
+
+00:25:43.000 --> 00:25:45.000 align:middle line:90%
+and also for the receiver.
+
+00:25:45.000 --> 00:25:47.440 align:middle line:84%
+So let's first just say
+what each of these things
+
+00:25:47.440 --> 00:25:50.680 align:middle line:90%
+mean in words.
+
+00:25:50.680 --> 00:25:52.240 align:middle line:84%
+Sequential optimality
+for the sender
+
+00:25:52.240 --> 00:25:56.520 align:middle line:84%
+just means if I'm the
+sender, and I know my type t,
+
+00:25:56.520 --> 00:25:58.760 align:middle line:84%
+my equilibrium
+level of education
+
+00:25:58.760 --> 00:26:01.400 align:middle line:84%
+is optimal for me given
+what everything else that's
+
+00:26:01.400 --> 00:26:02.760 align:middle line:90%
+happening in the game.
+
+00:26:02.760 --> 00:26:09.820 align:middle line:84%
+So for the sender, this means
+for each t where, remember,
+
+00:26:09.820 --> 00:26:11.820 align:middle line:84%
+t is my type, and it could
+be either low ability
+
+00:26:11.820 --> 00:26:12.820 align:middle line:90%
+or high ability.
+
+00:26:12.820 --> 00:26:21.740 align:middle line:84%
+So for each t, if my
+type is t, choosing et--
+
+00:26:21.740 --> 00:26:23.500 align:middle line:84%
+remember, this could
+either be el or eh
+
+00:26:23.500 --> 00:26:34.140 align:middle line:84%
+depending on the value
+of t, is optimal given w.
+
+00:26:34.140 --> 00:26:38.460 align:middle line:84%
+Remember, what is w here? w is
+the wage that the receiver sets.
+
+00:26:38.460 --> 00:26:40.220 align:middle line:84%
+And which education
+level is optimal
+
+00:26:40.220 --> 00:26:43.753 align:middle line:84%
+for me depends on w because
+what I'm thinking, what if I
+
+00:26:43.753 --> 00:26:45.920 align:middle line:84%
+go to school a little bit
+less or a little bit more,
+
+00:26:45.920 --> 00:26:47.018 align:middle line:90%
+what if I deviate?
+
+00:26:47.018 --> 00:26:48.560 align:middle line:84%
+Well, to see whether
+that's worth it,
+
+00:26:48.560 --> 00:26:50.760 align:middle line:84%
+I have to trade off
+the cost of, say,
+
+00:26:50.760 --> 00:26:52.860 align:middle line:84%
+additional education
+against the effect that
+
+00:26:52.860 --> 00:26:54.460 align:middle line:90%
+would have on my wage.
+
+00:26:54.460 --> 00:26:56.700 align:middle line:84%
+And that's going to be
+governed by the strategy w
+
+00:26:56.700 --> 00:26:57.720 align:middle line:90%
+that the receiver uses.
+
+00:26:57.720 --> 00:27:00.020 align:middle line:84%
+So that's going to be
+relevant in determining
+
+00:27:00.020 --> 00:27:03.420 align:middle line:90%
+whether et is optimal.
+
+00:27:03.420 --> 00:27:06.540 align:middle line:90%
+And then for the receiver--
+
+00:27:06.540 --> 00:27:10.400 align:middle line:84%
+well, with the receiver,
+this is actually--
+
+00:27:10.400 --> 00:27:13.560 align:middle line:84%
+we can write this maybe
+a bit more easily.
+
+00:27:13.560 --> 00:27:17.640 align:middle line:90%
+So for each e--
+
+00:27:17.640 --> 00:27:24.840 align:middle line:84%
+and e is in 0 or 1,
+the receiver's wage
+
+00:27:24.840 --> 00:27:27.060 align:middle line:84%
+must be optimal
+given their beliefs.
+
+00:27:27.060 --> 00:27:42.960 align:middle line:84%
+So we need choosing w of
+e is optimal given b h e.
+
+00:27:42.960 --> 00:27:44.720 align:middle line:84%
+So what we're saying
+is I'm the receiver.
+
+00:27:44.720 --> 00:27:47.680 align:middle line:90%
+I observe an education level e.
+
+00:27:47.680 --> 00:27:52.200 align:middle line:84%
+That causes me to form beliefs
+b h given e about your type.
+
+00:27:52.200 --> 00:27:54.160 align:middle line:84%
+And given those
+beliefs, the wage
+
+00:27:54.160 --> 00:27:57.600 align:middle line:84%
+that I actually choose as
+the receiver is optimal.
+
+00:27:57.600 --> 00:27:58.860 align:middle line:90%
+Can we write that out in math?
+
+00:27:58.860 --> 00:28:01.600 align:middle line:84%
+I mean, given what
+we said above,
+
+00:28:01.600 --> 00:28:04.520 align:middle line:84%
+we said that it's always
+optimal given my quadratic loss
+
+00:28:04.520 --> 00:28:08.780 align:middle line:84%
+utility to always charge
+a wage equal to my updated
+
+00:28:08.780 --> 00:28:10.660 align:middle line:90%
+expectation about your type.
+
+00:28:10.660 --> 00:28:13.360 align:middle line:84%
+So can we write this
+condition in words?
+
+00:28:13.360 --> 00:28:18.600 align:middle line:84%
+What does it mean for w of e to
+be optimal given b of h given e?
+
+00:28:18.600 --> 00:28:21.180 align:middle line:90%
+
+
+00:28:21.180 --> 00:28:22.600 align:middle line:90%
+What must w of e be?
+
+00:28:22.600 --> 00:28:30.360 align:middle line:90%
+
+
+00:28:30.360 --> 00:28:30.860 align:middle line:90%
+Yeah?
+
+00:28:30.860 --> 00:28:32.038 align:middle line:90%
+AUDIENCE: Expected value 2.
+
+00:28:32.038 --> 00:28:32.580 align:middle line:90%
+IAN BALL: OK.
+
+00:28:32.580 --> 00:28:36.060 align:middle line:84%
+And how can we write that
+in terms of b of h given e?
+
+00:28:36.060 --> 00:28:39.800 align:middle line:90%
+AUDIENCE: Um--
+
+00:28:39.800 --> 00:28:40.300 align:middle line:90%
+
+
+00:28:40.300 --> 00:28:42.220 align:middle line:90%
+IAN BALL: So you're right.
+
+00:28:42.220 --> 00:28:43.540 align:middle line:90%
+AUDIENCE: Wait, are all--
+
+00:28:43.540 --> 00:28:44.480 align:middle line:90%
+other numbers.
+
+00:28:44.480 --> 00:28:48.860 align:middle line:90%
+So then the l top were--
+
+00:28:48.860 --> 00:28:53.280 align:middle line:84%
+Oh, is it h times b of h
+plus l times minus 1 minus--
+
+00:28:53.280 --> 00:28:54.280 align:middle line:90%
+IAN BALL: Exactly right.
+
+00:28:54.280 --> 00:28:54.540 align:middle line:90%
+Yeah.
+
+00:28:54.540 --> 00:28:56.240 align:middle line:84%
+So indeed, it is the
+expectation of t,
+
+00:28:56.240 --> 00:28:59.140 align:middle line:84%
+but we have to be careful
+because our expectation of t
+
+00:28:59.140 --> 00:29:01.760 align:middle line:84%
+is influenced by the education
+we see and our beliefs.
+
+00:29:01.760 --> 00:29:03.840 align:middle line:84%
+So it's not just our
+prior expectation.
+
+00:29:03.840 --> 00:29:06.170 align:middle line:84%
+And maybe I should be clear
+here, when I write this,
+
+00:29:06.170 --> 00:29:08.730 align:middle line:90%
+this is the updated expectation.
+
+00:29:08.730 --> 00:29:12.590 align:middle line:90%
+
+
+00:29:12.590 --> 00:29:14.110 align:middle line:84%
+This is the
+expectation of t that
+
+00:29:14.110 --> 00:29:16.350 align:middle line:84%
+reflects the new
+information that I have
+
+00:29:16.350 --> 00:29:17.690 align:middle line:90%
+given your educational choice.
+
+00:29:17.690 --> 00:29:19.425 align:middle line:84%
+And indeed, if
+seeing e caused me
+
+00:29:19.425 --> 00:29:21.550 align:middle line:84%
+to believe that this is
+the probability that you're
+
+00:29:21.550 --> 00:29:24.150 align:middle line:84%
+a high type and 1 minus that
+is the probability that you're
+
+00:29:24.150 --> 00:29:26.670 align:middle line:84%
+a low type, well, now I can
+compute the expected value
+
+00:29:26.670 --> 00:29:27.830 align:middle line:90%
+of your type.
+
+00:29:27.830 --> 00:29:31.270 align:middle line:84%
+And, yeah, I should emphasize
+here that l and h are actually
+
+00:29:31.270 --> 00:29:31.770 align:middle line:90%
+numbers.
+
+00:29:31.770 --> 00:29:34.290 align:middle line:84%
+Sometimes we think of high type
+and low type as just labels,
+
+00:29:34.290 --> 00:29:37.863 align:middle line:84%
+but here, a low type is like
+0.7 and a high type is like 2.3,
+
+00:29:37.863 --> 00:29:39.530 align:middle line:84%
+and these numbers
+actually have meaning.
+
+00:29:39.530 --> 00:29:40.390 align:middle line:90%
+Yeah.
+
+00:29:40.390 --> 00:29:41.030 align:middle line:90%
+OK.
+
+00:29:41.030 --> 00:29:48.110 align:middle line:84%
+So indeed, we get h times p of h
+given e plus l times-- well, we
+
+00:29:48.110 --> 00:29:50.870 align:middle line:84%
+could write b of l given e, but
+using the notation we're using,
+
+00:29:50.870 --> 00:29:55.790 align:middle line:84%
+we'll just write 1
+minus b of h given e.
+
+00:29:55.790 --> 00:29:59.190 align:middle line:84%
+So that's pretty
+easy to write down.
+
+00:29:59.190 --> 00:30:02.970 align:middle line:90%
+And now, belief consistency.
+
+00:30:02.970 --> 00:30:05.730 align:middle line:84%
+Well, remember,
+belief consistency
+
+00:30:05.730 --> 00:30:08.050 align:middle line:84%
+says the receiver
+has to be applying
+
+00:30:08.050 --> 00:30:10.970 align:middle line:90%
+Bayes' rule wherever possible.
+
+00:30:10.970 --> 00:30:13.650 align:middle line:84%
+And the receiver can
+only apply Bayes' rule
+
+00:30:13.650 --> 00:30:15.290 align:middle line:84%
+when they see a
+level of education
+
+00:30:15.290 --> 00:30:17.130 align:middle line:84%
+that someone is actually
+supposed to choose
+
+00:30:17.130 --> 00:30:18.850 align:middle line:90%
+with positive probability.
+
+00:30:18.850 --> 00:30:22.170 align:middle line:90%
+So we can separate--
+
+00:30:22.170 --> 00:30:25.450 align:middle line:84%
+sometimes this is called
+on-path and off-path.
+
+00:30:25.450 --> 00:30:28.930 align:middle line:90%
+
+
+00:30:28.930 --> 00:30:30.330 align:middle line:90%
+Let's say e prime.
+
+00:30:30.330 --> 00:30:32.130 align:middle line:84%
+So if they see an
+education level
+
+00:30:32.130 --> 00:30:35.450 align:middle line:84%
+e that's on-path, meaning
+that either the low type
+
+00:30:35.450 --> 00:30:37.570 align:middle line:84%
+or the high type is
+supposed to choose this
+
+00:30:37.570 --> 00:30:40.750 align:middle line:84%
+with positive probability under
+their equilibrium strategy,
+
+00:30:40.750 --> 00:30:41.870 align:middle line:90%
+then we apply Bayes' rule.
+
+00:30:41.870 --> 00:30:51.330 align:middle line:90%
+
+
+00:30:51.330 --> 00:30:53.390 align:middle line:84%
+But if we see an
+off-path education,
+
+00:30:53.390 --> 00:30:55.410 align:middle line:84%
+we see a level of
+education that is not
+
+00:30:55.410 --> 00:30:59.410 align:middle line:84%
+supposed to be chosen
+by either type,
+
+00:30:59.410 --> 00:31:03.810 align:middle line:84%
+and then there are
+no restrictions.
+
+00:31:03.810 --> 00:31:07.830 align:middle line:90%
+
+
+00:31:07.830 --> 00:31:11.030 align:middle line:84%
+And let's be a bit more precise
+here, which education levels are
+
+00:31:11.030 --> 00:31:13.870 align:middle line:84%
+on-path given the
+strategy that we've
+
+00:31:13.870 --> 00:31:16.270 align:middle line:90%
+written down for the sender?
+
+00:31:16.270 --> 00:31:18.150 align:middle line:84%
+Well, there's only
+two that are on-path.
+
+00:31:18.150 --> 00:31:20.550 align:middle line:84%
+It's exactly the
+numbers el and eh.
+
+00:31:20.550 --> 00:31:23.470 align:middle line:84%
+Those are the only two education
+levels that the receiver expects
+
+00:31:23.470 --> 00:31:25.310 align:middle line:90%
+to see in equilibrium.
+
+00:31:25.310 --> 00:31:31.962 align:middle line:84%
+So these are precisely the cases
+where e is either el or eh.
+
+00:31:31.962 --> 00:31:33.670 align:middle line:84%
+If the sender was
+using a mixed strategy,
+
+00:31:33.670 --> 00:31:34.930 align:middle line:84%
+this would be a bit
+more complicated.
+
+00:31:34.930 --> 00:31:37.270 align:middle line:84%
+There may be more education
+levels they might choose.
+
+00:31:37.270 --> 00:31:41.070 align:middle line:84%
+But I, as the receiver, know
+that, well, if you're low type,
+
+00:31:41.070 --> 00:31:43.028 align:middle line:84%
+you're supposed to choose
+this education level;
+
+00:31:43.028 --> 00:31:44.528 align:middle line:84%
+if you're high type,
+you're supposed
+
+00:31:44.528 --> 00:31:47.310 align:middle line:84%
+to choose this education level;
+and if I see any other education
+
+00:31:47.310 --> 00:31:50.170 align:middle line:84%
+level, well, I wasn't supposed
+to see this in equilibrium,
+
+00:31:50.170 --> 00:31:51.730 align:middle line:84%
+so I'm not able to
+apply Bayes' rule.
+
+00:31:51.730 --> 00:31:53.480 align:middle line:84%
+Of course, this is
+quite a simplification.
+
+00:31:53.480 --> 00:31:55.890 align:middle line:84%
+In reality, we see a
+lot of education levels,
+
+00:31:55.890 --> 00:31:58.550 align:middle line:84%
+people's types are not binary,
+and we'll do extensions later,
+
+00:31:58.550 --> 00:32:01.610 align:middle line:84%
+but for now, this
+is where we are.
+
+00:32:01.610 --> 00:32:06.870 align:middle line:84%
+And then we have e is not
+an element of el and eh.
+
+00:32:06.870 --> 00:32:14.490 align:middle line:90%
+
+
+00:32:14.490 --> 00:32:16.990 align:middle line:90%
+OK.
+
+00:32:16.990 --> 00:32:19.870 align:middle line:84%
+So to start dealing
+with Bayes' rule,
+
+00:32:19.870 --> 00:32:22.213 align:middle line:84%
+it turns out that it's
+helpful to distinguish
+
+00:32:22.213 --> 00:32:23.630 align:middle line:84%
+two different kinds
+of equilibria,
+
+00:32:23.630 --> 00:32:25.422 align:middle line:84%
+and that's what we're
+going to look at now.
+
+00:32:25.422 --> 00:32:30.130 align:middle line:84%
+So we're going to consider
+two kinds of equilibria what
+
+00:32:30.130 --> 00:32:42.150 align:middle line:84%
+are called separating equilibria
+and a pooling equilibria.
+
+00:32:42.150 --> 00:32:50.170 align:middle line:90%
+
+
+00:32:50.170 --> 00:32:53.050 align:middle line:84%
+So what defines a
+separating equilibria
+
+00:32:53.050 --> 00:32:58.443 align:middle line:90%
+is that el is not equal to eh.
+
+00:32:58.443 --> 00:32:59.610 align:middle line:90%
+So let's think through this.
+
+00:32:59.610 --> 00:33:00.443 align:middle line:90%
+What does this mean?
+
+00:33:00.443 --> 00:33:01.710 align:middle line:90%
+What does the receiver learn?
+
+00:33:01.710 --> 00:33:05.030 align:middle line:84%
+If we're in an equilibrium
+where the low type chooses
+
+00:33:05.030 --> 00:33:07.110 align:middle line:84%
+one education level
+and the high type
+
+00:33:07.110 --> 00:33:08.790 align:middle line:84%
+chooses a different
+education level,
+
+00:33:08.790 --> 00:33:11.402 align:middle line:84%
+what can the receiver
+conclude when they see
+
+00:33:11.402 --> 00:33:12.610 align:middle line:90%
+the sender's education level?
+
+00:33:12.610 --> 00:33:13.410 align:middle line:90%
+What do they learn?
+
+00:33:13.410 --> 00:33:17.750 align:middle line:90%
+
+
+00:33:17.750 --> 00:33:20.430 align:middle line:84%
+Well, they perfectly
+learn the sender's type
+
+00:33:20.430 --> 00:33:23.910 align:middle line:84%
+because in a
+separating equilibrium,
+
+00:33:23.910 --> 00:33:25.210 align:middle line:90%
+the implication of that--
+
+00:33:25.210 --> 00:33:29.510 align:middle line:90%
+
+
+00:33:29.510 --> 00:33:31.510 align:middle line:90%
+let's write it this way.
+
+00:33:31.510 --> 00:33:34.830 align:middle line:84%
+If I'm the receiver, and I see
+that you chose a high level--
+
+00:33:34.830 --> 00:33:37.230 align:middle line:84%
+that you chose eh,
+I know for certain
+
+00:33:37.230 --> 00:33:38.530 align:middle line:90%
+that you must be a high type.
+
+00:33:38.530 --> 00:33:41.790 align:middle line:90%
+
+
+00:33:41.790 --> 00:33:43.610 align:middle line:90%
+And conversely, 0 here.
+
+00:33:43.610 --> 00:33:44.110 align:middle line:90%
+Why?
+
+00:33:44.110 --> 00:33:47.670 align:middle line:84%
+Well, if I see eh, the
+low type never chooses eh.
+
+00:33:47.670 --> 00:33:50.150 align:middle line:84%
+They always choose a
+different education level, el.
+
+00:33:50.150 --> 00:33:52.930 align:middle line:84%
+So if I see eh, I know that
+you must be a high type,
+
+00:33:52.930 --> 00:33:54.490 align:middle line:84%
+and therefore, I
+assign probability 1
+
+00:33:54.490 --> 00:33:55.930 align:middle line:90%
+to you being a high type.
+
+00:33:55.930 --> 00:33:58.450 align:middle line:84%
+Conversely, if I see
+a low education level,
+
+00:33:58.450 --> 00:34:00.330 align:middle line:84%
+then I know that the
+only kind of person
+
+00:34:00.330 --> 00:34:02.455 align:middle line:84%
+who would choose a low
+level of education, at least
+
+00:34:02.455 --> 00:34:04.210 align:middle line:84%
+in this equilibrium,
+is the low type,
+
+00:34:04.210 --> 00:34:07.250 align:middle line:84%
+so I assign 0 probability
+to being the high type.
+
+00:34:07.250 --> 00:34:11.670 align:middle line:84%
+And then what about b of
+h given e for all other e?
+
+00:34:11.670 --> 00:34:16.330 align:middle line:90%
+
+
+00:34:16.330 --> 00:34:20.850 align:middle line:84%
+What about for e that
+aren't equal to el or eh?
+
+00:34:20.850 --> 00:34:22.650 align:middle line:84%
+Well, there's no
+restriction on these.
+
+00:34:22.650 --> 00:34:24.429 align:middle line:90%
+So these are unconstrained.
+
+00:34:24.429 --> 00:34:26.449 align:middle line:84%
+And we'll fill
+these in as we want,
+
+00:34:26.449 --> 00:34:28.070 align:middle line:84%
+but this is going
+to be unconstrained.
+
+00:34:28.070 --> 00:34:33.409 align:middle line:90%
+
+
+00:34:33.409 --> 00:34:36.210 align:middle line:84%
+OK, now let's look at
+the pooling equilibrium
+
+00:34:36.210 --> 00:34:39.010 align:middle line:90%
+where el equals eh.
+
+00:34:39.010 --> 00:34:41.690 align:middle line:84%
+And sometimes it's nice
+to give a label to this.
+
+00:34:41.690 --> 00:34:44.570 align:middle line:90%
+So let's call this e star.
+
+00:34:44.570 --> 00:34:46.730 align:middle line:84%
+So here, both the high
+types and the low types
+
+00:34:46.730 --> 00:34:50.489 align:middle line:84%
+choose the same level
+of education, e star.
+
+00:34:50.489 --> 00:34:55.000 align:middle line:84%
+So now, what is b
+of h given e star?
+
+00:34:55.000 --> 00:35:10.340 align:middle line:90%
+
+
+00:35:10.340 --> 00:35:13.380 align:middle line:84%
+Well, if everyone choose
+the same level of education,
+
+00:35:13.380 --> 00:35:16.300 align:middle line:84%
+their choice of education hasn't
+revealed any new information
+
+00:35:16.300 --> 00:35:17.250 align:middle line:90%
+to me.
+
+00:35:17.250 --> 00:35:19.000 align:middle line:84%
+So my belief about
+them should be the same
+
+00:35:19.000 --> 00:35:21.460 align:middle line:84%
+that it was, the
+same as my prior.
+
+00:35:21.460 --> 00:35:25.160 align:middle line:84%
+And my prior belief was pi
+that they were high ability.
+
+00:35:25.160 --> 00:35:27.440 align:middle line:90%
+So this must be pi.
+
+00:35:27.440 --> 00:35:36.620 align:middle line:90%
+
+
+00:35:36.620 --> 00:35:39.320 align:middle line:84%
+Because-- I mean, you could
+write out Bayes' rule,
+
+00:35:39.320 --> 00:35:41.780 align:middle line:84%
+but I think the basic
+idea is if I thought
+
+00:35:41.780 --> 00:35:44.300 align:middle line:84%
+that the probability that
+your high ability was pi,
+
+00:35:44.300 --> 00:35:46.060 align:middle line:84%
+and then I know that
+whoever you are,
+
+00:35:46.060 --> 00:35:48.300 align:middle line:84%
+you're going to choose the
+education level e star,
+
+00:35:48.300 --> 00:35:49.758 align:middle line:84%
+then the fact that
+you chose e star
+
+00:35:49.758 --> 00:35:52.300 align:middle line:84%
+doesn't give me any new
+information about your ability.
+
+00:35:52.300 --> 00:35:54.880 align:middle line:90%
+So it's-- this must still be pi.
+
+00:35:54.880 --> 00:35:59.160 align:middle line:84%
+And then again, we
+have flexibility
+
+00:35:59.160 --> 00:36:07.340 align:middle line:84%
+is unconstrained
+for all other e.
+
+00:36:07.340 --> 00:36:10.080 align:middle line:90%
+
+
+00:36:10.080 --> 00:36:12.920 align:middle line:84%
+And part of
+constructing equilibria
+
+00:36:12.920 --> 00:36:17.160 align:middle line:84%
+is going to be to think a bit
+about what those beliefs have
+
+00:36:17.160 --> 00:36:18.400 align:middle line:90%
+to be.
+
+00:36:18.400 --> 00:36:19.668 align:middle line:90%
+So let's start with pooling.
+
+00:36:19.668 --> 00:36:21.460 align:middle line:84%
+I think pooling is
+actually an easier case,
+
+00:36:21.460 --> 00:36:22.700 align:middle line:90%
+so let's start there.
+
+00:36:22.700 --> 00:36:26.800 align:middle line:90%
+
+
+00:36:26.800 --> 00:36:28.860 align:middle line:84%
+So let's try to construct
+our equilibrium.
+
+00:36:28.860 --> 00:36:32.660 align:middle line:84%
+So case 1 is the
+pooling equilibrium.
+
+00:36:32.660 --> 00:36:43.660 align:middle line:90%
+
+
+00:36:43.660 --> 00:36:47.840 align:middle line:84%
+And for the sender, we
+know that they're choosing
+
+00:36:47.840 --> 00:36:51.185 align:middle line:90%
+el equals eh equals e star.
+
+00:36:51.185 --> 00:36:53.560 align:middle line:84%
+And we're going to try to
+solve for this value of e star,
+
+00:36:53.560 --> 00:36:56.460 align:middle line:84%
+but we're just going to put it
+in as a placeholder for now.
+
+00:36:56.460 --> 00:37:00.580 align:middle line:84%
+And now let's look
+at the receiver.
+
+00:37:00.580 --> 00:37:02.920 align:middle line:84%
+The receiver needs
+to choose w of e--
+
+00:37:02.920 --> 00:37:08.820 align:middle line:90%
+
+
+00:37:08.820 --> 00:37:11.480 align:middle line:84%
+let's think through as the
+analyst what we want to do here.
+
+00:37:11.480 --> 00:37:15.460 align:middle line:84%
+We're trying to construct
+an equilibrium where
+
+00:37:15.460 --> 00:37:17.340 align:middle line:84%
+both the low type
+and the high type
+
+00:37:17.340 --> 00:37:20.380 align:middle line:84%
+choose this education
+level e star.
+
+00:37:20.380 --> 00:37:24.180 align:middle line:84%
+And now we're going to try to
+choose what this wage is to make
+
+00:37:24.180 --> 00:37:26.240 align:middle line:90%
+e star optimal for the sender.
+
+00:37:26.240 --> 00:37:29.420 align:middle line:84%
+So any ideas about
+what might be--
+
+00:37:29.420 --> 00:37:33.260 align:middle line:84%
+Well, let's think a little
+bit about this wage.
+
+00:37:33.260 --> 00:37:35.000 align:middle line:90%
+Let's separate into two cases.
+
+00:37:35.000 --> 00:37:41.220 align:middle line:90%
+
+
+00:37:41.220 --> 00:37:44.320 align:middle line:90%
+What is w of e star have to be?
+
+00:37:44.320 --> 00:37:47.520 align:middle line:84%
+We're going to argue that if
+we're looking for an equilibrium
+
+00:37:47.520 --> 00:37:51.520 align:middle line:84%
+where both the low type and the
+high type pool on this education
+
+00:37:51.520 --> 00:37:53.320 align:middle line:84%
+level e star, and
+now we're going
+
+00:37:53.320 --> 00:37:56.600 align:middle line:84%
+to try to fill in, in this
+equilibrium, what the receiver's
+
+00:37:56.600 --> 00:37:57.813 align:middle line:90%
+wage strategy is.
+
+00:37:57.813 --> 00:37:59.480 align:middle line:84%
+And I argue that here,
+we basically know
+
+00:37:59.480 --> 00:38:03.920 align:middle line:84%
+what it has to be by the
+combination of belief
+
+00:38:03.920 --> 00:38:09.040 align:middle line:84%
+consistency and
+sequential optimality.
+
+00:38:09.040 --> 00:38:10.940 align:middle line:84%
+Well, we know what
+the beliefs are here.
+
+00:38:10.940 --> 00:38:13.120 align:middle line:84%
+We just said the beliefs
+are that your ability is
+
+00:38:13.120 --> 00:38:15.200 align:middle line:90%
+high probability pi.
+
+00:38:15.200 --> 00:38:18.720 align:middle line:84%
+And if those are our
+beliefs, well, over--
+
+00:38:18.720 --> 00:38:19.820 align:middle line:90%
+where did we write it?
+
+00:38:19.820 --> 00:38:22.340 align:middle line:84%
+Here, we said if those
+are your beliefs,
+
+00:38:22.340 --> 00:38:24.560 align:middle line:84%
+we computed what
+the wage has to be.
+
+00:38:24.560 --> 00:38:30.160 align:middle line:84%
+So let's plug in pi for this
+and 1 minus pi for this.
+
+00:38:30.160 --> 00:38:34.720 align:middle line:84%
+And indeed, we get
+that this is h times pi
+
+00:38:34.720 --> 00:38:37.860 align:middle line:90%
+plus l times 1 minus pi.
+
+00:38:37.860 --> 00:38:43.200 align:middle line:90%
+
+
+00:38:43.200 --> 00:38:46.020 align:middle line:90%
+So that's pinned down.
+
+00:38:46.020 --> 00:38:48.380 align:middle line:84%
+And I think this is a key
+observation when analyzing
+
+00:38:48.380 --> 00:38:49.620 align:middle line:90%
+these signaling games.
+
+00:38:49.620 --> 00:38:53.260 align:middle line:84%
+The question is, I
+said that your beliefs
+
+00:38:53.260 --> 00:38:54.800 align:middle line:90%
+off-path are unconstrained.
+
+00:38:54.800 --> 00:38:57.340 align:middle line:84%
+So if you observe-- when
+the receiver observes
+
+00:38:57.340 --> 00:38:59.443 align:middle line:84%
+a level of education that's
+different from e star,
+
+00:38:59.443 --> 00:39:00.860 align:middle line:84%
+we can fill in
+whatever beliefs we
+
+00:39:00.860 --> 00:39:03.660 align:middle line:84%
+want for that kind of
+receiver, but we can't
+
+00:39:03.660 --> 00:39:05.580 align:middle line:90%
+fill in whatever wage we want.
+
+00:39:05.580 --> 00:39:07.940 align:middle line:84%
+What is the range of
+wages we could possibly
+
+00:39:07.940 --> 00:39:11.820 align:middle line:84%
+put in here that would be
+consistent with receiver
+
+00:39:11.820 --> 00:39:13.900 align:middle line:90%
+optimality?
+
+00:39:13.900 --> 00:39:16.620 align:middle line:84%
+How high or how low
+could these wages be?
+
+00:39:16.620 --> 00:39:18.740 align:middle line:84%
+Well, what's the most
+pessimistic belief
+
+00:39:18.740 --> 00:39:20.180 align:middle line:90%
+the receiver could form?
+
+00:39:20.180 --> 00:39:23.040 align:middle line:84%
+What's the worst belief
+they could have about the--
+
+00:39:23.040 --> 00:39:25.100 align:middle line:84%
+they could think you're
+certainly a low type.
+
+00:39:25.100 --> 00:39:26.660 align:middle line:84%
+And if they think you're
+certainly a low type, what
+
+00:39:26.660 --> 00:39:28.280 align:middle line:90%
+is the optimal wage to charge?
+
+00:39:28.280 --> 00:39:31.220 align:middle line:90%
+
+
+00:39:31.220 --> 00:39:32.700 align:middle line:90%
+Just l.
+
+00:39:32.700 --> 00:39:34.720 align:middle line:84%
+And if they think you're
+certainly a high type,
+
+00:39:34.720 --> 00:39:36.620 align:middle line:90%
+then the optimal wage is h.
+
+00:39:36.620 --> 00:39:38.587 align:middle line:84%
+And any belief
+they form is going
+
+00:39:38.587 --> 00:39:40.420 align:middle line:84%
+to make it so that the
+optimal wage for them
+
+00:39:40.420 --> 00:39:42.420 align:middle line:84%
+is going to be somewhere
+between l and h.
+
+00:39:42.420 --> 00:39:44.120 align:middle line:84%
+It can't be lower
+than l because there's
+
+00:39:44.120 --> 00:39:46.480 align:middle line:84%
+no belief that would make
+the expectation lower than l.
+
+00:39:46.480 --> 00:39:48.200 align:middle line:84%
+It can't be higher
+than h because there's
+
+00:39:48.200 --> 00:39:50.617 align:middle line:84%
+no belief that would make the
+wage the optimal wage higher
+
+00:39:50.617 --> 00:39:57.420 align:middle line:84%
+than h, but we can actually
+choose anything between l and h.
+
+00:39:57.420 --> 00:40:01.120 align:middle line:90%
+
+
+00:40:01.120 --> 00:40:03.260 align:middle line:84%
+Because whatever choice
+we make between l and h,
+
+00:40:03.260 --> 00:40:05.000 align:middle line:84%
+we can then construct
+some belief that
+
+00:40:05.000 --> 00:40:07.140 align:middle line:90%
+justifies that wage choice.
+
+00:40:07.140 --> 00:40:17.440 align:middle line:90%
+
+
+00:40:17.440 --> 00:40:22.200 align:middle line:84%
+So let's try to
+think this through.
+
+00:40:22.200 --> 00:40:26.800 align:middle line:84%
+If you're trying to
+construct a wage that makes--
+
+00:40:26.800 --> 00:40:28.720 align:middle line:84%
+we want to make
+this an equilibrium.
+
+00:40:28.720 --> 00:40:33.480 align:middle line:84%
+So let's maybe think of
+it graphing it down here.
+
+00:40:33.480 --> 00:40:36.200 align:middle line:90%
+Here's e star.
+
+00:40:36.200 --> 00:40:37.500 align:middle line:90%
+Here's our wage w.
+
+00:40:37.500 --> 00:40:40.080 align:middle line:90%
+
+
+00:40:40.080 --> 00:40:43.560 align:middle line:84%
+The wage here is
+pinned down to be this.
+
+00:40:43.560 --> 00:40:45.120 align:middle line:84%
+Maybe I'll give
+notation for this.
+
+00:40:45.120 --> 00:40:51.380 align:middle line:90%
+
+
+00:40:51.380 --> 00:40:52.480 align:middle line:90%
+I'll just write it down.
+
+00:40:52.480 --> 00:40:54.200 align:middle line:90%
+I'll just-- that's here.
+
+00:40:54.200 --> 00:40:58.860 align:middle line:90%
+
+
+00:40:58.860 --> 00:41:01.900 align:middle line:84%
+And now the question
+is, what choices of wage
+
+00:41:01.900 --> 00:41:05.900 align:middle line:84%
+should we make off-path to
+ensure that the sender actually
+
+00:41:05.900 --> 00:41:08.460 align:middle line:84%
+wants to choose an
+education level of e star?
+
+00:41:08.460 --> 00:41:10.640 align:middle line:84%
+So here, we're trying to
+construct an equilibrium.
+
+00:41:10.640 --> 00:41:14.220 align:middle line:84%
+We don't want the sender to
+have any profitable deviations.
+
+00:41:14.220 --> 00:41:17.700 align:middle line:84%
+So any ideas about what
+wage we would set off-path
+
+00:41:17.700 --> 00:41:21.540 align:middle line:84%
+to encourage the sender to
+choose this education level e
+
+00:41:21.540 --> 00:41:22.040 align:middle line:90%
+star?
+
+00:41:22.040 --> 00:41:25.220 align:middle line:90%
+
+
+00:41:25.220 --> 00:41:27.300 align:middle line:84%
+Well, what's the
+sender tempted to do?
+
+00:41:27.300 --> 00:41:29.800 align:middle line:84%
+They're supposed to choose
+e star in equilibrium.
+
+00:41:29.800 --> 00:41:32.157 align:middle line:84%
+They're attempting to choose
+a lower level of education
+
+00:41:32.157 --> 00:41:34.240 align:middle line:84%
+because if they choose a
+lower level of education,
+
+00:41:34.240 --> 00:41:35.980 align:middle line:90%
+that's less costly for them.
+
+00:41:35.980 --> 00:41:37.940 align:middle line:84%
+So the only way to make
+sure that that's not
+
+00:41:37.940 --> 00:41:39.570 align:middle line:84%
+a profitable deviation
+is to say, well,
+
+00:41:39.570 --> 00:41:41.210 align:middle line:84%
+if you choose any
+less education,
+
+00:41:41.210 --> 00:41:43.230 align:middle line:84%
+your wage is going
+to drop a lot.
+
+00:41:43.230 --> 00:41:44.710 align:middle line:84%
+And let's look at
+the extreme case
+
+00:41:44.710 --> 00:41:47.890 align:middle line:84%
+where the wage drops
+all the way to l.
+
+00:41:47.890 --> 00:41:55.422 align:middle line:90%
+
+
+00:41:55.422 --> 00:41:57.630 align:middle line:84%
+So we're going to think of
+a wage function that says,
+
+00:41:57.630 --> 00:41:59.950 align:middle line:84%
+if you don't get enough
+education e star,
+
+00:41:59.950 --> 00:42:03.270 align:middle line:84%
+you're going to get paid
+a very low wage of l.
+
+00:42:03.270 --> 00:42:06.270 align:middle line:84%
+But if you go to college, if
+you achieve this certification,
+
+00:42:06.270 --> 00:42:07.770 align:middle line:84%
+if you go to school
+for long enough,
+
+00:42:07.770 --> 00:42:11.990 align:middle line:84%
+now you can get a job that
+pays a higher wage of this.
+
+00:42:11.990 --> 00:42:14.430 align:middle line:84%
+And then what happens if e
+is even higher than that?
+
+00:42:14.430 --> 00:42:16.590 align:middle line:84%
+Well, we want to make
+sure that no one wants
+
+00:42:16.590 --> 00:42:19.510 align:middle line:84%
+to get even more education than
+necessary, so we might as well
+
+00:42:19.510 --> 00:42:20.730 align:middle line:90%
+just keep the wage flat.
+
+00:42:20.730 --> 00:42:24.590 align:middle line:90%
+
+
+00:42:24.590 --> 00:42:26.590 align:middle line:84%
+And if we keep the
+wage flat, then we
+
+00:42:26.590 --> 00:42:29.470 align:middle line:84%
+know that, well, if someone can
+get the same wage by choosing
+
+00:42:29.470 --> 00:42:32.190 align:middle line:84%
+e star as choosing a
+higher level of education,
+
+00:42:32.190 --> 00:42:34.630 align:middle line:84%
+they would never pay more
+to get an even higher level
+
+00:42:34.630 --> 00:42:36.750 align:middle line:84%
+of education if the wage
+that they're going to get
+
+00:42:36.750 --> 00:42:37.750 align:middle line:90%
+is exactly the same.
+
+00:42:37.750 --> 00:42:40.730 align:middle line:90%
+
+
+00:42:40.730 --> 00:42:44.850 align:middle line:84%
+So this is, I think,
+a good conjecture
+
+00:42:44.850 --> 00:42:47.430 align:middle line:84%
+for what this
+equilibrium might be.
+
+00:42:47.430 --> 00:42:51.850 align:middle line:90%
+
+
+00:42:51.850 --> 00:42:54.770 align:middle line:84%
+So let's write this
+out more formally.
+
+00:42:54.770 --> 00:43:00.870 align:middle line:84%
+What we have is w of e equals
+l if e is less than e star.
+
+00:43:00.870 --> 00:43:04.970 align:middle line:90%
+
+
+00:43:04.970 --> 00:43:07.570 align:middle line:90%
+Strictly less than e star.
+
+00:43:07.570 --> 00:43:13.230 align:middle line:90%
+And it's h pi plus l1 minus pi.
+
+00:43:13.230 --> 00:43:25.650 align:middle line:90%
+
+
+00:43:25.650 --> 00:43:32.030 align:middle line:84%
+And then if you wanted
+to fill in beliefs,
+
+00:43:32.030 --> 00:43:42.510 align:middle line:84%
+let's just be really precise,
+our beliefs are-- well,
+
+00:43:42.510 --> 00:43:46.030 align:middle line:84%
+if e is less than e
+star, the firm charges--
+
+00:43:46.030 --> 00:43:47.817 align:middle line:90%
+pays a wage of l.
+
+00:43:47.817 --> 00:43:50.150 align:middle line:84%
+The only way it's optimal for
+them to charge a wage of l
+
+00:43:50.150 --> 00:43:52.430 align:middle line:84%
+is if they believe you're
+certain to be a low type.
+
+00:43:52.430 --> 00:43:54.210 align:middle line:90%
+So we must have 0 here.
+
+00:43:54.210 --> 00:44:00.670 align:middle line:90%
+
+
+00:44:00.670 --> 00:44:02.390 align:middle line:84%
+And then if they see
+a level of education
+
+00:44:02.390 --> 00:44:05.650 align:middle line:84%
+that's at least e star, they're
+paying exactly this wage.
+
+00:44:05.650 --> 00:44:08.330 align:middle line:84%
+So what must their belief be if
+they see a level of education
+
+00:44:08.330 --> 00:44:11.370 align:middle line:84%
+at least e star to make that
+wage optimal given their belief?
+
+00:44:11.370 --> 00:44:14.150 align:middle line:90%
+
+
+00:44:14.150 --> 00:44:16.430 align:middle line:90%
+Yeah?
+
+00:44:16.430 --> 00:44:17.030 align:middle line:90%
+Let's think.
+
+00:44:17.030 --> 00:44:19.850 align:middle line:84%
+If you're a high type,
+what's the optimal wage?
+
+00:44:19.850 --> 00:44:22.710 align:middle line:90%
+
+
+00:44:22.710 --> 00:44:26.350 align:middle line:84%
+If I know you're a high type,
+now my optimal wage is h.
+
+00:44:26.350 --> 00:44:30.950 align:middle line:84%
+But the wage they're
+charging is this,
+
+00:44:30.950 --> 00:44:34.370 align:middle line:84%
+which is h times pi
+plus l times 1 minus pi.
+
+00:44:34.370 --> 00:44:38.710 align:middle line:84%
+So I need to find the belief
+that makes my expected--
+
+00:44:38.710 --> 00:44:43.490 align:middle line:84%
+so that makes the expected
+type equal to this.
+
+00:44:43.490 --> 00:44:44.390 align:middle line:90%
+Pi, exactly.
+
+00:44:44.390 --> 00:44:47.127 align:middle line:90%
+
+
+00:44:47.127 --> 00:44:49.210 align:middle line:84%
+If I ever-- if there was
+some education level that
+
+00:44:49.210 --> 00:44:50.752 align:middle line:84%
+made me believe you
+were a high type,
+
+00:44:50.752 --> 00:44:52.790 align:middle line:84%
+then I'd want to charge
+you a high wage there,
+
+00:44:52.790 --> 00:44:53.910 align:middle line:84%
+and now there might
+be a deviation
+
+00:44:53.910 --> 00:44:55.930 align:middle line:84%
+because now someone would want
+to get that education to prove
+
+00:44:55.930 --> 00:44:56.972 align:middle line:90%
+that they're a high type.
+
+00:44:56.972 --> 00:44:59.450 align:middle line:84%
+So let's think through
+what's happening here.
+
+00:44:59.450 --> 00:45:01.490 align:middle line:84%
+The firms are
+saying, look, there's
+
+00:45:01.490 --> 00:45:05.050 align:middle line:84%
+some minimal education level
+e star that you need to get.
+
+00:45:05.050 --> 00:45:06.965 align:middle line:84%
+If you get less than
+that education level,
+
+00:45:06.965 --> 00:45:08.590 align:middle line:84%
+I don't think you're
+very high ability,
+
+00:45:08.590 --> 00:45:10.382 align:middle line:84%
+I think you're certain
+to be a low ability,
+
+00:45:10.382 --> 00:45:13.530 align:middle line:84%
+and I'm going to charge
+you a low wage, namely l.
+
+00:45:13.530 --> 00:45:16.010 align:middle line:84%
+But if you get enough
+education-- let's
+
+00:45:16.010 --> 00:45:18.090 align:middle line:84%
+say you graduate from
+college, then I'm
+
+00:45:18.090 --> 00:45:20.230 align:middle line:84%
+going to form a more
+optimistic belief about you.
+
+00:45:20.230 --> 00:45:23.170 align:middle line:84%
+I'm going to believe that
+you're just like anyone
+
+00:45:23.170 --> 00:45:24.430 align:middle line:90%
+from the population.
+
+00:45:24.430 --> 00:45:26.490 align:middle line:84%
+You're a high type
+with probability pi
+
+00:45:26.490 --> 00:45:28.730 align:middle line:84%
+and you're low type with
+probability 1 minus pi.
+
+00:45:28.730 --> 00:45:31.910 align:middle line:84%
+And because I believe that,
+I'm going to charge you
+
+00:45:31.910 --> 00:45:34.830 align:middle line:90%
+a wage that's equal to this.
+
+00:45:34.830 --> 00:45:37.190 align:middle line:84%
+So we have this
+two-tiered wage system
+
+00:45:37.190 --> 00:45:39.715 align:middle line:84%
+where if you graduate from
+college, you get a wage premium,
+
+00:45:39.715 --> 00:45:41.090 align:middle line:84%
+but at least in
+this equilibrium,
+
+00:45:41.090 --> 00:45:43.530 align:middle line:84%
+further education doesn't
+further increase your wage.
+
+00:45:43.530 --> 00:45:45.290 align:middle line:84%
+And that's consistent
+with some settings,
+
+00:45:45.290 --> 00:45:47.090 align:middle line:84%
+we could also construct
+other equilibria.
+
+00:45:47.090 --> 00:45:48.628 align:middle line:90%
+But we're not quite done yet.
+
+00:45:48.628 --> 00:45:50.670 align:middle line:84%
+We're going to have to be
+careful about the value
+
+00:45:50.670 --> 00:45:54.270 align:middle line:84%
+of e star to actually
+make this in equilibrium.
+
+00:45:54.270 --> 00:45:56.730 align:middle line:84%
+So let's check-- let's
+see what we've chosen,
+
+00:45:56.730 --> 00:45:58.790 align:middle line:90%
+what we've satisfied here.
+
+00:45:58.790 --> 00:46:03.830 align:middle line:84%
+Belief consistency is good
+because the only time belief
+
+00:46:03.830 --> 00:46:07.050 align:middle line:84%
+consistency has any bite
+here is when e equals e star.
+
+00:46:07.050 --> 00:46:09.750 align:middle line:84%
+That's the only on-path
+level of education,
+
+00:46:09.750 --> 00:46:11.350 align:middle line:84%
+and we're consistent
+with Bayes' rule,
+
+00:46:11.350 --> 00:46:13.950 align:middle line:84%
+so we're good with
+belief consistency.
+
+00:46:13.950 --> 00:46:16.550 align:middle line:84%
+And by construction,
+the receiver
+
+00:46:16.550 --> 00:46:20.030 align:middle line:84%
+is always paying the wage
+that's equal to their updated
+
+00:46:20.030 --> 00:46:21.950 align:middle line:84%
+expectation of
+the sender's type.
+
+00:46:21.950 --> 00:46:24.110 align:middle line:90%
+So we're good for the receiver.
+
+00:46:24.110 --> 00:46:28.270 align:middle line:84%
+The one thing we still have
+to check is sender optimality.
+
+00:46:28.270 --> 00:46:33.305 align:middle line:84%
+So what could go wrong
+in this equilibrium?
+
+00:46:33.305 --> 00:46:34.930 align:middle line:84%
+How could sender
+optimality potentially
+
+00:46:34.930 --> 00:46:37.270 align:middle line:84%
+be violated if we
+choose e star wrong?
+
+00:46:37.270 --> 00:46:42.370 align:middle line:90%
+
+
+00:46:42.370 --> 00:46:47.970 align:middle line:84%
+Well, the problem is, if e
+star is really, really big,
+
+00:46:47.970 --> 00:46:51.850 align:middle line:84%
+I might say, look, yes,
+I get a higher wage
+
+00:46:51.850 --> 00:46:54.150 align:middle line:84%
+if I get at least e
+star of education,
+
+00:46:54.150 --> 00:46:56.450 align:middle line:84%
+but that education
+is so costly to me
+
+00:46:56.450 --> 00:46:59.450 align:middle line:84%
+that it's not worth me going to
+school to get that higher wage.
+
+00:46:59.450 --> 00:47:02.898 align:middle line:84%
+So we need to check that e star
+is intuitively-- e star is going
+
+00:47:02.898 --> 00:47:04.690 align:middle line:84%
+to have to be low enough
+that it's actually
+
+00:47:04.690 --> 00:47:06.610 align:middle line:84%
+worthwhile for people
+to go to college.
+
+00:47:06.610 --> 00:47:08.730 align:middle line:84%
+Just because there's a
+college wage premium,
+
+00:47:08.730 --> 00:47:10.330 align:middle line:84%
+if the college wage
+premium is smaller
+
+00:47:10.330 --> 00:47:12.750 align:middle line:84%
+than the cost of education,
+people aren't going to go.
+
+00:47:12.750 --> 00:47:14.690 align:middle line:84%
+And in fact, if
+we look over here,
+
+00:47:14.690 --> 00:47:16.770 align:middle line:84%
+the college wage
+premium is not too far
+
+00:47:16.770 --> 00:47:17.970 align:middle line:90%
+from the cost of education.
+
+00:47:17.970 --> 00:47:19.110 align:middle line:90%
+So that is an issue.
+
+00:47:19.110 --> 00:47:21.890 align:middle line:84%
+We have to make sure that
+the wage premium exceeds
+
+00:47:21.890 --> 00:47:23.150 align:middle line:90%
+the cost of education.
+
+00:47:23.150 --> 00:47:25.110 align:middle line:84%
+So we have a final
+condition here.
+
+00:47:25.110 --> 00:47:28.490 align:middle line:84%
+So we need to-- it remains
+to check sender optimality.
+
+00:47:28.490 --> 00:47:37.390 align:middle line:90%
+
+
+00:47:37.390 --> 00:47:38.650 align:middle line:90%
+So at first, it's tricky.
+
+00:47:38.650 --> 00:47:42.890 align:middle line:84%
+We have to say, for both
+types, t equals l and h.
+
+00:47:42.890 --> 00:47:45.710 align:middle line:90%
+
+
+00:47:45.710 --> 00:47:56.690 align:middle line:84%
+Choosing e star is better than
+any other education e in 0, 1.
+
+00:47:56.690 --> 00:48:01.062 align:middle line:90%
+
+
+00:48:01.062 --> 00:48:02.950 align:middle line:84%
+Now this is a hard
+condition because it
+
+00:48:02.950 --> 00:48:04.790 align:middle line:90%
+has to hold for both types.
+
+00:48:04.790 --> 00:48:08.250 align:middle line:84%
+And we're comparing e star to
+any other level of education,
+
+00:48:08.250 --> 00:48:10.590 align:middle line:84%
+and there's infinitely many
+other levels of education
+
+00:48:10.590 --> 00:48:12.390 align:middle line:90%
+someone might choose.
+
+00:48:12.390 --> 00:48:13.990 align:middle line:84%
+So the key to
+simplifying things is
+
+00:48:13.990 --> 00:48:15.910 align:middle line:84%
+to say, well, instead
+of saying it's
+
+00:48:15.910 --> 00:48:18.630 align:middle line:84%
+better than any other
+education, let's try
+
+00:48:18.630 --> 00:48:21.410 align:middle line:90%
+to find the best deviation.
+
+00:48:21.410 --> 00:48:25.030 align:middle line:90%
+
+
+00:48:25.030 --> 00:48:26.698 align:middle line:84%
+I could deviate from
+e star to anything,
+
+00:48:26.698 --> 00:48:28.240 align:middle line:84%
+and we have to make
+sure that I don't
+
+00:48:28.240 --> 00:48:31.080 align:middle line:84%
+want to deviate from e star to
+any other level of education.
+
+00:48:31.080 --> 00:48:33.840 align:middle line:84%
+But some of these other
+levels of education, it's
+
+00:48:33.840 --> 00:48:35.600 align:middle line:84%
+clear that I'm never
+going to choose.
+
+00:48:35.600 --> 00:48:38.515 align:middle line:84%
+So let's focus on the
+most attractive deviation,
+
+00:48:38.515 --> 00:48:40.640 align:middle line:84%
+and as long as the most
+attractive deviation is not
+
+00:48:40.640 --> 00:48:42.600 align:middle line:84%
+profitable, then
+no other deviation
+
+00:48:42.600 --> 00:48:44.480 align:middle line:90%
+can be profitable either.
+
+00:48:44.480 --> 00:48:47.280 align:middle line:84%
+So if I'm looking
+at this wage chart,
+
+00:48:47.280 --> 00:48:49.920 align:middle line:84%
+this is the wage
+function I'm facing,
+
+00:48:49.920 --> 00:48:52.600 align:middle line:84%
+and I'm choosing how
+much education to get.
+
+00:48:52.600 --> 00:48:54.480 align:middle line:90%
+I'm already here at e star.
+
+00:48:54.480 --> 00:48:56.313 align:middle line:84%
+What would be the most
+attractive deviation?
+
+00:48:56.313 --> 00:48:58.063 align:middle line:84%
+I'm not saying it's
+profitable, but if I'm
+
+00:48:58.063 --> 00:48:59.720 align:middle line:84%
+going to deviate,
+how should I deviate?
+
+00:48:59.720 --> 00:49:02.420 align:middle line:84%
+What's the best
+possible deviation?
+
+00:49:02.420 --> 00:49:04.240 align:middle line:90%
+Yeah?
+
+00:49:04.240 --> 00:49:07.920 align:middle line:84%
+0 is the only one that has
+a chance, because clearly,
+
+00:49:07.920 --> 00:49:10.640 align:middle line:84%
+deviating above e star doesn't
+make any sense because I'm
+
+00:49:10.640 --> 00:49:14.880 align:middle line:84%
+paying more in education and I'm
+not getting any wage benefit.
+
+00:49:14.880 --> 00:49:17.500 align:middle line:84%
+So the only deviation
+that could be profitable--
+
+00:49:17.500 --> 00:49:19.560 align:middle line:84%
+and I should put
+"best" in parentheses.
+
+00:49:19.560 --> 00:49:23.480 align:middle line:90%
+It could be that-- yeah, anyway.
+
+00:49:23.480 --> 00:49:27.100 align:middle line:84%
+If I-- so I don't want to choose
+any education higher than e
+
+00:49:27.100 --> 00:49:27.740 align:middle line:90%
+star.
+
+00:49:27.740 --> 00:49:30.140 align:middle line:84%
+If I choose education
+strictly below e star,
+
+00:49:30.140 --> 00:49:33.660 align:middle line:84%
+well, my wage is the same no
+matter what education I choose.
+
+00:49:33.660 --> 00:49:35.800 align:middle line:84%
+So since I hate school,
+according to the model,
+
+00:49:35.800 --> 00:49:37.800 align:middle line:84%
+I might as well choose
+the lowest possible level
+
+00:49:37.800 --> 00:49:38.360 align:middle line:90%
+of education.
+
+00:49:38.360 --> 00:49:39.900 align:middle line:84%
+So the only thing
+we have to check
+
+00:49:39.900 --> 00:49:43.220 align:middle line:90%
+is a deviation of e equals 0.
+
+00:49:43.220 --> 00:49:45.780 align:middle line:90%
+
+
+00:49:45.780 --> 00:49:49.020 align:middle line:84%
+And now we have to check
+that both for the high type
+
+00:49:49.020 --> 00:49:50.120 align:middle line:90%
+and for the low type.
+
+00:49:50.120 --> 00:49:52.820 align:middle line:84%
+So let's write down the
+two conditions we need.
+
+00:49:52.820 --> 00:49:56.700 align:middle line:84%
+So let's look at t
+equals l and t equals h.
+
+00:49:56.700 --> 00:49:59.580 align:middle line:84%
+We want to compare what
+utility that person get
+
+00:49:59.580 --> 00:50:01.940 align:middle line:90%
+if they choose e star versus 0.
+
+00:50:01.940 --> 00:50:06.380 align:middle line:84%
+So if they choose e star,
+their utility is going to be--
+
+00:50:06.380 --> 00:50:10.260 align:middle line:90%
+I really need notation for this.
+
+00:50:10.260 --> 00:50:13.060 align:middle line:90%
+Let me call this prior mean.
+
+00:50:13.060 --> 00:50:17.720 align:middle line:84%
+Let me call this
+mu, mu for mean.
+
+00:50:17.720 --> 00:50:20.220 align:middle line:84%
+So let me use--
+just call that mu.
+
+00:50:20.220 --> 00:50:25.840 align:middle line:84%
+So if I choose e star, I
+get a wage of mu minus 1
+
+00:50:25.840 --> 00:50:31.080 align:middle line:90%
+over l e star squared.
+
+00:50:31.080 --> 00:50:36.700 align:middle line:90%
+And that must be better than l.
+
+00:50:36.700 --> 00:50:39.400 align:middle line:90%
+
+
+00:50:39.400 --> 00:50:42.620 align:middle line:84%
+Maybe, just so we see
+what's going on here.
+
+00:50:42.620 --> 00:50:45.280 align:middle line:90%
+
+
+00:50:45.280 --> 00:50:47.680 align:middle line:84%
+OK, this is the key condition,
+let's go over it slowly.
+
+00:50:47.680 --> 00:50:49.240 align:middle line:90%
+I'm a type l.
+
+00:50:49.240 --> 00:50:53.080 align:middle line:84%
+If I do what I'm supposed to
+do, I get paid a wage of mu.
+
+00:50:53.080 --> 00:50:55.520 align:middle line:84%
+I choose a level of
+education e star.
+
+00:50:55.520 --> 00:50:59.220 align:middle line:84%
+My cost of that education is
+1 over l times e star squared.
+
+00:50:59.220 --> 00:51:02.880 align:middle line:84%
+That comes from the formula
+for my utility up here.
+
+00:51:02.880 --> 00:51:05.520 align:middle line:84%
+And we've plugged
+in for my wage mu
+
+00:51:05.520 --> 00:51:08.260 align:middle line:84%
+because that's the wage
+I get if I choose e star.
+
+00:51:08.260 --> 00:51:09.960 align:middle line:90%
+So let's remind ourselves here.
+
+00:51:09.960 --> 00:51:13.720 align:middle line:90%
+This is w of e star.
+
+00:51:13.720 --> 00:51:16.000 align:middle line:84%
+If instead, I choose
+zero education,
+
+00:51:16.000 --> 00:51:20.440 align:middle line:84%
+well, my wage is l
+because we see over here--
+
+00:51:20.440 --> 00:51:23.180 align:middle line:84%
+and maybe I'll write
+that down here.
+
+00:51:23.180 --> 00:51:25.340 align:middle line:90%
+This is w of 0.
+
+00:51:25.340 --> 00:51:28.860 align:middle line:84%
+This is the wage that's offered
+to me if I choose no education.
+
+00:51:28.860 --> 00:51:31.460 align:middle line:84%
+And if I choose no
+education, this is the cost,
+
+00:51:31.460 --> 00:51:34.280 align:middle line:84%
+but this cost is just 0, because
+if I choose no education,
+
+00:51:34.280 --> 00:51:35.162 align:middle line:90%
+the cost is 0.
+
+00:51:35.162 --> 00:51:37.120 align:middle line:84%
+So we don't even have to
+worry about this term.
+
+00:51:37.120 --> 00:51:39.400 align:middle line:84%
+0 squared is 0, I can
+just cross this out.
+
+00:51:39.400 --> 00:51:41.980 align:middle line:90%
+
+
+00:51:41.980 --> 00:51:43.820 align:middle line:84%
+And now let's go
+down to l equals h
+
+00:51:43.820 --> 00:51:45.240 align:middle line:90%
+and write down the same formula.
+
+00:51:45.240 --> 00:51:54.195 align:middle line:90%
+
+
+00:51:54.195 --> 00:51:55.820 align:middle line:84%
+Now I think a lot of
+people are tempted
+
+00:51:55.820 --> 00:51:59.040 align:middle line:84%
+to put an h on the right-hand
+side, but that's not correct.
+
+00:51:59.040 --> 00:52:01.060 align:middle line:84%
+Because remember, what
+is l representing?
+
+00:52:01.060 --> 00:52:02.960 align:middle line:90%
+l is the wage the firm charges.
+
+00:52:02.960 --> 00:52:04.820 align:middle line:90%
+If you get no education.
+
+00:52:04.820 --> 00:52:06.860 align:middle line:84%
+If I deviate and
+get no education,
+
+00:52:06.860 --> 00:52:10.180 align:middle line:84%
+I'm offered a wage of l whether
+I'm a high type or low type.
+
+00:52:10.180 --> 00:52:12.440 align:middle line:90%
+So this is coming from w of 0.
+
+00:52:12.440 --> 00:52:14.140 align:middle line:84%
+It's not about my
+true type, it's
+
+00:52:14.140 --> 00:52:15.960 align:middle line:84%
+about what the firm
+is actually doing.
+
+00:52:15.960 --> 00:52:23.000 align:middle line:90%
+
+
+00:52:23.000 --> 00:52:30.320 align:middle line:84%
+So here are the two
+conditions we have,
+
+00:52:30.320 --> 00:52:33.320 align:middle line:84%
+and we need both
+of them to hold.
+
+00:52:33.320 --> 00:52:34.880 align:middle line:84%
+It turns out, one
+of these conditions
+
+00:52:34.880 --> 00:52:38.700 align:middle line:84%
+is going to be more
+demanding than the other.
+
+00:52:38.700 --> 00:52:41.340 align:middle line:84%
+Which of these is
+harder to satisfy?
+
+00:52:41.340 --> 00:52:46.098 align:middle line:90%
+
+
+00:52:46.098 --> 00:52:47.140 align:middle line:90%
+We have two inequalities.
+
+00:52:47.140 --> 00:52:47.838 align:middle line:90%
+Yeah?
+
+00:52:47.838 --> 00:52:48.880 align:middle line:90%
+AUDIENCE: The one on top.
+
+00:52:48.880 --> 00:52:49.060 align:middle line:90%
+IAN BALL: OK.
+
+00:52:49.060 --> 00:52:49.880 align:middle line:90%
+And why?
+
+00:52:49.880 --> 00:52:51.400 align:middle line:84%
+AUDIENCE: Because
+the 1 over l times
+
+00:52:51.400 --> 00:52:54.480 align:middle line:84%
+e star squared term is greater
+than the 1 over h times
+
+00:52:54.480 --> 00:52:55.500 align:middle line:90%
+the e star squared term.
+
+00:52:55.500 --> 00:52:56.500 align:middle line:90%
+IAN BALL: Example right.
+
+00:52:56.500 --> 00:52:59.338 align:middle line:84%
+So because l is smaller,
+1 over l is bigger.
+
+00:52:59.338 --> 00:53:00.880 align:middle line:84%
+So we're subtracting
+a bigger number,
+
+00:53:00.880 --> 00:53:02.145 align:middle line:90%
+and that's harder to satisfy.
+
+00:53:02.145 --> 00:53:03.020 align:middle line:90%
+And this makes sense.
+
+00:53:03.020 --> 00:53:05.800 align:middle line:84%
+Let's think about what each
+of these inequalities say.
+
+00:53:05.800 --> 00:53:07.960 align:middle line:84%
+If we move these things
+around, what we're saying
+
+00:53:07.960 --> 00:53:11.160 align:middle line:84%
+is, let's think of moving
+the cost to this side
+
+00:53:11.160 --> 00:53:13.040 align:middle line:90%
+and subtracting l on this side.
+
+00:53:13.040 --> 00:53:14.700 align:middle line:90%
+Let me write that down here.
+
+00:53:14.700 --> 00:53:16.140 align:middle line:90%
+This is the key condition.
+
+00:53:16.140 --> 00:53:20.260 align:middle line:84%
+So the key condition
+is mu minus l
+
+00:53:20.260 --> 00:53:24.960 align:middle line:84%
+is greater than or equal
+to 1 over l e star squared.
+
+00:53:24.960 --> 00:53:27.780 align:middle line:84%
+And this, I think, is a
+very natural interpretation.
+
+00:53:27.780 --> 00:53:31.540 align:middle line:84%
+Mu minus l is the, quote
+unquote, "college wage premium."
+
+00:53:31.540 --> 00:53:34.420 align:middle line:84%
+This is the difference in wage
+I get if I choose an education
+
+00:53:34.420 --> 00:53:37.320 align:middle line:84%
+level of e star versus
+education level of 0
+
+00:53:37.320 --> 00:53:42.260 align:middle line:84%
+because if I choose e star, I
+get mu; if I choose 0, I get l.
+
+00:53:42.260 --> 00:53:43.820 align:middle line:90%
+So this is the wage premium.
+
+00:53:43.820 --> 00:53:46.740 align:middle line:84%
+And this condition says
+the wage premium is higher
+
+00:53:46.740 --> 00:53:48.300 align:middle line:90%
+than the cost of education.
+
+00:53:48.300 --> 00:53:50.980 align:middle line:84%
+And indeed, it's worth it
+for me to go to college
+
+00:53:50.980 --> 00:53:53.580 align:middle line:84%
+if the wage premium I get
+from going to college-- that
+
+00:53:53.580 --> 00:53:55.860 align:middle line:84%
+is, the additional wage I
+get from going to college
+
+00:53:55.860 --> 00:53:57.620 align:middle line:84%
+more than outweighs
+the cost I have
+
+00:53:57.620 --> 00:53:59.220 align:middle line:90%
+to bear of going to college.
+
+00:53:59.220 --> 00:54:03.340 align:middle line:84%
+Now, we also need to check
+that the wage premium exceeds
+
+00:54:03.340 --> 00:54:05.500 align:middle line:84%
+the cost of education
+for the high type.
+
+00:54:05.500 --> 00:54:08.860 align:middle line:84%
+But for the high type, going
+to college is less costly.
+
+00:54:08.860 --> 00:54:10.940 align:middle line:84%
+So as long as we check
+that the wage premium is
+
+00:54:10.940 --> 00:54:12.510 align:middle line:84%
+worth it for the
+low type, well, it's
+
+00:54:12.510 --> 00:54:14.510 align:middle line:84%
+certainly going to be
+worth it for the high type
+
+00:54:14.510 --> 00:54:16.290 align:middle line:84%
+because they get the
+same wage premium,
+
+00:54:16.290 --> 00:54:17.850 align:middle line:84%
+but they find
+education less costly,
+
+00:54:17.850 --> 00:54:19.390 align:middle line:84%
+and that's exactly
+the observation
+
+00:54:19.390 --> 00:54:20.550 align:middle line:90%
+that was made at the end.
+
+00:54:20.550 --> 00:54:22.970 align:middle line:84%
+So this is our
+equilibrium condition.
+
+00:54:22.970 --> 00:54:25.052 align:middle line:84%
+And as long as
+this is satisfied,
+
+00:54:25.052 --> 00:54:27.010 align:middle line:84%
+then this is indeed going
+to be an equilibrium.
+
+00:54:27.010 --> 00:54:31.310 align:middle line:90%
+
+
+00:54:31.310 --> 00:54:34.230 align:middle line:84%
+So we actually have constructed
+many different equilibria
+
+00:54:34.230 --> 00:54:36.172 align:middle line:84%
+parametrized by
+this level e star.
+
+00:54:36.172 --> 00:54:37.630 align:middle line:84%
+There could be an
+equilibrium where
+
+00:54:37.630 --> 00:54:40.528 align:middle line:84%
+we say if you go to school
+for 0.3-- for e equals 0.3,
+
+00:54:40.528 --> 00:54:41.570 align:middle line:90%
+then you get a high wage.
+
+00:54:41.570 --> 00:54:42.510 align:middle line:84%
+There could also
+be an equilibrium
+
+00:54:42.510 --> 00:54:44.802 align:middle line:84%
+where if you go to school
+for 0.4, you get a high wage.
+
+00:54:44.802 --> 00:54:46.552 align:middle line:84%
+And these are both
+conceivable equilibria,
+
+00:54:46.552 --> 00:54:48.135 align:middle line:84%
+and there's a huge
+range of equilibria
+
+00:54:48.135 --> 00:54:49.270 align:middle line:90%
+that we can construct here.
+
+00:54:49.270 --> 00:54:50.890 align:middle line:90%
+Any questions on this?
+
+00:54:50.890 --> 00:54:55.150 align:middle line:90%
+
+
+00:54:55.150 --> 00:54:59.030 align:middle line:90%
+OK, so now, let's look for a--
+
+00:54:59.030 --> 00:55:00.730 align:middle line:84%
+let's look for a
+separating equilibria.
+
+00:55:00.730 --> 00:55:02.250 align:middle line:84%
+So, so far, we've
+just done pooling.
+
+00:55:02.250 --> 00:55:05.710 align:middle line:90%
+
+
+00:55:05.710 --> 00:55:08.250 align:middle line:84%
+Let's look for a
+separating equilibria.
+
+00:55:08.250 --> 00:55:24.250 align:middle line:90%
+
+
+00:55:24.250 --> 00:55:26.790 align:middle line:84%
+Now let's look for a
+separating equilibria.
+
+00:55:26.790 --> 00:55:34.930 align:middle line:90%
+
+
+00:55:34.930 --> 00:55:40.970 align:middle line:84%
+So what that means is we
+have el is not equal to eh.
+
+00:55:40.970 --> 00:55:43.050 align:middle line:84%
+So instead of just
+solving for e star
+
+00:55:43.050 --> 00:55:46.030 align:middle line:90%
+we have to solve for el and eh.
+
+00:55:46.030 --> 00:55:48.610 align:middle line:90%
+
+
+00:55:48.610 --> 00:55:54.270 align:middle line:84%
+And now, let's try to think of
+what w is going to have to be.
+
+00:55:54.270 --> 00:56:07.507 align:middle line:90%
+
+
+00:56:07.507 --> 00:56:09.090 align:middle line:84%
+So I think on a
+problem set, if you're
+
+00:56:09.090 --> 00:56:11.550 align:middle line:84%
+trying to construct equilibrium,
+it's always very helpful
+
+00:56:11.550 --> 00:56:15.750 align:middle line:84%
+to separate what the firm-- or
+what the receiver does on-path
+
+00:56:15.750 --> 00:56:17.870 align:middle line:84%
+from what the receiver
+does off-path.
+
+00:56:17.870 --> 00:56:20.190 align:middle line:84%
+Because on-path,
+Bayes' rule applies,
+
+00:56:20.190 --> 00:56:22.270 align:middle line:84%
+and we really have
+precise control
+
+00:56:22.270 --> 00:56:24.230 align:middle line:90%
+over what the wage has to be.
+
+00:56:24.230 --> 00:56:26.350 align:middle line:84%
+Off-path, Bayes rule
+can't be applied
+
+00:56:26.350 --> 00:56:28.830 align:middle line:84%
+because we divide by 0
+when we apply Bayes' rule,
+
+00:56:28.830 --> 00:56:32.870 align:middle line:84%
+and we have a lot of flexibility
+in what this wage is.
+
+00:56:32.870 --> 00:56:34.750 align:middle line:90%
+OK.
+
+00:56:34.750 --> 00:56:37.050 align:middle line:84%
+So if we're looking
+for an equilibrium,
+
+00:56:37.050 --> 00:56:39.750 align:middle line:84%
+a separating equilibrium, with
+these two levels of education,
+
+00:56:39.750 --> 00:56:42.310 align:middle line:84%
+eh and el, what
+is the firm's wage
+
+00:56:42.310 --> 00:56:46.090 align:middle line:84%
+going to have to be if they
+see an education level of el?
+
+00:56:46.090 --> 00:56:47.590 align:middle line:84%
+Or maybe the first
+question is, what
+
+00:56:47.590 --> 00:56:48.890 align:middle line:84%
+is their belief
+going to have to be,
+
+00:56:48.890 --> 00:56:50.890 align:middle line:84%
+and then what is their
+wage going to have to be?
+
+00:56:50.890 --> 00:56:57.270 align:middle line:90%
+
+
+00:56:57.270 --> 00:56:59.150 align:middle line:84%
+Well, what do they learn
+if they see someone
+
+00:56:59.150 --> 00:57:01.910 align:middle line:90%
+choose education level el?
+
+00:57:01.910 --> 00:57:05.630 align:middle line:84%
+They learn that they must be a
+low type because the high types
+
+00:57:05.630 --> 00:57:06.827 align:middle line:90%
+always choose eh.
+
+00:57:06.827 --> 00:57:09.410 align:middle line:84%
+Notice, this is a key difference
+with the pooling equilibrium.
+
+00:57:09.410 --> 00:57:11.950 align:middle line:84%
+If all the types choose the
+same level of education,
+
+00:57:11.950 --> 00:57:14.810 align:middle line:84%
+I don't learn about your type
+by seeing your education level.
+
+00:57:14.810 --> 00:57:17.610 align:middle line:84%
+But if different types choose
+different levels of education,
+
+00:57:17.610 --> 00:57:19.890 align:middle line:84%
+now, your choice of
+education reveals
+
+00:57:19.890 --> 00:57:22.050 align:middle line:84%
+a lot of information
+to me as the receiver.
+
+00:57:22.050 --> 00:57:24.850 align:middle line:84%
+So when I el, I know
+that you're a low type
+
+00:57:24.850 --> 00:57:27.050 align:middle line:84%
+and I must set the
+wage equal to l.
+
+00:57:27.050 --> 00:57:33.070 align:middle line:84%
+And maybe in parentheses,
+this is because eh of el is 0.
+
+00:57:33.070 --> 00:57:35.690 align:middle line:90%
+
+
+00:57:35.690 --> 00:57:37.950 align:middle line:84%
+What about if I see an
+education level of eh?
+
+00:57:37.950 --> 00:57:38.990 align:middle line:90%
+What do I conclude?
+
+00:57:38.990 --> 00:57:42.050 align:middle line:90%
+
+
+00:57:42.050 --> 00:57:42.610 align:middle line:90%
+Yeah?
+
+00:57:42.610 --> 00:57:43.550 align:middle line:90%
+AUDIENCE: I want to say type h.
+
+00:57:43.550 --> 00:57:44.758 align:middle line:90%
+IAN BALL: You must be type h.
+
+00:57:44.758 --> 00:57:46.410 align:middle line:90%
+So now this is h.
+
+00:57:46.410 --> 00:57:52.310 align:middle line:84%
+And now we have b of
+h given eh equals 1.
+
+00:57:52.310 --> 00:57:55.690 align:middle line:90%
+
+
+00:57:55.690 --> 00:58:00.450 align:middle line:84%
+And now the off-path wage,
+there's kind of a trick
+
+00:58:00.450 --> 00:58:03.290 align:middle line:90%
+that we sometimes can use.
+
+00:58:03.290 --> 00:58:05.510 align:middle line:84%
+If we really want to
+make this an equilibrium,
+
+00:58:05.510 --> 00:58:06.990 align:middle line:84%
+we want to make
+it as unappealing
+
+00:58:06.990 --> 00:58:10.590 align:middle line:84%
+as possible to deviate to any
+off-path level of education.
+
+00:58:10.590 --> 00:58:12.570 align:middle line:84%
+So how could-- if we
+have flexibility here
+
+00:58:12.570 --> 00:58:14.230 align:middle line:84%
+to choose this
+wage, how could we
+
+00:58:14.230 --> 00:58:15.950 align:middle line:84%
+choose this wage
+to make deviations
+
+00:58:15.950 --> 00:58:18.412 align:middle line:90%
+unappealing for the sender?
+
+00:58:18.412 --> 00:58:20.370 align:middle line:84%
+And this may be the most
+realistic equilibrium,
+
+00:58:20.370 --> 00:58:23.710 align:middle line:84%
+but it's kind of a good trick
+for computing equilibria.
+
+00:58:23.710 --> 00:58:27.490 align:middle line:84%
+So 0 would really deter
+deviations, but we can't do 0.
+
+00:58:27.490 --> 00:58:29.622 align:middle line:84%
+Why can't we necessarily--
+why can't we do 0?
+
+00:58:29.622 --> 00:58:31.330 align:middle line:84%
+That would violate
+one of our conditions.
+
+00:58:31.330 --> 00:58:33.040 align:middle line:84%
+The problem is, it
+would violate r,
+
+00:58:33.040 --> 00:58:35.290 align:middle line:84%
+and you may not have been
+here when we went over this,
+
+00:58:35.290 --> 00:58:37.150 align:middle line:84%
+but this would
+violate r, and I think
+
+00:58:37.150 --> 00:58:39.890 align:middle line:84%
+I just erased it, our
+receiver optimality condition.
+
+00:58:39.890 --> 00:58:45.670 align:middle line:84%
+So off-path, Bayes' rule
+doesn't impose any constraints
+
+00:58:45.670 --> 00:58:46.610 align:middle line:90%
+in our belief.
+
+00:58:46.610 --> 00:58:48.230 align:middle line:84%
+But whatever our
+belief is, we still
+
+00:58:48.230 --> 00:58:50.430 align:middle line:84%
+have to be behaving
+optimally given our belief.
+
+00:58:50.430 --> 00:58:52.933 align:middle line:84%
+And the worst possible belief
+we could form off-path, worse
+
+00:58:52.933 --> 00:58:54.350 align:middle line:84%
+from the standpoint
+of the sender,
+
+00:58:54.350 --> 00:58:56.910 align:middle line:84%
+would to be certain
+that you're a low type.
+
+00:58:56.910 --> 00:58:59.630 align:middle line:84%
+So if we're certain you're a low
+type, the wage we would charge
+
+00:58:59.630 --> 00:59:00.590 align:middle line:90%
+is l.
+
+00:59:00.590 --> 00:59:04.690 align:middle line:84%
+So you're right that a wage
+of 0 would be a stronger
+
+00:59:04.690 --> 00:59:07.070 align:middle line:84%
+punishment for the
+sender for deviating,
+
+00:59:07.070 --> 00:59:08.790 align:middle line:84%
+but it's not a
+credible punishment
+
+00:59:08.790 --> 00:59:11.130 align:middle line:84%
+because even if the firm
+thinks you're always
+
+00:59:11.130 --> 00:59:13.130 align:middle line:84%
+a low-ability person,
+they'd rather charge you
+
+00:59:13.130 --> 00:59:15.710 align:middle line:84%
+a wage of l, which is strictly
+positive than a wage of 0,
+
+00:59:15.710 --> 00:59:20.010 align:middle line:90%
+but that's a helpful comment.
+
+00:59:20.010 --> 00:59:21.090 align:middle line:90%
+So here we are.
+
+00:59:21.090 --> 00:59:27.090 align:middle line:84%
+Now I think we have some trouble
+because if I'm a low type, well,
+
+00:59:27.090 --> 00:59:31.170 align:middle line:84%
+why should I choose el and
+get l if I could just-- well,
+
+00:59:31.170 --> 00:59:33.990 align:middle line:84%
+any other education level I
+choose, I'll get l as well,
+
+00:59:33.990 --> 00:59:37.290 align:middle line:84%
+so why don't I just deviate
+to education level equals 0?
+
+00:59:37.290 --> 00:59:39.530 align:middle line:84%
+If I'm the low type,
+I think deviating
+
+00:59:39.530 --> 00:59:42.810 align:middle line:90%
+to equals 0 looks pretty good.
+
+00:59:42.810 --> 00:59:45.490 align:middle line:84%
+So in fact, we immediately
+see a strong constraint
+
+00:59:45.490 --> 00:59:47.550 align:middle line:84%
+on what happens in a
+separating equilibrium.
+
+00:59:47.550 --> 00:59:55.490 align:middle line:84%
+So first observation,
+note, must be 0.
+
+00:59:55.490 --> 00:59:58.450 align:middle line:84%
+If el was not 0,
+then the low type
+
+00:59:58.450 --> 01:00:01.270 align:middle line:84%
+would deviate to choose
+an education level of 0.
+
+01:00:01.270 --> 01:00:03.470 align:middle line:84%
+And let's think
+through why this is.
+
+01:00:03.470 --> 01:00:06.270 align:middle line:84%
+In a separating
+equilibrium, put yourself
+
+01:00:06.270 --> 01:00:07.830 align:middle line:90%
+in the position of a low type.
+
+01:00:07.830 --> 01:00:10.830 align:middle line:84%
+When you follow your equilibrium
+strategy and choose el,
+
+01:00:10.830 --> 01:00:14.310 align:middle line:84%
+you're fully revealing to the
+firm that you're a low ability
+
+01:00:14.310 --> 01:00:17.030 align:middle line:84%
+or that you're a low
+type sender, which
+
+01:00:17.030 --> 01:00:19.630 align:middle line:84%
+is the worst possible thing
+they can believe about you.
+
+01:00:19.630 --> 01:00:23.470 align:middle line:84%
+So it never makes sense to pay
+a positive cost to go to school,
+
+01:00:23.470 --> 01:00:26.065 align:middle line:84%
+only to be believed that
+you're the worst possible type.
+
+01:00:26.065 --> 01:00:28.190 align:middle line:84%
+So if I'm going to induce
+the worst possible belief
+
+01:00:28.190 --> 01:00:30.310 align:middle line:84%
+about myself, I might
+as well pay no cost
+
+01:00:30.310 --> 01:00:33.550 align:middle line:90%
+and not go to school at all.
+
+01:00:33.550 --> 01:00:36.630 align:middle line:90%
+So now el equals 0.
+
+01:00:36.630 --> 01:00:37.150 align:middle line:90%
+Good.
+
+01:00:37.150 --> 01:00:39.830 align:middle line:90%
+
+
+01:00:39.830 --> 01:00:42.930 align:middle line:90%
+And let's try to graph this.
+
+01:00:42.930 --> 01:00:45.328 align:middle line:90%
+
+
+01:00:45.328 --> 01:00:46.870 align:middle line:84%
+Let's do our graph
+again, and I think
+
+01:00:46.870 --> 01:00:51.390 align:middle line:84%
+it's actually helpful to try to
+represent the sender optimality
+
+01:00:51.390 --> 01:00:53.510 align:middle line:84%
+conditions on the graph,
+so let's try to do this.
+
+01:00:53.510 --> 01:00:56.390 align:middle line:84%
+So we're going to
+look at a wage here.
+
+01:00:56.390 --> 01:00:58.310 align:middle line:90%
+el is going to be 0.
+
+01:00:58.310 --> 01:01:02.200 align:middle line:84%
+eh is not equal to el, so eh
+has to be strictly positive.
+
+01:01:02.200 --> 01:01:06.920 align:middle line:84%
+So let's just put a
+guess of where eh is.
+
+01:01:06.920 --> 01:01:09.640 align:middle line:84%
+And we said that
+the wage is going
+
+01:01:09.640 --> 01:01:13.440 align:middle line:84%
+to be l If you deviate-- if
+you do something off-path.
+
+01:01:13.440 --> 01:01:17.240 align:middle line:90%
+So here's l.
+
+01:01:17.240 --> 01:01:18.840 align:middle line:90%
+Here's h.
+
+01:01:18.840 --> 01:01:28.720 align:middle line:84%
+And to here, the wage is
+going to look like this.
+
+01:01:28.720 --> 01:01:33.280 align:middle line:90%
+Now, at eh, the wage jumps to h.
+
+01:01:33.280 --> 01:01:40.160 align:middle line:84%
+So this is an open circle,
+this is a closed circle here,
+
+01:01:40.160 --> 01:01:42.000 align:middle line:84%
+and then the wage
+continues down.
+
+01:01:42.000 --> 01:01:46.680 align:middle line:84%
+So this is, if we want to be
+really safe, what we would do.
+
+01:01:46.680 --> 01:01:49.120 align:middle line:84%
+But to be a little
+more realistic,
+
+01:01:49.120 --> 01:01:52.400 align:middle line:84%
+well, we want to make
+sure that no one wants
+
+01:01:52.400 --> 01:01:54.540 align:middle line:84%
+to deviate to this high
+level of education.
+
+01:01:54.540 --> 01:01:56.640 align:middle line:90%
+But this seems like--
+
+01:01:56.640 --> 01:01:58.100 align:middle line:84%
+I mean, it could
+be an equilibrium,
+
+01:01:58.100 --> 01:01:59.660 align:middle line:84%
+but it seems kind
+of weird to say,
+
+01:01:59.660 --> 01:02:01.160 align:middle line:84%
+if you get a really
+high education,
+
+01:02:01.160 --> 01:02:02.600 align:middle line:90%
+we believe you're a low type.
+
+01:02:02.600 --> 01:02:04.725 align:middle line:84%
+I mean, it's possible, but
+it seems a little weird.
+
+01:02:04.725 --> 01:02:06.980 align:middle line:84%
+So I think often
+what we'll do is
+
+01:02:06.980 --> 01:02:10.160 align:middle line:84%
+we'll choose the off-path
+beliefs like this
+
+01:02:10.160 --> 01:02:13.780 align:middle line:84%
+so that actually, if you choose
+any education level above eh,
+
+01:02:13.780 --> 01:02:15.780 align:middle line:90%
+we'll still pay you a wage of h.
+
+01:02:15.780 --> 01:02:17.300 align:middle line:90%
+Now why is that OK?
+
+01:02:17.300 --> 01:02:20.900 align:middle line:84%
+Well, if you can always get
+an education level of eh
+
+01:02:20.900 --> 01:02:22.740 align:middle line:84%
+and get a wage of
+h, no one's going
+
+01:02:22.740 --> 01:02:25.157 align:middle line:84%
+to ever want to deviate
+beyond eh to get the same wage
+
+01:02:25.157 --> 01:02:26.240 align:middle line:90%
+that they would get at eh.
+
+01:02:26.240 --> 01:02:29.280 align:middle line:84%
+So that going off your
+comment, to be really safe,
+
+01:02:29.280 --> 01:02:32.300 align:middle line:84%
+we'd set we to bl, but
+really, the important thing
+
+01:02:32.300 --> 01:02:33.517 align:middle line:90%
+is that it's l down here.
+
+01:02:33.517 --> 01:02:36.100 align:middle line:84%
+Beyond here, we can make it h
+and we're not going to introduce
+
+01:02:36.100 --> 01:02:38.500 align:middle line:90%
+any deviations, so let's--
+
+01:02:38.500 --> 01:02:44.420 align:middle line:84%
+bl for e less than eh, that's
+kind of the important thing.
+
+01:02:44.420 --> 01:02:46.920 align:middle line:84%
+And let's try to
+do it like this.
+
+01:02:46.920 --> 01:02:50.900 align:middle line:90%
+
+
+01:02:50.900 --> 01:02:53.340 align:middle line:84%
+So notice that this graph
+looks a lot like what
+
+01:02:53.340 --> 01:02:55.000 align:middle line:84%
+we had in the
+pooling equilibrium,
+
+01:02:55.000 --> 01:02:56.208 align:middle line:90%
+but there's a key difference.
+
+01:02:56.208 --> 01:03:00.640 align:middle line:84%
+So like the pooling equilibrium,
+if your education was too low,
+
+01:03:00.640 --> 01:03:04.060 align:middle line:84%
+we paid you l, but in
+the pooling equilibrium,
+
+01:03:04.060 --> 01:03:06.060 align:middle line:84%
+if you got to a high
+enough level of education,
+
+01:03:06.060 --> 01:03:08.860 align:middle line:84%
+we paid you the average
+ability in the population.
+
+01:03:08.860 --> 01:03:10.440 align:middle line:90%
+Now we pay you a lot more.
+
+01:03:10.440 --> 01:03:11.880 align:middle line:90%
+We pay you h.
+
+01:03:11.880 --> 01:03:14.500 align:middle line:84%
+Because now, if I see a
+high level of education,
+
+01:03:14.500 --> 01:03:15.743 align:middle line:90%
+I draw a different inference.
+
+01:03:15.743 --> 01:03:17.160 align:middle line:84%
+As the receiver,
+I say, oh, if you
+
+01:03:17.160 --> 01:03:20.960 align:middle line:84%
+got a high level of education,
+you must be a high type person.
+
+01:03:20.960 --> 01:03:22.820 align:middle line:84%
+So this wage is
+much, much higher,
+
+01:03:22.820 --> 01:03:24.580 align:middle line:84%
+and we'll find that,
+not too surprisingly,
+
+01:03:24.580 --> 01:03:26.122 align:middle line:84%
+eh is going to have
+to be pretty high
+
+01:03:26.122 --> 01:03:29.280 align:middle line:84%
+as well to ensure that
+no one wants to deviate.
+
+01:03:29.280 --> 01:03:29.780 align:middle line:90%
+OK.
+
+01:03:29.780 --> 01:03:33.240 align:middle line:84%
+So we have our wage
+function written down.
+
+01:03:33.240 --> 01:03:37.840 align:middle line:84%
+The wage function satisfies
+receiver optimality
+
+01:03:37.840 --> 01:03:39.400 align:middle line:90%
+by our construction.
+
+01:03:39.400 --> 01:03:43.080 align:middle line:90%
+Let's just check in words.
+
+01:03:43.080 --> 01:03:45.920 align:middle line:84%
+Bayes rule applies only
+at these two points
+
+01:03:45.920 --> 01:03:48.200 align:middle line:84%
+because at this
+point, at e equals 0,
+
+01:03:48.200 --> 01:03:51.040 align:middle line:84%
+that's the level of education
+chosen by the low type.
+
+01:03:51.040 --> 01:03:52.640 align:middle line:84%
+We believe that
+you're the low type,
+
+01:03:52.640 --> 01:03:54.340 align:middle line:90%
+and we charge you a wage of l.
+
+01:03:54.340 --> 01:03:55.540 align:middle line:90%
+That's great.
+
+01:03:55.540 --> 01:03:59.135 align:middle line:84%
+Here, eh, If we see that, we
+believe you're a high type,
+
+01:03:59.135 --> 01:04:01.260 align:middle line:84%
+and we charge you that--
+we pay you the wage that's
+
+01:04:01.260 --> 01:04:02.640 align:middle line:90%
+optimal given that belief.
+
+01:04:02.640 --> 01:04:04.700 align:middle line:84%
+So Bayes' rule
+pins us down here.
+
+01:04:04.700 --> 01:04:06.890 align:middle line:84%
+Everything outside
+of that is off-path,
+
+01:04:06.890 --> 01:04:08.640 align:middle line:84%
+we had a lot of
+flexibility in our choice,
+
+01:04:08.640 --> 01:04:10.820 align:middle line:84%
+and we made those choices
+to try to deter deviations
+
+01:04:10.820 --> 01:04:12.700 align:middle line:90%
+by the sender.
+
+01:04:12.700 --> 01:04:13.200 align:middle line:90%
+OK.
+
+01:04:13.200 --> 01:04:16.340 align:middle line:84%
+So now, there's two
+things we have to check.
+
+01:04:16.340 --> 01:04:22.340 align:middle line:84%
+We have to check that the
+low type-- so maybe I'll
+
+01:04:22.340 --> 01:04:23.320 align:middle line:90%
+just put it over here.
+
+01:04:23.320 --> 01:04:26.980 align:middle line:90%
+
+
+01:04:26.980 --> 01:04:36.220 align:middle line:84%
+The low type prefers el
+to all other e, e prime,
+
+01:04:36.220 --> 01:04:39.800 align:middle line:90%
+and the high type prefers eh.
+
+01:04:39.800 --> 01:04:44.900 align:middle line:90%
+
+
+01:04:44.900 --> 01:04:48.100 align:middle line:84%
+So this is what sender
+optimality means.
+
+01:04:48.100 --> 01:04:52.695 align:middle line:84%
+The type l sender in equilibrium
+is choosing el, which is 0.
+
+01:04:52.695 --> 01:04:54.320 align:middle line:84%
+And we have to check
+that that's better
+
+01:04:54.320 --> 01:04:57.600 align:middle line:84%
+for them than deviating to
+any other level of education.
+
+01:04:57.600 --> 01:04:59.880 align:middle line:84%
+Similarly, the high
+type, in equilibrium,
+
+01:04:59.880 --> 01:05:02.420 align:middle line:84%
+is choosing eh, which
+is strictly positive.
+
+01:05:02.420 --> 01:05:04.080 align:middle line:84%
+And we have to check
+that they prefer
+
+01:05:04.080 --> 01:05:06.360 align:middle line:84%
+eh to any other
+level of education.
+
+01:05:06.360 --> 01:05:08.340 align:middle line:84%
+Now I think this can be
+overwhelming at first
+
+01:05:08.340 --> 01:05:10.560 align:middle line:84%
+because there's so many
+other levels of education
+
+01:05:10.560 --> 01:05:12.120 align:middle line:84%
+that people might
+choose, but just
+
+01:05:12.120 --> 01:05:15.600 align:middle line:84%
+like before, given
+this wage function,
+
+01:05:15.600 --> 01:05:18.780 align:middle line:84%
+I think there's only one
+really candidate deviation.
+
+01:05:18.780 --> 01:05:21.120 align:middle line:84%
+I think most of the deviations
+are clearly not going
+
+01:05:21.120 --> 01:05:22.380 align:middle line:90%
+to be the optimal deviation.
+
+01:05:22.380 --> 01:05:25.280 align:middle line:90%
+So let's say I'm a low type.
+
+01:05:25.280 --> 01:05:26.240 align:middle line:90%
+Here I am.
+
+01:05:26.240 --> 01:05:27.480 align:middle line:90%
+I'm down here.
+
+01:05:27.480 --> 01:05:29.172 align:middle line:90%
+I'm getting a wage of l.
+
+01:05:29.172 --> 01:05:31.380 align:middle line:84%
+I see that this is what the
+wage function looks like,
+
+01:05:31.380 --> 01:05:33.480 align:middle line:84%
+and this is the choice
+that people actually face
+
+01:05:33.480 --> 01:05:36.320 align:middle line:90%
+when they design their lives.
+
+01:05:36.320 --> 01:05:41.600 align:middle line:84%
+What level of education might
+I be tempted to deviate to?
+
+01:05:41.600 --> 01:05:42.100 align:middle line:90%
+Yeah?
+
+01:05:42.100 --> 01:05:42.960 align:middle line:90%
+AUDIENCE: e of h?
+
+01:05:42.960 --> 01:05:43.820 align:middle line:90%
+IAN BALL: eh, right?
+
+01:05:43.820 --> 01:05:45.760 align:middle line:84%
+None of the other
+deviations make sense.
+
+01:05:45.760 --> 01:05:48.440 align:middle line:84%
+If I deviate to
+here, I'm paying more
+
+01:05:48.440 --> 01:05:50.640 align:middle line:84%
+and I'm not getting
+any wage return.
+
+01:05:50.640 --> 01:05:53.427 align:middle line:84%
+If I deviate to here, well,
+I am getting a wage return,
+
+01:05:53.427 --> 01:05:55.260 align:middle line:84%
+but I'm getting the
+same return I could have
+
+01:05:55.260 --> 01:05:56.980 align:middle line:90%
+gotten by just going to eh.
+
+01:05:56.980 --> 01:06:00.002 align:middle line:84%
+So if I want to deviate, that's
+really the key deviation.
+
+01:06:00.002 --> 01:06:01.460 align:middle line:84%
+And similarly, now
+let's put myself
+
+01:06:01.460 --> 01:06:07.460 align:middle line:84%
+in the position of someone of
+a high type who's choosing eh.
+
+01:06:07.460 --> 01:06:10.380 align:middle line:84%
+They're here, and they're
+looking over the graph.
+
+01:06:10.380 --> 01:06:14.460 align:middle line:84%
+What is the only reasonable
+or tempting deviation
+
+01:06:14.460 --> 01:06:15.440 align:middle line:90%
+for the high type?
+
+01:06:15.440 --> 01:06:20.980 align:middle line:90%
+
+
+01:06:20.980 --> 01:06:21.480 align:middle line:90%
+Yeah?
+
+01:06:21.480 --> 01:06:22.620 align:middle line:90%
+AUDIENCE: el?
+
+01:06:22.620 --> 01:06:25.260 align:middle line:84%
+IAN BALL: Exactly. el,
+which, in this case, is 0.
+
+01:06:25.260 --> 01:06:26.780 align:middle line:90%
+So el, for the same reason.
+
+01:06:26.780 --> 01:06:28.123 align:middle line:90%
+I'm already getting a wage of h.
+
+01:06:28.123 --> 01:06:30.040 align:middle line:84%
+There's no reason for
+me to go to school more.
+
+01:06:30.040 --> 01:06:32.457 align:middle line:84%
+I don't like school, and it's
+not going to raise my wages,
+
+01:06:32.457 --> 01:06:34.180 align:middle line:90%
+according to this strategy.
+
+01:06:34.180 --> 01:06:35.620 align:middle line:84%
+If I go to less
+school, well, I'm
+
+01:06:35.620 --> 01:06:38.042 align:middle line:84%
+going to get a big cut in
+wages, but I can go all the way
+
+01:06:38.042 --> 01:06:40.500 align:middle line:84%
+down to here and I'm still
+going to get the same wage of l.
+
+01:06:40.500 --> 01:06:42.940 align:middle line:84%
+So I might as well choose the
+lowest education level that
+
+01:06:42.940 --> 01:06:45.740 align:middle line:90%
+ensures that I get that wage.
+
+01:06:45.740 --> 01:06:47.720 align:middle line:84%
+So now let's write
+down these conditions.
+
+01:06:47.720 --> 01:07:13.030 align:middle line:90%
+
+
+01:07:13.030 --> 01:07:15.270 align:middle line:84%
+So really, what we
+need to check is--
+
+01:07:15.270 --> 01:07:17.610 align:middle line:84%
+and sometimes I write it
+like this, in shorthand.
+
+01:07:17.610 --> 01:07:25.610 align:middle line:90%
+
+
+01:07:25.610 --> 01:07:29.750 align:middle line:84%
+So what I mean by
+this is, this, I say,
+
+01:07:29.750 --> 01:07:31.590 align:middle line:90%
+this means type h prefers.
+
+01:07:31.590 --> 01:07:32.312 align:middle line:90%
+This is a weak.
+
+01:07:32.312 --> 01:07:33.770 align:middle line:84%
+Maybe I'll say
+something like this.
+
+01:07:33.770 --> 01:07:35.670 align:middle line:84%
+So I need to check
+is if I'm type h,
+
+01:07:35.670 --> 01:07:38.950 align:middle line:84%
+I prefer choosing an
+education level of eh
+
+01:07:38.950 --> 01:07:41.270 align:middle line:90%
+to an education level of el.
+
+01:07:41.270 --> 01:07:43.770 align:middle line:84%
+Of course, I have to prefer it
+to any other education level,
+
+01:07:43.770 --> 01:07:46.630 align:middle line:84%
+but we said this is really
+the deviation I'm tempted by.
+
+01:07:46.630 --> 01:07:48.890 align:middle line:84%
+And then we have to check
+if I'm a low type l,
+
+01:07:48.890 --> 01:07:52.170 align:middle line:84%
+I weakly prefer my
+own education level el
+
+01:07:52.170 --> 01:07:55.570 align:middle line:84%
+to deviating to the
+education level eh.
+
+01:07:55.570 --> 01:07:58.350 align:middle line:84%
+Now in general, I have to worry
+about every other deviation,
+
+01:07:58.350 --> 01:08:00.130 align:middle line:84%
+but because of the
+special structure
+
+01:08:00.130 --> 01:08:02.830 align:middle line:84%
+we've used when we define
+this wage function,
+
+01:08:02.830 --> 01:08:04.670 align:middle line:84%
+we only have to check
+these two conditions.
+
+01:08:04.670 --> 01:08:08.170 align:middle line:84%
+So let's just write
+this out in math.
+
+01:08:08.170 --> 01:08:11.370 align:middle line:84%
+If I'm a high type and
+I choose eh, then I'm
+
+01:08:11.370 --> 01:08:13.890 align:middle line:84%
+going to get a wage
+of h, but then I'm
+
+01:08:13.890 --> 01:08:19.410 align:middle line:84%
+going to have to pay
+1 over h eh squared.
+
+01:08:19.410 --> 01:08:20.850 align:middle line:90%
+Maybe let's go down here.
+
+01:08:20.850 --> 01:08:23.790 align:middle line:84%
+What if I'm a low type-- no,
+we'll just go through it.
+
+01:08:23.790 --> 01:08:25.050 align:middle line:90%
+Let's see.
+
+01:08:25.050 --> 01:08:31.510 align:middle line:84%
+Now if I deviate to
+el, well, then I get l.
+
+01:08:31.510 --> 01:08:32.510 align:middle line:90%
+Maybe I'll write it out.
+
+01:08:32.510 --> 01:08:38.510 align:middle line:84%
+It's 1 over h el squared, but
+that's just l because el is 0.
+
+01:08:38.510 --> 01:08:47.029 align:middle line:90%
+
+
+01:08:47.029 --> 01:08:53.710 align:middle line:84%
+And I think as usual, let's
+simplify this a little bit.
+
+01:08:53.710 --> 01:08:58.810 align:middle line:84%
+That is, h minus l is
+greater than or equal to--
+
+01:08:58.810 --> 01:09:07.388 align:middle line:90%
+
+
+01:09:07.388 --> 01:09:08.930 align:middle line:84%
+and this has the
+same interpretation.
+
+01:09:08.930 --> 01:09:11.450 align:middle line:84%
+Now the wage
+premium is different
+
+01:09:11.450 --> 01:09:12.930 align:middle line:90%
+in the separating equilibrium.
+
+01:09:12.930 --> 01:09:15.229 align:middle line:84%
+The wage premium
+is now h minus l.
+
+01:09:15.229 --> 01:09:18.149 align:middle line:84%
+And what this condition
+says is the wage premium
+
+01:09:18.149 --> 01:09:22.630 align:middle line:84%
+is higher than the cost of
+education for the high type.
+
+01:09:22.630 --> 01:09:25.550 align:middle line:84%
+So going to college and
+getting an education of eh
+
+01:09:25.550 --> 01:09:28.990 align:middle line:84%
+is worth it for the high type
+because their cost of doing that
+
+01:09:28.990 --> 01:09:31.069 align:middle line:84%
+is weakly smaller
+than the wage premium
+
+01:09:31.069 --> 01:09:33.550 align:middle line:90%
+they'll get from doing that.
+
+01:09:33.550 --> 01:09:36.630 align:middle line:84%
+Now let's look at the same
+condition for the low type.
+
+01:09:36.630 --> 01:09:39.830 align:middle line:84%
+So for the low type, well, if
+they choose their equilibrium
+
+01:09:39.830 --> 01:09:42.310 align:middle line:84%
+education level of 0,
+they don't pay anything
+
+01:09:42.310 --> 01:09:44.370 align:middle line:90%
+and they get a wage of l.
+
+01:09:44.370 --> 01:09:46.890 align:middle line:84%
+So we get-- and
+again, maybe I'll--
+
+01:09:46.890 --> 01:09:49.450 align:middle line:84%
+it's l, but if we really
+write it out, it's this.
+
+01:09:49.450 --> 01:09:53.010 align:middle line:90%
+
+
+01:09:53.010 --> 01:09:56.490 align:middle line:84%
+Where this just second term
+disappears because el is 0.
+
+01:09:56.490 --> 01:09:59.990 align:middle line:84%
+And this has to be greater
+than or equal to what?
+
+01:09:59.990 --> 01:10:03.630 align:middle line:84%
+Well, if they deviate and choose
+a high level of education,
+
+01:10:03.630 --> 01:10:06.010 align:middle line:84%
+they're going to get the
+wage h, but then they
+
+01:10:06.010 --> 01:10:11.650 align:middle line:90%
+have to pay 1 over l eh squared.
+
+01:10:11.650 --> 01:10:14.470 align:middle line:90%
+And again, let's simplify.
+
+01:10:14.470 --> 01:10:28.330 align:middle line:90%
+
+
+01:10:28.330 --> 01:10:30.390 align:middle line:90%
+And what does this say in words?
+
+01:10:30.390 --> 01:10:43.070 align:middle line:90%
+
+
+01:10:43.070 --> 01:10:44.310 align:middle line:90%
+Can we interpret this?
+
+01:10:44.310 --> 01:10:45.150 align:middle line:90%
+Yeah?
+
+01:10:45.150 --> 01:10:48.510 align:middle line:84%
+AUDIENCE: The wage premium
+is smaller than the cost
+
+01:10:48.510 --> 01:10:53.050 align:middle line:84%
+of, I guess, getting
+education eh for the low type.
+
+01:10:53.050 --> 01:10:54.550 align:middle line:84%
+IAN BALL: For the
+low type, exactly.
+
+01:10:54.550 --> 01:10:55.973 align:middle line:90%
+So-- and this is--
+
+01:10:55.973 --> 01:10:58.390 align:middle line:84%
+if you recall, it's similar
+when we talked about the essay
+
+01:10:58.390 --> 01:11:00.710 align:middle line:84%
+problem last week, and we
+said the cost of the essay
+
+01:11:00.710 --> 01:11:04.110 align:middle line:84%
+has to be cheap enough that
+the excited students take it,
+
+01:11:04.110 --> 01:11:06.610 align:middle line:84%
+but expensive enough that the
+less excited students take it,
+
+01:11:06.610 --> 01:11:08.110 align:middle line:84%
+that's exactly
+what's going on here.
+
+01:11:08.110 --> 01:11:09.990 align:middle line:84%
+In order to sustain a
+separating equilibrium,
+
+01:11:09.990 --> 01:11:11.890 align:middle line:84%
+because it's a
+separating equilibrium,
+
+01:11:11.890 --> 01:11:13.690 align:middle line:84%
+the wage premium is
+going to be h minus l,
+
+01:11:13.690 --> 01:11:16.453 align:middle line:84%
+because high education fully
+reveals you're a high type,
+
+01:11:16.453 --> 01:11:18.370 align:middle line:84%
+low education fully
+reveals you're a low type,
+
+01:11:18.370 --> 01:11:19.990 align:middle line:84%
+so that defines--
+the fact that it's
+
+01:11:19.990 --> 01:11:22.590 align:middle line:84%
+a separating equilibrium
+defines what the wage premium is
+
+01:11:22.590 --> 01:11:23.430 align:middle line:90%
+going to be.
+
+01:11:23.430 --> 01:11:25.263 align:middle line:84%
+But then we have to
+check that it's actually
+
+01:11:25.263 --> 01:11:27.950 align:middle line:84%
+optimal for each type to follow
+what they're supposed to do.
+
+01:11:27.950 --> 01:11:29.750 align:middle line:90%
+In this equilibrium.
+
+01:11:29.750 --> 01:11:32.470 align:middle line:84%
+The high type people are
+supposed to get educated,
+
+01:11:32.470 --> 01:11:36.230 align:middle line:84%
+so the level of education
+eh must be low enough
+
+01:11:36.230 --> 01:11:38.790 align:middle line:84%
+that it's worth it for high
+ability or high type people
+
+01:11:38.790 --> 01:11:41.170 align:middle line:84%
+to choose to get that
+education because the wage
+
+01:11:41.170 --> 01:11:43.770 align:middle line:84%
+premium outweighs the
+cost for those types.
+
+01:11:43.770 --> 01:11:47.110 align:middle line:84%
+At the same time, the level of
+education must be high enough.
+
+01:11:47.110 --> 01:11:49.010 align:middle line:84%
+If it was too low,
+then even the low types
+
+01:11:49.010 --> 01:11:50.130 align:middle line:84%
+would also choose
+that education,
+
+01:11:50.130 --> 01:11:52.430 align:middle line:84%
+and we would no longer have
+a separating equilibrium.
+
+01:11:52.430 --> 01:11:54.570 align:middle line:84%
+So the level of education
+must, at the same time,
+
+01:11:54.570 --> 01:11:56.510 align:middle line:84%
+be high enough that
+for the low types,
+
+01:11:56.510 --> 01:11:59.970 align:middle line:84%
+it's not worth going to
+education-- going to school
+
+01:11:59.970 --> 01:12:04.090 align:middle line:84%
+because the cost exceeds the
+wage premium that they get.
+
+01:12:04.090 --> 01:12:07.790 align:middle line:84%
+And if we do this, we can get a
+formula for what eh has to be.
+
+01:12:07.790 --> 01:12:09.910 align:middle line:90%
+So maybe this is helpful.
+
+01:12:09.910 --> 01:12:17.080 align:middle line:84%
+Let's pull the h over
+here, and what we get is eh
+
+01:12:17.080 --> 01:12:23.290 align:middle line:84%
+needs to be between
+h, h minus l,
+
+01:12:23.290 --> 01:12:28.410 align:middle line:84%
+and it has to be above
+l times h minus l.
+
+01:12:28.410 --> 01:12:30.090 align:middle line:84%
+And let's just check
+that this works.
+
+01:12:30.090 --> 01:12:32.890 align:middle line:84%
+Well, because l
+is smaller than h,
+
+01:12:32.890 --> 01:12:35.490 align:middle line:84%
+this inequality does
+indeed-- is indeed
+
+01:12:35.490 --> 01:12:39.750 align:middle line:84%
+satisfied for a
+certain range of types.
+
+01:12:39.750 --> 01:12:45.870 align:middle line:90%
+I think it's helpful to compare.
+
+01:12:45.870 --> 01:12:51.510 align:middle line:84%
+So this is-- let's
+compare what happened
+
+01:12:51.510 --> 01:12:54.450 align:middle line:90%
+in the pooling equilibrium.
+
+01:12:54.450 --> 01:12:55.690 align:middle line:90%
+So this is separating.
+
+01:12:55.690 --> 01:13:00.070 align:middle line:90%
+
+
+01:13:00.070 --> 01:13:01.910 align:middle line:84%
+So in separating,
+the low types got
+
+01:13:01.910 --> 01:13:04.590 align:middle line:84%
+no education and the
+high types got eh.
+
+01:13:04.590 --> 01:13:08.350 align:middle line:84%
+In the pooling equilibrium,
+both types got e star.
+
+01:13:08.350 --> 01:13:12.210 align:middle line:84%
+And e star satisfied
+the following property.
+
+01:13:12.210 --> 01:13:21.750 align:middle line:90%
+
+
+01:13:21.750 --> 01:13:24.390 align:middle line:90%
+So how do these compare?
+
+01:13:24.390 --> 01:13:30.550 align:middle line:84%
+If we look at these bounds, how
+does the pooling equilibrium
+
+01:13:30.550 --> 01:13:31.050 align:middle line:90%
+compare?
+
+01:13:31.050 --> 01:13:34.770 align:middle line:84%
+How does e star compare to eh if
+we look at these inequalities?
+
+01:13:34.770 --> 01:13:36.800 align:middle line:90%
+Let's look.
+
+01:13:36.800 --> 01:13:40.260 align:middle line:84%
+Mu is an average
+between h and l.
+
+01:13:40.260 --> 01:13:42.840 align:middle line:84%
+So mu is certainly
+smaller than h.
+
+01:13:42.840 --> 01:13:46.357 align:middle line:90%
+So this is smaller than this.
+
+01:13:46.357 --> 01:13:48.440 align:middle line:84%
+So we see a fundamental
+difference between the two
+
+01:13:48.440 --> 01:13:49.840 align:middle line:90%
+kinds of equilibria.
+
+01:13:49.840 --> 01:13:52.440 align:middle line:84%
+In the separating
+equilibrium, the low types
+
+01:13:52.440 --> 01:13:56.640 align:middle line:84%
+get no education and the high
+types get a lot of education.
+
+01:13:56.640 --> 01:13:58.840 align:middle line:84%
+In the pooling
+equilibrium, both types
+
+01:13:58.840 --> 01:14:01.420 align:middle line:84%
+get this lower intermediate
+level of education.
+
+01:14:01.420 --> 01:14:05.440 align:middle line:84%
+That's e star is must be
+strictly lower than eh.
+
+01:14:05.440 --> 01:14:07.020 align:middle line:90%
+So we have two worlds.
+
+01:14:07.020 --> 01:14:09.540 align:middle line:84%
+We have one world-- and
+they're both equilibria.
+
+01:14:09.540 --> 01:14:11.800 align:middle line:84%
+There's one world
+where getting educated
+
+01:14:11.800 --> 01:14:14.960 align:middle line:84%
+conveys a lot of
+benefits, and people--
+
+01:14:14.960 --> 01:14:18.280 align:middle line:84%
+or I should say, getting very
+highly educated conveys a lot
+
+01:14:18.280 --> 01:14:19.080 align:middle line:90%
+of benefits.
+
+01:14:19.080 --> 01:14:20.380 align:middle line:90%
+People pay a huge cost.
+
+01:14:20.380 --> 01:14:22.660 align:middle line:84%
+The high types pay a huge
+cost to get highly educated,
+
+01:14:22.660 --> 01:14:25.120 align:middle line:90%
+and they get a huge return.
+
+01:14:25.120 --> 01:14:26.960 align:middle line:84%
+There's also another
+equilibrium we
+
+01:14:26.960 --> 01:14:30.180 align:middle line:84%
+could be in where people
+don't get as much as educated,
+
+01:14:30.180 --> 01:14:33.000 align:middle line:84%
+there's not a huge benefit to
+education, but everyone gets it.
+
+01:14:33.000 --> 01:14:36.660 align:middle line:84%
+And I think these actually are
+consistent with-- you might
+
+01:14:36.660 --> 01:14:38.780 align:middle line:84%
+imagine in different
+countries, we might kind of
+
+01:14:38.780 --> 01:14:40.697 align:middle line:84%
+reach different equilibria
+where education has
+
+01:14:40.697 --> 01:14:44.420 align:middle line:90%
+a different role in society.
+
+01:14:44.420 --> 01:14:46.202 align:middle line:90%
+Both of these are consistent.
+
+01:14:46.202 --> 01:14:47.660 align:middle line:84%
+Everyone's behaving
+optimally given
+
+01:14:47.660 --> 01:14:50.560 align:middle line:84%
+what everyone else
+is doing, but here,
+
+01:14:50.560 --> 01:14:52.592 align:middle line:84%
+the beliefs that
+the market forms
+
+01:14:52.592 --> 01:14:54.300 align:middle line:84%
+about your education
+and this equilibrium
+
+01:14:54.300 --> 01:14:55.860 align:middle line:84%
+are different-- sorry,
+the beliefs, the market
+
+01:14:55.860 --> 01:14:57.780 align:middle line:84%
+forms about your ability
+given your education
+
+01:14:57.780 --> 01:14:59.620 align:middle line:84%
+are different than the
+beliefs the market forms
+
+01:14:59.620 --> 01:15:01.120 align:middle line:84%
+in this equilibrium,
+and then people
+
+01:15:01.120 --> 01:15:03.500 align:middle line:84%
+are responding accordingly,
+and it's mutually
+
+01:15:03.500 --> 01:15:04.720 align:middle line:90%
+consistent in each case.
+
+01:15:04.720 --> 01:15:07.580 align:middle line:90%
+
+
+01:15:07.580 --> 01:15:10.080 align:middle line:84%
+Let me maybe just
+do one final thing.
+
+01:15:10.080 --> 01:15:14.980 align:middle line:84%
+I think it's sometimes helpful
+to visualize these constraints
+
+01:15:14.980 --> 01:15:16.140 align:middle line:90%
+geometrically.
+
+01:15:16.140 --> 01:15:18.180 align:middle line:84%
+So I've written
+out the constraint
+
+01:15:18.180 --> 01:15:20.040 align:middle line:84%
+for the separating
+equilibrium up here,
+
+01:15:20.040 --> 01:15:22.740 align:middle line:84%
+but I want to try
+to visualize this.
+
+01:15:22.740 --> 01:15:28.070 align:middle line:84%
+And I think a good way to
+visualize this is to say,
+
+01:15:28.070 --> 01:15:29.820 align:middle line:84%
+well, we want to look
+at something that is
+
+01:15:29.820 --> 01:15:31.343 align:middle line:90%
+called an indifference curve.
+
+01:15:31.343 --> 01:15:33.260 align:middle line:84%
+And if you've studied
+other economics classes,
+
+01:15:33.260 --> 01:15:34.320 align:middle line:90%
+you would have seen this.
+
+01:15:34.320 --> 01:15:36.880 align:middle line:84%
+But what we want to say is,
+well, we're in the plain
+
+01:15:36.880 --> 01:15:40.720 align:middle line:84%
+here where the horizontal axis
+is your level of education
+
+01:15:40.720 --> 01:15:43.240 align:middle line:84%
+and the vertical
+axis is your wage.
+
+01:15:43.240 --> 01:15:49.200 align:middle line:84%
+And we want to ask, what are the
+pairs of wage and education that
+
+01:15:49.200 --> 01:15:52.280 align:middle line:90%
+give you the same utility?
+
+01:15:52.280 --> 01:15:53.980 align:middle line:84%
+Well let's write
+the formula down.
+
+01:15:53.980 --> 01:15:58.560 align:middle line:84%
+So for the low
+type, or for type t,
+
+01:15:58.560 --> 01:16:02.480 align:middle line:84%
+an indifference curve would
+have the form, say, u bar equals
+
+01:16:02.480 --> 01:16:07.520 align:middle line:90%
+wage minus 1 over t e squared.
+
+01:16:07.520 --> 01:16:10.760 align:middle line:84%
+So what I'm saying is I want
+to look at all the pairs
+
+01:16:10.760 --> 01:16:15.600 align:middle line:84%
+we that give type t
+the utility u bar.
+
+01:16:15.600 --> 01:16:18.160 align:middle line:84%
+And if I solve-- if I
+write this out, what I get
+
+01:16:18.160 --> 01:16:24.980 align:middle line:84%
+is w equals u bar plus
+1 over t e squared.
+
+01:16:24.980 --> 01:16:29.640 align:middle line:90%
+
+
+01:16:29.640 --> 01:16:31.860 align:middle line:84%
+So what this tells
+me is w is going
+
+01:16:31.860 --> 01:16:35.440 align:middle line:84%
+to be an increasing quadratic
+function of e squared.
+
+01:16:35.440 --> 01:16:37.023 align:middle line:90%
+So let's try to write this down.
+
+01:16:37.023 --> 01:16:38.440 align:middle line:84%
+It might look
+something like this.
+
+01:16:38.440 --> 01:16:43.380 align:middle line:90%
+
+
+01:16:43.380 --> 01:16:47.500 align:middle line:84%
+What this indicates is the set--
+what I'm saying is if I moved
+
+01:16:47.500 --> 01:16:52.060 align:middle line:84%
+along this curve, the
+utility that I would get--
+
+01:16:52.060 --> 01:16:53.580 align:middle line:90%
+say I'm the low type here--
+
+01:16:53.580 --> 01:16:55.458 align:middle line:90%
+is the same along this curve.
+
+01:16:55.458 --> 01:16:58.000 align:middle line:84%
+Because if I move a little bit
+to the right along this curve,
+
+01:16:58.000 --> 01:17:00.480 align:middle line:84%
+I'm getting more educated,
+that's more costly,
+
+01:17:00.480 --> 01:17:03.140 align:middle line:84%
+but my wage is also increasing
+at just the right rate
+
+01:17:03.140 --> 01:17:05.940 align:middle line:84%
+to ensure that my
+utility stays constant.
+
+01:17:05.940 --> 01:17:07.940 align:middle line:84%
+And then we could draw
+another utility curve.
+
+01:17:07.940 --> 01:17:09.980 align:middle line:84%
+By shifting the
+value of u bar, we
+
+01:17:09.980 --> 01:17:13.620 align:middle line:84%
+could draw another utility
+curve like this and another one
+
+01:17:13.620 --> 01:17:14.700 align:middle line:90%
+like this.
+
+01:17:14.700 --> 01:17:17.740 align:middle line:84%
+So what this says is, these
+all give me the same utility,
+
+01:17:17.740 --> 01:17:19.200 align:middle line:84%
+these all give me
+the same utility,
+
+01:17:19.200 --> 01:17:21.657 align:middle line:84%
+but that utility is going to
+be higher than this utility.
+
+01:17:21.657 --> 01:17:23.740 align:middle line:84%
+And similarly, these all
+give me the same utility,
+
+01:17:23.740 --> 01:17:26.420 align:middle line:84%
+but a higher utility still
+than the previous case.
+
+01:17:26.420 --> 01:17:29.520 align:middle line:90%
+
+
+01:17:29.520 --> 01:17:32.640 align:middle line:84%
+Now, let's say these
+are the indifference
+
+01:17:32.640 --> 01:17:36.340 align:middle line:90%
+curves for the low types.
+
+01:17:36.340 --> 01:17:39.290 align:middle line:90%
+
+
+01:17:39.290 --> 01:17:41.040 align:middle line:84%
+Now I want to draw the
+indifference curves
+
+01:17:41.040 --> 01:17:43.200 align:middle line:90%
+for the high types.
+
+01:17:43.200 --> 01:17:44.137 align:middle line:90%
+And this is tricky.
+
+01:17:44.137 --> 01:17:45.720 align:middle line:84%
+Are the high types
+indifference curves
+
+01:17:45.720 --> 01:17:47.640 align:middle line:84%
+going to be steeper
+than the low type
+
+01:17:47.640 --> 01:17:49.727 align:middle line:90%
+or shallower than the low type?
+
+01:17:49.727 --> 01:17:51.560 align:middle line:84%
+This is-- we can do the
+algebra, but I think
+
+01:17:51.560 --> 01:17:55.477 align:middle line:90%
+it's good to think it through.
+
+01:17:55.477 --> 01:17:57.060 align:middle line:84%
+So they're also going
+to be quadratic.
+
+01:17:57.060 --> 01:17:59.380 align:middle line:84%
+They're going to
+have a similar shape.
+
+01:17:59.380 --> 01:18:02.960 align:middle line:90%
+
+
+01:18:02.960 --> 01:18:04.540 align:middle line:90%
+Is that shallower or steeper?
+
+01:18:04.540 --> 01:18:06.200 align:middle line:90%
+What do you think?
+
+01:18:06.200 --> 01:18:07.300 align:middle line:90%
+You have a half-chance.
+
+01:18:07.300 --> 01:18:12.052 align:middle line:90%
+
+
+01:18:12.052 --> 01:18:13.260 align:middle line:90%
+Well, let's think it through.
+
+01:18:13.260 --> 01:18:14.380 align:middle line:90%
+What does this curve mean?
+
+01:18:14.380 --> 01:18:18.120 align:middle line:84%
+It tells me, if I get
+this much more education,
+
+01:18:18.120 --> 01:18:20.680 align:middle line:84%
+I have to get paid this much
+more to compensate me for it
+
+01:18:20.680 --> 01:18:22.288 align:middle line:90%
+and keep me indifferent.
+
+01:18:22.288 --> 01:18:24.080 align:middle line:84%
+So it is a high type
+need to be compensated
+
+01:18:24.080 --> 01:18:28.940 align:middle line:84%
+more or less for the
+same level of education.
+
+01:18:28.940 --> 01:18:30.620 align:middle line:90%
+AUDIENCE: More.
+
+01:18:30.620 --> 01:18:32.700 align:middle line:84%
+IAN BALL: Actually less
+because a high type
+
+01:18:32.700 --> 01:18:35.420 align:middle line:90%
+finds education less costly.
+
+01:18:35.420 --> 01:18:38.940 align:middle line:84%
+So if I'm really good at school,
+and I go to school a little bit
+
+01:18:38.940 --> 01:18:40.860 align:middle line:84%
+more, I don't need
+to get paid too much
+
+01:18:40.860 --> 01:18:42.240 align:middle line:90%
+more to keep me indifferent.
+
+01:18:42.240 --> 01:18:44.900 align:middle line:84%
+If I'm really good at school,
+I can go to school for 20 years
+
+01:18:44.900 --> 01:18:47.060 align:middle line:84%
+and you just need to
+pay me a little bit.
+
+01:18:47.060 --> 01:18:52.900 align:middle line:84%
+So here, I'm going
+to get curves like--
+
+01:18:52.900 --> 01:18:55.860 align:middle line:90%
+say something like this.
+
+01:18:55.860 --> 01:18:57.440 align:middle line:90%
+No, these should not intersect.
+
+01:18:57.440 --> 01:18:59.820 align:middle line:90%
+Sorry.
+
+01:18:59.820 --> 01:19:04.700 align:middle line:90%
+Something like that.
+
+01:19:04.700 --> 01:19:06.080 align:middle line:90%
+Let me-- I forget this last one.
+
+01:19:06.080 --> 01:19:08.940 align:middle line:90%
+
+
+01:19:08.940 --> 01:19:11.320 align:middle line:84%
+So these are the indifference
+curves for the high types.
+
+01:19:11.320 --> 01:19:20.220 align:middle line:90%
+
+
+01:19:20.220 --> 01:19:22.700 align:middle line:84%
+And in fact, using
+these curves, we
+
+01:19:22.700 --> 01:19:25.190 align:middle line:84%
+can exactly
+represent graphically
+
+01:19:25.190 --> 01:19:27.590 align:middle line:84%
+the levels of education
+that could support
+
+01:19:27.590 --> 01:19:29.030 align:middle line:90%
+a separating equilibrium.
+
+01:19:29.030 --> 01:19:33.490 align:middle line:84%
+So it's exactly going
+to be this range here.
+
+01:19:33.490 --> 01:19:48.710 align:middle line:84%
+Do I have-- and let's
+just see it in words.
+
+01:19:48.710 --> 01:19:53.590 align:middle line:84%
+This dotted line here is the
+indifference curve that passes
+
+01:19:53.590 --> 01:19:56.310 align:middle line:90%
+through 0l for the low type.
+
+01:19:56.310 --> 01:19:59.590 align:middle line:84%
+So these are the wage-education
+level pairs that make the low
+
+01:19:59.590 --> 01:20:04.750 align:middle line:84%
+type indifferent with 0l, with
+no education and a wage of l.
+
+01:20:04.750 --> 01:20:07.310 align:middle line:84%
+So if I want to have a
+separating equilibrium,
+
+01:20:07.310 --> 01:20:10.350 align:middle line:84%
+I better make this
+eh high enough
+
+01:20:10.350 --> 01:20:12.430 align:middle line:84%
+that the low type doesn't
+want to deviate to eh.
+
+01:20:12.430 --> 01:20:15.030 align:middle line:84%
+And that precisely means
+eh has to be farther
+
+01:20:15.030 --> 01:20:18.830 align:middle line:84%
+to the right of this point
+because if eh is over here, that
+
+01:20:18.830 --> 01:20:21.430 align:middle line:84%
+tells me the low
+type strictly prefers
+
+01:20:21.430 --> 01:20:23.690 align:middle line:84%
+to get no education
+and a wage of l
+
+01:20:23.690 --> 01:20:27.490 align:middle line:84%
+than to get this level of
+education and a wage of h.
+
+01:20:27.490 --> 01:20:30.890 align:middle line:84%
+On the other hand, the
+high type must weakly
+
+01:20:30.890 --> 01:20:33.990 align:middle line:84%
+prefer to get high
+education than no education.
+
+01:20:33.990 --> 01:20:37.130 align:middle line:90%
+
+
+01:20:37.130 --> 01:20:39.760 align:middle line:90%
+Ah, I misdrew this.
+
+01:20:39.760 --> 01:20:41.510 align:middle line:84%
+It's going to go all
+the way over to here.
+
+01:20:41.510 --> 01:20:42.010 align:middle line:90%
+Sorry.
+
+01:20:42.010 --> 01:20:49.810 align:middle line:90%
+
+
+01:20:49.810 --> 01:20:54.210 align:middle line:84%
+So the high types indifference
+curve that passes through 0l
+
+01:20:54.210 --> 01:20:58.650 align:middle line:90%
+goes all the way up to here.
+
+01:20:58.650 --> 01:21:00.830 align:middle line:84%
+So just to maybe go
+through it one last time,
+
+01:21:00.830 --> 01:21:02.410 align:middle line:90%
+let's make sure we understand.
+
+01:21:02.410 --> 01:21:03.970 align:middle line:84%
+If I could get a
+level of education
+
+01:21:03.970 --> 01:21:06.490 align:middle line:84%
+here and get paid
+a wage of h, that
+
+01:21:06.490 --> 01:21:09.490 align:middle line:84%
+would be better than no
+education and a wage of l
+
+01:21:09.490 --> 01:21:12.050 align:middle line:90%
+for both high and low types.
+
+01:21:12.050 --> 01:21:14.890 align:middle line:84%
+So that couldn't be part of
+a separating equilibrium.
+
+01:21:14.890 --> 01:21:17.330 align:middle line:84%
+If I chose eh to
+be way over here,
+
+01:21:17.330 --> 01:21:20.650 align:middle line:84%
+then getting this level of
+education and a wage of h would
+
+01:21:20.650 --> 01:21:23.590 align:middle line:90%
+be worse than 0l for both types.
+
+01:21:23.590 --> 01:21:25.590 align:middle line:84%
+The only way I can have
+a separating equilibrium
+
+01:21:25.590 --> 01:21:27.550 align:middle line:84%
+is if I lie exactly
+in this range.
+
+01:21:27.550 --> 01:21:29.310 align:middle line:84%
+And if I lie in
+that range, I ensure
+
+01:21:29.310 --> 01:21:33.650 align:middle line:84%
+that this additional education
+is worth it for the high type,
+
+01:21:33.650 --> 01:21:35.830 align:middle line:84%
+but not worth it
+for the low type.
+
+01:21:35.830 --> 01:21:38.830 align:middle line:84%
+And the crucial point here is
+I'm looking at the indifference
+
+01:21:38.830 --> 01:21:42.470 align:middle line:84%
+curves that pass
+through the point 0l.
+
+01:21:42.470 --> 01:21:44.910 align:middle line:84%
+So these are considering
+the pairs of education
+
+01:21:44.910 --> 01:21:46.330 align:middle line:90%
+and wages that--
+
+01:21:46.330 --> 01:21:47.810 align:middle line:84%
+So let me just--
+as I'm concluding,
+
+01:21:47.810 --> 01:21:51.070 align:middle line:84%
+let me say it smoothly
+in words one last time.
+
+01:21:51.070 --> 01:21:53.510 align:middle line:84%
+These are the pairs
+of wages in education
+
+01:21:53.510 --> 01:21:56.430 align:middle line:84%
+that make the high type
+indifferent with this point,
+
+01:21:56.430 --> 01:21:58.388 align:middle line:84%
+and these are the pairs
+of education and wages
+
+01:21:58.388 --> 01:21:59.430 align:middle line:90%
+that make the high type--
+
+01:21:59.430 --> 01:22:01.970 align:middle line:84%
+that make the low type
+indifferent with this point.
+
+01:22:01.970 --> 01:22:03.718 align:middle line:84%
+And everything in
+between is going
+
+01:22:03.718 --> 01:22:05.510 align:middle line:84%
+to ensure that the high
+type finds it worth
+
+01:22:05.510 --> 01:22:08.517 align:middle line:84%
+it to get educated and the low
+type finds it not worth it.
+
+01:22:08.517 --> 01:22:10.850 align:middle line:84%
+We did the algebra, but it's
+just good to see the graph,
+
+01:22:10.850 --> 01:22:12.433 align:middle line:84%
+and I think on the
+problem set, you'll
+
+01:22:12.433 --> 01:22:15.980 align:middle line:84%
+be asked to illustrate
+this graphically.
+
+01:22:15.980 --> 01:22:20.000 align:middle line:90%

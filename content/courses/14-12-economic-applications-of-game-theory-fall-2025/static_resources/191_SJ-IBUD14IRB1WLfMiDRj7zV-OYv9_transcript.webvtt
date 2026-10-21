@@ -1,0 +1,6178 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:02.420 align:middle line:90%
+[SQUEAKING]
+
+00:00:02.420 --> 00:00:04.340 align:middle line:90%
+[RUSTLING]
+
+00:00:04.340 --> 00:00:05.780 align:middle line:90%
+[CLICKING]
+
+00:00:05.780 --> 00:00:10.237 align:middle line:90%
+
+
+00:00:10.237 --> 00:00:12.320 align:middle line:84%
+IAN BALL: All right, so
+we're going to start today
+
+00:00:12.320 --> 00:00:13.580 align:middle line:90%
+with another MobLab game.
+
+00:00:13.580 --> 00:00:16.540 align:middle line:84%
+Hopefully everyone
+can get logged in.
+
+00:00:16.540 --> 00:00:18.040 align:middle line:84%
+This is going to
+be-- the game we're
+
+00:00:18.040 --> 00:00:20.380 align:middle line:84%
+going to play is called
+the Ultimatum Game.
+
+00:00:20.380 --> 00:00:24.360 align:middle line:90%
+
+
+00:00:24.360 --> 00:00:26.120 align:middle line:84%
+And this is probably
+the most famous game
+
+00:00:26.120 --> 00:00:29.800 align:middle line:84%
+that's used in laboratory
+experiments about economics.
+
+00:00:29.800 --> 00:00:31.880 align:middle line:84%
+So the way it's going
+to work is that you're
+
+00:00:31.880 --> 00:00:34.140 align:middle line:84%
+going to be randomly
+assigned to two roles.
+
+00:00:34.140 --> 00:00:36.520 align:middle line:84%
+One of you is going to be
+the proposer, and one of you
+
+00:00:36.520 --> 00:00:38.480 align:middle line:90%
+is going to be the responder.
+
+00:00:38.480 --> 00:00:40.400 align:middle line:90%
+And there's some pot of money.
+
+00:00:40.400 --> 00:00:42.760 align:middle line:84%
+And the proposer
+just proposes how
+
+00:00:42.760 --> 00:00:45.780 align:middle line:84%
+that money is split between
+them and the other person.
+
+00:00:45.780 --> 00:00:47.280 align:middle line:84%
+And then the other
+person can choose
+
+00:00:47.280 --> 00:00:51.240 align:middle line:84%
+to accept that, in which case
+you split the money in that way,
+
+00:00:51.240 --> 00:00:54.400 align:middle line:84%
+or reject that, in which
+case no one gets any money.
+
+00:00:54.400 --> 00:00:56.928 align:middle line:90%
+So player 1 makes an ultimatum.
+
+00:00:56.928 --> 00:00:58.220 align:middle line:90%
+This is how much money you get.
+
+00:00:58.220 --> 00:00:59.600 align:middle line:90%
+This is how much money I get.
+
+00:00:59.600 --> 00:01:00.800 align:middle line:90%
+Take it or leave it.
+
+00:01:00.800 --> 00:01:03.620 align:middle line:84%
+Player 2 says, I'll take
+it, or I'll leave it
+
+00:01:03.620 --> 00:01:05.040 align:middle line:90%
+and then we both get nothing.
+
+00:01:05.040 --> 00:01:06.020 align:middle line:90%
+So that's the game.
+
+00:01:06.020 --> 00:01:09.040 align:middle line:84%
+I think in this version you
+have $100, maybe, to split.
+
+00:01:09.040 --> 00:01:11.260 align:middle line:84%
+So let's play and
+see what happens.
+
+00:01:11.260 --> 00:01:18.720 align:middle line:90%
+
+
+00:01:18.720 --> 00:01:22.640 align:middle line:84%
+So here we have a
+table of the results.
+
+00:01:22.640 --> 00:01:26.580 align:middle line:84%
+What we can see is
+the blue circle,
+
+00:01:26.580 --> 00:01:28.700 align:middle line:84%
+these are offers
+that were accepted.
+
+00:01:28.700 --> 00:01:30.720 align:middle line:84%
+So this is the amount
+that the proposer
+
+00:01:30.720 --> 00:01:34.560 align:middle line:84%
+offered the responder could
+receive out of the 100.
+
+00:01:34.560 --> 00:01:39.080 align:middle line:84%
+And then the orange circles
+are offers that were rejected.
+
+00:01:39.080 --> 00:01:40.920 align:middle line:84%
+And then we see
+the averages here.
+
+00:01:40.920 --> 00:01:43.480 align:middle line:84%
+So we definitely see
+that, on average,
+
+00:01:43.480 --> 00:01:46.360 align:middle line:84%
+at least especially
+in these early rounds,
+
+00:01:46.360 --> 00:01:50.160 align:middle line:84%
+the higher offers were
+more likely to be accepted,
+
+00:01:50.160 --> 00:01:54.225 align:middle line:84%
+and the lower offers were
+more likely to be rejected.
+
+00:01:54.225 --> 00:01:55.600 align:middle line:84%
+It looks like a
+lot of the offers
+
+00:01:55.600 --> 00:01:58.830 align:middle line:84%
+were above zero, except
+maybe one down here.
+
+00:01:58.830 --> 00:02:00.453 align:middle line:90%
+Someone offered zero.
+
+00:02:00.453 --> 00:02:02.370 align:middle line:84%
+Anyone who played want
+to share their thoughts
+
+00:02:02.370 --> 00:02:04.222 align:middle line:84%
+about how they
+approached this and how
+
+00:02:04.222 --> 00:02:05.430 align:middle line:90%
+they thought about this game?
+
+00:02:05.430 --> 00:02:10.948 align:middle line:90%
+
+
+00:02:10.948 --> 00:02:12.990 align:middle line:84%
+So what about when you
+were the-- yeah, go ahead.
+
+00:02:12.990 --> 00:02:15.670 align:middle line:84%
+AUDIENCE: I was the one who
+was receiving the offer.
+
+00:02:15.670 --> 00:02:17.947 align:middle line:84%
+So as long as the
+amount was positive,
+
+00:02:17.947 --> 00:02:19.530 align:middle line:84%
+I would receive it
+because otherwise I
+
+00:02:19.530 --> 00:02:20.405 align:middle line:90%
+wouldn't [INAUDIBLE].
+
+00:02:20.405 --> 00:02:23.690 align:middle line:84%
+IAN BALL: OK, so that's the
+ultra-rational way to play.
+
+00:02:23.690 --> 00:02:26.790 align:middle line:84%
+And that's what game
+theory would propose.
+
+00:02:26.790 --> 00:02:29.013 align:middle line:84%
+Often in practice we
+don't see that happening.
+
+00:02:29.013 --> 00:02:30.430 align:middle line:84%
+But that's a great
+way of playing.
+
+00:02:30.430 --> 00:02:34.090 align:middle line:84%
+So other people who rejected
+positive offers, what
+
+00:02:34.090 --> 00:02:35.410 align:middle line:90%
+was your thinking about that?
+
+00:02:35.410 --> 00:02:35.910 align:middle line:90%
+Yeah?
+
+00:02:35.910 --> 00:02:37.590 align:middle line:84%
+AUDIENCE: I guess I
+was less rational.
+
+00:02:37.590 --> 00:02:40.990 align:middle line:84%
+If no one offered me 50,
+then I was like, well,
+
+00:02:40.990 --> 00:02:42.110 align:middle line:90%
+I don't like you.
+
+00:02:42.110 --> 00:02:43.910 align:middle line:90%
+So I'm not going to accept that.
+
+00:02:43.910 --> 00:02:45.070 align:middle line:90%
+IAN BALL: OK, great.
+
+00:02:45.070 --> 00:02:46.570 align:middle line:90%
+AUDIENCE: [INAUDIBLE]
+
+00:02:46.570 --> 00:02:48.290 align:middle line:84%
+IAN BALL: So a
+lot of people have
+
+00:02:48.290 --> 00:02:50.150 align:middle line:90%
+this reaction about fairness.
+
+00:02:50.150 --> 00:02:52.350 align:middle line:84%
+So this captures people's
+idea of fairness.
+
+00:02:52.350 --> 00:02:55.810 align:middle line:84%
+Some people are willing to
+sacrifice financial gains
+
+00:02:55.810 --> 00:02:58.730 align:middle line:84%
+in order to punish people who
+you might feel have morally
+
+00:02:58.730 --> 00:03:01.530 align:middle line:84%
+wronged you or done something
+that's fundamentally unfair.
+
+00:03:01.530 --> 00:03:04.570 align:middle line:84%
+Again, it's a pretty cheap
+way to punish someone when
+
+00:03:04.570 --> 00:03:05.950 align:middle line:90%
+there's no money on the line.
+
+00:03:05.950 --> 00:03:09.410 align:middle line:84%
+If it was $50,000 and
+they gave you 49,000,
+
+00:03:09.410 --> 00:03:11.250 align:middle line:84%
+you'd probably still
+accept it, right?
+
+00:03:11.250 --> 00:03:12.513 align:middle line:90%
+But yeah, that's useful.
+
+00:03:12.513 --> 00:03:14.430 align:middle line:84%
+And then what about
+people who were proposing?
+
+00:03:14.430 --> 00:03:17.830 align:middle line:90%
+What was your reasoning?
+
+00:03:17.830 --> 00:03:20.410 align:middle line:90%
+
+
+00:03:20.410 --> 00:03:21.950 align:middle line:90%
+Did you propose an even split?
+
+00:03:21.950 --> 00:03:23.750 align:middle line:84%
+Did you propose
+more for yourself?
+
+00:03:23.750 --> 00:03:24.470 align:middle line:90%
+What did you do?
+
+00:03:24.470 --> 00:03:27.850 align:middle line:90%
+
+
+00:03:27.850 --> 00:03:29.410 align:middle line:90%
+It's very quiet.
+
+00:03:29.410 --> 00:03:31.210 align:middle line:90%
+Someone proposed.
+
+00:03:31.210 --> 00:03:33.432 align:middle line:84%
+Some people proposed--
+it looks like--
+
+00:03:33.432 --> 00:03:34.890 align:middle line:84%
+I guess, if we look
+at the game, it
+
+00:03:34.890 --> 00:03:37.950 align:middle line:84%
+looks like no one gave more
+than 50 to the other person.
+
+00:03:37.950 --> 00:03:40.370 align:middle line:84%
+So it looks like
+some people felt,
+
+00:03:40.370 --> 00:03:42.630 align:middle line:90%
+let's be generous and give 50.
+
+00:03:42.630 --> 00:03:44.850 align:middle line:84%
+And then other people
+wanted to keep a little more
+
+00:03:44.850 --> 00:03:45.590 align:middle line:90%
+for themselves.
+
+00:03:45.590 --> 00:03:47.850 align:middle line:84%
+Usually what happens in
+this game is people--
+
+00:03:47.850 --> 00:03:50.730 align:middle line:84%
+their reasoning is, well, I
+anticipate the responder might
+
+00:03:50.730 --> 00:03:53.650 align:middle line:84%
+be a bit like you suggested
+and might not be happy with me
+
+00:03:53.650 --> 00:03:56.020 align:middle line:84%
+if I give them nothing, but
+I don't have to give them
+
+00:03:56.020 --> 00:03:57.000 align:middle line:90%
+all-- the full half.
+
+00:03:57.000 --> 00:03:58.920 align:middle line:90%
+Maybe I'll give them 30 or 40.
+
+00:03:58.920 --> 00:04:00.290 align:middle line:90%
+That's a pretty common response.
+
+00:04:00.290 --> 00:04:02.540 align:middle line:84%
+And then the hope is that
+the person will accept this.
+
+00:04:02.540 --> 00:04:04.540 align:middle line:84%
+Here, you actually played
+it in multiple rounds.
+
+00:04:04.540 --> 00:04:07.860 align:middle line:84%
+Did anyone think about
+the dynamics of this game?
+
+00:04:07.860 --> 00:04:10.280 align:middle line:84%
+So I think that's an important
+consideration in this game.
+
+00:04:10.280 --> 00:04:12.363 align:middle line:84%
+Today, we're going to think
+about a static version
+
+00:04:12.363 --> 00:04:13.460 align:middle line:90%
+of this game.
+
+00:04:13.460 --> 00:04:15.500 align:middle line:84%
+But if you're playing
+this repeatedly,
+
+00:04:15.500 --> 00:04:17.579 align:middle line:84%
+you might think, well,
+depending on what
+
+00:04:17.579 --> 00:04:20.540 align:middle line:84%
+I do in this round, that might
+affect the way the person will
+
+00:04:20.540 --> 00:04:22.160 align:middle line:90%
+play in future rounds.
+
+00:04:22.160 --> 00:04:25.040 align:middle line:84%
+If they know that I'm someone
+who rejects really low offers,
+
+00:04:25.040 --> 00:04:28.497 align:middle line:84%
+maybe they'll be forced or
+motivated to offer more to me
+
+00:04:28.497 --> 00:04:29.080 align:middle line:90%
+in the future.
+
+00:04:29.080 --> 00:04:30.872 align:middle line:84%
+And that's something
+we'll think about when
+
+00:04:30.872 --> 00:04:32.380 align:middle line:90%
+we get into repeated games.
+
+00:04:32.380 --> 00:04:44.460 align:middle line:84%
+So let's close this and move
+into more of a formal analysis
+
+00:04:44.460 --> 00:04:47.460 align:middle line:90%
+of this game.
+
+00:04:47.460 --> 00:04:50.060 align:middle line:84%
+So the topic for today
+is going to be what's
+
+00:04:50.060 --> 00:04:51.280 align:middle line:90%
+called backward induction.
+
+00:04:51.280 --> 00:04:52.980 align:middle line:84%
+But I think the best way
+to go about it is just
+
+00:04:52.980 --> 00:04:55.480 align:middle line:84%
+to think through this example,
+and then, later in the class,
+
+00:04:55.480 --> 00:04:57.100 align:middle line:84%
+I'll give a more
+formal definition.
+
+00:04:57.100 --> 00:04:59.860 align:middle line:84%
+So let's look at an easier
+version of the ultimatum game.
+
+00:04:59.860 --> 00:05:01.820 align:middle line:84%
+I think in the game
+you played, you
+
+00:05:01.820 --> 00:05:05.313 align:middle line:84%
+could choose any number
+between maybe 0 and hundreds.
+
+00:05:05.313 --> 00:05:06.480 align:middle line:90%
+Let's make it a bit simpler.
+
+00:05:06.480 --> 00:05:12.140 align:middle line:84%
+So let's see the ultimatum
+game with maybe $3 at stake.
+
+00:05:12.140 --> 00:05:15.060 align:middle line:84%
+And let's think about
+how this game works.
+
+00:05:15.060 --> 00:05:22.140 align:middle line:84%
+So we have player 1, who's what
+we would call the proposer,
+
+00:05:22.140 --> 00:05:25.000 align:middle line:84%
+and player 2, who's
+the responder.
+
+00:05:25.000 --> 00:05:27.700 align:middle line:90%
+
+
+00:05:27.700 --> 00:05:29.540 align:middle line:84%
+And the proposer
+is proposing how
+
+00:05:29.540 --> 00:05:34.202 align:middle line:84%
+to split the $3 between
+themselves and the other person.
+
+00:05:34.202 --> 00:05:35.660 align:middle line:84%
+But we're going to
+keep track of it
+
+00:05:35.660 --> 00:05:39.400 align:middle line:84%
+as thinking about the
+proposer, P1, makes an offer.
+
+00:05:39.400 --> 00:05:42.580 align:middle line:90%
+
+
+00:05:42.580 --> 00:05:44.540 align:middle line:84%
+So we'll think of
+the offer as what
+
+00:05:44.540 --> 00:05:46.860 align:middle line:90%
+they offer to the other person.
+
+00:05:46.860 --> 00:05:49.480 align:middle line:84%
+And that means that they will
+keep the remaining amount.
+
+00:05:49.480 --> 00:05:50.960 align:middle line:90%
+So there's two numbers going on.
+
+00:05:50.960 --> 00:05:53.245 align:middle line:84%
+But because the numbers
+always sum to $3,
+
+00:05:53.245 --> 00:05:55.370 align:middle line:84%
+we only have to keep track
+of one of those numbers.
+
+00:05:55.370 --> 00:05:57.078 align:middle line:84%
+And we'll keep track
+of the number, which
+
+00:05:57.078 --> 00:06:00.950 align:middle line:84%
+is the amount the
+responder would get.
+
+00:06:00.950 --> 00:06:03.670 align:middle line:84%
+And then the
+responder, player 2,
+
+00:06:03.670 --> 00:06:09.892 align:middle line:84%
+can either accept or
+reject this offer.
+
+00:06:09.892 --> 00:06:11.350 align:middle line:84%
+And as usual, we're
+going to assume
+
+00:06:11.350 --> 00:06:15.030 align:middle line:84%
+that people are risk neutral so
+that monetary payoffs coincide
+
+00:06:15.030 --> 00:06:16.050 align:middle line:90%
+with utilities.
+
+00:06:16.050 --> 00:06:20.710 align:middle line:90%
+
+
+00:06:20.710 --> 00:06:24.310 align:middle line:84%
+So let's try to represent this
+game in the extensive form.
+
+00:06:24.310 --> 00:06:26.790 align:middle line:90%
+So first, we have player 1.
+
+00:06:26.790 --> 00:06:29.288 align:middle line:84%
+And how much can they
+offer to player 2?
+
+00:06:29.288 --> 00:06:30.830 align:middle line:84%
+Well, we'll assume
+that they can only
+
+00:06:30.830 --> 00:06:33.110 align:middle line:84%
+make offers that are in
+even dollar amounts just
+
+00:06:33.110 --> 00:06:34.370 align:middle line:90%
+to make it a bit simpler.
+
+00:06:34.370 --> 00:06:37.410 align:middle line:84%
+So they can either
+offer 0, 1, 2, or 3.
+
+00:06:37.410 --> 00:06:44.750 align:middle line:90%
+
+
+00:06:44.750 --> 00:06:48.770 align:middle line:84%
+And each of these offers, it's
+then player 2's turn to move.
+
+00:06:48.770 --> 00:06:51.910 align:middle line:90%
+
+
+00:06:51.910 --> 00:06:55.070 align:middle line:84%
+Of course, these are all in
+separate information sets.
+
+00:06:55.070 --> 00:06:58.150 align:middle line:84%
+We have to remember that player
+2 observes the offer that
+
+00:06:58.150 --> 00:06:59.410 align:middle line:90%
+is made by player 1.
+
+00:06:59.410 --> 00:07:03.070 align:middle line:84%
+The responder observes the
+offer made by the proposer.
+
+00:07:03.070 --> 00:07:05.430 align:middle line:84%
+So they can distinguish
+these offers.
+
+00:07:05.430 --> 00:07:17.310 align:middle line:84%
+And then they choose accept or
+reject, which I'll call A/R.
+
+00:07:17.310 --> 00:07:19.390 align:middle line:84%
+And now let's make sure
+we get the payoffs right.
+
+00:07:19.390 --> 00:07:23.030 align:middle line:84%
+So whenever the second
+player rejects the offer,
+
+00:07:23.030 --> 00:07:25.803 align:middle line:84%
+no matter what the offer
+was, both players get 0.
+
+00:07:25.803 --> 00:07:26.970 align:middle line:90%
+That's the rule of the game.
+
+00:07:26.970 --> 00:07:29.190 align:middle line:84%
+If the offer is
+rejected, you both get 0.
+
+00:07:29.190 --> 00:07:35.990 align:middle line:84%
+So we're going to have 0,
+0; 0, 0; 0, 0; and 0, 0.
+
+00:07:35.990 --> 00:07:39.150 align:middle line:84%
+Now, if the offer is
+accepted, then the number
+
+00:07:39.150 --> 00:07:42.630 align:middle line:84%
+here is the offer that goes to
+player 2, which means player
+
+00:07:42.630 --> 00:07:45.310 align:middle line:90%
+1 gets the remainder of the $3.
+
+00:07:45.310 --> 00:07:48.530 align:middle line:84%
+So up here, it's
+going to be 3, 0.
+
+00:07:48.530 --> 00:07:51.600 align:middle line:84%
+The accepted offer is an
+offer of 0 to player 2,
+
+00:07:51.600 --> 00:07:53.880 align:middle line:90%
+and that means player 1 keeps 3.
+
+00:07:53.880 --> 00:07:56.440 align:middle line:90%
+Here, it's going to be 2, 1.
+
+00:07:56.440 --> 00:07:59.180 align:middle line:84%
+The offer is 1 to
+player 2 is accepted.
+
+00:07:59.180 --> 00:08:02.920 align:middle line:84%
+And that means the first
+player, the proposer, keeps 2.
+
+00:08:02.920 --> 00:08:06.000 align:middle line:90%
+Then we have 1, 2, and 0, 3.
+
+00:08:06.000 --> 00:08:10.680 align:middle line:90%
+
+
+00:08:10.680 --> 00:08:13.280 align:middle line:90%
+So here's the game.
+
+00:08:13.280 --> 00:08:22.280 align:middle line:84%
+And the first approach to
+analyzing this game is let's
+
+00:08:22.280 --> 00:08:26.040 align:middle line:84%
+think about how we can represent
+this game in strategic form.
+
+00:08:26.040 --> 00:08:27.940 align:middle line:90%
+So what is a strategy?
+
+00:08:27.940 --> 00:08:30.940 align:middle line:84%
+Let's write down what the
+strategies are for the players.
+
+00:08:30.940 --> 00:08:34.600 align:middle line:90%
+
+
+00:08:34.600 --> 00:08:37.620 align:middle line:84%
+What about for player
+1 and for player 2?
+
+00:08:37.620 --> 00:08:42.600 align:middle line:84%
+So for player 1, what is
+a strategy in this game?
+
+00:08:42.600 --> 00:08:44.780 align:middle line:90%
+Well, it's just an offer.
+
+00:08:44.780 --> 00:08:49.940 align:middle line:84%
+So for player 1, a strategy is
+an element of the set 0, 1, 2,
+
+00:08:49.940 --> 00:08:51.400 align:middle line:90%
+3.
+
+00:08:51.400 --> 00:08:53.880 align:middle line:84%
+They just choose, how much
+do they offer to player 2,
+
+00:08:53.880 --> 00:08:55.400 align:middle line:90%
+to the responder?
+
+00:08:55.400 --> 00:08:56.900 align:middle line:84%
+What about a strategy
+for player 2?
+
+00:08:56.900 --> 00:08:58.960 align:middle line:90%
+This is a little trickier.
+
+00:08:58.960 --> 00:09:00.960 align:middle line:84%
+How do we represent a
+strategy for player 2?
+
+00:09:00.960 --> 00:09:04.540 align:middle line:84%
+Or what kind of
+mathematical object is it?
+
+00:09:04.540 --> 00:09:05.040 align:middle line:90%
+Yeah?
+
+00:09:05.040 --> 00:09:06.000 align:middle line:90%
+AUDIENCE: [INAUDIBLE] people?
+
+00:09:06.000 --> 00:09:06.580 align:middle line:90%
+IAN BALL: Right.
+
+00:09:06.580 --> 00:09:08.372 align:middle line:84%
+So it's a function of
+four things, which we
+
+00:09:08.372 --> 00:09:09.860 align:middle line:90%
+can represent as a four-tuple.
+
+00:09:09.860 --> 00:09:10.960 align:middle line:84%
+Let's first write
+it as a function,
+
+00:09:10.960 --> 00:09:12.460 align:middle line:84%
+and then I'll
+represent it that way.
+
+00:09:12.460 --> 00:09:15.920 align:middle line:84%
+So it's a function that says, as
+a function of what you offer me,
+
+00:09:15.920 --> 00:09:18.600 align:middle line:84%
+I have to choose whether
+to accept that offer
+
+00:09:18.600 --> 00:09:19.780 align:middle line:90%
+or reject that offer.
+
+00:09:19.780 --> 00:09:21.780 align:middle line:84%
+And here we're looking
+at pure strategies.
+
+00:09:21.780 --> 00:09:29.720 align:middle line:84%
+So it's a function from 0, 1,
+2, 3 to either accept or reject.
+
+00:09:29.720 --> 00:09:31.720 align:middle line:84%
+And how are we going to
+represent that function?
+
+00:09:31.720 --> 00:09:35.520 align:middle line:84%
+As you suggested, the way we
+normally write down strategies
+
+00:09:35.520 --> 00:09:39.680 align:middle line:84%
+is we put one blank space
+for each of the information
+
+00:09:39.680 --> 00:09:41.640 align:middle line:90%
+sets of the player.
+
+00:09:41.640 --> 00:09:44.480 align:middle line:84%
+In this case, the player
+has four information sets
+
+00:09:44.480 --> 00:09:46.990 align:middle line:84%
+corresponding to the
+four possible offers.
+
+00:09:46.990 --> 00:09:50.570 align:middle line:90%
+So we have 0, 1, 2, 3.
+
+00:09:50.570 --> 00:09:54.490 align:middle line:84%
+And as an example, they might
+use a strategy like this.
+
+00:09:54.490 --> 00:09:57.070 align:middle line:84%
+And this would be a very common
+strategy to use in this game.
+
+00:09:57.070 --> 00:10:00.178 align:middle line:84%
+This would say, if you
+only offer me 0 or 1,
+
+00:10:00.178 --> 00:10:01.470 align:middle line:90%
+I'm going to be upset with you.
+
+00:10:01.470 --> 00:10:02.750 align:middle line:90%
+I'm going to find that unfair.
+
+00:10:02.750 --> 00:10:05.510 align:middle line:84%
+So I'm going to reject that
+offer and punish both of us.
+
+00:10:05.510 --> 00:10:09.570 align:middle line:84%
+If you give me 2 or
+3, I'm very happy,
+
+00:10:09.570 --> 00:10:11.080 align:middle line:84%
+and I'm going to
+accept that offer.
+
+00:10:11.080 --> 00:10:11.830 align:middle line:90%
+I think it's fair.
+
+00:10:11.830 --> 00:10:14.070 align:middle line:84%
+In fact, you've given me
+a majority of the pot,
+
+00:10:14.070 --> 00:10:17.250 align:middle line:84%
+so I'm very happy,
+and I'll accept it.
+
+00:10:17.250 --> 00:10:20.810 align:middle line:84%
+So now let's see if we can find
+a Nash equilibrium of this game
+
+00:10:20.810 --> 00:10:22.350 align:middle line:90%
+involving this strategy.
+
+00:10:22.350 --> 00:10:25.050 align:middle line:84%
+So remember, Nash equilibrium
+is a strategy profile.
+
+00:10:25.050 --> 00:10:27.410 align:middle line:90%
+I've specified one strategy.
+
+00:10:27.410 --> 00:10:30.090 align:middle line:84%
+Let's see-- can we find
+a strategy for player 1
+
+00:10:30.090 --> 00:10:32.183 align:middle line:84%
+that makes this into
+a Nash equilibrium?
+
+00:10:32.183 --> 00:10:33.350 align:middle line:90%
+So let's think this through.
+
+00:10:33.350 --> 00:10:36.170 align:middle line:84%
+If you were player 1, if
+you were the proposer,
+
+00:10:36.170 --> 00:10:39.410 align:middle line:84%
+and you expected or you
+believed that the responder was
+
+00:10:39.410 --> 00:10:41.210 align:middle line:84%
+going to play in
+this way, how much
+
+00:10:41.210 --> 00:10:45.490 align:middle line:90%
+would you offer the responder?
+
+00:10:45.490 --> 00:10:46.190 align:middle line:90%
+Yeah, over here?
+
+00:10:46.190 --> 00:10:46.690 align:middle line:90%
+AUDIENCE: 2.
+
+00:10:46.690 --> 00:10:48.210 align:middle line:90%
+IAN BALL: 2, great.
+
+00:10:48.210 --> 00:10:51.330 align:middle line:84%
+So we're going to have
+exactly S2 equals--
+
+00:10:51.330 --> 00:10:52.510 align:middle line:90%
+S1 equals 2.
+
+00:10:52.510 --> 00:10:53.465 align:middle line:90%
+That's confusing.
+
+00:10:53.465 --> 00:10:54.590 align:middle line:90%
+And explain your reasoning.
+
+00:10:54.590 --> 00:10:55.507 align:middle line:90%
+Why would you offer 2?
+
+00:10:55.507 --> 00:10:58.590 align:middle line:84%
+AUDIENCE: If you offer
+lower, both of you get 0.
+
+00:10:58.590 --> 00:11:00.430 align:middle line:84%
+If you offer more,
+then you get nothing.
+
+00:11:00.430 --> 00:11:02.590 align:middle line:90%
+So [INAUDIBLE].
+
+00:11:02.590 --> 00:11:03.690 align:middle line:90%
+IAN BALL: Great.
+
+00:11:03.690 --> 00:11:05.770 align:middle line:84%
+So another way of saying
+that-- exactly right--
+
+00:11:05.770 --> 00:11:10.050 align:middle line:84%
+is, I'm making the lowest
+offer that will be accepted.
+
+00:11:10.050 --> 00:11:12.370 align:middle line:84%
+I don't want to offer any
+less because there I'm
+
+00:11:12.370 --> 00:11:14.570 align:middle line:90%
+clearly doing--
+
+00:11:14.570 --> 00:11:17.170 align:middle line:84%
+if I offer them less,
+it gets rejected.
+
+00:11:17.170 --> 00:11:21.050 align:middle line:84%
+And if I offer them
+more, it would be--
+
+00:11:21.050 --> 00:11:24.090 align:middle line:84%
+it will be accepted, but
+it will be worse for me.
+
+00:11:24.090 --> 00:11:28.290 align:middle line:84%
+So just to keep track,
+let's say these offers--
+
+00:11:28.290 --> 00:11:32.730 align:middle line:84%
+these offers are
+better for the proposer
+
+00:11:32.730 --> 00:11:34.810 align:middle line:84%
+if they're accepted
+because I'm offering
+
+00:11:34.810 --> 00:11:37.510 align:middle line:84%
+less money to the respondent,
+but they're not accepted.
+
+00:11:37.510 --> 00:11:42.610 align:middle line:90%
+
+
+00:11:42.610 --> 00:11:44.240 align:middle line:84%
+So when I say better
+for the proposer,
+
+00:11:44.240 --> 00:11:46.440 align:middle line:84%
+I mean better for the
+proposer if they're accepted.
+
+00:11:46.440 --> 00:11:49.020 align:middle line:84%
+The problem with these
+is they're not accepted.
+
+00:11:49.020 --> 00:11:52.800 align:middle line:84%
+And then these higher offers
+are worse for the proposer.
+
+00:11:52.800 --> 00:11:56.380 align:middle line:90%
+
+
+00:11:56.380 --> 00:11:58.640 align:middle line:90%
+So I make the lowest offer.
+
+00:11:58.640 --> 00:12:02.020 align:middle line:84%
+That is the offer that's
+best for me if accepted.
+
+00:12:02.020 --> 00:12:04.860 align:middle line:84%
+And I find the lowest one that's
+actually going to be accepted.
+
+00:12:04.860 --> 00:12:08.040 align:middle line:84%
+So this indeed is going
+to be a Nash equilibrium.
+
+00:12:08.040 --> 00:12:10.860 align:middle line:90%
+
+
+00:12:10.860 --> 00:12:12.400 align:middle line:90%
+And let's check this formally.
+
+00:12:12.400 --> 00:12:17.420 align:middle line:84%
+Let's check that neither player
+has a profitable deviation.
+
+00:12:17.420 --> 00:12:23.660 align:middle line:84%
+If player 1 is offering 2,
+let's check that player 2 cannot
+
+00:12:23.660 --> 00:12:25.140 align:middle line:90%
+profitably deviate.
+
+00:12:25.140 --> 00:12:29.500 align:middle line:84%
+Well, if you're offering me 2,
+there's only two possibilities.
+
+00:12:29.500 --> 00:12:33.580 align:middle line:84%
+I accept the offer, and I
+get 2, or I reject the offer,
+
+00:12:33.580 --> 00:12:34.682 align:middle line:90%
+and I get 0.
+
+00:12:34.682 --> 00:12:36.140 align:middle line:84%
+So certainly I'm
+behaving optimally
+
+00:12:36.140 --> 00:12:38.905 align:middle line:90%
+by accepting the offer.
+
+00:12:38.905 --> 00:12:40.280 align:middle line:84%
+Now let's go the
+other direction.
+
+00:12:40.280 --> 00:12:41.863 align:middle line:84%
+This is what we just
+reasoned through.
+
+00:12:41.863 --> 00:12:44.820 align:middle line:84%
+Given that this is the way
+that player 2, the responder,
+
+00:12:44.820 --> 00:12:49.120 align:middle line:84%
+is playing, the best that player
+1 can possibly do is to offer 2,
+
+00:12:49.120 --> 00:12:53.180 align:middle line:84%
+and that means keep 1, because
+the only way they could
+
+00:12:53.180 --> 00:12:56.100 align:middle line:84%
+get more than 1 is if they
+made one of these offers
+
+00:12:56.100 --> 00:12:57.200 align:middle line:90%
+and it was accepted.
+
+00:12:57.200 --> 00:12:59.020 align:middle line:84%
+But that's impossible
+given the strategy
+
+00:12:59.020 --> 00:13:01.340 align:middle line:90%
+that the responder is using.
+
+00:13:01.340 --> 00:13:03.180 align:middle line:84%
+So we found one
+Nash equilibrium.
+
+00:13:03.180 --> 00:13:05.218 align:middle line:84%
+There's a lot of Nash
+equilibrium in this game.
+
+00:13:05.218 --> 00:13:07.260 align:middle line:84%
+But there's something
+about this Nash equilibrium
+
+00:13:07.260 --> 00:13:09.900 align:middle line:90%
+that seems wrong.
+
+00:13:09.900 --> 00:13:11.862 align:middle line:90%
+Or maybe it seems problematic.
+
+00:13:11.862 --> 00:13:14.320 align:middle line:84%
+So maybe I'll say, what's wrong
+with this Nash equilibrium?
+
+00:13:14.320 --> 00:13:21.460 align:middle line:90%
+
+
+00:13:21.460 --> 00:13:24.020 align:middle line:84%
+And this is exactly what
+we want to capture today.
+
+00:13:24.020 --> 00:13:26.960 align:middle line:84%
+So does anything
+feel off to you?
+
+00:13:26.960 --> 00:13:30.360 align:middle line:84%
+Does it feel like
+there's a problem here?
+
+00:13:30.360 --> 00:13:31.160 align:middle line:90%
+Yeah, in the front.
+
+00:13:31.160 --> 00:13:33.700 align:middle line:84%
+AUDIENCE: It seems like
+one person is always
+
+00:13:33.700 --> 00:13:34.520 align:middle line:90%
+beating the other.
+
+00:13:34.520 --> 00:13:37.780 align:middle line:84%
+IAN BALL: OK, so that's true,
+but some games are unfair.
+
+00:13:37.780 --> 00:13:39.035 align:middle line:90%
+So I think that's true.
+
+00:13:39.035 --> 00:13:40.160 align:middle line:90%
+Maybe you're getting at it.
+
+00:13:40.160 --> 00:13:42.130 align:middle line:84%
+But I would say let's add
+a little bit more to that.
+
+00:13:42.130 --> 00:13:44.090 align:middle line:84%
+Yeah, so it is true that one
+player is always doing better,
+
+00:13:44.090 --> 00:13:46.670 align:middle line:84%
+but I can certainly write down
+games where one player always
+
+00:13:46.670 --> 00:13:47.290 align:middle line:90%
+loses.
+
+00:13:47.290 --> 00:13:49.790 align:middle line:84%
+It doesn't necessarily mean
+they're playing irrationally.
+
+00:13:49.790 --> 00:13:50.850 align:middle line:90%
+Any other thoughts in the front?
+
+00:13:50.850 --> 00:13:51.190 align:middle line:90%
+Yeah?
+
+00:13:51.190 --> 00:13:52.790 align:middle line:84%
+AUDIENCE: The responders
+should [INAUDIBLE] someone
+
+00:13:52.790 --> 00:13:54.230 align:middle line:90%
+that's positive utility.
+
+00:13:54.230 --> 00:13:55.310 align:middle line:90%
+IAN BALL: Great.
+
+00:13:55.310 --> 00:13:59.330 align:middle line:84%
+So this information set
+seems a bit puzzling.
+
+00:13:59.330 --> 00:14:03.990 align:middle line:84%
+So this says, if I'm offered 1,
+there are two choices for me.
+
+00:14:03.990 --> 00:14:08.430 align:middle line:84%
+I either accept 1, and I get
+my $1, or I reject the offer,
+
+00:14:08.430 --> 00:14:10.150 align:middle line:90%
+and I get 0.
+
+00:14:10.150 --> 00:14:12.210 align:middle line:84%
+So it seems that in
+this contingency,
+
+00:14:12.210 --> 00:14:15.110 align:middle line:84%
+accepting is strictly
+better than rejecting.
+
+00:14:15.110 --> 00:14:19.250 align:middle line:84%
+And if you're not motivated by
+$1, let's call it $1 million.
+
+00:14:19.250 --> 00:14:21.390 align:middle line:84%
+Then it makes it clear,
+I might be unhappy
+
+00:14:21.390 --> 00:14:24.510 align:middle line:84%
+that you're only giving me 1
+million out of the 3 million.
+
+00:14:24.510 --> 00:14:28.910 align:middle line:84%
+But if my choice is take the 1
+million or reject it and get 0,
+
+00:14:28.910 --> 00:14:31.430 align:middle line:84%
+it seems like accepting
+is much better.
+
+00:14:31.430 --> 00:14:34.090 align:middle line:84%
+But why is this still consistent
+with Nash equilibrium?
+
+00:14:34.090 --> 00:14:35.110 align:middle line:90%
+So I agree with you.
+
+00:14:35.110 --> 00:14:38.190 align:middle line:84%
+It seems like clearly this
+is a-- we might call this
+
+00:14:38.190 --> 00:14:39.090 align:middle line:90%
+a "mistake."
+
+00:14:39.090 --> 00:14:41.870 align:middle line:90%
+
+
+00:14:41.870 --> 00:14:45.892 align:middle line:84%
+Or we might call
+this "suboptimal."
+
+00:14:45.892 --> 00:14:47.350 align:middle line:84%
+But I thought Nash
+equilibrium said
+
+00:14:47.350 --> 00:14:48.950 align:middle line:84%
+that players are playing
+optimal given the way
+
+00:14:48.950 --> 00:14:50.117 align:middle line:90%
+their opponents are playing.
+
+00:14:50.117 --> 00:14:51.130 align:middle line:90%
+So why is this allowed?
+
+00:14:51.130 --> 00:14:54.410 align:middle line:84%
+It is a Nash equilibrium, but
+someone's playing suboptimally.
+
+00:14:54.410 --> 00:14:57.610 align:middle line:90%
+So what's happening?
+
+00:14:57.610 --> 00:15:02.310 align:middle line:90%
+
+
+00:15:02.310 --> 00:15:02.870 align:middle line:90%
+Yeah?
+
+00:15:02.870 --> 00:15:04.510 align:middle line:84%
+AUDIENCE: Because we're
+basing it off of the belief
+
+00:15:04.510 --> 00:15:05.710 align:middle line:90%
+of how they're playing.
+
+00:15:05.710 --> 00:15:06.510 align:middle line:90%
+IAN BALL: Exactly.
+
+00:15:06.510 --> 00:15:11.870 align:middle line:84%
+So player 2 believes that player
+1 is making an offer of 2.
+
+00:15:11.870 --> 00:15:14.030 align:middle line:84%
+If I believe that player
+1 is making an offer of 2,
+
+00:15:14.030 --> 00:15:16.990 align:middle line:84%
+I'm never going to
+reach this contingency.
+
+00:15:16.990 --> 00:15:19.470 align:middle line:84%
+And because I'm never going
+to reach this contingency, how
+
+00:15:19.470 --> 00:15:22.710 align:middle line:84%
+I play this contingency
+doesn't affect my payoff given
+
+00:15:22.710 --> 00:15:24.670 align:middle line:84%
+the strategy of
+the other player.
+
+00:15:24.670 --> 00:15:28.910 align:middle line:84%
+So what we've identified is kind
+of a crucial issue with Nash
+
+00:15:28.910 --> 00:15:33.070 align:middle line:84%
+equilibrium, maybe a
+limitation of Nash equilibrium,
+
+00:15:33.070 --> 00:15:46.360 align:middle line:84%
+that Nash equilibrium does
+not require optimal play
+
+00:15:46.360 --> 00:15:48.220 align:middle line:90%
+at unreached contingencies.
+
+00:15:48.220 --> 00:15:50.880 align:middle line:90%
+
+
+00:15:50.880 --> 00:15:53.520 align:middle line:84%
+We could be a little
+more precise--
+
+00:15:53.520 --> 00:15:55.040 align:middle line:84%
+contingencies that
+are not reached
+
+00:15:55.040 --> 00:15:56.660 align:middle line:84%
+based on the play
+of the other player.
+
+00:15:56.660 --> 00:15:58.320 align:middle line:84%
+But I'll be a
+little vague here--
+
+00:15:58.320 --> 00:16:01.060 align:middle line:90%
+"at unreached contingencies."
+
+00:16:01.060 --> 00:16:08.160 align:middle line:90%
+
+
+00:16:08.160 --> 00:16:12.160 align:middle line:84%
+And if we want to dig a little
+deeper, when we analyze the Nash
+
+00:16:12.160 --> 00:16:14.880 align:middle line:84%
+equilibrium of this game,
+we converted this game
+
+00:16:14.880 --> 00:16:17.320 align:middle line:90%
+into a strategic form.
+
+00:16:17.320 --> 00:16:21.320 align:middle line:84%
+And we said, well,
+what player 2 does
+
+00:16:21.320 --> 00:16:25.000 align:middle line:84%
+is player 2 chooses a
+complete contingent plan.
+
+00:16:25.000 --> 00:16:28.400 align:middle line:84%
+They just say, if I'm
+offered 0, I'll reject.
+
+00:16:28.400 --> 00:16:30.260 align:middle line:90%
+If I'm offered 1, I'll reject.
+
+00:16:30.260 --> 00:16:31.540 align:middle line:90%
+If I'm offered 2, I'll accept.
+
+00:16:31.540 --> 00:16:33.120 align:middle line:84%
+And if I'm offered
+3, I'll accept.
+
+00:16:33.120 --> 00:16:37.000 align:middle line:84%
+And then they form beliefs about
+what player 1 is going to do.
+
+00:16:37.000 --> 00:16:46.480 align:middle line:84%
+So this reasoning of the
+complete contingent plan,
+
+00:16:46.480 --> 00:16:48.600 align:middle line:84%
+in some sense it's
+missing something.
+
+00:16:48.600 --> 00:16:51.480 align:middle line:84%
+If I think about the complete
+contingent plan approach,
+
+00:16:51.480 --> 00:16:56.320 align:middle line:84%
+it's missing the fact that a
+deviation might be observable.
+
+00:16:56.320 --> 00:17:08.740 align:middle line:84%
+So it doesn't capture the
+observability of deviations.
+
+00:17:08.740 --> 00:17:12.640 align:middle line:90%
+
+
+00:17:12.640 --> 00:17:13.819 align:middle line:90%
+What do I mean by that?
+
+00:17:13.819 --> 00:17:16.319 align:middle line:84%
+Well, the logic of
+Nash equilibrium
+
+00:17:16.319 --> 00:17:19.680 align:middle line:84%
+says, I have a belief
+that my opponent
+
+00:17:19.680 --> 00:17:21.378 align:middle line:90%
+is playing this strategy.
+
+00:17:21.378 --> 00:17:23.920 align:middle line:84%
+And given that belief, I'm going
+to choose my contingent plan
+
+00:17:23.920 --> 00:17:24.597 align:middle line:90%
+optimally.
+
+00:17:24.597 --> 00:17:25.180 align:middle line:90%
+And that's it.
+
+00:17:25.180 --> 00:17:28.400 align:middle line:84%
+I have my contingent plan,
+and then it gets executed.
+
+00:17:28.400 --> 00:17:31.320 align:middle line:84%
+But if player 1 is
+going to deviate,
+
+00:17:31.320 --> 00:17:34.000 align:middle line:84%
+well, I'm actually going to get
+to observe that because if they
+
+00:17:34.000 --> 00:17:36.770 align:middle line:90%
+offer me 1, I get to see that.
+
+00:17:36.770 --> 00:17:39.970 align:middle line:84%
+So what this strategic form
+reduction of the dynamic game
+
+00:17:39.970 --> 00:17:43.530 align:middle line:84%
+seems to be missing is the
+fact that if player 1 were
+
+00:17:43.530 --> 00:17:46.450 align:middle line:84%
+to deviate and
+play 1, well, now I
+
+00:17:46.450 --> 00:17:48.420 align:middle line:84%
+know that they're not
+playing 2 anymore.
+
+00:17:48.420 --> 00:17:50.170 align:middle line:84%
+But the complete
+contingent plan reasoning
+
+00:17:50.170 --> 00:17:53.590 align:middle line:84%
+tells me, well, my play,
+even at this contingency,
+
+00:17:53.590 --> 00:17:57.770 align:middle line:84%
+is governed by my belief that
+player 1 is always offering 2.
+
+00:17:57.770 --> 00:17:59.930 align:middle line:84%
+And it's ignoring the
+fact that if we actually
+
+00:17:59.930 --> 00:18:03.010 align:middle line:84%
+reach this contingency, I
+learn that my opponent has
+
+00:18:03.010 --> 00:18:05.370 align:middle line:84%
+deviated and is not playing
+according to my belief.
+
+00:18:05.370 --> 00:18:07.930 align:middle line:84%
+So the fact that information
+arrives over time
+
+00:18:07.930 --> 00:18:10.170 align:middle line:84%
+is totally missed by
+the strategic form
+
+00:18:10.170 --> 00:18:14.130 align:middle line:84%
+because the whole tree and
+the extensive form game
+
+00:18:14.130 --> 00:18:17.170 align:middle line:84%
+are missing from the
+strategic form representation.
+
+00:18:17.170 --> 00:18:18.610 align:middle line:84%
+And that's going
+to be what we're
+
+00:18:18.610 --> 00:18:22.050 align:middle line:84%
+going to try to study more
+formally and more rigorously
+
+00:18:22.050 --> 00:18:22.850 align:middle line:90%
+today.
+
+00:18:22.850 --> 00:18:26.690 align:middle line:84%
+So today, we're going
+to define something
+
+00:18:26.690 --> 00:18:28.510 align:middle line:90%
+called backward induction.
+
+00:18:28.510 --> 00:18:35.330 align:middle line:90%
+
+
+00:18:35.330 --> 00:18:37.570 align:middle line:84%
+And the basic idea is
+that backward induction
+
+00:18:37.570 --> 00:18:40.010 align:middle line:84%
+is going to require
+optimal play even
+
+00:18:40.010 --> 00:18:41.590 align:middle line:90%
+at unreached contingencies--
+
+00:18:41.590 --> 00:18:54.955 align:middle line:90%
+
+
+00:18:54.955 --> 00:18:56.830 align:middle line:84%
+obviously, at reached
+contingencies, as well.
+
+00:18:56.830 --> 00:18:59.530 align:middle line:84%
+But what's new about it is
+that it requires optimal play
+
+00:18:59.530 --> 00:19:01.190 align:middle line:90%
+at unreached contingencies.
+
+00:19:01.190 --> 00:19:06.715 align:middle line:90%
+
+
+00:19:06.715 --> 00:19:08.090 align:middle line:84%
+And I want to make
+one more point
+
+00:19:08.090 --> 00:19:09.770 align:middle line:84%
+about this, that what
+we're doing today
+
+00:19:09.770 --> 00:19:12.310 align:middle line:84%
+is going to depend crucially
+on the extensive form.
+
+00:19:12.310 --> 00:19:19.310 align:middle line:90%
+
+
+00:19:19.310 --> 00:19:21.410 align:middle line:84%
+So, so far our
+approach in the class
+
+00:19:21.410 --> 00:19:23.690 align:middle line:84%
+has been to start with
+the extensive form
+
+00:19:23.690 --> 00:19:26.170 align:middle line:84%
+to try to capture the
+application we're studying,
+
+00:19:26.170 --> 00:19:29.570 align:middle line:84%
+reduce it to the strategic form,
+and then do all our analysis
+
+00:19:29.570 --> 00:19:32.100 align:middle line:90%
+within the strategic form.
+
+00:19:32.100 --> 00:19:33.860 align:middle line:84%
+And so far what
+we looked at, Nash
+
+00:19:33.860 --> 00:19:36.420 align:middle line:84%
+equilibrium, these
+various solution concepts,
+
+00:19:36.420 --> 00:19:39.458 align:middle line:84%
+rationalizability-- only
+dependent on the strategic form.
+
+00:19:39.458 --> 00:19:41.500 align:middle line:84%
+But today, we're going to
+take the extensive form
+
+00:19:41.500 --> 00:19:42.247 align:middle line:90%
+more seriously.
+
+00:19:42.247 --> 00:19:44.580 align:middle line:84%
+And we're going to argue that
+something might be missing
+
+00:19:44.580 --> 00:19:48.940 align:middle line:84%
+when we reduce the extensive
+form to the strategic form.
+
+00:19:48.940 --> 00:19:51.940 align:middle line:84%
+So let's see how this
+algorithm works by looking
+
+00:19:51.940 --> 00:19:56.120 align:middle line:90%
+at another simple example.
+
+00:19:56.120 --> 00:19:58.380 align:middle line:84%
+Let's look at the
+Boston game again.
+
+00:19:58.380 --> 00:20:00.660 align:middle line:84%
+But in this case,
+the first player
+
+00:20:00.660 --> 00:20:04.740 align:middle line:84%
+chooses what sporting event to
+go, and that move is observed.
+
+00:20:04.740 --> 00:20:08.400 align:middle line:84%
+So the Boston game
+with observed moves.
+
+00:20:08.400 --> 00:20:11.980 align:middle line:90%
+
+
+00:20:11.980 --> 00:20:13.662 align:middle line:90%
+So what happens, we have--
+
+00:20:13.662 --> 00:20:15.620 align:middle line:84%
+maybe I'll draw it-- we
+can draw it either way.
+
+00:20:15.620 --> 00:20:16.620 align:middle line:90%
+I'll draw it up here.
+
+00:20:16.620 --> 00:20:20.300 align:middle line:84%
+We have player 1 first
+chooses to go to the Celtics
+
+00:20:20.300 --> 00:20:23.580 align:middle line:90%
+game or the Red Sox game.
+
+00:20:23.580 --> 00:20:28.300 align:middle line:84%
+And then player 2 observes
+whether player 1 has chosen
+
+00:20:28.300 --> 00:20:29.680 align:middle line:90%
+the Celtics or the Red Sox.
+
+00:20:29.680 --> 00:20:31.720 align:middle line:84%
+And then they choose
+Celtics or Red Sox.
+
+00:20:31.720 --> 00:20:37.380 align:middle line:90%
+
+
+00:20:37.380 --> 00:20:40.060 align:middle line:84%
+So the original version of
+this game that we studied
+
+00:20:40.060 --> 00:20:42.620 align:middle line:84%
+was a simultaneous-move
+version of this game.
+
+00:20:42.620 --> 00:20:44.560 align:middle line:84%
+And in the
+simultaneous-move version,
+
+00:20:44.560 --> 00:20:47.140 align:middle line:84%
+we would represent that
+by putting these two nodes
+
+00:20:47.140 --> 00:20:48.860 align:middle line:90%
+in the same information set.
+
+00:20:48.860 --> 00:20:51.940 align:middle line:84%
+Now we're studying a different
+version, where player 1's move
+
+00:20:51.940 --> 00:20:53.502 align:middle line:90%
+is observed by player 2.
+
+00:20:53.502 --> 00:20:54.960 align:middle line:84%
+And now let's
+remember our payoffs.
+
+00:20:54.960 --> 00:20:56.335 align:middle line:84%
+I think the
+convention we've used
+
+00:20:56.335 --> 00:20:59.420 align:middle line:84%
+is that player 1 prefers
+Celtics to Red Sox.
+
+00:20:59.420 --> 00:21:02.460 align:middle line:84%
+So if they both go to the
+Celtics game, it's 2 1.
+
+00:21:02.460 --> 00:21:06.620 align:middle line:84%
+If they both go to Red Sox,
+it's 1 2, and then 0 0, and 0 0.
+
+00:21:06.620 --> 00:21:09.860 align:middle line:84%
+So when I write extensive
+form games this way,
+
+00:21:09.860 --> 00:21:11.340 align:middle line:84%
+I'll put the first
+player's payoff
+
+00:21:11.340 --> 00:21:14.160 align:middle line:84%
+on top instead of to the left,
+but it has the same meaning.
+
+00:21:14.160 --> 00:21:17.640 align:middle line:84%
+Instead of going 0,
+comma 0, or 0, comma 1,
+
+00:21:17.640 --> 00:21:20.580 align:middle line:90%
+I'll just do 2 and then 1.
+
+00:21:20.580 --> 00:21:25.440 align:middle line:84%
+So first let's represent
+this game in strategic form.
+
+00:21:25.440 --> 00:21:31.070 align:middle line:90%
+
+
+00:21:31.070 --> 00:21:33.110 align:middle line:84%
+So we first have to
+understand the strategies
+
+00:21:33.110 --> 00:21:35.150 align:middle line:90%
+for the two players.
+
+00:21:35.150 --> 00:21:38.390 align:middle line:84%
+So player 1's strategy
+set is pretty simple.
+
+00:21:38.390 --> 00:21:40.530 align:middle line:84%
+They're just choosing
+Celtics or Red Sox.
+
+00:21:40.530 --> 00:21:45.767 align:middle line:84%
+So we just have C and R.
+But player 2's strategy set
+
+00:21:45.767 --> 00:21:46.850 align:middle line:90%
+is a bit more complicated.
+
+00:21:46.850 --> 00:21:51.510 align:middle line:84%
+Just like we had before, player
+2 has two information sets.
+
+00:21:51.510 --> 00:21:53.110 align:middle line:84%
+So their strategy
+should be a vector
+
+00:21:53.110 --> 00:21:56.390 align:middle line:84%
+with two components,
+one component saying
+
+00:21:56.390 --> 00:21:58.630 align:middle line:84%
+what they do here and
+one component saying
+
+00:21:58.630 --> 00:21:59.730 align:middle line:90%
+what they do here.
+
+00:21:59.730 --> 00:22:01.590 align:middle line:84%
+So we can write
+player 2's strategies
+
+00:22:01.590 --> 00:22:07.910 align:middle line:84%
+as CC, CR, RC, and
+RR, where the meaning
+
+00:22:07.910 --> 00:22:11.070 align:middle line:84%
+is that we've agreed that we're
+going to order our information
+
+00:22:11.070 --> 00:22:13.030 align:middle line:90%
+sets from left to right.
+
+00:22:13.030 --> 00:22:15.950 align:middle line:84%
+So the first letter
+says what player 2
+
+00:22:15.950 --> 00:22:18.910 align:middle line:90%
+does at this information set.
+
+00:22:18.910 --> 00:22:21.190 align:middle line:84%
+And the second letter
+says what player 2
+
+00:22:21.190 --> 00:22:24.430 align:middle line:90%
+does at this information set.
+
+00:22:24.430 --> 00:22:26.150 align:middle line:84%
+So now we've defined
+the strategies.
+
+00:22:26.150 --> 00:22:30.030 align:middle line:84%
+We now need to write
+out the extensive form--
+
+00:22:30.030 --> 00:22:31.950 align:middle line:90%
+sorry, the strategic form.
+
+00:22:31.950 --> 00:22:33.750 align:middle line:90%
+So we have CR.
+
+00:22:33.750 --> 00:22:39.410 align:middle line:90%
+And we have CC, CR, RC, RR.
+
+00:22:39.410 --> 00:22:42.910 align:middle line:90%
+
+
+00:22:42.910 --> 00:22:48.430 align:middle line:84%
+So now we want to fill
+in the payoffs here.
+
+00:22:48.430 --> 00:22:53.150 align:middle line:84%
+So if player 1 goes
+to the Celtics game,
+
+00:22:53.150 --> 00:22:55.010 align:middle line:84%
+when we're trying
+to compute payoffs,
+
+00:22:55.010 --> 00:22:58.150 align:middle line:84%
+what matters is the
+first entry of player 2's
+
+00:22:58.150 --> 00:23:00.950 align:middle line:84%
+strategy because the
+first entry of player 2's
+
+00:23:00.950 --> 00:23:04.470 align:middle line:84%
+strategy precisely
+says what player 2 does
+
+00:23:04.470 --> 00:23:08.310 align:middle line:84%
+after they observe that player
+1 goes to the Celtics game.
+
+00:23:08.310 --> 00:23:11.270 align:middle line:84%
+So under these two strategies,
+they go to the Celtics game,
+
+00:23:11.270 --> 00:23:11.990 align:middle line:90%
+as well.
+
+00:23:11.990 --> 00:23:17.110 align:middle line:84%
+And therefore the
+payoff is 2, 1; 2, 1.
+
+00:23:17.110 --> 00:23:19.030 align:middle line:84%
+Under either of
+these strategies,
+
+00:23:19.030 --> 00:23:20.990 align:middle line:84%
+player 1 goes to
+the Celtics game.
+
+00:23:20.990 --> 00:23:24.115 align:middle line:84%
+But player 2 responds by
+going to the Red Sox game.
+
+00:23:24.115 --> 00:23:25.490 align:middle line:84%
+They're not at
+the game together.
+
+00:23:25.490 --> 00:23:26.940 align:middle line:90%
+And they both get a payoff of 0.
+
+00:23:26.940 --> 00:23:32.560 align:middle line:90%
+
+
+00:23:32.560 --> 00:23:35.920 align:middle line:84%
+Now let's look at what happens
+if player 1 goes to the Red Sox
+
+00:23:35.920 --> 00:23:37.280 align:middle line:90%
+game.
+
+00:23:37.280 --> 00:23:39.680 align:middle line:84%
+Now it's the second
+component of the strategy
+
+00:23:39.680 --> 00:23:42.000 align:middle line:90%
+that determines the payoffs.
+
+00:23:42.000 --> 00:23:44.960 align:middle line:84%
+So when do we both go
+to the Red Sox game?
+
+00:23:44.960 --> 00:23:47.530 align:middle line:84%
+It's actually going to be
+under these two strategies
+
+00:23:47.530 --> 00:23:49.280 align:middle line:84%
+because these are the
+two strategies where
+
+00:23:49.280 --> 00:23:53.680 align:middle line:84%
+player 2 goes to the Red Sox
+game after player 1 does.
+
+00:23:53.680 --> 00:23:58.680 align:middle line:84%
+So we're going to
+have 1, 2, and 1, 2.
+
+00:23:58.680 --> 00:24:03.800 align:middle line:84%
+And then over here, we're
+going to have 0, 0 and 0, 0.
+
+00:24:03.800 --> 00:24:08.060 align:middle line:84%
+So let's now try to compute the
+Nash equilibria of this game.
+
+00:24:08.060 --> 00:24:11.000 align:middle line:84%
+We're going to use
+our standard trick--
+
+00:24:11.000 --> 00:24:13.000 align:middle line:90%
+fixing a strategy of player 2.
+
+00:24:13.000 --> 00:24:14.038 align:middle line:90%
+Oh, yes?
+
+00:24:14.038 --> 00:24:16.080 align:middle line:84%
+AUDIENCE: Could you clarify
+what the first letter
+
+00:24:16.080 --> 00:24:17.340 align:middle line:90%
+means [? in ?] players too?
+
+00:24:17.340 --> 00:24:18.465 align:middle line:90%
+IAN BALL: Yeah, absolutely.
+
+00:24:18.465 --> 00:24:23.520 align:middle line:84%
+So this means-- so let me
+call these information sets
+
+00:24:23.520 --> 00:24:31.080 align:middle line:90%
+maybe Ia and Ib.
+
+00:24:31.080 --> 00:24:33.182 align:middle line:90%
+This is the first--
+
+00:24:33.182 --> 00:24:35.640 align:middle line:84%
+I'll use a so we don't get
+confused with the first player--
+
+00:24:35.640 --> 00:24:37.880 align:middle line:84%
+the first information
+set of player 2.
+
+00:24:37.880 --> 00:24:40.600 align:middle line:84%
+And this is the second
+information set of player 2.
+
+00:24:40.600 --> 00:24:43.680 align:middle line:90%
+And this is what they do at Ia.
+
+00:24:43.680 --> 00:24:46.940 align:middle line:90%
+And this is what they do at Ib.
+
+00:24:46.940 --> 00:24:49.060 align:middle line:84%
+So in words-- let me
+use this strategy.
+
+00:24:49.060 --> 00:24:51.280 align:middle line:84%
+This is a better example
+since it's not constant.
+
+00:24:51.280 --> 00:24:53.543 align:middle line:84%
+At the first information
+set, I play C.
+
+00:24:53.543 --> 00:24:54.960 align:middle line:84%
+And at the second
+information set,
+
+00:24:54.960 --> 00:24:59.360 align:middle line:84%
+I play R. That's my
+complete contingent plan.
+
+00:24:59.360 --> 00:25:03.480 align:middle line:84%
+So now let's try to compute the
+Nash equilibria of this game.
+
+00:25:03.480 --> 00:25:06.720 align:middle line:84%
+So as usual, we're going to
+fix the strategy of player 2
+
+00:25:06.720 --> 00:25:08.640 align:middle line:84%
+and think about how
+well player 1 does
+
+00:25:08.640 --> 00:25:10.300 align:middle line:90%
+with their different strategies.
+
+00:25:10.300 --> 00:25:12.340 align:middle line:84%
+So given that
+player 2 does this,
+
+00:25:12.340 --> 00:25:16.360 align:middle line:84%
+player 1 is better off choosing
+C because 2 is greater than 0.
+
+00:25:16.360 --> 00:25:21.720 align:middle line:84%
+Given here, player 2
+is better off here.
+
+00:25:21.720 --> 00:25:23.490 align:middle line:90%
+Here, it doesn't matter.
+
+00:25:23.490 --> 00:25:25.890 align:middle line:90%
+And here, we go and get this.
+
+00:25:25.890 --> 00:25:27.690 align:middle line:84%
+So I'm just going
+column by column,
+
+00:25:27.690 --> 00:25:30.690 align:middle line:84%
+fixing player 2's strategy
+and computing player 1's best
+
+00:25:30.690 --> 00:25:32.808 align:middle line:90%
+response.
+
+00:25:32.808 --> 00:25:34.350 align:middle line:84%
+Now I'm going to do
+it the other way.
+
+00:25:34.350 --> 00:25:36.330 align:middle line:84%
+I'm going to fix
+player 1's strategy
+
+00:25:36.330 --> 00:25:38.590 align:middle line:84%
+and compute player
+2's best response.
+
+00:25:38.590 --> 00:25:43.950 align:middle line:84%
+So I'm going to
+get this and this.
+
+00:25:43.950 --> 00:25:47.930 align:middle line:90%
+
+
+00:25:47.930 --> 00:25:52.450 align:middle line:84%
+So here, I get three
+Nash equilibria.
+
+00:25:52.450 --> 00:25:55.890 align:middle line:84%
+Remember, Nash equilibrium
+can be visualized here
+
+00:25:55.890 --> 00:25:59.530 align:middle line:84%
+by looking for a cell that
+has both numbers underlined.
+
+00:25:59.530 --> 00:26:02.890 align:middle line:84%
+So we have three
+Nash equilibria.
+
+00:26:02.890 --> 00:26:04.470 align:middle line:84%
+Player 1 goes to
+the Celtics game.
+
+00:26:04.470 --> 00:26:07.250 align:middle line:84%
+And player 2 always
+goes to Celtics game.
+
+00:26:07.250 --> 00:26:08.950 align:middle line:84%
+Player 2 goes to
+the Red Sox game,
+
+00:26:08.950 --> 00:26:11.570 align:middle line:84%
+and player 2 always goes
+to the Red Sox game.
+
+00:26:11.570 --> 00:26:14.230 align:middle line:84%
+And then this one, where player
+2 goes to the Celtics game,
+
+00:26:14.230 --> 00:26:16.430 align:middle line:84%
+and what player 2 does
+depends on what they observe.
+
+00:26:16.430 --> 00:26:18.650 align:middle line:84%
+So they go to the Celtics game
+if player 1 goes to the Celtics
+
+00:26:18.650 --> 00:26:20.430 align:middle line:84%
+game, but they go
+to the Red Sox game
+
+00:26:20.430 --> 00:26:22.070 align:middle line:84%
+if player 2 goes to
+the Red Sox game.
+
+00:26:22.070 --> 00:26:23.810 align:middle line:84%
+So we have three
+Nash equilibria.
+
+00:26:23.810 --> 00:26:25.170 align:middle line:90%
+Which of these--
+
+00:26:25.170 --> 00:26:33.930 align:middle line:84%
+I'll write this-- which of these
+seems most compelling to you?
+
+00:26:33.930 --> 00:26:37.458 align:middle line:84%
+Which of these seems
+the most reasonable?
+
+00:26:37.458 --> 00:26:38.750 align:middle line:90%
+Or do they all seem reasonable?
+
+00:26:38.750 --> 00:26:39.870 align:middle line:84%
+Or do none of them
+seem reasonable?
+
+00:26:39.870 --> 00:26:40.990 align:middle line:90%
+I guess I gave it away.
+
+00:26:40.990 --> 00:26:41.490 align:middle line:90%
+Yeah?
+
+00:26:41.490 --> 00:26:44.450 align:middle line:90%
+AUDIENCE: [INAUDIBLE] C CR.
+
+00:26:44.450 --> 00:26:45.850 align:middle line:90%
+IAN BALL: OK, this one.
+
+00:26:45.850 --> 00:26:47.290 align:middle line:90%
+And tell me why.
+
+00:26:47.290 --> 00:26:51.090 align:middle line:84%
+AUDIENCE: I mean, you're getting
+some sort of payoff either way
+
+00:26:51.090 --> 00:26:53.310 align:middle line:84%
+or some positive
+payoff either way,
+
+00:26:53.310 --> 00:26:57.370 align:middle line:84%
+whereas the other ones
+[INAUDIBLE] always [INAUDIBLE]
+
+00:26:57.370 --> 00:27:00.003 align:middle line:84%
+the first player doesn't go to
+the Celtics game [INAUDIBLE].
+
+00:27:00.003 --> 00:27:00.670 align:middle line:90%
+IAN BALL: Right.
+
+00:27:00.670 --> 00:27:02.212 align:middle line:84%
+So I think what
+you're thinking about
+
+00:27:02.212 --> 00:27:05.570 align:middle line:84%
+is exactly, even at the
+contingency that's not reached,
+
+00:27:05.570 --> 00:27:08.810 align:middle line:84%
+this second player
+is doing pretty well.
+
+00:27:08.810 --> 00:27:13.690 align:middle line:84%
+So the issue, if we look at
+the first one or the last one,
+
+00:27:13.690 --> 00:27:17.930 align:middle line:84%
+it is a Nash equilibrium, but
+it involves player 2 playing
+
+00:27:17.930 --> 00:27:20.570 align:middle line:84%
+suboptimally at
+some contingency,
+
+00:27:20.570 --> 00:27:23.850 align:middle line:84%
+namely in this Nash
+equilibrium, player 2
+
+00:27:23.850 --> 00:27:25.410 align:middle line:84%
+goes to the Celtics
+game even when
+
+00:27:25.410 --> 00:27:28.010 align:middle line:84%
+they see that player 1 has
+chosen the Red Sox game.
+
+00:27:28.010 --> 00:27:30.310 align:middle line:84%
+That's suboptimal
+play because they'd
+
+00:27:30.310 --> 00:27:31.810 align:middle line:84%
+rather join them
+at the Red Sox game
+
+00:27:31.810 --> 00:27:35.210 align:middle line:84%
+than be all alone
+at the Celtics game.
+
+00:27:35.210 --> 00:27:37.870 align:middle line:84%
+And similarly, this
+strategy profile,
+
+00:27:37.870 --> 00:27:41.570 align:middle line:84%
+while it is a Nash equilibrium,
+involves suboptimal play
+
+00:27:41.570 --> 00:27:44.930 align:middle line:84%
+at the first contingency
+because player 2 observes
+
+00:27:44.930 --> 00:27:47.250 align:middle line:84%
+that player 1 has gone
+to the Celtics game,
+
+00:27:47.250 --> 00:27:49.950 align:middle line:84%
+and they've responded not by
+going to the Celtics game,
+
+00:27:49.950 --> 00:27:51.810 align:middle line:84%
+but by going to
+the Red Sox game.
+
+00:27:51.810 --> 00:27:54.730 align:middle line:84%
+So each of these
+involves suboptimal play
+
+00:27:54.730 --> 00:27:56.410 align:middle line:90%
+at unreached contingencies.
+
+00:27:56.410 --> 00:27:58.490 align:middle line:84%
+And it's only this
+Nash equilibrium
+
+00:27:58.490 --> 00:28:02.090 align:middle line:84%
+that seems to have this special
+property of optimal play
+
+00:28:02.090 --> 00:28:03.850 align:middle line:90%
+at every contingency.
+
+00:28:03.850 --> 00:28:08.090 align:middle line:84%
+So let's see how we could
+have tried to identify this.
+
+00:28:08.090 --> 00:28:09.970 align:middle line:84%
+What algorithm
+could we have used?
+
+00:28:09.970 --> 00:28:12.350 align:middle line:84%
+If I have colored
+chalk-- maybe not.
+
+00:28:12.350 --> 00:28:14.370 align:middle line:90%
+So I'll just highlight it.
+
+00:28:14.370 --> 00:28:16.590 align:middle line:84%
+Well, it's pretty intuitive
+to work backwards.
+
+00:28:16.590 --> 00:28:18.660 align:middle line:84%
+And I think this is how
+most people approach
+
+00:28:18.660 --> 00:28:20.860 align:middle line:90%
+problems like this.
+
+00:28:20.860 --> 00:28:22.800 align:middle line:84%
+Let's analyze this
+working backwards.
+
+00:28:22.800 --> 00:28:25.660 align:middle line:84%
+Let's start here at these
+last information sets
+
+00:28:25.660 --> 00:28:28.980 align:middle line:84%
+and say, how should
+player 2 behave optimally
+
+00:28:28.980 --> 00:28:30.797 align:middle line:84%
+if this information
+set is reached?
+
+00:28:30.797 --> 00:28:31.880 align:middle line:90%
+So we'll look at player 2.
+
+00:28:31.880 --> 00:28:34.860 align:middle line:84%
+We'll say, well, if we're here,
+we're certainly better off
+
+00:28:34.860 --> 00:28:36.700 align:middle line:90%
+getting 1 than 0.
+
+00:28:36.700 --> 00:28:41.540 align:middle line:84%
+So I'm going to
+choose this edge.
+
+00:28:41.540 --> 00:28:43.780 align:middle line:84%
+And then we'll come
+over here and say, if I
+
+00:28:43.780 --> 00:28:45.240 align:middle line:90%
+reach this information set--
+
+00:28:45.240 --> 00:28:46.560 align:middle line:90%
+I don't know if we'll reach it.
+
+00:28:46.560 --> 00:28:48.240 align:middle line:84%
+I don't know how
+player 1 is playing.
+
+00:28:48.240 --> 00:28:51.460 align:middle line:84%
+But let's suppose that we
+get to this contingency.
+
+00:28:51.460 --> 00:28:54.420 align:middle line:90%
+Well, if I choose C, I get 0.
+
+00:28:54.420 --> 00:28:56.060 align:middle line:90%
+If I choose R, I get 2.
+
+00:28:56.060 --> 00:28:59.020 align:middle line:90%
+So R is better.
+
+00:28:59.020 --> 00:29:01.780 align:middle line:84%
+And then we can work our
+way up a step further.
+
+00:29:01.780 --> 00:29:04.020 align:middle line:84%
+And now we can say, well,
+suppose I'm player 1
+
+00:29:04.020 --> 00:29:05.700 align:middle line:90%
+and I'm choosing how to play.
+
+00:29:05.700 --> 00:29:09.060 align:middle line:84%
+I'm anticipating how
+player 2 is going to play
+
+00:29:09.060 --> 00:29:10.900 align:middle line:90%
+at each of these contingencies.
+
+00:29:10.900 --> 00:29:14.100 align:middle line:84%
+So if I choose C, I
+anticipate we'll go down here,
+
+00:29:14.100 --> 00:29:15.980 align:middle line:90%
+and I'll get a payoff of 2.
+
+00:29:15.980 --> 00:29:19.300 align:middle line:84%
+And if I choose R, I anticipate
+player 2 will do this,
+
+00:29:19.300 --> 00:29:21.300 align:middle line:90%
+and I'll get a payoff of 1.
+
+00:29:21.300 --> 00:29:25.220 align:middle line:84%
+2 is higher than
+1, so I'll go here.
+
+00:29:25.220 --> 00:29:28.540 align:middle line:84%
+And sure enough, we've exactly
+identified this special Nash
+
+00:29:28.540 --> 00:29:30.140 align:middle line:90%
+equilibrium.
+
+00:29:30.140 --> 00:29:31.620 align:middle line:84%
+When you apply this
+procedure, it's
+
+00:29:31.620 --> 00:29:33.980 align:middle line:84%
+very tempting to then--
+you follow the path down
+
+00:29:33.980 --> 00:29:36.740 align:middle line:84%
+and you say, ah,
+2 1 is the answer.
+
+00:29:36.740 --> 00:29:38.820 align:middle line:90%
+But no, 2 1 is just the payoff.
+
+00:29:38.820 --> 00:29:41.440 align:middle line:84%
+The answer that you're looking
+for is a strategy profile.
+
+00:29:41.440 --> 00:29:44.620 align:middle line:84%
+The strategy profile
+is player 1 plays C,
+
+00:29:44.620 --> 00:29:47.340 align:middle line:84%
+and player 2 makes
+a contingent plan
+
+00:29:47.340 --> 00:29:50.500 align:middle line:84%
+to play C at this information
+set and R at this information
+
+00:29:50.500 --> 00:29:51.000 align:middle line:90%
+set.
+
+00:29:51.000 --> 00:30:02.900 align:middle line:90%
+
+
+00:30:02.900 --> 00:30:05.440 align:middle line:84%
+So now let's formalize
+this procedure.
+
+00:30:05.440 --> 00:30:05.940 align:middle line:90%
+Yes?
+
+00:30:05.940 --> 00:30:08.460 align:middle line:84%
+AUDIENCE: Since this is
+an [INAUDIBLE] version
+
+00:30:08.460 --> 00:30:11.300 align:middle line:84%
+of the [INAUDIBLE] game,
+then would players here
+
+00:30:11.300 --> 00:30:16.150 align:middle line:84%
+have no reason to choose the 0
+0 payoffs in order to convince
+
+00:30:16.150 --> 00:30:18.690 align:middle line:90%
+player 1 to switch strategies?
+
+00:30:18.690 --> 00:30:22.630 align:middle line:84%
+Or is that only in the
+game where they don't
+
+00:30:22.630 --> 00:30:24.210 align:middle line:90%
+know each other's choices?
+
+00:30:24.210 --> 00:30:27.430 align:middle line:84%
+IAN BALL: Wait, so maybe
+what you're getting at
+
+00:30:27.430 --> 00:30:31.390 align:middle line:84%
+is, let's look at player 1's
+payoffs in these equilibria.
+
+00:30:31.390 --> 00:30:34.190 align:middle line:84%
+So we have this
+equilibrium, 2, 1,
+
+00:30:34.190 --> 00:30:37.710 align:middle line:84%
+that gives-- it's an equilibrium
+that gives the payoffs 2 and 1.
+
+00:30:37.710 --> 00:30:39.550 align:middle line:84%
+And we have another
+Nash equilibrium
+
+00:30:39.550 --> 00:30:41.550 align:middle line:90%
+that gives the payoffs 1, 2.
+
+00:30:41.550 --> 00:30:43.910 align:middle line:84%
+So you might say,
+if you're player 2,
+
+00:30:43.910 --> 00:30:46.350 align:middle line:84%
+you do better in
+this equilibrium
+
+00:30:46.350 --> 00:30:48.190 align:middle line:90%
+than this equilibrium.
+
+00:30:48.190 --> 00:30:51.430 align:middle line:84%
+And indeed, this gets
+at a central issue,
+
+00:30:51.430 --> 00:30:56.750 align:middle line:84%
+another way of thinking about
+backward induction, that how--
+
+00:30:56.750 --> 00:31:00.383 align:middle line:84%
+let's suppose I'm player 2 and I
+want to get to this equilibrium.
+
+00:31:00.383 --> 00:31:01.050 align:middle line:90%
+What would I do?
+
+00:31:01.050 --> 00:31:03.350 align:middle line:84%
+Maybe I would say
+something like, look,
+
+00:31:03.350 --> 00:31:05.210 align:middle line:84%
+I'm always going to go
+to the Red Sox game.
+
+00:31:05.210 --> 00:31:06.390 align:middle line:90%
+That's just who I am.
+
+00:31:06.390 --> 00:31:09.550 align:middle line:84%
+Whatever I see you do, I'm
+going to go to the Red Sox game.
+
+00:31:09.550 --> 00:31:12.590 align:middle line:84%
+And it's almost like a threat
+because the way I punish you
+
+00:31:12.590 --> 00:31:14.610 align:middle line:84%
+is by just saying, I'm
+going to the Red Sox game
+
+00:31:14.610 --> 00:31:16.590 align:middle line:90%
+whatever you do.
+
+00:31:16.590 --> 00:31:18.830 align:middle line:84%
+The issue is that
+another way of saying it
+
+00:31:18.830 --> 00:31:21.370 align:middle line:84%
+is that this involves
+a non-credible threat.
+
+00:31:21.370 --> 00:31:25.670 align:middle line:90%
+
+
+00:31:25.670 --> 00:31:27.790 align:middle line:84%
+So let's understand,
+why might player 2
+
+00:31:27.790 --> 00:31:28.950 align:middle line:90%
+want to make this threat?
+
+00:31:28.950 --> 00:31:32.470 align:middle line:84%
+It would be great for player
+2 if player 1 believes
+
+00:31:32.470 --> 00:31:34.910 align:middle line:84%
+that player 2 is always going
+to go to the Red Sox game
+
+00:31:34.910 --> 00:31:36.565 align:middle line:84%
+because player 2
+loves the Red Sox.
+
+00:31:36.565 --> 00:31:39.190 align:middle line:84%
+They love player one to believe
+that because then player 1 will
+
+00:31:39.190 --> 00:31:40.710 align:middle line:90%
+choose the Red Sox themselves.
+
+00:31:40.710 --> 00:31:42.750 align:middle line:84%
+The problem is if player
+1 thinks it through,
+
+00:31:42.750 --> 00:31:44.250 align:middle line:84%
+they're going to
+say, wait a second,
+
+00:31:44.250 --> 00:31:47.390 align:middle line:84%
+you're threatening to go to
+the Red Sox game whatever I do.
+
+00:31:47.390 --> 00:31:49.710 align:middle line:84%
+But if I actually go
+to the Celtics game,
+
+00:31:49.710 --> 00:31:52.510 align:middle line:84%
+are you really going to find
+it optimal to follow through
+
+00:31:52.510 --> 00:31:53.372 align:middle line:90%
+on that threat?
+
+00:31:53.372 --> 00:31:54.830 align:middle line:84%
+And the answer is
+no, because given
+
+00:31:54.830 --> 00:31:56.288 align:middle line:84%
+that I'm going to
+the Celtics game,
+
+00:31:56.288 --> 00:31:58.510 align:middle line:84%
+you'd rather go to the
+Celtics than go alone.
+
+00:31:58.510 --> 00:32:01.430 align:middle line:84%
+So one other way of thinking
+about backward induction
+
+00:32:01.430 --> 00:32:03.910 align:middle line:84%
+is that it's a principled
+way of ruling out
+
+00:32:03.910 --> 00:32:06.750 align:middle line:84%
+equilibria that involve
+non-credible threats
+
+00:32:06.750 --> 00:32:08.530 align:middle line:84%
+at contingencies
+that are not reached.
+
+00:32:08.530 --> 00:32:09.290 align:middle line:90%
+Great question.
+
+00:32:09.290 --> 00:32:11.450 align:middle line:84%
+Yeah, any other
+questions on this?
+
+00:32:11.450 --> 00:32:11.950 align:middle line:90%
+Yes?
+
+00:32:11.950 --> 00:32:14.440 align:middle line:84%
+AUDIENCE: Then would
+you say offering 1
+
+00:32:14.440 --> 00:32:17.100 align:middle line:84%
+to a person then rejecting
+it is a non-credible threat?
+
+00:32:17.100 --> 00:32:18.560 align:middle line:90%
+IAN BALL: Yes.
+
+00:32:18.560 --> 00:32:22.280 align:middle line:84%
+So similarly, this was
+a Nash equilibrium that
+
+00:32:22.280 --> 00:32:24.600 align:middle line:84%
+involves a non-credible
+threat, and therefore it's
+
+00:32:24.600 --> 00:32:28.660 align:middle line:84%
+a Nash equilibrium, but it will
+not satisfy backward induction.
+
+00:32:28.660 --> 00:32:31.420 align:middle line:84%
+So in both of these cases--
+these are very symmetric.
+
+00:32:31.420 --> 00:32:34.360 align:middle line:84%
+In both cases, we have
+many Nash equilibria.
+
+00:32:34.360 --> 00:32:37.240 align:middle line:84%
+But some of the Nash equilibria
+involve non-credible threats.
+
+00:32:37.240 --> 00:32:39.240 align:middle line:84%
+And we're going to introduce
+an algorithm called
+
+00:32:39.240 --> 00:32:42.605 align:middle line:84%
+backward induction that will
+rule out those equilibria.
+
+00:32:42.605 --> 00:32:44.480 align:middle line:84%
+But I think the point
+that could be confusing
+
+00:32:44.480 --> 00:32:47.120 align:middle line:84%
+is even though I'm saying
+this is not credible,
+
+00:32:47.120 --> 00:32:48.800 align:middle line:90%
+it's still an equilibrium.
+
+00:32:48.800 --> 00:32:50.720 align:middle line:84%
+And similarly over
+here, this was exactly
+
+00:32:50.720 --> 00:32:52.360 align:middle line:84%
+a non-credible threat,
+but it was still
+
+00:32:52.360 --> 00:32:53.760 align:middle line:90%
+part of an equilibrium.
+
+00:32:53.760 --> 00:32:56.160 align:middle line:90%
+Yeah.
+
+00:32:56.160 --> 00:32:57.020 align:middle line:90%
+Any other questions?
+
+00:32:57.020 --> 00:32:58.800 align:middle line:90%
+This is great.
+
+00:32:58.800 --> 00:33:02.640 align:middle line:84%
+OK, so now let's be
+a bit more formal
+
+00:33:02.640 --> 00:33:06.240 align:middle line:84%
+or just say what
+our algorithm is.
+
+00:33:06.240 --> 00:33:09.340 align:middle line:84%
+So this is-- we'll call this the
+backward induction algorithm.
+
+00:33:09.340 --> 00:33:19.160 align:middle line:90%
+
+
+00:33:19.160 --> 00:33:20.680 align:middle line:90%
+So we already did it here.
+
+00:33:20.680 --> 00:33:22.180 align:middle line:84%
+The algorithm is
+you work backwards.
+
+00:33:22.180 --> 00:33:23.940 align:middle line:90%
+But let's say what that means.
+
+00:33:23.940 --> 00:33:27.520 align:middle line:84%
+Well, first, what's the
+input to the algorithm?
+
+00:33:27.520 --> 00:33:30.680 align:middle line:84%
+And formally, the
+input to the algorithm
+
+00:33:30.680 --> 00:33:34.860 align:middle line:90%
+is a finite extensive-form game.
+
+00:33:34.860 --> 00:33:42.440 align:middle line:90%
+
+
+00:33:42.440 --> 00:33:45.120 align:middle line:84%
+Really, the important
+aspect of finiteness
+
+00:33:45.120 --> 00:33:49.320 align:middle line:84%
+is that the players alternate
+moves only finitely many times.
+
+00:33:49.320 --> 00:33:51.720 align:middle line:84%
+If one player at
+some node can choose
+
+00:33:51.720 --> 00:33:55.480 align:middle line:84%
+among infinitely many
+moves, like choosing
+
+00:33:55.480 --> 00:33:58.220 align:middle line:84%
+a number between 0 and 100,
+it's still going to be OK.
+
+00:33:58.220 --> 00:34:00.360 align:middle line:84%
+But to be extra
+careful, we'll only--
+
+00:34:00.360 --> 00:34:03.460 align:middle line:84%
+we'll formally define the
+algorithm for finite games.
+
+00:34:03.460 --> 00:34:05.160 align:middle line:84%
+But we will be a bit
+informal and then
+
+00:34:05.160 --> 00:34:08.320 align:middle line:84%
+apply it to some infinite games
+where it won't create problems.
+
+00:34:08.320 --> 00:34:11.969 align:middle line:84%
+The other important aspect is
+it's an extensive-form game.
+
+00:34:11.969 --> 00:34:15.330 align:middle line:84%
+The whole point of this is that
+this algorithm is faithfully
+
+00:34:15.330 --> 00:34:17.042 align:middle line:84%
+capturing the
+dynamics of the game,
+
+00:34:17.042 --> 00:34:19.250 align:middle line:84%
+and we wouldn't be able to
+observe that if we started
+
+00:34:19.250 --> 00:34:20.690 align:middle line:90%
+with a strategic-form game.
+
+00:34:20.690 --> 00:34:23.810 align:middle line:84%
+So notice this is fundamentally
+different from Nash equilibrium.
+
+00:34:23.810 --> 00:34:26.449 align:middle line:84%
+When we define Nash
+equilibrium, our starting point
+
+00:34:26.449 --> 00:34:29.050 align:middle line:90%
+was a given strategic-form game.
+
+00:34:29.050 --> 00:34:32.250 align:middle line:84%
+Here, our starting point
+is an extensive-form game.
+
+00:34:32.250 --> 00:34:33.929 align:middle line:84%
+And the other final
+thing that we need
+
+00:34:33.929 --> 00:34:36.830 align:middle line:84%
+is this is a game with
+perfect information.
+
+00:34:36.830 --> 00:34:43.650 align:middle line:90%
+
+
+00:34:43.650 --> 00:34:45.770 align:middle line:84%
+What do I mean by
+perfect information?
+
+00:34:45.770 --> 00:34:48.949 align:middle line:84%
+I mean every information
+set is a singleton.
+
+00:34:48.949 --> 00:35:01.970 align:middle line:90%
+
+
+00:35:01.970 --> 00:35:04.510 align:middle line:84%
+And as long as information
+sets are singletons,
+
+00:35:04.510 --> 00:35:07.170 align:middle line:84%
+you could even have moves
+by nature, that's OK,
+
+00:35:07.170 --> 00:35:09.770 align:middle line:84%
+but only moves by nature
+that everyone gets to see.
+
+00:35:09.770 --> 00:35:11.938 align:middle line:84%
+So poker, where you
+have a private hand,
+
+00:35:11.938 --> 00:35:13.730 align:middle line:84%
+that's not going to be
+perfect information.
+
+00:35:13.730 --> 00:35:16.850 align:middle line:84%
+But if nature flipped a
+coin and everyone saw that,
+
+00:35:16.850 --> 00:35:20.050 align:middle line:90%
+that would be OK.
+
+00:35:20.050 --> 00:35:22.530 align:middle line:90%
+Can you see what would go wrong?
+
+00:35:22.530 --> 00:35:26.230 align:middle line:84%
+Let's say these two nodes were
+in the same information set
+
+00:35:26.230 --> 00:35:28.570 align:middle line:84%
+and we tried to perform
+the same procedure.
+
+00:35:28.570 --> 00:35:29.670 align:middle line:90%
+What would go wrong?
+
+00:35:29.670 --> 00:35:33.530 align:middle line:90%
+
+
+00:35:33.530 --> 00:35:35.810 align:middle line:84%
+Well, if we were at
+this information set
+
+00:35:35.810 --> 00:35:37.650 align:middle line:84%
+and we tried to say
+how should player
+
+00:35:37.650 --> 00:35:39.310 align:middle line:84%
+2 play at this
+information set, we
+
+00:35:39.310 --> 00:35:40.810 align:middle line:84%
+wouldn't know how
+to play because it
+
+00:35:40.810 --> 00:35:43.018 align:middle line:84%
+would depend on which of
+the nodes in the information
+
+00:35:43.018 --> 00:35:43.710 align:middle line:90%
+set we were at.
+
+00:35:43.710 --> 00:35:45.210 align:middle line:84%
+And later in the
+course, we'll think
+
+00:35:45.210 --> 00:35:46.905 align:middle line:90%
+about how to approach that.
+
+00:35:46.905 --> 00:35:49.030 align:middle line:84%
+But for now, our algorithm--
+"later in the course,"
+
+00:35:49.030 --> 00:35:50.570 align:middle line:90%
+just in two days--
+
+00:35:50.570 --> 00:35:52.930 align:middle line:84%
+but for now, we're only
+going to apply this
+
+00:35:52.930 --> 00:35:56.088 align:middle line:84%
+to games of perfect information
+so that, at any node we get to,
+
+00:35:56.088 --> 00:35:58.130 align:middle line:84%
+we know that we're at that
+node, and therefore we
+
+00:35:58.130 --> 00:35:59.590 align:middle line:90%
+can compute the optimal play.
+
+00:35:59.590 --> 00:36:01.788 align:middle line:84%
+If we had a non-singleton
+information set
+
+00:36:01.788 --> 00:36:04.330 align:middle line:84%
+and we don't know which node
+we're at within that information
+
+00:36:04.330 --> 00:36:08.500 align:middle line:84%
+set, it's not clear
+what optimal play is.
+
+00:36:08.500 --> 00:36:10.700 align:middle line:90%
+So this is our input.
+
+00:36:10.700 --> 00:36:12.000 align:middle line:90%
+And what is our output?
+
+00:36:12.000 --> 00:36:14.700 align:middle line:90%
+
+
+00:36:14.700 --> 00:36:16.860 align:middle line:84%
+We have to keep in mind
+that the output is always
+
+00:36:16.860 --> 00:36:18.120 align:middle line:90%
+a strategy profile.
+
+00:36:18.120 --> 00:36:22.940 align:middle line:90%
+
+
+00:36:22.940 --> 00:36:24.280 align:middle line:90%
+It's not a pair of payoffs.
+
+00:36:24.280 --> 00:36:25.640 align:middle line:90%
+It's the full strategy profile.
+
+00:36:25.640 --> 00:36:27.500 align:middle line:84%
+And this is the most
+common mistake I see.
+
+00:36:27.500 --> 00:36:29.800 align:middle line:84%
+People just list the
+payoffs they get at the end.
+
+00:36:29.800 --> 00:36:31.920 align:middle line:84%
+They follow the paths
+down, and they say 2 1.
+
+00:36:31.920 --> 00:36:36.100 align:middle line:84%
+But you really have to specify
+the full strategy profile.
+
+00:36:36.100 --> 00:36:38.720 align:middle line:84%
+Now, I could formally define
+what the algorithm is,
+
+00:36:38.720 --> 00:36:40.270 align:middle line:84%
+but I think you
+see how it works.
+
+00:36:40.270 --> 00:36:42.020 align:middle line:84%
+I can introduce all
+this notation and say,
+
+00:36:42.020 --> 00:36:43.900 align:middle line:84%
+you start at the end,
+and you play optimally,
+
+00:36:43.900 --> 00:36:45.233 align:middle line:90%
+and you work your way backwards.
+
+00:36:45.233 --> 00:36:47.560 align:middle line:84%
+But I think it's just easier
+to say, you see how it is.
+
+00:36:47.560 --> 00:36:50.520 align:middle line:84%
+But let me talk about a few
+properties of this algorithm.
+
+00:36:50.520 --> 00:36:54.460 align:middle line:84%
+So the output is not just
+any strategy profile.
+
+00:36:54.460 --> 00:36:57.700 align:middle line:84%
+A first observation is
+that it is a pure strategy
+
+00:36:57.700 --> 00:37:04.880 align:middle line:84%
+profile because, at each point,
+we just choose one action.
+
+00:37:04.880 --> 00:37:06.540 align:middle line:90%
+We don't need any mixing.
+
+00:37:06.540 --> 00:37:10.000 align:middle line:84%
+Now, if the player were
+indifferent at some point,
+
+00:37:10.000 --> 00:37:11.280 align:middle line:90%
+you might have two choices.
+
+00:37:11.280 --> 00:37:13.420 align:middle line:84%
+There might be two ways
+they could play optimally.
+
+00:37:13.420 --> 00:37:15.980 align:middle line:84%
+And in that case, just
+choose one arbitrarily.
+
+00:37:15.980 --> 00:37:18.800 align:middle line:84%
+So always break ties
+yourself because, at the end,
+
+00:37:18.800 --> 00:37:21.100 align:middle line:84%
+we always want to
+get a pure strategy
+
+00:37:21.100 --> 00:37:23.220 align:middle line:90%
+equilibrium when we apply this.
+
+00:37:23.220 --> 00:37:27.060 align:middle line:84%
+And that kind of indicates
+another property of this, that,
+
+00:37:27.060 --> 00:37:32.620 align:middle line:84%
+in fact, the output
+is going to be unique
+
+00:37:32.620 --> 00:37:34.080 align:middle line:90%
+as long as there are no ties.
+
+00:37:34.080 --> 00:37:39.220 align:middle line:90%
+
+
+00:37:39.220 --> 00:37:42.700 align:middle line:84%
+So as long as we never get to
+a point where there's a tie,
+
+00:37:42.700 --> 00:37:44.960 align:middle line:84%
+we never have any
+flexibility in what we do.
+
+00:37:44.960 --> 00:37:46.700 align:middle line:84%
+So when we work
+backwards, we're always
+
+00:37:46.700 --> 00:37:49.648 align:middle line:84%
+going to have a
+unique edge to choose.
+
+00:37:49.648 --> 00:37:51.440 align:middle line:84%
+There's never going to
+be multiple choices.
+
+00:37:51.440 --> 00:37:54.620 align:middle line:90%
+
+
+00:37:54.620 --> 00:37:57.200 align:middle line:84%
+And this isn't just going
+to be any strategy profile.
+
+00:37:57.200 --> 00:37:59.180 align:middle line:84%
+This is also going to
+be a Nash equilibrium.
+
+00:37:59.180 --> 00:38:08.030 align:middle line:90%
+
+
+00:38:08.030 --> 00:38:11.910 align:middle line:90%
+So what does this algorithm do?
+
+00:38:11.910 --> 00:38:16.790 align:middle line:84%
+It gives us a pure-strategy
+Nash equilibrium.
+
+00:38:16.790 --> 00:38:19.550 align:middle line:84%
+And unless there
+are ties, it always
+
+00:38:19.550 --> 00:38:22.030 align:middle line:84%
+gives us the same
+pure-strategy Nash equilibrium.
+
+00:38:22.030 --> 00:38:25.210 align:middle line:84%
+But let's keep in
+mind a warning.
+
+00:38:25.210 --> 00:38:27.830 align:middle line:90%
+
+
+00:38:27.830 --> 00:38:33.170 align:middle line:84%
+As we already saw, there may
+be other Nash equilibria.
+
+00:38:33.170 --> 00:38:38.750 align:middle line:90%
+
+
+00:38:38.750 --> 00:38:40.990 align:middle line:84%
+So it's true that the
+output of this algorithm
+
+00:38:40.990 --> 00:38:44.490 align:middle line:84%
+is a Nash equilibrium, but it's
+a very special Nash equilibrium.
+
+00:38:44.490 --> 00:38:47.510 align:middle line:84%
+And it's possible that there are
+other Nash equilibria that would
+
+00:38:47.510 --> 00:38:50.390 align:middle line:84%
+not-- that cannot be
+outputs of this algorithm.
+
+00:38:50.390 --> 00:38:52.390 align:middle line:84%
+And those would be
+the Nash equilibria
+
+00:38:52.390 --> 00:38:54.470 align:middle line:84%
+that involve
+non-credible threats,
+
+00:38:54.470 --> 00:38:56.970 align:middle line:90%
+as we've identified previously.
+
+00:38:56.970 --> 00:39:08.030 align:middle line:90%
+
+
+00:39:08.030 --> 00:39:11.630 align:middle line:84%
+Now, I think one
+nice implication
+
+00:39:11.630 --> 00:39:18.010 align:middle line:84%
+of this that we shouldn't
+forget is that, recall--
+
+00:39:18.010 --> 00:39:20.790 align:middle line:90%
+
+
+00:39:20.790 --> 00:39:26.550 align:middle line:84%
+recall that some of the
+strategic-form games
+
+00:39:26.550 --> 00:39:30.610 align:middle line:84%
+we looked at before did not have
+pure-strategy Nash equilibria.
+
+00:39:30.610 --> 00:39:48.830 align:middle line:90%
+
+
+00:39:48.830 --> 00:39:52.190 align:middle line:84%
+Can you remember an
+example of a game that
+
+00:39:52.190 --> 00:39:54.190 align:middle line:84%
+doesn't have-- a
+finite game that
+
+00:39:54.190 --> 00:39:57.290 align:middle line:84%
+doesn't have a pure-strategy
+Nash equilibrium?
+
+00:39:57.290 --> 00:40:05.020 align:middle line:90%
+
+
+00:40:05.020 --> 00:40:05.520 align:middle line:90%
+Yeah?
+
+00:40:05.520 --> 00:40:06.360 align:middle line:90%
+AUDIENCE: Rock, paper, scissors.
+
+00:40:06.360 --> 00:40:07.700 align:middle line:84%
+IAN BALL: Rock, paper,
+scissors is a great example.
+
+00:40:07.700 --> 00:40:08.620 align:middle line:90%
+So it's unique.
+
+00:40:08.620 --> 00:40:12.760 align:middle line:84%
+Nash equilibrium is we each mix
+one third, one third, one third.
+
+00:40:12.760 --> 00:40:14.680 align:middle line:90%
+So wait a second.
+
+00:40:14.680 --> 00:40:17.680 align:middle line:84%
+Rock, paper, scissors doesn't
+have a pure-strategy Nash
+
+00:40:17.680 --> 00:40:18.223 align:middle line:90%
+equilibrium.
+
+00:40:18.223 --> 00:40:19.640 align:middle line:84%
+But here, I have
+an algorithm that
+
+00:40:19.640 --> 00:40:21.740 align:middle line:84%
+always gives us a
+pure-strategy Nash equilibrium.
+
+00:40:21.740 --> 00:40:23.180 align:middle line:90%
+So what's going on here?
+
+00:40:23.180 --> 00:40:27.440 align:middle line:90%
+
+
+00:40:27.440 --> 00:40:31.040 align:middle line:84%
+Well, the input to our algorithm
+is a finite extensive-form game
+
+00:40:31.040 --> 00:40:33.000 align:middle line:90%
+with perfect information.
+
+00:40:33.000 --> 00:40:36.680 align:middle line:84%
+So notice, rock, paper, scissors
+is a simultaneous move game.
+
+00:40:36.680 --> 00:40:38.400 align:middle line:84%
+If we wanted to
+represent rock, paper,
+
+00:40:38.400 --> 00:40:42.920 align:middle line:84%
+scissors in extensive form,
+we'd have an information set
+
+00:40:42.920 --> 00:40:45.200 align:middle line:84%
+with multiple nodes,
+and therefore this
+
+00:40:45.200 --> 00:40:47.640 align:middle line:84%
+would not be a game of
+perfect information,
+
+00:40:47.640 --> 00:40:49.920 align:middle line:84%
+and therefore algorithm
+would not apply.
+
+00:40:49.920 --> 00:40:51.903 align:middle line:84%
+So one implication
+of this algorithm--
+
+00:40:51.903 --> 00:40:53.320 align:middle line:84%
+you can think of
+it as a theorem--
+
+00:40:53.320 --> 00:40:56.960 align:middle line:84%
+is that every extensive-form
+game with perfect information
+
+00:40:56.960 --> 00:40:59.160 align:middle line:84%
+has a pure-strategy
+Nash equilibrium.
+
+00:40:59.160 --> 00:41:01.840 align:middle line:84%
+So Nash's theorem
+told us that any game
+
+00:41:01.840 --> 00:41:03.940 align:middle line:84%
+has a mixed-strategy
+Nash equilibrium.
+
+00:41:03.940 --> 00:41:07.060 align:middle line:84%
+Some games only have
+mixed-strategy Nash equilibria.
+
+00:41:07.060 --> 00:41:10.140 align:middle line:84%
+But for this special class of
+games with perfect information,
+
+00:41:10.140 --> 00:41:12.860 align:middle line:84%
+we always have a pure-strategy
+Nash equilibrium.
+
+00:41:12.860 --> 00:41:16.040 align:middle line:90%
+
+
+00:41:16.040 --> 00:41:18.360 align:middle line:84%
+So maybe I'll say--
+what's the answer here?
+
+00:41:18.360 --> 00:41:20.660 align:middle line:84%
+Perfect-information
+games are special.
+
+00:41:20.660 --> 00:41:28.426 align:middle line:90%
+
+
+00:41:28.426 --> 00:41:30.426 align:middle line:84%
+And in fact, what's nice
+about this algorithm is
+
+00:41:30.426 --> 00:41:32.760 align:middle line:84%
+it doesn't just show
+that a pure-strategy Nash
+
+00:41:32.760 --> 00:41:36.280 align:middle line:84%
+equilibrium exists, it gives
+us an algorithm for finding it,
+
+00:41:36.280 --> 00:41:39.720 align:middle line:84%
+whereas computing Nash
+equilibria in arbitrary games
+
+00:41:39.720 --> 00:41:42.840 align:middle line:90%
+is generally much harder.
+
+00:41:42.840 --> 00:41:46.080 align:middle line:84%
+And this actually
+formally confirms a claim
+
+00:41:46.080 --> 00:41:47.700 align:middle line:90%
+I made in a previous class.
+
+00:41:47.700 --> 00:41:52.760 align:middle line:84%
+If you recall, I said
+that the value of chess
+
+00:41:52.760 --> 00:41:55.640 align:middle line:90%
+is plus 1, minus 1, or 0.
+
+00:41:55.640 --> 00:41:58.730 align:middle line:84%
+Can anyone see-- I didn't
+actually check that claim.
+
+00:41:58.730 --> 00:42:03.890 align:middle line:84%
+Can anyone see why this follows
+from what we've said so far?
+
+00:42:03.890 --> 00:42:05.930 align:middle line:84%
+So we know chess has
+a value because chess
+
+00:42:05.930 --> 00:42:07.890 align:middle line:90%
+is a zero-sum game.
+
+00:42:07.890 --> 00:42:09.370 align:middle line:84%
+But in general,
+the value of a game
+
+00:42:09.370 --> 00:42:14.170 align:middle line:84%
+could be something like
+0.3 or negative 0.7.
+
+00:42:14.170 --> 00:42:16.050 align:middle line:84%
+So we know chess is
+some value that's going
+
+00:42:16.050 --> 00:42:19.055 align:middle line:90%
+to be between negative 1 and 1.
+
+00:42:19.055 --> 00:42:20.930 align:middle line:84%
+But how do we know that
+it has a value that's
+
+00:42:20.930 --> 00:42:26.470 align:middle line:84%
+either 0, negative 1,
+or 1, and not, say, 0.7?
+
+00:42:26.470 --> 00:42:26.970 align:middle line:90%
+Yeah?
+
+00:42:26.970 --> 00:42:28.370 align:middle line:84%
+AUDIENCE: Win,
+draw, [? or loss. ?]
+
+00:42:28.370 --> 00:42:29.828 align:middle line:84%
+IAN BALL: So those
+are the outcomes
+
+00:42:29.828 --> 00:42:31.230 align:middle line:90%
+of the game, that's true.
+
+00:42:31.230 --> 00:42:34.630 align:middle line:84%
+But I can give you examples of
+games-- let's take rock, paper--
+
+00:42:34.630 --> 00:42:36.330 align:middle line:90%
+well, let's take--
+
+00:42:36.330 --> 00:42:39.730 align:middle line:84%
+rock, paper, scissors
+is not a good example.
+
+00:42:39.730 --> 00:42:42.635 align:middle line:84%
+The-- actually, hide and seek
+is also not a good example.
+
+00:42:42.635 --> 00:42:44.010 align:middle line:84%
+There are games
+that can give you
+
+00:42:44.010 --> 00:42:46.850 align:middle line:84%
+with 1's and 2's and only
+whole-number payoffs, where
+
+00:42:46.850 --> 00:42:49.610 align:middle line:84%
+the value of the game is not a
+whole number because it involves
+
+00:42:49.610 --> 00:42:50.110 align:middle line:90%
+mixing.
+
+00:42:50.110 --> 00:42:54.270 align:middle line:84%
+So rock, paper, scissors,
+if I slightly change things,
+
+00:42:54.270 --> 00:42:55.690 align:middle line:90%
+I'd be able to get that.
+
+00:42:55.690 --> 00:43:00.210 align:middle line:84%
+So that shows that, indeed, the
+value can't be below negative 1
+
+00:43:00.210 --> 00:43:01.250 align:middle line:90%
+or above 1.
+
+00:43:01.250 --> 00:43:04.150 align:middle line:84%
+But in principle, players
+could play mixed strategies.
+
+00:43:04.150 --> 00:43:06.890 align:middle line:84%
+And maybe the value-- we
+often saw in zero-sum games
+
+00:43:06.890 --> 00:43:09.410 align:middle line:84%
+that the security
+strategies involved mixing.
+
+00:43:09.410 --> 00:43:12.710 align:middle line:84%
+And that meant that the
+value was a fraction.
+
+00:43:12.710 --> 00:43:13.510 align:middle line:90%
+Yeah?
+
+00:43:13.510 --> 00:43:15.510 align:middle line:84%
+AUDIENCE: I mean, I don't
+have the exact answer,
+
+00:43:15.510 --> 00:43:17.427 align:middle line:84%
+but does it have something
+to do with the fact
+
+00:43:17.427 --> 00:43:21.390 align:middle line:84%
+that one player has one step's
+worth of perfect information,
+
+00:43:21.390 --> 00:43:25.105 align:middle line:84%
+[? that ?] you always know what
+happens if you [INAUDIBLE].
+
+00:43:25.105 --> 00:43:27.230 align:middle line:84%
+IAN BALL: Yeah, I think
+it's even easier than that.
+
+00:43:27.230 --> 00:43:28.730 align:middle line:84%
+They do have
+perfect information.
+
+00:43:28.730 --> 00:43:30.950 align:middle line:84%
+So chess is a game of
+perfect information.
+
+00:43:30.950 --> 00:43:32.950 align:middle line:84%
+Whenever I move, I
+see all the moves--
+
+00:43:32.950 --> 00:43:35.290 align:middle line:84%
+I see the board, and
+I know exactly how
+
+00:43:35.290 --> 00:43:36.650 align:middle line:90%
+people have moved before.
+
+00:43:36.650 --> 00:43:38.030 align:middle line:90%
+So let's understand this.
+
+00:43:38.030 --> 00:43:40.890 align:middle line:84%
+Chess is a game of
+perfect information,
+
+00:43:40.890 --> 00:43:44.950 align:middle line:84%
+PI, which means I can apply
+backward induction to chess,
+
+00:43:44.950 --> 00:43:45.515 align:middle line:90%
+in principle.
+
+00:43:45.515 --> 00:43:46.890 align:middle line:84%
+Of course, I can't
+actually do it
+
+00:43:46.890 --> 00:43:49.450 align:middle line:90%
+because the game tree explodes.
+
+00:43:49.450 --> 00:43:53.570 align:middle line:84%
+No computer-- all the
+NVIDIA chips in the world
+
+00:43:53.570 --> 00:43:56.700 align:middle line:84%
+can't solve chess,
+but because it's
+
+00:43:56.700 --> 00:43:59.300 align:middle line:84%
+a game of perfect
+information, I know
+
+00:43:59.300 --> 00:44:04.980 align:middle line:84%
+it has a pure-strategy Nash
+equilibrium from backward
+
+00:44:04.980 --> 00:44:07.220 align:middle line:90%
+induction.
+
+00:44:07.220 --> 00:44:09.600 align:middle line:84%
+And because it has a
+pure-strategy Nash equilibrium--
+
+00:44:09.600 --> 00:44:11.740 align:middle line:84%
+well, because it's
+a zero-sum game,
+
+00:44:11.740 --> 00:44:14.760 align:middle line:84%
+I know that in that
+pure-strategy Nash equilibrium,
+
+00:44:14.760 --> 00:44:18.220 align:middle line:84%
+each player is actually
+playing a security strategy.
+
+00:44:18.220 --> 00:44:20.980 align:middle line:84%
+So it must consist--
+because it's
+
+00:44:20.980 --> 00:44:27.980 align:middle line:84%
+zero-sum, that consists
+of security strategies.
+
+00:44:27.980 --> 00:44:30.780 align:middle line:84%
+And the payoff in that
+pure-strategy Nash equilibrium
+
+00:44:30.780 --> 00:44:32.500 align:middle line:84%
+consisting of
+security strategies
+
+00:44:32.500 --> 00:44:34.080 align:middle line:84%
+is exactly the
+value of the game.
+
+00:44:34.080 --> 00:44:41.180 align:middle line:90%
+
+
+00:44:41.180 --> 00:44:42.940 align:middle line:84%
+So in general, the
+value of the game
+
+00:44:42.940 --> 00:44:45.700 align:middle line:84%
+is always the payoff when each
+player plays their security
+
+00:44:45.700 --> 00:44:46.660 align:middle line:90%
+strategy.
+
+00:44:46.660 --> 00:44:49.400 align:middle line:84%
+But often, those security
+strategies involve mixing.
+
+00:44:49.400 --> 00:44:50.800 align:middle line:90%
+Those are mixed strategies.
+
+00:44:50.800 --> 00:44:52.820 align:middle line:84%
+And therefore the
+payoff isn't necessarily
+
+00:44:52.820 --> 00:44:54.280 align:middle line:90%
+plus 1, minus 1, or 0.
+
+00:44:54.280 --> 00:44:56.060 align:middle line:90%
+It could be something like 1/2.
+
+00:44:56.060 --> 00:44:58.380 align:middle line:84%
+But this tells us that, in
+fact, the value of the game
+
+00:44:58.380 --> 00:45:00.220 align:middle line:90%
+is plus 1, minus 1, and 0.
+
+00:45:00.220 --> 00:45:02.740 align:middle line:84%
+And even more
+amazingly, it tells us
+
+00:45:02.740 --> 00:45:06.580 align:middle line:84%
+that the security
+strategies are pure.
+
+00:45:06.580 --> 00:45:09.740 align:middle line:84%
+So if I say, what's the optimal
+way to play chess, it's not,
+
+00:45:09.740 --> 00:45:11.760 align:middle line:84%
+oh, I'm going to randomize,
+like it is in poker.
+
+00:45:11.760 --> 00:45:12.840 align:middle line:90%
+There's literally a book.
+
+00:45:12.840 --> 00:45:15.173 align:middle line:84%
+It would be bigger than
+the size of the universe,
+
+00:45:15.173 --> 00:45:17.840 align:middle line:84%
+but there is a book I could, in
+principle, write down that says,
+
+00:45:17.840 --> 00:45:20.500 align:middle line:84%
+given this move on the board,
+this is how you should play.
+
+00:45:20.500 --> 00:45:21.880 align:middle line:84%
+Given this position
+on the board,
+
+00:45:21.880 --> 00:45:23.060 align:middle line:90%
+this is how you should play.
+
+00:45:23.060 --> 00:45:26.060 align:middle line:84%
+And that would ensure
+either that I always win,
+
+00:45:26.060 --> 00:45:28.940 align:middle line:84%
+depending on if the value is
+1 and I'm the first player,
+
+00:45:28.940 --> 00:45:31.087 align:middle line:84%
+maybe I always draw, or
+maybe the other player
+
+00:45:31.087 --> 00:45:31.920 align:middle line:90%
+has such a strategy.
+
+00:45:31.920 --> 00:45:35.140 align:middle line:84%
+We just don't know in chess
+who has the advantage.
+
+00:45:35.140 --> 00:45:36.387 align:middle line:90%
+In checkers, we do know.
+
+00:45:36.387 --> 00:45:37.720 align:middle line:90%
+So what's the value of checkers?
+
+00:45:37.720 --> 00:45:38.440 align:middle line:90%
+Does anyone know?
+
+00:45:38.440 --> 00:45:42.020 align:middle line:90%
+
+
+00:45:42.020 --> 00:45:42.980 align:middle line:90%
+Yeah?
+
+00:45:42.980 --> 00:45:44.537 align:middle line:84%
+AUDIENCE: The first
+player has won.
+
+00:45:44.537 --> 00:45:46.120 align:middle line:84%
+IAN BALL: No, I think
+it's actually 0.
+
+00:45:46.120 --> 00:45:47.953 align:middle line:84%
+I think, checkers, if
+people play optimally,
+
+00:45:47.953 --> 00:45:49.260 align:middle line:90%
+I think it ends in a tie.
+
+00:45:49.260 --> 00:45:50.880 align:middle line:84%
+Though, there may be different
+variants of checkers,
+
+00:45:50.880 --> 00:45:51.970 align:middle line:90%
+so I have to check that.
+
+00:45:51.970 --> 00:45:53.390 align:middle line:84%
+But I think, in
+standard checkers,
+
+00:45:53.390 --> 00:45:54.530 align:middle line:90%
+it always ends in a tie.
+
+00:45:54.530 --> 00:45:55.150 align:middle line:90%
+Yeah.
+
+00:45:55.150 --> 00:45:55.730 align:middle line:90%
+Yeah?
+
+00:45:55.730 --> 00:45:57.970 align:middle line:84%
+AUDIENCE: When you say
+a game has a value,
+
+00:45:57.970 --> 00:45:59.053 align:middle line:90%
+what are you referring to?
+
+00:45:59.053 --> 00:46:01.730 align:middle line:84%
+IAN BALL: So this is something
+specific to zero-sum games.
+
+00:46:01.730 --> 00:46:04.370 align:middle line:84%
+That's a lecture we did,
+I guess, on Thursday.
+
+00:46:04.370 --> 00:46:06.690 align:middle line:84%
+Yeah, so it's referencing
+a previous lecture.
+
+00:46:06.690 --> 00:46:08.170 align:middle line:84%
+Yeah, I'm happy to
+talk more after.
+
+00:46:08.170 --> 00:46:10.830 align:middle line:90%
+
+
+00:46:10.830 --> 00:46:13.790 align:middle line:90%
+Any other questions on this?
+
+00:46:13.790 --> 00:46:21.990 align:middle line:84%
+So now let's do one final
+example of backward induction.
+
+00:46:21.990 --> 00:46:28.290 align:middle line:84%
+And that will be another
+quantity competition game.
+
+00:46:28.290 --> 00:46:35.173 align:middle line:90%
+
+
+00:46:35.173 --> 00:46:37.990 align:middle line:84%
+So, so far we looked
+at Cournot competition.
+
+00:46:37.990 --> 00:46:40.747 align:middle line:84%
+Here we'll look at something
+called Stackelberg competition.
+
+00:46:40.747 --> 00:46:42.330 align:middle line:84%
+I mean, the names
+don't really matter.
+
+00:46:42.330 --> 00:46:48.390 align:middle line:90%
+
+
+00:46:48.390 --> 00:46:50.450 align:middle line:84%
+So in Cournot
+competition, remember,
+
+00:46:50.450 --> 00:46:54.710 align:middle line:84%
+we had two firms that were each
+choosing how much to produce
+
+00:46:54.710 --> 00:46:56.590 align:middle line:90%
+and how much to bring to market.
+
+00:46:56.590 --> 00:46:59.150 align:middle line:84%
+But the assumption in
+Cournot was that the firms
+
+00:46:59.150 --> 00:47:00.742 align:middle line:90%
+move simultaneously.
+
+00:47:00.742 --> 00:47:02.950 align:middle line:84%
+And in Stackelberg, we're
+going to imagine that there
+
+00:47:02.950 --> 00:47:04.270 align:middle line:90%
+may be a first mover.
+
+00:47:04.270 --> 00:47:06.710 align:middle line:90%
+Maybe I harvest my crops first.
+
+00:47:06.710 --> 00:47:08.890 align:middle line:84%
+I get to choose to
+bring them to market.
+
+00:47:08.890 --> 00:47:11.350 align:middle line:84%
+And then the next farmer sees
+how much I bring to market
+
+00:47:11.350 --> 00:47:13.950 align:middle line:84%
+and then chooses how
+much to bring themselves.
+
+00:47:13.950 --> 00:47:17.590 align:middle line:84%
+So we have-- it's still
+quantity competition.
+
+00:47:17.590 --> 00:47:19.310 align:middle line:90%
+I'll emphasize this.
+
+00:47:19.310 --> 00:47:25.390 align:middle line:84%
+But it's-- sequential quantity
+competition would maybe be--
+
+00:47:25.390 --> 00:47:26.835 align:middle line:90%
+we often name these with people.
+
+00:47:26.835 --> 00:47:28.210 align:middle line:84%
+But if you don't
+know the person,
+
+00:47:28.210 --> 00:47:29.543 align:middle line:90%
+it's not a very meaningful name.
+
+00:47:29.543 --> 00:47:32.590 align:middle line:84%
+So we might call this
+sequential quantity competition
+
+00:47:32.590 --> 00:47:34.170 align:middle line:84%
+if we want a more
+descriptive title.
+
+00:47:34.170 --> 00:47:37.430 align:middle line:90%
+
+
+00:47:37.430 --> 00:47:38.950 align:middle line:90%
+So let's see how this works.
+
+00:47:38.950 --> 00:47:44.990 align:middle line:84%
+We still have two
+firms, 1 and 2.
+
+00:47:44.990 --> 00:47:49.560 align:middle line:84%
+And they are choosing
+quantities as before.
+
+00:47:49.560 --> 00:47:52.880 align:middle line:90%
+And we have market demand--
+
+00:47:52.880 --> 00:48:01.040 align:middle line:84%
+maybe I'll say inverse
+demand P of Q equals
+
+00:48:01.040 --> 00:48:06.280 align:middle line:84%
+to the maximum of
+1 minus Q and 0.
+
+00:48:06.280 --> 00:48:08.160 align:middle line:84%
+So this is exactly
+what we had before.
+
+00:48:08.160 --> 00:48:11.760 align:middle line:84%
+The more quantity that's brought
+to market, the lower the price
+
+00:48:11.760 --> 00:48:12.520 align:middle line:90%
+is.
+
+00:48:12.520 --> 00:48:16.200 align:middle line:84%
+If quantity 1 is brought
+to market, the price is 0.
+
+00:48:16.200 --> 00:48:19.280 align:middle line:84%
+If quantity 0 is brought
+to market, the price is 1.
+
+00:48:19.280 --> 00:48:20.940 align:middle line:84%
+And the price can
+never go negative.
+
+00:48:20.940 --> 00:48:23.680 align:middle line:84%
+So if tons is brought to market,
+we just say the price is 0.
+
+00:48:23.680 --> 00:48:26.360 align:middle line:90%
+The market price is 0.
+
+00:48:26.360 --> 00:48:34.860 align:middle line:84%
+And let's also assume
+marginal cost C. And as usual,
+
+00:48:34.860 --> 00:48:38.640 align:middle line:84%
+we'll assume C is
+between 0 and 1.
+
+00:48:38.640 --> 00:48:40.960 align:middle line:84%
+So remember,
+marginal cost C means
+
+00:48:40.960 --> 00:48:43.360 align:middle line:84%
+whatever quantity Q
+of the good I produce,
+
+00:48:43.360 --> 00:48:46.100 align:middle line:84%
+it costs me C times Q
+to produce that amount.
+
+00:48:46.100 --> 00:48:50.120 align:middle line:84%
+So it's a linear cost--
+constant marginal cost.
+
+00:48:50.120 --> 00:48:54.320 align:middle line:84%
+But the key difference
+relative to Cournot competition
+
+00:48:54.320 --> 00:48:56.540 align:middle line:90%
+is that firm 1 moves first.
+
+00:48:56.540 --> 00:49:03.520 align:middle line:90%
+
+
+00:49:03.520 --> 00:49:10.660 align:middle line:84%
+And then firm 2 observes
+firm 1's choice.
+
+00:49:10.660 --> 00:49:16.440 align:middle line:90%
+
+
+00:49:16.440 --> 00:49:17.340 align:middle line:90%
+So we can draw this.
+
+00:49:17.340 --> 00:49:19.100 align:middle line:84%
+We can try to draw
+this in extensive form.
+
+00:49:19.100 --> 00:49:20.600 align:middle line:84%
+It's a little tricky
+because they're
+
+00:49:20.600 --> 00:49:23.540 align:middle line:84%
+making choices among
+infinitely many quantities.
+
+00:49:23.540 --> 00:49:27.720 align:middle line:84%
+But if we wanted to draw it,
+we would say, here's firm 1.
+
+00:49:27.720 --> 00:49:31.360 align:middle line:84%
+They're making an infinite
+choice over how much to produce.
+
+00:49:31.360 --> 00:49:35.120 align:middle line:90%
+Maybe we'll call this Q1.
+
+00:49:35.120 --> 00:49:39.600 align:middle line:84%
+Maybe I'll take a
+particular point here.
+
+00:49:39.600 --> 00:49:43.920 align:middle line:84%
+And then we have
+firm 2, who's making
+
+00:49:43.920 --> 00:49:46.850 align:middle line:90%
+an infinite choice over Q2.
+
+00:49:46.850 --> 00:49:49.410 align:middle line:84%
+So it's a little hard
+to formally represent
+
+00:49:49.410 --> 00:49:52.090 align:middle line:84%
+this in extensive form when we
+have infinitely many things.
+
+00:49:52.090 --> 00:49:55.530 align:middle line:84%
+But what I mean here
+is player 1 chooses
+
+00:49:55.530 --> 00:49:59.930 align:middle line:84%
+a quantity Q1 to bring to
+market, any non-negative number.
+
+00:49:59.930 --> 00:50:02.542 align:middle line:84%
+Whatever quantity that
+is, player 2 observes it.
+
+00:50:02.542 --> 00:50:04.250 align:middle line:84%
+I'll warn you that
+it's particularly hard
+
+00:50:04.250 --> 00:50:07.950 align:middle line:84%
+to represent information sets
+with infinitely many players.
+
+00:50:07.950 --> 00:50:10.930 align:middle line:84%
+So it's crucial here
+sometimes to write it in words
+
+00:50:10.930 --> 00:50:13.343 align:middle line:84%
+that player 2 observes
+the quantity that's
+
+00:50:13.343 --> 00:50:15.010 align:middle line:84%
+produced by player 1
+because it's really
+
+00:50:15.010 --> 00:50:16.730 align:middle line:90%
+hard to draw information sets.
+
+00:50:16.730 --> 00:50:18.790 align:middle line:84%
+And then player 2
+chooses the quantity Q2.
+
+00:50:18.790 --> 00:50:26.690 align:middle line:90%
+
+
+00:50:26.690 --> 00:50:29.090 align:middle line:90%
+So now let's write down payoffs.
+
+00:50:29.090 --> 00:50:32.090 align:middle line:84%
+The payoffs are actually
+going to look exactly the same
+
+00:50:32.090 --> 00:50:34.250 align:middle line:84%
+as they did in
+Cournot competition
+
+00:50:34.250 --> 00:50:37.650 align:middle line:84%
+because the payoffs just depend
+on how much each firm brings
+
+00:50:37.650 --> 00:50:38.350 align:middle line:90%
+to market.
+
+00:50:38.350 --> 00:50:40.570 align:middle line:84%
+So this is kind of
+like our BoS game,
+
+00:50:40.570 --> 00:50:44.490 align:middle line:84%
+where the payoffs are the
+same whether player 2 observes
+
+00:50:44.490 --> 00:50:47.023 align:middle line:84%
+player 1's move or not, but
+the equilibria of the game
+
+00:50:47.023 --> 00:50:48.690 align:middle line:84%
+are going to be very
+different depending
+
+00:50:48.690 --> 00:50:50.450 align:middle line:84%
+on whether that
+move is observed.
+
+00:50:50.450 --> 00:50:51.910 align:middle line:90%
+So what are our payoffs?
+
+00:50:51.910 --> 00:50:53.590 align:middle line:90%
+Let's look at, say, firm 1.
+
+00:50:53.590 --> 00:50:56.570 align:middle line:90%
+
+
+00:50:56.570 --> 00:51:05.730 align:middle line:84%
+Well, as before, we want to say,
+what is firm 1's profit, pi 1,
+
+00:51:05.730 --> 00:51:08.370 align:middle line:84%
+if they bring
+quantity Q1 to market
+
+00:51:08.370 --> 00:51:11.170 align:middle line:84%
+and firm 2 brings
+quantity Q2 to market?
+
+00:51:11.170 --> 00:51:13.770 align:middle line:84%
+So we always have to think
+of profit in two components.
+
+00:51:13.770 --> 00:51:17.570 align:middle line:84%
+It's the profit per unit times
+the number of units you have.
+
+00:51:17.570 --> 00:51:23.370 align:middle line:84%
+So it's going to
+be Q1 times what?
+
+00:51:23.370 --> 00:51:30.250 align:middle line:84%
+Well, maybe I'll
+write it like this.
+
+00:51:30.250 --> 00:51:32.730 align:middle line:84%
+Q1 is the amount
+I bring to market.
+
+00:51:32.730 --> 00:51:35.770 align:middle line:84%
+I sell it at a price
+of P of Q1 plus Q2
+
+00:51:35.770 --> 00:51:39.410 align:middle line:84%
+because Q1 plus Q2 is the total
+quantity brought to market.
+
+00:51:39.410 --> 00:51:41.290 align:middle line:84%
+That's what
+determines the price.
+
+00:51:41.290 --> 00:51:44.250 align:middle line:84%
+And then, of course, I also have
+to pay my constant marginal cost
+
+00:51:44.250 --> 00:51:45.170 align:middle line:90%
+per unit.
+
+00:51:45.170 --> 00:51:48.450 align:middle line:84%
+But let me plug in a formula
+here, again with my little cheat
+
+00:51:48.450 --> 00:51:50.955 align:middle line:84%
+that I'm going to assume
+Q is not so big that this
+
+00:51:50.955 --> 00:51:51.830 align:middle line:90%
+is a negative number.
+
+00:51:51.830 --> 00:51:56.490 align:middle line:84%
+So I'm just going to write
+this as Q1 times 1 minus Q1
+
+00:51:56.490 --> 00:52:01.050 align:middle line:84%
+minus Q2 minus C, where
+technically this formula only
+
+00:52:01.050 --> 00:52:04.930 align:middle line:84%
+applies if Q1 plus Q2 is
+between 0 and 1, but in the end
+
+00:52:04.930 --> 00:52:05.478 align:middle line:90%
+it will be.
+
+00:52:05.478 --> 00:52:07.270 align:middle line:84%
+You might say, why are
+there two negatives?
+
+00:52:07.270 --> 00:52:10.770 align:middle line:84%
+Well, remember, it's minus,
+in parentheses, Q1 plus Q2.
+
+00:52:10.770 --> 00:52:14.330 align:middle line:84%
+And that's why I
+get two minuses.
+
+00:52:14.330 --> 00:52:18.010 align:middle line:84%
+So now we've
+specified the payoffs.
+
+00:52:18.010 --> 00:52:21.290 align:middle line:84%
+We still have to specify
+strategies, though.
+
+00:52:21.290 --> 00:52:26.850 align:middle line:84%
+And this, I think, is
+where it gets a bit tricky.
+
+00:52:26.850 --> 00:52:27.430 align:middle line:90%
+Any ideas?
+
+00:52:27.430 --> 00:52:29.430 align:middle line:84%
+Let's start with
+player 1, firm 1.
+
+00:52:29.430 --> 00:52:32.210 align:middle line:84%
+Maybe I'll call them
+F1 and F2 for firm.
+
+00:52:32.210 --> 00:52:34.190 align:middle line:90%
+What is a strategy for firm 1?
+
+00:52:34.190 --> 00:52:39.890 align:middle line:90%
+
+
+00:52:39.890 --> 00:52:40.410 align:middle line:90%
+Yeah?
+
+00:52:40.410 --> 00:52:42.140 align:middle line:84%
+AUDIENCE: Whatever
+value of Q1 would
+
+00:52:42.140 --> 00:52:44.560 align:middle line:84%
+lead to the derivative
+of Q1 times [INAUDIBLE].
+
+00:52:44.560 --> 00:52:46.000 align:middle line:84%
+IAN BALL: Well, now you're
+talking about optimal.
+
+00:52:46.000 --> 00:52:48.417 align:middle line:84%
+Sorry, I'm just saying, what
+is the set of all strategies,
+
+00:52:48.417 --> 00:52:49.980 align:middle line:90%
+before we talk about optimum.
+
+00:52:49.980 --> 00:52:51.140 align:middle line:90%
+So a strategy for--
+
+00:52:51.140 --> 00:52:52.980 align:middle line:84%
+I'm just saying,
+what is a strategy?
+
+00:52:52.980 --> 00:52:56.283 align:middle line:84%
+AUDIENCE: [INAUDIBLE] for
+any non-negative value.
+
+00:52:56.283 --> 00:52:57.700 align:middle line:84%
+IAN BALL: Yeah,
+so it's just going
+
+00:52:57.700 --> 00:53:01.380 align:middle line:84%
+to be Q1, which we have to
+choose exactly how much they
+
+00:53:01.380 --> 00:53:02.280 align:middle line:90%
+can produce.
+
+00:53:02.280 --> 00:53:04.658 align:middle line:84%
+Let's say it's a number
+between, say, 0 and infinity,
+
+00:53:04.658 --> 00:53:05.700 align:middle line:90%
+so a non-negative number.
+
+00:53:05.700 --> 00:53:06.540 align:middle line:90%
+Let's say that.
+
+00:53:06.540 --> 00:53:09.300 align:middle line:90%
+The details don't really matter.
+
+00:53:09.300 --> 00:53:11.238 align:middle line:84%
+Whether it's 0 to
+1 or 0 to infinity,
+
+00:53:11.238 --> 00:53:12.280 align:middle line:90%
+it doesn't really matter.
+
+00:53:12.280 --> 00:53:13.280 align:middle line:90%
+But what about firm 2?
+
+00:53:13.280 --> 00:53:15.060 align:middle line:84%
+This is where it
+gets quite subtle.
+
+00:53:15.060 --> 00:53:17.740 align:middle line:90%
+What is a strategy for firm 2?
+
+00:53:17.740 --> 00:53:21.220 align:middle line:84%
+Well, if we took our
+previous approach,
+
+00:53:21.220 --> 00:53:22.760 align:middle line:90%
+we'd have to get a vector.
+
+00:53:22.760 --> 00:53:25.020 align:middle line:84%
+And we'd have to have a
+different spot in the vector
+
+00:53:25.020 --> 00:53:26.540 align:middle line:90%
+for every contingency.
+
+00:53:26.540 --> 00:53:28.520 align:middle line:84%
+But now there's infinitely
+many contingencies.
+
+00:53:28.520 --> 00:53:30.420 align:middle line:84%
+So that's going to
+become a bit messy.
+
+00:53:30.420 --> 00:53:33.780 align:middle line:90%
+So we really need a function.
+
+00:53:33.780 --> 00:53:39.100 align:middle line:84%
+What kind of function
+is this going to be?
+
+00:53:39.100 --> 00:53:43.620 align:middle line:84%
+Well, firm 2 observes the
+quantity chosen by firm 1,
+
+00:53:43.620 --> 00:53:45.860 align:middle line:84%
+and then they choose
+a quantity themselves.
+
+00:53:45.860 --> 00:53:55.880 align:middle line:84%
+So sometimes it might
+be easier to do 0, 1,
+
+00:53:55.880 --> 00:53:58.740 align:middle line:90%
+but I'll stick with it this way.
+
+00:53:58.740 --> 00:53:59.800 align:middle line:90%
+So what does this say?
+
+00:53:59.800 --> 00:54:00.883 align:middle line:90%
+What's the interpretation?
+
+00:54:00.883 --> 00:54:01.440 align:middle line:90%
+Yeah?
+
+00:54:01.440 --> 00:54:03.380 align:middle line:84%
+AUDIENCE: Is C going to be
+involved [? in this one? ?]
+
+00:54:03.380 --> 00:54:05.600 align:middle line:84%
+Is C going to be considered
+an input to the function?
+
+00:54:05.600 --> 00:54:06.980 align:middle line:90%
+Or will C be implied?
+
+00:54:06.980 --> 00:54:11.200 align:middle line:84%
+IAN BALL: No, so C is a commonly
+known parameter-- is known.
+
+00:54:11.200 --> 00:54:13.500 align:middle line:84%
+AUDIENCE: So it is not
+considered an input
+
+00:54:13.500 --> 00:54:14.560 align:middle line:90%
+to the function?
+
+00:54:14.560 --> 00:54:16.600 align:middle line:84%
+IAN BALL: No, because
+C is like 2 here.
+
+00:54:16.600 --> 00:54:18.700 align:middle line:90%
+It doesn't change--
+
+00:54:18.700 --> 00:54:22.800 align:middle line:84%
+C is a known parameter that
+affects the payoff functions,
+
+00:54:22.800 --> 00:54:25.360 align:middle line:84%
+but it doesn't affect the
+definition of the strategies.
+
+00:54:25.360 --> 00:54:27.380 align:middle line:84%
+So you think of it,
+in a game, there's
+
+00:54:27.380 --> 00:54:30.080 align:middle line:84%
+a fundamental distinction
+between the set of strategies,
+
+00:54:30.080 --> 00:54:32.600 align:middle line:84%
+what people can do, and
+the utility functions,
+
+00:54:32.600 --> 00:54:35.500 align:middle line:84%
+which is how well they do when
+they choose those strategies.
+
+00:54:35.500 --> 00:54:38.080 align:middle line:84%
+C is just-- we could call
+it a half if we wanted.
+
+00:54:38.080 --> 00:54:41.050 align:middle line:84%
+It's just a known number that
+enters the utility functions
+
+00:54:41.050 --> 00:54:43.010 align:middle line:84%
+but has no role
+in the strategies.
+
+00:54:43.010 --> 00:54:46.670 align:middle line:84%
+One way of seeing this is if
+in this game, I made this a 3,
+
+00:54:46.670 --> 00:54:48.450 align:middle line:84%
+it wouldn't change
+the set of strategies.
+
+00:54:48.450 --> 00:54:50.075 align:middle line:84%
+It would just change
+the payoffs people
+
+00:54:50.075 --> 00:54:51.710 align:middle line:90%
+get from those strategies.
+
+00:54:51.710 --> 00:54:54.655 align:middle line:84%
+And I could call this alpha,
+and the same would be true.
+
+00:54:54.655 --> 00:54:55.530 align:middle line:90%
+But that's important.
+
+00:54:55.530 --> 00:54:57.890 align:middle line:84%
+If C was private information,
+then it would get tricky.
+
+00:54:57.890 --> 00:54:59.890 align:middle line:84%
+But we're going to assume
+it's known and public.
+
+00:54:59.890 --> 00:55:02.150 align:middle line:84%
+Everyone knows it,
+just like everyone
+
+00:55:02.150 --> 00:55:05.630 align:middle line:84%
+knows this market
+function, big P.
+
+00:55:05.630 --> 00:55:08.030 align:middle line:84%
+Great, so what's the
+interpretation of this?
+
+00:55:08.030 --> 00:55:14.310 align:middle line:84%
+This says, for any Q1 that I
+observe, what is the amount
+
+00:55:14.310 --> 00:55:18.030 align:middle line:90%
+Q2 of Q1 that I produce?
+
+00:55:18.030 --> 00:55:21.150 align:middle line:84%
+So Q1 is the quantity
+that I observe
+
+00:55:21.150 --> 00:55:23.548 align:middle line:90%
+for 1 producing hypothetically.
+
+00:55:23.548 --> 00:55:25.590 align:middle line:84%
+It's not how much they
+actually produce, but it's
+
+00:55:25.590 --> 00:55:28.590 align:middle line:84%
+if I were to observe
+them producing Q1,
+
+00:55:28.590 --> 00:55:30.430 align:middle line:84%
+how much would I
+produce as firm 2?
+
+00:55:30.430 --> 00:55:33.390 align:middle line:90%
+I would produce Q2 of Q1.
+
+00:55:33.390 --> 00:55:36.510 align:middle line:90%
+OK, now, a big warning here.
+
+00:55:36.510 --> 00:55:39.390 align:middle line:84%
+I think this is maybe
+the fault of sometimes
+
+00:55:39.390 --> 00:55:40.570 align:middle line:90%
+the way we teach math.
+
+00:55:40.570 --> 00:55:43.710 align:middle line:90%
+
+
+00:55:43.710 --> 00:55:46.950 align:middle line:90%
+Q2 is a function.
+
+00:55:46.950 --> 00:55:49.532 align:middle line:90%
+Q2 of Q1 is a number.
+
+00:55:49.532 --> 00:55:50.990 align:middle line:84%
+And this creates
+a lot of confusion
+
+00:55:50.990 --> 00:55:55.470 align:middle line:84%
+because, in math class, we often
+write f of x to mean a function.
+
+00:55:55.470 --> 00:55:57.170 align:middle line:90%
+But really, f of x is a number.
+
+00:55:57.170 --> 00:55:59.167 align:middle line:84%
+It's the value of
+the function at x.
+
+00:55:59.167 --> 00:56:00.750 align:middle line:84%
+So it's really
+important in this class
+
+00:56:00.750 --> 00:56:05.550 align:middle line:84%
+that we understand f by
+itself is a function, f
+
+00:56:05.550 --> 00:56:07.110 align:middle line:90%
+of x is a number--
+
+00:56:07.110 --> 00:56:09.950 align:middle line:84%
+the value of the
+function evaluated at x.
+
+00:56:09.950 --> 00:56:12.470 align:middle line:84%
+So in problem sets,
+it's really important
+
+00:56:12.470 --> 00:56:15.470 align:middle line:84%
+that we understand that
+the strategy for firm 2
+
+00:56:15.470 --> 00:56:17.510 align:middle line:90%
+is the function Q2.
+
+00:56:17.510 --> 00:56:21.150 align:middle line:84%
+People often say the
+strategy is Q2 of Q1, but no.
+
+00:56:21.150 --> 00:56:23.930 align:middle line:90%
+Q2 of Q1 is a number.
+
+00:56:23.930 --> 00:56:27.890 align:middle line:84%
+It's the quantity produced at
+a particular contingency, Q1.
+
+00:56:27.890 --> 00:56:29.390 align:middle line:84%
+So it's really
+important that you
+
+00:56:29.390 --> 00:56:31.670 align:middle line:90%
+understand function notation.
+
+00:56:31.670 --> 00:56:34.450 align:middle line:84%
+If in doubt, you need to, on
+problem sets or on quizzes,
+
+00:56:34.450 --> 00:56:36.420 align:middle line:84%
+be very clear about
+what you mean by things
+
+00:56:36.420 --> 00:56:38.253 align:middle line:84%
+because if you say the
+strategy is Q2 of Q1,
+
+00:56:38.253 --> 00:56:39.795 align:middle line:84%
+we're not going to
+really know if you
+
+00:56:39.795 --> 00:56:42.398 align:middle line:84%
+mean a number or a function
+because of this ambiguity
+
+00:56:42.398 --> 00:56:42.940 align:middle line:90%
+that we have.
+
+00:56:42.940 --> 00:56:46.080 align:middle line:90%
+So try to be precise.
+
+00:56:46.080 --> 00:56:47.360 align:middle line:90%
+Great.
+
+00:56:47.360 --> 00:56:50.660 align:middle line:84%
+So now let's try to
+actually analyze this.
+
+00:56:50.660 --> 00:57:07.920 align:middle line:90%
+
+
+00:57:07.920 --> 00:57:10.400 align:middle line:84%
+So now what we'd like to do
+is apply backward induction
+
+00:57:10.400 --> 00:57:11.160 align:middle line:90%
+to this game.
+
+00:57:11.160 --> 00:57:13.240 align:middle line:84%
+Now, I know technically
+I said it only applies
+
+00:57:13.240 --> 00:57:14.700 align:middle line:90%
+to finite extensive form games.
+
+00:57:14.700 --> 00:57:16.280 align:middle line:84%
+But we are going to be
+able to apply it here,
+
+00:57:16.280 --> 00:57:17.480 align:middle line:90%
+and it won't be a problem.
+
+00:57:17.480 --> 00:57:19.300 align:middle line:84%
+So let's apply
+backward induction.
+
+00:57:19.300 --> 00:57:25.600 align:middle line:90%
+
+
+00:57:25.600 --> 00:57:26.800 align:middle line:90%
+And what are we going to do?
+
+00:57:26.800 --> 00:57:30.160 align:middle line:84%
+Well, we're going to work
+backwards, like we always do.
+
+00:57:30.160 --> 00:57:31.600 align:middle line:90%
+So let's start here.
+
+00:57:31.600 --> 00:57:35.760 align:middle line:84%
+And we have to say, as a
+function of the amount Q1
+
+00:57:35.760 --> 00:57:40.040 align:middle line:84%
+that firm 1 has produced,
+what should firm 2 do?
+
+00:57:40.040 --> 00:57:49.760 align:middle line:84%
+So let's consider maybe what
+I'll call contingency or infoset
+
+00:57:49.760 --> 00:57:50.840 align:middle line:90%
+Q1.
+
+00:57:50.840 --> 00:57:53.800 align:middle line:84%
+So this says, put yourself
+in the position of firm 2.
+
+00:57:53.800 --> 00:57:56.778 align:middle line:84%
+You've observed how much
+firm 1 has brought to market.
+
+00:57:56.778 --> 00:57:59.320 align:middle line:84%
+And you've observed that the
+amount they've brought to market
+
+00:57:59.320 --> 00:58:00.360 align:middle line:90%
+is Q1.
+
+00:58:00.360 --> 00:58:03.440 align:middle line:84%
+And now you're choosing
+Q2, how much you should
+
+00:58:03.440 --> 00:58:04.920 align:middle line:90%
+bring to market yourself.
+
+00:58:04.920 --> 00:58:06.200 align:middle line:90%
+So what are you choosing?
+
+00:58:06.200 --> 00:58:10.840 align:middle line:84%
+Well, you're going
+to maximize over Q2--
+
+00:58:10.840 --> 00:58:13.800 align:middle line:90%
+Q2 is what you're choosing--
+
+00:58:13.800 --> 00:58:19.040 align:middle line:90%
+pi 2 of Q1, Q2.
+
+00:58:19.040 --> 00:58:21.160 align:middle line:84%
+So this is essentially
+just what we
+
+00:58:21.160 --> 00:58:24.100 align:middle line:84%
+did before when we talked about
+computing a best response.
+
+00:58:24.100 --> 00:58:27.180 align:middle line:84%
+Given that Q1 is
+the amount produced,
+
+00:58:27.180 --> 00:58:31.330 align:middle line:84%
+I want to choose Q2 to maximize
+my payoff where Q1 appears
+
+00:58:31.330 --> 00:58:32.580 align:middle line:90%
+in here because this is fixed.
+
+00:58:32.580 --> 00:58:33.830 align:middle line:90%
+I can't control this.
+
+00:58:33.830 --> 00:58:34.890 align:middle line:90%
+This is already chosen.
+
+00:58:34.890 --> 00:58:37.130 align:middle line:90%
+And this is what I can control.
+
+00:58:37.130 --> 00:58:37.950 align:middle line:90%
+And what do we get?
+
+00:58:37.950 --> 00:58:39.810 align:middle line:90%
+Well, this is Q2.
+
+00:58:39.810 --> 00:58:41.570 align:middle line:84%
+I'm just going to
+copy this formula
+
+00:58:41.570 --> 00:58:46.750 align:middle line:84%
+but switch it because we're
+now focusing on firm 2.
+
+00:58:46.750 --> 00:58:57.690 align:middle line:84%
+1 minus Q1 minus Q2 minus
+C. And if we use our trick,
+
+00:58:57.690 --> 00:59:00.810 align:middle line:84%
+this is something times a
+constant minus that something.
+
+00:59:00.810 --> 00:59:03.090 align:middle line:84%
+It's always optimal to
+just do the something
+
+00:59:03.090 --> 00:59:07.490 align:middle line:84%
+the constant-- sorry, this is
+Q2 times the constant minus Q2.
+
+00:59:07.490 --> 00:59:11.170 align:middle line:84%
+It's always optimal to set Q2
+to be the constant divided by 2.
+
+00:59:11.170 --> 00:59:17.930 align:middle line:84%
+So what we're going to get is
+Q2, maybe I'll say star of Q1
+
+00:59:17.930 --> 00:59:18.910 align:middle line:90%
+is equal to--
+
+00:59:18.910 --> 00:59:22.890 align:middle line:90%
+
+
+00:59:22.890 --> 00:59:24.690 align:middle line:90%
+so we're almost there.
+
+00:59:24.690 --> 00:59:27.150 align:middle line:84%
+I just mechanically
+took a derivative.
+
+00:59:27.150 --> 00:59:30.390 align:middle line:84%
+But there is one issue I have
+to be a little careful about.
+
+00:59:30.390 --> 00:59:34.450 align:middle line:84%
+What if Q1 is
+really, really big?
+
+00:59:34.450 --> 00:59:36.280 align:middle line:84%
+So now my assumption
+that, oh, we
+
+00:59:36.280 --> 00:59:38.030 align:middle line:84%
+don't have to worry
+about negative prices,
+
+00:59:38.030 --> 00:59:39.870 align:middle line:84%
+we don't have to worry
+about max or min,
+
+00:59:39.870 --> 00:59:41.970 align:middle line:84%
+turns out we have to be
+a little bit careful.
+
+00:59:41.970 --> 00:59:43.670 align:middle line:84%
+If Q1-- let's just
+think it through.
+
+00:59:43.670 --> 00:59:49.450 align:middle line:84%
+If Q1 is a billion, what
+should firm 2 produce?
+
+00:59:49.450 --> 00:59:52.110 align:middle line:84%
+Nothing, because
+if Q1 is a billion,
+
+00:59:52.110 --> 00:59:53.930 align:middle line:90%
+then the market price is 0.
+
+00:59:53.930 --> 00:59:56.770 align:middle line:84%
+My cost is C. So I definitely
+don't want to produce anything.
+
+00:59:56.770 --> 00:59:58.970 align:middle line:84%
+And unfortunately, it
+turns out that if we just
+
+00:59:58.970 --> 01:00:01.065 align:middle line:84%
+compute this number and
+check if it's positive,
+
+01:00:01.065 --> 01:00:02.190 align:middle line:90%
+we'll get the right answer.
+
+01:00:02.190 --> 01:00:03.690 align:middle line:90%
+So if it's positive, we're good.
+
+01:00:03.690 --> 01:00:06.410 align:middle line:84%
+If it's negative,
+we set it to 0.
+
+01:00:06.410 --> 01:00:09.850 align:middle line:84%
+And we often-- the notation
+I'll use for that is I'll
+
+01:00:09.850 --> 01:00:13.090 align:middle line:84%
+put a little plus
+at the bottom of it.
+
+01:00:13.090 --> 01:00:15.088 align:middle line:90%
+Or-- let me just write--
+
+01:00:15.088 --> 01:00:17.130 align:middle line:84%
+I like that notation, but
+I think that might just
+
+01:00:17.130 --> 01:00:17.910 align:middle line:90%
+cause confusion.
+
+01:00:17.910 --> 01:00:23.698 align:middle line:84%
+So let's just write
+max of this is 0.
+
+01:00:23.698 --> 01:00:25.930 align:middle line:90%
+Need a little more space.
+
+01:00:25.930 --> 01:00:28.370 align:middle line:90%
+Getting too cute here.
+
+01:00:28.370 --> 01:00:34.500 align:middle line:84%
+So it's the-- we have 1
+minus Q1 minus C over 2.
+
+01:00:34.500 --> 01:00:37.300 align:middle line:84%
+But if this is negative,
+I just want to produce 0.
+
+01:00:37.300 --> 01:00:42.020 align:middle line:84%
+So I'm going to write the
+maximum of this and 0.
+
+01:00:42.020 --> 01:00:44.440 align:middle line:84%
+I could use the plus, but
+I think this is clearer.
+
+01:00:44.440 --> 01:00:49.220 align:middle line:90%
+
+
+01:00:49.220 --> 01:00:51.260 align:middle line:84%
+And I wrote Q2 star
+just to indicate
+
+01:00:51.260 --> 01:00:55.020 align:middle line:84%
+that this is going to be part
+of my special backward induction
+
+01:00:55.020 --> 01:00:57.660 align:middle line:90%
+strategy profile.
+
+01:00:57.660 --> 01:01:03.180 align:middle line:84%
+And let's understand, Q2
+star at a particular Q1
+
+01:01:03.180 --> 01:01:04.860 align:middle line:90%
+is exactly this number.
+
+01:01:04.860 --> 01:01:06.640 align:middle line:84%
+But by going through
+this procedure,
+
+01:01:06.640 --> 01:01:09.140 align:middle line:84%
+I'm going to obtain
+a function Q2 star.
+
+01:01:09.140 --> 01:01:15.760 align:middle line:84%
+So Q2 star-- the function
+is firm 2's strategy.
+
+01:01:15.760 --> 01:01:20.780 align:middle line:90%
+
+
+01:01:20.780 --> 01:01:23.800 align:middle line:84%
+It's the function where,
+whatever Q1 you plug into it,
+
+01:01:23.800 --> 01:01:24.880 align:middle line:90%
+this is what you get out.
+
+01:01:24.880 --> 01:01:29.020 align:middle line:90%
+
+
+01:01:29.020 --> 01:01:31.800 align:middle line:84%
+OK, so now we go
+one step further.
+
+01:01:31.800 --> 01:01:35.700 align:middle line:90%
+
+
+01:01:35.700 --> 01:01:36.640 align:middle line:90%
+So we work backwards.
+
+01:01:36.640 --> 01:01:40.900 align:middle line:84%
+We figured out what happens at
+the second stage with firm 2.
+
+01:01:40.900 --> 01:01:44.040 align:middle line:84%
+And now we have to figure
+out how firm 1 should behave.
+
+01:01:44.040 --> 01:01:57.180 align:middle line:90%
+
+
+01:01:57.180 --> 01:02:02.900 align:middle line:90%
+So now we're at firm 1.
+
+01:02:02.900 --> 01:02:05.160 align:middle line:84%
+Technically, we're at
+the initial contingency.
+
+01:02:05.160 --> 01:02:07.340 align:middle line:84%
+Nothing has really happened
+so far in the game.
+
+01:02:07.340 --> 01:02:09.980 align:middle line:90%
+And what is firm 1's problem?
+
+01:02:09.980 --> 01:02:13.340 align:middle line:90%
+They're maximizing over Q1 what?
+
+01:02:13.340 --> 01:02:17.340 align:middle line:84%
+They're choosing Q1
+to maximize what?
+
+01:02:17.340 --> 01:02:20.140 align:middle line:90%
+Any thoughts here?
+
+01:02:20.140 --> 01:02:23.560 align:middle line:84%
+Well, I think the first step
+is it's going to be a profit.
+
+01:02:23.560 --> 01:02:26.020 align:middle line:90%
+So let's put pi 1 here.
+
+01:02:26.020 --> 01:02:28.590 align:middle line:84%
+And if they choose Q1,
+well, definitely Q1
+
+01:02:28.590 --> 01:02:30.927 align:middle line:84%
+should be the first
+component in here.
+
+01:02:30.927 --> 01:02:33.510 align:middle line:84%
+But the hard thing is, what do
+we put in the second component?
+
+01:02:33.510 --> 01:02:36.850 align:middle line:84%
+If I choose Q1,
+what will firm 2 do?
+
+01:02:36.850 --> 01:02:37.750 align:middle line:90%
+Yes?
+
+01:02:37.750 --> 01:02:39.110 align:middle line:90%
+AUDIENCE: [INAUDIBLE]
+
+01:02:39.110 --> 01:02:39.950 align:middle line:90%
+IAN BALL: Exactly.
+
+01:02:39.950 --> 01:02:46.710 align:middle line:84%
+So what I'll put in
+here is Q2 star of Q1.
+
+01:02:46.710 --> 01:02:48.670 align:middle line:84%
+So notice what I'm
+doing here as firm 1.
+
+01:02:48.670 --> 01:02:50.990 align:middle line:84%
+I'm choosing how much
+quantity to produce,
+
+01:02:50.990 --> 01:02:54.170 align:middle line:84%
+recognizing that
+when I choose Q1,
+
+01:02:54.170 --> 01:02:56.150 align:middle line:84%
+that's going to directly
+affect my payoff.
+
+01:02:56.150 --> 01:02:58.150 align:middle line:84%
+But the Q1 I choose
+is also going
+
+01:02:58.150 --> 01:03:01.430 align:middle line:84%
+to affect how much the
+other firm brings to market.
+
+01:03:01.430 --> 01:03:03.270 align:middle line:84%
+And specifically,
+we can see that this
+
+01:03:03.270 --> 01:03:05.510 align:middle line:90%
+is a decreasing function of Q1.
+
+01:03:05.510 --> 01:03:07.850 align:middle line:84%
+So the more that
+I bring to market,
+
+01:03:07.850 --> 01:03:10.590 align:middle line:84%
+the more the next farmer
+sees, wow, this person
+
+01:03:10.590 --> 01:03:11.850 align:middle line:90%
+brought a lot to market.
+
+01:03:11.850 --> 01:03:14.030 align:middle line:84%
+That's really going to
+bring down the market price.
+
+01:03:14.030 --> 01:03:15.930 align:middle line:84%
+I'm going to bring
+less to market.
+
+01:03:15.930 --> 01:03:19.510 align:middle line:84%
+So I can influence how much
+firm 2 brings to market
+
+01:03:19.510 --> 01:03:22.815 align:middle line:90%
+through my choice of Q1.
+
+01:03:22.815 --> 01:03:24.190 align:middle line:84%
+And now we're just
+going to write
+
+01:03:24.190 --> 01:03:25.990 align:middle line:90%
+this, substitute everything in.
+
+01:03:25.990 --> 01:03:29.710 align:middle line:84%
+And we'll use the trick that
+let's hope that we never
+
+01:03:29.710 --> 01:03:30.448 align:middle line:90%
+deal with the 0.
+
+01:03:30.448 --> 01:03:31.990 align:middle line:84%
+So let's assume
+everything's positive
+
+01:03:31.990 --> 01:03:33.610 align:middle line:84%
+and solve it and
+see what happens.
+
+01:03:33.610 --> 01:03:38.670 align:middle line:84%
+So we're going to get Q1 is
+the amount that I produce.
+
+01:03:38.670 --> 01:03:40.510 align:middle line:90%
+Then we're going to get--
+
+01:03:40.510 --> 01:03:42.190 align:middle line:84%
+maybe I'll write it
+really carefully--
+
+01:03:42.190 --> 01:03:50.850 align:middle line:84%
+Q1 plus Q2 star of Q1 minus C
+because for each unit I produce,
+
+01:03:50.850 --> 01:03:52.510 align:middle line:84%
+I have to pay a
+cost of C. And I'm
+
+01:03:52.510 --> 01:03:54.010 align:middle line:90%
+going to get the market price.
+
+01:03:54.010 --> 01:03:55.010 align:middle line:90%
+What's the market price?
+
+01:03:55.010 --> 01:03:57.610 align:middle line:84%
+Well, it depends on the
+market production level,
+
+01:03:57.610 --> 01:03:59.150 align:middle line:84%
+which is the sum
+of what I produce
+
+01:03:59.150 --> 01:04:02.590 align:middle line:84%
+and what I'm going to
+induce firm 2 to produce.
+
+01:04:02.590 --> 01:04:14.190 align:middle line:84%
+So this is Q1 times 1 minus Q1
+minus Q2 star of Q1 minus C.
+
+01:04:14.190 --> 01:04:16.270 align:middle line:84%
+And here, there's
+kind of a trick.
+
+01:04:16.270 --> 01:04:22.590 align:middle line:84%
+We have 1 minus Q1 minus C
+minus, again, 1 minus Q1 minus C
+
+01:04:22.590 --> 01:04:23.510 align:middle line:90%
+but over 2.
+
+01:04:23.510 --> 01:04:26.500 align:middle line:84%
+So we have 1 minus Q1
+minus C minus half of it.
+
+01:04:26.500 --> 01:04:27.620 align:middle line:90%
+So we have half left.
+
+01:04:27.620 --> 01:04:34.100 align:middle line:84%
+So we're going to get Q1 times
+1 minus Q1 minus C over 2.
+
+01:04:34.100 --> 01:04:36.760 align:middle line:90%
+
+
+01:04:36.760 --> 01:04:39.840 align:middle line:84%
+The Q2 star is gone because I
+substituted in the expression
+
+01:04:39.840 --> 01:04:41.340 align:middle line:90%
+for Q2 star above.
+
+01:04:41.340 --> 01:04:47.240 align:middle line:90%
+
+
+01:04:47.240 --> 01:04:49.452 align:middle line:84%
+And it turns out the half
+here doesn't actually
+
+01:04:49.452 --> 01:04:51.160 align:middle line:84%
+affect the optimum,
+because we could just
+
+01:04:51.160 --> 01:04:52.480 align:middle line:90%
+pull out the half to the front.
+
+01:04:52.480 --> 01:04:57.600 align:middle line:84%
+And we're going to get Q1
+star equals 1 minus C over 2
+
+01:04:57.600 --> 01:04:59.640 align:middle line:90%
+if we do the algebra.
+
+01:04:59.640 --> 01:05:01.660 align:middle line:84%
+It can be tricky to
+see this half here.
+
+01:05:01.660 --> 01:05:04.143 align:middle line:84%
+But remember, if we just
+put the half in the front,
+
+01:05:04.143 --> 01:05:06.560 align:middle line:84%
+you can see-- if we multiply
+the objective by a half, that
+
+01:05:06.560 --> 01:05:07.757 align:middle line:90%
+doesn't change the optimum.
+
+01:05:07.757 --> 01:05:09.840 align:middle line:84%
+It changes the optimal
+value, but not the optimum.
+
+01:05:09.840 --> 01:05:13.600 align:middle line:90%
+So we'll just get this.
+
+01:05:13.600 --> 01:05:16.440 align:middle line:84%
+Now let's be really
+clear about this.
+
+01:05:16.440 --> 01:05:19.740 align:middle line:84%
+The algorithm has told
+us a strategy profile.
+
+01:05:19.740 --> 01:05:22.880 align:middle line:84%
+It said firm 1 is
+producing this amount,
+
+01:05:22.880 --> 01:05:26.200 align:middle line:84%
+and firm 2 is using this
+complete contingent plan
+
+01:05:26.200 --> 01:05:29.297 align:middle line:84%
+that specifies what they produce
+as a function of every Q1.
+
+01:05:29.297 --> 01:05:30.880 align:middle line:84%
+But now we'd like
+to understand, well,
+
+01:05:30.880 --> 01:05:32.680 align:middle line:90%
+how much is actually produced?
+
+01:05:32.680 --> 01:05:36.900 align:middle line:84%
+Because all we know is firm
+2's complete contingent plan.
+
+01:05:36.900 --> 01:05:39.680 align:middle line:84%
+Let's figure out the actual
+production level for firm 2.
+
+01:05:39.680 --> 01:05:40.780 align:middle line:90%
+What is that going to be?
+
+01:05:40.780 --> 01:05:44.920 align:middle line:90%
+
+
+01:05:44.920 --> 01:05:47.040 align:middle line:90%
+Well, we need to plug in--
+
+01:05:47.040 --> 01:05:49.800 align:middle line:84%
+what I want to
+look at is Q2 star
+
+01:05:49.800 --> 01:05:53.600 align:middle line:84%
+is the strategy that backward
+induction gave us for firm 2.
+
+01:05:53.600 --> 01:05:56.680 align:middle line:84%
+But now I'm going to plug into
+that function the strategy
+
+01:05:56.680 --> 01:05:58.880 align:middle line:84%
+that backward induction
+gave us for firm 1, which
+
+01:05:58.880 --> 01:06:02.240 align:middle line:90%
+is just a number, the quantity.
+
+01:06:02.240 --> 01:06:04.400 align:middle line:84%
+And this is going to tell
+me how much is actually
+
+01:06:04.400 --> 01:06:09.080 align:middle line:84%
+produced as opposed to firm
+2's complete contingent plan.
+
+01:06:09.080 --> 01:06:14.540 align:middle line:84%
+And I have to--
+little careful here.
+
+01:06:14.540 --> 01:06:18.860 align:middle line:84%
+It's 1 minus C over
+2 minus quarter.
+
+01:06:18.860 --> 01:06:21.670 align:middle line:84%
+And I think it should
+be 1 minus C over 4.
+
+01:06:21.670 --> 01:06:25.490 align:middle line:90%
+
+
+01:06:25.490 --> 01:06:30.330 align:middle line:90%
+So now we've analyzed the game.
+
+01:06:30.330 --> 01:06:32.910 align:middle line:84%
+But now we can ask-- we've
+analyzed it mathematically.
+
+01:06:32.910 --> 01:06:36.090 align:middle line:84%
+Let's ask some econ
+questions about it.
+
+01:06:36.090 --> 01:06:39.930 align:middle line:84%
+And in particular, we've looked
+at how much each firm produces
+
+01:06:39.930 --> 01:06:41.290 align:middle line:90%
+in the equilibrium.
+
+01:06:41.290 --> 01:06:45.090 align:middle line:84%
+Does anyone recall, if we
+did Cournot with two firms,
+
+01:06:45.090 --> 01:06:48.196 align:middle line:90%
+how much each firm produced?
+
+01:06:48.196 --> 01:06:49.427 align:middle line:90%
+Anyone remember?
+
+01:06:49.427 --> 01:06:51.010 align:middle line:84%
+We had the same--
+were the same demand
+
+01:06:51.010 --> 01:06:52.350 align:middle line:90%
+function, and the same costs.
+
+01:06:52.350 --> 01:06:56.210 align:middle line:90%
+
+
+01:06:56.210 --> 01:06:56.862 align:middle line:90%
+No?
+
+01:06:56.862 --> 01:06:57.570 align:middle line:90%
+I'll just say it.
+
+01:06:57.570 --> 01:06:59.030 align:middle line:90%
+It's 1 minus C over 3.
+
+01:06:59.030 --> 01:07:03.062 align:middle line:90%
+
+
+01:07:03.062 --> 01:07:06.510 align:middle line:84%
+So can anyone comment
+on the differences here?
+
+01:07:06.510 --> 01:07:13.550 align:middle line:84%
+So in Cournot, Q1 star equals
+Q2 star equals 1 minus C over 3.
+
+01:07:13.550 --> 01:07:15.610 align:middle line:84%
+So when the firms
+move simultaneously,
+
+01:07:15.610 --> 01:07:18.290 align:middle line:84%
+they both produced
+1 minus C over 3.
+
+01:07:18.290 --> 01:07:20.330 align:middle line:84%
+When the firms
+move sequentially,
+
+01:07:20.330 --> 01:07:22.250 align:middle line:84%
+firm 1 produced
+1 minus C over 2,
+
+01:07:22.250 --> 01:07:27.490 align:middle line:84%
+and firm 2 produced
+1 minus C over 4.
+
+01:07:27.490 --> 01:07:32.378 align:middle line:84%
+Any intuition for
+why we get this?
+
+01:07:32.378 --> 01:07:33.670 align:middle line:90%
+What's the key difference here?
+
+01:07:33.670 --> 01:07:36.010 align:middle line:84%
+Let's think of it from
+firm 1's perspective.
+
+01:07:36.010 --> 01:07:40.850 align:middle line:84%
+What's the key difference in
+firm 1's optimization problem
+
+01:07:40.850 --> 01:07:43.622 align:middle line:84%
+between the simultaneous-move
+Cournot game
+
+01:07:43.622 --> 01:07:44.830 align:middle line:90%
+and the sequential-move game?
+
+01:07:44.830 --> 01:07:46.622 align:middle line:84%
+Remember, we already
+saw in the Boston game
+
+01:07:46.622 --> 01:07:48.330 align:middle line:84%
+that simultaneity
+versus sequential play
+
+01:07:48.330 --> 01:07:50.570 align:middle line:90%
+can have a big difference.
+
+01:07:50.570 --> 01:07:51.570 align:middle line:90%
+Yeah?
+
+01:07:51.570 --> 01:07:53.430 align:middle line:84%
+AUDIENCE: Maybe in
+the Cournot game,
+
+01:07:53.430 --> 01:07:56.230 align:middle line:84%
+they both know that they're
+choosing the same quantity.
+
+01:07:56.230 --> 01:07:59.930 align:middle line:84%
+So they have to keep in mind
+that the other person could
+
+01:07:59.930 --> 01:08:03.110 align:middle line:84%
+be doing the same thing
+while the other [INAUDIBLE].
+
+01:08:03.110 --> 01:08:05.710 align:middle line:84%
+IAN BALL: Stackelberg or
+sequential quantity competition?
+
+01:08:05.710 --> 01:08:06.510 align:middle line:90%
+Yeah.
+
+01:08:06.510 --> 01:08:09.130 align:middle line:84%
+AUDIENCE: [INAUDIBLE]
+player 1 knows [INAUDIBLE]
+
+01:08:09.130 --> 01:08:10.730 align:middle line:90%
+player 2's going to know.
+
+01:08:10.730 --> 01:08:13.928 align:middle line:84%
+Player 2's obviously not
+going to [INAUDIBLE].
+
+01:08:13.928 --> 01:08:16.470 align:middle line:84%
+IAN BALL: So I think the one
+word you said there was crucial.
+
+01:08:16.470 --> 01:08:18.138 align:middle line:84%
+You said firm 1 can
+influence firm 2,
+
+01:08:18.138 --> 01:08:19.680 align:middle line:84%
+and I think that's
+the crucial thing.
+
+01:08:19.680 --> 01:08:21.580 align:middle line:84%
+So let's think about
+the Nash equilibrium
+
+01:08:21.580 --> 01:08:22.939 align:middle line:90%
+reasoning in Cournot.
+
+01:08:22.939 --> 01:08:26.020 align:middle line:84%
+In Cournot, I'm taking
+as given the amount
+
+01:08:26.020 --> 01:08:27.427 align:middle line:90%
+that my opponent is producing.
+
+01:08:27.427 --> 01:08:29.760 align:middle line:84%
+And I'm saying, given the
+amount that they're producing,
+
+01:08:29.760 --> 01:08:31.500 align:middle line:84%
+the amount that I'm
+producing is optimal,
+
+01:08:31.500 --> 01:08:33.899 align:middle line:84%
+taking as fixed the
+amount they produce.
+
+01:08:33.899 --> 01:08:35.420 align:middle line:84%
+Here, it's
+fundamentally different
+
+01:08:35.420 --> 01:08:39.380 align:middle line:84%
+because, because I move first, I
+know that my choice of quantity
+
+01:08:39.380 --> 01:08:41.120 align:middle line:90%
+affects how much they produce.
+
+01:08:41.120 --> 01:08:43.700 align:middle line:84%
+So I know if I
+increase my production,
+
+01:08:43.700 --> 01:08:46.200 align:middle line:84%
+I can cause them to
+decrease their production.
+
+01:08:46.200 --> 01:08:49.000 align:middle line:84%
+So that makes more production
+for firm 1 more attractive.
+
+01:08:49.000 --> 01:08:51.143 align:middle line:84%
+In general, I don't
+want the other person
+
+01:08:51.143 --> 01:08:53.060 align:middle line:84%
+to produce because that
+brings down the price.
+
+01:08:53.060 --> 01:08:55.880 align:middle line:84%
+So if I know that by
+raising my production,
+
+01:08:55.880 --> 01:08:57.779 align:middle line:84%
+I can decrease their
+production, that
+
+01:08:57.779 --> 01:09:02.500 align:middle line:84%
+gives me a further incentive for
+me to raise my production level.
+
+01:09:02.500 --> 01:09:05.220 align:middle line:84%
+So that's why firm
+1 produces more.
+
+01:09:05.220 --> 01:09:07.760 align:middle line:84%
+Firm 2's choices actually
+looks very similar.
+
+01:09:07.760 --> 01:09:10.240 align:middle line:84%
+Firm 2 takes firm 1's
+quantity as given.
+
+01:09:10.240 --> 01:09:12.620 align:middle line:84%
+So firm 1's incentives are
+essentially the same-- sorry,
+
+01:09:12.620 --> 01:09:15.319 align:middle line:84%
+firm 2's incentives are
+essentially the same.
+
+01:09:15.319 --> 01:09:17.740 align:middle line:84%
+But the issue is firm 1
+is producing so much more.
+
+01:09:17.740 --> 01:09:21.240 align:middle line:84%
+It's optimal for them to produce
+a lot less than in Cournot.
+
+01:09:21.240 --> 01:09:24.779 align:middle line:90%
+
+
+01:09:24.779 --> 01:09:25.880 align:middle line:90%
+So what's key?
+
+01:09:25.880 --> 01:09:28.160 align:middle line:84%
+The key word you
+used is "influence."
+
+01:09:28.160 --> 01:09:30.700 align:middle line:90%
+
+
+01:09:30.700 --> 01:09:36.540 align:middle line:84%
+Can my quantity influence
+the quantity that you choose?
+
+01:09:36.540 --> 01:09:38.180 align:middle line:84%
+All right, so now
+we've found-- we've
+
+01:09:38.180 --> 01:09:39.720 align:middle line:90%
+applied backward induction.
+
+01:09:39.720 --> 01:09:42.740 align:middle line:84%
+We found a particular
+Nash equilibrium
+
+01:09:42.740 --> 01:09:44.000 align:middle line:90%
+that seems reasonable to us.
+
+01:09:44.000 --> 01:09:46.083 align:middle line:84%
+It doesn't involve any
+credible-- any non-credible
+
+01:09:46.083 --> 01:09:46.620 align:middle line:90%
+threats.
+
+01:09:46.620 --> 01:09:48.120 align:middle line:84%
+But it's still good
+to keep in mind,
+
+01:09:48.120 --> 01:09:51.260 align:middle line:84%
+could we find any other
+Nash equilibria that
+
+01:09:51.260 --> 01:09:52.760 align:middle line:90%
+do involve credible threats?
+
+01:09:52.760 --> 01:10:03.700 align:middle line:90%
+
+
+01:10:03.700 --> 01:10:09.145 align:middle line:84%
+So could we find
+other Nash equilibria
+
+01:10:09.145 --> 01:10:11.020 align:middle line:84%
+that maybe we don't find
+compelling, but just
+
+01:10:11.020 --> 01:10:13.640 align:middle line:84%
+to understand what's
+going on here?
+
+01:10:13.640 --> 01:10:17.095 align:middle line:84%
+What would be a threat that
+firm 2 might be tempted to make?
+
+01:10:17.095 --> 01:10:18.470 align:middle line:84%
+If we think back
+to our reasoning
+
+01:10:18.470 --> 01:10:20.630 align:middle line:84%
+about-- we gave the
+example of, I'll
+
+01:10:20.630 --> 01:10:23.710 align:middle line:84%
+threaten to always go to the
+Red Sox game whatever you do.
+
+01:10:23.710 --> 01:10:25.590 align:middle line:84%
+What might be a threat
+that firm 2 might
+
+01:10:25.590 --> 01:10:28.730 align:middle line:84%
+want to impose to try
+to benefit themselves,
+
+01:10:28.730 --> 01:10:30.090 align:middle line:90%
+if we had a very smart firm 2?
+
+01:10:30.090 --> 01:10:30.350 align:middle line:90%
+Yeah?
+
+01:10:30.350 --> 01:10:31.767 align:middle line:84%
+AUDIENCE: Make a
+threat to produce
+
+01:10:31.767 --> 01:10:34.910 align:middle line:84%
+a lot to drive the price
+down so that firm 1 won't
+
+01:10:34.910 --> 01:10:37.528 align:middle line:84%
+make any money, and then, yeah,
+they're both just worse off.
+
+01:10:37.528 --> 01:10:38.570 align:middle line:90%
+IAN BALL: Great, exactly.
+
+01:10:38.570 --> 01:10:41.990 align:middle line:90%
+So firm 2 can make a threat.
+
+01:10:41.990 --> 01:10:45.310 align:middle line:84%
+Firm 2 might threaten--
+there's even a term for this--
+
+01:10:45.310 --> 01:10:47.390 align:middle line:84%
+to flood the market,
+meaning produce
+
+01:10:47.390 --> 01:10:50.130 align:middle line:84%
+a huge amount of quantity to
+pull down the market price.
+
+01:10:50.130 --> 01:11:02.550 align:middle line:90%
+
+
+01:11:02.550 --> 01:11:03.730 align:middle line:90%
+But let's say a little more.
+
+01:11:03.730 --> 01:11:05.130 align:middle line:84%
+When would they
+want to impose this?
+
+01:11:05.130 --> 01:11:06.210 align:middle line:84%
+When would they
+flood the market?
+
+01:11:06.210 --> 01:11:08.250 align:middle line:84%
+Under what conditions
+or what circumstances?
+
+01:11:08.250 --> 01:11:13.350 align:middle line:90%
+
+
+01:11:13.350 --> 01:11:16.750 align:middle line:84%
+What does firm 2
+want firm 1 to do?
+
+01:11:16.750 --> 01:11:19.420 align:middle line:90%
+Produce a lot or a little?
+
+01:11:19.420 --> 01:11:21.170 align:middle line:84%
+You can answer or
+someone else can answer.
+
+01:11:21.170 --> 01:11:21.510 align:middle line:90%
+Yeah?
+
+01:11:21.510 --> 01:11:24.070 align:middle line:84%
+AUDIENCE: Well, I guess firm
+2 would want firm 1 to produce
+
+01:11:24.070 --> 01:11:25.410 align:middle line:90%
+1 minus C over 3.
+
+01:11:25.410 --> 01:11:25.910 align:middle line:90%
+But--
+
+01:11:25.910 --> 01:11:27.150 align:middle line:84%
+IAN BALL: Or in
+general, they actually
+
+01:11:27.150 --> 01:11:28.370 align:middle line:84%
+might want them to
+produce either even less.
+
+01:11:28.370 --> 01:11:30.370 align:middle line:84%
+But in general, they want
+them to produce not very much.
+
+01:11:30.370 --> 01:11:32.310 align:middle line:84%
+So when would they
+threaten-- when would they
+
+01:11:32.310 --> 01:11:33.018 align:middle line:90%
+flood the market?
+
+01:11:33.018 --> 01:11:33.830 align:middle line:90%
+Under what--
+
+01:11:33.830 --> 01:11:34.670 align:middle line:84%
+AUDIENCE: When they
+produce too much.
+
+01:11:34.670 --> 01:11:36.212 align:middle line:84%
+IAN BALL: When they
+produce too much.
+
+01:11:36.212 --> 01:11:38.430 align:middle line:84%
+So what firm 2 might
+say is, look, you better
+
+01:11:38.430 --> 01:11:43.130 align:middle line:84%
+keep your production level low
+because if you produce too much,
+
+01:11:43.130 --> 01:11:44.490 align:middle line:90%
+I'm going to flood the market.
+
+01:11:44.490 --> 01:11:46.510 align:middle line:84%
+So firm 2 might threaten
+to flood the market
+
+01:11:46.510 --> 01:11:50.650 align:middle line:90%
+if firm 1 produces too much.
+
+01:11:50.650 --> 01:11:55.350 align:middle line:90%
+
+
+01:11:55.350 --> 01:11:58.790 align:middle line:84%
+And this actually gets into
+dynamics that we'll study later.
+
+01:11:58.790 --> 01:12:01.290 align:middle line:84%
+Oil cartels essentially
+function exactly in this way.
+
+01:12:01.290 --> 01:12:03.450 align:middle line:84%
+I might say, you need
+to keep production low,
+
+01:12:03.450 --> 01:12:04.750 align:middle line:84%
+and if you don't, I'm
+going to punish you
+
+01:12:04.750 --> 01:12:05.880 align:middle line:90%
+by flooding the market Yes?
+
+01:12:05.880 --> 01:12:08.130 align:middle line:84%
+AUDIENCE: How would this be
+a credible threat, though?
+
+01:12:08.130 --> 01:12:10.580 align:middle line:84%
+Because firms 2 loses
+money by flooding.
+
+01:12:10.580 --> 01:12:12.580 align:middle line:84%
+IAN BALL: So this will
+not be a credible threat.
+
+01:12:12.580 --> 01:12:15.403 align:middle line:84%
+That's why it didn't survive our
+backward induction procedure.
+
+01:12:15.403 --> 01:12:16.820 align:middle line:84%
+But it will be a
+Nash equilibrium.
+
+01:12:16.820 --> 01:12:19.400 align:middle line:84%
+So what I want to illustrate
+is how a Nash equilibrium can
+
+01:12:19.400 --> 01:12:21.280 align:middle line:90%
+involve non-credible threats.
+
+01:12:21.280 --> 01:12:24.740 align:middle line:84%
+Backward induction rules out
+those non-credible threats,
+
+01:12:24.740 --> 01:12:26.360 align:middle line:84%
+but Nash equilibrium
+can allow them
+
+01:12:26.360 --> 01:12:28.400 align:middle line:90%
+if we design them carefully.
+
+01:12:28.400 --> 01:12:29.100 align:middle line:90%
+Other question?
+
+01:12:29.100 --> 01:12:29.600 align:middle line:90%
+Yeah?
+
+01:12:29.600 --> 01:12:32.440 align:middle line:84%
+AUDIENCE: If you remove some
+of the simplifying assumptions
+
+01:12:32.440 --> 01:12:34.920 align:middle line:84%
+we make for this, can you
+make it a credible threat
+
+01:12:34.920 --> 01:12:38.080 align:middle line:84%
+with things like infrastructure
+and capital investments
+
+01:12:38.080 --> 01:12:39.397 align:middle line:90%
+in production capacity?
+
+01:12:39.397 --> 01:12:41.480 align:middle line:84%
+IAN BALL: I think the best
+way to make it credible
+
+01:12:41.480 --> 01:12:42.820 align:middle line:84%
+would be to say it's
+a repeated game,
+
+01:12:42.820 --> 01:12:44.080 align:middle line:84%
+and that's what
+we'll study later on.
+
+01:12:44.080 --> 01:12:45.640 align:middle line:84%
+We're assuming it's
+a one-off thing.
+
+01:12:45.640 --> 01:12:48.900 align:middle line:84%
+But really what might happen
+is, every day we come to market,
+
+01:12:48.900 --> 01:12:51.400 align:middle line:84%
+and I might say, well, if day
+after day you keep doing this,
+
+01:12:51.400 --> 01:12:52.483 align:middle line:90%
+then I'm going to do this.
+
+01:12:52.483 --> 01:12:54.400 align:middle line:84%
+And then we can get
+these complicated rewards
+
+01:12:54.400 --> 01:12:55.500 align:middle line:90%
+and punishments over time.
+
+01:12:55.500 --> 01:12:57.080 align:middle line:84%
+And that's going to be a
+big focus of the second part
+
+01:12:57.080 --> 01:12:58.000 align:middle line:90%
+of our course.
+
+01:12:58.000 --> 01:12:59.340 align:middle line:84%
+So that's a good way
+to make it credible.
+
+01:12:59.340 --> 01:12:59.640 align:middle line:90%
+Yes?
+
+01:12:59.640 --> 01:13:01.420 align:middle line:84%
+AUDIENCE: If it were
+a Nash equilibrium--
+
+01:13:01.420 --> 01:13:02.860 align:middle line:90%
+so this is a Nash equilibrium.
+
+01:13:02.860 --> 01:13:04.920 align:middle line:84%
+Is it the idea that
+firm 1, knowing
+
+01:13:04.920 --> 01:13:07.220 align:middle line:84%
+firm 2 can threaten the
+market, will deviate?
+
+01:13:07.220 --> 01:13:08.720 align:middle line:84%
+IAN BALL: Exactly,
+so let's actually
+
+01:13:08.720 --> 01:13:10.000 align:middle line:84%
+construct our Nash
+equilibrium because we
+
+01:13:10.000 --> 01:13:11.220 align:middle line:90%
+haven't constructed one yet.
+
+01:13:11.220 --> 01:13:18.760 align:middle line:84%
+So let's fix some number,
+Q1, which is, let's say,
+
+01:13:18.760 --> 01:13:20.080 align:middle line:90%
+really small.
+
+01:13:20.080 --> 01:13:26.980 align:middle line:84%
+So let's say-- it doesn't really
+matter exactly, but we do--
+
+01:13:26.980 --> 01:13:32.440 align:middle line:90%
+
+
+01:13:32.440 --> 01:13:34.560 align:middle line:84%
+yeah, let's say
+1 minus C over 4.
+
+01:13:34.560 --> 01:13:36.640 align:middle line:90%
+It doesn't matter.
+
+01:13:36.640 --> 01:13:41.060 align:middle line:84%
+And now what is Q2
+star going to be?
+
+01:13:41.060 --> 01:13:50.080 align:middle line:90%
+
+
+01:13:50.080 --> 01:13:53.883 align:middle line:84%
+Well, let's use our
+idea that-- there's
+
+01:13:53.883 --> 01:13:55.300 align:middle line:84%
+a few different
+ways we can do it,
+
+01:13:55.300 --> 01:13:56.280 align:middle line:84%
+but let's use an
+idea that they're
+
+01:13:56.280 --> 01:13:58.405 align:middle line:84%
+going to threaten to flood
+the market if production
+
+01:13:58.405 --> 01:14:00.280 align:middle line:90%
+is too high.
+
+01:14:00.280 --> 01:14:02.280 align:middle line:90%
+So let's look at two cases.
+
+01:14:02.280 --> 01:14:07.200 align:middle line:84%
+If Q1 is less than--
+let me call this Q1 bar.
+
+01:14:07.200 --> 01:14:12.330 align:middle line:84%
+If Q1 is less than Q1 bar and
+if Q1 is greater than or--
+
+01:14:12.330 --> 01:14:16.010 align:middle line:84%
+less than or equal to
+and greater than Q1.
+
+01:14:16.010 --> 01:14:18.890 align:middle line:84%
+So if Q1 is greater
+than Q1 bar, firm 2
+
+01:14:18.890 --> 01:14:20.170 align:middle line:90%
+is going to flood the market.
+
+01:14:20.170 --> 01:14:21.910 align:middle line:84%
+Again, the exact
+amount doesn't matter.
+
+01:14:21.910 --> 01:14:23.030 align:middle line:90%
+Let's say 100.
+
+01:14:23.030 --> 01:14:23.790 align:middle line:90%
+It doesn't matter.
+
+01:14:23.790 --> 01:14:27.210 align:middle line:90%
+
+
+01:14:27.210 --> 01:14:29.625 align:middle line:84%
+What if Q1 is less than
+or equal to Q1 bar?
+
+01:14:29.625 --> 01:14:31.250 align:middle line:84%
+We actually have to
+be a little careful
+
+01:14:31.250 --> 01:14:33.042 align:middle line:84%
+to make sure it's still
+a Nash equilibrium.
+
+01:14:33.042 --> 01:14:40.610 align:middle line:84%
+So let's follow our idea here,
+and let's make this 1 minus Q1
+
+01:14:40.610 --> 01:14:45.490 align:middle line:90%
+minus C over 2.
+
+01:14:45.490 --> 01:14:46.420 align:middle line:90%
+There's many examples.
+
+01:14:46.420 --> 01:14:48.670 align:middle line:84%
+And we could figure out
+exactly how big Q1 bar can go.
+
+01:14:48.670 --> 01:14:49.990 align:middle line:84%
+But I think this
+one should work.
+
+01:14:49.990 --> 01:14:51.948 align:middle line:84%
+And let's just see that
+we understand that this
+
+01:14:51.948 --> 01:14:53.890 align:middle line:90%
+is a Nash equilibrium.
+
+01:14:53.890 --> 01:14:58.910 align:middle line:84%
+So given Q2's strategy, why is
+this the optimal choice of Q1?
+
+01:14:58.910 --> 01:15:00.810 align:middle line:90%
+Can anyone explain in words?
+
+01:15:00.810 --> 01:15:03.150 align:middle line:84%
+I mean, we see the math, but
+can we explain it in words?
+
+01:15:03.150 --> 01:15:06.930 align:middle line:90%
+
+
+01:15:06.930 --> 01:15:09.490 align:middle line:84%
+Well, why don't I want to
+produce more than this?
+
+01:15:09.490 --> 01:15:10.070 align:middle line:90%
+Yeah?
+
+01:15:10.070 --> 01:15:11.170 align:middle line:84%
+AUDIENCE: That's
+the most you can
+
+01:15:11.170 --> 01:15:12.910 align:middle line:84%
+produce without the
+market getting flooded.
+
+01:15:12.910 --> 01:15:13.660 align:middle line:90%
+IAN BALL: Exactly.
+
+01:15:13.660 --> 01:15:16.630 align:middle line:84%
+So if I produce-- it's the most
+I can produce without flooding.
+
+01:15:16.630 --> 01:15:19.090 align:middle line:84%
+And you can check that, when
+the market's not flooded,
+
+01:15:19.090 --> 01:15:21.010 align:middle line:84%
+my payoff is going
+to be increasing
+
+01:15:21.010 --> 01:15:22.230 align:middle line:90%
+at least until this point.
+
+01:15:22.230 --> 01:15:25.550 align:middle line:84%
+So if I produce less than this,
+the market doesn't get flooded.
+
+01:15:25.550 --> 01:15:27.770 align:middle line:84%
+But I'm producing so little,
+I'm not doing very well.
+
+01:15:27.770 --> 01:15:29.272 align:middle line:84%
+If I produce more
+than this, that
+
+01:15:29.272 --> 01:15:31.230 align:middle line:84%
+would be good if the
+market didn't get flooded.
+
+01:15:31.230 --> 01:15:33.750 align:middle line:84%
+But if I produce more than
+this, the market gets flooded,
+
+01:15:33.750 --> 01:15:35.030 align:middle line:90%
+so I don't want to do it.
+
+01:15:35.030 --> 01:15:39.770 align:middle line:84%
+So player 1 is behaving optimal
+given firm 2's strategy.
+
+01:15:39.770 --> 01:15:42.450 align:middle line:84%
+How can we see that firm 2 is
+behaving optimally given firm
+
+01:15:42.450 --> 01:15:43.070 align:middle line:90%
+1's strategy?
+
+01:15:43.070 --> 01:15:45.090 align:middle line:84%
+What's the one--
+the only one aspect
+
+01:15:45.090 --> 01:15:46.570 align:middle line:84%
+of this strategy
+that's important
+
+01:15:46.570 --> 01:15:50.890 align:middle line:84%
+if we want to check that
+it's a Nash equilibrium?
+
+01:15:50.890 --> 01:15:53.730 align:middle line:84%
+What's important is,
+when firm 1 chooses
+
+01:15:53.730 --> 01:16:00.010 align:middle line:84%
+Q1 bar, which is in this case--
+firm 2 responds optimally
+
+01:16:00.010 --> 01:16:02.537 align:middle line:84%
+because that's the only thing
+that affects firm 2's payoff,
+
+01:16:02.537 --> 01:16:04.870 align:middle line:84%
+what they do in the contingency
+that's actually reached.
+
+01:16:04.870 --> 01:16:07.620 align:middle line:84%
+So you can check that, given
+that firm 1 is producing
+
+01:16:07.620 --> 01:16:11.260 align:middle line:84%
+this amount, firm 2 is going to
+produce 1 minus Q1 bar minus C
+
+01:16:11.260 --> 01:16:11.880 align:middle line:90%
+over 2.
+
+01:16:11.880 --> 01:16:14.180 align:middle line:84%
+And it turns out that's
+optimal for firm 2 given firm
+
+01:16:14.180 --> 01:16:15.120 align:middle line:90%
+1's behavior.
+
+01:16:15.120 --> 01:16:16.820 align:middle line:84%
+So this will be a
+Nash equilibrium.
+
+01:16:16.820 --> 01:16:20.840 align:middle line:84%
+But it doesn't survive
+backward induction.
+
+01:16:20.840 --> 01:16:24.720 align:middle line:84%
+What is a contingency at which
+firm 2 is behaving suboptimally?
+
+01:16:24.720 --> 01:16:29.220 align:middle line:90%
+
+
+01:16:29.220 --> 01:16:31.540 align:middle line:84%
+Well, really anything
+up here-- actually,
+
+01:16:31.540 --> 01:16:32.960 align:middle line:84%
+not if Q1 is
+really, really high.
+
+01:16:32.960 --> 01:16:39.140 align:middle line:84%
+But if Q1 is anywhere
+between Q1 bar and 1 minus C,
+
+01:16:39.140 --> 01:16:42.660 align:middle line:84%
+firm 2 could respond and
+make positive profits,
+
+01:16:42.660 --> 01:16:44.600 align:middle line:84%
+but they're instead
+flooding the market,
+
+01:16:44.600 --> 01:16:47.620 align:middle line:84%
+causing the price to drop to
+0, and making profits of 0.
+
+01:16:47.620 --> 01:16:51.360 align:middle line:84%
+So at unreached contingencies,
+firm 2 is behaving suboptimally.
+
+01:16:51.360 --> 01:16:53.560 align:middle line:84%
+That's why this doesn't
+survive backward induction.
+
+01:16:53.560 --> 01:16:56.318 align:middle line:84%
+But at the reached contingency,
+they are behaving optimally.
+
+01:16:56.318 --> 01:16:58.360 align:middle line:84%
+And that's why it constitutes
+a Nash equilibrium.
+
+01:16:58.360 --> 01:17:00.527 align:middle line:84%
+And let me stop there, and
+I'll see you on Thursday.
+
+01:17:00.527 --> 01:17:02.330 align:middle line:90%
+Thank you.
+
+01:17:02.330 --> 01:17:05.000 align:middle line:90%

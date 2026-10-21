@@ -1,0 +1,4073 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:01.922 align:middle line:90%
+[SQUEAKING]
+
+00:00:01.922 --> 00:00:03.818 align:middle line:90%
+[RUSTLING]
+
+00:00:03.818 --> 00:00:08.558 align:middle line:90%
+[CLICKING]
+
+00:00:08.558 --> 00:00:11.120 align:middle line:84%
+IAN BALL: So the last
+topic of the course
+
+00:00:11.120 --> 00:00:13.000 align:middle line:84%
+that we'll discuss
+today is going
+
+00:00:13.000 --> 00:00:14.980 align:middle line:84%
+to be something called
+common knowledge.
+
+00:00:14.980 --> 00:00:21.440 align:middle line:90%
+
+
+00:00:21.440 --> 00:00:23.760 align:middle line:84%
+So throughout the course,
+we've often said things
+
+00:00:23.760 --> 00:00:28.853 align:middle line:84%
+like, oh, we've assumed that
+the game is common knowledge.
+
+00:00:28.853 --> 00:00:31.520 align:middle line:84%
+But we've never really been very
+precise about exactly what that
+
+00:00:31.520 --> 00:00:34.120 align:middle line:84%
+means when we say the game
+itself is common knowledge.
+
+00:00:34.120 --> 00:00:36.560 align:middle line:84%
+So today, we're going to
+introduce formally this concept
+
+00:00:36.560 --> 00:00:37.960 align:middle line:90%
+of common knowledge.
+
+00:00:37.960 --> 00:00:40.913 align:middle line:84%
+And this is a topic that
+has quite a long history
+
+00:00:40.913 --> 00:00:42.580 align:middle line:84%
+and has been studied
+across many fields.
+
+00:00:42.580 --> 00:00:44.320 align:middle line:84%
+So philosophers thought
+about this issue.
+
+00:00:44.320 --> 00:00:46.277 align:middle line:84%
+Logicians and mathematicians
+thought about it.
+
+00:00:46.277 --> 00:00:48.360 align:middle line:84%
+And then economists have
+thought about it as well.
+
+00:00:48.360 --> 00:00:53.240 align:middle line:84%
+So the starting point of our
+model of common knowledge
+
+00:00:53.240 --> 00:00:56.840 align:middle line:84%
+is we're going to say there's
+some set, this is called omega,
+
+00:00:56.840 --> 00:00:58.260 align:middle line:90%
+of states of the world.
+
+00:00:58.260 --> 00:01:05.069 align:middle line:90%
+
+
+00:01:05.069 --> 00:01:07.910 align:middle line:84%
+And there's various
+interpretations about what
+
+00:01:07.910 --> 00:01:09.310 align:middle line:90%
+these states of the world are.
+
+00:01:09.310 --> 00:01:13.070 align:middle line:84%
+You could imagine every state
+specifying every possible detail
+
+00:01:13.070 --> 00:01:15.750 align:middle line:84%
+about the world, every
+arrangement of atoms.
+
+00:01:15.750 --> 00:01:17.530 align:middle line:84%
+Of course, that's not
+a very useful model.
+
+00:01:17.530 --> 00:01:19.770 align:middle line:84%
+So often, when we talk
+about states of the world,
+
+00:01:19.770 --> 00:01:22.030 align:middle line:84%
+we talk about the states of
+the world, the dimensions
+
+00:01:22.030 --> 00:01:24.950 align:middle line:84%
+or aspects of the world that are
+relevant to the problem at hand.
+
+00:01:24.950 --> 00:01:26.730 align:middle line:84%
+And I think this is
+all a bit abstract.
+
+00:01:26.730 --> 00:01:29.810 align:middle line:84%
+So as I introduce the model,
+I want to, on the other side,
+
+00:01:29.810 --> 00:01:33.130 align:middle line:84%
+introduce some leading
+examples to make this concrete.
+
+00:01:33.130 --> 00:01:35.590 align:middle line:84%
+So as a leading
+example let's imagine
+
+00:01:35.590 --> 00:01:38.968 align:middle line:84%
+we're learning about
+the roll of a die.
+
+00:01:38.968 --> 00:01:40.510 align:middle line:84%
+And therefore, the
+state of the world
+
+00:01:40.510 --> 00:01:43.990 align:middle line:84%
+is just going to be
+these possible values.
+
+00:01:43.990 --> 00:01:46.790 align:middle line:84%
+Of course, this is a
+huge simplification,
+
+00:01:46.790 --> 00:01:50.990 align:middle line:84%
+but I think this is going to
+be a good way to fix ideas.
+
+00:01:50.990 --> 00:01:52.630 align:middle line:90%
+So a die is rolled.
+
+00:01:52.630 --> 00:01:55.430 align:middle line:84%
+It can take any value
+between 1 and 6.
+
+00:01:55.430 --> 00:01:59.110 align:middle line:84%
+And it's also helpful to
+represent these states
+
+00:01:59.110 --> 00:02:00.870 align:middle line:90%
+kind of geometrically here.
+
+00:02:00.870 --> 00:02:03.055 align:middle line:84%
+So the exact arrangement
+doesn't matter.
+
+00:02:03.055 --> 00:02:04.930 align:middle line:84%
+It just makes it easier
+to draw the pictures.
+
+00:02:04.930 --> 00:02:07.263 align:middle line:84%
+So I'm going to think of the
+states as being like this--
+
+00:02:07.263 --> 00:02:13.567 align:middle line:90%
+1, 2, 3, 4, 5, 6.
+
+00:02:13.567 --> 00:02:15.650 align:middle line:84%
+And then once we have the
+set of states the world,
+
+00:02:15.650 --> 00:02:18.550 align:middle line:84%
+we can then talk about
+each player's-- it's called
+
+00:02:18.550 --> 00:02:20.290 align:middle line:90%
+their information partition.
+
+00:02:20.290 --> 00:02:26.830 align:middle line:84%
+So we're going to say
+an agent, say agent i,
+
+00:02:26.830 --> 00:02:37.710 align:middle line:90%
+has information partition Ki.
+
+00:02:37.710 --> 00:02:39.390 align:middle line:84%
+So the subscript
+i indicates this
+
+00:02:39.390 --> 00:02:42.793 align:middle line:84%
+is something-- this represents
+the information for player i.
+
+00:02:42.793 --> 00:02:44.710 align:middle line:84%
+And the K comes from the
+word knowledge, which
+
+00:02:44.710 --> 00:02:45.930 align:middle line:90%
+we'll talk about later on.
+
+00:02:45.930 --> 00:02:47.710 align:middle line:84%
+We'll talk about
+what knowledge is.
+
+00:02:47.710 --> 00:02:49.870 align:middle line:84%
+Now, partition is
+just a mathy word
+
+00:02:49.870 --> 00:02:53.170 align:middle line:84%
+that says we're arranging
+these different states,
+
+00:02:53.170 --> 00:02:56.075 align:middle line:84%
+these different dots, and we're
+splitting them up into groups.
+
+00:02:56.075 --> 00:02:57.200 align:middle line:90%
+That's what a partition is.
+
+00:02:57.200 --> 00:02:58.660 align:middle line:90%
+It just puts things into groups.
+
+00:02:58.660 --> 00:03:01.300 align:middle line:84%
+So in this opening
+example, let's imagine
+
+00:03:01.300 --> 00:03:02.400 align:middle line:90%
+the groups are like this.
+
+00:03:02.400 --> 00:03:07.140 align:middle line:90%
+
+
+00:03:07.140 --> 00:03:10.380 align:middle line:84%
+So this is an example of
+one possible information
+
+00:03:10.380 --> 00:03:12.420 align:middle line:90%
+partition for player i.
+
+00:03:12.420 --> 00:03:18.340 align:middle line:84%
+We've partitioned the six states
+into four different groups.
+
+00:03:18.340 --> 00:03:21.500 align:middle line:84%
+And each of these groups,
+they're sometimes called a cell.
+
+00:03:21.500 --> 00:03:25.340 align:middle line:84%
+So we might say that this
+partition assigns the states
+
+00:03:25.340 --> 00:03:26.880 align:middle line:90%
+into one of four cells.
+
+00:03:26.880 --> 00:03:29.380 align:middle line:84%
+The first cell contains
+states 1 and 2.
+
+00:03:29.380 --> 00:03:31.740 align:middle line:90%
+This cell contains only state 3.
+
+00:03:31.740 --> 00:03:33.780 align:middle line:90%
+This cell contains only state 5.
+
+00:03:33.780 --> 00:03:37.220 align:middle line:84%
+And these cells
+contain states 4 and 6.
+
+00:03:37.220 --> 00:03:40.420 align:middle line:84%
+And the word "partition" may
+remind you when we talked about
+
+00:03:40.420 --> 00:03:43.140 align:middle line:84%
+extensive form games, we talked
+about a player's information
+
+00:03:43.140 --> 00:03:43.680 align:middle line:90%
+partition.
+
+00:03:43.680 --> 00:03:46.080 align:middle line:84%
+And this is the
+same concept here.
+
+00:03:46.080 --> 00:03:48.220 align:middle line:84%
+So what's the
+interpretation of this?
+
+00:03:48.220 --> 00:03:51.460 align:middle line:84%
+The interpretation is
+that a player, player i,
+
+00:03:51.460 --> 00:03:53.200 align:middle line:90%
+does not learn the actual state.
+
+00:03:53.200 --> 00:03:55.570 align:middle line:84%
+They don't actually see
+the roll of the die.
+
+00:03:55.570 --> 00:03:59.515 align:middle line:84%
+But what they do learn is
+which cell the state lies in.
+
+00:03:59.515 --> 00:04:00.890 align:middle line:84%
+So in this case,
+the player might
+
+00:04:00.890 --> 00:04:03.520 align:middle line:84%
+learn the state of the
+world is in this cell.
+
+00:04:03.520 --> 00:04:05.270 align:middle line:84%
+And if they learn that,
+then they can say,
+
+00:04:05.270 --> 00:04:08.010 align:middle line:84%
+well, I know the die
+was either 1 or 2,
+
+00:04:08.010 --> 00:04:10.690 align:middle line:84%
+but I can't distinguish
+between 1 or 2.
+
+00:04:10.690 --> 00:04:13.650 align:middle line:84%
+And similarly, but in this
+state, when the player learns
+
+00:04:13.650 --> 00:04:16.029 align:middle line:84%
+that the state is in this
+cell of the partition,
+
+00:04:16.029 --> 00:04:18.390 align:middle line:84%
+they know for certain
+that the state was 3.
+
+00:04:18.390 --> 00:04:25.730 align:middle line:90%
+
+
+00:04:25.730 --> 00:04:35.770 align:middle line:84%
+Now, it's convenient to then
+introduce or denote Ki of omega
+
+00:04:35.770 --> 00:04:39.587 align:middle line:84%
+to be the cell of the partition
+that contains state omega.
+
+00:04:39.587 --> 00:04:41.170 align:middle line:84%
+This is just a
+definition that's going
+
+00:04:41.170 --> 00:04:43.650 align:middle line:84%
+to make it a bit easier to
+reason about these things.
+
+00:04:43.650 --> 00:04:46.370 align:middle line:84%
+So this is going
+to be informally
+
+00:04:46.370 --> 00:04:57.200 align:middle line:84%
+the cell of the partition
+containing omega.
+
+00:04:57.200 --> 00:04:59.820 align:middle line:84%
+So again, I think it's easier
+to just see an example.
+
+00:04:59.820 --> 00:05:01.760 align:middle line:84%
+Let's look at our
+example over here.
+
+00:05:01.760 --> 00:05:10.440 align:middle line:90%
+What would Ki of, say, 4 be?
+
+00:05:10.440 --> 00:05:14.360 align:middle line:84%
+Well, Ki of 4 is going to be
+the cell of the partition that
+
+00:05:14.360 --> 00:05:16.320 align:middle line:90%
+contains the state 4.
+
+00:05:16.320 --> 00:05:19.240 align:middle line:84%
+In this case, that's
+going to be this cell.
+
+00:05:19.240 --> 00:05:21.020 align:middle line:90%
+And we need to name this cell.
+
+00:05:21.020 --> 00:05:23.760 align:middle line:84%
+Well, this is the cell that
+contains states 4 and 6.
+
+00:05:23.760 --> 00:05:27.400 align:middle line:84%
+So we're going to write
+here this equals 4, 6.
+
+00:05:27.400 --> 00:05:30.920 align:middle line:84%
+So what we're
+saying here is when
+
+00:05:30.920 --> 00:05:33.600 align:middle line:84%
+the state is 4, the
+cell that contains
+
+00:05:33.600 --> 00:05:35.905 align:middle line:90%
+4 is the cell 4 comma 6.
+
+00:05:35.905 --> 00:05:37.280 align:middle line:84%
+And then as just
+one more example
+
+00:05:37.280 --> 00:05:41.720 align:middle line:84%
+to make sure we're clear,
+we could say Ki of 3--
+
+00:05:41.720 --> 00:05:44.560 align:middle line:84%
+well, the cell
+containing 3 is just
+
+00:05:44.560 --> 00:05:46.560 align:middle line:90%
+this cell that only contains 3.
+
+00:05:46.560 --> 00:05:49.000 align:middle line:90%
+So this is going to be just 3.
+
+00:05:49.000 --> 00:05:53.280 align:middle line:90%
+
+
+00:05:53.280 --> 00:05:56.020 align:middle line:84%
+Any questions about just
+this notation so far?
+
+00:05:56.020 --> 00:05:58.860 align:middle line:90%
+
+
+00:05:58.860 --> 00:06:04.180 align:middle line:84%
+So now we can start
+talking about knowledge.
+
+00:06:04.180 --> 00:06:08.920 align:middle line:90%
+
+
+00:06:08.920 --> 00:06:11.200 align:middle line:84%
+So what does it mean
+to know something?
+
+00:06:11.200 --> 00:06:13.040 align:middle line:84%
+Well, the player
+doesn't necessarily
+
+00:06:13.040 --> 00:06:16.360 align:middle line:84%
+know exactly what the
+state is, but they
+
+00:06:16.360 --> 00:06:19.520 align:middle line:84%
+may be able to say that
+the state satisfies
+
+00:06:19.520 --> 00:06:22.460 align:middle line:84%
+certain properties, or the
+state lies in some smaller set.
+
+00:06:22.460 --> 00:06:25.200 align:middle line:84%
+And that's exactly how we're
+going to define knowledge.
+
+00:06:25.200 --> 00:06:26.783 align:middle line:84%
+I guess maybe the
+most difficult thing
+
+00:06:26.783 --> 00:06:28.908 align:middle line:84%
+when we first think about
+knowledge is, what do you
+
+00:06:28.908 --> 00:06:29.960 align:middle line:90%
+form knowledge about?
+
+00:06:29.960 --> 00:06:32.665 align:middle line:84%
+When I say I know something,
+what does that mean?
+
+00:06:32.665 --> 00:06:34.040 align:middle line:84%
+And the key point
+is knowledge is
+
+00:06:34.040 --> 00:06:36.510 align:middle line:84%
+going to be formed about
+what we call an event.
+
+00:06:36.510 --> 00:06:38.260 align:middle line:84%
+And we can just think
+of this intuitively.
+
+00:06:38.260 --> 00:06:42.760 align:middle line:84%
+I might say, I know
+that the die is odd.
+
+00:06:42.760 --> 00:06:45.560 align:middle line:84%
+And if I say that, I'm making
+a statement about the event
+
+00:06:45.560 --> 00:06:49.400 align:middle line:84%
+that the state is either 1,
+3, or 5, the possible odd
+
+00:06:49.400 --> 00:06:50.560 align:middle line:90%
+realizations.
+
+00:06:50.560 --> 00:06:52.650 align:middle line:84%
+So first, we're going
+to define an event.
+
+00:06:52.650 --> 00:06:54.333 align:middle line:84%
+And this notation may
+be familiar to you
+
+00:06:54.333 --> 00:06:56.250 align:middle line:84%
+if you've taken a class
+on probability theory.
+
+00:06:56.250 --> 00:07:01.710 align:middle line:84%
+An event E is just a subset
+of the state space omega.
+
+00:07:01.710 --> 00:07:07.970 align:middle line:84%
+So as an example, e.g.,
+the event E equals 1, 3,
+
+00:07:07.970 --> 00:07:12.210 align:middle line:84%
+5, formally, it's a
+subset of the state space.
+
+00:07:12.210 --> 00:07:13.710 align:middle line:84%
+But colloquially
+we might say this
+
+00:07:13.710 --> 00:07:25.930 align:middle line:84%
+is the event that the die is on,
+that the state or the die is on.
+
+00:07:25.930 --> 00:07:30.630 align:middle line:90%
+
+
+00:07:30.630 --> 00:07:33.370 align:middle line:84%
+So now that we have the first
+piece, we can talk about
+
+00:07:33.370 --> 00:07:35.590 align:middle line:90%
+does a player know E?
+
+00:07:35.590 --> 00:07:37.990 align:middle line:84%
+Do they know that
+the die is odd?
+
+00:07:37.990 --> 00:07:40.190 align:middle line:84%
+But we need one more
+piece of notation
+
+00:07:40.190 --> 00:07:42.230 align:middle line:84%
+here because, well,
+whether I know
+
+00:07:42.230 --> 00:07:45.750 align:middle line:84%
+the die is odd is
+going to depend on what
+
+00:07:45.750 --> 00:07:47.830 align:middle line:90%
+the actual value of the die is.
+
+00:07:47.830 --> 00:07:51.100 align:middle line:84%
+If the die is 6, I'm not going
+to know that the die is odd.
+
+00:07:51.100 --> 00:07:54.300 align:middle line:84%
+So our definition is going
+to describe knowledge
+
+00:07:54.300 --> 00:07:56.540 align:middle line:90%
+in a particular state.
+
+00:07:56.540 --> 00:08:12.660 align:middle line:84%
+So we're going to say in
+state omega, player i knows E.
+
+00:08:12.660 --> 00:08:14.780 align:middle line:84%
+So notice here that
+our definition depends
+
+00:08:14.780 --> 00:08:16.740 align:middle line:90%
+on two or maybe three things.
+
+00:08:16.740 --> 00:08:18.760 align:middle line:84%
+It depends on what
+the actual state is.
+
+00:08:18.760 --> 00:08:20.340 align:middle line:84%
+That's certainly
+affects knowledge.
+
+00:08:20.340 --> 00:08:22.820 align:middle line:84%
+It depends on which player
+we're talking about because some
+
+00:08:22.820 --> 00:08:25.020 align:middle line:84%
+players know things that
+other players don't.
+
+00:08:25.020 --> 00:08:28.820 align:middle line:84%
+And it depends on the fact or
+the statement or the proposition
+
+00:08:28.820 --> 00:08:31.300 align:middle line:84%
+that we're actually
+knowing, this event E.
+
+00:08:31.300 --> 00:08:34.320 align:middle line:84%
+So we say in state omega
+player knows E if--
+
+00:08:34.320 --> 00:08:37.140 align:middle line:90%
+
+
+00:08:37.140 --> 00:08:40.419 align:middle line:84%
+well, we're going to
+just write it in math
+
+00:08:40.419 --> 00:08:51.490 align:middle line:84%
+and then interpret it, Ki
+omega is a subset of E.
+
+00:08:51.490 --> 00:08:54.130 align:middle line:90%
+Let's interpret this.
+
+00:08:54.130 --> 00:08:57.330 align:middle line:84%
+If the state is omega,
+well, the player
+
+00:08:57.330 --> 00:08:59.830 align:middle line:84%
+is informed by their
+information partition
+
+00:08:59.830 --> 00:09:02.068 align:middle line:84%
+not necessarily the
+state is actually omega,
+
+00:09:02.068 --> 00:09:04.610 align:middle line:84%
+but they're informed of which
+cell of the partition the state
+
+00:09:04.610 --> 00:09:05.570 align:middle line:90%
+lies in.
+
+00:09:05.570 --> 00:09:08.270 align:middle line:84%
+So all the player learns, all
+the player, quote unquote,
+
+00:09:08.270 --> 00:09:13.770 align:middle line:84%
+"knows," is that the state lies
+in this cell of their partition.
+
+00:09:13.770 --> 00:09:16.050 align:middle line:84%
+And if that cell
+is a subset of E,
+
+00:09:16.050 --> 00:09:18.770 align:middle line:84%
+then the player can
+conclude that the event must
+
+00:09:18.770 --> 00:09:22.350 align:middle line:84%
+be E. They don't know exactly
+which state has been realized,
+
+00:09:22.350 --> 00:09:24.430 align:middle line:84%
+but they know whichever
+state has been realized,
+
+00:09:24.430 --> 00:09:25.570 align:middle line:90%
+it must be in here.
+
+00:09:25.570 --> 00:09:27.217 align:middle line:84%
+And therefore, it
+must be in here.
+
+00:09:27.217 --> 00:09:29.550 align:middle line:84%
+And this is exactly how we're
+going to define knowledge.
+
+00:09:29.550 --> 00:09:33.110 align:middle line:84%
+So I think it's kind of easier
+to go through an example again.
+
+00:09:33.110 --> 00:09:37.010 align:middle line:90%
+
+
+00:09:37.010 --> 00:09:40.330 align:middle line:84%
+So let's here think
+of an event, the event
+
+00:09:40.330 --> 00:09:42.890 align:middle line:90%
+that the die is, at most, 4.
+
+00:09:42.890 --> 00:09:43.430 align:middle line:90%
+OK.
+
+00:09:43.430 --> 00:09:47.470 align:middle line:84%
+So that's going to
+be this event here.
+
+00:09:47.470 --> 00:09:51.570 align:middle line:90%
+
+
+00:09:51.570 --> 00:09:55.610 align:middle line:84%
+And we can ask, well, does
+this player, the player
+
+00:09:55.610 --> 00:09:58.810 align:middle line:84%
+i whose information partition
+is represented here,
+
+00:09:58.810 --> 00:10:00.420 align:middle line:90%
+do they know event E?
+
+00:10:00.420 --> 00:10:02.170 align:middle line:84%
+Or another way we might
+say it is, do they
+
+00:10:02.170 --> 00:10:04.590 align:middle line:90%
+know that event E has occurred?
+
+00:10:04.590 --> 00:10:06.090 align:middle line:84%
+Well, it's certainly
+going to depend
+
+00:10:06.090 --> 00:10:09.470 align:middle line:90%
+on what the die actually was.
+
+00:10:09.470 --> 00:10:14.110 align:middle line:84%
+So let's ask if the die is
+5, does the player know E?
+
+00:10:14.110 --> 00:10:16.890 align:middle line:84%
+Do they know that the
+event E has occurred?
+
+00:10:16.890 --> 00:10:20.890 align:middle line:84%
+No, because this cell
+is not a subset of 5.
+
+00:10:20.890 --> 00:10:24.010 align:middle line:84%
+And, in fact, there's only
+going to be three states--
+
+00:10:24.010 --> 00:10:26.370 align:middle line:84%
+this one, this
+one, and this one--
+
+00:10:26.370 --> 00:10:28.010 align:middle line:84%
+where the player
+knows the event E
+
+00:10:28.010 --> 00:10:32.850 align:middle line:84%
+So let's write that down
+over here as an example.
+
+00:10:32.850 --> 00:10:36.050 align:middle line:84%
+So I guess here I've changed
+my event E. Let's call it
+
+00:10:36.050 --> 00:10:43.370 align:middle line:90%
+the event E prime.
+
+00:10:43.370 --> 00:10:48.880 align:middle line:84%
+So let's consider the event
+E prime, which is 1, 2, 3, 4.
+
+00:10:48.880 --> 00:10:52.840 align:middle line:84%
+So this is the event that
+the die is, at most, 4.
+
+00:10:52.840 --> 00:10:55.560 align:middle line:84%
+And let's just go through
+each of our cases.
+
+00:10:55.560 --> 00:10:59.920 align:middle line:84%
+So if the state
+is either 1 or 2--
+
+00:10:59.920 --> 00:11:02.440 align:middle line:90%
+let's start if the state is 1.
+
+00:11:02.440 --> 00:11:04.840 align:middle line:84%
+If the state is 1,
+well, the player
+
+00:11:04.840 --> 00:11:09.560 align:middle line:84%
+knows that the state
+lies in this cell 1, 2.
+
+00:11:09.560 --> 00:11:14.240 align:middle line:84%
+And because the set 1, 2 is
+a subset of the set E prime,
+
+00:11:14.240 --> 00:11:16.640 align:middle line:84%
+we conclude by our
+definition that in state 1
+
+00:11:16.640 --> 00:11:20.880 align:middle line:90%
+the player knows the event is E.
+
+00:11:20.880 --> 00:11:27.880 align:middle line:84%
+So we have Ki of 1 is a
+subset of E prime, which
+
+00:11:27.880 --> 00:11:37.440 align:middle line:84%
+means player i knows E
+prime in this state 1.
+
+00:11:37.440 --> 00:11:39.960 align:middle line:84%
+And we could reason
+analogously about state 2.
+
+00:11:39.960 --> 00:11:42.320 align:middle line:84%
+And we could reason
+analogously about state 3.
+
+00:11:42.320 --> 00:11:43.860 align:middle line:90%
+Now let's worry about state 4.
+
+00:11:43.860 --> 00:11:47.910 align:middle line:84%
+I think that's
+maybe a tricky case.
+
+00:11:47.910 --> 00:11:52.430 align:middle line:84%
+So state in state 4, the cell
+of the partition for player i
+
+00:11:52.430 --> 00:11:53.430 align:middle line:90%
+is the cell 4, 6.
+
+00:11:53.430 --> 00:11:59.710 align:middle line:90%
+
+
+00:11:59.710 --> 00:12:07.450 align:middle line:84%
+So in this case, Ki of 4
+is not a subset of E prime.
+
+00:12:07.450 --> 00:12:07.950 align:middle line:90%
+Oops.
+
+00:12:07.950 --> 00:12:13.470 align:middle line:90%
+
+
+00:12:13.470 --> 00:12:14.270 align:middle line:90%
+Why?
+
+00:12:14.270 --> 00:12:18.070 align:middle line:84%
+Well, this cell, 4, 6,
+is not entirely contained
+
+00:12:18.070 --> 00:12:19.330 align:middle line:90%
+within the yellow box.
+
+00:12:19.330 --> 00:12:20.770 align:middle line:90%
+It breaks the yellow box.
+
+00:12:20.770 --> 00:12:24.310 align:middle line:84%
+And parts of this cell lie
+outside the yellow box.
+
+00:12:24.310 --> 00:12:37.950 align:middle line:84%
+So we conclude that in state 4,
+player i does not know E prime.
+
+00:12:37.950 --> 00:12:40.670 align:middle line:90%
+Now, notice the difference here.
+
+00:12:40.670 --> 00:12:45.740 align:middle line:84%
+When the state is 1, the
+event E prime has occurred,
+
+00:12:45.740 --> 00:12:49.260 align:middle line:84%
+and the player knows
+that it has occurred.
+
+00:12:49.260 --> 00:12:53.740 align:middle line:84%
+In the state 4, event
+E prime has occurred
+
+00:12:53.740 --> 00:12:56.120 align:middle line:90%
+because 4 is in E prime.
+
+00:12:56.120 --> 00:12:57.880 align:middle line:84%
+Yet, the player
+does not know this.
+
+00:12:57.880 --> 00:12:59.600 align:middle line:84%
+And then we can have
+an even easier case.
+
+00:12:59.600 --> 00:13:01.000 align:middle line:90%
+Let's look at Ki of 5.
+
+00:13:01.000 --> 00:13:05.260 align:middle line:90%
+
+
+00:13:05.260 --> 00:13:11.260 align:middle line:84%
+And again, Ki of 5 is
+not a subset of E prime.
+
+00:13:11.260 --> 00:13:19.060 align:middle line:84%
+So here, player i
+does not know E prime.
+
+00:13:19.060 --> 00:13:21.580 align:middle line:84%
+But notice there's kind of an
+interesting difference here.
+
+00:13:21.580 --> 00:13:24.040 align:middle line:84%
+In state 4, E
+prime has occurred,
+
+00:13:24.040 --> 00:13:26.500 align:middle line:84%
+but the player i
+doesn't know it.
+
+00:13:26.500 --> 00:13:28.860 align:middle line:84%
+In state 5, E prime
+has not occurred,
+
+00:13:28.860 --> 00:13:30.600 align:middle line:90%
+and the player doesn't know it.
+
+00:13:30.600 --> 00:13:33.882 align:middle line:90%
+
+
+00:13:33.882 --> 00:13:35.340 align:middle line:84%
+And this is consistent
+with the way
+
+00:13:35.340 --> 00:13:36.940 align:middle line:84%
+that we drew
+information partitions
+
+00:13:36.940 --> 00:13:40.740 align:middle line:84%
+and thought about extensive
+form games previously.
+
+00:13:40.740 --> 00:13:44.220 align:middle line:84%
+So I guess the first
+thing we might ask, well,
+
+00:13:44.220 --> 00:13:46.980 align:middle line:90%
+we saw three possibilities here.
+
+00:13:46.980 --> 00:13:50.100 align:middle line:90%
+E prime occurs, and we know it.
+
+00:13:50.100 --> 00:13:52.900 align:middle line:84%
+E prime occurs, and
+we don't know it.
+
+00:13:52.900 --> 00:13:55.340 align:middle line:84%
+And E prime doesn't occur,
+and we don't know it.
+
+00:13:55.340 --> 00:13:57.980 align:middle line:84%
+You might ask, is it ever
+possible that I know as an event
+
+00:13:57.980 --> 00:13:59.742 align:middle line:90%
+when the event doesn't happen?
+
+00:13:59.742 --> 00:14:01.700 align:middle line:84%
+And it turns out that's
+going to be impossible,
+
+00:14:01.700 --> 00:14:04.580 align:middle line:84%
+and we're going to
+make that precise next.
+
+00:14:04.580 --> 00:14:09.100 align:middle line:84%
+So I guess the next
+definition we need--
+
+00:14:09.100 --> 00:14:12.420 align:middle line:84%
+well, we've said what
+it means for player i
+
+00:14:12.420 --> 00:14:14.700 align:middle line:84%
+to know an event
+in a given state.
+
+00:14:14.700 --> 00:14:17.380 align:middle line:84%
+But now we can talk about
+well, in which states does
+
+00:14:17.380 --> 00:14:19.460 align:middle line:90%
+a player know a given event E?
+
+00:14:19.460 --> 00:14:21.740 align:middle line:84%
+And that itself
+is another event.
+
+00:14:21.740 --> 00:14:35.240 align:middle line:84%
+So now the event that player
+i knows E is given by--
+
+00:14:35.240 --> 00:14:39.340 align:middle line:90%
+
+
+00:14:39.340 --> 00:14:43.850 align:middle line:84%
+well, we're going
+to call it Ki of E.
+
+00:14:43.850 --> 00:14:47.210 align:middle line:84%
+So this is going to be the set
+of all states in which player
+
+00:14:47.210 --> 00:14:50.690 align:middle line:84%
+i knows that event
+E has occurred.
+
+00:14:50.690 --> 00:14:53.970 align:middle line:84%
+So let's write this
+down mathematically.
+
+00:14:53.970 --> 00:14:56.970 align:middle line:90%
+It's the state omega.
+
+00:14:56.970 --> 00:15:02.410 align:middle line:84%
+First, maybe we'll write it
+in words, that at omega player
+
+00:15:02.410 --> 00:15:09.530 align:middle line:84%
+i knows E. So this is
+itself an event because it's
+
+00:15:09.530 --> 00:15:11.050 align:middle line:90%
+a collection of states.
+
+00:15:11.050 --> 00:15:12.930 align:middle line:84%
+And it's the collection
+of all states,
+
+00:15:12.930 --> 00:15:17.330 align:middle line:84%
+such in that state player i
+knows that event E has occurred.
+
+00:15:17.330 --> 00:15:20.730 align:middle line:84%
+And now we can just
+plug in our definition
+
+00:15:20.730 --> 00:15:24.690 align:middle line:84%
+from here to make
+this more precise.
+
+00:15:24.690 --> 00:15:31.270 align:middle line:84%
+And we can say, this is the
+set of omega omega, such that--
+
+00:15:31.270 --> 00:15:37.010 align:middle line:90%
+
+
+00:15:37.010 --> 00:15:40.480 align:middle line:84%
+so all I've done is I've
+replaced this informal statement
+
+00:15:40.480 --> 00:15:44.360 align:middle line:84%
+that player i knows E to a
+more precise statement of what
+
+00:15:44.360 --> 00:15:47.660 align:middle line:84%
+that knowledge means, according
+to this definition over here.
+
+00:15:47.660 --> 00:15:53.000 align:middle line:90%
+
+
+00:15:53.000 --> 00:15:56.600 align:middle line:84%
+And now we can try to formalize
+this property that a player can
+
+00:15:56.600 --> 00:16:00.680 align:middle line:84%
+only know something if it's
+true, that if in some state
+
+00:16:00.680 --> 00:16:03.720 align:middle line:84%
+I know an event E holds, then it
+must be the case that the event
+
+00:16:03.720 --> 00:16:04.780 align:middle line:90%
+E actually holds.
+
+00:16:04.780 --> 00:16:06.400 align:middle line:84%
+And let's state that
+mathematically and then prove
+
+00:16:06.400 --> 00:16:06.900 align:middle line:90%
+it.
+
+00:16:06.900 --> 00:16:12.760 align:middle line:90%
+
+
+00:16:12.760 --> 00:16:21.680 align:middle line:84%
+So here's our maybe first
+very basic result. Ki of E
+
+00:16:21.680 --> 00:16:30.400 align:middle line:84%
+is a subset of E. So let's
+understand what this means.
+
+00:16:30.400 --> 00:16:33.200 align:middle line:84%
+This says in any state of
+the world in which player
+
+00:16:33.200 --> 00:16:37.110 align:middle line:84%
+i knows that E has occurred,
+it must be the case
+
+00:16:37.110 --> 00:16:38.990 align:middle line:84%
+that that state
+is actually in E.
+
+00:16:38.990 --> 00:16:41.650 align:middle line:84%
+And therefore, the event
+E has in fact occurred.
+
+00:16:41.650 --> 00:16:45.190 align:middle line:90%
+
+
+00:16:45.190 --> 00:16:48.097 align:middle line:84%
+And the proof of
+this is actually--
+
+00:16:48.097 --> 00:16:49.930 align:middle line:84%
+I mean, I think
+conceptually it may be hard,
+
+00:16:49.930 --> 00:16:53.990 align:middle line:84%
+but mathematically
+pretty straightforward.
+
+00:16:53.990 --> 00:16:59.790 align:middle line:84%
+We want to argue that this
+set is a subset of this set.
+
+00:16:59.790 --> 00:17:02.230 align:middle line:84%
+So we're going to take an
+arbitrary thing in this set
+
+00:17:02.230 --> 00:17:04.030 align:middle line:84%
+and argue that it
+must be in this set.
+
+00:17:04.030 --> 00:17:13.510 align:middle line:84%
+So let's choose some state
+omega that's in Ki of E.
+
+00:17:13.510 --> 00:17:16.990 align:middle line:84%
+And now let's just
+apply our definition.
+
+00:17:16.990 --> 00:17:22.510 align:middle line:84%
+So what does it mean that
+state omega is in Ki of E?
+
+00:17:22.510 --> 00:17:25.650 align:middle line:84%
+If we apply our definition, what
+can we conclude about omega?
+
+00:17:25.650 --> 00:17:29.428 align:middle line:90%
+
+
+00:17:29.428 --> 00:17:30.970 align:middle line:84%
+We just want to go
+to our definition.
+
+00:17:30.970 --> 00:17:31.530 align:middle line:90%
+Yeah, Amy?
+
+00:17:31.530 --> 00:17:33.470 align:middle line:90%
+AUDIENCE: [INAUDIBLE]
+
+00:17:33.470 --> 00:17:34.190 align:middle line:90%
+IAN BALL: Right.
+
+00:17:34.190 --> 00:17:36.110 align:middle line:84%
+So this is just by
+definition, right?
+
+00:17:36.110 --> 00:17:38.090 align:middle line:84%
+If we choose omega
+in here, well,
+
+00:17:38.090 --> 00:17:43.727 align:middle line:84%
+by definition, that means Ki
+of omega is a subset of E.
+
+00:17:43.727 --> 00:17:44.810 align:middle line:90%
+We haven't done much here.
+
+00:17:44.810 --> 00:17:46.130 align:middle line:90%
+We've just used our definition.
+
+00:17:46.130 --> 00:17:49.697 align:middle line:90%
+
+
+00:17:49.697 --> 00:17:51.530 align:middle line:84%
+And then I would argue
+we're basically done.
+
+00:17:51.530 --> 00:17:53.030 align:middle line:84%
+What's the last
+thing we need to see
+
+00:17:53.030 --> 00:17:56.910 align:middle line:84%
+when you want to argue that,
+in fact, omega is in E?
+
+00:17:56.910 --> 00:17:58.010 align:middle line:90%
+So what do we need to do?
+
+00:17:58.010 --> 00:18:01.930 align:middle line:90%
+
+
+00:18:01.930 --> 00:18:02.430 align:middle line:90%
+Yeah?
+
+00:18:02.430 --> 00:18:03.847 align:middle line:84%
+AUDIENCE: Omega
+[INAUDIBLE] of Ki.
+
+00:18:03.847 --> 00:18:04.472 align:middle line:90%
+IAN BALL: Yeah.
+
+00:18:04.472 --> 00:18:05.770 align:middle line:90%
+So we're basically done.
+
+00:18:05.770 --> 00:18:09.870 align:middle line:84%
+Ki omega is the cell of the
+partition that contains omega.
+
+00:18:09.870 --> 00:18:12.030 align:middle line:84%
+So, in particular,
+omega is in here.
+
+00:18:12.030 --> 00:18:15.870 align:middle line:84%
+So what that tells
+us is that omega
+
+00:18:15.870 --> 00:18:20.870 align:middle line:84%
+is in Ki of omega,
+which is a subset of E.
+
+00:18:20.870 --> 00:18:27.217 align:middle line:90%
+And therefore, omega is in E.
+
+00:18:27.217 --> 00:18:28.550 align:middle line:90%
+Maybe that's just a mathier way.
+
+00:18:28.550 --> 00:18:30.670 align:middle line:90%
+We can look at it over here.
+
+00:18:30.670 --> 00:18:33.710 align:middle line:84%
+If I'm in some state,
+and the cell containing
+
+00:18:33.710 --> 00:18:37.060 align:middle line:84%
+that state is entirely
+contained in this yellow box,
+
+00:18:37.060 --> 00:18:39.160 align:middle line:84%
+then the state must
+be in the yellow box.
+
+00:18:39.160 --> 00:18:41.620 align:middle line:90%
+That's all we're saying.
+
+00:18:41.620 --> 00:18:44.098 align:middle line:84%
+And this is kind of a
+fundamental property
+
+00:18:44.098 --> 00:18:44.640 align:middle line:90%
+of knowledge.
+
+00:18:44.640 --> 00:18:46.980 align:middle line:84%
+I should maybe point out
+an alternative approach
+
+00:18:46.980 --> 00:18:51.060 align:middle line:84%
+to modeling knowledge is not to
+work with a primitive partition,
+
+00:18:51.060 --> 00:18:55.380 align:middle line:84%
+but to start with this function
+that tells us which events do
+
+00:18:55.380 --> 00:18:57.340 align:middle line:84%
+we know, and then
+imposing axioms
+
+00:18:57.340 --> 00:18:58.632 align:middle line:90%
+or properties on this function.
+
+00:18:58.632 --> 00:19:00.840 align:middle line:84%
+And if you impose enough
+properties on this function,
+
+00:19:00.840 --> 00:19:03.220 align:middle line:84%
+you can show that it must be
+derived from some partition
+
+00:19:03.220 --> 00:19:03.840 align:middle line:90%
+in this way.
+
+00:19:03.840 --> 00:19:08.340 align:middle line:84%
+But we're not going to go
+through this entire exercise.
+
+00:19:08.340 --> 00:19:11.140 align:middle line:84%
+So now we've just
+talked about things
+
+00:19:11.140 --> 00:19:12.940 align:middle line:90%
+that a single player knows.
+
+00:19:12.940 --> 00:19:14.940 align:middle line:84%
+Now we're going to talk
+about multiple players
+
+00:19:14.940 --> 00:19:16.380 align:middle line:90%
+at the same time.
+
+00:19:16.380 --> 00:19:25.560 align:middle line:84%
+So let's come back over here,
+do a really simple example.
+
+00:19:25.560 --> 00:19:38.730 align:middle line:90%
+
+
+00:19:38.730 --> 00:19:42.130 align:middle line:84%
+So now let's consider
+we have two players.
+
+00:19:42.130 --> 00:19:46.450 align:middle line:84%
+We have players one and
+two, and each player
+
+00:19:46.450 --> 00:19:48.330 align:middle line:84%
+may know different
+things about the state.
+
+00:19:48.330 --> 00:19:49.788 align:middle line:84%
+And therefore, each
+player is going
+
+00:19:49.788 --> 00:19:51.990 align:middle line:84%
+to have their own
+information partition.
+
+00:19:51.990 --> 00:19:56.330 align:middle line:84%
+So player one is going to have
+their information partition K1,
+
+00:19:56.330 --> 00:20:00.350 align:middle line:84%
+and player two is going to have
+their information partition K2.
+
+00:20:00.350 --> 00:20:06.370 align:middle line:90%
+
+
+00:20:06.370 --> 00:20:09.150 align:middle line:84%
+And let's represent the
+state as we did before.
+
+00:20:09.150 --> 00:20:13.850 align:middle line:90%
+
+
+00:20:13.850 --> 00:20:19.515 align:middle line:84%
+So this is state
+1, 2, 3, 4, 5, 6.
+
+00:20:19.515 --> 00:20:21.390 align:middle line:84%
+And I think it's easier
+now if we use colors.
+
+00:20:21.390 --> 00:20:30.410 align:middle line:84%
+So let's put player one's
+information partition in blue.
+
+00:20:30.410 --> 00:20:37.000 align:middle line:84%
+And let's say that player
+one's information partition
+
+00:20:37.000 --> 00:20:37.900 align:middle line:90%
+looks like this.
+
+00:20:37.900 --> 00:20:42.560 align:middle line:90%
+
+
+00:20:42.560 --> 00:20:44.680 align:middle line:84%
+And now let's say that
+player two's information
+
+00:20:44.680 --> 00:20:47.580 align:middle line:90%
+partition looks like this.
+
+00:20:47.580 --> 00:20:51.600 align:middle line:90%
+
+
+00:20:51.600 --> 00:20:53.840 align:middle line:84%
+So intuitively, what
+does player one learn?
+
+00:20:53.840 --> 00:20:57.480 align:middle line:84%
+Player one learns either
+that the die is 1 or 2,
+
+00:20:57.480 --> 00:21:01.800 align:middle line:84%
+or that the die is 3 or 4,
+or that the die is 5 or 6.
+
+00:21:01.800 --> 00:21:03.180 align:middle line:90%
+What does player two learn?
+
+00:21:03.180 --> 00:21:06.920 align:middle line:84%
+They learn either that the die
+is odd or that the die is even.
+
+00:21:06.920 --> 00:21:09.240 align:middle line:84%
+So now we can talk about
+the different information
+
+00:21:09.240 --> 00:21:12.080 align:middle line:90%
+that the players have.
+
+00:21:12.080 --> 00:21:18.260 align:middle line:84%
+And now let's draw
+an event here.
+
+00:21:18.260 --> 00:21:23.080 align:middle line:90%
+
+
+00:21:23.080 --> 00:21:29.360 align:middle line:84%
+So let's let E be the
+event 1, 2, 3, 4, 5.
+
+00:21:29.360 --> 00:21:35.600 align:middle line:90%
+
+
+00:21:35.600 --> 00:21:39.160 align:middle line:84%
+So now maybe first,
+let's ask, what is the--
+
+00:21:39.160 --> 00:21:44.800 align:middle line:84%
+let's describe
+the event K1 of E.
+
+00:21:44.800 --> 00:21:48.000 align:middle line:84%
+So this is going to be in which
+states does player one know
+
+00:21:48.000 --> 00:21:50.200 align:middle line:90%
+that event E has occurred?
+
+00:21:50.200 --> 00:21:52.080 align:middle line:90%
+Any ideas here?
+
+00:21:52.080 --> 00:21:54.320 align:middle line:84%
+What is this going
+to be Yeah, Amy?
+
+00:21:54.320 --> 00:21:56.135 align:middle line:90%
+AUDIENCE: 1, 2, 3, 4.
+
+00:21:56.135 --> 00:21:56.760 align:middle line:90%
+IAN BALL: Yeah.
+
+00:21:56.760 --> 00:21:58.660 align:middle line:84%
+And actually, we can just
+write them all together.
+
+00:21:58.660 --> 00:21:58.760 align:middle line:90%
+Yeah.
+
+00:21:58.760 --> 00:21:59.740 align:middle line:90%
+So 1, 2, 3, 4.
+
+00:21:59.740 --> 00:22:01.772 align:middle line:90%
+In any of these states--
+
+00:22:01.772 --> 00:22:02.980 align:middle line:90%
+so that's an important point.
+
+00:22:02.980 --> 00:22:05.293 align:middle line:84%
+The object here, it's not
+a collection of cells.
+
+00:22:05.293 --> 00:22:06.460 align:middle line:90%
+It's a collection of states.
+
+00:22:06.460 --> 00:22:10.540 align:middle line:84%
+So it is the states in this cell
+and the states in this cell.
+
+00:22:10.540 --> 00:22:14.240 align:middle line:90%
+So altogether, we get 1, 2, 3 4.
+
+00:22:14.240 --> 00:22:18.020 align:middle line:84%
+And then we can ask,
+what about player two?
+
+00:22:18.020 --> 00:22:21.520 align:middle line:90%
+
+
+00:22:21.520 --> 00:22:23.440 align:middle line:84%
+Well, similarly
+player two, it's only
+
+00:22:23.440 --> 00:22:26.840 align:middle line:84%
+going to be 1, 3, and 5 because
+these are the only states that
+
+00:22:26.840 --> 00:22:29.550 align:middle line:84%
+are in a cell that's
+contained in the yellow box.
+
+00:22:29.550 --> 00:22:32.250 align:middle line:90%
+So we get 1, 3, 5.
+
+00:22:32.250 --> 00:22:34.950 align:middle line:90%
+
+
+00:22:34.950 --> 00:22:39.270 align:middle line:84%
+But now we can ask another
+question, which is, what
+
+00:22:39.270 --> 00:22:43.730 align:middle line:90%
+is K1 of E intersect K2 of E?
+
+00:22:43.730 --> 00:22:46.830 align:middle line:90%
+
+
+00:22:46.830 --> 00:22:48.830 align:middle line:84%
+So let's try to
+interpret this set.
+
+00:22:48.830 --> 00:22:52.870 align:middle line:84%
+This is the set of states
+where player one knows E,
+
+00:22:52.870 --> 00:22:57.370 align:middle line:84%
+and player two knows E. And
+if we just read it off here,
+
+00:22:57.370 --> 00:22:59.810 align:middle line:84%
+we can see these are
+the states 1 and 3.
+
+00:22:59.810 --> 00:23:09.390 align:middle line:90%
+
+
+00:23:09.390 --> 00:23:15.510 align:middle line:84%
+So we can say in state 3,
+player one knows E has occurred,
+
+00:23:15.510 --> 00:23:18.110 align:middle line:84%
+and player two knows
+E has occurred.
+
+00:23:18.110 --> 00:23:22.870 align:middle line:84%
+But now we can start asking
+maybe a more confusing question.
+
+00:23:22.870 --> 00:23:25.910 align:middle line:84%
+Does player one know
+that both players
+
+00:23:25.910 --> 00:23:28.435 align:middle line:90%
+know that event E has occurred?
+
+00:23:28.435 --> 00:23:30.560 align:middle line:84%
+So let's try to think
+through what that would mean.
+
+00:23:30.560 --> 00:23:33.380 align:middle line:90%
+So we want to ask--
+
+00:23:33.380 --> 00:23:42.180 align:middle line:84%
+we want to look at the set K1
+of K1 of E intersect K2 of E.
+
+00:23:42.180 --> 00:23:44.740 align:middle line:90%
+So this means I'm player one.
+
+00:23:44.740 --> 00:23:48.300 align:middle line:84%
+In which states do I
+know that I know event E,
+
+00:23:48.300 --> 00:23:50.145 align:middle line:84%
+and my opponent, player
+two, knows events E?
+
+00:23:50.145 --> 00:23:52.520 align:middle line:84%
+So now we can start thinking
+about interactive knowledge.
+
+00:23:52.520 --> 00:23:54.980 align:middle line:84%
+What do I know about
+what other players know?
+
+00:23:54.980 --> 00:23:57.800 align:middle line:84%
+And it's kind of a
+mouthful to say it,
+
+00:23:57.800 --> 00:24:00.740 align:middle line:84%
+but mathematically
+it's not too hard.
+
+00:24:00.740 --> 00:24:02.380 align:middle line:90%
+We've just said what this is.
+
+00:24:02.380 --> 00:24:04.000 align:middle line:90%
+This is 1, 3.
+
+00:24:04.000 --> 00:24:07.860 align:middle line:90%
+
+
+00:24:07.860 --> 00:24:09.980 align:middle line:90%
+So what is K1 of 1, 3?
+
+00:24:09.980 --> 00:24:20.260 align:middle line:90%
+
+
+00:24:20.260 --> 00:24:20.760 align:middle line:90%
+Yeah?
+
+00:24:20.760 --> 00:24:21.620 align:middle line:84%
+AUDIENCE: Would it
+be the empty set?
+
+00:24:21.620 --> 00:24:22.995 align:middle line:84%
+IAN BALL: It's
+just the empty set
+
+00:24:22.995 --> 00:24:25.810 align:middle line:84%
+because there are no
+states in which player
+
+00:24:25.810 --> 00:24:30.810 align:middle line:84%
+one's cell of his partition
+is a subset of 1, 3.
+
+00:24:30.810 --> 00:24:32.650 align:middle line:90%
+So this is one possibility.
+
+00:24:32.650 --> 00:24:34.210 align:middle line:90%
+It can be the case--
+
+00:24:34.210 --> 00:24:36.950 align:middle line:84%
+so we can say informally,
+what does this mean?
+
+00:24:36.950 --> 00:24:41.310 align:middle line:84%
+It means there are states of the
+world where both players 1 and 2
+
+00:24:41.310 --> 00:24:43.050 align:middle line:90%
+know that the event is E.
+
+00:24:43.050 --> 00:24:46.410 align:middle line:84%
+But there is no state of the
+world where player one knows
+
+00:24:46.410 --> 00:24:52.290 align:middle line:84%
+that both players know
+that the event is E.
+
+00:24:52.290 --> 00:24:56.890 align:middle line:84%
+And in fact, this motivates
+one more definition.
+
+00:24:56.890 --> 00:25:01.470 align:middle line:84%
+Let's define-- and this is what
+we might call mutual knowledge.
+
+00:25:01.470 --> 00:25:07.010 align:middle line:90%
+
+
+00:25:07.010 --> 00:25:10.122 align:middle line:84%
+So it gets a bit messy
+to keep talking about, do
+
+00:25:10.122 --> 00:25:12.330 align:middle line:84%
+I know that player one knows
+something and player two
+
+00:25:12.330 --> 00:25:14.372 align:middle line:84%
+knows something and player
+three knows something.
+
+00:25:14.372 --> 00:25:16.570 align:middle line:84%
+So let's just introduce
+notation for the event
+
+00:25:16.570 --> 00:25:19.810 align:middle line:84%
+that everyone knows that
+some event has occurred.
+
+00:25:19.810 --> 00:25:42.450 align:middle line:84%
+So we'll say in state omega,
+event E is mutual knowledge if--
+
+00:25:42.450 --> 00:25:49.970 align:middle line:84%
+well, Ki omega is a
+subset of E for all i,
+
+00:25:49.970 --> 00:25:53.330 align:middle line:84%
+for all players i that
+we're talking about.
+
+00:25:53.330 --> 00:25:55.650 align:middle line:84%
+Maybe we'll say i equals 1
+through n, because we often
+
+00:25:55.650 --> 00:25:56.670 align:middle line:90%
+work with n players.
+
+00:25:56.670 --> 00:26:04.370 align:middle line:90%
+
+
+00:26:04.370 --> 00:26:06.710 align:middle line:84%
+And then once we
+have this definition,
+
+00:26:06.710 --> 00:26:08.470 align:middle line:90%
+we can just naturally define--
+
+00:26:08.470 --> 00:26:15.770 align:middle line:90%
+
+
+00:26:15.770 --> 00:26:18.410 align:middle line:84%
+well, here I've said,
+in a given state
+
+00:26:18.410 --> 00:26:22.370 align:middle line:84%
+an event is mutual knowledge
+if everyone knows it.
+
+00:26:22.370 --> 00:26:24.320 align:middle line:84%
+But now we can ask
+about the event
+
+00:26:24.320 --> 00:26:26.920 align:middle line:84%
+that everyone knows
+something, or the event
+
+00:26:26.920 --> 00:26:28.500 align:middle line:84%
+that this event is
+mutual knowledge.
+
+00:26:28.500 --> 00:26:30.417 align:middle line:84%
+I know it's getting to
+be a bit of a mouthful,
+
+00:26:30.417 --> 00:26:32.560 align:middle line:84%
+but we can give
+another definition,
+
+00:26:32.560 --> 00:26:38.420 align:middle line:84%
+and we'll just say K of E is
+equal to the intersection--
+
+00:26:38.420 --> 00:26:40.160 align:middle line:90%
+or maybe I'll write it this way.
+
+00:26:40.160 --> 00:26:48.720 align:middle line:90%
+K1 of E intersect Kn of E.
+
+00:26:48.720 --> 00:26:55.960 align:middle line:84%
+So this is precisely
+the set of states
+
+00:26:55.960 --> 00:26:58.640 align:middle line:84%
+where player one
+knows event E. Player
+
+00:26:58.640 --> 00:27:03.560 align:middle line:84%
+two knows event E. And
+everyone else knows event E.
+
+00:27:03.560 --> 00:27:12.000 align:middle line:84%
+So if we want to rewrite this
+equation star over here using
+
+00:27:12.000 --> 00:27:19.760 align:middle line:84%
+our new notation, we could write
+that is the event K1 of K of E.
+
+00:27:19.760 --> 00:27:23.270 align:middle line:84%
+So in the notation,
+E is an event.
+
+00:27:23.270 --> 00:27:28.030 align:middle line:84%
+K of E is the event that
+E is mutual knowledge.
+
+00:27:28.030 --> 00:27:31.190 align:middle line:84%
+It's the event that
+everyone knows E is true.
+
+00:27:31.190 --> 00:27:34.390 align:middle line:84%
+And K1 of K of E is the
+event that player one
+
+00:27:34.390 --> 00:27:38.070 align:middle line:84%
+knows that everyone knows
+that the event E is true.
+
+00:27:38.070 --> 00:27:40.950 align:middle line:84%
+So what this highlights is that
+mutual knowledge sounds pretty
+
+00:27:40.950 --> 00:27:44.350 align:middle line:84%
+strong, but it's actually
+not quite as strong
+
+00:27:44.350 --> 00:27:45.550 align:middle line:90%
+as we might think.
+
+00:27:45.550 --> 00:27:48.590 align:middle line:84%
+Because it may be that we all
+know something, but there's
+
+00:27:48.590 --> 00:27:51.230 align:middle line:84%
+a player who doesn't know
+that we all know something.
+
+00:27:51.230 --> 00:27:54.230 align:middle line:84%
+And that suggests that we
+might need to go a step deeper.
+
+00:27:54.230 --> 00:27:58.110 align:middle line:84%
+So we could then look at,
+what is the interpretation k
+
+00:27:58.110 --> 00:28:02.710 align:middle line:84%
+squared of E is
+equal to K of K of E?
+
+00:28:02.710 --> 00:28:06.930 align:middle line:84%
+So in words, what would
+you describe this as?
+
+00:28:06.930 --> 00:28:09.430 align:middle line:90%
+This is the event that what?
+
+00:28:09.430 --> 00:28:13.030 align:middle line:90%
+K of K of E. Yeah?
+
+00:28:13.030 --> 00:28:15.678 align:middle line:84%
+AUDIENCE: Everyone knows
+that everyone else knows.
+
+00:28:15.678 --> 00:28:16.970 align:middle line:90%
+IAN BALL: Knows that E is true.
+
+00:28:16.970 --> 00:28:19.350 align:middle line:90%
+So we might call--
+
+00:28:19.350 --> 00:28:21.820 align:middle line:90%
+we call this mutual knowledge.
+
+00:28:21.820 --> 00:28:24.100 align:middle line:84%
+It's kind of first-order
+mutual knowledge.
+
+00:28:24.100 --> 00:28:26.438 align:middle line:84%
+This we might call
+second-order mutual knowledge.
+
+00:28:26.438 --> 00:28:27.480 align:middle line:90%
+Everyone knows something.
+
+00:28:27.480 --> 00:28:31.860 align:middle line:84%
+And on top of that, everyone
+knows that everyone knows it.
+
+00:28:31.860 --> 00:28:41.740 align:middle line:84%
+So this is maybe second-order
+mutual knowledge,
+
+00:28:41.740 --> 00:28:43.000 align:middle line:90%
+but that's still too weak.
+
+00:28:43.000 --> 00:28:44.580 align:middle line:84%
+Because it could be that
+everyone knows something,
+
+00:28:44.580 --> 00:28:46.400 align:middle line:84%
+and everyone knows that
+everyone knows something.
+
+00:28:46.400 --> 00:28:48.020 align:middle line:84%
+But maybe people don't
+know that everyone
+
+00:28:48.020 --> 00:28:49.228 align:middle line:90%
+knows that everyone knows it.
+
+00:28:49.228 --> 00:28:50.540 align:middle line:90%
+So have to go a step deeper.
+
+00:28:50.540 --> 00:28:57.100 align:middle line:84%
+And we finally get to maybe what
+I'll say common knowledge, CK
+
+00:28:57.100 --> 00:29:01.253 align:middle line:84%
+of E. Now we can formally
+define this thing that we've
+
+00:29:01.253 --> 00:29:03.420 align:middle line:84%
+been informally talking
+about throughout the course.
+
+00:29:03.420 --> 00:29:13.740 align:middle line:84%
+CK of E is K of E intersect K
+squared of E Intersect K cubed
+
+00:29:13.740 --> 00:29:17.500 align:middle line:90%
+of E, and it goes on forever.
+
+00:29:17.500 --> 00:29:20.660 align:middle line:84%
+So now we have a formal
+definition of common knowledge.
+
+00:29:20.660 --> 00:29:23.260 align:middle line:90%
+Event E is common knowledge.
+
+00:29:23.260 --> 00:29:26.020 align:middle line:84%
+Or in other words, the set
+of states in which event
+
+00:29:26.020 --> 00:29:28.140 align:middle line:84%
+E is common knowledge
+are precisely
+
+00:29:28.140 --> 00:29:30.140 align:middle line:84%
+the states in which
+everyone knows
+
+00:29:30.140 --> 00:29:34.380 align:middle line:84%
+E. Everyone knows that everyone
+knows E. Everyone knows
+
+00:29:34.380 --> 00:29:36.380 align:middle line:84%
+that everyone knows
+that everyone knows E.
+
+00:29:36.380 --> 00:29:39.300 align:middle line:84%
+And this goes on no matter how
+long the length of this chain
+
+00:29:39.300 --> 00:29:39.800 align:middle line:90%
+is.
+
+00:29:39.800 --> 00:29:42.060 align:middle line:84%
+And this is a very,
+very demanding property
+
+00:29:42.060 --> 00:29:44.380 align:middle line:84%
+that we've implicitly
+been kind of relying on
+
+00:29:44.380 --> 00:29:45.400 align:middle line:90%
+throughout the course.
+
+00:29:45.400 --> 00:29:47.030 align:middle line:84%
+Now, I think you
+might think, well, why
+
+00:29:47.030 --> 00:29:48.280 align:middle line:90%
+are we going through all this?
+
+00:29:48.280 --> 00:29:49.380 align:middle line:90%
+This is kind of--
+
+00:29:49.380 --> 00:29:51.100 align:middle line:90%
+we're just playing math games.
+
+00:29:51.100 --> 00:29:52.780 align:middle line:84%
+Does this really
+have any content?
+
+00:29:52.780 --> 00:29:56.120 align:middle line:84%
+So I now, for the next
+part of the class,
+
+00:29:56.120 --> 00:29:57.900 align:middle line:84%
+want to go over a
+famous riddle that
+
+00:29:57.900 --> 00:30:01.100 align:middle line:84%
+illustrates how different
+common knowledge of something
+
+00:30:01.100 --> 00:30:02.802 align:middle line:84%
+can be from just
+mutual knowledge,
+
+00:30:02.802 --> 00:30:04.760 align:middle line:84%
+or from first- or
+second-order mutual knowledge
+
+00:30:04.760 --> 00:30:08.240 align:middle line:84%
+So this is kind of a classic
+riddle that we'll go over.
+
+00:30:08.240 --> 00:30:31.210 align:middle line:90%
+
+
+00:30:31.210 --> 00:30:34.128 align:middle line:90%
+So this is sometimes called--
+
+00:30:34.128 --> 00:30:34.670 align:middle line:90%
+I don't know.
+
+00:30:34.670 --> 00:30:36.570 align:middle line:84%
+It has many names-- the
+sage and the children.
+
+00:30:36.570 --> 00:30:37.112 align:middle line:90%
+I don't know.
+
+00:30:37.112 --> 00:30:39.710 align:middle line:84%
+Or the teacher-- there's so
+many stories we could use.
+
+00:30:39.710 --> 00:30:41.510 align:middle line:84%
+Let's use the teacher
+and the students.
+
+00:30:41.510 --> 00:30:47.570 align:middle line:90%
+
+
+00:30:47.570 --> 00:30:49.390 align:middle line:84%
+And here's the-- the
+story, of course,
+
+00:30:49.390 --> 00:30:51.428 align:middle line:84%
+it's kind of a bit
+of a silly puzzle,
+
+00:30:51.428 --> 00:30:53.470 align:middle line:84%
+but I think it illustrates
+the ideas really well.
+
+00:30:53.470 --> 00:30:54.790 align:middle line:90%
+So we have three students.
+
+00:30:54.790 --> 00:30:57.850 align:middle line:90%
+
+
+00:30:57.850 --> 00:30:59.790 align:middle line:90%
+Call them 1, 2, and 3.
+
+00:30:59.790 --> 00:31:02.370 align:middle line:90%
+
+
+00:31:02.370 --> 00:31:05.460 align:middle line:84%
+And there's various
+versions of it.
+
+00:31:05.460 --> 00:31:06.710 align:middle line:90%
+We'll use the version of hats.
+
+00:31:06.710 --> 00:31:08.150 align:middle line:84%
+So each student
+is wearing a hat.
+
+00:31:08.150 --> 00:31:13.300 align:middle line:90%
+
+
+00:31:13.300 --> 00:31:16.220 align:middle line:84%
+The student's hat
+is white or red.
+
+00:31:16.220 --> 00:31:18.960 align:middle line:90%
+
+
+00:31:18.960 --> 00:31:19.900 align:middle line:90%
+Why do we use hats?
+
+00:31:19.900 --> 00:31:21.260 align:middle line:84%
+Well, the point is, when
+you're wearing a hat,
+
+00:31:21.260 --> 00:31:23.480 align:middle line:84%
+you can see other people's
+hats, but not your own.
+
+00:31:23.480 --> 00:31:25.740 align:middle line:84%
+So you can observe the color
+of everyone else's hat,
+
+00:31:25.740 --> 00:31:29.120 align:middle line:84%
+but you can't observe the
+color of your own hat.
+
+00:31:29.120 --> 00:31:41.000 align:middle line:84%
+And so we'll say that
+each student observes
+
+00:31:41.000 --> 00:31:45.180 align:middle line:84%
+the other's hats,
+but not her own.
+
+00:31:45.180 --> 00:32:05.280 align:middle line:90%
+
+
+00:32:05.280 --> 00:32:09.180 align:middle line:84%
+So let's suppose that all
+the hats are actually red.
+
+00:32:09.180 --> 00:32:16.150 align:middle line:90%
+
+
+00:32:16.150 --> 00:32:17.730 align:middle line:90%
+We should put it in red.
+
+00:32:17.730 --> 00:32:18.970 align:middle line:90%
+So all hats are red.
+
+00:32:18.970 --> 00:32:21.110 align:middle line:90%
+This is an assumption.
+
+00:32:21.110 --> 00:32:23.710 align:middle line:84%
+It's really a statement about
+what the true state omega is.
+
+00:32:23.710 --> 00:32:27.190 align:middle line:84%
+So the true state is that
+all the hats are red.
+
+00:32:27.190 --> 00:32:30.810 align:middle line:84%
+And then the teacher is going
+to ask all the students,
+
+00:32:30.810 --> 00:32:32.290 align:middle line:84%
+do you know what
+color your hat is?
+
+00:32:32.290 --> 00:32:39.790 align:middle line:90%
+
+
+00:32:39.790 --> 00:32:41.628 align:middle line:84%
+Now, for this
+riddle to work out,
+
+00:32:41.628 --> 00:32:44.170 align:middle line:84%
+it must be the case that we're
+assuming everyone is truthful.
+
+00:32:44.170 --> 00:32:46.110 align:middle line:90%
+No one's lying to the teacher.
+
+00:32:46.110 --> 00:32:49.230 align:middle line:84%
+So the teacher asks, do
+you know your hat color?
+
+00:32:49.230 --> 00:32:52.750 align:middle line:84%
+And we should be
+a little precise
+
+00:32:52.750 --> 00:32:54.790 align:middle line:84%
+when it means know your
+hat color means either
+
+00:32:54.790 --> 00:32:58.310 align:middle line:84%
+you know hat is red, or
+you know your hat is white.
+
+00:32:58.310 --> 00:33:01.630 align:middle line:84%
+That's what it means
+to know your hat color.
+
+00:33:01.630 --> 00:33:04.190 align:middle line:84%
+What would the student's
+answer be if they're truthful?
+
+00:33:04.190 --> 00:33:05.450 align:middle line:90%
+They look around.
+
+00:33:05.450 --> 00:33:07.430 align:middle line:90%
+Do they know their hat color?
+
+00:33:07.430 --> 00:33:07.955 align:middle line:90%
+No, right?
+
+00:33:07.955 --> 00:33:09.330 align:middle line:84%
+They can see other
+people's hats,
+
+00:33:09.330 --> 00:33:10.550 align:middle line:90%
+but they can't see their own.
+
+00:33:10.550 --> 00:33:11.650 align:middle line:90%
+They know others hat colors.
+
+00:33:11.650 --> 00:33:12.450 align:middle line:90%
+They don't know their own.
+
+00:33:12.450 --> 00:33:13.610 align:middle line:90%
+So do your own hat color?
+
+00:33:13.610 --> 00:33:16.190 align:middle line:90%
+The answer is no.
+
+00:33:16.190 --> 00:33:18.450 align:middle line:84%
+Then the teacher
+makes an announcement.
+
+00:33:18.450 --> 00:33:22.590 align:middle line:84%
+The teacher says-- so
+the teacher announces
+
+00:33:22.590 --> 00:33:24.010 align:middle line:90%
+at least one hat is red.
+
+00:33:24.010 --> 00:33:29.143 align:middle line:90%
+
+
+00:33:29.143 --> 00:33:30.810 align:middle line:84%
+Have people heard of
+this riddle before?
+
+00:33:30.810 --> 00:33:31.330 align:middle line:90%
+I'm curious.
+
+00:33:31.330 --> 00:33:31.830 align:middle line:90%
+Anyone?
+
+00:33:31.830 --> 00:33:33.130 align:middle line:90%
+One person, two.
+
+00:33:33.130 --> 00:33:34.530 align:middle line:90%
+OK, so not too many.
+
+00:33:34.530 --> 00:33:36.895 align:middle line:84%
+So the teacher says at
+least one hat is red.
+
+00:33:36.895 --> 00:33:39.270 align:middle line:84%
+And now she's going to go
+through and ask these questions
+
+00:33:39.270 --> 00:33:41.230 align:middle line:84%
+again to the
+students one by one.
+
+00:33:41.230 --> 00:33:44.410 align:middle line:84%
+So she's going to go to
+student 1, S1, and say,
+
+00:33:44.410 --> 00:33:46.030 align:middle line:90%
+do you know your hat color?
+
+00:33:46.030 --> 00:33:48.590 align:middle line:84%
+And still, I mean, knowing
+that at least one hat is
+
+00:33:48.590 --> 00:33:51.070 align:middle line:84%
+red doesn't give that
+student any information
+
+00:33:51.070 --> 00:33:51.970 align:middle line:90%
+about their own hat.
+
+00:33:51.970 --> 00:33:54.070 align:middle line:84%
+So that student is
+going to say no.
+
+00:33:54.070 --> 00:33:56.185 align:middle line:84%
+And then the teacher goes
+to student 2 and says,
+
+00:33:56.185 --> 00:33:57.310 align:middle line:90%
+do you know your hat color?
+
+00:33:57.310 --> 00:33:59.470 align:middle line:90%
+And the student says, no.
+
+00:33:59.470 --> 00:34:02.330 align:middle line:84%
+And crucially, when the teacher
+is asking these students,
+
+00:34:02.330 --> 00:34:04.350 align:middle line:84%
+the other students get
+to observe the answers.
+
+00:34:04.350 --> 00:34:06.100 align:middle line:84%
+So these are public
+questioning, and we're
+
+00:34:06.100 --> 00:34:07.630 align:middle line:90%
+assuming everyone's truthful.
+
+00:34:07.630 --> 00:34:09.630 align:middle line:84%
+And then she goes
+to student three,
+
+00:34:09.630 --> 00:34:10.969 align:middle line:90%
+and that student says yes.
+
+00:34:10.969 --> 00:34:13.739 align:middle line:90%
+Now I know my hat color.
+
+00:34:13.739 --> 00:34:15.300 align:middle line:90%
+Now, I think people--
+
+00:34:15.300 --> 00:34:17.300 align:middle line:84%
+this, I think, was first
+developed in the 1950s.
+
+00:34:17.300 --> 00:34:19.258 align:middle line:84%
+These mathematicians were
+really shocked by it.
+
+00:34:19.258 --> 00:34:20.719 align:middle line:90%
+So why is this kind of shocking?
+
+00:34:20.719 --> 00:34:22.940 align:middle line:90%
+I hope people are shocked.
+
+00:34:22.940 --> 00:34:25.500 align:middle line:84%
+It's shocking--
+well, it doesn't feel
+
+00:34:25.500 --> 00:34:28.340 align:middle line:84%
+like the teacher's announcement
+should have made any difference.
+
+00:34:28.340 --> 00:34:30.620 align:middle line:84%
+The teacher announced
+something that everyone knew.
+
+00:34:30.620 --> 00:34:33.179 align:middle line:84%
+The teacher said at
+least one hat his red.
+
+00:34:33.179 --> 00:34:35.100 align:middle line:84%
+Well, if everyone's had
+his red, any student
+
+00:34:35.100 --> 00:34:37.017 align:middle line:84%
+can look around and, in
+fact, see that there's
+
+00:34:37.017 --> 00:34:38.420 align:middle line:90%
+at least two red hats.
+
+00:34:38.420 --> 00:34:42.300 align:middle line:84%
+So why would the announcement
+that at least one hat is red
+
+00:34:42.300 --> 00:34:44.699 align:middle line:84%
+change the dynamics
+that come after?
+
+00:34:44.699 --> 00:34:45.360 align:middle line:90%
+Any thoughts?
+
+00:34:45.360 --> 00:34:47.842 align:middle line:84%
+The teacher has said
+something that everyone knows.
+
+00:34:47.842 --> 00:34:49.800 align:middle line:84%
+So why does this announcement
+make a difference
+
+00:34:49.800 --> 00:34:52.580 align:middle line:84%
+using the language-- maybe using
+the language we've said before,
+
+00:34:52.580 --> 00:34:54.739 align:middle line:84%
+how could saying something,
+announcing something
+
+00:34:54.739 --> 00:34:57.040 align:middle line:84%
+that everyone already
+knows make a difference?
+
+00:34:57.040 --> 00:34:58.460 align:middle line:90%
+Yeah?
+
+00:34:58.460 --> 00:35:00.910 align:middle line:84%
+AUDIENCE: If player
+one-- or student one
+
+00:35:00.910 --> 00:35:03.740 align:middle line:84%
+and student two, both
+sides, one hat is red.
+
+00:35:03.740 --> 00:35:06.820 align:middle line:84%
+And both, one that they
+don't share [INAUDIBLE].
+
+00:35:06.820 --> 00:35:09.780 align:middle line:90%
+
+
+00:35:09.780 --> 00:35:10.900 align:middle line:90%
+IAN BALL: I didn't follow.
+
+00:35:10.900 --> 00:35:13.858 align:middle line:84%
+AUDIENCE: [INAUDIBLE] based
+on one student [INAUDIBLE].
+
+00:35:13.858 --> 00:35:15.650 align:middle line:84%
+IAN BALL: So student
+three is learning from
+
+00:35:15.650 --> 00:35:17.310 align:middle line:84%
+based on what student
+one and student said.
+
+00:35:17.310 --> 00:35:18.190 align:middle line:90%
+But let's be clear.
+
+00:35:18.190 --> 00:35:20.370 align:middle line:84%
+If the teacher had not
+made this announcement,
+
+00:35:20.370 --> 00:35:22.703 align:middle line:84%
+and the teacher kept saying,
+do you know your hat color?
+
+00:35:22.703 --> 00:35:25.390 align:middle line:84%
+Everyone would say no, and we
+would just go around forever,
+
+00:35:25.390 --> 00:35:26.070 align:middle line:90%
+actually.
+
+00:35:26.070 --> 00:35:29.090 align:middle line:84%
+So the answers to the questions
+are fundamentally changed
+
+00:35:29.090 --> 00:35:31.270 align:middle line:84%
+by this announcement that
+at least one hat is red.
+
+00:35:31.270 --> 00:35:33.270 align:middle line:84%
+So why does this announcement
+make a difference?
+
+00:35:33.270 --> 00:35:35.970 align:middle line:84%
+What is changed by this
+announcement using maybe a hint
+
+00:35:35.970 --> 00:35:37.190 align:middle line:84%
+about what we've
+talked about over here.
+
+00:35:37.190 --> 00:35:37.690 align:middle line:90%
+Yeah?
+
+00:35:37.690 --> 00:35:39.107 align:middle line:84%
+AUDIENCE: So like
+everyone already
+
+00:35:39.107 --> 00:35:40.590 align:middle line:84%
+knew that at least
+one hat is red,
+
+00:35:40.590 --> 00:35:42.490 align:middle line:84%
+but not everyone knew
+that everyone knew it.
+
+00:35:42.490 --> 00:35:42.730 align:middle line:90%
+IAN BALL: Yeah.
+
+00:35:42.730 --> 00:35:44.150 align:middle line:84%
+In fact, everyone knew
+that everyone knew it.
+
+00:35:44.150 --> 00:35:45.410 align:middle line:84%
+But it's not the case that
+everyone knew that everyone
+
+00:35:45.410 --> 00:35:46.535 align:middle line:90%
+knew that everyone knew it.
+
+00:35:46.535 --> 00:35:48.650 align:middle line:84%
+So why did this announcement
+make a difference?
+
+00:35:48.650 --> 00:35:51.782 align:middle line:84%
+It took something that was
+mutual knowledge-- in fact,
+
+00:35:51.782 --> 00:35:53.990 align:middle line:84%
+if we're careful, it's
+second-order mutual knowledge,
+
+00:35:53.990 --> 00:35:55.890 align:middle line:84%
+but it was not common
+knowledge, and it
+
+00:35:55.890 --> 00:35:57.450 align:middle line:90%
+made that common knowledge.
+
+00:35:57.450 --> 00:35:59.530 align:middle line:84%
+So announcements about
+things that everyone know
+
+00:35:59.530 --> 00:36:00.555 align:middle line:90%
+can change things.
+
+00:36:00.555 --> 00:36:01.930 align:middle line:84%
+If that thing that
+everyone knows
+
+00:36:01.930 --> 00:36:04.610 align:middle line:84%
+is only mutual knowledge
+and not common knowledge.
+
+00:36:04.610 --> 00:36:07.090 align:middle line:84%
+So the crucial thing
+about this announcement
+
+00:36:07.090 --> 00:36:14.240 align:middle line:84%
+is it makes an event go
+from mutual knowledge,
+
+00:36:14.240 --> 00:36:18.680 align:middle line:84%
+everyone knows it,
+to common knowledge.
+
+00:36:18.680 --> 00:36:23.600 align:middle line:90%
+
+
+00:36:23.600 --> 00:36:26.000 align:middle line:84%
+And I think this
+really highlights
+
+00:36:26.000 --> 00:36:28.620 align:middle line:84%
+how fundamentally different
+these two concepts are.
+
+00:36:28.620 --> 00:36:31.460 align:middle line:84%
+So let's try to work through and
+see how we actually get this.
+
+00:36:31.460 --> 00:36:33.180 align:middle line:90%
+And then we'll conclude.
+
+00:36:33.180 --> 00:36:46.440 align:middle line:90%
+
+
+00:36:46.440 --> 00:36:48.700 align:middle line:84%
+So first, we have to
+model the state space.
+
+00:36:48.700 --> 00:36:50.760 align:middle line:84%
+So each of the three
+students has a hat,
+
+00:36:50.760 --> 00:36:53.640 align:middle line:84%
+and the hat can either
+be white or red.
+
+00:36:53.640 --> 00:36:55.420 align:middle line:84%
+I find it easier
+to use binary here.
+
+00:36:55.420 --> 00:36:57.240 align:middle line:84%
+So let's say we're
+going to say white is
+
+00:36:57.240 --> 00:37:01.520 align:middle line:84%
+going to correspond to 0, and
+red is going to correspond to 1.
+
+00:37:01.520 --> 00:37:04.000 align:middle line:90%
+So what is a state omega?
+
+00:37:04.000 --> 00:37:09.320 align:middle line:84%
+Well, a state omega is going
+to be something like 010.
+
+00:37:09.320 --> 00:37:12.480 align:middle line:84%
+This would mean player
+one's hat is white,
+
+00:37:12.480 --> 00:37:15.380 align:middle line:84%
+player two's hat is red, and
+player three's hat is white.
+
+00:37:15.380 --> 00:37:17.520 align:middle line:84%
+So I'm going to
+represent the state
+
+00:37:17.520 --> 00:37:20.840 align:middle line:84%
+by 3 binary digits,
+each one indicating
+
+00:37:20.840 --> 00:37:23.560 align:middle line:84%
+whether that corresponding
+student's hat is red.
+
+00:37:23.560 --> 00:37:27.060 align:middle line:84%
+So I'll just note here, this
+is student two's hat color.
+
+00:37:27.060 --> 00:37:31.360 align:middle line:90%
+
+
+00:37:31.360 --> 00:37:34.240 align:middle line:84%
+Now, this means that
+we have eight states.
+
+00:37:34.240 --> 00:37:37.680 align:middle line:84%
+And it turns out to be quite
+useful to represent the states
+
+00:37:37.680 --> 00:37:39.640 align:middle line:90%
+as the corners of a cube.
+
+00:37:39.640 --> 00:37:43.660 align:middle line:84%
+So let me think about
+different axes here.
+
+00:37:43.660 --> 00:37:46.480 align:middle line:90%
+
+
+00:37:46.480 --> 00:37:53.560 align:middle line:84%
+So we have the first axis, the
+second axis, and the third axis.
+
+00:37:53.560 --> 00:37:57.020 align:middle line:84%
+This will kind of test my
+drawing abilities here.
+
+00:37:57.020 --> 00:38:02.880 align:middle line:90%
+
+
+00:38:02.880 --> 00:38:06.590 align:middle line:90%
+I think-- how do I do this?
+
+00:38:06.590 --> 00:38:20.110 align:middle line:84%
+So we need- have I
+drawn that right?
+
+00:38:20.110 --> 00:38:23.550 align:middle line:90%
+It keeps-- kind of jumps at you.
+
+00:38:23.550 --> 00:38:25.390 align:middle line:90%
+Let me see how I did it here.
+
+00:38:25.390 --> 00:38:30.602 align:middle line:84%
+OK Yeah, let me draw
+this a bit differently.
+
+00:38:30.602 --> 00:38:32.310 align:middle line:84%
+I don't know if it
+makes more sense to me
+
+00:38:32.310 --> 00:38:36.270 align:middle line:84%
+or it will make more sense
+to other people, too.
+
+00:38:36.270 --> 00:38:39.910 align:middle line:90%
+I think I should--
+
+00:38:39.910 --> 00:38:41.950 align:middle line:90%
+yeah.
+
+00:38:41.950 --> 00:38:43.130 align:middle line:90%
+I'm struggling here.
+
+00:38:43.130 --> 00:38:47.030 align:middle line:90%
+
+
+00:38:47.030 --> 00:38:49.390 align:middle line:84%
+I should have done better
+in drawing class here.
+
+00:38:49.390 --> 00:38:51.630 align:middle line:90%
+Let's see.
+
+00:38:51.630 --> 00:38:54.630 align:middle line:84%
+It makes sense in my paper,
+but then I can't draw it here.
+
+00:38:54.630 --> 00:38:56.970 align:middle line:90%
+OK, I think it should be--
+
+00:38:56.970 --> 00:38:57.470 align:middle line:90%
+yeah.
+
+00:38:57.470 --> 00:39:01.910 align:middle line:90%
+
+
+00:39:01.910 --> 00:39:04.110 align:middle line:90%
+Yeah.
+
+00:39:04.110 --> 00:39:05.820 align:middle line:90%
+There we go.
+
+00:39:05.820 --> 00:39:08.220 align:middle line:90%
+That looks better.
+
+00:39:08.220 --> 00:39:16.380 align:middle line:84%
+So we have-- so
+this is state 111.
+
+00:39:16.380 --> 00:39:21.500 align:middle line:90%
+This is state 000.
+
+00:39:21.500 --> 00:39:28.180 align:middle line:84%
+And as we move on this axis,
+we increase component 1 by one.
+
+00:39:28.180 --> 00:39:33.800 align:middle line:84%
+As we move along this axis, we
+increase component 2 by one.
+
+00:39:33.800 --> 00:39:38.340 align:middle line:84%
+And as we move along this axis,
+we increase component 3 by one.
+
+00:39:38.340 --> 00:39:42.100 align:middle line:90%
+So my picture--
+
+00:39:42.100 --> 00:39:45.020 align:middle line:90%
+I think-- there we go.
+
+00:39:45.020 --> 00:39:49.140 align:middle line:84%
+So now let's think about
+the information partitions.
+
+00:39:49.140 --> 00:39:54.900 align:middle line:84%
+So what is player one's
+information partition?
+
+00:39:54.900 --> 00:39:57.940 align:middle line:84%
+Well, player one's
+partition has four cells.
+
+00:39:57.940 --> 00:40:00.300 align:middle line:84%
+The player one
+observes the colors
+
+00:40:00.300 --> 00:40:02.100 align:middle line:84%
+of the other two
+students' hats, but they
+
+00:40:02.100 --> 00:40:03.610 align:middle line:90%
+don't observe their own hat.
+
+00:40:03.610 --> 00:40:05.650 align:middle line:84%
+So we can think of each
+cell of the partition
+
+00:40:05.650 --> 00:40:07.490 align:middle line:90%
+as being a horizontal line.
+
+00:40:07.490 --> 00:40:14.606 align:middle line:90%
+
+
+00:40:14.606 --> 00:40:17.270 align:middle line:84%
+And it may get a bit messy when
+I keep drawing everyone else's.
+
+00:40:17.270 --> 00:40:22.130 align:middle line:84%
+Player two's is going
+to be like this.
+
+00:40:22.130 --> 00:40:25.490 align:middle line:84%
+And then player
+three's partition
+
+00:40:25.490 --> 00:40:27.890 align:middle line:90%
+is going to be like this.
+
+00:40:27.890 --> 00:40:30.210 align:middle line:90%
+It's going to be [INAUDIBLE].
+
+00:40:30.210 --> 00:40:31.790 align:middle line:84%
+So let's understand
+what that means.
+
+00:40:31.790 --> 00:40:36.010 align:middle line:90%
+
+
+00:40:36.010 --> 00:40:39.170 align:middle line:84%
+In this cell of the
+partition, player one
+
+00:40:39.170 --> 00:40:41.890 align:middle line:84%
+sees that the other two
+player's hats are white,
+
+00:40:41.890 --> 00:40:44.150 align:middle line:84%
+but player one doesn't
+know her own hat color.
+
+00:40:44.150 --> 00:40:47.930 align:middle line:84%
+She knows her hat can
+either be white or red.
+
+00:40:47.930 --> 00:40:51.090 align:middle line:90%
+Let's go up to this cell.
+
+00:40:51.090 --> 00:40:55.090 align:middle line:90%
+Well, this point here is 001.
+
+00:40:55.090 --> 00:40:58.170 align:middle line:84%
+So here, player one sees that
+player two's hat is white
+
+00:40:58.170 --> 00:41:00.450 align:middle line:84%
+and player three's
+hat is red, but she
+
+00:41:00.450 --> 00:41:02.010 align:middle line:90%
+doesn't know her own hat color.
+
+00:41:02.010 --> 00:41:07.570 align:middle line:84%
+And that's why these two
+are going to be like this.
+
+00:41:07.570 --> 00:41:13.670 align:middle line:84%
+So this is-- any questions about
+this information structure?
+
+00:41:13.670 --> 00:41:14.170 align:middle line:90%
+Great.
+
+00:41:14.170 --> 00:41:17.490 align:middle line:84%
+So now let me try to
+formalize my claim.
+
+00:41:17.490 --> 00:41:20.650 align:middle line:84%
+My claim here was that the
+event, that at least one hat is
+
+00:41:20.650 --> 00:41:23.990 align:middle line:84%
+read, is mutual knowledge
+but not common knowledge.
+
+00:41:23.990 --> 00:41:27.170 align:middle line:90%
+So let's try to check that.
+
+00:41:27.170 --> 00:41:28.310 align:middle line:90%
+So let's write this down.
+
+00:41:28.310 --> 00:41:32.130 align:middle line:84%
+This event E-- maybe I'll write
+E greater than or equal to 1.
+
+00:41:32.130 --> 00:41:35.510 align:middle line:84%
+This is the event that at
+least one student's hat is red.
+
+00:41:35.510 --> 00:41:41.970 align:middle line:90%
+
+
+00:41:41.970 --> 00:41:43.710 align:middle line:90%
+I'll write this as a triple.
+
+00:41:43.710 --> 00:41:46.530 align:middle line:90%
+
+
+00:41:46.530 --> 00:41:49.530 align:middle line:84%
+So the event that at least
+one student's hat is red
+
+00:41:49.530 --> 00:41:54.330 align:middle line:84%
+is the event that omega 1
+plus omega 2 plus omega 3
+
+00:41:54.330 --> 00:41:58.010 align:middle line:90%
+is greater than or equal to 1.
+
+00:41:58.010 --> 00:42:00.050 align:middle line:84%
+In fact, if we draw
+it on the graph,
+
+00:42:00.050 --> 00:42:03.133 align:middle line:84%
+this is the event that's
+everything except this point.
+
+00:42:03.133 --> 00:42:05.800 align:middle line:84%
+So it's the event containing all
+seven points of the cube, which
+
+00:42:05.800 --> 00:42:07.640 align:middle line:84%
+I've quite messily
+drawn, but hopefully it
+
+00:42:07.640 --> 00:42:12.640 align:middle line:84%
+looks-- you can see it now,
+except this point here.
+
+00:42:12.640 --> 00:42:15.940 align:middle line:84%
+So now we're going to have
+to do a bit of calculation.
+
+00:42:15.940 --> 00:42:17.940 align:middle line:90%
+So let's come over here.
+
+00:42:17.940 --> 00:42:28.280 align:middle line:90%
+
+
+00:42:28.280 --> 00:42:35.200 align:middle line:84%
+So now let's ask, what is
+K1 of E greater than 1?
+
+00:42:35.200 --> 00:42:38.320 align:middle line:84%
+So this is, in which
+states does player one
+
+00:42:38.320 --> 00:42:41.920 align:middle line:84%
+know that at least one
+player's hat is red?
+
+00:42:41.920 --> 00:42:43.000 align:middle line:90%
+I want to be clear here.
+
+00:42:43.000 --> 00:42:45.240 align:middle line:84%
+Over here, I was talking
+about the true state
+
+00:42:45.240 --> 00:42:47.160 align:middle line:90%
+being red, red, red.
+
+00:42:47.160 --> 00:42:49.387 align:middle line:84%
+But for these statements
+about knowledge,
+
+00:42:49.387 --> 00:42:51.220 align:middle line:84%
+they don't depend on
+what the true state is.
+
+00:42:51.220 --> 00:42:52.800 align:middle line:84%
+These are just statements
+about in which state
+
+00:42:52.800 --> 00:42:53.500 align:middle line:90%
+something is known.
+
+00:42:53.500 --> 00:42:55.167 align:middle line:84%
+They don't depend on
+the realized state.
+
+00:42:55.167 --> 00:42:57.840 align:middle line:90%
+So what is this going to be?
+
+00:42:57.840 --> 00:43:02.710 align:middle line:84%
+It's omega and omega
+such that what?
+
+00:43:02.710 --> 00:43:03.230 align:middle line:90%
+Yeah?
+
+00:43:03.230 --> 00:43:05.880 align:middle line:84%
+AUDIENCE: Omega 2 plus omega
+3 is greater than omega 4.
+
+00:43:05.880 --> 00:43:06.630 align:middle line:90%
+IAN BALL: Exactly.
+
+00:43:06.630 --> 00:43:08.430 align:middle line:84%
+So I only know at
+least someone's hat
+
+00:43:08.430 --> 00:43:10.790 align:middle line:90%
+is red if I see a red hat.
+
+00:43:10.790 --> 00:43:12.010 align:middle line:90%
+And I'm player one.
+
+00:43:12.010 --> 00:43:13.390 align:middle line:90%
+I see hats two and three.
+
+00:43:13.390 --> 00:43:14.290 align:middle line:90%
+I look at them.
+
+00:43:14.290 --> 00:43:16.070 align:middle line:84%
+If either of those
+is red, then I
+
+00:43:16.070 --> 00:43:17.890 align:middle line:84%
+know at least one
+person's hat is red.
+
+00:43:17.890 --> 00:43:21.990 align:middle line:84%
+So this is the event
+that W2 plus W3
+
+00:43:21.990 --> 00:43:24.910 align:middle line:90%
+is greater than or equal to 1.
+
+00:43:24.910 --> 00:43:30.010 align:middle line:84%
+And symmetrically, for
+player 2 it's the same thing,
+
+00:43:30.010 --> 00:43:34.230 align:middle line:84%
+but it's W1 plus W3 is
+greater than or equal to 1.
+
+00:43:34.230 --> 00:43:36.190 align:middle line:84%
+Because if I'm player
+two, I can only
+
+00:43:36.190 --> 00:43:39.230 align:middle line:84%
+observe the hats of player
+one and player three.
+
+00:43:39.230 --> 00:43:40.730 align:middle line:90%
+And then finally, K3.
+
+00:43:40.730 --> 00:43:49.670 align:middle line:90%
+
+
+00:43:49.670 --> 00:43:53.550 align:middle line:84%
+So now that we've done
+these calculations,
+
+00:43:53.550 --> 00:43:58.400 align:middle line:84%
+we can say, well, what is
+K of E, which, remember,
+
+00:43:58.400 --> 00:44:17.780 align:middle line:84%
+is the intersection K1 of
+E intersect K2 of E. Well,
+
+00:44:17.780 --> 00:44:22.900 align:middle line:90%
+W2 plus W3 has to be at least 1.
+
+00:44:22.900 --> 00:44:25.860 align:middle line:90%
+W1 plus W3 has to be at least 1.
+
+00:44:25.860 --> 00:44:29.380 align:middle line:84%
+And W1 plus W2 has
+to be at least 1.
+
+00:44:29.380 --> 00:44:31.180 align:middle line:84%
+It turns out this
+is exactly going
+
+00:44:31.180 --> 00:44:36.140 align:middle line:84%
+to be the event that at
+least two hats are red.
+
+00:44:36.140 --> 00:44:37.440 align:middle line:90%
+Let's see how we can see this.
+
+00:44:37.440 --> 00:44:48.100 align:middle line:90%
+
+
+00:44:48.100 --> 00:44:50.980 align:middle line:84%
+I think it's kind of easier
+maybe to reason in words.
+
+00:44:50.980 --> 00:44:55.060 align:middle line:84%
+If only one person's hat is red,
+then the person with the red hat
+
+00:44:55.060 --> 00:44:56.740 align:middle line:90%
+sees two white hats.
+
+00:44:56.740 --> 00:44:59.820 align:middle line:84%
+So they're not certain that at
+least one person's hat is red.
+
+00:44:59.820 --> 00:45:01.720 align:middle line:84%
+But if at least
+two hats are red,
+
+00:45:01.720 --> 00:45:03.700 align:middle line:84%
+then everyone must see
+at least one red hat,
+
+00:45:03.700 --> 00:45:06.020 align:middle line:84%
+and therefore, know that
+at least one hat is red.
+
+00:45:06.020 --> 00:45:09.080 align:middle line:84%
+So formally, if we maintain
+this notation here,
+
+00:45:09.080 --> 00:45:14.360 align:middle line:84%
+this is E greater
+than or equal to 2.
+
+00:45:14.360 --> 00:45:17.260 align:middle line:90%
+
+
+00:45:17.260 --> 00:45:20.740 align:middle line:84%
+So let's see if we can
+continue this pattern.
+
+00:45:20.740 --> 00:45:26.460 align:middle line:84%
+So we've said that K of E
+greater than or equal to 1
+
+00:45:26.460 --> 00:45:29.780 align:middle line:90%
+is E greater than or equal to 2.
+
+00:45:29.780 --> 00:45:33.620 align:middle line:84%
+The event that everyone
+knows at least one hat is red
+
+00:45:33.620 --> 00:45:36.300 align:middle line:84%
+is exactly the event that
+at least two hats are red.
+
+00:45:36.300 --> 00:45:38.740 align:middle line:84%
+You need one more
+red hat for people
+
+00:45:38.740 --> 00:45:41.060 align:middle line:84%
+to know that at
+least one hat is red.
+
+00:45:41.060 --> 00:45:46.540 align:middle line:84%
+And now let's ask, what is
+K squared of E greater than
+
+00:45:46.540 --> 00:45:48.540 align:middle line:90%
+or equal to 1?
+
+00:45:48.540 --> 00:45:52.620 align:middle line:84%
+This is the event that everyone
+knows that everyone knows
+
+00:45:52.620 --> 00:45:54.460 align:middle line:90%
+that at least one hat is red.
+
+00:45:54.460 --> 00:45:59.730 align:middle line:84%
+Well, from what we said
+over here, this is K of E
+
+00:45:59.730 --> 00:46:02.530 align:middle line:90%
+greater than or equal to 2.
+
+00:46:02.530 --> 00:46:06.650 align:middle line:84%
+This means everyone knows that
+at least two hats are red.
+
+00:46:06.650 --> 00:46:07.390 align:middle line:90%
+And any guesses?
+
+00:46:07.390 --> 00:46:09.410 align:middle line:84%
+Can we just reason
+through in which
+
+00:46:09.410 --> 00:46:12.050 align:middle line:84%
+states does everyone know that
+at least two of the three hats
+
+00:46:12.050 --> 00:46:12.710 align:middle line:90%
+are red?
+
+00:46:12.710 --> 00:46:17.050 align:middle line:90%
+
+
+00:46:17.050 --> 00:46:17.550 align:middle line:90%
+Yeah?
+
+00:46:17.550 --> 00:46:18.690 align:middle line:90%
+AUDIENCE: [INAUDIBLE]
+
+00:46:18.690 --> 00:46:20.970 align:middle line:84%
+IAN BALL: All
+three hats are red.
+
+00:46:20.970 --> 00:46:24.550 align:middle line:90%
+So this is going to be E3.
+
+00:46:24.550 --> 00:46:27.410 align:middle line:90%
+
+
+00:46:27.410 --> 00:46:33.130 align:middle line:84%
+Because if anyone's
+hat was white,
+
+00:46:33.130 --> 00:46:36.690 align:middle line:84%
+then a person seeing
+that white hat
+
+00:46:36.690 --> 00:46:38.345 align:middle line:84%
+would only be
+seeing one red hat,
+
+00:46:38.345 --> 00:46:39.970 align:middle line:84%
+and they wouldn't be
+certain that there
+
+00:46:39.970 --> 00:46:42.650 align:middle line:90%
+are at least two red hats.
+
+00:46:42.650 --> 00:46:45.250 align:middle line:90%
+So now, final step.
+
+00:46:45.250 --> 00:46:49.730 align:middle line:84%
+What is K3 of E greater
+than or equal to 1?
+
+00:46:49.730 --> 00:46:52.790 align:middle line:90%
+This is K of E3.
+
+00:46:52.790 --> 00:47:02.640 align:middle line:90%
+
+
+00:47:02.640 --> 00:47:06.800 align:middle line:84%
+So in which states
+does everyone know
+
+00:47:06.800 --> 00:47:08.900 align:middle line:90%
+that there are three red hats?
+
+00:47:08.900 --> 00:47:09.400 align:middle line:90%
+Yeah?
+
+00:47:09.400 --> 00:47:12.783 align:middle line:84%
+AUDIENCE: [INAUDIBLE]
+red hats [INAUDIBLE].
+
+00:47:12.783 --> 00:47:13.700 align:middle line:90%
+IAN BALL: Let's think.
+
+00:47:13.700 --> 00:47:14.997 align:middle line:90%
+So do we know--
+
+00:47:14.997 --> 00:47:16.580 align:middle line:84%
+let's say everyone
+has three red hats.
+
+00:47:16.580 --> 00:47:18.820 align:middle line:84%
+Do we all know that
+everyone has three red hats?
+
+00:47:18.820 --> 00:47:19.320 align:middle line:90%
+No.
+
+00:47:19.320 --> 00:47:21.800 align:middle line:84%
+So actually, this
+is the empty set.
+
+00:47:21.800 --> 00:47:24.040 align:middle line:84%
+Because even if everyone
+has three red hats,
+
+00:47:24.040 --> 00:47:25.300 align:middle line:90%
+we don't all know that.
+
+00:47:25.300 --> 00:47:28.020 align:middle line:84%
+Because I only know the hats
+of the other two people.
+
+00:47:28.020 --> 00:47:32.680 align:middle line:90%
+
+
+00:47:32.680 --> 00:47:43.440 align:middle line:84%
+So here, we can formalize our
+claim in state omega equals 111.
+
+00:47:43.440 --> 00:47:46.280 align:middle line:84%
+Well, the event at
+least one person's hat
+
+00:47:46.280 --> 00:47:49.640 align:middle line:90%
+is red is mutual knowledge.
+
+00:47:49.640 --> 00:47:51.720 align:middle line:84%
+It's second-order
+mutual knowledge,
+
+00:47:51.720 --> 00:47:55.310 align:middle line:84%
+but it's not third-order
+mutual knowledge.
+
+00:47:55.310 --> 00:48:00.990 align:middle line:84%
+So in this state,
+the event E1 is maybe
+
+00:48:00.990 --> 00:48:04.830 align:middle line:84%
+I'll say second, but not
+third-order mutual knowledge.
+
+00:48:04.830 --> 00:48:17.830 align:middle line:90%
+
+
+00:48:17.830 --> 00:48:20.630 align:middle line:84%
+And I think the reason this
+puzzle is so confusing to people
+
+00:48:20.630 --> 00:48:22.390 align:middle line:84%
+is that we have
+pretty good intuition
+
+00:48:22.390 --> 00:48:23.972 align:middle line:90%
+about mutual knowledge.
+
+00:48:23.972 --> 00:48:25.430 align:middle line:84%
+We have pretty weak
+intuition about
+
+00:48:25.430 --> 00:48:26.650 align:middle line:90%
+second-order mutual knowledge.
+
+00:48:26.650 --> 00:48:29.010 align:middle line:84%
+And once we get to third- or
+fourth-order mutual knowledge,
+
+00:48:29.010 --> 00:48:30.885 align:middle line:84%
+it's really hard for us
+to reason through it.
+
+00:48:30.885 --> 00:48:33.190 align:middle line:84%
+It feels a lot like
+common knowledge.
+
+00:48:33.190 --> 00:48:35.270 align:middle line:84%
+So in this game,
+because this event
+
+00:48:35.270 --> 00:48:37.010 align:middle line:84%
+is second-order
+mutual knowledge,
+
+00:48:37.010 --> 00:48:39.170 align:middle line:84%
+it feels a lot like
+common knowledge.
+
+00:48:39.170 --> 00:48:41.950 align:middle line:84%
+But in fact, it's not actually
+third-order mutual knowledge,
+
+00:48:41.950 --> 00:48:44.503 align:middle line:84%
+and therefore, certainly
+is not common knowledge.
+
+00:48:44.503 --> 00:48:47.170 align:middle line:84%
+And that's why this announcement
+can make such a big difference.
+
+00:48:47.170 --> 00:48:49.930 align:middle line:84%
+Let me pause to see if
+there's any questions on this,
+
+00:48:49.930 --> 00:48:53.710 align:middle line:84%
+and then we'll see if we can
+actually resolve the riddle.
+
+00:48:53.710 --> 00:48:54.830 align:middle line:90%
+Questions?
+
+00:48:54.830 --> 00:48:56.110 align:middle line:90%
+Yeah?
+
+00:48:56.110 --> 00:48:58.090 align:middle line:84%
+AUDIENCE: Like, I guess
+if we were to continue,
+
+00:48:58.090 --> 00:49:00.790 align:middle line:84%
+does that mean like the other
+students would also start to
+
+00:49:00.790 --> 00:49:03.150 align:middle line:90%
+[INAUDIBLE]?
+
+00:49:03.150 --> 00:49:05.410 align:middle line:84%
+IAN BALL: You're saying if
+we ask more questions here?
+
+00:49:05.410 --> 00:49:05.910 align:middle line:90%
+AUDIENCE: Yeah.
+
+00:49:05.910 --> 00:49:06.070 align:middle line:90%
+[INAUDIBLE]
+
+00:49:06.070 --> 00:49:07.370 align:middle line:84%
+IAN BALL: If we ask
+a fourth question.
+
+00:49:07.370 --> 00:49:07.910 align:middle line:84%
+AUDIENCE: If we just
+keep going around.
+
+00:49:07.910 --> 00:49:09.450 align:middle line:84%
+IAN BALL: Yeah, it turns
+out it would actually cycle.
+
+00:49:09.450 --> 00:49:10.890 align:middle line:84%
+Then it gets even
+more confusing,
+
+00:49:10.890 --> 00:49:13.030 align:middle line:84%
+and it's going to depend
+on what the state is.
+
+00:49:13.030 --> 00:49:14.530 align:middle line:84%
+But you can actually
+have situations
+
+00:49:14.530 --> 00:49:19.767 align:middle line:84%
+where it would cycle
+where you might think,
+
+00:49:19.767 --> 00:49:21.850 align:middle line:84%
+oh, we're just learning
+more and more information.
+
+00:49:21.850 --> 00:49:24.225 align:middle line:84%
+But yeah you can actually have
+this kind of weird cycling
+
+00:49:24.225 --> 00:49:26.830 align:middle line:84%
+pattern where the subsequent
+answers now change,
+
+00:49:26.830 --> 00:49:28.550 align:middle line:90%
+and we keep going on forever.
+
+00:49:28.550 --> 00:49:29.590 align:middle line:90%
+Yeah.
+
+00:49:29.590 --> 00:49:31.150 align:middle line:90%
+Any other questions?
+
+00:49:31.150 --> 00:49:31.710 align:middle line:90%
+Yes?
+
+00:49:31.710 --> 00:49:32.668 align:middle line:90%
+AUDIENCE: Do you mean--
+
+00:49:32.668 --> 00:49:35.710 align:middle line:84%
+[INAUDIBLE] answers [INAUDIBLE]
+that should be-- yes.
+
+00:49:35.710 --> 00:49:38.310 align:middle line:84%
+[INAUDIBLE] students actually
+don't know their hat color,
+
+00:49:38.310 --> 00:49:41.470 align:middle line:90%
+or a student [INAUDIBLE].
+
+00:49:41.470 --> 00:49:45.130 align:middle line:90%
+IAN BALL: So you're right.
+
+00:49:45.130 --> 00:49:50.460 align:middle line:84%
+So if I know my hat color, I
+can never subsequently forget
+
+00:49:50.460 --> 00:49:51.220 align:middle line:90%
+my hat color.
+
+00:49:51.220 --> 00:49:51.720 align:middle line:90%
+That's true.
+
+00:49:51.720 --> 00:49:53.400 align:middle line:84%
+So what am I thinking
+in this example?
+
+00:49:53.400 --> 00:49:54.900 align:middle line:84%
+Let me-- I should
+double-check this.
+
+00:49:54.900 --> 00:50:02.960 align:middle line:90%
+
+
+00:50:02.960 --> 00:50:03.460 align:middle line:90%
+Yeah.
+
+00:50:03.460 --> 00:50:05.960 align:middle line:84%
+So more information can ever
+cause you to not know something
+
+00:50:05.960 --> 00:50:07.380 align:middle line:90%
+that you previously knew.
+
+00:50:07.380 --> 00:50:09.880 align:middle line:84%
+But there is a similar riddle
+where these answers can cycle.
+
+00:50:09.880 --> 00:50:12.445 align:middle line:84%
+So they must be asking about
+do you know something about--
+
+00:50:12.445 --> 00:50:14.820 align:middle line:84%
+it must be something about
+something other people knowing
+
+00:50:14.820 --> 00:50:15.440 align:middle line:90%
+something about you.
+
+00:50:15.440 --> 00:50:16.200 align:middle line:90%
+Let me follow up with that.
+
+00:50:16.200 --> 00:50:17.260 align:middle line:90%
+Yeah, let me double-check that.
+
+00:50:17.260 --> 00:50:19.593 align:middle line:84%
+You're right, that more
+information-- adding information
+
+00:50:19.593 --> 00:50:26.540 align:middle line:84%
+can never cause you to forget
+something you once knew.
+
+00:50:26.540 --> 00:50:29.300 align:middle line:84%
+So now let's see if we can
+actually resolve the puzzle
+
+00:50:29.300 --> 00:50:31.480 align:middle line:90%
+and see what's happening here.
+
+00:50:31.480 --> 00:50:34.420 align:middle line:90%
+
+
+00:50:34.420 --> 00:50:39.180 align:middle line:84%
+So I think it's best
+to go to the picture
+
+00:50:39.180 --> 00:50:40.800 align:middle line:84%
+here and go through
+the questions.
+
+00:50:40.800 --> 00:50:47.180 align:middle line:90%
+
+
+00:50:47.180 --> 00:50:48.730 align:middle line:90%
+So here we are.
+
+00:50:48.730 --> 00:50:52.970 align:middle line:84%
+The teacher, I guess, first
+makes an announcement.
+
+00:50:52.970 --> 00:50:57.590 align:middle line:90%
+I'll go here-- so these stages.
+
+00:50:57.590 --> 00:51:02.053 align:middle line:90%
+
+
+00:51:02.053 --> 00:51:03.470 align:middle line:84%
+The teacher makes
+an announcement.
+
+00:51:03.470 --> 00:51:08.350 align:middle line:84%
+Basically, they say, the event
+is E greater than or equal to 1.
+
+00:51:08.350 --> 00:51:13.010 align:middle line:84%
+The teacher says at least
+one person's hat is red.
+
+00:51:13.010 --> 00:51:15.930 align:middle line:84%
+But crucially, this
+announcement makes this event
+
+00:51:15.930 --> 00:51:17.370 align:middle line:90%
+common knowledge.
+
+00:51:17.370 --> 00:51:25.930 align:middle line:90%
+
+
+00:51:25.930 --> 00:51:27.615 align:middle line:84%
+And what it means
+is now everyone
+
+00:51:27.615 --> 00:51:29.490 align:middle line:84%
+knows that everyone
+knows that everyone knows
+
+00:51:29.490 --> 00:51:31.610 align:middle line:90%
+that we're not in this state.
+
+00:51:31.610 --> 00:51:33.670 align:middle line:84%
+So let me put an
+x over this state.
+
+00:51:33.670 --> 00:51:38.330 align:middle line:90%
+
+
+00:51:38.330 --> 00:51:43.210 align:middle line:84%
+So now we're going
+to go to player one,
+
+00:51:43.210 --> 00:51:48.467 align:middle line:84%
+and we're going to ask player
+one, do you know your hat color?
+
+00:51:48.467 --> 00:51:50.300 align:middle line:84%
+That is, do you know
+that your hat is white?
+
+00:51:50.300 --> 00:51:51.800 align:middle line:84%
+Or do you know that
+you had his red?
+
+00:51:51.800 --> 00:51:52.960 align:middle line:90%
+Or are you not sure?
+
+00:51:52.960 --> 00:51:56.840 align:middle line:84%
+And let's go through each of
+player one's information sets.
+
+00:51:56.840 --> 00:52:00.540 align:middle line:84%
+So if the state of the world
+is in this information set,
+
+00:52:00.540 --> 00:52:02.920 align:middle line:84%
+does player one know
+their hat color?
+
+00:52:02.920 --> 00:52:03.468 align:middle line:90%
+No.
+
+00:52:03.468 --> 00:52:05.760 align:middle line:84%
+Because player one thinks
+either they're in this state,
+
+00:52:05.760 --> 00:52:08.682 align:middle line:84%
+or they're in this state, and
+they don't know their hat color.
+
+00:52:08.682 --> 00:52:10.140 align:middle line:84%
+If they're in this
+information set,
+
+00:52:10.140 --> 00:52:12.520 align:middle line:84%
+player one also doesn't know
+their hat color, and same
+
+00:52:12.520 --> 00:52:16.080 align:middle line:90%
+with this information set.
+
+00:52:16.080 --> 00:52:20.600 align:middle line:84%
+But if player one is in this
+information set, well, now,
+
+00:52:20.600 --> 00:52:24.277 align:middle line:84%
+because we've announced
+that the state is not 000.
+
+00:52:24.277 --> 00:52:26.360 align:middle line:84%
+Basically, what's happened
+is this information set
+
+00:52:26.360 --> 00:52:27.380 align:middle line:90%
+has split into two.
+
+00:52:27.380 --> 00:52:30.000 align:middle line:90%
+
+
+00:52:30.000 --> 00:52:31.300 align:middle line:90%
+The partition has changed.
+
+00:52:31.300 --> 00:52:33.500 align:middle line:84%
+And in fact, if we're
+really formal about it,
+
+00:52:33.500 --> 00:52:39.800 align:middle line:84%
+that's true for this one
+and also for this one.
+
+00:52:39.800 --> 00:52:41.520 align:middle line:84%
+It gets messy to
+keep writing this.
+
+00:52:41.520 --> 00:52:46.920 align:middle line:84%
+But the announcement that the
+state is not 000 splits up any
+
+00:52:46.920 --> 00:52:49.880 align:middle line:84%
+of the information sets, any
+of the cells that includes this
+
+00:52:49.880 --> 00:52:51.300 align:middle line:90%
+state 000.
+
+00:52:51.300 --> 00:52:55.880 align:middle line:84%
+So it splits up this one,
+this one, and this one.
+
+00:52:55.880 --> 00:52:58.920 align:middle line:84%
+So now when we ask
+player one, do you
+
+00:52:58.920 --> 00:53:01.320 align:middle line:84%
+know your hat color,
+and player one says
+
+00:53:01.320 --> 00:53:06.640 align:middle line:84%
+no, what do all the
+other players now
+
+00:53:06.640 --> 00:53:07.620 align:middle line:90%
+learn about the state?
+
+00:53:07.620 --> 00:53:11.580 align:middle line:84%
+What is the one state
+that they can rule out?
+
+00:53:11.580 --> 00:53:12.080 align:middle line:90%
+Yeah?
+
+00:53:12.080 --> 00:53:13.277 align:middle line:90%
+AUDIENCE: The bottom one.
+
+00:53:13.277 --> 00:53:14.360 align:middle line:90%
+IAN BALL: This one, right?
+
+00:53:14.360 --> 00:53:16.920 align:middle line:84%
+Because if the state
+were here, player one
+
+00:53:16.920 --> 00:53:22.520 align:middle line:84%
+would know for certain
+that his hat was red.
+
+00:53:22.520 --> 00:53:26.640 align:middle line:84%
+So now the players--
+we break this up.
+
+00:53:26.640 --> 00:53:28.345 align:middle line:84%
+And I want to be
+really clear here,
+
+00:53:28.345 --> 00:53:29.720 align:middle line:84%
+what these questions
+are doing is
+
+00:53:29.720 --> 00:53:31.560 align:middle line:84%
+they're changing the
+information partitions
+
+00:53:31.560 --> 00:53:34.200 align:middle line:90%
+that the players have.
+
+00:53:34.200 --> 00:53:37.480 align:middle line:84%
+Again, this one is
+going to split up,
+
+00:53:37.480 --> 00:53:39.500 align:middle line:84%
+and this one is
+going to split up.
+
+00:53:39.500 --> 00:53:42.440 align:middle line:90%
+
+
+00:53:42.440 --> 00:53:47.630 align:middle line:84%
+Because now all the players
+learn that we're not here.
+
+00:53:47.630 --> 00:53:49.950 align:middle line:90%
+Now let's go to player two.
+
+00:53:49.950 --> 00:53:53.550 align:middle line:84%
+So next, player two is
+asked, do your hat color?
+
+00:53:53.550 --> 00:53:55.670 align:middle line:90%
+Well, let's look.
+
+00:53:55.670 --> 00:53:59.110 align:middle line:84%
+If the state is in
+this information
+
+00:53:59.110 --> 00:54:01.550 align:middle line:84%
+set or this cell for
+player two, then player two
+
+00:54:01.550 --> 00:54:03.710 align:middle line:90%
+doesn't know their hat color.
+
+00:54:03.710 --> 00:54:06.070 align:middle line:84%
+If it's in this cell,
+then player two also
+
+00:54:06.070 --> 00:54:07.870 align:middle line:90%
+doesn't know their hat color.
+
+00:54:07.870 --> 00:54:10.530 align:middle line:84%
+But if it's in either
+of these four points,
+
+00:54:10.530 --> 00:54:12.090 align:middle line:84%
+the player does know
+their hat color.
+
+00:54:12.090 --> 00:54:14.750 align:middle line:84%
+Because now these
+four points are
+
+00:54:14.750 --> 00:54:17.990 align:middle line:84%
+in distinct singleton
+information sets for player two.
+
+00:54:17.990 --> 00:54:21.190 align:middle line:84%
+Because previously, these two
+were in the same information set
+
+00:54:21.190 --> 00:54:24.710 align:middle line:84%
+in the same cell, but that was
+split by the first announcement.
+
+00:54:24.710 --> 00:54:27.090 align:middle line:84%
+And then these two
+were in the same cell,
+
+00:54:27.090 --> 00:54:30.910 align:middle line:84%
+but that was split by
+player one's answer.
+
+00:54:30.910 --> 00:54:36.470 align:middle line:84%
+So when player two says no,
+I don't know my hat color,
+
+00:54:36.470 --> 00:54:40.410 align:middle line:84%
+that tells us that the
+state is not here or here.
+
+00:54:40.410 --> 00:54:44.460 align:middle line:90%
+
+
+00:54:44.460 --> 00:54:48.500 align:middle line:84%
+So now everyone
+knows that the state
+
+00:54:48.500 --> 00:54:52.600 align:middle line:84%
+must be up in this
+higher horizontal plane.
+
+00:54:52.600 --> 00:54:56.620 align:middle line:90%
+
+
+00:54:56.620 --> 00:55:01.500 align:middle line:84%
+Player one knows we're
+either in this information
+
+00:55:01.500 --> 00:55:03.500 align:middle line:84%
+set or this information
+set, and they actually
+
+00:55:03.500 --> 00:55:04.940 align:middle line:90%
+know which one they're in.
+
+00:55:04.940 --> 00:55:06.920 align:middle line:90%
+Player two sees this.
+
+00:55:06.920 --> 00:55:10.020 align:middle line:84%
+But player one now,
+player three actually
+
+00:55:10.020 --> 00:55:12.040 align:middle line:90%
+now perfectly knows the state.
+
+00:55:12.040 --> 00:55:12.540 align:middle line:90%
+Why?
+
+00:55:12.540 --> 00:55:15.780 align:middle line:84%
+Because if the state is here,
+then player three knows it.
+
+00:55:15.780 --> 00:55:17.847 align:middle line:84%
+If the state is here,
+player three knows it.
+
+00:55:17.847 --> 00:55:19.680 align:middle line:84%
+If the state is here,
+player three knows it.
+
+00:55:19.680 --> 00:55:21.680 align:middle line:84%
+And if the state is here,
+player three knows it.
+
+00:55:21.680 --> 00:55:24.460 align:middle line:84%
+So now player three, when
+the state is actually 111,
+
+00:55:24.460 --> 00:55:27.840 align:middle line:84%
+is able to conclude that
+the state must be here.
+
+00:55:27.840 --> 00:55:29.560 align:middle line:84%
+And therefore,
+the answer is yes.
+
+00:55:29.560 --> 00:55:34.540 align:middle line:90%
+
+
+00:55:34.540 --> 00:55:36.240 align:middle line:84%
+I think this can be
+a little confusing.
+
+00:55:36.240 --> 00:55:36.840 align:middle line:90%
+So yeah?
+
+00:55:36.840 --> 00:55:38.900 align:middle line:84%
+AUDIENCE: Please repeat
+what you said about
+
+00:55:38.900 --> 00:55:41.770 align:middle line:84%
+after player's two
+answer, how that allows
+
+00:55:41.770 --> 00:55:44.490 align:middle line:90%
+player one to know a state?
+
+00:55:44.490 --> 00:55:45.610 align:middle line:90%
+IAN BALL: Yes.
+
+00:55:45.610 --> 00:55:49.510 align:middle line:90%
+So before player two answers--
+
+00:55:49.510 --> 00:55:51.350 align:middle line:84%
+I think maybe another
+way of looking at it.
+
+00:55:51.350 --> 00:55:54.828 align:middle line:90%
+Let's focus on player three.
+
+00:55:54.828 --> 00:55:56.370 align:middle line:84%
+So maybe another
+way of looking at it
+
+00:55:56.370 --> 00:55:58.210 align:middle line:84%
+without breaking
+information sets
+
+00:55:58.210 --> 00:56:03.090 align:middle line:84%
+is player three's
+information set is this one.
+
+00:56:03.090 --> 00:56:05.690 align:middle line:84%
+Because the state
+is 111, we're saying
+
+00:56:05.690 --> 00:56:09.250 align:middle line:84%
+suppose the realized state is
+that everyone's hat is red.
+
+00:56:09.250 --> 00:56:14.490 align:middle line:84%
+So that means that player three
+knows either my hat is red
+
+00:56:14.490 --> 00:56:19.410 align:middle line:84%
+and the other two player's hats
+are red, or my hat is white,
+
+00:56:19.410 --> 00:56:21.970 align:middle line:84%
+and the other two
+player's hats are red.
+
+00:56:21.970 --> 00:56:22.830 align:middle line:90%
+Put this up here.
+
+00:56:22.830 --> 00:56:25.570 align:middle line:90%
+
+
+00:56:25.570 --> 00:56:27.122 align:middle line:84%
+These are the only
+two possibilities
+
+00:56:27.122 --> 00:56:29.330 align:middle line:84%
+that player three entertains
+because they can observe
+
+00:56:29.330 --> 00:56:31.970 align:middle line:90%
+the other two player's hats.
+
+00:56:31.970 --> 00:56:36.410 align:middle line:84%
+Now player three now
+says, well, wait a second.
+
+00:56:36.410 --> 00:56:37.990 align:middle line:90%
+Suppose the state were this.
+
+00:56:37.990 --> 00:56:40.890 align:middle line:90%
+
+
+00:56:40.890 --> 00:56:45.790 align:middle line:84%
+If the state were 110, and that
+means that my hat is white,
+
+00:56:45.790 --> 00:56:49.050 align:middle line:84%
+but the other two
+player's hats are red,
+
+00:56:49.050 --> 00:56:52.930 align:middle line:84%
+then let me put myself in
+the shoes of player two.
+
+00:56:52.930 --> 00:56:55.410 align:middle line:84%
+So if this were the
+state, then player
+
+00:56:55.410 --> 00:56:59.890 align:middle line:84%
+two's information
+set would be this.
+
+00:56:59.890 --> 00:57:05.330 align:middle line:84%
+But player two has learned
+from player one's answer
+
+00:57:05.330 --> 00:57:07.690 align:middle line:90%
+that this can't be the state.
+
+00:57:07.690 --> 00:57:09.970 align:middle line:84%
+So if this were the
+state, then player two
+
+00:57:09.970 --> 00:57:12.910 align:middle line:84%
+would know for certain
+that this were the state.
+
+00:57:12.910 --> 00:57:15.890 align:middle line:84%
+And therefore, player two would
+have said yes to this question.
+
+00:57:15.890 --> 00:57:18.698 align:middle line:84%
+So it must be the case
+because player two says no,
+
+00:57:18.698 --> 00:57:19.990 align:middle line:90%
+that we can't be in this state.
+
+00:57:19.990 --> 00:57:21.670 align:middle line:84%
+And therefore, we
+must be in this state.
+
+00:57:21.670 --> 00:57:22.750 align:middle line:84%
+And knowing that
+we're in this state,
+
+00:57:22.750 --> 00:57:23.990 align:middle line:90%
+I know that my hat is red.
+
+00:57:23.990 --> 00:57:27.290 align:middle line:90%
+
+
+00:57:27.290 --> 00:57:27.790 align:middle line:90%
+Great.
+
+00:57:27.790 --> 00:57:30.050 align:middle line:84%
+So I think I want to end a bit
+early since it's the last class.
+
+00:57:30.050 --> 00:57:30.630 align:middle line:90%
+I'll stop there.
+
+00:57:30.630 --> 00:57:31.130 align:middle line:90%
+Thanks.
+
+00:57:31.130 --> 00:57:33.980 align:middle line:90%
+[APPLAUSE]
+
+00:57:33.980 --> 00:57:39.000 align:middle line:90%

@@ -1,0 +1,5788 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:01.985 align:middle line:90%
+[SQUEAKING]
+
+00:00:01.985 --> 00:00:03.965 align:middle line:90%
+[RUSTLING]
+
+00:00:03.965 --> 00:00:06.440 align:middle line:90%
+[CLICKING]
+
+00:00:06.440 --> 00:00:10.400 align:middle line:90%
+
+
+00:00:10.400 --> 00:00:15.760 align:middle line:84%
+IAN BALL: Today, we're going
+to start with finitely repeated
+
+00:00:15.760 --> 00:00:16.420 align:middle line:90%
+games.
+
+00:00:16.420 --> 00:00:23.360 align:middle line:90%
+
+
+00:00:23.360 --> 00:00:25.740 align:middle line:84%
+And I want to just start
+with a really simple example,
+
+00:00:25.740 --> 00:00:27.460 align:middle line:84%
+and we'll actually
+play a game together.
+
+00:00:27.460 --> 00:00:30.920 align:middle line:84%
+And then we'll develop the
+general theory of this.
+
+00:00:30.920 --> 00:00:35.480 align:middle line:84%
+So let's recall the standard
+prisoner's dilemma game where
+
+00:00:35.480 --> 00:00:36.998 align:middle line:90%
+each player had two choices.
+
+00:00:36.998 --> 00:00:39.040 align:middle line:84%
+They could either cooperate
+with the other player
+
+00:00:39.040 --> 00:00:40.520 align:middle line:90%
+or they could defect.
+
+00:00:40.520 --> 00:00:42.520 align:middle line:84%
+And the payoffs
+that we wrote down
+
+00:00:42.520 --> 00:00:49.680 align:middle line:84%
+are going to be 2, 2; 3
+negative 1; negative 1, 3.
+
+00:00:49.680 --> 00:00:52.480 align:middle line:84%
+And what we saw in this game
+is that for both players,
+
+00:00:52.480 --> 00:00:57.080 align:middle line:84%
+defecting is a strictly
+dominant strategy.
+
+00:00:57.080 --> 00:01:00.360 align:middle line:84%
+So if the opponent
+cooperates, I'm
+
+00:01:00.360 --> 00:01:03.120 align:middle line:84%
+better off if I defect
+because 3 is better than 2.
+
+00:01:03.120 --> 00:01:05.200 align:middle line:84%
+And if the opponent defects,
+I'm still better off
+
+00:01:05.200 --> 00:01:09.040 align:middle line:84%
+if I defect because 0 is
+greater than negative 1.
+
+00:01:09.040 --> 00:01:11.960 align:middle line:84%
+But so far, we've assumed that
+this game is played only once.
+
+00:01:11.960 --> 00:01:13.520 align:middle line:84%
+And in reality, a
+lot of interactions
+
+00:01:13.520 --> 00:01:14.780 align:middle line:90%
+take place over time.
+
+00:01:14.780 --> 00:01:17.220 align:middle line:84%
+You play a game with someone,
+you see what happens,
+
+00:01:17.220 --> 00:01:18.500 align:middle line:90%
+then you play the game again.
+
+00:01:18.500 --> 00:01:19.583 align:middle line:90%
+Then you see what happens.
+
+00:01:19.583 --> 00:01:21.800 align:middle line:90%
+Then you play the game again.
+
+00:01:21.800 --> 00:01:24.440 align:middle line:84%
+And today, we're going
+to study what happens
+
+00:01:24.440 --> 00:01:26.440 align:middle line:84%
+and how our
+conclusions change when
+
+00:01:26.440 --> 00:01:28.720 align:middle line:84%
+we're in this kind of
+repeated situation.
+
+00:01:28.720 --> 00:01:31.020 align:middle line:84%
+So let's start with a
+really simple example.
+
+00:01:31.020 --> 00:01:35.440 align:middle line:84%
+Let's play the prisoner's
+dilemma three times.
+
+00:01:35.440 --> 00:01:37.260 align:middle line:90%
+So how does this work?
+
+00:01:37.260 --> 00:01:39.640 align:middle line:84%
+You're going to
+simultaneously play the game.
+
+00:01:39.640 --> 00:01:42.680 align:middle line:84%
+Then both players observe
+the actions that were taken.
+
+00:01:42.680 --> 00:01:44.320 align:middle line:90%
+Then the game is played again.
+
+00:01:44.320 --> 00:01:46.460 align:middle line:84%
+Both players observe the
+actions that were taken.
+
+00:01:46.460 --> 00:01:48.800 align:middle line:84%
+And then finally, the game
+is played a third time.
+
+00:01:48.800 --> 00:01:53.400 align:middle line:84%
+And we'll assume that your
+payoffs in this grand game
+
+00:01:53.400 --> 00:01:55.480 align:middle line:84%
+are just the sum
+of your payoffs,
+
+00:01:55.480 --> 00:01:58.060 align:middle line:84%
+or maybe the average
+payoffs across the games.
+
+00:01:58.060 --> 00:02:05.000 align:middle line:90%
+
+
+00:02:05.000 --> 00:02:08.419 align:middle line:84%
+So if you get 2 in each
+repetition of the game,
+
+00:02:08.419 --> 00:02:10.028 align:middle line:90%
+your average payoff is 2.
+
+00:02:10.028 --> 00:02:10.820 align:middle line:90%
+I think it's good--
+
+00:02:10.820 --> 00:02:11.945 align:middle line:90%
+It's fun to just play this.
+
+00:02:11.945 --> 00:02:13.400 align:middle line:84%
+So we could do it
+on MobLab, but I
+
+00:02:13.400 --> 00:02:15.400 align:middle line:84%
+feel that if you look
+someone in the eye
+
+00:02:15.400 --> 00:02:17.858 align:middle line:84%
+when you're playing the game,
+it changes the results a bit.
+
+00:02:17.858 --> 00:02:20.683 align:middle line:84%
+So I want you to pair off, and
+you need a way to play this.
+
+00:02:20.683 --> 00:02:22.600 align:middle line:84%
+I think the easiest way
+is to think of this as
+
+00:02:22.600 --> 00:02:23.725 align:middle line:90%
+like rock, paper, scissors.
+
+00:02:23.725 --> 00:02:25.480 align:middle line:90%
+So just agree, maybe rock--
+
+00:02:25.480 --> 00:02:28.440 align:middle line:84%
+if you need help-- let's say
+playing rock is defecting
+
+00:02:28.440 --> 00:02:31.620 align:middle line:84%
+and maybe playing
+paper is cooperating.
+
+00:02:31.620 --> 00:02:34.360 align:middle line:84%
+So then it's just a variant
+of rock, paper, scissors.
+
+00:02:34.360 --> 00:02:34.860 align:middle line:90%
+Play it.
+
+00:02:34.860 --> 00:02:35.700 align:middle line:90%
+Observe the outcome.
+
+00:02:35.700 --> 00:02:36.980 align:middle line:84%
+You play it again,
+observe the outcome.
+
+00:02:36.980 --> 00:02:37.500 align:middle line:90%
+You play it again.
+
+00:02:37.500 --> 00:02:38.600 align:middle line:90%
+So three times in total.
+
+00:02:38.600 --> 00:02:39.140 align:middle line:90%
+Pair up.
+
+00:02:39.140 --> 00:02:40.682 align:middle line:84%
+Maybe one of you
+will be by yourself.
+
+00:02:40.682 --> 00:02:42.520 align:middle line:90%
+You can observe other people.
+
+00:02:42.520 --> 00:02:45.500 align:middle line:84%
+And let's do it and
+see what happens.
+
+00:02:45.500 --> 00:02:51.000 align:middle line:90%
+
+
+00:02:51.000 --> 00:02:51.500 align:middle line:90%
+All right.
+
+00:02:51.500 --> 00:02:52.250 align:middle line:90%
+So let's see how--
+
+00:02:52.250 --> 00:02:53.560 align:middle line:90%
+I'm curious how people did.
+
+00:02:53.560 --> 00:02:58.580 align:middle line:84%
+So I hope most groups
+got a chance to play.
+
+00:02:58.580 --> 00:03:00.693 align:middle line:90%
+So tell me, how did people play?
+
+00:03:00.693 --> 00:03:02.360 align:middle line:84%
+Does anyone want to
+share what you found
+
+00:03:02.360 --> 00:03:04.480 align:middle line:90%
+when you played this game?
+
+00:03:04.480 --> 00:03:05.180 align:middle line:90%
+Yes.
+
+00:03:05.180 --> 00:03:07.360 align:middle line:84%
+AUDIENCE: We both
+cooperated on first try,
+
+00:03:07.360 --> 00:03:09.800 align:middle line:84%
+so I think it has to
+do with cooperating.
+
+00:03:09.800 --> 00:03:13.240 align:middle line:84%
+IAN BALL: So you cooperated
+in all three rounds, or--
+
+00:03:13.240 --> 00:03:14.540 align:middle line:90%
+OK, interesting.
+
+00:03:14.540 --> 00:03:16.840 align:middle line:84%
+That's pretty good
+payoffs for you guys.
+
+00:03:16.840 --> 00:03:19.360 align:middle line:84%
+So you each got an
+average payoff of 2.
+
+00:03:19.360 --> 00:03:20.760 align:middle line:90%
+That's pretty good
+
+00:03:20.760 --> 00:03:23.180 align:middle line:84%
+I would argue maybe someone
+was a little irrational there,
+
+00:03:23.180 --> 00:03:23.763 align:middle line:90%
+but we'll see.
+
+00:03:23.763 --> 00:03:25.415 align:middle line:90%
+Anyone else?
+
+00:03:25.415 --> 00:03:26.540 align:middle line:90%
+Did other people cooperate?
+
+00:03:26.540 --> 00:03:26.800 align:middle line:90%
+Yeah?
+
+00:03:26.800 --> 00:03:28.467 align:middle line:84%
+AUDIENCE: We also
+cooperated every time,
+
+00:03:28.467 --> 00:03:31.200 align:middle line:84%
+but then after we
+discussed that because we
+
+00:03:31.200 --> 00:03:33.960 align:middle line:84%
+know each other in real life,
+like technically the game is
+
+00:03:33.960 --> 00:03:35.540 align:middle line:90%
+infinitely repeated.
+
+00:03:35.540 --> 00:03:37.453 align:middle line:84%
+So maybe that's
+why we cooperated.
+
+00:03:37.453 --> 00:03:38.120 align:middle line:90%
+IAN BALL: Great.
+
+00:03:38.120 --> 00:03:39.060 align:middle line:90%
+That's a great point.
+
+00:03:39.060 --> 00:03:41.160 align:middle line:84%
+So we'll see actually that the
+theory of infinitely repeated
+
+00:03:41.160 --> 00:03:43.280 align:middle line:84%
+games is much different than
+the theory of finitely repeated
+
+00:03:43.280 --> 00:03:43.780 align:middle line:90%
+games.
+
+00:03:43.780 --> 00:03:46.400 align:middle line:84%
+And Paul Milgrom loves to
+say the game is always larger
+
+00:03:46.400 --> 00:03:47.100 align:middle line:90%
+than you think.
+
+00:03:47.100 --> 00:03:48.140 align:middle line:84%
+So when you write
+down these games,
+
+00:03:48.140 --> 00:03:50.040 align:middle line:84%
+often we're missing
+additional interactions
+
+00:03:50.040 --> 00:03:52.153 align:middle line:90%
+that we might not be modeling.
+
+00:03:52.153 --> 00:03:53.320 align:middle line:90%
+OK, so a lot of cooperation.
+
+00:03:53.320 --> 00:03:56.480 align:middle line:84%
+Did anyone just
+defect every time?
+
+00:03:56.480 --> 00:03:57.668 align:middle line:90%
+Yeah?
+
+00:03:57.668 --> 00:03:59.460 align:middle line:84%
+AUDIENCE: Yeah, I
+defected all three times.
+
+00:03:59.460 --> 00:04:00.240 align:middle line:90%
+IAN BALL: OK.
+
+00:04:00.240 --> 00:04:00.780 align:middle line:90%
+Great.
+
+00:04:00.780 --> 00:04:02.880 align:middle line:90%
+A paragon of rationality.
+
+00:04:02.880 --> 00:04:04.443 align:middle line:90%
+And what was your reasoning?
+
+00:04:04.443 --> 00:04:05.360 align:middle line:90%
+Did you have a reason?
+
+00:04:05.360 --> 00:04:08.160 align:middle line:84%
+AUDIENCE: Well, I thought that
+Live would also defect all three
+
+00:04:08.160 --> 00:04:10.920 align:middle line:84%
+times because I feel like that's
+what you're supposed to do.
+
+00:04:10.920 --> 00:04:11.760 align:middle line:90%
+IAN BALL: OK.
+
+00:04:11.760 --> 00:04:12.260 align:middle line:90%
+Great.
+
+00:04:12.260 --> 00:04:14.427 align:middle line:84%
+So it seems like we have a
+few different approaches.
+
+00:04:14.427 --> 00:04:16.279 align:middle line:84%
+Some people said,
+well, we understand
+
+00:04:16.279 --> 00:04:19.120 align:middle line:84%
+that in the staged game,
+defecting is optimal.
+
+00:04:19.120 --> 00:04:22.160 align:middle line:84%
+So let's just expect that the
+other player is going to defect
+
+00:04:22.160 --> 00:04:24.060 align:middle line:84%
+and we're both going
+to defect every period.
+
+00:04:24.060 --> 00:04:27.620 align:middle line:84%
+Other people seem to be able
+to sustain some cooperation.
+
+00:04:27.620 --> 00:04:30.520 align:middle line:84%
+And maybe what you had in
+mind is if we cooperate today,
+
+00:04:30.520 --> 00:04:33.000 align:middle line:84%
+then tomorrow, my
+opponent will reward me
+
+00:04:33.000 --> 00:04:34.500 align:middle line:90%
+by cooperating in the future.
+
+00:04:34.500 --> 00:04:37.280 align:middle line:84%
+We'll see that in the
+finite repeated game,
+
+00:04:37.280 --> 00:04:40.320 align:middle line:84%
+the unique subgame perfect
+Nash equilibrium is actually
+
+00:04:40.320 --> 00:04:42.578 align:middle line:84%
+always defecting, so as
+one of these groups played.
+
+00:04:42.578 --> 00:04:44.120 align:middle line:84%
+And the way these
+other groups played
+
+00:04:44.120 --> 00:04:46.520 align:middle line:84%
+is not actually consistent
+with subgame perfect Nash
+
+00:04:46.520 --> 00:04:47.180 align:middle line:90%
+equilibrium.
+
+00:04:47.180 --> 00:04:49.120 align:middle line:90%
+But let's understand why.
+
+00:04:49.120 --> 00:04:51.960 align:middle line:84%
+So I think the first key
+observation here is that when
+
+00:04:51.960 --> 00:04:54.430 align:middle line:90%
+we play a game repeatedly--
+
+00:04:54.430 --> 00:05:05.815 align:middle line:84%
+so repetition-- I guess I should
+say, together with observability
+
+00:05:05.815 --> 00:05:09.170 align:middle line:84%
+creates the opportunity for
+rewards and punishments.
+
+00:05:09.170 --> 00:05:22.438 align:middle line:90%
+
+
+00:05:22.438 --> 00:05:24.230 align:middle line:84%
+I think what some of
+you might have thought
+
+00:05:24.230 --> 00:05:27.270 align:middle line:84%
+is maybe if I cooperate
+today, I'll be rewarded,
+
+00:05:27.270 --> 00:05:29.990 align:middle line:84%
+and my opponent will cooperate
+with me in the future
+
+00:05:29.990 --> 00:05:31.650 align:middle line:84%
+and I'll get some
+benefit from that.
+
+00:05:31.650 --> 00:05:33.990 align:middle line:84%
+Or conversely, if
+I defect today,
+
+00:05:33.990 --> 00:05:37.590 align:middle line:84%
+my opponent might punish me
+by defecting in the future.
+
+00:05:37.590 --> 00:05:40.030 align:middle line:84%
+Notice that we need both
+repetition and observability
+
+00:05:40.030 --> 00:05:40.830 align:middle line:90%
+for this to happen.
+
+00:05:40.830 --> 00:05:42.497 align:middle line:84%
+Of course, we need
+repetition because we
+
+00:05:42.497 --> 00:05:45.190 align:middle line:84%
+need some future for
+people to reward or punish.
+
+00:05:45.190 --> 00:05:47.350 align:middle line:84%
+And we need observability
+because the only way
+
+00:05:47.350 --> 00:05:48.990 align:middle line:84%
+to reward and punish
+people is if you
+
+00:05:48.990 --> 00:05:52.693 align:middle line:84%
+make your future play contingent
+on what was done in the past.
+
+00:05:52.693 --> 00:05:54.610 align:middle line:84%
+If you couldn't observe
+the way people played,
+
+00:05:54.610 --> 00:05:58.990 align:middle line:84%
+then the repetition wouldn't
+really be so important.
+
+00:05:58.990 --> 00:05:59.670 align:middle line:90%
+Great.
+
+00:05:59.670 --> 00:06:04.190 align:middle line:84%
+So now let's see if we can
+formally model this game
+
+00:06:04.190 --> 00:06:07.430 align:middle line:84%
+and solve for a subgame
+perfect Nash equilibrium.
+
+00:06:07.430 --> 00:06:10.570 align:middle line:84%
+The three-copy version
+actually gets a bit messy,
+
+00:06:10.570 --> 00:06:12.910 align:middle line:84%
+so let me just go over
+the two-copy version,
+
+00:06:12.910 --> 00:06:14.570 align:middle line:84%
+and then we'll
+generalize from there.
+
+00:06:14.570 --> 00:06:16.730 align:middle line:84%
+So let's imagine that
+the game is played twice.
+
+00:06:16.730 --> 00:06:20.030 align:middle line:84%
+So maybe I'll say this is
+prisoner's dilemma times 2.
+
+00:06:20.030 --> 00:06:23.008 align:middle line:84%
+And even with this very simple
+game and just two repetitions,
+
+00:06:23.008 --> 00:06:25.050 align:middle line:84%
+the game tree is going to
+get pretty complicated,
+
+00:06:25.050 --> 00:06:26.592 align:middle line:84%
+but let's see if we
+can write it out.
+
+00:06:26.592 --> 00:06:29.670 align:middle line:84%
+So we'll say, maybe
+the first player
+
+00:06:29.670 --> 00:06:34.150 align:middle line:84%
+is choosing between
+cooperate and defect.
+
+00:06:34.150 --> 00:06:37.510 align:middle line:84%
+And then the second
+player, without observing
+
+00:06:37.510 --> 00:06:39.190 align:middle line:84%
+what the first
+player did, is also
+
+00:06:39.190 --> 00:06:43.410 align:middle line:84%
+going to choose between
+cooperate and defect.
+
+00:06:43.410 --> 00:06:45.990 align:middle line:90%
+
+
+00:06:45.990 --> 00:06:48.030 align:middle line:84%
+Now, remember, we've
+chosen to model
+
+00:06:48.030 --> 00:06:51.322 align:middle line:84%
+it this way as the first
+player going first,
+
+00:06:51.322 --> 00:06:52.530 align:middle line:90%
+but it doesn't really matter.
+
+00:06:52.530 --> 00:06:54.190 align:middle line:84%
+We could also have the
+second player going first,
+
+00:06:54.190 --> 00:06:55.730 align:middle line:84%
+and then the first
+player moving,
+
+00:06:55.730 --> 00:06:58.210 align:middle line:84%
+not having observed what
+the second player did right.
+
+00:06:58.210 --> 00:07:01.090 align:middle line:84%
+The key thing is that this is
+really a simultaneous move game,
+
+00:07:01.090 --> 00:07:03.190 align:middle line:84%
+because neither player's
+action can depend on what
+
+00:07:03.190 --> 00:07:05.050 align:middle line:90%
+the other player is doing.
+
+00:07:05.050 --> 00:07:06.770 align:middle line:84%
+So this was kind of
+the first period.
+
+00:07:06.770 --> 00:07:08.750 align:middle line:90%
+Often we call this period 0.
+
+00:07:08.750 --> 00:07:10.990 align:middle line:84%
+We often start
+our labeling at 0.
+
+00:07:10.990 --> 00:07:12.650 align:middle line:84%
+And now we have
+the second period.
+
+00:07:12.650 --> 00:07:21.290 align:middle line:84%
+So now player 1 chooses
+between cooperate and defect.
+
+00:07:21.290 --> 00:07:27.510 align:middle line:90%
+
+
+00:07:27.510 --> 00:07:30.150 align:middle line:84%
+And notice these are
+in separate information
+
+00:07:30.150 --> 00:07:31.630 align:middle line:90%
+sets to indicate the fact that.
+
+00:07:31.630 --> 00:07:33.710 align:middle line:84%
+At this point, the
+players observe
+
+00:07:33.710 --> 00:07:35.090 align:middle line:90%
+what happened in period 0.
+
+00:07:35.090 --> 00:07:37.050 align:middle line:84%
+You know whether both
+players cooperated,
+
+00:07:37.050 --> 00:07:39.550 align:middle line:84%
+both players defected, one
+cooperated, the other defected,
+
+00:07:39.550 --> 00:07:41.470 align:middle line:90%
+or vice versa.
+
+00:07:41.470 --> 00:07:45.310 align:middle line:84%
+And then these are going to
+be in the same information set
+
+00:07:45.310 --> 00:07:49.590 align:middle line:84%
+because this is really a
+simultaneous move game.
+
+00:07:49.590 --> 00:07:50.850 align:middle line:90%
+And this is player 2.
+
+00:07:50.850 --> 00:07:56.270 align:middle line:90%
+
+
+00:07:56.270 --> 00:07:58.330 align:middle line:84%
+And player 2 chooses
+cooperate or defect.
+
+00:07:58.330 --> 00:08:03.910 align:middle line:90%
+
+
+00:08:03.910 --> 00:08:07.110 align:middle line:90%
+You see this gets a bit messy.
+
+00:08:07.110 --> 00:08:09.018 align:middle line:90%
+And I think you see the pattern.
+
+00:08:09.018 --> 00:08:10.810 align:middle line:84%
+And then I could write
+out all the payoffs,
+
+00:08:10.810 --> 00:08:13.170 align:middle line:84%
+but that's going to be a
+bit time consuming, so I
+
+00:08:13.170 --> 00:08:15.350 align:middle line:90%
+won't write out the payoffs.
+
+00:08:15.350 --> 00:08:22.238 align:middle line:84%
+So we want to understand what
+are the SPNE of this game?
+
+00:08:22.238 --> 00:08:24.030 align:middle line:84%
+And what's the first
+question we always ask
+
+00:08:24.030 --> 00:08:26.735 align:middle line:90%
+when we try to solve for SPNE?
+
+00:08:26.735 --> 00:08:28.610 align:middle line:84%
+Well, first we have to
+identify the subgames.
+
+00:08:28.610 --> 00:08:30.670 align:middle line:90%
+That's always step one.
+
+00:08:30.670 --> 00:08:31.885 align:middle line:90%
+So how many subgames?
+
+00:08:31.885 --> 00:08:33.010 align:middle line:90%
+Maybe I'll write down here.
+
+00:08:33.010 --> 00:08:34.090 align:middle line:90%
+This is period 1.
+
+00:08:34.090 --> 00:08:37.870 align:middle line:90%
+
+
+00:08:37.870 --> 00:08:42.510 align:middle line:84%
+So which nodes of this
+tree start a new subgame?
+
+00:08:42.510 --> 00:08:43.929 align:middle line:90%
+Well, there's one easy answer.
+
+00:08:43.929 --> 00:08:44.690 align:middle line:90%
+It's this node.
+
+00:08:44.690 --> 00:08:46.482 align:middle line:84%
+I don't know if I have
+colored chalk today.
+
+00:08:46.482 --> 00:08:47.510 align:middle line:90%
+I'll just use arrows.
+
+00:08:47.510 --> 00:08:50.490 align:middle line:84%
+So this node starts one subgame
+that's just the entire game.
+
+00:08:50.490 --> 00:08:51.550 align:middle line:90%
+That's easy.
+
+00:08:51.550 --> 00:08:55.110 align:middle line:84%
+And what other nodes
+start subgames?
+
+00:08:55.110 --> 00:08:57.610 align:middle line:84%
+Well, we know that if a node
+is going to start a subgame,
+
+00:08:57.610 --> 00:08:58.910 align:middle line:90%
+it has to be by itself.
+
+00:08:58.910 --> 00:09:01.317 align:middle line:84%
+If a node is with another
+node in the information set,
+
+00:09:01.317 --> 00:09:03.150 align:middle line:84%
+that node can't start
+a subgame because that
+
+00:09:03.150 --> 00:09:05.150 align:middle line:84%
+goes against the
+definition of subgame.
+
+00:09:05.150 --> 00:09:07.910 align:middle line:84%
+And it has to be a
+decision node, so it can't
+
+00:09:07.910 --> 00:09:09.330 align:middle line:90%
+be any of the terminal nodes.
+
+00:09:09.330 --> 00:09:10.872 align:middle line:84%
+It can't be any of
+the nodes that are
+
+00:09:10.872 --> 00:09:12.690 align:middle line:90%
+in multinode information sets.
+
+00:09:12.690 --> 00:09:17.470 align:middle line:84%
+So actually, we immediately
+see that it's just these four.
+
+00:09:17.470 --> 00:09:20.930 align:middle line:84%
+So what we see is, first,
+let's look at the subgames.
+
+00:09:20.930 --> 00:09:26.070 align:middle line:90%
+
+
+00:09:26.070 --> 00:09:27.730 align:middle line:84%
+And it turns out
+there's five subgames.
+
+00:09:27.730 --> 00:09:29.670 align:middle line:84%
+And here, we see
+the general pattern.
+
+00:09:29.670 --> 00:09:32.510 align:middle line:84%
+There's one subgame
+starting in period 0.
+
+00:09:32.510 --> 00:09:35.150 align:middle line:84%
+And then there's four
+subgame starting in period 1
+
+00:09:35.150 --> 00:09:37.430 align:middle line:84%
+where each of those
+subgames corresponds
+
+00:09:37.430 --> 00:09:40.350 align:middle line:84%
+to the history of play that
+the players have observed.
+
+00:09:40.350 --> 00:09:43.930 align:middle line:84%
+And in period 1, there's four
+possible histories-- cooperate,
+
+00:09:43.930 --> 00:09:47.290 align:middle line:84%
+cooperate; cooperate defect;
+defect, cooperate; and defect,
+
+00:09:47.290 --> 00:09:47.790 align:middle line:90%
+defect.
+
+00:09:47.790 --> 00:09:50.750 align:middle line:90%
+
+
+00:09:50.750 --> 00:09:53.250 align:middle line:84%
+So now let's use
+our usual approach,
+
+00:09:53.250 --> 00:09:54.770 align:middle line:90%
+and let's try to work backwards.
+
+00:09:54.770 --> 00:10:01.550 align:middle line:90%
+
+
+00:10:01.550 --> 00:10:05.510 align:middle line:84%
+So let's start with our smallest
+subgames, the subgames that
+
+00:10:05.510 --> 00:10:07.470 align:middle line:90%
+come at the end.
+
+00:10:07.470 --> 00:10:10.150 align:middle line:84%
+And in the subgame
+starting here,
+
+00:10:10.150 --> 00:10:13.370 align:middle line:84%
+if we're looking for a subgame
+perfect Nash equilibrium,
+
+00:10:13.370 --> 00:10:16.470 align:middle line:84%
+the restriction of the strategy
+profile to this subgame
+
+00:10:16.470 --> 00:10:18.730 align:middle line:84%
+must be a Nash equilibrium
+of this subgame.
+
+00:10:18.730 --> 00:10:21.710 align:middle line:84%
+So how must we play
+in this subgame
+
+00:10:21.710 --> 00:10:23.650 align:middle line:84%
+to be consistent with
+Nash equilibrium?
+
+00:10:23.650 --> 00:10:26.590 align:middle line:90%
+
+
+00:10:26.590 --> 00:10:28.630 align:middle line:84%
+Defect, defect,
+because we know--
+
+00:10:28.630 --> 00:10:32.430 align:middle line:90%
+maybe I'll do it here--
+
+00:10:32.430 --> 00:10:39.070 align:middle line:84%
+that if we fill in
+this game, we see
+
+00:10:39.070 --> 00:10:46.670 align:middle line:84%
+that DD is the unique Nash
+equilibrium of this stage game.
+
+00:10:46.670 --> 00:10:50.503 align:middle line:90%
+
+
+00:10:50.503 --> 00:10:52.170 align:middle line:84%
+Now, you might say,
+well, wait a second.
+
+00:10:52.170 --> 00:10:54.552 align:middle line:84%
+In this subgame, we're not
+quite playing the stage game,
+
+00:10:54.552 --> 00:10:56.510 align:middle line:84%
+because the payoffs I'm
+going to put at the end
+
+00:10:56.510 --> 00:10:59.230 align:middle line:84%
+here don't just depend
+on what happens here.
+
+00:10:59.230 --> 00:11:01.610 align:middle line:84%
+They also depend on what
+happened in the first game.
+
+00:11:01.610 --> 00:11:03.510 align:middle line:84%
+But that's not going
+to change incentives
+
+00:11:03.510 --> 00:11:06.850 align:middle line:84%
+because the payoffs we got
+from the first game are sunk.
+
+00:11:06.850 --> 00:11:08.330 align:middle line:90%
+We've already got those payoffs.
+
+00:11:08.330 --> 00:11:11.728 align:middle line:84%
+So the only effect that my
+play has today is on the game
+
+00:11:11.728 --> 00:11:12.770 align:middle line:90%
+that we're playing today.
+
+00:11:12.770 --> 00:11:14.710 align:middle line:84%
+The fact that we add
+in yesterday's payoffs
+
+00:11:14.710 --> 00:11:18.190 align:middle line:84%
+doesn't change the
+return to my actions.
+
+00:11:18.190 --> 00:11:22.428 align:middle line:84%
+So indeed, we must be
+defect, defect here.
+
+00:11:22.428 --> 00:11:24.470 align:middle line:84%
+And the same reasoning
+says we have to be defect,
+
+00:11:24.470 --> 00:11:30.670 align:middle line:84%
+defect here, and defect, defect
+here, and defect, defect here.
+
+00:11:30.670 --> 00:11:34.430 align:middle line:84%
+So what we've seen is that
+in each of the stage--
+
+00:11:34.430 --> 00:11:37.870 align:middle line:84%
+maybe I'll say the stage
+period 1, or-- yeah--
+
+00:11:37.870 --> 00:11:45.870 align:middle line:84%
+in each of the
+period 1 subgames,
+
+00:11:45.870 --> 00:11:50.350 align:middle line:84%
+we know that defect, defect
+must be what's played.
+
+00:11:50.350 --> 00:11:52.850 align:middle line:84%
+And now let's go to
+the period 0 subgame.
+
+00:11:52.850 --> 00:12:01.745 align:middle line:90%
+
+
+00:12:01.745 --> 00:12:03.870 align:middle line:84%
+Well, now this is where
+things are more complicated
+
+00:12:03.870 --> 00:12:05.870 align:middle line:84%
+because here, there's the
+possibility of rewards
+
+00:12:05.870 --> 00:12:06.830 align:middle line:90%
+and punishments.
+
+00:12:06.830 --> 00:12:10.030 align:middle line:84%
+But I argue that in
+this period 0 subgame,
+
+00:12:10.030 --> 00:12:14.010 align:middle line:84%
+we still must both play
+defect, defect in period 0.
+
+00:12:14.010 --> 00:12:14.810 align:middle line:90%
+Why is that?
+
+00:12:14.810 --> 00:12:18.710 align:middle line:84%
+What would happen if we
+weren't playing defect, defect?
+
+00:12:18.710 --> 00:12:22.090 align:middle line:90%
+What's the key observation here?
+
+00:12:22.090 --> 00:12:25.070 align:middle line:90%
+
+
+00:12:25.070 --> 00:12:28.030 align:middle line:84%
+Well, I guess the first
+thing I'd point out
+
+00:12:28.030 --> 00:12:31.570 align:middle line:84%
+is we don't have any
+rewards or punishments.
+
+00:12:31.570 --> 00:12:32.070 align:middle line:90%
+Why?
+
+00:12:32.070 --> 00:12:33.528 align:middle line:84%
+Because we've
+already computed what
+
+00:12:33.528 --> 00:12:35.603 align:middle line:90%
+happens in the period 1 subgame.
+
+00:12:35.603 --> 00:12:37.270 align:middle line:84%
+And what we've seen
+is that both players
+
+00:12:37.270 --> 00:12:39.530 align:middle line:84%
+are going to play
+defect in period 1
+
+00:12:39.530 --> 00:12:42.070 align:middle line:84%
+regardless of what
+was done in period 0.
+
+00:12:42.070 --> 00:12:45.870 align:middle line:84%
+So because the future play is
+independent of the past play,
+
+00:12:45.870 --> 00:12:48.010 align:middle line:84%
+there's no scope for
+rewards and punishments.
+
+00:12:48.010 --> 00:12:49.970 align:middle line:84%
+So this is kind of
+an important point.
+
+00:12:49.970 --> 00:12:57.270 align:middle line:90%
+
+
+00:12:57.270 --> 00:13:00.230 align:middle line:84%
+Another way of saying this
+is, how I behave today
+
+00:13:00.230 --> 00:13:03.150 align:middle line:84%
+has no effect on how we're
+going to behave tomorrow.
+
+00:13:03.150 --> 00:13:07.230 align:middle line:84%
+Because whatever we play
+today, the same behavior, D, D,
+
+00:13:07.230 --> 00:13:09.590 align:middle line:90%
+is going to be played tomorrow.
+
+00:13:09.590 --> 00:13:11.710 align:middle line:90%
+So how should I play today?
+
+00:13:11.710 --> 00:13:14.670 align:middle line:84%
+If how I play today has no
+effect on what happens tomorrow,
+
+00:13:14.670 --> 00:13:18.590 align:middle line:84%
+I should simply do today what
+maximizes my payoff today.
+
+00:13:18.590 --> 00:13:21.470 align:middle line:84%
+And we know that the unique Nash
+equilibrium of the prisoner's
+
+00:13:21.470 --> 00:13:23.510 align:middle line:84%
+dilemma is D, D,
+so in the period
+
+00:13:23.510 --> 00:13:26.790 align:middle line:84%
+0 subgame we both
+must play D, D. So
+
+00:13:26.790 --> 00:13:30.550 align:middle line:84%
+that was kind of a bit of a
+verbal argument, but let's see,
+
+00:13:30.550 --> 00:13:31.890 align:middle line:90%
+any questions on that?
+
+00:13:31.890 --> 00:13:34.830 align:middle line:90%
+
+
+00:13:34.830 --> 00:13:39.670 align:middle line:84%
+So just to make sure we
+understand what's going on,
+
+00:13:39.670 --> 00:13:44.820 align:middle line:84%
+what is the strategy--
+maybe I'll put it over here.
+
+00:13:44.820 --> 00:13:48.460 align:middle line:84%
+What is the strategy
+that each player plays?
+
+00:13:48.460 --> 00:13:50.180 align:middle line:84%
+So I might say the
+outcome of this game
+
+00:13:50.180 --> 00:13:51.800 align:middle line:90%
+is we just always defect.
+
+00:13:51.800 --> 00:13:54.100 align:middle line:84%
+But remember, there's a
+difference between the outcome
+
+00:13:54.100 --> 00:13:55.460 align:middle line:90%
+and the strategy.
+
+00:13:55.460 --> 00:13:57.420 align:middle line:84%
+So what is a strategy
+of a player in this game
+
+00:13:57.420 --> 00:13:58.900 align:middle line:90%
+or in this Nash equilibrium?
+
+00:13:58.900 --> 00:14:01.860 align:middle line:84%
+Well, a strategy is a
+complete contingent plan.
+
+00:14:01.860 --> 00:14:04.380 align:middle line:84%
+And the number of
+information sets
+
+00:14:04.380 --> 00:14:07.400 align:middle line:84%
+is actually exactly the
+same as the histories here.
+
+00:14:07.400 --> 00:14:09.320 align:middle line:84%
+Because when am I
+called upon to play?
+
+00:14:09.320 --> 00:14:11.460 align:middle line:84%
+Either I know it's
+period 0 or I'm
+
+00:14:11.460 --> 00:14:13.260 align:middle line:84%
+called upon to play
+in period 1, and I
+
+00:14:13.260 --> 00:14:14.940 align:middle line:90%
+know what happened in period 0.
+
+00:14:14.940 --> 00:14:18.940 align:middle line:90%
+So a strategy needs to specify--
+
+00:14:18.940 --> 00:14:20.160 align:middle line:90%
+we'll write it like this.
+
+00:14:20.160 --> 00:14:25.900 align:middle line:90%
+
+
+00:14:25.900 --> 00:14:30.540 align:middle line:84%
+So we have one spot for each
+possible information set.
+
+00:14:30.540 --> 00:14:33.980 align:middle line:84%
+Notice I'm being-- if we look
+really carefully at the game,
+
+00:14:33.980 --> 00:14:35.980 align:middle line:84%
+then the information
+sets for player 1
+
+00:14:35.980 --> 00:14:41.260 align:middle line:84%
+are this node, this node, this
+node, this node, and this node.
+
+00:14:41.260 --> 00:14:43.940 align:middle line:84%
+The information sets for player
+2 look a little different.
+
+00:14:43.940 --> 00:14:47.262 align:middle line:84%
+It's this dotted line, this
+dotted line, this dotted line,
+
+00:14:47.262 --> 00:14:48.720 align:middle line:84%
+this dotted line,
+this dotted line.
+
+00:14:48.720 --> 00:14:51.740 align:middle line:84%
+But we can really think
+of them as being the same,
+
+00:14:51.740 --> 00:14:55.820 align:middle line:84%
+because in both cases, the
+player either were in period 0
+
+00:14:55.820 --> 00:14:57.858 align:middle line:84%
+or were in period
+1, and all we know
+
+00:14:57.858 --> 00:14:59.400 align:middle line:84%
+is what happened in
+the first period.
+
+00:14:59.400 --> 00:15:01.620 align:middle line:84%
+So the fact that
+player 2 comes later
+
+00:15:01.620 --> 00:15:03.980 align:middle line:84%
+and it's dotted versus
+not, it doesn't actually
+
+00:15:03.980 --> 00:15:05.700 align:middle line:90%
+change things at all.
+
+00:15:05.700 --> 00:15:08.700 align:middle line:84%
+So what is the Nash equilibrium,
+or the subgame perfect Nash
+
+00:15:08.700 --> 00:15:10.020 align:middle line:90%
+equilibrium we found?
+
+00:15:10.020 --> 00:15:13.380 align:middle line:90%
+It looks like this.
+
+00:15:13.380 --> 00:15:15.300 align:middle line:84%
+This is a full description
+of the strategy.
+
+00:15:15.300 --> 00:15:18.580 align:middle line:84%
+So it says initially,
+before we played it all,
+
+00:15:18.580 --> 00:15:20.300 align:middle line:90%
+I'm going to play defect.
+
+00:15:20.300 --> 00:15:22.900 align:middle line:90%
+Then in the second period--
+
+00:15:22.900 --> 00:15:24.500 align:middle line:90%
+the first period, the second--
+
+00:15:24.500 --> 00:15:28.020 align:middle line:84%
+in the next game, if I
+observe that we both played C,
+
+00:15:28.020 --> 00:15:31.060 align:middle line:84%
+C last game, then I'm
+going to play defect.
+
+00:15:31.060 --> 00:15:33.620 align:middle line:84%
+If I observe that we played C,
+D, I'm going to play defect.
+
+00:15:33.620 --> 00:15:36.120 align:middle line:84%
+If we observe that we played
+D, C, I'm going to play defect,
+
+00:15:36.120 --> 00:15:37.600 align:middle line:90%
+and if D, D, play defect.
+
+00:15:37.600 --> 00:15:42.380 align:middle line:84%
+So this specifies a complete
+contingent plan in the game.
+
+00:15:42.380 --> 00:15:45.460 align:middle line:84%
+Notice one kind
+of subtlety here--
+
+00:15:45.460 --> 00:15:46.680 align:middle line:90%
+and this will come up.
+
+00:15:46.680 --> 00:15:49.660 align:middle line:84%
+We normally think that how
+you play in future games
+
+00:15:49.660 --> 00:15:52.415 align:middle line:84%
+will be contingent on how your
+opponent played in the past.
+
+00:15:52.415 --> 00:15:54.540 align:middle line:84%
+This is how we think about
+rewards and punishments.
+
+00:15:54.540 --> 00:15:57.780 align:middle line:84%
+If you play C today, I might
+behave differently tomorrow.
+
+00:15:57.780 --> 00:15:59.300 align:middle line:90%
+And that's possible.
+
+00:15:59.300 --> 00:16:01.260 align:middle line:84%
+But in general,
+we can actually do
+
+00:16:01.260 --> 00:16:03.420 align:middle line:84%
+even more, that what a
+strategy allows us to do
+
+00:16:03.420 --> 00:16:05.360 align:middle line:84%
+is make our future play
+contingent not only
+
+00:16:05.360 --> 00:16:07.860 align:middle line:84%
+on what the other player did,
+but actually what we ourselves
+
+00:16:07.860 --> 00:16:10.480 align:middle line:84%
+did, which may seem a bit weird,
+but this will also come up.
+
+00:16:10.480 --> 00:16:12.300 align:middle line:84%
+I might say, I'll
+play C tomorrow
+
+00:16:12.300 --> 00:16:14.585 align:middle line:84%
+if I played C in
+the first period.
+
+00:16:14.585 --> 00:16:15.960 align:middle line:84%
+But I'll play
+something different
+
+00:16:15.960 --> 00:16:17.160 align:middle line:90%
+if I play D in the first period.
+
+00:16:17.160 --> 00:16:17.785 align:middle line:90%
+That's allowed.
+
+00:16:17.785 --> 00:16:20.620 align:middle line:84%
+We can contingent-- make future
+play contingent on our own play,
+
+00:16:20.620 --> 00:16:25.240 align:middle line:84%
+and that will actually play
+an important role below.
+
+00:16:25.240 --> 00:16:26.960 align:middle line:84%
+So now that we've
+done an example,
+
+00:16:26.960 --> 00:16:30.060 align:middle line:84%
+let's introduce a general
+framework for finitely repeated
+
+00:16:30.060 --> 00:16:30.800 align:middle line:90%
+games.
+
+00:16:30.800 --> 00:16:32.877 align:middle line:84%
+You can see this was the
+simplest possible game.
+
+00:16:32.877 --> 00:16:33.960 align:middle line:90%
+It was prisoner's dilemma.
+
+00:16:33.960 --> 00:16:35.260 align:middle line:90%
+And we only played it twice.
+
+00:16:35.260 --> 00:16:37.862 align:middle line:84%
+And already, the extensive
+form got really messy.
+
+00:16:37.862 --> 00:16:40.320 align:middle line:84%
+So we're not really going to
+draw any more extensive forms,
+
+00:16:40.320 --> 00:16:42.195 align:middle line:84%
+and we're going to
+introduce special notation
+
+00:16:42.195 --> 00:16:44.220 align:middle line:84%
+for repeated games that's
+a bit more convenient.
+
+00:16:44.220 --> 00:16:53.060 align:middle line:84%
+So maybe I'll call this
+the general framework
+
+00:16:53.060 --> 00:16:54.560 align:middle line:90%
+for finitely repeated games.
+
+00:16:54.560 --> 00:17:03.720 align:middle line:90%
+
+
+00:17:03.720 --> 00:17:05.240 align:middle line:90%
+So what's the first ingredient?
+
+00:17:05.240 --> 00:17:07.520 align:middle line:84%
+Well, the first ingredient
+is the game that we repeat.
+
+00:17:07.520 --> 00:17:09.079 align:middle line:84%
+So this is called
+the stage game.
+
+00:17:09.079 --> 00:17:13.260 align:middle line:90%
+
+
+00:17:13.260 --> 00:17:16.040 align:middle line:84%
+So in our example, the stage
+game was the prisoner's dilemma.
+
+00:17:16.040 --> 00:17:20.339 align:middle line:84%
+But it could be any simultaneous
+move or any strategic form game.
+
+00:17:20.339 --> 00:17:23.099 align:middle line:84%
+And we're going to call
+the stage game-- we're
+
+00:17:23.099 --> 00:17:25.000 align:middle line:90%
+going to specify it like this.
+
+00:17:25.000 --> 00:17:34.860 align:middle line:90%
+
+
+00:17:34.860 --> 00:17:40.240 align:middle line:84%
+And we might call this game G,
+which is a strategic form game.
+
+00:17:40.240 --> 00:17:46.483 align:middle line:90%
+
+
+00:17:46.483 --> 00:17:47.400 align:middle line:90%
+So what does this say?
+
+00:17:47.400 --> 00:17:49.580 align:middle line:84%
+It says in the
+stage game, player 1
+
+00:17:49.580 --> 00:17:52.020 align:middle line:84%
+can choose any action
+from the set A1.
+
+00:17:52.020 --> 00:17:54.980 align:middle line:84%
+Player n can choose any
+action from the set An.
+
+00:17:54.980 --> 00:17:57.020 align:middle line:84%
+And then we have a payoff
+function that says,
+
+00:17:57.020 --> 00:17:59.540 align:middle line:84%
+what is player i's
+utility as a function
+
+00:17:59.540 --> 00:18:02.780 align:middle line:84%
+of the profile of actions
+that's played in the stage game?
+
+00:18:02.780 --> 00:18:05.180 align:middle line:84%
+And we specify that
+function for all players
+
+00:18:05.180 --> 00:18:07.180 align:middle line:90%
+I equals 1 through n.
+
+00:18:07.180 --> 00:18:09.700 align:middle line:84%
+Now, we might call
+the stage game G.
+
+00:18:09.700 --> 00:18:11.758 align:middle line:84%
+And this is just a
+strategic form game.
+
+00:18:11.758 --> 00:18:14.300 align:middle line:84%
+You may notice, though, that
+the notation is a bit different.
+
+00:18:14.300 --> 00:18:16.300 align:middle line:84%
+In the past, earlier
+in the course,
+
+00:18:16.300 --> 00:18:18.400 align:middle line:84%
+when we wrote a
+strategic form game down,
+
+00:18:18.400 --> 00:18:20.483 align:middle line:84%
+what was different about
+the way we wrote it down?
+
+00:18:20.483 --> 00:18:22.500 align:middle line:90%
+We used different notation here.
+
+00:18:22.500 --> 00:18:24.380 align:middle line:90%
+Remember?
+
+00:18:24.380 --> 00:18:25.380 align:middle line:90%
+These A's are different.
+
+00:18:25.380 --> 00:18:29.220 align:middle line:84%
+Before we wrote Ses,
+we had S1 up to Sn.
+
+00:18:29.220 --> 00:18:31.740 align:middle line:84%
+And we can think of these as
+basically the same-- playing
+
+00:18:31.740 --> 00:18:33.380 align:middle line:84%
+the same role as the
+Ses, but we don't
+
+00:18:33.380 --> 00:18:36.660 align:middle line:84%
+want to get confused between
+strategies in the stage game
+
+00:18:36.660 --> 00:18:38.890 align:middle line:84%
+and strategies in the
+grand repeated game.
+
+00:18:38.890 --> 00:18:40.640 align:middle line:84%
+So now I'm going to
+change notation a bit,
+
+00:18:40.640 --> 00:18:42.723 align:middle line:84%
+and I'm going to call what
+we do in the stage game
+
+00:18:42.723 --> 00:18:44.480 align:middle line:84%
+an action rather
+than a strategy.
+
+00:18:44.480 --> 00:18:46.400 align:middle line:90%
+But that's just terminology.
+
+00:18:46.400 --> 00:18:49.100 align:middle line:84%
+So here, before, we
+said C and D were
+
+00:18:49.100 --> 00:18:50.440 align:middle line:90%
+strategies of the stage game.
+
+00:18:50.440 --> 00:18:52.940 align:middle line:84%
+Now we're going to say that C
+and D are actions in the stage
+
+00:18:52.940 --> 00:18:54.700 align:middle line:84%
+game, so that we can
+keep track of what
+
+00:18:54.700 --> 00:18:57.300 align:middle line:90%
+a strategy is in the full game.
+
+00:18:57.300 --> 00:19:00.720 align:middle line:84%
+Then we have to
+specify the timing.
+
+00:19:00.720 --> 00:19:04.900 align:middle line:90%
+
+
+00:19:04.900 --> 00:19:07.240 align:middle line:84%
+And remember this is
+finitely repeated,
+
+00:19:07.240 --> 00:19:09.120 align:middle line:84%
+so we're going to
+say that time goes--
+
+00:19:09.120 --> 00:19:10.543 align:middle line:90%
+we're going to start time at 0.
+
+00:19:10.543 --> 00:19:11.960 align:middle line:84%
+And that will be
+a bit convenient,
+
+00:19:11.960 --> 00:19:13.380 align:middle line:90%
+we'll see a bit later.
+
+00:19:13.380 --> 00:19:16.860 align:middle line:84%
+And we're going to have period
+0, period 1, period 2, all
+
+00:19:16.860 --> 00:19:23.140 align:middle line:84%
+the way up to period
+T, where T is finite.
+
+00:19:23.140 --> 00:19:25.420 align:middle line:84%
+So T is sometimes called--
+big T is sometimes
+
+00:19:25.420 --> 00:19:27.220 align:middle line:90%
+called the horizon of the game.
+
+00:19:27.220 --> 00:19:31.140 align:middle line:84%
+And notice we actually play
+the game big T plus 1 times,
+
+00:19:31.140 --> 00:19:33.620 align:middle line:90%
+because we start at 0.
+
+00:19:33.620 --> 00:19:35.020 align:middle line:84%
+And for this
+reason, we sometimes
+
+00:19:35.020 --> 00:19:36.940 align:middle line:90%
+call the repeated game--
+
+00:19:36.940 --> 00:19:39.420 align:middle line:90%
+maybe I'll call it G of T.
+
+00:19:39.420 --> 00:19:43.140 align:middle line:84%
+So the idea is G is our
+notation for the stage game.
+
+00:19:43.140 --> 00:19:47.460 align:middle line:84%
+G of T denotes the repeated game
+where we play the stage game
+
+00:19:47.460 --> 00:19:50.140 align:middle line:84%
+G in period 0 all
+the way up to T.
+
+00:19:50.140 --> 00:19:56.500 align:middle line:84%
+So just so we're on the same
+page, G of 0 is equal to G,
+
+00:19:56.500 --> 00:19:59.480 align:middle line:84%
+because if we play the repeated
+game, but a horizon is 0,
+
+00:19:59.480 --> 00:20:01.140 align:middle line:84%
+we just play it
+once, and that just
+
+00:20:01.140 --> 00:20:02.680 align:middle line:90%
+coincides with the stage game.
+
+00:20:02.680 --> 00:20:05.380 align:middle line:84%
+But in general, this game is
+going to be more complicated.
+
+00:20:05.380 --> 00:20:06.880 align:middle line:90%
+So what did we play here?
+
+00:20:06.880 --> 00:20:07.900 align:middle line:90%
+We played g?
+
+00:20:07.900 --> 00:20:09.740 align:middle line:90%
+Of 1.
+
+00:20:09.740 --> 00:20:11.340 align:middle line:84%
+Our horizon was 1
+because we played it
+
+00:20:11.340 --> 00:20:15.140 align:middle line:84%
+in period 0 and period 1, and
+G was the prisoner's dilemma.
+
+00:20:15.140 --> 00:20:21.780 align:middle line:84%
+So as an example, just to remind
+ourselves what we played so far
+
+00:20:21.780 --> 00:20:24.420 align:middle line:90%
+could maybe be called PD of 1.
+
+00:20:24.420 --> 00:20:28.740 align:middle line:84%
+The game is the prisoner's
+dilemma, and our horizon was 1.
+
+00:20:28.740 --> 00:20:32.880 align:middle line:84%
+We next have to say
+something about information.
+
+00:20:32.880 --> 00:20:38.405 align:middle line:90%
+
+
+00:20:38.405 --> 00:20:39.780 align:middle line:84%
+And what we're
+going to assume is
+
+00:20:39.780 --> 00:20:41.920 align:middle line:90%
+that past actions are observed.
+
+00:20:41.920 --> 00:20:50.127 align:middle line:90%
+
+
+00:20:50.127 --> 00:20:51.960 align:middle line:84%
+And this was already
+assumed in our example.
+
+00:20:51.960 --> 00:20:54.640 align:middle line:84%
+What we're saying is whenever
+we play the game together,
+
+00:20:54.640 --> 00:20:57.780 align:middle line:84%
+we've observed exactly how
+people played in the past.
+
+00:20:57.780 --> 00:20:59.820 align:middle line:84%
+So for instance, here,
+when we played the game
+
+00:20:59.820 --> 00:21:02.380 align:middle line:84%
+for the second time, we
+observe how people played it
+
+00:21:02.380 --> 00:21:03.320 align:middle line:90%
+the first time.
+
+00:21:03.320 --> 00:21:05.120 align:middle line:84%
+And we pointed out
+that was crucial.
+
+00:21:05.120 --> 00:21:07.820 align:middle line:84%
+This observability was crucial
+to create the opportunity
+
+00:21:07.820 --> 00:21:09.400 align:middle line:90%
+for rewards and punishments.
+
+00:21:09.400 --> 00:21:15.540 align:middle line:90%
+
+
+00:21:15.540 --> 00:21:19.320 align:middle line:84%
+And now we have to say
+what our payoffs are.
+
+00:21:19.320 --> 00:21:23.660 align:middle line:90%
+
+
+00:21:23.660 --> 00:21:25.460 align:middle line:90%
+Let's use average payoffs.
+
+00:21:25.460 --> 00:21:27.600 align:middle line:90%
+So maybe I'll just write Ui--
+
+00:21:27.600 --> 00:21:32.250 align:middle line:90%
+
+
+00:21:32.250 --> 00:21:33.790 align:middle line:84%
+maybe I'll be a
+little more precise.
+
+00:21:33.790 --> 00:21:41.050 align:middle line:90%
+
+
+00:21:41.050 --> 00:21:43.650 align:middle line:84%
+So what I'm saying is,
+let's say I'm player i,
+
+00:21:43.650 --> 00:21:45.432 align:middle line:90%
+and this is how we play--
+
+00:21:45.432 --> 00:21:46.890 align:middle line:84%
+or this is the
+outcome of the game.
+
+00:21:46.890 --> 00:21:49.050 align:middle line:84%
+In period 0, we play
+the action profile
+
+00:21:49.050 --> 00:21:51.310 align:middle line:84%
+a0, and all the
+way into period T,
+
+00:21:51.310 --> 00:21:53.050 align:middle line:90%
+we play the action profile aT.
+
+00:21:53.050 --> 00:21:56.250 align:middle line:84%
+I want to write down what
+is the payoff of player i?
+
+00:21:56.250 --> 00:21:59.050 align:middle line:84%
+And this is just
+going to be the sum--
+
+00:21:59.050 --> 00:22:00.130 align:middle line:90%
+but write it here.
+
+00:22:00.130 --> 00:22:12.450 align:middle line:84%
+It's going to be 1 over
+T plus 1 of Ui of a0
+
+00:22:12.450 --> 00:22:18.370 align:middle line:90%
+plus all the way up to Ui of aT
+
+00:22:18.370 --> 00:22:21.230 align:middle line:84%
+So I look what happens
+in stage 0, or period 0,
+
+00:22:21.230 --> 00:22:22.930 align:middle line:90%
+I compute my payoff there.
+
+00:22:22.930 --> 00:22:26.970 align:middle line:84%
+I go all the way up to period
+T, I compute my payoff there.
+
+00:22:26.970 --> 00:22:29.250 align:middle line:84%
+Altogether I have
+T plus 1 terms,
+
+00:22:29.250 --> 00:22:31.650 align:middle line:84%
+and it's convenient to
+just divide it by T plus 1.
+
+00:22:31.650 --> 00:22:33.550 align:middle line:84%
+That doesn't have any
+effect on incentives.
+
+00:22:33.550 --> 00:22:35.525 align:middle line:84%
+We can always scale
+utilities however we want.
+
+00:22:35.525 --> 00:22:37.650 align:middle line:84%
+But it means that we're
+kind of computing utilities
+
+00:22:37.650 --> 00:22:39.770 align:middle line:84%
+in the multiperiod
+game, in the repeated
+
+00:22:39.770 --> 00:22:42.750 align:middle line:84%
+game, in the same utility
+units as the stage game.
+
+00:22:42.750 --> 00:22:44.510 align:middle line:84%
+And it turns out that
+that's convenient,
+
+00:22:44.510 --> 00:22:46.970 align:middle line:84%
+so that our payoff will
+be something like 2 or 3
+
+00:22:46.970 --> 00:22:50.650 align:middle line:84%
+rather than 7 or 8, which isn't
+in the same terms as the stage
+
+00:22:50.650 --> 00:22:51.150 align:middle line:90%
+game.
+
+00:22:51.150 --> 00:22:55.610 align:middle line:90%
+
+
+00:22:55.610 --> 00:22:57.390 align:middle line:84%
+So now let's talk
+about strategies.
+
+00:22:57.390 --> 00:23:02.650 align:middle line:90%
+
+
+00:23:02.650 --> 00:23:07.290 align:middle line:84%
+And maybe before we define
+strategies, let me just
+
+00:23:07.290 --> 00:23:14.890 align:middle line:84%
+make one note that a
+finitely repeated game,
+
+00:23:14.890 --> 00:23:21.870 align:middle line:84%
+this is a special case
+of a multistage game.
+
+00:23:21.870 --> 00:23:30.682 align:middle line:90%
+
+
+00:23:30.682 --> 00:23:32.890 align:middle line:84%
+Remember, in a multistage
+game, we separated the game
+
+00:23:32.890 --> 00:23:36.770 align:middle line:84%
+into stages, and in each
+stage, some subset of players
+
+00:23:36.770 --> 00:23:38.970 align:middle line:84%
+moved simultaneously
+having observed what
+
+00:23:38.970 --> 00:23:41.010 align:middle line:90%
+happened in previous stages.
+
+00:23:41.010 --> 00:23:45.330 align:middle line:84%
+This is a special case because
+the subset of players who move
+
+00:23:45.330 --> 00:23:48.370 align:middle line:84%
+is always all the players,
+and the game they play
+
+00:23:48.370 --> 00:23:49.970 align:middle line:90%
+is always the stage game.
+
+00:23:49.970 --> 00:23:52.410 align:middle line:84%
+So more generally,
+in a multistage game,
+
+00:23:52.410 --> 00:23:54.380 align:middle line:84%
+the stage game could
+vary over time.
+
+00:23:54.380 --> 00:23:56.130 align:middle line:84%
+We might play a different
+game in period 0
+
+00:23:56.130 --> 00:23:57.410 align:middle line:90%
+as we do in period 1.
+
+00:23:57.410 --> 00:24:01.170 align:middle line:84%
+This is a special case in that
+we always play the same stage
+
+00:24:01.170 --> 00:24:03.090 align:middle line:90%
+game in every period.
+
+00:24:03.090 --> 00:24:05.250 align:middle line:84%
+So because this is
+a multistage game,
+
+00:24:05.250 --> 00:24:06.750 align:middle line:84%
+what does that tell
+us we can apply?
+
+00:24:06.750 --> 00:24:10.650 align:middle line:84%
+Let's just keep in mind, why
+might this be useful for us?
+
+00:24:10.650 --> 00:24:13.430 align:middle line:84%
+What's a general result we
+know about multistage games?
+
+00:24:13.430 --> 00:24:20.890 align:middle line:90%
+
+
+00:24:20.890 --> 00:24:21.833 align:middle line:90%
+Remember?
+
+00:24:21.833 --> 00:24:23.250 align:middle line:84%
+If we want to check
+that something
+
+00:24:23.250 --> 00:24:25.150 align:middle line:84%
+is a subgame perfect
+Nash equilibrium
+
+00:24:25.150 --> 00:24:27.450 align:middle line:84%
+in a multistage game,
+it's a bit easier
+
+00:24:27.450 --> 00:24:29.190 align:middle line:90%
+to check because of what result?
+
+00:24:29.190 --> 00:24:32.290 align:middle line:90%
+
+
+00:24:32.290 --> 00:24:35.130 align:middle line:84%
+IAN BALL: The one-shot
+deviation principle.
+
+00:24:35.130 --> 00:24:44.476 align:middle line:90%
+
+
+00:24:44.476 --> 00:24:46.290 align:middle line:84%
+So the one-shot
+deviation principle
+
+00:24:46.290 --> 00:24:49.450 align:middle line:84%
+gave us an easy way to
+verify that a given strategy
+
+00:24:49.450 --> 00:24:53.450 align:middle line:84%
+profile was, in fact, a subgame
+perfect Nash equilibrium.
+
+00:24:53.450 --> 00:24:57.970 align:middle line:84%
+The one-shot deviation principle
+applies to any multistage game.
+
+00:24:57.970 --> 00:25:00.850 align:middle line:84%
+And finally, repeated
+games are a special case
+
+00:25:00.850 --> 00:25:03.130 align:middle line:84%
+of multistage games,
+and therefore,
+
+00:25:03.130 --> 00:25:06.650 align:middle line:84%
+the one-shot deviation principle
+applies to these games as well.
+
+00:25:06.650 --> 00:25:08.650 align:middle line:90%
+And we'll use that fact below.
+
+00:25:08.650 --> 00:25:14.570 align:middle line:84%
+So now let's define
+what a strategy is,
+
+00:25:14.570 --> 00:25:15.870 align:middle line:90%
+let's say for player i.
+
+00:25:15.870 --> 00:25:20.810 align:middle line:90%
+
+
+00:25:20.810 --> 00:25:25.450 align:middle line:84%
+And as usual, a strategy is
+a complete contingent plan.
+
+00:25:25.450 --> 00:25:27.890 align:middle line:84%
+So we have to say
+how player i will
+
+00:25:27.890 --> 00:25:30.650 align:middle line:84%
+behave at every
+possible contingency
+
+00:25:30.650 --> 00:25:33.570 align:middle line:90%
+player i finds herself at.
+
+00:25:33.570 --> 00:25:35.510 align:middle line:84%
+And again, let's separate
+this into periods.
+
+00:25:35.510 --> 00:25:43.730 align:middle line:84%
+We have period 0, period
+1, to a generic period t,
+
+00:25:43.730 --> 00:25:51.370 align:middle line:84%
+and then eventually
+we get to period T.
+
+00:25:51.370 --> 00:25:54.370 align:middle line:84%
+Well, at period 0,
+nothing has happened.
+
+00:25:54.370 --> 00:25:55.910 align:middle line:84%
+So we just have the
+trivial history.
+
+00:25:55.910 --> 00:26:03.330 align:middle line:84%
+So at period 0, my strategy must
+say Si of the empty set in Ai.
+
+00:26:03.330 --> 00:26:06.930 align:middle line:84%
+So my strategy Si is going
+to say, what action do I
+
+00:26:06.930 --> 00:26:08.538 align:middle line:90%
+take in period 0?
+
+00:26:08.538 --> 00:26:10.830 align:middle line:84%
+Well, at the null history we
+haven't observed anything.
+
+00:26:10.830 --> 00:26:12.050 align:middle line:90%
+Nothing has happened so far.
+
+00:26:12.050 --> 00:26:14.250 align:middle line:84%
+So we're going to use
+the empty set to denote
+
+00:26:14.250 --> 00:26:17.290 align:middle line:90%
+the history in period 0.
+
+00:26:17.290 --> 00:26:22.930 align:middle line:84%
+Then in period 1, we
+need to specify Si of h1.
+
+00:26:22.930 --> 00:26:25.970 align:middle line:84%
+This is going to
+be an action in Ai.
+
+00:26:25.970 --> 00:26:35.690 align:middle line:84%
+And we have to specify
+this for every history h1.
+
+00:26:35.690 --> 00:26:37.470 align:middle line:90%
+This is a period 1 history--
+
+00:26:37.470 --> 00:26:41.130 align:middle line:90%
+
+
+00:26:41.130 --> 00:26:42.130 align:middle line:90%
+h1.
+
+00:26:42.130 --> 00:26:43.890 align:middle line:84%
+Well, where do
+these things live?
+
+00:26:43.890 --> 00:26:46.410 align:middle line:84%
+Well, a period 1
+history just specifies
+
+00:26:46.410 --> 00:26:48.210 align:middle line:90%
+what happened in period 0.
+
+00:26:48.210 --> 00:26:50.630 align:middle line:84%
+And crucially, not just
+what I did in period 0,
+
+00:26:50.630 --> 00:26:52.130 align:middle line:90%
+but what my opponents did.
+
+00:26:52.130 --> 00:26:55.330 align:middle line:84%
+So this is going to be
+an element of A. It's
+
+00:26:55.330 --> 00:26:56.750 align:middle line:90%
+going to be an action profile.
+
+00:26:56.750 --> 00:27:02.850 align:middle line:84%
+Remember, A-- let me
+write is A1 up to An.
+
+00:27:02.850 --> 00:27:05.410 align:middle line:84%
+So what this says is in
+period 1, as player i,
+
+00:27:05.410 --> 00:27:07.930 align:middle line:84%
+I'm going to choose
+some action to play.
+
+00:27:07.930 --> 00:27:10.610 align:middle line:84%
+And the action I choose
+can depend upon the way
+
+00:27:10.610 --> 00:27:14.450 align:middle line:84%
+that we played in period 0,
+namely the action profile
+
+00:27:14.450 --> 00:27:16.470 align:middle line:90%
+that we all took in period 0.
+
+00:27:16.470 --> 00:27:19.350 align:middle line:90%
+
+
+00:27:19.350 --> 00:27:21.870 align:middle line:84%
+If we extend this and we get
+to period t, what happens?
+
+00:27:21.870 --> 00:27:27.850 align:middle line:90%
+We're choosing Si of ht in Ai.
+
+00:27:27.850 --> 00:27:29.770 align:middle line:84%
+And again, for every
+history, but now
+
+00:27:29.770 --> 00:27:31.510 align:middle line:90%
+we have every history, ht.
+
+00:27:31.510 --> 00:27:35.790 align:middle line:90%
+
+
+00:27:35.790 --> 00:27:36.290 align:middle line:90%
+In what?
+
+00:27:36.290 --> 00:27:39.050 align:middle line:90%
+Where does ht live?
+
+00:27:39.050 --> 00:27:43.650 align:middle line:84%
+Well in period t, I observe how
+everyone behaved in period 0,
+
+00:27:43.650 --> 00:27:47.210 align:middle line:84%
+in period 1, all the way
+up to period t minus 1.
+
+00:27:47.210 --> 00:27:49.630 align:middle line:84%
+And altogether that's
+actually t periods.
+
+00:27:49.630 --> 00:27:52.930 align:middle line:90%
+So this is going to be in At.
+
+00:27:52.930 --> 00:27:56.170 align:middle line:84%
+It might be a little confusing
+why it's At because it only
+
+00:27:56.170 --> 00:27:57.670 align:middle line:90%
+goes up to T minus 1.
+
+00:27:57.670 --> 00:27:59.270 align:middle line:90%
+But remember, we started at 0.
+
+00:27:59.270 --> 00:28:03.250 align:middle line:84%
+So actions profiles in 0, 1,
+2, all the way up to T minus 1.
+
+00:28:03.250 --> 00:28:06.730 align:middle line:90%
+There's t of those altogether.
+
+00:28:06.730 --> 00:28:12.090 align:middle line:90%
+And then we could go down to T.
+
+00:28:12.090 --> 00:28:13.970 align:middle line:84%
+So maybe if we wanted
+to say, really,
+
+00:28:13.970 --> 00:28:18.730 align:middle line:84%
+to be really formal
+here, what is it?
+
+00:28:18.730 --> 00:28:27.770 align:middle line:84%
+A strategy Si is a function that
+specifies what player i does
+
+00:28:27.770 --> 00:28:30.690 align:middle line:90%
+at every possible history.
+
+00:28:30.690 --> 00:28:34.810 align:middle line:84%
+So maybe we could write this as
+a function from the union from t
+
+00:28:34.810 --> 00:28:41.910 align:middle line:90%
+equals 0 to T of At to Ai.
+
+00:28:41.910 --> 00:28:49.970 align:middle line:90%
+
+
+00:28:49.970 --> 00:28:51.950 align:middle line:84%
+So this is, I think,
+the way to interpret it.
+
+00:28:51.950 --> 00:28:54.150 align:middle line:84%
+But if you want to think
+formally mathematically,
+
+00:28:54.150 --> 00:28:56.430 align:middle line:84%
+well, I have to specify
+what I do at every history.
+
+00:28:56.430 --> 00:28:58.950 align:middle line:84%
+So I'm going to take the union
+of all the sets of histories.
+
+00:28:58.950 --> 00:29:02.162 align:middle line:84%
+And this will specify the period
+0 history, all the period 1
+
+00:29:02.162 --> 00:29:04.370 align:middle line:84%
+histories, all the period
+2 histories, all the way up
+
+00:29:04.370 --> 00:29:06.090 align:middle line:90%
+to all the period T histories.
+
+00:29:06.090 --> 00:29:08.670 align:middle line:84%
+And this is going to be the
+formal way I write it down.
+
+00:29:08.670 --> 00:29:10.750 align:middle line:90%
+But that's the math way.
+
+00:29:10.750 --> 00:29:13.370 align:middle line:84%
+This is, I think, the
+intuitive way to do it.
+
+00:29:13.370 --> 00:29:15.110 align:middle line:84%
+And you'll notice,
+this is maybe the way
+
+00:29:15.110 --> 00:29:16.610 align:middle line:84%
+that we'll write
+it down in examples
+
+00:29:16.610 --> 00:29:17.790 align:middle line:90%
+that will be a bit clearer.
+
+00:29:17.790 --> 00:29:24.830 align:middle line:90%
+
+
+00:29:24.830 --> 00:29:28.890 align:middle line:84%
+Any questions on the
+setup on how we've
+
+00:29:28.890 --> 00:29:32.970 align:middle line:90%
+defined a finite repeated game?
+
+00:29:32.970 --> 00:29:33.607 align:middle line:90%
+Yeah?
+
+00:29:33.607 --> 00:29:34.690 align:middle line:90%
+AUDIENCE: Just a question.
+
+00:29:34.690 --> 00:29:37.030 align:middle line:84%
+So for that game, we're only
+going for two two rounds?
+
+00:29:37.030 --> 00:29:38.332 align:middle line:90%
+IAN BALL: Yeah.
+
+00:29:38.332 --> 00:29:40.290 align:middle line:84%
+AUDIENCE: It just so
+happened that both players
+
+00:29:40.290 --> 00:29:41.990 align:middle line:90%
+had identical strategies.
+
+00:29:41.990 --> 00:29:44.350 align:middle line:84%
+But normally, we need
+to specify two of those.
+
+00:29:44.350 --> 00:29:45.350 align:middle line:90%
+IAN BALL: Exactly right.
+
+00:29:45.350 --> 00:29:49.810 align:middle line:84%
+So I should have said--
+yeah, this is a strategy Si.
+
+00:29:49.810 --> 00:29:51.290 align:middle line:90%
+Exactly right.
+
+00:29:51.290 --> 00:29:51.790 align:middle line:90%
+Good point.
+
+00:29:51.790 --> 00:29:53.690 align:middle line:84%
+So the equilibrium
+that we solved for
+
+00:29:53.690 --> 00:29:55.390 align:middle line:90%
+has to be a strategy profile.
+
+00:29:55.390 --> 00:29:57.210 align:middle line:84%
+So maybe I would
+say it's actually
+
+00:29:57.210 --> 00:30:00.610 align:middle line:90%
+S1 equals S2 equals this.
+
+00:30:00.610 --> 00:30:01.170 align:middle line:90%
+Yeah.
+
+00:30:01.170 --> 00:30:01.670 align:middle line:90%
+Great.
+
+00:30:01.670 --> 00:30:04.170 align:middle line:90%
+Thanks for clarifying.
+
+00:30:04.170 --> 00:30:05.510 align:middle line:90%
+That's a symmetric equilibrium.
+
+00:30:05.510 --> 00:30:07.590 align:middle line:84%
+We could also have potentially
+asymmetric equilibria.
+
+00:30:07.590 --> 00:30:07.890 align:middle line:90%
+Yeah.
+
+00:30:07.890 --> 00:30:08.150 align:middle line:90%
+Great.
+
+00:30:08.150 --> 00:30:09.150 align:middle line:90%
+Any other questions?
+
+00:30:09.150 --> 00:30:14.210 align:middle line:90%
+
+
+00:30:14.210 --> 00:30:19.000 align:middle line:84%
+So now we want to understand
+what's kind of special
+
+00:30:19.000 --> 00:30:20.320 align:middle line:90%
+and what happened here.
+
+00:30:20.320 --> 00:30:21.800 align:middle line:84%
+We wrote down this
+model thinking
+
+00:30:21.800 --> 00:30:24.950 align:middle line:84%
+that there would be maybe
+a potential for cooperation
+
+00:30:24.950 --> 00:30:27.200 align:middle line:84%
+using rewards and punishments,
+where people might play
+
+00:30:27.200 --> 00:30:28.800 align:middle line:84%
+differently early
+on in the game,
+
+00:30:28.800 --> 00:30:31.440 align:middle line:84%
+anticipating what happens
+later on in the game.
+
+00:30:31.440 --> 00:30:34.047 align:middle line:84%
+But then we looked at
+the prisoner's dilemma,
+
+00:30:34.047 --> 00:30:35.380 align:middle line:90%
+and we found that didn't happen.
+
+00:30:35.380 --> 00:30:37.240 align:middle line:84%
+We always just played the Nash
+equilibrium of the prisoner's
+
+00:30:37.240 --> 00:30:38.440 align:middle line:90%
+dilemma every period.
+
+00:30:38.440 --> 00:30:41.440 align:middle line:84%
+So let's try to understand how
+general that phenomenon is.
+
+00:30:41.440 --> 00:30:45.160 align:middle line:84%
+And that will be what our
+first result tells us.
+
+00:30:45.160 --> 00:30:48.400 align:middle line:84%
+So one special property
+of the prisoner's dilemma
+
+00:30:48.400 --> 00:30:51.420 align:middle line:84%
+is that the stage game only
+has one Nash equilibrium.
+
+00:30:51.420 --> 00:30:53.240 align:middle line:84%
+It had a unique
+Nash equilibrium.
+
+00:30:53.240 --> 00:30:55.040 align:middle line:84%
+And we'll see that when
+the stage game only
+
+00:30:55.040 --> 00:30:58.000 align:middle line:84%
+has a unique Nash equilibrium,
+that puts a lot of structure
+
+00:30:58.000 --> 00:31:00.700 align:middle line:84%
+on the subgame perfect Nash
+equilibria of the repeated game.
+
+00:31:00.700 --> 00:31:04.520 align:middle line:90%
+So let's state this theorem.
+
+00:31:04.520 --> 00:31:09.122 align:middle line:84%
+So let G be a
+strategic form game.
+
+00:31:09.122 --> 00:31:10.580 align:middle line:84%
+This is going to
+be our stage game.
+
+00:31:10.580 --> 00:31:17.640 align:middle line:90%
+
+
+00:31:17.640 --> 00:31:20.080 align:middle line:84%
+So this is an arbitrary
+strategic form game.
+
+00:31:20.080 --> 00:31:26.240 align:middle line:84%
+May be finite, but I don't
+think we need finiteness.
+
+00:31:26.240 --> 00:31:54.200 align:middle line:84%
+If this game G has a unique
+Nash equilibrium, then--
+
+00:31:54.200 --> 00:31:54.700 align:middle line:90%
+OK.
+
+00:31:54.700 --> 00:31:57.698 align:middle line:84%
+So we've started with an
+assumption about our stage game.
+
+00:31:57.698 --> 00:31:59.240 align:middle line:84%
+And we've assumed
+that our stage game
+
+00:31:59.240 --> 00:32:01.460 align:middle line:90%
+G has unique Nash equilibrium.
+
+00:32:01.460 --> 00:32:04.040 align:middle line:84%
+We want to draw a conclusion
+about the repeated
+
+00:32:04.040 --> 00:32:05.425 align:middle line:90%
+version of this game.
+
+00:32:05.425 --> 00:32:06.800 align:middle line:84%
+And we actually
+want a conclusion
+
+00:32:06.800 --> 00:32:08.480 align:middle line:84%
+to hold no matter
+how many finitely
+
+00:32:08.480 --> 00:32:09.500 align:middle line:90%
+many times we repeat it.
+
+00:32:09.500 --> 00:32:16.840 align:middle line:84%
+So I'm going to say
+then for every horizon
+
+00:32:16.840 --> 00:32:24.602 align:middle line:90%
+T, the game G of T--
+
+00:32:24.602 --> 00:32:26.060 align:middle line:84%
+so I'm going to
+finish my sentence,
+
+00:32:26.060 --> 00:32:28.102 align:middle line:84%
+but let's just make sure
+we see what we're doing.
+
+00:32:28.102 --> 00:32:30.960 align:middle line:84%
+We've started with
+a single game G.
+
+00:32:30.960 --> 00:32:32.680 align:middle line:84%
+We've made an
+assumption about it,
+
+00:32:32.680 --> 00:32:34.680 align:middle line:84%
+that it has unique
+Nash equilibrium.
+
+00:32:34.680 --> 00:32:37.480 align:middle line:84%
+And now we're going to draw
+a conclusion about the T
+
+00:32:37.480 --> 00:32:42.040 align:middle line:84%
+repeated version of this
+game for every horizon T,
+
+00:32:42.040 --> 00:32:51.480 align:middle line:84%
+namely, the game G of T has
+a unique subgame perfect Nash
+
+00:32:51.480 --> 00:32:52.260 align:middle line:90%
+equilibrium.
+
+00:32:52.260 --> 00:32:55.120 align:middle line:90%
+
+
+00:32:55.120 --> 00:32:56.380 align:middle line:90%
+We can actually say more.
+
+00:32:56.380 --> 00:33:00.560 align:middle line:84%
+Any guesses on what this
+unique subgame perfect Nash
+
+00:33:00.560 --> 00:33:01.660 align:middle line:90%
+equilibrium might be?
+
+00:33:01.660 --> 00:33:06.520 align:middle line:90%
+
+
+00:33:06.520 --> 00:33:07.200 align:middle line:90%
+Yeah.
+
+00:33:07.200 --> 00:33:08.840 align:middle line:84%
+AUDIENCE: It's G is
+Nash equilibrium.
+
+00:33:08.840 --> 00:33:09.320 align:middle line:90%
+IAN BALL: Exactly.
+
+00:33:09.320 --> 00:33:10.778 align:middle line:84%
+And we have to be
+a little precise,
+
+00:33:10.778 --> 00:33:12.985 align:middle line:84%
+so the set of strategies
+is a bit different,
+
+00:33:12.985 --> 00:33:13.860 align:middle line:90%
+though, in this game.
+
+00:33:13.860 --> 00:33:14.820 align:middle line:90%
+So let's be a little--
+
+00:33:14.820 --> 00:33:17.942 align:middle line:84%
+so can you say that
+a bit more precisely?
+
+00:33:17.942 --> 00:33:19.400 align:middle line:84%
+AUDIENCE: It's the
+Nash equilibrium
+
+00:33:19.400 --> 00:33:22.215 align:middle line:84%
+where the action is G is the
+same as G is Nash equilibrium.
+
+00:33:22.215 --> 00:33:22.840 align:middle line:90%
+IAN BALL: Yeah.
+
+00:33:22.840 --> 00:33:26.800 align:middle line:84%
+So I would say it's the
+strategy profile where
+
+00:33:26.800 --> 00:33:31.840 align:middle line:84%
+we play the Nash equilibrium
+of G at every history.
+
+00:33:31.840 --> 00:33:33.840 align:middle line:84%
+But there's a key point
+there that we can't just
+
+00:33:33.840 --> 00:33:35.340 align:middle line:84%
+say it's the Nash
+equilibrium of G,
+
+00:33:35.340 --> 00:33:37.460 align:middle line:84%
+because the set of strategies
+in G are different.
+
+00:33:37.460 --> 00:33:42.260 align:middle line:90%
+So namely, maybe I'll say--
+
+00:33:42.260 --> 00:33:52.760 align:middle line:90%
+
+
+00:33:52.760 --> 00:33:53.820 align:middle line:90%
+maybe I'll give notation.
+
+00:33:53.820 --> 00:33:54.862 align:middle line:90%
+Maybe that would be nice.
+
+00:33:54.862 --> 00:33:59.940 align:middle line:84%
+So unique Nash equilibrium,
+just add some notation, a star.
+
+00:33:59.940 --> 00:34:03.240 align:middle line:90%
+
+
+00:34:03.240 --> 00:34:06.900 align:middle line:84%
+So I'm just giving a name to
+the unique Nash equilibrium.
+
+00:34:06.900 --> 00:34:08.800 align:middle line:90%
+This is an action profile.
+
+00:34:08.800 --> 00:34:14.400 align:middle line:84%
+Then this has unique Nash
+equilibrium, namely S of h
+
+00:34:14.400 --> 00:34:19.739 align:middle line:84%
+equals a star for
+every history h.
+
+00:34:19.739 --> 00:34:23.320 align:middle line:90%
+
+
+00:34:23.320 --> 00:34:25.920 align:middle line:84%
+So now we're formalizing
+what you said.
+
+00:34:25.920 --> 00:34:31.600 align:middle line:84%
+A strategy in the repeated
+game has to say how we play.
+
+00:34:31.600 --> 00:34:34.520 align:middle line:84%
+A strategy profile needs to
+say how every player plays
+
+00:34:34.520 --> 00:34:36.440 align:middle line:90%
+at every history.
+
+00:34:36.440 --> 00:34:41.040 align:middle line:84%
+And we're going to specify that
+whatever the history is, we all
+
+00:34:41.040 --> 00:34:45.463 align:middle line:84%
+follow the Nash
+equilibrium profile.
+
+00:34:45.463 --> 00:34:47.380 align:middle line:84%
+Maybe if I wanted to be
+a little more precise,
+
+00:34:47.380 --> 00:34:50.719 align:middle line:84%
+maybe I'll say Si equals
+ai star for every history
+
+00:34:50.719 --> 00:34:51.980 align:middle line:90%
+h and every player i.
+
+00:34:51.980 --> 00:34:58.040 align:middle line:90%
+
+
+00:34:58.040 --> 00:35:00.200 align:middle line:84%
+So if I'm player
+i, what do I do?
+
+00:35:00.200 --> 00:35:02.260 align:middle line:84%
+I have to specify what
+I do at every history.
+
+00:35:02.260 --> 00:35:03.220 align:middle line:90%
+What am I going to do?
+
+00:35:03.220 --> 00:35:05.120 align:middle line:84%
+Just what I'm supposed
+to do in the Nash
+
+00:35:05.120 --> 00:35:06.840 align:middle line:90%
+equilibrium of the stage game.
+
+00:35:06.840 --> 00:35:11.240 align:middle line:84%
+And in particular, this
+strategy is history independent.
+
+00:35:11.240 --> 00:35:15.355 align:middle line:84%
+How I play does not depend
+on how I played in the past
+
+00:35:15.355 --> 00:35:16.980 align:middle line:84%
+or how other people
+played in the past.
+
+00:35:16.980 --> 00:35:19.605 align:middle line:84%
+And this means we don't really
+have any rewards or punishments.
+
+00:35:19.605 --> 00:35:25.400 align:middle line:90%
+
+
+00:35:25.400 --> 00:35:27.760 align:middle line:84%
+This result is true if the
+unique Nash equilibrium
+
+00:35:27.760 --> 00:35:30.063 align:middle line:84%
+is mixed, but for the
+proof, let's think
+
+00:35:30.063 --> 00:35:31.980 align:middle line:84%
+of this as being pure
+to make it a bit easier,
+
+00:35:31.980 --> 00:35:34.260 align:middle line:84%
+but the result will
+be true either way.
+
+00:35:34.260 --> 00:35:35.540 align:middle line:90%
+So let's try to prove this.
+
+00:35:35.540 --> 00:35:43.720 align:middle line:90%
+
+
+00:35:43.720 --> 00:35:51.648 align:middle line:84%
+And let's assume
+that a star is pure,
+
+00:35:51.648 --> 00:35:53.940 align:middle line:84%
+just to make the proof easier,
+the result goes through,
+
+00:35:53.940 --> 00:35:55.640 align:middle line:84%
+but we haven't really talked
+about mixed strategies
+
+00:35:55.640 --> 00:35:57.390 align:middle line:84%
+and we don't really
+want to get into that.
+
+00:35:57.390 --> 00:36:01.273 align:middle line:84%
+So let's just say that this
+unique Nash equilibrium is pure.
+
+00:36:01.273 --> 00:36:01.940 align:middle line:90%
+Let me be clear.
+
+00:36:01.940 --> 00:36:04.320 align:middle line:84%
+I'm not saying that it's
+not enough to just say
+
+00:36:04.320 --> 00:36:06.420 align:middle line:84%
+it's unique among the
+pure Nash equilibrium.
+
+00:36:06.420 --> 00:36:11.920 align:middle line:84%
+I'm saying there's
+only one equilibrium,
+
+00:36:11.920 --> 00:36:13.700 align:middle line:84%
+and that equilibrium
+happens to be pure.
+
+00:36:13.700 --> 00:36:16.705 align:middle line:90%
+
+
+00:36:16.705 --> 00:36:19.080 align:middle line:84%
+Well, we basically want to
+replicate the argument that we
+
+00:36:19.080 --> 00:36:22.680 align:middle line:90%
+used in the prisoner's dilemma.
+
+00:36:22.680 --> 00:36:31.440 align:middle line:90%
+So let's suppose that S star--
+
+00:36:31.440 --> 00:36:40.920 align:middle line:84%
+or S equals S1 through Sn
+is a subgame perfect Nash
+
+00:36:40.920 --> 00:36:41.660 align:middle line:90%
+equilibrium.
+
+00:36:41.660 --> 00:36:49.560 align:middle line:90%
+
+
+00:36:49.560 --> 00:36:52.580 align:middle line:84%
+So we're going to consider
+some strategy profile.
+
+00:36:52.580 --> 00:36:54.980 align:middle line:84%
+And let's assume it's a subgame
+perfect Nash equilibrium,
+
+00:36:54.980 --> 00:36:57.272 align:middle line:84%
+and we want to say that if
+it is a subgame perfect Nash
+
+00:36:57.272 --> 00:37:00.020 align:middle line:84%
+equilibrium, it has to take
+this very special form.
+
+00:37:00.020 --> 00:37:02.680 align:middle line:90%
+
+
+00:37:02.680 --> 00:37:05.100 align:middle line:84%
+Well, what we want to do is
+we want to work backwards.
+
+00:37:05.100 --> 00:37:08.632 align:middle line:90%
+So let's look at our periods--
+
+00:37:08.632 --> 00:37:20.200 align:middle line:84%
+0, 1, 2-- and I'll
+give a verbal proof.
+
+00:37:20.200 --> 00:37:25.620 align:middle line:84%
+What do we know must be
+true within period T.
+
+00:37:25.620 --> 00:37:30.160 align:middle line:84%
+How must we all play in
+the final period, period T?
+
+00:37:30.160 --> 00:37:31.080 align:middle line:90%
+Yeah?
+
+00:37:31.080 --> 00:37:32.640 align:middle line:84%
+AUDIENCE: You just
+played [INAUDIBLE]
+
+00:37:32.640 --> 00:37:33.307 align:middle line:90%
+IAN BALL: Right.
+
+00:37:33.307 --> 00:37:36.560 align:middle line:84%
+And why do we know that
+that has to be the case?
+
+00:37:36.560 --> 00:37:38.960 align:middle line:84%
+AUDIENCE: You talked about
+how all the-- because T is
+
+00:37:38.960 --> 00:37:41.160 align:middle line:84%
+independent of
+the first t games,
+
+00:37:41.160 --> 00:37:45.280 align:middle line:84%
+so then you just
+have the one stage
+
+00:37:45.280 --> 00:37:46.840 align:middle line:90%
+played by the Nash equilibrium.
+
+00:37:46.840 --> 00:37:47.840 align:middle line:90%
+IAN BALL: Exactly right.
+
+00:37:47.840 --> 00:37:50.275 align:middle line:84%
+So once you've
+gotten to here, it's
+
+00:37:50.275 --> 00:37:52.400 align:middle line:84%
+always easier to work
+backwards because at the end,
+
+00:37:52.400 --> 00:37:53.920 align:middle line:90%
+there's less to worry about.
+
+00:37:53.920 --> 00:37:55.445 align:middle line:84%
+How I play in the
+last game can't
+
+00:37:55.445 --> 00:37:57.320 align:middle line:84%
+have any effect in the
+future because there's
+
+00:37:57.320 --> 00:37:58.300 align:middle line:90%
+no future ahead of me.
+
+00:37:58.300 --> 00:37:59.500 align:middle line:90%
+This is the last game.
+
+00:37:59.500 --> 00:38:02.400 align:middle line:84%
+So my only choice
+today is, how do I
+
+00:38:02.400 --> 00:38:07.320 align:middle line:84%
+want to influence my flow
+payoffs in the game today?
+
+00:38:07.320 --> 00:38:11.640 align:middle line:90%
+And if this is supposed to be--
+
+00:38:11.640 --> 00:38:14.720 align:middle line:84%
+if this is a Nash equilibrium
+of every subgame, well, what
+
+00:38:14.720 --> 00:38:22.040 align:middle line:84%
+we know is that we
+must have S of ht
+
+00:38:22.040 --> 00:38:30.960 align:middle line:84%
+equals ai star for
+every ht in At.
+
+00:38:30.960 --> 00:38:33.840 align:middle line:84%
+So I'm saying whatever
+history we're at,
+
+00:38:33.840 --> 00:38:37.880 align:middle line:84%
+in this last period, period T,
+this history starts a subgame.
+
+00:38:37.880 --> 00:38:40.560 align:middle line:84%
+We have to be playing a Nash
+equilibrium within this subgame.
+
+00:38:40.560 --> 00:38:42.733 align:middle line:84%
+But this subgame is just
+the same as the stage game,
+
+00:38:42.733 --> 00:38:44.900 align:middle line:84%
+because there's only one--
+we're in the last period,
+
+00:38:44.900 --> 00:38:47.480 align:middle line:84%
+all we're doing is choosing how
+to play the stage game once.
+
+00:38:47.480 --> 00:38:49.757 align:middle line:84%
+And therefore, we must be
+playing a Nash equilibrium.
+
+00:38:49.757 --> 00:38:51.340 align:middle line:84%
+But there's only one
+Nash equilibrium,
+
+00:38:51.340 --> 00:38:52.960 align:middle line:90%
+so we must be playing that.
+
+00:38:52.960 --> 00:38:55.820 align:middle line:84%
+And now we want
+to move backwards.
+
+00:38:55.820 --> 00:38:58.742 align:middle line:84%
+So maybe now I'll go
+to period T minus 1.
+
+00:38:58.742 --> 00:39:00.700 align:middle line:84%
+So formally, it's kind
+of a proof by induction,
+
+00:39:00.700 --> 00:39:03.850 align:middle line:84%
+but I'm just going to
+try to do it verbally.
+
+00:39:03.850 --> 00:39:06.470 align:middle line:90%
+
+
+00:39:06.470 --> 00:39:09.430 align:middle line:84%
+So now what happens
+in period T minus 1?
+
+00:39:09.430 --> 00:39:12.750 align:middle line:84%
+Well, in principle, how I
+behave in period T minus 1
+
+00:39:12.750 --> 00:39:14.470 align:middle line:84%
+could be more
+complicated because I
+
+00:39:14.470 --> 00:39:17.950 align:middle line:84%
+have to anticipate that the
+way I play in period T minus 1
+
+00:39:17.950 --> 00:39:20.990 align:middle line:84%
+might change the way that we
+play in period T. The future is
+
+00:39:20.990 --> 00:39:22.510 align:middle line:90%
+more complicated now.
+
+00:39:22.510 --> 00:39:25.230 align:middle line:84%
+But because I know that this is
+what's happening in period T,
+
+00:39:25.230 --> 00:39:26.990 align:middle line:84%
+I don't have to
+worry about that.
+
+00:39:26.990 --> 00:39:30.590 align:middle line:84%
+What I know is that if this is
+how we're playing in period T,
+
+00:39:30.590 --> 00:39:32.350 align:middle line:84%
+then how we're
+playing in period T
+
+00:39:32.350 --> 00:39:35.910 align:middle line:84%
+is independent of how I
+play in period T minus 1.
+
+00:39:35.910 --> 00:39:41.410 align:middle line:84%
+So now I just need to maximize
+my payoff in the stage game.
+
+00:39:41.410 --> 00:39:43.030 align:middle line:84%
+And the only way
+that can be the case
+
+00:39:43.030 --> 00:39:45.405 align:middle line:84%
+is if we're playing a Nash
+equilibrium of the stage game.
+
+00:39:45.405 --> 00:39:51.510 align:middle line:84%
+So if we work backwards we see
+that Si of hT minus 1 equals
+
+00:39:51.510 --> 00:40:00.750 align:middle line:84%
+ai star for every history
+ht minus 1 in AT minus 1.
+
+00:40:00.750 --> 00:40:05.050 align:middle line:84%
+And then we can just keep going
+back until we get to period 0,
+
+00:40:05.050 --> 00:40:09.910 align:middle line:84%
+when we'll see that Si of the
+empty set must equal ai star.
+
+00:40:09.910 --> 00:40:20.110 align:middle line:90%
+
+
+00:40:20.110 --> 00:40:21.972 align:middle line:84%
+But notice the ordering
+really was crucial.
+
+00:40:21.972 --> 00:40:23.430 align:middle line:84%
+It was crucial that
+we knew what we
+
+00:40:23.430 --> 00:40:25.638 align:middle line:84%
+were going to do in the
+future in order to figure out
+
+00:40:25.638 --> 00:40:27.350 align:middle line:90%
+our incentives to play today.
+
+00:40:27.350 --> 00:40:27.910 align:middle line:90%
+Yes?
+
+00:40:27.910 --> 00:40:30.410 align:middle line:84%
+AUDIENCE: The idea
+that in time T minus 1,
+
+00:40:30.410 --> 00:40:32.410 align:middle line:84%
+because what happens at
+time T is already fixed.
+
+00:40:32.410 --> 00:40:37.830 align:middle line:84%
+You just play [INAUDIBLE]
+in and of itself,
+
+00:40:37.830 --> 00:40:39.245 align:middle line:84%
+and then you just
+look backwards.
+
+00:40:39.245 --> 00:40:39.870 align:middle line:90%
+IAN BALL: Yeah.
+
+00:40:39.870 --> 00:40:41.328 align:middle line:84%
+So it's exactly
+backward induction,
+
+00:40:41.328 --> 00:40:43.910 align:middle line:84%
+but I want to be careful
+when we say fixed.
+
+00:40:43.910 --> 00:40:46.190 align:middle line:84%
+It's not just that it's
+fixed-- what's crucial is that
+
+00:40:46.190 --> 00:40:49.030 align:middle line:84%
+it's-- yeah-- it's independent
+of the history that
+
+00:40:49.030 --> 00:40:52.150 align:middle line:84%
+it's-- the crucial thing is that
+what we do in period t does not
+
+00:40:52.150 --> 00:40:54.310 align:middle line:90%
+depend on hT.
+
+00:40:54.310 --> 00:40:57.430 align:middle line:84%
+If it did depend
+on hT, then things
+
+00:40:57.430 --> 00:40:59.230 align:middle line:84%
+would be more
+complicated, because what
+
+00:40:59.230 --> 00:41:03.010 align:middle line:84%
+I do today could affect how
+we end up playing tomorrow.
+
+00:41:03.010 --> 00:41:05.790 align:middle line:84%
+Because what I do today,
+I guess the key issue--
+
+00:41:05.790 --> 00:41:09.210 align:middle line:90%
+and maybe we'll start over here.
+
+00:41:09.210 --> 00:41:13.350 align:middle line:90%
+
+
+00:41:13.350 --> 00:41:14.930 align:middle line:90%
+So maybe let's go kind of the--
+
+00:41:14.930 --> 00:41:18.910 align:middle line:90%
+
+
+00:41:18.910 --> 00:41:25.630 align:middle line:84%
+what's the key issue
+in repeated games?
+
+00:41:25.630 --> 00:41:33.890 align:middle line:84%
+It's that my action
+ait has two effects.
+
+00:41:33.890 --> 00:41:37.230 align:middle line:90%
+
+
+00:41:37.230 --> 00:41:43.290 align:middle line:84%
+It affects my flow
+payoff, namely Ui.
+
+00:41:43.290 --> 00:41:47.790 align:middle line:90%
+
+
+00:41:47.790 --> 00:41:50.910 align:middle line:84%
+So if this is how my opponents
+are playing in period T,
+
+00:41:50.910 --> 00:41:55.790 align:middle line:84%
+the action that I choose
+directly affects my flow payoff.
+
+00:41:55.790 --> 00:41:58.050 align:middle line:90%
+But it also affects future play.
+
+00:41:58.050 --> 00:42:01.710 align:middle line:90%
+
+
+00:42:01.710 --> 00:42:03.270 align:middle line:90%
+Why?
+
+00:42:03.270 --> 00:42:20.790 align:middle line:84%
+Well, ait changes the history
+hs for all S greater than
+
+00:42:20.790 --> 00:42:27.910 align:middle line:84%
+or equal to t because any
+subsequent history specifies
+
+00:42:27.910 --> 00:42:29.670 align:middle line:90%
+exactly what happened so far.
+
+00:42:29.670 --> 00:42:32.310 align:middle line:84%
+So if I behave
+differently in period 9,
+
+00:42:32.310 --> 00:42:35.630 align:middle line:84%
+then the history that the
+players observe in period 10
+
+00:42:35.630 --> 00:42:39.790 align:middle line:84%
+is going to depend on
+what I did in period 9.
+
+00:42:39.790 --> 00:42:44.490 align:middle line:84%
+And in particular, that might
+therefore change actions.
+
+00:42:44.490 --> 00:42:51.830 align:middle line:90%
+
+
+00:42:51.830 --> 00:42:53.750 align:middle line:84%
+And this is the
+fundamental trade-off
+
+00:42:53.750 --> 00:42:55.530 align:middle line:84%
+that we always face
+in repeated games.
+
+00:42:55.530 --> 00:42:59.630 align:middle line:84%
+I have to compare how my
+action today affects my flow
+
+00:42:59.630 --> 00:43:03.390 align:middle line:84%
+payoffs today, and also
+how it affects what happens
+
+00:43:03.390 --> 00:43:06.910 align:middle line:90%
+in future play of the game.
+
+00:43:06.910 --> 00:43:09.310 align:middle line:84%
+If we go over here, let's look
+at what happened in period
+
+00:43:09.310 --> 00:43:11.830 align:middle line:90%
+T minus 1.
+
+00:43:11.830 --> 00:43:13.510 align:middle line:84%
+The first effect
+was still true--
+
+00:43:13.510 --> 00:43:16.070 align:middle line:90%
+or this effect is still true.
+
+00:43:16.070 --> 00:43:18.370 align:middle line:84%
+It's still true that
+at period T minus 1,
+
+00:43:18.370 --> 00:43:22.310 align:middle line:84%
+my action changes
+the history tomorrow.
+
+00:43:22.310 --> 00:43:24.950 align:middle line:90%
+But this is what broke down.
+
+00:43:24.950 --> 00:43:28.110 align:middle line:84%
+If the way that we play tomorrow
+is independent of the history,
+
+00:43:28.110 --> 00:43:30.310 align:middle line:84%
+then the fact that my
+action changes the history
+
+00:43:30.310 --> 00:43:32.730 align:middle line:84%
+doesn't mean that the actions
+are going to be different,
+
+00:43:32.730 --> 00:43:35.830 align:middle line:84%
+because the actions tomorrow
+are independent of the history--
+
+00:43:35.830 --> 00:43:40.090 align:middle line:90%
+namely this property.
+
+00:43:40.090 --> 00:43:42.750 align:middle line:90%
+
+
+00:43:42.750 --> 00:43:47.610 align:middle line:84%
+So sure, if I change my action
+at T minus 1, I might change hT.
+
+00:43:47.610 --> 00:43:50.150 align:middle line:84%
+I'm going to change the history
+that everyone sees tomorrow.
+
+00:43:50.150 --> 00:43:52.195 align:middle line:84%
+But if the way we
+play is a star,
+
+00:43:52.195 --> 00:43:54.070 align:middle line:84%
+no matter what that
+history is, then the fact
+
+00:43:54.070 --> 00:43:56.830 align:middle line:84%
+that I change that history
+doesn't matter at all.
+
+00:43:56.830 --> 00:43:59.710 align:middle line:84%
+And therefore, I can ignore
+the effect of my action
+
+00:43:59.710 --> 00:44:03.030 align:middle line:84%
+on future play, and only focus
+on the effect of my action
+
+00:44:03.030 --> 00:44:04.068 align:middle line:90%
+on my flow payoff.
+
+00:44:04.068 --> 00:44:06.610 align:middle line:84%
+But that means we're effectively
+just playing the stage game,
+
+00:44:06.610 --> 00:44:09.030 align:middle line:84%
+and we already know that
+has a Nash equilibrium.
+
+00:44:09.030 --> 00:44:10.510 align:middle line:84%
+Again, we could do
+all the algebra,
+
+00:44:10.510 --> 00:44:12.260 align:middle line:84%
+and you can look in
+the notes for the more
+
+00:44:12.260 --> 00:44:14.150 align:middle line:84%
+formal algebraic
+argument, but I just
+
+00:44:14.150 --> 00:44:16.150 align:middle line:84%
+find it easier just to
+think through it verbally
+
+00:44:16.150 --> 00:44:16.858 align:middle line:90%
+than the algebra.
+
+00:44:16.858 --> 00:44:17.450 align:middle line:90%
+Yes, question.
+
+00:44:17.450 --> 00:44:18.908 align:middle line:84%
+AUDIENCE: Kind of
+the main point is
+
+00:44:18.908 --> 00:44:24.390 align:middle line:84%
+that if future actions were not
+dependent on the history, then
+
+00:44:24.390 --> 00:44:27.000 align:middle line:84%
+it might not impact
+the Nash equilibrium.
+
+00:44:27.000 --> 00:44:27.750 align:middle line:90%
+IAN BALL: Exactly.
+
+00:44:27.750 --> 00:44:29.890 align:middle line:84%
+And we'll do an example
+of that exactly next.
+
+00:44:29.890 --> 00:44:30.390 align:middle line:90%
+Yeah.
+
+00:44:30.390 --> 00:44:33.980 align:middle line:90%
+
+
+00:44:33.980 --> 00:44:35.730 align:middle line:84%
+I guess technically
+what I've shown here--
+
+00:44:35.730 --> 00:44:37.020 align:middle line:90%
+I should be careful.
+
+00:44:37.020 --> 00:44:39.270 align:middle line:84%
+I've shown that if something
+is a subgame perfect Nash
+
+00:44:39.270 --> 00:44:42.515 align:middle line:84%
+equilibrium, we must play the
+stage game Nash every period.
+
+00:44:42.515 --> 00:44:44.390 align:middle line:84%
+I technically also have
+to check that playing
+
+00:44:44.390 --> 00:44:46.270 align:middle line:84%
+the subgame-- playing
+the Nash every period
+
+00:44:46.270 --> 00:44:48.270 align:middle line:84%
+is a subgame perfect
+Nash equilibrium,
+
+00:44:48.270 --> 00:44:50.970 align:middle line:84%
+but that's also not
+too hard to show.
+
+00:44:50.970 --> 00:44:53.150 align:middle line:90%
+So I'll just say--
+
+00:44:53.150 --> 00:44:55.130 align:middle line:84%
+and this is maybe
+a good exercise.
+
+00:44:55.130 --> 00:44:58.670 align:middle line:90%
+
+
+00:44:58.670 --> 00:45:04.960 align:middle line:84%
+Use the one-shot
+deviation principle
+
+00:45:04.960 --> 00:45:10.510 align:middle line:84%
+to show that this is a subgame
+perfect Nash equilibrium.
+
+00:45:10.510 --> 00:45:13.070 align:middle line:84%
+I showed that the only
+possible subgame perfect Nash
+
+00:45:13.070 --> 00:45:14.250 align:middle line:90%
+equilibrium is this.
+
+00:45:14.250 --> 00:45:16.150 align:middle line:84%
+But of course, it could be that
+there's no subgame perfect Nash
+
+00:45:16.150 --> 00:45:16.770 align:middle line:90%
+equilibrium.
+
+00:45:16.770 --> 00:45:19.228 align:middle line:84%
+So you should actually check
+that this is a subgame perfect
+
+00:45:19.228 --> 00:45:20.090 align:middle line:90%
+Nash equilibrium.
+
+00:45:20.090 --> 00:45:21.770 align:middle line:84%
+And it's exactly
+the same reasoning.
+
+00:45:21.770 --> 00:45:23.145 align:middle line:84%
+I just have to
+check that there's
+
+00:45:23.145 --> 00:45:24.590 align:middle line:84%
+no profitable
+one-shot deviation,
+
+00:45:24.590 --> 00:45:26.548 align:middle line:84%
+and we go through basically
+the same reasoning.
+
+00:45:26.548 --> 00:45:28.330 align:middle line:84%
+But maybe I'll leave
+that as an exercise.
+
+00:45:28.330 --> 00:45:33.060 align:middle line:90%
+
+
+00:45:33.060 --> 00:45:35.310 align:middle line:84%
+So I don't want to give the
+impression that repetition
+
+00:45:35.310 --> 00:45:36.870 align:middle line:90%
+can't have any effect.
+
+00:45:36.870 --> 00:45:38.730 align:middle line:84%
+And it turns out
+that this result,
+
+00:45:38.730 --> 00:45:41.190 align:middle line:84%
+it is very, very special
+that we have a unique Nash
+
+00:45:41.190 --> 00:45:43.030 align:middle line:90%
+equilibrium in the stage game.
+
+00:45:43.030 --> 00:45:44.730 align:middle line:84%
+And if we have multiple
+Nash equilibria,
+
+00:45:44.730 --> 00:45:46.190 align:middle line:90%
+this result is no longer true.
+
+00:45:46.190 --> 00:45:49.610 align:middle line:90%
+So let's go through that.
+
+00:45:49.610 --> 00:46:14.110 align:middle line:90%
+
+
+00:46:14.110 --> 00:46:15.950 align:middle line:84%
+So let's go through
+maybe the oldest
+
+00:46:15.950 --> 00:46:19.870 align:middle line:84%
+game that's been
+formalized, is we're
+
+00:46:19.870 --> 00:46:23.070 align:middle line:90%
+going to study the stag hunt.
+
+00:46:23.070 --> 00:46:27.070 align:middle line:84%
+So I think Rousseau talked
+about this in maybe the 1600s.
+
+00:46:27.070 --> 00:46:29.710 align:middle line:84%
+And the story is you
+have two hunters.
+
+00:46:29.710 --> 00:46:32.890 align:middle line:84%
+They can either hunt hare, which
+is easy, you do it by yourself,
+
+00:46:32.890 --> 00:46:36.410 align:middle line:84%
+or they can hunt a big stag, and
+they have to do that together.
+
+00:46:36.410 --> 00:46:38.230 align:middle line:84%
+So can each of
+them chooses, do we
+
+00:46:38.230 --> 00:46:42.110 align:middle line:84%
+try to cooperate and
+hunt stag together,
+
+00:46:42.110 --> 00:46:45.390 align:middle line:84%
+or do we just hunt
+for hare on our own?
+
+00:46:45.390 --> 00:46:48.490 align:middle line:84%
+And if we both hunt for
+stag, then we both succeed.
+
+00:46:48.490 --> 00:46:51.750 align:middle line:84%
+We get the stag, and therefore,
+we each get a payoff of 2.
+
+00:46:51.750 --> 00:46:53.830 align:middle line:90%
+Payoff is going to be 2, 2.
+
+00:46:53.830 --> 00:46:56.250 align:middle line:84%
+Now, hare is not
+as good as stag.
+
+00:46:56.250 --> 00:46:57.370 align:middle line:90%
+It's just a rabbit.
+
+00:46:57.370 --> 00:47:01.110 align:middle line:84%
+If we both hunt for rabbits
+on our own, we each get 1.
+
+00:47:01.110 --> 00:47:02.110 align:middle line:90%
+We each get a rabbit.
+
+00:47:02.110 --> 00:47:03.730 align:middle line:84%
+But a rabbit is
+worse than a stag.
+
+00:47:03.730 --> 00:47:06.230 align:middle line:90%
+So we each just get 1, 1.
+
+00:47:06.230 --> 00:47:08.870 align:middle line:84%
+But then the tricky thing
+is what happens here.
+
+00:47:08.870 --> 00:47:11.990 align:middle line:84%
+What if I hunt for
+hare as player 1,
+
+00:47:11.990 --> 00:47:13.870 align:middle line:90%
+and player 2 hunts for stag?
+
+00:47:13.870 --> 00:47:17.470 align:middle line:84%
+Well, I'll still get 1 because
+I can hunt for hare by myself.
+
+00:47:17.470 --> 00:47:19.670 align:middle line:84%
+But now I've kind of screwed
+over the other person
+
+00:47:19.670 --> 00:47:22.477 align:middle line:84%
+because they're hunting
+for stag by themselves now.
+
+00:47:22.477 --> 00:47:24.810 align:middle line:84%
+They're not going to be able
+to successfully get a stag,
+
+00:47:24.810 --> 00:47:26.435 align:middle line:84%
+and they're going to
+get a payoff of 0.
+
+00:47:26.435 --> 00:47:29.550 align:middle line:90%
+
+
+00:47:29.550 --> 00:47:32.990 align:middle line:84%
+So the idea is, do we
+pursue the small prey
+
+00:47:32.990 --> 00:47:35.390 align:middle line:84%
+that we can achieve by
+ourselves or the big prey that
+
+00:47:35.390 --> 00:47:36.990 align:middle line:90%
+requires cooperation?
+
+00:47:36.990 --> 00:47:40.990 align:middle line:84%
+If you seek out the big prey
+by yourself, you get nothing
+
+00:47:40.990 --> 00:47:44.830 align:middle line:90%
+and you fail.
+
+00:47:44.830 --> 00:47:47.310 align:middle line:84%
+So this is going to have
+multiple equilibria.
+
+00:47:47.310 --> 00:47:48.650 align:middle line:90%
+Let's just go through it.
+
+00:47:48.650 --> 00:47:51.283 align:middle line:84%
+If my opponent is
+hunting for stag,
+
+00:47:51.283 --> 00:47:52.700 align:middle line:84%
+then I also want
+to hunt for stag,
+
+00:47:52.700 --> 00:47:54.240 align:middle line:84%
+because if I know
+they're hunting for stag,
+
+00:47:54.240 --> 00:47:56.740 align:middle line:84%
+then I can join them and we'll
+get stag, and that's great.
+
+00:47:56.740 --> 00:47:58.660 align:middle line:84%
+But if my opponent
+is hunting for hare,
+
+00:47:58.660 --> 00:48:00.618 align:middle line:84%
+I also want to hunt for
+hare, because if I hunt
+
+00:48:00.618 --> 00:48:03.180 align:middle line:90%
+stag by myself, I get nothing.
+
+00:48:03.180 --> 00:48:06.420 align:middle line:84%
+And now we can do
+the symmetric thing.
+
+00:48:06.420 --> 00:48:08.760 align:middle line:84%
+And Rousseau didn't really
+write it out quite this way,
+
+00:48:08.760 --> 00:48:12.140 align:middle line:84%
+but he was trying to make the
+point that the nature of society
+
+00:48:12.140 --> 00:48:13.120 align:middle line:90%
+can have a big impact.
+
+00:48:13.120 --> 00:48:14.820 align:middle line:84%
+We can be a society
+of stag hunters,
+
+00:48:14.820 --> 00:48:16.800 align:middle line:84%
+do really well because
+we all trust each other,
+
+00:48:16.800 --> 00:48:19.300 align:middle line:84%
+or we can be a society of hare
+hunters who don't do as well.
+
+00:48:19.300 --> 00:48:22.145 align:middle line:84%
+And these are both consistent
+and stable courses of action.
+
+00:48:22.145 --> 00:48:24.520 align:middle line:84%
+Of course, he didn't have the
+notion of Nash equilibrium,
+
+00:48:24.520 --> 00:48:28.642 align:middle line:84%
+but he talks about this
+in his book in the 1600s.
+
+00:48:28.642 --> 00:48:30.100 align:middle line:84%
+But for our purposes,
+the key point
+
+00:48:30.100 --> 00:48:36.860 align:middle line:84%
+is that this has two Nash
+equilibrium, namely S, S
+
+00:48:36.860 --> 00:48:50.420 align:middle line:84%
+and H, H. So now let's consider
+the repeated version of this.
+
+00:48:50.420 --> 00:48:59.327 align:middle line:84%
+Maybe let's look at stag
+hunt with T equals 1.
+
+00:48:59.327 --> 00:49:01.160 align:middle line:84%
+So we're just going to
+play stag hunt twice.
+
+00:49:01.160 --> 00:49:03.517 align:middle line:90%
+
+
+00:49:03.517 --> 00:49:06.100 align:middle line:84%
+And there's actually going to
+be a lot of subgame perfect Nash
+
+00:49:06.100 --> 00:49:07.540 align:middle line:90%
+equilibria.
+
+00:49:07.540 --> 00:49:08.840 align:middle line:90%
+Let's look for a few.
+
+00:49:08.840 --> 00:49:13.540 align:middle line:90%
+
+
+00:49:13.540 --> 00:49:19.980 align:middle line:84%
+Let's first look for subgame
+perfect Nash equilibria
+
+00:49:19.980 --> 00:49:22.680 align:middle line:84%
+where I might say there's
+no rewards and punishments.
+
+00:49:22.680 --> 00:49:30.140 align:middle line:90%
+
+
+00:49:30.140 --> 00:49:31.540 align:middle line:90%
+What do I mean by that?
+
+00:49:31.540 --> 00:49:35.980 align:middle line:84%
+I mean let's look for SPNE
+where the way we play in T
+
+00:49:35.980 --> 00:49:40.660 align:middle line:84%
+equals 1 doesn't depend on
+how we played in T equals 0.
+
+00:49:40.660 --> 00:49:42.900 align:middle line:90%
+Our play is history independent.
+
+00:49:42.900 --> 00:49:44.960 align:middle line:84%
+Again, if there's
+no contingency,
+
+00:49:44.960 --> 00:49:47.355 align:middle line:84%
+if the way we play
+tomorrow doesn't depend
+
+00:49:47.355 --> 00:49:49.480 align:middle line:84%
+on how we played today,
+then the way we play today,
+
+00:49:49.480 --> 00:49:50.980 align:middle line:84%
+doesn't have any
+effect on tomorrow,
+
+00:49:50.980 --> 00:49:53.620 align:middle line:84%
+and we could just focus
+on the stage games.
+
+00:49:53.620 --> 00:49:58.100 align:middle line:84%
+So any guesses for some
+kind of simple SPNE
+
+00:49:58.100 --> 00:50:00.040 align:middle line:90%
+that have this property?
+
+00:50:00.040 --> 00:50:06.420 align:middle line:84%
+Maybe I'll write period
+0 and period one.
+
+00:50:06.420 --> 00:50:09.060 align:middle line:84%
+There's actually a
+number of choices here.
+
+00:50:09.060 --> 00:50:11.860 align:middle line:84%
+Any guesses for some
+really simple SPNE
+
+00:50:11.860 --> 00:50:13.400 align:middle line:90%
+where there's no contingency?
+
+00:50:13.400 --> 00:50:14.800 align:middle line:90%
+We just kind of ignore the past.
+
+00:50:14.800 --> 00:50:23.100 align:middle line:90%
+
+
+00:50:23.100 --> 00:50:26.580 align:middle line:84%
+Well, one thing we could do is
+we could just always hunt stag.
+
+00:50:26.580 --> 00:50:30.242 align:middle line:84%
+We know that's a Nash
+equilibrium of the stage game.
+
+00:50:30.242 --> 00:50:31.700 align:middle line:84%
+So maybe I'll be
+a little informal,
+
+00:50:31.700 --> 00:50:36.560 align:middle line:84%
+and I'll just write we could
+do S, S; S, S. So formally,
+
+00:50:36.560 --> 00:50:39.940 align:middle line:84%
+what I mean is in period
+0, we each hunt stag.
+
+00:50:39.940 --> 00:50:43.140 align:middle line:84%
+And in period 1, we each hunt
+stag regardless of the history
+
+00:50:43.140 --> 00:50:44.007 align:middle line:90%
+in period 0.
+
+00:50:44.007 --> 00:50:46.340 align:middle line:84%
+So remember, if I really
+formally wrote out the strategy
+
+00:50:46.340 --> 00:50:49.640 align:middle line:84%
+here, I'm actually saying S, S
+at four different contingencies.
+
+00:50:49.640 --> 00:50:54.110 align:middle line:90%
+
+
+00:50:54.110 --> 00:50:55.500 align:middle line:90%
+Great.
+
+00:50:55.500 --> 00:50:57.500 align:middle line:90%
+So that's one thing we could do.
+
+00:50:57.500 --> 00:50:59.880 align:middle line:84%
+Is this a subgame
+perfect Nash equilibrium?
+
+00:50:59.880 --> 00:51:02.700 align:middle line:84%
+Well, yes, because in
+period 1, we're each
+
+00:51:02.700 --> 00:51:03.960 align:middle line:90%
+playing a Nash equilibrium.
+
+00:51:03.960 --> 00:51:05.100 align:middle line:90%
+That's great.
+
+00:51:05.100 --> 00:51:07.700 align:middle line:84%
+In period 0, how I play
+today has no effect
+
+00:51:07.700 --> 00:51:09.820 align:middle line:90%
+on what happens in period 1.
+
+00:51:09.820 --> 00:51:12.140 align:middle line:84%
+So all we need to check
+is that I'm playing a Nash
+
+00:51:12.140 --> 00:51:12.960 align:middle line:90%
+equilibrium today.
+
+00:51:12.960 --> 00:51:14.140 align:middle line:90%
+And indeed, that works out.
+
+00:51:14.140 --> 00:51:15.420 align:middle line:90%
+So here's one.
+
+00:51:15.420 --> 00:51:17.598 align:middle line:84%
+Any other examples
+of SPNE that don't
+
+00:51:17.598 --> 00:51:19.140 align:middle line:84%
+have any rewards or
+punishments, that
+
+00:51:19.140 --> 00:51:20.760 align:middle line:90%
+don't have any contingencies?
+
+00:51:20.760 --> 00:51:21.260 align:middle line:90%
+Yeah?
+
+00:51:21.260 --> 00:51:22.500 align:middle line:84%
+AUDIENCE: We could
+always hunt hare.
+
+00:51:22.500 --> 00:51:24.292 align:middle line:84%
+IAN BALL: We could
+always send hare, right?
+
+00:51:24.292 --> 00:51:27.660 align:middle line:90%
+
+
+00:51:27.660 --> 00:51:29.860 align:middle line:84%
+So again, in each
+of these subgames,
+
+00:51:29.860 --> 00:51:31.337 align:middle line:84%
+it's obviously a
+Nash equilibrium.
+
+00:51:31.337 --> 00:51:33.420 align:middle line:84%
+We just have to check that
+it's a Nash equilibrium
+
+00:51:33.420 --> 00:51:34.680 align:middle line:90%
+of this main subgame.
+
+00:51:34.680 --> 00:51:36.180 align:middle line:84%
+But because the way
+we play tomorrow
+
+00:51:36.180 --> 00:51:37.555 align:middle line:84%
+doesn't depend on
+the way we play
+
+00:51:37.555 --> 00:51:39.860 align:middle line:84%
+today, it's Nash
+equilibrium and we're good.
+
+00:51:39.860 --> 00:51:41.640 align:middle line:84%
+I'd argue there's
+actually even some more.
+
+00:51:41.640 --> 00:51:44.380 align:middle line:90%
+Any other things we could do?
+
+00:51:44.380 --> 00:51:45.060 align:middle line:90%
+Yeah?
+
+00:51:45.060 --> 00:51:47.720 align:middle line:84%
+AUDIENCE: Could you hunt stag in
+the first period, both of you,
+
+00:51:47.720 --> 00:51:49.840 align:middle line:84%
+and then hunt hares
+in the next one?
+
+00:51:49.840 --> 00:51:51.900 align:middle line:90%
+IAN BALL: Exactly.
+
+00:51:51.900 --> 00:51:53.500 align:middle line:90%
+Great.
+
+00:51:53.500 --> 00:51:54.940 align:middle line:84%
+So you might think,
+wait, oh, this
+
+00:51:54.940 --> 00:51:57.600 align:middle line:84%
+has punishments because we're
+playing differently tomorrow.
+
+00:51:57.600 --> 00:52:00.500 align:middle line:84%
+But no, punishments are about
+making what we do tomorrow
+
+00:52:00.500 --> 00:52:02.140 align:middle line:90%
+contingent on what we do today.
+
+00:52:02.140 --> 00:52:05.000 align:middle line:84%
+So what I'm saying, or what
+our friend here is saying,
+
+00:52:05.000 --> 00:52:07.820 align:middle line:90%
+is we both hunt stag today.
+
+00:52:07.820 --> 00:52:09.740 align:middle line:84%
+Tomorrow we hunt
+hare, but we hunt
+
+00:52:09.740 --> 00:52:12.140 align:middle line:90%
+hare whatever happened today.
+
+00:52:12.140 --> 00:52:14.480 align:middle line:84%
+If we both hunted hare
+today, we hunt hare tomorrow.
+
+00:52:14.480 --> 00:52:16.647 align:middle line:84%
+If we both hunted stag
+today, we hunt hare tomorrow.
+
+00:52:16.647 --> 00:52:19.400 align:middle line:84%
+If it was S, H or H, S we
+still do hare tomorrow.
+
+00:52:19.400 --> 00:52:22.500 align:middle line:84%
+So again, there's no contingency
+and we can go through it.
+
+00:52:22.500 --> 00:52:25.940 align:middle line:84%
+Clearly a Nash equilibrium
+of this subgame, and then
+
+00:52:25.940 --> 00:52:28.980 align:middle line:84%
+clearly a Nash equilibrium
+here, because all I care
+
+00:52:28.980 --> 00:52:30.540 align:middle line:84%
+about is my flow
+payoffs, and S, S
+
+00:52:30.540 --> 00:52:32.660 align:middle line:84%
+is a Nash equilibrium
+of the stage game.
+
+00:52:32.660 --> 00:52:36.580 align:middle line:84%
+And then as you pointed
+out, we have one final one,
+
+00:52:36.580 --> 00:52:42.260 align:middle line:84%
+where we do H, H
+and S, S. And maybe
+
+00:52:42.260 --> 00:52:45.260 align:middle line:84%
+if I want to be more
+precise, what I mean--
+
+00:52:45.260 --> 00:52:49.620 align:middle line:90%
+I mean, at every h1.
+
+00:52:49.620 --> 00:52:52.220 align:middle line:84%
+When I write this down, I'm
+really specifying four things.
+
+00:52:52.220 --> 00:52:54.660 align:middle line:84%
+I'm saying, at
+every history h1--
+
+00:52:54.660 --> 00:52:55.820 align:middle line:90%
+there's four of them--
+
+00:52:55.820 --> 00:53:00.140 align:middle line:90%
+S, S; H, H; H, S; S, H--
+
+00:53:00.140 --> 00:53:02.460 align:middle line:90%
+this is what happens.
+
+00:53:02.460 --> 00:53:06.380 align:middle line:84%
+So here, we have four subgame
+perfect Nash equilibria
+
+00:53:06.380 --> 00:53:08.560 align:middle line:84%
+that involve no
+rewards or punishments,
+
+00:53:08.560 --> 00:53:10.700 align:middle line:84%
+and they're pretty
+easy to analyze.
+
+00:53:10.700 --> 00:53:15.340 align:middle line:84%
+But now we want to see if
+we can do a little more.
+
+00:53:15.340 --> 00:53:19.060 align:middle line:84%
+Any questions on this
+before we move on?
+
+00:53:19.060 --> 00:53:22.280 align:middle line:84%
+So now maybe I'll
+go to this board.
+
+00:53:22.280 --> 00:53:41.020 align:middle line:90%
+
+
+00:53:41.020 --> 00:53:44.620 align:middle line:90%
+So what's the question?
+
+00:53:44.620 --> 00:53:49.260 align:middle line:84%
+Can we find a subgame
+perfect Nash equilibrium
+
+00:53:49.260 --> 00:53:53.240 align:middle line:84%
+in which we don't play a
+stage game Nash in period 0?
+
+00:53:53.240 --> 00:54:18.620 align:middle line:90%
+
+
+00:54:18.620 --> 00:54:24.060 align:middle line:84%
+So in each of these subgame
+perfect Nash equilibrium that we
+
+00:54:24.060 --> 00:54:26.940 align:middle line:84%
+looked at, we played a Nash
+equilibrium of the stage game
+
+00:54:26.940 --> 00:54:27.920 align:middle line:90%
+in period 0.
+
+00:54:27.920 --> 00:54:30.540 align:middle line:84%
+I'm asking, can we find a
+different subgame perfect Nash
+
+00:54:30.540 --> 00:54:36.260 align:middle line:84%
+equilibrium in which
+we do not play a Nash
+
+00:54:36.260 --> 00:54:38.220 align:middle line:90%
+equilibrium of the stage game?
+
+00:54:38.220 --> 00:54:41.060 align:middle line:84%
+So let's just try to
+think through this.
+
+00:54:41.060 --> 00:54:43.180 align:middle line:84%
+Well, we might say,
+wait, that's impossible.
+
+00:54:43.180 --> 00:54:44.520 align:middle line:90%
+We can apply our theorem.
+
+00:54:44.520 --> 00:54:46.460 align:middle line:84%
+But why can't we apply
+our theorem here?
+
+00:54:46.460 --> 00:54:48.740 align:middle line:84%
+Our theorem told us
+there's only one subgame
+
+00:54:48.740 --> 00:54:49.955 align:middle line:90%
+perfect Nash equilibrium.
+
+00:54:49.955 --> 00:54:52.080 align:middle line:84%
+We already found multiple,
+so something's going on.
+
+00:54:52.080 --> 00:54:54.780 align:middle line:84%
+So why doesn't the theorem
+apply to this setting?
+
+00:54:54.780 --> 00:54:55.900 align:middle line:90%
+Yeah.
+
+00:54:55.900 --> 00:54:57.580 align:middle line:84%
+AUDIENCE: Because it doesn't
+have a unique Nash equilibrium.
+
+00:54:57.580 --> 00:54:58.580 align:middle line:90%
+IAN BALL: Exactly right.
+
+00:54:58.580 --> 00:55:01.700 align:middle line:84%
+Our theorem was only applied to
+games where the-- or stage games
+
+00:55:01.700 --> 00:55:03.340 align:middle line:90%
+with unique Nash equilibria.
+
+00:55:03.340 --> 00:55:06.352 align:middle line:84%
+This stag hunt game has
+multiple Nash equilibria,
+
+00:55:06.352 --> 00:55:07.560 align:middle line:90%
+so our theorem doesn't apply.
+
+00:55:07.560 --> 00:55:09.320 align:middle line:84%
+Of course, just because
+the theorem doesn't apply,
+
+00:55:09.320 --> 00:55:10.960 align:middle line:84%
+it doesn't mean that the
+conclusions aren't true,
+
+00:55:10.960 --> 00:55:12.400 align:middle line:90%
+so we have to be careful.
+
+00:55:12.400 --> 00:55:14.260 align:middle line:84%
+And that's what we're
+going to do here.
+
+00:55:14.260 --> 00:55:17.460 align:middle line:84%
+So we're looking for a subgame
+perfect Nash equilibrium
+
+00:55:17.460 --> 00:55:20.180 align:middle line:84%
+in which we're not playing a
+Nash equilibrium of the stage
+
+00:55:20.180 --> 00:55:21.522 align:middle line:90%
+game in period 0.
+
+00:55:21.522 --> 00:55:22.480 align:middle line:90%
+So what does that mean?
+
+00:55:22.480 --> 00:55:24.320 align:middle line:84%
+Let's just write
+out what that means.
+
+00:55:24.320 --> 00:55:27.740 align:middle line:84%
+If we're not playing
+a Nash equilibrium,
+
+00:55:27.740 --> 00:55:31.780 align:middle line:90%
+then that means some player--
+
+00:55:31.780 --> 00:55:33.660 align:middle line:90%
+what can they do in period 0?
+
+00:55:33.660 --> 00:55:37.840 align:middle line:84%
+That means some player
+can deviate in period 0--
+
+00:55:37.840 --> 00:55:42.900 align:middle line:90%
+
+
+00:55:42.900 --> 00:55:45.540 align:middle line:84%
+unilaterally deviate in
+period 0 and strictly increase
+
+00:55:45.540 --> 00:55:46.520 align:middle line:90%
+their flow path.
+
+00:55:46.520 --> 00:55:58.540 align:middle line:90%
+
+
+00:55:58.540 --> 00:56:00.440 align:middle line:84%
+So I realize when
+I say flow payoff,
+
+00:56:00.440 --> 00:56:02.920 align:middle line:84%
+I just mean the payoff
+you get in that period.
+
+00:56:02.920 --> 00:56:05.460 align:middle line:84%
+So often we talk
+about stock and flow.
+
+00:56:05.460 --> 00:56:09.120 align:middle line:84%
+What I mean here is each of
+these things are flow payoffs,
+
+00:56:09.120 --> 00:56:12.900 align:middle line:84%
+and this is maybe your
+total stock payoff.
+
+00:56:12.900 --> 00:56:14.260 align:middle line:90%
+Well, now we have an issue.
+
+00:56:14.260 --> 00:56:17.020 align:middle line:84%
+We're looking for a subgame
+perfect Nash equilibrium.
+
+00:56:17.020 --> 00:56:19.220 align:middle line:84%
+If it's a subgame
+perfect Nash equilibrium,
+
+00:56:19.220 --> 00:56:21.240 align:middle line:84%
+in particular, it's
+a Nash equilibrium,
+
+00:56:21.240 --> 00:56:23.460 align:middle line:84%
+so no one should be able
+to profitably deviate.
+
+00:56:23.460 --> 00:56:28.700 align:middle line:84%
+But I've already said that some
+player can deviate in period 0
+
+00:56:28.700 --> 00:56:31.060 align:middle line:84%
+and strictly increase
+their flow payoff.
+
+00:56:31.060 --> 00:56:33.540 align:middle line:84%
+So how can we resurrect this
+as a subgame perfect Nash
+
+00:56:33.540 --> 00:56:34.120 align:middle line:90%
+equilibrium?
+
+00:56:34.120 --> 00:56:36.980 align:middle line:84%
+What has to happen if this
+player deviates in period 0
+
+00:56:36.980 --> 00:56:40.410 align:middle line:84%
+and strictly increases
+their flow payoff?
+
+00:56:40.410 --> 00:56:43.190 align:middle line:84%
+This can't be profitable, but
+it increases the flow payoff.
+
+00:56:43.190 --> 00:56:46.410 align:middle line:90%
+So what must happen?
+
+00:56:46.410 --> 00:56:47.810 align:middle line:90%
+Yeah?
+
+00:56:47.810 --> 00:56:49.650 align:middle line:90%
+AUDIENCE: Maybe in a future one?
+
+00:56:49.650 --> 00:56:52.650 align:middle line:84%
+Would it be a flow payoff
+is this one, right?
+
+00:56:52.650 --> 00:56:54.850 align:middle line:84%
+IAN BALL: Yeah, so I'm
+behaving differently today.
+
+00:56:54.850 --> 00:56:56.770 align:middle line:90%
+I'm increasing my payoff today.
+
+00:56:56.770 --> 00:56:58.810 align:middle line:84%
+But we don't want
+this to be profitable.
+
+00:56:58.810 --> 00:57:00.473 align:middle line:84%
+So what must happen
+in the future?
+
+00:57:00.473 --> 00:57:01.890 align:middle line:84%
+I think you're on
+the right track.
+
+00:57:01.890 --> 00:57:04.798 align:middle line:84%
+AUDIENCE: It must
+be profitable then.
+
+00:57:04.798 --> 00:57:06.590 align:middle line:84%
+IAN BALL: I must be
+punished in the future.
+
+00:57:06.590 --> 00:57:09.867 align:middle line:84%
+So if the player deviates today,
+they're increasing their flow
+
+00:57:09.867 --> 00:57:11.450 align:middle line:84%
+payoff, but this is
+not supposed to be
+
+00:57:11.450 --> 00:57:12.970 align:middle line:90%
+profitable in the entire game.
+
+00:57:12.970 --> 00:57:15.610 align:middle line:84%
+It must be that the
+deviation they consider today
+
+00:57:15.610 --> 00:57:17.330 align:middle line:84%
+that increased their
+flow payoff today
+
+00:57:17.330 --> 00:57:18.947 align:middle line:84%
+eventually comes
+back to bite them,
+
+00:57:18.947 --> 00:57:20.530 align:middle line:84%
+because they're
+eventually going to be
+
+00:57:20.530 --> 00:57:21.697 align:middle line:90%
+punished in the next period.
+
+00:57:21.697 --> 00:57:24.330 align:middle line:90%
+So what must be true--
+
+00:57:24.330 --> 00:57:34.550 align:middle line:84%
+so this deviation must
+be punished tomorrow.
+
+00:57:34.550 --> 00:57:40.795 align:middle line:90%
+
+
+00:57:40.795 --> 00:57:42.170 align:middle line:84%
+And this is exactly
+the intuition
+
+00:57:42.170 --> 00:57:44.390 align:middle line:84%
+that I think we all have
+from just human affairs.
+
+00:57:44.390 --> 00:57:46.130 align:middle line:84%
+If your friend does
+something that's
+
+00:57:46.130 --> 00:57:49.010 align:middle line:84%
+selfish and hurts you
+or benefits them today,
+
+00:57:49.010 --> 00:57:52.273 align:middle line:84%
+tomorrow you might punish
+them by behaving differently.
+
+00:57:52.273 --> 00:57:53.690 align:middle line:84%
+And that's a way
+of deterring them
+
+00:57:53.690 --> 00:57:55.288 align:middle line:90%
+from engaging in this action.
+
+00:57:55.288 --> 00:57:57.830 align:middle line:84%
+Maybe this is a negative view
+of human affairs, I don't know.
+
+00:57:57.830 --> 00:57:59.290 align:middle line:90%
+But this I think does happen.
+
+00:57:59.290 --> 00:58:02.190 align:middle line:84%
+Certainly between firms
+colluding, this happens.
+
+00:58:02.190 --> 00:58:04.750 align:middle line:90%
+
+
+00:58:04.750 --> 00:58:08.410 align:middle line:90%
+So this is all kind of abstract.
+
+00:58:08.410 --> 00:58:13.650 align:middle line:84%
+Now, what's tricky is we need to
+punish the deviation tomorrow.
+
+00:58:13.650 --> 00:58:18.210 align:middle line:84%
+But we know that tomorrow
+is the last period.
+
+00:58:18.210 --> 00:58:21.330 align:middle line:84%
+And we know that in the
+last period of a game,
+
+00:58:21.330 --> 00:58:25.010 align:middle line:84%
+we have to be playing a Nash
+equilibrium of the stage game,
+
+00:58:25.010 --> 00:58:27.530 align:middle line:84%
+because this is kind
+of a key property.
+
+00:58:27.530 --> 00:58:29.230 align:middle line:84%
+In the last period,
+there's no future.
+
+00:58:29.230 --> 00:58:31.170 align:middle line:84%
+So you must be playing
+a stage game Nash.
+
+00:58:31.170 --> 00:58:34.050 align:middle line:84%
+So we need to
+punish you tomorrow,
+
+00:58:34.050 --> 00:58:38.530 align:middle line:84%
+but we can only punish you by
+playing a Nash equilibrium.
+
+00:58:38.530 --> 00:58:40.250 align:middle line:90%
+So this seems a little tricky.
+
+00:58:40.250 --> 00:58:43.610 align:middle line:84%
+But the key is that we have
+multiple Nash equilibrium.
+
+00:58:43.610 --> 00:58:46.050 align:middle line:90%
+So we can punish you tomorrow--
+
+00:58:46.050 --> 00:58:48.670 align:middle line:84%
+How? by playing a
+different Nash equilibrium.
+
+00:58:48.670 --> 00:58:54.690 align:middle line:90%
+
+
+00:58:54.690 --> 00:58:57.090 align:middle line:84%
+And this really gets to
+the core of the difference
+
+00:58:57.090 --> 00:58:59.370 align:middle line:84%
+between our theorem
+and our game here.
+
+00:58:59.370 --> 00:59:02.890 align:middle line:84%
+In the last period, we have
+to play a Nash equilibrium.
+
+00:59:02.890 --> 00:59:04.703 align:middle line:84%
+If there's only one
+Nash equilibrium,
+
+00:59:04.703 --> 00:59:06.870 align:middle line:84%
+then we know how we have
+to play in the last period,
+
+00:59:06.870 --> 00:59:09.690 align:middle line:84%
+and there's no scope for
+punishments or rewards.
+
+00:59:09.690 --> 00:59:13.170 align:middle line:84%
+If our game has multiple Nash
+equilibrium like the stag hunt,
+
+00:59:13.170 --> 00:59:16.550 align:middle line:84%
+now we still have to play a Nash
+equilibrium in the last period,
+
+00:59:16.550 --> 00:59:18.450 align:middle line:84%
+but which Nash
+equilibrium we play
+
+00:59:18.450 --> 00:59:20.173 align:middle line:90%
+can depend on our past behavior.
+
+00:59:20.173 --> 00:59:22.090 align:middle line:84%
+So there might be a good
+Nash equilibrium that
+
+00:59:22.090 --> 00:59:24.650 align:middle line:84%
+can serve as a reward,
+and a bad Nash equilibrium
+
+00:59:24.650 --> 00:59:26.250 align:middle line:90%
+that can serve as a punishment.
+
+00:59:26.250 --> 00:59:29.810 align:middle line:90%
+So let's try to go through that.
+
+00:59:29.810 --> 00:59:40.325 align:middle line:84%
+So the idea is we want a good
+Nash equilibrium as a reward.
+
+00:59:40.325 --> 00:59:41.950 align:middle line:84%
+Things could be a
+bit more complicated,
+
+00:59:41.950 --> 00:59:43.370 align:middle line:84%
+and Nash equilibrium could
+be good for some people
+
+00:59:43.370 --> 00:59:44.162 align:middle line:90%
+and bad for others.
+
+00:59:44.162 --> 00:59:48.370 align:middle line:84%
+But let's start with
+this really simple case.
+
+00:59:48.370 --> 00:59:50.830 align:middle line:84%
+And a bad Nash equilibrium
+as a punishment.
+
+00:59:50.830 --> 00:59:58.170 align:middle line:90%
+
+
+00:59:58.170 --> 01:00:00.650 align:middle line:84%
+So in this stag hunt game,
+what is going to be the reward,
+
+01:00:00.650 --> 01:00:05.090 align:middle line:84%
+and what is going to
+be the punishment?
+
+01:00:05.090 --> 01:00:06.490 align:middle line:90%
+Well, we can look, right?
+
+01:00:06.490 --> 01:00:10.430 align:middle line:84%
+S, S is the good equilibrium,
+and H, H is the bad equilibrium.
+
+01:00:10.430 --> 01:00:14.130 align:middle line:84%
+So what we want is
+we want S, S to serve
+
+01:00:14.130 --> 01:00:17.170 align:middle line:84%
+as a reward for good
+behavior, and we
+
+01:00:17.170 --> 01:00:22.730 align:middle line:84%
+want H, H to serve as our
+punishment for bad behavior.
+
+01:00:22.730 --> 01:00:26.090 align:middle line:84%
+So what we say is, if
+you don't do what you're
+
+01:00:26.090 --> 01:00:27.890 align:middle line:84%
+supposed to today,
+then tomorrow,
+
+01:00:27.890 --> 01:00:29.250 align:middle line:90%
+we're both going to hunt hare.
+
+01:00:29.250 --> 01:00:30.350 align:middle line:90%
+That's bad for you.
+
+01:00:30.350 --> 01:00:32.090 align:middle line:84%
+If you do do what
+you're supposed to do,
+
+01:00:32.090 --> 01:00:33.715 align:middle line:84%
+then we're going to
+hunt stag tomorrow,
+
+01:00:33.715 --> 01:00:35.250 align:middle line:90%
+and that's better for you.
+
+01:00:35.250 --> 01:00:39.250 align:middle line:90%
+So let's see if this works out.
+
+01:00:39.250 --> 01:00:42.010 align:middle line:90%
+So let's be a bit more specific.
+
+01:00:42.010 --> 01:00:44.530 align:middle line:84%
+I want to find an SPNE
+in which in period 0
+
+01:00:44.530 --> 01:00:47.050 align:middle line:84%
+we play something that's
+not a stage game Nash.
+
+01:00:47.050 --> 01:00:51.050 align:middle line:84%
+Let's be more specific,
+and let's look for an SPNE
+
+01:00:51.050 --> 01:00:53.430 align:middle line:90%
+where in period 0, we play--
+
+01:00:53.430 --> 01:00:56.010 align:middle line:90%
+
+
+01:00:56.010 --> 01:00:57.582 align:middle line:84%
+well, we don't want
+to play a Nash.
+
+01:00:57.582 --> 01:00:59.290 align:middle line:84%
+So that means we're
+playing one of these.
+
+01:00:59.290 --> 01:01:00.730 align:middle line:84%
+And it's kind of symmetric.
+it doesn't really
+
+01:01:00.730 --> 01:01:01.855 align:middle line:90%
+matter which one we choose.
+
+01:01:01.855 --> 01:01:03.190 align:middle line:90%
+But let's choose this one.
+
+01:01:03.190 --> 01:01:11.570 align:middle line:90%
+So let's play H, S.
+
+01:01:11.570 --> 01:01:16.010 align:middle line:84%
+So let's try to
+fill in our table.
+
+01:01:16.010 --> 01:01:18.810 align:middle line:84%
+I think this is kind of a
+good way to go about it.
+
+01:01:18.810 --> 01:01:20.890 align:middle line:84%
+So let me-- remember, I
+think the hardest thing
+
+01:01:20.890 --> 01:01:23.210 align:middle line:84%
+about sometimes finding
+equilibria is figuring out
+
+01:01:23.210 --> 01:01:25.870 align:middle line:84%
+what kind of object they
+are, like how many positions,
+
+01:01:25.870 --> 01:01:26.830 align:middle line:84%
+how many things you
+have to fill in.
+
+01:01:26.830 --> 01:01:28.450 align:middle line:84%
+So let's make a blank
+table, and then we'll
+
+01:01:28.450 --> 01:01:29.890 align:middle line:84%
+gradually fill it in
+and try to construct
+
+01:01:29.890 --> 01:01:31.510 align:middle line:84%
+our subgame perfect
+Nash equilibrium.
+
+01:01:31.510 --> 01:01:33.177 align:middle line:84%
+So what is our table
+going to look like?
+
+01:01:33.177 --> 01:01:38.490 align:middle line:90%
+Well, we have our histories.
+
+01:01:38.490 --> 01:01:40.890 align:middle line:90%
+We have the empty history.
+
+01:01:40.890 --> 01:01:43.250 align:middle line:84%
+And then we have four
+histories after that.
+
+01:01:43.250 --> 01:01:50.730 align:middle line:84%
+We have S, S; S, H; H, S;
+And H, H. So to be clear,
+
+01:01:50.730 --> 01:01:58.170 align:middle line:84%
+these are period 0 histories,
+and these are period
+
+01:01:58.170 --> 01:01:58.990 align:middle line:90%
+1 histories.
+
+01:01:58.990 --> 01:02:02.673 align:middle line:90%
+
+
+01:02:02.673 --> 01:02:04.090 align:middle line:84%
+And then for each
+history, we have
+
+01:02:04.090 --> 01:02:08.570 align:middle line:84%
+to specify how player 1
+plays and how player 2 plays.
+
+01:02:08.570 --> 01:02:12.270 align:middle line:84%
+So let's put player 1
+here and player 2 here.
+
+01:02:12.270 --> 01:02:14.710 align:middle line:90%
+And maybe let's put in a spot.
+
+01:02:14.710 --> 01:02:19.290 align:middle line:90%
+
+
+01:02:19.290 --> 01:02:22.530 align:middle line:84%
+So just to be clear, when I'm
+asking to solve for an SPNE,
+
+01:02:22.530 --> 01:02:26.810 align:middle line:84%
+I'm asking to specify 10 things,
+five things for player 1,
+
+01:02:26.810 --> 01:02:29.930 align:middle line:84%
+and five things for player
+2, because player 1 has five
+
+01:02:29.930 --> 01:02:32.570 align:middle line:84%
+information sets, and player
+2 has five information sets,
+
+01:02:32.570 --> 01:02:35.250 align:middle line:84%
+and we're looking for
+a strategy profile.
+
+01:02:35.250 --> 01:02:37.530 align:middle line:84%
+So the goal is to fill
+this in such a way
+
+01:02:37.530 --> 01:02:40.330 align:middle line:84%
+that we get a subgame perfect
+Nash equilibrium in which this
+
+01:02:40.330 --> 01:02:41.890 align:middle line:90%
+is what happens in period 0.
+
+01:02:41.890 --> 01:02:43.950 align:middle line:84%
+So we first have a very
+easy thing to fill in.
+
+01:02:43.950 --> 01:02:45.710 align:middle line:84%
+We want this to
+happen in period 0.
+
+01:02:45.710 --> 01:02:50.850 align:middle line:84%
+So we're going to
+fill in H, S. And now
+
+01:02:50.850 --> 01:02:52.310 align:middle line:90%
+H, S is just written this way.
+
+01:02:52.310 --> 01:02:54.230 align:middle line:84%
+So it's player 1
+followed by player 2.
+
+01:02:54.230 --> 01:03:02.190 align:middle line:90%
+
+
+01:03:02.190 --> 01:03:05.130 align:middle line:84%
+So now we need to fill in
+what happens in period 1
+
+01:03:05.130 --> 01:03:09.290 align:middle line:84%
+to try to make this a subgame
+perfect Nash equilibrium.
+
+01:03:09.290 --> 01:03:14.530 align:middle line:84%
+So the first observation is
+that whatever we do in period 1,
+
+01:03:14.530 --> 01:03:17.790 align:middle line:84%
+at every history, it must be
+a Nash equilibrium, because we
+
+01:03:17.790 --> 01:03:20.958 align:middle line:84%
+know, in the last
+period, the subgame is
+
+01:03:20.958 --> 01:03:23.250 align:middle line:84%
+just the same as the stage
+game because there's nothing
+
+01:03:23.250 --> 01:03:24.690 align:middle line:90%
+else that comes in the future.
+
+01:03:24.690 --> 01:03:27.010 align:middle line:84%
+So what we're choosing,
+basically, is we need to--
+
+01:03:27.010 --> 01:03:29.410 align:middle line:84%
+it's almost like kind
+of a word search.
+
+01:03:29.410 --> 01:03:35.130 align:middle line:84%
+We have H, H and S, S.
+These are Nash equilibria.
+
+01:03:35.130 --> 01:03:38.330 align:middle line:84%
+And we need to choose
+where to put H, H
+
+01:03:38.330 --> 01:03:41.130 align:middle line:84%
+and where to put S, S. So we
+could be really mechanical
+
+01:03:41.130 --> 01:03:43.610 align:middle line:90%
+about it, but 4--
+
+01:03:43.610 --> 01:03:46.452 align:middle line:84%
+I mean, then we have
+16 different choices,
+
+01:03:46.452 --> 01:03:47.910 align:middle line:84%
+so that's going to
+take us a while,
+
+01:03:47.910 --> 01:03:49.243 align:middle line:90%
+so let's be a little thoughtful.
+
+01:03:49.243 --> 01:03:52.430 align:middle line:84%
+We could put either S,
+S here or H, H here,
+
+01:03:52.430 --> 01:03:54.730 align:middle line:84%
+either S, S here or
+H, H here, and so on.
+
+01:03:54.730 --> 01:03:56.710 align:middle line:84%
+But that's kind of a
+silly way to do it.
+
+01:03:56.710 --> 01:03:58.970 align:middle line:90%
+So let's try to think more.
+
+01:03:58.970 --> 01:04:02.050 align:middle line:84%
+Any guesses about
+where we should put H,
+
+01:04:02.050 --> 01:04:06.050 align:middle line:84%
+H and where we should put
+S, S. Maybe any thoughts
+
+01:04:06.050 --> 01:04:08.110 align:middle line:90%
+about one position?
+
+01:04:08.110 --> 01:04:12.984 align:middle line:90%
+
+
+01:04:12.984 --> 01:04:14.450 align:middle line:90%
+Hmm?
+
+01:04:14.450 --> 01:04:16.850 align:middle line:84%
+AUDIENCE: So if he have
+H, H, we could just--
+
+01:04:16.850 --> 01:04:20.410 align:middle line:84%
+I mean, if we have S, S,
+then both people cooperated
+
+01:04:20.410 --> 01:04:21.970 align:middle line:90%
+and we wanted to do so.
+
+01:04:21.970 --> 01:04:26.880 align:middle line:90%
+So like S, S goes under S, S.
+
+01:04:26.880 --> 01:04:29.220 align:middle line:84%
+IAN BALL: S, S goes under
+S, S. I'm not so sure.
+
+01:04:29.220 --> 01:04:30.780 align:middle line:90%
+So let's understand.
+
+01:04:30.780 --> 01:04:34.640 align:middle line:84%
+We want a subgame
+perfect Nash equilibrium
+
+01:04:34.640 --> 01:04:37.260 align:middle line:84%
+where we play H, S
+in the first period.
+
+01:04:37.260 --> 01:04:39.040 align:middle line:84%
+So you might be
+thinking we want S, S,
+
+01:04:39.040 --> 01:04:40.880 align:middle line:84%
+but we're trying to
+get people to play
+
+01:04:40.880 --> 01:04:42.055 align:middle line:90%
+H, S in the first period.
+
+01:04:42.055 --> 01:04:42.680 align:middle line:90%
+AUDIENCE: Yeah.
+
+01:04:42.680 --> 01:04:46.800 align:middle line:84%
+IAN BALL: So you said
+put S, S under S, S?
+
+01:04:46.800 --> 01:04:47.480 align:middle line:90%
+AUDIENCE: Yes.
+
+01:04:47.480 --> 01:04:48.980 align:middle line:84%
+IAN BALL: So if we
+put S, S under S,
+
+01:04:48.980 --> 01:04:53.600 align:middle line:84%
+S, that would make it
+appealing to play S, S today.
+
+01:04:53.600 --> 01:04:57.720 align:middle line:90%
+So let's think-- so say again?
+
+01:04:57.720 --> 01:05:00.280 align:middle line:84%
+AUDIENCE: Then H, H
+would be under S, S.
+
+01:05:00.280 --> 01:05:01.060 align:middle line:90%
+IAN BALL: Right.
+
+01:05:01.060 --> 01:05:01.560 align:middle line:90%
+Exactly.
+
+01:05:01.560 --> 01:05:03.680 align:middle line:90%
+So let's actually start--
+
+01:05:03.680 --> 01:05:06.400 align:middle line:84%
+I think this is the kind
+of-- let's start here.
+
+01:05:06.400 --> 01:05:09.480 align:middle line:84%
+We're trying to encourage
+people to play H, S today.
+
+01:05:09.480 --> 01:05:12.400 align:middle line:84%
+So we want to reward them
+if they do play H, S today
+
+01:05:12.400 --> 01:05:13.860 align:middle line:90%
+with a good equilibrium.
+
+01:05:13.860 --> 01:05:16.903 align:middle line:84%
+So let's reward them by
+playing S, S tomorrow.
+
+01:05:16.903 --> 01:05:19.320 align:middle line:84%
+And I want to be clear, when
+we're computing repeated game
+
+01:05:19.320 --> 01:05:22.840 align:middle line:84%
+equilibria, it's very tempting
+and it's very convenient
+
+01:05:22.840 --> 01:05:26.280 align:middle line:84%
+to think about choosing an
+action profile rather than just
+
+01:05:26.280 --> 01:05:26.780 align:middle line:90%
+an action.
+
+01:05:26.780 --> 01:05:28.880 align:middle line:84%
+So I'm saying we're going
+to play S, S tomorrow.
+
+01:05:28.880 --> 01:05:31.192 align:middle line:84%
+But we have to really
+understand it's always the case
+
+01:05:31.192 --> 01:05:33.400 align:middle line:84%
+that a single player is
+choosing how they're playing.
+
+01:05:33.400 --> 01:05:35.220 align:middle line:84%
+We're never jointly
+choosing what to do.
+
+01:05:35.220 --> 01:05:37.460 align:middle line:84%
+It's just, as the analyst,
+when I'm analyzing it,
+
+01:05:37.460 --> 01:05:39.980 align:middle line:84%
+it's convenient to think
+about where we put S, S.
+
+01:05:39.980 --> 01:05:42.820 align:middle line:84%
+But each player is making
+a decision for themselves.
+
+01:05:42.820 --> 01:05:45.320 align:middle line:90%
+I just want to keep that clear.
+
+01:05:45.320 --> 01:05:47.920 align:middle line:84%
+So what we've set up so
+far is we've made it so
+
+01:05:47.920 --> 01:05:50.477 align:middle line:84%
+that if we play H, S, which
+is how we want people to play.
+
+01:05:50.477 --> 01:05:52.060 align:middle line:84%
+We want this to be
+a Nash equilibrium.
+
+01:05:52.060 --> 01:05:53.800 align:middle line:84%
+We're going to be
+rewarded tomorrow
+
+01:05:53.800 --> 01:05:58.620 align:middle line:84%
+by playing S, S. We also need
+to think about punishments.
+
+01:05:58.620 --> 01:06:01.560 align:middle line:84%
+Let's try to punish the
+players if anyone unilaterally
+
+01:06:01.560 --> 01:06:03.960 align:middle line:90%
+deviates so.
+
+01:06:03.960 --> 01:06:07.640 align:middle line:84%
+If player 1 unilaterally
+deviates, what happens?
+
+01:06:07.640 --> 01:06:11.960 align:middle line:84%
+Player 1 is supposed to play
+H. If they deviate, they play S
+
+01:06:11.960 --> 01:06:16.040 align:middle line:84%
+And therefore, the history
+is S, S. So because S,
+
+01:06:16.040 --> 01:06:18.720 align:middle line:84%
+S is a history that could result
+from a unilateral deviation
+
+01:06:18.720 --> 01:06:22.000 align:middle line:84%
+by player 1, in order to punish
+that, we want to put H, H here.
+
+01:06:22.000 --> 01:06:27.200 align:middle line:90%
+
+
+01:06:27.200 --> 01:06:31.503 align:middle line:84%
+Conversely, if player
+2 deviates from S to H,
+
+01:06:31.503 --> 01:06:32.920 align:middle line:84%
+then the history
+is going to be H,
+
+01:06:32.920 --> 01:06:39.760 align:middle line:84%
+H. So we also want to
+punish H, H with H, H.
+
+01:06:39.760 --> 01:06:44.600 align:middle line:84%
+What about this
+remaining history?
+
+01:06:44.600 --> 01:06:48.160 align:middle line:84%
+Should we put H, H
+here or S, S here?
+
+01:06:48.160 --> 01:06:51.480 align:middle line:90%
+Or It doesn't matter.
+
+01:06:51.480 --> 01:06:54.340 align:middle line:84%
+It turns out it
+won't matter at all.
+
+01:06:54.340 --> 01:06:54.840 align:middle line:90%
+Why?
+
+01:06:54.840 --> 01:06:58.120 align:middle line:84%
+Well, remember, Nash equilibrium
+and subgame perfect Nash
+
+01:06:58.120 --> 01:07:00.435 align:middle line:84%
+equilibrium is all about
+unilateral deviations.
+
+01:07:00.435 --> 01:07:02.560 align:middle line:84%
+So if we're interested in
+the incentives for people
+
+01:07:02.560 --> 01:07:05.040 align:middle line:84%
+to unilaterally
+deviate, we have to say
+
+01:07:05.040 --> 01:07:08.760 align:middle line:84%
+what happens if player 1
+unilaterally deviates to S,
+
+01:07:08.760 --> 01:07:11.520 align:middle line:84%
+or player 2 unilaterally
+deviates to H?
+
+01:07:11.520 --> 01:07:14.120 align:middle line:84%
+But there's no unilateral
+deviation from H, S
+
+01:07:14.120 --> 01:07:16.540 align:middle line:90%
+that will result in S, H.
+
+01:07:16.540 --> 01:07:19.680 align:middle line:84%
+That would mean that player
+1 had deviated from H to S,
+
+01:07:19.680 --> 01:07:23.200 align:middle line:84%
+and player 2 had deviated from S
+to H. But if they both deviate,
+
+01:07:23.200 --> 01:07:25.020 align:middle line:84%
+well, that's not a
+unilateral deviation.
+
+01:07:25.020 --> 01:07:28.200 align:middle line:84%
+So it turns out whether this is
+an equilibrium will not actually
+
+01:07:28.200 --> 01:07:29.660 align:middle line:90%
+depend on what happens here.
+
+01:07:29.660 --> 01:07:34.000 align:middle line:84%
+So we could either do H, H or
+S, S. Let's do H, H, but S,
+
+01:07:34.000 --> 01:07:37.000 align:middle line:90%
+S would also work.
+
+01:07:37.000 --> 01:07:38.440 align:middle line:90%
+It can't be S, H, though.
+
+01:07:38.440 --> 01:07:40.200 align:middle line:84%
+It's either H, H
+or S, S. Or maybe
+
+01:07:40.200 --> 01:07:43.980 align:middle line:84%
+I should have big parentheses
+to make that clear.
+
+01:07:43.980 --> 01:07:54.300 align:middle line:90%
+
+
+01:07:54.300 --> 01:07:59.360 align:middle line:84%
+So now let's try to check
+whether this is indeed
+
+01:07:59.360 --> 01:08:03.060 align:middle line:84%
+a Nash equilibrium, a subgame
+perfect Nash equilibrium.
+
+01:08:03.060 --> 01:08:17.880 align:middle line:90%
+
+
+01:08:17.880 --> 01:08:20.380 align:middle line:90%
+So maybe I'll call this star.
+
+01:08:20.380 --> 01:08:23.000 align:middle line:90%
+This is our strategy profile.
+
+01:08:23.000 --> 01:08:27.120 align:middle line:84%
+We're not playing a stage
+game Nash in period 0,
+
+01:08:27.120 --> 01:08:29.020 align:middle line:84%
+but we claim that
+this is still an SPNE.
+
+01:08:29.020 --> 01:08:36.200 align:middle line:84%
+So I claim that star is
+a subgame perfect Nash
+
+01:08:36.200 --> 01:08:36.979 align:middle line:90%
+equilibrium.
+
+01:08:36.979 --> 01:08:40.720 align:middle line:90%
+
+
+01:08:40.720 --> 01:08:42.399 align:middle line:90%
+Now, there's a lot to check.
+
+01:08:42.399 --> 01:08:44.960 align:middle line:84%
+We have to check that
+this forms a Nash
+
+01:08:44.960 --> 01:08:48.040 align:middle line:90%
+equilibrium in every subgame.
+
+01:08:48.040 --> 01:08:50.300 align:middle line:84%
+So we have to check
+all five subgames.
+
+01:08:50.300 --> 01:08:58.720 align:middle line:90%
+
+
+01:08:58.720 --> 01:09:01.732 align:middle line:84%
+But the one-shot deviation
+principle is going to help us.
+
+01:09:01.732 --> 01:09:03.899 align:middle line:84%
+Technically, we have to
+check that in every subgame,
+
+01:09:03.899 --> 01:09:05.819 align:middle line:90%
+there's no profitable deviation.
+
+01:09:05.819 --> 01:09:07.319 align:middle line:84%
+But the one-shot
+deviation principle
+
+01:09:07.319 --> 01:09:08.944 align:middle line:84%
+says we just have to
+check that there's
+
+01:09:08.944 --> 01:09:10.620 align:middle line:84%
+no profitable
+one-shot deviation.
+
+01:09:10.620 --> 01:09:13.479 align:middle line:84%
+So check in all
+five subgames, there
+
+01:09:13.479 --> 01:09:19.180 align:middle line:84%
+is no profitable
+one-shot deviation.
+
+01:09:19.180 --> 01:09:40.080 align:middle line:90%
+
+
+01:09:40.080 --> 01:09:42.520 align:middle line:84%
+So the period 1 subgames
+are pretty easy,
+
+01:09:42.520 --> 01:09:44.899 align:middle line:84%
+but let's just do one of
+them to check as an example.
+
+01:09:44.899 --> 01:09:47.760 align:middle line:90%
+
+
+01:09:47.760 --> 01:09:50.800 align:middle line:84%
+So in period 1, we
+have four subgames.
+
+01:09:50.800 --> 01:09:59.600 align:middle line:84%
+Let's look at the subgame
+following H, H just
+
+01:09:59.600 --> 01:10:06.140 align:middle line:90%
+to make sure we understand.
+
+01:10:06.140 --> 01:10:09.360 align:middle line:90%
+
+
+01:10:09.360 --> 01:10:12.920 align:middle line:90%
+So let's consider player 1.
+
+01:10:12.920 --> 01:10:17.280 align:middle line:84%
+Player 1 is supposed to
+play H. At history H, H,
+
+01:10:17.280 --> 01:10:20.920 align:middle line:84%
+player 1 is supposed to play
+H. So let's compare two things.
+
+01:10:20.920 --> 01:10:23.640 align:middle line:84%
+What happens if
+player 1 plays H?
+
+01:10:23.640 --> 01:10:26.840 align:middle line:84%
+And what happens if
+player 1 plays S?
+
+01:10:26.840 --> 01:10:28.600 align:middle line:84%
+So let's understand
+what I'm doing here.
+
+01:10:28.600 --> 01:10:32.680 align:middle line:84%
+I'm contemplating a
+one-shot deviation
+
+01:10:32.680 --> 01:10:35.760 align:middle line:84%
+by player 1 at history
+H, H. I'm saying
+
+01:10:35.760 --> 01:10:38.880 align:middle line:84%
+suppose we're at history H,
+H, and player 1 unilaterally
+
+01:10:38.880 --> 01:10:40.000 align:middle line:90%
+deviates.
+
+01:10:40.000 --> 01:10:41.640 align:middle line:84%
+Instead of playing
+H, they play S,
+
+01:10:41.640 --> 01:10:44.120 align:middle line:84%
+and we want to
+compare the payoffs.
+
+01:10:44.120 --> 01:10:49.160 align:middle line:84%
+So what if player 1 plays
+H as he's supposed to do?
+
+01:10:49.160 --> 01:10:52.160 align:middle line:84%
+What is player 1's average
+payoff in the entire game
+
+01:10:52.160 --> 01:10:53.640 align:middle line:90%
+going to be?
+
+01:10:53.640 --> 01:10:56.560 align:middle line:90%
+Well, we're at the H, H history.
+
+01:10:56.560 --> 01:10:59.200 align:middle line:84%
+So the way we compute
+payoffs is we already
+
+01:10:59.200 --> 01:11:01.740 align:middle line:84%
+assume that H, H was
+played in the first period.
+
+01:11:01.740 --> 01:11:05.280 align:middle line:84%
+So that gives player
+1 a payoff of 1.
+
+01:11:05.280 --> 01:11:07.200 align:middle line:84%
+And then if I play
+H again, I also
+
+01:11:07.200 --> 01:11:10.880 align:middle line:84%
+get 1 because my opponent
+is also playing H.
+
+01:11:10.880 --> 01:11:15.040 align:middle line:84%
+So we're going to get a
+payoff of 1 plus 1 over 2,
+
+01:11:15.040 --> 01:11:18.080 align:middle line:90%
+which equals 1.
+
+01:11:18.080 --> 01:11:20.760 align:middle line:84%
+What if I unilaterally
+deviate to S?
+
+01:11:20.760 --> 01:11:23.480 align:middle line:90%
+What is my payoff going to be?
+
+01:11:23.480 --> 01:11:25.897 align:middle line:84%
+Well, if I unilaterally
+deviate to S--
+
+01:11:25.897 --> 01:11:27.480 align:middle line:84%
+and maybe let's
+write-- let me be very
+
+01:11:27.480 --> 01:11:29.300 align:middle line:90%
+clear about what happens here.
+
+01:11:29.300 --> 01:11:37.560 align:middle line:90%
+
+
+01:11:37.560 --> 01:11:42.560 align:middle line:84%
+So if at history H, H, I do what
+I'm supposed to and I play H,
+
+01:11:42.560 --> 01:11:44.563 align:middle line:84%
+and my opponent also
+plays H, then this
+
+01:11:44.563 --> 01:11:45.980 align:middle line:84%
+is what our payoff
+is going to be.
+
+01:11:45.980 --> 01:11:49.820 align:middle line:84%
+The path of play is H, H in
+period 0, H, H in period 1,
+
+01:11:49.820 --> 01:11:52.800 align:middle line:84%
+and my payoff is
+an average of 1.
+
+01:11:52.800 --> 01:11:57.640 align:middle line:84%
+If I unilaterally deviate to
+S, then after history H, H
+
+01:11:57.640 --> 01:11:59.840 align:middle line:84%
+I unilaterally deviate
+to S, but my opponent
+
+01:11:59.840 --> 01:12:04.400 align:middle line:84%
+stays at H, which means
+my payoff is now 1 plus 0
+
+01:12:04.400 --> 01:12:07.160 align:middle line:90%
+over 2, which equals one half.
+
+01:12:07.160 --> 01:12:11.000 align:middle line:84%
+And indeed, deviating
+is not profitable.
+
+01:12:11.000 --> 01:12:14.560 align:middle line:84%
+So what I've checked is there's
+no one-shot profitable deviation
+
+01:12:14.560 --> 01:12:18.440 align:middle line:84%
+for player 1 at H, H. I actually
+have to do that eight times
+
+01:12:18.440 --> 01:12:20.498 align:middle line:84%
+because there's four
+histories and two players,
+
+01:12:20.498 --> 01:12:22.040 align:middle line:84%
+so it's a bit of a
+mess, but it's not
+
+01:12:22.040 --> 01:12:24.280 align:middle line:84%
+too hard to check that
+that's going to work out.
+
+01:12:24.280 --> 01:12:25.640 align:middle line:90%
+So now let's go to period 0.
+
+01:12:25.640 --> 01:12:27.140 align:middle line:84%
+This is where I
+think the action is.
+
+01:12:27.140 --> 01:12:51.400 align:middle line:90%
+
+
+01:12:51.400 --> 01:12:53.660 align:middle line:90%
+So let's look at period 0.
+
+01:12:53.660 --> 01:12:58.820 align:middle line:90%
+
+
+01:12:58.820 --> 01:13:00.580 align:middle line:90%
+So the history is just nothing.
+
+01:13:00.580 --> 01:13:02.000 align:middle line:90%
+Nothing has happened.
+
+01:13:02.000 --> 01:13:06.340 align:middle line:84%
+And let's look at
+player 1 and player 2.
+
+01:13:06.340 --> 01:13:09.480 align:middle line:90%
+
+
+01:13:09.480 --> 01:13:18.950 align:middle line:84%
+And in period 0, player
+1 is supposed to play H,
+
+01:13:18.950 --> 01:13:20.830 align:middle line:90%
+but they could also play S.
+
+01:13:20.830 --> 01:13:25.682 align:middle line:84%
+And player 2 is
+supposed to play S,
+
+01:13:25.682 --> 01:13:30.510 align:middle line:84%
+but they could also play H. So
+to check that neither player has
+
+01:13:30.510 --> 01:13:34.270 align:middle line:84%
+a profitable one-shot deviation,
+I need to say, what if player 1,
+
+01:13:34.270 --> 01:13:36.230 align:middle line:84%
+instead of playing H
+as they're supposed to,
+
+01:13:36.230 --> 01:13:40.230 align:middle line:84%
+one-shot deviates to
+playing S at this history,
+
+01:13:40.230 --> 01:13:43.390 align:middle line:84%
+and then follows their
+strategy from there on out.
+
+01:13:43.390 --> 01:13:46.070 align:middle line:84%
+And ask the same about player 2,
+and check that these deviations
+
+01:13:46.070 --> 01:13:48.350 align:middle line:90%
+are not going to be profitable.
+
+01:13:48.350 --> 01:13:51.110 align:middle line:84%
+So I think the first thing,
+before we can compute payoffs,
+
+01:13:51.110 --> 01:13:52.390 align:middle line:90%
+is figure out what happens.
+
+01:13:52.390 --> 01:13:57.830 align:middle line:84%
+So if player 1 does what they're
+supposed to and plays H today,
+
+01:13:57.830 --> 01:14:00.130 align:middle line:84%
+then what's going to happen
+is we're going to get H,
+
+01:14:00.130 --> 01:14:07.550 align:middle line:84%
+S today followed
+by S, S tomorrow.
+
+01:14:07.550 --> 01:14:09.510 align:middle line:84%
+This is what's
+supposed to happen.
+
+01:14:09.510 --> 01:14:10.810 align:middle line:90%
+And the same is true down here.
+
+01:14:10.810 --> 01:14:12.870 align:middle line:84%
+If player 2 does what
+they're supposed to,
+
+01:14:12.870 --> 01:14:18.270 align:middle line:84%
+we get H, S followed
+by S, S. But what
+
+01:14:18.270 --> 01:14:23.230 align:middle line:84%
+happens if player 1
+unilaterally deviates to S, S?
+
+01:14:23.230 --> 01:14:26.590 align:middle line:90%
+Then we get S, S today.
+
+01:14:26.590 --> 01:14:28.050 align:middle line:90%
+But then what happens tomorrow?
+
+01:14:28.050 --> 01:14:33.030 align:middle line:90%
+
+
+01:14:33.030 --> 01:14:33.530 align:middle line:90%
+Yeah?
+
+01:14:33.530 --> 01:14:34.155 align:middle line:90%
+AUDIENCE: H, H.
+
+01:14:34.155 --> 01:14:35.530 align:middle line:90%
+IAN BALL: H, H. Exactly.
+
+01:14:35.530 --> 01:14:38.430 align:middle line:90%
+
+
+01:14:38.430 --> 01:14:39.970 align:middle line:84%
+And let's ask the
+same of player 2.
+
+01:14:39.970 --> 01:14:42.910 align:middle line:84%
+If they deviate from
+S to H, then we're
+
+01:14:42.910 --> 01:14:47.390 align:middle line:90%
+going to get H, H today.
+
+01:14:47.390 --> 01:14:48.730 align:middle line:90%
+And then what happens tomorrow?
+
+01:14:48.730 --> 01:14:52.810 align:middle line:90%
+
+
+01:14:52.810 --> 01:14:53.310 align:middle line:90%
+Yeah?
+
+01:14:53.310 --> 01:14:54.030 align:middle line:90%
+AUDIENCE: [INAUDIBLE]
+
+01:14:54.030 --> 01:14:54.947 align:middle line:90%
+IAN BALL: H, H, right?
+
+01:14:54.947 --> 01:14:59.510 align:middle line:90%
+
+
+01:14:59.510 --> 01:15:03.430 align:middle line:84%
+So now we can exactly see
+what we were discussing.
+
+01:15:03.430 --> 01:15:05.310 align:middle line:84%
+If player 1
+unilaterally deviates,
+
+01:15:05.310 --> 01:15:09.190 align:middle line:84%
+they get a benefit today because
+S, S is better than H, S.
+
+01:15:09.190 --> 01:15:10.710 align:middle line:84%
+But then they get
+punished tomorrow
+
+01:15:10.710 --> 01:15:14.230 align:middle line:84%
+because they get H, H
+tomorrow rather than S, S.
+
+01:15:14.230 --> 01:15:16.213 align:middle line:84%
+And the same thing
+goes down here.
+
+01:15:16.213 --> 01:15:17.630 align:middle line:84%
+And instead of
+adding it all up, I
+
+01:15:17.630 --> 01:15:20.350 align:middle line:84%
+think it's easier
+to see, what is
+
+01:15:20.350 --> 01:15:24.910 align:middle line:84%
+the gain from the deviation
+in going from H, S to S, S?
+
+01:15:24.910 --> 01:15:27.690 align:middle line:90%
+Well if they did--
+
+01:15:27.690 --> 01:15:30.190 align:middle line:84%
+oh, maybe let's just
+write it all out.
+
+01:15:30.190 --> 01:15:38.350 align:middle line:84%
+Player 1 payoff from H, S
+is going to be 1, 2; 2, 1.
+
+01:15:38.350 --> 01:15:44.490 align:middle line:84%
+And here, player 2's
+payoff is 1, ; 0, 2.
+
+01:15:44.490 --> 01:15:49.030 align:middle line:90%
+
+
+01:15:49.030 --> 01:15:53.550 align:middle line:84%
+So if we add it all up, we're
+going to get an average of 3/2,
+
+01:15:53.550 --> 01:15:58.170 align:middle line:90%
+3/2, 1, and 1.
+
+01:15:58.170 --> 01:16:02.350 align:middle line:90%
+
+
+01:16:02.350 --> 01:16:04.910 align:middle line:84%
+So I've just gone through
+and computed the flow payoff
+
+01:16:04.910 --> 01:16:06.730 align:middle line:84%
+that player 1 gets
+in each situation.
+
+01:16:06.730 --> 01:16:08.150 align:middle line:90%
+And then I've taken the average.
+
+01:16:08.150 --> 01:16:09.733 align:middle line:84%
+And then I've computed
+the flow payoff
+
+01:16:09.733 --> 01:16:11.750 align:middle line:84%
+player 2 gets in each
+situation, and then I've
+
+01:16:11.750 --> 01:16:13.270 align:middle line:90%
+computed the average.
+
+01:16:13.270 --> 01:16:15.688 align:middle line:84%
+And what we indeed see is
+that if player 1 unilaterally
+
+01:16:15.688 --> 01:16:17.230 align:middle line:84%
+deviates, well,
+actually their payoff
+
+01:16:17.230 --> 01:16:18.770 align:middle line:84%
+is going to be
+exactly unchanged.
+
+01:16:18.770 --> 01:16:20.310 align:middle line:90%
+So it's not profitable.
+
+01:16:20.310 --> 01:16:22.193 align:middle line:84%
+If player 2
+unilaterally deviates,
+
+01:16:22.193 --> 01:16:23.610 align:middle line:84%
+their payoff is
+exactly unchanged.
+
+01:16:23.610 --> 01:16:24.730 align:middle line:90%
+So it's not profitable.
+
+01:16:24.730 --> 01:16:27.490 align:middle line:84%
+And therefore, we see that these
+deviations are not profitable
+
+01:16:27.490 --> 01:16:28.950 align:middle line:90%
+and we're done here.
+
+01:16:28.950 --> 01:16:30.710 align:middle line:84%
+And we can exactly
+see the effect.
+
+01:16:30.710 --> 01:16:32.770 align:middle line:90%
+If player 1 says, wait a second.
+
+01:16:32.770 --> 01:16:35.190 align:middle line:84%
+You're asking me
+to hunt for hare
+
+01:16:35.190 --> 01:16:37.010 align:middle line:84%
+when my opponent's
+hunting for stag.
+
+01:16:37.010 --> 01:16:39.430 align:middle line:84%
+I'd much rather hunt for
+stag and get a higher payoff.
+
+01:16:39.430 --> 01:16:42.170 align:middle line:84%
+Indeed, your flow payoff
+would jump up by 1.
+
+01:16:42.170 --> 01:16:44.250 align:middle line:84%
+It would jump from 1
+to 2 if you deviated.
+
+01:16:44.250 --> 01:16:46.430 align:middle line:84%
+The problem is that
+tomorrow, you're
+
+01:16:46.430 --> 01:16:50.390 align:middle line:84%
+going to be punished with H, H,
+which reduces your payoff by 1.
+
+01:16:50.390 --> 01:16:52.470 align:middle line:84%
+So the punishment you
+experience tomorrow
+
+01:16:52.470 --> 01:16:56.772 align:middle line:84%
+is just large enough to offset
+the gain you experienced today.
+
+01:16:56.772 --> 01:16:58.730 align:middle line:84%
+And therefore, the
+deviation is not profitable.
+
+01:16:58.730 --> 01:17:01.070 align:middle line:84%
+And the same happens
+for player 2.
+
+01:17:01.070 --> 01:17:05.060 align:middle line:84%
+Let me stop there, and I'll
+see everyone on Thursday.
+
+01:17:05.060 --> 01:17:08.000 align:middle line:90%
