@@ -10,18 +10,21 @@ geometry in the SVG master. No bitmap, external resource or live font is allowed
 The browser-facing exports keep the current shelf (96 × 320, q80) and detail
 (256 × 1280, q84) ceilings and never exceed reference dimensions.
 
-| Role                       | Default                                                  |
-| -------------------------- | -------------------------------------------------------- |
-| Trace                      | GPT-6.1 Sol, medium effort                               |
-| Independent visual review  | Fresh GPT-6.1 Sol, high effort, then Gemini 4 Argon High |
-| Optional additional review | Caw, installed Cursor model, ask mode                    |
-| Coordinator                | One Python process; sequential model calls               |
+| Role                       | Default                                           |
+| -------------------------- | ------------------------------------------------- |
+| Trace and repair           | Gemini 4 Argon High                               |
+| Independent visual review  | GPT-6 Astra and Claude Opus 5.5, both high effort |
+| Additional required review | Caw, installed Cursor model, ask mode             |
+| Coordinator                | One Python process; sequential model calls        |
 
-The defaults live in [config.json](config.json). All configured reviewers must
-pass the exact candidate. Add `caw` to `reviewers` in a separate config before
-planning to require it. `review --provider caw` also works as an additional check.
-Sol and Argon are already required by default. No provider substitution or paid
-usage override happens on account errors.
+The defaults live in [config.json](config.json). Astra, Opus and Caw must each pass
+the exact candidate. The implementation provider cannot review its own trace.
+Sol Medium remains selectable: in a separate config set `trace` to
+`{"provider":"sol","model":"gpt-6.1-sol","effort":"medium"}`, then pass that
+file to `plan --config`. `prepare` follows the planned role when `--provider` is
+omitted. No provider substitution or paid usage override happens on account errors.
+Version 2 policy requires a fresh plan; earlier run directories remain historical
+evidence and are never rewritten to satisfy the new reviewer requirements.
 
 ## Invoke
 
@@ -34,6 +37,7 @@ bash harness/bookcase-spines/scripts/run.sh status --run spines-v1
 bash harness/bookcase-spines/scripts/run.sh run --run spines-v1 --dry-run
 bash harness/bookcase-spines/scripts/run.sh run --run spines-v1 --max-jobs 1
 bash harness/bookcase-spines/scripts/run.sh resume --run spines-v1 --until-done
+bash harness/bookcase-spines/scripts/run.sh review --run spines-v1 --job ID --provider opus
 bash harness/bookcase-spines/scripts/run.sh export --run spines-v1
 ```
 
@@ -95,17 +99,33 @@ refuses a live owner or unresolved provider marker; inspect those processes befo
 removing any stale active marker. It does not kill an unrelated process.
 
 Raw provider assignments and capped logs live in
-`work/{codex,argon,cursor}/bookcase-spines/INVOCATION/`. Request, transport and
+`work/{codex,claude,argon,cursor}/bookcase-spines/INVOCATION/`. Request, transport and
 review receipts stay in the run. Argon and Caw responses are inspected with their
 skills' native inspection helpers. A zero exit without a complete terminal result
 cannot satisfy review. Model usage is preserved when reported.
 
-Sol uses read-only sandbox mode with user config disabled. Caw uses ask mode,
+Sol and Astra use read-only sandbox mode with user config disabled. Caw uses ask mode,
 without `--force` or blanket MCP approval. Argon receives a read-only assignment;
-that prompt does not create an OS sandbox. All three receive explicit instructions
+that prompt does not create an OS sandbox. All providers receive explicit instructions
 to avoid browsers, edits and further delegation. Fresh invocation directories and
 bounded process groups separate their output. Account access is checked only by a
 live call; `doctor` checks executable/helper availability.
+
+Opus uses the installed Claude CLI in bare, restricted mode, with only the `Read`
+tool and no MCP servers, shell or edits. Its adapter requires `CLAUDE_API_KEY`
+from the process environment or repository `.env`, maps it to the child process's
+`ANTHROPIC_API_KEY`, and never serializes credentials into requests or receipts.
+An optional `CLAUDE_WORKSPACE_ID` (or `ANTHROPIC_WORKSPACE_ID`) sets the
+`anthropic-workspace-id` header for an unscoped API key. Missing credentials or API
+errors stop the review without subscription fallback. Native completion, the
+observed model and successful reads of all three images are checked before its
+review can count.
+
+An organization-scoped key still targets one workspace per model request. To find
+the Default workspace, the read-only List Workspaces request needs
+`include_default=true`; the default is omitted otherwise. See Anthropic's
+[workspace scoping](https://platform.claude.com/docs/en/manage-claude/workspaces)
+and [Admin API authentication](https://platform.claude.com/docs/en/manage-claude/admin-api).
 
 Use durable reference paths for long runs. Expiring verification fixtures are
 appropriate for smoke tests; deleting or changing a pinned input makes its run

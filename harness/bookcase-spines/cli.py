@@ -7,6 +7,7 @@ import argparse
 from pathlib import Path
 import shutil
 import sys
+from typing import get_args
 
 from files import (
   HARNESS,
@@ -32,9 +33,9 @@ def doctor() -> dict[str, object]:
   config = decode(Config, read_json(HARNESS / 'config.json'))
   config.validate()
   commands = [
-    config.providers.sol.command,
-    config.providers.argon.command,
-    config.providers.caw.command,
+    *dict.fromkeys(
+      config.providers.get(provider).command for provider in get_args(Provider)
+    ),
     'rsvg-convert',
     'cwebp',
     'dwebp',
@@ -80,9 +81,7 @@ def main() -> object:
   parser.add_argument('--config', type=Path)
   parser.add_argument('--job')
   parser.add_argument('--stage', choices=['trace', 'verify'], default='trace')
-  parser.add_argument(
-    '--provider', choices=['sol', 'argon', 'caw'], default='sol'
-  )
+  parser.add_argument('--provider', choices=get_args(Provider))
   parser.add_argument('--response', type=Path)
   parser.add_argument('--max-jobs', type=int, default=1)
   parser.add_argument('--until-done', action='store_true')
@@ -145,7 +144,11 @@ def main() -> object:
       raise ValueError('--job is required')
     job = job_by_id(state, args.job)
     fresh_job(job)
-    provider: Provider = args.provider
+    provider: Provider = args.provider or (
+      state.config.trace.provider
+      if args.command == 'prepare' and args.stage == 'trace'
+      else state.config.reviewers[0]
+    )
     if args.command == 'prepare':
       return prepare(state, job, args.stage, provider)
     if args.command == 'submit':

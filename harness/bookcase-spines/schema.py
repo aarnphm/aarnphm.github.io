@@ -7,7 +7,7 @@ import math
 import types
 from typing import Literal, TypeVar, get_args, get_origin, get_type_hints
 
-Provider = Literal['sol', 'argon', 'caw']
+Provider = Literal['sol', 'astra', 'opus', 'argon', 'caw']
 Stage = Literal['trace', 'verify']
 Status = Literal[
   'queued',
@@ -44,18 +44,26 @@ class Backend:
 @dataclass
 class Backends:
   sol: Backend
+  astra: Backend
+  opus: Backend
   argon: Backend
   caw: Backend
 
   def get(self, provider: Provider) -> Backend:
-    return {'sol': self.sol, 'argon': self.argon, 'caw': self.caw}[provider]
+    return {
+      'sol': self.sol,
+      'astra': self.astra,
+      'opus': self.opus,
+      'argon': self.argon,
+      'caw': self.caw,
+    }[provider]
 
 
 @dataclass
 class TraceModel:
-  provider: Literal['sol']
-  model: Literal['gpt-6.1-sol']
-  effort: Literal['medium']
+  provider: Literal['sol', 'argon']
+  model: str
+  effort: str | None
 
 
 @dataclass
@@ -87,7 +95,7 @@ class Exports:
 
 @dataclass
 class Config:
-  version: Literal[1]
+  version: Literal[2]
   trace: TraceModel
   reviewers: list[Provider]
   providers: Backends
@@ -97,6 +105,20 @@ class Config:
   def validate(self) -> None:
     if not self.reviewers or len(set(self.reviewers)) != len(self.reviewers):
       raise ValueError('Require distinct reviewers')
+    if not {'astra', 'opus', 'caw'}.issubset(self.reviewers):
+      raise ValueError('Astra, Opus and Caw are required reviewers')
+    if self.trace.provider in self.reviewers:
+      raise ValueError('The trace worker cannot review its own candidate')
+    expected = {
+      'sol': ('gpt-6.1-sol', 'medium'),
+      'argon': ('gemini-4-argon-high', None),
+    }
+    if (self.trace.model, self.trace.effort) != expected[self.trace.provider]:
+      raise ValueError('Use Argon High or Sol Medium for implementation')
+    if self.providers.astra.model != 'gpt-6-astra':
+      raise ValueError('Astra review requires gpt-6-astra')
+    if not (self.providers.opus.model or '').startswith('claude-opus-'):
+      raise ValueError('Opus review requires an explicit Claude Opus model')
     caps = Limits(
       240000, 240000, 100, 10, 33554432, 2097152, 100000, 32, 1000000, 30000
     )
@@ -113,7 +135,7 @@ class Config:
         and tier.quality == cap.quality
       ):
         raise ValueError('Invalid raster export budget')
-    for provider in ['sol', 'argon', 'caw']:
+    for provider in get_args(Provider):
       if not getattr(self.providers, provider).command:
         raise ValueError('Provider command is empty')
 
@@ -232,6 +254,20 @@ class Transport:
   model: str | None
   error: str | None
   usage: object
+
+
+def mapping(value: object) -> dict[str, object]:
+  if not isinstance(value, dict):
+    raise ValueError('Expected a JSON object')
+  if any(not isinstance(key, str) for key in value):
+    raise ValueError('Expected string object keys')
+  return {key: item for key, item in value.items()}
+
+
+def optional_text(value: object) -> str | None:
+  if value is None or isinstance(value, str):
+    return value
+  raise ValueError('Expected string or null')
 
 
 def decode(cls: type[T], value: object) -> T:
