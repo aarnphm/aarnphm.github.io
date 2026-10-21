@@ -1,0 +1,331 @@
+.tri-ana-trend {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.tri-ana-lactate {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  height: 100%;
+}
+
+.tri-trend-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.tri-trend-stale {
+  opacity: 0.5;
+}
+
+.tri-lt-table {
+  align-self: stretch;
+  flex: 1 1 auto;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  border-collapse: collapse;
+  font-size: 0.58rem;
+  line-height: 1.45;
+
+  th,
+  td {
+    padding: 0.5rem 0;
+    border: 0;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+
+  th {
+    padding-right: 0.7rem;
+    color: var(--darkgray);
+    font-weight: 400;
+    text-align: left;
+  }
+
+  td {
+    color: var(--dark);
+    font-size: 0.64rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  td + td {
+    padding-left: 0.7rem;
+    color: var(--darkgray);
+    font-size: 0.58rem;
+  }
+
+  tr {
+    border-bottom: 1px solid color-mix(in srgb, var(--gray) 22%, transparent);
+
+    &:last-child {
+      border: 0;
+    }
+  }
+}
+
+.tri-lt-head {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.tri-lt-val-inner {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.tri-lt-trend {
+  display: block;
+}
+
+.tri-lt-spark {
+  display: block;
+  width: 6.8rem;
+  height: 2.35rem;
+
+  polyline {
+    fill: none;
+    stroke-width: 1.5;
+    vector-effect: non-scaling-stroke;
+  }
+}
+
+.tri-trend-head {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.64rem;
+}
+
+.tri-trend-unit {
+  color: var(--dark);
+}
+
+.tri-ana-conf,
+.tri-trend-dir {
+  font-size: 0.56rem;
+}
+
+.tri-conf-firm {
+  color: var(--tri-swim);
+}
+.tri-conf-low,
+.tri-conf-prior {
+  color: color-mix(in srgb, var(--gray) 90%, transparent);
+}
+.tri-conf-stale {
+  color: var(--tri-run);
+}
+
+.tri-dir-up {
+  color: var(--tri-swim);
+}
+.tri-dir-down {
+  color: var(--tri-run);
+}
+.tri-dir-flat {
+  color: var(--gray);
+}
+
+.tri-trend-band {
+  fill-opacity: 0.18;
+  stroke: none;
+}
+
+.tri-trend-future {
+  fill: color-mix(in srgb, var(--gray) 8%, transparent);
+}
+
+.tri-trend-tick {
+  stroke: color-mix(in srgb, var(--gray) 22%, transparent);
+  stroke-width: 0.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-trend-now {
+  stroke: var(--dark);
+  stroke-opacity: 0.35;
+  stroke-width: 0.75;
+  stroke-dasharray: 1 2;
+  vector-effect: non-scaling-stroke;
+}
+
+// The forecast issued two weeks ago, drawn over the days it covered.
+.tri-trend-issued,
+.tri-trend-issued-mid {
+  fill: none;
+  stroke: var(--dark);
+  stroke-width: 0.75;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-trend-issued {
+  stroke-opacity: 0.45;
+  stroke-dasharray: 2 2;
+}
+
+.tri-trend-issued-mid {
+  stroke-opacity: 0.3;
+  stroke-dasharray: 0.5 2.5;
+  stroke-linecap: round;
+}
+
+.tri-trend-level {
+  stroke-width: 1.5;
+}
+
+.tri-trend-proj {
+  fill: none;
+  stroke-width: 1.2;
+  stroke-dasharray: 2.5 2;
+  vector-effect: non-scaling-stroke;
+}
+
+// Dots are zero-length round-cap paths, so they stay round in the stretched viewBox.
+.tri-trend-dot path,
+.tri-trend-mark path {
+  fill: none;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  stroke-width: var(--tri-dot-w, 5px);
+  transition: stroke-width 120ms ease;
+}
+
+.tri-trend-dot-o {
+  stroke-opacity: 0.55;
+}
+
+.tri-trend-dot-swim .tri-trend-dot-o {
+  stroke: var(--tri-swim);
+}
+.tri-trend-dot-bike .tri-trend-dot-o {
+  stroke: color-mix(in srgb, var(--tri-bike) 78%, var(--dark));
+}
+.tri-trend-dot-run .tri-trend-dot-o {
+  stroke: var(--tri-run);
+}
+
+.tri-trend-dot--out .tri-trend-dot-o {
+  stroke: var(--gray);
+  stroke-opacity: 0.8;
+}
+
+.tri-trend-dot-i {
+  stroke: var(--light);
+}
+
+.tri-chart--hover .tri-trend-dot--hot .tri-trend-dot-o {
+  stroke-opacity: 1;
+  stroke-width: calc(var(--tri-dot-w, 5px) + 3px);
+}
+
+.tri-trend-mark-o {
+  stroke: var(--dark);
+}
+
+.tri-trend-mark-i {
+  stroke: var(--light);
+}
+
+.tri-trend-axis {
+  stroke: color-mix(in srgb, var(--gray) 50%, transparent);
+  stroke-width: 0.75;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-trend-track {
+  position: relative;
+  flex: 1 1 auto;
+}
+
+.tri-trend-chart {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.tri-trend-yax {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 2.4rem;
+  padding: 0.15rem 0;
+  font-size: 0.56rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  color: var(--gray);
+}
+
+.tri-trend-xax {
+  position: relative;
+  height: 0.9rem;
+  margin-top: 0.1rem;
+  margin-left: 2.9rem;
+  font-size: 0.56rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--gray);
+}
+
+.tri-trend-xax > span {
+  position: absolute;
+  top: 0;
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+
+.tri-trend-xax > .tri-trend-x0 {
+  transform: none;
+}
+
+.tri-trend-xax > .tri-trend-xend {
+  transform: translateX(-100%);
+}
+
+.tri-trend-xax > .tri-trend-xnow {
+  color: var(--dark);
+}
+
+.tri-trend-signal {
+  font-size: 0.56rem;
+  color: var(--gray);
+}
+
+.tri-trend-rate {
+  font-size: 0.56rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.tri-trend-calls + .tri-trend-cap {
+  margin-top: 0;
+}
+
+.tri-trend-held {
+  color: var(--tri-swim);
+}
+
+.tri-trend-missed {
+  color: var(--tri-run);
+}
+
+// A session readout outgrows a phone-width panel; wrap it across the head row instead.
+@media all and (max-width: 48rem) {
+  .tri-trend-panel .tri-trend-readout {
+    left: 0;
+    white-space: normal;
+  }
+
+  .tri-trend-xax--long > .tri-trend-xend {
+    display: none;
+  }
+}
+
+.tri-trend-note {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}

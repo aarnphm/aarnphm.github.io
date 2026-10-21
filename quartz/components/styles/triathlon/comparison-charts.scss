@@ -1,0 +1,280 @@
+@use './foundations' as *;
+
+.tri-compare-chart[hidden] {
+  display: none;
+}
+
+.tri-compare-chart-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+.tri-compare-chart-head > .tri-curve-ranges {
+  margin-left: 0;
+}
+
+.tri-compare-title {
+  font-size: 0.62rem;
+  color: var(--dark);
+  text-transform: lowercase;
+}
+
+.tri-compare-map {
+  box-sizing: border-box;
+  width: 100%;
+  height: clamp(10rem, 25dvh, 16rem);
+  overflow: hidden;
+  background: color-mix(in srgb, var(--gray) 6%, transparent);
+  border: 1px solid color-mix(in srgb, var(--gray) 20%, transparent);
+}
+
+.tri-compare-map--down ~ .tri-map-side {
+  display: none;
+}
+
+.tri-compare-map--down {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.62rem;
+  color: var(--darkgray);
+}
+
+.tri-compare-map-stage {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+}
+
+.tri-compare-line,
+.tri-compare-selection-line {
+  fill: none;
+  stroke: var(--tri-compare-color);
+  stroke-width: 1.15;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-compare-line[data-activity-index='1'],
+.tri-compare-selection-line[data-activity-index='1'] {
+  stroke-dasharray: 5 2.5;
+}
+
+.tri-compare-line[data-activity-index='2'],
+.tri-compare-selection-line[data-activity-index='2'] {
+  stroke-dasharray: 1.2 2.2;
+}
+
+.tri-compare-line[data-activity-index='3'],
+.tri-compare-selection-line[data-activity-index='3'] {
+  stroke-dasharray: 7 2 1.2 2;
+}
+
+.tri-compare-curve-ref {
+  fill: none;
+  stroke: color-mix(in srgb, var(--gray) 55%, transparent);
+  stroke-width: 0.8;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.tri-compare-curve-model {
+  fill: none;
+  stroke: color-mix(in srgb, var(--tri-accent) 58%, var(--dark));
+  stroke-width: 0.9;
+  stroke-dasharray: 4 1.5 1 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-compare-curve-cp {
+  stroke: color-mix(in srgb, var(--tri-accent) 58%, var(--dark));
+  stroke-width: 0.65;
+  stroke-dasharray: 5 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-compare-curve-model[hidden],
+.tri-compare-curve-cp[hidden] {
+  display: none;
+}
+
+.tri-compare-curve-ftp {
+  stroke: color-mix(in srgb, var(--gray) 60%, transparent);
+  stroke-width: 0.7;
+  stroke-dasharray: 2 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-compare-curve-goal {
+  stroke: color-mix(in srgb, var(--tri-accent) 70%, transparent);
+  stroke-width: 0.8;
+  stroke-dasharray: 3 2;
+  vector-effect: non-scaling-stroke;
+}
+
+[data-compare-hidden='true']:is(.tri-compare-line, .tri-compare-selection-line),
+.tri-compare-readout-row[data-compare-hidden='true'] {
+  display: none;
+}
+
+.tri-compare-charts {
+  display: grid;
+  flex: 1 1 auto;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  gap: 1.25rem 1.5rem;
+  width: 100%;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  @include thin-scrollbar;
+  padding-right: 0.45rem;
+}
+
+.tri-compare-chart > .tri-cax-frame {
+  grid-template-columns: 3.2rem minmax(0, 1fr);
+}
+
+.tri-compare-chart:is(
+  [data-compare-chart='power-curve'],
+  [data-compare-chart='power-distribution']
+) {
+  grid-column: 1 / -1;
+}
+
+.tri-compare-chart[data-compare-chart='power-curve'] .tri-cax-xax {
+  cursor: crosshair;
+}
+
+.tri-compare-graph {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 10 / 3;
+  min-height: 172px;
+  overflow: visible;
+  cursor: crosshair;
+  touch-action: pan-y;
+}
+
+.tri-compare-chart[data-available='0'] .tri-compare-graph {
+  cursor: default;
+}
+
+.tri-compare-graph:focus {
+  outline: none;
+}
+
+.tri-compare-graph:focus-visible {
+  outline: 2px solid var(--darkgray);
+  outline-offset: 2px;
+}
+
+.tri-compare-grid {
+  stroke: color-mix(in srgb, var(--gray) 16%, transparent);
+  stroke-width: 0.45;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-compare-selection-region {
+  fill: color-mix(in srgb, var(--gray) 16%, transparent);
+  pointer-events: none;
+  opacity: 0;
+}
+
+.tri-compare--selection .tri-compare-distance-graph .tri-compare-selection-region {
+  opacity: 1;
+}
+
+.tri-compare--selecting .tri-compare-distance-graph .tri-compare-selection-region {
+  fill: color-mix(in srgb, var(--tri-accent) 18%, transparent);
+}
+
+.tri-compare-selection-line {
+  stroke-width: 2.15;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.tri-compare--selection .tri-compare-distance-graph .tri-compare-line {
+  opacity: 0.32;
+}
+
+.tri-compare--selection .tri-compare-distance-graph .tri-compare-selection-line {
+  opacity: 1;
+}
+
+.tri-compare-cursor {
+  stroke: color-mix(in srgb, var(--dark) 68%, transparent);
+  stroke-width: 0.75;
+  vector-effect: non-scaling-stroke;
+  opacity: 0;
+}
+
+.tri-compare-chart--hover .tri-compare-cursor {
+  opacity: 1;
+}
+
+.tri-compare-readout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: flex-end;
+  box-sizing: border-box;
+  gap: 0.22rem 0.65rem;
+  max-width: 100%;
+  margin-left: auto;
+  font-size: 0.6rem;
+  color: var(--dark);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 100ms ease;
+}
+
+.tri-compare-readout-context {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.tri-compare-readout-row {
+  display: grid;
+  grid-template-columns: 0.7rem max-content;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.tri-compare-readout-value {
+  align-self: baseline;
+  justify-self: end;
+  font-weight: 600;
+  line-height: 1.3;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.tri-compare-readout-row--missing {
+  color: var(--darkgray);
+}
+
+.tri-compare-readout[data-visible='true'] {
+  opacity: 1;
+}
+
+.tri-compare-empty {
+  margin: 0;
+  padding: 0.7rem;
+  font-size: 0.62rem;
+  text-align: center;
+  color: var(--gray);
+  border: 1px solid color-mix(in srgb, var(--gray) 24%, transparent);
+}

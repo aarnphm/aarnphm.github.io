@@ -1,0 +1,88 @@
+.tri-maintenance-heading {
+  color: var(--dark);
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.tri-maintenance-group {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr);
+  gap: 0.8rem;
+  align-items: start;
+}
+
+.tri-maintenance-group-label {
+  color: var(--gray);
+  font-size: 0.58rem;
+  line-height: 1.45;
+  text-transform: uppercase;
+}
+
+.tri-maintenance-list {
+  display: grid;
+  gap: 0.5rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tri-maintenance-entry {
+  display: grid;
+  gap: 0.14rem;
+  min-width: 0;
+  padding-top: 0.5rem;
+  border-top: 1px solid color-mix(in srgb, var(--gray) 18%, transparent);
+
+  &:first-child {
+    padding-top: 0;
+    border-top: 0;
+  }
+}
+
+.tri-maintenance-entry-head {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr);
+  gap: 0.55rem;
+  align-items: baseline;
+  font-size: 0.64rem;
+  line-height: 1.4;
+}
+
+.tri-maintenance-entry-label {
+  color: var(--gray);
+  text-wrap: balance;
+  white-space: normal;
+}
+
+.tri-maintenance-entry-name {
+  min-width: 0;
+  color: var(--dark);
+  overflow-wrap: anywhere;
+}
+
+.tri-maintenance-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.08rem 0.45rem;
+  color: var(--gray);
+  font-size: 0.52rem;
+  line-height: 1.45;
+
+  > span + span::before {
+    content: '·';
+    margin-inline-end: 0.45rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .tri-maintenance-group {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.3rem;
+  }
+
+  .tri-maintenance-entry-head {
+    grid-template-columns: 4.1rem minmax(0, 1fr);
+  }
+}

@@ -1,0 +1,155 @@
+.tri-bodywt-chart {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.tri-bodywt-yax {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 2.2rem;
+  padding: 0.1rem 0;
+  font-size: 0.56rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  color: var(--gray);
+}
+
+.tri-bodywt-yax-r {
+  text-align: left;
+  color: color-mix(in srgb, var(--tri-swim) 80%, var(--gray));
+}
+
+.tri-bodywt-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.tri-bodywt-grid {
+  stroke: color-mix(in srgb, var(--gray) 22%, transparent);
+  stroke-width: 0.4;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-bodywt-grid--v {
+  stroke: color-mix(in srgb, var(--gray) 11%, transparent);
+}
+
+.tri-bodywt-axis {
+  stroke: color-mix(in srgb, var(--gray) 50%, transparent);
+  stroke-width: 0.75;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-bodywt-axis--bmr {
+  stroke: color-mix(in srgb, var(--tri-swim) 50%, transparent);
+}
+
+.tri-bodywt-line {
+  fill: none;
+  stroke: var(--dark);
+  stroke-width: 1;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-bodywt-goal {
+  stroke: color-mix(in srgb, var(--tri-accent) 65%, transparent);
+  stroke-width: 0.8;
+  stroke-dasharray: 3 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-bodywt-pt {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  transform: translate(-50%, -50%);
+  background: var(--darkgray);
+}
+
+.tri-bodywt-pt--last {
+  width: 5px;
+  height: 5px;
+  background: var(--tri-accent);
+}
+
+.tri-bodywt-pt--sub {
+  width: 3px;
+  height: 3px;
+  background: color-mix(in srgb, var(--darkgray) 55%, transparent);
+}
+
+.tri-bodywt-range {
+  stroke: color-mix(in srgb, var(--tri-accent) 42%, transparent);
+  stroke-width: 1;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-bodywt-range--active {
+  stroke: color-mix(in srgb, var(--tri-accent) 85%, transparent);
+}
+
+.tri-bodywt-bmr {
+  fill: none;
+  stroke: var(--tri-swim);
+  stroke-width: 1;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  opacity: 0.9;
+}
+
+.tri-bodywt-bmr-goal {
+  stroke: color-mix(in srgb, var(--tri-swim) 72%, transparent);
+  stroke-width: 0.8;
+  stroke-dasharray: 1.5 2.5;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-bodywt-bmr-missing {
+  stroke: color-mix(in srgb, var(--tri-swim) 58%, transparent);
+  stroke-width: 0.8;
+  stroke-dasharray: 0.5 2.5;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-bodywt-bpt {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  transform: translate(-50%, -50%);
+  background: var(--tri-swim);
+}
+
+.tri-bmr-k {
+  color: color-mix(in srgb, var(--tri-swim) 78%, var(--dark));
+}
+
+.tri-bodywt-xax {
+  display: flex;
+  justify-content: space-between;
+  padding-left: 2.7rem;
+  margin-top: 0.25rem;
+  font-size: 0.56rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--gray);
+}
+
+.tri-bodywt--bmr .tri-bodywt-xax {
+  padding-right: 2.7rem;
+}
+
+@media all and (max-width: 48rem) {
+  .tri-bodywt-yax {
+    flex: 0 0 2.2rem;
+  }
+
+  .tri-bodywt-plot {
+    min-width: 0;
+  }
+}

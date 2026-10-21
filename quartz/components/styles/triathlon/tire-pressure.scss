@@ -1,0 +1,601 @@
+.tri-pressure {
+  --tri-pressure-label-size: 0.56rem;
+  --tri-pressure-option-size: 0.58rem;
+  --tri-pressure-meta-size: 0.5rem;
+  container-name: tri-pressure;
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  min-width: 0;
+  padding-block: 0.35rem 0.9rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--gray) 28%, transparent);
+  scroll-margin-block: 1rem;
+}
+
+.tri-pressure-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.8rem;
+  color: var(--gray);
+  font-size: var(--tri-pressure-label-size);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.tri-pressure-date {
+  font-size: var(--tri-pressure-label-size);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+  text-align: right;
+  text-transform: none;
+}
+
+.tri-pressure-result {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+.tri-pressure-axle {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.4rem;
+  min-width: 0;
+  padding: 0.55rem 0.65rem;
+  background: color-mix(in srgb, var(--tri-bike) 9%, var(--light));
+  border: 1px solid color-mix(in srgb, var(--tri-bike) 34%, var(--lightgray));
+}
+
+.tri-pressure-axle-label {
+  color: var(--gray);
+  font-size: var(--tri-pressure-label-size);
+  text-transform: uppercase;
+}
+
+.tri-pressure-value-wrap {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  color: var(--dark);
+}
+
+.tri-pressure-value {
+  font-size: var(--tri-pressure-option-size);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.tri-pressure-unit {
+  color: var(--gray);
+  font-size: var(--tri-pressure-meta-size);
+}
+
+.tri-pressure-system {
+  grid-column: 1 / -1;
+  color: var(--gray);
+  font-size: var(--tri-pressure-meta-size);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.tri-pressure-controls {
+  display: grid;
+  grid-template-areas:
+    'bike wheel'
+    'tire surface'
+    'setup surface'
+    'balance measured'
+    'balance weight'
+    'balance speed';
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.tri-pressure-field[data-pressure-group='bike'] {
+  grid-area: bike;
+}
+
+.tri-pressure-field[data-pressure-group='wheel'] {
+  grid-area: wheel;
+}
+
+.tri-pressure-field[data-pressure-group='tire'] {
+  grid-area: tire;
+
+  .tri-pressure-option {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.12rem;
+
+    small {
+      white-space: normal;
+    }
+  }
+}
+
+.tri-pressure-setup-note {
+  display: grid;
+  gap: 0.25rem;
+  margin-top: 0.35rem;
+}
+
+.tri-pressure-field[data-pressure-group='setup'] {
+  grid-area: setup;
+}
+
+.tri-pressure-field[data-pressure-group='surface'] {
+  grid-area: surface;
+}
+
+.tri-pressure-field[data-pressure-group='balance'] {
+  grid-area: balance;
+}
+
+.tri-pressure-weight {
+  grid-area: weight;
+}
+
+.tri-pressure-measured {
+  grid-area: measured;
+}
+
+.tri-pressure-field {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+
+  legend {
+    margin-bottom: 0.25rem;
+    padding: 0;
+    color: var(--gray);
+    font-size: var(--tri-pressure-label-size);
+    text-transform: uppercase;
+  }
+}
+
+.tri-pressure-options {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+  padding: 1px;
+  background: color-mix(in srgb, var(--gray) 24%, transparent);
+}
+
+.tri-pressure-options--surface {
+  position: relative;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.tri-pressure-options--balance {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.tri-pressure-option {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+  min-height: 1.75rem;
+  padding: 0.28rem 0.4rem;
+  color: var(--gray);
+  background: var(--light);
+  cursor: pointer;
+
+  input[type='radio'] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  > span:not(.tri-pressure-surface-tip, .tri-pressure-bike-mass, .tri-pressure-wheel-width) {
+    min-width: 0;
+    overflow: hidden;
+    font-size: var(--tri-pressure-option-size);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  small {
+    font-size: var(--tri-pressure-meta-size);
+    white-space: nowrap;
+  }
+
+  &:has(input:checked) {
+    color: var(--dark);
+    background: color-mix(in srgb, var(--tri-bike) 13%, var(--light));
+  }
+
+  &:has(input:disabled) {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  &:has(input:focus-visible) {
+    outline: 1px solid color-mix(in srgb, var(--tri-accent) 72%, transparent);
+    outline-offset: -1px;
+  }
+}
+
+.tri-pressure-bike-choice,
+.tri-pressure-wheel-choice {
+  min-width: 0;
+  cursor: pointer;
+
+  > span {
+    display: block;
+    overflow: hidden;
+    font-size: var(--tri-pressure-option-size);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.tri-pressure-options--surface .tri-pressure-option {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.tri-pressure-options--balance .tri-pressure-option {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.tri-pressure-surface-tip {
+  position: absolute;
+  z-index: 2;
+  inset-inline: 0;
+  bottom: calc(100% + 0.2rem);
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.35rem 0.4rem;
+  color: var(--dark);
+  background: var(--light);
+  border: 1px solid color-mix(in srgb, var(--gray) 48%, transparent);
+  font-size: var(--tri-pressure-meta-size);
+  line-height: 1.35;
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+
+  strong {
+    color: var(--tri-accent);
+    font-weight: inherit;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.tri-pressure-options--surface:has(.tri-pressure-option:hover) > .tri-pressure-surface-tip,
+.tri-pressure-options--surface:has(input:focus-visible) > .tri-pressure-surface-tip {
+  opacity: 1;
+  visibility: visible;
+}
+
+.tri-pressure-speed {
+  grid-area: speed;
+}
+
+.tri-pressure-speed,
+.tri-pressure-measured,
+.tri-pressure-weight {
+  align-self: end;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-height: 1.35rem;
+  padding: 0;
+  color: var(--gray);
+  border: 0;
+  font-size: var(--tri-pressure-label-size);
+  text-transform: uppercase;
+}
+
+.tri-pressure-speed-input,
+.tri-pressure-bike-mass,
+.tri-pressure-measured-controls,
+.tri-pressure-wheel-width,
+.tri-pressure-weight-controls {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.22rem;
+  color: var(--gray);
+  font-size: var(--tri-pressure-meta-size);
+  text-transform: none;
+
+  > input {
+    width: 2.8rem;
+    padding: 0;
+    color: var(--dark);
+    background: transparent;
+    border: 0;
+    border-radius: var(--radius-none);
+    outline: 0;
+    font-family: inherit;
+    font-size: var(--tri-pressure-option-size);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    cursor: text;
+
+    &:hover {
+      text-decoration: underline dotted color-mix(in srgb, var(--gray) 55%, transparent);
+    }
+
+    &:focus {
+      text-decoration: underline solid var(--tri-accent);
+    }
+  }
+}
+
+.tri-pressure-bike-mass input {
+  width: 2.2rem;
+}
+
+.tri-pressure-wheel-width {
+  gap: 0.12rem;
+}
+
+.tri-pressure-wheel-width input {
+  width: 1.8rem;
+}
+
+.tri-pressure-measured-controls {
+  grid-column: 2;
+  grid-row: 2;
+  justify-self: end;
+  gap: 0.18rem;
+
+  &[hidden] {
+    display: none;
+  }
+
+  > input {
+    width: 1.8rem;
+  }
+}
+
+.tri-pressure-measured {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.25rem 0.5rem;
+}
+
+.tri-pressure-measured-head {
+  grid-column: 1 / -1;
+}
+
+.tri-pressure-width-mode {
+  grid-column: 1;
+  grid-row: 2;
+  justify-self: start;
+  margin: 0;
+  padding: 0.08rem 0;
+  color: var(--gray);
+  font: inherit;
+  font-size: var(--tri-pressure-meta-size);
+  text-align: left;
+  text-transform: none;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  cursor: pointer;
+
+  &[aria-pressed='true'] {
+    color: var(--dark);
+    border-bottom-color: currentColor;
+  }
+
+  &:hover {
+    color: var(--dark);
+  }
+
+  &:focus-visible {
+    outline: 1px solid color-mix(in srgb, var(--tri-accent) 68%, transparent);
+    outline-offset: 2px;
+  }
+}
+
+.tri-pressure-width-note {
+  grid-column: 1 / -1;
+  font-size: var(--tri-pressure-meta-size);
+  text-transform: none;
+}
+
+.tri-pressure-weight-controls {
+  align-items: center;
+  gap: 0.35rem;
+
+  > input {
+    width: 3.4rem;
+  }
+}
+
+.tri-pressure-weight-units {
+  display: inline-grid;
+  grid-template-columns: repeat(2, auto);
+  gap: 1px;
+  padding: 1px;
+  background: color-mix(in srgb, var(--gray) 24%, transparent);
+
+  label {
+    position: relative;
+    cursor: pointer;
+
+    input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    span {
+      display: block;
+      padding: 0.08rem 0.22rem;
+      color: var(--gray);
+      background: var(--light);
+      font-size: var(--tri-pressure-meta-size);
+      line-height: 1.1;
+    }
+
+    &:has(input:checked) span {
+      color: var(--dark);
+      background: color-mix(in srgb, var(--tri-bike) 13%, var(--light));
+    }
+
+    &:has(input:focus-visible) {
+      outline: 1px solid color-mix(in srgb, var(--tri-accent) 72%, transparent);
+      outline-offset: 1px;
+    }
+  }
+}
+
+.tri-pressure-weather {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+  padding: 0.45rem 0.5rem;
+  color: var(--gray);
+  background: color-mix(in srgb, var(--tri-swim) 7%, var(--light));
+  border: 1px solid color-mix(in srgb, var(--tri-swim) 30%, var(--lightgray));
+  font-size: var(--tri-pressure-meta-size);
+  line-height: 1.4;
+}
+
+.tri-pressure-weather-head,
+.tri-pressure-weather-current,
+.tri-pressure-weather-offsets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 0.7rem;
+  min-width: 0;
+}
+
+.tri-pressure-weather-head {
+  justify-content: space-between;
+  color: var(--dark);
+  text-transform: uppercase;
+
+  time,
+  > span:last-child {
+    color: var(--gray);
+    font-variant-numeric: tabular-nums;
+    text-transform: none;
+  }
+}
+
+.tri-pressure-weather-current,
+.tri-pressure-weather-note {
+  margin: 0;
+}
+
+.tri-pressure-weather-current > span:not(:last-child)::after {
+  margin-left: 0.7rem;
+  content: '·';
+}
+
+.tri-pressure-weather-offsets {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  padding: 1px;
+  background: color-mix(in srgb, var(--gray) 24%, transparent);
+
+  > span {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.25rem 0.35rem;
+    color: var(--dark);
+    background: var(--light);
+    font-variant-numeric: tabular-nums;
+  }
+
+  strong {
+    font-weight: inherit;
+    text-transform: uppercase;
+  }
+}
+
+.tri-pressure-weather-note {
+  max-width: 78ch;
+}
+
+.tri-pressure-warning,
+.tri-pressure-note {
+  margin: 0;
+  font-size: 0.54rem;
+  line-height: 1.45;
+}
+
+.tri-pressure-warning {
+  padding: 0.4rem 0.5rem;
+  color: var(--dark);
+  background: color-mix(in srgb, var(--tri-run) 12%, var(--light));
+  border: 1px solid color-mix(in srgb, var(--tri-run) 38%, var(--lightgray));
+}
+
+.tri-pressure-note {
+  color: var(--gray);
+
+  a {
+    color: inherit;
+    text-decoration-line: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 0.12em;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--tri-accent);
+      text-decoration-style: solid;
+    }
+  }
+}
+
+.tri-pressure--unavailable .tri-pressure-axle {
+  background: color-mix(in srgb, var(--gray) 6%, var(--light));
+  border-color: color-mix(in srgb, var(--gray) 24%, transparent);
+}
+
+@container tri-pressure (max-width: 26rem) {
+  .tri-pressure-controls {
+    grid-template-areas:
+      'bike'
+      'wheel'
+      'tire'
+      'setup'
+      'surface'
+      'balance'
+      'measured'
+      'weight'
+      'speed';
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .tri-pressure-head {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .tri-pressure-date {
+    text-align: left;
+  }
+}
+
+@container tri-pressure (max-width: 16rem) {
+  .tri-pressure-axle {
+    align-items: center;
+    flex-direction: column;
+    gap: 0.25rem;
+    text-align: center;
+  }
+}

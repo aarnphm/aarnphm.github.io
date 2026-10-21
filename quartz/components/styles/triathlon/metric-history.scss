@@ -1,0 +1,482 @@
+.tri-dev {
+  display: grid;
+  gap: 0.3rem;
+  margin-top: 0.6rem;
+  opacity: 1;
+  filter: blur(0);
+  transition:
+    opacity 180ms cubic-bezier(0.23, 1, 0.32, 1),
+    filter 180ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.tri-dev-slot {
+  display: grid;
+}
+
+.tri-dev-slot > .tri-dev {
+  grid-area: 1 / 1;
+}
+
+.tri-dev--entering,
+.tri-dev--leaving {
+  opacity: 0;
+  filter: blur(1px);
+}
+
+.tri-dev--leaving {
+  pointer-events: none;
+}
+
+.tri-dev-frame {
+  display: flex;
+  align-items: stretch;
+  gap: 0.4rem;
+}
+
+.tri-dev-yax {
+  position: relative;
+  flex: 0 0 1.6rem;
+}
+
+.tri-dev-yt {
+  position: absolute;
+  right: 0;
+  transform: translateY(-50%);
+  font-size: 0.5rem;
+  line-height: 1;
+  color: var(--gray);
+  font-variant-numeric: tabular-nums;
+}
+
+.tri-dev-plot {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.tri-dev-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 10 / 3;
+  min-height: 184px;
+  overflow: visible;
+}
+
+.tri-dev-xax {
+  position: relative;
+  height: 0.85rem;
+  margin-left: calc(1.6rem + 0.4rem);
+}
+
+.tri-dev-xt {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  font-size: 0.5rem;
+  line-height: 1;
+  color: var(--gray);
+  white-space: nowrap;
+}
+
+.tri-dev-xt--first {
+  transform: none;
+}
+
+.tri-dev-grid {
+  stroke: color-mix(in srgb, var(--gray) 36%, transparent);
+  stroke-width: 0.5;
+  stroke-dasharray: 1.5 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-dev-grid--mid {
+  stroke: color-mix(in srgb, var(--gray) 52%, transparent);
+}
+
+.tri-dev-read {
+  display: grid;
+  gap: 0.1rem;
+  text-align: left;
+  line-height: 1.25;
+}
+
+.tri-dev-read-date {
+  color: var(--gray);
+}
+
+.tri-dev-read-row {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.tri-dev-read-k {
+  flex: 1 1 auto;
+  padding-right: 0.5rem;
+  color: var(--gray);
+}
+
+.tri-dev-read-v {
+  font-variant-numeric: tabular-nums;
+  color: var(--dark);
+}
+
+.tri-dev-line {
+  fill: none;
+  stroke-width: 1.4;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  transition: opacity 0.35s ease;
+}
+
+.tri-dev-lines {
+  transition: clip-path 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tri-dev-line,
+  .tri-dev-lines,
+  .tri-dev,
+  .tri-radar-ax,
+  .tri-radar-fill,
+  .tri-radar-dot,
+  .tri-radar-sport {
+    transition: none;
+  }
+}
+
+.tri-dev-line--off {
+  opacity: 0;
+}
+
+.tri-dev-line--endurance {
+  stroke: var(--tri-accent);
+}
+
+.tri-dev-line--recovery,
+.tri-dev-line--oscillation {
+  stroke: var(--tri-swim);
+}
+
+.tri-dev-line--cadence {
+  stroke: #5e409d;
+}
+
+.tri-dev-line--sprint {
+  stroke: #af3029;
+}
+
+.tri-dev-line--threshold {
+  stroke: #205ea6;
+}
+
+.tri-dev-line--climb,
+.tri-dev-line--stride {
+  stroke: #66800b;
+}
+
+.tri-dev-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.25rem 0.7rem;
+}
+
+.tri-dev-leg {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 0.62rem;
+  color: var(--dark);
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.tri-dev-leg--off {
+  opacity: 0.4;
+}
+
+.tri-dev-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-none);
+}
+
+.tri-dev-dot--endurance {
+  background: var(--tri-accent);
+}
+
+.tri-dev-dot--recovery,
+.tri-dev-dot--oscillation {
+  background: var(--tri-swim);
+}
+
+.tri-dev-dot--cadence {
+  background: #5e409d;
+}
+
+.tri-dev-dot--sprint {
+  background: #af3029;
+}
+
+.tri-dev-dot--threshold {
+  background: #205ea6;
+}
+
+.tri-dev-dot--climb,
+.tri-dev-dot--stride {
+  background: #66800b;
+}
+
+.tri-dev-dot--sp-swim {
+  background: var(--tri-swim);
+}
+
+.tri-dev-dot--sp-bike {
+  background: color-mix(in srgb, var(--tri-bike) 78%, var(--dark));
+}
+
+.tri-dev-dot--sp-run {
+  background: var(--tri-run);
+}
+
+.tri-dev-dot--sp-avg {
+  background: color-mix(in srgb, var(--dark) 65%, transparent);
+}
+
+.tri-dev-leg--static {
+  cursor: default;
+}
+
+.tri-engine-cardio {
+  --tri-cardio-label-width: var(--tri-analytics-meta-width);
+  --tri-cardio-domain-width: var(--tri-analytics-domain-width);
+  --tri-cardio-column-gap: var(--tri-analytics-column-gap);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.78rem;
+}
+
+.tri-engine-cardio-head {
+  > .tri-ana-block-title {
+    margin-bottom: 0;
+  }
+}
+
+.tri-engine-cardio .tri-cardio-readout {
+  top: var(--tri-cardio-readout-y, 50%);
+  right: auto;
+  left: var(--tri-cardio-readout-x, 50%);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.12rem;
+  min-inline-size: 0;
+  max-inline-size: min(18rem, calc(100% - 0.5rem));
+  overflow: hidden;
+  color: var(--dark);
+  font-family: var(--codeFont);
+  font-size: 0.58rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.25;
+  text-align: left;
+  transform: translateY(-50%);
+}
+
+.tri-engine-cardio .tri-cardio-readout[data-side='left'] {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.tri-cardio-readout-date {
+  color: var(--gray);
+}
+
+.tri-cardio-readout-table {
+  inline-size: auto;
+  margin: 0;
+  border: 0;
+  border-collapse: collapse;
+  color: inherit;
+  font: inherit;
+  font-variant-numeric: inherit;
+  background: none;
+
+  tr {
+    border: 0;
+    background: none;
+  }
+
+  th,
+  td {
+    padding: 0;
+    border: 0;
+    font: inherit;
+    line-height: inherit;
+    white-space: nowrap;
+  }
+}
+
+.tri-cardio-readout-table .tri-cardio-readout-metric {
+  padding-inline-end: 0.72rem;
+  color: var(--gray);
+  text-align: left;
+}
+
+.tri-cardio-readout-value {
+  text-align: right;
+}
+
+.tri-engine-row {
+  display: grid;
+  grid-template-columns: var(--tri-cardio-domain-width) minmax(0, 1fr) var(--tri-cardio-label-width);
+  align-items: stretch;
+  column-gap: var(--tri-cardio-column-gap);
+  min-width: 0;
+}
+
+.tri-engine-row-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0.22rem;
+  min-width: 0;
+  text-align: right;
+}
+
+.tri-engine-row-k {
+  font-size: 0.64rem;
+  color: var(--gray);
+  text-transform: uppercase;
+}
+
+.tri-engine-row-status {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.34rem;
+  min-width: 0;
+}
+
+.tri-engine-spark {
+  display: block;
+  inline-size: 100%;
+  block-size: 6.25rem;
+  min-width: 0;
+  overflow: hidden;
+  cursor: crosshair;
+
+  &:focus-visible {
+    outline: 1px solid color-mix(in srgb, var(--tri-accent) 58%, var(--dark));
+    outline-offset: 0.18rem;
+  }
+}
+
+.tri-engine-grid {
+  stroke: color-mix(in srgb, var(--gray) 18%, transparent);
+  stroke-width: 0.45;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-engine-axis {
+  stroke: color-mix(in srgb, var(--gray) 62%, var(--dark));
+  stroke-width: 0.7;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-engine-spark .tri-engine-raw {
+  stroke-width: 0.7;
+  stroke-opacity: 0.34;
+}
+
+.tri-engine-spark .tri-engine-baseline {
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+
+.tri-engine-domain {
+  position: relative;
+  block-size: 6.25rem;
+  color: color-mix(in srgb, var(--gray) 68%, var(--dark));
+  font-family: var(--codeFont);
+  font-size: 0.48rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  pointer-events: none;
+  text-align: right;
+}
+
+.tri-engine-domain-tick {
+  position: absolute;
+  inset-inline-end: 0;
+  transform: translateY(-50%);
+}
+
+.tri-cardio-time-axis {
+  display: grid;
+  grid-template-columns: var(--tri-cardio-domain-width) minmax(0, 1fr) var(--tri-cardio-label-width);
+  column-gap: var(--tri-cardio-column-gap);
+  min-width: 0;
+  margin-top: -0.5rem;
+}
+
+.tri-cardio-time-scale {
+  grid-column: 2;
+  display: flex;
+  justify-content: space-between;
+  min-width: 0;
+  color: color-mix(in srgb, var(--gray) 68%, var(--dark));
+  font-family: var(--codeFont);
+  font-size: 0.54rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.tri-engine-row-v {
+  font-size: 0.66rem;
+  color: var(--dark);
+  font-variant-numeric: tabular-nums;
+}
+
+.tri-engine-row-dir {
+  min-width: 0.7rem;
+}
+
+.tri-trend-glyph {
+  display: block;
+  flex: 0 0 auto;
+  inline-size: 0.5rem;
+  block-size: 0.5rem;
+  overflow: visible;
+  fill: currentcolor;
+}
+
+@media all and (max-width: 48rem) {
+  .tri-engine-cardio {
+    --tri-analytics-domain-width: 1.6rem;
+    --tri-analytics-meta-width: 5.2rem;
+    --tri-analytics-column-gap: 0.38rem;
+  }
+
+  .tri-engine-cardio .tri-cardio-readout {
+    font-size: 0.52rem;
+  }
+
+  .tri-engine-row-k,
+  .tri-engine-row-v {
+    font-size: 0.56rem;
+  }
+
+  .tri-engine-spark,
+  .tri-engine-domain {
+    block-size: 5.65rem;
+  }
+}

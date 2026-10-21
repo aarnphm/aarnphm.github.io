@@ -1,0 +1,308 @@
+.tri-pred {
+  margin-top: 1rem;
+}
+.tri-pred-head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-bottom: 0.85rem;
+  font-size: 0.6rem;
+  color: var(--gray);
+}
+.tri-pred-head-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+  min-width: 0;
+}
+.tri-pred-title {
+  min-width: 0;
+}
+.tri-pred-controls {
+  --tri-pred-control-height: 1.55rem;
+  --tri-pred-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+}
+.tri-pred-compare {
+  display: inline-flex;
+  block-size: var(--tri-pred-control-height);
+  overflow: hidden;
+  border: 1px solid var(--lightgray);
+  background: var(--tri-pred-surface);
+}
+.tri-pred-compare-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  block-size: 100%;
+  padding: 0.18rem 0.55rem;
+  border: 0;
+  background: transparent;
+  font-family: var(--codeFont);
+  font-size: 0.58rem;
+  color: var(--gray);
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease,
+    transform 0.12s cubic-bezier(0.23, 1, 0.32, 1);
+
+  &:hover {
+    color: var(--dark);
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+}
+.tri-pred-compare-btn--on {
+  background: color-mix(in srgb, var(--tri-accent) 18%, var(--tri-pred-surface));
+  color: var(--dark);
+}
+.tri-pred-tabs {
+  display: inline-flex;
+  block-size: var(--tri-pred-control-height);
+  overflow: hidden;
+  border: 1px solid var(--lightgray);
+  background: var(--tri-pred-surface);
+}
+.tri-pred-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--tri-pred-control-height);
+  block-size: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--gray);
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease,
+    transform 0.12s cubic-bezier(0.23, 1, 0.32, 1);
+
+  .tri-ico {
+    inline-size: 0.82rem;
+    block-size: 0.82rem;
+
+    path {
+      stroke: currentColor;
+    }
+  }
+
+  &:hover {
+    color: var(--dark);
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+}
+.tri-pred-tab--on {
+  background: color-mix(in srgb, var(--tri-accent) 18%, var(--tri-pred-surface));
+  color: var(--dark);
+}
+.tri-pred-tab--swim.tri-pred-tab--on {
+  color: var(--tri-swim);
+}
+.tri-pred-tab--bike.tri-pred-tab--on {
+  color: color-mix(in srgb, var(--tri-bike) 78%, var(--dark));
+}
+.tri-pred-tab--run.tri-pred-tab--on {
+  color: var(--tri-run);
+}
+
+.tri-pred-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.tri-pred-card {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+
+  @starting-style {
+    opacity: 0;
+    transform: translateY(0.45rem);
+  }
+}
+.tri-pred-badge {
+  flex: none;
+  min-width: 4.4rem;
+  font-size: 0.62rem;
+  letter-spacing: 0.05em;
+  color: var(--tri-accent);
+}
+.tri-pred-bar-track {
+  --tri-pred-line: color-mix(in srgb, var(--gray) 16%, transparent);
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 0.5rem;
+  background:
+    linear-gradient(
+      90deg,
+      transparent calc(25% - 0.5px),
+      var(--tri-pred-line) calc(25% - 0.5px) calc(25% + 0.5px),
+      transparent calc(25% + 0.5px)
+    ),
+    linear-gradient(
+      90deg,
+      transparent calc(50% - 0.5px),
+      var(--tri-pred-line) calc(50% - 0.5px) calc(50% + 0.5px),
+      transparent calc(50% + 0.5px)
+    ),
+    linear-gradient(
+      90deg,
+      transparent calc(75% - 0.5px),
+      var(--tri-pred-line) calc(75% - 0.5px) calc(75% + 0.5px),
+      transparent calc(75% + 0.5px)
+    ),
+    color-mix(in srgb, var(--gray) 12%, transparent);
+}
+.tri-pred-bar-range {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 0;
+  width: 0;
+  background: color-mix(in srgb, var(--tri-accent) 20%, transparent);
+  transition:
+    left 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    width 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.15s ease;
+}
+.tri-pred-bar {
+  position: relative;
+  z-index: 1;
+  width: 0;
+  height: 100%;
+  background: var(--tri-accent);
+  transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.tri-pred-card:hover .tri-pred-bar-range {
+  background: color-mix(in srgb, var(--tri-accent) 32%, transparent);
+}
+.tri-pred-result {
+  display: grid;
+  flex: none;
+  justify-items: end;
+  min-width: 4.4rem;
+  font-variant-numeric: tabular-nums;
+}
+.tri-pred-time {
+  grid-area: 1 / 1;
+  text-align: right;
+  font-size: 0.72rem;
+  color: var(--dark);
+  transition: opacity 0.15s ease;
+}
+.tri-pred-pace {
+  grid-area: 1 / 1;
+  align-self: center;
+  text-align: right;
+  font-size: 0.62rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+.tri-pred-card[data-sport='swim'] .tri-pred-pace {
+  color: color-mix(in srgb, var(--tri-swim) 76%, var(--gray));
+}
+.tri-pred-card[data-sport='bike'] .tri-pred-pace {
+  color: color-mix(in srgb, var(--tri-bike) 78%, var(--dark));
+}
+.tri-pred-card[data-sport='run'] .tri-pred-pace {
+  color: color-mix(in srgb, var(--tri-run) 70%, var(--dark));
+}
+.tri-pred-result:hover:has(.tri-pred-pace:not(:empty)) .tri-pred-time {
+  opacity: 0;
+}
+.tri-pred-result:hover .tri-pred-pace:not(:empty) {
+  opacity: 1;
+}
+.tri-pred-delta {
+  flex: none;
+  min-width: 3.6rem;
+  text-align: right;
+  font-size: 0.6rem;
+  font-variant-numeric: tabular-nums;
+}
+.tri-pred-delta--na {
+  color: var(--gray);
+}
+.tri-pred-delta--up {
+  color: #66800b;
+}
+.tri-pred-delta--down {
+  color: #af3029;
+}
+.tri-pred-axis {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin-top: 0.35rem;
+}
+.tri-pred-axis-pad {
+  flex: none;
+  min-width: 4.4rem;
+}
+.tri-pred-axis-end {
+  flex: none;
+  min-width: 8.6rem;
+}
+.tri-pred-axis-track {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 0.85rem;
+}
+.tri-pred-axis-tick {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  padding-top: 0.3rem;
+  font-size: 0.54rem;
+  color: var(--gray);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 1px;
+    height: 0.2rem;
+    background: color-mix(in srgb, var(--gray) 30%, transparent);
+  }
+
+  &[data-edge='start'] {
+    transform: translateX(0);
+
+    &::before {
+      left: 0;
+    }
+  }
+
+  &[data-edge='end'] {
+    transform: translateX(-100%);
+
+    &::before {
+      left: auto;
+      right: 0;
+    }
+  }
+}

@@ -1,0 +1,411 @@
+@use './foundations' as *;
+
+.tri-act {
+  --tri-activity-chart-height: #{$triathlon-row-height};
+  --tri-training-effect-anaerobic: #5c46df;
+  --tri-training-effect-high-aerobic: #e5782e;
+  --tri-training-effect-low-aerobic: #45a078;
+  container: tri-activity / inline-size;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+
+  & + & {
+    margin-top: 1.6rem;
+    padding-top: 1.6rem;
+    border-top: 1px solid color-mix(in srgb, var(--gray) 38%, transparent);
+  }
+}
+
+.tri-act-head {
+  display: flex;
+  align-items: center;
+}
+
+.tri-act-head > a.tri-act-icon-link {
+  display: inline-flex;
+  flex: none;
+  padding: 0;
+  line-height: 0;
+  color: inherit;
+  text-decoration: none;
+  background: none;
+
+  &:hover,
+  &:active,
+  &:visited {
+    color: inherit;
+    text-decoration: none;
+    background: none;
+  }
+
+  &:focus-visible {
+    outline: 1px solid var(--dark);
+    outline-offset: 3px;
+  }
+}
+
+.tri-act-stats {
+  width: 100%;
+  margin: 0;
+  border: 0;
+  border-collapse: collapse;
+  background: none;
+  font-family: var(--codeFont);
+
+  th,
+  td {
+    padding: 0.14rem 0;
+    border: 0;
+    background: none;
+    font-weight: inherit;
+    vertical-align: baseline;
+  }
+
+  tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) max-content;
+  }
+}
+
+.tri-act-strength {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding-top: 0.55rem;
+  margin-top: 0.35rem;
+}
+
+.tri-act-strength-h {
+  margin: 0;
+  font-family: var(--codeFont);
+  font-size: 0.56rem;
+  font-weight: inherit;
+  color: var(--tri-accent);
+}
+
+.tri-strength-exercises {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.tri-strength-exercise {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.35rem 0.8rem;
+  align-items: baseline;
+  font-family: var(--codeFont);
+  font-size: 0.58rem;
+}
+
+.tri-strength-exercise-name {
+  color: var(--dark);
+}
+
+.tri-strength-exercise-summary {
+  max-width: 20rem;
+  color: var(--darkgray);
+  text-align: right;
+}
+
+.tri-act-stat-k {
+  text-align: left;
+  font-size: 0.62rem;
+  color: var(--gray);
+  white-space: nowrap;
+}
+
+.tri-act-stat-v {
+  text-align: right;
+  font-size: 0.62rem;
+  color: var(--dark);
+}
+
+.tri-act-stats tr[data-stat-key='wind'] .tri-act-stat-v {
+  white-space: nowrap;
+}
+
+.tri-act-stats tr[data-stat-key='training effect'],
+.tri-training-effect-item {
+  --tri-training-effect-color: var(--tri-training-effect-low-aerobic);
+}
+
+.tri-act-stats tr[data-training-effect-group='high-aerobic'],
+.tri-training-effect-item[data-training-effect-group='high-aerobic'] {
+  --tri-training-effect-color: var(--tri-training-effect-high-aerobic);
+}
+
+.tri-act-stats tr[data-training-effect-group='anaerobic'],
+.tri-training-effect-item[data-training-effect-group='anaerobic'] {
+  --tri-training-effect-color: var(--tri-training-effect-anaerobic);
+}
+
+.tri-act-stats tr[data-stat-key='training effect'] .tri-act-stat-v::before {
+  display: inline-block;
+  width: 0.42rem;
+  height: 0.42rem;
+  margin-right: 0.4rem;
+  border-radius: 50%;
+  background: var(--tri-training-effect-color);
+  content: '';
+}
+
+.tri-act-toggle {
+  align-self: flex-start;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  font-family: var(--codeFont);
+  font-size: 0.62rem;
+  color: var(--gray);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--dark);
+  }
+}
+
+.tri-act-more {
+  display: none;
+  flex-direction: column;
+  gap: var(--tri-activity-graph-gap);
+
+  > .tri-act-strength {
+    box-sizing: border-box;
+    flex: 0 0 auto;
+    height: var(--tri-activity-graph-row-height);
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+
+    > .tri-strength-exercises {
+      min-height: 0;
+      overflow-y: auto;
+      overscroll-behavior-y: contain;
+      scrollbar-gutter: stable;
+      @include thin-scrollbar;
+    }
+  }
+}
+
+.tri-training-effect-list {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: space-around;
+  gap: 0.55rem;
+}
+
+.tri-training-effect {
+  min-height: calc(var(--tri-activity-chart-height, $triathlon-row-height) + 2.7rem);
+
+  > .tri-zone-title {
+    font-size: 0.66rem;
+  }
+}
+
+.tri-training-effect-item {
+  display: grid;
+  grid-template-columns: minmax(4.5rem, max-content) minmax(4rem, 1fr) 3ch;
+  gap: 0.2rem 0.7rem;
+  align-items: center;
+  min-width: 0;
+  font-family: var(--codeFont);
+}
+
+.tri-training-effect-label,
+.tri-training-effect-note {
+  color: var(--gray);
+}
+
+.tri-training-effect-label,
+.tri-training-effect-score,
+.tri-training-effect-meter {
+  font-size: 0.62rem;
+}
+
+.tri-training-effect-label {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.tri-training-effect-label::before {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 50%;
+  background: var(--tri-training-effect-color);
+  content: '';
+}
+
+.tri-training-effect-meter {
+  height: 0.32rem;
+  overflow: hidden;
+  background: color-mix(in oklab, var(--tri-training-effect-color) 18%, transparent);
+}
+
+.tri-training-effect-meter-fill {
+  display: block;
+  width: var(--tri-training-effect-progress);
+  height: 100%;
+  background: var(--tri-training-effect-color);
+}
+
+.tri-training-effect-score {
+  color: var(--tri-training-effect-color);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.tri-training-effect-note {
+  grid-column: 1 / -1;
+  min-height: calc(0.56rem * 1.4);
+  margin: 0;
+  font-size: 0.56rem;
+  line-height: 1.4;
+}
+
+.tri-efforts {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+  padding-top: 0.2rem;
+}
+
+.tri-day-embed[data-triathlon-embedded='1'] .tri-efforts {
+  display: none;
+}
+
+.tri-effort-block,
+.tri-effort-viewport {
+  min-width: 0;
+}
+
+.tri-effort-title {
+  margin-bottom: 0.38rem;
+}
+
+.tri-effort-viewport {
+  position: relative;
+}
+
+.tri-effort-scroll {
+  box-sizing: border-box;
+  width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  @include thin-scrollbar;
+}
+
+.tri-effort-table {
+  width: 100%;
+  min-width: 29rem;
+  margin: 0;
+  border: 0;
+  border-collapse: collapse;
+  background: none;
+  font-family: var(--codeFont);
+  font-size: 0.58rem;
+  font-variant-numeric: tabular-nums;
+
+  th,
+  td {
+    padding: 0.28rem 0.6rem;
+    border: 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--gray) 22%, transparent);
+    background: none;
+    font-weight: inherit;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  thead th {
+    color: var(--gray);
+  }
+
+  tbody th {
+    color: var(--darkgray);
+  }
+
+  tbody td {
+    color: var(--dark);
+  }
+
+  th:first-child,
+  td:first-child {
+    padding-left: 0;
+    text-align: left;
+  }
+
+  th:last-child,
+  td:last-child {
+    padding-right: 0;
+  }
+}
+
+.tri-effort-table--distance,
+.tri-effort-table--power {
+  table-layout: fixed;
+}
+
+.tri-effort-table--climbing {
+  min-width: 56rem;
+}
+
+@container (max-width: 29.99rem) {
+  .tri-effort-viewport::after {
+    content: '';
+    position: absolute;
+    inset: 0 0 0 auto;
+    width: 1.35rem;
+    pointer-events: none;
+    background: linear-gradient(
+      to right,
+      transparent,
+      color-mix(in srgb, var(--light) 94%, transparent)
+    );
+  }
+
+  .tri-effort-scroll {
+    padding-inline-end: 1.35rem;
+  }
+
+  .tri-effort-table {
+    table-layout: fixed;
+
+    th,
+    td {
+      box-sizing: border-box;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    th:nth-child(1),
+    td:nth-child(1) {
+      width: 4.75rem;
+    }
+
+    th:nth-child(2),
+    td:nth-child(2) {
+      width: 4.25rem;
+    }
+
+    th:nth-child(3),
+    td:nth-child(3) {
+      width: 5.75rem;
+    }
+  }
+}
+
+.tri-effort-note {
+  margin: -0.7rem 0 0;
+  font-family: var(--codeFont);
+  font-size: 0.52rem;
+  color: var(--gray);
+}

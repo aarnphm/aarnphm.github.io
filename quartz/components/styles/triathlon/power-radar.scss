@@ -1,0 +1,368 @@
+.tri-best-power-curve-pane,
+.tri-power-radar {
+  min-width: 0;
+}
+
+.tri-power-radar {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.38rem;
+  width: 100%;
+  max-width: 14.5rem;
+  justify-self: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.tri-power-radar-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.55rem;
+  min-width: 0;
+  font-family: var(--codeFont);
+  white-space: nowrap;
+}
+
+.tri-power-radar-title {
+  flex-shrink: 0;
+  color: var(--dark);
+  font-size: 0.58rem;
+  line-height: 1.2;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.tri-power-radar-mass {
+  overflow: hidden;
+  color: var(--gray);
+  font-size: 0.52rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tri-power-radar-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  overflow: visible;
+  cursor: crosshair;
+  touch-action: pan-y;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.tri-power-radar-grid,
+.tri-power-radar-spoke {
+  fill: none;
+  stroke: color-mix(in srgb, var(--gray) 25%, transparent);
+  stroke-width: 0.45;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
+.tri-power-radar-arc {
+  fill: none;
+  stroke-width: 3;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
+.tri-power-radar-arc--sprint {
+  stroke: var(--tri-power-sprint);
+}
+
+.tri-power-radar-arc--attack {
+  stroke: var(--tri-power-attack);
+}
+
+.tri-power-radar-arc--climb {
+  stroke: var(--tri-power-climb);
+}
+
+.tri-power-radar-fill {
+  stroke-linejoin: round;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.tri-power-radar-fill--six-weeks {
+  fill: color-mix(in srgb, var(--tri-accent) 15%, transparent);
+  stroke: var(--tri-accent);
+}
+
+.tri-power-radar-fill--year {
+  fill: none;
+  stroke: color-mix(in srgb, var(--tri-accent) 32%, var(--gray));
+  stroke-width: 2.15;
+  stroke-dasharray: 2.4 1.6;
+}
+
+.tri-power-radar-label {
+  fill: var(--gray);
+  font-family: var(--codeFont);
+  font-size: 3.4px;
+  pointer-events: none;
+}
+
+.tri-power-radar-label--active {
+  fill: var(--dark);
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.tri-power-radar-readout {
+  display: flex;
+  flex-direction: column;
+  gap: 0.16rem;
+  block-size: 2.6rem;
+  font-family: var(--codeFont);
+  font-size: 0.52rem;
+  line-height: 1.35;
+}
+
+.tri-power-radar-duration {
+  color: var(--dark);
+  font-size: 0.62rem;
+}
+
+.tri-power-radar-readout-row {
+  display: grid;
+  grid-template-columns: 0.85rem minmax(0, 1fr);
+  align-items: baseline;
+  gap: 0.12rem 0.32rem;
+  min-width: 0;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.tri-power-radar-readout-value {
+  min-width: 0;
+  color: var(--darkgray);
+}
+
+@media all and (max-width: 60rem) {
+  .tri-best-power-visuals {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .tri-power-weight {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .tri-power-weight-head {
+    grid-column: 1;
+  }
+
+  .tri-power-weight-reference {
+    width: min(100%, 26rem);
+  }
+
+  .tri-power-radar {
+    width: min(100%, 26rem);
+    max-width: none;
+  }
+
+  .tri-power-radar-svg {
+    width: min(100%, 15.5rem);
+    align-self: center;
+  }
+}
+
+.tri-best-power-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.45rem 1rem;
+
+  > .tri-ana-block-title {
+    margin-bottom: 0;
+  }
+}
+
+.tri-best-power-controls {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.8rem;
+  margin-left: auto;
+}
+
+.tri-best-power-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.34rem;
+  padding: 0.08rem 0;
+  color: var(--gray);
+  font: inherit;
+  font-size: 0.58rem;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  cursor: pointer;
+
+  &[aria-pressed='true'] {
+    color: var(--dark);
+    border-bottom-color: currentColor;
+  }
+
+  &:focus-visible {
+    outline: 1px solid color-mix(in srgb, var(--tri-accent) 68%, transparent);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.35;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tri-best-power-toggle:not(:disabled):hover {
+    color: var(--dark);
+  }
+}
+
+.tri-best-power-swatch {
+  --tri-power-skill: var(--tri-power-attack);
+
+  display: inline-block;
+  width: 0.85rem;
+  height: 2px;
+  background: var(--tri-power-skill);
+}
+
+.tri-best-power-swatch--year {
+  background: repeating-linear-gradient(
+    to right,
+    color-mix(in srgb, var(--tri-power-skill) 58%, var(--gray)) 0 0.22rem,
+    transparent 0.22rem 0.34rem
+  );
+}
+
+.tri-best-power-swatch--model {
+  background: repeating-linear-gradient(
+    to right,
+    var(--tri-power-model) 0 0.22rem,
+    transparent 0.22rem 0.32rem
+  );
+}
+
+.tri-best-power-swatch--model-year {
+  background: repeating-linear-gradient(
+    to right,
+    color-mix(in srgb, var(--tri-power-model) 58%, var(--gray)) 0 0.22rem,
+    transparent 0.22rem 0.32rem
+  );
+}
+
+.tri-best-power-swatch[data-power-skill='sprint'] {
+  --tri-power-skill: var(--tri-power-sprint);
+}
+
+.tri-best-power-swatch[data-power-skill='attack'] {
+  --tri-power-skill: var(--tri-power-attack);
+}
+
+.tri-best-power-swatch[data-power-skill='climb'] {
+  --tri-power-skill: var(--tri-power-climb);
+}
+
+.tri-best-power-cap {
+  margin: 0;
+  color: var(--gray);
+  font-size: 0.56rem;
+}
+
+.tri-power-rank-progress {
+  display: grid;
+  grid-template-columns: max-content minmax(6rem, 1fr) max-content;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: 0.42rem;
+  font-family: var(--codeFont);
+  font-size: 0.56rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.tri-power-rank-progress-label {
+  color: var(--darkgray);
+}
+
+.tri-power-rank-progress-next {
+  color: var(--gray);
+}
+
+.tri-power-rank-progress-label,
+.tri-power-rank-progress-next {
+  white-space: nowrap;
+}
+
+.tri-power-rank-progress-track {
+  --tri-power-skill: var(--tri-power-attack);
+
+  position: relative;
+  display: block;
+  min-width: 0;
+  height: 0.56rem;
+
+  &::before {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    left: 0;
+    height: 4px;
+    content: '';
+    background: color-mix(in srgb, var(--gray) 18%, transparent);
+    transform: translateY(-50%);
+  }
+}
+
+.tri-power-rank-progress-fill {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  z-index: 1;
+  width: var(--tri-power-rank-progress);
+  height: 2px;
+  background: var(--tri-power-skill);
+  transform: translateY(-50%);
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.tri-power-rank-progress-track[data-power-skill='sprint'] {
+  --tri-power-skill: var(--tri-power-sprint);
+}
+
+.tri-power-rank-progress-track[data-power-skill='attack'] {
+  --tri-power-skill: var(--tri-power-attack);
+}
+
+.tri-power-rank-progress-track[data-power-skill='climb'] {
+  --tri-power-skill: var(--tri-power-climb);
+}
+
+.tri-power-rank-progress-step {
+  position: absolute;
+  top: 50%;
+  left: var(--tri-power-rank-step);
+  z-index: 2;
+  width: 1px;
+  height: 0.56rem;
+  background: color-mix(in srgb, var(--light) 78%, var(--gray));
+  transform: translate(-50%, -50%);
+}
