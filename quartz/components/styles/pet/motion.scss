@@ -1,0 +1,693 @@
+// The friend keeps its sprout, so it goes without the toque.
+.garden-pet-friend .pet-svg[data-cold] [data-part='toque'] {
+  display: none;
+}
+
+// The friend on the friendship page (pet.inline.ts): the same pen blob a size smaller, filled
+// sage, a sprout on its head swaying.
+.garden-pet-friend {
+  --pet-friend-fill: color-mix(in srgb, #cdd597 45%, var(--light));
+
+  .pet-svg [data-part='sprout'] {
+    display: inline;
+    transform-box: fill-box;
+    transform-origin: 30% 100%;
+    animation: pet-sprout 2.4s steps(12) infinite alternate;
+  }
+}
+
+// A pen heart rising from between the two as they hug, then fading.
+.garden-pet-heart {
+  position: absolute;
+  z-index: var(--z-popover);
+  width: 1.4rem;
+  pointer-events: none;
+  animation: pet-heart 1.5s cubic-bezier(0.2, 0, 0, 1) forwards;
+
+  svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+}
+
+// Standing on its own pen line where no box offers an edge.
+.pet-svg[data-kind='floor'] [data-part='ground'] {
+  display: inline;
+}
+
+// Sitting on a ledge: the body rests on the edge and the legs hang over its face, swinging.
+.pet-svg[data-kind='sit'] .pet-leg {
+  animation: pet-dangle 1.4s steps(14) infinite alternate;
+}
+
+.pet-svg[data-kind='sit'] .pet-leg + .pet-leg {
+  animation-delay: -0.7s;
+}
+
+// Hanging from a ledge by both hands, swaying, feet kicking now and then. Arm-waving looks would
+// mean letting go, so the hands stay up whatever the face does.
+.pet-svg[data-kind='hang'] {
+  [data-part='arms-hang'] {
+    display: inline;
+  }
+
+  [data-part^='arm-'],
+  [data-part='laptop'],
+  [data-part='dots'] {
+    display: none;
+  }
+
+  .pet-lean {
+    transform-origin: 50% 0;
+    animation: pet-sway 2.6s steps(26) infinite alternate;
+  }
+
+  .pet-leg {
+    animation: pet-kick 3.2s steps(16) infinite;
+  }
+
+  .pet-leg + .pet-leg {
+    animation-delay: -1.6s;
+  }
+}
+
+.pet-svg[data-state='run'] {
+  .pet-lean {
+    rotate: -9deg;
+    animation: none;
+  }
+
+  .pet-hop {
+    animation: pet-trot 0.32s steps(4) infinite;
+  }
+
+  .pet-leg {
+    animation: pet-stride 0.32s steps(4) infinite alternate;
+  }
+
+  .pet-leg + .pet-leg {
+    animation-direction: alternate-reverse;
+  }
+
+  .pet-speed {
+    animation: pet-whoosh 0.32s steps(4) infinite;
+  }
+}
+
+// A stroll: upright, a slow stride, a bob on each step.
+.pet-svg[data-state='walk'] {
+  .pet-lean {
+    rotate: -3deg;
+    animation: none;
+  }
+
+  .pet-hop {
+    animation: pet-trot 0.6s steps(4) infinite;
+  }
+
+  .pet-leg {
+    animation: pet-amble 0.6s steps(6) infinite alternate;
+  }
+
+  .pet-leg + .pet-leg {
+    animation-direction: alternate-reverse;
+  }
+}
+
+.pet-svg[data-state='fly'] {
+  .pet-lean {
+    rotate: -12deg;
+    animation: none;
+  }
+
+  .pet-leg {
+    scale: 1 0.6;
+    animation: none;
+  }
+}
+
+.pet-svg[data-state='land'] .pet-body {
+  animation: pet-squash 0.38s steps(5);
+}
+
+.pet-svg[data-state='wave'] [data-part='arm-l'] {
+  animation: pet-wave 0.9s steps(9) infinite alternate;
+}
+
+.pet-svg[data-state='failed'] {
+  .pet-hop {
+    animation: pet-shake 0.12s steps(2) 6;
+  }
+
+  [data-part='eyes-wide'] {
+    animation: pet-startle 1.6s step-end infinite;
+  }
+
+  [data-part='eyes-wince'] {
+    animation: pet-startle 1.6s step-end -0.8s infinite;
+  }
+}
+
+.pet-svg[data-state='wait'] {
+  .pet-look {
+    animation: pet-look-around 3.2s step-end infinite;
+  }
+
+  .pet-dot {
+    animation: pet-dot 1.5s steps(6) infinite;
+  }
+
+  .pet-dot:nth-child(2) {
+    animation-delay: 0.25s;
+  }
+
+  .pet-dot:nth-child(3) {
+    animation-delay: 0.5s;
+  }
+}
+
+.pet-svg[data-state='wait'][data-kind='stand'] .pet-leg:first-child {
+  animation: pet-tap 0.7s steps(4) infinite;
+}
+
+.pet-svg[data-state='work'] {
+  .pet-look {
+    translate: -0.04px 0.14px;
+  }
+
+  .pet-body {
+    animation: pet-type 0.36s steps(2) infinite;
+  }
+
+  .pet-key {
+    animation: pet-key 0.36s step-end infinite;
+  }
+
+  .pet-key + .pet-key {
+    animation-delay: -0.18s;
+  }
+}
+
+.pet-svg[data-state='happy'] .pet-hop {
+  animation: pet-bounce 0.9s steps(9) infinite;
+}
+
+.pet-svg[data-state='cheer'] {
+  .pet-hop {
+    animation: pet-jump 0.5s steps(6) infinite;
+  }
+
+  .pet-arm {
+    animation: pet-cheer 0.25s steps(3) infinite alternate;
+  }
+
+  [data-part='arm-r'] {
+    animation-direction: alternate-reverse;
+  }
+}
+
+.pet-svg[data-state='cheer'][data-kind='hang'] .pet-hop {
+  animation: none;
+}
+
+// Sliding down the scroll rail: hugging the pole, legs wrapped toward it, leaning in.
+.pet-svg[data-state='slide'] {
+  .pet-lean {
+    transform-origin: 50% 0;
+    rotate: 6deg;
+    animation: none;
+  }
+
+  .pet-leg {
+    rotate: -22deg;
+    animation: none;
+  }
+
+  .pet-leg + .pet-leg {
+    rotate: -34deg;
+  }
+}
+
+// Flying up to the rail on a jetpack: arms reaching for the pole, legs trailing, the flames
+// flickering between their two drawings.
+.pet-svg[data-state='jet'] {
+  [data-part='ground'] {
+    display: none;
+  }
+
+  .pet-lean {
+    transform-origin: 50% 50%;
+    animation: pet-jet-wobble 0.5s steps(6) infinite alternate;
+  }
+
+  .pet-flame {
+    animation: pet-swap 0.16s step-end infinite;
+  }
+
+  .pet-flame + .pet-flame {
+    animation-delay: -0.08s;
+  }
+
+  .pet-leg {
+    rotate: 8deg;
+    animation: pet-dangle 0.9s steps(9) infinite alternate;
+  }
+
+  .pet-leg + .pet-leg {
+    animation-delay: -0.45s;
+  }
+}
+
+// Floating down off the rail under its parachute: swinging under the canopy, legs dangling. The
+// canopy's line boils between its three drawings and the canopy puffs as it fills.
+.pet-svg[data-state='chute'] {
+  [data-part='ground'] {
+    display: none;
+  }
+
+  .pet-lean {
+    transform-origin: 50% 0;
+    animation: pet-sway 2.4s steps(24) infinite alternate;
+  }
+
+  .pet-canopy {
+    transform-origin: 50% 100%;
+    animation: pet-puff 1.1s steps(5) infinite alternate;
+  }
+
+  .pet-canopy-frame {
+    animation: pet-boil 0.42s step-end infinite;
+  }
+
+  .pet-canopy-frame:nth-child(2) {
+    animation-delay: -0.14s;
+  }
+
+  .pet-canopy-frame:nth-child(3) {
+    animation-delay: -0.28s;
+  }
+
+  .pet-leg {
+    rotate: 0deg;
+    animation: pet-dangle 1.6s steps(16) infinite alternate;
+  }
+
+  .pet-leg + .pet-leg {
+    animation-delay: -0.8s;
+  }
+}
+
+// Saying the phrase the French voice is reading: the mouth opens and closes in turn.
+.pet-svg[data-state='talk'] {
+  [data-part='mouth-o'],
+  [data-part='mouth-smile'] {
+    animation: pet-swap 0.34s step-end infinite;
+  }
+
+  [data-part='mouth-smile'] {
+    animation-delay: -0.17s;
+  }
+}
+
+// Reading a sidenote from on top of it: eyes down on the text, a thought ticking over.
+.pet-svg[data-state='think'] {
+  .pet-look {
+    translate: -0.04px 0.12px;
+  }
+
+  .pet-dot {
+    animation: pet-dot 1.5s steps(6) infinite;
+  }
+
+  .pet-dot:nth-of-type(2) {
+    animation-delay: 0.25s;
+  }
+
+  .pet-dot:nth-of-type(3) {
+    animation-delay: 0.5s;
+  }
+}
+
+@keyframes pet-blink {
+  0%,
+  92%,
+  100% {
+    scale: 1 1;
+  }
+  95% {
+    scale: 1 0.1;
+  }
+}
+
+@keyframes pet-dangle {
+  from {
+    rotate: 22deg;
+  }
+  to {
+    rotate: -8deg;
+  }
+}
+
+@keyframes pet-puff {
+  from {
+    scale: 1.05 0.94;
+  }
+  to {
+    scale: 0.96 1.05;
+  }
+}
+
+// One of three drawings shows at a time, each for a third of the cycle.
+@keyframes pet-glasses-on {
+  0% {
+    translate: 0 -0.62px;
+    rotate: -9deg;
+  }
+
+  65% {
+    translate: 0 0.05px;
+    rotate: 2deg;
+  }
+
+  100% {
+    translate: 0 0;
+    rotate: 0deg;
+  }
+}
+
+@keyframes pet-glasses-off {
+  0% {
+    translate: 0 0;
+    rotate: 0deg;
+    opacity: 1;
+  }
+
+  70% {
+    translate: 0 -0.62px;
+    rotate: -9deg;
+    opacity: 1;
+  }
+
+  100% {
+    translate: 0 -0.7px;
+    rotate: -9deg;
+    opacity: 0;
+  }
+}
+
+@keyframes pet-sprout {
+  from {
+    rotate: -6deg;
+  }
+
+  to {
+    rotate: 6deg;
+  }
+}
+
+@keyframes pet-heart {
+  0% {
+    opacity: 0;
+    scale: 0.4;
+    translate: 0 6px;
+  }
+
+  20% {
+    opacity: 1;
+    scale: 1.1;
+  }
+
+  35% {
+    scale: 1;
+  }
+
+  100% {
+    opacity: 0;
+    translate: 0 -30px;
+  }
+}
+
+@keyframes pet-hat-on {
+  0% {
+    translate: 0 -0.7px;
+    scale: 1.15 0.85;
+  }
+
+  70% {
+    translate: 0 0.06px;
+    scale: 0.94 1.06;
+  }
+
+  100% {
+    translate: 0 0;
+    scale: 1;
+  }
+}
+
+@keyframes pet-jet-wobble {
+  0% {
+    rotate: -4deg;
+  }
+
+  100% {
+    rotate: 3deg;
+  }
+}
+
+@keyframes pet-scribble {
+  from {
+    translate: -0.03px 0.01px;
+  }
+
+  to {
+    translate: 0.04px -0.02px;
+  }
+}
+
+@keyframes pet-swap {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes pet-boil {
+  0% {
+    opacity: 1;
+  }
+  33.33% {
+    opacity: 0;
+  }
+}
+
+@keyframes pet-sway {
+  from {
+    rotate: -4deg;
+  }
+  to {
+    rotate: 4deg;
+  }
+}
+
+@keyframes pet-kick {
+  0%,
+  70%,
+  100% {
+    rotate: 0deg;
+  }
+  80% {
+    rotate: 24deg;
+  }
+  90% {
+    rotate: -10deg;
+  }
+}
+
+@keyframes pet-trot {
+  50% {
+    translate: 0 -0.12px;
+  }
+}
+
+@keyframes pet-stride {
+  from {
+    rotate: 28deg;
+  }
+  to {
+    rotate: -28deg;
+  }
+}
+
+@keyframes pet-amble {
+  from {
+    rotate: 16deg;
+  }
+  to {
+    rotate: -16deg;
+  }
+}
+
+@keyframes pet-whoosh {
+  from {
+    translate: -0.1px 0;
+    opacity: 1;
+  }
+  to {
+    translate: 0.2px 0;
+    opacity: 0.3;
+  }
+}
+
+@keyframes pet-jump {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  45% {
+    translate: 0 -0.7px;
+  }
+}
+
+@keyframes pet-squash {
+  0%,
+  100% {
+    scale: 1 1;
+  }
+  25% {
+    scale: 1.14 0.84;
+  }
+  60% {
+    scale: 0.95 1.06;
+  }
+}
+
+@keyframes pet-wave {
+  from {
+    rotate: 18deg;
+  }
+  to {
+    rotate: -22deg;
+  }
+}
+
+@keyframes pet-shake {
+  25% {
+    translate: -0.05px 0;
+  }
+  75% {
+    translate: 0.05px 0;
+  }
+}
+
+@keyframes pet-startle {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes pet-look-around {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  25% {
+    translate: -0.12px -0.04px;
+  }
+  60% {
+    translate: 0.14px -0.04px;
+  }
+}
+
+@keyframes pet-tap {
+  50% {
+    rotate: -18deg;
+  }
+}
+
+@keyframes pet-dot {
+  0%,
+  60%,
+  100% {
+    opacity: 0.25;
+    translate: 0 0;
+  }
+  30% {
+    opacity: 1;
+    translate: 0 -0.08px;
+  }
+}
+
+@keyframes pet-type {
+  50% {
+    translate: 0 0.03px;
+  }
+}
+
+@keyframes pet-key {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes pet-bounce {
+  50% {
+    translate: 0 -0.1px;
+  }
+}
+
+@keyframes pet-rail {
+  from {
+    translate: 0 var(--pet-rail-from, 0);
+  }
+  to {
+    translate: 0 var(--pet-rail-to, 0);
+  }
+}
+
+@keyframes pet-cheer {
+  from {
+    rotate: -10deg;
+  }
+  to {
+    rotate: 10deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pet-svg,
+  .pet-svg * {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .pet-svg[data-state='failed'] [data-part='eyes-wince'] {
+    display: none;
+  }
+
+  :is(.pet-flap-frame, .pet-rain-frame, .pet-flame-frame, .pet-gust-frame, .pet-out-frame)
+    + :is(.pet-flap-frame, .pet-rain-frame, .pet-flame-frame, .pet-gust-frame, .pet-out-frame) {
+    display: none;
+  }
+
+  // Without the motion a storm leaves the umbrella inside out.
+  .pet-svg[data-storm] {
+    .pet-brolly-open {
+      opacity: 0;
+    }
+
+    .pet-brolly-out {
+      opacity: 1;
+    }
+  }
+}

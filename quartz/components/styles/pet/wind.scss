@@ -1,0 +1,83 @@
+// Wind where the visitor is (pet.inline.ts): gusts stream past, and it holds its hat on with the
+// hand on its right, reaching up over its head to wherever the hat sits. The hat is the page's own
+// (hard hat high, wig and mortarboard lower, beret lowest), the toque in the cold, or else its
+// walking hat put on for the wind. Not in the rain (that hand holds the umbrella), not with the
+// triathlon sweatband (tied on), and not while its hands are busy.
+$pet-head-outfits: "[data-outfit='fr'], [data-outfit='legal'], [data-outfit='courses'], [data-outfit='engineering']";
+
+.pet-svg[data-windy] {
+  [data-part='gust'] {
+    display: inline;
+  }
+
+  .pet-gust-frame {
+    animation: pet-swap 0.4s step-end infinite;
+  }
+
+  .pet-gust-frame + .pet-gust-frame {
+    animation-delay: -0.2s;
+  }
+}
+
+.pet-svg[data-windy]:not(
+    [data-rain],
+    [data-outfit='triathlon'],
+    [data-kind='hang'],
+    [data-state='slide'],
+    [data-state='chute'],
+    [data-state='jet'],
+    [data-state='fly'],
+    [data-state='cheer']
+  ) {
+  &:not(#{$pet-head-outfits}):is([data-hat], :not([data-cold='cold'])) {
+    [data-part='hat'],
+    [data-part='hold-high'] {
+      display: inline;
+    }
+  }
+
+  &[data-outfit='engineering'] [data-part='hold-high'],
+  &:is([data-outfit='legal'], [data-outfit='courses']) [data-part='hold-mid'],
+  &[data-cold='cold']:not(#{$pet-head-outfits}, [data-hat]) [data-part='hold-mid'],
+  &[data-outfit='fr'] [data-part='hold-low'] {
+    display: inline;
+  }
+
+  // At the laptop it types with the other hand only.
+  &[data-state='work'] .pet-key + .pet-key {
+    display: none;
+  }
+
+  // The wind tugs at the brim under its hand: it lifts at the front and drops back.
+  :is([data-part='hat'], [data-part='toque']) {
+    transform-box: view-box;
+    transform-origin: 0.46px -1.3px;
+    animation: pet-hat-tug 2.2s steps(22) infinite;
+  }
+}
+
+@keyframes pet-hat-tug {
+  0%,
+  40%,
+  100% {
+    rotate: 0deg;
+  }
+  8% {
+    rotate: 5deg;
+  }
+  12% {
+    rotate: 2deg;
+  }
+  20% {
+    rotate: 7deg;
+  }
+  26% {
+    rotate: 1deg;
+  }
+  62% {
+    rotate: 3deg;
+  }
+  70% {
+    rotate: 0deg;
+  }
+}

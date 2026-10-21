@@ -1,0 +1,297 @@
+// Gaze belongs to the eyes and body; inherited pointer updates restyle the full SVG artwork.
+@property --pet-eye-x {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --pet-eye-y {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --pet-tilt {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
+
+$pet-looks: (
+  idle: (
+    eyes-dash,
+  ),
+  run: (
+    eyes-dash,
+    speed,
+  ),
+  walk: (
+    eyes-dash,
+  ),
+  fly: (
+    eyes-wide,
+    speed,
+  ),
+  land: (
+    eyes-dash,
+  ),
+  wave: (
+    eyes-dash,
+    mouth-smile,
+    arm-l,
+  ),
+  failed: (
+    eyes-wide,
+    eyes-wince,
+    mouth-o,
+    sweat,
+  ),
+  wait: (
+    eyes-dash,
+    dots,
+  ),
+  work: (
+    eyes-dash,
+    laptop,
+  ),
+  happy: (
+    eyes-happy,
+    mouth-smile,
+  ),
+  cheer: (
+    eyes-happy,
+    mouth-grin,
+    arm-l,
+    arm-r,
+  ),
+  slide: (
+    eyes-dash,
+    arms-pole,
+  ),
+  chute: (
+    eyes-dash,
+    arms-hang,
+    chute,
+  ),
+  jet: (
+    eyes-dash,
+    arms-hang,
+    jetpack,
+  ),
+  notice: (
+    eyes-wide,
+    mouth-o,
+  ),
+  talk: (
+    eyes-dash,
+    mouth-o,
+    mouth-smile,
+  ),
+  think: (
+    eyes-dash,
+    thought,
+  ),
+);
+
+.pet-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+
+  [data-part] {
+    display: none;
+  }
+
+  [data-part='legs'] {
+    display: inline;
+  }
+
+  .pet-hop,
+  .pet-lean,
+  .pet-canopy,
+  .pet-body,
+  .pet-look,
+  .pet-eye,
+  .pet-leg,
+  .pet-arm,
+  .pet-dot,
+  .pet-key,
+  .pet-speed,
+  [data-part='eyes-wide'],
+  [data-part='eyes-wince'] {
+    transform-box: fill-box;
+  }
+
+  .pet-lean,
+  .pet-body {
+    transform-origin: 50% 100%;
+  }
+
+  .pet-look {
+    translate: calc(var(--pet-eye-x) * 1px) calc(var(--pet-eye-y) * 1px);
+    transition: translate 120ms cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  .pet-eye {
+    transform-origin: 50% 50%;
+    animation: pet-blink 4.2s infinite;
+  }
+
+  .pet-eye + .pet-eye {
+    animation-delay: 40ms;
+  }
+
+  .pet-leg {
+    transform-origin: 50% 0;
+  }
+
+  [data-part='arm-l'] {
+    transform-origin: 100% 100%;
+  }
+
+  [data-part='arm-r'] {
+    transform-origin: 0 100%;
+  }
+}
+
+// Perched and watching, the body tips toward the pointer from where it rests. A hanger's body
+// hangs from its arms, so it stays plumb.
+.pet-svg:is([data-state='idle'], [data-state='happy'], [data-state='wait']):not([data-kind='hang'])
+  .pet-body {
+  rotate: calc(var(--pet-tilt, 0) * 1deg);
+  transition: rotate 160ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+@each $state, $parts in $pet-looks {
+  @each $part in $parts {
+    .pet-svg[data-state='#{$state}'] [data-part='#{$part}'] {
+      display: inline;
+    }
+  }
+}
+
+// Dressed for the page's section, as its site icon is (quartz/util/section-icon.ts).
+@each $section
+  in (triathlon, fr, posts, legal, art, library, slides, stream, courses, engineering, cinema)
+{
+  .pet-svg[data-outfit='#{$section}'] [data-part^='outfit-#{$section}'] {
+    display: inline;
+  }
+}
+
+// Out on the home page's trail: the bucket hat drops on as it sets off.
+.pet-svg[data-hat] [data-part='hat'] {
+  display: inline;
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: pet-hat-on 0.36s steps(6) both;
+}
+
+// Reader mode: it pushes its glasses down off its forehead as the mode starts, arrives on a new
+// page already wearing them, and lifts them back off when the mode ends. The librarian already
+// wears the same pair.
+.pet-svg:is([data-reading], [data-reading-off]) [data-part='glasses'] {
+  display: inline;
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+}
+
+.pet-svg[data-reading-on] [data-part='glasses'] {
+  animation: pet-glasses-on 0.42s steps(7) both;
+}
+
+.pet-svg[data-reading-off] [data-part='glasses'] {
+  animation: pet-glasses-off 0.42s steps(7) both;
+}
+
+.pet-svg:is([data-outfit='library'], [data-outfit='cinema']) [data-part='glasses'] {
+  display: none;
+}
+
+// The stream's reader and pages tagged technical wear the same pair all the time, so the reader
+// mode toggle leaves them be.
+.pet-svg:is([data-outfit='stream'], [data-traits~='technical']) [data-part='glasses'] {
+  display: inline;
+  animation: none;
+}
+
+// The student writes: the pencil's point jitters along the line.
+.pet-svg[data-outfit='courses'] .pet-pencil {
+  transform-box: fill-box;
+  animation: pet-scribble 0.9s steps(6) infinite alternate;
+}
+
+// The film nerd snacks: every few seconds a kernel pops off the heap, arcs up and into its mouth.
+.pet-svg[data-outfit='cinema'] .pet-kernel {
+  opacity: 0;
+  animation: pet-snack 3.8s steps(14) infinite;
+}
+
+@keyframes pet-snack {
+  0%,
+  52% {
+    opacity: 0;
+    translate: 0 0;
+  }
+  56% {
+    opacity: 1;
+    translate: 0.1px -0.3px;
+  }
+  64% {
+    translate: 0.36px -0.46px;
+  }
+  72% {
+    opacity: 1;
+    translate: 0.58px 0.1px;
+  }
+  76%,
+  100% {
+    opacity: 0;
+    translate: 0.6px 0.16px;
+  }
+}
+
+// The engineer's flask fizzes: each bubble rises off the neck and fades, one after another.
+.pet-svg[data-outfit='engineering'] .pet-bubble {
+  animation: pet-fizz 2.4s steps(8) infinite;
+
+  // The hat and the flask come first in the part, so count bubbles only.
+  &:nth-child(2 of .pet-bubble) {
+    animation-delay: -0.8s;
+  }
+
+  &:nth-child(3 of .pet-bubble) {
+    animation-delay: -1.6s;
+  }
+}
+
+@keyframes pet-fizz {
+  from {
+    translate: 0.04px 0.3px;
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 1;
+  }
+  to {
+    translate: -0.04px -0.3px;
+    opacity: 0;
+  }
+}
+
+// Pages tagged philosophy: the hair has gone wild, and frizzes between its two drawings.
+.pet-svg[data-traits~='philosophy'] [data-part='hair'] {
+  display: inline;
+
+  .pet-hair-frame {
+    animation: pet-swap 1.4s step-end infinite;
+  }
+
+  .pet-hair-frame + .pet-hair-frame {
+    animation-delay: -0.7s;
+  }
+}

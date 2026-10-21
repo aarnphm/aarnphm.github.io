@@ -1,0 +1,549 @@
+// Cold where the visitor is (pet.inline.ts reads the wind chill): at 10 °C and under it zips on its
+// wind vest; at 0 °C and under it pulls on its jumper, and a toque too unless the page's outfit or
+// the trail's hat has the head, and at rest its breath shows and every few seconds it hunches up and
+// shivers.
+.pet-svg[data-cold='cool'] [data-part='vest'] {
+  display: inline;
+}
+
+// The flapping back panel is for training in it.
+.pet-svg[data-cold='cool']:not([data-outfit='triathlon']) .pet-flap-frame {
+  display: none;
+}
+
+.pet-svg[data-cold='cold'] [data-part='jumper'] {
+  display: inline;
+}
+
+// On triathlon pages it trains in its wind vest in the cold too, the back panel flapping.
+.pet-svg[data-outfit='triathlon']:is([data-cold='cool'], [data-cold='cold']) {
+  [data-part='jumper'] {
+    display: none;
+  }
+
+  [data-part='vest'] {
+    display: inline;
+  }
+
+  .pet-flap-frame {
+    animation: pet-swap 0.5s step-end infinite;
+  }
+
+  .pet-flap-frame + .pet-flap-frame {
+    animation-delay: -0.25s;
+  }
+}
+
+.pet-svg[data-cold='cold']:not(
+    [data-hat],
+    [data-outfit='triathlon'],
+    [data-outfit='fr'],
+    [data-outfit='legal'],
+    [data-outfit='courses'],
+    [data-outfit='engineering']
+  )
+  [data-part='toque'] {
+  display: inline;
+}
+
+.pet-svg[data-cold='cold']:is([data-state='idle'], [data-state='wait']) {
+  [data-part='breath'] {
+    display: inline;
+  }
+
+  .pet-puff {
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: 100% 50%;
+    animation: pet-breath 3.4s steps(10) infinite;
+  }
+
+  .pet-puff:nth-child(2) {
+    animation-delay: 0.25s;
+  }
+
+  .pet-puff:nth-child(3) {
+    animation-delay: 0.5s;
+  }
+
+  &:not([data-kind='hang']) .pet-lean {
+    animation: pet-shiver 4.6s linear infinite;
+  }
+}
+
+@keyframes pet-breath {
+  0%,
+  8% {
+    opacity: 0;
+    scale: 0.6;
+  }
+  16% {
+    opacity: 1;
+  }
+  40% {
+    opacity: 0;
+    scale: 1.2;
+    translate: -0.06px -0.08px;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+// Rest, then shoulders up (it hunches into its collar), a few quick shakes, and it settles.
+@keyframes pet-shiver {
+  0%,
+  70%,
+  100% {
+    translate: 0 0;
+    scale: 1 1;
+  }
+  73% {
+    scale: 1.04 0.93;
+  }
+  75% {
+    translate: -0.06px 0;
+    scale: 1.04 0.93;
+  }
+  77% {
+    translate: 0.06px 0;
+  }
+  79% {
+    translate: -0.06px 0;
+  }
+  81% {
+    translate: 0.05px 0;
+  }
+  83% {
+    translate: -0.05px 0;
+  }
+  85% {
+    translate: 0.04px 0;
+    scale: 1.04 0.93;
+  }
+  87% {
+    translate: -0.03px 0;
+  }
+  90% {
+    translate: 0 0;
+    scale: 1 1;
+  }
+}
+
+// Rain where the visitor is: it holds up its little umbrella, the rain falling past in two
+// drawings. Not while its hands are busy hanging, sliding, flying or cheering.
+.pet-svg[data-rain]:not(
+    [data-kind='hang'],
+    [data-state='slide'],
+    [data-state='chute'],
+    [data-state='jet'],
+    [data-state='fly'],
+    [data-state='cheer']
+  )
+  [data-part='umbrella'] {
+  display: inline;
+
+  .pet-rain-frame {
+    animation: pet-swap 0.36s step-end infinite;
+  }
+
+  .pet-rain-frame + .pet-rain-frame {
+    animation-delay: -0.18s;
+  }
+}
+
+// A storm (pet.inline.ts): once a lightning period (11 s, on the wall clock the home page's flash
+// uses), a gust yanks the umbrella over and blows it inside out. The cloth flaps while it stares, it
+// pumps the umbrella twice and the canopy pops back. pet.inline.ts sets every pet-storm animation's
+// clock, so these share one duration and no delay.
+.pet-brolly-out {
+  display: none;
+}
+
+.pet-svg[data-storm] {
+  [data-part='gust'] {
+    display: inline;
+  }
+
+  .pet-gust-frame {
+    animation: pet-swap 0.4s step-end infinite;
+  }
+
+  .pet-gust-frame + .pet-gust-frame {
+    animation-delay: -0.2s;
+  }
+
+  .pet-brolly {
+    transform-box: view-box;
+    transform-origin: 0.84px 0.2px;
+    animation: pet-storm-yank 11s steps(3) infinite;
+  }
+
+  .pet-brolly-open {
+    animation: pet-storm-open 11s step-end infinite;
+  }
+
+  .pet-brolly-out {
+    display: inline;
+    opacity: 0;
+    animation: pet-storm-out 11s step-end infinite;
+  }
+
+  .pet-out-frame {
+    animation: pet-swap 0.3s step-end infinite;
+  }
+
+  .pet-out-frame + .pet-out-frame {
+    animation-delay: -0.15s;
+  }
+
+  // Its eyes go wide as the umbrella turns, where it would otherwise look on calmly.
+  &:is(
+      [data-state='idle'],
+      [data-state='wait'],
+      [data-state='work'],
+      [data-state='walk'],
+      [data-state='run'],
+      [data-state='land'],
+      [data-state='talk'],
+      [data-state='think'],
+      [data-state='wave']
+    ):not([data-kind='hang']) {
+    [data-part='eyes-dash'] {
+      animation: pet-storm-open-eyes 11s step-end infinite;
+    }
+
+    [data-part='eyes-wide'] {
+      display: inline;
+      opacity: 0;
+      animation: pet-storm-out-eyes 11s step-end infinite;
+    }
+  }
+}
+
+// The lightning lifts the page at 1% of the period; the gust lands just after it.
+@keyframes pet-storm-out {
+  0% {
+    opacity: 0;
+  }
+  1.6% {
+    opacity: 1;
+  }
+  36% {
+    opacity: 0;
+  }
+}
+
+@keyframes pet-storm-open {
+  0% {
+    opacity: 1;
+  }
+  1.6% {
+    opacity: 0;
+  }
+  36% {
+    opacity: 1;
+  }
+}
+
+@keyframes pet-storm-out-eyes {
+  0% {
+    opacity: 0;
+  }
+  1.6% {
+    opacity: 1;
+  }
+  14% {
+    opacity: 0;
+  }
+}
+
+@keyframes pet-storm-open-eyes {
+  0% {
+    opacity: 1;
+  }
+  1.6% {
+    opacity: 0;
+  }
+  14% {
+    opacity: 1;
+  }
+}
+
+// Yanked over by the gust, tugged about while inside out, two pumps and back upright.
+@keyframes pet-storm-yank {
+  0%,
+  1.4%,
+  36%,
+  100% {
+    rotate: 0deg;
+  }
+  1.8% {
+    rotate: 16deg;
+  }
+  3% {
+    rotate: 10deg;
+  }
+  5% {
+    rotate: 14deg;
+  }
+  8% {
+    rotate: 9deg;
+  }
+  12% {
+    rotate: 13deg;
+  }
+  17% {
+    rotate: 8deg;
+  }
+  23% {
+    rotate: 12deg;
+  }
+  29% {
+    rotate: 10deg;
+  }
+  31% {
+    rotate: -2deg;
+  }
+  32.5% {
+    rotate: 9deg;
+  }
+  34% {
+    rotate: -2deg;
+  }
+  35.5% {
+    rotate: 5deg;
+  }
+}
+
+// Snow where the visitor is: a mitten on every hand it shows. At rest the flakes fall round it, and
+// with its hands free (no prop from the page's outfit) it holds both mittens up to catch them: one
+// comes down into the front mitten, which dips as it lands, and melts there.
+.pet-mitten {
+  display: none;
+}
+
+.pet-svg[data-snow] {
+  .pet-mitten {
+    display: inline;
+  }
+
+  &:is([data-state='idle'], [data-state='wait']):not([data-kind='hang']) {
+    [data-part='snowfall'] {
+      display: inline;
+    }
+
+    &:is(
+        :not([data-outfit]),
+        [data-outfit=''],
+        [data-outfit='triathlon'],
+        [data-outfit='posts']
+      ):not([data-lantern])
+      [data-part='catch'] {
+      display: inline;
+    }
+  }
+
+  .pet-flake {
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: 50% 50%;
+    animation: pet-snowfall 4.2s steps(21) infinite;
+  }
+
+  .pet-catch {
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: 50% 50%;
+    animation: pet-catch 5s steps(25) infinite;
+  }
+
+  .pet-catch-arm:first-child {
+    animation: pet-catch-dip 5s steps(25) infinite;
+  }
+}
+
+@keyframes pet-snowfall {
+  0% {
+    opacity: 0;
+    translate: 0 0;
+    rotate: 0deg;
+  }
+  12%,
+  80% {
+    opacity: 1;
+  }
+  50% {
+    translate: var(--sway) calc(var(--fall) * 0.5);
+  }
+  100% {
+    opacity: 0;
+    translate: calc(var(--sway) * -0.5) var(--fall);
+    rotate: 90deg;
+  }
+}
+
+// Down from above the front mitten with a drift, in by 52%, then it melts away.
+@keyframes pet-catch {
+  0% {
+    opacity: 0;
+    translate: 0.3px -1.1px;
+    rotate: 0deg;
+  }
+  8% {
+    opacity: 1;
+  }
+  28% {
+    translate: 0.06px -0.6px;
+  }
+  52% {
+    opacity: 1;
+    translate: 0 0;
+    rotate: 120deg;
+    scale: 1;
+  }
+  72% {
+    opacity: 1;
+    scale: 0.85;
+  }
+  84%,
+  100% {
+    opacity: 0;
+    translate: 0 0.04px;
+    rotate: 120deg;
+    scale: 0.2;
+  }
+}
+
+@keyframes pet-catch-dip {
+  0%,
+  52%,
+  64%,
+  100% {
+    translate: 0 0;
+  }
+  56% {
+    translate: 0 0.05px;
+  }
+}
+
+// Fog, dusk or night where the visitor is: it holds out a little lantern on the side it faces,
+// unless its hands are busy. Outfits with a prop in that paw hold it out behind instead, unless the
+// umbrella has that paw. The flame flickers between two drawings and the glow wavers.
+.pet-svg[data-lantern]:not(
+    [data-kind='hang'],
+    [data-state='slide'],
+    [data-state='chute'],
+    [data-state='jet'],
+    [data-state='fly'],
+    [data-state='cheer'],
+    [data-state='wave']
+  ) {
+  &:not(
+      [data-outfit='art'],
+      [data-outfit='stream'],
+      [data-outfit='courses'],
+      [data-outfit='cinema'],
+      [data-outfit='engineering']
+    )
+    [data-part='lantern'] {
+    display: inline;
+  }
+
+  &:is(
+      [data-outfit='art'],
+      [data-outfit='stream'],
+      [data-outfit='courses'],
+      [data-outfit='cinema'],
+      [data-outfit='engineering']
+    ):not([data-rain])
+    [data-part='lantern-back'] {
+    display: inline;
+  }
+
+  .pet-flame-frame {
+    animation: pet-swap 0.32s step-end infinite;
+  }
+
+  .pet-flame-frame + .pet-flame-frame {
+    animation-delay: -0.16s;
+  }
+
+  .pet-glow {
+    animation: pet-glow 2.6s steps(13) infinite;
+  }
+}
+
+@keyframes pet-glow {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  18% {
+    opacity: 0.78;
+  }
+  31% {
+    opacity: 0.95;
+  }
+  54% {
+    opacity: 0.7;
+  }
+  62% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 0.86;
+  }
+}
+
+// Heat where the visitor is (27 °C and over): sunglasses, in place of reading glasses; the
+// librarian and the film nerd keep their own pair, and after dark it takes them off. Its tan (pet.inline.ts) shows while it is hot.
+.pet-svg[data-heat]:not([data-outfit='library'], [data-outfit='cinema'], [data-lantern]) {
+  [data-part='sunglasses'] {
+    display: inline;
+  }
+
+  [data-part='glasses'] {
+    display: none;
+  }
+}
+
+.pet-svg[data-heat] [data-part='tan'] {
+  display: inline;
+  opacity: calc(var(--pet-tan, 0) * 0.5);
+}
+
+// On a sunny hot day, when it would get its laptop out, it lies back on a sun lounger instead,
+// turned 30° into the backrest with its legs out along the cushion, and tans as it lies there.
+.pet-svg[data-beach][data-state='work']:is([data-kind='stand'], [data-kind='floor']) {
+  [data-part='laptop'],
+  [data-part='legs'] {
+    display: none;
+  }
+
+  [data-part='lounger'] {
+    display: inline;
+  }
+
+  .pet-look {
+    translate: 0 0;
+  }
+
+  .pet-body {
+    transform-box: view-box;
+    transform-origin: 0 0;
+    translate: 0 -0.1px;
+    rotate: 32deg;
+    animation: none;
+  }
+
+  .pet-tan {
+    animation: pet-tan var(--pet-tan-left, 120s) linear forwards;
+  }
+}
+
+@keyframes pet-tan {
+  to {
+    opacity: 0.5;
+  }
+}
