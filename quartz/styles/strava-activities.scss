@@ -36,8 +36,23 @@
   border-block-start: 1px solid var(--strava-activities-line);
 }
 
-.strava-activities-title {
+.strava-activities a.strava-activities-title {
   color: var(--dark);
+  text-decoration: underline;
+  text-decoration-color: var(--strava-activities-line);
+  text-underline-offset: 2px;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      text-decoration-color: currentColor;
+    }
+  }
+}
+
+.strava-activities-meta {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
 }
 
 .strava-activities a.strava-activities-source {
