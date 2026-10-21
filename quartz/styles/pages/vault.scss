@@ -38,8 +38,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .vault-card[open],
-  .vault-lift .cn-lid-detail {
+  .vault-card[open] {
     animation: none;
   }
 }

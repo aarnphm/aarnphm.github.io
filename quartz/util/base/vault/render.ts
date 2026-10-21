@@ -175,12 +175,17 @@ export function buildVault(entries: VaultEntry[], view: VaultView): Element {
           'aria-label':
             'Film vault drawing. Arrow keys move along the rack, Enter opens the selected can, Escape returns it, plus and minus zoom.',
         },
-        [scene],
+        [h('template.vault-source', [scene])],
       ),
       h('div.vault-controls', { role: 'group', 'aria-label': 'Vault camera' }, [
         button({ 'data-camera': 'in' }, 'Zoom in', ['M12 5v14M5 12h14']),
         button({ 'data-camera': 'out' }, 'Zoom out', ['M5 12h14']),
         button({ 'data-camera': 'fit' }, 'Fit rack', ['M8 3H3v5M16 3h5v5M21 16v5h-5M3 16v5h5']),
+        h('span.vault-status', { role: 'status', 'data-state': 'loading' }, [
+          h('span.vault-status-spinner', controlIcon(['M12 3a9 9 0 1 1-9 9'])),
+          h('span.vault-status-ready', controlIcon(['M5 12l4 4L19 6'])),
+          h('span.vault-status-text.visually-hidden', 'preparing vault'),
+        ]),
       ]),
       h('span.vault-corner', { 'data-corner': 'title', 'data-vault-section': '' }, ''),
       h('span.vault-corner', { 'data-corner': 'hint' }, 'drag a can out or in · drag to pan'),

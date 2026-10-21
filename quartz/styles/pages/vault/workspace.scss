@@ -75,6 +75,8 @@ body[data-vault-page] {
   position: absolute;
   inset: 0;
   overflow: auto;
+  // The camera owns scroll offsets while scene surfaces arrive asynchronously.
+  overflow-anchor: none;
   overscroll-behavior: contain;
   scrollbar-width: none;
   cursor: grab;
@@ -90,6 +92,57 @@ body[data-vault-page] {
 .vault-canvas {
   position: relative;
   overflow: clip;
+}
+
+.vault-status {
+  display: grid;
+  place-items: center;
+  height: 2.125rem;
+  margin-block-start: 0.25rem;
+  color: var(--darkgray);
+  background: var(--light);
+  pointer-events: none;
+
+  svg {
+    display: block;
+    width: 1rem;
+    height: 1rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .vault-status-spinner {
+    animation: vault-status-spin 850ms linear infinite;
+  }
+
+  .vault-status-ready {
+    display: none;
+  }
+
+  &[data-state='ready'] {
+    .vault-status-spinner {
+      display: none;
+    }
+
+    .vault-status-ready {
+      display: block;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vault-status-spinner {
+      animation: none;
+    }
+  }
+}
+
+@keyframes vault-status-spin {
+  to {
+    transform: rotate(1turn);
+  }
 }
 
 // Always laid out and never painted; only its pointer-events change, so showing it repaints nothing.
