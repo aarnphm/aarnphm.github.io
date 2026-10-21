@@ -32,6 +32,42 @@ export const fr: Record<string, string> = {
     'Le pull met l’accent sur le mouvement des bras; le kick, sur les jambes. Un drill isole un point technique, puis la nage complète permet de l’appliquer.',
   '4 × 50 m (25 drill / 25 swim) → practice the cue for 25 m, then swim normally for 25 m.':
     '4 × 50 m (25 drill / 25 swim) → travaillez le point technique sur 25 m, puis nagez normalement sur 25 m.',
+  'Freestyle drill: on each recovery, touch your hip, then your armpit, then the side of your head before the hand enters. It trains a high, relaxed elbow.':
+    'Éducatif de crawl : à chaque retour du bras, touchez la hanche, puis l’aisselle, puis le côté de la tête avant l’entrée de la main. Il travaille un coude haut et détendu.',
+  '4 × 50 m (25 3-point / 25 swim) → 25 m of touches, then 25 m of full stroke.':
+    '4 × 50 m (25 3-point / 25 swim) → 25 m avec les touches, puis 25 m de nage complète.',
+  'Catch-up: the lead hand waits in front until the other hand arrives, which lengthens the stroke. Fingertip drag: drag the fingertips along the surface on the recovery to keep the elbow high.':
+    'Rattrapé : la main avant attend que l’autre main la rejoigne, ce qui allonge la nage. Doigts traînés : faites glisser le bout des doigts sur l’eau pendant le retour pour garder le coude haut.',
+  '8 × 25 m catch-up → keep the lead arm still until the recovering hand touches it.':
+    '8 × 25 m rattrapé → gardez le bras avant immobile jusqu’à ce que l’autre main le touche.',
+  '6-kick switch: kick six times on your side, then take one stroke to roll to the other side. Sculling: small figure-eight hand movements that train the feel of the water at the catch.':
+    '6-kick switch : six battements sur le côté, puis un mouvement de bras pour rouler de l’autre côté. Godille : petits mouvements des mains en huit qui travaillent la sensation de l’eau à l’appui.',
+  '4 × 25 m 6-kick switch → breathe while on your side, then switch with one stroke.':
+    '4 × 25 m 6-kick switch → respirez sur le côté, puis changez de côté avec un mouvement de bras.',
+  'Tarzan: head-up freestyle with the eyes forward, which trains a fast catch and open-water sighting. Single-arm: stroke with one arm while the other rests at your side or in front, and breathe to the side of the resting arm.':
+    'Tarzan : crawl tête hors de l’eau, les yeux vers l’avant, qui travaille un appui rapide et le repérage en eau libre. Un bras : nagez avec un seul bras, l’autre reste le long du corps ou devant, et respirez du côté du bras au repos.',
+  '4 × 50 m (25 R arm / 25 L arm) → right arm only for 25 m, then left arm only.':
+    '4 × 50 m (25 R arm / 25 L arm) → bras droit seul sur 25 m, puis bras gauche seul.',
+  'Equipment. A pull buoy (PB) holds the legs up for pull sets; paddles enlarge the hand to load the catch; fins add propulsion for kick and drill work.':
+    'Matériel. Le pull-buoy (PB) maintient les jambes en surface pour les séries de bras; les plaquettes agrandissent la main pour charger l’appui; les palmes ajoutent de la propulsion pour les jambes et les éducatifs.',
+  '4 × 100 m pull w/ PB + paddles → arms only, with the buoy between the thighs.':
+    '4 × 100 m pull w/ PB + paddles → bras seuls, le pull-buoy entre les cuisses.',
+  'Breathing pattern: b3 means a breath every third stroke, so the breathing side alternates. b5 means every fifth stroke.':
+    'Rythme respiratoire : b3 signifie une respiration tous les trois mouvements de bras, ce qui alterne le côté. b5 signifie tous les cinq mouvements.',
+  '200 m b3 → breathe to the left, then to the right, every third stroke.':
+    '200 m b3 → respirez à gauche, puis à droite, tous les trois mouvements.',
+  'Open water: lift the eyes forward to find the buoy, then turn the head to breathe. Sight every 6–8 strokes.':
+    'En eau libre : levez les yeux vers l’avant pour repérer la bouée, puis tournez la tête pour respirer. Visez tous les 6 à 8 mouvements.',
+  '400 m, sight every 6 → look forward once in every six strokes.':
+    '400 m, sight every 6 → regardez devant une fois tous les six mouvements.',
+  'Critical swim speed: an estimate of the pace you can hold for about 30 minutes, from a 400 m and a 200 m time trial. Sets use it as a pace target.':
+    'Vitesse critique de nage : estimation de l’allure tenable pendant environ 30 minutes, à partir d’un 400 m et d’un 200 m chronométrés. Les séries s’en servent comme cible d’allure.',
+  'CSS = 200 m ÷ (T400 − T200). 6:40 and 3:10 → 200 m in 210 s → 1:45/100 m.':
+    'CSS = 200 m ÷ (T400 − T200). 6:40 et 3:10 → 200 m en 210 s → 1:45/100 m.',
+  'SWOLF is the time for one length plus the strokes in that length; a lower score is more efficient. SPL is strokes per length.':
+    'Le SWOLF additionne le temps d’une longueur et le nombre de mouvements de cette longueur; un score plus bas est plus efficace. SPL est le nombre de mouvements par longueur.',
+  '25 m in 22 s with 16 strokes → SWOLF 38, SPL 16.':
+    '25 m en 22 s avec 16 mouvements → SWOLF 38, SPL 16.',
   'Repeat the whole bracket twice. Keep the specified rest between repeats and between rounds.':
     'Répétez tout le contenu des parenthèses deux fois. Respectez le repos indiqué entre les répétitions et les séries.',
   '2 × 4 × 50 m = 400 m. The brackets alone do not specify rest.':
