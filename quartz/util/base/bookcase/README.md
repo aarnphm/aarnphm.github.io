@@ -73,8 +73,10 @@ selected hardcover preview. Browsing the shelf does not attach original scans.
 The shelf viewport uses native two-axis scrolling for wheel input and momentum.
 Wheel distance stays in screen pixels and preserves zoom and horizontal position
 without lifting books from the shelf. Hovering a book on the stage lifts its copy
-and reveals the matching sidebar entry without moving the camera. Scrolling the
-sidebar list interpolates selection continuously from the top visible entry to the
+and reveals the matching sidebar entry without moving the camera.
+Holding Shift while hovering a sidebar entry selects its placed copy, centers the
+camera and pulls the book out. Ordinary sidebar hover leaves selection unchanged.
+Scrolling the sidebar list interpolates selection continuously from the top visible entry to the
 bottom entry and follows it with the camera. The lifted copy waits until that
 scroll has been still, so a fast pass does not clone a book on every row. A padded,
 clipped plane keeps SVG overflow within the camera's existing bounds; fit, zoom,
