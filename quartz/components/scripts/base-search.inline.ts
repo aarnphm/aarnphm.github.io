@@ -4,6 +4,8 @@ import {
   searchModeShortcutLabel,
 } from '../../util/search-shortcuts'
 import { isRecord } from '../../util/type-guards'
+import { readGeoPayload } from './base-geo-client'
+import { applyMemberList, runBaseGeoSearch, showDistanceLabel } from './base-geo-search'
 import { isSemanticCancellation, SemanticClient } from './semantic.inline'
 
 type SearchMode = 'lexical' | 'semantic'
@@ -124,6 +126,19 @@ function setupBaseSearch(): (() => void) | undefined {
     scoreLabels.delete(item)
   }
 
+  const dispatchMemberFilter = (
+    slugs: string[] | null,
+    distances: Record<string, number>,
+    notice: string,
+  ) => {
+    document.dispatchEvent(
+      new CustomEvent('base-member-filter', { detail: { slugs, distances, notice } }),
+    )
+  }
+
+  const labelDistance = (item: HTMLElement, meters: number) =>
+    showDistanceLabel(scoreLabels, item, meters)
+
   const showScore = (item: HTMLElement, score: number) => {
     const link =
       item.querySelector<HTMLElement>('.base-card-title-link') ??
@@ -233,6 +248,42 @@ function setupBaseSearch(): (() => void) | undefined {
     collapseGroups()
   }
 
+  const hideAll = () => {
+    filtered = true
+    for (const item of items) {
+      item.style.display = 'none'
+      clearScore(item)
+    }
+    restoreOrder()
+    collapseGroups()
+  }
+
+  const applySlugList = (
+    slugs: string[],
+    distances: Record<string, number> = {},
+    distanceLabels = false,
+  ) =>
+    applyMemberList(
+      {
+        items,
+        slugOf,
+        reorderable,
+        clearScore,
+        showDistance: labelDistance,
+        bySibling,
+        collapseGroups,
+        setFiltered: value => {
+          filtered = value
+        },
+        setReordered: value => {
+          reordered = value
+        },
+      },
+      slugs,
+      distances,
+      distanceLabels,
+    )
+
   const filterLexical = () => {
     const query = searchInput.value.toLowerCase().trim()
     if (query.length === 0) {
@@ -283,6 +334,8 @@ function setupBaseSearch(): (() => void) | undefined {
     }
     collapseGroups()
   }
+
+  const geoPayload = readGeoPayload(bar)
 
   // Semantic mode exists only when the build found a vector index for this base.
   const manifest = bar.dataset.semanticManifest
@@ -365,6 +418,39 @@ function setupBaseSearch(): (() => void) | undefined {
     }
   }
 
+  const runGeoSearch = () =>
+    runBaseGeoSearch({
+      query: () => searchInput.value.trim(),
+      payload: geoPayload!,
+      mode: () => mode,
+      bump: () => ++searchSeq,
+      current: () => searchSeq,
+      active: () => active,
+      notice: value => {
+        semanticNotice = value
+      },
+      status: value => {
+        if (!status) return
+        if (value === '' && status.dataset.state === 'unavailable') return
+        status.textContent = value
+      },
+      cancelEncoder: () => shared?.client.cancel(),
+      releaseEncoder: releaseSemantic,
+      setSemanticState,
+      showAll,
+      hideAll,
+      applySlugs: applySlugList,
+      applySemantic,
+      dispatch: dispatchMemberFilter,
+      ensureSemantic,
+      search: async (residual, limit) => {
+        const { semantic } = await sharedSemantic(manifest!).client.search(residual, limit)
+        return semantic
+      },
+      semanticK: SEMANTIC_K,
+      semanticTail: SEMANTIC_TAIL,
+    })
+
   const runSemantic = async () => {
     const query = searchInput.value.trim()
     const seq = ++searchSeq
@@ -407,6 +493,11 @@ function setupBaseSearch(): (() => void) | undefined {
   }
 
   const search = () => {
+    if (geoPayload) {
+      void runGeoSearch()
+      return
+    }
+    dispatchMemberFilter(null, {}, '')
     if (mode === 'semantic') {
       void runSemantic()
     } else {

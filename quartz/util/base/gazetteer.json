@@ -1,0 +1,95 @@
+{
+  "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+  "features": [
+    {
+      "id": "osm:relation:111968",
+      "name": "San Francisco",
+      "aliases": ["san francisco", "sf"],
+      "kind": "city",
+      "city": "San Francisco",
+      "centroid": [37.7879363, -122.4075201],
+      "bbox": [37.6403143, 37.9296678, -123.173825, -122.2814578]
+    },
+    {
+      "id": "osm:relation:11879671",
+      "name": "Kensington Market",
+      "aliases": ["kensington market", "kensington"],
+      "kind": "neighbourhood",
+      "city": "Toronto",
+      "centroid": [43.6552136, -79.4022604],
+      "bbox": [43.6517445, 43.6579542, -79.4077041, -79.3981331]
+    },
+    {
+      "id": "osm:relation:16751345",
+      "name": "Trinity Bellwoods Park",
+      "aliases": ["trinity bellwoods park", "trinity bellwoods"],
+      "kind": "park",
+      "city": "Toronto",
+      "centroid": [43.647644, -79.4139122],
+      "bbox": [43.6452101, 43.6502273, -79.4180559, -79.4115891]
+    },
+    {
+      "id": "osm:relation:175905",
+      "name": "New York",
+      "aliases": ["new york", "new york city", "nyc"],
+      "kind": "city",
+      "city": "New York",
+      "centroid": [40.7127281, -74.0060152],
+      "bbox": [40.476578, 40.91763, -74.258843, -73.700233]
+    },
+    {
+      "id": "osm:relation:186579",
+      "name": "Portland",
+      "aliases": ["portland"],
+      "kind": "city",
+      "city": "Portland",
+      "centroid": [45.5202471, -122.674194],
+      "bbox": [45.432536, 45.6528812, -122.8367489, -122.4720252]
+    },
+    {
+      "id": "osm:relation:1933745",
+      "name": "Cambridge",
+      "aliases": ["cambridge"],
+      "kind": "city",
+      "city": "Cambridge",
+      "centroid": [42.3656347, -71.1040018],
+      "bbox": [42.3524025, 42.4042593, -71.1603989, -71.0639844]
+    },
+    {
+      "id": "osm:relation:197239",
+      "name": "Memphis",
+      "aliases": ["memphis"],
+      "kind": "city",
+      "city": "Memphis",
+      "centroid": [35.146026, -90.0517786],
+      "bbox": [34.9941528, 35.263879, -90.308366, -89.637089]
+    },
+    {
+      "id": "osm:relation:324211",
+      "name": "Toronto",
+      "aliases": ["toronto"],
+      "kind": "city",
+      "city": "Toronto",
+      "centroid": [43.6534817, -79.3839347],
+      "bbox": [43.5796082, 43.8554425, -79.6392832, -79.1132193]
+    },
+    {
+      "id": "osm:relation:962190",
+      "name": "Arlington",
+      "aliases": ["arlington", "arlington county"],
+      "kind": "city",
+      "city": "Arlington",
+      "centroid": [38.8769326, -77.0893094],
+      "bbox": [38.8274696, 38.9343511, -77.1722757, -77.0309984]
+    },
+    {
+      "id": "osm:relation:9691750",
+      "name": "Brooklyn",
+      "aliases": ["brooklyn"],
+      "kind": "city",
+      "city": "Brooklyn",
+      "centroid": [40.6526006, -73.9497211],
+      "bbox": [40.550339, 40.739434, -74.056688, -73.832945]
+    }
+  ]
+}

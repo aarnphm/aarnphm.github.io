@@ -6,7 +6,7 @@
   --grid-center-width: calc(100vw - (var(--kern) * 5) - (var(--kern) * 4));
   --grid-col-width: calc(var(--grid-center-width) / 9);
   --layout-reading-column: 5 / span 3;
-  --layout-wide-column: 5 / span 3;
+  --layout-wide-column: 5 / span 4;
   --layout-side-column: 8 / 10;
   --layout-full-column: 5 / span 5;
   --layout-header-column: var(--layout-wide-column);

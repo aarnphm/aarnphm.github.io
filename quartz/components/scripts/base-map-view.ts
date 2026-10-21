@@ -23,6 +23,11 @@ function icon(paths: string[]): string {
   return `<svg viewBox="0 0 24 24" aria-hidden="true">${paths.map(path => `<path d="${path}"/>`).join('')}</svg>`
 }
 
+function formatSpotDistance(meters: number): string {
+  if (meters >= 1000) return `${(meters / 1000).toFixed(1)} km`
+  return `${Math.round(meters)} m`
+}
+
 function distanceKm(a: MarkerData, b: MarkerData): number {
   const rad = Math.PI / 180
   const dLat = (b.lat - a.lat) * rad
@@ -59,11 +64,11 @@ export function mountBaseMapView(
   const list = container.querySelector<HTMLElement>('.base-map-spot-list')
   const selection = container.querySelector<HTMLElement>('.base-map-selection')
   const count = container.querySelector<HTMLElement>('.base-map-count')
-  const search =
-    container.closest('.base-embed')?.querySelector<HTMLInputElement>('input.base-search-input') ??
-    document.querySelector<HTMLInputElement>('#base-search-input')
   let category: string | undefined
   let selected: MarkerData | undefined
+  let memberSlugs: string[] | null = null
+  let memberDistances: Record<string, number> = {}
+  let memberNotice = ''
   let filtered = data.markers
   const categoryCounts = new Map<string, number>()
   for (const marker of data.markers) {
@@ -120,21 +125,19 @@ export function mountBaseMapView(
   }
 
   function update(): void {
-    const query = search?.value.toLowerCase().trim() ?? ''
-    filtered = data.markers.filter(
-      marker =>
-        (!category || marker.categories?.includes(category)) &&
-        [
-          marker.title,
-          marker.description,
-          marker.address,
-          ...(marker.categories ?? []),
-          JSON.stringify(marker.popupFields),
-        ]
-          .join(' ')
-          .toLowerCase()
-          .includes(query),
+    const byCategory = data.markers.filter(
+      marker => !category || marker.categories?.includes(category),
     )
+    if (memberSlugs === null) {
+      filtered = byCategory
+    } else if (memberSlugs.length === 0) {
+      filtered = []
+    } else {
+      const allowed = new Set(memberSlugs)
+      filtered = memberSlugs
+        .map(slug => byCategory.find(marker => marker.slug === slug))
+        .filter((marker): marker is MarkerData => marker !== undefined && allowed.has(marker.slug))
+    }
     if (selected && !filtered.some(marker => marker.slug === selected?.slug)) {
       selected = undefined
       if (selection) selection.hidden = true
@@ -143,12 +146,14 @@ export function mountBaseMapView(
     if (list)
       list.innerHTML = filtered.length
         ? filtered
-            .map(
-              marker =>
-                `<button type="button" class="base-map-spot" data-spot="${escapeHTML(marker.slug)}" aria-pressed="${marker.slug === selected?.slug}"><span class="base-map-swatch" style="background:${markerColor(marker)}"></span><span><strong>${escapeHTML(marker.title)}</strong><span class="base-map-spot-meta">${escapeHTML((marker.categories ?? []).join(' · '))}${marker.rating !== undefined ? ` · ☆ ${escapeHTML(String(marker.rating))}` : ''}</span>${marker.description ? `<span class="base-map-spot-description">${escapeHTML(marker.description)}</span>` : ''}</span></button>`,
-            )
+            .map(marker => {
+              const distanceM = memberDistances[marker.slug]
+              const distanceLabel =
+                distanceM !== undefined ? ` · ${formatSpotDistance(distanceM)}` : ''
+              return `<button type="button" class="base-map-spot" data-spot="${escapeHTML(marker.slug)}" aria-pressed="${marker.slug === selected?.slug}"><span class="base-map-swatch" style="background:${markerColor(marker)}"></span><span><strong>${escapeHTML(marker.title)}</strong><span class="base-map-spot-meta">${escapeHTML((marker.categories ?? []).join(' · '))}${marker.rating !== undefined ? ` · ☆ ${escapeHTML(String(marker.rating))}` : ''}${distanceLabel}</span>${marker.description ? `<span class="base-map-spot-description">${escapeHTML(marker.description)}</span>` : ''}</span></button>`
+            })
             .join('')
-        : `<p class="base-map-no-results">No spots match. Try another search or category.</p>`
+        : `<p class="base-map-no-results">${memberNotice.length > 0 ? escapeHTML(memberNotice) : 'No spots match. Try another search or category.'}</p>`
     actions.filter(filtered)
     if (!container.closest('.base-embed')) {
       document.dispatchEvent(
@@ -203,7 +208,28 @@ export function mountBaseMapView(
     },
     { signal },
   )
-  search?.addEventListener('input', update, { signal })
+  document.addEventListener(
+    'base-member-filter',
+    event => {
+      if (!(event instanceof CustomEvent)) return
+      const detail = event.detail
+      if (!detail || typeof detail !== 'object') return
+      const slugs = 'slugs' in detail ? detail.slugs : null
+      memberSlugs = Array.isArray(slugs) ? slugs.filter(slug => typeof slug === 'string') : slugs
+      const distances = 'distances' in detail ? detail.distances : undefined
+      memberDistances =
+        distances && typeof distances === 'object' && distances !== null
+          ? Object.fromEntries(
+              Object.entries(distances).filter(
+                (entry): entry is [string, number] => typeof entry[1] === 'number',
+              ),
+            )
+          : {}
+      memberNotice = 'notice' in detail && typeof detail.notice === 'string' ? detail.notice : ''
+      update()
+    },
+    { signal },
+  )
   update()
   return {
     canvas,

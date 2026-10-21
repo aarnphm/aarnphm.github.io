@@ -9,6 +9,7 @@ import path from 'node:path'
 import { parseArgs } from 'node:util'
 import { baseEmbeddingsDir, type BaseEmbeddingRecord } from '../util/base/embeddings'
 import { SEMANTIC_ONNX_MODELS, type SemanticQueryDType } from '../util/semantic-search'
+import { refreshGazetteer } from './build-base-gazetteer'
 
 const JSONL_SUFFIX = '.embeddings-text.jsonl'
 
@@ -179,4 +180,14 @@ const report = {
 if (values.report) await writeFile(values.report, `${JSON.stringify(report, null, 2)}\n`)
 for (const r of results) {
   console.log(`${r.base}: ${r.rows} rows, ${(r.bytes / 1024).toFixed(0)} KB, ${r.elapsedMs} ms`)
+}
+if (!values.base?.length) {
+  try {
+    const features = await refreshGazetteer()
+    console.log(`gazetteer: ${features} features`)
+  } catch (error) {
+    console.warn(
+      `gazetteer refresh failed; kept the previous file: ${error instanceof Error ? error.message : error}`,
+    )
+  }
 }
