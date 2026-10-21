@@ -17,6 +17,7 @@ import style from '../styles/triathlon.scss'
 import { TRI_ANALYTICS_BOOT_SCRIPT } from '../triathlon/analytics/boot'
 import { SeasonSummary } from '../triathlon/SeasonSummary'
 import { ShortcutHint } from '../triathlon/shell/ShortcutHint'
+import { PacePanel } from '../triathlon/tools/PaceChart'
 import {
   AnalyticsPanel,
   CalcPanel,
@@ -24,7 +25,6 @@ import {
   CONVERSIONS,
   GearPanel,
   MapPanel,
-  PacePanel,
   TrainingPanel,
 } from './triathlon-panels'
 

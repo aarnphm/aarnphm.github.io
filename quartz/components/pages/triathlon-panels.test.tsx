@@ -11,12 +11,12 @@ import type { TriathlonRenderData } from '../triathlon/render-data'
 import { buildAnalytics } from '../../plugins/stores/analytics'
 import { triathlonDateTree } from '../../util/triathlon-date-route'
 import { ANALYTICS_CATALOG } from '../triathlon/analytics/catalog'
+import { PacePanel } from '../triathlon/tools/PaceChart'
 import {
   AnalyticsPanel,
   CalcPanel,
   GearPanel,
   OnTreePanel,
-  PacePanel,
   ToolsPanel,
   TrainingPanel,
   TriathlonSubnav,
