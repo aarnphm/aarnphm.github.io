@@ -49,7 +49,7 @@ When the API key cannot run, an Opus session can be the worker itself: after `di
 
 ## Choose a proposal
 
-1. A proposal is eligible only when its `validation.json` status is `pass` and its decision is `verify`. Any failed check (blob-current, partition, budget, acyclic, entry-only, interface-kept, seam-adapters, paths, scss-order) rules it out.
+1. A proposal is eligible only when its `validation.json` status is `pass` and its decision is `verify`. Any failed check (blob-current, partition, budget, acyclic, entry-only, interface-kept, importers-budget, seam-adapters, paths, scss-order) rules it out. `importers-budget` fails when the proposal must edit an importer that is already over 5000 tokens: the hook checks every staged file, so that importer has to be split first, in its own pass.
 2. Two eligible proposals with ARI 0.8 or more agree. Take the one with fewer exports after the split and a smaller `cutShare`.
 3. With ARI under 0.8, arbitrate. Read both proposals against the four semantic checks in the decision request (deletion test, one concept per file, complete interface, tests at the interface). Write down why you chose one in `<slug>/arbitration.md`.
 4. The baseline (contiguous cuts) is a null model. If it beats both workers, say so in the report and stop for that target.
@@ -69,14 +69,15 @@ run.sh worktree <name> <path>   # w garden tb-<name>: ~/workspace/worktrees/gard
 
 It runs `w` with stdin closed (`w` opens an interactive shell, and a non-interactive agent would hang) and warns when the target's copy in this checkout's index differs from HEAD. In that case wait until aarnphm commits it. The worktree starts from HEAD and has no `node_modules`, so `run.sh` uses the main checkout's tools on worktree paths. Compare the worktree blob (`git -C <wt> rev-parse HEAD:<path>`) with the `blob` in `graph.json` before you start.
 
-1. **Move.** Create the files the proposal names and move blocks into them verbatim. Fix only imports and exports. Do not rename, reformat or rewrite. Check the move:
+1. **Move.** Write the proposal's files with the move tool, then check the move:
 
    ```sh
-   run.sh proof <wt> <path>   # non-import lines, HEAD vs entry + private folder; only blank lines and new comments may differ
-   run.sh css <wt> <path>     # style targets: HEAD vs worktree CSS, expanded and compressed, for the target and each stylesheet that @uses it
+   run.sh move <wt> <run>/<slug> <worker>   # blocks verbatim; import headers, @use lines and entry re-exports generated
+   run.sh proof <wt> <path>                 # code lines, HEAD vs entry + private folder; only comment lines may differ
+   run.sh css <wt> <path>                   # style targets: HEAD vs worktree CSS, expanded and compressed, for the target and each stylesheet that @uses it
    ```
 
-   `css` must print `identical` for every line. A cascade-order mistake compiles fine and shows up only here.
+   `move` refuses when the worktree's target is not the graph's blob, or when a proposal puts a closure and its inner blocks in different files (do stage 4a). It keeps `// @ts-` directives with their imports, keeps re-exports in the entry, and adds `export` to a declaration that a sibling file imports; nothing else in a block changes. It prints each file's tokens and the edits left to do by hand (a relative specifier inside a moved block, a partial that reads a declaration the entry keeps). For scripts, run `./node_modules/.bin/oxfmt` on the module paths next; `proof` lists any line the formatter rewrapped. `css` must print `identical` for every line. A cascade-order mistake compiles fine and shows up only here. With an arbitrated mix of proposals, write the merged proposal to `<run>/<slug>/arbiter/proposal.json` and move that.
 
 2. **Deepen.** Hide the exports the proposal hides. Update importers to use the entry. Move tests that import internals to the entry interface, and delete tests of internals when tests at the interface cover the same behaviour. Keep every behaviour that a test covers.
 
@@ -88,7 +89,7 @@ It runs `w` with stdin closed (`w` opens an interactive shell, and a non-interac
    run.sh land <wt> <run>/<slug> <module paths>   # stages the worktree's changes vs HEAD; writes land.patch
    ```
 
-   This stages only the module's paths. It refuses when those paths are already staged here (a second round on a landed module): then copy the changed files over after checking `git diff --quiet -- <paths>`, and stage them. Do not commit. aarnphm commits, then `w --rm garden tb-<slug>` removes the worktree. `w --rm` keeps the branch; `git branch -D aarnphm/tb-<slug>` removes it (nothing was committed there).
+   This stages only the module's paths. It refuses when those paths are already staged here (a second round on a landed module): then copy the changed files over after checking `git diff --quiet -- <paths>`, and stage them. Do not commit. After aarnphm commits, `run.sh clean <wt>` removes the worktree and its branch. It refuses while any changed file in the worktree differs from HEAD; `w --rm` always refuses here, because the worktree keeps the split as uncommitted files.
 
 ## Rules
 
@@ -105,14 +106,15 @@ For each target, give aarnphm: the chosen proposal (or none) and why, the files 
 
 ## Files
 
-| File                                                    | Role                                                                                            |
-| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| `check.py`                                              | Pre-commit hook; `--all`, `--paths`, `--json`                                                   |
-| `common.py`                                             | Budget constants, `cuts`, Git helpers                                                           |
-| `blocks.py`                                             | Tree-sitter (ast-grep-py) blocks for scripts, line blocks for styles, references between blocks |
-| `inventory.py`                                          | Graph, importers, interface use, `--top`, briefs                                                |
-| `brief.py`                                              | The brief the workers read                                                                      |
-| `dispatch.sh`                                           | Stage 2 workers                                                                                 |
-| `collect.sh`, `baseline.py`, `validate.py`, `checks.py` | Stage 3                                                                                         |
-| `pass.sh`                                               | Stages 0 to 4 in one command                                                                    |
-| `scripts/run.sh`                                        | Entry point: every stage plus `summary`, `worktree`, `proof`, `css`, `land`                     |
+| File                                                    | Role                                                                                                        |
+| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `check.py`                                              | Pre-commit hook; `--all`, `--paths`, `--json`                                                               |
+| `common.py`                                             | Budget constants, `cuts`, Git helpers                                                                       |
+| `blocks.py`                                             | Tree-sitter (ast-grep-py) blocks for scripts, line blocks for styles, scope-aware references between blocks |
+| `inventory.py`                                          | Graph, importers, interface use, `--top`, briefs                                                            |
+| `brief.py`                                              | The brief the workers read                                                                                  |
+| `dispatch.sh`                                           | Stage 2 workers                                                                                             |
+| `collect.sh`, `baseline.py`, `validate.py`, `checks.py` | Stage 3                                                                                                     |
+| `pass.sh`                                               | Stages 0 to 4 in one command                                                                                |
+| `move.py`, `proof.py`                                   | Stage 5: the verbatim move and its proof                                                                    |
+| `scripts/run.sh`                                        | Entry point: every stage plus `summary`, `worktree`, `move`, `proof`, `css`, `land`                         |

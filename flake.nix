@@ -43,6 +43,7 @@
       ./package.json
       ./pnpm-lock.yaml
       ./pnpm-workspace.yaml
+      ./patches
       ./pyproject.toml
       ./quartz.config.ts
       ./quartz.layout.ts
@@ -62,7 +63,7 @@
     mkPackages = system: let
       pkgs = import nixpkgs {inherit system;};
       nodejs = pkgs.nodejs_24;
-      pnpm = pkgs.pnpm_10.override {inherit nodejs;};
+      pnpm = pkgs.pnpm_11.override {inherit nodejs;};
       python = pkgs.python313;
       fetchPnpmInstallFlags = [
         "--frozen-lockfile"
@@ -86,7 +87,7 @@
         inherit pnpm;
         pnpmInstallFlags = fetchPnpmInstallFlags;
         fetcherVersion = 3;
-        hash = "sha256-tk6MRfVmf/v+NW1nbrHkwTslNPlSJbz3bxhu6+7ANco=";
+        hash = "sha256-G8QsfbUGgc0nFDh0iKaDcEa0rl6gEepVuX1fny5K83E=";
       };
       quartz = pkgs.stdenvNoCC.mkDerivation {
         pname = "garden-quartz";
@@ -170,97 +171,38 @@
       default = deployable;
       inherit deployable pnpmDeps quartz site vault;
     };
-    mkApps = system: let
-      pkgs = import nixpkgs {inherit system;};
-      nodejs = pkgs.nodejs_24;
-      pnpm = pkgs.pnpm_10.override {inherit nodejs;};
-      app = drv: {
-        type = "app";
-        program = "${drv}/bin/${drv.name}";
-      };
-      build = pkgs.writeShellApplication {
-        name = "garden-build";
-        runtimeInputs = [
-          pkgs.gitMinimal
-          pkgs.nix
-        ];
-        text = ''
-          root="''${GARDEN_ROOT:-}"
-          if [ -z "$root" ]; then
-            root="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
-          fi
-          exec nix build "$root#deployable" "$@"
-        '';
-      };
-      buildSite = pkgs.writeShellApplication {
-        name = "garden-build-site";
-        runtimeInputs = [
-          pkgs.gitMinimal
-          pkgs.nix
-        ];
-        text = ''
-          root="''${GARDEN_ROOT:-}"
-          if [ -z "$root" ]; then
-            root="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
-          fi
-          exec nix build "$root#site" "$@"
-        '';
-      };
-      deploy = pkgs.writeShellApplication {
-        name = "garden-deploy";
-        runtimeInputs = [
-          pkgs.bash
-          pkgs.coreutils
-          pkgs.fd
-          pkgs.gitMinimal
-          pkgs.git-lfs
-          pkgs.openssh
-          nodejs
-          pnpm
-        ];
-        text = ''
-          deploy_root="''${GARDEN_DEPLOY_ROOT:-$HOME/workspace/aarnphm.github.io}"
-          if [ ! -d "$deploy_root/.git" ]; then
-            printf '%s\n' "missing deploy checkout: $deploy_root" >&2
-            exit 1
-          fi
-          cd "$deploy_root"
-          git pull
-          exec bash ./deploy.sh "$@"
-        '';
-      };
-      preview = pkgs.writeShellApplication {
-        name = "garden-preview";
-        runtimeInputs = [
-          pkgs.caddy
-          pkgs.gitMinimal
-          pkgs.nix
-        ];
-        text = ''
-          root="''${GARDEN_ROOT:-}"
-          if [ -z "$root" ]; then
-            root="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
-          fi
-          site="''${GARDEN_SITE_OUT:-}"
-          if [ -z "$site" ]; then
-            site="$(nix build "$root#deployable" --no-link --print-out-paths)"
-          fi
-          exec caddy file-server --listen "''${GARDEN_PREVIEW_ADDR:-localhost:8080}" --root "$site" "$@"
-        '';
-      };
-    in {
-      default = app build;
-      build = app build;
-      build-site = app buildSite;
-      deploy = app deploy;
-      preview = app preview;
-    };
   in {
     packages = forAllSystems mkPackages;
-    apps = forAllSystems mkApps;
     checks = forAllSystems (
       system: let
-        packages = self.packages.${system};
+        pkgs = import nixpkgs {inherit system;};
+        # tiktoken reads <cache dir>/<sha1 of the rank URL>, so the rank file is fetched at build
+        # time and the hook never needs the network or uv.
+        tiktokenCache =
+          pkgs.runCommand "tiktoken-cache" {
+            rank = pkgs.fetchurl {
+              url = "https://openaipublic.blob.core.windows.net/encodings/o200k_base.tiktoken";
+              sha256 = "446a9538cb6c348e3516120d7c08b09f57c36495e2acfffe59a5bf8b0cfb1a2d";
+            };
+          } ''
+            mkdir -p "$out"
+            cp "$rank" "$out/fb374d419588a4632f3f557e76b4b70aebbca790"
+          '';
+        tokenBudget = pkgs.writeShellApplication {
+          name = "token-budget";
+          runtimeInputs = [
+            pkgs.gitMinimal
+            (pkgs.python313.withPackages (ps: [ps.tiktoken]))
+          ];
+          text = ''
+            export TIKTOKEN_CACHE_DIR=${tiktokenCache}
+            # The flake check runs hooks over a sandbox copy with an empty index and no harness path.
+            root="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
+            script="$root/harness/token-budget/check.py"
+            [ -f "$script" ] || exit 0
+            exec python3 "$script"
+          '';
+        };
         preCommitCheck = git-hooks.lib.${system}.run {
           src = ./.;
           hooks = {
@@ -276,10 +218,18 @@
               enable = true;
               files = "^flake\\.nix$";
             };
+            token-budget = {
+              enable = true;
+              name = "token-budget";
+              entry = "${tokenBudget}/bin/token-budget";
+              language = "system";
+              pass_filenames = false;
+              always_run = true;
+              stages = ["pre-commit"];
+            };
           };
         };
       in {
-        inherit (packages) deployable quartz vault;
         pre-commit-check = preCommitCheck;
       }
     );
@@ -287,7 +237,7 @@
       system: let
         pkgs = import nixpkgs {inherit system;};
         nodejs = pkgs.nodejs_24;
-        pnpm = pkgs.pnpm_10.override {inherit nodejs;};
+        pnpm = pkgs.pnpm_11.override {inherit nodejs;};
         preCommitCheck = self.checks.${system}.pre-commit-check;
       in {
         default = pkgs.mkShell {

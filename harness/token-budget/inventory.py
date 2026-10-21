@@ -26,6 +26,7 @@ from ast_grep_py import SgRoot
 
 from blocks import language, link, script_blocks, string_value, style_blocks
 from brief import CHURN_DAYS, brief
+from check import index_entries, over_budget
 from common import (
   LIMIT,
   TARGET,
@@ -178,6 +179,14 @@ def importers(path: str) -> list[dict]:
     if entry['names']:
       entry['names'] = list(dict.fromkeys(entry['names']))
       out.append(entry)
+  # The hook checks every staged file, so a proposal cannot edit an importer it would reject.
+  heavy = {
+    f['path']: f['tokens']
+    for f in over_budget(index_entries([u['path'] for u in out]))
+  } if out else {}
+  for u in out:
+    if u['path'] in heavy:
+      u['overBudget'] = heavy[u['path']]
   return sorted(out, key=lambda u: u['path'])
 
 

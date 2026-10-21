@@ -162,15 +162,83 @@ def statement_info(st: SgNode) -> dict:
   }
 
 
+def key(node: SgNode) -> tuple:
+  r = node.range()
+  return (r.start.index, r.end.index, node.kind())
+
+
+def params(fn: SgNode) -> list[str]:
+  """Names a function's parameters bind."""
+  one = fn.field('parameter')
+  if one:
+    return binding_names(one)
+  ps = fn.field('parameters')
+  return [
+    n for p in ps.named_children() for n in binding_names(p.field('pattern') or p)
+  ] if ps else []
+
+
+def scope_bindings(node: SgNode, inner: bool) -> set[str]:
+  """Names a scope node binds for the identifiers below it. Function parameters and type
+  parameters bind at any depth. Declarations in a block, a loop head or a catch clause bind only
+  when the scope is inside the statement (`inner`): above it, they are the sibling blocks that
+  `link` resolves."""
+  out: set[str] = set()
+  tps = node.field('type_parameters')
+  if tps:
+    out |= {
+      t.field('name').text()
+      for t in tps.named_children()
+      if t.kind() == 'type_parameter' and t.field('name')
+    }
+  if node.kind() in FUNCTIONS:
+    out |= set(params(node))
+  if not inner:
+    return out
+  k = node.kind()
+  if k == 'statement_block':
+    for st in node.named_children():
+      out |= set(statement_info(st)['names'])
+  elif k in ('for_statement', 'for_in_statement'):
+    init = node.field('initializer') or node.field('left')
+    if init:
+      for d in [init, *init.named_children()]:
+        if d.kind() == 'variable_declarator':
+          out |= set(binding_names(d.field('name')))
+      if k == 'for_in_statement':
+        out |= set(binding_names(init))
+  elif k == 'catch_clause':
+    out |= set(binding_names(node.field('parameter')))
+  elif k in ('arrow_function', 'function_expression', 'class') and node.field('name'):
+    out.add(node.field('name').text())
+  return out
+
+
 def identifiers_used(node: SgNode) -> Counter:
-  """Identifiers a node reads or binds, without property names and `A.B`'s right side."""
+  """Identifiers a node reads or binds, without property names, `A.B`'s right side, and names that
+  a scope inside the node or a parameter list around it binds."""
+  top = key(node)
+  bound: dict[tuple, set[str]] = {}
   found = []
   for kind in IDENTS:
     for i in node.find_all(kind=kind):
       p = i.parent()
       if p and p.kind() == 'nested_type_identifier' and p.field('name') == i:
         continue
-      found.append((i.range().start.index, i.text()))
+      inner = True
+      local = False
+      for a in i.ancestors():
+        k = key(a)
+        # A node is inside or around `node` for every identifier, so one cache entry serves all.
+        if k not in bound:
+          bound[k] = scope_bindings(a, inner)
+        if i.text() in bound[k]:
+          local = True
+          break
+        if k == top:
+          inner = False
+      if not local:
+        found.append((i.range().start.index, i.text()))
   # Source order, so derived lists (imports used) read in the order the code uses them.
   return Counter(t for _, t in sorted(found))
 
@@ -351,8 +419,9 @@ def link(bs: list[dict]) -> list[dict]:
     key = parent or ''
     if key not in scopes:
       scope = dict(scope_for(by_id[parent].get('parent'))) if parent else {}
+      # `export { x } from` binds no local name, so only declarations enter the scope.
       for b in bs:
-        if b.get('parent') == parent and b['kind'] != 'import':
+        if b.get('parent') == parent and b['kind'] not in ('import', 'reexport'):
           for n in b['names']:
             scope[n] = b['id']
       scopes[key] = scope
@@ -368,7 +437,7 @@ def link(bs: list[dict]) -> list[dict]:
       if target and target != b['id'] and n not in b['names']:
         refs[target] = refs.get(target, 0) + count
       source = import_of.get(n)
-      if source and b['kind'] != 'import':
+      if source and b['kind'] not in ('import', 'reexport'):
         names = imports.setdefault(source, [])
         if n not in names:
           names.append(n)

@@ -102,6 +102,7 @@ def brief(g: dict) -> str:
           for n, on in (
             ('type-only', u['typeOnly']),
             ('dynamic', u['dynamic']),
+            (f'**over budget ({u.get("overBudget")} tokens): do not edit**', u.get('overBudget')),
           )
           if on
         ),
@@ -136,6 +137,13 @@ def brief(g: dict) -> str:
     ],
     ['id', 'lines', 'tokens', 'kind', 'names', 'refs', 'imports used'],
   )
+  heavy = (
+    '\nThe pre-commit hook checks every staged file, so an importer marked over budget cannot'
+    ' change in this pass. Keep every name such an importer uses exported from the entry, and do'
+    ' not list it in `importer_changes` or `tests`.\n'
+    if any(u.get('overBudget') for u in g['importers'])
+    else ''
+  )
   order = (
     ' Each file holds one contiguous run of blocks. The entry `@use`s its partials before its own'
     " rules, so the partials' blocks come first in source order and the entry keeps only the"
@@ -165,7 +173,7 @@ Exported with no importer (candidates to hide): {code(iface['unused']) or 'none'
 Used only by tests (tests past the interface?): {code(iface['testOnly']) or 'none'}.
 
 {users}
-
+{heavy}
 ## Blocks
 
 `refs` lists the blocks this block reads (×n = occurrences). A seam belongs where these references are sparse. Read source ranges with `sed -n '<start>,<end>p' {g['path']}` only when the label is not enough; find a name's uses with `rg -nw <name>`{'' if style else f" or `ast-grep run -p '<pattern>' -l ts {g['path']}`"}.

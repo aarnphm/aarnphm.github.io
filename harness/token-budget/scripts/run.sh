@@ -8,11 +8,15 @@
 #                                              TB_WORKERS="opus argon" Opus on API credits for Sol)
 #   summary <run>                              per target: proposals, checks, decisions, ARI
 #   worktree <name> <path>                     w garden tb-<name>; checks the target blob at HEAD
-#   proof <worktree> <path>                    move proof: non-import lines, original vs module
+#   move <worktree> <run>/<slug> <worker>      stage 5: the worker's proposal, blocks moved verbatim,
+#                                              import headers and entry re-exports generated
+#   proof <worktree> <path>                    move proof: code lines, original vs module
 #   css <worktree> <path>                      compiled CSS, HEAD vs worktree, for the target and
 #                                              each stylesheet that @uses it; must be identical
 #   land <worktree> <out-dir> <path>...        worktree changes vs HEAD -> <out-dir>/land.patch,
 #                                              applied to this checkout's index (stage only)
+#   clean <worktree>                           after the commit: remove the worktree and its branch
+#                                              when every changed file matches HEAD
 #   inventory | dispatch | collect | validate | baseline [args]   one stage script, as is
 #
 # Commands run from the main checkout; <worktree> is a `w` worktree path.
@@ -21,7 +25,7 @@ TB=$(cd "$(dirname "$0")/.." && pwd)
 WS=$(git -C "$TB" rev-parse --show-toplevel)
 SASS="$WS/node_modules/.bin/sass"
 
-usage() { sed -n '3,19p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 2; }
+usage() { sed -n '3,22p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 2; }
 need() { [ "$1" -ge "$2" ] || usage; }
 
 cmd=${1:-}
@@ -65,15 +69,10 @@ case $cmd in
       || echo "warning: $2 in this checkout's index ($index) differs from HEAD ($head); wait for a commit" >&2
     ;;
 
-  proof)
-    need $# 2
-    wt=$1 p=$2
-    strip() { rg -v '^\s*(import\b|export \{|export \* from|\} from |@use )' | sd '^export (default )?' '' | sort; }
-    tmp=$(mktemp -d)
-    git -C "$wt" show "HEAD:$p" | strip > "$tmp/before"
-    cat "$wt/$p" $(fd -t f . "$wt/${p%.*}") | strip > "$tmp/after"
-    if diff "$tmp/before" "$tmp/after"; then echo "move proof: identical"; else echo "move proof: only blank lines and new comments may differ (above)"; fi
-    rm -r "$tmp"
+  proof) need $# 2; exec "$TB/proof.py" "$@" ;;
+  move)
+    need $# 3
+    exec "$TB/move.py" "$(dirname "$2")/graph.json" "$2/$3/proposal.json" "$1"
     ;;
 
   css)
@@ -111,7 +110,25 @@ case $cmd in
     git -C "$wt" diff --cached --binary HEAD -- "$@" > "$out/land.patch"
     git -C "$WS" apply --index --3way "$out/land.patch"
     git -C "$WS" status --short -- "$@"
-    echo "staged from $out/land.patch; aarnphm commits, then: w --rm garden $(basename "$wt"); git branch -D aarnphm/$(basename "$wt")"
+    echo "staged from $out/land.patch; after aarnphm commits: run.sh clean $wt"
+    ;;
+
+  clean)
+    need $# 1
+    wt=$1
+    # The split lives in the worktree as uncommitted files (land copies it by patch), so `w --rm`
+    # refuses; remove only when every changed file matches this checkout's HEAD.
+    left=0
+    for f in $(git -C "$wt" status --porcelain -uall | awk '{print $NF}' | rg -v '^node_modules$'); do
+      a=$( [ -f "$wt/$f" ] && git -C "$wt" hash-object "$wt/$f" || echo deleted)
+      b=$(git -C "$WS" rev-parse -q --verify "HEAD:$f" || echo deleted)
+      [ "$a" = "$b" ] || { echo "not in HEAD: $f"; left=1; }
+    done
+    [ $left -eq 0 ] || { echo "keeping $wt; compare with git diff --no-index, then remove by hand" >&2; exit 1; }
+    branch=$(git -C "$wt" branch --show-current)
+    rm -f "$wt/node_modules"
+    git -C "$WS" worktree remove --force "$wt"
+    [ -z "$branch" ] || git -C "$WS" branch -D "$branch"
     ;;
 
   *) usage ;;
