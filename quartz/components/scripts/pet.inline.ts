@@ -554,18 +554,6 @@ const coversText = (edge: Edge, obstacles = petObstacles()) => {
   )
 }
 
-// Probes run with the pet hidden, so its own drawing never counts as the page's.
-function unseen<T>(probe: () => T): T {
-  // Probes nest (a landing asks where the friend would go), so each restores what it found.
-  const before = root?.style.visibility ?? ''
-  if (root) root.style.visibility = 'hidden'
-  try {
-    return probe()
-  } finally {
-    if (root) root.style.visibility = before
-  }
-}
-
 // The floor, too, keeps off text: a client point where the pet could stand on its own line.
 const floorStep = 16
 const floorY = () => window.innerHeight - margin - (viewBottom - edgeY.floor) * unit
@@ -577,39 +565,37 @@ const floorNear = (
   x: number,
   fits?: (p: Perch) => boolean,
   seen: PlacementMeasurements = {},
-): Perch | null =>
-  unseen<Perch | null>(() => {
-    const obstacles = (seen.obstacles ??= petObstacles())
-    const lo = margin + width / 2
-    const hi = window.innerWidth - margin - width / 2
-    const start = clamp(x, lo, hi)
-    const bottom = floorY()
-    const top = margin + (edgeY.floor - viewTop) * unit
-    for (let y = bottom; y >= top; y -= floorStep)
-      for (let k = 0; k * floorStep <= hi - lo; k++)
-        for (const c of k ? [start + k * floorStep, start - k * floorStep] : [start]) {
-          if (c < lo || c > hi || !floorClear(c, y, obstacles)) continue
-          const p: Perch = {
-            el: null,
-            kind: 'floor',
-            t: c / window.innerWidth,
-            foot: y === bottom ? undefined : { x: c + window.scrollX, y: y + window.scrollY },
-          }
-          if (!fits || fits(p)) return p
+): Perch | null => {
+  const obstacles = (seen.obstacles ??= petObstacles())
+  const lo = margin + width / 2
+  const hi = window.innerWidth - margin - width / 2
+  const start = clamp(x, lo, hi)
+  const bottom = floorY()
+  const top = margin + (edgeY.floor - viewTop) * unit
+  for (let y = bottom; y >= top; y -= floorStep)
+    for (let k = 0; k * floorStep <= hi - lo; k++)
+      for (const c of k ? [start + k * floorStep, start - k * floorStep] : [start]) {
+        if (c < lo || c > hi || !floorClear(c, y, obstacles)) continue
+        const p: Perch = {
+          el: null,
+          kind: 'floor',
+          t: c / window.innerWidth,
+          foot: y === bottom ? undefined : { x: c + window.scrollX, y: y + window.scrollY },
         }
-    return null
-  })
+        if (!fits || fits(p)) return p
+      }
+  return null
+}
 
 // How far along the floor from `from` toward `to` the pet can walk with text clear underfoot.
-const floorReach = (from: number, to: number) =>
-  unseen(() => {
-    const obstacles = petObstacles()
-    const dir = Math.sign(to - from)
-    let x = from
-    while (Math.abs(to - x) > floorStep && floorClear(x + dir * floorStep, floorY(), obstacles))
-      x += dir * floorStep
-    return Math.abs(to - x) <= floorStep && floorClear(to, floorY(), obstacles) ? to : x
-  })
+const floorReach = (from: number, to: number) => {
+  const obstacles = petObstacles()
+  const dir = Math.sign(to - from)
+  let x = from
+  while (Math.abs(to - x) > floorStep && floorClear(x + dir * floorStep, floorY(), obstacles))
+    x += dir * floorStep
+  return Math.abs(to - x) <= floorStep && floorClear(to, floorY(), obstacles) ? to : x
+}
 
 // The first edge that is actually in view at the point the pet would hold, moves with the page,
 // and leaves the text around it clear.
@@ -619,18 +605,16 @@ function pickEdge(
   fits?: (p: Perch) => boolean,
   seen: PlacementMeasurements = {},
 ): Edge | null {
-  return unseen(() => {
-    const obstacles = (seen.obstacles ??= petObstacles())
-    for (const edge of edgesNear(anchor, avoid).slice(0, 20)) {
-      const probe = edge.kind === 'hang' ? edge.at.y - 3 : edge.at.y + 3
-      const hit = document.elementsFromPoint(edge.at.x, probe).find(e => !root?.contains(e))
-      if (edge.kind === 'stand' && (!hit || !(edge.el === hit || edge.el!.contains(hit)))) continue
-      if (!inFlow(edge.el!) || coversText(edge, obstacles)) continue
-      if (fits && !fits(edge)) continue
-      return edge
-    }
-    return null
-  })
+  const obstacles = (seen.obstacles ??= petObstacles())
+  for (const edge of edgesNear(anchor, avoid).slice(0, 20)) {
+    const probe = edge.kind === 'hang' ? edge.at.y - 3 : edge.at.y + 3
+    const hit = document.elementsFromPoint(edge.at.x, probe).find(e => !root?.contains(e))
+    if (edge.kind === 'stand' && (!hit || !(edge.el === hit || edge.el!.contains(hit)))) continue
+    if (!inFlow(edge.el!) || coversText(edge, obstacles)) continue
+    if (fits && !fits(edge)) continue
+    return edge
+  }
+  return null
 }
 
 // The document position (top-left of the pet) that puts its held edge on `perch`.
@@ -739,7 +723,7 @@ const wander = () => {
         x: target.x - window.scrollX + (width * scale) / 2,
         y: target.y - window.scrollY + (edgeY[next.kind] - viewTop) * unit * scale,
       }
-      if (unseen(() => coversText({ ...next, at, score: 0 }))) return
+      if (coversText({ ...next, at, score: 0 })) return
     }
     moveTo(next, how)
   }
@@ -752,7 +736,7 @@ const wander = () => {
   // On the floor it stops short of the first stretch that would put it over text.
   if (!perch.el) {
     const here = center().x
-    if (!unseen(() => floorClear(here))) return relocate(center(), null)
+    if (!floorClear(here)) return relocate(center(), null)
     t = floorReach(here, t * span) / span
   }
   if (Math.abs(t - perch.t) * span < 30) return
@@ -2132,9 +2116,7 @@ const slidesPerch = (seen: PlacementMeasurements): Perch | 'covered' | null => {
   const drop = Math.max(0, margin + (edgeY.sit - viewTop) * unit - rect.top)
   const p: Perch = { el: deck, kind: 'sit', t: 1 + (0.36 * unit) / rect.width, drop }
   const at = { x: placeOn(p).x - window.scrollX + width / 2, y: rect.top + drop }
-  return unseen(() => coversText({ ...p, at, score: 0 }, (seen.obstacles ??= petObstacles())))
-    ? 'covered'
-    : p
+  return coversText({ ...p, at, score: 0 }, (seen.obstacles ??= petObstacles())) ? 'covered' : p
 }
 
 // The page changed under a perched pet: if its edge went away or text now sits under it, it finds
@@ -2147,8 +2129,7 @@ function recheckPerch() {
     y: doc.y - window.scrollY + (edgeY[perch.kind] - viewTop) * unit * scale,
   }
   const gone = !!perch.el && !perch.el.getClientRects().length
-  if (gone || unseen(() => coversText({ ...perch!, at, score: 0 })))
-    relocate(center(), gone ? null : perch.el)
+  if (gone || coversText({ ...perch!, at, score: 0 })) relocate(center(), gone ? null : perch.el)
 }
 
 function relocate(anchor: Point, avoid: Element | null, how: 'chute' | null = null) {
@@ -2159,19 +2140,20 @@ function relocate(anchor: Point, avoid: Element | null, how: 'chute' | null = nu
   if (friend) friend.style.visibility = 'hidden'
   let next: Perch | null
   try {
-    next = unseen(() => {
-      // No page writes occur until a perch is chosen. Every fallback shares this one snapshot.
-      const seen: PlacementMeasurements = {}
-      const slides = slidesPerch(seen)
-      const fits =
-        friend && friendPage() ? (p: Perch) => !!friendSpot(p, placeOn(p), false, seen) : undefined
-      return slides === 'covered'
+    // No page writes occur until a perch is chosen. Every fallback shares this one snapshot. The
+    // pet stays shown while it measures: every probe already skips the pet's own boxes, and hiding
+    // it toggled inherited `visibility` across ~3k SVG nodes, ~20 ms of style per toggle.
+    const seen: PlacementMeasurements = {}
+    const slides = slidesPerch(seen)
+    const fits =
+      friend && friendPage() ? (p: Perch) => !!friendSpot(p, placeOn(p), false, seen) : undefined
+    next =
+      slides === 'covered'
         ? null
         : (slides ??
-            (fits && (pickEdge(anchor, avoid, fits, seen) ?? floorNear(anchor.x, fits, seen))) ??
-            pickEdge(anchor, avoid, undefined, seen) ??
-            floorNear(anchor.x, undefined, seen))
-    })
+          (fits && (pickEdge(anchor, avoid, fits, seen) ?? floorNear(anchor.x, fits, seen))) ??
+          pickEdge(anchor, avoid, undefined, seen) ??
+          floorNear(anchor.x, undefined, seen))
   } finally {
     if (friend) friend.style.visibility = before
   }
@@ -2726,7 +2708,7 @@ function friendSpot(
   const before = friend?.style.visibility ?? ''
   if (friend) friend.style.visibility = 'hidden'
   try {
-    return unseen(probe)
+    return probe()
   } finally {
     if (friend) friend.style.visibility = before
   }

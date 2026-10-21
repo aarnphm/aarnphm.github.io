@@ -646,6 +646,20 @@
   }
 }
 
+// The rail run is set on the pet's box for its own animation. Inherited, each new run restyled
+// every node of the SVG artwork (~17 ms on a triathlon day page).
+@property --pet-rail-from {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --pet-rail-to {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
 @keyframes pet-rail {
   from {
     translate: 0 var(--pet-rail-from, 0);
