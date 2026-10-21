@@ -2587,36 +2587,42 @@
       "title": "To Save and to Destroy: Writing as an Other",
       "publisher": "Belknap Press of Harvard University Press",
       "isbn": "9780674298170",
-      "editionEvidence": "Same photograph shows exact saved cream/redprofile front, full spine and rear barcode9780674298170. Jacket credit Evan Gaffney visible on flap. Same gallery copyright and signed title establish2025 firsthardcover. Original jacket curves retained, no redrawn letterforms.",
-      "page": "https://www.ebay.com/p/13070925640?iid=306396935278",
-      "source": "https://i.ebayimg.com/images/g/P9UAAeSw6QBodoPX/s-l1600.jpg",
-      "sourceSha256": "fd66870ff020bc0284106fbaf75f52bbe2cea8861a19eca6d7bd785eca3c4476",
+      "editionEvidence": "Same photograph shows exact saved cream/redprofile front, full spine and rear barcode9780674298170. Jacket credit Evan Gaffney visible on flap. Same gallery copyright and signed title establish2025 firsthardcover. Original jacket curves retained, no redrawn letterforms. Higher-native matching-design physical-copy source replaces only the spine extraction. Biblio's photographed signed first-edition listing identifies a fine 2025 hardcover from The Belknap Press of Harvard University Press and ISBN 9780674298170. Its physical jacket front matches the pinned cream/red-profile design, and the same image shows the full spine from head to tail, including the title, author and Belknap/Harvard mark.",
+      "page": "https://www.biblio.com/book/save-destroy-writing-other-signed-title/d/1690731047",
+      "source": "https://d3525k1ryd2155.cloudfront.net/h/047/731/1690731047.0.x.jpg",
+      "sourceSha256": "f0ca4ce43437e960f1a1b8f8606f68734cf2b3fa2ed5e2feec7aaeac7da9e1c8",
+      "sourceKind": "Native photograph of the exact listed physical hardcover and dust jacket. Current front and complete printed spine are visible together; both rounded ends and Belknap/Harvard imprint are present.",
       "poster": "library/posters/to-save-and-to-destroy.jpg",
       "posterSha256": "803ba7edb9fd0326dea9a1f610cfc8dd95e69bfa7c96ea3a0471798050e7730b",
-      "crop": { "left": 0, "top": 0, "width": 64, "height": 584 },
-      "artwork": "to-save-and-to-destroy-round-10-sampling.webp",
+      "crop": { "left": 0, "top": 0, "width": 125, "height": 2664 },
       "height": 320,
-      "artworkSha256": "22b9fc581ef4f670b10b42e117f8a8a297d4b1430907a96ab12a1ff2fbd4a3a0",
+      "artwork": "to-save-and-to-destroy-r27-native.webp",
+      "sampling": "independent",
       "perspective": {
-        "width": 64,
-        "height": 584,
+        "width": 125,
+        "height": 2664,
         "points": [
-          { "source": [603, 116], "target": [0, 0] },
-          { "source": [652, 119], "target": [63, 0] },
-          { "source": [637, 693], "target": [63, 583] },
-          { "source": [587, 699], "target": [0, 583] }
+          { "source": [127, 73], "target": [0, 0] },
+          { "source": [242, 67], "target": [124, 0] },
+          { "source": [231, 2575], "target": [124, 2663] },
+          { "source": [126, 2575], "target": [0, 2663] }
         ]
       },
-      "sourceKind": "physical-jacket-photograph",
-      "corroboration": [
-        "https://i.ebayimg.com/images/g/96QAAeSwH6xoSxDJ/s-l1600.jpg",
-        "https://i.ebayimg.com/images/g/I3AAAeSwJmZodoPC/s-l1600.jpg"
-      ],
-      "detailArtwork": "to-save-and-to-destroy-detail-47496842632c1115.webp",
-      "detailArtworkSha256": "47496842632c1115a5f667e4947de4a8f191d78b7767d8ef78d101cf634ef560",
-      "detailWidth": 62,
-      "detailHeight": 574,
-      "sampling": "independent"
+      "lowPerspective": {
+        "width": 125,
+        "height": 2664,
+        "points": [
+          { "source": [127, 73], "target": [0, 0] },
+          { "source": [242, 67], "target": [124, 0] },
+          { "source": [231, 2575], "target": [124, 2663] },
+          { "source": [126, 2575], "target": [0, 2663] }
+        ]
+      },
+      "artworkSha256": "8ba0298e42a26ca8eb6848d761073f2a50d508ce0fe7cad233243e94921dbbd7",
+      "detailArtwork": "to-save-and-to-destroy-detail-c2a368aaefbba701.webp",
+      "detailArtworkSha256": "c2a368aaefbba701f13772b6e9d23cdac8c4fc6fe05d3904559e496ab0523e47",
+      "detailWidth": 60,
+      "detailHeight": 1280
     },
     {
       "id": "language-truth-and-logic",
@@ -4477,6 +4483,37 @@
       "title": "The Voice of Robert Desnos",
       "publisher": "The Ecco Press",
       "isbn": "9780880012614",
+      "editionEvidence": "Rulon-Miller Books seller listing identifies inventory 62898 as a first edition published by Ecco Press in 1991, inscribed by William Kulik to Kim Merker. Gallery image 1 is the actual physical front and complete spine. Native gallery image 2 is the title page naming the same volume, translators, and editor; the inscription reads For Kim Merker / Best wishes! / Bill Kulik, July 4, 1991. Academy of American Poets credits The Voice of Robert Desnos to Desnos and Kulik in The Selected Poems of Robert Desnos. The review front uses an estimated 2:3 octavo face ratio, because no verified physical dimensions were available. The photographed front plane shortest sampled width is 284 px, so the crop uses 284x426 and does not exceed source sampling. This estimate describes the review crop only; it does not assert verified book measurements. Final plane registration follows the visible front-to-spine jacket joint and physical board perimeter; page block and outside backdrop are excluded. The spine crop includes both complete printed columns and the Ecco mark. Higher-native matching-design physical-copy source replaces only the spine extraction. The seller's 1991 Ecco Press first-edition hardcover listing identifies the title, year, publisher, binding and first-printing status. Its physical jacket front matches the pinned portrait design, and the same photograph shows the complete printed spine with both rounded ends, title, translators/editor credit and Ecco mark. The matching 1991 hardcover ISBN 9780880012614 is established by the publisher/edition catalog record.",
+      "page": "https://www.ebay.com/itm/225073381409",
+      "source": "https://i.ebayimg.com/images/g/t~AAAOSw6bVizyXF/s-l1600.webp",
+      "sourceSha256": "bf0d6a326385ba899bb03c7843905bd65e1114be81c5690650ba20e24b7d1046",
+      "sourceKind": "Native seller photograph of an actual 1991 Ecco Press hardcover. Current cover and adjacent complete dust-jacket spine are visible in one frame, including the head, tail and Ecco imprint.",
+      "poster": "library/posters/the-voice-of-robert-desnos.png",
+      "posterSha256": "1e95c3e191ea4535425db8bd472f0fff594100491366ef7307e9ccc4d0864ea7",
+      "crop": { "left": 0, "top": 0, "width": 100, "height": 1600 },
+      "height": 320,
+      "artwork": "the-voice-of-robert-desnos-r27-native.webp",
+      "sampling": "independent",
+      "perspective": {
+        "width": 100,
+        "height": 1600,
+        "points": [
+          { "source": [110, 42], "target": [0, 0] },
+          { "source": [203, 22], "target": [99, 0] },
+          { "source": [203, 1518], "target": [99, 1599] },
+          { "source": [114, 1514], "target": [0, 1599] }
+        ]
+      },
+      "lowPerspective": {
+        "width": 100,
+        "height": 1600,
+        "points": [
+          { "source": [110, 42], "target": [0, 0] },
+          { "source": [203, 22], "target": [99, 0] },
+          { "source": [203, 1518], "target": [99, 1599] },
+          { "source": [114, 1514], "target": [0, 1599] }
+        ]
+      },
       "containingVolume": {
         "title": "The Selected Poems of Robert Desnos",
         "author": "Robert Desnos",
@@ -4486,47 +4523,11 @@
         "translation": "William Kulik",
         "page": "https://poets.org/poem/voice-robert-desnos/print"
       },
-      "page": "https://www.abebooks.com/first-edition/selected-poems-Translated-Carolyn-Forche-William/31439566751/bd",
-      "editionEvidence": "Rulon-Miller Books seller listing identifies inventory 62898 as a first edition published by Ecco Press in 1991, inscribed by William Kulik to Kim Merker. Gallery image 1 is the actual physical front and complete spine. Native gallery image 2 is the title page naming the same volume, translators, and editor; the inscription reads For Kim Merker / Best wishes! / Bill Kulik, July 4, 1991. Academy of American Poets credits The Voice of Robert Desnos to Desnos and Kulik in The Selected Poems of Robert Desnos. The review front uses an estimated 2:3 octavo face ratio, because no verified physical dimensions were available. The photographed front plane shortest sampled width is 284 px, so the crop uses 284x426 and does not exceed source sampling. This estimate describes the review crop only; it does not assert verified book measurements. Final plane registration follows the visible front-to-spine jacket joint and physical board perimeter; page block and outside backdrop are excluded. The spine crop includes both complete printed columns and the Ecco mark.",
-      "source": "https://pictures.abebooks.com/inventory/31439566751.jpg",
-      "sourceSha256": "28b7023349dd5180d1f6ceef9673044c5d72a303fbe36797f4a0d363775923b2",
-      "poster": "library/posters/the-voice-of-robert-desnos.png",
-      "posterSha256": "1e95c3e191ea4535425db8bd472f0fff594100491366ef7307e9ccc4d0864ea7",
-      "frontProportionEstimate": {
-        "ratio": "2:3",
-        "basis": "Visual estimate for the octavo book face; exact physical width and height are not verified.",
-        "crop": { "left": 0, "top": 0, "width": 284, "height": 426 },
-        "perspective": {
-          "width": 284,
-          "height": 426,
-          "points": [
-            { "source": [94, 80], "target": [0, 0] },
-            { "source": [390, 42], "target": [283, 0] },
-            { "source": [393, 566], "target": [283, 425] },
-            { "source": [112, 623], "target": [0, 425] }
-          ]
-        }
-      },
-      "crop": { "left": 0, "top": 0, "width": 44, "height": 540 },
-      "perspective": {
-        "width": 44,
-        "height": 540,
-        "points": [
-          { "source": [55, 73], "target": [0, 0] },
-          { "source": [94, 80], "target": [43, 0] },
-          { "source": [112, 623], "target": [43, 539] },
-          { "source": [69, 618], "target": [0, 539] }
-        ]
-      },
-      "sampling": "independent",
-      "artwork": "the-voice-of-robert-desnos-spine-28b7023349dd.webp",
-      "height": 320,
-      "spineSourceSha256": "28b7023349dd5180d1f6ceef9673044c5d72a303fbe36797f4a0d363775923b2",
-      "artworkSha256": "c1bf3fab13bfcd471b5b58ff7ddb443cf086c95bbdb783cbbde37f833980db24",
-      "detailArtwork": "the-voice-of-robert-desnos-detail-5aced4403a9744a0.webp",
-      "detailArtworkSha256": "5aced4403a9744a079cfd133052776f6e2a46066d6fd4e69a43f7908bdced6e2",
-      "detailWidth": 44,
-      "detailHeight": 543
+      "artworkSha256": "1041c514b98e34f861973fa38a9f0e27586f5aaad74c280d8ac3f2e50d282274",
+      "detailArtwork": "the-voice-of-robert-desnos-detail-de1abdbdfd350b90.webp",
+      "detailArtworkSha256": "de1abdbdfd350b903fd92546b4580f0bd1c581ca0eb0150cc97ea7f1a058dc6b",
+      "detailWidth": 80,
+      "detailHeight": 1280
     },
     {
       "id": "mathematics",
@@ -6344,6 +6345,231 @@
       "detailArtworkSha256": "0b63cc7cc95f2fc7242daa182fe5a176be14045300a6e4ae547bdf236eb23e30",
       "detailWidth": 160,
       "detailHeight": 1280
+    },
+    {
+      "id": "east-of-eden-penguin-orange-2016-9780143129486-r25",
+      "title": "East of Eden",
+      "author": "John Steinbeck",
+      "publisher": "Penguin Classics, Penguin Orange Collection",
+      "isbn": "9780143129486",
+      "editionEvidence": "The saved stop-sign/tower front was unidentified. The approved unidentified-front replacement route supplies a verified physical English edition of the same work, without a claim about relative design chronology. Paul Buckley’s primary Penguin Orange design portfolio supplies the complete physical spine and matching flat front, illustrated by Eric Nyquist. A separate PangoBooks actual-copy gallery shows the same tree, keys, Penguin and revolver spine layout, matching rabbit/snake front, and a photographed back printing ISBN 9780143129486. Penguin Random House identifies that ISBN as its October 18, 2016, 608-page paperback. The designer photograph closes the Pango photo’s clipped author/head gap. All author/title/imprint and illustration regions are observed. The crop trims only small unprinted physical edge margins; photography, lighting and native blur remain.",
+      "page": "https://paulbuckleydesign.com/project_orange.html",
+      "source": "https://paulbuckleydesign.com/img/penguin_orange/orange_013_14.webp",
+      "sourceSha256": "e3c49845da40e105f114dd6363dda0e5ea0a5f2cb63c5cb29c6c9693b16073af",
+      "sourceKind": "Designer portfolio photograph of complete physical Penguin Orange Collection spines. The first spine is East of Eden, corroborated by actual-copy matching front/spine and photographed ISBN back.",
+      "poster": "library/posters/east-of-eden.jpg",
+      "posterSha256": "312147d0a01da414d0bbcc795b9c8d399dda3e4f518de6ce40efa6cf9b8d50b8",
+      "crop": { "left": 0, "top": 0, "width": 136, "height": 681 },
+      "height": 320,
+      "artwork": "east-of-eden-penguin-orange-2016-9780143129486-r25.webp",
+      "perspective": {
+        "width": 136,
+        "height": 681,
+        "points": [
+          { "source": [66, 3], "target": [0, 0] },
+          { "source": [201, 3], "target": [135, 0] },
+          { "source": [201, 684], "target": [135, 680] },
+          { "source": [65, 684], "target": [0, 680] }
+        ]
+      },
+      "lowPerspective": {
+        "width": 136,
+        "height": 681,
+        "points": [
+          { "source": [66, 3], "target": [0, 0] },
+          { "source": [201, 3], "target": [135, 0] },
+          { "source": [201, 684], "target": [135, 680] },
+          { "source": [65, 684], "target": [0, 680] }
+        ]
+      },
+      "sampling": "independent",
+      "artworkSha256": "f2028b340522d27e538f4827cd0b7b41d4c4546210a7922fbbed4b67c78a4443",
+      "detailArtwork": "east-of-eden-penguin-orange-2016-9780143129486-r25-detail-a6047069bd4f8511.webp",
+      "detailArtworkSha256": "a6047069bd4f8511dc955dcd540ceb49f1345075d1b1b3b6fcdca46d6b4b108a",
+      "detailWidth": 136,
+      "detailHeight": 681
+    },
+    {
+      "id": "technological-republic-crown-currency-2025-isbn-9780593798690-r26-le",
+      "title": "The Technological Republic",
+      "author": "Alexander C. Karp; Nicholas W. Zamiska",
+      "publisher": "Crown Currency",
+      "isbn": "9780593798690",
+      "editionEvidence": "AbeBooks signed-first hardcover listing identifies the 2025 Crown Currency US edition and ISBN 9780593798690. The seller's photographed copy shows the pale-blue concentric-line front matching the pinned poster, plus the complete physical spine with both ends visible. The spine prints the title, both authors, the Crown mark and Crown Currency imprint. The UK Bodley Head edition has a different front and is excluded.",
+      "page": "https://www.abebooks.co.uk/signed-first-edition/Technological-Republic-Hard-Power-Soft-Belief/32163801938/bd",
+      "source": "https://pictures.abebooks.com/inventory/32163801938_c16efa82-02f1-4daa-9c12-79cce3d6e977.jpg",
+      "sourceSha256": "20ec4887db126b42c1c2c554d6a72af34fd7a361ea71467153e90a2bfaa8d03b",
+      "sourceKind": "Native photograph of the exact listed physical hardcover. The current-design front and its complete adjacent spine are visible in one image, including both rounded physical ends and every printed spine mark.",
+      "poster": "library/posters/the-technological-republic.jpg",
+      "posterSha256": "e1d0fb853238415394e48710f3e1c017a6334faab6cef3324860fabc4f0acaf8",
+      "crop": { "left": 0, "top": 0, "width": 200, "height": 4096 },
+      "height": 320,
+      "artwork": "technological-republic-crown-currency-2025-isbn-9780593798690-r26-le-v3.webp",
+      "sampling": "independent",
+      "perspective": {
+        "width": 200,
+        "height": 4096,
+        "points": [
+          { "source": [125, 270], "target": [0, 0] },
+          { "source": [365, 95], "target": [199, 0] },
+          { "source": [274, 4750], "target": [199, 4095] },
+          { "source": [130, 4735], "target": [0, 4095] }
+        ]
+      },
+      "lowPerspective": {
+        "width": 200,
+        "height": 4096,
+        "points": [
+          { "source": [125, 270], "target": [0, 0] },
+          { "source": [365, 95], "target": [199, 0] },
+          { "source": [274, 4750], "target": [199, 4095] },
+          { "source": [130, 4735], "target": [0, 4095] }
+        ]
+      },
+      "detailWidth": 62,
+      "detailHeight": 1280,
+      "artworkSha256": "07c32fa05425ffa2feab6b8e7a737779006042502b4d221c667e7ffb55862825",
+      "detailArtwork": "technological-republic-crown-currency-2025-isbn-9780593798690-r26-le-detail-a1e508690f03e7e7.webp",
+      "detailArtworkSha256": "a1e508690f03e7e738cf4a180022430c74f8bc0aa3aabcb9c0bc1bff8bbee718"
+    },
+    {
+      "id": "gravitys-rainbow-penguin-classics-deluxe-0143039946-r26-root",
+      "title": "Gravity's Rainbow",
+      "author": "Thomas Pynchon",
+      "publisher": "Penguin Classics Deluxe Edition",
+      "isbn": "9780143039945",
+      "editionEvidence": "AbeBooks item 32466920353 is a copy-specific Bookbot listing. Its page identifies the book as Penguin LCC US, paperback, 2006, ISBN 9780143039945, English; gallery image 1 shows the pinned front and complete physical spine, and gallery image 2 shows the back with the matching printed ISBN and barcode. The gallery images belong to the same seller item. The spine photo shows the full title, author, Penguin Classics Deluxe Edition line and penguin mark from head to tail. The source image is 1920x1920. The spine plane trims about 40 source pixels from the rounded unprinted physical tail at source y=1680; all printed marks, including the Penguin Classics Deluxe Edition imprint, remain visible. The front plane is observed in the same photo as the spine; the pinned front remains unchanged. Root inset the right boundary to exclude the adjacent front-face strip, and samples the shelf tier independently from the native photo at96x320. The recipe trims small unprinted curved head/tail and side margins; all printed spine marks remain.",
+      "sourceBack": "https://pictures.abebooks.com/inventory/32466920353_2._SL1000_.jpg",
+      "sourceBackSha256": "29c917d91ec697ef1ed464c1d1069df5f887fa92b39ff5650381b536e7df631d",
+      "sourceBackDimensions": [1000, 1000],
+      "sourceBackObservation": "Seller gallery image 2 prints ISBN 978-0-14-303994-5 above the barcode. This joins the copy-specific front and complete spine in gallery image 1 to ISBN 9780143039945.",
+      "page": "https://www.abebooks.com/Gravitys-Rainbow-Penguin-Classics-Deluxe/32466920353/bd",
+      "source": "https://pictures.abebooks.com/inventory/32466920353.jpg",
+      "sourceSha256": "0ceae6129e20bbb94dd1e162c7e71f308a473c377e95b00cf1c183705552547d",
+      "sourceKind": "Copy-specific native seller JPEG, 1920x1920 pixels. Perspective correction samples the photographed front and spine only; no text or marks are synthesized.",
+      "poster": "library/posters/gravitys-rainbow.jpg",
+      "posterSha256": "77ccba1ea82b871fc163c9ec503142a4a8e1e8e3886fd631be0134a083363c59",
+      "crop": { "left": 0, "top": 0, "width": 112, "height": 1481 },
+      "perspective": {
+        "width": 112,
+        "height": 1481,
+        "points": [
+          { "source": [491, 201], "target": [0, 0] },
+          { "source": [602, 200], "target": [111, 0] },
+          { "source": [607, 1681], "target": [111, 1480] },
+          { "source": [490, 1681], "target": [0, 1480] }
+        ]
+      },
+      "height": 320,
+      "artwork": "gravitys-rainbow-penguin-classics-deluxe-0143039946-r26-root.webp",
+      "lowPerspective": {
+        "width": 112,
+        "height": 1481,
+        "points": [
+          { "source": [491, 201], "target": [0, 0] },
+          { "source": [602, 200], "target": [111, 0] },
+          { "source": [607, 1681], "target": [111, 1480] },
+          { "source": [490, 1681], "target": [0, 1480] }
+        ]
+      },
+      "sampling": "independent",
+      "artworkSha256": "034440e349e24767db1388761f7f7b0fba9f44f684191d17938b02cd39aba346",
+      "detailArtwork": "gravitys-rainbow-penguin-classics-deluxe-0143039946-r26-root-detail-533d8a4567d41762.webp",
+      "detailArtworkSha256": "533d8a4567d417622d9426ca6ba216c5d303909b792c606d62a94e9e51311dcc",
+      "detailWidth": 96,
+      "detailHeight": 1280
+    },
+    {
+      "id": "tractatus-dover-ogden-9780486404455-r31",
+      "title": "Tractatus Logico-Philosophicus",
+      "author": "Ludwig Wittgenstein",
+      "publisher": "Dover Publications",
+      "isbn": "9780486404455",
+      "editionEvidence": "Acervo Infinito listing 8164528 identifies a used English Dover paperback, ISBN 9780486404455. Its live gallery image 1 shows the physical front matching the current pin. Gallery image 2 shows the same copy's complete spine, with WITTGENSTEIN, TRACTATUS LOGICO-PHILOSOPHICUS, and DOVER visible from head to tail. Gallery image 3 shows the same copy's back, printing ISBN-13 978-0-486-40445-5 and identifying C. K. Ogden's English translation. The back states Dover (1999) republication of the Routledge & Kegan Paul 1922 English translation. The gallery has no interior copyright leaf; the back-cover ISBN and translator line join the physical copy to the exact Dover/Ogden edition. The listing's 2013 seller catalog date does not override the physical copy's printed 1999 republication statement. Root uses a conservative interior plane to exclude neighboring front/background edge pixels, trimming only unprinted curved head/tail margins. A separately tested contour SVG lost serif strokes and publisher-mark detail, so the photographic source is retained.",
+      "page": "https://www.portaldolivreiro.com.br/livro.asp?codigo=8164528&titulo=Tractatus+Logico-Philosophicus",
+      "source": "https://imagedelivery.net/8_mRjFmPxY_brewboTCwFg/5a2ea981-4dc7-4308-235a-b88721783300/public",
+      "sourceSha256": "e038c691e5ef771cc6981b21d5b4a20e66fe3c87e0ffc410e3fe83d99bf9444d",
+      "sourceKind": "Native seller photo 2 from the public listing gallery, 576x768 JPEG. The photographed spine plane is perspective-rectified from original pixels; all visible print is sampled, no letters or marks are synthesized.",
+      "sourceFront": "https://imagedelivery.net/8_mRjFmPxY_brewboTCwFg/71ff5ebf-09ff-4778-fcfa-e2887d466600/public",
+      "sourceFrontSha256": "36e5e3ab36b81d962771e68e7a716e8997dd1b0f22392c62e507dbb9f3f9817e",
+      "sourceFrontDimensions": [576, 768],
+      "sourceBack": "https://imagedelivery.net/8_mRjFmPxY_brewboTCwFg/e86f6b65-3e0c-4bc2-15f2-90cd696e9b00/public",
+      "sourceBackSha256": "f7cc0dad99b26133b2b1775dce193ea75d527a34e45d974d3a83af8f6fee8a0d",
+      "sourceBackDimensions": [576, 768],
+      "sourceBackObservation": "The same seller gallery's physical back prints ISBN-13 978-0-486-40445-5 and identifies C. K. Ogden as translator. It also states Dover (1999) republication of the Routledge & Kegan Paul 1922 English translation.",
+      "poster": "library/posters/tractatus-logico-philosophicus.jpg",
+      "posterSha256": "eb8e8b7445ecdc2b369feaa8675a49578d6c2914d8ccc0117b216c2941d52a63",
+      "crop": { "left": 0, "top": 0, "width": 24, "height": 730 },
+      "height": 320,
+      "artwork": "tractatus-dover-ogden-9780486404455-r31-root.webp",
+      "perspective": {
+        "width": 24,
+        "height": 730,
+        "points": [
+          { "source": [219, 14], "target": [0, 0] },
+          { "source": [243, 14], "target": [23, 0] },
+          { "source": [248, 744], "target": [23, 729] },
+          { "source": [229, 744], "target": [0, 729] }
+        ]
+      },
+      "lowPerspective": {
+        "width": 24,
+        "height": 730,
+        "points": [
+          { "source": [219, 14], "target": [0, 0] },
+          { "source": [243, 14], "target": [23, 0] },
+          { "source": [248, 744], "target": [23, 729] },
+          { "source": [229, 744], "target": [0, 729] }
+        ]
+      },
+      "sampling": "independent",
+      "artworkSha256": "bdcbf58b46a1262d44202dc4fb9596faa05fe130835a8fd81df3059ef535a2a3",
+      "detailArtwork": "tractatus-dover-ogden-9780486404455-r31-detail-72a393bb58d61fae.webp",
+      "detailArtworkSha256": "72a393bb58d61fae8132253d06deb4a792c61f7c895ca7084786e3c9062e79c0",
+      "detailWidth": 24,
+      "detailHeight": 730
+    },
+    {
+      "id": "motivation-and-personality",
+      "title": "Motivation and Personality",
+      "publisher": "Harper & Row",
+      "isbn": "9780060419875",
+      "editionEvidence": "Aspen Book Co. seller listing identifies this physical copy as the 1987 Third Edition, ISBN 9780060419875. The seller's image 1 shows the complete front and spine of one book. The printed copyright-page photograph (seller image 3) shows ISBN 0-06-041987-3 and 1987; the title page (seller image 2) names Abraham H. Maslow. The photographed cover design matches the pinned green and cream Harper & Row Third Edition cover. The complete spine shows Maslow, MOTIVATION and PERSONALITY, Third Edition, and the Harper & Row mark. The spine crop follows the photographed binding edges, including the worn but visible head and tail; perspective correction uses only source pixels.",
+      "page": "https://www.abebooks.com/Motivation-Personality-Abraham-H-Maslow-Harper/32535258973/bd",
+      "source": "https://pictures.abebooks.com/inventory/32535258973.jpg",
+      "sourceSha256": "4da28034f1881eea000a03143c5c04a1c9989d6851b7781377b7a510547bd23c",
+      "sourceKind": "Native seller photograph of an actual Harper & Row 1987 Third Edition. The matching front, complete spine, head, tail, title page, and printed ISBN/copyright page are shown in the three-image seller gallery.",
+      "poster": "library/posters/motivation-and-personality.jpg",
+      "posterSha256": "81fc89b87cb5e23682a97dc8135a8af61062fd352514795927620e8f0970eb2f",
+      "crop": { "left": 0, "top": 0, "width": 56, "height": 1183 },
+      "height": 320,
+      "artwork": "motivation-and-personality-r32-aspen-v2.webp",
+      "sampling": "independent",
+      "perspective": {
+        "width": 56,
+        "height": 1183,
+        "points": [
+          { "source": [168, 292], "target": [0, 0] },
+          { "source": [220, 292], "target": [55, 0] },
+          { "source": [278, 1474], "target": [55, 1182] },
+          { "source": [222, 1462], "target": [0, 1182] }
+        ]
+      },
+      "lowPerspective": {
+        "width": 56,
+        "height": 1183,
+        "points": [
+          { "source": [168, 292], "target": [0, 0] },
+          { "source": [220, 292], "target": [55, 0] },
+          { "source": [278, 1474], "target": [55, 1182] },
+          { "source": [222, 1462], "target": [0, 1182] }
+        ]
+      },
+      "artworkSha256": "d126fe787e4fd4c4b240e90902cc4bd666aa9e4c82b7cc77f01ea623fcb2033b",
+      "detailArtwork": "motivation-and-personality-detail-6d3419256cdd01c1.webp",
+      "detailArtworkSha256": "6d3419256cdd01c1a7206e522125073e38560c685e9d28961e80711c1157891b",
+      "detailWidth": 55,
+      "detailHeight": 1171
     }
   ]
 }
