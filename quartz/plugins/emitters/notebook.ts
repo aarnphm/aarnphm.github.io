@@ -73,6 +73,7 @@ type NotebookPageResult = { page: NotebookPage; cacheHit: boolean }
 const defaultOptions: ResolvedOptions = { executeTimeoutSeconds: 120, runtime: false }
 
 const notebookCacheSourcePaths: FilePath[] = [
+  'quartz/util/notebook-preview.ts' as FilePath,
   'quartz/util/notebook/cell-html.ts' as FilePath,
   'quartz/util/notebook/extract-assets.ts' as FilePath,
   'quartz/util/notebook/inline-svg.ts' as FilePath,
