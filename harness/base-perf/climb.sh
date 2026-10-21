@@ -40,6 +40,19 @@ git -C "$WT" status --short > "$RUN_DIR/status-before.txt"
 
 echo "baseline: $NAME ($GROUP) at $URL" >&2
 ( cd "$WT" && "$HERE/bench.py" --base-url "$URL" --group "$GROUP" --reps 5 --lighthouse 2 --out "$RUN_DIR/baseline" --session "bp-$NAME" ) > "$RUN_DIR/baseline.log" 2>&1
+# A worker given a baseline with fewer than three good reps a scenario can only report that it
+# could not measure; stop here (exit 4) and let the caller retry when the browser is usable.
+unusable=$(python3 -c '
+import json, sys
+r = json.load(open(sys.argv[1]))
+bad = [n for n, s in r["scenarios"].items() if s["summary"]["n"] < 3]
+print(" ".join(bad))
+' "$RUN_DIR/baseline/results.json" 2> /dev/null || echo "results.json missing")
+if [ -n "$unusable" ]; then
+  echo "baseline unusable ($unusable); see $RUN_DIR/baseline.log" >&2
+  "$HERE/worktree.sh" down "$NAME"
+  exit 4
+fi
 ( cd "$WT" && "$HERE/scripts/run.sh" check "$NAME" ) > "$RUN_DIR/baseline/checks.txt" 2>&1 || true
 
 sed -e "s|{{GROUP}}|$GROUP|g" -e "s|{{WORKTREE}}|$WT|g" -e "s|{{BRANCH}}|$BRANCH|g" -e "s|{{COMMIT}}|$COMMIT|g" \
@@ -50,6 +63,8 @@ sed -e "s|{{GROUP}}|$GROUP|g" -e "s|{{WORKTREE}}|$WT|g" -e "s|{{BRANCH}}|$BRANCH
 rm -f "$RUN_DIR/exit-code"
 
 echo "worker: $WORKER on $NAME" >&2
+# The sandboxed worker opens the shared bench lock read-only; it has to exist first.
+touch "$HOME/.local/state/helium-cua/base-perf.lock"
 rc=0
 case $WORKER in
   sol | astra)

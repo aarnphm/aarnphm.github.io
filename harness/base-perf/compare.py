@@ -25,6 +25,12 @@ def main() -> int:
   with open(os.path.join(b, 'results.json')) as f:
     cand = json.load(f)
   cmp = compare(base, cand)
+  # A run measured on a saturated machine decides nothing; it can only be measured again.
+  if base['meta'].get('load_high') or cand['meta'].get('load_high'):
+    for c in cmp.values():
+      if not c.get('missing'):
+        c['accept'] = False
+        c['worse'] = [*c.get('worse', []), 'load_high']
   text = render_compare(cmp, base['meta'], cand['meta'])
   with open(os.path.join(b, 'compare.md'), 'w') as f:
     f.write(text)
