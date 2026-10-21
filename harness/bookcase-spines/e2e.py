@@ -19,7 +19,7 @@ EVIDENCE = (
   / 'docs/verification/bookcase-spine-harness/artifacts/e2e'
   / str(time.time_ns())
 )
-SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 80"><rect width="20" height="80" fill="#eee9dc"/><path d="M4 12H16V16H4ZM4 24H12V28H4ZM4 64H16V68H4Z" fill="#242424"/></svg>'
+SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 320"><g transform="scale(4)"><rect width="20" height="80" fill="#eee9dc"/><path d="M4 12H16V16H4ZM4 24H12V28H4ZM4 64H16V68H4Z" fill="#242424"/></g></svg>'
 
 
 def digest(path: Path) -> str:
@@ -121,6 +121,10 @@ class Pipeline(unittest.TestCase):
       self.assertIsInstance(prepared['argv'], list)
       self.assertIn('gemini-4-argon-high', list_value(prepared['argv']))
       self.assertIn('none', list_value(prepared['argv']))
+      self.assertEqual(
+        mapping(prepared['request'])['resultFile'],
+        str(Path(str(prepared['directory'])) / 'trace-result.json'),
+      )
       config = mapping(
         json.loads((ROOT / 'harness/bookcase-spines/config.json').read_text())
       )
@@ -186,8 +190,32 @@ class Pipeline(unittest.TestCase):
       )
       sol = cli('prepare', '--run', str(sol_run), '--job', 'fixture')
       self.assertEqual(sol['provider'], 'sol')
-      self.assertIn('read-only', list_value(sol['argv']))
+      self.assertIn('workspace-write', list_value(sol['argv']))
       self.assertIn('gpt-6.1-sol', list_value(sol['argv']))
+      grok_model = 'grok-4.7[context=500k,reasoning_effort=xhigh,fast=false]'
+      write(
+        config_file,
+        {
+          **config,
+          'trace': {'provider': 'caw', 'model': grok_model, 'effort': None},
+          'reviewers': ['astra', 'opus', 'sol'],
+        },
+      )
+      grok_run = EVIDENCE / 'grok-run'
+      cli(
+        'plan',
+        '--input',
+        str(input_file),
+        '--config',
+        str(config_file),
+        '--run',
+        str(grok_run),
+      )
+      grok = cli('prepare', '--run', str(grok_run), '--job', 'fixture')
+      self.assertEqual(grok['provider'], 'caw')
+      self.assertIn(grok_model, list_value(grok['argv']))
+      self.assertIn('--force', list_value(grok['argv']))
+      self.assertNotIn('--mode', list_value(grok['argv']))
       cli(
         'prepare',
         '--run',
@@ -204,6 +232,7 @@ class Pipeline(unittest.TestCase):
         'inputFingerprint': prepared['inputFingerprint'],
         'status': 'candidate',
         'svg': SVG,
+        'svgFile': None,
         'provenance': ['Synthetic geometric regions.'],
         'unresolved': [],
       }
@@ -220,6 +249,60 @@ class Pipeline(unittest.TestCase):
       self.assertEqual(submitted['status'], 'awaiting_review')
       detail = mapping(mapping(submitted['candidate'])['detail'])
       self.assertEqual((detail['width'], detail['height']), (80, 320))
+      svg_file = Path(str(prepared['directory'])) / 'candidate.svg'
+      svg_file.write_text(SVG)
+      file_candidate = {
+        **candidate,
+        'svg': '',
+        'svgFile': {'file': str(svg_file), 'sha256': digest(svg_file)},
+      }
+      write(response, file_candidate)
+      cli(
+        'submit',
+        '--run',
+        str(run),
+        '--job',
+        'fixture',
+        '--response',
+        str(response),
+      )
+      before_file = (run / 'state.json').read_bytes()
+      for bad_pin in [
+        {'file': str(EVIDENCE / 'fixture.svg'), 'sha256': digest(svg_file)},
+        {'file': str(svg_file), 'sha256': '0' * 64},
+      ]:
+        write(response, {**file_candidate, 'svgFile': bad_pin})
+        cli(
+          'submit',
+          '--run',
+          str(run),
+          '--job',
+          'fixture',
+          '--response',
+          str(response),
+          expected=1,
+        )
+        self.assertEqual((run / 'state.json').read_bytes(), before_file)
+      escaped = svg_file.with_name('escaped.svg')
+      escaped.symlink_to(EVIDENCE / 'fixture.svg')
+      write(
+        response,
+        {
+          **file_candidate,
+          'svgFile': {'file': str(escaped), 'sha256': digest(svg_file)},
+        },
+      )
+      cli(
+        'submit',
+        '--run',
+        str(run),
+        '--job',
+        'fixture',
+        '--response',
+        str(response),
+        expected=1,
+      )
+      self.assertEqual((run / 'state.json').read_bytes(), before_file)
       cli('verify', '--run', str(run), '--job', 'fixture')
       before = (run / 'state.json').read_bytes()
       for bad in [
@@ -230,10 +313,10 @@ class Pipeline(unittest.TestCase):
         SVG.replace(
           'fill="#242424"', 'fill="url(https://example.invalid/payload)"'
         ),
-        SVG.replace('20 80', '20 Infinity'),
+        SVG.replace('80 320', '80 Infinity'),
         '<svg><g></svg>',
         SVG.replace('<path', '<g clip-path="url(#loop)" id="loop"/><path'),
-        SVG.replace('20 80', '20 40'),
+        SVG.replace('80 320', '80 160'),
       ]:
         write(response, {**candidate, 'svg': bad})
         cli(

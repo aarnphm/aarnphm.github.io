@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
-import json
 from pathlib import Path
 import re
 import sys
@@ -31,8 +30,10 @@ from schema import (
   Trace,
   Transport,
   json_schema,
+  decode,
   mapping,
   optional_text,
+  strict_json,
 )
 from svg import dimensions
 
@@ -98,6 +99,7 @@ def prepare(
   request: dict[str, object] = {
     'jobId': job.input.id,
     'title': job.input.title,
+    'modelSelection': {'requestedModel': model, 'requestedEffort': effort},
     'inputFingerprint': job.inputFingerprint,
     'source': asdict(job.input.source),
     'images': [asdict(value) for value in images],
@@ -105,6 +107,9 @@ def prepare(
     'candidateSha256': job.candidate.master.sha256 if job.candidate else None,
     'rubricSha256': sha((HARNESS / 'prompts/verify.md').read_bytes()),
     'limits': asdict(state.config.limits),
+    'resultFile': str(directory / 'trace-result.json')
+    if stage == 'trace'
+    else None,
     'priorDefects': [
       asdict(defect)
       for receipt in job.reviews
@@ -134,7 +139,7 @@ def prepare(
       '--ephemeral',
       '--ignore-user-config',
       '--sandbox',
-      'read-only',
+      'workspace-write' if stage == 'trace' else 'read-only',
       '-c',
       'approval_policy="never"',
       '--model',
@@ -163,13 +168,14 @@ def prepare(
       '--browser',
       'none',
       '--stream',
+      '--no-auto-title',
       '--timeout',
       str(max(1, timeout_ms // 1000 - 5)),
     ]
     if model:
       argv.extend(['--model', model])
     if provider == 'caw':
-      argv.extend(['--mode', 'ask'])
+      argv.extend(['--force'] if stage == 'trace' else ['--mode', 'ask'])
   prepared = Prepared(
     invocation,
     str(directory),
@@ -189,7 +195,7 @@ def inspect_codex(
   directory: Path, output: str, provider: Provider
 ) -> Transport:
   events = [
-    mapping(json.loads(line)) for line in output.splitlines() if line.strip()
+    mapping(strict_json(line)) for line in output.splitlines() if line.strip()
   ]
   completed = next(
     (
@@ -209,7 +215,9 @@ def inspect_codex(
   response = final.read_text() if final.exists() else ''
   return Transport(
     provider,
-    bool(completed and not failed and response.strip()),
+    bool(
+      completed and events[-1] is completed and not failed and response.strip()
+    ),
     None,
     response,
     optional_text(thread.get('thread_id')),
@@ -247,11 +255,6 @@ def dispatch(prepared: Prepared, state: State) -> Transport:
     if prepared.provider in ['sol', 'astra']:
       report = inspect_codex(
         directory, Path(result.stdoutFile).read_text(), prepared.provider
-      )
-      report.model = (
-        state.config.trace.model
-        if prepared.stage == 'trace'
-        else state.config.providers.get(prepared.provider).model
       )
     elif prepared.provider == 'opus':
       images = prepared.request['images']
@@ -291,6 +294,8 @@ def dispatch(prepared: Prepared, state: State) -> Transport:
       models = summary.get('observed_models') or []
       model = summary.get('model')
       if model is None and isinstance(models, list) and models:
+        if len(models) != 1:
+          raise ValueError('Provider reported multiple models in one invocation')
         model = models[0]
       report = Transport(
         prepared.provider,
@@ -304,6 +309,35 @@ def dispatch(prepared: Prepared, state: State) -> Transport:
         'Provider reported tool failures' if errors else None,
         summary.get('usage') or terminal.get('usage'),
       )
+      if (
+        prepared.provider == 'caw'
+        and prepared.stage == 'trace'
+        and report.complete
+      ):
+        file = directory / 'trace-result.json'
+        if file.resolve().parent != directory.resolve() or not file.is_file():
+          raise ValueError(
+            'Grok trace needs its invocation-bound JSON result file'
+          )
+        if file.stat().st_size > state.config.limits.maxOutputBytes:
+          raise ValueError('Trace JSON result exceeds the output budget')
+        payload = file.read_text()
+        trace = decode(Trace, response_json(payload))
+        if (
+          trace.inputFingerprint != prepared.inputFingerprint
+          or trace.jobId != prepared.request['jobId']
+        ):
+          raise ValueError('Trace JSON result belongs to a different request')
+        write_json(
+          directory / 'response-source.json',
+          {
+            'kind': 'provider-file',
+            'file': str(file),
+            'sha256': sha(payload),
+            'nativeResponseSha256': sha(report.response),
+          },
+        )
+        report.response = payload
   except (OSError, ValueError, KeyError) as error:
     report = Transport(
       prepared.provider,
@@ -322,6 +356,24 @@ def dispatch(prepared: Prepared, state: State) -> Transport:
     and result.error is None
     and bool(report.response.strip())
   )
+  if prepared.provider == 'argon':
+    requested = mapping(prepared.request['modelSelection']).get(
+      'requestedModel'
+    )
+    if requested and report.model != requested:
+      report.complete = False
+      report.error = 'Argon did not confirm the requested model'
+  if prepared.provider == 'caw' and prepared.stage == 'trace':
+    observed = (report.model or '').lower()
+    if not (
+      'grok' in observed
+      and '4.7' in observed
+      and '500' in observed
+      and ('extra high' in observed or 'xhigh' in observed)
+      and 'fast' not in observed.replace('fast=false', '')
+    ):
+      report.complete = False
+      report.error = 'Grok trace did not confirm Extra High, 500K and Fast disabled'
   report.error = (
     result.error
     or report.error
@@ -332,10 +384,22 @@ def dispatch(prepared: Prepared, state: State) -> Transport:
     )
   )
   write_json(directory / 'process.json', result)
+  write_json(
+    directory / 'model-provenance.json',
+    {
+      **mapping(prepared.request['modelSelection']),
+      'observedModel': report.model,
+      'observationSource': 'native-provider-stream'
+      if report.model
+      else 'unreported',
+      'rawOutput': result.stdoutFile,
+      'rawOutputSha256': sha(Path(result.stdoutFile).read_bytes()),
+    },
+  )
   write_json(directory / 'transport.json', report)
   return report
 
 
 def response_json(response: str) -> object:
   match = re.fullmatch(r'```(?:json)?\s*\n(.*)\n```', response.strip(), re.S)
-  return json.loads(match[1] if match else response)
+  return strict_json(match[1] if match else response)

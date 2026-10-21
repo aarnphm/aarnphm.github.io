@@ -12,7 +12,7 @@ import selectors
 import signal
 import subprocess
 import time
-from typing import Iterator, Mapping
+from typing import Generator, Mapping
 
 DEADLINE: ContextVar[float | None] = ContextVar(
   'invocation_deadline', default=None
@@ -20,7 +20,7 @@ DEADLINE: ContextVar[float | None] = ContextVar(
 
 
 @contextmanager
-def budget(seconds: float) -> Iterator[None]:
+def budget(seconds: float) -> Generator[None]:
   token = DEADLINE.set(time.monotonic() + seconds)
   try:
     yield

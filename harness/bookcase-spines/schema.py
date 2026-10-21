@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, fields, is_dataclass
+import json
 import math
 import types
 from typing import Literal, TypeVar, get_args, get_origin, get_type_hints
@@ -61,7 +62,7 @@ class Backends:
 
 @dataclass
 class TraceModel:
-  provider: Literal['sol', 'argon']
+  provider: Literal['sol', 'argon', 'caw']
   model: str
   effort: str | None
 
@@ -84,18 +85,19 @@ class Limits:
 class Tier:
   width: int
   height: int
-  quality: int
+  quality: int | None
 
 
 @dataclass
 class Exports:
+  encoding: Literal['lossless-webp', 'lossy-webp']
   shelf: Tier
   detail: Tier
 
 
 @dataclass
 class Config:
-  version: Literal[2]
+  version: Literal[4]
   trace: TraceModel
   reviewers: list[Provider]
   providers: Backends
@@ -105,16 +107,21 @@ class Config:
   def validate(self) -> None:
     if not self.reviewers or len(set(self.reviewers)) != len(self.reviewers):
       raise ValueError('Require distinct reviewers')
-    if not {'astra', 'opus', 'caw'}.issubset(self.reviewers):
-      raise ValueError('Astra, Opus and Caw are required reviewers')
+    additional = 'sol' if self.trace.provider == 'caw' else 'caw'
+    if not {'astra', 'opus', additional}.issubset(self.reviewers):
+      raise ValueError(f'Astra, Opus and {additional} are required reviewers')
     if self.trace.provider in self.reviewers:
       raise ValueError('The trace worker cannot review its own candidate')
     expected = {
       'sol': ('gpt-6.1-sol', 'medium'),
       'argon': ('gemini-4-argon-high', None),
+      'caw': (
+        'grok-4.7[context=500k,reasoning_effort=xhigh,fast=false]',
+        None,
+      ),
     }
     if (self.trace.model, self.trace.effort) != expected[self.trace.provider]:
-      raise ValueError('Use Argon High or Sol Medium for implementation')
+      raise ValueError('Use Argon High, Sol Medium or Grok Extra High 500K')
     if self.providers.astra.model != 'gpt-6-astra':
       raise ValueError('Astra review requires gpt-6-astra')
     if not (self.providers.opus.model or '').startswith('claude-opus-'):
@@ -141,7 +148,8 @@ class Config:
       if not (
         0 < tier.width <= cap.width
         and 0 < tier.height <= cap.height
-        and tier.quality == cap.quality
+        and tier.quality
+        == (cap.quality if self.exports.encoding == 'lossy-webp' else None)
       ):
         raise ValueError('Invalid raster export budget')
     for provider in get_args(Provider):
@@ -172,6 +180,7 @@ class Trace:
   inputFingerprint: str
   status: Literal['candidate', 'blocked_source']
   svg: str
+  svgFile: Pin | None
   provenance: list[str]
   unresolved: list[str]
 
@@ -194,6 +203,18 @@ class Defect:
 
 
 @dataclass
+class TierReview:
+  sourceCorrespondence: bool
+  fullFaceCoverage: bool
+
+
+@dataclass
+class TierReviews:
+  shelf: TierReview
+  detail: TierReview
+
+
+@dataclass
 class Review:
   jobId: str
   inputFingerprint: str
@@ -202,6 +223,7 @@ class Review:
   inspectedImages: list[str]
   verdict: Literal['pass', 'revise', 'blocked_source', 'needs_review']
   categories: Categories
+  tiers: TierReviews
   defects: list[Defect]
 
 
@@ -279,6 +301,21 @@ def optional_text(value: object) -> str | None:
   raise ValueError('Expected string or null')
 
 
+def strict_json(text: str) -> object:
+  def unique(pairs: list[tuple[str, object]]) -> dict[str, object]:
+    result: dict[str, object] = {}
+    for key, value in pairs:
+      if key in result:
+        raise ValueError(f'Duplicate JSON key: {key}')
+      result[key] = value
+    return result
+
+  def invalid(value: str) -> object:
+    raise ValueError(f'Nonfinite JSON constant: {value}')
+
+  return json.loads(text, object_pairs_hook=unique, parse_constant=invalid)
+
+
 def decode(cls: type[T], value: object) -> T:
   """Reject missing/extra fields and primitive coercions at JSON boundaries."""
   if not is_dataclass(cls) or not isinstance(value, dict):
@@ -339,7 +376,7 @@ def json_schema(annotation: object) -> dict[str, object]:
       'required': [field.name for field in fields(annotation)],
       'additionalProperties': False,
     }
-  primitives = {
+  primitives: dict[type, str] = {
     str: 'string',
     int: 'integer',
     bool: 'boolean',
