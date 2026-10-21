@@ -1,0 +1,496 @@
+.tri-calc-cell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto auto;
+  align-items: end;
+  column-gap: 0.9rem;
+  row-gap: 0;
+}
+
+.tri-calc-presets {
+  grid-area: 2/2;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.3rem;
+  padding-top: 0.55rem;
+}
+
+.tri-calc-box {
+  grid-area: 2/1;
+  padding: 0.35rem 0.75rem;
+  border: 1px solid var(--lightgray);
+  border-radius: var(--radius-none);
+  background: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+}
+
+.tri-calc-preset {
+  padding: 0.2rem 0.55rem;
+  background: none;
+  border: 1px solid color-mix(in srgb, var(--gray) 30%, transparent);
+  border-radius: var(--radius-none);
+  font-family: var(--codeFont);
+  font-size: 0.66rem;
+  color: var(--darkgray);
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--dark);
+  }
+}
+
+.tri-calc-preset--on {
+  background: var(--dark);
+  border-color: var(--dark);
+  color: var(--light);
+}
+
+.tri-calc-source {
+  --tri-src-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+  position: relative;
+  z-index: 1;
+  grid-area: 1/1;
+  display: flex;
+  align-items: stretch;
+  margin-bottom: -1px;
+}
+
+.tri-calc-srcs {
+  display: inline-flex;
+  align-items: stretch;
+  overflow: hidden;
+  border-color: var(--lightgray);
+  border-style: solid;
+  border-width: 1px 0 0 1px;
+  border-radius: var(--radius-none);
+  background: var(--tri-src-surface);
+  isolation: isolate;
+}
+
+.tri-calc-source > .tri-calc-copy {
+  justify-content: center;
+  min-width: 2rem;
+  background: var(--tri-src-surface);
+  border-color: var(--lightgray);
+  border-style: solid;
+  border-width: 1px 1px 0 0;
+}
+
+.tri-calc-src {
+  padding: 0.22rem 0.7rem;
+  border: 0;
+  background: transparent;
+  font-family: var(--codeFont);
+  font-size: 0.66rem;
+  line-height: 1.3;
+  color: var(--gray);
+  cursor: pointer;
+  transition:
+    background-color 140ms ease,
+    color 140ms ease;
+
+  &:not(:disabled):hover {
+    color: var(--dark);
+  }
+}
+
+.tri-calc-src--on {
+  background: color-mix(in srgb, var(--tri-accent) 18%, var(--tri-src-surface));
+  color: var(--dark);
+}
+
+.tri-calc-src[hidden] {
+  display: none;
+}
+
+.tri-calc-proj {
+  margin-top: 0.75rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--lightgray);
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    display 0.28s allow-discrete;
+
+  @starting-style {
+    opacity: 0;
+    transform: translateY(-0.45rem);
+  }
+}
+
+.tri-calc-proj[hidden] {
+  display: none;
+  opacity: 0;
+  transform: translateY(-0.45rem);
+}
+
+.tri-calc-proj-zones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-bottom: 0.6rem;
+}
+
+.tri-calc-zone {
+  padding: 0.2rem 0.6rem;
+  background: none;
+  border: 1px solid color-mix(in srgb, var(--gray) 30%, transparent);
+  border-radius: var(--radius-none);
+  font-family: var(--codeFont);
+  font-size: 0.64rem;
+  color: var(--darkgray);
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--dark);
+  }
+}
+
+.tri-calc-zone--on {
+  background: color-mix(in srgb, var(--tri-accent) 18%, transparent);
+  border-color: var(--tri-accent);
+  color: var(--dark);
+}
+
+.tri-calc-proj-cap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.45rem;
+  font-family: var(--codeFont);
+  font-size: 0.62rem;
+}
+
+.tri-calc-proj-cap-z {
+  color: var(--dark);
+}
+
+.tri-calc-proj-cap-k {
+  color: var(--gray);
+}
+
+.tri-calc-proj-io {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+
+  th,
+  td {
+    padding: 0.34rem 0;
+    vertical-align: baseline;
+    border: 0;
+  }
+}
+
+.tri-calc-proj-k {
+  padding-right: 0.7rem !important;
+  text-align: left;
+  font-weight: inherit;
+  font-size: 0.6rem;
+  color: var(--gray);
+  white-space: nowrap;
+}
+
+.tri-calc-proj-pace {
+  font-family: var(--codeFont);
+  font-size: 0.78rem;
+  color: var(--dark);
+  white-space: nowrap;
+}
+
+.tri-calc-proj-u {
+  width: 100%;
+  padding-left: 0.5rem !important;
+  font-size: 0.6rem;
+  color: color-mix(in srgb, var(--gray) 75%, transparent);
+  white-space: nowrap;
+}
+
+.tri-calc-proj-split {
+  text-align: right;
+  font-family: var(--codeFont);
+  font-size: 0.78rem;
+  color: var(--dark);
+  white-space: nowrap;
+}
+
+.tri-calc-proj-finish {
+  th,
+  td {
+    padding-top: 0.5rem;
+    border-top: 1px solid color-mix(in srgb, var(--gray) 30%, transparent);
+  }
+
+  .tri-calc-proj-split {
+    font-weight: 600;
+    color: var(--tri-accent);
+  }
+}
+
+.tri-calc-proj-delta {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-top: 0.55rem;
+  font-family: var(--codeFont);
+  font-size: 0.66rem;
+}
+
+.tri-calc-proj-delta-k {
+  font-size: 0.6rem;
+  color: var(--gray);
+}
+
+.tri-calc-proj-delta-v {
+  color: var(--dark);
+  font-variant-numeric: tabular-nums;
+}
+
+.tri-calc-proj-delta-d {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, var(--tri-run) 65%, var(--dark));
+}
+
+.tri-calc-proj-delta-d--fast {
+  color: color-mix(in srgb, var(--tri-bike) 60%, var(--dark));
+}
+
+.tri-calc-proj-likely {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+  font-family: var(--codeFont);
+  font-size: 0.66rem;
+}
+.tri-calc-proj-likely-k {
+  font-size: 0.6rem;
+  color: var(--gray);
+}
+.tri-calc-proj-likely-v {
+  margin-left: auto;
+  color: var(--tri-accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.tri-calc-embed {
+  margin: 1.2rem 0;
+}
+
+.tri-compare-embed {
+  box-sizing: border-box;
+  display: flex;
+  width: 100%;
+  height: min(44rem, 78dvh);
+  margin: 1.2rem 0;
+  padding: 0.85rem;
+  font-family: var(--codeFont);
+  color: var(--dark);
+  background: color-mix(in srgb, var(--light) 70%, transparent);
+  border: 1px solid var(--lightgray);
+
+  > .tri-compare {
+    width: 100%;
+    height: 100%;
+    padding-bottom: 0;
+  }
+}
+
+.tri-calc-card {
+  border: 1px solid var(--lightgray);
+  border-radius: var(--radius-none);
+  font-family: var(--codeFont);
+  font-size: 0.8rem;
+  color: var(--dark);
+  background: color-mix(in srgb, var(--light) 70%, transparent);
+
+  > .table-container {
+    .tri-calc-card-row > th {
+      border-bottom: none !important;
+    }
+  }
+}
+
+.tri-calc-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.55rem 0.85rem;
+  border-bottom: 1px solid var(--lightgray);
+}
+
+.tri-calc-card-dist {
+  font-weight: 600;
+}
+
+.tri-calc-card-tabs {
+  display: inline-flex;
+  gap: 0.25rem;
+}
+
+.tri-calc-card-tab {
+  padding: 0.15rem 0 0.15rem 0.55rem;
+  font-size: 0.72rem;
+  color: var(--gray);
+  border-radius: var(--radius-none);
+}
+
+.tri-calc-card-tab--on {
+  background: color-mix(in srgb, var(--tri-accent) 16%, transparent);
+  color: var(--dark);
+}
+
+.tri-calc-card-io {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.tri-calc-card-row > th,
+.tri-calc-card-row > td {
+  padding: 0.42rem 0.85rem;
+  border-top: 1px solid color-mix(in srgb, var(--lightgray) 55%, transparent);
+}
+
+.tri-calc-card-row:first-child > th,
+.tri-calc-card-row:first-child > td {
+  border-top: 0;
+}
+
+.tri-calc-card-k {
+  text-align: left;
+  font-weight: 400;
+  color: var(--gray);
+}
+
+.tri-calc-card-split {
+  text-align: right;
+}
+
+.tri-calc-card-total > th,
+.tri-calc-card-total > td {
+  border-top: 1px solid var(--lightgray);
+}
+
+.tri-calc-card-total .tri-calc-card-split {
+  font-weight: 600;
+  color: var(--tri-accent);
+}
+
+.tri-calc-io {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+
+  th {
+    padding: 0.5rem 0.8rem 0.5rem 0;
+    font-weight: inherit;
+    font-size: 0.6rem;
+    text-align: left;
+    color: var(--gray);
+    white-space: nowrap;
+    border-bottom-width: 0px;
+  }
+
+  td {
+    padding: 0.5rem 0;
+    vertical-align: baseline;
+  }
+}
+
+.tri-calc-u {
+  padding-left: 1rem !important;
+  padding-right: 1rem;
+  font-size: 0.64rem;
+  color: color-mix(in srgb, var(--gray) 75%, transparent);
+  white-space: nowrap;
+}
+
+.tri-calc-in {
+  width: 3.1rem;
+  min-height: 1.45rem;
+  margin: -0.08rem -0.18rem;
+  padding: 0.08rem 0.18rem;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  border-radius: var(--radius-none);
+  outline: 1px solid transparent;
+  outline-offset: 1px;
+  font-family: var(--codeFont);
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.3;
+  text-align: right;
+  color: var(--dark);
+  cursor: text;
+  transition:
+    background-color 140ms ease,
+    border-bottom-color 140ms ease,
+    color 140ms ease,
+    outline-color 140ms ease;
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--light) 72%, var(--tri-accent));
+  }
+
+  &:focus {
+    background-color: color-mix(in srgb, var(--light) 64%, var(--tri-accent));
+  }
+}
+
+.tri-calc-r {
+  width: 100%;
+  text-align: right;
+  color: var(--dark);
+}
+
+.tri-calc-target,
+.tri-calc-legtime {
+  &::placeholder {
+    color: color-mix(in srgb, var(--gray) 55%, transparent);
+  }
+}
+
+.tri-calc-target {
+  width: 5.2rem;
+}
+
+.tri-calc-legtime {
+  width: 4.6rem;
+}
+
+.tri-calc-target-cell {
+  white-space: nowrap;
+}
+
+.tri-calc-total {
+  th,
+  .tri-calc-r {
+    padding-top: 0.5rem;
+    border-top: 1px solid color-mix(in srgb, var(--gray) 30%, transparent);
+  }
+
+  .tri-calc-r {
+    font-size: 0.95rem;
+  }
+}
+
+.tri-credit {
+  background: var(--lightgray);
+  color: var(--dark);
+}
+
+@media all and (max-width: 48rem) {
+  .tri-strip {
+    padding-bottom: 3rem;
+  }
+  .tri-foot {
+    font-size: 0.68rem;
+  }
+}

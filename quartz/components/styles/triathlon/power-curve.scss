@@ -1,0 +1,430 @@
+.tri-best-power-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 184px;
+  aspect-ratio: 10 / 3;
+  overflow: visible;
+  cursor: crosshair;
+  touch-action: pan-y;
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: 1px solid color-mix(in srgb, var(--tri-accent) 68%, transparent);
+    outline-offset: 2px;
+  }
+}
+
+.tri-best-power .tri-cax-xax,
+.tri-curve-chart .tri-cax-xax,
+.tri-swim-drag-chart .tri-cax-xax {
+  cursor: crosshair;
+}
+
+.tri-best-power-tick,
+.tri-curve-tick,
+.tri-swim-drag-tick {
+  appearance: none;
+  margin: -0.18rem -0.22rem 0;
+  padding: 0.18rem 0;
+  border: 0;
+  color: var(--gray);
+  font: inherit;
+  font-size: 0.5rem;
+  line-height: 1;
+  background: transparent;
+  cursor: pointer;
+
+  &[hidden] {
+    display: none;
+  }
+
+  &[aria-pressed='true'] {
+    color: var(--dark);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 0.16rem;
+  }
+
+  &:focus-visible {
+    color: var(--dark);
+    outline: 1px solid color-mix(in srgb, var(--tri-accent) 68%, transparent);
+    outline-offset: 1px;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tri-best-power-tick:hover,
+  .tri-curve-tick:hover {
+    color: var(--dark);
+  }
+}
+
+.tri-best-power-line {
+  fill: none;
+  stroke-width: 1;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.tri-best-power-line--sprint {
+  stroke: var(--tri-power-sprint);
+}
+
+.tri-swim-power-line {
+  stroke: var(--tri-accent);
+}
+
+.tri-swim-power .tri-best-power-point,
+.tri-swim-power .tri-best-power-swatch {
+  --tri-power-skill: var(--tri-accent);
+}
+
+.tri-best-power-line--attack {
+  stroke: var(--tri-power-attack);
+}
+
+.tri-best-power-line--climb {
+  stroke: var(--tri-power-climb);
+}
+
+.tri-best-power-grid {
+  stroke: color-mix(in srgb, var(--gray) 24%, transparent);
+  stroke-width: 0.55;
+  stroke-dasharray: 1 1.6;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
+.tri-power-curve-grid {
+  stroke: color-mix(in srgb, var(--gray) 30%, transparent);
+  stroke-width: 0.65;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+
+  line {
+    vector-effect: non-scaling-stroke;
+
+    &[hidden] {
+      display: none;
+    }
+  }
+}
+
+.tri-best-power-line--year {
+  stroke-width: 0.8;
+  stroke-dasharray: 3 2;
+  opacity: 0.55;
+}
+
+.tri-best-power-model-line {
+  fill: none;
+  stroke: var(--tri-power-model);
+  stroke-width: 1.05;
+  stroke-dasharray: 4 1.5 1 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-best-power-model-line--year {
+  stroke: color-mix(in srgb, var(--tri-power-model) 58%, var(--gray));
+}
+
+.tri-best-power-cp {
+  stroke: var(--tri-power-model);
+  stroke-width: 0.75;
+  stroke-dasharray: 5 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-best-power-cp--year {
+  stroke: color-mix(in srgb, var(--tri-power-model) 58%, var(--gray));
+}
+
+.tri-best-power-eftp {
+  stroke: var(--tri-accent);
+  stroke-width: 1;
+  stroke-dasharray: 7 3;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
+.tri-best-power-eftp--year {
+  stroke: color-mix(in srgb, var(--tri-accent) 58%, var(--gray));
+  stroke-dasharray: 2 3;
+}
+
+.tri-best-power [data-power-eftp-series][hidden],
+.tri-best-power-cap-eftp[hidden] {
+  display: none;
+}
+
+.tri-best-power-cap-eftp {
+  color: var(--tri-accent);
+  white-space: nowrap;
+}
+
+.tri-best-power-readout-row[hidden],
+.tri-best-power-model-line[hidden],
+.tri-best-power-cp[hidden] {
+  display: none;
+}
+
+.tri-best-power-ftp,
+.tri-best-power-goal {
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-best-power-ftp {
+  stroke: color-mix(in srgb, var(--gray) 60%, transparent);
+  stroke-width: 0.7;
+  stroke-dasharray: 2 2;
+}
+
+.tri-best-power-goal {
+  stroke: color-mix(in srgb, var(--tri-accent) 70%, transparent);
+  stroke-width: 0.8;
+  stroke-dasharray: 3 2;
+}
+
+.tri-best-power-cursor {
+  stroke: var(--dark);
+  stroke-width: 0.8;
+  vector-effect: non-scaling-stroke;
+  opacity: 0.72;
+  pointer-events: none;
+}
+
+.tri-best-power-point {
+  --tri-power-skill: var(--tri-power-attack);
+
+  position: absolute;
+  z-index: 2;
+  box-sizing: border-box;
+  width: 0.45rem;
+  height: 0.45rem;
+  background: var(--light);
+  border: 1px solid var(--tri-power-skill);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.tri-best-power-point--year {
+  width: 0.6rem;
+  height: 0.6rem;
+  background: color-mix(in srgb, var(--tri-power-skill) 12%, var(--light));
+  border-color: color-mix(in srgb, var(--tri-power-skill) 45%, var(--gray));
+}
+
+.tri-best-power-point[data-power-skill='sprint'] {
+  --tri-power-skill: var(--tri-power-sprint);
+}
+
+.tri-best-power-point[data-power-skill='attack'] {
+  --tri-power-skill: var(--tri-power-attack);
+}
+
+.tri-best-power-point[data-power-skill='climb'] {
+  --tri-power-skill: var(--tri-power-climb);
+}
+
+.tri-gloss.tri-power-range-tip {
+  --tri-power-skill: var(--tri-power-attack);
+
+  box-sizing: border-box;
+  width: min(22rem, calc(100vw - 1rem));
+  max-width: none;
+  gap: 0.38rem;
+  padding: 0.5rem;
+  font-family: var(--codeFont);
+  font-variant-numeric: tabular-nums;
+  text-align: left;
+  transition: none;
+
+  * {
+    font-family: var(--codeFont);
+  }
+}
+
+.tri-power-range-tip[data-power-skill='sprint'] {
+  --tri-power-skill: var(--tri-power-sprint);
+}
+
+.tri-power-range-tip[data-power-skill='attack'] {
+  --tri-power-skill: var(--tri-power-attack);
+}
+
+.tri-power-range-tip[data-power-skill='climb'] {
+  --tri-power-skill: var(--tri-power-climb);
+}
+
+.tri-power-range-tip-head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.12rem;
+  padding: 0 0.18rem;
+  text-align: left;
+}
+
+.tri-power-range-tip-title {
+  color: var(--dark);
+  font-size: 0.68rem;
+}
+
+.tri-power-range-tip-best {
+  color: var(--gray);
+  font-size: 0.56rem;
+  white-space: nowrap;
+}
+
+.tri-power-range-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--darkgray);
+  font-size: 0.55rem;
+  line-height: 1.25;
+  table-layout: fixed;
+
+  > * {
+    font-family: var(--codeFont);
+  }
+
+  tr {
+    border-bottom: 1px solid var(--lightgray) !important;
+  }
+
+  th,
+  td {
+    padding: 0.2rem 0.28rem;
+    text-align: left;
+    white-space: nowrap;
+    border-bottom: none;
+  }
+
+  th:first-child,
+  td:first-child {
+    width: 40%;
+  }
+
+  thead th {
+    color: var(--gray);
+    font-size: 0.48rem;
+    font-weight: 400;
+    text-transform: uppercase;
+  }
+}
+
+.tri-power-range-level {
+  overflow: hidden;
+  font-weight: 400;
+  text-overflow: ellipsis;
+}
+
+.tri-power-range-result {
+  color: var(--gray);
+}
+
+.tri-power-range-row--current {
+  color: var(--dark);
+  font-weight: 700;
+  background: color-mix(in srgb, var(--tri-power-skill) 12%, transparent);
+
+  .tri-power-range-level,
+  .tri-power-range-result {
+    color: inherit;
+    font-weight: inherit;
+  }
+}
+
+.tri-best-power-readout {
+  position: absolute;
+  top: 0.42rem;
+  right: 0.42rem;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: 0.85rem max-content;
+  gap: 0.18rem 0.34rem;
+  min-width: 5.8rem;
+  padding: 0.38rem 0.48rem;
+  color: var(--dark);
+  font-size: 0.58rem;
+  font-variant-numeric: tabular-nums;
+  background: var(--light);
+  pointer-events: none;
+}
+
+.tri-best-power-duration {
+  grid-column: 1 / -1;
+  font-size: 0.7rem;
+  line-height: 1.2;
+}
+
+.tri-best-power-readout-row {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+  align-items: center;
+  color: inherit;
+  line-height: 1.25;
+  text-decoration: none;
+
+  &[href] {
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  &[href]:focus-visible {
+    outline: 1px solid color-mix(in srgb, var(--tri-accent) 68%, transparent);
+    outline-offset: 2px;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tri-best-power-readout-row[href]:hover {
+    background: transparent;
+
+    .tri-best-power-value {
+      color: var(--dark);
+      text-decoration-line: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.12rem;
+    }
+  }
+}
+
+.tri-best-power-value {
+  justify-self: end;
+  font-weight: 600;
+}
+
+.tri-best-power-readout-row--model:not([hidden]) {
+  margin-top: 0.28rem;
+}
+
+.tri-best-power-readout-row--model:not([hidden])
+  ~ .tri-best-power-readout-row--model:not([hidden]) {
+  margin-top: 0;
+}
+
+.tri-best-power-cap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.9rem;
+  padding-left: 2.6rem;
+}
+
+.tri-best-power-cap-cp {
+  color: var(--tri-power-model);
+}
+
+.tri-best-power-cap-goal {
+  color: color-mix(in srgb, var(--tri-accent) 75%, var(--dark));
+}

@@ -1,0 +1,304 @@
+@use './foundations' as *;
+
+.tri-map {
+  container: tri-map / inline-size;
+}
+
+.tri-map-body {
+  position: relative;
+  flex-direction: row;
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.tri-map-pane {
+  position: relative;
+  contain: layout paint style;
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.tri-map-pane a.mapboxgl-ctrl-logo {
+  background-color: transparent;
+}
+
+.tri-map-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.tri-map-canvas--down {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--codeFont);
+  font-size: 0.66rem;
+  color: var(--gray);
+}
+
+.tri-map-overlay {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 0.5rem 0.6rem;
+  background: color-mix(in srgb, var(--light) 94%, transparent);
+  border: 1px solid var(--lightgray);
+}
+
+.tri-map-selection {
+  --tri-analysis-label-width: 3.75rem;
+  container-type: inline-size;
+  position: absolute;
+  right: 0.75rem;
+  bottom: 1.75rem;
+  left: 0.75rem;
+  z-index: 4;
+  padding: 0.55rem 0.65rem;
+  border: 0;
+  background: transparent;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(calc(100% + 1.75rem));
+  transition:
+    opacity 120ms cubic-bezier(0.23, 1, 0.32, 1),
+    transform 120ms cubic-bezier(0.23, 1, 0.32, 1),
+    visibility 0s linear 120ms;
+}
+
+.tri-map-selection[aria-hidden='false'] {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+  transition-duration: 180ms, 180ms, 0s;
+  transition-delay: 0s;
+}
+
+.tri-map-selection .tri-analysis {
+  --tri-analysis-label-width: 3.75rem;
+  padding-top: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tri-map-selection,
+  .tri-map-selection[aria-hidden='false'] {
+    transform: none;
+    transition:
+      opacity 120ms cubic-bezier(0.23, 1, 0.32, 1),
+      visibility 0s linear 120ms;
+  }
+
+  .tri-map-selection[aria-hidden='false'] {
+    transition-delay: 0s;
+  }
+}
+
+.tri-map-canvas--down ~ .tri-map-overlay,
+.tri-map--detail .tri-map-overlay {
+  display: none;
+}
+
+.tri-map-modes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.tri-map-mode {
+  font-family: var(--codeFont);
+  font-size: 0.62rem;
+  color: var(--gray);
+  background: none;
+  border: 1px solid color-mix(in srgb, var(--gray) 24%, transparent);
+  border-radius: var(--radius-none);
+  padding: 0.18rem 0.5rem;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--dark);
+  }
+
+  &[aria-pressed='true'] {
+    color: var(--light);
+    background: var(--tri-accent);
+    border-color: var(--tri-accent);
+  }
+}
+
+.tri-map-side {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  background: color-mix(in srgb, var(--light) 94%, transparent);
+  border: 1px solid var(--lightgray);
+}
+
+.tri-map-canvas--down ~ .tri-map-side,
+.tri-map--detail .tri-map-side {
+  display: none;
+}
+
+.tri-map-side-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.tri-map-side--folded .tri-map-side-body {
+  display: none;
+}
+
+.tri-map-side-fold,
+.tri-map-sport,
+.tri-map-elevation,
+.tri-map-3d,
+.tri-map-style {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.7rem;
+  height: 1.7rem;
+  color: var(--gray);
+  background: none;
+  border: none;
+  border-radius: var(--radius-none);
+  padding: 0;
+  cursor: pointer;
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  &:hover {
+    color: var(--dark);
+  }
+}
+
+.tri-map-sport[aria-pressed='true'],
+.tri-map-elevation[aria-pressed='true'],
+.tri-map-3d[aria-pressed='true'],
+.tri-map-style[aria-pressed='true'] {
+  color: var(--dark);
+}
+
+.tri-map-side-rule {
+  height: 1px;
+  margin: 0.15rem 0.3rem;
+  background: var(--lightgray);
+}
+
+.tri-map-side-fold svg {
+  transition: transform 0.18s ease;
+}
+
+.tri-map-side-fold[aria-expanded='true'] svg {
+  transform: rotate(180deg);
+}
+
+.tri-map-legend.tri-map-overlay-legend {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.25rem;
+  font-size: 0.56rem;
+}
+
+.tri-map-overlay-legend .tri-map-legend-bar {
+  width: 100%;
+  min-width: 4.5rem;
+  background: linear-gradient(to right, #997c6d, #b96c4a, #da5d27, #fc4c02);
+}
+
+.tri-map-legend-ends {
+  display: flex;
+  width: 100%;
+  min-height: 1.4em;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.tri-map-tip {
+  position: absolute;
+  z-index: 5;
+  display: none;
+  pointer-events: none;
+  white-space: nowrap;
+  font-family: var(--codeFont);
+  font-size: 0.62rem;
+  color: var(--dark);
+  background: var(--light);
+  border: 1px solid var(--lightgray);
+  padding: 0.22rem 0.45rem;
+}
+
+.tri-map-tip--on {
+  display: block;
+}
+
+.tri-map-search-wrap {
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.tri-map-results {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  left: 0;
+  right: 0;
+  z-index: 6;
+  max-height: min(48vh, 24rem);
+  overflow-y: auto;
+  @include thin-scrollbar;
+  gap: 0.7rem;
+  padding: 0.7rem 0.8rem;
+  background: var(--light);
+  border: 1px solid var(--lightgray);
+}
+
+.tri-map--searching .tri-map-results {
+  display: flex;
+}
+
+.tri-map-sidebar {
+  box-sizing: border-box;
+  contain: layout paint style;
+  flex: 0 0 clamp(20rem, 44%, 28rem);
+  min-width: 0;
+  min-height: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  @include thin-scrollbar;
+  padding: 1rem 1.1rem;
+}
+
+.tri-map--detail .tri-map-sidebar {
+  display: flex;
+  flex-direction: column;
+}
+
+.tri-map--detail .tri-map-pane {
+  border-right: 1px solid var(--lightgray);
+}

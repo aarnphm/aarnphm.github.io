@@ -1,0 +1,347 @@
+@use './foundations' as *;
+
+.tri-compare-stats-panel {
+  --tri-compare-better: color-mix(in srgb, #66800b 90%, var(--dark));
+  --tri-compare-worse: #af3029;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 0.45rem;
+  min-width: 0;
+  min-height: 0;
+}
+
+:root[saved-theme='dark'] .tri-compare-stats-panel {
+  --tri-compare-better: #879a39;
+  --tri-compare-worse: color-mix(in srgb, #d14d41 90%, var(--dark));
+}
+
+.tri-compare-stats-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem 0.55rem;
+  margin-inline-start: auto;
+  font-size: 0.56rem;
+}
+
+.tri-compare-stats-panel > .tri-compare-chart-head {
+  align-items: center;
+}
+
+.tri-compare-stats-scopes {
+  display: inline-grid;
+  flex: none;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  border: 1px solid color-mix(in srgb, var(--gray) 28%, transparent);
+}
+
+.tri-compare-stats-scope {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  margin: 0;
+  min-width: 4rem;
+  min-height: 1.5rem;
+  padding: 0.12rem 0.45rem;
+  font: inherit;
+  font-weight: 400;
+  line-height: 1.25;
+  white-space: nowrap;
+  color: var(--darkgray);
+  appearance: none;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-none);
+}
+
+.tri-compare-stats-scope[aria-pressed='true'] {
+  color: var(--light);
+  background: var(--dark);
+}
+
+.tri-compare-stats-scope:disabled {
+  cursor: default;
+  color: var(--gray);
+}
+
+.tri-compare-stats-scope:focus-visible,
+.tri-compare-stats-label-text[data-gloss]:focus-visible,
+.tri-compare-stats-scroll:focus-visible {
+  outline: 2px solid var(--darkgray);
+  outline-offset: 1px;
+}
+
+.tri-compare-stats-window {
+  color: var(--darkgray);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.tri-compare-stats-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+
+  overflow: auto;
+  overscroll-behavior: contain;
+  @include thin-scrollbar;
+  border-top: 1px solid color-mix(in srgb, var(--gray) 20%, transparent);
+}
+
+.tri-compare-stats {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.58rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.25;
+
+  // base.scss rules every th with a 2px gray border and loosens tbody line-height.
+  th,
+  td {
+    padding: 0.35rem 0.42rem 0.48rem;
+    font-weight: normal;
+    text-align: end;
+    vertical-align: middle;
+    background: var(--light);
+    border: 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--gray) 10%, transparent);
+  }
+
+  tbody,
+  thead {
+    line-height: inherit;
+  }
+
+  thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    vertical-align: top;
+    border-bottom-color: color-mix(in srgb, var(--gray) 20%, transparent);
+  }
+}
+
+.tri-compare-stats :is(.tri-compare-stats-corner, .tri-compare-stats-label) {
+  position: sticky;
+  inset-inline-start: 0;
+  z-index: 1;
+  text-align: start;
+}
+
+.tri-compare-stats thead .tri-compare-stats-corner {
+  z-index: 3;
+  color: var(--gray);
+}
+
+.tri-compare-stats .tri-compare-stats-group-head {
+  padding-top: 0.75rem;
+  padding-bottom: 0.2rem;
+  font-size: 0.52rem;
+  color: var(--darkgray);
+  text-align: start;
+  text-transform: lowercase;
+  letter-spacing: 0.04em;
+}
+
+.tri-compare-stats-label {
+  color: var(--dark);
+  min-width: 6rem;
+  white-space: nowrap;
+}
+
+.tri-compare-stats-label-text[data-gloss] {
+  cursor: help;
+  text-decoration: underline dotted color-mix(in srgb, var(--gray) 55%, transparent);
+  text-underline-offset: 2px;
+}
+
+.tri-compare-stats-mixed {
+  margin-inline-start: 0.3rem;
+  color: var(--darkgray);
+  cursor: help;
+}
+
+.tri-compare-stats-activity,
+.tri-compare-stats-cell {
+  min-width: 4.4rem;
+}
+
+.tri-compare-stats :is(.tri-compare-stats-activity--baseline, .tri-compare-stats-cell--baseline) {
+  background: color-mix(in srgb, var(--tri-compare-color) 8%, var(--light));
+}
+
+.tri-compare-stats-heading {
+  display: grid;
+  grid-template-rows: 2px auto auto;
+  justify-items: end;
+  gap: 0.22rem;
+  width: 100%;
+  min-width: 7rem;
+  color: var(--dark);
+  text-align: end;
+}
+
+.tri-compare-stats-swatch {
+  align-self: start;
+  width: 100%;
+  height: 2px;
+  background: var(--tri-compare-color);
+}
+
+.tri-compare-stats-date {
+  color: var(--darkgray);
+}
+
+.tri-compare-stats-name {
+  max-width: 100%;
+  color: var(--dark);
+  overflow-wrap: anywhere;
+  line-height: 1.4;
+}
+
+.tri-compare-stats-tag {
+  display: block;
+  margin-top: 0.12rem;
+  font-size: 0.5rem;
+  color: var(--darkgray);
+  text-transform: lowercase;
+}
+
+.tri-compare-stats-activity[data-coverage='partial'] .tri-compare-stats-tag {
+  color: var(--darkgray);
+}
+
+.tri-compare-stats-cell {
+  position: relative;
+  white-space: nowrap;
+}
+
+.tri-compare-stats-content {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 0.4rem;
+}
+
+.tri-compare-stats-value {
+  flex: none;
+  margin-inline-start: auto;
+  font-weight: 600;
+  color: var(--dark);
+}
+
+.tri-compare-stats-cell[data-estimate] .tri-compare-stats-value {
+  font-weight: 500;
+  color: color-mix(in srgb, var(--dark) 76%, var(--gray));
+}
+
+.tri-compare-stats-value--missing {
+  font-weight: normal;
+  color: var(--darkgray);
+}
+
+.tri-compare-stats-delta {
+  display: inline-flex;
+  flex: none;
+  order: -1;
+  align-items: baseline;
+  gap: 0.32rem;
+  font-size: 0.52rem;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--darkgray);
+  text-align: start;
+}
+
+.tri-compare-stats-delta[data-trend='better'] {
+  color: var(--tri-compare-better);
+}
+
+.tri-compare-stats-delta[data-trend='worse'] {
+  color: var(--tri-compare-worse);
+}
+
+.tri-compare-stats-line {
+  position: absolute;
+  inset-inline: 0.42rem;
+  bottom: 0.14rem;
+  height: 2px;
+  background: var(--tri-compare-color);
+}
+
+.tri-compare :is(.tri-cax-yt, .tri-cax-xt, .tri-ana-k, .tri-compare-empty) {
+  color: var(--darkgray);
+}
+
+.tri-compare .tri-map-side button:focus-visible {
+  outline: 2px solid var(--darkgray);
+  outline-offset: 2px;
+}
+
+.tri-compare .tri-map-side button {
+  color: var(--darkgray);
+  border: 1px solid transparent;
+}
+
+.tri-compare .tri-map-side button[aria-pressed='true'] {
+  border-color: currentColor;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tri-compare-stats-row:hover :is(th, td) {
+    background: color-mix(in srgb, var(--gray) 8%, var(--light));
+  }
+
+  .tri-compare-stats-scope:not(:disabled, [aria-pressed='true']):hover {
+    color: var(--dark);
+  }
+}
+
+// Narrow comparisons use one scroll surface so the map and both lower panels stay reachable.
+@container tri-compare (max-width: 47.99rem) {
+  .tri-compare-content {
+    overflow: hidden auto;
+    overscroll-behavior: contain;
+    @include thin-scrollbar;
+  }
+
+  .tri-compare-body {
+    flex: 0 0 auto;
+    grid-auto-rows: max-content;
+  }
+
+  .tri-compare-charts-viewport {
+    overflow: visible;
+  }
+
+  .tri-compare-charts {
+    overflow: visible;
+    padding-inline-end: 0;
+    scrollbar-gutter: auto;
+  }
+
+  .tri-compare-stats-scroll {
+    flex: 0 0 auto;
+    max-height: min(24rem, 55dvh);
+  }
+}
+
+@media all and (max-width: 36rem) {
+  .tri-compare-map {
+    height: min(52vw, 13rem, 28dvh);
+  }
+
+  .tri-compare-graph {
+    min-height: 152px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tri-compare-readout {
+    transition: none;
+  }
+}

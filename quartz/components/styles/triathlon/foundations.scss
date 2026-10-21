@@ -1,0 +1,89 @@
+$triathlon-row-height: 112px;
+
+// A graph unit is one caption plus one drawing. Expanded activity blocks are whole units tall, so
+// activities set side by side line up block for block.
+@function tri-graph-span($units) {
+  @if $units == 1 {
+    @return var(--tri-activity-graph-row-height);
+  }
+  @return calc(
+    #{$units} * var(--tri-activity-graph-row-height) + #{$units - 1} * var(--tri-activity-graph-gap)
+  );
+}
+
+.triathlon,
+.tri-calendar-set,
+.tri-calendar,
+.tri-day-embed,
+.tri-compare-embed,
+.triathlon-popover,
+.tri-power-range-tip {
+  --tri-accent: #fc4c02;
+  --tri-swim: #3aa99f;
+  --tri-bike: #cdd597;
+  --tri-run: #fdb2a2;
+  --tri-heart-rate: #fdb2a2;
+  --tri-zone-heart-rate: #d14d41;
+  --tri-zone-power: #8b6fd6;
+  --tri-zone-pace: #205ea6;
+  --tri-environment-uv-low: #66800b;
+  --tri-environment-uv-moderate: #df9f22;
+  --tri-environment-uv-high: #da702c;
+  --tri-environment-uv-very-high: #af3029;
+  --tri-environment-uv-extreme: #8b6fd6;
+  --tri-power-sprint: #287dd1;
+  --tri-power-attack: #67a82f;
+  --tri-power-climb: #f27440;
+  --tri-power-model: #8b7ec8;
+  --tri-health-good: color-mix(in srgb, var(--color-green) 94%, var(--dark));
+  --tri-health-watch: color-mix(in srgb, var(--color-yellow) 80%, var(--dark));
+  --tri-health-alert: color-mix(in srgb, var(--color-red) 94%, var(--dark));
+  --tri-health-info: var(--color-blue);
+  --tri-health-neutral: var(--darkgray);
+  --tri-activity-caption-height: 1.55rem;
+  --tri-activity-graph-gap: 0.7rem;
+  --tri-activity-graph-row-height: calc(
+    var(--tri-activity-chart-height, #{$triathlon-row-height}) + 2.45rem +
+      var(--tri-activity-caption-height)
+  );
+}
+
+// Skin hooks for the shared controls (styles/controls.scss).
+.triathlon,
+.tri-calendar-set,
+.tri-calendar,
+.tri-day-embed,
+.tri-compare-embed {
+  --control-height: 1.55rem;
+  --control-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+  --control-accent: var(--tri-accent);
+  --control-accent-ink: color-mix(in srgb, var(--tri-accent) 78%, var(--dark));
+}
+
+// Zero specificity, so a host block can resize its own control.
+:where(.triathlon, .tri-calendar-set, .tri-calendar, .tri-day-embed, .tri-compare-embed) {
+  :where(.g-datepicker) {
+    --control-font-size: 0.58rem;
+  }
+
+  :where(.g-select) {
+    --control-font-size: 0.62rem;
+  }
+}
+
+@mixin thin-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--gray) 45%, transparent) transparent;
+
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--gray) 45%, transparent);
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}

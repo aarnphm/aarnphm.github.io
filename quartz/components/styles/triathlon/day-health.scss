@@ -1,0 +1,361 @@
+.tri-sleep-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.75rem;
+  margin-bottom: 0.5rem;
+
+  > .tri-ana-block-title {
+    margin: 0;
+    font-size: 0.62rem;
+  }
+}
+
+.tri-sleep-view-switch {
+  flex: none;
+}
+
+.tri-sleep-view-button {
+  gap: 0.3rem;
+
+  &[aria-pressed='true'] {
+    color: var(--light);
+    background: var(--tri-accent);
+    border-color: var(--tri-accent);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--secondary);
+    outline-offset: 2px;
+  }
+}
+
+.tri-sleep-nap-summary {
+  margin: 0 0 0.65rem;
+  font-family: var(--codeFont);
+  font-size: 0.56rem;
+  line-height: 1.35;
+}
+
+.tri-sleep-pane[hidden] {
+  display: none;
+}
+
+.tri-sleep-nap + .tri-sleep-nap {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--lightgray);
+}
+
+:is(.tri-health-recovery, .tri-health-training, .tri-health-oura) {
+  text-transform: lowercase;
+
+  .tri-ana-block-title {
+    text-transform: inherit;
+  }
+}
+
+.tri-health-score-table {
+  display: table;
+  width: 100%;
+  margin: 0;
+  border-collapse: separate;
+  border-spacing: 0 0.3rem;
+  table-layout: fixed;
+  font-family: var(--codeFont);
+  font-size: 0.6rem;
+  line-height: 1.4;
+
+  tbody {
+    line-height: inherit;
+  }
+
+  :is(th, td) {
+    padding: 0;
+    border: 0;
+    font: inherit;
+    vertical-align: middle;
+  }
+
+  .tri-health-label-column {
+    width: 8.5rem;
+  }
+
+  .tri-health-value-column {
+    width: 2rem;
+  }
+
+  th {
+    text-align: left;
+    color: var(--darkgray);
+  }
+
+  td:last-child {
+    text-align: right;
+  }
+
+  .tri-health-score-bar {
+    padding-inline: 0.5rem;
+  }
+}
+
+.tri-health-tooltip-trigger {
+  position: relative;
+  cursor: help;
+
+  &:focus-visible {
+    outline: 1px solid var(--secondary);
+    outline-offset: 2px;
+  }
+}
+
+.tri-health-tooltip {
+  left: 0;
+  right: auto;
+  width: max-content;
+  max-width: min(24rem, 78cqw);
+  font-family: var(--codeFont);
+  font-weight: normal;
+  white-space: pre-line;
+  transform-origin: left bottom;
+}
+
+.tri-health-tooltip-trigger:focus-visible .tri-health-tooltip {
+  visibility: visible;
+  opacity: 1;
+  transform: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tri-health-tooltip-trigger:hover .tri-health-tooltip {
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.tri-health-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.3rem 1.2rem;
+  margin: 0;
+
+  > :nth-child(even) .tri-health-tooltip {
+    left: auto;
+    right: 0;
+    transform-origin: right bottom;
+  }
+}
+
+.tri-health-load-title {
+  margin-top: 0.75rem;
+}
+
+.tri-health-load-table {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.tri-health-load-row {
+  display: grid;
+  grid-template-columns: 6rem minmax(0, 1fr) 4.8rem;
+  align-items: end;
+  gap: 0.5rem;
+  font-family: var(--codeFont);
+  font-size: 0.6rem;
+  line-height: 1.35;
+  color: var(--darkgray);
+}
+
+.tri-health-load-plot {
+  position: relative;
+  padding-top: 1rem;
+  padding-bottom: 0.25rem;
+  min-width: 0;
+}
+
+.tri-health-load-rail {
+  position: relative;
+  height: 4px;
+  background: color-mix(in srgb, var(--gray) 18%, transparent);
+}
+
+.tri-health-load-target {
+  position: absolute;
+  height: 100%;
+  background: color-mix(in srgb, var(--tri-health-good) 32%, transparent);
+}
+
+.tri-health-load-marker {
+  position: absolute;
+  top: -3px;
+  width: 2px;
+  height: 10px;
+  background: var(--tri-health-color, var(--tri-health-neutral));
+  transform: translateX(-50%);
+}
+
+.tri-health-load-value {
+  position: absolute;
+  top: 0;
+  width: max-content;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  color: var(--tri-health-color, var(--tri-health-neutral));
+}
+
+.tri-health-load-range {
+  text-align: right;
+  color: var(--gray);
+}
+
+.tri-health-load-note {
+  margin: 0.45rem 0 0;
+  font-family: var(--codeFont);
+  font-size: 0.56rem;
+  line-height: 1.35;
+  color: var(--gray);
+}
+
+@container tri-day-card (max-width: 23rem) {
+  .tri-health-summary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .tri-health-load-row {
+    grid-template-columns: minmax(0, 1fr) 4.8rem;
+    row-gap: 0;
+  }
+
+  .tri-health-load-name {
+    grid-column: 1 / -1;
+  }
+}
+
+.tri-day-sleep-summary {
+  margin-bottom: 0.2rem;
+}
+
+.tri-day-sleep-contributions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 1.4rem;
+}
+
+.tri-day-sleep-contributions .tri-sleep-contrib {
+  margin-top: 0.65rem;
+}
+
+.tri-day-sleep-chart {
+  position: relative;
+  min-width: 0;
+  margin-top: 0.9rem;
+  overflow-x: clip;
+}
+
+.tri-day-sleep-chart .tri-ana-block-title {
+  margin-bottom: 0.3rem;
+}
+
+.tri-day-sleep-stage-svg {
+  height: 64px;
+  cursor: crosshair;
+}
+
+.tri-day-sleep-stage-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.25rem;
+
+  .tri-ana-k {
+    font-size: 0.56rem;
+    line-height: 1.4;
+  }
+}
+
+.tri-day-sleep-line-svg {
+  height: 7rem;
+  cursor: crosshair;
+}
+
+@media (max-width: 38rem) {
+  .tri-day-sleep-line-svg {
+    height: 6.25rem;
+  }
+}
+
+.tri-day-sleep-stage-svg:focus,
+.tri-day-sleep-line-svg:focus {
+  outline: none;
+}
+
+.tri-day-sleep-stage-svg:focus-visible,
+.tri-day-sleep-line-svg:focus-visible {
+  outline: 1px solid color-mix(in srgb, var(--tri-accent) 68%, transparent);
+  outline-offset: 2px;
+}
+
+.tri-day-sleep-chart[data-sleep-input='keyboard'] .tri-chart-readout {
+  transition: none;
+}
+
+.tri-day-sleep-line {
+  fill: none;
+  stroke-width: 1.05;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-day-sleep-line--hrv {
+  stroke: color-mix(in srgb, var(--tri-bike) 78%, var(--dark));
+}
+
+.tri-day-sleep-line--heart-rate {
+  stroke: var(--tri-run);
+}
+
+.tri-day-sleep-line--respiration {
+  stroke: var(--tri-swim);
+}
+
+@container tri-day-card (max-width: 36rem) {
+  .tri-day-sleep-line-svg {
+    height: 6.25rem;
+  }
+
+  .tri-day-analytics-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tri-day-sleep-contributions {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .tri-day-analytics-group--thermal .tri-day-analytics-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 1.2rem;
+  }
+
+  .tri-day-analytics-group--thermal .tri-day-analytics-metric {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.75rem;
+  }
+
+  .tri-day-analytics-group--thermal .tri-day-analytics-value {
+    text-align: right;
+  }
+}
+
+@container tri-day-card (max-width: 23rem) {
+  .tri-day-analytics-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tri-day-analytics-detail {
+    transition: opacity 100ms ease;
+  }
+}

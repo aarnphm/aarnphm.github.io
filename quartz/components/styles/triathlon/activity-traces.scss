@@ -1,0 +1,482 @@
+@use './foundations' as *;
+
+.tri-swim-trends {
+  display: flex;
+  flex-direction: column;
+  gap: 0.68rem;
+  min-width: 0;
+}
+
+.tri-swim-chart-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  min-width: 0;
+}
+
+.tri-swim-mode-toggle {
+  --tri-swim-mode-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-end;
+  font-family: var(--codeFont);
+  background: var(--tri-swim-mode-surface);
+  border: 1px solid var(--lightgray);
+  border-radius: var(--radius-none);
+  isolation: isolate;
+}
+
+.tri-swim-mode {
+  position: relative;
+  padding: 0.14rem 0.46rem;
+  font-family: inherit;
+  font-size: 0.58rem;
+  line-height: 1;
+  color: var(--gray);
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-none);
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background-color 140ms ease,
+    color 140ms ease;
+
+  &::after {
+    position: absolute;
+    inset: -0.3rem 0;
+    content: '';
+  }
+
+  &:hover {
+    color: var(--dark);
+  }
+
+  &[aria-pressed='true'] {
+    color: var(--dark);
+    background: color-mix(in srgb, var(--tri-swim) 18%, var(--tri-swim-mode-surface));
+  }
+
+  &:focus-visible {
+    outline: 1px solid color-mix(in srgb, var(--tri-swim) 68%, transparent);
+    outline-offset: 1px;
+  }
+}
+
+.tri-swim-trend {
+  display: flex;
+  flex-direction: column;
+  gap: 0.42rem;
+  min-width: 0;
+}
+
+.tri-swim-trend-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  align-items: baseline;
+  gap: 0.12rem 0.7rem;
+  min-height: 1.122rem;
+  font-family: var(--codeFont);
+  font-variant-numeric: tabular-nums;
+  margin-top: 1rem;
+}
+
+.tri-swim-trend-head--with-mode {
+  > .tri-swim-mode-toggle {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: center;
+    justify-self: start;
+  }
+
+  > .tri-swim-trend-value {
+    grid-column: 2;
+    grid-row: 1;
+  }
+}
+
+.tri-swim-trend-title {
+  grid-row: 1;
+  font-size: 0.58rem;
+  color: var(--gray);
+}
+
+.tri-swim-trend-value {
+  font-size: 0.72rem;
+  font-weight: 500;
+  line-height: 1.1;
+  text-align: right;
+  color: var(--dark);
+}
+
+.tri-swim-trend > .tri-cax-frame {
+  grid-template-columns: 2.35rem minmax(0, 1fr);
+}
+
+.tri-swim-trend-svg {
+  display: block;
+  width: 100%;
+  height: var(--tri-activity-chart-height, $triathlon-row-height);
+  overflow: visible;
+  touch-action: pan-y;
+}
+
+.tri-swim-trend-svg:focus {
+  outline: none;
+}
+
+.tri-swim-trend-svg:focus-visible {
+  outline: 1px solid color-mix(in srgb, var(--tri-swim) 68%, transparent);
+  outline-offset: 2px;
+}
+
+.tri-swim-trend-grid {
+  stroke: color-mix(in srgb, var(--gray) 36%, transparent);
+  stroke-width: 0.5;
+  stroke-dasharray: 2 3;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-swim-series {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.tri-swim-series--active {
+  opacity: 1;
+}
+
+.tri-swim-trend-area {
+  fill: color-mix(in srgb, var(--tri-swim) 16%, transparent);
+  stroke: none;
+  pointer-events: none;
+}
+
+.tri-swim-trend-line {
+  fill: none;
+  stroke: var(--tri-swim);
+  stroke-width: 1.15;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-swim-trend-hover {
+  position: absolute;
+  z-index: 2;
+  box-sizing: border-box;
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 50%;
+  background: var(--tri-swim);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.tri-swim-trend .tri-chart-cursor {
+  stroke: var(--tri-swim);
+}
+
+.tri-swim-trend-readout {
+  display: flex;
+  align-items: baseline;
+  gap: 0.38rem;
+}
+
+.tri-swim-trend-readout-position {
+  color: var(--gray);
+}
+
+.tri-swim-trend-readout-value {
+  font-weight: 600;
+}
+
+.tri-elev-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.tri-elev {
+  display: block;
+  width: 100%;
+  height: 64px;
+  cursor: crosshair;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.tri-elev-wrap > .tri-cax-frame {
+  grid-template-columns: 2.4rem minmax(0, 1fr);
+
+  .tri-elev {
+    height: var(--tri-activity-chart-height, $triathlon-row-height);
+  }
+}
+
+.tri-elev-unavailable {
+  display: grid;
+  place-items: center;
+  height: var(--tri-activity-chart-height, $triathlon-row-height);
+  font-family: var(--codeFont);
+  font-size: 0.58rem;
+  color: var(--gray);
+}
+
+.tri-elev-cap {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 0.9rem;
+  font-size: 0.66rem;
+  margin-top: 1rem;
+  font-family: var(--codeFont);
+  color: var(--gray);
+}
+
+.tri-elev-cap > .tri-fig-readout {
+  top: 50%;
+  transform: translateY(-50%);
+  white-space: nowrap;
+}
+
+.tri-elev-cap--summary {
+  flex-wrap: nowrap;
+  column-gap: 0.9rem;
+  white-space: nowrap;
+}
+
+.tri-elev-cap--unavailable {
+  min-height: 1lh;
+}
+
+.tri-elev-d {
+  color: var(--darkgray);
+}
+
+.tri-elev-range {
+  color: color-mix(in srgb, var(--gray) 75%, transparent);
+}
+
+.tri-elev-area {
+  fill: color-mix(in srgb, var(--gray) 20%, transparent);
+  stroke: none;
+}
+
+.tri-elev-grade {
+  stroke: none;
+  pointer-events: none;
+}
+
+.tri-elev-grade--gentle {
+  fill: color-mix(in oklab, var(--color-green) 58%, transparent);
+}
+
+.tri-elev-grade--moderate {
+  fill: color-mix(in oklab, var(--color-yellow) 68%, transparent);
+}
+
+.tri-elev-grade--hard {
+  fill: color-mix(in oklab, var(--color-orange) 76%, transparent);
+}
+
+.tri-elev-grade--steep {
+  fill: color-mix(in oklab, var(--color-red) 84%, transparent);
+}
+
+.tri-elev-grade--wall {
+  fill: color-mix(in oklab, var(--color-red) 72%, var(--dark));
+}
+
+.tri-elev-grid {
+  stroke: color-mix(in srgb, var(--gray) 42%, transparent);
+  stroke-width: 0.55;
+  stroke-dasharray: 2 3;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-elev-line {
+  fill: none;
+  stroke: var(--dark);
+  stroke-width: 0.8;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-elev-line--missing {
+  stroke-width: 0.7;
+  stroke-dasharray: 0.5 2.5;
+  stroke-linecap: round;
+  opacity: 0.62;
+}
+
+.tri-trace-reference {
+  stroke: color-mix(in srgb, var(--tri-accent) 68%, var(--dark));
+  stroke-width: 0.7;
+  stroke-dasharray: 4 1.5 1 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-trace-reference-k {
+  color: color-mix(in srgb, var(--tri-accent) 58%, var(--dark));
+}
+
+.tri-cycling-power {
+  --tri-activity-chart-height: 160px;
+  min-width: 0;
+
+  > .tri-cax-frame--dual {
+    grid-template-columns: 2.4rem minmax(0, 1fr) 2.4rem;
+  }
+
+  > .tri-elev-cap {
+    flex-wrap: nowrap;
+    column-gap: 0.6rem;
+  }
+
+  .tri-elev-cap > .tri-fig-readout {
+    top: 0;
+    z-index: 2;
+    transform: none;
+    box-sizing: border-box;
+    height: 100%;
+    max-width: 100%;
+    padding-block: 0;
+    font-size: inherit;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background: var(--light);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+.tri-cycling-power-legend {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  flex-wrap: wrap;
+  min-width: 0;
+  gap: 0.35rem 0.6rem;
+  font-family: var(--codeFont);
+  font-size: 0.58rem;
+  color: var(--gray);
+}
+
+.tri-chart-controls {
+  display: inline-flex;
+  align-items: baseline;
+  flex-shrink: 0;
+  gap: 0.45rem;
+  margin-inline-start: auto;
+}
+
+.tri-elev-cap:has(> .tri-chart-controls) {
+  align-items: baseline;
+}
+
+.tri-cycling-power-plot:focus-visible {
+  outline: 1px solid var(--tri-bike);
+  outline-offset: 3px;
+}
+
+@media (pointer: coarse) {
+  .tri-cycling-power-window,
+  .tri-torque-mode {
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+.tri-cycling-power-elevation {
+  fill: color-mix(in srgb, var(--gray) 42%, transparent);
+  stroke: none;
+}
+
+.tri-cycling-power-elevation-line {
+  fill: none;
+  stroke: var(--gray);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-cycling-power-line {
+  fill: none;
+  stroke: var(--tri-bike);
+  stroke-width: 1.35;
+  vector-effect: non-scaling-stroke;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.tri-cycling-power-line--cumulative {
+  stroke: var(--dark);
+  stroke-width: 1;
+  stroke-dasharray: 4 2;
+}
+
+.tri-cycling-power-wind--headwind {
+  fill: var(--color-red);
+}
+
+.tri-cycling-power-wind--tailwind {
+  fill: var(--tri-swim);
+}
+
+.tri-cycling-power-wind--calm {
+  fill: var(--gray);
+}
+
+.tri-cycling-power-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+
+  &::before {
+    content: '';
+    display: inline-block;
+    width: 0.9rem;
+    height: 0;
+    border-top: 2px solid var(--tri-bike);
+  }
+}
+
+.tri-cycling-power-key--cumulative::before {
+  border-color: var(--dark);
+  border-top-style: dashed;
+}
+
+.tri-cycling-power-key--headwind::before {
+  border-color: var(--color-red);
+}
+
+.tri-cycling-power-key--tailwind::before {
+  border-color: var(--tri-swim);
+}
+
+@media (max-width: 600px) {
+  .tri-effort-table {
+    min-width: 27rem;
+    font-size: 0.55rem;
+
+    th,
+    td {
+      padding-inline: 0.45rem;
+    }
+  }
+
+  .tri-effort-table--climbing {
+    min-width: 52rem;
+  }
+
+  .tri-shift-chart > .tri-elev-cap--summary {
+    flex-wrap: wrap;
+    white-space: normal;
+  }
+}

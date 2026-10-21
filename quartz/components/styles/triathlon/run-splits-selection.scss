@@ -1,0 +1,342 @@
+.tri-run-splits {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 0.3rem;
+  min-width: 0;
+  margin-bottom: 0.5rem;
+  padding: 0.5rem 0.6rem 0.6rem;
+  background: color-mix(in srgb, var(--lightgray) 34%, transparent);
+  font-family: var(--codeFont);
+}
+
+.tri-run-splits-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.tri-run-splits-average {
+  color: var(--gray);
+  font-size: 0.54rem;
+}
+
+.tri-run-splits-columns,
+.tri-run-split {
+  display: grid;
+  grid-template-columns: 1.5rem 3.5rem minmax(7rem, 1fr) 3.2rem;
+  gap: 0.45rem;
+  align-items: center;
+  min-width: 0;
+}
+
+.tri-run-splits-columns {
+  min-height: calc(0.48rem * 1.2);
+  padding: 0 0.35rem;
+  color: var(--gray);
+  font-size: 0.48rem;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.tri-run-splits-columns > :last-child {
+  text-align: right;
+}
+
+.tri-run-splits-list {
+  display: grid;
+  min-width: 0;
+}
+
+.tri-run-splits-empty {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  min-height: 1.8rem;
+  padding: 0.2rem 0.35rem;
+  color: var(--gray);
+  font-size: 0.54rem;
+}
+
+.tri-run-split {
+  appearance: none;
+  width: 100%;
+  min-height: 1.8rem;
+  margin: 0;
+  padding: 0.2rem 0.35rem;
+  border: 0;
+  border-top: 1px solid color-mix(in srgb, var(--gray) 15%, transparent);
+  border-radius: var(--radius-none);
+  color: var(--dark);
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.tri-run-split:first-child {
+  border-top: 0;
+}
+
+.tri-run-split:focus-visible {
+  outline: 2px solid var(--tri-accent);
+  outline-offset: 1px;
+}
+
+.tri-run-split-lap,
+.tri-run-split-distance,
+.tri-run-split-delta {
+  font-size: 0.54rem;
+}
+
+.tri-run-split-lap,
+.tri-run-split-distance {
+  color: var(--gray);
+}
+
+.tri-run-split-track {
+  position: relative;
+  display: block;
+  min-width: 0;
+  height: 1.35rem;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--gray) 11%, transparent);
+}
+
+.tri-run-split-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--tri-run-split-width);
+  background: color-mix(in srgb, var(--tri-run) 62%, var(--light));
+}
+
+.tri-run-split-average-marker {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  bottom: 0;
+  left: var(--tri-run-split-average);
+  width: 1px;
+  background: color-mix(in srgb, var(--dark) 72%, transparent);
+}
+
+.tri-run-split-pace {
+  position: relative;
+  z-index: 3;
+  display: block;
+  padding: 0.35rem 0.45rem;
+  overflow: hidden;
+  color: var(--dark);
+  font-size: 0.56rem;
+  line-height: 0.65rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tri-run-split-delta {
+  text-align: right;
+  color: var(--gray);
+}
+
+.tri-run-split-delta--faster {
+  color: color-mix(in srgb, var(--tri-bike) 68%, var(--dark));
+}
+
+.tri-run-split-delta--slower {
+  color: color-mix(in srgb, var(--tri-accent) 72%, var(--dark));
+}
+
+.tri-run-split[aria-pressed='true'] .tri-run-split-track {
+  outline: 1px solid color-mix(in srgb, var(--tri-run) 78%, var(--dark));
+  outline-offset: -1px;
+}
+
+.tri-run-split:active {
+  background: color-mix(in srgb, var(--dark) 8%, transparent);
+}
+
+.tri-analysis-band {
+  display: grid;
+  grid-template-columns: var(--tri-analysis-label-width) minmax(0, 1fr);
+  align-items: start;
+  min-width: 0;
+  min-height: 0.55rem;
+}
+
+.tri-analysis-band-label {
+  min-width: 0;
+  padding-right: 0.5rem;
+  overflow: hidden;
+  font-size: var(--tri-analysis-label-size, 0.54rem);
+  line-height: 0.55rem;
+  color: var(--gray);
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tri-analysis-band-items {
+  position: relative;
+  min-width: 0;
+  height: calc(var(--tri-analysis-lanes) * 0.3rem + (var(--tri-analysis-lanes) - 1) * 0.08rem);
+  overflow: visible;
+}
+
+.tri-analysis-range {
+  position: absolute;
+  top: calc(var(--tri-analysis-lane) * 0.38rem);
+  left: var(--tri-analysis-start);
+  width: var(--tri-analysis-width);
+  min-width: 2px;
+  height: 0.3rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-none);
+  background: color-mix(in srgb, var(--gray) 30%, transparent);
+  cursor: pointer;
+  touch-action: manipulation;
+
+  &[aria-pressed='true'] {
+    background: var(--dark);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--tri-accent);
+    outline-offset: 1px;
+  }
+
+  &:active {
+    background: color-mix(in srgb, var(--dark) 72%, transparent);
+  }
+}
+
+.tri-analysis-band[data-analysis-kind='segment'] .tri-analysis-range {
+  background: color-mix(in srgb, var(--gray) 23%, transparent);
+}
+
+.tri-analysis-band[data-analysis-kind='climb'] .tri-analysis-range {
+  background: color-mix(in srgb, var(--gray) 27%, transparent);
+}
+
+.tri-analysis-band .tri-analysis-range[aria-pressed='true'] {
+  background: var(--dark);
+}
+
+.tri-analysis-band .tri-analysis-range[data-analysis-preview] {
+  background: color-mix(in srgb, var(--tri-accent) 64%, transparent);
+}
+
+.tri-analysis-selection {
+  fill: color-mix(in srgb, var(--gray) 16%, transparent);
+  pointer-events: none;
+}
+
+.tri-act--selecting .tri-analysis-selection {
+  fill: color-mix(in srgb, var(--tri-accent) 18%, transparent);
+}
+
+.tri-route-selected {
+  fill: none;
+  stroke: var(--tri-accent);
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  pointer-events: stroke;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.tri-route-selected:focus-visible {
+  outline: 2px solid var(--tri-accent);
+  outline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tri-analysis-range:not([aria-pressed='true']):hover {
+    background: color-mix(in srgb, var(--tri-accent) 64%, transparent);
+  }
+
+  .tri-run-split:not([aria-pressed='true']):hover {
+    background: color-mix(in srgb, var(--dark) 4%, transparent);
+  }
+
+  .tri-run-split:not([aria-pressed='true']):hover .tri-run-split-fill {
+    background: color-mix(in srgb, var(--tri-run) 72%, var(--light));
+  }
+
+  .tri-workout-lap:not([aria-pressed='true']):hover .tri-workout-lap-bar {
+    opacity: var(--tri-workout-lap-active-opacity, 1);
+  }
+
+  .tri-workout-lap:hover {
+    z-index: 5;
+  }
+
+  .tri-workout-lap:hover .tri-workout-lap-tooltip {
+    visibility: visible;
+    opacity: 1;
+  }
+}
+
+@container tri-activity (max-width: 30rem) {
+  .tri-strength-exercise {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .tri-strength-exercise-summary {
+    text-align: left;
+  }
+
+  .tri-analysis {
+    --tri-analysis-label-width: 3.4rem;
+  }
+
+  .tri-analysis,
+  .tri-pool-wrap {
+    --tri-analysis-label-size: 0.5rem;
+  }
+
+  .tri-analysis-band-label {
+    padding-right: 0.4rem;
+  }
+
+  .tri-run-splits {
+    padding-inline: 0.45rem;
+  }
+
+  .tri-workout {
+    padding-inline: 0.45rem;
+  }
+
+  .tri-workout-analysis {
+    padding-inline: 0.45rem;
+  }
+
+  .tri-workout-analysis :is(.tri-workout, .tri-run-splits, .tri-workout-distribution) {
+    padding-inline: 0;
+  }
+
+  .tri-workout-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .tri-workout-chart {
+    grid-template-columns: 2.4rem minmax(0, 1fr);
+    gap: 0.35rem;
+  }
+
+  .tri-run-splits-columns,
+  .tri-run-split {
+    grid-template-columns: 1.25rem 2.8rem minmax(6.25rem, 1fr) 2.8rem;
+    gap: 0.3rem;
+  }
+
+  .tri-run-split-pace {
+    padding-inline: 0.35rem;
+    font-size: 0.52rem;
+  }
+}

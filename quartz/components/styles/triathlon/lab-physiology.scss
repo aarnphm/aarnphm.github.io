@@ -1,0 +1,439 @@
+@use './foundations' as *;
+
+.tri-vo2p {
+  --tri-vo2p-plot-start: 4.75%;
+  --tri-vo2p-plot-end: 10%;
+  --tri-vo2p-paper: var(--light);
+  --tri-vo2p-axis: var(--dark);
+  --tri-vo2p-grid: color-mix(in srgb, var(--gray) 13%, transparent);
+  --tri-vo2p-frame: color-mix(in srgb, var(--gray) 45%, transparent);
+  --tri-vo2p-muted: color-mix(in srgb, var(--gray) 76%, transparent);
+  --tri-vo2p-phase-fill: color-mix(in srgb, var(--tri-swim) 9%, transparent);
+  --tri-vo2p-target-fill: color-mix(in srgb, var(--gray) 18%, transparent);
+  --tri-vo2p-blue-c: #1b82c9;
+  --tri-vo2p-red-c: #ff0000;
+  --tri-vo2p-green-c: #2d8b57;
+  --tri-vo2p-cyan-c: #04ced1;
+  --tri-vo2p-orange-c: #e69900;
+  container-type: inline-size;
+  display: grid;
+  gap: 0.75rem;
+  background: transparent;
+}
+
+.tri-vo2p-panel {
+  display: grid;
+  gap: 0.28rem;
+  margin-top: 0.32rem;
+}
+
+.tri-vo2p-panel-head {
+  display: flex;
+  align-items: baseline;
+  padding-inline-start: var(--tri-vo2p-plot-start);
+  font-family: var(--codeFont);
+}
+
+.tri-vo2p-panel-heading {
+  font-size: clamp(0.72rem, 1cqi, 0.94rem);
+  color: var(--tri-vo2p-blue-c);
+}
+
+.tri-vo2p-stats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.72rem;
+  padding-inline-start: var(--tri-vo2p-plot-start);
+  font-family: var(--codeFont);
+  font-size: clamp(0.55rem, 0.9cqi, 0.78rem);
+  font-variant-numeric: tabular-nums;
+}
+
+.tri-vo2p-stat {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.16rem;
+  white-space: nowrap;
+}
+
+.tri-vo2p-stat-name {
+  font-size: inherit;
+}
+
+.tri-vo2p-stat-k {
+  margin-left: 0.08rem;
+  color: var(--gray);
+}
+
+.tri-vo2p-stat-v {
+  margin-left: 0;
+}
+
+.tri-vo2p-fig {
+  position: relative;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.tri-vo2p-legend {
+  position: absolute;
+  top: 0.38rem;
+  right: var(--tri-vo2p-plot-end);
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.24rem 0.64rem;
+  font-family: var(--codeFont);
+  font-size: clamp(0.56rem, 0.75cqi, 0.72rem);
+  color: var(--tri-vo2p-axis);
+}
+
+.tri-vo2p-leg {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.22rem;
+  white-space: nowrap;
+}
+
+.tri-vo2p-leg-mark {
+  width: 1.28rem;
+  height: 0;
+  border-top: 1.1px solid currentColor;
+}
+
+.tri-vo2p-leg-mark--area {
+  height: 0.3rem;
+  border: 1px solid currentColor;
+  background: color-mix(in srgb, currentColor 20%, transparent);
+}
+
+.tri-vo2p-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1200 / 430;
+  font-family: var(--codeFont);
+  overflow: visible;
+}
+
+.tri-vo2p-bg {
+  fill: var(--tri-vo2p-paper);
+}
+
+.tri-vo2p-bg,
+.tri-vo2p-phase,
+.tri-vo2p-target-area,
+.tri-vo2p-target-line,
+.tri-vo2p-grid,
+.tri-vo2p-tick,
+.tri-vo2p-xtick,
+.tri-vo2p-frame,
+.tri-vo2p-line,
+.tri-vo2p-xtext,
+.tri-vo2p-ytext {
+  pointer-events: none;
+}
+
+.tri-vo2p-frame {
+  fill: none;
+  stroke: var(--tri-vo2p-frame);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-vo2p-phase {
+  fill: var(--tri-vo2p-phase-fill);
+}
+
+.tri-vo2p-target-area {
+  fill: var(--tri-vo2p-target-fill);
+  opacity: 0.42;
+}
+
+.tri-vo2p-target-line {
+  fill: none;
+  stroke: var(--tri-vo2p-frame);
+  stroke-width: 1.05;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-vo2p-grid {
+  stroke: var(--tri-vo2p-grid);
+  stroke-width: 0.4;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-vo2p-tick,
+.tri-vo2p-xtick {
+  stroke: var(--tri-vo2p-axis);
+  stroke-width: 0.95;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-vo2p-line {
+  fill: none;
+  stroke-width: 1.08;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-vo2p-line--vo2 {
+  stroke: var(--tri-vo2p-blue-c);
+}
+
+.tri-vo2p-line--hr {
+  stroke: var(--tri-vo2p-red-c);
+}
+
+.tri-vo2p-line--ve {
+  stroke: var(--tri-vo2p-green-c);
+}
+
+.tri-vo2p-line--rf {
+  stroke: var(--tri-vo2p-cyan-c);
+}
+
+.tri-vo2p-line--tv {
+  stroke: var(--tri-vo2p-orange-c);
+}
+
+.tri-vo2p-marker {
+  stroke: var(--tri-vo2p-muted);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
+.tri-vo2p-zone-hit,
+.tri-vo2p-marker-hit {
+  fill: transparent;
+  pointer-events: all;
+}
+
+.tri-vo2p-xtext,
+.tri-vo2p-ytext {
+  fill: var(--tri-vo2p-axis);
+  font-size: clamp(0.49rem, 0.75cqi, 0.72rem);
+  font-variant-numeric: tabular-nums;
+  transform: scaleX(0.6666666667);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.tri-vo2p-blue {
+  color: var(--tri-vo2p-blue-c);
+  fill: var(--tri-vo2p-blue-c);
+}
+
+.tri-vo2p-red {
+  color: var(--tri-vo2p-red-c);
+  fill: var(--tri-vo2p-red-c);
+}
+
+.tri-vo2p-green {
+  color: var(--tri-vo2p-green-c);
+  fill: var(--tri-vo2p-green-c);
+}
+
+.tri-vo2p-cyan {
+  color: var(--tri-vo2p-cyan-c);
+  fill: var(--tri-vo2p-cyan-c);
+}
+
+.tri-vo2p-orange {
+  color: var(--tri-vo2p-orange-c);
+  fill: var(--tri-vo2p-orange-c);
+}
+
+.tri-vo2p-target {
+  color: var(--tri-vo2p-frame);
+  fill: var(--tri-vo2p-frame);
+}
+
+@container (min-width: 64rem) {
+  .tri-vo2p-xtext,
+  .tri-vo2p-ytext {
+    font-size: 0.35rem;
+  }
+}
+
+@media (max-width: 720px) {
+  .tri-vo2p-panel {
+    gap: 0.2rem;
+    min-width: 0;
+  }
+
+  .tri-vo2p-stats {
+    gap: 0.28rem 0.55rem;
+  }
+
+  .tri-vo2p-legend {
+    position: static;
+    justify-content: flex-start;
+    max-width: 100%;
+    margin: 0;
+    gap: 0.18rem 0.45rem;
+    font-size: clamp(0.46rem, 2.4vw, 0.52rem);
+  }
+
+  .tri-vo2p-leg {
+    gap: 0.14rem;
+  }
+
+  .tri-vo2p-leg-mark {
+    flex: 0 0 0.8rem;
+    width: 0.8rem;
+  }
+
+  .tri-vo2p-svg {
+    aspect-ratio: 800 / 430;
+  }
+
+  .tri-vo2p-xtext,
+  .tri-vo2p-ytext {
+    font-size: 1rem;
+    transform: none;
+  }
+}
+
+.tri-vo2t-titlerow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.tri-vo2t-titlerow .tri-ana-block-title {
+  margin-bottom: 0;
+}
+
+.tri-vo2t-chart {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.tri-vo2t-yax {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 2rem;
+  padding: 0.1rem 0;
+  font-size: 0.56rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  color: var(--gray);
+}
+
+.tri-vo2t-plot {
+  position: relative;
+  flex: 1 1 auto;
+  height: $triathlon-row-height;
+}
+
+.tri-vo2t-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.tri-vo2t-zone {
+  cursor: default;
+}
+
+.tri-vo2t-zone:hover {
+  fill-opacity: 0.85;
+}
+
+.tri-vo2t-zone--1 {
+  fill: color-mix(in srgb, var(--gray) 9%, transparent);
+}
+
+.tri-vo2t-zone--2 {
+  fill: color-mix(in srgb, #cdd597 18%, transparent);
+}
+
+.tri-vo2t-zone--3 {
+  fill: color-mix(in srgb, #cdd597 32%, transparent);
+}
+
+.tri-vo2t-zone--4 {
+  fill: color-mix(in srgb, #fdb2a2 30%, transparent);
+}
+
+.tri-vo2t-zone--5 {
+  fill: color-mix(in srgb, var(--tri-accent) 24%, transparent);
+}
+
+.tri-vo2t-grid {
+  stroke: color-mix(in srgb, var(--gray) 18%, transparent);
+  stroke-width: 0.4;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
+.tri-vo2t-vt {
+  stroke: color-mix(in srgb, var(--gray) 45%, transparent);
+  stroke-width: 0.6;
+  stroke-dasharray: 2 2;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
+.tri-vo2t-line {
+  fill: none;
+  stroke: color-mix(in srgb, #fdb2a2 72%, var(--dark));
+  stroke-width: 1.4;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
+.tri-vo2t-pt {
+  position: absolute;
+  width: 0.32rem;
+  height: 0.32rem;
+  background: color-mix(in srgb, #fdb2a2 72%, var(--dark));
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.tri-vo2t-pt--vt {
+  width: 0.42rem;
+  height: 0.42rem;
+  background: var(--tri-accent);
+  pointer-events: auto;
+}
+
+.tri-vo2t-pt--max {
+  width: 0.5rem;
+  height: 0.5rem;
+  background: var(--tri-accent);
+  pointer-events: auto;
+}
+
+.tri-vo2t-lbl {
+  position: absolute;
+  font-family: var(--codeFont);
+  font-size: 0.56rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--dark);
+  white-space: nowrap;
+  transform: translate(-50%, -165%);
+  pointer-events: none;
+}
+
+.tri-vo2t-lbl--vt {
+  color: var(--gray);
+}
+
+.tri-vo2t-xax {
+  display: flex;
+  justify-content: space-between;
+  margin: 0.2rem 0 0 2.5rem;
+  font-size: 0.56rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--gray);
+}

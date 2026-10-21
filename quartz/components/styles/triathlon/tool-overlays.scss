@@ -1,0 +1,315 @@
+@use './foundations' as *;
+
+.tri-pace-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.tri-pace {
+  position: absolute;
+  bottom: calc(100% + 0.6rem);
+  left: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  width: 10rem;
+  max-width: 86vw;
+  max-height: 60vh;
+  overflow-y: auto;
+  scrollbar-width: none;
+  padding: 0.9rem 1rem;
+  background: color-mix(in srgb, var(--light) 92%, transparent);
+  backdrop-filter: blur(10px);
+  border: 1px solid color-mix(in srgb, var(--gray) 72%, transparent);
+  border-radius: var(--radius-none);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(4px);
+  transition:
+    opacity 0.16s ease,
+    transform 0.18s ease,
+    visibility 0.16s;
+}
+
+.tri-pace-open .tri-pace {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.tri-pace-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  column-gap: 1rem;
+  font-size: 0.66rem;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.tri-pace-head {
+  margin-bottom: 0.15rem;
+  font-size: 0.58rem;
+  color: var(--gray);
+}
+
+.tri-pace-mi {
+  color: var(--darkgray);
+}
+
+.tri-pace-km {
+  color: var(--dark);
+}
+
+.tri-pace-spd {
+  color: var(--gray);
+}
+
+.tri-pace-ref {
+  margin-inline-start: 0.2rem;
+  font-size: 0.5rem;
+  color: var(--darkgray);
+  text-decoration: none;
+}
+
+.tri-pace-unit {
+  justify-self: end;
+  font: inherit;
+  color: var(--gray);
+  background: none;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.tri-pace-unit:hover {
+  color: var(--dark);
+  border-bottom-color: currentColor;
+}
+
+.tri-pace::-webkit-scrollbar {
+  display: none;
+}
+
+.tri-pace-sec {
+  font-size: 0.58rem;
+  color: var(--darkgray);
+}
+
+.tri-pace-sec:not(:first-child) {
+  margin-top: 0.55rem;
+}
+
+.tri-calc-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease;
+}
+
+.tri-calc-open .tri-calc-scrim {
+  opacity: 1;
+  visibility: visible;
+}
+
+.tri-calc {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 61;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: min(420px, 94vw);
+  max-height: 88vh;
+  overflow-y: auto;
+  @include thin-scrollbar;
+  padding: 1.2rem 1.3rem 1.4rem;
+  font-family: var(--codeFont);
+  font-variant-numeric: tabular-nums;
+  background: var(--light);
+  border: 1px solid color-mix(in srgb, var(--gray) 80%, transparent);
+  border-radius: var(--radius-none);
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(-50%, calc(var(--tri-modal-y) + 2%)) scale(0.97);
+  transition:
+    opacity 0.2s ease,
+    transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0.2s;
+}
+
+.tri-calc-open .tri-calc {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, var(--tri-modal-y)) scale(1);
+  transition:
+    opacity 0.2s ease,
+    transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0s;
+}
+
+.tri-calc-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.tri-calc-title {
+  font-size: 0.8rem;
+  color: var(--dark);
+  margin-right: auto;
+}
+
+.tri-calc-tabs,
+.tri-tools-tabs,
+.tri-calendar-source-controls:not(.tri-calendar-source-controls--icons) {
+  --tri-header-tab-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+
+  display: inline-flex;
+  box-sizing: border-box;
+  align-items: stretch;
+  align-self: flex-start;
+  max-width: 100%;
+  height: 1.6rem;
+  background: var(--tri-header-tab-surface);
+  border: 1px solid var(--lightgray);
+  border-radius: var(--radius-none);
+  isolation: isolate;
+}
+
+.tri-calc-tab,
+.tri-tools-tab,
+.tri-calendar-source-tab {
+  appearance: none;
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 0.3rem 0.5rem;
+  color: var(--gray);
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-none);
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  line-height: normal;
+  white-space: nowrap;
+  cursor: pointer;
+
+  &:focus-visible {
+    z-index: 1;
+    outline: 2px solid color-mix(in srgb, var(--tri-accent) 72%, transparent);
+    outline-offset: -2px;
+  }
+}
+
+.tri-calendar-source-tab {
+  flex-shrink: 1;
+  min-width: 0;
+
+  > span {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tri-calc-tab:not(.tri-calc-tab--on):hover,
+  .tri-tools-tab[aria-selected='false']:hover,
+  .tri-calendar-source-tab[aria-pressed='false']:hover {
+    color: var(--dark);
+  }
+}
+
+.tri-calc-tab--on,
+.tri-tools-tab[aria-selected='true'],
+.tri-calendar-source-tab[aria-pressed='true'] {
+  color: var(--dark);
+  background: color-mix(in srgb, var(--tri-accent) 18%, var(--tri-header-tab-surface));
+}
+
+@media (max-width: 48rem) {
+  .tri-calc-tabs,
+  .tri-tools-tabs,
+  .tri-calendar-source-controls:not(.tri-calendar-source-controls--icons) {
+    height: 1.65rem;
+  }
+}
+
+.tri-calc-panel {
+  min-width: 0;
+}
+
+.tri-calc-panel[hidden],
+.tri-calc-copy[hidden] {
+  display: none;
+}
+
+.tri-calc-panel--tool > .tri-ratio,
+.tri-calc-panel--tool > .tri-pressure {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.tri-calc-copy,
+.tri-compare-copy {
+  display: flex;
+  align-items: center;
+  padding: 0;
+  background: none;
+  border: 0;
+  color: var(--gray);
+  cursor: pointer;
+  transition: transform 120ms cubic-bezier(0.23, 1, 0.32, 1);
+
+  &:hover {
+    color: var(--dark);
+  }
+
+  &:focus-visible {
+    color: var(--dark);
+    outline: 1px solid color-mix(in srgb, var(--tri-accent) 68%, transparent);
+    outline-offset: 2px;
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
+
+  .copy-icon {
+    display: block;
+  }
+  .check-icon {
+    display: none;
+  }
+
+  &.check {
+    .check-icon {
+      display: block;
+    }
+    .copy-icon {
+      display: none;
+    }
+  }
+}
+
+.tri-calc-close,
+.tri-dropdown-close {
+  padding: 0;
+  background: none;
+  border: 0;
+  font-size: 1.3rem;
+  line-height: 1;
+  color: var(--gray);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--dark);
+  }
+}

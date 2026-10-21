@@ -1,0 +1,344 @@
+.tri-bodywt-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.tri-bodywt-kg {
+  font-family: var(--codeFont);
+  font-size: 1.15rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--dark);
+}
+
+.tri-bodywt-titlerow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.tri-bodywt-titlerow .tri-ana-block-title {
+  margin-bottom: 0;
+}
+
+.tri-dexa,
+.tri-dexa-tip {
+  --tri-dexa-muted: var(--gray);
+  --tri-dexa-bone: color-mix(in srgb, var(--gray) 50%, transparent);
+  --tri-dexa-grid: color-mix(in srgb, var(--gray) 16%, transparent);
+  --tri-dexa-divider: color-mix(in srgb, var(--gray) 26%, transparent);
+}
+
+:root[saved-theme='dark'] .tri-dexa,
+:root[saved-theme='dark'] .tri-dexa-tip {
+  --tri-dexa-muted: color-mix(in oklab, var(--dark) 80%, var(--gray));
+  --tri-dexa-bone: color-mix(in oklab, var(--dark) 42%, var(--gray));
+  --tri-dexa-grid: color-mix(in oklab, var(--darkgray) 48%, transparent);
+  --tri-dexa-divider: color-mix(in oklab, var(--darkgray) 64%, transparent);
+}
+
+.tri-dexa-titlerow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.tri-dexa-titlerow .tri-ana-block-title {
+  margin-bottom: 0;
+}
+
+.tri-dexa-date {
+  margin-left: auto;
+}
+
+.tri-lab-session > .tri-vo2t {
+  margin-top: 0.9rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid color-mix(in srgb, var(--gray) 18%, transparent);
+}
+
+.tri-dexa-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.45rem;
+}
+
+.tri-dexa-bf {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  font-family: var(--codeFont);
+  font-size: 1.15rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--dark);
+}
+
+.tri-dexa-unit {
+  font-size: 0.62rem;
+  line-height: 1;
+  color: var(--tri-dexa-muted);
+}
+
+.tri-dexa-cat {
+  font-family: var(--codeFont);
+  font-size: 0.62rem;
+  line-height: 1;
+  color: var(--tri-dexa-muted);
+}
+
+.tri-dexa-seg {
+  display: block;
+  width: 100%;
+}
+
+.tri-dexa-seg.is-lean {
+  background: #cdd597;
+}
+
+.tri-dexa-seg.is-fat {
+  background: #fdb2a2;
+}
+
+.tri-dexa-seg.is-bone {
+  background: var(--tri-dexa-bone);
+}
+
+.tri-dexa-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin: 0 0 1rem;
+}
+
+.tri-dexa-legitem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: var(--codeFont);
+  font-size: 0.62rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.tri-dexa-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  flex: none;
+}
+
+.tri-dexa-dot.is-lean {
+  background: #cdd597;
+}
+
+.tri-dexa-dot.is-fat {
+  background: #fdb2a2;
+}
+
+.tri-dexa-dot.is-bone {
+  background: var(--tri-dexa-bone);
+}
+
+.tri-dexa-legname {
+  color: var(--tri-dexa-muted);
+}
+
+.tri-dexa-legval {
+  color: var(--dark);
+}
+
+.tri-dexa-chart {
+  --tri-dexa-plot-height: 8.5rem;
+  display: grid;
+  grid-template-columns: 2.8rem minmax(0, 1fr);
+  gap: 0.55rem;
+  margin-block: 0.65rem 1.15rem;
+}
+
+.tri-dexa-axis {
+  position: relative;
+  height: var(--tri-dexa-plot-height);
+  font-family: var(--codeFont);
+  font-size: 0.55rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--tri-dexa-muted);
+}
+
+.tri-dexa-axis-value {
+  position: absolute;
+  right: 0;
+  line-height: 1;
+  transform: translateY(-50%);
+
+  &.is-top {
+    top: 0;
+  }
+
+  &.is-mid {
+    top: calc(var(--tri-dexa-plot-height) / 2);
+  }
+
+  &.is-bottom {
+    top: var(--tri-dexa-plot-height);
+  }
+}
+
+.tri-dexa-plot {
+  position: relative;
+  display: grid;
+  gap: clamp(0.45rem, 3vw, 1.8rem);
+}
+
+.tri-dexa-gridline {
+  position: absolute;
+  z-index: 0;
+  right: 0;
+  left: 0;
+  height: 1px;
+  background: var(--tri-dexa-grid);
+  pointer-events: none;
+
+  &.is-top {
+    top: 0;
+  }
+
+  &.is-mid {
+    top: calc(var(--tri-dexa-plot-height) / 2);
+  }
+
+  &.is-bottom {
+    top: var(--tri-dexa-plot-height);
+  }
+}
+
+.tri-dexa-column {
+  z-index: 1;
+  display: grid;
+  grid-template-rows: var(--tri-dexa-plot-height) auto auto auto;
+  justify-items: center;
+  gap: 0.08rem;
+  min-width: 0;
+  font-family: var(--codeFont);
+  font-variant-numeric: tabular-nums;
+
+  &:focus-visible {
+    outline: 0;
+  }
+
+  &:focus-visible .tri-dexa-column-bar {
+    outline: 1px solid color-mix(in srgb, var(--tri-accent) 68%, var(--dark));
+    outline-offset: 2px;
+  }
+}
+
+.tri-dexa-column-track {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: clamp(1.8rem, 42%, 3.1rem);
+  height: var(--tri-dexa-plot-height);
+}
+
+.tri-dexa-column-bar {
+  display: flex;
+  flex-direction: column-reverse;
+  width: 100%;
+  min-height: 1px;
+  overflow: hidden;
+}
+
+.tri-dexa-column-label {
+  margin-top: 0.28rem;
+  font-size: 0.61rem;
+  color: var(--dark);
+}
+
+.tri-dexa-column-value,
+.tri-dexa-column-fat {
+  font-size: 0.55rem;
+  white-space: nowrap;
+}
+
+.tri-dexa-column-value {
+  color: var(--dark);
+}
+
+.tri-dexa-column-fat {
+  color: var(--tri-dexa-muted);
+}
+
+.tri-dexa-tip {
+  width: min(13rem, calc(100vw - 1rem));
+  gap: 0.38rem;
+  font-family: var(--codeFont);
+}
+
+.tri-dexa-tip-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.tri-dexa-tip-total,
+.tri-dexa-tip-value,
+.tri-dexa-tip-pct {
+  font-family: var(--codeFont);
+  font-size: 0.62rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.tri-dexa-tip-total,
+.tri-dexa-tip-value {
+  color: var(--dark);
+}
+
+.tri-dexa-tip-row {
+  display: grid;
+  grid-template-columns: 0.55rem minmax(0, 1fr) max-content 2.5rem;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.tri-dexa-tip-label,
+.tri-dexa-tip-pct {
+  color: var(--tri-dexa-muted);
+}
+
+.tri-dexa-tip-label {
+  font-size: 0.66rem;
+}
+
+.tri-dexa-tip-pct {
+  text-align: right;
+}
+
+.tri-dexa-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.4rem 0.6rem;
+  margin-top: 0.1rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--tri-dexa-divider);
+}
+
+.tri-dexa-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+}
+
+.tri-dexa-statv {
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--dark);
+}
+
+.tri-dexa-statk {
+  font-size: 0.56rem;
+  color: var(--tri-dexa-muted);
+}

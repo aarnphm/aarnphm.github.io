@@ -1,0 +1,389 @@
+@use './foundations' as *;
+
+.tri-workout {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 0.5rem;
+  min-width: 0;
+  margin-bottom: 0.5rem;
+  padding: 0.5rem 0.6rem 0.6rem;
+  background: color-mix(in srgb, var(--lightgray) 34%, transparent);
+  font-family: var(--codeFont);
+  font-variant-numeric: tabular-nums;
+}
+
+.tri-workout-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem 0.75rem;
+}
+
+.tri-workout-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
+  color: var(--gray);
+  font-size: 0.52rem;
+}
+
+.tri-workout-chart {
+  display: grid;
+  grid-template-columns: 2.8rem minmax(0, 1fr);
+  gap: 0.5rem;
+  min-width: 0;
+  height: 10.5rem;
+}
+
+.tri-workout-y-axis {
+  position: relative;
+  align-self: start;
+  height: calc(100% - 1.2rem);
+  color: var(--gray);
+  font-size: 0.48rem;
+}
+
+.tri-workout-y-tick {
+  position: absolute;
+  right: 0;
+  line-height: 1;
+  transform: translateY(-50%);
+}
+
+.tri-workout-viewport {
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  @include thin-scrollbar;
+}
+
+.tri-workout-plot {
+  position: relative;
+  height: 100%;
+}
+
+.tri-workout-plot:has(> .tri-workout-elevation) {
+  --tri-workout-lap-opacity-scale: 0.45;
+  --tri-workout-lap-active-opacity: 0.55;
+}
+
+.tri-run-workout-plot {
+  min-width: max(100%, calc(var(--tri-run-workout-laps) * 2rem));
+}
+
+.tri-workout-grid {
+  position: absolute;
+  z-index: 1;
+  inset: 0 0 1.2rem;
+  pointer-events: none;
+}
+
+.tri-workout-gridline {
+  position: absolute;
+  right: 0;
+  left: 0;
+  border-top: 1px solid color-mix(in srgb, var(--gray) 14%, transparent);
+}
+
+.tri-cycling-workout-plot {
+  overflow-x: clip;
+  min-width: max(100%, calc(var(--tri-cycling-workout-laps) * 0.75rem));
+}
+
+.tri-workout-elevation {
+  position: absolute;
+  inset: 0 0 1.2rem;
+  z-index: 0;
+  width: 100%;
+  height: calc(100% - 1.2rem);
+  pointer-events: none;
+}
+
+.tri-workout-elevation-area {
+  fill: color-mix(in srgb, var(--gray) 36%, transparent);
+}
+
+.tri-workout-elevation-line {
+  fill: none;
+  stroke: var(--darkgray);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-cycling-workout-average-line {
+  position: absolute;
+  right: 0;
+  left: 0;
+  border-top: 1px dashed color-mix(in srgb, var(--dark) 68%, transparent);
+  pointer-events: none;
+}
+
+.tri-cycling-workout-annotations {
+  position: absolute;
+  z-index: 4;
+  inset: 0 0 1.2rem;
+  pointer-events: none;
+}
+
+.tri-cycling-workout-bars {
+  position: absolute;
+  inset: 0;
+}
+
+.tri-cycling-workout-lap {
+  appearance: none;
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  bottom: 0;
+  left: var(--tri-cycling-workout-start);
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) 1.2rem;
+  align-items: end;
+  width: max(2px, var(--tri-cycling-workout-width));
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  border-radius: var(--radius-none);
+  color: var(--gray);
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+  container: tri-cycling-workout-lap / inline-size;
+}
+
+.tri-cycling-workout-column {
+  position: relative;
+  align-self: stretch;
+  min-height: 0;
+}
+
+.tri-cycling-workout-bar {
+  position: absolute;
+  right: 1px;
+  bottom: 0;
+  left: 1px;
+  min-width: 1px;
+  min-height: 1px;
+  height: var(--tri-cycling-workout-height);
+  background: color-mix(in srgb, var(--tri-bike) 78%, var(--dark));
+  opacity: calc(0.78 * var(--tri-workout-lap-opacity-scale, 1));
+}
+
+.tri-cycling-workout-lap--unavailable .tri-cycling-workout-bar {
+  background: color-mix(in srgb, var(--gray) 38%, transparent);
+}
+
+.tri-workout-lap-tooltip {
+  position: absolute;
+  z-index: 4;
+  top: 0;
+  left: 0;
+  padding: 0.12rem 0.28rem;
+  visibility: hidden;
+  color: var(--dark);
+  background: var(--light);
+  border: 1px solid var(--lightgray);
+  font-size: 0.5rem;
+  line-height: 1;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.tri-workout-lap:focus-visible .tri-workout-lap-tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+.tri-workout-lap:is(:focus-visible, [aria-pressed='true'], [data-analysis-preview]) {
+  z-index: 5;
+}
+
+.tri-workout-lap:is(:focus-visible, [aria-pressed='true'], [data-analysis-preview])
+  .tri-workout-lap-bar {
+  outline: 2px solid var(--tri-accent);
+  outline-offset: 1px;
+  opacity: var(--tri-workout-lap-active-opacity, 1);
+}
+
+.tri-cycling-workout-label {
+  align-self: center;
+  overflow: hidden;
+  font-size: 0.48rem;
+  text-align: center;
+}
+
+.tri-cycling-workout-y-unit {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  line-height: 1;
+}
+
+.tri-cycling-workout-lap:focus-visible {
+  outline: 0;
+}
+
+@container tri-cycling-workout-lap (max-width: 1rem) {
+  .tri-cycling-workout-label {
+    visibility: hidden;
+  }
+
+  .tri-cycling-workout-lap[aria-pressed='true'] .tri-cycling-workout-label {
+    overflow: visible;
+    color: var(--tri-accent);
+    visibility: visible;
+  }
+}
+
+.tri-swim-workout-plot {
+  min-width: max(100%, calc(var(--tri-swim-workout-laps) * 0.75rem));
+}
+
+.tri-swim-workout-bars {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+}
+
+.tri-swim-workout-lap {
+  appearance: none;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--tri-swim-workout-start);
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) 1.2rem;
+  align-items: end;
+  width: max(2px, var(--tri-swim-workout-width));
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  border-radius: var(--radius-none);
+  color: var(--gray);
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+  container: tri-swim-workout-lap / inline-size;
+}
+
+.tri-swim-workout-column {
+  position: relative;
+  align-self: stretch;
+  min-height: 0;
+}
+
+.tri-swim-workout-bar {
+  position: absolute;
+  right: 1px;
+  bottom: 0;
+  left: 1px;
+  min-width: 1px;
+  min-height: 1px;
+  height: var(--tri-swim-workout-height);
+  background: color-mix(in srgb, var(--tri-swim) 78%, var(--dark));
+  opacity: calc(var(--tri-swim-workout-opacity) * var(--tri-workout-lap-opacity-scale, 1));
+}
+
+.tri-swim-workout-label {
+  align-self: center;
+  overflow: hidden;
+  font-size: 0.48rem;
+  text-align: center;
+}
+
+.tri-swim-workout-lap:focus-visible {
+  outline: 0;
+}
+
+@container tri-swim-workout-lap (max-width: 1rem) {
+  .tri-swim-workout-label {
+    visibility: hidden;
+  }
+
+  .tri-swim-workout-lap[aria-pressed='true'] .tri-swim-workout-label {
+    overflow: visible;
+    color: var(--tri-accent);
+    visibility: visible;
+  }
+}
+
+.tri-run-workout-bars {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+}
+
+.tri-run-workout-lap {
+  appearance: none;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--tri-run-workout-start);
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) 1.2rem;
+  align-items: end;
+  width: max(2px, var(--tri-run-workout-width));
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  border-radius: var(--radius-none);
+  color: var(--gray);
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+  container: tri-run-workout-lap / inline-size;
+}
+
+.tri-run-workout-column {
+  position: relative;
+  align-self: stretch;
+  min-height: 0;
+}
+
+.tri-run-workout-bar {
+  position: absolute;
+  right: 1px;
+  bottom: 0;
+  left: 1px;
+  min-width: 1px;
+  min-height: 1px;
+  height: var(--tri-run-workout-height);
+  background: var(--tri-run);
+  opacity: calc(var(--tri-run-workout-opacity) * var(--tri-workout-lap-opacity-scale, 1));
+}
+
+.tri-run-workout-label {
+  align-self: center;
+  overflow: hidden;
+  font-size: 0.48rem;
+  text-align: center;
+}
+
+.tri-run-workout-lap:focus-visible {
+  outline: 0;
+}
+
+@container tri-run-workout-lap (max-width: 1rem) {
+  .tri-run-workout-label {
+    visibility: hidden;
+  }
+
+  .tri-run-workout-lap[aria-pressed='true'] .tri-run-workout-label {
+    overflow: visible;
+    color: var(--tri-accent);
+    visibility: visible;
+  }
+}

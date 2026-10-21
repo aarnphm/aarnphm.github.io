@@ -1,0 +1,104 @@
+@use './foundations' as *;
+
+.tri-note-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 1.2rem;
+  margin-top: 0.45rem;
+
+  button {
+    outline: none;
+  }
+}
+
+.tri-calc-btn,
+.tri-gear-btn,
+.tri-pace-btn,
+.tri-map-btn,
+.tri-training-btn,
+.tri-calendar-btn,
+.tri-analytics-btn {
+  padding: 0;
+  background: none;
+  border: 0;
+  text-decoration: none;
+  font-family: var(--codeFont);
+  font-size: 0.64rem;
+  line-height: 1.4 !important;
+  color: var(--darkgray);
+  cursor: pointer;
+  border-bottom: 1px solid color-mix(in srgb, var(--gray) 45%, transparent);
+  display: inline-flex;
+
+  &:hover {
+    color: var(--dark);
+    border-bottom-color: var(--dark);
+  }
+}
+
+.triathlon a.tri-credit {
+  display: inline;
+  white-space: nowrap;
+  font-family: var(--codeFont);
+  font-size: 0.64rem;
+  line-height: 1.4;
+  color: color-mix(in srgb, var(--gray) 85%, transparent);
+  text-decoration: none;
+  background: transparent;
+  border-bottom: 1px solid transparent;
+
+  &:hover {
+    background: transparent;
+    color: var(--dark);
+    border-bottom-color: color-mix(in srgb, var(--gray) 50%, transparent);
+  }
+}
+
+.tri-gear-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.tri-gear {
+  position: absolute;
+  bottom: calc(100% + 0.6rem);
+  left: 0;
+  z-index: 40;
+  box-sizing: border-box;
+  height: 640px;
+  max-height: 50vh;
+  width: min(32rem, calc(100vw - 2rem));
+  overflow: hidden;
+  background: color-mix(in srgb, var(--light) 92%, transparent);
+  backdrop-filter: blur(10px);
+  border: 1px solid color-mix(in srgb, var(--gray) 72%, transparent);
+  border-radius: var(--radius-none);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(4px);
+  transition:
+    opacity 0.16s ease,
+    transform 0.18s ease,
+    visibility 0.16s;
+}
+
+.tri-gear-scroll {
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 0.9rem 1rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  @include thin-scrollbar;
+}
+
+.tri-maintenance {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--gray) 28%, transparent);
+}

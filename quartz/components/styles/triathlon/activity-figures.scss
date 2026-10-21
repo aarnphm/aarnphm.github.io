@@ -1,0 +1,339 @@
+.tri-act--expanded .tri-act-more {
+  display: flex;
+}
+
+.tri-act-health {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding-top: 0.55rem;
+  margin-top: 0.35rem;
+  border-top: 1px solid color-mix(in srgb, var(--gray) 32%, transparent);
+}
+
+.tri-act-health-h {
+  font-family: var(--codeFont);
+  font-size: 0.56rem;
+  color: var(--gray);
+}
+
+.tri-act-fueling .tri-act-health-h {
+  color: var(--tri-accent);
+}
+
+.tri-act-fueling--empty {
+  visibility: hidden;
+}
+
+.tri-act-garmin .tri-act-health-h {
+  color: var(--secondary);
+}
+
+.tri-act-figs {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.tri-act-figs--empty {
+  display: none;
+}
+
+.tri-sauna-summary {
+  display: grid;
+  grid-template-columns: min(44%, 15rem) minmax(0, 1fr);
+  gap: 0.8rem;
+  width: 100%;
+  align-items: start;
+  flex-shrink: 0;
+}
+
+.tri-sauna-summary-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+
+  > .tri-sauna-laps {
+    align-self: stretch;
+  }
+}
+
+.tri-sauna-location {
+  min-width: 0;
+  margin: 0;
+}
+
+.tri-sauna-location-map {
+  position: relative;
+  display: block;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 4px;
+  background: var(--light);
+
+  &:hover {
+    background: var(--light);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--secondary);
+    outline-offset: 2px;
+  }
+
+  > .tri-sauna-location-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    border-radius: 0;
+    mix-blend-mode: multiply;
+  }
+
+  > .tri-sauna-location-image--dark {
+    display: none;
+  }
+}
+
+:root[saved-theme='dark'] .tri-sauna-location-map {
+  > .tri-sauna-location-image--light {
+    display: none;
+  }
+
+  > .tri-sauna-location-image--dark {
+    display: block;
+    mix-blend-mode: screen;
+  }
+}
+
+.tri-sauna-location-pin {
+  position: absolute;
+  left: 50%;
+  bottom: 50%;
+  width: 24px;
+  height: 32px;
+  transform: translateX(-50%);
+  fill: var(--secondary);
+  stroke: var(--light);
+  stroke-width: 1.5;
+
+  circle {
+    fill: var(--light);
+    stroke: none;
+  }
+}
+
+.tri-sauna-location-caption {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem 0.5rem;
+  margin-top: 0.3rem;
+  font-size: 0.62rem;
+  line-height: 1.4;
+  color: var(--gray);
+  text-align: left;
+}
+
+.tri-sauna-location-name {
+  color: var(--darkgray);
+}
+
+.tri-sauna-location-coordinates {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.56rem;
+}
+
+.tri-sauna-location-attribution {
+  font-size: 0.6rem;
+}
+
+.tri-route-cursor {
+  fill: var(--tri-accent);
+  stroke: var(--light);
+  stroke-width: 0.6;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.1s ease;
+}
+
+.tri-elev-cursor {
+  stroke: var(--tri-accent);
+  stroke-width: 0.8;
+  vector-effect: non-scaling-stroke;
+  opacity: 0;
+}
+
+.tri-fig-readout {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0.12rem 0.4rem;
+  font-family: var(--codeFont);
+  font-size: 0.6rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--dark);
+  background: color-mix(in srgb, var(--light) 90%, transparent);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  border-radius: var(--radius-none);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.1s ease;
+}
+
+.tri-act--scrub .tri-route-cursor,
+.tri-act--scrub .tri-elev-cursor {
+  opacity: 1;
+}
+
+.tri-elev-wrap--read .tri-fig-readout {
+  opacity: 1;
+}
+
+.tri-route {
+  width: 100%;
+  height: auto;
+  max-height: 150px;
+}
+
+.tri-act-figs--route > .tri-route {
+  height: clamp(190px, 24cqi, 280px);
+  max-height: none;
+}
+
+@container tri-activity (min-width: 38rem) {
+  .tri-act-figs--split {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: center;
+    gap: 1.6rem;
+
+    > * {
+      min-width: 0;
+    }
+
+    > .tri-pool-strokes {
+      justify-self: center;
+    }
+  }
+}
+
+.tri-route-path {
+  fill: none;
+  stroke: var(--dark);
+  stroke-width: 1.1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+.tri-pool-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.tri-pool {
+  max-height: 92px;
+}
+
+.tri-pool-lane {
+  fill: none;
+  stroke: var(--dark);
+  stroke-width: 1.2;
+}
+
+.tri-pool-mid {
+  stroke: color-mix(in srgb, var(--gray) 55%, transparent);
+  stroke-width: 0.7;
+  stroke-dasharray: 3 3;
+}
+
+.tri-pool-cap {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.9rem;
+  width: 100%;
+  font-family: var(--codeFont);
+  font-size: 0.66rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--darkgray);
+}
+
+.tri-pool-strokes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  width: 100%;
+}
+
+.tri-stroke-bar {
+  display: flex;
+  width: 100%;
+  height: 0.45rem;
+  overflow: hidden;
+  border-radius: var(--radius-none);
+}
+
+.tri-stroke-seg {
+  height: 100%;
+  min-width: 1px;
+}
+
+.tri-stroke-legend {
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  gap: 0.2rem;
+  margin: 0;
+  padding: 0 !important;
+  list-style: none;
+}
+
+.tri-stroke-leg {
+  display: flex;
+  align-items: center;
+  gap: 0.28rem;
+  font-family: var(--codeFont);
+  font-size: 0.62rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--gray);
+}
+
+.tri-stroke-distance {
+  margin-inline-start: auto;
+  text-align: end;
+  white-space: nowrap;
+}
+
+.tri-stroke-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: var(--radius-none);
+}
+
+.tri-stroke-freestyle {
+  background: #cdd597;
+}
+
+.tri-stroke-breaststroke {
+  background: #fdb2a2;
+}
+
+.tri-stroke-backstroke {
+  background: var(--tri-swim);
+}
+
+.tri-stroke-butterfly {
+  background: #8b7ec8;
+}
+
+.tri-stroke-mixed {
+  background: color-mix(in srgb, var(--gray) 55%, transparent);
+}
+
+.tri-stroke-kickboard {
+  background: #d0a215;
+}
