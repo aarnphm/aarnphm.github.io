@@ -1,6 +1,6 @@
 import { QuartzPluginData } from '../plugins/vfile'
 import { FullSlug, joinSegments, slugifyFilePath, FilePath } from './path'
-import { universityPlaceOf } from './university'
+import { universityIndexOf, universityPlaceOf } from './university'
 import { isUniversityPdfPage } from './university-pdf'
 
 export type CourseUnitKind = 'lecture' | 'week' | 'session'
@@ -321,12 +321,12 @@ export function coursePageOf(slug: string | undefined): { dir: string; name: str
 }
 
 /**
- * Pages that draw their own course crumb (masthead, resource strip, unit bar, page head). The site
+ * Pages that draw their own course crumb (index bar, masthead, resource strip, unit bar, page head). The site
  * breadcrumbs stay off them: the crumb is the trail.
  */
 export function hasCourseCrumb(data: QuartzPluginData): boolean {
   const slug = data.slug ?? ''
-  if (isUniversityPdfPage(slug) || universityPlaceOf(slug)) return true
+  if (isUniversityPdfPage(slug) || universityPlaceOf(slug) || universityIndexOf(slug)) return true
   if (!courseDirOf(slug)) return false
   return (
     parseCourseRecord(data.frontmatter) !== null ||
@@ -335,6 +335,7 @@ export function hasCourseCrumb(data: QuartzPluginData): boolean {
     unitOf(slug) !== null ||
     latexOf(data)?.pset !== undefined ||
     coursePageOf(slug) !== null ||
+    data.frontmatter?.pageLayout === 'courses' ||
     data.frontmatter?.pageLayout === 'study-log' ||
     data.frontmatter?.pageLayout === 'statements'
   )

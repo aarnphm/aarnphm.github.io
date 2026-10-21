@@ -43,6 +43,12 @@ export function universityPlaceOf(slug: string): UniversityPlace | null {
   return { term, course, folders: parts.slice(0, -1), isFolder }
 }
 
+/** The archive (`thoughts/university/index`) or a term page (`…/<term>/index`): term is null at the archive. */
+export function universityIndexOf(slug: string): { term: string | null } | null {
+  const match = /^thoughts\/university\/(?:([^/]+)\/)?index$/.exec(slug)
+  return match ? { term: match[1] ?? null } : null
+}
+
 let folderNames: { paths: readonly string[]; names: Map<string, string> } | undefined
 
 /** Source names of university folders by slug (`…/05-Construction-of-a-Parser` → `05 Construction of a Parser`). */

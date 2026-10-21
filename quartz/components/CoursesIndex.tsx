@@ -38,6 +38,12 @@ export default (() => {
 
     return (
       <div class={classNames(displayClass, 'course-home', 'course-home--index')}>
+        <nav class="course-unit-bar" aria-label="course trail">
+          <span class="course-crumb">
+            <span>courses</span>
+          </span>
+          <span class="course-count course-unit-dates">mit opencourseware</span>
+        </nav>
         <section
           class="course-index"
           data-course-prefix="courses/"

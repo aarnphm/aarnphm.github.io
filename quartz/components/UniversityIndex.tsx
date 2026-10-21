@@ -6,11 +6,10 @@ import {
 import { BuildCtx } from '../util/ctx'
 import { classNames } from '../util/lang'
 import { FullSlug, resolveRelative } from '../util/path'
-import { courseCode, termLabel } from '../util/university'
+import { UNIVERSITY_SLUG, courseCode, termLabel, universityIndexOf } from '../util/university'
 import style from './styles/university.scss'
 
 const root = 'thoughts/university/'
-const termIndexRe = /^thoughts\/university\/([^/]+)\/index$/
 const homeRe = /^thoughts\/university\/([^/]+)\/([^/]+)\/index$/
 
 interface Counts {
@@ -72,7 +71,7 @@ export default (() => {
     const counts = countsByCourse(ctx)
     const terms = new Map<string, { home: (typeof allFiles)[number]; dir: string }[]>()
     // a term page (`thoughts/university/<term>/`) lists only its own courses
-    const scope = termIndexRe.exec(from)?.[1]
+    const scope = universityIndexOf(from)?.term ?? undefined
     for (const home of allFiles) {
       const match = homeRe.exec(home.slug ?? '')
       if (!match || (scope && match[1] !== scope)) continue
@@ -90,6 +89,27 @@ export default (() => {
 
     return (
       <div class={classNames(displayClass, 'course-home', 'course-home--index')}>
+        {/* the same trail as course pages; it ends at this page */}
+        <nav class="course-unit-bar" aria-label="course trail">
+          <span class="course-crumb">
+            {scope ? (
+              <>
+                <a
+                  class="internal"
+                  href={resolveRelative(from, UNIVERSITY_SLUG as FullSlug)}
+                  data-slug={UNIVERSITY_SLUG}
+                  data-no-popover
+                >
+                  university
+                </a>
+                <span class="course-unit-sep">/</span>
+                <span>{termLabel(scope)}</span>
+              </>
+            ) : (
+              <span>university</span>
+            )}
+          </span>
+        </nav>
         <section class="course-index university-index" aria-labelledby="university-h">
           <header class="course-bar">
             <h2 id="university-h">
