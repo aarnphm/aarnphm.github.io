@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "trace": { "provider": "sol", "model": "gpt-6.1-sol", "effort": "medium" },
+  "reviewers": ["sol", "argon"],
+  "providers": {
+    "sol": { "command": "codex", "model": "gpt-6.1-sol", "effort": "high" },
+    "argon": { "command": "argon", "model": "gemini-4-argon-high", "effort": null },
+    "caw": { "command": "caw", "model": null, "effort": null }
+  },
+  "limits": {
+    "invocationMs": 240000,
+    "workerMs": 180000,
+    "maxCalls": 24,
+    "maxAttempts": 3,
+    "maxOutputBytes": 16777216,
+    "maxSvgBytes": 2097152,
+    "maxSegments": 100000,
+    "maxDepth": 32,
+    "maxCoordinate": 1000000,
+    "maxRasterMs": 30000
+  },
+  "exports": {
+    "shelf": { "width": 96, "height": 320, "quality": 80 },
+    "detail": { "width": 256, "height": 1280, "quality": 84 }
+  }
+}
