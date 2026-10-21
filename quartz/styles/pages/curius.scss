@@ -15,7 +15,7 @@ body[data-slug='curius'] {
 
   :where(.curius, .aside-container, .curius-preview)
     :where(button, a, input, summary):focus-visible {
-    outline: 2px solid var(--secondary);
+    outline: 2px solid var(--dark);
     outline-offset: -2px;
   }
 
@@ -204,6 +204,10 @@ body[data-slug='curius'] {
     overflow: hidden;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
+  }
+
+  :is(#curius-fragments, #curius-pagination, .curius-search)[hidden] {
+    display: none;
   }
 
   .curius-pagination {

@@ -6,6 +6,7 @@ import { classNames } from '../../util/lang'
 import curiusFriendScript from '../scripts/curius-friends.inline'
 //@ts-ignore
 import curiusScript from '../scripts/curius.inline'
+import curiusDateStyle from '../styles/curius-date.scss'
 
 // Curius components
 export const CuriusContent: QuartzComponent = (props: QuartzComponentProps) => {
@@ -169,6 +170,7 @@ export const CuriusContent: QuartzComponent = (props: QuartzComponentProps) => {
   )
 }
 CuriusContent.afterDOMLoaded = curiusScript
+CuriusContent.css = curiusDateStyle
 
 export const CuriusFriends: QuartzComponent = (props: QuartzComponentProps) => {
   const { displayClass } = props

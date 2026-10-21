@@ -8,6 +8,7 @@ import {
 import { parseGithubRepositoryUrl } from '../../util/github-embed'
 import { parseWikipediaTarget } from '../../util/wikipedia'
 import { buildYouTubeEmbed } from '../../util/youtube'
+import { bindCuriusPopover } from './curius-popover'
 import { registerEscapeHandler } from './escape-handler'
 import { currentNavSignal } from './nav-lifecycle'
 
@@ -42,6 +43,7 @@ export function activateCuriusLink(link: Link, trigger: HTMLElement, original: b
 }
 
 export function bindCuriusPreview(link: Link, anchor: HTMLAnchorElement): void {
+  bindCuriusPopover(link, anchor)
   const signal = currentNavSignal()
   anchor.setAttribute('aria-controls', 'curius-preview')
   anchor.setAttribute('aria-haspopup', 'dialog')
