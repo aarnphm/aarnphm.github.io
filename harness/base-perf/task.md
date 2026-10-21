@@ -6,15 +6,15 @@ Your dev watcher is already running: it rebuilds the site on save and serves it 
 
 ## Objective
 
-Make the pages in your group faster to interact with, measured by the bench, without changing what they render or do. The bench (`{{RUN}} bench {{NAME}} <out-dir> [--reps N]`) opens each page in the real Helium browser, runs a fixed interaction script and reports, per scenario, `interaction_ms` (the primary metric: wall time of the scripted interactions), `task_ms` (main-thread time), `longtask_ms`, `ready_ms` (navigation to view ready), `nodes`, `heap_mb`, layouts, style recalcs and per-step times. Lower is better everywhere. Scenarios: {{SCENARIOS}}. Read `harness/base-perf/scenarios.py` for exactly what each step does; it is the workload and you must not edit it.
+Make the pages in your group faster to interact with, measured by the bench, without changing what they render or do. The bench (`{{RUN}} bench {{NAME}} <out-dir> [--reps N]`) opens each page in the real Helium browser, runs a fixed interaction script and reports, per scenario, `interaction_ms` (the primary metric: wall time of the scripted interactions), `task_ms` (main-thread time), `longtask_ms`, `loaf_block_ms` (long animation frames), `frames_dropped`, `fps_min` and `worst_frame_ms` (a rAF sampler during every step), `ready_ms` (navigation to view ready), `nodes`, `listeners`, `heap_mb`, `dom_heap_mb` (Blink heap), layouts, style recalcs and per-step times with fps. Lower is better everywhere except `fps_min`. The baseline and the final `ab` also carry Lighthouse medians (`lh_score`, `lh_tbt_ms`, `lh_lcp_ms`, ...; `{{RUN}} bench ... --lighthouse 2` adds them to any run, about 25 s per scenario per run); they are reported, not gates. Scenarios: {{SCENARIOS}}. Read `{{HARNESS}}/scenarios.py` for exactly what each step does; it is the workload and you must not edit it. The bench may print `waiting for ...lock` and sit for some minutes: other workers share the browser and run one bench at a time.
 
 Your baseline is already measured at `{{RUN_DIR}}/baseline/summary.md` (5 reps). Read it first and pick the scenario and step where the time goes.
 
 ## Loop
 
-1. Form one hypothesis about where the cost is (read the view's source and stylesheet; `harness/base-perf/probe.py <url> --eval '<expr>'` evaluates an expression in the page, so you can count nodes, time a call, or read computed styles). Write it as a line in `{{RUN_DIR}}/experiments.md` before you edit: `N. <hypothesis> -> <files>`.
+1. Form one hypothesis about where the cost is (read the view's source and stylesheet; `{{HARNESS}}/probe.py <url> --eval '<expr>'` evaluates an expression in the page, so you can count nodes, time a call, or read computed styles). Write it as a line in `{{RUN_DIR}}/experiments.md` before you edit: `N. <hypothesis> -> <files>`.
 2. Edit only files you own (below). Keep the change small and specific to the hypothesis.
-3. `{{RUN}} wait-build {{NAME}}`, then `{{RUN}} bench {{NAME}} {{RUN_DIR}}/cand-N --reps 3`, then `{{RUN}} compare {{RUN_DIR}}/baseline {{RUN_DIR}}/cand-N`. ACCEPT means the primary metric's median beat the baseline's best rep and no guard metric (task, long tasks, ready, nodes, heap) fell outside the baseline's range and no check broke.
+3. `{{RUN}} wait-build {{NAME}}`, then `{{RUN}} bench {{NAME}} {{RUN_DIR}}/cand-N --reps 3`, then `{{RUN}} compare {{RUN_DIR}}/baseline {{RUN_DIR}}/cand-N`. ACCEPT means the primary metric's median beat the baseline's best rep and no guard metric (task, long tasks, ready, dropped frames, nodes, listeners, JS heap) fell outside the baseline's range and no check broke.
 4. Run the checks: `{{RUN}} check {{NAME}}` (tsgo, oxlint, oxfmt on your changed files, and the view's test file). Baseline failures listed in `{{RUN_DIR}}/baseline/checks.txt` are known; you may not add one.
 5. Keep the change if ACCEPT on every scenario it touches and no other scenario got worse and the checks pass. Otherwise revert it exactly (`git checkout -- <file>` for each file you changed in that experiment, or edit it back), wait-build, and move on. Append the outcome to the same line in `experiments.md`: the primary metric before and after, kept or reverted, and why.
 6. After every kept change, re-measure the baseline against the current tree so later experiments compare against the kept state: `{{RUN}} bench {{NAME}} {{RUN_DIR}}/baseline-N --reps 5` and use that directory as the baseline from then on.
@@ -25,11 +25,11 @@ Prefer changes with a mechanism you can name: fewer style writes on large subtre
 ## Ownership
 
 You may edit: {{OWNED}}
-Read-only: everything else, including `harness/`, `quartz/styles/pages/bases.scss`, the emitters and the content. If a gain needs a shared file, write the exact change you would make into `{{RUN_DIR}}/proposals.md` with its expected effect and do not apply it.
+Read-only: everything else, including `{{HARNESS}}` (the harness lives in the main checkout, not your worktree), `quartz/styles/pages/bases.scss`, the emitters and the content. If a gain needs a shared file, write the exact change you would make into `{{RUN_DIR}}/proposals.md` with its expected effect and do not apply it.
 
 ## Allowed commands
 
-`{{RUN}} ...`, `harness/base-perf/probe.py ...`, `rg`, `fd`, `sed -n`, `cat`, `head`, `tail`, `wc`, `ls`, `git status`, `git diff`, `git log`, `git show`, `git checkout -- <file>`, `pnpm exec tsgo --noEmit`, `pnpm exec oxlint <files>`, `pnpm exec oxfmt <files>`, `pnpm test <file>`, `curl` against `{{URL}}` only. No other network, no installs, no browsers of your own (the bench owns its tab), no sub-agents, no background processes.
+`{{RUN}} ...`, `{{HARNESS}}/probe.py ...`, `rg`, `fd`, `sed -n`, `cat`, `head`, `tail`, `wc`, `ls`, `git status`, `git diff`, `git log`, `git show`, `git checkout -- <file>`, `pnpm exec tsgo --noEmit`, `pnpm exec oxlint <files>`, `pnpm exec oxfmt <files>`, `pnpm test <file>`, `curl` against `{{URL}}` only. No other network, no installs, no browsers of your own (the bench owns its tab), no sub-agents, no background processes.
 
 ## Final report
 

@@ -1,19 +1,32 @@
 """In-page helpers every scenario script gets."""
 
-# Installed once the page is ready: a buffered long-task observer and the step timer. `step` runs an
-# action and waits two animation frames; frame_ms is its wall time. Inside an action, `sync` runs
-# one dispatch and forces a layout, so the handler, style and layout cost of that event lands in the
-# step's sync_ms (the waits between events do not).
+# Installed once the page is ready: buffered long-task and long-animation-frame observers, a
+# display-interval calibration (20 idle rAF gaps; 16.7 ms at 60 Hz, 8.3 at 120) and the step timer.
+# `step` runs an action and waits two animation frames; frame_ms is its wall time. While it runs, a
+# rAF loop of its own (one per step, so a finished loop never stamps into the next step) stamps
+# every frame the compositor produced: fps is stamps over wall time, a gap over
+# 1.5 intervals counts the frames it skipped as dropped, worst_ms is the longest gap, and the
+# long-animation-frame entries that landed inside the step give loaf and its blocking time. Inside
+# an action, `sync` runs one dispatch and forces a layout, so the handler, style and layout cost of
+# that event lands in the step's sync_ms (the waits between events do not).
 PRELUDE = r"""
-window.__bp = { longtasks: [], steps: [], checks: {}, notes: {}, _sync: 0 }
+window.__bp = { longtasks: [], loaf: [], steps: [], checks: {}, notes: {}, _sync: 0, interval: 16.7 }
 try { new PerformanceObserver(l => { for (const e of l.getEntries()) __bp.longtasks.push(+e.duration.toFixed(1)) }).observe({ type: 'longtask', buffered: true }) } catch {}
+try { new PerformanceObserver(l => { for (const e of l.getEntries()) __bp.loaf.push({ d: +e.duration.toFixed(1), b: +(e.blockingDuration || 0).toFixed(1) }) }).observe({ type: 'long-animation-frame', buffered: true }) } catch {}
 __bp.raf = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))
 __bp.sleep = ms => new Promise(r => setTimeout(r, ms))
+__bp.sampler = () => { const st = [], s = { on: true, stamps: st }; const tick = t => { if (!s.on) return; if (t !== st[st.length - 1]) st.push(t); requestAnimationFrame(tick) }; requestAnimationFrame(tick); return s }
+;(async () => { const st = []; for (let i = 0; i < 21; i++) st.push(await new Promise(requestAnimationFrame)); const g = st.slice(1).map((t, i) => t - st[i]).sort((a, b) => a - b); __bp.interval = +g[Math.floor(g.length / 2)].toFixed(2); __bp.notes.hz = Math.round(1000 / __bp.interval) })()
 __bp.step = async (name, action) => {
-  const t0 = performance.now(), s0 = __bp._sync
+  const t0 = performance.now(), s0 = __bp._sync, l0 = __bp.loaf.length, sample = __bp.sampler()
   await action()
   await __bp.raf()
-  __bp.steps.push({ name, sync_ms: +(__bp._sync - s0).toFixed(2), frame_ms: +(performance.now() - t0).toFixed(2) })
+  sample.on = false
+  const st = sample.stamps, wall = performance.now() - t0, iv = __bp.interval
+  let dropped = 0, worst = 0
+  for (let i = 1; i < st.length; i++) { const g = st[i] - st[i - 1]; if (g > worst) worst = g; if (g > 1.5 * iv) dropped += Math.round(g / iv) - 1 }
+  const loaf = __bp.loaf.slice(l0)
+  __bp.steps.push({ name, sync_ms: +(__bp._sync - s0).toFixed(2), frame_ms: +wall.toFixed(2), frames: st.length, fps: +(st.length / wall * 1000).toFixed(1), dropped, worst_ms: +worst.toFixed(1), loaf: loaf.length, loaf_block_ms: +loaf.reduce((a, e) => a + e.b, 0).toFixed(1) })
 }
 __bp.sync = fn => { const t = performance.now(); fn(); void document.body.offsetWidth; __bp._sync += performance.now() - t }
 __bp.check = (name, ok) => { __bp.checks[name] = !!ok }

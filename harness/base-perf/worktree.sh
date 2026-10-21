@@ -34,6 +34,12 @@ case $cmd in
     fi
     mkdir -p "$STATE"
     echo "$port" > "$STATE/port"
+    # Workers start from the main checkout's HEAD: a worker branch never has commits of its own,
+    # so this is a fast-forward; a tree with edits (a run in progress) is left where it is.
+    if [ -z "$(git -C "$WT" status --porcelain)" ]; then
+      git -C "$WT" merge --ff-only -q "$(git -C "$WS" rev-parse HEAD)" 2> /dev/null \
+        || echo "worktree $WT is not behind main's HEAD on a straight line; left as is" >&2
+    fi
     # Worktrees share the main repo's info/exclude; the state dir must stay out of status, diff
     # and the ab stash.
     exclude="$WS/.git/info/exclude"

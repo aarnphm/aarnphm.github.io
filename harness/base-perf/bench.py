@@ -18,6 +18,7 @@ brought to the front for each rep (a background tab gets no animation frames) an
 from __future__ import annotations
 
 import argparse
+import fcntl
 import json
 import os
 import subprocess
@@ -26,6 +27,7 @@ import time
 from datetime import datetime, timezone
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import lighthouse  # noqa: E402
 from cua import CuaError, Session, Tab  # noqa: E402
 from scenarios import GROUPS, PRELUDE, SCENARIOS  # noqa: E402
 from stats import render_summary, summarize  # noqa: E402
@@ -40,7 +42,13 @@ def sh(cmd: list[str]) -> str:
     return ''
 
 
-RECLAIM_ERRORS = ('STALE_HANDLE', 'BROWSER_DISCONNECTED', 'EXECUTION_TIMEOUT', 'detached')
+LOCK_PATH = os.path.expanduser('~/.local/state/helium-cua/base-perf.lock')
+RECLAIM_ERRORS = (
+  'STALE_HANDLE',
+  'BROWSER_DISCONNECTED',
+  'EXECUTION_TIMEOUT',
+  'detached',
+)
 
 
 def run_once(
@@ -65,14 +73,15 @@ def run_once(
     return {'rep': rep, 'skipped': f'not ready after {limit_ms} ms'}
   tab.evaluate(PRELUDE)
   time.sleep(scenario.get('settle', 800) / 1000)
-  # Nodes counts the previous document until it is collected (one rep read 71000 instead of
-  # 35500); a GC before the first reading keeps nodes and heap comparable across reps.
-  tab.command('HeapProfiler.collectGarbage')
   before = tab.metrics()
   longtasks_before = tab.evaluate('__bp.longtasks.length')
   run = tab.evaluate(f'(async () => {{ {scenario["script"]} }})()', 60000)
   time.sleep(0.2)
   after = tab.metrics()
+  # Oilpan (DOM, style, layout objects) is not in Performance.getMetrics; the extension does not
+  # expose HeapProfiler or Memory, so no forced GC: Nodes still counts the previous document
+  # until it is collected (one rep in 20 reads double), which the median absorbs.
+  heap = tab.heap_usage()
   longtasks = tab.evaluate(f'__bp.longtasks.slice({longtasks_before})')
   if rep == reps - 1:
     with open(os.path.join(out, f'{name}.png'), 'wb') as f:
@@ -94,6 +103,19 @@ def run_once(
     'longtask_ms': round(sum(longtasks), 1),
     'nodes': after['Nodes'],
     'heap_mb': round(after['JSHeapUsedSize'] / 1048576, 1),
+    'heap_total_mb': round(after['JSHeapTotalSize'] / 1048576, 1),
+    'heap_growth_mb': round(
+      (after['JSHeapUsedSize'] - before['JSHeapUsedSize']) / 1048576, 1
+    ),
+    'dom_heap_mb': round(heap.get('embedderHeapUsedSize', 0) / 1048576, 1),
+    'listeners': after['JSEventListeners'],
+    'layout_objects': after['LayoutObjects'],
+    'documents': after['Documents'],
+    'frames_dropped': sum(s.get('dropped', 0) for s in steps),
+    'fps_min': min((s['fps'] for s in steps if s.get('frames')), default=0),
+    'worst_frame_ms': max((s.get('worst_ms', 0) for s in steps), default=0),
+    'loaf': sum(s.get('loaf', 0) for s in steps),
+    'loaf_block_ms': round(sum(s.get('loaf_block_ms', 0) for s in steps), 1),
     'steps': steps,
     'checks': run['checks'],
     'notes': run['notes'],
@@ -111,6 +133,13 @@ def main() -> int:
   ap.add_argument('--width', type=int, default=1440)
   ap.add_argument('--height', type=int, default=900)
   ap.add_argument('--ready-timeout', type=int, default=90000)
+  ap.add_argument(
+    '--lighthouse',
+    type=int,
+    default=0,
+    metavar='N',
+    help='after the reps, N Lighthouse runs per scenario (headless Helium, separate instance)',
+  )
   a = ap.parse_args()
   names = (
     a.scenario.split(',')
@@ -140,6 +169,11 @@ def main() -> int:
     },
     'scenarios': {},
   }
+  # One bench at a time per machine: Helium drops every other session's debugger lease when a
+  # debugged tab closes, so two concurrent benches fail each other's reps. Climbs queue here.
+  lock = open(LOCK_PATH, 'w')
+  print(f'waiting for {LOCK_PATH}', file=sys.stderr)
+  fcntl.flock(lock, fcntl.LOCK_EX)
   session = Session(a.session)
 
   def fresh_tab() -> Tab:
@@ -170,7 +204,10 @@ def main() -> int:
             # restart, a dismissed debugging bar); the tab is still ours, so close it and
             # open a new one rather than failing every rep that follows.
             if attempt == 0 and any(k in msg for k in RECLAIM_ERRORS):
-              print(f'{name} rep {rep}: {msg[:80]}; reclaiming the tab', file=sys.stderr)
+              print(
+                f'{name} rep {rep}: {msg[:80]}; reclaiming the tab',
+                file=sys.stderr,
+              )
               reclaims += 1
               try:
                 tab.finish()
@@ -201,6 +238,18 @@ def main() -> int:
       tab.finish()
     except CuaError as e:
       print(f'cleanup: {e}', file=sys.stderr)
+  fcntl.flock(lock, fcntl.LOCK_UN)
+  lock.close()
+  if a.lighthouse:
+    # After the task tab is closed, so the audit's own browser never shares the run.
+    for name, s in results['scenarios'].items():
+      runs = lighthouse.run(base + s['path'], a.lighthouse, a.out, name)
+      s['lighthouse'] = runs
+      s['summary'] = summarize(s['reps'], runs)
+      print(
+        f'{name} lighthouse: {lighthouse.medians(runs) or runs}',
+        file=sys.stderr,
+      )
   results['meta']['reclaims'] = reclaims
   with open(os.path.join(a.out, 'results.json'), 'w') as f:
     json.dump(results, f, indent=2)

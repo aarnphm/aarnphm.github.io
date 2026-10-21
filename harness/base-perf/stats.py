@@ -1,5 +1,6 @@
 """Summary statistics for bench results and the comparison of two runs. Lower is better for every
-metric; interaction_ms (the sum of the scenario's step wall times) decides a climb step."""
+metric except fps_min and lh_score; interaction_ms (the sum of the scenario's step wall times)
+decides a climb step."""
 
 from __future__ import annotations
 
@@ -15,32 +16,76 @@ METRICS = [
   'style_ms',
   'longtask_ms',
   'longtasks',
+  'loaf',
+  'loaf_block_ms',
+  'frames_dropped',
+  'fps_min',
+  'worst_frame_ms',
   'layouts',
   'recalcs',
   'nodes',
+  'layout_objects',
+  'listeners',
+  'documents',
   'heap_mb',
+  'heap_total_mb',
+  'heap_growth_mb',
+  'dom_heap_mb',
 ]
+# Per scenario, not per rep: medians of the bench's --lighthouse runs.
+LH_METRICS = [
+  'lh_score',
+  'lh_fcp_ms',
+  'lh_lcp_ms',
+  'lh_si_ms',
+  'lh_tti_ms',
+  'lh_tbt_ms',
+  'lh_fid_ms',
+  'lh_main_ms',
+  'lh_js_ms',
+  'lh_cls',
+  'lh_dom',
+  'lh_bytes_kb',
+]
+HIGHER_IS_BETTER = {'fps_min', 'lh_score'}
 PRIMARY = 'interaction_ms'
 # A candidate that gets worse on one of these is rejected even when the primary metric improves.
-GUARDS = ['task_ms', 'longtask_ms', 'ready_ms', 'nodes', 'heap_mb']
+GUARDS = [
+  'task_ms',
+  'longtask_ms',
+  'ready_ms',
+  'frames_dropped',
+  'nodes',
+  'listeners',
+  'heap_mb',
+]
 
 
 def _stat(xs):
   return {'median': round(median(xs), 1), 'min': min(xs), 'max': max(xs)}
 
 
-def summarize(reps: list[dict]) -> dict:
+def summarize(reps: list[dict], lighthouse: list[dict] | None = None) -> dict:
   ok = [r for r in reps if 'error' not in r and 'skipped' not in r]
   out = {'n': len(ok), 'failed': len(reps) - len(ok)}
   for k in METRICS:
     xs = [r[k] for r in ok if isinstance(r.get(k), (int, float))]
     if xs:
       out[k] = _stat(xs)
+  lh = [r for r in (lighthouse or []) if 'error' not in r]
+  for k in LH_METRICS:
+    xs = [r[k] for r in lh if isinstance(r.get(k), (int, float))]
+    if xs:
+      out[k] = _stat(xs)
   steps: dict[str, list] = {}
+  fps: dict[str, list] = {}
   for r in ok:
     for s in r.get('steps', []):
       steps.setdefault(s['name'], []).append(s['frame_ms'])
+      if s.get('frames'):
+        fps.setdefault(s['name'], []).append(s['fps'])
   out['steps'] = {k: _stat(v) for k, v in steps.items()}
+  out['step_fps'] = {k: _stat(v) for k, v in fps.items()}
   checks: dict[str, bool] = {}
   for r in ok:
     for k, v in (r.get('checks') or {}).items():
@@ -56,7 +101,9 @@ def fmt(s):
 def render_summary(results: dict) -> str:
   meta = results['meta']
   dirty = f' (+{meta["dirty"]} dirty)' if meta.get('dirty') else ''
-  reclaims = f', {meta["reclaims"]} tab reclaims' if meta.get('reclaims') else ''
+  reclaims = (
+    f', {meta["reclaims"]} tab reclaims' if meta.get('reclaims') else ''
+  )
   lines = [
     f'# bench {meta["date"]} @ {meta["commit"]}{dirty}, {meta["reps"]} reps, {meta["base_url"]}{reclaims}',
     '',
@@ -74,11 +121,14 @@ def render_summary(results: dict) -> str:
       lines.append('')
       continue
     lines += ['', '| metric | median (min–max) |', '| --- | --- |']
-    for k in METRICS:
+    for k in METRICS + LH_METRICS:
       if k in sm:
         lines.append(f'| {k} | {fmt(sm[k])} |')
     for k, v in sm['steps'].items():
-      lines.append(f'| step {k} | {fmt(v)} |')
+      f = sm.get('step_fps', {}).get(k)
+      lines.append(
+        f'| step {k} | {fmt(v)}{f" · {f['median']} fps" if f else ""} |'
+      )
     failed = [k for k, v in sm['checks'].items() if not v]
     notes = [r.get('notes') for r in s['reps'] if r.get('notes')]
     vis = {n.get('visibility') for n in notes}
@@ -110,17 +160,16 @@ def compare(base: dict, cand: dict) -> dict:
       out[name] = {'missing': True}
       continue
     metrics = {}
-    for k in METRICS:
+    for k in METRICS + LH_METRICS:
       if k not in b or k not in c:
         continue
       ratio = c[k]['median'] / b[k]['median'] if b[k]['median'] else 1.0
-      verdict = (
-        'better'
-        if c[k]['median'] < b[k]['min']
-        else 'worse'
-        if c[k]['median'] > b[k]['max']
-        else 'noise'
+      low, high = (
+        (c[k]['median'] > b[k]['max'], c[k]['median'] < b[k]['min'])
+        if k in HIGHER_IS_BETTER
+        else (c[k]['median'] < b[k]['min'], c[k]['median'] > b[k]['max'])
       )
+      verdict = 'better' if low else 'worse' if high else 'noise'
       metrics[k] = {
         'base': b[k],
         'cand': c[k],
