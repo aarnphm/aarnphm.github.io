@@ -1,5 +1,6 @@
 import type { CyclingMechanics } from '../../../util/cycling-torque'
 import type { GarminStreams } from '../garmin'
+import { getMeanMaxCurveCache } from './power-curve-cache'
 import { DAY_MS, type StravaStreams } from './raw-and-kinds'
 import { MAX_ACCEL_MPS2, MAX_SPEED_WINDOW_S, round } from './stream-primitives'
 
@@ -80,7 +81,7 @@ const DISTANCE_EFFORTS = [
   ['180K', 180_000],
 ] as const
 
-interface EffortTimeline {
+export interface EffortTimeline {
   distanceM: Float64Array
   altitudeM: Float64Array
   watts: Float64Array
@@ -260,11 +261,15 @@ export function bestObservedPowerWindows(
 
 export function meanMaxCurve(timeline: EffortTimeline | null): PowerCurvePoint[] {
   if (!timeline) return []
-  const durations = Array.from({ length: timeline.watts.length }, (_, index) => index + 1)
-  return bestPowerWindows(timeline, durations).map(window => ({
-    s: window.durationS,
-    w: window.averageWatts,
-  }))
+  const watts = timeline.watts
+  if (watts.length === 0) return []
+  return getMeanMaxCurveCache().getOrCompute(watts, () => {
+    const durations = Array.from({ length: watts.length }, (_, index) => index + 1)
+    return bestPowerWindows(timeline, durations).map(window => ({
+      s: window.durationS,
+      w: window.averageWatts,
+    }))
+  })
 }
 
 export function maxSpeedKph(timeline: EffortTimeline | null): number | null {
