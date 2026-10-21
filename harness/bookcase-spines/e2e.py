@@ -126,6 +126,31 @@ class Pipeline(unittest.TestCase):
       )
       self.assertEqual(config['reviewers'], ['astra', 'opus', 'caw'])
       config_file = EVIDENCE / 'config.json'
+      long_config = EVIDENCE / 'long-config.json'
+      long_worker_ms = 31 * 60 * 1000
+      long_limits = {
+        **mapping(config['limits']),
+        'workerMs': long_worker_ms,
+        'invocationMs': 121 * 60 * 1000,
+      }
+      write(long_config, {**config, 'limits': long_limits})
+      long_run = EVIDENCE / 'long-run'
+      cli(
+        'plan',
+        '--input',
+        str(input_file),
+        '--config',
+        str(long_config),
+        '--run',
+        str(long_run),
+      )
+      long_request = cli('prepare', '--run', str(long_run), '--job', 'fixture')
+      self.assertEqual(long_request['timeoutMs'], long_worker_ms)
+      long_argv = list_value(long_request['argv'])
+      self.assertEqual(
+        long_argv[long_argv.index('--timeout') + 1],
+        str(long_worker_ms // 1000 - 5),
+      )
       for reviewers in [['astra', 'opus'], ['astra', 'opus', 'caw', 'argon']]:
         write(config_file, {**config, 'reviewers': reviewers})
         cli(
@@ -283,7 +308,7 @@ class Pipeline(unittest.TestCase):
       print(f'Evidence: {EVIDENCE}', file=sys.stderr)
 
   def test_process_limits(self) -> None:
-    from process import execute
+    from process import budget, execute
 
     directory = EVIDENCE / 'process-checks'
     directory.mkdir(parents=True, exist_ok=True)
@@ -294,6 +319,15 @@ class Pipeline(unittest.TestCase):
       max_bytes=1024,
     )
     self.assertEqual(timeout.error, 'Process timed out')
+    with budget(0.15):
+      parent_deadline = execute(
+        [sys.executable, '-c', 'import time; time.sleep(20)'],
+        directory / 'parent-deadline',
+        timeout=31 * 60,
+        max_bytes=1024,
+      )
+    self.assertEqual(parent_deadline.error, 'Process timed out')
+    self.assertLess(parent_deadline.durationSeconds, 3)
     overflow = execute(
       [sys.executable, '-c', 'import sys; sys.stdout.write("x" * 1000000)'],
       directory / 'overflow',

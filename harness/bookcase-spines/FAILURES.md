@@ -35,6 +35,9 @@ separately.
   recovery command and recorded evidence; a live process cannot be recovered.
 - Timeouts, output overflow and cancellation stop only owned processes and preserve
   raw logs. Rate-limit and billing failures never enable paid overage or switch models.
+- A configured model budget above the former four-minute ceiling must reach the
+  provider without truncation. The invocation deadline still bounds every child,
+  including when its worker budget is longer. Short diagnostic timeouts must work.
 - Resume must skip completed stages and preserve successful independent reviews.
 - Repeated rejected candidates must eventually require attention instead of looping.
 - Export must require every configured reviewer to pass and revalidate all bytes.
