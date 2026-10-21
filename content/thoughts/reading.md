@@ -2,11 +2,10 @@
 date: '2025-12-13'
 description: and knowledge diffusion
 id: reading
-modified: 2026-06-08 23:52:57 GMT-04:00
+modified: 2026-10-21 00:47:33 GMT-04:00
 tags:
   - pattern
   - evergreen
-  - philosophy
 title: reading
 ---
 

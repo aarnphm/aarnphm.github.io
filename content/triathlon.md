@@ -294,7 +294,7 @@ maintenance:
           - end: null
             start: '2026-10-05'
       - reason: null
-modified: 2026-10-16 15:25:58 GMT-04:00
+modified: 2026-10-21 00:45:52 GMT-04:00
 race: Lanzarote
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
