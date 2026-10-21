@@ -98,6 +98,7 @@ const configuration: GlobalConfiguration = {
     'cmd+.': 'arena',
     'cmd+b': 'français',
     'cmd+shift+b': 'lecteur',
+    'alt+shift+s': 'mode de recherche sémantique',
     // 'cmd+g': 'graphique',
     'cmd+o': 'opener',
     'cmd+p': 'palette de commandes',

@@ -48,7 +48,7 @@ export function mountBaseMapView(
       <button type="button" data-map-control="satellite" aria-label="Satellite" title="Satellite" aria-pressed="false" disabled>${icon(icons.satellite)}</button>
     </div>
     <aside class="base-map-browser" aria-label="Saved spots">
-      <div class="base-map-browser-head"><span class="base-map-kicker">collected places</span><h2>Find a spot.</h2><span class="base-map-count" role="status"></span></div>
+      <div class="base-map-browser-head"><span class="base-map-kicker">collected places</span><span class="base-map-count" role="status"></span></div>
       <div class="base-map-categories" role="group" aria-label="Filter spots by category"></div>
       <div class="base-map-selection" hidden></div>
       <div class="base-map-spot-list" aria-label="Matching spots"></div>

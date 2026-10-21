@@ -70,6 +70,7 @@ export default ((userOpts?: Partial<SearchOptions>) => {
                     data-mode="lexical"
                     aria-pressed="true"
                     aria-label="Full-text search"
+                    aria-keyshortcuts="Alt+Shift+S"
                   >
                     <svg viewBox="0 0 20 20" role="img" aria-hidden="true">
                       <g
@@ -89,6 +90,7 @@ export default ((userOpts?: Partial<SearchOptions>) => {
                     data-mode="semantic"
                     aria-pressed="false"
                     aria-label="Semantic search"
+                    aria-keyshortcuts="Alt+Shift+S"
                   >
                     <svg viewBox="0 0 20 20" role="img" aria-hidden="true">
                       <g
