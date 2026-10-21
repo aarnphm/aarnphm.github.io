@@ -25,6 +25,7 @@ export type ContentLayout =
   | 'triathlon'
   | 'course'
   | 'courses'
+  | 'fr'
   | 'university'
   | 'flashcards'
   | 'resource'

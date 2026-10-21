@@ -234,7 +234,7 @@ export const ElementComponent = ((enableRecents: boolean = false) => {
 
 export function Functions({ displayClass }: QuartzComponentProps) {
   return (
-    <section class={classNames(displayClass, 'menu', 'side-col')} data-function={true}>
+    <section class={classNames(displayClass, 'menu', 'main-col')} data-function={true}>
       <a href="../atelier-with-friends" class="internal alias" data-no-popover={true}>
         atelier with friends.
       </a>

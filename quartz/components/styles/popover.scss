@@ -1,4 +1,5 @@
 @use '../../styles/variables.scss' as *;
+@use './page-preview.scss';
 
 @keyframes dropin {
   0% {
@@ -19,6 +20,7 @@
 .popover {
   --popover-padding: 1rem;
   --popover-border: 1px;
+  --popover-border-color: var(--gray);
   --popover-arrow-size: 0.58rem;
   --popover-arrow-leg: calc(var(--popover-arrow-size) * 0.7071);
   --popover-arrow-overlap: calc(var(--popover-border) / 0.7071);
@@ -108,7 +110,7 @@
       bottom: 50%;
       left: 50%;
       transform: translateX(-50%);
-      border-bottom-color: var(--gray);
+      border-bottom-color: var(--popover-border-color);
     }
 
     &::after {
@@ -124,7 +126,7 @@
       top: 50%;
       left: 50%;
       transform: translateX(-50%);
-      border-top-color: var(--gray);
+      border-top-color: var(--popover-border-color);
     }
 
     &::after {
@@ -140,7 +142,7 @@
       right: 50%;
       top: 50%;
       transform: translateY(-50%);
-      border-right-color: var(--gray);
+      border-right-color: var(--popover-border-color);
     }
 
     &::after {
@@ -156,7 +158,7 @@
       left: 50%;
       top: 50%;
       transform: translateY(-50%);
-      border-left-color: var(--gray);
+      border-left-color: var(--popover-border-color);
     }
 
     &::after {
@@ -178,7 +180,7 @@
     line-height: normal;
     font-size: initial;
     font-family: var(--bodyFont);
-    border: var(--popover-border) solid var(--gray);
+    border: var(--popover-border) solid var(--popover-border-color);
     border-radius: var(--radius-none);
     background-color: var(--light);
     overflow: auto;
@@ -258,6 +260,16 @@
 
   @media all and ($mobile) {
     display: none !important;
+
+    &.page-preview-popover {
+      @media (hover: hover) and (pointer: fine) {
+        display: block !important;
+      }
+
+      &.keyboard-popover {
+        display: block !important;
+      }
+    }
   }
 }
 

@@ -23,7 +23,13 @@ export const sharedPageComponents: SharedLayout = {
     Component.Darkmode(),
     Component.CodeCopy(),
   ],
-  afterBody: [Component.CourseUnitFoot(), Component.License(), Component.Backlinks()],
+  afterBody: [
+    Component.CourseUnitFoot(),
+    Component.FrUnitFoot(),
+    Component.InquiryMap(),
+    Component.License(),
+    Component.Backlinks(),
+  ],
   footer: Component.Footer({
     layout: 'minimal',
     links: {
@@ -41,6 +47,7 @@ export const defaultContentPageLayout: PageLayout = {
     Component.NotebookRuntimeLoader(),
     // the course crumb is the trail on unit pages (the site breadcrumbs stay off them)
     Component.CourseUnitBar(),
+    Component.FrUnitBar(),
     // the university course trail on notes and notebooks inside a course folder
     Component.UniversityCrumbBar(),
     Component.ArticleTitle(),

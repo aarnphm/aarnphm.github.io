@@ -96,7 +96,7 @@ export default (() => {
     }
     if (created !== undefined) {
       meta.push({
-        title: 'publié à',
+        title: 'publié le',
         classes: ['published-time'],
         item: h(
           'span',
@@ -107,7 +107,7 @@ export default (() => {
     }
     if (modified !== undefined) {
       meta.push({
-        title: 'modifié à',
+        title: 'modifié le',
         classes: ['modified-time'],
         item: h(
           'span',
@@ -175,9 +175,9 @@ export default (() => {
           [label],
         )
       meta.push({
-        title: 'flashcards',
+        title: 'cartes',
         classes: ['flashcards-links'],
-        item: [deckLink(deckHref, 'review'), deckLink(`${deckHref}?n=20`, 'shuffle 20')],
+        item: [deckLink(deckHref, 'réviser'), deckLink(`${deckHref}?n=20`, '20 au hasard')],
       })
     }
 

@@ -228,6 +228,7 @@ li.section-li {
     }
 
     section {
+      grid-column: var(--layout-wide-column);
       min-width: 0;
       padding-right: 0;
     }
@@ -235,11 +236,12 @@ li.section-li {
 
   &--l {
     section {
+      grid-column: var(--layout-wide-column);
       padding-right: 0;
     }
   }
 
   &--article {
-    grid-column: var(--layout-reading-column);
+    grid-column: var(--layout-wide-column);
   }
 }

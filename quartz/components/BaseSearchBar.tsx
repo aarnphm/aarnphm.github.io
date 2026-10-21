@@ -22,7 +22,11 @@ function BaseSearchBar({ displayClass, fileData }: QuartzComponentProps) {
     >
       <div class="base-query-toolbar">
         <div class="base-query-actions">
-          <div id="base-search-bar" data-semantic-manifest={semanticManifest}>
+          <div
+            id="base-search-bar"
+            data-semantic-manifest={semanticManifest}
+            data-base-geo={fileData.basesGeo ? JSON.stringify(fileData.basesGeo) : undefined}
+          >
             <span class="base-search-label" aria-hidden="true">
               search
             </span>

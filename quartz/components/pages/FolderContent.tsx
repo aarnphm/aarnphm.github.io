@@ -35,6 +35,7 @@ import CoursesIndexConstructor from '../CoursesIndex'
 import CourseStatementsConstructor from '../CourseStatements'
 import CourseStudyLogConstructor from '../CourseStudy'
 import EvergreenConstructor, { AllTags, EvergreenPermanentNotes } from '../Evergreen'
+import FrHomeConstructor from '../FrHome'
 import PageListConstructor, {
   byDateAndAlphabetical,
   byNaturalSlug,
@@ -106,6 +107,7 @@ const Layout = {
   lovp: 'L',
   course: 'COURSE',
   courses: 'COURSES',
+  fr: 'FR',
   university: 'UNIVERSITY',
   resource: 'RESOURCE',
   studyLog: 'STUDY-LOG',
@@ -343,6 +345,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
   const SeeAlso = SeeAlsoComponent()
   const CourseHome = CourseHomeConstructor()
   const CoursesIndex = CoursesIndexConstructor()
+  const FrHome = FrHomeConstructor()
   const UniversityIndex = UniversityIndexConstructor()
   const UniversityCourse = UniversityCourseConstructor()
   const CourseResource = CourseResourceConstructor()
@@ -577,6 +580,10 @@ export default ((opts?: Partial<FolderContentOptions>) => {
       case Layout.courses:
         return <CoursesIndex {...props} />
 
+      // `fr/index.md`: the French folder as one course, seasons and calendar
+      case Layout.fr:
+        return <FrHome {...props} />
+
       // `thoughts/university/index.md`: archived courses by term, no study state
       case Layout.university:
         return <UniversityIndex {...props} />
@@ -628,6 +635,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
     PageListSearch.css,
     SeeAlso.css,
     CourseHome.css,
+    FrHome.css,
     CourseResource.css,
     CourseStudyLog.css,
     CourseStatements.css,
@@ -641,6 +649,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
     SeeAlso,
     CourseHome,
     CoursesIndex,
+    FrHome,
     UniversityIndex,
     UniversityCourse,
     CourseResource,
@@ -651,6 +660,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
     Evergreen.afterDOMLoaded,
     PageListSearch.afterDOMLoaded,
     CourseHome.afterDOMLoaded,
+    FrHome.afterDOMLoaded,
     CourseResource.afterDOMLoaded,
     courseCalendarScript,
   )

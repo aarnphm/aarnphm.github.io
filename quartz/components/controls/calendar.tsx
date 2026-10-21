@@ -1,6 +1,6 @@
 import type { ComponentChildren } from 'preact'
 import { useLayoutEffect, useRef, useState } from 'preact/hooks'
-import { buildDatePicker, englishDateLabels } from './date-picker'
+import { buildDatePicker, englishDateLabels, type DatePickerLabels } from './date-picker'
 import { addMonths, isoMonth, monthGridDates, parseIsoMonth } from './dates'
 import { MonthGrid } from './month-grid'
 import { useAnchoredPreview } from './use-anchored-preview'
@@ -16,6 +16,10 @@ export interface CalendarEvent {
   /** A planned event draws its chip as an outline. */
   planned?: boolean
   minutes?: number
+  /** A reminder: a short one-line chip with no duration. */
+  thin?: boolean
+  /** Clock time that leads the chip, such as `18:30`. */
+  time?: string
   /** A chip with a page opens it; a chip without one is a button that only previews. */
   href?: string
 }
@@ -23,11 +27,31 @@ export interface CalendarEvent {
 export const calendarDuration = (minutes: number) =>
   `${Math.floor(minutes / 60)}:${String(Math.round(minutes % 60)).padStart(2, '0')}`
 
-const weekday = (date: string) =>
-  new Date(`${date}T00:00:00`).toLocaleDateString('en', { weekday: 'short' }).toLowerCase()
-const dayName = (date: string) =>
+export interface CalendarLabels {
+  locale: string
+  picker: DatePickerLabels
+  previous: string
+  next: string
+  today: string
+  jump: string
+  none: string
+}
+
+export const englishCalendarLabels: CalendarLabels = {
+  locale: 'en',
+  picker: englishDateLabels,
+  previous: 'previous month',
+  next: 'next month',
+  today: 'today',
+  jump: 'choose month',
+  none: 'no events',
+}
+
+const weekday = (locale: string) => (date: string) =>
+  new Date(`${date}T00:00:00`).toLocaleDateString(locale, { weekday: 'short' }).toLowerCase()
+const dayName = (locale: string) => (date: string) =>
   new Date(`${date}T00:00:00`)
-    .toLocaleDateString('en', { weekday: 'long', month: 'long', day: 'numeric' })
+    .toLocaleDateString(locale, { weekday: 'long', month: 'long', day: 'numeric' })
     .toLowerCase()
 
 const Arrow = ({ d }: { d: string }) => (
@@ -47,10 +71,12 @@ const MonthJump = ({
   id,
   month,
   onPick,
+  labels,
 }: {
   id: string
   month: string
   onPick: (month: string) => void
+  labels: CalendarLabels
 }) => {
   const host = useRef<HTMLDivElement>(null)
   const state = useRef({ month, onPick })
@@ -59,7 +85,8 @@ const MonthJump = ({
   useLayoutEffect(() => {
     const picker = buildDatePicker({
       id,
-      label: 'choose month',
+      label: labels.jump,
+      labels: labels.picker,
       selected: () => `${state.current.month}-01`,
       onSelect: date => state.current.onPick(date.slice(0, 7)),
     })
@@ -74,7 +101,7 @@ const MonthJump = ({
     }
   }, [])
   useLayoutEffect(() => {
-    if (text.current) text.current.textContent = englishDateLabels.monthYear(`${month}-01`)
+    if (text.current) text.current.textContent = labels.picker.monthYear(`${month}-01`)
   }, [month])
   return <div ref={host} class="g-calendar-jump" />
 }
@@ -93,6 +120,7 @@ const Chip = ({
     'data-tone': event.tone,
     'data-event-id': event.id,
     'data-planned': event.planned ? 'true' : undefined,
+    'data-thin': event.thin ? 'true' : undefined,
     'aria-label': `${event.title}, ${event.kind}${event.minutes ? `, ${calendarDuration(event.minutes)}` : ''}`,
     'aria-describedby': describedBy,
     ...anchor,
@@ -100,7 +128,10 @@ const Chip = ({
   const body = (
     <>
       <span class="g-event-mark" aria-hidden="true" />
-      <span class="g-event-title">{event.title}</span>
+      <span class="g-event-title">
+        {event.time ? <span class="g-event-time">{event.time} </span> : null}
+        {event.title}
+      </span>
       {event.minutes ? <span class="g-event-meta">{calendarDuration(event.minutes)}</span> : null}
     </>
   )
@@ -130,6 +161,7 @@ export const Calendar = <T extends CalendarEvent>({
   dayHeader,
   renderPreview,
   previewLabel,
+  labels = englishCalendarLabels,
 }: {
   id: string
   events: T[]
@@ -140,6 +172,7 @@ export const Calendar = <T extends CalendarEvent>({
   dayHeader?: (date: string) => ComponentChildren
   renderPreview: (event: T) => ComponentChildren
   previewLabel?: (event: T) => string
+  labels?: CalendarLabels
 }) => {
   const [month, setMonth] = useState(start ?? today.slice(0, 7))
   const view = parseIsoMonth(month) ?? parseIsoMonth(today.slice(0, 7))!
@@ -161,24 +194,24 @@ export const Calendar = <T extends CalendarEvent>({
           <button
             type="button"
             class="g-icon-button"
-            aria-label="previous month"
+            aria-label={labels.previous}
             onClick={() => step(-1)}
           >
             <Arrow d="M10 3.5 5.5 8l4.5 4.5" />
           </button>
           <button type="button" class="g-text-button" onClick={() => setMonth(today.slice(0, 7))}>
-            today
+            {labels.today}
           </button>
           <button
             type="button"
             class="g-icon-button"
-            aria-label="next month"
+            aria-label={labels.next}
             onClick={() => step(1)}
           >
             <Arrow d="M6 3.5 10.5 8 6 12.5" />
           </button>
         </div>
-        <MonthJump id={`${id}-jump`} month={month} onPick={setMonth} />
+        <MonthJump id={`${id}-jump`} month={month} onPick={setMonth} labels={labels} />
         {summary ? <p class="g-calendar-summary">{summary(month, shown)}</p> : null}
       </div>
       <MonthGrid
@@ -186,8 +219,8 @@ export const Calendar = <T extends CalendarEvent>({
         dates={dates}
         month={month}
         today={today}
-        weekdayLabel={weekday}
-        dayLabel={dayName}
+        weekdayLabel={weekday(labels.locale)}
+        dayLabel={dayName(labels.locale)}
         dayHeader={dayHeader}
         onKeyDown={onKeyDown}
         onPointerDownCapture={() => {
@@ -217,7 +250,7 @@ export const Calendar = <T extends CalendarEvent>({
                 />
               ))}
               {day.length === 0 && (
-                <span class="g-calendar-empty" aria-label="no events">
+                <span class="g-calendar-empty" aria-label={labels.none}>
                   –
                 </span>
               )}

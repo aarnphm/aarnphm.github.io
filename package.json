@@ -32,6 +32,7 @@
     "embed:prepare": "node --env-file=.env quartz/bootstrap-cli.mjs build --concurrency 10 --output quartz/.quartz-cache/embedding-inputs",
     "embed:bases": "pnpm exec tsx quartz/scripts/build-base-embeddings.ts --jsonl-dir quartz/.quartz-cache/embedding-inputs",
     "embed": "USE_VLLM=1 VLLM_URL=\"http://127.0.0.1:8000/v1/embeddings\" uv run quartz/embed_build.py --jsonl quartz/.quartz-cache/embedding-inputs/embeddings-text.jsonl --model \"google/embeddinggemma-2\" --out content/embeddings --dtype fp32 --dims 768 --chunk-size 512 --chunk-overlap 128 --concurrency 1 --batch-size 64 --max-tokens 8192",
+    "geo:gazetteer": "pnpm exec tsx quartz/scripts/build-base-gazetteer.ts",
     "swarm": "pnpm exec tsx quartz/scripts/dev.ts",
     "dev": "node quartz/scripts/dev-container.mjs",
     "convert": "tsx quartz/scripts/convert.ts",

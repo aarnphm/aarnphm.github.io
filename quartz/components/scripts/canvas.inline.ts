@@ -12,7 +12,6 @@ import { cleanupHydratedRoot } from './root-lifecycle'
 const marked = new Marked({ breaks: true, gfm: true })
 
 const EDGE_LABEL_LINE_HEIGHT = 1.2
-const GROUP_LABEL_MIN_SCREEN_PX = 18
 
 function renderTextNodeContent(node: NodeData): string {
   const html = marked.parse(node.resolvedText ?? node.text ?? '', { async: false })
@@ -202,7 +201,11 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
 
   const cfgAttr = container.getAttribute('data-cfg')
   const metaUrl = container.getAttribute('data-meta')?.trim()
-  const isEmbed = container.getAttribute('data-embed') === 'true'
+  // `true` is the static preview; `live` is a bounded viewer inside a page: toolbar, zoom, drag
+  // and `f` for full screen, with the wheel zooming so it does not scroll the page past it
+  const embedMode = container.getAttribute('data-embed')
+  const isEmbed = embedMode === 'true'
+  const isLive = embedMode === 'live'
 
   try {
     const [canvasData, metaMap] = await Promise.all([
@@ -255,6 +258,18 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
           </button>
         </div>
       `
+      if (isLive) {
+        toolbar.querySelector('[data-action="help"]')?.closest('.canvas-control-group')?.remove()
+        const fullscreen = document.createElement('button')
+        fullscreen.type = 'button'
+        fullscreen.className = 'canvas-control-item'
+        fullscreen.dataset.action = 'fullscreen'
+        fullscreen.setAttribute('aria-label', 'Plein écran (f)')
+        fullscreen.title = 'Plein écran (f)'
+        fullscreen.innerHTML =
+          '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"></path><path d="m21 3-7 7"></path><path d="M9 21H3v-6"></path><path d="m3 21 7-7"></path></svg>'
+        toolbar.querySelector('.canvas-control-group')?.append(fullscreen)
+      }
       container.appendChild(toolbar)
 
       helpModal = document.createElement('dialog')
@@ -347,7 +362,7 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
       .attr('width', width)
       .attr('height', height)
       .attr('viewBox', [0, 0, width, height])
-      .attr('tabindex', isEmbed ? null : 0)
+      .attr('tabindex', isEmbed || isLive ? null : 0)
       .attr('role', 'group')
       .attr(
         'aria-label',
@@ -408,7 +423,6 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
     const previewJobs: { run: (active: boolean) => void; isActive: () => boolean }[] = []
     const movedNodes = new Set<NodeData>()
     let renderedTransform = ''
-    let labelledScale = 0
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
 
     function queueRender() {
@@ -432,10 +446,6 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
             .attr('height', gridSize)
             .attr('x', offset(currentTransform.x))
             .attr('y', offset(currentTransform.y))
-          if (labelledScale !== currentScale) {
-            updateGroupLabels(currentScale)
-            labelledScale = currentScale
-          }
           const skeleton = currentScale < 0.5
           if (container.classList.contains('canvas-skeleton-view') !== skeleton) {
             container.classList.toggle('canvas-skeleton-view', skeleton)
@@ -493,6 +503,8 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
         })
       zoomBehavior = zoom
       svg.call(zoom).on('dblclick.zoom', null)
+      // one finger scrolls the page past a live canvas; two fingers still pinch it
+      if (isLive) svg.style('touch-action', 'pan-y')
     }
 
     const getBoundsTransform = (b: CanvasBounds) => {
@@ -569,7 +581,7 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
                 : 1
           const dx = event.deltaX * unit
           const dy = event.deltaY * unit
-          if (event.metaKey || event.ctrlKey) {
+          if (event.metaKey || event.ctrlKey || (isLive && !event.shiftKey)) {
             const rect = container.getBoundingClientRect()
             const scale = currentScale * Math.pow(2, -dy * 0.002 * (event.ctrlKey ? 10 : 1))
             svg.call(zoomBehavior.scaleTo, scale, [
@@ -650,6 +662,10 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
               return
             }
 
+            if (action === 'fullscreen') {
+              toggleFullscreen()
+              return
+            }
             if (!zoomBehavior) return
             svg.interrupt()
             isFitted = action === 'zoom-fit'
@@ -685,6 +701,11 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
       })
     }
 
+    const toggleFullscreen = () => {
+      if (document.fullscreenElement === container) void document.exitFullscreen()
+      else void container.requestFullscreen?.()
+    }
+
     const handleKeydown = (event: KeyboardEvent) => {
       const target = event.target
       if (
@@ -701,6 +722,13 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
         return
       }
       if (isEmbed || isHelpOpen || !zoomBehavior) return
+      // a live canvas shares its page, so its keys act only while focus is inside it
+      if (isLive && !(target instanceof Element && container.contains(target))) return
+      if (isLive && event.key === 'f' && !event.metaKey && !event.ctrlKey && !event.altKey) {
+        event.preventDefault()
+        toggleFullscreen()
+        return
+      }
       if (target instanceof Element && !container.contains(target) && target !== document.body)
         return
       if (event.key === ' ') {
@@ -819,13 +847,11 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
       .attr('fill', 'none')
       .attr('pointer-events', 'none')
 
-    // Group titles sit flush with the group's left border and keep a readable screen size
-    // when zoomed out, so the overview stays navigable by section.
+    // Labels use canvas coordinates so their size and width follow the cards through zoom.
     const groupLabels: {
       element: SVGTextElement
       group: NodeData
       text: string
-      metrics: SvgTextMetrics | null
       fontSize: number
     }[] = []
 
@@ -834,26 +860,18 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
       .attr('class', 'node-group-label')
       .attr('x', 0)
       .attr('y', -8)
-      .attr('font-size', '2rem')
+      .attr('font-size', '24px')
       .each(function (d: NodeData) {
         const text = d.label || 'Group'
         this.textContent = text
-        groupLabels.push({ element: this, group: d, text, metrics: null, fontSize: 32 })
+        groupLabels.push({ element: this, group: d, text, fontSize: 24 })
       })
 
     function measureGroupLabels() {
       for (const label of groupLabels) {
-        label.metrics = measureSvgText(label.element, label.text)
-        label.fontSize = parseFloat(getComputedStyle(label.element).fontSize) || 32
-      }
-    }
-
-    function updateGroupLabels(scale: number) {
-      for (const label of groupLabels) {
-        if (!label.metrics) continue
-        const labelScale = Math.max(1, GROUP_LABEL_MIN_SCREEN_PX / (label.fontSize * scale))
-        label.element.setAttribute('transform', labelScale === 1 ? '' : `scale(${labelScale})`)
-        const shown = fitSvgText(label.text, label.metrics, label.group.width / labelScale)
+        const metrics = measureSvgText(label.element, label.text)
+        label.fontSize = parseFloat(getComputedStyle(label.element).fontSize) || 24
+        const shown = fitSvgText(label.text, metrics, label.group.width)
         if (label.element.textContent !== shown) label.element.textContent = shown
       }
     }
@@ -1322,7 +1340,7 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
       applyBoundsTransform(
         {
           minX: d.x,
-          minY: d.y - (label?.fontSize ?? 32),
+          minY: d.y - (label?.fontSize ?? 24),
           maxX: d.x + d.width,
           maxY: d.y + d.height,
         },
@@ -1526,8 +1544,6 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
       if (!isCanvasActive(container, lifecycle)) return
       measureEdgeLabels()
       measureGroupLabels()
-      updateGroupLabels(currentScale)
-      labelledScale = currentScale
       if (centerTitlesFitted) {
         centerTitlesFitted = false
         if (container.classList.contains('canvas-skeleton-view')) fitCenterTitles()
@@ -1537,7 +1553,7 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
     const boundsAttr = container.getAttribute('data-canvas-bounds')
     if (boundsAttr) {
       bounds = JSON.parse(boundsAttr)
-    } else if (isEmbed) {
+    } else if (isEmbed || isLive) {
       let minX = Infinity
       let minY = Infinity
       let maxX = -Infinity

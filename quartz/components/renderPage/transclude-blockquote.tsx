@@ -12,6 +12,7 @@ import {
 } from '../../util/transclude-props'
 import { buildBaseEmbedNodes, type BaseRenderedView, type BaseRenderResult } from './base-embeds'
 import { appendTranscludedNotes, isTrailingNoteSection } from './footnotes-citations'
+import { transcludeCurius } from './transclude-curius'
 import {
   pruneLeadingHeading,
   renderNotebookCellTransclude,
@@ -56,7 +57,8 @@ export function transcludeBlockquote(scope: TranscludeScope, node: Element): voi
 
   const calendarView =
     page.frontmatter?.layout === 'triathlon' ? calendarEmbedView(blockRef, anchorPath) : undefined
-  if (!calendarView) {
+  const curiusDateView = page.slug === 'curius' && blockRef?.startsWith('#')
+  if (!calendarView && !curiusDateView) {
     const visitKey = transcludeVisitKey(transclude)
     if (visited.has(visitKey)) return
     visited.add(visitKey)
@@ -110,6 +112,7 @@ export function transcludeBlockquote(scope: TranscludeScope, node: Element): voi
     return
   }
 
+  if (transcludeCurius(node, transcludeTarget, blockRef, inner, alias)) return
   if (transcludeTriathlonCard(scope, node, page, blockRef, anchorPath, inner)) return
 
   if (blockRef?.startsWith('#^')) {

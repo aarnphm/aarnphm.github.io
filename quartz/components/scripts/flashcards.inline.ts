@@ -21,6 +21,8 @@ interface DeckEntry {
   deck: string
   course: string
   n: number
+  /** Shown in `next: …` when it names the deck better than `course n`. */
+  label?: string
   read: boolean
   ids: string[]
 }
@@ -62,6 +64,7 @@ const mountFlashcards = () => {
     { once: true },
   )
 
+  const french = root.dataset.lang === 'fr'
   const deckSlug = root.dataset.deck ?? ''
   // merged pages carry the deck on each card
   const deckOf = (el: HTMLElement) => el.dataset.deck ?? deckSlug
@@ -94,10 +97,10 @@ const mountFlashcards = () => {
     if (sync === 'off') {
       const returnTo = `${window.location.pathname}${window.location.search}`
       syncEl.href = `/comments/github/login?returnTo=${encodeURIComponent(returnTo)}`
-      syncEl.textContent = 'not saved'
+      syncEl.textContent = french ? 'non enregistré' : 'not saved'
     } else {
       syncEl.removeAttribute('href')
-      syncEl.textContent = sync === 'on' ? `@${login}` : 'sync failed'
+      syncEl.textContent = sync === 'on' ? `@${login}` : french ? 'échec' : 'sync failed'
     }
   }
 
@@ -456,7 +459,10 @@ const mountFlashcards = () => {
       setSync('off', 'reviews save only for the site owner')
       total = 0
       finish()
-      if (summaryEl) summaryEl.textContent = 'reviews save only for the site owner.'
+      if (summaryEl)
+        summaryEl.textContent = french
+          ? 'les révisions ne sont enregistrées que pour le propriétaire.'
+          : 'reviews save only for the site owner.'
       return
     }
     setSync('on', `reviews save to ${login}`)
@@ -477,7 +483,7 @@ const mountFlashcards = () => {
           if (row.due <= now) due.push(id)
           else if (row.due < nextDue) {
             nextDue = row.due
-            nextLabel = `${deck.course} ${String(deck.n).padStart(2, '0')}`
+            nextLabel = deck.label ?? `${deck.course} ${String(deck.n).padStart(2, '0')}`
           }
         } else if (deck.read && newBudget > 0) {
           fresh.push(id)
@@ -534,7 +540,9 @@ const mountFlashcards = () => {
     if (total === 0) {
       finish()
       if (summaryEl && Number.isFinite(nextDue)) {
-        summaryEl.textContent = `nothing due right now. next: ${age(nextDue - now)} (${nextLabel})`
+        summaryEl.textContent = french
+          ? `rien à revoir. prochain : ${age(nextDue - now)} (${nextLabel})`
+          : `nothing due right now. next: ${age(nextDue - now)} (${nextLabel})`
       }
       return
     }

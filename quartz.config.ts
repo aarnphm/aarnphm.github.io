@@ -267,6 +267,7 @@ const config: QuartzConfig = {
               'thoughts/GPU programming',
             ],
           }),
+          afterBody: [Component.InquiryMap()],
         }),
         Plugin.TagPage(),
         Plugin.ContentIndex({ atomLimit: 50 }),
@@ -299,6 +300,7 @@ const config: QuartzConfig = {
         },
         Plugin.FlashcardsPage(),
         Plugin.CourseReviewPage(),
+        Plugin.FrReviewPage(),
         {
           plugin: Plugin.ArenaPage(),
           dev: arena,
@@ -315,6 +317,7 @@ const config: QuartzConfig = {
         Plugin.StreamIndex(),
         Plugin.Masonry(),
         Plugin.Strava(),
+        Plugin.InquiryMap(),
         Plugin.CanvasPage(),
         Plugin.NotebookViewer({ runtime: { enabled: true } }),
         Plugin.NotebookPagesManifest(),
