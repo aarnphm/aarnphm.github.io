@@ -37,14 +37,22 @@ def strip(path: str, text: str) -> list[str]:
       n.range()
       for n in root.children()
       if n.kind() == 'import_statement'
-      or (n.kind() == 'export_statement' and not n.field('declaration')
-          and not any(c.kind() == 'default' for c in n.children()))
+      or (
+        n.kind() == 'export_statement'
+        and not n.field('declaration')
+        and not any(c.kind() == 'default' for c in n.children())
+      )
     ]
     for r in sorted(cut, key=lambda r: -r.start.index):
       text = text[: r.start.index] + text[r.end.index :]
   else:
-    text = re.sub(r"""^@(?:use|forward|import) [^;]*;[ \t]*$""", '', text, flags=re.M)
-  lines = (re.sub(r'^(\s*)export (default )?', r'\1', line) for line in text.split('\n'))
+    text = re.sub(
+      r"""^@(?:use|forward|import) [^;]*;[ \t]*$""", '', text, flags=re.M
+    )
+  lines = (
+    re.sub(r'^(\s*)export (default )?', r'\1', line)
+    for line in text.split('\n')
+  )
   return [line.rstrip() for line in lines if line.strip()]
 
 
@@ -53,10 +61,16 @@ def main() -> int:
     raise SystemExit(__doc__)
   wt, path = sys.argv[1:]
   head = subprocess.run(
-    ['git', '-C', wt, 'show', f':{path}'], capture_output=True, text=True, check=True
+    ['git', '-C', wt, 'show', f':{path}'],
+    capture_output=True,
+    text=True,
+    check=True,
   ).stdout
   folder = Path(wt, os.path.splitext(path)[0])
-  parts = [Path(wt, path), *sorted(p for p in folder.rglob('*') if p.is_file())]
+  parts = [
+    Path(wt, path),
+    *sorted(p for p in folder.rglob('*') if p.is_file()),
+  ]
   before = collections.Counter(strip(path, head))
   after = collections.Counter(
     line for p in parts for line in strip(str(p), p.read_text())
@@ -69,9 +83,13 @@ def main() -> int:
   print(f'files: {", ".join(os.path.relpath(p, wt) for p in parts)}')
   if code:
     print('\n'.join(code))
-    print(f'move proof: {len(code)} code line(s) differ, {notes} comment line(s)')
+    print(
+      f'move proof: {len(code)} code line(s) differ, {notes} comment line(s)'
+    )
     return 1
-  print(f'move proof: identical code{f" ({notes} comment lines differ)" if notes else ""}')
+  print(
+    f'move proof: identical code{f" ({notes} comment lines differ)" if notes else ""}'
+  )
   return 0
 
 

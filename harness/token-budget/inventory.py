@@ -180,10 +180,14 @@ def importers(path: str) -> list[dict]:
       entry['names'] = list(dict.fromkeys(entry['names']))
       out.append(entry)
   # The hook checks every staged file, so a proposal cannot edit an importer it would reject.
-  heavy = {
-    f['path']: f['tokens']
-    for f in over_budget(index_entries([u['path'] for u in out]))
-  } if out else {}
+  heavy = (
+    {
+      f['path']: f['tokens']
+      for f in over_budget(index_entries([u['path'] for u in out]))
+    }
+    if out
+    else {}
+  )
   for u in out:
     if u['path'] in heavy:
       u['overBudget'] = heavy[u['path']]
