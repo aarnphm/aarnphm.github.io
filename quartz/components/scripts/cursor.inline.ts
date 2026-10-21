@@ -130,12 +130,17 @@ document.addEventListener('nav', () => {
   layer.showPopover()
   const line = cursor.querySelector<HTMLElement>('.site-cursor-line')
   if (!line) return
-  const chartLine = cursorPart('site-cursor-chart-line')
-  chartLine.setAttribute('aria-hidden', 'true')
+  const chartLines = new Map<HTMLElement, HTMLSpanElement>()
   configuredCursors.get(cursor)?.abort()
   const controller = new AbortController()
   const signal = controller.signal
-  signal.addEventListener('abort', () => chartLine.remove(), { once: true })
+  signal.addEventListener(
+    'abort',
+    () => {
+      for (const chartLine of chartLines.values()) chartLine.remove()
+    },
+    { once: true },
+  )
   configuredCursors.set(cursor, controller)
 
   let frame = 0
@@ -170,13 +175,23 @@ document.addEventListener('nav', () => {
   let pointerTargetDirty = false
 
   // Keep the line in the plot so scrolling and layout changes cannot strand it in the viewport.
+  // Each plot keeps its own line and switches visibility: moving one line between plots is a
+  // childList change, which costs ~60 ms of style recalc on triathlon pages.
   const setChartTarget = (target: HTMLElement | null): void => {
-    if (target !== chartTarget) {
-      chartTarget = target
-      chartLine.remove()
-      target?.appendChild(chartLine)
+    let chartLine = target ? chartLines.get(target) : undefined
+    if (target && chartLine?.parentElement !== target) {
+      chartLine?.remove()
+      chartLine = cursorPart('site-cursor-chart-line')
+      chartLine.setAttribute('aria-hidden', 'true')
+      chartLines.set(target, chartLine)
+      target.appendChild(chartLine)
     }
-    if (!target) return
+    if (target !== chartTarget) {
+      if (chartTarget) chartLines.get(chartTarget)?.style.setProperty('visibility', 'hidden')
+      chartLine?.style.removeProperty('visibility')
+      chartTarget = target
+    }
+    if (!target || !chartLine) return
     const rect = target.getBoundingClientRect()
     const fraction = rect.width > 0 ? Math.max(0, Math.min(1, (x - rect.left) / rect.width)) : 0
     chartLine.style.left = `${fraction * 100}%`

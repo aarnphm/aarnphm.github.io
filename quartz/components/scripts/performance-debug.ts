@@ -1,3 +1,4 @@
+import { setText } from '../../util/set-text'
 import { sceneProbe } from '../visitor-trail/performance-probe'
 import {
   SITE_PERFORMANCE_SAMPLE_EVENT,
@@ -719,47 +720,49 @@ export const setupPerformanceDebug = (profile: PerformanceDebugProfile): (() => 
         readingMetrics.push(metric)
         readings.append(metric.element)
       }
-      metric.name.textContent = reading.label
-      metric.value.textContent = reading.value
+      setText(metric.name, reading.label)
+      setText(metric.value, reading.value)
     })
     for (const metric of readingMetrics.splice(values.length)) metric.element.remove()
   }
 
   const updateState = (): void => {
     const cursor = document.querySelector<HTMLElement>('.site-cursor')
-    state.textContent = profile.state?.() || cursor?.dataset.mode || 'idle'
+    setText(state, profile.state?.() || cursor?.dataset.mode || 'idle')
   }
 
   const updateMetrics = (timestamp: number): void => {
     const frameValues = ringValues(frames)
     frameBudget = estimateFrameBudget(frameValues)
     const summary = summarizeFrameDurations(frameValues, frameBudget * DROPPED_FACTOR)
-    fps.textContent = `${Math.round(summary.fps)} fps`
-    frameMetric.value.textContent = formatDuration(summary.p95)
-    droppedMetric.value.textContent = `${Math.round(summary.slowRatio * 100)}%`
-    workMetric.value.textContent = formatDuration(percentile95(work))
-    scriptMetric.value.textContent = formatDuration(percentile95(script))
-    renderMetric.value.textContent = formatDuration(percentile95(render))
-    longFrameMetric.value.textContent = String(longFrames)
-    worstMetric.value.textContent = formatDuration(worstFrame)
-    blockedMetric.value.textContent = formatDuration(blockedTotal)
-    shiftMetric.value.textContent = layoutShift.toFixed(3)
+    setText(fps, `${Math.round(summary.fps)} fps`)
+    setText(frameMetric.value, formatDuration(summary.p95))
+    setText(droppedMetric.value, `${Math.round(summary.slowRatio * 100)}%`)
+    setText(workMetric.value, formatDuration(percentile95(work)))
+    setText(scriptMetric.value, formatDuration(percentile95(script)))
+    setText(renderMetric.value, formatDuration(percentile95(render)))
+    setText(longFrameMetric.value, String(longFrames))
+    setText(worstMetric.value, formatDuration(worstFrame))
+    setText(blockedMetric.value, formatDuration(blockedTotal))
+    setText(shiftMetric.value, layoutShift.toFixed(3))
     for (const [source, metric] of sourceMetrics)
-      metric.value.textContent = formatDuration(percentile95(samples[source]))
+      setText(metric.value, formatDuration(percentile95(samples[source])))
     const elapsed = Math.max(1, timestamp - previousScrollPaint)
     const scrollRate = ((scrollEvents - previousScrollEvents) * 1000) / elapsed
-    scrollMetric.value.textContent = `${scrollEvents} · ${scrollRate.toFixed(0)} /s`
+    setText(scrollMetric.value, `${scrollEvents} · ${scrollRate.toFixed(0)} /s`)
     previousScrollEvents = scrollEvents
     previousScrollPaint = timestamp
     const heap = (performance as Performance & { memory?: HeapMemory }).memory
-    heapMetric.value.textContent = heap ? formatHeap(heap.usedJSHeapSize) : '—'
-    nodeMetric.value.textContent = String(document.getElementsByTagName('*').length)
-    scriptRow.value.textContent = worstScript
-      ? `${worstScript} · ${formatDuration(worstScriptDuration)}`
-      : '—'
-    eventRow.value.textContent = worstInteractionName
-      ? `${worstInteractionName} · ${formatDuration(worstInteraction)}`
-      : '—'
+    setText(heapMetric.value, heap ? formatHeap(heap.usedJSHeapSize) : '—')
+    setText(nodeMetric.value, String(document.getElementsByTagName('*').length))
+    setText(
+      scriptRow.value,
+      worstScript ? `${worstScript} · ${formatDuration(worstScriptDuration)}` : '—',
+    )
+    setText(
+      eventRow.value,
+      worstInteractionName ? `${worstInteractionName} · ${formatDuration(worstInteraction)}` : '—',
+    )
     updateReadings()
     updateState()
   }
