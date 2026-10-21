@@ -6,10 +6,17 @@ tags:
   - fr
   - language
   - learning
-title: quebec-france
+title: québec et france
 ---
 
 Le français a deux rives — et le piège des faux amis. Vocabulaire général dans [[fr/mots]].
+
+```jsx imports={RegisterLadder}
+<RegisterLadder
+  label="échelle de registre"
+  pairs='{"qc":{"fam":["Je suis tanné, on va au dépanneur.","*être tanné* et *dépanneur* sont québécois ; oral familier."],"std":["J’en ai assez, allons au dépanneur.","*j’en ai assez* est compris partout ; *dépanneur* reste québécois."],"sou":["Je suis excédé ; rendons-nous au dépanneur.","*excédé* et l’impératif *rendons-nous* : écrit soigné."]},"fr":{"fam":["J’en ai marre, on va à la supérette.","*en avoir marre* et *supérette* : familier de France."],"std":["J’en ai assez, allons à la supérette.","*supérette* remplace *dépanneur* ; le reste est standard."],"sou":["Je suis excédé ; rendons-nous à la supérette.","le soutenu est le même des deux rives, sauf le nom du commerce."]}}'
+/>
+```
 
 ## Québec vs France
 

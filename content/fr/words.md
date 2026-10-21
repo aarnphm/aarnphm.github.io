@@ -6,7 +6,7 @@ tags:
   - fr
   - language
   - learning
-title: Mots de la leçon
+title: mots de la leçon
 ---
 
 Vocabulaire de [[fr/lessons/260921|la leçon du 21 septembre]]. Les formes au présent sont dans [[fr/verbs|le tableau des verbes]].

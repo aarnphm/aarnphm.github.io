@@ -6,7 +6,7 @@ tags:
   - fr
   - language
   - learning
-title: discours-rapporte
+title: discours rapporté
 ---
 
 Rapporter ce qui a été dit (B2). Les formules pour rapporter sont dans [[fr/phrases]] ; ici, la mécanique.
