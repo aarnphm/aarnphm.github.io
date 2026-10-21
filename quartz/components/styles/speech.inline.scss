@@ -19,9 +19,14 @@
     text-underline-offset: 0.2em;
     cursor: pointer;
 
-    &:hover,
     &[data-speech-state] {
       text-decoration-color: var(--tertiary);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        text-decoration-color: var(--tertiary);
+      }
     }
 
     &[data-speech-state='loading'] {
@@ -30,7 +35,7 @@
     }
 
     &:focus-visible {
-      outline: 2px solid var(--secondary);
+      outline: 2px solid var(--dark);
       outline-offset: 2px;
     }
 
@@ -41,23 +46,26 @@
   }
 }
 
+$speech-line: color-mix(in srgb, var(--gray) 55%, transparent);
+$speech-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+
 .speech-controls {
   position: fixed;
-  inset: auto 0.75rem 0.75rem auto;
+  inset: auto var(--space-3) var(--space-3) auto;
   z-index: calc(var(--z-tooltip) - 1);
   contain: layout paint style;
   box-sizing: border-box;
-  width: min(22rem, calc(100vw - 1.5rem));
-  max-height: calc(100dvh - 1.5rem);
+  width: min(22rem, calc(100vw - 2 * var(--space-3)));
+  max-height: calc(100dvh - 2 * var(--space-3));
   overflow-y: auto;
   margin: 0;
-  padding: 0.7rem 0.75rem 0.6rem;
-  border: 1px solid color-mix(in srgb, var(--gray) 34%, transparent);
+  padding: var(--space-3);
+  border: 1px solid $speech-line;
   border-radius: var(--radius-none);
   background: var(--light);
-  color: var(--dark);
+  color: var(--darkgray);
   font-family: var(--codeFont);
-  font-size: 0.62rem;
+  font-size: var(--text-meta);
   line-height: 1.5;
   font-variant-numeric: tabular-nums;
 
@@ -68,8 +76,12 @@
   .speech-controls-head {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    min-height: 1.25rem;
+    gap: var(--space-2);
+    min-height: 1.5rem;
+  }
+
+  .speech-controls-title {
+    color: var(--dark);
   }
 
   .speech-controls-shortcut {
@@ -77,27 +89,31 @@
     padding: 0;
     border: 0;
     background: transparent;
-    color: var(--gray);
+    color: var(--darkgray);
     font: inherit;
   }
 
   .speech-close {
     display: grid;
     place-items: center;
-    width: 1.25rem;
-    height: 1.25rem;
+    width: 1.5rem;
+    height: 1.5rem;
     padding: 0;
     border: 0;
+    border-radius: var(--radius-none);
     background: transparent;
-    color: var(--gray);
+    color: var(--darkgray);
     cursor: pointer;
+    transition:
+      color 0.12s ease,
+      background-color 0.12s ease;
 
     svg {
       width: 0.75rem;
       height: 0.75rem;
       fill: none;
       stroke: currentColor;
-      stroke-width: 1;
+      stroke-width: 1.25;
     }
   }
 
@@ -105,139 +121,53 @@
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 0.75rem;
-    margin-block-start: 0.5rem;
+    gap: var(--space-3);
+    margin-block-start: var(--space-2);
   }
 
-  .speech-controls-title {
-    color: var(--dark);
-    font-weight: 500;
-  }
-
-  .speech-speed {
+  .speech-picker {
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
-    gap: 0.35rem;
+    gap: var(--space-2);
     flex: 1;
+    min-width: 0;
   }
 
-  .speech-speed-trigger,
-  .speech-stop {
-    min-height: 1.75rem;
-    border: 1px solid var(--lightgray);
-    border-radius: 0.25rem;
-    background: var(--light);
-    color: var(--dark);
-    padding: 0.15rem 0.4rem;
-    font: inherit;
-    cursor: pointer;
+  .speech-select {
+    --control-font-size: var(--text-meta);
+    --control-height: 1.75rem;
+    --control-accent: var(--tertiary);
   }
 
-  .speech-speed-trigger {
-    display: inline-flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
-    min-width: 4.25rem;
-    border-color: color-mix(in srgb, var(--gray) 28%, transparent);
-    border-radius: 0;
-    background: color-mix(in srgb, var(--light) 88%, transparent);
-
-    &:hover,
-    &[aria-expanded='true'] {
-      border-color: color-mix(in srgb, var(--tertiary) 48%, var(--lightgray));
-      background: color-mix(in srgb, var(--tertiary) 8%, var(--light));
-    }
-
-    svg {
-      width: 0.7rem;
-      height: 0.7rem;
-      fill: none;
-      stroke: currentColor;
-      stroke-width: 1.4;
-    }
-
-    &[aria-expanded='true'] svg {
-      transform: rotate(180deg);
-    }
-  }
-
-  .speech-speed-menu {
-    // A top-layer menu escapes the panel's paint containment without resizing it.
-    position: fixed;
-    inset: 0 auto auto 0;
-    box-sizing: border-box;
+  .speech-select .g-select-trigger {
     min-width: 5rem;
-    margin: 0;
-    padding: 0.2rem;
-    border: 1px solid color-mix(in srgb, var(--gray) 34%, transparent);
-    border-radius: 0;
-    background: var(--light);
-    color: var(--dark);
-    font: inherit;
-
-    &:popover-open {
-      display: grid;
-      gap: 1px;
-    }
+    max-width: 14rem;
   }
 
-  .speech-speed-option {
-    display: grid;
-    grid-template-columns: 0.75rem minmax(0, 1fr);
-    align-items: center;
-    gap: 0.35rem;
-    width: 100%;
-    min-height: 1.5rem;
-    padding: 0.28rem 0.34rem;
-    border: 0;
-    border-radius: 0;
-    background: transparent;
-    color: var(--darkgray);
-    font: inherit;
-    text-align: left;
-    cursor: pointer;
-
-    &:hover,
-    &:focus-visible {
-      background: color-mix(in srgb, var(--tertiary) 10%, var(--light));
-      color: var(--dark);
-    }
-
-    .speech-speed-check {
-      color: var(--tertiary);
-      opacity: 0;
-    }
-
-    &[aria-selected='true'] .speech-speed-check {
-      opacity: 1;
-    }
-  }
-
-  :is(button, summary):focus-visible {
-    outline: 2px solid var(--secondary);
-    outline-offset: 2px;
+  .speech-stop {
+    --control-height: 1.75rem;
   }
 
   .speech-model-details {
-    margin-block-start: 0.45rem;
-    padding-block-start: 0.4rem;
-    border-top: 1px solid color-mix(in srgb, var(--gray) 28%, transparent);
+    margin-block-start: var(--space-2);
+    padding-block-start: var(--space-2);
+    border-top: 1px solid $speech-line;
 
     summary {
+      color: var(--dark);
       cursor: pointer;
     }
 
     p {
       font-size: inherit;
-      margin-block: 0.5rem 0;
+      margin-block: var(--space-2) 0;
       line-height: 1.5;
     }
   }
 
   .speech-status {
-    margin-block: 0.5rem 0;
+    margin-block: var(--space-2) 0;
     font-size: inherit;
     overflow-wrap: anywhere;
 
@@ -245,18 +175,30 @@
       color: var(--dark);
     }
   }
+
+  :is(.speech-close, summary):focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
 }
 
-:root[saved-theme='dark'] .speech-controls {
-  border-color: color-mix(in srgb, var(--gray) 46%, transparent);
+@media (hover: hover) and (pointer: fine) {
+  .speech-controls .speech-close:hover {
+    background: $speech-surface;
+    color: var(--dark);
+  }
 }
 
 @media (pointer: coarse) {
-  .speech-controls :is(.speech-speed-trigger, .speech-speed-option, .speech-stop, .speech-close) {
-    min-height: 2.5rem;
-  }
+  .speech-controls {
+    .speech-select,
+    .speech-stop {
+      --control-height: 44px;
+    }
 
-  .speech-controls .speech-close {
-    min-width: 2.5rem;
+    .speech-close {
+      width: 44px;
+      height: 44px;
+    }
   }
 }

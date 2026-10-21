@@ -47,13 +47,13 @@ document.addEventListener('nav', () => {
   controls.className = 'speech-controls'
   controls.lang = 'fr'
   controls.popover = 'auto'
-  controls.setAttribute('aria-label', 'Prononciation')
+  controls.setAttribute('aria-label', 'prononciation')
 
   const header = document.createElement('div')
   header.className = 'speech-controls-head'
   const title = document.createElement('span')
   title.className = 'speech-controls-title'
-  title.textContent = 'Prononciation'
+  title.textContent = 'prononciation'
   const shortcut = document.createElement('kbd')
   shortcut.className = 'speech-controls-shortcut'
   shortcut.textContent = 'gv'
@@ -61,7 +61,7 @@ document.addEventListener('nav', () => {
   closeButton.type = 'button'
   closeButton.className = 'speech-close'
   closeButton.autofocus = true
-  closeButton.setAttribute('aria-label', 'Fermer les réglages de prononciation')
+  closeButton.setAttribute('aria-label', 'fermer les réglages de prononciation')
   closeButton.dataset.siteCursorClose = ''
   closeButton.innerHTML =
     '<svg data-site-cursor-icon viewBox="0 0 12 12" aria-hidden="true"><path d="M2.25 2.25 9.75 9.75M9.75 2.25 2.25 9.75"/></svg>'
@@ -85,8 +85,8 @@ document.addEventListener('nav', () => {
   )
   const stopButton = document.createElement('button')
   stopButton.type = 'button'
-  stopButton.className = 'speech-stop'
-  stopButton.textContent = 'Arrêter'
+  stopButton.className = 'g-button speech-stop'
+  stopButton.textContent = 'arrêter'
   stopButton.hidden = true
   row.append(speedPicker.element, stopButton)
 
@@ -98,7 +98,7 @@ document.addEventListener('nav', () => {
     const phonon = model === 'supertonic-2' ? undefined : PHONON_MODELS[model]
     const info = phonon ?? SPEECH_MODEL_INFO
     const downloadMb = Math.ceil(info.downloadBytes / 1_000_000)
-    summary.textContent = `Voix française synthétique · ${downloadMb} Mo au premier clic`
+    summary.textContent = `voix française synthétique · ${downloadMb} Mo au premier clic`
     const modelLink = document.createElement('a')
     modelLink.href = info.sourceUrl
     modelLink.textContent = phonon
@@ -120,8 +120,8 @@ document.addEventListener('nav', () => {
   status.hidden = true
   const modelPicker = createSpeechPicker({
     id: 'speech-model-options',
-    label: 'Modèle',
-    menuLabel: 'Modèle vocal',
+    label: 'modèle',
+    menuLabel: 'modèle vocal',
     choices: SPEECH_MODEL_IDS.map(id => [id, speechModelLabel(id)]),
     initial: model,
     select: value => {
@@ -185,7 +185,7 @@ document.addEventListener('nav', () => {
     const button = phrase.querySelector<HTMLButtonElement>('.speech-play')
     if (button) {
       button.disabled = false
-      button.title = 'Écouter la prononciation'
+      button.title = 'écouter la prononciation'
     }
   }
 
@@ -214,8 +214,8 @@ document.addEventListener('nav', () => {
     active.removeAttribute('aria-busy')
     active.removeAttribute('data-speech-state')
     const text = active.closest<HTMLElement>('.speech-phrase')?.dataset.speechText ?? ''
-    active.setAttribute('aria-label', `Écouter : ${text}`)
-    active.title = 'Écouter la prononciation'
+    active.setAttribute('aria-label', `écouter : ${text}`)
+    active.title = 'écouter la prononciation'
     active = undefined
   }
   const stop = () => {
@@ -243,9 +243,9 @@ document.addEventListener('nav', () => {
     button.removeAttribute('data-speech-latency-ms')
     button.dataset.speechState = 'loading'
     button.setAttribute('aria-busy', 'true')
-    button.setAttribute('aria-label', `Arrêter : ${text}`)
+    button.setAttribute('aria-label', `arrêter : ${text}`)
     stopButton.hidden = false
-    setStatus('Préparation de la voix…')
+    setStatus('préparation de la voix…')
     announce('loading', phrase)
     try {
       const url = await runtime.prepare(text)
@@ -256,8 +256,8 @@ document.addEventListener('nav', () => {
       if (disposed || currentRequest !== request) return
       button.removeAttribute('aria-busy')
       button.dataset.speechState = 'playing'
-      button.title = 'Arrêter la lecture'
-      setStatus(`Lecture : ${text}`)
+      button.title = 'arrêter la lecture'
+      setStatus(`lecture : ${text}`)
       announce('playing', phrase)
     } catch (error) {
       if (disposed || currentRequest !== request) return
@@ -265,7 +265,7 @@ document.addEventListener('nav', () => {
       stopButton.hidden = true
       announce('idle')
       const message = error instanceof Error ? error.message : String(error)
-      setStatus(`Lecture indisponible. ${message}`, true)
+      setStatus(`lecture indisponible. ${message}`, true)
     }
   }
 
@@ -329,7 +329,7 @@ document.addEventListener('nav', () => {
       resetActive()
       stopButton.hidden = true
       announce('idle')
-      setStatus('Lecture indisponible. Réessayez avec une autre phrase.', true)
+      setStatus('lecture indisponible. Réessayez avec une autre phrase.', true)
     },
     { signal: listeners.signal },
   )
