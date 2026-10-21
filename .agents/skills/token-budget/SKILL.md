@@ -25,6 +25,7 @@ Every command goes through `harness/token-budget/scripts/run.sh` (below: `run.sh
 run.sh pass --top 3          # the 3 files with the most tokens x churn
 run.sh pass <path>...        # the named files
 TB_WORKERS= run.sh pass ...  # baseline only, no model calls
+TB_WORKERS="opus argon" run.sh pass ...  # Opus (API credits) in place of Sol
 run.sh summary <run>         # the table again for a finished run
 ```
 
@@ -36,11 +37,15 @@ What the stages do:
 | ----------- | ------------------------------------------------------------ | ----------------------------------------------------------------------------- |
 | 0 inventory | `check.py --all --json`, `inventory.py --top N` or `--paths` | `inventory.json`, `graph.json` (tree-sitter blocks, importers, interface use) |
 | 1 brief     | `inventory.py --briefs <run>`                                | `<slug>/brief.md`                                                             |
-| 2 propose   | `dispatch.sh <run> sol`, `dispatch.sh <run> argon`           | `<slug>/<worker>/` with the final message                                     |
+| 2 propose   | `dispatch.sh <run> <sol\|opus\|argon>`                       | `<slug>/<worker>/` with the final message                                     |
 | 3 validate  | `collect.sh <run>` (adds `baseline.py`, runs `validate.py`)  | `<slug>/validation.json`, `<slug>/decisions/*.decision-request.json`          |
 | 4 decide    | `agent-decide < request` (assessor none)                     | `<slug>/decisions/*.decision.json`                                            |
 
 Sol runs through `codex exec -s read-only`; it minimises the interface. Argon runs through `argon --browser none`; it keeps the most common caller simple. Both are read-only. A watchdog stops an Argon run 30 seconds after its result event, because agy can keep running after it answers.
+
+Opus takes Sol's constraint, so `TB_WORKERS="opus argon"` replaces Sol one for one. It runs `claude -p --bare` with only read and search tools allowed and Edit, Write and Agent denied. `--bare` authenticates with `ANTHROPIC_API_KEY` only, which `dispatch.sh` reads from `CLAUDE_API_KEY` in the main checkout's `.env`, so the run bills the API credits and not the subscription. `TB_OPUS_EFFORT` sets the effort (default `high`). A key that is not scoped to a workspace (`sk-ant-usr-...`) also needs `CLAUDE_WORKSPACE_ID` in `.env`. The raw result is in `opus/events.json`, which also holds `total_cost_usd`; on an API error `opus/last-message.txt` stays empty and `collect.sh` reports no proposal.
+
+When the API key cannot run, an Opus session can be the worker itself: after `dispatch.sh` has written `<slug>/opus/task.txt`, follow that task read-only, write the final message (outcome lines and the one json block) to `<slug>/opus/last-message.txt`, write `0` to `<slug>/opus/exit-code`, then run `run.sh collect <run>`, the stage 4 `agent-decide` loop from `pass.sh`, and `run.sh summary <run>`. Do not read the other workers' proposals first, so that the ARI between proposals stays independent.
 
 ## Choose a proposal
 
@@ -75,7 +80,7 @@ It runs `w` with stdin closed (`w` opens an interactive shell, and a non-interac
 
 2. **Deepen.** Hide the exports the proposal hides. Update importers to use the entry. Move tests that import internals to the entry interface, and delete tests of internals when tests at the interface cover the same behaviour. Keep every behaviour that a test covers.
 
-3. **Verify.** For scripts, link the main checkout's `node_modules` into the worktree first (`ln -s ~/workspace/garden/node_modules <wt>/node_modules`; not yet tried in a pass), then in the worktree: `pnpm exec tsgo --noEmit`, `pnpm exec oxlint <changed files>`, the affected tests, and the hook on the new files: `git -C <wt> add <module paths>`, then `(cd <wt> && ~/workspace/garden/harness/token-budget/scripts/run.sh check --paths <module paths>)`. The hook reads the index of the directory it runs in, so it measures the worktree. Keep each file under the 4000-token aim, not only the 5000 limit; when a file lands over the aim, move a whole concept out (pet.scss: wind left weather). For client scripts, land first, then use the running `quartz/scripts/dev.ts` watcher in the main checkout: wait for the next `build:ready` and check the rendered page. Then ask Argon, in a new conversation, to review the diff with the proposal as acceptance criteria.
+3. **Verify.** For scripts, link the main checkout's `node_modules` into the worktree first (`ln -s ~/workspace/garden/node_modules <wt>/node_modules`), then in the worktree: `./node_modules/.bin/tsgo --noEmit` (compare its error count with HEAD's, which is not zero), `./node_modules/.bin/oxlint <changed files>`, the affected tests, all through `./node_modules/.bin/`. Do not use `pnpm exec` there: its dependency check runs `pnpm install` against the linked `node_modules`. Then run the hook on the new files: `git -C <wt> add <module paths>`, then `(cd <wt> && ~/workspace/garden/harness/token-budget/scripts/run.sh check --paths <module paths>)`. The hook reads the index of the directory it runs in, so it measures the worktree. Keep each file under the 4000-token aim, not only the 5000 limit; when a file lands over the aim, move a whole concept out (pet.scss: wind left weather). For client scripts, land first, then use the running `quartz/scripts/dev.ts` watcher in the main checkout: wait for the next `build:ready` and check the rendered page. Then ask Argon, in a new conversation, to review the diff with the proposal as acceptance criteria.
 
 4. **Land.** From the main checkout:
 

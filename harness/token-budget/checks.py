@@ -256,7 +256,8 @@ def validate(g: dict, p: dict) -> dict:
   bad_paths = []
   folder = os.path.dirname(g['path'])
   for f in files:
-    if not re.match(
+    # The original path keeps its name (CourseHome.tsx); the rule is for new paths.
+    if f['path'] != g['path'] and not re.match(
       r'^_?[a-z0-9]+(?:[-.][a-z0-9]+)*\.[a-z]+$', os.path.basename(f['path'])
     ):
       bad_paths.append(f'{f["path"]} is not kebab-case')

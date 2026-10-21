@@ -4,7 +4,8 @@
 #
 #   check [--all | --paths <p>...] [--json]    the pre-commit hook (o200k_base tokens)
 #   pass [--top N] [--run <dir>] [<path>...]   stages 0-4: inventory, Sol and Argon proposals,
-#                                              validation, agent-decide (TB_WORKERS= baseline only)
+#                                              validation, agent-decide (TB_WORKERS= baseline only,
+#                                              TB_WORKERS="opus argon" Opus on API credits for Sol)
 #   summary <run>                              per target: proposals, checks, decisions, ARI
 #   worktree <name> <path>                     w garden tb-<name>; checks the target blob at HEAD
 #   proof <worktree> <path>                    move proof: non-import lines, original vs module
@@ -20,7 +21,7 @@ TB=$(cd "$(dirname "$0")/.." && pwd)
 WS=$(git -C "$TB" rev-parse --show-toplevel)
 SASS="$WS/node_modules/.bin/sass"
 
-usage() { sed -n '3,18p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 2; }
+usage() { sed -n '3,19p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 2; }
 need() { [ "$1" -ge "$2" ] || usage; }
 
 cmd=${1:-}

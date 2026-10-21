@@ -1,13 +1,13 @@
 #!/bin/sh
 # Stage 2: one read-only boundary proposal per target from one worker, in parallel.
-#   harness/token-budget/dispatch.sh <run-dir> <sol|argon> [<slug>...]
+#   harness/token-budget/dispatch.sh <run-dir> <sol|opus|argon> [<slug>...]
 # Each <run-dir>/<slug>/brief.md becomes <slug>/<worker>/task.txt; the run writes events.ndjson,
-# stderr.txt and exit-code there (Codex also writes last-message.txt). Workers read the tree at
+# stderr.txt and exit-code there (Codex and Claude also write last-message.txt). Workers read the tree at
 # TB_WORKSPACE (default: this checkout), so a `w` worktree can be the source as well.
 set -eu
 HERE=$(cd "$(dirname "$0")" && pwd)
 WS=${TB_WORKSPACE:-$(git -C "$HERE" rev-parse --show-toplevel)}
-[ $# -ge 2 ] || { echo "usage: $0 <run-dir> <sol|argon> [<slug>...]" >&2; exit 2; }
+[ $# -ge 2 ] || { echo "usage: $0 <run-dir> <sol|opus|argon> [<slug>...]" >&2; exit 2; }
 RUN=$(cd "$1" && pwd)
 W=$2
 shift 2
@@ -17,6 +17,19 @@ case $W in
     ID='codex:gpt-6.1-sol'
     CONSTRAINT='minimise-interface'
     TEXT='Minimise the interface: aim for the fewest names the production importers need (1 to 3 where possible) and the most leverage per name. Hide every export that production callers do not use, and plan to move tests that import internals to the entry interface.'
+    ;;
+  opus)
+    # Takes Sol's constraint, so `TB_WORKERS="opus argon"` replaces Sol one for one.
+    ID="claude:claude-opus-5-5-${TB_OPUS_EFFORT:-high}"
+    CONSTRAINT='minimise-interface'
+    TEXT='Minimise the interface: aim for the fewest names the production importers need (1 to 3 where possible) and the most leverage per name. Hide every export that production callers do not use, and plan to move tests that import internals to the entry interface.'
+    # --bare authenticates with ANTHROPIC_API_KEY only (never OAuth), so the run bills the API
+    # credits in the main checkout's .env and not the subscription quota.
+    ENV="$(git -C "$HERE" rev-parse --show-toplevel)/.env"
+    KEY=$(rg -m1 '^CLAUDE_API_KEY=' "$ENV" | cut -d= -f2- | tr -d "\"'")
+    [ -n "$KEY" ] || { echo "CLAUDE_API_KEY is not in .env" >&2; exit 2; }
+    # A key that is not scoped to a workspace (sk-ant-usr-...) must name one in each request.
+    WSID=$(rg -m1 '^CLAUDE_WORKSPACE_ID=' "$ENV" | cut -d= -f2- | tr -d "\"'" || true)
     ;;
   argon)
     ID='argon:gemini-4-argon-high'
@@ -50,6 +63,22 @@ EOF
       ( cd "$d" && codex exec -C "$WS" -s read-only -m gpt-6.1-sol -c model_reasoning_effort=high \
           --json -o last-message.txt - < task.txt > events.ndjson 2> stderr.txt; echo $? > exit-code ) &
       ;;
+    opus)
+      ( cd "$WS" || exit 1
+        rc=0
+        ANTHROPIC_API_KEY=$KEY ANTHROPIC_CUSTOM_HEADERS=${WSID:+"anthropic-workspace-id: $WSID"} \
+          claude -p --bare --no-session-persistence \
+          --model claude-opus-5-5 --effort "${TB_OPUS_EFFORT:-high}" --output-format json \
+          --permission-mode dontAsk \
+          --allowedTools 'Read' 'Grep' 'Glob' 'Bash(rg *)' 'Bash(fd *)' 'Bash(ast-grep run *)' \
+            'Bash(git log *)' 'Bash(git show *)' 'Bash(sed -n *)' 'Bash(cat *)' 'Bash(wc *)' \
+          --disallowedTools 'Edit' 'Write' 'NotebookEdit' 'Agent' 'WebFetch' 'WebSearch' \
+          < "$d/task.txt" > "$d/events.json" 2> "$d/stderr.txt" || rc=$?
+        # The json output is the event list; the last event is the result.
+        jq -r 'if type == "array" then .[-1] else . end | select(.is_error | not) | .result // empty' \
+          "$d/events.json" > "$d/last-message.txt" 2> /dev/null || true
+        echo $rc > "$d/exit-code" ) &
+      ;;
     argon)
       # agy can keep running after its result event; stop this run (and only it) after a grace period.
       ( cd "$d"
@@ -64,7 +93,8 @@ EOF
           fi
           sleep 10
         done
-        wait "$pid"; echo $? > exit-code ) &
+        # set -e would end this subshell when wait reports the watchdog's SIGTERM (143).
+        rc=0; wait "$pid" || rc=$?; echo $rc > exit-code ) &
       ;;
   esac
 done
