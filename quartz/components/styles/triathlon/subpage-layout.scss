@@ -13,7 +13,6 @@
 
 .triathlon.tri-panels-fullscreen .tri-analytics,
 .triathlon.tri-panels-fullscreen .tri-map,
-.triathlon.tri-panels-fullscreen .tri-training,
 .triathlon.tri-panels-fullscreen .tri-calendar-panel {
   border: none;
 }
@@ -26,15 +25,7 @@
   --tri-modal-w: 100%;
   --tri-modal-h: 100%;
 
-  :is(
-    .tri-gear,
-    .tri-pace,
-    .tri-analytics,
-    .tri-map,
-    .tri-training,
-    .tri-calendar-panel,
-    .tri-calc
-  ) {
+  :is(.tri-gear, .tri-pace, .tri-analytics, .tri-map, .tri-calendar-panel, .tri-calc) {
     position: fixed;
     inset: 0;
     box-sizing: border-box;
@@ -71,7 +62,6 @@
 
   .tri-analytics,
   .tri-map,
-  .tri-training,
   .tri-calendar-panel {
     border: none;
   }
@@ -87,7 +77,6 @@
 
 .tri-analytics-scrim,
 .tri-map-scrim,
-.tri-training-scrim,
 .tri-calendar-scrim {
   position: fixed;
   inset: 0;
@@ -101,7 +90,6 @@
 
 .tri-analytics-open .tri-analytics-scrim,
 .tri-map-open .tri-map-scrim,
-.tri-training-open .tri-training-scrim,
 .tri-calendar-open .tri-calendar-scrim {
   opacity: 1;
   visibility: visible;
@@ -112,7 +100,6 @@
 
 .tri-analytics,
 .tri-map,
-.tri-training,
 .tri-calendar-panel {
   position: fixed;
   top: 50%;
@@ -147,7 +134,6 @@
 
 .tri-analytics-open .tri-analytics,
 .tri-map-open .tri-map,
-.tri-training-open .tri-training,
 .tri-calendar-open .tri-calendar-panel {
   opacity: 1;
   visibility: visible;
@@ -173,7 +159,6 @@
 @media (prefers-reduced-motion: reduce) {
   .tri-analytics,
   .tri-map,
-  .tri-training,
   .tri-calendar-panel {
     transform: translate(-50%, var(--tri-modal-y));
     transition:
@@ -184,7 +169,6 @@
 
   .tri-analytics-open .tri-analytics,
   .tri-map-open .tri-map,
-  .tri-training-open .tri-training,
   .tri-calendar-open .tri-calendar-panel {
     transform: translate(-50%, var(--tri-modal-y));
     transition:
@@ -278,8 +262,7 @@
 }
 
 .tri-analytics--page,
-.tri-map--page,
-.tri-training--page {
+.tri-map--page {
   position: static;
   width: 100%;
   max-width: var(--tri-page-w);
@@ -295,14 +278,12 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 }
 
 .tri-subpage .tri-analytics-scrim,
-.tri-subpage .tri-map-scrim,
-.tri-subpage .tri-training-scrim {
+.tri-subpage .tri-map-scrim {
   display: none;
 }
 
 .tri-analytics--page .tri-ana-close,
-.tri-map--page .tri-map-close,
-.tri-training--page .tri-training-close {
+.tri-map--page .tri-map-close {
   display: none;
 }
 

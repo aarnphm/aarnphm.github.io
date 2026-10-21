@@ -13,11 +13,9 @@ import { CalendarPanel } from '../triathlon/calendar/Calendar'
 import {
   AnalyticsPanel,
   CalcPanel,
-  FeedPanel,
   MapPanel,
   OnTreePanel,
   ToolsPanel,
-  TrainingPanel,
   TriathlonSubnav,
   type TriView,
 } from './triathlon-panels'
@@ -29,15 +27,11 @@ interface TriathlonSubPanelProps {
   renderData?: TriathlonRenderData
 }
 
-const PANEL: Record<
-  Exclude<TriView, 'on' | 'feed'>,
-  (props: TriathlonSubPanelProps) => JSX.Element
-> = {
+const PANEL: Record<Exclude<TriView, 'on'>, (props: TriathlonSubPanelProps) => JSX.Element> = {
   tools: ToolsPanel,
   calc: CalcPanel,
   analytics: AnalyticsPanel,
   maps: MapPanel,
-  training: TrainingPanel,
   calendar: CalendarPanel,
 }
 
@@ -53,7 +47,7 @@ export const TriathlonSubPage = (view: TriView, defaultDistance?: unknown): Quar
         data-detail-path={joinSegments(root, 'static/strava-detail.json')}
         data-analytics-path={joinSegments(root, 'static/analytics.json')}
         data-oura-detail-path={joinSegments(root, 'static/oura-detail.json')}
-        data-training-path={joinSegments(root, 'static/training.json')}
+        data-feed-prefix={feedScope?.prefix}
         tabindex={-1}
         data-keyboard-scroll-scope
       >
@@ -68,8 +62,6 @@ export const TriathlonSubPage = (view: TriView, defaultDistance?: unknown): Quar
               feedScope?.prefix,
             )}
           />
-        ) : view === 'feed' ? (
-          <FeedPanel />
         ) : (
           PANEL[view]({
             page: true,

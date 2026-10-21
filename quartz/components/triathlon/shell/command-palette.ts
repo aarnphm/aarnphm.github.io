@@ -56,23 +56,16 @@ export const TRI_PAGES: { path: string; label: string; hint: string }[] = [
   { path: '/triathlon/calc', label: 'calculator', hint: 'race · gears · PSI' },
   { path: '/triathlon/analytics', label: 'analytics', hint: 'charts' },
   { path: '/triathlon/maps', label: 'maps', hint: 'routes' },
-  { path: '/triathlon/training', label: 'training', hint: 'plans' },
   { path: '/triathlon/calendar', label: 'calendar', hint: 'races · training' },
-  { path: '/triathlon/feed', label: 'feed', hint: 'all activities' },
+  { path: '/triathlon/on?view=feed', label: 'feed', hint: 'all activities' },
   { path: '/triathlon/on', label: 'on', hint: 'by date' },
 ]
 
 export type SearchShortcut = { view: string; openClass?: string; search: string }
 
 export const TRI_SEARCH_SHORTCUTS: SearchShortcut[] = [
-  { view: 'analytics', openClass: 'tri-analytics-open', search: '.tri-analytics .tri-ana-search' },
   { view: 'maps', openClass: 'tri-map-open', search: '.tri-map .tri-map-search' },
-  {
-    view: 'training',
-    openClass: 'tri-training-open',
-    search: '.tri-training .tri-training-search',
-  },
-  { view: 'feed', search: '.tri-feed .tri-feed-search' },
+  { view: 'on', search: '.tri-feed .tri-feed-search' },
 ]
 
 export const isEditable = (el: HTMLElement): boolean => {
@@ -102,6 +95,8 @@ export const toggleSearchFocus = (root: HTMLElement, target: HTMLElement | null)
   if (target && isEditable(target) && target !== search) return false
   if (document.activeElement === search) search.blur()
   else {
+    // a panel can hide its search until asked; this lets it switch the search into view first
+    search.dispatchEvent(new Event('tri:search-reveal'))
     search.focus()
     search.select()
   }
@@ -1070,8 +1065,7 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
         return
       }
       if (toggleSearchFocus(root, null) || currentSearchShortcut(root)) return
-      if (root.matches('.tri-analytics-open, .tri-map-open, .tri-training-open, .tri-calc-open'))
-        return
+      if (root.matches('.tri-analytics-open, .tri-map-open, .tri-calc-open')) return
       togglePalette()
     }
   }

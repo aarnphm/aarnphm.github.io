@@ -400,7 +400,10 @@ export const buildBestEfforts = (
       tab.style.setProperty('--tri-be-tab-color', BIKE_GROUP_COLOR[bikeGroups[i]])
     })
   }
-  catbar.append(controls, categoryRow)
+  // One row: the ride period and month sit between the categories and the view tabs, and wrap
+  // only when the panel is too narrow.
+  controls.insertBefore(categoryRow, tablist)
+  catbar.append(controls)
   const panel = el('div', 'tri-be-panel', undefined, { role: 'tabpanel', id: 'tri-be-panel' })
   block.append(title, catbar, panel)
 
@@ -681,7 +684,6 @@ export const buildBestEfforts = (
       className: 'tri-be-picker',
     })
     select.trigger.dataset.beFocus = name
-    if (name === 'month') select.trigger.dataset.active = String(state.rideRange === 'month')
     pickers.push({ name, select, dispose: null })
     field.append(label, select.element)
     return field

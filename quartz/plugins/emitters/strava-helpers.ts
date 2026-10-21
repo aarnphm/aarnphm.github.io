@@ -6,16 +6,22 @@ import type { QuartzPluginData } from '../vfile'
 import { joinSegments, QUARTZ } from '../../util/path'
 import { ATHLETE } from '../stores/analytics'
 
-export const TRI_SUBVIEWS: TriView[] = [
-  'tools',
-  'calc',
-  'analytics',
-  'maps',
-  'training',
-  'calendar',
-  'feed',
-  'on',
-]
+export const TRI_SUBVIEWS: TriView[] = ['tools', 'calc', 'analytics', 'maps', 'calendar', 'on']
+
+// The feed lives on /triathlon/on behind its log · feed switch; old feed links open it there.
+export const TRIATHLON_FEED_REDIRECT = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>triathlon · feed</title>
+<meta name="robots" content="noindex">
+<link rel="canonical" href="on?view=feed">
+<script>location.replace(location.pathname.replace(/\\/feed\\/?$/, "/on") + "?view=feed" + location.hash)</script>
+<meta http-equiv="refresh" content="0; url=on?view=feed">
+</head>
+</html>
+`
+
 const TRIATHLON_DATA_CACHE_DIR = joinSegments(QUARTZ, '.quartz-cache', 'triathlon')
 const TRIATHLON_DATA_CACHE_PATH = joinSegments(TRIATHLON_DATA_CACHE_DIR, 'data.jsonl')
 
@@ -28,9 +34,8 @@ export const isTriathlon = (data: QuartzPluginData): boolean =>
   data.frontmatter?.layout === 'triathlon'
 
 export const triathlonDescription = (
-  view: TriView | 'day',
+  view: TriView | 'feed' | 'day',
   activityCount: number,
-  planCount: number,
   scopePrefix = '',
 ): string => {
   switch (view) {
@@ -42,8 +47,6 @@ export const triathlonDescription = (
       return `Generated training analytics across ${activityCount} activities.`
     case 'maps':
       return `Generated route geometry and map metrics across ${activityCount} activities.`
-    case 'training':
-      return `${planCount} generated triathlon training plans with their complete note content.`
     case 'calendar':
       return 'Race dates and the TrainingPeaks training calendar, with weekly planned and completed sessions.'
     case 'feed':

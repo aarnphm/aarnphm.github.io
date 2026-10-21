@@ -1,17 +1,5 @@
-import type { Element } from 'hast'
-import { toText } from 'hast-util-to-text'
 import assert from 'node:assert/strict'
-import { mkdir, writeFile } from 'node:fs/promises'
-import path from 'node:path'
 import test from 'node:test'
-import { h } from 'preact'
-import { renderToString } from 'preact-render-to-string'
-import rehypeRaw from 'rehype-raw'
-import remarkGfm from 'remark-gfm'
-import remarkParse from 'remark-parse'
-import remarkRehype from 'remark-rehype'
-import { unified } from 'unified'
-import { visit } from 'unist-util-visit'
 import { buildAnalytics } from '../plugins/stores/analytics'
 import { emptyPayload, type StravaActivityDetail } from '../plugins/stores/strava'
 import { isFullSlug, type FullSlug } from './path'
@@ -192,17 +180,6 @@ const options = (
     dataFeed,
     analytics,
     payload,
-    plans: [
-      {
-        id: 'plan-0',
-        meta: 'Olympic build',
-        distance: 'Olympic',
-        date: '2026-08-01',
-        target: 'finish',
-        author: 'Aaron',
-        html: '<h2>Week one</h2><p>Ride easy.</p><table><thead><tr><th>day</th><th>session</th></tr></thead><tbody><tr><td>Monday</td><td>Swim<br>easy</td></tr></tbody></table>',
-      },
-    ],
     tools: {
       conversions: [['pace', '/100m x 16.09 -> /mi']],
       gear: [['bike', ['Cervelo Soloist']]],
@@ -283,17 +260,9 @@ test('builds exact analytics and calculator notes with stable permalinks', () =>
   assert.doesNotMatch(calculator, /```json/)
 })
 
-test('turns generated training HTML and tool constants into markdown', () => {
-  const training = buildTriathlonMarkdown(options('training', 'triathlon/training'))
+test('turns tool constants into markdown', () => {
   const tools = buildTriathlonMarkdown(options('tools', 'triathlon/tools'))
 
-  assert.match(training, /## Olympic build/)
-  assert.match(training, /\| id \| distance \| date \| target \| author \|/)
-  assert.match(training, /\| "plan-0" \| "Olympic" \| "2026-08-01" \| "finish" \| "Aaron" \|/)
-  assert.match(training, /## Week one/)
-  assert.match(training, /Ride easy\./)
-  assert.match(training, /\| day \| session \|\n\| --- \| --- \|/)
-  assert.match(training, /\| Monday \| Swim<br>easy \|/)
   assert.match(tools, /\| arrayIndex \| distance \| swimKm \| bikeKm \| runKm \|/)
   assert.match(tools, /units: race distance km, maintenance distance mi/)
   assert.match(tools, /## maintenance/)
@@ -322,81 +291,7 @@ test('turns generated training HTML and tool constants into markdown', () => {
   assert.match(tools, /"2026-05-26"/)
   assert.match(tools, /"strava"/)
   assert.match(tools, /\| 1 \| "bike" \| "Cervelo Soloist" \|/)
-  assert.doesNotMatch(training, /```json/)
   assert.doesNotMatch(tools, /```json/)
-})
-
-test('training table cells survive real GFM parsing with pipes and backslashes', async () => {
-  const values = [
-    'plain | pipe',
-    'C:\\data\\ride',
-    '\\|',
-    '\\\\|',
-    '<script>literal</script>',
-    '\\|*literal*',
-    '\\|[x](javascript:alert(1))',
-    '\\|&copy;',
-    '\\|<img src=x onerror=alert(1)>',
-  ]
-  for (const tag of ['span', 'code']) {
-    const opts = options('training', 'triathlon/training')
-    opts.plans[0].html = renderToString(
-      h('table', {}, [
-        h('tr', {}, h('th', {}, 'value')),
-        ...values.map(value => h('tr', {}, h('td', {}, h(tag, {}, value)))),
-      ]),
-    )
-    const markdown = buildTriathlonMarkdown(opts)
-    const parser = unified()
-      .use(remarkParse)
-      .use(remarkGfm)
-      .use(remarkRehype, { allowDangerousHtml: true })
-      .use(rehypeRaw)
-    const tree = parser.runSync(parser.parse(markdown))
-    const tables: Element[] = []
-    visit(tree, 'element', node => {
-      if (node.tagName === 'table') tables.push(node)
-    })
-    const table = tables.at(-1)
-    assert.ok(table)
-    const rows: string[][] = []
-    visit(table, 'element', node => {
-      if (node.tagName !== 'tr') return
-      rows.push(node.children.filter(child => child.type === 'element').map(cell => toText(cell)))
-    })
-    assert.deepEqual(
-      rows.slice(1),
-      values.map(value => [value]),
-      `${tag} cells must retain text and column count`,
-    )
-    const artifacts = path.resolve('docs/verification/code-scanning-remediation/artifacts/tables')
-    await mkdir(artifacts, { recursive: true })
-    await writeFile(
-      path.join(artifacts, `${tag}.json`),
-      JSON.stringify(
-        {
-          command: 'pnpm test quartz/util/triathlon-markdown.test.ts',
-          tag,
-          values,
-          markdown,
-          renderedCells: rows.slice(1),
-        },
-        null,
-        2,
-      ),
-    )
-  }
-})
-
-test('neutralizes authored text in generated training headings', () => {
-  const trainingOptions = options('training', 'triathlon/training')
-  trainingOptions.plans[0].meta = 'Olympic\n# forged <script>'
-
-  const training = buildTriathlonMarkdown(trainingOptions)
-
-  assert.match(training, /^## Olympic \\# forged \\<script\\>$/m)
-  assert.doesNotMatch(training, /<script>/)
-  assert.doesNotMatch(training, /^# forged/m)
 })
 
 test('scopes generated archive and day notes to their route', () => {

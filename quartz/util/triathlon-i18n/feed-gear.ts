@@ -1,5 +1,6 @@
 export const en: Record<string, string> = {
   feed: 'feed',
+  log: 'log',
   on: 'on',
   'all activities · list': 'all activities · list',
   'weight unit': 'weight unit',
@@ -90,6 +91,7 @@ export const en: Record<string, string> = {
 
 export const fr: Record<string, string> = {
   feed: 'flux',
+  log: 'par date',
   on: 'journal',
   'all activities · list': 'toutes les activités · liste',
   'weight unit': 'unité de poids',

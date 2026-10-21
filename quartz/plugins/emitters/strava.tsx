@@ -1,4 +1,3 @@
-import type { Root as HtmlRoot } from 'hast'
 import { Node } from 'unist'
 import type { TriathlonRenderData } from '../../components/triathlon/render-data'
 import { defaultContentPageLayout, sharedPageComponents } from '../../../quartz.layout'
@@ -39,7 +38,7 @@ import {
   parseTriathlonMaintenance,
   type TriathlonMaintenance,
 } from '../../util/triathlon-maintenance'
-import { buildTriathlonMarkdown } from '../../util/triathlon-markdown'
+import { buildTriathlonMarkdown, type TriathlonMarkdownView } from '../../util/triathlon-markdown'
 import {
   buildTriathlonCalendarPreview,
   buildTriathlonPreview,
@@ -50,7 +49,6 @@ import { buildStravaActivityIndex } from '../../util/triathlon-shortcut'
 import { buildDataFeed, parseVo2Lab } from '../stores/analytics'
 import { buildMatchedRides, emptyMatchedRides } from '../stores/matched-rides'
 import { buildMatchedRuns, emptyMatchedRuns } from '../stores/matched-runs'
-import { parseTrainingPlans } from '../stores/training'
 import { defaultProcessedContent, ProcessedContent, QuartzPluginData } from '../vfile'
 import { removeWritten, write } from './helpers'
 import { createOgImageGenerator } from './ogImage'
@@ -59,6 +57,7 @@ import {
   isTriathlon,
   stravaDetailPayload,
   TRI_SUBVIEWS,
+  TRIATHLON_FEED_REDIRECT,
   triathlonDescription,
 } from './strava-helpers'
 import { linkTrainingCalendar } from './strava-training-calendar'
@@ -145,11 +144,9 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
         matchedRides,
       })
       const detailArtifacts = serializeStravaDetails(detailPayload)
-      const plans = parseTrainingPlans(tree as unknown as HtmlRoot)
       const equipment = buildTriathlonEquipment(cache)
       const triathlonRenderData: TriathlonRenderData = {
         analytics,
-        plans,
         weather: weather?.current ?? null,
         equipment,
         calendar,
@@ -217,12 +214,6 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
         }),
         write({
           ctx,
-          slug: 'static/training' as FullSlug,
-          ext: '.json',
-          content: JSON.stringify({ plans }),
-        }),
-        write({
-          ctx,
           slug: 'static/training-calendar',
           ext: '.json',
           content: sealTrainingCalendar(trainingCalendar, process.env.TRAINING_CALENDAR_DATA_KEY),
@@ -279,19 +270,14 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
       const html = renderPage(ctx, slug, componentData, opts, externalResources, false)
       yield await write({ ctx, content: html, slug, ext: '.html' })
 
-      const renderSubPage = async (
+      const subMarkdown = (
+        view: TriathlonMarkdownView,
         subSlug: FullSlug,
-        view: TriView,
         title: string,
-        scopePrefix = '',
-      ): Promise<FilePath[]> => {
-        const description = triathlonDescription(
-          view,
-          payload.totalCount,
-          plans.length,
-          scopePrefix,
-        )
-        const markdown = buildTriathlonMarkdown({
+        description: string,
+        scopePrefix: string,
+      ): string =>
+        buildTriathlonMarkdown({
           view,
           slug: subSlug,
           title,
@@ -301,10 +287,18 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
           dataFeed,
           analytics,
           payload,
-          plans,
           calendar,
           tools: { conversions: CONVERSIONS, gear: GEAR, maintenance, equipment },
         })
+
+      const renderSubPage = async (
+        subSlug: FullSlug,
+        view: TriView,
+        title: string,
+        scopePrefix = '',
+      ): Promise<FilePath[]> => {
+        const description = triathlonDescription(view, payload.totalCount, scopePrefix)
+        const markdown = subMarkdown(view, subSlug, title, description, scopePrefix)
         const [subTree, subFile] = defaultProcessedContent({
           slug: subSlug,
           text: description,
@@ -353,6 +347,22 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
           renderSubPage(`triathlon/${view}` as FullSlug, view, `triathlon · ${view}`),
         )
       ).flat()
+      const legacyFeedSlug = 'triathlon/feed' as FullSlug
+      yield* await Promise.all([
+        write({ ctx, content: TRIATHLON_FEED_REDIRECT, slug: legacyFeedSlug, ext: '.html' }),
+        write({
+          ctx,
+          content: subMarkdown(
+            'feed',
+            legacyFeedSlug,
+            'triathlon · feed',
+            triathlonDescription('feed', payload.totalCount),
+            '',
+          ),
+          slug: legacyFeedSlug,
+          ext: '.md',
+        }),
+      ])
 
       const feedRoutes = triathlonActivityFeedRoutes(
         Object.fromEntries(payload.days.map(day => [day.date, { date: day.date }])),
@@ -420,7 +430,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
               dayRenderCache.set(daySlug, dayKey)
             }
             const title = `triathlon · ${date}`
-            const description = triathlonDescription('day', payload.totalCount, plans.length, date)
+            const description = triathlonDescription('day', payload.totalCount, date)
             const markdown = buildTriathlonMarkdown({
               view: 'day',
               slug: daySlug,
@@ -431,7 +441,6 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
               dataFeed,
               analytics,
               payload,
-              plans,
               tools: { conversions: CONVERSIONS, gear: GEAR, maintenance, equipment },
             })
             const track = trackingByDate.get(date)

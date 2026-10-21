@@ -25,7 +25,6 @@ import {
   CONVERSIONS,
   GearPanel,
   MapPanel,
-  TrainingPanel,
 } from './triathlon-panels'
 
 const PX_PER_MIN = 2.4
@@ -116,7 +115,6 @@ export default (() => {
         data-detail-path={joinSegments(pathToRoot(fileData.slug!), 'static/strava-detail.json')}
         data-analytics-path={joinSegments(pathToRoot(fileData.slug!), 'static/analytics.json')}
         data-oura-detail-path={joinSegments(pathToRoot(fileData.slug!), 'static/oura-detail.json')}
-        data-training-path={joinSegments(pathToRoot(fileData.slug!), 'static/training.json')}
         data-location={location}
       >
         <div class="tri-head">
@@ -300,10 +298,6 @@ export default (() => {
               <span data-i18n="map">map</span>
               <ShortcutHint>g m</ShortcutHint>
             </button>
-            <button class="tri-training-btn tri-key-anchor" type="button">
-              <span data-i18n="training">training</span>
-              <ShortcutHint>g t</ShortcutHint>
-            </button>
             <button
               class="tri-calendar-btn tri-key-anchor"
               type="button"
@@ -332,7 +326,6 @@ export default (() => {
 
         <AnalyticsPanel />
         <MapPanel />
-        <TrainingPanel />
         <CalendarOverlay renderData={fileData.triathlonRenderData} />
       </article>
     )

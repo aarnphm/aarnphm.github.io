@@ -12,8 +12,7 @@
   }
 }
 
-.tri-calendar,
-.tri-calendar-source-controls {
+.tri-calendar {
   --calendar-control-size: 2rem;
   --calendar-line: color-mix(in srgb, var(--gray) 55%, transparent);
   --calendar-surface: color-mix(in srgb, var(--lightgray) 24%, var(--light));
@@ -276,22 +275,6 @@
   box-sizing: border-box;
   width: fit-content;
   margin-bottom: 0.6rem;
-
-  &--icons {
-    height: var(--calendar-control-size);
-    border: 1px solid var(--calendar-line);
-  }
-
-  .tri-calendar-icon {
-    height: 100%;
-    border: 0;
-    cursor: pointer;
-
-    &:focus-visible {
-      outline: 2px solid var(--dark);
-      outline-offset: 3px;
-    }
-  }
 }
 
 .tri-calendar-icon .tri-calendar-icon-fill {
@@ -1561,7 +1544,6 @@ a.tri-calendar-day {
   }
 
   > .tri-ana-bar > .tri-calendar-source-controls {
-    --calendar-control-size: 1.9rem;
     margin: 0 0 0 auto;
   }
 

@@ -1,10 +1,7 @@
-import TurndownService from 'turndown'
 import type { Analytics } from '../plugins/stores/analytics'
 import type { StravaActivityDetail, StravaPayload } from '../plugins/stores/strava'
-import type { TrainingPlan } from '../plugins/stores/training'
 import type { FullSlug } from './path'
 import type { TriathlonEquipmentUsage } from './triathlon-equipment'
-import { escapeHTML } from './escape'
 import { TRI_RACE_DISTANCES } from './triathlon-calculator'
 import {
   calendarScheduleDates,
@@ -27,7 +24,6 @@ export type TriathlonMarkdownView =
   | 'calc'
   | 'analytics'
   | 'maps'
-  | 'training'
   | 'calendar'
   | 'feed'
   | 'on'
@@ -50,60 +46,9 @@ export interface TriathlonMarkdownOptions {
   dataFeed: string
   analytics: Analytics
   payload: StravaPayload
-  plans: TrainingPlan[]
   calendar?: TriathlonCalendar | null
   tools: TriathlonMarkdownTools
 }
-
-const turndown = new TurndownService({
-  headingStyle: 'atx',
-  bulletListMarker: '-',
-  codeBlockStyle: 'fenced',
-})
-
-const escapeMarkdownText = turndown.escape.bind(turndown)
-turndown.escape = value => escapeMarkdownText(escapeHTML(value))
-
-const tableCellMarkdown = (cell: HTMLElement): string =>
-  turndown
-    .turndown(cell)
-    .trim()
-    .replace(/\n+/g, '<br>')
-    .replace(/\s*<br>\s*/g, '<br>')
-    .replace(/\|/g, '\\|')
-
-turndown.addRule('table-code-with-backslash-pipe', {
-  filter: node =>
-    node.nodeName === 'CODE' &&
-    node.closest('td, th') !== null &&
-    node.textContent?.includes('\\|') === true,
-  replacement: (_content, node) => {
-    // GFM consumes a pipe escape before parsing code spans. HTML entities retain
-    // literal backslashes without exposing a table delimiter to that first pass.
-    const text = (node.textContent ?? '').replace(
-      /[!-/:-@[-`{-~]/g,
-      character => `&#${character.charCodeAt(0)};`,
-    )
-    return `<code>${text}</code>`
-  },
-})
-
-turndown.addRule('table', {
-  filter: 'table',
-  replacement: (_content, node) => {
-    const rows = Array.from(node.querySelectorAll('tr'))
-      .map(row =>
-        Array.from(row.children).filter(
-          (cell): cell is HTMLTableCellElement => cell.tagName === 'TH' || cell.tagName === 'TD',
-        ),
-      )
-      .filter(row => row.length > 0)
-    if (rows.length === 0) return ''
-    const lines = rows.map(row => `| ${row.map(cell => tableCellMarkdown(cell)).join(' | ')} |`)
-    const separator = `| ${rows[0].map(() => '---').join(' | ')} |`
-    return `\n\n${[lines[0], separator, ...lines.slice(1)].join('\n')}\n\n`
-  },
-})
 
 const generatedAt = (payload: StravaPayload): string => new Date(payload.generatedAt).toISOString()
 
@@ -210,30 +155,6 @@ const mapsMarkdown = (opts: TriathlonMarkdownOptions): string => {
     activities,
   }
   return document(opts, renderTitledSections(data, { title: 'mappedActivities' }))
-}
-
-const trainingMarkdown = (opts: TriathlonMarkdownOptions): string => {
-  const plans = opts.plans
-    .map(plan => {
-      const metadata = renderGfmTable([
-        {
-          id: plan.id,
-          distance: plan.distance || 'unspecified',
-          date: plan.date || 'unspecified',
-          target: plan.target || 'unspecified',
-          author: plan.author || 'unspecified',
-        },
-      ])
-      return [
-        `## ${escapeMarkdownHeading(plan.meta || plan.id)}`,
-        '',
-        metadata,
-        '',
-        turndown.turndown(plan.html),
-      ].join('\n')
-    })
-    .join('\n\n')
-  return document(opts, plans || 'No generated training plans are available.')
 }
 
 const celsiusText = (range: [number, number] | null): string =>
@@ -504,8 +425,6 @@ export function buildTriathlonMarkdown(opts: TriathlonMarkdownOptions): string {
       return analyticsMarkdown(opts)
     case 'maps':
       return mapsMarkdown(opts)
-    case 'training':
-      return trainingMarkdown(opts)
     case 'calendar':
       return calendarMarkdown(opts)
     case 'tools':

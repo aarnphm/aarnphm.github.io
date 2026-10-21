@@ -36,10 +36,8 @@ export const setupShortcuts = (root: HTMLElement): (() => void) => {
     c: '/triathlon/calc',
     a: '/triathlon/analytics',
     m: '/triathlon/maps',
-    t: '/triathlon/training',
     e: '/triathlon/calendar',
-    r: '/triathlon/training',
-    f: '/triathlon/feed',
+    f: '/triathlon/on?view=feed',
     o: '/triathlon/on',
     h: '/triathlon',
   }
@@ -69,10 +67,10 @@ export const setupShortcuts = (root: HTMLElement): (() => void) => {
   }
 
   const listItems = (): HTMLElement[] => {
-    if (subView === 'feed')
-      return Array.from(root.querySelectorAll<HTMLButtonElement>('.tri-feed-head'))
     if (subView === 'on')
-      return Array.from(root.querySelectorAll<HTMLAnchorElement>('.tri-tree-list a[href]'))
+      return root.querySelector<HTMLElement>('.tri-tree')?.dataset.onMode === 'feed'
+        ? Array.from(root.querySelectorAll<HTMLButtonElement>('.tri-feed-head'))
+        : Array.from(root.querySelectorAll<HTMLAnchorElement>('.tri-tree-list a[href]'))
     return []
   }
   const focusedListItem = (items: HTMLElement[]): HTMLElement | null => {
@@ -111,7 +109,6 @@ export const setupShortcuts = (root: HTMLElement): (() => void) => {
     c: { btn: '.tri-calc-btn', openClass: 'tri-calc-open', close: '.tri-calc-close' },
     e: { btn: '.tri-calendar-btn', openClass: 'tri-calendar-open', close: '.tri-calendar-close' },
     m: { btn: '.tri-map-btn', openClass: 'tri-map-open', close: '.tri-map-close' },
-    t: { btn: '.tri-training-btn', openClass: 'tri-training-open', close: '.tri-training-close' },
   }
   const closeOpenModals = (except?: string) => {
     for (const k in modalChords) {

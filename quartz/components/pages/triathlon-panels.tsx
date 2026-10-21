@@ -1,11 +1,6 @@
 import { ShortcutHint } from '../triathlon/shell/ShortcutHint'
-export { FeedPanel, OnTreePanel } from './triathlon-panels/activity-log'
-export {
-  AnalyticsPanel,
-  CalendarOverlay,
-  MapPanel,
-  TrainingPanel,
-} from './triathlon-panels/dialog-views'
+export { OnTreePanel } from './triathlon-panels/activity-log'
+export { AnalyticsPanel, CalendarOverlay, MapPanel } from './triathlon-panels/dialog-views'
 export { CONVERSIONS, GEAR, GearPanel, ToolsPanel } from './triathlon-panels/equipment-tools'
 export { CalcPanel } from './triathlon-panels/calculators'
 
@@ -14,9 +9,7 @@ const NAV = [
   ['calc', 'calculator', 'g c'],
   ['analytics', 'analytics', 'g a'],
   ['maps', 'maps', 'g m'],
-  ['training', 'training', 'g t'],
   ['calendar', 'calendar', 'g e'],
-  ['feed', 'feed', 'g f'],
   ['on', 'on', 'g o'],
 ] as const
 

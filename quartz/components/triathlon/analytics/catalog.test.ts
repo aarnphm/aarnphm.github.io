@@ -3,8 +3,12 @@ import test from 'node:test'
 import type { DailyPoint } from '../../../plugins/stores/analytics'
 import { buildAnalytics, computeFtpHypothesisFromVo2 } from '../../../plugins/stores/analytics'
 import { DEFAULT_TRIATHLON_FORMATTER } from '../runtime/formatter'
-import { analyticsPanelDefinition } from './catalog'
-import { GLOSS_CHART, SEARCH_SECTIONS } from './search'
+import {
+  ANALYTICS_CHAPTERS,
+  ANALYTICS_PANEL_ORDER,
+  analyticsChapterFromHash,
+  analyticsPanelDefinition,
+} from './catalog'
 
 const daily: DailyPoint = {
   date: '2026-08-11',
@@ -58,12 +62,7 @@ test('performance management exposes daily TSS with CTL, ATL, and TSB', () => {
   ])
 })
 
-test('critical power search and calendar-year SSR resolve to the power curve', () => {
-  assert.equal(GLOSS_CHART.cp, 'power')
-  assert.equal(GLOSS_CHART.wprime, 'power')
-  const section = SEARCH_SECTIONS.find(item => item.chart === 'power')
-  assert.ok(section?.hay.includes('critical power'))
-  assert.ok(section?.hay.includes('power rank'))
+test('calendar-year critical power SSR resolves to the power curve', () => {
   const analytics = buildAnalytics(null)
   analytics.powerCurve.criticalPowerYear = {
     criticalPowerWatts: 249,
@@ -127,4 +126,13 @@ test('ftp summary carries provenance and observed cycling evidence', () => {
     { label: 'pedal evidence', value: '4 rides · 3600 samples' },
     { label: 'observation window', value: 'Aug 14–Aug 16' },
   ])
+})
+
+test('every analytics panel sits in exactly one chapter and hashes pick the chapter', () => {
+  const placed = ANALYTICS_CHAPTERS.flatMap(chapter => [...chapter.panels])
+  assert.deepEqual([...placed].sort(), [...ANALYTICS_PANEL_ORDER].sort())
+  assert.equal(new Set(placed).size, placed.length)
+  assert.equal(analyticsChapterFromHash('#zones'), 'zones')
+  assert.equal(analyticsChapterFromHash(''), 'load')
+  assert.equal(analyticsChapterFromHash('#compare=1,2'), 'load')
 })

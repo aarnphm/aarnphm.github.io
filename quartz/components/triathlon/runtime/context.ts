@@ -1,6 +1,5 @@
 import type { Analytics } from '../../../plugins/stores/analytics'
 import type { OuraDayDetail } from '../../../plugins/stores/oura'
-import type { TrainingPayload } from '../../../plugins/stores/training'
 import type { TriathlonPresentation } from '../../../util/triathlon-presentation'
 import type { TriathlonFormatter } from './formatter'
 import { readDetailPayload, readMapPayload, type DetailPayload } from '../activity/data'
@@ -14,7 +13,6 @@ export interface TriathlonResources {
   detail: NavigationResource<DetailPayload>
   analytics: NavigationResource<Analytics>
   oura: NavigationResource<Record<string, OuraDayDetail>>
-  training: NavigationResource<TrainingPayload>
 }
 
 export interface TriathlonContext {
@@ -55,7 +53,6 @@ export const createTriathlonContext = (signal: AbortSignal): TriathlonContext =>
       detail: createNavigationResource(signal, response => readDetailPayload(response, signal)),
       analytics: createNavigationResource(signal, readJson<Analytics>),
       oura: createNavigationResource(signal, readJson<Record<string, OuraDayDetail>>),
-      training: createNavigationResource(signal, readJson<TrainingPayload>),
     },
   }
 }
