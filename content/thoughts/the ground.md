@@ -1,6 +1,6 @@
 ---
 date: '2026-10-21'
-description: depth scale, the pond ellipse, crown shade, and scroll parallax on the homepage trail.
+description: Depth scale, terrain profiles, pond geometry, shade, and scroll parallax on the homepage trail.
 id: the ground
 modified: 2026-10-21 02:50:00 GMT-04:00
 seealso:
@@ -11,34 +11,61 @@ tags:
 title: the ground
 ---
 
-The homepage meadow is `quartz/components/visitor-trail/landscape.ts`, lit by `sunlight.ts`, and shifted by `perspective.ts`. It does not call the 404's ridge functions. The sun it hangs still comes from the same almanac. See [[thoughts/the sky|the sky]].
+The homepage terrain is defined in `quartz/components/visitor-trail/landscape.ts`, lit by `sunlight.ts`, and moved by `perspective.ts`. It builds its own mountain profiles and shares the almanac described in [[thoughts/the sky|the sky]].
 
-## depth
+## depth and ground profile
 
-A figure's scale runs from $0.35$ at the treeline to $1$ at $160$ scene units below the meadow's top:
+Figure scale increases from $0.35$ at the treeline to one at $160$ scene units below the meadow top:
 
 $$
-s = 0.35 + 0.65\, \mathrm{clamp}\left(\frac{y - y_{\mathrm{tree}}}{y_{\mathrm{meadow}} + 160 - y_{\mathrm{tree}}}\right).
+s = 0.35 + 0.65\, \mathrm{clamp}\left(\frac{y - y_{\mathrm{tree}}}{y_{\mathrm{meadow}} + 160 - y_{\mathrm{tree}}},0,1\right).
 $$
 
-Grass thins toward the viewer. With $n$ the fraction of the way from the meadow top to the bottom of the scene, a plant of roll $U$ grows when $U \ge (n - 0.45)/0.2$.
+Grass coverage decreases toward the viewer. Let $n$ be normalised distance from the meadow top to the scene bottom. A candidate plant with uniform random value $U$ is retained when $U\ge(n-0.45)/0.2$.
 
-The ground itself rolls. Depth $d$ is the fraction of the way from the meadow top down to camp, and the offset is three sines: amplitude $A$ at one cycle across the width, $0.45A$ at five cycles, and $0.25A$ with depth alone. The ranges meet that valley on a foot of $\sin(x/83)\,11 + \sin(x/29)\,5$, rounded to even pixels, so the contact line stays on the pixel grid. The comment's bound is $16$ pixels either side of the alpine base.
+Ground height combines three sine terms. If $d$ measures depth from meadow top to camp, $W$ is scene width, and $\phi$ is the terrain phase, the offset is
 
-## water and rises
+$$
+A\sin(2\pi x/W+\phi+2.4d)
++0.45A\sin(5\pi x/W-\phi-3.1d)
++0.25A\sin(2.3\pi d+\phi).
+$$
 
-Distance to the pond is the ellipse metric, $\sqrt{((x-c_x)/r_x)^2 + ((y-c_y)/r_y)^2}$. A path that would cross the water is pushed out to a margin and walked around the ellipse. The creek is the ordinary distance to its polyline. Its width grows with the square root of how far down the valley the sample sits: depth $0.24 + 0.76\sqrt{t}$.
+At fixed depth, the first two terms span one and $2.5$ cycles across the width. The mountain foot uses $11\sin(x/83+\phi)+5\sin(x/29+2.3\phi)$, rounded to even pixels. Its displacement stays within $16$ pixels of the alpine base.
 
-Rises along a contour are one of four lifts of a normalised run $v$. A hill is $\cos^2(|v|\pi/2)$. A knob raises that to $2.2$. A ridge raises it to $0.6$ and multiplies by a sine along the crest. A butte is a flat cap and a cosine shoulder. Height is then calmed by how close the sample is to the pond, the camp, and the creek, and scaled by depth. Slopes other than knobs are held to $2{:}1$.
+## pond, creek, and rises
+
+The pond uses normalised elliptical distance:
+
+$$
+\sqrt{\left(\frac{x-c_x}{r_x}\right)^2+\left(\frac{y-c_y}{r_y}\right)^2}.
+$$
+
+A value of one lies on the bank. Routes that cross the pond are moved to a margin outside the ellipse. Creek distance is the shortest distance to its centreline segments. Its section scales with $0.24+0.76\sqrt t$, where $t$ is clamped valley depth; separate sinusoidal terms vary pools and banks.
+
+Each rise uses a profile over normalised horizontal position $v$:
+
+- Hill: $\cos^2(|v|\pi/2)$ within $|v|\le1$.
+- Knob: the hill profile raised to $2.2$.
+- Ridge: the hill profile raised to $0.6$, multiplied by a sinusoidal crest variation.
+- Butte: a nearly level cap with cosine shoulders.
+
+Height decreases near the pond, camp, and creek, then scales with depth. Except for knobs, adjacent crest samples change by at most two pixels per four horizontal pixels, a $2:1$ run-to-rise limit.
 
 ## shade
 
-The default sun, used when the page has no daylight clock, casts at $(0.42, 0.32)$ with lowness $0.35$. Crown shade reaches $10 + 62\, \mathrm{low}$ scene units, so a sun on the horizon throws the shade $72/10 = 7.2$ times as far as the minimum. A blob of cover $c$ at normalised radius $d$ lights a cell of the [[thoughts/ordered dither|Bayer screen]] when the threshold is below $c(1 - d^2)^{0.8}$.
+Without a daylight clock, the sun direction is $(0.42,0.32)$ and its lowness parameter is $0.35$. Crown shadows extend $10+62\,\mathrm{low}$ scene units. At maximum lowness, the reach is $72$ units, $7.2$ times the minimum.
 
-## parallax
+A shade patch with cover $c$ and normalised radius $d$ has coverage $c(1-d^2)^{0.8}$. Each cell compares that value with the [[thoughts/ordered dither|Bayer threshold]].
 
-Only scroll moves the camera. The target shift is $\min(12,\, 0.025\, \mathrm{scrollY})$ downward, eased by $1 - e^{-\Delta t / 90}$. A layer at depth $d$ takes $d$ of that shift. The alpine is $0.25$, the foothill $0.6$. Collision radii pick up the difference: a background trunk blocks a foreground walker by $|\Delta d| \cdot 12$ extra pixels.
+## scroll parallax
+
+Scrolling sets a downward camera offset $\min(12,0.025\,\mathrm{scrollY})$. Each frame approaches that target by a fraction $1-e^{-\Delta t/90}$, with $\Delta t$ measured in milliseconds.
+
+A layer receives its depth fraction of the offset: $0.25$ for alpine layers and $0.6$ for foothills. Collision bounds allow for relative movement by adding $12|\Delta d|$ pixels to the radius when objects occupy different depths.
 
 ## the far gate
 
-`weather.ts` plants a small copy of the [[thoughts/the gate|404's gate]] on the back crest. It searches centre positions from $0.72$ to $0.9$ of the width, step $4$, and keeps the site whose crest is quietest across a window three radii wide. The ring is the same twelve hours, on the trail's cell grid, and the hands follow the wall clock.
+`weather.ts` places a small version of the [[thoughts/the gate|404 gate]] on the rear crest. It tests centres between $0.72$ and $0.9$ of the scene width in four-unit steps. Each candidate is scored by crest variation within three rendered gate radii on either side. The smallest variation wins, with higher ground preferred on a tie.
+
+The ring is drawn on the trail's cell grid. Its hands follow wall time.

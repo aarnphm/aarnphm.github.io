@@ -1,6 +1,6 @@
 ---
 date: '2026-10-21'
-description: the low-precision solar ephemeris, the moon on the ecliptic, and the vortex field the 404 sky is stroked along.
+description: Solar and lunar placement, daylight, and the flow field used to draw the 404 sky.
 id: the sky
 modified: 2026-10-21 02:50:00 GMT-04:00
 seealso:
@@ -11,11 +11,11 @@ tags:
 title: the sky
 ---
 
-The 404 and the homepage hang the sun and the moon from one almanac, `quartz/components/scripts/404-almanac.ts`. The homepage imports it in `visitor-trail/weather.ts` and `scene-lighting.ts`. The stroke field under the 404's clouds stays on the 404.
+The 404 and homepage use `quartz/components/scripts/404-almanac.ts` to place the sun and moon. The homepage imports it through `visitor-trail/weather.ts` and `scene-lighting.ts`. The cloud flow and brush described below belong to the 404 renderer.
 
-## where the sun is
+## solar position
 
-Days are counted from the Unix epoch in mean solar days, $d = t / 86400$. The comment names the Astronomical Almanac's low-precision solar formula and says it is good to about a hundredth of a degree. With $n = d - 10957.5$ the day count from J2000,
+Let $t$ be Unix time in seconds and $d=t/86400$. The day count from J2000 is $n=d-10957.5$. The implementation uses
 
 $$
 \begin{aligned}
@@ -25,29 +25,43 @@ g &= 357.528° + 0.9856003°\, n, \\
 \end{aligned}
 $$
 
-$g$ is the mean anomaly, $\lambda$ the ecliptic longitude, $\varepsilon$ the obliquity. Right ascension and declination follow from the usual rotation by $\varepsilon$. The hour angle puts the observer's longitude in directly. Altitude is the standard cosine formula. Azimuth is measured from south, positive to the west, and a southern latitude flips it by $180°$.
+Here $g$ is mean anomaly, $\lambda$ is ecliptic longitude, and $\varepsilon$ is obliquity. The code attributes this approximation to the Astronomical Almanac and reports accuracy of about $0.01°$. That accuracy claim comes from the source comment.
 
-The view looks $35°$ east of that south-facing direction, so noon sits right of the gate. The body's `across` coordinate is $(\mathrm{bearing} + 35°)/90$, clamped to $[-1.25, 1.25]$.
+Rotation by $\varepsilon$ gives right ascension and declination. The hour angle includes observer longitude; latitude then determines altitude and azimuth. Azimuth is measured westward from south. For a southern latitude, the view rotates by $180°$ to face the equator.
 
-Daylight is smoothstep from altitude $-9°$ to $+3°$. Dusk is a tent of width $10°$ centred at $-1°$: $\max(0,\, 1 - |\mathrm{alt} + 1|/10)$. The clock hour is mean solar time, $(\mathrm{UTC\ hours} + \mathrm{longitude}/15) \bmod 24$. The equation of time is left out. Winter is the half-year-and-a-bit when $\cos 2\pi (w - 40)/365.24 > -0.2$, with $w$ the days since the December solstice in the north and the June solstice in the south. The year length in that expression is $365.2422$ days for the solstice wrap and $365.24$ inside the cosine.
+The camera faces $35°$ east of the equator-facing direction. Horizontal position is $(\mathrm{bearing}+35°)/90°$, clamped to $[-1.25,1.25]$.
 
-## the moon
+## daylight and season
 
-`lunarPhase` in `quartz/util/lunar-phase.ts` returns a phase in $[0, 1)$. Inside a published USNO quarter-to-quarter interval it interpolates. Outside one, it uses the mean synodic month $29.530588853$ days from the new moon of 6 January 2000, 18:14 UT. Illumination is $(1 - \cos 2\pi p)/2$.
-
-The moon is then placed by the solar formula with ecliptic longitude shifted by $p \cdot 360°$. It sits on the ecliptic. The comment says the five-degree inclination is ignored. South of the equator the lit limb is mirrored, so the moon waxes from the left.
-
-On the 404 a body of altitude $\alpha$ hangs above the skyline under it. With $H$ the skyline and $70$ the top margin,
+Daylight uses smoothstep between solar altitudes $-9°$ and $+3°$. Dusk intensity is
 
 $$
-y = H - (H - 70)\, \sin(\alpha)^{0.6}
+\max(0,\,1-|\mathrm{alt}+1|/10),
 $$
 
-while $\alpha \ge 0$, in radians inside the sine. Below the horizon it drops at $8$ scene units per degree. The homepage uses the same $0.6$ power, measured down from the mountain crest to a ceiling. The disc test is a phase terminator: with $v$ the vertical coordinate on the unit circle and $k = \cos 2\pi p$, the lit side is where the horizontal coordinate sits past $k$ times the half-width $\sqrt{1 - v^2}$.
+with altitude in degrees. It peaks at $-1°$ and reaches zero ten degrees on either side.
 
-## the air
+Mean solar time is $(\mathrm{UTC\ hours}+\mathrm{longitude}/15)\bmod24$. This omits the equation of time. The winter flag tests $\cos(2\pi(w-40)/365.24)>-0.2$, where $w$ counts days since the local winter solstice. The code uses the December solstice in the north and June in the south, wrapping the count at $365.2422$ days.
 
-Cloud streaks follow a velocity field. Three plane waves set a stream function. Wave $i$ has wavevector $(k_x, k_y)$, frequency $\omega$, phase $\phi$, and amplitude $6 / \lVert k \rVert$:
+## moon and horizon
+
+`quartz/util/lunar-phase.ts` returns phase $p\in[0,1)$. It interpolates between published USNO quarter phases when the date is covered. Otherwise it uses a mean synodic month of $29.530588853$ days from 6 January 2000, 18:14 UT. Illumination is $(1-\cos2\pi p)/2$.
+
+For position, the renderer adds $360°p$ to solar ecliptic longitude and applies the same coordinate conversion. This places the moon on the ecliptic and omits its orbital inclination. In the southern view, the lit limb is mirrored.
+
+On the 404, a body at altitude $\alpha\ge0$ is placed above local skyline height $H$:
+
+$$
+y = H - (H - 70)\, \sin(\alpha)^{0.6}.
+$$
+
+The sine takes radians; $70$ is the top margin in scene units. Below the horizon, position drops by eight scene units per degree. The homepage uses the same exponent, with its mountain crest and ceiling as bounds.
+
+The moon's terminator is drawn within a unit disc. At vertical coordinate $v$, its boundary is $\cos(2\pi p)\sqrt{1-v^2}$ along the horizontal axis. Phase determines which side is lit.
+
+## cloud flow
+
+Three plane waves define a stream function. Each wave has wavevector $(k_x,k_y)$, frequency $\omega$, phase $\phi$, and amplitude $6/\lVert k\rVert$:
 
 |    $k_x$ |    $k_y$ | $\omega$ | $\phi$ |
 | -------: | -------: | -------: | -----: |
@@ -55,7 +69,7 @@ Cloud streaks follow a velocity field. Three plane waves set a stream function. 
 | $-0.013$ |  $0.021$ |  $-0.17$ |  $2.1$ |
 |  $0.024$ | $-0.017$ |   $0.23$ |  $4.4$ |
 
-On top of a base drift $(24, 2)$, the field adds Lamb–Oseen vortices. At offset $(x, y)$, core radius $c$, circulation $\Gamma$ and sink strength $s$,
+The velocity field combines these waves, a base drift of $(24,2)$, and Lamb–Oseen vortices. For offset $(x,y)$, core radius $c$, circulation $\Gamma$, and sink strength $s$,
 
 $$
 r^2 = x^2 + y^2 + 1, \qquad
@@ -66,10 +80,12 @@ v_y &\mathrel{+}= (x\,\Gamma - y\, s)\, k.
 \end{aligned}
 $$
 
-The sun's halo has $\Gamma = 42000$ and core $70$. A cursor eddy grows its core as $40 + \sqrt{\mathrm{age}}\cdot 30$. The gate, when the rift is pulling, adds $\Gamma = 160000 \cdot \mathrm{pull}$ and a sink of $70000 \cdot \mathrm{pull}$ at core $240$. Smoke from the hearth is advected by the same angle.
+The solar halo uses $\Gamma=42000$ and core radius $70$. A cursor vortex expands with radius $40+30\sqrt{\mathrm{age}}$. The active gate adds circulation $160000\,\mathrm{pull}$ and sink strength $70000\,\mathrm{pull}$ at radius $240$. Hearth smoke follows the same field direction.
 
-Cloud cover at a point is three-octave `fbm` at scales $0.0035$ across and $0.012$ down, compared with a threshold $0.62 - 0.4 \cdot \mathrm{cover}$. Stars number $\mathrm{round}(18(1 - \mathrm{smooth}(0.2, 0.9, \mathrm{cover})))$, and each twinkles as $0.6 + 0.4 \sin(\omega t + \phi)$.
+Cloud coverage tests three-octave `fbm`, sampled at scales $0.0035$ horizontally and $0.012$ vertically, against $0.62-0.4\,\mathrm{cover}$. The star count is $\mathrm{round}(18(1-\mathrm{smooth}(0.2,0.9,\mathrm{cover})))$. Each star's brightness varies as $0.6+0.4\sin(\omega t+\phi)$.
 
-## the brush
+## curved brush
 
-Sky, land, and meadow are painted with the curved brush in `404-landscape/raster.ts`. The comment names Hertzmann 1998: from a jittered seed, march one buffer pixel at a time along the flow, both directions, two pixels wide through the body and one at the tips. Flow is an orientation, so a step whose dot product with the previous step is negative gets flipped. The multi-size hierarchy of that paper is not what runs. One length is passed in, and the seeds are a lattice with one hash deciding which pass a cell belongs to.
+`404-landscape/raster.ts` draws sky, land, and meadow strokes along a flow orientation. Starting from a jittered lattice point, it advances one buffer pixel at a time in both directions. The stroke is two pixels wide through its body and one at its tips. A direction with a negative dot product against the previous step is reversed to keep the curve continuous.
+
+The source cites Hertzmann's 1998 painterly rendering work. This implementation uses one caller-supplied stroke length and hashes lattice cells into passes. It omits the paper's hierarchy of brush sizes.

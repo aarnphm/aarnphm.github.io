@@ -1,6 +1,6 @@
 ---
 date: '2026-10-21'
-description: the probabilistic L-system, da Vinci area split, and golden-angle phase used for trees on the 404 and the trail.
+description: Probabilistic tree growth with area-preserving forks, golden-angle branch placement, and dithered leaves.
 id: branching
 modified: 2026-10-21 02:50:00 GMT-04:00
 seealso:
@@ -11,57 +11,63 @@ tags:
 title: branching
 ---
 
-The foreground trees on the 404 and the repoussoir trees on the homepage are the same growth rule. The 404 copy is `growTree` in `quartz/components/scripts/404-landscape/trees.ts`. The trail copy is in `visitor-trail/repoussoir.ts`, with the same constants.
+The 404 foreground trees and homepage framing trees use the same probabilistic growth rule. The implementations are `growTree` in `quartz/components/scripts/404-landscape/trees.ts` and `quartz/components/visitor-trail/repoussoir.ts`.
 
-## the productions
+## growth rule
 
-The comment writes the grammar as
+The code describes an L-system with productions
 
 $$
 X \to FX \mid F[+X]X \mid F[-X]X \mid F[+X][-X]X.
 $$
 
-What runs is a stack, not a string. A limb continues while its width stays at least $1.6$ and the segment count stays at most $1400$. Each step shortens the width by $5\%$ before any fork, $w_1 = 0.95\, w$, and shortens the length by $6\%$ on a straight continuation, $0.94$.
+A stack holds the active limbs. Each step emits a segment, then continues or branches. Growth stops at a limb width below $1.6$ scene units or a segment count above $1400$.
 
-The roll that picks a production:
+Before a fork, width decreases by $5\%$: $w_1=0.95w$. A straight continuation also multiplies segment length by $0.94$. A uniform random draw selects the next step:
 
-- below $0.3$, or while the limb is still thicker than $80\%$ of the trunk, it continues straight
-- above $0.79$, it forks both ways
-- otherwise it forks once
+- Continue straight if the draw is below $0.3$, or the limb is still wider than $80\%$ of the trunk.
+- Create two side branches if the remaining draw is above $0.79$.
+- Otherwise, create one side branch.
 
-A straight continuation also curls toward vertical. With $a$ the current heading and $-\pi/2$ straight up,
+Headings turn toward vertical. For heading $a$, with $-\pi/2$ pointing up,
 
 $$
 a' = a + (-\pi/2 - a)\, k + U,
 $$
 
-where $k$ is $0.1$ on the continuing limb and $0.14$ on a side branch, and $U$ is uniform on $[-0.15, 0.15]$.
+where $U$ is uniform on $[-0.15,0.15]$. The continuing limb uses $k=0.1$; a side branch uses $k=0.14$.
 
-## area
+## branch widths
 
-At a fork the continuing limb keeps a fraction of the cross-section and the children share the rest. If the keep-fraction is $k$ and there are $n$ children,
+At a fork, the continuing limb retains a fraction $k$ of the cross-sectional area. The $n$ children share the remainder:
 
 $$
 w_{\mathrm{keep}} = w_1 \sqrt{k}, \qquad
 w_{\mathrm{child}} = w_1 \sqrt{\frac{1 - k}{n}}.
 $$
 
-Squares add up: $w_{\mathrm{keep}}^2 + n\, w_{\mathrm{child}}^2 = w_1^2$. That is the comment's da Vinci rule, area conserved across the fork, applied after the $5\%$ taper. A single child takes $k \in [0.6, 0.8]$. A double fork takes $k \in [0.45, 0.6]$.
+Thus $w_{\mathrm{keep}}^2+n\,w_{\mathrm{child}}^2=w_1^2$. The code calls this the da Vinci rule. Area is conserved across the fork after the $5\%$ taper. For one child, $k\in[0.6,0.8]$; for two, $k\in[0.45,0.6]$.
 
-## the angle
+## branch angles
 
-The side a branch leaves on is the sign of $\cos \phi$, and $\phi$ advances by $2.39996$ radians at every fork. That is the golden angle, $2\pi / \varphi^2 = \pi(3 - \sqrt{5}) \approx 2.399963$, truncated. The same phase, through $\sin \phi$, says whether a leaf tip sits toward the viewer or away. Tips closer than the terminal width become the canopy.
+The sign of $\cos\phi$ selects the side of a branch. At each fork, $\phi$ advances by $2.39996$ radians, an approximation to the golden angle:
 
-## the canopy
+$$
+\frac{2\pi}{\varphi^2}=\pi(3-\sqrt5)\approx2.399963.
+$$
 
-A tip at depth $z \in [-1, 1]$ splats a disc of radius $40$ scene units. At distance $d$ the kernel is $q = 1 - d/40$, and the pixel accumulates $q^2$ into density and $q^2 z$ into depth. Coverage is
+The same phase sets leaf-tip depth through $\sin\phi$. Limbs below the width threshold become canopy tips.
+
+## canopy and shade
+
+Each tip has depth $z\in[-1,1]$ and contributes to a disc of radius $40$ scene units. Within that disc, $q=1-d/40$. A pixel accumulates $q^2$ as density and $q^2z$ as weighted depth. The coverage input is
 
 $$
 v = \mathrm{density}\,(0.35 + n)\,(1 + 0.15\, \bar z)\,(1 - 0.92\, \mathrm{bare}),
 $$
 
-with $n$ a two-octave `fbm`, and the pixel is dithered across a penumbra of width $0.1 + 0.16(1 - \bar z)/2$ on the 404. The trail's penumbra is narrower, $0.1 + 0.08(1 - \bar z)$. Both compare the result with the [[thoughts/ordered dither|Bayer screen]].
+where $n$ is two-octave `fbm` and $\bar z$ is mean depth. Both scenes use the penumbra width $0.1+0.08(1-\bar z)$. The 404 writes the equivalent expression $0.1+0.16(1-\bar z)/2$. Coverage is tested against the [[thoughts/ordered dither|Bayer matrix]].
 
-The ground shade under those trees is a second, wider noise. The comment names it as the penumbra of a disc: if $f$ is the angular size of a gap and $b/a$ the relative sizes, the shade edge has width $U = f \cdot b / a$. In the code the focal ratio is $0.09$ and the disc's minimum radius over $640$ scene units stands in for $b$.
+Ground shade uses a broader noise field. The source relates its edge width to the geometric penumbra rule $U=f\,b/a$. The implementation uses $b=\min(1,r_{\min}/640)$, where $r_{\min}$ is horizontal distance to the nearest tree root, and smooths the edge over $0.012+0.09b$.
 
-Cypresses are not grown. Their half-width along height $t \in [0, 1]$ is $\sqrt{t/0.3}$ in the lower $30\%$, then $((1-t)/0.7)^{0.85}$ above that, times a noise of a few tenths. The skirt is wide, the top is a long taper.
+Cypresses use a direct silhouette. For normalised height $t$, half-width is proportional to $\sqrt{t/0.3}$ below $t=0.3$ and $((1-t)/0.7)^{0.85}$ above it. Noise perturbs the outline.
