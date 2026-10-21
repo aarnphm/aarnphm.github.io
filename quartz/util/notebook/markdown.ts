@@ -16,6 +16,7 @@ import {
   notebookCellRuntimeOutput,
   notebookRuntimeControls,
   notebookRuntimeDataScript,
+  notebookPreviewMarker,
   notebookSourceEditor,
   notebookStaticOutputTabs,
   notebookStaticCellActions,
@@ -629,6 +630,7 @@ export function notebookToMarkdownChunks(
     chunks.push(...rendered.chunks)
     if (rendered.titleHeadingRemoved) titleHeading = undefined
   })
+  chunks.push(notebookPreviewMarker(doc, runtime))
   return chunks.filter(chunk => chunk.trim())
 }
 

@@ -1,9 +1,11 @@
+import type { NotebookDoc } from './types'
 import {
   notebookSuccessOutputLabel,
   type NotebookRuntimeCell,
   type NotebookRuntimeData,
 } from '../../runtime/notebook/types'
 import { escapeHTML } from '../escape'
+import { buildNotebookPreview } from '../notebook-preview'
 import { notebookIconSvg, notebookLanguageIconSvg } from './render/icons'
 
 type NotebookIcon = 'run' | 'stop' | 'reset' | 'debug' | 'edit' | 'save' | 'revert' | 'vim'
@@ -146,6 +148,14 @@ export function notebookRuntimeControls(data: NotebookRuntimeData): string[] {
 
 export function notebookRuntimeDataScript(data: NotebookRuntimeData): string {
   return `<script type="application/json" data-notebook-runtime-data>${notebookRuntimeJson(data)}</script>`
+}
+
+export function notebookPreviewMarker(
+  doc: NotebookDoc,
+  runtime: NotebookRuntimeData | undefined,
+): string {
+  const data = JSON.stringify(buildNotebookPreview(doc, runtime))
+  return `<div hidden data-notebook-preview="${escapeHTML(data)}"></div>`
 }
 
 export function notebookCellLanguageBadge(language: string): string {
