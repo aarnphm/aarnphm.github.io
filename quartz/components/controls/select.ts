@@ -3,6 +3,8 @@ import { autoUpdate, computePosition, flip, offset, shift, size } from '@floatin
 export interface SelectOption<T> {
   value: T
   label: string
+  /** A second line under the label in the menu; the trigger shows only the label. */
+  detail?: string
 }
 
 export interface SelectGroup<T> {
@@ -105,7 +107,12 @@ export const buildSelect = <T>(options: SelectOptions<T>): Select<T> => {
       button.tabIndex = isSelected ? 0 : -1
       const check = span('g-select-check', '✓')
       check.setAttribute('aria-hidden', 'true')
-      button.append(check, span('g-select-label', option.label))
+      const label = span('g-select-label', option.label)
+      if (option.detail) {
+        const text = span('g-select-text')
+        text.append(label, span('g-select-detail', option.detail))
+        button.append(check, text)
+      } else button.append(check, label)
       items.push({ button, option, lowerLabel: option.label.toLocaleLowerCase() })
       parent.append(button)
     }
