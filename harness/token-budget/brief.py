@@ -3,7 +3,7 @@
 
 import json
 
-from common import LIMIT, TARGET, strip_ext
+from common import LIMIT, TARGET, module_dir
 
 CHURN_DAYS = 180
 
@@ -165,7 +165,7 @@ Target: `{g['path']}`, blob `{g['blob']}`, {g['tokens']} tokens (limit {LIMIT}, 
 ## Module shape
 
 - `{g['path']}` stays the **entry**: it exports the interface, and importers keep this path.
-- Implementation moves to the private folder `{strip_ext(g['path'])}/` (kebab-case file names). Code outside the module imports only the entry. Files in the private folder import each other freely. Tests import the entry. No import cycles.
+- Implementation moves to the private folder `{module_dir(g['path'])}/` (kebab-case file names). Code outside the module imports only the entry. Files in the private folder import each other freely. Tests import the entry. No import cycles.
 - More than one entry file is allowed when callers use distinct parts. No barrel files.
 {'- This is a stylesheet: keep the block order (the cascade depends on it). Partials are `@use`d from the entry in the original order.' + chr(10) if style else ''}
 ## Interface as callers use it today

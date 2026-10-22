@@ -248,7 +248,7 @@ def cut_plan(d: dict) -> list[str]:
 def split_steps(kinds: set[str]) -> list[str]:
   steps = [
     f'Start from the proposed cuts, then move blocks between parts so each part has one responsibility: each new file has one reason to change and stays under {TARGET} tokens. A single block over {TARGET} tokens must be split too: extract its inner helpers, lookup tables and constants into their own modules first.',
-    'Keep the original path as the module entry: it exports the interface callers use, and nothing else. Move the implementation into a private folder named after the file (<dir>/<original>/<part>.<ext>, kebab-case). Move code verbatim; do not rewrite it during the split. Keep each function with the private helpers and types that only it uses. Put helpers that two parts use in a third file that both import. Do not create import cycles.',
+    'Keep the original path as the module entry: it exports the interface callers use, and nothing else. Move the implementation into a private folder named after the file (<dir>/<original without extension or .inline>/<part>.<ext>, kebab-case). Move code verbatim; do not rewrite it during the split. Keep each function with the private helpers and types that only it uses. Put helpers that two parts use in a third file that both import. Do not create import cycles.',
     'Importers keep importing the entry; never import a file in the private folder from outside it. Exports that no importer outside the module uses are candidates to hide: run `rg -l "<original basename without extension>"` to find importers.',
   ]
   if 'style' in kinds:
