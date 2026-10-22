@@ -1,4 +1,6 @@
+import type { StravaActivityDetail } from '../../../plugins/stores/strava'
 import type { ActivityComparisonMetric } from '../../../util/triathlon-card'
+import type { TriathlonPresentation } from '../../../util/triathlon-presentation'
 import { activityComparisonFractionForKey } from '../../../util/triathlon-card'
 
 export const activityComparisonMetric = (
@@ -28,6 +30,37 @@ export const activityComparisonMetricLabel = (metric: ActivityComparisonMetric):
       : metric.replaceAll('-', ' ')
 
 export type ActivityComparisonScrubState = { fraction: number; selectedFraction?: number }
+
+export type ActivityComparisonReadoutMode =
+  | ActivityComparisonMetric
+  | 'power-curve'
+  | 'power-distribution'
+  | 'gear-ratio-distribution'
+  | 'hr-zones'
+  | 'power-zones'
+
+export type ActivityComparisonReading = {
+  activity: StravaActivityDetail
+  value: string
+  missing: boolean
+}
+
+/** What a chart scrub needs from the comparison: the shared readout, cursors and source stack. */
+export type ActivityComparisonScrubContext = {
+  presentation: TriathlonPresentation
+  activities: readonly StravaActivityDetail[]
+  charts: readonly HTMLElement[]
+  text: (key: string) => string
+  setReadout: (
+    mode: ActivityComparisonReadoutMode,
+    values: ActivityComparisonReading[],
+    context?: string,
+  ) => void
+  showChartCursors: (visible: readonly HTMLElement[]) => void
+  activate: (source: Element, restore: () => void) => void
+  render: (source: Element, restore: () => void) => void
+  deactivate: (source: Element) => void
+}
 
 export type ActivityComparisonSelectionRange = { startFraction: number; endFraction: number }
 
@@ -93,8 +126,11 @@ export const bindActivityComparisonGraph = (
     if (bounds.width <= 0) return null
     return Math.min(1, Math.max(0, (clientX - bounds.left) / bounds.width))
   }
+  // Hover scrubbing is for fine pointers; touch reaches the readout by a tap or a drag.
+  const hover = window.matchMedia('(hover: hover) and (pointer: fine)')
   const onPointerMove = (event: PointerEvent) => {
     if (drag && event.pointerId !== drag.pointerId) return
+    if (!drag && !hover.matches) return
     const fraction = fractionAt(event.clientX)
     if (fraction == null) return
     if (!pointerActive) {
@@ -164,7 +200,8 @@ export const bindActivityComparisonGraph = (
     const fraction = fractionAt(event.clientX)
     if (fraction == null) return
     if (!selection) {
-      if (state.selectedFraction == null) return
+      // Without hover, a tap pins the reading.
+      if (state.selectedFraction == null && hover.matches) return
       state.fraction = fraction
       state.selectedFraction = fraction
       pointerActive = true

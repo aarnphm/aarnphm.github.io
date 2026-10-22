@@ -55,6 +55,26 @@ export const setupAnalytics = (
   const closeBtn = root.querySelector<HTMLElement>('.tri-ana-close')
   const results = root.querySelector<HTMLElement>('.tri-ana-results')
   const compareToggle = root.querySelector<HTMLButtonElement>('.tri-ana-compare-toggle')
+  const compareSubmit = root.querySelector<HTMLButtonElement>('.tri-compare-picker-submit')
+  // Clearing the picked activities lives in the bar beside the submit and the compare toggle.
+  const compareClear = el('button', 'tri-compare-clear', undefined, {
+    type: 'button',
+    disabled: '',
+    'data-site-cursor-action': '',
+    'aria-label': context.formatter.text('clear selection'),
+    'data-i18n-aria-label': 'clear selection',
+    title: context.formatter.text('clear selection'),
+  })
+  const compareClearIcon = svg('svg', {
+    class: 'tri-compare-picker-icon',
+    viewBox: '0 0 24 24',
+    fill: 'none',
+    'aria-hidden': 'true',
+    'data-site-cursor-icon': '',
+  })
+  compareClearIcon.appendChild(svg('path', { d: 'M6 6l12 12M18 6 6 18' }))
+  compareClear.appendChild(compareClearIcon)
+  compareSubmit?.parentElement?.before(compareClear)
   const pageMode = root.dataset.triView === 'analytics'
   if (!panel || (!btn && !pageMode)) return null
 
@@ -158,6 +178,19 @@ export const setupAnalytics = (
     const status = program.retrieve().status
     if (status === 'idle' || status === 'failed') program.dispatch({ type: 'load' })
   }
+  // The comparison's back lives in the bar: the compare toggle on the page, the close in the dialog.
+  const setBarBack = (back: boolean) => {
+    const target = pageMode ? compareToggle : closeBtn
+    if (!target) return
+    const key = back ? 'go back' : target === compareToggle ? 'compare activities' : 'Close'
+    target.setAttribute('aria-label', context.formatter.text(key))
+    if (target === compareToggle) {
+      target.dataset.i18nAriaLabel = key
+      return
+    }
+    target.toggleAttribute('data-site-cursor-close', !back)
+    target.toggleAttribute('data-site-cursor-action', back)
+  }
   const closeDetail = () => {
     detailGeneration += 1
     compareCleanup?.()
@@ -166,6 +199,7 @@ export const setupAnalytics = (
     activityCleanup = null
     panel.classList.remove('tri-analytics--comparison')
     panel.classList.remove('tri-analytics--detail')
+    setBarBack(false)
     if (detail) {
       detail.replaceChildren()
       detail.setAttribute('aria-hidden', 'true')
@@ -286,11 +320,6 @@ export const setupAnalytics = (
     activityCleanup?.()
     activityCleanup = null
     const card = el('div', 'tri-pop-card tri-pop-card--compare')
-    const { head, back, actions } = detailHead(
-      `${activities.length} ${context.formatter.text('activities')}`,
-      undefined,
-      context.formatter.text('go back'),
-    )
     const copy = el('button', 'tri-compare-copy', undefined, {
       type: 'button',
       'data-site-cursor-action': '',
@@ -318,7 +347,9 @@ export const setupAnalytics = (
     })
     checkIcon.appendChild(svg('use', { href: '#github-check' }))
     copy.append(copyIcon, checkIcon)
-    actions.prepend(copy)
+    // The copy sits in the bar beside the compare toggle, which turns into the back arrow.
+    if (compareToggle) compareToggle.before(copy)
+    else card.append(copy)
     const copyCleanup = wireEmbedCopy(context.formatter, copy, () =>
       activityComparisonEmbed(comparisonIds()),
     )
@@ -331,7 +362,7 @@ export const setupAnalytics = (
       { health },
     )
     applyI18n(comparison, context.presentation)
-    card.append(head, comparison)
+    card.append(comparison)
     detail.replaceChildren(card)
     const interactionCleanup = wireActivityComparison(
       context.presentation,
@@ -351,84 +382,20 @@ export const setupAnalytics = (
     comparison.addEventListener('click', onComparisonClick)
     compareCleanup = () => {
       copyCleanup()
+      copy.remove()
       interactionCleanup()
       comparison.removeEventListener('click', onComparisonClick)
     }
     panel.classList.add('tri-analytics--comparison')
+    setBarBack(true)
     showDetail()
     const chartScroller = comparisonScroller(comparison)
     if (chartScroller && chartScrollTop > 0) chartScroller.scrollTop = chartScrollTop
-    back.addEventListener('click', closeDetail, { once: true })
   }
 
   const resultItems = (): HTMLElement[] => activityResultItems(results)
   const setSel = (i: number) => {
     program.dispatch({ type: 'select-result', index: setActivityResultSelection(results, i) })
-  }
-  const comparePicker = (): HTMLElement => {
-    const picker = el('div', 'tri-compare-picker')
-    const top = el('div', 'tri-compare-picker-top')
-    const actions = el('div', 'tri-compare-picker-actions')
-    const clear = el('button', 'tri-compare-picker-clear', undefined, {
-      type: 'button',
-      'data-compare-clear': '',
-      'data-site-cursor-close': '',
-      'aria-label': context.formatter.text('clear selection'),
-      'data-i18n-aria-label': 'clear selection',
-      title: context.formatter.text('clear selection'),
-    })
-    const clearIcon = svg('svg', {
-      class: 'tri-compare-picker-icon',
-      viewBox: '0 0 24 24',
-      fill: 'none',
-      'aria-hidden': 'true',
-      'data-site-cursor-icon': '',
-    })
-    clearIcon.appendChild(svg('path', { d: 'M6 6l12 12M18 6 6 18' }))
-    clear.appendChild(clearIcon)
-    clear.toggleAttribute('disabled', comparisonIds().length === 0)
-    const submit = el('button', 'tri-compare-picker-submit', undefined, {
-      type: 'button',
-      'data-compare-submit': '',
-      'data-site-cursor-action': '',
-      'aria-label': context.formatter.text('compare selected'),
-      'data-i18n-aria-label': 'compare selected',
-      'aria-describedby': 'tri-compare-picker-submit-help',
-      'aria-keyshortcuts': 'Shift+Enter',
-    })
-    const submitIcon = svg('svg', {
-      class: 'tri-compare-picker-icon',
-      viewBox: '0 0 24 24',
-      fill: 'none',
-      'aria-hidden': 'true',
-      'data-site-cursor-icon': '',
-    })
-    submitIcon.appendChild(svg('path', { d: 'M12 4.5 19.5 12 12 19.5 4.5 12Z' }))
-    submit.appendChild(submitIcon)
-    submit.toggleAttribute('disabled', comparisonIds().length < 2)
-    const submitWrap = el('span', 'tri-compare-picker-submit-wrap')
-    const submitHelp = el('span', 'tri-compare-picker-tooltip', undefined, {
-      id: 'tri-compare-picker-submit-help',
-      role: 'tooltip',
-    })
-    submitHelp.append(
-      el('span', undefined, context.formatter.text('compare activities'), {
-        'data-i18n': 'compare activities',
-      }),
-    )
-    submitWrap.append(submit, submitHelp)
-    actions.append(submitWrap, clear)
-    top.append(
-      el(
-        'span',
-        'tri-compare-picker-instruction',
-        context.formatter.text('choose 2 or more activities from one sport'),
-        { 'data-i18n': 'choose 2 or more activities from one sport' },
-      ),
-      actions,
-    )
-    picker.appendChild(top)
-    return picker
   }
   const toggleCompareActivity = (id: string) => {
     const selected = comparisonIds().indexOf(id)
@@ -463,7 +430,8 @@ export const setupAnalytics = (
     }
     panel.classList.add('tri-analytics--searching')
     results.setAttribute('aria-hidden', 'false')
-    results.appendChild(comparePicker())
+    compareClear.toggleAttribute('disabled', comparisonIds().length === 0)
+    compareSubmit?.toggleAttribute('disabled', comparisonIds().length < 2)
     const resultList = el('div', 'tri-compare-activity-list', undefined, {
       'data-keyboard-scroll': '',
     })
@@ -490,7 +458,12 @@ export const setupAnalytics = (
         it.classList.toggle('tri-ana-ritem--chosen', chosen)
         if (chosen) {
           it.style.setProperty('--tri-compare-color', activityCompareColor(selected))
-          head.prepend(el('span', 'tri-compare-swatch', undefined, { 'aria-hidden': 'true' }))
+          head.prepend(
+            el('span', 'tri-compare-swatch', undefined, {
+              'aria-hidden': 'true',
+              'data-activity-index': String(selected),
+            }),
+          )
         }
         grp.appendChild(it)
       }
@@ -503,21 +476,14 @@ export const setupAnalytics = (
     setSel(index)
     if (focusedId) resultItems()[index]?.focus({ preventScroll: true })
   }
+  const onCompareClear = () => program.dispatch({ type: 'set-comparison-activities', ids: [] })
   const refreshPicker = (): void => {
     program.dispatch({ type: 'query', value: '' })
   }
   const onResultsClick = (event: MouseEvent) => {
     if (!(event.target instanceof Element)) return
-    if (event.target.closest('[data-compare-clear]')) {
-      program.dispatch({ type: 'set-comparison-activities', ids: [] })
-      return
-    }
     if (event.target.closest('[data-compare-retry]')) {
       enterCompare()
-      return
-    }
-    if (event.target.closest('[data-compare-submit]')) {
-      program.dispatch({ type: 'submit-comparison' })
       return
     }
     activate(event.target.closest<HTMLElement>('.tri-ana-ritem') ?? undefined)
@@ -599,9 +565,18 @@ export const setupAnalytics = (
       resultItems()[0]?.focus({ preventScroll: true })
     })
   }
+  const onCompareSubmit = () => {
+    program.dispatch({ type: 'submit-comparison' })
+  }
+  const inComparison = (): boolean => panel.classList.contains('tri-analytics--comparison')
   const onCompareToggle = () => {
-    if (inCompareMode()) toMain()
+    if (pageMode && inComparison()) closeDetail()
+    else if (inCompareMode()) toMain()
     else enterCompare()
+  }
+  const onClose = () => {
+    if (inComparison()) closeDetail()
+    else close()
   }
   const open = () => {
     toMain()
@@ -781,10 +756,12 @@ export const setupAnalytics = (
     load()
   } else {
     btn?.addEventListener('click', open)
-    closeBtn?.addEventListener('click', close)
+    closeBtn?.addEventListener('click', onClose)
     scrim?.addEventListener('click', close)
   }
   compareToggle?.addEventListener('click', onCompareToggle)
+  compareSubmit?.addEventListener('click', onCompareSubmit)
+  compareClear.addEventListener('click', onCompareClear)
   for (const tab of chapterTabs) {
     tab.addEventListener('click', onChapterClick)
     tab.addEventListener('keydown', onChapterKey)
@@ -816,9 +793,12 @@ export const setupAnalytics = (
     live = false
     finishPageBoot()
     btn?.removeEventListener('click', open)
-    closeBtn?.removeEventListener('click', close)
+    closeBtn?.removeEventListener('click', onClose)
     scrim?.removeEventListener('click', close)
     compareToggle?.removeEventListener('click', onCompareToggle)
+    compareSubmit?.removeEventListener('click', onCompareSubmit)
+    compareClear.removeEventListener('click', onCompareClear)
+    compareClear.remove()
     for (const tab of chapterTabs) {
       tab.removeEventListener('click', onChapterClick)
       tab.removeEventListener('keydown', onChapterKey)

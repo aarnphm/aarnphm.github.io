@@ -1,5 +1,5 @@
 // The planned tab of a workout analysis section. The server renders it for every activity linked
-// to a TrainingPeaks workout, and the client rebuilds it with the same attributes when a card is
+// to a prescribed TrainingPeaks workout, and the client rebuilds it with the same attributes when a card is
 // rebuilt, so the tab row does not move after load. The panel holds no plan data until the
 // training calendar session is unlocked.
 

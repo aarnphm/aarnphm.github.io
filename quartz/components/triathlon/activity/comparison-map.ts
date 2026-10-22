@@ -28,7 +28,7 @@ export interface ActivityComparisonMapController {
 
 interface ComparisonRoute {
   id: string
-  color: string
+  index: number
   dash: readonly number[] | null
   segments: readonly (readonly StravaMapPoint[])[]
   startKm: number
@@ -41,6 +41,13 @@ const ROUTE_DASHES: readonly (readonly number[] | null)[] = [
   [0.5, 1.1],
   [3.2, 0.9, 0.5, 0.9],
 ]
+
+// Satellite imagery is dark, so it takes the raw series colour like the dark theme.
+const routeColor = (route: ComparisonRoute): string =>
+  activityCompareColor(
+    route.index,
+    readTriMapStyle() === 'satellite' ? 'dark' : readTriMapTheme() === 'dark' ? 'dark' : 'light',
+  )
 
 const routeSourceId = (route: ComparisonRoute): string => `tri-cmp-${route.id}`
 
@@ -66,7 +73,7 @@ export const mountActivityComparisonMap = (
     return [
       {
         id: `${activity.id}`,
-        color: activityCompareColor(index),
+        index,
         dash: ROUTE_DASHES[index % ROUTE_DASHES.length],
         segments,
         startKm: Math.min(...distances),
@@ -104,7 +111,7 @@ export const mountActivityComparisonMap = (
           ? [
               {
                 type: 'Feature',
-                properties: { color: route.color },
+                properties: { color: routeColor(route) },
                 geometry: { type: 'Point', coordinates: [point.lng, point.lat] },
               },
             ]
@@ -158,7 +165,7 @@ export const mountActivityComparisonMap = (
             visibility: hidden.has(route.id) ? 'none' : 'visible',
           },
           paint: {
-            'line-color': route.color,
+            'line-color': routeColor(route),
             'line-width': 2.4,
             ...(route.dash ? { 'line-dasharray': route.dash } : {}),
           },

@@ -18,25 +18,45 @@ export type ActivityComparisonDomain = { min: number; max: number }
 export const ACTIVITY_COMPARISON_WIDTH = 100
 export const ACTIVITY_COMPARISON_HEIGHT = 34
 
-const COMPARE_LIGHTNESS = 0.62
-const COMPARE_CHROMA = 0.18
+// Series hues mirror the theme tokens (--tertiary peach, --secondary sage), then Flexoki
+// blue-200 and magenta-200. They stay hex because the route overlay is a live mapbox map,
+// which cannot parse oklch or CSS variables.
+const COMPARE_SERIES = ['#fcc192', '#cdd597', '#abcfe2', '#f4a4c2'] as const
+// Light paper needs darker ink for 3:1 marks; comparison-charts.scss uses the same oklab mix.
+export const ACTIVITY_COMPARE_LIGHT_INK = 0.58
+const LIGHT_INK_HEX = '#100f0f'
 
-const oklchLinearSrgb = (chroma: number, hueDegrees: number): [number, number, number] => {
-  const hue = (hueDegrees * Math.PI) / 180
-  const a = chroma * Math.cos(hue)
-  const b = chroma * Math.sin(hue)
-  const long = (COMPARE_LIGHTNESS + 0.3963377774 * a + 0.2158037573 * b) ** 3
-  const medium = (COMPARE_LIGHTNESS - 0.1055613458 * a - 0.0638541728 * b) ** 3
-  const short = (COMPARE_LIGHTNESS - 0.0894841775 * a - 1.291485548 * b) ** 3
+type Rgb = [number, number, number]
+
+const hexLinear = (hex: string): Rgb => {
+  const channel = (offset: number): number => {
+    const encoded = Number.parseInt(hex.slice(offset, offset + 2), 16) / 255
+    return encoded <= 0.04045 ? encoded / 12.92 : ((encoded + 0.055) / 1.055) ** 2.4
+  }
+  return [channel(1), channel(3), channel(5)]
+}
+
+const linearOklab = ([r, g, b]: Rgb): Rgb => {
+  const long = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b)
+  const medium = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b)
+  const short = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b)
+  return [
+    0.2104542553 * long + 0.793617785 * medium - 0.0040720468 * short,
+    1.9779984951 * long - 2.428592205 * medium + 0.4505937099 * short,
+    0.0259040371 * long + 0.7827717662 * medium - 0.808675766 * short,
+  ]
+}
+
+const oklabLinear = ([lightness, a, b]: Rgb): Rgb => {
+  const long = (lightness + 0.3963377774 * a + 0.2158037573 * b) ** 3
+  const medium = (lightness - 0.1055613458 * a - 0.0638541728 * b) ** 3
+  const short = (lightness - 0.0894841775 * a - 1.291485548 * b) ** 3
   return [
     4.0767416621 * long - 3.3077115913 * medium + 0.2309699292 * short,
     -1.2684380046 * long + 2.6097574011 * medium - 0.3413193965 * short,
     -0.0041960863 * long - 0.7034186147 * medium + 1.707614701 * short,
   ]
 }
-
-const withinSrgb = (channels: readonly number[]): boolean =>
-  channels.every(channel => channel >= -1e-4 && channel <= 1 + 1e-4)
 
 const srgbHex = (channels: readonly number[]): string =>
   `#${channels
@@ -49,19 +69,18 @@ const srgbHex = (channels: readonly number[]): string =>
     })
     .join('')}`
 
-export const activityCompareColor = (index: number): string => {
+/** Series colour for the activity at `index`; `light` returns the ink drawn on light paper. */
+export const activityCompareColor = (index: number, theme: 'light' | 'dark' = 'dark'): string => {
   const position = Number.isFinite(index) ? Math.max(0, Math.trunc(index)) : 0
-  const hue = (25 + position * 137.508) % 360
-  if (withinSrgb(oklchLinearSrgb(COMPARE_CHROMA, hue)))
-    return srgbHex(oklchLinearSrgb(COMPARE_CHROMA, hue))
-  let low = 0
-  let high = COMPARE_CHROMA
-  for (let iteration = 0; iteration < 12; iteration++) {
-    const chroma = (low + high) / 2
-    if (withinSrgb(oklchLinearSrgb(chroma, hue))) low = chroma
-    else high = chroma
-  }
-  return srgbHex(oklchLinearSrgb(low, hue))
+  const hex = COMPARE_SERIES[position % COMPARE_SERIES.length]
+  if (theme === 'dark') return hex
+  const series = linearOklab(hexLinear(hex))
+  const ink = linearOklab(hexLinear(LIGHT_INK_HEX))
+  const mixed = series.map(
+    (value, axis) =>
+      value * ACTIVITY_COMPARE_LIGHT_INK + ink[axis] * (1 - ACTIVITY_COMPARE_LIGHT_INK),
+  ) as Rgb
+  return srgbHex(oklabLinear(mixed))
 }
 
 export const comparisonNumericDomain = (
@@ -133,6 +152,9 @@ export const comparisonReadout = <N>(
     f.add(
       row,
       f.el('span', 'tri-compare-readout-swatch', undefined, { 'aria-hidden': 'true' }),
+      f.el('span', 'tri-compare-readout-name', activity.name || activity.sport, {
+        title: activity.name || activity.sport,
+      }),
       f.el('strong', 'tri-compare-readout-value', undefined, { 'data-compare-readout-value': '' }),
     )
     f.add(readout, row)

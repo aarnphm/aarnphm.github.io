@@ -61,13 +61,32 @@ export const buildStrengthExercises = <N>(
 ): N | null => {
   if (strength.exercises.length === 0) return null
   const wrap = f.el('section', 'tri-act-strength')
-  f.add(wrap, f.el('h3', 'tri-act-strength-h', 'exercises'))
+  const prescription = strength.prescription
+  f.add(
+    wrap,
+    f.el(
+      'h3',
+      'tri-act-strength-h',
+      'exercise',
+      prescription
+        ? {
+            title: `prescription · ${strength.source.startsWith('trainingpeaks') ? 'TrainingPeaks' : strength.source === 'strava-description' ? 'Strava description' : 'saved routine'} · ${prescription.rounds} rounds · ${dlabel(prescription.workS)} work / ${dlabel(prescription.restS)} rest`,
+            'data-strength-source': strength.source,
+          }
+        : undefined,
+    ),
+  )
   const list = f.el('ol', 'tri-strength-exercises')
   for (const exercise of strength.exercises) {
     const item = f.el('li', 'tri-strength-exercise')
     f.add(
       item,
-      f.el('span', 'tri-strength-exercise-name', exercise.name),
+      f.el(
+        'span',
+        'tri-strength-exercise-name',
+        exercise.name,
+        exercise.instructions ? { title: exercise.instructions } : undefined,
+      ),
       f.el(
         'span',
         'tri-strength-exercise-summary',

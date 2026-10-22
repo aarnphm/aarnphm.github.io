@@ -64,8 +64,11 @@ import {
   readJson,
   windArchiveStamp,
 } from './strava-payload/wind-enrichment'
+import { enrichTrainingPeaksStrength } from './strength-trainingpeaks'
 import { applySwimPhysiology } from './swim-physiology'
 import { readSwimProvenance, swimProvenanceStamp } from './swim-provenance'
+import { parseTrainingPeaksCalendar, type TrainingPeaksCalendar } from './trainingpeaks-calendar'
+import { TRAININGPEAKS_CALENDAR_CACHE } from './trainingpeaks-calendar-cache'
 import {
   buildTriathlonDailyAnalytics,
   type TriathlonDailyAnalytics,
@@ -150,6 +153,7 @@ export function applyManualActivityTracking(
 }
 
 export interface StravaDataSources {
+  trainingPeaks?: TrainingPeaksCalendar | null
   strava: StravaRawCache | null
   oura: OuraCache | null
   garmin: GarminCache | null
@@ -230,7 +234,7 @@ export function loadStravaDataSync(
     wahooFitPath: pair.fitPath,
   }))
   const stamps = `${stamp(stravaCachePath)}:${stamp(ouraCachePath)}:${stamp(garminCachePath)}:${stamp(wahooCachePath)}:${stamp(weatherCachePath)}:${stamp(appleCachePath)}:${stamp(coreBodyTemperatureCachePath)}:${stamp(rouvyWahooPairsPath(contentDirectory))}:${wahooTrackingStamp([...pairEntries, ...(manualTracking?.activities ?? [])], contentDirectory)}:${windArchiveStamp(contentDirectory)}:${swimProvenanceStamp(contentDirectory)}`
-  const sourceSalt = payloadSourceSalt
+  const sourceSalt = `${payloadSourceSalt}:${stamp(TRAININGPEAKS_CALENDAR_CACHE)}`
   if (payloadMemo.stamps !== stamps || payloadMemo.sourceSalt !== sourceSalt) {
     payloadMemo.entries.clear()
     payloadMemo.stamps = stamps
@@ -247,7 +251,16 @@ export function loadStravaDataSync(
   const core = parseCoreBodyTemperatureCache(readJson<unknown>(coreBodyTemperatureCachePath))
   const weather = parseWeatherCache(readJson<unknown>(weatherCachePath))
   const loaded = buildStravaData(
-    { strava, oura, garmin, wahoo, apple, core, weather },
+    {
+      strava,
+      oura,
+      garmin,
+      wahoo,
+      apple,
+      core,
+      weather,
+      trainingPeaks: parseTrainingPeaksCalendar(readJson<unknown>(TRAININGPEAKS_CALENDAR_CACHE)),
+    },
     since,
     manualTracking,
     analyticsInputs,
@@ -297,6 +310,7 @@ export function buildStravaData(
     generatedAt,
     activityTracking,
   )
+  enrichTrainingPeaksStrength(payload, strava, sources.trainingPeaks)
   applyManualActivityTracking(payload, manualTracking, oura, weather, garmin)
   for (const day of analyticsInputs.weights ?? []) {
     if (day.windKph != null) {
@@ -371,6 +385,7 @@ export function buildStravaData(
     ? { ...trackedCache, geo: undefined, activityDetails: undefined }
     : null
   const compactSources: StravaDataSources = {
+    trainingPeaks: sources.trainingPeaks ?? null,
     strava: compactStrava,
     oura: oura ? { ...oura, heartRate: undefined } : null,
     garmin,

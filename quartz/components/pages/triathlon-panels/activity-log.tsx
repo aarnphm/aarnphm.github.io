@@ -44,7 +44,6 @@ export const OnTreePanel = ({ tree, root }: { tree: TriathlonTreeYear[]; root: s
     data-keyboard-scroll-scope
   >
     <div class="tri-ana-bar tri-feed-bar">
-      <span class="tri-tree-count">{tree.reduce((total, year) => total + year.count, 0)}</span>
       <div class="tri-feed-search-wrap tri-key-anchor tri-key-search">
         <input
           class="tri-ana-search tri-feed-search"
@@ -58,6 +57,7 @@ export const OnTreePanel = ({ tree, root }: { tree: TriathlonTreeYear[]; root: s
         <ShortcutHint>/</ShortcutHint>
         <div id="tri-feed-results" class="tri-ana-results tri-feed-results" aria-hidden="true" />
       </div>
+      <span class="tri-tree-count">{tree.reduce((total, year) => total + year.count, 0)}</span>
       <span class="tri-feed-count" aria-live="polite" />
       <OnModeSwitch />
     </div>

@@ -27,6 +27,7 @@ export interface StrengthSet {
 
 export interface StrengthExercise {
   name: string
+  instructions?: string
   setCount: number
   repetitions: number | null
   durationS: number | null

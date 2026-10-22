@@ -10,7 +10,7 @@ import {
   TRAINING_CALENDAR_SESSION_API,
 } from '../../../util/training-calendar-access'
 import { parseTrainingPeaksCalendar } from '../../../util/trainingpeaks-calendar'
-import { trainingPeaksExecution } from '../../../util/trainingpeaks-execution'
+import { trainingPeaksExecution, trainingPeaksHasPlan } from '../../../util/trainingpeaks-execution'
 import { calendarToday } from '../calendar/display'
 import { parseSwimDescription } from '../calendar/swim-structure'
 import { TrainingStructure } from '../calendar/TrainingStructure'
@@ -56,7 +56,8 @@ const loadPlanned = async (signal: AbortSignal): Promise<PlannedIndex | null> =>
   if (!calendar) return null
   const byActivity = new Map<number, TrainingPeaksCalendarWorkout>()
   for (const workout of calendar.workouts)
-    if (workout.activity) byActivity.set(workout.activity.id, workout)
+    if (workout.activity && trainingPeaksHasPlan(workout))
+      byActivity.set(workout.activity.id, workout)
   return { calendar, byActivity }
 }
 

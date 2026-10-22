@@ -19,7 +19,6 @@ import {
   activityCadenceScale,
   excludesZeroPower,
   scrubDist,
-  shortDate,
 } from './metric-text'
 
 export const buildActivityComparisonStats = <N>(
@@ -112,6 +111,7 @@ export const buildActivityComparisonStats = <N>(
     const attrs: Record<string, string> = {
       scope: 'col',
       'data-activity-id': id,
+      'data-activity-index': `${index}`,
       style: `--tri-compare-color:${activityCompareColor(index)}`,
     }
     if (partial(id)) attrs['data-coverage'] = 'partial'
@@ -121,12 +121,12 @@ export const buildActivityComparisonStats = <N>(
       undefined,
       attrs,
     )
-    const heading = f.el('div', 'tri-compare-stats-heading', undefined, { title: activity.name })
+    const title = activity.name || activity.sport
+    const heading = f.el('div', 'tri-compare-stats-heading', undefined, { title })
     f.add(
       heading,
       f.el('span', 'tri-compare-stats-swatch', undefined, { 'aria-hidden': 'true' }),
-      f.el('span', 'tri-compare-stats-date', shortDate(activity.date)),
-      f.el('span', 'tri-compare-stats-name', activity.name),
+      f.el('span', 'tri-compare-stats-name', title),
     )
     f.add(cell, heading)
     if (partial(id))
@@ -192,12 +192,9 @@ export const buildActivityComparisonStats = <N>(
         )
       }
       f.add(row, labelCell)
-      for (const { id, index, stat } of cells) {
+      for (const { id, stat } of cells) {
         const isBaseline = id === baseline?.id
-        const attrs: Record<string, string> = {
-          'data-activity-id': id,
-          style: `--tri-compare-color:${activityCompareColor(index)}`,
-        }
+        const attrs: Record<string, string> = { 'data-activity-id': id }
         if (stat) {
           attrs['data-source'] = stat.source
           attrs.title = [
@@ -213,7 +210,7 @@ export const buildActivityComparisonStats = <N>(
           attrs,
         )
         if (!stat) {
-          f.add(cell, f.el('span', 'tri-compare-stats-value tri-compare-stats-value--missing', '—'))
+          f.add(cell, f.el('span', 'tri-compare-stats-value tri-compare-stats-value--missing', '–'))
           f.add(row, cell)
           continue
         }
@@ -257,11 +254,7 @@ export const buildActivityComparisonStats = <N>(
             f.add(deltaNode, comparisonMathNode(f, 'tri-compare-stats-delta-rel', relative))
           f.add(content, deltaNode)
         }
-        f.add(
-          cell,
-          content,
-          f.el('span', 'tri-compare-stats-line', undefined, { 'aria-hidden': 'true' }),
-        )
+        f.add(cell, content)
         f.add(row, cell)
       }
       f.add(body, row)

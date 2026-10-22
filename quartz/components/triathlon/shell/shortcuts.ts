@@ -63,8 +63,16 @@ export const setupShortcuts = (root: HTMLElement): (() => void) => {
     tab.focus({ preventScroll: true })
     return true
   }
+  const toggleAnalyticsCompare = (key: string): boolean => {
+    if (key !== 'c') return false
+    if (subView !== 'analytics' && !root.classList.contains('tri-analytics-open')) return false
+    const toggle = root.querySelector<HTMLButtonElement>('.tri-ana-compare-toggle')
+    if (!toggle) return false
+    toggle.click()
+    return true
+  }
   const selectTab = (key: string): boolean =>
-    selectCalculatorTab(key) || selectAnalyticsChapter(key)
+    selectCalculatorTab(key) || selectAnalyticsChapter(key) || toggleAnalyticsCompare(key)
   const waitForG = (): void => {
     waitingForG = true
     gTimeout = window.setTimeout(() => {

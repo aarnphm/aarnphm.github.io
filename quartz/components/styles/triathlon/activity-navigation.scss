@@ -140,7 +140,7 @@
 }
 
 .tri-tree-count {
-  margin-right: auto;
+  margin-left: auto;
   font-family: var(--codeFont);
   font-size: 0.62rem;
   color: var(--gray);
@@ -297,7 +297,8 @@
   display: flex;
   align-items: baseline;
   gap: 0.6rem;
-  padding: 0.55rem 0.1rem 0.35rem;
+  padding: 0.4rem 0.1rem;
+  font-size: 0.72rem;
 }
 
 .tri-tree-row a {
@@ -316,13 +317,13 @@
   outline: 0;
 }
 
+// Rows share the feed row pitch so log and feed swap without moving; the year reads by its rule.
 .tri-tree-row--year {
-  font-size: 0.9rem;
-  border-bottom: 1px solid var(--gray);
+  padding-bottom: calc(0.4rem - 1px);
+  border-bottom: 2px solid var(--gray);
 }
 
 .tri-tree-row--month {
-  font-size: 0.74rem;
   border-bottom: 1px solid color-mix(in srgb, var(--gray) 35%, transparent);
 }
 

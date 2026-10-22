@@ -15,6 +15,7 @@ import {
 import { applyHeartRatePhysiology } from '../../../util/heart-rate-physiology'
 import { latestProviderSync } from '../../../util/provider-sync'
 import { buildRunHeartCostTrace, buildRunStrideCadenceTrace } from '../../../util/run-mechanics'
+import { inferStrengthPrescription } from '../../../util/strength-prescription'
 import {
   matchGarminHeartRateActivity,
   matchGarminTrainingEffectActivity,
@@ -211,6 +212,11 @@ export function projectActivityDetail(
     powerCurves.get(id),
     activityCriticalPowers.get(id) ?? null,
   )
+  if (sport === 'strength')
+    detail.strength = inferStrengthPrescription(
+      original.name,
+      originalCache.activityDetails?.[id]?.description,
+    )
   if (sport === 'bike') {
     const originalStreams = originalCache.streams?.[id]
     const terrain = cyclingPowerTerrain(a, originalStreams, garminMatch, garmin)

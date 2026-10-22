@@ -1,5 +1,8 @@
 @use './foundations' as *;
 
+// Series ink: the raw Flexoki fill in dark, mixed toward ink on light paper (see comparison-picker).
+$compare-ink: color-mix(in oklab, var(--tri-compare-color) var(--tri-compare-ink-mix), var(--dark));
+
 .tri-compare-chart[hidden] {
   display: none;
 }
@@ -16,7 +19,7 @@
 }
 
 .tri-compare-title {
-  font-size: 0.62rem;
+  font-size: 0.75rem;
   color: var(--dark);
   text-transform: lowercase;
 }
@@ -26,8 +29,8 @@
   width: 100%;
   height: clamp(10rem, 25dvh, 16rem);
   overflow: hidden;
-  background: color-mix(in srgb, var(--gray) 6%, transparent);
-  border: 1px solid color-mix(in srgb, var(--gray) 20%, transparent);
+  background: var(--tri-compare-surface);
+  border: 1px solid var(--tri-compare-line);
 }
 
 .tri-compare-map--down ~ .tri-map-side {
@@ -38,7 +41,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.62rem;
+  font-size: 0.75rem;
   color: var(--darkgray);
 }
 
@@ -51,8 +54,8 @@
 .tri-compare-line,
 .tri-compare-selection-line {
   fill: none;
-  stroke: var(--tri-compare-color);
-  stroke-width: 1.15;
+  stroke: $compare-ink;
+  stroke-width: 1.25;
   stroke-linecap: round;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
@@ -175,14 +178,42 @@
 }
 
 .tri-compare-graph:focus-visible {
-  outline: 2px solid var(--darkgray);
+  outline: 2px solid var(--dark);
   outline-offset: 2px;
 }
 
 .tri-compare-grid {
-  stroke: color-mix(in srgb, var(--gray) 16%, transparent);
-  stroke-width: 0.45;
+  stroke: var(--tri-compare-line);
+  stroke-width: 0.5;
   vector-effect: non-scaling-stroke;
+}
+
+// Grouped zone bars: the first activity is solid ink, the second an outline over a light
+// tint, so the pair reads without hue the same way solid and dashed lines do.
+.tri-compare-zone-bars {
+  fill: $compare-ink;
+  stroke: none;
+}
+
+.tri-compare-zone-bars:not([data-activity-index='0']) {
+  fill: color-mix(in srgb, $compare-ink 22%, transparent);
+  stroke: $compare-ink;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+[data-compare-hidden='true'].tri-compare-zone-bars {
+  display: none;
+}
+
+.tri-compare-zone-focus {
+  fill: color-mix(in srgb, var(--tri-compare-surface) 55%, transparent);
+  pointer-events: none;
+  opacity: 0;
+}
+
+.tri-compare-chart--hover .tri-compare-zone-focus {
+  opacity: 1;
 }
 
 .tri-compare-selection-region {
@@ -233,7 +264,7 @@
   gap: 0.22rem 0.65rem;
   max-width: 100%;
   margin-left: auto;
-  font-size: 0.6rem;
+  font-size: 0.75rem;
   color: var(--dark);
   pointer-events: none;
   opacity: 0;
@@ -247,10 +278,20 @@
 
 .tri-compare-readout-row {
   display: grid;
-  grid-template-columns: 0.7rem max-content;
+  grid-template-columns: 1.25rem minmax(0, auto) max-content;
   align-items: center;
   gap: 0.35rem;
   min-width: 0;
+}
+
+.tri-compare-readout-name {
+  max-width: 9rem;
+  overflow: hidden;
+  font-family: var(--codeFont);
+  line-height: 1.3;
+  color: var(--darkgray);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .tri-compare-readout-value {
@@ -273,8 +314,8 @@
 .tri-compare-empty {
   margin: 0;
   padding: 0.7rem;
-  font-size: 0.62rem;
+  font-size: 0.75rem;
   text-align: center;
-  color: var(--gray);
-  border: 1px solid color-mix(in srgb, var(--gray) 24%, transparent);
+  color: var(--darkgray);
+  border: 1px solid var(--tri-compare-line);
 }

@@ -71,10 +71,9 @@
 }
 
 .tri-ana-compare-toggle {
-  display: inline-flex;
+  display: inline-grid;
   flex: none;
-  align-items: center;
-  justify-content: center;
+  place-items: center;
   width: 1.9rem;
   // Same height as the header tab groups (.tri-ana-chapters et al.) so the bar keeps the
   // 55px pitch shared by maps, on, tools and calendar instead of growing to 60px.
@@ -102,6 +101,12 @@
     outline: 1px solid color-mix(in srgb, var(--tri-accent) 68%, transparent);
     outline-offset: 2px;
   }
+
+  // Like the chapter tabs, the hint drops below because the dialog clips above its top edge.
+  > .tri-key {
+    top: calc(100% + 0.35rem);
+    bottom: auto;
+  }
 }
 
 .tri-ana-compare-icon {
@@ -112,6 +117,71 @@
   path {
     fill: currentColor;
     stroke: none;
+  }
+}
+
+// The submit sits beside the compare toggle only while activities are being picked.
+.tri-analytics:not(.tri-analytics--compare) .tri-compare-picker-submit-wrap,
+.tri-analytics--comparison .tri-compare-picker-submit-wrap {
+  display: none;
+}
+
+.tri-analytics-controls .tri-compare-picker-submit-wrap,
+.tri-analytics-controls .tri-compare-picker-submit {
+  height: 1.6rem;
+}
+
+.tri-ana-bar-back {
+  width: 1rem;
+  height: 1rem;
+
+  path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+}
+
+// In a comparison the back arrow replaces the compare toggle on the page and the close in
+// the dialog. Both icons share one grid cell and turn through each other.
+.tri-ana-compare-toggle,
+.tri-analytics .tri-ana-close {
+  > svg,
+  > [data-site-cursor-icon] {
+    grid-area: 1 / 1;
+    transition:
+      opacity 160ms cubic-bezier(0.23, 1, 0.32, 1),
+      transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  > .tri-ana-bar-back {
+    opacity: 0;
+    transform: rotate(90deg) scale(0.6);
+  }
+}
+
+.tri-analytics--page.tri-analytics--comparison .tri-ana-compare-toggle,
+.tri-analytics--comparison:not(.tri-analytics--page) .tri-ana-close {
+  > .tri-ana-bar-back {
+    opacity: 1;
+    transform: none;
+  }
+
+  > :not(.tri-ana-bar-back, .tri-key) {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.6);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tri-ana-compare-toggle,
+  .tri-analytics .tri-ana-close {
+    > svg,
+    > [data-site-cursor-icon] {
+      transition: none;
+    }
   }
 }
 
