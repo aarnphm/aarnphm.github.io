@@ -4,7 +4,7 @@ date: '2024-02-07'
 description: a mathematical framework for intelligence
 id: LLMs
 layout: technical
-modified: 2026-10-22 11:27:07 GMT-04:00
+modified: 2026-10-22 11:36:15 GMT-04:00
 seealso:
   - '[[thoughts/mechanistic interpretability]]'
   - '[[thoughts/Alignment|Alignment]]'
@@ -41,8 +41,6 @@ One way or another is a form of [[thoughts/Behaviourism|behaviourism]], through 
 Incredibly hard to scale, mainly due to their [[thoughts/large models|large]] memory footprint and tokens memory allocation.
 
 ### [[thoughts/optimization|Optimization]]
-
-I did a [[thoughts/images/htn-openllm.pdf|talk at HackTheNorth 2023]] on this topic and rationale behind building [[thoughts/craft#open source|OpenLLM]]
 
 - [[thoughts/quantization|Quantization]]: reduce computational and memory costs of running inference with representing the weight and activations with low-precision data type
 - [[thoughts/Continuous batching]]: update the batch after each decoding step so finished requests leave and waiting requests can join. [Orca](https://www.usenix.org/conference/osdi22/presentation/yu) introduced iteration-level scheduling. [[thoughts/paged attention|PagedAttention]] manages KV-cache memory in blocks; it can support this scheduling by reducing wasted memory.

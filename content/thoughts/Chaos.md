@@ -82,7 +82,7 @@ Philip J. Kain's [[thoughts/papers/Nietzsche the Kantian Self and Eternal Recurr
 
 > The self, for Nietzsche, is not just a radically unstable postmodern self. It is such a self, but it is not simply such a self. It also has a stability, sameness, and unity that goes far beyond anything Kant ever imagined in his wildest dreams
 
-This is [Kain's argument](https://scholarcommons.scu.edu/phi/52/), on manuscript page 17. It should be distinguished from Nietzsche's own words and from a theorem about chaotic systems. The question of creating values belongs with [[thoughts/Philosophy and Nietzsche#Prejudices of Philosophers|Nietzsche's criticism of inherited judgments]] and [[thoughts/Will#as power.|will to power]]. Thermodynamic entropy does not provide a measure of those values.
+This is [Kain's argument](https://scholarcommons.scu.edu/phi/52/), on manuscript page 17. It should be distinguished from Nietzsche's own words and from a theorem about chaotic systems. The question of creating values belongs with [[thoughts/Philosophy and Nietzsche|Nietzsche's criticism of inherited judgments]] and [[thoughts/Will to Power|will to power]]. Thermodynamic entropy does not provide a measure of those values.
 
 ## versus equanimity.
 
@@ -97,4 +97,4 @@ Yet ignorance seems to overload chaos, and prevents the maximum utilization of o
 
 That last question remains a personal conjecture. A physical entropy would require a system, states and a measure; the attraction to uncertainty does not supply them. Equanimity describes how one responds to an experience. It leaves room for seeking unfamiliar experiences and for judging which disruptions are worth their consequences.
 
-[^1]: See also [[thoughts/Giles Deleuze#Nietzsche and Philosophy|Giles Deleuze's]] interpretation.
+[^1]: See also [[thoughts/Giles Deleuze#forces.|Giles Deleuze's]] interpretation.
