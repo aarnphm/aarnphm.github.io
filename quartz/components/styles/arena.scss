@@ -520,7 +520,8 @@ body[data-arena-subpage='true'] {
   cursor: pointer;
 
   &:focus-visible {
-    outline: var(--secondary);
+    outline: 2px solid var(--dark);
+    outline-offset: -2px;
   }
 
   &:hover {

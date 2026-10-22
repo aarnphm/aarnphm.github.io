@@ -384,8 +384,14 @@ body[data-pdf-embedded='course'] {
     scrollbar-width: none;
   }
 
-  &:focus {
+  // A Tab stop: the scoped :where() ring loses to this reset at equal specificity.
+  &:focus:not(:focus-visible) {
     outline: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: -2px;
   }
 }
 

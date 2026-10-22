@@ -10,10 +10,6 @@ $base-control-height: 2.125rem;
   #base-search-bar {
     box-sizing: border-box;
     height: $base-control-height;
-
-    &:focus-within {
-      outline: none;
-    }
   }
 }
 

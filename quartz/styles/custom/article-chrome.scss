@@ -366,8 +366,9 @@ body {
   margin-top: 0;
   font-family: var(--headerFont);
 
-  & > a {
-    outline: none;
+  & > a:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
   }
 }
 
