@@ -38,6 +38,6 @@ Under `pointer: coarse` every control rises to `control-touch` (44px).
 
 - Start a new tool surface from the shared recipe. Use the system names (`line`, `surface`, `selected`) and add a local alias only when the page needs its own value.
 - Controls are mono and lowercase. Labels at 0.62 to 0.66rem are existing dense exceptions; new labels start at `meta`.
-- Focus is the `focus` ring, inset (`-2px`) inside frames. Triathlon panels may use `tri-be-focus`. Sage rings in the current code are debt.
+- Focus is the `focus` ring, inset (`-2px`) inside frames. Triathlon panels may use `tri-be-focus`. Sage rings in the current code are debt. The Focus section lists the allowed replacements for a removed outline.
 - `gray` labels in the current code (stream title actions, the Arena count, best-efforts captions, triathlon block titles) are debt. Use `darkgray`.
 - A full-viewport tool (`/read`, the Arena reader) owns `100dvh`, hides the page footer and lets each pane scroll on its own.

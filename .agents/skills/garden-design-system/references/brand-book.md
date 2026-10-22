@@ -58,7 +58,7 @@ The site has two registers. Prose pages use the reading defaults in this README.
 ## States and interaction
 
 - Use a native `<button>` for an action and an `<a href>` for navigation.
-- Focus: `outline: 2px solid` `focus` with `outline-offset: 2px`. Inside a framed list, use `-2px` so the frame does not clip it. Focus stays visible on selected, pressed and expanded controls. In forced colours, use `Highlight`.
+- Focus: `outline: 2px solid` `focus` with `outline-offset: 2px`. Inside a framed list, use `-2px` so the frame does not clip it. Focus stays visible on selected, pressed and expanded controls. In forced colours, use `Highlight`. The Focus section says when a page may remove the outline and what must replace it.
 - Links on prose pages invert on hover: `link-hover-bg` ground, `link-hover-ink` text. This is the site's default `a:hover`. Tool surfaces replace it inside their own scope with an underline, a `surface` row fill or a `surface` block fill (see Link).
 - Control hover changes fill or ink slightly, only under `(hover: hover) and (pointer: fine)`.
 - Selected: `selected` fill, `dark` label and the matching ARIA attribute (`aria-pressed`, `aria-selected` or `aria-current`).
