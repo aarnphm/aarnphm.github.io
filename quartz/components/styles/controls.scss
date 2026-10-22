@@ -441,6 +441,18 @@ button.g-select-trigger {
   }
 }
 
+.g-select-text {
+  display: grid;
+  min-width: 0;
+}
+
+.g-select-detail {
+  overflow: hidden;
+  color: var(--gray);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .g-select-check {
   color: var(--control-accent-ink, var(--dark));
   opacity: 0;
