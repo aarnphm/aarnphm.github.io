@@ -418,16 +418,17 @@ export function renderPageWithMetadata(
               <Headings {...componentData} />
               <PressKit {...componentData} />
             </section>
-            {!isFolderTag && !isCurius && !isPdfReader && (
+            {!isCurius && !isPdfReader && (!isFolderTag || afterBody.length > 0) && (
               <section class="page-footer popover-hint grid all-col">
-                {retrievalNodes.length > 0 &&
+                {!isFolderTag &&
+                  retrievalNodes.length > 0 &&
                   htmlToJsx(componentData.fileData.filePath!, {
                     type: 'root',
                     children: retrievalNodes,
                   } as Node)}
                 {afterBody.length > 0 &&
                   afterBody.map(BodyComponent => <BodyComponent {...componentData} />)}
-                {slug !== 'index' && <Footer {...componentData} />}
+                {!isFolderTag && slug !== 'index' && <Footer {...componentData} />}
               </section>
             )}
           </div>

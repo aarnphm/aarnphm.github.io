@@ -23,7 +23,7 @@ type Body = SimulationNodeDatum & {
   y: number
 }
 
-const PAD = 6
+const PAD = 4
 const HALO_REACH = 180
 const HALO_ALPHA = [0.55, 0.35, 0.15, 0.06]
 const SAGE = '205,213,151'
@@ -32,34 +32,52 @@ const PEACH = '253,178,162'
 const spread = (k: number, n: number, from: number, to: number) =>
   n <= 1 ? (from + to) / 2 : from + ((to - from) * k) / (n - 1)
 
+// Deterministic scatter in [0, 1): the golden-ratio sequence, so a given node always lands in the
+// same place and neighbours in the sequence never share a column.
+const scatter = (k: number, salt: number) => (k * 0.6180339887 + salt) % 1
+
 /**
  * Seeds positions as the hand-placed mock does: hubs down the left (what joins pages) or across the
  * top (what joins sections), one column of pages per kind, sections at the centre of what they touch.
  */
 function seed(bodies: Body[], adj: number[][], w: number, h: number) {
-  const byId = (a: Body, b: Body) => a.node.id.localeCompare(b.node.id, 'fr', { numeric: true })
   const isFixed = (b: Body) => b.node.cls !== 'theme'
-  const hubs = bodies.filter(b => b.node.cls === 'mvt').sort(byId)
+  // hubs keep the order the data declares them in (a1..c1, automne..été)
+  const hubs = bodies.filter(b => b.node.cls === 'mvt').sort((a, b) => a.i - b.i)
   const sideways = hubs.filter(
     b => adj[b.i].filter(j => bodies[j].node.cls === 'pg').length * 2 >= adj[b.i].length,
   )
   const across = hubs.filter(b => !sideways.includes(b))
   sideways.forEach((b, k) => {
-    b.sx = 0.07 * w
+    b.sx = (0.05 + 0.05 * scatter(k, 0.3)) * w
     b.sy = spread(k, sideways.length, 0.14, 0.88) * h
   })
   across.forEach((b, k) => {
     b.sx = spread(k, across.length, 0.22, 0.82) * w
-    b.sy = 0.05 * h
+    b.sy = (0.05 + 0.04 * scatter(k, 0.6)) * h
   })
-  const kinds = [...new Set(bodies.filter(b => b.node.cls === 'pg').map(b => b.node.kind))].sort()
-  kinds.forEach((kind, c) => {
-    const column = bodies.filter(b => b.node.cls === 'pg' && b.node.kind === kind).sort(byId)
+  // lessons run down their own column in episode order, topics down another in the order of the
+  // levels that cite them, so a reader finds ép. 14 between ép. 13 and ép. 15
+  const episodeOf = (b: Body) => /episode-(\d+)$/.exec(b.node.id)?.[1]
+  const pages = bodies.filter(b => b.node.cls === 'pg')
+  const lessons = pages.filter(b => episodeOf(b) !== undefined)
+  const topics = pages.filter(b => episodeOf(b) === undefined)
+  lessons.sort((a, b) => Number(episodeOf(a)) - Number(episodeOf(b)))
+  const rank = (b: Body) =>
+    Math.min(...adj[b.i].filter(j => bodies[j].node.cls === 'mvt'), Infinity)
+  topics.sort((a, b) => rank(a) - rank(b) || a.i - b.i)
+  // order still reads top to bottom, but each page drifts sideways inside a wide band, so the
+  // field looks scattered instead of two stacks
+  const bands: [Body[], number, number, number][] = [
+    [topics, 0.3, 0.36, 0.2],
+    [lessons, 0.5, 0.42, 0.7],
+  ]
+  for (const [column, from, span, salt] of bands) {
     column.forEach((b, k) => {
-      b.sx = spread(c, kinds.length, 0.22, 0.93) * w
-      b.sy = spread(k, column.length, 0.12, 0.92) * h
+      b.sx = (from + span * scatter(k, salt)) * w
+      b.sy = (spread(k, column.length, 0.07, 0.93) + 0.03 * (scatter(k, salt + 0.4) - 0.5)) * h
     })
-  })
+  }
   bodies
     .filter(b => !isFixed(b))
     .forEach((b, k) => {
@@ -79,7 +97,8 @@ function seed(bodies: Body[], adj: number[][], w: number, h: number) {
 
 /** Pushes overlapping rectangles apart along the shorter overlap. */
 function rectCollide(bodies: Body[], w: number, h: number) {
-  return () => {
+  return (): boolean => {
+    let moved = false
     for (let i = 0; i < bodies.length; i++) {
       for (let j = i + 1; j < bodies.length; j++) {
         const p = bodies[i]
@@ -89,14 +108,19 @@ function rectCollide(bodies: Body[], w: number, h: number) {
         const ox = (p.w + q.w) / 2 + PAD - Math.abs(dx)
         const oy = (p.h + q.h) / 2 + PAD - Math.abs(dy)
         if (ox <= 0 || oy <= 0) continue
+        moved = true
+        // page capsules and hubs hold their columns; theme boxes give way first
+        const wp = p.node.cls === 'theme' ? 1 : 0.15
+        const wq = q.node.cls === 'theme' ? 1 : 0.15
+        const share = wp / (wp + wq)
         if (ox < oy) {
-          const s = ((dx < 0 ? -1 : 1) * ox) / 2
-          p.x -= s
-          q.x += s
+          const s = (dx < 0 ? -1 : 1) * ox
+          p.x -= s * share
+          q.x += s * (1 - share)
         } else {
-          const s = ((dy < 0 ? -1 : 1) * oy) / 2
-          p.y -= s
-          q.y += s
+          const s = (dy < 0 ? -1 : 1) * oy
+          p.y -= s * share
+          q.y += s * (1 - share)
         }
       }
     }
@@ -104,6 +128,7 @@ function rectCollide(bodies: Body[], w: number, h: number) {
       b.x = Math.min(w - b.w / 2, Math.max(b.w / 2, b.x))
       b.y = Math.min(h - b.h / 2, Math.max(b.h / 2, b.y))
     }
+    return moved
   }
 }
 
@@ -188,12 +213,19 @@ function mount(root: HTMLElement, data: InquiryMapData, slug: FullSlug, signal: 
           .strength(0.06),
       )
       .force('charge', forceManyBody<Body>().strength(-40))
-      .force('x', forceX<Body>(b => b.sx).strength(0.12))
-      .force('y', forceY<Body>(b => b.sy).strength(0.12))
+      .force(
+        'x',
+        forceX<Body>(b => b.sx).strength(b => (b.node.cls === 'theme' ? 0.12 : 0.5)),
+      )
+      .force(
+        'y',
+        forceY<Body>(b => b.sy).strength(b => (b.node.cls === 'theme' ? 0.12 : 0.5)),
+      )
       .force('collide', collide)
       .stop()
     for (let tick = 0; tick < 300; tick++) sim.tick()
-    for (let pass = 0; pass < 40; pass++) collide()
+    // settle until no two boxes overlap; the clamp to the frame can undo a push, so allow many passes
+    for (let pass = 0; pass < 2000 && collide(); pass++);
     for (const b of bodies) {
       b.el.style.left = `${b.x}px`
       b.el.style.top = `${b.y}px`
@@ -280,7 +312,8 @@ function mount(root: HTMLElement, data: InquiryMapData, slug: FullSlug, signal: 
     list.append(box)
   }
   const seen = new Set<number>()
-  for (const i of order.filter(k => data.nodes[k].cls === 'mvt')) {
+  // season and level groups keep the order the data declares them in
+  for (const i of order.filter(k => data.nodes[k].cls === 'mvt').sort((a, b) => a - b)) {
     const members = adj[i].filter(j => data.nodes[j].cls !== 'mvt')
     members.forEach(j => seen.add(j))
     seen.add(i)
@@ -293,6 +326,10 @@ function mount(root: HTMLElement, data: InquiryMapData, slug: FullSlug, signal: 
 
   layout()
   const relayout = debounce(layout, 150)
+  // label widths change when the web font swaps in
+  void document.fonts?.ready.then(() => {
+    if (!signal.aborted) layout()
+  })
   const observer = new ResizeObserver(relayout)
   observer.observe(root)
   signal.addEventListener(
