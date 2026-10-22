@@ -1,6 +1,6 @@
 import type { QuartzComponent, QuartzComponentConstructor } from '../types/component'
 import { BaseViewSelectorMarkup } from './BaseViewSelectorMarkup'
-import bookcaseScript from './scripts/base-bookcase.inline'
+import bookcaseScript from './scripts/base-bookcase-loader.inline'
 import kanbanScript from './scripts/base-kanban.inline'
 import vaultScript from './scripts/base-vault.inline'
 import script from './scripts/base-view-selector.inline'
