@@ -1,3 +1,5 @@
+import type { MotionTuning } from './motion-tuning'
+
 // A moving crown or leaf cluster, with its motion read once from the markup.
 type Cluster = {
   leaves: SVGGElement
@@ -35,7 +37,7 @@ const reread = 3000
 
 // Gusts shift cached WebGL canopies by whole cells. SVG fallback keeps the individual clusters.
 // The clock writes only changed offsets for trees already uncovered during the opening.
-export function mountCrownWind(scene: HTMLElement, signal: AbortSignal) {
+export function mountCrownWind(scene: HTMLElement, signal: AbortSignal, tuning: MotionTuning) {
   const document = scene.ownerDocument
   const view = document.defaultView
   if (!view) return { refresh() {} }
@@ -98,6 +100,7 @@ export function mountCrownWind(scene: HTMLElement, signal: AbortSignal) {
     }
   }
   const windy = () =>
+    tuning.wind > 0 &&
     scene.dataset.weatherWindy === 'true' &&
     scene.dataset.trailVisible === 'true' &&
     !motion.matches
@@ -116,10 +119,11 @@ export function mountCrownWind(scene: HTMLElement, signal: AbortSignal) {
     const live = scene.dataset.trailRenderer === 'webgl' ? canopies : leaves
     if (time - read > reread || live.length !== clusters.length) collect(time)
     const style = scene.style
-    const pushX = number(style, '--trail-leaf-push-x')
-    const pushY = number(style, '--trail-leaf-push-y')
-    const restX = number(style, '--trail-leaf-rest-x')
-    const restY = number(style, '--trail-leaf-rest-y')
+    const strength = tuning.wind / 100
+    const pushX = number(style, '--trail-leaf-push-x') * strength
+    const pushY = number(style, '--trail-leaf-push-y') * strength
+    const restX = number(style, '--trail-leaf-rest-x') * strength
+    const restY = number(style, '--trail-leaf-rest-y') * strength
     const period = number(style, '--trail-wind-period') || 9
     const lagX = number(style, '--trail-leaf-lag-x')
     const lagY = number(style, '--trail-leaf-lag-y')
@@ -174,6 +178,7 @@ export function mountCrownWind(scene: HTMLElement, signal: AbortSignal) {
     ],
   })
   document.addEventListener('visibilitychange', wake, { signal })
+  scene.addEventListener('trail:motion-tuning', wake, { signal })
   motion.addEventListener('change', wake, { signal })
   wake()
   signal.addEventListener(

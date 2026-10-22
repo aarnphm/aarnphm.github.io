@@ -13,9 +13,14 @@ import {
   trailSeasons,
 } from '../../util/trail-season'
 import { holidayLabels } from '../../util/visitor-holiday'
+import { mountSceneControls, type SceneTuningControls } from './scene-controls'
 
 // The boulder reveals the existing cycles; returning to the forecast or calendar clears an override.
-export function mountSeasonToggle(scene: HTMLElement, signal: AbortSignal) {
+export function mountSeasonToggle(
+  scene: HTMLElement,
+  signal: AbortSignal,
+  controls?: SceneTuningControls,
+) {
   const document = scene.ownerDocument
   const view = document.defaultView
   if (!view) return
@@ -29,7 +34,11 @@ export function mountSeasonToggle(scene: HTMLElement, signal: AbortSignal) {
   panel.className = 'trail-scene-controls'
   panel.popover = 'auto'
   panel.setAttribute('role', 'group')
-  panel.setAttribute('aria-label', 'Season and holiday')
+  panel.setAttribute('aria-label', 'Trail settings')
+  panel.tabIndex = -1
+  panel.id = `trail-scene-controls-${crypto.randomUUID()}`
+  boulder.setAttribute('aria-controls', panel.id)
+  boulder.setAttribute('aria-expanded', 'false')
   boulder.popoverTargetElement = panel
   scene.append(boulder, panel)
   const button = document.createElement('button')
@@ -48,7 +57,45 @@ export function mountSeasonToggle(scene: HTMLElement, signal: AbortSignal) {
   const holidayValue = document.createElement('span')
   holidayValue.className = 'trail-scene-value'
   holidayButton.append(holidayLabel, holidayValue)
-  panel.append(button, holidayButton)
+  const head = document.createElement('div')
+  head.className = 'trail-tuning-head'
+  const title = document.createElement('span')
+  title.textContent = 'settings'
+  const close = document.createElement('button')
+  close.type = 'button'
+  close.setAttribute('aria-label', 'Close trail settings')
+  close.textContent = '×'
+  const dismiss = () => {
+    panel.hidePopover()
+  }
+  const restoreBoulderFocus = () => {
+    if (
+      signal.aborted ||
+      !scene.isConnected ||
+      scene.dataset.trailVisible !== 'true' ||
+      scene.hidden ||
+      boulder.hidden ||
+      boulder.inert
+    )
+      return
+    const root = scene.getRootNode()
+    const active =
+      root instanceof view.ShadowRoot
+        ? (root.activeElement ?? document.activeElement)
+        : document.activeElement
+    // Disabling reset can blur to the body before Escape reaches the scene's key handler.
+    if (
+      !active ||
+      active === document.body ||
+      active === document.documentElement ||
+      panel.contains(active) ||
+      (root instanceof view.ShadowRoot && active === root.host)
+    )
+      boulder.focus({ preventScroll: true })
+  }
+  close.addEventListener('click', dismiss, { signal })
+  head.append(title, close)
+  panel.append(head, button, holidayButton)
   const nextHoliday = (): TrailHolidayChoice | null => {
     const chosen = readTrailHolidayChoice(document.defaultView)
     const index = chosen ? trailHolidayChoices.indexOf(chosen) : -1
@@ -135,18 +182,41 @@ export function mountSeasonToggle(scene: HTMLElement, signal: AbortSignal) {
     signal,
   })
   scene.addEventListener('trail:reflow', place, { signal })
+  scene.addEventListener('trail:tuning-commit', place, { signal })
   scene.addEventListener(
     'keydown',
     event => {
       if (event.key !== 'Escape' || !panel.matches(':popover-open')) return
       event.preventDefault()
       event.stopPropagation()
-      panel.hidePopover()
-      boulder.focus({ preventScroll: true })
+      dismiss()
     },
     { signal },
   )
-  panel.addEventListener('toggle', positionPanel, { signal })
+  let mounted = false
+  panel.addEventListener(
+    'beforetoggle',
+    event => {
+      if (event.newState !== 'open' || mounted || !controls) return
+      mounted = true
+      mountSceneControls(scene, panel, signal, controls)
+    },
+    { signal },
+  )
+  panel.addEventListener(
+    'toggle',
+    () => {
+      const open = panel.matches(':popover-open')
+      boulder.setAttribute('aria-expanded', String(open))
+      if (open) {
+        positionPanel()
+        panel.focus({ preventScroll: true })
+      } else restoreBoulderFocus()
+    },
+    { signal },
+  )
+  panel.addEventListener('toggle', positionPanel, { signal, capture: true })
+  view.addEventListener('resize', positionPanel, { signal, passive: true })
   view.addEventListener('scroll', positionPanel, { signal, passive: true })
   const observer = new MutationObserver(records => {
     if (scene.dataset.trailVisible === 'false') panel.hidePopover()

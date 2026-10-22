@@ -25,15 +25,17 @@ export type TravelerSettings = {
   rangers: number
 }
 
-// Authored scene settings. Changes take effect with the next scene load.
-export const sceneSettings: {
+export type SceneSettings = {
   forest: ForestSettings
   animals: AnimalSettings
   camps: CampSettings
   travelers: TravelerSettings
   holiday: HolidaySelection
   destination: number
-} = {
+}
+
+// Each scene starts from these authored defaults and owns its tuning copy.
+export const sceneSettings: SceneSettings = {
   forest: {
     density: 64,
     depth: 9,
