@@ -3,209 +3,33 @@
 // that carries the same number. The markup comes from renderPage/fr-margins.ts. Under the width
 // that leaves a margin, each group folds under its paragraph and the label toggles it.
 
-interface Face {
-  front: string
-  back: string
-  note: string
-}
+import { layout, mountNotes, mountReview } from './fr-margins-review'
 
-interface CardState {
-  cardId: string
-  due: number
-}
-
-const GRADES = [
-  ['encore', 1],
-  ['difficile', 2],
-  ['bien', 3],
-  ['facile', 4],
-] as const
-
-const el = <K extends keyof HTMLElementTagNameMap>(
-  tag: K,
-  className?: string,
-  text?: string,
-): HTMLElementTagNameMap[K] => {
-  const node = document.createElement(tag)
-  if (className) node.className = className
-  if (text !== undefined) node.textContent = text
-  return node
-}
-
-const button = (label: string, className = 'fr-btn') => {
-  const node = el('button', className, label)
-  node.type = 'button'
-  return node
-}
-
-// Margins change height when a card flips or a note is added; the stack below follows.
-let relayout: () => void = () => {}
-
-const decks = new Map<string, Promise<Map<string, Face>>>()
-
-const loadDeck = (deck: string, signal: AbortSignal): Promise<Map<string, Face>> => {
-  const cached = decks.get(deck)
-  if (cached) return cached
-  const pending = fetch(`/${deck}`, { headers: { Accept: 'text/html' }, signal })
-    .then(res => (res.ok ? res.text() : Promise.reject(new Error(String(res.status)))))
-    .then(html => {
-      const doc = new DOMParser().parseFromString(html, 'text/html')
-      const faces = new Map<string, Face>()
-      for (const card of doc.querySelectorAll<HTMLElement>('.flashcard[data-card-id]')) {
-        const note = card.querySelector('.flashcard-note')
-        note?.remove()
-        faces.set(card.dataset.cardId!, {
-          front: card.querySelector('[data-face="front"]')?.innerHTML ?? '',
-          back: card.querySelector('[data-face="back"]')?.innerHTML ?? '',
-          note: note?.innerHTML ?? '',
-        })
-      }
-      return faces
-    })
-  pending.catch(() => decks.delete(deck))
-  decks.set(deck, pending)
-  return pending
-}
-
-async function mountReview(root: HTMLElement, signal: AbortSignal) {
-  const deck = root.dataset.deck
-  const ids = (root.dataset.ids ?? '').split(',').filter(Boolean)
-  const count = root.querySelector<HTMLElement>('[data-fr-count]')
-  const box = root.querySelector<HTMLElement>('[data-fr-card]')
-  if (!deck || ids.length === 0 || !count || !box) return
-
-  const [faces, state] = await Promise.all([
-    loadDeck(deck, signal),
-    fetch(`/api/flashcards/state?deck=${encodeURIComponent(deck)}`, { signal })
-      .then(res => (res.ok ? res.json() : { login: null, states: [] }))
-      .catch(() => ({ login: null, states: [] })) as Promise<{
-      login: string | null
-      states: CardState[]
-    }>,
-  ]).catch(() => [undefined, undefined] as const)
-  if (!faces || !state || signal.aborted) return
-
-  let login = state.login
-  const dueAt = new Map(state.states.map(s => [s.cardId, s.due]))
-  const now = Date.now()
-  // a card with no row is new, so it is due
-  const queue = ids.filter(id => faces.has(id) && (dueAt.get(id) ?? 0) <= now)
-  const total = queue.length
-  let revealed = false
-
-  if (!login) {
-    const link = el('a', 'fr-meta', 'connexion')
-    link.href = `/comments/github/login?returnTo=${encodeURIComponent(location.pathname)}`
-    root.querySelector('.fr-label')?.append(' · ', link)
-  }
-
-  const paint = () => {
-    box.replaceChildren()
-    const id = queue[0]
-    if (id === undefined) {
-      count.textContent = total === 0 ? 'à jour' : `${total}/${total}`
-      box.hidden = true
-      relayout()
-      return
-    }
-    const face = faces.get(id)!
-    count.textContent = `${total - queue.length + 1}/${total}`
-    const front = el('div', 'fr-q')
-    front.innerHTML = face.front
-    box.append(front)
-    const bar = el('div', 'fr-bar')
-    const show = button('montrer')
-    bar.append(show)
-    const flip = () => {
-      revealed = true
-      const back = el('div', 'fr-a')
-      back.innerHTML = face.back
-      if (face.note) {
-        const meta = el('div', 'fr-meta')
-        meta.innerHTML = face.note
-        // the card cites this page; that link points at where the reader already is
-        for (const a of meta.querySelectorAll<HTMLAnchorElement>('a[data-slug]'))
-          if (a.dataset.slug === document.body.dataset.slug) a.remove()
-        back.append(meta)
-      }
-      for (const play of back.querySelectorAll<HTMLButtonElement>('.speech-play'))
-        play.disabled = false
-      box.insertBefore(back, bar)
-      bar.replaceChildren(
-        ...GRADES.map(([label, grade]) => {
-          const b = button(label)
-          b.dataset.grade = String(grade)
-          return b
-        }),
-      )
-      relayout()
-    }
-    show.addEventListener('click', flip, { signal })
-    bar.addEventListener(
-      'click',
-      event => {
-        const target = (event.target as Element).closest<HTMLButtonElement>('button[data-grade]')
-        if (!target || !revealed) return
-        void grade(id, Number(target.dataset.grade))
-      },
-      { signal },
-    )
-    box.append(bar)
-    box.hidden = false
-    revealed = false
-    relayout()
-  }
-
-  const grade = async (id: string, value: number) => {
-    queue.shift()
-    if (value === 1) queue.push(id)
-    paint()
-    if (!login) return
-    try {
-      const res = await fetch('/api/flashcards/review', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cardId: id, deckSlug: deck, grade: value }),
-        signal,
-      })
-      if (res.status === 401) login = null
-    } catch {
-      /* the schedule stays as it was; the next grade retries the session */
-    }
-  }
-
-  paint()
-}
-
-type NotesModule = typeof import('./fr-notes.client')
-let notesModule: Promise<NotesModule> | undefined
-
-function mountNotes(root: HTMLElement, signal: AbortSignal) {
-  notesModule ??= import(new URL('fr-notes.js', import.meta.url).href)
-  void notesModule
-    .then(({ mountFrNotes }) => {
-      if (signal.aborted || !root.isConnected) return
-      mountFrNotes(root, document.body.dataset.slug ?? location.pathname.slice(1), signal, () =>
-        relayout(),
-      )
-    })
-    .catch(error => {
-      notesModule = undefined
-      if (!signal.aborted) console.error(error)
-    })
-}
-
-// Room for a 15.5rem column and its 3.5rem gutter beside the text (fr-margins.scss).
-const GUTTER = 56
-const MARGIN_COLUMN = 248 + GUTTER + 16
+// Room for a 15.5rem column and its narrowest 3rem gutter left of the text (fr-margins.scss).
+const MARGIN_COLUMN = 248 + 48 + 16
 const GROUP_GAP = 12
-// a leader ends in a gap and a short dash before its number, as in Locher's margins
-const DASH = 8
-const GAP = 6
+// a leader stops this short of the number, or of the line a sidenote marks
+const STOP = 6
 // stacked elbows take their own trunk columns through the gutter, this far apart
 const STEP = 4
 
 const SVG = 'http://www.w3.org/2000/svg'
+
+/** the middle of an element's first line of text, in the viewport */
+function firstLine(el: HTMLElement): number {
+  const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, node =>
+    node.textContent?.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP,
+  )
+  const text = walker.nextNode()
+  if (text) {
+    const range = document.createRange()
+    range.selectNodeContents(text)
+    const rect = range.getClientRects()[0]
+    if (rect) return rect.top + rect.height / 2
+  }
+  const r = el.getBoundingClientRect()
+  return r.top + r.height / 2
+}
 
 function mountLayout(article: HTMLElement, signal: AbortSignal) {
   const groups = Array.from(article.querySelectorAll<HTMLElement>('.fr-group'))
@@ -233,7 +57,14 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
   leaders.classList.add('fr-leaders')
   leaders.setAttribute('aria-hidden', 'true')
   article.append(leaders)
-  const leaderOf = new Map<HTMLElement, SVGPathElement>()
+  // a group's entries each take a leader to the block's number; a sidenote takes one
+  const leaderOf = new Map<HTMLElement, SVGPathElement[]>()
+  // a sidenote keeps its box; neighbours take different tones (fr-margins.scss), so two boxes
+  // stacked in the margin read apart
+  const notes = Array.from(article.querySelectorAll<HTMLElement>('.sidenote-content'))
+  const labelOf = (content: HTMLElement) =>
+    content.previousElementSibling?.querySelector<HTMLElement>('.sidenote-label') ?? null
+  notes.forEach((content, i) => (content.dataset.frTone = String((i % 3) + 1)))
 
   // folded, an open entry's body leaves the parenthesis before the text for a fold under the block
   const entries = Array.from(article.querySelectorAll<HTMLElement>('.fr-entry'))
@@ -289,7 +120,7 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
       anchor.classList.toggle('fr-hot', on)
       for (const group of mine) {
         group.classList.toggle('fr-hot', on)
-        leaderOf.get(group)?.classList.toggle('fr-hot', on)
+        for (const path of leaderOf.get(group) ?? []) path.classList.toggle('fr-hot', on)
       }
     }
     for (const node of [anchor, ...mine]) {
@@ -297,11 +128,19 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
       node.addEventListener('pointerleave', () => light(false), { signal })
     }
   }
+  for (const content of notes) {
+    const light = (on: boolean) => {
+      for (const path of leaderOf.get(content) ?? []) path.classList.toggle('fr-hot', on)
+    }
+    for (const node of [content, labelOf(content)]) {
+      node?.addEventListener('pointerenter', () => light(true), { signal })
+      node?.addEventListener('pointerleave', () => light(false), { signal })
+    }
+  }
 
   const paint = () => {
     const box = article.getBoundingClientRect()
-    const room = Math.min(box.left, document.documentElement.clientWidth - box.right)
-    const mode = room >= MARGIN_COLUMN ? 'margin' : 'inline'
+    const mode = box.left >= MARGIN_COLUMN ? 'margin' : 'inline'
     article.dataset.frMode = mode
     for (const label of article.querySelectorAll<HTMLButtonElement>('.fr-entry-label')) {
       if (mode === 'margin') {
@@ -329,72 +168,71 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
     leaders.setAttribute('width', String(box.width))
     leaders.setAttribute('height', String(box.height))
 
-    // groups hang beside their block, the label level with its number, pushed down where two overlap
+    // groups hang left of their block, the label level with its number, pushed down where two
+    // overlap
     const hoisted = (g: HTMLElement) => g.parentElement === article
     for (const group of groups) {
       const a = anchors.get(group)!.getBoundingClientRect()
       group.style.top = hoisted(group) ? `${a.top - box.top}px` : '0px'
     }
-    // sidenotes the page already hung in the margins stack with the groups, so nothing overlaps
+    // sidenotes the page already hung in either margin stack with the groups, so nothing overlaps
     interface Item {
       el: HTMLElement
       side: 'left' | 'right'
       top: number
-      /** where the leader ends and the y of the number it points at; sidenotes have none */
-      end?: { x: number; y: number }
+      /** where the leader ends, in the article's frame, and the y of what it points at */
+      end: { x: number; y: number }
+      /** the y of each leader's head on the entry: its labels, or a sidenote's first line */
+      heads: () => number[]
       move: (by: number) => void
     }
     const items: Item[] = []
+    const mid = (r: DOMRect) => r.top + r.height / 2
     for (const group of groups) {
       const anchor = anchors.get(group)!
       const mark = anchor.querySelector<HTMLElement>(':scope > .fr-n')
-      const label = group.querySelector<HTMLElement>('.fr-entry-label')
+      const labels = [...group.querySelectorAll<HTMLElement>('.fr-entry-label')]
+      const label = labels[0]
       if (!mark || !label) continue
       const a = anchor.getBoundingClientRect()
-      const side = group.dataset.side === 'right' ? 'right' : 'left'
-      const inset = side === 'right' ? box.right - a.right : a.left - box.left
-      group.style.setProperty('--fr-dx', hoisted(group) ? '0px' : `${inset}px`)
+      group.style.setProperty('--fr-dx', hoisted(group) ? '0px' : `${a.left - box.left}px`)
       const m = mark.getBoundingClientRect()
-      const l = label.getBoundingClientRect()
-      group.style.top = `${parseFloat(group.style.top) + m.top + m.height / 2 - (l.top + l.height / 2)}px`
-      // the leader stays in the gutter: it stops just before the block, or at the text column's
-      // edge for a block inside a table
-      const edge = hoisted(group)
-        ? side === 'right'
-          ? box.right
-          : box.left
-        : side === 'right'
-          ? a.right
-          : a.left
-      const x = side === 'right' ? edge + GAP : edge - GAP
+      group.style.top = `${parseFloat(group.style.top) + mid(m) - mid(label.getBoundingClientRect())}px`
+      // the leader stays in the gutter and stops at the text column's edge, short of a list item's
+      // marker or a cell's rule
       items.push({
         el: group,
-        side,
+        side: 'left',
         top: group.getBoundingClientRect().top,
-        end: { x: x - box.left, y: m.top + m.height / 2 - box.top },
+        end: { x: -STOP, y: mid(m) - box.top },
+        heads: () => labels.map(l => mid(l.getBoundingClientRect())),
         move: by => (group.style.top = `${parseFloat(group.style.top) + by}px`),
       })
     }
-    for (const content of document.querySelectorAll<HTMLElement>(
-      '.sidenote-content.sidenote-left, .sidenote-content.sidenote-right',
-    )) {
-      if (!article.contains(content)) continue
+    // a sidenote's first line sits level with its label, as an entry's does with its number; its
+    // leader points at the label's line from the text column's edge
+    for (const content of notes) {
       content.style.removeProperty('translate')
-      const label = content.previousElementSibling?.querySelector<HTMLElement>('.sidenote-label')
-      if (!label) continue
+      const label = labelOf(content)
       const side = content.classList.contains('sidenote-right') ? 'right' : 'left'
+      if (!label || !content.classList.contains(`sidenote-${side}`)) continue
+      const l = mid(label.getBoundingClientRect())
+      let dy = l - firstLine(content)
+      content.style.translate = `0 ${dy}px`
       items.push({
         el: content,
         side,
         top: content.getBoundingClientRect().top,
-        move: by => content.style.setProperty('translate', `0 ${by}px`),
+        end: { x: side === 'left' ? -STOP : box.width + STOP, y: l - box.top },
+        heads: () => [firstLine(content)],
+        move: by => content.style.setProperty('translate', `0 ${(dy += by)}px`),
       })
     }
     items.sort((x, y) => x.top - y.top)
     const floors = { left: -Infinity, right: -Infinity }
     interface Lead {
       item: Item
-      /** the label's y, the number's y and the entry's near edge, in the article's frame */
+      /** the head's y, the target's y and the entry's near edge, in the article's frame */
       y0: number
       y1: number
       x0: number
@@ -406,44 +244,43 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
       if (shift > 0) item.move(shift)
       const placed = item.el.getBoundingClientRect()
       floors[item.side] = placed.bottom
-      if (!item.end) continue
-      const label = item.el.querySelector<HTMLElement>('.fr-entry-label')!.getBoundingClientRect()
-      leads.push({
-        item,
-        y0: Math.round(label.top + label.height / 2 - box.top) + 0.5,
-        y1: Math.round(item.end.y) + 0.5,
-        x0: (item.side === 'right' ? placed.left : placed.right) - box.left,
-        level: 0,
-      })
+      // every entry of a group points at the same number: the first level with it, the rest as
+      // elbows that meet its line
+      for (const head of item.heads())
+        leads.push({
+          item,
+          y0: Math.round(head - box.top) + 0.5,
+          y1: Math.round(item.end.y) + 0.5,
+          x0: (item.side === 'left' ? placed.right : placed.left) - box.left,
+          level: 0,
+        })
     }
-    // one hairline from the label to the number: straight when the entry is level with it, an
-    // elbow through the gutter when the stack pushed the entry down. An elbow's trunk spans its
-    // number and its label; a later elbow whose span overlaps takes the next column inward, so
-    // neither one's arms cross the other's trunk
+    // one unbroken hairline from the entry to what it points at: straight when the entry is
+    // level with it, an elbow through the gutter when the stack pushed the entry down. An
+    // elbow's trunk spans its target and its head; a later elbow on the same side whose span
+    // overlaps takes the next column inward, so neither one's arms cross the other's trunk
     const depth = { left: 0, right: 0 }
     for (const lead of leads) {
       if (lead.y0 === lead.y1) continue
       for (const prior of leads) {
         if (prior === lead) break
-        if (prior.item.side !== lead.item.side || prior.y0 === prior.y1) continue
+        if (prior.y0 === prior.y1 || prior.item.side !== lead.item.side) continue
         if (prior.y1 < lead.y0 && lead.y1 < prior.y0)
           lead.level = Math.max(lead.level, prior.level + 1)
       }
       depth[lead.item.side] = Math.max(depth[lead.item.side], lead.level)
     }
     for (const { item, y0, y1, x0, level } of leads) {
-      const dir = item.side === 'right' ? -1 : 1
-      const x1 = item.end!.x
-      const reach = Math.min(GAP + DASH + STEP * (1 + depth[item.side] - level), GUTTER - STEP)
-      const turn = item.side === 'right' ? box.width + reach : -reach
-      const d =
-        y0 === y1
-          ? `M${x0} ${y0}H${x1 - dir * (DASH + GAP)}M${x1 - dir * DASH} ${y1}H${x1}`
-          : `M${x0} ${y0}H${turn}V${y1}H${x1 - dir * (DASH + GAP)}M${x1 - dir * DASH} ${y1}H${x1}`
+      const x1 = item.end.x
+      const dir = item.side === 'left' ? 1 : -1
+      // the trunk stands in the gutter, never past the entries' edge
+      const gutter = Math.abs(x0 - x1)
+      const turn = x1 - dir * Math.min(STEP * (1 + depth[item.side] - level), gutter - STEP)
+      const d = y0 === y1 ? `M${x0} ${y0}H${x1}` : `M${x0} ${y0}H${turn}V${y1}H${x1}`
       const path = document.createElementNS(SVG, 'path')
       path.setAttribute('d', d)
       leaders.append(path)
-      leaderOf.set(item.el, path)
+      leaderOf.set(item.el, [...(leaderOf.get(item.el) ?? []), path])
     }
   }
 
@@ -452,23 +289,23 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
     cancelAnimationFrame(frame)
     frame = requestAnimationFrame(paint)
   }
-  relayout = queue
+  layout.relayout = queue
   const observer = new ResizeObserver(queue)
   observer.observe(article)
   for (const anchor of article.querySelectorAll('.fr-anchor')) observer.observe(anchor)
   // the sidenote script hangs or folds its notes after this one runs, and again on resize
-  const notes = new MutationObserver(records => {
+  const hung = new MutationObserver(records => {
     if (records.some(r => (r.target as Element).classList.contains('sidenote-content'))) queue()
   })
-  notes.observe(article, { attributes: true, attributeFilter: ['class'], subtree: true })
+  hung.observe(article, { attributes: true, attributeFilter: ['class'], subtree: true })
   signal.addEventListener(
     'abort',
     () => {
       cancelAnimationFrame(frame)
       observer.disconnect()
-      notes.disconnect()
+      hung.disconnect()
       leaders.remove()
-      relayout = () => {}
+      layout.relayout = () => {}
     },
     { once: true },
   )

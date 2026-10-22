@@ -13,6 +13,8 @@ import { isoDateFromLocal, parseIsoDate } from '../controls/dates'
 export interface FrCalendarData {
   notes: { date: string; kind: 'lessons' | 'practices'; href: string; episodes: number[] }[]
   horaire: string
+  /** `horaire.json` read at build, so the first paint already has the schedule. */
+  schedule?: Horaire
   /** `fr/`, the flashcard state prefix. */
   prefix: string
   cardIds: string[]
@@ -164,7 +166,7 @@ const Preview = ({ event }: { event: FrEvent }) => (
   </>
 )
 
-/** Server-rendered without the schedule; the browser adds `horaire.json` and the due counts. */
+/** Server-rendered with the schedule; the browser adds the due counts. */
 export const FrCalendarView = ({
   id,
   data,
@@ -175,17 +177,18 @@ export const FrCalendarView = ({
   signal?: AbortSignal
 }) => {
   const today = isoDateFromLocal(new Date())
-  const [horaire, setHoraire] = useState<Horaire | null>(null)
+  const [horaire, setHoraire] = useState<Horaire | null>(data.schedule ?? null)
   const [due, setDue] = useState<Map<string, number>>(new Map())
   const events = useMemo(() => frEvents(data, horaire, today), [data, horaire, today])
 
   useEffect(() => {
-    fetch(data.horaire, { signal })
-      .then(res => (res.ok ? (res.json() as Promise<Horaire>) : null))
-      .then(body => {
-        if (!signal?.aborted && body) setHoraire(body)
-      })
-      .catch(() => undefined)
+    if (!data.schedule)
+      fetch(data.horaire, { signal })
+        .then(res => (res.ok ? (res.json() as Promise<Horaire>) : null))
+        .then(body => {
+          if (!signal?.aborted && body) setHoraire(body)
+        })
+        .catch(() => undefined)
     if (data.cardIds.length === 0) return
     const ids = new Set(data.cardIds)
     fetch(`/api/flashcards/state?prefix=${encodeURIComponent(data.prefix)}`, { signal })
