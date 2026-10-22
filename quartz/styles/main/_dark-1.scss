@@ -1,0 +1,37 @@
+@mixin decls {
+  --background-modifier-error: #d14d41 !important;
+  --background-modifier-success: #879a39 !important;
+  --callout-bug: 209, 77, 65;
+  --callout-default: 67, 133, 190;
+  --callout-example: 139, 126, 200;
+  --callout-fail: 209, 77, 65;
+  --callout-info: 67, 133, 190;
+  --callout-question: 218, 112, 44;
+  --callout-quote: 158, 158, 158;
+  --callout-success: 135, 154, 57;
+  --callout-summary: 58, 169, 159;
+  --callout-tip: 58, 169, 159;
+  --callout-todo: 67, 133, 190;
+  --callout-warning: 218, 112, 44;
+  --checkbox-border-color: #575653 !important;
+  --checkbox-color: rgb(36, 132, 124) !important;
+  --checkbox-marker-color: #100f0f !important;
+  --checkbox-size: 16px !important;
+  --code-background: #1c1b1a !important;
+  --code-comment: #575653 !important;
+  --code-function: #d0a215 !important;
+  --code-important: #da702c !important;
+  --code-keyword: #ce5d97 !important;
+  --code-normal: #cecdc3 !important;
+  --code-operator: #d14d41 !important;
+  --code-property: #3aa99f !important;
+  --code-punctuation: #878580 !important;
+  --code-string: #879a39 !important;
+  --code-tag: #d14d41 !important;
+  --code-value: #8b7ec8 !important;
+  --color-blue: #4385be !important;
+  --color-green: #879a39 !important;
+  --color-orange: #da702c !important;
+  --color-red: #d14d41 !important;
+  --color-yellow: #d0a215 !important;
+}
