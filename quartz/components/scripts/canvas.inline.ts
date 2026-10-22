@@ -449,9 +449,10 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
           const skeleton = currentScale < 0.5
           if (container.classList.contains('canvas-skeleton-view') !== skeleton) {
             container.classList.toggle('canvas-skeleton-view', skeleton)
-            if (skeleton) fitCenterTitles()
             measureEdgeLabels()
           }
+          if (skeleton) fitCenterTitles()
+          measureGroupLabels()
           renderedTransform = transform
         }
         updatePreviewVisibility()
@@ -867,10 +868,18 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
         groupLabels.push({ element: this, group: d, text, fontSize: 24 })
       })
 
+    // Counter-scaled: the title keeps about 13px on screen at any zoom, clamped to its group.
+    let groupLabelSize = 0
     function measureGroupLabels() {
+      const size = Math.max(24, 13 / currentScale)
+      const quantized = 2 ** (Math.round(4 * Math.log2(size)) / 4)
+      if (quantized === groupLabelSize) return
+      groupLabelSize = quantized
       for (const label of groupLabels) {
+        label.element.setAttribute('font-size', `${quantized}px`)
+        label.element.setAttribute('y', String(-quantized / 3))
         const metrics = measureSvgText(label.element, label.text)
-        label.fontSize = parseFloat(getComputedStyle(label.element).fontSize) || 24
+        label.fontSize = quantized
         const shown = fitSvgText(label.text, metrics, label.group.width)
         if (label.element.textContent !== shown) label.element.textContent = shown
       }
@@ -1023,14 +1032,39 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
       .attr('font-weight', '600')
       .text(d => cardName(d))
 
-    // Centered titles are hidden until the skeleton view, so they can only be measured there.
-    let centerTitlesFitted = false
+    // Centered titles are hidden until the skeleton view, so they can only be measured there. They
+    // are measured once at 16px, then grow as the view zooms out so they stay about 12px on screen;
+    // the size moves in quarter octaves, so a zoom gesture rewrites them a few times, not every frame.
+    const centerTitleMetrics = new Map<SVGTextElement, SvgTextMetrics>()
+    let centerTitleSize = 0
     function fitCenterTitles() {
-      if (centerTitlesFitted) return
-      centerTitlesFitted = true
-      fileNodes.select<SVGTextElement>('.node-title-center').each(function (d) {
+      const size = 16 * 2 ** Math.max(0, Math.ceil(4 * Math.log2(0.75 / currentScale)) / 4)
+      if (size === centerTitleSize) return
+      centerTitleSize = size
+      node.select<SVGTextElement>('.node-title-center').each(function (d) {
         const text = cardName(d)
-        this.textContent = fitSvgText(text, measureSvgText(this, text), d.width - 32)
+        let metrics = centerTitleMetrics.get(this)
+        if (!metrics) {
+          this.setAttribute('font-size', '16px')
+          metrics = measureSvgText(this, text)
+          centerTitleMetrics.set(this, metrics)
+        }
+        // a short card caps the title so it never spills over its neighbours
+        const px = Math.min(size, d.height * 0.4)
+        this.setAttribute('font-size', `${px}px`)
+        const lines = wrapSvgText(text, metrics, ((d.width - 32) * 16) / px)
+        if (lines.length === 1) {
+          this.textContent = lines[0]
+          return
+        }
+        this.textContent = ''
+        lines.forEach((line, i) => {
+          const tspan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan')
+          tspan.setAttribute('x', String(d.width / 2))
+          tspan.setAttribute('dy', i === 0 ? '-0.55em' : '1.1em')
+          tspan.textContent = line
+          this.append(tspan)
+        })
       })
     }
 
@@ -1045,6 +1079,7 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
       .attr('dominant-baseline', 'middle')
       .attr('font-size', '16px')
       .attr('font-weight', '600')
+      .text(d => cardName(d))
 
     textNodes.each(function (d: NodeData) {
       const host = select(this)
@@ -1543,9 +1578,11 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
     void document.fonts.ready.then(() => {
       if (!isCanvasActive(container, lifecycle)) return
       measureEdgeLabels()
+      groupLabelSize = 0
       measureGroupLabels()
-      if (centerTitlesFitted) {
-        centerTitlesFitted = false
+      if (centerTitleMetrics.size > 0) {
+        centerTitleMetrics.clear()
+        centerTitleSize = 0
         if (container.classList.contains('canvas-skeleton-view')) fitCenterTitles()
       }
     })
@@ -1740,9 +1777,40 @@ function fitSvgText(text: string, metrics: SvgTextMetrics, maxWidth: number): st
   return `${text.slice(0, end).trimEnd()}…`
 }
 
+// Two lines: break at the last space that fits, then fit the rest from the same prefix widths.
+function wrapSvgText(text: string, metrics: SvgTextMetrics, maxWidth: number): string[] {
+  const { prefixWidths, ellipsisWidth } = metrics
+  if (prefixWidths[text.length] <= maxWidth) return [text]
+  let cut = text.lastIndexOf(' ', text.length)
+  while (cut > 0 && prefixWidths[cut] > maxWidth) cut = text.lastIndexOf(' ', cut - 1)
+  if (cut <= 0) return [fitSvgText(text, metrics, maxWidth)]
+  const base = prefixWidths[cut + 1]
+  let end = text.length
+  while (end > cut + 1 && prefixWidths[end] - base > maxWidth) end--
+  const rest = text.slice(cut + 1, end)
+  const clipped = end < text.length
+  if (clipped) {
+    let e = end
+    while (e > cut + 1 && prefixWidths[e] - base + ellipsisWidth > maxWidth) e--
+    return [text.slice(0, cut), `${text.slice(cut + 1, e).trimEnd()}…`]
+  }
+  return [text.slice(0, cut), rest]
+}
+
 // Cards show the note name, matching the emitter's displayName, never the vault path.
 function cardName(node: NodeData): string {
+  // a text node has no title; its first line stands in at fit zoom
+  if (node.type === 'text') return firstLine(node.text)
   return node.displayName || node.file?.split('/').pop()?.replace(/\.md$/, '') || ''
+}
+
+function firstLine(text: string | undefined): string {
+  const line = (text ?? '').split('\n').find(l => l.trim()) ?? ''
+  return line
+    .replace(/^#+\s*/, '')
+    .replace(/\[\[[^\]|]*\|([^\]]*)\]\]/g, '$1')
+    .replace(/\[\[([^\]]*)\]\]/g, '$1')
+    .trim()
 }
 
 function wrapTextHtml(text: string): string {

@@ -19,6 +19,10 @@ import { collectCanvasMeta } from '../transformers/canvas'
 import { QuartzPluginData } from '../vfile'
 import { write } from './helpers'
 
+// a shared prefix would eat the card width: "épisode 3 : petit bobo" reads "3 · petit bobo"
+const cardTitle = (title: string) =>
+  title.replace(/^épisode (\d+) : /i, '$1\u00a0·\u00a0').replace(/ ([!?:;])/g, '\u00a0$1')
+
 export const CanvasPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => {
   const header = sharedPageComponents.header.filter(component => {
     const name = component.displayName || component.name || ''
@@ -49,6 +53,11 @@ export const CanvasPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts
     const { cfg } = ctx
 
     const allFiles = contentDataFor(content)
+    const titles = new Map<string, string>()
+    for (const data of allFiles) {
+      const title = data.frontmatter?.title
+      if (data.slug && typeof title === 'string' && title) titles.set(data.slug, title)
+    }
 
     for (const [_tree, file] of content) {
       // Only process files marked as canvas files
@@ -56,6 +65,13 @@ export const CanvasPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts
 
       const slug = slugifyFilePath(file.data.relativePath!, true)
       const jcast = file.data.canvas
+
+      // cards carry the note's title, not its file name
+      for (const [, node] of jcast.data.nodeMap) {
+        const resolved = node.data?.resolved
+        const title = resolved && titles.get(resolved.slug)
+        if (resolved && title) resolved.displayName = cardTitle(title)
+      }
 
       const jscastMetadata = collectCanvasMeta(jcast)
 
