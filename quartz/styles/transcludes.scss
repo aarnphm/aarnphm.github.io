@@ -686,33 +686,49 @@
 }
 
 [saved-theme='dark'] {
+  // Theme tokens already flip, so --light is the dark ground and --dark the ink here.
   .pdf-embed-toolbar {
-    background: var(--dark);
-    border-color: var(--darkgray);
+    --pdf-embed-line: color-mix(in srgb, var(--gray) 55%, transparent);
+    background: var(--light);
+    border-color: var(--pdf-embed-line);
   }
 
   .pdf-embed-button {
-    color: var(--light);
-    border-color: var(--lightgray);
+    color: var(--darkgray);
+    background: transparent;
+    border-color: var(--pdf-embed-line) !important;
 
     &:hover:not(:disabled),
     &:active,
     &:focus-visible {
-      color: var(--light);
+      color: var(--dark);
       background: transparent;
-      border-color: var(--light);
+      border-color: var(--dark) !important;
     }
   }
 
   .pdf-embed-page-total,
   .pdf-embed-zoom {
-    color: var(--light);
+    color: var(--darkgray);
   }
 
   .pdf-embed-page-input {
-    background: var(--darkgray);
-    color: var(--light);
-    border-color: var(--lightgray);
+    color: var(--dark);
+    background: var(--light);
+    border-color: var(--pdf-embed-line);
+
+    &:focus {
+      outline-color: var(--dark);
+    }
+  }
+
+  .pdf-embed-page-label {
+    color: var(--darkgray);
+  }
+
+  // Same raster treatment as dark-theme images: the white sheet becomes a dim page.
+  .pdf-embed-canvas {
+    filter: invert(0.88) hue-rotate(180deg);
   }
 
   .pdf-annotation-card,
