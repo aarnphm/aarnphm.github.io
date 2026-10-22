@@ -2,10 +2,10 @@
 date: '2024-02-07'
 description: how behaviourism explains learning, and why prediction leaves questions about attention, love, and responsibility open.
 id: Behavirourism
-modified: 2026-10-17 18:19:59 GMT-04:00
+modified: 2026-10-22 01:12:41 GMT-04:00
 seealso:
-  - '[[thoughts/functionalism]]'
-  - '[[thoughts/hermeneutics]]'
+  - '[[thoughts/functionalism|functionalism]]'
+  - '[[thoughts/hermeneutics|hermeneutics]]'
   - '[[thoughts/Attention|attention]]'
 tags:
   - philosophy
@@ -24,7 +24,7 @@ There are several claims under the name:
 - **Logical behaviourism** concerns the meaning of psychological statements. Hempel's [early account](https://doi.org/10.1017/CBO9780511815157.015) seeks to translate them into physical descriptions, including behavioural responses. This is a stronger claim than requiring an experiment to have observable results.
 - **Skinner's radical behaviourism** includes private events. His [1945 paper](https://betshy.com/wp-content/uploads/2021/09/c238a-the-operational-analysis-of-psychological-terms-b.f.-skinner.pdf) asks how someone learns to report a toothache when other people cannot feel it. He treats private stimuli as part of nature and examines how a community teaches words for them. Denying a separate mental substance leaves room for thinking and feeling.
 
-This also separates behaviourism from [[thoughts/functionalism]]. Functionalism characterizes mental states through their causal relations to inputs, other states, and actions. A description of what someone tends to do leaves those internal relations unspecified.
+This also separates behaviourism from [[thoughts/functionalism|functionalism]]. Functionalism characterizes mental states through their causal relations to inputs, other states, and actions. A description of what someone tends to do leaves those internal relations unspecified.
 
 ## reinforcement
 
