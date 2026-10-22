@@ -120,6 +120,17 @@ export class Panel extends Component {
     })
   }
 
+  /** Selects and focuses the next topic tab matching `key` from anywhere in the bookcase. */
+  stepByLetter(key: string): boolean {
+    if (this.box.hasClass('is-hidden') || this.topicButtons.length === 0) return false
+    const active = this.topicButtons.findIndex(b => b.getAttribute('aria-selected') === 'true')
+    const next = letter(key, Math.max(0, active), this.topicButtons)
+    if (next === null) return false
+    this.host.topic(this.topicButtons[next].dataset.topic!)
+    this.topicButtons[next].focus()
+    return true
+  }
+
   setCamera(state: { canIn: boolean; canOut: boolean; fullscreen: boolean }): void {
     this.buttons.get('in')!.disabled = !state.canIn
     this.buttons.get('out')!.disabled = !state.canOut

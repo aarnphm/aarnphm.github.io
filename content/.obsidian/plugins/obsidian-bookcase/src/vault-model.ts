@@ -1,7 +1,7 @@
 // The only module that calls the garden's vault modules. It hands resolved entries to the garden's
 // `buildVault`, swaps the scene's theme rules for Obsidian's, drops the garden's card dialog (the page
 // panel takes its place) and serializes the rest.
-import type { Element, ElementContent } from 'hast'
+import type { Element, ElementContent, RootContent } from 'hast'
 import { toHtml } from 'hast-util-to-html'
 import {
   type VaultEntry,
@@ -13,7 +13,7 @@ import { VAULT_MATERIALS, vaultCss } from '../../../../../quartz/util/base/vault
 export { VAULT_DEFAULTS, VAULT_LIMITS, lidRibs } from '../../../../../quartz/util/base/vault/layout'
 export type { VaultEntry, VaultView }
 
-const isElement = (node: ElementContent): node is Element => node.type === 'element'
+const isElement = (node: ElementContent | RootContent): node is Element => node.type === 'element'
 
 const hasClass = (node: Element, name: string) => {
   const cls = node.properties.className
@@ -22,7 +22,7 @@ const hasClass = (node: Element, name: string) => {
 
 function findScene(node: Element): Element | null {
   if (node.tagName === 'svg' && hasClass(node, 'vault-scene')) return node
-  for (const child of node.children)
+  for (const child of [...node.children, ...(node.content?.children ?? [])])
     if (isElement(child)) {
       const found = findScene(child)
       if (found) return found

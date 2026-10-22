@@ -130,10 +130,15 @@
 }
 
 .bookcase-controls button:focus-visible {
+  outline: none;
+}
+
+.bookcase-camera-controls > button:focus-visible {
   position: relative;
   z-index: 1;
-  outline: 2px solid var(--bc-hi);
-  outline-offset: 1px;
+  border-color: var(--bc-hi);
+  background: var(--bc-hi);
+  color: var(--background-primary);
 }
 
 /* direct children only: the tabs must not take the square size, or the open tab is clipped */
@@ -194,17 +199,8 @@
   padding: 0 0.25rem;
 }
 
-/* inside the scrolling column an outer ring would be cut off */
-.bookcase-controls .bookcase-tab:focus-visible {
-  outline-offset: -4px;
-}
-
 .bookcase-controls .bookcase-topic[aria-selected='true'] {
   padding: 0 0.5rem;
-}
-
-.bookcase-topic[aria-selected='true']:focus-visible {
-  outline-color: var(--background-primary);
 }
 
 .bookcase-tab + .bookcase-tab {
@@ -707,6 +703,7 @@
 .vault-stage {
   position: absolute;
   inset: 0;
+  overflow: hidden;
   background: var(--background-primary);
 }
 
@@ -714,6 +711,7 @@
   position: absolute;
   inset: 0;
   overflow: auto;
+  overflow-anchor: none;
   overscroll-behavior: contain;
   cursor: grab;
   user-select: none;
@@ -722,13 +720,77 @@
 }
 
 .vault-viewport:focus-visible {
-  outline: 2px solid var(--text-normal);
-  outline-offset: -2px;
+  outline: none;
 }
 
 .vault-canvas {
   position: relative;
   overflow: clip;
+}
+
+/* the zoom rides on this wrapper as a composited transform; the drawing keeps its unit size */
+.vault-scaler {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
+.vault-status {
+  display: grid;
+  place-items: center;
+  width: 2.125rem;
+  height: 2.125rem;
+  margin-top: 0.25rem;
+  color: var(--text-muted);
+  background: var(--background-primary);
+  pointer-events: none;
+}
+
+.vault-view[data-layout='narrow'] .vault-status {
+  margin-top: 0;
+  margin-left: 0.25rem;
+}
+
+.vault-status .vault-status-spinner {
+  display: inline-flex;
+  animation: vault-status-spin 850ms linear infinite;
+}
+
+.vault-status .vault-status-ready {
+  display: none;
+}
+
+.vault-status[data-state='ready'] .vault-status-spinner {
+  display: none;
+}
+
+.vault-status[data-state='ready'] .vault-status-ready {
+  display: inline-flex;
+}
+
+.vault-status .vault-status-text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@keyframes vault-status-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vault-status .vault-status-spinner {
+    animation: none;
+  }
 }
 
 /* the scroll shield: always laid out, never painted; the view sets only its inline pointer-events
@@ -965,9 +1027,9 @@
   cursor: pointer;
 }
 
-/* transparent, not hidden: the empty slot keeps the pointer, so the can behind it cannot claim it */
-.vault-scene .cn-can[data-lifted] {
-  opacity: 0;
+.vault-scene .cn-can[data-dimmed] {
+  opacity: 0.22;
+  pointer-events: none;
 }
 
 /* only the front of the roll, the face that carries the label, takes the pointer */
@@ -1069,29 +1131,20 @@
   pointer-events: none;
 }
 
-/* the pulled copy leaves its slot along -y and rises; the lid detail shows once it is out */
-.vault-scene .vault-lift .cn-can {
+/* the pulled copy leaves its slot along -y and rises; its foreground mask preserves depth */
+.cn-can.cn-pulled {
   will-change: transform;
 }
 
-.vault-scene .vault-lift .cn-can[data-out] {
+.cn-can.cn-pulled[data-out] {
   transform: translate(var(--px), var(--py));
 }
 
-.vault-scene .vault-lift .cn-lid-detail {
-  animation: vault-lid-in 120ms 200ms both;
-}
-
-@keyframes vault-lid-in {
-  from {
-    opacity: 0;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .vault-scene .vault-lift .cn-lid-detail {
-    animation: none;
-  }
+.vault-motion {
+  contain: strict;
+  overflow: hidden;
+  pointer-events: none;
+  will-change: transform;
 }
 
 /* the index and the live line are for screen readers; the rack's arrow keys walk the same order */

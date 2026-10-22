@@ -54,6 +54,14 @@ export const viewBox = (b: Box) => `${r1(b.x)} ${r1(b.y)} ${r1(b.w)} ${r1(b.h)}`
 const polygon = (className: string, points: readonly Point[], attrs = '') =>
   `<polygon class="${className}" points="${toPoints(points)}"${attrs}/>`
 
+const surfaces = (className: string, faces: readonly (readonly Point[])[]) => {
+  if (faces.length === 0) return ''
+  const d = faces
+    .map(points => `M${points.map(([x, y]) => `${r1(x)} ${r1(y)}`).join('L')}Z`)
+    .join('')
+  return `<path class="${className}" d="${d}"/>`
+}
+
 const lines = (className: string, segments: readonly Segment[]) =>
   segments.length > 0 ? `<path class="${className}" d="${toPath(segments)}"/>` : ''
 
@@ -134,8 +142,8 @@ function bookBody<T>(book: SceneBook<T>, paint: BookPaint, cover: string): strin
     polygon('bc-face-end', faces.end) +
     polygon('bc-pages', detail.pages) +
     lines('bc-page-crease', detail.pageCreases) +
-    detail.boardRims.map(points => polygon('bc-board-rim', points)).join('') +
-    detail.jacketRims.map(points => polygon('bc-jacket-rim', points)).join('') +
+    surfaces('bc-board-rim', detail.boardRims) +
+    surfaces('bc-jacket-rim', detail.jacketRims) +
     lines('bc-jacket-fold', detail.jacketCreases) +
     lines('bc-round-lit', [detail.round[0]]) +
     lines('bc-round-shade', [detail.round[1]]) +
