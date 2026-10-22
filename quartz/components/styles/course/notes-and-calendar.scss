@@ -337,6 +337,10 @@ code.course-path {
 .course-calendar {
   --control-focus: var(--dark);
 
+  .g-calendar-day-header {
+    padding: 0.1rem 0.15rem 0.2rem;
+  }
+
   .g-calendar-day-header h3 {
     font-size: 1em;
   }
@@ -346,11 +350,38 @@ code.course-path {
   }
 }
 
+// the due count sits over the day's top corner and shows on hover or focus, so the date keeps its row
+.course-calendar .g-calendar-day,
+.fr-calendar .g-calendar-day {
+  position: relative;
+}
+
+.fr-calendar .g-calendar-day-header {
+  padding: 0.1rem 0.15rem 0.2rem;
+}
+
 .course-calendar-due {
+  position: absolute;
+  inset-block-start: 0.3rem;
+  inset-inline-end: 0.4rem;
+  padding-inline: 0.25rem;
+  background: var(--light);
   color: var(--darkgray);
   font-family: var(--codeFont);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s;
+
+  .g-calendar-day:hover &,
+  .g-calendar-day:focus-within & {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
 }
 
 .course-calendar-foot {
