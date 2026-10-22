@@ -122,12 +122,14 @@ export const buildActivityComparisonStats = <N>(
       undefined,
       attrs,
     )
+    // Names run long, so the column shows only its stroke sample; the title and the hidden
+    // name carry it for hover and assistive tech.
     const title = activity.name || activity.sport
     const heading = f.el('div', 'tri-compare-stats-heading', undefined, { title })
     f.add(
       heading,
       f.el('span', 'tri-compare-stats-swatch', undefined, { 'aria-hidden': 'true' }),
-      f.el('span', 'tri-compare-stats-name', title),
+      f.el('span', 'visually-hidden', title),
     )
     f.add(cell, heading)
     if (partial(id))
