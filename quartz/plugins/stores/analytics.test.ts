@@ -1677,6 +1677,67 @@ test('run radar replaces climb and recovery with native stride and oscillation',
   assert.equal(run?.history.at(-1)?.oscillation, 50)
 })
 
+test('run abilities consume matched Garmin summaries without Apple workouts', () => {
+  const { cache, oura, weights } = fixtures()
+  const run = cache.activities['2']
+  const garmin: GarminCache = {
+    lastSync: cache.lastSync,
+    activities: {
+      'native-run': {
+        id: 'native-run',
+        name: run.name,
+        sport: 'run',
+        startDate: run.startDate,
+        startDateLocal: run.startDateLocal,
+        distanceM: run.distance,
+        movingTimeS: run.movingTime,
+        elapsedTimeS: run.elapsedTime,
+        sourceDevice: null,
+        sourceFile: null,
+        metrics: emptyGarminMetrics(),
+        fueling: emptyGarminFueling(),
+        runningDynamics: {
+          source: 'garmin',
+          averageRespirationRate: null,
+          averageStrideLengthCm: 115,
+          averageVerticalRatioPct: null,
+          averageVerticalOscillationCm: 9.1,
+          averageGroundContactBalanceLeftPct: null,
+          averageGroundContactTimeMs: null,
+          averageStepSpeedLossMps: null,
+          averageStepSpeedLossPct: null,
+          impactLoadM: null,
+        },
+      },
+    },
+  }
+  const evaluate = () => {
+    const payload = buildPayload(cache, oura, garmin, '2026-05-12')
+    assert.equal(payload.details['2'].garmin?.activityId, 'native-run')
+    return buildAnalytics(cache, {
+      oura,
+      weights,
+      activityDetails: payload.details,
+      since: '2026-05-12',
+    }).engine.abilities.sports.find(sport => sport.sport === 'run')
+  }
+  const native = evaluate()
+  assert.equal(native?.axes.find(axis => axis.key === 'stride')?.label, 'stride length')
+  assert.equal(native?.axes.find(axis => axis.key === 'stride')?.rawValue, 1.15)
+  assert.equal(native?.axes.find(axis => axis.key === 'oscillation')?.rawValue, 9.1)
+  assert.equal(native?.history.at(-1)?.stride, 50)
+  assert.equal(native?.history.at(-1)?.oscillation, 50)
+
+  const dynamics = garmin.activities['native-run'].runningDynamics
+  assert.ok(dynamics)
+  dynamics.averageStrideLengthCm = 0
+  dynamics.averageVerticalOscillationCm = 99
+  const invalid = evaluate()
+  assert.equal(invalid?.axes.find(axis => axis.key === 'stride')?.label, 'estimated stride length')
+  assert.equal(invalid?.axes.find(axis => axis.key === 'oscillation')?.rawValue, null)
+  assert.equal(invalid?.history.at(-1)?.oscillation, null)
+})
+
 test('engine derives ftp from 20-min power only when strava declares none', () => {
   const { cache, oura, weights } = fixtures()
   const a = buildAnalytics({ ...cache, zones: undefined }, { oura, weights, since: '2026-05-12' })

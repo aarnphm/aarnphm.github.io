@@ -139,13 +139,6 @@ export function buildAbilities(scope: AbilityScope): AbilitiesBlock {
             .map(x => ({ day: x.day, value: runningDynamics.get(x.a.id)?.strideLengthM ?? null }))
             .filter((point): point is { day: string; value: number } => point.value != null)
         : []
-    const nativeStrideSampleCount =
-      sport === 'run'
-        ? mine.reduce(
-            (total, x) => total + (runningDynamics.get(x.a.id)?.strideSampleCount ?? 0),
-            0,
-          )
-        : 0
     const estimatedStride =
       sport === 'run'
         ? mine
@@ -160,7 +153,7 @@ export function buildAbilities(scope: AbilityScope): AbilitiesBlock {
             })
             .filter((point): point is { day: string; value: number } => point.value != null)
         : []
-    const stride = nativeStrideSampleCount >= 2 ? nativeStride : estimatedStride
+    const stride = nativeStride.length > 0 ? nativeStride : estimatedStride
     const oscillation =
       sport === 'run'
         ? mine
@@ -252,7 +245,7 @@ export function buildAbilities(scope: AbilityScope): AbilitiesBlock {
     } else {
       fourth = {
         key: 'stride',
-        label: nativeStrideSampleCount >= 2 ? 'stride length' : 'estimated stride length',
+        label: nativeStride.length > 0 ? 'stride length' : 'estimated stride length',
         proj: null,
         score: personalMetricScore(currentStride, strideBounds, false),
         rawValue: currentStride != null ? round(currentStride, 2) : null,

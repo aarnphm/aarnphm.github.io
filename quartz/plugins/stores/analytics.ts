@@ -193,7 +193,7 @@ export function buildAnalytics(
   }))
   const trainingActs = acts.filter(act => act.a.commute !== true)
   const swimMetrics = swimMetricsByActivityId(acts, inputs.apple, inputs.activityDetails)
-  const runningDynamics = runningDynamicsByActivityId(acts, inputs.apple)
+  const runningDynamics = runningDynamicsByActivityId(acts, inputs.apple, inputs.activityDetails)
   const distributions = buildDistributions(
     trainingActs,
     inputs.zones,

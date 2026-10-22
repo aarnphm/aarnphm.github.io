@@ -191,7 +191,6 @@ export interface SwimActivityMetrics {
 
 export interface RunningDynamicsMetrics {
   strideLengthM: number | null
-  strideSampleCount: number
   verticalOscillationCm: number | null
 }
 
