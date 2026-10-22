@@ -513,7 +513,7 @@ test('createHardcoverPreview sizes mount immediately on open, decodes cover and 
     } as unknown as Document
 
     const { createHardcoverPreview } =
-      await import('../../components/scripts/base-bookcase-preview')
+      await import('../../components/scripts/base-bookcase/preview')
     const root = new FakeElement('div')
     const controller = new AbortController()
     const preview = createHardcoverPreview(root as unknown as HTMLElement, controller.signal)

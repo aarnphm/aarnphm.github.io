@@ -12,9 +12,9 @@ import {
   SHELF_MATERIALS,
   stylePackOptions,
 } from '../../../util/base/bookcase/styles'
-import { retainCovers } from '../base-bookcase-artwork'
 import { rootNavSignal } from '../root-lifecycle'
 import { removeArtwork } from './artwork'
+import { retainCovers } from './covers'
 import { readBookBounds } from './state'
 
 export function mountShelves(s: BookcaseScene) {

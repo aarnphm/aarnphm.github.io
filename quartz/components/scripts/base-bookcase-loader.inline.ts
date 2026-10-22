@@ -1,4 +1,4 @@
-import { type Cover, retainCovers } from './base-bookcase-artwork'
+import { type Cover, retainCovers } from './base-bookcase/covers'
 import { currentNavSignal } from './nav-lifecycle'
 import { rootNavSignal } from './root-lifecycle'
 
