@@ -250,7 +250,7 @@ export const buildComparisonPowerCurve = <N>(
   )
   f.add(
     chart,
-    comparisonChartHead(f, 'power curve', ranges ?? undefined),
+    comparisonChartHead(f, 'power curve', ranges ?? undefined, true),
     axisFrame(
       f,
       graph,

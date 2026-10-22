@@ -303,6 +303,73 @@ $compare-ink: color-mix(in oklab, var(--tri-compare-color) var(--tri-compare-ink
   white-space: nowrap;
 }
 
+// As in the stream chart caps (.tri-elev-cap--summary), title and readout share one row that
+// never wraps: names shrink to an ellipsis and values keep a fixed width, so a scrub cannot
+// change the row height or move the plot. A head too narrow for the swatches and values lays
+// the readout over the top of the plot instead, as .tri-fig-readout does on the stream.
+.tri-compare-chart-head--readout {
+  position: relative;
+  flex-wrap: nowrap;
+  // Empty values before the first scrub have no baseline; baseline alignment then grows the row.
+  align-items: center;
+  container: tri-compare-head / inline-size;
+
+  > .tri-compare-title {
+    flex: none;
+  }
+
+  > .tri-compare-readout {
+    flex: 1 1 0;
+    flex-wrap: nowrap;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  // Rows share the room equally, so a long name cannot squeeze a short one to its swatch.
+  .tri-compare-readout-row {
+    flex: 1 1 0;
+    max-width: max-content;
+  }
+
+  .tri-compare-readout-value {
+    min-width: var(--tri-compare-readout-value-width, 6ch);
+    text-align: end;
+  }
+}
+
+// Controls keep their place; the readout lies over them at the end of the title row while it
+// shows, as .tri-fig-readout does over a stream chart cap.
+@container tri-compare-head (min-width: 25.01rem) {
+  .tri-compare-chart-head--controls > .tri-compare-readout {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    z-index: 2;
+    max-width: 100%;
+    padding-inline-start: 0.45rem;
+    background: var(--light);
+    transform: translateY(-50%);
+  }
+}
+
+@container tri-compare-head (max-width: 25rem) {
+  .tri-compare-chart-head--readout > .tri-compare-readout {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 2;
+    flex-wrap: wrap;
+    padding: 0.2rem 0 0.2rem 0.45rem;
+    overflow: visible;
+    background: var(--light);
+  }
+
+  .tri-compare-chart-head--readout .tri-compare-readout-row {
+    flex: 0 1 auto;
+    max-width: 100%;
+  }
+}
+
 .tri-compare-readout-row--missing {
   color: var(--darkgray);
 }

@@ -66,6 +66,7 @@ export const wireActivityComparison = (
   const map = comparison.querySelector<HTMLElement>('.tri-compare-map')
   const readout = comparison.querySelector<HTMLElement>('[data-compare-readout]')
   const readoutContext = readout?.querySelector<HTMLElement>('[data-compare-readout-context]')
+  const readoutValueWidths = new Map<ActivityComparisonReadoutMode, number>()
   const maxDistanceKm = Number(
     map?.dataset.domainXMax ?? distanceCharts[0]?.graph.dataset.domainXMax ?? 0,
   )
@@ -154,6 +155,13 @@ export const wireActivityComparison = (
     if (head && readout.parentElement !== head) head.append(readout)
     readout.dataset.visible = 'true'
     readout.dataset.compareReadoutMode = mode
+    // Each mode's value column only widens, so scrubbing never moves the names beside it.
+    const valueWidth = Math.max(
+      readoutValueWidths.get(mode) ?? 0,
+      ...values.map(({ value }) => value.length),
+    )
+    readoutValueWidths.set(mode, valueWidth)
+    readout.style.setProperty('--tri-compare-readout-value-width', `${valueWidth}ch`)
     if (readoutContext) {
       setComparisonMath(readoutContext, context)
       readoutContext.hidden = context.length === 0

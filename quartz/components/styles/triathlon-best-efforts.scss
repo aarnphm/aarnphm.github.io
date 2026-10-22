@@ -20,7 +20,9 @@
   }
 }
 
-.tri-be-tabs.tri-map-tablist {
+// The shared tablist rule sets `margin: -4px` for focus room at equal specificity and loads
+// later, so the controls scope keeps the auto margin that pins the view tabs right.
+.tri-be-controls .tri-be-tabs.tri-map-tablist {
   flex: none;
   margin-inline-start: auto;
   block-size: var(--tri-be-control-height);
@@ -41,8 +43,9 @@
   min-width: 0;
 }
 
+// The view tabs stay pinned to the right of the category row; only phones let them wrap.
 .tri-be-controls.tri-dist-controls {
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: flex-start;
   inline-size: 100%;
 }
@@ -468,6 +471,10 @@
 }
 
 @media all and (max-width: 48rem) {
+  .tri-be-controls.tri-dist-controls {
+    flex-wrap: wrap;
+  }
+
   .tri-be-hero {
     align-items: flex-start;
   }

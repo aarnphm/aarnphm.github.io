@@ -25,6 +25,17 @@ const DISPATCH_ICON =
 
 type TriPanelKind = 'analytics' | 'map' | 'calendar'
 
+const ActivitySearchInput = ({ kind }: { kind: 'map' | 'compare' }) => (
+  <input
+    class={`tri-ana-search tri-${kind}-search`}
+    type="search"
+    placeholder="search (filter:bike|run|swim|walk, sort:distance|pace|cadence)"
+    aria-label={kind === 'map' ? 'search routes' : 'search comparison activities'}
+    aria-controls={kind === 'compare' ? 'tri-analytics-results' : undefined}
+    autocomplete="off"
+  />
+)
+
 interface TriPanelShellProps {
   kind: TriPanelKind
   id?: string
@@ -167,6 +178,9 @@ export const AnalyticsPanel = ({
       </div>
     }
   >
+    <div class="tri-compare-search-wrap">
+      <ActivitySearchInput kind="compare" />
+    </div>
     <div id="tri-analytics-results" class="tri-ana-results" aria-hidden="true" />
     <div id="tri-analytics-detail" class="tri-ana-detail" aria-hidden="true" />
     {ANALYTICS_CHAPTERS.map(chapter => (
@@ -202,13 +216,7 @@ export const MapPanel = ({ page }: { page?: boolean }) => (
     bodyClass="tri-map-body"
     controls={
       <div class="tri-map-search-wrap tri-key-anchor tri-key-search">
-        <input
-          class="tri-ana-search tri-map-search"
-          type="search"
-          placeholder="search (filter:bike|run|swim|walk, sort:distance|pace|cadence)"
-          aria-label="search routes"
-          autocomplete="off"
-        />
+        <ActivitySearchInput kind="map" />
         <ShortcutHint>/</ShortcutHint>
         <div class="tri-ana-results tri-map-results" aria-hidden="true" />
       </div>

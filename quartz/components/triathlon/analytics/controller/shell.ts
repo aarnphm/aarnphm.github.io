@@ -21,6 +21,7 @@ export interface AnalyticsSession {
   scrim: HTMLElement | null
   closeBtn: HTMLElement | null
   results: HTMLElement | null
+  search: HTMLInputElement | null
   compareToggle: HTMLButtonElement | null
   compareSubmit: HTMLButtonElement | null
   pageMode: boolean
@@ -95,6 +96,7 @@ export interface AnalyticsSession {
 }
 
 export function initSession(s: AnalyticsSession) {
+  s.search = s.panel.querySelector<HTMLInputElement>('.tri-compare-search')
   s.body = s.root.querySelector<HTMLElement>('.tri-ana-body')
 
   s.detail = s.root.querySelector<HTMLElement>('.tri-ana-detail')
@@ -187,6 +189,7 @@ export function mountShellChrome(s: AnalyticsSession) {
   }
 
   s.toMain = () => {
+    if (s.search) s.search.value = ''
     s.closeDetail()
     s.setCompareMode(false)
     s.panel.classList.remove('tri-analytics--searching')

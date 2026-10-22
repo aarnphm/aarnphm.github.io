@@ -38,7 +38,8 @@
   box-sizing: border-box;
   margin: 0;
   min-width: 4rem;
-  min-height: 1.5rem;
+  // The group border adds 2px; the group matches the 1.5rem chart tabs beside it.
+  min-height: calc(1.5rem - 2px);
   padding: 0.12rem 0.45rem;
   font: inherit;
   font-weight: 400;
@@ -186,14 +187,17 @@
   text-align: center;
 }
 
-// Identity colour appears once per column: a stroke sample beside the date.
+// Identity colour appears once per column: a stroke sample beside the name, as in the chart
+// legend. The name keeps to one line and ends in an ellipsis; the heading's title holds it in
+// full. Its zero width keeps the name out of the column's intrinsic size, so the values set
+// the column width and the heading fills whatever they leave.
 .tri-compare-stats-heading {
   display: flex;
   align-items: baseline;
   justify-content: center;
   gap: 0.45rem;
-  width: 100%;
-  min-width: 6rem;
+  width: 0;
+  min-width: 100%;
   color: var(--dark);
 }
 
@@ -204,11 +208,11 @@
 
 .tri-compare-stats-name {
   min-width: 0;
+  overflow: hidden;
   color: var(--dark);
-  overflow-wrap: anywhere;
   line-height: 1.4;
-  text-align: center;
-  text-wrap: balance;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .tri-compare-stats-tag {
@@ -289,10 +293,6 @@
     min-width: 0;
     padding-inline-start: 0.8rem;
   }
-
-  .tri-compare-stats-heading {
-    min-width: 0;
-  }
 }
 
 @mixin compare-stats-compact {
@@ -321,12 +321,6 @@
   .tri-compare-stats-value {
     flex: 0 1 auto;
     text-align: end;
-  }
-
-  .tri-compare-stats-heading {
-    flex-direction: column;
-    align-items: center;
-    gap: 0.2rem;
   }
 }
 
