@@ -1,9 +1,10 @@
 @use '../../styles/variables.scss' as *;
 
-// maquette 2: one line, facts left (they shrink with an ellipsis), review links right
+// maquette 2: one line, facts left (they shrink with an ellipsis), review links right. The bar
+// itself is trail-bar.scss; the facts are inline text, so their line is the control height and the
+// half-leading centres it.
 .course-unit-bar.fr-unit-bar {
   flex-wrap: nowrap;
-  align-items: baseline;
 
   .fr-unit-facts {
     flex: 1 1 0;
@@ -11,16 +12,22 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    line-height: var(--course-control-height);
+
+    // base.scss sets `white-space: normal` on links, which wrapped a link onto three lines here
+    a {
+      white-space: inherit;
+      // an inline link is as tall as its content box (1.1667em in Berkeley Mono), not its line
+      padding-block: calc((var(--course-control-height) - 1.1667em) / 2);
+    }
   }
 
   .course-unit-sep {
-    margin-inline: var(--space-2);
+    margin-inline: 1ch;
   }
 
   .course-unit-actions {
     flex: none;
-    display: flex;
-    gap: var(--space-3);
     white-space: nowrap;
   }
 
@@ -30,6 +37,13 @@
 }
 
 .fr-home {
+  // the home's trail bar is the one /courses draws: it fills the grid row and starts at the
+  // container's top edge, which .course-home already spaces
+  > .course-unit-bar {
+    grid-column: 1 / -1;
+    margin-top: 0;
+  }
+
   // the count of unseen cards is noise next to the due count
   .course-new {
     display: none;

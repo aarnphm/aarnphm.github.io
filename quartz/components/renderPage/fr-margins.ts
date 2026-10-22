@@ -7,19 +7,13 @@ import { parseFlashcards } from '../../util/flashcards'
 import { flashcardsSlug } from '../../util/flashcards-path'
 import { assignCards, foldText, FrSection, lessonLabel } from '../../util/fr-margins'
 import { FullSlug, resolveRelative, simplifySlug } from '../../util/path'
+import { anchorOf, Apparatus, classesOf, walk } from './apparatus'
+import { takeNotes } from './apparatus-notes'
 
 type Ctx = QuartzComponentProps['ctx']
 
 const GLOSS_HEADING = 'comprendre-les-expressions'
 const BLOCKS = new Set(['p', 'li', 'td', 'th', 'blockquote'])
-// A margin entry hangs from a prose block; a header cell is no place for one.
-// a quotation's first paragraph carries the number, so it opens a line of text, never its own
-const ANCHORS = new Set(['p', 'li', 'td'])
-
-const classesOf = (node: Element): string[] => {
-  const value = node.properties?.className
-  return Array.isArray(value) ? value.map(String) : typeof value === 'string' ? [value] : []
-}
 
 const levelOf = (node: Element): number => Number(node.properties?.dataLevel ?? 0)
 
@@ -28,16 +22,6 @@ const isSection = (node: ElementContent, level?: number): node is Element =>
   node.tagName === 'section' &&
   classesOf(node).includes('collapsible-header') &&
   (level === undefined || levelOf(node) === level)
-
-/** Depth-first walk that skips sidenote bodies, so margin text never counts as page text. */
-function walk(node: Element | Root, fn: (el: Element, parent: Element | Root) => void | false) {
-  for (const child of node.children) {
-    if (child.type !== 'element') continue
-    if (classesOf(child).includes('sidenote-content')) continue
-    if (fn(child, node) === false) continue
-    walk(child, fn)
-  }
-}
 
 function sectionsOf(tree: Root): { node: Element; info: FrSection; body: Element }[] {
   const out: { node: Element; info: FrSection; body: Element }[] = []
@@ -63,18 +47,14 @@ function sectionsOf(tree: Root): { node: Element; info: FrSection; body: Element
   return out
 }
 
-type EntryKind = 'rev' | 'notes' | 'lex' | 'cite'
+type EntryKind = 'rev' | 'notes' | 'rem' | 'lex' | 'cite'
 
 const LABELS: Record<EntryKind, string> = {
   rev: 'révision',
   notes: 'notes',
+  rem: 'remarque',
   lex: 'lexique',
   cite: 'cité par',
-}
-
-interface Entry {
-  kind: EntryKind
-  body: Element
 }
 
 // Everything inside a prose block is a span: a <div> would end the paragraph when the browser parses it.
@@ -179,16 +159,6 @@ function citedByMargin(links: { slug: FullSlug; label: string }[], from: FullSlu
   )
 }
 
-/** First prose block of a section body, or the body itself when the section has none. */
-function anchorOf(container: Element): Element {
-  let found: Element | undefined
-  walk(container, el => {
-    if (found) return false
-    if (ANCHORS.has(el.tagName) && toString(el).trim()) found = el
-  })
-  return found ?? container
-}
-
 const bodyOf = (section: Element): Element => {
   let body: Element | undefined
   walk(section, el => {
@@ -198,8 +168,8 @@ const bodyOf = (section: Element): Element => {
 }
 
 /**
- * One margin column, Locher style: each prose block that carries margin work opens with a number
- * `(n)`, and the column holds `§ label (n)` entries for it. Review of the cards that cite the page
+ * One margin column left of the text, Locher style: each prose block that carries margin work opens
+ * with a number `(n)`, and the column holds `§ label (n)` entries for it. Review of the cards that cite the page
  * and the reader's notes sit at the first block of each `##`; the page's "comprendre les expressions"
  * rows sit at the first use of each expression; the lessons that cite the page sit at the first
  * block. The browser hangs the group beside the block, its label level with the number, or folds it
@@ -222,12 +192,9 @@ export function renderFrMargins(tree: Root, componentData: QuartzComponentProps,
     sections.map(s => s.info),
   )
 
-  const pending = new Map<Element, Entry[]>()
-  const put = (block: Element, entry: Entry) => {
-    const list = pending.get(block)
-    if (list) list.push(entry)
-    else pending.set(block, [entry])
-  }
+  const apparatus = new Apparatus()
+  const put = (block: Element, entry: { kind: EntryKind; body: Element }) =>
+    apparatus.put(block, { ...entry, label: LABELS[entry.kind] })
 
   const firstBlock = anchorOf(sections[0].body)
   const backlinks = renderDataFor(ctx, allFiles).backlinksBySlug.get(simplifySlug(slug)) ?? []
@@ -267,54 +234,12 @@ export function renderFrMargins(tree: Root, componentData: QuartzComponentProps,
     for (const [block, items] of groups) put(block, { kind: 'lex', body: glossMargin(items) })
   }
 
+  // the page's footnotes hang beside the block that calls them; its sidenotes keep their boxes
+  takeNotes(tree, apparatus, { kind: 'rem', label: LABELS.rem })
+
   if (lessons.length > 0) put(firstBlock, { kind: 'cite', body: citedByMargin(lessons, slug) })
 
-  // numbers follow document order, whichever pass found the block first
-  const ordered: Element[] = []
-  walk(tree, el => {
-    if (pending.has(el)) ordered.push(el)
-  })
-  ordered.forEach((block, i) => {
-    const n = i + 1
-    const entries = pending.get(block)!.sort((a, b) => ORDER[a.kind] - ORDER[b.kind])
-    block.properties = {
-      ...block.properties,
-      className: [...classesOf(block), 'fr-anchor'],
-      dataFrN: String(n),
-    }
-    // the number and the groups open the block: beside it in the margin, or in parentheses before
-    // the text where there is no margin
-    const lead: Element[] = [h('span.fr-n', { ariaHidden: 'true' }, `(${n})`)]
-    // Locher's three columns: review and notes hang left of the text, glosses and citing lessons right
-    for (const side of ['left', 'right'] as const) {
-      const mine = entries.filter(entry => SIDE[entry.kind] === side)
-      if (mine.length === 0) continue
-      lead.push(
-        h(
-          'span.fr-group',
-          { dataN: String(n), dataSide: side },
-          mine.map(entry =>
-            h('span.fr-entry', { dataFrKind: entry.kind }, [
-              h(
-                'button.fr-entry-label',
-                { type: 'button', ariaExpanded: 'false' },
-                `§ ${LABELS[entry.kind]} (${n})`,
-              ),
-              h('span.fr-entry-body', [entry.body]),
-            ]),
-          ),
-        ),
-      )
-    }
-    block.children.unshift(...lead)
-  })
+  apparatus.hang(tree, kind => ORDER[kind as EntryKind])
 }
 
-const ORDER: Record<EntryKind, number> = { rev: 0, notes: 1, lex: 2, cite: 3 }
-
-const SIDE: Record<EntryKind, 'left' | 'right'> = {
-  rev: 'left',
-  notes: 'left',
-  lex: 'right',
-  cite: 'right',
-}
+const ORDER: Record<EntryKind, number> = { rev: 0, notes: 1, rem: 2, lex: 3, cite: 4 }

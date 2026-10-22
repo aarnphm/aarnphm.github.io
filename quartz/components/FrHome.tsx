@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import {
   QuartzComponent,
   QuartzComponentConstructor,
@@ -7,7 +9,12 @@ import { cardsWord, frCount, frView, type FrEpisode } from '../util/fr'
 import { classNames } from '../util/lang'
 import { FullSlug, resolveRelative } from '../util/path'
 import { concatenateResources } from '../util/resources'
-import { FR_CALENDAR_ID, FrCalendarView, type FrCalendarData } from './course-calendar/fr'
+import {
+  FR_CALENDAR_ID,
+  FrCalendarView,
+  type FrCalendarData,
+  type Horaire,
+} from './course-calendar/fr'
 import { FR_REVIEW } from './FrUnit'
 // @ts-ignore
 import canvasScript from './scripts/canvas.inline'
@@ -24,6 +31,14 @@ const HORAIRE = '/fr/horaire.json'
 // JSON inside <script> must not close the element or open a comment.
 const scriptJson = (value: unknown) =>
   JSON.stringify(value).replace(/</g, '\\u003c').replace(/>/g, '\\u003e')
+
+const readHoraire = (directory: string): Horaire | undefined => {
+  try {
+    return JSON.parse(readFileSync(join(directory, 'fr/horaire.json'), 'utf8')) as Horaire
+  } catch {
+    return undefined
+  }
+}
 
 const pad = (n: number) => String(n).padStart(2, '0')
 
@@ -51,6 +66,7 @@ export default (() => {
         episodes: note.episodes,
       })),
       horaire: HORAIRE,
+      schedule: readHoraire(ctx.argv.directory),
       prefix: 'fr/',
       cardIds: allIds,
     }
@@ -77,17 +93,19 @@ export default (() => {
         data-course-prefix="fr/"
         data-course-lang="fr"
       >
-        <header class="course-masthead">
-          <h1 class="course-masthead-title">français</h1>
-          <p class="course-masthead-meta">
-            Par ici A1<span class="course-sep">·</span>québécois
+        <nav class="course-unit-bar" aria-label="course trail">
+          <span class="course-crumb">
+            <span>français</span>
+          </span>
+          <span class="course-count course-unit-dates">
+            Par ici A1<span class="course-unit-sep">·</span>québécois
             {since ? (
               <>
-                <span class="course-sep">·</span>depuis le {since}
+                <span class="course-unit-sep">·</span>depuis le {since}
               </>
             ) : null}
-          </p>
-        </header>
+          </span>
+        </nav>
 
         <nav class="fr-shelf" aria-label="accès">
           <a class="internal" href={href('tags/fr' as FullSlug)} data-slug="tags/fr">

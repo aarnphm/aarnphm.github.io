@@ -1,18 +1,25 @@
 @use '../../styles/variables.scss' as *;
 
 // The apparatus of a /fr page, Locher style: a prose block opens with its number `(n)`, and the
-// margin holds `§ label (n)` entries for it. Wide screens hang the entries beside the text in the
-// sidenote column; where there is no margin the labels open the block in parentheses, before the
-// text, and each toggles its body in a fold under the block. No boxes: one hairline joins each
-// entry to its number through the gutter (drawn by fr-margins.inline.ts), and hovering an entry or
-// its block lights the pair.
+// margin holds `§ label (n)` entries for it. Wide screens hang the entries left of the text, the
+// side the page grid leaves room for from its desktop width; where there is no margin the labels
+// open the block in parentheses, before the text, and each toggles its body in a fold under the
+// block. In the margin each entry is a 1px box in the tone of its kind, and one unbroken hairline
+// joins it to its number through the gutter (drawn by fr-margins.inline.ts); hovering an entry or
+// its block lights the pair. The page's sidenotes keep their boxes and take the same leaders.
 $fr-line: color-mix(in srgb, var(--gray) 45%, transparent);
 $fr-column: 15.5rem;
-// wide enough for a leader with its gap and dash; the page's sidenotes move out to the same edge
-$fr-gutter: 3.5rem;
+// the gutter at the narrowest margin that still hangs (1440px): wide enough for a leader to read
+// as a line, with room for the trunks of stacked elbows. On wider screens the column keeps its
+// width and the gutter takes the rest of the header's two tracks (--fr-reach below)
+$fr-gutter: 3rem;
 
-article[data-fr-mode] {
-  position: relative;
+// registered, so the gutter computes to a length: the sidenote script reads --sidenote-gutter (set
+// from it below) as a number of pixels, and an unregistered max()/calc() would reach it as text
+@property --fr-gutter {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 0px;
 }
 
 .fr-anchor {
@@ -58,6 +65,22 @@ article[data-fr-mode] {
   flex-direction: column;
   gap: var(--space-2);
   min-width: 0;
+}
+
+// the kinds that hold the reader's own work or the page's standing (cards, notes, who cites it, a
+// listing) take the three tones the sidenotes cycle, so a stack of boxes reads apart at a glance;
+// the index kinds (the lexicon, a see-also list) keep the hairline
+.fr-entry[data-fr-kind='rev'],
+.fr-entry[data-fr-kind='listing'] {
+  --fr-entry-tone: var(--color-orange);
+}
+
+.fr-entry[data-fr-kind='notes'] {
+  --fr-entry-tone: var(--color-green);
+}
+
+.fr-entry[data-fr-kind='cite'] {
+  --fr-entry-tone: var(--color-yellow);
 }
 
 .fr-entry-label {
@@ -109,30 +132,26 @@ article[data-fr-mode] {
   }
 }
 
+// margin: the entries hang left of the text, one column past the gutter (fr-margins.inline.ts
+// sets each group's top and --fr-dx, and draws the leaders)
 article[data-fr-mode='margin'] {
   .fr-leaders {
     display: block;
   }
 
-  // sidenotes share the entries' edge
-  .sidenote-content.sidenote-left {
-    left: calc(-1 * (#{$fr-column} + #{$fr-gutter}));
-  }
-
-  .sidenote-content.sidenote-right {
-    right: calc(-1 * (#{$fr-column} + #{$fr-gutter}));
-  }
-
   .fr-group {
     position: absolute;
     top: 0;
-    right: calc(100% + var(--fr-dx, 0px) + #{$fr-gutter});
+    right: calc(100% + var(--fr-dx, 0px) + var(--fr-gutter));
     width: $fr-column;
+  }
 
-    &[data-side='right'] {
-      right: auto;
-      left: calc(100% + var(--fr-dx, 0px) + #{$fr-gutter});
-    }
+  // the box: its leader meets the right edge, level with the label
+  .fr-entry {
+    box-sizing: border-box;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--fr-entry-tone, #{$fr-line});
+    border-radius: var(--radius-none);
   }
 
   .fr-entry-label {
@@ -216,6 +235,59 @@ article[data-fr-mode='inline'] {
     &:focus-visible {
       outline: 2px solid var(--dark);
       outline-offset: 2px;
+    }
+  }
+}
+
+// the page's sidenotes (sidenotes.inline.ts) hang at the same gutter, so they share the entries'
+// edge. Both are set before any script runs: the sidenotes may hang first, and they measure from
+// their offset parent, which must already be the article
+article:has(.fr-group) {
+  position: relative;
+  // the entries and the page's sidenotes hang from the header's left edge, --fr-reach left of
+  // the text; what that leaves beside a 15.5rem column is the gutter
+  --fr-gutter: max(
+    #{$fr-gutter},
+    calc(var(--fr-reach, #{$fr-column + $fr-gutter}) - #{$fr-column})
+  );
+  --sidenote-gutter: var(--fr-gutter);
+
+  // a sidenote keeps its box; stacked neighbours take different tones (fr-margins.inline.ts cycles
+  // them in document order), so two boxes in the margin read apart. The sidenote sheet is
+  // unlayered and wins over this one, so the tone goes through its custom property
+  .sidenote-content[data-fr-tone='1'] {
+    --sidenote-border-color: var(--color-orange);
+  }
+
+  .sidenote-content[data-fr-tone='2'] {
+    --sidenote-border-color: var(--color-green);
+  }
+
+  .sidenote-content[data-fr-tone='3'] {
+    --sidenote-border-color: var(--color-yellow);
+  }
+}
+
+// on a page with an apparatus the header spans five tracks from the wide column's own start, where
+// the site header's breadcrumb begins: two for the margin, three for the text, which is the site's
+// reading measure, so the block sits centred with the same margin on each side. The header and the
+// content are separate grids under the page grid, each reading the wide column from itself; the
+// byline is the tag box alone (quartz.layout.ts) and takes the whole span
+@media all and ($desktop) {
+  .page-body-grid:has(.fr-group) {
+    > .page-header {
+      --layout-wide-column: 5 / span 5;
+      --layout-byline-template: 1fr;
+    }
+
+    > .page-content {
+      --layout-wide-column: 7 / span 3;
+      --fr-reach: calc(var(--grid-col-width) * 2);
+    }
+
+    // the foot (pager, backlinks table, the site's footer) takes the header's span
+    > .page-footer {
+      --layout-wide-column: 5 / span 5;
     }
   }
 }
