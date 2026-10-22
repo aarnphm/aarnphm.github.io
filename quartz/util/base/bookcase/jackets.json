@@ -7345,6 +7345,62 @@
         }
       },
       "artworkSha256": "7b15528b823c659415c2dda51a8ae1b4b09c3471e0f00081e3894c9550c6f85a"
+    },
+    {
+      "id": "tinkering-toward-utopia-harvard-1995-9780674892828-ebay-copy-autonomous-v4",
+      "title": "Tinkering Toward Utopia",
+      "author": "David B. Tyack and Larry Cuban",
+      "publisher": "Harvard University Press",
+      "isbn": "9780674892828",
+      "editionEvidence": "The current pinned front matches the photographed maroon-and-gold cover. Root's browser inspection of the public eBay item-specific metadata confirms an English Harvard University Press hardcover, first edition / second printing, 1996, ISBN 0674892828 (ISBN-13 9780674892828). Independent bibliographic records identify the Harvard University Press edition as published in 1995 and distinguish the 1997 paperback ISBN 0674892836. The 1996 listing printing and 1995 publication year are retained as separate catalog facts. The same listing photograph shows the matching front and complete physical spine; it does not show the ISBN on the copy.",
+      "page": "https://www.ebay.com/itm/128042637526",
+      "source": "https://i.ebayimg.com/images/g/XXwAAeSwaGRqzo4N/s-l1600.jpg",
+      "sourceSha256": "3b1c300737c866b918c9d0d21aabd1f62f9d51ed28cc4f1dfcf64a25e2365c49",
+      "sourceKind": "Native same-copy eBay seller photograph (900 x 1200 JPEG). A curved boundary mesh maps the complete visible spine plane. The left curve moves inward approximately two source pixels through the body, leaving the physical crown and rounded tail endpoints intact. No lettering is reconstructed and no source detail is enlarged.",
+      "poster": "library/posters/tinkering-toward-utopia.jpg",
+      "posterSha256": "a70e47d4390e49a00e3ea59cca55a5bed88458c85fdd742377c9cbd0a9c4752b",
+      "crop": { "left": 0, "top": 0, "width": 22, "height": 820 },
+      "height": 320,
+      "artwork": "tinkering-toward-utopia-harvard-1995-9780674892828-ebay-copy-autonomous-v4-low.webp",
+      "detailArtwork": "tinkering-toward-utopia-harvard-1995-9780674892828-ebay-copy-autonomous-v4-detail-63062cfb82d76e0d.webp",
+      "detailWidth": 22,
+      "detailHeight": 820,
+      "sampling": "independent",
+      "mesh": {
+        "kind": "boundary-curves-spine",
+        "interpolation": "bilinear",
+        "width": 22,
+        "height": 820,
+        "boundaries": {
+          "top": [
+            [0, 213, 192],
+            [0.5, 224, 196],
+            [1, 239, 198]
+          ],
+          "bottom": [
+            [0, 222, 1012],
+            [0.33, 232, 1024],
+            [0.66, 245, 1026],
+            [1, 252, 1023]
+          ],
+          "left": [
+            [0, 213, 192],
+            [0.18, 214, 345],
+            [0.48, 218, 592],
+            [0.77, 222, 841],
+            [1, 222, 1012]
+          ],
+          "right": [
+            [0, 239, 198],
+            [0.18, 240, 350],
+            [0.48, 243, 588],
+            [0.77, 247, 834],
+            [1, 252, 1023]
+          ]
+        }
+      },
+      "artworkSha256": "c1e73cd6028c51d89da3aff6a027c12765e8e461aa2438cb6df42c235fb54f2a",
+      "detailArtworkSha256": "63062cfb82d76e0dd433d3e1050c2205ff62dece6fcf198fdfa5aae1b252a535"
     }
   ]
 }
