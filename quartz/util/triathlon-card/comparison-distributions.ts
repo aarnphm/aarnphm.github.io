@@ -306,22 +306,37 @@ export const buildComparisonZones = <N>(
         y2: tick.vbY,
       }),
     )
+  // Zones are categories, so each activity gets one bar per zone instead of a line across them.
+  const band = ACTIVITY_COMPARISON_WIDTH / zoneCount
+  const group = band * 0.64
+  const barWidth = group / Math.max(1, activities.length)
+  f.add(
+    graph,
+    f.svg('rect', {
+      class: 'tri-compare-zone-focus',
+      x: 0,
+      y: 0,
+      width: band,
+      height: ACTIVITY_COMPARISON_HEIGHT,
+      'aria-hidden': 'true',
+    }),
+  )
   for (const item of available) {
+    const x = (zone: number) => zone * band + (band - group) / 2 + item.index * barWidth
     const path = item.percentages
-      .map((value, index) => {
-        const x =
-          zoneCount === 1
-            ? ACTIVITY_COMPARISON_WIDTH / 2
-            : (index / (zoneCount - 1)) * ACTIVITY_COMPARISON_WIDTH
-        const y =
-          ACTIVITY_COMPARISON_HEIGHT - (value / domain.max) * (ACTIVITY_COMPARISON_HEIGHT - 1)
-        return `${index === 0 ? 'M' : 'L'} ${x.toFixed(2)} ${y.toFixed(2)}`
+      .flatMap((value, zone) => {
+        const height = (value / domain.max) * (ACTIVITY_COMPARISON_HEIGHT - 1)
+        if (!(height > 0)) return []
+        const width = barWidth * 0.84
+        return [
+          `M ${x(zone).toFixed(2)} ${ACTIVITY_COMPARISON_HEIGHT} v ${(-height).toFixed(2)} h ${width.toFixed(2)} v ${height.toFixed(2)} Z`,
+        ]
       })
       .join(' ')
     f.add(
       graph,
       f.svg('path', {
-        class: 'tri-compare-line',
+        class: 'tri-compare-zone-bars',
         d: path,
         'data-activity-id': item.activity.id,
         'data-activity-index': item.index,
@@ -329,21 +344,9 @@ export const buildComparisonZones = <N>(
       }),
     )
   }
-  f.add(
-    graph,
-    f.svg('line', {
-      class: 'tri-compare-cursor',
-      x1: 0,
-      y1: 0,
-      x2: 0,
-      y2: ACTIVITY_COMPARISON_HEIGHT,
-    }),
-  )
   const xTicks = Array.from({ length: zoneCount }, (_, index) => ({
     label: `Z${index + 1}`,
-    pct: zoneCount === 1 ? 50 : (index / (zoneCount - 1)) * 100,
-    cls:
-      index === 0 ? 'tri-cax-xt--first' : index === zoneCount - 1 ? 'tri-cax-xt--last' : undefined,
+    pct: ((index + 0.5) / zoneCount) * 100,
   }))
   const chart = f.el('section', 'tri-compare-chart', undefined, {
     'data-compare-chart': kind,

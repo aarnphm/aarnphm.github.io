@@ -383,7 +383,7 @@ export const activityComparisonDisplayValueAtDistance = (
   distanceKm: number,
 ): string => {
   const value = activityComparisonMetricAtDistance(presentation, activity, metric, distanceKm)
-  if (value == null) return '—'
+  if (value == null) return '–'
   if (metric === 'elevation') {
     const altitude = formatAltitude(presentation, value)
     const route = activity.route

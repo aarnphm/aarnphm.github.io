@@ -1394,14 +1394,6 @@ activity: 20038951296
 strengthVolume: 0 lb
 strengthSets: 5
 strengthReps: 40
-exercise: Marching in Place | 30s
-exercise: Bodyweight Squat | 30s | 45s | 45s | 45s
-exercise: Glute Bridge | 30s | 45s | 45s | 45s
-exercise: Arm Swings | 30s
-exercise: Plank Hold | 45s | 45s | 45s
-exercise: Alternating Reverse Lunge | 45s | 45s | 45s
-exercise: Standing Single-Leg Balance with Knee Lift | 45s | 45s | 45s
-exercise: Full-Body Stretch Flow | 2m
 ```
 
 ```tracking
@@ -1453,16 +1445,6 @@ garmin: 24277684359
 strengthVolume: 0 lb
 strengthSets: 6
 strengthReps: 59
-exercise: Hip Circles | 30s
-exercise: Glute Bridge | 30s
-exercise: Walking Knee Hugs | 30s
-exercise: Ankle Bounces | 30s
-exercise: Single-Leg Glute Bridge | 40s | 40s | 40s | 40s
-exercise: Reverse Lunge to Knee Drive | 40s | 40s | 40s | 40s
-exercise: Side Plank with Hip Dip | 40s | 40s | 40s | 40s
-exercise: Bodyweight Squat with 2s Pause | 40s | 40s | 40s | 40s
-exercise: Bird Dog | 40s | 40s | 40s | 40s
-exercise: Hip Flexor, Calf, and Standing Quad Stretch Flow | 2m
 ```
 
 ```tracking
@@ -1554,16 +1536,6 @@ garmin: 24327949290
 strengthVolume: 180 lb
 strengthSets: 10
 strengthReps: 60
-exercise: Glute Bridge | 30s
-exercise: Standing Calf Raise | 30s
-exercise: Walking Lunge | 30s
-exercise: Hip Hinge | 30s
-exercise: Single-Leg Calf Raise | 40s | 40s | 40s | 40s
-exercise: Glute Bridge March | 40s | 40s | 40s | 40s
-exercise: Curtsy Lunge | 40s | 40s | 40s | 40s
-exercise: Wall Sit | 40s | 40s | 40s | 40s
-exercise: Single-Leg Romanian Deadlift | 40s | 40s | 40s | 40s
-exercise: Standing Calf, Seated Forward Fold, and Pigeon Stretch Flow | 2m
 ```
 
 ```tracking
@@ -1594,16 +1566,6 @@ garmin: 24362776276
 strengthVolume: 180 lb
 strengthSets: 10
 strengthReps: 60
-exercise: Leg Swings | 30s
-exercise: Inchworms | 30s
-exercise: Bodyweight Squats | 30s
-exercise: Arm Circles & Torso Twists | 30s
-exercise: Squat Jump | 40s | 40s | 40s | 40s
-exercise: Plank Shoulder Taps | 40s | 40s | 40s | 40s
-exercise: Bulgarian Split Squats | 40s | 40s | 40s | 40s
-exercise: Mountain Climbers | 40s | 40s | 40s | 40s
-exercise: Reverse Lunge to High Knee Balance Hold | 40s | 40s | 40s | 40s
-exercise: Figure-4 Glute Stretch, Downward Dogs, Seated Hamstring Stretch | 2m
 ```
 
 ```tracking
@@ -1695,21 +1657,6 @@ computer: Wahoo ELEMNT BOLT 3
 ```
 
 ```tracking
-date: 2026-09-17
-activity: 20222319922
-exercise: Cat-cow | 30s
-exercise: Standing torso rotations | 30s
-exercise: Glute bridges | 30s
-exercise: Deep squat hold with gentle rocking | 30s
-exercise: Dead bug | 40s | 40s | 40s | 40s
-exercise: Forearm plank | 40s | 40s | 40s | 40s
-exercise: Single-leg Romanian deadlift reach | 40s | 40s | 40s | 40s
-exercise: Side plank | 40s | 40s | 40s | 40s
-exercise: Superman hold with alternating leg lift | 40s | 40s | 40s | 40s
-exercise: Child's pose and thread-the-needle stretch | 2m
-```
-
-```tracking
 date: 2026-09-19
 activity: 20246133767
 fueling: 1560
@@ -1745,21 +1692,6 @@ location: Othership Adelaide
 htl: 7.6
 strava: 20261500024
 garmin: 24437877325
-```
-
-```tracking
-date: 2026-09-21
-activity: 20276080158
-exercise: Marching in place | 30s
-exercise: Bodyweight squats | 30s
-exercise: Glute bridges | 30s
-exercise: Arm swings | 30s
-exercise: Bodyweight squats | 45s | 45s | 45s
-exercise: Plank hold | 45s | 45s | 45s
-exercise: Alternating reverse lunges | 45s | 45s | 45s
-exercise: Glute bridges | 45s | 45s | 45s
-exercise: Standing single-leg balance with knee lift | 45s | 45s | 45s
-exercise: full-body stretch flows | 2m
 ```
 
 ```tracking
@@ -1846,31 +1778,6 @@ garmin: 24511332675
 strengthVolume: 0 lb
 strengthSets: 6
 strengthReps: 60
-exercise: Hip Circles | 30s
-exercise: Glute Bridge | 30s
-exercise: Walking Knee Hugs | 30s
-exercise: Ankle Bounces | 30s
-exercise: Single-Leg Glute Bridge | 40s | 40s | 40s | 40s
-exercise: Reverse Lunge to Knee Drive | 40s | 40s | 40s | 40s
-exercise: Side Plank with Hip Dip | 40s | 40s | 40s | 40s
-exercise: Bodyweight Squat with 2s Pause | 40s | 40s | 40s | 40s
-exercise: Bird Dog | 40s | 40s | 40s | 40s
-exercise: Hip Flexor, Calf, and Standing Quad Stretch Flow | 2m
-```
-
-```tracking
-date: 2026-09-28
-activity: 20371684360
-exercise: Glute Bridge | 30s
-exercise: Standing Calf Raise | 30s
-exercise: Walking Lunge | 30s
-exercise: Hip Hinge | 30s
-exercise: Single-Leg Calf Raise | 40s | 40s | 40s | 40s
-exercise: Glute Bridge March | 40s | 40s | 40s | 40s
-exercise: Curtsy Lunge | 40s | 40s | 40s | 40s
-exercise: Wall Sit | 40s | 40s | 40s | 40s
-exercise: Single-Leg Romanian Deadlift | 40s | 40s | 40s | 40s
-exercise: Standing Calf, Seated Forward Fold, and Pigeon Stretch Flow | 2m
 ```
 
 ```tracking
@@ -1890,21 +1797,6 @@ garmin: 24557452349
 ```
 
 ```tracking
-date: 2026-10-02
-activity: 20425548072
-exercise: Leg Swings | 30s
-exercise: Inchworms | 30s
-exercise: Bodyweight Squat | 30s
-exercise: Arm Circles and Torso Twists | 30s
-exercise: Squat Jump | 40s | 40s | 40s | 40s
-exercise: Plank Shoulder Taps | 40s | 40s | 40s | 40s
-exercise: Split Squat with Rear Foot Elevated (or Flat) | 40s | 40s | 40s | 40s
-exercise: Mountain Climbers | 40s | 40s | 40s | 40s
-exercise: Step-Back Lunge to Balance Hold | 40s | 40s | 40s | 40s
-exercise: Figure-4 Glute Stretch, Downward Dogs, Seated Hamstring Stretch | 2m
-```
-
-```tracking
 title: Guided All Round, Reflect
 date: 2026-10-02
 time: 19:30
@@ -1921,36 +1813,6 @@ garmin: 24584149374
 ```
 
 ```tracking
-date: 2026-10-05
-activity: 20467680308
-exercise: Cat-cow | 30s
-exercise: Standing torso rotations | 30s
-exercise: Glute bridges | 30s
-exercise: Deep squat hold with gentle rocking | 30s
-exercise: Dead bug | 40s | 40s | 40s | 40s
-exercise: Forearm plank | 40s | 40s | 40s | 40s
-exercise: Single-leg Romanian deadlift reach | 40s | 40s | 40s | 40s
-exercise: Side plank | 40s | 40s | 40s | 40s
-exercise: Superman hold with alternating leg lift | 40s | 40s | 40s | 40s
-exercise: Child's pose and thread-the-needle stretch | 2m
-```
-
-```tracking
-date: 2026-10-09
-activity: 20521929664
-exercise: Marching in place | 30s
-exercise: Bodyweight squats | 30s
-exercise: Glute bridges | 30s
-exercise: Arm swings | 30s
-exercise: Bodyweight squats | 45s | 45s | 45s
-exercise: Plank hold | 45s | 45s | 45s
-exercise: Alternating reverse lunges | 45s | 45s | 45s
-exercise: Glute bridges | 45s | 45s | 45s
-exercise: Standing single-leg balance with knee lift | 45s | 45s | 45s
-exercise: Hip flexor, hamstring, calf, and lower back stretch flow | 2m
-```
-
-```tracking
 title: Free Flow
 date: 2026-10-09
 time: 16:00
@@ -1964,21 +1826,6 @@ location: Othership Adelaide
 htl: 6.6
 strava: 20519634483
 garmin: 24667016038
-```
-
-```tracking
-date: 2026-10-12
-activity: 20562430914
-exercise: Hip Circles | 30s
-exercise: Glute Bridge | 30s
-exercise: Walking Knee Hugs | 30s
-exercise: Ankle Bounces | 30s
-exercise: Single-Leg Glute Bridge | 40s | 40s | 40s | 40s
-exercise: Reverse Lunge to Knee Drive | 40s | 40s | 40s | 40s
-exercise: Side Plank with Hip Dip | 40s | 40s | 40s | 40s
-exercise: Bodyweight Squat with 2s Pause | 40s | 40s | 40s | 40s
-exercise: Bird Dog | 40s | 40s | 40s | 40s
-exercise: Hip Flexor, Calf, and Standing Quad Stretch Flow | 2m
 ```
 
 ```tracking
@@ -2019,29 +1866,6 @@ garmin: 24750153909
 wahoo: [[triathlon/wahoo/26-10-16-507050206.fit]]
 power: wahoo
 virtual: true
-```
-
-<!--
-2026-10-18, hamstrings, glutes, calves. Prescription: 2 min warm-up,
-4 rounds of the five main exercises, 40s work / 20s rest, 2 min cool-down.
-The supplied circuit heading says 16 min; the listed intervals total 20 min
-for the circuit and 24 min for the full prescription. Recorded activity time
-remains provider-owned. Alternate legs each round for unilateral exercises.
--->
-
-```tracking
-date: 2026-10-18
-activity: 20642462794
-exercise: Glute Bridge | 30s
-exercise: Standing Calf Raise | 30s
-exercise: Walking Lunge (bodyweight, slow) | 30s
-exercise: Hip Hinge (no weight, focus on form) | 30s
-exercise: Single-Leg Calf Raise (alternate legs each round, full range, controlled tempo) | 40s | 40s | 40s | 40s
-exercise: Glute Bridge March (hips level, alternate lifting each foot) | 40s | 40s | 40s | 40s
-exercise: Curtsy Lunge (alternate legs each round, knee tracks over toe, controlled) | 40s | 40s | 40s | 40s
-exercise: Wall Sit (thighs parallel if possible, breathe steadily) | 40s | 40s | 40s | 40s
-exercise: Single-Leg Romanian Deadlift (alternate legs each round, hips square, slow eccentric) | 40s | 40s | 40s | 40s
-exercise: Standing Calf, Seated Forward Fold, and Pigeon Stretch Flow (each side) | 2m
 ```
 
 <!-- training plan start

@@ -46,6 +46,16 @@ export function applyManualStrength(
       (detail.sport !== 'strength' && detail.sport !== 'sauna')
     )
       continue
+    if (entry.exercises.length === 0 && detail.strength?.prescription) {
+      detail.strength = {
+        ...detail.strength,
+        volumeKg: entry.volumeKg,
+        totalSets: entry.totalSets,
+        totalReps: entry.totalReps,
+        totalsSource: 'manual',
+      }
+      continue
+    }
     detail.strength = {
       volumeKg: entry.volumeKg,
       totalSets: entry.totalSets,

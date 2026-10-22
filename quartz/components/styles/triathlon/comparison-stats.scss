@@ -1,8 +1,6 @@
 @use './foundations' as *;
 
 .tri-compare-stats-panel {
-  --tri-compare-better: color-mix(in srgb, #66800b 90%, var(--dark));
-  --tri-compare-worse: #af3029;
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
@@ -11,18 +9,13 @@
   min-height: 0;
 }
 
-:root[saved-theme='dark'] .tri-compare-stats-panel {
-  --tri-compare-better: #879a39;
-  --tri-compare-worse: color-mix(in srgb, #d14d41 90%, var(--dark));
-}
-
 .tri-compare-stats-controls {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.3rem 0.55rem;
   margin-inline-start: auto;
-  font-size: 0.56rem;
+  font-size: 0.75rem;
 }
 
 .tri-compare-stats-panel > .tri-compare-chart-head {
@@ -34,7 +27,7 @@
   flex: none;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: stretch;
-  border: 1px solid color-mix(in srgb, var(--gray) 28%, transparent);
+  border: 1px solid var(--tri-compare-line);
 }
 
 .tri-compare-stats-scope {
@@ -71,8 +64,8 @@
 .tri-compare-stats-scope:focus-visible,
 .tri-compare-stats-label-text[data-gloss]:focus-visible,
 .tri-compare-stats-scroll:focus-visible {
-  outline: 2px solid var(--darkgray);
-  outline-offset: 1px;
+  outline: 2px solid var(--dark);
+  outline-offset: -2px;
 }
 
 .tri-compare-stats-window {
@@ -88,27 +81,27 @@
   overflow: auto;
   overscroll-behavior: contain;
   @include thin-scrollbar;
-  border-top: 1px solid color-mix(in srgb, var(--gray) 20%, transparent);
+  border-top: 1px solid var(--tri-compare-line);
 }
 
 .tri-compare-stats {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  font-size: 0.58rem;
+  font-size: 0.75rem;
   font-variant-numeric: tabular-nums;
-  line-height: 1.25;
+  line-height: 1.3;
 
   // base.scss rules every th with a 2px gray border and loosens tbody line-height.
   th,
   td {
-    padding: 0.35rem 0.42rem 0.48rem;
+    padding: 0.32rem 0.4rem;
     font-weight: normal;
     text-align: end;
     vertical-align: middle;
     background: var(--light);
     border: 0;
-    border-bottom: 1px solid color-mix(in srgb, var(--gray) 10%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--tri-compare-line) 45%, transparent);
   }
 
   tbody,
@@ -121,7 +114,7 @@
     top: 0;
     z-index: 2;
     vertical-align: top;
-    border-bottom-color: color-mix(in srgb, var(--gray) 20%, transparent);
+    border-bottom-color: var(--tri-compare-line);
   }
 }
 
@@ -140,7 +133,7 @@
 .tri-compare-stats .tri-compare-stats-group-head {
   padding-top: 0.75rem;
   padding-bottom: 0.2rem;
-  font-size: 0.52rem;
+  font-size: 0.75rem;
   color: var(--darkgray);
   text-align: start;
   text-transform: lowercase;
@@ -170,43 +163,34 @@
   min-width: 4.4rem;
 }
 
-.tri-compare-stats :is(.tri-compare-stats-activity--baseline, .tri-compare-stats-cell--baseline) {
-  background: color-mix(in srgb, var(--tri-compare-color) 8%, var(--light));
-}
-
+// Identity colour appears once per column: a stroke sample beside the date.
 .tri-compare-stats-heading {
-  display: grid;
-  grid-template-rows: 2px auto auto;
-  justify-items: end;
-  gap: 0.22rem;
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 0.45rem;
   width: 100%;
-  min-width: 7rem;
+  min-width: 6rem;
   color: var(--dark);
-  text-align: end;
 }
 
-.tri-compare-stats-swatch {
-  align-self: start;
-  width: 100%;
-  height: 2px;
-  background: var(--tri-compare-color);
-}
-
-.tri-compare-stats-date {
-  color: var(--darkgray);
+.tri-compare-stats-heading > .tri-compare-stats-swatch {
+  flex: none;
+  align-self: center;
 }
 
 .tri-compare-stats-name {
-  max-width: 100%;
+  min-width: 0;
   color: var(--dark);
   overflow-wrap: anywhere;
   line-height: 1.4;
+  text-align: right;
 }
 
 .tri-compare-stats-tag {
   display: block;
   margin-top: 0.12rem;
-  font-size: 0.5rem;
+  font-size: 0.75rem;
   color: var(--darkgray);
   text-transform: lowercase;
 }
@@ -230,7 +214,7 @@
 .tri-compare-stats-value {
   flex: none;
   margin-inline-start: auto;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--dark);
 }
 
@@ -244,33 +228,21 @@
   color: var(--darkgray);
 }
 
+// Deltas against the first activity are plain text: the sign carries direction. The one
+// emphasis is lightness: a change in the better direction is set in ink, the rest in darkgray.
 .tri-compare-stats-delta {
   display: inline-flex;
   flex: none;
   order: -1;
   align-items: baseline;
-  gap: 0.32rem;
-  font-size: 0.52rem;
-  font-style: italic;
+  gap: 0.4rem;
   font-weight: 400;
   color: var(--darkgray);
   text-align: start;
 }
 
 .tri-compare-stats-delta[data-trend='better'] {
-  color: var(--tri-compare-better);
-}
-
-.tri-compare-stats-delta[data-trend='worse'] {
-  color: var(--tri-compare-worse);
-}
-
-.tri-compare-stats-line {
-  position: absolute;
-  inset-inline: 0.42rem;
-  bottom: 0.14rem;
-  height: 2px;
-  background: var(--tri-compare-color);
+  color: var(--dark);
 }
 
 .tri-compare :is(.tri-cax-yt, .tri-cax-xt, .tri-ana-k, .tri-compare-empty) {
@@ -278,7 +250,7 @@
 }
 
 .tri-compare .tri-map-side button:focus-visible {
-  outline: 2px solid var(--darkgray);
+  outline: 2px solid var(--dark);
   outline-offset: 2px;
 }
 
@@ -293,7 +265,7 @@
 
 @media (hover: hover) and (pointer: fine) {
   .tri-compare-stats-row:hover :is(th, td) {
-    background: color-mix(in srgb, var(--gray) 8%, var(--light));
+    background: var(--tri-compare-surface);
   }
 
   .tri-compare-stats-scope:not(:disabled, [aria-pressed='true']):hover {

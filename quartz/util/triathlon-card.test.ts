@@ -9713,7 +9713,7 @@ test('formats only the active comparison metric and clamps keyboard navigation',
       'hr',
       5,
     ),
-    '—',
+    '–',
   )
   assert.equal(
     activityComparisonDisplayValueAtDistance(
@@ -9721,7 +9721,7 @@ test('formats only the active comparison metric and clamps keyboard navigation',
       'speed',
       5,
     ),
-    '—',
+    '–',
   )
 
   assert.equal(activityComparisonFractionForKey('ArrowRight', 0.4, 0.1), 0.5)
@@ -9855,7 +9855,9 @@ test('renders every comparison graph with stable selectors, cursors, and readout
     assert.equal(graph.properties.tabIndex, 0)
     assert.equal(graph.properties.ariaOrientation, 'horizontal')
     assert.equal(graph.properties.ariaLabel, graph.properties.dataI18nAriaLabel)
-    assert.equal(byClass(chart, 'tri-compare-cursor').length, 1)
+    const zoneChart = String(chart.properties.dataCompareChart).endsWith('-zones')
+    assert.equal(byClass(chart, 'tri-compare-cursor').length, zoneChart ? 0 : 1)
+    assert.equal(byClass(chart, 'tri-compare-zone-focus').length, zoneChart ? 1 : 0)
     const selection = byClass(chart, 'tri-compare-selection-region')
     const selectionClip = byClass(chart, 'tri-compare-selection-clip')
     const selectionLines = byClass(chart, 'tri-compare-selection-line')
@@ -9936,17 +9938,19 @@ test('renders every comparison graph with stable selectors, cursors, and readout
     ],
   )
   for (const [index, row] of rows.entries()) {
-    assert.equal(row.children.length, 2)
+    assert.equal(row.children.length, 3)
     assert.equal(row.properties.style, `--tri-compare-color:${activityCompareColor(index)}`)
-    const swatch = row.children[0]
-    const value = row.children[1]
+    const [swatch, name, value] = row.children
     assert.ok(swatch?.type === 'element')
+    assert.ok(name?.type === 'element')
     assert.ok(value?.type === 'element')
     assert.deepEqual(classNames(swatch), ['tri-compare-readout-swatch'])
     assert.equal(swatch.properties.ariaHidden, 'true')
+    assert.deepEqual(classNames(name), ['tri-compare-readout-name'])
+    assert.ok(text(name).length > 0)
     assert.deepEqual(classNames(value), ['tri-compare-readout-value'])
     assert.equal(value.properties.dataCompareReadoutValue, '')
-    assert.equal(text(row), '')
+    assert.equal(text(value), '')
   }
   for (const line of [
     ...byClass(rendered, 'tri-compare-line'),
@@ -10497,7 +10501,7 @@ test('normalizes heart-rate and power zone overlays to percentages', () => {
     const graph = byClass(chart, 'tri-compare-zone-graph')[0]
     assert.ok(graph)
     assert.equal(graph.properties.dataZoneUnit, 'percent')
-    assert.equal(byClass(chart, 'tri-compare-line').length, 2)
+    assert.equal(byClass(chart, 'tri-compare-zone-bars').length, 2)
     assert.deepEqual(byClass(chart, 'tri-cax-yt').map(text), ['0%', '25%', '50%', '75%', '100%'])
     assert.doesNotMatch(text(chart), /\b\d+:\d{2}\b/)
   }
@@ -10595,8 +10599,8 @@ test('comparison elevation readouts include signed smoothed grades in either uni
         )
       }
     }
-    assert.equal(activityComparisonDisplayValueAtDistance(activity, 'elevation', -1), '—')
-    assert.equal(activityComparisonDisplayValueAtDistance(activity, 'elevation', 1), '—')
+    assert.equal(activityComparisonDisplayValueAtDistance(activity, 'elevation', -1), '–')
+    assert.equal(activityComparisonDisplayValueAtDistance(activity, 'elevation', 1), '–')
   }
   const smoothed = comparisonActivity(259, {
     route: [100, 110, 140, 110, 120].map((alt, index) => ({ ...base, d: index * 0.1, alt })),
@@ -10613,7 +10617,7 @@ test('comparison elevation omits grades across invalid samples or without a dist
     route: [100, Number.NaN, 120, 130, 140].map((alt, index) => ({ ...base, d: index * 0.1, alt })),
   })
   assert.equal(activityComparisonDisplayValueAtDistance(missing, 'elevation', 0.2), '120 m')
-  assert.equal(activityComparisonDisplayValueAtDistance(missing, 'elevation', 0.1), '—')
+  assert.equal(activityComparisonDisplayValueAtDistance(missing, 'elevation', 0.1), '–')
   const stationary = comparisonActivity(260, {
     route: [100, 110].map(alt => ({ ...base, d: 0, alt })),
   })

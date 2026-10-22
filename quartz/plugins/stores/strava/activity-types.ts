@@ -89,8 +89,24 @@ export interface ActivityStrength {
   volumeKg: number | null
   totalSets: number | null
   totalReps: number | null
+  totalsSource?: 'manual'
   exercises: StrengthExercise[]
-  source: 'manual' | 'strava'
+  source:
+    | 'manual'
+    | 'strava'
+    | 'strava-description'
+    | 'routine-title'
+    | 'routine-description'
+    | 'trainingpeaks-description'
+    | 'trainingpeaks-routine'
+  prescription?: {
+    rounds: number
+    workS: number
+    restS: number
+    durationS: number
+    optionalRoundRestS?: number
+    trainingPeaksWorkoutId?: string
+  }
 }
 
 export interface ActivityMoveList {

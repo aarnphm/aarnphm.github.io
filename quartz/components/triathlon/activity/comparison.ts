@@ -5,28 +5,24 @@ import type { ActivityComparisonStatsScope } from '../../../util/triathlon-card'
 import type { DetailCtx } from '../../../util/triathlon-card'
 import type { TriathlonPresentation } from '../../../util/triathlon-presentation'
 import type { ActivityComparisonDragSelection } from './comparison-graph'
+import type { ActivityComparisonReading } from './comparison-graph'
+import type { ActivityComparisonReadoutMode } from './comparison-graph'
+import type { ActivityComparisonScrubContext } from './comparison-graph'
 import type { ActivityComparisonScrubState } from './comparison-graph'
 import type { ActivityComparisonSelectionRange } from './comparison-graph'
 import type { ActivityComparisonMapController } from './comparison-map'
-import { decodePowerCurves, type PowerCurveData } from '../../../util/power-curve'
 import { activityComparisonMathText } from '../../../util/triathlon-card'
 import { activityComparisonDisplayValueAtDistance } from '../../../util/triathlon-card'
 import { activityComparisonMetricsForSport } from '../../../util/triathlon-card'
-import { activityGearRatioDistribution } from '../../../util/triathlon-card'
-import { activityPowerDistributionPercentages } from '../../../util/triathlon-card'
-import { activityZonePercentages } from '../../../util/triathlon-card'
 import { buildActivityComparisonStats } from '../../../util/triathlon-card'
-import { dlabel } from '../../../util/triathlon-card'
-import { nearestPowerCurveValue } from '../../../util/triathlon-card'
-import { normalizePowerCurvePoints } from '../../../util/triathlon-card'
-import { powerCurveFraction } from '../../../util/triathlon-card'
 import { scrubDist } from '../../../util/triathlon-card'
-import { powerCurveReferenceLabel } from '../../../util/triathlon-i18n'
 import { triText } from '../../../util/triathlon-i18n'
 import { applyI18n } from '../runtime/dom'
 import { createDomFactory, setMath } from '../runtime/dom'
 import { setupPowerCurveTicks } from '../shell/power-curve-ticks'
+import { wireComparisonBinnedCharts } from './comparison-binned'
 import { mountComparisonChartTabs } from './comparison-chart-tabs'
+import { wireComparisonPowerCurve } from './comparison-curve'
 import { activityComparisonMetric } from './comparison-graph'
 import { activityComparisonMetricLabel } from './comparison-graph'
 import { bindActivityComparisonGraph } from './comparison-graph'
@@ -145,14 +141,8 @@ export const wireActivityComparison = (
   })
 
   const setReadout = (
-    mode:
-      | ActivityComparisonMetric
-      | 'power-curve'
-      | 'power-distribution'
-      | 'gear-ratio-distribution'
-      | 'hr-zones'
-      | 'power-zones',
-    values: { activity: StravaActivityDetail; value: string; missing: boolean }[],
+    mode: ActivityComparisonReadoutMode,
+    values: ActivityComparisonReading[],
     context = '',
   ) => {
     if (!readout) return
@@ -292,7 +282,7 @@ export const wireActivityComparison = (
       positionActivityComparisonCursor(graph, distanceState.fraction)
       const values = readings.map(({ activity, metrics }) => ({
         activity,
-        value: metrics.find(reading => reading.metric === metric)?.value ?? '—',
+        value: metrics.find(reading => reading.metric === metric)?.value ?? '–',
       }))
       graph.setAttribute('aria-valuenow', distanceKm.toFixed(3))
       graph.setAttribute(
@@ -300,7 +290,7 @@ export const wireActivityComparison = (
         `${position}; ${values
           .map(
             ({ activity, value }) =>
-              `${activity.name || text(activity.sport)}: ${value === '—' ? text('no data') : value}`,
+              `${activity.name || text(activity.sport)}: ${value === '–' ? text('no data') : value}`,
           )
           .join('; ')}`,
       )
@@ -308,8 +298,8 @@ export const wireActivityComparison = (
     setReadout(
       activeMetric,
       readings.map(({ activity, metrics }) => {
-        const value = metrics.find(reading => reading.metric === activeMetric)?.value ?? '—'
-        return { activity, value, missing: value === '—' }
+        const value = metrics.find(reading => reading.metric === activeMetric)?.value ?? '–'
+        return { activity, value, missing: value === '–' }
       }),
     )
     map?.setAttribute('aria-valuenow', distanceKm.toFixed(3))
@@ -317,8 +307,8 @@ export const wireActivityComparison = (
       'aria-valuetext',
       `${text(activityComparisonMetricLabel(activeMetric))}; ${position}; ${readings
         .map(({ activity, metrics }) => {
-          const value = metrics.find(reading => reading.metric === activeMetric)?.value ?? '—'
-          return `${activity.name || text(activity.sport)}: ${value === '—' ? text('no data') : value}`
+          const value = metrics.find(reading => reading.metric === activeMetric)?.value ?? '–'
+          return `${activity.name || text(activity.sport)}: ${value === '–' ? text('no data') : value}`
         })
         .join('; ')}`,
     )
@@ -402,285 +392,18 @@ export const wireActivityComparison = (
   comparison.addEventListener('click', onStatsClick)
   cleanups.push(() => comparison.removeEventListener('click', onStatsClick))
 
-  const curveChart = charts.find(chart => chart.dataset.compareChart === 'power-curve')
-  const curveGraph = curveChart?.querySelector<SVGElement>('.tri-compare-graph')
-  const powerCurves = activities.map(activity =>
-    normalizePowerCurvePoints(activity.powerCurve ?? []),
-  )
-  const curves = powerCurves.filter(curve => curve.length >= 2)
-  if (curveChart && curveGraph && curves.length > 0) {
-    type ComparisonCurveRange = 'six-weeks' | 'year'
-    const curveState: ActivityComparisonScrubState = { fraction: 0, selectedFraction: 0 }
-    const minDurationS = Math.min(...curves.map(curve => curve[0].s))
-    const maxDurationS = Math.max(...curves.map(curve => curve[curve.length - 1].s))
-    const [sixWeeks, year] = decodePowerCurves(curveGraph.dataset.powerCurves)
-    const curveReferences: Record<ComparisonCurveRange, PowerCurveData> = {
-      'six-weeks': sixWeeks ?? [],
-      year: year ?? [],
-    }
-    let curveRange: ComparisonCurveRange =
-      curveGraph.dataset.curveRange === 'year' ? 'year' : 'six-weeks'
-    const rawCurveYear = Number(curveGraph.dataset.curveYear)
-    const curveYear =
-      curveGraph.dataset.curveYear && Number.isInteger(rawCurveYear) ? rawCurveYear : null
-    const durationAt = (fraction: number): number =>
-      Math.exp(
-        Math.log(minDurationS) +
-          Math.min(1, Math.max(0, fraction)) * (Math.log(maxDurationS) - Math.log(minDurationS)),
-      )
-    const showCurve = (fraction: number) => {
-      curveState.fraction = Math.min(1, Math.max(0, fraction))
-      const durationS = durationAt(curveState.fraction)
-      positionActivityComparisonCursor(curveGraph, curveState.fraction)
-      const values = activities.map((activity, index) => {
-        const value = nearestPowerCurveValue(powerCurves[index], durationS)
-        return { activity, value: value == null ? '—' : `${value.toLocaleString()} W` }
-      })
-      showChartCursors([curveChart])
-      setReadout(
-        'power-curve',
-        values.map(({ activity, value }) => ({ activity, value, missing: value === '—' })),
-      )
-      const referenceWatts = nearestPowerCurveValue(curveReferences[curveRange], durationS)
-      const selectedSeconds = Math.max(1, Math.round(durationAt(curveState.selectedFraction ?? 0)))
-      for (const tick of curveChart.querySelectorAll<HTMLButtonElement>('.tri-curve-tick'))
-        tick.setAttribute(
-          'aria-pressed',
-          String(Number(tick.dataset.curveSeconds) === selectedSeconds),
-        )
-      curveGraph.setAttribute('aria-valuenow', Math.round(durationS).toString())
-      curveGraph.setAttribute(
-        'aria-valuetext',
-        `${dlabel(Math.max(1, Math.round(durationS)))}; ${values
-          .map(
-            ({ activity, value }) =>
-              `${activity.name || text(activity.sport)}: ${value === '—' ? text('no data') : value}`,
-          )
-          .join('; ')}${
-          referenceWatts == null
-            ? ''
-            : `; ${powerCurveReferenceLabel(presentation.locale, curveRange === 'year' ? curveYear : null)}: ${referenceWatts.toLocaleString()} W`
-        }`,
-      )
-    }
-    const selectCurve = (fraction: number) => {
-      const selected = Math.min(1, Math.max(0, fraction))
-      curveState.fraction = selected
-      curveState.selectedFraction = selected
-      showCurve(selected)
-      curveGraph.focus({ preventScroll: true })
-    }
-    const selectCurveRange = (range: ComparisonCurveRange) => {
-      if (curveReferences[range].length < 2) return
-      curveRange = range
-      curveGraph.dataset.curveRange = range
-      for (const option of curveChart.querySelectorAll<HTMLButtonElement>('.tri-curve-range'))
-        option.setAttribute('aria-pressed', String(option.dataset.curveRange === range))
-      for (const path of curveGraph.querySelectorAll<SVGElement>(
-        '.tri-compare-curve-ref[data-curve-range]',
-      ))
-        path.toggleAttribute('hidden', path.dataset.curveRange !== range)
-      for (const element of curveChart.querySelectorAll<HTMLElement | SVGElement>(
-        '[data-critical-power-range]',
-      ))
-        element.toggleAttribute('hidden', element.dataset.criticalPowerRange !== range)
-      const label = curveChart.querySelector<HTMLElement>('.tri-compare-curve-reference-label')
-      if (label) {
-        label.removeAttribute('data-i18n')
-        label.textContent = powerCurveReferenceLabel(
-          presentation.locale,
-          range === 'year' ? curveYear : null,
-        )
-      }
-      showCurve(curveState.selectedFraction ?? curveState.fraction)
-    }
-    const onCurveClick = (event: MouseEvent) => {
-      if (!(event.target instanceof Element)) return
-      const rangeButton = event.target.closest<HTMLButtonElement>('.tri-curve-range')
-      if (rangeButton && !rangeButton.disabled) {
-        selectCurveRange(rangeButton.dataset.curveRange === 'year' ? 'year' : 'six-weeks')
-        curveGraph.focus({ preventScroll: true })
-        return
-      }
-      const tick = event.target.closest<HTMLButtonElement>('.tri-curve-tick')
-      if (tick) {
-        const seconds = Number(tick.dataset.curveSeconds)
-        if (seconds > 0) selectCurve(powerCurveFraction(seconds, minDurationS, maxDurationS))
-        return
-      }
-      const axis = event.target.closest<HTMLElement>('.tri-cax-xax')
-      if (!axis || !curveChart.contains(axis)) return
-      const bounds = axis.getBoundingClientRect()
-      if (bounds.width > 0) selectCurve((event.clientX - bounds.left) / bounds.width)
-    }
-    curveChart.addEventListener('click', onCurveClick)
-    cleanups.push(
-      bindActivityComparisonGraph(curveGraph, curveState, showCurve, activate, render, deactivate),
-      () => curveChart.removeEventListener('click', onCurveClick),
-    )
+  const scrub: ActivityComparisonScrubContext = {
+    presentation,
+    activities,
+    charts,
+    text,
+    setReadout,
+    showChartCursors,
+    activate,
+    render,
+    deactivate,
   }
-
-  const distributionChart = charts.find(
-    chart => chart.dataset.compareChart === 'power-distribution',
-  )
-  const distributionGraph = distributionChart?.querySelector<SVGElement>(
-    '.tri-compare-distribution-graph',
-  )
-  const distributions = activities.map(activity =>
-    activityPowerDistributionPercentages(activity.powerHist),
-  )
-  const binCount = Math.max(0, ...distributions.map(values => values.length))
-  if (distributionChart && distributionGraph && binCount >= 2) {
-    const distributionState: ActivityComparisonScrubState = { fraction: 0 }
-    const showDistribution = (fraction: number) => {
-      distributionState.fraction = Math.min(1, Math.max(0, fraction))
-      const index = Math.round(distributionState.fraction * (binCount - 1))
-      const selectedFraction = index / (binCount - 1)
-      const startWatts = index * 25
-      const range = `${startWatts}–${startWatts + 24} W`
-      positionActivityComparisonCursor(distributionGraph, selectedFraction)
-      const values = activities.map((activity, activityIndex) => {
-        const distribution = distributions[activityIndex]
-        const value = distribution.length === 0 ? null : (distribution[index] ?? 0)
-        return { activity, value: value == null ? '—' : `${value.toFixed(1)}%` }
-      })
-      showChartCursors([distributionChart])
-      setReadout(
-        'power-distribution',
-        values.map(({ activity, value }) => ({ activity, value, missing: value === '—' })),
-        range,
-      )
-      distributionGraph.setAttribute('aria-valuenow', `${startWatts}`)
-      distributionGraph.setAttribute(
-        'aria-valuetext',
-        `${range}; ${values
-          .map(
-            ({ activity, value }) =>
-              `${activity.name || text(activity.sport)}: ${value === '—' ? text('no data') : value}`,
-          )
-          .join('; ')}`,
-      )
-    }
-    cleanups.push(
-      bindActivityComparisonGraph(
-        distributionGraph,
-        distributionState,
-        showDistribution,
-        activate,
-        render,
-        deactivate,
-        1 / (binCount - 1),
-      ),
-    )
-  }
-
-  const gearRatioChart = charts.find(
-    chart => chart.dataset.compareChart === 'gear-ratio-distribution',
-  )
-  const gearRatioGraph = gearRatioChart?.querySelector<SVGElement>(
-    '.tri-compare-distribution-graph',
-  )
-  const gearRatioDistributions = activities.map(activity => activityGearRatioDistribution(activity))
-  const gearRatios = [
-    ...new Set(gearRatioDistributions.flatMap(points => points.map(point => point.ratio))),
-  ].sort((left, right) => left - right)
-  if (gearRatioChart && gearRatioGraph && gearRatios.length > 0) {
-    const gearRatioState: ActivityComparisonScrubState = { fraction: 0 }
-    const showGearRatio = (fraction: number) => {
-      const index = Math.round(Math.min(1, Math.max(0, fraction)) * (gearRatios.length - 1))
-      const selectedFraction = gearRatios.length <= 1 ? 0.5 : index / (gearRatios.length - 1)
-      gearRatioState.fraction = selectedFraction
-      const ratio = gearRatios[index]
-      positionActivityComparisonCursor(gearRatioGraph, selectedFraction)
-      const values = activities.map((activity, activityIndex) => {
-        const distribution = gearRatioDistributions[activityIndex]
-        const point = distribution.find(point => point.ratio === ratio)
-        const pairings = point?.pairings
-          .map(({ frontTeeth, rearTeeth }) => `${frontTeeth}×${rearTeeth}T`)
-          .join(' / ')
-        const percentage = `${(point?.percentage ?? 0).toFixed(1)}%`
-        const value =
-          distribution.length === 0 ? '—' : pairings ? `${pairings} · ${percentage}` : percentage
-        return { activity, value }
-      })
-      showChartCursors([gearRatioChart])
-      setReadout(
-        'gear-ratio-distribution',
-        values.map(({ activity, value }) => ({ activity, value, missing: value === '—' })),
-        `${ratio.toFixed(2)}×`,
-      )
-      gearRatioGraph.setAttribute('aria-valuenow', `${index}`)
-      gearRatioGraph.setAttribute(
-        'aria-valuetext',
-        `${ratio.toFixed(2)}×; ${values
-          .map(
-            ({ activity, value }) =>
-              `${activity.name || text(activity.sport)}: ${value === '—' ? text('no data') : value}`,
-          )
-          .join('; ')}`,
-      )
-    }
-    cleanups.push(
-      bindActivityComparisonGraph(
-        gearRatioGraph,
-        gearRatioState,
-        showGearRatio,
-        activate,
-        render,
-        deactivate,
-        gearRatios.length <= 1 ? 1 : 1 / (gearRatios.length - 1),
-      ),
-    )
-  }
-
-  const zoneKinds: readonly ('hr' | 'power')[] = ['hr', 'power']
-  for (const kind of zoneKinds) {
-    const chart = charts.find(candidate => candidate.dataset.compareChart === `${kind}-zones`)
-    const graph = chart?.querySelector<SVGElement>('.tri-compare-graph')
-    const zones = activities.map(activity =>
-      activityZonePercentages(kind === 'hr' ? activity.hrZones : activity.powerZones),
-    )
-    const zoneCount = Math.max(0, ...zones.map(values => values.length))
-    if (!chart || !graph || zoneCount === 0) continue
-    const zoneState: ActivityComparisonScrubState = { fraction: 0 }
-    const showZone = (fraction: number) => {
-      zoneState.fraction = Math.min(1, Math.max(0, fraction))
-      const index = Math.round(zoneState.fraction * Math.max(0, zoneCount - 1))
-      const selectedFraction = zoneCount <= 1 ? 0 : index / (zoneCount - 1)
-      positionActivityComparisonCursor(graph, selectedFraction)
-      const values = activities.map((activity, activityIndex) => {
-        const value = zones[activityIndex][index]
-        return { activity, value: value == null ? '—' : `${value.toFixed(1)}%` }
-      })
-      showChartCursors([chart])
-      setReadout(
-        `${kind}-zones`,
-        values.map(({ activity, value }) => ({ activity, value, missing: value === '—' })),
-      )
-      graph.setAttribute('aria-valuenow', `${index + 1}`)
-      graph.setAttribute(
-        'aria-valuetext',
-        `Z${index + 1}; ${values
-          .map(
-            ({ activity, value }) =>
-              `${activity.name || text(activity.sport)}: ${value === '—' ? text('no data') : value}`,
-          )
-          .join('; ')}`,
-      )
-    }
-    const keyboardStep = zoneCount <= 1 ? 1 : 1 / (zoneCount - 1)
-    cleanups.push(
-      bindActivityComparisonGraph(
-        graph,
-        zoneState,
-        showZone,
-        activate,
-        render,
-        deactivate,
-        keyboardStep,
-      ),
-    )
-  }
+  cleanups.push(...wireComparisonPowerCurve(scrub), ...wireComparisonBinnedCharts(scrub))
 
   return () => {
     distanceSelection.clear()

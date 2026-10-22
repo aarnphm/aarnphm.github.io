@@ -24,6 +24,15 @@ const priority: readonly (keyof TrainingPeaksCalendarMetrics)[] = [
   'tss',
 ]
 
+export function trainingPeaksHasPlan(workout: TrainingPeaksCalendarWorkout): boolean {
+  return (
+    workout.status === 'planned' ||
+    workout.startTimePlanned !== null ||
+    workout.structure != null ||
+    priority.some(metric => (workout.planned[metric] ?? 0) > 0)
+  )
+}
+
 export function trainingPeaksExecution(
   workout: TrainingPeaksCalendarWorkout,
   today: string,
@@ -49,9 +58,7 @@ export function trainingPeaksExecution(
   }
 
   return {
-    status: priority.some(metric => (workout.planned[metric] ?? 0) > 0)
-      ? 'unavailable'
-      : 'unplanned',
+    status: trainingPeaksHasPlan(workout) ? 'unavailable' : 'unplanned',
     metric: null,
     ratio: null,
   }

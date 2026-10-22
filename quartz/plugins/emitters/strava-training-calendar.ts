@@ -3,6 +3,7 @@ import type { TrainingPeaksCalendar } from '../../util/trainingpeaks-calendar'
 import { linkTrainingPeaksCalendarActivities } from '../../util/trainingpeaks-activity-links'
 import { trainingPeaksActivityPeaks } from '../../util/trainingpeaks-calendar-peaks'
 import { trainingPeaksLocalZones } from '../../util/trainingpeaks-calendar-zones'
+import { trainingPeaksHasPlan } from '../../util/trainingpeaks-execution'
 
 type StravaActivity = NonNullable<LoadedStravaData['trackedCache']>['activities'][string]
 
@@ -43,7 +44,7 @@ export function linkTrainingCalendar(
   return {
     calendar: { ...linked, localZones: trainingPeaksLocalZones(analytics, payload.zones.ftp) },
     plannedActivityIds: linked.workouts.flatMap(workout =>
-      workout.activity ? [workout.activity.id] : [],
+      workout.activity && trainingPeaksHasPlan(workout) ? [workout.activity.id] : [],
     ),
   }
 }

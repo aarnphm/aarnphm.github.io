@@ -12,6 +12,14 @@ import { AnalyticsServerPanel } from '../../triathlon/analytics/render'
 import { CalendarPanel, CalendarSourceControls } from '../../triathlon/calendar/Calendar'
 import { ShortcutHint } from '../../triathlon/shell/ShortcutHint'
 
+const BACK_ICON = 'M19 12H5M11 6l-6 6 6 6'
+
+const BackIcon = () => (
+  <svg class="tri-ana-bar-back" viewBox="0 0 24 24" aria-hidden="true">
+    <path d={BACK_ICON} />
+  </svg>
+)
+
 const DISPATCH_ICON =
   'M189 375Q189 338 207 306.5Q225 275 256.5 257Q288 239 325 239H675Q712 239 743.5 257Q775 275 793 306.5Q811 338 811 375V775Q811 812 793 843.5Q775 875 743.5 893Q712 911 675 911H325Q288 911 256.5 893Q225 875 207 843.5Q189 812 189 775ZM261 375V775Q261 802 279.5 820.5Q298 839 325 839H675Q702 839 720.5 820.5Q739 802 739 775V375Q739 348 720.5 329.5Q702 311 675 311H325Q298 311 279.5 329.5Q261 348 261 375ZM411 275H339V100Q339 85 349.5 74.5Q360 64 375 64Q390 64 400.5 74.5Q411 85 411 100ZM661 275H589V150Q589 135 599.5 124.5Q610 114 625 114Q640 114 650.5 124.5Q661 135 661 150ZM375 539H625A36 36 0 0 1 625 611H375A36 36 0 0 1 375 539Z'
 
@@ -64,6 +72,7 @@ const TriPanelShell = ({
             <span aria-hidden="true" data-site-cursor-icon>
               ×
             </span>
+            {kind === 'analytics' && <BackIcon />}
             <ShortcutHint>esc</ShortcutHint>
           </button>
         </div>
@@ -111,18 +120,49 @@ export const AnalyticsPanel = ({
             </button>
           ))}
         </div>
+        <span class="tri-compare-picker-submit-wrap">
+          <button
+            class="tri-compare-picker-submit"
+            type="button"
+            disabled
+            aria-label="compare selected"
+            data-i18n-aria-label="compare selected"
+            aria-describedby="tri-compare-picker-submit-help"
+            aria-keyshortcuts="Shift+Enter"
+            data-site-cursor-action
+          >
+            <svg
+              class="tri-compare-picker-icon"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              data-site-cursor-icon
+            >
+              <path d="M12 4.5 19.5 12 12 19.5 4.5 12Z" />
+            </svg>
+          </button>
+          <span
+            id="tri-compare-picker-submit-help"
+            class="tri-compare-picker-tooltip"
+            role="tooltip"
+          >
+            <span data-i18n="compare activities">compare activities</span>
+          </span>
+        </span>
         <button
-          class="tri-ana-compare-toggle"
+          class="tri-ana-compare-toggle tri-key-anchor"
           type="button"
           aria-pressed="false"
           aria-label="compare activities"
           aria-controls="tri-analytics-results"
+          aria-keyshortcuts="c"
           data-i18n-aria-label="compare activities"
           data-site-cursor-action
         >
           <svg class="tri-ana-compare-icon" viewBox="0 0 1000 1000" aria-hidden="true">
             <path d={DISPATCH_ICON} />
           </svg>
+          <BackIcon />
+          <ShortcutHint>c</ShortcutHint>
         </button>
       </div>
     }
