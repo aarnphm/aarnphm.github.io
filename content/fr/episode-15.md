@@ -76,7 +76,7 @@ Pour la grille : **restaurant → B ; chez un ami → A et C ; plat à partager 
 
 Avec une quantité précise : **nombre + nom** ou **mesure + de / d' + aliment** : {{`un œuf`}}, {{`deux tomates`}}, {{`une tasse de lait`}}, {{`deux tranches de pain`}}, {{`un peu de jus de citron`}}. On dit **une tasse de lait**.
 
-Pour un aliment en quantité indéterminée, on emploie {{sidenotes[le partitif]: `du` = `de + le`, la contraction de `Je viens du Brésil` ([[fr/episode-1#dire-son-origine-sa-résidence-et-ses-langues|épisode 1]]).}} : {{`Je mange du fromage.`}} Pour un gout général, on emploie le défini : {{`J'aime le fromage.`}} À la négation : {{`Je ne mange pas de fromage.`}} / {{`Je n'aime pas le fromage.`}} Le défini **le** reste après **aimer**.
+Pour un aliment en quantité indéterminée, on emploie {{sidenotes[le partitif]: dans `du fromage`, `du` indique une quantité indéterminée. Dans `Je viens du Brésil` ([[fr/episode-1#dire-son-origine-sa-résidence-et-ses-langues|épisode 1]]), `du` contracte la préposition `de` et l'article `le`. La forme est identique ; la fonction diffère ([OQLF](https://vitrinelinguistique.oqlf.gouv.qc.ca/fiche-gdt/fiche/26559622/determinant-partitif)).}} : {{`Je mange du fromage.`}} Pour un gout général, on emploie le défini : {{`J'aime le fromage.`}} À la négation : {{`Je ne mange pas de fromage.`}} / {{`Je n'aime pas le fromage.`}} Le défini **le** reste après **aimer**.
 
 ### piste 36 : les quatre sandwichs
 
@@ -182,10 +182,12 @@ Pour réviser : nommer les ingrédients, choisir **du / de la / de l' / des**, e
 | français                 | sens en anglais          | usage                                                                    |
 | ------------------------ | ------------------------ | ------------------------------------------------------------------------ |
 | {{`casser la croute`}}   | to grab a bite           | Familier ; orthographe traditionnelle : `croûte`.                        |
-| {{`apportez votre vin`}} | bring your own wine      | Restaurant sans permis d'alcool ; on apporte sa bouteille.               |
+| {{`apportez votre vin`}} | bring your own wine      | On apporte son vin ; permis avec option « pour servir » au Québec.       |
 | {{`un repas-partage`}}   | potluck                  | Québec ; France : `une auberge espagnole`.                               |
 | {{`une bonne sandwich`}} | a good sandwich          | Oral québécois ; forme standard : `un bon sandwich`.                     |
 | {{`les bleuets`}}        | blueberries              | Québec ; France : `les myrtilles`.                                       |
 | {{`le melon d'eau`}}     | watermelon               | Québec ; France : `la pastèque`.                                         |
 | {{`C'est écœurant !`}}   | it's gross; it's amazing | Québec : sens positif possible ; France : seulement négatif.             |
 | {{`souper`}}             | to have dinner; supper   | Québec : repas du soir ; France : `le dîner`. Au Québec, `dîner` = midi. |
+
+La [RACJ](https://www.racj.gouv.qc.ca/alcool/vendre-ou-servir-des-boissons-alcooliques-pour-consommation-sur-place/permis-de-restaurant) rattache cette formule au permis de restaurant avec l’option « pour servir ».

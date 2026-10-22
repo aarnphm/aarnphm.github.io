@@ -14,7 +14,7 @@ Le français a deux rives — et le piège des faux amis. Vocabulaire général 
 ```jsx imports={RegisterLadder}
 <RegisterLadder
   label="échelle de registre"
-  pairs='{"qc":{"fam":["Je suis tanné, on va au dépanneur.","*être tanné* et *dépanneur* sont québécois ; oral familier."],"std":["J’en ai assez, allons au dépanneur.","*j’en ai assez* est compris partout ; *dépanneur* reste québécois."],"sou":["Je suis excédé ; rendons-nous au dépanneur.","*excédé* et l’impératif *rendons-nous* : écrit soigné."]},"fr":{"fam":["J’en ai marre, on va à la supérette.","*en avoir marre* et *supérette* : familier de France."],"std":["J’en ai assez, allons à la supérette.","*supérette* remplace *dépanneur* ; le reste est standard."],"sou":["Je suis excédé ; rendons-nous à la supérette.","le soutenu est le même des deux rives, sauf le nom du commerce."]}}'
+  pairs='{"qc":{"fam":["Je suis tanné, on va au dépanneur.","*être tanné* est familier au Québec ; *dépanneur* y est le mot courant pour ce type de commerce."],"std":["J’en ai assez, allons au dépanneur.","*j’en ai assez* est compris partout ; *dépanneur* reste québécois."],"sou":["Je suis excédé ; rendons-nous au dépanneur.","*excédé* et l’impératif *rendons-nous* : écrit soigné."]},"fr":{"fam":["J’en ai marre, on va à la supérette.","*en avoir marre* est familier ; *supérette* est le mot courant pour ce type de commerce en France."],"std":["J’en ai assez, allons à la supérette.","*supérette* remplace *dépanneur* ; le reste est standard."],"sou":["Je suis excédé ; rendons-nous à la supérette.","Même construction dans cet exemple ; les usages formels varient aussi selon le contexte."]}}'
 />
 ```
 
