@@ -73,12 +73,7 @@ const MAX_HR_KEYS = ['maxHR', 'maxHeartRate', 'maxHeartRateInBeatsPerMinute']
 const AVG_POWER_KEYS = ['averagePower', 'avgPower']
 const NORMALIZED_POWER_KEYS = ['normalizedPower', 'weightedAverageWatts']
 const MAX_POWER_KEYS = ['maxPower', 'maxPowerInWatts']
-const AVG_CADENCE_KEYS = [
-  'averageBikeCadence',
-  'averageRunCadence',
-  'averageSwimCadence',
-  'avgCadence',
-]
+const AVG_CADENCE_KEYS = ['averageBikeCadence', 'averageSwimCadence', 'avgCadence']
 const ASCENT_M_KEYS = ['elevationGain', 'totalAscent', 'totalAscentM', 'totalElevationGain']
 const DESCENT_M_KEYS = ['elevationLoss', 'totalDescent', 'totalDescentM', 'totalElevationLoss']
 const WORK_KJ_KEYS = ['kilojoules', 'totalWorkKJ']
@@ -324,7 +319,11 @@ export function garminConnectActivity(
   metrics.avgPower = rounded(firstNumber(records, AVG_POWER_KEYS))
   metrics.normalizedPower = rounded(firstNumber(records, NORMALIZED_POWER_KEYS))
   metrics.maxPower = rounded(firstNumber(records, MAX_POWER_KEYS))
-  metrics.avgCadence = rounded(firstNumber(records, AVG_CADENCE_KEYS))
+  const cadence = firstNumber(records, AVG_CADENCE_KEYS)
+  const runCadence = firstNumber(records, ['averageRunCadence'])
+  // Run cadence counts both feet; the shared activity contract uses cycles per minute.
+  metrics.avgCadence =
+    cadence != null ? rounded(cadence) : runCadence != null ? roundedFloat(runCadence / 2, 1) : null
   metrics.totalAscentM = rounded(firstNumber(records, ASCENT_M_KEYS))
   metrics.totalDescentM = rounded(firstNumber(records, DESCENT_M_KEYS))
   metrics.totalWorkKJ =

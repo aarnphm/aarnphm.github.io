@@ -26,6 +26,7 @@ export interface GarminMetrics {
   avgPower: number | null
   normalizedPower: number | null
   maxPower: number | null
+  /** Cycling rpm, running cycles/min, or swim strokes/min. */
   avgCadence: number | null
   totalAscentM: number | null
   totalDescentM: number | null

@@ -13,6 +13,52 @@ import {
   garminConnectWeightSamples,
 } from './garmin-connect'
 
+test('Garmin run cadence normalizes summary and timed double cadence to cycles per minute', () => {
+  const summary = {
+    activityId: 1,
+    startTimeGMT: '2026-10-20T18:38:42Z',
+    activityType: { typeKey: 'running' },
+    averageRunCadence: 172,
+  }
+  assert.equal(garminConnectActivity(summary, {}, 0)?.metrics.avgCadence, 86)
+  assert.equal(
+    garminConnectActivity({ ...summary, averageBikeCadence: 86 }, {}, 0)?.metrics.avgCadence,
+    86,
+  )
+  const detail = {
+    metricDescriptors: [
+      { metricsIndex: 0, key: 'sumElapsedDuration' },
+      { metricsIndex: 1, key: 'directRunCadence' },
+      { metricsIndex: 2, key: 'directDoubleCadence' },
+    ],
+    activityDetailMetrics: [
+      { metrics: [0, 56, 113] },
+      { metrics: [1, 80, 160] },
+      { metrics: [2, 0, 0] },
+    ],
+  }
+  assert.deepEqual(garminConnectStreams(detail)?.cadence, [56.5, 80, 0])
+  assert.deepEqual(
+    garminConnectStreams({
+      ...detail,
+      metricDescriptors: detail.metricDescriptors.filter(
+        metric => metric.key !== 'directDoubleCadence',
+      ),
+    })?.cadence,
+    [56, 80, 0],
+  )
+  assert.deepEqual(
+    garminConnectStreams({
+      ...detail,
+      metricDescriptors: [
+        ...detail.metricDescriptors,
+        { metricsIndex: 1, key: 'directBikeCadence' },
+      ],
+    })?.cadence,
+    [56, 80, 0],
+  )
+})
+
 test('normalizes dated Garmin running lactate threshold history without filling missing days', () => {
   const raw = [
     {

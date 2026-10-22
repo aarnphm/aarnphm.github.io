@@ -133,9 +133,12 @@ export function garminConnectStreams(detail: UnknownRecord | null): GarminStream
   if (!detail || !Array.isArray(detail.activityDetailMetrics))
     return detail ? polylineStreams(detail) : null
 
+  const bikeCadence = metricIndex(detail, METRIC_KEYS.cadence)
+  const doubleCadence = metricIndex(detail, 'directDoubleCadence')
+  const cadenceScale = bikeCadence == null && doubleCadence != null ? 0.5 : 1
   const indices = {
     altitude: metricIndex(detail, METRIC_KEYS.altitude),
-    cadence: metricIndex(detail, METRIC_KEYS.cadence),
+    cadence: bikeCadence ?? doubleCadence ?? metricIndex(detail, 'directRunCadence'),
     distance: metricIndex(detail, METRIC_KEYS.distance),
     elapsedTime: metricIndex(detail, METRIC_KEYS.elapsedTime),
     groundContactBalanceLeftPct: metricIndex(detail, METRIC_KEYS.groundContactBalanceLeftPct),
@@ -208,7 +211,7 @@ export function garminConnectStreams(detail: UnknownRecord | null): GarminStream
     streams.watts?.push(metricValue(item, indices.power) ?? 0)
     streams.rightBalance?.push(metricValue(item, indices.rightBalance) ?? -1)
     streams.heartrate?.push(metricValue(item, indices.heartRate) ?? 0)
-    streams.cadence?.push(metricValue(item, indices.cadence) ?? 0)
+    streams.cadence?.push((metricValue(item, indices.cadence) ?? 0) * cadenceScale)
     streams.stamina?.push(metricValue(item, indices.stamina) ?? -1)
     streams.potentialStamina?.push(metricValue(item, indices.potentialStamina) ?? -1)
     streams.respiration?.push(metricValue(item, indices.respiration) ?? 0)
