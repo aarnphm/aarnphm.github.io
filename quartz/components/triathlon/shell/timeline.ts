@@ -1,6 +1,6 @@
-import type { ActivityKind } from '../../../plugins/stores/strava'
 import type { TriathlonContext } from '../runtime/context'
 import type { TriathlonFormatter } from '../runtime/formatter'
+import { SPORT_ICON, type ActivityKind } from '../../../plugins/stores/strava'
 import { buildBattery, buildIcon } from '../../../util/triathlon-card/activity-icons'
 import { dist, dur, prettyDate } from '../../../util/triathlon-card/metric-text'
 import { triText } from '../../../util/triathlon-i18n'
@@ -160,11 +160,13 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
   const restValEl = el('span', 'tri-timeline-value', undefined, { 'data-i18n': 'rest' })
   restEl.append(buildBattery(domF), restValEl)
   const listEl = el('ul', 'tri-timeline-list')
+  // Slots are reused across sports, so each holds as many paths as the largest icon.
+  const iconPathSlots = Math.max(...Object.values(SPORT_ICON).map(paths => paths.length))
   const itemSlots = Array.from({ length: maxDayActivities }, () => {
     const item = el('li', 'tri-timeline-item')
     const entry = el('span', 'tri-timeline-row tri-timeline-activity', undefined, { role: 'group' })
     const icon = svg('svg', { class: 'tri-ico', viewBox: '0 0 24 24', fill: 'none' })
-    const paths = Array.from({ length: 4 }, () => {
+    const paths = Array.from({ length: iconPathSlots }, () => {
       const p = svg('path', { d: '' })
       icon.appendChild(p)
       return p

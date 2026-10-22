@@ -7,6 +7,7 @@
   gap: 0.45rem;
   min-width: 0;
   min-height: 0;
+  container: tri-compare-stats / inline-size;
 }
 
 .tri-compare-stats-controls {
@@ -62,10 +63,19 @@
 }
 
 .tri-compare-stats-scope:focus-visible,
-.tri-compare-stats-label-text[data-gloss]:focus-visible,
-.tri-compare-stats-scroll:focus-visible {
+.tri-compare-stats-label-text[data-gloss]:focus-visible {
   outline: 2px solid var(--dark);
   outline-offset: -2px;
+}
+
+// The sticky cells paint over a ring on the scroll region, leaving bars at the group rows and
+// a bracket at the foot. Keyboard focus fills the column heads with `selected` instead.
+.tri-compare-stats-scroll:focus-visible {
+  outline: none;
+}
+
+.tri-compare-stats-scroll:focus-visible thead th {
+  background: var(--tri-compare-selected);
 }
 
 .tri-compare-stats-window {
@@ -140,6 +150,12 @@
   letter-spacing: 0.04em;
 }
 
+.tri-compare-stats-group-label {
+  display: inline-block;
+  position: sticky;
+  inset-inline-start: 0.4rem;
+}
+
 .tri-compare-stats-label {
   color: var(--dark);
   min-width: 6rem;
@@ -158,16 +174,23 @@
   cursor: help;
 }
 
-.tri-compare-stats-activity,
-.tri-compare-stats-cell {
+// Each delta sits left of its value, so the gap between columns must read wider than the
+// 0.4rem gap inside a cell; otherwise a delta seems to belong to the value before it.
+.tri-compare-stats .tri-compare-stats-activity,
+.tri-compare-stats .tri-compare-stats-cell {
   min-width: 4.4rem;
+  padding-inline-start: 1.1rem;
+}
+
+.tri-compare-stats .tri-compare-stats-activity {
+  text-align: center;
 }
 
 // Identity colour appears once per column: a stroke sample beside the date.
 .tri-compare-stats-heading {
   display: flex;
   align-items: baseline;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 0.45rem;
   width: 100%;
   min-width: 6rem;
@@ -184,7 +207,8 @@
   color: var(--dark);
   overflow-wrap: anywhere;
   line-height: 1.4;
-  text-align: right;
+  text-align: center;
+  text-wrap: balance;
 }
 
 .tri-compare-stats-tag {
@@ -243,6 +267,91 @@
 
 .tri-compare-stats-delta[data-trend='better'] {
   color: var(--dark);
+}
+
+// The table fits its panel instead of scrolling sideways. When value and delta no longer fit
+// on one line, the delta drops under its value; in a narrower panel the delta's absolute and
+// relative parts stack too, labels wrap and the column padding shrinks. The thresholds are
+// the widths the inline layout needs for two and for three or more activities.
+@mixin compare-stats-stacked {
+  .tri-compare-stats-content {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.1rem;
+  }
+
+  .tri-compare-stats-delta {
+    order: 0;
+  }
+
+  .tri-compare-stats .tri-compare-stats-activity,
+  .tri-compare-stats .tri-compare-stats-cell {
+    min-width: 0;
+    padding-inline-start: 0.8rem;
+  }
+
+  .tri-compare-stats-heading {
+    min-width: 0;
+  }
+}
+
+@mixin compare-stats-compact {
+  .tri-compare-stats-delta {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0;
+  }
+
+  .tri-compare-stats :is(th, td) {
+    padding-inline: 0.25rem;
+  }
+
+  .tri-compare-stats .tri-compare-stats-activity,
+  .tri-compare-stats .tri-compare-stats-cell {
+    padding-inline-start: 0.5rem;
+  }
+
+  .tri-compare-stats-label,
+  .tri-compare-stats-cell {
+    min-width: 0;
+    white-space: normal;
+  }
+
+  // A unit breaks onto its own line: "24.0 str/min" alone is wider than a third of a phone.
+  .tri-compare-stats-value {
+    flex: 0 1 auto;
+    text-align: end;
+  }
+
+  .tri-compare-stats-heading {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+  }
+}
+
+@container tri-compare-stats (max-width: 34rem) {
+  .tri-compare-stats-panel[data-columns='2'] {
+    @include compare-stats-stacked;
+  }
+}
+
+@container tri-compare-stats (max-width: 24rem) {
+  .tri-compare-stats-panel[data-columns='2'] {
+    @include compare-stats-compact;
+  }
+}
+
+@container tri-compare-stats (max-width: 47rem) {
+  .tri-compare-stats-panel[data-columns]:not([data-columns='2']) {
+    @include compare-stats-stacked;
+  }
+}
+
+@container tri-compare-stats (max-width: 32rem) {
+  .tri-compare-stats-panel[data-columns]:not([data-columns='2']) {
+    @include compare-stats-compact;
+  }
 }
 
 .tri-compare :is(.tri-cax-yt, .tri-cax-xt, .tri-ana-k, .tri-compare-empty) {

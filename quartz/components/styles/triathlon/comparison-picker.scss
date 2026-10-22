@@ -7,6 +7,7 @@
   --tri-compare-ink-mix: 58%;
   --tri-compare-line: color-mix(in srgb, var(--gray) 55%, transparent);
   --tri-compare-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+  --tri-compare-selected: color-mix(in srgb, var(--secondary) 18%, var(--light));
 }
 
 :root[saved-theme='dark'] {
@@ -63,7 +64,6 @@
   opacity: 1;
 }
 
-.tri-compare-clear,
 .tri-compare-picker-submit,
 .tri-compare-load-retry {
   min-height: 1.55rem;
@@ -84,7 +84,6 @@
   }
 }
 
-.tri-compare-clear,
 .tri-compare-picker-submit {
   display: inline-flex;
   align-items: center;
@@ -113,7 +112,6 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .tri-compare-clear:hover:not(:disabled),
   .tri-compare-picker-submit:hover:not(:disabled) {
     color: var(--dark);
   }
@@ -193,18 +191,6 @@ $compare-swatches: '.tri-compare-swatch, .tri-compare-legend-swatch, .tri-compar
     var(--tri-compare-ink) 9px 11px,
     transparent 11px 13px
   );
-}
-
-// The clear shows with the submit, only while activities are being picked.
-.tri-analytics:not(.tri-analytics--compare) .tri-compare-clear,
-.tri-analytics--comparison .tri-compare-clear {
-  display: none;
-}
-
-.tri-ana-bar .tri-compare-clear {
-  flex: none;
-  height: 1.6rem;
-  min-height: 0;
 }
 
 // The copy shares the bar row with the compare toggle and takes the same box.

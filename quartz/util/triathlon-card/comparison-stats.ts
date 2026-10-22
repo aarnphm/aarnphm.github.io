@@ -59,6 +59,7 @@ export const buildActivityComparisonStats = <N>(
     'data-compare-stats': '',
     'data-scope': selection ? 'selection' : 'whole',
     'data-baseline': baseline?.id ?? '',
+    'data-columns': `${columns.length}`,
     'aria-label': 'metrics',
     'data-i18n-aria-label': 'metrics',
   })
@@ -149,14 +150,16 @@ export const buildActivityComparisonStats = <N>(
     if (rows.length === 0) continue
     const body = f.el('tbody', 'tri-compare-stats-group', undefined, { 'data-stat-group': group })
     const groupRow = f.el('tr')
+    const groupHead = f.el('th', 'tri-compare-stats-group-head', undefined, {
+      scope: 'colgroup',
+      colspan: `${columns.length + 1}`,
+    })
+    // The cell spans the table; only the label sticks when the table scrolls sideways.
     f.add(
-      groupRow,
-      f.el('th', 'tri-compare-stats-group-head', text(group), {
-        scope: 'colgroup',
-        colspan: `${columns.length + 1}`,
-        'data-i18n': group,
-      }),
+      groupHead,
+      f.el('span', 'tri-compare-stats-group-label', text(group), { 'data-i18n': group }),
     )
+    f.add(groupRow, groupHead)
     f.add(body, groupRow)
     for (const spec of rows) {
       rowCount++

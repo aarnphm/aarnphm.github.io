@@ -7,8 +7,9 @@
   gap: 0.5rem 1.2rem;
   margin-top: 0.45rem;
 
-  button {
-    outline: none;
+  button:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
   }
 }
 
