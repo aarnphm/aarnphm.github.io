@@ -189,32 +189,13 @@
   text-align: center;
 }
 
-// Identity colour appears once per column: a stroke sample beside the name, as in the chart
-// legend. The name keeps to one line and ends in an ellipsis; the heading's title holds it in
-// full. Its zero width keeps the name out of the column's intrinsic size, so the values set
-// the column width and the heading fills whatever they leave.
+// Identity colour appears once per column as a stroke sample, as in the chart legend; the
+// heading's title names the activity on hover.
 .tri-compare-stats-heading {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: center;
-  gap: 0.45rem;
-  width: 0;
-  min-width: 100%;
-  color: var(--dark);
-}
-
-.tri-compare-stats-heading > .tri-compare-stats-swatch {
-  flex: none;
-  align-self: center;
-}
-
-.tri-compare-stats-name {
-  min-width: 0;
-  overflow: hidden;
-  color: var(--dark);
-  line-height: 1.4;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  min-height: 1.4em;
 }
 
 .tri-compare-stats-tag {
