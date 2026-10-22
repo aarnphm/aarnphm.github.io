@@ -187,6 +187,7 @@ const config: QuartzConfig = {
             { name: 'fr-notes', entry: 'components/scripts/fr-notes.client.ts' },
             { name: 'course-calendar', entry: 'components/course-calendar/app.tsx' },
             { name: 'base-query', entry: 'components/scripts/base-query.ts' },
+            { name: 'base-bookcase', entry: 'components/scripts/base-bookcase.inline.ts' },
             { name: 'pele', entry: 'components/scripts/pele.client.ts' },
           ],
         }),

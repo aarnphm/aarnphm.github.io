@@ -8,6 +8,7 @@ import {
   placeShelves,
   stylePackOptions,
 } from '../../util/base/bookcase/styles'
+import { type Cover, retainCovers } from './base-bookcase-artwork'
 import { createHardcoverPreview } from './base-bookcase-preview'
 import { registerEscapeHandler } from './escape-handler'
 import { rootNavSignal } from './root-lifecycle'
@@ -41,58 +42,6 @@ const PULL_DELAY_MS = 160
 const SETTLE_MS = 180
 const WHEEL_SETTLE_MS = 500
 type Drag = { id: number; x: number; y: number; camera: Camera; book: number; moved: boolean }
-type Cover = {
-  url: string
-  spine?: string
-  ink?: string
-  art?: string
-  artDetail?: string
-  artDetailWidth?: string
-  artDetailHeight?: string
-}
-
-function retainCovers(root: HTMLElement, covers: Map<string, Cover>): void {
-  const nodes = root.querySelectorAll<HTMLElement | SVGElement>('[data-bookcase-cover]')
-  for (const node of nodes) {
-    const slug = node.dataset.bookcaseCover
-    const url = node instanceof HTMLImageElement ? node.getAttribute('src') : node.dataset.cover
-    if (!slug || !url?.includes('/static/bookcase/')) continue
-    const cover = { ...covers.get(slug), url }
-    if (node.matches('.bc-book')) {
-      cover.spine = node.style.getPropertyValue('--spine')
-      cover.ink = node.style.getPropertyValue('--spine-ink')
-      if (node.dataset.spineArt) cover.art = node.dataset.spineArt
-      if (node.dataset.spineArtDetail) {
-        cover.artDetail = node.dataset.spineArtDetail
-        cover.artDetailWidth = node.dataset.spineArtDetailWidth
-        cover.artDetailHeight = node.dataset.spineArtDetailHeight
-      }
-    }
-    covers.set(slug, cover)
-  }
-  for (const node of nodes) {
-    const slug = node.dataset.bookcaseCover
-    const cover = slug ? covers.get(slug) : undefined
-    if (!cover) continue
-    if (node instanceof HTMLImageElement) {
-      if (node.getAttribute('src') !== cover.url) node.src = cover.url
-      continue
-    }
-    if (node.dataset.cover !== cover.url) node.dataset.cover = cover.url
-    if (cover.art && node.dataset.spineArt !== cover.art) node.dataset.spineArt = cover.art
-    if (cover.artDetail && node.dataset.spineArtDetail !== cover.artDetail) {
-      node.dataset.spineArtDetail = cover.artDetail
-      node.dataset.spineArtDetailWidth = cover.artDetailWidth ?? ''
-      node.dataset.spineArtDetailHeight = cover.artDetailHeight ?? ''
-    }
-    if (node.hasAttribute('data-spine-sampled')) {
-      if (cover.spine && node.style.getPropertyValue('--spine') !== cover.spine)
-        node.style.setProperty('--spine', cover.spine)
-      if (cover.ink && node.style.getPropertyValue('--spine-ink') !== cover.ink)
-        node.style.setProperty('--spine-ink', cover.ink)
-    }
-  }
-}
 
 function readBookBounds(book: SVGGElement): DOMRect {
   const candidate = book.lastElementChild?.previousElementSibling
@@ -242,7 +191,7 @@ function removeExposedCover(image: SVGImageElement | undefined): void {
   if (image && !image.hasAttribute('data-shelf-resident')) image.remove()
 }
 
-function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void {
+export function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void {
   if (root.dataset.bookcaseReady !== undefined) return
   const scene = root.querySelector<SVGSVGElement>('svg.bookcase-scene')
   const world = root.querySelector<HTMLElement>('.bookcase-world')
@@ -262,6 +211,13 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
   retainCovers(root, covers)
   root.dataset.bookcaseReady = ''
   const signal = rootNavSignal(root)
+  const loadTextures = () => {
+    for (const image of scene.querySelectorAll<SVGImageElement>('image[data-bookcase-texture]')) {
+      const url = image.dataset.bookcaseTexture
+      if (url) image.setAttribute('href', url)
+    }
+  }
+  loadTextures()
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
   const entries = [...root.querySelectorAll<HTMLLIElement>('.bookcase-entry')]
   const groups = [...root.querySelectorAll<HTMLDetailsElement>('.bookcase-index-group')]
@@ -393,6 +349,7 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
     for (const image of residentCovers.values()) removeArtwork(image)
     for (const attribute of next.attributes) scene.setAttribute(attribute.name, attribute.value)
     scene.replaceChildren(...next.childNodes)
+    loadTextures()
     ;[originX, originY] = (scene.dataset.origin ?? '0 0').split(' ').map(Number)
     box = scene.viewBox.baseVal
     fitWidth = Number(scene.dataset.fit) || box.width
@@ -1656,6 +1613,8 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
       if (dialog.open) dialog.close()
       dropLift()
       for (const image of residentCovers.values()) removeArtwork(image)
+      for (const image of scene.querySelectorAll('image[data-bookcase-texture]'))
+        image.removeAttribute('href')
       residentCovers.clear()
       preloaded.clear()
       if (prefetchTask !== undefined && idle) cancelIdleCallback(prefetchTask)
@@ -1674,19 +1633,5 @@ function initializeBookcase(root: HTMLElement, covers: Map<string, Cover>): void
     { once: true },
   )
 }
-
-document.addEventListener('nav', () => {
-  const covers = new Map<string, Cover>()
-  const initializeBookcases = () => {
-    for (const root of document.querySelectorAll<HTMLElement>('.bookcase'))
-      initializeBookcase(root, covers)
-  }
-  initializeBookcases()
-  document.addEventListener('base-content-changed', initializeBookcases)
-  window.addCleanup(() => {
-    document.removeEventListener('base-content-changed', initializeBookcases)
-    covers.clear()
-  })
-})
 
 export default ''
