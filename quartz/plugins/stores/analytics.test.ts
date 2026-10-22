@@ -1738,6 +1738,99 @@ test('run abilities consume matched Garmin summaries without Apple workouts', ()
   assert.equal(invalid?.history.at(-1)?.oscillation, null)
 })
 
+test('analytics and feed retain matched provider summaries and canonical cadence units', () => {
+  const { cache } = fixtures()
+  delete cache.activities['1'].averageCadence
+  delete cache.activities['1'].averageWatts
+  delete cache.activities['1'].weightedAverageWatts
+  delete cache.activities['1'].calories
+  delete cache.activities['1'].averageHeartrate
+  delete cache.activities['1'].maxHeartrate
+  delete cache.activities['2'].averageCadence
+  const garmin: GarminCache = { lastSync: cache.lastSync, activities: {} }
+  const matches: { id: string; sport: 'bike' | 'run' }[] = [
+    { id: '1', sport: 'bike' },
+    { id: '2', sport: 'run' },
+  ]
+  for (const { id, sport } of matches) {
+    const activity = cache.activities[id]
+    garmin.activities[id] = {
+      id,
+      sport,
+      name: activity.name,
+      startDate: activity.startDate,
+      startDateLocal: activity.startDateLocal,
+      distanceM: activity.distance,
+      movingTimeS: activity.movingTime,
+      elapsedTimeS: activity.elapsedTime,
+      sourceDevice: null,
+      sourceFile: null,
+      metrics: {
+        ...emptyGarminMetrics(),
+        avgCadence: 86,
+        avgPower: 250,
+        normalizedPower: 260,
+        totalCalories: 900,
+        avgHeartRate: 152,
+        maxHeartRate: 180,
+      },
+      fueling: emptyGarminFueling(),
+    }
+  }
+  const before = structuredClone(cache)
+  const payload = buildPayload(cache, null, garmin, '2026-05-12')
+  const analytics = buildAnalytics(cache, {
+    activityDetails: payload.details,
+    garmin,
+    since: '2026-05-12',
+  })
+  assert.equal(payload.details['2'].avgCadence, 86)
+  assert.equal(analytics.activities.find(activity => activity.id === 1)?.cadence, 86)
+  assert.equal(analytics.activities.find(activity => activity.id === 2)?.cadence, 86)
+  assert.equal(analytics.distributions.activities.find(activity => activity.id === 2)?.cadence, 172)
+  const run = analytics.engine.abilities.sports.find(sport => sport.sport === 'run')
+  assert.equal(run?.axes.find(axis => axis.key === 'cadence')?.rawValue, 172)
+  assert.equal(analytics.engine.cardio.efSeries.find(point => point.sport === 'bike')?.ef, 1.71)
+  const rows: unknown[] = buildDataFeed(cache, analytics, {
+    garmin,
+    activityDetails: payload.details,
+  })
+    .trim()
+    .split('\n')
+    .map(line => JSON.parse(line))
+  const bike = rows.find(row => isRecord(row) && row.kind === 'activity' && row.id === 1)
+  assert.ok(isRecord(bike))
+  assert.equal(bike.avgWatts, 250)
+  assert.equal(bike.weightedWatts, 260)
+  assert.equal(bike.deviceWatts, true)
+  assert.equal(bike.calories, 900)
+  assert.equal(bike.avgHr, 152)
+  assert.equal(bike.maxHr, 160)
+  assert.equal(bike.ef, 1.71)
+  assert.deepEqual(cache, before)
+
+  cache.activities['1'].averageCadence = 0
+  cache.activities['1'].averageWatts = 0
+  cache.activities['1'].weightedAverageWatts = 0
+  cache.activities['1'].calories = 0
+  cache.activities['1'].deviceWatts = false
+  const zeroPayload = buildPayload(cache, null, garmin, '2026-05-12')
+  const zeroAnalytics = buildAnalytics(cache, { activityDetails: zeroPayload.details })
+  assert.equal(zeroAnalytics.activities.find(activity => activity.id === 1)?.cadence, 0)
+  const zeroRows: unknown[] = buildDataFeed(cache, zeroAnalytics, {
+    activityDetails: zeroPayload.details,
+  })
+    .trim()
+    .split('\n')
+    .map(line => JSON.parse(line))
+  const zeroBike = zeroRows.find(row => isRecord(row) && row.kind === 'activity' && row.id === 1)
+  assert.ok(isRecord(zeroBike))
+  assert.equal(zeroBike.avgWatts, 0)
+  assert.equal(zeroBike.weightedWatts, 0)
+  assert.equal(zeroBike.calories, 0)
+  assert.equal(zeroBike.deviceWatts, false)
+})
+
 test('engine derives ftp from 20-min power only when strava declares none', () => {
   const { cache, oura, weights } = fixtures()
   const a = buildAnalytics({ ...cache, zones: undefined }, { oura, weights, since: '2026-05-12' })

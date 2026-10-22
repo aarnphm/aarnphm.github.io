@@ -44,6 +44,7 @@ import {
   type SportBest,
   type ThresholdEstimate,
 } from './analytics/primitives'
+import { activityWithProviderMetrics } from './analytics/provider-metrics'
 import {
   buildActions,
   buildBest,
@@ -132,6 +133,9 @@ export function buildAnalytics(
   const sinceDay = inputs.since && /^\d{4}-\d{2}-\d{2}$/.test(inputs.since) ? inputs.since : null
   const sourceActivities = Object.values(cache.activities)
     .filter(activity => !sinceDay || activity.startDateLocal.slice(0, 10) >= sinceDay)
+    .map(activity =>
+      activityWithProviderMetrics(activity, inputs.activityDetails?.[String(activity.id)]),
+    )
     .sort((left, right) => left.startDateLocal.localeCompare(right.startDateLocal))
   const saunaDetails = Object.values(inputs.activityDetails ?? {})
     .filter(detail => detail.sport === 'sauna' && detail.sauna != null)
