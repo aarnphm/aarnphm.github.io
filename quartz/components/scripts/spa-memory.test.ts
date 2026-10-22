@@ -6,7 +6,7 @@ import {
   MAX_CACHED_POPOVERS,
   removePopoverElement,
   touchPopoverElement,
-} from './popover-dom'
+} from './popover/dom'
 import { beginSidePanelRequest, disposeSidePanel } from './side-panel'
 
 interface MockPopoverNode {

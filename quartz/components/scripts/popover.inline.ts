@@ -2,8 +2,8 @@ import { fetchCanonical } from '../../util/fetch-canonical'
 import { getContentType } from '../../util/mime'
 import { getFullSlug, isFullSlug, normalizeRelativeURLs } from '../../util/path'
 import { currentNavSignal } from './nav-lifecycle'
-import { clearAllPopovers } from './popover-dom'
 import { p } from './popover/content-render'
+import { clearAllPopovers } from './popover/dom'
 import {
   containsRelatedTarget,
   dismissPopover,
@@ -20,12 +20,7 @@ import {
   mountPdfPreviews,
   preloadPopoverLinks,
 } from './popover/pdf-preview'
-import {
-  clearActivePopover,
-  compareUrls,
-  findHashTarget,
-  popoverState,
-} from './popover/placement'
+import { clearActivePopover, compareUrls, findHashTarget, popoverState } from './popover/placement'
 import { beginSidePanelRequest, disposeSidePanel, getOrCreateSidePanel } from './side-panel'
 
 let stackedPopoverEvents: AbortController | null = null

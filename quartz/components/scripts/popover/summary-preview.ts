@@ -38,7 +38,6 @@ import { coursePreviewTarget, renderCoursePreview } from '../course-preview-card
 import { curiusPagePreviewSource } from '../curius-page-preview'
 import { curiusPopoverSource } from '../curius-popover'
 import { renderDocumentPreview } from '../document-preview-card'
-import { renderTriathlonHubPreview } from '../triathlon-hub-preview-card'
 import {
   renderTriathlonCalculatorPreview,
   renderTriathlonCalendarPreview,
@@ -53,6 +52,7 @@ import {
   renderWikipediaPreview,
 } from './external-preview-cards'
 import { compareUrls } from './placement'
+import { renderTriathlonHubPreview } from './triathlon-hub-preview-card'
 
 function wikipediaTargetFromLink(link: HTMLAnchorElement): WikipediaTarget | undefined {
   const { wikipediaLang, wikipediaTitle } = link.dataset

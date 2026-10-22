@@ -1,7 +1,6 @@
 import { fetchCanonical } from '../../../util/fetch-canonical'
 import { getFullSlug } from '../../../util/path'
 import { beginSitePerformanceSample, endSitePerformanceSample } from '../performance-sample'
-import { removePopoverElement } from '../popover-dom'
 import {
   cloneCurrentStreamEntryPreview,
   fetchStackedNotePayload,
@@ -11,6 +10,7 @@ import {
   streamPopoverFetchUrl,
   streamPopoverKey,
 } from './content-render'
+import { removePopoverElement } from './dom'
 import {
   arxivPdfUrl,
   cleanArxivIdentifier,
