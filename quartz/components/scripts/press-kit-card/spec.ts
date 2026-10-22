@@ -2,8 +2,8 @@ import type { Locale } from '../../../util/triathlon-presentation'
 import type { CalendarCardData } from '../press-kit-calendar'
 import type { DayCardData } from '../press-kit-day'
 import type { LayerRenderer } from '../press-kit-layers'
-import type { MathImage } from '../press-kit-math'
 import type { Run } from '../press-kit-text'
+import type { MathImage } from './math'
 import {
   isActivityCardStatKey,
   type ActivityCardData,

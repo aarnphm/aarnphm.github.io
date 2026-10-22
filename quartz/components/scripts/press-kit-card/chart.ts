@@ -1,11 +1,11 @@
 import { scaleLinear, scaleLog } from 'd3'
-import type { ActivityCardChart, ActivityCardData } from '../../util/press-kit-activity'
-import type { Locale } from '../../util/triathlon-presentation'
-import type { CardModel, Fonts } from './press-kit-card'
-import type { LayerRenderer } from './press-kit-layers'
-import { triLabel, triText } from '../../util/triathlon-i18n'
-import { cardLocale } from './press-kit-i18n'
-import { createSvgText, node, svgImage } from './press-kit-svg'
+import type { ActivityCardChart, ActivityCardData } from '../../../util/press-kit-activity'
+import type { Locale } from '../../../util/triathlon-presentation'
+import type { CardModel, Fonts } from '../press-kit-card'
+import type { LayerRenderer } from '../press-kit-layers'
+import { triLabel, triText } from '../../../util/triathlon-i18n'
+import { cardLocale } from '../press-kit-i18n'
+import { createSvgText, node, svgImage } from './svg'
 
 export function trainingCharts(
   activity: ActivityCardData | undefined,

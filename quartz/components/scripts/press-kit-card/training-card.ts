@@ -1,4 +1,4 @@
-import { triLabel, triText } from '../../util/triathlon-i18n'
+import { triLabel, triText } from '../../../util/triathlon-i18n'
 import {
   FORMATS,
   cardResolution,
@@ -8,15 +8,15 @@ import {
   type Palette,
   type Fonts,
   type Frame,
-} from './press-kit-card'
-import { paintTrainingChart, trainingCharts, trainingChartWeight } from './press-kit-chart'
-import { cardBlockDisplay, type TrainingCardBlock } from './press-kit-day'
-import { cardLocale } from './press-kit-i18n'
-import { svgLayer, type LayerRenderer } from './press-kit-layers'
-import { cardRoute, routeSvg } from './press-kit-route'
-import { stickerCardSvg } from './press-kit-sticker'
-import { node, createSvgText, graphic, sportIcon } from './press-kit-svg'
-import { cardDate, runsToPlain } from './press-kit-text'
+} from '../press-kit-card'
+import { cardBlockDisplay, type TrainingCardBlock } from '../press-kit-day'
+import { cardLocale } from '../press-kit-i18n'
+import { svgLayer, type LayerRenderer } from '../press-kit-layers'
+import { cardDate, runsToPlain } from '../press-kit-text'
+import { paintTrainingChart, trainingCharts, trainingChartWeight } from './chart'
+import { cardRoute, routeSvg } from './route'
+import { stickerCardSvg } from './sticker'
+import { node, createSvgText, graphic, sportIcon } from './svg'
 function activityBlock(model: CardModel): TrainingCardBlock[] {
   return model.activity
     ? [

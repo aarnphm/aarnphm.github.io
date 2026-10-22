@@ -1,5 +1,5 @@
-import type { ActivityCardData, ActivityCardStat } from '../../util/press-kit-activity'
-import { triLabel } from '../../util/triathlon-i18n'
+import type { ActivityCardData, ActivityCardStat } from '../../../util/press-kit-activity'
+import { triLabel } from '../../../util/triathlon-i18n'
 import {
   FORMATS,
   cardResolution,
@@ -8,14 +8,14 @@ import {
   type FormatKey,
   type Palette,
   type Fonts,
-} from './press-kit-card'
-import { paintTrainingChart, trainingCharts, trainingChartWeight } from './press-kit-chart'
-import { cardBlockDisplay, type BlockDisplay, type TrainingCardBlock } from './press-kit-day'
-import { cardLocale } from './press-kit-i18n'
-import { svgLayer, type LayerRenderer } from './press-kit-layers'
-import { cardRoute, routeSvg } from './press-kit-route'
-import { node, createSvgText, graphic, sportIcon } from './press-kit-svg'
-import { cardDate, runsToPlain } from './press-kit-text'
+} from '../press-kit-card'
+import { cardBlockDisplay, type BlockDisplay, type TrainingCardBlock } from '../press-kit-day'
+import { cardLocale } from '../press-kit-i18n'
+import { svgLayer, type LayerRenderer } from '../press-kit-layers'
+import { cardDate, runsToPlain } from '../press-kit-text'
+import { paintTrainingChart, trainingCharts, trainingChartWeight } from './chart'
+import { cardRoute, routeSvg } from './route'
+import { node, createSvgText, graphic, sportIcon } from './svg'
 
 const ORANGE = '#fc4c02'
 

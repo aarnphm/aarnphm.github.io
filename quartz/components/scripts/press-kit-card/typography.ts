@@ -1,7 +1,7 @@
 import type { CardRun, Fonts } from './spec'
 import { captureLayer, type CardLayer } from '../press-kit-layers'
-import { drawMath, type MathImage } from '../press-kit-math'
 import { BREAK, type Run, type RunStyle } from '../press-kit-text'
+import { drawMath, type MathImage } from './math'
 
 type Voice = 'header' | 'body' | 'serif'
 

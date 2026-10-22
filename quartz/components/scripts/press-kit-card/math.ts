@@ -1,6 +1,6 @@
 import katex from 'katex'
-import type { Run } from './press-kit-text'
-import { customMacros } from '../../cfg'
+import type { Run } from '../press-kit-text'
+import { customMacros } from '../../../cfg'
 
 const EM = 100
 

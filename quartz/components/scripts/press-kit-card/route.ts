@@ -1,4 +1,4 @@
-import type { ActivityCardPoint } from '../../util/press-kit-activity'
+import type { ActivityCardPoint } from '../../../util/press-kit-activity'
 
 const WIDTH = 960
 const HEIGHT = 540
