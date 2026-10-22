@@ -19,6 +19,7 @@ import {
   TANAKA_A,
   TANAKA_B,
 } from './primitives'
+import { activityWithProviderMetrics } from './provider-metrics'
 import {
   ACTIVITY_FIELDS,
   DAY_FIELDS,
@@ -143,8 +144,9 @@ export function buildDataFeed(
 
   const activityLines: string[] = []
   for (const s of sorted) {
-    const raw = cache?.activities[String(s.id)]
     const detail = inputs.activityDetails?.[String(s.id)]
+    const source = cache?.activities[String(s.id)]
+    const raw = source ? activityWithProviderMetrics(source, detail) : undefined
     const selectedAnalysis = detail ? selectActivityAnalysisSummary(detail.analyses) : null
     const environment = detail?.analyses.derived.environment ?? null
     const apparentWind = detail?.analyses.derived.apparentWind ?? null
