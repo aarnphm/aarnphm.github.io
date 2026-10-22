@@ -4,7 +4,16 @@ import {
   QuartzComponentProps,
 } from '../types/component'
 import { flashcardsSlug } from '../util/flashcards-path'
-import { FR_EPISODES, cardsWord, dateWords, episodeLabel, frEpisodeOf, frView } from '../util/fr'
+import {
+  FR_EPISODES,
+  cardIdsOf,
+  cardsWord,
+  dateWords,
+  episodeLabel,
+  frEpisodeOf,
+  frView,
+  isFrNote,
+} from '../util/fr'
 import { classNames } from '../util/lang'
 import { FullSlug, resolveRelative } from '../util/path'
 import { concatenateResources } from '../util/resources'
@@ -19,36 +28,53 @@ export const FR_REVIEW = 'fr/révision' as FullSlug
 
 const pad = (n: number) => String(n).padStart(2, '0')
 
-/** The course unit bar on one line, in French: the crumb, the episode's facts, the review links. */
+/**
+ * The course unit bar on one line, in French: the crumb, the facts, the review links. An episode
+ * shows its number, season and lessons; any other /fr note shows its title, and its cards when it
+ * has a deck.
+ */
 export const FrUnitBar = (() => {
   const Bar: QuartzComponent = (props: QuartzComponentProps) => {
-    const n = frEpisodeOf(props.fileData.slug)
-    if (n === null) return null
     const from = props.fileData.slug!
+    const n = frEpisodeOf(from)
+    if (n === null && !isFrNote(props.fileData)) return null
     const view = frView(props.allFiles, props.ctx.decks)
-    const episode = view.episodes[n - 1]
-    const deck = flashcardsSlug(episode.slug)
-    const ids = episode.cardIds.join(' ')
-    const dates = dateWords(episode.lessons.map(lesson => lesson.date))
+    const episode = n === null ? undefined : view.episodes[n - 1]
+    const ids = episode
+      ? episode.cardIds
+      : cardIdsOf(view.decks.find(item => item.note.slug === from)?.deck)
+    const deck = flashcardsSlug(from)
+    const drill = ids.join(' ')
+    const dates = episode ? dateWords(episode.lessons.map(lesson => lesson.date)) : ''
+    // only an episode is a course card: a note keeps its own popover and search preview
+    const card = episode ? { 'data-course-card': true } : {}
     return (
       <nav
         class={classNames(props.displayClass, 'course-unit-bar', 'fr-unit-bar')}
-        aria-label="épisode"
+        aria-label={episode ? 'épisode' : 'français'}
         data-course-prefix="fr/"
         data-course-lang="fr"
-        data-course-card
+        {...card}
       >
         <span class="fr-unit-facts">
           <a class="internal" href={resolveRelative(from, FR_HOME)} data-slug={FR_HOME}>
             français
           </a>
           <span class="course-unit-sep">/</span>
-          <span class="course-num" title={`épisode ${n} sur ${FR_EPISODES}`}>
-            épisode {episodeLabel(n)}
-          </span>
-          <span class="course-unit-sep">·</span>
-          <span>{episode.season}</span>
-          {episode.cardIds.length > 0 ? (
+          {episode ? (
+            <>
+              <span class="course-num" title={`épisode ${n} sur ${FR_EPISODES}`}>
+                épisode {episodeLabel(episode.n)}
+              </span>
+              <span class="course-unit-sep">·</span>
+              <span>{episode.season}</span>
+            </>
+          ) : (
+            <span aria-current="page">
+              {String(props.fileData.frontmatter?.title ?? from.slice(3))}
+            </span>
+          )}
+          {ids.length > 0 ? (
             <>
               <span class="course-unit-sep">·</span>
               <a
@@ -57,12 +83,12 @@ export const FrUnitBar = (() => {
                 data-slug={deck}
                 data-no-popover
               >
-                {cardsWord(episode.cardIds.length)}
+                {cardsWord(ids.length)}
               </a>
               <span class="course-unit-sep">·</span>
               <span>
                 à revoir{' '}
-                <span data-due="" data-cards={ids} data-unit={String(n)}>
+                <span data-due="" data-cards={drill} data-unit={episode ? String(n) : undefined}>
                   –
                 </span>
               </span>
@@ -75,29 +101,31 @@ export const FrUnitBar = (() => {
             </>
           ) : null}
         </span>
-        <span class="course-unit-actions">
-          <a
-            class="course-action internal"
-            href={resolveRelative(from, FR_REVIEW)}
-            data-slug={FR_REVIEW}
-            data-no-popover
-          >
-            tout réviser
-          </a>
-          {episode.cardIds.length > 0 ? (
+        {episode || ids.length > 0 ? (
+          <span class="course-unit-actions">
             <a
               class="course-action internal"
-              href={resolveRelative(from, deck)}
-              data-slug={deck}
+              href={resolveRelative(from, FR_REVIEW)}
+              data-slug={FR_REVIEW}
               data-no-popover
-              data-course-action="drill"
-              data-cards={ids}
-              data-unit={String(n)}
             >
-              réviser
+              tout réviser
             </a>
-          ) : null}
-        </span>
+            {ids.length > 0 ? (
+              <a
+                class="course-action internal"
+                href={resolveRelative(from, deck)}
+                data-slug={deck}
+                data-no-popover
+                data-course-action="drill"
+                data-cards={drill}
+                data-unit={episode ? String(n) : undefined}
+              >
+                réviser
+              </a>
+            ) : null}
+          </span>
+        ) : null}
       </nav>
     )
   }
