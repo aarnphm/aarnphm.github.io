@@ -1,9 +1,9 @@
 import { zoomIdentity } from 'd3'
 import type { NodeData } from './data'
 import type { CanvasScene } from './scene'
-import { mountHtmlCanvasPreview } from '../html-canvas-preview'
 import { cleanupHydratedRoot } from '../root-lifecycle'
 import { hydrateFileNodeContent } from './content'
+import { mountHtmlCanvasPreview } from './html-preview'
 import { addCanvasCleanup, isCanvasActive } from './lifecycle'
 
 export function installPreviews(s: CanvasScene) {

@@ -1,6 +1,5 @@
 import type { BaseType, Selection, ZoomTransform } from 'd3'
 import type { ZoomBehavior } from 'd3-zoom'
-import type { HtmlCanvasPreview } from '../html-canvas-preview'
 import type {
   CanvasBounds,
   CanvasConfig,
@@ -11,6 +10,7 @@ import type {
   LinkData,
   NodeData,
 } from './data'
+import type { HtmlCanvasPreview } from './html-preview'
 import type { SvgTextMetrics } from './labels'
 import type { CanvasLifecycle } from './lifecycle'
 
