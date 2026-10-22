@@ -53,6 +53,11 @@
   &:focus {
     outline: none;
   }
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
 }
 
 .tri-power-radar-grid,
