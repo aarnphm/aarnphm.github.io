@@ -10,9 +10,9 @@ import {
   stackedNotePayloadUrl,
   stackedNoteRootSlug,
 } from '../../../util/stacked-notes'
-import { renderCustomPagePreview } from '../custom-page-preview'
 import { renderDocumentPreview } from '../document-preview-card'
 import { currentNavSignal } from '../nav-lifecycle'
+import { renderCustomPagePreview } from './custom-page-preview'
 import { handlePdfContent } from './pdf-preview'
 import { findHashTarget, isAbortError } from './placement'
 

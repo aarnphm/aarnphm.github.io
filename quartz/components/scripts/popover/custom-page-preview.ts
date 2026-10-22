@@ -1,11 +1,11 @@
-import { loadCuriusPagePreview } from './curius-page-preview'
-import { notebookPreviewDetails } from './notebook-preview-card'
+import { loadCuriusPagePreview } from '../curius-page-preview'
+import { notebookPreviewDetails } from '../notebook-preview-card'
 import {
   previewHref,
   previewText,
   renderPagePreview,
   type PagePreviewRow,
-} from './page-preview-card'
+} from '../page-preview-card'
 
 function customPageKind(page: Document, target: URL): string | null {
   const data = page.body.dataset

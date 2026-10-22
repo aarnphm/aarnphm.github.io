@@ -13,7 +13,7 @@ import {
 } from '@floating-ui/dom'
 import { getFullSlug } from '../../../util/path'
 import { beginSitePerformanceSample, endSitePerformanceSample } from '../performance-sample'
-import { blurPopoverFocus, touchPopoverElement, evictInactivePopovers } from '../popover-dom'
+import { blurPopoverFocus, touchPopoverElement, evictInactivePopovers } from './dom'
 
 interface PositioningOptions {
   clientX: number

@@ -1,8 +1,8 @@
-import type { ActivityKind } from '../../plugins/stores/strava'
-import type { TriathlonPresentation } from '../../util/triathlon-presentation'
-import { distCombined, dur } from '../../util/triathlon-card'
-import { HUB_PREVIEW_DAYS, type TriathlonHubPreview } from '../../util/triathlon-hub-preview'
-import { miniatureList, windowPreview } from './triathlon-preview-card'
+import type { ActivityKind } from '../../../plugins/stores/strava'
+import type { TriathlonPresentation } from '../../../util/triathlon-presentation'
+import { distCombined, dur } from '../../../util/triathlon-card'
+import { HUB_PREVIEW_DAYS, type TriathlonHubPreview } from '../../../util/triathlon-hub-preview'
+import { miniatureList, windowPreview } from '../triathlon-preview-card'
 
 const SVG_NS = 'http://www.w3.org/2000/svg'
 // Bikes cover the most ground, so they go down first and runs and swims stay readable on top.
