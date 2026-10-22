@@ -919,7 +919,7 @@ class Converter {
   readonly report: string[] = []
   readonly katexErrors: string[] = []
   readonly refs: { placeholder: string; key: string; kind: 'ref' | 'eqref'; line: number }[] = []
-  private counters: Counters = {
+  counters: Counters = {
     section: 0,
     subsection: 0,
     subsubsection: 0,
@@ -929,795 +929,906 @@ class Converter {
     theorem: new Map(),
     enumerate: [],
   }
-  private lastLabelTarget: Omit<LabelEntry, 'line'> | null = null
-  private lastStatement: { kind: string; number: string; anchor: string } | null = null
-  private proofsFor = new Map<string, number>()
-  private section: ConvertedSection | null = null
-  private figureStepped = false
-  private subfigureLetter = 0
-  private refCounter = 0
+  lastLabelTarget: Omit<LabelEntry, 'line'> | null = null
+  lastStatement: { kind: string; number: string; anchor: string } | null = null
+  proofsFor = new Map<string, number>()
+  section: ConvertedSection | null = null
+  figureStepped = false
+  subfigureLetter = 0
+  refCounter = 0
 
   constructor(
-    private readonly preamble: Preamble,
-    private readonly options: ConvertOptions,
+    readonly preamble: Preamble,
+    readonly options: ConvertOptions,
   ) {}
 
   // ---- numbering
 
-  private stepTheorem(env: TheoremEnv): string {
-    const current = (this.counters.theorem.get(env.counter) ?? 0) + 1
-    this.counters.theorem.set(env.counter, current)
-    return env.within === 'section' ? `${this.counters.section}.${current}` : String(current)
+  stepTheorem(env: TheoremEnv): string {
+    return stepTheorem.call(this, env)
   }
 
-  private resetSectionCounters(): void {
-    this.counters.subsection = 0
-    this.counters.subsubsection = 0
-    for (const env of this.preamble.theorems.values()) {
-      if (env.within === 'section') this.counters.theorem.set(env.counter, 0)
-    }
+  resetSectionCounters(): void {
+    return resetSectionCounters.call(this)
   }
 
-  private bindLabel(key: string, line: number): void {
-    if (!this.lastLabelTarget) {
-      this.report.push(`label ${key} has no numbered target (line ${line})`)
-      return
-    }
-    if (this.labels.has(key)) {
-      this.report.push(
-        `duplicate label ${key} (lines ${this.labels.get(key)!.line} and ${line}); the later one wins`,
-      )
-    }
-    this.labels.set(key, { ...this.lastLabelTarget, line })
+  bindLabel(key: string, line: number): void {
+    return bindLabel.call(this, key, line)
   }
 
-  private setTarget(entry: Omit<LabelEntry, 'line'>): void {
-    this.lastLabelTarget = entry
+  setTarget(entry: Omit<LabelEntry, 'line'>): void {
+    return setTarget.call(this, entry)
   }
 
   // ---- document
 
   convert(nodes: LatexNode[]): ConvertedSection[] {
-    const body = this.documentBody(nodes)
-    const sections: ConvertedSection[] = []
-    let current: LatexNode[] = []
-    let currentCmd: Extract<LatexNode, { type: 'cmd' }> | null = null
-    const flushSection = (endLine: number) => {
-      if (this.options.mode === 'pset') {
-        sections.push(this.convertSection(null, current, body[0]?.line ?? 1, endLine))
-      } else if (currentCmd) {
-        sections.push(this.convertSection(currentCmd, current, currentCmd.line, endLine))
-      }
-      current = []
-    }
-    for (const node of body) {
-      if (node.type === 'cmd' && node.name === 'section' && this.options.mode === 'notes') {
-        flushSection(node.line - 1)
-        currentCmd = node
-        continue
-      }
-      current.push(node)
-    }
-    const last = body.at(-1)
-    flushSection(last ? endLineOf(last) : 1)
-    return sections
+    return convert.call(this, nodes)
   }
 
-  private documentBody(nodes: LatexNode[]): LatexNode[] {
-    const doc = nodes.find(node => node.type === 'env' && node.name === 'document')
-    return doc && doc.type === 'env' ? doc.children : nodes
+  documentBody(nodes: LatexNode[]): LatexNode[] {
+    return documentBody(nodes)
   }
 
-  private convertSection(
+  convertSection(
     cmd: Extract<LatexNode, { type: 'cmd' }> | null,
     nodes: LatexNode[],
     startLine: number,
     endLine: number,
   ): ConvertedSection {
-    if (cmd) {
-      this.counters.section++
-      this.resetSectionCounters()
-    }
-    const titleNodes = cmd ? cmd.args[0] : []
-    const section: ConvertedSection = {
-      section: this.counters.section,
-      title: cmd ? titleCaseLower(normalizeSpaces(this.inline(titleNodes, 'title')).trim()) : '',
-      titlePlain: cmd ? plainSectionTitle(titleNodes, this.preamble) : '',
-      date: null,
-      description: '',
-      markdown: '',
-      startLine,
-      endLine,
-      statements: 0,
-      figures: [],
-      unhandled: [],
-    }
-    this.section = section
-    if (cmd) {
-      this.setTarget({
-        value: String(this.counters.section),
-        anchor: null,
-        section: this.counters.section,
-        kind: 'section',
-      })
-    }
-    const blocks = this.blocks(nodes)
-    // date line: the first paragraph of a section
-    const firstIndex = blocks.findIndex(block => block.trim().length > 0)
-    if (firstIndex !== -1) {
-      const first = blocks[firstIndex].replace(/\\\$/g, '$').replace(/\$([^$]*)\$/g, '$1')
-      const match = dateLineRe.exec(first.trim())
-      if (match) {
-        section.date = `${String(months[match[1].slice(0, 3).toLowerCase()]).padStart(2, '0')}-${match[2].padStart(2, '0')}`
-        blocks.splice(firstIndex, 1)
-      }
-    }
-    section.description = describe(blocks)
-    section.markdown = blocks
-      .join('\n\n')
-      .replace(/\n{3,}/g, '\n\n')
-      .trim()
-    return section
+    return convertSection.call(this, cmd, nodes, startLine, endLine)
   }
 
   // ---- blocks
 
   /** Renders a node list into markdown blocks (strings; containers are already indented or quoted). */
   blocks(nodes: LatexNode[]): string[] {
-    const out: string[] = []
-    let inline: string[] = []
-    const flush = () => {
-      const text = normalizeSpaces(inline.join('')).trim()
-      inline = []
-      if (text.length > 0) out.push(escapeLineStart(text))
-    }
-    for (let i = 0; i < nodes.length; i++) {
-      const node = nodes[i]
-      if (node.type === 'par') {
-        flush()
-        continue
-      }
-      if (node.type === 'math' && node.display) {
-        flush()
-        out.push(...this.displayMath(node.src, node.line, 'plain', null))
-        continue
-      }
-      if (node.type === 'env') {
-        const rendered = this.envBlocks(node)
-        if (rendered !== null) {
-          flush()
-          out.push(...rendered)
-          continue
-        }
-      }
-      if (node.type === 'cmd') {
-        const rendered = this.cmdBlocks(node)
-        if (rendered !== null) {
-          flush()
-          out.push(...rendered)
-          continue
-        }
-      }
-      if (node.type === 'group' && this.isBlockGroup(node)) {
-        flush()
-        out.push(...this.blocks(node.children))
-        continue
-      }
-      inline.push(this.inline([node], 'text'))
-    }
-    flush()
-    return out
+    return blocks.call(this, nodes)
   }
 
-  private isBlockGroup(node: Extract<LatexNode, { type: 'group' }>): boolean {
-    return node.children.some(
-      child => child.type === 'par' || (child.type === 'env' && !rawEnvs.has(child.name)),
-    )
+  isBlockGroup(node: Extract<LatexNode, { type: 'group' }>): boolean {
+    return isBlockGroup(node)
   }
 
-  private cmdBlocks(node: Extract<LatexNode, { type: 'cmd' }>): string[] | null {
-    switch (node.name) {
-      case 'section':
-      case 'section*':
-      case 'subsection*':
-      case 'subsubsection*': {
-        // unnumbered headings; a pset \section is a heading since the file is one page
-        const level = node.name.startsWith('section')
-          ? 2
-          : node.name.startsWith('subsection')
-            ? 3
-            : 4
-        const title = titleCaseLower(normalizeSpaces(this.inline(node.args[0], 'title')).trim())
-        return [`${'#'.repeat(level)} ${title}`]
-      }
-      case 'newcommand':
-      case 'renewcommand':
-      case 'providecommand':
-      case 'DeclareMathOperator':
-      case 'newtheorem':
-      case 'def':
-        // collected by scanPreamble; body definitions of argument macros are reported there
-        return []
-      case 'subsection':
-      case 'subsubsection': {
-        const level = node.name === 'subsection' ? 2 : 3
-        if (level === 2) {
-          this.counters.subsection++
-          this.counters.subsubsection = 0
-        } else this.counters.subsubsection++
-        const number =
-          level === 2
-            ? `${this.counters.section}.${this.counters.subsection}`
-            : `${this.counters.section}.${this.counters.subsection}.${this.counters.subsubsection}`
-        this.setTarget({
-          value: number,
-          anchor: null,
-          section: this.counters.section,
-          kind: level === 2 ? 'subsection' : 'other',
-        })
-        const title = titleCaseLower(normalizeSpaces(this.inline(node.args[0], 'title')).trim())
-        return [`${'#'.repeat(level)} ${number} ${title}`]
-      }
-      case 'paragraph':
-        return [`**${normalizeSpaces(this.inline(node.args[0], 'text')).trim()}**`]
-      case 'newpage':
-      case 'tableofcontents':
-      case 'maketitle':
-      case 'title':
-      case 'setcounter':
-      case 'vskip':
-      case 'hskip':
-      case 'smallskip':
-      case 'medskip':
-      case 'bigskip':
-      case 'clearpage':
-      case 'pagebreak':
-        return []
-      case '\\':
-      case 'newline':
-      case 'linebreak':
-        return []
-      case 'input':
-      case 'includegraphics':
-        return [this.figureImage(node)]
-      default:
-        return null
-    }
+  cmdBlocks(node: Extract<LatexNode, { type: 'cmd' }>): string[] | null {
+    return cmdBlocks.call(this, node)
   }
 
-  private figureImage(node: Extract<LatexNode, { type: 'cmd' }>): string {
-    const name = plainText(node.args[node.name === 'input' ? 0 : 0]).trim()
-    const kind = node.name === 'input' ? 'input' : 'graphics'
-    this.section?.figures.push({ name, kind, body: '', line: node.line })
-    return `\uE001FIG:${kind}:${name}:${node.line}\uE001`
+  figureImage(node: Extract<LatexNode, { type: 'cmd' }>): string {
+    return figureImage.call(this, node)
   }
 
-  private displayMath(
+  displayMath(
     src: string,
     line: number,
     env: 'plain' | 'equation' | 'align' | 'eqnarray' | 'gather' | 'multline',
     numbered: boolean | null,
   ): string[] {
-    const blocks: string[] = []
-    let body = src
-    const anchors: string[] = []
-    const labelsInRow = (row: string): string[] =>
-      Array.from(row.matchAll(/\\label\{([^}]*)\}/g), match => match[1].trim())
-    const stripRow = (row: string) =>
-      row
-        .replace(/\\label\{[^}]*\}/g, '')
-        .replace(/\\(nonumber|notag)(?![A-Za-z])/g, '')
-        .trim()
-    if (env === 'plain') {
-      for (const key of labelsInRow(body)) {
-        this.report.push(`label ${key} inside unnumbered display math is ignored (line ${line})`)
-      }
-      body = stripRow(body)
-      const expanded = expandMacros(body, this.preamble)
-      this.gate(expanded, true, line)
-      return [`$$\n${expanded}\n$$`]
-    }
-    const rows = env === 'equation' ? [body] : splitRows(body)
-    const taggedRows = rows.map(row => {
-      const labels = labelsInRow(row)
-      const unnumbered = /\\(nonumber|notag)(?![A-Za-z])/.test(row) || numbered === false
-      const tag = /\\tag\{([^}]*)\}/.exec(row)
-      let cleaned = stripRow(row)
-      if (env === 'eqnarray')
-        cleaned = cleaned.replace(/&\s*=\s*&/g, '&=').replace(/&\s*([<>≤≥\\]+[^&]*?)\s*&/g, '&$1')
-      if (cleaned.length === 0) return cleaned
-      if (unnumbered && !tag) return cleaned
-      let value: string
-      if (tag) value = tag[1]
-      else {
-        this.counters.equation++
-        value = String(this.counters.equation)
-        cleaned = `${cleaned} \\tag{${value}}`
-      }
-      const anchor = `eq-${value.replace(/[^A-Za-z0-9]+/g, '-')}`
-      anchors.push(anchor)
-      this.setTarget({ value, anchor, section: this.counters.section, kind: 'equation' })
-      for (const key of labels) this.bindLabel(key, line)
-      return cleaned
-    })
-    const content = taggedRows.filter(row => row.length > 0).join(' \\\\\n')
-    let expanded = expandMacros(content, this.preamble)
-    if (env !== 'equation') {
-      const wrapper = env === 'align' || env === 'eqnarray' ? 'align*' : `${env}*`
-      expanded = `\\begin{${wrapper}}\n${expanded}\n\\end{${wrapper}}`
-    }
-    this.gate(expanded, true, line)
-    if (anchors.length > 0) {
-      blocks.push(anchors.map(anchor => `<a id="${anchor}" class="latex-eq"></a>`).join(''))
-    }
-    blocks.push(`$$\n${expanded}\n$$`)
-    return blocks
+    return displayMath.call(this, src, line, env, numbered)
   }
 
-  private gate(src: string, display: boolean, line: number): void {
-    const error = checkKatex(src, display)
-    if (error)
-      this.katexErrors.push(
-        `line ${line}: ${error.replace(/^KaTeX parse error: /, '')}\n    ${src.slice(0, 160)}`,
-      )
+  gate(src: string, display: boolean, line: number): void {
+    return gate.call(this, src, display, line)
   }
 
-  private envBlocks(node: Extract<LatexNode, { type: 'env' }>): string[] | null {
-    const name = node.name
-    const theorem = this.preamble.theorems.get(name)
-    if (theorem) return this.statement(node, theorem)
-    switch (name) {
-      case 'proof':
-        return this.proof(node)
-      case 'equation':
-      case 'equation*':
-      case 'displaymath':
-        return this.displayMath(
-          node.raw,
-          node.line,
-          name === 'equation' ? 'equation' : 'plain',
-          name === 'equation',
-        )
-      case 'align':
-      case 'align*':
-      case 'eqnarray':
-      case 'eqnarray*':
-      case 'gather':
-      case 'gather*':
-      case 'multline':
-      case 'multline*': {
-        const base = name.replace('*', '') as 'align' | 'eqnarray' | 'gather' | 'multline'
-        return this.displayMath(node.raw, node.line, base, !name.endsWith('*'))
-      }
-      case 'itemize':
-      case 'enumerate':
-      case 'description':
-        return this.list(node)
-      case 'figure':
-      case 'figure*':
-      case 'wrapfigure':
-        return this.figure(node)
-      case 'subfigure':
-        return this.subfigure(node)
-      case 'center':
-      case 'minipage':
-      case 'flushleft':
-      case 'flushright':
-      case 'quote':
-      case 'quotation':
-      case 'small':
-      case 'footnotesize':
-        return this.blocks(node.children)
-      case 'tikzpicture': {
-        const body = node.raw
-        const name = `tikz-${createHash('sha256').update(body).digest('hex').slice(0, 10)}`
-        this.section?.figures.push({
-          name,
-          kind: 'inline',
-          body: `\\begin{tikzpicture}${body}\\end{tikzpicture}`,
-          line: node.line,
-        })
-        return [`\uE001FIG:inline:${name}:${node.line}\uE001`]
-      }
-      case 'abstract':
-        return this.blocks(node.children)
-      case 'document':
-        return this.blocks(node.children)
-      default: {
-        this.section?.unhandled.push(`environment ${name} (line ${node.line})`)
-        const raw = `\\begin{${name}}${node.opt ? `[${node.opt}]` : ''}${node.args.map(arg => `{${arg}}`).join('')}${node.raw}\\end{${name}}`
-        return ['```latex\n' + raw.trim() + '\n```']
-      }
-    }
+  envBlocks(node: Extract<LatexNode, { type: 'env' }>): string[] | null {
+    return envBlocks.call(this, node)
   }
 
-  private statement(node: Extract<LatexNode, { type: 'env' }>, theorem: TheoremEnv): string[] {
-    const number = this.stepTheorem(theorem)
-    const kindWord = theorem.name.toLowerCase()
-    const calloutType = theoremCalloutTypes[kindWord] ?? kindWord
-    const anchor = `${calloutType}-${number.replace(/\./g, '-')}`
-    this.setTarget({ value: number, anchor, section: this.counters.section, kind: 'statement' })
-    this.lastStatement = { kind: kindWord, number, anchor }
-    this.proofsFor.set(anchor, 0)
-    if (this.section) this.section.statements++
-
-    let children = node.children
-    let title = node.opt ? this.inline(new Parser(node.opt).parseAll(), 'title').trim() : ''
-    if (!title) {
-      const lead = leadingParenthetical(children)
-      if (lead) {
-        title = this.inline(lead.nodes, 'title').trim()
-        children = lead.rest
-      }
-    }
-    children = dropLeadingBreaks(children)
-    const mathInTitle = /\$/.test(title)
-    const isMath = calloutType in theoremCalloutTypes
-    const header = isMath
-      ? `> [!${calloutType}|latex] ${number}${title && !mathInTitle ? ` ${title}` : ''}`
-      : `> [!${calloutType}|latex] ${theorem.name} ${number}${title && !mathInTitle ? `. ${title}` : ''}`
-    const body = this.blocks(children)
-    this.statements.push({
-      anchor,
-      section: this.counters.section,
-      number,
-      title,
-      text: body.join('\n\n'),
-      line: node.line,
-    })
-    if (mathInTitle) body.unshift(`_(${title})_`)
-    const page = this.options.pageLink?.(node.line) ?? null
-    if (page) body.push(`[p. ${page.page}](${page.href})`)
-    return [[header, '>', ...quote(body.join('\n\n'))].join('\n'), `^${anchor}`]
+  statement(node: Extract<LatexNode, { type: 'env' }>, theorem: TheoremEnv): string[] {
+    return statement.call(this, node, theorem)
   }
 
-  private proof(node: Extract<LatexNode, { type: 'env' }>): string[] {
-    const statement = this.lastStatement
-    let anchor = 'proof'
-    if (statement) {
-      const count = (this.proofsFor.get(statement.anchor) ?? 0) + 1
-      this.proofsFor.set(statement.anchor, count)
-      anchor = `proof-${statement.number.replace(/\./g, '-')}${count > 1 ? `-${String.fromCharCode(96 + count)}` : ''}`
-    }
-    const label = node.opt ? this.inline(new Parser(node.opt).parseAll(), 'title').trim() : ''
-    const of = statement ? ` of ${statement.kind} ${statement.number}` : ''
-    const title = label ? `${label}${of}` : of.trim()
-    const header = `> [!proof|latex]+ ${title}`.trimEnd()
-    const body = this.blocks(dropLeadingBreaks(node.children))
-    const blocks = [[header, '>', ...quote(body.join('\n\n'))].join('\n')]
-    if (statement) blocks.push(`^${anchor}`)
-    return blocks
+  proof(node: Extract<LatexNode, { type: 'env' }>): string[] {
+    return proof.call(this, node)
   }
 
-  private list(node: Extract<LatexNode, { type: 'env' }>): string[] {
-    const ordered = node.name === 'enumerate'
-    if (ordered) this.counters.enumerate.push(0)
-    const items: { label: string | null; nodes: LatexNode[] }[] = []
-    let current: { label: string | null; nodes: LatexNode[] } | null = null
-    for (const child of node.children) {
-      if (child.type === 'cmd' && child.name === 'item') {
-        current = { label: child.opt, nodes: [] }
-        items.push(current)
-        continue
-      }
-      if (!current) {
-        if (child.type === 'par' || (child.type === 'text' && child.value.trim() === '')) continue
-        current = { label: null, nodes: [] }
-        items.push(current)
-      }
-      current.nodes.push(child)
-    }
-    const lines: string[] = []
-    for (const item of items) {
-      let marker: string
-      if (ordered) {
-        const depth = this.counters.enumerate.length - 1
-        this.counters.enumerate[depth]++
-        const n = this.counters.enumerate[depth]
-        marker = `${n}.`
-        this.setTarget({
-          value: String(n),
-          anchor: null,
-          section: this.counters.section,
-          kind: 'item',
-        })
-      } else marker = '-'
-      const label = item.label !== null ? `**${escapeText(item.label)}** ` : ''
-      const blocks = this.blocks(dropLeadingBreaks(item.nodes))
-      const first = blocks.shift() ?? ''
-      const indent = ' '.repeat(ordered ? marker.length + 1 : 2)
-      lines.push(`${marker} ${label}${first}`.trimEnd())
-      for (const block of blocks) {
-        lines.push('')
-        lines.push(...block.split('\n').map(line => (line.length > 0 ? indent + line : line)))
-      }
-    }
-    if (ordered) this.counters.enumerate.pop()
-    return [lines.join('\n')]
+  list(node: Extract<LatexNode, { type: 'env' }>): string[] {
+    return list.call(this, node)
   }
 
-  private figure(node: Extract<LatexNode, { type: 'env' }>): string[] {
-    const outerStepped = this.figureStepped
-    this.figureStepped = false
-    this.subfigureLetter = 0
-    const blocks = this.figureBody(node.children, true)
-    this.figureStepped = outerStepped
-    return blocks
+  figure(node: Extract<LatexNode, { type: 'env' }>): string[] {
+    return figure.call(this, node)
   }
 
-  private subfigure(node: Extract<LatexNode, { type: 'env' }>): string[] {
-    return this.figureBody(node.children, false)
+  subfigure(node: Extract<LatexNode, { type: 'env' }>): string[] {
+    return subfigure.call(this, node)
   }
 
-  private figureBody(children: LatexNode[], parent: boolean): string[] {
-    const out: string[] = []
-    for (const child of children) {
-      if (child.type === 'cmd' && child.name === 'caption') {
-        let value: string
-        let anchor: string
-        if (parent) {
-          if (!this.figureStepped) {
-            this.counters.figure++
-            this.figureStepped = true
-          }
-          value = String(this.counters.figure)
-          anchor = `figure-${value}`
-        } else {
-          if (!this.figureStepped) {
-            this.counters.figure++
-            this.figureStepped = true
-          }
-          this.subfigureLetter++
-          value = `${this.counters.figure}${String.fromCharCode(96 + this.subfigureLetter)}`
-          anchor = `figure-${value}`
-        }
-        this.setTarget({ value, anchor, section: this.counters.section, kind: 'figure' })
-        const text = normalizeSpaces(this.inline(child.args[0], 'text')).trim()
-        out.push(`_Figure ${value}._ ${text}`.trimEnd(), `^${anchor}`)
-        continue
-      }
-      if (
-        child.type === 'cmd' &&
-        (child.name === 'centering' || child.name === 'hfill' || child.name === 'label')
-      ) {
-        if (child.name === 'label') this.bindLabel(plainText(child.args[0]).trim(), child.line)
-        continue
-      }
-      if (child.type === 'par' || (child.type === 'text' && child.value.trim() === '')) continue
-      if (child.type === 'env' && child.name === 'subfigure') {
-        out.push(...this.subfigure(child))
-        continue
-      }
-      if (child.type === 'cmd' && child.name === 'adjustbox') {
-        out.push(...this.blocks(child.args[1]))
-        continue
-      }
-      out.push(...this.blocks([child]))
-    }
-    return out
+  figureBody(children: LatexNode[], parent: boolean): string[] {
+    return figureBody.call(this, children, parent)
   }
 
   // ---- inline
 
   inline(nodes: LatexNode[], mode: 'text' | 'title'): string {
-    let out = ''
-    for (let i = 0; i < nodes.length; i++) {
-      const node = nodes[i]
-      switch (node.type) {
-        case 'text':
-          out += escapeText(normalizeSpaces(node.value.replace(/~/g, ' ')))
-            .replace(/\\~/g, ' ')
-            .replace(/---/g, '—')
-            .replace(/--/g, '–')
-            .replace(/``|''/g, '"')
-            .replace(/`/g, "'")
-          break
-        case 'par':
-          out += ' '
-          break
-        case 'math': {
-          const expanded = expandMacros(node.src, this.preamble)
-          this.gate(expanded, false, node.line)
-          out += `$${expanded}$`
-          break
-        }
-        case 'group': {
-          const [first, ...rest] = node.children
-          if (first?.type === 'cmd' && (first.name === 'bf' || first.name === 'textbf')) {
-            out += `**${this.inline(first.name === 'bf' ? rest : [...first.args[0], ...rest], mode).trim()}**`
-          } else if (
-            first?.type === 'cmd' &&
-            (first.name === 'it' || first.name === 'em' || first.name === 'sl')
-          ) {
-            out += `_${this.inline(rest, mode).trim()}_`
-          } else if (first?.type === 'cmd' && first.name in accents && rest.length > 0) {
-            out += this.accent(first.name, this.inline(rest, mode))
-          } else out += this.inline(node.children, mode)
-          break
-        }
-        case 'env':
-          if (rawEnvs.has(node.name) && node.name !== 'tikzpicture' && node.name !== 'verbatim') {
-            // display math inside an inline context (a title): keep the source
-            out += `$$${expandMacros(node.raw, this.preamble)}$$`
-          } else out += this.blocks([node]).join('\n\n')
-          break
-        case 'cmd':
-          out += this.inlineCmd(node, mode)
-          break
-      }
-    }
-    return out
+    return inline.call(this, nodes, mode)
   }
 
-  private accent(name: string, letter: string): string {
-    const base = letter.replace(/\\i(?![A-Za-z])/g, 'i').trim()
-    const table = accents[name]
-    const mapped = table?.[base]
-    if (mapped) return mapped
-    return base
+  accent(name: string, letter: string): string {
+    return accent(name, letter)
   }
 
-  private inlineCmd(node: Extract<LatexNode, { type: 'cmd' }>, mode: 'text' | 'title'): string {
-    const arg = (index: number) => this.inline(node.args[index] ?? [], mode)
-    switch (node.name) {
-      case 'textbf':
-      case 'bf':
-        return node.args.length ? `**${arg(0).trim()}**` : ''
-      case 'emph':
-      case 'textit':
-      case 'it':
-      case 'em':
-        return node.args.length ? `_${arg(0).trim()}_` : ''
-      case 'underline':
-        return `<u>${arg(0)}</u>`
-      case 'texttt':
-        return `\`${plainText(node.args[0])}\``
-      case 'textrm':
-      case 'text':
-      case 'mbox':
-      case 'textsc':
-      case 'adjustbox':
-        return arg(node.name === 'adjustbox' ? 1 : 0)
-      case 'url':
-        return `<${plainText(node.args[0]).trim()}>`
-      case 'href':
-        return `[${arg(1)}](${plainText(node.args[0]).trim()})`
-      case 'label':
-        this.bindLabel(plainText(node.args[0]).trim(), node.line)
-        return ''
-      case 'ref':
-      case 'eqref': {
-        const key = plainText(node.args[0]).trim()
-        const placeholder = `\uE000REF${this.refCounter++}\uE000`
-        this.refs.push({ placeholder, key, kind: node.name, line: node.line })
-        return placeholder
-      }
-      case 'cite':
-        this.section?.unhandled.push(`\\cite (line ${node.line})`)
-        return `[${plainText(node.args[0])}]`
-      case 'footnote':
-        return `^[${arg(0).trim()}]`
-      case 'ldots':
-      case 'dots':
-        return '…'
-      case 'LaTeX':
-        return 'LaTeX'
-      case 'TeX':
-        return 'TeX'
-      case '%':
-        return '%'
-      case '&':
-        return '&'
-      case '$':
-        return '\\$'
-      case '#':
-        return '#'
-      case '_':
-        return '\\_'
-      case '{':
-        return '{'
-      case '}':
-        return '}'
-      case ',':
-      case ';':
-      case ' ':
-      case '!':
-      case '/':
-        return ' '
-      case '-':
-        return ''
-      case 'quad':
-      case 'qquad':
-        return ' '
-      case '\\':
-      case 'newline':
-      case 'linebreak':
-        return mode === 'title' ? ' ' : '\n'
-      case 'noindent':
-      case 'indent':
-      case 'centering':
-      case 'hfill':
-      case 'hspace':
-      case 'vspace':
-      case 'qedhere':
-      case 'small':
-      case 'footnotesize':
-      case 'large':
-      case 'Large':
-      case 'LARGE':
-      case 'huge':
-      case 'normalsize':
-      case 'textwidth':
-      case 'linewidth':
-      case 'par':
-      case 'smallskip':
-      case 'medskip':
-      case 'bigskip':
-      case 'vskip':
-      case 'hskip':
-      case 'newpage':
-      case 'clearpage':
-      case 'label*':
-      case 'relax':
-      case 'raggedright':
-        return ''
-      case 'i':
-        return 'i'
-      case 'j':
-        return 'j'
-      case 'o':
-        return 'ø'
-      case 'ss':
-        return 'ß'
-      case 'ae':
-        return 'æ'
-      case 'oe':
-        return 'œ'
-      case 'sim':
-        return '~'
-      default:
-        break
-    }
-    if (node.name in accents && node.args.length > 0) return this.accent(node.name, arg(0))
-    const macro = this.preamble.macros.get(node.name)
-    if (macro !== undefined) {
-      const expanded = expandMacros(macro, this.preamble)
-      this.gate(expanded, false, node.line)
-      return `$${expanded}$`
-    }
-    this.section?.unhandled.push(`\\${node.name} (line ${node.line})`)
-    const raw = `\\${node.name}${node.opt ? `[${node.opt}]` : ''}${node.args.map(a => `{${plainText(a)}}`).join('')}`
-    return `\`${raw}\``
+  inlineCmd(node: Extract<LatexNode, { type: 'cmd' }>, mode: 'text' | 'title'): string {
+    return inlineCmd.call(this, node, mode)
   }
 
   /** Replaces `\ref` placeholders once every label is known. */
   resolveRefs(sections: ConvertedSection[]): void {
-    const restated = this.options.restates?.(this.statements) ?? new Map<string, string>()
-    const resolve = (ref: (typeof this.refs)[number]): string => {
-      const entry = this.labels.get(ref.key)
-      if (!entry) {
-        this.report.push(`undefined reference ${ref.key} (line ${ref.line})`)
-        return '??'
+    return resolveRefs.call(this, sections)
+  }
+}
+function stepTheorem(this: Converter, env: TheoremEnv): string {
+  const current = (this.counters.theorem.get(env.counter) ?? 0) + 1
+  this.counters.theorem.set(env.counter, current)
+  return env.within === 'section' ? `${this.counters.section}.${current}` : String(current)
+}
+
+function resetSectionCounters(this: Converter): void {
+  this.counters.subsection = 0
+  this.counters.subsubsection = 0
+  for (const env of this.preamble.theorems.values()) {
+    if (env.within === 'section') this.counters.theorem.set(env.counter, 0)
+  }
+}
+
+function bindLabel(this: Converter, key: string, line: number): void {
+  if (!this.lastLabelTarget) {
+    this.report.push(`label ${key} has no numbered target (line ${line})`)
+    return
+  }
+  if (this.labels.has(key)) {
+    this.report.push(
+      `duplicate label ${key} (lines ${this.labels.get(key)!.line} and ${line}); the later one wins`,
+    )
+  }
+  this.labels.set(key, { ...this.lastLabelTarget, line })
+}
+
+function setTarget(this: Converter, entry: Omit<LabelEntry, 'line'>): void {
+  this.lastLabelTarget = entry
+}
+
+function convert(this: Converter, nodes: LatexNode[]): ConvertedSection[] {
+  const body = this.documentBody(nodes)
+  const sections: ConvertedSection[] = []
+  let current: LatexNode[] = []
+  let currentCmd: Extract<LatexNode, { type: 'cmd' }> | null = null
+  const flushSection = (endLine: number) => {
+    if (this.options.mode === 'pset') {
+      sections.push(this.convertSection(null, current, body[0]?.line ?? 1, endLine))
+    } else if (currentCmd) {
+      sections.push(this.convertSection(currentCmd, current, currentCmd.line, endLine))
+    }
+    current = []
+  }
+  for (const node of body) {
+    if (node.type === 'cmd' && node.name === 'section' && this.options.mode === 'notes') {
+      flushSection(node.line - 1)
+      currentCmd = node
+      continue
+    }
+    current.push(node)
+  }
+  const last = body.at(-1)
+  flushSection(last ? endLineOf(last) : 1)
+  return sections
+}
+
+function documentBody(nodes: LatexNode[]): LatexNode[] {
+  const doc = nodes.find(node => node.type === 'env' && node.name === 'document')
+  return doc && doc.type === 'env' ? doc.children : nodes
+}
+
+function convertSection(
+  this: Converter,
+  cmd: Extract<LatexNode, { type: 'cmd' }> | null,
+  nodes: LatexNode[],
+  startLine: number,
+  endLine: number,
+): ConvertedSection {
+  if (cmd) {
+    this.counters.section++
+    this.resetSectionCounters()
+  }
+  const titleNodes = cmd ? cmd.args[0] : []
+  const section: ConvertedSection = {
+    section: this.counters.section,
+    title: cmd ? titleCaseLower(normalizeSpaces(this.inline(titleNodes, 'title')).trim()) : '',
+    titlePlain: cmd ? plainSectionTitle(titleNodes, this.preamble) : '',
+    date: null,
+    description: '',
+    markdown: '',
+    startLine,
+    endLine,
+    statements: 0,
+    figures: [],
+    unhandled: [],
+  }
+  this.section = section
+  if (cmd) {
+    this.setTarget({
+      value: String(this.counters.section),
+      anchor: null,
+      section: this.counters.section,
+      kind: 'section',
+    })
+  }
+  const blocks = this.blocks(nodes)
+  // date line: the first paragraph of a section
+  const firstIndex = blocks.findIndex(block => block.trim().length > 0)
+  if (firstIndex !== -1) {
+    const first = blocks[firstIndex].replace(/\\\$/g, '$').replace(/\$([^$]*)\$/g, '$1')
+    const match = dateLineRe.exec(first.trim())
+    if (match) {
+      section.date = `${String(months[match[1].slice(0, 3).toLowerCase()]).padStart(2, '0')}-${match[2].padStart(2, '0')}`
+      blocks.splice(firstIndex, 1)
+    }
+  }
+  section.description = describe(blocks)
+  section.markdown = blocks
+    .join('\n\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
+  return section
+}
+
+function blocks(this: Converter, nodes: LatexNode[]): string[] {
+  const out: string[] = []
+  let inline: string[] = []
+  const flush = () => {
+    const text = normalizeSpaces(inline.join('')).trim()
+    inline = []
+    if (text.length > 0) out.push(escapeLineStart(text))
+  }
+  for (let i = 0; i < nodes.length; i++) {
+    const node = nodes[i]
+    if (node.type === 'par') {
+      flush()
+      continue
+    }
+    if (node.type === 'math' && node.display) {
+      flush()
+      out.push(...this.displayMath(node.src, node.line, 'plain', null))
+      continue
+    }
+    if (node.type === 'env') {
+      const rendered = this.envBlocks(node)
+      if (rendered !== null) {
+        flush()
+        out.push(...rendered)
+        continue
       }
-      const value = ref.kind === 'eqref' ? `(${entry.value})` : entry.value
-      const slug = this.options.noteSlug(entry.section)
-      if (entry.kind === 'section') return `[[${slug}|${value}]]`
-      if (entry.kind === 'equation' && entry.anchor) return `[[${slug}#${entry.anchor}|${value}]]`
-      const target = entry.anchor ? restated.get(entry.anchor) : undefined
-      if (target) return `[[${target}|${value}]]`
-      if (entry.anchor) return `[[${slug}#^${entry.anchor}|${value}]]`
-      return value
     }
-    const table = new Map(this.refs.map(ref => [ref.placeholder, resolve(ref)]))
-    for (const section of sections) {
-      section.markdown = section.markdown.replace(
-        /\uE000REF\d+\uE000/g,
-        match => table.get(match) ?? '??',
-      )
-      section.description = section.description.replace(/\uE000REF\d+\uE000/g, match =>
-        (table.get(match) ?? '??').replace(/\[\[[^\]|]*\|([^\]]*)\]\]/g, '$1'),
-      )
+    if (node.type === 'cmd') {
+      const rendered = this.cmdBlocks(node)
+      if (rendered !== null) {
+        flush()
+        out.push(...rendered)
+        continue
+      }
     }
+    if (node.type === 'group' && this.isBlockGroup(node)) {
+      flush()
+      out.push(...this.blocks(node.children))
+      continue
+    }
+    inline.push(this.inline([node], 'text'))
+  }
+  flush()
+  return out
+}
+
+function isBlockGroup(node: Extract<LatexNode, { type: 'group' }>): boolean {
+  return node.children.some(
+    child => child.type === 'par' || (child.type === 'env' && !rawEnvs.has(child.name)),
+  )
+}
+
+function cmdBlocks(this: Converter, node: Extract<LatexNode, { type: 'cmd' }>): string[] | null {
+  switch (node.name) {
+    case 'section':
+    case 'section*':
+    case 'subsection*':
+    case 'subsubsection*': {
+      // unnumbered headings; a pset \section is a heading since the file is one page
+      const level = node.name.startsWith('section') ? 2 : node.name.startsWith('subsection') ? 3 : 4
+      const title = titleCaseLower(normalizeSpaces(this.inline(node.args[0], 'title')).trim())
+      return [`${'#'.repeat(level)} ${title}`]
+    }
+    case 'newcommand':
+    case 'renewcommand':
+    case 'providecommand':
+    case 'DeclareMathOperator':
+    case 'newtheorem':
+    case 'def':
+      // collected by scanPreamble; body definitions of argument macros are reported there
+      return []
+    case 'subsection':
+    case 'subsubsection': {
+      const level = node.name === 'subsection' ? 2 : 3
+      if (level === 2) {
+        this.counters.subsection++
+        this.counters.subsubsection = 0
+      } else this.counters.subsubsection++
+      const number =
+        level === 2
+          ? `${this.counters.section}.${this.counters.subsection}`
+          : `${this.counters.section}.${this.counters.subsection}.${this.counters.subsubsection}`
+      this.setTarget({
+        value: number,
+        anchor: null,
+        section: this.counters.section,
+        kind: level === 2 ? 'subsection' : 'other',
+      })
+      const title = titleCaseLower(normalizeSpaces(this.inline(node.args[0], 'title')).trim())
+      return [`${'#'.repeat(level)} ${number} ${title}`]
+    }
+    case 'paragraph':
+      return [`**${normalizeSpaces(this.inline(node.args[0], 'text')).trim()}**`]
+    case 'newpage':
+    case 'tableofcontents':
+    case 'maketitle':
+    case 'title':
+    case 'setcounter':
+    case 'vskip':
+    case 'hskip':
+    case 'smallskip':
+    case 'medskip':
+    case 'bigskip':
+    case 'clearpage':
+    case 'pagebreak':
+      return []
+    case '\\':
+    case 'newline':
+    case 'linebreak':
+      return []
+    case 'input':
+    case 'includegraphics':
+      return [this.figureImage(node)]
+    default:
+      return null
+  }
+}
+
+function figureImage(this: Converter, node: Extract<LatexNode, { type: 'cmd' }>): string {
+  const name = plainText(node.args[node.name === 'input' ? 0 : 0]).trim()
+  const kind = node.name === 'input' ? 'input' : 'graphics'
+  this.section?.figures.push({ name, kind, body: '', line: node.line })
+  return `\uE001FIG:${kind}:${name}:${node.line}\uE001`
+}
+
+function displayMath(
+  this: Converter,
+  src: string,
+  line: number,
+  env: 'plain' | 'equation' | 'align' | 'eqnarray' | 'gather' | 'multline',
+  numbered: boolean | null,
+): string[] {
+  const blocks: string[] = []
+  let body = src
+  const anchors: string[] = []
+  const labelsInRow = (row: string): string[] =>
+    Array.from(row.matchAll(/\\label\{([^}]*)\}/g), match => match[1].trim())
+  const stripRow = (row: string) =>
+    row
+      .replace(/\\label\{[^}]*\}/g, '')
+      .replace(/\\(nonumber|notag)(?![A-Za-z])/g, '')
+      .trim()
+  if (env === 'plain') {
+    for (const key of labelsInRow(body)) {
+      this.report.push(`label ${key} inside unnumbered display math is ignored (line ${line})`)
+    }
+    body = stripRow(body)
+    const expanded = expandMacros(body, this.preamble)
+    this.gate(expanded, true, line)
+    return [`$$\n${expanded}\n$$`]
+  }
+  const rows = env === 'equation' ? [body] : splitRows(body)
+  const taggedRows = rows.map(row => {
+    const labels = labelsInRow(row)
+    const unnumbered = /\\(nonumber|notag)(?![A-Za-z])/.test(row) || numbered === false
+    const tag = /\\tag\{([^}]*)\}/.exec(row)
+    let cleaned = stripRow(row)
+    if (env === 'eqnarray')
+      cleaned = cleaned.replace(/&\s*=\s*&/g, '&=').replace(/&\s*([<>≤≥\\]+[^&]*?)\s*&/g, '&$1')
+    if (cleaned.length === 0) return cleaned
+    if (unnumbered && !tag) return cleaned
+    let value: string
+    if (tag) value = tag[1]
+    else {
+      this.counters.equation++
+      value = String(this.counters.equation)
+      cleaned = `${cleaned} \\tag{${value}}`
+    }
+    const anchor = `eq-${value.replace(/[^A-Za-z0-9]+/g, '-')}`
+    anchors.push(anchor)
+    this.setTarget({ value, anchor, section: this.counters.section, kind: 'equation' })
+    for (const key of labels) this.bindLabel(key, line)
+    return cleaned
+  })
+  const content = taggedRows.filter(row => row.length > 0).join(' \\\\\n')
+  let expanded = expandMacros(content, this.preamble)
+  if (env !== 'equation') {
+    const wrapper = env === 'align' || env === 'eqnarray' ? 'align*' : `${env}*`
+    expanded = `\\begin{${wrapper}}\n${expanded}\n\\end{${wrapper}}`
+  }
+  this.gate(expanded, true, line)
+  if (anchors.length > 0) {
+    blocks.push(anchors.map(anchor => `<a id="${anchor}" class="latex-eq"></a>`).join(''))
+  }
+  blocks.push(`$$\n${expanded}\n$$`)
+  return blocks
+}
+
+function gate(this: Converter, src: string, display: boolean, line: number): void {
+  const error = checkKatex(src, display)
+  if (error)
+    this.katexErrors.push(
+      `line ${line}: ${error.replace(/^KaTeX parse error: /, '')}\n    ${src.slice(0, 160)}`,
+    )
+}
+
+function envBlocks(this: Converter, node: Extract<LatexNode, { type: 'env' }>): string[] | null {
+  const name = node.name
+  const theorem = this.preamble.theorems.get(name)
+  if (theorem) return this.statement(node, theorem)
+  switch (name) {
+    case 'proof':
+      return this.proof(node)
+    case 'equation':
+    case 'equation*':
+    case 'displaymath':
+      return this.displayMath(
+        node.raw,
+        node.line,
+        name === 'equation' ? 'equation' : 'plain',
+        name === 'equation',
+      )
+    case 'align':
+    case 'align*':
+    case 'eqnarray':
+    case 'eqnarray*':
+    case 'gather':
+    case 'gather*':
+    case 'multline':
+    case 'multline*': {
+      const base = name.replace('*', '') as 'align' | 'eqnarray' | 'gather' | 'multline'
+      return this.displayMath(node.raw, node.line, base, !name.endsWith('*'))
+    }
+    case 'itemize':
+    case 'enumerate':
+    case 'description':
+      return this.list(node)
+    case 'figure':
+    case 'figure*':
+    case 'wrapfigure':
+      return this.figure(node)
+    case 'subfigure':
+      return this.subfigure(node)
+    case 'center':
+    case 'minipage':
+    case 'flushleft':
+    case 'flushright':
+    case 'quote':
+    case 'quotation':
+    case 'small':
+    case 'footnotesize':
+      return this.blocks(node.children)
+    case 'tikzpicture': {
+      const body = node.raw
+      const name = `tikz-${createHash('sha256').update(body).digest('hex').slice(0, 10)}`
+      this.section?.figures.push({
+        name,
+        kind: 'inline',
+        body: `\\begin{tikzpicture}${body}\\end{tikzpicture}`,
+        line: node.line,
+      })
+      return [`\uE001FIG:inline:${name}:${node.line}\uE001`]
+    }
+    case 'abstract':
+      return this.blocks(node.children)
+    case 'document':
+      return this.blocks(node.children)
+    default: {
+      this.section?.unhandled.push(`environment ${name} (line ${node.line})`)
+      const raw = `\\begin{${name}}${node.opt ? `[${node.opt}]` : ''}${node.args.map(arg => `{${arg}}`).join('')}${node.raw}\\end{${name}}`
+      return ['```latex\n' + raw.trim() + '\n```']
+    }
+  }
+}
+
+function statement(
+  this: Converter,
+  node: Extract<LatexNode, { type: 'env' }>,
+  theorem: TheoremEnv,
+): string[] {
+  const number = this.stepTheorem(theorem)
+  const kindWord = theorem.name.toLowerCase()
+  const calloutType = theoremCalloutTypes[kindWord] ?? kindWord
+  const anchor = `${calloutType}-${number.replace(/\./g, '-')}`
+  this.setTarget({ value: number, anchor, section: this.counters.section, kind: 'statement' })
+  this.lastStatement = { kind: kindWord, number, anchor }
+  this.proofsFor.set(anchor, 0)
+  if (this.section) this.section.statements++
+
+  let children = node.children
+  let title = node.opt ? this.inline(new Parser(node.opt).parseAll(), 'title').trim() : ''
+  if (!title) {
+    const lead = leadingParenthetical(children)
+    if (lead) {
+      title = this.inline(lead.nodes, 'title').trim()
+      children = lead.rest
+    }
+  }
+  children = dropLeadingBreaks(children)
+  const mathInTitle = /\$/.test(title)
+  const isMath = calloutType in theoremCalloutTypes
+  const header = isMath
+    ? `> [!${calloutType}|latex] ${number}${title && !mathInTitle ? ` ${title}` : ''}`
+    : `> [!${calloutType}|latex] ${theorem.name} ${number}${title && !mathInTitle ? `. ${title}` : ''}`
+  const body = this.blocks(children)
+  this.statements.push({
+    anchor,
+    section: this.counters.section,
+    number,
+    title,
+    text: body.join('\n\n'),
+    line: node.line,
+  })
+  if (mathInTitle) body.unshift(`_(${title})_`)
+  const page = this.options.pageLink?.(node.line) ?? null
+  if (page) body.push(`[p. ${page.page}](${page.href})`)
+  return [[header, '>', ...quote(body.join('\n\n'))].join('\n'), `^${anchor}`]
+}
+
+function proof(this: Converter, node: Extract<LatexNode, { type: 'env' }>): string[] {
+  const statement = this.lastStatement
+  let anchor = 'proof'
+  if (statement) {
+    const count = (this.proofsFor.get(statement.anchor) ?? 0) + 1
+    this.proofsFor.set(statement.anchor, count)
+    anchor = `proof-${statement.number.replace(/\./g, '-')}${count > 1 ? `-${String.fromCharCode(96 + count)}` : ''}`
+  }
+  const label = node.opt ? this.inline(new Parser(node.opt).parseAll(), 'title').trim() : ''
+  const of = statement ? ` of ${statement.kind} ${statement.number}` : ''
+  const title = label ? `${label}${of}` : of.trim()
+  const header = `> [!proof|latex]+ ${title}`.trimEnd()
+  const body = this.blocks(dropLeadingBreaks(node.children))
+  const blocks = [[header, '>', ...quote(body.join('\n\n'))].join('\n')]
+  if (statement) blocks.push(`^${anchor}`)
+  return blocks
+}
+
+function list(this: Converter, node: Extract<LatexNode, { type: 'env' }>): string[] {
+  const ordered = node.name === 'enumerate'
+  if (ordered) this.counters.enumerate.push(0)
+  const items: { label: string | null; nodes: LatexNode[] }[] = []
+  let current: { label: string | null; nodes: LatexNode[] } | null = null
+  for (const child of node.children) {
+    if (child.type === 'cmd' && child.name === 'item') {
+      current = { label: child.opt, nodes: [] }
+      items.push(current)
+      continue
+    }
+    if (!current) {
+      if (child.type === 'par' || (child.type === 'text' && child.value.trim() === '')) continue
+      current = { label: null, nodes: [] }
+      items.push(current)
+    }
+    current.nodes.push(child)
+  }
+  const lines: string[] = []
+  for (const item of items) {
+    let marker: string
+    if (ordered) {
+      const depth = this.counters.enumerate.length - 1
+      this.counters.enumerate[depth]++
+      const n = this.counters.enumerate[depth]
+      marker = `${n}.`
+      this.setTarget({
+        value: String(n),
+        anchor: null,
+        section: this.counters.section,
+        kind: 'item',
+      })
+    } else marker = '-'
+    const label = item.label !== null ? `**${escapeText(item.label)}** ` : ''
+    const blocks = this.blocks(dropLeadingBreaks(item.nodes))
+    const first = blocks.shift() ?? ''
+    const indent = ' '.repeat(ordered ? marker.length + 1 : 2)
+    lines.push(`${marker} ${label}${first}`.trimEnd())
+    for (const block of blocks) {
+      lines.push('')
+      lines.push(...block.split('\n').map(line => (line.length > 0 ? indent + line : line)))
+    }
+  }
+  if (ordered) this.counters.enumerate.pop()
+  return [lines.join('\n')]
+}
+
+function figure(this: Converter, node: Extract<LatexNode, { type: 'env' }>): string[] {
+  const outerStepped = this.figureStepped
+  this.figureStepped = false
+  this.subfigureLetter = 0
+  const blocks = this.figureBody(node.children, true)
+  this.figureStepped = outerStepped
+  return blocks
+}
+
+function subfigure(this: Converter, node: Extract<LatexNode, { type: 'env' }>): string[] {
+  return this.figureBody(node.children, false)
+}
+
+function figureBody(this: Converter, children: LatexNode[], parent: boolean): string[] {
+  const out: string[] = []
+  for (const child of children) {
+    if (child.type === 'cmd' && child.name === 'caption') {
+      let value: string
+      let anchor: string
+      if (parent) {
+        if (!this.figureStepped) {
+          this.counters.figure++
+          this.figureStepped = true
+        }
+        value = String(this.counters.figure)
+        anchor = `figure-${value}`
+      } else {
+        if (!this.figureStepped) {
+          this.counters.figure++
+          this.figureStepped = true
+        }
+        this.subfigureLetter++
+        value = `${this.counters.figure}${String.fromCharCode(96 + this.subfigureLetter)}`
+        anchor = `figure-${value}`
+      }
+      this.setTarget({ value, anchor, section: this.counters.section, kind: 'figure' })
+      const text = normalizeSpaces(this.inline(child.args[0], 'text')).trim()
+      out.push(`_Figure ${value}._ ${text}`.trimEnd(), `^${anchor}`)
+      continue
+    }
+    if (
+      child.type === 'cmd' &&
+      (child.name === 'centering' || child.name === 'hfill' || child.name === 'label')
+    ) {
+      if (child.name === 'label') this.bindLabel(plainText(child.args[0]).trim(), child.line)
+      continue
+    }
+    if (child.type === 'par' || (child.type === 'text' && child.value.trim() === '')) continue
+    if (child.type === 'env' && child.name === 'subfigure') {
+      out.push(...this.subfigure(child))
+      continue
+    }
+    if (child.type === 'cmd' && child.name === 'adjustbox') {
+      out.push(...this.blocks(child.args[1]))
+      continue
+    }
+    out.push(...this.blocks([child]))
+  }
+  return out
+}
+
+function inline(this: Converter, nodes: LatexNode[], mode: 'text' | 'title'): string {
+  let out = ''
+  for (let i = 0; i < nodes.length; i++) {
+    const node = nodes[i]
+    switch (node.type) {
+      case 'text':
+        out += escapeText(normalizeSpaces(node.value.replace(/~/g, ' ')))
+          .replace(/\\~/g, ' ')
+          .replace(/---/g, '—')
+          .replace(/--/g, '–')
+          .replace(/``|''/g, '"')
+          .replace(/`/g, "'")
+        break
+      case 'par':
+        out += ' '
+        break
+      case 'math': {
+        const expanded = expandMacros(node.src, this.preamble)
+        this.gate(expanded, false, node.line)
+        out += `$${expanded}$`
+        break
+      }
+      case 'group': {
+        const [first, ...rest] = node.children
+        if (first?.type === 'cmd' && (first.name === 'bf' || first.name === 'textbf')) {
+          out += `**${this.inline(first.name === 'bf' ? rest : [...first.args[0], ...rest], mode).trim()}**`
+        } else if (
+          first?.type === 'cmd' &&
+          (first.name === 'it' || first.name === 'em' || first.name === 'sl')
+        ) {
+          out += `_${this.inline(rest, mode).trim()}_`
+        } else if (first?.type === 'cmd' && first.name in accents && rest.length > 0) {
+          out += this.accent(first.name, this.inline(rest, mode))
+        } else out += this.inline(node.children, mode)
+        break
+      }
+      case 'env':
+        if (rawEnvs.has(node.name) && node.name !== 'tikzpicture' && node.name !== 'verbatim') {
+          // display math inside an inline context (a title): keep the source
+          out += `$$${expandMacros(node.raw, this.preamble)}$$`
+        } else out += this.blocks([node]).join('\n\n')
+        break
+      case 'cmd':
+        out += this.inlineCmd(node, mode)
+        break
+    }
+  }
+  return out
+}
+
+function accent(name: string, letter: string): string {
+  const base = letter.replace(/\\i(?![A-Za-z])/g, 'i').trim()
+  const table = accents[name]
+  const mapped = table?.[base]
+  if (mapped) return mapped
+  return base
+}
+
+function inlineCmd(
+  this: Converter,
+  node: Extract<LatexNode, { type: 'cmd' }>,
+  mode: 'text' | 'title',
+): string {
+  const arg = (index: number) => this.inline(node.args[index] ?? [], mode)
+  switch (node.name) {
+    case 'textbf':
+    case 'bf':
+      return node.args.length ? `**${arg(0).trim()}**` : ''
+    case 'emph':
+    case 'textit':
+    case 'it':
+    case 'em':
+      return node.args.length ? `_${arg(0).trim()}_` : ''
+    case 'underline':
+      return `<u>${arg(0)}</u>`
+    case 'texttt':
+      return `\`${plainText(node.args[0])}\``
+    case 'textrm':
+    case 'text':
+    case 'mbox':
+    case 'textsc':
+    case 'adjustbox':
+      return arg(node.name === 'adjustbox' ? 1 : 0)
+    case 'url':
+      return `<${plainText(node.args[0]).trim()}>`
+    case 'href':
+      return `[${arg(1)}](${plainText(node.args[0]).trim()})`
+    case 'label':
+      this.bindLabel(plainText(node.args[0]).trim(), node.line)
+      return ''
+    case 'ref':
+    case 'eqref': {
+      const key = plainText(node.args[0]).trim()
+      const placeholder = `\uE000REF${this.refCounter++}\uE000`
+      this.refs.push({ placeholder, key, kind: node.name, line: node.line })
+      return placeholder
+    }
+    case 'cite':
+      this.section?.unhandled.push(`\\cite (line ${node.line})`)
+      return `[${plainText(node.args[0])}]`
+    case 'footnote':
+      return `^[${arg(0).trim()}]`
+    case 'ldots':
+    case 'dots':
+      return '…'
+    case 'LaTeX':
+      return 'LaTeX'
+    case 'TeX':
+      return 'TeX'
+    case '%':
+      return '%'
+    case '&':
+      return '&'
+    case '$':
+      return '\\$'
+    case '#':
+      return '#'
+    case '_':
+      return '\\_'
+    case '{':
+      return '{'
+    case '}':
+      return '}'
+    case ',':
+    case ';':
+    case ' ':
+    case '!':
+    case '/':
+      return ' '
+    case '-':
+      return ''
+    case 'quad':
+    case 'qquad':
+      return ' '
+    case '\\':
+    case 'newline':
+    case 'linebreak':
+      return mode === 'title' ? ' ' : '\n'
+    case 'noindent':
+    case 'indent':
+    case 'centering':
+    case 'hfill':
+    case 'hspace':
+    case 'vspace':
+    case 'qedhere':
+    case 'small':
+    case 'footnotesize':
+    case 'large':
+    case 'Large':
+    case 'LARGE':
+    case 'huge':
+    case 'normalsize':
+    case 'textwidth':
+    case 'linewidth':
+    case 'par':
+    case 'smallskip':
+    case 'medskip':
+    case 'bigskip':
+    case 'vskip':
+    case 'hskip':
+    case 'newpage':
+    case 'clearpage':
+    case 'label*':
+    case 'relax':
+    case 'raggedright':
+      return ''
+    case 'i':
+      return 'i'
+    case 'j':
+      return 'j'
+    case 'o':
+      return 'ø'
+    case 'ss':
+      return 'ß'
+    case 'ae':
+      return 'æ'
+    case 'oe':
+      return 'œ'
+    case 'sim':
+      return '~'
+    default:
+      break
+  }
+  if (node.name in accents && node.args.length > 0) return this.accent(node.name, arg(0))
+  const macro = this.preamble.macros.get(node.name)
+  if (macro !== undefined) {
+    const expanded = expandMacros(macro, this.preamble)
+    this.gate(expanded, false, node.line)
+    return `$${expanded}$`
+  }
+  this.section?.unhandled.push(`\\${node.name} (line ${node.line})`)
+  const raw = `\\${node.name}${node.opt ? `[${node.opt}]` : ''}${node.args.map(a => `{${plainText(a)}}`).join('')}`
+  return `\`${raw}\``
+}
+
+function resolveRefs(this: Converter, sections: ConvertedSection[]): void {
+  const restated = this.options.restates?.(this.statements) ?? new Map<string, string>()
+  const resolve = (ref: (typeof this.refs)[number]): string => {
+    const entry = this.labels.get(ref.key)
+    if (!entry) {
+      this.report.push(`undefined reference ${ref.key} (line ${ref.line})`)
+      return '??'
+    }
+    const value = ref.kind === 'eqref' ? `(${entry.value})` : entry.value
+    const slug = this.options.noteSlug(entry.section)
+    if (entry.kind === 'section') return `[[${slug}|${value}]]`
+    if (entry.kind === 'equation' && entry.anchor) return `[[${slug}#${entry.anchor}|${value}]]`
+    const target = entry.anchor ? restated.get(entry.anchor) : undefined
+    if (target) return `[[${target}|${value}]]`
+    if (entry.anchor) return `[[${slug}#^${entry.anchor}|${value}]]`
+    return value
+  }
+  const table = new Map(this.refs.map(ref => [ref.placeholder, resolve(ref)]))
+  for (const section of sections) {
+    section.markdown = section.markdown.replace(
+      /\uE000REF\d+\uE000/g,
+      match => table.get(match) ?? '??',
+    )
+    section.description = section.description.replace(/\uE000REF\d+\uE000/g, match =>
+      (table.get(match) ?? '??').replace(/\[\[[^\]|]*\|([^\]]*)\]\]/g, '$1'),
+    )
   }
 }
 
@@ -2243,46 +2354,40 @@ function flow(value: unknown): string {
   return yamlQuote(String(value))
 }
 
-export async function convertLatexCourse(input: LatexCourseInput): Promise<LatexResult | null> {
-  const texResources = input.resources.filter(resource => /\.tex$/i.test(resource.localFile))
-  if (texResources.length === 0) return null
-  const report: string[] = []
-  const pointers = new Map<string, string>()
-  const notesDir = path.join(input.root, 'notes')
-  const latexDir = path.join(input.root, 'static_resources', 'latex')
-  const noteSlug = (n: number) => `${input.slug}/notes/${pad(n)}`
+interface CourseDraft {
+  input: LatexCourseInput
+  report: string[]
+  pointers: Map<string, string>
+  notesDir: string
+  noteSlug: (n: number) => string
+  full: LatexResource | undefined
+  psets: LatexResource[]
+  files: Map<string, string>
+  notes: LatexNoteSummary[]
+  psetNotes: LatexNoteSummary[]
+  figureJobs: FigureJob[]
+  zip: ZipSources | null
+  pdfResource: (n: number | 'full') => LatexResource | undefined
+  year: string
+  preambleForFigures: Preamble | null
+  noteStatements: StatementText[]
+}
 
-  const full = texResources.find(
-    resource =>
-      resource.resourceTypes.includes('Lecture Notes') && !problemSetNumberRe.test(resource.title),
-  )
-  const psets = texResources.filter(resource => problemSetNumber(resource) !== null)
-
-  // staged output: nothing is written until every gate passes
-  const files = new Map<string, string>()
-  const notes: LatexNoteSummary[] = []
-  const psetNotes: LatexNoteSummary[] = []
-  let figureCount = 0
-  const figureJobs: FigureJob[] = []
-  let zip: ZipSources | null = null
-  const year = /\b(\d{4})\b/.exec(input.term)?.[1] ?? ''
-  const lecturer =
-    (input.instructors[0] ?? '')
-      .replace(/^prof\.?\s*/i, '')
-      .split(/\s+/)
-      .at(-1) ?? ''
-
-  const pdfResource = (n: number | 'full') =>
-    input.resources.find(
-      resource =>
-        /\.pdf$/i.test(resource.localFile) &&
-        (n === 'full'
-          ? /full/i.test(resource.localFile) && /lec/i.test(resource.localFile)
-          : lectureNumber(resource) === n && !/transcript|full/i.test(resource.localFile)),
-    )
-
-  let preambleForFigures: Preamble | null = null
-  let noteStatements: StatementText[] = []
+async function convertFullLectureNotes(draft: CourseDraft): Promise<void> {
+  const input = draft.input
+  const report = draft.report
+  const pointers = draft.pointers
+  const notesDir = draft.notesDir
+  const noteSlug = draft.noteSlug
+  const full = draft.full
+  const year = draft.year
+  const files = draft.files
+  const notes = draft.notes
+  const figureJobs = draft.figureJobs
+  let zip = draft.zip
+  const pdfResource = draft.pdfResource
+  let preambleForFigures = draft.preambleForFigures
+  let noteStatements = draft.noteStatements
 
   if (full) {
     const sourcePath = path.join(input.root, 'static_resources', full.localFile)
@@ -2487,6 +2592,22 @@ export async function convertLatexCourse(input: LatexCourseInput): Promise<Latex
     }
     pointers.set(full.relDir, `${input.slug}/notes/`)
   }
+  draft.zip = zip
+  draft.preambleForFigures = preambleForFigures
+  draft.noteStatements = noteStatements
+}
+
+async function convertProblemSets(draft: CourseDraft): Promise<void> {
+  const input = draft.input
+  const report = draft.report
+  const pointers = draft.pointers
+  const notesDir = draft.notesDir
+  const noteSlug = draft.noteSlug
+  const psets = draft.psets
+  const files = draft.files
+  const psetNotes = draft.psetNotes
+  const figureJobs = draft.figureJobs
+  const noteStatements = draft.noteStatements
 
   for (const resource of psets) {
     const n = problemSetNumber(resource)!
@@ -2562,6 +2683,71 @@ export async function convertLatexCourse(input: LatexCourseInput): Promise<Latex
     pointers.set(resource.relDir, slug)
     for (const figure of section.figures) figureJobs.push({ ...figure, section })
   }
+}
+
+export async function convertLatexCourse(input: LatexCourseInput): Promise<LatexResult | null> {
+  const texResources = input.resources.filter(resource => /\.tex$/i.test(resource.localFile))
+  if (texResources.length === 0) return null
+  const report: string[] = []
+  const pointers = new Map<string, string>()
+  const notesDir = path.join(input.root, 'notes')
+  const latexDir = path.join(input.root, 'static_resources', 'latex')
+  const noteSlug = (n: number) => `${input.slug}/notes/${pad(n)}`
+
+  const full = texResources.find(
+    resource =>
+      resource.resourceTypes.includes('Lecture Notes') && !problemSetNumberRe.test(resource.title),
+  )
+  const psets = texResources.filter(resource => problemSetNumber(resource) !== null)
+
+  // staged output: nothing is written until every gate passes
+  const files = new Map<string, string>()
+  const notes: LatexNoteSummary[] = []
+  const psetNotes: LatexNoteSummary[] = []
+  let figureCount = 0
+  const figureJobs: FigureJob[] = []
+  let zip: ZipSources | null = null
+  const year = /\b(\d{4})\b/.exec(input.term)?.[1] ?? ''
+  const lecturer =
+    (input.instructors[0] ?? '')
+      .replace(/^prof\.?\s*/i, '')
+      .split(/\s+/)
+      .at(-1) ?? ''
+
+  const pdfResource = (n: number | 'full') =>
+    input.resources.find(
+      resource =>
+        /\.pdf$/i.test(resource.localFile) &&
+        (n === 'full'
+          ? /full/i.test(resource.localFile) && /lec/i.test(resource.localFile)
+          : lectureNumber(resource) === n && !/transcript|full/i.test(resource.localFile)),
+    )
+
+  let preambleForFigures: Preamble | null = null
+  let noteStatements: StatementText[] = []
+  const courseDraft: CourseDraft = {
+    input,
+    report,
+    pointers,
+    notesDir,
+    noteSlug,
+    full,
+    psets,
+    files,
+    notes,
+    psetNotes,
+    figureJobs,
+    zip,
+    pdfResource,
+    year,
+    preambleForFigures,
+    noteStatements,
+  }
+  await convertFullLectureNotes(courseDraft)
+  zip = courseDraft.zip
+  preambleForFigures = courseDraft.preambleForFigures
+  noteStatements = courseDraft.noteStatements
+  await convertProblemSets(courseDraft)
 
   // figures
   if (figureJobs.length > 0) {
