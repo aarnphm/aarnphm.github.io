@@ -13,6 +13,16 @@ function remToPx(rem: number): number {
   return rem * parseFloat(getComputedStyle(document.documentElement).fontSize)
 }
 
+// a page that hangs other work in the margin (fr-margins.scss) widens the gutter with
+// `--sidenote-gutter`, in rem or (from a registered property) in px, so its notes share one
+// edge with that work
+function gutterPx(scope?: Element | null): number {
+  const raw = scope ? getComputedStyle(scope).getPropertyValue('--sidenote-gutter').trim() : ''
+  const set = parseFloat(raw)
+  if (!Number.isFinite(set)) return remToPx(SIDENOTE_GUTTER)
+  return raw.endsWith('px') ? set : remToPx(set)
+}
+
 function getMainColumn(content?: Element): HTMLElement | null {
   return (
     content?.closest<HTMLElement>('.main-col') ??
@@ -50,10 +60,10 @@ function getContentWidth(): number {
 function getMarginAvailability(content?: Element): { canFitLeft: boolean; canFitRight: boolean } {
   const sidenoteWidth = remToPx(SIDENOTE_WIDTH)
   const spacing = remToPx(SPACING)
-  const gutter = remToPx(SIDENOTE_GUTTER)
+  const mainColumn = getMainColumn(content)
+  const gutter = gutterPx(content ?? mainColumn)
   const requiredMargin = sidenoteWidth + gutter + spacing
 
-  const mainColumn = getMainColumn(content)
   if (!mainColumn) {
     const contentWidth = getContentWidth()
     const windowWidth = window.innerWidth
@@ -223,7 +233,7 @@ class SidenoteManager {
 
     const mainColumn = getMainColumn(content)
     if (mainColumn) {
-      const gutter = remToPx(SIDENOTE_GUTTER)
+      const gutter = gutterPx(content)
       const sidenoteWidth = remToPx(SIDENOTE_WIDTH)
       const mainRect = mainColumn.getBoundingClientRect()
       const parentRect = getOffsetParentRect(content)

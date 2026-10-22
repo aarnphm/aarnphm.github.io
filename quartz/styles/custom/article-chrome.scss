@@ -427,6 +427,11 @@ body {
       border-left: 1px solid var(--lightgray);
       padding-left: 1rem;
     }
+
+    // the divider stands between two cells; a byline of only tags has none
+    &:only-child {
+      border-left: 0;
+    }
   }
 
   .tags {
@@ -458,6 +463,23 @@ body {
 
   &::after {
     bottom: 0;
+  }
+}
+
+// an apparatus page (/fr, technical) sets its tags alone: the tag boxes are the byline, with no label,
+// no hairlines and no cell padding, flush with the header's edge
+#quartz-root > .page-body-grid:has(.fr-group) > .page-header > .byline {
+  &::before,
+  &::after {
+    content: none;
+  }
+
+  > * {
+    padding: 0;
+  }
+
+  .tags h2 {
+    display: none;
   }
 }
 

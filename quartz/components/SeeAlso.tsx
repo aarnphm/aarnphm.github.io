@@ -120,6 +120,15 @@ export default (() => {
     if (!rootLinks || rootLinks.length === 0) {
       return null
     }
+    // the margin apparatus (renderPage/technical-apparatus.ts) already lists them by the first block
+    let inMargin = false
+    visit(tree, 'element', (node: Element) => {
+      if (node.properties?.dataFrKind === 'seealso') {
+        inMargin = true
+        return EXIT
+      }
+    })
+    if (inMargin) return null
 
     const renderData = renderDataFor(ctx, allFiles)
     const seealsoBySlug =
