@@ -298,12 +298,20 @@ export class BookcaseView extends BasesView {
         if (this.linked && !this.editor.alive()) this.setLinked(false)
       }),
     )
-    // Plus and minus zoom while focus is inside the view.
+    // Plus and minus zoom while focus is inside the view; category initials select and focus topics.
     this.registerDomEvent(this.root, 'keydown', evt => {
-      if (evt.defaultPrevented || evt.ctrlKey || evt.metaKey || evt.altKey) return
+      if (evt.defaultPrevented || evt.ctrlKey || evt.metaKey || evt.altKey || evt.isComposing)
+        return
+      if (
+        evt.target instanceof Element &&
+        evt.target.closest('input, textarea, select, [contenteditable]')
+      )
+        return
       if (evt.key === '+' || evt.key === '=') this.zoomBy(ZOOM)
       else if (evt.key === '-') this.zoomBy(1 / ZOOM)
-      else return
+      else if (/^\p{L}$/u.test(evt.key) && this.panel.stepByLetter(evt.key)) {
+        // Topic selected and focused by panel.
+      } else return
       evt.preventDefault()
     })
     // Escape clears the selection while focus is in the view, or the pointer is over it: a wheel
