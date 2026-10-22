@@ -10,18 +10,18 @@ body[data-layout='technical'] {
     padding: 0;
 
     & > .graph,
-    & > .recommendations,
-    & > .backlinks {
+    & > .recommendations {
       display: none;
     }
   }
+}
 
-  .collapse-rail {
+// the tractatus numbers its own lines; a technical note keeps the heading rails
+body[data-layout='technical-tractatus'] .collapse-rail {
+  width: 0;
+
+  & > .collapse-line {
     width: 0;
-
-    & > .collapse-line {
-      width: 0;
-    }
   }
 }
 

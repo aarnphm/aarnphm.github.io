@@ -1,0 +1,25 @@
+// Technical notes on the /fr apparatus contract (fr-margins.scss, renderPage/technical-apparatus.ts):
+// a footnote's paragraphs arrive as spans, since the group sits inside the paragraph that calls it
+.fr-para {
+  display: block;
+}
+
+.fr-para + .fr-para {
+  margin-top: var(--space-2);
+}
+
+// a listing's title moves to the margin and its caption keeps the number; where there is no margin
+// the caption reads the title, as without the apparatus
+article[data-fr-mode='inline'] .fr-group .fr-entry[data-fr-kind='listing'] {
+  > .fr-entry-label {
+    display: none;
+  }
+
+  > .fr-entry-body,
+  .fr-margin,
+  .fr-meta {
+    display: inline;
+    font: inherit;
+    color: inherit;
+  }
+}
