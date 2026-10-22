@@ -85,22 +85,13 @@ EOF
         echo $rc > "$d/exit-code" ) &
       ;;
     argon)
-      # agy can keep running after its result event; stop this run (and only it) after a grace period.
+      # The launcher owns the native process group and its 30-second post-result grace.
       ( cd "$d"
         printf '%s\n' "$TB_ARGON_TIMEOUT" > timeout-seconds
+        rc=0
         argon --workspace "$WS" --browser none --stream --timeout "$TB_ARGON_TIMEOUT" \
-          < task.txt > events.ndjson 2> stderr.txt &
-        pid=$!
-        while kill -0 "$pid" 2> /dev/null; do
-          if rg -q '"event":\s*"result"' events.ndjson 2> /dev/null; then
-            sleep 30
-            kill -0 "$pid" 2> /dev/null && { pkill -TERM -P "$pid"; kill -TERM "$pid"; echo "killed after result" > watchdog; }
-            break
-          fi
-          sleep 10
-        done
-        # set -e would end this subshell when wait reports the watchdog's SIGTERM (143).
-        rc=0; wait "$pid" || rc=$?; echo $rc > exit-code ) &
+          < task.txt > events.ndjson 2> stderr.txt || rc=$?
+        echo "$rc" > exit-code ) &
       ;;
   esac
 done
