@@ -1,3 +1,4 @@
+import { ANALYTICS_CHAPTERS } from '../analytics/catalog'
 import { calculatorTabFromShortcut } from '../tools/calculator-tabs'
 import { blurFocusedPanelSearch } from './command-palette'
 import { isEditable } from './command-palette'
@@ -51,6 +52,19 @@ export const setupShortcuts = (root: HTMLElement): (() => void) => {
     tab.focus({ preventScroll: true })
     return true
   }
+  const selectAnalyticsChapter = (key: string): boolean => {
+    if (subView !== 'analytics' && !root.classList.contains('tri-analytics-open')) return false
+    const chapter = ANALYTICS_CHAPTERS.find(chapter => chapter.shortcut === key)
+    const tab =
+      chapter &&
+      root.querySelector<HTMLButtonElement>(`[data-analytics-chapter-tab="${chapter.key}"]`)
+    if (!tab) return false
+    tab.click()
+    tab.focus({ preventScroll: true })
+    return true
+  }
+  const selectTab = (key: string): boolean =>
+    selectCalculatorTab(key) || selectAnalyticsChapter(key)
   const waitForG = (): void => {
     waitingForG = true
     gTimeout = window.setTimeout(() => {
@@ -237,15 +251,12 @@ export const setupShortcuts = (root: HTMLElement): (() => void) => {
 
     const calculatorKey = e.isComposing || e.repeat ? null : e.key
     if (waitingForG) {
-      if (
-        runChord(e.key.toLowerCase()) ||
-        (calculatorKey !== null && selectCalculatorTab(calculatorKey))
-      ) {
+      if (runChord(e.key.toLowerCase()) || (calculatorKey !== null && selectTab(calculatorKey))) {
         e.preventDefault()
         e.stopImmediatePropagation()
       }
       clearG()
-    } else if (calculatorKey !== null && selectCalculatorTab(calculatorKey)) {
+    } else if (calculatorKey !== null && selectTab(calculatorKey)) {
       if (e.key === 'g') waitForG()
       e.preventDefault()
       e.stopImmediatePropagation()

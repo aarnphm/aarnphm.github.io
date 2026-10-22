@@ -6,7 +6,6 @@ import type {
   BestEffortSport,
 } from '../../../../util/best-efforts'
 import type { TriathlonContext } from '../../runtime/context'
-import { shiftIsoDay } from '../../../../util/local-date'
 import { powerCurveActivityLinkAttributes } from '../../../../util/triathlon-power-activity'
 import { isRecord } from '../../../../util/type-guards'
 import { buildSelect, type Select } from '../../../controls/select'
@@ -28,7 +27,6 @@ export const TRI_BEST_EFFORTS_KEY = 'tri-best-efforts'
 
 type BestEffortsView = 'analysis' | 'top'
 type BestEffortsSort = 'newest' | 'oldest' | 'high' | 'low'
-type BestEffortsRange = 'all' | '7d' | '14d' | '30d' | '60d' | 'month'
 
 interface BestEffortsState {
   sport: BestEffortSport
@@ -38,12 +36,10 @@ interface BestEffortsState {
   bikeCategory: Partial<Record<BestEffortGroup, string>>
   year: number | null
   sort: BestEffortsSort
-  rideRange: BestEffortsRange
-  rideMonth: string
 }
 
 interface Picker {
-  name: 'year' | 'sort' | 'month'
+  name: 'year' | 'sort'
   select: Select<string>
   dispose: (() => void) | null
 }
@@ -65,14 +61,6 @@ const SPORTS: readonly BestEffortSport[] = ['run', 'bike']
 const VIEWS: readonly { key: BestEffortsView; label: string }[] = [
   { key: 'analysis', label: 'analysis' },
   { key: 'top', label: 'top 10' },
-]
-const RANGES: readonly { key: BestEffortsRange; label: string; days: number | null }[] = [
-  { key: 'all', label: 'all-time', days: null },
-  { key: '7d', label: '7d', days: 7 },
-  { key: '14d', label: '14d', days: 14 },
-  { key: '30d', label: '30d', days: 30 },
-  { key: '60d', label: '60d', days: 60 },
-  { key: 'month', label: 'month', days: null },
 ]
 // High and low order by the category's own value (time, distance, metres, watts).
 const SORTS: readonly { key: BestEffortsSort; label: string }[] = [
@@ -139,13 +127,6 @@ export const buildBestEfforts = (
     categories.filter(category => category.sport === 'bike' && category.group === group)
   const bikeGroups = BIKE_GROUPS.filter(group => groupCategories(group).length > 0)
   const categoryByKey = new Map(categories.map(category => [category.key, category]))
-  const rideMonths = [
-    ...new Set(
-      categories
-        .filter(category => category.group === 'longest' || category.group === 'elevation')
-        .flatMap(category => category.efforts.map(entry => entry.date.slice(0, 7))),
-    ),
-  ].sort((a, b) => b.localeCompare(a))
 
   const validRunCategory = (key: unknown): key is string =>
     typeof key === 'string' && categoryByKey.get(key)?.sport === 'run'
@@ -185,9 +166,7 @@ export const buildBestEfforts = (
       }
     const year = typeof stored.year === 'number' && years.includes(stored.year) ? stored.year : null
     const sort = SORTS.find(option => option.key === stored.sort)?.key ?? 'newest'
-    const rideRange = RANGES.find(option => option.key === stored.rideRange)?.key ?? 'all'
-    const rideMonth = rideMonths.find(month => month === stored.rideMonth) ?? rideMonths[0] ?? ''
-    return { sport, view, runCategory, bikeGroup, bikeCategory, year, sort, rideRange, rideMonth }
+    return { sport, view, runCategory, bikeGroup, bikeCategory, year, sort }
   }
 
   const state = restore()
@@ -198,43 +177,10 @@ export const buildBestEfforts = (
     } catch {}
   }
 
-  const rideRangeBounds = (): { from: string; to: string } | undefined => {
-    if (state.rideRange === 'all') return undefined
-    if (state.rideRange === 'month') {
-      const monthEnd = new Date(
-        Date.UTC(Number(state.rideMonth.slice(0, 4)), Number(state.rideMonth.slice(5)), 0),
-      )
-        .toISOString()
-        .slice(0, 10)
-      return {
-        from: `${state.rideMonth}-01`,
-        to: monthEnd < data.meta.today ? monthEnd : data.meta.today,
-      }
-    }
-    const days = RANGES.find(option => option.key === state.rideRange)?.days ?? 1
-    return { from: shiftIsoDay(data.meta.today, 1 - days), to: data.meta.today }
-  }
-
   const activeCategory = (): BestEffortCategory => {
     const key = state.sport === 'run' ? state.runCategory : groupCategoryKey(state.bikeGroup)
-    const category = (key ? categoryByKey.get(key) : undefined) ?? sportCategories(state.sport)[0]
-    if (category.group !== 'longest' && category.group !== 'elevation') return category
-    const range = rideRangeBounds()
-    if (!range) return category
-    return {
-      ...category,
-      efforts: category.efforts.filter(entry => entry.date >= range.from && entry.date <= range.to),
-    }
+    return (key ? categoryByKey.get(key) : undefined) ?? sportCategories(state.sport)[0]
   }
-
-  const ridePeriodActive = (): boolean =>
-    state.sport === 'bike' && (state.bikeGroup === 'longest' || state.bikeGroup === 'elevation')
-  const periodLabel = (): string =>
-    ridePeriodActive() && state.rideRange !== 'all'
-      ? state.rideRange === 'month'
-        ? formatter.monthYear(`${state.rideMonth}-01`)
-        : text(state.rideRange)
-      : text('all-time')
 
   const activityLink = (
     entry: BestEffortEntry,
@@ -306,7 +252,7 @@ export const buildBestEfforts = (
   const categoryTablist = (
     name: string,
     label: string,
-    kind: 'category' | 'group' | 'range',
+    kind: 'category' | 'group',
     options: readonly CategoryTabOption[],
   ): CategoryTablist => {
     const element = el('div', 'tri-map-tablist tri-be-cats', undefined, {
@@ -377,20 +323,6 @@ export const buildBestEfforts = (
         ),
       )
 
-  if (rideMonths.length > 0)
-    addCategoryList(
-      categoryTablist(
-        'range',
-        text('date range'),
-        'range',
-        RANGES.map(option => ({
-          value: option.key,
-          label: text(option.label),
-          short: text(option.label),
-        })),
-      ),
-    )
-
   const catbar = el('div', 'tri-be-catbar')
   const categoryRow = el('div', 'tri-be-category-row')
   const bikeTabs = categoryLists.get('bike')
@@ -400,7 +332,7 @@ export const buildBestEfforts = (
       tab.style.setProperty('--tri-be-tab-color', BIKE_GROUP_COLOR[bikeGroups[i]])
     })
   }
-  // One row: the ride period and month sit between the categories and the view tabs, and wrap
+  // One row: the group's categories sit between the bike groups and the view tabs, and wrap
   // only when the panel is too narrow.
   controls.insertBefore(categoryRow, tablist)
   catbar.append(controls)
@@ -440,7 +372,7 @@ export const buildBestEfforts = (
         ? ['run']
         : state.bikeGroup === 'distance' || state.bikeGroup === 'power'
           ? ['bike', state.bikeGroup]
-          : ['bike', 'range']
+          : ['bike']
     return names.flatMap(name => {
       const list = categoryLists.get(name)
       return list ? [list] : []
@@ -451,15 +383,6 @@ export const buildBestEfforts = (
     const visible = visibleCategoryLists()
     if (bikeTabs) bikeTabs.element.hidden = state.sport !== 'bike'
     const rows = visible.filter(list => list.name !== 'bike').map(list => list.element)
-    if (ridePeriodActive())
-      rows.push(
-        buildPicker(
-          'month',
-          text('month'),
-          rideMonths.map(month => ({ value: month, label: formatter.monthYear(`${month}-01`) })),
-          state.rideMonth,
-        ),
-      )
     const shown = Array.from(categoryRow.children)
     // Rows are swapped only when the set changes: a kept row stays in the DOM, so its tabs
     // transition from the old selection to the new one.
@@ -472,13 +395,7 @@ export const buildBestEfforts = (
     for (const list of visible) {
       const selected = Math.max(
         0,
-        list.values.indexOf(
-          list.name === 'bike'
-            ? state.bikeGroup
-            : list.name === 'range'
-              ? state.rideRange
-              : category.key,
-        ),
+        list.values.indexOf(list.name === 'bike' ? state.bikeGroup : category.key),
       )
       if (!animate) list.element.dataset.motion = 'instant'
       list.tabs.forEach((tab, i) => {
@@ -496,7 +413,7 @@ export const buildBestEfforts = (
     const best = ranked[0]
     if (!best) return el('div', 'tri-ana-empty', text('no efforts in the selected period'))
     const hero = el('section', 'tri-be-hero', undefined, {
-      'aria-label': `${periodLabel()} · ${label}`,
+      'aria-label': `${text('all-time')} · ${label}`,
     })
     const main = el('div', 'tri-be-hero-main')
     const record = el('div', 'tri-be-hero-pr', undefined, {
@@ -509,7 +426,7 @@ export const buildBestEfforts = (
       dateNode(best, formatter.longDate(best.date)),
       activityLink(best, 'tri-be-activity'),
     )
-    main.append(el('span', 'tri-be-cap', periodLabel()), record, meta)
+    main.append(el('span', 'tri-be-cap', text('all-time')), record, meta)
     hero.appendChild(main)
     const runners = ranked.slice(1, 3)
     if (runners.length > 0) {
@@ -612,17 +529,7 @@ export const buildBestEfforts = (
       category.efforts.filter(entry => state.year == null || entryYear(entry) === state.year),
     )
     if (efforts.length === 0) {
-      scroller.appendChild(
-        el(
-          'div',
-          'tri-ana-empty',
-          text(
-            ridePeriodActive() && state.rideRange !== 'all'
-              ? 'no efforts in the selected period'
-              : 'no efforts in the selected year',
-          ),
-        ),
-      )
+      scroller.appendChild(el('div', 'tri-ana-empty', text('no efforts in the selected year')))
       return list
     }
     // A season of rides is ~120 rows; scrolling them in place keeps the panels below within reach.
@@ -652,14 +559,7 @@ export const buildBestEfforts = (
   const renderYearRegion = (category: BestEffortCategory): void => {
     if (!chartSlot || !listSlot) return
     dropChart()
-    const range = ridePeriodActive() ? rideRangeBounds() : undefined
-    chart = buildBestEffortsChart({
-      category,
-      context,
-      year: state.year,
-      today: data.meta.today,
-      range,
-    })
+    chart = buildBestEffortsChart({ category, context, year: state.year, today: data.meta.today })
     chartSlot.replaceChildren(chart.element)
     renderList(category)
     mountChart()
@@ -674,7 +574,6 @@ export const buildBestEfforts = (
     const field = el('div', 'tri-be-field')
     // The trigger's own name repeats the label, so the visible copy is hidden from assistive tech.
     const label = el('span', 'tri-be-field-label', labelText, { 'aria-hidden': 'true' })
-    if (name === 'month') label.hidden = true
     const select = buildSelect({
       id: `tri-be-${name}-menu`,
       label: labelText,
@@ -719,8 +618,7 @@ export const buildBestEfforts = (
       'aria-label': `${text('top 10')} · ${label}`,
     })
     for (const entry of top) rows.appendChild(buildRow(category, entry))
-    const scope = ridePeriodActive() && state.rideRange !== 'all' ? ` · ${periodLabel()}` : ''
-    scroller.append(band(`${text('top 10')} · ${label}${scope}`, top.length), rows)
+    scroller.append(band(`${text('top 10')} · ${label}`, top.length), rows)
     if (top.length === 0)
       scroller.appendChild(el('div', 'tri-ana-empty', text('no efforts in the selected period')))
     box.appendChild(scroller)
@@ -753,8 +651,6 @@ export const buildBestEfforts = (
     block.dataset.beCategory = category.key
     block.dataset.beYear = state.year == null ? 'all' : String(state.year)
     block.dataset.beSort = state.sort
-    block.dataset.beRange = ridePeriodActive() ? state.rideRange : 'all'
-    block.dataset.beMonth = state.rideMonth
     for (const [sport, button] of sportButtons)
       button.setAttribute('aria-pressed', String(sport === state.sport))
     for (const [view, tab] of tabs) {
@@ -808,18 +704,8 @@ export const buildBestEfforts = (
 
   // Category tabs stay in the DOM across renders, so focus stays on the activated tab.
   const selectCategoryTab = (tab: HTMLButtonElement, animate: boolean): void => {
-    const { beGroupOption, beCategoryOption, beRangeOption } = tab.dataset
-    if (beRangeOption) {
-      const range = RANGES.find(option => option.key === beRangeOption)?.key
-      if (!range || range === state.rideRange) return
-      update(
-        () => {
-          state.rideRange = range
-        },
-        'all',
-        animate,
-      )
-    } else if (beGroupOption) {
+    const { beGroupOption, beCategoryOption } = tab.dataset
+    if (beGroupOption) {
       const group = bikeGroups.find(option => option === beGroupOption)
       if (!group || group === state.bikeGroup) return
       update(
@@ -845,15 +731,7 @@ export const buildBestEfforts = (
 
   // The year and sort pickers live outside the list, so their changes keep them in place.
   const choosePickerOption = (name: Picker['name'], value: string): void => {
-    if (name === 'month') {
-      if (!rideMonths.includes(value)) return
-      update(() => {
-        state.rideRange = 'month'
-        state.rideMonth = value
-      })
-      // The render replaced the month picker; focus its new trigger.
-      pickers.find(picker => picker.name === 'month')?.select.trigger.focus({ preventScroll: true })
-    } else if (name === 'year') {
+    if (name === 'year') {
       const next = value === 'all' ? null : years.find(year => String(year) === value)
       if (next !== undefined && next !== state.year)
         update(() => {
@@ -873,8 +751,7 @@ export const buildBestEfforts = (
     if (!(target instanceof Element)) return
     const control = target.closest<HTMLButtonElement>('button')
     if (!control || !block.contains(control)) return
-    const { beSportOption, beViewOption, beGroupOption, beCategoryOption, beRangeOption } =
-      control.dataset
+    const { beSportOption, beViewOption, beGroupOption, beCategoryOption } = control.dataset
     if (beSportOption) {
       const sport = sports.find(option => option === beSportOption)
       if (!sport || sport === state.sport) return
@@ -884,7 +761,7 @@ export const buildBestEfforts = (
     } else if (beViewOption) {
       const view = VIEWS.find(option => option.key === beViewOption)?.key
       if (view) selectView(view)
-    } else if (beGroupOption || beCategoryOption || beRangeOption) {
+    } else if (beGroupOption || beCategoryOption) {
       // A pointer click animates the width change; Enter and Space (detail 0) snap like the arrows.
       selectCategoryTab(control, event.detail > 0)
     }

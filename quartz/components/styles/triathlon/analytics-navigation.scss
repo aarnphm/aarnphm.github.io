@@ -48,39 +48,25 @@
 }
 
 .tri-ana-chapters {
-  display: flex;
-  gap: 1.1rem;
   margin-right: auto;
   min-width: 0;
-  overflow-x: auto;
-  scrollbar-width: none;
 }
 
+// Tabs shrink instead of scrolling, so the shortcut hints above them stay unclipped.
 .tri-ana-chapter-tab {
-  appearance: none;
-  flex: none;
-  padding: 0.2rem 0;
-  font-family: var(--codeFont);
-  font-size: 0.78rem;
-  color: var(--gray);
-  background: none;
-  border: 0;
-  border-radius: var(--radius-none);
-  cursor: pointer;
+  flex-shrink: 1;
+  min-width: 0;
 
-  &:hover,
-  &[aria-selected='true'] {
-    color: var(--dark);
+  > span {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
-  &[aria-selected='true'] {
-    text-decoration: underline;
-    text-underline-offset: 0.3em;
-  }
-
-  &:focus-visible {
-    outline: 1px solid color-mix(in srgb, var(--tri-accent) 68%, transparent);
-    outline-offset: 2px;
+  // The dialog clips above its top edge, so the hint drops below the tab.
+  > .tri-key {
+    top: calc(100% + 0.35rem);
+    bottom: auto;
   }
 }
 
@@ -90,7 +76,9 @@
   align-items: center;
   justify-content: center;
   width: 1.9rem;
-  height: 1.9rem;
+  // Same height as the header tab groups (.tri-ana-chapters et al.) so the bar keeps the
+  // 55px pitch shared by maps, on, tools and calendar instead of growing to 60px.
+  height: 1.6rem;
   padding: 0;
   font-family: var(--codeFont);
   font-size: 0.62rem;
@@ -128,6 +116,10 @@
 }
 
 @media all and (max-width: 48rem) {
+  .tri-ana-compare-toggle {
+    height: 1.65rem;
+  }
+
   .tri-ana-search {
     --tri-search-scale: 0.72;
     --tri-search-height: 1.65rem;
@@ -313,17 +305,6 @@
   color: var(--gray);
 }
 
-.tri-ana-title {
-  font-size: 0.8rem;
-  color: var(--dark);
-  cursor: pointer;
-  font-family: var(--codeFont);
-
-  &:hover {
-    color: var(--tri-accent);
-  }
-}
-
 .tri-ana-close {
   display: inline-grid;
   flex: none;
@@ -438,16 +419,6 @@
   &:hover {
     color: var(--dark);
   }
-}
-
-// Selected controls inside panels read as ink with an underline, like the kg/lb switch.
-.tri-analytics
-  .tri-ana-chapter
-  :is([aria-pressed='true'], [aria-selected='true']):not(.tri-ana-ritem) {
-  color: var(--dark);
-  background: transparent;
-  border-color: var(--lightgray);
-  box-shadow: inset 0 -1px 0 currentColor;
 }
 
 .tri-ana-block-title {

@@ -82,19 +82,6 @@
   flex: 0 1 auto;
 }
 
-.tri-be-category-row > .tri-be-field {
-  flex: none;
-}
-
-.tri-be-category-row .g-select-trigger {
-  inline-size: 9rem;
-  block-size: var(--tri-be-control-height);
-  padding-block: 0;
-  overflow: hidden;
-  font-size: 0.62rem;
-  white-space: nowrap;
-}
-
 .tri-be-cats .tri-map-tab {
   flex: none;
   min-inline-size: 1.5rem;
@@ -419,7 +406,7 @@
     font-size: 0.5rem;
   }
 
-  // Analytics type scale: the feed's 0.78rem names would outweigh the chart above.
+  // Analytics type scale: the feed's 0.72rem names would outweigh the chart above.
   .tri-feed-name {
     font-size: 0.64rem;
   }
