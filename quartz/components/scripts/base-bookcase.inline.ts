@@ -1,4 +1,4 @@
-import type { Cover } from './base-bookcase-artwork'
+import type { Cover } from './base-bookcase/covers'
 import type { BookcaseScene } from './base-bookcase/scene'
 import { installCovers, mountCovers } from './base-bookcase/artwork'
 import { mountCamera } from './base-bookcase/camera'

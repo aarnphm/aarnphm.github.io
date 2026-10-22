@@ -1,6 +1,6 @@
 import type { BookcaseScene } from './scene'
 import type { Camera } from './state'
-import { createHardcoverPreview } from '../base-bookcase-preview'
+import { createHardcoverPreview } from './preview'
 
 // Camera glide time constant, and the lift's beats: the pull out of the slot, its wait for the
 // glide, and the slide home of the copy it replaces.

@@ -1,6 +1,6 @@
 import type { TopicShelf } from '../../../util/base/bookcase/styles'
-import type { Cover } from '../base-bookcase-artwork'
-import type { HardcoverBook } from '../base-bookcase-preview'
+import type { Cover } from './covers'
+import type { HardcoverBook } from './preview'
 import type { Camera, Drag, LiftGeometry } from './state'
 
 // Every binding of one mounted bookcase; the phases below share it.
