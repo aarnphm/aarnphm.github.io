@@ -87,7 +87,6 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
   const panel = root.querySelector<HTMLElement>('.tri-map')
   const scrim = root.querySelector<HTMLElement>('.tri-map-scrim')
   const closeBtn = root.querySelector<HTMLElement>('.tri-map-close')
-  const title = root.querySelector<HTMLElement>('.tri-map-title')
   const search = root.querySelector<HTMLInputElement>('.tri-map-search')
   const results = root.querySelector<HTMLElement>('.tri-map-results')
   const detail = root.querySelector<HTMLElement>('.tri-map-detail')
@@ -1104,7 +1103,6 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
   } else {
     btn?.addEventListener('click', open)
     closeBtn?.addEventListener('click', close)
-    title?.addEventListener('click', toMain)
     scrim?.addEventListener('click', close)
     warmupTimer = window.setTimeout(() => {
       warmupTimer = 0
@@ -1134,7 +1132,6 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
     if (detailWarmTimer) window.clearTimeout(detailWarmTimer)
     btn?.removeEventListener('click', open)
     closeBtn?.removeEventListener('click', close)
-    title?.removeEventListener('click', toMain)
     scrim?.removeEventListener('click', close)
     panel.removeEventListener('click', onPanelClick)
     overlay?.removeEventListener('click', onModeClick)

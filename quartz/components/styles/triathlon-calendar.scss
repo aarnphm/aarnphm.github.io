@@ -1543,8 +1543,13 @@ a.tri-calendar-day {
     gap: 0.5rem;
   }
 
+  // The source switch takes the title slot, as on the calendar page.
   > .tri-ana-bar > .tri-calendar-source-controls {
-    margin: 0 0 0 auto;
+    margin: 0;
+  }
+
+  > .tri-ana-bar > .tri-ana-close {
+    margin-left: auto;
   }
 
   > .tri-ana-body:has(> [data-calendar-source='training']) {

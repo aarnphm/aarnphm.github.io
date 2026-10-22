@@ -53,7 +53,6 @@ export const setupAnalytics = (
   const panel = root.querySelector<HTMLElement>('.tri-analytics')
   const scrim = root.querySelector<HTMLElement>('.tri-analytics-scrim')
   const closeBtn = root.querySelector<HTMLElement>('.tri-ana-close')
-  const title = root.querySelector<HTMLElement>('.tri-ana-title')
   const results = root.querySelector<HTMLElement>('.tri-ana-results')
   const compareToggle = root.querySelector<HTMLButtonElement>('.tri-ana-compare-toggle')
   const pageMode = root.dataset.triView === 'analytics'
@@ -783,7 +782,6 @@ export const setupAnalytics = (
   } else {
     btn?.addEventListener('click', open)
     closeBtn?.addEventListener('click', close)
-    title?.addEventListener('click', toMain)
     scrim?.addEventListener('click', close)
   }
   compareToggle?.addEventListener('click', onCompareToggle)
@@ -819,7 +817,6 @@ export const setupAnalytics = (
     finishPageBoot()
     btn?.removeEventListener('click', open)
     closeBtn?.removeEventListener('click', close)
-    title?.removeEventListener('click', toMain)
     scrim?.removeEventListener('click', close)
     compareToggle?.removeEventListener('click', onCompareToggle)
     for (const tab of chapterTabs) {

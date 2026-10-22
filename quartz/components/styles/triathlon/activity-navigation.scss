@@ -200,8 +200,12 @@
   align-items: baseline;
   gap: 0.6rem;
   width: 100%;
-  padding: 0.55rem 0.1rem;
+  // Same row pitch and type as .tri-tree-day so the log and feed read as one list.
+  padding: 0.4rem 0.1rem;
   font-family: var(--codeFont);
+  font-size: 0.72rem;
+  // Buttons reset line-height; inherit it so the row height matches the log's links.
+  line-height: inherit;
   color: var(--dark);
   text-align: left;
   background: none;
@@ -228,8 +232,8 @@
 
 .tri-feed-head svg {
   flex: none;
-  width: 0.95rem;
-  height: 0.95rem;
+  width: 0.85rem;
+  height: 0.85rem;
   align-self: center;
 }
 
@@ -237,7 +241,6 @@
   flex: 1 1 auto;
   min-width: 0;
   overflow: hidden;
-  font-size: 0.78rem;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

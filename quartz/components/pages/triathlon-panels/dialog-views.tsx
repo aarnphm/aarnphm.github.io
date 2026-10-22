@@ -23,9 +23,7 @@ interface TriPanelShellProps {
   panelClass?: string
   page?: boolean
   label: string
-  title: string
   barClass?: string
-  titleClass?: string
   bodyClass?: string
   controls?: ComponentChildren
   children: ComponentChildren
@@ -37,9 +35,7 @@ const TriPanelShell = ({
   panelClass,
   page,
   label,
-  title,
   barClass,
-  titleClass,
   bodyClass,
   controls,
   children,
@@ -58,11 +54,6 @@ const TriPanelShell = ({
         data-keyboard-scroll-scope
       >
         <div class={`tri-ana-bar${barClass ? ` ${barClass}` : ''}`}>
-          {!page && (
-            <span class={`tri-ana-title${titleClass ? ` ${titleClass}` : ''}`} data-i18n={title}>
-              {title}
-            </span>
-          )}
           {controls}
           <button
             class={`tri-ana-close tri-key-anchor${kind === 'analytics' ? '' : ` tri-${kind}-close`}`}
@@ -95,7 +86,6 @@ export const AnalyticsPanel = ({
     kind="analytics"
     page={page}
     label="triathlon analytics"
-    title="analytics"
     controls={
       <div class="tri-analytics-controls">
         <div
@@ -109,13 +99,15 @@ export const AnalyticsPanel = ({
               type="button"
               role="tab"
               id={`tri-ana-chapter-tab-${chapter.key}`}
-              class="tri-ana-chapter-tab"
+              class="tri-ana-chapter-tab tri-key-anchor"
               data-analytics-chapter-tab={chapter.key}
               aria-controls={`tri-ana-chapter-${chapter.key}`}
               aria-selected={chapter.key === DEFAULT_ANALYTICS_CHAPTER ? 'true' : 'false'}
+              aria-keyshortcuts={chapter.shortcut}
               tabindex={chapter.key === DEFAULT_ANALYTICS_CHAPTER ? 0 : -1}
             >
               <span data-i18n={chapter.key}>{chapter.key}</span>
+              <ShortcutHint>{chapter.shortcut}</ShortcutHint>
             </button>
           ))}
         </div>
@@ -166,9 +158,7 @@ export const MapPanel = ({ page }: { page?: boolean }) => (
     kind="map"
     page={page}
     label="triathlon route maps"
-    title="map"
     barClass="tri-map-bar"
-    titleClass="tri-map-title"
     bodyClass="tri-map-body"
     controls={
       <div class="tri-map-search-wrap tri-key-anchor tri-key-search">
@@ -327,7 +317,6 @@ export const CalendarOverlay = ({ renderData }: { renderData?: TriathlonRenderDa
     id="tri-calendar-panel"
     panelClass="tri-calendar-panel"
     label="triathlon calendar"
-    title="calendar"
     controls={<CalendarSourceControls id="tri-calendar" />}
   >
     <CalendarPanel renderData={renderData} id="tri-calendar" panel />

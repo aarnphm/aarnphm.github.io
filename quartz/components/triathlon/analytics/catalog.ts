@@ -796,9 +796,14 @@ export const analyticsPanelDefinition = (key: string): AnalyticsPanelDefinition 
 
 // Each chapter is one tab of the analytics page; every panel sits in exactly one.
 export const ANALYTICS_CHAPTERS = [
-  { key: 'load', panels: ['pmc', 'weekly', 'effort', 'gauge', 'readiness', 'actions'] },
+  {
+    key: 'load',
+    shortcut: 'l',
+    panels: ['pmc', 'weekly', 'effort', 'gauge', 'readiness', 'actions'],
+  },
   {
     key: 'performance',
+    shortcut: 'p',
     panels: [
       'best-efforts',
       'power',
@@ -810,9 +815,13 @@ export const ANALYTICS_CHAPTERS = [
       'abilities',
     ],
   },
-  { key: 'zones', panels: ['distributions', 'heat', 'cardio'] },
-  { key: 'body', panels: ['body', 'dexa', 'recovery', 'sleep'] },
-] as const satisfies readonly { key: string; panels: readonly AnalyticsPanelKey[] }[]
+  { key: 'zones', shortcut: 'z', panels: ['distributions', 'heat', 'cardio'] },
+  { key: 'body', shortcut: 'b', panels: ['body', 'dexa', 'recovery', 'sleep'] },
+] as const satisfies readonly {
+  key: string
+  shortcut: string
+  panels: readonly AnalyticsPanelKey[]
+}[]
 
 export type AnalyticsChapterKey = (typeof ANALYTICS_CHAPTERS)[number]['key']
 
