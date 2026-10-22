@@ -4,9 +4,10 @@
 // margin holds `§ label (n)` entries for it. Wide screens hang the entries left of the text, the
 // side the page grid leaves room for from its desktop width; where there is no margin the labels
 // open the block in parentheses, before the text, and each toggles its body in a fold under the
-// block. In the margin each entry is a 1px box in the tone of its kind, and one unbroken hairline
-// joins it to its number through the gutter (drawn by fr-margins.inline.ts); hovering an entry or
-// its block lights the pair. The page's sidenotes keep their boxes and take the same leaders.
+// block. In the margin each entry is a 1px box in the tone of its kind, and one hairline joins it to
+// its number through the gutter (drawn by fr-margins.inline.ts), broken at a section's rail with a
+// dash resuming before the number, as Locher breaks his; hovering an entry or its block lights the
+// pair. The page's sidenotes keep their boxes and take the same leaders.
 $fr-line: color-mix(in srgb, var(--gray) 45%, transparent);
 $fr-column: 15.5rem;
 // the gutter at the narrowest margin that still hangs (1440px): wide enough for a leader to read

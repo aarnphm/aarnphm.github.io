@@ -5,6 +5,7 @@ import {
 } from '../types/component'
 import { hasCourseCrumb } from '../util/course'
 import { trieFromAllFiles } from '../util/ctx'
+import { isFrNote } from '../util/fr'
 import { classNames } from '../util/lang'
 import { FullSlug, SimpleSlug, joinSegments, resolveRelative, simplifySlug } from '../util/path'
 // @ts-ignore
@@ -110,6 +111,8 @@ export default ((opts?: Partial<BreadcrumbOptions>) => {
   }: QuartzComponentProps) => {
     // course pages draw their own crumb (masthead, strip, unit bar, page head)
     if (hasCourseCrumb(fileData)) return null
+    // a /fr note draws the French unit bar in its page header (FrUnit.tsx)
+    if (isFrNote(fileData)) return null
     const slug = pageSlug ?? fileData.slug!
     const trie = (ctx.trie ??= trieFromAllFiles(allFiles))
     const slugParts = slug.split('/').filter(part => part.length > 0)

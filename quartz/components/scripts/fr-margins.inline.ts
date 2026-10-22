@@ -12,6 +12,10 @@ const GROUP_GAP = 12
 const STOP = 6
 // stacked elbows take their own trunk columns through the gutter, this far apart
 const STEP = 4
+// where a section's rail stands between the gutter and the number, the leader breaks at the rail
+// and a dash this long resumes before the number, this short of it (Locher's broken leaders)
+const TICK = 6
+const TICK_STOP = 4
 
 const SVG = 'http://www.w3.org/2000/svg'
 
@@ -184,6 +188,8 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
       end: { x: number; y: number }
       /** the y of each leader's head on the entry: its labels, or a sidenote's first line */
       heads: () => number[]
+      /** the dash before a number that sits past the text column's edge, x0 to x1 */
+      tick?: [number, number]
       move: (by: number) => void
     }
     const items: Item[] = []
@@ -199,12 +205,17 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
       const m = mark.getBoundingClientRect()
       group.style.top = `${parseFloat(group.style.top) + mid(m) - mid(label.getBoundingClientRect())}px`
       // the leader stays in the gutter and stops at the text column's edge, short of a list item's
-      // marker or a cell's rule
+      // marker or a cell's rule; a number set in from the edge (past a section's rail) gets its dash
+      const markX = Math.round(m.left - box.left)
       items.push({
         el: group,
         side: 'left',
         top: group.getBoundingClientRect().top,
         end: { x: -STOP, y: mid(m) - box.top },
+        tick:
+          markX > STOP + TICK + TICK_STOP
+            ? [markX - TICK_STOP - TICK, markX - TICK_STOP]
+            : undefined,
         heads: () => labels.map(l => mid(l.getBoundingClientRect())),
         move: by => (group.style.top = `${parseFloat(group.style.top) + by}px`),
       })
@@ -276,7 +287,8 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
       // the trunk stands in the gutter, never past the entries' edge
       const gutter = Math.abs(x0 - x1)
       const turn = x1 - dir * Math.min(STEP * (1 + depth[item.side] - level), gutter - STEP)
-      const d = y0 === y1 ? `M${x0} ${y0}H${x1}` : `M${x0} ${y0}H${turn}V${y1}H${x1}`
+      const line = y0 === y1 ? `M${x0} ${y0}H${x1}` : `M${x0} ${y0}H${turn}V${y1}H${x1}`
+      const d = item.tick ? `${line}M${item.tick[0]} ${y1}H${item.tick[1]}` : line
       const path = document.createElementNS(SVG, 'path')
       path.setAttribute('d', d)
       leaders.append(path)

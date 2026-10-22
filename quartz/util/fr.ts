@@ -103,7 +103,7 @@ function deckMap(decks: QuartzPluginData[]) {
   return map
 }
 
-const cardIdsOf = (deck: QuartzPluginData | undefined) =>
+export const cardIdsOf = (deck: QuartzPluginData | undefined) =>
   deck?.flashcards?.cards.map(card => card.id) ?? []
 
 /**
@@ -202,6 +202,19 @@ export const frEpisodeOf = (slug: string | undefined): number | null => {
   const match = episodeRe.exec(slug ?? '')
   const n = match ? Number(match[1]) : 0
   return n >= 1 && n <= FR_EPISODES ? n : null
+}
+
+/**
+ * A /fr note that wears the unit bar without being an episode: a top-level note or a dated lesson.
+ * The home, the episodes (their own facts), decks, the review page, folder indexes and the canvas
+ * keep the form they have.
+ */
+export function isFrNote(data: QuartzPluginData): boolean {
+  const slug = data.slug ?? ''
+  if (!slug.startsWith('fr/') || slug === 'fr/index' || episodeRe.test(slug)) return false
+  if (data.flashcards || data.frontmatter?.pageLayout === 'flashcards') return false
+  if (data.filePath?.endsWith('.canvas')) return false
+  return slug.indexOf('/', 3) === -1 || datedRe.test(slug)
 }
 
 /** The merged drill's deck list for `fr/`: the shape `unitManifest` gives course decks. */
