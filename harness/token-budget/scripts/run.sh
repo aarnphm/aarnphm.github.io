@@ -106,6 +106,13 @@ case $cmd in
     mkdir -p "$out"
     git -C "$WS" diff --cached --quiet HEAD -- "$@" \
       || { echo "these paths are already staged here; land the increment by hand" >&2; exit 1; }
+    # `git add <dir>` skips ignored files silently (image-sharing.ts matched `image-*`); rename them.
+    ignored=$(git -C "$wt" ls-files --others --ignored --exclude-standard -- "$@")
+    if [ -n "$ignored" ]; then
+      echo "these module files are git-ignored and would not land; rename them:" >&2
+      printf '%s\n' "$ignored" | git -C "$wt" check-ignore -v --stdin >&2
+      exit 1
+    fi
     git -C "$wt" add -- "$@"
     git -C "$wt" diff --cached --binary HEAD -- "$@" > "$out/land.patch"
     git -C "$WS" apply --index --3way "$out/land.patch"
