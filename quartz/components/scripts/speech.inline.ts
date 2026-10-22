@@ -4,7 +4,7 @@ import {
   SPEECH_MODEL_IDS,
   SPEECH_MODEL_INFO,
   isSpeechModelId,
-  speechModelLabel,
+  speechModelInfo,
   type SpeechModelId,
 } from '../../util/speech-protocol'
 import { registerEscapeHandler } from './escape-handler'
@@ -93,16 +93,16 @@ document.addEventListener('nav', () => {
   const details = document.createElement('details')
   details.className = 'speech-model-details'
   const summary = document.createElement('summary')
+  summary.textContent = 'voix française synthétique'
   const explanation = document.createElement('p')
   const describeModel = () => {
     const phonon = model === 'supertonic-2' ? undefined : PHONON_MODELS[model]
     const info = phonon ?? SPEECH_MODEL_INFO
     const downloadMb = Math.ceil(info.downloadBytes / 1_000_000)
-    summary.textContent = `voix française synthétique · ${downloadMb} Mo au premier clic`
     const modelLink = document.createElement('a')
     modelLink.href = info.sourceUrl
     modelLink.textContent = phonon
-      ? `${phonon.label}, voix par défaut, licence ${phonon.license}`
+      ? `${phonon.label}, voix par défaut`
       : `${SPEECH_MODEL_INFO.label}, voix ${SPEECH_MODEL_INFO.voice}`
     explanation.replaceChildren(
       modelLink,
@@ -122,7 +122,10 @@ document.addEventListener('nav', () => {
     id: 'speech-model-options',
     label: 'modèle',
     menuLabel: 'modèle vocal',
-    choices: SPEECH_MODEL_IDS.map(id => [id, speechModelLabel(id)]),
+    choices: SPEECH_MODEL_IDS.map(id => {
+      const info = speechModelInfo(id)
+      return [id, info.label, `licence ${info.license}`]
+    }),
     initial: model,
     select: value => {
       if (value === model) return

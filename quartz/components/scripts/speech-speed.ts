@@ -35,7 +35,7 @@ export function createSpeechPicker<T extends string>({
   id: string
   label: string
   menuLabel: string
-  choices: [T, string][]
+  choices: [T, string, string?][]
   initial: T
   select: (value: T) => void
   signal: AbortSignal
@@ -48,7 +48,7 @@ export function createSpeechPicker<T extends string>({
   const control = buildSelect<T>({
     id,
     label: menuLabel,
-    groups: [{ options: choices.map(([value, text]) => ({ value, label: text })) }],
+    groups: [{ options: choices.map(([value, text, detail]) => ({ value, label: text, detail })) }],
     selected: initial,
     onSelect: select,
     className: 'speech-select',
