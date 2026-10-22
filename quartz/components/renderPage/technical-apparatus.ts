@@ -178,7 +178,7 @@ export function renderTechnicalApparatus(
       if (citing.length > CITED_BY)
         lines.push(
           h('span.fr-gloss.fr-meta', [
-            h('a', { href: '#backlinks-label' }, `and ${citing.length - CITED_BY} more`),
+            h('a', { href: '#backlinks' }, `and ${citing.length - CITED_BY} more`),
           ]),
         )
       apparatus.put(first, { kind: 'cite', label: LABELS.cite, body: h('span.fr-margin', lines) })
