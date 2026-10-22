@@ -156,7 +156,7 @@ these articles belong to the expression and must be learned with it. French says
 
 `faire le lavage` is the ordinary Québec expression; `faire la lessive` is the book's pan-francophone gloss and the more frequent form in France.
 
-`faire` is irregular:
+`faire` is {{sidenotes[irregular]: à apprendre forme par forme, comme `être`, `avoir` et `aller` : [[fr/verbs#formes-à-mémoriser|verbes]].}}:
 
 | personne     | forme         |
 | ------------ | ------------- |
@@ -208,7 +208,7 @@ the destination and transport phrases can appear in the same sentence: `Je vais 
 
 #### piste 5: comment chaque personne se déplace-t-elle ?
 
-`se déplacer` means to travel or get around. `Comment` asks for the means of transport, so the answer combines a conjugated form of `aller`, a destination, and `à` or `en` plus the means of transport.
+{{sidenotes[`se déplacer`]: verbe pronominal : `je me déplace`, `tu te déplaces`, `nous nous déplaçons`. même modèle que `se sentir` ([[fr/episode-13#dire-comment-on-se-sent|épisode 13]]).}} means to travel or get around. `Comment` asks for the means of transport, so the answer combines a conjugated form of `aller`, a destination, and `à` or `en` plus the means of transport.
 
 | no  | phrase entendue                         | moyen de transport |
 | --- | --------------------------------------- | ------------------ |
@@ -392,7 +392,7 @@ in informal spoken Québec French, invariant `-tu` can mark a closed question:
 - {{`Tu vas-tu au travail à pied ?`}}
 - {{`Elle écoute-tu la télé ?`}}
 
-this `-tu` is a question particle, not the subject pronoun. the real subjects above are `je`, `tu`, and `elle`; the particle stays `tu` after all three. it is therefore possible to hear two `tu` forms in {{`Tu vas-tu ?`}}, one subject and one particle.
+this `-tu` is a {{sidenotes[question particle]: oral familier seulement ; à l'écrit, `est-ce que` ou l'inversion ([[fr/episode-2#poser-des-questions--informel-vs-formel|épisode 2]]).}}, not the subject pronoun. the real subjects above are `je`, `tu`, and `elle`; the particle stays `tu` after all three. it is therefore possible to hear two `tu` forms in {{`Tu vas-tu ?`}}, one subject and one particle.
 
 > [!warning] no interrogative `-tu` with `nous` or `vous`
 > the book excludes verbs conjugated with `nous` and `vous`: use `Est-ce que vous allez… ?`, `Allez-vous… ?`, or rising intonation instead.
@@ -430,7 +430,7 @@ the reformulation exercise gives these answers:
 
 ### répondre par la négative
 
-written French keeps the `ne…pas` frame; ordinary speech usually drops `ne`:
+written French keeps the `ne…pas` frame; ordinary speech usually {{sidenotes[drops `ne`]: à l'écrit, `ne…pas` entoure le verbe conjugué, jamais l'infinitif : [[fr/episode-7#la-négation|épisode 7]].}}:
 
 - written: {{`Non, je ne vais pas au travail en métro.`}}
 - spoken: {{`Non, je vais pas au travail en métro.`}}
@@ -440,6 +440,19 @@ after a negated partitive or indefinite quantity, the article usually becomes `d
 ## faits d'ici
 
 the sports chart is historical, sourced to PMB via Réseau Veille Tourisme for 2005, 2010, and 2015. in the printed 2015 counts, jogging (`1 081 000`), swimming (`1 029 000`), and sports-centre activity (`903 000`) rank above soccer (`652 000`), yoga/Pilates (`521 000`), hockey (`491 000`), volleyball (`453 000`), aerobics (`452 000`), and basketball (`356 000`). these figures describe that survey period, not current participation.
+
+## comprendre les expressions
+
+| français                   | sens en anglais         | usage                                                                      |
+| -------------------------- | ----------------------- | -------------------------------------------------------------------------- |
+| {{`le déjeuner`}}          | breakfast               | Faux ami : en France, `le petit-déjeuner` ; `le déjeuner` = repas du midi. |
+| {{`le souper`}}            | supper                  | Québec ; France : `le dîner`.                                              |
+| {{`l'avant-midi`}}         | morning, before noon    | Québec ; France : `la matinée`.                                            |
+| {{`manger une collation`}} | eat a snack             | Courant au Québec ; France : plutôt `un en-cas`, `le goûter` l'après-midi. |
+| {{`prendre l'apéro`}}      | have a pre-dinner drink | Familier ; `l'apéro` abrège `l'apéritif`.                                  |
+| {{`l'autobus`}}            | the bus                 | France : `le bus` en ville, `le car` entre deux villes.                    |
+| {{`faire l'épicerie`}}     | do the grocery shopping | Québec ; France : `faire les courses`.                                     |
+| {{`en fin de semaine`}}    | on the weekend          | Québec ; France : `le week-end`.                                           |
 
 related: [[fr/episode-3|épisode 3]], [[fr/episode-7|épisode 7]], [[fr/episode-8|épisode 8]], [[fr/les-nombres|les nombres]]
 

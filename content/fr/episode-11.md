@@ -28,7 +28,7 @@ the checklist of loisirs is the vocabulary bank for the first question:
 
 {{`Je fais de la bicyclette.`}}, {{`Je fais de la course à pied.`}}, {{`Je joue à des jeux vidéos.`}}, {{`Je nage.`}}, {{`Je cuisine.`}}, {{`Je lis.`}}, {{`Je tricote.`}}
 
-two of these carry structure worth naming: `faire de la` + activity (`de la bicyclette`, `de la course à pied`) and `jouer à` + game (`à des jeux vidéos`). the rest are plain `-er` verbs plus `lire`, both already conjugated in [[fr/episode-9]].
+two of these carry structure worth naming: {{sidenotes[`faire de la`]: à la négation, `de` seul : `Je ne fais pas de yoga.` d'autres expressions avec `faire` : [[fr/episode-9#les-expressions-avec-faire|épisode 9]].}} + activity (`de la bicyclette`, `de la course à pied`) and `jouer à` + game (`à des jeux vidéos`). the rest are plain `-er` verbs plus `lire`, both already conjugated in [[fr/episode-9]].
 
 > [!note] `passer le temps`
 > the third question is a trap with two boxes: `Demander l'heure.` and {{`Occuper son temps.`}} the answer is `Occuper son temps`, to fill your time. asking the hour is {{`Avez-vous l'heure ?`}} from [[fr/episode-3]], which shares the noun `temps` with nothing at all.
@@ -37,7 +37,7 @@ two of these carry structure worth naming: `faire de la` + activity (`de la bicy
 
 ### associer les images aux annonces
 
-six photos, six posters, one pairing exercise. the posters are worth reading for their imperative register:
+six photos, six posters, one pairing exercise. the posters are worth reading for their {{sidenotes[imperative register]: le même impératif en `vous` que les consignes : `Écoutez`, `Inscrivez-vous`. → [[fr/episode-3#comprendre-une-consigne|épisode 3]]}}:
 
 | image | photo                    | annonce                                                                       |
 | ----- | ------------------------ | ----------------------------------------------------------------------------- |
@@ -152,7 +152,7 @@ the verb splits by who is being enrolled:
 | {{`Inscrivez-vous !`}} | `Inscrivez-vous maintenant !`                         | the poster imperative           |
 | {{`suivre un cours`}}  | {{`Est-ce que vous suivez des cours ?`}}              | to take a course, once enrolled |
 
-`suivre` is irregular: {{`je suis`}}, {{`tu suis`}}, {{`il suit`}}, {{`nous suivons`}}, {{`vous suivez`}}, {{`ils suivent`}}. `je suis un cours` is not `être`; context and the object do the disambiguating.[^suivre]
+`suivre` is {{sidenotes[irregular]: deux radicaux : `sui-` au singulier, `suiv-` au pluriel. même modèle : `vivre` (`je vis`, `nous vivons`). → [[fr/verbs|verbes]]}}: {{`je suis`}}, {{`tu suis`}}, {{`il suit`}}, {{`nous suivons`}}, {{`vous suivez`}}, {{`ils suivent`}}. `je suis un cours` is not `être`; context and the object do the disambiguating.[^suivre]
 
 ### les questions et les réponses
 
@@ -293,7 +293,20 @@ the two remaining cheques of the exercise:
 | a.     | `Centre communautaire Du Boisé`    | `138,46 $` | `Cent-trente-huit et 46/100`      |
 | b.     | `École de langues Les polyglottes` | `98,50 $`  | `Quatre-vingt-dix-huit et 50/100` |
 
-note the comma: French writes the decimal with a virgule (`138,46 $`) and puts the dollar sign after the number, with a space. english does neither.
+note the comma: French writes the decimal with a {{sidenotes[virgule]: les milliers prennent une espace, jamais une virgule : `1 250,50 $`.}} (`138,46 $`) and puts the dollar sign after the number, with a space. english does neither.
+
+## comprendre les expressions
+
+| français        | sens en anglais      | usage                                                               |
+| --------------- | -------------------- | ------------------------------------------------------------------- |
+| s'inscrire      | to sign up, to enrol | `s'inscrire à` un cours ; `inscrire qqn à` pour une autre personne. |
+| une session     | a term               | Québec : aussi le semestre d'études (`la session d'automne`).       |
+| séance          | one class meeting    | `30 minutes par séance` ; la session regroupe les séances.          |
+| à compter de    | starting from        | Registre administratif ; à l'oral : `à partir de`.                  |
+| suivre un cours | to take a course     | `je suis un cours` : `suivre`, pas `être`.                          |
+| comptant        | cash                 | Québec : `payer comptant` ; France : `en espèces`, `en liquide`.    |
+| des frais       | fees                 | Toujours pluriel : `des frais d'inscription`.                       |
+| cellulaire      | mobile phone         | Québec, souvent `cell` ; France : `un portable`.                    |
 
 ## à retenir
 

@@ -38,7 +38,7 @@ then Benoit says he is hungry, and the three options are three different intensi
 | {{`Je suis affamé.`}}         | starving             | neutre, adjectif      |
 | {{`J'ai une faim de loup !`}} | ravenous             | familier, image figée |
 
-`un creux` is a hollow, so `j'ai un petit creux` is the stomach's minor dip. `une faim de loup` is fixed and does not decline into other animals.
+`un creux` is a hollow, so `j'ai un petit creux` is the stomach's minor dip. {{sidenotes[`une faim de loup`]: la faim se dit avec `avoir` + nom : `j'ai faim`, `j'ai un petit creux`, comme l'âge ([[fr/episode-2#lâge|épisode 2]]).}} is fixed and does not decline into other animals.
 
 how Hélène solves the restaurant problem: {{`Elle consulte une carte.`}}, {{`Elle consulte son téléphone.`}}, {{`Elle demande de l'aide à quelqu'un.`}} note `demander de l'aide à quelqu'un`, where the person asked takes `à` and the thing asked for is direct.
 
@@ -397,9 +397,9 @@ le mémo reprend cinq formulations pour demander des indications, avec le vocabu
 | {{`Le parc, c'est à quel endroit ?`}}            | Where is the park?                                |
 | {{`L'école primaire, s'il vous plait.`}}         | The elementary school, please.                    |
 
-`où est` accompagne un lieu singulier, `où sont` plusieurs lieux. `chercher` prend directement le nom : {{`Je cherche la pharmacie.`}} la dernière formule est une demande abrégée; le contexte indique qu'on cherche le chemin. `Pardon`, `Excusez-moi` et `s'il vous plait` rendent la demande polie.
+`où est` accompagne un lieu singulier, `où sont` plusieurs lieux. `chercher` prend directement le nom : {{`Je cherche la pharmacie.`}} la dernière formule est une demande abrégée; le contexte indique qu'on cherche le chemin. {{sidenotes[`Pardon`]: `Pardon` et `Excusez-moi` interpellent un passant ; `Désolé(e)` s'excuse d'une faute.}}, `Excusez-moi` et `s'il vous plait` rendent la demande polie.
 
-the matching exercise adds three frames the earlier episode did not have. `où se trouve X ?` uses `se trouver`, a pronominal verb meaning to be situated, interchangeable with `être` and with `être situé`. `Savez-vous où est X ?` wraps the question in a yes-no shell, so the answer opens with `Oui,` or `Non,`. and `est-ce qu'il y a un X dans le coin ?` asks about existence rather than location, which is the only question on the page that can be answered no.
+the matching exercise adds three frames the earlier episode did not have. `où se trouve X ?` uses {{sidenotes[`se trouver`]: pronominal : `je me trouve`, `il se trouve`, `vous vous trouvez`. → [[fr/verbs|verbes]]}}, a pronominal verb meaning to be situated, interchangeable with `être` and with `être situé`. `Savez-vous où est X ?` wraps the question in a yes-no shell, so the answer opens with `Oui,` or `Non,`. and `est-ce qu'il y a un X dans le coin ?` asks about existence rather than location, which is the only question on the page that can be answered no.
 
 | demande                                                        | réponse                                                                            |
 | -------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
@@ -490,7 +490,7 @@ the eight stations are the four lines' eight termini, paired, which is why `Berr
 | `Le premier train passe à 5 h 30 tous les jours à la station Montmorency.`    | vrai    | semaine, samedi et dimanche                 |
 | `Le métro de Montréal n'est pas ouvert à 3 h du matin.`                       | vrai    | dernier passage 1 h 30 au plus tard         |
 
-two notations sit on the same page. the table uses `05:24`, the prose uses `5 h 24`, and French writing wants the second: the hour, a space, `h`, a space, the minutes, with no leading zero on the hour. `minuit` and `midi` are nouns, so `à minuit`, never `à 12 h de la nuit`.
+two notations sit on the same page. the table uses `05:24`, the prose uses {{sidenotes[`5 h 24`]: se lit `cinq heures vingt-quatre`. lecture courante et numérique : [[fr/episode-3#lheure|épisode 3]].}}, and French writing wants the second: the hour, a space, `h`, a space, the minutes, with no leading zero on the hour. `minuit` and `midi` are nouns, so `à minuit`, never `à 12 h de la nuit`.
 
 `le lundi` and `le vendredi soir` with the definite article mean every Monday, every Friday evening, the habitual reading [[fr/episode-9]] set up. drop the article and you get one particular Monday.
 
@@ -576,6 +576,19 @@ dates take cardinal numbers except the first of the month: `le 14 mai 2017`, `le
 > in notice 4, `entre 2 arrêts` names a service for women travelling alone on a bus: after the indicated time, they can request a drop-off between two official stops. the notice gives 19 h 30 from 30 August through 30 April and 21 h from 1 May through 29 August. together those periods cover the whole year.
 
 `VOUS POUVEZ MAINTENANT…` closes the episode on two lines, `Vous orienter dans un quartier.` and `Comprendre un plan, un horaire ou un avis.` the first is the épisode 6 skill with a bigger map and two new prepositions; the second is new, and it is the first time the book asks you to read a document written for native speakers rather than for you.
+
+## comprendre les expressions
+
+| français             | sens en anglais             | usage                                                    |
+| -------------------- | --------------------------- | -------------------------------------------------------- |
+| {{`se rendre à`}}    | to get to (a place)         | Pronominal : `je me rends au métro`.                     |
+| {{`une lumière`}}    | traffic light               | Québec ; France : `un feu (de circulation)`.             |
+| {{`un arrêt`}}       | stop sign                   | Québec, mot imprimé sur le panneau ; France : `un stop`. |
+| {{`dans le coin`}}   | around here                 | Sans complément ; `au coin de` = at the corner of.       |
+| {{`jusqu'à`}}        | as far as, up to            | Se contracte : `jusqu'au coin`, `jusqu'aux lumières`.    |
+| {{`le dépanneur`}}   | corner store                | Québec, ouvert tard ; France : `la supérette`.           |
+| {{`voirie`}}         | road maintenance            | Langue des avis : `des travaux de voirie`.               |
+| {{`un achalandage`}} | ridership, customer traffic | Québec ; France : `l'affluence`.                         |
 
 related: [[fr/episode-6|épisode 6]], [[fr/episode-3|épisode 3]], [[fr/episode-9|épisode 9]], [[fr/episode-11|épisode 11]], [[fr/les-nombres|les nombres]]
 

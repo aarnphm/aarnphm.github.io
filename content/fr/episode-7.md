@@ -101,7 +101,7 @@ the episode's infinitive bank, one verb per image:
 
 {{`Je ne peux pas utiliser mon téléphone.`}}
 
-the negation bites the conjugated verb only; the infinitive stays outside the sandwich. `Elle ne peut pas fumer ici.` and the vrai/faux's `ne peuvent pas arriver en retard` keep the same shape. one listening drills nothing else than the two-way {{`La personne peut.`}} / {{`La personne ne peut pas.`}}, another the three-way affirmation / négation / question.
+the negation bites {{sidenotes[the conjugated verb only]: à l'oral, le `ne` tombe souvent : `Je peux pas.` À l'écrit, on le garde.}}; the infinitive stays outside the sandwich. `Elle ne peut pas fumer ici.` and the vrai/faux's `ne peuvent pas arriver en retard` keep the same shape. one listening drills nothing else than the two-way {{`La personne peut.`}} / {{`La personne ne peut pas.`}}, another the three-way affirmation / négation / question.
 
 ## demander la permission
 
@@ -126,7 +126,7 @@ the exercise changes the relationship while keeping the grammatical subject fixe
 | à la maison, un enfant à sa mère ou à son père | familiar, `tu`                                    | {{`Est-ce que je peux regarder la télévision ?`}}<br>{{`Je peux inviter mon ami ?`}}     |
 | dans un magasin, une cliente à une vendeuse    | formal service encounter, `vous`                  | {{`Est-ce que je peux essayer ce chandail ?`}}<br>{{`Puis-je payer par carte ?`}}        |
 
-the short `Je peux… ?` frame fits home and familiar speech. `Est-ce que je peux… ?` is neutral and works everywhere. `Puis-je… ?` is the most formal of the three and fits a workplace, classroom, or service encounter.
+the short `Je peux… ?` frame fits home and familiar speech. `Est-ce que je peux… ?` is neutral and works everywhere. `Puis-je… ?` is {{sidenotes[the most formal of the three]: inversion sujet-verbe, comme `Pouvez-vous… ?` ; les registres de question : [[fr/episode-2#poser-des-questions--informel-vs-formel|épisode 2]].}} and fits a workplace, classroom, or service encounter.
 
 > [!warning] `je peux` and `pouvez-vous` ask different things
 > {{`Est-ce que je peux partir ?`}} asks permission for the speaker to leave. {{`Pouvez-vous partir ?`}} asks whether the other person can leave. changing `peux` to `pouvez` changes the subject and therefore the requested action.
@@ -155,7 +155,7 @@ two sentence shapes recur:
 
 ## le pluriel des noms
 
-règle générale: on ajoute un `s` au mot. `une feuille → des feuilles`, `mon enfant → mes enfants`. the final `s` is silent, so in speech the plural lives in the determiner: you hear `le/les`, `ton/tes`, `mon/mes`, and that is exactly what the singulier-ou-pluriel listening asks you to catch.
+règle générale: on ajoute un `s` au mot. `une feuille → des feuilles`, `mon enfant → mes enfants`. the final `s` is {{sidenotes[silent]: sauf en liaison devant voyelle : `mes amis` /mez‿ami/. → [[fr/orthography-phonetics#word-boundaries|liaison]]}}, so in speech the plural lives in the determiner: you hear `le/les`, `ton/tes`, `mon/mes`, and that is exactly what the singulier-ou-pluriel listening asks you to catch.
 
 the demandes exercise scales the possessive with the noun: {{`Est-ce que je peux prendre ton livre ?`}} against {{`Est-ce que je peux prendre tes livres ?`}}, and the images run the same pair through un stylo, une photo, une pomme.
 
@@ -172,7 +172,7 @@ the second Mémo verb, `devoir` au présent de l'indicatif:
 | `vous`       | {{`devez`}}   |
 | `ils/elles`  | {{`doivent`}} |
 
-`dois, dois, doit` is the regular s, s, t right next to `pouvoir`'s x, x, t. followed by an infinitive it states obligation: {{`Vous devez arriver à l'heure.`}}
+`dois, dois, doit` is the regular s, s, t right next to `pouvoir`'s x, x, t. {{sidenotes[followed by an infinitive]: suivi d'un nom, `devoir` veut dire owe : `Je te dois 10 $.`}} it states obligation: {{`Vous devez arriver à l'heure.`}}
 
 the ladder Mémo assembles the full register of rules, tout + verbe à l'infinitif:
 
@@ -287,6 +287,19 @@ the vrai/faux then re-reads the board through `pouvoir`: {{`Mon enfant ne peut p
 > les allergies alimentaires. au Canada, de 5 à 6 % des enfants et de 3 à 4 % des adultes ont des allergies alimentaires, roughly 3 : 2 children to adults. les principaux allergènes: le lait, les œufs, les noix, les arachides, le soya, les protéines du bœuf, du poisson, des fruits de mer, et le gluten. dans votre pays d'origine, est-ce que beaucoup de personnes ont des allergies alimentaires ?
 
 vous pouvez maintenant vous informer sur le fonctionnement d'un établissement et comprendre un message d'un établissement. the établissement itself (les salles, la bibliothèque, les casiers) sits on the location vocabulary of [[fr/episode-6]], and every horaire in the messages leans on the clock of [[fr/episode-3]].
+
+## comprendre les expressions
+
+| français                    | sens en anglais             | usage                                                               |
+| --------------------------- | --------------------------- | ------------------------------------------------------------------- |
+| {{`permis`}}                | allowed                     | Adjectif ici ; le nom `un permis` = licence : `permis de conduire`. |
+| {{`un cellulaire`}}         | cell phone                  | Québec ; France : `un portable`.                                    |
+| {{`se tutoyer`}}            | to use `tu` with each other | `On peut se tutoyer ?` propose le passage au `tu`.                  |
+| {{`la collation`}}          | snack                       | Québec, à l'école ; France : `le goûter` l'après-midi.              |
+| {{`les croustilles`}}       | potato chips                | Québec ; France : `les chips`.                                      |
+| {{`les boissons gazeuses`}} | soft drinks                 | Québec ; oral : `la liqueur` ; France : `les sodas`.                |
+| {{`les arachides`}}         | peanuts                     | Étiquettes et règlements ; à l'oral, France : `les cacahuètes`.     |
+| {{`le congé des Fêtes`}}    | holiday break               | Québec ; France : `les vacances de Noël`.                           |
 
 related: [[fr/episode-2|épisode 2]], [[fr/episode-3|épisode 3]], [[fr/episode-6|épisode 6]], [[fr/orthography-phonetics|orthographe]]
 

@@ -103,7 +103,7 @@ Réponses possibles : {{`Oui, je joue du piano.`}} / {{`Non, je ne joue pas du p
 
 `Aller` au présent : **je vais, tu vas, il/elle/on va, nous allons, vous allez, ils/elles vont**. `On` prend la troisième personne du singulier, même lorsqu'il signifie _we_.
 
-La destination suit son article : `à + le = au`, `à + les = aux`, puis `à la` et `à l'`. Une personne ou son lieu d'activité prend souvent **chez** : {{`chez le dentiste`}}, {{`chez mes parents`}}, {{`chez toi`}}. Dans le modèle `on va au café avec nos amis`, le verbe reste singulier et `nos` renvoie au groupe de personnes.
+La destination suit son article : `à + le = au`, `à + les = aux`, puis `à la` et `à l'`. Une personne ou {{sidenotes[son lieu d'activité]: `chez` + personne, `à` + lieu : `chez le dentiste`, `au cabinet dentaire`. → [[fr/episode-9#la-destination|épisode 9]]}} prend souvent **chez** : {{`chez le dentiste`}}, {{`chez mes parents`}}, {{`chez toi`}}. Dans le modèle `on va au café avec nos amis`, le verbe reste singulier et `nos` renvoie au groupe de personnes.
 
 ### piste 18 : les moyens de transport
 
@@ -134,11 +134,11 @@ Dans les formes travaillées ici : **à pied**, **à vélo**, puis **en autobus*
 | rangée 2, centre                     | `Je prends le train à 7 h 30.`     | sept heures trente    |
 | rangée 2, droite                     | `Je finis mon travail à 16 h.`     | seize heures          |
 
-**À** présente une heure fixée ; **vers** signifie _around_, une heure approximative. On conserve la préposition déjà imprimée : `à 20 h`, `vers 18 h`. {{`Prendre le train`}} = to take the train ; {{`finir son travail`}} = to finish one's work.
+**À** présente une heure fixée ; **vers** signifie _around_, {{sidenotes[une heure approximative]: autre forme : `à 18 h environ`. → [[fr/episode-9#indiquer-une-heure-approximative|épisode 9]]}}. On conserve la préposition déjà imprimée : `à 20 h`, `vers 18 h`. {{`Prendre le train`}} = to take the train ; {{`finir son travail`}} = to finish one's work.
 
 ### l'horaire de Stéphane
 
-**Exercice 4.** Le bleu désigne les **activités habituelles** et l'orange les **activités ponctuelles**. Pour le contraste travaillé dans ce bilan, `le mardi` signifie _on Tuesdays_, tandis que `mardi` désigne un mardi particulier dans le contexte.
+**Exercice 4.** Le bleu désigne les **activités habituelles** et l'orange les **activités ponctuelles**. Pour le contraste travaillé dans ce bilan, `le mardi` signifie _on Tuesdays_, tandis que `mardi` désigne {{sidenotes[un mardi particulier]: même contraste avec les moments : `le soir` = chaque soir, `ce soir` = aujourd'hui. → [[fr/episode-9#action-habituelle-ou-ponctuelle|épisode 9]]}} dans le contexte.
 
 | jour et moment               | type indiqué | phrase modèle                                                         |
 | ---------------------------- | ------------ | --------------------------------------------------------------------- |
@@ -210,7 +210,7 @@ La transcription imprimée p. 137 donne ce trajet :
 
 Ce sont des productions pour pratiquer, avec une arrivée identifiable sur le dessin. `Rejoignez` = get to/join ; {{`en direction de`}} = towards ; {{`de l'autre côté`}} = on the other side.
 
-Les indications utilisent l'impératif de **vous**, sans sujet exprimé : `vous tournez` → **tournez**, `vous continuez` → **continuez**, `vous traversez` → **traversez**, `vous prenez` → **prenez**. `Je cherche le bureau de poste` prend directement le lieu après `chercher`.
+Les indications utilisent {{sidenotes[l'impératif]: avec `tu`, le `-s` des verbes en `-er` tombe : `tourne`, `continue`, `traverse`, mais `prends`. → [[fr/verbs|verbes]]}} de **vous**, sans sujet exprimé : `vous tournez` → **tournez**, `vous continuez` → **continuez**, `vous traversez` → **traversez**, `vous prenez` → **prenez**. `Je cherche le bureau de poste` prend directement le lieu après `chercher`.
 
 ### l'avis de modification de service
 
@@ -521,6 +521,19 @@ Après avoir refait les exercices sans regarder les réponses, vérifier ces tre
 - [ ] Comprendre une annonce sur un cours.
 
 Pour l'oral, prendre une fiche du jeu, poser une question avec **est-ce que**, refaire la même question par **inversion**, puis utiliser la forme québécoise en **-tu**. Garder la personne et l'activité fixes permet de travailler la construction de la question.
+
+## comprendre les expressions
+
+| français          | sens en anglais   | usage                                                      |
+| ----------------- | ----------------- | ---------------------------------------------------------- |
+| la garderie       | daycare           | France : la crèche, avant l'école                          |
+| l'épicerie        | the grocery store | Québec : aussi le supermarché ; France : un petit commerce |
+| diner             | lunch             | Québec : midi ; France : `le déjeuner` = midi              |
+| déjeuner          | breakfast         | Québec : matin ; France : `le petit-déjeuner`              |
+| souper            | the evening meal  | Québec ; France : `le dîner`                               |
+| un party          | a party           | Québec, familier, masculin ; France : une fête, une soirée |
+| la fin de semaine | the weekend       | Québec ; France : le week-end                              |
+| courriel          | email             | Québec, aussi officiel en France ; oral France : un mail   |
 
 ## sources
 

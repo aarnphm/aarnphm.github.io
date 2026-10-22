@@ -8,209 +8,251 @@ tags:
 
 Q: What does `Qui est-ce ?` ask, and what shape does the answer take?
 A: Who someone is; `C'est mon/ma …` or `Ce sont mes …` : {{`C'est ma tante.`}}, {{`Ce sont mes petits-enfants.`}} ([[fr/episode-5]])
+N: [[fr/episode-8#à-vous-de-jouer-|§ qui est-ce]]
 
 ---
 
 Q: What does `À quel étage se trouve la garderie ?` ask, and what shape does the answer take?
 A: Which floor something is on; `au + ordinal + étage` : `Au 2e étage.`, with {{`Au sous-sol.`}} and {{`Au dernier étage.`}} at the edges ([[fr/episode-6]])
+N: [[fr/episode-8#voyons-voir-|§ indications]]
 
 ---
 
 Q: What does `Est-ce que je peux … ?` ask, and what are the two answer shapes?
 A: Permission; `Oui, tu peux / vous pouvez …` or `Non, on ne peut pas …` : the bilan's model request is {{`Est-ce que je peux texter pendant un cours ?`}} ([[fr/episode-7]])
+N: [[fr/episode-8#voyons-voir-|§ permission]]
 
 ---
 
 C: `C'est la sœur de ma mère : c'est ma [tante].`
+N: [[fr/episode-8#à-vous-de-jouer-|§ qui est-ce]]
 
 ---
 
 C: `C'est le père de mon père : c'est mon [grand-père].`
+N: [[fr/episode-8#à-vous-de-jouer-|§ qui est-ce]]
 
 ---
 
 C: `C'est le fils de ma sœur : c'est mon [neveu].`
+N: [[fr/episode-8#à-vous-de-jouer-|§ qui est-ce]]
 
 ---
 
 C: `C'est le frère de mon père : c'est mon [oncle].`
+N: [[fr/episode-8#à-vous-de-jouer-|§ qui est-ce]]
 
 ---
 
 C: `Ce sont les enfants de ma fille : ce sont mes [petits-enfants].`
+N: [[fr/episode-8#à-vous-de-jouer-|§ qui est-ce]]
 
 ---
 
 Q: `Qui est-ce ? C'est la fille du frère de ma mère.`
 A: {{`Ma cousine.`}} (two hops: le frère de ma mère est mon oncle, sa fille est ma cousine)
+N: [[fr/episode-8#à-vous-de-jouer-|§ qui est-ce]]
 
 ---
 
 Q: `Qui est-ce ? C'est la femme de mon fils.`
 A: {{`Ma belle-fille.`}} (my son's wife)
+N: [[fr/episode-8#à-vous-de-jouer-|§ qui est-ce]]
 
 ---
 
 Q: `Qui est-ce ? C'est le frère de ma conjointe.`
 A: {{`Mon beau-frère.`}} (my partner's brother)
+N: [[fr/episode-8#à-vous-de-jouer-|§ qui est-ce]]
 
 ---
 
 Q: `Qui est-ce ? C'est le conjoint de ma fille.`
 A: {{`Mon gendre.`}} (my daughter's partner, the male counterpart of {{`ma belle-fille`}})
+N: [[fr/episode-8#à-vous-de-jouer-|§ qui est-ce]]
 
 ---
 
 Q: `Qui est-ce ? C'est la sœur de mon conjoint.`
 A: {{`Ma belle-sœur.`}} (my partner's sister)
+N: [[fr/episode-8#à-vous-de-jouer-|§ qui est-ce]]
 
 ---
 
 Q: Trouvez l'erreur : `Tu es étudiant.` · `Tu as hongrois.` · `Tu es résident permanent.` · `Tu as 1 fille.`
 A: `Tu as hongrois.` → {{`Tu es hongrois.`}} : nationality runs on `être`.
+N: [[fr/episode-8#à-vous-de-jouer-|§ trouvez l'erreur]]
 
 ---
 
 Q: Trouvez l'erreur : `J'ai une auto.` · `J'ai une maison.` · `Je suis 2 enfants.` · `Je suis célibataire.`
 A: `Je suis 2 enfants.` → `J'ai 2 enfants.` : children are had, `avoir`.
+N: [[fr/episode-8#à-vous-de-jouer-|§ trouvez l'erreur]]
 
 ---
 
 Q: Trouvez l'erreur : `Elle s'appelle Sophie.` · `Elle a mariée.` · `Elle est psychologue.` · `Elle habite à Vancouver.`
 A: `Elle a mariée.` → {{`Elle est mariée.`}} : marital status runs on `être`.
+N: [[fr/episode-8#à-vous-de-jouer-|§ trouvez l'erreur]]
 
 ---
 
 Q: Trouvez l'erreur : `Elle a 1 sœur et 2 frères.` · `Il est 17 ans.` · `Il est né au Brésil.` · `Elle est chef cuisinière.`
 A: `Il est 17 ans.` → `Il a 17 ans.` : age runs on `avoir`.
+N: [[fr/episode-8#à-vous-de-jouer-|§ trouvez l'erreur]]
 
 ---
 
 Q: Trouvez l'erreur : `Je suis dans la classe.` · `J'ai des lunettes.` · `Je suis infirmière.` · `J'ai étudiante.`
 A: `J'ai étudiante.` → {{`Je suis étudiante.`}} : profession runs on `être`, no article.
+N: [[fr/episode-8#à-vous-de-jouer-|§ trouvez l'erreur]]
 
 ---
 
 Q: Trouvez l'erreur : `Tu es une maison.` · `Tu as un téléphone cellulaire.` · `Tu es avec ton frère.` · `Tu as un problème.`
 A: `Tu es une maison.` → {{`Tu as une maison.`}} : possession runs on `avoir` ({{`Tu es avec ton frère.`}} stands, `être` + place).
+N: [[fr/episode-8#à-vous-de-jouer-|§ trouvez l'erreur]]
 
 ---
 
 C: `La Lune est [loin|far] de nous.`
+N: [[fr/episode-8#à-vous-de-jouer-|§ mots manquants]]
 
 ---
 
 C: `L'écureuil est [près|close] de la femme.`
+N: [[fr/episode-8#à-vous-de-jouer-|§ mots manquants]]
 
 ---
 
 C: `La mère est [à gauche|on the left] de sa fille.`
+N: [[fr/episode-8#à-vous-de-jouer-|§ mots manquants]]
 
 ---
 
 C: `Le fils est [à droite|on the right] de son père.`
+N: [[fr/episode-8#à-vous-de-jouer-|§ mots manquants]]
 
 ---
 
 C: `La femme est [au bout|at the end] du quai.`
+N: [[fr/episode-8#à-vous-de-jouer-|§ mots manquants]]
 
 ---
 
 C: `L'avion est [au-dessus|above] des nuages.`
+N: [[fr/episode-8#à-vous-de-jouer-|§ mots manquants]]
 
 ---
 
 C: `L'homme est [en face|across from] de la femme.`
+N: [[fr/episode-8#à-vous-de-jouer-|§ mots manquants]]
 
 ---
 
 C: `Le chien est [à côté|beside] de l'homme.`
+N: [[fr/episode-8#à-vous-de-jouer-|§ mots manquants]]
 
 ---
 
 Q: `Endroit où on peut manger.` (one word, somewhere in an édifice)
 A: {{`La cafétéria.`}} ([[fr/episode-6]])
+N: [[fr/episode-8#à-vous-de-jouer-|§ mots en désordre]]
 
 ---
 
 Q: `Étage d'un édifice situé sous la terre.`
 A: {{`Le sous-sol.`}}
+N: [[fr/episode-8#à-vous-de-jouer-|§ mots en désordre]]
 
 ---
 
 Q: `Endroit où travaille le ou la secrétaire.`
 A: {{`Le secrétariat.`}}
+N: [[fr/episode-8#à-vous-de-jouer-|§ mots en désordre]]
 
 ---
 
 Q: What does `avoir besoin de` mean, and what follows it?
 A: To need; the needed thing follows `de` : {{`Votre enfant a besoin d'une règle et de ciseaux.`}}
+N: [[fr/episode-8#ce-qui-est-nouveau|§ nouveau]]
 
 ---
 
 C: `Il ne trouve [plus|no longer] [les siens|his own ones].`, the child lost his règle and ciseaux: `ne … plus` upgrades `ne … pas`, and `les siens` replaces the possessed nouns.
+N: [[fr/episode-8#ce-qui-est-nouveau|§ nouveau]]
 
 ---
 
 C: `Votre enfant n'avait pas de collation aujourd'hui. Il doit [en|pronoun standing for the collation] avoir une tous les jours.`, he must have one every day.
+N: [[fr/episode-8#ce-qui-est-nouveau|§ nouveau]]
 
 ---
 
 C: `Merci de nous envoyer [le tout|the whole lot] [dès que possible|as soon as possible].`
+N: [[fr/episode-8#ce-qui-est-nouveau|§ nouveau]]
 
 ---
 
 Q: What frame carries `Nous demandons à chaque enfant d'avoir des bottes pour jouer dehors.` ?
 A: `demander à quelqu'un de + infinitif`, to ask someone to do something.
+N: [[fr/episode-8#ce-qui-est-nouveau|§ nouveau]]
 
 ---
 
 Q: In the `Parlez de votre famille.` drill (mon, ma, mes), which family group does the corrigé strike out of the `nom` and `profession` columns?
 A: {{`vos enfants`}}. It survives only in the `âge` column: you give a child's age, not their name or job, in this exercise.
+N: [[fr/episode-8#voyons-voir-|§ famille]]
 
 ---
 
 C: The 3×3 grid `nom/âge/profession` × `parents/frères et sœurs/enfants` has two cells struck: `le [nom] de vos enfants` and `la [profession] de vos enfants` are both crossed, leaving `l'âge de vos enfants` as the one valid `enfants` cell.
+N: [[fr/episode-8#voyons-voir-|§ famille]]
 
 ---
 
 Q: `Qui est-ce ? C'est le fils de mon oncle.`
 A: {{`C'est mon cousin.`}}
+N: [[fr/episode-8#à-vous-de-jouer-|§ qui est-ce]]
 
 ---
 
 Q: `Qui est-ce ? C'est la mère de ma mère.`
 A: {{`C'est ma grand-mère.`}}
+N: [[fr/episode-8#à-vous-de-jouer-|§ qui est-ce]]
 
 ---
 
 Q: `Qui est-ce ? C'est la fille de mon frère.`
 A: {{`C'est ma nièce.`}}
+N: [[fr/episode-8#à-vous-de-jouer-|§ qui est-ce]]
 
 ---
 
 Q: `Qui est-ce ? C'est le père de ma conjointe.`
 A: {{`C'est mon beau-père.`}}
+N: [[fr/episode-8#à-vous-de-jouer-|§ qui est-ce]]
 
 ---
 
 Q: `Qui est-ce ? C'est le mari de ma sœur.`
 A: {{`C'est mon beau-frère.`}}
+N: [[fr/episode-8#à-vous-de-jouer-|§ qui est-ce]]
 
 ---
 
 Q: Corrigez : `Nous avons canadiens.`
 A: {{`Nous sommes canadiens.`}}
-N: Nationality takes `être`.
+N: Nationality takes `être`. [[fr/episode-8#à-vous-de-jouer-|§ trouvez l'erreur]]
 
 ---
 
 Q: Corrigez : `Ils sont 30 ans.`
 A: `Ils ont 30 ans.`
-N: Age takes `avoir`.
+N: Age takes `avoir`. [[fr/episode-8#à-vous-de-jouer-|§ trouvez l'erreur]]
 
 ---
 
 Q: Say "Your child needs scissors." (school message, formal)
 A: {{`Votre enfant a besoin de ciseaux.`}}
-N: `avoir besoin de` + noun, with no article after `de` here.
+N: `avoir besoin de` + noun, with no article after `de` here. [[fr/episode-8#ce-qui-est-nouveau|§ nouveau]]

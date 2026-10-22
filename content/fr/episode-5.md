@@ -51,7 +51,7 @@ la famille Dupuis makes you say all of it at once. `André` et `Claire Dupuis` h
 
 ## les possessifs
 
-three Mémos spread one rule across the épisode: the determinant sits before the noun, and the noun that follows chooses its form. the possessor picks the series; the possessor's gender changes nothing.
+three Mémos spread one rule across the épisode: the determinant sits before the noun, and the noun that follows {{sidenotes[chooses its form]: devant voyelle, `ma`/`ta`/`sa` → `mon`/`ton`/`son` : `mon amie`, `son école`.}}. the possessor picks the series; the possessor's gender changes nothing.
 
 | possesseur     | + nom masculin singulier | + nom féminin singulier | + nom pluriel      |
 | -------------- | ------------------------ | ----------------------- | ------------------ |
@@ -90,7 +90,7 @@ the picture drill answers with winter things: {{`les raquettes de Martin`}}, {{`
 
 ## c'est vs il est
 
-the model answer fixes the division of labour: `C'est Jocelyn. Il a 38 ans. Il est infirmier. Il est divorcé. Il a 2 enfants. Il a des lunettes.` `c'est` plus the name introduces; then the pronoun takes over, `être` for profession, nationalité and état civil (no article, the [[fr/episode-1]] rule), `avoir` for âge and possessions (the [[fr/episode-2]] verb).
+the model answer fixes the division of labour: `C'est Jocelyn. Il a 38 ans. Il est infirmier. Il est divorcé. Il a 2 enfants. Il a des lunettes.` `c'est` plus the name {{sidenotes[introduces]: un nom qualifié repasse par `c'est` + article : `C'est un infirmier patient.`, mais `Il est infirmier.` ([[fr/episode-1#dire-sa-profession|épisode 1]]).}}; then the pronoun takes over, `être` for profession, nationalité and état civil (no article, the [[fr/episode-1]] rule), `avoir` for âge and possessions (the [[fr/episode-2]] verb).
 
 the other cards scale the frame: `Ce sont Louis et Antoine. Ils ont 5 ans. Ils sont jumeaux. Ils ont 1 sœur : Olivia.` and `C'est Marielle. Elle a 74 ans. Elle est québécoise. Elle est retraitée. Elle a 4 enfants et 9 petits-enfants.`, plus her animals, `la chatte Marmelade (2 ans)` et `le poisson rouge Philibert (8 mois)`. {{`jumeaux`}} are twins, {{`retraitée`}} retired.
 
@@ -191,7 +191,7 @@ the Mémo's own model runs on `vous` : {{`Vous êtes dentiste ?`}}, {{`Est-ce qu
 
 the hyphen in the inversion is obligatory, and as soon as the subject is `il`, `elle` ou `on` behind a vowel-final verb, a euphonic `-t-` has to fill the gap: {{`A-t-il une auto ?`}}, {{`Parle-t-elle français ?`}}
 
-une question ouverte starts from un mot interrogatif (`comment`, `quand`, `où`, `combien`, `c'est quoi`, `c'est qui`), and register decides its position:
+une question ouverte starts from un mot interrogatif (`comment`, `quand`, `où`, `combien`, `c'est quoi`, `c'est qui`), and register {{sidenotes[decides its position]: même partage qu'en [[fr/episode-2#poser-des-questions--informel-vs-formel|épisode 2]]. l'oral familier québécois ajoute la particule `-tu` : `Tu viens-tu ?`, `C'est-tu loin ?`}}:
 
 | registre             | placement                                       | exemples                                                                                                 |
 | -------------------- | ----------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
@@ -235,6 +235,19 @@ the question word travels as a block, never alone: `combien d'enfants`, `à quel
 > the `Ailleurs, autrement ?` box (dire oui, avec sa tête) : au Canada, aux États-Unis, dans plusieurs pays d'Europe et d'Asie, on hoche la tête de haut en bas pour dire oui. en Bulgarie, en Syrie, en Grèce et en Turquie, on hoche la tête de gauche à droite pour dire oui.
 
 vous pouvez maintenant parler de vous et de votre famille, présenter quelqu'un ou quelque chose, et faire connaissance avec quelqu'un.
+
+## comprendre les expressions
+
+| français         | sens en anglais           | usage                                                               |
+| ---------------- | ------------------------- | ------------------------------------------------------------------- |
+| {{`chum`}}       | boyfriend                 | Québec, familier ; féminin `une blonde` ; France : `copain`.        |
+| {{`conjoint`}}   | partner                   | Marié ou non ; à l'oral en France, plutôt `compagnon`, `compagne`.  |
+| {{`beau-père`}}  | father-in-law; stepfather | Un seul mot pour les deux ; le contexte tranche.                    |
+| {{`petit-fils`}} | grandson                  | Piège : `un petit garçon` = a little boy.                           |
+| {{`raquettes`}}  | snowshoes                 | Aussi la raquette de tennis ; l'hiver, `faire de la raquette`.      |
+| {{`chalet`}}     | cottage                   | Québec : maison de campagne, souvent au lac ; France : en montagne. |
+| {{`une auto`}}   | a car                     | Québec, neutre ; familier `un char` ; France : `une voiture`.       |
+| {{`jumeaux`}}    | twins                     | Féminin `jumelles` ; groupe mixte : `jumeaux`.                      |
 
 related: [[fr/episode-1|épisode 1]], [[fr/episode-2|épisode 2]], [[fr/episode-4|épisode 4]], [[fr/les-nombres|les nombres]], [[fr/orthography-phonetics|orthographe]]
 

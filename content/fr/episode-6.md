@@ -27,7 +27,7 @@ the Mémo splits the ask into two moves. first you interpeler quelqu'un,[^interp
 
 adding {{`madame`}} ou `monsieur` is the politer half of each pair, and the choice of `madame` follows the Canadian rule in the box below.
 
-then the ask itself, four frames printed on five lines (the `Pouvez-vous` frame gets two lines because the embedded verb agrees):
+then the ask itself, four frames printed on five lines (the {{sidenotes[`Pouvez-vous`]: inversion, donc registre soigné ([[fr/episode-2#poser-des-questions--informel-vs-formel|épisode 2]]) ; à l'oral : `Vous pouvez me dire où… ?`}} frame gets two lines because the embedded verb agrees):
 
 | frame                                | exemple                                                                                                                                | ce qu'elle fait                                          |
 | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
@@ -92,7 +92,7 @@ the exchange also carries the politeness that the frames alone do not:
 | {{`ouvert`}} >< {{`fermé`}} | open against closed                                                                         |
 | {{`au mauvais étage`}}      | on the wrong floor, `mauvais` opposé de `bon`                                               |
 
-{{`Vous allez voir le vestiaire des hommes`}} is a futur proche, `aller` au présent plus l'infinitif, and {{`celui des femmes`}} replaces `le vestiaire des femmes` with a demonstrative pronoun.[^celui]
+{{`Vous allez voir le vestiaire des hommes`}} is a {{sidenotes[futur proche]: construction, négation et questions : [[fr/episode-14#parler-du-futur--le-futur-proche|épisode 14]].}}, `aller` au présent plus l'infinitif, and {{`celui des femmes`}} replaces `le vestiaire des femmes` with a demonstrative pronoun.[^celui]
 
 > [!note] ailleurs, autrement ?
 > madame et mademoiselle. au Canada, `madame` addresses any woman; {{`mademoiselle`}} is reserved for young girls, or for women who ask for it. est-ce la même chose dans votre pays d'origine ?
@@ -277,7 +277,7 @@ the exercise is spoken, so the table has to come back out as sentences:
 - {{`Le bureau de Sylvie Leclerc, dentiste, est au deuxième étage.`}}
 - {{`La réception et la sécurité sont au rez-de-chaussée.`}}
 
-saying them exposes what the table hides. the frame is `au` plus the ordinal plus `étage`, `au` being `à` plus `le` contracted. a single numbered floor uses the masculine singular: {{`au troisième étage`}}. two numbered floors use the plural: {{`aux quatrième et cinquième étages`}}, with `aux` for `à les` and one shared `étages` carrying both ordinals. and the two floors that are named rather than numbered take no ordinal at all, {{`au sous-sol`}} et {{`au rez-de-chaussée`}}, because those are nouns in their own right. the last line also swaps the verb, `La réception et la sécurité sont…`, two subjects joined by `et` taking the plural.
+saying them exposes what the table hides. the frame is `au` plus the ordinal plus `étage`, `au` being `à` plus `le` {{sidenotes[contracted]: `à + le → au`, `à + les → aux` ; même mécanisme que `du lundi au vendredi` ([[fr/episode-3#lhoraire|épisode 3]]).}}. a single numbered floor uses the masculine singular: {{`au troisième étage`}}. two numbered floors use the plural: {{`aux quatrième et cinquième étages`}}, with `aux` for `à les` and one shared `étages` carrying both ordinals. and the two floors that are named rather than numbered take no ordinal at all, {{`au sous-sol`}} et {{`au rez-de-chaussée`}}, because those are nouns in their own right. the last line also swaps the verb, `La réception et la sécurité sont…`, two subjects joined by `et` taking the plural.
 
 the Mémo builds les déterminants ordinaux by adding `-ième` to the number: `deuxième (2e)`, `troisième (3e)`, up to `douzième (12e)`. at five spots the spelling shifts, `le «e» final disparait ou la dernière lettre du nombre change`: `quatre → quatrième`, `onze → onzième`, `douze → douzième` (final `e` drops), `cinq → cinquième` (gains a `u`), `neuf → neuvième` (`f` becomes `v`). number 1 gets its own pair, `premier (1er)` / `première (1re)`, and the end gets {{`dernier`}} / {{`dernière`}}. the cardinal inventory lives in [[fr/les-nombres]].
 
@@ -344,7 +344,7 @@ the book never states it as a rule, its table simply shows it: `-er` verbs and `
 
 the table is three rows deep and that is the whole tense: there is no `je`, no `il`, no `ils`. an order can only reach someone standing there, so the impératif keeps exactly the persons you can address, `tu` and `vous`, plus `nous` for the group you are inside of. most imperative forms match the present-indicative `tu`, `nous`, or `vous` form without the subject pronoun. the `tu` form of `-er` verbs and `aller` normally loses its final `-s`, while `être`, `avoir`, `savoir`, and `vouloir` use irregular forms.
 
-the `nous` form proposes or urges shared action, the usual French equivalent of English “let's”: {{`Allons au sous-sol.`}} giving directions you will almost never use it; you use it to propose.
+the `nous` form proposes or urges shared action, the usual French equivalent of English “{{sidenotes[let's]: à l'oral, `on` remplace souvent `nous` : `On y va ?` plutôt que `Allons-y.`}}”: {{`Allons au sous-sol.`}} giving directions you will almost never use it; you use it to propose.
 
 | forme    | à qui                    | valeur                                                           |
 | -------- | ------------------------ | ---------------------------------------------------------------- |
@@ -388,6 +388,19 @@ the answer stacks three imperatives and lands on an ordinal, `le 2e à gauche`, 
 > des édifices « records » : l'Empire State Building à New York a 102 étages, le premier édifice de plus de 100 étages sur la planète. la tour CN à Toronto mesure 553,33 m. the workbook calls it the world's sixth-highest structure, a ranking tied to the source's date and definition of `édifice`. les ascenseurs de la tour de Shanghai montent au 119e étage en 55 secondes, a bit over 2 étages par seconde.
 
 vous pouvez maintenant demander des indications dans un édifice et donner des indications dans un édifice : interpeler, ask with `Pouvez-vous me dire où est… ?`, then parse (or produce) an answer made of imperatives, prépositions de localisation, and an étage.
+
+## comprendre les expressions
+
+| français                          | sens en anglais  | usage                                                                         |
+| --------------------------------- | ---------------- | ----------------------------------------------------------------------------- |
+| {{`le corridor`}}                 | hallway          | Québec ; France : `un couloir`.                                               |
+| {{`l'accueil`}}                   | front desk       | Sur les plans et les panneaux ; aussi `la réception`.                         |
+| {{`les machines distributrices`}} | vending machines | Québec, souvent `les distributrices` ; France : `distributeurs automatiques`. |
+| {{`le guichet automatique`}}      | ATM              | Québec ; France : `un distributeur de billets`.                               |
+| {{`rez-de-chaussée`}}             | ground floor     | Abrégé `RC` ; au Québec, parfois appelé `le premier étage`.                   |
+| {{`le sous-sol`}}                 | basement         | Nommé, sans ordinal : `au sous-sol`.                                          |
+| {{`tout droit`}}                  | straight ahead   | À ne pas confondre avec `à droite`, to the right.                             |
+| {{`Ça me fait plaisir`}}          | you're welcome   | Réponse québécoise à `merci` ; France : `de rien`, `je vous en prie`.         |
 
 related: [[fr/episode-5|épisode 5]], [[fr/episode-3|épisode 3]], [[fr/les-nombres|les nombres]], [[fr/orthography-phonetics|orthographe]]
 

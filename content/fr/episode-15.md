@@ -11,7 +11,7 @@ title: 'épisode 15 : on casse la croute'
 
 L'épisode 15 du [[fr/par-ici-niveau-a1.pdf|manuel]], p. **108 à 113**, apprend à **planifier un repas entre amis** et à **exprimer ses gouts et ses préférences**. **Casser la croute** signifie manger un repas, souvent simplement.
 
-Les réponses sont vérifiées avec le **corrigé p. 154** et les **transcriptions CD2, pistes 34 à 39, p. 138–139**. Les écoutes sont résolues à partir du texte imprimé. Les invitations et réponses personnelles proposées ici sont des **modèles à adapter**. On réutilise le futur proche de [[fr/episode-14|l'épisode 14]].
+Les réponses sont vérifiées avec le **corrigé p. 154** et les **transcriptions CD2, pistes 34 à 39, p. 138–139**. Les écoutes sont résolues à partir du texte imprimé. Les invitations et réponses personnelles proposées ici sont des **modèles à adapter**. On réutilise {{sidenotes[le futur proche]: `aller` + infinitif : `Je vais faire une soupe froide.` → [[fr/episode-14#la-construction|épisode 14]]}} de [[fr/episode-14|l'épisode 14]].
 
 ## organiser le piquenique, p. 108
 
@@ -40,7 +40,7 @@ La piste 34 nomme des sandwichs **aux œufs, au poulet, au bœuf, au jambon et a
 | fixer l'heure                    | {{`On se donne rendez-vous vers onze heures.`}}                     |
 | exprimer son impatience positive | {{`J'ai hâte !`}}                                                   |
 
-**Vers 11 h** indique une heure approximative. **Apporter** un plat = le prendre avec soi pour le repas. **S'occuper de** quelque chose = en prendre la responsabilité.
+**Vers 11 h** indique {{sidenotes[une heure approximative]: `à 11 h` = heure exacte. lire l'heure : [[fr/episode-3#lheure|épisode 3]]}}. **Apporter** un plat = le prendre avec soi pour le repas. **S'occuper de** quelque chose = en prendre la responsabilité.
 
 ## comprendre les invitations, p. 109
 
@@ -76,7 +76,7 @@ Pour la grille : **restaurant → B ; chez un ami → A et C ; plat à partager 
 
 Avec une quantité précise : **nombre + nom** ou **mesure + de / d' + aliment** : {{`un œuf`}}, {{`deux tomates`}}, {{`une tasse de lait`}}, {{`deux tranches de pain`}}, {{`un peu de jus de citron`}}. On dit **une tasse de lait**.
 
-Pour un aliment en quantité indéterminée, on emploie le partitif : {{`Je mange du fromage.`}} Pour un gout général, on emploie le défini : {{`J'aime le fromage.`}} À la négation : {{`Je ne mange pas de fromage.`}} / {{`Je n'aime pas le fromage.`}} Le défini **le** reste après **aimer**.
+Pour un aliment en quantité indéterminée, on emploie {{sidenotes[le partitif]: `du` = `de + le`, la contraction de `Je viens du Brésil` ([[fr/episode-1#dire-son-origine-sa-résidence-et-ses-langues|épisode 1]]).}} : {{`Je mange du fromage.`}} Pour un gout général, on emploie le défini : {{`J'aime le fromage.`}} À la négation : {{`Je ne mange pas de fromage.`}} / {{`Je n'aime pas le fromage.`}} Le défini **le** reste après **aimer**.
 
 ### piste 36 : les quatre sandwichs
 
@@ -89,7 +89,7 @@ Pour un aliment en quantité indéterminée, on emploie le partitif : {{`Je mang
 
 Exemple : {{`Dans les sandwichs au poulet, il y a du poulet, des tortillas, de la mayonnaise, de la laitue et des tomates.`}}
 
-**Sandwich** est masculin dans la forme standard : **un bon sandwich**. Le livre signale aussi le féminin fréquent dans l'oral québécois : **une bonne sandwich**.
+**Sandwich** est masculin dans la forme standard : **un bon sandwich**. Le livre signale aussi le féminin fréquent dans {{sidenotes[l'oral québécois]: autres écarts d'usage : [[fr/quebec-france#québec-vs-france|québec et france]]}} : **une bonne sandwich**.
 
 ### décrire les recettes
 
@@ -176,3 +176,16 @@ Pour **vous** : **Quel est votre plat préféré ?**, **Quelle est votre saison 
 > {{`J'aime inviter des amis à souper. Pour un repas-partage, je vais préparer une salade avec du riz, des tomates et des concombres. J'aime les pâtes, mais je préfère le riz. J'adore les fruits et je n'aime pas beaucoup les plats très sucrés. Ma boisson préférée, c'est l'eau. Et toi, quel est ton plat préféré ?`}}
 
 Pour réviser : nommer les ingrédients, choisir **du / de la / de l' / des**, exprimer une quantité précise, puis poser une question sur les préférences. Le [[fr/episode-16|bilan de l'épisode 16]] reprend ces compétences.
+
+## comprendre les expressions
+
+| français                 | sens en anglais          | usage                                                                    |
+| ------------------------ | ------------------------ | ------------------------------------------------------------------------ |
+| {{`casser la croute`}}   | to grab a bite           | Familier ; orthographe traditionnelle : `croûte`.                        |
+| {{`apportez votre vin`}} | bring your own wine      | Restaurant sans permis d'alcool ; on apporte sa bouteille.               |
+| {{`un repas-partage`}}   | potluck                  | Québec ; France : `une auberge espagnole`.                               |
+| {{`une bonne sandwich`}} | a good sandwich          | Oral québécois ; forme standard : `un bon sandwich`.                     |
+| {{`les bleuets`}}        | blueberries              | Québec ; France : `les myrtilles`.                                       |
+| {{`le melon d'eau`}}     | watermelon               | Québec ; France : `la pastèque`.                                         |
+| {{`C'est écœurant !`}}   | it's gross; it's amazing | Québec : sens positif possible ; France : seulement négatif.             |
+| {{`souper`}}             | to have dinner; supper   | Québec : repas du soir ; France : `le dîner`. Au Québec, `dîner` = midi. |
