@@ -177,6 +177,10 @@ export const comparisonChartHead = <N>(
       ...(readout ? ['tri-compare-chart-head--readout'] : []),
       ...(readout && controls !== undefined ? ['tri-compare-chart-head--controls'] : []),
     ].join(' '),
+    undefined,
+    readout && controls !== undefined
+      ? { style: `--tri-compare-title-width:${title.length}ch` }
+      : {},
   )
   f.add(
     head,
