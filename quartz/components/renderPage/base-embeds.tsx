@@ -33,6 +33,7 @@ export function buildBaseEmbedNodes(
   componentData: QuartzComponentProps,
   rendered: BaseRenderResult,
   activeView: BaseRenderedView,
+  pinned = false,
 ): BaseEmbedNodes {
   const baseSlug = baseFileData.slug as FullSlug
   const baseMetadata = { baseSlug, currentView: activeView.view.name, allViews: rendered.allViews }
@@ -40,7 +41,8 @@ export function buildBaseEmbedNodes(
     ...componentData,
     fileData: { ...componentData.fileData, basesMetadata: baseMetadata },
   }
-  const selectorNodes = renderComponentNodes(BaseViewSelectorComponent, embedData)
+  // A transclusion that names a view shows that view alone, so it has nothing to switch to.
+  const selectorNodes = pinned ? [] : renderComponentNodes(BaseViewSelectorComponent, embedData)
   const resultsLabel =
     activeView.totalCount === activeView.resultCount
       ? `${activeView.totalCount} results`
@@ -51,7 +53,8 @@ export function buildBaseEmbedNodes(
     h('span', { dataBaseEmbedResultsLabel: '' }, resultsLabel),
   )
   const barNode = h('div.base-embed-bar', [...selectorNodes, resultsNode])
-  const viewNodes = rendered.views.map(view => {
+  const views = pinned ? [activeView] : rendered.views
+  const viewNodes = views.map(view => {
     const isActive = view.slug === activeView.slug
     return h(
       'div.base-embed-view',
