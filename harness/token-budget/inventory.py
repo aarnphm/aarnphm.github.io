@@ -26,7 +26,7 @@ from ast_grep_py import SgRoot
 
 from blocks import language, link, script_blocks, string_value, style_blocks
 from brief import CHURN_DAYS, brief
-from check import index_entries, over_budget
+from check import index_entries, is_test_path, over_budget
 from common import (
   LIMIT,
   TARGET,
@@ -163,7 +163,7 @@ def importers(path: str) -> list[dict]:
     text = Path(c).read_text()
     entry = {
       'path': c,
-      'test': re.search(r'\.(test|spec)\.', c) is not None,
+      'test': is_test_path(c),
       'names': [],
       'typeOnly': True,
       'dynamic': False,
@@ -179,7 +179,7 @@ def importers(path: str) -> list[dict]:
     if entry['names']:
       entry['names'] = list(dict.fromkeys(entry['names']))
       out.append(entry)
-  # The hook checks every staged file, so a proposal cannot edit an importer it would reject.
+  # A proposal cannot edit an importer the hook would reject when staged.
   heavy = (
     {
       f['path']: f['tokens']
@@ -258,6 +258,7 @@ def main() -> int:
   args = ap.parse_args()
   report = json.loads(Path(args.inventory).read_text())
   check_report(report)
+  report['files'] = [f for f in report['files'] if not is_test_path(f['path'])]
   only = (
     set(args.paths)
     if args.paths

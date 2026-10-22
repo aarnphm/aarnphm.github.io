@@ -2,7 +2,7 @@
 # One entry point for the token budget harness (.agents/skills/token-budget/SKILL.md).
 #   harness/token-budget/scripts/run.sh <command> [args]
 #
-#   check [--all | --paths <p>...] [--json]    the pre-commit hook (o200k_base tokens)
+#   check [--all | --paths <p>...] [--json]    the pre-commit hook (o200k_base; tests exempt)
 #   pass [--top N] [--run <dir>] [<path>...]   stages 0-4: inventory, Sol and Argon proposals,
 #                                              validation, agent-decide (TB_WORKERS= baseline only,
 #                                              TB_WORKERS="opus argon" Opus on API credits for Sol)

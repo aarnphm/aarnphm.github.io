@@ -11,7 +11,7 @@
   harness/token-budget/check.py --json           with any source: the report for inventory.py, exit 0
 
 Exits 1 on violations. It reads blobs from the index, so partial staging is measured as it will be
-committed. Skipped: gitlinks, symlinks, binary blobs, and paths that .gitattributes (index copy)
+committed. Skipped: test files, gitlinks, symlinks, binary blobs, and paths that .gitattributes (index copy)
 marks linguist-generated, linguist-vendored or -agent-authored.
 """
 
@@ -96,9 +96,24 @@ def blobs(shas: list[str]) -> list[bytes]:
   return out
 
 
+def is_test_path(path: str) -> bool:
+  parts = path.split('/')
+  return any(
+    part in ('test', 'tests', '__tests__') for part in parts[:-1]
+  ) or bool(
+    re.search(
+      r'\.(test|spec)\.[cm]?[jt]sx?$|^(test_.+|.+_test)\.py$', parts[-1]
+    )
+  )
+
+
 def over_budget(entries: list[dict]) -> list[dict]:
   """Over-budget, agent-authored text files among the entries, with their text."""
-  files = [f for f in entries if f['mode'] in ('100644', '100755')]
+  files = [
+    f
+    for f in entries
+    if f['mode'] in ('100644', '100755') and not is_test_path(f['path'])
+  ]
   if not files:
     return []
   sizes = run(
@@ -149,8 +164,6 @@ def over_budget(entries: list[dict]) -> list[dict]:
 
 def kind_of(p: str) -> str:
   base = os.path.basename(p)
-  if re.search(r'\.(test|spec)\.[cm]?[jt]sx?$|(^test_.*|_test)\.py$', base):
-    return 'test'
   if re.search(r'\.(s?css|sass|less)$', base):
     return 'style'
   if re.search(r'\.(md|mdx|markdown)$', base):
@@ -238,10 +251,6 @@ def split_steps(kinds: set[str]) -> list[str]:
     'Keep the original path as the module entry: it exports the interface callers use, and nothing else. Move the implementation into a private folder named after the file (<dir>/<original>/<part>.<ext>, kebab-case). Move code verbatim; do not rewrite it during the split. Keep each function with the private helpers and types that only it uses. Put helpers that two parts use in a third file that both import. Do not create import cycles.',
     'Importers keep importing the entry; never import a file in the private folder from outside it. Exports that no importer outside the module uses are candidates to hide: run `rg -l "<original basename without extension>"` to find importers.',
   ]
-  if 'test' in kinds:
-    steps.append(
-      'Tests: test through the module entry, the same interface callers use. Split the test file by behaviour of the interface, one <module>-<behaviour>.test.<ext> per group. Move each test with the fixtures it uses; put fixtures shared by several test files in a <name>-fixtures.<ext> helper. Keep every assertion: the split must not drop coverage.'
-    )
   if 'style' in kinds:
     steps.append(
       'Styles: move each component or page region into an SCSS partial and `@use` it from the original file in the same position. Keep the rule order, because the cascade depends on it.'
@@ -257,7 +266,7 @@ def split_steps(kinds: set[str]) -> list[str]:
     'How to split:',
     *(f'  {i + 1}. {s}' for i, s in enumerate(steps)),
     '',
-    'Lockfiles, generated, vendored and human-authored paths are exempt through .gitattributes (linguist-generated, linguist-vendored, -agent-authored). Do not mark code that agents write as exempt; split it.',
+    'Test files are exempt. Lockfiles, generated, vendored and human-authored paths are exempt through .gitattributes (linguist-generated, linguist-vendored, -agent-authored). Do not mark production code that agents write as exempt; split it.',
     '',
   ]
 

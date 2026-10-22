@@ -5,7 +5,9 @@ description: 'Run a token budget pass: split Garden files over 5000 tokens into 
 
 # Token budget pass
 
-The pre-commit hook `harness/token-budget/check.py` rejects agent-authored files over 5000 tokens, counted with tiktoken o200k_base (the tokenizer of o1, o3, o4-mini and GPT-4o). A token is at least one byte, so files of 5000 bytes or less are never encoded. A split that cuts a file in source order gives many files and no better modules. A pass instead asks two workers for a module boundary, checks both proposals with deterministic code, and implements the one that survives in a `w` worktree. The design and the pilot results are in `docs/plans/token-budget-refactor.md` (local only); read it before you change the harness.
+The pre-commit hook `harness/token-budget/check.py` rejects non-test agent-authored files over 5000 tokens, counted with tiktoken o200k_base (the tokenizer of o1, o3, o4-mini and GPT-4o). A token is at least one byte, so files of 5000 bytes or less are never encoded. A split that cuts a file in source order gives many files and no better modules. A pass instead asks two workers for a module boundary, checks both proposals with deterministic code, and implements the one that survives in a `w` worktree. The design and the pilot results are in `docs/plans/token-budget-refactor.md` (local only); read it before you change the harness.
+
+Test files are exempt in staged checks, `--all`, explicit `--paths`, and refactor inventories. This covers JavaScript/TypeScript `*.test.*` and `*.spec.*`, Python `test_*.py` and `*_test.py`, and files inside `test/`, `tests/`, or `__tests__/` directories. Test importers remain in the interface analysis and carry no token-budget restriction.
 
 ## Words
 
@@ -41,9 +43,9 @@ What the stages do:
 | 3 validate  | `collect.sh <run>` (adds `baseline.py`, runs `validate.py`)  | `<slug>/validation.json`, `<slug>/decisions/*.decision-request.json`          |
 | 4 decide    | `agent-decide < request` (assessor none)                     | `<slug>/decisions/*.decision.json`                                            |
 
-Sol runs through `codex exec -s read-only`; it minimises the interface. Argon runs through `argon --browser none`; it keeps the most common caller simple. Both are read-only. A watchdog stops an Argon run 30 seconds after its result event, because agy can keep running after it answers.
+Sol runs through `codex exec -s read-only`; it minimises the interface. Argon runs through `argon --browser none`; it keeps the most common caller simple. Both are read-only. The Argon launcher allows 30 seconds for native shutdown after a terminal result. If agy remains alive, the launcher terminates its owned process group, escalates to SIGKILL after two seconds, and returns exit 124. The raw result stays in events.ndjson; an interrupted transport is not accepted as a successful run.
 
-Argon's wall-clock budget defaults to two hours, four times the earlier 30-minute limit. Set `TB_ARGON_TIMEOUT` in seconds to change it, or `TB_ARGON_TIMEOUT=0` to wait until completion. Each Argon assignment records its effective budget in `timeout-seconds`. Sol and Opus have no harness wall-clock limit. The post-result watchdog remains 30 seconds; it applies after the model has answered.
+Argon's wall-clock budget defaults to two hours, four times the earlier 30-minute limit. Set `TB_ARGON_TIMEOUT` in seconds to change it, or `TB_ARGON_TIMEOUT=0` to wait until completion. Each Argon assignment records its effective budget in `timeout-seconds`. Sol and Opus have no harness wall-clock limit. The launcher owns the 30-second post-result shutdown limit, including when the model budget is unlimited. The dispatcher records its actual exit code and does not race a separate child-killing watchdog.
 
 Opus takes Sol's constraint, so `TB_WORKERS="opus argon"` replaces Sol one for one. It runs `claude -p --bare` with only read and search tools allowed and Edit, Write and Agent denied. `--bare` authenticates with `ANTHROPIC_API_KEY` only, which `dispatch.sh` reads from `CLAUDE_API_KEY` in the main checkout's `.env`, so the run bills the API credits and not the subscription. `TB_OPUS_EFFORT` sets the effort (default `high`). A key that is not scoped to a workspace (`sk-ant-usr-...`) also needs `CLAUDE_WORKSPACE_ID` in `.env`. The raw result is in `opus/events.json`, which also holds `total_cost_usd`; on an API error `opus/last-message.txt` stays empty and `collect.sh` reports no proposal.
 
@@ -51,7 +53,7 @@ When the API key cannot run, an Opus session can be the worker itself: after `di
 
 ## Choose a proposal
 
-1. A proposal is eligible only when its `validation.json` status is `pass` and its decision is `verify`. Any failed check (blob-current, partition, budget, acyclic, entry-only, interface-kept, importers-budget, seam-adapters, paths, scss-order) rules it out. `importers-budget` fails when the proposal must edit an importer that is already over 5000 tokens: the hook checks every staged file, so that importer has to be split first, in its own pass.
+1. A proposal is eligible only when its `validation.json` status is `pass` and its decision is `verify`. Any failed check (blob-current, partition, budget, acyclic, entry-only, interface-kept, importers-budget, seam-adapters, paths, scss-order) rules it out. `importers-budget` fails when the proposal must edit an importer that is already over 5000 tokens: the hook checks every non-exempt staged file, so that importer has to be split first, in its own pass.
 2. Two eligible proposals with ARI 0.8 or more agree. Take the one with fewer exports after the split and a smaller `cutShare`.
 3. With ARI under 0.8, arbitrate. Read both proposals against the four semantic checks in the decision request (deletion test, one concept per file, complete interface, tests at the interface). Write down why you chose one in `<slug>/arbitration.md`.
 4. The baseline (contiguous cuts) is a null model. If it beats both workers, say so in the report and stop for that target.
