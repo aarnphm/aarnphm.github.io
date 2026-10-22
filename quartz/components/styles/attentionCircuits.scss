@@ -25,15 +25,15 @@
 
 :root[saved-theme='dark'] .attention-circuits {
   --acir-box: var(--lightgray);
-  --acir-box-soft: color-mix(in srgb, var(--lightgray) 80%, var(--dark));
+  --acir-box-soft: color-mix(in srgb, var(--lightgray) 80%, var(--light));
   --acir-input: color-mix(in srgb, var(--gray) 22%, var(--lightgray));
   --acir-output: color-mix(in srgb, var(--tertiary) 22%, var(--lightgray));
-  --acir-softmax: color-mix(in srgb, var(--lightgray) 65%, var(--dark));
+  --acir-softmax: color-mix(in srgb, var(--lightgray) 65%, var(--light));
   --acir-qk-fill: color-mix(in srgb, var(--fig-salmon) 22%, var(--lightgray));
   --acir-ov-fill: color-mix(in srgb, var(--fig-sage) 22%, var(--lightgray));
-  --acir-tab-surface: color-mix(in srgb, var(--lightgray) 18%, var(--dark));
-  --acir-tab-border: color-mix(in srgb, var(--lightgray) 30%, transparent);
-  --acir-tab-neutral: color-mix(in srgb, var(--lightgray) 26%, var(--dark));
+  --acir-tab-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+  --acir-tab-border: var(--acir-stroke);
+  --acir-tab-neutral: color-mix(in srgb, var(--lightgray) 88%, var(--dark));
 }
 
 .acir-controls {
@@ -94,11 +94,22 @@
     background-color 140ms ease,
     color 140ms ease;
 
-  &:not(:disabled):hover {
-    color: var(--dark);
+  @media (hover: hover) and (pointer: fine) {
+    &:not(:disabled):hover {
+      background: var(--acir-tab-neutral);
+      color: var(--dark);
+    }
+
+    &.acir-pill--qk:hover {
+      background: var(--acir-qk-fill);
+    }
+
+    &.acir-pill--ov:hover {
+      background: var(--acir-ov-fill);
+    }
   }
   &:focus-visible {
-    outline: 2px solid color-mix(in srgb, var(--acir-stroke) 60%, transparent);
+    outline: 2px solid var(--dark);
     outline-offset: -2px;
   }
 
@@ -166,7 +177,7 @@
   }
 
   input[type='checkbox']:focus-visible {
-    outline: 2px solid color-mix(in srgb, var(--acir-stroke) 60%, transparent);
+    outline: 2px solid var(--dark);
     outline-offset: 2px;
   }
 }

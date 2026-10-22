@@ -140,9 +140,11 @@ $speech-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
     --control-accent: var(--tertiary);
   }
 
+  // one width for every picker, so the rows line up
   .speech-select .g-select-trigger {
-    min-width: 5rem;
-    max-width: 14rem;
+    width: 12rem;
+    min-width: 0;
+    max-width: 100%;
   }
 
   .speech-stop {

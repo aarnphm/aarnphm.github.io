@@ -23,12 +23,12 @@
 :root[saved-theme='dark'] .offset-heads-toy {
   --oht-head1: color-mix(in srgb, var(--fig-salmon) 78%, var(--lightgray));
   --oht-head2: color-mix(in srgb, var(--fig-sage) 78%, var(--lightgray));
-  --oht-surrogate: color-mix(in srgb, var(--gray) 50%, var(--lightgray));
-  --oht-grid-bg: color-mix(in srgb, var(--lightgray) 22%, var(--dark));
+  --oht-surrogate: var(--darkgray);
+  --oht-grid-bg: color-mix(in srgb, var(--lightgray) 86%, var(--light));
   --oht-grid-stroke: color-mix(in srgb, var(--gray) 22%, transparent);
-  --oht-tab-surface: color-mix(in srgb, var(--lightgray) 18%, var(--dark));
-  --oht-tab-border: color-mix(in srgb, var(--lightgray) 30%, transparent);
-  --oht-tab-active: color-mix(in srgb, var(--lightgray) 26%, var(--dark));
+  --oht-tab-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+  --oht-tab-border: var(--fig-stroke);
+  --oht-tab-active: color-mix(in srgb, var(--lightgray) 88%, var(--dark));
 }
 
 .oht-panels {
@@ -279,11 +279,14 @@
     background-color 140ms ease,
     color 140ms ease;
 
-  &:not(:disabled):hover {
-    color: var(--dark);
+  @media (hover: hover) and (pointer: fine) {
+    &:not(:disabled):hover {
+      background: var(--oht-tab-active);
+      color: var(--dark);
+    }
   }
   &:focus-visible {
-    outline: 2px solid color-mix(in srgb, var(--oht-note) 50%, transparent);
+    outline: 2px solid var(--dark);
     outline-offset: -2px;
   }
   &.is-active {
