@@ -1,29 +1,167 @@
 @use '../../styles/variables.scss' as *;
 
-// Margin notes on /fr pages: review and reader notes on the left, glosses and citations on the
-// right. They ride the sidenote layout (15.5rem in the margin at 1400px and up, a toggle under it).
+// One margin column on /fr pages, Locher style: a prose block opens with its number `(n)`, and the
+// column holds `§ label (n)` entries for it. Wide screens hang the group left of the text and join
+// it to the number with a leader line (drawn by fr-margins.inline.ts); narrow screens fold the
+// group under the block and the label toggles it.
 $fr-line: color-mix(in srgb, var(--gray) 55%, transparent);
 $fr-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+$fr-column: 15.5rem;
+$fr-gutter: 2.5rem;
 
-// The sidenote label only marks the position; it shows as a toggle once the note goes inline.
-.sidenote[data-fr] {
-  .sidenote-label:not([data-inline]) {
-    display: inline-block !important;
-    width: 0 !important;
-    overflow: hidden !important;
-    visibility: hidden !important;
-    border: 0 !important;
+article[data-fr-mode] {
+  position: relative;
+}
+
+.fr-anchor {
+  position: relative;
+}
+
+.fr-n {
+  margin-inline-end: 0.35em;
+  font-family: var(--codeFont);
+  font-size: var(--text-meta);
+  font-variant-numeric: tabular-nums;
+  color: var(--darkgray);
+}
+
+.fr-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+  font-family: var(--bodyFont);
+  font-size: 0.85rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.5;
+  text-align: start;
+  text-indent: 0;
+  text-wrap: pretty;
+  color: var(--darkgray);
+}
+
+.fr-entry {
+  --course-workspace-line: #{$fr-line};
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.fr-entry-label {
+  align-self: flex-start;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--darkgray);
+  font-family: var(--codeFont);
+  font-size: var(--text-meta);
+  font-variant-numeric: tabular-nums;
+  text-align: start;
+}
+
+.fr-entry-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.fr-entry .course-draft-editor {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 5rem;
+}
+
+// notes and "cité par" share the card box: 1px line on the page background, same padding, full width
+.fr-notes,
+.fr-cited {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid $fr-line;
+}
+
+.fr-cited > .fr-gloss:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.fr-leaders {
+  display: none;
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+
+  path {
+    fill: none;
+    stroke: $fr-line;
+    stroke-width: 1;
   }
 }
 
-// sidenotes.inline.scss is unlayered and beats this layered sheet, so the reset needs !important
-.sidenote-content:has(> .fr-margin) {
-  padding: 0 !important;
-  border: 0 !important;
-  background: transparent !important;
+article[data-fr-mode='margin'] {
+  .fr-leaders {
+    display: block;
+  }
 
-  &.sidenote-inline {
-    margin-block: 0.5rem;
+  .fr-group {
+    position: absolute;
+    top: 0;
+    right: calc(100% + var(--fr-dx, 0px) + #{$fr-gutter});
+    width: $fr-column;
+
+    &[data-side='right'] {
+      right: auto;
+      left: calc(100% + var(--fr-dx, 0px) + #{$fr-gutter});
+    }
+  }
+
+  .fr-entry-label {
+    cursor: default;
+  }
+}
+
+article[data-fr-mode='inline'] {
+  .fr-group {
+    margin-block: var(--space-2);
+  }
+
+  // folded groups of one block read as a single list of labels
+  .fr-group + .fr-group {
+    margin-top: calc(var(--space-2) * -1);
+  }
+
+  .fr-entry-label {
+    min-height: 1.5rem;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+
+    &:focus-visible {
+      outline: 2px solid var(--dark);
+      outline-offset: 2px;
+    }
+
+    @media (pointer: coarse) {
+      min-height: 44px;
+    }
+  }
+
+  .fr-entry:not([data-open]) > .fr-entry-body {
+    display: none;
+  }
+}
+
+// a popover is a preview of the page, not a place to review or write
+.popover {
+  .fr-group,
+  .fr-n,
+  .fr-leaders {
+    display: none;
   }
 }
 
@@ -35,10 +173,6 @@ $fr-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
   font-size: 0.85rem;
   line-height: 1.5;
   color: var(--darkgray);
-
-  + .fr-margin {
-    margin-top: var(--space-3);
-  }
 }
 
 .fr-label,
@@ -64,7 +198,6 @@ $fr-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
   gap: 0.5rem;
   padding: 0.5rem 0.6rem;
   border: 1px solid $fr-line;
-  background: $fr-surface;
 
   &[hidden] {
     display: none;
@@ -106,6 +239,10 @@ $fr-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
   font-size: var(--text-meta);
   text-transform: lowercase;
   cursor: pointer;
+
+  &[hidden] {
+    display: none;
+  }
 
   &:focus-visible {
     outline: 2px solid var(--dark);
@@ -161,7 +298,7 @@ $fr-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
 .fr-editor {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: stretch;
   gap: 0.25rem;
 }
 

@@ -137,7 +137,7 @@ let delegatedPopoverSignal: AbortSignal | undefined
 
 function cleanAbsoluteElement(element: HTMLElement): HTMLElement {
   const refsAndNotes = element.querySelectorAll<HTMLElement>(
-    'section[data-references], section[data-footnotes], [data-skip-preview], .telescopic-container',
+    'section[data-references], section[data-footnotes], [data-skip-preview], .telescopic-container, .fr-margin, .fr-group, .fr-leaders',
   )
   refsAndNotes.forEach(section => section.remove())
   return element
