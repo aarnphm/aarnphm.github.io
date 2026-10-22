@@ -94,8 +94,14 @@ const haloNode = (halo: StyleHalo): Element =>
     'data-material': materialAttr(halo.material),
   })
 
-const defNode = (node: DefNode): Element =>
-  s(node.tag, node.attrs, (node.children ?? []).map(defNode))
+const defNode = (node: DefNode): Element => {
+  // SVG images fetch even in an unused pattern. The scene runtime activates texture URLs on entry.
+  const attrs =
+    node.tag === 'image'
+      ? { ...node.attrs, href: undefined, 'data-bookcase-texture': node.attrs.href }
+      : node.attrs
+  return s(node.tag, attrs, (node.children ?? []).map(defNode))
+}
 
 /** Tone tokens and gradient stops of the materials in use, and the defs their faces reference. */
 function materialNodes(materials: Set<ShelfMaterial>): Element[] {
