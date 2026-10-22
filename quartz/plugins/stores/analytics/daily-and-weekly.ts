@@ -67,29 +67,36 @@ const runningDynamicsMean = (
   const values = (samples ?? [])
     .map(sample => sample.value)
     .filter(value => Number.isFinite(value) && value >= minimum && value <= maximum)
-  return values.length ? values.reduce((total, value) => total + value, 0) / values.length : null
+  return values.length >= 2
+    ? values.reduce((total, value) => total + value, 0) / values.length
+    : null
 }
+
+const nativeRunningMetric = (
+  value: number | null | undefined,
+  minimum: number,
+  maximum: number,
+): number | null =>
+  value != null && Number.isFinite(value) && value >= minimum && value <= maximum ? value : null
 
 export const runningDynamicsByActivityId = (
   acts: readonly Act[],
   apple: AppleCache | null | undefined,
+  details: AnalyticsInputs['activityDetails'],
 ): Map<number, RunningDynamicsMetrics> => {
   const workouts = Object.values(apple?.workouts ?? {})
   const out = new Map<number, RunningDynamicsMetrics>()
   for (const act of acts) {
     if (act.sport !== 'run') continue
     const workout = matchAppleRun({ start: act.a.startDate, distanceM: act.a.distance }, workouts)
-    if (!workout) continue
-    const strideSampleCount = workout.strideLengthM?.length ?? 0
-    const verticalOscillationSampleCount = workout.verticalOscillationCm?.length ?? 0
+    const garmin = details?.[String(act.a.id)]?.garmin?.runningDynamics
+    const strideCm = nativeRunningMetric(garmin?.averageStrideLengthCm, 20, 300)
     out.set(act.a.id, {
       strideLengthM:
-        strideSampleCount >= 2 ? runningDynamicsMean(workout.strideLengthM, 0.2, 3) : null,
-      strideSampleCount,
+        strideCm != null ? strideCm / 100 : runningDynamicsMean(workout?.strideLengthM, 0.2, 3),
       verticalOscillationCm:
-        verticalOscillationSampleCount >= 2
-          ? runningDynamicsMean(workout.verticalOscillationCm, 1, 30)
-          : null,
+        nativeRunningMetric(garmin?.averageVerticalOscillationCm, 1, 30) ??
+        runningDynamicsMean(workout?.verticalOscillationCm, 1, 30),
     })
   }
   return out
