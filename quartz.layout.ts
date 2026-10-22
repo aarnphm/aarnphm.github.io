@@ -1,5 +1,6 @@
 import { PageLayout, SharedLayout } from './quartz/cfg'
 import * as Component from './quartz/components'
+import { usesApparatus } from './quartz/util/apparatus'
 import { unitOf } from './quartz/util/course'
 
 // components shared across all pages
@@ -64,7 +65,12 @@ export const defaultContentPageLayout: PageLayout = {
           direction: 'column',
           gap: '0.5rem',
         }),
-        Component.ContentMeta(),
+        // a page with the margin apparatus (/fr, `layout: technical`) keeps only its tags here
+        Component.ConditionalRender({
+          component: Component.ContentMeta(),
+          condition: ({ fileData }) =>
+            !(fileData.slug ?? '').startsWith('fr/') && !usesApparatus(fileData),
+        }),
       ),
       condition: ({ fileData }) => unitOf(fileData.slug ?? '')?.kind !== 'psets',
     }),
