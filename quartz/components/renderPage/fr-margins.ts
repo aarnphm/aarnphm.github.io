@@ -13,7 +13,8 @@ type Ctx = QuartzComponentProps['ctx']
 const GLOSS_HEADING = 'comprendre-les-expressions'
 const BLOCKS = new Set(['p', 'li', 'td', 'th', 'blockquote'])
 // A margin entry hangs from a prose block; a header cell is no place for one.
-const ANCHORS = new Set(['p', 'li', 'td', 'blockquote'])
+// a quotation's first paragraph carries the number, so it opens a line of text, never its own
+const ANCHORS = new Set(['p', 'li', 'td'])
 
 const classesOf = (node: Element): string[] => {
   const value = node.properties?.className
@@ -201,8 +202,8 @@ const bodyOf = (section: Element): Element => {
  * `(n)`, and the column holds `§ label (n)` entries for it. Review of the cards that cite the page
  * and the reader's notes sit at the first block of each `##`; the page's "comprendre les expressions"
  * rows sit at the first use of each expression; the lessons that cite the page sit at the first
- * block. The browser hangs the group in the left margin and joins it to the block with a leader line,
- * or folds it under the block on narrow screens. Decks are only visible at render time
+ * block. The browser hangs the group beside the block, its label level with the number, or folds it
+ * under the block on narrow screens. Decks are only visible at render time
  * (`ctx.decks`), so this runs here rather than in a transformer.
  */
 export function renderFrMargins(tree: Root, componentData: QuartzComponentProps, ctx: Ctx) {
@@ -281,15 +282,14 @@ export function renderFrMargins(tree: Root, componentData: QuartzComponentProps,
       className: [...classesOf(block), 'fr-anchor'],
       dataFrN: String(n),
     }
-    block.children.unshift(h('span.fr-n', { ariaHidden: 'true' }, `(${n})`), {
-      type: 'text',
-      value: ' ',
-    })
+    // the number and the groups open the block: beside it in the margin, or in parentheses before
+    // the text where there is no margin
+    const lead: Element[] = [h('span.fr-n', { ariaHidden: 'true' }, `(${n})`)]
     // Locher's three columns: review and notes hang left of the text, glosses and citing lessons right
     for (const side of ['left', 'right'] as const) {
       const mine = entries.filter(entry => SIDE[entry.kind] === side)
       if (mine.length === 0) continue
-      block.children.push(
+      lead.push(
         h(
           'span.fr-group',
           { dataN: String(n), dataSide: side },
@@ -306,6 +306,7 @@ export function renderFrMargins(tree: Root, componentData: QuartzComponentProps,
         ),
       )
     }
+    block.children.unshift(...lead)
   })
 }
 
