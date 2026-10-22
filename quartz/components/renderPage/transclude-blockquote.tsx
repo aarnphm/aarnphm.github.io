@@ -191,6 +191,7 @@ export function transcludeBlockquote(scope: TranscludeScope, node: Element): voi
     let baseTree = page.htmlAst
     let baseRendered: BaseRenderResult | undefined
     let baseView: BaseRenderedView | undefined
+    let baseViewPinned = false
     if (page.bases && page.basesConfig && page.basesExpressions && page.slug) {
       baseRendered = renderBaseViewsForFile(page, allFiles, fileData)
       const baseSlug = page.slug as FullSlug
@@ -210,8 +211,9 @@ export function transcludeBlockquote(scope: TranscludeScope, node: Element): voi
           targetSlug = match.slug
         }
       }
-      baseView =
-        baseRendered.views.find(entry => entry.slug === targetSlug) ?? baseRendered.views[0]
+      const pinnedView = baseRendered.views.find(entry => entry.slug === targetSlug)
+      baseViewPinned = targetSlug !== baseSlug && pinnedView !== undefined
+      baseView = pinnedView ?? baseRendered.views[0]
       baseTree = baseView ? baseView.tree : baseTree
     }
     if (!baseTree) {
@@ -223,6 +225,7 @@ export function transcludeBlockquote(scope: TranscludeScope, node: Element): voi
         componentData,
         baseRendered,
         baseView,
+        baseViewPinned,
       )
       const normalizedViewNodes = viewNodes.map(child =>
         normalizeHastElement(child as Element, slug, transcludeTarget),
