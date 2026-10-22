@@ -17,6 +17,7 @@ import lydiaScript from '../scripts/lydia.inline'
 //@ts-ignore
 import unbadgeScript from '../scripts/unbadge.inline'
 import SeeAlsoComponent from '../SeeAlso'
+import apparatusStyle from '../styles/apparatus.scss'
 import frMarginsStyle from '../styles/fr-margins.scss'
 
 export default (() => {
@@ -77,7 +78,7 @@ export default (() => {
     unbadgeScript,
     Workspace.afterDOMLoaded,
   )
-  Content.css = concatenateResources(SeeAlso.css, Workspace.css, frMarginsStyle)
+  Content.css = concatenateResources(SeeAlso.css, Workspace.css, frMarginsStyle, apparatusStyle)
   Content.sourceNames = inheritComponentSourceNames('Content', [SeeAlso, Workspace])
 
   return Content

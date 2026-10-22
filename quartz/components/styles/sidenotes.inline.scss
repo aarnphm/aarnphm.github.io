@@ -4,7 +4,10 @@ $sidenote-accent: var(--tertiary);
 $sidenote-secondary: var(--secondary);
 $sidenote-surface: var(--light);
 $sidenote-surface-muted: var(--lightgray);
-$sidenote-border-color: var(--gray);
+// a page can tone a box through --sidenote-border-color (fr-margins.scss); the box keeps that
+// tone when lit
+$sidenote-border-color: var(--sidenote-border-color, var(--gray));
+$sidenote-lit-border-color: var(--sidenote-border-color, var(--tertiary));
 $sidenote-width: 15.5rem;
 $sidenote-spacing: 1rem;
 $sidenote-gutter: 1.5rem;
@@ -39,7 +42,7 @@ $sidenote-enter-shift: 0.85rem;
     }
 
     ~ .sidenote-content {
-      border-color: $sidenote-accent;
+      border-color: $sidenote-lit-border-color;
       border-style: dashed;
       background-color: color-mix(in srgb, $sidenote-accent 10%, $sidenote-surface);
     }
@@ -125,7 +128,7 @@ $sidenote-enter-shift: 0.85rem;
 
   &:hover,
   &:focus-within {
-    border-color: $sidenote-accent;
+    border-color: $sidenote-lit-border-color;
     border-style: dashed;
     background-color: color-mix(in srgb, $sidenote-accent 10%, $sidenote-surface);
   }

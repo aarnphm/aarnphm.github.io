@@ -1658,6 +1658,23 @@ export function paintHill(
     }
   }
 
+  paintSkiers({ d, g, ink, h, onRange, dark, heads, plot, at, beat, lift })
+}
+
+function paintSkiers(scope: {
+  d: Uint8ClampedArray
+  g: Grid
+  ink: SkiInk
+  h: Hill
+  onRange: (i: number, j: number) => boolean
+  dark: boolean
+  heads: Voices['heads']
+  plot: (i: number, j: number, c: RGB, alpha: number) => void
+  at: ([x, y]: Pt) => Pt
+  beat: number
+  lift: (u: number) => Pt
+}) {
+  const { d, g, ink, h, onRange, dark, heads, plot, at, beat, lift } = scope
   const where = (o: Skier): Pt => {
     if (o.state === 'chair') {
       const u = clamp((h.lift - o.chair) / LIFT_LEN, 0, 1)

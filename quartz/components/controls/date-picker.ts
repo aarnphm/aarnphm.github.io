@@ -60,6 +60,8 @@ export interface DatePickerOptions {
   id: string
   label: string
   labels?: DatePickerLabels
+  /** A `.g-datepicker` the page already rendered; the picker attaches to it and builds no DOM. */
+  host?: HTMLElement
   selected: () => string | undefined
   min?: () => string | undefined
   max?: () => string | undefined
@@ -101,12 +103,10 @@ const icon = (className: string, d: string, width: string): SVGElement => {
   return svg
 }
 
-export const calendarIcon = (): SVGElement =>
-  icon(
-    'g-datepicker-icon',
-    'M4.5 2v2M11.5 2v2M3.5 5.5h9M4 3.5h8a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1Z',
-    '1.35',
-  )
+export const CALENDAR_ICON_PATH =
+  'M4.5 2v2M11.5 2v2M3.5 5.5h9M4 3.5h8a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1Z'
+
+export const calendarIcon = (): SVGElement => icon('g-datepicker-icon', CALENDAR_ICON_PATH, '1.35')
 
 export const arrowIcon = (direction: -1 | 1): SVGElement =>
   icon('g-icon', direction < 0 ? 'M10 3.5 5.5 8l4.5 4.5' : 'M6 3.5 10.5 8 6 12.5', '1.6')
@@ -158,22 +158,29 @@ export const buildDatePicker = (options: DatePickerOptions): DatePicker => {
   const labels = options.labels ?? englishDateLabels
   const min = () => options.min?.()
   const max = () => options.max?.()
-  const wrap = element('div', 'g-datepicker')
-  const trigger = button('g-datepicker-trigger', undefined, {
-    'aria-label': options.label,
-    'aria-haspopup': 'dialog',
-    'aria-expanded': 'false',
-  })
-  const text = element('span', 'g-datepicker-text')
-  trigger.append(text, calendarIcon())
-  const panel = element('div', 'g-datepicker-panel')
-  panel.id = options.id
-  panel.tabIndex = -1
-  panel.setAttribute('role', 'dialog')
-  panel.setAttribute('aria-label', `${options.label} · ${labels.text('date picker')}`)
-  panel.setAttribute('popover', 'auto')
-  trigger.setAttribute('aria-controls', panel.id)
-  wrap.append(trigger, panel)
+  const host = options.host
+  const wrap = host ?? element('div', 'g-datepicker')
+  const trigger =
+    host?.querySelector<HTMLButtonElement>('.g-datepicker-trigger') ??
+    button('g-datepicker-trigger', undefined, {
+      'aria-label': options.label,
+      'aria-haspopup': 'dialog',
+      'aria-expanded': 'false',
+    })
+  const text =
+    host?.querySelector<HTMLElement>('.g-datepicker-text') ?? element('span', 'g-datepicker-text')
+  const panel =
+    host?.querySelector<HTMLElement>('.g-datepicker-panel') ?? element('div', 'g-datepicker-panel')
+  if (!host) {
+    trigger.append(text, calendarIcon())
+    panel.id = options.id
+    panel.tabIndex = -1
+    panel.setAttribute('role', 'dialog')
+    panel.setAttribute('aria-label', `${options.label} · ${labels.text('date picker')}`)
+    panel.setAttribute('popover', 'auto')
+    trigger.setAttribute('aria-controls', panel.id)
+    wrap.append(trigger, panel)
+  }
 
   const closePanel = (restoreFocus = false): void => {
     if (panel.matches(':popover-open') && typeof panel.hidePopover === 'function')

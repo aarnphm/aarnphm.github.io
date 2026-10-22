@@ -1,6 +1,11 @@
 import type { ComponentChildren } from 'preact'
 import { useLayoutEffect, useRef, useState } from 'preact/hooks'
-import { buildDatePicker, englishDateLabels, type DatePickerLabels } from './date-picker'
+import {
+  buildDatePicker,
+  CALENDAR_ICON_PATH,
+  englishDateLabels,
+  type DatePickerLabels,
+} from './date-picker'
 import { addMonths, isoMonth, monthGridDates, parseIsoMonth } from './dates'
 import { MonthGrid } from './month-grid'
 import { useAnchoredPreview } from './use-anchored-preview'
@@ -66,7 +71,8 @@ const Arrow = ({ d }: { d: string }) => (
   </svg>
 )
 
-// The month jump is the shared date picker, mounted into a node this component owns.
+// The month jump is the shared date picker. Its trigger and panel shell are rendered here, so the
+// build's HTML already has them; the picker only attaches its handlers and fills the open panel.
 const MonthJump = ({
   id,
   month,
@@ -81,29 +87,62 @@ const MonthJump = ({
   const host = useRef<HTMLDivElement>(null)
   const state = useRef({ month, onPick })
   state.current = { month, onPick }
-  const text = useRef<HTMLElement | null>(null)
   useLayoutEffect(() => {
     const picker = buildDatePicker({
       id,
+      host: host.current!,
       label: labels.jump,
       labels: labels.picker,
       selected: () => `${state.current.month}-01`,
       onSelect: date => state.current.onPick(date.slice(0, 7)),
     })
-    text.current = picker.text
-    picker.text.setAttribute('aria-live', 'polite')
-    host.current?.append(picker.wrap)
     const unmount = picker.mount()
     return () => {
       picker.close()
       unmount()
-      picker.wrap.remove()
     }
   }, [])
-  useLayoutEffect(() => {
-    if (text.current) text.current.textContent = labels.picker.monthYear(`${month}-01`)
-  }, [month])
-  return <div ref={host} class="g-calendar-jump" />
+  return (
+    <div class="g-calendar-jump">
+      <div ref={host} class="g-datepicker">
+        <button
+          type="button"
+          class="g-datepicker-trigger"
+          aria-label={labels.jump}
+          aria-haspopup="dialog"
+          aria-expanded="false"
+          aria-controls={id}
+        >
+          <span class="g-datepicker-text" aria-live="polite">
+            {labels.picker.monthYear(`${month}-01`)}
+          </span>
+          <svg
+            class="g-datepicker-icon"
+            viewBox="0 0 16 16"
+            fill="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d={CALENDAR_ICON_PATH}
+              stroke="currentColor"
+              stroke-width="1.35"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+        <div
+          id={id}
+          class="g-datepicker-panel"
+          tabIndex={-1}
+          role="dialog"
+          aria-label={`${labels.jump} · ${labels.picker.text('date picker')}`}
+          popover="auto"
+        />
+      </div>
+    </div>
+  )
 }
 
 const Chip = ({

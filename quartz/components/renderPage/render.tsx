@@ -45,6 +45,7 @@ import {
   type RenderComponents,
   type RenderPageOptions,
 } from './page-chrome'
+import { renderTechnicalApparatus } from './technical-apparatus'
 import { applyTractatusLayout } from './tractatus'
 import { resolveTransclusions } from './transclude'
 
@@ -104,6 +105,7 @@ export function renderPageWithMetadata(
     renderBaseEmbeds(tree, componentData)
     renderStravaActivities(tree, slug)
     renderFrMargins(tree, componentData, ctx)
+    if (!renderOptions.forEmail) renderTechnicalApparatus(tree, componentData, ctx)
 
     if (componentData.fileData.frontmatter?.pageLayout === 'technical-tractatus') {
       applyTractatusLayout(tree)
