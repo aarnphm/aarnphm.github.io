@@ -2,8 +2,7 @@
 date: '2025-07-04'
 description: what does home mean to you?
 id: furnitures
-layout: technical
-modified: 2026-06-05 15:08:13 GMT-04:00
+modified: 2026-10-22 02:08:21 GMT-04:00
 tags:
   - evergreen
   - home

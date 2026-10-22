@@ -1,8 +1,8 @@
 ---
 date: '2024-01-08'
-description: public tool for understanding private life through wittgenstein's language-games, where llms represent massive corpus of human knowledge and patient interaction.
+description: language as a public tool for private life, wittgenstein's move from the picture theory to language-games, and what a language model represents.
 id: Language
-modified: 2026-06-05 15:08:13 GMT-04:00
+modified: 2026-10-22 11:26:44 GMT-04:00
 tags:
   - seed
 title: Language
@@ -14,13 +14,13 @@ important to our self-knowledge => emphasise through reading books.
 
 ## communication.
 
-circa [[movies/Philosophical Investigations]] by [[thoughts/Wittgenstein]]
+[[thoughts/Wittgenstein]] holds two views of language, also known as Early Wittgenstein and Late Wittgenstein.
 
-- Concept of "language-game"
-- The idea that each of us construct a pictures that we see the world through language.
-- Conflict arose when pictures are not aligned, often lead to context collapse.
+- In the [[library/Tractatus Logico-Philosophicus|_Tractatus_]], a sentence is ::a picture of a fact::: it means something because its parts are arranged the way the parts of the world are. The embed below is from this period.
+- In [[library/Philosophical Investigations]], A word's meaning is its use inside a "language-game", and no more "picture" concept— a shared activity with rules, such as giving orders, describing an object or telling a joke. He also warns that "a picture held us captive" (§115): one model of how language must work can stop us from looking at how it does work.
+- My reading: conflict starts when two people play different games with the same words and each assumes the other plays theirs. Online, where one sentence reaches many audiences at once, this shows up as context collapse.
 
-Possibly the most salient feature of [[thoughts/LLMs|LLMs]] is that the system is surprising patient per each interactions with humans.
+Possibly the most salient feature of [[thoughts/LLMs|LLMs]] is that the system is surprisingly patient in each interaction with humans.
 
 https://x.com/paulg/status/2000259667965165638
 
@@ -28,6 +28,6 @@ https://x.com/paulg/status/2000259667965165638
 
 ## [[thoughts/representations|representations]]
 
-[[thoughts/LLMs|Language models]] is ==one== massive corpus representation of human knowledge.
+A [[thoughts/LLMs|language model]] is ==one== compressed representation of a large corpus of human text. It learns which continuations of a text are likely, so whatever knowledge it holds, it holds through the way people have written.
 
-Techniques such as [[thoughts/deep learning|deep learning]] has risen to prominence due to its ability to learn from data, and in doing so, it has the capability to represent the world in a way that is more similar to how we perceive it.
+[[thoughts/deep learning|Deep learning]] rose to prominence because it learns its features from data, in place of features that people design by hand. Whether those learned features resemble how we perceive the world is an open question, and part of what [[thoughts/representations|representation]] research asks.
