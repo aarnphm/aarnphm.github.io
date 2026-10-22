@@ -1,5 +1,5 @@
-import type { Fonts } from './press-kit-card'
-import { SPORT_ICON, isActivityKind } from '../../plugins/stores/strava'
+import type { Fonts } from '../press-kit-card'
+import { SPORT_ICON, isActivityKind } from '../../../plugins/stores/strava'
 
 const NS = 'http://www.w3.org/2000/svg'
 

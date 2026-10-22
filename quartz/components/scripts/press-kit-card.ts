@@ -2,6 +2,7 @@ import type { Run } from './press-kit-text'
 import { drawCalendar } from './press-kit-card/calendar'
 import { chrome } from './press-kit-card/chrome'
 import { drawEntry, drawNote, drawQuote } from './press-kit-card/editorial'
+import { mathKey, prepareMath } from './press-kit-card/math'
 import {
   cardResolution,
   FORMATS,
@@ -11,10 +12,9 @@ import {
   type FormatKey,
   type Palette,
 } from './press-kit-card/spec'
+import { svgImage } from './press-kit-card/svg'
+import { trainingCardSvg } from './press-kit-card/training-card'
 import { svgLayers, type CardLayer, type CardScene, type LayerRenderer } from './press-kit-layers'
-import { mathKey, prepareMath } from './press-kit-math'
-import { svgImage } from './press-kit-svg'
-import { trainingCardSvg } from './press-kit-training-card'
 export { FORMATS, cardResolution, metricShown, palettes } from './press-kit-card/spec'
 export type {
   CardModel,
