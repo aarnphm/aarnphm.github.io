@@ -57,7 +57,7 @@ function mountControllerEvents(s: AnalyticsSession): () => void {
   }
 
   s.onPickerKey = (event: KeyboardEvent) => {
-    if (!s.inCompareMode()) return
+    if (!s.inCompareMode() || event.isComposing) return
     if (
       event.key === 'Enter' &&
       event.shiftKey &&
@@ -75,14 +75,16 @@ function mountControllerEvents(s: AnalyticsSession): () => void {
     ) {
       event.preventDefault()
       s.setSel(s.program.retrieve().selectedResult + 1)
-      s.resultItems()[s.program.retrieve().selectedResult]?.focus({ preventScroll: true })
+      if (event.target !== s.search)
+        s.resultItems()[s.program.retrieve().selectedResult]?.focus({ preventScroll: true })
     } else if (
       event.key === 'ArrowUp' ||
       (event.ctrlKey && (event.key === 'p' || event.key === 'P'))
     ) {
       event.preventDefault()
       s.setSel(s.program.retrieve().selectedResult - 1)
-      s.resultItems()[s.program.retrieve().selectedResult]?.focus({ preventScroll: true })
+      if (event.target !== s.search)
+        s.resultItems()[s.program.retrieve().selectedResult]?.focus({ preventScroll: true })
     } else if (event.key === 'Enter') {
       event.preventDefault()
       const its = s.resultItems()
@@ -130,7 +132,7 @@ function mountControllerEvents(s: AnalyticsSession): () => void {
         return
       }
       s.refreshPicker()
-      s.resultItems()[0]?.focus({ preventScroll: true })
+      s.search?.focus({ preventScroll: true })
     })
   }
 
@@ -360,6 +362,9 @@ function mountControllerEvents(s: AnalyticsSession): () => void {
 
   s.results?.addEventListener('keydown', s.onPickerKey)
 
+  s.search?.addEventListener('input', s.refreshPicker)
+  s.search?.addEventListener('keydown', s.onPickerKey)
+
   s.detail?.addEventListener('click', onCardToggle)
 
   document.addEventListener('keydown', s.onKey)
@@ -402,6 +407,8 @@ function mountControllerEvents(s: AnalyticsSession): () => void {
     window.removeEventListener('hashchange', s.onHashChange)
     s.results?.removeEventListener('click', s.onResultsClick)
     s.results?.removeEventListener('keydown', s.onPickerKey)
+    s.search?.removeEventListener('input', s.refreshPicker)
+    s.search?.removeEventListener('keydown', s.onPickerKey)
     s.detail?.removeEventListener('click', onCardToggle)
     document.removeEventListener('keydown', s.onKey)
     window.removeEventListener('tri:comparison-fill', s.onComparisonFill)

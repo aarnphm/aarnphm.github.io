@@ -162,8 +162,22 @@ export const comparisonReadout = <N>(
   return readout
 }
 
-export const comparisonChartHead = <N>(f: TriNodeFactory<N>, title: string, controls?: N): N => {
-  const head = f.el('div', 'tri-compare-chart-head')
+export const comparisonChartHead = <N>(
+  f: TriNodeFactory<N>,
+  title: string,
+  controls?: N,
+  readout = controls === undefined,
+): N => {
+  // A readout head holds the shared hover readout on its title row; with controls, the
+  // readout covers them while it shows.
+  const head = f.el(
+    'div',
+    [
+      'tri-compare-chart-head',
+      ...(readout ? ['tri-compare-chart-head--readout'] : []),
+      ...(readout && controls !== undefined ? ['tri-compare-chart-head--controls'] : []),
+    ].join(' '),
+  )
   f.add(
     head,
     f.el('div', 'tri-compare-title', title, { 'data-i18n': title }),

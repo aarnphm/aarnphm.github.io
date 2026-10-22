@@ -18,10 +18,15 @@ import { wireEmbedCopy } from '../../shell/timeline'
 import { analyticsPanelDefinition, type AnalyticsPanelRender } from '../catalog'
 import { analyticsForRange } from '../range'
 import {
+  activityCommandHints,
+  activityQueryTokens,
   activityResultItem,
   activityResultItems,
   detailHead,
+  matchesActivityQuery,
+  parseActivityQuery,
   setActivityResultSelection,
+  sortActivitiesBy,
 } from '../search'
 
 const RENDER_SLICE_MS = 8
@@ -257,6 +262,14 @@ export function mountActivityViews(s: AnalyticsSession) {
   }
 
   s.activate = (it: HTMLElement | undefined) => {
+    if (it?.dataset.insert && s.search) {
+      const tokens = activityQueryTokens(s.search.value)
+      tokens[tokens.length - 1] = it.dataset.insert
+      s.search.value = tokens.join(' ') + (it.dataset.insert.endsWith(':') ? '' : ' ')
+      s.search.focus()
+      s.refreshPicker()
+      return
+    }
     const id = it?.dataset.id
     if (!id) return
     if (s.inCompareMode()) s.toggleCompareActivity(id)
@@ -284,10 +297,26 @@ export function mountActivityViews(s: AnalyticsSession) {
     })
     s.results.appendChild(resultList)
     const sport = s.compareSport()
-    const acts = (s.data?.activities ?? []).filter(
-      a =>
-        s.compareActivityEligible(s.detailData?.details[String(a.id)]) &&
-        (!sport || a.sport === sport),
+    const tokens = activityQueryTokens(s.program.retrieve().query)
+    const query = parseActivityQuery(tokens)
+    const hints = activityCommandHints(
+      tokens.at(-1) ?? '',
+      'activities',
+      sport ? [sport] : undefined,
+    )
+    if (hints.length) {
+      const group = el('div', 'tri-ana-rgroup')
+      group.append(el('div', 'tri-ana-rlabel', 'suggestions'), ...hints)
+      resultList.appendChild(group)
+    }
+    const acts = sortActivitiesBy(
+      (s.data?.activities ?? []).filter(
+        a =>
+          s.compareActivityEligible(s.detailData?.details[String(a.id)]) &&
+          (!sport || a.sport === sport) &&
+          matchesActivityQuery(a, query),
+      ),
+      query.sortKey,
     )
     if (acts.length) {
       const grp = el('div', 'tri-ana-rgroup')
@@ -316,7 +345,7 @@ export function mountActivityViews(s: AnalyticsSession) {
         grp.appendChild(it)
       }
       resultList.appendChild(grp)
-    } else
+    } else if (!hints.length)
       resultList.appendChild(el('div', 'tri-ana-empty', s.context.formatter.text('no matches')))
     const index = Math.max(
       0,
@@ -327,6 +356,6 @@ export function mountActivityViews(s: AnalyticsSession) {
   }
 
   s.refreshPicker = (): void => {
-    s.program.dispatch({ type: 'query', value: '' })
+    s.program.dispatch({ type: 'query', value: s.search?.value ?? '' })
   }
 }

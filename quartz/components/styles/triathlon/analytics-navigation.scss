@@ -47,6 +47,29 @@
   min-width: 0;
 }
 
+.tri-compare-search-wrap {
+  display: none;
+  flex: 0 0 auto;
+  min-width: 0;
+
+  .tri-ana-search {
+    font-size: max(0.75rem, 12px);
+
+    &::placeholder {
+      color: var(--darkgray);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--dark);
+      outline-offset: -2px;
+    }
+  }
+}
+
+.tri-analytics--compare:not(.tri-analytics--detail) .tri-compare-search-wrap {
+  display: flex;
+}
+
 .tri-ana-chapters {
   margin-right: auto;
   min-width: 0;
@@ -205,6 +228,10 @@
     font-size: 16px;
     transform: scale(var(--tri-search-scale));
     transform-origin: left center;
+  }
+
+  .tri-compare-search-wrap .tri-ana-search {
+    font-size: 16px;
   }
 }
 
