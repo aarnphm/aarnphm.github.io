@@ -49,7 +49,7 @@ the last one returns the `vous`, so it pairs with `Comment allez-vous ?`.
 
 ## se présenter : dire son nom
 
-two frames: {{`Je m'appelle Marie.`}} and {{`Mon nom est Samuel.`}}; the second is common in Québec. you then spell the name aloud:
+two frames: {{`Je m'appelle Marie.`}} and {{`Mon nom est Samuel.`}}; the second is {{sidenotes[common in Québec]: registre : `Je me présente : …` formel, `Je m'appelle …` neutre, `Moi, c'est …` familier. → [[fr/phrases#les-présentations|phrases, les présentations]]}}. you then spell the name aloud:
 
 - `Bonjour ! Je m'appelle Marie. M-A-R-I-E`
 - `Allo ! Mon nom est Samuel. S-A-M-U-E-L`
@@ -79,7 +79,7 @@ the `-eure` line is the Québécois signature: the feminized forms (`ingénieure
 
 ## dire son origine, sa résidence et ses langues
 
-`Je viens…` agrees with the article of the country:
+`Je viens…` {{sidenotes[agrees with the article]: `de + le → du`, `de + les → des` ; `de` s'élide devant voyelle : `d'Italie`, `d'Haïti`. classement complet : [[fr/phrases#dire-son-origine|phrases, dire son origine]].}} of the country:
 
 | article du pays | pays                                                                                                  | je viens…            |
 | --------------- | ----------------------------------------------------------------------------------------------------- | -------------------- |
@@ -93,7 +93,7 @@ the `-eure` line is the Québécois signature: the feminized forms (`ingénieure
 
 résidence is one frame, `J'habite à` plus the city name: {{`J'habite à Québec.`}}, {{`J'habite à Montréal.`}}, {{`J'habite à Rome.`}}
 
-langues: `Je parle` plus the language, lowercase, no article: {{`allemand`}}, {{`anglais`}}, {{`espagnol`}}, {{`russe`}}, {{`arabe`}}, {{`mandarin`}}, {{`français`}}. {{`Je parle anglais et arabe.`}}
+langues: `Je parle` plus the language, {{sidenotes[lowercase, no article]: le verbe change le cadre : `parler` + langue nue, `se débrouiller en`, `un bon niveau de`, `ma langue maternelle est le`. → [[fr/phrases#parler-des-langues|phrases, parler des langues]]}}: {{`allemand`}}, {{`anglais`}}, {{`espagnol`}}, {{`russe`}}, {{`arabe`}}, {{`mandarin`}}, {{`français`}}. {{`Je parle anglais et arabe.`}}
 
 nationality is an adjective after `être`, lowercase,[^majuscule] and the feminine follows suffix families:
 
@@ -127,6 +127,19 @@ the negation squeezes the article: {{`des enfants`}} becomes {{`pas d'enfants`}}
 the résumé folds all six slots into one dialogue: `Allo ! Je m'appelle Monica. Je suis colombienne. Je suis … Je viens de Colombie et j'habite à … Je parle … et français. Je suis … et j'ai 1 enfant, c'est un garçon.` vous pouvez maintenant saluer quelqu'un, entrer en contact et vous présenter : nom, profession, nationalité, lieu de résidence, langue(s) parlée(s), état civil, enfant(s). the personal details (âge, date de naissance, coordonnées) continue in [[fr/episode-2]].
 
 related: [[fr/episode-2|épisode 2]], [[fr/episode-3|épisode 3]], [[fr/orthography-phonetics|orthographe]], [[fr/les-nombres|les nombres]]
+
+## comprendre les expressions
+
+| français                  | sens en anglais    | usage                                                             |
+| ------------------------- | ------------------ | ----------------------------------------------------------------- |
+| {{`Salut !`}}             | hi; bye            | Familier, à l'arrivée comme au départ.                            |
+| {{`Bye !`}}               | bye                | Emprunt à l'anglais, oral informel au Québec.                     |
+| {{`À bientôt !`}}         | see you soon       | Au départ, quand on compte se revoir.                             |
+| {{`J'habite à`}}          | I live in          | `à` + ville ; devant un pays : `au Canada`, `en France`.          |
+| {{`le trait d'union`}}    | hyphen             | Prénoms composés : `Marie-Claude`, `Jean-François`.               |
+| {{`une garderie`}}        | daycare            | Québec ; en France, `une crèche` avant 3 ans.                     |
+| {{`célibataire`}}         | single             | Invariable : `Il est célibataire.`, `Elle est célibataire.`       |
+| {{`conjoint(e) de fait`}} | common-law partner | Formulaires québécois ; en France : `en union libre`, `pacsé(e)`. |
 
 [^allo]: in France `Allô` (with the circumflex) exists only on the telephone; the Québécois `Allo !`, spelled without the accent, greets someone face to face. the book files it under informal arrivals next to `Salut !`.
 

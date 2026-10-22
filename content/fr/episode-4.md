@@ -85,7 +85,7 @@ the full form, worth transcribing because it is the administrative template the 
 > [!note] règles du jeu
 > chaque joueur, à tour de rôle, lance le dé, déplace son pion selon le chiffre obtenu et répond à la question inscrite dans la case. le premier arrivé à la case 50 gagne. sur une case `« échelle »`, un autre joueur pose une question : bonne réponse, on monte l'échelle; mauvaise réponse, on reste sur place et on rejoue au tour suivant. sur une case `« tête de serpent »`, bonne réponse, on reste sur place et on rejoue au tour suivant; mauvaise réponse, on descend le long du serpent.[^serpent]
 
-the ladders climb from cases 6 and 26; the snake heads sit on 28 and 44. the other 46 cases, transcribed as a drill bank:
+the ladders climb from cases 6 and 26; the snake heads sit on 28 and 44. the other 46 cases, transcribed as a drill bank, {{sidenotes[mix both registers]: les deux colonnes de [[fr/episode-2#poser-des-questions--informel-vs-formel|épisode 2]] : case 18 `C'est quoi votre prénom ?` (oral), case 19 `Quel est votre nom ?` (formel), case 32 `À quelle heure vous étudiez…` sans inversion.}}:
 
 | case | question                                                      |
 | ---- | ------------------------------------------------------------- |
@@ -145,8 +145,8 @@ the ladders climb from cases 6 and 26; the snake heads sit on 28 and 44. the oth
 the bilan teaches almost nothing, and the exceptions cluster in the game:
 
 - `Qu'est-ce que c'est ?` asks what a thing is; the answer is `C'est un/une …` : {{`C'est un stylo.`}}, {{`C'est un bureau.`}}
-- `Que veut dire « X » ?` asks what X means : {{`« M. » veut dire Monsieur.`}} the titles themselves live in [[fr/episode-2]].
-- `Voici` presents something to the listener, and `de` marks the owner: `Voici les livres de France.` French does not use the English possessive `'s`.
+- `Que veut dire « X » ?` asks {{sidenotes[what X means]: à l'oral : `Qu'est-ce que ça veut dire ?`, `Ça veut dire quoi ?`. réponse : `« X » veut dire…`, `ça signifie…`.}} : {{`« M. » veut dire Monsieur.`}} the titles themselves live in [[fr/episode-2]].
+- {{sidenotes[`Voici`]: `voici` (proche) et `voilà` (loin) en principe ; à l'oral, `voilà` sert partout.}} presents something to the listener, and `de` marks the owner: `Voici les livres de France.` French does not use the English possessive `'s`.
 - {{`se trouver`}} doubles {{`être situé`}} : `3 objets qui se trouvent dans votre sac` are just objects that are in your bag.
 - classroom action verbs in the vous-imperative, extending the consignes of [[fr/episode-3]]:
 
@@ -162,6 +162,17 @@ the bilan teaches almost nothing, and the exceptions cluster in the game:
 - form vocabulary: `sexe` ({{`féminin`}}/{{`masculin`}}), `Prénom(s)` in the plural, `Téléphone (jour)` against `Téléphone cellulaire`, `facultatif` for an optional field.
 
 related: [[fr/episode-1]], [[fr/episode-2]], [[fr/episode-3]], [[fr/les-nombres]]
+
+## comprendre les expressions
+
+| français                | sens en anglais | usage                                                            |
+| ----------------------- | --------------- | ---------------------------------------------------------------- |
+| {{`Voyons voir !`}}     | let's see       | Oral : on réfléchit à voix haute avant de répondre.              |
+| {{`À vous de jouer !`}} | your turn       | Au tour par tour : `C'est à toi !`, `C'est ton tour.`            |
+| {{`un dé`}}             | die             | Pluriel : `des dés`.                                             |
+| {{`un pion`}}           | game piece      | On le déplace selon le chiffre du dé.                            |
+| {{`à tour de rôle`}}    | in turn         | Chacun son tour, dans l'ordre.                                   |
+| {{`facultatif`}}        | optional        | Contraire : `obligatoire`, souvent marqué `*` sur un formulaire. |
 
 [^annee]: only two of the five printed pairs decide themselves: 2016 minus 1988 gives 28, 2016 minus 1964 gives 52, so the book froze its arithmetic at 2016, the year before publication. `6 ans`, `16 ans` et `78 ans` have no printed year that fits; that part of the matching runs on the audio (CD1, piste 41), not on arithmetic.
 

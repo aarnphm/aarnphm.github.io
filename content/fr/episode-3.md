@@ -21,7 +21,7 @@ the source method writes clock times with a space, `9 h 30`, which i keep in pro
 > [!note] écrire l'heure
 > one writes the hours `1 h` through `12 h` and then `13 h` through `24 h`. the letter `h` is the abbreviation of the word `heure`, so `9 h` reads {{`neuf heures`}}.
 
-`Il est…` plus the hour. the half-hour splits into two registers: the everyday reading counts up to `et demie`, then switches to the next hour with `moins`; the digital reading just states the minutes.[^moins]
+{{sidenotes[`Il est…`]: `il` impersonnel, sans référent, comme dans `il y a` et `il fait chaud` ([[fr/episode-14|épisode 14]]).}} plus the hour. the half-hour splits into two registers: the everyday reading counts up to `et demie`, then switches to the next hour with `moins`; the digital reading just states the minutes.[^moins]
 
 | time | everyday                             | digital                           |
 | ---- | ------------------------------------ | --------------------------------- |
@@ -66,7 +66,7 @@ a course has a start and an end. `commence à` for the start, `finit à` for the
 - {{`Le cours est de 9 h à midi.`}}
 - {{`La pause est de 10 h à 10 h 45.`}}
 
-the same `de … à …` describes a day: {{`Je travaille de 9 h à 16 h.`}} for the week you switch to `du … au …`, which already folds in the article: {{`du lundi au vendredi`}}, {{`du jeudi au dimanche`}}.
+the same `de … à …` describes a day: {{`Je travaille de 9 h à 16 h.`}} for the week you switch to `du … au …`, which {{sidenotes[already folds in the article]: `de + le → du`, `à + le → au` : les contractions de `Je viens du Brésil` ([[fr/episode-1#dire-son-origine-sa-résidence-et-ses-langues|épisode 1]]).}}: {{`du lundi au vendredi`}}, {{`du jeudi au dimanche`}}.
 
 the days are lowercase, no capital. the book's calendar starts on {{`dimanche`}}:
 
@@ -146,7 +146,7 @@ the cat sits in six places, one preposition each.
 
 ## comprendre une consigne
 
-une `consigne` is an instruction. in this exercise, the six `consignes` are written in the `vous` form of the imperative.
+une `consigne` is an instruction. in this exercise, the six `consignes` are written in the `vous` form of {{sidenotes[the imperative]: le présent sans sujet : `vous écoutez → Écoutez`, `tu écoutes → Écoute` (le `-s` tombe pour les verbes en `-er`). conjugaisons : [[fr/verbs|verbes]].}}.
 
 | consigne        | gloss         |
 | --------------- | ------------- |
@@ -161,7 +161,7 @@ une `consigne` is an instruction. in this exercise, the six `consignes` are writ
 
 ## les couleurs
 
-color adjectives follow the noun: {{`un cahier rouge`}}, {{`une porte verte`}}. most add `-e` for the feminine, which often resurfaces a final consonant.
+color adjectives follow the noun: {{`un cahier rouge`}}, {{`une porte verte`}}. most add `-e` for the feminine, which often resurfaces a final consonant. the {{sidenotes[plural]: sauf `orange` et `marron`, des noms employés comme adjectifs, invariables : `des sacs orange`.}} adds `-s`: {{`des cahiers verts`}}.
 
 | masculin     | féminin       | gloss  |
 | ------------ | ------------- | ------ |
@@ -178,6 +178,18 @@ color adjectives follow the noun: {{`un cahier rouge`}}, {{`une porte verte`}}. 
 
 > [!note] faits d'ici
 > faire la file. au Canada, les gens font très souvent la file: à l'arrêt d'autobus, à l'épicerie, à la banque. the queue is the default, and respecting it is part of following the consignes.
+
+## comprendre les expressions
+
+| français                | sens en anglais  | usage                                                            |
+| ----------------------- | ---------------- | ---------------------------------------------------------------- |
+| {{`De rien !`}}         | you're welcome   | Le Québec dit aussi `Bienvenue !`, calque de _you're welcome_.   |
+| {{`un réveille-matin`}} | alarm clock      | Québec ; en France : `un réveil`.                                |
+| {{`des souliers`}}      | shoes            | Courant au Québec ; vieilli en France, qui dit `des chaussures`. |
+| {{`le bocal`}}          | jar, fishbowl    | Ici le bocal à poissons, derrière lequel se cache le chat.       |
+| {{`une consigne`}}      | instruction      | Aussi la consigne d'une bouteille : _deposit_.                   |
+| {{`brun`}}              | brown            | En France, `marron` pour les objets, `brun` pour les cheveux.    |
+| {{`faire la file`}}     | to stand in line | Québec ; en France : `faire la queue`.                           |
 
 [^space]: the method spaces the abbreviation, `9 h 30`, following the typographic convention that puts a thin space between the number and the unit. plenty of everyday writing closes it up to `9h30`. the abbreviation itself is just `h` for `heure`, and it never takes a period.
 

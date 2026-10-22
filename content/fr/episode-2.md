@@ -38,7 +38,7 @@ une carte d'identité ({{`fiche d'identité`}}) liste cinq champs:
 
 ### l'âge
 
-l'âge se dit avec le verbe `avoir`, pas `être`. le français compte les années comme une possession: on _a_ un âge.
+l'âge se dit avec le verbe {{sidenotes[`avoir`]: même verbe pour les enfants (`J'ai 2 enfants`, [[fr/episode-1#létat-civil-et-les-enfants|épisode 1]]) et, plus tard, `avoir faim`, `avoir froid`, `avoir mal`.}}, pas `être`. le français compte les années comme une possession: on _a_ un âge.
 
 - {{`J'ai 4 ans.`}}
 - {{`J'ai 21 ans.`}}
@@ -102,11 +102,11 @@ chaque chiffre se prononce séparément, un par un. l'indicatif régional (`514`
 | `@`     | `arobas` (ou {{`a commercial`}}) |
 | `.`     | {{`point`}}                      |
 
-au Québec, un email s'appelle un `courriel` (mot-valise de `courrier` + `électronique`). exemple: `mariet@editionsmd.ca` se lit {{`mariet arobas editionsmd point ca`}}.
+au Québec, un email s'appelle un {{sidenotes[`courriel`]: la France le recommande aussi depuis 2003 (Journal officiel), mais l'oral dit `un mail`. autres paires : [[fr/quebec-france#québec-vs-france|québec et france]]}} (mot-valise de `courrier` + `électronique`). exemple: `mariet@editionsmd.ca` se lit {{`mariet arobas editionsmd point ca`}}.
 
 ## poser des questions : informel vs formel
 
-le manuel oppose deux registres qui gardent tous les deux le `vous` de politesse. l'informel relâche la syntaxe (`c'est quoi`, ordre sujet-verbe, pas d'inversion) ; le formel passe par l'inversion (`quel est`, `avez-vous`). le `tu` vraiment familier viendra plus tard.
+le manuel oppose deux registres qui gardent tous les deux le `vous` de politesse. l'informel relâche la syntaxe (`c'est quoi`, ordre sujet-verbe, pas d'inversion) ; le formel passe par {{sidenotes[l'inversion]: trois façons de poser la même question, de l'oral à l'écrit : intonation `Vous habitez où ?`, `est-ce que` `Où est-ce que vous habitez ?`, inversion `Où habitez-vous ?`.}} (`quel est`, `avez-vous`). le `tu` vraiment familier viendra plus tard.
 
 | information       | situation informelle                | situation formelle                                        |
 | ----------------- | ----------------------------------- | --------------------------------------------------------- |
@@ -163,6 +163,17 @@ une {{`fiche d'inscription`}} type demande:
 - {{`Courriel`}}
 
 exemple rempli: `Hélène Ferron`, `H2P 4T8`, `mariet@editionsmd.ca`.
+
+## comprendre les expressions
+
+| français                   | sens en anglais | usage                                                                      |
+| -------------------------- | --------------- | -------------------------------------------------------------------------- |
+| {{`nom de famille`}}       | surname         | `Nom` seul, sur un formulaire, veut dire la même chose.                    |
+| {{`l'indicatif régional`}} | area code       | `514`, `438` : Montréal ; `450` : la couronne ; `418` : Québec et l'Est.   |
+| {{`arobas`}}               | at sign (@)     | Forme québécoise ; la France dit plutôt `arobase`.                         |
+| {{`C'est quoi`}}           | what is         | Oral ; à l'écrit : `Quel est…`, `Quelle est…`.                             |
+| {{`code postal`}}          | postal code     | Format canadien lettre-chiffre-lettre, chiffre-lettre-chiffre : `H2P 4T8`. |
+| {{`Mademoiselle`}}         | Miss            | Vieilli ; la France l'a retiré des formulaires administratifs en 2012.     |
 
 ## à retenir
 
