@@ -1,3 +1,4 @@
+import type { MotionTuning } from './motion-tuning'
 import { trailRandom } from './random'
 
 type Leaf = {
@@ -52,10 +53,11 @@ const restLife = 24_000
 // Leaves drop from each broadleaf crown, sway and tumble in whole-pixel steps, race sideways as
 // the scene's gust front passes the tree, and settle on the ground around its trunk before they
 // fade. The pet walking through a drift kicks the leaves up again.
-export function mountLeafFall(scene: HTMLElement, signal: AbortSignal) {
+export function mountLeafFall(scene: HTMLElement, signal: AbortSignal, tuning: MotionTuning) {
   const document = scene.ownerDocument
   const view = document.defaultView
-  if (!view || view.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  if (!view) return
+  const motion = view.matchMedia('(prefers-reduced-motion: reduce)')
   const canvas = document.createElement('canvas')
   canvas.className = 'trail-leaf-fall'
   canvas.hidden = true
@@ -157,6 +159,8 @@ export function mountLeafFall(scene: HTMLElement, signal: AbortSignal) {
     const dt = Math.min(0.05, last ? (time - last) / 1000 : 0)
     last = time
     const visible =
+      !motion.matches &&
+      !document.hidden &&
       scene.dataset.trailVisible === 'true' &&
       scene.dataset.trailOpening === 'complete' &&
       scene.dataset.foliageSeason === 'autumn' &&
@@ -164,7 +168,7 @@ export function mountLeafFall(scene: HTMLElement, signal: AbortSignal) {
     canvas.hidden = !visible
     if (!visible) leaves.length = 0
     // The trail's weather stamps the shared schedule's rate (world-schedule.ts).
-    const rate = visible ? Number(scene.dataset.leafRate) || 0 : 0
+    const rate = visible ? ((Number(scene.dataset.leafRate) || 0) * tuning.leaves) / 100 : 0
     if (rate > 0 && time - measured > 5000) measure(time)
     const air = wind()
     const bounds = scene.getBoundingClientRect()
@@ -264,6 +268,8 @@ export function mountLeafFall(scene: HTMLElement, signal: AbortSignal) {
     if (!frame && !signal.aborted && !document.hidden) frame = view.requestAnimationFrame(step)
   }
   document.addEventListener('visibilitychange', wake, { signal })
+  motion.addEventListener('change', wake, { signal })
+  scene.addEventListener('trail:motion-tuning', wake, { signal })
 
   // A change of season, a shown trail or resumed motion starts the fall again.
   const watch = new MutationObserver(wake)

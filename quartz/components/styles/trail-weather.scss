@@ -1,3 +1,5 @@
+@use './trail-scene-controls.scss';
+
 .homepage-trail-scene {
   .trail-weather {
     pointer-events: none;
@@ -128,7 +130,7 @@
       }
     }
     &:focus-visible {
-      outline: 1px dashed var(--darkgray);
+      outline: 2px solid var(--dark);
       outline-offset: 2px;
     }
   }
@@ -158,66 +160,8 @@
       color: color-mix(in srgb, var(--darkgray) 80%, var(--dark));
     }
   }
-  .trail-scene-controls {
-    position: fixed;
-    inset: auto;
-    margin: 0;
-    width: max-content;
-    max-width: calc(100vw - 16px);
-    padding: 0;
-    border: 1px solid var(--lightgray);
-    border-radius: 0;
-    background: var(--light);
-    color: var(--darkgray);
-    font: 10px/1.6 var(--codeFont);
-    pointer-events: auto;
-    &:popover-open {
-      display: grid;
-      grid-template-columns: max-content minmax(0, 1fr);
-      column-gap: 8px;
-    }
-  }
-  // A dotted underline marks a season or scene chosen by the visitor.
-  .trail-season-toggle,
-  .trail-holiday-toggle {
-    display: grid;
-    grid-column: 1 / -1;
-    grid-template-columns: subgrid;
-    align-items: baseline;
-    min-width: 44px;
-    min-height: 24px;
-    padding: 5px 12px;
-    border: 0;
-    border-radius: 0;
-    background: transparent;
-    color: inherit;
-    font: inherit;
-    text-align: left;
-    pointer-events: auto;
-    cursor: pointer;
-    & + button {
-      border-top: 1px solid var(--lightgray);
-    }
-    &[data-forced='true'] .trail-scene-value {
-      text-decoration: underline dotted;
-      text-underline-offset: 2px;
-    }
-    &:hover {
-      color: var(--dark);
-    }
-    &:focus-visible {
-      outline: 1px dashed var(--darkgray);
-      outline-offset: -3px;
-    }
-  }
   .trail-scene:not([data-trail-opening='complete']) .trail-scene-toggle {
     visibility: hidden;
-  }
-  @media (pointer: coarse) {
-    .trail-season-toggle,
-    .trail-holiday-toggle {
-      min-height: 44px;
-    }
   }
   // Fog is paper laid over the ranges through the dither screen.
   .trail-weather-fog {

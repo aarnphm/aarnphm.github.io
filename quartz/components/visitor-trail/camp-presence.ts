@@ -14,6 +14,7 @@ export function connectCampPresence(
   signal: AbortSignal,
   destination: number,
   onVisitors: (visitors: TrailVisitor[]) => void,
+  campCount: () => number = () => sceneSettings.camps.sites,
 ) {
   const document = scene.ownerDocument
   const view = document.defaultView
@@ -58,7 +59,7 @@ export function connectCampPresence(
         'camp' in campsite &&
         typeof campsite.camp === 'number' &&
         Number.isFinite(campsite.camp)
-          ? Math.max(0, Math.min(sceneSettings.camps.sites - 1, Math.floor(campsite.camp)))
+          ? Math.max(0, Math.min(campCount() - 1, Math.floor(campsite.camp)))
           : (previous?.camp ?? 0)
       visitors.push({ id, own: peer.isMe, camp })
       const joined =
@@ -210,6 +211,16 @@ export function connectCampPresence(
     }
   }, 1000)
   host.addEventListener('trail:show', publish, { signal })
+  host.addEventListener(
+    'trail:destination',
+    event => {
+      const next = 'detail' in event ? event.detail : null
+      if (typeof next !== 'number' || !Number.isFinite(next)) return
+      destination = Math.max(0, Math.min(campCount() - 1, Math.floor(next)))
+      room.presence.setMyPresence('campsite', { camp: destination, joined: true })
+    },
+    { signal },
+  )
   document.addEventListener(
     'visibilitychange',
     () => {
