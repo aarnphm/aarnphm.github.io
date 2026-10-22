@@ -101,11 +101,11 @@ ten kinship riddles, each `C'est … de mon/ma …` over three checkbox choices.
 | i   | {{`C'est le conjoint de ma fille.`}}      | {{`mon gendre`}}, `mon neveu`, `mon fils`                     | `mon gendre`         |
 | j   | {{`C'est la sœur de mon conjoint.`}}      | {{`ma belle-sœur`}}, `ma tante`, `ma belle-mère`              | `ma belle-sœur`      |
 
-the distractors are the near-misses one generation off (`nièce` for `tante`, `cousin` for `neveu`). the in-law answers use `beau-` or `belle-` in `beau-frère`, `belle-sœur`, and `belle-fille`. `gendre` is the separate term for a daughter's spouse.
+the distractors are the near-misses one generation off (`nièce` for `tante`, `cousin` for `neveu`). the in-law answers use {{sidenotes[`beau-` or `belle-`]: double sens : `beau-père` = father-in-law et stepfather, `belle-fille` = daughter-in-law et stepdaughter.}} in `beau-frère`, `belle-sœur`, and `belle-fille`. `gendre` is the separate term for a daughter's spouse.
 
 ### 2. trouvez l'erreur…
 
-eight sets of four sentences; each set hides exactly one wrong verb, and the fault line is always `avoir` against `être`.
+eight sets of four sentences; each set hides exactly one wrong verb, and the fault line is always {{sidenotes[`avoir` against `être`]: l'âge avec `avoir` : [[fr/episode-2#donner-ses-informations-personnelles|épisode 2]] ; conjugaisons : [[fr/verbs|verbes]].}}.
 
 |     | phrases                                                                                                 | l'erreur             | correction               |
 | --- | ------------------------------------------------------------------------------------------------------- | -------------------- | ------------------------ |
@@ -156,13 +156,26 @@ seven scrambled words, all places in an édifice, the vocabulary of [[fr/episode
 the review exercises stay inside épisodes 5 à 7; the new language hides in the three school messages and the riddle frame:
 
 - {{`avoir besoin de`}} : {{`Votre enfant a besoin d'une règle et de ciseaux.`}}, to need something; the needed thing follows `de`.
-- `ne … plus` : `il ne trouve plus les siens`, no longer, the next negation after `ne … pas`.
+- {{sidenotes[`ne … plus`]: même sandwich que `ne … pas` autour du verbe conjugué ([[fr/episode-7#la-négation|épisode 7]]) ; à l'oral, le `ne` tombe : `il trouve plus`.}} : `il ne trouve plus les siens`, no longer, the next negation after `ne … pas`.
 - {{`les siens`}} : his own ones, a possessive pronoun standing in for `sa règle et ses ciseaux`; the message expects recognition, nothing more.
-- `en` : {{`Il doit en avoir une tous les jours.`}}, the pronoun stands for the missing `collation`; word for word, he must of-it have one every day.[^imparfait]
+- {{sidenotes[`en`]: reprend un nom après une quantité : `Tu as des enfants ? — J'en ai deux.`}} : {{`Il doit en avoir une tous les jours.`}}, the pronoun stands for the missing `collation`; word for word, he must of-it have one every day.[^imparfait]
 - `Merci de + infinitif` closes a written request, {{`Merci de nous envoyer le tout dès que possible.`}}, with {{`le tout`}} (the whole lot) and {{`dès que possible`}} (as soon as possible); {{`Merci de votre collaboration.`}} does the same with a noun.
 - `demander à quelqu'un de + infinitif` : {{`Nous demandons à chaque enfant d'avoir des bottes pour jouer dehors.`}}
 - the riddle frame {{`Qui est-ce ? C'est la sœur de ma mère.`}} composes kinship by chaining `de`: my mother's sister is `ma tante`, and one more hop (`la fille du frère de ma mère`) still lands on a single word, `ma cousine`.
 - consignes extending the [[fr/episode-3]] list: `Associez`, `Complétez`, `Formulez`, `Identifiez`, `Tracez`, `Trouvez l'erreur`.
+
+## comprendre les expressions
+
+| français               | sens en anglais     | usage                                                             |
+| ---------------------- | ------------------- | ----------------------------------------------------------------- |
+| {{`la garderie`}}      | daycare             | Québec ; en France, `une crèche` avant 3 ans.                     |
+| {{`sous-sol`}}         | basement            | Sous le `1er étage` au Québec, sous le rez-de-chaussée en France. |
+| {{`texter`}}           | to text             | Québec, familier ; en France : `envoyer un texto`, `un SMS`.      |
+| {{`avoir besoin de`}}  | to need             | + nom ou infinitif ; `d'` devant voyelle : `besoin d'une règle`.  |
+| {{`les siens`}}        | his/her own ones    | S'accorde avec l'objet : `le sien`, `la sienne`, `les siennes`.   |
+| {{`collation`}}        | snack               | Québec, à l'école ; en France, `le goûter` l'après-midi.          |
+| {{`dès que possible`}} | as soon as possible | Écrit comme oral ; synonyme : `au plus vite`.                     |
+| {{`gendre`}}           | son-in-law          | Synonyme : `beau-fils`, qui veut aussi dire stepson.              |
 
 related: [[fr/episode-5]], [[fr/episode-6]], [[fr/episode-7]], [[fr/les-nombres]]
 

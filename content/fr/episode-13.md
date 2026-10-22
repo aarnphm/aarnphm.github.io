@@ -37,20 +37,26 @@ Pour **b**, on coche seulement les deux symptômes mentionnés dans la transcrip
 
 ### comprendre les expressions
 
-| français                   | sens en anglais                | usage                                                                   |
-| -------------------------- | ------------------------------ | ----------------------------------------------------------------------- |
-| {{un bobo}}                | a minor hurt or health problem | Mot familier, souvent employé avec les enfants.                         |
-| {{être malade}}            | to be ill                      | {{`Je suis malade.`}}                                                   |
-| {{avoir une santé de fer}} | to be in very good health      | Expression de la page d'ouverture.                                      |
-| {{avoir le rhume}}         | to have a cold                 | Forme du corrigé ; {{`avoir un rhume`}} est aussi possible.             |
-| {{faire de la fièvre}}     | to have a fever                | Expression travaillée dans le manuel.                                   |
-| {{attraper un rhume}}      | to catch a cold                | Dans le dialogue, Hélène dit qu'elle pense avoir attrapé un gros rhume. |
-| {{rien de très grave}}     | nothing very serious           | Hélène décrit ainsi son problème.                                       |
-| {{C'est plate.}}           | That's a shame / That sucks.   | Français québécois familier, une réaction à une situation décevante.    |
-| {{C'est pas grave.}}       | It's okay / It doesn't matter. | Forme orale sans `ne` ; à l'écrit : `Ce n'est pas grave.`               |
-| {{Merci d'avoir appelé.}}  | Thanks for calling.            | Pour remercier la personne qui téléphone.                               |
-| {{Y'a pas de quoi.}}       | You're welcome.                | Forme orale de `Il n'y a pas de quoi.`                                  |
-| {{Je t'embrasse.}}         | Sending you a kiss.            | Formule affectueuse à la fin de l'appel.                                |
+| français                    | sens en anglais                | usage                                                                   |
+| --------------------------- | ------------------------------ | ----------------------------------------------------------------------- |
+| {{un bobo}}                 | a minor hurt or health problem | Mot familier, souvent employé avec les enfants.                         |
+| {{être malade}}             | to be ill                      | {{`Je suis malade.`}}                                                   |
+| {{avoir une santé de fer}}  | to be in very good health      | Expression de la page d'ouverture.                                      |
+| {{avoir le rhume}}          | to have a cold                 | Forme du corrigé ; {{`avoir un rhume`}} est aussi possible.             |
+| {{faire de la fièvre}}      | to have a fever                | Expression travaillée dans le manuel.                                   |
+| {{attraper un rhume}}       | to catch a cold                | Dans le dialogue, Hélène dit qu'elle pense avoir attrapé un gros rhume. |
+| {{rien de très grave}}      | nothing very serious           | Hélène décrit ainsi son problème.                                       |
+| {{C'est plate.}}            | That's a shame / That sucks.   | Français québécois familier, une réaction à une situation décevante.    |
+| {{C'est pas grave.}}        | It's okay / It doesn't matter. | Forme orale sans `ne` ; à l'écrit : `Ce n'est pas grave.`               |
+| {{Merci d'avoir appelé.}}   | Thanks for calling.            | Pour remercier la personne qui téléphone.                               |
+| {{Y'a pas de quoi.}}        | You're welcome.                | Forme orale de `Il n'y a pas de quoi.`                                  |
+| {{Je t'embrasse.}}          | Sending you a kiss.            | Formule affectueuse à la fin de l'appel.                                |
+| {{Bonne fête !}}            | Happy birthday!                | Québec : l'anniversaire ; France : `Joyeux anniversaire !`.             |
+| {{un œil}}                  | an eye                         | Pluriel irrégulier : `les yeux` ; `à l'œil`, `aux yeux`.                |
+| {{la langue}}               | tongue; language               | Deux sens : `tirer la langue`, `la langue française`.                   |
+| {{avoir mal au cœur}}       | to feel nauseous               | Faux ami : nausée, pas une douleur au cœur.                             |
+| {{Ayoye !}}                 | Ouch!                          | Québec familier ; France : `Aïe !`.                                     |
+| {{Prompt rétablissement !}} | Get well soon!                 | Écrit, sur une carte ; à l'oral : `Bon rétablissement !`.               |
 
 **Une fête** peut désigner une célébration ou une soirée ; dans **ta fête** et **Bonne fête !**, le contexte québécois du dialogue est l'anniversaire.
 
@@ -63,7 +69,7 @@ Pour **b**, on coche seulement les deux symptômes mentionnés dans la transcrip
 
 Le verbe **se sentir** garde son pronom : {{`je me sens`}}, {{`tu te sens`}}, {{`il/elle/on se sent`}}, {{`nous nous sentons`}}, {{`vous vous sentez`}}, {{`ils/elles se sentent`}}. La négation entoure le groupe pronom-verbe : **je ne me sens pas bien**.
 
-`Elle va aller au lit` annonce l'action suivante : **aller au présent + infinitif**, le futur proche qui sera étudié dans l'épisode 14. Les deux formes de `aller` ont une fonction différente dans cette phrase.
+`Elle va aller au lit` annonce l'action suivante : **aller au présent + infinitif**, {{sidenotes[le futur proche]: `aller` au présent + infinitif : `Il va faire chaud.` → [[fr/episode-14#parler-du-futur--le-futur-proche|épisode 14]]}} qui sera étudié dans l'épisode 14. Les deux formes de `aller` ont une fonction différente dans cette phrase.
 
 ## les parties du corps
 
@@ -116,7 +122,7 @@ Sur le dessin : cases à gauche, **le nez, la bouche, la gorge** ; cases à droi
 
 ### avoir mal : la construction
 
-**Sujet + avoir au présent + mal + à + article + partie du corps.** On emploie généralement l'article défini dans cette construction : {{`J'ai mal à la tête.`}}
+**Sujet + avoir au présent + mal + à + article + partie du corps.** On emploie généralement {{sidenotes[l'article défini]: pas de possessif comme en anglais (_my head hurts_) : `J'ai mal à la tête`, jamais `à ma tête`.}} dans cette construction : {{`J'ai mal à la tête.`}}
 
 | sujet          | avoir mal                |
 | -------------- | ------------------------ |
@@ -192,7 +198,7 @@ Dans l'ordre des expressions imprimées : **d, c, a, b**.
 
 On laisse **Bon appétit !** et **Tant pis pour toi !** décochés. Le premier concerne un repas ; le second signifie _too bad for you_ et n'est pas une formule de réconfort ici.
 
-À l'impératif, le sujet n'est pas exprimé. **Repose-toi** et **soigne-toi** placent `toi` après le verbe avec un trait d'union. Les verbes réguliers en `-er` perdent le `s` de `tu` dans ces formes : `tu te reposes → repose-toi`. **Prendre** et **faire** donnent **prends** et **fais**.
+{{sidenotes[À l'impératif]: même chute du `-s` que les consignes de [[fr/episode-3#comprendre-une-consigne|épisode 3]] : `tu écoutes → Écoute`.}}, le sujet n'est pas exprimé. **Repose-toi** et **soigne-toi** placent `toi` après le verbe avec un trait d'union. Les verbes réguliers en `-er` perdent le `s` de `tu` dans ces formes : `tu te reposes → repose-toi`. **Prendre** et **faire** donnent **prends** et **fais**.
 
 Pour vouvoyer : {{`Reposez-vous bien !`}}, {{`Prenez soin de vous !`}}, {{`Soignez-vous bien !`}}, {{`Faites attention à vous !`}}
 
@@ -381,7 +387,7 @@ Le cadre historique du manuel mentionne un tarif de timbre daté de **2017**. Ce
 
 ## questions fermées et ouvertes pour pratiquer
 
-Les réponses suivantes sont des **modèles**, pas des renseignements personnels. Une question fermée demande une confirmation ; une question ouverte demande une information. **Est-ce que** peut apparaitre dans les deux types, comme dans [[fr/lessons/261006]].
+Les réponses suivantes sont des **modèles**, pas des renseignements personnels. {{sidenotes[Une question fermée]: trois formes, de l'oral à l'écrit : intonation, `est-ce que`, inversion. → [[fr/episode-2#poser-des-questions--informel-vs-formel|épisode 2]]}} demande une confirmation ; une question ouverte demande une information. **Est-ce que** peut apparaitre dans les deux types, comme dans [[fr/lessons/261006]].
 
 | question fermée                                  | réponse modèle                        |
 | ------------------------------------------------ | ------------------------------------- |

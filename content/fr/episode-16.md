@@ -21,7 +21,7 @@ Réponses vérifiées avec le **corrigé p. 155** et les **transcriptions CD2, p
 
 Sur le dessin, cases **à gauche**, de haut en bas : **l'épaule, le bras, la jambe**. Cases **à droite** : **la main, le coude, le pied**.
 
-On conjugue **avoir** selon le sujet, puis la préposition **à** se combine avec l'article : **au** dos, **à la** tête, **à l'oreille**, **aux** dents. Exemple : {{`J'ai mal à l'épaule.`}}
+On conjugue **avoir** selon le sujet, puis la préposition **à** {{sidenotes[se combine avec l'article]: même contraction après `jouer à` : `jouer au soccer` (p. 116). construction : [[fr/episode-13#avoir-mal--la-construction|épisode 13]].}} : **au** dos, **à la** tête, **à l'oreille**, **aux** dents. Exemple : {{`J'ai mal à l'épaule.`}}
 
 | image, exercice 2 | réponse                       |
 | ----------------- | ----------------------------- |
@@ -74,7 +74,7 @@ Conditions actuelles : **soleil et nuages, 10 °C**. Prévisions : **lundi 11 °
 | Val-d'Or | 0 °C        | {{`zéro degré`}}          |
 | Kuujjuaq | −4 °C       | {{`moins quatre degrés`}} |
 
-Question : {{`Quelle température fait-il à Kuujjuaq ?`}} → {{`Il fait moins quatre degrés Celsius.`}} **Zéro degré**, **un degré** et **moins un degré** prennent le singulier.
+Question : {{`Quelle température fait-il à Kuujjuaq ?`}} → {{`Il fait moins quatre degrés Celsius.`}} **Zéro degré**, **un degré** et **moins un degré** {{sidenotes[prennent le singulier]: le pluriel commence à 2 : `1,5 degré` reste au singulier.}}.
 
 ## vêtements et futur proche, p. 116
 
@@ -107,7 +107,7 @@ Pour continuer avec les températures : {{`Mercredi, il va faire zéro degré à
 
 ### exercice 4 : les projets d'Hélène et de Benoit
 
-**Sujet + aller au présent + infinitif**. La négation entoure **aller conjugué** : {{`Il ne va pas pleuvoir.`}} La phrase {{`Je vais à la banque.`}} est au présent ; {{`Je vais aller à la banque.`}} est au futur proche.
+**Sujet + aller au présent + infinitif**. {{sidenotes[La négation]: à l'oral québécois, le `ne` tombe souvent : `Il va pas pleuvoir`. → [[fr/episode-14#la-négation-et-les-questions|épisode 14]]}} entoure **aller conjugué** : {{`Il ne va pas pleuvoir.`}} La phrase {{`Je vais à la banque.`}} est au présent ; {{`Je vais aller à la banque.`}} est au futur proche.
 
 | moment                         | phrase                                                        |
 | ------------------------------ | ------------------------------------------------------------- |
@@ -118,7 +118,7 @@ Pour continuer avec les températures : {{`Mercredi, il va faire zéro degré à
 | mercredi prochain, Benoit      | {{`Mercredi prochain, il va jouer au soccer avec des amis.`}} |
 | bientôt, les deux              | {{`Bientôt, ils vont aller en vacances dans le Sud.`}}        |
 
-**Demain**, **la semaine prochaine**, **mercredi prochain** et **bientôt** situent l'action. **Va / vont** s'accorde avec le sujet ; **aller, manger, commencer, jouer** restent à l'infinitif.
+**Demain**, **la semaine prochaine**, **mercredi prochain** et **bientôt** {{sidenotes[situent l'action]: `prochain` suit le jour, sans article ; `le mercredi` veut dire chaque mercredi.}}. **Va / vont** s'accorde avec le sujet ; **aller, manger, commencer, jouer** restent à l'infinitif.
 
 ## repas, invitations et préférences, p. 117
 
@@ -192,3 +192,16 @@ Chacun lance le dé et avance son pion. Réponse correcte : on reste sur la case
 > {{`Demain, il va faire beau. Je vais aller au parc avec des amis. Je vais porter un t-shirt et des shorts. Chaque personne va apporter un plat et ses boissons. Moi, je vais préparer une salade. J'aime les légumes et j'adore les fruits. Quelle est ta boisson préférée ?`}}
 
 Ce bilan termine les épisodes du manuel A1 disponible. Pour réviser une difficulté, retourner à l'épisode **13**, **14** ou **15** correspondant.
+
+## comprendre les expressions
+
+| français               | sens en anglais     | usage                                                                |
+| ---------------------- | ------------------- | -------------------------------------------------------------------- |
+| {{le destinataire}}    | the recipient       | Adresse au centre de l'enveloppe.                                    |
+| {{l'expéditeur}}       | the sender          | Féminin : l'expéditrice.                                             |
+| {{orages}}             | thunderstorms       | Masculin : un orage.                                                 |
+| {{une tuque}}          | a knit winter hat   | France : un bonnet.                                                  |
+| {{des mitaines}}       | mittens             | France : des moufles ; là-bas, une mitaine laisse les doigts libres. |
+| {{piquenique}}         | picnic              | Orthographe rectifiée de pique-nique.                                |
+| {{potluck}}            | potluck             | Anglicisme courant au Québec ; en français : un repas-partage.       |
+| {{apportez votre vin}} | bring your own wine | Restaurant québécois sans permis d'alcool.                           |

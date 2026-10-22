@@ -32,22 +32,31 @@ Pour **a**, le corrigé retient **Bof !** et **C'est difficile de travailler**. 
 
 ### comprendre les expressions
 
-| français                           | anglais ou explication                                      |
-| ---------------------------------- | ----------------------------------------------------------- |
-| {{la météo}}                       | the weather, or a weather forecast according to context     |
-| {{un bulletin météo}}              | a weather report                                            |
-| {{les prévisions météorologiques}} | weather forecasts                                           |
-| {{la canicule}}                    | a heatwave, une période de très forte chaleur               |
-| {{un bureau climatisé}}            | an air-conditioned office                                   |
-| {{un ventilateur}}                 | a fan                                                       |
-| {{la chaleur}} / {{le froid}}      | heat / cold                                                 |
-| {{une journée fraiche}}            | a cool day                                                  |
-| {{jouer dans le sable}}            | to play in the sand                                         |
-| {{Bof !}}                          | réaction peu enthousiaste                                   |
-| {{Ouf !}}                          | réaction à une difficulté ou soulagement, selon le contexte |
-| {{chanceux / chanceuse}}           | lucky, accord avec la personne                              |
+| français                           | sens en anglais                                             | usage                                                                 |
+| ---------------------------------- | ----------------------------------------------------------- | --------------------------------------------------------------------- |
+| {{la météo}}                       | the weather, or a weather forecast according to context     | Abrégé de `météorologie` ; invariable : `des bulletins météo`.        |
+| {{un bulletin météo}}              | a weather report                                            |                                                                       |
+| {{les prévisions météorologiques}} | weather forecasts                                           |                                                                       |
+| {{la canicule}}                    | a heatwave, une période de très forte chaleur               |                                                                       |
+| {{un bureau climatisé}}            | an air-conditioned office                                   | Québec oral : `l'air climatisé` ; France : `la clim`.                 |
+| {{un ventilateur}}                 | a fan                                                       |                                                                       |
+| {{la chaleur}} / {{le froid}}      | heat / cold                                                 |                                                                       |
+| {{une journée fraiche}}            | a cool day                                                  | Orthographe rectifiée ; traditionnelle : `fraîche`.                   |
+| {{jouer dans le sable}}            | to play in the sand                                         |                                                                       |
+| {{Bof !}}                          | réaction peu enthousiaste                                   |                                                                       |
+| {{Ouf !}}                          | réaction à une difficulté ou soulagement, selon le contexte |                                                                       |
+| {{chanceux / chanceuse}}           | lucky, accord avec la personne                              |                                                                       |
+| {{des gougounes}}                  | flip-flops                                                  | Québec familier ; France : `des tongs`.                               |
+| {{une camisole}}                   | a tank top                                                  | Québec ; France : `un débardeur`.                                     |
+| {{une tuque}}                      | a knit winter hat                                           | Québec ; France : `un bonnet`.                                        |
+| {{des espadrilles}}                | sneakers                                                    | France : `des baskets` ; là-bas, l'espadrille a une semelle de corde. |
+| {{un foulard}}                     | a scarf                                                     | Québec, écharpe d'hiver ; France : `une écharpe`.                     |
+| {{un chandail}}                    | a sweater                                                   | Québec ; France : `un pull`.                                          |
+| {{des mitaines}}                   | mittens                                                     | Faux ami : en France, gants sans doigts ; mittens = `des moufles`.    |
+| {{des souliers}}                   | shoes                                                       | Québec courant ; France : `des chaussures`.                           |
+| {{présentement}}                   | currently                                                   | Québec courant ; France : `en ce moment`, `actuellement`.             |
 
-Pour décrire le temps : {{`Il fait chaud.`}} Pour décrire ce que ressent une personne : {{`J'ai chaud.`}} ou {{`J'ai froid.`}} La phrase **Il chaud** manque du verbe **fait**.
+Pour décrire le temps : {{`Il fait chaud.`}} Pour décrire {{sidenotes[ce que ressent une personne]: `avoir` + nom sans article, comme `avoir mal` ([[fr/episode-13#avoir-mal--la-construction|épisode 13]]) et `avoir faim`.}} : {{`J'ai chaud.`}} ou {{`J'ai froid.`}} La phrase **Il chaud** manque du verbe **fait**.
 
 ## comprendre un bulletin météo
 
@@ -93,7 +102,7 @@ Les expressions sont associées par phénomène dans l'exercice. **On annonce / 
 | vent      | {{`On annonce du vent.`}}     | {{`Il vente.`}} / {{`C'est venteux.`}}          |
 | nuages    | {{`On prévoit des nuages.`}}  | {{`C'est nuageux.`}} / {{`Il y a des nuages.`}} |
 
-Le **il** de `il pleut`, `il neige` ou `il fait chaud` est impersonnel : il ne désigne pas une personne. **Il vente** est la forme travaillée dans le manuel québécois ; **il y a du vent** exprime aussi la présence de vent.
+Le **il** de `il pleut`, `il neige` ou `il fait chaud` est {{sidenotes[impersonnel]: même `il` sans référent que `Il est 8 h` ([[fr/episode-3#lheure|épisode 3]]) et `il y a`.}} : il ne désigne pas une personne. **Il vente** est la forme travaillée dans le {{sidenotes[manuel québécois]: en France, `il vente` est rare à l'oral ; on dit `il y a du vent`.}} ; **il y a du vent** exprime aussi la présence de vent.
 
 ### piste 28 : les régions, p. 104
 
@@ -145,7 +154,7 @@ L'encadré p. 104 parle des **écarts de température** entre l'été et l'hiver
 
 ### la construction
 
-**Sujet + aller au présent + infinitif.** Le verbe **aller** s'accorde avec le sujet ; le deuxième verbe reste à l'infinitif.
+**Sujet + aller au présent + infinitif.** Le verbe **aller** s'accorde avec le sujet ; le deuxième verbe {{sidenotes[reste à l'infinitif]: même schéma que `vouloir` ou `pouvoir` + infinitif : `Je veux sortir.` → [[fr/verbs#formes-à-mémoriser|verbes]]}}.
 
 | sujet          | aller au présent      | exemple au futur proche                 |
 | -------------- | --------------------- | --------------------------------------- |
@@ -320,7 +329,7 @@ Un **parapluie** apparait aussi dans l'entrée. Il ne fait pas partie de la list
 
 ### porter un vêtement
 
-**Porter** signifie _to wear_ dans ce contexte : {{`je porte`}}, {{`tu portes`}}, {{`il/elle/on porte`}}, {{`nous portons`}}, {{`vous portez`}}, {{`ils/elles portent`}}.
+**Porter** signifie _to wear_ {{sidenotes[dans ce contexte]: `porter` = avoir sur soi ; `mettre` = l'action de s'habiller : `Je mets ma tuque.`}} : {{`je porte`}}, {{`tu portes`}}, {{`il/elle/on porte`}}, {{`nous portons`}}, {{`vous portez`}}, {{`ils/elles portent`}}.
 
 - {{`Je porte un manteau.`}} : présent.
 - {{`Demain, je vais porter un manteau.`}} : futur proche.
