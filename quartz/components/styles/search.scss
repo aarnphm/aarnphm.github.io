@@ -79,8 +79,9 @@
     width: 100%;
     justify-content: space-between;
 
-    &:focus {
-      outline: 0;
+    &:focus-visible {
+      outline: 2px solid var(--dark);
+      outline-offset: 2px;
     }
 
     & > p {
@@ -460,7 +461,6 @@
   }
 
   // inline base search bar for base views
-  #popover-base-search-bar,
   #base-search-bar {
     display: flex;
     align-items: center;

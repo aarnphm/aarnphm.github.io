@@ -151,8 +151,26 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='bookca
     border-color: var(--dark);
   }
 
+  // Focus usually lands on the selected topic, so it must differ from the selected dark fill.
+  // An underline bar marks focus in both states; an unselected topic also takes a grey fill.
+  // A pseudo-element, because the label clips a text-decoration underline.
   &:focus-visible {
+    position: relative;
     outline: none;
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset-inline: 0.375rem;
+      inset-block-end: 0.375rem;
+      block-size: 2px;
+      background: currentColor;
+    }
+  }
+
+  &:not([aria-selected='true']):focus-visible {
+    color: var(--dark);
+    background: var(--lightgray);
   }
 
   @media (hover: hover) and (pointer: fine) {

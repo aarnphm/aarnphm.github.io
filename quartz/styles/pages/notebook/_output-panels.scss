@@ -264,10 +264,15 @@ article.notebook-runtime-page,
 article.notebook-page,
 article.notebook-runtime-page,
 .slides-root {
-  .notebook-output-tab:not(:disabled):hover,
+  .notebook-output-tab:not(:disabled):hover {
+    color: var(--dark);
+  }
+
+  // Inset: the tablist clips an outside ring. The selected tab already has dark text.
   .notebook-output-tab:not(:disabled):focus-visible {
     color: var(--dark);
-    outline: 0;
+    outline: 2px solid var(--dark);
+    outline-offset: -2px;
   }
 }
 
