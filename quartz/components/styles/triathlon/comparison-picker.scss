@@ -264,7 +264,6 @@ $compare-swatches: '.tri-compare-swatch, .tri-compare-legend-swatch, .tri-compar
     min-width: 1.5rem;
     min-height: 1.5rem;
     margin: 0;
-    font-size: 0.75rem;
     font-weight: 400;
     color: var(--darkgray);
     border-radius: var(--radius-none);
@@ -275,10 +274,15 @@ $compare-swatches: '.tri-compare-swatch, .tri-compare-legend-swatch, .tri-compar
       border-color: var(--dark);
     }
 
-    &:focus-visible,
-    &[aria-selected='true']:focus-visible {
+    // The tabs abut, so the ring sits inside the tab; outside it would cover the neighbours.
+    &:focus-visible {
       outline: 2px solid var(--dark);
-      outline-offset: 1px;
+      outline-offset: -2px;
+    }
+
+    &[aria-selected='true']:focus-visible {
+      outline-color: var(--light);
+      outline-offset: -4px;
     }
   }
 }

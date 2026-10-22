@@ -345,7 +345,8 @@ $compare-ink: color-mix(in oklab, var(--tri-compare-color) var(--tri-compare-ink
     top: 50%;
     right: 0;
     z-index: 2;
-    max-width: 100%;
+    // Title and readout share the 0.75rem code font, so the title's length in ch is its width.
+    max-width: calc(100% - var(--tri-compare-title-width, 0ch) - 0.6rem);
     padding-inline-start: 0.45rem;
     background: var(--light);
     transform: translateY(-50%);
