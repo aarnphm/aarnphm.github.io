@@ -14,9 +14,11 @@ title: registre soutenu
 ```jsx imports={RegisterLadder}
 <RegisterLadder
   label="échelle de registre"
-  pairs='{"qc":{"fam":["C’est plate, y’a pas de quoi.","forme orale sans *ne* ; *plate* et *y’a pas de quoi* sont québécois familiers."],"std":["C’est dommage, il n’y a pas de quoi.","le *ne* revient ; *dommage* remplace *plate*, compris partout."],"sou":["C’est regrettable, je vous en prie.","registre écrit ou formel ; *je vous en prie* au lieu de *il n’y a pas de quoi*."]},"fr":{"fam":["C’est nul, y a pas de quoi.","en France, *nul* ou *chiant* ; *plate* ne se dit pas."],"std":["C’est dommage, il n’y a pas de quoi.","le standard est le même des deux côtés de l’Atlantique."],"sou":["C’est regrettable, je vous en prie.","le soutenu aussi : la variation est surtout dans le familier."]}}'
+  pairs='{"qc":{"fam":["C’est plate que tu puisses pas venir.","*plate* est familier au Québec ; le *ne* de *ne… pas* est omis."],"std":["C’est dommage que tu ne puisses pas venir.","*dommage* remplace *plate* ; la négation complète revient."],"sou":["Je regrette que vous ne puissiez vous joindre à nous.","*je regrette*, le vouvoiement et *vous joindre à nous* donnent ici un ton plus formel."]},"fr":{"fam":["C’est nul que tu puisses pas venir.","*nul* est familier ; le *ne* est omis, comme dans cet exemple québécois."],"std":["C’est dommage que tu ne puisses pas venir.","Cet exemple standard convient aussi en France."],"sou":["Je regrette que vous ne puissiez vous joindre à nous.","Même formulation dans cet exemple ; le registre dépend aussi du contexte et de la relation."]}}'
 />
 ```
+
+Pour répondre à un remerciement : {{`Il n’y a pas de quoi`}} ou {{`Je vous en prie`}} ([OQLF](https://vitrinelinguistique.oqlf.gouv.qc.ca/21469/les-emprunts-a-langlais/emprunts-semantiques/emploi-deconseille-de-lemprunt-bienvenue)). La forme orale {{`Y a pas de quoi`}} omet {{`il`}} et {{`n’`}} ; cette réduction ne suffit pas à identifier une variété régionale.
 
 ## Connecteurs formels
 

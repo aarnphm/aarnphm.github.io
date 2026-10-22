@@ -204,4 +204,6 @@ Ce bilan termine les épisodes du manuel A1 disponible. Pour réviser une diffic
 | {{des mitaines}}       | mittens             | France : des moufles ; là-bas, une mitaine laisse les doigts libres. |
 | {{piquenique}}         | picnic              | Orthographe rectifiée de pique-nique.                                |
 | {{potluck}}            | potluck             | Anglicisme courant au Québec ; en français : un repas-partage.       |
-| {{apportez votre vin}} | bring your own wine | Restaurant québécois sans permis d'alcool.                           |
+| {{apportez votre vin}} | bring your own wine | On apporte son vin ; permis avec option « pour servir » au Québec.   |
+
+La [RACJ](https://www.racj.gouv.qc.ca/alcool/vendre-ou-servir-des-boissons-alcooliques-pour-consommation-sur-place/permis-de-restaurant) rattache cette formule au permis de restaurant avec l’option « pour servir ».

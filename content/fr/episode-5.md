@@ -2,7 +2,7 @@
 date: '2026-07-14'
 description: épisode 5, la famille, les possessifs mon-ma-mes, c'est et ce sont, faire connaissance
 id: episode-5
-modified: 2026-07-14 21:00:00 GMT-04:00
+modified: 2026-10-22 07:10:31 GMT-04:00
 tags:
   - fr
   - language
@@ -51,7 +51,7 @@ la famille Dupuis makes you say all of it at once. `André` et `Claire Dupuis` h
 
 ## les possessifs
 
-three Mémos spread one rule across the épisode: the determinant sits before the noun, and the noun that follows {{sidenotes[chooses its form]: devant voyelle, `ma`/`ta`/`sa` → `mon`/`ton`/`son` : `mon amie`, `son école`.}}. the possessor picks the series; the possessor's gender changes nothing.
+the determinant sits before the noun, and the noun that follows {{sidenotes[chooses its form]: devant voyelle, `ma`/`ta`/`sa` → `mon`/`ton`/`son` : `mon amie`, `son école`.}}.
 
 | possesseur     | + nom masculin singulier | + nom féminin singulier | + nom pluriel      |
 | -------------- | ------------------------ | ----------------------- | ------------------ |
