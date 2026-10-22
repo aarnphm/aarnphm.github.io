@@ -1,13 +1,15 @@
 @use '../../styles/variables.scss' as *;
 
-// One margin column on /fr pages, Locher style: a prose block opens with its number `(n)`, and the
-// column holds `§ label (n)` entries for it. Wide screens hang the group left of the text and join
-// it to the number with a leader line (drawn by fr-margins.inline.ts); narrow screens fold the
-// group under the block and the label toggles it.
-$fr-line: color-mix(in srgb, var(--gray) 55%, transparent);
-$fr-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+// The apparatus of a /fr page, Locher style: a prose block opens with its number `(n)`, and the
+// margin holds `§ label (n)` entries for it. Wide screens hang the entries beside the text in the
+// sidenote column; where there is no margin the labels open the block in parentheses, before the
+// text, and each toggles its body in a fold under the block. No boxes: one hairline joins each
+// entry to its number through the gutter (drawn by fr-margins.inline.ts), and hovering an entry or
+// its block lights the pair.
+$fr-line: color-mix(in srgb, var(--gray) 45%, transparent);
 $fr-column: 15.5rem;
-$fr-gutter: 2.5rem;
+// wide enough for a leader with its gap and dash; the page's sidenotes move out to the same edge
+$fr-gutter: 3.5rem;
 
 article[data-fr-mode] {
   position: relative;
@@ -18,17 +20,26 @@ article[data-fr-mode] {
 }
 
 .fr-n {
-  margin-inline-end: 0.35em;
+  // opens the block's first line, as Locher sets it; the leader arrives just before it
+  margin-inline-end: 0.4em;
   font-family: var(--codeFont);
-  font-size: var(--text-meta);
+  font-size: 0.62rem;
+  font-style: normal;
+  font-weight: 400;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
   color: var(--darkgray);
 }
 
-.fr-group {
+.fr-anchor.fr-hot > .fr-n {
+  color: var(--dark);
+}
+
+.fr-group,
+.fr-fold {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--space-4);
   min-width: 0;
   font-family: var(--bodyFont);
   font-size: 0.85rem;
@@ -45,7 +56,7 @@ article[data-fr-mode] {
   --course-workspace-line: #{$fr-line};
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: var(--space-2);
   min-width: 0;
 }
 
@@ -59,6 +70,10 @@ article[data-fr-mode] {
   font-size: var(--text-meta);
   font-variant-numeric: tabular-nums;
   text-align: start;
+}
+
+.fr-group.fr-hot .fr-entry-label {
+  color: var(--dark);
 }
 
 .fr-entry-body {
@@ -75,20 +90,6 @@ article[data-fr-mode] {
   min-height: 5rem;
 }
 
-// notes and "cité par" share the card box: 1px line on the page background, same padding, full width
-.fr-notes,
-.fr-cited {
-  box-sizing: border-box;
-  width: 100%;
-  padding: 0.5rem 0.6rem;
-  border: 1px solid $fr-line;
-}
-
-.fr-cited > .fr-gloss:first-child {
-  padding-top: 0;
-  border-top: 0;
-}
-
 .fr-leaders {
   display: none;
   position: absolute;
@@ -100,12 +101,26 @@ article[data-fr-mode] {
     fill: none;
     stroke: $fr-line;
     stroke-width: 1;
+    shape-rendering: crispEdges;
+  }
+
+  path.fr-hot {
+    stroke: var(--dark);
   }
 }
 
 article[data-fr-mode='margin'] {
   .fr-leaders {
     display: block;
+  }
+
+  // sidenotes share the entries' edge
+  .sidenote-content.sidenote-left {
+    left: calc(-1 * (#{$fr-column} + #{$fr-gutter}));
+  }
+
+  .sidenote-content.sidenote-right {
+    right: calc(-1 * (#{$fr-column} + #{$fr-gutter}));
   }
 
   .fr-group {
@@ -126,39 +141,89 @@ article[data-fr-mode='margin'] {
 }
 
 article[data-fr-mode='inline'] {
-  .fr-group {
-    margin-block: var(--space-2);
+  // the label carries the number; only a cell keeps its own, for the groups set after its table
+  .fr-n {
+    display: none;
   }
 
-  // folded groups of one block read as a single list of labels
-  .fr-group + .fr-group {
-    margin-top: calc(var(--space-2) * -1);
+  :is(td, th).fr-anchor > .fr-n {
+    display: inline;
+  }
+
+  // Locher's fallback: `(§ label (n))` opens the block in the text's own type, in ink one step
+  // lighter; the body, when opened, sits in a fold under the block (fr-margins.inline.ts)
+  .fr-group:not([data-out]) {
+    display: contents;
+
+    > .fr-entry {
+      display: contents;
+    }
+
+    .fr-entry-label {
+      display: inline;
+      margin-inline-end: 0.4em;
+      font: inherit;
+      color: var(--darkgray);
+
+      &::before {
+        content: '(';
+      }
+
+      &::after {
+        content: ')';
+      }
+
+      @media (pointer: coarse) {
+        padding-block: 0.5em;
+      }
+    }
+
+    .fr-entry-body {
+      display: none;
+    }
+  }
+
+  .fr-fold {
+    margin-top: var(--space-2);
+  }
+
+  // the groups of a table sit after it as a list of labels
+  .fr-group[data-out] {
+    margin-block: var(--space-2);
+
+    + .fr-group[data-out] {
+      margin-top: calc(var(--space-2) * -1);
+    }
+
+    .fr-entry-label {
+      min-height: 1.5rem;
+      text-decoration: underline;
+      text-underline-offset: 0.2em;
+
+      @media (pointer: coarse) {
+        min-height: 44px;
+      }
+    }
+
+    .fr-entry:not([data-open]) > .fr-entry-body {
+      display: none;
+    }
   }
 
   .fr-entry-label {
-    min-height: 1.5rem;
     cursor: pointer;
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
 
     &:focus-visible {
       outline: 2px solid var(--dark);
       outline-offset: 2px;
     }
-
-    @media (pointer: coarse) {
-      min-height: 44px;
-    }
-  }
-
-  .fr-entry:not([data-open]) > .fr-entry-body {
-    display: none;
   }
 }
 
 // a popover is a preview of the page, not a place to review or write
 .popover {
   .fr-group,
+  .fr-fold,
   .fr-n,
   .fr-leaders {
     display: none;
@@ -175,6 +240,7 @@ article[data-fr-mode='inline'] {
   color: var(--darkgray);
 }
 
+// mono is for readouts: counts, dates, the login link
 .fr-label,
 .fr-meta {
   font-family: var(--codeFont);
@@ -192,12 +258,11 @@ article[data-fr-mode='inline'] {
   color: var(--dark);
 }
 
+// one card at a time: the question, then the answer under a hairline
 .fr-card {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  padding: 0.5rem 0.6rem;
-  border: 1px solid $fr-line;
+  gap: var(--space-2);
 
   &[hidden] {
     display: none;
@@ -214,30 +279,33 @@ article[data-fr-mode='inline'] {
 }
 
 .fr-a {
-  padding-top: 0.5rem;
+  padding-top: var(--space-2);
   border-top: 1px solid $fr-line;
 }
 
 .fr-bar {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.25rem;
+  gap: var(--space-1) var(--space-3);
 }
 
+// actions are words, set like the page's own links; the row keeps a 1.5rem reach
 .fr-btn {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
   align-self: flex-start;
   min-height: 1.5rem;
-  padding: 0.15rem 0.5rem;
-  border: 1px solid var(--dark);
+  padding: 0;
+  border: 0;
   border-radius: var(--radius-none);
-  background: var(--light);
+  background: transparent;
   color: var(--dark);
   font-family: var(--codeFont);
   font-size: var(--text-meta);
   text-transform: lowercase;
+  text-decoration: underline;
+  text-decoration-color: var(--gray);
+  text-underline-offset: 0.2em;
   cursor: pointer;
 
   &[hidden] {
@@ -251,7 +319,7 @@ article[data-fr-mode='inline'] {
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      background: $fr-surface;
+      text-decoration-color: var(--dark);
     }
   }
 
@@ -259,25 +327,14 @@ article[data-fr-mode='inline'] {
     min-height: 44px;
   }
 
+  // a note's own actions sit after its date, quieter than the entry's
   &.fr-link {
-    min-height: 0;
-    padding: 0;
-    border: 0;
-    background: transparent;
     color: var(--darkgray);
-    font-size: inherit;
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
 
     @media (hover: hover) and (pointer: fine) {
       &:hover {
-        background: transparent;
         color: var(--dark);
       }
-    }
-
-    @media (pointer: coarse) {
-      min-height: 44px;
     }
   }
 }
@@ -285,9 +342,7 @@ article[data-fr-mode='inline'] {
 .fr-note {
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
-  padding-top: 0.35rem;
-  border-top: 1px solid $fr-line;
+  gap: var(--space-1);
   font-style: italic;
 
   .fr-meta {
@@ -295,11 +350,16 @@ article[data-fr-mode='inline'] {
   }
 }
 
+.fr-note + .fr-note {
+  padding-top: var(--space-2);
+  border-top: 1px solid $fr-line;
+}
+
 .fr-editor {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 0.25rem;
+  gap: var(--space-2);
 }
 
 .fr-area {
@@ -321,18 +381,25 @@ article[data-fr-mode='inline'] {
   }
 }
 
+// a gloss is one line of the lexicon: the term in ink, its sense, then where it is said
 .fr-gloss {
-  padding-top: 0.35rem;
-  border-top: 1px solid $fr-line;
+  display: block;
 
   b {
     font-weight: 500;
     color: var(--dark);
   }
+
+  > .fr-meta {
+    margin-top: 0.1rem;
+    font-family: var(--bodyFont);
+    font-size: 0.78rem;
+    color: var(--darkgray);
+  }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .fr-btn {
-    transition: none;
-  }
+.fr-gloss + .fr-gloss {
+  margin-top: var(--space-2);
+  padding-top: var(--space-2);
+  border-top: 1px solid $fr-line;
 }

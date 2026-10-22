@@ -1,7 +1,7 @@
 // Margin column of /fr pages, Locher style: numbered `§ label (n)` entries (review of the section's
-// cards through /api/flashcards, the reader's notes, the lexicon, citing lessons) joined to their
-// paragraph by a leader line and a tick. The markup comes from renderPage/fr-margins.ts. Under the
-// width that leaves a margin, each group folds under its paragraph and the label toggles it.
+// cards through /api/flashcards, the reader's notes, the lexicon, citing lessons) beside the block
+// that carries the same number. The markup comes from renderPage/fr-margins.ts. Under the width
+// that leaves a margin, each group folds under its paragraph and the label toggles it.
 
 interface Face {
   front: string
@@ -38,7 +38,7 @@ const button = (label: string, className = 'fr-btn') => {
   return node
 }
 
-// Margins change height when a card flips or a note is added; the leaders follow.
+// Margins change height when a card flips or a note is added; the stack below follows.
 let relayout: () => void = () => {}
 
 const decks = new Map<string, Promise<Map<string, Face>>>()
@@ -195,10 +195,15 @@ function mountNotes(root: HTMLElement, signal: AbortSignal) {
     })
 }
 
-// Room for a 15.5rem column and its gutter left of the text, as the sidenotes measure it.
-const MARGIN_COLUMN = 248 + 40 + 16
+// Room for a 15.5rem column and its 3.5rem gutter beside the text (fr-margins.scss).
+const GUTTER = 56
+const MARGIN_COLUMN = 248 + GUTTER + 16
 const GROUP_GAP = 12
-const TICK = 5
+// a leader ends in a gap and a short dash before its number, as in Locher's margins
+const DASH = 8
+const GAP = 6
+// stacked elbows take their own trunk columns through the gutter, this far apart
+const STEP = 4
 
 const SVG = 'http://www.w3.org/2000/svg'
 
@@ -213,6 +218,7 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
   const place = (group: HTMLElement, mode: string) => {
     const host = scroller(group)
     if (!host) return
+    group.toggleAttribute('data-out', true)
     if (mode === 'margin') {
       if (group.parentElement !== article) article.append(group)
     } else {
@@ -227,6 +233,35 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
   leaders.classList.add('fr-leaders')
   leaders.setAttribute('aria-hidden', 'true')
   article.append(leaders)
+  const leaderOf = new Map<HTMLElement, SVGPathElement>()
+
+  // folded, an open entry's body leaves the parenthesis before the text for a fold under the block
+  const entries = Array.from(article.querySelectorAll<HTMLElement>('.fr-entry'))
+  const bodies = new Map(
+    entries.map(e => [e, e.querySelector<HTMLElement>(':scope > .fr-entry-body')!]),
+  )
+  const settle = (entry: HTMLElement) => {
+    const body = bodies.get(entry)!
+    const group = entry.parentElement as HTMLElement
+    const anchor = anchors.get(group)!
+    const out =
+      article.dataset.frMode === 'inline' &&
+      entry.hasAttribute('data-open') &&
+      group.parentElement === anchor
+    if (out) {
+      let fold = anchor.querySelector<HTMLElement>(':scope > .fr-fold')
+      if (!fold) {
+        fold = document.createElement('span')
+        fold.className = 'fr-fold'
+        anchor.append(fold)
+      }
+      if (body.parentElement !== fold) fold.append(body)
+    } else {
+      if (body.parentElement !== entry) entry.append(body)
+      const fold = anchor.querySelector(':scope > .fr-fold')
+      if (fold && fold.childElementCount === 0) fold.remove()
+    }
+  }
 
   for (const label of article.querySelectorAll<HTMLButtonElement>('.fr-entry-label')) {
     label.addEventListener(
@@ -237,9 +272,30 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
         if (!entry) return
         const open = entry.toggleAttribute('data-open')
         label.setAttribute('aria-expanded', String(open))
+        settle(entry)
       },
       { signal },
     )
+  }
+
+  // the number is the cross-reference; pointing at either side lights the other
+  const siblings = new Map<HTMLElement, HTMLElement[]>()
+  for (const group of groups) {
+    const anchor = anchors.get(group)!
+    siblings.set(anchor, [...(siblings.get(anchor) ?? []), group])
+  }
+  for (const [anchor, mine] of siblings) {
+    const light = (on: boolean) => {
+      anchor.classList.toggle('fr-hot', on)
+      for (const group of mine) {
+        group.classList.toggle('fr-hot', on)
+        leaderOf.get(group)?.classList.toggle('fr-hot', on)
+      }
+    }
+    for (const node of [anchor, ...mine]) {
+      node.addEventListener('pointerenter', () => light(true), { signal })
+      node.addEventListener('pointerleave', () => light(false), { signal })
+    }
   }
 
   const paint = () => {
@@ -261,7 +317,9 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
     }
     tail.clear()
     for (const group of groups) place(group, mode)
+    for (const entry of entries) settle(entry)
     leaders.replaceChildren()
+    leaderOf.clear()
     if (mode === 'inline') {
       for (const group of groups) group.style.removeProperty('top')
       leaders.removeAttribute('viewBox')
@@ -271,14 +329,22 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
     leaders.setAttribute('width', String(box.width))
     leaders.setAttribute('height', String(box.height))
 
-    // groups hang beside their paragraph, pushed down where two would overlap
+    // groups hang beside their block, the label level with its number, pushed down where two overlap
     const hoisted = (g: HTMLElement) => g.parentElement === article
     for (const group of groups) {
       const a = anchors.get(group)!.getBoundingClientRect()
       group.style.top = hoisted(group) ? `${a.top - box.top}px` : '0px'
     }
-    const floors = { left: -Infinity, right: -Infinity }
-    const d: string[] = []
+    // sidenotes the page already hung in the margins stack with the groups, so nothing overlaps
+    interface Item {
+      el: HTMLElement
+      side: 'left' | 'right'
+      top: number
+      /** where the leader ends and the y of the number it points at; sidenotes have none */
+      end?: { x: number; y: number }
+      move: (by: number) => void
+    }
+    const items: Item[] = []
     for (const group of groups) {
       const anchor = anchors.get(group)!
       const mark = anchor.querySelector<HTMLElement>(':scope > .fr-n')
@@ -288,26 +354,97 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
       const side = group.dataset.side === 'right' ? 'right' : 'left'
       const inset = side === 'right' ? box.right - a.right : a.left - box.left
       group.style.setProperty('--fr-dx', hoisted(group) ? '0px' : `${inset}px`)
-      const m0 = mark.getBoundingClientRect()
-      const l0 = label.getBoundingClientRect()
-      // the label sits level with its number, so the line is one horizontal stroke
-      const level = m0.top + m0.height / 2 - (l0.top + l0.height / 2)
-      group.style.top = `${parseFloat(group.style.top) + level}px`
-      const natural = group.getBoundingClientRect()
-      const shift = Math.max(0, floors[side] + GROUP_GAP - natural.top)
-      if (shift > 0) group.style.top = `${parseFloat(group.style.top) + shift}px`
-      const placed = group.getBoundingClientRect()
-      floors[side] = placed.bottom
+      const m = mark.getBoundingClientRect()
       const l = label.getBoundingClientRect()
-      const gy = l.top + l.height / 2 - box.top
-      const gx = (side === 'right' ? placed.left : placed.right) - box.left
-      const tx = (side === 'right' ? a.right + 10 : a.left - 10) - box.left
-      // a group pushed down by a neighbour keeps its line straight at the label's height
-      d.push(`M${gx} ${gy}H${tx}`, `M${tx} ${gy - TICK}V${gy + TICK}`)
+      group.style.top = `${parseFloat(group.style.top) + m.top + m.height / 2 - (l.top + l.height / 2)}px`
+      // the leader stays in the gutter: it stops just before the block, or at the text column's
+      // edge for a block inside a table
+      const edge = hoisted(group)
+        ? side === 'right'
+          ? box.right
+          : box.left
+        : side === 'right'
+          ? a.right
+          : a.left
+      const x = side === 'right' ? edge + GAP : edge - GAP
+      items.push({
+        el: group,
+        side,
+        top: group.getBoundingClientRect().top,
+        end: { x: x - box.left, y: m.top + m.height / 2 - box.top },
+        move: by => (group.style.top = `${parseFloat(group.style.top) + by}px`),
+      })
     }
-    const path = document.createElementNS(SVG, 'path')
-    path.setAttribute('d', d.join(''))
-    leaders.append(path)
+    for (const content of document.querySelectorAll<HTMLElement>(
+      '.sidenote-content.sidenote-left, .sidenote-content.sidenote-right',
+    )) {
+      if (!article.contains(content)) continue
+      content.style.removeProperty('translate')
+      const label = content.previousElementSibling?.querySelector<HTMLElement>('.sidenote-label')
+      if (!label) continue
+      const side = content.classList.contains('sidenote-right') ? 'right' : 'left'
+      items.push({
+        el: content,
+        side,
+        top: content.getBoundingClientRect().top,
+        move: by => content.style.setProperty('translate', `0 ${by}px`),
+      })
+    }
+    items.sort((x, y) => x.top - y.top)
+    const floors = { left: -Infinity, right: -Infinity }
+    interface Lead {
+      item: Item
+      /** the label's y, the number's y and the entry's near edge, in the article's frame */
+      y0: number
+      y1: number
+      x0: number
+      level: number
+    }
+    const leads: Lead[] = []
+    for (const item of items) {
+      const shift = Math.max(0, floors[item.side] + GROUP_GAP - item.top)
+      if (shift > 0) item.move(shift)
+      const placed = item.el.getBoundingClientRect()
+      floors[item.side] = placed.bottom
+      if (!item.end) continue
+      const label = item.el.querySelector<HTMLElement>('.fr-entry-label')!.getBoundingClientRect()
+      leads.push({
+        item,
+        y0: Math.round(label.top + label.height / 2 - box.top) + 0.5,
+        y1: Math.round(item.end.y) + 0.5,
+        x0: (item.side === 'right' ? placed.left : placed.right) - box.left,
+        level: 0,
+      })
+    }
+    // one hairline from the label to the number: straight when the entry is level with it, an
+    // elbow through the gutter when the stack pushed the entry down. An elbow's trunk spans its
+    // number and its label; a later elbow whose span overlaps takes the next column inward, so
+    // neither one's arms cross the other's trunk
+    const depth = { left: 0, right: 0 }
+    for (const lead of leads) {
+      if (lead.y0 === lead.y1) continue
+      for (const prior of leads) {
+        if (prior === lead) break
+        if (prior.item.side !== lead.item.side || prior.y0 === prior.y1) continue
+        if (prior.y1 < lead.y0 && lead.y1 < prior.y0)
+          lead.level = Math.max(lead.level, prior.level + 1)
+      }
+      depth[lead.item.side] = Math.max(depth[lead.item.side], lead.level)
+    }
+    for (const { item, y0, y1, x0, level } of leads) {
+      const dir = item.side === 'right' ? -1 : 1
+      const x1 = item.end!.x
+      const reach = Math.min(GAP + DASH + STEP * (1 + depth[item.side] - level), GUTTER - STEP)
+      const turn = item.side === 'right' ? box.width + reach : -reach
+      const d =
+        y0 === y1
+          ? `M${x0} ${y0}H${x1 - dir * (DASH + GAP)}M${x1 - dir * DASH} ${y1}H${x1}`
+          : `M${x0} ${y0}H${turn}V${y1}H${x1 - dir * (DASH + GAP)}M${x1 - dir * DASH} ${y1}H${x1}`
+      const path = document.createElementNS(SVG, 'path')
+      path.setAttribute('d', d)
+      leaders.append(path)
+      leaderOf.set(item.el, path)
+    }
   }
 
   let frame = 0
@@ -319,11 +456,17 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
   const observer = new ResizeObserver(queue)
   observer.observe(article)
   for (const anchor of article.querySelectorAll('.fr-anchor')) observer.observe(anchor)
+  // the sidenote script hangs or folds its notes after this one runs, and again on resize
+  const notes = new MutationObserver(records => {
+    if (records.some(r => (r.target as Element).classList.contains('sidenote-content'))) queue()
+  })
+  notes.observe(article, { attributes: true, attributeFilter: ['class'], subtree: true })
   signal.addEventListener(
     'abort',
     () => {
       cancelAnimationFrame(frame)
       observer.disconnect()
+      notes.disconnect()
       leaders.remove()
       relayout = () => {}
     },
