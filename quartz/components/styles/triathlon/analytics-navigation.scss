@@ -149,6 +149,11 @@
   display: none;
 }
 
+// While picking, the pressed compare toggle is the way out, so the dialog drops its close.
+.tri-analytics--compare:not(.tri-analytics--comparison) .tri-ana-close {
+  display: none;
+}
+
 .tri-analytics-controls .tri-compare-picker-submit-wrap,
 .tri-analytics-controls .tri-compare-picker-submit {
   height: 1.6rem;
