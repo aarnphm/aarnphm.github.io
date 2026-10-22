@@ -13,7 +13,7 @@ import re
 import sys
 from pathlib import Path
 
-from common import strip_ext
+from common import module_dir
 
 
 def main() -> int:
@@ -23,7 +23,7 @@ def main() -> int:
     for f in json.loads(Path(graph_path).read_text())['files']
     if f['path'] == target
   )
-  stem = strip_ext(g['path'])
+  stem = module_dir(g['path'])
   ext = (
     '.scss'
     if g['kind'] == 'style'

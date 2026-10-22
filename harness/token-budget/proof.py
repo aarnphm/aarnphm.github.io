@@ -25,6 +25,7 @@ from pathlib import Path
 from ast_grep_py import SgRoot
 
 from blocks import language
+from common import module_dir
 
 SCRIPT = re.compile(r'\.(?:[cm]?[jt]sx?)$')
 COMMENT = re.compile(r'^\s*(//|/\*|\*)')
@@ -66,7 +67,7 @@ def main() -> int:
     text=True,
     check=True,
   ).stdout
-  folder = Path(wt, os.path.splitext(path)[0])
+  folder = Path(wt, module_dir(path))
   parts = [
     Path(wt, path),
     *sorted(p for p in folder.rglob('*') if p.is_file()),

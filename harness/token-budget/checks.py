@@ -3,7 +3,7 @@
 import os
 import re
 
-from common import LIMIT, TARGET, index_blob, strip_ext, text_tokens
+from common import LIMIT, TARGET, index_blob, module_dir, strip_ext, text_tokens
 
 
 def import_tokens(names: list[str]) -> int:
@@ -54,7 +54,7 @@ def validate(g: dict, p: dict) -> dict:
   files = p.get('files') or []
   iface = p.get('interface') or {}
   entries = set(iface.get('entries') or [])
-  private_dir = f'{strip_ext(g["path"])}/'
+  private_dir = f'{module_dir(g["path"])}/'
 
   current = index_blob(g['path'])
   stale = []
@@ -293,6 +293,8 @@ def validate(g: dict, p: dict) -> dict:
       bad_paths.append(f'{f["path"]} is not kebab-case')
     if not f['path'].startswith(f'{folder}/'):
       bad_paths.append(f'{f["path"]} is outside {folder}/')
+    if f['path'] != g['path'] and '.inline/' in f['path']:
+      bad_paths.append(f'{f["path"]} is in a `.inline` folder; use {module_dir(g["path"])}/')
   check(
     'paths',
     'New paths are kebab-case and inside the target folder.',

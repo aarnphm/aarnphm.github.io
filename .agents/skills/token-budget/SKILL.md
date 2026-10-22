@@ -13,7 +13,7 @@ Test files are exempt in staged checks, `--all`, explicit `--paths`, and refacto
 
 Use these words in briefs, reports and reviews:
 
-- **Module**: the original path (the entry) plus a private folder `<path without extension>/` that holds the implementation. Code outside the module imports only the entry.
+- **Module**: the original path (the entry) plus a private folder `<path without extension>/` that holds the implementation. The folder name also drops an `.inline` marker: `popover.inline.ts` keeps its code in `popover/`. Code outside the module imports only the entry.
 - **Interface**: the names the entry exports, with their invariants, ordering rules and error modes. The interface is the test surface.
 - **Depth**: a lot of behaviour behind a small interface. A deep module gives leverage to each caller.
 - **Seam**: a place where behaviour can change without edits at the call site. One adapter makes a hypothetical seam; two adapters make a real one.

@@ -47,6 +47,11 @@ def strip_ext(p: str) -> str:
   return _EXT.sub('', p)
 
 
+def module_dir(p: str) -> str:
+  # The private folder drops the extension and a `.inline` build marker: popover.inline.ts -> popover/.
+  return re.sub(r'\.inline$', '', strip_ext(p))
+
+
 def git(*args: str) -> str:
   return subprocess.run(
     ['git', *args], check=True, capture_output=True, text=True
