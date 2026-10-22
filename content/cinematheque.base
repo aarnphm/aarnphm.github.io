@@ -55,7 +55,9 @@ views:
     bayWidth: 1200
     shelfRows: 5
     dividers: 8
-    eraCuts: [1980, 2016]
+    eraCuts:
+      - 1980
+      - 2016
   - type: vault
     name: directors
     groupBy:
@@ -80,7 +82,9 @@ views:
     bayWidth: 1200
     shelfRows: 5
     dividers: 8
-    eraCuts: [1980, 2016]
+    eraCuts:
+      - 1980
+      - 2016
   - type: cards
     name: gallery
     groupBy:
