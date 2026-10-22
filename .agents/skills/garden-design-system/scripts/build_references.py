@@ -25,6 +25,7 @@ SECTIONS = {
   'home.md': 'home.md',
   'math.md': 'math.md',
   'review.md': 'review.md',
+  'focus.md': 'focus.md',
 }
 
 

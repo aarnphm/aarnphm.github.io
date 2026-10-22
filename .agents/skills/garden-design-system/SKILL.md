@@ -19,7 +19,7 @@ The repo is the source of truth. When this skill and the code disagree, the code
 - Numbers: inside an argument, inline LaTeX (`28\,\mathrm{mm}`, `500{,}000`); in a tool, table or readout, `meta-mono` with `tabular-nums` (`28 mm`). Keep units, dates and sources. Show missing data as `–`. Label estimates as estimates.
 - Copy is first person, lowercase, literal. Controls are named by what they do ("list", "copy"). No emoji, no exclamation marks.
 - Two registers. Prose pages invert links on hover (`link-hover-bg` / `link-hover-ink`). Tool surfaces (Arena, triathlon, courses, stream, `/read`, Base views, tag and folder pages, Curius) use mono lowercase controls, the `line` / `surface` / `selected` recipe and scope their own hover (underline or `surface` fill).
-- Native `<button>` for actions, `<a href>` for navigation, native `<dialog>` with `showModal()` for blocking modals. Focus is `outline: 2px solid` `focus` with `outline-offset: 2px` (`-2px` inside a framed list) and stays visible on selected and expanded controls.
+- Native `<button>` for actions, `<a href>` for navigation, native `<dialog>` with `showModal()` for blocking modals. Focus is `outline: 2px solid` `focus` with `outline-offset: 2px` (`-2px` inside a framed list) and stays visible on selected and expanded controls. Remove the outline only with a replacement from `references/focus.md`.
 - Hover only under `(hover: hover) and (pointer: fine)`. Controls are 1.5rem in readers, 1.75rem in collections, 2.125rem in Base views, 44px under `(pointer: coarse)`. Text inputs are 16px or more on mobile.
 - Motion: 100 to 150ms on named properties for feedback, 220ms `cubic-bezier(0.23, 1, 0.32, 1)` for panels, never `transition: all`. Reduced motion stops movement and keeps a static cue.
 - Pick the page mode first (reading, collection, workspace); see `references/layout.md`. Text-holding grid and flex children get `min-width: 0`. The page never scrolls sideways down to 320px.
@@ -37,6 +37,7 @@ The repo is the source of truth. When this skill and the code disagree, the code
 | Courses and flashcards                                                    | `references/courses.md`                                                  |
 | Home page widgets, trail, press kit                                       | `references/home.md`                                                     |
 | Math, numbers in prose, chart labels, TikZ                                | `references/math.md`                                                     |
+| Focus rings, `outline: none`, focus on tabs or charts | `references/focus.md` |
 | Brand art, mascot, social images                                          | `references/imagery.md`                                                  |
 | A specific component                                                      | `references/components/index.md`, then `references/components/<Name>.md` |
 | Calling a surface done                                                    | `references/review.md`                                                   |

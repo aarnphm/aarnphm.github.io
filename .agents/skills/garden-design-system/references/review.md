@@ -5,7 +5,7 @@ Run this before calling a new or changed surface done. Check the rendered page, 
 1. **Mode.** The page uses the reading, collection or workspace contract from Layout, and the right width for it.
 2. **Tokens.** Colours, spacing, radii and layers come from tokens. No new literal hex outside an authored page; no new radius above `radius-none` except a handle.
 3. **Text contrast.** Meaningful text, including captions and proof reasons, is `darkgray` or `dark`, never `gray`. Text on an accent fill is `on-accent`. Check both themes, including selected and hover fills.
-4. **Focus.** Tab through every control. Each shows a 2px `focus` ring, also when selected, pressed or expanded. Nothing sets `outline: none` without a replacement.
+4. **Focus.** Tab through every control. Each shows a 2px `focus` ring, also when selected, pressed or expanded. Every `outline: none` has one of the replacements in the Focus section, and the reset does not win over the ring by specificity. On tabs, focus on the selected tab looks different from selection alone.
 5. **States.** Default, hover, focus, selected, expanded, disabled, loading, empty and error all exist where the control can reach them. Empty and error states offer a way forward.
 6. **Type.** Nothing a reader needs is below `meta` (12px). Numbers use tabular figures and keep their units.
 7. **Math.** Numbers in an argument are inline math; numbers in a tool or table are `meta-mono`. Units are `\,\mathrm{unit}`. A wide equation scrolls inside its own box at 320px. Figure symbols are KaTeX labels.
