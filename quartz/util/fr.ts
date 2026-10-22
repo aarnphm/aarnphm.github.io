@@ -228,29 +228,3 @@ export const episodeLabel = (n: number) => `${n}/${FR_EPISODES}`
 export const frCount = (n: number) => n.toLocaleString('fr-CA')
 
 export const cardsWord = (n: number) => `${frCount(n)} ${n === 1 ? 'carte' : 'cartes'}`
-
-const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1'] as const
-
-/**
- * The word bank's `parcours A1 → C1` section: each level and the sections it lists. Read from the
- * note's plain text, where a wikilink is its label and a list item ends at a newline. A text that
- * runs on past a level (no newline) gives no levels rather than wrong counts.
- */
-export function motsLevels(mots: QuartzPluginData | undefined) {
-  const text = mots?.text ?? ''
-  const from = text.indexOf('parcours A1')
-  if (from < 0) return []
-  const body = text.slice(from)
-  const marks = [...body.matchAll(new RegExp(`(${LEVELS.join('|')})\\s*:\\s*`, 'g'))]
-  const levels = marks.map((mark, i) => {
-    const start = mark.index + mark[0].length
-    const stop = Math.min(marks[i + 1]?.index ?? body.length, body.indexOf('\n', start) >>> 0)
-    const themes = body
-      .slice(start, stop)
-      .split(/\s*,\s*/)
-      .map(name => name.trim())
-      .filter(Boolean)
-    return { level: mark[1], themes }
-  })
-  return levels.some(item => item.themes.length > 12) ? [] : levels
-}

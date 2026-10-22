@@ -21,40 +21,101 @@ const paintWhy = (el: HTMLElement, why: string) => {
   )
 }
 
+/** Prefer the exact locale, then any fr voice; `undefined` lets the browser choose by `lang`. */
+const pickVoice = (lang: string): SpeechSynthesisVoice | undefined => {
+  const voices = speechSynthesis.getVoices().filter(v => /^fr\b/i.test(v.lang.replace('_', '-')))
+  return (
+    voices.find(v => v.lang.replace('_', '-').toLowerCase() === lang.toLowerCase()) ?? voices[0]
+  )
+}
+
 function setup(root: HTMLElement): () => void {
   const table = parseTable(root.dataset.table)
   const groups = Array.from(root.querySelectorAll<HTMLElement>('.fr-rw-group'))
-  const phrase = root.querySelector<HTMLElement>('.speech-phrase')
-  const play = root.querySelector<HTMLButtonElement>('.speech-play')
+  const out = root.querySelector<HTMLElement>('.fr-rw-out')
   const why = root.querySelector<HTMLElement>('.fr-rw-why')
+  const speak = root.querySelector<HTMLButtonElement>('.fr-rw-speak')
   const ac = new AbortController()
+  const { signal } = ac
+
+  const selected = (group: HTMLElement) =>
+    group.querySelector<HTMLElement>('[aria-selected="true"]')?.dataset.option ?? ''
 
   const paint = () => {
-    const key = groups
-      .map(g => g.querySelector<HTMLElement>('[aria-pressed="true"]')?.dataset.option ?? '')
-      .join('.')
-    const pair = table[key]
-    if (!pair || !phrase || !play || !why) return
-    const [text, note] = pair
-    phrase.dataset.speechText = text
-    play.textContent = text
-    play.setAttribute('aria-label', `Écouter : ${text}`)
-    paintWhy(why, note)
+    const pair = table[groups.map(selected).join('.')]
+    if (!pair || !out || !why) return
+    out.textContent = pair[0]
+    paintWhy(why, pair[1])
+  }
+
+  const select = (tab: HTMLElement, focus: boolean) => {
+    const group = tab.closest<HTMLElement>('.fr-rw-group')
+    if (!group) return
+    for (const t of group.querySelectorAll<HTMLElement>('[role="tab"]')) {
+      t.setAttribute('aria-selected', String(t === tab))
+      t.tabIndex = t === tab ? 0 : -1
+    }
+    if (focus) tab.focus()
+    paint()
   }
 
   root.addEventListener(
     'click',
     event => {
-      const btn = (event.target as HTMLElement).closest<HTMLButtonElement>('.fr-rw-btn')
-      const group = btn?.closest<HTMLElement>('.fr-rw-group')
-      if (!btn || !group) return
-      for (const b of group.querySelectorAll<HTMLButtonElement>('.fr-rw-btn'))
-        b.setAttribute('aria-pressed', String(b === btn))
-      paint()
+      const tab = (event.target as HTMLElement).closest<HTMLElement>('[role="tab"]')
+      if (tab) select(tab, false)
     },
-    { signal: ac.signal },
+    { signal },
   )
-  return () => ac.abort()
+
+  root.addEventListener(
+    'keydown',
+    event => {
+      const tab = (event.target as HTMLElement).closest<HTMLElement>('[role="tab"]')
+      const group = tab?.closest<HTMLElement>('.fr-rw-group')
+      if (!tab || !group) return
+      const tabs = Array.from(group.querySelectorAll<HTMLElement>('[role="tab"]'))
+      const at = tabs.indexOf(tab)
+      const next =
+        event.key === 'ArrowRight' || event.key === 'ArrowDown'
+          ? (at + 1) % tabs.length
+          : event.key === 'ArrowLeft' || event.key === 'ArrowUp'
+            ? (at - 1 + tabs.length) % tabs.length
+            : event.key === 'Home'
+              ? 0
+              : event.key === 'End'
+                ? tabs.length - 1
+                : -1
+      if (next < 0) return
+      event.preventDefault()
+      select(tabs[next], true)
+    },
+    { signal },
+  )
+
+  if (speak && 'speechSynthesis' in window) {
+    speak.hidden = false
+    speak.addEventListener(
+      'click',
+      () => {
+        const text = out?.textContent?.trim()
+        if (!text) return
+        const variety = groups.find(g => g.dataset.axis === 'variete')
+        const lang = variety && selected(variety) === 'qc' ? 'fr-CA' : 'fr-FR'
+        const utterance = new SpeechSynthesisUtterance(text)
+        const voice = pickVoice(lang)
+        utterance.voice = voice ?? null
+        utterance.lang = voice?.lang ?? lang
+        speechSynthesis.cancel()
+        speechSynthesis.speak(utterance)
+      },
+      { signal },
+    )
+  }
+  return () => {
+    ac.abort()
+    if ('speechSynthesis' in window) speechSynthesis.cancel()
+  }
 }
 
 document.addEventListener('nav', () => {

@@ -1,25 +1,40 @@
 @use '../../styles/variables.scss' as *;
 
-// the episode bar keeps one row and scrolls sideways before it wraps
+// maquette 2: one line, facts left (they shrink with an ellipsis), review links right
 .course-unit-bar.fr-unit-bar {
   flex-wrap: nowrap;
-  overflow-x: auto;
-  white-space: nowrap;
-  // the focus ring of a link must fit inside the scrolling box
-  padding-block: var(--space-2);
-  scrollbar-width: thin;
+  align-items: baseline;
 
-  > *,
-  .course-unit-actions {
-    flex: none;
+  .fr-unit-facts {
+    flex: 1 1 0;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .course-unit-sep {
+    margin-inline: var(--space-2);
   }
 
   .course-unit-actions {
-    flex-wrap: nowrap;
+    flex: none;
+    display: flex;
+    gap: var(--space-3);
+    white-space: nowrap;
+  }
+
+  .course-new {
+    display: none;
   }
 }
 
 .fr-home {
+  // the count of unseen cards is noise next to the due count
+  .course-new {
+    display: none;
+  }
+
   .fr-h {
     margin: 0 0 var(--space-2);
     font-family: var(--codeFont);
@@ -133,7 +148,9 @@
   }
 
   .fr-canvas.canvas-embed-container {
-    height: clamp(18rem, 50vh, 32rem);
+    height: auto;
+    aspect-ratio: 3 / 2;
+    max-height: 80vh;
     min-height: 0;
     margin: 0;
     border-color: var(--course-line);
@@ -158,9 +175,44 @@
   }
 }
 
+// The chip preview gives the time and length, so a day cell keeps its width for the title.
+.fr-calendar {
+  :is(a, button).g-event {
+    grid-template-columns: 0.375rem minmax(0, 1fr);
+  }
+
+  .g-event-meta {
+    display: none;
+  }
+}
+
+// below this width a day cell is too narrow for a title: the chip is a bar, the title is in its preview
 @container course-home (max-width: 35rem) {
-  .fr-saisons {
+  // a 30 px group cannot hold a label; the seasons grid lists the same notes
+  .fr-home .fr-parcours {
+    display: none;
+  }
+
+  .fr-home .fr-saisons {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .fr-home :is(a, button).g-event {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 1rem;
+    padding: 0;
+    background: transparent;
+
+    .g-event-title,
+    .g-event-meta {
+      display: none;
+    }
+
+    .g-event-mark {
+      display: block;
+      width: 100%;
+      height: 0.375rem;
+    }
   }
 }
 

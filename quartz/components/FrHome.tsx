@@ -3,8 +3,7 @@ import {
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from '../types/component'
-import { fileBySlug } from '../util/course'
-import { cardsWord, frCount, frView, motsLevels, type FrEpisode } from '../util/fr'
+import { cardsWord, frCount, frView, type FrEpisode } from '../util/fr'
 import { classNames } from '../util/lang'
 import { FullSlug, resolveRelative } from '../util/path'
 import { concatenateResources } from '../util/resources'
@@ -44,7 +43,6 @@ export default (() => {
     const view = frView(allFiles, ctx.decks)
     const href = (slug: FullSlug) => resolveRelative(from, slug)
     const allIds = view.decks.flatMap(item => item.deck.flashcards!.cards.map(card => card.id))
-    const levels = motsLevels(fileBySlug('fr/mots', allFiles))
     const calendar: FrCalendarData = {
       notes: [...view.lessons, ...view.practices].map(note => ({
         date: note.date,
@@ -56,7 +54,6 @@ export default (() => {
       prefix: 'fr/',
       cardIds: allIds,
     }
-    const latestPractice = view.practices.at(-1)
     const since = longDate(String(fileData.frontmatter?.date ?? '') || undefined)
 
     const episode = (item: FrEpisode) => (
@@ -144,7 +141,7 @@ export default (() => {
           </div>
         </section>
 
-        <section aria-labelledby="fr-parcours-h">
+        <section class="fr-parcours" aria-labelledby="fr-parcours-h">
           <h2 id="fr-parcours-h" class="fr-h">
             carte des notes
           </h2>
@@ -170,42 +167,8 @@ export default (() => {
               </a>{' '}
               <span class="course-count">{cardsWord(view.mots.cards)}</span>
             </h2>
-            {levels.length > 0 ? (
-              <p class="fr-shelf fr-shelf--levels">
-                {levels.map(item => (
-                  <span>
-                    {item.level} <span class="course-count">{item.themes.length}</span>
-                  </span>
-                ))}
-              </p>
-            ) : null}
           </section>
         ) : null}
-
-        <section aria-labelledby="fr-reperes-h">
-          <h2 id="fr-reperes-h" class="fr-h">
-            repères
-          </h2>
-          <p class="fr-shelf">
-            {view.reperes.map(item => (
-              <a class="internal" href={href(item.slug)} data-slug={item.slug}>
-                {item.title}
-              </a>
-            ))}
-            {latestPractice ? (
-              <a class="internal" href={href(latestPractice.slug)} data-slug={latestPractice.slug}>
-                pratiques
-              </a>
-            ) : null}
-            <a
-              class="internal"
-              href={href('fr/books/index' as FullSlug)}
-              data-slug="fr/books/index"
-            >
-              livres
-            </a>
-          </p>
-        </section>
       </div>
     )
   }

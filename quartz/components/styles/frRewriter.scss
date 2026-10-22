@@ -5,7 +5,6 @@
 .fr-rewriter {
   @include figure-frame('fr-rewriter', 14rem);
 
-  --frw-btn-bg: var(--fig-tab-surface);
   --frw-btn-on: color-mix(in srgb, var(--fig-sage) 38%, var(--light));
 
   display: flex;
@@ -13,25 +12,25 @@
   gap: 0.75rem;
 
   .fr-rw-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
+    @include figure-grid;
+    grid-auto-flow: column;
+    justify-content: start;
+    width: max-content;
+    max-width: 100%;
     min-width: 0;
   }
 
   .fr-rw-btn {
+    @include figure-grid-cell;
     min-height: 1.75rem;
-    padding: 0.25rem 0.6rem;
-    border: 1px solid var(--dark);
-    border-radius: var(--radius-none);
-    background: var(--light);
-    color: var(--dark);
+    padding: 0.28rem 0.65rem;
+    color: var(--fig-tab-fg);
     font: 400 0.75rem/1.2 var(--codeFont);
-    text-transform: lowercase;
+    white-space: nowrap;
     cursor: pointer;
     transition:
-      background-color 120ms ease,
-      border-color 120ms ease;
+      background-color 140ms ease,
+      color 140ms ease;
 
     @media (pointer: coarse) {
       min-height: 44px;
@@ -39,30 +38,84 @@
 
     @media (hover: hover) and (pointer: fine) {
       &:hover {
-        background: var(--frw-btn-bg);
+        color: var(--dark);
       }
     }
 
-    &[aria-pressed='true'] {
+    &[aria-selected='true'] {
       background: var(--frw-btn-on);
-      border-color: var(--dark);
       color: var(--dark);
-      font-weight: 500;
     }
 
     &:focus-visible {
       outline: 2px solid var(--dark);
-      outline-offset: 2px;
+      outline-offset: -2px;
     }
   }
 
+  .fr-rw-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
   .fr-rw-out {
+    flex: 1;
     margin: 0;
     min-height: 2.4em;
     color: var(--dark);
     font-size: 1.05rem;
     line-height: 1.4;
     overflow-wrap: anywhere;
+  }
+
+  .fr-rw-speak {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-none);
+    background: var(--fig-grid-cell);
+    color: var(--fig-tab-fg);
+    cursor: pointer;
+    transition:
+      background-color 140ms ease,
+      color 140ms ease;
+
+    @media (pointer: coarse) {
+      width: 44px;
+      height: 44px;
+    }
+
+    &[hidden] {
+      display: none;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        background: var(--frw-btn-on);
+        color: var(--dark);
+      }
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--dark);
+      outline-offset: 2px;
+    }
+
+    svg {
+      width: 1rem;
+      height: 1rem;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
   }
 
   .fr-rw-why {

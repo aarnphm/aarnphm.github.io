@@ -38,36 +38,43 @@ export const FrUnitBar = (() => {
         data-course-lang="fr"
         data-course-card
       >
-        <a class="internal" href={resolveRelative(from, FR_HOME)} data-slug={FR_HOME}>
-          français
-        </a>
-        <span class="course-unit-sep">/</span>
-        <span class="course-num" title={`épisode ${n} sur ${FR_EPISODES}`}>
-          épisode {episodeLabel(n)}
-        </span>
-        <span class="course-unit-sep">·</span>
-        <span>{episode.season}</span>
-        {episode.cardIds.length > 0 ? (
-          <>
-            <span class="course-unit-sep">·</span>
-            <a class="internal" href={resolveRelative(from, deck)} data-slug={deck} data-no-popover>
-              {cardsWord(episode.cardIds.length)}
-            </a>
-            <span class="course-unit-sep">·</span>
-            <span>
-              à revoir{' '}
-              <span data-due="" data-cards={ids} data-unit={String(n)}>
-                –
+        <span class="fr-unit-facts">
+          <a class="internal" href={resolveRelative(from, FR_HOME)} data-slug={FR_HOME}>
+            français
+          </a>
+          <span class="course-unit-sep">/</span>
+          <span class="course-num" title={`épisode ${n} sur ${FR_EPISODES}`}>
+            épisode {episodeLabel(n)}
+          </span>
+          <span class="course-unit-sep">·</span>
+          <span>{episode.season}</span>
+          {episode.cardIds.length > 0 ? (
+            <>
+              <span class="course-unit-sep">·</span>
+              <a
+                class="internal"
+                href={resolveRelative(from, deck)}
+                data-slug={deck}
+                data-no-popover
+              >
+                {cardsWord(episode.cardIds.length)}
+              </a>
+              <span class="course-unit-sep">·</span>
+              <span>
+                à revoir{' '}
+                <span data-due="" data-cards={ids} data-unit={String(n)}>
+                  –
+                </span>
               </span>
-            </span>
-          </>
-        ) : null}
-        {dates ? (
-          <>
-            <span class="course-unit-sep">·</span>
-            <span>leçons {dates}</span>
-          </>
-        ) : null}
+            </>
+          ) : null}
+          {dates ? (
+            <>
+              <span class="course-unit-sep">·</span>
+              <span>leçons {dates}</span>
+            </>
+          ) : null}
+        </span>
         <span class="course-unit-actions">
           <a
             class="course-action internal"

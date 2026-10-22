@@ -1,5 +1,7 @@
-// Left margin of /fr pages: review of the section's cards (FSRS through /api/flashcards) and the
-// reader's private notes. The markup comes from renderPage/fr-margins.ts.
+// Margin column of /fr pages, Locher style: numbered `§ label (n)` entries (review of the section's
+// cards through /api/flashcards, the reader's notes, the lexicon, citing lessons) joined to their
+// paragraph by a leader line and a tick. The markup comes from renderPage/fr-margins.ts. Under the
+// width that leaves a margin, each group folds under its paragraph and the label toggles it.
 
 interface Face {
   front: string
@@ -12,33 +14,12 @@ interface CardState {
   due: number
 }
 
-interface Note {
-  id: string
-  text: string
-  at: number
-}
-
 const GRADES = [
   ['encore', 1],
   ['difficile', 2],
   ['bien', 3],
   ['facile', 4],
 ] as const
-
-const MONTHS = [
-  'janv.',
-  'févr.',
-  'mars',
-  'avr.',
-  'mai',
-  'juin',
-  'juil.',
-  'août',
-  'sept.',
-  'oct.',
-  'nov.',
-  'déc.',
-]
 
 const el = <K extends keyof HTMLElementTagNameMap>(
   tag: K,
@@ -57,8 +38,8 @@ const button = (label: string, className = 'fr-btn') => {
   return node
 }
 
-// margins change height when a card flips or a note is added; the sidenote manager re-lays out on resize
-const relayout = () => window.dispatchEvent(new Event('resize'))
+// Margins change height when a card flips or a note is added; the leaders follow.
+let relayout: () => void = () => {}
 
 const decks = new Map<string, Promise<Map<string, Face>>>()
 
@@ -196,129 +177,172 @@ async function mountReview(root: HTMLElement, signal: AbortSignal) {
   paint()
 }
 
-const notesKey = (section: string) =>
-  `fr-notes:v1:${document.body.dataset.slug ?? location.pathname}:${section}`
-
-const readNotes = (key: string): Note[] => {
-  try {
-    const value: unknown = JSON.parse(localStorage.getItem(key) ?? '[]')
-    return Array.isArray(value) ? (value as Note[]) : []
-  } catch {
-    return []
-  }
-}
-
-const writeNotes = (key: string, notes: Note[]) => {
-  try {
-    if (notes.length === 0) localStorage.removeItem(key)
-    else localStorage.setItem(key, JSON.stringify(notes))
-  } catch {
-    /* private mode: the note lives until the page closes */
-  }
-}
-
-const dayLabel = (at: number) => {
-  const d = new Date(at)
-  return `${d.getDate()} ${MONTHS[d.getMonth()]}`
-}
+type NotesModule = typeof import('./fr-notes.client')
+let notesModule: Promise<NotesModule> | undefined
 
 function mountNotes(root: HTMLElement, signal: AbortSignal) {
-  const section = root.dataset.section ?? ''
-  const key = notesKey(section)
-  const list = root.querySelector<HTMLElement>('[data-fr-note-list]')
-  const add = root.querySelector<HTMLButtonElement>('[data-fr-act="add"]')
-  if (!list || !add) return
-  let notes = readNotes(key)
-  let editor: HTMLElement | undefined
+  notesModule ??= import(new URL('fr-notes.js', import.meta.url).href)
+  void notesModule
+    .then(({ mountFrNotes }) => {
+      if (signal.aborted || !root.isConnected) return
+      mountFrNotes(root, document.body.dataset.slug ?? location.pathname.slice(1), signal, () =>
+        relayout(),
+      )
+    })
+    .catch(error => {
+      notesModule = undefined
+      if (!signal.aborted) console.error(error)
+    })
+}
+
+// Room for a 15.5rem column and its gutter left of the text, as the sidenotes measure it.
+const MARGIN_COLUMN = 248 + 40 + 16
+const GROUP_GAP = 12
+const TICK = 5
+
+const SVG = 'http://www.w3.org/2000/svg'
+
+function mountLayout(article: HTMLElement, signal: AbortSignal) {
+  const groups = Array.from(article.querySelectorAll<HTMLElement>('.fr-group'))
+  if (groups.length === 0) return () => {}
+  // a group in a table cell would be clipped by the table's scroller (margin) or squeezed into the
+  // cell (inline), so it leaves the cell: beside the article in the margin, after the table when folded
+  const anchors = new Map(groups.map(g => [g, g.parentElement as HTMLElement]))
+  const scroller = (g: HTMLElement) =>
+    anchors.get(g)!.closest<HTMLElement>('.table-container, table')
+  const place = (group: HTMLElement, mode: string) => {
+    const host = scroller(group)
+    if (!host) return
+    if (mode === 'margin') {
+      if (group.parentElement !== article) article.append(group)
+    } else {
+      // groups of one table stack in document order after it, not each straight behind the host
+      const behind = tail.get(host) ?? host
+      if (behind.nextElementSibling !== group) behind.after(group)
+      tail.set(host, group)
+    }
+  }
+  const tail = new Map<Element, Element>()
+  const leaders = document.createElementNS(SVG, 'svg')
+  leaders.classList.add('fr-leaders')
+  leaders.setAttribute('aria-hidden', 'true')
+  article.append(leaders)
+
+  for (const label of article.querySelectorAll<HTMLButtonElement>('.fr-entry-label')) {
+    label.addEventListener(
+      'click',
+      () => {
+        if (article.dataset.frMode !== 'inline') return
+        const entry = label.closest<HTMLElement>('.fr-entry')
+        if (!entry) return
+        const open = entry.toggleAttribute('data-open')
+        label.setAttribute('aria-expanded', String(open))
+      },
+      { signal },
+    )
+  }
 
   const paint = () => {
-    list.replaceChildren(
-      ...notes.map(note => {
-        const row = el('div', 'fr-note')
-        row.append(el('span', undefined, note.text))
-        const meta = el('span', 'fr-meta', `${dayLabel(note.at)} · privé`)
-        const card = button('carte', 'fr-btn fr-link')
-        card.addEventListener(
-          'click',
-          () => {
-            const slug = document.body.dataset.slug ?? location.pathname.slice(1)
-            const source = `Q: ${note.text}\nA: \nN: [[${slug}#${section}]]\n`
-            void navigator.clipboard?.writeText(source).then(() => {
-              card.textContent = 'copié'
-              setTimeout(() => (card.textContent = 'carte'), 1500)
-            })
-          },
-          { signal },
+    const box = article.getBoundingClientRect()
+    const room = Math.min(box.left, document.documentElement.clientWidth - box.right)
+    const mode = room >= MARGIN_COLUMN ? 'margin' : 'inline'
+    article.dataset.frMode = mode
+    for (const label of article.querySelectorAll<HTMLButtonElement>('.fr-entry-label')) {
+      if (mode === 'margin') {
+        label.removeAttribute('aria-expanded')
+        label.tabIndex = -1
+      } else {
+        label.setAttribute(
+          'aria-expanded',
+          String(label.closest('.fr-entry')?.hasAttribute('data-open') ?? false),
         )
-        const drop = button('retirer', 'fr-btn fr-link')
-        drop.addEventListener(
-          'click',
-          () => {
-            notes = notes.filter(n => n.id !== note.id)
-            writeNotes(key, notes)
-            paint()
-          },
-          { signal },
-        )
-        meta.append(' ', card, ' ', drop)
-        row.append(meta)
-        return row
-      }),
-    )
-    relayout()
-  }
-
-  const close = () => {
-    editor?.remove()
-    editor = undefined
-    add.hidden = false
-    relayout()
-  }
-
-  add.addEventListener(
-    'click',
-    () => {
-      const area = el('textarea', 'fr-area')
-      area.rows = 3
-      area.setAttribute('aria-label', 'nouvelle note')
-      const save = button('ok')
-      const commit = () => {
-        const text = area.value.trim()
-        if (text) {
-          notes = [...notes, { id: crypto.randomUUID(), text, at: Date.now() }]
-          writeNotes(key, notes)
-          paint()
-        }
-        close()
+        label.removeAttribute('tabindex')
       }
-      save.addEventListener('click', commit, { signal })
-      area.addEventListener(
-        'keydown',
-        event => {
-          if (event.key === 'Escape') close()
-          else if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) commit()
-        },
-        { signal },
-      )
-      editor = el('div', 'fr-editor')
-      editor.append(area, save)
-      add.hidden = true
-      add.after(editor)
-      area.focus()
-      relayout()
-    },
-    { signal },
-  )
+    }
+    tail.clear()
+    for (const group of groups) place(group, mode)
+    leaders.replaceChildren()
+    if (mode === 'inline') {
+      for (const group of groups) group.style.removeProperty('top')
+      leaders.removeAttribute('viewBox')
+      return
+    }
+    leaders.setAttribute('viewBox', `0 0 ${box.width} ${box.height}`)
+    leaders.setAttribute('width', String(box.width))
+    leaders.setAttribute('height', String(box.height))
 
-  paint()
+    // groups hang beside their paragraph, pushed down where two would overlap
+    const hoisted = (g: HTMLElement) => g.parentElement === article
+    for (const group of groups) {
+      const a = anchors.get(group)!.getBoundingClientRect()
+      group.style.top = hoisted(group) ? `${a.top - box.top}px` : '0px'
+    }
+    const floors = { left: -Infinity, right: -Infinity }
+    const d: string[] = []
+    for (const group of groups) {
+      const anchor = anchors.get(group)!
+      const mark = anchor.querySelector<HTMLElement>(':scope > .fr-n')
+      const label = group.querySelector<HTMLElement>('.fr-entry-label')
+      if (!mark || !label) continue
+      const a = anchor.getBoundingClientRect()
+      const side = group.dataset.side === 'right' ? 'right' : 'left'
+      const inset = side === 'right' ? box.right - a.right : a.left - box.left
+      group.style.setProperty('--fr-dx', hoisted(group) ? '0px' : `${inset}px`)
+      const m0 = mark.getBoundingClientRect()
+      const l0 = label.getBoundingClientRect()
+      // the label sits level with its number, so the line is one horizontal stroke
+      const level = m0.top + m0.height / 2 - (l0.top + l0.height / 2)
+      group.style.top = `${parseFloat(group.style.top) + level}px`
+      const natural = group.getBoundingClientRect()
+      const shift = Math.max(0, floors[side] + GROUP_GAP - natural.top)
+      if (shift > 0) group.style.top = `${parseFloat(group.style.top) + shift}px`
+      const placed = group.getBoundingClientRect()
+      floors[side] = placed.bottom
+      const l = label.getBoundingClientRect()
+      const gy = l.top + l.height / 2 - box.top
+      const gx = (side === 'right' ? placed.left : placed.right) - box.left
+      const tx = (side === 'right' ? a.right + 10 : a.left - 10) - box.left
+      // a group pushed down by a neighbour keeps its line straight at the label's height
+      d.push(`M${gx} ${gy}H${tx}`, `M${tx} ${gy - TICK}V${gy + TICK}`)
+    }
+    const path = document.createElementNS(SVG, 'path')
+    path.setAttribute('d', d.join(''))
+    leaders.append(path)
+  }
+
+  let frame = 0
+  const queue = () => {
+    cancelAnimationFrame(frame)
+    frame = requestAnimationFrame(paint)
+  }
+  relayout = queue
+  const observer = new ResizeObserver(queue)
+  observer.observe(article)
+  for (const anchor of article.querySelectorAll('.fr-anchor')) observer.observe(anchor)
+  signal.addEventListener(
+    'abort',
+    () => {
+      cancelAnimationFrame(frame)
+      observer.disconnect()
+      leaders.remove()
+      relayout = () => {}
+    },
+    { once: true },
+  )
+  void document.fonts?.ready.then(queue)
+  queue()
 }
 
 document.addEventListener('nav', () => {
-  const reviews = document.querySelectorAll<HTMLElement>('article [data-fr-rev]')
-  const notes = document.querySelectorAll<HTMLElement>('article [data-fr-notes]')
-  if (reviews.length === 0 && notes.length === 0) return
+  const article = document.querySelector<HTMLElement>('article')
+  if (!article?.querySelector('.fr-group')) return
   const controller = new AbortController()
   window.addCleanup(() => controller.abort())
-  notes.forEach(root => mountNotes(root, controller.signal))
-  reviews.forEach(root => void mountReview(root, controller.signal))
+  mountLayout(article, controller.signal)
+  article
+    .querySelectorAll<HTMLElement>('[data-fr-notes]')
+    .forEach(root => mountNotes(root, controller.signal))
+  article
+    .querySelectorAll<HTMLElement>('[data-fr-rev]')
+    .forEach(root => void mountReview(root, controller.signal))
 })

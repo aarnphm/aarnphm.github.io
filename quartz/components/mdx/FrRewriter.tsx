@@ -37,26 +37,31 @@ export function FrRewriter({ cls, axes, table, caption, label, initial }: Props)
   return (
     <figure class={`fr-rewriter ${cls}`} data-fr-rewriter data-table={JSON.stringify(table)}>
       {axes.map((axis, i) => (
-        <div class="fr-rw-group" role="group" aria-label={axis.label} data-axis={axis.id}>
+        <div class="fr-rw-group" role="tablist" aria-label={axis.label} data-axis={axis.id}>
           {axis.options.map(o => (
             <button
               type="button"
+              role="tab"
               class="fr-rw-btn"
               {...{ 'data-option': o.id }}
-              aria-pressed={o.id === picked[i]}
+              aria-selected={o.id === picked[i]}
+              tabIndex={o.id === picked[i] ? 0 : -1}
             >
               {o.label}
             </button>
           ))}
         </div>
       ))}
-      <p class="fr-rw-out" role="status" lang="fr" aria-label={label}>
-        <span class="speech-phrase" lang="fr" data-speech-text={text}>
-          <button type="button" class="speech-play" disabled aria-label={`Écouter : ${text}`}>
-            {text}
-          </button>
-        </span>
-      </p>
+      <div class="fr-rw-row">
+        <p class="fr-rw-out" role="status" lang="fr" aria-label={label}>
+          {text}
+        </p>
+        <button type="button" class="fr-rw-speak" aria-label="écouter" hidden>
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M2 6h3l4-3v10l-4-3H2zM11.5 5.5a3.5 3.5 0 0 1 0 5M13 3.5a6.5 6.5 0 0 1 0 9" />
+          </svg>
+        </button>
+      </div>
       <p class="fr-rw-why">{emParts(why)}</p>
       {caption && <figcaption class="fr-rw-caption">{caption}</figcaption>}
     </figure>

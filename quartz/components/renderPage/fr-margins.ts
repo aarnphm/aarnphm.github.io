@@ -1,7 +1,6 @@
 import type { Element, ElementContent, Root } from 'hast'
 import { toString } from 'hast-util-to-string'
 import { h } from 'hastscript'
-import { buildSidenoteHast } from '../../plugins/transformers/sidenotes'
 import { QuartzComponentProps } from '../../types/component'
 import { renderDataFor } from '../../util/ctx'
 import { parseFlashcards } from '../../util/flashcards'
@@ -11,9 +10,10 @@ import { FullSlug, resolveRelative, simplifySlug } from '../../util/path'
 
 type Ctx = QuartzComponentProps['ctx']
 
-const SIDENOTE_ID_BASE = 9000
 const GLOSS_HEADING = 'comprendre-les-expressions'
 const BLOCKS = new Set(['p', 'li', 'td', 'th', 'blockquote'])
+// A margin entry hangs from a prose block; a header cell is no place for one.
+const ANCHORS = new Set(['p', 'li', 'td', 'blockquote'])
 
 const classesOf = (node: Element): string[] => {
   const value = node.properties?.className
@@ -62,45 +62,35 @@ function sectionsOf(tree: Root): { node: Element; info: FrSection; body: Element
   return out
 }
 
-function anchored(
-  label: string,
-  kind: 'rev' | 'gloss' | 'cite',
-  content: ElementContent[],
-  baseId: string,
-  serial: number,
-): ElementContent[] {
-  const [span, body] = buildSidenoteHast(
-    [],
-    false,
-    kind === 'rev',
-    kind !== 'rev',
-    content,
-    SIDENOTE_ID_BASE + serial,
-    baseId,
-  )
-  span.properties = { ...span.properties, dataFr: kind, ariaLabel: label }
-  return [span, body]
+type EntryKind = 'rev' | 'notes' | 'lex' | 'cite'
+
+const LABELS: Record<EntryKind, string> = {
+  rev: 'révision',
+  notes: 'notes',
+  lex: 'lexique',
+  cite: 'cité par',
 }
 
+interface Entry {
+  kind: EntryKind
+  body: Element
+}
+
+// Everything inside a prose block is a span: a <div> would end the paragraph when the browser parses it.
 function reviewMargin(deck: FullSlug, section: string, ids: string[]): Element {
   return h(
-    'div.fr-margin.fr-rev',
+    'span.fr-margin.fr-rev',
     { dataFrRev: '', dataDeck: deck, dataIds: ids.join(','), dataSection: section },
     [
-      h('span.fr-label', [
-        'révision',
-        ' ',
-        h('span.fr-count', { dataFrCount: '' }, String(ids.length)),
-      ]),
-      h('div.fr-card', { dataFrCard: '', hidden: true }),
+      h('span.fr-label', [h('span.fr-count', { dataFrCount: '' }, String(ids.length)), ' cartes']),
+      h('span.fr-card', { dataFrCard: '', hidden: true }),
     ],
   )
 }
 
 function notesMargin(section: string): Element {
-  return h('div.fr-margin.fr-notes', { dataFrNotes: '', dataSection: section }, [
-    h('span.fr-label', 'mes notes'),
-    h('div.fr-note-list', { dataFrNoteList: '' }),
+  return h('span.fr-margin.fr-notes', { dataFrNotes: '', dataSection: section }, [
+    h('span.fr-note-list', { dataFrNoteList: '' }),
     h('button.fr-btn', { type: 'button', dataFrAct: 'add' }, 'ajouter'),
   ])
 }
@@ -174,10 +164,10 @@ function glossMargin(items: Gloss[]): Element {
 }
 
 function citedByMargin(links: { slug: FullSlug; label: string }[], from: FullSlug): Element {
-  return h('div.fr-margin.fr-cited', [
-    h('span.fr-label', 'cité par'),
-    ...links.map(link =>
-      h('div.fr-gloss', [
+  return h(
+    'span.fr-margin.fr-cited',
+    links.map(link =>
+      h('span.fr-gloss', [
         h(
           'a.internal',
           { href: resolveRelative(from, link.slug), dataSlug: link.slug },
@@ -185,13 +175,34 @@ function citedByMargin(links: { slug: FullSlug; label: string }[], from: FullSlu
         ),
       ]),
     ),
-  ])
+  )
+}
+
+/** First prose block of a section body, or the body itself when the section has none. */
+function anchorOf(container: Element): Element {
+  let found: Element | undefined
+  walk(container, el => {
+    if (found) return false
+    if (ANCHORS.has(el.tagName) && toString(el).trim()) found = el
+  })
+  return found ?? container
+}
+
+const bodyOf = (section: Element): Element => {
+  let body: Element | undefined
+  walk(section, el => {
+    if (!body && classesOf(el).includes('collapsible-header-content')) body = el
+  })
+  return body ?? section
 }
 
 /**
- * Left margin per `##`: reviewing the cards of the twin deck that cite the page, plus the
- * reader's notes. Right margin: the page's "comprendre les expressions" rows at the first use of
- * each expression, and the lessons that cite the page. Decks are only visible at render time
+ * One margin column, Locher style: each prose block that carries margin work opens with a number
+ * `(n)`, and the column holds `§ label (n)` entries for it. Review of the cards that cite the page
+ * and the reader's notes sit at the first block of each `##`; the page's "comprendre les expressions"
+ * rows sit at the first use of each expression; the lessons that cite the page sit at the first
+ * block. The browser hangs the group in the left margin and joins it to the block with a leader line,
+ * or folds it under the block on narrow screens. Decks are only visible at render time
  * (`ctx.decks`), so this runs here rather than in a transformer.
  */
 export function renderFrMargins(tree: Root, componentData: QuartzComponentProps, ctx: Ctx) {
@@ -200,10 +211,6 @@ export function renderFrMargins(tree: Root, componentData: QuartzComponentProps,
   if (!slug || !slug.startsWith('fr/') || fileData.flashcards) return
   const sections = sectionsOf(tree)
   if (sections.length === 0) return
-
-  let serial = 0
-  const baseId = (kind: string, key: string) =>
-    `sidenote-fr-${kind}-${key.replace(/[^A-Za-z0-9_-]/g, '-')}`
 
   const deck = ctx.decks?.find(d => d.flashcards?.sourceSlug === slug)
   const deckSlug = flashcardsSlug(slug)
@@ -214,14 +221,25 @@ export function renderFrMargins(tree: Root, componentData: QuartzComponentProps,
     sections.map(s => s.info),
   )
 
+  const pending = new Map<Element, Entry[]>()
+  const put = (block: Element, entry: Entry) => {
+    const list = pending.get(block)
+    if (list) list.push(entry)
+    else pending.set(block, [entry])
+  }
+
+  const firstBlock = anchorOf(sections[0].body)
+  const backlinks = renderDataFor(ctx, allFiles).backlinksBySlug.get(simplifySlug(slug)) ?? []
+  const lessons = backlinks
+    .map(file => ({ slug: file.slug as FullSlug, label: lessonLabel(file.slug as string) }))
+    .filter((link): link is { slug: FullSlug; label: string } => Boolean(link.label))
+    .sort((a, b) => a.slug.localeCompare(b.slug))
+
   for (const { body, info } of sections) {
+    const block = anchorOf(body)
     const ids = assigned.get(info.id) ?? []
-    const content: Element[] = []
-    if (ids.length > 0) content.push(reviewMargin(deckSlug, info.id, ids))
-    content.push(notesMargin(info.id))
-    body.children.unshift(
-      ...anchored('marge gauche', 'rev', content, baseId('rev', info.id), serial++),
-    )
+    if (ids.length > 0) put(block, { kind: 'rev', body: reviewMargin(deckSlug, info.id, ids) })
+    put(block, { kind: 'notes', body: notesMargin(info.id) })
   }
 
   const glosses = glossesOf(tree)
@@ -238,63 +256,64 @@ export function renderFrMargins(tree: Root, componentData: QuartzComponentProps,
       .at(0)
     const groups = new Map<Element, Gloss[]>()
     for (const gloss of glosses) {
-      const block = uses.get(gloss) ?? heading
+      const found = uses.get(gloss)
+      const block = found ?? (heading ? anchorOf(bodyOf(heading)) : undefined)
       if (!block) continue
       const bucket = groups.get(block)
       if (bucket) bucket.push(gloss)
       else groups.set(block, [gloss])
     }
-    for (const [block, items] of groups) {
-      // a section stands in for its heading's content: its glosses sit at the top of the body
-      let target = block
-      if (isSection(block)) {
-        walk(block, el => {
-          if (target === block && classesOf(el).includes('collapsible-header-content')) target = el
-        })
-      }
-      target.children.unshift(
-        ...anchored(
-          'marge droite',
-          'gloss',
-          [glossMargin(items)],
-          baseId('gloss', `${serial}`),
-          serial++,
-        ),
-      )
-    }
+    for (const [block, items] of groups) put(block, { kind: 'lex', body: glossMargin(items) })
   }
 
-  const backlinks = renderDataFor(ctx, allFiles).backlinksBySlug.get(simplifySlug(slug)) ?? []
-  const lessons = backlinks
-    .map(file => ({ slug: file.slug as FullSlug, label: lessonLabel(file.slug as string) }))
-    .filter((link): link is { slug: FullSlug; label: string } => Boolean(link.label))
-    .sort((a, b) => a.slug.localeCompare(b.slug))
-  if (lessons.length > 0) {
-    const first = sections[0].node
-    const parent = findParent(tree, first)
-    if (parent) {
-      parent.children.splice(
-        parent.children.indexOf(first),
-        0,
-        ...anchored(
-          'cité par',
-          'cite',
-          [citedByMargin(lessons, slug)],
-          baseId('cite', slug),
-          serial++,
+  if (lessons.length > 0) put(firstBlock, { kind: 'cite', body: citedByMargin(lessons, slug) })
+
+  // numbers follow document order, whichever pass found the block first
+  const ordered: Element[] = []
+  walk(tree, el => {
+    if (pending.has(el)) ordered.push(el)
+  })
+  ordered.forEach((block, i) => {
+    const n = i + 1
+    const entries = pending.get(block)!.sort((a, b) => ORDER[a.kind] - ORDER[b.kind])
+    block.properties = {
+      ...block.properties,
+      className: [...classesOf(block), 'fr-anchor'],
+      dataFrN: String(n),
+    }
+    block.children.unshift(h('span.fr-n', { ariaHidden: 'true' }, `(${n})`), {
+      type: 'text',
+      value: ' ',
+    })
+    // Locher's three columns: review and notes hang left of the text, glosses and citing lessons right
+    for (const side of ['left', 'right'] as const) {
+      const mine = entries.filter(entry => SIDE[entry.kind] === side)
+      if (mine.length === 0) continue
+      block.children.push(
+        h(
+          'span.fr-group',
+          { dataN: String(n), dataSide: side },
+          mine.map(entry =>
+            h('span.fr-entry', { dataFrKind: entry.kind }, [
+              h(
+                'button.fr-entry-label',
+                { type: 'button', ariaExpanded: 'false' },
+                `§ ${LABELS[entry.kind]} (${n})`,
+              ),
+              h('span.fr-entry-body', [entry.body]),
+            ]),
+          ),
         ),
       )
     }
-  }
+  })
 }
 
-function findParent(root: Root | Element, target: Element): Element | Root | undefined {
-  for (const child of root.children) {
-    if (child === target) return root
-    if (child.type === 'element') {
-      const found = findParent(child, target)
-      if (found) return found
-    }
-  }
-  return undefined
+const ORDER: Record<EntryKind, number> = { rev: 0, notes: 1, lex: 2, cite: 3 }
+
+const SIDE: Record<EntryKind, 'left' | 'right'> = {
+  rev: 'left',
+  notes: 'left',
+  lex: 'right',
+  cite: 'right',
 }
