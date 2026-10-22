@@ -8,6 +8,7 @@ export const SPEECH_MODEL_INFO = {
   runtimeDownloadBytes: 14_239_897,
   downloadBytes: 277_760_116,
   sourceUrl: 'https://huggingface.co/supertone-oss-archive/supertonic-2',
+  license: 'OpenRAIL-M',
   licenseUrl:
     'https://huggingface.co/supertone-oss-archive/supertonic-2/blob/7edbcd0bba8cd579100a353a9e0b2b49cad7c875/LICENSE',
 }
@@ -87,8 +88,8 @@ export function isSpeechModelId(value: unknown): value is SpeechModelId {
   return SPEECH_MODEL_IDS.some(id => id === value)
 }
 
-export function speechModelLabel(id: SpeechModelId): string {
-  return id === 'supertonic-2' ? SPEECH_MODEL_INFO.label : PHONON_MODELS[id].label
+export function speechModelInfo(id: SpeechModelId): { label: string; license: string } {
+  return id === 'supertonic-2' ? SPEECH_MODEL_INFO : PHONON_MODELS[id]
 }
 
 export type SpeechOptions = {
