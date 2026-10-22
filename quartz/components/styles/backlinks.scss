@@ -2,7 +2,7 @@
   --backlinks-line: color-mix(in srgb, var(--gray) 55%, transparent);
   --backlinks-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
 
-  margin-bottom: 1.9rem;
+  margin: 1.9rem 0;
 
   & > .overflow {
     height: auto;

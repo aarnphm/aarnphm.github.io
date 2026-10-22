@@ -24,36 +24,17 @@ export default (() => {
     }
 
     return (
-      <section data-backlinks class={classNames(displayClass, 'backlinks', 'main-col')}>
-        <h2 id="backlinks-label">
-          {i18n(cfg.locale).components.backlinks.title}
-          <a
-            data-role="anchor"
-            aria-hidden="true"
-            tabindex={-1}
-            data-no-popover="true"
-            href="#backlinks-label"
-            class="internal"
-          >
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <use href="#github-anchor" />
-            </svg>
-          </a>
-        </h2>
+      <section
+        id="backlinks"
+        data-backlinks
+        class={classNames(displayClass, 'backlinks', 'main-col')}
+        aria-label={i18n(cfg.locale).components.backlinks.title}
+      >
         <div class="overflow">
           <table class="backlinks-table" aria-label={i18n(cfg.locale).components.backlinks.title}>
             <thead>
               <tr>
-                <th scope="col">note</th>
+                <th scope="col">backlinks</th>
                 <th scope="col">description</th>
               </tr>
             </thead>
