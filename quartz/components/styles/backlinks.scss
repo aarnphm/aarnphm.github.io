@@ -1,58 +1,68 @@
-@use '../../styles/variables.scss' as *;
-
 .backlinks {
+  --backlinks-line: color-mix(in srgb, var(--gray) 55%, transparent);
+  --backlinks-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+
   margin-bottom: 1.9rem;
 
   & > .overflow {
     height: auto;
+    border: 1px solid var(--backlinks-line);
+    border-radius: var(--radius-none);
 
     .backlinks-table {
-      display: block;
+      display: table;
       width: 100%;
       margin: 0;
       border: 0;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-family: var(--bodyFont);
+      font-size: 0.85rem;
+      line-height: 1.45;
+      color: var(--darkgray);
 
       thead {
-        display: none;
+        background: var(--backlinks-surface);
+        font-family: var(--codeFont);
+        font-size: var(--text-meta);
+        line-height: 1.5;
+        color: var(--dark);
       }
 
-      tbody {
-        display: grid;
-        gap: 0.5em;
+      tr {
+        border: 0;
+        border-bottom: 1px solid var(--backlinks-line);
+      }
 
-        @media all and ($desktop) {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
+      tbody tr:last-child {
+        border-bottom: 0;
       }
 
       th,
       td {
-        display: block;
+        padding: 0.4rem 0.75rem;
         border: 0;
-        padding: 0;
         text-align: left;
-        font-weight: inherit;
+        vertical-align: top;
+        font-weight: 400;
+        overflow-wrap: anywhere;
+      }
+
+      th:first-child {
+        width: 35%;
+        border-right: 1px solid var(--backlinks-line);
       }
     }
 
     .backlink-card {
-      display: block;
       position: relative;
-      border: 1px solid var(--gray);
-      padding: 0.75rem;
-      border-radius: var(--radius-none);
-      line-height: 1.3;
 
       a[data-backlink] {
         display: block;
-        line-height: 1.3;
+        color: var(--dark);
         text-decoration: none;
 
-        &:hover {
-          background: initial;
-        }
-
-        // Extend the title's hit area across the card, below the description links.
+        // Extend the title's hit area across the row, below the description links.
         &::after {
           content: '';
           position: absolute;
@@ -63,30 +73,19 @@
           outline: none;
 
           &::after {
-            outline: 2px solid var(--secondary);
-            outline-offset: 2px;
+            outline: 2px solid var(--dark);
+            outline-offset: -2px;
           }
+        }
+
+        > .small {
+          font-size: inherit;
         }
       }
 
       .description {
         pointer-events: none;
-        line-height: 1.3;
-        font-weight: normal;
-
-        overflow: hidden;
-        text-overflow: ellipsis;
-
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-
-        text-align: left;
-        word-spacing: -0.5px;
-        letter-spacing: -0.2px;
-
-        color: var(--gray);
-        margin-top: 0.2rem;
+        color: var(--darkgray);
 
         a {
           position: relative;
@@ -94,6 +93,19 @@
           pointer-events: auto;
         }
       }
+    }
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .backlinks .backlink-card {
+    a[data-backlink]:hover {
+      background: initial;
+      text-decoration: underline;
+    }
+
+    &:hover {
+      background: var(--backlinks-surface);
     }
   }
 }
