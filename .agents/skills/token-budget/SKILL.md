@@ -93,7 +93,7 @@ It runs `w` with stdin closed (`w` opens an interactive shell, and a non-interac
    run.sh land <wt> <run>/<slug> <module paths>   # stages the worktree's changes vs HEAD; writes land.patch
    ```
 
-   This stages only the module's paths. It refuses when those paths are already staged here (a second round on a landed module): then copy the changed files over after checking `git diff --quiet -- <paths>`, and stage them. Do not commit. After aarnphm commits, `run.sh clean <wt>` removes the worktree and its branch. It refuses while any changed file in the worktree differs from HEAD; `w --rm` always refuses here, because the worktree keeps the split as uncommitted files.
+   This stages only the module's paths. It refuses when those paths are already staged here (a second round on a landed module): then copy the changed files over after checking `git diff --quiet -- <paths>`, and stage them. It also refuses when a module file matches a Git ignore rule (`.git/info/exclude` has `image-*`), because `git add` would skip it silently; rename the file. Do not commit. After aarnphm commits, `run.sh clean <wt>` removes the worktree and its branch. It refuses while any changed file in the worktree differs from HEAD; `w --rm` always refuses here, because the worktree keeps the split as uncommitted files.
 
 ## Rules
 
