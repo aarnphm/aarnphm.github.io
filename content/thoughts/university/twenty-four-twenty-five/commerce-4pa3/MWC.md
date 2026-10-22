@@ -4,8 +4,8 @@ aliases:
 date: '2025-02-06'
 description: and world congress
 id: MWC
-layout: technical
-modified: 2026-06-05 15:08:37 GMT-04:00
+modified: 2026-10-22 02:08:34 GMT-04:00
+noindex: true
 permalinks:
   - /mwc
 tags:

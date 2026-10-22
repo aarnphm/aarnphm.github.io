@@ -3,16 +3,18 @@ abstract: large language models will probably be the most important piece of tec
 date: '2024-02-07'
 description: a mathematical framework for intelligence
 id: LLMs
-modified: 2026-10-21 23:55:28 GMT-04:00
+layout: technical
+modified: 2026-10-22 11:27:07 GMT-04:00
 seealso:
   - '[[thoughts/mechanistic interpretability]]'
   - '[[thoughts/Alignment|Alignment]]'
 slides: true
 tags:
-  - sapling
   - ml
   - llm
   - philosophy
+  - technical
+  - evergreen
 title: LLMs
 ---
 

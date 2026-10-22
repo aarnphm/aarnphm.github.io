@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-10-21 09:10:36 GMT-04:00
+modified: 2026-10-22 09:19:44 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -82,6 +82,26 @@ title: are.na
 
 ## discourse
 
+- https://x.com/QiaochuYuan/status/2103524793383620817 -- Qiaochu Yuan on simulated shopping and consumerism
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [consumerism, reward loops]
+    - later: true
+- https://x.com/aidangomez/status/2105994794883502168 -- Aidan Gomez criticizes Anthropic's outreach to religious institutions
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [ai personhood, religion]
+    - later: true
+- https://x.com/andy_matuschak/status/2105771380948226371 -- Andy Matuschak on computer liberation without programming literacy
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [malleable software, computing literacy]
+    - later: true
+- https://x.com/tyler_johnston/status/2103585202584875122 -- Tyler Johnston's investigation of the AI-safety backlash
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [ai politics, influence networks]
+    - later: true
 - https://sparcjcs.substack.com/p/i-want-to-destroy-the-words-interesting -- "Interesting" and "sparkly"
   - [meta]:
     - date: 10/21/2026
@@ -748,6 +768,81 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/rtwlz/status/2102793613914816765 -- Riley Walz on the expanding scope of individual projects
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [personal agency, ambition]
+    - later: true
+- https://x.com/nabla_theta/status/2103369543980912695 -- Leo Gao on spiky alignment across domains
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [ai alignment, generalization]
+    - later: true
+- https://x.com/majamediaco/status/2103257793772028094 -- Maja on making somatic practices legible
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [somatic awareness, communication]
+    - later: true
+- https://x.com/NoahChrein/status/2103199943460602254 -- Noah Chrein on mathematics and human dignity
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [mathematics, human dignity]
+    - later: true
+- https://x.com/NatlParkService/status/2103162056602247357 -- Honky Chonk Beardonkadonk
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [wildlife, fat bear week]
+    - later: true
+- https://x.com/Lang__Leon/status/2103503937701548071 -- Leon Lang on keeping pace with AI-driven mathematics
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [ai alignment, mathematics]
+    - later: true
+- https://x.com/notsky/status/2103287813651550556 -- Sky on Mitchell Hashimoto: genius billionaire husband comedian
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [internet humor, home offices]
+    - later: true
+- https://x.com/dioscuri/status/2103455021128208782 -- Henry Shevlin on sharing the benefits of advanced AI
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [ai ethics, global justice]
+    - later: true
+- https://x.com/dylanbowmanSF/status/2105800414520307922 -- Human-authored chain-of-thought as fiction
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [chain of thought, experimental writing]
+    - later: true
+- https://x.com/SchrodingrsBrat/status/2104027484425769445 -- Sherry on the salesman and martyr friendship
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [friendship, values]
+    - later: true
+- https://x.com/tenderizzation/status/2104451042284814372 -- A Transformer at the keyboard: an LLM procedural-generation meme
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [transformers, procedural generation]
+    - later: true
+- https://x.com/boazbaraktcs/status/2105040796504187299 -- Boaz Barak on adapting mathematical research to AI
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [mathematics, research culture]
+    - later: true
+- https://x.com/PalisadeAI/status/2104949061325652001 -- Palisade Research shares Neel Nanda's warning on interpretability
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [interpretability, ai safety]
+    - later: true
+- https://x.com/NeelNanda5/status/2105062988990550223 -- Neel Nanda on the limits of interpretability as a safety guarantee
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [interpretability, ai safety]
+    - later: true
+- https://x.com/michellechen/status/2106894709696422189 -- Michelle Chen on Clef and Clef Flash in the Workers AI free tier
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [cloudflare, llm inference]
+    - later: true
 - https://x.com/whitecircle/status/2102087563913609534 -- White Circle introduces Halo for open-source model post-training
   - [meta]:
     - date: 10/21/2026
@@ -5434,6 +5529,11 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://x.com/xhfloz/status/2103557179441901911 -- Long List of Random Reflections After AI Rut
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [ai tools, creative flow]
+    - later: true
 - https://sparcjcs.substack.com/p/i-was-half-myself-without-you-now -- i was half myself without you, now i feel so complete
   - [meta]:
     - date: 10/21/2026
@@ -9243,6 +9343,51 @@ title: are.na
   - view: list
   - json: true
 
+- https://x.com/ayushjain1144/status/2103484674983313828 -- TrackEverything: 3D point tracking across long videos
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [computer vision, point tracking]
+    - later: true
+- https://x.com/samsja19/status/2103188904715386881 -- Secure Acceleration: a cyberdefense strategy for superintelligence
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [ai security, model weights]
+    - later: true
+- https://x.com/voooooogel/status/2105793927035093490 -- Steering vectors as feature bundles and behavioral biases
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [activation steering, interpretability]
+    - later: true
+- https://x.com/celestepoasts/status/2103232383139057950 -- How 12 blind Claudes see the Earth
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [spatial representations, model evaluation]
+    - later: true
+- https://x.com/chhillee/status/2105177416666914936 -- Horace He on prefill-decode disaggregation versus mixed chunked prefill
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [llm inference, disaggregated serving]
+    - later: true
+- https://x.com/PaxMachinaMag/status/2105674475702477241 -- Alignment compilers for collective AI agents
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [multi-agent alignment, collective intelligence]
+    - later: true
+- https://x.com/i/trending/2105719842124788060 -- SYNTH and Olmo-core 3: synthetic data and open training infrastructure
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [synthetic data, distributed training]
+    - later: true
+- https://x.com/i/trending/2105674095589257687 -- Invent-a-Dataset: post-training data from natural-language descriptions
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [synthetic data, post-training]
+    - later: true
+- https://x.com/lionellevine/status/2106055882299625839 -- Lionel Levine on jointly training probes and language models
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [interpretability, probe training]
+    - later: true
 - https://cocohearts.substack.com/p/revisiting-situational-awareness -- Revisiting Situational Awareness
   - [meta]:
     - date: 10/21/2026
@@ -12888,6 +13033,11 @@ title: are.na
 
 ## opinions
 
+- https://x.com/chrislakin/status/2103620465029943764 -- Chris Lakin: Addictions are anesthesia
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [addiction, suffering]
+    - later: true
 - https://ai-frontiers.org/articles/suicidal-compassion-how-utilitarianism-at-ai-companies-endangers-humanity -- Suicidal Compassion: How Utilitarianism at AI Companies Endangers Humanity
   - [meta]:
     - date: 10/11/2026
@@ -15463,6 +15613,11 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://x.com/BeckmannPierre/status/2105682558524522923 -- Understanding and trust in polyphonic language models
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [interpretability, understanding]
+    - later: true
 - https://contrapositive.substack.com/p/adaptive-complexity-as-a-supervalue -- Adaptive complexity as a supervalue
   - [meta]:
     - date: 10/21/2026
@@ -19721,6 +19876,21 @@ title: are.na
 
 ## prompts
 
+- https://x.com/donaldjewkes/status/2102801274173587569 -- Claude Pop: an overnight music-video generation prompt
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [music videos, agent workflows]
+    - later: true
+- https://x.com/jakubantalik/status/2103145432390262954 -- libraries-dev: an agent skill for expressive interfaces
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [agent skills, interface design]
+    - later: true
+- https://x.com/jakubkrehel/status/2104961136617787398 -- Jakub Krehel's interface skills in practice
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [agent skills, interface design]
+    - later: true
 - https://x.com/ericzakariasson/status/2102853511637774551 -- Improve this agent harness's token efficiency
   - [meta]:
     - date: 10/21/2026
@@ -19814,6 +19984,11 @@ title: are.na
 
 ## resources
 
+- https://x.com/karpathy/status/1865924776214327360 -- Andrej Karpathy's books that stayed with him
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [reading lists, books]
+    - later: true
 - https://seanmeng17.substack.com/p/a-hitchhikers-guide-to-phd-apps -- A hitchhiker's guide to PhD apps
   - [meta]:
     - date: 10/21/2026
@@ -21472,6 +21647,16 @@ title: are.na
 
 ## interfaces
 
+- https://x.com/azlenelza/status/2105540576200581601 -- A call for new aesthetics of maps
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [cartography, information density]
+    - later: true
+- https://x.com/geoffreylitt/status/2105728583318770140 -- Geoffrey Litt on Imbue Studio and malleable software
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [malleable software, personal computing]
+    - later: true
 - https://x.com/natkohasic/status/2103440361716629785 -- Pinch-to-zoom timeline with progressive detail
   - [meta]:
     - date: 10/21/2026
@@ -23316,6 +23501,41 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://x.com/sanyampunia/status/2103533714252902592 -- Anchor-centered tooltips that stay within the viewport
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [css anchor positioning, tooltips]
+    - later: true
+- https://x.com/istdrc/status/2103168507878011088 -- Raft.build is now source-available
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [agentic development, source available]
+    - later: true
+- https://x.com/charles_irl/status/2103222839507652640 -- Quail: joint query planning and LLM inference for AI-SQL
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [query optimization, llm inference]
+    - later: true
+- https://x.com/PyTorch/status/2105788900576743798 -- Jagged Flash Attention with TLX on Blackwell
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [attention kernels, triton]
+    - later: true
+- https://x.com/joedaroo/status/2104335929293127851 -- Its not just the f*cking sandbox
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [agent security, incident response]
+    - later: true
+- https://x.com/ekzhang1/status/2105444878716932411 -- Eric Zhang: a steady-state model of prefill-decode disaggregation
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [llm inference, disaggregated serving]
+    - later: true
+- https://x.com/cerebras/status/2105749446814576806 -- Disaggregated Inference From The Ground Up
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [llm inference, heterogeneous computing]
+    - later: true
 - https://en.wikipedia.org/wiki/Bayer_filter -- Bayer filter
   - [meta]:
     - date: 10/21/2026
