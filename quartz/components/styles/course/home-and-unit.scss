@@ -83,12 +83,16 @@
   padding: 0 0 var(--space-4);
   border-bottom: 1px solid var(--dark);
 
+  // the plain crumb over the title: the trail bar's type and separator (trail-bar.scss), without
+  // its hairlines, because the masthead rule under the meta line already frames the block
   .course-masthead-num {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-1) var(--space-2);
+    gap: var(--space-1) 1ch;
     margin: 0;
-    font-size: var(--text-ui);
+    font-size: var(--text-meta);
+    line-height: 1.4;
+    text-transform: lowercase;
     color: var(--darkgray);
 
     .course-unit-sep {
@@ -121,7 +125,7 @@
     color: var(--darkgray);
 
     .course-sep {
-      margin: 0 var(--space-2);
+      margin: 0 1ch;
       color: var(--gray);
     }
 
@@ -332,48 +336,7 @@
   text-transform: lowercase;
 }
 
-// unit page: bar above the notes, foot below. The page header is a grid on desktop and a
-// wrapping flex row below it; the footer is always the page grid.
-.course-unit-bar {
-  grid-column: var(--layout-byline-column);
-  flex: 1 1 100%;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-2) var(--space-3);
-  margin: var(--space-3) 0 var(--space-4);
-  padding: var(--space-2) 0;
-  border-top: 1px solid var(--course-line);
-  border-bottom: 1px solid var(--course-line);
-  font-family: var(--codeFont);
-  font-size: var(--text-meta);
-  text-transform: lowercase;
-
-  a {
-    color: var(--dark);
-    text-decoration: none;
-
-    &:hover {
-      text-decoration: underline;
-      text-underline-offset: 0.2em;
-    }
-  }
-
-  .course-unit-sep {
-    color: var(--gray);
-  }
-
-  .course-action {
-    margin-left: auto;
-  }
-
-  @media all and ($mobile) {
-    .course-action {
-      margin-left: 0;
-    }
-  }
-}
-
+// unit page: the bar above the notes lives in trail-bar.scss; the foot below it is the page grid.
 .course-unit-foot {
   // footer.scss lays every <footer> out as a flex row; this one stacks
   display: block;

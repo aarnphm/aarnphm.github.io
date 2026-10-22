@@ -105,54 +105,6 @@
   }
 }
 
-// --- unit bar extras: the crumb group, the fold button ---
-.course-unit-bar {
-  // the bar's runs differ in box height (the toggles keep the 1.75rem control height), so
-  // they share the text baseline rather than the box centre
-  align-items: baseline;
-
-  // read/problems and the page action stay together at the end of the bar
-  .course-unit-actions {
-    display: inline-flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: var(--space-1) var(--space-3);
-    margin-left: auto;
-
-    > .course-action {
-      margin-left: 0;
-    }
-
-    @media all and ($mobile) {
-      margin-left: 0;
-    }
-  }
-
-  .course-crumb {
-    display: inline-flex;
-    flex-wrap: wrap;
-    gap: var(--space-2);
-    align-items: baseline;
-  }
-
-  .course-unit-dates {
-    color: var(--darkgray);
-  }
-
-  button.course-fold {
-    appearance: none;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    cursor: pointer;
-
-    &[aria-pressed='true'] {
-      text-decoration-color: var(--dark);
-      text-decoration-style: double;
-    }
-  }
-}
-
 // byline cell under the tags: label and path at the byline's one size
 .byline .course-unit-notes {
   p {

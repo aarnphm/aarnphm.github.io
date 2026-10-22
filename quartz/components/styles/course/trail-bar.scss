@@ -1,0 +1,147 @@
+@use '../../../styles/variables.scss' as *;
+
+// The trail bar above /fr episodes, course units and university notes: crumb and facts on the
+// left, controls on the right, between two hairlines.
+//
+// Centring. Berkeley Mono at 12px has ascent 11 and descent 3, so every run's content box is 14px
+// with the baseline 11px down and a cap height of about 8.2px. A run centred on the bar's axis
+// leaves 2.84px above the caps and 3.00px below the baseline inside that box, so the caps sit
+// within 0.2px of the middle whatever the line-height. The bar therefore centres every run
+// (`align-items: center`, never `baseline`: the 1.75rem controls and the bare text share an axis,
+// not a baseline) and gives each run the same minimum height, so the three bars are one height.
+.course-unit-bar {
+  grid-column: var(--layout-byline-column);
+  flex: 1 1 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-3);
+  margin: var(--space-3) 0 var(--space-4);
+  padding: var(--space-2) 0;
+  border-top: 1px solid var(--course-line);
+  border-bottom: 1px solid var(--course-line);
+  font-family: var(--codeFont);
+  font-size: var(--text-meta);
+  line-height: 1.4;
+  text-transform: lowercase;
+
+  // under a coarse pointer the 44px controls fill the bar, so the padding is spent already
+  @media (pointer: coarse) {
+    padding-block: 0;
+  }
+
+  // every run is one line tall at least the control height and centres its text in it
+  .course-crumb,
+  .course-unit-dates,
+  .course-unit-actions,
+  .fr-unit-facts {
+    min-block-size: var(--course-control-height);
+  }
+
+  .course-crumb,
+  .course-unit-dates,
+  .course-unit-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  // one separator width everywhere: a mono space either side, which is what the ` · ` in the
+  // dates string measures
+  .course-crumb {
+    column-gap: 1ch;
+  }
+
+  .course-unit-sep {
+    color: var(--gray);
+  }
+
+  .course-unit-dates {
+    color: var(--darkgray);
+  }
+
+  a {
+    // the padding makes the link as tall as a control without moving the text
+    padding-block: calc((var(--course-control-height) - 1lh) / 2);
+    color: var(--dark);
+    line-height: 1.4;
+    text-decoration: none;
+
+    &:focus-visible {
+      outline: 2px solid var(--dark);
+      outline-offset: -2px;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        color: var(--dark);
+        text-decoration: underline;
+        text-underline-offset: 0.2em;
+      }
+    }
+  }
+
+  // read, problems, log and the page action stay together at the end of the bar
+  .course-unit-actions {
+    margin-left: auto;
+    gap: 0 var(--space-3);
+
+    @media all and ($mobile) {
+      margin-left: 0;
+    }
+
+    // the controls are the established text action: underlined, the dark ink, no box
+    a,
+    .course-action,
+    .course-study-toggle {
+      margin: 0;
+      padding-block: 0;
+      text-decoration: underline;
+      text-decoration-color: var(--course-line);
+      text-underline-offset: 0.2em;
+    }
+
+    a,
+    .course-action {
+      display: inline-flex;
+      align-items: center;
+      min-block-size: var(--course-control-height);
+      line-height: 1.4;
+      color: var(--dark);
+    }
+
+    .course-action[aria-disabled='true'] {
+      color: var(--darkgray);
+      text-decoration: none;
+    }
+
+    .course-study {
+      align-items: center;
+      gap: 0 var(--space-3);
+    }
+
+    // the toggle is a flex box whose label would otherwise sit at its top edge
+    .course-study-toggle {
+      align-items: center;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      a:hover,
+      .course-action:not([aria-disabled='true']):hover {
+        text-decoration-color: var(--dark);
+      }
+    }
+  }
+
+  button.course-fold {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+
+    &[aria-pressed='true'] {
+      text-decoration-color: var(--dark);
+      text-decoration-style: double;
+    }
+  }
+}
