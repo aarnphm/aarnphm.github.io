@@ -22,15 +22,15 @@ Pour répondre à un remerciement : {{`Il n’y a pas de quoi`}} ou {{`Je vous e
 
 ## Connecteurs formels
 
-| Connecteur                                          | Sens                           | Note                                                                      |
-| --------------------------------------------------- | ------------------------------ | ------------------------------------------------------------------------- |
-| {{`cependant`}} / {{`néanmoins`}} / {{`toutefois`}} | however                        | {{`toutefois`}} un peu plus littéraire                                    |
-| {{`en revanche`}}                                   | on the other hand              | contraste équilibré — ≠ {{`au contraire`}} (réfutation : on the contrary) |
-| {{`dès lors`}}                                      | consequently                   |                                                                           |
-| {{`en outre`}}                                      | furthermore                    | pilier de la dissertation                                                 |
-| {{`au demeurant`}}                                  | be that as it may              | concession élégante                                                       |
-| {{`partant`}} (de ce constat)                       | starting from this observation | transition logique                                                        |
-| {{`nonobstant`}}                                    | notwithstanding                | très juridique — à manier avec parcimonie                                 |
+| Connecteur                                          | Sens                           | Note                                                                           |
+| --------------------------------------------------- | ------------------------------ | ------------------------------------------------------------------------------ |
+| {{`cependant`}} / {{`néanmoins`}} / {{`toutefois`}} | however                        | {{`toutefois`}} un peu plus littéraire                                         |
+| {{`en revanche`}}                                   | on the other hand              | contraste équilibré — $\neq$ {{`au contraire`}} (réfutation : on the contrary) |
+| {{`dès lors`}}                                      | consequently                   |                                                                                |
+| {{`en outre`}}                                      | furthermore                    | pilier de la dissertation                                                      |
+| {{`au demeurant`}}                                  | be that as it may              | concession élégante                                                            |
+| {{`partant`}} (de ce constat)                       | starting from this observation | transition logique                                                             |
+| {{`nonobstant`}}                                    | notwithstanding                | très juridique — à manier avec parcimonie                                      |
 
 ## Tournures de l'écrit formel
 
