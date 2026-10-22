@@ -3,7 +3,7 @@ abstract: large language models will probably be the most important piece of tec
 date: '2024-02-07'
 description: a mathematical framework for intelligence
 id: LLMs
-modified: 2026-10-11 13:09:21 GMT-04:00
+modified: 2026-10-21 23:55:28 GMT-04:00
 seealso:
   - '[[thoughts/mechanistic interpretability]]'
   - '[[thoughts/Alignment|Alignment]]'
@@ -16,11 +16,17 @@ tags:
 title: LLMs
 ---
 
-Large language models often use [[thoughts/Autoregressive models|autoregressive]] [[thoughts/Transformers|transformers]] to predict the next token. LLaDA is a diffusion language model: it learns to reconstruct masked tokens, then generates text through repeated unmasking [@nie2025largelanguagediffusionmodels]. DFlash uses a lightweight block-diffusion draft model for [[thoughts/Speculative decoding|speculative decoding]], producing a block of draft tokens in one forward pass for an autoregressive target model to verify [@chen2026dflashblockdiffusionflash]. These are separate roles for diffusion, with separate training and sampling procedures.
+Large language models builds on top of [[thoughts/Autoregressive models|autoregressive]] [[thoughts/Transformers|transformers]] to predict the [[thoughts/Autoregressive models#next token prediction|next token]].
 
-> [!note] GPTs and friends
+This is often because these models are trained to "hillclimb" this specific objective, and with the recent advancement in [[thoughts/Reinforcement learning|RL]] we've basically achieved _pseudo-intellectualism_
+
+There are also a whole genre of language model built on top of diffusion blocks, where it learns to reconstruct masked tokens, then generates text through repeated {{sidenotes[unmasking]: diffusion is an alternate approach to AR, but if anything it lacks the coherency formed via [[thoughts/mechanistic interpretability#superposition hypothesis|superposition]] to those of AR models (_i suspect_)}} [@nie2025largelanguagediffusionmodels].
+
+[[thoughts/Speculative decoding|Speculative decoding]] techniques such as DFlash uses a lightweight block-diffusion draft model to produce a block of draft tokens in one forward pass for an autoregressive target model to verify [@chen2026dflashblockdiffusionflash].
+
+> [!note]- GPTs and friends
 >
-> Most variants of LLMs are decoder-only [@radford2019language]
+> Most variants of LLMs are decoder-only [@radford2019language]. There are bi-directional encoder-decoder models, though their application are more domain-specific, whereas decoder-only models generalized a lot better, per recent history.
 
 Have "capabilities" to understand [[thoughts/NLP|natural language]].
 
