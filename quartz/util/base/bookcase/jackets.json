@@ -7205,6 +7205,146 @@
       "detailArtworkSha256": "f1f2f53c463d94222932cc8314ec487ba73f8f47ea3a9357a994218785810377",
       "detailWidth": 65,
       "detailHeight": 620
+    },
+    {
+      "id": "elements-of-morals-american-book-undated-photo-v1",
+      "title": "Elements of Morals",
+      "author": "Paul Janet",
+      "publisher": "American Book Company",
+      "isbn": null,
+      "editionEvidence": "Same-copy AbeBooks seller gallery 11563827082 shows the full open blue-cloth case, complete spine and both endpoints, plus the title page naming Paul Janet, Mrs. C. R. Corson and American Book Company (New York, Cincinnati, Chicago). This replaces the documented interior-title-leaf placeholder under existing authorization for physical pairs, preserving the Corson translation and note. Seller dates the illegible copyright as 188?; exact printing date and publisher-issued binding originality are unverified. This is a photographed surviving copy, not a claim of the A. S. Barnes 1884 binding. The tan paper label is badly faded; its actual pixels are retained, with no inferred blank label, recreated lettering, repair or SVG. Source photograph has 2198x1500 native pixels; capped raster sampling adds no native detail.",
+      "page": "https://www.abebooks.com/Elements-Morals-Special-Application-Moral-Law/11563827082/bd",
+      "source": "https://pictures.abebooks.com/inventory/11563827082.jpg",
+      "sourceSha256": "affbb488917378c22d96ad21072682b2cd0656c3e3743ca5441d705baa80c4d3",
+      "sourceKind": "Same-copy native 2198x1500 open-case photograph; actual-copy condition and faded label retained.",
+      "poster": "library/posters/elements-of-morals.jpg",
+      "posterSha256": "f0eb579e09d0f0c0101d5ceeca594fe96edb391340f2f780f0857c72d55eed1f",
+      "crop": { "left": 0, "top": 0, "width": 240, "height": 1280 },
+      "mesh": {
+        "kind": "boundary-curves-spine",
+        "interpolation": "bilinear",
+        "width": 240,
+        "height": 1280,
+        "boundaries": {
+          "top": [
+            [0, 970, 46],
+            [0.12, 1000, 52],
+            [0.45, 1080, 54],
+            [0.73, 1150, 52],
+            [1, 1218, 50]
+          ],
+          "bottom": [
+            [0, 963, 1440],
+            [0.26, 1030, 1450],
+            [0.62, 1120, 1451],
+            [1, 1218, 1442]
+          ],
+          "left": [
+            [0, 970, 46],
+            [0.11, 977, 200],
+            [0.39, 976, 590],
+            [0.68, 965, 1000],
+            [1, 963, 1440]
+          ],
+          "right": [
+            [0, 1218, 50],
+            [0.11, 1230, 200],
+            [0.39, 1225, 590],
+            [0.68, 1224, 1000],
+            [1, 1218, 1442]
+          ]
+        }
+      },
+      "height": 320,
+      "sampling": "independent",
+      "artwork": "elements-of-morals-american-book-undated-photo-v1-low-v2.webp",
+      "linkedEvidence": {
+        "titlePage": {
+          "source": "https://pictures.abebooks.com/inventory/11563827082_2.jpg",
+          "sha256": "377fe3e545131970df860d08949b50f88e70f1c08930532059c7f7e8decdb63b"
+        },
+        "independentReferenceReview": {
+          "file": "docs/verification/bookcase-spine-art/research/autonomous/2026-10-22T0342-manual/reviews/elements-luna-c.json"
+        }
+      },
+      "artworkSha256": "227fe0bcc32bb299fb804efddf20bbd90342de2e52447062857c9489aa7fc2e1",
+      "detailArtwork": "elements-of-morals-american-book-undated-photo-v1-detail-0f38b185d98fb2ab.webp",
+      "detailArtworkSha256": "0f38b185d98fb2ab5f38a4b75017c5dc2b0976ee5adb1d3069c74bb1372ec060",
+      "detailWidth": 240,
+      "detailHeight": 1280
+    },
+    {
+      "id": "nicomachean-ethics-ostwald-bobbs-merrill-9780672602566-2026-10-22-v2",
+      "title": "Nicomachean Ethics",
+      "author": "Aristotle",
+      "publisher": "The Bobbs-Merrill Company, Inc. / Library of Liberal Arts",
+      "isbn": "9780672602566",
+      "editionEvidence": "The live Collectors Guild LLC eBay item 316126165628 gallery contains this copy's matching blue tree/two-figure front and full spine in adjacent views. The front prints Martin Ostwald's translation credit. Its title page names Nicomachean Ethics, Aristotle, Martin Ostwald (translated, with introduction and notes), The Library of Liberal Arts, and The Bobbs-Merrill Company, Inc. Its copyright leaf prints 1962 and ISBN 0-672-60256-3. This qualifies the existing pinned Ostwald artwork and physical spine. The linked Garden text separately identifies W. D. Ross; it remains unchanged and is not used as evidence about this physical copy.",
+      "page": "https://www.ebay.com/itm/316126165628",
+      "source": "https://i.ebayimg.com/images/g/jmkAAOSw7ndngpFc/s-l1600.webp",
+      "sourceSha256": "908c68faaa0d60299e8a55e8eac8cecfc4d9f27b027d94490225544239dbc0d6",
+      "sourceKind": "Native same-copy seller photograph, perspective rectified from the four photographed spine-face corners. The crop excludes the display stand and background at both head and tail; original wear, shadows and print remain photographic.",
+      "poster": "library/posters/nicomachean-ethics.jpg",
+      "posterSha256": "184b68b36b34867e09f1f0e0008b7a0e0c35aa7b675e80e4318c39382957d0a7",
+      "linkedEvidence": {
+        "front": {
+          "source": "https://i.ebayimg.com/images/g/-nEAAOSwV0xngpFa/s-l1600.webp",
+          "sha256": "35ed3dd7fd6b389d2135313ea2edd13d89ecf300b342b2f39b7017c6462133ec",
+          "file": "evidence/linked-front.webp"
+        },
+        "titlePage": {
+          "source": "https://i.ebayimg.com/images/g/gG0AAOSwTh9ngpFr/s-l1600.webp",
+          "sha256": "995eb58721b7e68b02a94faf0a45cef041d24c16738f925a02aadc70d1b6959f",
+          "file": "evidence/title-page.webp"
+        },
+        "copyright": {
+          "source": "https://i.ebayimg.com/images/g/lnIAAOSwOXdngpFu/s-l1600.webp",
+          "sha256": "a5f7a82942d6634001e254931c9f4bda97d51ae4492d59dd94090d5edcf695ec",
+          "file": "evidence/copyright-preface.webp"
+        }
+      },
+      "crop": { "left": 0, "top": 0, "width": 93, "height": 1280 },
+      "height": 320,
+      "artwork": "nicomachean-ethics-ostwald-2026-10-22-v2-low.webp",
+      "detailArtwork": "nicomachean-ethics-ostwald-bobbs-merrill-9780672602566-2026-10-22-v2-detail-37f05379c5bfbbb3.webp",
+      "detailArtworkSha256": "37f05379c5bfbbb3cc16b8c355047dc20fc4757b45b2c195b04ced6bcf800d83",
+      "detailWidth": 93,
+      "detailHeight": 1280,
+      "mesh": {
+        "kind": "boundary-curves-spine",
+        "interpolation": "bilinear",
+        "width": 93,
+        "height": 1280,
+        "boundaries": {
+          "top": [
+            [0, 422, 218],
+            [1, 539, 198]
+          ],
+          "bottom": [
+            [0, 780, 1487],
+            [1, 862, 1442]
+          ],
+          "left": [
+            [0, 422, 218],
+            [0.2, 480, 470],
+            [0.4, 546, 725],
+            [0.6, 610, 980],
+            [0.8, 680, 1225],
+            [0.9, 725, 1360],
+            [1, 780, 1487]
+          ],
+          "right": [
+            [0, 539, 198],
+            [0.2, 594, 450],
+            [0.4, 660, 700],
+            [0.6, 725, 950],
+            [0.8, 785, 1200],
+            [0.9, 830, 1360],
+            [1, 862, 1442]
+          ]
+        }
+      },
+      "artworkSha256": "7b15528b823c659415c2dda51a8ae1b4b09c3471e0f00081e3894c9550c6f85a"
     }
   ]
 }
