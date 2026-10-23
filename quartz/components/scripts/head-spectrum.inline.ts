@@ -1,4 +1,4 @@
-export {}
+import { registerMdxContent } from './mdx-content'
 
 type LayoutState = { xS: number[]; yS: number[]; points: string[] }
 type HeadState = {
@@ -183,9 +183,7 @@ const setupHeadSpectrum = (root: HTMLElement): (() => void) | null => {
   }
 }
 
-document.addEventListener('nav', () => {
-  for (const root of document.querySelectorAll<HTMLElement>(HS_ROOT_SELECTOR)) {
-    const cleanup = setupHeadSpectrum(root)
-    if (cleanup) window.addCleanup?.(cleanup)
-  }
+registerMdxContent(HS_ROOT_SELECTOR, root => {
+  const cleanup = setupHeadSpectrum(root)
+  if (cleanup) window.addCleanup?.(cleanup)
 })

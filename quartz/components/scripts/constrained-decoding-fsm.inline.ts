@@ -1,3 +1,5 @@
+import { registerMdxContent } from './mdx-content'
+
 type CdfsmView = {
   state: number
   visited: number[]
@@ -47,55 +49,49 @@ const cdfsmRender = (root: HTMLElement, views: CdfsmView[], step: number) => {
   if (status) status.textContent = view.status
 }
 
-const cdfsmSetup = () => {
-  for (const root of document.querySelectorAll<HTMLElement>('[data-cdfsm]')) {
-    const views = cdfsmParse(root)
-    if (!views.length) continue
-    const last = views.length - 1
-    let step = 0
+registerMdxContent('[data-cdfsm]', root => {
+  const views = cdfsmParse(root)
+  if (!views.length) return
+  const last = views.length - 1
+  let step = 0
 
-    const go = (next: number) => {
-      const clamped = Math.max(0, Math.min(last, next))
-      if (clamped === step) return
-      step = clamped
-      cdfsmRender(root, views, step)
-    }
-
-    // aria-disabled keeps focus on the button at either end; the click is ignored instead.
-    const onClick = (event: MouseEvent) => {
-      const btn = (event.target as Element | null)?.closest<HTMLButtonElement>(
-        '[data-cdfsm-action]',
-      )
-      if (!btn || !root.contains(btn)) return
-      const action = btn.dataset.cdfsmAction
-      if (action === 'step') go(step + 1)
-      else if (action === 'back') go(step - 1)
-      else if (action === 'reset') go(0)
-    }
-
-    const onKey = (event: KeyboardEvent) => {
-      if (event.altKey || event.ctrlKey || event.metaKey) return
-      const moves: Record<string, number> = {
-        ArrowRight: step + 1,
-        ArrowLeft: step - 1,
-        Home: 0,
-        End: last,
-      }
-      if (!(event.key in moves)) return
-      event.preventDefault()
-      go(moves[event.key])
-    }
-
-    const controls = root.querySelector<HTMLElement>('.cdfsm-controls')
-    root.addEventListener('click', onClick)
-    controls?.addEventListener('keydown', onKey)
+  const go = (next: number) => {
+    const clamped = Math.max(0, Math.min(last, next))
+    if (clamped === step) return
+    step = clamped
     cdfsmRender(root, views, step)
-
-    window.addCleanup(() => {
-      root.removeEventListener('click', onClick)
-      controls?.removeEventListener('keydown', onKey)
-    })
   }
-}
 
-document.addEventListener('nav', cdfsmSetup)
+  // aria-disabled keeps focus on the button at either end; the click is ignored instead.
+  const onClick = (event: MouseEvent) => {
+    const btn = (event.target as Element | null)?.closest<HTMLButtonElement>('[data-cdfsm-action]')
+    if (!btn || !root.contains(btn)) return
+    const action = btn.dataset.cdfsmAction
+    if (action === 'step') go(step + 1)
+    else if (action === 'back') go(step - 1)
+    else if (action === 'reset') go(0)
+  }
+
+  const onKey = (event: KeyboardEvent) => {
+    if (event.altKey || event.ctrlKey || event.metaKey) return
+    const moves: Record<string, number> = {
+      ArrowRight: step + 1,
+      ArrowLeft: step - 1,
+      Home: 0,
+      End: last,
+    }
+    if (!(event.key in moves)) return
+    event.preventDefault()
+    go(moves[event.key])
+  }
+
+  const controls = root.querySelector<HTMLElement>('.cdfsm-controls')
+  root.addEventListener('click', onClick)
+  controls?.addEventListener('keydown', onKey)
+  cdfsmRender(root, views, step)
+
+  window.addCleanup(() => {
+    root.removeEventListener('click', onClick)
+    controls?.removeEventListener('keydown', onKey)
+  })
+})

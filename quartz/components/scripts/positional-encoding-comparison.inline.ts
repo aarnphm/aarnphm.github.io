@@ -1,4 +1,4 @@
-export {}
+import { registerMdxContent } from './mdx-content'
 
 const SVG_NS = 'http://www.w3.org/2000/svg'
 const PEC_LENGTHS = [8, 16, 32, 64] as const
@@ -247,12 +247,6 @@ const pecSetupRoot = (root: HTMLElement) => {
   })
 }
 
-const pecSetup = () => {
-  for (const root of document.querySelectorAll<HTMLElement>(
-    '[data-positional-encoding-comparison]',
-  )) {
-    pecSetupRoot(root)
-  }
-}
-
-document.addEventListener('nav', pecSetup)
+registerMdxContent('[data-positional-encoding-comparison]', root => {
+  pecSetupRoot(root)
+})

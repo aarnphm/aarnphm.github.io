@@ -1,4 +1,4 @@
-export {}
+import { registerMdxContent } from './mdx-content'
 
 type QueryState = {
   t: number
@@ -98,9 +98,7 @@ const setupSparseAttentionMask = (root: HTMLElement): (() => void) | null => {
   }
 }
 
-document.addEventListener('nav', () => {
-  for (const root of document.querySelectorAll<HTMLElement>(SAM_ROOT_SELECTOR)) {
-    const cleanup = setupSparseAttentionMask(root)
-    if (cleanup) window.addCleanup?.(cleanup)
-  }
+registerMdxContent(SAM_ROOT_SELECTOR, root => {
+  const cleanup = setupSparseAttentionMask(root)
+  if (cleanup) window.addCleanup?.(cleanup)
 })

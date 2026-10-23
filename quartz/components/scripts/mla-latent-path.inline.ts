@@ -1,5 +1,6 @@
 import katex from 'katex'
 import { renderFigureLabel } from '../../util/figure-label'
+import { registerMdxContent } from './mdx-content'
 
 type MlaKey = 'd' | 'nh' | 'dh' | 'dc' | 'dr'
 type MlaState = Record<MlaKey, number>
@@ -103,32 +104,27 @@ const mlaRender = (root: HTMLElement, state: MlaState) => {
   mlaUpdateReadout(root, state)
 }
 
-const mlaSetup = () => {
-  const roots = document.querySelectorAll<HTMLElement>('[data-mla-latent-path]')
-  for (const root of roots) {
-    if (root.dataset.mlaBound === 'true') continue
-    root.dataset.mlaBound = 'true'
+registerMdxContent('[data-mla-latent-path]', root => {
+  if (root.dataset.mlaBound === 'true') return
+  root.dataset.mlaBound = 'true'
 
-    const state = mlaReadState(root)
-    mlaRender(root, state)
+  const state = mlaReadState(root)
+  mlaRender(root, state)
 
-    const handlers: Array<() => void> = []
-    for (const k of mlaKeys) {
-      const input = root.querySelector<HTMLInputElement>(`[data-mla-input="${k}"]`)
-      if (!input) continue
-      const handler = () => {
-        state[k] = Number(input.value)
-        mlaRender(root, state)
-      }
-      input.addEventListener('input', handler)
-      handlers.push(() => input.removeEventListener('input', handler))
+  const handlers: Array<() => void> = []
+  for (const k of mlaKeys) {
+    const input = root.querySelector<HTMLInputElement>(`[data-mla-input="${k}"]`)
+    if (!input) continue
+    const handler = () => {
+      state[k] = Number(input.value)
+      mlaRender(root, state)
     }
-
-    window.addCleanup?.(() => {
-      for (const off of handlers) off()
-      delete root.dataset.mlaBound
-    })
+    input.addEventListener('input', handler)
+    handlers.push(() => input.removeEventListener('input', handler))
   }
-}
 
-document.addEventListener('nav', mlaSetup)
+  window.addCleanup?.(() => {
+    for (const off of handlers) off()
+    delete root.dataset.mlaBound
+  })
+})

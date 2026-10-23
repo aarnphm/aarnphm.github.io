@@ -1,4 +1,5 @@
 import katex from 'katex'
+import { registerMdxContent } from './mdx-content'
 
 type OhtMatrix = number[][]
 
@@ -337,8 +338,6 @@ const ohtSetupRoot = (root: HTMLElement) => {
   })
 }
 
-document.addEventListener('nav', () => {
-  for (const root of document.querySelectorAll<HTMLElement>(OHT_ROOT)) {
-    ohtSetupRoot(root)
-  }
+registerMdxContent(OHT_ROOT, root => {
+  ohtSetupRoot(root)
 })

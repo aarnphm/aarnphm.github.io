@@ -1,4 +1,4 @@
-export {}
+import { registerMdxContent } from './mdx-content'
 
 type ClientFrame = {
   n: string
@@ -89,7 +89,6 @@ const setupFSMDecoding = (root: HTMLElement): (() => void) => {
   }
 }
 
-document.addEventListener('nav', () => {
-  for (const root of document.querySelectorAll<HTMLElement>(FSM_ROOT_SELECTOR))
-    window.addCleanup?.(setupFSMDecoding(root))
+registerMdxContent(FSM_ROOT_SELECTOR, root => {
+  window.addCleanup?.(setupFSMDecoding(root))
 })

@@ -1,4 +1,4 @@
-export {}
+import { registerMdxContent } from './mdx-content'
 
 const PPT_ROOT_SELECTOR = '[data-priority-protocol-timeline]'
 
@@ -27,9 +27,7 @@ const setupPriorityProtocolTimeline = (root: HTMLElement): (() => void) | null =
   return () => root.removeEventListener('change', apply)
 }
 
-document.addEventListener('nav', () => {
-  for (const root of document.querySelectorAll<HTMLElement>(PPT_ROOT_SELECTOR)) {
-    const cleanup = setupPriorityProtocolTimeline(root)
-    if (cleanup) window.addCleanup?.(cleanup)
-  }
+registerMdxContent(PPT_ROOT_SELECTOR, root => {
+  const cleanup = setupPriorityProtocolTimeline(root)
+  if (cleanup) window.addCleanup?.(cleanup)
 })

@@ -1,3 +1,5 @@
+import { registerMdxContent } from './mdx-content'
+
 type PoolState = { cells: string; max: string; rows: string; cols: string }
 type PoolMeta = { n: number; skipped: number; w2: string }
 type ConnState = { ids: string[]; params: string; reads: string; range: string; share: string }
@@ -62,9 +64,7 @@ const setupConvLocality = (root: HTMLElement): (() => void) | null => {
   return () => root.removeEventListener('change', apply)
 }
 
-document.addEventListener('nav', () => {
-  for (const root of document.querySelectorAll<HTMLElement>('[data-conv-locality]')) {
-    const cleanup = setupConvLocality(root)
-    if (cleanup) window.addCleanup?.(cleanup)
-  }
+registerMdxContent('[data-conv-locality]', root => {
+  const cleanup = setupConvLocality(root)
+  if (cleanup) window.addCleanup?.(cleanup)
 })

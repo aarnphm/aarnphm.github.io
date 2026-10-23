@@ -1,4 +1,4 @@
-export {}
+import { registerMdxContent } from './mdx-content'
 
 type AcirCircuit = 'qk' | 'ov' | 'none'
 
@@ -133,10 +133,7 @@ function acirSetup(root: HTMLElement): (() => void) | null {
   }
 }
 
-document.addEventListener('nav', () => {
-  const roots = document.querySelectorAll<HTMLElement>(ACIR_ROOT_SELECTOR)
-  for (const root of roots) {
-    const cleanup = acirSetup(root)
-    if (cleanup) window.addCleanup?.(cleanup)
-  }
+registerMdxContent(ACIR_ROOT_SELECTOR, root => {
+  const cleanup = acirSetup(root)
+  if (cleanup) window.addCleanup?.(cleanup)
 })

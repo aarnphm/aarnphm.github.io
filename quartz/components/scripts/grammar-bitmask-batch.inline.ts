@@ -1,4 +1,4 @@
-export {}
+import { registerMdxContent } from './mdx-content'
 
 const setupGrammarBitmaskBatch = (root: HTMLElement): (() => void) => {
   const requestParts = Array.from(root.querySelectorAll<Element>('[data-gbb-req]'))
@@ -23,8 +23,6 @@ const setupGrammarBitmaskBatch = (root: HTMLElement): (() => void) => {
   return () => root.removeEventListener('change', apply)
 }
 
-document.addEventListener('nav', () => {
-  for (const root of document.querySelectorAll<HTMLElement>('[data-grammar-bitmask-batch]')) {
-    window.addCleanup?.(setupGrammarBitmaskBatch(root))
-  }
+registerMdxContent('[data-grammar-bitmask-batch]', root => {
+  window.addCleanup?.(setupGrammarBitmaskBatch(root))
 })

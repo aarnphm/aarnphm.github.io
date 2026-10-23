@@ -1,5 +1,6 @@
 import katex from 'katex'
 import { renderFigureLabel } from '../../util/figure-label'
+import { registerMdxContent } from './mdx-content'
 
 type Preset = 'uniform' | 'spiky' | 'longtail'
 
@@ -197,10 +198,7 @@ const setupCascade = (root: HTMLElement): (() => void) | null => {
   }
 }
 
-document.addEventListener('nav', () => {
-  const roots = document.querySelectorAll<HTMLElement>(CF_ROOT_SELECTOR)
-  for (const root of roots) {
-    const cleanup = setupCascade(root)
-    if (cleanup) window.addCleanup?.(cleanup)
-  }
+registerMdxContent(CF_ROOT_SELECTOR, root => {
+  const cleanup = setupCascade(root)
+  if (cleanup) window.addCleanup?.(cleanup)
 })

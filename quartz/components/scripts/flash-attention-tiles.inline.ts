@@ -1,5 +1,6 @@
 import katex from 'katex'
 import { renderFigureLabel } from '../../util/figure-label'
+import { registerMdxContent } from './mdx-content'
 
 type Vec = [number, number]
 
@@ -211,47 +212,42 @@ function hasBeenWritten(stepIdx: number, row: number): boolean {
   return false
 }
 
-function setupFlashAttentionTiles() {
-  const roots = document.querySelectorAll<HTMLElement>('[data-flash-attention-tiles]')
-  for (const root of roots) {
-    if (root.dataset.fatBound) continue
-    root.dataset.fatBound = 'true'
+registerMdxContent('[data-flash-attention-tiles]', root => {
+  if (root.dataset.fatBound) return
+  root.dataset.fatBound = 'true'
 
-    let idx = 0
-    renderStep(root, idx)
+  let idx = 0
+  renderStep(root, idx)
 
-    const next = root.querySelector<HTMLButtonElement>('[data-fat-next]')
-    const prev = root.querySelector<HTMLButtonElement>('[data-fat-prev]')
-    const reset = root.querySelector<HTMLButtonElement>('[data-fat-reset]')
+  const next = root.querySelector<HTMLButtonElement>('[data-fat-next]')
+  const prev = root.querySelector<HTMLButtonElement>('[data-fat-prev]')
+  const reset = root.querySelector<HTMLButtonElement>('[data-fat-reset]')
 
-    const handleNext = () => {
-      if (idx < TOTAL_STEPS - 1) {
-        idx += 1
-        renderStep(root, idx)
-      }
-    }
-    const handlePrev = () => {
-      if (idx > 0) {
-        idx -= 1
-        renderStep(root, idx)
-      }
-    }
-    const handleReset = () => {
-      idx = 0
+  const handleNext = () => {
+    if (idx < TOTAL_STEPS - 1) {
+      idx += 1
       renderStep(root, idx)
     }
-
-    next?.addEventListener('click', handleNext)
-    prev?.addEventListener('click', handlePrev)
-    reset?.addEventListener('click', handleReset)
-
-    window.addCleanup(() => {
-      next?.removeEventListener('click', handleNext)
-      prev?.removeEventListener('click', handlePrev)
-      reset?.removeEventListener('click', handleReset)
-      delete root.dataset.fatBound
-    })
   }
-}
+  const handlePrev = () => {
+    if (idx > 0) {
+      idx -= 1
+      renderStep(root, idx)
+    }
+  }
+  const handleReset = () => {
+    idx = 0
+    renderStep(root, idx)
+  }
 
-document.addEventListener('nav', setupFlashAttentionTiles)
+  next?.addEventListener('click', handleNext)
+  prev?.addEventListener('click', handlePrev)
+  reset?.addEventListener('click', handleReset)
+
+  window.addCleanup(() => {
+    next?.removeEventListener('click', handleNext)
+    prev?.removeEventListener('click', handlePrev)
+    reset?.removeEventListener('click', handleReset)
+    delete root.dataset.fatBound
+  })
+})

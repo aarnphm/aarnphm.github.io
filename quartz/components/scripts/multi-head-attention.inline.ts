@@ -1,5 +1,6 @@
 import katex from 'katex'
 import { renderFigureLabel } from '../../util/figure-label'
+import { registerMdxContent } from './mdx-content'
 
 const mhaViewH = 560
 const mhaBandTop = 36
@@ -199,111 +200,106 @@ const mhaParseOptions = (raw: string | undefined, fallback: number[]): number[] 
   return parsed.length > 0 ? parsed : fallback
 }
 
-const mhaSetup = () => {
-  const roots = document.querySelectorAll<HTMLElement>('[data-multi-head-attention]')
-  for (const root of roots) {
-    if (root.dataset.mhaBound === 'true') continue
-    root.dataset.mhaBound = 'true'
+registerMdxContent('[data-multi-head-attention]', root => {
+  if (root.dataset.mhaBound === 'true') return
+  root.dataset.mhaBound = 'true'
 
-    const options = mhaParseOptions(root.dataset.mhaOptions, [1, 2, 4, 8])
-    const seq = Number(root.dataset.mhaSeq ?? '4')
-    let h = Number(root.dataset.mhaHeads ?? String(options[0]))
-    let dm = Number(root.dataset.mhaDm ?? '512')
-    let showPattern = root.dataset.mhaShowPattern !== 'false'
+  const options = mhaParseOptions(root.dataset.mhaOptions, [1, 2, 4, 8])
+  const seq = Number(root.dataset.mhaSeq ?? '4')
+  let h = Number(root.dataset.mhaHeads ?? String(options[0]))
+  let dm = Number(root.dataset.mhaDm ?? '512')
+  let showPattern = root.dataset.mhaShowPattern !== 'false'
 
-    const slider = root.querySelector<HTMLInputElement>('[data-mha-heads-input]')
-    const dmInput = root.querySelector<HTMLInputElement>('[data-mha-dm-input]')
-    const dmValue = root.querySelector<HTMLElement>('[data-mha-dm-value]')
-    const toggle = root.querySelector<HTMLButtonElement>('[data-mha-pattern-toggle]')
+  const slider = root.querySelector<HTMLInputElement>('[data-mha-heads-input]')
+  const dmInput = root.querySelector<HTMLInputElement>('[data-mha-dm-input]')
+  const dmValue = root.querySelector<HTMLElement>('[data-mha-dm-value]')
+  const toggle = root.querySelector<HTMLButtonElement>('[data-mha-pattern-toggle]')
 
-    const render = () => {
-      mhaSetLayout(root, h, showPattern)
-      mhaSetReadout(root, h, dm, seq)
+  const render = () => {
+    mhaSetLayout(root, h, showPattern)
+    mhaSetReadout(root, h, dm, seq)
+  }
+
+  render()
+
+  const handlers: Array<() => void> = []
+
+  if (slider) {
+    const onSlide = () => {
+      const idx = Number(slider.value)
+      const next = options[idx] ?? options[0]
+      h = next
+      root.dataset.mhaHeads = String(h)
+      render()
     }
+    slider.addEventListener('input', onSlide)
+    handlers.push(() => slider.removeEventListener('input', onSlide))
+  }
 
-    render()
-
-    const handlers: Array<() => void> = []
-
-    if (slider) {
-      const onSlide = () => {
-        const idx = Number(slider.value)
-        const next = options[idx] ?? options[0]
-        h = next
-        root.dataset.mhaHeads = String(h)
+  if (dmInput && dmValue) {
+    const startEdit = () => {
+      dmInput.value = String(dm)
+      dmValue.hidden = true
+      dmInput.hidden = false
+      dmInput.focus()
+      dmInput.select()
+    }
+    const commitEdit = () => {
+      if (dmInput.hidden) return
+      const raw = Number(dmInput.value)
+      if (Number.isFinite(raw) && raw > 0) {
+        dm = Math.min(16384, Math.max(64, Math.round(raw)))
+        root.dataset.mhaDm = String(dm)
         render()
       }
-      slider.addEventListener('input', onSlide)
-      handlers.push(() => slider.removeEventListener('input', onSlide))
+      dmInput.hidden = true
+      dmValue.hidden = false
     }
-
-    if (dmInput && dmValue) {
-      const startEdit = () => {
-        dmInput.value = String(dm)
-        dmValue.hidden = true
-        dmInput.hidden = false
-        dmInput.focus()
-        dmInput.select()
-      }
-      const commitEdit = () => {
-        if (dmInput.hidden) return
-        const raw = Number(dmInput.value)
-        if (Number.isFinite(raw) && raw > 0) {
-          dm = Math.min(16384, Math.max(64, Math.round(raw)))
-          root.dataset.mhaDm = String(dm)
-          render()
-        }
-        dmInput.hidden = true
-        dmValue.hidden = false
-      }
-      const cancelEdit = () => {
-        dmInput.hidden = true
-        dmValue.hidden = false
-      }
-      const onValueKey = (e: KeyboardEvent) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault()
-          startEdit()
-        }
-      }
-      const onEditKey = (e: KeyboardEvent) => {
-        if (e.key === 'Enter') {
-          e.preventDefault()
-          commitEdit()
-        } else if (e.key === 'Escape') {
-          e.preventDefault()
-          cancelEdit()
-        }
-      }
-      dmValue.addEventListener('click', startEdit)
-      dmValue.addEventListener('keydown', onValueKey)
-      dmInput.addEventListener('keydown', onEditKey)
-      dmInput.addEventListener('blur', commitEdit)
-      handlers.push(() => {
-        dmValue.removeEventListener('click', startEdit)
-        dmValue.removeEventListener('keydown', onValueKey)
-        dmInput.removeEventListener('keydown', onEditKey)
-        dmInput.removeEventListener('blur', commitEdit)
-      })
+    const cancelEdit = () => {
+      dmInput.hidden = true
+      dmValue.hidden = false
     }
-
-    if (toggle) {
-      const onToggle = () => {
-        showPattern = !showPattern
-        root.dataset.mhaShowPattern = showPattern ? 'true' : 'false'
-        toggle.classList.toggle('is-active', showPattern)
-        toggle.setAttribute('aria-pressed', showPattern ? 'true' : 'false')
-        render()
+    const onValueKey = (e: KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault()
+        startEdit()
       }
-      toggle.addEventListener('click', onToggle)
-      handlers.push(() => toggle.removeEventListener('click', onToggle))
     }
-
-    window.addCleanup(() => {
-      for (const off of handlers) off()
-      delete root.dataset.mhaBound
+    const onEditKey = (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        e.preventDefault()
+        commitEdit()
+      } else if (e.key === 'Escape') {
+        e.preventDefault()
+        cancelEdit()
+      }
+    }
+    dmValue.addEventListener('click', startEdit)
+    dmValue.addEventListener('keydown', onValueKey)
+    dmInput.addEventListener('keydown', onEditKey)
+    dmInput.addEventListener('blur', commitEdit)
+    handlers.push(() => {
+      dmValue.removeEventListener('click', startEdit)
+      dmValue.removeEventListener('keydown', onValueKey)
+      dmInput.removeEventListener('keydown', onEditKey)
+      dmInput.removeEventListener('blur', commitEdit)
     })
   }
-}
 
-document.addEventListener('nav', mhaSetup)
+  if (toggle) {
+    const onToggle = () => {
+      showPattern = !showPattern
+      root.dataset.mhaShowPattern = showPattern ? 'true' : 'false'
+      toggle.classList.toggle('is-active', showPattern)
+      toggle.setAttribute('aria-pressed', showPattern ? 'true' : 'false')
+      render()
+    }
+    toggle.addEventListener('click', onToggle)
+    handlers.push(() => toggle.removeEventListener('click', onToggle))
+  }
+
+  window.addCleanup(() => {
+    for (const off of handlers) off()
+    delete root.dataset.mhaBound
+  })
+})

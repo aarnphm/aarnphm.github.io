@@ -1,4 +1,4 @@
-export {}
+import { registerMdxContent } from './mdx-content'
 
 type State = {
   orig: number[][]
@@ -52,9 +52,7 @@ const setupMXBlockScale = (root: HTMLElement): (() => void) | null => {
   return () => root.removeEventListener('change', apply)
 }
 
-document.addEventListener('nav', () => {
-  for (const root of document.querySelectorAll<HTMLElement>('[data-mx-block-scale]')) {
-    const cleanup = setupMXBlockScale(root)
-    if (cleanup) window.addCleanup?.(cleanup)
-  }
+registerMdxContent('[data-mx-block-scale]', root => {
+  const cleanup = setupMXBlockScale(root)
+  if (cleanup) window.addCleanup?.(cleanup)
 })

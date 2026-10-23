@@ -1,3 +1,5 @@
+import { registerMdxContent } from './mdx-content'
+
 type Table = Record<string, [string, string]>
 
 const parseTable = (raw: string | undefined): Table => {
@@ -118,8 +120,6 @@ function setup(root: HTMLElement): () => void {
   }
 }
 
-document.addEventListener('nav', () => {
-  for (const root of document.querySelectorAll<HTMLElement>('[data-fr-rewriter]')) {
-    window.addCleanup?.(setup(root))
-  }
+registerMdxContent('[data-fr-rewriter]', root => {
+  window.addCleanup?.(setup(root))
 })

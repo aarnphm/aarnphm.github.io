@@ -12,6 +12,7 @@ import {
   type AccNumKey,
   type AccState,
 } from './attention-cost-model'
+import { registerMdxContent } from './mdx-content'
 
 type AccKey = AccNumKey | 'dt'
 
@@ -126,113 +127,108 @@ const accRender = (root: HTMLElement, s: AccState) => {
   accUpdateSummary(root, m)
 }
 
-const accSetup = () => {
-  const roots = document.querySelectorAll<HTMLElement>('[data-acc-root]')
-  for (const root of roots) {
-    if (root.dataset.accBound === 'true') continue
-    root.dataset.accBound = 'true'
+registerMdxContent('[data-acc-root]', root => {
+  if (root.dataset.accBound === 'true') return
+  root.dataset.accBound = 'true'
 
-    const state = accReadState(root)
-    accRender(root, state)
+  const state = accReadState(root)
+  accRender(root, state)
 
-    const offHandlers: Array<() => void> = []
+  const offHandlers: Array<() => void> = []
 
-    for (const k of Object.keys(ACC_VALUES) as AccNumKey[]) {
-      const input = root.querySelector<HTMLInputElement>(`[data-acc-input="${k}"]`)
-      if (!input) continue
-      const opts = ACC_VALUES[k]
-      const handler = () => {
-        const idx = Math.min(opts.length - 1, Math.max(0, Math.round(Number(input.value))))
-        let next = opts[idx]
-        if (k === 'nh') {
-          const dh = state.dm / next
-          if (!Number.isInteger(dh)) {
+  for (const k of Object.keys(ACC_VALUES) as AccNumKey[]) {
+    const input = root.querySelector<HTMLInputElement>(`[data-acc-input="${k}"]`)
+    if (!input) continue
+    const opts = ACC_VALUES[k]
+    const handler = () => {
+      const idx = Math.min(opts.length - 1, Math.max(0, Math.round(Number(input.value))))
+      let next = opts[idx]
+      if (k === 'nh') {
+        const dh = state.dm / next
+        if (!Number.isInteger(dh)) {
+          const divisors = opts.filter(h => Number.isInteger(state.dm / h))
+          if (divisors.length > 0) next = accSnap(next, divisors)
+        }
+      }
+      state[k] = next
+      accRender(root, state)
+      accFlashCard(root, k)
+    }
+    input.addEventListener('input', handler)
+    offHandlers.push(() => input.removeEventListener('input', handler))
+
+    const valueEl = root.querySelector<HTMLElement>(`[data-acc-value="${k}"]`)
+    const editEl = root.querySelector<HTMLInputElement>(`[data-acc-edit="${k}"]`)
+    if (valueEl && editEl) {
+      const startEdit = () => {
+        editEl.value = String(state[k])
+        valueEl.hidden = true
+        editEl.hidden = false
+        editEl.focus()
+        editEl.select()
+      }
+      const commitEdit = () => {
+        if (editEl.hidden) return
+        const raw = Number(editEl.value)
+        if (Number.isFinite(raw) && raw > 0) {
+          let next = accSnap(raw, opts)
+          if (k === 'nh') {
             const divisors = opts.filter(h => Number.isInteger(state.dm / h))
             if (divisors.length > 0) next = accSnap(next, divisors)
           }
-        }
-        state[k] = next
-        accRender(root, state)
-        accFlashCard(root, k)
-      }
-      input.addEventListener('input', handler)
-      offHandlers.push(() => input.removeEventListener('input', handler))
-
-      const valueEl = root.querySelector<HTMLElement>(`[data-acc-value="${k}"]`)
-      const editEl = root.querySelector<HTMLInputElement>(`[data-acc-edit="${k}"]`)
-      if (valueEl && editEl) {
-        const startEdit = () => {
-          editEl.value = String(state[k])
-          valueEl.hidden = true
-          editEl.hidden = false
-          editEl.focus()
-          editEl.select()
-        }
-        const commitEdit = () => {
-          if (editEl.hidden) return
-          const raw = Number(editEl.value)
-          if (Number.isFinite(raw) && raw > 0) {
-            let next = accSnap(raw, opts)
-            if (k === 'nh') {
-              const divisors = opts.filter(h => Number.isInteger(state.dm / h))
-              if (divisors.length > 0) next = accSnap(next, divisors)
-            }
-            state[k] = next
-            accRender(root, state)
-            accFlashCard(root, k)
-          }
-          editEl.hidden = true
-          valueEl.hidden = false
-          valueEl.focus({ preventScroll: true })
-        }
-        const cancelEdit = () => {
-          editEl.hidden = true
-          valueEl.hidden = false
-        }
-        const onEditKey = (e: KeyboardEvent) => {
-          if (e.key === 'Enter') {
-            e.preventDefault()
-            commitEdit()
-          } else if (e.key === 'Escape') {
-            e.preventDefault()
-            cancelEdit()
-          }
-        }
-        valueEl.addEventListener('click', startEdit)
-        editEl.addEventListener('keydown', onEditKey)
-        editEl.addEventListener('blur', commitEdit)
-        offHandlers.push(() => {
-          valueEl.removeEventListener('click', startEdit)
-          editEl.removeEventListener('keydown', onEditKey)
-          editEl.removeEventListener('blur', commitEdit)
-        })
-      }
-    }
-
-    const dtHost = root.querySelector<HTMLElement>('[data-acc-dtype]')
-    if (dtHost) {
-      const select = buildSelect<AccDType>({
-        id: `${root.id || 'acc'}-dtype-menu`,
-        label: 'kv dtype',
-        groups: [
-          { options: accDtypes.map(v => ({ value: v, label: `${v} (${ACC_DTYPE_BYTES[v]} B)` })) },
-        ],
-        selected: state.dt,
-        onSelect: v => {
-          state.dt = v
+          state[k] = next
           accRender(root, state)
-          accFlashCard(root, 'dt')
-        },
+          accFlashCard(root, k)
+        }
+        editEl.hidden = true
+        valueEl.hidden = false
+        valueEl.focus({ preventScroll: true })
+      }
+      const cancelEdit = () => {
+        editEl.hidden = true
+        valueEl.hidden = false
+      }
+      const onEditKey = (e: KeyboardEvent) => {
+        if (e.key === 'Enter') {
+          e.preventDefault()
+          commitEdit()
+        } else if (e.key === 'Escape') {
+          e.preventDefault()
+          cancelEdit()
+        }
+      }
+      valueEl.addEventListener('click', startEdit)
+      editEl.addEventListener('keydown', onEditKey)
+      editEl.addEventListener('blur', commitEdit)
+      offHandlers.push(() => {
+        valueEl.removeEventListener('click', startEdit)
+        editEl.removeEventListener('keydown', onEditKey)
+        editEl.removeEventListener('blur', commitEdit)
       })
-      dtHost.replaceChildren(select.element)
-      offHandlers.push(select.mount())
     }
-
-    window.addCleanup?.(() => {
-      for (const off of offHandlers) off()
-      delete root.dataset.accBound
-    })
   }
-}
 
-document.addEventListener('nav', accSetup)
+  const dtHost = root.querySelector<HTMLElement>('[data-acc-dtype]')
+  if (dtHost) {
+    const select = buildSelect<AccDType>({
+      id: `${root.id || 'acc'}-dtype-menu`,
+      label: 'kv dtype',
+      groups: [
+        { options: accDtypes.map(v => ({ value: v, label: `${v} (${ACC_DTYPE_BYTES[v]} B)` })) },
+      ],
+      selected: state.dt,
+      onSelect: v => {
+        state.dt = v
+        accRender(root, state)
+        accFlashCard(root, 'dt')
+      },
+    })
+    dtHost.replaceChildren(select.element)
+    offHandlers.push(select.mount())
+  }
+
+  window.addCleanup?.(() => {
+    for (const off of offHandlers) off()
+    delete root.dataset.accBound
+  })
+})

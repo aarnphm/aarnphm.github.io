@@ -1,4 +1,4 @@
-export {}
+import { registerMdxContent } from './mdx-content'
 
 // Every pass is rendered at build time; the root attribute selects which one the stylesheet shows.
 const setupMXComputeFlow = (root: HTMLElement): (() => void) => {
@@ -11,7 +11,6 @@ const setupMXComputeFlow = (root: HTMLElement): (() => void) => {
   return () => root.removeEventListener('change', apply)
 }
 
-document.addEventListener('nav', () => {
-  for (const root of document.querySelectorAll<HTMLElement>('[data-mx-compute-flow]'))
-    window.addCleanup?.(setupMXComputeFlow(root))
+registerMdxContent('[data-mx-compute-flow]', root => {
+  window.addCleanup?.(setupMXComputeFlow(root))
 })

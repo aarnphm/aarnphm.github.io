@@ -1,5 +1,6 @@
 import katex from 'katex'
 import { renderFigureLabel } from '../../util/figure-label'
+import { registerMdxContent } from './mdx-content'
 
 type RptBranch = 'chat_a' | 'chat_b' | 'few_shot' | 'new' | 'root'
 
@@ -251,63 +252,58 @@ const rptResetStats = (root: HTMLElement) => {
   for (const [key, value] of Object.entries(reset)) rptSetStat(root, key, value)
 }
 
-const rptSetup = () => {
-  const roots = document.querySelectorAll<HTMLElement>('[data-radix-prefix-tree]')
-  for (const root of roots) {
-    if (root.dataset.rptBound === 'true') continue
-    root.dataset.rptBound = 'true'
+registerMdxContent('[data-radix-prefix-tree]', root => {
+  if (root.dataset.rptBound === 'true') return
+  root.dataset.rptBound = 'true'
 
-    const prompts = rptParsePrompts(root)
-    if (!prompts.length) continue
-    const nodeTokens = rptBuildTokenMap(root)
+  const prompts = rptParsePrompts(root)
+  if (!prompts.length) return
+  const nodeTokens = rptBuildTokenMap(root)
 
-    rptResetStats(root)
+  rptResetStats(root)
 
-    const resident: RptResidentMap = { chat_a: true, chat_b: true, few_shot: true }
-    let lru: Array<'chat_a' | 'chat_b' | 'few_shot'> = ['few_shot', 'chat_b', 'chat_a']
-    let cumCached = 0
-    let cumTotal = 0
+  const resident: RptResidentMap = { chat_a: true, chat_b: true, few_shot: true }
+  let lru: Array<'chat_a' | 'chat_b' | 'few_shot'> = ['few_shot', 'chat_b', 'chat_a']
+  let cumCached = 0
+  let cumTotal = 0
 
-    const handlers: Array<() => void> = []
+  const handlers: Array<() => void> = []
 
-    const handleClick = (prompt: RptPrompt) => () => {
-      if (prompt.evictTarget) resident[prompt.evictTarget] = false
-      const cached = rptCachedTokens(prompt, nodeTokens, resident)
-      cumCached += cached
-      cumTotal += cached + prompt.newTokens
-      rptApplyPrompt(root, prompt, resident, lru)
-      rptUpdateStats(root, prompt, cached, resident, cumCached, cumTotal)
-    }
-
-    for (const prompt of prompts) {
-      const btn = root.querySelector<HTMLButtonElement>(`[data-rpt-prompt="${prompt.id}"]`)
-      if (!btn) continue
-      const fn = handleClick(prompt)
-      btn.addEventListener('click', fn)
-      handlers.push(() => btn.removeEventListener('click', fn))
-    }
-
-    const resetBtn = root.querySelector<HTMLButtonElement>('[data-rpt-reset]')
-    const handleReset = () => {
-      resident.chat_a = true
-      resident.chat_b = true
-      resident.few_shot = true
-      lru = ['few_shot', 'chat_b', 'chat_a']
-      cumCached = 0
-      cumTotal = 0
-      rptResetVisualState(root)
-      rptResetStats(root)
-    }
-    if (resetBtn) {
-      resetBtn.addEventListener('click', handleReset)
-      handlers.push(() => resetBtn.removeEventListener('click', handleReset))
-    }
-
-    window.addCleanup(() => {
-      for (const off of handlers) off()
-      delete root.dataset.rptBound
-    })
+  const handleClick = (prompt: RptPrompt) => () => {
+    if (prompt.evictTarget) resident[prompt.evictTarget] = false
+    const cached = rptCachedTokens(prompt, nodeTokens, resident)
+    cumCached += cached
+    cumTotal += cached + prompt.newTokens
+    rptApplyPrompt(root, prompt, resident, lru)
+    rptUpdateStats(root, prompt, cached, resident, cumCached, cumTotal)
   }
-}
 
-document.addEventListener('nav', rptSetup)
+  for (const prompt of prompts) {
+    const btn = root.querySelector<HTMLButtonElement>(`[data-rpt-prompt="${prompt.id}"]`)
+    if (!btn) continue
+    const fn = handleClick(prompt)
+    btn.addEventListener('click', fn)
+    handlers.push(() => btn.removeEventListener('click', fn))
+  }
+
+  const resetBtn = root.querySelector<HTMLButtonElement>('[data-rpt-reset]')
+  const handleReset = () => {
+    resident.chat_a = true
+    resident.chat_b = true
+    resident.few_shot = true
+    lru = ['few_shot', 'chat_b', 'chat_a']
+    cumCached = 0
+    cumTotal = 0
+    rptResetVisualState(root)
+    rptResetStats(root)
+  }
+  if (resetBtn) {
+    resetBtn.addEventListener('click', handleReset)
+    handlers.push(() => resetBtn.removeEventListener('click', handleReset))
+  }
+
+  window.addCleanup(() => {
+    for (const off of handlers) off()
+    delete root.dataset.rptBound
+  })
+})

@@ -1,4 +1,4 @@
-export {}
+import { registerMdxContent } from './mdx-content'
 
 const MAM_ROOT_SELECTOR = '[data-mla-attention-modes]'
 
@@ -15,8 +15,6 @@ const setupMLAAttentionModes = (root: HTMLElement): (() => void) => {
   return () => root.removeEventListener('change', onChange)
 }
 
-document.addEventListener('nav', () => {
-  for (const root of document.querySelectorAll<HTMLElement>(MAM_ROOT_SELECTOR)) {
-    window.addCleanup?.(setupMLAAttentionModes(root))
-  }
+registerMdxContent(MAM_ROOT_SELECTOR, root => {
+  window.addCleanup?.(setupMLAAttentionModes(root))
 })

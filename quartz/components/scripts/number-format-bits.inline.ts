@@ -1,4 +1,4 @@
-export {}
+import { registerMdxContent } from './mdx-content'
 
 type ValueState = {
   bits: Record<string, string>
@@ -40,9 +40,7 @@ const setupNumberFormatBits = (root: HTMLElement): (() => void) | null => {
   return () => root.removeEventListener('change', apply)
 }
 
-document.addEventListener('nav', () => {
-  for (const root of document.querySelectorAll<HTMLElement>('[data-number-format-bits]')) {
-    const cleanup = setupNumberFormatBits(root)
-    if (cleanup) window.addCleanup?.(cleanup)
-  }
+registerMdxContent('[data-number-format-bits]', root => {
+  const cleanup = setupNumberFormatBits(root)
+  if (cleanup) window.addCleanup?.(cleanup)
 })

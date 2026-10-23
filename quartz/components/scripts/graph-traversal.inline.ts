@@ -1,4 +1,4 @@
-export {}
+import { registerMdxContent } from './mdx-content'
 
 type ClientRun = {
   steps: [nodes: string, edges: string, store: string, say: string][]
@@ -85,9 +85,7 @@ const setupGraphTraversal = (root: HTMLElement): (() => void) | null => {
   }
 }
 
-document.addEventListener('nav', () => {
-  for (const root of document.querySelectorAll<HTMLElement>(ROOT_SELECTOR)) {
-    const cleanup = setupGraphTraversal(root)
-    if (cleanup) window.addCleanup?.(cleanup)
-  }
+registerMdxContent(ROOT_SELECTOR, root => {
+  const cleanup = setupGraphTraversal(root)
+  if (cleanup) window.addCleanup?.(cleanup)
 })

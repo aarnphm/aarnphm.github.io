@@ -1,4 +1,4 @@
-export {}
+import { registerMdxContent } from './mdx-content'
 
 const ROOT_SELECTOR = '[data-patricia-trie]'
 
@@ -15,7 +15,6 @@ const setupPatriciaTrie = (root: HTMLElement): (() => void) => {
   return () => root.removeEventListener('change', apply)
 }
 
-document.addEventListener('nav', () => {
-  for (const root of document.querySelectorAll<HTMLElement>(ROOT_SELECTOR))
-    window.addCleanup?.(setupPatriciaTrie(root))
+registerMdxContent(ROOT_SELECTOR, root => {
+  window.addCleanup?.(setupPatriciaTrie(root))
 })

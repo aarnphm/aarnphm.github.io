@@ -1,4 +1,4 @@
-export {}
+import { registerMdxContent } from './mdx-content'
 
 type Step = {
   phase: string
@@ -88,9 +88,7 @@ const setupAllReduceSteps = (root: HTMLElement): (() => void) | null => {
   }
 }
 
-document.addEventListener('nav', () => {
-  for (const root of document.querySelectorAll<HTMLElement>(ARS_ROOT_SELECTOR)) {
-    const cleanup = setupAllReduceSteps(root)
-    if (cleanup) window.addCleanup?.(cleanup)
-  }
+registerMdxContent(ARS_ROOT_SELECTOR, root => {
+  const cleanup = setupAllReduceSteps(root)
+  if (cleanup) window.addCleanup?.(cleanup)
 })

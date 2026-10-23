@@ -1,4 +1,4 @@
-export {}
+import { registerMdxContent } from './mdx-content'
 
 const SCL_ROOT_SELECTOR = '[data-schedule-classifier]'
 
@@ -22,9 +22,7 @@ const setupScheduleClassifier = (root: HTMLElement): (() => void) | null => {
   return () => root.removeEventListener('change', apply)
 }
 
-document.addEventListener('nav', () => {
-  for (const root of document.querySelectorAll<HTMLElement>(SCL_ROOT_SELECTOR)) {
-    const cleanup = setupScheduleClassifier(root)
-    if (cleanup) window.addCleanup?.(cleanup)
-  }
+registerMdxContent(SCL_ROOT_SELECTOR, root => {
+  const cleanup = setupScheduleClassifier(root)
+  if (cleanup) window.addCleanup?.(cleanup)
 })
