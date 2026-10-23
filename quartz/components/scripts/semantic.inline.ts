@@ -14,6 +14,7 @@ type SemanticConfig = {
   manifestUrl?: string
 }
 type PendingResolver = { resolve: (payload: SearchPayload) => void; reject: (err: Error) => void }
+const SEMANTIC_IDLE_MS = 30_000
 
 export function isSemanticCancellation(error: unknown): boolean {
   return error instanceof Error && error.name === 'AbortError'
@@ -35,6 +36,19 @@ export class SemanticRuntime {
   private clients = 0
   private queue: Promise<unknown> = Promise.resolve()
   private timer: ReturnType<typeof setTimeout> | undefined
+  private idleTimer: ReturnType<typeof setTimeout> | undefined
+  private searches = 0
+
+  get alive() {
+    return this.worker !== null && this.error === null
+  }
+
+  private releaseWhenIdle() {
+    clearTimeout(this.idleTimer)
+    if (!this.alive || this.searches > 0) return
+    // Clients retain result caches across navigation; the model has a shorter lifetime.
+    this.idleTimer = setTimeout(() => this.fail(cancelled()), SEMANTIC_IDLE_MS)
+  }
 
   constructor(readonly cfg: SemanticConfig) {
     this.ready = new Promise(resolve => (this.resolveReady = resolve))
@@ -46,6 +60,7 @@ export class SemanticRuntime {
         if (msg.type === 'ready') {
           clearTimeout(this.timer)
           this.resolveReady()
+          this.releaseWhenIdle()
         } else if (msg.type === 'search-result') {
           const pending = this.pending.get(msg.seq)
           this.pending.delete(msg.seq)
@@ -77,6 +92,7 @@ export class SemanticRuntime {
   private fail(error: Error) {
     this.error = error
     clearTimeout(this.timer)
+    clearTimeout(this.idleTimer)
     this.worker?.terminate()
     this.worker = null
     this.resolveReady()
@@ -91,9 +107,12 @@ export class SemanticRuntime {
       if (window.quartzSemanticRuntime === this) window.quartzSemanticRuntime = undefined
       throw this.error
     }
+    this.releaseWhenIdle()
   }
 
   search(text: string, k: number, manifestUrl: string, current: () => boolean) {
+    this.searches++
+    clearTimeout(this.idleTimer)
     const result = this.queue.then(async () => {
       if (!current()) throw cancelled()
       await this.ensureReady()
@@ -107,7 +126,12 @@ export class SemanticRuntime {
       if (!current()) throw cancelled()
       return payload
     })
-    this.queue = result.catch(() => {})
+    this.queue = result
+      .catch(() => {})
+      .finally(() => {
+        this.searches--
+        this.releaseWhenIdle()
+      })
     return result
   }
 }
@@ -119,29 +143,36 @@ export class SemanticClient {
 
   constructor(private cfg: SemanticConfig = {}) {
     if (cfg.enable === false) return
+    this.acquireRuntime()
+  }
+
+  private acquireRuntime(): SemanticRuntime {
+    if (this.runtime?.alive) return this.runtime
+    this.runtime?.release()
     const previous = window.quartzSemanticRuntime
     if (
       previous &&
-      (previous.cfg.model !== cfg.model || previous.cfg.queryDtype !== cfg.queryDtype)
+      (previous.cfg.model !== this.cfg.model || previous.cfg.queryDtype !== this.cfg.queryDtype)
     )
       throw new Error('semantic encoder configuration differs from the active encoder')
-    this.runtime = previous ?? new SemanticRuntime(cfg)
+    this.runtime = previous ?? new SemanticRuntime(this.cfg)
     window.quartzSemanticRuntime = this.runtime
     this.runtime.retain()
+    return this.runtime
   }
 
   async ensureReady() {
     if (this.disposed) throw new Error('semantic client has been disposed')
-    if (!this.runtime) throw new Error('semantic search disabled by configuration')
-    await this.runtime.ensureReady()
+    if (this.cfg.enable === false) throw new Error('semantic search disabled by configuration')
+    await this.acquireRuntime().ensureReady()
     if (this.disposed) throw new Error('semantic client has been disposed')
   }
 
   search(text: string, k: number): Promise<SearchPayload> {
     const generation = ++this.generation
-    if (this.disposed || !this.runtime)
+    if (this.disposed || this.cfg.enable === false)
       return Promise.reject(new Error('semantic client unavailable'))
-    return this.runtime.search(
+    return this.acquireRuntime().search(
       text,
       k,
       this.cfg.manifestUrl ?? '/embeddings/manifest.json',
