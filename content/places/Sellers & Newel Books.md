@@ -1,7 +1,7 @@
 ---
 address: 672 College St, Toronto, ON M6G 1B8, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.6552721'
   - '-79.4201953'

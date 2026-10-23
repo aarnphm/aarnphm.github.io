@@ -7,7 +7,7 @@ director:
   - Ari Aster
 id: Eddington
 modified: 2026-06-05 15:08:16 GMT-04:00
-posters: '[[movies/posters/eddington.jpg]]'
+posters: '[[movies/posters/eddington.jpg|eddington.jpg]]'
 rating: 7.9
 status: to watch
 studio: a24

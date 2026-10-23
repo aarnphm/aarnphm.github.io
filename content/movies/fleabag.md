@@ -10,7 +10,7 @@ director:
   - Tim Kirkby
 id: fleabag
 modified: 2026-06-05 15:08:17 GMT-04:00
-posters: '[[movies/posters/fleabag.jpg]]'
+posters: '[[movies/posters/fleabag.jpg|fleabag.jpg]]'
 rating: 8.7
 status: finished
 studio: bbc

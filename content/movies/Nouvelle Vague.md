@@ -8,7 +8,7 @@ director:
   - Richard Linklater
 id: Nouvelle Vague
 modified: 2026-06-05 15:08:16 GMT-04:00
-posters: '[[movies/posters/nouvelle-vague.jpg]]'
+posters: '[[movies/posters/nouvelle-vague.jpg|nouvelle-vague.jpg]]'
 rating: 7.3
 status: to watch
 studio: netflix

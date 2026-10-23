@@ -7,7 +7,7 @@ director:
   - Andrew DeYoung
 id: Friendship
 modified: 2026-06-05 15:08:15 GMT-04:00
-posters: '[[movies/posters/friendship.avif]]'
+posters: '[[movies/posters/friendship.avif|friendship.avif]]'
 rating: 6.8
 status: to watch
 studio: a24

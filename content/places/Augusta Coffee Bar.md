@@ -1,7 +1,7 @@
 ---
 address: 229 Augusta Ave, Toronto, ON M5T 2L4, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.6544546'
   - '-79.4044516'

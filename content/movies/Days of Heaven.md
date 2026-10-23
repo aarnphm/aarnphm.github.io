@@ -9,7 +9,7 @@ director:
   - Terrence Malick
 id: Days of Heaven
 modified: 2026-06-05 15:08:16 GMT-04:00
-posters: '[[movies/posters/Days of Heaven.jpg]]'
+posters: '[[movies/posters/Days of Heaven.jpg|Days of Heaven.jpg]]'
 rating: 7.7
 status: to watch
 studio: paramount pictures

@@ -8,7 +8,7 @@ director:
   - Kristen Stewart
 id: The Chronology of Water
 modified: 2026-06-05 15:08:19 GMT-04:00
-posters: '[[movies/posters/the-chronology-of-water.jpg]]'
+posters: '[[movies/posters/the-chronology-of-water.jpg|the-chronology-of-water.jpg]]'
 rating: 8.4
 status: to watch
 studio: les films du losange

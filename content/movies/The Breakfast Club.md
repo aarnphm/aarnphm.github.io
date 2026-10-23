@@ -7,7 +7,7 @@ description: five students spend saturday detention under the labels their schoo
 director: John Hughes
 id: the-breakfast-club
 modified: 2026-06-05 15:08:19 GMT-04:00
-posters: '[[movies/posters/the-breakfast-club.jpg]]'
+posters: '[[movies/posters/the-breakfast-club.jpg|the-breakfast-club.jpg]]'
 rating: 7.8
 status: recurring
 studio: universal pictures

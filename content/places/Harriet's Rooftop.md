@@ -1,7 +1,7 @@
 ---
 address: 550 Wellington St W, Toronto, ON M5V 2P2, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.6430582'
   - '-79.4018187'

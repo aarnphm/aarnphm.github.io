@@ -8,7 +8,7 @@ description: a tokyo toilet cleaner finds contentment in a strict routine. unexp
 director: Wim Wenders
 id: perfect-days
 modified: 2026-06-05 15:08:18 GMT-04:00
-posters: '[[movies/posters/perfect-days.jpg]]'
+posters: '[[movies/posters/perfect-days.jpg|perfect-days.jpg]]'
 rating: 7.9
 status: to watch
 studio: neon

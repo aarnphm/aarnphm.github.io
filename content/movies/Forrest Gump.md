@@ -8,7 +8,7 @@ description: zemeckis threads forrest through vietnam, watergate, and the rise o
 director: Robert Zemeckis
 id: forrest-gump
 modified: 2026-06-05 15:08:19 GMT-04:00
-posters: '[[movies/posters/forrest-gump.jpg]]'
+posters: '[[movies/posters/forrest-gump.jpg|forrest-gump.jpg]]'
 rating: 8.8
 status: recurring
 studio: paramount pictures

@@ -1,7 +1,7 @@
 ---
 address: 69 Chestnut St, Cambridge, MA 02139, USA
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '42.3565554'
   - '-71.1107316'

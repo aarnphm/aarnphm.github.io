@@ -8,7 +8,7 @@ description: masculinity as psychotic break—fincher filming ikea catalogs and 
 director: David Fincher
 id: fight-club
 modified: 2026-06-05 15:08:12 GMT-04:00
-posters: '[[movies/posters/fight-club.jpg]]'
+posters: '[[movies/posters/fight-club.jpg|fight-club.jpg]]'
 rating: 8.8
 status: recurring
 studio: 20th century fox

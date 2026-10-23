@@ -5,7 +5,7 @@ description: depression as talking horse in hollywood—six seasons asking wheth
 director: Various
 id: bojack-horseman
 modified: 2026-06-05 15:08:12 GMT-04:00
-posters: '[[movies/posters/bojack-horseman.jpg]]'
+posters: '[[movies/posters/bojack-horseman.jpg|bojack-horseman.jpg]]'
 rating: 8.8
 status: recurring
 studio: netflix

@@ -7,7 +7,7 @@ description: almut and tobias get ten years together, shown through three timeli
 director: John Crowley
 id: we-live-in-time
 modified: 2026-06-05 15:08:17 GMT-04:00
-posters: '[[movies/posters/we-live-in-time.jpg]]'
+posters: '[[movies/posters/we-live-in-time.jpg|we-live-in-time.jpg]]'
 rating: 8.8
 status: finished
 studio: a24

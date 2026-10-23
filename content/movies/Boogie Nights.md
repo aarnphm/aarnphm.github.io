@@ -6,7 +6,7 @@ description: surrogate family built on film stock and delusion—pta's valentine
 director: Paul Thomas Anderson
 id: boogie-nights
 modified: 2026-06-05 15:08:14 GMT-04:00
-posters: '[[movies/posters/boogie-nights.jpg]]'
+posters: '[[movies/posters/boogie-nights.jpg|boogie-nights.jpg]]'
 rating: 7.9
 status: to watch
 studio: new line cinema

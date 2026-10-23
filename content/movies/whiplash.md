@@ -5,7 +5,7 @@ description: andrew wants to become a great jazz drummer. fletcher uses humiliat
 director: Damien Chazelle
 id: whiplash
 modified: 2026-06-05 15:08:13 GMT-04:00
-posters: '[[movies/posters/whiplash.jpg]]'
+posters: '[[movies/posters/whiplash.jpg|whiplash.jpg]]'
 rating: 8.5
 status: recurring
 studio: sony pictures classics

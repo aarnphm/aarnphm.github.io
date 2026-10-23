@@ -8,7 +8,7 @@ director:
   - Kristoffer Borgli
 id: The Drama
 modified: 2026-06-05 15:08:14 GMT-04:00
-posters: '[[movies/posters/the-drama.webp]]'
+posters: '[[movies/posters/the-drama.webp|the-drama.webp]]'
 rating: 7.6
 status: finished
 studio: a24

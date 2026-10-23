@@ -8,7 +8,7 @@ director:
   - Blake Edwards
 id: Breakfast at Tiffany's
 modified: 2026-10-22 23:19:59 GMT-04:00
-posters: "[[movies/posters/breakfast-at-tiffanys.jpg]]"
+posters: "[[movies/posters/breakfast-at-tiffanys.jpg|breakfast-at-tiffanys.jpg]]"
 runtime: 115
 status: to watch
 studio: paramount pictures

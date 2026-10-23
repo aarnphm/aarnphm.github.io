@@ -8,7 +8,7 @@ description: tarantino shattering chronology to make violence cool again—hit m
 director: Quentin Tarantino
 id: pulp-fiction
 modified: 2026-06-05 15:08:18 GMT-04:00
-posters: '[[movies/posters/pulp-fiction.jpg]]'
+posters: '[[movies/posters/pulp-fiction.jpg|pulp-fiction.jpg]]'
 rating: 8.8
 status: recurring
 studio: miramax

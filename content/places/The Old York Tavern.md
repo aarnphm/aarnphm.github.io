@@ -1,7 +1,7 @@
 ---
 address: 167 Niagara St, Toronto, ON M5V 1C9, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.6422174'
   - '-79.4051655'

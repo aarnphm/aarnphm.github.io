@@ -1,7 +1,7 @@
 ---
 address: 225 Wellington St W, Toronto, ON M5V 3G7, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.6451208'
   - '-79.3888161'

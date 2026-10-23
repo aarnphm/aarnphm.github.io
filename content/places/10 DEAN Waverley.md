@@ -1,7 +1,7 @@
 ---
 address: 484 Spadina Ave, Toronto, ON M5S 2H1, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.6583573'
   - '-79.4002914'

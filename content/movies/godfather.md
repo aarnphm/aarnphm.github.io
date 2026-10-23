@@ -5,7 +5,7 @@ description: immigrant family business happens to be murder—coppola filming ma
 director: Francis Ford Coppola
 id: godfather
 modified: 2026-06-05 15:08:18 GMT-04:00
-posters: '[[movies/posters/godfather.jpg]]'
+posters: '[[movies/posters/godfather.jpg|godfather.jpg]]'
 rating: 9.2
 status: recurring
 studio: paramount pictures

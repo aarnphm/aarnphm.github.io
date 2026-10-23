@@ -5,7 +5,7 @@ description: Paul Atreides unites with Chani and the Fremen while seeking reveng
 director: Denis Villeneuve
 id: dune-part-two
 modified: 2026-06-05 15:08:19 GMT-04:00
-posters: '[[movies/posters/dune-part-two.jpg]]'
+posters: '[[movies/posters/dune-part-two.jpg|dune-part-two.jpg]]'
 rating: 9.2
 status: finished
 studio: warner bros

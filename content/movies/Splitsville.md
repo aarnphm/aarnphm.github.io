@@ -9,7 +9,7 @@ director:
   - Michael Angelo Covino
 id: Splitsville
 modified: 2026-06-05 15:08:14 GMT-04:00
-posters: '[[movies/posters/splitsville.avif]]'
+posters: '[[movies/posters/splitsville.avif|splitsville.avif]]'
 rating: 6.8
 status: finished
 studio: neon

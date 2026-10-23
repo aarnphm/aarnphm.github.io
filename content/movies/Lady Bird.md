@@ -7,7 +7,7 @@ description: sacramento senior year filmed with aching specificity—gerwig's di
 director: Greta Gerwig
 id: lady-bird
 modified: 2026-06-05 15:08:12 GMT-04:00
-posters: '[[movies/posters/lady-bird.jpg]]'
+posters: '[[movies/posters/lady-bird.jpg|lady-bird.jpg]]'
 rating: 7.4
 status: recurring
 studio: a24

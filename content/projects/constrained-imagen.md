@@ -4,7 +4,7 @@ date: '2022-01-25'
 description: structured outputs for image generation.
 id: constrained decoding imagegen
 modified: 2026-10-20 11:58:11 GMT-04:00
-notebook: '[[thoughts/vllm]]'
+notebook: '[[thoughts/vllm|vllm]]'
 status: idea
 subcategory: generative models
 tags:
@@ -14,7 +14,7 @@ tags:
 title: constrainted imagegen
 ---
 
-applying [[thoughts/structured outputs]] to image generation:
+applying [[thoughts/structured outputs|structured outputs]] to image generation:
 
 - partial masks for specific regions and subdividing patches into blocks
 - likely replacing humans or sections of images while preserving structure.

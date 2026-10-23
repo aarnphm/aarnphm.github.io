@@ -5,7 +5,7 @@ description: loneliness scaled to billions—sorkin's dialogue moving at connect
 director: David Fincher
 id: the-social-network
 modified: 2026-06-05 15:08:19 GMT-04:00
-posters: '[[movies/posters/the-social-network.jpg]]'
+posters: '[[movies/posters/the-social-network.jpg|the-social-network.jpg]]'
 rating: 7.8
 status: recurring
 studio: columbia pictures

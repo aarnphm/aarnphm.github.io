@@ -6,7 +6,7 @@ description: a writer follows strangers for material, then copies cobb's burglar
 director: Christopher Nolan
 id: following
 modified: 2026-06-05 15:08:19 GMT-04:00
-posters: '[[movies/posters/following.jpg]]'
+posters: '[[movies/posters/following.jpg|following.jpg]]'
 rating: 7.4
 status: recurring
 studio: syncopy

@@ -8,7 +8,7 @@ director:
   - Noah Baumbach
 id: Jay Kelly
 modified: 2026-06-05 15:08:13 GMT-04:00
-posters: '[[movies/posters/jay-kelly.webp]]'
+posters: '[[movies/posters/jay-kelly.webp|jay-kelly.webp]]'
 rating: 7.8
 status: to watch
 studio: netflix

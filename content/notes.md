@@ -18,7 +18,7 @@ I also [[thoughts/craft|work]] quite a bit these days, so notes might appear unf
 
 Here are a few things that I like:
 
-- [[thoughts/Wittgenstein]], [[thoughts/Gilles Deleuze|Deleuze]] and [[thoughts/Camus|Camus]]
+- [[thoughts/Wittgenstein|Wittgenstein]], [[thoughts/Gilles Deleuze|Deleuze]] and [[thoughts/Camus|Camus]]
 - [[thoughts/Determinism|determinism]]
 - [[thoughts/hermeneutics|hermeneutics]]
 - [[thoughts/functionalism|functionalism]]

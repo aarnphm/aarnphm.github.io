@@ -9,7 +9,7 @@ director:
   - Peter Weir
 id: Picnic at Hanging Rock
 modified: 2026-06-05 15:08:18 GMT-04:00
-posters: '[[movies/posters/Picnic at Hanging Rock.jpg]]'
+posters: '[[movies/posters/Picnic at Hanging Rock.jpg|Picnic at Hanging Rock.jpg]]'
 rating: 7.4
 status: to watch
 studio: b.e.f. film distributors

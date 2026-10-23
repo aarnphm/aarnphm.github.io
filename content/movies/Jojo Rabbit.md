@@ -5,7 +5,7 @@ description: ten-year-old nazi with imaginary hitler friend—waititi satirizing
 director: Taika Waititi
 id: jojo-rabbit
 modified: 2026-06-05 15:08:18 GMT-04:00
-posters: '[[movies/posters/jojo-rabbit.jpg]]'
+posters: '[[movies/posters/jojo-rabbit.jpg|jojo-rabbit.jpg]]'
 rating: 7.9
 status: recurring
 studio: searchlight pictures

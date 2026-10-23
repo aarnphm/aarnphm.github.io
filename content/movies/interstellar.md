@@ -8,7 +8,7 @@ description: time dilation separates a father from his daughter by decades. from
 director: Christopher Nolan
 id: interstellar
 modified: 2026-06-05 15:08:13 GMT-04:00
-posters: '[[movies/posters/interstellar.jpg]]'
+posters: '[[movies/posters/interstellar.jpg|interstellar.jpg]]'
 rating: 8.7
 status: recurring
 studio: syncopy

@@ -8,7 +8,7 @@ description: two twelve-year-olds escaping into the wilderness because adult lov
 director: Wes Anderson
 id: moonrise-kingdom
 modified: 2026-06-05 15:08:14 GMT-04:00
-posters: '[[movies/posters/moonrise-kingdom.jpg]]'
+posters: '[[movies/posters/moonrise-kingdom.jpg|moonrise-kingdom.jpg]]'
 rating: 7.8
 status: recurring
 studio: focus features

@@ -1,7 +1,7 @@
 ---
 address: 106 Mutual St, Unit 8, Toronto, ON M5B 2R7, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.65792'
   - '-79.3762526'

@@ -6,7 +6,7 @@ description: damaged veteran meeting charismatic cult leader—anderson filming 
 director: Paul Thomas Anderson
 id: the-master
 modified: 2026-06-05 15:08:12 GMT-04:00
-posters: '[[movies/posters/the-master.jpg]]'
+posters: '[[movies/posters/the-master.jpg|the-master.jpg]]'
 rating: 7.1
 status: to watch
 studio: the weinstein company

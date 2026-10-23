@@ -8,7 +8,7 @@ director:
   - Destin Daniel Cretton
 id: Spider Man Brand New Day
 modified: 2026-08-21 23:36:31 GMT-04:00
-posters: '[[movies/posters/spider-man-brand-new-day.webp]]'
+posters: '[[movies/posters/spider-man-brand-new-day.webp|spider-man-brand-new-day.webp]]'
 rating: 8.0
 status: finished
 studio: columbia pictures

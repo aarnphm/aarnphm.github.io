@@ -8,7 +8,7 @@ director:
   - Ingmar Bergman
 id: Through a Glass Darkly
 modified: 2026-06-05 15:08:13 GMT-04:00
-posters: '[[movies/posters/through-a-glass-darkly.jpg]]'
+posters: '[[movies/posters/through-a-glass-darkly.jpg|through-a-glass-darkly.jpg]]'
 rating: 7.9
 status: to watch
 studio: svensk filmindustri

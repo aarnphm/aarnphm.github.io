@@ -1,7 +1,7 @@
 ---
 address: '61 Spadina Avenue, Toronto, ON M5V 2J2, Canada'
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.6450334'
   - '-79.3944412'

@@ -8,7 +8,7 @@ director:
   - Sydney Pollack
 id: three-days-of-the-condor
 modified: 2026-06-05 15:08:17 GMT-04:00
-posters: '[[movies/posters/three-days-of-the-condor.jpg]]'
+posters: '[[movies/posters/three-days-of-the-condor.jpg|three-days-of-the-condor.jpg]]'
 rating: 7.4
 status: to watch
 studio: paramount pictures

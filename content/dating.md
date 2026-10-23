@@ -123,7 +123,7 @@ This led me to join BentoML, as a software engineer. The mission statement and p
 
 My approach to problems has stayed consistent since I learned arithmetic: ==don't quit, managed obsession [^obsession], and get your hands dirty== [^work].
 
-[^work]: I should say I've been very fortunate professionally, working at a startup meant tackling loosely-defined problems and developing my own research and engineering [[thoughts/taste]].
+[^work]: I should say I've been very fortunate professionally, working at a startup meant tackling loosely-defined problems and developing my own research and engineering [[thoughts/taste|taste]].
 
 [^obsession]: Allocating 15-20 minutes a day to _one_ problem, without distraction. These days it's often 30-60 minute stints for me. I have a squad of Claude and Claude Code (for general discoverability), Gemini (large context handling), GPT-5 and Codex (raw intelligence), Kimi K2 + GLM 4.6 (raw agentic tool calling) that I built as my own "researchers"/"curators"/"verifiers". These tools has becoming a very good discovery tools for me.
 
@@ -147,7 +147,7 @@ This might be connected to something else, though—I moved abroad at 17 to stud
 
 My mom says I was always shy growing up. These days I'm much more social, though I suppose the right word is _ambivert_: I'm comfortable in social settings, but I also treasure my alone time.
 
-[^being-human]: Regardless, this was life-changing, as it taught me a lot about [[thoughts/being]] _human_.
+[^being-human]: Regardless, this was life-changing, as it taught me a lot about [[thoughts/being|being]] _human_.
 
 [[influence|Friends]] mean the world to me. I'd go so far as to say my whole model of relationships came out of my friendships:
 
@@ -293,7 +293,7 @@ possible deal-breakers
 2. I don't want kids, _yet_, at least for the next five years.
    - We are young still, many things yet to be explored.
    - I want to be focused on my work and dedication to my [[thoughts/craft|craft]].
-   - I will pursue academia at some points, or at least working on my independent [[research]].
+   - I will pursue academia at some points, or at least working on my independent [[research|research]].
    - That said, I'd make it work for the _right_ person.
 3. I care deeply about my friends, and I believe that as partners, we don't have to do everything {{sidenotes[together.]: I definitely want to spend the majority of my time with you, but I'll need "boys" time.}}
 4. Most of my friends are female. I have very clear boundaries with friends, but I want all my female friendships—especially with N, C, Si—to remain strong.

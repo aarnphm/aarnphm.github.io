@@ -1,7 +1,7 @@
 ---
 address: '913 Bathurst Street, Toronto, ON M5R 3G4, Canada'
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.6692929'
   - '-79.4124893'

@@ -1,7 +1,7 @@
 ---
 address: 159 Augusta Ave, Toronto, ON M5T 2L4, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.652916'
   - '-79.4011013'

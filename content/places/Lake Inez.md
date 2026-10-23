@@ -1,7 +1,7 @@
 ---
 address: 1471 Gerrard St E, Toronto, ON M4L 2A1, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.6723948'
   - '-79.3206899'

@@ -8,7 +8,7 @@ description: three hours of unchecked id—excess as religion, scorsese abandoni
 director: Martin Scorsese
 id: the-wolf-of-wall-street
 modified: 2026-06-05 15:08:12 GMT-04:00
-posters: '[[movies/posters/the-wolf-of-wall-street.jpg]]'
+posters: '[[movies/posters/the-wolf-of-wall-street.jpg|the-wolf-of-wall-street.jpg]]'
 rating: 8.2
 status: recurring
 studio: paramount pictures

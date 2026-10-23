@@ -8,7 +8,7 @@ description: carpe diem as fatal advice. weir follows neil from keating's classr
 director: Peter Weir
 id: dead-poets-society
 modified: 2026-06-05 15:08:17 GMT-04:00
-posters: '[[movies/posters/dead-poets-society.jpg]]'
+posters: '[[movies/posters/dead-poets-society.jpg|dead-poets-society.jpg]]'
 rating: 8.1
 status: finished
 studio: touchstone pictures

@@ -6,7 +6,7 @@ description: oil prospector devouring california—anderson filming day-lewis as
 director: Paul Thomas Anderson
 id: there-will-be-blood
 modified: 2026-06-05 15:08:14 GMT-04:00
-posters: '[[movies/posters/there-will-be-blood.jpg]]'
+posters: '[[movies/posters/there-will-be-blood.jpg|there-will-be-blood.jpg]]'
 rating: 8.2
 socials:
   pta: https://www.youtube.com/watch?v=I0OeDhBRFCM

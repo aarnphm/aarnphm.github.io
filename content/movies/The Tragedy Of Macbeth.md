@@ -7,7 +7,7 @@ description: shakespeare's scottish play stripped to stark monochrome—coen fil
 director: Joel Coen
 id: the-tragedy-of-macbeth
 modified: 2026-06-05 15:08:17 GMT-04:00
-posters: '[[movies/posters/the-tragedy-of-macbeth.jpg]]'
+posters: '[[movies/posters/the-tragedy-of-macbeth.jpg|the-tragedy-of-macbeth.jpg]]'
 rating: 7.1
 status: recurring
 studio: a24

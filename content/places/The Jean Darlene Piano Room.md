@@ -1,7 +1,7 @@
 ---
 address: 1203 Dundas St W, Toronto, ON M6J 1X3, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.6491785'
   - '-79.424054'

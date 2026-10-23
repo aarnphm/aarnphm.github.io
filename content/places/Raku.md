@@ -1,7 +1,7 @@
 ---
 address: 456 Queen St W, Toronto, ON M5V 2A8, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.6482265'
   - '-79.399447'

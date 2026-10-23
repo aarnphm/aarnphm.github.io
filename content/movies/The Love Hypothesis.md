@@ -8,7 +8,7 @@ director:
   - Claire Scanlon
 id: The Love Hypothesis
 modified: 2026-09-23
-posters: '[[movies/posters/the-love-hypothesis.jpg]]'
+posters: '[[movies/posters/the-love-hypothesis.jpg|the-love-hypothesis.jpg]]'
 rating: 5.8
 runtime: 112
 status: finished

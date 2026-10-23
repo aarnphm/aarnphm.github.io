@@ -8,7 +8,7 @@ description: a nearly mute drifter walks out of the texas desert and tries to re
 director: Wim Wenders
 id: paris-texas
 modified: 2026-06-05 15:08:15 GMT-04:00
-posters: '[[movies/posters/paris-texas.jpg]]'
+posters: '[[movies/posters/paris-texas.jpg|paris-texas.jpg]]'
 rating: 8.1
 status: to watch
 studio: argos films

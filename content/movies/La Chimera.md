@@ -8,7 +8,7 @@ description: tomb raider haunted by dead lover—rohrwacher filming etruscan gra
 director: Alice Rohrwacher
 id: la-chimera
 modified: 2026-06-05 15:08:15 GMT-04:00
-posters: '[[movies/posters/la-chimera.jpg]]'
+posters: '[[movies/posters/la-chimera.jpg|la-chimera.jpg]]'
 rating: 7.3
 status: to watch
 studio: neon

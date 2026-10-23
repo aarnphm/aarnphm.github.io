@@ -7,7 +7,7 @@ description: cinderella story collapsing into screwball chaos—a brighton beach
 director: Sean Baker
 id: anora
 modified: 2026-06-05 15:08:14 GMT-04:00
-posters: '[[movies/posters/anora.jpg]]'
+posters: '[[movies/posters/anora.jpg|anora.jpg]]'
 rating: 7.9
 status: finished
 studio: neon

@@ -5,7 +5,7 @@ description: bond follows a message from m into a meeting of the criminal group 
 director: Sam Mendes
 id: spectre
 modified: 2026-06-05 15:08:17 GMT-04:00
-posters: '[[movies/posters/spectre.jpg]]'
+posters: '[[movies/posters/spectre.jpg|spectre.jpg]]'
 rating: 6.8
 status: recurring
 studio: eon productions

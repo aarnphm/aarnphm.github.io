@@ -1,6 +1,6 @@
 ---
 date: '2024-03-01'
-description: see also [[library/A Pattern Language]]
+description: see also [[library/A Pattern Language|A Pattern Language]]
 title: pattern
 ---
 

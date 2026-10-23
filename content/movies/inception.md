@@ -8,7 +8,7 @@ description: dreams folding into dreams as a way to talk about grief and the sto
 director: Christopher Nolan
 id: inception
 modified: 2026-06-05 15:08:14 GMT-04:00
-posters: '[[movies/posters/inception.jpg]]'
+posters: '[[movies/posters/inception.jpg|inception.jpg]]'
 rating: 8.8
 status: recurring
 studio: syncopy

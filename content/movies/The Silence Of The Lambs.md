@@ -5,7 +5,7 @@ description: fbi trainee consulting imprisoned cannibal to catch another serial 
 director: Jonathan Demme
 id: the-silence-of-the-lambs
 modified: 2026-06-05 15:08:17 GMT-04:00
-posters: '[[movies/posters/the-silence-of-the-lambs.jpg]]'
+posters: '[[movies/posters/the-silence-of-the-lambs.jpg|the-silence-of-the-lambs.jpg]]'
 rating: 8.6
 status: recurring
 studio: orion pictures

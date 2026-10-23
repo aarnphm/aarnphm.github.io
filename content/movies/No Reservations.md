@@ -8,7 +8,7 @@ description: a rigid new york chef takes in her niece after her sister dies and 
 director: Scott Hicks
 id: no-reservations
 modified: 2026-06-05 15:08:13 GMT-04:00
-posters: '[[movies/posters/no-reservations.jpg]]'
+posters: '[[movies/posters/no-reservations.jpg|no-reservations.jpg]]'
 rating: 6.6
 status: finished
 studio: warner bros

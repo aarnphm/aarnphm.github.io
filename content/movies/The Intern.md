@@ -5,7 +5,7 @@ description: seventy-year-old widower interning at fashion startup—meyers film
 director: Nancy Meyers
 id: the-intern
 modified: 2026-06-05 15:08:16 GMT-04:00
-posters: '[[movies/posters/the-intern.jpg]]'
+posters: '[[movies/posters/the-intern.jpg|the-intern.jpg]]'
 rating: 7.1
 status: recurring
 studio: ratpac entertainment

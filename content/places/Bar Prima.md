@@ -1,7 +1,7 @@
 ---
 address: '1136 Queen St W, Toronto, ON M6J 1J3, Canada'
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.6432233'
   - '-79.4241936'

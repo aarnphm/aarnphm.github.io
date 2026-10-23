@@ -6,7 +6,7 @@ description: a washed-up revolutionary searches for his daughter when the enemy 
 director: Paul Thomas Anderson
 id: one-battle-after-another
 modified: 2026-06-05 15:08:12 GMT-04:00
-posters: '[[movies/posters/one-battle-after-another.jpg]]'
+posters: '[[movies/posters/one-battle-after-another.jpg|one-battle-after-another.jpg]]'
 rating: 7.4
 status: finished
 studio: warner bros

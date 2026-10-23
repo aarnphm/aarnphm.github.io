@@ -8,7 +8,7 @@ description: debt collectors attack the dude because they mistake him for anothe
 director: Joel Coen
 id: the-big-lebowski
 modified: 2026-06-05 15:08:19 GMT-04:00
-posters: '[[movies/posters/the-big-lebowski.jpg]]'
+posters: '[[movies/posters/the-big-lebowski.jpg|the-big-lebowski.jpg]]'
 rating: 8.1
 status: to watch
 studio: universal pictures

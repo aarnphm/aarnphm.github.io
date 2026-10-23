@@ -1,7 +1,7 @@
 ---
 address: 932 College St, Toronto, ON M6H 1A4, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.6538016'
   - '-79.4260017'

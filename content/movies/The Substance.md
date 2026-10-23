@@ -6,7 +6,7 @@ description: aging actress injecting herself to birth younger doppelganger—far
 director: Coralie Fargeat
 id: the-substance
 modified: 2026-06-05 15:08:12 GMT-04:00
-posters: '[[movies/posters/the-substance.jpg]]'
+posters: '[[movies/posters/the-substance.jpg|the-substance.jpg]]'
 rating: 7.8
 status: finished
 studio: mubi

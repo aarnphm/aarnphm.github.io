@@ -8,7 +8,7 @@ description: abigail arrives at queen anne's court and competes with sarah churc
 director: Yorgos Lanthimos
 id: the-favourite
 modified: 2026-06-05 15:08:19 GMT-04:00
-posters: '[[movies/posters/the-favourite.jpg]]'
+posters: '[[movies/posters/the-favourite.jpg|the-favourite.jpg]]'
 rating: 7.5
 status: to watch
 studio: element pictures

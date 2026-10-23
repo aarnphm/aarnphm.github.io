@@ -1,6 +1,6 @@
 ---
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 date: '2026-09-15'
 id: oakwood studio
 rating: 5

@@ -1,7 +1,7 @@
 ---
 address: '544 Park Ave, Suite 332, Brooklyn, NY 11205, USA'
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '40.6966319'
   - '-73.9530876'

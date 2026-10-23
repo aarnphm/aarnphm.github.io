@@ -28,7 +28,7 @@ The following is a list of people I owe a lot. It moves from people I know who m
 - [Sean](https://www.linkedin.com/in/ssheng/), whom I consider as a friend both professionally and personally.
 - All my colleagues at [that infrastructure startup](https://bentoml.com/), for your trust in me.
 - [Tommy](https://tommytrinh.me/), for your laughs, and going through life with pure determinism.
-- [Kelly](https://www.kellychong.ca/), for your wonderful [[thoughts/taste]] and holistic worldview.
+- [Kelly](https://www.kellychong.ca/), for your wonderful [[thoughts/taste|taste]] and holistic worldview.
 - [Wilbur](https://www.wilburzhang.com/), for your thoughts, vulnerability, and trust.
 - [Rabs](https://linktr.ee/rabiasohail), for your trust, kindness and being so damn ==real== :smiley:
 - [Gourob](https://x.com/PodderGourob), for your trust in my abilities.

@@ -1,7 +1,7 @@
 ---
 address: 176 Bellwoods Ave, Toronto, ON M6J 2P4, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.6508061'
   - '-79.4172506'

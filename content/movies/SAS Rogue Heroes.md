@@ -10,7 +10,7 @@ director:
   - Stephen Woolfenden
 id: SAS Rogue Heroes
 modified: 2026-08-21 23:36:31 GMT-04:00
-posters: '[[movies/posters/sas-rogue-heroes.webp]]'
+posters: '[[movies/posters/sas-rogue-heroes.webp|sas-rogue-heroes.webp]]'
 rating: 8.2
 status: recurring
 studio: bbc

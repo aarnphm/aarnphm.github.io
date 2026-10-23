@@ -9,7 +9,7 @@ director:
   - John Cassavetes
 id: Husbands
 modified: 2026-06-05 15:08:18 GMT-04:00
-posters: '[[movies/posters/husband.jpg]]'
+posters: '[[movies/posters/husband.jpg|husband.jpg]]'
 rating: 7.1
 status: to watch
 studio: columbia pictures

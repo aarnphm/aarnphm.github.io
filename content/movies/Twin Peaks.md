@@ -8,7 +8,7 @@ description: fbi agent investigating laura palmer's murder in pacific northwest 
 director: David Lynch
 id: twin-peaks
 modified: 2026-06-05 15:08:14 GMT-04:00
-posters: '[[movies/posters/twin-peaks.jpg]]'
+posters: '[[movies/posters/twin-peaks.jpg|twin-peaks.jpg]]'
 rating: 8.7
 status: to watch
 studio: abc

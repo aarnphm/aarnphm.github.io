@@ -5,7 +5,7 @@ description: detectives rust cohle and marty hart investigate a ritual murder in
 director: Cary Fukunaga
 id: true-detective
 modified: 2026-06-05 15:08:12 GMT-04:00
-posters: '[[movies/posters/true-detective.jpg]]'
+posters: '[[movies/posters/true-detective.jpg|true-detective.jpg]]'
 rating: 8.9
 status: recurring
 studio: hbo

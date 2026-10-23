@@ -7,7 +7,7 @@ director:
   - R. Scott Gemmill
 id: The Pitt
 modified: 2026-06-05 15:08:19 GMT-04:00
-posters: '[[movies/posters/the-pit.webp]]'
+posters: '[[movies/posters/the-pit.webp|the-pit.webp]]'
 rating: 9.4
 status: finished
 studio: hbo

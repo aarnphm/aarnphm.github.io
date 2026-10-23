@@ -8,7 +8,7 @@ description: marriage as masked orgy—kubrick's final film exploring sexual jea
 director: Stanley Kubrick
 id: eyes-wide-shut
 modified: 2026-06-05 15:08:19 GMT-04:00
-posters: '[[movies/posters/eyes-wide-shut.jpg]]'
+posters: '[[movies/posters/eyes-wide-shut.jpg|eyes-wide-shut.jpg]]'
 rating: 7.5
 status: to watch
 studio: warner bros

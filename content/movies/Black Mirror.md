@@ -5,7 +5,7 @@ description: technology as mirror for human ugliness—brooker's anthology askin
 director: Various
 id: black-mirror
 modified: 2026-06-05 15:08:12 GMT-04:00
-posters: '[[movies/posters/black-mirror.jpg]]'
+posters: '[[movies/posters/black-mirror.jpg|black-mirror.jpg]]'
 rating: 8.7
 status: recurring
 studio: netflix

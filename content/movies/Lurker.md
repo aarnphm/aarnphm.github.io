@@ -8,7 +8,7 @@ director:
   - Alex Russell
 id: Lurker
 modified: 2026-06-05 15:08:12 GMT-04:00
-posters: '[[movies/posters/lurker.jpg]]'
+posters: '[[movies/posters/lurker.jpg|lurker.jpg]]'
 rating: 6.7
 status: to watch
 studio: mubi

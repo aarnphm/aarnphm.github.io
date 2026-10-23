@@ -9,7 +9,7 @@ director:
   - Noah Baumbach
 id: Kicking and Screaming
 modified: 2026-06-05 15:08:17 GMT-04:00
-posters: '[[movies/posters/Kicking and Screaming.jpg]]'
+posters: '[[movies/posters/Kicking and Screaming.jpg|Kicking and Screaming.jpg]]'
 rating: 6.6
 status: to watch
 studio: trimark pictures

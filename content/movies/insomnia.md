@@ -7,7 +7,7 @@ description: midnight sun as moral exposure—a detective's guilt illuminated in
 director: Christopher Nolan
 id: insomnia
 modified: 2026-06-05 15:08:18 GMT-04:00
-posters: '[[movies/posters/insomnia.jpg]]'
+posters: '[[movies/posters/insomnia.jpg|insomnia.jpg]]'
 rating: 7.2
 status: recurring
 studio: alcon entertainment

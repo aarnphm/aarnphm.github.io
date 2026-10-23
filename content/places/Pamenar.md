@@ -6,7 +6,7 @@ visits:
   - '2025-11-17'
 address: 307 Augusta Ave, Toronto, ON M5T 2M2, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.6566835'
   - '-79.4027094'

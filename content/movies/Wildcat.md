@@ -8,7 +8,7 @@ director:
   - Ethan Hawke
 id: Wildcat
 modified: 2026-06-05 15:08:14 GMT-04:00
-posters: '[[movies/posters/wildcat.jpg]]'
+posters: '[[movies/posters/wildcat.jpg|wildcat.jpg]]'
 rating: 7.1
 status: to watch
 studio: oscilloscope laboratories

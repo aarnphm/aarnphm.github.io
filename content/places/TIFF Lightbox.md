@@ -1,7 +1,7 @@
 ---
 address: 350 King St W, Toronto, ON M5V 3X5, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.6473074'
   - '-79.3937604'

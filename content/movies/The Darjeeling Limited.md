@@ -8,7 +8,7 @@ description: three brothers on a train through india carrying their father's lug
 director: Wes Anderson
 id: the-darjeeling-limited
 modified: 2026-06-05 15:08:17 GMT-04:00
-posters: '[[movies/posters/the-darjeeling-limited.jpg]]'
+posters: '[[movies/posters/the-darjeeling-limited.jpg|the-darjeeling-limited.jpg]]'
 rating: 7.2
 status: recurring
 studio: searchlight pictures

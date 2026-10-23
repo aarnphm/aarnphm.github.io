@@ -1,7 +1,7 @@
 ---
 address: 453 Wellington St W, Toronto, ON M5V 1E7, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.6432746'
   - '-79.3986369'

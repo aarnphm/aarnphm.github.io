@@ -5,7 +5,7 @@ description: bucharest traffic as apocalypse—jude filming overworked productio
 director: Radu Jude
 id: do-not-expect-too-much-from-the-end-of-the-world
 modified: 2026-06-05 15:08:18 GMT-04:00
-posters: '[[movies/posters/do-not-expect-too-much-from-the-end-of-the-world.jpg]]'
+posters: '[[movies/posters/do-not-expect-too-much-from-the-end-of-the-world.jpg|do-not-expect-too-much-from-the-end-of-the-world.jpg]]'
 rating: 7.4
 status: to watch
 studio: mubi

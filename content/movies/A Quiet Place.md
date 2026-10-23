@@ -8,7 +8,7 @@ description: a family surviving by silence after sound-hunting creatures arriveâ
 director: John Krasinski
 id: a-quiet-place
 modified: 2026-06-05 15:08:17 GMT-04:00
-posters: '[[movies/posters/a-quiet-place.jpg]]'
+posters: '[[movies/posters/a-quiet-place.jpg|a-quiet-place.jpg]]'
 rating: 7.5
 status: to watch
 studio: paramount pictures

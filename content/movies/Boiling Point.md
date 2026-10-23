@@ -5,7 +5,7 @@ description: one unbroken take through restaurant hell—barantini filming steph
 director: Philip Barantini
 id: Boiling Point
 modified: 2026-06-05 15:08:18 GMT-04:00
-posters: '[[movies/posters/boiling-point.jpg]]'
+posters: '[[movies/posters/boiling-point.jpg|boiling-point.jpg]]'
 rating: 7.5
 status: to watch
 studio: ascendant films

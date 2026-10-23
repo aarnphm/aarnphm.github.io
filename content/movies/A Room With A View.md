@@ -9,7 +9,7 @@ director:
   - James Ivory
 id: A Room With A View
 modified: 2026-06-05 15:08:19 GMT-04:00
-posters: '[[movies/posters/a-room-with-a-view.jpg]]'
+posters: '[[movies/posters/a-room-with-a-view.jpg|a-room-with-a-view.jpg]]'
 rating: 7.4
 status: to watch
 studio: merchant ivory productions

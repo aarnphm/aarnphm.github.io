@@ -1,7 +1,7 @@
 ---
 address: 194 Queen St W, Toronto, ON M5V 1Z1, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.6505964'
   - '-79.3885233'

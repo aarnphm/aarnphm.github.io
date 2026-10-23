@@ -8,7 +8,7 @@ description: a surgeon's family sickens after he refuses responsibility for a pa
 director: Yorgos Lanthimos
 id: the-killing-of-a-sacred-deer
 modified: 2026-06-05 15:08:18 GMT-04:00
-posters: '[[movies/posters/killing-of-the-sacred-deer.jpg]]'
+posters: '[[movies/posters/killing-of-the-sacred-deer.jpg|killing-of-the-sacred-deer.jpg]]'
 rating: 7
 status: to watch
 studio: element pictures

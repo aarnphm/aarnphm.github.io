@@ -7,7 +7,7 @@ director:
   - Eva Victor
 id: Sorry Baby
 modified: 2026-06-05 15:08:12 GMT-04:00
-posters: '[[movies/posters/sorry-baby.jpg]]'
+posters: '[[movies/posters/sorry-baby.jpg|sorry-baby.jpg]]'
 rating: 7.2
 status: to watch
 studio: a24

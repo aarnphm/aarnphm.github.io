@@ -10,7 +10,7 @@ director:
   - Marcel Carné
 id: Children of Paradise
 modified: 2026-06-05 15:08:14 GMT-04:00
-posters: '[[movies/posters/children-of-paradise.jpg]]'
+posters: '[[movies/posters/children-of-paradise.jpg|children-of-paradise.jpg]]'
 rating: 8.3
 status: to watch
 studio: pathe cinema

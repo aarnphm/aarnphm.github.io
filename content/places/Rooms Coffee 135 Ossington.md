@@ -1,7 +1,7 @@
 ---
 address: 135 Ossington Ave, Toronto, ON M6J 2Z6, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.6472513'
   - '-79.4197269'

@@ -26,7 +26,7 @@ towards either a net positive work.
 
 Maybe the general consensus of tagging is that sometimes we associated it with the notion of something bad happens. (notably about cancel culture)
 
-I like a [[thoughts/friendship]] where I can be unapologetically myself, and I see myself in this with N. We don't judge each others, even though
+I like a [[thoughts/friendship|friendship]] where I can be unapologetically myself, and I see myself in this with N. We don't judge each others, even though
 sometimes we observe each others' life from afar. I enjoy having these relationship in a sense that whenever we see each other, it felt like time have never left the station.
 
 Open-source policies <--

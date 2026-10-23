@@ -8,7 +8,7 @@ director:
   - Joshua Michael Stern
 id: Jobs
 modified: 2026-06-05 15:08:19 GMT-04:00
-posters: '[[movies/posters/kutcher-jobs.jpg]]'
+posters: '[[movies/posters/kutcher-jobs.jpg|kutcher-jobs.jpg]]'
 rating: 6
 status: to watch
 studio: open road films

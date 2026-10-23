@@ -1,7 +1,7 @@
 ---
 address: 324 College St, Toronto, ON M5T 1S3, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.6576525'
   - '-79.4026381'

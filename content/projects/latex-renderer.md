@@ -4,7 +4,7 @@ date: '2022-01-25'
 description: for neovim
 id: latex-renderer
 modified: 2026-06-05 15:08:02 GMT-04:00
-notebook: '[[uses#^neovim]]'
+notebook: '[[uses#^neovim|^neovim]]'
 status: idea
 subcategory: tooling
 tags:

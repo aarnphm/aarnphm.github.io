@@ -7,7 +7,7 @@ director:
   - Colin Cairnes
 id: late-night-with-the-devil
 modified: 2026-06-05 15:08:17 GMT-04:00
-posters: '[[movies/posters/late-night-with-the-devil.jpg]]'
+posters: '[[movies/posters/late-night-with-the-devil.jpg|late-night-with-the-devil.jpg]]'
 rating: 7
 status: to watch
 studio: ifc films

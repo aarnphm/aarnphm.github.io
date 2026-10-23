@@ -10,7 +10,7 @@ director:
   - Sergei Bondarchuk
 id: War and Peace
 modified: 2026-06-05 15:08:17 GMT-04:00
-posters: '[[movies/posters/war-and-peace.jpg]]'
+posters: '[[movies/posters/war-and-peace.jpg|war-and-peace.jpg]]'
 rating: 8.3
 status: to watch
 studio: mosfilm

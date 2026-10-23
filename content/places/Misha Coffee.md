@@ -1,7 +1,7 @@
 ---
 address: 6242 21st St N, Arlington, VA 22205, USA
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '38.8883236'
   - '-77.1514396'

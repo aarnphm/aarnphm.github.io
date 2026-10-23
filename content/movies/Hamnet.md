@@ -8,7 +8,7 @@ director:
   - Chloé Zhao
 id: Hamnet
 modified: 2026-06-05 15:08:16 GMT-04:00
-posters: '[[movies/posters/Hamnet.jpg]]'
+posters: '[[movies/posters/Hamnet.jpg|Hamnet.jpg]]'
 rating: 8.5
 status: to watch
 studio: focus features
