@@ -47,6 +47,7 @@ import {
   syncMetricIncludes,
   titleText,
 } from './share-subject'
+import { editedPropositions } from './tractatus'
 import { layoutMetricControls, mountDayControls, mountMetricControls } from './training-controls'
 
 const THEME_KEYS: ThemeKey[] = ['papier', 'encre', 'rose', 'sauge']
@@ -113,6 +114,7 @@ export function open(request: OpenRequest = {}) {
       ? candidate
       : null
   session.quote = quoteFrom(usable)
+  show.tractatus = Boolean(session.quote.propositions?.length)
   session.anchor = session.quote.fragment ? 'passage' : 'page'
   session.noteEdited = false
   const note = $<HTMLTextAreaElement>('#press-kit-note')
@@ -356,13 +358,20 @@ export function bindDialog(signal: AbortSignal) {
   $<HTMLTextAreaElement>('#press-kit-quote')?.addEventListener(
     'input',
     event => {
-      const value = (event.target as HTMLTextAreaElement).value
+      if (!(event.target instanceof HTMLTextAreaElement)) return
+      const value = event.target.value
+      const propositions = show.tractatus
+        ? editedPropositions(value, session.quote.propositions ?? [])
+        : []
       session.quote = {
         ...session.quote,
         runs: runsFromText(value),
+        propositions,
         chosen: true,
         fragment: undefined,
       }
+      if (!propositions.length) show.tractatus = false
+      syncControls()
       if (session.anchor === 'passage')
         session.anchor = session.quote.section ? `#${session.quote.section.id}` : 'page'
       schedule()

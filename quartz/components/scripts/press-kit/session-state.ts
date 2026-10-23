@@ -5,6 +5,7 @@ import type { PressKitPage } from '../../PressKit'
 import type { CalendarCardData } from '../press-kit-calendar'
 import type { BlockDisplay, DayCardData } from '../press-kit-day'
 import type { Run } from '../press-kit-text'
+import type { TractatusPassage } from './tractatus'
 import { PressKitEditor } from '../../PressKitEditor'
 import { FORMATS, type Fonts, type FormatKey, type ThemeKey } from '../press-kit-card'
 import { cardLocale } from '../press-kit-i18n'
@@ -37,6 +38,7 @@ export interface Subject {
 
 export interface Quote {
   runs: Run[]
+  propositions?: TractatusPassage[]
   attribution?: string
   /** false while the quote is the page's own excerpt, before any selection or edit */
   chosen: boolean
@@ -115,6 +117,7 @@ export const session: {
 }
 export const selectedMetrics = new Map<string, Set<string>>()
 export const show = {
+  tractatus: false,
   art: false,
   description: true,
   excerpt: false,

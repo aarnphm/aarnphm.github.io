@@ -49,7 +49,12 @@ export async function prepareCard(
     Math.max(...spec.title, ...spec.prose, ...spec.quote) * cardResolution(format).scale,
   )
   const images = await prepareMath(
-    [...model.title, ...model.description, ...model.body],
+    [
+      ...model.title,
+      ...model.description,
+      ...model.body,
+      ...(model.propositions?.flatMap(p => p.runs) ?? []),
+    ],
     pixelsPerEm,
   )
   const prepare = (runs: Run[]): CardRun[] =>
@@ -59,6 +64,7 @@ export async function prepareCard(
     title: prepare(model.title),
     description: prepare(model.description),
     body: prepare(model.body),
+    propositions: model.propositions?.map(passage => ({ ...passage, runs: prepare(passage.runs) })),
   }
 }
 

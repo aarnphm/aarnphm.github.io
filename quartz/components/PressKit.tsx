@@ -137,6 +137,7 @@ const Include = ({
     data-include={name}
     data-for={tab}
     data-page-only={pageOnly ? '' : undefined}
+    data-tractatus-only={name === 'tractatus' ? '' : undefined}
     aria-pressed={pressed}
     aria-label={shortLabel ? label : undefined}
     title={shortLabel ? label : undefined}
@@ -297,6 +298,7 @@ function getPressKitInnerTemplate(site: string): string {
                 <Include name="art" label="illustration" />
                 <Include name="highlight" label="surligner" tab="quote" />
                 <Include name="section" label="section" tab="quote" pressed />
+                <Include name="tractatus" label="tractatus" tab="quote" />
               </div>
             </fieldset>
 

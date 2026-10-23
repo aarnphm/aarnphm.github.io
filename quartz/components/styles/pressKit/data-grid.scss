@@ -28,8 +28,14 @@
   border-radius: var(--radius-none);
   background: var(--light);
   color: var(--darkgray);
+  text-align: start;
+  text-wrap: wrap;
   overflow: hidden;
   overscroll-behavior: contain;
+
+  :where(*) {
+    text-wrap: wrap;
+  }
 
   &:focus {
     outline: none;

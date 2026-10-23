@@ -1,6 +1,7 @@
 import { captureLayer, type CardLayer } from '../press-kit-layers'
 import { chrome, type Frame } from './chrome'
 import { alpha, FORMATS, type CardModel, type Fonts, type FormatSpec, type Palette } from './spec'
+import { drawTractatus } from './tractatus'
 import { draw, fit, oneLine, type Block, type Fitted } from './typography'
 
 type Anchor = 'start' | 'center' | 'end'
@@ -185,6 +186,10 @@ export function drawQuote(
     layers,
   )
   const avail = frame.bottom - frame.top
+  if (model.propositions?.length) {
+    drawTractatus(ctx, fonts, model, spec, palette, frame, layers)
+    return
+  }
   const gap = spec.gap * 0.8
 
   const attrSize = spec.meta * 1.35
