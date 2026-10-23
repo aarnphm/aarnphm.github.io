@@ -144,7 +144,8 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
 
   const paint = () => {
     const box = article.getBoundingClientRect()
-    const mode = box.left >= MARGIN_COLUMN ? 'margin' : 'inline'
+    const mode =
+      article.closest('.preview-container') || box.left < MARGIN_COLUMN ? 'inline' : 'margin'
     article.dataset.frMode = mode
     for (const label of article.querySelectorAll<HTMLButtonElement>('.fr-entry-label')) {
       if (mode === 'margin') {
@@ -360,16 +361,39 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
   queue()
 }
 
+function mountRoot(root: HTMLElement, signal: AbortSignal) {
+  if (!root.querySelector('.fr-group')) return
+  mountLayout(root, signal)
+  root.querySelectorAll<HTMLElement>('[data-fr-notes]').forEach(el => mountNotes(el, signal))
+  root.querySelectorAll<HTMLElement>('[data-fr-rev]').forEach(el => void mountReview(el, signal))
+}
+
 document.addEventListener('nav', () => {
-  const article = document.querySelector<HTMLElement>('article')
-  if (!article?.querySelector('.fr-group')) return
   const controller = new AbortController()
   window.addCleanup(() => controller.abort())
-  mountLayout(article, controller.signal)
-  article
-    .querySelectorAll<HTMLElement>('[data-fr-notes]')
-    .forEach(root => mountNotes(root, controller.signal))
-  article
-    .querySelectorAll<HTMLElement>('[data-fr-rev]')
-    .forEach(root => void mountReview(root, controller.signal))
+  const article = document.querySelector<HTMLElement>('article')
+  if (article) mountRoot(article, controller.signal)
+
+  for (const preview of document.querySelectorAll<HTMLElement>('.preview-container')) {
+    let previewController: AbortController | null = null
+    const syncPreview = () => {
+      previewController?.abort()
+      previewController = null
+      const inner = preview.querySelector<HTMLElement>(':scope > .preview-inner')
+      if (!inner?.querySelector('.fr-group')) return
+      previewController = new AbortController()
+      mountRoot(inner, previewController.signal)
+    }
+    const observer = new MutationObserver(syncPreview)
+    observer.observe(preview, { childList: true })
+    controller.signal.addEventListener(
+      'abort',
+      () => {
+        observer.disconnect()
+        previewController?.abort()
+      },
+      { once: true },
+    )
+    syncPreview()
+  }
 })

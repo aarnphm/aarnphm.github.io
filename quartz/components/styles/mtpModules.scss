@@ -9,7 +9,7 @@
   --mtp-on: var(--fig-grid-selected);
   --mtp-link: var(--dark);
   --mtp-share-stroke: color-mix(in srgb, var(--fig-sage) 55%, var(--dark));
-  --mtp-input: color-mix(in srgb, var(--tertiary) 38%, var(--light));
+  --mtp-input: color-mix(in srgb, var(--gray) 26%, var(--light));
   --mtp-target: color-mix(in srgb, var(--fig-salmon) 48%, var(--light));
 }
 
@@ -18,7 +18,7 @@
   --mtp-op: var(--lightgray);
   --mtp-on: color-mix(in srgb, var(--fig-sage) 22%, var(--lightgray));
   --mtp-share-stroke: color-mix(in srgb, var(--fig-sage) 45%, var(--light));
-  --mtp-input: color-mix(in srgb, var(--tertiary) 30%, var(--lightgray));
+  --mtp-input: color-mix(in srgb, var(--gray) 40%, var(--lightgray));
   --mtp-target: color-mix(in srgb, var(--fig-salmon) 30%, var(--lightgray));
 }
 
@@ -39,7 +39,7 @@
   list-style: none;
   color: var(--fig-tab-fg);
   font-family: var(--codeFont);
-  font-size: var(--text-meta);
+  font-size: 0.68rem;
 
   li {
     display: inline-flex;
@@ -52,8 +52,8 @@
 
 .mtp-swatch {
   min-width: 0;
-  width: 1rem;
-  height: 0.8rem;
+  width: 0.8rem;
+  height: 0.6rem;
   padding: 0;
 }
 
@@ -64,7 +64,6 @@
   width: fit-content;
   max-width: 100%;
   min-inline-size: 0;
-  padding: 0;
 }
 
 .mtp-segment {

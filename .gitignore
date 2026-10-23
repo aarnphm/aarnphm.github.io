@@ -39,6 +39,8 @@ sites
 .ipynb_checkpoints
 **/partial_movie_files/**
 data/
+# activity/data.ts keeps its implementation in a private data/ module folder.
+!quartz/components/triathlon/activity/data/
 model/
 content/thoughts/university/**/*.csv
 private

@@ -148,12 +148,16 @@ const setup = (root: HTMLElement): (() => void) | null => {
   const stage = root.querySelector('[data-mtp-stage]')
   if (stage) ro.observe(stage)
 
+  // The rail scrolls sideways on narrow screens; the link layer stays put and repaints.
+  const rail = root.querySelector('[data-mtp-rail]')
+  rail?.addEventListener('scroll', onResize, { passive: true })
   root.addEventListener('change', onChange)
   window.addEventListener('resize', onResize)
   render(Number(root.getAttribute('data-mtp-depth') ?? '2'))
 
   return () => {
     cancelAnimationFrame(frame)
+    rail?.removeEventListener('scroll', onResize)
     root.removeEventListener('change', onChange)
     window.removeEventListener('resize', onResize)
     ro.disconnect()
