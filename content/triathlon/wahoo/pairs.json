@@ -22,6 +22,17 @@
       "startDate": "2026-10-16T22:04:57.000Z",
       "elapsedTimeS": 4859,
       "distanceM": 40919.35
+    },
+    {
+      "canonicalId": 20693429964,
+      "canonicalStartDate": "2026-10-22T19:54:23Z",
+      "workoutId": 508811260,
+      "duplicateStravaId": null,
+      "fitPath": "triathlon/wahoo/26-10-22.fit",
+      "sha256": "bc2578bce02d45673ca8e88fa897c90cf4e148567fd4a2fec45e238522f050d3",
+      "startDate": "2026-10-22T19:54:23.000Z",
+      "elapsedTimeS": 5484,
+      "distanceM": 47186.38
     }
   ]
 }
