@@ -343,10 +343,6 @@ transclude:
 >
 > Alexandre Grothendieck, Récoltes et Semailles (translation by Childe)
 
-> Sometimes you love someone so much they feel like family, though you don’t share any known ancestors and it’s by no means clear you’ll co-parent with them. ^coparent
->
-> Lydia
-
 > An idiot admires complexity, a genius admires simplicity, a physicist tries to make it simple. For an idiot, the more complicated something is, the more he will admire it. If you make something so clusterfucked he can’t understand it, he’s gonna think you’re a god because you made it so complicated nobody can understand it. That’s how they write journals in academics, they try to make it so complicated people think you’re a genius.
 >
 > Terry Davis

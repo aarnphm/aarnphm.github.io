@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-10-22 09:19:44 GMT-04:00
+modified: 2026-10-22 21:15:00 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -82,6 +82,66 @@ title: are.na
 
 ## discourse
 
+- https://www.nytimes.com/2026/10/08/books/nobel-prize-literature.html -- 2026 Nobel Prize in Literature
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [nobel prize, literature]
+    - later: true
+- https://scottaaronson.blog/?p=10169 -- The Mathocalypse
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [mathematics, busy beaver, ai capabilities]
+    - later: true
+- https://situational-awareness.ai/lock-down-the-labs -- IIIb. Lock Down the Labs: Security for AGI
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [ai security, model weights]
+    - later: true
+- https://www.science.org/content/article/complete-devastation-how-nsf-gutted-its-social-sciences-research -- Complete devastation: How NSF gutted its social sciences research
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [science policy, nsf, social sciences]
+    - later: true
+- https://swarmcha.se/posts/chinese-agent-fleet-full-report -- We found a Tencent agent fleet
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [agent swarms, tencent, telemetry]
+    - later: true
+- https://every.to/p/how-codex-happened -- How Codex Happened
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [openai, coding agents, product history]
+    - later: true
+- https://nymag.com/intelligencer/article/china-ai-learning-craze.html -- Why Millions Across China Are Rushing to Learn AI
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [china, ai education, culture]
+    - later: true
+- https://morewrong.lol/?post=overdose-offsets-why-every-bag-of-fentanyl-i-sell-is-net-life-positive -- Overdose Offsets: Why Every Bag of Fentanyl I Sell Is Net Life-Positive
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [effective altruism, satire]
+    - later: true
+- https://legacy.donotresearch.net/posts/how-to-plant-a-meme -- How To Plant A Meme
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [memetics, online subcultures]
+    - later: true
+- https://www.pv-magazine.com/2026/09/29/solar-surpasses-nuclear-power-globally-for-first-time -- Solar surpasses nuclear power globally for first time
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [solar energy, nuclear power]
+    - later: true
+- https://www.statnews.com/2026/10/19/elizabeth-holmes-theranos-whistleblower-tyler-shultz-insider-review -- Theranos insider: What you don't see in 'You Can See Everything'
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [theranos, biotech, whistleblowing]
+    - later: true
+- https://chriskiehl.com/article/it-is-still-ok-to-enjoy-programming -- It's still OK to enjoy programming
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [programming, software craft]
+    - later: true
 - https://x.com/QiaochuYuan/status/2103524793383620817 -- Qiaochu Yuan on simulated shopping and consumerism
   - [meta]:
     - date: 10/22/2026
@@ -768,6 +828,26 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/np_hard/status/2107880652888772819 -- NP on cooperative multi-agent RL with communication at Prime Intellect
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [multi-agent rl, agent swarms]
+    - later: true
+- https://x.com/tylerangert/status/2112222741814263911 -- Tyler Angert on context switching and consciousness
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [attention, context switching]
+    - later: true
+- https://x.com/voooooogel/status/2112160405393117315 -- thebes on a Golem XIV-inspired genealogy chart of the heroic age of LLMs
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [llm history, stanislaw lem]
+    - later: true
+- https://x.com/soumitrashukla9/status/2109343818847785019 -- Soumitra Shukla on mathematicians reacting to rapid AI advances
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [mathematics, technological change]
+    - later: true
 - https://x.com/rtwlz/status/2102793613914816765 -- Riley Walz on the expanding scope of individual projects
   - [meta]:
     - date: 10/22/2026
@@ -2931,6 +3011,51 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.lemonde.fr -- Le Monde
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [french news, journalism]
+    - later: true
+- https://www.armadin.com -- Armadin
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [design, web]
+    - later: true
+- https://chalkies.website -- Chalkies
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [community, directory]
+    - later: true
+- https://mkdir.directory -- mkdir: curated web design inspiration directories
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [web design, directories]
+    - later: true
+- https://www.404s.design -- 404s: A Curated Gallery of Creative Error Page Designs
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [web design, error pages]
+    - later: true
+- https://minusone.com -- Minus One
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [design studio, experimentation]
+    - later: true
+- https://ifyouknewmewouldyoulove.me -- if you knew me would you love me
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [web art, interactive]
+    - later: true
+- https://teachings.kayserifserif.place -- Teachings
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [web art, kay serif]
+    - later: true
+- https://www.berkeleyalembic.org -- Berkeley Alembic
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [contemplative practice, berkeley]
+    - later: true
 - https://autobahndotcom.de/?page=1&sort=alphabetically -- AUTOBAHN DOT COM
   - [meta]:
     - date: 10/11/2026
@@ -3887,6 +4012,81 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://bcho.me -- Brandon Cho
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [portfolio, design]
+    - later: true
+- https://harveylederman.com/papers.html -- Harvey Lederman: Papers
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [philosophy, epistemology]
+    - later: true
+- https://www.callmemoby.dev -- Moby
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [portfolio, engineering]
+    - later: true
+- https://slack.org/reading -- Quinn Slack: Things I read
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [reading list, books]
+    - later: true
+- https://alexwennerberg.com/infra.html -- Alex Wennerberg: Hello World
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [self-hosting, personal web]
+    - later: true
+- https://theleniac.com -- Ivan Yevenko
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [artificial life, cellular automata]
+    - later: true
+- https://www.gonzalosoto.com -- Gonzalo Soto
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [product design, portfolio]
+    - later: true
+- https://bayesianinvestor.com -- Peter McCluskey
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [rationality, investing]
+    - later: true
+- https://www.pengzhe.ng/c/2026-08-05-vnhq52pp#timeline -- Peng Zheng: Timeline
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [product design, craft]
+    - later: true
+- https://www.procyclingstats.com/rider/demi-vollering -- Demi Vollering
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [cycling, pro peloton]
+    - later: true
+- https://leiac.me -- Leia
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [personal website]
+    - later: true
+- https://niksethi.com -- Nikhil's Index
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [creative history, portfolio]
+    - later: true
+- https://jillian.cloud -- Jillian G. Meehan
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [personal website]
+    - later: true
+- https://anhvn.com -- anhvn
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [personal website]
+    - later: true
+- https://liuleslie.github.io -- Leslie Liu
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [personal website, essays]
+    - later: true
 - https://en.wikipedia.org/wiki/Marshall_McLuhan -- Marshall McLuhan
   - [meta]:
     - date: 10/21/2026
@@ -5529,6 +5729,56 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://kwokchain.com/2026/10/09/abstract-warfare-how-tsmc-made-its-own-market -- Abstract Warfare: How TSMC Made Its Own Market
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [tsmc, semiconductors, strategy]
+    - later: true
+- https://www.readthesequences.com/Positive-Bias-Look-Into-The-Dark -- Positive Bias: Look into the Dark
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [epistemology, cognitive bias]
+    - later: true
+- https://felixrieseberg.com/how-to-be-more-ambitious-a-tutorial-for-humans-with-models -- How to be more ambitious: A tutorial for humans with models
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [ambition, coding agents]
+    - later: true
+- https://sfalexandria.com/posts/matts-genius -- An idiot in motion goes farther than a genius at rest
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [agency, momentum]
+    - later: true
+- https://www.nplusonemag.com/issue-54/the-intellectual-situation/old-directions -- Old Directions
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [cultural criticism, digital archives]
+    - later: true
+- https://sikorskyarchives.com/igor-sikorsky-sergei-rachmaninoff -- Sergei Rachmaninoff's Investment in Igor Sikorsky's Vision
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [aviation history, patronage]
+    - later: true
+- https://www.reddit.com/r/slatestarcodex/comments/qej806/nash_equilibria_in_human_relationships -- Nash Equilibria in Human Relationships
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [game theory, relationships]
+    - later: true
+- https://www.huffpost.com/entry/how-i-saved-my-marriage_b_6958222 -- How I Saved My Marriage
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [relationships, marriage]
+    - later: true
+- https://liuleslie.github.io/essays/e1.html -- Existentialism at the grocery store
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [existentialism, personal essay]
+    - later: true
+- https://liuleslie.github.io/essays/e5.html -- The Second Text: Notes on Human-LLM Encounters
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [human-llm interaction, writing]
+    - later: true
 - https://x.com/xhfloz/status/2103557179441901911 -- Long List of Random Reflections After AI Rut
   - [meta]:
     - date: 10/22/2026
@@ -9186,6 +9436,11 @@ title: are.na
   - view: list
   - json: true
 
+- https://deep-learning-alchemy.github.io -- Deep Learning Alchemy (Stanford CS 312)
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [deep learning, stanford]
+    - later: true
 - https://stanford-cs221.github.io/autumn2026/assignments/hw1_foundations/index.html -- Stanford CS221: Foundations Assignment
   - [meta]:
     - date: 10/11/2026
@@ -9343,6 +9598,76 @@ title: are.na
   - view: list
   - json: true
 
+- https://distill.pub/2020/growing-ca -- Growing Neural Cellular Automata
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [cellular automata, morphogenesis]
+    - later: true
+- https://distill.pub/2020/selforg -- Thread: Differentiable Self-organizing Systems
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [self-organization, differentiable programming]
+    - later: true
+- https://2026.alife.org -- The 2026 Artificial Life Conference
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [artificial life, complex systems]
+    - later: true
+- https://lossfunctions.tumblr.com -- Loss Functions
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [loss functions, machine learning]
+    - later: true
+- https://storage.googleapis.com/deepmind-media/gemini/gemini_4_safety_report.pdf -- Gemini 4 Safety Report
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [frontier safety, model evaluation]
+    - later: true
+- https://i.smitop.com/concise-research-roadmap.pdf -- Concise Alignment Research Roadmap
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [ai alignment, research roadmap]
+    - later: true
+- https://already-clean.goodfire.com -- Neural Networks Are Already Clean
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [mechanistic interpretability, circuit ecology]
+    - later: true
+- https://direct.mit.edu/isal/isal2025/volume/37 -- ALIFE 2025 Proceedings
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [artificial life, proceedings]
+    - later: true
+- https://alexwang.ai/posts/associative-memory -- You could have invented transformers from memory
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [transformers, associative memory]
+    - later: true
+- https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro-DSpark -- deepseek-ai/DeepSeek-V4-Pro-DSpark
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [deepseek, speculative decoding]
+    - later: true
+- https://blog.cloudflare.com/clairic-extraction-model -- Introducing Clairic, a new System One class of extraction models
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [structured extraction, cloudflare]
+    - later: true
+- https://blog.cloudflare.com/clef-decision-models -- Introducing Clef: our open-source decision models, and new RL fine-tuning platform
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [decision models, reinforcement learning]
+    - later: true
+- https://www.kerls.dev/read/inference-engineering-speculative-decoding-part-1 -- Inference Engineering: Speculative Decoding (Part 1)
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [speculative decoding, llm inference]
+    - later: true
+- https://www.kerls.dev/read/inference-engineering-speculative-decoding-part-4 -- Inference Engineering: Speculative Decoding (Part 4)
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [speculative decoding, llm inference]
+    - later: true
 - https://x.com/ayushjain1144/status/2103484674983313828 -- TrackEverything: 3D point tracking across long videos
   - [meta]:
     - date: 10/22/2026
@@ -13648,6 +13973,16 @@ title: are.na
 
 ## life is literature
 
+- https://web.mit.edu/people/dpolicar/writing/prose/text/thinkingMeat.html -- They're Made out of Meat
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [terry bisson, science fiction]
+    - later: true
+- https://files.libcom.org/files/Paulo%20Freire,%20Myra%20Bergman%20Ramos,%20Donaldo%20Macedo%20-%20Pedagogy%20of%20the%20Oppressed,%2030th%20Anniversary%20Edition%20(2000,%20Bloomsbury%20Academic).pdf -- Pedagogy of the Oppressed
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [paulo freire, critical pedagogy]
+    - later: true
 - https://countercraft.substack.com/p/of-course-its-the-screens-who-are -- Of Course It's the Screens. Who Are We Kidding?
   - [meta]:
     - date: 10/21/2026
@@ -15613,6 +15948,26 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://philosophy.lander.edu/intro/articles/jameslife-a.pdf -- Is Life Worth Living?
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [william james, pragmatism]
+    - later: true
+- https://rachelshu.com/2025/11/16/mmo-metaphysics-short.html -- Video games are philosophy's playground
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [metaphysics, video games]
+    - later: true
+- https://thoughtforms.life/on-artificial-beings -- On artificial beings
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [michael levin, morphogenesis, mind]
+    - later: true
+- https://aier.org/article/mises-and-hayek-two-complementary-critiques-of-central-planning -- Mises and Hayek: Two Complementary Critiques of Central Planning
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [economic calculation, local knowledge]
+    - later: true
 - https://x.com/BeckmannPierre/status/2105682558524522923 -- Understanding and trust in polyphonic language models
   - [meta]:
     - date: 10/22/2026
@@ -16997,6 +17352,31 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.bbc.com/news/magazine-34290981 -- The extraordinary case of the Guevedoces
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [endocrinology, developmental biology]
+    - later: true
+- https://www.mnhn.fr/fr/actualites/limiter-l-eclairage-artificiel-a-t-il-un-reel-impact-sur-la-biodiversite -- Limiter l'éclairage artificiel a-t-il un réel impact sur la biodiversité ?
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [biodiversity, light pollution]
+    - later: true
+- https://www.mnhn.fr/fr/actualites/menace-sur-la-pollinisation-le-cote-obscur-de-la-lumiere-artificielle -- Menace sur la pollinisation : le côté obscur de la lumière artificielle
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [pollination, light pollution]
+    - later: true
+- https://manifund.org/projects/ozempic-for-sleep-proof-of-concept-research-for-safely-reducing-sleep -- Ozempic for Sleep: Research for Safely Reducing Sleep Needs
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [sleep, pharmacology]
+    - later: true
+- https://www.ranomics.com/what-is-yeast-display -- What Is Yeast Display? How It Works
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [protein engineering, yeast display]
+    - later: true
 - https://www.technologynetworks.com/neuroscience/news/common-virus-linked-to-metabolic-changes-in-neurons-415897 -- Common Virus Linked to Metabolic Changes in Neurons
   - [meta]:
     - date: 09/21/2026
@@ -17656,6 +18036,11 @@ title: are.na
 
 ## poetry
 
+- https://www.poetryfoundation.org/poetrymagazine/poems/49493/i-carry-your-heart-with-mei-carry-it-in -- [i carry your heart with me(i carry it in]
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [e e cummings, love poetry]
+    - later: true
 - https://www.poetryinternational.com/en/poets-poems/poems/poem/103-20022_THE-PROBLEM-OF-DESCRIBING-TREES -- The Problem of Describing Trees
   - [meta]:
     - date: 10/11/2026
@@ -17742,6 +18127,31 @@ title: are.na
 
 ## design
 
+- https://www.rosslovegrove.com/commercial -- Ross Lovegrove: Commercial
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [industrial design, organic form]
+    - later: true
+- https://www.regards.design/galleries -- Best Design Inspiration Websites & Galleries
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [design galleries, inspiration]
+    - later: true
+- https://foxrockettstudio.com/products/micrographics-vol-1?variant=56778800038261 -- Micrographics Vol.1
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [vector graphics, micrographics]
+    - later: true
+- https://design.interfere.com -- Interfere Design System
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [design systems, components]
+    - later: true
+- https://the-brandidentity.com -- The Brand Identity
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [graphic design, brand identity]
+    - later: true
 - https://builtbydesigners.com/projects/oddflick -- Oddflick
   - [meta]:
     - date: 10/11/2026
@@ -19154,6 +19564,26 @@ title: are.na
 
 ## tools
 
+- https://obry.app -- Obry for Mac
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [macos, screen capture, ocr]
+    - later: true
+- https://pond.raphaelsalaja.com -- Pond
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [bookmarking, local-first]
+    - later: true
+- https://www.typefree.org -- Typefree
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [writing tool, minimalism]
+    - later: true
+- https://silca.cc/en-ca/pages/pro-tire-pressure-calculator -- SILCA Professional Tire Pressure Calculator
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [cycling, tire pressure]
+    - later: true
 - https://18words.app -- 18 Words
   - [meta]:
     - date: 10/11/2026
@@ -19434,6 +19864,31 @@ title: are.na
 
 ## arts
 
+- https://albertomielgo.blogspot.com/2009/12/cosmo-02_11.html -- Alberto Mielgo: COSMO 02
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [concept art, animation]
+    - later: true
+- https://www.shauntan.net/summer-book -- Summer book — Shaun Tan
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [illustration, picture books]
+    - later: true
+- https://vigeland.museum.no/en/gustav-vigeland/chronology -- Gustav Vigeland: Chronology
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [sculpture, art history]
+    - later: true
+- https://olvidare.tumblr.com/post/119865013718 -- Olvidare
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [visual art, tumblr]
+    - later: true
+- https://ginnyweaver.com/artwork -- Ginny Weaver: Artwork
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [painting, visual art]
+    - later: true
 - https://georg.nu -- Georg.nu
   - [meta]:
     - date: 10/11/2026
@@ -19984,6 +20439,56 @@ title: are.na
 
 ## resources
 
+- https://www.cyclingtimetrials.org.uk/events/42188-rttc-national-hill-climb-championship -- RTTC National Hill Climb Championship 2026
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [cycling, hill climb]
+    - later: true
+- https://www.reddit.com/user/Derpost/comments/xtlp83/a_comprehensive_master_list_of_resources_that -- A Comprehensive Master List of Resources
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [learning resources, reference]
+    - later: true
+- https://chancellor.berkeley.edu/are-there-different-types-subpoenas -- Are there different types of Subpoenas?
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [law, subpoenas]
+    - later: true
+- https://notes.andymatuschak.org/zRBUabiBg7c2o9i2vqamMFW -- Interface for writing spaced repetition prompts inline while reading web content
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [spaced repetition, mnemonic medium]
+    - later: true
+- https://cycling.favero.com/shop/assioma-pro-rl2 -- Favero Assioma PRO RL-2 Dual-Sided Road Power Meter Pedals
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [cycling, power meter]
+    - later: true
+- https://www.fizik.com/fr-ca/products/chaussures-transiro-hydra-aeroweave-carbone-kh-blanc_argent-trr2par1k2080 -- Fizik Transiro Hydra Aeroweave Carbon
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [triathlon, cycling shoes]
+    - later: true
+- https://www.precisionhydration.com/performance-advice/performance/winter-training-camp-advice -- How to not screw up your winter training camp
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [endurance training, hydration]
+    - later: true
+- https://www.ironman.com/races/im-lanzarote -- IRONMAN Lanzarote
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [ironman, triathlon]
+    - later: true
+- https://www.bicyclerollingresistance.com/road-bike-reviews -- Road Bike Tires Test Results
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [cycling, rolling resistance]
+    - later: true
+- https://www.phrasefantastic.com/resources.html?goto=topicDiv1656613342996 -- phraseFantastic: French Resources
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [french, language learning]
+    - later: true
 - https://x.com/karpathy/status/1865924776214327360 -- Andrej Karpathy's books that stayed with him
   - [meta]:
     - date: 10/22/2026
@@ -21647,6 +22152,16 @@ title: are.na
 
 ## interfaces
 
+- https://love-motion-recreation.ethan-clinick.chatgpt.site/site -- Love Motion Recreation
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [motion design, claude code]
+    - later: true
+- https://mesq.me/jelly-painting -- Jelly Painting
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [webgpu, tsl, shaders]
+    - later: true
 - https://x.com/azlenelza/status/2105540576200581601 -- A call for new aesthetics of maps
   - [meta]:
     - date: 10/22/2026
@@ -21760,6 +22275,11 @@ title: are.na
 
 ## typography
 
+- https://michaeljmcmaster.com/selectmono.html -- Select Mono Italic
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [monospace, ibm selectric, typography]
+    - later: true
 - https://kayserifserif.place/work/rivers -- Rivers
   - [meta]:
     - date: 10/11/2026
@@ -21930,6 +22450,11 @@ title: are.na
 
 ## lecture
 
+- https://www.youtube.com/watch?v=Ep1TzZDOHnU -- ICM 2026 Plenary Lecture - Stephen Wright
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [optimization, mathematics]
+    - later: true
 - https://docs.google.com/presentation/d/1k0Zo33KubK7pmhYXg-7G1PjgcEbOhBkSbwiEwUpUyH0/edit?slide=id.g38a7e5eff34_0_2923#slide=id.g38a7e5eff34_0_2923 -- vLLM IR: February 26, 2026
   - [meta]:
     - date: 09/15/2026
@@ -23501,6 +24026,16 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.wilfred.me.uk/blog/2022/09/06/difftastic-the-fantastic-diff -- Difftastic, the Fantastic Diff
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [structural diff, developer tools]
+    - later: true
+- https://www.reddit.com/r/mac/comments/1b9lc0r/what_the_heck_is_fseventsd_and_why_is_it_using_30 -- What the heck is fseventsd and why is it using 30% CPU?
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [macos, filesystem]
+    - later: true
 - https://x.com/sanyampunia/status/2103533714252902592 -- Anchor-centered tooltips that stay within the viewport
   - [meta]:
     - date: 10/22/2026
@@ -24760,6 +25295,46 @@ title: are.na
 
 ## organizations
 
+- https://www.axibo.com -- Axibo Humanoid
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [robotics, humanoids]
+    - later: true
+- https://palaestraresearch.org -- Palaestra Research
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [scalable oversight, character training]
+    - later: true
+- https://getcartwheel.com -- Cartwheel
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [motion models, physical ai]
+    - later: true
+- https://progress.capable.com/p/202610 -- Capable Fall Update: $38M Seed, New SF Lab, Next Programs
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [biotech, therapeutics]
+    - later: true
+- https://www.resonantcomputinglab.com -- Resonant Computing Lab
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [computing research, interfaces]
+    - later: true
+- https://www.helionenergy.com -- Helion Energy
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [fusion energy, power plants]
+    - later: true
+- https://analoguegroup.org -- Analogue
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [research group, institutions]
+    - later: true
+- https://expeditions.earth -- Expeditions by Analogue
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [fieldwork, exploration]
+    - later: true
 - https://general-instinct.com -- General Instinct
   - [meta]:
     - date: 10/11/2026
@@ -26053,6 +26628,11 @@ title: are.na
   - view: list
   - json: true
 
+- https://advanced.onlinelibrary.wiley.com/doi/10.1002/aisy.202401034 -- Artificial Intelligences: A Bridge Toward Diverse Intelligence and Humanity's Future
+  - [meta]:
+    - date: 10/22/2026
+    - tags: [michael levin, diverse intelligence, bioelectricity]
+    - later: true
 - https://arxiv.org/abs/2107.07511 -- A Gentle Introduction to Conformal Prediction and Distribution-Free Uncertainty Quantification
   - [meta]:
     - date: 10/20/2026

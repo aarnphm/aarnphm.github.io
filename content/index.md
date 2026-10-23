@@ -4,7 +4,7 @@ aliases:
 date: '2022-04-22'
 description: my working notes, as a form of a digital garden
 id: _index
-modified: 2026-08-21 20:04:32 GMT-04:00
+modified: 2026-10-22 21:15:11 GMT-04:00
 permalinks:
   - /about
 tags:
@@ -14,58 +14,6 @@ title: Aaron's notes
 ---
 
 Hi, my name is Aaron. I'm best reached via [twitter](https://twitter.com/aarnphm) or [email](mailto:contact@aarnphm.xyz).
-
-```telescopic id="thoughts"
-* I try to be
-* present.
-  * present, but you will find
-  *  me
-    * me working on [[thoughts/craft|open-source projects]],
-      * me working on [[thoughts/craft|open-source projects]],
-      * and spending too much time fixing this [site](https://aarnphm.xyz/view-source),
-        * and committing to the bit.
-        * I enjoy
-          * I enjoy long walks,
-          * nerd-snipping on the next [[/tags/math|math]] topics,
-            * going to public libraries
-              * watching people
-                * yuzu-related dishes
-                  * anything [[thoughts/images/onionnnnnnnnnn.webp|onion-related]] or garlic or beets
-                    * collecting watches (horology)
-                      * folktronica
-                        * Miles Davis and the Quintet
-                          * Miles Davis and the Quintet, Foucault and [[thoughts/Wittgenstein]]'s,
-                          * _my 3 qt stainless clad [saucier](https://madeincookware.com/products/saucier/3-quart) that I use for_
-                          * everything,
-                            * everything from searing
-                              * to making **broth**
-                                * and confit
-                                  * making ~~Velouté~~,
-                                    * or Espagnole,
-                                      * testing out any recipes in mind,
-                          * italian cuisine
-                            * julienne
-                              * allumette,
-                                * this [playlist](https://music.youtube.com/playlist?list=PLsRPzRsbp3lCxe4gXH4S4Zf38X_45Oj6N&si=Od99WbOnJlbB9NYJ)
-                                * on repeats
-                                  * on repeats, [[thoughts/atelier with friends|hosting]] functions.
-                                    * and [[thoughts/Scents|scents]].
-                                * Beige and <span class="rose">rosé</span> are my two favourite
-                                * colours.
-                                  * colours.
-                                  * Cooking
-                                    * Cooking is
-                                    * my [[/tags/love]] language
-                                      * my [[/tags/love]] language, which I learn
-                                      * from my mom.
-                                        * from my mom. How one cooks their
-                                        * eggs
-                                          * eggs tells me a lot
-                                          * about
-                                            * about how they _treat others_
-                                              * about their cadence
-                                                * about their intrinsic [[thoughts/Agency|drive]].
-```
 
 I [[thoughts/craft|work]] on #ml [[research|systems]] (i.e. [[thoughts/Transformers#inference.|inference]] engine), and they work with me. My frequent interlocutors include _my close friends_.
 

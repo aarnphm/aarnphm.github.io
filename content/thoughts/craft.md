@@ -146,7 +146,6 @@ You can find internal monologue under [[/posts/]] index. I also send a ~monthly 
     - A hybrid of A\* and a BFS search for pathfinding algorithm.
     - polyalphabetic cipher with deterministic reversible transformations includes a Fiestel network structure with MurmurHash3 mixing of 32-bit avalanche mixer
     - Source: [site but password protected](https://nicky.day/)
-- #postcards, a collections of cards for all the places I have lived at.
 
 ## talks
 
