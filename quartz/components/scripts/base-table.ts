@@ -5,6 +5,25 @@ export function initializeBaseTables(): void {
     if (wrapper.dataset.tableInitialized !== undefined) continue
     wrapper.dataset.tableInitialized = ''
     const signal = rootNavSignal(wrapper)
+    wrapper.addEventListener(
+      'click',
+      event => {
+        if (!(event.target instanceof Element)) return
+        const toggle = event.target.closest<HTMLButtonElement>('.base-group-toggle')
+        const header = toggle?.closest('tr.base-group-header')
+        if (!toggle || !header) return
+        const collapsed = toggle.getAttribute('aria-expanded') === 'true'
+        toggle.setAttribute('aria-expanded', String(!collapsed))
+        for (
+          let row = header.nextElementSibling;
+          row instanceof HTMLTableRowElement && !row.classList.contains('base-group-header');
+          row = row.nextElementSibling
+        ) {
+          row.hidden = collapsed
+        }
+      },
+      { signal },
+    )
     const updateDivider = () => {
       wrapper.toggleAttribute('data-base-table-scrolled', wrapper.scrollTop > 0)
     }

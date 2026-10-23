@@ -47,7 +47,7 @@ $base-control-height: 2.125rem;
         border-radius: var(--radius-none);
         color: var(--darkgray);
         font-family: inherit;
-        font-size: 0.875rem;
+        font-size: var(--text-ui);
         font-weight: 500;
         line-height: inherit;
         cursor: pointer;
@@ -85,7 +85,7 @@ $base-control-height: 2.125rem;
         }
 
         .text-button-label {
-          font-size: 0.875rem;
+          font-size: inherit;
           color: var(--dark);
           font-weight: 500;
         }
@@ -94,17 +94,21 @@ $base-control-height: 2.125rem;
   }
 
   .menu-scroll {
-    position: absolute;
-    top: calc(100% + 0.5rem);
-    left: 0;
+    position: fixed;
+    inset: auto;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
     z-index: var(--z-popover);
-    max-height: 400px;
+    max-height: calc(100dvh - 16px);
+    max-width: calc(100vw - 16px);
     background: var(--light);
     border: 1px solid var(--lightgray);
     border-radius: var(--radius-none);
     overflow: hidden;
-    min-width: 280px;
-    display: block;
+    width: 280px;
+    display: flex;
+    flex-direction: column;
 
     &[hidden] {
       display: none;
@@ -114,10 +118,11 @@ $base-control-height: 2.125rem;
   .bases-toolbar-menu-container {
     display: flex;
     flex-direction: column;
-    max-height: 400px;
+    min-height: 0;
 
     .search-input-container {
       position: relative;
+      flex-shrink: 0;
       padding: 0.5rem;
       border-bottom: 1px solid var(--lightgray);
 
@@ -127,20 +132,20 @@ $base-control-height: 2.125rem;
         background: var(--light);
         border: 1px solid var(--lightgray);
         border-radius: var(--radius-none);
-        font-size: 0.875rem;
+        font-size: var(--text-ui);
         color: var(--dark);
         font-family: var(--bodyFont);
 
         // the script focuses this field as the menu opens, so the focus ring is
         // the border itself: one line, no second rectangle around it
         &:focus-visible {
-          border-color: var(--secondary);
+          border-color: var(--dark);
           outline: none;
         }
 
         &::placeholder {
-          color: var(--gray);
-          opacity: 0.7;
+          color: var(--darkgray);
+          opacity: 1;
         }
 
         &::-webkit-search-cancel-button {
@@ -179,7 +184,7 @@ $base-control-height: 2.125rem;
         }
 
         &:focus-visible {
-          outline: 2px solid var(--secondary);
+          outline: 2px solid var(--dark);
           outline-offset: -2px;
 
           svg {
@@ -201,8 +206,9 @@ $base-control-height: 2.125rem;
     }
 
     .bases-toolbar-items {
+      min-height: 0;
       overflow-y: auto;
-      max-height: 340px;
+      overscroll-behavior: contain;
 
       &::-webkit-scrollbar {
         width: 8px;
@@ -238,6 +244,8 @@ $base-control-height: 2.125rem;
           display: flex;
           align-items: center;
           justify-content: space-between;
+          box-sizing: border-box;
+          min-height: $base-control-height;
           padding: 0.5rem 0.75rem;
           margin: 0 0.25rem;
           border-radius: var(--radius-none);
@@ -254,7 +262,7 @@ $base-control-height: 2.125rem;
           }
 
           &:focus-visible {
-            outline: 2px solid var(--secondary);
+            outline: 2px solid var(--dark);
             outline-offset: -2px;
             background: var(--lightgray);
           }
@@ -267,7 +275,7 @@ $base-control-height: 2.125rem;
             .bases-toolbar-menu-item-info {
               .bases-toolbar-menu-item-name {
                 font-weight: 600;
-                color: var(--secondary);
+                color: var(--dark);
               }
             }
           }
@@ -294,7 +302,7 @@ $base-control-height: 2.125rem;
             }
 
             .bases-toolbar-menu-item-name {
-              font-size: 0.875rem;
+              font-size: var(--text-ui);
               color: var(--dark);
             }
           }
@@ -315,8 +323,26 @@ $base-control-height: 2.125rem;
 @media all and ($mobile) {
   .bases-toolbar {
     .menu-scroll {
-      min-width: 240px;
-      left: auto;
+      width: 240px;
     }
+
+    .bases-toolbar-menu-container .search-input-container input[type='search'] {
+      font-size: 16px;
+    }
+  }
+}
+
+@media (pointer: coarse) {
+  .bases-toolbar
+    .bases-toolbar-menu-container
+    .bases-toolbar-items
+    .suggestion-item.bases-toolbar-menu-item,
+  .bases-toolbar .bases-toolbar-item.bases-toolbar-views-menu .text-icon-button {
+    min-height: 44px;
+  }
+
+  .bases-toolbar .bases-toolbar-menu-container .search-input-container input[type='search'] {
+    min-height: 46px;
+    padding-right: 3.5rem;
   }
 }

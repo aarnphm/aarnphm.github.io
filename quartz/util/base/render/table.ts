@@ -233,9 +233,11 @@ export function buildTable(
     for (const [groupName, groupFiles] of groups) {
       const groupHeader = h('tr.base-group-header', [
         h('td', { colspan: columns.length }, [
-          h('span.base-group-header-label', groupByLabel.toLowerCase()),
-          ' ',
-          groupLabel(groupName),
+          h('button.base-group-toggle', { type: 'button', 'aria-expanded': 'true' }, [
+            h('span.base-group-header-label', groupByLabel.toLowerCase()),
+            ' ',
+            groupLabel(groupName),
+          ]),
         ]),
       ])
       allRows.push(groupHeader)

@@ -52,10 +52,12 @@ body[data-is-base='true'] #quartz-root > .page-body-grid > .page-header {
     min-width: 0;
   }
 
+  // Collapsed, each control is its word plus the same --space-2 inline padding, so the gaps
+  // between search, filter and sort match whatever their lengths.
   #base-search-bar {
     position: relative;
     flex: 0 1 auto;
-    width: 3.5rem;
+    width: auto;
     min-width: 0;
     max-width: none;
     min-height: 0;
@@ -65,8 +67,6 @@ body[data-is-base='true'] #quartz-root > .page-body-grid > .page-header {
     background: transparent;
 
     .base-search-label {
-      position: absolute;
-      inset: 0;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -192,8 +192,8 @@ body[data-is-base='true'] #quartz-root > .page-body-grid > .page-header {
 
     > button {
       appearance: none;
-      flex: 0 0 3.5rem;
-      min-width: 3.5rem;
+      flex: 0 0 auto;
+      min-width: 0;
       min-height: 0;
       height: 100%;
       margin: 0;
