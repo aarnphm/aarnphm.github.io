@@ -378,6 +378,12 @@ body {
   padding-top: var(--sidepanel-padding);
 }
 
+#quartz-root:not(:has(> .header .breadcrumb-container:not(:empty)))
+  > .page-body-grid
+  > .page-header {
+  padding-top: 1rem;
+}
+
 #quartz-root > .page-body-grid > .page-header:has(> .byline) {
   overflow-x: clip;
 }
