@@ -6,7 +6,7 @@ comments: false
 date: '2021-12-22'
 description: and a celebration for the act of making.
 id: craft
-modified: 2026-10-21 15:29:49 GMT-04:00
+modified: 2026-10-23 01:47:47 GMT-04:00
 permalinks:
   - /thoughts/work
   - /craft
@@ -117,6 +117,7 @@ There is also a [[ideas|backlog]] of unfinished ideas that I might work on, one 
   <div data-triathlon-latest />
 
 - NVIDIA, 11/26-Now
+  - DL Performance Software Engineer, LLM Inference
 - Modular, 01/2026—06/2026
   - Inference Optimization Engineer, MAX Serve
   - _Acquired by Qualcomm_
@@ -170,4 +171,3 @@ You can find internal monologue under [[/posts/]] index. I also send a ~monthly 
 
 - OpenLLM, and everything about running LLMs in production at Hack The North (2023)
   - Source: [[thoughts/images/htn-openllm.pdf|slides]]
-    ![[thoughts/images/htn-2023-speaks.webp]]
