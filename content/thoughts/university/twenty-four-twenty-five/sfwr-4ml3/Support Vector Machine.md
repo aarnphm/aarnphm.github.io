@@ -92,7 +92,7 @@ $$
 
 A correctly classified point inside the margin still pays loss. Increasing $\lambda$ puts more weight on small coefficients. In the convention $\tfrac12\|w\|_2^2+C\sum_i\xi_i$, the same tradeoff uses $C=1/(2\lambda m)$. The [scikit-learn formulation](https://scikit-learn.org/stable/modules/svm.html#mathematical-formulation) uses this latter convention.
 
-The objective is convex, with a kink where a point reaches the margin. A quadratic-programming solver or a subgradient method can handle it; ordinary smooth [[thoughts/gradient descent]] needs this qualification.
+The objective is convex, with a kink where a point reaches the margin. A quadratic-programming solver or a subgradient method can handle it; ordinary smooth [[thoughts/gradient descent|gradient descent]] needs this qualification.
 
 ## SVM with basis functions
 
@@ -123,7 +123,7 @@ To see why, split $w$ into a component in that span and an orthogonal component.
 
 ## kernelized SVM
 
-Using the [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Support Vector Machine#representor theorem]], define
+Using the [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Support Vector Machine#representor theorem|representor theorem]], define
 
 $$
 K(x,z)=\langle\phi(x),\phi(z)\rangle.

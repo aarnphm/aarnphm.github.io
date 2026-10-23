@@ -10,4 +10,4 @@ pdfTitles:
   'infer-0.3.pdf': 'Infer 0.3: K, V and KVCache'
 ---
 
-slides: [[lectures/3/infer-0.3.pdf]]
+slides: [[lectures/3/infer-0.3.pdf|infer-0.3.pdf]]

@@ -12,9 +12,9 @@ transclude:
   title: false
 ---
 
-megathread: [[thoughts/Speculative decoding]]
+megathread: [[thoughts/Speculative decoding|Speculative decoding]]
 
-## non-lossless of [[thoughts/Speculative decoding#Medusa]]
+## non-lossless of [[thoughts/Speculative decoding#Medusa|Medusa]]
 
 > [!definition] lossless in sampling
 >

@@ -109,4 +109,4 @@ The lubricant constraint is a lower bound because the contract requires at least
 
 <!-- end date Feb 1 -->
 
-See also [[thoughts/university/twenty-three-twenty-four/eng-3px3/Linear Optimization]]
+See also [[thoughts/university/twenty-three-twenty-four/eng-3px3/Linear Optimization|Linear Optimization]]

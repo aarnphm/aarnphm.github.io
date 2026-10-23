@@ -210,7 +210,7 @@ $$
 \end{aligned}
 $$
 
-Induction now gives $\|\theta^k\|_2^2\le kR^2$. By [[thoughts/Cauchy-Schwarz]] and $\|\theta^{*}\|_2=1$,
+Induction now gives $\|\theta^k\|_2^2\le kR^2$. By [[thoughts/Cauchy-Schwarz|Cauchy-Schwarz]] and $\|\theta^{*}\|_2=1$,
 
 $$
 k\gamma\le {\theta^k}^T\theta^{*}\le\|\theta^k\|_2\le\sqrt{k}R.

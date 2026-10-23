@@ -5,7 +5,7 @@ id: Root locus control
 modified: 2026-10-09 11:00:00 GMT-04:00
 seealso:
   - '[[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/root_locus_control.pdf|slides]]'
-  - '[[thoughts/Root locus]]'
+  - '[[thoughts/Root locus|Root locus]]'
 tags:
   - sfwr3dx4
 title: Root locus control

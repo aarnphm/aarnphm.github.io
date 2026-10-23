@@ -11,4 +11,4 @@ pdfTitles:
   'infer-0.411.pdf': 'Infer 0.411: Linear Algebra'
 ---
 
-slides: [[lectures/411/infer-0.411.pdf]]
+slides: [[lectures/411/infer-0.411.pdf|infer-0.411.pdf]]

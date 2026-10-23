@@ -5,7 +5,7 @@ id: index
 modified: 2026-06-07 01:26:56 GMT-04:00
 seealso:
   - '[[thoughts/MLA|Multi-head Latent Attention]]'
-  - '[[thoughts/LLMs]]'
+  - '[[thoughts/LLMs|LLMs]]'
   - '[[lectures/430/mla-rope-proofs|MLA proof]]'
 tags:
   - ml

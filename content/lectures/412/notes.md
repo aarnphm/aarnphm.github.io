@@ -203,7 +203,7 @@ where $v_j$ is the $j$th column of $V^\top$. Each neuron contributes a rank-one 
 > - The singular values $\sigma_i$ quantify how much a head stretches each principal direction; sharp decay (large $\sigma_1$, tiny tail) signals a nearly one-dimensional copier, while flat spectra imply superposed features with comparable gain.[^sigma-footnote]
 > - Effective rank $r_{\text{eff}} = \exp\!\big(-\sum_i p_i \log p_i\big)$ with $p_i = \sigma_i^2 / \sum_j \sigma_j^2$ summarises the decay; it stays small for copy heads and grows when heads mix many directions.
 > - The cumulative energy $E_k = \sum_{i\le k}\sigma_i^2 / \sum_i \sigma_i^2$ tells you how many singular directions you need to capture a target fraction of variance.
-> - The diagnostic script [[lectures/412/tools#scripts]] computes these curves, logs spectra, and now measures effective rank so you can separate low-rank copiers from high-rank mixers in practice.
+> - The diagnostic script [[lectures/412/tools#scripts|scripts]] computes these curves, logs spectra, and now measures effective rank so you can separate low-rank copiers from high-rank mixers in practice.
 > - Example below: six heads of Qwen3-0.6B, with the $W_{OV}$ spectrum and the attention routing of the same head on the prompt "The true meaning of life is absurdity, and suffering". Layer 12 head 8 has the largest gap $\sigma_1/\sigma_2 \approx 1.9$ and the smallest $r_{\text{eff}} \approx 83$.
 
 ```jsx imports={Zoomable,HeadSpectrum}
@@ -365,7 +365,7 @@ You can embed a mini-proof or derivation slide showing that, under layer gating 
    - Picking `d_model` like 3072, 4096, 5120, 6144, 8192, … isn’t arbitrary (mapping neatly to GEMM tiles and keeping you near peak compute flops).
 
 6. **Tie input and output embeddings unless you have a reason not to.**
-   - Use [[thoughts/weight tying]].
+   - Use [[thoughts/weight tying|weight tying]].
    - It reduces parameters (big win when vocab is large) and _improves perplexity/regularization_ in language models.
    - This makes the **embedding dim = unembedding dim = d_model** the default.
 

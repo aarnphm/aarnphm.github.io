@@ -52,7 +52,7 @@ Pascal, [[library/Pensees|Pensées]]
 The inception of [[thoughts/Machine learning|AI]] might well begin when the belief of a total formalisation of knowledge must be possible[^2]. From Plato's
 dichotomy of the rational soul from the body with its skills and intuition[^3], to Leibniz's conception of the binary systems as a "universal characteristics" [@leibniz_selections_1951{pp. 15, 25, 38}] that
 led to Babbage's design of "Analytic Engine" being recognized as the "first digital computer", Alan Turing posited that a high-speed digital computer, programmed
-with rules, might exhibit [[thoughts/emergent behaviour]] of [[thoughts/intelligence|intelligence]] [@10.1093/mind/LIX.236.433]. Thus, a paradigm among researchers that focused on symbolic [[thoughts/reason|reasoning]] was born, referred to as Good Old-Fashioned AI (GOFAI) [@10.7551/mitpress/4626.001.0001]. GOFAI was built on a high level symbolic representation of the world, popularized through expert systems [@jackson_introduction_1998]
+with rules, might exhibit [[thoughts/emergent behaviour|emergent behaviour]] of [[thoughts/intelligence|intelligence]] [@10.1093/mind/LIX.236.433]. Thus, a paradigm among researchers that focused on symbolic [[thoughts/reason|reasoning]] was born, referred to as Good Old-Fashioned AI (GOFAI) [@10.7551/mitpress/4626.001.0001]. GOFAI was built on a high level symbolic representation of the world, popularized through expert systems [@jackson_introduction_1998]
 that tried to mimic human expert on specialized tasks [^4]. Yet, we observed a period of "AI Winter" where most symbolic AI research either reached dead end or funding being dried up [@handler2008avoidanotheraiwinter].
 This is largely due to GOFAI's semantic representation which were implausible to scale to generalized tasks.
 
@@ -61,15 +61,15 @@ proposed intermediate processors within the network (often known as "hidden laye
 These systems, built on top of statistical methods[^5] and connectionist networks are often referred to by Haugeland as New-Fangled AI (NFAI) [@10.7551/mitpress/4626.001.0001].
 
 In retrospect, GOFAI are [[thoughts/Determinism|deterministic]] in a sense that intentionality is injected within symbolic tokens through explicit programming.
-[[thoughts/Connectionist network]], on the other hand, are often considered as black-box models, given their hidden nature of intermediate representations of perceptron.
+[[thoughts/Connectionist network|Connectionist network]], on the other hand, are often considered as black-box models, given their hidden nature of intermediate representations of perceptron.
 Unlike GOFAI, its internal representation is determined by the state of the entire network rather than any single unit.
 Given the rise of Moore's Law and the exponential amount of computing and data available, we are currently witnessing the dominance of connectionist networks, especially with the injection of LLMs into the mainstream [@kaplan2020scalinglawsneurallanguage],
 where the majority of research are focused on developing artificial neural networks that optimizes around loss functions [@vaswani2023attentionneed; @srivastava_dropout_2014]. One notable example that combines both GOFAI and NFAI
 systems is AlphaZero, a connectionist network based Go playing systems, that uses a deep neural networks to assess new positions and Monte-Carlo Tree Search (a GOFAI algorithm) to determine its next move [@silver2017masteringchessshogiselfplay].
 
 [^2]:
-    According to [[thoughts/Plato]], Socrates asked Euthyphro, a fellow Athenian who is about to turn in his own father for murder in the name of piety: "I want to know what is characteristic of piety which makes all actions pious. [...] that I may have it to turn to, and to use as a standard whereby to judge your actions and those of other men."
-    This is Socrates' version of [[thoughts/effective procedure]] for modern-day computer scientists.
+    According to [[thoughts/Plato|Plato]], Socrates asked Euthyphro, a fellow Athenian who is about to turn in his own father for murder in the name of piety: "I want to know what is characteristic of piety which makes all actions pious. [...] that I may have it to turn to, and to use as a standard whereby to judge your actions and those of other men."
+    This is Socrates' version of [[thoughts/effective procedure|effective procedure]] for modern-day computer scientists.
 
 [^3]:
     According to Plato, all knowledge must be universally applicable with explicit definitions, in other words, intuition, feeling would not constitute as the definition of knowing
@@ -104,7 +104,7 @@ See also: MIT Press [@HaoKarBuolamwini2019], Darthmouth investigation in COMPAS 
 DEI has become a key aspect of technological progress in the $21^{\text{st}}$ century. This applies to AI, where its black-box nature has proven to be difficult for researchers to align certain bias bugs. Two main DEI methods emerge for addressing given problems: improving data
 diversity and ensuring fairness during the training procedure.
 
-The primary methods on fighting against bias bugs in contemporary AI system includes increase in data diversity. There is a timeless saying in computer science "[[thoughts/Garbage in Garbage out]]",
+The primary methods on fighting against bias bugs in contemporary AI system includes increase in data diversity. There is a timeless saying in computer science "[[thoughts/Garbage in Garbage out|Garbage in Garbage out]]",
 which essentially states that bad data will produce outputs that's of equal quality.
 This is most prevalent in AI, given the existence of these networks within a black-box model. One case of this is the very first iterations of Google Photos’ image
 recognition where it identified people with darker skins as “gorillas” [@BBCGoogleApology2015]. Alliances such as The Data & Trust Alliance, including Meta, Nike, CVS Health, are formed to regulate and

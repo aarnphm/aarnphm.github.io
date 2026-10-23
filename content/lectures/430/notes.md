@@ -2,11 +2,12 @@
 date: '2025-10-17'
 description: Deploying DeepSeek R1
 id: index
-modified: 2026-06-07 01:28:56 GMT-04:00
+modified: 2026-10-23 02:11:46 GMT-04:00
 seealso:
   - '[[thoughts/MLA|Multi-head Latent Attention]]'
-  - '[[thoughts/LLMs]]'
+  - '[[thoughts/LLMs|LLMs]]'
   - '[[lectures/430/mla-rope-proofs|MLA proof]]'
+slides: true
 tags:
   - ml
   - workshop
@@ -53,7 +54,7 @@ $$
 
 Across 61 layers, one request would need $122$ GiB.
 
-see also: [[thoughts/Attention]]
+see also: [[thoughts/Attention|Attention]]
 
 ## multi-latent attention
 

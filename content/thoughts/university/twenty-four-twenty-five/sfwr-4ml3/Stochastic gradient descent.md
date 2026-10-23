@@ -49,7 +49,7 @@ Fresh sampling at every step gives $\mathbb{E}[\widehat g_k\mid\theta_k]=\nabla 
 \end{algorithm}
 ```
 
-Intuition: each update computes $b$ example gradients instead of all $n$. With $b=1$, this is the single-sample form of [[thoughts/gradient descent]]:
+Intuition: each update computes $b$ example gradients instead of all $n$. With $b=1$, this is the single-sample form of [[thoughts/gradient descent|gradient descent]]:
 
 $$
 \theta_{k+1}=\theta_k-\epsilon_k\nabla Q_{i_k}(\theta_k).

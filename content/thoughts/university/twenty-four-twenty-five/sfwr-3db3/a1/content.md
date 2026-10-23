@@ -4,7 +4,7 @@ description: some notes about entity-relationship models and foreign keys
 id: a1
 modified: 2026-06-05 15:08:42 GMT-04:00
 seealso:
-  - '[[thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1/airline.ddl]]'
+  - '[[thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1/airline.ddl|airline.ddl]]'
 tags:
   - sfwr3db3
 title: E/R models and keys

@@ -35,7 +35,7 @@ $$
 p(x^i,y^i\mid W)=p(y^i\mid x^i,W)\,p(x^i\mid W).
 $$
 
-If the input distribution is independent of $W$, that extra factor leaves the maximising $W$ unchanged. Otherwise joint and conditional fitting are different objectives. See [[thoughts/Maximum likelihood estimation]] for the general setup.
+If the input distribution is independent of $W$, that extra factor leaves the maximising $W$ unchanged. Otherwise joint and conditional fitting are different objectives. See [[thoughts/Maximum likelihood estimation|Maximum likelihood estimation]] for the general setup.
 
 For linear regression with independent Gaussian noise and fixed $\sigma^2>0$,
 

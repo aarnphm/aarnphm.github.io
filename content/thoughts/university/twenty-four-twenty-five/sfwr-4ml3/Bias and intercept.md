@@ -250,7 +250,7 @@ For dense $\Phi\in\mathbb{R}^{n\times p}$, forming and solving the regularized n
 | Form $\Phi^TY$                                          | $O(np)$         |
 | Factor and solve a positive-definite $p\times p$ system | $O(p^3)$        |
 
-The total is $O(np^2+p^3)$, excluding feature construction. Dense storage for $\Phi$ and its Gram matrix takes $O(np+p^2)$ space. [[thoughts/Cholesky decomposition]] factors the positive-definite system; explicitly constructing its inverse is unnecessary. A prediction costs $O(p)$ after evaluating the features.
+The total is $O(np^2+p^3)$, excluding feature construction. Dense storage for $\Phi$ and its Gram matrix takes $O(np+p^2)$ space. [[thoughts/Cholesky decomposition|Cholesky decomposition]] factors the positive-definite system; explicitly constructing its inverse is unnecessary. A prediction costs $O(p)$ after evaluating the features.
 
 The number of observations matters here. A bound for multiplying two square matrices alone leaves out the work of constructing $\Phi^T\Phi$ from all $n$ rows.
 

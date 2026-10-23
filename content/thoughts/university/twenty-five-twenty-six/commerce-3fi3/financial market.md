@@ -122,7 +122,7 @@ An expansion ends at a peak. A contraction continues to a trough, after which ex
 
 ## technical analysis
 
-Technical analysts study price and trading-volume patterns. Using those observations to forecast a return requires a rule and evidence about its performance. The claim that past market information is already reflected in prices belongs to the weak form of the [[thoughts/efficient market hypothesis]]. It does not establish that a chart pattern earns excess returns.
+Technical analysts study price and trading-volume patterns. Using those observations to forecast a return requires a rule and evidence about its performance. The claim that past market information is already reflected in prices belongs to the weak form of the [[thoughts/efficient market hypothesis|efficient market hypothesis]]. It does not establish that a chart pattern earns excess returns.
 
 ### theory
 
@@ -130,7 +130,7 @@ Technical analysts study price and trading-volume patterns. Using those observat
 - Price rate of change measures how far a price has moved over a chosen interval.
 - Advance-decline indicators count rising and falling securities to describe market breadth. Volume-based versions use trading volume to weight advancing and declining securities.
 - Odd-lot indicators examine trades smaller than the market's standard round lot.
-- [[thoughts/Bollinger Bands]] locate a price relative to its recent average and dispersion.
+- [[thoughts/Bollinger Bands|Bollinger Bands]] locate a price relative to its recent average and dispersion.
 
 ## tasks
 

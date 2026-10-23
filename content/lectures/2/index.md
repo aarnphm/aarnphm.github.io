@@ -10,4 +10,4 @@ pdfTitles:
   'infer-0.2.pdf': 'Infer 0.2: Attention and Convex Optimization'
 ---
 
-slides: [[lectures/2/infer-0.2.pdf]]
+slides: [[lectures/2/infer-0.2.pdf|infer-0.2.pdf]]

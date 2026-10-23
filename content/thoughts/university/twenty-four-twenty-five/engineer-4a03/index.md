@@ -4,9 +4,9 @@ description: course on engineering ethics covering literature review and case st
 id: index
 modified: 2026-06-05 15:08:40 GMT-04:00
 seealso:
-  - '[[thoughts/ethics]]'
-  - '[[thoughts/university/twenty-four-twenty-five/engineer-4a03/literature review]]'
-  - '[[thoughts/university/twenty-four-twenty-five/engineer-4a03/case study]]'
+  - '[[thoughts/ethics|ethics]]'
+  - '[[thoughts/university/twenty-four-twenty-five/engineer-4a03/literature review|literature review]]'
+  - '[[thoughts/university/twenty-four-twenty-five/engineer-4a03/case study|case study]]'
 tags:
   - university
   - engineer4a03

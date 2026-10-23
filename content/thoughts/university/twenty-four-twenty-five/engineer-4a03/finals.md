@@ -24,7 +24,7 @@ Tony Hope
 
 2. Philosophical consideration
 
-   Enlightenment thinkers with the likes of Kant upheld human autonomy as fundamental [[thoughts/moral]] imperatives. [[thoughts/Philosophy and Kant|Kantian]] ethics suggests that
+   Enlightenment thinkers with the likes of Kant upheld human autonomy as fundamental [[thoughts/moral|moral]] imperatives. [[thoughts/Philosophy and Kant|Kantian]] ethics suggests that
    using patient data solely as a means to an end, without their informed consent, is ethically problematic [@Kant1785KANGFT]. John Stuart [[thoughts/John Stuart Mill|Mill]]’s harm principle further
    supports protecting private information to prevent harm and maintain trust.
 
@@ -56,13 +56,13 @@ Tony Hope
 2. Philosophical consideration
 
    John Rawls' _veil of ignorance_, or his principles of justice in general, encourage designing systems that benefit all segments of society fairly, without bias toward any particular group. [@rawls1999theory]
-   Additionally, Nussbaum and Sen's capabilities approach suggests that technologies should expand human capabilities and [[thoughts/Agency]] (health, longevity, quality of life), especially marginalized communities. [@robeyns2020capability] [^emergent]
+   Additionally, Nussbaum and Sen's capabilities approach suggests that technologies should expand human capabilities and [[thoughts/Agency|Agency]] (health, longevity, quality of life), especially marginalized communities. [@robeyns2020capability] [^emergent]
 
    Notable mentions that the AI system should also consider Kimberlé Crenshaw's theory of intersectionality in healthcare disparities to address fairness. [@crenshaw1991mapping]
 
 [^emergent]:
     [[thoughts/LLMs|Large language model]] systems are poised to revolutionize ethnography by fundamentally altering how researchers conduct their work. In a sense, these systems should amplify our work, rather act as a replacement.
-    Even these systems exhibit [[thoughts/emergent behaviour]] of [[thoughts/intelligence|intelligence]], we don't think it is artificial general intelligence ([[thoughts/AGI|AGI]]) due to [[thoughts/observer-expectancy effect]].
+    Even these systems exhibit [[thoughts/emergent behaviour|emergent behaviour]] of [[thoughts/intelligence|intelligence]], we don't think it is artificial general intelligence ([[thoughts/AGI|AGI]]) due to [[thoughts/observer-expectancy effect|observer-expectancy effect]].
 
 3. Contemporary implications
 

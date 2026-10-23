@@ -7,8 +7,8 @@ description: grammar et al.
 id: results
 modified: 2026-06-05 15:08:40 GMT-04:00
 seealso:
-  - '[[thoughts/NFA]]'
-  - '[[thoughts/Context-Free Grammar]]'
+  - '[[thoughts/NFA|NFA]]'
+  - '[[thoughts/Context-Free Grammar|Context-Free Grammar]]'
 tags:
   - sfwr4tb3
   - assignment

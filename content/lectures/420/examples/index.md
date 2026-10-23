@@ -531,7 +531,7 @@ To add your own kernel:
 
 ## References
 
-- Full lecture notes: [[lectures/420/index]]
+- Full lecture notes: [[lectures/420/index|index]]
 - GPU architecture overview: [[lectures/420#what-is-a-gpu|what is a GPU?]]
 - CUDA Programming Guide: https://docs.nvidia.com/cuda/cuda-c-programming-guide/
 - Nsight Compute: https://developer.nvidia.com/nsight-compute
