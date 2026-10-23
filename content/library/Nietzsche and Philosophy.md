@@ -18,7 +18,7 @@ title: Nietzsche and Philosophy
 year: 1962
 ---
 
-_by [[thoughts/Giles Deleuze|Gilles Deleuze]]_
+_by [[thoughts/Gilles Deleuze|Gilles Deleuze]]_
 
 The decadence of modern philosophy is the theory of value imposes conformism and a new form of submission
 
@@ -170,7 +170,7 @@ The will to power is the element from which derive both the quantitative differe
 
 Mixed with eternal return, centered around the concept of force and internal will
 
-[[thoughts/Giles Deleuze|Deleuze]] brought up the argument that Nietzsche belongs to neo-Kantian not because his philosophy follows deontological framework, but because of the way he handles these Kantian demands
+[[thoughts/Gilles Deleuze|Deleuze]] brought up the argument that Nietzsche belongs to neo-Kantian not because his philosophy follows deontological framework, but because of the way he handles these Kantian demands
 
 > [!important] synthesis
 >
