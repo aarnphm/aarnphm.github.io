@@ -5,7 +5,7 @@ import {
   type Plugin,
 } from 'obsidian'
 import type { ParsedSidenote, SidenoteMatch, SidenoteProperties } from './types'
-import { findSidenotes } from './parser'
+import { findSidenotes, parseSidenotes } from './parser'
 
 const OPEN = '{{sidenotes'
 
@@ -87,13 +87,25 @@ export async function processSidenotes(
 ): Promise<void> {
   if (el.closest('.sidenote, .cm-editor')) return
   const section = ctx.getSectionInfo(el)
-  const source = section?.text
-    .split('\n')
-    .slice(section.lineStart, section.lineEnd + 1)
-    .join('\n')
-  const sourceNotes = source ? findSidenotes(source) : []
-  const preceding = section ? section.text.split('\n').slice(0, section.lineStart).join('\n') : ''
-  let number = findSidenotes(preceding).length
+  const parsedDocument = section ? parseSidenotes(section.text) : undefined
+  if (section && parsedDocument) {
+    // Reading view processes the definition header and its indented body as separate sections.
+    const definition = parsedDocument.definitions.find(
+      item => section.lineStart >= item.lineStart && section.lineEnd <= item.lineEnd,
+    )
+    if (definition) {
+      el.replaceChildren()
+      return
+    }
+  }
+  const lines = section?.text.split('\n') ?? []
+  const start = section
+    ? lines.slice(0, section.lineStart).join('\n').length + (section.lineStart ? 1 : 0)
+    : 0
+  const end = section ? lines.slice(0, section.lineEnd + 1).join('\n').length : 0
+  const sourceNotes =
+    parsedDocument?.matches.filter(note => note.from >= start && note.to <= end) ?? []
+  let number = parsedDocument?.matches.filter(note => note.from < start).length ?? 0
 
   // Obsidian has already rendered links, emphasis, embeds, and math. Preserve their rendered markup.
   for (;;) {
@@ -103,16 +115,18 @@ export async function processSidenotes(
     const match = original ? renderedMatch(text, original.data) : findSidenotes(text)[0]
     if (!match) return
     const range = rangeAt(nodes, match.from, match.to)
-    const contentRange = rangeAt(nodes, match.contentFrom, match.to - 2)
-    if (!range || !contentRange) return
     const parsed = sourceNotes.shift()?.data ?? match.data
+    const contentRange = parsed.reference
+      ? undefined
+      : rangeAt(nodes, match.contentFrom, match.to - 2)
+    if (!range || (!parsed.reference && !contentRange)) return
     const rendered = createSidenote(
       parsed,
       ++number,
       plugin,
       ctx.sourcePath,
       undefined,
-      contentRange.cloneContents(),
+      contentRange?.cloneContents(),
     )
     ctx.addChild(rendered.child)
     range.deleteContents()
@@ -122,6 +136,10 @@ export async function processSidenotes(
 }
 
 function renderedMatch(text: string, data: ParsedSidenote): SidenoteMatch | undefined {
+  if (data.reference) {
+    const from = text.indexOf(data.raw)
+    return from < 0 ? undefined : { from, to: from + data.raw.length, contentFrom: from, data }
+  }
   let from = text.indexOf(OPEN)
   if (from === -1) return
   for (;;) {

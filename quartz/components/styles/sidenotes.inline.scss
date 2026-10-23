@@ -163,7 +163,9 @@ $sidenote-enter-shift: 0.85rem;
     transform: translateY(-0.5rem);
   }
 
-  p {
+  p,
+  .sidenote-paragraph {
+    display: block;
     margin: 0.5rem 0;
 
     &:first-child {
@@ -246,6 +248,17 @@ $sidenote-enter-shift: 0.85rem;
 }
 
 @include media-query($mobile) {
+  .sidenote-content:not(.sidenote-inline) {
+    display: none !important;
+  }
+
+  .sidenote-content.sidenote-inline {
+    width: 100%;
+    font-size: $sidenote-inline-font-size-mobile;
+  }
+}
+
+.preview-container {
   .sidenote-content:not(.sidenote-inline) {
     display: none !important;
   }

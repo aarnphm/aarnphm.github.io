@@ -322,7 +322,17 @@ export function buildSidenoteHast(
       'data-sidenote-for': baseId,
       'aria-hidden': 'true',
     },
-    combinedContent.length > 0 ? combinedContent : [{ type: 'text', value: '' }],
+    combinedContent.length > 0
+      ? combinedContent.map(child => {
+          // A paragraph tag would close the prose paragraph containing this inline note.
+          if (!isHastElement(child) || child.tagName !== 'p') return child
+          return h(
+            'span.sidenote-paragraph',
+            { ...child.properties, role: 'paragraph' },
+            child.children,
+          )
+        })
+      : [{ type: 'text', value: '' }],
   )
 
   return [sidenoteElement, contentElement]

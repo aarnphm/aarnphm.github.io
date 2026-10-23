@@ -10,7 +10,9 @@
 
 // a listing's title moves to the margin and its caption keeps the number; where there is no margin
 // the caption reads the title, as without the apparatus
-article[data-fr-mode='inline'] .fr-group .fr-entry[data-fr-kind='listing'] {
+:is(article[data-fr-mode='inline'], .preview-container > .preview-inner)
+  .fr-group
+  .fr-entry[data-fr-kind='listing'] {
   > .fr-entry-label {
     display: none;
   }

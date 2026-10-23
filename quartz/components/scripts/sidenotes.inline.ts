@@ -114,7 +114,7 @@ class SidenoteManager {
   private lastBottomRight = 0
   private layoutMode: LayoutMode = 'inline'
 
-  constructor() {
+  constructor(private root: ParentNode = document) {
     this.initialize()
   }
 
@@ -151,9 +151,10 @@ class SidenoteManager {
   }
 
   private initialize() {
-    const sidenoteSpans = document.querySelectorAll<HTMLSpanElement>('.sidenote')
+    const sidenoteSpans = this.root.querySelectorAll<HTMLSpanElement>('.sidenote')
 
     sidenoteSpans.forEach(span => {
+      if (this.root === document && span.closest('.preview-container')) return
       const label = span.querySelector<HTMLSpanElement>('.sidenote-label')
       if (!label) return
 
@@ -320,7 +321,11 @@ class SidenoteManager {
 
       const forceInline =
         state.span.getAttribute('data-force-inline') === 'true' ||
-        Boolean(state.span.closest('.popover, .sidepanel-container, .stacked-content'))
+        Boolean(
+          state.span.closest(
+            '.popover, .sidepanel-container, .stacked-content, .preview-container',
+          ),
+        )
 
       if (this.layoutMode === 'inline' || forceInline) {
         this.positionInline(state)
@@ -344,14 +349,12 @@ let activeSidenotesCleanup: (() => void) | null = null
 function setupSidenotes() {
   activeSidenotesCleanup?.()
   activeSidenotesCleanup = null
-  if (!document.querySelector('.sidenote')) return
-  const manager = new SidenoteManager()
-  if (!manager.hasSidenotes()) return
-  manager.layout()
+  const manager = new SidenoteManager(document)
+  if (manager.hasSidenotes()) manager.layout()
 
   let destroyed = false
   const debouncedLayout = debounce(() => {
-    if (!destroyed) manager.layout()
+    if (!destroyed && manager.hasSidenotes()) manager.layout()
   }, 100)
 
   window.addEventListener('resize', debouncedLayout, { passive: true })
@@ -369,6 +372,25 @@ function setupSidenotes() {
     observer.observe(sidepanel, { attributes: true, attributeFilter: ['class'] })
   }
 
+  const previewCleanups: (() => void)[] = []
+  for (const preview of document.querySelectorAll<HTMLElement>('.preview-container')) {
+    let previewManager: SidenoteManager | null = null
+    const syncPreview = () => {
+      previewManager?.destroy()
+      previewManager = null
+      if (!preview.querySelector('.sidenote')) return
+      previewManager = new SidenoteManager(preview)
+      if (previewManager.hasSidenotes()) previewManager.layout()
+    }
+    const previewObserver = new MutationObserver(syncPreview)
+    previewObserver.observe(preview, { childList: true })
+    previewCleanups.push(() => {
+      previewObserver.disconnect()
+      previewManager?.destroy()
+    })
+    syncPreview()
+  }
+
   const cleanup = () => {
     if (destroyed) return
     destroyed = true
@@ -380,6 +402,7 @@ function setupSidenotes() {
       observer.disconnect()
       observer = null
     }
+    for (const cleanPreview of previewCleanups) cleanPreview()
     manager.destroy()
   }
   activeSidenotesCleanup = cleanup

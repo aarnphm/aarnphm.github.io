@@ -1,4 +1,4 @@
-import type { ParsedSidenote, SidenoteMatch, SidenoteProperties } from './types'
+import type { ParsedSidenote, SidenoteMatch, SidenoteProperties, SidenoteDefinition } from './types'
 
 const OPEN = '{{sidenotes'
 
@@ -14,21 +14,39 @@ function maskMarkdown(text: string): string {
 }
 
 export function findSidenotes(text: string): SidenoteMatch[] {
+  return parseSidenotes(text).matches
+}
+
+export function parseSidenotes(text: string): {
+  matches: SidenoteMatch[]
+  definitions: SidenoteDefinition[]
+} {
   const masked = maskMarkdown(text)
+  const definitions = readDefinitions(text, masked)
   const matches: SidenoteMatch[] = []
   let index = 0
   while (index < text.length) {
     const start = masked.indexOf(OPEN, index)
     if (start === -1) break
+    const definition = definitions.find(item => start >= item.from && start < item.to)
+    if (definition) {
+      index = definition.to
+      continue
+    }
     const parsed = parseAt(text, masked, start)
     if (parsed) {
+      if (parsed.data.reference) {
+        parsed.data.content =
+          definitions.find(item => item.label === parsed.data.label)?.content ??
+          '[Missing definition]'
+      }
       matches.push(parsed)
       index = parsed.to
     } else {
       index = start + OPEN.length
     }
   }
-  return matches
+  return { matches, definitions }
 }
 
 function parseAt(text: string, masked: string, start: number): SidenoteMatch | null {
@@ -54,6 +72,19 @@ function parseAt(text: string, masked: string, start: number): SidenoteMatch | n
     label = text.slice(labelStart, index - 1)
   }
 
+  if (label?.startsWith('^') && text.startsWith('}}', index)) {
+    return {
+      from: start,
+      to: index + 2,
+      contentFrom: index,
+      data: {
+        raw: text.slice(start, index + 2),
+        label: label.slice(1),
+        content: '',
+        reference: true,
+      },
+    }
+  }
   if (text[index] !== ':') return null
   index++
   const contentFrom = index
@@ -81,4 +112,36 @@ export function parseProperties(raw: string): SidenoteProperties {
     props[key] = wikilinks?.length ? wikilinks : value
   }
   return props
+}
+
+function readDefinitions(text: string, masked: string): SidenoteDefinition[] {
+  const definitions: SidenoteDefinition[] = []
+  const header = /^ {0,3}\{\{sidenotes\[([^\]\n]+)\]\}\}:[ \t]*\r?$/gm
+  let match: RegExpExecArray | null
+  while ((match = header.exec(masked))) {
+    let cursor = match.index + match[0].length + 1
+    let end = cursor
+    const lines: string[] = []
+    while (cursor < text.length) {
+      const newline = text.indexOf('\n', cursor)
+      const lineEnd = newline < 0 ? text.length : newline
+      const line = text.slice(cursor, lineEnd).replace(/\r$/, '')
+      if (line.trim() && !/^(?: {4}|\t)/.test(line)) break
+      lines.push(line.replace(/^(?: {4}|\t)/, ''))
+      if (line.trim()) end = lineEnd
+      cursor = lineEnd + 1
+    }
+    const content = lines.join('\n').trim()
+    if (!content) continue
+    definitions.push({
+      from: match.index,
+      to: end,
+      label: match[1],
+      content,
+      lineStart: text.slice(0, match.index).split('\n').length - 1,
+      lineEnd: text.slice(0, end).split('\n').length - 1,
+    })
+    header.lastIndex = end
+  }
+  return definitions
 }
