@@ -687,8 +687,9 @@
 
 [saved-theme='dark'] {
   // Theme tokens already flip, so --light is the dark ground and --dark the ink here.
+  --pdf-embed-line: color-mix(in srgb, var(--gray) 55%, transparent);
+
   .pdf-embed-toolbar {
-    --pdf-embed-line: color-mix(in srgb, var(--gray) 55%, transparent);
     background: var(--light);
     border-color: var(--pdf-embed-line);
   }
@@ -731,26 +732,38 @@
     filter: invert(0.88) hue-rotate(180deg);
   }
 
-  .pdf-annotation-card,
+  // Grounds come from the base rules; only the hairlines and sub-4.5:1 text need dark values.
   .pdf-annotation-rail,
-  .pdf-comment-composer,
-  .pdf-comment-editor-shell {
-    color: var(--light);
-    background: var(--dark);
+  .pdf-annotation-card,
+  .pdf-annotation-reply-composer .pdf-comment-editor-shell {
+    border-color: var(--pdf-embed-line);
+  }
+
+  .pdf-annotation-card.is-active {
+    border-color: var(--secondary);
+  }
+
+  .pdf-annotation-reply {
+    border-top-color: var(--pdf-embed-line);
+  }
+
+  .pdf-comment-composer {
     border-color: var(--darkgray);
   }
 
-  .pdf-comment-editor {
-    color: var(--light);
-  }
-
-  .pdf-annotation-quote {
-    color: var(--lightgray);
+  .pdf-annotation-meta,
+  .pdf-comment-placeholder {
+    color: var(--darkgray);
   }
 
   .pdf-annotation-action {
-    color: var(--light);
-    border-color: var(--darkgray);
+    color: var(--darkgray);
+    border-color: var(--pdf-embed-line);
+
+    &:hover {
+      color: var(--dark);
+      border-color: var(--secondary);
+    }
   }
 }
 
