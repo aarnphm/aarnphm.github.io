@@ -29,8 +29,21 @@
   align-items: stretch;
 }
 
+// Narrow frames scroll the drawing sideways rather than shrink its labels below reading size.
+.fat-scroll {
+  min-width: 0;
+  overflow-x: auto;
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
+}
+
 .fat-graph {
   width: 100%;
+  // Below 36rem the 12px labels outgrow their tiles and stack into each other.
+  min-width: 36rem;
   height: auto;
   aspect-ratio: 720 / 492;
   display: block;

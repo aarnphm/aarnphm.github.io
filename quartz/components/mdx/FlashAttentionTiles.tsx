@@ -85,157 +85,170 @@ const FlashAttentionTilesImpl: QuartzMdxComponent<Props> = ({ caption }) => {
     <figure class="flash-attention-tiles" data-flash-attention-tiles>
       <div class="fat-stage">
         <div>
-          <svg
-            class="fat-graph"
-            viewBox="0 0 720 492"
-            preserveAspectRatio="xMidYMid meet"
-            role="img"
-            aria-label="FlashAttention tiled streaming: HBM holds full Q, K, V, O matrices while SRAM holds the active Q_i, K_j, V_j tiles plus running stats m, l, O_i that the online softmax recurrence updates each step."
+          <div
+            class="fat-scroll"
+            tabindex={0}
+            role="region"
+            aria-label="FlashAttention tile diagram"
           >
-            <defs>
-              <marker
-                id={arrowId}
-                viewBox="0 0 10 10"
-                refX="9"
-                refY="5"
-                markerWidth="6"
-                markerHeight="6"
-                orient="auto-start-reverse"
-              >
-                <path class="fat-arrowhead is-active" d="M0,0 L10,5 L0,10 z" />
-              </marker>
-            </defs>
+            <svg
+              class="fat-graph"
+              viewBox="0 0 720 492"
+              preserveAspectRatio="xMidYMid meet"
+              role="img"
+              aria-label="FlashAttention tiled streaming: HBM holds full Q, K, V, O matrices while SRAM holds the active Q_i, K_j, V_j tiles plus running stats m, l, O_i that the online softmax recurrence updates each step."
+            >
+              <defs>
+                <marker
+                  id={arrowId}
+                  viewBox="0 0 10 10"
+                  refX="9"
+                  refY="5"
+                  markerWidth="6"
+                  markerHeight="6"
+                  orient="auto-start-reverse"
+                >
+                  <path class="fat-arrowhead is-active" d="M0,0 L10,5 L0,10 z" />
+                </marker>
+              </defs>
 
-            <foreignObject x={HbmCol - 35} y={4} width={92} height={14}>
-              <div
-                class="fat-fo fat-fo--axis"
-                dangerouslySetInnerHTML={{ __html: tex('\\mathrm{HBM}') }}
-              />
-            </foreignObject>
-            <foreignObject x={HbmCol - 50} y={18} width={120} height={12}>
-              <div
-                class="fat-fo fat-fo--sublabel"
-                dangerouslySetInnerHTML={{ __html: tex('\\text{slow, full }L{\\times}d') }}
-              />
-            </foreignObject>
-            <foreignObject x={SRAM_X + SRAM_W / 2 - 46} y={4} width={92} height={14}>
-              <div
-                class="fat-fo fat-fo--axis"
-                dangerouslySetInnerHTML={{ __html: tex('\\mathrm{SRAM}') }}
-              />
-            </foreignObject>
-            <foreignObject x={SRAM_X + SRAM_W / 2 - 70} y={18} width={140} height={12}>
-              <div
-                class="fat-fo fat-fo--sublabel"
-                dangerouslySetInnerHTML={{
-                  __html: tex('\\text{fast, }B_m{\\cdot}B_n\\text{ on-chip}'),
-                }}
-              />
-            </foreignObject>
-
-            <rect class="fat-sram-panel" x={SRAM_X} y={PANEL_TOP} width={SRAM_W} height={PANEL_H} />
-
-            {BLOCKS.map((b, idx) => {
-              const top = blockTop(idx)
-              return (
-                <g class="fat-hbm-block" data-fat-block={b.id}>
-                  <foreignObject
-                    x={HBM_X - 6}
-                    y={top + BLOCK_H / 2 - 9}
-                    width={HBM_LABEL_W}
-                    height={18}
-                  >
-                    <div
-                      class="fat-fo fat-fo--block-label"
-                      dangerouslySetInnerHTML={{ __html: tex(b.label) }}
-                    />
-                  </foreignObject>
-                  {Array.from({ length: SEQ_LEN }, (_, i) => (
-                    <rect
-                      class="fat-cell"
-                      x={HbmCol}
-                      y={top + i * HBM_CELL}
-                      width={HBM_CELL}
-                      height={HBM_CELL}
-                      {...{ [b.attr]: i }}
-                    />
-                  ))}
-                  <foreignObject x={HbmCol - 20} y={top + BLOCK_H + 4} width={60} height={12}>
-                    <div
-                      class="fat-fo fat-fo--sublabel"
-                      dangerouslySetInnerHTML={{ __html: tex(`${SEQ_LEN}{\\times}d`) }}
-                    />
-                  </foreignObject>
-                </g>
-              )
-            })}
-
-            {SRAM_TILES.map((t, idx) => {
-              const y = sramTop(idx)
-              return (
-                <g>
-                  <rect
-                    class="fat-cell is-active"
-                    x={SRAM_LEFT}
-                    y={y}
-                    width={SRAM_INNER}
-                    height={SRAM_TILE_H}
-                    aria-label={t.aria}
-                  />
-                  <foreignObject x={SRAM_LEFT} y={y} width={SRAM_INNER} height={SRAM_TILE_H}>
-                    <div
-                      class="fat-fo fat-fo--tile"
-                      {...{ [t.attr]: '' }}
-                      dangerouslySetInnerHTML={{ __html: tex(t.label) }}
-                    />
-                  </foreignObject>
-                </g>
-              )
-            })}
-
-            <g>
-              <rect
-                class="fat-cell is-active"
-                x={SRAM_LEFT}
-                y={sramTop(3)}
-                width={SRAM_INNER}
-                height={SRAM_TILE_H}
-                aria-label="online-softmax stats in SRAM"
-              />
-              <foreignObject x={SRAM_LEFT} y={sramTop(3)} width={SRAM_INNER} height={SRAM_TILE_H}>
+              <foreignObject x={HbmCol - 35} y={4} width={92} height={14}>
                 <div
-                  class="fat-fo"
-                  dangerouslySetInnerHTML={{ __html: tex('m_i,\\, l_i,\\, O_i') }}
+                  class="fat-fo fat-fo--axis"
+                  dangerouslySetInnerHTML={{ __html: tex('\\mathrm{HBM}') }}
                 />
               </foreignObject>
-            </g>
-
-            {BLOCKS.map((_, idx) => {
-              const fy = blockTop(idx) + BLOCK_H / 2
-              const ty = sramTop(idx) + SRAM_TILE_H / 2
-              const mx = (HbmCol + HBM_CELL + SRAM_LEFT) / 2
-              return (
-                <path
-                  class="fat-arrow"
-                  data-fat-arrow
-                  d={`M ${HbmCol + HBM_CELL} ${fy} C ${mx} ${fy}, ${mx} ${ty}, ${SRAM_LEFT} ${ty}`}
-                  marker-end={`url(#${arrowId})`}
+              <foreignObject x={HbmCol - 50} y={18} width={120} height={12}>
+                <div
+                  class="fat-fo fat-fo--sublabel"
+                  dangerouslySetInnerHTML={{ __html: tex('\\text{slow, full }L{\\times}d') }}
                 />
-              )
-            })}
+              </foreignObject>
+              <foreignObject x={SRAM_X + SRAM_W / 2 - 46} y={4} width={92} height={14}>
+                <div
+                  class="fat-fo fat-fo--axis"
+                  dangerouslySetInnerHTML={{ __html: tex('\\mathrm{SRAM}') }}
+                />
+              </foreignObject>
+              <foreignObject x={SRAM_X + SRAM_W / 2 - 70} y={18} width={140} height={12}>
+                <div
+                  class="fat-fo fat-fo--sublabel"
+                  dangerouslySetInnerHTML={{
+                    __html: tex('\\text{fast, }B_m{\\cdot}B_n\\text{ on-chip}'),
+                  }}
+                />
+              </foreignObject>
 
-            {/* Wide enough for the loop order on one line at the meta size. */}
-            <foreignObject x={110} y={428} width={510} height={22}>
-              <div
-                class="fat-fo fat-fo--caption-line"
-                dangerouslySetInnerHTML={{
-                  __html: tex(
-                    '\\text{outer: }K,V\\text{ tiles; inner: }Q\\text{ tiles; online softmax accumulates}',
-                  ),
-                }}
+              <rect
+                class="fat-sram-panel"
+                x={SRAM_X}
+                y={PANEL_TOP}
+                width={SRAM_W}
+                height={PANEL_H}
               />
-            </foreignObject>
-          </svg>
+
+              {BLOCKS.map((b, idx) => {
+                const top = blockTop(idx)
+                return (
+                  <g class="fat-hbm-block" data-fat-block={b.id}>
+                    <foreignObject
+                      x={HBM_X - 6}
+                      y={top + BLOCK_H / 2 - 9}
+                      width={HBM_LABEL_W}
+                      height={18}
+                    >
+                      <div
+                        class="fat-fo fat-fo--block-label"
+                        dangerouslySetInnerHTML={{ __html: tex(b.label) }}
+                      />
+                    </foreignObject>
+                    {Array.from({ length: SEQ_LEN }, (_, i) => (
+                      <rect
+                        class="fat-cell"
+                        x={HbmCol}
+                        y={top + i * HBM_CELL}
+                        width={HBM_CELL}
+                        height={HBM_CELL}
+                        {...{ [b.attr]: i }}
+                      />
+                    ))}
+                    <foreignObject x={HbmCol - 20} y={top + BLOCK_H + 4} width={60} height={12}>
+                      <div
+                        class="fat-fo fat-fo--sublabel"
+                        dangerouslySetInnerHTML={{ __html: tex(`${SEQ_LEN}{\\times}d`) }}
+                      />
+                    </foreignObject>
+                  </g>
+                )
+              })}
+
+              {SRAM_TILES.map((t, idx) => {
+                const y = sramTop(idx)
+                return (
+                  <g>
+                    <rect
+                      class="fat-cell is-active"
+                      x={SRAM_LEFT}
+                      y={y}
+                      width={SRAM_INNER}
+                      height={SRAM_TILE_H}
+                      aria-label={t.aria}
+                    />
+                    <foreignObject x={SRAM_LEFT} y={y} width={SRAM_INNER} height={SRAM_TILE_H}>
+                      <div
+                        class="fat-fo fat-fo--tile"
+                        {...{ [t.attr]: '' }}
+                        dangerouslySetInnerHTML={{ __html: tex(t.label) }}
+                      />
+                    </foreignObject>
+                  </g>
+                )
+              })}
+
+              <g>
+                <rect
+                  class="fat-cell is-active"
+                  x={SRAM_LEFT}
+                  y={sramTop(3)}
+                  width={SRAM_INNER}
+                  height={SRAM_TILE_H}
+                  aria-label="online-softmax stats in SRAM"
+                />
+                <foreignObject x={SRAM_LEFT} y={sramTop(3)} width={SRAM_INNER} height={SRAM_TILE_H}>
+                  <div
+                    class="fat-fo"
+                    dangerouslySetInnerHTML={{ __html: tex('m_i,\\, l_i,\\, O_i') }}
+                  />
+                </foreignObject>
+              </g>
+
+              {BLOCKS.map((_, idx) => {
+                const fy = blockTop(idx) + BLOCK_H / 2
+                const ty = sramTop(idx) + SRAM_TILE_H / 2
+                const mx = (HbmCol + HBM_CELL + SRAM_LEFT) / 2
+                return (
+                  <path
+                    class="fat-arrow"
+                    data-fat-arrow
+                    d={`M ${HbmCol + HBM_CELL} ${fy} C ${mx} ${fy}, ${mx} ${ty}, ${SRAM_LEFT} ${ty}`}
+                    marker-end={`url(#${arrowId})`}
+                  />
+                )
+              })}
+
+              {/* Wide enough for the loop order on one line at the meta size. */}
+              <foreignObject x={110} y={428} width={510} height={22}>
+                <div
+                  class="fat-fo fat-fo--caption-line"
+                  dangerouslySetInnerHTML={{
+                    __html: tex(
+                      '\\text{outer: }K,V\\text{ tiles; inner: }Q\\text{ tiles; online softmax accumulates}',
+                    ),
+                  }}
+                />
+              </foreignObject>
+            </svg>
+          </div>
 
           <div class="fat-controls">
             <button type="button" class="fat-button" data-fat-prev aria-label="Previous tile step">

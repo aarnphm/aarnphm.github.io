@@ -72,8 +72,9 @@
   display: none;
 }
 
-// block-diagram.inline.ts gives each svg a minimum width; narrow frames scroll the step sideways.
-.bd-step {
+// block-diagram.inline.ts gives each svg a minimum width and wraps it in this scroller; narrow
+// frames scroll the drawing sideways.
+.bd-scroll {
   overflow-x: auto;
 
   &:focus-visible {

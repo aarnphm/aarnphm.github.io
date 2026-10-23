@@ -23,13 +23,22 @@ const setupBlockDiagram = (root: HTMLElement): (() => void) => {
 }
 
 // Labels hold their px size while blocks shrink with the svg, so below about its viewBox width the
-// labels outgrow their blocks; the step scrolls sideways instead.
+// labels outgrow their blocks. The svg keeps a minimum width inside its own scroller, which leaves
+// the step text at the frame width.
 const MIN_PX_PER_UNIT = 1.1
+
+const holdMinWidth = (svg: SVGSVGElement) => {
+  svg.style.minWidth = `${Math.ceil(svg.viewBox.baseVal.width * MIN_PX_PER_UNIT)}px`
+  if (svg.parentElement?.classList.contains('bd-scroll')) return
+  const scroller = document.createElement('div')
+  scroller.className = 'bd-scroll'
+  svg.before(scroller)
+  scroller.append(svg)
+}
 
 registerMdxContent(ROOT_SELECTOR, root => {
   window.addCleanup?.(setupBlockDiagram(root))
   const svgs = root.querySelectorAll<SVGSVGElement>('.bd-svg')
-  for (const svg of svgs)
-    svg.style.minWidth = `${Math.ceil(svg.viewBox.baseVal.width * MIN_PX_PER_UNIT)}px`
+  for (const svg of svgs) holdMinWidth(svg)
   window.addCleanup?.(observeSvgScale(svgs, '--bd-u'))
 })
