@@ -193,26 +193,9 @@ figure.tikz {
   }
 
   .source-code-button {
+    position: relative;
     color: inherit;
-    float: right;
-
-    .source-icon {
-      display: inline;
-    }
-
-    .check-icon {
-      display: none;
-    }
-
-    &.check {
-      .source-icon {
-        display: none;
-      }
-
-      .check-icon {
-        display: inline;
-      }
-    }
+    opacity: 1;
   }
 }
 

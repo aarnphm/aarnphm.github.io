@@ -72,7 +72,7 @@
   }
 
   // Dark mode support
-  :global([saved-theme='dark']) & > #shortcut-container > #shortcut-space {
+  [saved-theme='dark'] & > #shortcut-container > #shortcut-space {
     background: var(--dark);
     border-color: var(--darkgray);
 

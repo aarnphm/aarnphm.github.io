@@ -17,7 +17,12 @@ export function imageSimilarityButton(
   button.type = 'button'
   button.className = 'image-similar-button'
   const scored = similarity !== undefined && Number.isFinite(similarity)
-  button.textContent = scored ? `${(similarity * 100).toFixed(1)}%` : 'similar images'
+  if (scored) button.textContent = similarity.toFixed(3)
+  else {
+    button.classList.add('image-similar-button-icon')
+    button.innerHTML =
+      '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="0.9" aria-hidden="true"><rect x="6" y="6" width="11" height="11"/><path d="M3 13H2V2h11v1M8 14l3-3 4 4"/><circle cx="13" cy="9" r="1"/></svg>'
+  }
   button.title = scored
     ? `Cosine similarity: ${similarity.toFixed(3)}. Find similar images`
     : 'Find similar images'
@@ -44,13 +49,6 @@ export function imageSearchRow(
   thumbnail.loading = 'lazy'
   thumbnail.decoding = 'async'
   anchor.prepend(thumbnail)
-  if (similarity !== undefined && Number.isFinite(similarity)) {
-    const score = document.createElement('span')
-    score.className = 'result-likelihood'
-    score.title = 'cosine similarity'
-    score.textContent = similarity.toFixed(3)
-    anchor.append(score)
-  }
   row.append(anchor, imageSimilarityButton(slug, onSelect, similarity))
   return row
 }
