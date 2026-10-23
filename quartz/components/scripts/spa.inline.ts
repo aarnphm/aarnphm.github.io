@@ -33,14 +33,12 @@ import {
   STREAM_HOSTNAME,
   streamHostUrl,
 } from '../../util/stream-host'
-import { readTrailPreference } from '../../util/trail-preference'
 import {
   triathlonApexRedirectUrl,
   triathlonHostLinkUrl,
   TRIATHLON_HOSTNAME,
 } from '../../util/triathlon-host'
 import { triathlonPreviewTarget } from '../../util/triathlon-preview'
-import { preloadHomepageTrail } from './homepage-trail-preload'
 import { loadPageStyles } from './page-styles'
 import { cleanupHydratedRoot } from './root-lifecycle'
 import { Toast } from './toast'
@@ -1108,7 +1106,6 @@ async function navigate(
   const html = p.parseFromString(contents, 'text/html')
   normalizeRelativeURLs(html, url)
   transformHostInternalLinks(html)
-  preloadHomepageTrail(html, url)
   // Link the page-scoped sheets the new body uses while the old page still shows; a stalled
   // sheet only delays navigation.
   await Promise.race([loadPageStyles(html.body), new Promise(resolve => setTimeout(resolve, 2000))])
@@ -1178,7 +1175,6 @@ document.addEventListener('nav', () => {
   activeRouterNavCleanup = null
   transformHostInternalLinks(document)
   const controller = new AbortController()
-  let warmingHome = false
   let hoverPrefetchTimer = 0
   const clearHoverPrefetch = () => {
     if (hoverPrefetchTimer !== 0) {
@@ -1195,19 +1191,6 @@ document.addEventListener('nav', () => {
       hoverPrefetchTimer = 0
       prefetchCanonical(url)
     }, 45)
-    if (warmingHome || getFullSlug(window) === 'index' || !readTrailPreference()) return
-    if (!['/', '/index', '/index.html'].includes(url.pathname)) return
-    warmingHome = true
-    void fetchCanonical(url, { signal: controller.signal })
-      .then(response => response.text())
-      .then(contents => {
-        if (controller.signal.aborted) return
-        p = p || new DOMParser()
-        preloadHomepageTrail(p.parseFromString(contents, 'text/html'), url)
-      })
-      .catch(() => {
-        warmingHome = false
-      })
   }
   const onPointerDown = (event: PointerEvent) => {
     if (event.button !== 0 || event.ctrlKey || event.metaKey || event.altKey || event.shiftKey) {

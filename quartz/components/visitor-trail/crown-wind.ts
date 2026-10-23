@@ -97,13 +97,10 @@ export function mountCrownWind(scene: HTMLElement, signal: AbortSignal, tuning: 
       cluster.flipped = false
     }
   }
-  const windy = () =>
-    tuning.wind > 0 &&
-    scene.dataset.weatherWindy === 'true' &&
-    scene.dataset.trailVisible === 'true' &&
-    !motion.matches
+  const windy = () => tuning.wind > 0 && scene.dataset.weatherWindy === 'true' && !motion.matches
   const running = () =>
     windy() &&
+    scene.dataset.trailVisible === 'true' &&
     scene.dataset.weatherMotion !== 'paused' &&
     !document.hidden &&
     scene.dataset.trailOpening !== 'pending'

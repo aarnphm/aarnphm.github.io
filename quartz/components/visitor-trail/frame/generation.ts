@@ -171,7 +171,7 @@ export function createFrameGeneration(context: Context) {
   }
   const drawScene = async () => {
     await styleReady
-    if (signal.aborted || document.hidden || !scene.isConnected) return
+    if (signal.aborted || document.hidden || host.hidden || !scene.isConnected) return
     const mode = scene.clientWidth < 700 ? 'narrow' : 'wide'
     const world =
       retainedSeed === sceneSeed && host.dataset.trailWorld === mode

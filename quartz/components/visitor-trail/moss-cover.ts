@@ -34,6 +34,8 @@ export function mountMossCover(scene: HTMLElement, host: HTMLElement, signal: Ab
   let tones = new Map<string, Uint8Array>()
   let top = 0
   let palette: Uint8ClampedArray[] = []
+  let paletteSamples: HTMLElement[] = []
+  let paletteFrame = 0
   let pendingHits: { id: string; x: number; y: number; radius: number }[] = []
   let hitFlush = 0
   let hits = 0
@@ -107,14 +109,12 @@ export function mountMossCover(scene: HTMLElement, host: HTMLElement, signal: Ab
   const readPalette = () => {
     const surface = canvas
     if (!surface || !probeContext) return
-    palette = Array.from({ length: mossTones }, (_, index) => {
-      surface.style.color = `var(--trail-moss-${index + 1})`
-      probeContext.fillStyle = view.getComputedStyle(surface).color
+    palette = paletteSamples.map(sample => {
+      probeContext.fillStyle = view.getComputedStyle(sample).color
       probeContext.clearRect(0, 0, 1, 1)
       probeContext.fillRect(0, 0, 1, 1)
       return probeContext.getImageData(0, 0, 1, 1).data
     })
-    surface.style.removeProperty('color')
   }
   const startWorker = () => {
     if (worker) return
@@ -162,6 +162,8 @@ export function mountMossCover(scene: HTMLElement, host: HTMLElement, signal: Ab
     send({ type: 'climate', growth: climate.growth, lean: climate.lean })
   }
   const clear = () => {
+    view.cancelAnimationFrame(paletteFrame)
+    paletteFrame = 0
     send({ type: 'clear' })
     clumps = new Map()
     tones = new Map()
@@ -170,6 +172,7 @@ export function mountMossCover(scene: HTMLElement, host: HTMLElement, signal: Ab
     frame = null
     canvas = null
     context = null
+    paletteSamples = []
   }
   // Boot prints arrive as footprint paths appended to the track layers.
   const trample = (x: number, y: number) => {
@@ -279,7 +282,14 @@ export function mountMossCover(scene: HTMLElement, host: HTMLElement, signal: Ab
     canvas.height = rows
     canvas.className = 'trail-moss'
     context = canvas.getContext('2d')
-    frame.append(canvas)
+    // Resolve all tones without interleaving style writes and reads on the live surface.
+    paletteSamples = Array.from({ length: mossTones }, (_, index) => {
+      const sample = document.createElement('span')
+      sample.hidden = true
+      sample.style.color = `var(--trail-moss-${index + 1})`
+      return sample
+    })
+    frame.append(canvas, ...paletteSamples)
     layer.append(frame)
     readPalette()
     for (const clump of plan(landscape, trees, walks)) {
@@ -301,9 +311,15 @@ export function mountMossCover(scene: HTMLElement, host: HTMLElement, signal: Ab
     if (!host.hidden && !document.hidden) send({ type: 'resume' })
   }
   const restyle = () => {
-    if (!canvas) return
-    readPalette()
-    repaint()
+    if (!canvas || paletteFrame) return
+    // Theme listeners still have scene writes to make. Resolve their final palette together
+    // on the rendering frame, without forcing layout inside the view-transition callback.
+    paletteFrame = view.requestAnimationFrame(() => {
+      paletteFrame = 0
+      if (!canvas) return
+      readPalette()
+      repaint()
+    })
   }
   const reweather = () => {
     if (!readClimate()) return
@@ -311,8 +327,14 @@ export function mountMossCover(scene: HTMLElement, host: HTMLElement, signal: Ab
     if (canvas) repaint()
   }
   document.addEventListener('themechange', restyle, { signal })
-  const seasons = new view.MutationObserver(restyle)
-  seasons.observe(scene, { attributes: true, attributeFilter: ['data-foliage-season'] })
+  const seasons = new view.MutationObserver(records => {
+    if (records.some(record => record.oldValue !== scene.dataset.foliageSeason)) restyle()
+  })
+  seasons.observe(scene, {
+    attributes: true,
+    attributeOldValue: true,
+    attributeFilter: ['data-foliage-season'],
+  })
   const weather = new view.MutationObserver(reweather)
   weather.observe(scene, { attributes: true, attributeFilter: ['data-moss'] })
   readClimate()
@@ -326,6 +348,7 @@ export function mountMossCover(scene: HTMLElement, host: HTMLElement, signal: Ab
       seasons.disconnect()
       weather.disconnect()
       view.clearTimeout(hitFlush)
+      view.cancelAnimationFrame(paletteFrame)
       stopWorker()
     },
     { once: true },

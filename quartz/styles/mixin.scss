@@ -265,7 +265,7 @@
 }
 
 @mixin trailPanel {
-  --trail-panel-top: max(1rem, env(safe-area-inset-top));
+  --trail-panel-top: max(7vh, 1rem, env(safe-area-inset-top));
   --trail-panel-right: max(1rem, env(safe-area-inset-right));
   --trail-panel-left: max(1rem, env(safe-area-inset-left));
   --trail-panel-bottom: max(1rem, env(safe-area-inset-bottom));
@@ -274,7 +274,7 @@
   width: min(44rem, calc(100% - var(--trail-panel-left) - var(--trail-panel-right)));
   max-width: none;
   max-height: var(--trail-panel-height);
-  margin: var(--trail-panel-top) var(--trail-panel-right) 0 auto;
+  margin: var(--trail-panel-top) auto 0;
 }
 
 @mixin steps {

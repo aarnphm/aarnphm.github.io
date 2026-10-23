@@ -58,16 +58,16 @@ export function mountHomepageTheme(signal: AbortSignal) {
     const followsScene = Boolean(host && !host.hidden && surface)
     const opening = followsScene && scene?.dataset.trailOpening !== 'complete'
     const gpu = followsScene && scene?.dataset.trailRenderer === 'webgl'
-    const rect = followsScene ? surface?.getBoundingClientRect() : undefined
-    const clock = trailRevealOrigin(document)
     const radius = Number(scene?.dataset.trailOpeningRadius)
+    // The trail surface is fixed at the viewport origin. Its layout already measured the
+    // reveal center; reading geometry here would flush the sky update's pending styles.
     const origin =
-      (opening || gpu) && rect && scene && radius > 0
+      (opening || gpu) && scene && radius > 0
         ? {
-            x: Number(scene.dataset.trailOpeningOriginX) + rect.left,
-            y: Number(scene.dataset.trailOpeningOriginY) + rect.top,
+            x: Number(scene.dataset.trailOpeningOriginX),
+            y: Number(scene.dataset.trailOpeningOriginY),
           }
-        : clock
+        : trailRevealOrigin(document)
     const clip = createTrailRevealClip(
       window.innerWidth,
       window.innerHeight,
@@ -76,7 +76,8 @@ export function mountHomepageTheme(signal: AbortSignal) {
     )
 
     const style = document.createElement('style')
-    style.textContent = ':root[data-home-theme-reveal]::view-transition-old(root) {}'
+    style.textContent =
+      ':root:active-view-transition-type(homepage-theme)::view-transition-old(root) {}'
     document.head.append(style)
     const rule = style.sheet?.cssRules[0]
     if (!(rule instanceof CSSStyleRule)) {
@@ -90,6 +91,7 @@ export function mountHomepageTheme(signal: AbortSignal) {
     draw(0)
     if (gpu && scene && !opening) scene.dataset.trailThemeStarted = String(performance.now())
     root.dataset.homeThemeReveal = 'pending'
+    document.body.dataset.homeThemeFreeze = ''
     let frame = 0
     let finished = false
     let seenScene = false
@@ -108,11 +110,14 @@ export function mountHomepageTheme(signal: AbortSignal) {
       })
     const request = { theme, update }
     pending = request
-    const transition = document.startViewTransition(() => {
-      if (current === generation && !signal.aborted) {
-        pending = null
-        request.update()
-      }
+    const transition = document.startViewTransition({
+      types: ['homepage-theme'],
+      update: () => {
+        if (current === generation && !signal.aborted) {
+          pending = null
+          request.update()
+        }
+      },
     })
     const cleanup = () => {
       if (finished) return
@@ -126,6 +131,7 @@ export function mountHomepageTheme(signal: AbortSignal) {
         pending = null
         if (scene) delete scene.dataset.trailThemeStarted
         delete root.dataset.homeThemeReveal
+        delete document.body.dataset.homeThemeFreeze
         cancel = () => {}
       }
     }

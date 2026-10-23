@@ -95,7 +95,8 @@ export function createLoadCoverage(scope: Scope, gpu: Gpu, raster: Raster) {
     )
     filter()
   }
-  const paintPriority = (target: Run | Group) => {
+  const priorities = new WeakMap<Run | Group, { revision: number; value: number }>()
+  const rank = (target: Run | Group) => {
     const owner = target.kind === 'group' ? target : target.owner
     if (target.kind === 'group' || owner.element.closest('.trail-paper, .trail-ground-base'))
       return -Infinity
@@ -110,6 +111,15 @@ export function createLoadCoverage(scope: Scope, gpu: Gpu, raster: Raster) {
     return -(ground
       ? Number(ground.dataset.groundY) * shared.resolution
       : (paintBounds(target)?.bottom ?? -Infinity))
+  }
+  const paintPriority = (target: Run | Group) => {
+    const known = priorities.get(target)
+    if (known?.revision === shared.revision) return known.value
+    // A palette sweep keeps its layout. Resolve each layer's ancestor-based order once;
+    // changing pixels and animation transforms still update coverage on every frame.
+    const value = rank(target)
+    priorities.set(target, { revision: shared.revision, value })
+    return value
   }
   const coverageCeiling = () => {
     const origin = opening.origin()

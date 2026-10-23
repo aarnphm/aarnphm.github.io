@@ -12,14 +12,14 @@ body[data-slug='index'] {
   }
 }
 
-:root[data-home-theme-reveal] {
-  body,
-  body *,
-  body *::before,
-  body *::after {
-    transition: none !important;
-  }
+body[data-home-theme-freeze],
+body[data-home-theme-freeze] *,
+body[data-home-theme-freeze] *::before,
+body[data-home-theme-freeze] *::after {
+  transition: none !important;
+}
 
+:root:active-view-transition-type(homepage-theme) {
   &::view-transition-group(root),
   &::view-transition-new(root),
   &::view-transition-old(root) {

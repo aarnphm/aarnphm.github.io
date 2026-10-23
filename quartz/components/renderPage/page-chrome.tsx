@@ -190,7 +190,6 @@ export const ElementComponent = ((enableRecents: boolean = false) => {
             <AliasLink isInternal enablePopover={false} name="notes" url="/thoughts/" />
             <AliasLink isInternal enablePopover={false} name="writings" url="/posts/" />
             <AliasLink isInternal enablePopover={false} name="colophon" url="/colophon" />
-            <AliasLink isInternal enablePopover={false} name="friends" url="/friends" />
           </div>
         </section>,
       ],

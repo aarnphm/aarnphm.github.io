@@ -108,7 +108,6 @@ export default (() => {
         >
           <iframe
             data-trail-frame
-            data-trail-src={source}
             srcDoc={`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="style-src 'self' 'unsafe-inline'"><title>Shared trail</title></head><body><script src="${source}"></script></body></html>`}
             title="Trail connection"
             hidden
