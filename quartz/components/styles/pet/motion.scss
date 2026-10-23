@@ -305,15 +305,8 @@
 }
 
 // Saying the phrase the French voice is reading: the mouth opens and closes in turn.
-.pet-svg[data-pet-state='talk'] {
-  [data-part='mouth-o'],
-  [data-part='mouth-smile'] {
-    animation: pet-swap 0.34s step-end infinite;
-  }
-
-  [data-part='mouth-smile'] {
-    animation-delay: -0.17s;
-  }
+.pet-svg[data-pet-state='talk'] [data-part='mouth-o'] {
+  animation: pet-swap 0.34s step-end infinite;
 }
 
 // Reading a sidenote from on top of it: eyes down on the text, a thought ticking over.

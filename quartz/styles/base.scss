@@ -83,8 +83,11 @@
   display: initial !important;
 }
 
+// A formula too wide to wrap scrolls in place. An inline-block scroll container sits on its
+// bottom edge and lifts the math off the text baseline; inline-flex takes the baseline from
+// .katex-html, which still wraps between atoms.
 :is(p, li) > .katex {
-  display: inline-block;
+  display: inline-flex;
   max-inline-size: 100%;
   overflow-x: auto;
   overflow-y: hidden;

@@ -115,6 +115,56 @@ export function eye(x: number, base: number, ink: string): string {
 // Where the eyes rest, as in aarnphm's sketch: both shifted left of centre.
 export const EYES = [-0.6, 0.24] as const
 
+// A chunky pill eye as blobatar draws them (blobatar.dev): a straight stroke `h` tall and `w` wide
+// with round caps, its top leaning left of its foot by `lean` of its height, the width swelling by a
+// seeded hair so it stays a pen mark. Centred at (x, y). Comment avatars share it.
+export function pillEye(
+  x: number,
+  y: number,
+  h: number,
+  w: number,
+  lean = 0.2,
+  seed = 0,
+  ink = INK,
+): string {
+  const wave = drift(seed + 70, [2, 5])
+  const pts: Pt[] = Array.from({ length: 13 }, (_, i) => {
+    const t = i / 12
+    return [x + lean * h * (t - 0.5), y + h * (t - 0.5)] as const
+  })
+  return stroke(pts, t => w * (1 + 0.06 * wave(t * 4)), ink)
+}
+
+// The same eye smiling, as blobatar's happy pose: a short bar `len` long and `w` thick with round
+// caps, its right end raised by `rise` of its length (both eyes lean the same way). Centred at (x, y).
+export function happyEye(
+  x: number,
+  y: number,
+  len: number,
+  w: number,
+  rise = 0.14,
+  seed = 0,
+  ink = INK,
+): string {
+  const wave = drift(seed + 80, [2, 5])
+  const pts: Pt[] = Array.from({ length: 9 }, (_, i) => {
+    const t = i / 8
+    return [x + len * (t - 0.5), y - rise * len * (t - 0.5)] as const
+  })
+  return stroke(pts, t => w * (1 + 0.06 * wave(t * 4)), ink)
+}
+
+// A hand loop pulled toward a rounded square: `square` 0 is loop(), 1 a soft squircle. The pull is
+// a superellipse factor on the radius, so the loop's wobble and overrun stay.
+export function blob(seed: number, square = 0.25, wobble = 0.06, overrun = 0.03, n = 220): Pt[] {
+  const p = 2 + 2 * square
+  return loop(seed, wobble, overrun, n).map(([x, y]) => {
+    const a = Math.atan2(y, x)
+    const f = (Math.abs(Math.cos(a)) ** p + Math.abs(Math.sin(a)) ** p) ** (-1 / p)
+    return [x * f, y * f] as const
+  })
+}
+
 // A quadratic curve from `a` to `b` pulled toward `c`, as `n + 1` points.
 export const curve = (a: Pt, c: Pt, b: Pt, n = 12): Pt[] =>
   Array.from({ length: n + 1 }, (_, i) => {

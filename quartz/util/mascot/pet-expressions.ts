@@ -1,10 +1,9 @@
 import {
-  curve,
   densify,
   even,
-  eye,
   EYES,
-  hand,
+  happyEye,
+  pillEye,
   part,
   poly,
   pressure,
@@ -17,7 +16,18 @@ export function petFace(s: PetPen) {
   const { L, paper, ink, pen } = s
   const dash = part(
     'eyes-dash',
-    EYES.map(x => `<g class="pet-eye">${eye(x, L * 1.7, ink)}</g>`).join(''),
+    EYES.map(
+      (x, i) => `<g class="pet-eye">${pillEye(x, -0.22, 0.48, L * 2.1, 0.2, i, ink)}</g>`,
+    ).join(''),
+  )
+  // Smiling with its eyes, as blobatar does: each pill squashed to a short bar 1.7 times as wide and
+  // 0.3 times as tall, lifted and pushed a little apart, both leaning the same way.
+  const happy = part(
+    'eyes-happy',
+    EYES.map(
+      (x, i) =>
+        `<g class="pet-eye">${happyEye(x + (i ? 0.045 : -0.045), -0.265, 0.29, 0.145, 0.14, i, ink)}</g>`,
+    ).join(''),
   )
   const wide = part(
     'eyes-wide',
@@ -53,14 +63,6 @@ export function petFace(s: PetPen) {
 
   const mx = (EYES[0] + EYES[1]) / 2
   const mouthO = part('mouth-o', pen(ring(31, mx, 0.22, 0.09), pressure(33, L * 0.95, 0.25)))
-  // One stroke, thin where the pen lands and lifts, wide enough to read at the pet's size.
-  const smile = part(
-    'mouth-smile',
-    pen(
-      hand(curve([mx - 0.2, 0.1], [mx, 0.36], [mx + 0.2, 0.1], 14), 0.03, 0.004, 34),
-      pressure(35, L * 1.1, 0.15),
-    ),
-  )
 
   const sweat = part(
     'sweat',
@@ -114,5 +116,5 @@ export function petFace(s: PetPen) {
         .map(x => `<circle class="pet-dot" cx="${x}" cy="-2.2" r="0.08" style="fill:${ink}"/>`)
         .join(''),
   )
-  return { dash, wide, wince, mouthO, smile, sweat, dots, thought }
+  return { dash, happy, wide, wince, mouthO, sweat, dots, thought }
 }

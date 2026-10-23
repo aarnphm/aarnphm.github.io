@@ -2,7 +2,7 @@ const onClickGenerator = (button: HTMLButtonElement, source: string) => {
   return function onClick() {
     navigator.clipboard.writeText(source).then(
       () => {
-        button.blur()
+        if (!button.matches(':focus-visible')) button.blur()
         button.classList.add('check')
         setTimeout(() => {
           button.style.borderColor = ''

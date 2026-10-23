@@ -209,7 +209,8 @@
       [data-pet-state='think'],
       [data-pet-state='wave']
     ):not([data-pet-kind='hang']) {
-    [data-part='eyes-dash'] {
+    [data-part='eyes-dash'],
+    [data-part='eyes-happy'] {
       animation: pet-storm-open-eyes 11s step-end infinite;
     }
 

@@ -91,13 +91,16 @@ const legs = [
   ['.....L.....L.....', '....BB....BB.....'],
   ['.......L.L.......', '......BB.BB......'],
 ]
-// The dash eyes as the 404's: single ink strokes, set left of centre as the mascot's are.
-const dash = ['K....K', 'K....K', 'K....K']
+// The pill eyes as the site pet's (pen.ts pillEye): two cells wide, leaning a cell with the top to
+// the left, set left of centre as the mascot's are.
+const dash = ['KK....KK', 'KK....KK', '.KK....KK', '.KK....KK']
 const eyes: Record<string, string> = {
-  eyes: at(dash, 5, 7),
-  'eyes-up': at(dash, 5, 6),
-  'eyes-down': at(dash, 5, 8),
-  'eyes-wide': at(['K....K', 'K....K', 'K....K', 'K....K'], 5, 6),
+  eyes: at(dash, 4, 6),
+  'eyes-up': at(dash, 4, 5),
+  'eyes-down': at(dash, 4, 7),
+  'eyes-wide': at(['KK....KK', 'KK....KK', 'KK....KK', 'KK....KK', 'KK....KK'], 4, 5),
+  // Smiling with its eyes as the site pet does: each pill squashed to a short bar, right end up.
+  'eyes-happy': at(['..KK....KK', 'KKK...KKK.'], 3, 7),
 }
 const mouth = at(['KK'], 7, 10)
 const shades = at(['KKKKKKKK', 'KKK..KKK'], 4, 7)
