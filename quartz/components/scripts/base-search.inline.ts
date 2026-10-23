@@ -155,8 +155,7 @@ function setupBaseSearch(): (() => void) | undefined {
       elements = { label, title }
       scoreLabels.set(item, elements)
     }
-    const percentage = Math.round(Math.max(-1, Math.min(1, score)) * 100)
-    elements.label.textContent = `${score.toFixed(3)} · ${percentage}% similarity`
+    elements.label.textContent = score.toFixed(3)
     elements.label.title = `Cosine similarity to your query: ${score.toFixed(3)}`
   }
   // Grouped views (by year, by category) keep their groups; semantic mode lifts the group that

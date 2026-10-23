@@ -888,10 +888,9 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     itemTile.innerHTML = `<hgroup><h3>${titleContent}${isProtected ? ' <span aria-label="protected content">🔒</span>' : ''}</h3></hgroup>`
 
     const accessibleName = itemTile.textContent?.trim() ?? ''
-    for (const label of itemTile.querySelectorAll<HTMLElement>('h3, hgroup > b')) {
+    for (const label of itemTile.querySelectorAll<HTMLElement>('h3')) {
       const path = label.textContent ?? ''
-      if (!path.includes('/') && label.tagName !== 'B' && path !== slug && path !== fileName)
-        continue
+      if (!path.includes('/')) continue
       label.classList.add('search-result-path')
       label.title = path
       itemTile.setAttribute('aria-label', accessibleName)
@@ -980,7 +979,6 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
       const head = table.createTHead().insertRow()
       for (const [label, column] of [
         ['note', 'note'],
-        ['path', 'path'],
         ['match', 'match'],
         ...(scored ? [['score', 'score']] : []),
       ]) {
@@ -996,13 +994,6 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
         const note = row.insertCell()
         note.className = 'search-column-note'
         note.append(resultToHTML(result))
-        const path = row.insertCell()
-        path.className = 'search-column-path'
-        const pathLabel = document.createElement('span')
-        pathLabel.className = 'search-result-path'
-        pathLabel.textContent = result.item.slug
-        pathLabel.title = result.item.slug
-        path.append(pathLabel)
         const match = row.insertCell()
         match.className = 'search-column-match'
         const excerpt = document.createElement('span')

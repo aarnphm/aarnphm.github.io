@@ -1571,7 +1571,7 @@ document.addEventListener('nav', () => {
 
     const aux = document.createElement('div')
     aux.classList.add('suggestion-aux')
-    if (similarity !== undefined && Number.isFinite(similarity)) {
+    if (!searchableImage(slug) && similarity !== undefined && Number.isFinite(similarity)) {
       item.dataset.similarity = String(similarity)
       const score = document.createElement('span')
       score.className = 'result-likelihood'
