@@ -8,7 +8,7 @@ tags:
 title: Rhizome
 ---
 
-[[thoughts/Giles Deleuze|Gilles Deleuze]] and Félix Guattari develop the rhizome in _A Thousand Plateaus_, part of [[thoughts/Giles Deleuze#Capitalism and Schizophrenia|Capitalism and Schizophrenia]]. It describes connections that can cross between different kinds of things without following a single hierarchy. The arrangement has multiple entryways and can change as new connections form.[^source]
+[[thoughts/Gilles Deleuze|Gilles Deleuze]] and Félix Guattari develop the rhizome in _A Thousand Plateaus_, part of [[thoughts/Gilles Deleuze#Capitalism and Schizophrenia|Capitalism and Schizophrenia]]. It describes connections that can cross between different kinds of things without following a single hierarchy. The arrangement has multiple entryways and can change as new connections form.[^source]
 
 Their orchid and wasp example makes this concrete. The orchid attracts the wasp; the wasp transports its pollen. Their connection crosses the plant–animal division through what they do together. A classification that places them on separate branches leaves out this interaction.
 

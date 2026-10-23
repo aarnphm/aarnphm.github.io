@@ -97,4 +97,4 @@ Yet ignorance seems to overload chaos, and prevents the maximum utilization of o
 
 That last question remains a personal conjecture. A physical entropy would require a system, states and a measure; the attraction to uncertainty does not supply them. Equanimity describes how one responds to an experience. It leaves room for seeking unfamiliar experiences and for judging which disruptions are worth their consequences.
 
-[^1]: See also [[thoughts/Giles Deleuze#forces.|Giles Deleuze's]] interpretation.
+[^1]: See also [[thoughts/Gilles Deleuze#forces.|Giles Deleuze's]] interpretation.

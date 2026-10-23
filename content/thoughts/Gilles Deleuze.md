@@ -1,8 +1,8 @@
 ---
 date: '2024-02-24'
 description: Deleuze's reading of Nietzsche, distinguishing forces, will to power, and affirmation.
-id: Giles Deleuze
-modified: 2026-10-12 09:10:45 GMT-04:00
+id: Gilles Deleuze
+modified: 2026-10-23 01:53:26 GMT-04:00
 tags:
   - philosophy
   - seed
