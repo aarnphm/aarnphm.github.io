@@ -7,7 +7,7 @@ finished: 2024
 id: Fear and Trembling
 language: danish
 modified: 2026-06-05 15:08:01 GMT-04:00
-posters: '[[library/posters/fear-and-trembling.jpg]]'
+posters: '[[library/posters/fear-and-trembling.jpg|fear-and-trembling.jpg]]'
 status: finished
 subcategory: theology
 tags:

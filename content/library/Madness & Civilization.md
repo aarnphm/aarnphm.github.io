@@ -6,7 +6,7 @@ description: traces how western society redefined madness from the middle ages t
 id: Madness & Civilization
 modified: 2026-06-05 15:07:57 GMT-04:00
 notebook: null
-posters: '[[library/posters/madness-and-civilization.jpg]]'
+posters: '[[library/posters/madness-and-civilization.jpg|madness-and-civilization.jpg]]'
 status: to read
 subcategory:
   - reason

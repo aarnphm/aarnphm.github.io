@@ -7,7 +7,7 @@ description: kafka novel about josef k, arrested without clear charge and consum
 finished: 2024
 id: The Trial
 modified: 2026-06-05 15:08:02 GMT-04:00
-posters: '[[library/posters/the-trial.jpg]]'
+posters: '[[library/posters/the-trial.jpg|the-trial.jpg]]'
 status: finished
 subcategory:
   - bureaucracy

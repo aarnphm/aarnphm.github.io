@@ -11,7 +11,7 @@ finished: null
 id: Software Engineering at Google
 modified: 2026-06-05 15:08:01 GMT-04:00
 notebook: null
-posters: '[[library/posters/swe-books.jpeg]]'
+posters: '[[library/posters/swe-books.jpeg|swe-books.jpeg]]'
 status: to read
 subcategory:
   - software

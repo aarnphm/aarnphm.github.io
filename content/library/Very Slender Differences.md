@@ -7,7 +7,7 @@ description: An essay in The Idler
 finished: 2025
 id: Very Slender Differences
 modified: 2026-06-05 15:07:57 GMT-04:00
-posters: '[[library/posters/very-slender-differences.jpg]]'
+posters: '[[library/posters/very-slender-differences.jpg|very-slender-differences.jpg]]'
 status: finished
 subcategory: friendship
 tags:
@@ -17,7 +17,7 @@ title: Very Slender Differences
 year: 1758
 ---
 
-Life has no pleasure higher or nobler than that of [[thoughts/friendship]]. It is painful to consider that this sublime enjoyment may be impaired or destroyed by innumerable causes, and that there is no human possession of which the duration is less certain.
+Life has no pleasure higher or nobler than that of [[thoughts/friendship|friendship]]. It is painful to consider that this sublime enjoyment may be impaired or destroyed by innumerable causes, and that there is no human possession of which the duration is less certain.
 
 Many have talked, in very exalted language, of the perpetuity of friendship, of invincible constancy and unalienable kindness; and some examples have been seen of men who have continued faithful to their earliest choice, and whose affection has predominated over changes of fortune and contrariety of opinion.
 

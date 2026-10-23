@@ -6,7 +6,7 @@ description: Husserl's early phenomenological work, analyzing meaning, intention
 id: Logical Investigations
 language: german
 modified: 2026-06-05 15:07:56 GMT-04:00
-posters: '[[library/posters/logical-investigations.jpg]]'
+posters: '[[library/posters/logical-investigations.jpg|logical-investigations.jpg]]'
 status: to read
 subcategory: phenomenology
 tags:

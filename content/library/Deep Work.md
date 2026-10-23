@@ -7,7 +7,7 @@ description: argues for long, distraction free concentration as the key to produ
 finished: 2024
 id: Deep Work
 modified: 2026-06-05 15:08:00 GMT-04:00
-posters: '[[library/posters/deep-work.jpg]]'
+posters: '[[library/posters/deep-work.jpg|deep-work.jpg]]'
 status: finished
 subcategory: productivity
 tags:

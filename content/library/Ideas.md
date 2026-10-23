@@ -10,7 +10,7 @@ finished: null
 id: Ideas
 modified: 2026-10-20 16:19:47 GMT-04:00
 pdf: null
-posters: '[[library/posters/ideas.jpg]]'
+posters: '[[library/posters/ideas.jpg|ideas.jpg]]'
 socials:
   michael sugrue: https://www.youtube.com/watch?v=y0sLHfcsPAA
 status: to read

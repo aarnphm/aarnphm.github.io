@@ -6,7 +6,7 @@ date: '2025-10-07'
 description: introduction to situationist thought and revolutionary practice, tracing how spectacle, play, and detournement reshape politics and everyday life.
 id: Leaving the Twentieth Century
 modified: 2026-06-05 15:08:01 GMT-04:00
-posters: '[[library/posters/leaving-the-twentieth-century-cover.avif]]'
+posters: '[[library/posters/leaving-the-twentieth-century-cover.avif|leaving-the-twentieth-century-cover.avif]]'
 status: to read
 subcategory: progress
 tags:

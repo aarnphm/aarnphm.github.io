@@ -8,7 +8,7 @@ finished: 2025
 id: The Castle
 language: german
 modified: 2026-10-20 16:19:47 GMT-04:00
-posters: '[[library/posters/the-castle.jpg]]'
+posters: '[[library/posters/the-castle.jpg|the-castle.jpg]]'
 status: finished
 subcategory:
   - existentialism

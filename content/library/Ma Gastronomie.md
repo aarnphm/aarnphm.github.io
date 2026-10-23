@@ -8,7 +8,7 @@ finished: 2025
 id: Ma Gastronomie
 language: french
 modified: 2026-06-05 15:07:59 GMT-04:00
-posters: '[[library/posters/ma-gastronomie.jpg]]'
+posters: '[[library/posters/ma-gastronomie.jpg|ma-gastronomie.jpg]]'
 status: finished
 subcategory: cooking
 tags:

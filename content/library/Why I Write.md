@@ -8,7 +8,7 @@ finished: 2023
 id: Why I Write
 modified: 2026-06-05 15:08:01 GMT-04:00
 notebook: '[[thoughts/writing|writing]]'
-posters: '[[library/posters/why-i-write.jpg]]'
+posters: '[[library/posters/why-i-write.jpg|why-i-write.jpg]]'
 status: finished
 subcategory: writing
 tags:

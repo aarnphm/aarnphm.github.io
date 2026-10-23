@@ -12,11 +12,11 @@ language: german
 layout: technical-tractatus
 modified: 2026-06-05 15:08:00 GMT-04:00
 pdf: https://www.gutenberg.org/files/5740/5740-pdf.pdf
-posters: '[[library/posters/tractatus-logico-philosophicus.jpg]]'
+posters: '[[library/posters/tractatus-logico-philosophicus.jpg|tractatus-logico-philosophicus.jpg]]'
 seealso:
-  - '[[thoughts/Wittgenstein]]'
-  - '[[thoughts/Compositionality]]'
-  - '[[library/On Certainty]]'
+  - '[[thoughts/Wittgenstein|Wittgenstein]]'
+  - '[[thoughts/Compositionality|Compositionality]]'
+  - '[[library/On Certainty|On Certainty]]'
 status: evergreen
 subcategory:
   - languages
@@ -60,6 +60,6 @@ The same limit shapes the closing discussion of value. Section 6.421 calls ethic
 
 Section 6.54 compares the book's own propositions to a ladder that a reader discards after climbing it. The final proposition follows: “Whereof one cannot speak, thereof one must be silent.” The ending creates a deliberate strain because the book uses propositions to clarify the limits of propositions.
 
-The later [[library/Philosophical Investigations]] rejects the assumption that language has one underlying form. Read together, the change is visible. The _Tractatus_ seeks the general structure of representation. The later work studies the different jobs words perform in ordinary practices.
+The later [[library/Philosophical Investigations|Philosophical Investigations]] rejects the assumption that language has one underlying form. Read together, the change is visible. The _Tractatus_ seeks the general structure of representation. The later work studies the different jobs words perform in ordinary practices.
 
 source: [C. K. Ogden's English translation at Project Gutenberg](https://www.gutenberg.org/files/5740/5740-pdf.pdf)

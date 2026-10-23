@@ -7,7 +7,7 @@ id: The World as Will and Representation
 language: german
 modified: 2026-06-05 15:07:57 GMT-04:00
 notebook: '[[thoughts/representations|representations]]'
-posters: '[[library/posters/the-world-as-will-and-representation.jpg]]'
+posters: '[[library/posters/the-world-as-will-and-representation.jpg|the-world-as-will-and-representation.jpg]]'
 status: to read
 subcategory: nihilism
 tags:

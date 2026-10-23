@@ -6,7 +6,7 @@ description: autobiographical late text where nietzsche comments on his life, bo
 finished: 2023
 id: Why I Am So Wise
 modified: 2026-06-05 15:07:59 GMT-04:00
-posters: '[[library/posters/why-i-am-so-wise.jpg]]'
+posters: '[[library/posters/why-i-am-so-wise.jpg|why-i-am-so-wise.jpg]]'
 status: finished
 subcategory:
   - metaphysics

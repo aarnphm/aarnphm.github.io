@@ -7,7 +7,7 @@ description: thoreau reflections on simple living in nature paired with an argum
 finished: 2025
 id: Walden and Civil Disobedience
 modified: 2026-06-05 15:08:00 GMT-04:00
-posters: '[[library/posters/walden-and-civil-disobedience.jpg]]'
+posters: '[[library/posters/walden-and-civil-disobedience.jpg|walden-and-civil-disobedience.jpg]]'
 status: finished
 subcategory: life
 tags:

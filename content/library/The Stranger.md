@@ -10,7 +10,7 @@ id: The Stranger
 language: french
 modified: 2026-06-05 15:08:02 GMT-04:00
 notebook: null
-posters: '[[library/posters/the-stranger.jpg]]'
+posters: '[[library/posters/the-stranger.jpg|the-stranger.jpg]]'
 status: finished
 subcategory: existentialism
 tags:

@@ -7,7 +7,7 @@ description: pragmatist account of rationality where conceptual content emerges 
 id: Reason in Philosophy
 modified: 2026-06-05 15:07:58 GMT-04:00
 notebook: null
-posters: '[[library/posters/reason-in-philosophy.jpeg]]'
+posters: '[[library/posters/reason-in-philosophy.jpeg|reason-in-philosophy.jpeg]]'
 status: to read
 subcategory:
   - metaethics

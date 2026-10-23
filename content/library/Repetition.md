@@ -6,7 +6,7 @@ description: kierkegaard uses the idea of repetition to probe memory, love, and 
 id: Repetition
 language: danish
 modified: 2026-06-05 15:08:01 GMT-04:00
-posters: '[[library/posters/repetition.jpg]]'
+posters: '[[library/posters/repetition.jpg|repetition.jpg]]'
 status: to read
 subcategory:
   - love

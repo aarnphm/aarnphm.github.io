@@ -7,7 +7,7 @@ description: epic science fiction saga of politics, ecology, and prophecy on the
 finished: 2022
 id: Dune
 modified: 2026-06-05 15:07:59 GMT-04:00
-posters: '[[library/posters/dune.jpg]]'
+posters: '[[library/posters/dune.jpg|dune.jpg]]'
 status: finished
 subcategory: life
 tags:

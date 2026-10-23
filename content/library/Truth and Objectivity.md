@@ -11,9 +11,9 @@ external: https://www.hup.harvard.edu/books/9780674910874
 finished: null
 id: Truth and Objectivity
 modified: 2026-06-05 15:07:58 GMT-04:00
-notebook: '[[library/TAO/]]'
+notebook: '[[library/TAO/|TAO]]'
 pdf: null
-posters: '[[library/posters/truth-and-objectivity.jpeg]]'
+posters: '[[library/posters/truth-and-objectivity.jpeg|truth-and-objectivity.jpeg]]'
 status: to read
 subcategory:
   - logic

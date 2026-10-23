@@ -6,7 +6,7 @@ description: study of modern open source communities, examining how maintainers 
 finished: 2021
 id: Working in Public
 modified: 2026-06-05 15:08:01 GMT-04:00
-posters: '[[library/posters/working-in-public.jpg]]'
+posters: '[[library/posters/working-in-public.jpg|working-in-public.jpg]]'
 status: finished
 subcategory: programming
 tags:

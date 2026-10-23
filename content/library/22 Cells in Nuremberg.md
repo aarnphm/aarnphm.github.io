@@ -13,7 +13,7 @@ subcategory:
   - behaviour
 author:
   - Douglas Kelley
-posters: '[[library/posters/22-cell-in-nuremberg.jpg]]'
+posters: '[[library/posters/22-cell-in-nuremberg.jpg|22-cell-in-nuremberg.jpg]]'
 category:
   - p/nf
 translator:
@@ -21,5 +21,5 @@ description: Kelley's account of psychiatric interviews and tests of 22 Nazi def
 notebook:
 aliases:
 external:
-pdf: '[[thoughts/pdfs/22 Cells in Nuremberg.pdf]]'
+pdf: '[[thoughts/pdfs/22 Cells in Nuremberg.pdf|22 Cells in Nuremberg.pdf]]'
 ---

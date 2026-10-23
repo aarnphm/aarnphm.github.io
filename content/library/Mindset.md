@@ -7,7 +7,7 @@ description: popular psychology book contrasting fixed and growth mindsets, argu
 finished: 2025
 id: Mindset
 modified: 2026-06-05 15:07:56 GMT-04:00
-posters: '[[library/posters/mindset.jpg]]'
+posters: '[[library/posters/mindset.jpg|mindset.jpg]]'
 status: finished
 subcategory: productivity
 tags:

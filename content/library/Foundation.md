@@ -7,7 +7,7 @@ description: classic science fiction about psychohistory and the fall of a galac
 finished: 2025
 id: Foundation
 modified: 2026-06-05 15:07:57 GMT-04:00
-posters: '[[library/posters/foundation.jpg]]'
+posters: '[[library/posters/foundation.jpg|foundation.jpg]]'
 status: finished
 subcategory: dystopian
 tags:

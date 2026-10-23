@@ -8,7 +8,7 @@ finished: 2024
 id: The metamorphosis
 language: german
 modified: 2026-06-05 15:07:57 GMT-04:00
-posters: '[[library/posters/the-metamorphosis.jpg]]'
+posters: '[[library/posters/the-metamorphosis.jpg|the-metamorphosis.jpg]]'
 status: finished
 subcategory: Kafka
 tags:

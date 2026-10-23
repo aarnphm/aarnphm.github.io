@@ -7,7 +7,7 @@ finished: 2024
 id: Ecce Homo
 language: german
 modified: 2026-06-05 15:08:01 GMT-04:00
-posters: '[[library/posters/ecce-homo.webp]]'
+posters: '[[library/posters/ecce-homo.webp|ecce-homo.webp]]'
 status: evergreen
 subcategory: existentialism
 tags:

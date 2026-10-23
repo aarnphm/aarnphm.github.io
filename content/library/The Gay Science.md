@@ -11,10 +11,10 @@ id: The Gay Science
 language: german
 modified: 2026-06-05 15:07:59 GMT-04:00
 notebook: '[[thoughts/Philosophy and Nietzsche|field notes on Gay Science]]'
-pdf: '[[thoughts/papers/The Gay Science by Friedrich Nietzsche.pdf]]'
-posters: '[[library/posters/the-gay-science.jpg]]'
+pdf: '[[thoughts/papers/The Gay Science by Friedrich Nietzsche.pdf|The Gay Science by Friedrich Nietzsche.pdf]]'
+posters: '[[library/posters/the-gay-science.jpg|the-gay-science.jpg]]'
 seealso:
-  - '[[thoughts/Philosophy and Nietzsche]]'
+  - '[[thoughts/Philosophy and Nietzsche|Philosophy and Nietzsche]]'
 status: evergreen
 subcategory: metaphysics
 tags:

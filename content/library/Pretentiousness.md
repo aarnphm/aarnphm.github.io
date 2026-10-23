@@ -8,7 +8,7 @@ finished: 2023
 id: Pretentiousness
 modified: 2026-06-05 15:08:01 GMT-04:00
 notebook: '[[thoughts/fashion#pretentious.|pretentiousness]]'
-posters: '[[library/posters/pretentiousness.jpg]]'
+posters: '[[library/posters/pretentiousness.jpg|pretentiousness.jpg]]'
 status: finished
 subcategory: being
 tags:

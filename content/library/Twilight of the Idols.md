@@ -7,7 +7,7 @@ finished: 2024
 id: Twilight of the Idols
 language: german
 modified: 2026-06-05 15:08:01 GMT-04:00
-posters: '[[library/posters/twilight-of-the-idols.jpg]]'
+posters: '[[library/posters/twilight-of-the-idols.jpg|twilight-of-the-idols.jpg]]'
 status: finished
 subcategory: society
 tags:

@@ -8,7 +8,7 @@ language: german
 modified: 2026-06-05 15:08:01 GMT-04:00
 notebook: null
 posters:
-  - '[[library/posters/letters-to-family-friends-editors.jpg]]'
+  - '[[library/posters/letters-to-family-friends-editors.jpg|letters-to-family-friends-editors.jpg]]'
 status: to read
 subcategory: advices
 tags:

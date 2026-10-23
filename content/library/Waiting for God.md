@@ -10,7 +10,7 @@ language: french
 modified: 2026-06-05 15:07:58 GMT-04:00
 notebook: null
 pdf: https://antilogicalism.com/wp-content/uploads/2019/04/waiting-god.pdf
-posters: '[[library/posters/waiting-for-god.webp]]'
+posters: '[[library/posters/waiting-for-god.webp|waiting-for-god.webp]]'
 status: finished
 subcategory:
   - theology

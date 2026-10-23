@@ -7,7 +7,7 @@ description: a woman's decision to stop eating meat unsettles her family and exp
 external: https://www.penguinrandomhouse.com/books/250333/the-vegetarian-by-han-kang/
 id: The Vegetarian
 modified: '2026-10-20'
-posters: '[[library/posters/the-vegetarian.jpg]]'
+posters: '[[library/posters/the-vegetarian.jpg|the-vegetarian.jpg]]'
 status: to read
 title: The Vegetarian
 year: 2007

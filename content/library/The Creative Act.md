@@ -5,7 +5,7 @@ date: '2025-10-07'
 description: Rubin's meditative book on creativity as a way of being, offering practices for noticing, shaping, and trusting your own taste.
 id: The Creative Act
 modified: 2026-06-05 15:08:02 GMT-04:00
-posters: '[[library/posters/the-creative-act.jpg]]'
+posters: '[[library/posters/the-creative-act.jpg|the-creative-act.jpg]]'
 status: to read
 subcategory:
   - programming

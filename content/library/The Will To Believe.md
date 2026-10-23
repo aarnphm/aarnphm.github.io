@@ -6,7 +6,7 @@ description: essay defending a right to believe in certain cases without prior e
 id: The Will To Believe
 modified: 2026-06-05 15:08:01 GMT-04:00
 notebook: '[[thoughts/The Will To Believe|beliefs]]'
-posters: '[[library/posters/the-will-to-believe.jpg]]'
+posters: '[[library/posters/the-will-to-believe.jpg|the-will-to-believe.jpg]]'
 status: to read
 subcategory: ontology
 tags:

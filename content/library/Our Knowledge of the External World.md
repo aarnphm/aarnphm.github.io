@@ -6,7 +6,7 @@ description: AS A FIELD FOR SCIENTIFIC METHOD IN PHILOSOPHY
 external: https://www.gutenberg.org/files/37090/37090-h/37090-h.htm
 id: Our Knowledge of the External World
 modified: 2026-06-05 15:07:59 GMT-04:00
-posters: '[[library/posters/our-knowledge-of-the-external-world.png]]'
+posters: '[[library/posters/our-knowledge-of-the-external-world.png|our-knowledge-of-the-external-world.png]]'
 status: current
 subcategory: nous
 tags:

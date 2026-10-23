@@ -7,7 +7,7 @@ description: critique of how mediocre norms capture politics, culture, and insti
 id: Mediocracy
 language: french
 modified: 2026-06-05 15:07:57 GMT-04:00
-posters: '[[library/posters/mediocracy.jpg]]'
+posters: '[[library/posters/mediocracy.jpg|mediocracy.jpg]]'
 status: to read
 subcategory: politics
 tags:

@@ -6,7 +6,7 @@ description: foucault study of ancient ethics that treats care of the self as a 
 id: The Care of the Self
 language: french
 modified: 2026-06-05 15:08:00 GMT-04:00
-posters: '[[library/posters/the-care-of-the-self.jpg]]'
+posters: '[[library/posters/the-care-of-the-self.jpg|the-care-of-the-self.jpg]]'
 status: to read
 subcategory:
   - sex

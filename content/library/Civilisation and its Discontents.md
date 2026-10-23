@@ -7,7 +7,7 @@ finished: 2023
 id: Civilisation and its Discontents
 language: german
 modified: 2026-06-05 15:07:58 GMT-04:00
-posters: '[[library/posters/civilisation-and-its-discontents.jpg]]'
+posters: '[[library/posters/civilisation-and-its-discontents.jpg|civilisation-and-its-discontents.jpg]]'
 seealso:
   - '[[thoughts/Freud|Freud]]'
   - '[[thoughts/identity|identity]]'

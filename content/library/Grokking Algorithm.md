@@ -6,7 +6,7 @@ description: illustrated introduction to algorithms that explains core ideas lik
 external: https://www.manning.com/books/grokking-algorithms
 id: Grokking Algorithms
 modified: 2026-06-05 15:07:57 GMT-04:00
-posters: '[[library/posters/grokking-algorithms-cover.avif]]'
+posters: '[[library/posters/grokking-algorithms-cover.avif|grokking-algorithms-cover.avif]]'
 status: to read
 subcategory: computing
 tags:

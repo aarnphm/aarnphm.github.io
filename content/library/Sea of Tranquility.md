@@ -6,7 +6,7 @@ date: '2025-03-05'
 description: time hopping novel connecting plague, art, and simulation across centuries, questioning reality and recurrence in the mandel universe.
 id: Sea of Tranquility
 modified: 2026-06-05 15:07:58 GMT-04:00
-posters: '[[library/posters/sea-of-tranquility.jpg]]'
+posters: '[[library/posters/sea-of-tranquility.jpg|sea-of-tranquility.jpg]]'
 status: to read
 subcategory: love
 tags:

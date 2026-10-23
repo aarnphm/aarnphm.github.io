@@ -7,7 +7,7 @@ description: examines how repeated pursuit of pleasure can increase distress, us
 finished: 2023
 id: Dopamine Nation
 modified: 2026-06-05 15:07:57 GMT-04:00
-posters: '[[library/posters/dopamine-nation.jpg]]'
+posters: '[[library/posters/dopamine-nation.jpg|dopamine-nation.jpg]]'
 status: finished
 subcategory: productivity
 tags:

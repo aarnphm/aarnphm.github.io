@@ -7,7 +7,7 @@ description: lewontin argues that gene, organism, and environment form an insepa
 finished: 2024
 id: The Triple Helix
 modified: 2026-06-05 15:07:57 GMT-04:00
-posters: '[[library/posters/the-triple-helix.jpg]]'
+posters: '[[library/posters/the-triple-helix.jpg|the-triple-helix.jpg]]'
 status: finished
 subcategory: progress
 tags:

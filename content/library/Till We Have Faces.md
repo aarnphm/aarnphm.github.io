@@ -8,7 +8,7 @@ description: retelling of the cupid and psyche myth from the perspective of psyc
 id: Till We Have Faces
 modified: 2026-06-05 15:07:58 GMT-04:00
 notebook: null
-posters: '[[library/posters/till-we-have-faces.jpg]]'
+posters: '[[library/posters/till-we-have-faces.jpg|till-we-have-faces.jpg]]'
 status: to read
 subcategory:
   - society

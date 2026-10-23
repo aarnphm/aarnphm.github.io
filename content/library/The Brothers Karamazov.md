@@ -7,7 +7,7 @@ description: dostoevsky final novel about faith, parricide, and guilt, following
 id: The Brothers Karamazov
 language: russian
 modified: 2026-06-05 15:07:58 GMT-04:00
-posters: '[[library/posters/the-brothers-karamazov.jpg]]'
+posters: '[[library/posters/the-brothers-karamazov.jpg|the-brothers-karamazov.jpg]]'
 status: to read
 subcategory: dostoevskian
 tags:

@@ -7,7 +7,7 @@ finished: 2025
 id: The Second Sex
 language: french
 modified: 2026-06-05 15:08:00 GMT-04:00
-posters: '[[library/posters/the-second-sex.jpg]]'
+posters: '[[library/posters/the-second-sex.jpg|the-second-sex.jpg]]'
 status: finished
 subcategory: feminism
 tags:

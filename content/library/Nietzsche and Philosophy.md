@@ -9,7 +9,7 @@ id: Nietzsche and Philosophy
 language: french
 modified: 2026-06-05 15:07:59 GMT-04:00
 notebook: '[[thoughts/Philosophy and Nietzsche|Nietzsche]]'
-posters: '[[library/posters/nietzsche-and-philosophy.jpg]]'
+posters: '[[library/posters/nietzsche-and-philosophy.jpg|nietzsche-and-philosophy.jpg]]'
 status: evergreen
 subcategory: multiplicity
 tags:
@@ -50,7 +50,7 @@ Genealogy: substitute pathos of difference or distance for both Kantian principl
 
 > force is not a cause, but a symptom.
 
-### against [[thoughts/dialectics]]
+### against [[thoughts/dialectics|dialectics]]
 
 Life struggles with another form of life as it ::affirms{h3}:: its own difference and enjoys this difference.
 
@@ -110,7 +110,7 @@ Mentioned Heraclitus = tragic thinker
 H understood existence on the basis of an instinct of [[thoughts/play|play]]
 Existence as an [[thoughts/aesthetic value|aesthetic]] phenomenon rather than moral or religious
 
-#### Affirmation of [[thoughts/being]]
+#### Affirmation of [[thoughts/being|being]]
 
 Heraclitus denied the duality of worlds, "he denied being itself'. Moreover he made an affirmation of becoming. We have to reflect for a long time to understand what it means to make an affirmation of becoming.
 

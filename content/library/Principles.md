@@ -6,7 +6,7 @@ description: dalio outlines personal and work principles drawn from investing, e
 finished: 2025
 id: Principles
 modified: 2026-06-05 15:08:01 GMT-04:00
-posters: '[[library/posters/principles.jpg]]'
+posters: '[[library/posters/principles.jpg|principles.jpg]]'
 status: finished
 subcategory: money
 tags:

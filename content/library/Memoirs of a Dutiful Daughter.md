@@ -12,7 +12,7 @@ id: Memoirs of a Dutiful Daughter
 modified: 2026-06-05 15:07:59 GMT-04:00
 notebook: null
 pdf: null
-posters: '[[library/posters/memoirs-of-a-dutiful-daughter.jpg]]'
+posters: '[[library/posters/memoirs-of-a-dutiful-daughter.jpg|memoirs-of-a-dutiful-daughter.jpg]]'
 status: current
 subcategory:
   - love

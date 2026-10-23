@@ -7,7 +7,7 @@ description: friedman argues that competitive capitalism supports economic and p
 finished: 2025
 id: Capitalism and Freedom
 modified: 2026-06-05 15:08:00 GMT-04:00
-posters: '[[library/posters/capitalism-and-freedom-cover.avif]]'
+posters: '[[library/posters/capitalism-and-freedom-cover.avif|capitalism-and-freedom-cover.avif]]'
 status: finished
 subcategory: economic
 tags:

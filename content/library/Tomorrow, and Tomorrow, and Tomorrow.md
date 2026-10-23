@@ -7,7 +7,7 @@ description: novel about two friends and a collaborator who build videogames tog
 finished: 2024
 id: Tomorrow, and Tomorrow, and Tomorrow
 modified: 2026-06-05 15:08:01 GMT-04:00
-posters: '[[library/posters/tomorrow-and-tomorrow-and-tomorrow.jpg]]'
+posters: '[[library/posters/tomorrow-and-tomorrow-and-tomorrow.jpg|tomorrow-and-tomorrow-and-tomorrow.jpg]]'
 status: finished
 subcategory: life
 tags:

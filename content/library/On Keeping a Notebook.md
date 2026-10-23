@@ -10,8 +10,8 @@ finished: 2026
 id: On Keeping a Notebook
 modified: 2026-06-05 15:07:58 GMT-04:00
 notebook: null
-pdf: '[[thoughts/pdfs/00-On-Keeping-a-Notebook.pdf]]'
-posters: '[[library/posters/Slouching Towards Bethlehem.jpg]]'
+pdf: '[[thoughts/pdfs/00-On-Keeping-a-Notebook.pdf|00-On-Keeping-a-Notebook.pdf]]'
+posters: '[[library/posters/Slouching Towards Bethlehem.jpg|Slouching Towards Bethlehem.jpg]]'
 status: finished
 subcategory:
   - writing

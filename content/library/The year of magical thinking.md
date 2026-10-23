@@ -7,7 +7,7 @@ description: memoir on grief after sudden loss, tracing how Didion's mind loops 
 finished: null
 id: The year of magical thinking
 modified: 2026-06-05 15:07:59 GMT-04:00
-posters: '[[library/posters/the-year-of-magical-thinking.jpg]]'
+posters: '[[library/posters/the-year-of-magical-thinking.jpg|the-year-of-magical-thinking.jpg]]'
 status: to read
 subcategory: life
 tags:

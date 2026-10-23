@@ -9,7 +9,7 @@ external: https://www.gutenberg.org/files/5827/5827-h/5827-h.htm
 id: The Problems of Philosophy
 modified: 2026-06-05 15:07:56 GMT-04:00
 notebook: null
-posters: '[[library/posters/the-problems-of-philosophy.jpg]]'
+posters: '[[library/posters/the-problems-of-philosophy.jpg|the-problems-of-philosophy.jpg]]'
 status: to read
 subcategory:
   - metaphysics

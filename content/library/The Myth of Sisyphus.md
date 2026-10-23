@@ -8,7 +8,7 @@ id: The Myth of Sisyphus
 language: french
 modified: 2026-06-05 15:07:56 GMT-04:00
 notebook: '[[thoughts/Camus#The Myth of Sisyphus|field notes]]'
-posters: '[[library/posters/the-myth-of-sisyphus.jpg]]'
+posters: '[[library/posters/the-myth-of-sisyphus.jpg|the-myth-of-sisyphus.jpg]]'
 status: evergreen
 subcategory: absurdism
 tags:

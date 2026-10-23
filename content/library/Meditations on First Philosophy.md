@@ -8,7 +8,7 @@ id: Meditations on First Philosophy
 language: latin
 modified: 2026-06-05 15:08:02 GMT-04:00
 notebook: null
-posters: '[[library/posters/meditations-on-first-philosophy.jpg]]'
+posters: '[[library/posters/meditations-on-first-philosophy.jpg|meditations-on-first-philosophy.jpg]]'
 status: to read
 subcategory: theology
 tags:

@@ -13,7 +13,7 @@ subcategory:
   - dark
 author:
   - Caitlin Doughty
-posters: '[[library/posters/smoke-gets-in-your-eyes.jpg]]'
+posters: '[[library/posters/smoke-gets-in-your-eyes.jpg|smoke-gets-in-your-eyes.jpg]]'
 category:
   - p/nf
 translator:

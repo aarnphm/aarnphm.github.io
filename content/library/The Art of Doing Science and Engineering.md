@@ -5,7 +5,7 @@ date: '2025-10-07'
 description: Hamming's reflections on creativity, problem selection, and learning how to do consequential scientific and engineering work.
 id: The Art of Doing Science and Engineering
 modified: 2026-06-05 15:07:59 GMT-04:00
-posters: '[[library/posters/the-art-of-doing-science-and-engineering.jpg]]'
+posters: '[[library/posters/the-art-of-doing-science-and-engineering.jpg|the-art-of-doing-science-and-engineering.jpg]]'
 status: to read
 subcategory: programming
 tags:

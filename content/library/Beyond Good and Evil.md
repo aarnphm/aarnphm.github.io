@@ -7,7 +7,7 @@ finished: 2024
 id: Beyond Good and Evil
 language: german
 modified: 2026-06-05 15:07:58 GMT-04:00
-posters: '[[library/posters/beyond-good-and-evil.jpg]]'
+posters: '[[library/posters/beyond-good-and-evil.jpg|beyond-good-and-evil.jpg]]'
 status: evergreen
 subcategory: ethics
 tags:
