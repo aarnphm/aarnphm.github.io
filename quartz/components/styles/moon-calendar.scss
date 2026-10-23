@@ -2,8 +2,8 @@
 
 .homepage-trail,
 .homepage-trail-scene {
-  // Panels open 1rem above the almanac line: its inset plus the 28px moon toggle.
-  --trail-footer-panel-bottom: calc(max(16px, env(safe-area-inset-bottom)) + 28px + 1rem);
+  // Panels open 1rem above the almanac: its inset, 28px toggle, padding and border.
+  --trail-footer-panel-bottom: calc(max(16px, env(safe-area-inset-bottom)) + 38px + 1rem);
 }
 
 .trail-almanac {
@@ -13,8 +13,9 @@
   display: flex;
   align-items: end;
   gap: 8px;
-  padding-inline: 2px;
-  background: transparent;
+  padding: 4px 8px;
+  border: 1px solid var(--lightgray);
+  background: var(--light);
   font: 10px/1.6 var(--codeFont);
   font-variant-numeric: tabular-nums;
 }
@@ -68,7 +69,7 @@ button.homepage-moon-toggle {
   overflow-y: auto;
   margin: 0;
   padding: 0.65rem;
-  border: 0;
+  border: 1px solid var(--lightgray);
   border-radius: var(--radius-none);
   background: var(--light);
   color: var(--darkgray);
