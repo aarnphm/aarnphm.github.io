@@ -236,7 +236,18 @@ test('loads every tracked garden skill into an RFC-valid publication', async () 
   const publication = createAgentSkillsPublication(sources)
   assert.deepEqual(
     publication.index.skills.map(skill => skill.name),
-    ['add-descriptions', 'flashcards', 'interactive-diagrams', 'quartz-plugins', 'sfwr-4tb3'],
+    [
+      'flashcards',
+      'garden-add-place',
+      'garden-design-system',
+      'instagram-download',
+      'interactive-diagrams',
+      'mywindsock-ingest',
+      'quartz-plugins',
+      'sfwr-4tb3',
+      'strava-merge-activities',
+      'token-budget',
+    ],
   )
   assert.equal(
     publication.index.skills.every(skill => /^sha256:[0-9a-f]{64}$/.test(skill.digest)),

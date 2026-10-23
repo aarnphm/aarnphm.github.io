@@ -5,6 +5,7 @@ This repository powers a Quartz digital garden with custom plugins and a Cloudfl
 ## Implementation
 
 - Fix the owning boundary with the simplest implementation that meets current requirements. Reuse established helpers and dependencies before introducing abstractions or packages.
+- Use the [codebase-design skill](.agents/skills/codebase-design/SKILL.md) when changing module structure or interfaces. Concentrate required ordering, state, and recovery rules in their owner; assess cleanup by reduced caller knowledge. See [codebase structure](docs/codebase-structure.md) for the current ownership map and surveyed follow-ups.
 - Remove obsolete code when its callers no longer need it. Preserve required provider recovery, external API contracts, and persisted data. Add compatibility or migration code only for an identified current requirement.
 - Check `docs` for any additional notes on design patterns as well as relevant information. If possible, always use 80% of ASD-STE100 for description et al.
 - Place course files by the routing in [courses directory](docs/courses.md): vendored files come from `pnpm vendor:ocw`; authored files live in `lectures/`, `psets/` and `statements/`.

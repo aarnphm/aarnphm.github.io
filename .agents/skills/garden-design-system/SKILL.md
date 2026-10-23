@@ -37,7 +37,7 @@ The repo is the source of truth. When this skill and the code disagree, the code
 | Courses and flashcards                                                    | `references/courses.md`                                                  |
 | Home page widgets, trail, press kit                                       | `references/home.md`                                                     |
 | Math, numbers in prose, chart labels, TikZ                                | `references/math.md`                                                     |
-| Focus rings, `outline: none`, focus on tabs or charts | `references/focus.md` |
+| Focus rings, `outline: none`, focus on tabs or charts                     | `references/focus.md`                                                    |
 | Brand art, mascot, social images                                          | `references/imagery.md`                                                  |
 | A specific component                                                      | `references/components/index.md`, then `references/components/<Name>.md` |
 | Calling a surface done                                                    | `references/review.md`                                                   |
