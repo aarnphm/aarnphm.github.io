@@ -111,7 +111,9 @@
     padding: 0.32rem 0.4rem;
     font-weight: normal;
     text-align: end;
-    vertical-align: middle;
+    // Top, so a stacked value and delta keep each value on the row's first line, level with
+    // the baseline column's lone value and the label.
+    vertical-align: top;
     background: var(--light);
     border: 0;
     border-bottom: 1px solid color-mix(in srgb, var(--tri-compare-line) 45%, transparent);
@@ -186,15 +188,15 @@
 }
 
 .tri-compare-stats .tri-compare-stats-activity {
-  text-align: center;
+  text-align: end;
 }
 
 // Identity colour appears once per column as a stroke sample, as in the chart legend; the
-// heading's title names the activity on hover.
+// heading's title names the activity on hover. It sits flush right, over the values.
 .tri-compare-stats-heading {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   min-height: 1.4em;
 }
 

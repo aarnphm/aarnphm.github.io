@@ -458,6 +458,33 @@
   text-align: right;
 }
 
+.tri-shift-chart > .tri-elev-cap--summary,
+.tri-elev-wrap > .tri-elev-cap:has(> .tri-torque-controls) {
+  flex-wrap: wrap;
+
+  > .tri-fig-readout {
+    position: static;
+    order: 1;
+    min-width: 0;
+    margin-inline-start: auto;
+    padding: 0;
+    transform: none;
+    white-space: normal;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  > :is(.tri-shift-settings, .tri-torque-controls) {
+    order: 2;
+    margin-inline-start: auto;
+  }
+
+  &:has(> .tri-fig-readout) > :is(.tri-shift-settings, .tri-torque-controls) {
+    margin-inline-start: 0;
+  }
+}
+
 .tri-shift-settings {
   .g-select-trigger {
     min-width: 4.6rem;

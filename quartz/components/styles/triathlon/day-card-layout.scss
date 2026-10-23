@@ -55,7 +55,12 @@
 
     // The settings menu drops below the cap; the title keeps its own ellipsis.
     &:has(> .tri-shift-settings) {
+      flex-wrap: wrap;
       overflow: visible;
+    }
+
+    &:has(> .tri-torque-controls) {
+      flex-wrap: wrap;
     }
 
     > .tri-elev-d {
