@@ -134,7 +134,7 @@
   }
 }
 
-body[data-slug='index']:has(.homepage-trail-toggle[aria-expanded='true']) {
+body[data-slug='index'][data-trail-open='true'] {
   .garden-pet-bubble {
     border: 0;
     background: transparent;
