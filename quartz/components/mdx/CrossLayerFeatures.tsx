@@ -1,94 +1,30 @@
 import { MathText } from '../../util/math-text'
+//@ts-ignore
+import figureScaleScript from '../scripts/figure-scale.inline'
 import style from '../styles/crossLayerFeatures.scss'
+import {
+  STAGES,
+  LC,
+  STATIONS,
+  SAES,
+  CIRCUIT_LAYERS,
+  FEATURES,
+  FORMED,
+  FORMING_BLOCKS,
+  CIRCUIT,
+  persistEdges,
+  formEdges,
+} from './cross-layer-features/model'
 import { registerMdxComponent, type QuartzMdxComponent } from './registry'
 
 type View = 'lifecycle' | 'circuit'
 type Coder = 'sae' | 'crosscoder'
 type Props = { caption?: string; view?: View; coder?: Coder }
 
-// ---------- lifecycle: one feature through eight blocks ----------
-
-// Synthetic stages shaped after the preview's "feature lifecycle" figure. Each block either
-// leaves the feature alone, writes one unit of it, or deletes what the stream holds.
-type Stage = 'absent' | 'forms' | 'persists' | 'amplified' | 'deleted'
-const STAGES: readonly Stage[] = [
-  'absent',
-  'absent',
-  'forms',
-  'forms',
-  'persists',
-  'amplified',
-  'persists',
-  'deleted',
-]
-
-// r_{l+1} = r_l + u_l, projected onto the feature direction: s_{l+1} = s_l + w_l.
-const lifecycle = () => {
-  const strength = [0]
-  const writes: number[] = []
-  for (const stage of STAGES) {
-    const before = strength[strength.length - 1]
-    const w = stage === 'forms' || stage === 'amplified' ? 1 : stage === 'deleted' ? -before : 0
-    writes.push(w)
-    strength.push(before + w)
-  }
-  // Per-layer SAEs read r_1 .. r_8; a unit-norm latent there has activation s_l.
-  const layers = strength.slice(1).map((s, k) => ({ station: k + 1, s }))
-  const active = layers.filter(l => l.s > 0)
-  const sum = active.reduce((a, l) => a + l.s, 0)
-  return { writes, strength, layers, active, sum }
-}
-
-const LC = lifecycle()
-const STATIONS = LC.strength.length
-const SAES = LC.layers.length
-
-// ---------- circuit: the preview's three-feature example over layers L .. L+4 ----------
-
-const CIRCUIT_LAYERS = 5
-type Feature = { id: number; first: number; row: number }
-// Features 1 and 2 are present by layer L; MLPs in layers L+2 and L+3 combine them into 3.
-const FEATURES: readonly Feature[] = [
-  { id: 1, first: 0, row: 0 },
-  { id: 3, first: 2, row: 1 },
-  { id: 2, first: 0, row: 2 },
-]
-const FORMED = 3
-const PARENTS = [1, 2]
-// Block b moves layer b to layer b + 1; these two blocks write feature 3.
-const FORMING_BLOCKS = [1, 2]
-
-type Node = { f: number; l: number; label: string }
-type Edge = { from: [number, number]; to: [number, number]; kind: 'persist' | 'form' }
-
-const circuit = () => {
-  const feature = (id: number) => FEATURES.find(f => f.id === id)!
-  const nodes: Node[] = []
-  for (const f of FEATURES)
-    for (let l = f.first; l < CIRCUIT_LAYERS; l++)
-      nodes.push({ f: f.id, l, label: `${f.id}${'abcde'[l - f.first]}` })
-  const edges: Edge[] = []
-  for (const f of FEATURES)
-    for (let l = f.first; l + 1 < CIRCUIT_LAYERS; l++)
-      edges.push({ from: [f.id, l], to: [f.id, l + 1], kind: 'persist' })
-  for (const b of FORMING_BLOCKS)
-    for (const p of PARENTS) {
-      if (b < feature(p).first) continue
-      edges.push({ from: [p, b], to: [FORMED, b + 1], kind: 'form' })
-    }
-  // A crosscoder latent spans every layer its feature occupies, so persistence edges vanish and
-  // the formation edges collapse to one per parent feature.
-  const latentEdges = [...new Set(edges.filter(e => e.from[0] !== e.to[0]).map(e => e.from[0]))]
-  return { nodes, edges, latentEdges, feature }
-}
-
-const CIRCUIT = circuit()
-const persistEdges = CIRCUIT.edges.filter(e => e.kind === 'persist').length
-const formEdges = CIRCUIT.edges.length - persistEdges
-
 // ---------- geometry ----------
 
-const LC_X0 = 84
+// The left gutter holds the row labels at the meta size.
+const LC_X0 = 124
 const LC_P = 58
 const lcX = (l: number) => LC_X0 + l * LC_P
 const LC_W = lcX(STATIONS - 1) + 22
@@ -105,7 +41,7 @@ const CODER_Y = VALUE_Y + 14
 const CELL = 18
 const LC_H = CODER_Y + CELL + 30
 
-const CC_X0 = 74
+const CC_X0 = 100
 const CC_P = 96
 const ccX = (l: number) => CC_X0 + l * CC_P
 const CC_W = ccX(CIRCUIT_LAYERS - 1) + 34
@@ -140,6 +76,7 @@ const Arrow = ({ id, soft }: { id: string; soft?: boolean }) => (
 const Lifecycle = ({ arrow }: { arrow: string }) => (
   <svg
     class="clf-svg"
+    data-fig-scale="--clf-u"
     viewBox={`0 0 ${LC_W} ${LC_H}`}
     preserveAspectRatio="xMidYMid meet"
     role="img"
@@ -303,6 +240,7 @@ const nodeBox = (f: number, l: number) => ({ x: ccX(l) - NODE_W / 2, y: rowOf(f)
 const Circuit = ({ arrow }: { arrow: string }) => (
   <svg
     class="clf-svg"
+    data-fig-scale="--clf-u"
     viewBox={`0 0 ${CC_W} ${CC_H}`}
     preserveAspectRatio="xMidYMid meet"
     role="img"
@@ -508,6 +446,7 @@ const CrossLayerFeaturesImpl: QuartzMdxComponent<Props> = ({
 
 const CrossLayerFeaturesComponent = CrossLayerFeaturesImpl as QuartzMdxComponent<Props>
 CrossLayerFeaturesComponent.css = style
+CrossLayerFeaturesComponent.afterDOMLoaded = figureScaleScript
 
 export const CrossLayerFeatures = registerMdxComponent(
   'CrossLayerFeatures',

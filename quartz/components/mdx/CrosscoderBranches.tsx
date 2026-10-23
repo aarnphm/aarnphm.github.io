@@ -9,6 +9,8 @@ import {
   type BranchesView,
 } from '../../util/crosscoder-branches'
 import { MathText } from '../../util/math-text'
+//@ts-ignore
+import figureScaleScript from '../scripts/figure-scale.inline'
 import style from '../styles/crosscoderBranches.scss'
 import { H, Label, OneBlock, Panel, Parallel, Sequential, W } from './crosscoder-branches-parts'
 import { registerMdxComponent, type QuartzMdxComponent } from './registry'
@@ -27,7 +29,13 @@ const tip = (angle: number, r = R) => {
 }
 
 const Superposition = ({ marker }: { marker: string }) => (
-  <svg class="cb-svg" viewBox={`0 0 ${W} ${W}`} role="img" aria-label="Feature directions">
+  <svg
+    class="cb-svg"
+    data-fig-scale="--cb-u"
+    viewBox={`0 0 ${W} ${W}`}
+    role="img"
+    aria-label="Feature directions"
+  >
     <defs>
       <marker
         id={marker}
@@ -211,6 +219,7 @@ const CrosscoderBranchesImpl: QuartzMdxComponent<Props> = ({ caption, view = 'pa
 
 const CrosscoderBranchesComponent = CrosscoderBranchesImpl
 CrosscoderBranchesComponent.css = style
+CrosscoderBranchesComponent.afterDOMLoaded = figureScaleScript
 
 export const CrosscoderBranches = registerMdxComponent(
   'CrosscoderBranches',

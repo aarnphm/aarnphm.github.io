@@ -1,3 +1,4 @@
+import { observeSvgScale } from './figure-scale'
 import { registerMdxContent } from './mdx-content'
 
 type LayoutState = { xS: number[]; yS: number[]; points: string[] }
@@ -186,4 +187,6 @@ const setupHeadSpectrum = (root: HTMLElement): (() => void) | null => {
 registerMdxContent(HS_ROOT_SELECTOR, root => {
   const cleanup = setupHeadSpectrum(root)
   if (cleanup) window.addCleanup?.(cleanup)
+  const svgs = root.querySelectorAll<SVGSVGElement>('.hs-svg, .hs-heat-svg')
+  window.addCleanup?.(observeSvgScale(svgs, '--hs-u'))
 })

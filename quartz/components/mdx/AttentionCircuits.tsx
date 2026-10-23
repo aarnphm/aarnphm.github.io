@@ -78,7 +78,7 @@ const StandardPanel: FunctionalComponent = () => {
     >
       <ArrowDefs id={STD_ARROW} />
       <rect class="acir-box acir-box--input" x={6} y={210} width={44} height={40} />
-      <Fo x={6} y={210} w={44} h={40} t="x" cls="acir-fo--big" />
+      <Fo x={6} y={210} w={44} h={40} t="x" />
       <path class="acir-line" d="M 50 230 L 60 230" />
       <path class="acir-line" d="M 60 230 L 60 100 L 88 100" marker-end={arr} />
       <path class="acir-line" d="M 60 230 L 88 230" marker-end={arr} />

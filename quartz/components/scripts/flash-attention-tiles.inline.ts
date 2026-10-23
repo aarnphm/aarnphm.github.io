@@ -1,5 +1,6 @@
 import katex from 'katex'
 import { renderFigureLabel } from '../../util/figure-label'
+import { observeSvgScale } from './figure-scale'
 import { registerMdxContent } from './mdx-content'
 
 type Vec = [number, number]
@@ -243,8 +244,10 @@ registerMdxContent('[data-flash-attention-tiles]', root => {
   next?.addEventListener('click', handleNext)
   prev?.addEventListener('click', handlePrev)
   reset?.addEventListener('click', handleReset)
+  const stopScale = observeSvgScale(root.querySelectorAll<SVGSVGElement>('.fat-graph'), '--fat-u')
 
   window.addCleanup(() => {
+    stopScale()
     next?.removeEventListener('click', handleNext)
     prev?.removeEventListener('click', handlePrev)
     reset?.removeEventListener('click', handleReset)

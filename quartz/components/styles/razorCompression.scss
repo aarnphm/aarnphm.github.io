@@ -73,14 +73,14 @@
     fill: var(--rzc-comp-edge);
   }
   .rzc-comp-box {
-    fill: color-mix(in srgb, var(--fig-salmon) 16%, var(--light));
+    fill: color-mix(in srgb, var(--lightgray) 50%, var(--light));
     stroke: var(--rzc-comp-edge);
     stroke-width: 1.2;
   }
 }
 
 :root[saved-theme='dark'] .razor-compression .rzc-comp-box {
-  fill: color-mix(in srgb, var(--fig-salmon) 18%, var(--lightgray));
+  fill: color-mix(in srgb, var(--dark) 8%, var(--lightgray));
 }
 
 .rzc-fo {
@@ -104,7 +104,7 @@
   }
 }
 .rzc-fo--drop {
-  color: color-mix(in srgb, var(--dark) 70%, var(--fig-salmon));
+  color: var(--dark);
   .katex {
     font-size: 0.76em;
   }

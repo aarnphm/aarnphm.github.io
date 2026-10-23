@@ -36,6 +36,9 @@
   aspect-ratio: 520 / 260;
   display: block;
   margin: 0 auto;
+  // User units per rendered px; kv-head-grouping.inline.ts keeps it current. Labels and stroke
+  // weights hold their px size while the head boxes scale with the figure.
+  --kvg-u: 0.96;
 
   .kvg-arrowhead {
     fill: var(--kvg-stroke);
@@ -43,6 +46,7 @@
 
   .kvg-box {
     stroke-width: 1.2;
+    vector-effect: non-scaling-stroke;
     transition:
       x 260ms cubic-bezier(0.4, 0, 0.2, 1),
       width 260ms cubic-bezier(0.4, 0, 0.2, 1),
@@ -75,6 +79,7 @@
   .kvg-link {
     stroke: var(--kvg-link);
     stroke-width: 1.1;
+    vector-effect: non-scaling-stroke;
     fill: none;
     transition:
       x2 260ms cubic-bezier(0.4, 0, 0.2, 1),
@@ -90,23 +95,20 @@
   .kvg-fo {
     @include figure-fo;
     justify-content: center;
-    font-size: 12px;
+    font-size: calc(var(--kvg-u) * 13px);
     overflow: visible;
     pointer-events: none;
   }
 
-  .kvg-fo--box {
-    font-size: 11px;
-  }
-
+  .kvg-fo--box,
   .kvg-fo--kv {
-    font-size: 11px;
+    font-size: calc(var(--kvg-u) * var(--text-meta));
   }
 
   .kvg-fo--row-label {
     justify-content: flex-end;
     color: var(--kvg-note-fg);
-    font-size: 11px;
+    font-size: calc(var(--kvg-u) * var(--text-meta));
   }
 }
 
@@ -171,7 +173,7 @@
   position: absolute;
   left: calc(var(--kvg-stop) * 100%);
   transform: translateX(-50%);
-  font-size: 0.74rem;
+  font-size: var(--text-meta);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
   color: var(--kvg-note-fg);
@@ -204,7 +206,7 @@
 .kvg-label {
   grid-column: 1 / 2;
   color: var(--kvg-note-fg);
-  font-size: 0.82rem;
+  font-size: var(--text-meta);
   white-space: nowrap;
 }
 
@@ -244,7 +246,7 @@
   }
 
   .kvg-ratio-tick {
-    font-size: 0.7rem;
+    font-size: var(--text-meta);
   }
 }
 
@@ -254,6 +256,6 @@
   }
 
   .kvg-ratio-tick {
-    font-size: 0.65rem;
+    font-size: var(--text-meta);
   }
 }

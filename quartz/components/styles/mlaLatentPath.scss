@@ -46,7 +46,7 @@
   }
 
   .mla-cache-box {
-    fill: color-mix(in srgb, var(--mla-salmon) 10%, transparent);
+    fill: color-mix(in srgb, var(--lightgray) 40%, transparent);
     stroke: var(--mla-cached-edge);
     stroke-width: 1.2;
   }
@@ -315,7 +315,7 @@
   margin: 0.2rem 0 0;
   padding: 0.55rem 0.75rem;
   box-shadow: none;
-  background: color-mix(in srgb, var(--mla-salmon) 6%, transparent);
+  background: color-mix(in srgb, var(--lightgray) 40%, transparent);
   color: var(--mla-note);
   font-size: 0.86rem;
   line-height: 1.5;

@@ -91,10 +91,14 @@
   display: block;
   border-radius: var(--radius-none);
   background: var(--oht-grid-bg);
+  // User units per rendered px (viewBox width / svg width); offset-heads-toy.inline.ts keeps it
+  // current. Tick and axis type multiply by it, so it holds at meta size in every frame.
+  --oht-u: 0.0187;
 
   .oht-cell {
     stroke: var(--oht-grid-stroke);
-    stroke-width: 0.025;
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
     transition: fill-opacity 140ms ease-out;
   }
   .oht-cell--head1 {
@@ -111,7 +115,7 @@
 .oht-fo {
   @include figure-fo;
   color: var(--oht-note);
-  font-size: 0.42px;
+  font-size: calc(var(--oht-u, 0.0187) * var(--text-meta));
 
   &.oht-fo--center {
     justify-content: center;
@@ -135,12 +139,9 @@
   padding: 0.35rem 0.4rem;
   border-radius: var(--radius-none);
   background: color-mix(in srgb, var(--lightgray) 35%, transparent);
-  font-size: 0.78rem;
+  font-size: var(--text-meta);
   color: var(--dark);
   overflow-x: auto;
-  .katex {
-    font-size: 0.95em;
-  }
 }
 
 .oht-readout {
@@ -176,12 +177,11 @@
   }
 
   &.oht-stat-val--big {
-    font-size: 1.05rem;
+    font-size: var(--text-ui);
     color: var(--dark);
   }
   &.oht-stat-val--mono {
     font-family: var(--codeFont);
-    font-size: 0.85rem;
     font-weight: 500;
   }
 }
@@ -189,7 +189,7 @@
 .oht-note {
   margin: 0;
   color: var(--oht-note);
-  font-size: 0.85rem;
+  font-size: var(--text-meta);
   line-height: 1.55;
   .oht-math {
     color: var(--dark);
@@ -226,7 +226,7 @@
 
 .oht-label {
   color: var(--oht-note);
-  font-size: 0.85rem;
+  font-size: var(--text-meta);
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
@@ -234,6 +234,7 @@
 }
 
 .oht-slider-value {
+  font-size: var(--text-meta);
   font-variant-numeric: tabular-nums;
   color: var(--dark);
   font-weight: 600;
@@ -272,7 +273,7 @@
   color: var(--darkgray);
   cursor: pointer;
   font-family: var(--codeFont);
-  font-size: 0.72rem;
+  font-size: var(--text-meta);
   line-height: 1;
   white-space: nowrap;
   transition:
@@ -305,7 +306,7 @@
   background: color-mix(in srgb, var(--light) 90%, var(--lightgray));
   color: var(--dark);
   font: inherit;
-  font-size: 0.82rem;
+  font-size: var(--text-meta);
   font-weight: 600;
   min-height: 2.5rem;
   padding: 0.35rem 0.95rem;
@@ -348,6 +349,20 @@
   font-size: 1em;
 }
 
+// Before the script measures a grid, the frame width stands in for it: three columns above
+// 760px, one full-width column below (wider from 640px), a phone-width column under 460px.
+@container oht-figure (min-width: 761px) {
+  .oht-grid {
+    --oht-u: 0.025;
+  }
+}
+
+@container oht-figure (min-width: 640px) and (max-width: 760px) {
+  .oht-grid {
+    --oht-u: 0.015;
+  }
+}
+
 @container oht-figure (max-width: 760px) {
   .oht-panels {
     grid-template-columns: 1fr;
@@ -369,5 +384,8 @@
   }
   .oht-panel {
     padding: 0.7rem 0.7rem 0.75rem;
+  }
+  .oht-grid {
+    --oht-u: 0.035;
   }
 }

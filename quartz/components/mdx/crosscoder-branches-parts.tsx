@@ -167,7 +167,13 @@ export const Parallel = ({ l, next }: Pair) => {
 }
 
 export const Panel = ({ label, children }: { label: string; children: ComponentChildren }) => (
-  <svg class="cb-svg" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={label}>
+  <svg
+    class="cb-svg"
+    data-fig-scale="--cb-u"
+    viewBox={`0 0 ${W} ${H}`}
+    role="img"
+    aria-label={label}
+  >
     {children}
   </svg>
 )

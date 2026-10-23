@@ -1,3 +1,4 @@
+import { observeSvgScale } from './figure-scale'
 import { registerMdxContent } from './mdx-content'
 
 type AcirCircuit = 'qk' | 'ov' | 'none'
@@ -136,4 +137,7 @@ function acirSetup(root: HTMLElement): (() => void) | null {
 registerMdxContent(ACIR_ROOT_SELECTOR, root => {
   const cleanup = acirSetup(root)
   if (cleanup) window.addCleanup?.(cleanup)
+  window.addCleanup?.(
+    observeSvgScale(root.querySelectorAll<SVGSVGElement>('.acir-graph'), '--acir-u'),
+  )
 })

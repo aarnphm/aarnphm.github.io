@@ -1,3 +1,4 @@
+import { observeSvgScale } from './figure-scale'
 import { registerMdxContent } from './mdx-content'
 import {
   type Comp,
@@ -207,4 +208,6 @@ const setupLocus = (root: HTMLElement): (() => void) | null => {
 registerMdxContent('[data-pole-response]', root => {
   const cleanup = root.dataset.prsMode === 'locus' ? setupLocus(root) : setupTime(root)
   if (cleanup) window.addCleanup?.(cleanup)
+  const svgs = root.querySelectorAll<SVGSVGElement>('.prs-plane, .prs-plot')
+  window.addCleanup?.(observeSvgScale(svgs, '--prs-u'))
 })

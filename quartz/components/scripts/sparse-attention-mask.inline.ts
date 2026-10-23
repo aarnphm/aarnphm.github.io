@@ -1,3 +1,4 @@
+import { observeSvgScale } from './figure-scale'
 import { registerMdxContent } from './mdx-content'
 
 type QueryState = {
@@ -101,4 +102,5 @@ const setupSparseAttentionMask = (root: HTMLElement): (() => void) | null => {
 registerMdxContent(SAM_ROOT_SELECTOR, root => {
   const cleanup = setupSparseAttentionMask(root)
   if (cleanup) window.addCleanup?.(cleanup)
+  window.addCleanup?.(observeSvgScale(root.querySelectorAll<SVGSVGElement>('.sam-svg'), '--sam-u'))
 })

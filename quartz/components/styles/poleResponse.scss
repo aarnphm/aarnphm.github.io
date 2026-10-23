@@ -48,7 +48,7 @@
   color: var(--fig-tab-fg);
   cursor: pointer;
   font-family: var(--codeFont);
-  font-size: 0.72rem;
+  font-size: var(--text-meta);
   line-height: 1.2;
   white-space: nowrap;
   transition:
@@ -92,7 +92,7 @@
 
 .prs-gain-label {
   color: var(--fig-note);
-  font-size: 0.78rem;
+  font-size: var(--text-meta);
   white-space: nowrap;
 }
 
@@ -110,7 +110,7 @@
   background: var(--light);
   color: var(--dark);
   font-family: var(--codeFont);
-  font-size: 0.72rem;
+  font-size: var(--text-meta);
   cursor: pointer;
   transition: background-color 140ms ease;
 
@@ -130,7 +130,7 @@
   display: none;
   margin: 0 0 0.6rem;
   color: var(--fig-note);
-  font-size: 0.82rem;
+  font-size: var(--text-meta);
 }
 
 .pole-response[data-prs-comp='none'] [data-prs-loop='none'],
@@ -156,6 +156,13 @@
   width: 100%;
   height: auto;
   overflow: visible;
+  // User units per rendered px (viewBox width / svg width); pole-response.inline.ts keeps it
+  // current per svg. Type and stroke weights hold their px size; the plot geometry scales.
+  --prs-u: 0.8;
+
+  :is(line, path, circle, rect, polyline, polygon) {
+    vector-effect: non-scaling-stroke;
+  }
 
   text {
     font-family: var(--codeFont);
@@ -164,7 +171,7 @@
 
   .prs-tick text {
     fill: var(--darkgray);
-    font-size: 10px;
+    font-size: calc(var(--prs-u) * var(--text-meta));
   }
 
   .prs-grid line {
@@ -194,7 +201,7 @@
 
   .prs-region-label text {
     fill: var(--fig-note);
-    font-size: 9px;
+    font-size: calc(var(--prs-u) * var(--text-meta));
   }
 
   .prs-axis {
@@ -361,7 +368,7 @@
 .prs-fo {
   @include figure-fo;
   justify-content: center;
-  font-size: 0.68rem;
+  font-size: calc(var(--prs-u, 0.8) * var(--text-meta));
 }
 
 .prs-fo--end {
@@ -399,14 +406,10 @@
     margin: 0 auto;
   }
 
-  // Each panel spans the column here, so the viewBox scales down; text keeps a readable size.
-  .prs-plane .prs-tick text,
-  .prs-plot .prs-tick text {
-    font-size: 12px;
-  }
-
-  .prs-fo {
-    font-size: 0.8rem;
+  // Before the script measures the panels, the stacked column width stands in for them.
+  .prs-plane,
+  .prs-plot {
+    --prs-u: 1;
   }
 
   .prs-readout {

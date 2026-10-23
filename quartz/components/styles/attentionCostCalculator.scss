@@ -60,7 +60,7 @@
 .acc-label {
   grid-column: 1 / 3;
   color: var(--acc-note);
-  font-size: 0.8rem;
+  font-size: var(--text-meta);
   display: inline-flex;
   align-items: baseline;
   gap: 0.35rem;
@@ -142,9 +142,9 @@
 .acc-warning {
   margin: 0.2rem 0 0;
   padding: 0.4rem 0.55rem;
-  font-size: 0.74rem;
+  font-size: var(--text-meta);
   color: var(--dark);
-  background: color-mix(in srgb, var(--acc-salmon) 10%, transparent);
+  background: color-mix(in srgb, var(--lightgray) 50%, transparent);
   border-radius: var(--radius-none);
   line-height: 1.4;
 }
@@ -177,7 +177,7 @@
 }
 
 .acc-card-label {
-  font-size: 0.72rem;
+  font-size: var(--text-meta);
   color: var(--acc-note);
   font-weight: 600;
 }
@@ -186,7 +186,7 @@
   display: block;
   margin-top: 0.05rem;
   max-width: 100%;
-  font-size: 0.72rem;
+  font-size: var(--text-meta);
   color: var(--acc-note);
   opacity: 0.8;
   text-align: left;
@@ -200,7 +200,7 @@
 
 .acc-card-num {
   display: block;
-  font-size: 1.45rem;
+  font-size: var(--text-ui);
   color: var(--dark);
   line-height: 1.5;
   min-block-size: 1.5em;
@@ -228,7 +228,7 @@
   grid-template-columns: 90px minmax(0, 1fr) 90px;
   align-items: center;
   gap: 0.55rem;
-  font-size: 0.78rem;
+  font-size: var(--text-meta);
 }
 
 .acc-bar-tag {
@@ -244,7 +244,7 @@
 }
 
 .acc-bar-track--bytes {
-  background: color-mix(in srgb, var(--acc-salmon) 8%, var(--acc-track-bg));
+  background: color-mix(in srgb, var(--lightgray) 30%, var(--acc-track-bg));
 }
 
 .acc-bar-fill {
@@ -278,9 +278,9 @@
 .acc-summary {
   margin: 0.9rem 0 0;
   padding: 0.7rem 0.9rem;
-  background: color-mix(in srgb, var(--acc-salmon) 6%, transparent);
+  background: color-mix(in srgb, var(--lightgray) 40%, transparent);
   color: var(--dark);
-  font-size: 0.85rem;
+  font-size: var(--text-meta);
   line-height: 1.5;
 
   .katex {
@@ -301,7 +301,7 @@
   display: block;
   margin: 0;
   color: var(--acc-note);
-  font-size: 0.78rem;
+  font-size: var(--text-meta);
 }
 
 .acc-math {
@@ -343,6 +343,6 @@
   }
   .acc-bar-row {
     grid-template-columns: 70px minmax(0, 1fr) 70px;
-    font-size: 0.74rem;
+    font-size: var(--text-meta);
   }
 }

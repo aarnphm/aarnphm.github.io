@@ -1,4 +1,5 @@
 import katex from 'katex'
+import { observeSvgScale } from './figure-scale'
 import { registerMdxContent } from './mdx-content'
 
 type OhtMatrix = number[][]
@@ -340,4 +341,5 @@ const ohtSetupRoot = (root: HTMLElement) => {
 
 registerMdxContent(OHT_ROOT, root => {
   ohtSetupRoot(root)
+  window.addCleanup(observeSvgScale(root.querySelectorAll<SVGSVGElement>('.oht-grid'), '--oht-u'))
 })

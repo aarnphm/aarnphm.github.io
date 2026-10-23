@@ -34,7 +34,7 @@
   color: var(--fig-tab-fg);
   cursor: pointer;
   font-family: var(--codeFont);
-  font-size: 0.72rem;
+  font-size: var(--text-meta);
   line-height: 1.2;
   white-space: nowrap;
   transition:
@@ -77,6 +77,15 @@
   width: 100%;
   margin: 0.5rem auto 0;
   overflow: visible;
+  // User units per rendered px (viewBox width / svg width); block-diagram.inline.ts keeps it
+  // current. Labels and wire weights hold their px size; blocks and spacing scale.
+  --bd-u: 0.8;
+
+  .bd-wire,
+  .bd-block rect,
+  .bd-sum circle {
+    vector-effect: non-scaling-stroke;
+  }
 
   .bd-wire {
     fill: none;
@@ -116,27 +125,27 @@
   .bd-t {
     fill: var(--dark);
     font-family: var(--codeFont);
-    font-size: 12px;
+    font-size: calc(var(--bd-u) * var(--text-meta));
   }
 
   .bd-t {
     font-family: KaTeX_Math, serif;
     font-style: italic;
-    font-size: 13px;
+    font-size: calc(var(--bd-u) * 13px);
   }
 }
 
 .bd-fo {
   @include figure-fo;
   justify-content: center;
-  font-size: 13px;
+  font-size: calc(var(--bd-u, 0.8) * 13px);
   white-space: nowrap;
 }
 
 .bd-text {
   margin: 0.75rem 0 0;
   color: var(--fig-note);
-  font-size: 0.78rem;
+  font-size: var(--text-meta);
   line-height: 1.45;
   text-wrap: pretty;
 }

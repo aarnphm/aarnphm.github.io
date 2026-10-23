@@ -3,6 +3,8 @@ import { type FunctionalComponent } from 'preact'
 import { customMacros, katexOptions } from '../../cfg'
 import { renderFigureLabel } from '../../util/figure-label'
 import { MathText } from '../../util/math-text'
+//@ts-ignore
+import figureScaleScript from '../scripts/figure-scale.inline'
 import style from '../styles/razorHeadTaxonomy.scss'
 import { registerMdxComponent, type QuartzMdxComponent } from './registry'
 
@@ -76,6 +78,7 @@ const RazorHeadTaxonomyImpl: QuartzMdxComponent<Props> = ({ caption }) => (
     <div class="rht-stage">
       <svg
         class="rht-graph"
+        data-fig-scale="--rht-u"
         viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
         preserveAspectRatio="xMidYMid meet"
         role="img"
@@ -192,6 +195,7 @@ const RazorHeadTaxonomyImpl: QuartzMdxComponent<Props> = ({ caption }) => (
 
 const RazorHeadTaxonomyComponent = RazorHeadTaxonomyImpl as QuartzMdxComponent<Props>
 RazorHeadTaxonomyComponent.css = style
+RazorHeadTaxonomyComponent.afterDOMLoaded = figureScaleScript
 
 export const RazorHeadTaxonomy = registerMdxComponent(
   'RazorHeadTaxonomy',

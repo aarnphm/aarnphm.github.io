@@ -37,7 +37,7 @@
 .cb-step-label {
   margin: 0.4rem 0 0;
   color: var(--fig-note);
-  font-size: 0.75rem;
+  font-size: var(--text-meta);
   line-height: 1.4;
   text-wrap: pretty;
 
@@ -63,10 +63,17 @@
   max-width: 15rem;
   margin: 0 auto;
   overflow: visible;
+  // User units per rendered px; figure-scale.inline.ts keeps it current per svg. Labels and
+  // stroke weights hold their px size while the streams and blocks scale with the figure.
+  --cb-u: 1;
+
+  :is(line, path, rect, circle) {
+    vector-effect: non-scaling-stroke;
+  }
 
   .cb-fo {
     @include figure-fo;
-    font-size: 11px;
+    font-size: calc(var(--cb-u) * var(--text-meta));
   }
 
   .cb-fo--center {
@@ -176,7 +183,7 @@
 .crosscoder-branches .cb-table {
   margin: 0;
   border-collapse: collapse;
-  font-size: 0.78rem;
+  font-size: var(--text-meta);
   line-height: 1.35;
 
   th,

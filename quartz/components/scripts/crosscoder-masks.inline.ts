@@ -1,3 +1,4 @@
+import { observeSvgScale } from './figure-scale'
 import { registerMdxContent } from './mdx-content'
 
 type ClientState = {
@@ -58,4 +59,5 @@ const setupCrosscoderMasks = (root: HTMLElement): (() => void) | null => {
 registerMdxContent(CCM_ROOT_SELECTOR, root => {
   const cleanup = setupCrosscoderMasks(root)
   if (cleanup) window.addCleanup?.(cleanup)
+  window.addCleanup?.(observeSvgScale(root.querySelectorAll<SVGSVGElement>('.ccm-svg'), '--ccm-u'))
 })

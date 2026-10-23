@@ -1,3 +1,4 @@
+import { observeSvgScale } from './figure-scale'
 import { hbView } from './heavy-ball-model'
 import { registerMdxContent } from './mdx-content'
 
@@ -48,4 +49,5 @@ const setupHeavyBallRate = (root: HTMLElement): (() => void) | null => {
 registerMdxContent('[data-heavy-ball-rate]', root => {
   const cleanup = setupHeavyBallRate(root)
   if (cleanup) window.addCleanup?.(cleanup)
+  window.addCleanup?.(observeSvgScale(root.querySelectorAll<SVGSVGElement>('.hbr-svg'), '--hbr-u'))
 })

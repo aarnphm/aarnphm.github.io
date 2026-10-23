@@ -41,7 +41,7 @@
   color: var(--fig-tab-fg);
   cursor: pointer;
   font-family: var(--codeFont);
-  font-size: 0.72rem;
+  font-size: var(--text-meta);
   line-height: 1.2;
   white-space: nowrap;
   transition:
@@ -83,7 +83,7 @@
   color: var(--dark);
   cursor: pointer;
   font-family: var(--codeFont);
-  font-size: 0.72rem;
+  font-size: var(--text-meta);
   line-height: 1.2;
   transition:
     background-color 140ms ease,
@@ -114,12 +114,12 @@
 .fsm-regex {
   margin: 0.85rem 0 0;
   color: var(--fig-note);
-  font-size: 0.72rem;
+  font-size: var(--text-meta);
   overflow-wrap: anywhere;
 
   code {
     color: var(--dark);
-    font-size: 0.72rem;
+    font-size: var(--text-meta);
     background: none;
     padding: 0;
   }
@@ -144,6 +144,9 @@
   display: block;
   width: 100%;
   margin: 0 auto;
+  // User units per rendered px; fsm-decoding.inline.ts keeps it current per svg. Labels and
+  // stroke weights hold their px size while the boxes and edges scale with the figure.
+  --fsm-u: 0.77;
 
   text {
     font-family: var(--codeFont);
@@ -162,6 +165,7 @@
     fill: none;
     stroke: var(--fig-stroke);
     stroke-width: 1;
+    vector-effect: non-scaling-stroke;
     transition:
       stroke 160ms ease,
       stroke-width 160ms ease;
@@ -178,7 +182,7 @@
 
   .fsm-edge-label {
     fill: var(--dark);
-    font-size: 10px;
+    font-size: calc(var(--fsm-u) * var(--text-meta));
   }
 
   .fsm-edge[data-st='s'] .fsm-edge-line,
@@ -200,6 +204,7 @@
     fill: var(--fsm-node-ground);
     stroke: var(--fig-stroke);
     stroke-width: 1;
+    vector-effect: non-scaling-stroke;
     transition:
       fill 160ms ease,
       stroke 160ms ease;
@@ -209,11 +214,12 @@
     fill: none;
     stroke: var(--fig-stroke);
     stroke-width: 0.8;
+    vector-effect: non-scaling-stroke;
   }
 
   .fsm-node-label {
     fill: var(--dark);
-    font-size: 7.5px;
+    font-size: calc(var(--fsm-u) * var(--text-meta));
   }
 
   .fsm-node[data-st='s'] .fsm-node-box,
@@ -241,13 +247,13 @@
 .fsm-action {
   margin: 0;
   color: var(--dark);
-  font-size: 0.78rem;
+  font-size: var(--text-meta);
   line-height: 1.45;
   text-wrap: pretty;
 
   code {
     color: var(--dark);
-    font-size: 0.74rem;
+    font-size: var(--text-meta);
   }
 }
 
@@ -302,7 +308,7 @@
 
 .fsm-tok-text {
   color: var(--dark);
-  font-size: 0.74rem;
+  font-size: var(--text-meta);
   background: none;
   padding: 0;
   white-space: pre;
@@ -312,7 +318,7 @@
   min-height: 1.2em;
   color: var(--dark);
   font-family: var(--codeFont);
-  font-size: 0.64rem;
+  font-size: var(--text-meta);
   font-variant-numeric: tabular-nums;
 }
 
@@ -334,7 +340,7 @@
 
   code {
     color: var(--dark);
-    font-size: 0.74rem;
+    font-size: var(--text-meta);
     background: none;
     padding: 0;
     white-space: pre;
@@ -343,7 +349,7 @@
   span {
     color: var(--fig-note);
     font-family: var(--codeFont);
-    font-size: 0.64rem;
+    font-size: var(--text-meta);
   }
 
   &[data-st='h'] > * {
@@ -370,7 +376,7 @@
 .fsm-edge-table {
   @include figure-grid;
   grid-template-columns: max-content minmax(0, 1fr) max-content;
-  font-size: 0.78rem;
+  font-size: var(--text-meta);
 }
 
 .fsm-edge-row {

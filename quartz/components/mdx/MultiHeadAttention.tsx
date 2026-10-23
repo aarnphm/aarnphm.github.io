@@ -6,82 +6,29 @@ import { MathText } from '../../util/math-text'
 //@ts-ignore
 import script from '../scripts/multi-head-attention.inline'
 import style from '../styles/multiHeadAttention.scss'
+import {
+  COL_X,
+  DEFAULT_DM,
+  DEFAULT_HEADS,
+  HEAD_OPTIONS,
+  HEAD_OUT_H,
+  HEAD_OUT_W,
+  PAD_L,
+  PAD_R,
+  PROJ_W,
+  SCORE_BOX,
+  SCORE_PATTERNS,
+  SEQ_LEN,
+  VIEW_H,
+  VIEW_W,
+  fmtBytes,
+  fmtCompact,
+  headBandY,
+  projLayout,
+} from './multi-head-attention/model'
 import { registerMdxComponent, type QuartzMdxComponent } from './registry'
 
 type Props = { caption?: string; heads?: number }
-
-const HEAD_OPTIONS = [1, 2, 4, 8] as const
-const DEFAULT_HEADS = 4
-const DEFAULT_DM = 512
-const SEQ_LEN = 4
-
-const VIEW_W = 760
-const VIEW_H = 560
-const PAD_L = 18
-const PAD_R = 18
-
-const COL_X = { input: 60, proj: 200, score: 332, head: 472, concat: 612, wo: 700 } as const
-const HEAD_BAND_TOP = 36
-const HEAD_BAND_BOT = VIEW_H - 36
-const HEAD_BAND_H = HEAD_BAND_BOT - HEAD_BAND_TOP
-
-const PROJ_W = 52
-const PROJ_H = 14
-const PROJ_GAP = 4
-const SCORE_BOX = 52
-const HEAD_OUT_W = 56
-const HEAD_OUT_H = 22
-
-const SCORE_PATTERNS: number[][][] = [
-  [
-    [0.85, 0.06, 0.04, 0.05],
-    [0.05, 0.78, 0.12, 0.05],
-    [0.04, 0.1, 0.82, 0.04],
-    [0.05, 0.04, 0.06, 0.85],
-  ],
-  [
-    [0.05, 0.85, 0.05, 0.05],
-    [0.04, 0.04, 0.88, 0.04],
-    [0.04, 0.05, 0.04, 0.87],
-    [0.83, 0.06, 0.06, 0.05],
-  ],
-  [
-    [0.62, 0.18, 0.12, 0.08],
-    [0.16, 0.5, 0.22, 0.12],
-    [0.1, 0.2, 0.46, 0.24],
-    [0.06, 0.12, 0.28, 0.54],
-  ],
-  [
-    [0.25, 0.25, 0.25, 0.25],
-    [0.2, 0.3, 0.3, 0.2],
-    [0.18, 0.32, 0.32, 0.18],
-    [0.3, 0.2, 0.2, 0.3],
-  ],
-  [
-    [0.7, 0.2, 0.06, 0.04],
-    [0.5, 0.3, 0.15, 0.05],
-    [0.3, 0.35, 0.25, 0.1],
-    [0.1, 0.2, 0.35, 0.35],
-  ],
-  [
-    [0.1, 0.2, 0.3, 0.4],
-    [0.15, 0.25, 0.35, 0.25],
-    [0.25, 0.35, 0.25, 0.15],
-    [0.4, 0.3, 0.2, 0.1],
-  ],
-  [
-    [0.88, 0.04, 0.04, 0.04],
-    [0.06, 0.05, 0.84, 0.05],
-    [0.78, 0.08, 0.08, 0.06],
-    [0.06, 0.82, 0.06, 0.06],
-  ],
-  [
-    [0.4, 0.1, 0.4, 0.1],
-    [0.1, 0.4, 0.1, 0.4],
-    [0.42, 0.08, 0.42, 0.08],
-    [0.08, 0.42, 0.08, 0.42],
-  ],
-]
 
 const renderMath = (tex: string, display = false): string =>
   renderFigureLabel(
@@ -120,25 +67,6 @@ const MathLabel: FunctionalComponent<{ tex: string; display?: boolean }> = ({ te
     dangerouslySetInnerHTML={{ __html: renderMath(tex, display) }}
   />
 )
-
-const headBandY = (i: number, h: number): { top: number; mid: number; bot: number } => {
-  const slot = HEAD_BAND_H / h
-  const top = HEAD_BAND_TOP + slot * i
-  return { top, mid: top + slot / 2, bot: top + slot }
-}
-
-const fmtBytes = (n: number): string => {
-  if (n >= 1024 * 1024) return `${(n / (1024 * 1024)).toFixed(1)} MiB`
-  if (n >= 1024) return `${(n / 1024).toFixed(1)} KiB`
-  return `${n} B`
-}
-
-const fmtCompact = (n: number): string => {
-  if (n >= 1e9) return `${(n / 1e9).toFixed(2)}G`
-  if (n >= 1e6) return `${(n / 1e6).toFixed(2)}M`
-  if (n >= 1e3) return `${(n / 1e3).toFixed(1)}k`
-  return String(n)
-}
 
 const MultiHeadAttentionImpl: QuartzMdxComponent<Props> = ({ caption, heads = DEFAULT_HEADS }) => {
   const initialH = HEAD_OPTIONS.includes(heads as 1 | 2 | 4 | 8) ? (heads as number) : DEFAULT_HEADS
@@ -247,7 +175,8 @@ const MultiHeadAttentionImpl: QuartzMdxComponent<Props> = ({ caption, heads = DE
             {headIndices.map(i => {
               const visible = i < initialH
               const { mid } = headBandY(i, initialH)
-              const projTopY = mid - (PROJ_H * 3 + PROJ_GAP * 2) / 2
+              const proj = projLayout(initialH)
+              const projTopY = mid - (proj.height * 3 + proj.gap * 2) / 2
               const scoreY = mid - SCORE_BOX / 2
               const headOutY = mid - HEAD_OUT_H / 2
               const accent = i === 0
@@ -259,7 +188,7 @@ const MultiHeadAttentionImpl: QuartzMdxComponent<Props> = ({ caption, heads = DE
                 >
                   <g data-mha-projs>
                     {['Q', 'K', 'V'].map((kind, k) => {
-                      const py = projTopY + k * (PROJ_H + PROJ_GAP)
+                      const py = projTopY + k * (proj.height + proj.gap)
                       return (
                         <g>
                           <rect
@@ -267,13 +196,13 @@ const MultiHeadAttentionImpl: QuartzMdxComponent<Props> = ({ caption, heads = DE
                             x={COL_X.proj - PROJ_W / 2}
                             y={py}
                             width={PROJ_W}
-                            height={PROJ_H}
+                            height={proj.height}
                           />
                           <MathFO
                             x={COL_X.proj - PROJ_W / 2}
                             y={py}
                             w={PROJ_W}
-                            h={PROJ_H}
+                            h={proj.height}
                             tex={`W_{${kind},${i + 1}}`}
                             cls="mha-fo--proj"
                           />
@@ -337,7 +266,7 @@ const MultiHeadAttentionImpl: QuartzMdxComponent<Props> = ({ caption, heads = DE
                       y={mid - 11}
                       w={SCORE_BOX}
                       h={22}
-                      tex={`\\text{head}_{${i + 1}}\\,\\text{attn}`}
+                      tex="\text{attn}"
                       cls="mha-fo--collapsed"
                     />
                   </g>

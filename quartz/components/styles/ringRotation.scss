@@ -292,11 +292,11 @@
 }
 
 .rr-btn:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--rr-salmon) 12%, var(--light));
+  background: color-mix(in srgb, var(--lightgray) 60%, var(--light));
 }
 
 .rr-btn:focus-visible {
-  outline: 2px solid var(--rr-salmon);
+  outline: 2px solid var(--dark);
   outline-offset: 2px;
 }
 
@@ -306,7 +306,7 @@
 }
 
 .rr-btn--primary {
-  background: color-mix(in srgb, var(--rr-salmon) 28%, var(--light));
+  background: color-mix(in srgb, var(--lightgray) 80%, var(--light));
 }
 
 .rr-caption {
