@@ -261,7 +261,7 @@ async function processOgImage(
     fileData.frontmatter?.socialDescription ??
     fileData.rawDescription ??
     fileData.frontmatter?.description ??
-    unescapeHTML(fileData.description?.trim() ?? i18n(cfg.locale).propertyDefaults.description)
+    unescapeHTML(fileData.description?.trim() ?? '')
   const description = descriptionToPlainText(rawDescription, slug)
   const outputSlug = `${slug}-og-image` as FullSlug
   const dest = joinSegments(ctx.argv.output, `${outputSlug}.webp`) as FilePath

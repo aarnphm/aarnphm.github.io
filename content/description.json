@@ -1,0 +1,24 @@
+[
+  {
+    "[[antilibrary.base]]": "reading catalogue and shelf views across books, papers, and essays by topic and reading status"
+  },
+  {
+    "[[cinematheque.base]]": "film archive and watchlist indexed by director, release year, studio, and era"
+  },
+  { "[[ideas.base]]": "project index grouped by category, status, and notebook links" },
+  {
+    "[[places to go.base]]": "geospatial directory and map of cafes, studios, bookstores, and bars with coordinates and notes"
+  },
+  {
+    "[[singularity.canvas]]": "systems map connecting [[thoughts/Autoregressive models|autoregressive models]] and [[thoughts/vllm|vllm]] inference internals to hyperintelligence and the [[thoughts/Kardashev scale|kardashev scale]]"
+  },
+  {
+    "[[interfaces.canvas]]": "hardware interface notes on scsi standards for connecting computers and peripheral devices"
+  },
+  {
+    "[[philosophie.canvas]]": "concept map linking [[thoughts/Existentialism|existentialism]], [[thoughts/Camus|camus]], [[thoughts/Nietzsche|nietzsche]], and [[thoughts/Gilles Deleuze|deleuze]] across ontology and multiplicity"
+  },
+  {
+    "[[fr/parcours.canvas]]": "carte du parcours d'apprentissage du français par saison, épisode, grammaire et pratique"
+  }
+]

@@ -39,7 +39,7 @@ export default (() => {
       fileData.frontmatter?.socialDescription ??
       fileData.rawDescription ??
       fileData.frontmatter?.description ??
-      unescapeHTML(fileData.description?.trim() ?? i18n(cfg.locale).propertyDefaults.description)
+      unescapeHTML(fileData.description?.trim() ?? '')
     const description = descriptionToPlainText(rawDescription, fileData.slug)
 
     const { css, js, additionalHead } = externalResources
