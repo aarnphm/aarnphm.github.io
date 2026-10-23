@@ -87,7 +87,9 @@
       opacity: 0.7;
     }
 
-    [data-part],
+    [data-part] {
+      display: none;
+    }
     [data-part] > .trail-pet-frame {
       animation: trail-pet-step var(--trail-pet-swap, 0.4s) step-end infinite;
     }

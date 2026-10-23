@@ -85,7 +85,7 @@ const hat = [
 ]
 // The pill eyes as the site pet's (pen.ts pillEye, EYE_POSES): two cells wide, leaning a cell with
 // the top to the left, set left of centre as the mascot's are. Its feelings are all in them, as the
-// site pet's: happy squashes each to a short bar with its right end up, surprised stretches them,
+// site pet's: happy turns each into a caret (^), surprised stretches them,
 // scared narrows and lifts them, thinking sets one up and one down.
 const dash = ['KK....KK', 'KK....KK', '.KK....KK', '.KK....KK']
 const eyes: Record<string, string> = {
@@ -93,7 +93,7 @@ const eyes: Record<string, string> = {
   'eyes-up': at(dash, 4, 5),
   'eyes-down': at(dash, 4, 7),
   'eyes-wide': at(['KK....KK', 'KK....KK', 'KK....KK', 'KK....KK', 'KK....KK'], 4, 5),
-  'eyes-happy': at(['..KK....KK', 'KKK...KKK.'], 3, 7),
+  'eyes-happy': at(['.KK....KK.', 'K..K..K..K'], 3, 6),
   'eyes-scared': at(['.K....K.', 'K....K..', 'K....K..'], 5, 5),
   'eyes-thinking': at(['......KK', '......KK', 'KK......', 'KK......'], 4, 6),
 }

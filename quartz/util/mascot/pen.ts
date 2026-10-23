@@ -222,6 +222,21 @@ export function poseEye(
   return stroke(pts, t => thick * (1 + 0.06 * wave(t * 4)), ink)
 }
 
+// A happy eye as a caret (^), `s` wide, its apex at (x, y). The pet and comment avatars share it.
+export function caretEye(x: number, y: number, s: number, w: number, seed = 0, ink = INK): string {
+  const half = s / 2
+  const pts = densify(
+    [
+      [x - half, y + 0.62 * s],
+      [x, y],
+      [x + half, y + 0.62 * s],
+    ],
+    s / 12,
+  )
+  const wave = drift(seed + 90, [2, 5])
+  return stroke(pts, t => w * (1 + 0.06 * wave(t * 4)), ink)
+}
+
 // A hand loop pulled toward a rounded square: `square` 0 is loop(), 1 a soft squircle. The pull is
 // a superellipse factor on the radius, so the loop's wobble and overrun stay.
 export function blob(seed: number, square = 0.25, wobble = 0.06, overrun = 0.03, n = 220): Pt[] {

@@ -1,5 +1,6 @@
 import { mulberry } from '../components/scripts/404-pixel'
 import {
+  caretEye,
   curve,
   filled,
   hand,
@@ -139,24 +140,9 @@ function eyes(kind: number, gaze: number, w: number, seed: number): string {
         .join('')
     case 'dot':
       return xs.map(x => `<circle cx="${x}" cy="${y}" r="0.1" style="fill:${INK}"/>`).join('')
-    // Blobatar's happy: no mouth; the eyes squash into short thick bars, raised and spread a
-    // little, both leaning the same way.
+    // Happy as blobatar does it, all in the eyes: a caret each (^ ^), no mouth.
     case 'happy':
-      return xs
-        .map((x, i) => {
-          const cx = x + (i ? 0.04 : -0.04)
-          const a = (-8 * Math.PI) / 180
-          const [ux, uy] = [0.1 * Math.cos(a), 0.1 * Math.sin(a)]
-          return stroke(
-            [
-              [cx - ux, y - 0.05 - uy],
-              [cx + ux, y - 0.05 + uy],
-            ],
-            () => 0.15,
-            INK,
-          )
-        })
-        .join('')
+      return xs.map((x, i) => caretEye(x, y - 0.06, 0.3, w * 0.9, seed + i)).join('')
     case 'wink':
       return dash(xs[0]) + shut(xs[1], true)
     case 'wide':

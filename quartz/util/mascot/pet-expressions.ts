@@ -1,4 +1,5 @@
 import {
+  caretEye,
   densify,
   even,
   EYE,
@@ -31,7 +32,13 @@ export function petFace(s: PetPen) {
     'eyes-dash',
     EYES.map((x, i) => `<g class="pet-eye">${pillEye(x, y, h, w, 0.2, i, ink)}</g>`).join(''),
   )
-  const happy = look('happy')
+  // Happy is a pair of carets (^ ^), set a little high as blobatar lifts its happy eyes.
+  const happy = part(
+    'eyes-happy',
+    EYES.map(
+      (x, i) => `<g class="pet-eye">${caretEye(x, y - 0.12, 0.34, w * 0.8, i, ink)}</g>`,
+    ).join(''),
+  )
   const surprised = look('surprised')
   const scared = look('scared')
   const thinking = look('thinking')
