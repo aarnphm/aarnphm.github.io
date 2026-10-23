@@ -13,6 +13,7 @@ interface Scale {
   min: number
   span: number
   median: number
+  ties: Map<number, number>
 }
 
 const scales = new WeakMap<NoteGraph, Scale>()
@@ -23,11 +24,15 @@ function scaleOf(graph: NoteGraph): Scale {
   const logs = Array.from(graph.scores, score => Math.log(Math.max(score, Number.MIN_VALUE)))
   const sorted = [...logs].sort((a, b) => a - b)
   const min = sorted[0] ?? 0
+  // Notes nobody links to share one floor score; their positions differ only by tie-break.
+  const ties = new Map<number, number>()
+  for (const score of graph.scores) ties.set(score, (ties.get(score) ?? 0) + 1)
   scale = {
     ids: new Map(graph.slugs.map((slug, id) => [slug, id])),
     min,
     span: (sorted.at(-1) ?? 0) - min || 1,
     median: sorted[Math.floor(sorted.length / 2)] ?? 0,
+    ties,
   }
   scales.set(graph, scale)
   return scale
@@ -63,12 +68,14 @@ export function noteRankDistribution(ranker: NoteRanker, rank: NoteRank): SVGSVG
   const length = Math.max(2, x(rank.score))
 
   const top = gifts[0] ?? 0
+  const tied = scale.ties.get(rank.score) ?? 1
   const share = (value: number) => `${Math.round((value / (times || 1)) * 100)}%`
   const label =
     `PageRank ${rank.position} of ${n} notes, ${times.toFixed(2)} times the mean. ` +
     (gifts.length
       ? `${gifts.length} inbound ${gifts.length === 1 ? 'link gives' : 'links give'} ${share(received)}; the largest gives ${share(top)}. `
       : 'No inbound links; the whole score is the share every note gets. ') +
+    (tied > 1 ? `Tied with ${tied - 1} other notes at this score. ` : '') +
     'Bar length is the score on a log scale across all notes; the tick is the median note.'
 
   const svg = node('svg', {

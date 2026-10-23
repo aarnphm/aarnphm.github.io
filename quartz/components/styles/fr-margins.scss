@@ -160,7 +160,7 @@ article[data-fr-mode='margin'] {
   }
 }
 
-article[data-fr-mode='inline'] {
+:is(article[data-fr-mode='inline'], .preview-container > .preview-inner) {
   // the label carries the number; only a cell keeps its own, for the groups set after its table
   .fr-n {
     display: none;

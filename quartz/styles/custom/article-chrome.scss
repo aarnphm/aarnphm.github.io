@@ -481,7 +481,11 @@ body {
 
 // an apparatus page (/fr, technical) sets its tags alone: the tag boxes are the byline, with no label,
 // no hairlines and no cell padding, flush with the header's edge
-#quartz-root > .page-body-grid:has(.fr-group) > .page-header > .byline {
+#quartz-root > .page-body-grid:has(.fr-group) > .page-header > .byline,
+.preview-container > .preview-inner:has(.fr-group) > .byline {
+  border-top-width: 0;
+  border-bottom-width: 0;
+
   &::before,
   &::after {
     content: none;
@@ -489,6 +493,11 @@ body {
 
   > * {
     padding: 0;
+
+    &:last-child {
+      border-left: 0;
+      border-top: 0;
+    }
   }
 
   .tags h2 {
@@ -514,6 +523,10 @@ body {
       &:last-child {
         border-left: 0;
         border-top: 1px solid var(--lightgray);
+      }
+
+      &:only-child {
+        border-top: 0;
       }
     }
   }
