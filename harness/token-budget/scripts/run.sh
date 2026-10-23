@@ -21,11 +21,18 @@
 #
 # Commands run from the main checkout; <worktree> is a `w` worktree path.
 set -eu
-TB=$(cd "$(dirname "$0")/.." && pwd)
+TARGET=$0
+while [ -L "$TARGET" ]; do
+  DIR=$(cd -P "$(dirname "$TARGET")" && pwd)
+  TARGET=$(readlink "$TARGET")
+  [ "${TARGET#/}" = "$TARGET" ] && TARGET="$DIR/$TARGET"
+done
+SCRIPT_DIR=$(cd -P "$(dirname "$TARGET")" && pwd)
+TB=$(cd "$SCRIPT_DIR/.." && pwd)
 WS=$(git -C "$TB" rev-parse --show-toplevel)
 SASS="$WS/node_modules/.bin/sass"
 
-usage() { sed -n '3,22p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 2; }
+usage() { sed -n '3,22p' "$TARGET" | sed 's/^# \{0,1\}//' >&2; exit 2; }
 need() { [ "$1" -ge "$2" ] || usage; }
 
 cmd=${1:-}
