@@ -1,56 +1,103 @@
 .expand-button,
 .clipboard-button {
   position: absolute;
-  display: flex;
-  float: right;
   right: 0;
   margin: 0;
-  color: var(--gray);
-  background-color: var(--light);
   opacity: 0;
-  transition: 0.2s;
+  transition: opacity 120ms ease;
+}
+
+button.clipboard-button {
+  appearance: none;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  width: 24px;
+  height: 24px;
+  padding: 4px;
+  border: 0;
+  border-radius: 0;
+  color: var(--darkgray);
+  background: transparent;
+  font: inherit;
+  line-height: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+
+  & > svg {
+    grid-area: 1 / 1;
+    display: block;
+    width: 16px;
+    height: 16px;
+    pointer-events: none;
+    fill: currentColor;
+    transition:
+      opacity 120ms ease,
+      transform 120ms ease;
+  }
+
+  .source-icon {
+    fill: none;
+  }
 
   .copy-icon {
-    display: block;
+    opacity: 1;
+    transform: scale(1);
   }
+
   .check-icon {
-    display: none;
+    opacity: 0;
+    transform: scale(0.8);
   }
 
   &.check {
-    .check-icon {
-      display: block;
-    }
     .copy-icon {
-      display: none;
+      opacity: 0;
+      transform: scale(0.8);
+    }
+
+    .check-icon {
+      opacity: 1;
+      transform: scale(1);
     }
   }
 
-  & > svg {
-    fill: var(--light);
-    filter: contrast(0.3);
-  }
-
-  &:hover {
+  &:focus-visible {
     opacity: 1;
-    transition: 0.2s;
-    cursor: pointer;
-    border-color: var(--secondary);
-  }
-
-  &:focus {
-    outline: 0;
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
   }
 }
 
 .expand-button {
-  right: 1.6rem; // (margin from copy * 2 + spacing)
+  right: 1.6rem;
 }
 
-pre:hover {
-  & > .expand-button,
-  & > .clipboard-button {
+@media (hover: hover) and (pointer: fine) {
+  pre:hover > .expand-button,
+  pre:hover > .clipboard-button,
+  .clipboard-button:hover {
     opacity: 1;
-    transition: 0.2s;
+  }
+}
+
+@media (pointer: coarse) {
+  button.clipboard-button {
+    width: 44px;
+    height: 44px;
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button.clipboard-button,
+  button.clipboard-button > svg {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  button.clipboard-button:focus-visible {
+    outline-color: Highlight;
   }
 }
