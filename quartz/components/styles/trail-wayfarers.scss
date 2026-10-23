@@ -43,3 +43,54 @@
     scale: 1;
   }
 }
+
+// The hikers' clothes and poses, moved here whole from shared-trail-frame.scss.
+.homepage-trail-scene {
+  .trail-hiker-hat {
+    fill: color-mix(in srgb, var(--lightgray) 45%, #ae9066);
+  }
+  .trail-hiker-coat {
+    fill: color-mix(in srgb, var(--gray) 40%, #899275);
+  }
+  .trail-hiker-boot,
+  .trail-hiker-grip {
+    fill: var(--dark);
+  }
+  .trail-hiker-pole,
+  .trail-hiker-pack-cloth {
+    fill: color-mix(in srgb, var(--darkgray) 65%, #957352);
+  }
+  .trail-hiker-pack-strap {
+    fill: var(--darkgray);
+  }
+  .trail-hiker-bedroll {
+    fill: color-mix(in srgb, var(--lightgray) 45%, #b7ad8a);
+  }
+  [data-hiker-pose='bend'],
+  [data-hiker-pose='rest'],
+  .trail-hiker-parked-pole {
+    display: none;
+  }
+  .trail-backpacker[data-stride='0'] .trail-hiker-stride[data-stride='1'],
+  .trail-backpacker[data-stride='1'] .trail-hiker-stride[data-stride='0'] {
+    display: none;
+  }
+  .trail-backpacker:is([data-phase='unpacking'], [data-phase='packing']) {
+    [data-hiker-pose='walk'] {
+      display: none;
+    }
+    [data-hiker-pose='bend'],
+    .trail-hiker-parked-pole {
+      display: block;
+    }
+  }
+  .trail-backpacker[data-phase='resting'] {
+    [data-hiker-pose='walk'] {
+      display: none;
+    }
+    [data-hiker-pose='rest'],
+    .trail-hiker-parked-pole {
+      display: block;
+    }
+  }
+}
