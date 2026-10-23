@@ -7461,6 +7461,166 @@
       },
       "artworkSha256": "979b247da9663022d24c5c81032e0189e90bb2c028bde693bff6a83c96837987",
       "detailArtworkSha256": "991ab5f87be33b86f2f58fb5633af091777a735bcb5412b0ca3f44dc821a344a"
+    },
+    {
+      "id": "archaeology-of-knowledge-vintage-etsy-1535278588-v1",
+      "title": "The Archaeology of Knowledge",
+      "author": "Michel Foucault",
+      "publisher": "Vintage Books",
+      "isbn": "9780394711065",
+      "editionEvidence": "Same-copy Etsy gallery has the current megaphone front, rear barcode ISBN9780394711065 and an angled complete printed spine. Publisher record identifies this ISBN as the Vintage paperback. The note records A. M. Sheridan Smith, retained; no translation change or copy copyright/printing date asserted.",
+      "page": "https://www.etsy.com/listing/1535278588/michel-foucault-collection-b-10-books-to",
+      "source": "https://i.etsystatic.com/25985395/r/il/f236bd/8261587407/il_fullxfull.8261587407_sydd.jpg",
+      "sourceSha256": "f5558b6f423eec28f451fbdc76b2ff95d03acf6bd91c0313c84263391e9107a1",
+      "sourceKind": "Same-copy Etsy il_fullxfull served2999x2038JPEG, no camera-native proof. Boundary rectification of observed spine, no print reconstruction, recoloring, sharpening or invented edge pixels. Worn corners and soft small marks retained. Output56x1280 respects observed source cross-section and length.",
+      "poster": "library/posters/the-archaeology-of-knowledge.jpg",
+      "posterSha256": "f2e6a4e5e33b52f82d5aab2b74bbc830e3723f1ec631d7a75d4a364dd5a1b9ff",
+      "crop": { "left": 0, "top": 0, "width": 56, "height": 1280 },
+      "height": 320,
+      "artwork": "archaeology-of-knowledge-vintage-etsy-1535278588-v1-low.webp",
+      "mesh": {
+        "kind": "boundary-curves-spine",
+        "interpolation": "bilinear",
+        "width": 56,
+        "height": 1280,
+        "boundaries": {
+          "top": [
+            [0, 763, 1491],
+            [1, 799, 1574]
+          ],
+          "bottom": [
+            [0, 2595, 1387],
+            [1, 2555, 1455]
+          ],
+          "left": [
+            [0, 763, 1491],
+            [0.34, 1384, 1460],
+            [0.67, 1980, 1424],
+            [1, 2595, 1387]
+          ],
+          "right": [
+            [0, 799, 1574],
+            [0.34, 1385, 1527],
+            [0.67, 1980, 1491],
+            [1, 2555, 1455]
+          ]
+        }
+      },
+      "artworkSha256": "ddaf092fee98634c6a7fd9c037d0211a3ca467f6d88f130ca08f4a1de4e9412a",
+      "detailArtwork": "archaeology-of-knowledge-vintage-etsy-1535278588-v1-detail-46d214e7390bcdea.webp",
+      "detailArtworkSha256": "46d214e7390bcdea2c1ca00430fa6e33d28e6cc5b1cffe25c8e75145e0c25198",
+      "detailWidth": 56,
+      "detailHeight": 1280
+    },
+    {
+      "id": "i-who-have-never-known-men-vintage-2024-mainstreet-v1",
+      "title": "I Who Have Never Known Men",
+      "author": "Jacqueline Harpman",
+      "publisher": "Vintage Classics",
+      "isbn": "9781784879037",
+      "editionEvidence": "Article-level design/edition join: Mainstreet August2024 feature links the exact ISBN and shows the matching orange-lit silhouette front alongside a separate physical shelf photograph of the complete red title/author/VintageClassics spine. Official Penguin edition/2024 catalogue establishes this redesign and RosSchwartz translation, retained. No same-copy photographed ISBN, individual printing date or copyright-page claim.",
+      "page": "https://www.mainstreetbooks.co.uk/blog/vintage-red-spines/",
+      "source": "https://www.mainstreetbooks.co.uk/wp-content/uploads/2024/08/Redspinesfeature.jpg",
+      "sourceSha256": "59ac863fd02d5dbb05a0d207c62a8f9525b1a7a2d574204f700b470f31f8e246",
+      "sourceKind": "Physical shop shelf photograph, published full800x600JPEG confirmed by public WordPress metadata. Camera-native identity unestablished; site optimizer records lossy compression. Literal bilinear boundary rectification26x384 within observed samples; no sharpening, upscaling, text recovery, invented marks or SVG. Narrow lettering remains soft.",
+      "poster": "library/posters/i-who-have-never-known-men.jpg",
+      "posterSha256": "fe49ee75c65403c76b545240a343526f5cf38bb92cfdfeb2c31721a996bb9f56",
+      "crop": { "left": 0, "top": 0, "width": 26, "height": 384 },
+      "height": 320,
+      "artwork": "i-who-have-never-known-men-vintage-2024-mainstreet-v1-low.webp",
+      "mesh": {
+        "kind": "boundary-curves-spine",
+        "interpolation": "bilinear",
+        "width": 26,
+        "height": 384,
+        "boundaries": {
+          "top": [
+            [0, 320, 168],
+            [0.2, 323, 165],
+            [0.45, 329, 164],
+            [0.8, 342, 164],
+            [1, 347, 168]
+          ],
+          "bottom": [
+            [0, 325, 553.5],
+            [1, 352, 553.5]
+          ],
+          "left": [
+            [0, 320, 168],
+            [0.22, 320.4, 250],
+            [0.49, 321.8, 350],
+            [0.75, 323, 450],
+            [1, 325, 553.5]
+          ],
+          "right": [
+            [0, 347, 168],
+            [0.22, 348, 250],
+            [0.6, 350, 400],
+            [1, 352, 553.5]
+          ]
+        }
+      },
+      "artworkSha256": "4bab2269f8e4191961fbcae2fb72622c6e5b9bf7b6381145bde680dc439d5ef0",
+      "detailArtwork": "i-who-have-never-known-men-vintage-2024-mainstreet-v1-detail-ab5e8b5aafab9d33.webp",
+      "detailArtworkSha256": "ab5e8b5aafab9d33bac06677e9317ed613b625a0228cb37a23f37f6c45608a21",
+      "detailWidth": 26,
+      "detailHeight": 384
+    },
+    {
+      "id": "breakfast-of-champions-dial-etsy-1695314867-v1",
+      "title": "Breakfast of Champions",
+      "author": "Kurt Vonnegut",
+      "publisher": "Dial Press",
+      "isbn": "9780385334204",
+      "editionEvidence": "The same Etsy gallery shows the pinned orange-shirt illustrated front and a rear-cover barcode bearing ISBN 9780385334204 and Dial Press imprint, joining the shown spine to that copy’s ISBN. Rear credits list Lynn Buckley for cover design and © 2007 Kurt Vonnegut/Origami Express for front-cover illustration, spine illustration, and hand-lettering. The 2007 credit is artwork copyright, not an edition or printing date. No title-page or printing claim.",
+      "page": "https://www.etsy.com/listing/1695314867/kurt-vonnegut-jr-breakfast-of-champions",
+      "source": "https://i.etsystatic.com/9946487/r/il/bb553c/5962859847/il_fullxfull.5962859847_dxzr.jpg",
+      "sourceSha256": "3222a07139d44ff124d62efba85eed97e716f75f18ab0d8f3a4441e41e265c26",
+      "sourceKind": "Etsy seller photo served at 3000x2250 JPEG, the largest exposed rendition inspected for this source. Camera-original identity is unknown. Bilinear boundary-mesh unwrapping preserves observed samples without sharpening, upscaling, reconstructed or invented marks.",
+      "poster": "library/posters/breakfast-of-champions.jpg",
+      "posterSha256": "99ce999fb14a08b805e73844345071db6b06e992adc6f7dfbb3227dc49e6d60a",
+      "crop": { "left": 0, "top": 0, "width": 130, "height": 2800 },
+      "height": 320,
+      "artwork": "breakfast-of-champions-dial-etsy-1695314867-v1-low.webp",
+      "mesh": {
+        "kind": "boundary-curves-spine",
+        "interpolation": "bilinear",
+        "width": 130,
+        "height": 2800,
+        "boundaries": {
+          "top": [
+            [0, 106.9, 904.6],
+            [0.5, 106.1, 801.8],
+            [1, 105.3, 699]
+          ],
+          "bottom": [
+            [0, 2824, 1658],
+            [0.5, 2852, 1594],
+            [1, 2880, 1528]
+          ],
+          "left": [
+            [0, 106.9, 904.6],
+            [0.25, 809.2, 1118.4],
+            [0.5, 1506.6, 1322.4],
+            [0.75, 2207.2, 1509.9],
+            [0.95, 2766, 1642],
+            [1, 2824, 1658]
+          ],
+          "right": [
+            [0, 105.3, 699],
+            [0.25, 809.2, 924.3],
+            [0.5, 1506.6, 1143.1],
+            [0.75, 2207.2, 1353.6],
+            [0.95, 2768, 1494],
+            [1, 2880, 1528]
+          ]
+        }
+      },
+      "detailArtwork": "breakfast-of-champions-dial-etsy-1695314867-v1-detail-a06b0980de2dd08a.webp",
+      "detailArtworkSha256": "a06b0980de2dd08adbf1dadd9a427ec119b879acb2d652f4cd59afe2ae07f34e",
+      "detailWidth": 59,
+      "detailHeight": 1280,
+      "artworkSha256": "a70791bfcf90a3656179487b1fe9b4f7b95a2d7e759c0bc2203558dc46996981"
     }
   ]
 }
