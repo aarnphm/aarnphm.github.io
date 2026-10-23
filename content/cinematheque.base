@@ -273,7 +273,6 @@ views:
       direction: DESC
     order:
       - title
-      - file.name
       - director
       - status
       - studio
@@ -282,8 +281,8 @@ views:
       - year
       - rating
       - category
-      - description
       - posters
+      - description
     sort:
       - property: watched
         direction: ASC
@@ -295,10 +294,7 @@ views:
         direction: DESC
       - property: title
         direction: ASC
-    columnSize:
-      file.name: 253
-      note.director: 200
-      note.tags: 155
+    columnSize: {}
   - type: kanban
     name: analysis
     filters:
