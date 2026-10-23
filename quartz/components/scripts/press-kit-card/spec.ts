@@ -178,6 +178,7 @@ export interface CardModel {
   customTitle?: string
   description: CardRun[]
   body: CardRun[]
+  propositions?: { number: string; depth: number; runs: CardRun[] }[]
   date?: string
   reading?: string
   tags: string[]
@@ -200,6 +201,7 @@ export interface CardModel {
   metricKeys?: Record<string, string[]>
   locale?: Locale
   show: {
+    tractatus?: boolean
     art: boolean
     description: boolean
     excerpt: boolean

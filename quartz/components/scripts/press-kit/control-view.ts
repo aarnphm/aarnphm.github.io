@@ -30,6 +30,7 @@ import {
   headingText,
   titleText,
 } from './share-subject'
+import { propositionsText } from './tractatus'
 import { layoutMetricControls, mountMetricControls } from './training-controls'
 
 function anchorGroups() {
@@ -135,6 +136,9 @@ export function syncControls() {
   )
   session.dialog.dataset.transparent = String(show.transparent)
   session.dialog.dataset.citation = String(citationAllowed())
+  session.dialog.querySelectorAll<HTMLElement>('[data-tractatus-only]').forEach(element => {
+    element.hidden = !session.quote.propositions?.length
+  })
   session.dialog.querySelectorAll<HTMLButtonElement>('.press-kit-tab').forEach(button => {
     const selected = button.dataset.tab === session.tab
     button.setAttribute('aria-selected', String(selected))
@@ -255,7 +259,10 @@ export function syncControls() {
     )
   const textarea = $<HTMLTextAreaElement>('#press-kit-quote')
   if (textarea && document.activeElement !== textarea)
-    textarea.value = runsToText(session.quote.runs)
+    textarea.value =
+      show.tractatus && session.quote.propositions?.length
+        ? propositionsText(session.quote.propositions)
+        : runsToText(session.quote.runs)
   const attribution = $<HTMLInputElement>('#press-kit-attribution')
   if (attribution) {
     attribution.placeholder = titleText()

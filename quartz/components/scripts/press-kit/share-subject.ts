@@ -24,6 +24,7 @@ import {
   type Quote,
   type Subject,
 } from './session-state'
+import { selectedPropositions } from './tractatus'
 
 const TABS: PressKitTab[] = ['note', 'quote', 'links']
 
@@ -243,6 +244,7 @@ export function quoteFrom(range: Range | null): Quote {
   const source = sourceOf(range.commonAncestorContainer)
   return {
     runs: runsFromRange(range, source),
+    propositions: selectedPropositions(range, source),
     chosen: true,
     fragment: fragmentFor(range),
     section: sectionBefore(range.startContainer, session.subject.headings),
@@ -324,6 +326,8 @@ export function model(): CardModel {
           : [{ text: session.page!.site, style: 'roman' }],
     description: s.description,
     body: session.tab === 'quote' ? session.quote.runs : s.excerpt,
+    propositions:
+      session.tab === 'quote' && show.tractatus ? session.quote.propositions : undefined,
     date: s.date,
     reading: s.reading,
     tags: s.tags,
