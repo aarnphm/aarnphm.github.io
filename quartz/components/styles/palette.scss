@@ -496,6 +496,8 @@ body[data-slug='index'] .palette > #palette-container > #space {
 }
 
 .palette > #palette-container > #space {
+  overflow: visible;
+
   .input-container {
     display: flex;
     align-items: center;
@@ -515,7 +517,48 @@ body[data-slug='index'] .palette > #palette-container > #space {
   }
 
   .palette-rank-button {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    box-sizing: border-box;
     flex-shrink: 0;
+
+    &[hidden] {
+      display: none;
+    }
+
+    &::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: calc(100% + 6px);
+      right: 0;
+      padding: 4px 8px;
+      background: var(--light);
+      color: var(--dark);
+      border: 1px solid var(--darkgray);
+      font-family: var(--codeFont);
+      white-space: nowrap;
+      pointer-events: none;
+      visibility: hidden;
+    }
+
+    &:focus-visible::after {
+      visibility: visible;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover::after {
+        visibility: visible;
+      }
+    }
+
+    @media (pointer: coarse) {
+      width: 44px;
+      height: 44px;
+    }
     margin-right: 8px;
     padding: 6px 4px;
     border: 0;
@@ -546,16 +589,56 @@ body[data-slug='index'] .palette > #palette-container > #space {
       height: 28px;
       flex: none;
       color: var(--darkgray);
+      overflow: visible;
 
-      .rank-marker {
+      text {
+        font: 400 9px var(--codeFont);
+        font-variant-numeric: tabular-nums;
+        fill: var(--darkgray);
+      }
+
+      .rank-position {
         fill: var(--dark);
+      }
+
+      .rank-axis {
+        stroke: var(--lightgray);
+        stroke-width: 1;
+      }
+
+      .rank-median {
+        stroke: var(--darkgray);
+        stroke-width: 1;
+        stroke-dasharray: 2 1.5;
+      }
+
+      // Base share, then each inbound gift: the largest in dark so one-source notes read at once.
+      .rank-base {
+        fill: var(--lightgray);
+      }
+
+      .rank-top {
+        fill: var(--dark);
+      }
+
+      .rank-source,
+      .rank-rest {
+        fill: var(--darkgray);
+      }
+
+      .rank-rest {
+        opacity: 0.55;
       }
     }
   }
 
   @media (max-width: 480px) {
     .suggestion-rank {
-      width: 56px;
+      width: 64px;
+
+      .rank-inbound {
+        display: none;
+      }
     }
     #bar {
       font-size: 16px;

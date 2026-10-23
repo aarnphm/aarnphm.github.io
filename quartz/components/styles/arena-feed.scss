@@ -131,7 +131,7 @@ body[data-slug='arena/feed'] {
   }
 
   :where(button, a, input, select, textarea):focus-visible {
-    outline: 2px solid var(--secondary);
+    outline: 2px solid var(--dark);
     outline-offset: -2px;
   }
 

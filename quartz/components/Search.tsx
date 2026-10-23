@@ -59,7 +59,7 @@ export default ((userOpts?: Partial<SearchOptions>) => {
                   name="search"
                   type="text"
                   aria-label={searchPlaceholder}
-                  placeholder={`${searchPlaceholder} · filter: images · pdf · code · py · all`}
+                  placeholder="filter: images · pdf · code · py · all"
                 />
                 <span class="semantic-status" data-state="loading" aria-live="polite">
                   semantic not available yet

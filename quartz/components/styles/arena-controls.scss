@@ -1,15 +1,15 @@
 // Arena blocks and the feed shrink the PDF embed toolbar to their own control height and label
-// size; the instruments keep the frame and cells from quartz/styles/pdf-embed-toolbar.scss.
+// size; the instruments keep the frame and cells from quartz/styles/pdf-instrument.scss.
 @mixin compact-pdf-controls {
   .pdf-embed-toolbar {
-    --pdf-embed-control: var(--arena-control-height);
-    --pdf-embed-control-font: 0.66rem;
+    --pdf-instrument-height: var(--arena-control-height);
+    --pdf-instrument-font: 0.66rem;
     gap: 0.5rem;
     padding: 0.25rem 0.5rem;
 
     // 16px keeps mobile browsers from zooming the page when the page field takes focus.
     @media (pointer: coarse) {
-      --pdf-embed-control-font: max(1rem, 16px);
+      --pdf-instrument-font: max(1rem, 16px);
     }
   }
 }

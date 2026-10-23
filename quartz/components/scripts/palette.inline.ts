@@ -55,7 +55,7 @@ interface Item {
   similarity?: number
 }
 
-const numSearchResults = 10
+const numSearchResults = 13
 const noteRankers = new WeakMap<ContentIndex, NoteRanker>()
 
 function appendHighlightedText(parent: HTMLElement, searchTerm: string, text: string) {
@@ -414,8 +414,10 @@ document.addEventListener('nav', () => {
   const rankButton = document.createElement('a')
   rankButton.href = `${pathToRoot(currentSlug)}/pagerank`
   rankButton.className = 'palette-rank-button'
-  rankButton.textContent = 'pagerank ↗'
-  rankButton.title = 'Global note ranking and link graph'
+  rankButton.setAttribute('aria-label', 'PageRank')
+  rankButton.dataset.tooltip = 'pagerank'
+  rankButton.innerHTML =
+    '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18M6 7l5 4 4 6 6 2"/><circle cx="6" cy="7" r="1"/><circle cx="11" cy="11" r="1"/><circle cx="15" cy="17" r="1"/></svg>'
   bar.parentElement?.append(rankButton)
   rankButton.addEventListener('click', event => {
     if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return
@@ -539,9 +541,10 @@ document.addEventListener('nav', () => {
   }
 
   function syncPaletteHelper() {
+    rankButton.hidden = actionType !== 'quick_open'
     bar.placeholder =
       actionType === 'quick_open'
-        ? 'rechercher des notes… filter: images · pdf · code · py · all'
+        ? 'filter: images · pdf · code · py · all'
         : 'sélectionnez une option…'
     bar.setAttribute('aria-label', bar.placeholder)
     helper.querySelectorAll<HTMLLIElement>('li[data-quick-open]').forEach(el => {
@@ -1186,7 +1189,7 @@ document.addEventListener('nav', () => {
         bar.focus()
       }
       return
-    } else if (e.key === 'Tab' && e.shiftKey) {
+    } else if (e.key === 'Tab' && e.shiftKey && !rankButton.hidden) {
       e.preventDefault()
       rankButton.focus()
     } else if (e.key === 'Enter') {
@@ -1588,7 +1591,7 @@ document.addEventListener('nav', () => {
       }
       const rank = ranker.position(slug)
       if (rank) {
-        aux.append(noteRankDistribution(ranker.global(), rank))
+        aux.append(noteRankDistribution(ranker, rank))
       }
     }
 

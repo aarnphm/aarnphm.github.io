@@ -868,8 +868,13 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   const resultToHTML = ({ item, similarity }: SimilarityResult) => {
     const { slug, title, target, fileName } = item
     const isProtected = item.protected === true
+    const isImage = searchableImage(slug)
     const itemTile = document.createElement('a')
-    const titleContent = target ? highlight(currentSearchTerm, target) : title
+    const titleContent = isImage
+      ? highlight(currentSearchTerm, (fileName || slug).split('/').at(-1) ?? slug)
+      : target
+        ? highlight(currentSearchTerm, target)
+        : title
     itemTile.classList.add('result-card')
     itemTile.id = slug
     itemTile.href = resolveUrl(slug).toString()
@@ -917,9 +922,7 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     itemTile.addEventListener('click', handler)
     window.addCleanup(() => itemTile.removeEventListener('click', handler))
 
-    return searchableImage(slug)
-      ? imageSearchRow(itemTile, slug, showSimilarImages, similarity)
-      : itemTile
+    return isImage ? imageSearchRow(itemTile, slug, showSimilarImages, similarity) : itemTile
   }
 
   async function showSimilarImages(seed: string) {
@@ -969,8 +972,10 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
       </a>`
       currentHover = null
     } else if (finalResults.every(({ item }) => searchableImage(item.slug))) {
-      results.append(...finalResults.map(resultToHTML))
-      fitResultPaths()
+      const gallery = document.createElement('div')
+      gallery.className = 'image-search-grid'
+      gallery.append(...finalResults.map(resultToHTML))
+      results.append(gallery)
     } else {
       const scored = finalResults.some(result => Number.isFinite(result.similarity))
       const table = document.createElement('table')
