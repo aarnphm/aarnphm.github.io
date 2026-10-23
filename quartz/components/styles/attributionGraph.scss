@@ -18,27 +18,36 @@
   --ag-token: var(--lightgray);
 }
 
+// the KVHeadGrouping control grid: label column, then the control column
 .ag-controls {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 0.3rem 0.8rem;
   align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem 1.25rem;
 }
 
-.ag-prune {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.35rem 0.75rem;
-  min-width: 0;
+.ag-control {
+  display: contents;
+}
+
+.ag-prune-label {
+  grid-column: 1 / 2;
   color: var(--fig-note);
-  font-size: 0.78rem;
+  font-size: 0.82rem;
+  white-space: nowrap;
 }
 
-.ag-range {
-  width: 9rem;
-  accent-color: var(--dark);
+.ag-slider {
+  grid-column: 2 / 3;
+  width: 100%;
+  min-width: 0;
+  @include stableRangeControl;
+}
+
+.ag-prune-value,
+.ag-restore {
+  grid-column: 2 / 3;
+  justify-self: start;
 }
 
 .ag-prune-value,
