@@ -1,0 +1,4 @@
+interface:
+  display_name: "myWindsock ingestion"
+  short_description: "Capture personal ride and run wind reports"
+  default_prompt: "Use $mywindsock-ingest to archive my new outdoor activities since Tour de Simcoe."
