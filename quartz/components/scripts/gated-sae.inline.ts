@@ -1,3 +1,5 @@
+import { registerMdxContent } from './mdx-content'
+
 type ClientState = {
   theta: string
   bGate: string[]
@@ -73,9 +75,7 @@ const setupGatedSAE = (root: HTMLElement): (() => void) | null => {
   return () => slider.removeEventListener('input', apply)
 }
 
-document.addEventListener('nav', () => {
-  for (const root of document.querySelectorAll<HTMLElement>('[data-gated-sae]')) {
-    const cleanup = setupGatedSAE(root)
-    if (cleanup) window.addCleanup?.(cleanup)
-  }
+registerMdxContent('[data-gated-sae]', root => {
+  const cleanup = setupGatedSAE(root)
+  if (cleanup) window.addCleanup?.(cleanup)
 })

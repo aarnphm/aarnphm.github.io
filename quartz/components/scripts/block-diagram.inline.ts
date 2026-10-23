@@ -1,4 +1,4 @@
-export {}
+import { registerMdxContent } from './mdx-content'
 
 const ROOT_SELECTOR = '[data-block-diagram]'
 
@@ -21,7 +21,6 @@ const setupBlockDiagram = (root: HTMLElement): (() => void) => {
   return () => root.removeEventListener('change', apply)
 }
 
-document.addEventListener('nav', () => {
-  for (const root of document.querySelectorAll<HTMLElement>(ROOT_SELECTOR))
-    window.addCleanup?.(setupBlockDiagram(root))
+registerMdxContent(ROOT_SELECTOR, root => {
+  window.addCleanup?.(setupBlockDiagram(root))
 })

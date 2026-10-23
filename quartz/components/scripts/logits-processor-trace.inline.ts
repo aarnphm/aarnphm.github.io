@@ -1,4 +1,4 @@
-export {}
+import { registerMdxContent } from './mdx-content'
 
 type StepState = {
   step: string
@@ -51,9 +51,7 @@ const setupLogitsProcessorTrace = (root: HTMLElement): (() => void) | null => {
   }
 }
 
-document.addEventListener('nav', () => {
-  for (const root of document.querySelectorAll<HTMLElement>('[data-logits-processor-trace]')) {
-    const cleanup = setupLogitsProcessorTrace(root)
-    if (cleanup) window.addCleanup?.(cleanup)
-  }
+registerMdxContent('[data-logits-processor-trace]', root => {
+  const cleanup = setupLogitsProcessorTrace(root)
+  if (cleanup) window.addCleanup?.(cleanup)
 })

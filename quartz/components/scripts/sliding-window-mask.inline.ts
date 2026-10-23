@@ -1,5 +1,6 @@
 import katex from 'katex'
 import { renderFigureLabel } from '../../util/figure-label'
+import { registerMdxContent } from './mdx-content'
 
 const swmRenderMath = (tex: string): string => {
   try {
@@ -105,78 +106,73 @@ const clampParam = (raw: number, min: number, max: number): number => {
   return Math.min(Math.max(Math.round(raw), min), max)
 }
 
-const setupSlidingWindowMask = () => {
-  const roots = document.querySelectorAll<HTMLElement>('[data-sliding-window-mask]')
-  for (const root of roots) {
-    if (root.dataset.swmBound === 'true') continue
-    root.dataset.swmBound = 'true'
+registerMdxContent('[data-sliding-window-mask]', root => {
+  if (root.dataset.swmBound === 'true') return
+  root.dataset.swmBound = 'true'
 
-    const L = Number(root.dataset.swmLength ?? '0')
-    const wMax = Math.max(1, Math.floor(L / 2))
+  const L = Number(root.dataset.swmLength ?? '0')
+  const wMax = Math.max(1, Math.floor(L / 2))
 
+  renderState(root)
+
+  const wInput = root.querySelector<HTMLInputElement>('[data-swm-w-input]')
+  const gInput = root.querySelector<HTMLInputElement>('[data-swm-g-input]')
+  const dButtons = root.querySelectorAll<HTMLButtonElement>('[data-swm-d-btn]')
+
+  const handleW = () => {
+    if (!wInput) return
+    const next = clampParam(Number(wInput.value), 1, wMax)
+    root.dataset.swmW = String(next)
     renderState(root)
-
-    const wInput = root.querySelector<HTMLInputElement>('[data-swm-w-input]')
-    const gInput = root.querySelector<HTMLInputElement>('[data-swm-g-input]')
-    const dButtons = root.querySelectorAll<HTMLButtonElement>('[data-swm-d-btn]')
-
-    const handleW = () => {
-      if (!wInput) return
-      const next = clampParam(Number(wInput.value), 1, wMax)
-      root.dataset.swmW = String(next)
-      renderState(root)
-    }
-    const handleG = () => {
-      if (!gInput) return
-      const next = clampParam(Number(gInput.value), 0, 3)
-      root.dataset.swmG = String(next)
-      renderState(root)
-    }
-    const dHandlers: Array<() => void> = []
-    const dButtonsArr = Array.from(dButtons)
-    const selectDilation = (index: number, focus: boolean) => {
-      const btn = dButtonsArr[index]
-      if (!btn) return
-      const value = Number(btn.dataset.swmDBtn ?? '1')
-      if (!DILATIONS.includes(value as (typeof DILATIONS)[number])) return
-      root.dataset.swmD = String(value)
-      renderState(root)
-      if (focus) btn.focus()
-    }
-    dButtonsArr.forEach((btn, index) => {
-      const onClick = () => selectDilation(index, false)
-      const onKey = (event: KeyboardEvent) => {
-        const last = dButtonsArr.length - 1
-        if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
-          event.preventDefault()
-          selectDilation(index === last ? 0 : index + 1, true)
-        } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
-          event.preventDefault()
-          selectDilation(index === 0 ? last : index - 1, true)
-        } else if (event.key === 'Home') {
-          event.preventDefault()
-          selectDilation(0, true)
-        } else if (event.key === 'End') {
-          event.preventDefault()
-          selectDilation(last, true)
-        }
-      }
-      btn.addEventListener('click', onClick)
-      btn.addEventListener('keydown', onKey)
-      dHandlers.push(() => btn.removeEventListener('click', onClick))
-      dHandlers.push(() => btn.removeEventListener('keydown', onKey))
-    })
-
-    wInput?.addEventListener('input', handleW)
-    gInput?.addEventListener('input', handleG)
-
-    window.addCleanup(() => {
-      wInput?.removeEventListener('input', handleW)
-      gInput?.removeEventListener('input', handleG)
-      for (const off of dHandlers) off()
-      delete root.dataset.swmBound
-    })
   }
-}
+  const handleG = () => {
+    if (!gInput) return
+    const next = clampParam(Number(gInput.value), 0, 3)
+    root.dataset.swmG = String(next)
+    renderState(root)
+  }
+  const dHandlers: Array<() => void> = []
+  const dButtonsArr = Array.from(dButtons)
+  const selectDilation = (index: number, focus: boolean) => {
+    const btn = dButtonsArr[index]
+    if (!btn) return
+    const value = Number(btn.dataset.swmDBtn ?? '1')
+    if (!DILATIONS.includes(value as (typeof DILATIONS)[number])) return
+    root.dataset.swmD = String(value)
+    renderState(root)
+    if (focus) btn.focus()
+  }
+  dButtonsArr.forEach((btn, index) => {
+    const onClick = () => selectDilation(index, false)
+    const onKey = (event: KeyboardEvent) => {
+      const last = dButtonsArr.length - 1
+      if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+        event.preventDefault()
+        selectDilation(index === last ? 0 : index + 1, true)
+      } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+        event.preventDefault()
+        selectDilation(index === 0 ? last : index - 1, true)
+      } else if (event.key === 'Home') {
+        event.preventDefault()
+        selectDilation(0, true)
+      } else if (event.key === 'End') {
+        event.preventDefault()
+        selectDilation(last, true)
+      }
+    }
+    btn.addEventListener('click', onClick)
+    btn.addEventListener('keydown', onKey)
+    dHandlers.push(() => btn.removeEventListener('click', onClick))
+    dHandlers.push(() => btn.removeEventListener('keydown', onKey))
+  })
 
-document.addEventListener('nav', setupSlidingWindowMask)
+  wInput?.addEventListener('input', handleW)
+  gInput?.addEventListener('input', handleG)
+
+  window.addCleanup(() => {
+    wInput?.removeEventListener('input', handleW)
+    gInput?.removeEventListener('input', handleG)
+    for (const off of dHandlers) off()
+    delete root.dataset.swmBound
+  })
+})

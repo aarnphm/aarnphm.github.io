@@ -1,3 +1,5 @@
+import { registerMdxContent } from './mdx-content'
+
 type Triple = { m: number; z: number; y: number }
 
 type Pulse = { stage: number; nodes: number[] }
@@ -175,10 +177,6 @@ function setupReductionRoot(root: HTMLElement) {
   })
 }
 
-document.addEventListener('nav', () => {
-  for (const root of document.querySelectorAll<HTMLElement>(ROOT_SELECTOR)) {
-    setupReductionRoot(root)
-  }
+registerMdxContent(ROOT_SELECTOR, root => {
+  setupReductionRoot(root)
 })
-
-export {}

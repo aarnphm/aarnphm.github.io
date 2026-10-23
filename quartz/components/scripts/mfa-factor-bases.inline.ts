@@ -6,6 +6,7 @@ import {
   mfaMaxM,
   mfaMaxR,
 } from '../../util/mfa-factor-model'
+import { registerMdxContent } from './mdx-content'
 
 function mfaRange(values: number[]): { lo: number; hi: number } {
   let lo = Infinity
@@ -152,8 +153,6 @@ function mfaSetup(root: HTMLElement) {
   })
 }
 
-document.addEventListener('nav', () => {
-  for (const root of document.querySelectorAll<HTMLElement>('[data-mfa-factor-bases]')) {
-    mfaSetup(root)
-  }
+registerMdxContent('[data-mfa-factor-bases]', root => {
+  mfaSetup(root)
 })

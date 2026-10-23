@@ -1,4 +1,4 @@
-export {}
+import { registerMdxContent } from './mdx-content'
 
 type ClientState = {
   cells: string
@@ -55,9 +55,7 @@ const setupCrosscoderMasks = (root: HTMLElement): (() => void) | null => {
   return () => root.removeEventListener('change', apply)
 }
 
-document.addEventListener('nav', () => {
-  for (const root of document.querySelectorAll<HTMLElement>(CCM_ROOT_SELECTOR)) {
-    const cleanup = setupCrosscoderMasks(root)
-    if (cleanup) window.addCleanup?.(cleanup)
-  }
+registerMdxContent(CCM_ROOT_SELECTOR, root => {
+  const cleanup = setupCrosscoderMasks(root)
+  if (cleanup) window.addCleanup?.(cleanup)
 })

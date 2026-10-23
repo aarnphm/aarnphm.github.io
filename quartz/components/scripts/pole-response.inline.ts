@@ -1,3 +1,4 @@
+import { registerMdxContent } from './mdx-content'
 import {
   type Comp,
   type Lock,
@@ -203,9 +204,7 @@ const setupLocus = (root: HTMLElement): (() => void) | null => {
   }
 }
 
-document.addEventListener('nav', () => {
-  for (const root of document.querySelectorAll<HTMLElement>('[data-pole-response]')) {
-    const cleanup = root.dataset.prsMode === 'locus' ? setupLocus(root) : setupTime(root)
-    if (cleanup) window.addCleanup?.(cleanup)
-  }
+registerMdxContent('[data-pole-response]', root => {
+  const cleanup = root.dataset.prsMode === 'locus' ? setupLocus(root) : setupTime(root)
+  if (cleanup) window.addCleanup?.(cleanup)
 })

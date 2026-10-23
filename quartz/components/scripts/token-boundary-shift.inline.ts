@@ -1,4 +1,4 @@
-export {}
+import { registerMdxContent } from './mdx-content'
 
 type ClientState = {
   forced: string
@@ -36,9 +36,7 @@ const setupTokenBoundaryShift = (root: HTMLElement): (() => void) | null => {
   return () => root.removeEventListener('change', apply)
 }
 
-document.addEventListener('nav', () => {
-  for (const root of document.querySelectorAll<HTMLElement>('[data-token-boundary-shift]')) {
-    const cleanup = setupTokenBoundaryShift(root)
-    if (cleanup) window.addCleanup?.(cleanup)
-  }
+registerMdxContent('[data-token-boundary-shift]', root => {
+  const cleanup = setupTokenBoundaryShift(root)
+  if (cleanup) window.addCleanup?.(cleanup)
 })

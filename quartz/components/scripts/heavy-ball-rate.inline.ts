@@ -1,4 +1,5 @@
 import { hbView } from './heavy-ball-model'
+import { registerMdxContent } from './mdx-content'
 
 const OUTPUTS = ['alpha', 'beta', 'rho', 'roots', 'settle'] as const
 
@@ -44,9 +45,7 @@ const setupHeavyBallRate = (root: HTMLElement): (() => void) | null => {
   return () => root.removeEventListener('input', apply)
 }
 
-document.addEventListener('nav', () => {
-  for (const root of document.querySelectorAll<HTMLElement>('[data-heavy-ball-rate]')) {
-    const cleanup = setupHeavyBallRate(root)
-    if (cleanup) window.addCleanup?.(cleanup)
-  }
+registerMdxContent('[data-heavy-ball-rate]', root => {
+  const cleanup = setupHeavyBallRate(root)
+  if (cleanup) window.addCleanup?.(cleanup)
 })

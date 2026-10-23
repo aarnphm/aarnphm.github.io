@@ -1,4 +1,4 @@
-export {}
+import { registerMdxContent } from './mdx-content'
 
 type ClientState = {
   mask: string
@@ -47,9 +47,7 @@ const setupKVBudgetAllocation = (root: HTMLElement): (() => void) | null => {
   return () => root.removeEventListener('change', apply)
 }
 
-document.addEventListener('nav', () => {
-  for (const root of document.querySelectorAll<HTMLElement>(KVB_ROOT_SELECTOR)) {
-    const cleanup = setupKVBudgetAllocation(root)
-    if (cleanup) window.addCleanup?.(cleanup)
-  }
+registerMdxContent(KVB_ROOT_SELECTOR, root => {
+  const cleanup = setupKVBudgetAllocation(root)
+  if (cleanup) window.addCleanup?.(cleanup)
 })

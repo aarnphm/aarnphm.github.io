@@ -1,3 +1,5 @@
+import { registerMdxContent } from './mdx-content'
+
 const STEP_SELECTOR = '.methodology-step'
 const TOGGLE_SELECTOR = '[data-step-toggle]'
 const BODY_SELECTOR = '[data-step-body]'
@@ -13,24 +15,19 @@ const setStepState = (
   body.hidden = !open
 }
 
-const setupMethodologySteps = () => {
-  const steps = document.querySelectorAll<HTMLElement>(STEP_SELECTOR)
-  for (const step of steps) {
-    const toggle = step.querySelector<HTMLButtonElement>(TOGGLE_SELECTOR)
-    const body = step.querySelector<HTMLElement>(BODY_SELECTOR)
-    if (!toggle || !body) continue
+registerMdxContent(STEP_SELECTOR, step => {
+  const toggle = step.querySelector<HTMLButtonElement>(TOGGLE_SELECTOR)
+  const body = step.querySelector<HTMLElement>(BODY_SELECTOR)
+  if (!toggle || !body) return
 
-    const initialOpen = step.dataset.initialOpen !== 'false' && step.classList.contains('is-open')
-    setStepState(step, toggle, body, initialOpen)
+  const initialOpen = step.dataset.initialOpen !== 'false' && step.classList.contains('is-open')
+  setStepState(step, toggle, body, initialOpen)
 
-    const handleToggle = () => {
-      const willOpen = !step.classList.contains('is-open')
-      setStepState(step, toggle, body, willOpen)
-    }
-
-    toggle.addEventListener('click', handleToggle)
-    window.addCleanup?.(() => toggle.removeEventListener('click', handleToggle))
+  const handleToggle = () => {
+    const willOpen = !step.classList.contains('is-open')
+    setStepState(step, toggle, body, willOpen)
   }
-}
 
-document.addEventListener('nav', setupMethodologySteps)
+  toggle.addEventListener('click', handleToggle)
+  window.addCleanup?.(() => toggle.removeEventListener('click', handleToggle))
+})

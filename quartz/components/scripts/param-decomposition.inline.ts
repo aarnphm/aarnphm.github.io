@@ -1,4 +1,4 @@
-export {}
+import { registerMdxContent } from './mdx-content'
 
 const ROOT = '[data-param-decomposition]'
 
@@ -34,9 +34,7 @@ const setup = (root: HTMLElement): (() => void) | null => {
   return () => root.removeEventListener('change', onChange)
 }
 
-document.addEventListener('nav', () => {
-  for (const root of document.querySelectorAll<HTMLElement>(ROOT)) {
-    const cleanup = setup(root)
-    if (cleanup) window.addCleanup(cleanup)
-  }
+registerMdxContent(ROOT, root => {
+  const cleanup = setup(root)
+  if (cleanup) window.addCleanup(cleanup)
 })

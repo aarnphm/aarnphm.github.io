@@ -1,4 +1,4 @@
-export {}
+import { registerMdxContent } from './mdx-content'
 
 const ROOT_SELECTOR = '[data-rel-alg-tree]'
 
@@ -38,9 +38,7 @@ const setupRelAlgTree = (root: HTMLElement): (() => void) | null => {
   return () => root.removeEventListener('change', apply)
 }
 
-document.addEventListener('nav', () => {
-  for (const root of document.querySelectorAll<HTMLElement>(ROOT_SELECTOR)) {
-    const cleanup = setupRelAlgTree(root)
-    if (cleanup) window.addCleanup?.(cleanup)
-  }
+registerMdxContent(ROOT_SELECTOR, root => {
+  const cleanup = setupRelAlgTree(root)
+  if (cleanup) window.addCleanup?.(cleanup)
 })

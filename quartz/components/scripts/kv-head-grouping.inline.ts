@@ -1,3 +1,5 @@
+import { registerMdxContent } from './mdx-content'
+
 const VIEW_W = 520
 const BOX_W = 36
 const ROW_PAD = 28
@@ -94,34 +96,29 @@ const setReadout = (root: HTMLElement, h: number, r: number) => {
   }
 }
 
-const setupKVHeadGrouping = () => {
-  const roots = document.querySelectorAll<HTMLElement>('[data-kv-head-grouping]')
-  for (const root of roots) {
-    if (root.dataset.kvgBound === 'true') continue
-    root.dataset.kvgBound = 'true'
+registerMdxContent('[data-kv-head-grouping]', root => {
+  if (root.dataset.kvgBound === 'true') return
+  root.dataset.kvgBound = 'true'
 
-    const h = Number(root.dataset.heads ?? '8')
-    const ratios = (root.dataset.ratios ?? '1,2,4,8').split(',').map(Number)
-    const slider = root.querySelector<HTMLInputElement>('[data-kvg-ratio]')
-    if (!slider) continue
+  const h = Number(root.dataset.heads ?? '8')
+  const ratios = (root.dataset.ratios ?? '1,2,4,8').split(',').map(Number)
+  const slider = root.querySelector<HTMLInputElement>('[data-kvg-ratio]')
+  if (!slider) return
 
-    const handleInput = () => {
-      const idx = Number(slider.value)
-      const r = ratios[idx] ?? 1
-      slider.setAttribute('aria-valuenow', String(r))
-      slider.setAttribute('aria-valuetext', ratioName(r, h))
-      setReadout(root, h, r)
-      setKVLayout(root, h, r)
-    }
-
-    slider.addEventListener('input', handleInput)
-    handleInput()
-
-    window.addCleanup(() => {
-      slider.removeEventListener('input', handleInput)
-      delete root.dataset.kvgBound
-    })
+  const handleInput = () => {
+    const idx = Number(slider.value)
+    const r = ratios[idx] ?? 1
+    slider.setAttribute('aria-valuenow', String(r))
+    slider.setAttribute('aria-valuetext', ratioName(r, h))
+    setReadout(root, h, r)
+    setKVLayout(root, h, r)
   }
-}
 
-document.addEventListener('nav', setupKVHeadGrouping)
+  slider.addEventListener('input', handleInput)
+  handleInput()
+
+  window.addCleanup(() => {
+    slider.removeEventListener('input', handleInput)
+    delete root.dataset.kvgBound
+  })
+})

@@ -1,4 +1,4 @@
-export {}
+import { registerMdxContent } from './mdx-content'
 
 type ClientState = { nodes: string[]; mask: string; out: Record<string, string> }
 
@@ -38,9 +38,7 @@ const setupSpeculativeDraftTree = (root: HTMLElement): (() => void) | null => {
   return () => root.removeEventListener('change', apply)
 }
 
-document.addEventListener('nav', () => {
-  for (const root of document.querySelectorAll<HTMLElement>(SDT_ROOT_SELECTOR)) {
-    const cleanup = setupSpeculativeDraftTree(root)
-    if (cleanup) window.addCleanup?.(cleanup)
-  }
+registerMdxContent(SDT_ROOT_SELECTOR, root => {
+  const cleanup = setupSpeculativeDraftTree(root)
+  if (cleanup) window.addCleanup?.(cleanup)
 })

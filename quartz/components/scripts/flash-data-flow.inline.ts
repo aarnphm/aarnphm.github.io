@@ -1,4 +1,4 @@
-export {}
+import { registerMdxContent } from './mdx-content'
 
 const FDF_ROOT_SELECTOR = '[data-flash-data-flow]'
 
@@ -26,10 +26,7 @@ const setupFlashDataFlow = (root: HTMLElement): (() => void) | null => {
   }
 }
 
-document.addEventListener('nav', () => {
-  const roots = document.querySelectorAll<HTMLElement>(FDF_ROOT_SELECTOR)
-  for (const root of roots) {
-    const cleanup = setupFlashDataFlow(root)
-    if (cleanup) window.addCleanup?.(cleanup)
-  }
+registerMdxContent(FDF_ROOT_SELECTOR, root => {
+  const cleanup = setupFlashDataFlow(root)
+  if (cleanup) window.addCleanup?.(cleanup)
 })

@@ -1,4 +1,4 @@
-export {}
+import { registerMdxContent } from './mdx-content'
 
 const KVC_ROOT_SELECTOR = '[data-kv-compress-blocks]'
 
@@ -78,8 +78,6 @@ const setupKVCompressBlocks = (root: HTMLElement): (() => void) => {
   }
 }
 
-document.addEventListener('nav', () => {
-  for (const root of document.querySelectorAll<HTMLElement>(KVC_ROOT_SELECTOR)) {
-    window.addCleanup?.(setupKVCompressBlocks(root))
-  }
+registerMdxContent(KVC_ROOT_SELECTOR, root => {
+  window.addCleanup?.(setupKVCompressBlocks(root))
 })

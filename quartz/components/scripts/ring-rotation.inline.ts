@@ -1,5 +1,6 @@
 import katex from 'katex'
 import { renderFigureLabel } from '../../util/figure-label'
+import { registerMdxContent } from './mdx-content'
 
 type RingState = { p: number; step: number; playing: boolean }
 
@@ -473,13 +474,6 @@ const wireOne = (root: HTMLElement): (() => void) => {
   }
 }
 
-const setup = () => {
-  const roots = document.querySelectorAll<HTMLElement>(RR_ROOT)
-  const teardowns: Array<() => void> = []
-  for (const root of roots) teardowns.push(wireOne(root))
-  window.addCleanup(() => {
-    for (const t of teardowns) t()
-  })
-}
-
-document.addEventListener('nav', setup)
+registerMdxContent(RR_ROOT, root => {
+  window.addCleanup(wireOne(root))
+})

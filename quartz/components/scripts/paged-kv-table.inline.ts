@@ -1,5 +1,6 @@
 import katex from 'katex'
 import { renderFigureLabel } from '../../util/figure-label'
+import { registerMdxContent } from './mdx-content'
 
 const pktRenderMath = (tex: string): string => {
   try {
@@ -323,9 +324,6 @@ const pktBindRoot = (root: HTMLElement) => {
   })
 }
 
-const pktSetup = () => {
-  const roots = document.querySelectorAll<HTMLElement>('[data-paged-kv-table]')
-  for (const root of roots) pktBindRoot(root)
-}
-
-document.addEventListener('nav', pktSetup)
+registerMdxContent('[data-paged-kv-table]', root => {
+  pktBindRoot(root)
+})
