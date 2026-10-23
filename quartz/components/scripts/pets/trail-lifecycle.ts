@@ -156,7 +156,7 @@ export function watchTrail(
   }
   // Fresh page placement already checked the clock in its obstacle snapshot. Slides have their
   // own perch policy; retained pets still need the live check after the page changes. A trail
-  // still opening at load (the saved preference) takes the pet to the clock instead.
+  // still opening when the pet mounts takes it to the clock instead.
   const openingAtLoad =
     !!scene && !scene.hidden && trailScene(document)?.dataset.trailOpening !== 'complete'
   if ((!placed || document.body.dataset.slides === 'true') && !openingAtLoad) clearClock()

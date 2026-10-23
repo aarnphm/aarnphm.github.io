@@ -50,7 +50,6 @@ document.addEventListener('nav', () => {
   const controller = new AbortController()
   const { signal } = controller
   const supported = trailSupported()
-  const introduction = content.querySelector<HTMLElement>('.homepage-board-copy')
   toggle.hidden = !supported
   mountTrailGateNavigation(scene, signal)
   let isOpen = false
@@ -212,9 +211,9 @@ document.addEventListener('nav', () => {
       if (document.activeElement === toggle) toggle.blur()
     }
     isOpen = open
+    document.body.dataset.trailOpen = String(open)
     landing?.style.setProperty('visibility', 'hidden')
     if (open && landing?.contains(document.activeElement)) toggle.focus()
-    if (introduction) introduction.hidden = open
     clock.hidden = !open
     const almanac = root.querySelector<HTMLElement>('.trail-almanac')
     if (almanac) almanac.hidden = !open
@@ -309,6 +308,7 @@ document.addEventListener('nav', () => {
   setOpen(false)
   window.addCleanup(() => {
     controller.abort()
+    delete document.body.dataset.trailOpen
     landing?.style.removeProperty('visibility')
     disposeMoon()
     disposeEscape()

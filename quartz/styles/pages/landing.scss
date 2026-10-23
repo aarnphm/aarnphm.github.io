@@ -107,7 +107,7 @@ body[data-slug='index'] {
     }
   }
 
-  &:has(.homepage-trail-toggle[aria-expanded='true']) {
+  &[data-trail-open='true'] {
     overflow: hidden;
     block-size: 100dvh;
 
