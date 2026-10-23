@@ -22,6 +22,7 @@ import {
   oauthProtectedResourceMetadata,
   withAgentAuthMetadata,
 } from './auth-md'
+import { handleCommentAvatars, moveCommentAvatar } from './comment-avatars'
 import {
   getGithubCommentAuthor,
   MultiplayerComments,
@@ -272,6 +273,9 @@ export default {
       })
     }
 
+    const avatarResponse = await handleCommentAvatars(request, env)
+    if (avatarResponse) return avatarResponse
+
     if (request.method === 'POST' && url.pathname === '/comments/author/rename') {
       let payload: { oldAuthor?: unknown; newAuthor?: unknown; githubLogin?: unknown } | null = null
       try {
@@ -328,6 +332,7 @@ export default {
       )
         .bind(newAuthor, oldAuthor)
         .run()
+      await moveCommentAvatar(env, oldAuthor, newAuthor)
 
       await env.OAUTH_KV.put(authorKey, `${Date.now()}`, {
         expirationTtl: commentAuthorRenameWindowSeconds,

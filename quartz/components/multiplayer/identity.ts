@@ -1,8 +1,6 @@
+import { blobDataUrl, decodeBlob } from '../../util/blob-avatar'
 import { getFullSlug } from '../../util/path'
 import { isRecord } from './model'
-
-const githubAvatarCache = new Map<string, string>()
-const githubAvatarStoragePrefix = 'comment-author-github-avatar:'
 
 export function getAuthor(): string {
   const login = localStorage.getItem('comment-author-github-login')
@@ -30,53 +28,64 @@ export function getCommentPageId(): string {
   return slug
 }
 
-export async function getGravatarUrl(identifier: string, size: number = 24): Promise<string> {
-  const normalized = identifier.trim().toLowerCase()
-  const encoder = new TextEncoder()
-  const data = encoder.encode(normalized)
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data)
-  const hashArray = Array.from(new Uint8Array(hashBuffer))
-  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
-  return `https://gravatar.com/avatar/${hashHex}?s=${size}&d=identicon&r=pg`
+// Avatars are blobs (quartz/util/blob-avatar.ts): the name picks one, and a commenter who pinned
+// traits from the palette has them stored as a code that every reader fetches. Lookups made in the
+// same tick share one request.
+export const ownAvatarKey = 'comment-avatar'
+const avatarCodes = new Map<string, string>()
+let pending = new Map<string, ((code: string) => void)[]>()
+let flush: Promise<void> | null = null
+
+const fetchCodes = async () => {
+  await Promise.resolve()
+  const batch = pending
+  pending = new Map()
+  flush = null
+  const url = new URL('/comments/avatars', window.location.origin)
+  for (const author of batch.keys()) url.searchParams.append('author', author)
+  let avatars: Record<string, unknown> = {}
+  try {
+    const resp = await fetch(url)
+    const data: unknown = resp.ok ? await resp.json() : null
+    if (isRecord(data) && isRecord(data['avatars'])) avatars = data['avatars']
+  } catch {}
+  for (const [author, waiting] of batch) {
+    const code = typeof avatars[author] === 'string' ? avatars[author] : ''
+    avatarCodes.set(author, code)
+    for (const resolve of waiting) resolve(code)
+  }
 }
 
-export async function getGithubAvatarUrl(login: string): Promise<string | null> {
-  const cached = githubAvatarCache.get(login)
-  if (cached) return cached
-  const storageKey = `${githubAvatarStoragePrefix}${login}`
-  try {
-    const stored = sessionStorage.getItem(storageKey)
-    if (stored) {
-      githubAvatarCache.set(login, stored)
-      return stored
-    }
-  } catch {}
-  const resp = await fetch(`https://api.github.com/users/${encodeURIComponent(login)}`, {
-    headers: { Accept: 'application/vnd.github+json' },
+export function getAvatarCode(author: string): Promise<string> {
+  if (author === localStorage.getItem('comment-author')) {
+    const own = localStorage.getItem(ownAvatarKey)
+    if (own !== null) return Promise.resolve(own)
+  }
+  const known = avatarCodes.get(author)
+  if (known !== undefined) return Promise.resolve(known)
+  return new Promise(resolve => {
+    pending.set(author, [...(pending.get(author) ?? []), resolve])
+    flush ??= fetchCodes()
   })
-  if (!resp.ok) return null
-  let data: unknown
-  try {
-    data = await resp.json()
-  } catch {
-    return null
-  }
-  if (!isRecord(data)) return null
-  const avatar = data['avatar_url']
-  if (typeof avatar !== 'string' || avatar.length === 0) return null
-  githubAvatarCache.set(login, avatar)
-  try {
-    sessionStorage.setItem(storageKey, avatar)
-  } catch {}
-  return avatar
 }
 
-export async function getAvatarUrl(author: string, size: number = 24): Promise<string> {
-  const login = localStorage.getItem('comment-author-github-login')
-  const localAuthor = localStorage.getItem('comment-author')
-  if (login && (author === localAuthor || author === login)) {
-    const githubUrl = await getGithubAvatarUrl(login)
-    if (githubUrl) return githubUrl
-  }
-  return getGravatarUrl(author, size)
+export async function getAvatarUrl(author: string): Promise<string> {
+  return blobDataUrl(author, decodeBlob(await getAvatarCode(author)))
+}
+
+// Saves this commenter's pinned traits and redraws their avatars already on the page.
+export async function setOwnAvatar(code: string): Promise<boolean> {
+  const author = getAuthor()
+  const resp = await fetch('/comments/avatars', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ author, code }),
+  }).catch(() => null)
+  if (!resp?.ok) return false
+  localStorage.setItem(ownAvatarKey, code)
+  avatarCodes.set(author, code)
+  const src = blobDataUrl(author, decodeBlob(code))
+  for (const img of document.querySelectorAll<HTMLImageElement>('img.reply-avatar, img.avatar'))
+    if (img.alt === author) img.src = src
+  return true
 }
