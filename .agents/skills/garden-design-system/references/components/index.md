@@ -7,6 +7,7 @@
 | [ArenaControls](ArenaControls.md)           | The Arena channel control row: a search input that takes the free width, and a mono view toggle.                                                                               |
 | [ArenaReader](ArenaReader.md)               | The Arena reader frame: a mono header bar with a source link and actions, over a long-form reading pane.                                                                       |
 | [ArticleTitle](ArticleTitle.md)             | The note title above the byline, in `title` type at `article-title` size.                                                                                                      |
+| [AttributionGraph](AttributionGraph.md)     | The acronym attribution graph of Circuit Tracing (figure 5): supernodes from the prompt tokens to the DAG logit, with ablation and edge pruning.                               |
 | [Backlinks](Backlinks.md)                   | The list of notes that link to this one, at the end of the page.                                                                                                               |
 | [BaseToolbar](BaseToolbar.md)               | The Base view toolbar: the view menu, sort and filter controls, and search.                                                                                                    |
 | [Breadcrumbs](Breadcrumbs.md)               | The path from `~` to the current note, separated by `/`, with middle segments folded into an overflow trigger.                                                                 |
