@@ -14,7 +14,7 @@ title: affine transformation
 > $$\displaystyle f(x) = A\,x + b,$$
 > where $A\in\mathbb{R}^{m\times n}$ is a linear map and $b\in\mathbb{R}^m$ is a translation vector. An affine map sends a line to a line or a point and preserves convex combinations. When $A$ is injective, it also preserves parallelism and ratios of lengths along a line. Translation makes affine maps more general than linear maps.
 
-An affine map acts on points. Choosing coordinate origins represents those points as vectors; see [[thoughts/Vector space]]. A map from $\mathbb R^n$ to $\mathbb R^m$ has $m(n+1)$ parameters: $mn$ entries in $A$ and $m$ entries in $b$. An affine endomap on $\mathbb R^n$ therefore has $n^2+n$ parameters.
+An affine map acts on points. Choosing coordinate origins represents those points as vectors; see [[thoughts/Vector space|Vector space]]. A map from $\mathbb R^n$ to $\mathbb R^m$ has $m(n+1)$ parameters: $mn$ entries in $A$ and $m$ entries in $b$. An affine endomap on $\mathbb R^n$ therefore has $n^2+n$ parameters.
 
 ## standard form
 

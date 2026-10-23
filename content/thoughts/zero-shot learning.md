@@ -8,9 +8,9 @@ tags:
 title: zero-shot prompting
 ---
 
-Zero-shot prompting gives [[thoughts/LLMs]] a task without demonstrations of how to solve it. For example: "Classify the sentiment of 'The parcel arrived broken' as positive, negative, or neutral." The sentence is the input to classify. A demonstration would pair another sentence with its correct label. [@brown2020languagemodelsfewshotlearners]
+Zero-shot prompting gives [[thoughts/LLMs|LLMs]] a task without demonstrations of how to solve it. For example: "Classify the sentiment of 'The parcel arrived broken' as positive, negative, or neutral." The sentence is the input to classify. A demonstration would pair another sentence with its correct label. [@brown2020languagemodelsfewshotlearners]
 
-The term describes the prompt used at inference time. It says little by itself about which related tasks or examples appeared during training. It also leaves room for [[thoughts/prompt engineering]]: the instruction can specify labels, context, and an output format while containing no demonstrations.
+The term describes the prompt used at inference time. It says little by itself about which related tasks or examples appeared during training. It also leaves room for [[thoughts/prompt engineering|prompt engineering]]: the instruction can specify labels, context, and an output format while containing no demonstrations.
 
 ## what FLAN showed
 

@@ -11,6 +11,6 @@ tags:
 title: horizons
 ---
 
-see also [[thoughts/Alignment]], measure AI capabilities over time.
+see also [[thoughts/Alignment|Alignment]], measure AI capabilities over time.
 
 "foom" scenarios

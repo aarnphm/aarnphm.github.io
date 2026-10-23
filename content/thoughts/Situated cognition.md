@@ -7,7 +7,7 @@ description: knowing is inseparable from doing
 id: Situated cognition
 modified: 2026-06-05 15:08:20 GMT-04:00
 socials:
-  research: '[[hinterland/research/situated-cognition-ethics-research-plan]]'
+  research: '[[hinterland/research/situated-cognition-ethics-research-plan|situated-cognition-ethics-research-plan]]'
   wikipedia: https://en.wikipedia.org/wiki/Situated_cognition
 tags:
   - pattern

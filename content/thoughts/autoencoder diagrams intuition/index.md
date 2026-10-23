@@ -20,11 +20,11 @@ Two complementary illustrations help convey both (i) what a “vanilla” autoen
 
 see also:
 
-- [[thoughts/autoencoder diagrams intuition/00-Autoencoder-panoramic.pdf]]
-- [[thoughts/autoencoder diagrams intuition/Autoencoder-Implementation-simple.pdf]]
-- [[thoughts/autoencoder diagrams intuition/Autoencoder-Implementation.pdf]]
-- [[thoughts/autoencoder diagrams intuition/Autoencoder-Representation-simple.pdf]]
-- [[thoughts/autoencoder diagrams intuition/Autoencoder-Representation.pdf]]
+- [[thoughts/autoencoder diagrams intuition/00-Autoencoder-panoramic.pdf|00-Autoencoder-panoramic.pdf]]
+- [[thoughts/autoencoder diagrams intuition/Autoencoder-Implementation-simple.pdf|Autoencoder-Implementation-simple.pdf]]
+- [[thoughts/autoencoder diagrams intuition/Autoencoder-Implementation.pdf|Autoencoder-Implementation.pdf]]
+- [[thoughts/autoencoder diagrams intuition/Autoencoder-Representation-simple.pdf|Autoencoder-Representation-simple.pdf]]
+- [[thoughts/autoencoder diagrams intuition/Autoencoder-Representation.pdf|Autoencoder-Representation.pdf]]
 
 ## License
 

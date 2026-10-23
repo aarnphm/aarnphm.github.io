@@ -9,7 +9,7 @@ tags:
 title: furnitures
 ---
 
-Furnitures signify a permanent object that lives within your [[posts/dundurn|space]], that speaks about your [[thoughts/taste]]
+Furnitures signify a permanent object that lives within your [[posts/dundurn|space]], that speaks about your [[thoughts/taste|taste]]
 
 some more sources:
 

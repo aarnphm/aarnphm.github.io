@@ -91,7 +91,7 @@ When $m=1$, the Jacobian is the row vector $\mathbf{J}_f=(\nabla f)^T$, the tran
 
 ## gradient
 
-see also [[thoughts/gradient descent]]
+see also [[thoughts/gradient descent|gradient descent]]
 
 For a differentiable scalar function $f$ on Euclidean space with its standard inner product, the gradient is the vector that represents the derivative through the dot product:[^grad-annotation]
 
@@ -171,7 +171,7 @@ Its blue arrows show $\nabla f$ in the input plane, placed at $z=-4$ and scaled 
 \end{document}
 ```
 
-[^grad-annotation]: another annotation often used in [[thoughts/Machine learning]] is $\operatorname{grad}(f)$. See also [[thoughts/Automatic Differentiation|autograd]]
+[^grad-annotation]: another annotation often used in [[thoughts/Machine learning|Machine learning]] is $\operatorname{grad}(f)$. See also [[thoughts/Automatic Differentiation|autograd]]
 
 ## vector field
 

@@ -56,7 +56,7 @@ Kierkegaard grounds the duty to love one's neighbour in the Christian commandmen
 
 The [[thoughts/Compression|compression]] problem is clearest when the task is specified. A model trained to predict whether someone will answer a message can succeed while telling us little about what the message means to them. Its success is measured against that prediction. Understanding their grief, resentment, or commitment requires further evidence and a different question.
 
-This is a limit on what follows from predictive success. It gives no proof that persons are impossible to model. A richer model might include their reasons, their history, and their own account of the situation. I want those accounts to remain open to correction, including correction by the person being described. See [[thoughts/hermeneutics]].
+This is a limit on what follows from predictive success. It gives no proof that persons are impossible to model. A richer model might include their reasons, their history, and their own account of the situation. I want those accounts to remain open to correction, including correction by the person being described. See [[thoughts/hermeneutics|hermeneutics]].
 
 ## determinism and responsibility
 

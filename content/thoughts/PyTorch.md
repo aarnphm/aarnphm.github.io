@@ -47,7 +47,7 @@ A competing class contributes zero once the target score exceeds it by at least 
 
 PyTorch's [SGD implementation](https://docs.pytorch.org/docs/stable/generated/torch.optim.SGD.html) applies the `maximize` sign to the objective gradient before adding weight decay. The parameter update then subtracts the resulting direction in both modes. This keeps decay pointing toward zero.
 
-For [[thoughts/Nesterov momentum]], PyTorch cites [On the importance of initialization and momentum in deep learning](http://www.cs.toronto.edu/%7Ehinton/absps/momentum.pdf). Its momentum buffer is initialized to the first gradient. Dampening starts at the second update; Nesterov requires positive momentum and zero dampening.
+For [[thoughts/Nesterov momentum|Nesterov momentum]], PyTorch cites [On the importance of initialization and momentum in deep learning](http://www.cs.toronto.edu/%7Ehinton/absps/momentum.pdf). Its momentum buffer is initialized to the first gradient. Dampening starts at the second update; Nesterov requires positive momentum and zero dampening.
 
 ```pseudo
 \begin{algorithm}
@@ -82,7 +82,7 @@ For [[thoughts/Nesterov momentum]], PyTorch cites [On the importance of initiali
 \end{algorithm}
 ```
 
-## [[thoughts/knowledge distillation]]
+## [[thoughts/knowledge distillation|knowledge distillation]]
 
 CIFAR-10 examples from the [PyTorch distillation tutorial](https://docs.pytorch.org/tutorials/beginner/knowledge_distillation_tutorial.html). These are excerpts: the loaders, trained teacher, and model instances must be set up before running the training loops.
 
@@ -90,7 +90,7 @@ CIFAR-10 examples from the [PyTorch distillation tutorial](https://docs.pytorch.
 
 ### Cosine loss minimisation run
 
-The experiment asks whether a trained teacher's hidden [[thoughts/representations]] help the student classify images. The teacher stays fixed. The student minimizes a weighted sum of classification loss and cosine loss between their hidden activations.
+The experiment asks whether a trained teacher's hidden [[thoughts/representations|representations]] help the student classify images. The teacher stays fixed. The student minimizes a weighted sum of classification loss and cosine loss between their hidden activations.
 
 [`CosineEmbeddingLoss`](https://docs.pytorch.org/docs/stable/generated/torch.nn.CosineEmbeddingLoss.html) compares equal-length vectors in their current coordinate order. It encourages aligned directions. It does not copy weights or find a permutation of the teacher's features:
 

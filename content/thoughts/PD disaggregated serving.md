@@ -7,11 +7,11 @@ description: and inference go distributed
 id: pd disaggregated serving
 modified: 2026-06-07 01:17:44 GMT-04:00
 seealso:
-  - '[[thoughts/KV offloading]]'
+  - '[[thoughts/KV offloading|KV offloading]]'
   - '[[thoughts/distributed inference|distributed inference]]'
-  - '[[@vllm-disagg-docs]]'
-  - '[[@vllm-disagg-blog]]'
-  - '[[@qin2024mooncakekvcachecentricdisaggregatedarchitecture]]'
+  - '[[@vllm-disagg-docs|@vllm-disagg-docs]]'
+  - '[[@vllm-disagg-blog|@vllm-disagg-blog]]'
+  - '[[@qin2024mooncakekvcachecentricdisaggregatedarchitecture|@qin2024mooncakekvcachecentricdisaggregatedarchitecture]]'
 tags:
   - ml
   - inference
@@ -75,7 +75,7 @@ $$
 M_{\text{kv}}^{\text{MLA}} = (d_c + d_R) \cdot b \cdot L
 $$
 
-where $d_c$ is latent dimension, $d_R$ is [[thoughts/RoPE]] dimension.
+where $d_c$ is latent dimension, $d_R$ is [[thoughts/RoPE|RoPE]] dimension.
 
 > [!important] terminology
 >

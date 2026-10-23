@@ -59,7 +59,7 @@ The local quadratic term of KL divergence is this metric:
 > + o(\|\Delta\theta\|^{2}).
 > $$
 >
-> Thus $ds^2=d\theta^{\mathsf T}\mathcal I(\theta)d\theta$ measures local statistical distinguishability. See [[thoughts/Kullback-Leibler divergence]].
+> Thus $ds^2=d\theta^{\mathsf T}\mathcal I(\theta)d\theta$ measures local statistical distinguishability. See [[thoughts/Kullback-Leibler divergence|Kullback-Leibler divergence]].
 
 The uniqueness statement needs another assumption. [Chentsov's theorem](https://doi.org/10.1007/s00440-014-0574-8) characterizes the Fisher metric, up to scale, through invariance under sufficient statistics or the corresponding Markov morphisms. The KL expansion alone leaves the theorem unproved.
 
@@ -84,7 +84,7 @@ $$
 
 The steepest local descent direction under the Fisher metric is $-\tilde{\nabla}L(\theta)$. This direction is invariant to smooth reparameterization in the continuous-time or infinitesimal-step description. A geodesic equation adds connection terms and specifies a path.
 
-For a correctly specified likelihood model, the expected negative Hessian equals Fisher under regularity conditions. The observed Hessian can approach the same limit near a maximum-likelihood solution. Away from that setting, Fisher, the observed Hessian, and the [empirical Fisher](https://arxiv.org/abs/1905.12558) are different matrices; see [[thoughts/Maximum likelihood estimation]].
+For a correctly specified likelihood model, the expected negative Hessian equals Fisher under regularity conditions. The observed Hessian can approach the same limit near a maximum-likelihood solution. Away from that setting, Fisher, the observed Hessian, and the [empirical Fisher](https://arxiv.org/abs/1905.12558) are different matrices; see [[thoughts/Maximum likelihood estimation|Maximum likelihood estimation]].
 
 > [!caution] empirical and expected Fisher
 > The empirical Fisher $\tfrac{1}{n}\sum_i s_\theta(x_i)s_\theta(x_i)^{\mathsf T}$ replaces the model expectation with observed samples. It can give a poor curvature approximation away from a well-specified optimum. Diagonal and Kronecker-factored approximations add another approximation for tractability.
@@ -107,7 +107,7 @@ $$
 \mathcal G(z)=J_\theta(z)^{\mathsf T}\mathcal I(\theta(z))J_\theta(z).
 $$
 
-Geodesics depend on the chosen metric. A shortest path under the decoder pullback can differ from a straight segment in latent coordinates. The path tests decoder distortion. A claim about data density needs a separate probability model; see [[thoughts/geometric projections]].
+Geodesics depend on the chosen metric. A shortest path under the decoder pullback can differ from a straight segment in latent coordinates. The path tests decoder distortion. A claim about data density needs a separate probability model; see [[thoughts/geometric projections|geometric projections]].
 
 ## practical estimation
 
@@ -117,7 +117,7 @@ Geodesics depend on the chosen metric. A shortest path under the decoder pullbac
 
 ## see also
 
-- [[thoughts/Kullback-Leibler divergence]], for the local quadratic link to Fisher.
-- [[thoughts/Maximum likelihood estimation]], for expected negative Hessians and asymptotic covariance.
-- [[thoughts/manifold]], for the topological and differentiable definitions.
-- [[thoughts/Vector space]] and [[thoughts/Inner product space]], for the local linear algebra.
+- [[thoughts/Kullback-Leibler divergence|Kullback-Leibler divergence]], for the local quadratic link to Fisher.
+- [[thoughts/Maximum likelihood estimation|Maximum likelihood estimation]], for expected negative Hessians and asymptotic covariance.
+- [[thoughts/manifold|manifold]], for the topological and differentiable definitions.
+- [[thoughts/Vector space|Vector space]] and [[thoughts/Inner product space|Inner product space]], for the local linear algebra.

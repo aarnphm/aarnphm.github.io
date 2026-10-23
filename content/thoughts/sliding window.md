@@ -6,8 +6,8 @@ modified: 2026-06-06 01:39:40 GMT-04:00
 seealso:
   - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/flash attention|FlashAttention]]'
-  - '[[@beltagy2020longformerlongdocumenttransformer]]'
-  - '[[@zaheer2021bigbirdtransformerslonger]]'
+  - '[[@beltagy2020longformerlongdocumenttransformer|@beltagy2020longformerlongdocumenttransformer]]'
+  - '[[@zaheer2021bigbirdtransformerslonger|@zaheer2021bigbirdtransformerslonger]]'
 tags:
   - ml
   - llm

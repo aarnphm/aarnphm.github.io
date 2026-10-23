@@ -7,14 +7,15 @@ aliases:
 date: '2024-10-30'
 description: Features, circuits, and causal tests for reverse engineering neural networks.
 id: mechanistic interpretability
-modified: 2026-10-05 09:12:12 GMT-04:00
+layout: technical
+modified: 2026-10-23 02:16:18 GMT-04:00
 permalinks:
   - /mechinterp
   - /interpretability
 seealso:
-  - '[[thoughts/sparse autoencoder]]'
-  - '[[thoughts/sparse crosscoders]]'
-  - '[[thoughts/Attribution parameter decomposition]]'
+  - '[[thoughts/sparse autoencoder|sparse autoencoder]]'
+  - '[[thoughts/sparse crosscoders|sparse crosscoders]]'
+  - '[[thoughts/Attribution parameter decomposition|Attribution parameter decomposition]]'
 socials:
   glossary: https://dynalist.io/d/n2ZWtnoYHrU1s4vnFSAQ519J
   tour: https://www.youtube.com/watch?v=veT2VI4vHyU&ab_channel=FAR%E2%80%A4AI
@@ -26,7 +27,7 @@ tags:
 title: mechanistic interpretability
 ---
 
-mechanistic interpretability asks how a neural network produces a behaviour. An explanation identifies representations and computations inside the network, then predicts what will happen when we change them. Alignment supplies many of the motivating questions, especially for [[thoughts/LLMs]].
+mechanistic interpretability asks how a neural network produces a behaviour. An explanation identifies representations and computations inside the network, then predicts what will happen when we change them. Alignment supplies many of the motivating questions, especially for [[thoughts/LLMs|LLMs]].
 
 The scale problem remains: _==how do we hope to understand a function over such a large space, without an exponential amount of time?==_ [^lesswrongarc] Decomposition is one proposed answer. If the same components recur across inputs, we can study their interactions and reuse that explanation. We still have to establish where it holds.
 
@@ -161,7 +162,7 @@ $$
 
 The second term is interference. Sparsity sets many of its coefficients to zero; small pairwise inner products reduce the remaining terms. Nonlinear filtering can then help recover features. This explains how superposition can act as **lossy [[thoughts/Compression|compression]]**.
 
-High-dimensional geometry permits many directions with small pairwise inner products. The number depends on the tolerated overlap and the dimension; see the [[thoughts/Johnson-Lindenstrauss lemma]]. Compressed sensing adds another condition: recovery from fewer measurements can be possible when the original signal is sparse and the measurement matrix has suitable properties. Sparsity alone does not guarantee recovery.
+High-dimensional geometry permits many directions with small pairwise inner products. The number depends on the tolerated overlap and the dimension; see the [[thoughts/Johnson-Lindenstrauss lemma|Johnson-Lindenstrauss lemma]]. Compressed sensing adds another condition: recovery from fewer measurements can be possible when the original signal is sparse and the measurement matrix has suitable properties. Sparsity alone does not guarantee recovery.
 
 ### properties
 
@@ -239,7 +240,7 @@ see also: [author's writeup](https://www.alignmentforum.org/posts/N6WM6hs7RQMKDh
 
 ## attribution graph
 
-An attribution graph describes a chosen output on one prompt. In [Circuit Tracing](https://transformer-circuits.pub/2025/attribution-graphs/methods.html), nodes are active CLT features, input embeddings, reconstruction errors, and logits. Direct edges become linear contributions after fixing attention patterns and normalization denominators at their observed values. See [[thoughts/circuit tracing]] for the equations and [On the Biology of a Large Language Model](https://transformer-circuits.pub/2025/attribution-graphs/biology.html) for case studies.
+An attribution graph describes a chosen output on one prompt. In [Circuit Tracing](https://transformer-circuits.pub/2025/attribution-graphs/methods.html), nodes are active CLT features, input embeddings, reconstruction errors, and logits. Direct edges become linear contributions after fixing attention patterns and normalization denominators at their observed values. See [[thoughts/circuit tracing|circuit tracing]] for the equations and [On the Biology of a Large Language Model](https://transformer-circuits.pub/2025/attribution-graphs/biology.html) for case studies.
 
 ```jsx imports={Zoomable,AttributionGraph}
 <Zoomable label="attribution graph">

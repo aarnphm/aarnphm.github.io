@@ -11,7 +11,7 @@ transclude:
   title: false
 ---
 
-See also [paper](http://www.cs.toronto.edu/%7Ehinton/absps/momentum.pdf), [[thoughts/optimization#momentum]]
+See also [paper](http://www.cs.toronto.edu/%7Ehinton/absps/momentum.pdf), [[thoughts/optimization#momentum|momentum]]
 
 Nesterov momentum evaluates the gradient where the accumulated momentum would take the parameters. This lets the gradient correction respond to that proposed move.[^lookahead]
 

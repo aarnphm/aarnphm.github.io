@@ -8,11 +8,11 @@ seealso:
   - '[[thoughts/chinese room|chinese room]]'
   - '[[thoughts/representations|representations]]'
   - '[[thoughts/emergent behaviour|emergent behaviour]]'
-  - '[[thoughts/dualism]]'
-  - '[[thoughts/physicalism]]'
-  - '[[thoughts/phenomenal consciousness]]'
-  - '[[thoughts/access consciousness]]'
-  - '[[thoughts/panpsychism]]'
+  - '[[thoughts/dualism|dualism]]'
+  - '[[thoughts/physicalism|physicalism]]'
+  - '[[thoughts/phenomenal consciousness|phenomenal consciousness]]'
+  - '[[thoughts/access consciousness|access consciousness]]'
+  - '[[thoughts/panpsychism|panpsychism]]'
 socials:
   sep: https://plato.stanford.edu/entries/functionalism/
   wikipedia: https://en.wikipedia.org/wiki/Functionalism_(philosophy_of_mind)
@@ -96,15 +96,15 @@ a coarse role can count too many systems as minded. Block's China brain asks whe
 
 ### phenomenal character
 
-the inverted spectrum asks whether two systems could share their functional organization while their color experiences differ. absent-qualia cases ask whether the organization could remain while experience disappears. the [[thoughts/knowledge argument]] puts similar pressure on complete physical and functional descriptions through Mary's apparent discovery of what red looks like. [@shoemaker1982invertedspectrum; @block1978troublesfunctionalism; @jackson1982epiphenomenalqualia; @jackson1986whatmary]
+the inverted spectrum asks whether two systems could share their functional organization while their color experiences differ. absent-qualia cases ask whether the organization could remain while experience disappears. the [[thoughts/knowledge argument|knowledge argument]] puts similar pressure on complete physical and functional descriptions through Mary's apparent discovery of what red looks like. [@shoemaker1982invertedspectrum; @block1978troublesfunctionalism; @jackson1982epiphenomenalqualia; @jackson1986whatmary]
 
 ### content
 
-the [[thoughts/chinese room]] follows syntactic rules well enough to pass a linguistic test. Searle's objection is that successful symbol manipulation explains rule following while leaving symbol meaning underdescribed. a functional account of understanding therefore needs a role whose inputs and outputs are connected to more than strings. [@searle1980minds]
+the [[thoughts/chinese room|chinese room]] follows syntactic rules well enough to pass a linguistic test. Searle's objection is that successful symbol manipulation explains rule following while leaving symbol meaning underdescribed. a functional account of understanding therefore needs a role whose inputs and outputs are connected to more than strings. [@searle1980minds]
 
 ## machine minds
 
-for [[thoughts/LLMs]], functionalism gives a research program rather than a verdict. first specify the proposed role. then locate a candidate internal state and intervene on it. a successful intervention shows that the state matters for the role under the chosen abstraction. belief, pain, understanding, and consciousness need stronger criteria. [@geiger2025causalabstraction]
+for [[thoughts/LLMs|LLMs]], functionalism gives a research program rather than a verdict. first specify the proposed role. then locate a candidate internal state and intervene on it. a successful intervention shows that the state matters for the role under the chosen abstraction. belief, pain, understanding, and consciousness need stronger criteria. [@geiger2025causalabstraction]
 
 the attention operation computes weighted combinations of internal representations. the mental state called attention includes broader control, memory, and task constraints. sharing the word leaves the causal-role question open.
 

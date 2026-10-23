@@ -10,4 +10,4 @@ title: cryptography
 
 ### functions.
 
-See also [[thoughts/Merkle DAG]]
+See also [[thoughts/Merkle DAG|Merkle DAG]]

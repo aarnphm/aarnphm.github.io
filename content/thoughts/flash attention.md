@@ -6,9 +6,9 @@ modified: 2026-06-07 11:02:58 GMT-04:00
 seealso:
   - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/tree attention|tree attention]]'
-  - '[[thoughts/GPU programming]]'
-  - '[[@dao2023flashattention2fasterattentionbetter]]'
-  - '[[@shah2024flashattention3fastaccurateattention]]'
+  - '[[thoughts/GPU programming|GPU programming]]'
+  - '[[@dao2023flashattention2fasterattentionbetter|@dao2023flashattention2fasterattentionbetter]]'
+  - '[[@shah2024flashattention3fastaccurateattention|@shah2024flashattention3fastaccurateattention]]'
 tags:
   - ml
   - llm

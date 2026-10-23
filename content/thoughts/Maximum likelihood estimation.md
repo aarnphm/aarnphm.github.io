@@ -4,9 +4,9 @@ description: Likelihood objective, Fisher information, conditional classificatio
 id: Maximum likelihood estimation
 modified: 2026-09-01 09:15:00 GMT-04:00
 seealso:
-  - '[[thoughts/Logistic regression]]'
-  - '[[thoughts/regularization]]'
-  - '[[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/likelihood]]'
+  - '[[thoughts/Logistic regression|Logistic regression]]'
+  - '[[thoughts/regularization|regularization]]'
+  - '[[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/likelihood|likelihood]]'
   - '[[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/finals|supervised learning notes]]'
 tags:
   - ml
@@ -100,7 +100,7 @@ $$
 \nabla_a\mathcal J=\operatorname{softmax}(a)-\operatorname{onehot}(y).
 $$
 
-Mini-batch sampling gives an unbiased gradient estimate when the batch is sampled uniformly from the training set. See [[thoughts/Logistic regression#MLE derivation and gradients]] for the binary case.
+Mini-batch sampling gives an unbiased gradient estimate when the batch is sampled uniformly from the training set. See [[thoughts/Logistic regression#MLE derivation and gradients|MLE derivation and gradients]] for the binary case.
 
 > [!note] penalty priors and MAP
 > A prior adds its log density to the objective:
@@ -110,7 +110,7 @@ Mini-batch sampling gives an unbiased gradient estimate when the batch is sample
 > \in\arg\max_\theta\{\ell_n(\theta)+\log p(\theta)\}.
 > $$
 >
-> A zero-mean Gaussian prior gives an L2 penalty. A Laplace prior gives an L1 penalty. [Decoupled weight decay](https://arxiv.org/abs/1711.05101), as used by AdamW, is a different update rule, so the equivalence with an L2 objective usually fails. See [[thoughts/regularization]] and [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/likelihood#maximum a posteriori estimation|MAP]].
+> A zero-mean Gaussian prior gives an L2 penalty. A Laplace prior gives an L1 penalty. [Decoupled weight decay](https://arxiv.org/abs/1711.05101), as used by AdamW, is a different update rule, so the equivalence with an L2 objective usually fails. See [[thoughts/regularization|regularization]] and [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/likelihood#maximum a posteriori estimation|MAP]].
 
 ## examples
 
@@ -159,4 +159,4 @@ MLE is invariant under a one-to-one reparameterization: if $\alpha=g(\theta)$, t
 - At a twice-differentiable interior local maximum, the Hessian of $\ell_n$ is negative semidefinite. Negative definiteness is a sufficient local condition, not a necessary one.
 - Report whether the objective is a joint likelihood or a conditional likelihood.
 
-See also: [[thoughts/cross entropy]], [[thoughts/Logistic regression]], [[thoughts/regularization]], [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/finals]].
+See also: [[thoughts/cross entropy|cross entropy]], [[thoughts/Logistic regression|Logistic regression]], [[thoughts/regularization|regularization]], [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/finals|finals]].

@@ -13,7 +13,7 @@ Philosophical skepticism targets knowledge claims that ordinary life takes for g
 
 The Cartesian argument uses closure. If $S$ knows $p$, knows that $p \to q$, and competently infers $q$, then $S$ knows $q$. If I know that I have hands, and I know that having hands rules out being a brain in a vat, closure seems to give me knowledge that I am not a brain in a vat. The skeptic flips it around: I do not know that I am not a brain in a vat, so I do not know that I have hands.
 
-Knowledge also needs the right [[thoughts/doxastic attitude]]. The coarse attitudes are belief, disbelief, and suspension of judgment. I can fail to know $p$ because I do not believe $p$, or because I believe $p$ without justification.
+Knowledge also needs the right [[thoughts/doxastic attitude|doxastic attitude]]. The coarse attitudes are belief, disbelief, and suspension of judgment. I can fail to know $p$ because I do not believe $p$, or because I believe $p$ without justification.
 
 Nozick's sensitivity condition says that $S$ knows $p$ only if $S$ would not believe $p$ in the nearest worlds where $p$ is false. This lets ordinary hand knowledge pass while denying knowledge of the anti-skeptical claim. If I were a brain in a vat, I would still believe I was not one.
 

@@ -17,7 +17,7 @@ Artificial general intelligence (AGI) concerns how broadly an AI system can perf
 
 They treat **autonomy**, how much a system acts without human involvement, as a separate deployment question. A capable model can be used with a person reviewing every action.
 
-For [[thoughts/LLMs]], success on a [[thoughts/NLP|natural-language]] task provides evidence about that task. An AGI claim needs a stated threshold and evidence across tasks. Fluent explanations alone leave the reliability of the answers untested.
+For [[thoughts/LLMs|LLMs]], success on a [[thoughts/NLP|natural-language]] task provides evidence about that task. An AGI claim needs a stated threshold and evidence across tasks. Fluent explanations alone leave the reliability of the answers untested.
 
 ## superintelligence
 

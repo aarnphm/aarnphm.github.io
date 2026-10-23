@@ -14,10 +14,10 @@ important to our self-knowledge => emphasise through reading books.
 
 ## communication.
 
-[[thoughts/Wittgenstein]] holds two views of language, also known as Early Wittgenstein and Late Wittgenstein.
+[[thoughts/Wittgenstein|Wittgenstein]] holds two views of language, also known as Early Wittgenstein and Late Wittgenstein.
 
 - In the [[library/Tractatus Logico-Philosophicus|_Tractatus_]], a sentence is ::a picture of a fact::: it means something because its parts are arranged the way the parts of the world are. The embed below is from this period.
-- In [[library/Philosophical Investigations]], A word's meaning is its use inside a "language-game", and no more "picture" concept— a shared activity with rules, such as giving orders, describing an object or telling a joke. He also warns that "a picture held us captive" (§115): one model of how language must work can stop us from looking at how it does work.
+- In [[library/Philosophical Investigations|Philosophical Investigations]], A word's meaning is its use inside a "language-game", and no more "picture" concept— a shared activity with rules, such as giving orders, describing an object or telling a joke. He also warns that "a picture held us captive" (§115): one model of how language must work can stop us from looking at how it does work.
 - My reading: conflict starts when two people play different games with the same words and each assumes the other plays theirs. Online, where one sentence reaches many audiences at once, this shows up as context collapse.
 
 Possibly the most salient feature of [[thoughts/LLMs|LLMs]] is that the system is surprisingly patient in each interaction with humans.

@@ -171,4 +171,4 @@ $$
 
 For a summed loss, remove the factor $1/n$. [@freund2018conditionnumberlogisticregression]
 
-See [[thoughts/Logistic regression#MLE derivation and gradients]], [[thoughts/cross entropy]], [[thoughts/norm]], and [[thoughts/linear map#Operator norm and Lipschitzness]].
+See [[thoughts/Logistic regression#MLE derivation and gradients|MLE derivation and gradients]], [[thoughts/cross entropy|cross entropy]], [[thoughts/norm|norm]], and [[thoughts/linear map#Operator norm and Lipschitzness|Operator norm and Lipschitzness]].

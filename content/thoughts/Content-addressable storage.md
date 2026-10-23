@@ -17,12 +17,12 @@ Content-addressed storage is a mechanism to store information such that it can b
 
 | Content-addressed                                                                           | Location-addressed                                                                                                      |
 | ------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| use cryptographic hash functions[^1] to generate unique keys to retrieved based on contents | e.g: [[thoughts/HTTP]], look up content by its location (URI). Thus contents is controlled by the owner of the location |
+| use cryptographic hash functions[^1] to generate unique keys to retrieved based on contents | e.g: [[thoughts/HTTP\|HTTP]], look up content by its location (URI). Thus contents is controlled by the owner of the location |
 
 ## Immutable Objects, Mutable References
 
-Utilize [[thoughts/Merkle DAG]], immutable content-addressed objects, and mutable pointers to the DAG, which creates a dichotomy presents in many distributed systems.
+Utilize [[thoughts/Merkle DAG|Merkle DAG]], immutable content-addressed objects, and mutable pointers to the DAG, which creates a dichotomy presents in many distributed systems.
 
-See also [[thoughts/IPFS]], [[thoughts/Block-reference mechanism]]
+See also [[thoughts/IPFS|IPFS]], [[thoughts/Block-reference mechanism|Block-reference mechanism]]
 
 [^1]: See [[thoughts/cryptography#functions|cryptographic functions]]

@@ -97,7 +97,7 @@ When you write to discover, you follow threads that might lead nowhere. You indu
 
 ## motivation
 
-Excerpt from _George Orwell[^orwell]'s [[library/Why I Write]]_
+Excerpt from _George Orwell[^orwell]'s [[library/Why I Write|Why I Write]]_
 
 [^orwell]: Orwell is often known for his democratic socialism, and opposed for totalitarianism. But his [[thoughts/Will to Truth|will to truth]] is fundamental to his writing, a true [[thoughts/representations|representation]] of intellectual honesty. In the context of totalitarianism, Orwell pointed out that such regimes demand the continuous alteration of the past and probably a disbelief in the very existence of [objective truth](https://www.goodreads.com/book/show/35610790-orwell-on-truth). He saw the danger in a society that drifts from the truth, stating that it will hate those who speak it.
 
@@ -170,7 +170,7 @@ see also: _https://jsomers.net/blog/more-people-should-write_, _https://newslett
 
 ## for the shoggoth
 
-Along these lines where [[thoughts/LLMs]] are [strangely-shaped tool](https://near.blog/llms-are-strangely-shaped-tools/). [Nick](https://x.com/nickcammarata/status/1889762349210362324) did emphasize that this will be "the last humanities project of our time".
+Along these lines where [[thoughts/LLMs|LLMs]] are [strangely-shaped tool](https://near.blog/llms-are-strangely-shaped-tools/). [Nick](https://x.com/nickcammarata/status/1889762349210362324) did emphasize that this will be "the last humanities project of our time".
 
 <div class="nolist">
 

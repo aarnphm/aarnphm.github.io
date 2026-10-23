@@ -11,7 +11,7 @@ title: deep learning
 
 See also: [The Little Book of Deep Learning](/books#2024) ([pdf](https://fleuret.org/public/lbdl.pdf) or [lectures](https://fleuret.org/dlc/)), [annotated history of deep learning](https://people.idsia.ch/~juergen/deep-learning-history.html), this [lecture series at CMU](https://dlsyscourse.org/lectures/)
 
-Deep learning is a subset of [[thoughts/Machine learning]] that learns representations through multiple stages of a neural network. Each stage transforms the previous stage's output, so training can change both the features and the final prediction. [Goodfellow, Bengio and Courville's introduction](https://www.deeplearningbook.org/contents/intro.html) places it within representation learning.
+Deep learning is a subset of [[thoughts/Machine learning|Machine learning]] that learns representations through multiple stages of a neural network. Each stage transforms the previous stage's output, so training can change both the features and the final prediction. [Goodfellow, Bengio and Courville's introduction](https://www.deeplearningbook.org/contents/intro.html) places it within representation learning.
 
 ## composition
 
@@ -31,6 +31,6 @@ $$
 J(\theta)=\frac{1}{N}\sum_{i=1}^{N}\mathcal{L}(f_\theta(x_i),y_i).
 $$
 
-The dataset contains $N$ input-target pairs, and the loss $\mathcal{L}$ assigns a cost to each prediction. Backpropagation applies the chain rule through the network to compute parameter gradients. An optimizer then uses those gradients to update $\theta$, usually from a minibatch estimate. Backpropagation computes derivatives; [[thoughts/gradient descent]] specifies an update rule. Lower training loss can also come from memorizing examples, so we check performance on held-out data. [Section 8.1 of Deep Learning](https://www.deeplearningbook.org/contents/optimization.html) separates the training objective from generalization.
+The dataset contains $N$ input-target pairs, and the loss $\mathcal{L}$ assigns a cost to each prediction. Backpropagation applies the chain rule through the network to compute parameter gradients. An optimizer then uses those gradients to update $\theta$, usually from a minibatch estimate. Backpropagation computes derivatives; [[thoughts/gradient descent|gradient descent]] specifies an update rule. Lower training loss can also come from memorizing examples, so we check performance on held-out data. [Section 8.1 of Deep Learning](https://www.deeplearningbook.org/contents/optimization.html) separates the training objective from generalization.
 
 Supervised, self-supervised and unsupervised describe how the learning problem gets its targets or other training signal. A supplied class label gives a supervised target; predicting a hidden token uses the text itself to construct a self-supervised target. Density estimation can train on observations without class labels. These choices concern the training problem, while depth concerns the model's computation. The same network architecture can support several objectives. See [Fleuret's discussion of losses and autoregressive models](https://fleuret.org/public/lbdl.pdf), sections 3.1 and 3.2.

@@ -9,7 +9,7 @@ seealso:
   - '[[thoughts/XLA|XLA]]'
   - '[[thoughts/MLIR|MLIR]]'
   - '[[thoughts/Autograd|autograd]]'
-  - '[[thoughts/university/twenty-five-twenty-six/sfwr-4tb3]]'
+  - '[[thoughts/university/twenty-five-twenty-six/sfwr-4tb3|sfwr-4tb3]]'
 tags:
   - seed
   - compilers
@@ -23,7 +23,7 @@ title: Compiler
 
 tokenization groups source characters into identifiers, literals, keywords, and punctuation. a lexer also tracks source positions so later errors can point back to the text.
 
-regular token patterns can be compiled into an automaton: Thompson's construction builds an [[thoughts/NFA]] from a regular expression; subset construction converts that NFA into a [[thoughts/DFA]]. these are two separate steps. an implementation can also simulate the NFA directly. [Cox's construction and implementation](https://swtch.com/~rsc/regexp/regexp1.html) show both routes.
+regular token patterns can be compiled into an automaton: Thompson's construction builds an [[thoughts/NFA|NFA]] from a regular expression; subset construction converts that NFA into a [[thoughts/DFA|DFA]]. these are two separate steps. an implementation can also simulate the NFA directly. [Cox's construction and implementation](https://swtch.com/~rsc/regexp/regexp1.html) show both routes.
 
 a handwritten lexer can encode the same recognition rules. either implementation may need extra state for nested comments, string interpolation, or indentation. choosing a handwritten lexer does not by itself establish a speed or diagnostic advantage.
 
@@ -69,7 +69,7 @@ a profiling JIT can specialize code for behavior observed in the current process
 
 ## just-in-time compilation
 
-[[thoughts/JIT]] systems generate code at runtime. some select frequently executed regions; others compile a function on its first call for particular argument types or shapes.
+[[thoughts/JIT|JIT]] systems generate code at runtime. some select frequently executed regions; others compile a function on its first call for particular argument types or shapes.
 
 hotness matters because compilation has a cost. repeated execution gives the generated code more opportunities to recover that cost. a type-specializing numerical JIT can make the same decision at a function boundary without first running an interpreter profiler.
 
@@ -312,7 +312,7 @@ y = x3
 
 **properties**: a use has one defining instruction, though that instruction may be a $\phi$ that selects among several values. propagation still has to reason about joins and loops. removing an unused result also requires checking the instruction's effects.
 
-[LLVM's $\phi$ instruction](https://llvm.org/docs/LangRef.html#phi-instruction) specifies edge-based selection. see [[thoughts/MLIR]] for SSA with block arguments instead of $\phi$ nodes.
+[LLVM's $\phi$ instruction](https://llvm.org/docs/LangRef.html#phi-instruction) specifies edge-based selection. see [[thoughts/MLIR|MLIR]] for SSA with block arguments instead of $\phi$ nodes.
 
 ### three-address code
 
@@ -337,7 +337,7 @@ lowering makes implementation details explicit while preserving the source progr
 - place arguments according to a calling convention;
 - select target-specific operations.
 
-the details matter: lowering a `for` loop must preserve how `continue` reaches its update step. see [[thoughts/XLA]] for tensor computations lowered through HLO and backend representations.
+the details matter: lowering a `for` loop must preserve how `continue` reaches its update step. see [[thoughts/XLA|XLA]] for tensor computations lowered through HLO and backend representations.
 
 ## dataflow analysis
 
@@ -433,7 +433,7 @@ this is a forward **must** analysis, so joins use intersection. the entry starts
 
 [LLVM's pass reference](https://llvm.org/docs/Passes.html) describes SCCP, dead-code elimination, and value numbering as separate analyses and transformations.
 
-see [[thoughts/JIT/python bytecode jit]] for constant folding and dead code elimination on python bytecode.
+see [[thoughts/JIT/python bytecode jit|python bytecode jit]] for constant folding and dead code elimination on python bytecode.
 
 ## backend code generation
 
@@ -479,13 +479,13 @@ scheduling orders instructions subject to dependencies and machine resources. a 
 
 **latency hiding** places independent work between a long-latency operation and its consumer. moving a load earlier can help, though keeping its result alive longer raises register pressure. cache level, hardware, and surrounding work determine the latency worth hiding.
 
-see [[thoughts/XLA]] for scheduling tensor operations and managing their buffers.
+see [[thoughts/XLA|XLA]] for scheduling tensor operations and managing their buffers.
 
 ## machine learning compilers
 
 ML compilers operate on tensor programs whose operations expose shapes, element types, and data dependencies. this gives the compiler information for choosing layouts, combining kernels, and reusing buffers.
 
-### [[thoughts/XLA]] (accelerated linear algebra)
+### [[thoughts/XLA|XLA]] (accelerated linear algebra)
 
 TensorFlow can send a function's tensor computation to XLA by requesting compilation explicitly:
 
@@ -527,7 +527,7 @@ see [[thoughts/MLIR|MLIR]] for multi-level ir enabling progressive lowering.
 
 ### [[thoughts/Automatic Differentiation|automatic differentiation]]
 
-[[thoughts/Autograd]] can compose with JIT compilation. here the gradient transformation is applied before requesting compilation of the resulting function:
+[[thoughts/Autograd|Autograd]] can compose with JIT compilation. here the gradient transformation is applied before requesting compilation of the resulting function:
 
 ```python
 import jax

@@ -20,7 +20,7 @@ Cosine similarity measures how closely two nonzero vectors point in the same dir
 > =\cos\theta.
 > $$
 
-[[thoughts/Cauchy-Schwarz]] bounds the score to $[-1,1]$. The endpoints mean the vectors point in the same or opposite directions; a score of $0$ means they are orthogonal. A zero vector has no direction, and the formula is undefined for it.
+[[thoughts/Cauchy-Schwarz|Cauchy-Schwarz]] bounds the score to $[-1,1]$. The endpoints mean the vectors point in the same or opposite directions; a score of $0$ means they are orthogonal. A zero vector has no direction, and the formula is undefined for it.
 
 For example, $(1,2)$ and $(2,4)$ have similarity $1$ despite their different lengths. In document retrieval, this normalization allows term-frequency vectors from documents of different lengths to be compared by direction. The choice of features still determines what that direction means. [Manning, Raghavan, and Schütze, §6.3.1](https://nlp.stanford.edu/IR-book/html/htmledition/dot-products-1.html).
 

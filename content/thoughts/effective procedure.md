@@ -8,7 +8,7 @@ tags:
 title: effective procedure
 ---
 
-In [[thoughts/logic]], an effective procedure gives a finite set of exact instructions that can be followed mechanically. Each step specifies what to do next, without requiring a new insight from the person carrying it out. To solve every problem in a given class, the procedure must also halt with a correct answer for every input in that class. A procedure that can run forever on some inputs needs a narrower claim about what it solves. [Stanford CS103, effective computation and decidability](https://web.stanford.edu/class/archive/cs/cs103/cs103.1222/lectures/21/Small.pdf).
+In [[thoughts/logic|logic]], an effective procedure gives a finite set of exact instructions that can be followed mechanically. Each step specifies what to do next, without requiring a new insight from the person carrying it out. To solve every problem in a given class, the procedure must also halt with a correct answer for every input in that class. A procedure that can run forever on some inputs needs a narrower claim about what it solves. [Stanford CS103, effective computation and decidability](https://web.stanford.edu/class/archive/cs/cs103/cs103.1222/lectures/21/Small.pdf).
 
 ## formation rules for propositional calculus
 

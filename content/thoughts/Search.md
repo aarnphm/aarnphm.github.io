@@ -12,10 +12,10 @@ title: Search
 
 ## Engine
 
-A web search engine answers a query with a ranked list of documents. It is a form of [[thoughts/information retrieval]] and has three main stages:
+A web search engine answers a query with a ranked list of documents. It is a form of [[thoughts/information retrieval|information retrieval]] and has three main stages:
 
 1. **crawling**: a crawler follows links and revisits known pages on a schedule. The index is therefore always somewhat out of date.
-2. **indexing**: the engine builds an inverted index, which maps each term to the documents that contain it, and computes query-independent signals such as [[thoughts/PageRank]].
+2. **indexing**: the engine builds an inverted index, which maps each term to the documents that contain it, and computes query-independent signals such as [[thoughts/PageRank|PageRank]].
 3. **ranking**: for each query, it retrieves candidate documents from the index, scores them, and returns the ordered list as a search engine results page (SERP).
 
 A web directory differs in stage 2: human editors choose and classify the entries.
@@ -40,7 +40,7 @@ $$
 
 and normalize both vectors after each step. This is power iteration, so $\mathbf{a}$ converges to the principal eigenvector of $A^\top A$ and $\mathbf{h}$ to that of $A A^\top$ (when the top eigenvalue is unique).
 
-HITS depends on the query. It takes the top results of a text search as a root set, adds the pages that link to them or that they link to, and runs on that subgraph. [[thoughts/PageRank]] computes one score per page over the whole graph before any query arrives, which is cheaper at query time.
+HITS depends on the query. It takes the top results of a text search as a root set, adds the pages that link to them or that they link to, and runs on that subgraph. [[thoughts/PageRank|PageRank]] computes one score per page over the whole graph before any query arrives, which is cheaper at query time.
 
 ## HNSW
 

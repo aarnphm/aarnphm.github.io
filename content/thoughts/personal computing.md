@@ -11,4 +11,4 @@ title: personal computing
 
 See [this tweet](https://twitter.com/joekndy/status/1761616198482219368)
 
-manifestation of [[thoughts/malleable software]]
+manifestation of [[thoughts/malleable software|malleable software]]

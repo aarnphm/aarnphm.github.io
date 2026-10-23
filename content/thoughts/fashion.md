@@ -22,7 +22,7 @@ See also: [[thoughts/papers/Fashion and the Homospectatorial Look.pdf|Fashion an
 
 Diana Fuss argues that women's fashion photography is addressed mostly to women, and that it invites them to look at other women's bodies with pleasure. The magazine frames that look as identification ("I want to look like her"), which keeps it from being read as desire ("I want her"). This framing lets homoerotic looking happen in public while keeping it unnamed, so the same images both open the look and regulate it. The eroticised poses do not need a male viewer to work.
 
-Plays well into spaces that open for more nuanced and subtle expression of [[thoughts/desire]] and [[thoughts/identity]].
+Plays well into spaces that open for more nuanced and subtle expression of [[thoughts/desire|desire]] and [[thoughts/identity|identity]].
 
 [[thoughts/fashion#quiet luxury.|Quiet luxury]]'s emphasis on minimalism, subtle textures mirrors the homospectatorial look.
 

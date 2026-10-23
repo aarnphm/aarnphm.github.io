@@ -61,7 +61,7 @@ $$
 +\int_{\Omega(t)}\rho\mathbf{f}\,dV.
 $$
 
-The [[thoughts/Reynolds transport theorem]] and conservation of mass turn the left side into an integral of material acceleration.[^mat-derivative] ^matderivative
+The [[thoughts/Reynolds transport theorem|Reynolds transport theorem]] and conservation of mass turn the left side into an integral of material acceleration.[^mat-derivative] ^matderivative
 
 $$
 \frac{d}{dt}\int_{\Omega(t)}\rho\mathbf{u}\,dV

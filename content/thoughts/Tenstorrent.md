@@ -4,12 +4,12 @@ description: Tenstorrent hardware as explicit tiled dataflow, with current Wormh
 id: Tenstorrent
 modified: 2026-08-26 09:31:16 GMT-04:00
 seealso:
-  - '[[thoughts/GPU programming]]'
-  - '[[thoughts/MLIR]]'
-  - '[[thoughts/Compiler]]'
+  - '[[thoughts/GPU programming|GPU programming]]'
+  - '[[thoughts/MLIR|MLIR]]'
+  - '[[thoughts/Compiler|Compiler]]'
   - "[[thoughts/pdfs/88_HC2024.Tenstorrent.Jasmina.Davor.v7.pdf|Jasmina's talk at HotChip]]"
-  - '[[thoughts/XLA]]'
-  - '[[thoughts/PyTorch]]'
+  - '[[thoughts/XLA|XLA]]'
+  - '[[thoughts/PyTorch|PyTorch]]'
 tags:
   - ml
   - asic

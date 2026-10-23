@@ -12,10 +12,10 @@ A model of price changes and a claim about market efficiency require different a
 
 ## history
 
-- In 1900, Louis Bachelier's _Théorie de la spéculation_ studied price changes and option contracts in the Paris market. His additive model is an early financial use of what we now call [[thoughts/Brownian motion]] [@bachelier1900speculation].
+- In 1900, Louis Bachelier's _Théorie de la spéculation_ studied price changes and option contracts in the Paris market. His additive model is an early financial use of what we now call [[thoughts/Brownian motion|Brownian motion]] [@bachelier1900speculation].
 - In 1965, Paul Samuelson's _Rational Theory of Warrant Pricing_ used proportional price changes. This avoids the negative prices allowed by an additive Gaussian model [@samuelson1965warrant].
 - Samuelson's separate 1965 paper, _Proof That Properly Anticipated Prices Fluctuate Randomly_, derived a martingale result under its anticipation assumptions. The theorem uses conditional expectations without specifying a geometric Brownian price process. Whether observed markets satisfy its assumptions is an empirical question [@samuelson1965anticipated].
-- Fama's 1970 review organized the theory and empirical tests of the [[thoughts/efficient market hypothesis]] around the information available to investors [@fama1970efficient].
+- Fama's 1970 review organized the theory and empirical tests of the [[thoughts/efficient market hypothesis|efficient market hypothesis]] around the information available to investors [@fama1970efficient].
 
 ## additive and proportional changes
 

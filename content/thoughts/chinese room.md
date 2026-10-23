@@ -4,8 +4,8 @@ description: syntax, semantics, and why computation is insufficient for understa
 id: chinese room
 modified: 2026-06-05 15:08:07 GMT-04:00
 seealso:
-  - '[[thoughts/functionalism]]'
-  - '[[thoughts/qualia]]'
+  - '[[thoughts/functionalism|functionalism]]'
+  - '[[thoughts/qualia|qualia]]'
 socials:
   sep: https://plato.stanford.edu/entries/chinese-room/
   wikipedia: https://en.wikipedia.org/wiki/Chinese_room
@@ -25,7 +25,7 @@ the thought experiment asserts that executing a program (symbol manipulation) ca
 
 ## syntax is insufficient for semantics
 
-formal systems operate via **syntax**: rules for manipulating symbols based on shape. minds possess **semantics**: meaning, reference, and [[thoughts/intentionality]]. syntax is neither constitutive of nor sufficient for semantics.
+formal systems operate via **syntax**: rules for manipulating symbols based on shape. minds possess **semantics**: meaning, reference, and [[thoughts/intentionality|intentionality]]. syntax is neither constitutive of nor sufficient for semantics.
 
 therefore, computation alone cannot produce a mind. [@searle1980minds]
 
@@ -33,7 +33,7 @@ therefore, computation alone cannot produce a mind. [@searle1980minds]
 >
 > a person in a room matches chinese characters (input) to other characters (output) using a rulebook. they pass the turing test but understand nothing. the rulebook (program) dictates the syntax; the person serves as the cpu. neither understands chinese. [@searle1980minds]
 
-Searle's point is to prove running a program doesn't _constitute towards understanding_, i.e bare [[thoughts/functionalism]] is wrong. purely syntactic operations cannot produce semantic content.
+Searle's point is to prove running a program doesn't _constitute towards understanding_, i.e bare [[thoughts/functionalism|functionalism]] is wrong. purely syntactic operations cannot produce semantic content.
 
 ```jsx imports={TractatusRoot,Tractatus,TractatusPropo}
 <TractatusRoot>
@@ -71,13 +71,13 @@ if "syntax" means "formal operations on symbols," _any_ computational system is 
 
 ## syntactic engines
 
-[[thoughts/LLMs]] are sophisticated symbol manipulators. they produce behaviorally adequate text via gradient-descent-optimized weights.
+[[thoughts/LLMs|LLMs]] are sophisticated symbol manipulators. they produce behaviorally adequate text via gradient-descent-optimized weights.
 
 the searlean view dismisses these models as "stochastic parrots", manipulating tokens without grounding. the functionalist view, conversely, locates "understanding" in the high-dimensional vector space, arguing that rlhf provides synthetic grounding.
 
 mechanistic interpretability reveals features tracking "french" or "python syntax" [@geiger2025causalabstraction]. the interpretationist claims this constitutes semantic content. the searlean retorts that this is merely linear algebra labeled by humans; the system doesn't "know" it's tracking french.
 
-if the combination reply fails, [[thoughts/LLMs]] remain syntactic engines, distinct from semantic agents.
+if the combination reply fails, [[thoughts/LLMs|LLMs]] remain syntactic engines, distinct from semantic agents.
 
 ## the grounding problem
 

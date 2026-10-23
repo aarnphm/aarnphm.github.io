@@ -120,12 +120,12 @@ Until that protocol passes, the benchmark only documents the correctness bug. A 
 
 ## directory map
 
-- [[thoughts/jit/minimal_jit.py]] contains the eager AST to C decorator.
-- [[thoughts/jit/ir.py]] and [[thoughts/jit/ir_compiler.py]] contain the experimental IR path.
-- [[thoughts/jit/compiler.py]] contains the static syntax-based dispatcher.
-- [[thoughts/jit/blas.py]] is a benchmark harness that needs correctness gates before its timings mean anything.
-- [[thoughts/jit/tracing_jit.py]] extracts a loop from the AST and emits C. Despite its name, it has no runtime trace recorder, guards, or deoptimization.
-- [[thoughts/jit/bytecodes.py]] contains one working bytecode-folding example alongside several conceptual or version-stale transformations.
-- [[thoughts/jit/numba_jit.py]] is a comparison harness whose compilation timers also need repair.
+- [[thoughts/jit/minimal_jit.py|minimal_jit.py]] contains the eager AST to C decorator.
+- [[thoughts/jit/ir.py|ir.py]] and [[thoughts/jit/ir_compiler.py|ir_compiler.py]] contain the experimental IR path.
+- [[thoughts/jit/compiler.py|compiler.py]] contains the static syntax-based dispatcher.
+- [[thoughts/jit/blas.py|blas.py]] is a benchmark harness that needs correctness gates before its timings mean anything.
+- [[thoughts/jit/tracing_jit.py|tracing_jit.py]] extracts a loop from the AST and emits C. Despite its name, it has no runtime trace recorder, guards, or deoptimization.
+- [[thoughts/jit/bytecodes.py|bytecodes.py]] contains one working bytecode-folding example alongside several conceptual or version-stale transformations.
+- [[thoughts/jit/numba_jit.py|numba_jit.py]] is a comparison harness whose compilation timers also need repair.
 
 The directory is best read beside [PEP 659](https://peps.python.org/pep-0659/) and CPython's JIT internals. Starkiller is also nearby history, though it was a static type inferencer and compiler rather than a runtime JIT [@salib2004starkiller].

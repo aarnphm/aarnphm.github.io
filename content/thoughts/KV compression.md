@@ -4,10 +4,10 @@ description: '[[thoughts/Compression|compression]] of key-value in [[thoughts/Tr
 id: KV compression
 modified: 2026-06-06 23:33:08 GMT-04:00
 seealso:
-  - '[[@li2024snapkvllmknowslooking]]'
-  - '[[@ge2024modeltellsdiscardadaptive]]'
-  - '[[@xiao2024efficientstreaminglanguagemodels]]'
-  - '[[@cai2025pyramidkvdynamickvcache]]'
+  - '[[@li2024snapkvllmknowslooking|@li2024snapkvllmknowslooking]]'
+  - '[[@ge2024modeltellsdiscardadaptive|@ge2024modeltellsdiscardadaptive]]'
+  - '[[@xiao2024efficientstreaminglanguagemodels|@xiao2024efficientstreaminglanguagemodels]]'
+  - '[[@cai2025pyramidkvdynamickvcache|@cai2025pyramidkvdynamickvcache]]'
 socials:
   lists: https://github.com/October2001/Awesome-KV-Cache-Compression
 tags:
@@ -208,4 +208,4 @@ see also: [v2](https://github.com/vllm-project/vllm/blob/main/vllm/core/block_ma
 Reasoning for v2:
 
 - support sliding windows attention
-- lookahead slot for [[thoughts/Speculative decoding]]
+- lookahead slot for [[thoughts/Speculative decoding|Speculative decoding]]

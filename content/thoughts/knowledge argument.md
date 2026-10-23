@@ -4,9 +4,9 @@ description: what Mary learns and what physicalism misses
 id: knowledge-argument
 modified: 2026-06-05 15:08:20 GMT-04:00
 seealso:
-  - '[[thoughts/qualia]]'
-  - '[[thoughts/functionalism]]'
-  - '[[thoughts/philosophical zombies]]'
+  - '[[thoughts/qualia|qualia]]'
+  - '[[thoughts/functionalism|functionalism]]'
+  - '[[thoughts/philosophical zombies|philosophical zombies]]'
 socials:
   sep: https://plato.stanford.edu/entries/qualia-knowledge/
   wikipedia: https://en.wikipedia.org/wiki/Knowledge_argument
@@ -24,4 +24,4 @@ the reply menu:
 - phenomenal concept reply: Mary gains a first-person concept for a fact she already knew physically. [@loar1990phenomenal]
 - Jackson later backs away from the anti-physicalist conclusion. [@jackson1998argument]
 
-what this note tests is completeness. If a finished physical theory leaves Mary ignorant of what red is like, [[thoughts/physicalism]] owes a story that explains the ignorance without adding a new nonphysical fact.
+what this note tests is completeness. If a finished physical theory leaves Mary ignorant of what red is like, [[thoughts/physicalism|physicalism]] owes a story that explains the ignorance without adding a new nonphysical fact.

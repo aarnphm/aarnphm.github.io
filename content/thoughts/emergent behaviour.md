@@ -32,7 +32,7 @@ This is Graeber's philosophical sketch. The passage asserts irreducibility witho
 
 ## language-model benchmarks
 
-Wei et al. call an ability emergent when it is absent in smaller models and present in larger ones, with a transition that smaller-model performance does not predict. This is an operational claim about a measured scaling curve. It does not establish strong emergence in [[thoughts/LLMs]]. [@wei2022emergentabilitieslargelanguage]
+Wei et al. call an ability emergent when it is absent in smaller models and present in larger ones, with a transition that smaller-model performance does not predict. This is an operational claim about a measured scaling curve. It does not establish strong emergence in [[thoughts/LLMs|LLMs]]. [@wei2022emergentabilitieslargelanguage]
 
 [Schaeffer, Miranda and Koyejo](https://arxiv.org/abs/2304.15004) show how the scoring rule can produce an abrupt-looking curve from smoothly improving predictions. Suppose a task requires all $k$ answers to be correct. Under the simplifying assumption of independent answers with equal success probability $p$, exact-match success is
 
