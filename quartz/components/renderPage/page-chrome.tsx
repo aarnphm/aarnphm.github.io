@@ -189,18 +189,6 @@ export const ElementComponent = ((enableRecents: boolean = false) => {
             <AliasLink isInternal enablePopover={false} name="are.na" url="/arena" />
             <AliasLink isInternal enablePopover={false} name="notes" url="/thoughts/" />
             <AliasLink isInternal enablePopover={false} name="writings" url="/posts/" />
-          </div>
-        </section>,
-        <section class="boring-legal">
-          <div class="clickable-container">
-            <em class="homepage-board-license">
-              <AliasLink
-                newTab
-                classes={['external']}
-                name="CC BY-NC-SA"
-                url="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en"
-              />
-            </em>
             <AliasLink isInternal enablePopover={false} name="colophon" url="/colophon" />
             <AliasLink isInternal enablePopover={false} name="friends" url="/friends" />
           </div>
@@ -210,10 +198,6 @@ export const ElementComponent = ((enableRecents: boolean = false) => {
 
     return (
       <div class="content-container homepage-board">
-        <span class="homepage-board-hangers" aria-hidden="true" />
-        <nav class="homepage-board-links" aria-label="garden and site information">
-          <Hyperlink {...componentData} />
-        </nav>
         <div class="homepage-board-copy">
           <Content {...componentData} />
           {enableRecents && (
@@ -223,6 +207,9 @@ export const ElementComponent = ((enableRecents: boolean = false) => {
             </section>
           )}
         </div>
+        <nav class="homepage-board-links" aria-label="garden and site information">
+          <Hyperlink {...componentData} />
+        </nav>
       </div>
     )
   }
