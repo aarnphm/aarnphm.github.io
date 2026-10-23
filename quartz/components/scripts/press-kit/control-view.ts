@@ -10,8 +10,8 @@ import { buildSelect } from '../../controls/select'
 import { blockDisplayKeys, isBlockDisplayKey } from '../press-kit-day'
 import { localizeActivity } from '../press-kit-i18n'
 import { cardDate, runsToPlain, runsToText } from '../press-kit-text'
-import { schedule } from './picture-sharing'
 import { defaultNote } from './link-sharing'
+import { schedule } from './picture-sharing'
 import {
   $,
   blockDisplays,

@@ -5,6 +5,7 @@ import { calendarCardData } from '../press-kit-calendar'
 import { isBlockDisplayKey } from '../press-kit-day'
 import { runsFromText } from '../press-kit-text'
 import { isIncludeKey, mountAnchor, refreshLocale, setTab, syncControls } from './control-view'
+import { copy } from './link-sharing'
 import {
   canShareFiles,
   copyImage,
@@ -16,7 +17,6 @@ import {
   schedule,
   shareImage,
 } from './picture-sharing'
-import { copy } from './link-sharing'
 import {
   $,
   blockDisplays,
