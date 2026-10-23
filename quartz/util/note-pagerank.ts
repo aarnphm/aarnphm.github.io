@@ -13,6 +13,19 @@ export interface NoteRanker {
   related(currentSlug: string, limit: number): readonly FullSlug[]
   global(): readonly NoteRank[]
   position(slug: string): NoteRank | undefined
+  graph(): NoteGraph
+}
+
+/** The ranked graph by node id; ids follow `slugs`, and `scores[id]` is the global score. */
+export interface NoteGraph {
+  readonly slugs: readonly FullSlug[]
+  readonly scores: Float64Array
+  readonly outgoing: readonly (readonly number[])[]
+  readonly incoming: readonly (readonly number[])[]
+  /** Course navigation indexes; ranked like any note, skipped only by homepage suggestions. */
+  readonly courseIndexes: ReadonlySet<number>
+  readonly damping: number
+  readonly iterations: number
 }
 
 export interface NoteRank {
@@ -24,14 +37,19 @@ export interface NoteRank {
 const damping = 0.85
 const compareSlug = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0)
 
-function rank(neighbors: readonly (readonly number[])[], seed?: number): Float64Array {
+function rank(
+  neighbors: readonly (readonly number[])[],
+  seed?: number,
+): { scores: Float64Array; iterations: number } {
   const size = neighbors.length
   let scores = new Float64Array(size)
-  if (size === 0) return scores
+  if (size === 0) return { scores, iterations: 0 }
   if (seed === undefined) scores.fill(1 / size)
   else scores[seed] = 1
   let next = new Float64Array(size)
+  let iterations = 0
   for (let step = 0; step < 160; step++) {
+    iterations = step + 1
     let dangling = 0
     for (let i = 0; i < size; i++) if (neighbors[i].length === 0) dangling += scores[i]
     const restart = 1 - damping + damping * dangling
@@ -46,7 +64,7 @@ function rank(neighbors: readonly (readonly number[])[], seed?: number): Float64
     ;[scores, next] = [next, scores]
     if (difference <= 1e-10) break
   }
-  return scores
+  return { scores, iterations }
 }
 
 /** Snapshots the public note graph; its caller only supplies the navigation context. */
@@ -101,10 +119,23 @@ export function createNoteRanker(data: Readonly<Record<string, NoteRankMetadata>
     slugs.map((_, id) => id).sort((a, b) => scores[b] - scores[a] || a - b)
   let globalOrder: number[] | undefined
   let globalRows: readonly NoteRank[] | undefined
+  let globalGraph: NoteGraph | undefined
   const positions = new Map<number, NoteRank>()
   function global() {
     if (globalRows) return globalRows
-    const scores = rank(outgoing)
+    const { scores, iterations } = rank(outgoing)
+    const incoming = slugs.map(() => [] as number[])
+    for (const [source, targets] of outgoing.entries())
+      for (const target of targets) incoming[target].push(source)
+    globalGraph = Object.freeze({
+      slugs,
+      scores,
+      outgoing,
+      incoming,
+      courseIndexes,
+      damping,
+      iterations,
+    })
     globalOrder = order(scores)
     globalRows = Object.freeze(
       globalOrder.map((id, index) => {
@@ -118,6 +149,10 @@ export function createNoteRanker(data: Readonly<Record<string, NoteRankMetadata>
   const cache = new Map<string, readonly FullSlug[]>()
   return {
     global,
+    graph() {
+      global()
+      return globalGraph!
+    },
     position(slug) {
       global()
       const id = resolve(slug)
@@ -138,7 +173,7 @@ export function createNoteRanker(data: Readonly<Record<string, NoteRankMetadata>
       }
       const selected = new Set<number>()
       if (current !== undefined && slugs[current] !== 'index' && nearby[current].length > 0) {
-        const scores = rank(nearby, current)
+        const { scores } = rank(nearby, current)
         for (const id of order(scores)) {
           if (id !== current && scores[id] > 0) selected.add(id)
           if (selected.size === count) break
