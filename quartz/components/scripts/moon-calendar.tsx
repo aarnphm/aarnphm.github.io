@@ -163,7 +163,7 @@ function MoonCalendar({ open, signal }: { open: boolean; signal: AbortSignal }) 
         dates={dates}
         month={month}
         today={today}
-        rowMinHeight="2.75rem"
+        rowMinHeight="3.25rem"
         weekdayLabel={date =>
           new Date(`${date}T12:00:00`)
             .toLocaleDateString('en', { weekday: 'short' })

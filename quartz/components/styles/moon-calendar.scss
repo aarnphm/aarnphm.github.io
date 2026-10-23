@@ -2,8 +2,12 @@
 
 .homepage-trail,
 .homepage-trail-scene {
-  // Panels open 1rem above the almanac: its inset, 28px toggle, padding and border.
-  --trail-footer-panel-bottom: calc(max(16px, env(safe-area-inset-bottom)) + 38px + 1rem);
+  // Panels open 1rem above the almanac line: its inset plus the 28px moon toggle.
+  --trail-footer-panel-bottom: calc(max(16px, env(safe-area-inset-bottom)) + 28px + 1rem);
+}
+
+.trail-almanac[hidden] {
+  display: none;
 }
 
 .trail-almanac {
@@ -13,9 +17,8 @@
   display: flex;
   align-items: end;
   gap: 8px;
-  padding: 4px 8px;
-  border: 1px solid var(--lightgray);
-  background: var(--light);
+  padding-inline: 2px;
+  background: transparent;
   font: 10px/1.6 var(--codeFont);
   font-variant-numeric: tabular-nums;
 }
@@ -60,7 +63,7 @@ button.homepage-moon-toggle {
 }
 
 .homepage-moon-panel {
-  --control-font-size: 0.65rem;
+  --control-font-size: 10px;
   position: fixed;
   inset: auto auto var(--trail-footer-panel-bottom) max(16px, env(safe-area-inset-left));
   width: min(18rem, calc(100vw - 1rem));
@@ -69,11 +72,11 @@ button.homepage-moon-toggle {
   overflow-y: auto;
   margin: 0;
   padding: 0.65rem;
-  border: 1px solid var(--lightgray);
+  border: 1px solid var(--darkgray);
   border-radius: var(--radius-none);
   background: var(--light);
   color: var(--darkgray);
-  font: 0.65rem/1.4 var(--codeFont);
+  font: var(--control-font-size)/1.4 var(--codeFont);
   font-variant-numeric: tabular-nums;
   transform-origin: bottom left;
   transition:
@@ -100,6 +103,9 @@ button.homepage-moon-toggle {
   .g-cal-title {
     font-size: 1.1em;
     font-weight: 400;
+    overflow: visible;
+    white-space: normal;
+    text-overflow: clip;
   }
   .g-icon {
     fill: none;
@@ -111,11 +117,14 @@ button.homepage-moon-toggle {
   .g-calendar-weekdays > span {
     padding: 0.2rem 0;
     text-align: center;
-    font-size: 0.6rem;
+    font-size: var(--control-font-size);
   }
   .g-calendar-grid {
     border: 0;
     background: transparent;
+  }
+  .g-calendar-day-header {
+    padding: 0;
   }
   .g-calendar-day {
     position: relative;
@@ -143,7 +152,7 @@ button.homepage-moon-toggle {
       }
     }
     .g-calendar-day-header h3 {
-      font-size: 0.6rem;
+      font-size: var(--control-font-size);
     }
   }
 
@@ -168,7 +177,7 @@ button.homepage-moon-toggle {
       color: var(--dark);
     }
     &:focus-visible {
-      outline: 2px solid var(--secondary);
+      outline: 2px solid var(--dark);
       outline-offset: -2px;
     }
   }
@@ -200,11 +209,12 @@ button.homepage-moon-toggle {
     flex: none;
   }
   > div {
+    min-width: 0;
     display: grid;
     gap: 0.1rem;
   }
   time {
-    font-size: 0.6rem;
+    font-size: var(--control-font-size);
   }
   > button {
     margin-left: auto;
@@ -215,20 +225,21 @@ button.homepage-moon-toggle {
   justify-content: space-between;
   align-items: center;
   min-height: 1.4rem;
-  font-size: 0.55rem;
+  font-size: var(--control-font-size);
 }
 @media (max-width: 600px), (pointer: coarse) {
   .homepage-trail,
   .homepage-trail-scene {
-    --trail-footer-panel-bottom: max(4rem, calc(env(safe-area-inset-bottom) + 3.5rem));
+    --trail-footer-panel-bottom: calc(max(16px, env(safe-area-inset-bottom)) + 7rem);
+  }
+
+  .trail-almanac {
+    bottom: calc(max(16px, env(safe-area-inset-bottom)) + 2rem);
+    max-inline-size: calc(100vw - 2rem);
+    flex-wrap: wrap;
   }
 }
 @media (pointer: coarse) {
-  .homepage-trail,
-  .homepage-trail-scene {
-    --trail-footer-panel-bottom: max(5rem, calc(env(safe-area-inset-bottom) + 4rem));
-  }
-
   button.homepage-moon-toggle {
     min-height: 44px;
   }
