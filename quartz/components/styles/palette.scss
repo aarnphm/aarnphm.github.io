@@ -294,10 +294,6 @@ ul#helper {
         margin-top: auto;
       }
 
-      &:has(> output:empty) > #helper {
-        border-top: 0;
-      }
-
       .input-container {
         padding: 0.25rem 0.5rem 0;
         flex-shrink: 0;

@@ -242,7 +242,7 @@ export function renderDocumentPreview(
     meta.appendChild(el('li', undefined, item))
   card.appendChild(meta)
 
-  if (preview.type === 'base' && preview.description)
+  if (preview.description)
     card.appendChild(el('p', 'document-popover-description', preview.description))
 
   popoverInner.appendChild(card)

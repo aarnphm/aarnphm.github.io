@@ -1,4 +1,4 @@
-export const SEARCH_EXCLUDE_PREFIXES = ['hinterland', 'embeddings'] as const
+export const SEARCH_EXCLUDE_PREFIXES = ['hinterland', 'embeddings', 'description.json'] as const
 
 function contentRelativePath(value: string): string {
   const normalized = value.replace(/\\/g, '/').replace(/^\.?\//, '')

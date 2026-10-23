@@ -29,6 +29,7 @@ export interface CanvasPreview {
   type: 'canvas'
   slug: string
   title: string
+  description: string | null
   box: { x: number; y: number; w: number; h: number }
   nodes: CanvasPreviewNode[]
   edges: CanvasPreviewEdge[]
@@ -103,9 +104,11 @@ const fileCardLabel = (file: string, displayName?: string): string =>
 export function buildCanvasPreview(input: {
   slug: string
   title: string
+  description?: string | null
   canvas: JsonCanvas
   displayNames?: ReadonlyMap<string, string>
 }): CanvasPreview {
+  const description = input.description ? previewLabel(input.description, 160) : null
   const sources = input.canvas.nodes.filter(
     node =>
       CANVAS_KINDS.includes(node.type) &&
@@ -175,6 +178,7 @@ export function buildCanvasPreview(input: {
     type: 'canvas',
     slug: input.slug,
     title: input.title,
+    description,
     box,
     nodes,
     edges,
@@ -250,6 +254,7 @@ export function readDocumentPreview(
   if (type === 'canvas') {
     const { box, counts } = value
     const valid =
+      (value.description === undefined || isNullableString(value.description)) &&
       isRecord(box) &&
       [box.x, box.y, box.w, box.h].every(isFiniteNumber) &&
       isRecord(counts) &&
@@ -258,7 +263,12 @@ export function readDocumentPreview(
       value.nodes.every(isCanvasPreviewNode) &&
       Array.isArray(value.edges) &&
       value.edges.every(isCanvasPreviewEdge)
-    return valid ? (value as unknown as CanvasPreview) : null
+    return valid
+      ? ({
+          ...value,
+          description: typeof value.description === 'string' ? value.description : null,
+        } as unknown as CanvasPreview)
+      : null
   }
 
   const valid =

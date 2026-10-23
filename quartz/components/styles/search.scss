@@ -87,7 +87,7 @@
 
     & > p {
       display: inline;
-      color: var(--gray);
+      color: var(--darkgray);
       text-wrap: unset;
     }
 
@@ -249,8 +249,7 @@
 
         .semantic-status {
           font-size: var(--text-meta);
-          color: var(--gray);
-          opacity: 0.6;
+          color: var(--darkgray);
           text-transform: lowercase;
           white-space: nowrap;
           position: absolute;
@@ -513,13 +512,10 @@
             }
 
             .search-column-note {
-              width: 32%;
-            }
-            .search-column-path {
-              width: 28%;
+              width: 40%;
             }
             .search-column-match {
-              width: 40%;
+              width: 60%;
             }
             .search-column-score {
               width: 5rem;
@@ -561,9 +557,6 @@
               }
             }
             @container search-results (max-width: 600px) {
-              .search-column-path {
-                display: none;
-              }
               .search-column-note {
                 width: 45%;
               }
@@ -583,7 +576,7 @@
 
           &:has(> .image-search-row) {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
             align-content: start;
             gap: 12px;
 
@@ -620,7 +613,7 @@
 
             .image-search-thumbnail {
               width: 100%;
-              height: 12rem;
+              height: 14rem;
               object-fit: contain;
             }
 
@@ -738,7 +731,7 @@
         padding: 0;
         border: none;
         background: transparent;
-        color: var(--gray);
+        color: var(--darkgray);
         cursor: pointer;
         position: relative;
 
@@ -763,10 +756,6 @@
       }
     }
   }
-}
-
-body:not([data-slug='index']) .search-space > .search-layout:not(.display-results) + #helper {
-  border-top: 0;
 }
 
 body[data-slug='index'] .search > .search-container > .search-space {
