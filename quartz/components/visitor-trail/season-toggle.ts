@@ -146,6 +146,26 @@ export function mountSeasonToggle(
     const height = scene.clientHeight
     let best: { x: number; y: number; rock: SVGGElement } | null = null
     let score = -Infinity
+    // The fixed corner readouts (waterings, moon calendar, local time) sit over the scene; a rock
+    // under them would put the mark on their text. The waterings label fills in after the shared
+    // grove answers, so its corner is reserved at full width even while it is empty.
+    const origin = scene.getBoundingClientRect()
+    const reserved = [...document.querySelectorAll('.trail-almanac, .trail-local-time')].map(
+      el => {
+        const r = el.getBoundingClientRect()
+        const almanac = el.classList.contains('trail-almanac')
+        return {
+          left: r.left - origin.left - 8,
+          right: (almanac ? Math.max(r.right, r.left + 200) : r.right) - origin.left + 8,
+          top: (almanac ? Math.min(r.top, r.bottom - 32) : r.top) - origin.top - 8,
+          bottom: r.bottom - origin.top + 8,
+        }
+      },
+    )
+    const clear = (left: number, top: number, w: number, h: number) =>
+      reserved.every(
+        r => left + w <= r.left || left >= r.right || top + h <= r.top || top >= r.bottom,
+      )
     for (const rock of scene.querySelectorAll<SVGGElement>(
       '.trail-understory:is([data-plant="boulder"], [data-plant="stone"])',
     )) {
@@ -155,6 +175,10 @@ export function mountSeasonToggle(
       if (!Number.isFinite(x) || !Number.isFinite(y)) continue
       const edge = Math.min(120, width * 0.1)
       if (x < edge || x > width - edge || y > height - 16 || y < 44) continue
+      const box = rock.getBBox()
+      const w = Math.max(44, box.width)
+      const h = Math.max(44, box.height)
+      if (!clear(x + box.x + (box.width - w) / 2, y + box.y + (box.height - h) / 2, w, h)) continue
       const preferred = rock.dataset.plant === 'boulder' && y >= height * 0.5
       const fit = y - Math.abs(x - width / 2) * 0.25 + r * 2 + (preferred ? height : 0)
       if (fit <= score) continue
