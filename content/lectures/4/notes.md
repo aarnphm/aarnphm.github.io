@@ -4,7 +4,7 @@ description: 1/n of acceptance-rejection
 id: notes
 modified: 2026-06-07 01:29:52 GMT-04:00
 seealso:
-  - '[[thoughts/Speculative decoding]]'
+  - '[[thoughts/Speculative decoding|Speculative decoding]]'
 tags:
   - workshop
 title: supplement to 0[dot]400

@@ -4,7 +4,7 @@ description: chapter 1 and 2
 id: financial analysis
 modified: 2026-06-05 15:08:38 GMT-04:00
 seealso:
-  - '[[thoughts/university/twenty-five-twenty-six/commerce-4qa3/timeseries.py]]'
+  - '[[thoughts/university/twenty-five-twenty-six/commerce-4qa3/timeseries.py|timeseries.py]]'
 tags:
   - commerce4qa3
 title: financial analysis
@@ -24,7 +24,7 @@ $$
 
 ## forecasting
 
-see also: [[thoughts/university/twenty-five-twenty-six/commerce-4qa3/beer_sales_analysis.py]]
+see also: [[thoughts/university/twenty-five-twenty-six/commerce-4qa3/beer_sales_analysis.py|beer_sales_analysis.py]]
 
 ### forecast error
 
@@ -65,7 +65,7 @@ where $F_t$ is the forecast and $D_t$ is the actual demand.
    $$
 
 4. double exponential smoothing
-   see also: [[thoughts/papers/Holt-1957-Republished-IJF-2004.pdf]]
+   see also: [[thoughts/papers/Holt-1957-Republished-IJF-2004.pdf|Holt-1957-Republished-IJF-2004.pdf]]
    - used when the series has a trend
    - ![[thoughts/Holt linear]]
 5. seasonality
@@ -79,7 +79,7 @@ Y &= T \times S \times R
 \end{aligned}
 $$
 
-see also: [[thoughts/university/twenty-five-twenty-six/commerce-4qa3/trend_regression.py]]
+see also: [[thoughts/university/twenty-five-twenty-six/commerce-4qa3/trend_regression.py|trend_regression.py]]
 
 ![[thoughts/university/twenty-five-twenty-six/commerce-4qa3/trend_regression_quarter.svg]]
 ![[thoughts/university/twenty-five-twenty-six/commerce-4qa3/trend_regression_none.svg]]

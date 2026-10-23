@@ -46,7 +46,7 @@ we can replace $s$ with $jw$
 
 ex: $G(jw) = \frac{1}{1+jw \text{RC}}$, so $|G(jw)| = |\frac{1}{1+jw \text{RC}}| = \frac{1}{\sqrt{1+(w \text{RC})^2}}$
 
-reasoning: we substitute Laplace transform with [[thoughts/Fourier transform]] with $s=jw$
+reasoning: we substitute Laplace transform with [[thoughts/Fourier transform|Fourier transform]] with $s=jw$
 
 example for a first-order system
 

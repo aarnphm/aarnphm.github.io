@@ -6,7 +6,7 @@ modified: 2026-06-07 01:30:00 GMT-04:00
 socials:
   youtube: https://youtu.be/DDLlOqQ46HE
 seealso:
-  - '[[lectures/3/quantisation basics]]'
+  - '[[lectures/3/quantisation basics|quantisation basics]]'
 tags:
   - workshop
 title: supplement to 0[dot]300

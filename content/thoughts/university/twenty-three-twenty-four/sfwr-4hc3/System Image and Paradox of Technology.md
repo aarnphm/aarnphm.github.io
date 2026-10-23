@@ -8,7 +8,7 @@ tags:
 title: System Image and Paradox of Technology
 ---
 
-[[thoughts/university/twenty-three-twenty-four/hci-4hc3/Psychopathology of everything#Fundamental principles of Interaction]] goes into the fundamentals of interaction when designing a product -> conceptual models
+[[thoughts/university/twenty-three-twenty-four/hci-4hc3/Psychopathology of everything#Fundamental principles of Interaction|Fundamental principles of Interaction]] goes into the fundamentals of interaction when designing a product -> conceptual models
 
 - People create mental models of themselves, environment, interaction
 - Designer conceptual model vs. Users conceptual models

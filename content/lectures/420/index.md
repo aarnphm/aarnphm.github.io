@@ -6,8 +6,8 @@ layout: A|L
 modified: 2026-09-14 15:58:14 GMT-04:00
 seealso:
   - '[[thoughts/GPU programming|GPU]]'
-  - '[[thoughts/XLA]]'
-  - '[[thoughts/LLMs]]'
+  - '[[thoughts/XLA|XLA]]'
+  - '[[thoughts/LLMs|LLMs]]'
 tags:
   - ml
   - math/linalg
@@ -20,7 +20,7 @@ pdfTitles:
   'infer-0.420.pdf': 'Infer 0.420: GPUs, CUTLASS and CuTe Optimization'
 ---
 
-slides: [[lectures/420/infer-0.420.pdf]]
+slides: [[lectures/420/infer-0.420.pdf|infer-0.420.pdf]]
 
 > [!tip] Runnable Code Examples
 >

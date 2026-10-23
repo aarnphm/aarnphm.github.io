@@ -11,4 +11,4 @@ pdfTitles:
   'infer-0.4.pdf': 'Infer 0.4: Speculative Decoding'
 ---
 
-slides: [[lectures/4/infer-0.4.pdf]]
+slides: [[lectures/4/infer-0.4.pdf|infer-0.4.pdf]]

@@ -27,12 +27,12 @@ title: tools for 0.412
 > - add `--plot` to save the singular-value and cumulative-energy curves (optionally override path with `--plot-path`).
 > - add `--prompt "The true meaning of life is absurdity, and suffering" --heatmap` to snapshot an attention heatmap for that text (requires Hugging Face repo access).
 
-For the lecture note figure, export the six-head JSON once with `content/lectures/412/export_head_spectra.py`, then render through `HeadSpectrum` in [[lectures/412/notes]]. Do not keep the intermediate plot webps in `content/thoughts/images/`.
+For the lecture note figure, export the six-head JSON once with `content/lectures/412/export_head_spectra.py`, then render through `HeadSpectrum` in [[lectures/412/notes|notes]]. Do not keep the intermediate plot webps in `content/thoughts/images/`.
 
 ## backlog
 
-- attach a module to export activation traces from [[lectures/1/attn_toy.py]] and reuse the latent projection pipeline on synthetic heads.
-- integrate router statistics dumps for MoE checkpoints; reuse the sparse block structure described in [[lectures/412/notes#mixture-of-experts feed-forward layers]].
+- attach a module to export activation traces from [[lectures/1/attn_toy.py|attn_toy.py]] and reuse the latent projection pipeline on synthetic heads.
+- integrate router statistics dumps for MoE checkpoints; reuse the sparse block structure described in [[lectures/412/notes#mixture-of-experts feed-forward layers|mixture-of-experts feed-forward layers]].
 
 ```bash
 ➜ python content/lectures/412/latent_projection.py --hf-repo Qwen/Qwen3-0.6B --auto-infer --layer 3 --head 3 --latent-dim 32 --prompt "The true meaning of life is absurdity and suffering" --heatmap --plot

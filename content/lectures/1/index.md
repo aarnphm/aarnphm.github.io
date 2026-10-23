@@ -10,11 +10,11 @@ pdfTitles:
   'infer-0.1.pdf': 'Infer 0.1: Inference Overview'
 ---
 
-slides: [[lectures/1/infer-0.1.pdf]]
+slides: [[lectures/1/infer-0.1.pdf|infer-0.1.pdf]]
 
 ## supplement to 0.100
 
-See also [[lectures/1/infer-0.1.pdf]]
+See also [[lectures/1/infer-0.1.pdf|infer-0.1.pdf]]
 
 ![[lectures/1/lstm_toy.py]]
 

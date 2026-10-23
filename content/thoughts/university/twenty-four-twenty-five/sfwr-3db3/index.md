@@ -4,7 +4,7 @@ description: course on database management systems covering relational models, s
 id: index
 modified: 2026-06-05 15:08:42 GMT-04:00
 seealso:
-  - '[[thoughts/Database]]'
+  - '[[thoughts/Database|Database]]'
 tags:
   - university
   - sfwr3db3

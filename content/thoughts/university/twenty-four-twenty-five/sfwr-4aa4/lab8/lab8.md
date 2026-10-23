@@ -13,8 +13,8 @@ $$
 f_\text{PWM} = \frac{f_\text{clk}}{N(X+1)}
 $$
 
-See [[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/lab8/pwm/part1.c]]
+See [[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/lab8/pwm/part1.c|part1.c]]
 
-See [[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/lab8/pwm/part2.c]] and [[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/lab8/pwm/part2_application.c]]
+See [[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/lab8/pwm/part2.c|part2.c]] and [[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/lab8/pwm/part2_application.c|part2_application.c]]
 
-See [[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/lab8/pwm/part3.c]] and [[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/lab8/pwm/part3_application.c]]
+See [[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/lab8/pwm/part3.c|part3.c]] and [[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/lab8/pwm/part3_application.c|part3_application.c]]

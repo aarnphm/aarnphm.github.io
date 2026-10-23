@@ -4,8 +4,8 @@ description: anatomy of an inference engine
 id: index
 modified: 2026-08-12 11:31:40 GMT-04:00
 seealso:
-  - '[[thoughts/vllm]]'
-  - '[[thoughts/LLMs]]'
+  - '[[thoughts/vllm|vllm]]'
+  - '[[thoughts/LLMs|LLMs]]'
   - '[[thoughts/Transformers|Transformers]]'
   - '[[thoughts/Attention|Attention]]'
 tags:
@@ -651,7 +651,7 @@ total bitmask memory: batch_size × (num_speculative_tokens + 1) × (vocab_size 
 
 ## speculative decoding
 
-see also [[thoughts/Speculative decoding#EAGLE]], [[lectures/4/notes|0.4 lecture on speculative decoding]]
+see also [[thoughts/Speculative decoding#EAGLE|EAGLE]], [[lectures/4/notes|0.4 lecture on speculative decoding]]
 
 use a fast model to guess, then verify with the real model.
 

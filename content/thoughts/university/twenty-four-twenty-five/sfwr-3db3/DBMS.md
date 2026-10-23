@@ -26,7 +26,7 @@ A database holds data and its relationships. A DBMS supplies the software for de
 
 ## [[thoughts/Search|search]] vs. query
 
-A query states what to retrieve. A relational query might ask for the students enrolled in 3DB3, using a course ID to filter enrolment records and a join to retrieve their names. A keyword search for “database courses” retrieves documents under a chosen text-matching rule and may rank them by relevance. [[thoughts/PageRank]] supplies a [link-based ranking signal](https://developers.google.com/search/docs/appearance/ranking-systems-guide).
+A query states what to retrieve. A relational query might ask for the students enrolled in 3DB3, using a course ID to filter enrolment records and a join to retrieve their names. A keyword search for “database courses” retrieves documents under a chosen text-matching rule and may rank them by relevance. [[thoughts/PageRank|PageRank]] supplies a [link-based ranking signal](https://developers.google.com/search/docs/appearance/ranking-systems-guide).
 
 Search is therefore one use of a query system. PostgreSQL, for example, supports [full-text matching and ranking inside SQL](https://www.postgresql.org/docs/current/textsearch-intro.html). Both relational queries and text searches can use indexes to avoid examining every stored record; an index is an access method.
 

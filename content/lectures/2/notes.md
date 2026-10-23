@@ -12,8 +12,8 @@ supports:
 
 - [[lectures/2/afp|attention from first principles]]
 - [[lectures/2/convexity|convexity of attention]]
-- [[thoughts/Attention]]
-- [[thoughts/mechanistic interpretability]]
+- [[thoughts/Attention|Attention]]
+- [[thoughts/mechanistic interpretability|mechanistic interpretability]]
 
 ## equality constraints
 

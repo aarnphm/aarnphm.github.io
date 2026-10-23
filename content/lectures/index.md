@@ -8,6 +8,6 @@ tags:
 title: infer
 ---
 
-[[thoughts/LLMs]] #inference and everything in between.
+[[thoughts/LLMs|LLMs]] #inference and everything in between.
 
 A workshop series done at [@newsystems\_](https://x.com/newsystems_)

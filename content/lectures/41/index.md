@@ -10,4 +10,4 @@ pdfTitles:
   'infer-0.41.pdf': 'Infer 0.410: EAGLE and MTP'
 ---
 
-slides: [[lectures/41/infer-0.41.pdf]]
+slides: [[lectures/41/infer-0.41.pdf|infer-0.41.pdf]]
