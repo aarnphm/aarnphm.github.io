@@ -55,14 +55,19 @@ $pet-looks: (
     laptop,
   ),
   happy: (
-    eyes-happy,
+    eyes-dash,
     mouth-smile,
   ),
   cheer: (
-    eyes-happy,
-    mouth-grin,
+    eyes-dash,
+    mouth-smile,
     arm-l,
     arm-r,
+  ),
+  thumb: (
+    eyes-dash,
+    mouth-smile,
+    arm-thumb,
   ),
   slide: (
     eyes-dash,
@@ -118,6 +123,7 @@ $pet-looks: (
   .pet-dot,
   .pet-key,
   .pet-speed,
+  [data-part='arm-thumb'],
   [data-part='eyes-wide'],
   [data-part='eyes-wince'] {
     transform-box: fill-box;
@@ -150,7 +156,8 @@ $pet-looks: (
     transform-origin: 100% 100%;
   }
 
-  [data-part='arm-r'] {
+  [data-part='arm-r'],
+  [data-part='arm-thumb'] {
     transform-origin: 0 100%;
   }
 }

@@ -27,7 +27,8 @@ $pet-head-outfits: "[data-outfit='fr'], [data-outfit='legal'], [data-outfit='cou
     [data-state='chute'],
     [data-state='jet'],
     [data-state='fly'],
-    [data-state='cheer']
+    [data-state='cheer'],
+    [data-state='thumb']
   ) {
   &:not(#{$pet-head-outfits}):is([data-hat], :not([data-cold='cold'])) {
     [data-part='hat'],

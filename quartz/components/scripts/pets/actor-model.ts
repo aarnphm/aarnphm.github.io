@@ -21,6 +21,7 @@ export type State =
   | 'work'
   | 'happy'
   | 'cheer'
+  | 'thumb'
   | 'slide'
   | 'walk'
   | 'chute'

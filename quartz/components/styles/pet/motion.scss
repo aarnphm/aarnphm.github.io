@@ -212,6 +212,11 @@
   animation: none;
 }
 
+// Clicked: a thumbs up, the arm rising once from its side and holding there. No hop.
+.pet-svg[data-state='thumb'] [data-part='arm-thumb'] {
+  animation: pet-thumb-up 0.3s steps(4) both;
+}
+
 // Sliding down the scroll rail: hugging the pole, legs wrapped toward it, leaning in.
 .pet-svg[data-state='slide'] {
   .pet-lean {
@@ -678,6 +683,15 @@
   }
 }
 
+@keyframes pet-thumb-up {
+  from {
+    rotate: 32deg;
+  }
+  to {
+    rotate: 0deg;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .pet-svg,
   .pet-svg * {
@@ -689,8 +703,22 @@
     display: none;
   }
 
-  :is(.pet-flap-frame, .pet-rain-frame, .pet-flame-frame, .pet-gust-frame, .pet-out-frame)
-    + :is(.pet-flap-frame, .pet-rain-frame, .pet-flame-frame, .pet-gust-frame, .pet-out-frame) {
+  :is(
+      .pet-flap-frame,
+      .pet-rain-frame,
+      .pet-flame-frame,
+      .pet-ray-frame,
+      .pet-gust-frame,
+      .pet-out-frame
+    )
+    + :is(
+      .pet-flap-frame,
+      .pet-rain-frame,
+      .pet-flame-frame,
+      .pet-ray-frame,
+      .pet-gust-frame,
+      .pet-out-frame
+    ) {
     display: none;
   }
 

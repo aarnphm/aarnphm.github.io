@@ -4,6 +4,7 @@ import {
   even,
   eye,
   EYES,
+  hand,
   part,
   poly,
   pressure,
@@ -13,16 +14,10 @@ import {
 } from './pen'
 
 export function petFace(s: PetPen) {
-  const { L, paper, ink, pink, pen } = s
+  const { L, paper, ink, pen } = s
   const dash = part(
     'eyes-dash',
     EYES.map(x => `<g class="pet-eye">${eye(x, L * 1.7, ink)}</g>`).join(''),
-  )
-  const happy = part(
-    'eyes-happy',
-    EYES.map(x =>
-      pen(curve([x - 0.13, -0.1], [x + 0.02, -0.5], [x + 0.17, -0.1]), even(L * 1.35)),
-    ).join(''),
   )
   const wide = part(
     'eyes-wide',
@@ -58,23 +53,13 @@ export function petFace(s: PetPen) {
 
   const mx = (EYES[0] + EYES[1]) / 2
   const mouthO = part('mouth-o', pen(ring(31, mx, 0.22, 0.09), pressure(33, L * 0.95, 0.25)))
+  // One stroke, thin where the pen lands and lifts, wide enough to read at the pet's size.
   const smile = part(
     'mouth-smile',
-    pen(curve([mx - 0.15, 0.12], [mx, 0.3], [mx + 0.15, 0.12]), even(L * 1.1)),
-  )
-  const grinPts = [
-    ...densify(
-      [
-        [mx - 0.24, 0.1],
-        [mx + 0.24, 0.1],
-      ],
-      0.04,
+    pen(
+      hand(curve([mx - 0.2, 0.1], [mx, 0.36], [mx + 0.2, 0.1], 14), 0.03, 0.004, 34),
+      pressure(35, L * 1.1, 0.15),
     ),
-    ...curve([mx + 0.24, 0.1], [mx, 0.58], [mx - 0.24, 0.1]).slice(1),
-  ]
-  const grin = part(
-    'mouth-grin',
-    `<path d="${poly(grinPts)}" style="fill:${pink}"/>${pen(grinPts, pressure(35, L, 0.2))}`,
   )
 
   const sweat = part(
@@ -129,5 +114,5 @@ export function petFace(s: PetPen) {
         .map(x => `<circle class="pet-dot" cx="${x}" cy="-2.2" r="0.08" style="fill:${ink}"/>`)
         .join(''),
   )
-  return { dash, happy, wide, wince, mouthO, smile, grin, sweat, dots, thought }
+  return { dash, wide, wince, mouthO, smile, sweat, dots, thought }
 }
