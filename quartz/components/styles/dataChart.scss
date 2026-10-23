@@ -31,7 +31,7 @@
   padding: 0;
   list-style: none;
   color: var(--dark);
-  font-size: 0.75rem;
+  font-size: 12px;
   line-height: 1.35;
 
   li {
@@ -293,6 +293,7 @@
 
 .dch-readout {
   @include figure-table;
+  font-size: 12px;
 
   &[hidden] {
     display: none;
@@ -305,7 +306,7 @@
 
 .dch-details {
   margin-top: 0.6rem;
-  font-size: 0.75rem;
+  font-size: 12px;
 
   summary {
     width: max-content;
@@ -335,7 +336,7 @@
   width: 100%;
   margin: 0;
   border-collapse: collapse;
-  font-size: 0.75rem;
+  font-size: 12px;
   line-height: 1.35;
 
   th,
