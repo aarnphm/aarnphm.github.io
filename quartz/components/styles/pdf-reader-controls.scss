@@ -1,0 +1,65 @@
+@use '../../styles/pdf-instrument.scss' as instrument;
+
+// The /read toolbar's pager (‹ | p. 4 / 16 | ›) and zoom stepper (− | 90% | + | fit), in the
+// instrument look of the inline embed. fit sets a zoom, so it is the stepper's last cell and its
+// pressed state is the selected ground. This file loads after pdf-reader.scss and outranks its
+// scoped button and input rules.
+.pdf-reader-controls {
+  @include instrument.tokens;
+  --pdf-instrument-surface: var(--pdf-surface);
+  --pdf-instrument-selected: var(--pdf-selected);
+}
+
+.pdf-reader-app :is(.pdf-reader-page-form, .pdf-reader-zoom-group) {
+  @include instrument.frame;
+  @include instrument.type;
+  gap: 0;
+  color: var(--darkgray);
+
+  > * {
+    @include instrument.cell;
+  }
+
+  > button {
+    @include instrument.button;
+  }
+}
+
+// The reader's base hover and pressed rules paint every button border gray; inside a frame the
+// cell keeps its hairline. (0,4,1) outranks them.
+.pdf-reader-app
+  .pdf-reader-controls
+  :is(.pdf-reader-page-form, .pdf-reader-zoom-group)
+  > button:is(:hover, [aria-pressed='true']) {
+  border-color: var(--pdf-instrument-line);
+}
+
+.pdf-reader-app .pdf-reader-zoom-group > button:last-child {
+  aspect-ratio: auto;
+  padding: 0 0.5rem;
+}
+
+.pdf-reader-app .pdf-reader-zoom {
+  @include instrument.zoom-readout;
+  color: var(--dark);
+}
+
+.pdf-reader-app .pdf-reader-page-cell {
+  @include instrument.readout;
+
+  label {
+    color: var(--darkgray);
+  }
+
+  > input {
+    height: 100%;
+    min-height: 0;
+    margin: 0;
+    color: var(--dark);
+    font: inherit;
+    background: transparent;
+    border: 0;
+    border-radius: var(--radius-none);
+    @include instrument.page-field($start: 1ch);
+  }
+}

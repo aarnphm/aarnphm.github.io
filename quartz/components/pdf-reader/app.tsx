@@ -959,6 +959,11 @@ function DocumentReader({ data, signal }: { data: DocumentData; signal: AbortSig
   )
 
   const markCount = book.entries.size
+  // The page field holds the longest page number or label, so it keeps its width while paging.
+  const fieldChars = Math.min(
+    6,
+    Math.max(String(pageCount).length, ...(labels ?? []).map(l => l.length)),
+  )
   const showSide = !compact
   const viewer = viewerRef.current
 
@@ -1014,6 +1019,8 @@ function DocumentReader({ data, signal }: { data: DocumentData; signal: AbortSig
         <div class="pdf-reader-controls" role="toolbar" aria-label="Reader controls">
           <form
             class="pdf-reader-page-form"
+            role="group"
+            aria-label="Page"
             onSubmit={event => {
               event.preventDefault()
               const wanted = pageInput.trim()
@@ -1023,19 +1030,39 @@ function DocumentReader({ data, signal }: { data: DocumentData; signal: AbortSig
               scrollerRef.current?.focus({ preventScroll: true })
             }}
           >
-            <label for="pdf-reader-page">p.</label>
-            <input
-              id="pdf-reader-page"
-              value={pageInput}
-              inputMode="numeric"
-              size={Math.max(2, String(pageCount).length)}
-              aria-label={`Page, of ${pageCount}`}
-              onInput={event => setPageInput(event.currentTarget.value)}
-              onBlur={() => setPageInput(label(page))}
-            />
-            <span>/ {pageCount || '…'}</span>
+            <button
+              type="button"
+              aria-label="Previous page"
+              title="previous page"
+              disabled={page <= 1}
+              onClick={() => viewer?.scrollToPage(page - 1)}
+            >
+              ‹
+            </button>
+            <span class="pdf-reader-page-cell">
+              <label for="pdf-reader-page">p.</label>
+              <input
+                id="pdf-reader-page"
+                value={pageInput}
+                inputMode="numeric"
+                style={`--pdf-instrument-digits: ${fieldChars}`}
+                aria-label={`Page, of ${pageCount}`}
+                onInput={event => setPageInput(event.currentTarget.value)}
+                onBlur={() => setPageInput(label(page))}
+              />
+              <span>/ {pageCount || '…'}</span>
+            </span>
+            <button
+              type="button"
+              aria-label="Next page"
+              title="next page"
+              disabled={page >= pageCount}
+              onClick={() => viewer?.scrollToPage(page + 1)}
+            >
+              ›
+            </button>
           </form>
-          <div class="pdf-reader-row" role="group" aria-label="Zoom">
+          <div class="pdf-reader-zoom-group" role="group" aria-label="Zoom">
             <button
               type="button"
               aria-label="Zoom out"

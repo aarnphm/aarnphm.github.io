@@ -1,0 +1,170 @@
+// Shared look of the PDF toolbars: the inline embed (quartz/styles/pdf-embed-toolbar.scss) and the
+// /read reader (quartz/components/styles/pdf-reader-controls.scss). An instrument is one control
+// made of cells, such as the pager or the zoom stepper. Its darkgray outer frame marks where the
+// control starts and stops; line hairlines between cells only group. This module emits no CSS; each
+// surface includes the mixins under its own selectors.
+//
+// Each surface sets these custom properties through `tokens` and may override them:
+//   --pdf-instrument-height    1.5rem (control-pdf), 44px under a coarse pointer
+//   --pdf-instrument-font      meta; 16px under a coarse pointer so focusing a field does not zoom
+//   --pdf-instrument-icon      glyph size inside a square cell
+//   --pdf-instrument-frame     outer frame (darkgray)
+//   --pdf-instrument-line      hairline between cells (line)
+//   --pdf-instrument-surface   hover and press ground (surface)
+//   --pdf-instrument-selected  pressed toggle ground (selected)
+//   --pdf-instrument-digits    characters the page field holds, written by script
+
+@mixin tokens {
+  --pdf-instrument-height: 1.5rem;
+  --pdf-instrument-font: 0.75rem;
+  --pdf-instrument-icon: 0.75rem;
+  --pdf-instrument-frame: var(--darkgray);
+  --pdf-instrument-line: color-mix(in srgb, var(--gray) 55%, transparent);
+  --pdf-instrument-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+  --pdf-instrument-selected: color-mix(
+    in srgb,
+    var(--secondary) 18%,
+    var(--pdf-instrument-surface)
+  );
+
+  @media (pointer: coarse) {
+    --pdf-instrument-height: 44px;
+    --pdf-instrument-font: max(1rem, 16px);
+    --pdf-instrument-icon: 1rem;
+  }
+}
+
+@mixin type {
+  font-family: var(--codeFont);
+  font-size: var(--pdf-instrument-font);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  text-transform: lowercase;
+}
+
+// The joined frame around an instrument's cells.
+@mixin frame {
+  display: inline-flex;
+  flex: none;
+  align-items: stretch;
+  height: var(--pdf-instrument-height);
+  min-height: 0;
+  box-sizing: border-box;
+  border: 1px solid var(--pdf-instrument-frame);
+  border-radius: var(--radius-none);
+}
+
+// One cell of a frame. The hairline sits on the cell itself, so it wins over the border reset at
+// whatever specificity the surface includes this mixin.
+@mixin cell {
+  box-sizing: border-box;
+  height: 100%;
+  min-height: 0;
+  margin: 0;
+  color: var(--dark);
+  font: inherit;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-none);
+
+  &:not(:first-child) {
+    border-inline-start: 1px solid var(--pdf-instrument-line);
+  }
+}
+
+// An action cell: square for a glyph, padded for a word.
+@mixin button($square: true) {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  color: var(--darkgray);
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    background-color 120ms ease,
+    color 120ms ease;
+
+  @if $square {
+    aspect-ratio: 1;
+    padding: 0;
+  } @else {
+    padding: 0 0.5rem;
+  }
+
+  svg {
+    width: var(--pdf-instrument-icon);
+    height: var(--pdf-instrument-icon);
+    pointer-events: none;
+  }
+
+  &:active:not(:disabled) {
+    color: var(--dark);
+    background: var(--pdf-instrument-surface);
+  }
+
+  &[aria-pressed='true'] {
+    color: var(--dark);
+    background: var(--pdf-instrument-selected);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  @include hover;
+  @include focus;
+}
+
+// A value cell: the zoom percent, the page readout.
+@mixin readout {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.5rem;
+  white-space: nowrap;
+}
+
+// Four digit cells hold "47%" and "152%", so the stepper keeps its width while zooming. The 1px
+// is the hairline, which border-box widths include.
+@mixin zoom-readout {
+  @include readout;
+  min-width: calc(4ch + 1rem + 1px);
+}
+
+// The page field holds --pdf-instrument-digits characters, so the pager keeps its width between
+// pages 4 and 10. The 1ch end padding is the space before "/ n" in the mono face; the number and
+// the total read as one value.
+@mixin page-field($start: 0.5rem, $hairline: 0px) {
+  width: calc((var(--pdf-instrument-digits, 2) + 1) * 1ch + #{$start} + #{$hairline});
+  padding: 0 1ch 0 $start;
+  text-align: end;
+  appearance: textfield;
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  @include hover;
+  @include focus;
+}
+
+@mixin hover {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled, [aria-pressed='true']) {
+      color: var(--dark);
+      background: var(--pdf-instrument-surface);
+    }
+  }
+}
+
+@mixin focus {
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: -2px;
+  }
+}
