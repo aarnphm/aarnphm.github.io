@@ -2,7 +2,7 @@
 
 Inline and display math in prose, and the two ways to write a number.
 
-**Source:** `quartz/styles/custom.scss` (`.katex`), `quartz/styles/base.scss` (`.katex`, `.katex-display`, `.math`), `quartz.config.ts` (`Plugin.Latex`), `quartz/cfg.ts` (macros, strict mode).
+**Source:** `quartz/styles/custom/article-chrome.scss` and `quartz/styles/custom/callouts.scss` (`.katex`), `quartz/styles/base/document-defaults.scss` (`.katex`, `.katex-display`, `.math`), `quartz.config.ts` (`Plugin.Latex`), `quartz/cfg.ts` (macros, strict mode).
 
 ## Inputs
 

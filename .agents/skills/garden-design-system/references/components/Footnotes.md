@@ -2,7 +2,7 @@
 
 The footnote list at the end of a note, with back-references to each call site.
 
-**Source:** `quartz/plugins/transformers/ofm.ts` · styles: `quartz/styles/base.scss`
+**Source:** `quartz/plugins/transformers/ofm.ts` · styles: `quartz/styles/custom/article-chrome.scss`
 
 ## Preview
 

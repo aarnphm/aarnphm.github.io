@@ -2,7 +2,7 @@
 
 A Markdown table inside its scroll container.
 
-**Source:** `quartz/plugins/transformers/ofm.ts` · styles: `quartz/styles/base.scss`
+**Source:** `quartz/plugins/transformers/ofm.ts` · styles: `quartz/styles/base/document-defaults.scss`
 
 ## Preview
 
@@ -10,5 +10,6 @@ A copy of the server-rendered markup from `/stream/on/2026/08/22` (selector `.ta
 
 ## Rules
 
+- Focus: the ring on the scroll container sits inside at `-2px`, because an outside ring would be clipped (see `focus.md`, Ring placement).
 - The container scrolls sideways when the table is wider than the column.
 - Write absolute values as `\lvert x \rvert`; a literal `|` splits the cell.

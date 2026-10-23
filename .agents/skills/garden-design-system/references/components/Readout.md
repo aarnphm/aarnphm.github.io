@@ -2,7 +2,7 @@
 
 A bordered grid of labelled numeric readouts for data panels.
 
-**Source:** the triathlon stat grids (`triathlon.scss`, activity and day cards) and the data rules in `docs/design-patterns.md`.
+**Source:** the triathlon stat grids (`quartz/components/styles/triathlon/`, activity and day cards) and the data rules in `docs/design-patterns.md`.
 
 ## Inputs
 
