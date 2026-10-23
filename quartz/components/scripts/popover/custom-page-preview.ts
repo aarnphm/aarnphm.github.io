@@ -24,7 +24,6 @@ function customPageKind(page: Document, target: URL): string | null {
   if (data.menu === 'true') return 'menu'
   if (page.querySelector('.masonry-container')) return 'masonry'
   if (slug === 'index') return 'home'
-  if (slug === 'lyd') return 'letter'
   return data.layout && data.layout !== 'default' ? data.layout : null
 }
 

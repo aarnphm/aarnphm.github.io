@@ -79,7 +79,6 @@ async function convertMedia(contentDir: string) {
       ignore: [
         '**/movies',
         '**/library',
-        '**/lyd.md',
         'content/are.na.md',
         '**/healthexporter',
         '**/trtllm structured outputs with speculative decoding.md',

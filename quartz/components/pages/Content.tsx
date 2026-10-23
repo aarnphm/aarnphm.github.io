@@ -13,7 +13,6 @@ import { CourseUnitWorkspace } from '../CourseUnit'
 //@ts-ignore
 import frMarginsScript from '../scripts/fr-margins.inline'
 //@ts-ignore
-import lydiaScript from '../scripts/lydia.inline'
 //@ts-ignore
 import unbadgeScript from '../scripts/unbadge.inline'
 import SeeAlsoComponent from '../SeeAlso'
@@ -74,7 +73,6 @@ export default (() => {
 
   Content.afterDOMLoaded = concatenateResources(
     frMarginsScript,
-    lydiaScript,
     unbadgeScript,
     Workspace.afterDOMLoaded,
   )

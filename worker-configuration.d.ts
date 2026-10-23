@@ -39,7 +39,6 @@ interface __BaseEnv_Env {
 	SESSION_SECRET: string;
 	MAPBOX_API_KEY: string;
 	PROTECTED_CONTENT_PASSWORD: string;
-	LYD_2: string;
 	NICKY: string;
 	THERAPY: string;
 	BENNETT: string;

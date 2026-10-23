@@ -24,7 +24,7 @@ function markPopupImages(root: ParentNode = document) {
 
 document.addEventListener('nav', () => {
   const slug = getFullSlug(window)
-  if (slug === 'lyd' || slug === 'vibes') return
+  if (slug === 'vibes') return
 
   const dialog = document.getElementById('image-popup-modal')
   const modalImg = dialog?.querySelector<HTMLImageElement>('.image-popup-img')

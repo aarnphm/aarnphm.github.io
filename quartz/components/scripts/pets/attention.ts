@@ -127,7 +127,7 @@ const readSidenote = (note: Element) => {
   moveTo({ el: note, kind: 'stand', t: 0.3 + Math.random() * 0.4 })
 }
 
-// The eyes follow the pointer round, as lydia's bot does: they slide toward it along its direction,
+// The eyes follow the pointer round: they slide toward it along its direction,
 // easing back to centre as it comes close, and the body tips a few degrees its way. The pet turns
 // to face it once it is clearly to one side.
 export const watch = () => {
