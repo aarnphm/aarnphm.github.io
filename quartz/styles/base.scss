@@ -83,6 +83,13 @@
   display: initial !important;
 }
 
+:is(p, li) > .katex {
+  display: inline-block;
+  max-inline-size: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
 code,
 [data-rehype-pretty-code-figure] {
   text-transform: none !important;

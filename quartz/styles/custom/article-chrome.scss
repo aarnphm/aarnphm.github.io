@@ -7,7 +7,7 @@ hgroup {
     white-space: break-spaces;
     text-overflow: ellipsis;
     font-style: italic;
-    font-weight: 300;
+    font-weight: 400;
     display: -webkit-box;
     line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -362,6 +362,7 @@ body {
 
 .article-title {
   font-size: 2.6rem;
+  overflow-wrap: anywhere;
   font-weight: 800;
   margin-top: 0;
   font-family: var(--headerFont);
@@ -405,18 +406,18 @@ body {
   display: grid;
   grid-template-columns: var(--layout-byline-template);
   align-items: start;
-  font-size: 0.8rem;
+  font-size: var(--text-meta);
   line-height: 1.8em;
 
   h2 {
     margin: 0;
-    font-size: 0.6rem;
+    font-size: var(--text-meta);
     font-weight: 400;
 
     color: rgba(var(--darkgray), 0.15);
     text-transform: uppercase;
     margin-bottom: 4px;
-    font-weight: 300;
+    font-weight: 400;
   }
 
   & > * {

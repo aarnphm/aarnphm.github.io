@@ -26,11 +26,11 @@
 }
 
 @mixin tinyFonts {
-  font-size: 11.1px;
+  font-size: var(--text-meta);
   font-style: normal;
   font-weight: $normalWeight;
   letter-spacing: 0.4px;
-  line-height: 15px;
+  line-height: 1.4;
   text-transform: uppercase;
 }
 
@@ -235,6 +235,9 @@
       color: var(--dark);
       background-color: var(--light);
       font-size: 1.1em;
+      @media all and ($mobile) {
+        font-size: max(16px, 1.1em);
+      }
       border: none;
       border-radius: var(--radius-none);
 

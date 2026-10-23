@@ -31,7 +31,7 @@ button.g-datepicker-trigger {
   justify-content: space-between;
   gap: 0.45rem;
   inline-size: 100%;
-  block-size: calc(var(--control-height, 1.625rem) + 2px);
+  block-size: calc(var(--control-height, max(24px, 1.625rem)) + 2px);
   min-block-size: 0;
   padding: 0.13rem 0.45rem;
   border: 1px solid var(--lightgray);
@@ -234,8 +234,8 @@ button.g-datepicker-trigger {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  inline-size: 1.35rem;
-  block-size: 1.35rem;
+  inline-size: max(24px, 1.35rem);
+  block-size: max(24px, 1.35rem);
   padding: 0;
   color: var(--darkgray);
   transition:
@@ -259,6 +259,7 @@ button.g-datepicker-trigger {
 }
 
 .g-text-button {
+  min-block-size: 24px;
   padding: 0.12rem 0;
   color: var(--control-accent-ink, var(--dark));
   font-size: 1.03em;
@@ -279,7 +280,7 @@ button.g-button {
   align-items: center;
   justify-content: center;
   gap: 0.45rem;
-  min-height: var(--control-height, 1.625rem);
+  min-height: var(--control-height, max(24px, 1.625rem));
   padding: 0.2rem 0.62rem;
   border: 1px solid var(--lightgray);
   border-radius: var(--radius-none);
@@ -326,7 +327,7 @@ button.g-select-trigger {
   justify-content: space-between;
   gap: 0.55rem;
   min-width: 12.3em;
-  min-height: var(--control-height, 1.625rem);
+  min-height: var(--control-height, max(24px, 1.625rem));
   padding: 0.2rem 0.42rem;
   border: 1px solid var(--lightgray);
   border-radius: var(--radius-none);
@@ -555,7 +556,7 @@ button.g-select-trigger {
   display: inline-flex;
   align-items: stretch;
   // the month picker's box: --control-height plus its 2px border
-  block-size: calc(var(--control-height, 1.625rem) + 2px);
+  block-size: calc(var(--control-height, max(24px, 1.625rem)) + 2px);
   border: 1px solid color-mix(in srgb, var(--gray) 55%, transparent);
 
   .g-icon-button,
@@ -564,7 +565,7 @@ button.g-select-trigger {
   }
 
   .g-icon-button {
-    inline-size: var(--control-height, 1.625rem);
+    inline-size: var(--control-height, max(24px, 1.625rem));
     block-size: 100%;
   }
 
@@ -583,7 +584,7 @@ button.g-select-trigger {
 // the box is reserved, since the picker mounts in the browser after the server's markup
 .g-calendar-jump {
   inline-size: 12rem;
-  min-block-size: calc(var(--control-height, 1.625rem) + 2px);
+  min-block-size: calc(var(--control-height, max(24px, 1.625rem)) + 2px);
 
   .g-datepicker {
     inline-size: 100%;
@@ -666,7 +667,7 @@ button.g-select-trigger {
   border-radius: var(--radius-none);
   background: color-mix(in srgb, var(--tone) 16%, var(--light));
   color: var(--dark);
-  font: 400 0.75rem/1.3 var(--bodyFont);
+  font: 400 var(--text-meta)/1.3 var(--bodyFont);
   text-align: left;
   text-decoration: none;
   cursor: pointer;
@@ -687,7 +688,7 @@ button.g-select-trigger {
   &[data-thin] {
     min-height: 1rem;
     background: transparent;
-    font-size: 0.6875rem;
+    font-size: var(--text-meta);
     line-height: 1.2;
   }
 }
@@ -746,7 +747,7 @@ button.g-select-trigger {
 
   h4 {
     margin: 0 0 var(--space-2);
-    font: 600 0.875rem/1.3 var(--bodyFont);
+    font: 600 var(--text-ui)/1.3 var(--bodyFont);
   }
 }
 

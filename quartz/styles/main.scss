@@ -30,10 +30,10 @@
   --kern: 12px;
   --align-cap-height: -6px;
   --align-baseline: -6px;
-  --font-size: 16px;
-  // UI steps sit two heading-scale steps apart (r = 1.0699, see base.scss h1-h6)
-  --text-ui: 0.875rem;
-  --text-meta: 0.75rem;
+  --font-size: 87.5%;
+  // At the default browser size: 14px body/UI and 12px metadata.
+  --text-ui: 1rem;
+  --text-meta: calc(6rem / 7);
   --line-height: 1.4;
   --rail-width: 1.6rem;
   --sidepanel-padding: 14px;
