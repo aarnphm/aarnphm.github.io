@@ -11,6 +11,7 @@ import {
 import { FilePath, FullSlug, joinSegments, QUARTZ } from '../../util/path'
 import { isRecord } from '../../util/type-guards'
 import { ProcessedContent, QuartzPluginData } from '../vfile'
+import { notebookCacheReceipt } from './notebook-cache-receipts'
 
 export type NotebookPage = { fp: FilePath; slug: FullSlug; content: ProcessedContent }
 
@@ -171,27 +172,63 @@ export function resetNotebookCaches(): void {
   globalThis.__quartzNotebookDependencyCache?.clear()
 }
 
+function isNotebookPageBlob(value: unknown): value is NotebookPageBlob {
+  return (
+    isRecord(value) &&
+    isRecord(value.data) &&
+    typeof value.data.slug === 'string' &&
+    isRecord(value.tree) &&
+    value.tree.type === 'root' &&
+    Array.isArray(value.tree.children) &&
+    (value.extractedAssets === undefined ||
+      (Array.isArray(value.extractedAssets) && value.extractedAssets.every(isExtractedAsset)))
+  )
+}
+
 export async function readNotebookPageBlob(
   ctx: BuildCtx,
   entry: NotebookPageCacheEntry,
   fp: FilePath,
   src: FilePath,
   slug: FullSlug,
+  origin: 'cache' | 'spill' = 'cache',
 ): Promise<NotebookPage | undefined> {
+  let bytes: Buffer
   try {
-    const blob = v8.deserialize(await fs.readFile(entry.blob)) as NotebookPageBlob
-    const extractedAssets = entry.extractedAssets ?? blob.extractedAssets ?? []
-    if (!(await ensureExtractedNotebookAssets(ctx, extractedAssets))) {
-      return undefined
-    }
-    delete blob.data.htmlAst
-    entry.data ??= compactNotebookPluginData(blob.data)
-    const file = new VFile({ path: src, value: '' })
-    file.data = blob.data
-    return { fp, slug, content: [blob.tree, file] }
+    bytes = await fs.readFile(entry.blob)
   } catch {
+    notebookCacheReceipt(ctx, fp, 'restore', 'miss', 'blob-unavailable')
     return undefined
   }
+  let decoded: unknown
+  try {
+    decoded = v8.deserialize(bytes)
+  } catch {
+    notebookCacheReceipt(ctx, fp, 'restore', 'miss', 'blob-invalid')
+    return undefined
+  }
+  if (!isNotebookPageBlob(decoded)) {
+    notebookCacheReceipt(ctx, fp, 'restore', 'miss', 'blob-invalid')
+    return undefined
+  }
+  const extractedAssets = entry.extractedAssets ?? decoded.extractedAssets ?? []
+  const assetsReady = await ensureExtractedNotebookAssets(ctx, extractedAssets).catch(() => false)
+  if (!assetsReady) {
+    notebookCacheReceipt(ctx, fp, 'restore', 'miss', 'assets-unavailable')
+    return undefined
+  }
+  delete decoded.data.htmlAst
+  entry.data ??= compactNotebookPluginData(decoded.data)
+  const file = new VFile({ path: src, value: '' })
+  file.data = decoded.data
+  notebookCacheReceipt(
+    ctx,
+    fp,
+    'restore',
+    origin === 'cache' ? 'hit' : 'reload',
+    origin === 'cache' ? 'blob-restored' : 'spill-restored',
+  )
+  return { fp, slug, content: [decoded.tree, file] }
 }
 
 export async function writeNotebookPageBlob(

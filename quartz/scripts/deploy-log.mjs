@@ -60,6 +60,7 @@ const run = {
   deployStages: [],
   quartzStages: [],
   cacheReceipts: [],
+  notebookCacheReceipts: [],
 }
 let tail = ''
 let dirty = false
@@ -77,6 +78,25 @@ const seconds = ms => `${(ms / 1000).toFixed(2)} s`
 const finiteNumber = value => typeof value === 'number' && Number.isFinite(value)
 
 function parseLine(line) {
+  const notebookPrefix = '__QUARTZ_NOTEBOOK_CACHE__'
+  const notebookOffset = line.indexOf(notebookPrefix)
+  if (notebookOffset >= 0) {
+    try {
+      const receipt = JSON.parse(line.slice(notebookOffset + notebookPrefix.length))
+      if (
+        receipt &&
+        typeof receipt.epoch === 'string' &&
+        typeof receipt.file === 'string' &&
+        typeof receipt.reason === 'string' &&
+        ['prepare', 'restore'].includes(receipt.phase) &&
+        ['candidate', 'hit', 'miss', 'reload'].includes(receipt.status)
+      ) {
+        const { epoch, file, phase, status, reason } = receipt
+        run.notebookCacheReceipts.push({ epoch, file, phase, status, reason })
+      }
+    } catch {}
+    return
+  }
   const receipt = parseQuartzCacheReceipt(line)
   if (receipt) {
     run.cacheReceipts.push(receipt)
@@ -261,9 +281,20 @@ try {
     run.status = importedExit === null ? 'imported' : importedExit === 0 ? 'passed' : 'failed'
   } else {
     const [command, ...args] = positionals
+    const env = { ...process.env, GARDEN_DEPLOY_LOG_ACTIVE: '1' }
+    // Capture pipes hide the terminal's color support from child processes.
+    if (
+      env.FORCE_COLOR === undefined &&
+      env.NO_COLOR === undefined &&
+      env.NODE_DISABLE_COLORS === undefined
+    ) {
+      const terminal = process.stdout.isTTY ? process.stdout : process.stderr
+      const depth = terminal.isTTY ? terminal.getColorDepth() : 1
+      if (depth > 1) env.FORCE_COLOR = depth >= 24 ? '3' : depth >= 8 ? '2' : '1'
+    }
     child = spawn(command, args, {
       cwd: process.cwd(),
-      env: { ...process.env, GARDEN_DEPLOY_LOG_ACTIVE: '1' },
+      env,
       stdio: ['inherit', 'pipe', 'pipe'],
       detached: true,
     })

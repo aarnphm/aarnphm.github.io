@@ -27,6 +27,7 @@ import { logBuildSpan, PerfTimer } from '../../util/perf'
 import { StaticResources } from '../../util/resources'
 import { ProcessedContent, QuartzPluginData } from '../vfile'
 import { write } from './helpers'
+import { notebookCacheMiss, notebookCacheReceipt } from './notebook-cache-receipts'
 import { affectedNotebookFiles, isNotebookPath } from './notebook-dependencies'
 import {
   compactNotebookPluginData,
@@ -193,10 +194,6 @@ function notebookPageCacheKey(
   ].join('\u0001')
 }
 
-function notebookCacheKeyMatches(cachedKey: string | undefined, expectedKey: string): boolean {
-  return cachedKey === expectedKey || Boolean(cachedKey?.endsWith(`|${expectedKey}`))
-}
-
 async function notebookProcessedContent(
   ctx: BuildCtx,
   fp: FilePath,
@@ -212,12 +209,14 @@ async function notebookProcessedContent(
   const cacheKey = cacheOptions.salt
     ? notebookPageCacheKey(sourceSignature, opts, cacheOptions.salt, importableModules)
     : undefined
-  if (cacheKey && cacheOptions.read) {
+  if (cacheOptions.read || !cacheKey) {
     const cached = cacheOptions.entries.get(fp)
-    const page = notebookCacheKeyMatches(cached?.key, cacheKey)
-      ? await readNotebookPageBlob(ctx, cached!, fp, src, slug)
-      : undefined
-    if (page) return { page, cacheHit: true }
+    const miss = notebookCacheMiss(cacheKey, cached?.key)
+    notebookCacheReceipt(ctx, fp, 'prepare', miss ? 'miss' : 'candidate', miss ?? 'metadata-match')
+    if (!miss && cached) {
+      const page = await readNotebookPageBlob(ctx, cached, fp, src, slug)
+      if (page) return { page, cacheHit: true }
+    }
   }
 
   const raw = await fs.readFile(src, 'utf8')
@@ -367,6 +366,7 @@ type PreparedNotebookEmitItem = {
   slug: FullSlug
   data: QuartzPluginData
   cached?: NotebookPageCacheEntry
+  cacheOrigin?: 'cache' | 'spill'
   page?: NotebookPage
 }
 
@@ -428,9 +428,20 @@ async function* emitNotebookPages(
           ? notebookPageCacheKey(sourceSignature, opts, cacheOptions.salt, importableModules)
           : undefined
 
+        const candidate = cacheOptions.entries.get(fp)
+        const miss = notebookCacheMiss(cacheKey, candidate?.key)
+        // A metadata match is only eligibility; restoration is receipted when the blob is read.
+        if (cacheKey)
+          notebookCacheReceipt(
+            localCtx,
+            fp,
+            'prepare',
+            miss ? 'miss' : 'candidate',
+            miss ?? 'metadata-match',
+          )
         if (cacheKey && cacheOptions.read) {
-          const cached = cacheOptions.entries.get(fp)
-          if (cached && notebookCacheKeyMatches(cached.key, cacheKey)) {
+          const cached = candidate
+          if (cached && !miss) {
             if (
               cached.data &&
               (await ensureExtractedNotebookAssets(localCtx, cached.extractedAssets))
@@ -438,6 +449,8 @@ async function* emitNotebookPages(
               cacheHits += 1
               return { fp, src, slug, data: cached.data, cached }
             }
+            if (cached.data)
+              notebookCacheReceipt(localCtx, fp, 'prepare', 'miss', 'assets-unavailable')
             const page = await readNotebookPageBlob(localCtx, cached, fp, src, slug)
             if (page && cached.data) {
               cacheHits += 1
@@ -461,7 +474,7 @@ async function* emitNotebookPages(
         const data = cached?.data ?? compactNotebookPluginData(result.page.content[1].data)
         if (cached) {
           ;(result.page.content as unknown[])[0] = undefined
-          return { fp, src, slug, data, cached }
+          return { fp, src, slug, data, cached, cacheOrigin: 'spill' }
         }
         return { fp, src, slug, data, page: result.page }
       } catch (error) {
@@ -490,7 +503,14 @@ async function* emitNotebookPages(
     try {
       let page = item.page
       if (!page && item.cached) {
-        page = await readNotebookPageBlob(localCtx, item.cached, item.fp, item.src, item.slug)
+        page = await readNotebookPageBlob(
+          localCtx,
+          item.cached,
+          item.fp,
+          item.src,
+          item.slug,
+          item.cacheOrigin,
+        )
       }
       if (!page) {
         const fallback = await notebookProcessedContent(
