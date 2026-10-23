@@ -56,6 +56,9 @@
   aspect-ratio: 440 / 270;
   margin: 0 auto;
   overflow: visible;
+  // User units per rendered pixel (440 / rendered width); data-chart.inline.ts keeps it current.
+  // Type and marker sizes multiply by it, so they stay at their CSS px size in every frame.
+  --dch-u: 0.85;
 
   text {
     font-family: var(--codeFont);
@@ -73,29 +76,58 @@
     stroke-width: 1;
   }
 
+  // Ticks and axis titles share the 12px meta size; the title is body face, the ticks mono.
   .dch-tick {
     fill: var(--darkgray);
-    font-size: 10px;
+    font-size: calc(var(--dch-u) * 12px);
   }
 
   .dch-sup {
-    font-size: 7.5px;
+    font-size: calc(var(--dch-u) * 9px);
   }
 
   .dch-axis {
     fill: var(--darkgray);
     font-family: var(--bodyFont);
-    font-size: 11px;
+    font-size: calc(var(--dch-u) * 12px);
   }
 
   .dch-value {
     fill: var(--dark);
-    font-size: 10px;
+    font-size: calc(var(--dch-u) * 12px);
   }
 
   .dch-curve-label {
     fill: var(--dark);
-    font-size: 10.5px;
+    font-size: calc(var(--dch-u) * 12px);
+  }
+
+  .dch-marker,
+  .dch-ref-mark {
+    transform: scale(var(--dch-u));
+    vector-effect: non-scaling-stroke;
+  }
+
+  .dch-probe-dot {
+    r: calc(var(--dch-u) * 4.5px);
+    vector-effect: non-scaling-stroke;
+  }
+}
+
+.dch-swatch {
+  --dch-u: 1;
+}
+
+// Before the script measures the SVG, the frame width stands in for it.
+@container dch-figure (max-width: 30rem) {
+  .dch-svg {
+    --dch-u: 1.15;
+  }
+}
+
+@container dch-figure (max-width: 21rem) {
+  .dch-svg {
+    --dch-u: 1.5;
   }
 }
 
@@ -215,7 +247,7 @@
 
 .dch-fo {
   @include figure-fo;
-  font-size: 0.82rem;
+  font-size: calc(var(--dch-u, 1) * 12px);
 }
 
 .dch-fo--center {
@@ -341,29 +373,6 @@
   .dch-probe-drop,
   .dch-probe-dot {
     transition: none;
-  }
-}
-
-// The SVG scales with its frame, so on a narrow frame its type grows in user units to stay legible.
-@container dch-figure (max-width: 30rem) {
-  .dch-svg {
-    .dch-tick {
-      font-size: 16px;
-    }
-
-    .dch-axis,
-    .dch-curve-label,
-    .dch-value {
-      font-size: 15px;
-    }
-
-    .dch-sup {
-      font-size: 11px;
-    }
-  }
-
-  .dch-fo {
-    font-size: 1.2rem;
   }
 }
 
