@@ -17,13 +17,13 @@
 
   a,
   button {
-    color: var(--gray);
+    color: var(--darkgray);
     text-decoration: none;
     background: transparent;
 
     &:hover,
     &:focus-visible {
-      color: var(--darkgray);
+      color: var(--dark);
       background: transparent;
       text-decoration: underline;
     }
@@ -134,7 +134,7 @@
   .stream-feed-sentinel {
     min-height: 1px;
     margin-top: 1rem;
-    color: var(--gray);
+    color: var(--darkgray);
     font-size: 0.85rem;
     text-align: center;
 
@@ -151,7 +151,7 @@
 
   .stream-feed-archive {
     margin: 1.5rem 0 0;
-    color: var(--gray);
+    color: var(--darkgray);
     font-size: 0.85rem;
 
     a {
@@ -170,7 +170,7 @@
   .stream-search-loading-label,
   .stream-search-load-error .stream-entry-body {
     margin: 0;
-    color: var(--gray);
+    color: var(--darkgray);
   }
 
   .stream-search-loading {
@@ -180,7 +180,7 @@
   .stream-protected-unlock {
     margin: 0 0 1rem;
     padding: 0.75rem 0;
-    color: var(--gray);
+    color: var(--darkgray);
 
     &[hidden] {
       display: none;
@@ -210,7 +210,7 @@
       }
 
       &::placeholder {
-        color: var(--gray);
+        color: var(--darkgray);
       }
     }
 
@@ -258,7 +258,7 @@
 
   .stream-entry-date {
     font-size: 0.85rem;
-    color: var(--gray);
+    color: var(--darkgray);
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
@@ -297,7 +297,7 @@
   }
 
   .stream-entry-tag {
-    color: var(--gray);
+    color: var(--darkgray);
     background: color-mix(in srgb, var(--lightgray) 40%, transparent);
     width: fit-content;
 
@@ -330,10 +330,10 @@
 
     a {
       text-decoration: underline;
-      color: var(--gray);
+      color: var(--darkgray);
 
       &:hover {
-        color: var(--darkgray);
+        color: var(--dark);
       }
     }
   }
@@ -351,7 +351,7 @@
       padding: 0;
       border: 0;
       background: transparent;
-      color: var(--gray);
+      color: var(--darkgray);
       font: inherit;
       text-decoration: underline;
       cursor: pointer;
@@ -371,10 +371,10 @@
 
   .stream-entry-importance {
     font-size: 0.85rem;
-    color: var(--gray);
+    color: var(--darkgray);
 
     .stream-entry-importance-label {
-      color: var(--gray);
+      color: var(--darkgray);
     }
 
     .stream-entry-importance-value {
@@ -435,13 +435,13 @@
 
   .stream-entry-description {
     margin: 0;
-    color: var(--gray);
+    color: var(--darkgray);
     font-style: italic;
   }
 
   .stream-entry-wordcount {
     font-size: 0.85rem;
-    color: var(--gray);
+    color: var(--darkgray);
     font-style: italic;
   }
 
@@ -485,7 +485,7 @@
         border-left: 2px solid var(--secondary);
         padding-left: 1rem;
         margin: 0;
-        color: var(--gray);
+        color: var(--darkgray);
       }
 
       &.quotes {
@@ -503,7 +503,7 @@
 
   .stream-legend-count {
     margin: 0 0 0.25rem;
-    color: var(--gray);
+    color: var(--darkgray);
     font-size: 0.75rem;
   }
 
@@ -549,7 +549,7 @@
 
   .stream-legend-summary-metric,
   .stream-legend-meta {
-    color: var(--gray);
+    color: var(--darkgray);
     font-family: var(--codeFont);
     font-size: 0.62rem;
     white-space: nowrap;
@@ -561,7 +561,7 @@
     gap: 0.35rem;
     justify-self: end;
     width: 100%;
-    color: var(--gray);
+    color: var(--darkgray);
     text-align: left;
   }
 
@@ -698,7 +698,7 @@
   }
 
   .stream-legend-date {
-    color: var(--gray);
+    color: var(--darkgray);
   }
 
   .stream-legend-title {
@@ -717,7 +717,7 @@
     font-size: 0.85rem;
 
     a {
-      color: var(--gray);
+      color: var(--darkgray);
       text-decoration: none;
 
       &:hover,
@@ -734,7 +734,7 @@
   align-items: center;
   min-height: 50vh;
   font-size: 1rem;
-  color: var(--gray);
+  color: var(--darkgray);
 }
 
 @media all and ($mobile) {

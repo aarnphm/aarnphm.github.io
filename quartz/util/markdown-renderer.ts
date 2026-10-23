@@ -6,7 +6,9 @@ import javascript from 'highlight.js/lib/languages/javascript'
 import python from 'highlight.js/lib/languages/python'
 import rust from 'highlight.js/lib/languages/rust'
 import typescript from 'highlight.js/lib/languages/typescript'
+import katex from 'katex'
 import { marked } from 'marked'
+import { customMacros } from '../cfg'
 import { escapeHTML } from './escape'
 import { stripSlashes, splitAnchor, resolveRelative, type FullSlug } from './path'
 import { extractWikilinks, resolveWikilinkTarget } from './wikilinks'
@@ -20,11 +22,49 @@ hljs.registerLanguage('bash', bash)
 
 const renderer = new marked.Renderer()
 
+// Comments take the notes' math syntax, rendered with the notes' macros. Inline math follows
+// pandoc's rule: no space inside either dollar and no digit after the closing one, so "$5 and $10"
+// stays text.
+const inlineMath = /^\$(?![\s$])((?:\\.|[^\\$\n])+?)(?<!\s)\$(?!\d)/
+const displayMath = /^\$\$([\s\S]+?)\$\$/
+
+const renderMath = (tex: string, displayMode: boolean) =>
+  katex.renderToString(tex.trim(), {
+    displayMode,
+    throwOnError: false,
+    macros: { ...customMacros },
+  })
+
 marked.use({
   gfm: true,
   breaks: true,
   renderer,
   extensions: [
+    {
+      name: 'displayMath',
+      level: 'block',
+      start: (src: string) => src.indexOf('$$'),
+      tokenizer(src: string) {
+        const match = src.match(displayMath)
+        if (match) return { type: 'displayMath', raw: match[0], tex: match[1] }
+      },
+      renderer: token => renderMath((token as unknown as { tex: string }).tex, true),
+    },
+    {
+      name: 'inlineMath',
+      level: 'inline',
+      start: (src: string) => src.indexOf('$'),
+      tokenizer(src: string) {
+        const match = src.match(displayMath) ?? src.match(inlineMath)
+        if (match) {
+          return { type: 'inlineMath', raw: match[0], tex: match[1], display: match[0][1] === '$' }
+        }
+      },
+      renderer(token) {
+        const t = token as unknown as { tex: string; display: boolean }
+        return renderMath(t.tex, t.display)
+      },
+    },
     {
       name: 'mention',
       level: 'inline',

@@ -1,14 +1,60 @@
+.image-search-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  border-bottom: 1px solid var(--lightgray);
+  min-width: 0;
+
+  > a.result-card {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 0;
+    border: 0;
+
+    > hgroup {
+      min-width: 0;
+    }
+  }
+}
+
+.image-search-thumbnail {
+  width: 3.5rem;
+  height: 3.5rem;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
 .image-similar-button {
   font-family: var(--codeFont);
   font-size: var(--text-meta);
+  font-variant-numeric: tabular-nums;
   color: var(--darkgray);
   background: transparent;
-  border: 1px solid var(--darkgray);
+  border: 0;
   border-radius: 0;
   padding: 0.25rem 0.5rem;
   min-height: 1.75rem;
   margin: 0.5rem;
   cursor: pointer;
+
+  &.image-similar-button-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    padding: 0;
+
+    svg {
+      width: 18px;
+      height: 18px;
+      pointer-events: none;
+    }
+
+    @media (pointer: coarse) {
+      width: 44px;
+    }
+  }
 
   &:focus-visible {
     outline: 2px solid var(--dark);
@@ -50,6 +96,16 @@
   overflow-wrap: anywhere;
   padding: 0.5rem 1rem;
   margin: 0;
+}
+
+@media (max-width: 480px) {
+  .image-search-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .image-search-row > .image-similar-button {
+    justify-self: start;
+    margin-top: 0;
+  }
 }
 
 .result-likelihood {
