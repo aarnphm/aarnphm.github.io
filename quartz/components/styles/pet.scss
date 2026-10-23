@@ -12,3 +12,16 @@
 @use './pet/wind.scss';
 @use './pet/motion.scss';
 @use './pet/bubble.scss';
+
+// After dark the pet stays a white blob: everything drawn on its body takes the light theme's paper
+// and ink, while its limbs, props and ground keep the dark theme's light pen so they show on the page.
+// A rim in that light pen (mascot.ts #pet-rim) keeps a dark hat or collar from vanishing into the page.
+:root[saved-theme='dark'] .pet-svg .pet-skin {
+  filter: url(#pet-rim);
+  --light: rgb(255, 252, 240);
+  --lightgray: rgb(230, 228, 217);
+  --gray: rgb(183, 181, 172);
+  --darkgray: rgb(111, 110, 105);
+  --dark: rgb(16, 15, 15);
+  --pet-friend-fill: color-mix(in srgb, #cdd597 45%, var(--light));
+}

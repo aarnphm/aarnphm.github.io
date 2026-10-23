@@ -22,6 +22,7 @@ import { petFace } from './mascot/pet-expressions'
 import { petChute, petJetpack } from './mascot/pet-flight'
 import { petOutfits } from './mascot/pet-outfits'
 import { petWeather } from './mascot/pet-weather'
+import { thumbsUp } from './mascot/thumbs-up'
 export {
   PAPER,
   PINK,
@@ -163,7 +164,8 @@ export function petSvg(paper = 'var(--light)', ink = 'var(--dark)', pink = PINK,
   const w = (L * 0.042) / 0.055
   const s: PetPen = { L, w, paper, ink, pink, outline, pen, mitt }
 
-  const { dash, happy, wide, wince, mouthO, smile, grin, sweat, dots, thought } = petFace(s)
+  const { dash, wide, wince, mouthO, smile, sweat, dots, thought } = petFace(s)
+  const thumb = thumbsUp(s)
   const chute = petChute(s)
   const { hat, outfit, glasses, hair } = petOutfits(s)
   const {
@@ -252,5 +254,5 @@ export function petSvg(paper = 'var(--light)', ink = 'var(--dark)', pink = PINK,
     ),
   )
 
-  return `<svg class="pet-svg" viewBox="-1.8 -2 3.6 3.8" aria-hidden="true" focusable="false" data-state="idle"><g class="pet-flip">${ground}${snowfall}<g class="pet-hop"><g class="pet-lean">${chute}${legs}${lounge}${speed}<g class="pet-body">${jetpack}${hair}${outfit.back}${body}${tan}${vest}${strap}<g class="pet-look">${dash}${happy}${wide}${wince}${mouthO}${smile}${grin}</g>${knit}${outfit.front}${glasses}${shades}${toque}${hat}${holds}${shelter}${breath}${arms}${caught}${lit}${grip}${pole}${laptop}</g>${sweat}${dots}${gust}${thought}</g></g></g></svg>`
+  return `<svg class="pet-svg" viewBox="-1.8 -2 3.6 3.8" aria-hidden="true" focusable="false" data-state="idle"><defs><filter id="pet-rim" x="-20%" y="-20%" width="140%" height="140%"><feMorphology in="SourceAlpha" operator="dilate" radius="0.06" result="edge"/><feFlood style="flood-color:var(--dark)"/><feComposite in2="edge" operator="in"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><g class="pet-flip">${ground}${snowfall}<g class="pet-hop"><g class="pet-lean">${chute}${legs}${lounge}${speed}<g class="pet-body">${jetpack}${hair}${outfit.back}<g class="pet-skin">${body}${tan}${vest}${strap}<g class="pet-look">${dash}${wide}${wince}${mouthO}${smile}</g>${knit}${outfit.front}${glasses}${shades}${toque}${hat}</g>${holds}${shelter}${breath}${arms}${thumb}${caught}${lit}${grip}${pole}${laptop}</g>${sweat}${dots}${gust}${thought}</g></g></g></svg>`
 }

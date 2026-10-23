@@ -29,7 +29,7 @@ import {
   onTriWindows,
   watch,
 } from './pets/attention'
-import { bounce, heartUp } from './pets/friend-social'
+import { heartUp } from './pets/friend-social'
 import { recheckPerch, relocate, savePosition } from './pets/perch-motion'
 import { petsEnabledKey, readPetsEnabled, syncPets } from './pets/presence'
 import { endCarry, onViewportWidthChange, startCarry } from './pets/scroll-carry'
@@ -77,7 +77,7 @@ document.addEventListener('nav', () => {
     'click',
     event => {
       const hit = event.target as Element | null
-      // The friend cheers; the pet turns to it and waves back.
+      // The friend gives a thumbs up; the pet turns to it and waves back.
       if (
         hit &&
         friendState.friend?.contains(hit) &&
@@ -85,8 +85,7 @@ document.addEventListener('nav', () => {
         !friendState.friendHop
       ) {
         const fc = friendCenter()
-        friendPlay('cheer', 1400)
-        bounce(friendState.friendSvg)
+        friendPlay('thumb', 1400)
         if (fc && petState.root && petState.doc && !petState.hop && !petState.carry) {
           petState.lookAt = fc
           petState.gaze = ''
@@ -105,7 +104,7 @@ document.addEventListener('nav', () => {
       if (!hit.closest('.garden-pet-button')) return
       // A click on the pet dismisses the reminder it is holding up.
       if (petState.reminding) hideReminder()
-      if (!petState.hop) play('cheer', 1400)
+      if (!petState.hop) play('thumb', 1400)
     },
     { signal },
   )

@@ -74,8 +74,8 @@ export function petWeather(s: PetPen) {
       .join(''),
   )
   // In fog, at dusk and at night it holds out its little lantern on the side it faces, the flame
-  // flickering between two drawings and its light falling faintly on the body. Outfits with a prop
-  // in that paw (pet.scss) hold it out behind instead.
+  // and the rays off its globe each flickering between two drawings. Outfits with a prop in that
+  // paw (pet.scss) hold it out behind instead.
   const lamp = (side: 1 | -1, name: string, seed: number) => {
     const l = lantern(w, paper, ink, CRUST, pink, side)
     const reach: Pt[] = [
@@ -85,7 +85,8 @@ export function petWeather(s: PetPen) {
     ]
     return part(
       name,
-      `<g class="pet-glow">${l.glow}</g>${l.bail}${l.body}` +
+      l.rays.map(r => `<g class="pet-ray-frame">${r}</g>`).join('') +
+        `${l.bail}${l.body}` +
         l.flames.map(f => `<g class="pet-flame-frame">${f}</g>`).join('') +
         l.front +
         pen(densify(reach, 0.05), pressure(seed, L * 1.1, 0.2)) +

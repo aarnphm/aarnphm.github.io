@@ -15,8 +15,9 @@ import {
 } from './pen'
 
 // Fog, dusk and night: a little hurricane lantern hanging from the paw it holds out in front (on
-// its left, the way it faces, or with `side` 1 on its right). A cap and base, a glass lit warm with wire guards, and a flame
-// drawn twice to flicker between; `glow` is three faint rings round the flame, under everything.
+// its left, the way it faces, or with `side` 1 on its right). A cap and base, a glass lit warm with
+// wire guards, and a flame drawn twice to flicker between; `rays` are a few short pen ticks off the
+// globe, drawn twice as well, that say lit at the pet's size without a soft glow.
 export function lantern(
   w: number,
   paper = PAPER,
@@ -27,12 +28,33 @@ export function lantern(
 ) {
   const x = 1.22 * side
   const [top, bottom] = [0.42, 0.8]
-  const glow = [0.86, 0.62, 0.4]
-    .map(
-      (r, i) =>
-        `<circle cx="${x}" cy="0.6" r="${r}" style="fill:${glass};opacity:${[0.14, 0.18, 0.26][i]}"/>`,
+  // Each ray as (away from the body, up) and its reach; the one leaning back over the body is short
+  // so it stays clear of the outline.
+  const rays = [0, 1].map(k =>
+    (
+      [
+        [1, 0.3, 1],
+        [0.85, -0.55, 1],
+        [0.25, -1, 1],
+        [-0.45, -0.9, 0.8],
+      ] as const
     )
-    .join('')
+      .map(([a, u, reach], i) => {
+        const len = Math.hypot(a, u)
+        const [dx, dy] = [(a * side) / len, u / len]
+        const r0 = 0.28 + 0.02 * ((i + k) % 2)
+        const r1 = r0 + reach * (k ? 0.17 : 0.21)
+        return stroke(
+          [
+            [x + dx * r0, 0.6 + dy * r0],
+            [x + dx * r1, 0.6 + dy * r1],
+          ],
+          () => w * 1.05,
+          ink,
+        )
+      })
+      .join(''),
+  )
   const line = (pts: readonly Pt[], seed: number, k = 1, color = ink) =>
     stroke(hand(pts, 0.02, 0.004, seed), pressure(seed + 1, w * k, 0.2), color)
   const bail = line(curve([x - 0.13, top - 0.04], [x, -0.04], [x + 0.13, top - 0.04], 14), 830, 0.7)
@@ -89,5 +111,5 @@ export function lantern(
   )
   const body = `<path d="${poly(globe)}" style="fill:${glass}"/>`
   const glassLine = stroke(globe, pressure(842, w * 0.8, 0.2), ink)
-  return { glow, bail, body, flames, front: `${guards}${glassLine}${cap}${ring}${base}` }
+  return { rays, bail, body, flames, front: `${guards}${glassLine}${cap}${ring}${base}` }
 }

@@ -429,7 +429,7 @@
 
 // Fog, dusk or night where the visitor is: it holds out a little lantern on the side it faces,
 // unless its hands are busy. Outfits with a prop in that paw hold it out behind instead, unless the
-// umbrella has that paw. The flame flickers between two drawings and the glow wavers.
+// umbrella has that paw, or the thumbs up has it. The flame and its rays flicker between two drawings.
 .pet-svg[data-lantern]:not(
     [data-kind='hang'],
     [data-state='slide'],
@@ -456,7 +456,7 @@
       [data-outfit='courses'],
       [data-outfit='cinema'],
       [data-outfit='engineering']
-    ):not([data-rain])
+    ):not([data-rain], [data-state='thumb'])
     [data-part='lantern-back'] {
     display: inline;
   }
@@ -469,30 +469,12 @@
     animation-delay: -0.16s;
   }
 
-  .pet-glow {
-    animation: pet-glow 2.6s steps(13) infinite;
+  .pet-ray-frame {
+    animation: pet-swap 0.64s step-end infinite;
   }
-}
 
-@keyframes pet-glow {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  18% {
-    opacity: 0.78;
-  }
-  31% {
-    opacity: 0.95;
-  }
-  54% {
-    opacity: 0.7;
-  }
-  62% {
-    opacity: 1;
-  }
-  85% {
-    opacity: 0.86;
+  .pet-ray-frame + .pet-ray-frame {
+    animation-delay: -0.32s;
   }
 }
 
