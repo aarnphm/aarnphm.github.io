@@ -1,4 +1,3 @@
-import { createHash } from 'node:crypto'
 import fs from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
@@ -21,15 +20,13 @@ import {
 } from '../plugins/stores/activity-bridge'
 import { isActivityKind } from '../plugins/stores/strava'
 import { parseWahooCache } from '../plugins/stores/wahoo'
-import { garminActivityFileFromArchive } from '../util/garmin-fit'
+import { fetchGarminActivityFit, fetchWahooActivityFit } from '../util/activity-source-file'
 import {
   cleanGarminConnectBaseUrl,
   DEFAULT_GARMIN_CONNECT_BASE,
-  fetchGarminBytes,
   readGarminConnectSession,
   type GarminConnectSession,
 } from '../util/garmin-session'
-import { encodeGarminTcxActivityFit } from '../util/garmin-tcx-fit'
 import { updateGarminActivityTitle } from '../util/garmin-title-update'
 import { joinSegments, QUARTZ } from '../util/path'
 import { isRecord, type UnknownRecord } from '../util/type-guards'
@@ -38,7 +35,6 @@ import {
   wahooCloudClientFromEnv,
   type WahooWorkoutFileUpload,
 } from '../util/wahoo-cloud'
-import { wahooFitSha256 } from '../util/wahoo-fit'
 import { uploadGarminFit } from './garmin-fit-upload'
 
 const STRAVA_CACHE_FILE = joinSegments(QUARTZ, '.quartz-cache', 'strava.json')
@@ -54,14 +50,6 @@ export interface ActivityBridgeArgs {
   write: boolean
   limit: number | null
   direction: ActivityBridgeDirection | null
-}
-
-export interface ActivityBridgeFile {
-  bytes: Uint8Array
-  filename: string
-  sha256: string
-  kind: 'fit' | 'tcx'
-  sourceKind: 'fit' | 'tcx'
 }
 
 interface ActivityBridgeExecution {
@@ -342,72 +330,6 @@ export async function writeActivityBridgeLedgerAtomic(
     await fs.rename(temporary, target)
   } finally {
     await fs.rm(temporary, { force: true })
-  }
-}
-
-function garminActivityId(value: string): string {
-  const id = value.startsWith('connect:') ? value.slice('connect:'.length) : value
-  if (!id || !/^\d+$/.test(id)) throw new Error(`Garmin activity id is invalid: ${value}`)
-  return id
-}
-
-function fileSha256(bytes: Uint8Array): string {
-  return createHash('sha256').update(bytes).digest('hex')
-}
-
-export async function fetchWahooActivityFit(
-  activity: ActivityBridgeWahooActivity,
-  client: WahooCloudClient,
-): Promise<ActivityBridgeFile> {
-  const bytes = await client.downloadFit(activity.fitUrl)
-  const sha256 = wahooFitSha256(bytes)
-  if (sha256 !== activity.fitSha256.toLowerCase())
-    throw new Error(`Wahoo FIT SHA-256 changed for ${activity.id}`)
-  return {
-    bytes,
-    filename: `wahoo-${activity.workoutId}.fit`,
-    sha256,
-    kind: 'fit',
-    sourceKind: 'fit',
-  }
-}
-
-export async function fetchGarminActivityFile(
-  activity: ActivityBridgeGarminActivity,
-  session: GarminConnectSession,
-  base: string,
-): Promise<ActivityBridgeFile> {
-  const sourceId = garminActivityId(activity.id)
-  const archive = await fetchGarminBytes(
-    session,
-    base,
-    `/download-service/files/activity/${encodeURIComponent(sourceId)}`,
-  )
-  const sourceFile = garminActivityFileFromArchive(archive)
-  return {
-    bytes: sourceFile.bytes,
-    filename: `garmin-${sourceId}.${sourceFile.kind}`,
-    sha256: fileSha256(sourceFile.bytes),
-    kind: sourceFile.kind,
-    sourceKind: sourceFile.kind,
-  }
-}
-
-export async function fetchGarminActivityFit(
-  activity: ActivityBridgeGarminActivity,
-  session: GarminConnectSession,
-  base: string,
-): Promise<ActivityBridgeFile> {
-  const source = await fetchGarminActivityFile(activity, session, base)
-  if (source.kind === 'fit') return source
-  const sourceId = garminActivityId(activity.id)
-  const bytes = encodeGarminTcxActivityFit(source.bytes, sourceId).bytes
-  return {
-    bytes,
-    filename: `garmin-${sourceId}.fit`,
-    sha256: fileSha256(bytes),
-    kind: 'fit',
-    sourceKind: source.kind,
   }
 }
 

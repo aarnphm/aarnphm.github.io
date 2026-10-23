@@ -15,6 +15,11 @@ import {
   type WahooTrainingPeaksBackfillPlan,
 } from '../plugins/stores/activity-bridge'
 import {
+  fetchGarminActivityFile,
+  fetchWahooActivityFit,
+  type ActivitySourceFile,
+} from '../util/activity-source-file'
+import {
   cleanGarminConnectBaseUrl,
   DEFAULT_GARMIN_CONNECT_BASE,
   readGarminConnectSession,
@@ -25,13 +30,10 @@ import { stravaActivityTcx, timedStravaStreamsFromCache } from '../util/strava-t
 import { isRecord } from '../util/type-guards'
 import { wahooCloudClientFromEnv } from '../util/wahoo-cloud'
 import {
-  fetchGarminActivityFile,
-  fetchWahooActivityFit,
   parseActivityBridgeStravaActivities,
   readActivityBridgeGarminActivities,
   readActivityBridgeLedger,
   readActivityBridgeWahooActivities,
-  type ActivityBridgeFile,
 } from './sync-activity-providers'
 
 const STRAVA_CACHE_FILE = joinSegments(QUARTZ, '.quartz-cache', 'strava.json')
@@ -325,11 +327,11 @@ function wahooPlan(plan: TrainingPeaksBackfillPlan): plan is WahooTrainingPeaksB
   return plan.sourceProvider === 'wahoo'
 }
 
-function garminTrainingPeaksFile(file: ActivityBridgeFile): TrainingPeaksFile {
+function garminTrainingPeaksFile(file: ActivitySourceFile): TrainingPeaksFile {
   return { bytes: file.bytes, sha256: file.sha256, kind: file.kind, provenance: 'garmin-original' }
 }
 
-function wahooTrainingPeaksFile(file: ActivityBridgeFile): TrainingPeaksFile {
+function wahooTrainingPeaksFile(file: ActivitySourceFile): TrainingPeaksFile {
   return { bytes: file.bytes, sha256: file.sha256, kind: 'fit', provenance: 'wahoo-original-fit' }
 }
 
