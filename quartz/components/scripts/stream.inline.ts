@@ -5,8 +5,8 @@ import {
   type StreamManifestGroup,
 } from '../../util/stream-manifest'
 import { currentNavSignal } from './nav-lifecycle'
-import { setupStreamSearch } from './stream-search.inline'
-import { setupStreamVirtualizer, type StreamVirtualSource } from './stream-virtualizer'
+import { setupStreamSearch } from './stream/search'
+import { setupStreamVirtualizer, type StreamVirtualSource } from './stream/virtualizer'
 
 const formatEntryTimes = (scope: ParentNode): void => {
   const formatter = new Intl.DateTimeFormat('en-US', {

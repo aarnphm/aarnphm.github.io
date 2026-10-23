@@ -1,13 +1,13 @@
-import type { StreamManifestEntry, StreamManifestGroup } from '../../util/stream-manifest'
-import { tokenizeTerm } from '../../util/search-text'
+import type { StreamManifestEntry, StreamManifestGroup } from '../../../util/stream-manifest'
+import { tokenizeTerm } from '../../../util/search-text'
 import {
   buildStreamSearchData,
   matchStreamEntries,
   tagTokens,
   type IndexedStreamEntry,
   type StreamSearchData,
-} from './stream-search-index'
-import { setupStreamVirtualizer, type StreamVirtualizer } from './stream-virtualizer'
+} from './search-index'
+import { setupStreamVirtualizer, type StreamVirtualizer } from './virtualizer'
 
 interface StreamSearchSetup {
   root: HTMLElement
