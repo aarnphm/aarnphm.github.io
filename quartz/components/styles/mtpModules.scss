@@ -9,6 +9,8 @@
   --mtp-on: var(--fig-grid-selected);
   --mtp-link: var(--dark);
   --mtp-share-stroke: color-mix(in srgb, var(--fig-sage) 55%, var(--dark));
+  --mtp-input: color-mix(in srgb, var(--tertiary) 38%, var(--light));
+  --mtp-target: color-mix(in srgb, var(--fig-salmon) 48%, var(--light));
 }
 
 :root[saved-theme='dark'] .mtp-modules {
@@ -16,10 +18,43 @@
   --mtp-op: var(--lightgray);
   --mtp-on: color-mix(in srgb, var(--fig-sage) 22%, var(--lightgray));
   --mtp-share-stroke: color-mix(in srgb, var(--fig-sage) 45%, var(--light));
+  --mtp-input: color-mix(in srgb, var(--tertiary) 30%, var(--lightgray));
+  --mtp-target: color-mix(in srgb, var(--fig-salmon) 30%, var(--lightgray));
 }
 
 .mtp-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem 1rem;
   margin-bottom: 0.9rem;
+}
+
+.mtp-legend-keys {
+  display: flex;
+  gap: 0.9rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--fig-tab-fg);
+  font-family: var(--codeFont);
+  font-size: var(--text-meta);
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+.mtp-swatch {
+  min-width: 0;
+  width: 1rem;
+  height: 0.8rem;
+  padding: 0;
 }
 
 .mtp-segments {
@@ -81,18 +116,21 @@
 .mtp-link-causal {
   fill: none;
   stroke: var(--mtp-link);
-  stroke-width: 1.35;
+  stroke-width: 1;
 }
 
 .mtp-link-share {
   fill: none;
   stroke: var(--mtp-share-stroke);
-  stroke-width: 1.2;
+  stroke-width: 1;
   opacity: 0.85;
 }
 
 .mtp-link-arrow {
-  fill: var(--mtp-link);
+  fill: none;
+  stroke: var(--mtp-link);
+  stroke-width: 1;
+  stroke-linejoin: miter;
 }
 
 .mtp-share-label {
@@ -169,7 +207,9 @@
   min-height: 2.2rem;
 }
 
+// Fills the main column so its head and embedding rows line up with the MTP columns.
 .mtp-block--stack {
+  flex: 1;
   min-height: 3.2rem;
 }
 
@@ -188,19 +228,27 @@
   gap: 0.35rem;
 }
 
-.mtp-concat-label {
+.mtp-block--concat {
+  min-height: 1.2rem;
+  padding: 0.1rem 0.4rem;
+  border-color: var(--fig-stroke-soft);
+  background: transparent;
   color: var(--fig-note);
-  font-family: var(--codeFont);
   font-size: 0.62rem;
-  text-align: center;
-  margin: 0.05rem 0;
 }
 
+// Vertical arrows overlap the column gap so the line touches both boxes.
 .mtp-varrow {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 0.7rem;
+  height: 1.1rem;
+  margin: -0.2rem 0;
+
+  &[data-side='right'] {
+    width: calc(50% - 0.175rem);
+    margin-left: auto;
+  }
 }
 
 .mtp-varrow-line {
@@ -214,7 +262,7 @@
 .mtp-varrow-line::after {
   content: '';
   position: absolute;
-  top: -1px;
+  top: 1px;
   left: 50%;
   width: 5px;
   height: 5px;
@@ -224,19 +272,52 @@
   background: transparent;
 }
 
+// Joins the two RMSNorm outputs into the concatenation node.
+.mtp-merge {
+  position: relative;
+  height: 1.1rem;
+  margin: -0.2rem 0;
+}
+
+.mtp-merge-stem {
+  position: absolute;
+  top: 0.7rem;
+  bottom: 0;
+  width: 1px;
+  background: var(--dark);
+
+  &--l {
+    left: calc(25% - 0.0875rem);
+  }
+
+  &--r {
+    right: calc(25% - 0.0875rem);
+  }
+}
+
+.mtp-merge-bar {
+  position: absolute;
+  top: 0.7rem;
+  left: calc(25% - 0.0875rem);
+  right: calc(25% - 0.0875rem);
+  height: 1px;
+  background: var(--dark);
+}
+
+.mtp-merge-up {
+  position: absolute;
+  top: 0;
+  bottom: 0.4rem;
+  left: 50%;
+  height: auto;
+}
+
 .mtp-targets,
 .mtp-inputs {
   display: flex;
   flex-wrap: wrap;
   gap: 0.25rem;
   align-items: center;
-}
-
-.mtp-k {
-  color: var(--fig-note);
-  font-family: var(--codeFont);
-  font-size: 0.65rem;
-  margin-right: 0.15rem;
 }
 
 .mtp-tok {
@@ -251,6 +332,14 @@
   font-family: var(--codeFont);
   font-size: 0.65rem;
   font-variant-numeric: tabular-nums;
+
+  &[data-kind='input'] {
+    background: var(--mtp-input);
+  }
+
+  &[data-kind='target'] {
+    background: var(--mtp-target);
+  }
 }
 
 .mtp-readout {

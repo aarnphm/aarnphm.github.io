@@ -40,14 +40,16 @@ const paint = (root: HTMLElement) => {
   const marker = document.createElementNS(ns, 'marker')
   const markerId = `mtp-arrow-${Math.random().toString(36).slice(2, 8)}`
   marker.setAttribute('id', markerId)
-  marker.setAttribute('viewBox', '0 0 10 10')
-  marker.setAttribute('refX', '9')
-  marker.setAttribute('refY', '5')
+  // Open chevron, tip on the path end; user-space units keep it 6x8px at any figure size.
+  marker.setAttribute('markerUnits', 'userSpaceOnUse')
+  marker.setAttribute('viewBox', '0 0 6 8')
+  marker.setAttribute('refX', '5.5')
+  marker.setAttribute('refY', '4')
   marker.setAttribute('markerWidth', '6')
-  marker.setAttribute('markerHeight', '6')
+  marker.setAttribute('markerHeight', '8')
   marker.setAttribute('orient', 'auto')
   const tip = document.createElementNS(ns, 'path')
-  tip.setAttribute('d', 'M0,0 L10,5 L0,10 z')
+  tip.setAttribute('d', 'M0.5,0.5 L5.5,4 L0.5,7.5')
   tip.setAttribute('class', 'mtp-link-arrow')
   marker.appendChild(tip)
   defs.appendChild(marker)
@@ -61,15 +63,17 @@ const paint = (root: HTMLElement) => {
     if (!from || !to) continue
     const a = rel(stageBox, from)
     const b = rel(stageBox, to)
-    const x1 = a.right
+    // The elbow runs in the gutter between the two columns, so it never crosses a box or
+    // the "shared" links; it enters the left RMSNorm through its left edge.
+    const colA = rel(stageBox, cols[i])
+    const colB = rel(stageBox, cols[i + 1])
+    const gutterX = colA.right + (colB.left - colA.right) * 0.7
     const y1 = a.midY
-    const x2 = b.midX
-    const y2 = b.bottom
-    const midX = a.right + Math.max(10, (b.left - a.right) * 0.45)
-    const dropY = Math.max(y1, b.bottom + 8)
+    const y2 = b.midY
     const path = document.createElementNS(ns, 'path')
-    path.setAttribute('d', `M ${x1} ${y1} H ${midX} V ${dropY} H ${x2} V ${y2}`)
+    path.setAttribute('d', `M ${a.right} ${y1} H ${gutterX} V ${y2} H ${b.left}`)
     path.setAttribute('class', 'mtp-link-causal')
+    path.setAttribute('vector-effect', 'non-scaling-stroke')
     path.setAttribute('marker-end', `url(#${markerId})`)
     svg.appendChild(path)
   }
