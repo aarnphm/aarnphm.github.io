@@ -2,132 +2,40 @@ import { MathText } from '../../util/math-text'
 //@ts-ignore
 import script from '../scripts/data-chart.inline'
 import style from '../styles/dataChart.scss'
+import {
+  BAR_GAP,
+  BAR_MAX,
+  MAX_SLOTS,
+  SAMPLES,
+  VIEW_H,
+  VIEW_W,
+  X0,
+  X1,
+  Y0,
+  Y_TOP,
+  evalTerms,
+  expTex,
+  fwd,
+  json,
+  niceTicks,
+  num,
+  r1,
+  siTick,
+  trim,
+  type Json,
+  type MarkSpec,
+  type Position,
+  type ProbeSpec,
+  type Props,
+  type Pt,
+  type Scale,
+  type Series,
+  type SeriesSpec,
+  type XScale,
+} from './data-chart/model'
+import { Marker, Readouts, Swatch } from './data-chart/parts'
+import { probeStatesFor } from './data-chart/probe'
 import { registerMdxComponent, type QuartzMdxComponent } from './registry'
-
-type Value = number | null
-type SeriesSpec = {
-  name: string
-  // values align with `x`; points carry their own x; terms sample y = sum of c * x^p on [from, to].
-  values?: Value[]
-  points?: [number, number][]
-  terms?: [number, number][]
-  from?: number
-  to?: number
-}
-type MarkSpec = { x: number; xlabel?: string; ylabel?: string }
-type ProbeSpec = {
-  x: number
-  step?: number
-  xname?: string
-  yname?: string
-  falling?: string
-  flat?: string
-  rising?: string
-  state?: string
-}
-type Scale = 'linear' | 'log'
-type XScale = 'linear' | 'log2' | 'log10'
-
-// MDX hands JSON-valued props over as strings, so every structured prop also accepts a string.
-type Json<T> = T | string
-type Props = {
-  caption?: string
-  label?: string
-  mode?: 'bar' | 'line'
-  x?: Json<(string | number)[]>
-  xscale?: XScale
-  xlabel?: string
-  xname?: string
-  xmin?: number | string
-  xmax?: number | string
-  xticks?: Json<number[]>
-  yscale?: Scale
-  ylabel?: string
-  ymin?: number | string
-  ymax?: number | string
-  yticks?: Json<number[]>
-  unit?: string
-  decimals?: number | string
-  series: Json<SeriesSpec[]>
-  labels?: Json<number[]> | 'all' | 'last' | 'none'
-  ratio?: string
-  active?: number | string
-  marks?: Json<MarkSpec[]>
-  probe?: Json<ProbeSpec>
-}
-
-const VIEW_W = 440
-const X0 = 46
-const X1 = 428
-const Y_TOP = 30
-const Y0 = 228
-const VIEW_H = 270
-const BAR_MAX = 24
-const BAR_GAP = 2
-const SAMPLES = 120
-const MAX_SLOTS = 2
-
-const json = <T,>(name: string, v: Json<T> | undefined, fallback: T): T => {
-  if (v === undefined || v === null || v === '') return fallback
-  if (typeof v !== 'string') return v
-  try {
-    return JSON.parse(v) as T
-  } catch {
-    throw new Error(`DataChart: prop "${name}" is not valid JSON`)
-  }
-}
-const num = (v: number | string | undefined): number | undefined =>
-  v === undefined || v === '' ? undefined : Number(v)
-const r1 = (n: number) => Math.round(n * 10) / 10
-
-const fwd = (scale: XScale | Scale, v: number) =>
-  scale === 'log2' ? Math.log2(v) : scale === 'log10' || scale === 'log' ? Math.log10(v) : v
-
-const SI: [number, string][] = [
-  [1e9, 'G'],
-  [1e6, 'M'],
-  [1e3, 'k'],
-]
-const trim = (v: number) => String(Number(v.toPrecision(6)))
-const siTick = (v: number) => {
-  for (const [base, suffix] of SI) if (Math.abs(v) >= base) return `${trim(v / base)}${suffix}`
-  return trim(v)
-}
-
-const niceTicks = (lo: number, hi: number, target = 5): number[] => {
-  const raw = (hi - lo) / target
-  const mag = 10 ** Math.floor(Math.log10(raw))
-  const step = [1, 2, 2.5, 5, 10].map(m => m * mag).find(s => s >= raw) ?? raw
-  const out: number[] = []
-  for (let v = Math.ceil(lo / step) * step; v <= hi + step * 1e-9; v += step)
-    out.push(Number(v.toPrecision(12)))
-  return out
-}
-
-const expTex = (v: number) => {
-  const e = Math.log2(v)
-  const k = Math.round(e)
-  return `2^{${Math.abs(e - k) < 1e-6 ? k : e.toFixed(2)}}`
-}
-
-type Pt = { x: number; y: number }
-type Series = { name: string; slot: number; pts: Pt[]; analytic: boolean; spec: SeriesSpec }
-type Position = {
-  x: number
-  cx: number
-  lo: number
-  hi: number
-  tex: string
-  text: string
-  values: Value[]
-}
-
-const evalTerms = (terms: [number, number][], x: number) =>
-  terms.reduce((a, [p, c]) => a + c * x ** p, 0)
-
-const formatRatio = (r: number) =>
-  `${r >= 100 ? r.toFixed(0) : r >= 10 ? r.toFixed(1) : r.toFixed(2)}×`
-
 let instance = 0
 
 const DataChartImpl: QuartzMdxComponent<Props> = props => {
@@ -315,28 +223,7 @@ const DataChartImpl: QuartzMdxComponent<Props> = props => {
 
   // Probe: a point that walks the analytic series in fixed steps; every step is precomputed.
   const curve = series.find(s => s.analytic)
-  const probeStates = (() => {
-    if (!probe || !curve) return []
-    const s = curve.spec
-    const step = probe.step ?? 1
-    const from = s.from ?? 0
-    const to = s.to ?? 1
-    const f = (x: number) => evalTerms(s.terms!, x)
-    const fine = Array.from({ length: 2001 }, (_, i) => from + ((to - from) * i) / 2000)
-    const argmin = fine.reduce((a, b) => (f(b) < f(a) ? b : a), from)
-    const count = Math.floor((to - from) / step + 1e-9) + 1
-    return Array.from({ length: count }, (_, i) => {
-      const x = from + i * step
-      const y = f(x)
-      const regime =
-        Math.abs(x - argmin) <= step / 2
-          ? (probe.flat ?? 'minimum')
-          : x < argmin
-            ? (probe.falling ?? 'falling')
-            : (probe.rising ?? 'rising')
-      return { x, y, cx: xPx(x), cy: yPx(y), xs: x.toFixed(1), ys: fmt(y), regime }
-    })
-  })()
+  const probeStates = probeStatesFor(probe, curve, xPx, yPx, fmt)
   const probeIndex = probe
     ? probeStates.reduce(
         (best, s, i) =>
@@ -352,27 +239,6 @@ const DataChartImpl: QuartzMdxComponent<Props> = props => {
       .map((p, i) => `${i === 0 ? 'M' : 'L'}${xPx(p.x)} ${yPx(p.y)}`)
       .join('')
 
-  const Swatch = ({ slot }: { slot: number }) => (
-    <svg class="dch-swatch" viewBox="0 0 18 10" aria-hidden="true">
-      {mode === 'bar' ? (
-        <rect class={`dch-bar dch-s${slot}`} x={4.5} y={0.5} width={9} height={9} />
-      ) : (
-        <>
-          <line class={`dch-line dch-l${slot}`} x1={0} x2={18} y1={5} y2={5} />
-          <Marker slot={slot} x={9} y={5} />
-        </>
-      )}
-    </svg>
-  )
-
-  // A second cue beside colour: salmon circles and sage squares.
-  const Marker = ({ slot, x, y }: { slot: number; x: number; y: number }) =>
-    slot === 0 ? (
-      <circle class={`dch-marker dch-s${slot}`} cx={x} cy={y} r={4} />
-    ) : (
-      <rect class={`dch-marker dch-s${slot}`} x={x - 3.75} y={y - 3.75} width={7.5} height={7.5} />
-    )
-
   const showLegend = measured.length >= 2
 
   return (
@@ -387,7 +253,7 @@ const DataChartImpl: QuartzMdxComponent<Props> = props => {
         <ul class="dch-legend" aria-label="series">
           {measured.map(s => (
             <li>
-              <Swatch slot={s.slot} />
+              <Swatch slot={s.slot} mode={mode} />
               <span>{s.name}</span>
             </li>
           ))}
@@ -428,7 +294,7 @@ const DataChartImpl: QuartzMdxComponent<Props> = props => {
                 xscale === 'log2' ? (
                   <text x={xPx(t)} y={Y0 + 16}>
                     2
-                    <tspan class="dch-sup" dy={-5}>
+                    <tspan class="dch-sup" dy="-0.5em">
                       {expTex(t).slice(3, -1)}
                     </tspan>
                   </text>
@@ -525,7 +391,9 @@ const DataChartImpl: QuartzMdxComponent<Props> = props => {
               return (
                 <g class="dch-ref" aria-hidden="true">
                   <path d={`M${X0} ${cy}H${cx}V${Y0}`} />
-                  <rect x={cx - 3.75} y={cy - 3.75} width={7.5} height={7.5} />
+                  <g transform={`translate(${cx} ${cy})`}>
+                    <rect class="dch-ref-mark" x={-2.5} y={-2.5} width={5} height={5} />
+                  </g>
                   {m.xlabel ? (
                     <foreignObject x={cx - 30} y={Y0 + 2} width={60} height={24}>
                       <div class="dch-fo dch-fo--center">
@@ -603,116 +471,22 @@ const DataChartImpl: QuartzMdxComponent<Props> = props => {
         </div>
       ) : null}
 
-      <div class="dch-readouts">
-        {positions.map((p, i) => (
-          <dl class="dch-readout" data-dch-state={String(i)} hidden={i !== active}>
-            <div>
-              <dt>{xname}</dt>
-              <dd>
-                <MathText text={p.tex} mathClass="dch-math" />
-              </dd>
-            </div>
-            {measured.map((s, j) => (
-              <div>
-                <dt>
-                  <Swatch slot={s.slot} />
-                  {s.name}
-                </dt>
-                <dd>{p.values[j] === null ? '–' : `${fmt(p.values[j]!)}${unit}`}</dd>
-              </div>
-            ))}
-            {props.ratio && measured.length === 2 ? (
-              <div>
-                <dt>{props.ratio}</dt>
-                <dd>
-                  {p.values[0] && p.values[1] !== null
-                    ? formatRatio(p.values[1]! / p.values[0])
-                    : '–'}
-                </dd>
-              </div>
-            ) : null}
-          </dl>
-        ))}
-        {probe
-          ? probeStates.map((s, i) => (
-              <dl class="dch-readout" data-dch-probe-state={String(i)} hidden={i !== probeIndex}>
-                <div>
-                  <dt>
-                    <MathText text={probe.xname ?? 'x'} mathClass="dch-math" />
-                  </dt>
-                  <dd>{s.xs}</dd>
-                </div>
-                <div>
-                  <dt>
-                    <MathText text={probe.yname ?? 'y'} mathClass="dch-math" />
-                  </dt>
-                  <dd>{s.ys}</dd>
-                </div>
-                <div>
-                  <dt>{probe.state ?? 'region'}</dt>
-                  <dd>{s.regime}</dd>
-                </div>
-              </dl>
-            ))
-          : null}
-      </div>
-
-      <details class="dch-details">
-        <summary>table</summary>
-        <div class="dch-table-wrap">
-          <table class="dch-table">
-            {probe && curve ? (
-              <>
-                <thead>
-                  <tr>
-                    <th scope="col">point</th>
-                    <th scope="col">
-                      <MathText text={probe.xname ?? 'x'} mathClass="dch-math" />
-                    </th>
-                    <th scope="col">
-                      <MathText text={probe.yname ?? 'y'} mathClass="dch-math" />
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {marks.map(m => (
-                    <tr>
-                      <th scope="row">
-                        <MathText text={`$${m.xlabel ?? ''}$`} mathClass="dch-math" />
-                      </th>
-                      <td>{m.x.toFixed(1)}</td>
-                      <td>{fmt(evalTerms(curve.spec.terms!, m.x))}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </>
-            ) : (
-              <>
-                <thead>
-                  <tr>
-                    <th scope="col">{xname}</th>
-                    {measured.map(s => (
-                      <th scope="col">{`${s.name}${props.unit ? ` (${props.unit})` : ''}`}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {positions.map(p => (
-                    <tr>
-                      <th scope="row">
-                        <MathText text={p.tex} mathClass="dch-math" />
-                      </th>
-                      {p.values.map(v => (
-                        <td>{v === null ? '–' : fmt(v)}</td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </>
-            )}
-          </table>
-        </div>
-      </details>
+      <Readouts
+        mode={mode}
+        positions={positions}
+        active={active}
+        xname={xname}
+        measured={measured}
+        curve={curve}
+        marks={marks}
+        probe={probe}
+        probeStates={probeStates}
+        probeIndex={probeIndex}
+        fmt={fmt}
+        unit={unit}
+        unitName={props.unit}
+        ratio={props.ratio}
+      />
 
       {props.caption ? (
         <figcaption class="dch-caption">

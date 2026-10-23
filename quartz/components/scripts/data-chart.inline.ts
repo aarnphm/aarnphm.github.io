@@ -1,4 +1,4 @@
-export {}
+import { registerMdxContent } from './mdx-content'
 
 const DCH_ROOT_SELECTOR = '[data-data-chart]'
 
@@ -136,9 +136,20 @@ const setupProbe = (root: HTMLElement): (() => void) | null => {
   }
 }
 
-document.addEventListener('nav', () => {
-  for (const root of document.querySelectorAll<HTMLElement>(DCH_ROOT_SELECTOR)) {
-    for (const cleanup of [setupPositions(root), setupProbe(root)])
-      if (cleanup) window.addCleanup?.(cleanup)
-  }
+// The SVG scales with its frame. CSS multiplies type and marker sizes by user units per rendered
+// pixel, so axis titles stay at the meta size inline and in the Zoomable view.
+const setupScale = (root: HTMLElement): (() => void) | null => {
+  const svg = root.querySelector<SVGSVGElement>('[data-dch-svg]')
+  if (!svg) return null
+  const observer = new ResizeObserver(entries => {
+    const width = entries[entries.length - 1].contentRect.width
+    if (width > 0) svg.style.setProperty('--dch-u', (svg.viewBox.baseVal.width / width).toFixed(4))
+  })
+  observer.observe(svg)
+  return () => observer.disconnect()
+}
+
+registerMdxContent(DCH_ROOT_SELECTOR, root => {
+  for (const cleanup of [setupScale(root), setupPositions(root), setupProbe(root)])
+    if (cleanup) window.addCleanup?.(cleanup)
 })
