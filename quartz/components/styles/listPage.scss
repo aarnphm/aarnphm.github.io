@@ -154,6 +154,11 @@ li.section-li {
   flex-direction: column;
   padding-left: calc(var(--kern) * 2);
   margin-top: 1rem;
+
+  // on desktop the aside takes as many tracks as the list beside it, so both columns share one width
+  @media all and ($desktop) {
+    grid-column: 8 / span 3;
+  }
 }
 
 // below desktop the aside follows the list in the reading column; the folder prose,
@@ -198,6 +203,10 @@ li.section-li {
     .folder-layout--article {
       grid-column: var(--layout-full-column);
       margin: 0;
+
+      @media all and ($desktop) {
+        grid-column: 5 / span 6;
+      }
     }
 
     .note-tags {

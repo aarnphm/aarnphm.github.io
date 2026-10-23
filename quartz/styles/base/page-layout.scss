@@ -51,9 +51,12 @@
       calc(var(--kern) * 3) var(--grid-end);
   }
 
+  // folder and tag listings stop widening once a track reaches 192px; the outer 1fr
+  // tracks take the extra, so the list and its aside hold their width on a wide window
   [data-is-folder-tag='true'] {
     .grid {
       --grid-left: 1fr;
+      --grid-col-width: min(calc(var(--grid-center-width) / 9), 192px);
     }
   }
 }
