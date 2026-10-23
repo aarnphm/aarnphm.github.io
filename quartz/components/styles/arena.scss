@@ -30,7 +30,7 @@ body.arena-modal-open {
 
   :where(.arena-index, .arena-channel-page, .arena-entry-page)
     :where(button, a, input, summary, [role='button']):focus-visible {
-    outline: 2px solid var(--secondary);
+    outline: 2px solid var(--dark);
     outline-offset: -2px;
   }
 
@@ -231,8 +231,8 @@ body[data-arena-subpage='true'] {
   cursor: pointer;
 
   &:focus-visible {
-    outline: 2px solid var(--secondary);
-    outline-offset: 2px;
+    outline: 2px solid var(--dark);
+    outline-offset: -2px;
   }
 
   &:hover {
@@ -375,7 +375,7 @@ body[data-arena-subpage='true'] {
   font-size: 0.66rem;
   font-family: var(--codeFont);
   text-transform: lowercase;
-  color: var(--gray);
+  color: var(--darkgray);
   background: transparent;
   border: none;
   cursor: pointer;
@@ -387,9 +387,10 @@ body[data-arena-subpage='true'] {
     color: var(--dark);
   }
 
+  // The toggle clips (overflow: hidden), so the ring sits inside it.
   &:focus-visible {
-    outline: 2px solid var(--secondary);
-    outline-offset: 2px;
+    outline: 2px solid var(--dark);
+    outline-offset: -2px;
   }
 
   &.active {
@@ -518,11 +519,6 @@ body[data-arena-subpage='true'] {
   display: flex;
   flex-direction: column;
   cursor: pointer;
-
-  &:focus-visible {
-    outline: 2px solid var(--dark);
-    outline-offset: -2px;
-  }
 
   &:hover {
     border-color: var(--gray);
@@ -1469,7 +1465,7 @@ span.tag-link:hover {
   }
 
   &:focus-visible {
-    outline: 2px solid var(--secondary);
+    outline: 2px solid var(--dark);
     outline-offset: 2px;
   }
 }
@@ -1493,13 +1489,14 @@ span.tag-link:hover {
     color: var(--dark);
     transition: border-color 0.2s ease;
 
-    &:focus {
-      outline: none;
-      border-color: var(--secondary);
+    // (0,3,0) beats the scoped ring above, so the field draws its own ring.
+    &:focus-visible {
+      outline: 2px solid var(--dark);
+      outline-offset: 2px;
     }
 
     &::placeholder {
-      color: var(--gray);
+      color: var(--darkgray);
     }
   }
 
