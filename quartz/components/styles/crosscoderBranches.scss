@@ -1,0 +1,226 @@
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
+@use './figure.scss' as *;
+
+.crosscoder-branches {
+  @include figure-frame('cb-figure', 22rem);
+
+  --cb-lit: color-mix(in srgb, var(--fig-salmon) 78%, var(--light));
+  --cb-lit-cell: color-mix(in srgb, var(--fig-salmon) 30%, var(--light));
+  --cb-shared: color-mix(in srgb, var(--fig-sage) 70%, var(--light));
+  --cb-block: var(--fig-surface);
+}
+
+:root[saved-theme='dark'] .crosscoder-branches {
+  --cb-lit: color-mix(in srgb, var(--fig-salmon) 72%, var(--lightgray));
+  --cb-lit-cell: color-mix(in srgb, var(--fig-salmon) 18%, var(--lightgray));
+  --cb-shared: color-mix(in srgb, var(--fig-sage) 32%, var(--lightgray));
+  --cb-block: var(--lightgray);
+}
+
+.cb-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10.5rem, 1fr));
+  gap: 1.25rem 1.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: cb-step;
+}
+
+.cb-step {
+  min-width: 0;
+  margin: 0;
+  counter-increment: cb-step;
+}
+
+.cb-step-label {
+  margin: 0.4rem 0 0;
+  color: var(--fig-note);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  text-wrap: pretty;
+
+  &::before {
+    content: counter(cb-step) ' ';
+    color: var(--dark);
+    font-family: var(--codeFont);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.cb-pair {
+  display: grid;
+  grid-template-columns: minmax(0, 15rem) max-content;
+  gap: 1.5rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.cb-svg {
+  display: block;
+  width: 100%;
+  max-width: 15rem;
+  margin: 0 auto;
+  overflow: visible;
+
+  .cb-fo {
+    @include figure-fo;
+    font-size: 11px;
+  }
+
+  .cb-fo--center {
+    justify-content: center;
+  }
+
+  .cb-fo--right {
+    justify-content: flex-end;
+  }
+
+  .cb-stream {
+    stroke: var(--fig-stroke);
+    stroke-width: 2.5;
+  }
+
+  .cb-wire {
+    fill: none;
+    stroke: var(--fig-stroke);
+    stroke-width: 1.5;
+  }
+
+  .cb-wire--soft {
+    stroke: var(--fig-stroke);
+    stroke-width: 1;
+    stroke-opacity: 0.55;
+  }
+
+  .cb-tap {
+    fill: var(--fig-stroke);
+  }
+
+  .cb-read {
+    fill: var(--cb-lit);
+    stroke: var(--dark);
+    stroke-width: 1;
+  }
+
+  .cb-junction {
+    circle {
+      fill: var(--light);
+      stroke: var(--fig-stroke);
+      stroke-width: 1.2;
+    }
+
+    path {
+      stroke: var(--dark);
+      stroke-width: 1.2;
+    }
+  }
+
+  .cb-block,
+  .cb-cell {
+    fill: var(--cb-block);
+    stroke: var(--fig-stroke);
+    stroke-width: 1;
+  }
+
+  .cb-cell {
+    stroke: var(--fig-stroke-soft);
+  }
+
+  .cb-neuron {
+    fill: var(--light);
+    stroke: var(--fig-stroke-soft);
+    stroke-width: 1;
+  }
+
+  .cb-neuron--lit {
+    fill: var(--cb-lit);
+    stroke: var(--dark);
+  }
+
+  .cb-latent {
+    fill: var(--cb-shared);
+    stroke: var(--dark);
+    stroke-width: 1;
+  }
+
+  .cb-edge,
+  .cb-vector {
+    stroke: var(--dark);
+    stroke-width: 1.2;
+  }
+
+  .cb-arrowhead {
+    fill: var(--dark);
+  }
+
+  .cb-axis {
+    stroke: var(--fig-stroke);
+    stroke-width: 1;
+  }
+
+  .cb-unit {
+    fill: none;
+    stroke: var(--fig-line);
+    stroke-width: 1;
+  }
+
+  .cb-drop {
+    stroke: var(--fig-stroke-soft);
+    stroke-width: 1;
+  }
+}
+
+// Scoped under the figure to outrank the global `.table-container > table` cell rules.
+.crosscoder-branches .cb-table {
+  margin: 0;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+  line-height: 1.35;
+
+  th,
+  td {
+    // Global table cells keep a 75px floor; three columns must fit a phone-width callout.
+    min-width: 0;
+    padding: 0.4rem 0.6rem;
+    border: 1px solid var(--fig-grid-line);
+    background: var(--fig-grid-cell);
+    color: var(--dark);
+    text-align: right;
+  }
+
+  thead th {
+    color: var(--fig-note);
+    font-weight: 400;
+  }
+
+  thead th:first-child,
+  tbody th {
+    text-align: left;
+  }
+
+  td {
+    font-family: var(--codeFont);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .cb-lit {
+    background: var(--cb-lit-cell);
+  }
+}
+
+.cb-math {
+  @include figure-inline-math;
+}
+
+.cb-caption {
+  @include figure-caption;
+}
+
+@container cb-figure (max-width: 420px) {
+  .cb-pair {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+  }
+}

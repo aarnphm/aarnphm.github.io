@@ -17,7 +17,7 @@ transclude:
 >
 > Anthropic introduced this as a research preview in October 2024. Later work below tests whether decoder norms identify model-specific concepts.
 
-A sparse crosscoder extends a [[thoughts/sparse autoencoder]] to several activation spaces. It computes one vector of latent activations and gives each layer or model its own decoder. The same latent can therefore contribute to several reconstructions. [@lindsey2024sparsecrosscoders]
+A sparse crosscoder extends a [[thoughts/sparse autoencoder|sparse autoencoder]] to several activation spaces. It computes one vector of latent activations and gives each layer or model its own decoder. The same latent can therefore contribute to several reconstructions. [@lindsey2024sparsecrosscoders]
 
 see also the [Gemma 2 2B reproduction notebook](https://colab.research.google.com/drive/124ODki4dUjfi21nuZPHRySALx9I74YHj?usp=sharing) and its [training code](https://github.com/ckkissane/crosscoder-model-diff-replication).
 
@@ -29,13 +29,27 @@ see also the [Gemma 2 2B reproduction notebook](https://colab.research.google.co
 
 ### cross-layer [[thoughts/mechanistic interpretability#superposition hypothesis|superposition]]
 
-![[thoughts/images/additive-residual-stream-llm.webp|given the additive properties of transformers' residual stream, adjacent layers in larger transformers can be thought as "almost parallel"]]
+```jsx imports={Zoomable,CrosscoderBranches}
+<Zoomable label="adjacent blocks as almost parallel branches">
+  <CrosscoderBranches
+    view="parallel"
+    caption="After Anthropic. Each block adds its update to the residual stream. Block $l+1$ reads $r_l+u_l$; drawn with $r_l$ as the shared read point (salmon), $u_l$ becomes one soft edge into block $l+1$. When that edge is weak, the two blocks act almost in parallel and $r_{l+2}=r_l+u_l+u_{l+1}$."
+  />
+</Zoomable>
+```
 
 > [!important]- intuition
 >
 > Under the linear superposition hypothesis, features occupy directions that can overlap. One neuron can participate in several feature directions.
 >
-> ![[thoughts/images/feature-neurons.webp]]
+> ```jsx imports={Zoomable,CrosscoderBranches}
+> <Zoomable label="three feature directions over two neurons">
+>   <CrosscoderBranches
+>     view="superposition"
+>     caption="Three unit feature directions $d_1,d_2,d_3$ in a two-neuron space. Each row of the table is one feature spread over both neurons. The salmon column is neuron $n_1$: its activation $\sum_k z_k\,d_{k,1}$ mixes all three features."
+>   />
+> </Zoomable>
+> ```
 
 For a fixed token, write the residual update as
 
@@ -45,9 +59,23 @@ $$
 
 The update $u_l$ may depend on earlier layers and other tokens. Addition lets contributions accumulate in a common space; it does not make the blocks independent. The diagrams below illustrate a possible computation distributed across two blocks.
 
-![[thoughts/images/one-step-circuit.webp]]
+```jsx imports={Zoomable,CrosscoderBranches}
+<Zoomable label="one feature spread over neurons in two blocks">
+  <CrosscoderBranches
+    view="spread"
+    caption="After Anthropic. Superposition spreads one feature over four neurons (salmon). Drawn as almost-parallel branches, nothing forces those neurons into one block: two sit in block $l$ and two in block $l+1$. Panel 4 shows the same neurons in the usual sequential form."
+  />
+</Zoomable>
+```
 
-![[thoughts/images/parallel-joint-branch.webp]]
+```jsx imports={Zoomable,CrosscoderBranches}
+<Zoomable label="crosscoder over two blocks">
+  <CrosscoderBranches
+    view="joint"
+    caption="A crosscoder reads the concatenation $[a^{l};a^{l+1}]$ of both blocks' neurons. One latent $z$ (sage) covers the four salmon neurons; its decoders $d^{l}$ and $d^{l+1}$ write the two halves. Separate SAEs on $a^{l}$ and $a^{l+1}$ would each see half of the feature."
+  />
+</Zoomable>
+```
 
 Joint dictionary learning can capture correlated contributions in these spaces.[^jointlysae]
 
@@ -116,7 +144,7 @@ $$
 
 The decoder norm matters because activation scale is arbitrary. If the sparsity term penalized only $f_i(x)$, replacing $f_i(x)$ by $f_i(x)/c$ and every $d_i^l$ by $c d_i^l$, for $c>1$, would preserve reconstruction while lowering the sparsity penalty. Weighting by $\sum_{l\in L}\|d_i^l\|_2$ makes that scale change leave the penalty unchanged.
 
-The outer sum is an $L_1$ norm of per-layer $L_2$ norms.[^l2weightnorm] For one latent with activation $2$ and decoder norms $3$ and $4$, its penalty is $14\lambda$. Concatenating the decoder vectors and taking one $L_2$ norm would give $10\lambda$. Thus the latter objective gives a discount for spreading a latent across spaces. Which objective is useful depends on what we want to measure; decoder sparsity needs particular care in [[#model diffing]].
+The outer sum is an $L_1$ norm of per-layer $L_2$ norms.[^l2weightnorm] For one latent with activation $2$ and decoder norms $3$ and $4$, its penalty is $14\lambda$. Concatenating the decoder vectors and taking one $L_2$ norm would give $10\lambda$. Thus the latter objective gives a discount for spreading a latent across spaces. Which objective is useful depends on what we want to measure; decoder sparsity needs particular care in [[#model diffing|model diffing]].
 
 [^l2weightnorm]: The two weights are $\sum_l\|d_i^l\|_2$ and $\sqrt{\sum_l\|d_i^l\|_2^2}$. The preview uses the first so its loss can be compared with the sum of per-layer SAE losses at the same sparsity coefficient.
 
@@ -189,7 +217,7 @@ The preview compared a global acausal crosscoder with separate SAEs on all layer
 
 ## model diffing
 
-see also: [[thoughts/model stiching|model stitching]] and [[thoughts/SVCCA]]. These study compatibility or similarity between representations.[^sne]
+see also: [[thoughts/model stiching|model stitching]] and [[thoughts/SVCCA|SVCCA]]. These study compatibility or similarity between representations.[^sne]
 
 [^sne]: Laakso and Cottrell compare representations through distances between examples. [@doi:10.1080/09515080050002726] Colah's [representation-visualization post](https://colah.github.io/posts/2015-01-Visualizing-Representations/) discusses a related construction for visualizing networks.
 
@@ -230,7 +258,7 @@ then sample from the amplified distribution and repeat with the new context. Thi
 - [Circuit tracer](https://github.com/safety-research/circuit-tracer): attribution graphs and interventions using trained transcoders. Its graph pipeline consumes those weights.
 - [Neuronpedia graph interface](https://www.neuronpedia.org/gemma-2-2b/graph): a viewer for attribution graphs; check the selected source set to distinguish per-layer and cross-layer transcoders.
 
-see [[thoughts/circuit tracing]] for the graph workflow.
+see [[thoughts/circuit tracing|circuit tracing]] for the graph workflow.
 
 ## questions
 

@@ -182,6 +182,12 @@
 .ccm-readout {
   @include figure-table;
   margin-top: 0.9rem;
+
+  // The value column sizes to its widest state ("L0 L1 L2 L3 L4", 14 characters), so a
+  // hover or variant change never moves the label column.
+  dd {
+    min-width: 14ch;
+  }
 }
 
 .ccm-math {
