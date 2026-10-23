@@ -72,7 +72,11 @@ export function rankSizeChart(host: HTMLElement, model: PageRankModel): RankSize
       for (const value of logTicks(1, n)) {
         const x = sx(value)
         grid.append(svgNode('line', { x1: x, x2: x, y1: margin.top, y2: margin.top + plotH }))
-        const label = svgNode('text', { x, y: height - margin.bottom + 15, 'text-anchor': 'middle' })
+        const label = svgNode('text', {
+          x,
+          y: height - margin.bottom + 15,
+          'text-anchor': 'middle',
+        })
         label.textContent = tickLabel(value)
         ticks.append(label)
       }
@@ -90,9 +94,11 @@ export function rankSizeChart(host: HTMLElement, model: PageRankModel): RankSize
         class: 'pagerank-axis-title',
       })
       xTitle.textContent = 'rank (log)'
+      // The curve falls from the top left, so the top right corner stays clear for the label.
       const yTitle = svgNode('text', {
-        x: margin.left + 4,
-        y: margin.top + 10,
+        x: margin.left + plotW - 4,
+        y: margin.top + 14,
+        'text-anchor': 'end',
         class: 'pagerank-axis-title',
       })
       yTitle.textContent = '×mean (log)'

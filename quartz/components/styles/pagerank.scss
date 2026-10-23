@@ -146,7 +146,8 @@
 }
 
 .pagerank-chart {
-  block-size: 15rem;
+  // Matches the 240px drawing height in chart.ts.
+  block-size: 240px;
   min-width: 0;
 
   svg {
