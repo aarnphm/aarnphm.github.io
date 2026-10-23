@@ -33,7 +33,7 @@ see also the [Gemma 2 2B reproduction notebook](https://colab.research.google.co
 <Zoomable label="adjacent blocks as almost parallel branches">
   <CrosscoderBranches
     view="parallel"
-    caption="After Anthropic. Each block adds its update to the residual stream. Block $l+1$ reads $r_l+u_l$; drawn with $r_l$ as the shared read point (salmon), $u_l$ becomes one soft edge into block $l+1$. When that edge is weak, the two blocks act almost in parallel and $r_{l+2}=r_l+u_l+u_{l+1}$."
+    caption="After Anthropic. Each block adds its update to the residual stream. Block $l+1$ reads $r_l+u_l$ with $r_l$ as the shared read point (salmon). When the edge from $u_l$ is weak, the two blocks act almost in parallel and $r_{l+2}=r_l+u_l+u_{l+1}$."
   />
 </Zoomable>
 ```
@@ -63,7 +63,7 @@ The update $u_l$ may depend on earlier layers and other tokens. Addition lets co
 <Zoomable label="one feature spread over neurons in two blocks">
   <CrosscoderBranches
     view="spread"
-    caption="After Anthropic. Superposition spreads one feature over four neurons (salmon). Drawn as almost-parallel branches, nothing forces those neurons into one block: two sit in block $l$ and two in block $l+1$. Panel 4 shows the same neurons in the usual sequential form."
+    caption="After Anthropic. Superposition spreads one feature over four neurons (salmon). Nothing forces those neurons into one block: two sit in block $l$ and two in block $l+1$. Panel 4 shows the same neurons in sequential form."
   />
 </Zoomable>
 ```
@@ -87,7 +87,7 @@ Joint dictionary learning can capture correlated contributions in these spaces.[
 <Zoomable label="feature lifecycle through the residual stream">
   <CrossLayerFeatures
     view="lifecycle"
-    caption="Synthetic eight-block lifecycle after Anthropic: $r_{l+1}=r_l+u_l$, projected as $s_{l+1}=s_l+w_l$. Unit-norm per-layer SAE decoders give 5 latents; the crosscoder gives one ($z=1$, $\|d^l\|=s_l$). Both penalties are $11\lambda$. Switch dictionaries."
+    caption="Synthetic eight-block lifecycle after Anthropic: $r_{l+1}=r_l+u_l$, projected as $s_{l+1}=s_l+w_l$. Unit-norm per-layer SAE decoders give 5 latents; the crosscoder gives one ($z=1$, $\|d^l\|=s_l$). Both penalties are $11\lambda$."
   />
 </Zoomable>
 ```
@@ -98,7 +98,7 @@ Suppose a signal with strength $z(x)$ persists across three layers. Its contribu
 <Zoomable label="duplicate features and circuit edges">
   <CrossLayerFeatures
     view="circuit"
-    caption="Hypothetical circuit after Anthropic: features 1 and 2 form 3 at $L+2,L+3$; all persist to $L+4$. Per-layer SAEs: 13 latents/14 edges (10 persistence); crosscoder: 3 latents/2 edges. Switch dictionaries."
+    caption="Hypothetical circuit after Anthropic: features 1 and 2 form 3 at $L+2,L+3$; all persist to $L+4$. Per-layer SAEs: 13 latents/14 edges (10 persistence); crosscoder: 3 latents/2 edges."
   />
 </Zoomable>
 ```
@@ -115,7 +115,7 @@ An SAE reconstructs its input activation space. A [[thoughts/mechanistic interpr
 <Zoomable label="autoencoder, transcoder and crosscoder reads and writes">
   <CrosscoderMasks
     dims="coder"
-    caption="Five-layer autoencoder, transcoder and acausal crosscoder masks, after Anthropic. The grid shows allowed read/reconstruction layer pairs. Select a coder and read layer."
+    caption="Five-layer autoencoder, transcoder and acausal crosscoder masks, after Anthropic. The grid shows allowed read and reconstruction layer pairs."
   />
 </Zoomable>
 ```
@@ -156,7 +156,7 @@ The outer sum is an $L_1$ norm of per-layer $L_2$ norms.[^l2weightnorm] For one 
     dims="variant"
     causality="weak"
     locality="global"
-    caption="Five-layer causality/locality variants after Anthropic. Select a variant and read layer; shared SAE, cross-model and output-prediction variants appear in the table but are not drawn."
+    caption="Five-layer causality/locality variants after Anthropic. Shared SAE, cross-model and output-prediction variants appear in the table but are not drawn."
   />
 </Zoomable>
 ```
@@ -192,7 +192,7 @@ The preview compared a global acausal crosscoder with separate SAEs on all layer
     decimals={2}
     series='[{"name":"all-layer crosscoder","values":[9.16,8.49,7.92,7.39,6.91,6.52,6.02,5.75,5.54,5.44,null]},{"name":"per-layer SAEs","values":[10.60,10.09,9.57,9.03,8.48,7.95,7.38,6.90,6.47,6.13,6.03]}]'
     active={5}
-    caption="Approximate Anthropic values ($\pm0.05$) for an 18-layer crosscoder and per-layer SAEs; both axes are logarithmic. Hover or focus a point, then use arrows to read losses."
+    caption="Approximate Anthropic values ($\pm0.05$) for an 18-layer crosscoder and per-layer SAEs; both axes are logarithmic."
   />
 </Zoomable>
 
@@ -210,7 +210,7 @@ The preview compared a global acausal crosscoder with separate SAEs on all layer
     ylabel="minimum loss (arb. unit, log)"
     decimals={2}
     series='[{"name":"all-layer crosscoder","points":[[17.753,11.98],[35.506,10.94],[71.012,9.94],[142.025,9.09],[284.05,8.41],[568.1,7.84],[1136.199,7.42],[2272.398,7.12],[4544.797,6.74],[9089.593,6.41]]},{"name":"per-layer SAEs","points":[[2,10.82],[4,10.37],[8,9.93],[16,9.51],[32,9.08],[64,8.63],[128,8.24],[256,7.86],[512,7.48],[1024,7.16],[2048,6.82],[4096,6.54],[8192,6.28]]}]'
-    caption="Approximate Anthropic compute/loss values; at the largest budget the crosscoder uses about $2\times$ the FLOPs. Hover or focus a point, then use arrows to read losses."
+    caption="Approximate Anthropic compute/loss values; at the largest budget the crosscoder uses about $2\times$ the FLOPs."
   />
 </Zoomable>
 ```

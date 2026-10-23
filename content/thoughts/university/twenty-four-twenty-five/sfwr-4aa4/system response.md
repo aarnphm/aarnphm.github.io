@@ -70,7 +70,7 @@ These definitions follow the [Michigan CTMS first-order analysis](https://ctms.e
   <PoleResponse
     mode="first"
     a={1}
-    caption="First-order unit-step response $G(s)=a/(s+a)$, starting at $a=1$. Drag the pole or use arrow keys; the figure marks $T_r=\ln9/a$ and exact $T_s=-\ln(0.02)/a$ (the $4/a$ rule rounds it)."
+    caption="First-order unit-step response $G(s)=a/(s+a)$, starting at $a=1$. The figure marks $T_r=\ln9/a$ and exact $T_s=-\ln(0.02)/a$ (the $4/a$ rule rounds it)."
   />
 </Zoomable>
 ```
@@ -105,7 +105,7 @@ A nonzero natural response oscillates indefinitely, as shown below. The unit-ste
     re={0}
     im={3.14159}
     lock="sigma"
-    caption="Undamped unit-step response, starting at $\omega_n=\pi$ with real part fixed at 0. Move the pole vertically to change $\omega_n$; the response has no settling time."
+    caption="Undamped unit-step response, starting at $\omega_n=\pi$ with real part fixed at 0. The response has no settling time."
   />
 </Zoomable>
 ```
@@ -150,7 +150,7 @@ The diagram locates these pole types in the complex plane. The undamped case lie
     preset="underdamped"
     cases
     regions
-    caption="Pole regions for $G(s)=\omega_n^2/(s^2+2\zeta\omega_ns+\omega_n^2)$. Course cases use $\omega_n=3$, $a\in\{9,6,2,0,-1\}$. Select a case or move the pole."
+    caption="Pole regions for $G(s)=\omega_n^2/(s^2+2\zeta\omega_ns+\omega_n^2)$. Course cases use $\omega_n=3$, $a\in\{9,6,2,0,-1\}$."
   />
 </Zoomable>
 ```
@@ -179,7 +179,7 @@ The phase has a minus sign. Check it against the initial conditions: $c(0)=0$ an
 <Zoomable label="underdamped step-response specifications">
   <PoleResponse
     preset="underdamped"
-    caption="Course example $-1\pm j\sqrt8$ ($\omega_n=3$, $\zeta=1/3$): read $T_r$, $T_p=\pi/\omega_d$, curve-measured 2% $T_s$, and the $4/\sigma_d$ rule. Move the pole to update values."
+    caption="Course example $-1\pm j\sqrt8$ ($\omega_n=3$, $\zeta=1/3$): read $T_r$, $T_p=\pi/\omega_d$, curve-measured 2% $T_s$, and the $4/\sigma_d$ rule."
   />
 </Zoomable>
 ```
@@ -234,7 +234,7 @@ The envelope time $T_{s,\mathrm{env}}$ is an upper bound for the actual $2\%$ se
     re={-1}
     im={3}
     locks
-    caption="Underdamped poles start at $-1\pm j3$. Lock $\sigma_d$, $\omega_d$, or $\zeta$, then move the pole to compare equal envelope, frequency, or overshoot."
+    caption="Underdamped poles start at $-1\pm j3$. Locking $\sigma_d$, $\omega_d$, or $\zeta$ holds envelope, frequency, or overshoot equal."
   />
 </Zoomable>
 ```

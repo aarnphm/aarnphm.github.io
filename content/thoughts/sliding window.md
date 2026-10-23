@@ -37,7 +37,7 @@ In implementation the KV cache is a circular buffer that keeps only the most rec
 ```jsx imports={Zoomable,SlidingWindowMask}
 <Zoomable label="sliding window mask matrix">
   <SlidingWindowMask
-    caption="Interactive mask: drag w to thicken the band, switch dilation, add global tokens, watch the cost ratio collapse below the diagonal."
+    caption="Sliding-window mask with dilation and global tokens. The cost ratio drops below the diagonal."
     length={24}
   />
 </Zoomable>

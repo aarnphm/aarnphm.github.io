@@ -224,7 +224,7 @@ Ordinary next-token inference can use the first output head. The additional head
 <Zoomable label="DeepSeek MTP modules">
   <MTPModules
     depth={2}
-    caption="DeepSeek-V3 MTP uses a causal chain: each module combines the previous hidden state with shifted-token embeddings, runs one transformer block, and shares the output head. Select depth $D$."
+    caption="DeepSeek-V3 MTP uses a causal chain: each module combines the previous hidden state with shifted-token embeddings, runs one transformer block, and shares the output head."
   />
 </Zoomable>
 ```

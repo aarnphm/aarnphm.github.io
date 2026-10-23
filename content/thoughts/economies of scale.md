@@ -30,7 +30,7 @@ In microeconomics, **economies of scale** are the cost advantages that enterpris
     series='[{"name":"LRAC","terms":[[-1,36],[0,2],[1,0.25]],"from":3,"to":38}]'
     marks='[{"x":4,"xlabel":"Q","ylabel":"C"},{"x":12,"xlabel":"Q_2","ylabel":"C_1"}]'
     probe='{"x":8,"step":0.5,"xname":"output $Q$","yname":"average cost","falling":"economies of scale","flat":"minimum efficient scale","rising":"diseconomies of scale","state":"region"}'
-    caption="Illustrative $\mathrm{LRAC}(Q)=36/Q+2+Q/4$ reaches its minimum at $Q_2=12$. Markers show $(Q,C)$ and $(Q_2,C_1)$; move the point or slider to inspect average cost and its trend."
+    caption="Illustrative $\mathrm{LRAC}(Q)=36/Q+2+Q/4$ reaches its minimum at $Q_2=12$. Markers show $(Q,C)$ and $(Q_2,C_1)$."
   />
 </Zoomable>
 ```

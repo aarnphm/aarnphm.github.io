@@ -23,7 +23,7 @@ Post-training quantization uses a trained model. Conversion can happen offline o
 
 ```jsx imports={Zoomable,NumberFormatBits}
 <Zoomable label="Number format bit layouts">
-  <NumberFormatBits caption="Seven bit layouts adapted from Baseten’s quantization-format introduction, recomputed for input $x$ on a shared 32-bit scale. Floating-point formats use ties-to-even; FP32/BF16/FP16 overflow to infinity, while FP8/FP4 saturate. INT8 uses $S=1/127$ and levels $[-127,127]$. Select an input and format row to decode its bits." />
+  <NumberFormatBits caption="Seven bit layouts adapted from Baseten’s quantization-format introduction, recomputed for input $x$ on a shared 32-bit scale. Floating-point formats use ties-to-even; FP32/BF16/FP16 overflow to infinity, while FP8/FP4 saturate. INT8 uses $S=1/127$ and levels $[-127,127]$." />
 </Zoomable>
 ```
 
@@ -135,7 +135,7 @@ Here $Q_{\mathrm{E2M1}}$ rounds to the element format and clamps finite overflow
 
 ```jsx imports={Zoomable,MXBlockScale}
 <Zoomable label="MX block scale">
-  <MXBlockScale caption="Thirty-two seeded normal values; element 11 is $7$ or the outlier $24$. The shared exponent follows the conversion above; elements round ties-to-even and clamp. Outlines show inputs $V_i$, sage shows $\hat V_i=SP_i$, salmon marks the maximum that sets $S$, and the error strip shows $\hat V_i-V_i$. Select a format or block." />
+  <MXBlockScale caption="Thirty-two seeded normal values; element 11 is $7$ or the outlier $24$. The shared exponent follows the conversion above; elements round ties-to-even and clamp. Outlines show inputs $V_i$, sage shows $\hat V_i=SP_i$, salmon marks the maximum that sets $S$, and the error strip shows $\hat V_i-V_i$." />
 </Zoomable>
 ```
 
@@ -143,7 +143,7 @@ MX formats apply to both training and inference. A format definition alone gives
 
 ```jsx imports={Zoomable,MXComputeFlow}
 <Zoomable label="MX compute flow">
-  <MXComputeFlow caption="Three training GEMMs for layer $i$, after Fig. 2 of *Microscaling Data Formats for Deep Learning*. $M=32$, $K=64$, $N=32$; each gray block shares an E8M0 scale along $Q$. MXFP4 operands copy synthetic BF16 activations (two outlier channels), Gaussian weights, and per-token-scaled gradients. Accumulation is unrounded; outputs are BF16. Backward uses separately quantized transposes because quantization and transpose do not commute; the table counts mismatches. Selected operands are sage, the output salmon. Vector ops stay BF16; weights update from an FP32 master copy. Select a product." />
+  <MXComputeFlow caption="Three training GEMMs for layer $i$, after Fig. 2 of *Microscaling Data Formats for Deep Learning*. $M=32$, $K=64$, $N=32$; each gray block shares an E8M0 scale along $Q$. MXFP4 operands copy synthetic BF16 activations (two outlier channels), Gaussian weights, and per-token-scaled gradients. Accumulation is unrounded; outputs are BF16. Backward uses separately quantized transposes because quantization and transpose do not commute; the table counts mismatches. Selected operands are sage, the output salmon. Vector ops stay BF16; weights update from an FP32 master copy." />
 </Zoomable>
 ```
 

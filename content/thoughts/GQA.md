@@ -35,7 +35,7 @@ Each query head keeps its own projection, so the model retains $n_q$ distinct qu
 \begin{document}
 \begin{tikzpicture}[
   font=\sffamily\small,
-  qhead/.style={draw=black, fill=cyan!20, minimum width=0.5cm, minimum height=0.45cm, inner sep=0pt},
+  qhead/.style={draw=black, fill=black!8, minimum width=0.5cm, minimum height=0.45cm, inner sep=0pt},
   kvhead/.style={draw=black, fill=orange!30, minimum width=0.5cm, minimum height=0.45cm, inner sep=0pt},
   arrow/.style={->, >=latex, gray!70, thick},
   scope title/.style={font=\sffamily\small\bfseries}
@@ -82,7 +82,7 @@ Each query head keeps its own projection, so the model retains $n_q$ distinct qu
 ```jsx imports={Zoomable,KVHeadGrouping}
 <Zoomable label="KV head grouping">
   <KVHeadGrouping
-    caption="Slide the group ratio to watch KV boxes merge and decode cache reads shrink."
+    caption="Larger groups merge KV boxes and shrink decode cache reads."
     heads={8}
   />
 </Zoomable>

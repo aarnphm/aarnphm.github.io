@@ -12,7 +12,7 @@ title: Positional Embeddings
 ```jsx imports={Zoomable,PositionalEncodingComparison}
 <Zoomable label="positional encoding comparison">
   <PositionalEncodingComparison
-    caption="Absolute, relative, RoPE and ALiBi encodings at sequence length 16; toggle the logit-modifier view."
+    caption="Absolute, relative, RoPE and ALiBi encodings at sequence length $16$."
     length={16}
   />
 </Zoomable>

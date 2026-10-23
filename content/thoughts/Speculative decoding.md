@@ -81,7 +81,7 @@ The original EAGLE paper finds feature prediction useful for its draft model. Th
   <SpeculativeDraftTree
     method="eagle"
     step="d1"
-    caption="One round starts after target token I from “How can”. Step through draft, verify, and accept; the strip shows each drafter’s inputs. Probabilities are synthetic, shaped after EAGLE figs. 3, 5–6 and EAGLE-3 fig. 5; each $q$ mixes target $p$ with error, which grows when drafts lack target features or reuse predicted features. Tests use $U=0.7$ and $U \le \min(1,p/q)$; residual and bonus draws choose the most likely token. The readout shows $\beta=\sum_x \min(p(x),q(x))$ along “How can I help you”."
+    caption="One round starts after target token I from “How can”. Probabilities are synthetic, shaped after EAGLE figs. 3, 5–6 and EAGLE-3 fig. 5; each $q$ mixes target $p$ with error, which grows when drafts lack target features or reuse predicted features. Tests use $U=0.7$ and $U \le \min(1,p/q)$; residual and bonus draws choose the most likely token. The readout shows $\beta=\sum_x \min(p(x),q(x))$ along “How can I help you”."
   />
 </Zoomable>
 ```

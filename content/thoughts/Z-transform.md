@@ -228,7 +228,7 @@ Pole-zero cancellation can hide unstable internal modes. Use the state model to 
     re={-2}
     im={2}
     regions
-    caption="Poles $s=\sigma\pm j\omega$ for a unit-gain second-order model. Drag the pole or use arrow keys. LHP poles settle, imaginary-axis poles oscillate, and RHP poles diverge; under $z=e^{sT}$ these map inside, on, and outside the unit circle."
+    caption="Poles $s=\sigma\pm j\omega$ for a unit-gain second-order model. LHP poles settle, imaginary-axis poles oscillate, and RHP poles diverge; under $z=e^{sT}$ these map inside, on, and outside the unit circle."
   />
 </Zoomable>
 ```

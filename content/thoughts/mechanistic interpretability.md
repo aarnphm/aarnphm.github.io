@@ -216,7 +216,7 @@ see also: @elhage2021mathematical, [[thoughts/mathematical framework transformer
 
 ```jsx imports={Zoomable,ResidualStream}
 <Zoomable label="residual stream diagram">
-  <ResidualStream caption="Residual stream view of a transformer: each attention head and MLP layer reads from and writes back into the same shared stream." />
+  <ResidualStream caption="Each attention head and MLP layer reads from and writes back into the same shared stream." />
 </Zoomable>
 ```
 
@@ -244,7 +244,7 @@ An attribution graph describes a chosen output on one prompt. In [Circuit Tracin
 
 ```jsx imports={Zoomable,AttributionGraph}
 <Zoomable label="attribution graph">
-  <AttributionGraph caption="The acronym graph of Circuit Tracing, figure 5, redrawn: an 18-layer model reads 'The National Digital Analytics Group (N' and writes 'DAG'. Each box is a supernode; its sage bar is its activation. An edge carries $A_{s\to t}=a_s w_{s\to t}$ and its width follows that value. Hover or focus a node to read its inputs; press one to clamp it to zero and watch the replacement model recompute everything downstream. The slider hides edges under a direct-attribution threshold; the paper ranks by path influence $B=(I-A)^{-1}-I$ instead. The weights are illustrative, chosen so every node's inputs sum to one; the paper's figure carries none, and the real test of any ablation runs in the original model." />
+  <AttributionGraph caption="The acronym graph of Circuit Tracing, figure 5, redrawn: an 18-layer model reads 'The National Digital Analytics Group (N' and writes 'DAG'. Each box is a supernode; its sage bar is its activation. An edge carries $A_{s\to t}=a_s w_{s\to t}$ and its width follows that value. The paper ranks by path influence $B=(I-A)^{-1}-I$ instead. The weights are illustrative, chosen so every node's inputs sum to one; the paper's figure carries none, and the real test of any ablation runs in the original model." />
 </Zoomable>
 ```
 

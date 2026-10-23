@@ -69,7 +69,7 @@ Design preference at the time: prioritize backend performance, then justify the 
   <GrammarBitmaskBatch
     request="r2"
     workers={2}
-    caption="vLLM v0.8.0 proposal sketch: four running requests and one compiling request. Each guided request gets one int32 row (4,740 words for the 151,669-token Qwen3 vocabulary), broadcast to workers and applied before sampling. Mask and probability example: Qwen/Qwen3-0.6B-Base, four-string JSON grammar, greedy sampling. Select a request or worker count."
+    caption="vLLM v0.8.0 proposal sketch: four running requests and one compiling request. Each guided request gets one int32 row (4,740 words for the 151,669-token Qwen3 vocabulary), broadcast to workers and applied before sampling. Mask and probability example: Qwen/Qwen3-0.6B-Base, four-string JSON grammar, greedy sampling."
   />
 </Zoomable>
 ```
@@ -97,7 +97,7 @@ The working-group notes rejected a worker-local logit-processor abstraction as t
 <Zoomable label="Watergraph of current logit processor stack">
   <LogitsProcessorTrace
     guided={2}
-    caption="Historical vLLM v0.5.0 path, after PR #5329: each guided row adds a Python call between forward and sampling to build a full-vocabulary mask. Change guided rows to inspect call growth."
+    caption="Historical vLLM v0.5.0 path, after PR #5329: each guided row adds a Python call between forward and sampling to build a full-vocabulary mask."
   />
 </Zoomable>
 ```

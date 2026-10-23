@@ -52,7 +52,7 @@ Attention predates the Transformer. Bahdanau, Cho and Bengio's 2014 translation 
 
 ```jsx imports={Zoomable,AttentionCircuits}
 <Zoomable label="QK/OV circuit decomposition">
-  <AttentionCircuits caption="The same attention layer two ways: textbook softmax on the left, the Anthropic circuit decomposition on the right. Hover a circuit name to see which weights it covers: $QK$ sets where to read, $OV$ sets what to write." />
+  <AttentionCircuits caption="The same attention layer two ways: textbook softmax on the left, the Anthropic circuit decomposition on the right. $QK$ sets where to read, $OV$ sets what to write." />
 </Zoomable>
 ```
 
@@ -73,7 +73,7 @@ Here $Q$, $K$ and $V$ denote the inputs before the head projections. In self-att
 ```jsx imports={Zoomable,MultiHeadAttention}
 <Zoomable label="multi-head attention diagram">
   <MultiHeadAttention
-    caption="Slide $h$ to divide the fixed $d_m$ width across heads. Each head has its own softmax distribution; the output projection combines their value mixtures."
+    caption="The fixed $d_m$ width divides across $h$ heads. Each head has its own softmax distribution; the output projection combines their value mixtures."
     heads={4}
   />
 </Zoomable>

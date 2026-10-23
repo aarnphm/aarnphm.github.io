@@ -77,7 +77,7 @@ with the castes labelled, the algorithm is short. retrieval heads keep an untouc
 
 ```jsx imports={Zoomable,RazorCompression}
 <Zoomable label="razor attention cache scheme">
-  <RazorCompression caption="Non-retrieval heads keep sink tokens and a recent window $L_h=N/C$, then fold the remote middle into $(\hat{k},\hat{v})$. Retrieval heads (15%) keep the full cache. At $C=5$, retention is $0.15+0.85/5\approx0.32$ ($3.125\times$ shrink). Move $C$ to compare." />
+  <RazorCompression caption="Non-retrieval heads keep sink tokens and a recent window $L_h=N/C$, then fold the remote middle into $(\hat{k},\hat{v})$. Retrieval heads (15%) keep the full cache. At $C=5$, retention is $0.15+0.85/5\approx0.32$ ($3.125\times$ shrink)." />
 </Zoomable>
 ```
 

@@ -127,7 +127,7 @@ DFS follows an unvisited neighbor recursively, then returns to inspect the remai
   <GraphTraversal
     mode="dfs"
     start={0}
-    caption="Course graph $n_0,\ldots,n_9$ uses ascending adjacency order. Choose DFS/BFS and source $s$, then step: salmon marks the active vertex and inspected edge, outlines mark the stack/queue, sage marks completed vertices, and heavy edges form the search tree. DFS $d/f$ times tick on entry/return. Sources $n_1$ and $n_8$ reach only two vertices because the graph is disconnected."
+    caption="Course graph $n_0,\ldots,n_9$ uses ascending adjacency order. Salmon marks the active vertex and inspected edge, outlines mark the stack/queue, sage marks completed vertices, and heavy edges form the search tree. DFS $d/f$ times tick on entry/return. Sources $n_1$ and $n_8$ reach only two vertices because the graph is disconnected."
   />
 </Zoomable>
 ```

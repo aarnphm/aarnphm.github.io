@@ -23,7 +23,7 @@ the sketch below shows a toy Euclidean distance graph (left) and its 2D embeddin
 \begin{document}
 \begin{tikzpicture}[>=latex,scale=2]
   \tikzset{
-    datapoint/.style={circle, draw=black, fill=cyan!25, minimum size=6pt, inner sep=1.5pt},
+    datapoint/.style={circle, draw=black, fill=black!8, minimum size=6pt, inner sep=1.5pt},
     target/.style={circle, draw=black, fill=orange!35, minimum size=6pt, inner sep=1.5pt},
     edge/.style={gray!70},
     dashededge/.style={edge, dashed}

@@ -181,7 +181,7 @@ $$
 <Zoomable label="Ring all-reduce">
   <AllReduceSteps
     gpus={4}
-    caption="After Meta’s figure: ring $A \to B \to C \to D \to A$ over $N$ chunks of buffer size $S$. At reduce-scatter step $t$, GPU $i$ sends chunk $(i-t) \bmod N$ to $i+1$, which adds its partial; all-gather forwards full sums for $N-1$ more steps. Salmon marks received cells, outlines sent cells, sage holds $\Sigma$. Each GPU sends $S/N$ per step, $2(N-1)S/N$ total. Step through or change $N$."
+    caption="After Meta’s figure: ring $A \to B \to C \to D \to A$ over $N$ chunks of buffer size $S$. At reduce-scatter step $t$, GPU $i$ sends chunk $(i-t) \bmod N$ to $i+1$, which adds its partial; all-gather forwards full sums for $N-1$ more steps. Salmon marks received cells, outlines sent cells, sage holds $\Sigma$. Each GPU sends $S/N$ per step, $2(N-1)S/N$ total."
   />
 </Zoomable>
 ```
