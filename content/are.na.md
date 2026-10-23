@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-10-22 21:15:00 GMT-04:00
+modified: 2026-10-23 09:10:10 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -82,6 +82,11 @@ title: are.na
 
 ## discourse
 
+- https://x.com/nabeelqu/status/2107528380623319262 -- Nabeel Qureshi recommends Seb Krier's twenty takes on AI
+  - [meta]:
+    - date: 10/23/2026
+    - tags: [ai governance, ai discourse]
+    - later: true
 - https://www.nytimes.com/2026/10/08/books/nobel-prize-literature.html -- 2026 Nobel Prize in Literature
   - [meta]:
     - date: 10/22/2026
@@ -828,6 +833,21 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/WillManidis/status/2107558351383253000 -- Will Manidis on inflation from billion-dollar to trillion-dollar PDFs
+  - [meta]:
+    - date: 10/23/2026
+    - tags: [ai history, humor]
+    - later: true
+- https://x.com/nabeelqu/status/2107543628553802008 -- Nabeel Qureshi on Dario Amodei's Big Blob of Compute
+  - [meta]:
+    - date: 10/23/2026
+    - tags: [ai history, scaling hypothesis]
+    - later: true
+- https://x.com/NaomiBashkansky/status/2107505097580396687 -- Naomi Bashkansky on semantic brain decoding and Phase Lock
+  - [meta]:
+    - date: 10/23/2026
+    - tags: [brain-computer interfaces, semantic decoding]
+    - later: true
 - https://x.com/np_hard/status/2107880652888772819 -- NP on cooperative multi-agent RL with communication at Prime Intellect
   - [meta]:
     - date: 10/22/2026
@@ -9598,6 +9618,16 @@ title: are.na
   - view: list
   - json: true
 
+- https://x.com/xeophon/status/2106723814335996151 -- Florian Brand on chain-of-thought monitoring and action obfuscation
+  - [meta]:
+    - date: 10/23/2026
+    - tags: [chain of thought, ai monitoring]
+    - later: true
+- https://x.com/industriaalist/status/2107194534501433804 -- Dust: zeroth-order transformer pretraining with a virtual population
+  - [meta]:
+    - date: 10/23/2026
+    - tags: [zeroth-order optimization, transformer pretraining]
+    - later: true
 - https://distill.pub/2020/growing-ca -- Growing Neural Cellular Automata
   - [meta]:
     - date: 10/22/2026
@@ -13973,6 +14003,11 @@ title: are.na
 
 ## life is literature
 
+- https://x.com/SchrodingrsBrat/status/2107560613459140937 -- Sherry on fiction as a confession of imagination
+  - [meta]:
+    - date: 10/23/2026
+    - tags: [literary taste, imagination]
+    - later: true
 - https://web.mit.edu/people/dpolicar/writing/prose/text/thinkingMeat.html -- They're Made out of Meat
   - [meta]:
     - date: 10/22/2026
@@ -18127,6 +18162,11 @@ title: are.na
 
 ## design
 
+- https://x.com/ryolu_/status/2106337039201505453 -- Ryo Lu: convergence to the mean
+  - [meta]:
+    - date: 10/23/2026
+    - tags: [software as a medium, creative judgment]
+    - later: true
 - https://www.rosslovegrove.com/commercial -- Ross Lovegrove: Commercial
   - [meta]:
     - date: 10/22/2026
@@ -20331,6 +20371,11 @@ title: are.na
 
 ## prompts
 
+- https://x.com/karpathy/status/2105819303471976479 -- Andrej Karpathy on making LLM outputs easier to understand
+  - [meta]:
+    - date: 10/23/2026
+    - tags: [simplified technical english, explainer generation]
+    - later: true
 - https://x.com/donaldjewkes/status/2102801274173587569 -- Claude Pop: an overnight music-video generation prompt
   - [meta]:
     - date: 10/22/2026
@@ -22152,6 +22197,16 @@ title: are.na
 
 ## interfaces
 
+- https://x.com/_overment/status/2106102411051888770 -- Adam on visualizing an agent workflow as an interactive graph
+  - [meta]:
+    - date: 10/23/2026
+    - tags: [agent workflows, graph visualization]
+    - later: true
+- https://x.com/graycrawford/status/2106797639060918679 -- Gray Crawford's spatial interface for branching reply threads
+  - [meta]:
+    - date: 10/23/2026
+    - tags: [conversation trees, spatial navigation]
+    - later: true
 - https://love-motion-recreation.ethan-clinick.chatgpt.site/site -- Love Motion Recreation
   - [meta]:
     - date: 10/22/2026
@@ -22450,6 +22505,21 @@ title: are.na
 
 ## lecture
 
+- https://www.youtube.com/watch?v=0Ge3jKLDJaA -- Grant Sanderson: The collie and the pug (HackMIT keynote 2026)
+  - [meta]:
+    - date: 10/23/2026
+    - tags: [learning, ai-assisted programming]
+    - later: true
+- https://www.youtube.com/watch?v=tn45ZOp3lXM -- Tristan Buckmaster: Blowup for the Euler equations with smooth forcing
+  - [meta]:
+    - date: 10/23/2026
+    - tags: [fluid dynamics, ai-assisted mathematics]
+    - later: true
+- https://www.youtube.com/watch?v=LpR9SW4zn_s -- Anna Wolz: Gravitational Scattering off Compact Objects from Partial Waves
+  - [meta]:
+    - date: 10/23/2026
+    - tags: [gravitational waves, effective field theory]
+    - later: true
 - https://www.youtube.com/watch?v=Ep1TzZDOHnU -- ICM 2026 Plenary Lecture - Stephen Wright
   - [meta]:
     - date: 10/22/2026
@@ -24026,6 +24096,16 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://x.com/ekzhang1/status/2106839589721632831 -- Eric Zhang: What is a NIC?
+  - [meta]:
+    - date: 10/23/2026
+    - tags: [network interfaces, hardware offload]
+    - later: true
+- https://x.com/ID_AA_Carmack/status/2107548277747151125 -- John Carmack on sphere maps and HDR light probes
+  - [meta]:
+    - date: 10/23/2026
+    - tags: [computer graphics, image-based lighting]
+    - later: true
 - https://www.wilfred.me.uk/blog/2022/09/06/difftastic-the-fantastic-diff -- Difftastic, the Fantastic Diff
   - [meta]:
     - date: 10/22/2026
