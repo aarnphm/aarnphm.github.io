@@ -99,6 +99,7 @@ export const shapes = new Set(['path', 'ellipse', 'circle', 'rect', 'line', 'pol
 export const reference = (value: string | null) => value?.match(/url\(["']?#([^"')]+)["']?\)/)?.[1]
 
 export type Classes = {
+  CSSStyleRule: CSSStyleRule
   CSSTransition: CSSTransition
   Element: Element
   KeyframeEffect: KeyframeEffect

@@ -67,9 +67,10 @@ export function moveTo(next: Perch, how: 'chute' | 'stroll' | 'fade' | 'leap' | 
   const scrollY = window.scrollY
   const viewportHeight = window.innerHeight
   const target = placeOn(next)
-  // Leaving returns the trail position and scale before restoring the full-size page pet.
-  let from = petState.doc
-  let fromScale = petState.perch?.scale ?? 1
+  // Capture an interrupted hop before cancelling it; a trail departure supplies its own pose.
+  const moving = petState.hop && !petState.trailWalk ? petState.root.getBoundingClientRect() : null
+  let from = moving ? { x: moving.left + window.scrollX, y: moving.top + scrollY } : petState.doc
+  let fromScale = moving ? moving.width / petState.width : (petState.perch?.scale ?? 1)
   if (!petTrail(next.el)) {
     const left = leaveTrail()
     if (left) {
@@ -154,7 +155,7 @@ export function moveTo(next: Perch, how: 'chute' | 'stroll' | 'fade' | 'leap' | 
       { transform: end, opacity: 1 },
     ]
     duration = 420
-  } else if (same && d < 360) {
+  } else if (same && d < 360 && how !== 'leap') {
     frames = [{ transform: transform(from) }, { transform: end }]
     duration = clamp((d / (how === 'stroll' ? 60 : 160)) * 1000, 300, 4800)
   } else {

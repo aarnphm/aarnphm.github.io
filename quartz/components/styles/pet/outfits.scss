@@ -164,7 +164,9 @@ $pet-looks: (
 
 // Perched and watching, the body tips toward the pointer from where it rests. A hanger's body
 // hangs from its arms, so it stays plumb.
-.pet-svg:is([data-state='idle'], [data-state='happy'], [data-state='wait']):not([data-kind='hang'])
+.pet-svg:is([data-pet-state='idle'], [data-pet-state='happy'], [data-pet-state='wait']):not(
+    [data-pet-kind='hang']
+  )
   .pet-body {
   rotate: calc(var(--pet-tilt, 0) * 1deg);
   transition: rotate 160ms cubic-bezier(0.2, 0, 0, 1);
@@ -172,7 +174,7 @@ $pet-looks: (
 
 @each $state, $parts in $pet-looks {
   @each $part in $parts {
-    .pet-svg[data-state='#{$state}'] [data-part='#{$part}'] {
+    .pet-svg[data-pet-state='#{$state}'] [data-part='#{$part}'] {
       display: inline;
     }
   }

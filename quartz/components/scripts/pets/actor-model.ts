@@ -8,7 +8,7 @@ import { createPetGaze } from '../pet-gaze'
 // when it gets bored. While the page scrolls it clings to a pole on the right edge and slides along
 // it with the scroll thumb; when scrolling stops it parachutes down, or jetpacks up, to the nearest
 // edge. A pointer move costs no layout and every move is one compositor animation. Looks and motion live in components/styles/pet.scss; this
-// script picks edges and writes the SVG's data-state and data-kind.
+// script picks edges and writes the SVG's data-pet-state and data-pet-kind.
 
 export type State =
   | 'idle'

@@ -213,7 +213,7 @@
         calc(clamp(-1, round(var(--pet-ly, 0) / 0.08), 1) * 2px);
     }
 
-    &:is([data-state='walk'], [data-state='run']) {
+    &:is([data-pet-state='walk'], [data-pet-state='run']) {
       .trail-pet-legs[data-legs='0'] {
         display: none;
       }
@@ -225,11 +225,11 @@
         animation-delay: -0.16s;
       }
     }
-    &[data-state='wave'] [data-part='wave'] {
+    &[data-pet-state='wave'] [data-part='wave'] {
       display: inline;
       --trail-pet-swap: 0.5s;
     }
-    &:is([data-state='notice'], [data-state='failed']) {
+    &:is([data-pet-state='notice'], [data-pet-state='failed']) {
       [data-part='eyes'] {
         display: none;
       }
@@ -237,7 +237,7 @@
         display: inline;
       }
     }
-    &[data-state='think'] {
+    &[data-pet-state='think'] {
       [data-part='eyes'] {
         display: none;
       }
@@ -246,11 +246,11 @@
         display: inline;
       }
     }
-    &[data-state='talk'] [data-part='mouth'] {
+    &[data-pet-state='talk'] [data-part='mouth'] {
       display: inline;
       animation: trail-pet-step 0.36s step-end infinite;
     }
-    &[data-state='work'] {
+    &[data-pet-state='work'] {
       [data-part='eyes'] {
         display: none;
       }
@@ -301,7 +301,7 @@
     &:is([data-windy], [data-storm]) [data-part='gust'] {
       display: inline;
     }
-    &[data-windy]:not([data-rain], [data-state='wave']) {
+    &[data-windy]:not([data-rain], [data-pet-state='wave']) {
       [data-part='hold'] {
         display: inline;
       }
@@ -312,15 +312,15 @@
     &[data-snow] .trail-pet-hand {
       fill: #fdb2a2;
     }
-    &[data-snow]:is([data-state='idle'], [data-state='wait']):not([data-rain], [data-windy])
+    &[data-snow]:is([data-pet-state='idle'], [data-pet-state='wait']):not([data-rain], [data-windy])
       [data-part='reach'] {
       display: inline;
     }
     &[data-lantern]:not(
-        [data-state='wave'],
-        [data-state='work'],
-        [data-snow][data-state='idle'],
-        [data-snow][data-state='wait']
+        [data-pet-state='wave'],
+        [data-pet-state='work'],
+        [data-snow][data-pet-state='idle'],
+        [data-snow][data-pet-state='wait']
       ) {
       [data-part='lantern'],
       [data-part='flame'] {

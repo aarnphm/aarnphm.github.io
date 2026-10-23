@@ -265,7 +265,7 @@ export function friendFollow(
   })
   friendState.friendHop = anim
   friendState.friendOverride = {
-    state: walking ? (petState.svg?.dataset.state === 'walk' ? 'walk' : 'run') : 'fly',
+    state: walking ? (petState.svg?.dataset.petState === 'walk' ? 'walk' : 'run') : 'fly',
     until: Infinity,
   }
   renderFriend()

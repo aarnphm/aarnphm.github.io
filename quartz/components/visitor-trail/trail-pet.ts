@@ -8,7 +8,7 @@ import { pixels } from './pixels'
 //
 // pet.inline.ts copies the site pet's data-* attributes onto the sprite's group, and
 // shared-trail-frame.scss shows the parts below for them as pet.scss shows the site pet's: its
-// expression for data-state, and what it wears or holds in the visitor's weather.
+// expression for data-pet-state, and what it wears or holds in the visitor's weather.
 const tones = {
   K: 'trail-pet-ink',
   C: 'trail-pet-body',

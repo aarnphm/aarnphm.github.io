@@ -53,7 +53,7 @@ export function mascot({ line, seed, paper = PAPER, ink = INK, points = 220 }: M
 }
 
 // The pet: the mascot with every look the old rocky spritesheet had, each pre-drawn as a part. The
-// SVG's data-state picks which parts show and how they move (quartz/components/styles/pet.scss),
+// SVG's data-pet-state picks which parts show and how they move (quartz/components/styles/pet.scss),
 // so changing a look is one attribute write. Colours are theme variables; the pet faces left as
 // drawn and is mirrored to face right. `seed` picks the outline's wobble, so a friend is its own circle.
 export function petSvg(paper = 'var(--light)', ink = 'var(--dark)', pink = PINK, seed = 7): string {
@@ -254,5 +254,5 @@ export function petSvg(paper = 'var(--light)', ink = 'var(--dark)', pink = PINK,
     ),
   )
 
-  return `<svg class="pet-svg" viewBox="-1.8 -2 3.6 3.8" aria-hidden="true" focusable="false" data-state="idle"><defs><filter id="pet-rim" x="-20%" y="-20%" width="140%" height="140%"><feMorphology in="SourceAlpha" operator="dilate" radius="0.06" result="edge"/><feFlood style="flood-color:var(--dark)"/><feComposite in2="edge" operator="in"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><g class="pet-flip">${ground}${snowfall}<g class="pet-hop"><g class="pet-lean">${chute}${legs}${lounge}${speed}<g class="pet-body">${jetpack}${hair}${outfit.back}<g class="pet-skin">${body}${tan}${vest}${strap}<g class="pet-look">${dash}${wide}${wince}${mouthO}${smile}</g>${knit}${outfit.front}${glasses}${shades}${toque}${hat}</g>${holds}${shelter}${breath}${arms}${thumb}${caught}${lit}${grip}${pole}${laptop}</g>${sweat}${dots}${gust}${thought}</g></g></g></svg>`
+  return `<svg class="pet-svg" viewBox="-1.8 -2 3.6 3.8" aria-hidden="true" focusable="false" data-pet-state="idle"><defs><filter id="pet-rim" x="-20%" y="-20%" width="140%" height="140%"><feMorphology in="SourceAlpha" operator="dilate" radius="0.06" result="edge"/><feFlood style="flood-color:var(--dark)"/><feComposite in2="edge" operator="in"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><g class="pet-flip">${ground}${snowfall}<g class="pet-hop"><g class="pet-lean">${chute}${legs}${lounge}${speed}<g class="pet-body">${jetpack}${hair}${outfit.back}<g class="pet-skin">${body}${tan}${vest}${strap}<g class="pet-look">${dash}${wide}${wince}${mouthO}${smile}</g>${knit}${outfit.front}${glasses}${shades}${toque}${hat}</g>${holds}${shelter}${breath}${arms}${thumb}${caught}${lit}${grip}${pole}${laptop}</g>${sweat}${dots}${gust}${thought}</g></g></g></svg>`
 }
