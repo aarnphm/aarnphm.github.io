@@ -10,8 +10,21 @@ import { toHast } from 'mdast-util-to-hast'
 import { math } from 'micromark-extension-math'
 import { visit } from 'unist-util-visit'
 import { escapeHTML } from './escape'
-import { isFullSlug, type FullSlug } from './path'
-import { extractWikilinks, resolveWikilinkTarget, type WikilinkData } from './wikilinks'
+import {
+  isFullSlug,
+  simplifySlug,
+  slugifyFilePath,
+  stripSlashes,
+  type FilePath,
+  type FullSlug,
+} from './path'
+import { isRecord } from './type-guards'
+import {
+  extractWikilinks,
+  parseWikilink,
+  resolveWikilinkTarget,
+  type WikilinkData,
+} from './wikilinks'
 
 const defaultKatexOptions: Omit<KatexOptions, 'output'> = { strict: true, throwOnError: true }
 const latexCommandText: Record<string, string> = {
@@ -178,4 +191,57 @@ export function descriptionToPlainText(
   return toText(fromHtmlIsomorphic(text, { fragment: true }))
     .replace(/\s+/g, ' ')
     .trim()
+}
+
+export function parseDescriptionManifest(raw: unknown): Map<string, string> {
+  const entries = new Map<string, string>()
+  const records = Array.isArray(raw) ? raw.filter(isRecord) : isRecord(raw) ? [raw] : []
+  const rootSlug = 'index' as FullSlug
+
+  for (const record of records) {
+    for (const [rawKey, rawValue] of Object.entries(record)) {
+      if (typeof rawValue !== 'string') continue
+      const description = rawValue.trim()
+      const trimmedKey = rawKey.trim()
+      if (!trimmedKey || !description) continue
+
+      const wikilink =
+        parseWikilink(trimmedKey) ??
+        parseWikilink(`[[${trimmedKey.replace(/^!?\[\[|\]\]$/g, '')}]]`)
+      const resolved = wikilink ? resolveWikilinkTarget(wikilink, rootSlug) : null
+      if (resolved) {
+        entries.set(resolved.slug, description)
+        entries.set(simplifySlug(resolved.slug), description)
+      }
+
+      if (!wikilink?.anchor) {
+        const rawTarget = stripSlashes((wikilink?.target ?? trimmedKey).trim())
+        if (rawTarget) {
+          const slugWithExt = slugifyFilePath(rawTarget as FilePath)
+          const slugWithoutExt = slugifyFilePath(rawTarget as FilePath, true)
+          entries.set(slugWithExt, description)
+          entries.set(simplifySlug(slugWithExt), description)
+          entries.set(slugWithoutExt, description)
+          entries.set(simplifySlug(slugWithoutExt), description)
+        }
+      }
+    }
+  }
+
+  return entries
+}
+
+export function resolveManifestDescription(
+  descriptions: ReadonlyMap<string, string>,
+  slug: FullSlug,
+  relativePath?: FilePath,
+): string | undefined {
+  return (
+    descriptions.get(slug) ??
+    descriptions.get(simplifySlug(slug)) ??
+    (relativePath
+      ? (descriptions.get(slugifyFilePath(relativePath)) ??
+        descriptions.get(slugifyFilePath(relativePath, true)))
+      : undefined)
+  )
 }

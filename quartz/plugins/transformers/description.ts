@@ -1,9 +1,9 @@
 import { Root as HTMLRoot } from 'hast'
 import { toString } from 'hast-util-to-string'
 import readingTime, { ReadTimeResults } from 'reading-time'
-import { i18n } from '../../i18n'
 import { QuartzTransformerPlugin } from '../../types/plugin'
-import { renderDescriptionHtml } from '../../util/description'
+import { renderDescriptionHtml, resolveManifestDescription } from '../../util/description'
+import { descriptionManifestPath, loadDescriptionManifest } from '../../util/description-manifest'
 import { escapeHTML } from '../../util/escape'
 import { releasedOnReload } from '../../util/module-caches'
 import { simplifySlug, type FullSlug, type SimpleSlug } from '../../util/path'
@@ -62,7 +62,15 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = userOpts =
   const opts = { ...defaultOptions, ...userOpts }
   return {
     name: 'Description',
-    htmlPlugins({ cfg }) {
+    fileDependencies: (ctx, file) =>
+      !file ||
+      file.data.bases ||
+      file.data.jsonCanvas ||
+      file.data.hasExternalDescription ||
+      !file.data.frontmatter?.description
+        ? [descriptionManifestPath(ctx)]
+        : [],
+    htmlPlugins(ctx) {
       return [
         () => {
           return async (tree: HTMLRoot, file) => {
@@ -70,14 +78,27 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = userOpts =
             const descriptionLinks: Set<SimpleSlug> = new Set()
 
             const rawFrontMatterDescription =
-              typeof file.data.frontmatter?.description === 'string'
+              typeof file.data.frontmatter?.description === 'string' &&
+              file.data.frontmatter.description.trim().length > 0
                 ? file.data.frontmatter.description
                 : undefined
-            const frontMatterDescription = rawFrontMatterDescription
+            const manifestDescription =
+              rawFrontMatterDescription === undefined
+                ? resolveManifestDescription(
+                    await loadDescriptionManifest(ctx),
+                    currentSlug,
+                    file.data.relativePath,
+                  )
+                : undefined
+            const authoredDescription = rawFrontMatterDescription ?? manifestDescription
+            file.data.hasExternalDescription = Boolean(manifestDescription)
+            if (manifestDescription && file.data.frontmatter) {
+              file.data.frontmatter.description = manifestDescription
+            }
 
-            // Extract and track wikilinks from frontmatter description
-            if (typeof frontMatterDescription === 'string') {
-              const wikilinks = extractWikilinks(frontMatterDescription)
+            // Extract and track wikilinks from authored description
+            if (typeof authoredDescription === 'string') {
+              const wikilinks = extractWikilinks(authoredDescription)
               for (const link of wikilinks) {
                 const resolved = resolveWikilinkTarget(link, currentSlug)
                 if (resolved) {
@@ -113,18 +134,27 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = userOpts =
                 : finalDesc
             }
 
-            const processedFrontMatterDesc = frontMatterDescription
-              ? renderDescriptionHtml(frontMatterDescription, currentSlug)
+            const processedAuthoredDesc = authoredDescription
+              ? renderDescriptionHtml(authoredDescription, currentSlug)
               : undefined
 
-            const cacheKey = textCacheKey(file.value, currentSlug)
+            const isStructuredDocument = Boolean(file.data.bases || file.data.jsonCanvas)
+            const precomputedText =
+              isStructuredDocument && typeof file.data.text === 'string'
+                ? file.data.text
+                : undefined
+
+            const cacheKey =
+              precomputedText === undefined ? textCacheKey(file.value, currentSlug) : undefined
             const cachedText = cacheKey ? textCache.get(cacheKey) : undefined
-            let text = cachedText?.text
+            let text = precomputedText ?? cachedText?.text
             let textReadingTime = cachedText?.readingTime
-            if (!text || !textReadingTime) {
-              text = escapeHTML(toString(tree))
-              if (opts.replaceExternalLinks) {
-                text = text.replace(urlRegex, '$<domain>' + '$<path>')
+            if (text === undefined || !textReadingTime) {
+              if (text === undefined) {
+                text = escapeHTML(toString(tree))
+                if (opts.replaceExternalLinks) {
+                  text = text.replace(urlRegex, '$<domain>' + '$<path>')
+                }
               }
               textReadingTime = readingTime(text)
               if (cacheKey) {
@@ -133,16 +163,10 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = userOpts =
             }
 
             // Authored descriptions stay intact; length limits apply to generated body excerpts.
-            const processedPlainDesc = processDescription(text)
+            const processedPlainDesc = isStructuredDocument ? '' : processDescription(text)
 
-            file.data.description =
-              processedFrontMatterDesc ||
-              processedPlainDesc ||
-              i18n(cfg.configuration.locale).propertyDefaults.description
-            file.data.rawDescription =
-              rawFrontMatterDescription ||
-              processedPlainDesc ||
-              i18n(cfg.configuration.locale).propertyDefaults.description
+            file.data.description = processedAuthoredDesc || processedPlainDesc || ''
+            file.data.rawDescription = authoredDescription || processedPlainDesc || ''
 
             // Process abstract with wikilinks support
             let abstractText = file.data.frontmatter?.abstract
@@ -158,7 +182,7 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = userOpts =
               abstractText = renderDescriptionHtml(abstractText, currentSlug)
             }
 
-            file.data.abstract = abstractText ?? processDescription(text)
+            file.data.abstract = abstractText ?? processedPlainDesc
             file.data.text = text
             file.data.readingTime = textReadingTime
 
@@ -178,6 +202,7 @@ declare module 'vfile' {
   interface DataMap {
     description: string
     rawDescription: string
+    hasExternalDescription?: boolean
     abstract: string
     text: string
     readingTime: ReadTimeResults
