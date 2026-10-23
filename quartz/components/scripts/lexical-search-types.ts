@@ -1,3 +1,5 @@
+import type { SearchScope } from '../../util/search-scope'
+
 export type LexicalField = 'title' | 'fileName' | 'content' | 'tags' | 'aliases'
 
 export type LexicalIndexPriority = 'background' | 'user-visible'
@@ -16,6 +18,7 @@ export type LexicalDocument = {
 
 export type LexicalSearchSpec = {
   query: string
+  scope?: SearchScope
   limit: number
   index: LexicalField[]
   tag?: { tags: string }

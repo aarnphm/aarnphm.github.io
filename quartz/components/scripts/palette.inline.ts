@@ -1,4 +1,3 @@
-import type { SemanticDocument } from '../../util/semantic-search'
 import { cellSourceLegacyPrefix, cellSourceStoragePrefix } from '../../runtime/notebook/persistence'
 import {
   commentRoomToggleEvent,
@@ -6,6 +5,7 @@ import {
   writeCommentRoomEnabled,
 } from '../../util/comment-room'
 import { fetchCanonical } from '../../util/fetch-canonical'
+import { createNoteRanker, type NoteRanker } from '../../util/note-pagerank'
 import {
   notebookKernelCommandEvent,
   notebookKernelRequestEvent,
@@ -21,17 +21,30 @@ import {
   getFullSlug,
   isFullSlug,
   normalizeRelativeURLs,
+  pathToRoot,
   resolveRelative,
 } from '../../util/path'
 import { isSearchExcluded } from '../../util/search-exclude'
+import { parseSearchQuery, searchScopeIncludes, type SearchScope } from '../../util/search-scope'
 import { tokenizeTerm } from '../../util/search-text'
+import { fuseSearchRanks, type SemanticDocument } from '../../util/semantic-search'
 import {
   setTriActivityLayout,
   TRI_ACTIVITY_LAYOUTS,
   type TriActivityLayout,
 } from '../../util/triathlon-activity-layout'
+import { openAvatarEditor } from '../multiplayer/avatar-editor'
 import { registerEscapeHandler } from './escape-handler'
+import {
+  imageSimilarityButton,
+  imageSimilarityStatus,
+  searchableImage,
+} from './image-search-controls'
+import { createImageSemantic, type ImageSemantic } from './image-semantic'
+import { createImageSimilarity } from './image-similarity'
+import { getLexicalSearchClient } from './lexical-search'
 import { currentNavSignal } from './nav-lifecycle'
+import { noteRankDistribution } from './note-rank-distribution'
 import { isSemanticCancellation } from './semantic.inline'
 import { beginSidePanelRequest, disposeSidePanel, getOrCreateSidePanel } from './side-panel'
 import { siteSemantic, type SiteSemantic } from './site-semantic'
@@ -39,9 +52,11 @@ import { siteSemantic, type SiteSemantic } from './site-semantic'
 interface Item {
   slug: FullSlug
   name: string
+  similarity?: number
 }
 
 const numSearchResults = 10
+const noteRankers = new WeakMap<ContentIndex, NoteRanker>()
 
 function appendHighlightedText(parent: HTMLElement, searchTerm: string, text: string) {
   const terms = tokenizeTerm(searchTerm)
@@ -285,7 +300,7 @@ async function updateCommentAuthor(author: string, source: 'manual' | 'github') 
 
 function promptForCommentAuthor() {
   const existing = localStorage.getItem(commentAuthorKey) ?? ''
-  const hint = 'suggest: use the username that matches your gravatar'
+  const hint = 'your name picks your blob; change it with commenter avatar'
   const promptText = existing
     ? `current comment name: ${existing}\nset comment name (${hint})`
     : `set comment name (${hint})`
@@ -366,10 +381,50 @@ document.addEventListener('nav', () => {
   const containerElement = document.getElementById('palette-container')
   if (!containerElement) return
   const container = containerElement
+  const imageSimilarity = createImageSimilarity()
+  let imageIds: ReadonlySet<string> | undefined
+  window.addCleanup(() => imageSimilarity.dispose())
+  let imageSemantic: ImageSemantic | null = null
+  let imageReady: Promise<ImageSemantic> | null = null
+  let imageActive = true
+  function ensureImageSearch() {
+    imageReady ??= createImageSemantic()
+      .then(service => {
+        if (!imageActive) {
+          service.dispose()
+          throw new Error('image search page closed')
+        }
+        imageSemantic = service
+        return service
+      })
+      .catch(error => {
+        imageReady = null
+        throw error
+      })
+    return imageReady
+  }
+  window.addCleanup(() => {
+    imageActive = false
+    imageSemantic?.dispose()
+  })
 
   const bar = container.querySelector('#bar') as HTMLInputElement
   const output = container.getElementsByTagName('output')[0]
   const helper = container.querySelector('ul#helper') as HTMLUListElement
+  const rankButton = document.createElement('a')
+  rankButton.href = `${pathToRoot(currentSlug)}/pagerank`
+  rankButton.className = 'palette-rank-button'
+  rankButton.textContent = 'pagerank ↗'
+  rankButton.title = 'Global note ranking and link graph'
+  bar.parentElement?.append(rankButton)
+  rankButton.addEventListener('click', event => {
+    if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return
+    event.preventDefault()
+    const destination = new URL(rankButton.href)
+    hidePalette()
+    window.spaNavigate(destination)
+  })
+  window.addCleanup(() => rankButton.remove())
   let currentHover: HTMLDivElement | null = null
   let previousFocus: HTMLElement | null = null
   let data: ContentIndex | null = null
@@ -380,14 +435,15 @@ document.addEventListener('nav', () => {
 
   window.addCleanup(() => {
     isActive = false
+    imageSimilarity.cancel()
+    imageSemantic?.cancel()
     quickOpenSemantic?.cancel()
   })
 
   let contentDataReady: Promise<ContentIndex> | null = null
+  let attachmentDataReady: Promise<ContentIndex> | null = null
   let quickOpenReady: ReturnType<typeof siteSemantic> | null = null
   let quickOpenSemantic: SiteSemantic | null = null
-  let quickOpenLoaded = false
-  let quickOpenUnavailable = false
   let quickOpenTimer = 0
   const progress = document.createElement('div')
   progress.className = 'semantic-search-progress'
@@ -411,15 +467,26 @@ document.addEventListener('nav', () => {
     return contentDataReady
   }
 
+  function ensureAttachmentData() {
+    attachmentDataReady ??= (typeof fetchSearchData === 'undefined' ? fetchData : fetchSearchData)
+      .catch(error => {
+        console.warn('[QuickOpen] attachment index unavailable:', error)
+        return fetchData
+      })
+      .then(resolved => {
+        if (isActive) data = resolved
+        return resolved
+      })
+    return attachmentDataReady
+  }
+
   function ensureQuickOpen() {
     quickOpenReady ??= Promise.all([ensureContentData(), siteSemantic()]).then(
       ([, service]) => {
         quickOpenSemantic = service
-        quickOpenLoaded = true
         return service
       },
       error => {
-        quickOpenUnavailable = true
         throw error
       },
     )
@@ -439,6 +506,8 @@ document.addEventListener('nav', () => {
   }
 
   function hidePalette() {
+    imageSimilarity.cancel()
+    imageSemantic?.cancel()
     quickOpenSemantic?.cancel()
     queryGeneration += 1
     window.clearTimeout(quickOpenTimer)
@@ -471,7 +540,9 @@ document.addEventListener('nav', () => {
 
   function syncPaletteHelper() {
     bar.placeholder =
-      actionType === 'quick_open' ? 'recherche sémantique...' : 'sélectionnez une option...'
+      actionType === 'quick_open'
+        ? 'rechercher des notes… filter: images · pdf · code · py · all'
+        : 'sélectionnez une option…'
     bar.setAttribute('aria-label', bar.placeholder)
     helper.querySelectorAll<HTMLLIElement>('li[data-quick-open]').forEach(el => {
       el.style.display = actionType === 'quick_open' ? '' : 'none'
@@ -480,6 +551,48 @@ document.addEventListener('nav', () => {
       el.style.display = actionType === 'command' ? '' : 'none'
     })
   }
+
+  let measuredPaletteWidth = 0
+  function sizePaletteToDefaultItems() {
+    const panel = output.parentElement
+    if (!panel || !container.matches(':popover-open')) return
+    const width = panel.clientWidth
+    if (width === measuredPaletteWidth) return
+    const measurement = document.createElement('output')
+    measurement.setAttribute('aria-hidden', 'true')
+    measurement.inert = true
+    measurement.style.cssText = `position:absolute;visibility:hidden;pointer-events:none;flex:none;height:auto;max-height:none;overflow:visible;box-sizing:border-box;width:${width}px`
+    panel.append(measurement)
+    let itemsHeight = 0
+    for (const actions of [CONNECTOR_ACTS, COMMAND_ACTS]) {
+      measurement.replaceChildren(
+        ...actions.map(action =>
+          (actionCache.get(action) ?? actionComponent(action)).cloneNode(true),
+        ),
+      )
+      itemsHeight = Math.max(itemsHeight, measurement.getBoundingClientRect().height)
+    }
+    const inputHeight = bar.parentElement?.getBoundingClientRect().height ?? 0
+    const height =
+      itemsHeight +
+      inputHeight +
+      helper.getBoundingClientRect().height +
+      panel.offsetHeight -
+      panel.clientHeight
+    measurement.remove()
+    panel.style.setProperty('--palette-content-height', `${Math.ceil(height)}px`)
+    measuredPaletteWidth = width
+  }
+  const refreshPaletteHeight = () => {
+    measuredPaletteWidth = 0
+    sizePaletteToDefaultItems()
+  }
+  window.addEventListener('resize', refreshPaletteHeight)
+  document.fonts.addEventListener('loadingdone', refreshPaletteHeight)
+  window.addCleanup(() => {
+    window.removeEventListener('resize', refreshPaletteHeight)
+    document.fonts.removeEventListener('loadingdone', refreshPaletteHeight)
+  })
 
   function showPalette(actionTypeNew: ActionType, fallbackActionTypeNew?: FallbackActionType) {
     queryGeneration += 1
@@ -504,9 +617,10 @@ document.addEventListener('nav', () => {
       syncPaletteHelper()
       quickOpenStatus('')
       quickOpenProgress(false)
-      void ensureContentData()
+      void displayNearbyNotes(queryGeneration)
     }
 
+    sizePaletteToDefaultItems()
     bar?.focus()
     bar?.setSelectionRange(bar.value.length, bar.value.length)
   }
@@ -559,6 +673,13 @@ document.addEventListener('nav', () => {
       auxInnerHtml: '<kbd>↵</kbd> set comment handle',
       onClick: () => {
         promptForCommentAuthor()
+      },
+    },
+    {
+      name: 'commenter avatar',
+      auxInnerHtml: '<kbd>↵</kbd> change your blob',
+      onClick: () => {
+        openAvatarEditor()
       },
     },
     {
@@ -1011,6 +1132,33 @@ document.addEventListener('nav', () => {
     }
 
     if (!container?.classList.contains('active')) return
+    if (
+      e.target instanceof HTMLButtonElement &&
+      e.target.classList.contains('image-similar-button') &&
+      (e.key === 'Enter' || e.key === ' ')
+    )
+      return
+    if (
+      (e.key === 'Tab' || e.key === 'ArrowRight') &&
+      currentHover?.querySelector('.image-similar-button')
+    ) {
+      e.preventDefault()
+      const button = currentHover.querySelector<HTMLButtonElement>('.image-similar-button')
+      if (document.activeElement === button) {
+        if (e.shiftKey) currentHover.focus()
+        else moveSelection(1)
+      } else button?.focus()
+      return
+    }
+    if (
+      e.key === 'ArrowLeft' &&
+      e.target instanceof HTMLButtonElement &&
+      e.target.classList.contains('image-similar-button')
+    ) {
+      e.preventDefault()
+      currentHover?.focus()
+      return
+    }
 
     if (e.metaKey && e.altKey && e.key === 'Enter') {
       if (!currentHover) return
@@ -1032,6 +1180,15 @@ document.addEventListener('nav', () => {
         if (!wasAborted) console.error('Failed to create side panel:', error)
       }
       return
+    } else if (e.target === rankButton) {
+      if (e.key === 'Tab') {
+        e.preventDefault()
+        bar.focus()
+      }
+      return
+    } else if (e.key === 'Tab' && e.shiftKey) {
+      e.preventDefault()
+      rankButton.focus()
     } else if (e.key === 'Enter') {
       // If result has focus, navigate to that one, otherwise pick first result
       if (output?.contains(currentHover)) {
@@ -1063,43 +1220,131 @@ document.addEventListener('nav', () => {
     }
   }
 
+  async function displayNearbyNotes(generation: number) {
+    try {
+      const metadata = await ensureContentData()
+      if (generation !== queryGeneration || actionType !== 'quick_open' || !isActive) return
+      let ranker = noteRankers.get(metadata)
+      if (!ranker) {
+        ranker = createNoteRanker(metadata)
+        noteRankers.set(metadata, ranker)
+      }
+      const items = ranker
+        .related(currentSlug, numSearchResults)
+        .map(slug => ({ slug, name: metadata[slug].title || metadata[slug].fileName }))
+      output.removeAttribute('aria-busy')
+      quickOpenProgress(false)
+      if (items.length) displayResults(items, '')
+      else quickOpenStatus('')
+    } catch (error) {
+      if (generation !== queryGeneration || actionType !== 'quick_open' || !isActive) return
+      console.warn('[QuickOpen] nearby notes unavailable:', error)
+      output.removeAttribute('aria-busy')
+      quickOpenProgress(false)
+      quickOpenStatus('Nearby notes are unavailable.')
+    }
+  }
+
   async function querySearch(currentSearchTerm: string, generation = queryGeneration) {
     const queryActionType = actionType
     if (actionType === 'quick_open') {
-      const query = currentSearchTerm.trim()
-      if (!query) {
-        output.removeAttribute('aria-busy')
-        quickOpenProgress(quickOpenReady !== null && !quickOpenLoaded && !quickOpenUnavailable)
-        quickOpenStatus(
-          quickOpenUnavailable
-            ? 'Semantic search is unavailable. Use Ctrl+K for full-text search.'
-            : '',
-        )
+      const { term: query, scope, explicit } = parseSearchQuery(currentSearchTerm)
+      if (!query && (!explicit || scope === 'notes')) {
+        await displayNearbyNotes(generation)
         return
       }
       output.setAttribute('aria-busy', 'true')
       quickOpenProgress(true)
+      let scopedDocuments: SemanticDocument[] = []
       let settled = false
-      void ensureContentData().then(
-        () => {
-          if (settled || generation !== queryGeneration || !isActive) return
-          displayPendingTitles(query)
-        },
-        () => {},
-      )
       try {
+        if (scope !== 'notes' || !query) {
+          const content = await ensureContentData()
+          const loaded = scope === 'notes' ? content : await ensureAttachmentData()
+          if (generation !== queryGeneration || queryActionType !== actionType || !isActive) return
+          if (scope === 'images') {
+            const ids = await imageSimilarity.ids().catch(() => undefined)
+            if (generation !== queryGeneration || !isActive) return
+            imageIds = ids
+          }
+          const slugs = Object.entries(loaded)
+            .filter(
+              ([slug, source]) => !isSearchExcluded(slug) && !isSearchExcluded(source.fileName),
+            )
+            .map(([slug]) => slug)
+          const hits = query
+            ? await getLexicalSearchClient().search(loaded, {
+                query,
+                scope,
+                limit: scope === 'images' ? slugs.length : numSearchResults,
+                index: ['title', 'fileName', 'aliases'],
+              })
+            : [{ result: slugs.map((_, id) => id) }]
+          if (generation !== queryGeneration || !isActive) return
+          scopedDocuments = [...new Set(hits.flatMap(hit => hit.result))].flatMap(id => {
+            const slug = slugs[id]
+            return slug ? [{ slug, score: Number.NaN }] : []
+          })
+          displayQuickOpenResults(scopedDocuments, query, scope)
+          if (scope === 'images' && query) {
+            quickOpenProgress(true)
+            output.setAttribute('aria-busy', 'true')
+            const service = await ensureImageSearch()
+            if (generation !== queryGeneration || !isActive) return
+            const documents = await service.search(query, numSearchResults * 8)
+            if (generation !== queryGeneration || queryActionType !== actionType || !isActive)
+              return
+            const scores = new Map(documents.map(document => [document.slug, document.score]))
+            const combined = fuseSearchRanks([
+              { ids: scopedDocuments.map(document => document.slug), weight: 1 },
+              { ids: documents.map(document => document.slug), weight: 1 },
+            ]).map(({ id }) => ({ slug: id, score: scores.get(id) ?? Number.NaN }))
+            displayQuickOpenResults(combined, query, scope)
+            return
+          }
+          if ((scope !== 'notes' && scope !== 'all') || !query) return
+          output.setAttribute('aria-busy', 'true')
+          quickOpenProgress(true)
+        }
+        void ensureContentData().then(
+          () => {
+            if (settled || generation !== queryGeneration || !isActive) return
+            displayPendingTitles(query, undefined, scope)
+          },
+          () => {},
+        )
         const service = await ensureQuickOpen()
         if (generation !== queryGeneration || queryActionType !== actionType || !isActive) return
         const documents = await service.search(query, numSearchResults * 8)
         if (generation !== queryGeneration || queryActionType !== actionType || !isActive) return
-        displayQuickOpenResults(documents, query)
+        const scores = new Map(documents.map(document => [document.slug, document.score]))
+        const combined = fuseSearchRanks([
+          { ids: scopedDocuments.map(document => document.slug), weight: 1 },
+          { ids: documents.map(document => document.slug), weight: 1 },
+        ]).map(({ id }) => ({ slug: id, score: scores.get(id) ?? Number.NaN }))
+        displayQuickOpenResults(combined, query, scope)
       } catch (error) {
         if (isSemanticCancellation(error)) return
         if (generation !== queryGeneration || queryActionType !== actionType || !isActive) return
         console.warn('[QuickOpen] semantic search failed:', error)
         output.removeAttribute('aria-busy')
         quickOpenProgress(false)
-        displayPendingTitles(query, 'semantic unavailable; use ctrl+k for full-text search')
+        if (scope === 'images') {
+          imageSemantic?.dispose()
+          imageSemantic = null
+          imageReady = null
+          displayQuickOpenResults(scopedDocuments, query, scope)
+          const status = document.createElement('p')
+          status.setAttribute('role', 'status')
+          status.textContent = 'Visual search unavailable. Showing image metadata matches.'
+          output.prepend(status)
+        } else if (scopedDocuments.length) displayQuickOpenResults(scopedDocuments, query, scope)
+        else
+          displayPendingTitles(
+            query,
+            'semantic unavailable; use ctrl+k for full-text search',
+            scope,
+          )
       } finally {
         settled = true
       }
@@ -1119,7 +1364,7 @@ document.addEventListener('nav', () => {
     }
   }
 
-  function displayPendingTitles(query: string, message?: string) {
+  function displayPendingTitles(query: string, message?: string, scope: SearchScope = 'notes') {
     const terms = query.toLowerCase().split(/\s+/).filter(Boolean)
     const items = Object.entries(data ?? {})
       .flatMap(([slug, note]) => {
@@ -1127,7 +1372,8 @@ document.addEventListener('nav', () => {
           !isFullSlug(slug) ||
           note.protected ||
           isSearchExcluded(slug) ||
-          isSearchExcluded(note.fileName)
+          isSearchExcluded(note.fileName) ||
+          !searchScopeIncludes(scope, { ...note, slug })
         )
           return []
         const title = note.title || note.fileName
@@ -1151,13 +1397,63 @@ document.addEventListener('nav', () => {
     }
   }
 
-  function displayQuickOpenResults(documents: SemanticDocument[], query: string) {
+  async function showSimilarImages(seed: string) {
+    const generation = ++queryGeneration
+    imageSemantic?.cancel()
+    quickOpenSemantic?.cancel()
+    window.clearTimeout(quickOpenTimer)
+    currentSearchTerm = 'filter: images'
+    bar.value = currentSearchTerm
+    bar.focus()
+    output.replaceChildren(imageSimilarityStatus('finding similar images…'))
+    quickOpenProgress(true)
+    output.setAttribute('aria-busy', 'true')
+    try {
+      await ensureAttachmentData()
+      if (generation !== queryGeneration || !isActive) return
+      const documents = await imageSimilarity.search(seed, numSearchResults * 8)
+      if (generation !== queryGeneration || !isActive) return
+      displayQuickOpenResults(documents, '', 'images')
+      output.dataset.imageSeed = seed
+    } catch (error) {
+      if (isSemanticCancellation(error) || generation !== queryGeneration || !isActive) return
+      output.replaceChildren(
+        imageSimilarityStatus('similar images unavailable. Type an image query to continue.'),
+      )
+    } finally {
+      if (generation === queryGeneration) {
+        quickOpenProgress(false)
+        output.removeAttribute('aria-busy')
+      }
+    }
+  }
+
+  function displayQuickOpenResults(
+    documents: SemanticDocument[],
+    query: string,
+    scope: SearchScope,
+  ) {
     const items: Item[] = []
     for (const document of documents) {
       if (!isFullSlug(document.slug) || isSearchExcluded(document.slug)) continue
+      if (
+        scope === 'images' &&
+        (!searchableImage(document.slug) || (imageIds && !imageIds.has(document.slug)))
+      )
+        continue
       const fileData = data?.[document.slug]
-      if (!fileData || isSearchExcluded(fileData.fileName)) continue
-      items.push({ slug: document.slug, name: fileData.title || fileData.fileName })
+      if (
+        !fileData ||
+        fileData.protected ||
+        isSearchExcluded(fileData.fileName) ||
+        !searchScopeIncludes(scope, { ...fileData, slug: document.slug })
+      )
+        continue
+      items.push({
+        slug: document.slug,
+        name: fileData.title || fileData.fileName,
+        similarity: document.score,
+      })
       if (items.length === numSearchResults) break
     }
     output.removeAttribute('aria-busy')
@@ -1166,6 +1462,9 @@ document.addEventListener('nav', () => {
   }
 
   async function onType(e: HTMLElementEventMap['input']) {
+    delete output.dataset.imageSeed
+    imageSimilarity.cancel()
+    imageSemantic?.cancel()
     quickOpenSemantic?.cancel()
     queryGeneration += 1
     const value = (e.target as HTMLInputElement).value
@@ -1187,15 +1486,16 @@ document.addEventListener('nav', () => {
     currentSearchTerm = actionType === 'command' ? commandSearchTerm(value) : value
     window.clearTimeout(quickOpenTimer)
     if (actionType === 'quick_open' && currentSearchTerm.trim()) {
-      const query = currentSearchTerm
+      const { term: query, scope } = parseSearchQuery(currentSearchTerm)
+      const rawQuery = currentSearchTerm
       const generation = queryGeneration
       const cached = quickOpenSemantic?.cached(query, numSearchResults * 8)
-      if (cached !== undefined) {
-        displayQuickOpenResults(cached, query.trim())
+      if (scope === 'notes' && cached !== undefined) {
+        displayQuickOpenResults(cached, query, scope)
         return
       }
       quickOpenTimer = window.setTimeout(() => {
-        void querySearch(query, generation)
+        void querySearch(rawQuery, generation)
       }, 60)
     } else {
       if (actionType !== 'quick_open') {
@@ -1255,25 +1555,50 @@ document.addEventListener('nav', () => {
     currentHover = firstChild
   }
 
-  function toHtml({ name, slug }: Item) {
+  function toHtml({ name, slug, similarity }: Item) {
     const item = document.createElement('div')
     item.classList.add('suggestion-item')
     item.tabIndex = -1
     item.dataset.slug = slug
 
-    const content = document.createElement('div')
+    const content = document.createElement('a')
+    content.href = new URL(resolveRelative(currentSlug, slug), location.toString()).toString()
     content.classList.add('suggestion-content')
     const title = document.createElement('div')
     title.classList.add('suggestion-title')
-    appendHighlightedText(title, currentSearchTerm, name)
+    appendHighlightedText(title, parseSearchQuery(currentSearchTerm).term, name)
     content.appendChild(title)
 
     const aux = document.createElement('div')
     aux.classList.add('suggestion-aux')
+    if (similarity !== undefined && Number.isFinite(similarity)) {
+      item.dataset.similarity = String(similarity)
+      const score = document.createElement('span')
+      score.className = 'result-likelihood'
+      score.title = 'cosine similarity'
+      score.setAttribute('aria-label', `Cosine similarity: ${similarity.toFixed(3)}`)
+      score.textContent = similarity.toFixed(3)
+      aux.append(score)
+    }
+    if (data) {
+      let ranker = noteRankers.get(data)
+      if (!ranker) {
+        ranker = createNoteRanker(data)
+        noteRankers.set(data, ranker)
+      }
+      const rank = ranker.position(slug)
+      if (rank) {
+        aux.append(noteRankDistribution(ranker.global(), rank))
+      }
+    }
 
+    if (searchableImage(slug))
+      aux.append(imageSimilarityButton(slug, showSimilarImages, similarity))
     item.append(content, aux)
 
-    const onClick = () => {
+    const onClick = (event: MouseEvent) => {
+      if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return
+      event.preventDefault()
       window.spaNavigate(new URL(resolveRelative(currentSlug, slug), location.toString()))
       hidePalette()
     }

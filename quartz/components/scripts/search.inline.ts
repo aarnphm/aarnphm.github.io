@@ -10,6 +10,7 @@ import {
   resolveRelative,
 } from '../../util/path'
 import { isSearchExcluded } from '../../util/search-exclude'
+import { parseSearchQuery, searchScopeIncludes, type SearchScope } from '../../util/search-scope'
 import {
   isSearchModeToggle,
   isSearchToggle,
@@ -20,6 +21,14 @@ import { fuseSearchRanks } from '../../util/semantic-search'
 import { renderCoursePreview } from './course-preview-card'
 import { renderDocumentPreview } from './document-preview-card'
 import { registerEscapeHandler } from './escape-handler'
+import {
+  imageSearchRow,
+  imageSearchPreview,
+  imageSimilarityStatus,
+  searchableImage,
+} from './image-search-controls'
+import { createImageSemantic, type ImageSemantic } from './image-semantic'
+import { createImageSimilarity } from './image-similarity'
 import { getLexicalSearchClient } from './lexical-search'
 import { fitSearchPath } from './search-path'
 import { isSemanticCancellation } from './semantic.inline'
@@ -171,6 +180,32 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   const containerElement = searchElement.querySelector<HTMLElement>('.search-container')
   if (!containerElement) return
   const container = containerElement
+  const imageSimilarity = createImageSimilarity()
+  let imageIds: ReadonlySet<string> | undefined
+  window.addCleanup(() => imageSimilarity.dispose())
+  let imageSemantic: ImageSemantic | null = null
+  let imageReady: Promise<ImageSemantic> | null = null
+  let imageActive = true
+  function ensureImageSearch() {
+    imageReady ??= createImageSemantic()
+      .then(service => {
+        if (!imageActive) {
+          service.dispose()
+          throw new Error('image search page closed')
+        }
+        imageSemantic = service
+        return service
+      })
+      .catch(error => {
+        imageReady = null
+        throw error
+      })
+    return imageReady
+  }
+  window.addCleanup(() => {
+    imageActive = false
+    imageSemantic?.dispose()
+  })
 
   const searchButton = searchElement.querySelector<HTMLButtonElement>('.search-button')
   if (!searchButton) return
@@ -251,7 +286,9 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     const baseReady = (searchDataReady ??= (async () => {
       const loaded = await getSearchData()
       await fillDocument(loaded, priority)
-      idDataMap = Object.keys(loaded) as FullSlug[]
+      idDataMap = Object.keys(loaded).filter(
+        slug => !isSearchExcluded(slug) && !isSearchExcluded(loaded[slug].fileName),
+      ) as FullSlug[]
       slugToIndex = new Map<string, number>()
       idDataMap.forEach((slug, idx) => slugToIndex.set(slug, idx))
       data = loaded
@@ -288,6 +325,14 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
         kbd: searchModeShortcutLabel(/mac/i.test(navigator.userAgent)),
         description: 'pour basculer en recherche sémantique',
       },
+      ...(searchLayout.dataset.previewAvailable === 'true'
+        ? [
+            {
+              kbd: /mac/i.test(navigator.userAgent) ? '⌥⇧P' : 'Alt+Shift+P',
+              description: 'pour l’aperçu',
+            },
+          ]
+        : []),
     ]
     const helper = document.createElement('ul')
     helper.id = 'helper'
@@ -333,7 +378,8 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     }
   }
 
-  const enablePreview = searchLayout.dataset.preview === 'true'
+  const enablePreview = searchLayout.dataset.previewAvailable === 'true'
+  let previewVisible = false
   const storedMode = loadStoredSearchMode()
   let semanticBooting: Promise<boolean> | null = null
   const bootSemantic = async (): Promise<boolean> => {
@@ -404,6 +450,8 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
       updateModeUI(mode)
       return
     }
+    imageSimilarity.cancel()
+    imageSemantic?.cancel()
     semantic?.cancel()
     if (runSearchTimer !== null) {
       window.clearTimeout(runSearchTimer)
@@ -471,10 +519,27 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   }
 
   let currentHover: HTMLElement | null = null
+  const previewToggle = searchSpace.querySelector<HTMLButtonElement>('.search-preview-toggle')
+  function setPreviewVisible(visible: boolean) {
+    previewVisible = visible && enablePreview
+    searchLayout.dataset.preview = String(previewVisible)
+    previewToggle?.setAttribute('aria-expanded', String(previewVisible))
+    const label = previewVisible ? 'hide preview' : 'show preview'
+    previewToggle?.setAttribute('aria-label', label)
+    previewToggle?.setAttribute('title', label)
+    if (preview) preview.inert = !previewVisible
+    if (previewVisible) void displayPreview(currentHover)
+    else clearPreview()
+  }
+  const togglePreview = () => setPreviewVisible(!previewVisible)
+  previewToggle?.addEventListener('click', togglePreview)
+  window.addCleanup(() => previewToggle?.removeEventListener('click', togglePreview))
+  setPreviewVisible(false)
   let previousFocus: HTMLElement | null = null
   const pressedKeys = new Set<string>()
   let composing = false
   let pendingNavigation: -1 | 1 | null = null
+  let pendingOpen: number | null = null
   let pendingDisplay: { token: number; apply: () => void | Promise<void> } | null = null
 
   function commitSearchDisplay(token: number, apply: () => void | Promise<void>) {
@@ -486,7 +551,12 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     pendingDisplay = null
     searchLayout.classList.toggle('display-results', rawSearchTerm.trim() !== '')
     searchLayout.removeAttribute('aria-busy')
-    return apply()
+    const applied = apply()
+    if (pendingOpen === token) {
+      pendingOpen = null
+      openSearchResult()
+    }
+    return applied
   }
 
   function flushSearchDisplay() {
@@ -497,14 +567,18 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   }
 
   function hideSearch(focusButton = true) {
+    setPreviewVisible(false)
     modeRequest++
     requestedMode = searchMode
     updateModeUI(searchMode)
+    imageSimilarity.cancel()
+    imageSemantic?.cancel()
     semantic?.cancel()
     searchSeq += 1
     pressedKeys.clear()
     composing = false
     pendingNavigation = null
+    pendingOpen = null
     pendingDisplay = null
     if (runSearchTimer !== null) {
       window.clearTimeout(runSearchTimer)
@@ -536,6 +610,10 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   }
 
   function openSearchResult() {
+    if (searchLayout.getAttribute('aria-busy') === 'true') {
+      pendingOpen = searchSeq
+      return
+    }
     const focused = document.activeElement
     const anchor =
       focused instanceof HTMLAnchorElement && results.contains(focused)
@@ -627,6 +705,11 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     }
 
     if (!container!.classList.contains('active')) return
+    if (enablePreview && e.altKey && !e.ctrlKey && !e.metaKey && e.shiftKey && e.code === 'KeyP') {
+      e.preventDefault()
+      if (!e.repeat) togglePreview()
+      return
+    }
     if (isSearchModeToggle(e) && container.contains(document.activeElement)) {
       if (requestedMode === 'lexical' && semanticInitFailed) return
       e.preventDefault()
@@ -648,6 +731,12 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
       }
       return
     }
+    if (
+      e.target instanceof HTMLButtonElement &&
+      e.target.classList.contains('image-similar-button') &&
+      (e.key === 'Enter' || e.key === ' ')
+    )
+      return
     if (e.key === 'Enter') {
       if (e.target !== searchBar && !results.contains(document.activeElement)) return
       // Cancel native form submission before any asynchronous work can yield to the browser.
@@ -680,12 +769,17 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     const direction = pendingNavigation
     pendingNavigation = null
     if (!container.classList.contains('active')) return
-    if (direction === -1 && results.contains(document.activeElement)) {
-      const currentResult = currentHover ?? document.activeElement
-      void focusResult(currentResult?.previousElementSibling)
-    } else if (direction === 1 && (document.activeElement === searchBar || currentHover !== null)) {
-      const currentResult = currentHover ?? results.querySelector<HTMLElement>('.result-card')
-      void focusResult(currentResult?.nextElementSibling)
+    if (direction !== null) {
+      const controls = [
+        ...results.querySelectorAll<HTMLElement>(
+          'a.result-card[href], button.image-similar-button',
+        ),
+      ]
+      const active = document.activeElement
+      const index = active instanceof HTMLElement ? controls.indexOf(active) : -1
+      const next = index < 0 ? (direction === 1 ? 0 : controls.length - 1) : index + direction
+      if (next < 0) searchBar.focus()
+      else void focusResult(controls[next])
     }
   }
 
@@ -701,15 +795,31 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     currentHover = result
     result.classList.add('focus')
     result.focus()
-    await displayPreview(result)
+    const anchor =
+      result instanceof HTMLAnchorElement
+        ? result
+        : result.closest('.image-search-row')?.querySelector<HTMLAnchorElement>('a.result-card')
+    await displayPreview(anchor ?? null)
   }
 
-  const formatForDisplay = (term: string, id: number, renderType: SearchType) => {
+  const formatForDisplay = (
+    term: string,
+    id: number,
+    renderType: SearchType,
+    scope: SearchScope,
+  ) => {
     const slug = idDataMap[id]
     const fileData = requireData()[slug]
     if (!fileData) return null
     if (isSearchExcluded(slug) || isSearchExcluded(fileData.fileName)) return null
-    if (fileData.layout === 'letter' || (searchMode === 'semantic' && slug.includes('arena')))
+    if (scope === 'images' && (!searchableImage(slug) || (imageIds && !imageIds.has(slug))))
+      return null
+    if (
+      fileData.layout === 'letter' ||
+      ((scope === 'notes' || scope === 'all') &&
+        searchMode === 'semantic' &&
+        slug.includes('arena'))
+    )
       return null
     const aliases: string[] = fileData.aliases
     const target = aliases.find(alias => alias.toLowerCase().includes(term.toLowerCase())) ?? ''
@@ -756,14 +866,10 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   }
 
   const resultToHTML = ({ item, similarity }: SimilarityResult) => {
-    const { slug, title, content, tags, target, fileName } = item
+    const { slug, title, target, fileName } = item
     const isProtected = item.protected === true
-    const htmlTags = tags.length > 0 ? `<ul class="tags">${tags.join('')}</ul>` : ``
     const itemTile = document.createElement('a')
     const titleContent = target ? highlight(currentSearchTerm, target) : title
-    const subscript = target ? `<b>${slug}</b>` : ``
-    const similarityLabel = Number.isFinite(similarity) ? similarity.toFixed(3) : '—'
-    const showExcerpt = currentSlug !== 'index' && (!enablePreview || window.innerWidth <= 600)
     itemTile.classList.add('result-card')
     itemTile.id = slug
     itemTile.href = resolveUrl(slug).toString()
@@ -778,28 +884,8 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     if (isBases) itemTile.dataset.bases = 'true'
     if (isDirectFile) itemTile.dataset.directFile = 'true'
 
-    if (isProtected) {
-      itemTile.dataset.protected = 'true'
-      itemTile.innerHTML = `<hgroup>
-        <h3>${titleContent}</h3>
-        ${subscript}${htmlTags}
-        <span class="search-protected-badge" style="
-          font-size: 0.75rem;
-          color: var(--gray);
-          font-style: italic;
-          margin-left: 0.5rem;
-        ">🔒 protected content</span>
-        ${searchMode === 'semantic' ? `<span class="result-likelihood" title="cosine similarity">&nbsp;${similarityLabel}</span>` : ''}
-      </hgroup>`
-    } else {
-      delete itemTile.dataset.protected
-      itemTile.innerHTML = `<hgroup>
-        <h3>${titleContent}</h3>
-        ${subscript}${htmlTags}
-        ${searchMode === 'semantic' ? `<span class="result-likelihood" title="cosine similarity">&nbsp;${similarityLabel}</span>` : ''}
-        ${showExcerpt ? `<p>${content}</p>` : ''}
-      </hgroup>`
-    }
+    if (isProtected) itemTile.dataset.protected = 'true'
+    itemTile.innerHTML = `<hgroup><h3>${titleContent}${isProtected ? ' <span aria-label="protected content">🔒</span>' : ''}</h3></hgroup>`
 
     const accessibleName = itemTile.textContent?.trim() ?? ''
     for (const label of itemTile.querySelectorAll<HTMLElement>('h3, hgroup > b')) {
@@ -832,10 +918,50 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     itemTile.addEventListener('click', handler)
     window.addCleanup(() => itemTile.removeEventListener('click', handler))
 
-    return itemTile
+    return searchableImage(slug)
+      ? imageSearchRow(itemTile, slug, showSimilarImages, similarity)
+      : itemTile
   }
 
-  async function displayResults(finalResults: SimilarityResult[]) {
+  async function showSimilarImages(seed: string) {
+    const token = ++searchSeq
+    imageSemantic?.cancel()
+    semantic?.cancel()
+    if (runSearchTimer !== null) window.clearTimeout(runSearchTimer)
+    runSearchTimer = null
+    rawSearchTerm = 'filter: images'
+    currentSearchTerm = ''
+    searchBar.value = rawSearchTerm
+    searchBar.focus()
+    searchLayout.classList.add('display-results')
+    clearPreview()
+    results.replaceChildren(imageSimilarityStatus('finding similar images…'))
+    startSearchProgress()
+    try {
+      await ensureSearchData()
+      if (token !== searchSeq || !imageActive) return
+      const documents = await imageSimilarity.search(seed, numSearchResultsSemantic)
+      if (token !== searchSeq || !imageActive) return
+      const hits = documents.flatMap(document => {
+        const id = idDataMap.findIndex(slug => slug === document.slug)
+        const item = id >= 0 ? formatForDisplay('', id, 'basic', 'images') : null
+        return item ? [{ item, similarity: document.score }] : []
+      })
+      await commitSearchDisplay(token, () => {
+        displayResults(hits)
+        results.dataset.imageSeed = seed
+      })
+    } catch (error) {
+      if (isSemanticCancellation(error) || token !== searchSeq || !imageActive) return
+      results.replaceChildren(
+        imageSimilarityStatus('similar images unavailable. Type an image query to continue.'),
+      )
+    } finally {
+      if (token === searchSeq) completeSearchProgress()
+    }
+  }
+
+  function displayResults(finalResults: SimilarityResult[]) {
     results.replaceChildren()
     if (finalResults.length === 0) {
       results.innerHTML = `<a class="result-card no-match">
@@ -843,8 +969,63 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
           <p>Try another search term?</p>
       </a>`
       currentHover = null
-    } else {
+    } else if (finalResults.every(({ item }) => searchableImage(item.slug))) {
       results.append(...finalResults.map(resultToHTML))
+      fitResultPaths()
+    } else {
+      const scored = finalResults.some(result => Number.isFinite(result.similarity))
+      const table = document.createElement('table')
+      table.className = 'search-results-table'
+      table.setAttribute('aria-label', 'search results')
+      const head = table.createTHead().insertRow()
+      for (const [label, column] of [
+        ['note', 'note'],
+        ['path', 'path'],
+        ['match', 'match'],
+        ...(scored ? [['score', 'score']] : []),
+      ]) {
+        const heading = document.createElement('th')
+        heading.scope = 'col'
+        heading.className = `search-column-${column}`
+        heading.textContent = label
+        head.append(heading)
+      }
+      const body = table.createTBody()
+      for (const result of finalResults) {
+        const row = body.insertRow()
+        const note = row.insertCell()
+        note.className = 'search-column-note'
+        note.append(resultToHTML(result))
+        const path = row.insertCell()
+        path.className = 'search-column-path'
+        const pathLabel = document.createElement('span')
+        pathLabel.className = 'search-result-path'
+        pathLabel.textContent = result.item.slug
+        pathLabel.title = result.item.slug
+        path.append(pathLabel)
+        const match = row.insertCell()
+        match.className = 'search-column-match'
+        const excerpt = document.createElement('span')
+        excerpt.innerHTML = result.item.protected ? 'protected content' : result.item.content
+        match.append(excerpt)
+        if (scored) {
+          const score = row.insertCell()
+          score.className = 'search-column-score'
+          score.textContent = Number.isFinite(result.similarity)
+            ? result.similarity.toFixed(3)
+            : '–'
+        }
+        const anchor = note.querySelector<HTMLAnchorElement>('a.result-card')
+        if (anchor) {
+          row.addEventListener('mouseenter', () => void displayPreview(anchor))
+          row.addEventListener('click', event => {
+            if (event.target instanceof Element && event.target.closest('a, button')) return
+            if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return
+            anchor.click()
+          })
+        }
+      }
+      results.append(table)
       fitResultPaths()
     }
 
@@ -855,7 +1036,7 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
       if (!firstChild) return
       firstChild.classList.add('focus')
       currentHover = firstChild
-      await displayPreview(firstChild)
+      void displayPreview(firstChild)
     }
   }
 
@@ -873,7 +1054,7 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   }
 
   async function displayPreview(el: HTMLElement | null) {
-    if (!enablePreview || !el || !preview) return
+    if (!previewVisible || !el || !preview) return
     const slug = el.id
     if (!isFullSlug(slug)) return
     clearPreview()
@@ -927,6 +1108,13 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
           if (request.signal.aborted) return
           console.warn('[Search] document preview unavailable:', error)
         }
+      }
+
+      if (searchableImage(slug)) {
+        preview.replaceChildren(
+          imageSearchPreview(slug, resolveUrl(slug).toString(), showSimilarImages),
+        )
+        return
       }
 
       if (documentType || el.dataset.directFile === 'true') {
@@ -1028,8 +1216,13 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   async function querySearch(rawTerm: string, token: number) {
     await ensureSearchData()
     if (token !== searchSeq) return
-    const trimmed = rawTerm.trim()
-    if (trimmed === '') {
+    const { scope, term: trimmed, explicit } = parseSearchQuery(rawTerm)
+    if (scope === 'images') {
+      const ids = await imageSimilarity.ids().catch(() => undefined)
+      if (token !== searchSeq) return
+      imageIds = ids
+    }
+    if (trimmed === '' && !explicit) {
       await commitSearchDisplay(token, () => {
         results.replaceChildren()
         clearPreview()
@@ -1049,7 +1242,16 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     const lexicalClient = getLexicalSearchClient()
     const loadedData = requireData()
 
-    if (initialType === 'tags') {
+    if (trimmed === '') {
+      searchResults = [
+        {
+          field: 'title',
+          result: idDataMap.flatMap((slug, id) =>
+            searchScopeIncludes(scope, { ...loadedData[slug], slug }) ? [id] : [],
+          ),
+        },
+      ]
+    } else if (initialType === 'tags') {
       tagTerm = trimmed.substring(1).trim()
       const separatorIndex = tagTerm.indexOf(' ')
       if (separatorIndex !== -1) {
@@ -1057,6 +1259,7 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
         const query = tagTerm.substring(separatorIndex + 1).trim()
         searchResults = await lexicalClient.search(loadedData, {
           query,
+          scope,
           limit: Math.max(getNumSearchResults(modeForRanking), 10000),
           index: ['title', 'fileName', 'content', 'aliases'],
           tag: { tags: tag },
@@ -1067,7 +1270,8 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
       } else {
         searchResults = await lexicalClient.search(loadedData, {
           query: tagTerm,
-          limit: getNumSearchResults(modeForRanking),
+          scope,
+          limit: scope === 'images' ? idDataMap.length : getNumSearchResults(modeForRanking),
           index: ['tags'],
         })
         if (token !== searchSeq) return
@@ -1076,7 +1280,8 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     } else {
       searchResults = await lexicalClient.search(loadedData, {
         query: highlightTerm,
-        limit: getNumSearchResults(modeForRanking),
+        scope,
+        limit: scope === 'images' ? idDataMap.length : getNumSearchResults(modeForRanking),
         index: ['title', 'fileName', 'content', 'aliases'],
       })
       if (token !== searchSeq) return
@@ -1098,10 +1303,10 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     const candidateItems = new Map<string, Item>()
     const ensureItem = (id: number): Item | null => {
       const slug = idDataMap[id]
-      if (!slug) return null
+      if (!slug || !searchScopeIncludes(scope, { ...loadedData[slug], slug })) return null
       const cached = candidateItems.get(slug)
       if (cached) return cached
-      const item = formatForDisplay(highlightTerm, id, workingType)
+      const item = formatForDisplay(highlightTerm, id, workingType, scope)
       if (item) {
         candidateItems.set(slug, item)
         return item
@@ -1122,11 +1327,14 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     let semanticIds: number[] = []
     const semanticSimilarity = new Map<number, number>()
 
-    const orchestrator = modeForRanking === 'semantic' && semanticReady ? semantic : null
+    const orchestrator =
+      modeForRanking === 'semantic' && semanticReady && (scope === 'notes' || scope === 'all')
+        ? semantic
+        : null
 
     const render = async () => {
       if (token !== searchSeq) return
-      const useSemantic = semanticReady && semanticIds.length > 0
+      const useSemantic = semanticIds.length > 0
       const boosts = new Map<number, number>()
       for (const id of baseIndices) {
         if (ensureItem(id)?.titleMatch) boosts.set(id, 1.5)
@@ -1156,6 +1364,40 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     }
 
     await render()
+
+    if (scope === 'images' && initialType === 'basic' && highlightTerm) {
+      startSearchProgress()
+      try {
+        const service = await ensureImageSearch()
+        if (token !== searchSeq || !imageActive) return
+        const documents = await service.search(
+          highlightTerm,
+          getNumSearchResults(modeForRanking) * 8,
+        )
+        if (token !== searchSeq || !imageActive) return
+        for (const { slug, score } of documents) {
+          const id = slugToIndex.get(slug)
+          if (id === undefined || !ensureItem(id)) continue
+          semanticIds.push(id)
+          semanticSimilarity.set(id, score)
+        }
+        completeSearchProgress()
+        await render()
+      } catch (error) {
+        if (isSemanticCancellation(error) || token !== searchSeq || !imageActive) return
+        imageSemantic?.dispose()
+        imageSemantic = null
+        imageReady = null
+        completeSearchProgress()
+        await commitSearchDisplay(token, () => {
+          const status = document.createElement('p')
+          status.setAttribute('role', 'status')
+          status.textContent = 'Visual search unavailable. Showing image metadata matches.'
+          results.prepend(status)
+        })
+      }
+      return
+    }
 
     if (initialType === 'tags' || !orchestrator || !semanticReady || highlightTerm.length < 2) {
       return
@@ -1214,12 +1456,16 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   }
 
   function onType() {
+    delete results.dataset.imageSeed
+    imageSimilarity.cancel()
+    imageSemantic?.cancel()
     semantic?.cancel()
     previewRequest?.abort()
     rawSearchTerm = searchBar.value
     const hasQuery = rawSearchTerm.trim() !== ''
     const term = rawSearchTerm
     const token = ++searchSeq
+    pendingOpen = null
     pendingDisplay = null
     searchLayout.setAttribute('aria-busy', String(hasQuery))
     if (runSearchTimer !== null) {

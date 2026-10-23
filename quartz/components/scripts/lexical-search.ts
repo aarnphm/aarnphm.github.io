@@ -8,6 +8,7 @@ import type {
   LexicalWorkerResponse,
 } from './lexical-search-types'
 import { isSearchExcluded } from '../../util/search-exclude'
+import { searchScopeIncludes } from '../../util/search-scope'
 import { prepareLexicalDocument } from './lexical-search-document'
 
 type PendingSearch = {
@@ -93,11 +94,31 @@ export class LexicalSearchClient {
     spec: LexicalSearchSpec,
   ): Promise<LexicalFieldResult[]> {
     const generation = this.generation
+    const sources = Object.entries(data).filter(
+      ([slug, source]) => !isSearchExcluded(slug) && !isSearchExcluded(source.fileName),
+    )
+    const scoped = spec.scope !== undefined && spec.scope !== 'all'
+    const completeSpec = scoped ? { ...spec, limit: Math.max(spec.limit, sources.length) } : spec
+    const selectResults = (results: LexicalFieldResult[]) =>
+      scoped
+        ? results.map(result => ({
+            ...result,
+            result: result.result
+              .filter(id => {
+                const entry = sources[id]
+                return (
+                  entry !== undefined &&
+                  searchScopeIncludes(spec.scope ?? 'all', { ...entry[1], slug: entry[0] })
+                )
+              })
+              .slice(0, spec.limit),
+          }))
+        : results
     await this.ensureIndexed(data, 'user-visible')
 
     if (!this.workerFailed && this.worker && this.workerReady) {
       try {
-        return await this.searchWorker(spec)
+        return selectResults(await this.searchWorker(completeSpec))
       } catch (err) {
         if (generation !== this.generation) throw err
         this.handleWorkerFatal(err)
@@ -110,7 +131,7 @@ export class LexicalSearchClient {
     if (!this.fallbackIndex) {
       throw new Error('lexical fallback index is unavailable')
     }
-    return mod.searchLexicalDocumentIndex(this.fallbackIndex, spec)
+    return selectResults(await mod.searchLexicalDocumentIndex(this.fallbackIndex, completeSpec))
   }
 
   disposeForPagehide(): void {
