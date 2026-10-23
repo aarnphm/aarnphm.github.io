@@ -1,3 +1,4 @@
+import { setPageCount } from './viewer-chrome'
 import {
   clampPdfValue,
   MAX_SCALE,
@@ -98,9 +99,8 @@ export function createPageSlot(
 
 export function updateControls(state: PdfState) {
   const { controls } = state
-  controls.pageInput.max = String(state.document.numPages)
+  setPageCount(controls, state.document.numPages)
   controls.pageInput.value = String(state.currentPage)
-  controls.pageTotal.textContent = `/ ${state.document.numPages}`
   controls.prev.disabled = state.currentPage <= 1
   controls.next.disabled = state.currentPage >= state.document.numPages
   controls.zoom.textContent = `${Math.round(state.scale * 100)}%`

@@ -187,6 +187,21 @@ function createDownloadLink(options: PdfOptions): HTMLAnchorElement {
   return link
 }
 
+/** Writes the page count and sizes the page field to its digits, so the pager keeps its width. */
+export function setPageCount(controls: PdfControls, count: number) {
+  controls.pageInput.max = String(count)
+  controls.pageInput.style.setProperty('--pdf-embed-page-digits', String(String(count).length))
+  controls.pageTotal.textContent = `/ ${count}`
+}
+
+function createControlGroup(className: string, label: string): HTMLDivElement {
+  const group = document.createElement('div')
+  group.className = `pdf-embed-control-group ${className}`
+  group.setAttribute('role', 'group')
+  group.ariaLabel = label
+  return group
+}
+
 export function createControls(options: PdfOptions): {
   toolbar: HTMLDivElement
   controls: PdfControls
@@ -194,8 +209,7 @@ export function createControls(options: PdfOptions): {
   const toolbar = document.createElement('div')
   toolbar.className = 'pdf-embed-toolbar'
 
-  const pageGroup = document.createElement('div')
-  pageGroup.className = 'pdf-embed-control-group pdf-embed-page-controls'
+  const pageGroup = createControlGroup('pdf-embed-page-controls', 'Page')
   const prev = createButton('pdf-embed-prev', createPdfIcon(PDF_ICON_PREV), 'Previous page')
   const pageInput = document.createElement('input')
   pageInput.className = 'pdf-embed-page-input'
@@ -209,13 +223,13 @@ export function createControls(options: PdfOptions): {
   const next = createButton('pdf-embed-next', createPdfIcon(PDF_ICON_NEXT), 'Next page')
   pageGroup.append(prev, pageInput, pageTotal, next)
 
-  const zoomGroup = document.createElement('div')
-  zoomGroup.className = 'pdf-embed-control-group pdf-embed-zoom-controls'
+  const zoomGroup = createControlGroup('pdf-embed-zoom-controls', 'Zoom')
   const zoomOut = createButton('pdf-embed-zoom-out', createPdfIcon(PDF_ICON_MINUS), 'Zoom out')
   const zoom = document.createElement('span')
   zoom.className = 'pdf-embed-zoom'
   zoom.textContent = '100%'
   const zoomIn = createButton('pdf-embed-zoom-in', createPdfIcon(PDF_ICON_PLUS), 'Zoom in')
+  zoomGroup.append(zoomOut, zoom, zoomIn)
   const download = createDownloadLink(options)
   const fit = document.createElement('select')
   fit.className = 'pdf-embed-fit'
@@ -235,8 +249,10 @@ export function createControls(options: PdfOptions): {
     fit.appendChild(option)
   }
   fit.value = options.fit === 'custom' ? 'width' : options.fit
-  zoomGroup.append(zoomOut, zoom, zoomIn, download, fit)
-  toolbar.append(pageGroup, zoomGroup)
+  const end = document.createElement('div')
+  end.className = 'pdf-embed-toolbar-end'
+  end.append(zoomGroup, download, fit)
+  toolbar.append(pageGroup, end)
 
   return { toolbar, controls: { pageInput, pageTotal, prev, next, zoom, fit } }
 }
