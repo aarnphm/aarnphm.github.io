@@ -71,7 +71,7 @@ export function transcludeAnchor(
   const [parent, ...children] = url.split('/')
   const truncated = children.length > 2 ? `${parent}/.../${children[children.length - 1]}` : url
   const metadata: Element[] = [
-    h('li', { style: 'font-style: italic; color: var(--gray);' }, [
+    h('li', { style: 'font-style: italic; color: var(--darkgray);' }, [
       { type: 'text', value: `url: ${truncated}` },
     ]),
   ]

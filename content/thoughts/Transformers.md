@@ -2,7 +2,8 @@
 date: '2024-02-07'
 description: Attention, next-token training, decoding, and particle-based steering in transformer language models.
 id: Transformers
-modified: 2026-06-07 01:44:41 GMT-04:00
+layout: technical
+modified: 2026-10-23 16:52:48 GMT-04:00
 seealso:
   - '[[thoughts/LLMs|LLMs]]'
   - '[[thoughts/Embedding|embedding]]'
@@ -11,9 +12,7 @@ seealso:
   - '[[thoughts/KV offloading|KV offloading]]'
   - '[[thoughts/mechanistic interpretability|mechanistic interpretability]]'
   - '[[thoughts/Speculative decoding|Speculative decoding]]'
-  - '[[thoughts/tsfm|toronto school of foundational modelling]]'
-socials:
-  updates: https://magazine.sebastianraschka.com/p/beyond-standard-llms
+  - '[[/thoughts/tsfm|toronto school of foundational modelling]]'
 tags:
   - ml
   - technical
@@ -22,7 +21,7 @@ title: Transformers
 
 A transformer combines [[thoughts/Attention#Multi-head Attention|attention]] with position-wise feed-forward layers, residual connections, and normalization. Attention lets each position read weighted combinations of other positions' value vectors. The weights come from query–key scores computed from the current representations using learned projections. A high weight says where information enters that computation; it does not identify a high-entropy token or guarantee semantic importance. [@vaswani2023attentionneed]
 
-The architecture and the training objective are separate choices. The original transformer had an encoder and a decoder for translation. Here I focus on a decoder-only [[thoughts/Autoregressive models|autoregressive]] language model: read a prefix, produce a distribution for the next token, append a token, repeat. [Attention Is All You Need, §3](https://arxiv.org/html/1706.03762v7#S3)
+The architecture and the training objective are separate choices. The original transformer had an encoder and a decoder for translation. Here I focus on a decoder-only [[thoughts/Autoregressive models|autoregressive]] language model: read a prefix, produce a distribution for the next token, append a token, repeat. [Attention Is All You Need, §3](https://arxiv.org/html/1706.03762v7#S3). There is also a more recent [blog post](https://magazine.sebastianraschka.com/p/beyond-standard-llms) that goes beyond just a simple GPT-like architecture (probably a bit more updated with Kimi, Gated Delta Rule, et al.)
 
 ## internals
 
@@ -50,7 +49,13 @@ $$
 
 The softmax runs across key positions. The causal mask $C$ prevents position $t$ from reading future tokens. Multiple heads use separate projections, then combine their outputs. [Vaswani et al., §3.2](https://arxiv.org/html/1706.03762v7#S3.SS2)
 
-For a batch of $B$ sequences with $T$ input positions and vocabulary $\mathcal V$, logits have shape $B\times T\times |\mathcal V|$. Let $y_{b,t}=x_{b,t+1}$ be the target after input position $t$, and let $m_{b,t}$ equal one exactly where that target should contribute to training. With $N_{\mathrm{sup}}=\sum_{b,t}m_{b,t}>0$:
+For {{sidenotes[^a batch]}} of $B$ sequences with $T$ input positions and vocabulary $\mathcal V$, logits have shape $B\times T\times |\mathcal V|$. Let $y_{b,t}=x_{b,t+1}$ be the target after input position $t$, and let $m_{b,t}$ equal one exactly where that target should contribute to training. With $N_{\mathrm{sup}}=\sum_{b,t}m_{b,t}>0$:
+
+{{sidenotes[a batch]}}:
+
+    A batch can contain padding or targets excluded from supervision, so the denominator counts supervised positions. For example, sequences with three and one supervised targets contribute four terms in total. Using the padded batch size would change the loss scale when padding changes.
+
+    Training supplies the actual prefix at every position. The causal mask permits all these next-token predictions in one forward pass. During generation, each sampled token becomes part of the next prefix.
 
 $$
 \mathcal L(\theta)
@@ -58,10 +63,6 @@ $$
 \sum_{b=1}^{B}\sum_{t=1}^{T}
  m_{b,t}\log p_\theta(y_{b,t}\mid x_{b,\leq t}).
 $$
-
-A batch can contain padding or targets excluded from supervision, so the denominator counts supervised positions. For example, sequences with three and one supervised targets contribute four terms in total. Using the padded batch size would change the loss scale when padding changes.
-
-Training supplies the actual prefix at every position. The causal mask permits all these next-token predictions in one forward pass. During generation, each sampled token becomes part of the next prefix.
 
 ## memory limitations.
 

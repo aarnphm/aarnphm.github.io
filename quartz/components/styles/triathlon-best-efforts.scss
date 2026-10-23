@@ -117,7 +117,7 @@
 }
 
 .tri-be-cap {
-  color: var(--gray);
+  color: var(--darkgray);
   font-size: 0.56rem;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -135,13 +135,13 @@
 }
 
 .tri-be-secondary {
-  color: var(--gray);
+  color: var(--darkgray);
   font-size: 0.56rem;
   white-space: nowrap;
 }
 
 .tri-be-date {
-  color: var(--gray);
+  color: var(--darkgray);
   white-space: nowrap;
 }
 
@@ -177,7 +177,7 @@
   box-sizing: border-box;
   padding: 0 0.3em;
   border: 1px solid color-mix(in srgb, var(--gray) 45%, transparent);
-  color: var(--gray);
+  color: var(--darkgray);
   font-family: var(--codeFont);
   font-size: 0.55rem;
   font-variant-numeric: tabular-nums;
@@ -296,7 +296,7 @@
   justify-content: flex-end;
   gap: 0.4rem 1rem;
   min-width: 0;
-  color: var(--gray);
+  color: var(--darkgray);
   font-size: 0.56rem;
 }
 
@@ -369,7 +369,7 @@
 }
 
 .tri-be-band-count {
-  color: var(--gray);
+  color: var(--darkgray);
   font-size: 0.56rem;
 }
 
@@ -454,7 +454,7 @@
   gap: 0.3rem;
 
   dt {
-    color: var(--gray);
+    color: var(--darkgray);
   }
 
   dd {
@@ -466,7 +466,7 @@
 .tri-be-tag {
   padding: 0 0.3rem;
   border: 1px solid var(--lightgray);
-  color: var(--gray);
+  color: var(--darkgray);
   font-size: 0.52rem;
 }
 

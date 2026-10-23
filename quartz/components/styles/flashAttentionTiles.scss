@@ -253,7 +253,8 @@
 
 @container fat-figure (max-width: 760px) {
   .fat-stage {
-    grid-template-columns: 1fr;
+    // A zero minimum keeps the scroller's 36rem drawing from widening the column.
+    grid-template-columns: minmax(0, 1fr);
     gap: 1.25rem;
   }
 }
