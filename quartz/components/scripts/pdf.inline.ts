@@ -17,7 +17,7 @@ import {
   enqueuePreloadPages,
   scrollToPage,
 } from './pdf-common/page-rendering'
-import { createControls } from './pdf-common/viewer-chrome'
+import { createControls, setPageCount } from './pdf-common/viewer-chrome'
 import {
   clampPdfValue,
   readInteger,
@@ -92,7 +92,7 @@ async function mountPdfEmbed(root: HTMLElement, options: PdfOptions, events: Abo
     const firstViewport = firstPage.getViewport({ scale: 1 })
 
     const { toolbar, controls } = createControls(options)
-    controls.pageTotal.textContent = `/ ${pdfDocument.numPages}`
+    setPageCount(controls, pdfDocument.numPages)
 
     const scroller = document.createElement('div')
     scroller.className = 'pdf-viewer-container'
