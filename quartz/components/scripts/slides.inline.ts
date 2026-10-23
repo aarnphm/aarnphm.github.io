@@ -535,6 +535,7 @@ document.addEventListener('nav', () => {
   }
 
   const keyEvent = (e: KeyboardEvent) => {
+    if (e.defaultPrevented || document.querySelector('.zoomable.is-zoomed')) return
     const target = e.target
     if (
       target instanceof HTMLInputElement ||
@@ -545,6 +546,12 @@ document.addEventListener('nav', () => {
       return
     }
     if (e.metaKey || e.ctrlKey || e.altKey || e.isComposing) return
+    if (
+      (e.key === ' ' || e.key === 'Enter') &&
+      target instanceof Element &&
+      target.closest('button, a, summary, [role=button], [role=tab], [role=radio]')
+    )
+      return
 
     switch (e.key) {
       case 'ArrowLeft':
