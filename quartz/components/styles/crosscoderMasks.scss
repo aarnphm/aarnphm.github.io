@@ -183,10 +183,10 @@
   @include figure-table;
   margin-top: 0.9rem;
 
-  // The value column sizes to its widest state ("L0 L1 L2 L3 L4", 14 characters), so a
-  // hover or variant change never moves the label column.
+  // CrosscoderMasks.tsx emits the longest value any state can show; nowrap keeps one line.
   dd {
-    min-width: 14ch;
+    min-width: calc(var(--ccm-value-ch) * 1ch);
+    white-space: nowrap;
   }
 }
 

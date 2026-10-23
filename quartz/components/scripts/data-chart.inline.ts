@@ -141,9 +141,24 @@ const setupProbe = (root: HTMLElement): (() => void) | null => {
 const setupScale = (root: HTMLElement): (() => void) | null => {
   const svg = root.querySelector<SVGSVGElement>('[data-dch-svg]')
   if (!svg) return null
+  // A hover band narrower than 24 rendered px grows symmetrically about its point. Bands overlap,
+  // and pointer selection picks the nearest point by centre, so the overlap changes no choice.
+  const hits = Array.from(svg.querySelectorAll<SVGRectElement>('[data-dch-pos]')).map(rect => ({
+    rect,
+    lo: Number(rect.getAttribute('x')),
+    width: Number(rect.getAttribute('width')),
+    cx: Number(rect.getAttribute('data-dch-cx')),
+  }))
   const observer = new ResizeObserver(entries => {
     const width = entries[entries.length - 1].contentRect.width
-    if (width > 0) svg.style.setProperty('--dch-u', (svg.viewBox.baseVal.width / width).toFixed(4))
+    if (width <= 0) return
+    const u = svg.viewBox.baseVal.width / width
+    svg.style.setProperty('--dch-u', u.toFixed(4))
+    for (const h of hits) {
+      const wide = h.width >= 24 * u
+      h.rect.setAttribute('x', String(wide ? h.lo : h.cx - 12 * u))
+      h.rect.setAttribute('width', String(wide ? h.width : 24 * u))
+    }
   })
   observer.observe(svg)
   return () => observer.disconnect()

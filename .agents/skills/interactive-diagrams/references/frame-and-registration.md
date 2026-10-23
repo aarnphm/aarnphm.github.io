@@ -2,6 +2,8 @@
 
 Register a Preact component in `quartz/components/mdx/registry.ts` through `registerMdxComponent`, and add its import/export to `quartz/components/mdx/index.ts`. Attach its stylesheet to `.css` and, when needed, its inline script to `.afterDOMLoaded`. Give the component an explicit `QuartzMdxComponent<Props>` type; a second type assertion is unnecessary.
 
+Initialize browser behavior with `registerMdxContent(selector, setup)` from `quartz/components/scripts/mdx-content.ts`. It discovers each component once on page navigation, mounted fragments and slide changes, and waits until a slide is active. Register the instance's `window.addCleanup` callbacks inside `setup`. This keeps slide fragments interactive without resetting instances when revisiting a slide.
+
 Embed it in a note with the registered names in a JSX fence:
 
 ````md

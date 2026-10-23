@@ -136,6 +136,18 @@ const stateFor = (variant: string, f: number): State => {
   }
 }
 
+// The readout's value column is sized by the longest value any variant and read layer can show,
+// enumerated from the same state function the page renders, so the two cannot drift.
+const ALL_VARIANTS = [...new Set([...variantsFor('coder'), ...variantsFor('variant')])]
+const READOUT_VALUE_CH = Math.max(
+  ...ALL_VARIANTS.flatMap(v =>
+    LAYERS.flatMap(f => {
+      const s = stateFor(v, f)
+      return [s.groups, s.pairs, s.reads, s.writes].map(t => [...t].length)
+    }),
+  ),
+)
+
 // ---------- geometry ----------
 
 const PITCH = 30
@@ -406,7 +418,7 @@ const CrosscoderMasksImpl: QuartzMdxComponent<Props> = ({
         </svg>
       </div>
 
-      <dl class="ccm-readout">
+      <dl class="ccm-readout" style={`--ccm-value-ch:${READOUT_VALUE_CH}`}>
         <div>
           <dt>Latent groups</dt>
           <dd data-ccm-out="groups">{s0.groups}</dd>
