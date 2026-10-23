@@ -1,7 +1,6 @@
 import { statSync } from 'node:fs'
 import { isTreatment, normalizeKind, type ActivityKind } from '../plugins/stores/strava'
-import { readStravaCacheFileSync } from './strava-cache-file'
-import { stravaCachePath } from './strava-payload'
+import { readStravaCacheFileSync, stravaCachePath } from './strava-cache-file'
 
 export const STRAVA_LATEST_ACTIVITIES_LIMIT = 5
 
