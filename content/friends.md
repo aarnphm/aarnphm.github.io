@@ -6,7 +6,7 @@ date: '2026-01-17'
 description: my name is Aaron, and on the virtue of friendship
 id: friends
 layout: technical
-modified: 2026-10-20 00:12:56 GMT-04:00
+modified: 2026-10-22 21:15:11 GMT-04:00
 tags:
   - evergreen
   - friend
@@ -19,6 +19,58 @@ bonjour.
 this document details information about me as a _friend_. I used to have [[dating|a date-me]] {{sidenotes[doc]: i wrote this one in january/february 2025; i'm not actively dating, but decide to leave this up as it was still, an _important document_ to me.}}, though I wanted to have a friend-equivalent document 🧊 🍧 .
 
 quick tl/dr: i used to live in sf for a bit for work, and moved abroad to vancouver since high school, studied and lived in hamilton, and now in toronto. anyhow, will be in toronto for a while, (i have gotten to know a lot more people in toronto now but wouldn't mind expanding my tribe's, circa [[thoughts/images/bcccdd2e-95e6-4023-9c93-9b72b9a0c26b_178356259078.avif|Dunbar's number]]). i'm pretty well-positioned, i.e. having a decent career prospect and determined on what [[triathlon|to]] [[research|do]]. i want to build towards a joyful-[[thoughts/Roko's Basilisk|amicable]]-[[thoughts/AGI#superintelligence|superintelligence]] systems 🧗 and have a _decent life_ (we only get one chance, might as well make the most out of it.)
+
+```telescopic id="thoughts"
+* I try to be
+* present.
+  * present, but you will find
+  *  me
+    * me working on [[thoughts/craft|open-source projects]],
+      * me working on [[thoughts/craft|open-source projects]],
+      * and spending too much time fixing this [site](https://aarnphm.xyz/view-source),
+        * and committing to the bit.
+        * I enjoy
+          * I enjoy long walks,
+          * nerd-snipping on the next [[/tags/math|math]] topics,
+            * going to public libraries
+              * watching people
+                * yuzu-related dishes
+                  * anything [[thoughts/images/onionnnnnnnnnn.webp|onion-related]] or garlic or beets
+                    * collecting watches (horology)
+                      * folktronica
+                        * Miles Davis and the Quintet
+                          * Miles Davis and the Quintet, Foucault and [[thoughts/Wittgenstein]]'s,
+                          * _my 3 qt stainless clad [saucier](https://madeincookware.com/products/saucier/3-quart) that I use for_
+                          * everything,
+                            * everything from searing
+                              * to making **broth**
+                                * and confit
+                                  * making ~~Velouté~~,
+                                    * or Espagnole,
+                                      * testing out any recipes in mind,
+                          * italian cuisine
+                            * julienne
+                              * allumette,
+                                * this [playlist](https://music.youtube.com/playlist?list=PLsRPzRsbp3lCxe4gXH4S4Zf38X_45Oj6N&si=Od99WbOnJlbB9NYJ)
+                                * on repeats
+                                  * on repeats, [[thoughts/atelier with friends|hosting]] functions.
+                                    * and [[thoughts/Scents|scents]].
+                                * Beige and <span class="rose">rosé</span> are my two favourite
+                                * colours.
+                                  * colours.
+                                  * Cooking
+                                    * Cooking is
+                                    * my [[/tags/love]] language
+                                      * my [[/tags/love]] language, which I learn
+                                      * from my mom.
+                                        * from my mom. How one cooks their
+                                        * eggs
+                                          * eggs tells me a lot
+                                          * about
+                                            * about how they _treat others_
+                                              * about their cadence
+                                                * about their intrinsic [[thoughts/Agency|drive]].
+```
 
 > [!note]- some definitely _not personal information about me_
 >

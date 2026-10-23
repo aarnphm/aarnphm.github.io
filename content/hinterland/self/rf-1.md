@@ -111,7 +111,7 @@ so here’s where i’m landing, for the present self:
 - the instruction is to let the wound breathe its own language—neither hello nor goodbye.
 - to accept that the third night doesn’t arrive, and still the body holds its own archive: phantom indents, grooves in the vinyl, the impossible persistence of touch.
 - and to admit the thing that makes me cringe bc it sounds religious: love changed my ontology. not in the “i joined a church” sense. in the “i can no longer pretend meaning is optional” sense.
-- the meaning-making machine meets the meaningless void and keeps making meaning anyway . that’s the human condition, no cap, and lydia just made it impossible to keep pretending i’m above it.
+- the meaning-making machine meets the meaningless void and keeps making meaning anyway . that’s the human condition, no cap, and love just made it impossible to keep pretending i’m above it.
 
 > grief: proof of contact. evidence that something real happened. and rn, as annoying as it is, it’s also the closest thing i’ve got to a compass.
 
@@ -125,7 +125,7 @@ _scaling superintelligence_
 
 I see myself, at least insofar as the next few decades, to scale intelligence. We're in the age of commoditizing intelligence: cognition as an API, judgment as a subscription, taste as a vector.
 
-my dream self is the person who helps turn that into a public good instead of a private weapon. the technical spine is obvious that [[thoughts/Transformers]] will be the _major part_ of the engine, [[thoughts/LLMs]] as one of the interface layer, [[research]] as the unglamorous constraint-satisfaction of latency, memory, and cost, or [[thoughts/taste]] discovery. the philosophical spine is somewhat more cumbersome: what do we do when "ability to do work" is no longer scarce, but "ability to want the right things" still [is.](https://lydianottingham.substack.com/p/vitae-per-person-vpp-a-new-way-of)
+my dream self is the person who helps turn that into a public good instead of a private weapon. the technical spine is obvious that [[thoughts/Transformers]] will be the _major part_ of the engine, [[thoughts/LLMs]] as one of the interface layer, [[research]] as the unglamorous constraint-satisfaction of latency, memory, and cost, or [[thoughts/taste]] discovery. the philosophical spine is somewhat more cumbersome: what do we do when "ability to do work" is no longer scarce, but "ability to want the right things" still is.
 
 i want [[thoughts/Intelligence|intelligence]] to be cheap enough that it stops being a gate. the target isn't "a slightly higher benchmark score"; it's shrinking the distance between intention and impact. if a kid with a busted laptop can draft a grant, write code, learn math, and coordinate a project in a weekend, that's a civilizational lever. the best version of commoditized intelligence is that ==more people get to do effective work, earlier, with less rent-seeking.==
 

@@ -8,7 +8,7 @@
 		{"id":"750c7173092cf915","type":"group","x":1400,"y":240,"width":640,"height":1920,"color":"5","label":"hiver"},
 		{"id":"0083d967459fbf97","type":"group","x":1400,"y":2400,"width":640,"height":1920,"color":"4","label":"printemps"},
 		{"id":"6f22d47be6826275","type":"group","x":2400,"y":240,"width":640,"height":1920,"color":"1","label":"été"},
-		{"id":"fd6fee990e7888a1","type":"group","x":6000,"y":380,"width":640,"height":1460,"color":"3","label":"pratique"},
+		{"id":"fd6fee990e7888a1","type":"group","x":6000,"y":380,"width":640,"height":1920,"color":"3","label":"pratique"},
 		{"id":"6ca7659c729f6285","type":"file","file":"fr/phrases.md","x":-680,"y":560,"width":560,"height":380,"color":"4"},
 		{"id":"7c535096bcc2f736","type":"file","file":"fr/les-nombres.md","x":-680,"y":1020,"width":560,"height":380,"color":"4"},
 		{"id":"0a9fc08c64d7d8ee","type":"file","file":"fr/orthography-phonetics.md","x":-680,"y":1480,"width":560,"height":380,"color":"4"},
@@ -64,7 +64,8 @@
 		{"id":"303f979ed2649480","type":"file","file":"fr/lessons/260810.md","x":3800,"y":1540,"width":560,"height":380,"color":"6"},
 		{"id":"7e6f74786870ec9e","type":"file","file":"fr/lessons/261020.md","x":3800,"y":3700,"width":560,"height":380,"color":"6"},
 		{"id":"d9135884a541666b","type":"text","text":"Reprend : [[fr/episode-14|14]].","x":3800,"y":4092,"width":560,"height":66},
-		{"id":"fd45ddafef9e1f96","type":"file","file":"fr/lessons/260817.md","x":4520,"y":1540,"width":560,"height":380,"color":"6"}
+		{"id":"fd45ddafef9e1f96","type":"file","file":"fr/lessons/260817.md","x":4520,"y":1540,"width":560,"height":380,"color":"6"},
+		{"id":"42169daff0e9b136","type":"file","file":"fr/practices/261021.md","x":6040,"y":1840,"width":560,"height":380,"color":"3"}
 	],
 	"edges":[
 		{"id":"c07a292ddcd6bbb3","fromNode":"ddafc8572b51d1ef","fromSide":"bottom","toNode":"826ee21b849d44e1","toSide":"top"},
