@@ -94,6 +94,7 @@ function shouldIgnoreAssetFile(
   fp: FilePath,
   referencedPdfs: ReadonlySet<FilePath>,
 ): boolean {
+  if (fp.startsWith('embeddings/images/')) return true
   const ext = path.extname(fp).toLowerCase()
   if (ext === '.md' || ext === '.base' || isFlashcardPath(fp)) return true
   if (fp.startsWith('triathlon/memos/') && ext !== '.json') {
