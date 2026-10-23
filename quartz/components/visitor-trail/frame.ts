@@ -190,7 +190,14 @@ const perspective = mountTrailPerspective(scene, host, signal)
 const weather = mountTrailWeather(scene, host, signal)
 const motionTuning = createMotionTuning(scene)
 const crowns = mountCrownWind(scene, signal, motionTuning.settings)
-mountSceneCompositor(scene, host, signal, opening)
+if (host.hidden) {
+  host.addEventListener('trail:open', () => mountSceneCompositor(scene, host, signal, opening), {
+    once: true,
+    signal,
+  })
+} else {
+  mountSceneCompositor(scene, host, signal, opening)
+}
 mountSceneLighting(scene, signal)
 mountTrailBlazes(scene, signal)
 mountLeafFall(scene, signal, motionTuning.settings)

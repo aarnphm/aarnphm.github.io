@@ -171,9 +171,16 @@ export function mountLeafFall(scene: HTMLElement, signal: AbortSignal, tuning: M
       scene.dataset.foliageSeason === 'autumn' &&
       scene.dataset.weatherMotion !== 'paused'
     canvas.hidden = !visible
-    if (!visible) leaves.length = 0
+    if (!visible) {
+      leaves.length = 0
+      last = 0
+      canvas.width = 1
+      canvas.height = 1
+      measured = -Infinity
+      return
+    }
     // The trail's weather stamps the shared schedule's rate (world-schedule.ts).
-    const rate = visible ? ((Number(scene.dataset.leafRate) || 0) * tuning.leaves) / 100 : 0
+    const rate = ((Number(scene.dataset.leafRate) || 0) * tuning.leaves) / 100
     if (rate > 0 && time - measured > 5000) measure(time)
     const air = wind()
     const left = sceneLeft - view.scrollX

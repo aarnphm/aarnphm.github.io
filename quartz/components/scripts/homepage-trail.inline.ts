@@ -1,8 +1,4 @@
-import {
-  readTrailPreference,
-  trailSupported,
-  writeTrailPreference,
-} from '../../util/trail-preference'
+import { trailSupported } from '../../util/trail-preference'
 import { trailScene, trailSceneHeight } from '../../util/trail-scene'
 import {
   holidayLabels,
@@ -204,8 +200,11 @@ document.addEventListener('nav', () => {
     },
     { signal },
   )
-  const setOpen = (open: boolean, remember = true) => {
+  const setOpen = (open: boolean) => {
     if (open && !supported) return
+    if (window.scrollY !== 0) window.scrollTo({ top: 0, behavior: 'instant' })
+    if (open) align()
+    if (open !== isOpen) scene.dispatchEvent(new Event('trail:before-toggle'))
     if (!open) {
       const shadowActive = scene.shadowRoot?.activeElement
       if (shadowActive instanceof HTMLElement || shadowActive instanceof SVGElement)
@@ -220,19 +219,16 @@ document.addEventListener('nav', () => {
     const almanac = root.querySelector<HTMLElement>('.trail-almanac')
     if (almanac) almanac.hidden = !open
     if (!open) root.querySelector<HTMLElement>('#homepage-moon-panel:popover-open')?.hidePopover()
-    if (remember) writeTrailPreference(open)
     cancelResize()
     window.cancelAnimationFrame(openFrame)
     window.clearTimeout(openTimer)
     openFrame = openTimer = 0
     motionStarted = false
-    if (open) align()
     if (open) scene.hidden = false
     for (const control of scene.shadowRoot?.querySelector('.trail-scene')?.children ?? [])
       if (control instanceof HTMLElement) control.inert = !open
     scene.setAttribute('aria-hidden', String(!open))
     toggle.setAttribute('aria-expanded', String(open))
-    window.scrollTo({ top: 0, behavior: 'instant' })
     const label = open ? 'Hide walking trail' : 'Show walking trail'
     toggle.title = `${label}${shownHoliday ? ` · ${holidayLabels[shownHoliday]}` : ''}`
     if (open) {
@@ -307,7 +303,10 @@ document.addEventListener('nav', () => {
     { signal },
   )
   const disposeEscape = registerEscapeHandler(root, close, canClose)
-  setOpen(readTrailPreference(), false)
+  try {
+    localStorage.removeItem('garden:trail-open')
+  } catch {}
+  setOpen(false)
   window.addCleanup(() => {
     controller.abort()
     landing?.style.removeProperty('visibility')

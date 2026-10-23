@@ -1,11 +1,17 @@
 import { lunarDiscPath } from '../../util/lunar-phase'
 
+const transitions = new WeakMap<
+  SVGPathElement,
+  { outgoing: SVGPathElement; fade: Animation; incoming: Animation }
+>()
+
 export function stopLunarTransition(path: SVGPathElement) {
-  path.getAnimations().forEach(animation => animation.cancel())
-  path.parentElement?.querySelectorAll('[data-moon-transition]').forEach(node => {
-    node.getAnimations().forEach(animation => animation.cancel())
-    node.remove()
-  })
+  const transition = transitions.get(path)
+  if (!transition) return
+  transitions.delete(path)
+  transition.fade.cancel()
+  transition.incoming.cancel()
+  transition.outgoing.remove()
 }
 
 export function paintLunarDisc(
@@ -35,6 +41,14 @@ export function paintLunarDisc(
     easing: 'ease-in-out',
     fill: 'forwards',
   })
-  fade.onfinish = () => outgoing.remove()
-  path.animate([{ opacity: 0 }, { opacity: strength }], { duration: 400, easing: 'ease-in-out' })
+  const incoming = path.animate([{ opacity: 0 }, { opacity: strength }], {
+    duration: 400,
+    easing: 'ease-in-out',
+  })
+  // Retain our handles: getAnimations() flushes the entire scene's pending style changes,
+  // including when a newly created moon has no transition to cancel.
+  transitions.set(path, { outgoing, fade, incoming })
+  fade.onfinish = () => {
+    if (transitions.get(path)?.fade === fade) stopLunarTransition(path)
+  }
 }

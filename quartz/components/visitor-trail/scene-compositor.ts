@@ -126,7 +126,7 @@ export function mountSceneCompositor(
   const { segments } = cache
   const { cancelSurfaceTrim, scheduleSurfaceTrim, endFade, endResize, presentResize, holdResize } =
     overlays
-  const { pauseAnimations, resumeAnimations } = sampler
+  const { suspendAnimations, resumeAnimations } = sampler
   const { schedule } = loop
   observer.observe(svg, {
     subtree: true,
@@ -201,9 +201,11 @@ export function mountSceneCompositor(
   )
   host.addEventListener('trail:reveal-end', schedule, { signal })
   host.addEventListener(
-    'trail:close',
-    () => pauseAnimations(svg.getAnimations({ subtree: true })),
-    { signal },
+    'trail:before-toggle',
+    () => {
+      if (host.getAttribute('aria-hidden') === 'false') suspendAnimations()
+    },
+    { signal, capture: true },
   )
   host.addEventListener(
     'trail:show',

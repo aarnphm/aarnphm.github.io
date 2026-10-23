@@ -22,14 +22,40 @@ export function createAnimationSampler(scope: Scope, sceneTree: SceneTree, overl
     return animations
   }
   const pausedAnimations = new Set<Animation>()
+  let pauseFrame = 0
+  const cancelSuspension = () => {
+    view.cancelAnimationFrame(pauseFrame)
+    pauseFrame = 0
+  }
+  signal.addEventListener('abort', cancelSuspension, { once: true })
   const pauseAnimations = (animations: Iterable<Animation>) => {
-    const running = [...animations].filter(animation => animation.playState === 'running')
+    const running = [...animations].filter(
+      animation => !pausedAnimations.has(animation) && animation.playState === 'running',
+    )
     for (const animation of running) {
       pausedAnimations.add(animation)
       animation.pause()
     }
   }
+  const suspendAnimations = () => {
+    cancelSuspension()
+    const pending = [...readAnimations()].filter(
+      animation => !pausedAnimations.has(animation) && animation.playState === 'running',
+    )
+    let next = 0
+    const suspend = () => {
+      pauseFrame = 0
+      // The closing wipe uses retained pixels. Spread SVG style invalidation over its frames.
+      for (const animation of pending.slice(next, (next += 8))) {
+        pausedAnimations.add(animation)
+        animation.pause()
+      }
+      if (next < pending.length) pauseFrame = view.requestAnimationFrame(suspend)
+    }
+    if (pending.length) pauseFrame = view.requestAnimationFrame(suspend)
+  }
   const resumeAnimations = () => {
+    cancelSuspension()
     const paused = [...pausedAnimations].filter(animation => animation.playState === 'paused')
     for (const animation of paused) animation.play()
     pausedAnimations.clear()
@@ -126,6 +152,6 @@ export function createAnimationSampler(scope: Scope, sceneTree: SceneTree, overl
       settle()
     }
   }
-  return { pauseAnimations, resumeAnimations, readAnimations, scan }
+  return { pauseAnimations, suspendAnimations, resumeAnimations, readAnimations, scan }
 }
 export type AnimationSampler = ReturnType<typeof createAnimationSampler>

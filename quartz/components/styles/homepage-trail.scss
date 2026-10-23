@@ -25,6 +25,12 @@
   font: var(--text-meta)/1 var(--codeFont);
   font-variant-numeric: tabular-nums;
   pointer-events: none;
+
+  // The pet measures its destination before the opening changes page visibility.
+  &[hidden] {
+    display: block;
+    visibility: hidden;
+  }
 }
 
 // Browsers without the trail hide its toggle.
