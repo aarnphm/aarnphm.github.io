@@ -1,6 +1,5 @@
 import type { MotionTuning } from './motion-tuning'
 import { debounce } from '../../util/debounce'
-import { buildSelect, type SelectOption } from '../controls/select'
 import {
   forestLimits,
   sceneSettings,
@@ -114,15 +113,15 @@ export function mountSceneControls(
     panel.dataset.tuningPending = 'true'
     applyPending()
   }
-  const section = (name: string, open = false) => {
-    const details = document.createElement('details')
-    details.className = 'trail-tuning-section'
-    details.open = open
-    const summary = document.createElement('summary')
-    summary.textContent = name
-    details.append(summary)
-    panel.append(details)
-    return details
+  const section = (name: string) => {
+    const group = document.createElement('section')
+    group.className = 'trail-tuning-section'
+    group.setAttribute('aria-label', name)
+    const heading = document.createElement('h3')
+    heading.textContent = name
+    group.append(heading)
+    panel.append(group)
+    return group
   }
   const range = (
     into: HTMLElement,
@@ -177,7 +176,7 @@ export function mountSceneControls(
     row.append(label, input)
     into.append(row)
   }
-  const animation = section('animation', true)
+  const animation = section('animation')
   for (const field of [
     { key: 'wind', label: 'tree sway', name: 'Tree sway', suffix: '%', step: 5 },
     { key: 'leaves', label: 'falling leaves', name: 'Falling leaves', suffix: '%', step: 5 },
@@ -234,48 +233,60 @@ export function mountSceneControls(
           settings.camps[field.key] = value
         }),
     )
-  const select = <T>(
+  const choices = <T>(
     into: HTMLElement,
     label: string,
     name: string,
-    options: SelectOption<T>[],
+    options: { value: T; label: string }[],
     value: T,
     changed: (value: T) => void,
   ) => {
-    const row = document.createElement('div')
-    row.className = 'trail-tuning-select'
-    const text = document.createElement('span')
+    const row = document.createElement('fieldset')
+    row.className = 'trail-tuning-choice'
+    const text = document.createElement('legend')
     text.textContent = label
-    const choice = buildSelect({
-      id: `trail-tuning-${crypto.randomUUID()}`,
-      label: name,
-      groups: [{ options }],
-      selected: value,
-      onSelect: changed,
-      floating: true,
+    const group = document.createElement('div')
+    group.className = 'trail-tuning-options'
+    const lifetime = new AbortController()
+    const id = `trail-tuning-${crypto.randomUUID()}`
+    const inputs = options.map(option => {
+      const label = document.createElement('label')
+      const input = document.createElement('input')
+      const text = document.createElement('span')
+      input.type = 'radio'
+      input.name = id
+      input.checked = option.value === value
+      input.setAttribute('aria-label', `${name}: ${option.label}`)
+      text.textContent = option.label
+      input.addEventListener('change', () => changed(option.value), { signal: lifetime.signal })
+      label.append(input, text)
+      group.append(label)
+      return { input, value: option.value }
     })
-    row.append(text, choice.element)
+    row.append(text, group)
     into.append(row)
-    const unmount = choice.mount()
-    cleanups.add(unmount)
+    const remove = () => {
+      lifetime.abort()
+      cleanups.delete(remove)
+      row.remove()
+    }
+    cleanups.add(remove)
     return {
-      ...choice,
-      remove() {
-        unmount()
-        cleanups.delete(unmount)
-        row.remove()
+      setSelected(value: T) {
+        for (const entry of inputs) entry.input.checked = entry.value === value
       },
+      remove,
     }
   }
   let lightValue = settings.camps.light
-  const light = select<CampSettings['light']>(
+  const light = choices<CampSettings['light']>(
     camps,
     'light',
     'Camp light',
     [
-      { value: 'weather', label: 'local weather' },
-      { value: 'day', label: 'day preview' },
-      { value: 'night', label: 'night preview' },
+      { value: 'weather', label: 'weather' },
+      { value: 'day', label: 'day' },
+      { value: 'night', label: 'night' },
     ],
     settings.camps.light,
     value => {
@@ -305,7 +316,7 @@ export function mountSceneControls(
       destinationSites = settings.camps.sites
       removeDestination()
       const destination = Math.min(settings.destination, destinationSites - 1)
-      const choice = select(
+      const choice = choices(
         camps,
         'visit',
         'Visit campsite',

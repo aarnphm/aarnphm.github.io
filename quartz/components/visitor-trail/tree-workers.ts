@@ -12,7 +12,7 @@ import {
   type CachedSceneTrees,
 } from './tree-cache'
 
-declare const TRAIL_TREE_WORKER_SOURCE: string
+declare const TRAIL_TREE_WORKER_URL: string
 declare const TRAIL_TREE_VERSION: string
 
 function foregroundFallback(
@@ -49,6 +49,7 @@ export function prepareSceneTrees(
   settings: ForestSettings,
   signal: AbortSignal,
   foreground?: ForegroundTreeInput,
+  phase: 'opening' | 'active' = 'opening',
 ): { trees: Map<string, Promise<string | null>>; foreground: Promise<ForestSprite[]> } {
   const sprites = new Map<string, Promise<string | null>>()
   let resolveForeground: ((sprites: ForestSprite[]) => void) | null = null
@@ -72,14 +73,11 @@ export function prepareSceneTrees(
   const workers: Worker[] = []
   const completed: CachedSceneTrees = { trees: [], foreground: [] }
   let cacheKey: string | null = null
-  let workerUrl: string | null = null
   let finished = false
   const finish = () => {
     if (finished) return
     finished = true
     for (const worker of workers) worker.terminate()
-    if (workerUrl) URL.revokeObjectURL(workerUrl)
-    workerUrl = null
     signal.removeEventListener('abort', finish)
     for (const resolve of pending.values()) resolve(null)
     pending.clear()
@@ -94,11 +92,8 @@ export function prepareSceneTrees(
   signal.addEventListener('abort', finish, { once: true })
   const startWorkers = () => {
     try {
-      workerUrl = URL.createObjectURL(
-        new Blob([TRAIL_TREE_WORKER_SOURCE], { type: 'text/javascript' }),
-      )
       for (let index = 0; index < count; index++) {
-        const worker = new Worker(workerUrl, { name: `trail-trees-${index}` })
+        const worker = new Worker(TRAIL_TREE_WORKER_URL, { name: `trail-trees-${index}` })
         workers.push(worker)
         worker.addEventListener('message', (event: MessageEvent<TreeWorkerMessage>) => {
           if (parent.sessionStorage.getItem('trail:profile') === 'true')
@@ -150,7 +145,7 @@ export function prepareSceneTrees(
     }
   }
   const restore = async () => {
-    if (!foreground) return startWorkers()
+    if (!foreground || phase === 'active') return startWorkers()
     let timer = 0
     const lookupStart = performance.now()
     try {

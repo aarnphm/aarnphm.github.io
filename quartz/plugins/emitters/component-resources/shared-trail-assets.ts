@@ -46,6 +46,7 @@ export async function writeSharedTrailAsset(ctx: BuildCtx) {
     }),
   ])
   const entries = [
+    { path: 'static/scripts/trail-tree.worker.js', source: worker.outputFiles[0].text },
     { path: 'static/scripts/trail-navigation.worker.js', source: navigation.outputFiles[0].text },
     { path: 'static/scripts/trail-moss.worker.js', source: moss.outputFiles[0].text },
   ]
@@ -61,7 +62,7 @@ export async function writeSharedTrailAsset(ctx: BuildCtx) {
     format: 'iife',
     write: false,
     define: {
-      TRAIL_TREE_WORKER_SOURCE: JSON.stringify(worker.outputFiles[0].text),
+      TRAIL_TREE_WORKER_URL: reference('static/scripts/trail-tree.worker.js'),
       TRAIL_TREE_VERSION: JSON.stringify(hashAssetContent(worker.outputFiles[0].text)),
       TRAIL_NAVIGATION_WORKER_URL: reference('static/scripts/trail-navigation.worker.js'),
       TRAIL_MOSS_WORKER_URL: reference('static/scripts/trail-moss.worker.js'),

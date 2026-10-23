@@ -54,7 +54,7 @@ document.addEventListener('nav', () => {
   const controller = new AbortController()
   const { signal } = controller
   const supported = trailSupported()
-  // Other browsers keep the clock and almanac, without a way to open the scene.
+  const introduction = content.querySelector<HTMLElement>('.homepage-board-copy')
   toggle.hidden = !supported
   mountTrailGateNavigation(scene, signal)
   let isOpen = false
@@ -109,7 +109,7 @@ document.addEventListener('nav', () => {
   }
   const align = () => {
     const bottom = content.getBoundingClientRect().bottom + window.scrollY
-    const height = `${trailSceneHeight(scene, content)}px`
+    const height = `${trailSceneHeight(scene)}px`
     const signature = `${window.innerWidth}|${height}|${bottom}|${window.scrollY}`
     if (signature === layoutSignature) return
     layoutSignature = signature
@@ -145,7 +145,7 @@ document.addEventListener('nav', () => {
   }
   const resize = new ResizeObserver(scheduleAlign)
   resize.observe(content)
-  const landing = content.querySelector('.landing')
+  const landing = content.querySelector<HTMLElement>('.landing')
   if (landing) resize.observe(landing)
   const mutation = new MutationObserver(scheduleAlign)
   if (landing)
@@ -192,10 +192,18 @@ document.addEventListener('nav', () => {
   scene.addEventListener('trail:reveal-end', resumeScene, { signal })
   const finishClose = () => {
     if (isOpen) return
+    landing?.style.removeProperty('visibility')
     scene.hidden = true
     scene.dispatchEvent(new Event('trail:hide'))
   }
   scene.addEventListener('trail:closed', finishClose, { signal })
+  scene.addEventListener(
+    'trail:close-midpoint',
+    () => {
+      if (!isOpen) landing?.style.removeProperty('visibility')
+    },
+    { signal },
+  )
   const setOpen = (open: boolean, remember = true) => {
     if (open && !supported) return
     if (!open) {
@@ -205,6 +213,13 @@ document.addEventListener('nav', () => {
       if (document.activeElement === toggle) toggle.blur()
     }
     isOpen = open
+    landing?.style.setProperty('visibility', 'hidden')
+    if (open && landing?.contains(document.activeElement)) toggle.focus()
+    if (introduction) introduction.hidden = open
+    clock.hidden = !open
+    const almanac = root.querySelector<HTMLElement>('.trail-almanac')
+    if (almanac) almanac.hidden = !open
+    if (!open) root.querySelector<HTMLElement>('#homepage-moon-panel:popover-open')?.hidePopover()
     if (remember) writeTrailPreference(open)
     cancelResize()
     window.cancelAnimationFrame(openFrame)
@@ -217,6 +232,7 @@ document.addEventListener('nav', () => {
       if (control instanceof HTMLElement) control.inert = !open
     scene.setAttribute('aria-hidden', String(!open))
     toggle.setAttribute('aria-expanded', String(open))
+    window.scrollTo({ top: 0, behavior: 'instant' })
     const label = open ? 'Hide walking trail' : 'Show walking trail'
     toggle.title = `${label}${shownHoliday ? ` · ${holidayLabels[shownHoliday]}` : ''}`
     if (open) {
@@ -294,6 +310,7 @@ document.addEventListener('nav', () => {
   setOpen(readTrailPreference(), false)
   window.addCleanup(() => {
     controller.abort()
+    landing?.style.removeProperty('visibility')
     disposeMoon()
     disposeEscape()
     resize.disconnect()

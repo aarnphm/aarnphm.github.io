@@ -7,7 +7,7 @@ import { tree } from './scenery/tree-growth'
 import { forestShape, treeSprite } from './scenery/tree-sprites'
 import { trailDeadfall, trailUnderstory } from './understory'
 export type { TreeKind } from './scenery/species'
-export { planTrailTrees } from './scenery/forest-plan'
+export { planTrailTrees, planTrailTreeSteps } from './scenery/forest-plan'
 export type { TreePlacement } from './scenery/forest-plan'
 export {
   createTreePainter,

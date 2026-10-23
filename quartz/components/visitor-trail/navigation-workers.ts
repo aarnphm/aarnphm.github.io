@@ -266,6 +266,7 @@ export function createTrailNavigation(lifetime: AbortSignal) {
       landscape: Landscape,
       obstacles: readonly CollisionActor[],
       signal?: AbortSignal,
+      phase: 'opening' | 'active' = 'opening',
     ): Promise<NavigableTrail[]> {
       const results = await Promise.all(
         routes.map(async route => {
@@ -273,7 +274,7 @@ export function createTrailNavigation(lifetime: AbortSignal) {
           const result = await run(
             { kind: 'trail', ...input, obstacles: snapshot(obstacles) },
             signal,
-            'local',
+            phase === 'opening' ? 'local' : 'worker',
           )
           return plannedTrail(route, result)
         }),

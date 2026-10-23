@@ -70,10 +70,8 @@ export function mountCrownWind(scene: HTMLElement, signal: AbortSignal, tuning: 
       const root = crown.closest<SVGGElement>(
         '.trail-tree, .trail-woodland-tree, .trail-understory',
       )
-      const scale = tree
-        ? Number.parseFloat(tree.style.getPropertyValue('--trail-tree-wind-scale'))
-        : 1
-      const lift = number(sample.style, '--leaf-lift')
+      const scale = tree ? Number(tree.dataset.windScale) : 1
+      const lift = Number(sample.dataset.leafLift) || 0
       const give = needled.has(root?.dataset.tree ?? '') ? 0.55 : 1
       const flip = cached ? null : crown.querySelector<SVGPathElement>('.trail-tree-flip')
       clusters.push({
@@ -81,10 +79,10 @@ export function mountCrownWind(scene: HTMLElement, signal: AbortSignal, tuning: 
         flip,
         ground: Number(root?.dataset.groundY ?? 0),
         reach: lift * (Number.isFinite(scale) ? scale : 1) * give,
-        cell: number(sample.style, '--leaf-cell') || 1,
-        x: number(sample.style, '--leaf-x'),
-        y: number(sample.style, '--leaf-y'),
-        delay: tree ? number(tree.style, '--trail-weather-delay') : 0,
+        cell: Number(sample.dataset.leafCell) || 1,
+        x: Number(sample.dataset.leafX) || 0,
+        y: Number(sample.dataset.leafY) || 0,
+        delay: Number(tree?.dataset.windDelay) || 0,
         offset: crown.getAttribute('transform') ?? '',
         // A reread can land during a peak; retain its painted state so the next step releases it.
         flipped: flip !== null && flip.style.opacity !== '',

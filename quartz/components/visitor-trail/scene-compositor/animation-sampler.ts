@@ -4,12 +4,26 @@ import { motionProperties, type Scope } from './render-model'
 
 // Animations: paused around the opening, and sampled each frame into moved or dirtied textures.
 export function createAnimationSampler(scope: Scope, sceneTree: SceneTree, overlays: Overlays) {
-  const { is, shared } = scope
+  const { is, shared, svg, signal, view } = scope
   const { fading, groups, promote, touch, dirtyGroup, touchDefinition, settle } = sceneTree
   const { holdResize, capturePalette } = overlays
+  const animations = new Set<Animation>()
+  let discoveryPending = true
+  const discover = () => {
+    discoveryPending = true
+  }
+  for (const name of ['animationstart', 'transitionrun', 'trail:animation'])
+    svg.addEventListener(name, discover, { signal })
+  const readAnimations = () => {
+    if (discoveryPending) {
+      discoveryPending = false
+      for (const animation of svg.getAnimations({ subtree: true })) animations.add(animation)
+    }
+    return animations
+  }
   const pausedAnimations = new Set<Animation>()
-  const pauseAnimations = (animations: Animation[]) => {
-    const running = animations.filter(animation => animation.playState === 'running')
+  const pauseAnimations = (animations: Iterable<Animation>) => {
+    const running = [...animations].filter(animation => animation.playState === 'running')
     for (const animation of running) {
       pausedAnimations.add(animation)
       animation.pause()
@@ -22,9 +36,18 @@ export function createAnimationSampler(scope: Scope, sceneTree: SceneTree, overl
   }
   let settled = 0
   // Whether an animation changes pixels inside its target, rather than only moving or fading it.
-  const paints = new WeakMap<Animation, { content: boolean; state: AnimationPlayState }>()
+  const paints = new WeakMap<
+    Animation,
+    {
+      content: boolean
+      state: AnimationPlayState
+      style: CSSStyleDeclaration
+      properties: string[]
+      values: string[]
+    }
+  >()
   const timing = new Set(['offset', 'computedOffset', 'easing', 'composite'])
-  const scan = (animations: Animation[]) => {
+  const scan = (sample: Iterable<Animation>) => {
     if (shared.palettePending || shared.paletteTransition) {
       const fullPalette = shared.palettePending
       shared.palettePending = false
@@ -41,14 +64,19 @@ export function createAnimationSampler(scope: Scope, sceneTree: SceneTree, overl
       }
       shared.revision += 1
     }
-    for (const animation of animations) {
+    for (const animation of sample) {
+      const effect = animation.effect
+      if (!is(effect, 'KeyframeEffect') || !effect.target || !svg.contains(effect.target)) {
+        animations.delete(animation)
+        continue
+      }
       const state = animation.playState
+      // Sample the final or cancelled state once before releasing its target.
+      if (state === 'finished' || state === 'idle') animations.delete(animation)
       let sampled = paints.get(animation)
       // A stepped fade reaches its final opacity when it finishes. Sample that state once
       // before retaining it, otherwise footprints stay invisible until their textures regroup.
       if (state !== 'running' && sampled?.state === state) continue
-      const effect = animation.effect
-      if (!is(effect, 'KeyframeEffect') || !effect.target) continue
       const target = effect.target
       if (target.closest('defs')) {
         touchDefinition(target)
@@ -61,10 +89,27 @@ export function createAnimationSampler(scope: Scope, sceneTree: SceneTree, overl
         sampled = {
           content: properties.some(name => !timing.has(name) && !motionProperties.has(name)),
           state,
+          style: groups.get(target)?.style ?? view.getComputedStyle(target),
+          properties: [
+            ...new Set(
+              properties
+                .filter(name => !timing.has(name))
+                .map(name => name.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)),
+            ),
+          ],
+          values: [],
         }
         paints.set(animation, sampled)
       }
       sampled.state = state
+      if (!sampled.content && state === 'running') fading.set(target, shared.clock)
+      let changed = sampled.values.length !== sampled.properties.length
+      for (const [index, name] of sampled.properties.entries()) {
+        const value = sampled.style.getPropertyValue(name)
+        changed ||= value !== sampled.values[index]
+        sampled.values[index] = value
+      }
+      if (!changed) continue
       const known = groups.get(target)
       if (known) {
         if (sampled.content) dirtyGroup(known)
@@ -81,6 +126,6 @@ export function createAnimationSampler(scope: Scope, sceneTree: SceneTree, overl
       settle()
     }
   }
-  return { pauseAnimations, resumeAnimations, scan }
+  return { pauseAnimations, resumeAnimations, readAnimations, scan }
 }
 export type AnimationSampler = ReturnType<typeof createAnimationSampler>

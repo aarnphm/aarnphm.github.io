@@ -199,7 +199,7 @@ export function createFrameGeneration(context: Context) {
     opening.update(layout)
     clearSignature = clearance
     if (signature === layoutSignature) return
-    if (world) {
+    if (world && layout.landscape === world.landscape) {
       layoutSignature = signature
       const readingPaths = svg.querySelector('[data-pet-walk-paths]')
       if (

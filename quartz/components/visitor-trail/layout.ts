@@ -98,8 +98,11 @@ export function trailLayout(
   const height = scene.clientHeight
   if (width < 1 || height < 1) return null
   const random = trailRandom(seed)
+  const readingVisible = landing.checkVisibility()
   const reading = landing.getBoundingClientRect()
-  const board = landing.querySelector('.homepage-board')?.getBoundingClientRect()
+  const board = readingVisible
+    ? landing.querySelector('.homepage-board')?.getBoundingClientRect()
+    : undefined
   const controls = Array.from(
     document.querySelectorAll('.visitor-weather-toggle, .homepage-trail-toggle'),
     control => control.getBoundingClientRect(),
@@ -108,7 +111,9 @@ export function trailLayout(
   let cached = landingCache.get(scene)
   if (cached?.key !== cacheKey) {
     let protectedLines: Rect[]
-    if (board) {
+    if (!readingVisible) {
+      protectedLines = []
+    } else if (board) {
       protectedLines = [
         {
           left: board.left - bounds.left,
@@ -163,37 +168,30 @@ export function trailLayout(
         bottom: rect.bottom - bounds.top,
       })
     }
-    const hangers = landing.querySelector('.homepage-board-hangers')?.getBoundingClientRect()
-    if (board && hangers) {
-      for (const x of [hangers.left, hangers.right - 1]) {
-        paintObstacles.push({
-          left: x - bounds.left - 1,
-          right: x - bounds.left + 2,
-          top: 0,
-          bottom: board.top - bounds.top,
-        })
-      }
-    }
-    const bottom = Math.max(reading.bottom - bounds.top, 280)
+    const bottom = readingVisible ? Math.max(reading.bottom - bounds.top, 280) : 0
     const clear = clearSpace(width, height, paintObstacles)
-    const upperRoutes = readingRoutes(
-      width,
-      bottom,
-      reading.left - bounds.left,
-      reading.right - bounds.left,
-      protectedLines,
-      seed,
-      board ? protectedLines[0] : undefined,
-    )
-    const backdropClear = clearSpace(width, height, [
-      ...paintObstacles,
-      {
-        left: reading.left - bounds.left - 24,
-        right: reading.right - bounds.left + 24,
-        top: reading.top - bounds.top - 24,
-        bottom: reading.bottom - bounds.top + 24,
-      },
-    ])
+    const upperRoutes = readingVisible
+      ? readingRoutes(
+          width,
+          bottom,
+          reading.left - bounds.left,
+          reading.right - bounds.left,
+          protectedLines,
+          seed,
+          board ? protectedLines[0] : undefined,
+        )
+      : []
+    const backdropClear = readingVisible
+      ? clearSpace(width, height, [
+          ...paintObstacles,
+          {
+            left: reading.left - bounds.left - 24,
+            right: reading.right - bounds.left + 24,
+            top: reading.top - bounds.top - 24,
+            bottom: reading.bottom - bounds.top + 24,
+          },
+        ])
+      : clear
     cached = { key: cacheKey, bottom, baseObstacles, clear, backdropClear, upperRoutes }
     landingCache.set(scene, cached)
   }
@@ -210,11 +208,17 @@ export function trailLayout(
     ? [...cached.baseObstacles, clockExclusion]
     : [...cached.baseObstacles]
   const { bottom, clear, backdropClear, upperRoutes } = cached
-  const camp = world?.camp ?? {
+  const retainedWorld =
+    world?.landscape.bottom === bottom &&
+    world.landscape.width === width &&
+    world.landscape.height === height
+      ? world
+      : undefined
+  const camp = retainedWorld?.camp ?? {
     x: Math.min(width - 72, width * (0.64 + random() * 0.12)),
     y: Math.min(height - 80, Math.max(height - 112, bottom + 225)),
   }
-  const landscape = world?.landscape ?? trailLandscape(width, height, bottom, camp, seed)
+  const landscape = retainedWorld?.landscape ?? trailLandscape(width, height, bottom, camp, seed)
   const clearing = camp.y - landscape.meadowTop
   const wander = (x: number, y: number): Point => ({
     x: Math.max(10, Math.min(width - 10, width * (x + (random() - 0.5) * 0.12))),
@@ -225,7 +229,7 @@ export function trailLayout(
     y: landscape.alpine.base - 12,
   })
   const end = { x: camp.x - 72, y: camp.y + 34 }
-  const routes: Record<TrailId, string> = world?.routes ?? {
+  const routes: Record<TrailId, string> = retainedWorld?.routes ?? {
     main: curvedPath(
       [
         start(0.41),

@@ -32,6 +32,7 @@ import { sceneSettings } from './scene-settings'
 import { mountSceneTuning } from './scene-tuning-runtime'
 import {
   createTreePainter,
+  planTrailTreeSteps,
   planTrailTrees,
   trailFoothillWoodland,
   trailTreeSprites,
@@ -368,18 +369,21 @@ const tuning = mountSceneTuning({
         }
       : null
   },
-  replan() {
+  *replan() {
     if (!model.forestLayout) return
     regrowing?.abort()
     refreshForestObstacles()
-    model.treePlan = planTrailTrees(
+    const water = model.groveWater
+    const plan = yield* planTrailTreeSteps(
       model.forestLayout,
       sceneSeed,
       model.forestObstacles,
       forestClearings(model.forestLayout),
       model.forestNow,
-      (model.plannedWater = model.groveWater),
+      water,
     )
+    model.treePlan = plan
+    model.plannedWater = water
   },
   refreshForest: [
     () => groundDepth.refresh(),

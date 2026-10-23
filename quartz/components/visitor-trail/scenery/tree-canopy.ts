@@ -201,7 +201,7 @@ export function dressTree(grown: GrownTree) {
       // Displacement grows toward the crown top, like a cantilever loaded along its length.
       const lift = Math.max(0.15, Math.min(1, -centreY / extent)) ** 1.5
       return (
-        `<g class="trail-tree-leaves" style="--leaf-x:${centreX.toFixed(1)};--leaf-y:${centreY.toFixed(1)};--leaf-lift:${lift.toFixed(2)};--leaf-cell:${pixel}px">` +
+        `<g class="trail-tree-leaves" data-leaf-x="${centreX.toFixed(1)}" data-leaf-y="${centreY.toFixed(1)}" data-leaf-lift="${lift.toFixed(2)}" data-leaf-cell="${pixel}">` +
         (['light', 'crown', 'dark', 'gold'] as const)
           .filter(tone => cluster.marks[tone].length)
           .map(tone => `<path class="trail-tree-${tone}" d="${cluster.marks[tone].join('')}"/>`)

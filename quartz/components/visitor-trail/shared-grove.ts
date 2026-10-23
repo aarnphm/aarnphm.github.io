@@ -1,4 +1,5 @@
 import { playhtml, type PageDataChannel } from 'playhtml'
+import { animateScene } from './scene-animation'
 import { sceneMotionReady } from './scene-reveal'
 
 export type Watering = { count: number; at: number }
@@ -88,18 +89,16 @@ export function mountSharedGrove(
     const direction = Number.parseFloat(scene.style.getPropertyValue('--trail-wind-x')) < 0 ? -1 : 1
     tree.dataset.gust = 'active'
     const running = clusters.map(cluster => {
-      const cell = Number.parseFloat(cluster.style.getPropertyValue('--leaf-cell')) || 1
-      const lift = Number(cluster.style.getPropertyValue('--leaf-lift')) || 0
+      const cell = Number(cluster.dataset.leafCell) || 1
+      const lift = Number(cluster.dataset.leafLift) || 0
       const reach = lift > 0.3 ? cell : 0
-      const animation = cluster.animate(
+      const animation = animateScene(
+        cluster,
         [0, 1, -1, 1, 0, 0].map(step => ({
           transform: `translate(${step * reach * direction}px, ${step === 1 ? -reach : 0}px)`,
           easing: 'steps(1, end)',
         })),
-        {
-          duration: 1100,
-          delay: Math.abs(Number(cluster.style.getPropertyValue('--leaf-x')) || 0) * 6,
-        },
+        { duration: 1100, delay: Math.abs(Number(cluster.dataset.leafX) || 0) * 6 },
       )
       gusts.add(animation)
       return animation
@@ -122,7 +121,7 @@ export function mountSharedGrove(
         0,
       )
       const label = `${waters.toLocaleString()} ${waters === 1 ? 'watering' : 'waterings'}`
-      total.textContent = label
+      if (total.textContent !== label) total.textContent = label
       total.dataset.groveWaterTotal = String(waters)
       total.setAttribute('aria-label', `Shared grove, ${label}`)
       total.title = 'Shared grove · all visitors'

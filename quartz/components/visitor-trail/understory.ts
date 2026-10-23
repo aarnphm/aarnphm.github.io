@@ -185,7 +185,7 @@ function plant(
   const mirrored = random() < 0.5 ? -1 : 1
   const sway =
     sprite.lift && split > 0
-      ? `<g class="trail-tree-motion"><g class="trail-tree-leaves" style="--leaf-x:0;--leaf-y:${-tall};--leaf-lift:${sprite.lift};--leaf-cell:${cell}px">${pixels(rows.slice(0, split), tones, cell)}</g></g>`
+      ? `<g class="trail-tree-motion"><g class="trail-tree-leaves" data-leaf-x="0" data-leaf-y="${-tall}" data-leaf-lift="${sprite.lift}" data-leaf-cell="${cell}">${pixels(rows.slice(0, split), tones, cell)}</g></g>`
       : ''
   const base = pixels(rows.slice(split), tones, cell)
   const fungi =

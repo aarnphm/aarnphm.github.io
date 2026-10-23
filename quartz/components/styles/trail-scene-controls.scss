@@ -1,6 +1,6 @@
 .homepage-trail-scene {
   .trail-scene-controls {
-    --control-font-size: 0.75rem;
+    --control-font-size: 0.66rem;
     --control-height: 24px;
     --control-accent: var(--darkgray);
     --control-focus: var(--dark);
@@ -10,7 +10,7 @@
     margin: 0;
     width: 244px;
     max-width: calc(100vw - 16px);
-    max-height: min(70dvh, 560px);
+    height: min(70dvh, 560px);
     overflow-y: auto;
     overscroll-behavior: contain;
     scrollbar-width: thin;
@@ -19,7 +19,7 @@
     border-radius: 0;
     background: var(--light);
     color: var(--darkgray);
-    font: var(--text-meta, 0.75rem) / 1.5 var(--codeFont);
+    font: var(--control-font-size) / 1.5 var(--codeFont);
     font-variant-numeric: tabular-nums;
     pointer-events: auto;
     &:popover-open {
@@ -29,7 +29,7 @@
       outline: 2px solid var(--dark);
       outline-offset: -2px;
     }
-    :is(button, input, summary):focus-visible {
+    :is(button, input):focus-visible {
       outline: 2px solid var(--dark);
       outline-offset: -2px;
     }
@@ -78,14 +78,15 @@
     }
   }
   .trail-tuning-section {
-    > summary {
+    > h3 {
       min-height: 30px;
       box-sizing: border-box;
       padding: 5px 12px;
+      margin: 0;
       border-bottom: 1px solid var(--lightgray);
       background: color-mix(in srgb, var(--light) 96%, var(--darkgray));
       color: var(--dark);
-      cursor: pointer;
+      font: inherit;
     }
   }
   .trail-tuning-row {
@@ -149,27 +150,50 @@
       }
     }
   }
-  .trail-tuning-select {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
+  .trail-tuning-choice {
+    min-width: 0;
+    margin: 0;
     padding: 5px 12px;
+    border: 0;
     border-bottom: 1px solid var(--lightgray);
-    .g-select {
-      min-width: 0;
-      width: 11em;
+    legend {
+      padding: 0;
     }
-    .g-select-trigger {
-      width: 100%;
-      min-width: 0;
-      border-color: var(--darkgray);
-      padding: 0 4px;
-      color: inherit;
-      line-height: 1.5;
+  }
+  .trail-tuning-options {
+    display: flex;
+    gap: 4px;
+    label {
+      position: relative;
+      display: flex;
+      flex: 1;
+      align-items: center;
+      justify-content: center;
+      min-height: 24px;
+      border: 1px solid var(--darkgray);
+      cursor: pointer;
     }
-    .g-select-menu {
-      min-width: max-content;
+    span {
+      display: flex;
+      flex: 1;
+      align-self: stretch;
+      align-items: center;
+      justify-content: center;
+    }
+    input:checked + span {
+      background: color-mix(in srgb, var(--light) 88%, var(--darkgray));
+      color: var(--dark);
+    }
+    input:focus-visible + span {
+      outline: 2px solid var(--dark);
+      outline-offset: -2px;
+    }
+    input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: 0;
+      clip-path: inset(50%);
     }
   }
   .trail-tuning-action {
@@ -230,7 +254,7 @@
       .trail-tuning-action:not(:disabled),
       .trail-tuning-head > button
     ):hover,
-    .trail-tuning-section > summary:hover {
+    .trail-tuning-options label:hover {
       background: color-mix(in srgb, var(--light) 92%, var(--darkgray));
       color: var(--dark);
     }
@@ -239,7 +263,8 @@
     .trail-scene-controls {
       --control-height: 44px;
     }
-    .trail-scene-controls :is(button, summary),
+    .trail-scene-controls button,
+    .trail-tuning-options label,
     .trail-tuning-row input[type='range'] {
       min-height: 44px;
     }
