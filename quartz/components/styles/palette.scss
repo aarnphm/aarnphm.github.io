@@ -1,5 +1,7 @@
 @use '../../styles/variables.scss' as *;
 @use '../../styles/mixin.scss' as *;
+@use './image-search.scss';
+@use './avatar-editor.scss';
 
 ul#helper {
   list-style-type: none;
@@ -11,13 +13,16 @@ ul#helper {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px;
-  font-size: 11px;
+  justify-content: flex-start;
+  overflow-x: visible;
+  gap: 4px 12px;
+  font-size: var(--text-meta);
+  line-height: 1.4;
   padding: 8px;
   margin: 0;
 
   kbd {
+    white-space: nowrap;
     font-family: var(--bodyFont);
     font-weight: 600;
     margin-inline-end: 4px;
@@ -27,8 +32,12 @@ ul#helper {
   }
 
   & > li {
+    flex: 0 0 auto;
+    min-width: 0;
+    max-width: 100%;
+    white-space: normal;
     display: inline-block;
-    line-height: initial;
+    line-height: inherit;
   }
 }
 
@@ -275,21 +284,23 @@ ul#helper {
     }
 
     & > #space {
-      width: 30%;
-
-      @media all and ($tablet) {
-        width: 75%;
-      }
-
-      @media all and ($mobile) {
-        width: 75%;
-      }
-
       @include containerInner;
       @include inputContainer;
-      max-height: fit-content;
+      @include commandPanel;
+      height: min(var(--palette-content-height, 80dvh), var(--command-panel-height));
+
+      & > #helper {
+        flex-shrink: 0;
+        margin-top: auto;
+      }
+
+      &:has(> output:empty) > #helper {
+        border-top: 0;
+      }
 
       .input-container {
+        padding: 0.25rem 0.5rem 0;
+        flex-shrink: 0;
         border-bottom: 1px solid var(--lightgray);
 
         & > .semantic-search-progress {
@@ -299,10 +310,16 @@ ul#helper {
       }
 
       & > output {
+        flex: 1;
         padding: 12px;
         margin: 0;
         list-style: none;
         overflow-y: auto;
+        min-height: 0;
+
+        &:empty {
+          display: none;
+        }
 
         &[data-palette-transition] {
           animation: palette-continuity 180ms ease-out;
@@ -442,7 +459,9 @@ ul#helper {
 }
 
 body[data-slug='index'] .palette > #palette-container > #space {
-  @include trailPanel;
+  & > .input-container {
+    padding: 0;
+  }
 
   & > .input-container,
   & > #helper {
@@ -477,5 +496,73 @@ body[data-slug='index'] .palette > #palette-container > #space {
   50% {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+.palette > #palette-container > #space {
+  .input-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+
+    #bar {
+      min-width: 0;
+      flex: 1;
+      width: 0;
+
+      &::placeholder {
+        color: var(--darkgray);
+        opacity: 1;
+      }
+    }
+  }
+
+  .palette-rank-button {
+    flex-shrink: 0;
+    margin-right: 8px;
+    padding: 6px 4px;
+    border: 0;
+    background: transparent;
+    color: var(--darkgray);
+    font: inherit;
+    font-size: var(--text-meta);
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: 2px solid var(--dark);
+      outline-offset: -2px;
+    }
+  }
+
+  & > output .suggestion-item {
+    gap: 12px;
+    min-width: 0;
+
+    & > .suggestion-content {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .suggestion-rank {
+      display: block;
+      width: 80px;
+      height: 28px;
+      flex: none;
+      color: var(--darkgray);
+
+      .rank-marker {
+        fill: var(--dark);
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    .suggestion-rank {
+      width: 56px;
+    }
+    #bar {
+      font-size: 16px;
+    }
   }
 }

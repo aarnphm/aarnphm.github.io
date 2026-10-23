@@ -1,4 +1,11 @@
 import { env, AutoConfig, AutoModel, AutoTokenizer } from '@huggingface/transformers'
+import {
+  IMAGE_EMBEDDING_REVISION,
+  imageManifestUrl,
+  readImageManifest,
+  validateImageVectorShard,
+  type ImageSearchManifest,
+} from '../util/image-search'
 import { SEMANTIC_ONNX_MODELS, type SemanticQueryDType } from '../util/semantic-search'
 import { isRecord } from '../util/type-guards'
 
@@ -13,7 +20,8 @@ type VectorShardMeta = {
 
 type ChunkMetadata = { parentSlug: string; chunkId: number }
 
-type Manifest = {
+type TextManifest = {
+  modality?: 'text'
   version: number
   model: string
   dims: number
@@ -26,6 +34,8 @@ type Manifest = {
   titles?: string[]
   chunkMetadata?: Record<string, ChunkMetadata>
 }
+
+type Manifest = TextManifest | ImageSearchManifest
 
 type InitMessage = { type: 'init'; cfg?: SemanticWorkerConfig }
 
@@ -92,9 +102,16 @@ async function fetchAsset(path: string): Promise<Response> {
 }
 
 async function loadVectors(data: Manifest): Promise<Float32Array> {
+  const readShard = async (index: number): Promise<Float32Array> => {
+    const shard = data.vectors.shards[index]
+    const bytes = await fetchBinary(toAssetUrl(shard.path))
+    if (data.modality === 'image')
+      return validateImageVectorShard(bytes, data.vectors.shards[index], data.dims)
+    return new Float32Array(bytes)
+  }
   if (data.vectors.shards.length === 1 && data.vectors.shards[0].rowOffset === 0) {
     const shard = data.vectors.shards[0]
-    const view = new Float32Array(await fetchBinary(toAssetUrl(shard.path)))
+    const view = await readShard(0)
     if (view.length !== shard.rows * data.dims) {
       throw new Error(
         `shard ${shard.path} has mismatched length (expected ${shard.rows * data.dims}, got ${view.length})`,
@@ -114,8 +131,8 @@ async function loadVectors(data: Manifest): Promise<Float32Array> {
   const all = new Float32Array(data.rows * data.dims)
   let loadedRows = 0
   await Promise.all(
-    data.vectors.shards.map(async shard => {
-      const view = new Float32Array(await fetchBinary(toAssetUrl(shard.path)))
+    data.vectors.shards.map(async (shard, index) => {
+      const view = await readShard(index)
       if (view.length !== shard.rows * data.dims) {
         throw new Error(
           `shard ${shard.path} has mismatched length (expected ${shard.rows * data.dims}, got ${view.length})`,
@@ -197,6 +214,7 @@ async function loadEncoder() {
     throw new Error('semantic model is not configured')
   }
   const mappedModel = SEMANTIC_ONNX_MODELS[modelId] ?? modelId
+  const revision = modelId === 'google/embeddinggemma-2' ? IMAGE_EMBEDDING_REVISION : 'main'
   configureRuntimeEnv()
   // Every quantized embeddinggemma graph stores its token table with GatherBlockQuantized.
   // The wasm backend has no kernel for it (session creation fails), and the fp32 graph is over 1 GB.
@@ -205,17 +223,17 @@ async function loadEncoder() {
     throw new Error('semantic query encoder needs WebGPU')
   }
   const dtype = resolveQueryDType(cfg?.queryDtype)
-  const config = await AutoConfig.from_pretrained(mappedModel)
+  const config = await AutoConfig.from_pretrained(mappedModel, { revision })
   // embeddinggemma-2 ships vision and audio encoders (1.8 GB at fp32); queries only need the text graph.
   if (config.model_type === 'embedding_gemma2') {
     Object.assign(config, { vision_config: null, audio_config: null })
   }
   const [loadedTokenizer, loadedModel] = await Promise.all([
-    AutoTokenizer.from_pretrained(mappedModel).then(loaded => {
+    AutoTokenizer.from_pretrained(mappedModel, { revision }).then(loaded => {
       pruneTokenizerMemory(loaded)
       return loaded
     }),
-    AutoModel.from_pretrained(mappedModel, { config, dtype, device: 'webgpu' }),
+    AutoModel.from_pretrained(mappedModel, { config, dtype, device: 'webgpu', revision }),
   ])
   tokenizer = loadedTokenizer
   model = loadedModel
@@ -319,14 +337,19 @@ async function fetchManifest(path: string): Promise<Manifest> {
       `failed to fetch manifest ${manifestUrl}: ${response.status} ${response.statusText}`,
     )
   }
-  const data: Manifest = await response.json()
+  const raw: Manifest = await response.json()
+  const data = raw.modality === 'image' ? readImageManifest(raw) : raw
+  if (data.modality === 'image' && new URL(manifestUrl).pathname !== imageManifestUrl(data))
+    throw new Error('Image embedding manifest does not match its immutable generation URL.')
   if (data.vectors.dtype !== 'fp32') {
     throw new Error(`unsupported embedding dtype '${data.vectors.dtype}', regenerate with fp32`)
   }
   if (manifest && data.model !== manifest.model) {
     throw new Error(`index model ${data.model} differs from the loaded encoder ${manifest.model}`)
   }
-  return { ...data, ids: [], titles: undefined, chunkMetadata: undefined }
+  return data.modality === 'image'
+    ? { ...data, ids: [] }
+    : { ...data, ids: [], titles: undefined, chunkMetadata: undefined }
 }
 
 async function handleInit(msg: InitMessage) {

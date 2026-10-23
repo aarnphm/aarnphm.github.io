@@ -20,9 +20,9 @@ const searchInnerHtmlCache = new Map<string, string>()
 
 export default ((userOpts?: Partial<SearchOptions>) => {
   const opts = { ...defaultOptions, ...userOpts }
-  const Search: QuartzComponent = ({ displayClass, cfg, fileData }: QuartzComponentProps) => {
+  const Search: QuartzComponent = ({ displayClass, cfg }: QuartzComponentProps) => {
     const searchPlaceholder = i18n(cfg.locale).components.search.searchBarPlaceholder
-    const enablePreview = opts.enablePreview && fileData.slug !== 'index'
+    const enablePreview = opts.enablePreview
     const cacheKey = `${opts.includeButton ? '1' : '0'}:${enablePreview ? '1' : '0'}:${searchPlaceholder}`
     let innerHtml = searchInnerHtmlCache.get(cacheKey)
     if (innerHtml === undefined) {
@@ -59,7 +59,7 @@ export default ((userOpts?: Partial<SearchOptions>) => {
                   name="search"
                   type="text"
                   aria-label={searchPlaceholder}
-                  placeholder={searchPlaceholder}
+                  placeholder={`${searchPlaceholder} · filter: images · pdf · code · py · all`}
                 />
                 <span class="semantic-status" data-state="loading" aria-live="polite">
                   semantic not available yet
@@ -77,7 +77,7 @@ export default ((userOpts?: Partial<SearchOptions>) => {
                       <g
                         fill="none"
                         stroke="currentColor"
-                        stroke-width="1.5"
+                        stroke-width="0.9"
                         stroke-linecap="round"
                       >
                         <path d="M4 6h12M4 10h8M4 14h6" />
@@ -97,7 +97,7 @@ export default ((userOpts?: Partial<SearchOptions>) => {
                       <g
                         fill="none"
                         stroke="currentColor"
-                        stroke-width="1.5"
+                        stroke-width="0.9"
                         stroke-linecap="round"
                       >
                         <circle cx="5.2" cy="10" r="2.4" />
@@ -109,8 +109,34 @@ export default ((userOpts?: Partial<SearchOptions>) => {
                     <span class="sr-only">Semantic</span>
                   </button>
                 </div>
+                {enablePreview && (
+                  <button
+                    type="button"
+                    class="search-preview-toggle"
+                    aria-label="show preview"
+                    aria-expanded="false"
+                    aria-keyshortcuts="Alt+Shift+P"
+                    title="show preview"
+                  >
+                    <svg viewBox="0 0 20 20" stroke-width="0.9" aria-hidden="true">
+                      <rect
+                        x="2.5"
+                        y="3.5"
+                        width="15"
+                        height="13"
+                        fill="none"
+                        stroke="currentColor"
+                      />
+                      <path d="M9 3.5v13" stroke="currentColor" />
+                    </svg>
+                  </button>
+                )}
               </div>
-              <output class="search-layout" data-preview={enablePreview} />
+              <output
+                class="search-layout"
+                data-preview="false"
+                data-preview-available={enablePreview}
+              />
             </form>
           </search>
         </>,
