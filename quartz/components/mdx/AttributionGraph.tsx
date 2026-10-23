@@ -82,14 +82,14 @@ const AttributionGraphImpl: QuartzMdxComponent<Props> = ({ caption }) => {
   const stats = pruned(BASE, DEFAULT_THRESHOLD)
   return (
     <figure class="attribution-graph" data-attribution-graph data-ag-selected="logit">
-      <div class="ag-controls">
-        <label class="ag-prune" for={`${id}-prune`}>
-          <span class="ag-prune-label">
-            prune edges with <MathText text="$\lvert A_{s\to t}\rvert$" mathClass="ag-math" /> below
-          </span>
+      <div class="ag-controls" role="group" aria-label="pruning controls">
+        <div class="ag-control ag-control--slider">
+          <label class="ag-prune-label" for={`${id}-prune`}>
+            prune <MathText text="$\lvert A_{s\to t}\rvert$" mathClass="ag-math" /> below
+          </label>
           <input
             id={`${id}-prune`}
-            class="ag-range"
+            class="ag-slider"
             type="range"
             min="0"
             max={String(MAX_THRESHOLD)}
@@ -98,10 +98,10 @@ const AttributionGraphImpl: QuartzMdxComponent<Props> = ({ caption }) => {
             data-ag-prune
             aria-valuetext={`threshold ${fixed(DEFAULT_THRESHOLD)}`}
           />
-          <output class="ag-prune-value" for={`${id}-prune`} data-ag-prune-value>
-            {`${fixed(DEFAULT_THRESHOLD)} · ${stats.count}/${AG_EDGES.length} edges · ${Math.round(stats.share * 100)}% kept`}
-          </output>
-        </label>
+        </div>
+        <output class="ag-prune-value" for={`${id}-prune`} data-ag-prune-value>
+          {`${fixed(DEFAULT_THRESHOLD)} · ${stats.count}/${AG_EDGES.length} edges · ${Math.round(stats.share * 100)}% kept`}
+        </output>
         <button type="button" class="ag-restore" data-ag-restore hidden>
           restore ablated nodes
         </button>
