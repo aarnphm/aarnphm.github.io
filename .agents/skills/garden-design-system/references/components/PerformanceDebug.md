@@ -2,7 +2,7 @@
 
 A frame-timing panel that the trail and the triathlon pages share. It is for reading cost while a scene runs: frame rate, frame interval, main-thread work per frame, and where the worst frame went.
 
-**Source:** `quartz/components/scripts/performance-debug.ts` (`setupPerformanceDebug(profile)`) · styles: `quartz/components/styles/performance-debug.scss` · trail profile: `quartz/components/scripts/homepage-trail.inline.ts` (`trailPerformanceProfile`) and `quartz/components/visitor-trail/performance-probe.ts`
+**Source:** `quartz/components/scripts/performance-debug.ts` (`setupPerformanceDebug(profile)`) and `scripts/performance-debug/` (`panel.ts` the DOM and chart, `sampling.ts` the frame and event probes, `profile.ts` the page profile contract, `presentation.ts` number formats) · styles: `quartz/components/styles/performance-debug.scss` · trail profile: `quartz/components/scripts/homepage-trail.inline.ts` (`trailPerformanceProfile`) and `quartz/components/visitor-trail/performance-probe.ts`
 
 ## Opening
 
@@ -12,7 +12,7 @@ A frame-timing panel that the trail and the triathlon pages share. It is for rea
 
 ## Preview
 
-A copy of the live panel from `/` with the trail open (selector `.site-perf-debug`). The preview drops the fixed position. The chart is a `canvas` that a `ResizeObserver` redraws on the site; the preview shows a still of it for each theme, captured in headless Helium. The stills come from a separate run with synthetic main-thread work (6 to 20 ms every 260 to 320 ms) so that the spread band and the long-frame ticks show. The chart and the numbers therefore do not describe the same six seconds.
+A copy of the live panel from `/` with the trail open (selector `.site-perf-debug`). The preview drops the fixed position. The chart is a `canvas` on the site; the preview shows a still of it for each theme (`img[data-ds-theme]`, swapped on `saved-theme`), read from the canvas in the in-app browser. The stills come from a run with synthetic main-thread work (6 to 20 ms every 290 ms) so that the spread band and the long-frame ticks show. The dark still comes from `/triathlon`, because the home page follows the sky and stays light in the day. The chart and the numbers therefore do not describe the same six seconds.
 
 ## Parts
 
@@ -22,7 +22,7 @@ A copy of the live panel from `/` with the trail open (selector `.site-perf-debu
 | Primary     | frames per second at 1.15rem, and the profile's state (`trail`, `closed`, a triathlon view)                                                                          |
 | Chart       | 5rem high. Orange line: frame interval, with a salmon band for its spread. Sage area: main-thread work. Salmon ticks: long frames. Dashed rules at 15, 30 and 60 fps |
 | Legend      | interval, work, long frame, drawn with the same marks as the chart                                                                                                   |
-| Metrics     | two columns: frame p95, dropped, work p95, rAF p95, render p95, long frames, worst frame, blocked, shift, scroll, cursor p95, heap, DOM nodes                        |
+| Metrics     | two columns: frame p95, dropped, work p95, rAF p95, render p95, long frames, worst frame, blocked, shift, scroll, cursor p95, popover p95, heap, DOM nodes           |
 | Readings    | the profile's own probes. The trail reports scene nodes, animations, canvases and scene writes                                                                       |
 | Attribution | worst script and worst event, cut with an ellipsis                                                                                                                   |
 

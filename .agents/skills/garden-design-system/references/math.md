@@ -38,7 +38,7 @@ A number in an argument sets in math, in the same face as the symbols around it.
 - Axis titles: words in `body` at `meta` size, unit and scale in parentheses: "arithmetic intensity (FLOP/byte, log)".
 - Symbols on the plot (`\beta`, `C`, a ridge point) are KaTeX labels in a `foreignObject`, never SVG text.
 - Gridlines in `line`; data and model strokes in `dark`; reference lines in `darkgray`, dashed. A computed estimate is dashed too.
-- Series use `salmon` and `secondary` first. Each series also gets a second cue: marker shape, dash pattern or a direct label.
+- Salmon marks the one element to look at. Structure stays in `dark`, `darkgray` and `line`, and a second series is `secondary`. Each series also gets a second cue: marker shape, dash pattern or a direct label.
 - The caption names the source or hardware, gives the key number with its unit, and says what the reader should see.
 
 ## Colour
@@ -50,4 +50,4 @@ A number in an argument sets in math, in the same face as the symbols around it.
 - The site loads KaTeX CSS 0.16.11 from jsdelivr but renders with the installed `katex` 0.17.0. Pin both to the same version.
 - `.katex` sets its font with `!important`.
 - On mobile, TikZ figures shrink with `transform: scale(0.7)`, which leaves the layout box at full size.
-- Figure captions mix `gray` 70% with `dark` (3.68:1 at 0.78rem). This system uses `fig-caption` (`darkgray`).
+- Figure captions once mixed `gray` 70% with `dark` (3.68:1). The source now sets them in `fig-caption` (`darkgray`) at the `meta` size, as this system does.

@@ -78,8 +78,8 @@ The site has two registers. Prose pages use the reading defaults in this README.
 
 ## Figures and data
 
-- A technical figure sits in a square 1px `fig-frame` on paper, padded `space-6 1.75rem`, with a caption under it in `fig-caption` at 0.78rem.
-- Accents inside a figure are `salmon` and `secondary`. Symbol labels are KaTeX, not SVG text.
+- A technical figure sits in a square 1px `fig-frame` on paper, padded `1.5rem 1.75rem`, with a caption under it in `fig-caption` at the `meta` size.
+- Accents inside a figure are `salmon` and `secondary`. Salmon marks the one element to look at; structure stays in `dark`, `darkgray` and `line`; a second series is `secondary`. Symbol labels are KaTeX, not SVG text.
 - Charts take their colours from tokens: gridlines `line`, axes and tick labels `darkgray`, values and data strokes `dark`. Each value keeps its unit and reference date.
 
 ## Icons and imagery
@@ -99,6 +99,7 @@ The site has two registers. Prose pages use the reading defaults in this README.
 - `components/bundle.js` is one classic script that defines `window.Garden`. It holds 17 of the site's own scripts from `quartz/components/scripts`; `Garden.mount(slug)` fires the `nav` event they listen on, so 15 Quartz previews (callouts, code copy, TikZ, sidenotes, slides, table of contents, page-list filter, keybind panel, breadcrumbs, Evergreen, Base toolbar, and three diagrams) respond to clicks and input as they do on the site. Scripts that fetch from the site (search, palette, stream, transclusion, stacked notes, reading time, flashcard review) and the theme toggle, which would override the frame's theme, are left out, so those previews stay static.
 - `Garden.ui` runs the site's own controls: `dropdown`, `select`, `datePicker` and `calendar` wrap `setupDropdown`, `buildSelect`, `buildDatePicker`, `MonthGrid` and `useAnchoredPreview` from `quartz/components/controls/`, and `mountAll(scope)` binds every `[data-g-dropdown]`, `[data-g-select]`, `[data-g-datepicker]` and `[data-g-calendar]` in the scope. Each binder returns a cleanup function. The bundle carries Preact and floating-ui for them, and `bundle.css` carries the site's `controls.scss`, so a Controls preview shows the classes, ARIA and keys the site ships. Each Controls README lists the site API and the declarative inputs.
 - Diagrams keep three references: KVHeadGrouping for the figure grammar (frame, sliders, KaTeX labels, readout), AttributionGraph for a node-and-edge graph with a hairline readout, ablation and pruning, and MetaEthicsTree for a tree figure. The other attention diagrams and MethodologyTree were removed; read their source in `quartz/components/mdx` when you need one.
+- `Recommendations` is placed in no layout, so no page renders it; its preview is last-known markup.
 - Quartz components with no preview: `CascadeFilter` and `MFAFactorBases` (no page uses them), and the layout wrappers (`Head`, `Flex`, `Grid`, `Spacer`, `DesktopOnly`, `MobileOnly`, `ConditionalRender`, `NotebookRuntimeLoader`), which render no UI of their own. `Explorer` and `Graph` are not in the current layout.
-- Where a source rule fails contrast (sage focus rings, `gray` labels, paper text on `tri-accent` tabs, `gray` proof reasons, the mixed figure caption), the rendition uses the corrected role, and its README names the source value.
+- Where a source rule fails contrast (sage focus rings, `gray` labels, paper text on `tri-accent` tabs, `gray` proof reasons), the rendition uses the corrected role, and its README names the source value.
 - Triathlon has about 800 local custom properties. This system carries the colours and sizes that repeat across panels. Chart geometry (plot insets, per-chart heights) stays in the code.
