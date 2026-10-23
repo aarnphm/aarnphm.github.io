@@ -5,6 +5,7 @@
 # stderr.txt and exit-code there (Codex and Claude also write last-message.txt). Workers read the tree at
 # TB_WORKSPACE (default: this checkout), so a `w` worktree can be the source as well.
 # TB_ARGON_TIMEOUT sets Argon's wall-clock limit in seconds (7200; 0 waits until completion).
+# TB_ARGON_MODEL picks the agy model ID (gemini-4-argon-high; gemini-3.8-flash-high for Flash).
 set -eu
 HERE=$(cd "$(dirname "$0")" && pwd)
 WS=${TB_WORKSPACE:-$(git -C "$HERE" rev-parse --show-toplevel)}
@@ -37,7 +38,8 @@ case $W in
     case $TB_ARGON_TIMEOUT in
       *[!0-9]*) echo "TB_ARGON_TIMEOUT must be a nonnegative integer in seconds (0 means unlimited)" >&2; exit 2 ;;
     esac
-    ID='argon:gemini-4-argon-high'
+    ARGON_MODEL=${TB_ARGON_MODEL:-gemini-4-argon-high}
+    ID="argon:$ARGON_MODEL"
     CONSTRAINT='common-caller'
     TEXT='Optimise for the most common caller: the production importers listed below should keep a trivial default call, even if the interface keeps a few more names. Group the implementation so that the change you expect most often touches one file.'
     ;;
@@ -89,7 +91,7 @@ EOF
       ( cd "$d"
         printf '%s\n' "$TB_ARGON_TIMEOUT" > timeout-seconds
         rc=0
-        argon --workspace "$WS" --browser none --stream --timeout "$TB_ARGON_TIMEOUT" \
+        argon --workspace "$WS" --model "$ARGON_MODEL" --browser none --stream --timeout "$TB_ARGON_TIMEOUT" \
           < task.txt > events.ndjson 2> stderr.txt || rc=$?
         echo "$rc" > exit-code ) &
       ;;
