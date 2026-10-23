@@ -1,9 +1,18 @@
-import { cardFaces, cardResolution, FORMATS, palettes, prepareCard, prepareCardScene, renderCard, type Fonts, type SiteColors } from '../press-kit-card'
+import {
+  cardFaces,
+  cardResolution,
+  FORMATS,
+  palettes,
+  prepareCard,
+  prepareCardScene,
+  renderCard,
+  type Fonts,
+  type SiteColors,
+} from '../press-kit-card'
 import { renderLinks } from './link-sharing'
 import { $, arts, session, show, toast } from './session-state'
 import { model, shareUrl, titleText } from './share-subject'
 import { layoutMetricControls } from './training-controls'
-
 
 export function resolveFonts(): Fonts {
   const root = getComputedStyle(document.documentElement)
@@ -70,7 +79,6 @@ export function loadArt() {
     }
   }
 }
-
 
 function caption() {
   const spec = FORMATS[session.format]

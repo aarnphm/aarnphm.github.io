@@ -12,8 +12,8 @@ import {
   open,
   openCalendar,
 } from './press-kit/dialog-events'
-import { schedule } from './press-kit/picture-sharing'
 import { linkCards } from './press-kit/link-sharing'
+import { schedule } from './press-kit/picture-sharing'
 import {
   $,
   blockDisplays,
