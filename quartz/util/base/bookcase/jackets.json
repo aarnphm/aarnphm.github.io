@@ -7401,6 +7401,66 @@
       },
       "artworkSha256": "c1e73cd6028c51d89da3aff6a027c12765e8e461aa2438cb6df42c235fb54f2a",
       "detailArtworkSha256": "63062cfb82d76e0dd433d3e1050c2205ff62dece6fcf198fdfa5aae1b252a535"
+    },
+    {
+      "id": "soul-of-a-new-machine-avon-1990-etsy-4370170886-v3",
+      "title": "The Soul of a New Machine",
+      "author": "Tracy Kidder",
+      "publisher": "Avon Books",
+      "isbn": "9780380711154",
+      "editionEvidence": "Same-copy Etsy seller gallery shows the pinned computer-collage design on the front, ISBN 0-380-71115-X on the back, and copyright leaf text 'First Avon Books Trade Printing: September 1990'. The leaf separately identifies the mass-market printing as August 1982. This evidence identifies the 1990 trade-printing line and does not claim that this copy is a first printing. The copy-specific copyright number line is number 4.",
+      "page": "https://www.etsy.com/listing/4370170886/the-soul-of-a-new-machine-tracy-kidder",
+      "source": "https://i.etsystatic.com/26925811/r/il/43115c/7201824158/il_fullxfull.7201824158_5r4s.jpg",
+      "sourceSha256": "f18375f38b79097094deff7a024d2f2c31d6cdc6903b07294ab216486249c500",
+      "sourceKind": "Native same-copy Etsy seller photograph, 2250x3000 JPEG. Adjusted V3 boundary curves tracing the visible white spine-face/page-block seam enclose the complete visible diagonal spine face from Avon logo head through ISBN/price tail. Rectification samples this source only, does not reconstruct or recolor print, and uses 256 pixels across a native minimum cross-section of about 269 pixels; the source cross-section limits enlargement.",
+      "poster": "library/posters/the-soul-of-a-new-machine.jpg",
+      "posterSha256": "d6e88e56a19246c7ff9c24ff50440267c545d16f0b38a949b699b21df4f73568",
+      "crop": { "left": 0, "top": 0, "width": 256, "height": 1280 },
+      "height": 320,
+      "artwork": "soul-of-a-new-machine-avon-1990-etsy-4370170886-v3-low.webp",
+      "detailArtwork": "soul-of-a-new-machine-avon-1990-etsy-4370170886-v3-detail-991ab5f87be33b86.webp",
+      "detailWidth": 256,
+      "detailHeight": 1280,
+      "sampling": "independent",
+      "mesh": {
+        "kind": "boundary-curves-spine",
+        "interpolation": "bilinear",
+        "width": 256,
+        "height": 1280,
+        "boundaries": {
+          "top": [
+            [0, 43, 198],
+            [1, 267, 48]
+          ],
+          "bottom": [
+            [0, 1875, 2848],
+            [1, 2220, 2710]
+          ],
+          "left": [
+            [0, 43, 198],
+            [0.09, 195, 444],
+            [0.18, 350, 690],
+            [0.29, 495, 1000],
+            [0.4, 630, 1190],
+            [0.51, 835, 1500],
+            [0.62, 1045, 1778],
+            [0.72, 1270, 2055],
+            [0.82, 1510, 2335],
+            [0.91, 1690, 2595],
+            [1, 1875, 2848]
+          ],
+          "right": [
+            [0, 267, 48],
+            [0.18, 622, 491],
+            [0.4, 1054, 1068],
+            [0.62, 1467, 1652],
+            [0.82, 1850, 2203],
+            [1, 2220, 2710]
+          ]
+        }
+      },
+      "artworkSha256": "979b247da9663022d24c5c81032e0189e90bb2c028bde693bff6a83c96837987",
+      "detailArtworkSha256": "991ab5f87be33b86f2f58fb5633af091777a735bcb5412b0ca3f44dc821a344a"
     }
   ]
 }
