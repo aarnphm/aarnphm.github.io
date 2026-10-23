@@ -1,6 +1,7 @@
 // The blob avatar panel opened from the command palette (multiplayer/avatar-editor.ts). Tool
 // register: mono lowercase controls, a selected fill on the chosen option, square corners.
 #avatar-editor {
+  box-sizing: border-box;
   width: min(30rem, calc(100vw - 2rem));
   max-height: calc(100dvh - 2rem);
   padding: var(--space-4);
@@ -16,7 +17,7 @@
 
   header {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     justify-content: space-between;
     gap: var(--space-2);
   }
@@ -59,6 +60,24 @@
     display: block;
     width: 100%;
     height: 100%;
+  }
+}
+
+#avatar-editor .avatar-editor-close {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  padding: 0;
+  border-color: transparent;
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  @media (pointer: coarse) {
+    width: 44px;
+    height: 44px;
   }
 }
 
