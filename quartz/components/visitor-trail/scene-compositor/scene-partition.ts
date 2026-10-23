@@ -382,7 +382,18 @@ export function createSceneTree(scope: Scope, gpu: Gpu) {
     if (!changed) return
     carriers = new WeakSet()
     for (const element of promoted.keys()) carry(element)
-    for (const group of groups.values()) group.structure = true
+    // Only parents losing a texture boundary need new runs. Repartitioning every group
+    // here measures the whole forest again whenever replaced crowns are collected.
+    for (const group of groups.values())
+      if (
+        group.items.some(
+          item =>
+            item.kind === 'group' &&
+            (!svg.contains(item.element) ||
+              (!promoted.has(item.element) && !carriers.has(item.element))),
+        )
+      )
+        group.structure = true
   }
   return {
     promoted,

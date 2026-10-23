@@ -36,7 +36,7 @@ type TuningContext = {
   seed: number
   read: (refreshObstacles: boolean) => ForestState | null
   replan: () => void
-  refreshForest: () => void
+  refreshForest: readonly (() => void)[]
   routes: (signal: AbortSignal) => Promise<{ routes: NavigableTrail[]; solids: CollisionActor[] }>
   forestNodes: ReturnType<typeof createForestSprites>
   woodlandNodes: ReturnType<typeof createForestSprites>
@@ -66,6 +66,8 @@ export function mountSceneTuning(context: TuningContext) {
   let active = new Set<SceneTuningGroup>()
   let previousCamps = { ...settings.camps }
   let previousTravelers = { ...settings.travelers }
+  let campGeometryDirty = false
+  let campStructureDirty = false
   const ready = () =>
     !signal.aborted &&
     !host.hidden &&
@@ -75,8 +77,32 @@ export function mountSceneTuning(context: TuningContext) {
   const yieldWork = (signal: AbortSignal) =>
     new Promise<void>(resolve => {
       if (signal.aborted) return resolve()
-      view.setTimeout(resolve, 0)
+      let frame = 0
+      let timer = 0
+      const finish = () => {
+        view.cancelAnimationFrame(frame)
+        view.clearTimeout(timer)
+        signal.removeEventListener('abort', finish)
+        resolve()
+      }
+      signal.addEventListener('abort', finish, { once: true })
+      // Let the compositor present this slice before writing more SVG geometry.
+      frame = view.requestAnimationFrame(() => {
+        frame = 0
+        timer = view.setTimeout(finish, 0)
+      })
     })
+  const refreshForest = async (signal: AbortSignal) => {
+    let slice = view.performance.now()
+    for (const refresh of context.refreshForest) {
+      if (signal.aborted) return
+      refresh()
+      if (view.performance.now() - slice >= 2) {
+        await yieldWork(signal)
+        slice = view.performance.now()
+      }
+    }
+  }
   const forest = async (state: ForestState, signal: AbortSignal, replan: boolean) => {
     const { landscape, plan, obstacles, clearings, foregroundClearings } = state
     const current = { ...settings.forest }
@@ -104,6 +130,12 @@ export function mountSceneTuning(context: TuningContext) {
     )
     const foreground = await prepared.foreground
     if (signal.aborted) return
+    // Superseded generation must finish or abort before it can repaint a partial forest.
+    const rendered = new Map<string, string | null>()
+    await Promise.all(
+      [...prepared.trees].map(async ([id, markup]) => rendered.set(id, await markup)),
+    )
+    if (signal.aborted) return
     const landmarks = scene.querySelector('.trail-landmarks')
     const woodland = scene.querySelector('.trail-woodland')
     if (!landmarks || !woodland) return
@@ -117,10 +149,10 @@ export function mountSceneTuning(context: TuningContext) {
     for (const sprite of [...foreground, ...sprites]) {
       wanted.add(sprite.id)
       if (!context.forestNodes.needsUpdate(sprite)) continue
-      const markup = await prepared.trees.get(sprite.id)
+      const markup = rendered.get(sprite.id)
       if (signal.aborted) return
       context.forestNodes.update(markup ? { ...sprite, render: () => markup } : sprite, landmarks)
-      if (view.performance.now() - slice >= 4) {
+      if (view.performance.now() - slice >= 2) {
         await yieldWork(signal)
         slice = view.performance.now()
       }
@@ -139,7 +171,7 @@ export function mountSceneTuning(context: TuningContext) {
       if (signal.aborted) return
       distant.add(sprite.id)
       context.woodlandNodes.update(sprite, woodland)
-      if (view.performance.now() - slice >= 4) {
+      if (view.performance.now() - slice >= 2) {
         await yieldWork(signal)
         slice = view.performance.now()
       }
@@ -149,9 +181,10 @@ export function mountSceneTuning(context: TuningContext) {
     const foothillTrees = scene.querySelector('.trail-foothill-trees')
     foothillTrees?.append(...landmarks.querySelectorAll('[data-tree-depth="foothill"]'))
     context.worldPatches.refreshForest()
-    context.refreshForest()
+    await yieldWork(signal)
+    await refreshForest(signal)
   }
-  const animals = (state: ForestState) => {
+  const animals = async (state: ForestState, signal: AbortSignal) => {
     const layer = scene.querySelector('.trail-fauna')
     if (!layer) return
     const draft = scene.ownerDocument.createElementNS('http://www.w3.org/2000/svg', 'g')
@@ -167,7 +200,7 @@ export function mountSceneTuning(context: TuningContext) {
     }
     for (const [id, node] of existing) if (!wanted.has(id)) node.remove()
     context.pastureJourneys.update(state.landscape, seed)
-    context.refreshForest()
+    await refreshForest(signal)
   }
   const travelers = async (
     state: ForestState,
@@ -207,6 +240,7 @@ export function mountSceneTuning(context: TuningContext) {
     timer = 0
     if (!pending.size || !ready()) return
     const groups = new Set(pending)
+    if (campGeometryDirty || campStructureDirty) groups.add('camps')
     active = groups
     pending.clear()
     const request = new AbortController()
@@ -214,28 +248,29 @@ export function mountSceneTuning(context: TuningContext) {
     const current = request.signal
     try {
       const campsChanged = groups.has('camps')
-      const campGeometry =
+      // Replanning and painting mutate retained state before the whole request commits.
+      // Keep that work dirty across cancellation, even when input returns to the last commit.
+      campGeometryDirty ||=
         campsChanged &&
         (previousCamps.sites !== settings.camps.sites ||
           previousCamps.tents !== settings.camps.tents)
+      campStructureDirty ||=
+        campGeometryDirty || (campsChanged && previousCamps.builders !== settings.camps.builders)
+      const campGeometry = campGeometryDirty
       if (campGeometry) context.replan()
       const state = context.read(groups.has('forest') && !campGeometry)
       if (!state) return
       if (groups.has('forest') || campGeometry) await forest(state, current, campGeometry)
       if (current.aborted || !ready()) return
-      if (groups.has('animals')) animals(state)
+      if (groups.has('animals')) await animals(state, current)
+      if (current.aborted || !ready()) return
       const routing =
         groups.has('forest') || campGeometry || groups.has('travelers') || campsChanged
       if (routing) {
         const { routes, solids } = await context.routes(current)
         if (current.aborted || !ready()) return
         if (groups.has('forest') || campsChanged) {
-          if (
-            campsChanged &&
-            (previousCamps.sites !== settings.camps.sites ||
-              previousCamps.tents !== settings.camps.tents ||
-              previousCamps.builders !== settings.camps.builders)
-          )
+          if (campStructureDirty)
             context.groundDepth.restore('[data-camp-person], [data-camp-tent], .trail-extra-camp')
           context.community.update(state.landscape, seed, { ...settings.camps }, routes)
           context.visitorJourneys.update(routes, state.landscape, seed, settings.camps)
@@ -251,6 +286,8 @@ export function mountSceneTuning(context: TuningContext) {
       }
       previousTravelers = { ...settings.travelers }
       context.groundDepth.refresh()
+      campGeometryDirty = false
+      campStructureDirty = false
       working = null
       active = new Set()
       view.performance.mark('trail:tuning-commit', { detail: { groups: [...groups] } })

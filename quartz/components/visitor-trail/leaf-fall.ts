@@ -73,8 +73,10 @@ export function mountLeafFall(scene: HTMLElement, signal: AbortSignal, tuning: M
   let last = 0
   let pet: DOMRect | null = null
   let petRead = 0
+  let sceneLeft = 0
+  let sceneTop = 0
 
-  const treeBoxes = new WeakMap<SVGGElement, DOMRect>()
+  let treeBoxes = new WeakMap<SVGGElement, DOMRect>()
   const spriteCache = new Map<string, HTMLCanvasElement>()
   const leafSprite = (tone: string, shape: number, pose: number, cell: number) => {
     const key = `${tone}:${shape}:${pose}:${cell}`
@@ -101,6 +103,9 @@ export function mountLeafFall(scene: HTMLElement, signal: AbortSignal, tuning: M
   // Trees move when the forest is redrawn, so the crowns are read again every few seconds.
   const measure = (time: number) => {
     measured = time
+    const bounds = scene.getBoundingClientRect()
+    sceneLeft = bounds.left + view.scrollX
+    sceneTop = bounds.top + view.scrollY
     const ratio = 1
     const width = Math.round(scene.clientWidth * ratio)
     const height = Math.round(scene.clientHeight * ratio)
@@ -171,9 +176,10 @@ export function mountLeafFall(scene: HTMLElement, signal: AbortSignal, tuning: M
     const rate = visible ? ((Number(scene.dataset.leafRate) || 0) * tuning.leaves) / 100 : 0
     if (rate > 0 && time - measured > 5000) measure(time)
     const air = wind()
-    const bounds = scene.getBoundingClientRect()
+    const left = sceneLeft - view.scrollX
+    const sceneY = sceneTop - view.scrollY
     // Only trees in view drop leaves, and only that band of the canvas is redrawn.
-    const top = -bounds.top - 40
+    const top = -sceneY - 40
     const bottom = top + view.innerHeight + 80
     if (rate > 0)
       for (const tree of sources) {
@@ -205,8 +211,8 @@ export function mountLeafFall(scene: HTMLElement, signal: AbortSignal, tuning: M
     for (let index = leaves.length - 1; index >= 0; index--) {
       const leaf = leaves[index]!
       if (leaf.rest !== null) {
-        const x = leaf.x + bounds.left
-        const y = leaf.y + bounds.top
+        const x = leaf.x + left
+        const y = leaf.y + sceneY
         if (
           pet &&
           x > pet.left - 2 &&
@@ -236,12 +242,12 @@ export function mountLeafFall(scene: HTMLElement, signal: AbortSignal, tuning: M
         leaf.y = leaf.ground
         leaf.rest = time
       }
-      if (leaf.x < -20 || leaf.x > scene.clientWidth + 20) {
+      if (leaf.x < -20 || leaf.x > canvas.width + 20) {
         leaves[index] = leaves[leaves.length - 1]!
         leaves.pop()
       }
     }
-    context.clearRect(0, top, scene.clientWidth, bottom - top)
+    context.clearRect(0, top, canvas.width, bottom - top)
     for (const leaf of leaves) {
       if (leaf.y < top || leaf.y > bottom) continue
       // Resting leaves lie face up and fade; falling leaves turn edge-on for part of each sway.
@@ -270,6 +276,13 @@ export function mountLeafFall(scene: HTMLElement, signal: AbortSignal, tuning: M
   document.addEventListener('visibilitychange', wake, { signal })
   motion.addEventListener('change', wake, { signal })
   scene.addEventListener('trail:motion-tuning', wake, { signal })
+  const refreshSources = () => {
+    measured = -Infinity
+    treeBoxes = new WeakMap()
+    wake()
+  }
+  scene.addEventListener('trail:tuning-commit', refreshSources, { signal })
+  scene.addEventListener('trail:reflow', refreshSources, { signal })
 
   // A change of season, a shown trail or resumed motion starts the fall again.
   const watch = new MutationObserver(wake)

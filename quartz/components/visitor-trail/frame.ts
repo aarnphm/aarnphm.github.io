@@ -161,15 +161,16 @@ const larderClear = (point: Point) => {
       site.tents.every(tent => Math.hypot(tent.x - point.x, tent.y - point.y) > 30),
   )
 }
+const forestRefreshers = [
+  () => jay.refresh(model.treePlan ?? [], larderClear),
+  () => model.forestLayout && frog.refresh(model.forestLayout),
+  () => model.forestLayout && riverBear.refresh(model.forestLayout),
+  () => crowns.refresh(),
+  () => holidays.refreshTrees(),
+  () => pastureJourneys.refreshForest(),
+]
 const refreshForest = () => {
-  jay.refresh(model.treePlan ?? [], larderClear)
-  if (model.forestLayout) {
-    frog.refresh(model.forestLayout)
-    riverBear.refresh(model.forestLayout)
-  }
-  crowns.refresh()
-  holidays.refreshTrees()
-  pastureJourneys.refreshForest()
+  for (const refresh of forestRefreshers) refresh()
 }
 const holidays = mountTrailHolidays(scene, signal, () => {
   if (!model.forestLayout || scene.dataset.trailRendered !== 'true') return
@@ -380,12 +381,12 @@ const tuning = mountSceneTuning({
       (model.plannedWater = model.groveWater),
     )
   },
-  refreshForest() {
-    groundDepth.refresh()
-    grove.refresh()
-    weather.refreshForest()
-    refreshForest()
-  },
+  refreshForest: [
+    () => groundDepth.refresh(),
+    () => grove.refresh(),
+    () => weather.refreshForest(),
+    ...forestRefreshers,
+  ],
   async routes(request) {
     if (!model.forestLayout) return { routes: [], solids: [] }
     const prepared = await routes.prepare(model.forestLayout, request)
