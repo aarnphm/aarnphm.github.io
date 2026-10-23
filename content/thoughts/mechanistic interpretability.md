@@ -241,47 +241,10 @@ see also: [author's writeup](https://www.alignmentforum.org/posts/N6WM6hs7RQMKDh
 
 An attribution graph describes a chosen output on one prompt. In [Circuit Tracing](https://transformer-circuits.pub/2025/attribution-graphs/methods.html), nodes are active CLT features, input embeddings, reconstruction errors, and logits. Direct edges become linear contributions after fixing attention patterns and normalization denominators at their observed values. See [[thoughts/circuit tracing]] for the equations and [On the Biology of a Large Language Model](https://transformer-circuits.pub/2025/attribution-graphs/biology.html) for case studies.
 
-```jsx imports={MethodologyStep,MethodologyTree}
-<MethodologyTree
-  title="methodology"
-  description="construct a local explanation, then test its predictions."
->
-  <MethodologyStep
-    title="train transcoders"
-    badge="replacement"
-    summary="approximate MLP outputs with sparse features."
-  >
-    <MethodologyStep
-      title="cross-layer"
-      summary="features can write to their own and later layers."
-    />
-  </MethodologyStep>
-  <MethodologyStep
-    title="freeze attention"
-    badge="context"
-    summary="hold attention patterns and normalization denominators fixed."
-  />
-  <MethodologyStep
-    title="build graph"
-    badge="graph"
-    summary="attribute direct contributions between nodes."
-  >
-    <MethodologyStep
-      title="include error"
-      summary="retain MLP output left unexplained by the reconstruction."
-    />
-  </MethodologyStep>
-  <MethodologyStep
-    title="prune"
-    badge="sparsity"
-    summary="retain nodes and edges above chosen influence thresholds."
-  />
-  <MethodologyStep
-    title="validate"
-    badge="verify"
-    summary="intervene in the original model and compare downstream effects."
-  />
-</MethodologyTree>
+```jsx imports={Zoomable,AttributionGraph}
+<Zoomable label="attribution graph">
+  <AttributionGraph caption="The acronym graph of Circuit Tracing, figure 5, redrawn: an 18-layer model reads 'The National Digital Analytics Group (N' and writes 'DAG'. Each box is a supernode; its sage bar is its activation. An edge carries $A_{s\to t}=a_s w_{s\to t}$ and its width follows that value. Hover or focus a node to read its inputs; press one to clamp it to zero and watch the replacement model recompute everything downstream. The slider hides edges under a direct-attribution threshold; the paper ranks by path influence $B=(I-A)^{-1}-I$ instead. The weights are illustrative, chosen so every node's inputs sum to one; the paper's figure carries none, and the real test of any ablation runs in the original model." />
+</Zoomable>
 ```
 
 ### parameter decomposition
