@@ -34,6 +34,7 @@ import { recheckPerch, relocate, savePosition } from './pets/perch-motion'
 import { petsEnabledKey, readPetsEnabled, syncPets } from './pets/presence'
 import { endCarry, onViewportWidthChange, startCarry } from './pets/scroll-carry'
 import { driveKeys, onDriveKey, onDriveKeyUp } from './pets/trail-drive'
+import { mountTrailHint } from './pets/trail-hint'
 import { watchTrail } from './pets/trail-lifecycle'
 
 const scrollTimeline = typeof CSS !== 'undefined' && CSS.supports('animation-timeline', 'scroll()')
@@ -69,6 +70,7 @@ document.addEventListener('nav', () => {
   window.addEventListener('blur', () => driveKeys.clear(), { signal })
   void loadWeather(signal)
   const scene = document.querySelector<HTMLElement>('.homepage-trail-scene')
+  mountTrailHint(scene, signal)
   const trailNav = { trailWanted: false }
   const { queueTrail, clearClock, closeTrail } = watchTrail(trailNav, scene, placed, signal)
   document.addEventListener('pointermove', onPointerMove, { passive: true, signal })

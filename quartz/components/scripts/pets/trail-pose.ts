@@ -214,26 +214,43 @@ export const rememberTrail = () => {
     petState.trailJourney = { key: trailKey(petState.trailWalk.path), progress }
 }
 
-export const pauseTrail = () => {
+const stopTrail = (mode: 'pause' | 'leave') => {
   if (!petState.trailWalk) return
+  const rect = petState.root?.isConnected ? petState.root.getBoundingClientRect() : null
+  const scale = rect ? rect.width / petState.width : (petState.perch?.scale ?? 1)
+  const position = rect
+    ? { x: rect.left + window.scrollX, y: rect.top + window.scrollY }
+    : petState.doc
+  const progress = currentTrailProgress() ?? 0
+  const foot: TrailFoot | undefined =
+    rect && position
+      ? {
+          x: position.x + rect.width / 2,
+          y: position.y + (edgeY.stand - viewTop) * petState.unit * scale,
+          scale,
+          progress,
+        }
+      : petState.perch?.foot
+        ? { ...petState.perch.foot, scale, progress }
+        : undefined
+  const next =
+    mode === 'leave' && foot ? placeOn({ el: null, kind: 'stand', t: 0, foot }) : position
+  const transform = next ? transformFor(next, mode === 'leave' ? 1 : scale) : null
   rememberTrail()
   stopTrailGuard()
   const path = petState.trailWalk.path
-  const rect = petState.root?.isConnected ? petState.root.getBoundingClientRect() : null
   petState.hop?.cancel()
   petState.hop = null
   petState.afterMove = null
   petState.override = null
   petState.resizeObserver?.disconnect()
   cancelAnimationFrame(petState.anchorFrame)
-  if (petState.root && rect) {
-    const scale = rect.width / petState.width
-    const foot = {
-      x: rect.left + rect.width / 2 + window.scrollX,
-      y: rect.top + (edgeY.stand - viewTop) * petState.unit * scale + window.scrollY,
-      scale,
-      progress: petState.trailJourney?.progress ?? 0,
-    }
+  if (mode === 'leave') {
+    // Leaving removes the trail twin directly; painting an intermediate paused pose forces layout.
+    clearTrailActor()
+    petState.trailWalk = null
+    petState.perch = null
+  } else if (petState.root && rect && foot) {
     petState.perch = { el: path, kind: 'stand', t: 0, foot, scale, progress: foot.progress }
     petState.trailWalk = {
       path,
@@ -242,25 +259,16 @@ export const pauseTrail = () => {
       duration: 0,
       offsets: [0],
     }
-    petState.doc = { x: rect.left + window.scrollX, y: rect.top + window.scrollY }
-    petState.root.style.transform = transformFor(petState.doc)
-    reserveTrailFoot(path, foot)
   }
+  petState.doc = next
+  if (petState.root && transform) petState.root.style.transform = transform
+  if (mode === 'pause' && petState.root && rect && foot) reserveTrailFoot(path, foot)
   petState.settled = performance.now()
   render()
   armQuietTimer()
   scheduleWander()
+  return { position, scale }
 }
-export const leaveTrail = () => {
-  if (!petState.trailWalk) return
-  pauseTrail()
-  clearTrailActor()
-  const foot = petState.perch?.foot
-  petState.trailWalk = null
-  petState.perch = null
-  if (petState.root && foot) {
-    petState.doc = placeOn({ el: null, kind: 'stand', t: 0, foot })
-    petState.root.style.transform = transformFor(petState.doc)
-  }
-  render()
-}
+
+export const pauseTrail = () => stopTrail('pause')
+export const leaveTrail = () => stopTrail('leave')

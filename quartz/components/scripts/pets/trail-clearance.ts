@@ -169,13 +169,10 @@ export function hopArc(
   to: Point,
   fromScale: number,
   toScale: number,
+  top: number,
 ): [HopPoint, HopPoint, HopPoint] {
   const distance = Math.hypot(to.x - from.x, to.y - from.y)
-  const peak = Math.min(
-    180,
-    50 + distance * 0.3,
-    Math.max(0, Math.min(from.y, to.y) - window.scrollY),
-  )
+  const peak = Math.min(180, 50 + distance * 0.3, Math.max(0, Math.min(from.y, to.y) - top))
   return [
     { ...from, scale: fromScale },
     { x: (from.x + to.x) / 2, y: Math.min(from.y, to.y) - peak, scale: (fromScale + toScale) / 2 },
@@ -192,7 +189,13 @@ export function trailHopClear(next: Perch, obstacles: PetObstacles) {
     return false
   const target = placeOn(next)
   if (Math.hypot(target.x - petState.doc.x, target.y - petState.doc.y) > 900) return false
-  const arc = hopArc(petState.doc, target, petState.perch?.scale ?? 1, next.scale ?? 1)
+  const arc = hopArc(
+    petState.doc,
+    target,
+    petState.perch?.scale ?? 1,
+    next.scale ?? 1,
+    window.scrollY,
+  )
   for (let segment = 1; segment < arc.length; segment++) {
     const from = arc[segment - 1]
     const to = arc[segment]

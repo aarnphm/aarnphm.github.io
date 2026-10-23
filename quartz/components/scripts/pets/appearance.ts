@@ -24,7 +24,7 @@ export const state = (now: number): State => {
   if (petState.carry) return 'slide'
   if (petState.speaking) return petState.speaking.playing ? 'talk' : 'think'
   if (petState.hovering) return 'happy'
-  if (petState.reminding) return 'wave'
+  if (petState.reminding || petState.trailHint) return 'wave'
   if (petState.perch?.kind === 'hang') return 'idle'
   const quiet = now - Math.max(petState.lastMove, petState.settled)
   if (quiet > workAfterMs) return 'work'
@@ -156,7 +156,7 @@ export const render = () => {
   // On the rail it faces the page, its back to the pole.
   petState.gazeArt?.face(petState.carry ? 1 : petState.face)
   syncTrailArt()
-  if (petState.speaking?.playing || friendState.chat || petState.reminding) {
+  if (petState.speaking?.playing || friendState.chat || petState.reminding || petState.trailHint) {
     // On the trail the bubble sits on the pixel pet's head (reserveTrailFoot), not the hidden vector's.
     const top =
       trailState.trailHeadY === null
@@ -168,7 +168,7 @@ export const render = () => {
   renderFriend()
 }
 
-// What the bubble says: the phrase being read aloud, else the hydration reminder.
+// Speech and reminders take priority over the optional homepage shortcut hint.
 export const showBubble = () => {
   if (!petState.root) return
   const text = petState.root.querySelector<HTMLElement>('.garden-pet-bubble-text')
@@ -176,7 +176,9 @@ export const showBubble = () => {
     ? petState.speaking
     : friendState.chat
       ? { text: friendState.chat, lang: 'fr' }
-      : null
+      : petState.trailHint && !petState.reminding
+        ? { text: 'press gt to explore the trail', lang: 'en' }
+        : null
   petState.root.classList.toggle('is-speaking', !!said)
   petState.root.classList.toggle('is-reminding', petState.reminding && !said)
   if (text) {
@@ -193,7 +195,7 @@ const placeBubble = () => {
   if (
     !petState.root ||
     !bubble ||
-    !(petState.speaking?.playing || friendState.chat || petState.reminding)
+    !(petState.speaking?.playing || friendState.chat || petState.reminding || petState.trailHint)
   )
     return
   petState.root.style.removeProperty('--pet-bubble-x')

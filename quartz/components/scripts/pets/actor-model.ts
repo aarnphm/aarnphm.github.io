@@ -90,6 +90,7 @@ export const petState = {
   face: 1,
   hovering: false,
   reminding: false,
+  trailHint: false,
   landAfterJet: false,
   // Where the eyes look instead of the pointer: a triathlon window as it opens.
   lookAt: null as Point | null,
@@ -157,12 +158,20 @@ export const center = (): Point =>
         }
       : { x: window.innerWidth - petState.width, y: window.innerHeight - height() }
 
-export const transformFor = (p: Point, scale = petState.perch?.scale ?? 1) => {
+const transformWithin = (p: Point, scale: number, left: number, width: number) => {
   // Rail exits and jet control points can extend past the viewport even when the perch fits.
-  const left = window.scrollX
-  const right = Math.max(left, left + window.innerWidth - petState.width * scale)
+  const right = Math.max(left, left + width - petState.width * scale)
   const x = clamp(p.x, left, right)
   return `translate3d(${(x - petState.origin.x).toFixed(1)}px, ${(p.y - petState.origin.y).toFixed(1)}px, 0) scale(${scale.toFixed(4)})`
+}
+
+export const transformFor = (p: Point, scale = petState.perch?.scale ?? 1) =>
+  transformWithin(p, scale, window.scrollX, window.innerWidth)
+
+export const capturePetTransform = () => {
+  const left = window.scrollX
+  const width = window.innerWidth
+  return (p: Point, scale = petState.perch?.scale ?? 1) => transformWithin(p, scale, left, width)
 }
 
 export const trailState = {
