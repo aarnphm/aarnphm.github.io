@@ -228,7 +228,9 @@ export function blobSvg(name: string, pinned: Partial<BlobTraits> = {}): string 
   const body = outline(t.shape, seed)
   // Hats are drawn for the pet's round head, whose top is y = -1; this sets them on this body's.
   const top = Math.min(...body.map(([, y]) => y))
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-1.62 -1.78 3.24 3.24">${filled(body, fill, pressure(seed % 89, w, 0.3), INK)}${eyes(t.eyes, t.gaze, w, seed % 53)}${mouth(t.mouth, t.gaze, w, seed % 61)}<g transform="translate(0 ${(top + 1).toFixed(3)})">${hat(t.hat, w, fill)}</g></svg>`
+  // A paper rim, as on the pet, keeps the ink outline readable on a dark page.
+  const rim = `<filter id="blob-rim" filterUnits="userSpaceOnUse" x="-1.62" y="-1.78" width="3.24" height="3.24"><feMorphology in="SourceAlpha" operator="dilate" radius="0.07" result="grown"/><feFlood flood-color="${PAPER}"/><feComposite operator="in" in2="grown"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>`
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-1.62 -1.78 3.24 3.24"><defs>${rim}</defs><g filter="url(#blob-rim)">${filled(body, fill, pressure(seed % 89, w, 0.3), INK)}${eyes(t.eyes, t.gaze, w, seed % 53)}${mouth(t.mouth, t.gaze, w, seed % 61)}<g transform="translate(0 ${(top + 1).toFixed(3)})">${hat(t.hat, w, fill)}</g></g></svg>`
 }
 
 export const blobDataUrl = (name: string, pinned: Partial<BlobTraits> = {}) =>

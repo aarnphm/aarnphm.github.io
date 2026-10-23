@@ -256,6 +256,12 @@ $selection-highlight: rgba(255, 220, 100, 0.5);
       font: 500 1em / 1.4 var(--headerFont);
     }
 
+    .katex-display {
+      margin: var(--space-2) 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
     :is(code, pre) {
       background: var(--comment-surface);
       font-family: var(--codeFont);
