@@ -1,7 +1,7 @@
 ---
 address: 333 Bloor St W, Toronto, ON M5S 1W7, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.667092'
   - '-79.4030583'

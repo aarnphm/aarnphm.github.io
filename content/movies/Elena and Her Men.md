@@ -10,7 +10,7 @@ director:
   - Jean Renoir
 id: Elena and Her Men
 modified: 2026-06-05 15:08:17 GMT-04:00
-posters: '[[movies/posters/elena-and-her-men.jpg]]'
+posters: '[[movies/posters/elena-and-her-men.jpg|elena-and-her-men.jpg]]'
 rating: 7
 status: to watch
 studio:

@@ -1,7 +1,7 @@
 ---
 address: 202 Dovercourt Rd, Toronto, ON M6J 3C8, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.647259'
   - '-79.4271727'

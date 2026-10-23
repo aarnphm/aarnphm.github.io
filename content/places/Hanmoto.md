@@ -1,7 +1,7 @@
 ---
 address: 2 Lakeview Ave, Toronto, ON M6J 1X4, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.6489495'
   - '-79.4216355'

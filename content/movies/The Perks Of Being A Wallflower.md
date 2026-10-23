@@ -8,7 +8,7 @@ director:
   - Stephen Chbosky
 id: the-perks-of-being-a-wallflower
 modified: 2026-06-05 15:08:18 GMT-04:00
-posters: '[[movies/posters/the-perks-of-being-a-wallflower.jpg]]'
+posters: '[[movies/posters/the-perks-of-being-a-wallflower.jpg|the-perks-of-being-a-wallflower.jpg]]'
 rating: 7.9
 status: to watch
 studio: summit entertainment

@@ -8,7 +8,7 @@ description: haneke filming death's slow transformation of the body—retired pi
 director: Michael Haneke
 id: amour
 modified: 2026-06-05 15:08:15 GMT-04:00
-posters: '[[movies/posters/amour.jpg]]'
+posters: '[[movies/posters/amour.jpg|amour.jpg]]'
 rating: 7.9
 status: to watch
 studio: sony pictures classics

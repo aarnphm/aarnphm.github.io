@@ -8,7 +8,7 @@ description: white savior road trip barely mentioning the actual green book—fa
 director: Peter Farrelly
 id: green-book
 modified: 2026-06-05 15:08:19 GMT-04:00
-posters: '[[movies/posters/green-book.jpg]]'
+posters: '[[movies/posters/green-book.jpg|green-book.jpg]]'
 rating: 8.2
 status: recurring
 studio: dreamworks pictures

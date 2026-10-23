@@ -5,7 +5,7 @@ description: erikson's eight stages of life animated as carnival rides—hubley 
 director: John Hubley
 id: Everybody Rides the Carousel
 modified: 2026-06-05 15:08:17 GMT-04:00
-posters: '[[movies/posters/Everybody Rides the Carousel.jpg]]'
+posters: '[[movies/posters/Everybody Rides the Carousel.jpg|Everybody Rides the Carousel.jpg]]'
 rating: 6.6
 status: to watch
 studio: hubley studios

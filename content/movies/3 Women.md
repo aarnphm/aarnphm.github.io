@@ -9,7 +9,7 @@ director:
   - Robert Altman
 id: 3 Women
 modified: 2026-06-05 15:08:14 GMT-04:00
-posters: '[[movies/posters/3-women.jpg]]'
+posters: '[[movies/posters/3-women.jpg|3-women.jpg]]'
 rating: 7.7
 status: to watch
 studio: 20th century fox

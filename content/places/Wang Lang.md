@@ -1,7 +1,7 @@
 ---
 address: 669 King St W, Toronto, ON M5V 1M9, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.64391'
   - '-79.4007988'

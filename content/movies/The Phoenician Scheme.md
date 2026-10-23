@@ -8,7 +8,7 @@ director:
   - Wes Anderson
 id: The Phoenician Scheme
 modified: 2026-06-05 15:08:14 GMT-04:00
-posters: '[[movies/posters/the-phoenician-scheme.webp]]'
+posters: '[[movies/posters/the-phoenician-scheme.webp|the-phoenician-scheme.webp]]'
 rating: 6.9
 status: to watch
 studio: focus features

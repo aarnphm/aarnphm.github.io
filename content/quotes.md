@@ -175,7 +175,7 @@ transclude:
 
 > Once men turned their thinking over to machines in the hope that this would set them free. But that only permitted other men with machines to enslave them.
 >
-> Frank Herbert, _[[library/Dune]]_
+> Frank Herbert, _[[library/Dune|Dune]]_
 
 > In this regard, [[thoughts/LLMs|LLM]] use may be viewed as a dietary choice: one may choose to (say) not eat meat — and at Oxide we wish to empathize with that disposition by making sure that vegetarian options are available when we eat together. But just as we accommodate those choices, those who make them must understand that others will make different decisions — and it is decidedly anti-social to interrupt someone’s meal to register disapproval with their choice of entrée.
 >
@@ -233,7 +233,7 @@ transclude:
 
 > Humans can forget anything. It's okay to forget some things, because we are mortal and finite. But some things we have to remember. It's important that we remember. Write to yourself something which will make you remember. ^mnestics
 >
-> [[library/There Is No Antimemetics Division]]
+> [[library/There Is No Antimemetics Division|There Is No Antimemetics Division]]
 
 > I am shivering, reading cold northeastern prose
 >
@@ -421,11 +421,11 @@ transclude:
 
 > You don't know about real loss, because it only occurs when you [[posts/her|love]] something more than you love yourself. I doubt you've ever dared to love anybody that much
 >
-> Robin Williams ([[movies/Good Will Hunting]])
+> Robin Williams ([[movies/Good Will Hunting|Good Will Hunting]])
 
 > When you do something, do it 100%. When you work, work. When you laugh, laugh. When you eat, eat like it's your last meal
 >
-> Tony the valet ([[movies/Green Book]])
+> Tony the valet ([[movies/Green Book|Green Book]])
 
 > Life can only be understood backwards; but it must be lived forwards.
 >
@@ -443,7 +443,7 @@ transclude:
 >
 > Martin Scorsese
 
-> When you are not fed [[thoughts/love]] with a spoon you learn to lick it with a knife
+> When you are not fed [[thoughts/love|love]] with a spoon you learn to lick it with a knife
 >
 > the internet
 

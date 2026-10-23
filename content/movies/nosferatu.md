@@ -6,7 +6,7 @@ description: count orlok's obsession with ellen hutter brings him from transylva
 director: Robert Eggers
 id: nosferatu
 modified: 2026-06-05 15:08:17 GMT-04:00
-posters: '[[movies/posters/nosferatu.jpg]]'
+posters: '[[movies/posters/nosferatu.jpg|nosferatu.jpg]]'
 rating: 7.2
 status: finished
 studio: focus features

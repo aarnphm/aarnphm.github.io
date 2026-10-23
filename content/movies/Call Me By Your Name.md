@@ -8,7 +8,7 @@ description: desire in italian sunlight—a summer compressed into the shape of 
 director: Luca Guadagnino
 id: call-me-by-your-name
 modified: 2026-06-05 15:08:14 GMT-04:00
-posters: '[[movies/posters/call-me-by-your-name.jpg]]'
+posters: '[[movies/posters/call-me-by-your-name.jpg|call-me-by-your-name.jpg]]'
 rating: 7.9
 status: finished
 studio: sony pictures classics

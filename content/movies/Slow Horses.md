@@ -9,7 +9,7 @@ director:
   - Will Smith
 id: Slow Horses
 modified: 2026-09-18
-posters: '[[movies/posters/slow-horses.jpg]]'
+posters: '[[movies/posters/slow-horses.jpg|slow-horses.jpg]]'
 status: to watch
 studio: see-saw films
 tags:

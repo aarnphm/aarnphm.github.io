@@ -5,7 +5,7 @@ description: sherman tank crew grinding through final days of wwii—ayer filmin
 director: David Ayer
 id: fury
 modified: 2026-06-05 15:08:17 GMT-04:00
-posters: '[[movies/posters/fury.jpg]]'
+posters: '[[movies/posters/fury.jpg|fury.jpg]]'
 rating: 7.6
 status: recurring
 studio: columbia pictures

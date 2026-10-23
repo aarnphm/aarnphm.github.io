@@ -5,7 +5,7 @@ description: los angeles built on stolen water and worse crimes—polanski filmi
 director: Roman Polanski
 id: chinatown
 modified: 2026-06-05 15:08:15 GMT-04:00
-posters: '[[movies/posters/chinatown.jpg]]'
+posters: '[[movies/posters/chinatown.jpg|chinatown.jpg]]'
 rating: 8.1
 status: recurring
 studio: paramount pictures

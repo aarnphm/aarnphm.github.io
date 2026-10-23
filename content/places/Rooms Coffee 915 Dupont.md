@@ -1,7 +1,7 @@
 ---
 address: 915 Dupont St, Toronto, ON M6H 1Z1, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.6700986'
   - '-79.4297616'

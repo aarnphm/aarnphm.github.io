@@ -9,7 +9,7 @@ director:
   - Sydney Pollack
 id: jeremiah-johnson
 modified: 2026-06-05 15:08:19 GMT-04:00
-posters: '[[movies/posters/jeremiah-johnson.jpg]]'
+posters: '[[movies/posters/jeremiah-johnson.jpg|jeremiah-johnson.jpg]]'
 rating: 7.6
 status: to watch
 studio: warner bros

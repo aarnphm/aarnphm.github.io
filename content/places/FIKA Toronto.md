@@ -1,7 +1,7 @@
 ---
 address: 28 Kensington Ave, Toronto, ON M5T 2K1, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.6535814'
   - '-79.4030177'

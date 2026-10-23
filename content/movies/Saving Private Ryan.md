@@ -7,7 +7,7 @@ description: captain miller survives the omaha beach landing, then leads seven s
 director: Steven Spielberg
 id: saving-private-ryan
 modified: 2026-06-05 15:08:14 GMT-04:00
-posters: '[[movies/posters/saving-private-ryan.jpg]]'
+posters: '[[movies/posters/saving-private-ryan.jpg|saving-private-ryan.jpg]]'
 rating: 8.6
 status: recurring
 studio: dreamworks pictures

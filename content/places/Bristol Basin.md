@@ -1,7 +1,7 @@
 ---
 address: 'Bristol Basin, New York, NY 10010, USA'
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '40.738402'
   - '-73.973223'

@@ -7,7 +7,7 @@ description: nicolas cage goes viral for appearing in everyone's dreams—borgli
 director: Kristoffer Borgli
 id: dream-scenario
 modified: 2026-06-05 15:08:18 GMT-04:00
-posters: '[[movies/posters/dream-scenario.jpg]]'
+posters: '[[movies/posters/dream-scenario.jpg|dream-scenario.jpg]]'
 rating: 6.8
 status: recurring
 studio: a24

@@ -7,7 +7,7 @@ description: new york jeweler howard ratner tries to settle his debts with one h
 director: Safdie Brothers
 id: uncut-gems
 modified: 2026-06-05 15:08:15 GMT-04:00
-posters: '[[movies/posters/uncut-gems.jpg]]'
+posters: '[[movies/posters/uncut-gems.jpg|uncut-gems.jpg]]'
 rating: 7.4
 status: recurring
 studio: a24

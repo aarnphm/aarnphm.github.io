@@ -5,7 +5,7 @@ description: connery inventing the template—first bond film establishing the m
 director: Terence Young
 id: dr-no
 modified: 2026-06-05 15:08:16 GMT-04:00
-posters: '[[movies/posters/dr-no.jpg]]'
+posters: '[[movies/posters/dr-no.jpg|dr-no.jpg]]'
 rating: 7.2
 status: recurring
 studio: united artists

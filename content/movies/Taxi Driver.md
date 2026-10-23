@@ -8,7 +8,7 @@ description: loneliness calcifying into violence in a city that won't see you—
 director: Martin Scorsese
 id: taxi-driver
 modified: 2026-06-05 15:08:20 GMT-04:00
-posters: '[[movies/posters/taxi-driver.jpg]]'
+posters: '[[movies/posters/taxi-driver.jpg|taxi-driver.jpg]]'
 rating: 8.2
 status: recurring
 studio: columbia pictures

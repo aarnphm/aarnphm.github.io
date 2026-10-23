@@ -7,7 +7,7 @@ description: the weight of knowing you've changed the world irreversibly—prome
 director: Christopher Nolan
 id: oppenheimer
 modified: 2026-06-05 15:08:19 GMT-04:00
-posters: '[[movies/posters/oppenheimer.jpg]]'
+posters: '[[movies/posters/oppenheimer.jpg|oppenheimer.jpg]]'
 rating: 8.2
 status: recurring
 studio: syncopy

@@ -1,7 +1,7 @@
 ---
 address: 546 College St, Toronto, ON M6G 1A6, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.6536022'
   - '-79.4134644'

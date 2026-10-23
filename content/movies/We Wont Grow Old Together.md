@@ -5,7 +5,7 @@ description: jean and catherine have been lovers for six years. during the final
 director: Maurice Pialat
 id: we-wont-grow-old-together
 modified: 2026-06-05 15:08:17 GMT-04:00
-posters: '[[movies/posters/we-wont-grow-old-together.jpg]]'
+posters: '[[movies/posters/we-wont-grow-old-together.jpg|we-wont-grow-old-together.jpg]]'
 rating: 7.2
 status: recurring
 studio: les films corona

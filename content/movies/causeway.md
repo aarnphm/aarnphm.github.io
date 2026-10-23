@@ -6,7 +6,7 @@ description: lawrence returning from afghanistan with brain injury—neugebauer 
 director: Lila Neugebauer
 id: causeway
 modified: 2026-06-05 15:08:18 GMT-04:00
-posters: '[[movies/posters/causeway.jpg]]'
+posters: '[[movies/posters/causeway.jpg|causeway.jpg]]'
 rating: 6.6
 status: recurring
 studio: a24

@@ -13,7 +13,7 @@ title: gone girl is our life now, actually
 _alternative description: on pop culture, and the need for meta-authenticity_
 
 - following up essays:
-  - how to find people of your own on the internet in the age of [[posts/hyperabundance]]
+  - how to find people of your own on the internet in the age of [[posts/hyperabundance|hyperabundance]]
 
 https://www.youtube.com/watch?v=c4e9rQAKQSs
 

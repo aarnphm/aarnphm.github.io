@@ -8,7 +8,7 @@ description: a guardian angel shows george bailey how bedford falls would look w
 director: Frank Capra
 id: its-a-wonderful-life
 modified: 2026-10-18 10:33:47 GMT-04:00
-posters: '[[movies/posters/its-a-wonderful-life.jpg]]'
+posters: '[[movies/posters/its-a-wonderful-life.jpg|its-a-wonderful-life.jpg]]'
 rating: 8.6
 status: to watch
 studio: rko

@@ -1,7 +1,7 @@
 ---
 address: 198 Gough St, San Francisco, CA 94102, USA
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '37.7749123'
   - '-122.4225186'

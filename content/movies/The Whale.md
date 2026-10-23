@@ -6,7 +6,7 @@ description: charlie is a reclusive english teacher with severe obesity who want
 director: Darren Aronofsky
 id: the-whale
 modified: 2026-06-05 15:08:18 GMT-04:00
-posters: '[[movies/posters/the-whale.jpg]]'
+posters: '[[movies/posters/the-whale.jpg|the-whale.jpg]]'
 rating: 7.6
 status: recurring
 studio: a24

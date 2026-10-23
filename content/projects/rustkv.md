@@ -4,7 +4,7 @@ date: '2022-01-25'
 description: rust key-value store combining mongodb persistence with redis-like in-memory operations for fast access patterns.
 id: rust key-value store
 modified: 2026-06-05 15:08:02 GMT-04:00
-notebook: '[[thoughts/Rust]]'
+notebook: '[[thoughts/Rust|Rust]]'
 status: idea
 subcategory: databases
 tags:

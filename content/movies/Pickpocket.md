@@ -9,7 +9,7 @@ director:
   - Robert Bresson
 id: Pickpocket
 modified: 2026-06-05 15:08:19 GMT-04:00
-posters: '[[movies/posters/pickpocket.jpg]]'
+posters: '[[movies/posters/pickpocket.jpg|pickpocket.jpg]]'
 rating: 7.6
 status: to watch
 studio: agnes delahaie productions

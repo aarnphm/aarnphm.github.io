@@ -5,7 +5,7 @@ description: keanu reeves killing everyone over a dead dog—stahelski choreogra
 director: Chad Stahelski
 id: john-wick-series
 modified: 2026-06-05 15:08:17 GMT-04:00
-posters: '[[movies/posters/john-wick-series.jpg]]'
+posters: '[[movies/posters/john-wick-series.jpg|john-wick-series.jpg]]'
 rating: 7.5
 status: recurring
 studio: lionsgate

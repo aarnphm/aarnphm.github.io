@@ -7,7 +7,7 @@ description: henry sugar learns a method for seeing without his eyes, then uses 
 director: Wes Anderson
 id: the-wonderful-story-of-henry-sugar
 modified: 2026-06-05 15:08:13 GMT-04:00
-posters: '[[movies/posters/the-wonderful-story-of-henry-sugar.jpg]]'
+posters: '[[movies/posters/the-wonderful-story-of-henry-sugar.jpg|the-wonderful-story-of-henry-sugar.jpg]]'
 rating: 7.4
 status: recurring
 studio: netflix

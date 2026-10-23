@@ -1,7 +1,7 @@
 ---
 address: '1 Bass Pro Drive, Memphis, TN 38105, USA'
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '35.15556'
   - '-90.05194'

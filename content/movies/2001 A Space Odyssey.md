@@ -5,7 +5,7 @@ description: evolution as silent symphony—kubrick filming human transcendence 
 director: Stanley Kubrick
 id: 2001-a-space-odyssey
 modified: 2026-06-05 15:08:18 GMT-04:00
-posters: '[[movies/posters/2001-a-space-odyssey.jpg]]'
+posters: '[[movies/posters/2001-a-space-odyssey.jpg|2001-a-space-odyssey.jpg]]'
 rating: 8.3
 status: recurring
 studio: mgm

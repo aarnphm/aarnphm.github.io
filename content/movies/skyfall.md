@@ -8,7 +8,7 @@ description: bond as washed-up relic confronting cyber-terrorism—mendes filmin
 director: Sam Mendes
 id: skyfall
 modified: 2026-06-05 15:08:14 GMT-04:00
-posters: '[[movies/posters/skyfall.jpg]]'
+posters: '[[movies/posters/skyfall.jpg|skyfall.jpg]]'
 rating: 7.8
 status: recurring
 studio: columbia pictures

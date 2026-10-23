@@ -9,7 +9,7 @@ director:
   - Nick Santora
 id: Reacher
 modified: 2026-09-18
-posters: '[[movies/posters/reacher.jpg]]'
+posters: '[[movies/posters/reacher.jpg|reacher.jpg]]'
 rating: 7.9
 status: recurring
 studio:

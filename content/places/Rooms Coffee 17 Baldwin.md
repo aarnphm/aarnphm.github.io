@@ -1,7 +1,7 @@
 ---
 address: 17 Baldwin St, Toronto, ON M5T 1L1, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.6559416'
   - '-79.3953671'

@@ -1,7 +1,7 @@
 ---
 address: 1334 Dundas St W, Toronto, ON M6J 1Y2, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.6495912'
   - '-79.4295031'

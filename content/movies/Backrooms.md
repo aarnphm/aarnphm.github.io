@@ -8,7 +8,7 @@ director:
   - Kane Parsons
 id: Backrooms
 modified: 2026-08-21 23:36:31 GMT-04:00
-posters: '[[movies/posters/backrooms.webp]]'
+posters: '[[movies/posters/backrooms.webp|backrooms.webp]]'
 rating: 9.4
 status: finished
 studio: a24

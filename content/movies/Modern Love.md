@@ -15,7 +15,7 @@ director:
   - Andrew Rannells
 id: modern-love-2019-2021
 modified: 2026-06-05 15:08:14 GMT-04:00
-posters: '[[movies/posters/modern-love-2019-2021.jpg]]'
+posters: '[[movies/posters/modern-love-2019-2021.jpg|modern-love-2019-2021.jpg]]'
 rating: 7.9
 status: recurring
 studio: amazon mgm studios

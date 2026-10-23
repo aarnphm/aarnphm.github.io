@@ -10,7 +10,7 @@ director:
 id: Mayday
 modified: 2026-09-18 21:09:02 GMT-04:00
 notes: a light-hearted fun movie
-posters: '[[movies/posters/mayday.jpg]]'
+posters: '[[movies/posters/mayday.jpg|mayday.jpg]]'
 rating: 7.6
 runtime: 110
 status: finished

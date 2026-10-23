@@ -1,7 +1,7 @@
 ---
 address: 93A Ossington Ave, Toronto, ON M6J 0G1, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.64674'
   - '-79.4186459'

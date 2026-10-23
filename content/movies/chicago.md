@@ -8,7 +8,7 @@ description: murder as publicity stunt—marshall's jazz-age musical where court
 director: Rob Marshall
 id: chicago
 modified: 2026-06-05 15:08:19 GMT-04:00
-posters: '[[movies/posters/chicago.jpg]]'
+posters: '[[movies/posters/chicago.jpg|chicago.jpg]]'
 rating: 7.2
 status: recurring
 studio: miramax

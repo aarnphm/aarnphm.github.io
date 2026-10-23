@@ -11,5 +11,5 @@ title: puzzle
 
 | foundry        | links          |
 | -------------- | -------------- |
-| Advent of Code | [[puzzle/aoc]] |
-| LeetCode       | [[puzzle/lc]]  |
+| Advent of Code | [[puzzle/aoc\|aoc]] |
+| LeetCode       | [[puzzle/lc\|lc]]  |

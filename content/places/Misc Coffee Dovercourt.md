@@ -1,7 +1,7 @@
 ---
 address: 155 Dovercourt Rd, Toronto, ON M6J 3C6, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.6454764'
   - '-79.4229187'

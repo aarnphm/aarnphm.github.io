@@ -1,7 +1,7 @@
 ---
 address: 468 College St, Toronto, ON M6G 1A1, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.6564852'
   - '-79.4086992'

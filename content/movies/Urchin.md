@@ -7,7 +7,7 @@ director:
   - Harris Dickinson
 id: Urchin
 modified: 2026-06-05 15:08:13 GMT-04:00
-posters: '[[movies/posters/urchin.jpg]]'
+posters: '[[movies/posters/urchin.jpg|urchin.jpg]]'
 rating: 7.2
 status: to watch
 studio: picturehouse entertainment

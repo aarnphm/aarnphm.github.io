@@ -5,7 +5,7 @@ description: white and black convicts escaping while chained together—kramer f
 director: Stanley Kramer
 id: the-defiant-ones
 modified: 2026-06-05 15:08:14 GMT-04:00
-posters: '[[movies/posters/the-defiant-ones.jpg]]'
+posters: '[[movies/posters/the-defiant-ones.jpg|the-defiant-ones.jpg]]'
 rating: 7.5
 status: recurring
 studio: united artists

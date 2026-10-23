@@ -7,7 +7,7 @@ director:
   - Yorgos Lanthimos
 id: Bugonia
 modified: 2026-06-05 15:08:15 GMT-04:00
-posters: '[[movies/posters/bugonia.webp]]'
+posters: '[[movies/posters/bugonia.webp|bugonia.webp]]'
 rating: 7.9
 status: to watch
 studio: focus features

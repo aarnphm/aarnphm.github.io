@@ -34,7 +34,7 @@ _If you have read about the history of the field before, feel free to skip this 
 
 The inception of [[thoughts/Machine learning|AI]] might well be traced back to the origin of logics, where men put emphasis on reducing reasoning to some specific sets of calculations (a [[thoughts/reductionism|reductionist]] approach). As such, Plato generalised the belief in total formalisation of knowledge, where knowledge must be universally applicable with explicit definitions [^intuition].
 
-In 1950, Alan Turing posited that a high-speed digital computer, programmed with rules, would exhibit [[thoughts/emergent behaviour]] of [[thoughts/intelligence|intelligence]] [@10.1093/mind/LIX.236.433].
+In 1950, Alan Turing posited that a high-speed digital computer, programmed with rules, would exhibit [[thoughts/emergent behaviour|emergent behaviour]] of [[thoughts/intelligence|intelligence]] [@10.1093/mind/LIX.236.433].
 
 A paradigm quickly emerged among researchers in the 1950s, where expert systems were designed to replicate the decision-making capabilities of a human specialist [^expert-system], (or symbolic [[thoughts/reason|reasoning]] system), referred to by Haugland as Good Old-Fashioned AI (GOFAI) [@10.7551/mitpress/4626.001.0001]. However, it quickly ran into funding problems due to its semantic representation not being able to scaled up to generalized tasks (Also known as the "AI Winter" [@handler2008avoidanotheraiwinter]).
 
@@ -69,7 +69,7 @@ Concurrently, Donald Norman's Parallel Distributed Processing [@10.7551/mitpress
     In 2001, Bag of words (BoW)-variants model was trained on 0.3B tokens and was considered SOTA at the time [@mikolov2013efficientestimationwordrepresentations]. These earlier works proved to the research community that statistical modelling triumphs over symbolic counterpart for language processing given it can capture the general patterns for large corpuses of text.
 
 [^moore]:
-    In 2017, The landmark paper "Attention is all You Need" introduced [[thoughts/Transformers]] architecture [@vaswani2023attentionneed] for neural machine translations tasks, which is based on the [[thoughts/Attention|attention]] mechanism first proposed by [@bahdanau2016neuralmachinetranslationjointly].
+    In 2017, The landmark paper "Attention is all You Need" introduced [[thoughts/Transformers|Transformers]] architecture [@vaswani2023attentionneed] for neural machine translations tasks, which is based on the [[thoughts/Attention|attention]] mechanism first proposed by [@bahdanau2016neuralmachinetranslationjointly].
 
     OpenAI then introduced the scaling law for neural language models [@kaplan2020scalinglawsneurallanguage], which sets off the race towards building these systems based on foundational language models.
 
@@ -84,8 +84,8 @@ Concurrently, Donald Norman's Parallel Distributed Processing [@10.7551/mitpress
     One of the many reasons why attention-based transformers works better than LSTM is because transformers are very scalable and hardware-aware (you can’t just arbitrary add more LSTM block and hope for better long-term retention). For more information, please refer back to the original paper.
 
 In retrospect, GOFAI are [[thoughts/Determinism|deterministic]] in a sense that intentionality is injected within symbolic tokens through explicit programming.
-[[thoughts/Connectionist network]], on the other hand, are often considered as black-box models, given their hidden nature of intermediate representations of perceptron.
-Unlike GOFAI, its internal representation is determined by the state of the entire network states rather than one singular unit. These models exhibit [[thoughts/emergent behaviour]] of [[thoughts/intelligence|intelligence]].
+[[thoughts/Connectionist network|Connectionist network]], on the other hand, are often considered as black-box models, given their hidden nature of intermediate representations of perceptron.
+Unlike GOFAI, its internal representation is determined by the state of the entire network states rather than one singular unit. These models exhibit [[thoughts/emergent behaviour|emergent behaviour]] of [[thoughts/intelligence|intelligence]].
 
 In **summary**:
 

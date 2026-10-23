@@ -1,7 +1,7 @@
 ---
 address: 458 Queen St W, Toronto, ON M5V 2A8, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.6481885'
   - '-79.4021657'

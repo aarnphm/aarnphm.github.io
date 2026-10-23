@@ -9,7 +9,7 @@ director:
   - Ryan Coogler
 id: Sinners
 modified: 2026-06-05 15:08:12 GMT-04:00
-posters: '[[movies/posters/sinners.jpeg]]'
+posters: '[[movies/posters/sinners.jpeg|sinners.jpeg]]'
 rating: 8.9
 status: finished
 studio: warner bros

@@ -7,7 +7,7 @@ director:
   - Zach Cregger
 id: Weapons
 modified: 2026-06-05 15:08:17 GMT-04:00
-posters: '[[movies/posters/weapons.webp]]'
+posters: '[[movies/posters/weapons.webp|weapons.webp]]'
 rating: 7.2
 status: to watch
 studio: warner bros

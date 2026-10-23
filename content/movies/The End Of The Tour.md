@@ -7,7 +7,7 @@ description: rolling stone reporter david lipsky spends five days interviewing d
 director: James Ponsoldt
 id: the-end-of-the-tour
 modified: 2026-06-05 15:08:17 GMT-04:00
-posters: '[[movies/posters/the-end-of-the-tour.jpg]]'
+posters: '[[movies/posters/the-end-of-the-tour.jpg|the-end-of-the-tour.jpg]]'
 rating: 7.2
 status: to watch
 studio: modern man films

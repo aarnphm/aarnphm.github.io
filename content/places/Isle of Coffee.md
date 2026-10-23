@@ -1,7 +1,7 @@
 ---
 address: 745 Queen St E, Toronto, ON M4M 1H3, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.658965'
   - '-79.3515725'

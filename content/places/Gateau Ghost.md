@@ -1,7 +1,7 @@
 ---
 address: 974 College St, Toronto, ON M6H 1A5, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.6535085'
   - '-79.4277414'

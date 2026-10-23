@@ -7,7 +7,7 @@ director:
   - Joachim Trier
 id: Sentimental Value
 modified: 2026-06-05 15:08:12 GMT-04:00
-posters: '[[movies/posters/sentimental-value.jpg]]'
+posters: '[[movies/posters/sentimental-value.jpg|sentimental-value.jpg]]'
 rating: 7.5
 status: to watch
 studio: mubi

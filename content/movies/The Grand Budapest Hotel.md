@@ -8,7 +8,7 @@ description: nostalgia for a europe that maybe never existed, told through impos
 director: Wes Anderson
 id: the-grand-budapest-hotel
 modified: 2026-06-05 15:08:15 GMT-04:00
-posters: '[[movies/posters/the-grand-budapest-hotel.jpg]]'
+posters: '[[movies/posters/the-grand-budapest-hotel.jpg|the-grand-budapest-hotel.jpg]]'
 rating: 8.1
 status: recurring
 studio: searchlight pictures

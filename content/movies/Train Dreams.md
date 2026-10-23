@@ -8,7 +8,7 @@ director:
   - Clint Bentley
 id: Train Dreams
 modified: 2026-06-05 15:08:14 GMT-04:00
-posters: '[[movies/posters/train-dreams.jpeg]]'
+posters: '[[movies/posters/train-dreams.jpeg|train-dreams.jpeg]]'
 rating: 7.8
 status: to watch
 studio: netflix

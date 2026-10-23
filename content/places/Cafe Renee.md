@@ -1,7 +1,7 @@
 ---
 address: 100 Portland St, Toronto, ON M5V 2N2, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.6452821'
   - '-79.4011935'

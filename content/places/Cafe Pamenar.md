@@ -3,7 +3,7 @@ address: >-
   Cafe Pamenar, 307, Augusta Avenue, Kensington Market, Downtown, Toronto,
   Ontario, M5T 2M2, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.6566835'
   - '-79.4027094'

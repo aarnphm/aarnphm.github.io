@@ -8,7 +8,7 @@ description: a surgeon revives a dead woman by placing the brain of her unborn c
 director: Yorgos Lanthimos
 id: poor-things
 modified: 2026-06-05 15:08:15 GMT-04:00
-posters: '[[movies/posters/poor-things.jpg]]'
+posters: '[[movies/posters/poor-things.jpg|poor-things.jpg]]'
 rating: 7.9
 status: finished
 studio: searchlight pictures

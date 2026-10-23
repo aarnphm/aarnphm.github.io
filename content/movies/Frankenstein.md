@@ -10,7 +10,7 @@ director:
   - Guillermo del Toro
 id: Frankenstein
 modified: 2026-06-05 15:08:17 GMT-04:00
-posters: '[[movies/posters/frankenstein.jpg]]'
+posters: '[[movies/posters/frankenstein.jpg|frankenstein.jpg]]'
 rating: 7.5
 status: finished
 studio: netflix

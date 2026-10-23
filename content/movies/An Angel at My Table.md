@@ -8,7 +8,7 @@ director:
   - Jane Campion
 id: An Angel at My Table
 modified: 2026-06-05 15:08:15 GMT-04:00
-posters: '[[movies/posters/An Angel at My Table.jpg]]'
+posters: '[[movies/posters/An Angel at My Table.jpg|An Angel at My Table.jpg]]'
 rating: 7.4
 status: to watch
 studio: hibiscus films

@@ -6,10 +6,10 @@ description: inspired by https://girl.surgery/website_vibes/ and https://guzey.c
 id: vibes
 layout: masonry
 masonry:
-  - '[[posts/images]]'
-  - '[[thoughts/images]]'
-  - '[[library/posters]]'
-  - '[[movies/posters]]'
+  - '[[posts/images|images]]'
+  - '[[thoughts/images|images]]'
+  - '[[library/posters|posters]]'
+  - '[[movies/posters|posters]]'
 modified: 2026-06-05 15:08:10 GMT-04:00
 tags:
   - evergreen

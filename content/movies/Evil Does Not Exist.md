@@ -6,7 +6,7 @@ description: a village challenges a glamping project whose septic plan threatens
 director: Ryusuke Hamaguchi
 id: evil-does-not-exist
 modified: 2026-06-05 15:08:16 GMT-04:00
-posters: '[[movies/posters/evil-does-not-exist.jpg]]'
+posters: '[[movies/posters/evil-does-not-exist.jpg|evil-does-not-exist.jpg]]'
 rating: 7
 status: to watch
 studio: janus films

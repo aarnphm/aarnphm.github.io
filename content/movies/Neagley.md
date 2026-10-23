@@ -10,7 +10,7 @@ director:
   - Nicholas Wootton
 id: Neagley
 modified: 2026-09-18
-posters: '[[movies/posters/neagley.jpg]]'
+posters: '[[movies/posters/neagley.jpg|neagley.jpg]]'
 rating: 7.9
 status: recurring
 studio:

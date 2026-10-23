@@ -8,7 +8,7 @@ director:
   - Ingmar Bergman
 id: Winter Light
 modified: 2026-06-05 15:08:14 GMT-04:00
-posters: '[[movies/posters/winter-light.jpg]]'
+posters: '[[movies/posters/winter-light.jpg|winter-light.jpg]]'
 rating: 8.1
 status: to watch
 studio: svensk filmindustri

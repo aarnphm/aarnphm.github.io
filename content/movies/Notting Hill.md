@@ -8,7 +8,7 @@ description: a movie star falls for a notting hill bookshop owner while her fame
 director: Roger Michell
 id: notting-hill
 modified: 2026-06-05 15:08:17 GMT-04:00
-posters: '[[movies/posters/notting-hill.jpg]]'
+posters: '[[movies/posters/notting-hill.jpg|notting-hill.jpg]]'
 rating: 7.2
 status: recurring
 studio: universal pictures

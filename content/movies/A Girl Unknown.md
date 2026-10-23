@@ -7,7 +7,7 @@ director:
   - Zou Jing
 id: A Girl Unknown
 modified: 2026-10-14 13:23:53 GMT-04:00
-posters: '[[movies/posters/a-girl-unknown.jpg]]'
+posters: '[[movies/posters/a-girl-unknown.jpg|a-girl-unknown.jpg]]'
 rating: 8.2
 runtime: 128
 status: finished

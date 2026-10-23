@@ -5,7 +5,7 @@ description: sam starts decoding messages across los angeles after his neighbor 
 director: David Robert Mitchell
 id: under-the-silver-lake
 modified: 2026-06-05 15:08:16 GMT-04:00
-posters: '[[movies/posters/under-the-silver-lake.jpg]]'
+posters: '[[movies/posters/under-the-silver-lake.jpg|under-the-silver-lake.jpg]]'
 rating: 6.5
 status: to watch
 studio: a24

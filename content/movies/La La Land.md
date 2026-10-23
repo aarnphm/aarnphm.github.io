@@ -7,7 +7,7 @@ description: jazz purist and actress choosing dreams over each other—chazelle 
 director: Damien Chazelle
 id: la-la-land
 modified: 2026-06-05 15:08:13 GMT-04:00
-posters: '[[movies/posters/la-la-land.jpg]]'
+posters: '[[movies/posters/la-la-land.jpg|la-la-land.jpg]]'
 rating: 8
 status: recurring
 studio: summit entertainment

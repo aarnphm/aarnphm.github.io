@@ -4,13 +4,13 @@ description: iOS + watchOS app that snapshots Apple Health into JSON and GPX fil
 id: index
 modified: 2026-07-10 20:17:10 GMT-04:00
 seealso:
-  - '[[triathlon]]'
+  - '[[triathlon|triathlon]]'
 tags:
   - projects
 title: HealthDataExporter
 ---
 
-A small iOS + watchOS app that reads Apple Health and writes JSON and GPX files to iCloud Drive. It exports the daily metrics, swim data, workout data, and run routes I use for [[triathlon]] training.
+A small iOS + watchOS app that reads Apple Health and writes JSON and GPX files to iCloud Drive. It exports the daily metrics, swim data, workout data, and run routes I use for [[triathlon|triathlon]] training.
 
 ## metrics
 

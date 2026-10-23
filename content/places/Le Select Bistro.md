@@ -1,7 +1,7 @@
 ---
 address: 432 Wellington St W, Toronto, ON M5V 1E3, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.6441297'
   - '-79.3981767'

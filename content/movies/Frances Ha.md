@@ -8,7 +8,7 @@ description: millennial aimlessness in black and white—gerwig's dancer driftin
 director: Noah Baumbach
 id: frances-ha
 modified: 2026-06-05 15:08:14 GMT-04:00
-posters: '[[movies/posters/frances-ha.jpg]]'
+posters: '[[movies/posters/frances-ha.jpg|frances-ha.jpg]]'
 rating: 7.4
 status: finished
 studio: ifc films

@@ -8,7 +8,7 @@ director:
   - Ingmar Bergman
 id: The Silence
 modified: 2026-06-05 15:08:15 GMT-04:00
-posters: '[[movies/posters/the-silence.jpg]]'
+posters: '[[movies/posters/the-silence.jpg|the-silence.jpg]]'
 rating: 7.7
 status: to watch
 studio: svensk filmindustri

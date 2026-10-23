@@ -8,7 +8,7 @@ description: tennis as foreplay between three people who can't separate competit
 director: Luca Guadagnino
 id: challengers
 modified: 2026-06-05 15:08:16 GMT-04:00
-posters: '[[movies/posters/challengers.jpg]]'
+posters: '[[movies/posters/challengers.jpg|challengers.jpg]]'
 rating: 7.2
 status: finished
 studio: amazon mgm studios

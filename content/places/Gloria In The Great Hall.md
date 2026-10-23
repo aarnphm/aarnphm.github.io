@@ -3,7 +3,7 @@ address: >-
   1150, Queen Street West, Little Portugal, Davenport, Toronto, Ontario, M6J
   1J3, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.6432589'
   - '-79.424651'

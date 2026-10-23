@@ -1,7 +1,7 @@
 ---
 address: '1124 SW Alder Street, Portland, OR 97205, USA'
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '45.5209862'
   - '-122.6834370'

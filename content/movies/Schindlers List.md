@@ -8,7 +8,7 @@ description: oskar schindler begins as a nazi party member and war profiteer. he
 director: Steven Spielberg
 id: schindlers-list
 modified: 2026-06-05 15:08:18 GMT-04:00
-posters: '[[movies/posters/schindlers-list.jpg]]'
+posters: '[[movies/posters/schindlers-list.jpg|schindlers-list.jpg]]'
 rating: 9
 status: recurring
 studio: universal pictures

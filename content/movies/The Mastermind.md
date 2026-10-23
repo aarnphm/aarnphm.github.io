@@ -8,7 +8,7 @@ director:
   - Kelly Reichardt
 id: The Mastermind
 modified: 2026-06-05 15:08:16 GMT-04:00
-posters: '[[movies/posters/the-mastermind.webp]]'
+posters: '[[movies/posters/the-mastermind.webp|the-mastermind.webp]]'
 rating: 6.2
 status: finished
 studio: mubi

@@ -7,7 +7,7 @@ description: wordless animation of cat surviving apocalyptic flood—zilbalodis 
 director: Gints Zilbalodis
 id: flow
 modified: 2026-06-05 15:08:14 GMT-04:00
-posters: '[[movies/posters/flow.jpg]]'
+posters: '[[movies/posters/flow.jpg|flow.jpg]]'
 rating: 8.1
 status: finished
 studio: dream well studio

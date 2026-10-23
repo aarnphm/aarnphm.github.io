@@ -6,7 +6,7 @@ description: rosebud as the emptiness at the center, with welles and cinematogra
 director: Orson Welles
 id: citizen-kane
 modified: 2026-06-05 15:08:16 GMT-04:00
-posters: '[[movies/posters/citizen-kane.jpg]]'
+posters: '[[movies/posters/citizen-kane.jpg|citizen-kane.jpg]]'
 rating: 8.2
 status: finished
 studio: rko

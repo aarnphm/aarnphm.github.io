@@ -22,7 +22,7 @@ It dawned on me that we inference engineers should do a better job explaining ou
 
 **A**: The word "inference" refers to moving from premises or observations toward a conclusion. Deduction derives consequences from stated premises. Induction estimates a broader pattern from observations. Statistical work can combine them by deducing what a model predicts and then using data to estimate which model or parameters fit.
 
-From the objective of world [[thoughts/representations]], mathematicians and engineers have been using probability distributions/equations to model phenomena in life, as early as Laplace's work on celestial mechanics. The same intellectual lineage runs through modern ML systems—we're still trying to compress the world into mathematical forms, just with more parameters now.
+From the objective of world [[thoughts/representations|representations]], mathematicians and engineers have been using probability distributions/equations to model phenomena in life, as early as Laplace's work on celestial mechanics. The same intellectual lineage runs through modern ML systems—we're still trying to compress the world into mathematical forms, just with more parameters now.
 
 ![[posts/images/shogoth-gpt.webp|Shogoth as GPTs. RLHF, or any methods whatsoever, is an injection of rules into these systems]]
 
@@ -30,7 +30,7 @@ From the objective of world [[thoughts/representations]], mathematicians and eng
 
 **A**: I've been thinking about this distinction a lot. Well, to make a car run, you need a lot of components in addition to the engine: driving wheels, transmission, suspensions, exhaust, drive shaft etc.
 
-An ML system is the entire apparatus — training infrastructure, data pipelines, model architectures (a la [[thoughts/Transformers]], [[thoughts/Attention]]), evaluation harnesses (a la RLHF), deployment mechanisms (a la [[thoughts/vllm|vLLM]]).
+An ML system is the entire apparatus — training infrastructure, data pipelines, model architectures (a la [[thoughts/Transformers|Transformers]], [[thoughts/Attention|Attention]]), evaluation harnesses (a la RLHF), deployment mechanisms (a la [[thoughts/vllm|vLLM]]).
 
 > It's the full lifecycle of converting your inputs from ChatGPT to somewhat mildly coherent output text.
 
@@ -74,7 +74,7 @@ where $L$ is the layer count, $n_{\mathrm{kv}}$ is the number of key-value heads
 
 There's also scheduling: how do you decide which request to process next when they all have different deadlines and costs? [^scheduling-solution]
 
-[^scheduling-solution]: [Orca introduced iteration-level scheduling in 2022](https://www.usenix.org/conference/osdi22/presentation/yu): the batch can change between model iterations as requests arrive or finish. The [2023 vLLM release](https://vllm.ai/blog/2023-06-20-vllm) combined [[thoughts/Continuous batching|continuous batching]] with PagedAttention's KV-memory management. SGLang's [[thoughts/radix attention]] addresses prefix reuse, which can operate alongside this scheduling approach.
+[^scheduling-solution]: [Orca introduced iteration-level scheduling in 2022](https://www.usenix.org/conference/osdi22/presentation/yu): the batch can change between model iterations as requests arrive or finish. The [2023 vLLM release](https://vllm.ai/blog/2023-06-20-vllm) combined [[thoughts/Continuous batching|continuous batching]] with PagedAttention's KV-memory management. SGLang's [[thoughts/radix attention|radix attention]] addresses prefix reuse, which can operate alongside this scheduling approach.
 
 Then there is the kernel problem.[^kernel] Deep learning uses dense matrix multiplications, reductions, normalization, and elementwise operations. Matrix multiplication is distinct from both the Hadamard product and the [[lectures/411/notes#Hadamard and Kronecker products|Kronecker product]]. These operations run in accelerator kernels whose memory access and parallel work must be tuned together.[^kernel-solution]
 
@@ -140,7 +140,7 @@ Speculative decoding was just the beginning. We're seeing cascade systems where 
 
 Right now, we treat models like functions — input in, output out. But what if we treated them like databases? You could have standing queries, incremental updates, consistency guarantees. Or like operating systems — with process isolation, resource limits, scheduling policies.
 
-> Software co-designing hardware has always been, and will always be relevant in the world, even in the event we do reach [[thoughts/AGI]].
+> Software co-designing hardware has always been, and will always be relevant in the world, even in the event we do reach [[thoughts/AGI|AGI]].
 
 NVIDIA's H100 adds TMA and WGMMA instructions that support more asynchronous data movement and matrix work. AMD's MI300X, Groq's LPU, and [[thoughts/Tenstorrent|Tenstorrent's]] accelerators make different choices about memory, execution, and programmability.
 
@@ -168,11 +168,11 @@ The field is moving fast enough that by the time you read this, half the systems
 
 ### **Q**: _Is this also about saving money?_
 
-**A**: Inference efficiency reduces accelerator time and memory per request, which lowers serving cost. The same work can reduce latency or make a model fit on a smaller device. See [[thoughts/Speculative decoding]] and [[thoughts/quantization]].
+**A**: Inference efficiency reduces accelerator time and memory per request, which lowers serving cost. The same work can reduce latency or make a model fit on a smaller device. See [[thoughts/Speculative decoding|Speculative decoding]] and [[thoughts/quantization|quantization]].
 
 ### **Q**: _What’s the point of interpretability? Why look inside models if they “work”?_
 
-**A**: To debug, build trust, and design better systems. Peeking inside reveals features and circuits; [[thoughts/mechanistic interpretability]] to models is what a debugger is to our software system. It gives lenses into how things work internally. The [[thoughts/Connectionist network|models']] subspaces are extremely complex, insofar that we must know/understand/build intuition of how it works.
+**A**: To debug, build trust, and design better systems. Peeking inside reveals features and circuits; [[thoughts/mechanistic interpretability|mechanistic interpretability]] to models is what a debugger is to our software system. It gives lenses into how things work internally. The [[thoughts/Connectionist network|models']] subspaces are extremely complex, insofar that we must know/understand/build intuition of how it works.
 
 ### **Q**: _Enough yapping, can you give me some starter points?_
 
@@ -214,7 +214,7 @@ Especially for [[thoughts/MoE|mixture-of-experts]] models, SD remains largely un
 I suspect whether there are opportunity for self-speculation (i.e LayerSkip for MoE) using expert activation patterns:
 
 - Late-layer experts often mirror early-layer patterns — can we reuse them as draft models?
-- Training [[lectures/41/notes#MTP]] layers are expensive; routing-aware speculation that exploits expert sparsity might be cheaper.
+- Training [[lectures/41/notes#MTP|MTP]] layers are expensive; routing-aware speculation that exploits expert sparsity might be cheaper.
 - The theoretical question is whether _expert routing provides enough signal to predict future tokens without additional parameters_
 
 <br />

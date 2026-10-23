@@ -7,7 +7,7 @@ director:
   - Michael Haneke
 id: The Piano Teacher
 modified: 2026-06-05 15:08:15 GMT-04:00
-posters: '[[movies/posters/the-piano-teacher.jpg]]'
+posters: '[[movies/posters/the-piano-teacher.jpg|the-piano-teacher.jpg]]'
 rating: 7.5
 status: to watch
 studio:

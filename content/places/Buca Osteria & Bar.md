@@ -1,7 +1,7 @@
 ---
 address: 53 Scollard St, Toronto, ON M5R 0A1, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.6721727'
   - '-79.3898525'

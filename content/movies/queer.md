@@ -6,7 +6,7 @@ description: william lee lives alone among american expatriates in 1950s mexico 
 director: Luca Guadagnino
 id: queer
 modified: 2026-06-05 15:08:13 GMT-04:00
-posters: '[[movies/posters/queer.jpg]]'
+posters: '[[movies/posters/queer.jpg|queer.jpg]]'
 rating: 7.3
 status: finished
 studio: a24

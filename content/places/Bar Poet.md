@@ -1,7 +1,7 @@
 ---
 address: 1090 Queen St W, Toronto, ON M6J 1H7, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.6431257'
   - '-79.4230246'

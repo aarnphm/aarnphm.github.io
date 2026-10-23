@@ -8,7 +8,7 @@ description: danish resistance fighters assassinating nazis—madsen filming her
 director: Ole Christian Madsen
 id: flame-citron
 modified: 2026-06-05 15:08:16 GMT-04:00
-posters: '[[movies/posters/flame-citron.jpg]]'
+posters: '[[movies/posters/flame-citron.jpg|flame-citron.jpg]]'
 rating: 7.2
 status: to watch
 studio: sandrew metronome

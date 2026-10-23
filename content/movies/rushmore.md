@@ -8,7 +8,7 @@ description: a teenager building clubs and staging plays to avoid admitting he's
 director: Wes Anderson
 id: rushmore
 modified: 2026-06-05 15:08:19 GMT-04:00
-posters: '[[movies/posters/rushmore.jpg]]'
+posters: '[[movies/posters/rushmore.jpg|rushmore.jpg]]'
 rating: 7.6
 status: recurring
 studio: touchstone pictures

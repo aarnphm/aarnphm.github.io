@@ -9,7 +9,7 @@ director:
   - David Lynch
 id: Mulholland Dr
 modified: 2026-06-05 15:08:16 GMT-04:00
-posters: '[[movies/posters/mulholland-drive.jpg]]'
+posters: '[[movies/posters/mulholland-drive.jpg|mulholland-drive.jpg]]'
 rating: 7.9
 status: to watch
 studio:

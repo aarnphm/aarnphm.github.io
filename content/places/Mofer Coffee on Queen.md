@@ -1,7 +1,7 @@
 ---
 address: 1025 Queen St W, Unit 7, Toronto, ON M6J 1H1, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.6442662'
   - '-79.4175998'

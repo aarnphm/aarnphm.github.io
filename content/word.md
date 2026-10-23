@@ -180,7 +180,7 @@ title: lists
   - Note that for transpose, we should use col-major instead.
     - see also: https://en.wikipedia.org/wiki/Row-_and_column-major_order
 - polysyllabic
-  - [[thoughts/Epistemology]] versus [[thoughts/Ontology]]
+  - [[thoughts/Epistemology|Epistemology]] versus [[thoughts/Ontology|Ontology]]
 - epistolary
 - {{sidenotes[triptych]: a picture/relief carving on three panels, typically hinged together side by side and used as an altarpiece}}
 - meliorism

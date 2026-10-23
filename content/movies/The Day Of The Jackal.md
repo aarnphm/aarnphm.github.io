@@ -7,7 +7,7 @@ description: an OAS faction hires a professional assassin to kill charles de gau
 director: Fred Zinnemann
 id: the-day-of-the-jackal
 modified: 2026-06-05 15:08:17 GMT-04:00
-posters: '[[movies/posters/the-day-of-the-jackal.jpg]]'
+posters: '[[movies/posters/the-day-of-the-jackal.jpg|the-day-of-the-jackal.jpg]]'
 rating: 7.8
 status: finished
 studio: universal pictures

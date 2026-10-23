@@ -8,7 +8,7 @@ description: generation x coming-of-age dramedy following aspiring videographer 
 director: Ben Stiller
 id: Reality Bites
 modified: 2026-06-05 15:08:17 GMT-04:00
-posters: '[[movies/posters/reality-bites.jpg]]'
+posters: '[[movies/posters/reality-bites.jpg|reality-bites.jpg]]'
 rating: 6.6
 status: recurring
 studio: universal pictures

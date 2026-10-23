@@ -9,7 +9,7 @@ director:
   - Harold Ramis
 id: groundhog-day
 modified: 2026-06-05 15:08:19 GMT-04:00
-posters: '[[movies/posters/groundhog-day.jpg]]'
+posters: '[[movies/posters/groundhog-day.jpg|groundhog-day.jpg]]'
 rating: 8
 status: to watch
 studio: columbia pictures

@@ -7,7 +7,7 @@ description: in 1985, coal merchant bill furlong finds a girl confined at a conv
 director: Tim Mielants
 id: small-things-like-this
 modified: 2026-06-05 15:08:14 GMT-04:00
-posters: '[[movies/posters/small-things-like-this.jpg]]'
+posters: '[[movies/posters/small-things-like-this.jpg|small-things-like-this.jpg]]'
 rating: 7.8
 status: finished
 studio: lionsgate

@@ -10,7 +10,7 @@ director:
   - Hettie Macdonald
 id: normal-people
 modified: 2026-06-05 15:08:15 GMT-04:00
-posters: '[[movies/posters/normal-people.jpg]]'
+posters: '[[movies/posters/normal-people.jpg|normal-people.jpg]]'
 rating: 8.5
 status: finished
 studio: bbc

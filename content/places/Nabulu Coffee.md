@@ -1,7 +1,7 @@
 ---
 address: 6 St Joseph St, Toronto, ON M4Y 1J7, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.66649229071298'
   - '-79.38570733361347'

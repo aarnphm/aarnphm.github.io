@@ -5,7 +5,7 @@ description: a brooklyn lawyer takes his first case after his cousin and a frien
 director: Jonathan Lynn
 id: my-cousin-vinny
 modified: 2026-06-05 15:08:16 GMT-04:00
-posters: '[[movies/posters/my-cousin-vinny.jpg]]'
+posters: '[[movies/posters/my-cousin-vinny.jpg|my-cousin-vinny.jpg]]'
 rating: 7.6
 status: recurring
 studio: 20th century fox

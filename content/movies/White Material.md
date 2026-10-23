@@ -8,7 +8,7 @@ director:
   - Claire Denis
 id: White Material
 modified: 2026-06-05 15:08:19 GMT-04:00
-posters: '[[movies/posters/white-material.jpg]]'
+posters: '[[movies/posters/white-material.jpg|white-material.jpg]]'
 rating: 7
 status: to watch
 studio:

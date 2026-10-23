@@ -8,7 +8,7 @@ description: three and a half hours of regret slowed to the pace of old age—a 
 director: Martin Scorsese
 id: the-irishman
 modified: 2026-06-05 15:08:17 GMT-04:00
-posters: '[[movies/posters/the-irishman.jpg]]'
+posters: '[[movies/posters/the-irishman.jpg|the-irishman.jpg]]'
 rating: 7.8
 status: recurring
 studio: tribeca

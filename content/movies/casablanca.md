@@ -7,7 +7,7 @@ description: wartime romance as beautiful lie—bogart choosing the cause over t
 director: Michael Curtiz
 id: casablanca
 modified: 2026-06-05 15:08:14 GMT-04:00
-posters: '[[movies/posters/casablanca.jpg]]'
+posters: '[[movies/posters/casablanca.jpg|casablanca.jpg]]'
 rating: 8.5
 status: recurring
 studio: warner bros

@@ -8,7 +8,7 @@ director:
   - Éric Rohmer
 id: Love in the Afternoon
 modified: 2026-10-17 00:33:15 GMT-04:00
-posters: '[[movies/posters/love-in-the-afternoon.jpg]]'
+posters: '[[movies/posters/love-in-the-afternoon.jpg|love-in-the-afternoon.jpg]]'
 runtime: 95
 status: to watch
 studio: les films du losange

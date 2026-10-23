@@ -5,7 +5,7 @@ description: andy dufresne spends decades in shawshank state penitentiary while 
 director: Frank Darabont
 id: shawshank-redemption
 modified: 2026-06-05 15:08:15 GMT-04:00
-posters: '[[movies/posters/shawshank-redemption.jpg]]'
+posters: '[[movies/posters/shawshank-redemption.jpg|shawshank-redemption.jpg]]'
 rating: 9.3
 status: recurring
 studio: columbia pictures

@@ -7,7 +7,7 @@ director:
   - David Freyne
 id: Eternity
 modified: 2026-06-05 15:08:14 GMT-04:00
-posters: '[[movies/posters/eternity.webp]]'
+posters: '[[movies/posters/eternity.webp|eternity.webp]]'
 rating: 7.2
 status: finished
 studio: a24

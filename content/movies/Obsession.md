@@ -8,7 +8,7 @@ director:
   - Curry Barker
 id: Obsession
 modified: 2026-10-06 16:39:28 GMT-04:00
-posters: '[[movies/posters/obsession.webp]]'
+posters: '[[movies/posters/obsession.webp|obsession.webp]]'
 rating: 9.8
 status: finished
 studio: focus features

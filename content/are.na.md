@@ -812,7 +812,7 @@ title: are.na
   - [meta]:
     - date: 10/03/2025
     - tags: [metaphysics, diety]
-- https://www.lesswrong.com/posts/WBw8dDkAWohFjWQSk/the-cluster-structure-of-thingspace -- Cluster structure of [[thoughts/love#thingspace]]
+- https://www.lesswrong.com/posts/WBw8dDkAWohFjWQSk/the-cluster-structure-of-thingspace -- Cluster structure of [[thoughts/love#thingspace|thingspace]]
   - [meta]:
     - date: 09/04/2025
     - tags: [love, friendship]
@@ -2489,7 +2489,7 @@ title: are.na
   - [meta]:
     - date: 06/04/2026
     - tags: [events, recollection]
-- https://x.com/iycrtylph/status/2062332680566640666 -- Ted Chiang's AI [[thoughts/Consciousness]]
+- https://x.com/iycrtylph/status/2062332680566640666 -- Ted Chiang's AI [[thoughts/Consciousness|Consciousness]]
   - [meta]:
     - date: 06/04/2026
     - tags: [opinion]
@@ -2662,7 +2662,7 @@ title: are.na
     - tags: [eldrich, horror]
     - socials:
       - imdb: https://m.imdb.com/title/tt1945126/
-  - seealso: [[thoughts/Eldritch horror]]
+  - seealso: [[thoughts/Eldritch horror|Eldritch horror]]
 - https://x.com/0xluffy/status/2007140595043889254?s=20 -- boyfriend 101
   - [meta]:
     - date: 01/18/2026
@@ -2866,9 +2866,9 @@ title: are.na
   - [meta]:
     - date: 11/11/2025
     - tags: [relationship]
-  - He's no longer single, but an inspiration for [[dating]]
+  - He's no longer single, but an inspiration for [[dating|dating]]
   - see also: https://colah.github.io/personal/dating/
-- https://x.com/karpathy/status/1864023344435380613 -- Story behind [[thoughts/Attention]] development
+- https://x.com/karpathy/status/1864023344435380613 -- Story behind [[thoughts/Attention|Attention]] development
   - [meta]:
     - date: 11/10/2025
     - tags: [llm]
@@ -3640,7 +3640,7 @@ title: are.na
   - [meta]:
     - date: 11/13/2025
     - tags: [books]
-  - see also: [[antilibrary.base]]
+  - see also: [[antilibrary.base|antilibrary]]
 - https://ribo.zone/ -- ribose
   - [meta]:
     - date: 11/13/2025
@@ -3654,7 +3654,7 @@ title: are.na
   - [meta]:
     - date: 11/10/2025
     - tags: [film]
-- https://patternlanguage.cc/README -- [[library/A Pattern Language]]
+- https://patternlanguage.cc/README -- [[library/A Pattern Language|A Pattern Language]]
   - [meta]:
     - date: 11/10/2025
     - tags: [communal]
@@ -3677,7 +3677,7 @@ title: are.na
     - date: 11/09/2025
     - tags: [masonry]
   - Quartz version can be found [[vibes|here]]
-- [[lyd]] -- postcards, toronto
+- [[lyd|lyd]] -- postcards, toronto
   - [meta]:
     - date: 11/04/2025
     - tags: [friend, love]
@@ -4690,7 +4690,7 @@ title: are.na
   - [meta]:
     - date: 12/14/2025
     - tags: [philosopher, professor]
-  - [[thoughts/ethics]], feminist philosophy, Roman philosophy
+  - [[thoughts/ethics|ethics]], feminist philosophy, Roman philosophy
 - https://plato.stanford.edu/entries/ramsey/ -- Frank Ramsey
   - [meta]:
     - date: 12/14/2025
@@ -4708,7 +4708,7 @@ title: are.na
   - [meta]:
     - date: 12/12/2025
     - tags: [philosopher, sartre]
-  - Sartre scholars, and she translated [[library/Being and Nothingness]]
+  - Sartre scholars, and she translated [[library/Being and Nothingness|Being and Nothingness]]
 - https://www.davidson.edu/people/mark-sample -- Mark Sample
   - [meta]:
     - date: 12/12/2025
@@ -5124,7 +5124,7 @@ title: are.na
   - [meta]:
     - date: 10/02/2025
     - tags: [gpus, kernel]
-  - AI [[thoughts/Compiler]] ([[thoughts/GPU programming#AMD]])
+  - AI [[thoughts/Compiler|Compiler]] ([[thoughts/GPU programming#AMD|AMD]])
 - https://ampersand.pm/ -- &pm (Morgan.)
   - [meta]:
     - date: 10/02/2025
@@ -5157,7 +5157,7 @@ title: are.na
   - [meta]:
     - date: 05/31/2025
     - tags: [high fashion]
-  - legendary [[thoughts/fashion]] designer
+  - legendary [[thoughts/fashion|fashion]] designer
   - past: creative director @ Maison Margiela
 - https://en.wikipedia.org/wiki/Daniel_Dennett -- Daniel Dennett
   - [meta]:
@@ -5234,7 +5234,7 @@ title: are.na
   - [meta]:
     - date: 08/02/2025
     - tags: [alignment, interpretability]
-  - [[thoughts/mechanistic interpretability]], lead GDM applied interpretability team
+  - [[thoughts/mechanistic interpretability|mechanistic interpretability]], lead GDM applied interpretability team
 - https://rosszurowski.com/ -- Ross Zurowski
   - [meta]:
     - date: 08/03/2025
@@ -7006,12 +7006,12 @@ title: are.na
     - date: 06/17/2026
     - tags: [science, ideas]
     - pinned: true
-- [[thoughts/pdfs/Simondon_Gilbert_On_the_Mode_of_Existence_of_Technical_Objects_Part_I_alt.pdf]] -- On The Mode of Existence of Technical Objects, Gilbert Simondon
+- [[thoughts/pdfs/Simondon_Gilbert_On_the_Mode_of_Existence_of_Technical_Objects_Part_I_alt.pdf|Simondon_Gilbert_On_the_Mode_of_Existence_of_Technical_Objects_Part_I_alt.pdf]] -- On The Mode of Existence of Technical Objects, Gilbert Simondon
   - [meta]:
     - date: 06/17/2026
     - tags: [math, theology, naturalism]
     - later: true
-- [[thoughts/pdfs/IntroductionInverseProblems.pdf]] -- Introduction to Inverse Problems
+- [[thoughts/pdfs/IntroductionInverseProblems.pdf|IntroductionInverseProblems.pdf]] -- Introduction to Inverse Problems
   - [meta]:
     - date: 06/17/2026
     - tags: [math]
@@ -7911,7 +7911,7 @@ title: are.na
   - [meta]:
     - date: 01/01/2026
     - tags: [society]
-  - seealso: [[thoughts/AGI]]
+  - seealso: [[thoughts/AGI|AGI]]
 - https://zhengdongwang.com/2025/12/30/2025-letter.html -- Zhengdong Wang's 2025 letter
   - [meta]:
     - date: 01/01/2026
@@ -8068,7 +8068,7 @@ title: are.na
   - Conceptual problems (the question is not a question) (i.e. category error)
   - Logical problems (the question has no answer) (i.e. antinomy)
   - Ontic problems (the answer is literally inaccessible) (i.e. Computational intractability)
-  - Epistemic (we cannot get at the answer) (i.e. [[posts/Chaos]], Computational irreducibility)
+  - Epistemic (we cannot get at the answer) (i.e. [[posts/Chaos|Chaos]], Computational irreducibility)
   - ??? (the question is logical and/or ontic and/or epistemic idk) (i.e. Observer effects)
     - Hysteresis: we can’t answer it because we weren’t there at the start and the system remembers. (e.g. What’s the magnetic moment of this material at field strength H? When will this old rope snap? At what temperature will this water freeze?)
 - https://davidbau.com/archives/2025/12/09/in_defense_of_curiosity.html -- In defense of Curiosity
@@ -8087,7 +8087,7 @@ title: are.na
   - [meta]:
     - date: 12/17/2025
     - tags: [metaculture, pedagogy]
-- https://gwern.net/blog/2025/better-llm-writing -- Towards Better [[thoughts/LLMs]] Creative Writing
+- https://gwern.net/blog/2025/better-llm-writing -- Towards Better [[thoughts/LLMs|LLMs]] Creative Writing
   - [meta]:
     - date: 12/17/2025
     - tags: [writing, ai, generative arts]
@@ -8289,7 +8289,7 @@ title: are.na
     - tags: [writing, llm]
     - later: true
   - This is hard because LLMs are still advancing so fast. If I had written this in 2020, aimed at the original `davinci`, it would now be hopelessly obsolete; and the (still-unreleased and presumably still improving) o1 or [GPT-5](https://openai.com/gpt-5/) might render much of this moot. Perhaps there is not really anything a human can write now for LLMs beyond brute factual observations not yet recorded anywhere in black-and-white, or researchers at the frontier documenting their most esoteric findings, and we should drop “writing for LLMs” as a goal entirely, and write for all the other reasons there are to write? Still, I’m going to give it a try.
-  - see also: [[thoughts/writing]]
+  - see also: [[thoughts/writing|writing]]
 - https://www.nytimes.com/2025/12/03/magazine/chatbot-writing-style.html -- Why does AI write like... that?
   - [meta]:
     - date: 12/07/2025
@@ -8674,7 +8674,7 @@ title: are.na
   - [meta]:
     - date: 11/20/2025
     - tags: [cognitive, read later]
-- https://nickbostrom.com/papers/vulnerable.pdf -- [[thoughts/The Vulnerable World Hypothesis]], Nick Bostrom
+- https://nickbostrom.com/papers/vulnerable.pdf -- [[thoughts/The Vulnerable World Hypothesis|The Vulnerable World Hypothesis]], Nick Bostrom
   - [meta]:
     - date: 11/09/2025
     - tags: [alignment, singularity]
@@ -8736,7 +8736,7 @@ title: are.na
   - [meta]:
     - date: 10/31/2025
     - tags: [orwellian]
-  - [[thoughts/Orwellian]]
+  - [[thoughts/Orwellian|Orwellian]]
 - https://linear.app/now -- Linear Engineering Blog [**]
   - [meta]:
     - date: 10/30/2025
@@ -8838,7 +8838,7 @@ title: are.na
     - tags: [love]
   - https://www.nytimes.com/2015/01/11/style/modern-love-to-fall-in-love-with-anyone-do-this.html
   - https://journals.sagepub.com/doi/pdf/10.1177/0146167297234003
-  - [[posts/her]], [[posts/a broken heart]], [[thoughts/love]], #love, #friend
+  - [[posts/her|her]], [[posts/a broken heart|a broken heart]], [[thoughts/love|love]], #love, #friend
 - https://itscertified.substack.com/p/radiochange -- Radio/Change
   - [meta]:
     - date: 10/23/2025
@@ -8865,7 +8865,7 @@ title: are.na
   - [meta]:
     - date: 10/18/2025
     - tags: [ethics]
-  - see also [[thoughts/ethics]]
+  - see also [[thoughts/ethics|ethics]]
 - https://anthropic-principle.com/anthropic-bias/ -- Anthropic Bias [**]
   - [meta]:
     - date: 10/18/2025
@@ -8925,7 +8925,7 @@ title: are.na
     - date: 10/05/2025
     - tags: [anisogamy]
   - i.e: the evolution of anisogamy
-- [[thoughts/papers/Augmenting-Human-Intellect.pdf]] -- Augmenting Human Intellect, A Conceptual Framework - D.C Engelbart, 1962 [**]
+- [[thoughts/papers/Augmenting-Human-Intellect.pdf|Augmenting-Human-Intellect.pdf]] -- Augmenting Human Intellect, A Conceptual Framework - D.C Engelbart, 1962 [**]
   - [meta]:
     - date: 10/28/2025
     - tags: [hci]
@@ -8947,7 +8947,7 @@ title: are.na
   - [meta]:
     - date: 10/05/2025
     - tags: [research]
-  - The #philosophy underlying the essay is based on a famous quote attributed to [[thoughts/Aristotle]]: “We are what we repeatedly do. Excellence, then, is not an act but a habit.” Underlying all our habits are models (often unconscious) of how the world works.
+  - The #philosophy underlying the essay is based on a famous quote attributed to [[thoughts/Aristotle|Aristotle]]: “We are what we repeatedly do. Excellence, then, is not an act but a habit.” Underlying all our habits are models (often unconscious) of how the world works.
   - [[research|Research]] is, of course, only a part of life, and must be understood in relation to the rest of life
   - Effective people are proactive and take personal responsibility for the events in their lives.
   - They form a vision of how they want their life to be, and work toward achieving that vision.
@@ -9240,7 +9240,7 @@ title: are.na
   - [meta]:
     - date: 08/05/2025
     - tags: [reductionism]
-  - [[thoughts/Roko's Basilisk]]
+  - [[thoughts/Roko's Basilisk|Roko's Basilisk]]
   - “All of this feels mythic,” she said. “Even the non-Rationalist scientists find this compelling — the same way the Manhattan Project was compelling. We want to work on something mythic.”
 - https://ryanandrewlangdon.com/2020/01/28/today-i-learned-that-not-everyone-has-an-internal-monologue-and-it-has-ruined-my-day/ -- Today I learned that some people doesn't have an internal monologue
   - [meta]:
@@ -12341,7 +12341,7 @@ title: are.na
   - [meta]:
     - date: 01/11/2026
     - tags: [quantization, serving, scaling]
-  - see also: [[thoughts/quantization]]
+  - see also: [[thoughts/quantization|quantization]]
 - https://www.lesswrong.com/posts/K3aPmF5o37pYDqrFQ/taking-llms-seriously-as-language-models -- taking LLMs seriously, as a research directives
   - [meta]:
     - date: 01/10/2026
@@ -12512,7 +12512,7 @@ title: are.na
     - date: 12/13/2025
     - tags: [interpretability, alignment]
     - later: true
-  - see also: [[thoughts/Alignment#giving AI safe motivations]]
+  - see also: [[thoughts/Alignment#giving AI safe motivations|giving AI safe motivations]]
 - https://www.youtube.com/watch?v=DR7F7ZDAAtE -- Can Interpretability Control Model Training?
   - [meta]:
     - date: 12/12/2025
@@ -12654,7 +12654,7 @@ title: are.na
     - construct a graph between points that capture local structure
     - measure the "geodesic" distance between all pairs of points in this graph ^[these distances approximate the true manifold distances between points]
     - apply multi-dimensional scaling to project the high-dimensional data into a lower-dimensional embeddings that preserves the distance
-  - leverages [[thoughts/MDS]]
+  - leverages [[thoughts/MDS|MDS]]
 - https://www.youtube.com/watch?v=xcpEl0cGCC4 -- CUDA + ThunderKittens, but increasingly drunk.
   - [meta]:
     - date: 11/22/2025
@@ -12831,12 +12831,12 @@ title: are.na
   - [meta]:
     - date: 10/24/2025
     - tags: [state space models, s4]
-  - see also: [[thoughts/state-space models#Mamba]]
+  - see also: [[thoughts/state-space models#Mamba|Mamba]]
 - https://www.tilderesearch.com/vignettes/gram-space -- Gram-Space Manifold Muon
   - [meta]:
     - date: 10/24/2025
     - tags: [optimizer]
-  - see also: [[thoughts/muon]]
+  - see also: [[thoughts/muon|muon]]
 - https://x.com/jkminder/status/1980290860261732560 -- Finetuning on narrow domains leaves traces behind. So can interpretability agents
   - [meta]:
     - date: 10/21/2025
@@ -12845,7 +12845,7 @@ title: are.na
   - [meta]:
     - date: 10/09/2025
     - tags: [interpretability]
-  - see also: [[thoughts/mechanistic interpretability#QK attributions]]
+  - see also: [[thoughts/mechanistic interpretability#QK attributions|QK attributions]]
 - https://www.goodfire.ai/research/replicating-circuit-tracing-for-a-simple-mechanism -- Replicating Circuit Tracing for a Simple Known Mechanism
   - [meta]:
     - date: 10/09/2025
@@ -12879,7 +12879,7 @@ title: are.na
   - [meta]:
     - date: 10/06/2025
     - tags: [compiler, gpu]
-  - [[thoughts/GPU programming#AMD]]
+  - [[thoughts/GPU programming#AMD|AMD]]
 - https://thinkingmachines.ai/blog/lora/ -- LoRA Without Regret
   - [meta]:
     - date: 10/06/2025
@@ -12888,7 +12888,7 @@ title: are.na
   - [meta]:
     - date: 10/06/2025
     - tags: [ml]
-  - see also: [[thoughts/KV compression#Streaming LLM]]
+  - see also: [[thoughts/KV compression#Streaming LLM|Streaming LLM]]
   - Diagraph sink
   - OpenAI: $\text{attention\_probs} = \operatorname{softmax}([\text{sink\_scalar}, a_{1},a_{2},\ldots,a_{t}])$
   - @barbero2025llmsattendtoken have shown that attention sinks serve as "pressure valves" preventing what researchers call "over-mixing"—a pathological state where deep models processing long sequences blur important distinctions between tokens.
@@ -12896,17 +12896,17 @@ title: are.na
   - [meta]:
     - date: 10/06/2025
     - tags: [interpretability]
-  - [[thoughts/mechanistic interpretability]]
+  - [[thoughts/mechanistic interpretability|mechanistic interpretability]]
 - https://www.lesswrong.com/posts/L3aYFT4RDJYHbbsup/llms-can-learn-about-themselves-by-introspection -- LLMs can learn about themselves by introspection
   - [meta]:
     - date: 10/05/2025
     - tags: [alignment, ai]
-  - related to [[thoughts/Alignment]]
-  - TLDR: We find that [[thoughts/LLMs]] are capable of introspection on simple tasks. We discuss potential implications of introspection for interpretability and the moral status of AIs.
-    - I think this is largely [[thoughts/emergent behaviour]] based on [[thoughts/observer-expectancy effect]] through learnt patterns in RL/post-training paradigm.
+  - related to [[thoughts/Alignment|Alignment]]
+  - TLDR: We find that [[thoughts/LLMs|LLMs]] are capable of introspection on simple tasks. We discuss potential implications of introspection for interpretability and the moral status of AIs.
+    - I think this is largely [[thoughts/emergent behaviour|emergent behaviour]] based on [[thoughts/observer-expectancy effect|observer-expectancy effect]] through learnt patterns in RL/post-training paradigm.
     - LLMs can acquire knowledge that cannot be inferred from their training data. This challenges the view that LLMs simply imitate their training distributions. Instead, it appears that some LLMs have "privileged access" to certain facts about themselves and can use it to answer questions.
       - I wonder if the models grok based on what they understand OOD? We certainly don't have a strong hypothesis on why model groks overall.
-- https://www.lesswrong.com/posts/3ghj8EuKzwD3MQR5G/an-introduction-to-representation-engineering-an-activation -- Representation Engineering, an activation-based paradigm for controlling [[thoughts/LLMs]]
+- https://www.lesswrong.com/posts/3ghj8EuKzwD3MQR5G/an-introduction-to-representation-engineering-an-activation -- Representation Engineering, an activation-based paradigm for controlling [[thoughts/LLMs|LLMs]]
   - [meta]:
     - date: 10/05/2025
     - tags: [interpretability]
@@ -12919,12 +12919,12 @@ title: are.na
   - [meta]:
     - date: 10/05/2025
     - tags: [napkin, inference]
-  - see also [[thoughts/Transformers#inference.]], [[thoughts/LLMs]]
+  - see also [[thoughts/Transformers#inference.|inference.]], [[thoughts/LLMs|LLMs]]
 - https://www.youtube.com/watch?v=kLiwvnr4L80&t=868s -- Trends in Deep Learning, Bill Dally (NVIDIA)
   - [meta]:
     - date: 10/05/2025
     - tags: [argumentative, trend]
-  - [[thoughts/GPU programming]], [[lectures/420|NVIDIA architecture notes]]
+  - [[thoughts/GPU programming|GPU programming]], [[lectures/420|NVIDIA architecture notes]]
 - https://x.com/thesephist/status/1895887696268288119 -- AI-centric interface design
   - [meta]:
     - date: 10/03/2025
@@ -13140,12 +13140,12 @@ title: are.na
   - [meta]:
     - date: 10/03/2025
     - tags: [ml framework]
-  - See also [[thoughts/Weight tying]]
+  - See also [[thoughts/Weight tying|Weight tying]]
 - https://x.com/josh_bickett/status/1725556267014595032 -- What is an AI agent [**]
   - [meta]:
     - date: 10/03/2025
     - tags: [ai]
-- https://x.com/jkminder/status/1969082859311841413 -- [[thoughts/sparse crosscoders]] and non-linear representation dilemma
+- https://x.com/jkminder/status/1969082859311841413 -- [[thoughts/sparse crosscoders|sparse crosscoders]] and non-linear representation dilemma
   - [meta]:
     - date: 10/03/2025
     - tags: [interpretability, hypothesis]
@@ -13161,13 +13161,13 @@ title: are.na
     - date: 10/03/2025
     - tags: [optimizer]
   - https://centralflows.github.io/part1/
-    - How [[thoughts/gradient descent]] works?
+    - How [[thoughts/gradient descent|gradient descent]] works?
 - https://x.com/nrehiew_/status/1973404310127124790 -- DSA comparing to attention sink in long-context regime
   - [meta]:
     - date: 10/03/2025
     - tags: [attention, scaling law]
   - see also: https://x.com/nathancgy4/status/1973420757196873885
-  - [[thoughts/optimization#softmax]] over 2048 tokens, thus $QK$ weights magnitudes are preserved, and no "attention budget" are being given to useless tokens.
+  - [[thoughts/optimization#softmax|softmax]] over 2048 tokens, thus $QK$ weights magnitudes are preserved, and no "attention budget" are being given to useless tokens.
 - https://www.goodfire.ai/blog/painting-with-concepts -- Painting with concepts, via SAE for SDXL-turbo
   - [meta]:
     - date: 05/30/2025
@@ -13210,7 +13210,7 @@ title: are.na
   - [meta]:
     - date: 08/05/2025
     - tags: [fruit, interpretability]
-  - [[thoughts/mechanistic interpretability#attribution graph]]
+  - [[thoughts/mechanistic interpretability#attribution graph|attribution graph]]
   - On Biology of LLMs
   - Futures and directions of interpretability [research](https://www.neuronpedia.org/graph/info#section-directions-for-future-work)
     - Influence functions, or training data attributions methods
@@ -13237,7 +13237,7 @@ title: are.na
   - [meta]:
     - date: 08/14/2025
     - tags: [edit]
-- https://timdettmers.com/2022/08/17/llm-int8-and-emergent-features/ -- [[thoughts/LLMs]].int8() and Emergent Features
+- https://timdettmers.com/2022/08/17/llm-int8-and-emergent-features/ -- [[thoughts/LLMs|LLMs]].int8() and Emergent Features
   - [meta]:
     - date: 08/16/2025
     - tags: [properties, inference]
@@ -13263,7 +13263,7 @@ title: are.na
   - [meta]:
     - date: 10/04/2025
     - tags: [books, scaling law]
-- https://www.jeremykun.com/2023/08/10/mlir-getting-started/ -- [[thoughts/MLIR]] introduction [**]
+- https://www.jeremykun.com/2023/08/10/mlir-getting-started/ -- [[thoughts/MLIR|MLIR]] introduction [**]
   - [meta]:
     - date: 08/16/2025
     - tags: [compiler, ml]
@@ -13713,7 +13713,7 @@ title: are.na
     - pinned: true
     - socials:
       - website: https://www.forethought.org/research/viatopia
-  - Argument for [[posts/hyperabundance]], I believe we would reach to a hyperabundance state, if not sooner than reaching towards viatopia
+  - Argument for [[posts/hyperabundance|hyperabundance]], I believe we would reach to a hyperabundance state, if not sooner than reaching towards viatopia
 - https://tsvibt.blogspot.com/2025/11/llm-generated-text-is-not-testimony.html -- LLM-generated text is not testimony
   - [meta]:
     - date: 01/11/2026
@@ -13878,7 +13878,7 @@ title: are.na
   - [meta]:
     - date: 10/29/2025
     - tags: [dating]
-- [[library/The AI Anarchies Book]]
+- [[library/The AI Anarchies Book|The AI Anarchies Book]]
   - [meta]:
     - date: 10/29/2025
     - tags: [book, technology]
@@ -14884,11 +14884,11 @@ title: are.na
   - [meta]:
     - date: 04/09/2025
     - tags: [life, being]
-- https://en.wikipedia.org/wiki/Lovecraftian_horror -- [[thoughts/Eldritch horror]]
+- https://en.wikipedia.org/wiki/Lovecraftian_horror -- [[thoughts/Eldritch horror|Eldritch horror]]
   - [meta]:
     - date: 04/09/2025
     - tags: [gothic]
-- https://en.wikipedia.org/wiki/Rhizome_(philosophy) -- [[thoughts/Rhizome]]
+- https://en.wikipedia.org/wiki/Rhizome_(philosophy) -- [[thoughts/Rhizome|Rhizome]]
   - [meta]:
     - date: 04/09/2025
     - tags: [being, growth]
@@ -16523,7 +16523,7 @@ title: are.na
     - date: 06/22/2026
     - tags: [cosmology, theology]
     - later: true
-- [[thoughts/pdfs/The Bootstrapping Problem.pdf]] -- The Bootstrapping Problem
+- [[thoughts/pdfs/The Bootstrapping Problem.pdf|The Bootstrapping Problem.pdf]] -- The Bootstrapping Problem
   - [meta]:
     - date: 06/18/2026
     - tags: [morals]
@@ -16944,7 +16944,7 @@ title: are.na
   - [meta]:
     - date: 12/23/2025
     - tags: [functionalism]
-  - [[thoughts/functionalism]]
+  - [[thoughts/functionalism|functionalism]]
 - https://www.youtube.com/watch?v=29AgSo6KOtI -- Why Now? A Quest in Metaphysics
   - [meta]:
     - date: 12/23/2025
@@ -16973,7 +16973,7 @@ title: are.na
   - [meta]:
     - date: 12/17/2025
     - tags: [perception, theology]
-- [[thoughts/papers/The+normativity+of+meaning+without+the+normativity.pdf]] -- The normativity of meaning with the normativity
+- [[thoughts/papers/The+normativity+of+meaning+without+the+normativity.pdf|The+normativity+of+meaning+without+the+normativity.pdf]] -- The normativity of meaning with the normativity
   - [meta]:
     - date: 12/17/2025
     - tags: [being, semantic normativity]
@@ -16992,7 +16992,7 @@ title: are.na
   - [meta]:
     - date: 12/17/2025
     - tags: [amnesia, memory]
-  - from [[library/There is No Antimemetics Division]] our heroes must fight a great evil, monsters that make you forget they exist. In the course of such adventures, they find it necessary to imbibe "mnestics" (opposite of amnesiac), drugs for remembering
+  - from [[library/There is No Antimemetics Division|There is No Antimemetics Division]] our heroes must fight a great evil, monsters that make you forget they exist. In the course of such adventures, they find it necessary to imbibe "mnestics" (opposite of amnesiac), drugs for remembering
   - _Take. your. mnestic_
   - ![[quotes#^mnestics]]
 - https://www.youtube.com/watch?v=V-4R0uuyUm4 -- Derrida and Montaigne on Mourning the Friend
@@ -17066,7 +17066,7 @@ title: are.na
   - [meta]:
     - date: 12/11/2025
     - tags: [continential philosophy, metaphysics]
-- https://ellieanderphd.substack.com/p/simone-de-beauvoir-the-woman-in-love -- [[thoughts/Simone de Beauvoir]], the Woman in Love
+- https://ellieanderphd.substack.com/p/simone-de-beauvoir-the-woman-in-love -- [[thoughts/Simone de Beauvoir|Simone de Beauvoir]], the Woman in Love
   - [meta]:
     - date: 12/11/2025
     - tags: [love, relationship]
@@ -17149,7 +17149,7 @@ title: are.na
   - [meta]:
     - date: 11/18/2025
     - tags: [ai, reasoning]
-  - [[thoughts/spatial awareness]] + #llm to solve geometric problems.
+  - [[thoughts/spatial awareness|spatial awareness]] + #llm to solve geometric problems.
 - https://www.youtube.com87/watch?v=qX6NztnPU-4 -- A 97-Year-Old Philosopher Faces His Own Death
   - [meta]:
     - date: 11/18/2025
@@ -17164,7 +17164,7 @@ title: are.na
   - [meta]:
     - date: 11/05/2025
     - tags: [empathy]
-  - two camps when talking about [[thoughts/Empathy]]:
+  - two camps when talking about [[thoughts/Empathy|Empathy]]:
   - simulation theory: "putting yourself into another shoe"
   - theory theory: "mindreading"
   - She argues that empathy as "the experience of foreign consciousness in general", i.e: doesn't have to have shared experience, but rather a locus of their own subjectivity.
@@ -17176,7 +17176,7 @@ title: are.na
   - [meta]:
     - date: 11/04/2025
     - tags: [empathy, rationalist]
-  - theory theory versus [[thoughts/hermeneutics]]
+  - theory theory versus [[thoughts/hermeneutics|hermeneutics]]
 - https://www.youtube.com/watch?v=usxvyf3xqcQ -- Hubert Dreyfus - Dostoyevsky's The Brothers Karamazov [**]
   - [meta]:
     - date: 10/29/2025
@@ -17200,7 +17200,7 @@ title: are.na
   - [meta]:
     - date: 10/26/2025
     - tags: [existentialism]
-  - books: [[library/Logical Investigations]], [[library/Being and Time]]
+  - books: [[library/Logical Investigations|Logical Investigations]], [[library/Being and Time|Being and Time]]
 - https://www.youtube.com/watch?v=Oq4sjz38z5A -- Hubert Dreyfus discusses Heidegger & Merleau-Ponty [**]
   - [meta]:
     - date: 10/29/2025
@@ -17226,12 +17226,12 @@ title: are.na
   - [meta]:
     - date: 10/23/2025
     - tags: [love, deity]
-  - see also [[thoughts/papers/aron-et-al-1997-the-experimental-generation-of-interpersonal-closeness-a-procedure-and-some-preliminary-findings.pdf]]
+  - see also [[thoughts/papers/aron-et-al-1997-the-experimental-generation-of-interpersonal-closeness-a-procedure-and-some-preliminary-findings.pdf|aron-et-al-1997-the-experimental-generation-of-interpersonal-closeness-a-procedure-and-some-preliminary-findings.pdf]]
 - https://www.youtube.com/watch?v=C7n7wfQOGaI -- The Philosophy of Spinoza & Leibniz - Bryan Magee & Anthony Quinton (1987)
   - [meta]:
     - date: 10/08/2025
     - tags: [rationalist]
-  - after Decartes, [[thoughts/Sphinoza]]
+  - after Decartes, [[thoughts/Sphinoza|Sphinoza]]
 - https://caitlynrichardson.substack.com/p/can-intellectual-intimacy-replace -- can intellectual intimacy replace physical desire? [**]
   - [meta]:
     - date: 10/06/2025
@@ -17272,7 +17272,7 @@ title: are.na
     - date: 10/05/2025
     - tags: [longtermism, being]
   - basis for https://generative.ink/prophecies/
-  - _reframing exercise_. Not every theorist lost on [[thoughts/LLMs]], Barthes and Foucault for example are doing quite well. As difficult as it was to predict large language models some people had occasional glimpses of insight adjacent to or part of the underlying facts about reality that make LLMs possible.
+  - _reframing exercise_. Not every theorist lost on [[thoughts/LLMs|LLMs]], Barthes and Foucault for example are doing quite well. As difficult as it was to predict large language models some people had occasional glimpses of insight adjacent to or part of the underlying facts about reality that make LLMs possible.
 - https://www.lesswrong.com/posts/vzLrQaGPa9DNCpuZz/against-modal-logics -- Against Modal Logics
   - [meta]:
     - date: 10/05/2025
@@ -17338,7 +17338,7 @@ title: are.na
   - [meta]:
     - date: 10/03/2025
     - tags: [love]
-  - [[thoughts/Gilles Deleuze]]: ventures outwards to realize these potentiality.
+  - [[thoughts/Gilles Deleuze|Gilles Deleuze]]: ventures outwards to realize these potentiality.
   - Commit someone who will inevitability fails us.
   - unfolding of love sustains the form of life itself
   - ![[quotes#^camus]]
@@ -17408,7 +17408,7 @@ title: are.na
   - [meta]:
     - date: 06/08/2026
     - tags: [collections, reading]
-    - seealso: [[thoughts/reading]]
+    - seealso: [[thoughts/reading|reading]]
 - https://www.032carchive.com/ -- 032c archive
   - [meta]:
     - date: 06/06/2026
@@ -17474,7 +17474,7 @@ title: are.na
   - [meta]:
     - date: 05/27/2026
     - tags: [books]
-    - seealso: [[antilibrary]]
+    - seealso: [[antilibrary|antilibrary]]
 - https://bampfa.org/program/complete-stanley-kubrick -- A Complete Stanley Kubrick
   - [meta]:
     - date: 05/25/2026
@@ -17604,7 +17604,7 @@ title: are.na
   - [meta]:
     - date: 12/22/2025
     - tags: [play, community]
-- https://x.com/schlagetown/status/1494348599165128720 -- Threads on [[thoughts/play]]
+- https://x.com/schlagetown/status/1494348599165128720 -- Threads on [[thoughts/play|play]]
   - [meta]:
     - date: 12/22/2025
     - tags: [play, exploration]
@@ -18523,7 +18523,7 @@ title: are.na
   - [meta]:
     - date: 01/19/2026
     - tags: [design system]
-  - seealso: [[thoughts/Color]]
+  - seealso: [[thoughts/Color|Color]]
 - https://spaces.is/loversmagazine/interviews/helen-holmes
   - [meta]:
     - date: 01/17/2026
@@ -19442,7 +19442,7 @@ title: are.na
   - [meta]:
     - date: 10/05/2025
     - tags: [watch]
-  - see also [[thoughts/GPU programming]]
+  - see also [[thoughts/GPU programming|GPU programming]]
 - https://www.youtube.com/watch?v=WJ76FfBZuhI&ab_channel=SoderCinema -- Narcissistic Facades - Amy Dunne
   - [meta]:
     - date: 04/09/2025
@@ -24980,7 +24980,7 @@ title: are.na
     - date: 12/12/2025
     - tags: [systems, os]
     - pinned: true
-- [[puzzle/aoc/25/d11.cu]] -- Day 11 implementation of AOC 2025 in CUDA
+- [[puzzle/aoc/25/d11.cu|d11.cu]] -- Day 11 implementation of AOC 2025 in CUDA
   - [meta]:
     - date: 12/11/2025
     - tags: [code, puzzle]
@@ -25122,7 +25122,7 @@ title: are.na
   - [meta]:
     - date: 10/06/2025
     - tags: [asic]
-  - main difference rely on [[thoughts/systolic array]] versus common von Neumann architecture (found in [[thoughts/GPU programming|GPU]])
+  - main difference rely on [[thoughts/systolic array|systolic array]] versus common von Neumann architecture (found in [[thoughts/GPU programming|GPU]])
 - https://main-horse.github.io/posts/visualizing-6d/ -- Visualising 6D Mesh Parallelism [**]
   - [meta]:
     - date: 10/06/2025
@@ -25131,13 +25131,13 @@ title: are.na
   - [meta]:
     - date: 10/06/2025
     - tags: [compiler, security]
-  - [[thoughts/FHE]]
+  - [[thoughts/FHE|FHE]]
   - https://github.com/google/heir -- Next generation of the compiler for homomorphic encryption
 - https://blog.regehr.org/archives/2485 -- Why Do Peephole Optimizations Work?
   - [meta]:
     - date: 10/05/2025
     - tags: [compiler]
-  - See also [[thoughts/Compiler]]
+  - See also [[thoughts/Compiler|Compiler]]
 - https://en.wikipedia.org/wiki/L-system -- Lindenmayer system [**]
   - [meta]:
     - date: 10/05/2025
@@ -25230,7 +25230,7 @@ title: are.na
   - [meta]:
     - date: 10/05/2025
     - tags: [engineering, compilers]
-  - see also [[thoughts/pdfs/Efficient Implementation of the Smalltalk-80 System.pdf]]
+  - see also [[thoughts/pdfs/Efficient Implementation of the Smalltalk-80 System.pdf|Efficient Implementation of the Smalltalk-80 System.pdf]]
 
 ## watches
 
@@ -25624,7 +25624,7 @@ title: are.na
     - date: 11/15/2025
     - tags: [lithography]
   - Jim Keller's company
-  - see also: [[thoughts/Tenstorrent]]
+  - see also: [[thoughts/Tenstorrent|Tenstorrent]]
 - https://fundomo.com/
   - [meta]:
     - date: 11/15/2025
@@ -25641,7 +25641,7 @@ title: are.na
   - [meta]:
     - date: 10/05/2025
     - tags: [alignment]
-  - [[thoughts/AGI]] safe deployment
+  - [[thoughts/AGI|AGI]] safe deployment
 - https://www.generalist.com/briefing/hummingbird-ventures -- The Best Venture Firm You've Never Heard Of
   - [meta]:
     - date: 10/02/2025
@@ -26090,7 +26090,7 @@ title: are.na
     - date: 06/22/2026
     - tags: [linear algebra, matrix]
     - later: true
-- [[thoughts/pdfs/weisberg_vob.pdf]] -- Varieties of Bayesianism
+- [[thoughts/pdfs/weisberg_vob.pdf|weisberg_vob.pdf]] -- Varieties of Bayesianism
   - [meta]:
     - date: 06/18/2026
     - tags: [probability, life]
@@ -26098,7 +26098,7 @@ title: are.na
   - [meta]:
     - date: 06/17/2026
     - tags: [matrix, linear algebra]
-- [[thoughts/pdfs/mat67_course_notes.pdf]] -- Linear Algebra As an Introduction to Abstract Mathematics
+- [[thoughts/pdfs/mat67_course_notes.pdf|mat67_course_notes.pdf]] -- Linear Algebra As an Introduction to Abstract Mathematics
   - [meta]:
     - date: 06/17/2026
     - tags: [linear algebra]
@@ -26528,7 +26528,7 @@ title: are.na
   - [meta]:
     - date: 10/07/2025
     - tags: [tensor calculus]
-- https://leimao.github.io/article/Automatic-Differentiation/ -- [[thoughts/Automatic Differentiation]]
+- https://leimao.github.io/article/Automatic-Differentiation/ -- [[thoughts/Automatic Differentiation|Automatic Differentiation]]
   - [meta]:
     - date: 10/07/2025
     - tags: [autograd]
@@ -26581,12 +26581,12 @@ title: are.na
   - [meta]:
     - date: 10/05/2025
     - tags: [category theory]
-  - see also [[thoughts/category theory]]
+  - see also [[thoughts/category theory|category theory]]
 - https://www.youtube.com/watch?v=e1xo6qWTmoc&ab_channel=OxfordMathematics -- Thesis Competition at Oxford Mathematics
   - [meta]:
     - date: 07/29/2025
     - tags: [topology, research]
-  - https://youtu.be/e1xo6qWTmoc?si=U3esZ-Zq_DJy5Is1&t=134 -- Surgery presentation on [[thoughts/bordism bicategories]]
+  - https://youtu.be/e1xo6qWTmoc?si=U3esZ-Zq_DJy5Is1&t=134 -- Surgery presentation on [[thoughts/bordism bicategories|bordism bicategories]]
 - https://www.benparry.ca/euler-integration-lotka-volterra -- Euler Integration & Lotka-Volterra
   - [meta]:
     - date: 10/02/2025
@@ -28046,7 +28046,7 @@ title: are.na
   - [meta]:
     - date: 12/17/2025
     - tags: [moe]
-  - see also: [[thoughts/MoE]]
+  - see also: [[thoughts/MoE|MoE]]
 - https://arxiv.org/abs/1904.10509
   - [meta]:
     - date: 12/17/2025
@@ -28203,7 +28203,7 @@ title: are.na
   - [meta]:
     - date: 12/14/2025
     - tags: [inference]
-  - see also [[lectures/430/notes#native sparse attention]]
+  - see also [[lectures/430/notes#native sparse attention|native sparse attention]]
 - https://arxiv.org/abs/2501.00070
   - [meta]:
     - date: 12/14/2025
@@ -28246,7 +28246,7 @@ title: are.na
   - [meta]:
     - date: 12/01/2025
     - tags: [interpretability]
-- [[thoughts/pdfs/DeepSeek-V3.2.pdf]] -- DeepSeek V3.2 Technical Report
+- [[thoughts/pdfs/DeepSeek-V3.2.pdf|DeepSeek-V3.2.pdf]] -- DeepSeek V3.2 Technical Report
   - [meta]:
     - date: 12/01/2025
     - tags: [models, attention, dsa]
@@ -28470,7 +28470,7 @@ title: are.na
   - [meta]:
     - date: 10/03/2025
     - tags: [inference]
-  - [[thoughts/RoPE]]
+  - [[thoughts/RoPE|RoPE]]
   - more popular methods: https://arxiv.org/abs/2309.00071
 - https://arxiv.org/abs/2508.06471
   - [meta]:

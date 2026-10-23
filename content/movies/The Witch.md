@@ -7,7 +7,7 @@ director:
   - Robert Eggers
 id: The Witch
 modified: 2026-06-05 15:08:19 GMT-04:00
-posters: '[[movies/posters/the-witch.jpeg]]'
+posters: '[[movies/posters/the-witch.jpeg|the-witch.jpeg]]'
 rating: 7.9
 status: finished
 studio: a24

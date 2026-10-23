@@ -9,7 +9,7 @@ director:
   - Roman Polanski
 id: Tess
 modified: 2026-06-05 15:08:19 GMT-04:00
-posters: '[[movies/posters/Tess.jpg]]'
+posters: '[[movies/posters/Tess.jpg|Tess.jpg]]'
 rating: 7.3
 status: to watch
 studio: renn productions

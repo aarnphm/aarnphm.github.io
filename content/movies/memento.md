@@ -7,7 +7,7 @@ description: leonard shelby cannot form new memories, so he turns photographs an
 director: Christopher Nolan
 id: memento
 modified: 2026-06-05 15:08:15 GMT-04:00
-posters: '[[movies/posters/memento.jpg]]'
+posters: '[[movies/posters/memento.jpg|memento.jpg]]'
 rating: 8.4
 status: recurring
 studio: syncopy

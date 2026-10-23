@@ -10,7 +10,7 @@ director:
   - Jacques Deray
 id: La Piscine
 modified: 2026-06-05 15:08:14 GMT-04:00
-posters: '[[movies/posters/La piscine.jpg]]'
+posters: '[[movies/posters/La piscine.jpg|La piscine.jpg]]'
 rating: 7.1
 status: to watch
 studio: pathe cinema

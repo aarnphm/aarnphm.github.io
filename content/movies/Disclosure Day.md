@@ -8,7 +8,7 @@ director:
   - Steven Spielberg
 id: Disclosure Day
 modified: 2026-08-21 23:36:31 GMT-04:00
-posters: '[[movies/posters/disclosure-day.webp]]'
+posters: '[[movies/posters/disclosure-day.webp|disclosure-day.webp]]'
 rating: 7.8
 status: finished
 studio: universal pictures

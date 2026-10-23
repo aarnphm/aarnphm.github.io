@@ -122,7 +122,7 @@ sheila liming wrote an entire book on this: "hanging out is productive, and the 
 
 Karlsson puts it better than I ever could, where we "show the inside of your head in public, so people can see if they would like to live in there." this site is my version of that, a search query for people who might want to be friends.
 
-what i look for is presence over performance: people who can sit in a room without filling it with noise, who can be bored together without reaching for phones. the [[thoughts/hermeneutics]] commitment, choosing to interpret someone charitably, staying in the circle when understanding breaks down instead of exiting to win. honesty without cruelty, the friends who tell you when you're being stupid but frame it as observation rather than judgment. and showing up, repeatedly, over time, which is the only way any of this compounds into something real.
+what i look for is presence over performance: people who can sit in a room without filling it with noise, who can be bored together without reaching for phones. the [[thoughts/hermeneutics|hermeneutics]] commitment, choosing to interpret someone charitably, staying in the circle when understanding breaks down instead of exiting to win. honesty without cruelty, the friends who tell you when you're being stupid but frame it as observation rather than judgment. and showing up, repeatedly, over time, which is the only way any of this compounds into something real.
 
 i think about my life as being RLHF'd by the people i surround myself with. we populate our concept of the world with them.
 

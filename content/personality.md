@@ -262,9 +262,9 @@ from [this test](https://programs.clearerthinking.org/philosophical_beliefs.html
 ```
 
 - **Abstract Objects: Platonist**
-  - abstract ideas exist independently of human thought; numbers and shapes are discovered, not invented. see also [[thoughts/Plato]].
+  - abstract ideas exist independently of human thought; numbers and shapes are discovered, not invented. see also [[thoughts/Plato|Plato]].
 - **Aesthetic Beauty: Aesthetic Objectivist**
-  - some things are objectively beautiful or ugly; aesthetic disagreements have right and wrong answers. see also [[thoughts/aesthetic value]].
+  - some things are objectively beautiful or ugly; aesthetic disagreements have right and wrong answers. see also [[thoughts/aesthetic value|aesthetic value]].
 - **External World: External-world Realist**
   - the external world exists and our senses convey accurate information about it; trust in sensory capabilities and science.
 - **Free Will: Compatibilist**
@@ -272,26 +272,26 @@ from [this test](https://programs.clearerthinking.org/philosophical_beliefs.html
 - **God: Atheist**
   - confident that no supreme being exists; the idea of God's existence is either absurd or demonstrably false.
 - **Knowledge Claims: Contextualist**
-  - "knowledge" changes meaning based on context, stakes, and circumstances; no single consistent definition. see also [[thoughts/Epistemology]].
+  - "knowledge" changes meaning based on context, stakes, and circumstances; no single consistent definition. see also [[thoughts/Epistemology|Epistemology]].
 - **Laws of Nature: Anti-Humean**
   - laws of nature exist objectively and dictate how events proceed; reject Hume's view that causation is imaginary.
 - **Meta-Ethics: Moral Realist**
-  - moral facts exist objectively, not relative to culture or person; some moral beliefs are objectively true or false. see also [[thoughts/ethics]].
+  - moral facts exist objectively, not relative to culture or person; some moral beliefs are objectively true or false. see also [[thoughts/ethics|ethics]].
 - **Mind: Physicalist**
   - the mind is physical, likely identical with or [[thoughts/functionalism|functionally]] realized by the brain; no belief in a soul.
 - **Moral Judgment: Cognitivist**
-  - moral beliefs are about reality and can be true or false; moral judgments are meaningful statements about the world. see also [[thoughts/ethics]].
+  - moral beliefs are about reality and can be true or false; moral judgments are meaningful statements about the world. see also [[thoughts/ethics|ethics]].
 - **Newcomb's Problem: One-Boxer**
   - would choose only box A in Newcomb's paradox, prioritizing predicted outcome over causal reasoning.
 - **Normative Ethics: Deontologist**
-  - right and wrong determined by intentions, not consequences; good intentions make actions right. see also [[thoughts/Philosophy and Kant]].
+  - right and wrong determined by intentions, not consequences; good intentions make actions right. see also [[thoughts/Philosophy and Kant|Philosophy and Kant]].
 - **Politics: Libertarian**
   - strongly value individual freedom; governments should not interfere without strong reasons; enemy of paternalism.
 - **Science: Scientific Realist**
   - scientific theories approximately describe reality; unobservable entities like electrons exist because science says so.
 - **Teletransporter: Leads to Survival**
-  - would use a teletransporter; destroying and recreating your body doesn't kill you, just moves 'you'. see also [[thoughts/identity]].
+  - would use a teletransporter; destroying and recreating your body doesn't kill you, just moves 'you'. see also [[thoughts/identity|identity]].
 - **Truth: Deflationary Truth**
   - truth has no metaphysical reality; "truth" is a useful [[library/Tractatus Logico-Philosophicus|logical]] tool but not an external reality.
 - **Zombies: The Idea is Conceivable-but-Impossible**
-  - can imagine [[thoughts/philosophical zombies|p-zombies]] but don't believe they're possible; consciousness necessarily accompanies human-like behavior. see also [[thoughts/functionalism]]
+  - can imagine [[thoughts/philosophical zombies|p-zombies]] but don't believe they're possible; consciousness necessarily accompanies human-like behavior. see also [[thoughts/functionalism|functionalism]]

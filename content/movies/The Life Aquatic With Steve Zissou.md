@@ -8,7 +8,7 @@ description: grief disguised as documentary—a fading oceanographer hunting the
 director: Wes Anderson
 id: the-life-aquatic-with-steve-zissou
 modified: 2026-06-05 15:08:18 GMT-04:00
-posters: '[[movies/posters/the-life-aquatic-with-steve-zissou.jpg]]'
+posters: '[[movies/posters/the-life-aquatic-with-steve-zissou.jpg|the-life-aquatic-with-steve-zissou.jpg]]'
 rating: 7.2
 status: recurring
 studio: touchstone pictures

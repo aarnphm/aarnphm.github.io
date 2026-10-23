@@ -1,7 +1,7 @@
 ---
 address: 18 Duncan St, Toronto, ON M5H 3G8, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.6489907'
   - '-79.3900004'

@@ -5,7 +5,7 @@ description: conscientious objector saving seventy-five lives without touching a
 director: Mel Gibson
 id: hacksaw-ridge
 modified: 2026-06-05 15:08:17 GMT-04:00
-posters: '[[movies/posters/hacksaw-ridge.jpg]]'
+posters: '[[movies/posters/hacksaw-ridge.jpg|hacksaw-ridge.jpg]]'
 rating: 8.1
 status: recurring
 studio: icon productions

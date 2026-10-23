@@ -33,7 +33,7 @@ This paper posits that GenAI has passed the "peak of inflated expectations" and 
 
 ## Gartner's hype cycle.
 
-For context, applications such as ChatGPT are built on top of [[thoughts/Transformers]] architecture and pre-trained on a large corpus of [[thoughts/Language#representations|text]] [@brown2020languagemodelsfewshotlearners]. Given
+For context, applications such as ChatGPT are built on top of [[thoughts/Transformers|Transformers]] architecture and pre-trained on a large corpus of [[thoughts/Language#representations|text]] [@brown2020languagemodelsfewshotlearners]. Given
 an input sequence of tokens length $n$, these systems will predict the next tokens at index $n+1$. Most implementations of transformers are autoregressive [@croft2023llm], meaning that the model generates one token at a time, each conditioned on every token before it.
 Assuming the Strong Exponential Time Hypothesis, [@keles2022computationalcomplexityselfattention{pp. 4}] establish worst-case lower bounds for exact full self-attention and certain approximations. Under their dimension and error assumptions, these exclude running times of $O(n^{2-\varepsilon})$ for any fixed $\varepsilon>0$. Actual serving costs also depend on the model, workload, and implementation.
 

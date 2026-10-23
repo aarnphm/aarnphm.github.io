@@ -1,7 +1,7 @@
 ---
 address: 539 College St, Toronto, ON M6G 1A9, Canada
 category:
-  - '[[places to go]]'
+  - '[[places to go|places to go]]'
 coordinates:
   - '43.6554828'
   - '-79.4115051'

@@ -8,7 +8,7 @@ description: journalism as love letter to a dying form—anderson's most hermeti
 director: Wes Anderson
 id: the-french-dispatch
 modified: 2026-06-05 15:08:19 GMT-04:00
-posters: '[[movies/posters/the-french-dispatch.jpg]]'
+posters: '[[movies/posters/the-french-dispatch.jpg|the-french-dispatch.jpg]]'
 rating: 7.1
 status: recurring
 studio: searchlight pictures

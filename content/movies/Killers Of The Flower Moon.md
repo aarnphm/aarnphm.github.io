@@ -8,7 +8,7 @@ description: genocide dressed as love—greed poisoning a marriage and a people,
 director: Martin Scorsese
 id: killers-of-the-flower-moon
 modified: 2026-06-05 15:08:16 GMT-04:00
-posters: '[[movies/posters/killers-of-the-flower-moon.jpg]]'
+posters: '[[movies/posters/killers-of-the-flower-moon.jpg|killers-of-the-flower-moon.jpg]]'
 rating: 7.5
 status: recurring
 studio: apple studios
