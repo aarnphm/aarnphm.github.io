@@ -16,4 +16,4 @@ The shell is one grid with nine content tracks between gutters and outer tracks:
 - `body { overflow: hidden }` is reserved for a bounded workspace that keeps every action reachable.
 - Use logical properties (`padding-inline`, `margin-block`, `inset-inline`) for reading-direction layout; keep physical coordinates for maps, chart axes and pointer positions.
 - Align title, metadata, content and controls to the same local edges.
-- Authored pages (letters, the 404 scene, quotes, menu) may replace the palette, faces and layout, scoped by a precise route or frontmatter attribute. They still keep visible focus, readable contrast, reduced-motion guards and no page-level horizontal scroll.
+- Authored pages (letters, Lydia, the 404 scene, quotes, menu) may replace the palette, faces and layout, scoped by a precise route or frontmatter attribute. They still keep visible focus, readable contrast, reduced-motion guards and no page-level horizontal scroll.
