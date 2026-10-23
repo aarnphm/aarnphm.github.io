@@ -633,13 +633,6 @@ body[data-slug='index'] .palette > #palette-container > #space {
   }
 
   @media (max-width: 480px) {
-    .suggestion-rank {
-      width: 64px;
-
-      .rank-inbound {
-        display: none;
-      }
-    }
     #bar {
       font-size: 16px;
     }
