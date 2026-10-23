@@ -20,9 +20,10 @@ const searchInnerHtmlCache = new Map<string, string>()
 
 export default ((userOpts?: Partial<SearchOptions>) => {
   const opts = { ...defaultOptions, ...userOpts }
-  const Search: QuartzComponent = ({ displayClass, cfg }: QuartzComponentProps) => {
+  const Search: QuartzComponent = ({ displayClass, cfg, fileData }: QuartzComponentProps) => {
     const searchPlaceholder = i18n(cfg.locale).components.search.searchBarPlaceholder
-    const cacheKey = `${opts.includeButton ? '1' : '0'}:${opts.enablePreview ? '1' : '0'}:${searchPlaceholder}`
+    const enablePreview = opts.enablePreview && fileData.slug !== 'index'
+    const cacheKey = `${opts.includeButton ? '1' : '0'}:${enablePreview ? '1' : '0'}:${searchPlaceholder}`
     let innerHtml = searchInnerHtmlCache.get(cacheKey)
     if (innerHtml === undefined) {
       innerHtml = render(
@@ -109,7 +110,7 @@ export default ((userOpts?: Partial<SearchOptions>) => {
                   </button>
                 </div>
               </div>
-              <output class="search-layout" data-preview={opts.enablePreview} />
+              <output class="search-layout" data-preview={enablePreview} />
             </form>
           </search>
         </>,
