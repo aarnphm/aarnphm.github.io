@@ -13,4 +13,4 @@ pdfTitles:
 
 Collection of scattered thoughts and ideas, concepts, thoughts that I entertain quite a lot.
 
-Here are some of my favourite [[/posts]] of [[thoughts/writing|writing]]
+Here are some of my favourite [[/posts|posts]] of [[thoughts/writing|writing]]

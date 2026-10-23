@@ -11,9 +11,9 @@ title: IPFS
 
 IPFS is a set of protocols for sharing [[thoughts/Content-addressable storage|content-addressed]] data over peer-to-peer networks. A content identifier (CID) tells a client which data to request. The client still needs to find a peer that holds it, fetch the blocks, and verify their hashes. IPFS has separate mechanisms for these jobs.[^architecture]
 
-A large file is split into blocks and represented as a [[thoughts/Merkle DAG]]. Its root CID identifies the encoded root block, whose links lead to the rest of the file. A CID carries information about the hash and encoding, so it is generally different from a checksum of the original file. Importing identical bytes with different chunking or encoding settings can also produce different root CIDs.[^cid]
+A large file is split into blocks and represented as a [[thoughts/Merkle DAG|Merkle DAG]]. Its root CID identifies the encoded root block, whose links lead to the rest of the file. A CID carries information about the hash and encoding, so it is generally different from a checksum of the original file. Importing identical bytes with different chunking or encoding settings can also produce different root CIDs.[^cid]
 
-[[thoughts/git]] also uses [hash-linked objects](https://git-scm.com/book/en/v2/Git-Internals-Git-Objects). This is a shared data-structure choice; Git repositories do not thereby use the IPFS network.
+[[thoughts/git|git]] also uses [hash-linked objects](https://git-scm.com/book/en/v2/Git-Internals-Git-Objects). This is a shared data-structure choice; Git repositories do not thereby use the IPFS network.
 
 How would we use IPFS to share and publish data?
 

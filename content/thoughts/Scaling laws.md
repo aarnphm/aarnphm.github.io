@@ -80,4 +80,4 @@ For a run-planning fit, report:
 - the FLOP convention used for $C$;
 - the scale range used for fitting and a held-out range used to test extrapolation.
 
-See [[thoughts/Llama 3]] for one production model family's use of scaling experiments.
+See [[thoughts/Llama 3|Llama 3]] for one production model family's use of scaling experiments.

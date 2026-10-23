@@ -53,7 +53,7 @@ Each vector has one coordinate per example. A layer spans a subspace of $\mathbb
    K=\Sigma_{XX}^{-1/2}\Sigma_{XY}\Sigma_{YY}^{-1/2}.
    $$
 
-   These inverse square roots whiten each representation: its covariance becomes the identity. The objective is now $u^T Kv/(\|u\|\|v\|)$. For fixed $u$, [[thoughts/Cauchy-Schwarz]] gives a maximum of $\|K^T u\|/\|u\|$ over $v$. Squaring leaves the Rayleigh quotient
+   These inverse square roots whiten each representation: its covariance becomes the identity. The objective is now $u^T Kv/(\|u\|\|v\|)$. For fixed $u$, [[thoughts/Cauchy-Schwarz|Cauchy-Schwarz]] gives a maximum of $\|K^T u\|/\|u\|$ over $v$. Squaring leaves the Rayleigh quotient
 
    $$
    \rho_1^2=\max_{u\ne0}\frac{u^T KK^T u}{u^T u},\qquad

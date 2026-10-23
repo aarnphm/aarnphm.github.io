@@ -8,11 +8,11 @@ permalinks:
 seealso:
   - '[[thoughts/paged attention|PagedAttention]]'
   - '[[thoughts/PD disaggregated serving|pd disaggregation]]'
-  - '[[thoughts/Speculative decoding]]'
-  - '[[thoughts/Continuous batching]]'
-  - '[[thoughts/structured outputs]]'
-  - '[[thoughts/KV compression]]'
-  - '[[thoughts/prefix caching]]'
+  - '[[thoughts/Speculative decoding|Speculative decoding]]'
+  - '[[thoughts/Continuous batching|Continuous batching]]'
+  - '[[thoughts/structured outputs|structured outputs]]'
+  - '[[thoughts/KV compression|KV compression]]'
+  - '[[thoughts/prefix caching|prefix caching]]'
 socials:
   dbo: https://docs.vllm.ai/en/latest/design/dbo/
 tags:

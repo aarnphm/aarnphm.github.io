@@ -12,7 +12,7 @@ title: dialectics
 
 Hegel follows a position until its own commitments force it to change. This movement is **immanent**: the difficulty arises from what the position claims, using standards it already accepts.
 
-In [[library/The Phenomenology of Spirit]], the question concerns [[thoughts/Epistemology|knowledge]]. Consciousness distinguishes its knowledge from what it takes the object to be in itself. It then tests whether the two agree. When that test fails, its account of the object and its standard of knowing can change together ([Introduction, §§84–87](https://www.marxists.org/reference/archive/hegel/works/ph/phintro.htm)).
+In [[library/The Phenomenology of Spirit|The Phenomenology of Spirit]], the question concerns [[thoughts/Epistemology|knowledge]]. Consciousness distinguishes its knowledge from what it takes the object to be in itself. It then tests whether the two agree. When that test fails, its account of the object and its standard of knowing can change together ([Introduction, §§84–87](https://www.marxists.org/reference/archive/hegel/works/ph/phintro.htm)).
 
 Hegel calls the result **determinate negation** (§79). The failure has a specific content, so the next position retains something learned from the one it overturns. To explain a transition, we need to show what failed and how the successor follows from that failure.
 

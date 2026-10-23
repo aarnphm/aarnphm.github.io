@@ -18,7 +18,7 @@ $$
 P_{\mathrm{abs}}=fL_\star.
 $$
 
-If the collectors convert a fraction $\eta$ of that input to useful work, useful power is $\eta fL_\star$. Absorbed fraction and conversion efficiency are separate quantities. A swarm can grow by adding collectors, harvesting power while leaving most of the star uncovered. Collecting nearly the full stellar output gives the physical example behind Type II on the [[thoughts/Kardashev scale]].
+If the collectors convert a fraction $\eta$ of that input to useful work, useful power is $\eta fL_\star$. Absorbed fraction and conversion efficiency are separate quantities. A swarm can grow by adding collectors, harvesting power while leaving most of the star uncovered. Collecting nearly the full stellar output gives the physical example behind Type II on the [[thoughts/Kardashev scale|Kardashev scale]].
 
 ## where the energy goes
 

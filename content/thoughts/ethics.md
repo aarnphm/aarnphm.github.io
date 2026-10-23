@@ -62,7 +62,7 @@ Kant: morality comes from reason, not consequences or feelings. [@kant1785ground
    - Coercion: overrides their rational choice. Treats them as object, not subject. Wrong.
    - Using someone: okay to hire someone (they're means to your end), but only if you also respect them as end (fair pay, safe conditions, voluntary agreement). Not _merely_ means.
 
-   Connection to [[thoughts/love]]: Buber's I-Thou vs I-It. When you treat someone as I-It (pure instrument, function), you violate Kantian respect. Love requires treating as end.
+   Connection to [[thoughts/love|love]]: Buber's I-Thou vs I-It. When you treat someone as I-It (pure instrument, function), you violate Kantian respect. Love requires treating as end.
 
 3. **Kingdom of ends formulation**: "Act as if you were, through your maxims, a law-making member of a kingdom of ends."
 
@@ -90,10 +90,10 @@ Kant: morality comes from reason, not consequences or feelings. [@kant1785ground
 - Rigorism: allows no exceptions (lying to murderer at door?)
 - Conflicting duties: what when two categorical imperatives clash?
 - Empty formalism: universal law test gives different results depending on how you describe maxim
-- Ignores moral emotions: reduces morality to reason, excludes compassion, [[thoughts/love]], care
+- Ignores moral emotions: reduces morality to reason, excludes compassion, [[thoughts/love|love]], care
 - Autonomous subject assumption: presupposes independent rational agent (care ethics: we're always already relational)
 
-See also [[thoughts/Philosophy and Kant]], [[thoughts/hermeneutics]] (contrast: Kant's universal principles vs hermeneutic particularity)
+See also [[thoughts/Philosophy and Kant|Philosophy and Kant]], [[thoughts/hermeneutics|hermeneutics]] (contrast: Kant's universal principles vs hermeneutic particularity)
 
 ### consequentialism
 
@@ -130,7 +130,7 @@ Rule utilitarianism: follow rules that, if generally followed, maximize utility.
 - Rights violations: can justify harming innocents for greater good
 - Reduces persons to utility containers: ignores dignity, particularity (Kantian critique)
 - Separateness of persons: treats individuals as interchangeable (Rawls's critique)
-- [[thoughts/Compression]] problem: reduces rich moral life to single metric (utility)
+- [[thoughts/Compression|Compression]] problem: reduces rich moral life to single metric (utility)
 - Care ethics critique: can't aggregate across persons—each person's particularity matters
 
 Locke's alternative: action acceptable if it respects human rights of everyone involved. Rights constrain utility maximization.
@@ -151,7 +151,7 @@ Aristotle: virtue (_arete_) is excellence of character acquired through practice
 
 Phronesis (practical wisdom): knowing what virtue requires in particular situation. Not rule application—interpretive judgment about context. Requires experience, habituation, good upbringing.
 
-Connection to [[thoughts/hermeneutics]]: phronesis is hermeneutic skill. You interpret situation, grasp what matters, respond appropriately.
+Connection to [[thoughts/hermeneutics|hermeneutics]]: phronesis is hermeneutic skill. You interpret situation, grasp what matters, respond appropriately.
 
 **Practice-based**: virtues acquired through habituation. You become brave by doing brave acts, generous by doing generous acts. Virtue is second nature developed through practice.
 
@@ -183,7 +183,7 @@ Philia (friendship, [[thoughts/love|love]]): central to good life. Not instrumen
 
 Neo-Aristotelian response (MacIntyre, Nussbaum): ground virtues in human nature, needs, capabilities. Not arbitrary—virtues are what humans need to flourish.
 
-See also [[thoughts/love]] (virtue ethics: love as practice developing character)
+See also [[thoughts/love|love]] (virtue ethics: love as practice developing character)
 
 ### care ethics
 
@@ -193,7 +193,7 @@ Core commitments:
 
 - **Particularity**: you don't care for "humanity" in abstract. You care for _this_ person, in _this_ context, with _this_ history. Their particularity matters. Not interchangeable with anyone else.
 - **Relational self**: you're not autonomous atom making rational choices in isolation. You're always already in relation. Care doesn't happen _to_ a self; it partly _constitutes_ the self. You become who you are through being cared for and caring for others.
-- **Context-sensitivity**: respond to their needs as _they_ articulate them, not as abstract principle dictates. Requires phronesis (practical wisdom from [[thoughts/hermeneutics]]): knowing what matters here, now, to this person.
+- **Context-sensitivity**: respond to their needs as _they_ articulate them, not as abstract principle dictates. Requires phronesis (practical wisdom from [[thoughts/hermeneutics|hermeneutics]]): knowing what matters here, now, to this person.
 - **Responsiveness**: ethics emerges from actual encounters, not hypothetical scenarios. Face of the other calls you to respond. Not "what would rational agent do?" but "what does this person need?"
 
 Sara Ruddick: maternal thinking as ethical paradigm. [@ruddick1989maternal] Preservative love (protecting vulnerability), nurturance (fostering growth), training (shaping development). Not limited to biological mothers—practice available to anyone engaged in care work.
@@ -207,7 +207,7 @@ Connection to other frameworks:
 - vs consequentialism: care ethics rejects aggregating welfare across persons. Each person's particularity matters. Can't sacrifice one for greater good of abstract whole.
 - vs deontology: care ethics rejects universal principles applied regardless of context. Duties emerge from relationships, not abstract rationality. Kantian respect treats persons as interchangeable exemplars of rationality; care ethics attends to irreducible particularity.
 - with virtue ethics: both emphasize practice, character development, phronesis. But care ethics adds: relational self, dependency, feminist critique of "autonomy."
-- with [[thoughts/hermeneutics]]: both require entering other's horizon, fusion of horizons, interpretive charity, staying in circle. Care is hermeneutic practice.
+- with [[thoughts/hermeneutics|hermeneutics]]: both require entering other's horizon, fusion of horizons, interpretive charity, staying in circle. Care is hermeneutic practice.
 
 Criteria (Wittgensteinian): what does caring look like?
 
@@ -223,6 +223,6 @@ Critiques:
 - Particularity vs justice: how do you scale care beyond immediate relationships? Risk of parochialism. Response: care and justice are complementary, not opposed. Justice requires care (attending to particular contexts); care requires justice (fair distribution of care work).
 - Over-emphasis on harmony: care isn't always warm. Sometimes care means conflict, boundary-setting, refusal. Caring for someone can require saying no.
 
-see also: [[thoughts/love]], [[thoughts/hermeneutics]], [[thoughts/functionalism]] (critique: care resists reduction to functional role)
+see also: [[thoughts/love|love]], [[thoughts/hermeneutics|hermeneutics]], [[thoughts/functionalism|functionalism]] (critique: care resists reduction to functional role)
 
 ## meta-ethics.

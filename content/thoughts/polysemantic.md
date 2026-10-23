@@ -6,9 +6,9 @@ modified: 2026-08-27 09:11:56 GMT-04:00
 socials:
   circuits: https://transformer-circuits.pub/2023/monosemantic-features/index.html
 seealso:
-  - '[[thoughts/mechanistic interpretability]]'
-  - '[[thoughts/Negation]]'
-  - '[[thoughts/Compositionality]]'
+  - '[[thoughts/mechanistic interpretability|mechanistic interpretability]]'
+  - '[[thoughts/Negation|Negation]]'
+  - '[[thoughts/Compositionality|Compositionality]]'
 tags:
   - interp
   - llm
@@ -25,7 +25,7 @@ Compressed sensing applies cleanly when the feature dictionary is known. For rea
 
 A neuron remains a useful unit when a feature aligns with a privileged coordinate. Under superposition, one coordinate can move several feature directions at once. Learned directions can then provide cleaner candidates for explanation and intervention.
 
-## [[thoughts/sparse autoencoder]] decomposition
+## [[thoughts/sparse autoencoder|sparse autoencoder]] decomposition
 
 > [!important] Sparse autoencoders train on model activations, not on tokens directly.
 

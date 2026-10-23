@@ -8,6 +8,6 @@ tags:
 title: desire
 ---
 
-## contrast and complementarity of desire and [[/tags/love]]
+## contrast and complementarity of desire and [[/tags/love|love]]
 
 [source](https://www.themarginalian.org/2018/04/26/j-d-mcclatchy-love-speaks-its-name/)

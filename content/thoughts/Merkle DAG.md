@@ -25,9 +25,9 @@ Given a trusted root identifier and the encoding rules, a reader can verify each
 
 Examples of Merkle DAGs in action:
 
-- [[thoughts/IPFS]] uses linked blocks to represent files and directories.
+- [[thoughts/IPFS|IPFS]] uses linked blocks to represent files and directories.
 - [[thoughts/Containers|Container images]] have manifests referencing configuration and layer blobs by digest. The [OCI image manifest](https://github.com/opencontainers/image-spec/blob/main/manifest.md) defines these references.
-- [[thoughts/git]] commits link to a snapshot tree and parent commits; trees link to blobs and subtrees. The edges are object references. Diffs are computed between versions. See [Git objects](https://git-scm.com/book/en/v2/Git-Internals-Git-Objects).
+- [[thoughts/git|git]] commits link to a snapshot tree and parent commits; trees link to blobs and subtrees. The edges are object references. Diffs are computed between versions. See [Git objects](https://git-scm.com/book/en/v2/Git-Internals-Git-Objects).
 
 [^dag]: IPFS, [Merkle directed acyclic graphs](https://docs.ipfs.tech/concepts/merkle-dag/).
 

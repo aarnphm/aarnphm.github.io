@@ -10,7 +10,7 @@ tags:
 title: assignment three reports.
 ---
 
-## [[thoughts/optimization#ReLU]] run
+## [[thoughts/optimization#ReLU|ReLU]] run
 
 ```json
 {
@@ -163,7 +163,7 @@ TODO
 
 ### [d758a3e4](https://github.com/aarnphm/aarnphm.github.io/commit/d758a3e41a7b6da8c4d8f2770656a4774314b9f1)
 
-- implemented more efficient [[thoughts/tsfm/lecture-3-exercise/reports#data processing]]
+- implemented more efficient [[thoughts/tsfm/lecture-3-exercise/reports#data processing|data processing]]
 - implemented certain optimization [[thoughts/tsfm/lecture-3-exercise/reports#model implementation|observation]]
 - cleanup test cases and one ops file for both numpy and torch equivalent.
 - added `inference.py` with KVCache, top_k_top_p

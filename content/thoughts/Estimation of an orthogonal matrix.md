@@ -4,7 +4,7 @@ description: An Iterative Algorithm for Computing the Best Estimate of an Orthog
 id: Estimation of an orthogonal matrix
 modified: 2026-06-05 15:08:26 GMT-04:00
 seealso:
-  pdf: '[[thoughts/papers/2949484.pdf]]'
+  pdf: '[[thoughts/papers/2949484.pdf|2949484.pdf]]'
 tags:
   - math
   - matrix

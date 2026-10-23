@@ -5,7 +5,7 @@ id: attention-mfa
 modified: 2026-09-24 09:07:00 GMT-04:00
 seealso:
   - '[[thoughts/Attention|Attention]]'
-  - '[[thoughts/MoE]]'
+  - '[[thoughts/MoE|MoE]]'
   - '[[thoughts/MLA|MLA]]'
 tags:
   - ml

@@ -5,7 +5,7 @@ id: Containers
 modified: 2026-06-05 15:08:06 GMT-04:00
 seealso:
   - '[[thoughts/OCI|OCI specification]]'
-  - '[[thoughts/BuildKit]]'
+  - '[[thoughts/BuildKit|BuildKit]]'
 tags:
   - technical
   - storage

@@ -23,7 +23,7 @@ Most pretraining targets come from the data itself. Human annotation enters at m
 - preference training uses comparisons between model outputs;
 - evaluations use human judgments when a program cannot score the answer.
 
-InstructGPT used demonstrations and ranked comparisons from hired labelers. Its authors also state the limit directly: the model was aligned to the preferences of a particular group of labelers and researchers. That scope is narrower than a universal account of human values. See [Ouyang et al.](https://cdn.openai.com/papers/Training_language_models_to_follow_instructions_with_human_feedback.pdf) and [[thoughts/Alignment]].
+InstructGPT used demonstrations and ranked comparisons from hired labelers. Its authors also state the limit directly: the model was aligned to the preferences of a particular group of labelers and researchers. That scope is narrower than a universal account of human values. See [Ouyang et al.](https://cdn.openai.com/papers/Training_language_models_to_follow_instructions_with_human_feedback.pdf) and [[thoughts/Alignment|Alignment]].
 
 ## data labelling
 

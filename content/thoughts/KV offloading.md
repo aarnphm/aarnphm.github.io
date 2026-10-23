@@ -31,7 +31,7 @@ $$
 M_{\mathrm{KV}} = 2Lnh_{\mathrm{KV}}db.
 $$
 
-The factor of two counts keys and values. With $L=32$, $h_{\mathrm{KV}}=8$, $d=128$, and $b=2$, each token takes $128\,\mathrm{KiB}$ across the layers. A history of $8192$ tokens takes $1\,\mathrm{GiB}$ before allocator overhead. This counts ordinary MHA/GQA tensors; [[thoughts/MLA]] and sliding-window caches need their own accounting.
+The factor of two counts keys and values. With $L=32$, $h_{\mathrm{KV}}=8$, $d=128$, and $b=2$, each token takes $128\,\mathrm{KiB}$ across the layers. A history of $8192$ tokens takes $1\,\mathrm{GiB}$ before allocator overhead. This counts ordinary MHA/GQA tensors; [[thoughts/MLA|MLA]] and sliding-window caches need their own accounting.
 
 ## transfer budget
 

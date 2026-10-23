@@ -4,9 +4,9 @@ description: token lookup, position, masking, and image–text representations
 id: Embedding
 modified: 2026-10-12
 seealso:
-  - '[[thoughts/Transformers]]'
-  - '[[thoughts/Attention]]'
-  - '[[thoughts/LLMs]]'
+  - '[[thoughts/Transformers|Transformers]]'
+  - '[[thoughts/Attention|Attention]]'
+  - '[[thoughts/LLMs|LLMs]]'
 tags:
   - ml
   - llm

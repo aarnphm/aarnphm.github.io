@@ -4,12 +4,12 @@ description: the slim 51.9% majority position in philpapers 2020
 id: physicalism
 modified: 2026-06-05 15:08:05 GMT-04:00
 seealso:
-  - '[[thoughts/dualism]]'
-  - '[[thoughts/functionalism]]'
-  - '[[thoughts/qualia]]'
-  - '[[thoughts/phenomenal consciousness]]'
-  - '[[thoughts/philosophical zombies]]'
-  - '[[thoughts/panpsychism]]'
+  - '[[thoughts/dualism|dualism]]'
+  - '[[thoughts/functionalism|functionalism]]'
+  - '[[thoughts/qualia|qualia]]'
+  - '[[thoughts/phenomenal consciousness|phenomenal consciousness]]'
+  - '[[thoughts/philosophical zombies|philosophical zombies]]'
+  - '[[thoughts/panpsychism|panpsychism]]'
 socials:
   sep: https://plato.stanford.edu/entries/physicalism/
   wikipedia: https://en.wikipedia.org/wiki/Physicalism

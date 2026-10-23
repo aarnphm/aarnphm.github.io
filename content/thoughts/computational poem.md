@@ -4,7 +4,7 @@ description: text generation through context-free grammars, exploring how comput
 id: computational poem
 modified: 2026-06-05 15:08:30 GMT-04:00
 seealso:
-  - '[[thoughts/code/poem.js]]'
+  - '[[thoughts/code/poem.js|poem.js]]'
 tags:
   - seed
 title: computational poem

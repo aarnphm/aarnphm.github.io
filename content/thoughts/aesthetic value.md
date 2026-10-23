@@ -37,7 +37,7 @@ fitting attitude theories, response-dependence accounts, and value pluralism con
 
 aesthetic value sits among:
 
-- [[thoughts/moral]] value (rightness, virtue, duty)
+- [[thoughts/moral|moral]] value (rightness, virtue, duty)
 - [[thoughts/Epistemology|epistemic]] value (knowledge, justified belief, understanding)
 - prudential value (well-being, good-for, welfare)
 - economic value (utility, preference-satisfaction)

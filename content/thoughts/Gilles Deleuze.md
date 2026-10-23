@@ -15,7 +15,7 @@ French philosopher whose work explores multiplicity, becoming, and the creation 
 
 See also: [[thoughts/action theory|action theory]] and [[thoughts/Philosophy and Nietzsche|Nietzsche]].
 
-In [[library/Nietzsche and Philosophy]], Deleuze treats [[thoughts/Will to Power|will to power]] as the principle determining relations between forces. Calling it another force obscures that distinction. A [[thoughts/desire|desire]] for domination already presupposes a valuation of power.[^3]
+In [[library/Nietzsche and Philosophy|Nietzsche and Philosophy]], Deleuze treats [[thoughts/Will to Power|will to power]] as the principle determining relations between forces. Calling it another force obscures that distinction. A [[thoughts/desire|desire]] for domination already presupposes a valuation of power.[^3]
 
 Active and reactive name qualities of forces: active forces create forms and directions, while reactive forces conserve and adapt. Affirmation and negation name qualities of the [[thoughts/Will|will]] to power. These pairs are related and must be kept distinct.[^3]
 

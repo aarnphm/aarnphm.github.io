@@ -27,4 +27,4 @@ $$
 
 restores exactly what $B_{>k}$ expects. Directly connecting the two pieces would swap the inputs seen by every downstream weight. The learned representations can support the same computation while using different coordinates.
 
-A successful stitch shows that the receiving network can use the donor's representation for the evaluated task. It leaves open how either network computes that representation and what information the receiving layers discard. [[thoughts/SVCCA]] measures correlations between activation subspaces; stitching tests the behaviour of an assembled network.
+A successful stitch shows that the receiving network can use the donor's representation for the evaluated task. It leaves open how either network computes that representation and what information the receiving layers discard. [[thoughts/SVCCA|SVCCA]] measures correlations between activation subspaces; stitching tests the behaviour of an assembled network.

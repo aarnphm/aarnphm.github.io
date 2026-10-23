@@ -4,12 +4,12 @@ description: criterion for finding difference between input logits and targets.
 id: cross entropy
 modified: 2026-06-05 15:08:26 GMT-04:00
 seealso:
-  - '[[thoughts/Entropy]]'
-  - '[[thoughts/Kullback-Leibler divergence]]'
-  - '[[thoughts/Maximum likelihood estimation]]'
-  - '[[thoughts/Logistic regression]]'
-  - '[[thoughts/Negative log-likelihood]]'
-  - '[[thoughts/Perplexity]]'
+  - '[[thoughts/Entropy|Entropy]]'
+  - '[[thoughts/Kullback-Leibler divergence|Kullback-Leibler divergence]]'
+  - '[[thoughts/Maximum likelihood estimation|Maximum likelihood estimation]]'
+  - '[[thoughts/Logistic regression|Logistic regression]]'
+  - '[[thoughts/Negative log-likelihood|Negative log-likelihood]]'
+  - '[[thoughts/Perplexity|Perplexity]]'
 tags:
   - ml
   - probability
@@ -41,7 +41,7 @@ $$
 ## maximum likelihood
 
 - Empirical risk with cross‑entropy equals the negative log‑likelihood (NLL) of the dataset under the model.
-- Minimizing cross‑entropy thus performs [[thoughts/Maximum likelihood estimation]] (MLE).
+- Minimizing cross‑entropy thus performs [[thoughts/Maximum likelihood estimation|Maximum likelihood estimation]] (MLE).
 - Derivation sketch for a dataset $\{(x_i, y_i)\}$ with categorical model $q_\theta(y\mid x)$:
   - Objective: minimize
     $$
@@ -54,7 +54,7 @@ $$
 
 ## multiclass cross‑entropy
 
-i.e [[thoughts/optimization#softmax]]
+i.e [[thoughts/optimization#softmax|softmax]]
 
 - Model: logits $z \in \mathbb{R}^C$, probabilities $p = \mathrm{softmax}(z)$.
 - Loss per example with hard labels $y \in \{0,\ldots,C-1\}$: $L = -\log p_y$.
@@ -105,7 +105,7 @@ In vector form: $\nabla_z L = \mathrm{softmax}(z) - \mathrm{one\_hot}(y)$.
 - Multilabel (independent classes, several can be 1):
   - use per‑class binary cross‑entropy (`BCEWithLogitsLoss`), not softmax CE.
 
-[[thoughts/PyTorch]] usage:
+[[thoughts/PyTorch|PyTorch]] usage:
 
 - `nn.CrossEntropyLoss` expects raw logits and integer class indices. It internally applies `LogSoftmax` + `NLLLoss`.
 - Shapes:

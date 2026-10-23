@@ -8,7 +8,7 @@ tags:
 title: Tensor field
 ---
 
-A tensor field assigns a tensor to each point of a [[thoughts/manifold]]. The tensor at a point acts on vectors and covectors belonging to that point. Smoothness specifies how these assignments vary across the manifold.
+A tensor field assigns a tensor to each point of a [[thoughts/manifold|manifold]]. The tensor at a point acts on vectors and covectors belonging to that point. Smoothness specifies how these assignments vary across the manifold.
 
 For a smooth manifold $M$, its tangent space $T_xM$ contains the possible velocities of curves through $x$. These spaces form the tangent bundle $TM$. Their [[thoughts/Tensor field#dual|dual spaces]] form the cotangent bundle $T^*M$.
 
@@ -98,7 +98,7 @@ A real vector bundle consists of a base space $X$, a total space $E$, and a cont
 
 > [!important] compatibility condition
 >
-> Each point has an open neighborhood $U\subseteq X$ and a [[thoughts/homeomorphism]]
+> Each point has an open neighborhood $U\subseteq X$ and a [[thoughts/homeomorphism|homeomorphism]]
 >
 > $$
 > \varphi:U\times\mathbb R^k\longrightarrow\pi^{-1}(U)

@@ -29,7 +29,7 @@ p_\theta(x_{1:T}\mid c)
 =\prod_{t=1}^{T}p_\theta(x_t\mid x_{<t},c).
 $$
 
-[Vaswani et al., section 3](https://papers.nips.cc/paper/7181-attention-is-all-you-need.pdf) explicitly describes this decoder as autoregressive. GPT-style [[thoughts/LLMs]] use [next-token prediction](https://cdn.openai.com/research-covers/language-unsupervised/language_understanding_paper.pdf) too. The term LLM alone does not specify a training objective: [BERT](https://aclanthology.org/N19-1423/) learns to reconstruct selected tokens using context from both sides.
+[Vaswani et al., section 3](https://papers.nips.cc/paper/7181-attention-is-all-you-need.pdf) explicitly describes this decoder as autoregressive. GPT-style [[thoughts/LLMs|LLMs]] use [next-token prediction](https://cdn.openai.com/research-covers/language-unsupervised/language_understanding_paper.pdf) too. The term LLM alone does not specify a training objective: [BERT](https://aclanthology.org/N19-1423/) learns to reconstruct selected tokens using context from both sides.
 
 ## next token prediction
 

@@ -87,7 +87,7 @@ For $T:V\to W$ with $\dim V=\dim W=n<\infty$, the following are equivalent:
 
 ## Operator norm and Lipschitzness
 
-Assume norms $\|\cdot\|_V$ on $V$ and $\|\cdot\|_W$ on $W$ (see [[thoughts/norm]]). The operator norm of $T$ is
+Assume norms $\|\cdot\|_V$ on $V$ and $\|\cdot\|_W$ on $W$ (see [[thoughts/norm|norm]]). The operator norm of $T$ is
 
 $$
 \|T\|\;\coloneqq\;\sup_{x\ne0} \frac{\|T x\|_W}{\|x\|_V}
@@ -100,7 +100,7 @@ $$
   $\|Ax\|_q\le\|A\|_{q\leftarrow p}\,\|x\|_p$.
   Special cases: $\|A\|_1=\max_j\sum_i |a_{ij}|$ (max column sum),
   $\|A\|_\infty=\max_i\sum_j |a_{ij}|$ (max row sum), and
-  $\|A\|_2$ equals the largest singular value (see [[thoughts/Singular Value Decomposition]]).
+  $\|A\|_2$ equals the largest singular value (see [[thoughts/Singular Value Decomposition|Singular Value Decomposition]]).
 
 > [!proposition] Linear maps are Lipschitz (finite dimension)
 >
@@ -129,7 +129,7 @@ An affine map has the form $x\mapsto T x + b$ with $T$ linear and $b$ fixed. Lin
 
 ## See also
 
-- [[thoughts/Vector space]] — bases, span, and dimension.
-- [[thoughts/norm]] — norms and induced (operator/matrix) norms.
-- [[thoughts/Inner product space]] — adjoint, orthogonality, and projections.
-- [[thoughts/Singular Value Decomposition]] — spectral norm and low-rank structure of linear maps.
+- [[thoughts/Vector space|Vector space]] — bases, span, and dimension.
+- [[thoughts/norm|norm]] — norms and induced (operator/matrix) norms.
+- [[thoughts/Inner product space|Inner product space]] — adjoint, orthogonality, and projections.
+- [[thoughts/Singular Value Decomposition|Singular Value Decomposition]] — spectral norm and low-rank structure of linear maps.

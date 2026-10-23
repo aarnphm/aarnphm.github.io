@@ -106,7 +106,7 @@ the paper's main payoff is showing that ~12 interpretability methods sit at spec
 
 [^daslinear]: the restriction to _linear_ projections is doing enormous work here. see [[#the non-linear representation dilemma|the non-linear representation dilemma]].
 
-**[[thoughts/sparse autoencoder|SAEs]]** and **[[thoughts/sparse crosscoders|sparse crosscoders]]** provide a decomposition of representations into features, which amounts to a specific choice of $\tau$ (the encoder). the decomposition is not itself a causal abstraction test. it's a proposal for what the alignment maps _could_ be, which then needs to be validated with interventions. [[thoughts/Attribution parameter decomposition]] operates in parameter space rather than activation space but faces the same requirement: decomposition is necessary, not sufficient.
+**[[thoughts/sparse autoencoder|SAEs]]** and **[[thoughts/sparse crosscoders|sparse crosscoders]]** provide a decomposition of representations into features, which amounts to a specific choice of $\tau$ (the encoder). the decomposition is not itself a causal abstraction test. it's a proposal for what the alignment maps _could_ be, which then needs to be validated with interventions. [[thoughts/Attribution parameter decomposition|Attribution parameter decomposition]] operates in parameter space rather than activation space but faces the same requirement: decomposition is necessary, not sufficient.
 
 ## IIA as the metric
 
@@ -144,7 +144,7 @@ two responses are available:
 
 ## open edges
 
-**hypothesis generation.** the framework tests a given hypothesis but doesn't generate one. where do good high-level causal models come from? right now: human intuition, informed by probing results and ablation studies. {{sidenotes[automating this]: is approximately the problem of automated scientific discovery applied to neural network internals. the [[thoughts/circuit tracing]] pipeline gets partway there by discovering circuits bottom-up, but connecting those circuits to interpretable causal variables remains manual.}}
+**hypothesis generation.** the framework tests a given hypothesis but doesn't generate one. where do good high-level causal models come from? right now: human intuition, informed by probing results and ablation studies. {{sidenotes[automating this]: is approximately the problem of automated scientific discovery applied to neural network internals. the [[thoughts/circuit tracing|circuit tracing]] pipeline gets partway there by discovering circuits bottom-up, but connecting those circuits to interpretable causal variables remains manual.}}
 
 **compositionality.** can you compose small causal abstractions into larger ones? if module A implements addition and module B implements comparison, does the composition implement "compare sums"? the framework supports this in principle (compose the commuting diagrams), but empirical work hasn't tested compositional abstractions at scale.
 

@@ -20,4 +20,4 @@ These claims can come apart: accepting physical composition alone does not estab
 
 see also: https://www.lesswrong.com/posts/WBw8dDkAWohFjWQSk/the-cluster-structure-of-thingspace
 
-Related: [[thoughts/love]].
+Related: [[thoughts/love|love]].

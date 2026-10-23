@@ -56,8 +56,8 @@ For soft targets satisfying $t_i \geq 0$ and $\sum_i t_i=1$, the loss $L=-\sum_i
 
 > [!see-also] links
 >
-> - Binary special case: [[thoughts/Logistic regression#MLE derivation and gradients]].
-> - Training view: [[thoughts/Maximum likelihood estimation#training statistical models (derivation sketch)]].
+> - Binary special case: [[thoughts/Logistic regression#MLE derivation and gradients|MLE derivation and gradients]].
+> - Training view: [[thoughts/Maximum likelihood estimation#training statistical models (derivation sketch)|training statistical models (derivation sketch)]].
 
 ## `exp()`
 
@@ -198,7 +198,7 @@ L-BFGS builds a limited-memory curvature approximation from gradient differences
 
 ## momentum
 
-See also [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Stochastic gradient descent|SGD]], [Cornell's CS6787](https://www.cs.cornell.edu/courses/cs6787/2017fa/Lecture3.pdf), and [[thoughts/gradient descent]].
+See also [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Stochastic gradient descent|SGD]], [Cornell's CS6787](https://www.cs.cornell.edu/courses/cs6787/2017fa/Lecture3.pdf), and [[thoughts/gradient descent|gradient descent]].
 
 Start with $f(x)=\frac{1}{2}x^2$. Gradient descent gives
 
@@ -323,7 +323,7 @@ The reduction runs over the normalized feature dimensions. It leaves the mean un
 
 @bernstein2024modulardualitydeeplearning constructs weight-update directions from norms chosen for individual network layers. The norm determines how large a weight change is, so changing it changes the steepest-descent direction.
 
-The [Newton-Schulz construction](https://docs.modula.systems/algorithms/newton-schulz/) approximates the singular-value transformation needed for certain matrix updates using matrix multiplications. This is a different computation from solving the loss-Hessian system in [[#Newton methods]].
+The [Newton-Schulz construction](https://docs.modula.systems/algorithms/newton-schulz/) approximates the singular-value transformation needed for certain matrix updates using matrix multiplications. This is a different computation from solving the loss-Hessian system in [[#Newton methods|Newton methods]].
 
 ### muon
 

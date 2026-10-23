@@ -4,13 +4,13 @@ description: property dualism, leibniz's mill, the explanation that doesn't fit 
 id: dualism
 modified: 2026-06-05 15:08:05 GMT-04:00
 seealso:
-  - '[[thoughts/qualia]]'
-  - '[[thoughts/philosophical zombies]]'
-  - '[[thoughts/panpsychism]]'
-  - '[[thoughts/access consciousness]]'
-  - '[[thoughts/phenomenal consciousness]]'
-  - '[[thoughts/functionalism]]'
-  - '[[thoughts/physicalism]]'
+  - '[[thoughts/qualia|qualia]]'
+  - '[[thoughts/philosophical zombies|philosophical zombies]]'
+  - '[[thoughts/panpsychism|panpsychism]]'
+  - '[[thoughts/access consciousness|access consciousness]]'
+  - '[[thoughts/phenomenal consciousness|phenomenal consciousness]]'
+  - '[[thoughts/functionalism|functionalism]]'
+  - '[[thoughts/physicalism|physicalism]]'
 socials:
   sep: https://plato.stanford.edu/entries/dualism/
   wikipedia: https://en.wikipedia.org/wiki/Property_dualism

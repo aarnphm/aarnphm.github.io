@@ -23,13 +23,13 @@ Social alignment can mean adopting a group's beliefs to gain acceptance, power o
 
 Factual accuracy is one concern in aligning [[thoughts/LLMs|large language models]]. A hallucinated answer may come from missing knowledge or from mishandling available evidence. Fixing it requires identifying the failure, including failures in the surrounding retrieval system.[^enterprise]
 
-[^enterprise]: [[thoughts/RAG]] supplies retrieved documents as context for generation. [Lewis et al.](https://arxiv.org/abs/2005.11401) found factuality improvements over their parametric-only baseline. Retrieval can still return the wrong document, and generation can add claims the document never made. Access to an internal database does not guarantee a correct answer or aligned behavior.
+[^enterprise]: [[thoughts/RAG|RAG]] supplies retrieved documents as context for generation. [Lewis et al.](https://arxiv.org/abs/2005.11401) found factuality improvements over their parametric-only baseline. Retrieval can still return the wrong document, and generation can add claims the document never made. Access to an internal database does not guarantee a correct answer or aligned behavior.
 
 The proposal to build an aligned system that helps solve further alignment problems comes from the OpenAI agenda linked above. It depends on being able to evaluate the research those systems produce.
 
 > Should we build a [[thoughts/ethics|ethical]] aligned systems, or [[thoughts/moral|morally]] aligned systems?
 
-[[thoughts/mechanistic interpretability]] tries to explain how a model computes its outputs. [[thoughts/mechanistic interpretability#ablation|Ablation]] can test whether a feature contributes to a behavior. [Anthropic's 2024 feature experiments](https://www.anthropic.com/research/mapping-mind-language-model) showed that interventions can change responses; whether the identified features could reliably improve safety remained an open question in that work.
+[[thoughts/mechanistic interpretability|mechanistic interpretability]] tries to explain how a model computes its outputs. [[thoughts/mechanistic interpretability#ablation|Ablation]] can test whether a feature contributes to a behavior. [Anthropic's 2024 feature experiments](https://www.anthropic.com/research/mapping-mind-language-model) showed that interventions can change responses; whether the identified features could reliably improve safety remained an open question in that work.
 
 ## RSP
 

@@ -6,7 +6,7 @@ modified: 2026-06-06 01:37:07 GMT-04:00
 seealso:
   - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/MLA|MLA]]'
-  - '[[thoughts/KV compression]]'
+  - '[[thoughts/KV compression|KV compression]]'
 tags:
   - ml
   - llm

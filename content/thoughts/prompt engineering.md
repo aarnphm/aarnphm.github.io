@@ -4,15 +4,15 @@ description: how instructions, examples, and intermediate answers shape language
 id: prompt engineering
 modified: 2026-10-13 09:04:01 GMT-04:00
 seealso:
-  - '[[thoughts/linguistic]]'
-  - '[[thoughts/NLP]]'
+  - '[[thoughts/linguistic|linguistic]]'
+  - '[[thoughts/NLP|NLP]]'
 tags:
   - seed
   - ml
 title: Prompt engineering
 ---
 
-Prompt engineering is choosing the instructions, context, and examples given to [[thoughts/LLMs]]. During ordinary prompting, the model's weights stay fixed. The prompt supplies information about the task and the answer we want. [@brown2020languagemodelsfewshotlearners]
+Prompt engineering is choosing the instructions, context, and examples given to [[thoughts/LLMs|LLMs]]. During ordinary prompting, the model's weights stay fixed. The prompt supplies information about the task and the answer we want. [@brown2020languagemodelsfewshotlearners]
 
 What counts as a better prompt depends on what the output must do. For a date extractor, "find the dates" leaves the format and handling of missing information open. A more specific instruction would be: "Return a list of dates explicitly stated in this passage. Use ISO format when the day, month, and year are unambiguous; otherwise, preserve the original wording. Return an empty list if no dates appear." We can then check whether the output follows those rules on dated, ambiguous, and undated passages.
 

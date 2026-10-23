@@ -4,12 +4,12 @@ description: personal identity read through Merleau-Ponty, Sartre, Freud, Jung, 
 id: identity
 modified: 2026-10-12 10:58:00 GMT-04:00
 seealso:
-  - '[[thoughts/hermeneutics]]'
-  - '[[thoughts/love]]'
-  - '[[thoughts/functionalism]]'
-  - '[[thoughts/Freud]]'
-  - '[[thoughts/Wittgenstein]]'
-  - '[[thoughts/ethics]]'
+  - '[[thoughts/hermeneutics|hermeneutics]]'
+  - '[[thoughts/love|love]]'
+  - '[[thoughts/functionalism|functionalism]]'
+  - '[[thoughts/Freud|Freud]]'
+  - '[[thoughts/Wittgenstein|Wittgenstein]]'
+  - '[[thoughts/ethics|ethics]]'
 socials:
   pg: https://paulgraham.com/identity.html
 tags:
@@ -20,7 +20,7 @@ title: identity
 
 Two questions get mixed together under "identity". One asks what makes me the same person as the kid in my old photos. The other asks who I take myself to be: the roles, loyalties and stories I would defend in an argument. The traditions below mostly answer the second question, and most of them deny that the answer is a fixed inner essence. They disagree about what takes its place: the body, a free project, a negotiation among drives, or a story.
 
-The note uses "identity" in this personal sense. Type-identity theory, the claim that mental state types are brain state types, is a separate topic in philosophy of mind; see [[thoughts/functionalism]].
+The note uses "identity" in this personal sense. Type-identity theory, the claim that mental state types are brain state types, is a separate topic in philosophy of mind; see [[thoughts/functionalism|functionalism]].
 
 ## phenomenology
 
@@ -44,7 +44,7 @@ In a later essay he uses "intercorporeality" for the bodily relation with others
 
 ## existentialism
 
-See also [[thoughts/Existentialism]].
+See also [[thoughts/Existentialism|Existentialism]].
 
 ### being-in-itself and being-for-itself
 
@@ -76,7 +76,7 @@ Sartre therefore describes relations between people as basically conflictual. In
 
 ## psychoanalysis
 
-### [[thoughts/Freud]]
+### [[thoughts/Freud|Freud]]
 
 #### the structural model
 
@@ -114,7 +114,7 @@ Individuation does not remove these figures. It changes the ego's relation to th
 
 ## hermeneutics and narrative identity
 
-See [[thoughts/hermeneutics]]. Self-understanding is circular: I interpret myself from within my present self-conception, and the interpretation revises that self-conception. I have no standpoint outside the circle.
+See [[thoughts/hermeneutics|hermeneutics]]. Self-understanding is circular: I interpret myself from within my present self-conception, and the interpretation revises that self-conception. I have no standpoint outside the circle.
 
 Ricoeur [@ricoeur1992oneself] separates two meanings of "same":
 
@@ -131,7 +131,7 @@ The traditions above say identity comes from relations. Mathematics has precise 
 
 ### category theory
 
-See [[thoughts/category theory]]. Every object $A$ in a category has an identity morphism $\mathrm{id}_A : A \to A$, and for all $f : A \to B$ and $g : C \to A$,
+See [[thoughts/category theory|category theory]]. Every object $A$ in a category has an identity morphism $\mathrm{id}_A : A \to A$, and for all $f : A \to B$ and $g : C \to A$,
 
 $$
 f \circ \mathrm{id}_A = f, \qquad \mathrm{id}_A \circ g = g.
@@ -163,7 +163,7 @@ The tensor product $V \otimes W$ of two vector spaces contains elements of the f
 
 The analogy for persons is limited. It suggests why "who I am at work" and "who I am with family" may fail to factor into independent pieces. The mathematics does not show that people behave this way.
 
-## [[/tags/love]] as selfish act
+## [[/tags/love|love]] as selfish act
 
 Put the frameworks together and love starts to look self-serving. Freud says being loved raises self-regard, and that object choice often repeats a parent or the self. Jung says the person I fall for first carries my projection. Sartre says I want the beloved's freedom to choose me, so that my existence is justified. Merleau-Ponty says I cannot be a body-subject alone. Gadamer says understanding another person changes my own self-understanding.
 

@@ -25,6 +25,6 @@ Equipment:
 
 > [[thoughts/Lighting|Lighting]] is key
 
-[[thoughts/Planimetric composition]]
+[[thoughts/Planimetric composition|Planimetric composition]]
 
 - Wes Anderson

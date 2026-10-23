@@ -13,8 +13,8 @@ The 2021 framework treats the residual stream as an additive, mostly basis-free 
 
 see also:
 
-- [[thoughts/induction heads]], [[thoughts/polysemantic|superposition]], logit lens
-- Matrix perspectives and decompositions: [[thoughts/Singular Value Decomposition|SVD]], [[thoughts/Attention]], [[thoughts/Vector calculus#Jacobian matrix|Jacobian]].
+- [[thoughts/induction heads|induction heads]], [[thoughts/polysemantic|superposition]], logit lens
+- Matrix perspectives and decompositions: [[thoughts/Singular Value Decomposition|SVD]], [[thoughts/Attention|Attention]], [[thoughts/Vector calculus#Jacobian matrix|Jacobian]].
 
 ## residual stream as a [[thoughts/Embedding|embedding]] space
 

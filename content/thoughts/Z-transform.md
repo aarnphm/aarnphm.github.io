@@ -58,7 +58,7 @@ $$
 
 Keep these terms when solving a difference equation with initial conditions. Transfer functions describe the zero-initial-state response. [Siebert, §8.2](https://eecs6302.mit.edu/_static/fall21/extras/siebert8.pdf).
 
-## [[thoughts/quantization]] error
+## [[thoughts/quantization|quantization]] error
 
 Sampling selects times; quantization rounds amplitudes. With sampling period $T$, the sampling rate is $f_s=1/T$ samples per second. Raising $f_s$ alone leaves the amplitude spacing unchanged.
 

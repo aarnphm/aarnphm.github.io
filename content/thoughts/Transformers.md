@@ -7,9 +7,9 @@ seealso:
   - '[[thoughts/LLMs|LLMs]]'
   - '[[thoughts/Embedding|embedding]]'
   - '[[thoughts/PD disaggregated serving|disaggregated serving]]'
-  - '[[thoughts/KV compression]]'
-  - '[[thoughts/KV offloading]]'
-  - '[[thoughts/mechanistic interpretability]]'
+  - '[[thoughts/KV compression|KV compression]]'
+  - '[[thoughts/KV offloading|KV offloading]]'
+  - '[[thoughts/mechanistic interpretability|mechanistic interpretability]]'
   - '[[thoughts/Speculative decoding|Speculative decoding]]'
   - '[[thoughts/tsfm|toronto school of foundational modelling]]'
 socials:
@@ -65,7 +65,7 @@ Training supplies the actual prefix at every position. The causal mask permits a
 
 ## memory limitations.
 
-See also: [[thoughts/state-space models]], [Karpathy’s linked thread](https://x.com/karpathy/status/1691571869051445433).
+See also: [[thoughts/state-space models|state-space models]], [Karpathy’s linked thread](https://x.com/karpathy/status/1691571869051445433).
 
 A transformer uses memory for weights, temporary activations, and, during cached decoding, previous keys and values. Dense attention over a sequence of length $T$ computes $T^2$ query–key scores per head. Implementations can avoid storing the complete score matrix; that changes memory traffic and storage without removing all those interactions. [Efficient Transformers: A Survey](https://arxiv.org/abs/2009.06732)
 
@@ -189,7 +189,7 @@ x_{t+1}\sim p_\theta(\cdot\mid x_{\leq t}),
 p_\theta(x_{1:T})=\prod_{t=1}^{T}p_\theta(x_t\mid x_{<t}).
 $$
 
-There is no explicit lookahead over future token sequences in this procedure. Beam search and [[thoughts/Speculative decoding]] add different mechanisms for exploring or proposing continuations.
+There is no explicit lookahead over future token sequences in this procedure. Beam search and [[thoughts/Speculative decoding|Speculative decoding]] add different mechanisms for exploring or proposing continuations.
 
 ### multi-token prediction.
 

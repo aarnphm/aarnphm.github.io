@@ -4,7 +4,7 @@ description: and logical coherency
 id: rationality
 modified: 2026-06-05 15:08:25 GMT-04:00
 seealso:
-  - '[[thoughts/functionalism]]'
+  - '[[thoughts/functionalism|functionalism]]'
 socials:
   jkcarlsmith: https://joecarlsmith.com/category/rationality/
   lw: https://www.lesswrong.com/w/lesswrong-canon-on-rationality
@@ -18,7 +18,7 @@ Rationalist are mostly friends who read a lot #philosophy, but have a tendency t
 
 Tim Dettmers capture this in his argument against [AGI](https://timdettmers.com/2025/12/10/why-agi-will-not-happen/):
 
-> A key problem with ideas, particularly those coming from the Bay Area, is that they often live entirely in the idea space. Most people who think about [[thoughts/AGI]], superintelligence, scaling laws, and hardware improvements treat these concepts as abstract ideas that can be discussed like philosophical thought experiments.
+> A key problem with ideas, particularly those coming from the Bay Area, is that they often live entirely in the idea space. Most people who think about [[thoughts/AGI|AGI]], superintelligence, scaling laws, and hardware improvements treat these concepts as abstract ideas that can be discussed like philosophical thought experiments.
 > In fact, a lot of the thinking about superintelligence and AGI comes from Oxford-style philosophy. Oxford, the birthplace of effective altruism, mixed with the rationality culture from the Bay Area, gave rise to a strong distortion of how to clearly think about certain ideas. All of this sits on one fundamental misunderstanding of AI and scaling: computation is physical.
 
 ## is an underrated way to be authentic

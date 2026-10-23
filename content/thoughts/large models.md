@@ -8,9 +8,9 @@ tags:
 title: Foundational models
 ---
 
-Popularized through [[thoughts/LLMs]], GPT-3 paper [@brown2020languagemodelsfewshotlearners]
+Popularized through [[thoughts/LLMs|LLMs]], GPT-3 paper [@brown2020languagemodelsfewshotlearners]
 
-Though, it should be thought as [[thoughts/Intelligence amplification]] rather than "artificial intelligence" system.
+Though, it should be thought as [[thoughts/Intelligence amplification|Intelligence amplification]] rather than "artificial intelligence" system.
 
 ## Scaling laws
 

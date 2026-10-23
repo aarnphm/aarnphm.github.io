@@ -18,7 +18,7 @@ Numpy + [[thoughts/Autograd|Autograd]]. Use [[thoughts/XLA|XLA]] to compile and 
 
 > Arrays are **immutable** in Jax
 
-- Treat functions as pure as to compiled with [[thoughts/XLA]]
+- Treat functions as pure as to compiled with [[thoughts/XLA|XLA]]
 
 ```python title="entropix/dslider.py"
 from functools import partial

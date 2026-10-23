@@ -24,7 +24,7 @@ That last part matters. If I ask a model to change a formula, I still need some 
 >
 > A note-taking app can store a link. What do I have to do with that link for it to help me develop an argument?
 
-[[thoughts/Hypertext|Hypertext]] makes references traversable. Choosing which references deserve another look, checking them, and writing down what follows are still activities. This is where [[thoughts/representations]] meet habits of use. Counting notes or links tells us little about whether those habits are helping.
+[[thoughts/Hypertext|Hypertext]] makes references traversable. Choosing which references deserve another look, checking them, and writing down what follows are still activities. This is where [[thoughts/representations|representations]] meet habits of use. Counting notes or links tells us little about whether those habits are helping.
 
 [Andy Matuschak and Michael Nielsen](https://numinous.productions/ttft/) give a more specific example: their mnemonic medium embeds retrieval questions in an explanation and schedules later reviews. The reader has to recall something, then gets another chance to retrieve it later. Here we can ask what the reader retains and understands, instead of treating the existence of a knowledge graph as evidence of better thinking.
 

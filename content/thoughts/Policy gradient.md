@@ -6,7 +6,7 @@ id: Policy gradient
 modified: 2026-06-05 15:08:06 GMT-04:00
 published: '2017-03-01'
 seealso:
-  - '[[thoughts/Reinforcement learning]]'
+  - '[[thoughts/Reinforcement learning|Reinforcement learning]]'
 socials:
   lillog: https://lilianweng.github.io/posts/2018-04-08-policy-gradient/
   wikipedia: https://en.wikipedia.org/wiki/Policy_gradient_method

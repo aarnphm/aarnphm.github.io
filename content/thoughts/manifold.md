@@ -10,7 +10,7 @@ title: manifold
 
 A circle needs one coordinate to locate a point on a short arc. A sphere needs two on a small patch. Their dimensions count local coordinates, even when we draw them inside a space with more dimensions.
 
-An $n$-dimensional **topological manifold** is a second-countable Hausdorff space in which every point has an open [[thoughts/manifold#neighborhood|neighborhood]] $U$ and a [[thoughts/homeomorphism]]
+An $n$-dimensional **topological manifold** is a second-countable Hausdorff space in which every point has an open [[thoughts/manifold#neighborhood|neighborhood]] $U$ and a [[thoughts/homeomorphism|homeomorphism]]
 
 $$
 \varphi:U\longrightarrow V\subseteq\mathbb R^n,

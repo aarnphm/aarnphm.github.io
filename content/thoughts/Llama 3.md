@@ -4,7 +4,7 @@ description: Working notes on Llama 3.1 pre-training, batch accounting, and dist
 id: Llama 3
 modified: 2026-09-22 09:10:18 GMT-04:00
 seealso:
-  - '[[@grattafiori2024llama3herdmodels]]'
+  - '[[@grattafiori2024llama3herdmodels|@grattafiori2024llama3herdmodels]]'
   - '[[thoughts/papers/2407.21783v3.pdf|papers]]'
 tags:
   - ml
@@ -20,11 +20,11 @@ Meta reports 15.6T training tokens for 405B. Most training uses an 8K context, f
 
 To choose model size, Meta trains smaller models at fixed compute budgets and finds the lowest validation loss at each budget. Holding compute fixed forces a trade-off: a larger model gets fewer tokens. Their fitted scaling law suggests about 402B parameters and 16.55T tokens. The loss curves flatten near their minima, leaving room for the eventual 405B choice (§3.2.1).
 
-[[thoughts/annealing]] also provides a cheaper dataset test. Meta takes a half-trained 8B checkpoint, mixes a candidate into 30% of a 40B-token continuation, and reduces the learning rate to zero. Evaluation changes help judge the candidate. Section 3.1.3 relates this test to @blakeney2024doesdatasparkjoy.
+[[thoughts/annealing|annealing]] also provides a cheaper dataset test. Meta takes a half-trained 8B checkpoint, mixes a candidate into 30% of a 40B-token continuation, and reduces the learning rate to zero. Evaluation changes help judge the candidate. Section 3.1.3 relates this test to @blakeney2024doesdatasparkjoy.
 
 ## Architecture
 
-The models are dense [[thoughts/Transformers]], with [[thoughts/GQA]] and SwiGLU [[thoughts/FFN|feed-forward layers]]. Table 3 reports:
+The models are dense [[thoughts/Transformers|Transformers]], with [[thoughts/GQA|GQA]] and SwiGLU [[thoughts/FFN|feed-forward layers]]. Table 3 reports:
 
 |                    | 8B               | 70B                | 405B             |
 | ------------------ | ---------------- | ------------------ | ---------------- |
@@ -79,7 +79,7 @@ After gathering parameter shards for forward computation, Meta retains those wei
 
 ## Network, utilization, and elapsed time
 
-The run uses up to 16,384 H100s within a larger RoCE cluster. Its three-layer [[thoughts/Clos network]] connects eight pods of 3,072 GPUs. Each pod has full bisection bandwidth; inter-pod aggregation has the reported $1:7$ oversubscription. The parallelism layout keeps bandwidth-sensitive operations local and puts DP furthest out, where prefetching and asynchronous reduction tolerate more latency. NCCLX is Meta's NCCL fork for these collectives (§§3.3.1–3.3.3).
+The run uses up to 16,384 H100s within a larger RoCE cluster. Its three-layer [[thoughts/Clos network|Clos network]] connects eight pods of 3,072 GPUs. Each pod has full bisection bandwidth; inter-pod aggregation has the reported $1:7$ oversubscription. The parallelism layout keeps bandwidth-sensitive operations local and puts DP furthest out, where prefetching and asynchronous reduction tolerate more latency. NCCLX is Meta's NCCL fork for these collectives (§§3.3.1–3.3.3).
 
 For model FLOPs utilization, $F_{\mathrm{step}}$ counts model operations across the global batch, $t_{\mathrm{step}}$ is seconds per step, and $P_{\mathrm{peak}}$ is peak operations per second per GPU:
 

@@ -6,7 +6,7 @@ id: LLMs
 layout: technical
 modified: 2026-10-22 11:36:15 GMT-04:00
 seealso:
-  - '[[thoughts/mechanistic interpretability]]'
+  - '[[thoughts/mechanistic interpretability|mechanistic interpretability]]'
   - '[[thoughts/Alignment|Alignment]]'
 slides: true
 tags:
@@ -32,9 +32,9 @@ There are also a whole genre of language model built on top of diffusion blocks,
 
 Have "capabilities" to understand [[thoughts/NLP|natural language]].
 
-Exhibits [[thoughts/emergent behaviour]] of [[thoughts/intelligence|intelligence]]. ^emergent
+Exhibits [[thoughts/emergent behaviour|emergent behaviour]] of [[thoughts/intelligence|intelligence]]. ^emergent
 
-One way or another is a form of [[thoughts/Behaviourism|behaviourism]], through [[thoughts/Machine learning|reinforcement learning]]. It is being "told" what is good or bad, and thus act accordingly towards the users. However, this induces [[thoughts/confirmation bias]] where one aligns and contains his/her prejudices towards the problem.
+One way or another is a form of [[thoughts/Behaviourism|behaviourism]], through [[thoughts/Machine learning|reinforcement learning]]. It is being "told" what is good or bad, and thus act accordingly towards the users. However, this induces [[thoughts/confirmation bias|confirmation bias]] where one aligns and contains his/her prejudices towards the problem.
 
 ### Scalability
 
@@ -43,9 +43,9 @@ Incredibly hard to scale, mainly due to their [[thoughts/large models|large]] me
 ### [[thoughts/optimization|Optimization]]
 
 - [[thoughts/quantization|Quantization]]: reduce computational and memory costs of running inference with representing the weight and activations with low-precision data type
-- [[thoughts/Continuous batching]]: update the batch after each decoding step so finished requests leave and waiting requests can join. [Orca](https://www.usenix.org/conference/osdi22/presentation/yu) introduced iteration-level scheduling. [[thoughts/paged attention|PagedAttention]] manages KV-cache memory in blocks; it can support this scheduling by reducing wasted memory.
+- [[thoughts/Continuous batching|Continuous batching]]: update the batch after each decoding step so finished requests leave and waiting requests can join. [Orca](https://www.usenix.org/conference/osdi22/presentation/yu) introduced iteration-level scheduling. [[thoughts/paged attention|PagedAttention]] manages KV-cache memory in blocks; it can support this scheduling by reducing wasted memory.
 - Different [[thoughts/Attention|Attention]] variants, for better kernels and hardware optimisation (Think of [[thoughts/flash attention|Flash Attention 3]], [[thoughts/radix attention|Radix Attention]], [[thoughts/tree attention|TreeAttention]], etc.)
-- [[thoughts/Transformers#Byte-Latent Transformer]]: group bytes into variable-length patches using next-byte prediction entropy. The large transformer processes patches, while a smaller decoder generates bytes autoregressively. [^blt]
+- [[thoughts/Transformers#Byte-Latent Transformer|Byte-Latent Transformer]]: group bytes into variable-length patches using next-byte prediction entropy. The large transformer processes patches, while a smaller decoder generates bytes autoregressively. [^blt]
 
 [^blt]: A small byte-level model estimates how uncertain the next byte is. High uncertainty starts a new patch; predictable byte sequences can share longer patches, reducing the number of steps run by the large transformer. Entropy determines patch boundaries. Byte generation still uses the decoder's next-byte predictions. See [BLT, sections 2.3 and 3](https://arxiv.org/html/2412.09871v1).
 
@@ -79,13 +79,13 @@ See also: [All the better to see you with](https://www.kernelmag.io/2/all-the-be
 
 https://twitter.com/paulg/status/1761801995302662175
 
-### machine-assisted [[thoughts/writing]]
+### machine-assisted [[thoughts/writing|writing]]
 
 source: [creative fiction with GPT-3](https://gwern.net/gpt-3)
 
-Idea: use [[thoughts/mechanistic interpretability#sparse autoencoders]] to guide ideas generations
+Idea: use [[thoughts/mechanistic interpretability#sparse autoencoders|sparse autoencoders]] to guide ideas generations
 
-The idea from [writing for LLMs](https://gwern.net/llm-writing) means once your writing/thoughts were embedded within the models' [[thoughts/latent space]]
+The idea from [writing for LLMs](https://gwern.net/llm-writing) means once your writing/thoughts were embedded within the models' [[thoughts/latent space|latent space]]
 
 ### Good-enough
 
@@ -97,12 +97,12 @@ However, one should always consider to put in the work, rather than being "ok" w
 
 ### as [[thoughts/Search|search]]
 
-These models are incredibly useful for summarization and information gathering. With the [[thoughts/taxonomy]] of [[thoughts/RAG]] or any other CoT tooling, you can pretty much augment and produce and improve search-efficiency bu quite a lot.
+These models are incredibly useful for summarization and information gathering. With the [[thoughts/taxonomy|taxonomy]] of [[thoughts/RAG|RAG]] or any other CoT tooling, you can pretty much augment and produce and improve search-efficiency bu quite a lot.
 
 notable mentions:
 
 - [perplexity.ai](https://perplexity.ai/): [[thoughts/RAG|RAG]]-first search engine
-- [explorer.globe.engineer](https://explorer.globe.engineer/): tree-based [[thoughts/information retrieval]]
+- [explorer.globe.engineer](https://explorer.globe.engineer/): tree-based [[thoughts/information retrieval|information retrieval]]
 - [Exa labs](https://twitter.com/ExaAiLabs)
 
 ### Programming

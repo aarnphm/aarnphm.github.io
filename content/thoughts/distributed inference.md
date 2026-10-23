@@ -42,7 +42,7 @@ or _well-lit path_
    - Scheduler-aware KV (related to the scheduler WG)
    - Autoscaling (KEDA)
 
-##### [[thoughts/distributed inference#Autoscaling]]
+##### [[thoughts/distributed inference#Autoscaling|Autoscaling]]
 
 optimization:
 

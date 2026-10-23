@@ -40,7 +40,7 @@ $$
 +2\operatorname{Re}\langle x,y\rangle+\lVert y\rVert^2.
 $$
 
-[[thoughts/Cauchy-Schwarz]] gives $|\langle x,y\rangle|\le\lVert x\rVert\lVert y\rVert$, so the squared-length expansion implies the triangle inequality. If a positive-semidefinite form assigns length zero to a nonzero vector, it gives a seminorm; positive definiteness rules that out.
+[[thoughts/Cauchy-Schwarz|Cauchy-Schwarz]] gives $|\langle x,y\rangle|\le\lVert x\rVert\lVert y\rVert$, so the squared-length expansion implies the triangle inequality. If a positive-semidefinite form assigns length zero to a nonzero vector, it gives a seminorm; positive definiteness rules that out.
 
 ## Orthonormal bases & Gram–Schmidt
 
@@ -73,7 +73,7 @@ $$
 c^\dagger Gc=\left\lVert\sum_j c_jx_j\right\rVert^2\ge0.
 $$
 
-Thus $G$ is Hermitian positive semidefinite, and it is positive definite exactly when the vectors are linearly independent. In standard coordinates, putting the vectors in the columns of $X$ gives $G=X^\dagger X$. [Bindel's Gram-matrix derivation](https://www.cs.cornell.edu/courses/cs6210/2025fa/lec/2025-08-25-slides.html#gram-matrices) keeps this index order explicit. These matrices appear in least squares and [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/principal component analysis|PCA]]; see also [[thoughts/Singular Value Decomposition]].
+Thus $G$ is Hermitian positive semidefinite, and it is positive definite exactly when the vectors are linearly independent. In standard coordinates, putting the vectors in the columns of $X$ gives $G=X^\dagger X$. [Bindel's Gram-matrix derivation](https://www.cs.cornell.edu/courses/cs6210/2025fa/lec/2025-08-25-slides.html#gram-matrices) keeps this index order explicit. These matrices appear in least squares and [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/principal component analysis|PCA]]; see also [[thoughts/Singular Value Decomposition|Singular Value Decomposition]].
 
 ## Polarization identity
 

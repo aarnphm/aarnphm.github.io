@@ -4,7 +4,7 @@ description: R1 training and distillation, V3 architecture, and the limits of th
 id: DeepSeek
 modified: 2026-09-17 09:07:22 GMT-04:00
 seealso:
-  - '[[thoughts/DS32]]'
+  - '[[thoughts/DS32|DS32]]'
 socials:
   open-r1: https://github.com/huggingface/open-r1
   paper: '[[thoughts/papers/2501.12948v1.pdf|pdf]]'
@@ -23,7 +23,7 @@ Three experiments to keep separate:
 
 - [[#R1-Zero|R1-Zero]] applies reinforcement learning directly to that base checkpoint, without a supervised fine-tuning warmup.
 - [[#R1|R1]] combines two supervised fine-tuning stages with two RL stages.
-- [[#Distill|R1 Distill]] transfers generated examples to smaller Qwen and Llama models through [[thoughts/knowledge distillation]].
+- [[#Distill|R1 Distill]] transfers generated examples to smaller Qwen and Llama models through [[thoughts/knowledge distillation|knowledge distillation]].
 
 The [R1 report](https://arxiv.org/html/2501.12948v1) describes the January 2025 models. The V3.1 and V3.2-Exp sections below concern later releases.
 
@@ -158,7 +158,7 @@ Released on 21 August 2025. The [release announcement](https://api-docs.deepseek
 
 ## DeepSeek-V3.2-Exp
 
-Released on 29 September 2025. It adds DeepSeek Sparse Attention to V3.1-Terminus to reduce long-context attention work. DeepSeek reports broadly similar benchmark results under aligned training configurations. The [official release repository](https://github.com/deepseek-ai/DeepSeek-V3.2-Exp) supplies the comparison and inference implementation. See [[thoughts/DS32]] for the attention mechanism.
+Released on 29 September 2025. It adds DeepSeek Sparse Attention to V3.1-Terminus to reduce long-context attention work. DeepSeek reports broadly similar benchmark results under aligned training configurations. The [official release repository](https://github.com/deepseek-ai/DeepSeek-V3.2-Exp) supplies the comparison and inference implementation. See [[thoughts/DS32|DS32]] for the attention mechanism.
 
 ## evolution and integration
 

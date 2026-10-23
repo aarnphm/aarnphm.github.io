@@ -114,7 +114,7 @@ The auxiliary reconstruction trains the gate through $q$. The stop-gradient oper
 </Zoomable>
 ```
 
-_Figure 4: With tied weights, the gated forward pass can be written using a [[thoughts/optimization#JumpReLU]] activation with a nonnegative effective threshold._ [@erichson2019jumpreluretrofitdefensestrategy]
+_Figure 4: With tied weights, the gated forward pass can be written using a [[thoughts/optimization#JumpReLU|JumpReLU]] activation with a nonnegative effective threshold._ [@erichson2019jumpreluretrofitdefensestrategy]
 
 This forward-pass equivalence leaves a training distinction. The later JumpReLU SAE uses positive thresholds and an $L_0$ penalty:
 

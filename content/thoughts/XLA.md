@@ -36,7 +36,7 @@ def compute(x, y, z):
 
 see also: [OpenXLA](https://github.com/openxla/xla)
 
-see also: [[thoughts/PJRT|PJRT]], [[thoughts/MLIR|MLIR]], [[thoughts/PyTorch]], [[thoughts/Jax|JAX]], [[thoughts/Compiler|compiler]], [[thoughts/Autograd|autograd]], [[thoughts/GPU programming|GPU programming]]
+see also: [[thoughts/PJRT|PJRT]], [[thoughts/MLIR|MLIR]], [[thoughts/PyTorch|PyTorch]], [[thoughts/Jax|JAX]], [[thoughts/Compiler|compiler]], [[thoughts/Autograd|autograd]], [[thoughts/GPU programming|GPU programming]]
 
 ## architecture
 

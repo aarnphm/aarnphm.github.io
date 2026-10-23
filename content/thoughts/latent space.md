@@ -4,14 +4,14 @@ description: space of a model's latent variables or internal representations, wh
 id: latent space
 modified: 2026-10-08 09:07:14 GMT-04:00
 seealso:
-  - '[[thoughts/Embedding]]'
+  - '[[thoughts/Embedding|Embedding]]'
 tags:
   - seed
   - ml
 title: latent space
 ---
 
-A latent space is the space in which a model's unobserved variables or internal [[thoughts/representations]] take values. Its coordinates acquire meaning through the model and its training objective.
+A latent space is the space in which a model's unobserved variables or internal [[thoughts/representations|representations]] take values. Its coordinates acquire meaning through the model and its training objective.
 
 An autoencoder gives a concrete example. The encoder maps an input $x$ to a code $z=f(x)$. The decoder maps that code to a reconstruction $\hat{x}=g(z)$. Training can minimize mean squared reconstruction error over $N$ examples:
 

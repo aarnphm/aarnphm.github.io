@@ -14,7 +14,7 @@ title: Logistic regression
 > - We use $\sigma(t)=1/(1+e^{-t})$.
 > - Binary labels can be coded as $y\in\{0,1\}$ or $y\in\{-1,+1\}$. They are related by $y_{\pm}=2y_{01}-1$.
 > - With logits $t=w^\top x + b$, $p:=P(y{=}1\mid x;w,b)=\sigma(t)$ and $1-p=\sigma(-t)$.
-> - General MLE background is in [[thoughts/Maximum likelihood estimation]].
+> - General MLE background is in [[thoughts/Maximum likelihood estimation|Maximum likelihood estimation]].
 
 ## Model and likelihood
 
@@ -72,7 +72,7 @@ $$
 $$
 
 > [!tip] link to softmax gradients
-> For the multi‑class extension, gradients w.r.t. logits reduce to $\text{softmax}(z)-\text{one\_hot}(y)$. See [[thoughts/optimization#softmax]] for Jacobian and stable log‑sum‑exp.
+> For the multi‑class extension, gradients w.r.t. logits reduce to $\text{softmax}(z)-\text{one\_hot}(y)$. See [[thoughts/optimization#softmax|softmax]] for Jacobian and stable log‑sum‑exp.
 
 ## Hessian and convexity
 
@@ -113,8 +113,8 @@ With $\lambda>0$, penalize the slopes:
 
 These penalties leave $b$ unpenalized. With both classes present, either penalty gives a finite solution even under separation: the penalty bounds the slopes, and observations from both classes keep the intercept finite. L2 gives a unique solution. If all labels are $1$, setting $w=0$ and sending $b\to\infty$ still drives the loss to zero without paying either penalty. Penalizing the intercept too removes that escape direction. The all-zero case has $b\to-\infty$.
 
-See [[thoughts/Maximum likelihood estimation#training statistical models (derivation sketch)|MLE training sketch]] and [[thoughts/regularization]].
+See [[thoughts/Maximum likelihood estimation#training statistical models (derivation sketch)|MLE training sketch]] and [[thoughts/regularization|regularization]].
 
 ## Multiclass (softmax) regression
 
-For $C$ classes, logits $z=W^\top x + b$, $p=\text{softmax}(z)$. Minimize cross‑entropy $-\log p_{y}$. Gradients wrt logits: $\partial L/\partial z = p - \text{one\_hot}(y)$. See [[thoughts/optimization#softmax]].
+For $C$ classes, logits $z=W^\top x + b$, $p=\text{softmax}(z)$. Minimize cross‑entropy $-\log p_{y}$. Gradients wrt logits: $\partial L/\partial z = p - \text{one\_hot}(y)$. See [[thoughts/optimization#softmax|softmax]].

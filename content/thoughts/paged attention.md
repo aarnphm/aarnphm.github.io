@@ -6,9 +6,9 @@ modified: 2026-06-06 01:38:36 GMT-04:00
 seealso:
   - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/radix attention|radix attention]]'
-  - '[[thoughts/vllm]]'
-  - '[[thoughts/Continuous batching]]'
-  - '[[@kwon2023efficient]]'
+  - '[[thoughts/vllm|vllm]]'
+  - '[[thoughts/Continuous batching|Continuous batching]]'
+  - '[[@kwon2023efficient|@kwon2023efficient]]'
 tags:
   - ml
   - llm

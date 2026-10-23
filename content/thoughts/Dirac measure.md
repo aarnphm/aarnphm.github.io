@@ -52,7 +52,7 @@ Suppose that $(X, T)$ is a topological space and that $\Sigma$ is at least as fi
 - Assuming that the topology $T$ is fine enough that $\{x\}$ is closed, which is the case in most applications, the support of $\delta_x$ is $\{x\}$.
   - Otherwise, $\text{supp}(\delta_x)$ is the closure of $\{x\}$ in $(X, T)$.
   - Furthermore, $\delta_x$ is the only probability measure whose support is $\{x\}$.
-- If $X$ is $n$-dimensional Euclidean space $\mathbb{R}^n$ with its usual $\sigma$-algebra and $n$-dimensional [[thoughts/Lebesgue measure]] $\lambda^n$, then $\delta_x$ is a singular measure with respect to $\lambda^n$: simply decompose $\mathbb{R}^n$ as $A = \mathbb{R}^n \setminus \{x\}$ and $B = \{x\}$ and observe that $\delta_x(A) = \lambda^n(B) = 0$.
+- If $X$ is $n$-dimensional Euclidean space $\mathbb{R}^n$ with its usual $\sigma$-algebra and $n$-dimensional [[thoughts/Lebesgue measure|Lebesgue measure]] $\lambda^n$, then $\delta_x$ is a singular measure with respect to $\lambda^n$: simply decompose $\mathbb{R}^n$ as $A = \mathbb{R}^n \setminus \{x\}$ and $B = \{x\}$ and observe that $\delta_x(A) = \lambda^n(B) = 0$.
 
 > [!properties] lemma
 >
@@ -62,4 +62,4 @@ Suppose that $(X, T)$ is a topological space and that $\Sigma$ is at least as fi
 
 ## generalizations
 
-A discrete measure is similar to the Dirac measure, except that it is concentrated at countably many points instead of a single point. More formally, a measure on the real line is called a **discrete measure** (in respect to the [[thoughts/Lebesgue measure]]) if its support is at most a countable set.
+A discrete measure is similar to the Dirac measure, except that it is concentrated at countably many points instead of a single point. More formally, a measure on the real line is called a **discrete measure** (in respect to the [[thoughts/Lebesgue measure|Lebesgue measure]]) if its support is at most a countable set.

@@ -4,12 +4,12 @@ description: what-it's-like-ness, the hard problem, and why functional explanati
 id: phenomenal-consciousness
 modified: 2026-06-05 15:08:27 GMT-04:00
 seealso:
-  - '[[thoughts/access consciousness]]'
-  - '[[thoughts/dualism]]'
-  - '[[thoughts/qualia]]'
-  - '[[thoughts/philosophical zombies]]'
-  - '[[thoughts/functionalism]]'
-  - '[[thoughts/physicalism]]'
+  - '[[thoughts/access consciousness|access consciousness]]'
+  - '[[thoughts/dualism|dualism]]'
+  - '[[thoughts/qualia|qualia]]'
+  - '[[thoughts/philosophical zombies|philosophical zombies]]'
+  - '[[thoughts/functionalism|functionalism]]'
+  - '[[thoughts/physicalism|physicalism]]'
 socials:
   sep: https://plato.stanford.edu/entries/consciousness/
   wikipedia: https://en.wikipedia.org/wiki/Phenomenal_consciousness
@@ -19,7 +19,7 @@ tags:
 title: phenomenal consciousness
 ---
 
-phenomenal consciousness is the part picked out by Nagel's question, whether there is something it is like for the subject to have the state. [@nagel1974bat] This is why the note lives next to [[thoughts/qualia]] and [[thoughts/access consciousness]].
+phenomenal consciousness is the part picked out by Nagel's question, whether there is something it is like for the subject to have the state. [@nagel1974bat] This is why the note lives next to [[thoughts/qualia|qualia]] and [[thoughts/access consciousness|access consciousness]].
 
 Block's distinction does the sorting work. Access consciousness is availability for reasoning, report, and action. Phenomenal consciousness is the experiential character of the state. [@block1995confusion] A system can give strong access evidence while the phenomenal question stays open.
 

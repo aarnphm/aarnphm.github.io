@@ -114,7 +114,7 @@ $$
 
 These vectors converge to zero in the second norm and stay at distance $1$ in the first. Both norms are defined on every vector of $c_{00}$, and their ratio grows as $\sqrt n$.
 
-## [[lectures/411/notes#dual]] norm
+## [[lectures/411/notes#dual|dual]] norm
 
 The continuous dual $X^*$ consists of continuous linear functionals $\phi:X\to\mathbb F$. Their norm is
 

@@ -22,4 +22,4 @@ The problems with curiosity without [[thoughts/Alignment|alignment]] of capitali
 
 ## free market
 
-See also [[library/Capitalism and Freedom]] [@friedman1962capitalism]
+See also [[library/Capitalism and Freedom|Capitalism and Freedom]] [@friedman1962capitalism]

@@ -4,7 +4,7 @@ description: fathers of Western philosophical tradition.
 id: Plato
 modified: 2026-06-05 15:08:05 GMT-04:00
 seealso:
-  - '[[thoughts/Socrates]]'
+  - '[[thoughts/Socrates|Socrates]]'
 tags:
   - philosophy
   - philos1aa3

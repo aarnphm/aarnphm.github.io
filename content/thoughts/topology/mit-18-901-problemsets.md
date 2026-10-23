@@ -4,7 +4,7 @@ description: introduction to topology
 id: topology-mit-18-901-psets
 modified: 2026-06-05 15:08:22 GMT-04:00
 seealso:
-  - '[[thoughts/topology]]'
+  - '[[thoughts/topology|topology]]'
 socials:
   ocw: https://ocw.mit.edu/courses/18-901-introduction-to-topology-fall-2004/
 tags:

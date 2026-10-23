@@ -5,7 +5,7 @@ id: MoE
 modified: 2026-09-10 09:14:14 GMT-04:00
 seealso:
   - '[[thoughts/muon|muon]]'
-  - '[[thoughts/optimization#muon]]'
+  - '[[thoughts/optimization#muon|muon]]'
 tags:
   - ml
   - inference

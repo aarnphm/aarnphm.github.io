@@ -4,10 +4,10 @@ description: multi-level intermediate representation for compiler infrastructure
 id: MLIR
 modified: 2026-09-16 13:30:23 GMT-04:00
 seealso:
-  - '[[thoughts/Compiler]]'
-  - '[[thoughts/XLA]]'
-  - '[[thoughts/PyTorch]]'
-  - '[[thoughts/GPU programming]]'
+  - '[[thoughts/Compiler|Compiler]]'
+  - '[[thoughts/XLA|XLA]]'
+  - '[[thoughts/PyTorch|PyTorch]]'
+  - '[[thoughts/GPU programming|GPU programming]]'
 tags:
   - ml
   - compilers

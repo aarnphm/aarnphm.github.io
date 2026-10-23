@@ -4,19 +4,19 @@ description: phenomenal properties and what resists functional explanation
 id: qualia
 modified: 2026-06-10 23:44:47 GMT-04:00
 seealso:
-  - '[[thoughts/functionalism]]'
-  - '[[thoughts/identity]]'
-  - '[[thoughts/representations]]'
-  - '[[thoughts/philosophical zombies]]'
-  - '[[thoughts/knowledge argument]]'
-  - '[[thoughts/inverted spectrum]]'
-  - '[[thoughts/chinese room]]'
-  - '[[thoughts/Attention]]'
-  - '[[thoughts/dualism]]'
-  - '[[thoughts/physicalism]]'
-  - '[[thoughts/phenomenal consciousness]]'
-  - '[[thoughts/access consciousness]]'
-  - '[[thoughts/panpsychism]]'
+  - '[[thoughts/functionalism|functionalism]]'
+  - '[[thoughts/identity|identity]]'
+  - '[[thoughts/representations|representations]]'
+  - '[[thoughts/philosophical zombies|philosophical zombies]]'
+  - '[[thoughts/knowledge argument|knowledge argument]]'
+  - '[[thoughts/inverted spectrum|inverted spectrum]]'
+  - '[[thoughts/chinese room|chinese room]]'
+  - '[[thoughts/Attention|Attention]]'
+  - '[[thoughts/dualism|dualism]]'
+  - '[[thoughts/physicalism|physicalism]]'
+  - '[[thoughts/phenomenal consciousness|phenomenal consciousness]]'
+  - '[[thoughts/access consciousness|access consciousness]]'
+  - '[[thoughts/panpsychism|panpsychism]]'
 tags:
   - philosophy
   - pattern
@@ -42,7 +42,7 @@ when i try to map my intuitions, the gap doesn't feel like "unknown details" wai
 > [!example] how mary’s room hits me
 > mary knows every physical and functional fact about color vision while living in a black-and-white room. when she leaves and sees red for the first time, i can’t shake the sense that she learns something new: what red is _like_. if that’s right, then functional/physical knowledge wasn’t complete. [@jackson1982epiphenomenalqualia; @jackson1986whatmary]
 >
-> the [[thoughts/knowledge argument]] is my way to keep this intuition organized: no amount of third-person functional description seems to capture first-person phenomenal character. the quale of red feels additional to the functional role of red-processing.
+> the [[thoughts/knowledge argument|knowledge argument]] is my way to keep this intuition organized: no amount of third-person functional description seems to capture first-person phenomenal character. the quale of red feels additional to the functional role of red-processing.
 
 ## [[thoughts/access consciousness|access]] vs [[thoughts/phenomenal consciousness|phenomenal]] consciousness
 
@@ -56,7 +56,7 @@ these can come apart in ways that feel psychologically real to me:
 - blindsight: visual information without visual experience.
 - tip-of-the-tongue: a distinctive feel without full access to content.
 
-for [[thoughts/functionalism]], if mental states are just functional roles, and phenomenal consciousness isn’t functional, then either phenomenal consciousness isn’t really mental (which i don’t buy) or my functionalism is missing something important.
+for [[thoughts/functionalism|functionalism]], if mental states are just functional roles, and phenomenal consciousness isn’t functional, then either phenomenal consciousness isn’t really mental (which i don’t buy) or my functionalism is missing something important.
 
 ## how functionalists push back (as i understand them)
 
@@ -69,7 +69,7 @@ when i read functionalist responses, they mostly fall into three patterns in my 
    - this reads to me as labeling rather than explaining. the phenomenal character is now in the spec, but i don't see why _that_ character shows up, or how multiple realization is supposed to work if different phenomenal characters all satisfy the same role.
 
 3. **reduce experience to representation.** representationalism says phenomenal properties _are_ representational properties: what it's like to see red = representing red in the right way. representation is functional (information, tracking, control), so phenomenal properties reduce to functional properties after all. [@tye1995ten; @dretske1995naturalizing]
-   - here i get stuck on underdetermination: same representational content, different phenomenal character (the [[thoughts/inverted spectrum]] stories). and some experiences (pains, moods, background bodily feelings) don’t obviously represent anything external.
+   - here i get stuck on underdetermination: same representational content, different phenomenal character (the [[thoughts/inverted spectrum|inverted spectrum]] stories). and some experiences (pains, moods, background bodily feelings) don’t obviously represent anything external.
 
 none of these fully defuse my sense of an explanatory gap, but they do change how i think about what the gap might be _about_ (concepts? cognitive architecture? something metaphysical?).
 
@@ -77,9 +77,9 @@ none of these fully defuse my sense of an explanatory gap, but they do change ho
 
 conceivability arguments keep this whole topic live for me:
 
-- [[thoughts/philosophical zombies]]: functional duplicates without consciousness. if i can coherently imagine them, that tempts me to treat phenomenal properties as additional to functional properties.
-- [[thoughts/inverted spectrum]]: same functional role, different phenomenal character (your red = my green). if that really holds together, function doesn’t fix phenomenology.
-- [[thoughts/knowledge argument]]: knowing all functional facts still seems compatible (from the armchair) with not knowing what red looks like.
+- [[thoughts/philosophical zombies|philosophical zombies]]: functional duplicates without consciousness. if i can coherently imagine them, that tempts me to treat phenomenal properties as additional to functional properties.
+- [[thoughts/inverted spectrum|inverted spectrum]]: same functional role, different phenomenal character (your red = my green). if that really holds together, function doesn’t fix phenomenology.
+- [[thoughts/knowledge argument|knowledge argument]]: knowing all functional facts still seems compatible (from the armchair) with not knowing what red looks like.
 
 all three use the same pattern: show that phenomenal properties can vary independently of functional properties. if they can vary independently even in imagination, my brain wants to treat them as different kinds of thing—even if i’m not sure that’s good metaphysics.
 

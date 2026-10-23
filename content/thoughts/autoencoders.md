@@ -11,7 +11,7 @@ tags:
 title: autoencoders
 ---
 
-An autoencoder learns [[thoughts/representations]] by reconstructing its input. The encoder produces a code; the decoder uses that code to recover the input. What the model learns depends on which information the architecture and loss allow it to retain.
+An autoencoder learns [[thoughts/representations|representations]] by reconstructing its input. The encoder produces a code; the decoder uses that code to recover the input. What the model learns depends on which information the architecture and loss allow it to retain.
 
 ```mermaid
 graph TD
@@ -65,7 +65,7 @@ $$
 
 This objective has no sampler or prescribed distribution over codes.
 
-For a [[thoughts/sparse autoencoder]], we can add a penalty such as $\lambda\|f_\phi(x)\|_1$ for each input. When those inputs are activations from a [[thoughts/Transformers|transformer]], we can inspect the learned features through examples that activate them and interventions on their activations. Sparsity alone does not establish a feature's meaning. [@bricken2023monosemanticity]
+For a [[thoughts/sparse autoencoder|sparse autoencoder]], we can add a penalty such as $\lambda\|f_\phi(x)\|_1$ for each input. When those inputs are activations from a [[thoughts/Transformers|transformer]], we can inspect the learned features through examples that activate them and interventions on their activations. Sparsity alone does not establish a feature's meaning. [@bricken2023monosemanticity]
 
 ## variational autoencoders
 
