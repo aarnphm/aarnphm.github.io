@@ -38,7 +38,7 @@
   color: var(--fig-tab-fg);
   cursor: pointer;
   font-family: var(--codeFont);
-  font-size: 0.72rem;
+  font-size: var(--text-meta);
   line-height: 1.2;
   white-space: nowrap;
   transition:
@@ -79,6 +79,13 @@
   display: block;
   width: 100%;
   overflow: visible;
+  // User units per rendered px; head-spectrum.inline.ts keeps it current per svg. Labels and
+  // stroke weights hold their px size while the plot scales with the figure.
+  --hs-u: 1.13;
+
+  :is(line, path, rect, circle) {
+    vector-effect: non-scaling-stroke;
+  }
 
   &[data-hs-layout='narrow'] {
     display: none;
@@ -102,21 +109,18 @@
 
   .hs-tick {
     fill: var(--darkgray);
-    font-size: 10px;
+    font-size: calc(var(--hs-u) * var(--text-meta));
   }
 
-  .hs-sup {
-    font-size: 7px;
-  }
-
+  .hs-sup,
   .hs-sub {
-    font-size: 7.5px;
+    font-size: 0.75em;
   }
 
   .hs-axis,
   .hs-note {
     fill: var(--fig-note);
-    font-size: 10.5px;
+    font-size: calc(var(--hs-u) * var(--text-meta));
   }
 
   .hs-kept {
@@ -154,7 +158,7 @@
 
     text {
       fill: var(--dark);
-      font-size: 10.5px;
+      font-size: calc(var(--hs-u) * var(--text-meta));
     }
   }
 
@@ -231,11 +235,16 @@
   display: block;
   width: 100%;
   overflow: visible;
+  --hs-u: 0.95;
+
+  :is(rect, path) {
+    vector-effect: non-scaling-stroke;
+  }
 
   .hs-token {
     fill: var(--dark);
     font-family: var(--codeFont);
-    font-size: 9.5px;
+    font-size: calc(var(--hs-u) * var(--text-meta));
   }
 
   .hs-token[data-hs-on='true'] {
@@ -280,7 +289,7 @@
   margin: 0.4rem 0 0;
   color: var(--dark);
   font-family: var(--codeFont);
-  font-size: 0.72rem;
+  font-size: var(--text-meta);
   font-variant-numeric: tabular-nums;
   white-space: pre;
 }
@@ -293,7 +302,7 @@
   margin-top: 0.5rem;
   color: var(--fig-note);
   font-family: var(--codeFont);
-  font-size: 0.68rem;
+  font-size: var(--text-meta);
 
   > span:not(.hs-swatch) {
     padding: 0 0.25rem;
@@ -345,6 +354,7 @@
 
   .hs-svg[data-hs-layout='narrow'] {
     display: block;
+    --hs-u: 0.95;
   }
 
   .hs-slider {

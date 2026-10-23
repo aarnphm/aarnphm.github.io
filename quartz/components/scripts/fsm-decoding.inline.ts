@@ -1,3 +1,4 @@
+import { observeSvgScale } from './figure-scale'
 import { registerMdxContent } from './mdx-content'
 
 type ClientFrame = {
@@ -91,4 +92,5 @@ const setupFSMDecoding = (root: HTMLElement): (() => void) => {
 
 registerMdxContent(FSM_ROOT_SELECTOR, root => {
   window.addCleanup?.(setupFSMDecoding(root))
+  window.addCleanup?.(observeSvgScale(root.querySelectorAll<SVGSVGElement>('.fsm-svg'), '--fsm-u'))
 })

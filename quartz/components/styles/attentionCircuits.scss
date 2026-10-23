@@ -58,7 +58,7 @@
     float: left;
     margin-right: 0.6rem;
     color: var(--acir-note-fg);
-    font-size: 0.78rem;
+    font-size: var(--text-meta);
   }
 }
 
@@ -87,7 +87,7 @@
   color: var(--darkgray);
   cursor: pointer;
   font-family: var(--codeFont);
-  font-size: 0.72rem;
+  font-size: var(--text-meta);
   line-height: 1;
   white-space: nowrap;
   transition:
@@ -132,7 +132,7 @@
   align-items: center;
   gap: 0.5rem;
   font-family: var(--codeFont);
-  font-size: 0.72rem;
+  font-size: var(--text-meta);
   color: var(--acir-note-fg);
   cursor: pointer;
   user-select: none;
@@ -227,9 +227,18 @@
   height: auto;
   aspect-ratio: 320 / 460;
   display: block;
+  // User units per rendered px (320 / svg width); attention-circuits.inline.ts keeps it current.
+  // Label type and stroke weights hold their px size inline, expanded and on a phone.
+  --acir-u: 0.889;
 
   [hidden] {
     display: none;
+  }
+
+  .acir-box,
+  .acir-line,
+  .acir-node {
+    vector-effect: non-scaling-stroke;
   }
 
   .acir-box {
@@ -284,30 +293,23 @@
   .acir-fo {
     @include figure-fo;
     justify-content: center;
-    font-size: 14px;
+    font-size: calc(var(--acir-u) * 13px);
     overflow: visible;
     .katex {
       line-height: 1;
     }
   }
 
-  .acir-fo--big {
-    font-size: 18px;
+  .acir-fo--sm,
+  .acir-fo--xs,
+  .acir-fo--label,
+  .acir-fo--axis {
+    font-size: calc(var(--acir-u) * var(--text-meta));
   }
-  .acir-fo--sm {
-    font-size: 12px;
-  }
-  .acir-fo--xs {
-    font-size: 10px;
-    color: var(--acir-note-fg);
-  }
-  .acir-fo--label {
-    font-size: 11px;
-    color: var(--acir-note-fg);
-  }
+  .acir-fo--xs,
+  .acir-fo--label,
   .acir-fo--axis {
     color: var(--acir-note-fg);
-    font-size: 12px;
   }
   .acir-fo--qk-label {
     color: color-mix(in srgb, var(--acir-qk) 60%, var(--dark));
@@ -319,7 +321,7 @@
     font-style: italic;
   }
   .acir-fo--display {
-    font-size: 14px;
+    font-size: calc(var(--acir-u) * 13px);
   }
 
   .acir-attn-cell {
@@ -395,9 +397,6 @@
     max-width: 360px;
     margin: 0 auto;
   }
-  .acir-panel-sub {
-    font-size: 0.8rem;
-  }
 }
 
 @container acir-figure (max-width: 460px) {
@@ -413,7 +412,7 @@
     }
   }
   .acir-pill {
-    font-size: 0.78rem;
+    font-size: var(--text-meta);
     padding: 0.28rem 0.6rem;
   }
   .acir-panel {

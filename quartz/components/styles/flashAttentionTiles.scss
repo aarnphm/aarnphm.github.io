@@ -34,20 +34,26 @@
   height: auto;
   aspect-ratio: 720 / 492;
   display: block;
+  // User units per rendered px; flash-attention-tiles.inline.ts keeps it current. Every label
+  // holds the meta size and stroke weights hold their px width; tiles and arrows scale.
+  --fat-u: 1.33;
+
+  .fat-cell,
+  .fat-arrow,
+  .fat-sram-panel {
+    vector-effect: non-scaling-stroke;
+  }
 
   .fat-fo--axis {
     color: var(--fat-note-fg);
-    font-size: 12px;
     font-weight: 600;
   }
   .fat-fo--block-label {
     justify-content: flex-end;
-    font-size: 12px;
     font-weight: 600;
     color: var(--fat-note-fg);
   }
   .fat-fo--sublabel {
-    font-size: 10px;
     font-style: italic;
     color: var(--fat-note-fg);
     .katex {
@@ -55,12 +61,10 @@
     }
   }
   .fat-fo--tile {
-    font-size: 11.5px;
     color: var(--dark);
   }
   .fat-fo--caption-line {
     color: var(--fat-note-fg);
-    font-size: 12px;
   }
 
   .fat-cell {
@@ -109,10 +113,11 @@
     stroke-width: 1;
   }
 
+  // Every label is also .fat-fo, so this one size holds for all of them.
   .fat-fo {
     @include figure-fo;
     justify-content: center;
-    font-size: 12px;
+    font-size: calc(var(--fat-u) * var(--text-meta));
   }
 }
 

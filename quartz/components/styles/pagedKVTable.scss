@@ -166,7 +166,7 @@
     color 160ms ease;
 
   &:hover {
-    background: color-mix(in srgb, var(--pkt-salmon) 18%, var(--light));
+    background: color-mix(in srgb, var(--lightgray) 60%, var(--light));
     color: var(--dark);
   }
   &:disabled {
@@ -203,7 +203,7 @@
 .pkt-pt-row {
   transition: background 160ms ease;
   &.is-active {
-    background: color-mix(in srgb, var(--pkt-salmon) 22%, transparent);
+    background: color-mix(in srgb, var(--lightgray) 50%, transparent);
   }
 }
 
@@ -275,7 +275,7 @@
     color 160ms ease;
 
   &:hover:not(:disabled) {
-    background: color-mix(in srgb, var(--pkt-salmon) 22%, var(--light));
+    background: color-mix(in srgb, var(--lightgray) 60%, var(--light));
     color: var(--dark);
   }
   &:disabled {
@@ -366,7 +366,7 @@
     color 160ms ease;
 
   &:hover {
-    background: color-mix(in srgb, var(--pkt-salmon) 18%, var(--light));
+    background: color-mix(in srgb, var(--lightgray) 60%, var(--light));
     color: var(--dark);
   }
 }

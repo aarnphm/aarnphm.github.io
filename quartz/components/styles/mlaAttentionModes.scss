@@ -33,7 +33,7 @@
   color: var(--fig-tab-fg);
   cursor: pointer;
   font-family: var(--codeFont);
-  font-size: 0.72rem;
+  font-size: var(--text-meta);
   line-height: 1.2;
   white-space: nowrap;
   transition:
@@ -68,7 +68,7 @@
   display: none;
   margin: 0.75rem 0 0;
   color: var(--fig-note);
-  font-size: 0.78rem;
+  font-size: var(--text-meta);
   line-height: 1.45;
   text-wrap: pretty;
 }
@@ -88,7 +88,7 @@
   border-bottom: 1px solid var(--fig-div);
   color: var(--fig-note);
   font-family: var(--codeFont);
-  font-size: 0.68rem;
+  font-size: var(--text-meta);
   font-weight: 600;
 }
 
@@ -104,7 +104,7 @@
   justify-self: end;
   min-width: 0;
   color: var(--dark);
-  font-size: 0.8rem;
+  font-size: var(--text-meta);
   white-space: nowrap;
 
   .katex {
@@ -145,7 +145,7 @@
 .mam-gap {
   color: var(--dark);
   font-family: var(--codeFont);
-  font-size: 0.68rem;
+  font-size: var(--text-meta);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
@@ -184,7 +184,7 @@
   padding: 0;
   list-style: none;
   color: var(--fig-note);
-  font-size: 0.72rem;
+  font-size: var(--text-meta);
 
   li {
     display: inline-flex;
@@ -220,7 +220,7 @@
 .mam-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.74rem;
+  font-size: var(--text-meta);
   line-height: 1.3;
 
   th,

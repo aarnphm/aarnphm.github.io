@@ -33,7 +33,7 @@
 
 .sam-legend {
   color: var(--fig-note);
-  font-size: 0.72rem;
+  font-size: var(--text-meta);
   white-space: nowrap;
 }
 
@@ -46,7 +46,7 @@
   color: var(--fig-tab-fg);
   cursor: pointer;
   font-family: var(--codeFont);
-  font-size: 0.72rem;
+  font-size: var(--text-meta);
   line-height: 1.2;
   white-space: nowrap;
   transition:
@@ -100,7 +100,7 @@
   min-width: 2ch;
   color: var(--dark);
   font-family: var(--codeFont);
-  font-size: 0.78rem;
+  font-size: var(--text-meta);
   font-variant-numeric: tabular-nums;
   text-align: right;
 }
@@ -109,7 +109,7 @@
   display: none;
   margin: 0.75rem 0 0;
   color: var(--fig-note);
-  font-size: 0.78rem;
+  font-size: var(--text-meta);
   line-height: 1.45;
   text-wrap: pretty;
 }
@@ -135,6 +135,9 @@
   width: 100%;
   max-width: 34rem;
   margin: 0 auto;
+  // User units per rendered px (viewBox width / svg width); sparse-attention-mask.inline.ts keeps
+  // it current. Tick and lane labels hold the meta size at every width.
+  --sam-u: 0.9;
 
   text {
     font-family: var(--codeFont);
@@ -143,7 +146,7 @@
 
   .sam-axis {
     fill: var(--fig-note);
-    font-size: 7.5px;
+    font-size: calc(var(--sam-u) * var(--text-meta));
   }
 
   .sam-axis--title {
@@ -153,7 +156,7 @@
   .sam-lane,
   .sam-tag {
     fill: var(--dark);
-    font-size: 7px;
+    font-size: calc(var(--sam-u) * var(--text-meta));
   }
 
   .sam-strip {
@@ -260,7 +263,7 @@
 .sam-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.74rem;
+  font-size: var(--text-meta);
   line-height: 1.3;
 
   th,
@@ -351,17 +354,8 @@
     padding: 0.28rem 0.35rem;
   }
 
-  // The drawing scales to about half size here, so its labels grow in viewBox units.
+  // The drawing scales down here; its labels keep their px size, so the query title goes.
   .sam-svg {
-    .sam-axis {
-      font-size: 13px;
-    }
-
-    .sam-lane,
-    .sam-tag {
-      font-size: 11px;
-    }
-
     .sam-axis--query {
       display: none;
     }

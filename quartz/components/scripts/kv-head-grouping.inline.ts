@@ -1,3 +1,4 @@
+import { observeSvgScale } from './figure-scale'
 import { registerMdxContent } from './mdx-content'
 
 const VIEW_W = 520
@@ -116,8 +117,10 @@ registerMdxContent('[data-kv-head-grouping]', root => {
 
   slider.addEventListener('input', handleInput)
   handleInput()
+  const stopScale = observeSvgScale(root.querySelectorAll<SVGSVGElement>('.kvg-graph'), '--kvg-u')
 
   window.addCleanup(() => {
+    stopScale()
     slider.removeEventListener('input', handleInput)
     delete root.dataset.kvgBound
   })

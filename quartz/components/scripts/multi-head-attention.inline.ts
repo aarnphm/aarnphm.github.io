@@ -1,35 +1,34 @@
 import katex from 'katex'
 import { renderFigureLabel } from '../../util/figure-label'
+import {
+  COL_X,
+  HEAD_OUT_H,
+  HEAD_OUT_W,
+  PROJ_W,
+  SCORE_BOX,
+  VIEW_H,
+  fmtBytes,
+  fmtCompact,
+  headBandY,
+  projLayout,
+} from '../mdx/multi-head-attention/model'
+import { observeSvgScale } from './figure-scale'
 import { registerMdxContent } from './mdx-content'
 
-const mhaViewH = 560
-const mhaBandTop = 36
-const mhaBandBot = mhaViewH - 36
-const mhaBandH = mhaBandBot - mhaBandTop
-const mhaProjW = 52
-const mhaProjH = 14
-const mhaProjGap = 4
-const mhaScoreBox = 52
-const mhaHeadOutW = 56
-const mhaHeadOutH = 22
-const mhaColX = { input: 60, proj: 200, score: 332, head: 472, concat: 612, wo: 700 } as const
-
-const mhaHeadMid = (i: number, h: number): number => {
-  const slot = mhaBandH / h
-  return mhaBandTop + slot * i + slot / 2
-}
-
-const mhaFmtBytes = (n: number): string => {
-  if (n >= 1024 * 1024) return `${(n / (1024 * 1024)).toFixed(1)} MiB`
-  if (n >= 1024) return `${(n / 1024).toFixed(1)} KiB`
-  return `${n} B`
-}
-
-const mhaFmtCompact = (n: number): string => {
-  if (n >= 1e9) return `${(n / 1e9).toFixed(2)}G`
-  if (n >= 1e6) return `${(n / 1e6).toFixed(2)}M`
-  if (n >= 1e3) return `${(n / 1e3).toFixed(1)}k`
-  return String(n)
+// Labels hold 12px while their boxes scale with the figure. A label inside a box that is too
+// small for it at the current width and head count is hidden instead of overflowing its row.
+const MHA_BOXED_LABELS = '.mha-fo--proj, .mha-fo--head, .mha-fo--collapsed, .mha-fo--concat'
+const mhaFitLabels = (root: HTMLElement) => {
+  const range = document.createRange()
+  for (const fo of root.querySelectorAll<SVGForeignObjectElement>('foreignObject')) {
+    const label = fo.firstElementChild as HTMLElement | null
+    if (!label?.matches(MHA_BOXED_LABELS)) continue
+    range.selectNodeContents(label)
+    const text = range.getBoundingClientRect()
+    const box = fo.getBoundingClientRect()
+    const fits = text.width <= box.width + 1 && text.height <= box.height * 1.2 + 1
+    label.toggleAttribute('data-mha-clipped', !fits)
+  }
 }
 
 const mhaSetAttr = (el: Element | null, name: string, value: string) => {
@@ -61,9 +60,7 @@ const mhaSetText = (root: HTMLElement, selector: string, text: string) => {
 }
 
 const mhaSetLayout = (root: HTMLElement, h: number, showPattern: boolean) => {
-  const slot = mhaBandH / h
-  const projGap = slot < 56 ? 2 : mhaProjGap
-  const projH = Math.min(mhaProjH, Math.max(9, (slot - 8 - 2 * projGap) / 3))
+  const { height: projH, gap: projGap } = projLayout(h)
   const headGroups = root.querySelectorAll<SVGGElement>('[data-mha-head]')
   for (const g of headGroups) {
     const i = Number(g.dataset.mhaHead)
@@ -71,7 +68,7 @@ const mhaSetLayout = (root: HTMLElement, h: number, showPattern: boolean) => {
     g.dataset.mhaHidden = visible ? 'false' : 'true'
     if (!visible) continue
 
-    const mid = mhaHeadMid(i, h)
+    const mid = headBandY(i, h).mid
     const projTopY = mid - (projH * 3 + projGap * 2) / 2
 
     const projs = g.querySelectorAll<SVGGElement>('[data-mha-projs] > g')
@@ -92,11 +89,11 @@ const mhaSetLayout = (root: HTMLElement, h: number, showPattern: boolean) => {
     const scoreGroup = g.querySelector<SVGGElement>('[data-mha-score]')
     if (scoreGroup) {
       scoreGroup.dataset.mhaScoreVisible = showPattern ? 'true' : 'false'
-      const scoreY = mid - mhaScoreBox / 2
+      const scoreY = mid - SCORE_BOX / 2
       const frame = scoreGroup.querySelector<SVGRectElement>('.mha-score-frame')
       mhaSetAttr(frame, 'y', String(scoreY))
       const cells = scoreGroup.querySelectorAll<SVGRectElement>('.mha-score-cell')
-      const cellPx = mhaScoreBox / 4
+      const cellPx = SCORE_BOX / 4
       cells.forEach((cell, idx) => {
         const r = Math.floor(idx / 4)
         cell.setAttribute('y', String(scoreY + r * cellPx))
@@ -118,7 +115,7 @@ const mhaSetLayout = (root: HTMLElement, h: number, showPattern: boolean) => {
 
     const headRect = g.querySelector<SVGRectElement>('[data-mha-head-rect]')
     const headFO = g.querySelector<SVGForeignObjectElement>('[data-mha-head-label]')
-    const headOutY = mid - mhaHeadOutH / 2
+    const headOutY = mid - HEAD_OUT_H / 2
     mhaSetAttr(headRect, 'y', String(headOutY))
     mhaSetAttr(headFO, 'y', String(headOutY))
   }
@@ -129,10 +126,10 @@ const mhaSetLayout = (root: HTMLElement, h: number, showPattern: boolean) => {
     const visible = i < h
     line.dataset.mhaHidden = visible ? 'false' : 'true'
     if (!visible) continue
-    const mid = mhaHeadMid(i, h)
+    const mid = headBandY(i, h).mid
     line.setAttribute(
       'd',
-      `M ${mhaColX.input + 36} ${mhaViewH / 2} C ${mhaColX.input + 70} ${mhaViewH / 2}, ${mhaColX.proj - 60} ${mid}, ${mhaColX.proj - mhaProjW / 2 - 4} ${mid}`,
+      `M ${COL_X.input + 36} ${VIEW_H / 2} C ${COL_X.input + 70} ${VIEW_H / 2}, ${COL_X.proj - 60} ${mid}, ${COL_X.proj - PROJ_W / 2 - 4} ${mid}`,
     )
   }
 
@@ -142,10 +139,10 @@ const mhaSetLayout = (root: HTMLElement, h: number, showPattern: boolean) => {
     const visible = i < h
     line.dataset.mhaHidden = visible ? 'false' : 'true'
     if (!visible) continue
-    const mid = mhaHeadMid(i, h)
+    const mid = headBandY(i, h).mid
     line.setAttribute(
       'd',
-      `M ${mhaColX.head + mhaHeadOutW / 2} ${mid} C ${mhaColX.head + 60} ${mid}, ${mhaColX.concat - 30} ${mhaViewH / 2}, ${mhaColX.concat - 22} ${mhaViewH / 2}`,
+      `M ${COL_X.head + HEAD_OUT_W / 2} ${mid} C ${COL_X.head + 60} ${mid}, ${COL_X.concat - 30} ${VIEW_H / 2}, ${COL_X.concat - 22} ${VIEW_H / 2}`,
     )
   }
 }
@@ -157,9 +154,9 @@ const mhaSetReadout = (root: HTMLElement, h: number, dm: number, seq: number) =>
   const flops = 4 * seq * seq * dm
 
   mhaSetText(root, '[data-mha-dh]', String(dh))
-  mhaSetText(root, '[data-mha-params]', mhaFmtCompact(params))
-  mhaSetText(root, '[data-mha-cache]', mhaFmtBytes(cachePerToken))
-  mhaSetText(root, '[data-mha-flops]', mhaFmtCompact(flops))
+  mhaSetText(root, '[data-mha-params]', fmtCompact(params))
+  mhaSetText(root, '[data-mha-cache]', fmtBytes(cachePerToken))
+  mhaSetText(root, '[data-mha-flops]', fmtCompact(flops))
   mhaSetText(root, '[data-mha-dm-value]', String(dm))
 
   const ticks = root.querySelectorAll<HTMLElement>('[data-mha-tick]')
@@ -218,6 +215,7 @@ registerMdxContent('[data-multi-head-attention]', root => {
   const render = () => {
     mhaSetLayout(root, h, showPattern)
     mhaSetReadout(root, h, dm, seq)
+    mhaFitLabels(root)
   }
 
   render()
@@ -297,6 +295,12 @@ registerMdxContent('[data-multi-head-attention]', root => {
     toggle.addEventListener('click', onToggle)
     handlers.push(() => toggle.removeEventListener('click', onToggle))
   }
+
+  handlers.push(
+    observeSvgScale(root.querySelectorAll<SVGSVGElement>('.mha-graph'), '--mha-u', () =>
+      mhaFitLabels(root),
+    ),
+  )
 
   window.addCleanup(() => {
     for (const off of handlers) off()

@@ -37,7 +37,7 @@
   color: var(--fig-tab-fg);
   cursor: pointer;
   font-family: var(--codeFont);
-  font-size: 0.72rem;
+  font-size: var(--text-meta);
   line-height: 1.2;
   white-space: nowrap;
   transition:
@@ -88,6 +88,13 @@
   display: block;
   width: 100%;
   margin: 0 auto;
+  // User units per rendered px; figure-scale.inline.ts keeps it current per svg. Labels and
+  // stroke weights hold their px size while the stream, blocks and nodes scale with the figure.
+  --clf-u: 1.2;
+
+  :is(line, path, rect) {
+    vector-effect: non-scaling-stroke;
+  }
 
   text {
     font-family: var(--codeFont);
@@ -98,12 +105,12 @@
   .clf-axis,
   .clf-stage {
     fill: var(--fig-note);
-    font-size: 8.5px;
+    font-size: calc(var(--clf-u) * var(--text-meta));
   }
 
   .clf-value {
     fill: var(--dark);
-    font-size: 9px;
+    font-size: calc(var(--clf-u) * var(--text-meta));
   }
 
   .clf-stream {

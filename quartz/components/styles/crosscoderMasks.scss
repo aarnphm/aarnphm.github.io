@@ -38,7 +38,7 @@
   color: var(--fig-tab-fg);
   cursor: pointer;
   font-family: var(--codeFont);
-  font-size: 0.72rem;
+  font-size: var(--text-meta);
   line-height: 1.2;
   white-space: nowrap;
   transition:
@@ -74,7 +74,7 @@
 .ccm-rule {
   margin: 0.75rem 0 0;
   color: var(--fig-note);
-  font-size: 0.78rem;
+  font-size: var(--text-meta);
   line-height: 1.45;
   text-wrap: pretty;
 
@@ -95,6 +95,15 @@
 .ccm-svg {
   display: block;
   width: 100%;
+  // The "read" column label runs past the grid viewBox into the column gap.
+  overflow: visible;
+  // User units per rendered px; crosscoder-masks.inline.ts keeps it current per svg. Labels and
+  // stroke weights hold their px size while the stream and grid scale with the figure.
+  --ccm-u: 1.06;
+
+  :is(line, path, rect, circle) {
+    vector-effect: non-scaling-stroke;
+  }
 
   text {
     font-family: var(--codeFont);
@@ -103,7 +112,7 @@
 
   .ccm-axis {
     fill: var(--fig-note);
-    font-size: 8.5px;
+    font-size: calc(var(--ccm-u) * var(--text-meta));
   }
 
   .ccm-stream {

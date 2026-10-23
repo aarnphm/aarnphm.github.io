@@ -21,7 +21,7 @@
 
 .hbr-label {
   color: var(--fig-note);
-  font-size: 0.82rem;
+  font-size: var(--text-meta);
   white-space: nowrap;
 }
 
@@ -34,7 +34,7 @@
 .hbr-chip {
   color: var(--dark);
   font-family: var(--codeFont);
-  font-size: 0.82rem;
+  font-size: var(--text-meta);
   font-variant-numeric: tabular-nums;
   text-align: right;
 }
@@ -58,6 +58,13 @@
   display: block;
   width: 100%;
   overflow: visible;
+  // User units per rendered px (viewBox width / svg width); heavy-ball-rate.inline.ts keeps it
+  // current. Type, stroke weights and the marker hold their px size in every frame.
+  --hbr-u: 0.58;
+
+  :is(.hbr-grid line, .hbr-one, .hbr-reference, .hbr-curve, .hbr-guide, .hbr-mark, .hbr-traj) {
+    vector-effect: non-scaling-stroke;
+  }
 
   .hbr-grid line {
     stroke: var(--fig-div);
@@ -71,7 +78,7 @@
 
   .hbr-tick {
     font-family: var(--codeFont);
-    font-size: 10px;
+    font-size: calc(var(--hbr-u) * var(--text-meta));
     font-variant-numeric: tabular-nums;
     fill: var(--dark);
   }
@@ -100,6 +107,7 @@
   }
 
   .hbr-mark {
+    r: calc(var(--hbr-u) * 4.5px);
     fill: var(--fig-salmon);
     stroke: var(--dark);
     stroke-width: 1;
@@ -119,7 +127,7 @@
 .hbr-fo {
   @include figure-fo;
   justify-content: center;
-  font-size: 0.78rem;
+  font-size: calc(var(--hbr-u, 0.58) * var(--text-meta));
 }
 
 .hbr-fo--end {
@@ -145,6 +153,13 @@
   }
 }
 
+// Before the script measures the plots, the frame width stands in for them.
+@container hbr-figure (min-width: 541px) {
+  .hbr-svg {
+    --hbr-u: 0.5;
+  }
+}
+
 @container hbr-figure (max-width: 540px) {
   .hbr-plots {
     grid-template-columns: minmax(0, 1fr);
@@ -152,6 +167,10 @@
 }
 
 @container hbr-figure (max-width: 380px) {
+  .hbr-svg {
+    --hbr-u: 1.07;
+  }
+
   .hbr-controls {
     grid-template-columns: minmax(0, 1fr) 3.2rem;
   }

@@ -41,6 +41,16 @@
   height: 100%;
   max-height: 660px;
   display: block;
+  // User units per rendered px; figure-scale.inline.ts keeps it current. Labels and stroke weights
+  // hold their px size while the boxes and the stream scale with the figure.
+  --rs-u: 1.06;
+
+  .rs-box,
+  .rs-line,
+  .rs-node,
+  .rs-node-glyph {
+    vector-effect: non-scaling-stroke;
+  }
 
   .rs-box {
     stroke: var(--rs-stroke);
@@ -61,7 +71,7 @@
     display: flex;
     align-items: center;
     color: var(--dark);
-    font-size: 14px;
+    font-size: calc(var(--rs-u) * 13px);
     line-height: 1;
     overflow: visible;
 
@@ -85,16 +95,12 @@
   }
 
   .rs-fo--sm {
-    font-size: 12px;
+    font-size: calc(var(--rs-u) * var(--text-meta));
   }
 
   .rs-fo--axis {
     color: var(--rs-note-fg);
-    font-size: 13px;
-  }
-
-  .rs-fo--mlp {
-    font-size: 15px;
+    font-size: calc(var(--rs-u) * var(--text-meta));
   }
 
   .rs-line {
@@ -214,6 +220,7 @@
 
   .rs-graph {
     max-height: 560px;
+    --rs-u: 1.25;
   }
 
   .rs-note {
@@ -242,6 +249,7 @@
     max-width: 240px;
     margin: 0 auto;
     max-height: none;
+    --rs-u: 1;
   }
 
   .rs-divider {

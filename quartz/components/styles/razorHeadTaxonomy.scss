@@ -34,6 +34,14 @@
   height: auto;
   display: block;
   overflow: visible;
+  // User units per rendered px; figure-scale.inline.ts keeps it current. Labels and stroke weights
+  // hold their px size while the cells and arcs scale with the figure.
+  --rht-u: 1.25;
+
+  .rht-cell-box,
+  .rht-arc {
+    vector-effect: non-scaling-stroke;
+  }
 
   foreignObject {
     overflow: visible;
@@ -112,6 +120,7 @@
 .rht-fo {
   @include figure-fo;
   justify-content: center;
+  font-size: calc(var(--rht-u) * 13px);
   overflow: visible;
   pointer-events: none;
 }
@@ -125,6 +134,7 @@
 .rht-fo--axis {
   justify-content: flex-start;
   color: var(--fig-note);
+  font-size: calc(var(--rht-u) * var(--text-meta));
   font-style: italic;
   transition: opacity 140ms ease;
   .katex {
@@ -141,6 +151,7 @@
 }
 .rht-fo--sub {
   color: var(--fig-note);
+  font-size: calc(var(--rht-u) * var(--text-meta));
   .katex {
     font-size: 0.72em;
   }
@@ -157,7 +168,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem 1.6rem;
-  font-size: 0.82rem;
+  font-size: var(--text-meta);
   color: var(--fig-note);
 }
 .rht-legend-item {
@@ -186,7 +197,7 @@
   border-radius: var(--radius-none);
   background: color-mix(in srgb, var(--light) 97%, transparent);
   color: var(--fig-note);
-  font-size: 0.76rem;
+  font-size: var(--text-meta);
   line-height: 1.4;
   text-align: center;
   text-wrap: pretty;

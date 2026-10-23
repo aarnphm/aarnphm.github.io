@@ -14,7 +14,7 @@
   --mep-pos-stroke: color-mix(in srgb, var(--fig-sage) 66%, var(--darkgray));
   --mep-active: var(--fig-salmon);
   --mep-active-bg: color-mix(in srgb, var(--fig-salmon) 30%, var(--light));
-  --mep-path-bg: color-mix(in srgb, var(--fig-salmon) 15%, var(--light));
+  --mep-path-bg: color-mix(in srgb, var(--lightgray) 60%, var(--light));
   --mep-you: color-mix(in srgb, var(--fig-sage) 82%, var(--dark));
 }
 
@@ -22,7 +22,7 @@
   --mep-q-bg: color-mix(in srgb, var(--lightgray) 26%, var(--dark));
   --mep-pos-bg: color-mix(in srgb, var(--fig-sage) 20%, var(--lightgray));
   --mep-active-bg: color-mix(in srgb, var(--fig-salmon) 22%, var(--lightgray));
-  --mep-path-bg: color-mix(in srgb, var(--fig-salmon) 12%, var(--lightgray));
+  --mep-path-bg: color-mix(in srgb, var(--dark) 8%, var(--lightgray));
 }
 
 .mep-stage {

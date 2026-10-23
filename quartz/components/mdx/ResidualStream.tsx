@@ -3,6 +3,8 @@ import { type FunctionalComponent } from 'preact'
 import { customMacros, katexOptions } from '../../cfg'
 import { renderFigureLabel } from '../../util/figure-label'
 import { MathText } from '../../util/math-text'
+//@ts-ignore
+import figureScaleScript from '../scripts/figure-scale.inline'
 import style from '../styles/residualStream.scss'
 import { registerMdxComponent, type QuartzMdxComponent } from './registry'
 
@@ -56,6 +58,7 @@ const ResidualStreamImpl: QuartzMdxComponent<Props> = ({ caption, markerId }) =>
       <div class="rs-frame">
         <svg
           class="rs-graph"
+          data-fig-scale="--rs-u"
           viewBox="0 0 240 700"
           preserveAspectRatio="xMidYMid meet"
           role="img"
@@ -197,6 +200,7 @@ const ResidualStreamImpl: QuartzMdxComponent<Props> = ({ caption, markerId }) =>
 
 const ResidualStreamComponent = ResidualStreamImpl as QuartzMdxComponent<Props>
 ResidualStreamComponent.css = style
+ResidualStreamComponent.afterDOMLoaded = figureScaleScript
 
 export const ResidualStream = registerMdxComponent('ResidualStream', ResidualStreamComponent)
 
