@@ -788,6 +788,7 @@ export class NotebookPythonWorkspace extends Workspace {
 class NotebookPythonLspService {
   private client: Promise<LSPClient> | undefined
   private cells: () => readonly NotebookLspCell[]
+  private disposed = false
 
   constructor(
     private readonly rootUri: string,
@@ -802,12 +803,22 @@ class NotebookPythonLspService {
     this.cells = config.cells
   }
 
+  dispose() {
+    this.disposed = true
+    this.cells = () => []
+    void this.client?.then(
+      client => client.disconnect(),
+      () => undefined,
+    )
+  }
+
   async warm(): Promise<void> {
     await this.ensureClient()
   }
 
   async extensions(config: NotebookLspConfig): Promise<readonly Extension[]> {
     const client = await this.ensureClient()
+    if (this.disposed) return []
     return [client.plugin(notebookFileUri(config), 'python')]
   }
 
@@ -834,6 +845,7 @@ class NotebookPythonLspService {
         serverDiagnostics(),
       ],
     })
+    if (this.disposed) return client
     client.connect(
       createPyrightTransport(
         workerUrl,
@@ -853,13 +865,18 @@ function notebookService(config: NotebookLspConfig) {
   const key = notebookServiceKey(config)
   let service = notebookServices.get(key)
   if (!service) {
-    service = new NotebookPythonLspService(
+    const created = new NotebookPythonLspService(
       notebookRootUri(config),
       notebookRootPath(config),
       config.sourcePath,
       config.cells,
     )
-    notebookServices.set(key, service)
+    service = created
+    notebookServices.set(key, created)
+    window.addCleanup(() => {
+      if (notebookServices.get(key) === created) notebookServices.delete(key)
+      created.dispose()
+    })
   } else {
     service.update(config)
   }
