@@ -22,7 +22,14 @@ const setupBlockDiagram = (root: HTMLElement): (() => void) => {
   return () => root.removeEventListener('change', apply)
 }
 
+// Labels hold their px size while blocks shrink with the svg, so below about its viewBox width the
+// labels outgrow their blocks; the step scrolls sideways instead.
+const MIN_PX_PER_UNIT = 1.1
+
 registerMdxContent(ROOT_SELECTOR, root => {
   window.addCleanup?.(setupBlockDiagram(root))
-  window.addCleanup?.(observeSvgScale(root.querySelectorAll<SVGSVGElement>('.bd-svg'), '--bd-u'))
+  const svgs = root.querySelectorAll<SVGSVGElement>('.bd-svg')
+  for (const svg of svgs)
+    svg.style.minWidth = `${Math.ceil(svg.viewBox.baseVal.width * MIN_PX_PER_UNIT)}px`
+  window.addCleanup?.(observeSvgScale(svgs, '--bd-u'))
 })

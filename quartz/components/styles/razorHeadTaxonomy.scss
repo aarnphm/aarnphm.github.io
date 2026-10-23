@@ -27,6 +27,7 @@
   position: relative;
   display: block;
   min-width: 0;
+  overflow-x: auto;
 }
 
 .rht-graph {
@@ -240,6 +241,15 @@
   @include figure-caption;
   .rht-math {
     @include figure-caption-math-gap;
+  }
+}
+
+// Labels hold their px size while the cells shrink with the svg, so a phone-width graph would stack
+// each label over its neighbour; narrow frames scroll a 30rem graph sideways instead.
+@container rht-figure (max-width: 520px) {
+  .rht-graph {
+    min-width: 30rem;
+    --rht-u: 1.29;
   }
 }
 

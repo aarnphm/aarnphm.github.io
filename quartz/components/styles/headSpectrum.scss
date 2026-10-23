@@ -71,6 +71,9 @@
 
 .hs-plot {
   position: relative;
+  // The expanded frame lays the figure out as a flex row, where an auto width would shrink the
+  // plot to a third of its inline size and crowd its meta-size labels.
+  width: 100%;
   max-width: 40rem;
   margin: 1rem auto 0;
 }

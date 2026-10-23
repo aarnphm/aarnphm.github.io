@@ -13,6 +13,7 @@ import { pageResources, renderPage } from '../../components/renderPage'
 import { QuartzComponentProps } from '../../types/component'
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import { contentDataFor } from '../../util/ctx'
+import { descriptionToPlainText } from '../../util/description'
 import { buildCanvasPreview, documentPreviewSlug } from '../../util/document-preview'
 import { pathToRoot, simplifySlug, SimpleSlug, slugifyFilePath } from '../../util/path'
 import { collectCanvasMeta } from '../transformers/canvas'
@@ -82,9 +83,14 @@ export const CanvasPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts
         const displayName = node.data?.resolved?.displayName
         if (displayName) displayNames.set(id, displayName)
       }
+      const descriptionText = descriptionToPlainText(
+        file.data.rawDescription ?? file.data.frontmatter?.description ?? file.data.description,
+        slug,
+      )
       const preview = buildCanvasPreview({
         slug,
         title: path.basename(file.data.filePath!, '.canvas'),
+        description: descriptionText || null,
         canvas: JSON.parse(file.data.canvasContent) as JsonCanvas,
         displayNames,
       })
@@ -118,11 +124,18 @@ export const CanvasPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts
       //@ts-ignore
       const linkedSlugs = (file.data.links ?? []).map(simplifySlug) as SimpleSlug[]
 
+      const frontmatter = file.data.frontmatter
       const fileData: QuartzPluginData = {
         ...file.data,
         slug,
-        frontmatter: { title: `${slug}.canvas`, tags: ['canvas'], pageLayout: 'default' },
-        description: `Canvas of ${slug}`,
+        frontmatter: {
+          ...frontmatter,
+          title: `${slug}.canvas`,
+          tags: [...new Set(['canvas', ...(frontmatter?.tags ?? [])])],
+          pageLayout: frontmatter?.pageLayout ?? 'default',
+        },
+        description: file.data.description ?? '',
+        rawDescription: file.data.rawDescription ?? '',
         htmlAst: tree,
         text: file.data.text ?? '',
         links: linkedSlugs,

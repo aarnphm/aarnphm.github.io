@@ -401,8 +401,9 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
+  // Wide enough that the meta-size region labels clear the axis labels.
   .prs-plane {
-    max-width: 20rem;
+    max-width: 24rem;
     margin: 0 auto;
   }
 

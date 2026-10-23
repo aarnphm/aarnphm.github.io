@@ -233,7 +233,7 @@ const config: QuartzConfig = {
               '.svg',
               '.wat',
             ],
-            exclude: [/\.(ignore\.pdf)$/, /400232791/],
+            exclude: [/\.(ignore\.pdf)$/, /400232791/, /^description\.json$/],
             tags: ['ml', 'philosophy', 'love', 'math'],
             lg: [
               'thoughts/mechanistic interpretability',

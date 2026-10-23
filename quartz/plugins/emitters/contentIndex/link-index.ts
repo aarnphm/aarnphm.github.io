@@ -280,7 +280,6 @@ export function addProcessedContentToIndex(
   if (file.data.flashcards && !file.data.flashcardRoute?.default) return
 
   if (file.data.canvas) {
-    const jcast = file.data.canvas
     const searchableContent = file.data.text ?? ''
     const renderedSlug = slug.replace('.canvas', '') as FullSlug
 
@@ -301,7 +300,7 @@ export function addProcessedContentToIndex(
       },
       layout: file.data.frontmatter?.pageLayout ?? 'default',
       description: descriptionToPlainText(
-        file.data.frontmatter?.description ?? `Canvas with ${jcast.data.nodeMap.size} nodes`,
+        file.data.rawDescription ?? file.data.frontmatter?.description ?? file.data.description,
         renderedSlug,
       ),
       fileData: file.data,

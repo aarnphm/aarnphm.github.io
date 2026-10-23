@@ -337,18 +337,20 @@ function makeTikzGraph(node: Code, svg: string, style?: string): Element {
     'figcaption',
     h('em', [{ type: 'text', value: 'source code' }]),
     h(
-      'button.source-code-button',
+      'button.source-code-button.clipboard-button',
       {
+        type: 'button',
         ariaLabel: 'copy source code for this tikz graph',
         title: 'copy source code for this tikz graph',
       },
       s(
-        'svg.source-icon',
+        'svg.source-icon.copy-icon',
         {
           ...svgOptions,
-          width: 12,
+          width: 16,
           height: 16,
-          viewbox: '0 -4 24 24',
+          viewbox: '0 0 24 24',
+          ariaHidden: true,
           fill: 'none',
           stroke: 'currentColor',
           strokewidth: 2,
@@ -357,7 +359,7 @@ function makeTikzGraph(node: Code, svg: string, style?: string): Element {
       ),
       s(
         'svg.check-icon',
-        { ...svgOptions, width: 12, height: 16, viewbox: '0 -4 16 16' },
+        { ...svgOptions, width: 16, height: 16, viewbox: '0 0 16 16', ariaHidden: true },
         s('use', { href: '#github-check' }),
       ),
     ),

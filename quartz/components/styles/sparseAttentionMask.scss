@@ -135,6 +135,8 @@
   width: 100%;
   max-width: 34rem;
   margin: 0 auto;
+  // The query axis title runs left of the viewBox in the wide layout.
+  overflow: visible;
   // User units per rendered px (viewBox width / svg width); sparse-attention-mask.inline.ts keeps
   // it current. Tick and lane labels hold the meta size at every width.
   --sam-u: 0.9;

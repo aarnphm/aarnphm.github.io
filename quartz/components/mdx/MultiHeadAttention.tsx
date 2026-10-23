@@ -87,295 +87,308 @@ const MultiHeadAttentionImpl: QuartzMdxComponent<Props> = ({ caption, heads = DE
       data-mha-seq={String(SEQ_LEN)}
     >
       <div class="mha-stage">
-        <svg
-          class="mha-graph"
-          viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
-          preserveAspectRatio="xMidYMid meet"
-          role="img"
-          aria-label={`Multi-head attention with ${initialH} heads: per-head Q, K, V projections and softmax; concatenate outputs, project with W_O, add to residual.`}
-          data-mha-canvas
+        <div
+          class="mha-scroll"
+          tabindex={0}
+          role="region"
+          aria-label="Multi-head attention diagram"
         >
-          <defs>
-            <marker
-              id="mha-arrow"
-              viewBox="0 0 10 10"
-              refX="9"
-              refY="5"
-              markerWidth="6"
-              markerHeight="6"
-              orient="auto-start-reverse"
-            >
-              <path class="mha-arrowhead" d="M0,0 L10,5 L0,10 z" />
-            </marker>
-            <marker
-              id="mha-arrow-residual"
-              viewBox="0 0 10 10"
-              refX="9"
-              refY="5"
-              markerWidth="6"
-              markerHeight="6"
-              orient="auto-start-reverse"
-            >
-              <path class="mha-arrowhead mha-arrowhead--residual" d="M0,0 L10,5 L0,10 z" />
-            </marker>
-          </defs>
+          <svg
+            class="mha-graph"
+            viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
+            preserveAspectRatio="xMidYMid meet"
+            role="img"
+            aria-label={`Multi-head attention with ${initialH} heads: per-head Q, K, V projections and softmax; concatenate outputs, project with W_O, add to residual.`}
+            data-mha-canvas
+          >
+            <defs>
+              <marker
+                id="mha-arrow"
+                viewBox="0 0 10 10"
+                refX="9"
+                refY="5"
+                markerWidth="6"
+                markerHeight="6"
+                orient="auto-start-reverse"
+              >
+                <path class="mha-arrowhead" d="M0,0 L10,5 L0,10 z" />
+              </marker>
+              <marker
+                id="mha-arrow-residual"
+                viewBox="0 0 10 10"
+                refX="9"
+                refY="5"
+                markerWidth="6"
+                markerHeight="6"
+                orient="auto-start-reverse"
+              >
+                <path class="mha-arrowhead mha-arrowhead--residual" d="M0,0 L10,5 L0,10 z" />
+              </marker>
+            </defs>
 
-          <rect class="mha-residual" x={PAD_L} y={12} width={VIEW_W - PAD_L - PAD_R} height={20} />
-          <MathFO
-            x={PAD_L + 8}
-            y={13}
-            w={120}
-            h={18}
-            tex="\text{residual stream}"
-            cls="mha-fo--residual-label"
-          />
-
-          <g class="mha-input">
             <rect
-              class="mha-box mha-box--input"
-              x={COL_X.input - 36}
-              y={VIEW_H / 2 - 22}
-              width={72}
-              height={44}
+              class="mha-residual"
+              x={PAD_L}
+              y={12}
+              width={VIEW_W - PAD_L - PAD_R}
+              height={20}
             />
             <MathFO
-              x={COL_X.input - 36}
-              y={VIEW_H / 2 - 22}
-              w={72}
-              h={44}
-              tex="x"
-              cls="mha-fo--input"
+              x={PAD_L + 8}
+              y={13}
+              w={120}
+              h={18}
+              tex="\text{residual stream}"
+              cls="mha-fo--residual-label"
             />
-            <MathFO
-              x={COL_X.input - 20}
-              y={VIEW_H / 2 + 28}
-              w={40}
-              h={16}
-              tex="d_m"
-              cls="mha-fo--axis"
-            />
-          </g>
 
-          <g data-mha-fanout>
-            {headIndices.map(i => {
-              const visible = i < initialH
-              const { mid } = headBandY(i, initialH)
-              return (
-                <path
-                  class="mha-fanout"
-                  data-mha-fanout-line={String(i)}
-                  data-mha-hidden={visible ? 'false' : 'true'}
-                  d={`M ${COL_X.input + 36} ${VIEW_H / 2} C ${COL_X.input + 70} ${VIEW_H / 2}, ${COL_X.proj - 60} ${mid}, ${COL_X.proj - PROJ_W / 2 - 4} ${mid}`}
-                />
-              )
-            })}
-          </g>
+            <g class="mha-input">
+              <rect
+                class="mha-box mha-box--input"
+                x={COL_X.input - 36}
+                y={VIEW_H / 2 - 22}
+                width={72}
+                height={44}
+              />
+              <MathFO
+                x={COL_X.input - 36}
+                y={VIEW_H / 2 - 22}
+                w={72}
+                h={44}
+                tex="x"
+                cls="mha-fo--input"
+              />
+              <MathFO
+                x={COL_X.input - 20}
+                y={VIEW_H / 2 + 28}
+                w={40}
+                h={16}
+                tex="d_m"
+                cls="mha-fo--axis"
+              />
+            </g>
 
-          <g data-mha-heads>
-            {headIndices.map(i => {
-              const visible = i < initialH
-              const { mid } = headBandY(i, initialH)
-              const proj = projLayout(initialH)
-              const projTopY = mid - (proj.height * 3 + proj.gap * 2) / 2
-              const scoreY = mid - SCORE_BOX / 2
-              const headOutY = mid - HEAD_OUT_H / 2
-              const accent = i === 0
-              return (
-                <g
-                  class={`mha-head${accent ? ' mha-head--accent' : ''}`}
-                  data-mha-head={String(i)}
-                  data-mha-hidden={visible ? 'false' : 'true'}
-                >
-                  <g data-mha-projs>
-                    {['Q', 'K', 'V'].map((kind, k) => {
-                      const py = projTopY + k * (proj.height + proj.gap)
-                      return (
-                        <g>
-                          <rect
-                            class={`mha-proj mha-proj--${kind.toLowerCase()}`}
-                            x={COL_X.proj - PROJ_W / 2}
-                            y={py}
-                            width={PROJ_W}
-                            height={proj.height}
-                          />
-                          <MathFO
-                            x={COL_X.proj - PROJ_W / 2}
-                            y={py}
-                            w={PROJ_W}
-                            h={proj.height}
-                            tex={`W_{${kind},${i + 1}}`}
-                            cls="mha-fo--proj"
-                          />
-                        </g>
-                      )
-                    })}
-                  </g>
-
-                  <line
-                    class="mha-link mha-link--proj-score"
-                    x1={COL_X.proj + PROJ_W / 2}
-                    y1={mid}
-                    x2={COL_X.score - SCORE_BOX / 2}
-                    y2={mid}
-                    marker-end="url(#mha-arrow)"
+            <g data-mha-fanout>
+              {headIndices.map(i => {
+                const visible = i < initialH
+                const { mid } = headBandY(i, initialH)
+                return (
+                  <path
+                    class="mha-fanout"
+                    data-mha-fanout-line={String(i)}
+                    data-mha-hidden={visible ? 'false' : 'true'}
+                    d={`M ${COL_X.input + 36} ${VIEW_H / 2} C ${COL_X.input + 70} ${VIEW_H / 2}, ${COL_X.proj - 60} ${mid}, ${COL_X.proj - PROJ_W / 2 - 4} ${mid}`}
                   />
+                )
+              })}
+            </g>
 
+            <g data-mha-heads>
+              {headIndices.map(i => {
+                const visible = i < initialH
+                const { mid } = headBandY(i, initialH)
+                const proj = projLayout(initialH)
+                const projTopY = mid - (proj.height * 3 + proj.gap * 2) / 2
+                const scoreY = mid - SCORE_BOX / 2
+                const headOutY = mid - HEAD_OUT_H / 2
+                const accent = i === 0
+                return (
                   <g
-                    class="mha-score"
-                    data-mha-score={String(i)}
-                    data-mha-score-visible={visible ? 'true' : 'false'}
+                    class={`mha-head${accent ? ' mha-head--accent' : ''}`}
+                    data-mha-head={String(i)}
+                    data-mha-hidden={visible ? 'false' : 'true'}
                   >
-                    <rect
-                      class="mha-score-frame"
-                      x={COL_X.score - SCORE_BOX / 2}
-                      y={scoreY}
-                      width={SCORE_BOX}
-                      height={SCORE_BOX}
-                    />
-                    {SCORE_PATTERNS[i].map((row, r) =>
-                      row.map((v, c) => {
-                        const cell = SCORE_BOX / SEQ_LEN
+                    <g data-mha-projs>
+                      {['Q', 'K', 'V'].map((kind, k) => {
+                        const py = projTopY + k * (proj.height + proj.gap)
                         return (
-                          <rect
-                            class="mha-score-cell"
-                            x={COL_X.score - SCORE_BOX / 2 + c * cell}
-                            y={scoreY + r * cell}
-                            width={cell}
-                            height={cell}
-                            style={`opacity:${0.12 + v * 0.78}`}
-                          />
+                          <g>
+                            <rect
+                              class={`mha-proj mha-proj--${kind.toLowerCase()}`}
+                              x={COL_X.proj - PROJ_W / 2}
+                              y={py}
+                              width={PROJ_W}
+                              height={proj.height}
+                            />
+                            <MathFO
+                              x={COL_X.proj - PROJ_W / 2}
+                              y={py}
+                              w={PROJ_W}
+                              h={proj.height}
+                              tex={`W_{${kind},${i + 1}}`}
+                              cls="mha-fo--proj"
+                            />
+                          </g>
                         )
-                      }),
-                    )}
-                  </g>
+                      })}
+                    </g>
 
-                  <g
-                    class="mha-score-collapsed"
-                    data-mha-score-collapsed={String(i)}
-                    data-mha-collapsed-visible="false"
-                  >
+                    <line
+                      class="mha-link mha-link--proj-score"
+                      x1={COL_X.proj + PROJ_W / 2}
+                      y1={mid}
+                      x2={COL_X.score - SCORE_BOX / 2}
+                      y2={mid}
+                      marker-end="url(#mha-arrow)"
+                    />
+
+                    <g
+                      class="mha-score"
+                      data-mha-score={String(i)}
+                      data-mha-score-visible={visible ? 'true' : 'false'}
+                    >
+                      <rect
+                        class="mha-score-frame"
+                        x={COL_X.score - SCORE_BOX / 2}
+                        y={scoreY}
+                        width={SCORE_BOX}
+                        height={SCORE_BOX}
+                      />
+                      {SCORE_PATTERNS[i].map((row, r) =>
+                        row.map((v, c) => {
+                          const cell = SCORE_BOX / SEQ_LEN
+                          return (
+                            <rect
+                              class="mha-score-cell"
+                              x={COL_X.score - SCORE_BOX / 2 + c * cell}
+                              y={scoreY + r * cell}
+                              width={cell}
+                              height={cell}
+                              style={`opacity:${0.12 + v * 0.78}`}
+                            />
+                          )
+                        }),
+                      )}
+                    </g>
+
+                    <g
+                      class="mha-score-collapsed"
+                      data-mha-score-collapsed={String(i)}
+                      data-mha-collapsed-visible="false"
+                    >
+                      <rect
+                        class="mha-box mha-box--collapsed"
+                        x={COL_X.score - SCORE_BOX / 2}
+                        y={mid - 11}
+                        width={SCORE_BOX}
+                        height={22}
+                      />
+                      <MathFO
+                        x={COL_X.score - SCORE_BOX / 2}
+                        y={mid - 11}
+                        w={SCORE_BOX}
+                        h={22}
+                        tex="\text{attn}"
+                        cls="mha-fo--collapsed"
+                      />
+                    </g>
+
+                    <line
+                      class="mha-link mha-link--score-out"
+                      x1={COL_X.score + SCORE_BOX / 2}
+                      y1={mid}
+                      x2={COL_X.head - HEAD_OUT_W / 2}
+                      y2={mid}
+                      marker-end="url(#mha-arrow)"
+                    />
+
                     <rect
-                      class="mha-box mha-box--collapsed"
-                      x={COL_X.score - SCORE_BOX / 2}
-                      y={mid - 11}
-                      width={SCORE_BOX}
-                      height={22}
+                      class={`mha-box mha-box--head${accent ? ' mha-box--accent' : ''}`}
+                      data-mha-head-rect
+                      x={COL_X.head - HEAD_OUT_W / 2}
+                      y={headOutY}
+                      width={HEAD_OUT_W}
+                      height={HEAD_OUT_H}
                     />
-                    <MathFO
-                      x={COL_X.score - SCORE_BOX / 2}
-                      y={mid - 11}
-                      w={SCORE_BOX}
-                      h={22}
-                      tex="\text{attn}"
-                      cls="mha-fo--collapsed"
-                    />
+                    <foreignObject
+                      x={COL_X.head - HEAD_OUT_W / 2}
+                      y={headOutY}
+                      width={HEAD_OUT_W}
+                      height={HEAD_OUT_H}
+                      data-mha-head-label
+                    >
+                      <div
+                        class="mha-fo mha-fo--head"
+                        dangerouslySetInnerHTML={{ __html: renderMath(`\\text{head}_{${i + 1}}`) }}
+                      />
+                    </foreignObject>
                   </g>
+                )
+              })}
+            </g>
 
-                  <line
-                    class="mha-link mha-link--score-out"
-                    x1={COL_X.score + SCORE_BOX / 2}
-                    y1={mid}
-                    x2={COL_X.head - HEAD_OUT_W / 2}
-                    y2={mid}
-                    marker-end="url(#mha-arrow)"
+            <g data-mha-concat-lines>
+              {headIndices.map(i => {
+                const visible = i < initialH
+                const { mid } = headBandY(i, initialH)
+                return (
+                  <path
+                    class="mha-concat-line"
+                    data-mha-concat-line={String(i)}
+                    data-mha-hidden={visible ? 'false' : 'true'}
+                    d={`M ${COL_X.head + HEAD_OUT_W / 2} ${mid} C ${COL_X.head + 60} ${mid}, ${COL_X.concat - 30} ${VIEW_H / 2}, ${COL_X.concat - 22} ${VIEW_H / 2}`}
                   />
+                )
+              })}
+            </g>
 
-                  <rect
-                    class={`mha-box mha-box--head${accent ? ' mha-box--accent' : ''}`}
-                    data-mha-head-rect
-                    x={COL_X.head - HEAD_OUT_W / 2}
-                    y={headOutY}
-                    width={HEAD_OUT_W}
-                    height={HEAD_OUT_H}
-                  />
-                  <foreignObject
-                    x={COL_X.head - HEAD_OUT_W / 2}
-                    y={headOutY}
-                    width={HEAD_OUT_W}
-                    height={HEAD_OUT_H}
-                    data-mha-head-label
-                  >
-                    <div
-                      class="mha-fo mha-fo--head"
-                      dangerouslySetInnerHTML={{ __html: renderMath(`\\text{head}_{${i + 1}}`) }}
-                    />
-                  </foreignObject>
-                </g>
-              )
-            })}
-          </g>
+            <g class="mha-concat">
+              <rect
+                class="mha-box mha-box--concat"
+                x={COL_X.concat - 22}
+                y={VIEW_H / 2 - 28}
+                width={44}
+                height={56}
+              />
+              <MathFO
+                x={COL_X.concat - 22}
+                y={VIEW_H / 2 - 28}
+                w={44}
+                h={56}
+                tex="\operatorname{concat}"
+                cls="mha-fo--concat"
+              />
+            </g>
 
-          <g data-mha-concat-lines>
-            {headIndices.map(i => {
-              const visible = i < initialH
-              const { mid } = headBandY(i, initialH)
-              return (
-                <path
-                  class="mha-concat-line"
-                  data-mha-concat-line={String(i)}
-                  data-mha-hidden={visible ? 'false' : 'true'}
-                  d={`M ${COL_X.head + HEAD_OUT_W / 2} ${mid} C ${COL_X.head + 60} ${mid}, ${COL_X.concat - 30} ${VIEW_H / 2}, ${COL_X.concat - 22} ${VIEW_H / 2}`}
-                />
-              )
-            })}
-          </g>
+            <line
+              class="mha-link mha-link--wo"
+              x1={COL_X.concat + 22}
+              y1={VIEW_H / 2}
+              x2={COL_X.wo - 18}
+              y2={VIEW_H / 2}
+              marker-end="url(#mha-arrow)"
+            />
+            <g class="mha-wo">
+              <rect
+                class="mha-box mha-box--wo"
+                x={COL_X.wo - 18}
+                y={VIEW_H / 2 - 22}
+                width={42}
+                height={44}
+              />
+              <MathFO
+                x={COL_X.wo - 18}
+                y={VIEW_H / 2 - 22}
+                w={42}
+                h={44}
+                tex="W_O"
+                cls="mha-fo--wo"
+              />
+            </g>
 
-          <g class="mha-concat">
-            <rect
-              class="mha-box mha-box--concat"
-              x={COL_X.concat - 22}
-              y={VIEW_H / 2 - 28}
-              width={44}
-              height={56}
+            <path
+              class="mha-residual-arc"
+              d={`M ${COL_X.wo + 3} ${VIEW_H / 2 - 22} C ${COL_X.wo + 40} ${VIEW_H / 2 - 60}, ${COL_X.wo + 3} 90, ${COL_X.wo + 3} 34`}
+              marker-end="url(#mha-arrow-residual)"
             />
-            <MathFO
-              x={COL_X.concat - 22}
-              y={VIEW_H / 2 - 28}
-              w={44}
-              h={56}
-              tex="\operatorname{concat}"
-              cls="mha-fo--concat"
-            />
-          </g>
-
-          <line
-            class="mha-link mha-link--wo"
-            x1={COL_X.concat + 22}
-            y1={VIEW_H / 2}
-            x2={COL_X.wo - 18}
-            y2={VIEW_H / 2}
-            marker-end="url(#mha-arrow)"
-          />
-          <g class="mha-wo">
-            <rect
-              class="mha-box mha-box--wo"
-              x={COL_X.wo - 18}
-              y={VIEW_H / 2 - 22}
-              width={42}
-              height={44}
-            />
-            <MathFO
-              x={COL_X.wo - 18}
-              y={VIEW_H / 2 - 22}
-              w={42}
-              h={44}
-              tex="W_O"
-              cls="mha-fo--wo"
-            />
-          </g>
-
-          <path
-            class="mha-residual-arc"
-            d={`M ${COL_X.wo + 3} ${VIEW_H / 2 - 22} C ${COL_X.wo + 40} ${VIEW_H / 2 - 60}, ${COL_X.wo + 3} 90, ${COL_X.wo + 3} 34`}
-            marker-end="url(#mha-arrow-residual)"
-          />
-          <foreignObject x={COL_X.wo - 14} y={VIEW_H / 2 + 36} width={120} height={18}>
-            <div
-              class="mha-fo mha-fo--residual-label"
-              dangerouslySetInnerHTML={{ __html: renderMath('+\\ x') }}
-            />
-          </foreignObject>
-        </svg>
+            <foreignObject x={COL_X.wo - 14} y={VIEW_H / 2 + 36} width={120} height={18}>
+              <div
+                class="mha-fo mha-fo--residual-label"
+                dangerouslySetInnerHTML={{ __html: renderMath('+\\ x') }}
+              />
+            </foreignObject>
+          </svg>
+        </div>
 
         <aside class="mha-side" aria-label="MHA dimensional readout">
           <dl class="mha-readout" data-mha-readout>

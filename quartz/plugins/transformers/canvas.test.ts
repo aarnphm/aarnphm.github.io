@@ -13,6 +13,7 @@ import type { BuildCtx } from '../../util/ctx'
 import { isFilePath, isFullSlug, simplifySlug } from '../../util/path'
 import { staticCssBundleKey } from '../../util/resource-bundles'
 import { JsonCanvas } from './canvas'
+import { Description } from './description'
 
 async function loadCrawlLinks(t: TestContext) {
   const assets = registerHooks({
@@ -212,4 +213,115 @@ test('incremental canvas publishing creates and refreshes the page and metadata'
       note: { slug: targetSlug, href: targetSlug, displayName: path.basename(target, '.md') },
     })
   }
+})
+
+test('Description resolves canvas descriptions from content/description.json, preserves canvas searchable text, and omits default fallback text when absent', async t => {
+  const { writeFile } = await import('node:fs/promises')
+  const { CanvasPage } = await import('../emitters/canvas')
+  const { emitPartialEmitter } = await import('../../processors/emit')
+  const { default: collapseHeaderStyle } =
+    await import('../../components/styles/collapseHeader.inline.scss')
+  const dir = await mkdtemp(path.join(tmpdir(), 'quartz-canvas-desc-'))
+  const output = await mkdtemp(path.join(tmpdir(), 'quartz-canvas-desc-out-'))
+  t.after(async () => {
+    await rm(dir, { recursive: true, force: true })
+    await rm(output, { recursive: true, force: true })
+  })
+
+  await writeFile(
+    path.join(dir, 'description.json'),
+    JSON.stringify([
+      {
+        '[[singularity.canvas]]':
+          'systems map connecting [[fr/index|autoregressive models]] to inference engines',
+      },
+    ]),
+    'utf8',
+  )
+
+  const ctx = testContext()
+  ctx.argv.directory = dir
+  ctx.argv.output = output
+  ctx.incremental = true
+  ctx.cfg.plugins.emitters = [CanvasPage()]
+  ctx.extractedStaticResources = new Map([
+    [staticCssBundleKey(collapseHeaderStyle), 'static/collapse.css'],
+  ])
+
+  const canvasPath = 'singularity.canvas'
+  assert.ok(isFilePath(canvasPath))
+  const canvasFile = new VFile({
+    path: path.join(dir, canvasPath),
+    value: JSON.stringify({
+      nodes: [
+        {
+          id: 'n1',
+          type: 'text',
+          text: 'speculative decoding tokens',
+          x: 0,
+          y: 0,
+          width: 200,
+          height: 100,
+        },
+      ],
+      edges: [],
+    }),
+  })
+  canvasFile.data.slug = slug('singularity')
+  canvasFile.data.filePath = canvasPath
+  canvasFile.data.relativePath = canvasPath
+  canvasFile.data.jsonCanvas = true
+  canvasFile.data.frontmatter = { title: 'singularity', pageLayout: 'default' }
+  const tree: Root = { type: 'root', children: [] }
+
+  await unified()
+    .use(JsonCanvas().htmlPlugins?.(ctx) ?? [])
+    .use(Description().htmlPlugins?.(ctx) ?? [])
+    .run(tree, canvasFile)
+
+  assert.equal(canvasFile.data.text, 'speculative decoding tokens')
+  assert.equal(
+    canvasFile.data.rawDescription,
+    'systems map connecting [[fr/index|autoregressive models]] to inference engines',
+  )
+  assert.match(
+    canvasFile.data.description ?? '',
+    /<a href="\/fr\/index" class="internal">autoregressive models<\/a>/,
+  )
+  assert.ok(canvasFile.data.links?.includes(simplifySlug(slug('fr/index'))))
+
+  await emitPartialEmitter(
+    ctx,
+    [[tree, canvasFile]],
+    [{ type: 'add', path: canvasPath, file: canvasFile }],
+    'CanvasPage',
+  )
+  const preview = JSON.parse(
+    await readFile(path.join(output, 'static/preview/singularity.json'), 'utf8'),
+  ) as { description: string | null }
+  assert.equal(
+    preview.description,
+    'systems map connecting autoregressive models to inference engines',
+  )
+
+  // A canvas or empty note not listed in description.json gets an empty description, never 'aucune description fournie'
+  const unlistedCanvas = new VFile({
+    path: path.join(dir, 'unlisted.canvas'),
+    value: JSON.stringify({
+      nodes: [
+        { id: 'n1', type: 'text', text: 'raw node label', x: 0, y: 0, width: 100, height: 80 },
+      ],
+      edges: [],
+    }),
+  })
+  unlistedCanvas.data.slug = slug('unlisted')
+  unlistedCanvas.data.jsonCanvas = true
+  await unified()
+    .use(JsonCanvas().htmlPlugins?.(ctx) ?? [])
+    .use(Description().htmlPlugins?.(ctx) ?? [])
+    .run({ type: 'root', children: [] } as Root, unlistedCanvas)
+
+  assert.equal(unlistedCanvas.data.text, 'raw node label')
+  assert.equal(unlistedCanvas.data.description, '')
+  assert.equal(unlistedCanvas.data.rawDescription, '')
 })

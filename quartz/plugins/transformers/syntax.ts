@@ -69,13 +69,17 @@ function addCopyButtons() {
         }
         if (hasClipboardButton(node)) return
         node.children = [
-          h('span.clipboard-button', { type: 'button', ariaLabel: 'copy source' }, [
-            s('svg', { ...svgOptions, viewbox: '0 -8 24 24', class: 'copy-icon' }, [
-              s('use', { href: '#github-copy' }),
-            ]),
-            s('svg', { ...svgOptions, viewbox: '0 -8 24 24', class: 'check-icon' }, [
-              s('use', { href: '#github-check' }),
-            ]),
+          h('button.clipboard-button', { type: 'button', ariaLabel: 'copy source' }, [
+            s(
+              'svg',
+              { ...svgOptions, viewbox: '0 0 16 16', ariaHidden: true, class: 'copy-icon' },
+              [s('use', { href: '#github-copy' })],
+            ),
+            s(
+              'svg',
+              { ...svgOptions, viewbox: '0 0 16 16', ariaHidden: true, class: 'check-icon' },
+              [s('use', { href: '#github-check' })],
+            ),
           ]),
           ...node.children,
         ]

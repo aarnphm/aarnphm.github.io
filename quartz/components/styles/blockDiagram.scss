@@ -72,6 +72,16 @@
   display: none;
 }
 
+// block-diagram.inline.ts gives each svg a minimum width; narrow frames scroll the step sideways.
+.bd-step {
+  overflow-x: auto;
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
+}
+
 .bd-svg {
   display: block;
   width: 100%;
