@@ -1,0 +1,79 @@
+.base-semantic-title {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.65rem;
+  min-width: 0;
+
+  > a {
+    min-width: 0;
+  }
+}
+
+.base-semantic-score {
+  flex-shrink: 0;
+  color: var(--darkgray);
+  font-family: var(--bodyFont);
+  font-size: 0.7rem;
+  font-weight: 400;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.base-table-wrapper {
+  --base-table-line: color-mix(in srgb, var(--gray) 55%, transparent);
+  --base-table-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  max-block-size: 72dvh;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-padding-block-start: 2.125rem;
+  border: 1px solid var(--base-table-line);
+  border-radius: var(--radius-none);
+  background: var(--light);
+
+  > .table-container {
+    // Both scroll axes and the sticky cells belong to the Base scrollport.
+    overflow: visible;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: -2px;
+  }
+}
+
+.base-embed-bar {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  background: var(--light);
+}
+
+.base-embed-bar .bases-toolbar {
+  margin: 0;
+}
+
+.base-embed-results {
+  margin-left: auto;
+  font-size: 0.875rem;
+  color: var(--darkgray);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.page-content article.main-col > .base-embed {
+  margin: 1.5rem 0;
+}
+
+// On a base page the toolbar row above already ends with its own 1rem margin. Each view root's
+// 1.5rem top margin stacks on it, so the page drops it here once for every view type.
+.page-content article.main-col > .base-view > :first-child {
+  margin-block-start: 0;
+}

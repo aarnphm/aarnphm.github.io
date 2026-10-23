@@ -1,3 +1,4 @@
+import { autoUpdate, computePosition, flip, offset, shift, size } from '@floating-ui/dom'
 import { initializeBaseTables } from './base-table'
 import { currentNavSignal } from './nav-lifecycle'
 import { rootNavSignal } from './root-lifecycle'
@@ -120,8 +121,10 @@ document.addEventListener('nav', () => {
     const clearButton = clearElement
     const viewList = listElement
     const signal = rootNavSignal(selector)
+    let stopPositioning: (() => void) | undefined
 
     selector.dataset.initialized = ''
+    dropdown.setAttribute('popover', 'manual')
     dropdown.hidden = true
 
     function filterViews(query: string): void {
@@ -141,6 +144,9 @@ document.addEventListener('nav', () => {
     }
 
     function closeDropdown(focusTrigger = false): void {
+      stopPositioning?.()
+      stopPositioning = undefined
+      if (dropdown.matches(':popover-open')) dropdown.hidePopover()
       trigger.setAttribute('aria-expanded', 'false')
       trigger.classList.remove('has-active-menu')
       dropdown.hidden = true
@@ -160,6 +166,27 @@ document.addEventListener('nav', () => {
       trigger.setAttribute('aria-expanded', 'true')
       trigger.classList.add('has-active-menu')
       dropdown.hidden = false
+      dropdown.showPopover()
+      stopPositioning = autoUpdate(trigger, dropdown, async () => {
+        const { x, y } = await computePosition(trigger, dropdown, {
+          strategy: 'fixed',
+          placement: 'bottom-start',
+          middleware: [
+            offset(6),
+            flip({ padding: 8 }),
+            shift({ padding: 8 }),
+            size({
+              padding: 8,
+              apply: ({ availableHeight }) => {
+                dropdown.style.maxHeight = `${Math.max(0, availableHeight)}px`
+              },
+            }),
+          ],
+        })
+        if (dropdown.hidden) return
+        dropdown.style.left = `${x}px`
+        dropdown.style.top = `${y}px`
+      })
       queueMicrotask(() => searchInput.focus())
     }
 
@@ -192,6 +219,16 @@ document.addEventListener('nav', () => {
       () => {
         filterViews(searchInput.value)
         clearButton.hidden = searchInput.value.length === 0
+      },
+      { signal },
+    )
+
+    dropdown.addEventListener(
+      'keydown',
+      event => {
+        if (event.key !== 'Escape' || event.target === searchInput) return
+        event.preventDefault()
+        closeDropdown(true)
       },
       { signal },
     )
