@@ -3,6 +3,7 @@ export interface SidenoteProperties {
 }
 
 export interface ParsedSidenote {
+  reference?: boolean
   raw: string
   properties?: SidenoteProperties
   label?: string
@@ -14,4 +15,13 @@ export interface SidenoteMatch {
   to: number
   contentFrom: number
   data: ParsedSidenote
+}
+
+export interface SidenoteDefinition {
+  from: number
+  to: number
+  lineStart: number
+  lineEnd: number
+  label: string
+  content: string
 }

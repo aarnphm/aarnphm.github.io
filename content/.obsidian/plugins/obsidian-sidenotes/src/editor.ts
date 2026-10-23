@@ -6,8 +6,8 @@ import {
   type MarkdownRenderChild,
   type Plugin,
 } from 'obsidian'
-import type { SidenoteMatch } from './types'
-import { findSidenotes } from './parser'
+import type { SidenoteMatch, SidenoteDefinition } from './types'
+import { parseSidenotes } from './parser'
 import { createSidenote } from './renderer'
 
 class SidenoteWidget extends WidgetType {
@@ -26,6 +26,7 @@ class SidenoteWidget extends WidgetType {
   eq(other: SidenoteWidget): boolean {
     return (
       this.match.data.raw === other.match.data.raw &&
+      this.match.data.content === other.match.data.content &&
       this.number === other.number &&
       this.sourcePath === other.sourcePath &&
       this.sourceMode === other.sourceMode
@@ -60,7 +61,12 @@ class SidenoteWidget extends WidgetType {
   }
 }
 
-function decorate(state: EditorState, matches: SidenoteMatch[], plugin: Plugin): DecorationSet {
+function decorate(
+  state: EditorState,
+  matches: SidenoteMatch[],
+  definitions: SidenoteDefinition[],
+  plugin: Plugin,
+): DecorationSet {
   const livePreview = state.field(editorLivePreviewField, false) === true
   const sourcePath = state.field(editorInfoField, false)?.file?.path ?? ''
   const ranges = matches.flatMap((match, index) => {
@@ -72,22 +78,37 @@ function decorate(state: EditorState, matches: SidenoteMatch[], plugin: Plugin):
     if (!livePreview) return [Decoration.widget({ widget, side: -1 }).range(match.from)]
     return [Decoration.replace({ widget }).range(match.from, match.to)]
   })
+  if (livePreview) {
+    for (const definition of definitions) {
+      const editing = state.selection.ranges.some(
+        range => range.from <= definition.to && range.to >= definition.from,
+      )
+      if (!editing) ranges.push(Decoration.replace({}).range(definition.from, definition.to))
+    }
+  }
   return Decoration.set(ranges, true)
 }
 
 export function sidenoteEditorExtension(
   plugin: Plugin,
-): StateField<{ matches: SidenoteMatch[]; decorations: DecorationSet }> {
+): StateField<{
+  matches: SidenoteMatch[]
+  definitions: SidenoteDefinition[]
+  decorations: DecorationSet
+}> {
   return StateField.define({
     create(state) {
-      const matches = findSidenotes(state.doc.toString())
-      return { matches, decorations: decorate(state, matches, plugin) }
+      const parsed = parseSidenotes(state.doc.toString())
+      return { ...parsed, decorations: decorate(state, parsed.matches, parsed.definitions, plugin) }
     },
     update(value, transaction) {
-      const matches = transaction.docChanged
-        ? findSidenotes(transaction.state.doc.toString())
-        : value.matches
-      return { matches, decorations: decorate(transaction.state, matches, plugin) }
+      const parsed = transaction.docChanged
+        ? parseSidenotes(transaction.state.doc.toString())
+        : value
+      return {
+        ...parsed,
+        decorations: decorate(transaction.state, parsed.matches, parsed.definitions, plugin),
+      }
     },
     provide: field => EditorView.decorations.from(field, value => value.decorations),
   })

@@ -12,6 +12,21 @@ A sentence with {{sidenotes[label]: Supporting **Markdown**, [[thoughts/Sets|lin
 {{sidenotes<left: true, right: false, internal: [[thoughts/Sets]]>[[[thoughts/Sets|sets]]]: Supporting text.}}
 ```
 
+Separate definitions support multiple indented lines and paragraphs:
+
+```markdown
+For {{sidenotes[^a batch]}} of sequences, continue the sentence here.
+
+{{sidenotes[a batch]}}:
+
+    First paragraph, continued
+    on another line.
+
+    Second paragraph.
+```
+
+Indent each content line with four spaces or one tab. Blank lines separate paragraphs; an unindented line ends the definition. References can appear before or after their definitions. Live Preview exposes the definition when the cursor enters it, and Source mode keeps it editable.
+
 Click the label, or focus it and press Enter or Space, to open or close the note. Escape closes an open note and returns focus to its label. Hovering the label or focusing it with the keyboard changes the linked note's border to the theme accent. When the note pane has space beside the text, sidenotes open in the margins and align with their labels. Each pane balances notes between left and right by choosing the side with the lower occupied height. Notes on the same side stack without overlapping. At narrow widths, Reading view and Live Preview use inline foldouts; Source mode keeps the Markdown without a margin preview. `left` and `right` default to `true`; set one to `false` to restrict a note to the other margin. `inline` or `dropdown` always uses an inline foldout outside Source mode. Markdown examples inside code remain literal.
 
 The command **Insert sidenote template** preserves selected text and selects the label placeholder when no text is selected.

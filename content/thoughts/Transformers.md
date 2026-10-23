@@ -3,7 +3,7 @@ date: '2024-02-07'
 description: Attention, next-token training, decoding, and particle-based steering in transformer language models.
 id: Transformers
 layout: technical
-modified: 2026-10-23 16:52:48 GMT-04:00
+modified: 2026-10-23 16:58:14 GMT-04:00
 seealso:
   - '[[thoughts/LLMs|LLMs]]'
   - '[[thoughts/Embedding|embedding]]'
@@ -54,7 +54,6 @@ For {{sidenotes[^a batch]}} of $B$ sequences with $T$ input positions and vocabu
 {{sidenotes[a batch]}}:
 
     A batch can contain padding or targets excluded from supervision, so the denominator counts supervised positions. For example, sequences with three and one supervised targets contribute four terms in total. Using the padded batch size would change the loss scale when padding changes.
-
     Training supplies the actual prefix at every position. The causal mask permits all these next-token predictions in one forward pass. During generation, each sampled token becomes part of the next prefix.
 
 $$
