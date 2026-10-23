@@ -25,6 +25,7 @@ import {
   staticJsBundleKey,
   staticJsBundleSlug,
 } from '../../../util/resource-bundles'
+import { allSettledOrThrow } from '../../../util/staged-output'
 import { write } from '../helpers'
 import {
   collaborativeCommentsClientPath,
@@ -44,10 +45,16 @@ import {
   staticScriptAssetReference,
   writeAssetBundleOutput,
 } from './asset-writer'
+import { writeNotebookRuntimeAssets } from './notebook-assets'
+import {
+  writeCollaborativeCommentsAssets,
+  writeLexicalWorkerAsset,
+  writeSemanticWorkerAssets,
+} from './worker-assets'
 
-export type ScriptAssetReplacement = { placeholder: string; logicalPath: string }
+type ScriptAssetReplacement = { placeholder: string; logicalPath: string }
 
-export const componentScriptAssetReplacements: ScriptAssetReplacement[] = [
+const componentScriptAssetReplacements: ScriptAssetReplacement[] = [
   { placeholder: notebookRuntimeClientAsset, logicalPath: notebookRuntimeClientPath },
   { placeholder: notebookRuntimeWorkerAsset, logicalPath: notebookRuntimeWorkerPath },
   {
@@ -117,13 +124,12 @@ export async function joinScripts(scripts: string[]): Promise<string> {
   return result.outputFiles[0].text
 }
 
-export function resolveComponentResourceAssets(
+function resolveComponentResourceAssets(
   ctx: BuildCtx,
   componentResources: ComponentResourceSet,
-  replacements: readonly ScriptAssetReplacement[] = componentScriptAssetReplacements,
 ): void {
   componentResources.afterDOMLoaded = componentResources.afterDOMLoaded.map(script =>
-    replacements.reduce(
+    componentScriptAssetReplacements.reduce(
       (current, replacement) =>
         current.replaceAll(
           replacement.placeholder,
@@ -216,6 +222,15 @@ export async function writePageScripts(
   ctx: BuildCtx,
   componentResources: ComponentResourceSet,
 ): Promise<FilePath[]> {
+  // Resolve URLs only after every prerequisite has registered its emitted path. Drain all
+  // prerequisite writes before rejecting so the enclosing output transaction can clean up.
+  const prerequisiteFiles = await allSettledOrThrow([
+    writeNotebookRuntimeAssets(ctx),
+    writeCollaborativeCommentsAssets(ctx),
+    writeSemanticWorkerAssets(ctx),
+    writeLexicalWorkerAsset(ctx).then(file => [file]),
+  ])
+  resolveComponentResourceAssets(ctx, componentResources)
   const [prescript, postscriptResult] = await Promise.all([
     joinScripts(componentResources.beforeDOMLoaded),
     writeAfterDomLoadedScripts(ctx, componentResources.afterDOMLoaded),
@@ -233,5 +248,5 @@ export async function writePageScripts(
     ext: '.js',
     content: postscript,
   })
-  return [prescriptFile, postscriptFile, ...files]
+  return [prescriptFile, postscriptFile, ...files, ...prerequisiteFiles.flat()]
 }

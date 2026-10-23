@@ -304,12 +304,13 @@ test('pele.inline.ts stays a compact lazy loader when bundled into a synchronous
   assert.doesNotMatch(bundled, /KaTeX parse error/)
 })
 
-test('writePageScripts bundles afterDOMLoaded scripts into a single static/scripts/script module in source order', async () => {
-  const { mkdtemp, readFile } = await import('node:fs/promises')
+test('writePageScripts bundles afterDOMLoaded scripts into a single static/scripts/script module in source order', async t => {
+  const { mkdtemp, readFile, rm } = await import('node:fs/promises')
   const os = await import('node:os')
   const path = await import('node:path')
   const { writePageScripts } = await import('./component-resources/script-assets')
   const output = await mkdtemp(path.join(os.tmpdir(), 'quartz-page-scripts-'))
+  t.after(() => rm(output, { recursive: true, force: true }))
   const ctx = {
     buildId: 'test-page-scripts',
     argv: {
