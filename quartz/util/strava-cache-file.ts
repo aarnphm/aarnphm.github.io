@@ -3,7 +3,10 @@ import fs from 'node:fs'
 import fsp from 'node:fs/promises'
 import { dirname } from 'node:path'
 import type { StravaRawCache } from '../plugins/stores/strava'
+import { joinSegments, QUARTZ } from './path'
 import { isRecord } from './type-guards'
+
+export const stravaCachePath = joinSegments(QUARTZ, '.quartz-cache', 'strava.json')
 
 function isMissingFile(error: unknown): boolean {
   return isRecord(error) && error.code === 'ENOENT'

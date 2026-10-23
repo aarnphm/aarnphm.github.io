@@ -45,7 +45,7 @@ import {
   withoutPairedWahooDuplicates,
 } from './rouvy-wahoo-pairs'
 import { applyStaminaLedger, garminRecoveryReadings } from './stamina-ledger'
-import { readStravaCacheFileSync } from './strava-cache-file'
+import { readStravaCacheFileSync, stravaCachePath } from './strava-cache-file'
 import {
   enrichActivityDevices,
   enrichRouteLessHeartRate,
@@ -90,7 +90,6 @@ export {
   enrichRunPaceZones,
 } from './strava-payload/training-load-enrichment'
 
-export const stravaCachePath = joinSegments(QUARTZ, '.quartz-cache', 'strava.json')
 const ouraCachePath = joinSegments(QUARTZ, '.quartz-cache', 'oura.json')
 const garminCachePath = joinSegments(QUARTZ, '.quartz-cache', 'garmin.json')
 const wahooCachePath = joinSegments(QUARTZ, '.quartz-cache', 'wahoo.json')
