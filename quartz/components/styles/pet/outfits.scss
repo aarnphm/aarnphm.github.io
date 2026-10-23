@@ -29,7 +29,7 @@ $pet-looks: (
     eyes-dash,
   ),
   fly: (
-    eyes-wide,
+    eyes-surprised,
     speed,
   ),
   land: (
@@ -40,9 +40,7 @@ $pet-looks: (
     arm-l,
   ),
   failed: (
-    eyes-wide,
-    eyes-wince,
-    mouth-o,
+    eyes-scared,
     sweat,
   ),
   wait: (
@@ -80,15 +78,13 @@ $pet-looks: (
     jetpack,
   ),
   notice: (
-    eyes-wide,
-    mouth-o,
+    eyes-surprised,
   ),
   talk: (
     eyes-dash,
-    mouth-o,
   ),
   think: (
-    eyes-dash,
+    eyes-thinking,
     thought,
   ),
 );
@@ -103,24 +99,17 @@ $pet-looks: (
     display: none;
   }
 
-  [data-part='legs'] {
-    display: inline;
-  }
-
   .pet-hop,
   .pet-lean,
   .pet-canopy,
   .pet-body,
   .pet-look,
   .pet-eye,
-  .pet-leg,
   .pet-arm,
   .pet-dot,
   .pet-key,
   .pet-speed,
-  [data-part='arm-thumb'],
-  [data-part='eyes-wide'],
-  [data-part='eyes-wince'] {
+  [data-part='arm-thumb'] {
     transform-box: fill-box;
   }
 
@@ -141,10 +130,6 @@ $pet-looks: (
 
   .pet-eye + .pet-eye {
     animation-delay: 40ms;
-  }
-
-  .pet-leg {
-    transform-origin: 50% 0;
   }
 
   [data-part='arm-l'] {

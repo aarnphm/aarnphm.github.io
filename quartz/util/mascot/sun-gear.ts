@@ -22,13 +22,13 @@ export function sunglasses(w: number, ink = INK, lens = INK, glint = PINK) {
   const lenses = EYES.map((x, i) =>
     hand(
       [
-        [x - 0.24, -0.38],
-        [x + 0.28, -0.38],
-        [x + 0.24, -0.12],
-        [x + 0.12, -0.02],
-        [x - 0.12, -0.02],
-        [x - 0.22, -0.14],
-        [x - 0.24, -0.38],
+        [x - 0.26, -0.5],
+        [x + 0.3, -0.5],
+        [x + 0.27, -0.16],
+        [x + 0.13, 0.04],
+        [x - 0.13, 0.04],
+        [x - 0.24, -0.18],
+        [x - 0.26, -0.5],
       ],
       0.02,
       0.006,
@@ -38,8 +38,8 @@ export function sunglasses(w: number, ink = INK, lens = INK, glint = PINK) {
   const shine = EYES.map(x =>
     stroke(
       [
-        [x - 0.12, -0.18],
-        [x + 0.04, -0.32],
+        [x - 0.12, -0.2],
+        [x + 0.06, -0.4],
       ],
       () => w * 0.8,
       glint,
@@ -47,7 +47,7 @@ export function sunglasses(w: number, ink = INK, lens = INK, glint = PINK) {
   )
   const bridge = stroke(
     hand(
-      curve([EYES[0] + 0.28, -0.34], [(EYES[0] + EYES[1]) / 2, -0.42], [EYES[1] - 0.24, -0.34], 8),
+      curve([EYES[0] + 0.3, -0.44], [(EYES[0] + EYES[1]) / 2, -0.52], [EYES[1] - 0.26, -0.44], 8),
       0.02,
       0.006,
       852,
@@ -56,7 +56,7 @@ export function sunglasses(w: number, ink = INK, lens = INK, glint = PINK) {
     ink,
   )
   const temple = stroke(
-    hand(curve([EYES[1] + 0.28, -0.34], [0.7, -0.36], [0.96, -0.26], 10), 0.02, 0.006, 853),
+    hand(curve([EYES[1] + 0.3, -0.44], [0.7, -0.44], [0.96, -0.32], 10), 0.02, 0.006, 853),
     () => w * 1.1,
     ink,
   )
@@ -71,7 +71,7 @@ export function sunglasses(w: number, ink = INK, lens = INK, glint = PINK) {
 
 // A sun lounger for the hottest afternoons: a striped cushion along a flat bed and a backrest
 // raised behind it (on its right, as it faces left), on a pen-line frame with short legs to the
-// ground at y = 1.4. The pet lies back in it with its body turned 30°.
+// ground at y = 1.08, where the pet's base rests. The pet lies back in it with its body turned 30°.
 export function lounger(w: number, paper = PAPER, ink = INK, stripe = PINK, wood = CRUST) {
   const hinge: Pt = [0.55, 0.98]
   const head: Pt = [1.55, -0.55]
@@ -85,15 +85,15 @@ export function lounger(w: number, paper = PAPER, ink = INK, stripe = PINK, wood
       [
         [
           [-1.45, 1.0],
-          [-1.5, 1.4],
+          [-1.48, 1.08],
         ],
         [
           [0.42, 1.0],
-          [0.48, 1.4],
+          [0.44, 1.08],
         ],
         [
           [1.15, 0.32],
-          [1.05, 1.4],
+          [1.06, 1.08],
         ],
       ] as Pt[][]
     )
@@ -127,11 +127,11 @@ export function lounger(w: number, paper = PAPER, ink = INK, stripe = PINK, wood
   // A tall iced drink on the ground by its feet, with a straw and a slice of lime.
   const glass = hand(
     [
-      [-1.86, 0.98],
-      [-1.62, 0.98],
-      [-1.65, 1.4],
-      [-1.83, 1.4],
-      [-1.86, 0.98],
+      [-1.86, 0.66],
+      [-1.62, 0.66],
+      [-1.65, 1.08],
+      [-1.83, 1.08],
+      [-1.86, 0.66],
     ],
     0.02,
     0.004,

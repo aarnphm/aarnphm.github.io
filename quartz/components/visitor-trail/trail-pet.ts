@@ -3,8 +3,8 @@ import { pixels } from './pixels'
 // The garden's pet (quartz/util/mascot.ts) in 2-unit pixels in scene units, as the trail's folk are
 // drawn, and printed in the register of the 404's pixel pet (scripts/404-pet.ts): a round blob 14
 // pixels across in an ink keyline, lit up and to the right, with dash eyes set left of centre as the
-// mascot's are, so it faces left as drawn. It wears its walking hat and stands a fifth taller than
-// a hiker. The feet stand on the origin.
+// mascot's are, so it faces left as drawn. It wears its walking hat and has no legs: its base rests
+// on the origin, and walking it hops.
 //
 // pet.inline.ts copies the site pet's data-* attributes onto the sprite's group, and
 // shared-trail-frame.scss shows the parts below for them as pet.scss shows the site pet's: its
@@ -17,8 +17,6 @@ const tones = {
   W: 'trail-pet-hat',
   w: 'trail-pet-hat-light',
   R: 'trail-pet-band',
-  L: 'trail-pet-leg',
-  B: 'trail-pet-boot',
   H: 'trail-pet-hand',
   V: 'trail-pet-shell-light',
   A: 'trail-pet-shell',
@@ -37,10 +35,10 @@ const tones = {
 }
 
 const CELL = 2
-// Cells across the sprite, and down from the top row to the soles. The hat's crown starts a row
-// down, so it stands 17 cells, a fifth taller than a hiker.
+// Cells across the sprite, and down from the top row to its base. The hat's crown starts a row
+// down, so it stands 15 cells.
 const WIDE = 17
-const TALL = 18
+const TALL = 16
 // The body: a disc 7 cells in radius whose centre is 9.3 cells down, its edge cut a little uneven as
 // the 404's noise roughs its blob.
 const R = 7
@@ -85,24 +83,20 @@ const hat = [
   'KWWWWWWWWWWWWwwwK',
   '.KKKKKKKKKKKKKKK.',
 ]
-// Standing, then the two steps of a stride. The lower row is the boot.
-const legs = [
-  ['......L...L......', '.....BB..BB......'],
-  ['.....L.....L.....', '....BB....BB.....'],
-  ['.......L.L.......', '......BB.BB......'],
-]
-// The pill eyes as the site pet's (pen.ts pillEye): two cells wide, leaning a cell with the top to
-// the left, set left of centre as the mascot's are.
+// The pill eyes as the site pet's (pen.ts pillEye, EYE_POSES): two cells wide, leaning a cell with
+// the top to the left, set left of centre as the mascot's are. Its feelings are all in them, as the
+// site pet's: happy squashes each to a short bar with its right end up, surprised stretches them,
+// scared narrows and lifts them, thinking sets one up and one down.
 const dash = ['KK....KK', 'KK....KK', '.KK....KK', '.KK....KK']
 const eyes: Record<string, string> = {
   eyes: at(dash, 4, 6),
   'eyes-up': at(dash, 4, 5),
   'eyes-down': at(dash, 4, 7),
   'eyes-wide': at(['KK....KK', 'KK....KK', 'KK....KK', 'KK....KK', 'KK....KK'], 4, 5),
-  // Smiling with its eyes as the site pet does: each pill squashed to a short bar, right end up.
   'eyes-happy': at(['..KK....KK', 'KKK...KKK.'], 3, 7),
+  'eyes-scared': at(['.K....K.', 'K....K..', 'K....K..'], 5, 5),
+  'eyes-thinking': at(['......KK', '......KK', 'KK......', 'KK......'], 4, 6),
 }
-const mouth = at(['KK'], 7, 10)
 const shades = at(['KKKKKKKK', 'KKK..KKK'], 4, 7)
 // What it wears in the cold, cut from the body from its chin down: each cell of cloth takes the tone
 // of the body cell under it, so the cloth is lit as the body is. `cut` gives false for bare body,
@@ -209,15 +203,11 @@ export const trailPetTop = (rain: boolean) => (rain ? TALL + 6 : TALL - 1) * CEL
 export function trailPetSprite() {
   return `<g transform="translate(${(-WIDE * CELL) / 2} ${-TALL * CELL})">${[
     part('umbrella', part('brolly-open', canopy) + part('brolly-out', inside)),
-    ...legs.map(
-      (rows, index) => `<g class="trail-pet-legs" data-legs="${index}">${at(rows, 0, 16)}</g>`,
-    ),
     part('laptop', laptop),
     `<g class="trail-pet-blob">${at(body)}</g><g class="trail-pet-blob-mirrored">${at(bodyMirrored)}</g>`,
     part('windbreaker', windbreaker),
     part('jumper', jumper),
     ...Object.entries(eyes).map(([name, svg]) => part(name, svg)),
-    part('mouth', mouth),
     part('shades', shades),
     `<g class="trail-pet-crown">${at(hat, 0, 1)}</g>`,
     part('shaft', shaft),

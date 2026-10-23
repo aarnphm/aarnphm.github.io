@@ -53,7 +53,8 @@ export function mascot({ line, seed, paper = PAPER, ink = INK, points = 220 }: M
   return `<path d="${poly(outline)}" style="fill:${paper}"/>${stroke(outline, pressure(seed + 1, line), ink)}${eyes}`
 }
 
-// The pet: the mascot with every look the old rocky spritesheet had, each pre-drawn as a part. The
+// The pet: the mascot with every look the old rocky spritesheet had, each pre-drawn as a part. It
+// has no legs and no mouth: it sits on its base and every feeling is in its eyes, as blobatar's. The
 // SVG's data-pet-state picks which parts show and how they move (quartz/components/styles/pet.scss),
 // so changing a look is one attribute write. Colours are theme variables; the pet faces left as
 // drawn and is mirrored to face right. `seed` picks the outline's wobble, so a friend is its own circle.
@@ -69,14 +70,6 @@ export function petSvg(
   const L = 0.08
   const outline = blob(seed, 0.25, 0.06, 0.03, 140)
   const pen = (pts: readonly Pt[], w: (t: number) => number, color = ink) => stroke(pts, w, color)
-
-  const leg = (hip: Pt, foot: Pt, toe: number, seed: number) =>
-    `<g class="pet-leg">${pen(densify([hip, foot, [foot[0] + toe, foot[1] + 0.02]], 0.05), pressure(seed, L * 1.15, 0.2))}</g>`
-  const legs = part(
-    'legs',
-    leg([-0.34, 0.8], [-0.38, 1.36], -0.17, 41) + leg([0.3, 0.84], [0.33, 1.38], -0.16, 43),
-    'pet-legs',
-  )
 
   // In the snow every hand it shows wears a mitten (pet.scss shows them with data-snow).
   const mitt = (pts: readonly Pt[], side: 1 | -1, seed: number) =>
@@ -173,7 +166,7 @@ export function petSvg(
   const w = (L * 0.042) / 0.055
   const s: PetPen = { L, w, paper, ink, pink, outline, pen, mitt }
 
-  const { dash, happy, wide, wince, mouthO, sweat, dots, thought } = petFace(s)
+  const { dash, happy, surprised, scared, thinking, sweat, dots, thought } = petFace(s)
   const thumb = thumbsUp(s)
   const chute = petChute(s)
   const { hat, outfit, glasses, hair } = petOutfits(s)
@@ -246,14 +239,14 @@ export function petSvg(
         .join(''),
   )
 
-  // A short line of its own to stand on, for when no box nearby has an edge.
+  // A short line of its own to stand on, for when no box nearby has an edge, just under its base.
   const ground = part(
     'ground',
     pen(
       hand(
         [
-          [-1.2, 1.43],
-          [1.2, 1.45],
+          [-1.2, 1.07],
+          [1.2, 1.09],
         ],
         0.05,
         0.015,
@@ -263,5 +256,5 @@ export function petSvg(
     ),
   )
 
-  return `<svg class="pet-svg" viewBox="-1.8 -2 3.6 3.8" aria-hidden="true" focusable="false" data-pet-state="idle"><defs><filter id="pet-rim" x="-20%" y="-20%" width="140%" height="140%"><feMorphology in="SourceAlpha" operator="dilate" radius="0.06" result="edge"/><feFlood style="flood-color:var(--dark)"/><feComposite in2="edge" operator="in"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><g class="pet-flip">${ground}${snowfall}<g class="pet-hop"><g class="pet-lean">${chute}${legs}${lounge}${speed}<g class="pet-body">${jetpack}${hair}${outfit.back}<g class="pet-skin">${body}${tan}${vest}${strap}<g class="pet-look">${dash}${happy}${wide}${wince}${mouthO}</g>${knit}${outfit.front}${glasses}${shades}${toque}${hat}</g>${holds}${shelter}${breath}${arms}${thumb}${caught}${lit}${grip}${pole}${laptop}</g>${sweat}${dots}${gust}${thought}</g></g></g></svg>`
+  return `<svg class="pet-svg" viewBox="-1.8 -2 3.6 3.8" aria-hidden="true" focusable="false" data-pet-state="idle"><defs><filter id="pet-rim" x="-20%" y="-20%" width="140%" height="140%"><feMorphology in="SourceAlpha" operator="dilate" radius="0.06" result="edge"/><feFlood style="flood-color:var(--dark)"/><feComposite in2="edge" operator="in"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><g class="pet-flip">${ground}${snowfall}<g class="pet-hop"><g class="pet-lean">${chute}${lounge}${speed}<g class="pet-body">${jetpack}${hair}${outfit.back}<g class="pet-skin">${body}${tan}${vest}${strap}<g class="pet-look">${dash}${happy}${surprised}${scared}${thinking}</g>${knit}${outfit.front}${glasses}${shades}${toque}${hat}</g>${holds}${shelter}${breath}${arms}${thumb}${caught}${lit}${grip}${pole}${laptop}</g>${sweat}${dots}${gust}${thought}</g></g></g></svg>`
 }
