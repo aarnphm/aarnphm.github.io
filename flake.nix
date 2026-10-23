@@ -233,6 +233,17 @@
         pre-commit-check = preCommitCheck;
       }
     );
+    # The dev shell installs the same hooks, and also builds every compiler in that shell.
+    apps = forAllSystems (
+      system: let
+        pkgs = import nixpkgs {inherit system;};
+      in {
+        install-git-hooks = {
+          type = "app";
+          program = "${pkgs.writeShellScript "install-git-hooks" self.checks.${system}.pre-commit-check.shellHook}";
+        };
+      }
+    );
     devShells = forAllSystems (
       system: let
         pkgs = import nixpkgs {inherit system;};
