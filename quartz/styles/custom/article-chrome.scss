@@ -307,6 +307,15 @@ hr {
   background: var(--light);
   z-index: 99999;
 
+  body[data-slug='index'] & {
+    background: transparent;
+
+    > .header-content {
+      height: 0;
+      padding: 0;
+    }
+  }
+
   @media all and ($tablet), all and ($desktop) {
     body[data-slug*='stream'] & {
       background: transparent;

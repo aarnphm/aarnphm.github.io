@@ -565,7 +565,7 @@
 }
 
 // Before the script measures the graph, the frame width stands in for it: the graph spans the
-// frame less its padding, up to the 54rem cap of the expanded view. Phone frames scroll a 32rem
+// frame less its padding, up to the 54rem cap of the expanded view. Phone frames scroll a 37rem
 // graph.
 @container mha-figure (min-width: 640px) {
   .mha-graph {
@@ -581,8 +581,8 @@
 
 @container mha-figure (max-width: 460px) {
   .mha-graph {
-    min-width: 32rem;
-    --mha-u: 1.48;
+    min-width: 37rem;
+    --mha-u: 1.47;
   }
 }
 
