@@ -32,3 +32,6 @@ export { Strava } from './strava'
 export { InquiryMap } from './inquiry-map'
 export { Bibliography } from './citations'
 export { EmailEmitter } from './email'
+
+export { ImageSearch } from './image-search'
+export { PageRankPage } from './pagerank-page'
