@@ -763,6 +763,7 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     const titleContent = target ? highlight(currentSearchTerm, target) : title
     const subscript = target ? `<b>${slug}</b>` : ``
     const similarityLabel = Number.isFinite(similarity) ? similarity.toFixed(3) : '—'
+    const showExcerpt = currentSlug !== 'index' && (!enablePreview || window.innerWidth <= 600)
     itemTile.classList.add('result-card')
     itemTile.id = slug
     itemTile.href = resolveUrl(slug).toString()
@@ -796,7 +797,7 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
         <h3>${titleContent}</h3>
         ${subscript}${htmlTags}
         ${searchMode === 'semantic' ? `<span class="result-likelihood" title="cosine similarity">&nbsp;${similarityLabel}</span>` : ''}
-        ${enablePreview && window.innerWidth > 600 ? '' : `<p>${content}</p>`}
+        ${showExcerpt ? `<p>${content}</p>` : ''}
       </hgroup>`
     }
 

@@ -450,6 +450,7 @@ body[data-slug='index'] .palette > #palette-container > #space {
   }
 
   & > output {
+    flex: 1;
     min-height: 0;
   }
 }
