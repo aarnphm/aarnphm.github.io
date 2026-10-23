@@ -278,8 +278,6 @@ export function renderPageWithMetadata(
       pageBody: CuriusContent,
       afterBody: [],
     }
-  } else if (slug === 'lyd') {
-    components = { ...components, beforeBody: [], sidebar: [], afterBody: [] }
   }
 
   if (componentData.fileData.frontmatter?.poem) {
