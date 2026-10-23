@@ -5,8 +5,10 @@ import type {
 } from '../../types/component'
 import { pdfResourceOf } from '../../util/course'
 import { scriptJson } from '../../util/pdf-marks'
+import { concatenateResources } from '../../util/resources'
 // @ts-ignore
 import script from '../scripts/pdf-reader.inline'
+import controlsStyle from '../styles/pdf-reader-controls.scss'
 import style from '../styles/pdf-reader.scss'
 
 export default (() => {
@@ -50,7 +52,7 @@ export default (() => {
       </article>
     )
   }
-  PdfReader.css = style
+  PdfReader.css = concatenateResources(style, controlsStyle)
   PdfReader.afterDOMLoaded = script
   return PdfReader
 }) satisfies QuartzComponentConstructor

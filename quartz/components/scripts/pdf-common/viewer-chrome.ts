@@ -190,7 +190,7 @@ function createDownloadLink(options: PdfOptions): HTMLAnchorElement {
 /** Writes the page count and sizes the page field to its digits, so the pager keeps its width. */
 export function setPageCount(controls: PdfControls, count: number) {
   controls.pageInput.max = String(count)
-  controls.pageInput.style.setProperty('--pdf-embed-page-digits', String(String(count).length))
+  controls.pageInput.style.setProperty('--pdf-instrument-digits', String(String(count).length))
   controls.pageTotal.textContent = `/ ${count}`
 }
 
