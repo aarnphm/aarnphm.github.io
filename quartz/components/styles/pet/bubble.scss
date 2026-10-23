@@ -13,7 +13,8 @@
   }
 
   &[data-trail-paint='scene'] .garden-pet-button > .pet-svg {
-    visibility: hidden;
+    // The scene twin owns the pixels; keep visibility from cascading through the vector artwork.
+    opacity: 0;
   }
 
   // On the scroll rail: pinned to the viewport, its height tied to the page's scroll position by a

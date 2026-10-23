@@ -1,5 +1,5 @@
 // The pen-drawn pet (quartz/util/mascot.ts). Every look is pre-drawn as a [data-part] group; the
-// SVG's data-state picks which parts show and how they move, and data-kind says how it holds its
+// SVG's data-pet-state picks which parts show and how they move, and data-pet-kind says how it holds its
 // edge (stand, sit with legs dangling, hang). Lengths inside the SVG are user units, where 1px is the
 // body's radius. Loops step at about 10 frames a second, which suits a pen line and keeps the SVG
 // from repainting every frame.

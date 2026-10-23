@@ -66,8 +66,9 @@ export const clearTrailActor = () => {
   trailState.trailHeadY = null
   trailState.trailPrint = null
   petState.root?.removeAttribute('data-trail-paint')
+  const bubble = petState.root?.querySelector<HTMLElement>('.garden-pet-bubble')
   for (const property of ['--pet-trail-top', '--pet-trail-foot', '--pet-trail-unscale'])
-    petState.root?.style.removeProperty(property)
+    bubble?.style.removeProperty(property)
 }
 export const reserveTrailFoot = (path: SVGPathElement, foot: TrailFoot) => {
   if (!currentTrailPath(path)) return clearTrailActor()
@@ -133,7 +134,8 @@ export const reserveTrailFoot = (path: SVGPathElement, foot: TrailFoot) => {
   const feet = (edgeY.stand - viewTop) * petState.unit
   const gap = 4 / foot.scale
   trailState.trailHeadY = foot.y - head * foot.scale
-  const bubble: [string, string][] = [
+  const bubble = petState.root.querySelector<HTMLElement>('.garden-pet-bubble')
+  const placement: [string, string][] = [
     [
       '--pet-trail-top',
       `${((viewBottom - edgeY.stand) * petState.unit + head + gap).toFixed(1)}px`,
@@ -141,9 +143,9 @@ export const reserveTrailFoot = (path: SVGPathElement, foot: TrailFoot) => {
     ['--pet-trail-foot', `${(feet + gap).toFixed(1)}px`],
     ['--pet-trail-unscale', (1 / foot.scale).toFixed(4)],
   ]
-  for (const [property, value] of bubble)
-    if (petState.root.style.getPropertyValue(property) !== value)
-      petState.root.style.setProperty(property, value)
+  for (const [property, value] of placement)
+    if (bubble && bubble.style.getPropertyValue(property) !== value)
+      bubble.style.setProperty(property, value)
   leaveTrailPrint(scene, foot)
 }
 // One blob print a stride along the walk, on alternating sides; muddy in the rain. A jump longer

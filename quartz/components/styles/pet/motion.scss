@@ -33,22 +33,22 @@
 }
 
 // Standing on its own pen line where no box offers an edge.
-.pet-svg[data-kind='floor'] [data-part='ground'] {
+.pet-svg[data-pet-kind='floor'] [data-part='ground'] {
   display: inline;
 }
 
 // Sitting on a ledge: the body rests on the edge and the legs hang over its face, swinging.
-.pet-svg[data-kind='sit'] .pet-leg {
+.pet-svg[data-pet-kind='sit'] .pet-leg {
   animation: pet-dangle 1.4s steps(14) infinite alternate;
 }
 
-.pet-svg[data-kind='sit'] .pet-leg + .pet-leg {
+.pet-svg[data-pet-kind='sit'] .pet-leg + .pet-leg {
   animation-delay: -0.7s;
 }
 
 // Hanging from a ledge by both hands, swaying, feet kicking now and then. Arm-waving looks would
 // mean letting go, so the hands stay up whatever the face does.
-.pet-svg[data-kind='hang'] {
+.pet-svg[data-pet-kind='hang'] {
   [data-part='arms-hang'] {
     display: inline;
   }
@@ -73,7 +73,7 @@
   }
 }
 
-.pet-svg[data-state='run'] {
+.pet-svg[data-pet-state='run'] {
   .pet-lean {
     rotate: -9deg;
     animation: none;
@@ -97,7 +97,7 @@
 }
 
 // A stroll: upright, a slow stride, a bob on each step.
-.pet-svg[data-state='walk'] {
+.pet-svg[data-pet-state='walk'] {
   .pet-lean {
     rotate: -3deg;
     animation: none;
@@ -116,7 +116,7 @@
   }
 }
 
-.pet-svg[data-state='fly'] {
+.pet-svg[data-pet-state='fly'] {
   .pet-lean {
     rotate: -12deg;
     animation: none;
@@ -128,15 +128,15 @@
   }
 }
 
-.pet-svg[data-state='land'] .pet-body {
+.pet-svg[data-pet-state='land'] .pet-body {
   animation: pet-squash 0.38s steps(5);
 }
 
-.pet-svg[data-state='wave'] [data-part='arm-l'] {
+.pet-svg[data-pet-state='wave'] [data-part='arm-l'] {
   animation: pet-wave 0.9s steps(9) infinite alternate;
 }
 
-.pet-svg[data-state='failed'] {
+.pet-svg[data-pet-state='failed'] {
   .pet-hop {
     animation: pet-shake 0.12s steps(2) 6;
   }
@@ -150,7 +150,7 @@
   }
 }
 
-.pet-svg[data-state='wait'] {
+.pet-svg[data-pet-state='wait'] {
   .pet-look {
     animation: pet-look-around 3.2s step-end infinite;
   }
@@ -168,11 +168,11 @@
   }
 }
 
-.pet-svg[data-state='wait'][data-kind='stand'] .pet-leg:first-child {
+.pet-svg[data-pet-state='wait'][data-pet-kind='stand'] .pet-leg:first-child {
   animation: pet-tap 0.7s steps(4) infinite;
 }
 
-.pet-svg[data-state='work'] {
+.pet-svg[data-pet-state='work'] {
   .pet-look {
     translate: -0.04px 0.14px;
   }
@@ -190,11 +190,11 @@
   }
 }
 
-.pet-svg[data-state='happy'] .pet-hop {
+.pet-svg[data-pet-state='happy'] .pet-hop {
   animation: pet-bounce 0.9s steps(9) infinite;
 }
 
-.pet-svg[data-state='cheer'] {
+.pet-svg[data-pet-state='cheer'] {
   .pet-hop {
     animation: pet-jump 0.5s steps(6) infinite;
   }
@@ -208,17 +208,17 @@
   }
 }
 
-.pet-svg[data-state='cheer'][data-kind='hang'] .pet-hop {
+.pet-svg[data-pet-state='cheer'][data-pet-kind='hang'] .pet-hop {
   animation: none;
 }
 
 // Clicked: a thumbs up, the arm rising once from its side and holding there. No hop.
-.pet-svg[data-state='thumb'] [data-part='arm-thumb'] {
+.pet-svg[data-pet-state='thumb'] [data-part='arm-thumb'] {
   animation: pet-thumb-up 0.3s steps(4) both;
 }
 
 // Sliding down the scroll rail: hugging the pole, legs wrapped toward it, leaning in.
-.pet-svg[data-state='slide'] {
+.pet-svg[data-pet-state='slide'] {
   .pet-lean {
     transform-origin: 50% 0;
     rotate: 6deg;
@@ -237,7 +237,7 @@
 
 // Flying up to the rail on a jetpack: arms reaching for the pole, legs trailing, the flames
 // flickering between their two drawings.
-.pet-svg[data-state='jet'] {
+.pet-svg[data-pet-state='jet'] {
   [data-part='ground'] {
     display: none;
   }
@@ -267,7 +267,7 @@
 
 // Floating down off the rail under its parachute: swinging under the canopy, legs dangling. The
 // canopy's line boils between its three drawings and the canopy puffs as it fills.
-.pet-svg[data-state='chute'] {
+.pet-svg[data-pet-state='chute'] {
   [data-part='ground'] {
     display: none;
   }
@@ -305,7 +305,7 @@
 }
 
 // Saying the phrase the French voice is reading: the mouth opens and closes in turn.
-.pet-svg[data-state='talk'] {
+.pet-svg[data-pet-state='talk'] {
   [data-part='mouth-o'],
   [data-part='mouth-smile'] {
     animation: pet-swap 0.34s step-end infinite;
@@ -317,7 +317,7 @@
 }
 
 // Reading a sidenote from on top of it: eyes down on the text, a thought ticking over.
-.pet-svg[data-state='think'] {
+.pet-svg[data-pet-state='think'] {
   .pet-look {
     translate: -0.04px 0.12px;
   }
@@ -699,7 +699,7 @@
     transition: none !important;
   }
 
-  .pet-svg[data-state='failed'] [data-part='eyes-wince'] {
+  .pet-svg[data-pet-state='failed'] [data-part='eyes-wince'] {
     display: none;
   }
 

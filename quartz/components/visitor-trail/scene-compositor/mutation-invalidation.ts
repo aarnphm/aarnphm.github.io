@@ -28,7 +28,11 @@ export function createMutations(
   let attributeSelectors: Map<string, string[]> | null = null
   const collect = (rules: CSSRuleList, into: Map<string, string[]>) => {
     for (const rule of rules) {
-      if ('selectorText' in rule && typeof rule.selectorText === 'string')
+      // Pausing keeps the sampled pixels. The animation sampler owns timing changes.
+      if (
+        is(rule, 'CSSStyleRule') &&
+        [...rule.style].some(property => property !== 'animation-play-state')
+      )
         for (const name of new Set(
           Array.from(rule.selectorText.matchAll(/\[([\w-]+)/g), m => m[1]),
         ))

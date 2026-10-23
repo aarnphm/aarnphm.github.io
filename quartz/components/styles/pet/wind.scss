@@ -22,13 +22,13 @@ $pet-head-outfits: "[data-outfit='fr'], [data-outfit='legal'], [data-outfit='cou
 .pet-svg[data-windy]:not(
     [data-rain],
     [data-outfit='triathlon'],
-    [data-kind='hang'],
-    [data-state='slide'],
-    [data-state='chute'],
-    [data-state='jet'],
-    [data-state='fly'],
-    [data-state='cheer'],
-    [data-state='thumb']
+    [data-pet-kind='hang'],
+    [data-pet-state='slide'],
+    [data-pet-state='chute'],
+    [data-pet-state='jet'],
+    [data-pet-state='fly'],
+    [data-pet-state='cheer'],
+    [data-pet-state='thumb']
   ) {
   &:not(#{$pet-head-outfits}):is([data-hat], :not([data-cold='cold'])) {
     [data-part='hat'],
@@ -45,7 +45,7 @@ $pet-head-outfits: "[data-outfit='fr'], [data-outfit='legal'], [data-outfit='cou
   }
 
   // At the laptop it types with the other hand only.
-  &[data-state='work'] .pet-key + .pet-key {
+  &[data-pet-state='work'] .pet-key + .pet-key {
     display: none;
   }
 

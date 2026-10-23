@@ -272,6 +272,7 @@
   --trail-panel-height: calc(100dvh - var(--trail-panel-top) - var(--trail-panel-bottom));
   align-self: flex-start;
   width: min(44rem, calc(100% - var(--trail-panel-left) - var(--trail-panel-right)));
+  height: min(36rem, var(--trail-panel-height));
   max-width: none;
   max-height: var(--trail-panel-height);
   margin: var(--trail-panel-top) auto 0;

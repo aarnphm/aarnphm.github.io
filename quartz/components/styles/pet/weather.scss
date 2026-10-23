@@ -46,7 +46,7 @@
   display: inline;
 }
 
-.pet-svg[data-cold='cold']:is([data-state='idle'], [data-state='wait']) {
+.pet-svg[data-cold='cold']:is([data-pet-state='idle'], [data-pet-state='wait']) {
   [data-part='breath'] {
     display: inline;
   }
@@ -66,7 +66,7 @@
     animation-delay: 0.5s;
   }
 
-  &:not([data-kind='hang']) .pet-lean {
+  &:not([data-pet-kind='hang']) .pet-lean {
     animation: pet-shiver 4.6s linear infinite;
   }
 }
@@ -133,12 +133,12 @@
 // Rain where the visitor is: it holds up its little umbrella, the rain falling past in two
 // drawings. Not while its hands are busy hanging, sliding, flying or cheering.
 .pet-svg[data-rain]:not(
-    [data-kind='hang'],
-    [data-state='slide'],
-    [data-state='chute'],
-    [data-state='jet'],
-    [data-state='fly'],
-    [data-state='cheer']
+    [data-pet-kind='hang'],
+    [data-pet-state='slide'],
+    [data-pet-state='chute'],
+    [data-pet-state='jet'],
+    [data-pet-state='fly'],
+    [data-pet-state='cheer']
   )
   [data-part='umbrella'] {
   display: inline;
@@ -199,16 +199,16 @@
 
   // Its eyes go wide as the umbrella turns, where it would otherwise look on calmly.
   &:is(
-      [data-state='idle'],
-      [data-state='wait'],
-      [data-state='work'],
-      [data-state='walk'],
-      [data-state='run'],
-      [data-state='land'],
-      [data-state='talk'],
-      [data-state='think'],
-      [data-state='wave']
-    ):not([data-kind='hang']) {
+      [data-pet-state='idle'],
+      [data-pet-state='wait'],
+      [data-pet-state='work'],
+      [data-pet-state='walk'],
+      [data-pet-state='run'],
+      [data-pet-state='land'],
+      [data-pet-state='talk'],
+      [data-pet-state='think'],
+      [data-pet-state='wave']
+    ):not([data-pet-kind='hang']) {
     [data-part='eyes-dash'] {
       animation: pet-storm-open-eyes 11s step-end infinite;
     }
@@ -328,7 +328,7 @@
     display: inline;
   }
 
-  &:is([data-state='idle'], [data-state='wait']):not([data-kind='hang']) {
+  &:is([data-pet-state='idle'], [data-pet-state='wait']):not([data-pet-kind='hang']) {
     [data-part='snowfall'] {
       display: inline;
     }
@@ -431,13 +431,13 @@
 // unless its hands are busy. Outfits with a prop in that paw hold it out behind instead, unless the
 // umbrella has that paw, or the thumbs up has it. The flame and its rays flicker between two drawings.
 .pet-svg[data-lantern]:not(
-    [data-kind='hang'],
-    [data-state='slide'],
-    [data-state='chute'],
-    [data-state='jet'],
-    [data-state='fly'],
-    [data-state='cheer'],
-    [data-state='wave']
+    [data-pet-kind='hang'],
+    [data-pet-state='slide'],
+    [data-pet-state='chute'],
+    [data-pet-state='jet'],
+    [data-pet-state='fly'],
+    [data-pet-state='cheer'],
+    [data-pet-state='wave']
   ) {
   &:not(
       [data-outfit='art'],
@@ -456,7 +456,7 @@
       [data-outfit='courses'],
       [data-outfit='cinema'],
       [data-outfit='engineering']
-    ):not([data-rain], [data-state='thumb'])
+    ):not([data-rain], [data-pet-state='thumb'])
     [data-part='lantern-back'] {
     display: inline;
   }
@@ -497,7 +497,7 @@
 
 // On a sunny hot day, when it would get its laptop out, it lies back on a sun lounger instead,
 // turned 30° into the backrest with its legs out along the cushion, and tans as it lies there.
-.pet-svg[data-beach][data-state='work']:is([data-kind='stand'], [data-kind='floor']) {
+.pet-svg[data-beach][data-pet-state='work']:is([data-pet-kind='stand'], [data-pet-kind='floor']) {
   [data-part='laptop'],
   [data-part='legs'] {
     display: none;

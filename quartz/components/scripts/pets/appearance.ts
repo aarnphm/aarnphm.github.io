@@ -109,13 +109,13 @@ export const syncStorm = (event: AnimationEvent) => {
 export const render = () => {
   if (!petState.root || !petState.svg || (!petState.doc && !petState.carry)) return
   const next = state(performance.now())
-  if (petState.svg.dataset.state !== next) petState.svg.dataset.state = next
-  petState.svg.dataset.kind = petState.perch?.kind ?? 'stand'
+  if (petState.svg.dataset.petState !== next) petState.svg.dataset.petState = next
+  petState.svg.dataset.petKind = petState.perch?.kind ?? 'stand'
   const now = performance.now()
   const lying =
     weatherState.beach &&
     next === 'work' &&
-    (petState.svg.dataset.kind === 'stand' || petState.svg.dataset.kind === 'floor')
+    (petState.svg.dataset.petKind === 'stand' || petState.svg.dataset.petKind === 'floor')
   if (lying && weatherState.tanFrom === null) weatherState.tanFrom = now
   if (!lying && weatherState.tanFrom !== null) {
     weatherState.tan = Math.min(1, weatherState.tan + (now - weatherState.tanFrom) / tanMs)
@@ -198,13 +198,13 @@ const placeBubble = () => {
     !(petState.speaking?.playing || friendState.chat || petState.reminding || petState.trailHint)
   )
     return
-  petState.root.style.removeProperty('--pet-bubble-x')
+  bubble.style.removeProperty('--pet-bubble-x')
   const c = center().x
   const half = bubble.offsetWidth / 2
   const gutter = 8
   const shift =
     Math.max(gutter - (c - half), 0) - Math.max(c + half - (window.innerWidth - gutter), 0)
-  if (shift) petState.root.style.setProperty('--pet-bubble-x', `${shift.toFixed(0)}px`)
+  if (shift) bubble.style.setProperty('--pet-bubble-x', `${shift.toFixed(0)}px`)
 }
 
 // Shows `next` for `ms`, then falls back to whatever the pet would otherwise be doing.
@@ -246,7 +246,7 @@ export const syncTrailArt = () => {
 export function renderFriend() {
   if (!friendState.friend || !friendState.friendSvg) return
   const now = performance.now()
-  const main = petState.svg?.dataset.state
+  const main = petState.svg?.dataset.petState
   const next: State =
     friendState.friendOverride && now < friendState.friendOverride.until
       ? friendState.friendOverride.state
@@ -255,8 +255,8 @@ export function renderFriend() {
         : main === 'work' || main === 'wait'
           ? main
           : 'idle'
-  if (friendState.friendSvg.dataset.state !== next) friendState.friendSvg.dataset.state = next
-  friendState.friendSvg.dataset.kind = friendState.friendPerch?.kind ?? 'stand'
+  if (friendState.friendSvg.dataset.petState !== next) friendState.friendSvg.dataset.petState = next
+  friendState.friendSvg.dataset.petKind = friendState.friendPerch?.kind ?? 'stand'
   if (friendState.friendSvg.dataset.cold !== weatherState.chill)
     friendState.friendSvg.dataset.cold = weatherState.chill
   friendState.friendSvg.toggleAttribute('data-rain', weatherState.rain)
