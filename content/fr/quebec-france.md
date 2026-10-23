@@ -9,7 +9,7 @@ tags:
 title: québec et france
 ---
 
-Le français a deux rives — et le piège des faux amis. Vocabulaire général dans [[fr/mots]].
+Le français a deux rives — et le piège des faux amis. Vocabulaire général dans [[fr/mots|mots]].
 
 ```jsx imports={RegisterLadder}
 <RegisterLadder

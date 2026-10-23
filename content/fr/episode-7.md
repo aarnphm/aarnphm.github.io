@@ -24,7 +24,7 @@ the opening listening sorts qui parle à qui (la directrice du centre, le profes
 
 ## tu ou vous
 
-the Mémo scales the pronoun along the same axes as the greetings of [[fr/episode-1]]:
+the Mémo scales the pronoun along the same axes as the greetings of [[fr/episode-1|episode-1]]:
 
 | axe       | `tu`                  | `vous`               |
 | --------- | --------------------- | -------------------- |
@@ -76,7 +76,7 @@ the singular endings run x, x, t.[^x] `pouvoir` est souvent suivi d'un verbe à 
 - {{`Est-ce que tu peux répéter ?`}}
 - {{`Pouvez-vous attendre une minute ?`}}
 
-the last two are the polite-request side of `pouvoir`; {{`Pouvez-vous répéter, s'il vous plait ?`}} already lives in [[fr/episode-2]] with the rest of the not-understanding toolkit.
+the last two are the polite-request side of `pouvoir`; {{`Pouvez-vous répéter, s'il vous plait ?`}} already lives in [[fr/episode-2|episode-2]] with the rest of the not-understanding toolkit.
 
 the episode's infinitive bank, one verb per image:
 
@@ -191,12 +191,12 @@ interdiction gets twice the frames of the other two levels, 4 : 2 : 2, which tra
 
 posted messages state a condition in the third person (`ouvert`, `fermé`, `permis`) instead of addressing you with `pouvoir`. the four models:
 
-- `Les salles de classe sont fermées après 18 heures.` (the 24-hour clock of [[fr/episode-3]]: 18 h is 6 pm)
-- {{`Le bureau du registraire est ouvert du lundi au jeudi.`}} (the `du … au …` frame, also [[fr/episode-3]]; so fermé du vendredi au dimanche)
+- `Les salles de classe sont fermées après 18 heures.` (the 24-hour clock of [[fr/episode-3|episode-3]]: 18 h is 6 pm)
+- {{`Le bureau du registraire est ouvert du lundi au jeudi.`}} (the `du … au …` frame, also [[fr/episode-3|episode-3]]; so fermé du vendredi au dimanche)
 - {{`Le cellulaire n'est pas permis dans la bibliothèque.`}} (same negation, carried by `être` + `permis` instead of `pouvoir`)
-- {{`S'il vous plait, gardez les lieux propres en tout temps.`}} (an imperative consigne, the mode of [[fr/episode-3]]'s `Écoutez`, `Cochez`)
+- {{`S'il vous plait, gardez les lieux propres en tout temps.`}} (an imperative consigne, the mode of [[fr/episode-3|episode-3]]'s `Écoutez`, `Cochez`)
 
-`ouvert` and `fermé` do the state; the schedule around them is the horaire vocabulary of [[fr/episode-3]].
+`ouvert` and `fermé` do the state; the schedule around them is the horaire vocabulary of [[fr/episode-3|episode-3]].
 
 ### les quatre rubriques du babillard de l'école
 
@@ -226,7 +226,7 @@ posted messages state a condition in the third person (`ouvert`, `fermé`, `perm
 
 **sens en anglais:** the first parent-teacher evening will take place on December 4, starting at 4 p.m. your child's teacher will contact you to set the meeting time.
 
-{{`avoir lieu`}} signifie se passer, et {{`à compter de`}} signifie à partir de. `aura lieu` et `contactera` sont au futur simple parce que l'école annonce des évènements futurs. `16 h` correspond à 4 p.m. dans le système sur 24 heures de [[fr/episode-3]].
+{{`avoir lieu`}} signifie se passer, et {{`à compter de`}} signifie à partir de. `aura lieu` et `contactera` sont au futur simple parce que l'école annonce des évènements futurs. `16 h` correspond à 4 p.m. dans le système sur 24 heures de [[fr/episode-3|episode-3]].
 
 #### 4. photos de classe
 
@@ -281,12 +281,12 @@ posted messages state a condition in the third person (`ouvert`, `fermé`, `perm
 
 tout le registre de l'épisode réapparait ici: permis, pas permis, interdites, obligatoires. les formes au futur ajoutent les dates et les arrangements dont les parents ont besoin.
 
-the vrai/faux then re-reads the board through `pouvoir`: {{`Mon enfant ne peut pas apporter d'arachides à l'école.`}} (vrai). the negation squeezes the article to `d'arachides`, the same move as `pas d'enfants` in [[fr/episode-1]].
+the vrai/faux then re-reads the board through `pouvoir`: {{`Mon enfant ne peut pas apporter d'arachides à l'école.`}} (vrai). the negation squeezes the article to `d'arachides`, the same move as `pas d'enfants` in [[fr/episode-1|episode-1]].
 
 > [!note] faits d'ici
 > les allergies alimentaires. au Canada, de 5 à 6 % des enfants et de 3 à 4 % des adultes ont des allergies alimentaires, roughly 3 : 2 children to adults. les principaux allergènes: le lait, les œufs, les noix, les arachides, le soya, les protéines du bœuf, du poisson, des fruits de mer, et le gluten. dans votre pays d'origine, est-ce que beaucoup de personnes ont des allergies alimentaires ?
 
-vous pouvez maintenant vous informer sur le fonctionnement d'un établissement et comprendre un message d'un établissement. the établissement itself (les salles, la bibliothèque, les casiers) sits on the location vocabulary of [[fr/episode-6]], and every horaire in the messages leans on the clock of [[fr/episode-3]].
+vous pouvez maintenant vous informer sur le fonctionnement d'un établissement et comprendre un message d'un établissement. the établissement itself (les salles, la bibliothèque, les casiers) sits on the location vocabulary of [[fr/episode-6|episode-6]], and every horaire in the messages leans on the clock of [[fr/episode-3|episode-3]].
 
 ## comprendre les expressions
 
@@ -303,7 +303,7 @@ vous pouvez maintenant vous informer sur le fonctionnement d'un établissement e
 
 related: [[fr/episode-2|épisode 2]], [[fr/episode-3|épisode 3]], [[fr/episode-6|épisode 6]], [[fr/orthography-phonetics|orthographe]]
 
-[^plait]: rectified orthography drops the circumflex over `i` and `u` where it does no work: `plait`, `un diner` (both printed that way in this episode). the full rules live in [[fr/orthography-phonetics]].
+[^plait]: rectified orthography drops the circumflex over `i` and `u` where it does no work: `plait`, `un diner` (both printed that way in this episode). the full rules live in [[fr/orthography-phonetics|orthography-phonetics]].
 
 [^x]: `pouvoir`, `vouloir` and `valoir` are the only French verbs whose `je`/`tu` present forms end in `-x`; everything else takes `-s`. `devoir`, on the same page, shows the regular pattern.
 

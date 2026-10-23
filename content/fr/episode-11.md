@@ -28,10 +28,10 @@ the checklist of loisirs is the vocabulary bank for the first question:
 
 {{`Je fais de la bicyclette.`}}, {{`Je fais de la course à pied.`}}, {{`Je joue à des jeux vidéos.`}}, {{`Je nage.`}}, {{`Je cuisine.`}}, {{`Je lis.`}}, {{`Je tricote.`}}
 
-two of these carry structure worth naming: {{sidenotes[`faire de la`]: à la négation, `de` seul : `Je ne fais pas de yoga.` d'autres expressions avec `faire` : [[fr/episode-9#les-expressions-avec-faire|épisode 9]].}} + activity (`de la bicyclette`, `de la course à pied`) and `jouer à` + game (`à des jeux vidéos`). the rest are plain `-er` verbs plus `lire`, both already conjugated in [[fr/episode-9]].
+two of these carry structure worth naming: {{sidenotes[`faire de la`]: à la négation, `de` seul : `Je ne fais pas de yoga.` d'autres expressions avec `faire` : [[fr/episode-9#les-expressions-avec-faire|épisode 9]].}} + activity (`de la bicyclette`, `de la course à pied`) and `jouer à` + game (`à des jeux vidéos`). the rest are plain `-er` verbs plus `lire`, both already conjugated in [[fr/episode-9|episode-9]].
 
 > [!note] `passer le temps`
-> the third question is a trap with two boxes: `Demander l'heure.` and {{`Occuper son temps.`}} the answer is `Occuper son temps`, to fill your time. asking the hour is {{`Avez-vous l'heure ?`}} from [[fr/episode-3]], which shares the noun `temps` with nothing at all.
+> the third question is a trap with two boxes: `Demander l'heure.` and {{`Occuper son temps.`}} the answer is `Occuper son temps`, to fill your time. asking the hour is {{`Avez-vous l'heure ?`}} from [[fr/episode-3|episode-3]], which shares the noun `temps` with nothing at all.
 
 `Dans cet épisode… Hélène inscrit sa fille à un cours de natation.`
 
@@ -126,7 +126,7 @@ Les annotations visibles en haut de la capture mentionnent aussi la lecture, la 
 
 `Enfants : 75 $` `Adultes : 80 $`. {{`Paiement par débit, chèque ou comptant.`}}
 
-every time on the poster uses the `h` abbreviation of [[fr/episode-3]]: `9 h 30` reads {{`neuf heures trente`}}, `17 h 30` reads {{`dix-sept heures trente`}}. the children's courses name their animals (`canard`, `tortue`, `loutre de mer`) instead of levels, which is how a Québec pool grades toddlers.
+every time on the poster uses the `h` abbreviation of [[fr/episode-3|episode-3]]: `9 h 30` reads {{`neuf heures trente`}}, `17 h 30` reads {{`dix-sept heures trente`}}. the children's courses name their animals (`canard`, `tortue`, `loutre de mer`) instead of levels, which is how a Québec pool grades toddlers.
 
 ### le vocabulaire de la programmation
 
@@ -181,7 +181,7 @@ four frames worth owning, all of them reusable outside the pool:
 | `À qui s'adresse… ?`       | `À qui s'adresse le cours d'aqua-détente ?` | le public visé   |
 | `Quand peut-on… ?`         | {{`Quand peut-on s'inscrire ?`}}            | le moment        |
 
-`coute` is printed without the circumflex, the rectified spelling the book uses throughout.[^coute] the `on` in `Quand peut-on s'inscrire ?` and `Est-ce qu'on peut s'inscrire par téléphone ?` is impersonal, English one or you-in-general, not the spoken `on` that replaces `nous` in [[fr/episode-9]]. the answer stays impersonal too: `On peut s'inscrire à partir du 17 mars.`
+`coute` is printed without the circumflex, the rectified spelling the book uses throughout.[^coute] the `on` in `Quand peut-on s'inscrire ?` and `Est-ce qu'on peut s'inscrire par téléphone ?` is impersonal, English one or you-in-general, not the spoken `on` that replaces `nous` in [[fr/episode-9|episode-9]]. the answer stays impersonal too: `On peut s'inscrire à partir du 17 mars.`
 
 ## les modes de paiement
 
@@ -236,7 +236,7 @@ the second form is a full FLS registration, filled from `débutant • lundi et 
 
 `MODE DE PAIEMENT`: `Comptant`, `Débit`, or `Carte de crédit : Visa / MasterCard / Autre`, then {{`Nom du titulaire de la carte`}}, {{`Numéro de la carte`}}, `Date d'expiration (mm/aa)`.
 
-what is new against the `fiche d'inscription` of [[fr/episode-2]], which already owns `Nom de famille`, `Prénom`, {{`Date de naissance`}}, `Adresse`, `Ville`, {{`Code postal`}}, `Courriel`:
+what is new against the `fiche d'inscription` of [[fr/episode-2|episode-2]], which already owns `Nom de famille`, `Prénom`, {{`Date de naissance`}}, `Adresse`, `Ville`, {{`Code postal`}}, `Courriel`:
 
 - `* Champs obligatoires`, the asterisk convention. an unstarred field (`Téléphone cellulaire`, `Téléphone travail`) is optional.
 - `Province/État` and `Pays`, which appear once a form expects users from outside Québec.
@@ -246,7 +246,7 @@ what is new against the `fiche d'inscription` of [[fr/episode-2]], which already
 - `Durée (semaines)`, the same `durée` as the poster, counted in weeks instead of minutes.
 
 > [!warning] deux formats de date sur la même page
-> `Date de naissance (aaaa/mm/jj)` is year-month-day, the order of [[fr/episode-2]]. `Date d'expiration (mm/aa)` is month-year. the form prints both, three lines apart, and expects you to notice. `12/24` on a Visa means december 2024.
+> `Date de naissance (aaaa/mm/jj)` is year-month-day, the order of [[fr/episode-2|episode-2]]. `Date d'expiration (mm/aa)` is month-year. the form prints both, three lines apart, and expects you to notice. `12/24` on a Visa means december 2024.
 
 ## remplir un chèque
 
@@ -284,7 +284,7 @@ the printed line ends with `/100 DOLLARS`, so the dollars go in letters and the 
 | `138,46 $` | `Cent-trente-huit et 46`      | `Cent-trente-huit et 46/100 DOLLARS`      |
 | `98,50 $`  | `Quatre-vingt-dix-huit et 50` | `Quatre-vingt-dix-huit et 50/100 DOLLARS` |
 
-the hyphens follow the rectified spelling that [[fr/les-nombres]] sets out: every element joined, so `cent-trente-huit`, not the older `cent trente-huit`. `quatre-vingt-dix-huit` was already fully hyphenated under both conventions, and it drops the `-s` of `quatre-vingts` the moment another number follows.[^centimes]
+the hyphens follow the rectified spelling that [[fr/les-nombres|les-nombres]] sets out: every element joined, so `cent-trente-huit`, not the older `cent trente-huit`. `quatre-vingt-dix-huit` was already fully hyphenated under both conventions, and it drops the `-s` of `quatre-vingts` the moment another number follows.[^centimes]
 
 the two remaining cheques of the exercise:
 
@@ -324,7 +324,7 @@ related: [[fr/episode-2|épisode 2]], [[fr/episode-3|épisode 3]], [[fr/episode-
 
 [^huitsemaines]: the arithmetic checks out. 24 avril 2017 was a monday, 16 juin a friday, and the span covers exactly eight calendar weeks (24 avril, 1er, 8, 15, 22, 29 mai, 5 et 12 juin). so `8 semaines` is a count of sessions, one per week, not a delay before the start.
 
-[^coute]: the book prints `coute`, the rectified spelling of the verb `couter` (older graphie `coûter`), the same reform that gives `aout` and `s'il vous plait` in [[fr/episode-2]]. the circumflex disappears over `i` and `u` wherever it distinguishes nothing.
+[^coute]: the book prints `coute`, the rectified spelling of the verb `couter` (older graphie `coûter`), the same reform that gives `aout` and `s'il vous plait` in [[fr/episode-2|episode-2]]. the circumflex disappears over `i` and `u` wherever it distinguishes nothing.
 
 [^comptant]: `comptant` comes from `payer argent comptant`, paying money that is counted out on the spot. Québec kept the adverbial use where hexagonal French drifted to `en espèces` and `en liquide`. the poster's `Paiement par débit, chèque ou comptant` mixes an instrument (`débit`), a document (`chèque`) and a manner (`comptant`) in one list, which nobody notices until they try to parse it.
 

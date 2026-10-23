@@ -10,7 +10,7 @@ tags:
 title: 'épisode 10 : découvrir un nouveau quartier'
 ---
 
-épisode 10 sits in the middle of the printemps season, and it is the first time the book steps outdoors. [[fr/episode-6]] taught you to find a room inside an édifice; this one hands you a whole quartier, a plan drawn across two facing pages, a métro map, a timetable, and four transit notices.
+épisode 10 sits in the middle of the printemps season, and it is the first time the book steps outdoors. [[fr/episode-6|episode-6]] taught you to find a room inside an édifice; this one hands you a whole quartier, a plan drawn across two facing pages, a métro map, a timetable, and four transit notices.
 
 the découvrez checklist repeats the épisode 6 question with a bigger denominator: {{`Vous cherchez un endroit dans un quartier que vous ne connaissez pas. Qu'est-ce que vous faites ?`}}
 
@@ -20,7 +20,7 @@ the découvrez checklist repeats the épisode 6 question with a bigger denominat
 
 the same three strategies as the corridor version (ask, read the map, cope alone), and the same two get trained. the third option quietly slips a subjunctive past you: `jusqu'à ce que je trouve`. the episode never uses that construction again, and the version you actually need, `jusqu'à` plus a noun, shows up on the next page.
 
-the rest of the opener is personal: {{`Dans quel quartier habitez-vous ? Est-ce que vous aimez votre quartier ? Pourquoi ?`}}, {{`Quel est votre quartier préféré ? Pourquoi ?`}}, and {{`Comment aimez-vous découvrir un quartier ?`}} with four moyens de transport, {{`à pied`}}, {{`en auto`}}, {{`à vélo`}}, {{`en autobus`}}, the table [[fr/episode-9]] already built, minus `en métro` and `en taxi`.
+the rest of the opener is personal: {{`Dans quel quartier habitez-vous ? Est-ce que vous aimez votre quartier ? Pourquoi ?`}}, {{`Quel est votre quartier préféré ? Pourquoi ?`}}, and {{`Comment aimez-vous découvrir un quartier ?`}} with four moyens de transport, {{`à pied`}}, {{`en auto`}}, {{`à vélo`}}, {{`en autobus`}}, the table [[fr/episode-9|episode-9]] already built, minus `en métro` and `en taxi`.
 
 `Dans cet épisode… Hélène et Benoit découvrent un nouveau quartier.`
 
@@ -199,7 +199,7 @@ two of the eight are glossed by the book itself, and that is the tell. the list 
 
 ## les prépositions de localisation (3)
 
-third pass, and the interesting part is the delta. set (1) in [[fr/episode-3]] is `sur, dans, devant, derrière, sous, entre`, which parks objects around furniture. set (2) in [[fr/episode-6]] is `à gauche, à droite, en face, à côté, au bout, loin, près, au-dessus`, which points and measures inside a building. set (3) is seven items:
+third pass, and the interesting part is the delta. set (1) in [[fr/episode-3|episode-3]] is `sur, dans, devant, derrière, sous, entre`, which parks objects around furniture. set (2) in [[fr/episode-6|episode-6]] is `à gauche, à droite, en face, à côté, au bout, loin, près, au-dessus`, which points and measures inside a building. set (3) is seven items:
 
 | préposition              | gloss                | statut        | exemple du livre                                    |
 | ------------------------ | -------------------- | ------------- | --------------------------------------------------- |
@@ -215,7 +215,7 @@ two in, three out of this Mémo. `de l'autre côté` and `au coin` arrive; `à g
 
 ### choisir du, de la, de l' ou des
 
-the same combinations introduced in [[fr/episode-6]] follow all seven expressions. choose the form from the reference noun after the preposition. in {{`La banque est à côté du cinéma.`}}, masculine `le cinéma` determines `du`.
+the same combinations introduced in [[fr/episode-6|episode-6]] follow all seven expressions. choose the form from the reference noun after the preposition. in {{`La banque est à côté du cinéma.`}}, masculine `le cinéma` determines `du`.
 
 | nom de référence                                          | combinaison      | exemple du mémo       |
 | --------------------------------------------------------- | ---------------- | --------------------- |
@@ -235,7 +235,7 @@ keep `au coin de` apart from `dans le coin`, which has no complement and means a
 
 ### entre… et…
 
-`entre… et…` means between… and…, with two landmarks: **lieu + est / se trouve + entre + lieu A + et + lieu B**. it comes from [[fr/episode-3]] and also works with the neighbourhood plan:
+`entre… et…` means between… and…, with two landmarks: **lieu + est / se trouve + entre + lieu A + et + lieu B**. it comes from [[fr/episode-3|episode-3]] and also works with the neighbourhood plan:
 
 - `La boucherie (11) est entre l'épicerie (12) et la boulangerie (10).`
 - {{`La boucherie se trouve entre l'épicerie et la boulangerie.`}}
@@ -300,7 +300,7 @@ practice sentences from the west half of the plan, with its building numbers. th
 | Le café (4) est au coin de la rue Laliberté et de la rue Sainte-Anne. | The café is at the corner of Laliberté Street and Sainte-Anne Street. |
 | La banque (14) est à côté du magasin de sport (13).                   | The bank is next to the sporting goods store.                         |
 
-`entre… et…` comes from [[fr/episode-3]]. to ask for a location, use {{`Où est le gym ?`}} or {{`Où se trouve le gym ?`}}. the [[fr/lessons/260916#exemples sur le plan du quartier|lesson notes]] pair each place with a question and answer.
+`entre… et…` comes from [[fr/episode-3|episode-3]]. to ask for a location, use {{`Où est le gym ?`}} or {{`Où se trouve le gym ?`}}. the [[fr/lessons/260916#exemples sur le plan du quartier|lesson notes]] pair each place with a question and answer.
 
 ### repères sur la partie est du plan
 
@@ -317,7 +317,7 @@ le pont Gauthier permet de traverser la rivière au Chat. sur ce plan, la rue L�
 
 ## donner des indications dans un quartier
 
-the encadré is six lines, all impératif vous, the mood [[fr/episode-6]] already conjugated:
+the encadré is six lines, all impératif vous, the mood [[fr/episode-6|episode-6]] already conjugated:
 
 | formule                                      | ce qu'elle fait                           |
 | -------------------------------------------- | ----------------------------------------- |
@@ -334,7 +334,7 @@ three things are new here rather than recycled.
 
 `jusqu'à` means as far as, up to, and it ends in `à`, so it contracts like any other `à`: {{`jusqu'à la rue Légaré`}}, {{`jusqu'au coin`}}, {{`jusqu'aux lumières`}}. the pair `Continuez tout droit jusqu'à la rue Légaré` against `Continuez tout droit sur la rue Légaré` is the difference between a destination and a route.
 
-the landmarks changed with the setting. inside an édifice, [[fr/episode-6]] counted `le premier corridor` and `le troisième étage`. outdoors you count `la lumière`, `l'arrêt`, `le pont`, `le coin`. the slot after `à` is identical, only the furniture moved. `Au deuxième arrêt` needs an ordinal, which lives in [[fr/les-nombres]], and it means the second stop sign you drive past, a unit of measurement that only works in a place where every intersection has one.
+the landmarks changed with the setting. inside an édifice, [[fr/episode-6|episode-6]] counted `le premier corridor` and `le troisième étage`. outdoors you count `la lumière`, `l'arrêt`, `le pont`, `le coin`. the slot after `à` is identical, only the furniture moved. `Au deuxième arrêt` needs an ordinal, which lives in [[fr/les-nombres|les-nombres]], and it means the second stop sign you drive past, a unit of measurement that only works in a place where every intersection has one.
 
 ### piste 17 : trouver le lieu d'arrivée
 
@@ -387,7 +387,7 @@ with the model `– Pardon, je cherche le dentiste. – Tournez à gauche sur la
 
 ## demander son chemin
 
-le mémo reprend cinq formulations pour demander des indications, avec le vocabulaire du quartier. les exemples complets prolongent les questions de [[fr/episode-6]] :
+le mémo reprend cinq formulations pour demander des indications, avec le vocabulaire du quartier. les exemples complets prolongent les questions de [[fr/episode-6|episode-6]] :
 
 | formulation                                      | sens en anglais                                   |
 | ------------------------------------------------ | ------------------------------------------------- |
@@ -416,7 +416,7 @@ only a to 5 is printed in the book; the other seven are worked out below.[^appar
 
 the exercise is solvable almost entirely on gender, which is the point worth taking away. five of the eight answers open with a pronoun that has to agree with the noun in the question: `le dépanneur`, `le CLSC`, `le musée` and `le gym` want `Il`, `la garderie` and `la rue Sainte-Anne` want `Elle`. that pins the two feminine pairs immediately, since only réponses 2 and 6 begin with `Elle` and only one of them is about a street. of the three answers that carry no agreement, the `il` in `il n'y en a pas` is impersonal and belongs to the only existential question, which leaves `Oui, c'est…` and the bare `Au coin de…` as exactly the two that need the map.
 
-`il n'y en a pas` is the pronoun `en` again, last seen in [[fr/episode-8]]. word for word it is there-not-of-them-has-not: `en` replaces `de bar`, and the negation wraps the verb. you cannot answer this question without it, since French will not let you say `Non, il n'y a pas.`
+`il n'y en a pas` is the pronoun `en` again, last seen in [[fr/episode-8|episode-8]]. word for word it is there-not-of-them-has-not: `en` replaces `de bar`, and the negation wraps the verb. you cannot answer this question without it, since French will not let you say `Non, il n'y a pas.`
 
 ## lire un plan de métro
 
@@ -492,7 +492,7 @@ the eight stations are the four lines' eight termini, paired, which is why `Berr
 
 two notations sit on the same page. the table uses `05:24`, the prose uses {{sidenotes[`5 h 24`]: se lit `cinq heures vingt-quatre`. lecture courante et numérique : [[fr/episode-3#lheure|épisode 3]].}}, and French writing wants the second: the hour, a space, `h`, a space, the minutes, with no leading zero on the hour. `minuit` and `midi` are nouns, so `à minuit`, never `à 12 h de la nuit`.
 
-`le lundi` and `le vendredi soir` with the definite article mean every Monday, every Friday evening, the habitual reading [[fr/episode-9]] set up. drop the article and you get one particular Monday.
+`le lundi` and `le vendredi soir` with the definite article mean every Monday, every Friday evening, the habitual reading [[fr/episode-9|episode-9]] set up. drop the article and you get one particular Monday.
 
 ## lire un avis
 
@@ -570,7 +570,7 @@ the [[fr/lessons/260916#lire les avis : transports|lesson summary]] groups each 
 
 three spellings to notice, all rectified: `évènement` with a grave accent, `aout` and `Cout` with no circumflex.[^rectifie]
 
-dates take cardinal numbers except the first of the month: `le 14 mai 2017`, `le 30 aout`, but `le 1er mai`. that is the only ordinal French uses for dates, and [[fr/les-nombres]] has the rest.
+dates take cardinal numbers except the first of the month: `le 14 mai 2017`, `le 30 aout`, but `le 1er mai`. that is the only ordinal French uses for dates, and [[fr/les-nombres|les-nombres]] has the rest.
 
 > [!note] faits d'ici
 > in notice 4, `entre 2 arrêts` names a service for women travelling alone on a bus: after the indicated time, they can request a drop-off between two official stops. the notice gives 19 h 30 from 30 August through 30 April and 21 h from 1 May through 29 August. together those periods cover the whole year.
@@ -602,4 +602,4 @@ related: [[fr/episode-6|épisode 6]], [[fr/episode-3|épisode 3]], [[fr/episode-
 
 [^appariement]: only a to 5 is printed. the rest fall out in two passes. gender first: `Il` fits `le dépanneur`, `le CLSC`, `le musée`, `le gym`; `Elle` fits `la garderie` and `la rue Sainte-Anne`, and réponses 2 and 6 are the only ones beginning with `Elle`, so e takes 2 (the only answer about a street) and c takes 6. réponse 7 is the only negative existential, so it takes f, the only existential question. réponse 4 and réponse 6 name each other, `à côté de la garderie` and `à côté du CLSC`, and the plan draws 16 and 17 adjacent, so b takes 4. réponse 1 puts something `au-dessus de la bibliothèque municipale, sur la côte Saint-Pierre`, and the plan puts 18 `le musée` just up the côte from 19 `la bibliothèque`, so d takes 1. that leaves the two genderless answers for g and h, and the plan decides: 6 `le gym` sits directly across the avenue Sainte-Marcelle from 5 `la station-service`, so h takes 3, and 12 `l'épicerie` sits at the junction of the north-bank street and the pont Labelle, so g takes 8. the last two are the only ones I would want the recording to confirm.
 
-[^rectifie]: the 1990 rectifications on these pages: `s'il vous plait` (classic `plaît`), `Cout` (classic `Coût`), `aout` (classic `août`), `évènement` (classic `événement`). the circumflex drops from `i` and `u` where it distinguishes nothing, and `é` becomes `è` where the syllable is open. [[fr/orthography-phonetics]] has the full set.
+[^rectifie]: the 1990 rectifications on these pages: `s'il vous plait` (classic `plaît`), `Cout` (classic `Coût`), `aout` (classic `août`), `évènement` (classic `événement`). the circumflex drops from `i` and `u` where it distinguishes nothing, and `é` becomes `è` where the syllable is open. [[fr/orthography-phonetics|orthography-phonetics]] has the full set.

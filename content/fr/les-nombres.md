@@ -153,8 +153,8 @@ formation: cardinal + `-ième`. drop a final mute `e` first ({{`quatre`}} → {{
 
 ## les nombres en contexte
 
-- **l'âge** : {{`avoir`}} + cardinal + an obligatory {{`ans`}}: {{`J'ai 25 ans.`}} /ʒe vɛ̃tsɛ̃k ɑ̃/. you cannot drop {{`ans`}} the way english drops "years old". see [[fr/episode-2]].
-- **la date** : ordinal only for the first of the month: {{`le premier mars`}} (`le 1er mars`); every other day is a cardinal: {{`le deux mars`}}, {{`le quatorze juillet`}} (`le 14 juillet`). birthdates are written `AAAA-MM-JJ` (e.g. `1990-06-13`). see [[fr/episode-2]].
-- **l'heure** : {{`il est`}} + cardinal + {{`heures`}}: {{`il est trois heures`}}. midday and midnight are {{`midi`}} and {{`minuit`}} (no {{`heures`}}). the 24-hour system reads the hour as a plain cardinal: {{`quinze heures`}} for 15 h, written with `h` as the separator (`15 h 30`). see [[fr/episode-3]].
-- **le téléphone** : digits are read one by one, not grouped in pairs the way France does: `514 555 0199` → {{`cinq-un-quatre, cinq-cinq-cinq, zéro-un-neuf-neuf`}}. see [[fr/episode-2]].
+- **l'âge** : {{`avoir`}} + cardinal + an obligatory {{`ans`}}: {{`J'ai 25 ans.`}} /ʒe vɛ̃tsɛ̃k ɑ̃/. you cannot drop {{`ans`}} the way english drops "years old". see [[fr/episode-2|episode-2]].
+- **la date** : ordinal only for the first of the month: {{`le premier mars`}} (`le 1er mars`); every other day is a cardinal: {{`le deux mars`}}, {{`le quatorze juillet`}} (`le 14 juillet`). birthdates are written `AAAA-MM-JJ` (e.g. `1990-06-13`). see [[fr/episode-2|episode-2]].
+- **l'heure** : {{`il est`}} + cardinal + {{`heures`}}: {{`il est trois heures`}}. midday and midnight are {{`midi`}} and {{`minuit`}} (no {{`heures`}}). the 24-hour system reads the hour as a plain cardinal: {{`quinze heures`}} for 15 h, written with `h` as the separator (`15 h 30`). see [[fr/episode-3|episode-3]].
+- **le téléphone** : digits are read one by one, not grouped in pairs the way France does: `514 555 0199` → {{`cinq-un-quatre, cinq-cinq-cinq, zéro-un-neuf-neuf`}}. see [[fr/episode-2|episode-2]].
 - **le prix** : the unit follows the number: `15 dollars`; the decimal separator is a comma: `15,50 $` ("{{quinze dollars cinquante}}"). colloquial québec calls dollars {{`piastres`}} (often {{`piasses`}}): {{`quinze piasses`}}.

@@ -9,7 +9,7 @@ tags:
 title: registre soutenu
 ---
 
-Écrire et argumenter comme un natif cultivé — C1. Les tournures du débat sont dans [[fr/phrases]] ; ici, le registre qui impressionne.
+Écrire et argumenter comme un natif cultivé — C1. Les tournures du débat sont dans [[fr/phrases|phrases]] ; ici, le registre qui impressionne.
 
 ```jsx imports={RegisterLadder}
 <RegisterLadder

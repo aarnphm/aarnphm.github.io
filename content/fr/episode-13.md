@@ -387,7 +387,7 @@ Le cadre historique du manuel mentionne un tarif de timbre daté de **2017**. Ce
 
 ## questions fermées et ouvertes pour pratiquer
 
-Les réponses suivantes sont des **modèles**, pas des renseignements personnels. {{sidenotes[Une question fermée]: trois formes, de l'oral à l'écrit : intonation, `est-ce que`, inversion. → [[fr/episode-2#poser-des-questions--informel-vs-formel|épisode 2]]}} demande une confirmation ; une question ouverte demande une information. **Est-ce que** peut apparaitre dans les deux types, comme dans [[fr/lessons/261006]].
+Les réponses suivantes sont des **modèles**, pas des renseignements personnels. {{sidenotes[Une question fermée]: trois formes, de l'oral à l'écrit : intonation, `est-ce que`, inversion. → [[fr/episode-2#poser-des-questions--informel-vs-formel|épisode 2]]}} demande une confirmation ; une question ouverte demande une information. **Est-ce que** peut apparaitre dans les deux types, comme dans [[fr/lessons/261006|261006]].
 
 | question fermée                                  | réponse modèle                        |
 | ------------------------------------------------ | ------------------------------------- |

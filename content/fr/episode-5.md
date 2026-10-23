@@ -26,7 +26,7 @@ the model photo is three generations in silhouette: `Jean-Guy` et `Ginette`, leu
 | `le frère / la sœur`                                   | brother / sister                                                                 |
 | `le fils / la fille`                                   | son / daughter; {{`mon garçon`}} in family talk[^garcon]                         |
 | `le mari / la femme`                                   | husband / wife                                                                   |
-| `le conjoint / la conjointe`                           | partner, married or not; the status is `conjoint(e) de fait` in [[fr/episode-1]] |
+| `le conjoint / la conjointe`                           | partner, married or not; the status is `conjoint(e) de fait` in [[fr/episode-1\|episode-1]] |
 | `le grand-père / la grand-mère / les grands-parents`   | grandfather / grandmother / grandparents                                         |
 | `le petit-fils / la petite-fille / les petits-enfants` | grandson / granddaughter / grandchildren                                         |
 | `l'oncle / la tante`                                   | uncle / aunt                                                                     |
@@ -62,7 +62,7 @@ the determinant sits before the noun, and the noun that follows {{sidenotes[choo
 
 `votre` covers both genders, only the plural changes. and since the form ignores the possessor, `son frère` is his brother or her brother; the Mémo's own example decides by context: {{`Elle a un frère et deux cousins. Son frère est marié. Il s'appelle Sam. Sa femme s'appelle Claudia. Ses cousins s'appellent Jules et Victor.`}}
 
-the transformation drill converts possession-par-`de`, the `Voici les livres de France.` frame of [[fr/episode-4]], into the determinant: {{`C'est le frère de Julie.`}} devient {{`C'est son frère.`}}; {{`Ce sont les filles de Marc.`}} devient {{`Ce sont ses filles.`}}
+the transformation drill converts possession-par-`de`, the `Voici les livres de France.` frame of [[fr/episode-4|episode-4]], into the determinant: {{`C'est le frère de Julie.`}} devient {{`C'est son frère.`}}; {{`Ce sont les filles de Marc.`}} devient {{`Ce sont ses filles.`}}
 
 `votre` and `vos` double as politeness, `le vous de politesse`: {{`Quel est votre nom, madame ?`}}, {{`Quels sont vos souhaits, monsieur ?`}}
 
@@ -76,7 +76,7 @@ the transformation drill converts possession-par-`de`, the `Voici les livres de 
 - {{`C'est qui ? C'est mon cousin, Jean-François.`}}
 - {{`Qu'est-ce que c'est ? Ce sont mes lunettes.`}}
 
-the question frames split by register, and the split is syntactic; both sides keep the polite `vous` elsewhere, the same registre logic as [[fr/episode-2]]:
+the question frames split by register, and the split is syntactic; both sides keep the polite `vous` elsewhere, the same registre logic as [[fr/episode-2|episode-2]]:
 
 | cible        | situation formelle          | situation informelle |
 | ------------ | --------------------------- | -------------------- |
@@ -86,11 +86,11 @@ the question frames split by register, and the split is syntactic; both sides ke
 the picture drill answers with winter things: {{`les raquettes de Martin`}}, {{`le chalet de la famille`}}, {{`des voisins et amis`}}, {{`une cafetière`}}, {{`un chien avec des lunettes et un nœud papillon`}}. possession runs through `de` again.
 
 > [!note] faits d'ici
-> personnalités québécoises, presented with `c'est` ou `ce sont` : Kim Thúy ({{`écrivaine`}}), Danièle Henkel ({{`femme d'affaires, conférencière, écrivaine`}}), Boucar Diouf ({{`biologiste, humoriste, océanographe, conteur, animateur`}}), Les sœurs Boulay ({{`auteures, compositrices, interprètes`}}). the captions run on the OQLF feminizations of [[fr/episode-1]] : `écrivaine`, `auteure`, `conférencière`, `compositrice`.
+> personnalités québécoises, presented with `c'est` ou `ce sont` : Kim Thúy ({{`écrivaine`}}), Danièle Henkel ({{`femme d'affaires, conférencière, écrivaine`}}), Boucar Diouf ({{`biologiste, humoriste, océanographe, conteur, animateur`}}), Les sœurs Boulay ({{`auteures, compositrices, interprètes`}}). the captions run on the OQLF feminizations of [[fr/episode-1|episode-1]] : `écrivaine`, `auteure`, `conférencière`, `compositrice`.
 
 ## c'est vs il est
 
-the model answer fixes the division of labour: `C'est Jocelyn. Il a 38 ans. Il est infirmier. Il est divorcé. Il a 2 enfants. Il a des lunettes.` `c'est` plus the name {{sidenotes[introduces]: un nom qualifié repasse par `c'est` + article : `C'est un infirmier patient.`, mais `Il est infirmier.` ([[fr/episode-1#dire-sa-profession|épisode 1]]).}}; then the pronoun takes over, `être` for profession, nationalité and état civil (no article, the [[fr/episode-1]] rule), `avoir` for âge and possessions (the [[fr/episode-2]] verb).
+the model answer fixes the division of labour: `C'est Jocelyn. Il a 38 ans. Il est infirmier. Il est divorcé. Il a 2 enfants. Il a des lunettes.` `c'est` plus the name {{sidenotes[introduces]: un nom qualifié repasse par `c'est` + article : `C'est un infirmier patient.`, mais `Il est infirmier.` ([[fr/episode-1#dire-sa-profession|épisode 1]]).}}; then the pronoun takes over, `être` for profession, nationalité and état civil (no article, the [[fr/episode-1|episode-1]] rule), `avoir` for âge and possessions (the [[fr/episode-2|episode-2]] verb).
 
 the other cards scale the frame: `Ce sont Louis et Antoine. Ils ont 5 ans. Ils sont jumeaux. Ils ont 1 sœur : Olivia.` and `C'est Marielle. Elle a 74 ans. Elle est québécoise. Elle est retraitée. Elle a 4 enfants et 9 petits-enfants.`, plus her animals, `la chatte Marmelade (2 ans)` et `le poisson rouge Philibert (8 mois)`. {{`jumeaux`}} are twins, {{`retraitée`}} retired.
 
@@ -118,7 +118,7 @@ and the two verbs in full:
 
 ## le pronom relatif
 
-the photo captions want more than {{`C'est mon cousin.`}}: the class ([[fr/lessons/260727]]) extends the presenting frame with a relative clause, {{`Sur cette photo, c'est mon chat qui se prépare pour Noël.`}} the `c'est … qui …` cleft is the présentatif above plus a description glued on.[^relatif]
+the photo captions want more than {{`C'est mon cousin.`}}: the class ([[fr/lessons/260727|260727]]) extends the presenting frame with a relative clause, {{`Sur cette photo, c'est mon chat qui se prépare pour Noël.`}} the `c'est … qui …` cleft is the présentatif above plus a description glued on.[^relatif]
 
 pick the pronoun by what is missing inside the relative clause:
 
@@ -141,7 +141,7 @@ the meeting expressions split by register, and this time the split is `tu` again
 | `Je suis content(e) de te rencontrer.`      | `Je suis content(e) de vous rencontrer.`      |
 | `Je suis heureux/heureuse de te connaitre.` | `Je suis heureux/heureuse de vous connaitre.` |
 
-`connaitre` drops the circumflex, rectified orthography as in [[fr/episode-2]]'s `aout`; the inventory lives in [[fr/orthography-phonetics]]. the listening drill mixes in three distractors that belong to eating and leaving: {{`Bon appétit !`}}, {{`Bonne nuit !`}}, {{`À la prochaine !`}} (see you next time).
+`connaitre` drops the circumflex, rectified orthography as in [[fr/episode-2|episode-2]]'s `aout`; the inventory lives in [[fr/orthography-phonetics|orthography-phonetics]]. the listening drill mixes in three distractors that belong to eating and leaving: {{`Bon appétit !`}}, {{`Bonne nuit !`}}, {{`À la prochaine !`}} (see you next time).
 
 the tu↔vous conversion table:
 
@@ -187,7 +187,7 @@ the Mémo's own model runs on `vous` : {{`Vous êtes dentiste ?`}}, {{`Est-ce qu
 | {{`Tu as des enfants ?`}}          | `Est-ce que tu as des enfants ?`              | {{`As-tu des enfants ?`}}          |
 | {{`Tu parles une autre langue ?`}} | {{`Est-ce que tu parles une autre langue ?`}} | {{`Parles-tu une autre langue ?`}} |
 
-`Avez-vous l'heure ?` is [[fr/episode-3]]'s asking-the-time frame arriving as plain inversion. the row that teaches something is the last one: `Parles-tu` garde le `-s` que l'impératif efface ({{`Parle plus fort !`}}, {{`Tourne à gauche.`}} in [[fr/episode-6]]). same verb, same person, and the `-s` survives only because the pronoun is still attached. every other verb here is `être` ou `avoir`, so it is the one place the rule shows.
+`Avez-vous l'heure ?` is [[fr/episode-3|episode-3]]'s asking-the-time frame arriving as plain inversion. the row that teaches something is the last one: `Parles-tu` garde le `-s` que l'impératif efface ({{`Parle plus fort !`}}, {{`Tourne à gauche.`}} in [[fr/episode-6|episode-6]]). same verb, same person, and the `-s` survives only because the pronoun is still attached. every other verb here is `être` ou `avoir`, so it is the one place the rule shows.
 
 the hyphen in the inversion is obligatory, and as soon as the subject is `il`, `elle` ou `on` behind a vowel-final verb, a euphonic `-t-` has to fill the gap: {{`A-t-il une auto ?`}}, {{`Parle-t-elle français ?`}}
 
@@ -255,10 +255,10 @@ related: [[fr/episode-1|épisode 1]], [[fr/episode-2|épisode 2]], [[fr/episode-
 
 [^beau]: the épisode's usage is in-law. the same words also cover step-relations: `beau-père` is a stepfather as easily as a father-in-law, `belle-mère` likewise. French reuses one word where English splits two, and context decides which family you got.
 
-[^garcon]: the book's own examples use it: {{`Mon conjoint s'appelle Michel et mon garçon s'appelle Théo.`}}, `Ton garçon a 14 ans.` `fils` also appears ({{`Mon fils s'appelle Martin.`}}); `garçon` is the warmer, spoken choice, the same word [[fr/episode-1]] used to count `2 garçons`.
+[^garcon]: the book's own examples use it: {{`Mon conjoint s'appelle Michel et mon garçon s'appelle Théo.`}}, `Ton garçon a 14 ans.` `fils` also appears ({{`Mon fils s'appelle Martin.`}}); `garçon` is the warmer, spoken choice, the same word [[fr/episode-1|episode-1]] used to count `2 garçons`.
 
 [^nom]: the children are `Côté-Dupuis`, combining surnames from both parents. in Québec, marriage does not change either spouse's surname for the exercise of civil rights, though a spouse may use the other spouse's surname socially. a child may receive a simple or compound surname formed from the parents' surnames.
 
 [^relatif]: `qui/que/dont/où` runs ahead of the A1 syllabus (the book's épisode 5 stops at the présentatifs); the class introduced all four for recognition, so the section lives here where the `c'est … qui` cleft naturally attaches.
 
-[^passe]: the course has not taught the passé composé yet; it arrives here the way the imparfait arrives in [[fr/episode-8]]'s school messages, for recognition only. `Quand êtes-vous arrivé ?` = auxiliaire `être` au présent + participe passé, and the `-é` takes the subject's gender and number with an `être` verb ({{`Quand êtes-vous arrivée ?`}} à une femme).
+[^passe]: the course has not taught the passé composé yet; it arrives here the way the imparfait arrives in [[fr/episode-8|episode-8]]'s school messages, for recognition only. `Quand êtes-vous arrivé ?` = auxiliaire `être` au présent + participe passé, and the `-é` takes the subject's gender and number with an `être` verb ({{`Quand êtes-vous arrivée ?`}} à une femme).
