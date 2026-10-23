@@ -535,6 +535,22 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     hideSearch()
   }
 
+  function openSearchResult() {
+    const focused = document.activeElement
+    const anchor =
+      focused instanceof HTMLAnchorElement && results.contains(focused)
+        ? focused
+        : results.querySelector<HTMLAnchorElement>('a.result-card[href]:not(.no-match)')
+    if (anchor?.hasAttribute('href')) navigateSearchResult(anchor)
+  }
+
+  const submitSearch = (event: SubmitEvent) => {
+    event.preventDefault()
+    if (!composing && container.classList.contains('active')) openSearchResult()
+  }
+  searchSpace.addEventListener('submit', submitSearch)
+  window.addCleanup(() => searchSpace.removeEventListener('submit', submitSearch))
+
   function showSearch(type: SearchType) {
     if (!container!.matches(':popover-open')) {
       previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null
@@ -560,7 +576,7 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     searchBar!.focus()
   }
 
-  async function shortcutHandler(e: HTMLElementEventMap['keydown']) {
+  function shortcutHandler(e: HTMLElementEventMap['keydown']) {
     if (e.defaultPrevented) return
     const paletteOpen = document.querySelector('search#palette-container') as HTMLDivElement
     if (paletteOpen && paletteOpen.classList.contains('active')) return
@@ -633,19 +649,10 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
       return
     }
     if (e.key === 'Enter') {
-      let anchor: HTMLAnchorElement | undefined
-      if (results.contains(document.activeElement)) {
-        anchor = document.activeElement as HTMLAnchorElement
-        if (anchor.classList.contains('no-match')) return
-        await displayPreview(anchor)
-        e.preventDefault()
-      } else {
-        anchor = document.getElementsByClassName('result-card')[0] as HTMLAnchorElement
-        if (!anchor || anchor.classList.contains('no-match')) return
-        await displayPreview(anchor)
-        e.preventDefault()
-      }
-      if (anchor !== undefined) navigateSearchResult(anchor)
+      if (e.target !== searchBar && !results.contains(document.activeElement)) return
+      // Cancel native form submission before any asynchronous work can yield to the browser.
+      e.preventDefault()
+      if (!e.repeat) openSearchResult()
     } else if (
       e.key === 'ArrowUp' ||
       (e.shiftKey && e.key === 'Tab') ||
