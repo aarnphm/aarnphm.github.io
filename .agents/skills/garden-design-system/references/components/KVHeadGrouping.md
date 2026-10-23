@@ -2,7 +2,7 @@
 
 Grouped-query attention: query heads sharing KV heads, with a cache-bandwidth readout.
 
-**Source:** `quartz/components/mdx/KVHeadGrouping.tsx` · styles: `quartz/components/styles/kVHeadGrouping.scss`
+**Source:** `quartz/components/mdx/KVHeadGrouping.tsx` · styles: `quartz/components/styles/kvHeadGrouping.scss`
 
 ## Preview
 
@@ -11,4 +11,5 @@ A copy of the server-rendered markup from `/thoughts/GQA` (selector `.kv-head-gr
 ## Rules
 
 - Wrapped in `Zoomable` on the site. Interaction (sliders, steps, hover readouts) runs from the component's inline script; the preview shows its first rendered state.
-- Follows the figure grammar: `fig-frame`, `salmon` and `secondary` accents, KaTeX labels in `foreignObject`.
+- Follows the figure grammar: `fig-frame`, KaTeX labels in `foreignObject`. Query heads are `salmon` fills and the shared KV heads are `secondary`; the structure around them stays in ink.
+- The readout is a hairline table (`regime`, `KV heads`, `decode bandwidth`, `cache bytes/token`) and one formula card. A segmented ratio slider with a `group ratio r` legend sets the regime (MHA, GQA, MQA).

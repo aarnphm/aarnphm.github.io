@@ -4,8 +4,6 @@ The lecture workspace beside an authored lecture note: source, scratchpad and no
 
 **Source:** `quartz/components/course-workspace/` (`app.tsx`, `Header.tsx`, `editor.tsx`, `selection.tsx`, `store.ts`, `anchors.ts`, `split-divider.tsx`) · styles: `quartz/components/styles/course-workspace.scss` · notes: `docs/course-workspace.md`
 
-**Corrections:** in the source, the license line (`.course-source-license`) and the unselected tab labels are `gray`. This rendition uses `darkgray`.
-
 ## Preview
 
 A copy of the server-rendered markup from `/courses/18.905-fall-2016/lectures/01` (selector `.course-workspace`), styled by `site/garden.css`, the site's compiled CSS pruned to the rules these previews use. Links point to `#`. The PDF reader iframe and the CodeMirror editor are grey placeholders, and the panel sits in the page flow instead of fixed to the screen edge. The preview is static because the app is a Preact tree that reads browser storage.

@@ -4,7 +4,7 @@ A row of small mono tabs for maps, charts, best-effort categories and the course
 
 **Source:** `quartz/components/styles/triathlon/map-detail.scss` (`.tri-map-tablist`, `.tri-map-tab`, `.tri-map-tab-shortcut`, `.tri-map-tab-label`) and `triathlon-best-efforts.scss` (`.tri-be-cats`, `.tri-be-tabs`). The course workspace reuses the class in `course-workspace/Header.tsx`.
 
-**Corrections:** in the source, rest labels are `gray` and the best-efforts tabs draw a 1px `tri-be-focus` ring. This rendition uses `darkgray` for rest labels and the 2px `focus` ring. The selected label is `on-accent` on `tri-accent` (the source writes paper, 3.31:1).
+**Corrections:** in the source, the best-efforts tabs draw a 1px `tri-be-focus` ring, and the selected label is paper on `tri-accent` (3.31:1). This rendition uses the 2px `focus` ring and `on-accent` for the selected label.
 
 ## Inputs
 

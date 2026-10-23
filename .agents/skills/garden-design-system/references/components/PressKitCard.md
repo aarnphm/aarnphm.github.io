@@ -2,11 +2,11 @@
 
 The image card that the press kit draws on its `note` tab. A page and a stream entry use the same frame and the same type, so a shared entry looks like a shared note.
 
-**Source:** `quartz/components/scripts/press-kit-card.ts` (`renderCard`, `chrome`, `drawNote`, `drawEntry`) · the card's data: `quartz/components/scripts/press-kit.inline.ts` (`pageSubject`, `entrySubject`)
+**Source:** `quartz/components/scripts/press-kit-card/` (`spec.ts` formats, themes and card kinds, `chrome.ts` the frame, `editorial.ts` `drawNote`, `drawQuote` and `drawEntry`, `tractatus.ts` numbered propositions, `typography.ts` fitted text, `math.ts` KaTeX as images, `calendar.ts`, `chart.ts`, `training-card.ts`, `sticker.ts`, `route.ts`, `svg.ts`) · the card's data: `quartz/components/scripts/press-kit/share-subject.ts` (`pageSubject`, `entrySubject`) and `press-kit/tractatus.ts`
 
 ## Preview
 
-Still images of the site's canvas output, taken from the dialog on `/stream` (a page) and on the 2026-08-25 stream entry. The left column is the page card and the right column is the entry card, in portrait papier, portrait encre and paysage papier.
+Still images of the site's canvas output, in a grid of three columns. The first row is the page card on `/stream` in portrait papier, portrait encre and paysage papier. The second row is the stream entry of 2026-08-25 in the same three. The last row is a quote taken by selecting text on `/thoughts/chinese-room`, in portrait papier and portrait encre. The stills come from the dialog in the in-app browser, saved as webp at 1100px on the long side.
 
 ## Frame
 
@@ -35,9 +35,16 @@ Every card except the citation draws the same frame (`chrome`):
 | Tags         | frontmatter `tags`, first 4                     | the entry's tags, first 4                                                                                                        |
 | Reading time | the build's reading time                        | words ÷ 200 (reading-time's rate), rounded up                                                                                    |
 
+## Quote and Tractatus
+
+Card kinds are `note`, `quote`, `entry`, `activity`, `day` and `calendar`. A text selection on a page opens the dialog on the `quote` kind. It keeps the frame and replaces the text block:
+
+- **Quote:** a large opening quotation mark in `mark`, the selection in the serif voice at leading 1.28, then the attribution (an em-dash and the page title) in the header voice, and the section in italic when `section` is on. `surligner` paints the selection on a `hl` block.
+- **Tractatus:** a selection inside a numbered work draws each proposition on its own row, with its number in the mono face on the left and its text in the body face. Depth indents a row by 0.45 of the text size, at most three steps. The text shrinks to fit. When rows still do not fit, the card shows the first ones and ends with `… +N propositions supplémentaires` (`more propositions` in English).
+
 ## Training and Strava
 
-A training day entry and a Strava activity draw the training card (`press-kit-training-card.ts`) inside the same frame. The Strava overlays (`grille`, `colonne`, `ticket`, `pastilles`, `bord vertical`, `parcours seul`) are transparent stickers without the frame (`press-kit-sticker.ts`).
+A training day entry and a Strava activity draw the training card (`press-kit-card/training-card.ts`) inside the same frame. The Strava overlays (`grille`, `colonne`, `ticket`, `pastilles`, `bord vertical`, `parcours seul`) are transparent stickers without the frame (`press-kit-card/sticker.ts`).
 
 |              | Training day                                          | Strava activity                                               |
 | ------------ | ----------------------------------------------------- | ------------------------------------------------------------- |

@@ -4,7 +4,9 @@ The search button and its open panel: a text field, a lexical or semantic mode t
 
 **Source:** `quartz/components/Search.tsx` · styles: `quartz/components/styles/search.scss`
 
-**Corrections:** in the source, the inactive mode icons, the status text and the button label are `gray`, and the active icon is paper on `secondary` (1.4:1 in the light theme). This rendition uses `darkgray` for the first three and `on-accent` for the active icon.
+**Corrections:** in the source, the active mode icon is drawn in `secondary` (1.51:1 on paper). This rendition uses `on-accent`.
+
+**Debt:** the focus ring of the mode buttons is `tertiary`. New work uses `dark`.
 
 ## Preview
 

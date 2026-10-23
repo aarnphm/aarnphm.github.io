@@ -16,5 +16,6 @@ A data chart inside a figure frame: mono ticks, worded axis titles, KaTeX annota
 - Axis titles: words at `meta` size in `darkgray`, with unit and scale in parentheses.
 - Gridlines `line`. Data and roof strokes `dark`. Reference lines `darkgray`, dashed.
 - Symbols such as `\beta`, `C` and the ridge point are KaTeX labels in `foreignObject` elements.
-- Each series has a colour and a second cue: here a salmon circle and a sage square, each with a direct label.
+- Salmon marks the one element to look at (here the decode point, which the caption names). Data and roof strokes stay `dark`, reference lines `darkgray` and gridlines `line`. A second series is `secondary`.
+- Each series also has a second cue: here a salmon circle and a sage square, each with a direct label.
 - A computed estimate draws dashed. Missing data leaves a gap.
