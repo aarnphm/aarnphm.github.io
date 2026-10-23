@@ -1,4 +1,4 @@
-import { cleanupHydratedRoot } from './root-lifecycle'
+import { cleanupHydratedRoot } from '../root-lifecycle'
 
 export interface StreamVirtualSource {
   entryId: string

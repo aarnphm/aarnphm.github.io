@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import type { StreamManifestGroup } from '../../util/stream-manifest'
-import { buildStreamSearchData, matchStreamEntries } from './stream-search-index'
+import type { StreamManifestGroup } from '../../../util/stream-manifest'
+import { buildStreamSearchData, matchStreamEntries } from './search-index'
 
 const manifest: StreamManifestGroup[] = [
   {

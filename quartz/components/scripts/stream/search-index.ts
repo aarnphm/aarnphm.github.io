@@ -1,6 +1,6 @@
 import FlexSearch, { type Document as FlexSearchDocument } from 'flexsearch'
-import type { StreamManifestEntry, StreamManifestGroup } from '../../util/stream-manifest'
-import { encode } from '../../util/search-text'
+import type { StreamManifestEntry, StreamManifestGroup } from '../../../util/stream-manifest'
+import { encode } from '../../../util/search-text'
 
 export interface IndexedStreamEntry {
   id: number
