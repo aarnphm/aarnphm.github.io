@@ -136,7 +136,7 @@ From a technical perspective, an inference engine can modify the probability dis
   <FSMDecoding
     preset="json"
     mode="char"
-    caption="After LMSys (2024): character-level JSON for a name (Paul or John) and age (20 or 30), using a 21-token toy vocabulary. Each sampling step is one forward pass; forced text still processes to extend the KV cache. Salmon marks sampled tokens, sage viable tokens, and $-\infty$ masks invalid tokens. Step through 10 sampling passes or switch to the compressed FSM (2 sampling passes)."
+    caption="After LMSys (2024): character-level JSON for a name (Paul or John) and age (20 or 30), using a 21-token toy vocabulary. Each sampling step is one forward pass; forced text still processes to extend the KV cache. Salmon marks sampled tokens, sage viable tokens, and $-\infty$ masks invalid tokens. The compressed FSM needs $2$ sampling passes instead of $10$."
   />
 </Zoomable>
 ```
@@ -172,7 +172,7 @@ There are few limitations with current vLLM's support of the Outlines backend:
 <Zoomable label="Waterfall of sampling process in vLLM">
   <LogitsProcessorTrace
     guided={2}
-    caption="vLLM v0.5.0 call trace, checked against source and based on vllm-project/vllm#5329. Small and large squares mark caller and callee; a lone square marks an internal call. In batch 4, each guided row adds a Python call and full-vocabulary mask between forward pass and sampling. Move the slider or change guided rows to inspect the trace."
+    caption="vLLM v0.5.0 call trace, checked against source and based on vllm-project/vllm#5329. Small and large squares mark caller and callee; a lone square marks an internal call. In batch 4, each guided row adds a Python call and full-vocabulary mask between forward pass and sampling."
   />
 </Zoomable>
 ```
@@ -200,7 +200,7 @@ This is great because it addresses **limitation (1)** by moving grammar compilat
     series='[{"name":"vLLM 0.6.5 (xgrammar)","values":[75,68,80,118,220,446]},{"name":"vLLM 0.6.4 (outlines)","values":[10507,139455,144131,204710,192325,244884]}]'
     labels="[0,5]"
     ratio="outlines ÷ xgrammar"
-    caption="Reported mean TTFT (ms) for Llama-3.1-8B on one H100, NousResearch/json-mode-eval, with 50% guided requests: vLLM 0.6.5/XGrammar vs 0.6.4/Outlines. Values are from the original benchmark; the y-axis is logarithmic. Focus a QPS group and use arrow keys to read values and ratio; the table lists all values."
+    caption="Reported mean TTFT (ms) for Llama-3.1-8B on one H100, NousResearch/json-mode-eval, with 50% guided requests: vLLM 0.6.5/XGrammar vs 0.6.4/Outlines. Values are from the original benchmark; the y-axis is logarithmic."
   />
 </Zoomable>
 ```
@@ -220,7 +220,7 @@ This is great because it addresses **limitation (1)** by moving grammar compilat
     series='[{"name":"XGrammar","values":[8.4,9.6,12.1,16.1,26.5,32.0]},{"name":"Outlines","values":[7.9,13.4,19.6,73.8,68.6,152.3]}]'
     labels="[3,5]"
     ratio="Outlines ÷ XGrammar"
-    caption="Mean TPOT (ms) for Llama-3.1-8B on one H100, NousResearch/json-mode-eval, with 50% guided decoding: XGrammar vs Outlines. Values are from the original figure, courtesy of Michael Goin (Red Hat). Focus a QPS group to compare values; the gap opens from 15 QPS."
+    caption="Mean TPOT (ms) for Llama-3.1-8B on one H100, NousResearch/json-mode-eval, with 50% guided decoding: XGrammar vs Outlines. Values are from the original figure, courtesy of Michael Goin (Red Hat). The gap opens from 15 QPS."
   />
 </Zoomable>
 ```

@@ -208,7 +208,7 @@ where $v_j$ is the $j$th column of $V^\top$. Each neuron contributes a rank-one 
 
 ```jsx imports={Zoomable,HeadSpectrum}
 <Zoomable label="W_OV spectrum and attention per head">
-  <HeadSpectrum caption="Qwen3-0.6B (16 Q/8 KV heads; $d_{\text{model}}=1024$, $d_{\text{head}}=128$), computed on CPU by `export_head_spectra.py`/`latent_projection.py`. Top: log singular values of $W_{OV}=W_OW_V$; rank ends at 128, later values are float32 round-off. Middle: $E_k$, entropy rank, and selected $k$’s $\sigma_k,E_k$. Bottom: attention for 10/11-token prompts differing by a comma; spectrum is unchanged. Hover/focus cells for weights." />
+  <HeadSpectrum caption="Qwen3-0.6B (16 Q/8 KV heads; $d_{\text{model}}=1024$, $d_{\text{head}}=128$), computed on CPU by `export_head_spectra.py`/`latent_projection.py`. Top: log singular values of $W_{OV}=W_OW_V$; rank ends at 128, later values are float32 round-off. Middle: $E_k$, entropy rank, and selected $k$’s $\sigma_k,E_k$. Bottom: attention for 10/11-token prompts differing by a comma; spectrum is unchanged." />
 </Zoomable>
 ```
 

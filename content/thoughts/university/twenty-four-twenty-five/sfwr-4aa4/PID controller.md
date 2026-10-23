@@ -30,7 +30,7 @@ The transfer functions below assume zero initial conditions and a linear plant w
 <Zoomable label="Proportional control loop">
   <BlockDiagram
     config="proportional"
-    caption="Unity negative-feedback proportional control: $E(s)=R(s)-Y(s)$, $U(s)=K_pE(s)$, plant $G_p(s)$, and unit-gain sensor. The course image places the plant on the return path and labels the set point $u(t)$. The transfer function is $T(s)=K_pG_p(s)/(1+K_pG_p(s))$; step through the reduction."
+    caption="Unity negative-feedback proportional control: $E(s)=R(s)-Y(s)$, $U(s)=K_pE(s)$, plant $G_p(s)$, and unit-gain sensor. The transfer function is $T(s)=K_pG_p(s)/(1+K_pG_p(s))$."
   />
 </Zoomable>
 ```

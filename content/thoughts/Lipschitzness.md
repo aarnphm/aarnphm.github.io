@@ -36,8 +36,8 @@ Lipschitz continuity implies uniform continuity. In one dimension, a differentia
 \begin{tikzpicture}[>=Latex, scale=3]
   \draw[->] (-2.6,0) -- (2.8,0) node[below right] {$x$};
   \draw[->] (0,-0.2) -- (0,3.0) node[left] {$f(x)$};
-  \draw[thick,blue] (-2,2) -- (0,0) -- (2,2);
-  \node[blue,above right=1pt and 1pt of {(2,2)}] {$f(x)=|x|$};
+  \draw[thick,black] (-2,2) -- (0,0) -- (2,2);
+  \node[black,above right=1pt and 1pt of {(2,2)}] {$f(x)=|x|$};
 
   \def\xone{-1.8}
   \def\xtwo{0.8}
@@ -47,9 +47,9 @@ Lipschitz continuity implies uniform continuity. In one dimension, a differentia
   \draw[densely dashed] (\xone,0) -- (\xone,\fyone) node[below left=1pt and -2pt] {$x_1$};
   \draw[densely dashed] (\xtwo,0) -- (\xtwo,\fytwo) node[below right=1pt and -2pt] {$x_2$};
 
-  \fill[blue] (\xone,\fyone) circle(1.9pt)
+  \fill[black] (\xone,\fyone) circle(1.9pt)
     node[above left=3pt and 2pt] {$(x_1,\,f(x_1))$};
-  \fill[blue] (\xtwo,\fytwo) circle(1.9pt)
+  \fill[black] (\xtwo,\fytwo) circle(1.9pt)
     node[below right=4pt and 3pt] {$(x_2,\,f(x_2))$};
 
   \draw[thick,orange] (\xone,\fyone) -- (\xtwo,\fytwo)
@@ -57,7 +57,7 @@ Lipschitz continuity implies uniform continuity. In one dimension, a differentia
   \draw[<->] (\xone,-0.15) -- (\xtwo,-0.15) node[midway, below=2pt] {$|x_2-x_1|$};
   \draw[<->] (\xtwo+0.55,\fyone) -- (\xtwo+0.55,\fytwo)
     node[midway, right=3pt] {$|f(x_2)-f(x_1)|$};
-  \node[orange!80!black] at (-1.7,2.5) {$L=1$ for $f(x)=|x|$};
+  \node[black] at (-1.7,2.5) {$L=1$ for $f(x)=|x|$};
 \end{tikzpicture}
 \end{document}
 ```

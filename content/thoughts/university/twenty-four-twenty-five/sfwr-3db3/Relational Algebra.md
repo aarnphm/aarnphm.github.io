@@ -199,7 +199,7 @@ Use parentheses or intermediate assignments when mixing operators; notation conv
 
 ```jsx imports={Zoomable,RelAlgTree}
 <Zoomable label="Relational algebra expression tree">
-  <RelAlgTree caption="Course-slide expression tree, evaluated on the Sells and Bars relations above with set semantics and schema $\mathrm{Bars(name,addr)}$. Select a node to inspect its input and result; rename makes union inputs compatible, and Joe’s appears once." />
+  <RelAlgTree caption="Course-slide expression tree, evaluated on the Sells and Bars relations above with set semantics and schema $\mathrm{Bars(name,addr)}$. Rename makes union inputs compatible, and Joe’s appears once." />
 </Zoomable>
 ```
 

@@ -270,7 +270,7 @@ NSA solves both: natively trainable, hardware-aligned sparsity.
 <Zoomable label="Native sparse attention branches">
   <SparseAttentionMask
     mode="nsa"
-    caption="Toy NSA branches on a 64-token causal grid, after NSA Fig. 2; fixed-seed synthetic keys and queries. Toy parameters are $l=4$, $d=2$, $l'=8$, $n$ top blocks, and $w=24$; the paper uses $32$, $16$, $64$, $16$, and $512$. Branches overlap at 64 tokens, so compare savings at 32k and 128k."
+    caption="Toy NSA branches on a 64-token causal grid, after NSA Fig. 2; fixed-seed synthetic keys and queries. Toy parameters are $l=4$, $d=2$, $l'=8$, $n$ top blocks, and $w=24$; the paper uses $32$, $16$, $64$, $16$, and $512$. Branches overlap at 64 tokens."
   />
 </Zoomable>
 ```

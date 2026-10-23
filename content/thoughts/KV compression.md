@@ -69,7 +69,7 @@ https://arxiv.org/abs/2406.02069
   <KVBudgetAllocation
     policy="pyramidkv"
     budget={4}
-    caption="Synthetic votes for $L=4$, $H=3$ and 16 prefix tokens, shaped after PyramidKV’s funnel pattern; SnapKV pooling is omitted. Mark size shows vote share $C$; sage marks kept tokens and salmon the always-kept observation window. Switch policy at a fixed budget."
+    caption="Synthetic votes for $L=4$, $H=3$ and 16 prefix tokens, shaped after PyramidKV’s funnel pattern; SnapKV pooling is omitted. Mark size shows vote share $C$; sage marks kept tokens and salmon the always-kept observation window."
   />
 </Zoomable>
 ```
@@ -120,7 +120,7 @@ _built on-top of PyramidKV and SnapKV_
   <KVBudgetAllocation
     policy="adakv"
     budget={4}
-    caption="Synthetic votes for $L=4$, $H=3$ and 16 prefix tokens, shaped after PyramidKV’s funnel pattern; SnapKV pooling is omitted. Mark size shows vote share $C$; sage marks kept tokens and salmon the always-kept observation window. Switch policy at a fixed budget."
+    caption="Synthetic votes for $L=4$, $H=3$ and 16 prefix tokens, shaped after PyramidKV’s funnel pattern; SnapKV pooling is omitted. Mark size shows vote share $C$; sage marks kept tokens and salmon the always-kept observation window."
   />
 </Zoomable>
 ```
@@ -154,7 +154,7 @@ Motivation:
 <Zoomable label="vLLM and KV-Compress block layout">
   <KVCompressBlocks
     view="vllm"
-    caption="KV-Compress paper layout for one sequence, $l=2$, $H=2$, block size 2. Layer 0 uses eviction lengths 5/2; layer 1 lengths 3/4 and physical IDs are illustrative. vLLM shares IDs/table/context across layers and heads; KV-Compress uses $lH$ rows. Switch layouts or step through eviction."
+    caption="KV-Compress paper layout for one sequence, $l=2$, $H=2$, block size 2. Layer 0 uses eviction lengths 5/2; layer 1 lengths 3/4 and physical IDs are illustrative. vLLM shares IDs/table/context across layers and heads; KV-Compress uses $lH$ rows."
   />
 </Zoomable>
 ```
@@ -181,7 +181,7 @@ idea: adapt PagedAttention to page out cache on a _per-head, per-layer–as well
 <Zoomable label="KV-Compress block eviction">
   <KVCompressBlocks
     view="evict"
-    caption="Ten KV-Compress paper eviction steps: two heads, block size 2, $E=2$. Metrics/logical indices follow the paper; physical IDs are illustrative. Empty slots score 0; a block score is its maximum entry. Salmon marks evictions, sage freed blocks. Step or choose a step."
+    caption="Ten KV-Compress paper eviction steps: two heads, block size 2, $E=2$. Metrics/logical indices follow the paper; physical IDs are illustrative. Empty slots score 0; a block score is its maximum entry. Salmon marks evictions, sage freed blocks."
   />
 </Zoomable>
 ```

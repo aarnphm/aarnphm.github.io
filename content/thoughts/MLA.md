@@ -49,7 +49,7 @@ $$
 
 ```jsx imports={Zoomable,MLALatentPath}
 <Zoomable label="MLA latent projection path">
-  <MLALatentPath caption="Cache $c_t^{KV}$ and $k_t^R$; reconstruct per-head $k_{t,i}^C$ and $v_{t,i}^C$ on demand. Adjust $d_c$ and $d_h^R$ to change cache size." />
+  <MLALatentPath caption="Cache $c_t^{KV}$ and $k_t^R$; reconstruct per-head $k_{t,i}^C$ and $v_{t,i}^C$ on demand." />
 </Zoomable>
 ```
 

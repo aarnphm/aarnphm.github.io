@@ -84,7 +84,7 @@ $$
 <Zoomable label="Gated SAE encoder on four features">
   <GatedSAE
     view="gated"
-    caption="Four-feature gated SAE: shared projection $u=W_\text{gate}(x-b_\text{dec})$ feeds a rectified magnitude path $\pi_\text{mag}=e^{r_\text{mag}}\odot u+b_\text{mag}$ and binary gate $\pi_\text{gate}=u+b_\text{gate}$. At $\theta=0.35$, $u$, $f_\text{mag}$, and $\tilde f$ follow the paper figure; scales and biases are synthetic. Drag $\theta$ to change gates; active features retain full magnitude."
+    caption="Four-feature gated SAE: shared projection $u=W_\text{gate}(x-b_\text{dec})$ feeds a rectified magnitude path $\pi_\text{mag}=e^{r_\text{mag}}\odot u+b_\text{mag}$ and binary gate $\pi_\text{gate}=u+b_\text{gate}$. At $\theta=0.35$, $u$, $f_\text{mag}$, and $\tilde f$ follow the paper figure; scales and biases are synthetic. Active features retain full magnitude."
   />
 </Zoomable>
 ```
@@ -109,7 +109,7 @@ The auxiliary reconstruction trains the gate through $q$. The stop-gradient oper
 <Zoomable label="Gated SAE as a JumpReLU">
   <GatedSAE
     view="jumprelu"
-    caption="For four features, $\operatorname{JumpReLU}_\theta(\pi_\text{mag})$ is zero through $\theta$, then identity. Feature 4 ($\pi_\text{mag}=0.30$) activates when $\theta<0.30$; active points have no shrinkage. Drag $\theta$ to compare."
+    caption="For four features, $\operatorname{JumpReLU}_\theta(\pi_\text{mag})$ is zero through $\theta$, then identity. Feature 4 ($\pi_\text{mag}=0.30$) activates when $\theta<0.30$; active points have no shrinkage."
   />
 </Zoomable>
 ```

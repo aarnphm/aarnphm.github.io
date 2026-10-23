@@ -125,7 +125,7 @@ $s=0,-5$ are poles and $s=-2$ are zeros
 <Zoomable label="Closed-loop sampled-data basis">
   <BlockDiagram
     config="sampled-feedback"
-    caption="Sampler after the error sum; G(s) forward, H(s) in feedback. Step through the reduction; salmon marks the active rule."
+    caption="Sampler after the error sum; G(s) forward, H(s) in feedback. Salmon marks the active rule."
   />
 </Zoomable>
 ```

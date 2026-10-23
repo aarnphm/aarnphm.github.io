@@ -66,7 +66,7 @@ where $L$ is the layer count, $n_{\mathrm{kv}}$ is the number of key-value heads
 
 ```jsx imports={Zoomable,FlashInferPageLayout}
 <Zoomable label="FlashInfer page layout">
-  <FlashInferPageLayout caption="FlashInfer's three-request layout uses a nine-page pool with eight slots per page. Select a request to inspect its pages and CSR arrays $\mathrm{kv\_indptr}$, $\mathrm{kv\_page\_indices}$, $\mathrm{kv\_last\_page\_lens}$ and $\mathrm{qo\_indptr}$." />
+  <FlashInferPageLayout caption="FlashInfer's three-request layout uses a nine-page pool with eight slots per page. The CSR arrays are $\mathrm{kv\_indptr}$, $\mathrm{kv\_page\_indices}$, $\mathrm{kv\_last\_page\_lens}$ and $\mathrm{qo\_indptr}$." />
 </Zoomable>
 ```
 

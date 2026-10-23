@@ -44,7 +44,7 @@ After each time constant, the remaining gap is multiplied by the same factor, $e
   <PoleResponse
     mode="first"
     a={1}
-    caption="First-order step response of $G(s)=a/(s+a)$ at $a=1$. Drag the pole or use arrow keys. The plot marks $T_r=\ln9/a$ and exact $T_s=-\ln(0.02)/a$ (the $4/a$ rule rounds it); a right-half-plane pole diverges."
+    caption="First-order step response of $G(s)=a/(s+a)$ at $a=1$. The plot marks $T_r=\ln9/a$ and exact $T_s=-\ln(0.02)/a$ (the $4/a$ rule rounds it); a right-half-plane pole diverges."
   />
 </Zoomable>
 ```
@@ -84,7 +84,7 @@ The discriminant tells us whether the transient contains two real exponentials, 
   <PoleResponse
     preset="underdamped"
     cases
-    caption="Unit-step responses of $G(s)=b/(s^2+as+b)$ for course cases at $b=9$: overdamped $s^2+9s+9$, critically damped $s^2+6s+9$, underdamped $s^2+2s+9$, undamped $s^2+9$, and unstable $s^2-s+9$. Select a case or drag the pole; readout shows $\zeta$, $\omega_n$ and time specs."
+    caption="Unit-step responses of $G(s)=b/(s^2+as+b)$ for course cases at $b=9$: overdamped $s^2+9s+9$, critically damped $s^2+6s+9$, underdamped $s^2+2s+9$, undamped $s^2+9$, and unstable $s^2-s+9$. Select a case or drag the pole."
   />
 </Zoomable>
 ```

@@ -123,6 +123,6 @@ Block size $B = 4$; logical blocks map to scattered physical blocks through the 
 
 ```jsx imports={Zoomable,PagedKVTable}
 <Zoomable label="paged KV table">
-  <PagedKVTable caption="Two sequences share eight physical slots. Select a logical block to trace its page; add tokens to grow or evict to free slots. Noncontiguous allocation keeps internal fragmentation near zero." />
+  <PagedKVTable caption="Two sequences share eight physical slots. Noncontiguous allocation keeps internal fragmentation near zero." />
 </Zoomable>
 ```

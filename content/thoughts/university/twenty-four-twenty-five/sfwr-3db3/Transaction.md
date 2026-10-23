@@ -35,13 +35,13 @@ Concurrent transactions overlap in time. On one CPU core, their instructions can
 
 % Processes above the time line
 % P1 intervals
-\draw[fill=blue!30] (0,2.4) rectangle (2,3) node[midway]{P1};
-\draw[fill=blue!30] (4,2.4) rectangle (6,3) node[midway]{P1};
-\draw[fill=blue!30] (8,2.4) rectangle (9.5,3) node[midway]{P1};
+\draw[fill=black!12] (0,2.4) rectangle (2,3) node[midway]{P1};
+\draw[fill=black!12] (4,2.4) rectangle (6,3) node[midway]{P1};
+\draw[fill=black!12] (8,2.4) rectangle (9.5,3) node[midway]{P1};
 
 % P2 intervals
-\draw[fill=red!30] (2,2.4) rectangle (4,3) node[midway]{P2};
-\draw[fill=red!30] (6,2.4) rectangle (8,3) node[midway]{P2};
+\draw[fill=green!30] (2,2.4) rectangle (4,3) node[midway]{P2};
+\draw[fill=green!30] (6,2.4) rectangle (8,3) node[midway]{P2};
 
 %------------------------------
 % Parallel Processing
@@ -56,10 +56,10 @@ Concurrent transactions overlap in time. On one CPU core, their instructions can
 \draw[->] (-0.5,-2.5) -- (10,-2.5) node[below]{Time};
 
 % Process 1 on core 1 (above the -1 line)
-\draw[fill=blue!30] (0,-0.6) rectangle (9.5,-0.0) node[midway]{P1 running on Core 1};
+\draw[fill=black!12] (0,-0.6) rectangle (9.5,-0.0) node[midway]{P1 running on Core 1};
 
 % Process 2 on core 2 (above the -2.5 line)
-\draw[fill=red!30] (0,-2.1) rectangle (9.5,-1.5) node[midway]{P2 running on Core 2};
+\draw[fill=green!30] (0,-2.1) rectangle (9.5,-1.5) node[midway]{P2 running on Core 2};
 \end{scope}
 
 \end{tikzpicture}

@@ -211,7 +211,7 @@ Each step multiplies the distance to zero by $|1-\alpha|$. Thus $0<\alpha<2$ giv
 
 ```jsx imports={Zoomable,HeavyBallRate}
 <Zoomable label="Convergence rate against step size, with momentum">
-  <HeavyBallRate caption="For $f(x)=\frac{\lambda}{2}x^2$, the heavy-ball rate is $\rho=\max|r|$ over roots of $r^2-(1+\beta-\alpha\lambda)r+\beta$, with step dependence through $\alpha\lambda$. The light V is gradient descent; at $\beta=0$ the curves coincide. Sage marks $0<\alpha\lambda<2(1+\beta)$. The salmon point selects the step; the right panel starts from rest at $x_{-1}=x_0=1$. Raise $\beta$ to update the band and complex-root rate $\rho=\sqrt{\beta}$." />
+  <HeavyBallRate caption="For $f(x)=\frac{\lambda}{2}x^2$, the heavy-ball rate is $\rho=\max|r|$ over roots of $r^2-(1+\beta-\alpha\lambda)r+\beta$, with step dependence through $\alpha\lambda$. The light V is gradient descent; at $\beta=0$ the curves coincide. Sage marks $0<\alpha\lambda<2(1+\beta)$. The salmon point selects the step; the right panel starts from rest at $x_{-1}=x_0=1$. The complex-root rate is $\rho=\sqrt{\beta}$." />
 </Zoomable>
 ```
 

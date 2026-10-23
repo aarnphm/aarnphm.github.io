@@ -101,6 +101,6 @@ The same burden applies to [[thoughts/sparse crosscoders|cross-layer features]] 
 
 ```jsx imports={Zoomable,ParamDecomposition}
 <Zoomable label="parameter decomposition">
-  <ParamDecomposition caption="Toy, fixed-seed illustration (not a trained APD run): $\theta^\star \approx \sum_c P_c$. Change $C$ to inspect component fill rate." />
+  <ParamDecomposition caption="Toy fixed-seed example, not a trained APD run: $\theta^\star \approx \sum_c P_c$." />
 </Zoomable>
 ```

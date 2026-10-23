@@ -149,7 +149,7 @@ The figure uses $H_1$ for the forward block and $H_2$ for the feedback block.
 <Zoomable label="Feedback loop reduction">
   <BlockDiagram
     config="feedback"
-    caption="Forward block $H_1$ with feedback block $H_2$. Choose feedback sign and step through the reduction: negative gives $H_1/(1+H_1H_2)$, positive gives $H_1/(1-H_1H_2)$."
+    caption="Forward block $H_1$ with feedback block $H_2$. Negative feedback gives $H_1/(1+H_1H_2)$, positive gives $H_1/(1-H_1H_2)$."
   />
 </Zoomable>
 ```
@@ -176,7 +176,7 @@ The inverse is an algebraic device. For example, the inverse of an integrator is
 <Zoomable label="Moving a block past a summing junction">
   <BlockDiagram
     config="summing-junction"
-    caption="Block move after Figure 5.7 of the course slides. Choose (a) or (b) and step through; the readout expands each output, and matching expansions show equivalence."
+    caption="Block move after Figure 5.7 of the course slides. Matching output expansions show the two forms are equivalent."
   />
 </Zoomable>
 ```

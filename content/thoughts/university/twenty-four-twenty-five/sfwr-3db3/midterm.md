@@ -439,7 +439,7 @@ Outer join preserves dangling tuples by padding with `NULL`
 
 ```jsx imports={Zoomable,SqlJoin}
 <Zoomable label="SQL joins">
-  <SqlJoin caption="Course and prereq joined on course_id. Switch join kind; dangling tuples pad with null on outer joins." />
+  <SqlJoin caption="Course and prereq joined on course_id. Dangling tuples pad with null on outer joins." />
 </Zoomable>
 ```
 

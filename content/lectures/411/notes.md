@@ -217,7 +217,7 @@ $$A^\top A\,x=A^\top b.$$
 \begin{tikzpicture}[scale=3, >=stealth]
   \draw[->] (-0.2,0) -- (3.2,0) node[below] {$x$};
   \draw[->] (0,-0.2) -- (0,2.2) node[left] {$y$};
-  \draw[->, thick, blue] (0,0) -- (2,1.5) node[above] {$x$};
+  \draw[->, thick, black] (0,0) -- (2,1.5) node[above] {$x$};
   \draw[dashed] (2,0) node[below] {$x_1$} -- (2,1.5);
   \draw[dashed] (0,1.5) node[left] {$x_2$} -- (2,1.5);
   \node at (1.0,-0.35) {\small $e_1=(1,0)$};
@@ -412,10 +412,10 @@ see also [[thoughts/Vector calculus#gradient|gradient]], [[thoughts/Vector calcu
 >   \addplot3[only marks, mark=*, mark size=1.8pt] coordinates {(0,0,1)};
 >   \node[anchor=west] at (axis cs:0.05,0,1) {\scriptsize $\mathbf{p}$};
 >   % Spanning directions u, v along plane
->   \addplot3[->, thick, blue] coordinates {(0,0,1) (1,0,1+0.3)};
->   \node[anchor=west, blue] at (axis cs:1.0,0,1.3) {\scriptsize $\mathbf{u}$};
->   \addplot3[->, thick, blue] coordinates {(0,0,1) (0,1,1+0.5)};
->   \node[anchor=south, blue] at (axis cs:0,1,1.5) {\scriptsize $\mathbf{v}$};
+>   \addplot3[->, thick, black] coordinates {(0,0,1) (1,0,1+0.3)};
+>   \node[anchor=west, black] at (axis cs:1.0,0,1.3) {\scriptsize $\mathbf{u}$};
+>   \addplot3[->, thick, black] coordinates {(0,0,1) (0,1,1+0.5)};
+>   \node[anchor=south, black] at (axis cs:0,1,1.5) {\scriptsize $\mathbf{v}$};
 >   % Normal vector n = (0.3, 0.5, -1)
 >   \addplot3[->, thick, red] coordinates {(0,0,1) (0.18,0.30,0.4)};
 >   \node[anchor=west, red] at (axis cs:0.2,0.3,0.45) {\scriptsize $\mathbf{n}$};
@@ -1513,15 +1513,15 @@ Project onto $\mathrm{span}\{a\}$ with $a\ne0$: $P=\dfrac{a a^\top}{a^\top a}$, 
   % unit circle
   \draw[thick, black!50] (0,0) circle (1);
   % ellipse = level set of x^T A x = c, axes = eigenvectors
-  \draw[rotate=25, thick, blue] (0,0) ellipse (1.6 and 0.8);
+  \draw[rotate=25, thick, black] (0,0) ellipse (1.6 and 0.8);
   % eigenvector directions (axes of ellipse)
-  \draw[rotate=25, red!70, ->] (0,0) -- (1.6,0) node[above right]{$q_1$};
-  \draw[rotate=25, red!70, ->] (0,0) -- (0,0.8) node[above left]{$q_2$};
+  \draw[rotate=25, black!60, ->] (0,0) -- (1.6,0) node[above right]{$q_1$};
+  \draw[rotate=25, black!60, ->] (0,0) -- (0,0.8) node[above left]{$q_2$};
   % tangency points hint (where circle touches outermost ellipse)
-  \fill[blue] ( {cos(25)} , {sin(25)} ) circle (1.2pt);
-  \fill[blue] ( {-cos(25)} , {-sin(25)} ) circle (1.2pt);
+  \fill[black] ( {cos(25)} , {sin(25)} ) circle (1.2pt);
+  \fill[black] ( {-cos(25)} , {-sin(25)} ) circle (1.2pt);
   % labels
-  \node[blue] at (1.2,1.6) {$x^\top A x = c$};
+  \node[black] at (1.2,1.6) {$x^\top A x = c$};
   \node[black!60] at (-1.3,-1.2) {$\|x\|=1$};
 \end{tikzpicture}
 \end{document}
@@ -1588,10 +1588,10 @@ Project onto $\mathrm{span}\{a\}$ with $a\ne0$: $P=\dfrac{a a^\top}{a^\top a}$, 
   \draw[thick, black!50] (0,0) circle (1);
   % ellipse (x^T A x = c), principal axes = eigenvectors q1,q2
   \def\theta{25}
-  \draw[rotate=\theta, thick, blue] (0,0) ellipse (1.6 and 0.8);
+  \draw[rotate=\theta, thick, black] (0,0) ellipse (1.6 and 0.8);
   % eigenvector axes
-  \draw[rotate=\theta, red!70, ->] (0,0) -- (1.6,0) node[above right]{$q_1$};
-  \draw[rotate=\theta, red!70, ->] (0,0) -- (0,0.8) node[above left]{$q_2$};
+  \draw[rotate=\theta, black!60, ->] (0,0) -- (1.6,0) node[above right]{$q_1$};
+  \draw[rotate=\theta, black!60, ->] (0,0) -- (0,0.8) node[above left]{$q_2$};
   % S_*: best 1D subspace aligned with q1
   \draw[rotate=\theta, very thick, green!60!black] (-2,0) -- (2,0) node[right]{$S_*\ (k=1)$};
   % a suboptimal 1D subspace S
@@ -1602,8 +1602,8 @@ Project onto $\mathrm{span}\{a\}$ with $a\ne0$: $P=\dfrac{a a^\top}{a^\top a}$, 
   \fill[gray!80] ({cos(-18)},{sin(-18)}) circle (1.2pt);
   \fill[gray!80] ({-cos(-18)},{-sin(-18)}) circle (1.2pt);
   % annotations of values
-  \node[blue!70!black] at (1.25,1.55) {$R_A(x)$ large near $q_1$ ($\lambda_{\max}$)};
-  \node[blue!70!black] at (-0.9,0.2) {$R_A(x)$ small near $q_2$ ($\lambda_{\min}$)};
+  \node[black] at (1.25,1.55) {$R_A(x)$ large near $q_1$ ($\lambda_{\max}$)};
+  \node[black] at (-0.9,0.2) {$R_A(x)$ small near $q_2$ ($\lambda_{\min}$)};
 \end{tikzpicture}
 \end{document}
 ```

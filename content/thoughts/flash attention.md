@@ -105,7 +105,7 @@ FlashAttention loads tiles up, runs the whole softmax on-chip, and touches HBM a
 
 ```jsx imports={Zoomable,FlashAttentionTiles}
 <Zoomable label="FlashAttention tile streaming">
-  <FlashAttentionTiles caption="Step through FlashAttention tiles: HBM holds $Q,K,V,O$; SRAM streams $(Q_i,K_j,V_j)$ and updates $m_i,\ell_i,O_i$ by online softmax." />
+  <FlashAttentionTiles caption="HBM holds $Q,K,V,O$; SRAM streams $(Q_i,K_j,V_j)$ and updates $m_i,\ell_i,O_i$ by online softmax." />
 </Zoomable>
 ```
 
