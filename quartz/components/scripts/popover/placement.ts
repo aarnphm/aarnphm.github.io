@@ -213,6 +213,7 @@ export async function setPosition(
   { clientX, clientY, placement, strategy = 'fixed' }: PositioningOptions,
 ) {
   const arrowElement = popoverElement.querySelector<HTMLElement>('.popover-arrow')
+  const isPdf = popoverElement.querySelector('.popover-inner[data-content-type*="pdf"]') !== null
   const point = { x: clientX, y: clientY }
   const reference = popoverReference(link, point)
   const middleware = [
@@ -221,16 +222,20 @@ export async function setPosition(
       ? flip({ padding: 8, fallbackAxisSideDirection: 'end' })
       : autoPlacement({ padding: 8 }),
     shift({ padding: 8 }),
-    // a course card is taller than the room beside a short window; it scrolls instead of clipping
-    popoverElement.matches('.course-popover, .page-preview-popover')
+    popoverElement.matches('.course-popover, .page-preview-popover') || isPdf
       ? size({
           padding: 8,
-          apply({ availableHeight, elements }) {
+          apply({ availableWidth, availableHeight, elements }) {
             const inner = elements.floating.querySelector<HTMLElement>('.popover-inner')
             if (!inner) return
-            // the popover element wraps the inner box with its arrow gutter
+            // Reserve the outer arrow gutter when fitting the panel beside its anchor.
             const gutter = elements.floating.offsetHeight - inner.offsetHeight
-            inner.style.maxHeight = `min(${Math.max(0, Math.floor(availableHeight - gutter))}px, 75vh, 30rem)`
+            const height = Math.max(0, Math.floor(availableHeight - gutter))
+            inner.style.maxHeight = isPdf ? `${height}px` : `min(${height}px, 75vh, 30rem)`
+            if (isPdf) {
+              const widthGutter = elements.floating.offsetWidth - inner.offsetWidth
+              inner.style.maxWidth = `${Math.max(0, Math.floor(availableWidth - widthGutter))}px`
+            }
           },
         })
       : null,
