@@ -16,6 +16,7 @@ import { emitterSourceInputs, mergeEmitterSourceInputs } from '../util/source-em
 export { emitterSourceInputs } from '../util/source-emission.ts'
 import { handleLocalLeanVerifyNodeRequest } from '../util/lean-local-verify.ts'
 import { version, fp, cacheFile } from './constants.js'
+import { createSourceRebuildQueue } from './source-rebuild-queue.js'
 
 const inlineScriptFilter = /\.inline\.(ts|js)$/
 const testSourcePattern =
@@ -546,112 +547,102 @@ export async function handleBuild(argv) {
     }
   }
 
-  const build = async (clientRefresh, changedPaths = []) => {
+  const build = async (clientRefresh, takePaths = () => []) => {
     const release = await buildMutex.acquire()
+    try {
+      const changedPaths = takePaths()
 
-    const buildReason = activeBuild ? 'source' : 'initial'
-    const bundle = await rebuildQuartzBundle()
-    if (!bundle) {
-      release()
-      return
-    }
+      const buildReason = activeBuild ? 'source' : 'initial'
+      const bundle = await rebuildQuartzBundle()
+      if (!bundle) return false
 
-    const deletedSource = (
-      await Promise.all(
-        changedPaths.map(filename =>
-          promises.access(filename).then(
-            () => false,
-            () => true,
+      const deletedSource = (
+        await Promise.all(
+          changedPaths.map(filename =>
+            promises.access(filename).then(
+              () => false,
+              () => true,
+            ),
           ),
-        ),
-      )
-    ).some(Boolean)
-    const scope =
-      activeBuild?.ready && !deletedSource
-        ? bundle.sourceRebuildScope(
-            changedPaths,
-            new Set([...previousServerSourceInputs, ...serverSourceInputs]),
-            courseInputs,
-            mergeEmitterSourceInputs(previousEmissionInputs, emissionInputs),
-          )
-        : { kind: 'full' }
-    if (scope.kind === 'partial') {
+        )
+      ).some(Boolean)
+      const scope =
+        activeBuild?.ready && !deletedSource
+          ? bundle.sourceRebuildScope(
+              changedPaths,
+              new Set([...previousServerSourceInputs, ...serverSourceInputs]),
+              courseInputs,
+              mergeEmitterSourceInputs(previousEmissionInputs, emissionInputs),
+            )
+          : { kind: 'full' }
+      if (scope.kind === 'partial') {
+        release()
+        const ready = await bundle.buildSourceResources(argv, buildMutex, changedPaths, scope)
+        bundle.releaseModuleCaches()
+        if (ready) clientRefresh()
+        return ready
+      }
+
+      const courses = scope.kind === 'courses'
+      let hadPendingContent = false
+      if (activeBuild) {
+        hadPendingContent = await disposeActiveBuild()
+        console.log(
+          styleText(
+            'yellow',
+            courses && !hadPendingContent
+              ? 'Detected a course source change, rebuilding the courses...'
+              : scope.kind === 'emitters' && !hadPendingContent
+                ? `Detected an emission source change, rebuilding ${scope.emitters.join(', ')}...`
+                : 'Detected a source code change, doing a hard rebuild...',
+          ),
+        )
+      }
+      if (hadPendingContent) {
+        globalThis.__quartzSourceEmissionSnapshot = undefined
+      }
+      activeBundle?.releaseModuleCaches()
+      activeBundle = bundle
       release()
-      const ready = await bundle.buildSourceResources(argv, buildMutex, changedPaths, scope)
-      bundle.releaseModuleCaches()
-      if (ready) clientRefresh()
-      return
-    }
 
-    const courses = scope.kind === 'courses'
-    let hadPendingContent = false
-    if (activeBuild) {
-      hadPendingContent = await disposeActiveBuild()
-      console.log(
-        styleText(
-          'yellow',
-          courses && !hadPendingContent
-            ? 'Detected a course source change, rebuilding the courses...'
-            : scope.kind === 'emitters' && !hadPendingContent
-              ? `Detected an emission source change, rebuilding ${scope.emitters.join(', ')}...`
-              : 'Detected a source code change, doing a hard rebuild...',
-        ),
+      activeBuild = await bundle.default(
+        argv,
+        buildMutex,
+        clientRefresh,
+        buildReason,
+        hadPendingContent
+          ? 'site'
+          : courses
+            ? 'courses'
+            : scope.kind === 'emitters'
+              ? { emitters: scope.emitters }
+              : 'site',
       )
+      if (activeBuild?.ready) clientRefresh()
+      return Boolean(activeBuild?.ready)
+    } finally {
+      release()
     }
-    if (hadPendingContent) {
-      globalThis.__quartzSourceEmissionSnapshot = undefined
-    }
-    activeBundle?.releaseModuleCaches()
-    activeBundle = bundle
-    release()
-
-    activeBuild = await bundle.default(
-      argv,
-      buildMutex,
-      clientRefresh,
-      buildReason,
-      hadPendingContent
-        ? 'site'
-        : courses
-          ? 'courses'
-          : scope.kind === 'emitters'
-            ? { emitters: scope.emitters }
-            : 'site',
-    )
-    if (activeBuild?.ready) clientRefresh()
   }
 
   const reload = argv.watch ? createReloadServer(argv.wsPort) : undefined
   const clientRefresh = () => reload?.refresh()
   let initialBuild = () => build(clientRefresh)
   if (argv.watch) {
-    const sourceRebuildQueue = { running: true, requested: false, pending: new Set() }
-    const requestSourceRebuild = async () => {
-      sourceRebuildQueue.requested = true
-      if (sourceRebuildQueue.running) return
-      sourceRebuildQueue.running = true
-      try {
-        while (sourceRebuildQueue.requested) {
-          sourceRebuildQueue.requested = false
-          const changedPaths = [...sourceRebuildQueue.pending]
-          sourceRebuildQueue.pending.clear()
-          await build(clientRefresh, changedPaths)
-        }
-      } finally {
-        sourceRebuildQueue.running = false
-      }
-    }
+    const sourceRebuildQueue = createSourceRebuildQueue({
+      build: takePaths => build(clientRefresh, takePaths),
+      onError: error => console.error(`Source rebuild failed: ${formatErrorReason(error)}`),
+      onReceipt: receipt => console.log(`__QUARTZ_SOURCE_QUEUE__${JSON.stringify(receipt)}`),
+    })
     const sourceChanged = (type, fp) => {
       if (isTestSourcePath(fp)) return
       const normalized = normalizeWatchedPath(fp)
       console.log(styleText('yellow', `Detected source ${type}: ${normalized}`))
-      sourceRebuildQueue.pending.add(normalized)
-      void requestSourceRebuild()
+      void sourceRebuildQueue.add(normalized)
     }
     const sourceWatcher = createSourceWatcher(sourceChanged)
     await once(sourceWatcher, 'ready')
-    sourceRebuildQueue.running = false
-    initialBuild = requestSourceRebuild
+    initialBuild = () => sourceRebuildQueue.start()
   }
   await initialBuild()
 
