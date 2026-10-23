@@ -1,0 +1,235 @@
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
+@use './figure.scss' as *;
+
+.attribution-graph {
+  @include figure-frame('ag-figure', 34rem);
+
+  --ag-lit: color-mix(in srgb, var(--fig-salmon) 78%, var(--light));
+  --ag-bar: color-mix(in srgb, var(--fig-sage) 85%, var(--light));
+  --ag-node: color-mix(in srgb, var(--light) 70%, var(--lightgray));
+  --ag-token: var(--light);
+}
+
+:root[saved-theme='dark'] .attribution-graph {
+  --ag-lit: color-mix(in srgb, var(--fig-salmon) 30%, var(--lightgray));
+  --ag-bar: color-mix(in srgb, var(--fig-sage) 40%, var(--lightgray));
+  --ag-node: color-mix(in srgb, var(--dark) 10%, var(--lightgray));
+  --ag-token: var(--lightgray);
+}
+
+.ag-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1.25rem;
+}
+
+.ag-prune {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.75rem;
+  min-width: 0;
+  color: var(--fig-note);
+  font-size: 0.78rem;
+}
+
+.ag-range {
+  width: 9rem;
+  accent-color: var(--dark);
+}
+
+.ag-prune-value,
+.ag-restore {
+  color: var(--dark);
+  font-family: var(--codeFont);
+  font-size: var(--text-meta);
+  font-variant-numeric: tabular-nums;
+}
+
+.ag-restore {
+  @include figure-grid-cell;
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.5rem;
+  padding: 0.2rem 0.55rem;
+  border: 1px solid var(--fig-frame-border);
+  cursor: pointer;
+
+  &[hidden] {
+    display: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background: var(--fig-grid-selected);
+    }
+  }
+
+  @media (pointer: coarse) {
+    min-height: 44px;
+  }
+}
+
+.ag-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem 1.5rem;
+  align-items: start;
+  margin-top: 0.9rem;
+
+  @container ag-figure (min-width: 44rem) {
+    grid-template-columns: minmax(0, 1.9fr) minmax(13rem, 1fr);
+  }
+}
+
+.ag-scroll {
+  min-width: 0;
+  overflow-x: auto;
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
+}
+
+.ag-svg {
+  display: block;
+  width: 100%;
+  min-width: 36rem;
+
+  text {
+    font-family: var(--codeFont);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ag-axis {
+    fill: var(--fig-note);
+    font-size: 9px;
+  }
+
+  .ag-label {
+    fill: var(--dark);
+    font-size: 10px;
+    pointer-events: none;
+  }
+
+  .ag-arrowhead {
+    fill: var(--fig-stroke);
+  }
+
+  .ag-edge {
+    fill: none;
+    stroke: var(--fig-stroke);
+    stroke-linejoin: miter;
+    transition:
+      stroke 140ms ease,
+      stroke-width 180ms ease,
+      opacity 180ms ease;
+  }
+
+  .ag-edge[data-ag-in='true'] {
+    stroke: var(--dark);
+  }
+
+  // a pruned or zeroed edge stays in place, quiet: the graph's shape is the reader's map
+  .ag-edge[data-ag-pruned='true'] {
+    stroke: var(--fig-stroke-soft);
+    opacity: 0.55;
+  }
+
+  .ag-node {
+    cursor: pointer;
+    outline: none;
+  }
+
+  .ag-node[aria-disabled='true'] {
+    cursor: default;
+  }
+
+  .ag-box {
+    fill: var(--ag-node);
+    stroke: var(--fig-stroke);
+    stroke-width: 1;
+    transition:
+      fill 140ms ease,
+      stroke 140ms ease;
+  }
+
+  .ag-node--token .ag-box {
+    fill: var(--ag-token);
+  }
+
+  .ag-node--logit .ag-box {
+    stroke: var(--dark);
+    stroke-width: 1.4;
+  }
+
+  .ag-bar {
+    fill: var(--ag-bar);
+    transition: width 180ms ease;
+  }
+
+  .ag-node[data-ag-selected='true'] .ag-box {
+    fill: var(--ag-lit);
+    stroke: var(--dark);
+  }
+
+  .ag-node[data-ag-ablated='true'] {
+    .ag-box {
+      fill: var(--fig-surface);
+      stroke: var(--fig-stroke-soft);
+    }
+
+    .ag-label {
+      fill: var(--fig-tab-fg);
+      text-decoration: line-through;
+    }
+  }
+
+  .ag-node:focus-visible .ag-box {
+    stroke: var(--dark);
+    stroke-width: 2;
+  }
+}
+
+.ag-readout {
+  @include figure-table(minmax(0, 1fr) max-content);
+  margin: 0;
+  align-self: start;
+
+  .ag-readout-head dt,
+  .ag-readout-head dd {
+    color: var(--fig-note);
+    background: var(--fig-grid-selected);
+  }
+
+  // the live rows sit one level deeper than the mixin's bare rows
+  .ag-readout-rows,
+  .ag-readout-rows > div {
+    display: contents;
+  }
+}
+
+.ag-caption {
+  @include figure-caption;
+}
+
+.ag-math {
+  @include figure-inline-math;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ag-svg .ag-edge,
+  .ag-svg .ag-box,
+  .ag-svg .ag-bar {
+    transition: none;
+  }
+}
