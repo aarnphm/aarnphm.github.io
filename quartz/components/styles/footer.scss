@@ -1,12 +1,14 @@
 footer {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
   justify-content: space-between;
   align-items: center;
   box-sizing: border-box;
 
   font-family: var(--bodyFont);
-  font-size: 0.8rem;
+  font-size: var(--text-meta);
   font-style: normal;
 
   p {
@@ -16,7 +18,8 @@ footer {
   menu {
     display: flex;
     flex-direction: row;
-    line-height: 0;
+    flex-wrap: wrap;
+    line-height: 1.4;
     list-style: none;
     gap: 1rem;
     padding: 0;
@@ -24,7 +27,7 @@ footer {
     padding-inline-start: 0;
 
     & > li {
-      font-size: 0.8rem;
+      font-size: inherit;
       list-style: none;
       display: flex;
       flex-direction: row;

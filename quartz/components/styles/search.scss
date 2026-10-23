@@ -196,7 +196,7 @@
         }
 
         .semantic-status {
-          font-size: 0.65rem;
+          font-size: var(--text-meta);
           color: var(--gray);
           opacity: 0.6;
           text-transform: lowercase;
@@ -312,13 +312,13 @@
 
             &.search-document-preview {
               .document-popover-label {
-                font-size: 0.65rem;
+                font-size: var(--text-meta);
               }
 
               .document-popover-table,
               .document-popover-list,
               .document-popover-cards span {
-                font-size: 0.75rem;
+                font-size: var(--text-meta);
               }
             }
 
@@ -478,6 +478,10 @@
       background: transparent;
       font: inherit;
       color: var(--dark);
+
+      @media all and ($mobile) {
+        font-size: max(16px, 1em);
+      }
 
       &:focus {
         outline: none;

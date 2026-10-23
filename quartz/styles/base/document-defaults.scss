@@ -9,7 +9,6 @@ body {
   line-height: var(--line-height);
   padding: 0;
   text-transform: none;
-  font-size: var(--font-size);
   font-style: normal;
   font-weight: $normalWeight;
   font-synthesis: style;
@@ -21,6 +20,7 @@ body {
 }
 
 html {
+  font-size: var(--font-size);
   scroll-padding-top: 0;
   overscroll-behavior: none;
 
@@ -30,6 +30,7 @@ html {
 }
 
 body {
+  font-size: 1rem;
   margin: 0;
   box-sizing: border-box;
   background-color: var(--light);
@@ -313,11 +314,20 @@ h4,
 h5,
 h6 {
   &[id] {
+    // The icon is a fixed 16px svg on the baseline; size it to the heading and centre it on the
+    // lowercase letters.
     a[data-role='anchor'] {
+      display: inline-flex;
+      vertical-align: middle;
       opacity: 0;
       transition: opacity 0.2s ease;
       font-family: var(--codeFont);
       user-select: none;
+
+      svg {
+        width: 0.7em;
+        height: 0.7em;
+      }
     }
   }
 
@@ -338,17 +348,17 @@ h6 {
 // typography improvements
 // https://type-scale.spencermortensen.com/
 h1 {
-  font-size: 25.5px;
+  font-size: 1.59375rem;
   margin-top: 2.25rem;
 }
 
 h2 {
-  font-size: 23.8337px;
+  font-size: 1.4896rem;
   margin-top: 1.9rem;
 }
 
 h3 {
-  font-size: 22.2763px;
+  font-size: 1.3923rem;
   margin-top: 1.62rem;
 }
 
@@ -359,19 +369,19 @@ h6 {
 }
 
 h4 {
-  font-size: 20.8207px;
+  font-size: 1.3013rem;
 }
 
 h5 {
-  font-size: 19.4601px;
+  font-size: 1.2163rem;
 }
 
 h6 {
-  font-size: 18.1885px;
+  font-size: 1.1368rem;
 }
 
 small {
-  font-size: 15.8891px;
+  font-size: var(--text-meta);
 }
 
 sup {

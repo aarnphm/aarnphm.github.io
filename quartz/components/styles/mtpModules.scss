@@ -24,8 +24,12 @@
 
 .mtp-segments {
   @include figure-fieldset;
-  grid-auto-flow: column;
+  box-sizing: border-box;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   width: fit-content;
+  max-width: 100%;
+  min-inline-size: 0;
+  padding: 0;
 }
 
 .mtp-segment {
@@ -33,12 +37,12 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 2rem;
-  padding: 0.28rem 0.55rem;
+  min-width: 24px;
+  padding: 0.28rem 0.35em;
   color: var(--fig-tab-fg);
   cursor: pointer;
   font-family: var(--codeFont);
-  font-size: 0.72rem;
+  font-size: var(--text-meta);
 
   input {
     position: absolute;
@@ -69,7 +73,7 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  overflow: visible;
+  overflow: hidden;
   pointer-events: none;
   z-index: 2;
 }

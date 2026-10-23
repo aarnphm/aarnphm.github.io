@@ -2,7 +2,7 @@
 @use '../../styles/mixin.scss' as *;
 
 ul.content-meta {
-  color: var(--gray);
+  color: var(--darkgray);
   display: flex;
   flex-flow: wrap;
   flex-direction: column;
@@ -13,7 +13,7 @@ ul.content-meta {
   padding-inline-start: 0;
   list-style: none;
   gap: 0.3rem;
-  font-weight: 300;
+  font-weight: 400;
 
   pre {
     color: var(--darkgray);
@@ -76,7 +76,7 @@ ul.content-meta {
   }
 
   .source-copy-status {
-    font-size: 0.85em;
+    font-size: var(--text-meta);
   }
 }
 
