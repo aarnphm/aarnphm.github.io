@@ -17338,7 +17338,7 @@ title: are.na
   - [meta]:
     - date: 10/03/2025
     - tags: [love]
-  - [[thoughts/Giles Deleuze]]: ventures outwards to realize these potentiality.
+  - [[thoughts/Gilles Deleuze]]: ventures outwards to realize these potentiality.
   - Commit someone who will inevitability fails us.
   - unfolding of love sustains the form of life itself
   - ![[quotes#^camus]]

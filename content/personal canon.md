@@ -3,15 +3,13 @@ date: '2025-12-17'
 description: inspired by [David Cole's](http://davidcole.me/canon/), [Brendan Schlagel's](https://www.brendanschlagel.com/canon/#words-language), and [Marcelo Chaman Mallqui](https://www.marcelochaman.ca/s/heuristics)
 id: personal canon
 layout: technical-tractatus
-modified: 2026-10-14 14:58:03 GMT-04:00
+modified: 2026-10-23 01:08:03 GMT-04:00
 tags:
   - pattern
   - sapling
   - technical
 title: personal canon
 ---
-
-## language, logic, and epistemic calibration
 
 - _1.0_ [[thoughts/Wittgenstein|Ludwig Wittgenstein]]
   - _1.01_ [[library/Tractatus Logico-Philosophicus|Tractatus Logico-Philosophicus]] ([PDF](https://www.gutenberg.org/files/5740/5740-pdf.pdf)) treats a proposition as a picture of a possible fact. Its saying/showing distinction marks what a factual proposition can state and what its logical form can only display.
@@ -25,19 +23,15 @@ title: personal canon
 - _1.3_ [The Cluster Structure of Thingspace](https://www.lesswrong.com/posts/WBw8dDkAWohFjWQSk/the-cluster-structure-of-thingspace) by Eliezer Yudkowsky treats categories as clusters of correlated properties, a reason to examine a category's predictive use instead of searching for its essence.
 - _1.4_ [On Bounded Distrust](https://thezvi.substack.com/p/on-bounded-distrust) by Zvi Mowshowitz asks what signal can still be extracted from a source whose distortions are known. Distrust has to be calibrated to the claim and context.
 
-## existentialism, phenomenology, and the absurd
-
 - _2.0_ [[thoughts/Camus|Albert Camus]]
   - _2.01_ [[library/The Myth of Sisyphus|The Myth of Sisyphus]] asks whether life is worth living once the demand for meaning meets an indifferent world. Its answer is revolt without an appeal to philosophical suicide.
   - _2.02_ [[library/The Rebel|The Rebel]] asks how refusal of injustice can remain committed to human limits, rather than license murder in the name of a promised future.
   - _2.03_ [[library/The First Man|The First Man]], the unfinished novel about childhood in colonial Algeria, returns the argument to poverty, family, and the search for an origin.
 - _2.1_ Gilles Deleuze
-  - _2.10_ [[library/Nietzsche and Philosophy|Nietzsche and Philosophy]] by [[thoughts/Giles Deleuze|Gilles Deleuze]] reads critique through the origin and value of values. This is the route into [[thoughts/aesthetic value|aesthetic value]] in the existing [[thoughts/Philosophy and Nietzsche|Nietzsche notes]].
+  - _2.10_ [[library/Nietzsche and Philosophy|Nietzsche and Philosophy]] by [[thoughts/Gilles Deleuze|Gilles Deleuze]] reads critique through the origin and value of values. This is the route into [[thoughts/aesthetic value|aesthetic value]] in the existing [[thoughts/Philosophy and Nietzsche|Nietzsche notes]].
   - _2.11_ [[library/A Thousand Plateaus|A Thousand Plateaus]] ([PDF](https://files.libcom.org/files/A%20Thousand%20Plateaus.pdf)) by Deleuze and Félix Guattari develops rhizomes, assemblages, and multiplicities as ways to describe relations that do not grow from one root.
 - _2.2_ [[library/Being and Time|Being and Time]] ([PDF](https://libraryofagartha.com/Philosophy/Martin%20Heidegger/Being%20and%20Time%20%28Martin%20Heidegger_Berserker%20Books%29.pdf)) by Martin Heidegger starts from [[thoughts/being|Dasein]], already situated in a world of uses and concerns. _Readiness-to-hand_ and _presence-at-hand_ name two ways a thing becomes intelligible in that situation.
 - _2.3_ _The Sickness unto Death_ by Søren Kierkegaard and [[library/The Need For Roots|The Need for Roots]] by Simone Weil hold a question open: what gives a self form when possibility multiplies? [[posts/hyperabundance|Hyperabundance]] makes that question practical, because chosen commitments need time and attention to become real.
-
-## writing, agency, taste, and tools for thought
 
 - _3.0_ A notebook and an essay do different work in a [[thoughts/writing|writing]] life.
   - _3.01_ [[library/On Keeping a Notebook|On Keeping a Notebook]] by Joan Didion keeps contact with earlier selves. Its entries record how an event felt to the writer, even when they would make poor evidence for a factual diary.
@@ -53,14 +47,10 @@ title: personal canon
   - _3.33_ [File Over App](https://stephango.com/file-over-app) by Steph Ango puts durable files under the owner's control. Together these works explain the interest in [[thoughts/personal computing|personal computing]] and [[thoughts/malleable software|malleable software]].
 - _3.4_ [Universal Love, Said the Cactus Person](https://slatestarcodex.com/2015/04/21/universal-love-said-the-cactus-person/) by Scott Alexander belongs here because its demand for propositional proof interrupts an encounter. [[posts/2025|The 2025 notes]] use it to ask whether insisting on verification can turn a subject into an object.
 
-## computing, information, and interpretability
-
 - _4.0_ [[library/Structure and Interpretation of Computer Programs|Structure and Interpretation of Computer Programs]] ([PDF](https://web.mit.edu/6.001/6.037/sicp.pdf)) by Abelson and Sussman teaches procedures, data, and interpreters by constructing them, then changing the abstraction boundary.
   - _4.01_ [[library/The Art of Doing Science and Engineering|The Art of Doing Science and Engineering]] by Richard Hamming makes sustained attention to important problems part of the craft.
   - _4.02_ [How To Ask Questions The Smart Way](http://www.catb.org/~esr/faqs/smart-questions.html) by Eric S. Raymond asks for prior investigation and a precise account of the failure. Reading source code is often how a question becomes precise.
 - _4.1_ _A Mathematical Theory of Communication_ (1948) by Claude Shannon measures information against uncertainty in a distribution. _On Exactitude in Science_ by Jorge Luis Borges supplies the counterimage of a map as large as its empire. [[thoughts/Information Theory|Information theory]], [[thoughts/Entropy|entropy]], and [[thoughts/Compression|compression]] matter because a useful representation leaves something out.
-
-## cinema, sound, and craft
 
 - _5.0_ [[cinematheque.base|Cinema]] is a [[thoughts/Sets|set]] of recurring questions about time, belonging, and what another person can teach us.
   - _5.01_ [[movies/Past Lives|Past Lives]] (Celine Song) and [[movies/Paris Texas|Paris, Texas]] (Wim Wenders) return to lives that might have been and relationships altered by absence.
