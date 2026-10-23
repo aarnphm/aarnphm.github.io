@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TrainingCenterDatabase xmlns="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2" xmlns:ns3="http://www.garmin.com/xmlschemas/ActivityExtension/v2">
+  <Activities><Activity Sport="Running"><Id>2026-07-19T12:00:00Z</Id>
+    <Lap StartTime="2026-07-19T12:00:00Z"><TotalTimeSeconds>60</TotalTimeSeconds><DistanceMeters>200</DistanceMeters><Calories>50</Calories><Track>
+      <Trackpoint><Time>2026-07-19T12:00:00Z</Time><Position><LatitudeDegrees>43.6532</LatitudeDegrees><LongitudeDegrees>-79.3832</LongitudeDegrees></Position><AltitudeMeters>75</AltitudeMeters><DistanceMeters>0</DistanceMeters><HeartRateBpm><Value>120</Value></HeartRateBpm><Extensions><ns3:TPX><ns3:RunCadence>81</ns3:RunCadence><ns3:Watts>240</ns3:Watts><ns3:Temp>18</ns3:Temp></ns3:TPX></Extensions></Trackpoint>
+      <Trackpoint><Time>2026-07-19T12:01:00Z</Time><DistanceMeters>200</DistanceMeters><HeartRateBpm><Value>145</Value></HeartRateBpm><Cadence>82</Cadence><Extensions><ns3:TPX><ns3:Speed>3.3</ns3:Speed><ns3:Watts>260</ns3:Watts></ns3:TPX></Extensions></Trackpoint>
+    </Track></Lap>
+    <Lap StartTime="2026-07-19T12:01:00Z"><TotalTimeSeconds>60</TotalTimeSeconds><DistanceMeters>210</DistanceMeters><Calories>55</Calories><Track>
+      <Trackpoint><Time>2026-07-19T12:01:00Z</Time><DistanceMeters>200</DistanceMeters><HeartRateBpm><Value>145</Value></HeartRateBpm><Cadence>82</Cadence></Trackpoint>
+      <Trackpoint><Time>2026-07-19T12:02:00Z</Time><DistanceMeters>410</DistanceMeters><HeartRateBpm><Value>150</Value></HeartRateBpm><Cadence>84</Cadence><Extensions><ns3:TPX><ns3:Watts>280</ns3:Watts></ns3:TPX></Extensions></Trackpoint>
+    </Track></Lap>
+  </Activity></Activities>
+</TrainingCenterDatabase>
