@@ -202,7 +202,6 @@ document.addEventListener('nav', () => {
   const setOpen = (open: boolean) => {
     if (open && !supported) return
     if (window.scrollY !== 0) window.scrollTo({ top: 0, behavior: 'instant' })
-    if (open) align()
     if (open !== isOpen) scene.dispatchEvent(new Event('trail:before-toggle'))
     if (!open) {
       const shadowActive = scene.shadowRoot?.activeElement
@@ -231,6 +230,7 @@ document.addEventListener('nav', () => {
     const label = open ? 'Hide walking trail' : 'Show walking trail'
     toggle.title = `${label}${shownHoliday ? ` · ${holidayLabels[shownHoliday]}` : ''}`
     if (open) {
+      align()
       scene.dispatchEvent(new Event('trail:open'))
       resumeScene()
     } else {

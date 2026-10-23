@@ -98,7 +98,7 @@ export function trailLayout(
   const height = scene.clientHeight
   if (width < 1 || height < 1) return null
   const random = trailRandom(seed)
-  const readingVisible = landing.checkVisibility()
+  const readingVisible = landing.checkVisibility({ visibilityProperty: true })
   const reading = landing.getBoundingClientRect()
   const board = readingVisible
     ? landing.querySelector('.homepage-board')?.getBoundingClientRect()
@@ -107,7 +107,7 @@ export function trailLayout(
     document.querySelectorAll('.visitor-weather-toggle, .homepage-trail-toggle'),
     control => control.getBoundingClientRect(),
   )
-  const cacheKey = `${seed}|${width}|${height}|${(reading.left - bounds.left).toFixed(1)}|${(reading.top - bounds.top).toFixed(1)}|${reading.width.toFixed(1)}|${reading.height.toFixed(1)}|${board ? `${(board.left - bounds.left).toFixed(1)}:${(board.top - bounds.top).toFixed(1)}:${board.width.toFixed(1)}:${board.height.toFixed(1)}` : 'none'}|${controls.map(rect => `${(rect.left - bounds.left).toFixed(1)}:${(rect.top - bounds.top).toFixed(1)}:${rect.width.toFixed(1)}:${rect.height.toFixed(1)}`).join(',')}`
+  const cacheKey = `${seed}|${width}|${height}|${readingVisible}|${(reading.left - bounds.left).toFixed(1)}|${(reading.top - bounds.top).toFixed(1)}|${reading.width.toFixed(1)}|${reading.height.toFixed(1)}|${board ? `${(board.left - bounds.left).toFixed(1)}:${(board.top - bounds.top).toFixed(1)}:${board.width.toFixed(1)}:${board.height.toFixed(1)}` : 'none'}|${controls.map(rect => `${(rect.left - bounds.left).toFixed(1)}:${(rect.top - bounds.top).toFixed(1)}:${rect.width.toFixed(1)}:${rect.height.toFixed(1)}`).join(',')}`
   let cached = landingCache.get(scene)
   if (cached?.key !== cacheKey) {
     let protectedLines: Rect[]
