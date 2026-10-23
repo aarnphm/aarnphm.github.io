@@ -131,9 +131,10 @@ export function mountSeasonToggle(
     button.title = title
     button.setAttribute('aria-label', title)
   }
+  let panelAnchor: DOMRect | null = null
   const positionPanel = () => {
     if (!panel.matches(':popover-open')) return
-    const anchor = boulder.getBoundingClientRect()
+    const anchor = (panelAnchor ??= boulder.getBoundingClientRect())
     const bounds = panel.getBoundingClientRect()
     panel.style.left = `${Math.max(8, Math.min(view.innerWidth - bounds.width - 8, anchor.left + anchor.width / 2 - bounds.width / 2))}px`
     const above = anchor.top - bounds.height - 4
@@ -211,13 +212,20 @@ export function mountSeasonToggle(
       if (open) {
         positionPanel()
         panel.focus({ preventScroll: true })
-      } else restoreBoulderFocus()
+      } else {
+        panelAnchor = null
+        restoreBoulderFocus()
+      }
     },
     { signal },
   )
   panel.addEventListener('toggle', positionPanel, { signal, capture: true })
-  view.addEventListener('resize', positionPanel, { signal, passive: true })
-  view.addEventListener('scroll', positionPanel, { signal, passive: true })
+  const reanchorPanel = () => {
+    panelAnchor = null
+    positionPanel()
+  }
+  view.addEventListener('resize', reanchorPanel, { signal, passive: true })
+  view.addEventListener('scroll', reanchorPanel, { signal, passive: true })
   const observer = new MutationObserver(records => {
     if (scene.dataset.trailVisible === 'false') panel.hidePopover()
     if (records.some(record => record.attributeName === 'data-trail-paint-ready')) place()

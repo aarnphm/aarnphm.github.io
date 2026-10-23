@@ -98,7 +98,6 @@ const eyes: Record<string, string> = {
   'eyes-up': at(dash, 5, 6),
   'eyes-down': at(dash, 5, 8),
   'eyes-wide': at(['K....K', 'K....K', 'K....K', 'K....K'], 5, 6),
-  'eyes-happy': at(['.K....K.', 'K.K..K.K'], 4, 7),
 }
 const mouth = at(['KK'], 7, 10)
 const shades = at(['KKKKKKKK', 'KKK..KKK'], 4, 7)

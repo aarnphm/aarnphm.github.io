@@ -225,14 +225,6 @@
         animation-delay: -0.16s;
       }
     }
-    &:is([data-state='happy'], [data-state='cheer'], [data-state='wave']) {
-      [data-part='eyes'] {
-        display: none;
-      }
-      [data-part='eyes-happy'] {
-        display: inline;
-      }
-    }
     &[data-state='wave'] [data-part='wave'] {
       display: inline;
       --trail-pet-swap: 0.5s;

@@ -178,7 +178,7 @@ export function createFrameLoop(
     prepare(root, false)
     // Spend the saved layout work on bounded palette uploads during the shared sweep.
     const budget =
-      scene.dataset.trailOpening !== 'complete' ? (host.hidden ? 10 : 64) : shared.fade ? 10 : 6
+      scene.dataset.trailOpening !== 'complete' ? (host.hidden ? 10 : 64) : shared.fade ? 10 : 4
     const unfinished: (Run | Group)[] = []
     let deferred = 0
     let holes = 0
@@ -204,14 +204,18 @@ export function createFrameLoop(
             (b.kind === 'group' ? (b.mask?.waiting ?? 0) : b.waiting),
       )
     }
-    const painting = view.performance.now()
+    // Live updates share their budget with layout and preparation. Always advance one
+    // texture, even when those reads consume the budget, so replacement cannot starve.
+    const painting =
+      scene.dataset.trailOpening === 'complete' ? shared.clock : view.performance.now()
+    let paintedLayers = 0
     for (const target of pending) {
       const owner = target.kind === 'group' ? target : target.owner
       const layer = target.kind === 'group' ? target.mask : target
       // Weather and tracks resume after a palette transition finishes.
       if (shared.fade && owner.element.closest(ambientLayers)) continue
       const painted = !unpainted(target)
-      if (view.performance.now() - painting > budget) {
+      if (paintedLayers > 0 && view.performance.now() - painting > budget) {
         if (layer && (layer.palette !== shared.palette || layer.revision !== shared.revision))
           unfinished.push(target)
         if ((target.kind === 'group' ? target.mask?.revision : target.revision) !== shared.revision)
@@ -231,6 +235,7 @@ export function createFrameLoop(
           target.nodes,
           target.nodes[0] === target.owner.element,
         )
+      paintedLayers += 1
     }
     // Ongoing motion can dirty a replacement again; it must not hold the completed scene forever.
     const painted =
