@@ -1,5 +1,6 @@
 import { mitten } from './mascot/cold-weather'
 import {
+  blob,
   densify,
   even,
   eye,
@@ -56,9 +57,17 @@ export function mascot({ line, seed, paper = PAPER, ink = INK, points = 220 }: M
 // SVG's data-pet-state picks which parts show and how they move (quartz/components/styles/pet.scss),
 // so changing a look is one attribute write. Colours are theme variables; the pet faces left as
 // drawn and is mirrored to face right. `seed` picks the outline's wobble, so a friend is its own circle.
-export function petSvg(paper = 'var(--light)', ink = 'var(--dark)', pink = PINK, seed = 7): string {
+// After blobatar the body is a little square and its fill is `paper` blushed with a hair of `pink`;
+// `fill` overrides that blush. Props on paper (the laptop, a thought) stay plain `paper`.
+export function petSvg(
+  paper = 'var(--light)',
+  ink = 'var(--dark)',
+  pink = PINK,
+  seed = 7,
+  fill = `color-mix(in srgb, ${pink} 14%, ${paper})`,
+): string {
   const L = 0.08
-  const outline = loop(seed, 0.06, 0.03, 140)
+  const outline = blob(seed, 0.25, 0.06, 0.03, 140)
   const pen = (pts: readonly Pt[], w: (t: number) => number, color = ink) => stroke(pts, w, color)
 
   const leg = (hip: Pt, foot: Pt, toe: number, seed: number) =>
@@ -160,11 +169,11 @@ export function petSvg(paper = 'var(--light)', ink = 'var(--dark)', pink = PINK,
         .join(''),
   )
 
-  const body = `<path d="${poly(outline)}" style="fill:${paper}"/>${pen(outline, pressure(8, L))}`
+  const body = `<path d="${poly(outline)}" style="fill:${fill}"/>${pen(outline, pressure(8, L))}`
   const w = (L * 0.042) / 0.055
   const s: PetPen = { L, w, paper, ink, pink, outline, pen, mitt }
 
-  const { dash, wide, wince, mouthO, smile, sweat, dots, thought } = petFace(s)
+  const { dash, happy, wide, wince, mouthO, sweat, dots, thought } = petFace(s)
   const thumb = thumbsUp(s)
   const chute = petChute(s)
   const { hat, outfit, glasses, hair } = petOutfits(s)
@@ -254,5 +263,5 @@ export function petSvg(paper = 'var(--light)', ink = 'var(--dark)', pink = PINK,
     ),
   )
 
-  return `<svg class="pet-svg" viewBox="-1.8 -2 3.6 3.8" aria-hidden="true" focusable="false" data-pet-state="idle"><defs><filter id="pet-rim" x="-20%" y="-20%" width="140%" height="140%"><feMorphology in="SourceAlpha" operator="dilate" radius="0.06" result="edge"/><feFlood style="flood-color:var(--dark)"/><feComposite in2="edge" operator="in"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><g class="pet-flip">${ground}${snowfall}<g class="pet-hop"><g class="pet-lean">${chute}${legs}${lounge}${speed}<g class="pet-body">${jetpack}${hair}${outfit.back}<g class="pet-skin">${body}${tan}${vest}${strap}<g class="pet-look">${dash}${wide}${wince}${mouthO}${smile}</g>${knit}${outfit.front}${glasses}${shades}${toque}${hat}</g>${holds}${shelter}${breath}${arms}${thumb}${caught}${lit}${grip}${pole}${laptop}</g>${sweat}${dots}${gust}${thought}</g></g></g></svg>`
+  return `<svg class="pet-svg" viewBox="-1.8 -2 3.6 3.8" aria-hidden="true" focusable="false" data-pet-state="idle"><defs><filter id="pet-rim" x="-20%" y="-20%" width="140%" height="140%"><feMorphology in="SourceAlpha" operator="dilate" radius="0.06" result="edge"/><feFlood style="flood-color:var(--dark)"/><feComposite in2="edge" operator="in"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><g class="pet-flip">${ground}${snowfall}<g class="pet-hop"><g class="pet-lean">${chute}${legs}${lounge}${speed}<g class="pet-body">${jetpack}${hair}${outfit.back}<g class="pet-skin">${body}${tan}${vest}${strap}<g class="pet-look">${dash}${happy}${wide}${wince}${mouthO}</g>${knit}${outfit.front}${glasses}${shades}${toque}${hat}</g>${holds}${shelter}${breath}${arms}${thumb}${caught}${lit}${grip}${pole}${laptop}</g>${sweat}${dots}${gust}${thought}</g></g></g></svg>`
 }

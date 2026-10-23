@@ -1,3 +1,4 @@
+import { observeSvgScale } from './figure-scale'
 import { registerMdxContent } from './mdx-content'
 
 const ROOT_SELECTOR = '[data-block-diagram]'
@@ -23,4 +24,5 @@ const setupBlockDiagram = (root: HTMLElement): (() => void) => {
 
 registerMdxContent(ROOT_SELECTOR, root => {
   window.addCleanup?.(setupBlockDiagram(root))
+  window.addCleanup?.(observeSvgScale(root.querySelectorAll<SVGSVGElement>('.bd-svg'), '--bd-u'))
 })

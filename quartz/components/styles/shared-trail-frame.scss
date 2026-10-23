@@ -237,6 +237,19 @@
         display: inline;
       }
     }
+    &:is(
+      [data-pet-state='happy'],
+      [data-pet-state='cheer'],
+      [data-pet-state='thumb'],
+      [data-pet-state='wave']
+    ) {
+      [data-part='eyes'] {
+        display: none;
+      }
+      [data-part='eyes-happy'] {
+        display: inline;
+      }
+    }
     &[data-pet-state='think'] {
       [data-part='eyes'] {
         display: none;

@@ -86,7 +86,13 @@ $selection-highlight: rgba(255, 220, 100, 0.5);
     height: var(--comment-control-size);
     padding: 0;
 
+    // Icon spans default to inline, which sits the svg on the text baseline above center.
+    > span {
+      display: flex;
+    }
+
     svg {
+      display: block;
       width: 20px;
       height: 20px;
     }
@@ -121,11 +127,6 @@ $selection-highlight: rgba(255, 220, 100, 0.5);
     border: 1px solid var(--darkgray);
     background: var(--comment-surface);
     color: var(--dark);
-
-    &:focus-within {
-      outline: 2px solid var(--dark);
-      outline-offset: 2px;
-    }
   }
 
   :is(.composer-input, .editable-typeahead-wrapper, .edit-input) {
@@ -174,8 +175,65 @@ $selection-highlight: rgba(255, 220, 100, 0.5);
     height: 24px;
     margin: 0;
     border-radius: var(--radius-none);
-    background: var(--comment-selected);
-    object-fit: cover;
+    background: var(--comment-surface);
+    object-fit: contain;
+
+    // The blob arrives after a lookup; until then the slot stays empty, not a broken image.
+    &:not([src]) {
+      visibility: hidden;
+    }
+  }
+
+  // Overlapping blobs; the ring is the surface they sit on, so each reads as cut out of the next.
+  .thread-people {
+    --people-size: 20px;
+    --people-ring: var(--light);
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+
+    > * {
+      width: var(--people-size);
+      height: var(--people-size);
+      outline: 2px solid var(--people-ring);
+
+      + * {
+        margin-inline-start: -5px;
+      }
+    }
+  }
+
+  .thread-people-more {
+    display: inline-grid;
+    place-items: center;
+    padding-inline: 3px;
+    width: auto !important;
+    min-width: var(--people-size);
+    background: var(--lightgray);
+    color: var(--darkgray);
+    font: 400 var(--text-meta) / 1 var(--codeFont);
+    font-variant-numeric: tabular-nums;
+  }
+
+  // One chat row: avatar column, then the run's head and its text.
+  .reply-item {
+    position: relative;
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr);
+    column-gap: var(--space-3);
+    align-items: start;
+  }
+
+  .reply-body {
+    grid-column: 2;
+    min-width: 0;
+  }
+
+  .reply-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    column-gap: var(--space-2);
   }
 
   .markdown-content {
@@ -289,6 +347,8 @@ $selection-highlight: rgba(255, 220, 100, 0.5);
   .composer-input {
     position: relative;
     flex: 1;
+    // Same height before and after the lazy editor mounts, so the box does not jump on first show.
+    min-height: var(--comment-control-size);
 
     > div[aria-hidden='true'] {
       position: absolute;
@@ -357,21 +417,27 @@ $selection-highlight: rgba(255, 220, 100, 0.5);
     background: var(--comment-selected);
   }
 
-  .reply-left {
+  .reply-item {
+    column-gap: var(--space-2);
+  }
+
+  .reply-body {
+    display: none;
+  }
+
+  .reply-text {
+    margin-top: var(--space-1);
+  }
+
+  .preview-replies {
     display: flex;
     align-items: center;
     gap: var(--space-2);
-  }
+    margin-top: var(--space-2);
 
-  .reply-author,
-  .reply-time {
-    display: none;
-  }
-
-  .reply-text,
-  .preview-replies {
-    display: none;
-    padding-inline-start: var(--space-8);
+    .thread-people {
+      --people-size: 16px;
+    }
   }
 
   @media (hover: hover) and (pointer: fine) {
@@ -379,23 +445,16 @@ $selection-highlight: rgba(255, 220, 100, 0.5);
       z-index: 902;
       width: 320px;
       max-width: min(320px, calc(100vw - var(--space-6)));
-      max-height: 200px;
-      padding: var(--space-2) var(--space-3);
+      max-height: 220px;
+      padding: var(--space-3);
       transform: translateY(calc(-100% + var(--bubble-collapsed-size)));
 
-      .reply-author,
-      .reply-time,
-      .preview-replies {
+      .reply-body {
         display: block;
-      }
-
-      .reply-left {
-        flex-wrap: wrap;
       }
 
       .reply-text {
         display: -webkit-box;
-        margin-top: var(--space-1);
         overflow: hidden;
         -webkit-line-clamp: 4;
         -webkit-box-orient: vertical;
@@ -427,12 +486,29 @@ $selection-highlight: rgba(255, 220, 100, 0.5);
   }
 
   .modal-title {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
     color: var(--dark);
-    font: 400 var(--text-meta) / 1.4 var(--codeFont);
+    font: italic 400 var(--text-ui) / 1.4 var(--bodyFont);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &::before {
+      content: '¶';
+      margin-inline-end: var(--space-2);
+      color: var(--gray);
+      font-style: normal;
+    }
+  }
+
+  .modal-header .thread-people {
+    --people-ring: var(--comment-surface);
   }
 
   .modal-actions {
     display: flex;
+    flex: none;
     align-items: center;
     gap: var(--space-1);
   }
@@ -444,40 +520,45 @@ $selection-highlight: rgba(255, 220, 100, 0.5);
   .modal-content {
     min-width: 0;
     max-height: min(60dvh, 40rem);
+    padding-block: var(--space-2);
     overflow-y: auto;
     overscroll-behavior: contain;
   }
 
   .reply-item {
-    padding: var(--space-3);
+    padding: var(--space-2) var(--space-3) var(--space-1);
 
-    + .reply-item {
-      border-top: 1px solid var(--comment-line);
+    &.reply-continued {
+      padding-top: 0;
+    }
+
+    @include fine-hover {
+      background: var(--comment-surface);
     }
   }
 
-  .reply-top {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: var(--space-2);
-    margin-bottom: var(--space-2);
-  }
-
-  .reply-left {
-    display: grid;
-    flex: 1;
-    min-width: 0;
-    grid-template-columns: 24px minmax(0, 1fr);
-    column-gap: var(--space-2);
-
-    .reply-avatar {
-      grid-row: span 2;
-    }
+  .reply-avatar {
+    margin-top: 1px;
   }
 
   .reply-text {
-    padding-inline-start: var(--space-8);
+    margin-top: 2px;
+  }
+
+  // Row actions surface on hover or focus, so a quiet thread reads as text.
+  .reply-actions {
+    position: absolute;
+    top: var(--space-1);
+    right: var(--space-2);
+    border-color: var(--comment-line);
+    background: var(--light);
+    opacity: 0;
+    transition: opacity 120ms ease;
+  }
+
+  .reply-item:is(:hover, :focus-within) .reply-actions,
+  .reply-actions[aria-expanded='true'] {
+    opacity: 1;
   }
 
   .reply-composer-container {
@@ -636,6 +717,10 @@ body:has(.global-graph-outer.active) {
 
   .comment-actions-popover .popover-action {
     min-height: 44px;
+  }
+
+  .comment-thread-modal .reply-actions {
+    opacity: 1;
   }
 }
 

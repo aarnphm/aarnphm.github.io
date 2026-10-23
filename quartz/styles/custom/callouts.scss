@@ -231,8 +231,8 @@ blockquote.callout:is(
     overflow: visible;
   }
 
-  // keep display math scrolling inside the callout instead of widening the page on phones
-  & > .callout-content > .katex-display {
+  // keep display math and tables scrolling inside the callout instead of widening the page on phones
+  & > .callout-content > :is(.katex-display, .table-container) {
     overflow-x: auto;
     overflow-y: hidden;
   }
@@ -251,6 +251,8 @@ blockquote.callout:is(
 
   .math-proof {
     display: grid;
+    // an implicit track sizes to its widest step and pushes the callout past the page on phones
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--space-2);
     margin: var(--space-3) 0 0;
   }

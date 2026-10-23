@@ -244,7 +244,7 @@ function showPill(range: Range) {
   }
   const width = session.pill.offsetWidth || 48
   const left = Math.min(
-    Math.max(8, rect.right + window.scrollX - width / 2),
+    Math.max(8, rect.left + rect.width / 2 + window.scrollX - width / 2),
     window.scrollX + document.documentElement.clientWidth - width - 8,
   )
   session.pill.style.left = `${left}px`

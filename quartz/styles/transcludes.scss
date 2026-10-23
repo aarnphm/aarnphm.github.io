@@ -1,5 +1,6 @@
 @use './variables.scss' as *;
 @use 'sass:color';
+@use './pdf-embed-toolbar.scss';
 
 .transclude-collapsible {
   border: 1px solid var(--lightgray) !important;
@@ -159,118 +160,6 @@
   .pdf-annotation-rail {
     display: none;
   }
-}
-
-.pdf-embed-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 8px 12px;
-  background: var(--light);
-  border: 0px solid var(--lightgray);
-  border-bottom-width: 1px;
-  border-radius: var(--radius-none);
-  flex: 0 0 auto;
-  flex-shrink: 0;
-  box-sizing: border-box;
-}
-
-.pdf-embed-control-group {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-}
-
-.pdf-embed-zoom-controls {
-  margin-left: auto;
-  justify-content: flex-end;
-}
-
-.pdf-embed-button,
-.pdf-embed-page-input,
-.pdf-embed-fit {
-  height: 28px;
-  color: var(--dark);
-  background: transparent;
-  border: 1px solid var(--gray);
-  border-radius: var(--radius-none);
-  font: inherit;
-  font-size: 0.85rem;
-  box-sizing: border-box;
-}
-
-.pdf-embed-button {
-  width: 30px;
-  padding: 6px 8px;
-  display: inline-flex !important;
-  border: 1px solid var(--lightgray) !important;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer !important;
-  line-height: 1;
-  text-decoration: none;
-  flex: 0 0 30px;
-  transition:
-    background 0.2s ease,
-    border-color 0.2s ease;
-
-  svg {
-    width: 12px;
-    height: 12px;
-    pointer-events: none;
-  }
-}
-
-.pdf-embed-button:hover:not(:disabled),
-.pdf-embed-button:active,
-.pdf-embed-button:focus-visible {
-  color: var(--dark);
-  background: transparent;
-  border-color: var(--dark);
-}
-
-.pdf-embed-button:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-
-.pdf-embed-page-input {
-  width: 32px;
-  padding: 4px 6px;
-  text-align: center;
-  font-variant-numeric: tabular-nums;
-  background: var(--light);
-
-  &::-webkit-outer-spin-button,
-  &::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-
-  &:focus {
-    outline: 2px solid var(--secondary);
-    outline-offset: 1px;
-  }
-}
-
-.pdf-embed-page-total,
-.pdf-embed-zoom {
-  color: var(--dark);
-  font-size: 0.85rem;
-  white-space: nowrap;
-  line-height: 28px;
-  min-width: max-content;
-}
-
-.pdf-embed-zoom {
-  min-width: 42px;
-  text-align: center;
-}
-
-.pdf-embed-fit {
-  padding: 0 0.375rem;
 }
 
 .pdf-embed-body {
@@ -689,40 +578,6 @@
   // Theme tokens already flip, so --light is the dark ground and --dark the ink here.
   --pdf-embed-line: color-mix(in srgb, var(--gray) 55%, transparent);
 
-  .pdf-embed-toolbar {
-    background: var(--light);
-    border-color: var(--pdf-embed-line);
-  }
-
-  .pdf-embed-button {
-    color: var(--darkgray);
-    background: transparent;
-    border-color: var(--pdf-embed-line) !important;
-
-    &:hover:not(:disabled),
-    &:active,
-    &:focus-visible {
-      color: var(--dark);
-      background: transparent;
-      border-color: var(--dark) !important;
-    }
-  }
-
-  .pdf-embed-page-total,
-  .pdf-embed-zoom {
-    color: var(--darkgray);
-  }
-
-  .pdf-embed-page-input {
-    color: var(--dark);
-    background: var(--light);
-    border-color: var(--pdf-embed-line);
-
-    &:focus {
-      outline-color: var(--dark);
-    }
-  }
-
   .pdf-embed-page-label {
     color: var(--darkgray);
   }
@@ -777,15 +632,6 @@
   .pdf-annotation-rail {
     right: 0;
     left: auto;
-  }
-
-  .pdf-embed-toolbar {
-    align-items: center;
-    flex-wrap: wrap;
-  }
-
-  .pdf-embed-control-group {
-    justify-content: space-between;
   }
 
   .pdf-viewer-shell {
