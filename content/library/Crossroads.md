@@ -7,7 +7,7 @@ external: https://griffinpoetryprize.com/poem/crossroads-gluck
 finished: 2025
 id: Crossroads
 modified: 2026-06-05 15:07:57 GMT-04:00
-posters: '[[library/posters/crossroads.png]]'
+posters: '[[library/posters/crossroads.png|crossroads.png]]'
 status: finished
 subcategory:
   - love

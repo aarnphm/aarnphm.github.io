@@ -7,7 +7,7 @@ id: Being and Time
 language: german
 modified: 2026-10-20 16:19:46 GMT-04:00
 notebook: "[[thoughts/being#Heidegger's Being and Time|field notes on being]]"
-posters: '[[library/posters/being-and-time.jpg]]'
+posters: '[[library/posters/being-and-time.jpg|being-and-time.jpg]]'
 status: current
 subcategory:
   - being

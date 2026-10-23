@@ -7,7 +7,7 @@ finished: 2024
 id: The Critique of Pure Reason
 language: german
 modified: 2026-06-05 15:07:58 GMT-04:00
-posters: '[[library/posters/the-critique-of-pure-reason.jpg]]'
+posters: '[[library/posters/the-critique-of-pure-reason.jpg|the-critique-of-pure-reason.jpg]]'
 status: evergreen
 subcategory: analytics
 tags:

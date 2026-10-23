@@ -12,7 +12,7 @@ finished: 2024
 id: Structure and Interpretation of Computer Programs
 modified: 2026-06-05 15:07:57 GMT-04:00
 pdf: https://web.mit.edu/6.001/6.037/sicp.pdf
-posters: '[[library/posters/structure-and-interpretation-of-computer-programs.jpg]]'
+posters: '[[library/posters/structure-and-interpretation-of-computer-programs.jpg|structure-and-interpretation-of-computer-programs.jpg]]'
 status: finished
 subcategory: programming
 tags:

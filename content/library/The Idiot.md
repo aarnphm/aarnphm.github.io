@@ -7,7 +7,7 @@ description: novel about prince myshkin, a guileless man whose goodness collides
 id: The Idiot
 language: russian
 modified: 2026-06-05 15:07:58 GMT-04:00
-posters: '[[library/posters/the-idiot.jpg]]'
+posters: '[[library/posters/the-idiot.jpg|the-idiot.jpg]]'
 status: current
 subcategory: dostoevskian
 tags:

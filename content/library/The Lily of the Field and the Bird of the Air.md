@@ -6,7 +6,7 @@ description: three sermons that read gospel images of lilies and birds as invita
 finished: 2024
 id: The Lily of the Field and the Bird of the Air
 modified: 2026-06-05 15:08:02 GMT-04:00
-posters: '[[library/posters/the-lily-of-the-field-and-the-bird-of-the-air.jpg]]'
+posters: '[[library/posters/the-lily-of-the-field-and-the-bird-of-the-air.jpg|the-lily-of-the-field-and-the-bird-of-the-air.jpg]]'
 status: finished
 subcategory: theology
 tags:

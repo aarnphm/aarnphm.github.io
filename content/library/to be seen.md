@@ -8,7 +8,7 @@ finished: 2025
 id: to be seen
 modified: 2026-06-05 15:07:57 GMT-04:00
 notebook: null
-posters: '[[library/posters/to-be-seen.png]]'
+posters: '[[library/posters/to-be-seen.png|to-be-seen.png]]'
 status: finished
 subcategory:
   - o/relationship

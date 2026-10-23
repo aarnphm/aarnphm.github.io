@@ -7,7 +7,7 @@ description: argues for a focused, intentional relationship with technology, str
 finished: 2024
 id: Digital Minimalism
 modified: 2026-06-05 15:07:59 GMT-04:00
-posters: '[[library/posters/digital-minimalism.jpg]]'
+posters: '[[library/posters/digital-minimalism.jpg|digital-minimalism.jpg]]'
 status: finished
 subcategory: productivity
 tags:

@@ -10,7 +10,7 @@ id: A Thousand Plateaus
 language: french
 modified: 2026-06-05 15:08:00 GMT-04:00
 pdf: https://files.libcom.org/files/A%20Thousand%20Plateaus.pdf
-posters: '[[library/posters/a-thousand-plateaus.jpg]]'
+posters: '[[library/posters/a-thousand-plateaus.jpg|a-thousand-plateaus.jpg]]'
 status: evergreen
 subcategory: hermeneutics
 tags:

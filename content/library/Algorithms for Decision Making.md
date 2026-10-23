@@ -11,8 +11,8 @@ external: https://algorithmsbook.com/decisionmaking
 id: Algorithms for Decision Making
 modified: 2026-06-05 15:08:01 GMT-04:00
 notebook: null
-pdf: '[[thoughts/pdfs/dm.pdf]]'
-posters: '[[library/posters/algorithms-for-decision-making.jpg]]'
+pdf: '[[thoughts/pdfs/dm.pdf|dm.pdf]]'
+posters: '[[library/posters/algorithms-for-decision-making.jpg|algorithms-for-decision-making.jpg]]'
 status: current
 subcategory:
   - statistics

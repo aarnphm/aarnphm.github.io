@@ -7,7 +7,7 @@ finished: 2023
 id: Symposium
 language: ancient greek
 modified: 2026-06-05 15:07:57 GMT-04:00
-posters: '[[library/posters/symposium.jpg]]'
+posters: '[[library/posters/symposium.jpg|symposium.jpg]]'
 status: finished
 subcategory: love
 tags:

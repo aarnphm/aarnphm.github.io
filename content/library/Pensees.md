@@ -7,7 +7,7 @@ external: https://www.gutenberg.org/files/18269/18269-h/18269-h.htm
 id: Pensees
 language: french
 modified: 2026-06-05 15:07:59 GMT-04:00
-posters: '[[library/posters/pensees-cover.avif]]'
+posters: '[[library/posters/pensees-cover.avif|pensees-cover.avif]]'
 status: to read
 subcategory: being
 tags:

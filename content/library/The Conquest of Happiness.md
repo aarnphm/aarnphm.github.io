@@ -6,7 +6,7 @@ description: Russell's practical guide to avoiding boredom, envy, and anxiety, o
 external: https://russell-j.com/beginner/COH-TEXT.HTM
 id: The Conquest of Happiness
 modified: 2026-06-05 15:07:59 GMT-04:00
-posters: '[[library/posters/the-conquest-of-happiness.jpg]]'
+posters: '[[library/posters/the-conquest-of-happiness.jpg|the-conquest-of-happiness.jpg]]'
 status: to read
 subcategory: hedonia
 tags:

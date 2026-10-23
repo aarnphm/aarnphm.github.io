@@ -10,7 +10,7 @@ external: https://www.creativeapplications.net/books/the-ai-anarchies-book
 id: The AI Anarchies Book
 modified: 2026-06-05 15:07:56 GMT-04:00
 notebook: '[[thoughts/LLMs|LLMs]]'
-posters: '[[library/posters/ai-anarchies-cover.avif]]'
+posters: '[[library/posters/ai-anarchies-cover.avif|ai-anarchies-cover.avif]]'
 status: to read
 subcategory:
   - llms

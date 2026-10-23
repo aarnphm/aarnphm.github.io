@@ -7,7 +7,7 @@ description: an antiwar novel in which Billy Pilgrim moves through the Dresden b
 finished: 2025
 id: Slaughterhouse-Five
 modified: 2026-06-05 15:07:58 GMT-04:00
-posters: '[[library/posters/slaughterhouse-five.jpg]]'
+posters: '[[library/posters/slaughterhouse-five.jpg|slaughterhouse-five.jpg]]'
 status: evergreen
 subcategory:
   - o/life

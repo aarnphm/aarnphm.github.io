@@ -8,7 +8,7 @@ finished: 2025
 id: The First Man
 language: french
 modified: 2026-06-05 15:07:59 GMT-04:00
-posters: '[[library/posters/the-first-man.jpg]]'
+posters: '[[library/posters/the-first-man.jpg|the-first-man.jpg]]'
 status: evergreen
 subcategory: existentialism
 tags:

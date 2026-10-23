@@ -8,7 +8,7 @@ finished: 2025
 id: The Fall
 language: french
 modified: 2026-06-05 15:07:56 GMT-04:00
-posters: '[[library/posters/the-fall.jpg]]'
+posters: '[[library/posters/the-fall.jpg|the-fall.jpg]]'
 status: finished
 subcategory: existentialism
 tags:

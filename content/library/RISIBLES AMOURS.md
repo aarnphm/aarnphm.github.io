@@ -6,7 +6,7 @@ description: collection of kundera stories about love, desire, and humiliation, 
 id: RISIBLES AMOURS
 language: czech
 modified: 2026-06-05 15:07:58 GMT-04:00
-posters: '[[library/posters/risibles-amours.jpg]]'
+posters: '[[library/posters/risibles-amours.jpg|risibles-amours.jpg]]'
 status: to read
 subcategory: being
 tags:

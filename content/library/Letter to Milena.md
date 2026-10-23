@@ -7,9 +7,9 @@ finished: 2025
 id: Letters to Milena
 language: german
 modified: 2026-09-24 00:34:32 GMT-04:00
-posters: '[[library/posters/letter-to-milena.jpg]]'
+posters: '[[library/posters/letter-to-milena.jpg|letter-to-milena.jpg]]'
 seealso:
-  - '[[thoughts/pdfs/letter-to-milena.pdf]]'
+  - '[[thoughts/pdfs/letter-to-milena.pdf|letter-to-milena.pdf]]'
 status: finished
 subcategory:
   - o/relationship

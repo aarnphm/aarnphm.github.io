@@ -7,7 +7,7 @@ description: collection of feynman's letters spanning his career, from heartbrea
 id: Perfectly Reasonable Deviations From The Beaten Tracks
 modified: 2026-06-05 15:07:58 GMT-04:00
 notebook: null
-posters: '[[library/posters/perfectly-reasonable-deviations.jpg]]'
+posters: '[[library/posters/perfectly-reasonable-deviations.jpg|perfectly-reasonable-deviations.jpg]]'
 status: to read
 subcategory:
   - love

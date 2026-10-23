@@ -6,7 +6,7 @@ description: short treatise on power that analyzes how rulers gain and keep stat
 finished: 2025
 id: The Prince
 modified: 2026-06-05 15:08:02 GMT-04:00
-posters: '[[library/posters/the-prince.jpg]]'
+posters: '[[library/posters/the-prince.jpg|the-prince.jpg]]'
 status: finished
 subcategory: power
 tags:

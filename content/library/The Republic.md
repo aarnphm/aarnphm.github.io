@@ -7,7 +7,7 @@ finished: 2023
 id: The Republic
 language: ancient greek
 modified: 2026-06-05 15:08:02 GMT-04:00
-posters: '[[library/posters/the-republic.jpg]]'
+posters: '[[library/posters/the-republic.jpg|the-republic.jpg]]'
 status: finished
 subcategory: discourse
 tags:

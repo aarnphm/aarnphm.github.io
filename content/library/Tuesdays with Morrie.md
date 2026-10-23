@@ -7,7 +7,7 @@ description: a memoir of weekly conversations with the author's former sociology
 external: https://www.penguinrandomhouse.com/books/1588/tuesdays-with-morrie-by-mitch-albom/
 id: Tuesdays with Morrie
 modified: '2026-10-20'
-posters: '[[library/posters/tuesdays-with-morrie.jpg]]'
+posters: '[[library/posters/tuesdays-with-morrie.jpg|tuesdays-with-morrie.jpg]]'
 status: to read
 title: Tuesdays with Morrie
 year: 1997

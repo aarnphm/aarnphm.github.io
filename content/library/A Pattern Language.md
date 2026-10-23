@@ -10,7 +10,7 @@ description: a handbook of architectural and urban design patterns showing how t
 external: https://patternlanguage.cc/
 id: A Pattern Language
 modified: 2026-06-05 15:08:02 GMT-04:00
-posters: '[[library/posters/a-pattern-language.jpg]]'
+posters: '[[library/posters/a-pattern-language.jpg|a-pattern-language.jpg]]'
 status: to read
 subcategory: communal
 tags:

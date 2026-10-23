@@ -8,7 +8,7 @@ finished: 2021
 id: The Death of Ivan Ilyich
 language: russian
 modified: 2026-06-05 15:07:59 GMT-04:00
-posters: '[[library/posters/the-death-of-ivan-ilyich.jpg]]'
+posters: '[[library/posters/the-death-of-ivan-ilyich.jpg|the-death-of-ivan-ilyich.jpg]]'
 status: finished
 subcategory: life
 tags:

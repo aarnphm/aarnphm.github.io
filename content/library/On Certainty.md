@@ -9,7 +9,7 @@ description: late wittgenstein notes on knowledge and doubt, examining hinge pro
 id: On Certainty
 modified: 2026-06-05 15:07:56 GMT-04:00
 pdf: http://thatmarcusfamily.org/philosophy/Course_Websites/Readings/Wittgenstein%20On%20Certainty.pdf
-posters: '[[library/posters/on-certainty.jpg]]'
+posters: '[[library/posters/on-certainty.jpg|on-certainty.jpg]]'
 status: current
 subcategory: skepticism
 tags:

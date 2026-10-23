@@ -12,7 +12,7 @@ id: Of Mice and Men
 modified: 2026-06-05 15:07:58 GMT-04:00
 notebook: null
 pdf: null
-posters: '[[library/posters/of-mice-and-men.jpg]]'
+posters: '[[library/posters/of-mice-and-men.jpg|of-mice-and-men.jpg]]'
 status: to read
 subcategory:
   - absurdism

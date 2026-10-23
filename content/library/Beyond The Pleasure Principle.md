@@ -7,7 +7,7 @@ finished: 2024
 id: Beyond The Pleasure Principle
 language: german
 modified: 2026-06-05 15:07:58 GMT-04:00
-posters: '[[library/posters/beyond-the-pleasure-principle.jpg]]'
+posters: '[[library/posters/beyond-the-pleasure-principle.jpg|beyond-the-pleasure-principle.jpg]]'
 status: finished
 subcategory: hedonia
 tags:

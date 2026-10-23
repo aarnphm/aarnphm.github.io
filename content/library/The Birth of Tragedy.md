@@ -7,7 +7,7 @@ finished: 2024
 id: The Birth of Tragedy
 language: german
 modified: 2026-06-05 15:08:01 GMT-04:00
-posters: '[[library/posters/the-birth-of-tragedy.jpg]]'
+posters: '[[library/posters/the-birth-of-tragedy.jpg|the-birth-of-tragedy.jpg]]'
 status: finished
 subcategory: presocratic
 tags:

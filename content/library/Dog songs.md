@@ -6,7 +6,7 @@ description: poems celebrating dogs as companions, teachers, and mirrors of love
 finished: 2025
 id: Dog songs
 modified: 2026-06-05 15:07:59 GMT-04:00
-posters: '[[library/posters/dog-songs.jpg]]'
+posters: '[[library/posters/dog-songs.jpg|dog-songs.jpg]]'
 status: finished
 subcategory:
   - animal

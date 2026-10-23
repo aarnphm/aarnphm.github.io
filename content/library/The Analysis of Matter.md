@@ -8,7 +8,7 @@ description: russell's 1927 analysis of matter through quantum mechanics and rel
 id: The Analysis of Matter
 modified: 2026-06-05 15:07:59 GMT-04:00
 notebook: null
-posters: '[[library/posters/the-analysis-of-matter.jpg]]'
+posters: '[[library/posters/the-analysis-of-matter.jpg|the-analysis-of-matter.jpg]]'
 status: to read
 subcategory:
   - metaphysics

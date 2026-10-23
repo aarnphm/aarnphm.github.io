@@ -8,7 +8,7 @@ description: 1974 nonfiction narrative book by American author Annie Dillard. To
 finished: null
 id: Pilgrim at Tinker Creek
 modified: 2026-06-05 15:08:01 GMT-04:00
-posters: '[[library/posters/pilgrim-at-tinker-creek.jpg]]'
+posters: '[[library/posters/pilgrim-at-tinker-creek.jpg|pilgrim-at-tinker-creek.jpg]]'
 status: to read
 subcategory:
   - nature

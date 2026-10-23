@@ -8,7 +8,7 @@ external: https://www.cs.cmu.edu/~yangke/lightness.html
 id: The Unbearable Lightness of Being
 language: czech
 modified: 2026-06-05 15:07:58 GMT-04:00
-posters: '[[library/posters/the-unbearable-lightness-of-being-cover.avif]]'
+posters: '[[library/posters/the-unbearable-lightness-of-being-cover.avif|the-unbearable-lightness-of-being-cover.avif]]'
 status: to read
 subcategory: being
 tags:

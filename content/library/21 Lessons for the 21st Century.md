@@ -7,7 +7,7 @@ finished: 2022
 id: 21 Lessons for the 21st Century
 language: hebrew
 modified: 2026-06-05 15:07:57 GMT-04:00
-posters: '[[library/posters/21-lessons-for-the-21st-century.jpg]]'
+posters: '[[library/posters/21-lessons-for-the-21st-century.jpg|21-lessons-for-the-21st-century.jpg]]'
 status: finished
 subcategory:
   - progress

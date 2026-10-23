@@ -13,7 +13,7 @@ subcategory:
 author:
   - Remzi Arpaci-Dusseau
   - Andrea Arpaci-Dusseau
-posters: '[[library/posters/operating-systems.jpg]]'
+posters: '[[library/posters/operating-systems.jpg|operating-systems.jpg]]'
 category:
   - technology
 translator:

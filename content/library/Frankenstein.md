@@ -10,7 +10,7 @@ finished: null
 id: Frankenstein
 modified: 2026-06-05 15:07:59 GMT-04:00
 pdf: null
-posters: '[[library/posters/frankenstein.jpg]]'
+posters: '[[library/posters/frankenstein.jpg|frankenstein.jpg]]'
 status: to read
 subcategory:
   - victorian

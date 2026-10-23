@@ -6,7 +6,7 @@ description: survey of modern metaphysics that traces how philosophers from leib
 finished: 2025
 id: The Evolution of Modern Metaphysics
 modified: 2026-06-05 15:08:00 GMT-04:00
-posters: '[[library/posters/the-evolution-of-modern-metaphysics.jpg]]'
+posters: '[[library/posters/the-evolution-of-modern-metaphysics.jpg|the-evolution-of-modern-metaphysics.jpg]]'
 status: finished
 subcategory: metaphysics
 tags:

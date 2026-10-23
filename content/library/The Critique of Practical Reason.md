@@ -6,7 +6,7 @@ description: kant further develops his moral philosophy, focusing on duty, freed
 id: The Critique of Practical Reason
 language: german
 modified: 2026-06-05 15:08:01 GMT-04:00
-posters: '[[library/posters/the-critique-of-practical-reason.jpg]]'
+posters: '[[library/posters/the-critique-of-practical-reason.jpg|the-critique-of-practical-reason.jpg]]'
 status: to read
 subcategory: logic
 tags:

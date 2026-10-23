@@ -7,7 +7,7 @@ finished: 2024
 id: Either Or
 language: danish
 modified: 2026-06-05 15:07:58 GMT-04:00
-posters: '[[library/posters/either-or.jpg]]'
+posters: '[[library/posters/either-or.jpg|either-or.jpg]]'
 status: finished
 subcategory: theology
 tags:

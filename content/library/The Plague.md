@@ -13,7 +13,7 @@ subcategory:
   - absurdism
 author:
   - '[[thoughts/Camus|Albert Camus]]'
-posters: '[[library/posters/the-plague.jpg]]'
+posters: '[[library/posters/the-plague.jpg|the-plague.jpg]]'
 category:
   - philosophy
 translator:

@@ -15,7 +15,7 @@ subcategory:
   - photography
 author:
   - Susan Sontag
-posters: '[[library/posters/regarding-pain-of-others.jpg]]'
+posters: '[[library/posters/regarding-pain-of-others.jpg|regarding-pain-of-others.jpg]]'
 category:
   - p/nf
 translator:

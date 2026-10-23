@@ -8,7 +8,7 @@ language: german
 modified: 2026-06-05 15:07:56 GMT-04:00
 notebook: null
 pdf: https://images.pcmac.org/Uploads/Bellevue/Bellevue/Departments/DocumentsSubCategories/Documents/letter-to-my-father.pdf
-posters: '[[library/posters/letter-to-his-father.jpg]]'
+posters: '[[library/posters/letter-to-his-father.jpg|letter-to-his-father.jpg]]'
 status: current
 subcategory: arts
 tags:

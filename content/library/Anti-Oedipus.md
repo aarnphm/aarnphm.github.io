@@ -9,7 +9,7 @@ finished: 2025
 id: Anti-Oedipus
 language: french
 modified: 2026-06-05 15:08:02 GMT-04:00
-posters: '[[library/posters/anti-oedipus-cover.avif]]'
+posters: '[[library/posters/anti-oedipus-cover.avif|anti-oedipus-cover.avif]]'
 status: evergreen
 subcategory: hermeneutics
 tags:

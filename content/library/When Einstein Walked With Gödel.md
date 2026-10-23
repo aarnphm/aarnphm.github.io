@@ -9,7 +9,7 @@ finished: null
 id: When Einstein Walked With Gödel
 modified: 2026-06-05 15:07:57 GMT-04:00
 notebook: null
-posters: '[[library/posters/when-einstein.jpg]]'
+posters: '[[library/posters/when-einstein.jpg|when-einstein.jpg]]'
 status: to read
 subcategory:
   - essays

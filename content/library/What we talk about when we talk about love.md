@@ -10,7 +10,7 @@ id: What we talk about when we talk about love
 modified: 2026-06-05 15:07:57 GMT-04:00
 notebook: null
 pdf: https://tnsatlanta.org/wp-content/uploads/What-We-Talk-About-When-We-Talk-About-Love-Carver.pdf
-posters: '[[library/posters/what-we-talk-about.webp]]'
+posters: '[[library/posters/what-we-talk-about.webp|what-we-talk-about.webp]]'
 status: finished
 subcategory:
   - o/relationship

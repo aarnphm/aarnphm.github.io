@@ -6,8 +6,8 @@ description: historical survey of how major philosophers conceive being, tracing
 id: Being and Some Philosophers
 language: english
 modified: 2026-06-05 15:07:59 GMT-04:00
-pdf: '[[thoughts/papers/Being and Some Philosophers.pdf]]'
-posters: '[[library/posters/being-and-some-philosophers.jpg]]'
+pdf: '[[thoughts/papers/Being and Some Philosophers.pdf|Being and Some Philosophers.pdf]]'
+posters: '[[library/posters/being-and-some-philosophers.jpg|being-and-some-philosophers.jpg]]'
 status: to read
 subcategory: being
 tags:

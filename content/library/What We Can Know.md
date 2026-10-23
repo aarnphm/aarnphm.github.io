@@ -8,7 +8,7 @@ description: novel set in 2119 after climate collapse, following a professor rec
 id: What We Can Know
 modified: 2026-06-05 15:08:01 GMT-04:00
 notebook: null
-posters: '[[library/posters/what-we-can-know.jpg]]'
+posters: '[[library/posters/what-we-can-know.jpg|what-we-can-know.jpg]]'
 status: to read
 subcategory:
   - o/life

@@ -7,7 +7,7 @@ id: Das Passagen-Werk
 language: german
 modified: 2026-06-05 15:08:02 GMT-04:00
 pdf: '[[thoughts/pdfs/The Archades Project - Walter Benjamin.pdf|The Archades Project - Walter Benjamin]]'
-posters: '[[library/posters/das-passagen-werk.jpg]]'
+posters: '[[library/posters/das-passagen-werk.jpg|das-passagen-werk.jpg]]'
 status: to read
 subcategory: design
 tags:

@@ -8,7 +8,7 @@ finished: 2022
 id: Kafka on the Shore
 language: japanese
 modified: 2026-06-05 15:07:56 GMT-04:00
-posters: '[[library/posters/kafka-on-the-shore.jpg]]'
+posters: '[[library/posters/kafka-on-the-shore.jpg|kafka-on-the-shore.jpg]]'
 status: finished
 subcategory: life
 tags:

@@ -13,7 +13,7 @@ subcategory:
   - self
 author:
   - Erving Goffman
-posters: '[[library/posters/the-presentation-of-self-in-everyday-life.jpg]]'
+posters: '[[library/posters/the-presentation-of-self-in-everyday-life.jpg|the-presentation-of-self-in-everyday-life.jpg]]'
 category:
   - sociology
 translator:

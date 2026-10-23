@@ -11,7 +11,7 @@ subcategory:
   - love
 author:
   - Jane Hirshfield
-posters: '[[library/posters/mathematics.png]]'
+posters: '[[library/posters/mathematics.png|mathematics.png]]'
 category:
   - poetry
 translator:

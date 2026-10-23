@@ -7,7 +7,7 @@ description: a family saga in California's Salinas Valley exploring rivalry, inh
 external: https://en.wikipedia.org/wiki/East_of_Eden_(novel)
 id: East of Eden
 modified: 2026-10-20 17:24:30 GMT-04:00
-posters: '[[library/posters/east-of-eden.jpg]]'
+posters: '[[library/posters/east-of-eden.jpg|east-of-eden.jpg]]'
 seealso:
   - '[[arena/life-is-literature/entry-v1-a22d7b8661eb5739e511d57041ad10ef80352fb7116dd6009ffc71402ca07987|Arena]]'
 status: to read

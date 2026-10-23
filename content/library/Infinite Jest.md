@@ -7,7 +7,7 @@ description: sprawling maximalist novel about addiction, entertainment, tennis, 
 finished: 2022
 id: Infinite Jest
 modified: 2026-06-05 15:07:58 GMT-04:00
-posters: '[[library/posters/infinite-jest.jpg]]'
+posters: '[[library/posters/infinite-jest.jpg|infinite-jest.jpg]]'
 status: finished
 subcategory: life
 tags:

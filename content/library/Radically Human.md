@@ -8,7 +8,7 @@ description: business book about human centered technology, arguing that ai and 
 finished: 2023
 id: Radically Human
 modified: 2026-06-05 15:07:59 GMT-04:00
-posters: '[[library/posters/radically-human.jpg]]'
+posters: '[[library/posters/radically-human.jpg|radically-human.jpg]]'
 status: finished
 subcategory: programming
 tags:

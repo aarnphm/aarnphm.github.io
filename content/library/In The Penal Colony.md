@@ -9,7 +9,7 @@ id: In The Penal Colony
 language: german
 modified: 2026-06-05 15:07:58 GMT-04:00
 notebook: null
-posters: '[[library/posters/in-the-penal-colony.jpg]]'
+posters: '[[library/posters/in-the-penal-colony.jpg|in-the-penal-colony.jpg]]'
 status: to read
 subcategory:
   - absurdism

@@ -9,7 +9,7 @@ id: Basic Topology
 modified: 2026-06-06 04:44:29 GMT-04:00
 notebook: '[[thoughts/topology|topology]]'
 pdf: https://math.mit.edu/~hrm/palestine/armstrong-basic-topology.pdf
-posters: '[[library/posters/Basic Topology.png]]'
+posters: '[[library/posters/Basic Topology.png|Basic Topology.png]]'
 seealso:
   - '[[thoughts/pdfs/armstrong-basic-topology.pdf|Basic Topology, Armstrong]]'
 status: current

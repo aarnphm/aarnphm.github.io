@@ -6,7 +6,7 @@ date: '2025-09-18'
 description: hallucinatory, nonlinear novel about addiction, control, and bureaucracy, stitched from routines that attack respectability and state power.
 id: Naked Lunch
 modified: 2026-06-05 15:07:58 GMT-04:00
-posters: '[[library/posters/naked-lunch.jpg]]'
+posters: '[[library/posters/naked-lunch.jpg|naked-lunch.jpg]]'
 status: to read
 subcategory: hermeneutics
 tags:

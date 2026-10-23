@@ -6,7 +6,7 @@ description: poetry and prose about heartbreak, healing, and gentle self compass
 finished: 2023
 id: Pillow Thoughts IV
 modified: 2026-06-05 15:07:56 GMT-04:00
-posters: '[[library/posters/pillow-thoughts-iv.jpg]]'
+posters: '[[library/posters/pillow-thoughts-iv.jpg|pillow-thoughts-iv.jpg]]'
 status: finished
 subcategory:
   - o/relationship

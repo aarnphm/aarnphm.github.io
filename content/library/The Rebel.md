@@ -8,7 +8,7 @@ finished: 2025
 id: The Rebel
 language: french
 modified: 2026-06-05 15:07:56 GMT-04:00
-posters: '[[library/posters/the-rebel.jpg]]'
+posters: '[[library/posters/the-rebel.jpg|the-rebel.jpg]]'
 status: evergreen
 subcategory: existentialism
 tags:

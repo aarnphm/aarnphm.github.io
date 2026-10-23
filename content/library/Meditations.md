@@ -7,7 +7,7 @@ finished: 2024
 id: Meditations
 language: ancient greek
 modified: 2026-06-05 15:07:57 GMT-04:00
-posters: '[[library/posters/meditations.jpg]]'
+posters: '[[library/posters/meditations.jpg|meditations.jpg]]'
 status: finished
 subcategory: being
 tags:

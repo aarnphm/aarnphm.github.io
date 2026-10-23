@@ -7,7 +7,7 @@ finished: 2023
 id: Apology
 language: ancient greek
 modified: 2026-06-05 15:08:01 GMT-04:00
-posters: '[[library/posters/apology.jpg]]'
+posters: '[[library/posters/apology.jpg|apology.jpg]]'
 status: finished
 subcategory: regrets
 tags:

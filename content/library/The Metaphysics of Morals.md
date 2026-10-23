@@ -6,7 +6,7 @@ description: kant systematic account of duties of right and virtue, connecting l
 id: The Metaphysics of Morals
 language: german
 modified: 2026-06-05 15:07:58 GMT-04:00
-posters: '[[library/posters/the-metaphysics-of-morals.jpg]]'
+posters: '[[library/posters/the-metaphysics-of-morals.jpg|the-metaphysics-of-morals.jpg]]'
 status: to read
 subcategory:
   - ethics

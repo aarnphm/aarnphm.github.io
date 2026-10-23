@@ -7,7 +7,7 @@ description: mill defense of utilitarian ethics, refining happiness as quality a
 id: Utilitarianism
 modified: 2026-06-05 15:08:00 GMT-04:00
 notebook: null
-posters: '[[library/posters/utilitarianism.jpg]]'
+posters: '[[library/posters/utilitarianism.jpg|utilitarianism.jpg]]'
 status: to read
 subcategory: hedonia
 tags:

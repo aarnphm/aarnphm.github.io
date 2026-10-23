@@ -8,7 +8,7 @@ finished: 2025
 id: The Voice of Robert Desnos
 modified: 2026-06-05 15:08:00 GMT-04:00
 notebook: null
-posters: '[[library/posters/the-voice-of-robert-desnos.png]]'
+posters: '[[library/posters/the-voice-of-robert-desnos.png|the-voice-of-robert-desnos.png]]'
 status: finished
 subcategory:
   - writing

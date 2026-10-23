@@ -9,7 +9,7 @@ finished: null
 id: Works of Love
 modified: 2026-06-05 15:07:57 GMT-04:00
 notebook: null
-posters: '[[library/posters/works-of-love.jpeg]]'
+posters: '[[library/posters/works-of-love.jpeg|works-of-love.jpeg]]'
 status: current
 subcategory:
   - o/relationship

@@ -6,7 +6,7 @@ description: prophetic, poetic book in which zarathustra proclaims themes like o
 external: https://www.gutenberg.org/files/1998/1998-h/1998-h.htm
 id: Thus Spoke Zarathustra
 modified: 2026-06-05 15:08:01 GMT-04:00
-posters: '[[library/posters/thus-spoke-zarathustra.jpg]]'
+posters: '[[library/posters/thus-spoke-zarathustra.jpg|thus-spoke-zarathustra.jpg]]'
 status: to read
 subcategory: metaphysics
 tags:

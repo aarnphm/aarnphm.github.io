@@ -7,7 +7,7 @@ finished: 2025
 id: The Ego and The Id
 language: german
 modified: 2026-06-05 15:08:00 GMT-04:00
-posters: '[[library/posters/the-ego-and-the-id.jpg]]'
+posters: '[[library/posters/the-ego-and-the-id.jpg|the-ego-and-the-id.jpg]]'
 status: finished
 subcategory:
   - consciousness
@@ -35,7 +35,7 @@ He then gives identification a wider role in character. The ego contains traces 
 
 The superego, also called the ego ideal in parts of the text, develops from early identifications and the dissolution of the Oedipus complex. It preserves parental authority within the mind. It judges the ego, supplies ideals, and becomes a source of conscience and guilt.
 
-This internal authority can be severe. Aggression that might have been directed outward can be taken up by the superego and turned against the ego. Freud later develops that account of guilt in [[library/Civilisation and its Discontents]].
+This internal authority can be severe. Aggression that might have been directed outward can be taken up by the superego and turned against the ego. Freud later develops that account of guilt in [[library/Civilisation and its Discontents|Civilisation and its Discontents]].
 
 ## a divided ego
 

@@ -7,7 +7,7 @@ description: profiles of unconventional ceos who excel at capital allocation, sh
 finished: 2022
 id: The Outsiders
 modified: 2026-06-05 15:08:00 GMT-04:00
-posters: '[[library/posters/the-outsiders.jpg]]'
+posters: '[[library/posters/the-outsiders.jpg|the-outsiders.jpg]]'
 status: finished
 subcategory: money
 tags:

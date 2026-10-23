@@ -6,7 +6,7 @@ description: philosophical look at how mathematics appears to commit us to abstr
 id: 'Metaphysical Myths, Mathematical Practice: The Ontology and Epistemology of the Exact Sciences'
 modified: 2026-06-05 15:08:00 GMT-04:00
 notebook: '[[thoughts/Epistemology#mathematics|philosophy of math]]'
-posters: '[[library/posters/metaphysical-myths-mathematical-practice.jpg]]'
+posters: '[[library/posters/metaphysical-myths-mathematical-practice.jpg|metaphysical-myths-mathematical-practice.jpg]]'
 status: to read
 subcategory: mathematics
 tags:

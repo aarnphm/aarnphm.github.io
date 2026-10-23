@@ -8,7 +8,7 @@ finished: 2025
 id: i carry your heart with me
 modified: 2026-06-05 15:07:58 GMT-04:00
 notebook: null
-posters: '[[library/posters/623a82240254feaa3fbe220edc44096a89b52002.jpeg]]'
+posters: '[[library/posters/623a82240254feaa3fbe220edc44096a89b52002.jpeg|623a82240254feaa3fbe220edc44096a89b52002.jpeg]]'
 status: finished
 subcategory:
   - love

@@ -9,7 +9,7 @@ id: Philosophical Investigations
 language: german
 modified: 2026-06-05 15:07:59 GMT-04:00
 pdf: https://static1.squarespace.com/static/54889e73e4b0a2c1f9891289/t/564b61a4e4b04eca59c4d232/1447780772744/Ludwig.Wittgenstein.-.Philosophical.Investigations.pdf
-posters: '[[library/posters/philosophical-investigations.jpg]]'
+posters: '[[library/posters/philosophical-investigations.jpg|philosophical-investigations.jpg]]'
 seealso:
   - '[[library/Tractatus Logico-Philosophicus|TLP]]'
   - '[[thoughts/forms of life|forms of life]]'
@@ -59,4 +59,4 @@ Wittgenstein describes philosophy as work on confusions created by language. Sec
 
 The aim is clarity about a particular problem. The book offers reminders, examples, and comparisons that let a misleading picture lose its grip. Its method begins with actual usage and stops when the source of the confusion is visible.
 
-related: [[thoughts/Wittgenstein]], [[thoughts/forms of life]]
+related: [[thoughts/Wittgenstein|Wittgenstein]], [[thoughts/forms of life|forms of life]]

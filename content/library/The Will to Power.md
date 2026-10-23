@@ -6,7 +6,7 @@ description: posthumous notebook collection presenting themes of power, value cr
 id: The Will to Power
 language: german
 modified: 2026-06-05 15:08:02 GMT-04:00
-posters: '[[library/posters/the-will-to-power.jpg]]'
+posters: '[[library/posters/the-will-to-power.jpg|the-will-to-power.jpg]]'
 status: to read
 subcategory: ontology
 tags:

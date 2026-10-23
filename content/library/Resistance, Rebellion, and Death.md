@@ -7,7 +7,7 @@ finished: 2025
 id: Resistance, Rebellion, and Death
 language: french
 modified: 2026-06-05 15:07:58 GMT-04:00
-posters: '[[library/posters/resistance-rebellion-and-death.jpg]]'
+posters: '[[library/posters/resistance-rebellion-and-death.jpg|resistance-rebellion-and-death.jpg]]'
 status: finished
 subcategory: existentialism
 tags:
