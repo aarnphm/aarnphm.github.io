@@ -1,0 +1,337 @@
+// The Base table idiom: one line frame holding a fixed-height scrollport and the pager row.
+.pagerank-frame {
+  border: 1px solid var(--pr-line);
+  min-width: 0;
+}
+
+.pagerank-scroll {
+  block-size: min(70dvh, 40rem);
+  overflow: auto;
+  overscroll-behavior: contain;
+
+  &:focus-visible {
+    outline-offset: -2px;
+  }
+}
+
+.pagerank-table {
+  width: 100%;
+  margin: 0;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font: 400 0.85rem / 1.3 var(--bodyFont);
+  color: var(--darkgray);
+
+  th {
+    box-sizing: border-box;
+    position: sticky;
+    top: 0;
+    z-index: var(--z-sticky);
+    block-size: 2rem;
+    padding: 0 0.75rem;
+    background: var(--pr-surface);
+    font: 400 var(--text-meta) / 1.5 var(--codeFont);
+    color: var(--darkgray);
+    text-align: right;
+    text-transform: lowercase;
+    white-space: nowrap;
+
+    // Borders vanish on sticky cells, so the rule is drawn on the cell itself.
+    &::after {
+      content: '';
+      position: absolute;
+      inset: auto 0 0;
+      block-size: 1px;
+      background: var(--pr-line);
+    }
+
+    button {
+      padding: 0;
+      border: 0;
+      background: none;
+      color: inherit;
+      font: inherit;
+      text-transform: inherit;
+      cursor: pointer;
+
+      &:focus-visible {
+        outline-offset: 1px;
+      }
+    }
+
+    &[aria-sort='ascending'] button::after {
+      content: ' ↑';
+    }
+
+    &[aria-sort='descending'] button::after {
+      content: ' ↓';
+    }
+
+    &:is([aria-sort='ascending'], [aria-sort='descending']) button {
+      color: var(--dark);
+      text-decoration: underline;
+      text-underline-offset: 0.2em;
+    }
+  }
+
+  td {
+    box-sizing: border-box;
+    block-size: var(--pr-row);
+    padding: 0 0.75rem;
+    border-block-end: 1px solid var(--pr-line);
+    text-align: right;
+    vertical-align: middle;
+    white-space: nowrap;
+    overflow: hidden;
+    font-family: var(--codeFont);
+    font-size: var(--text-meta);
+    font-variant-numeric: tabular-nums;
+  }
+
+  tbody tr {
+    block-size: var(--pr-row);
+
+    @media (hover: hover) and (pointer: fine) {
+      &[data-id]:hover {
+        background: var(--pr-surface);
+        cursor: pointer;
+      }
+    }
+
+    &[aria-current='true'] {
+      background: var(--pr-selected);
+      color: var(--dark);
+    }
+  }
+
+  .pagerank-col-position {
+    inline-size: 3.75rem;
+  }
+
+  .pagerank-col-note {
+    text-align: left;
+  }
+
+  .pagerank-col-times {
+    inline-size: 4.5rem;
+  }
+
+  .pagerank-col-axis {
+    inline-size: 7rem;
+    text-align: left;
+  }
+
+  :is(.pagerank-col-inbound, .pagerank-col-outbound) {
+    inline-size: 3.25rem;
+  }
+
+  .pagerank-col-delta {
+    inline-size: 4rem;
+  }
+
+  td.pagerank-col-note {
+    font-family: var(--bodyFont);
+    font-size: 0.85rem;
+
+    a.internal {
+      white-space: nowrap;
+    }
+  }
+
+  .pagerank-note-line,
+  .pagerank-slug {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .pagerank-slug {
+    font: 400 0.66rem / 1.4 var(--codeFont);
+    color: var(--darkgray);
+  }
+
+  .pagerank-chip {
+    margin-inline-start: 0.4rem;
+    padding: 0 0.3rem;
+    border: 1px solid var(--pr-line);
+    background: var(--pr-surface);
+    font: 400 0.66rem / 1.4 var(--codeFont);
+    color: var(--darkgray);
+  }
+
+  td.pagerank-col-axis {
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 50% 0.75rem auto;
+      block-size: 1px;
+      background: var(--pr-line);
+    }
+  }
+
+  .pagerank-axis-mark {
+    position: absolute;
+    inset-block-start: calc(50% - 3.5px);
+    inset-inline-start: calc(0.75rem + var(--px) * (100% - 1.5rem - 7px));
+    inline-size: 7px;
+    block-size: 7px;
+    background: var(--dark);
+  }
+
+  .pagerank-rise {
+    color: var(--dark);
+  }
+
+  .pagerank-select {
+    min-inline-size: 2.25rem;
+    min-block-size: 1.75rem;
+    padding: 0 0.25rem;
+    border: 1px solid transparent;
+    border-radius: var(--radius-none);
+    background: none;
+    color: var(--dark);
+    font: inherit;
+    text-align: right;
+    cursor: pointer;
+
+    &[aria-pressed='true'] {
+      border-color: var(--darkgray);
+    }
+
+    &:focus-visible {
+      outline-offset: -2px;
+    }
+
+    @media (pointer: coarse) {
+      min-block-size: 44px;
+    }
+  }
+
+  .pagerank-status td {
+    block-size: calc(var(--pr-row) * 2);
+    padding: 0 0.75rem;
+    font-family: var(--bodyFont);
+    font-size: var(--text-ui);
+    text-align: left;
+    white-space: normal;
+  }
+
+  @container pagerank (max-width: 48rem) {
+    th,
+    td {
+      padding-inline: 0.4rem;
+    }
+
+    .pagerank-col-axis {
+      display: none;
+    }
+
+    .pagerank-col-position {
+      inline-size: 3rem;
+    }
+
+    .pagerank-col-times {
+      inline-size: 3.6rem;
+    }
+
+    :is(.pagerank-col-inbound, .pagerank-col-outbound) {
+      inline-size: 2.4rem;
+    }
+
+    .pagerank-col-delta {
+      inline-size: 3.4rem;
+    }
+  }
+
+  // The inspector carries out and Δ for the selected note, so the title keeps its room.
+  @container pagerank (max-width: 30rem) {
+    :is(.pagerank-col-outbound, .pagerank-col-delta) {
+      display: none;
+    }
+
+    .pagerank-chip {
+      display: none;
+    }
+
+    th,
+    td {
+      padding-inline: 0.3rem;
+    }
+
+    .pagerank-col-position {
+      inline-size: 2.75rem;
+    }
+
+    .pagerank-col-times {
+      inline-size: 3.25rem;
+    }
+
+    .pagerank-col-inbound {
+      inline-size: 2.25rem;
+    }
+  }
+}
+
+.pagerank-pager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+  padding: 0 0.5rem 0 0.25rem;
+  border-block-start: 1px solid var(--pr-line);
+  background: var(--pr-surface);
+
+  .pagerank-pages {
+    display: flex;
+    align-items: center;
+    font: 400 var(--text-meta) var(--codeFont);
+    font-variant-numeric: tabular-nums;
+    color: var(--dark);
+  }
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 2rem;
+    block-size: var(--control-height);
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-none);
+    background: none;
+    color: var(--dark);
+    font: 400 1rem var(--codeFont);
+    cursor: pointer;
+
+    &:disabled {
+      color: var(--gray);
+      cursor: default;
+    }
+
+    &:focus-visible {
+      outline-offset: -2px;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      &:not(:disabled):hover {
+        text-decoration: underline;
+      }
+    }
+
+    @media (pointer: coarse) {
+      inline-size: 44px;
+    }
+  }
+
+  .pagerank-filtered {
+    padding-block: 0.4rem;
+  }
+}
+
+.pagerank-legend {
+  margin: 0.5rem 0 0;
+}

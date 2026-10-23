@@ -1,0 +1,317 @@
+@use '../../styles/variables.scss' as *;
+@use './figure.scss' as figure;
+@use './pagerank/table';
+@use './pagerank/inspector';
+
+// Tool register: the shared line / surface / selected recipe under one prefix.
+.pagerank {
+  --pr-line: color-mix(in srgb, var(--gray) 55%, transparent);
+  --pr-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+  --pr-selected: color-mix(in srgb, var(--secondary) 18%, var(--pr-surface));
+  --pr-salmon: #fdb2a2;
+  --pr-row: 2.875rem;
+  --control-height: 2.125rem;
+  container-type: inline-size;
+  container-name: pagerank;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-block: 1rem 3rem;
+  min-width: 0;
+  color: var(--darkgray);
+
+  @media (pointer: coarse) {
+    --control-height: 44px;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
+
+  a.internal {
+    color: var(--dark);
+    background: none;
+    text-decoration: none;
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        color: var(--dark);
+        background: none;
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+.pagerank-intro {
+  max-width: 44rem;
+
+  p {
+    margin: 0 0 0.75rem;
+  }
+
+  .katex-display {
+    margin: 0.75rem 0 1rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+}
+
+.pagerank-meta,
+.pagerank-legend,
+.pagerank-filtered,
+.pagerank-kicker {
+  font: 400 var(--text-meta) / 1.5 var(--codeFont);
+  font-variant-numeric: tabular-nums;
+  color: var(--darkgray);
+  text-transform: lowercase;
+}
+
+.pagerank-aside {
+  font-size: var(--text-ui);
+}
+
+.pagerank-readout {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0;
+  border: 1px solid var(--pr-line);
+
+  > div {
+    padding: 0.55rem 0.75rem;
+    border-inline-end: 1px solid var(--pr-line);
+    border-block-end: 1px solid var(--pr-line);
+    min-width: 0;
+
+    &:nth-child(4n) {
+      border-inline-end: 0;
+    }
+
+    &:nth-last-child(-n + 4) {
+      border-block-end: 0;
+    }
+  }
+
+  dt {
+    font-size: var(--text-meta);
+    color: var(--darkgray);
+  }
+
+  dd {
+    margin: 0.15rem 0 0;
+    font: 500 var(--text-ui) / 1.4 var(--codeFont);
+    font-variant-numeric: tabular-nums;
+    color: var(--dark);
+    overflow-wrap: anywhere;
+  }
+
+  @container pagerank (max-width: 40rem) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    > div {
+      &:nth-child(4n) {
+        border-inline-end: 1px solid var(--pr-line);
+      }
+
+      &:nth-child(2n) {
+        border-inline-end: 0;
+      }
+
+      &:nth-last-child(-n + 4) {
+        border-block-end: 1px solid var(--pr-line);
+      }
+
+      &:nth-last-child(-n + 2) {
+        border-block-end: 0;
+      }
+    }
+  }
+}
+
+.pagerank-figure {
+  @include figure.figure-palette;
+  margin: 0;
+  padding: 1rem;
+  border: 1px solid var(--fig-frame-border);
+  background: color-mix(in srgb, var(--light) 94%, transparent);
+
+  figcaption {
+    @include figure.figure-caption;
+  }
+
+  .pagerank-tex {
+    color: var(--dark);
+  }
+}
+
+.pagerank-chart {
+  block-size: 15rem;
+  min-width: 0;
+
+  svg {
+    display: block;
+    overflow: visible;
+  }
+
+  .pagerank-grid line {
+    stroke: var(--pr-line);
+    stroke-width: 1;
+  }
+
+  .pagerank-plot-frame {
+    fill: none;
+    stroke: var(--pr-line);
+  }
+
+  .pagerank-curve {
+    fill: none;
+    stroke: var(--dark);
+    stroke-width: 1.5;
+    stroke-linejoin: round;
+  }
+
+  .pagerank-fit {
+    fill: none;
+    stroke: var(--darkgray);
+    stroke-width: 1;
+    stroke-dasharray: 4 3;
+  }
+
+  .pagerank-ticks text {
+    font: 400 11px var(--codeFont);
+    font-variant-numeric: tabular-nums;
+    fill: var(--darkgray);
+  }
+
+  .pagerank-axis-title {
+    font: 400 12px var(--bodyFont);
+    fill: var(--darkgray);
+  }
+
+  :is(.pagerank-mark-selected, .pagerank-mark-pointer) {
+    transition: transform 120ms ease-out;
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  .pagerank-mark-selected {
+    fill: var(--pr-salmon);
+    stroke: var(--dark);
+    stroke-width: 1;
+  }
+
+  .pagerank-mark-pointer {
+    fill: none;
+    stroke: var(--dark);
+    stroke-width: 1.5;
+  }
+}
+
+.pagerank-chart-readout {
+  font-family: var(--codeFont);
+  color: var(--dark);
+}
+
+.pagerank-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: stretch;
+  min-width: 0;
+
+  .pagerank-search {
+    flex: 1 1 12rem;
+    min-width: 0;
+    box-sizing: border-box;
+    block-size: var(--control-height);
+    padding: 0 0.6rem;
+    border: 1px solid var(--darkgray);
+    border-radius: var(--radius-none);
+    background: var(--light);
+    color: var(--dark);
+    font: 400 var(--text-ui) var(--bodyFont);
+
+    &::placeholder {
+      color: var(--darkgray);
+    }
+
+    &:focus-visible {
+      outline-offset: -2px;
+    }
+
+    @media #{$mobile} {
+      font-size: 16px;
+    }
+  }
+
+  .pagerank-folder {
+    flex: 0 1 13rem;
+    min-width: 0;
+
+    .g-select {
+      inline-size: 100%;
+    }
+  }
+}
+
+.pagerank-toggles {
+  display: flex;
+  border: 1px solid var(--darkgray);
+
+  button {
+    min-block-size: var(--control-height);
+    padding: 0 0.7rem;
+    border: 0;
+    border-radius: var(--radius-none);
+    background: transparent;
+    color: var(--darkgray);
+    font: 500 var(--text-ui) var(--codeFont);
+    text-transform: lowercase;
+    cursor: pointer;
+
+    & + button {
+      border-inline-start: 1px solid var(--darkgray);
+    }
+
+    &[aria-pressed='true'] {
+      background: var(--pr-selected);
+      color: var(--dark);
+      text-decoration: underline;
+      text-underline-offset: 0.2em;
+    }
+
+    &:focus-visible {
+      outline-offset: -2px;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        color: var(--dark);
+      }
+    }
+  }
+}
+
+.pagerank-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+
+  // Side by side only when the table still keeps its axis column (48rem) beside the inspector.
+  @container pagerank (min-width: 74rem) {
+    grid-template-columns: minmax(0, 1fr) minmax(19rem, 24rem);
+
+    .pagerank-inspector {
+      position: sticky;
+      top: 1rem;
+    }
+  }
+}

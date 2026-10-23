@@ -1,0 +1,287 @@
+.pagerank-inspector {
+  --hood-row: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border: 1px solid var(--pr-line);
+
+  > * {
+    padding: 0.75rem;
+  }
+
+  > * + * {
+    border-block-start: 1px solid var(--pr-line);
+  }
+
+  .pagerank-kicker {
+    margin: 0 0 0.4rem;
+  }
+}
+
+// base.scss lays every <header> out as a flex row; this one stacks.
+.pagerank-inspector-head {
+  display: block;
+  margin: 0;
+  background: var(--pr-surface);
+
+  h2 {
+    margin: 0;
+    font: 700 1.15rem / 1.25 var(--titleFont);
+    color: var(--dark);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .pagerank-slug {
+    margin: 0.1rem 0 0.6rem;
+    min-block-size: 1lh;
+    font: 400 0.66rem / 1.4 var(--codeFont);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.pagerank-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem 1rem;
+  margin: 0;
+
+  > div {
+    min-width: 0;
+  }
+
+  dt {
+    font-size: var(--text-meta);
+  }
+
+  dd {
+    margin: 0;
+    font: 500 var(--text-meta) / 1.5 var(--codeFont);
+    font-variant-numeric: tabular-nums;
+    color: var(--dark);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  > div:last-child {
+    flex-basis: 100%;
+  }
+}
+
+// Inbound sources, the note, outbound targets; rows are fixed so every note gets one height.
+.pagerank-hood-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 1.5rem auto 1.5rem minmax(0, 1fr);
+  block-size: calc(8 * var(--hood-row));
+}
+
+.pagerank-hood-side {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  min-width: 0;
+
+  li {
+    display: flex;
+    align-items: center;
+    block-size: var(--hood-row);
+    min-width: 0;
+    margin: 0;
+  }
+}
+
+.pagerank-hood-inbound .pagerank-hood-node {
+  flex-direction: row-reverse;
+  justify-content: flex-start;
+  text-align: right;
+}
+
+// Packed toward the centre box, so the ↔ mark stays beside its title on a wide inspector.
+.pagerank-hood-outbound .pagerank-hood-node {
+  justify-content: flex-start;
+}
+
+.pagerank-hood-node {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  inline-size: 100%;
+  block-size: 100%;
+  min-width: 0;
+  padding: 0 0.25rem;
+  border: 0;
+  border-radius: var(--radius-none);
+  background: none;
+  color: var(--darkgray);
+  font: 400 var(--text-meta) var(--bodyFont);
+  cursor: pointer;
+
+  &:focus-visible {
+    outline-offset: -2px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background: var(--pr-surface);
+      color: var(--dark);
+    }
+  }
+}
+
+.pagerank-hood-title {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pagerank-hood-rank,
+.pagerank-hood-both {
+  flex: none;
+  font-family: var(--codeFont);
+  font-variant-numeric: tabular-nums;
+  color: var(--dark);
+}
+
+.pagerank-hood-rank::before {
+  content: '#';
+  color: var(--darkgray);
+}
+
+.pagerank-hood-empty,
+.pagerank-hood-more {
+  font: 400 var(--text-meta) var(--codeFont);
+  color: var(--darkgray);
+}
+
+.pagerank-hood-inbound :is(.pagerank-hood-empty, .pagerank-hood-more) {
+  justify-content: flex-end;
+}
+
+.pagerank-hood-edges {
+  inline-size: 100%;
+  block-size: 100%;
+  overflow: visible;
+
+  path {
+    fill: none;
+    stroke: var(--darkgray);
+    stroke-linecap: round;
+  }
+}
+
+.pagerank-hood-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  padding: 0.35rem 0.4rem;
+  align-self: center;
+  border: 1px solid var(--dark);
+  background: var(--pr-selected);
+  font: 400 var(--text-meta) var(--codeFont);
+  font-variant-numeric: tabular-nums;
+  color: var(--dark);
+}
+
+.pagerank-square {
+  flex: none;
+  display: inline-block;
+  inline-size: calc(4px + var(--px) * 8px);
+  block-size: calc(4px + var(--px) * 8px);
+  background: var(--dark);
+}
+
+.pagerank-hood-caption {
+  margin: 0.5rem 0 0;
+  font-size: var(--text-meta);
+  line-height: 1.45;
+}
+
+.pagerank-ledger-scroll {
+  block-size: 15rem;
+  overflow: auto;
+  overscroll-behavior: contain;
+
+  &:focus-visible {
+    outline-offset: -2px;
+  }
+
+  table {
+    inline-size: 100%;
+    margin: 0 0 0.75rem;
+    table-layout: fixed;
+    border-collapse: collapse;
+    font: 400 var(--text-meta) / 1.4 var(--codeFont);
+    font-variant-numeric: tabular-nums;
+  }
+
+  th,
+  td {
+    padding: 0.3rem 0.4rem;
+    border-block-end: 1px solid var(--pr-line);
+    text-align: right;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  :is(th, td):first-child {
+    inline-size: auto;
+    text-align: left;
+  }
+
+  :is(th, td):nth-child(2) {
+    inline-size: 3.75rem;
+  }
+
+  :is(th, td):nth-child(3) {
+    inline-size: 6.5rem;
+  }
+
+  thead th {
+    font-weight: 400;
+    color: var(--darkgray);
+    background: var(--pr-surface);
+  }
+
+  tbody td:first-child {
+    font-family: var(--bodyFont);
+
+    .pagerank-hood-rank {
+      display: inline-block;
+      min-inline-size: 2.75rem;
+      margin-inline-end: 0.35rem;
+    }
+  }
+
+  tfoot th {
+    font-weight: 400;
+    white-space: normal;
+  }
+
+  tfoot tr:last-child :is(th, td) {
+    color: var(--dark);
+    font-weight: 500;
+  }
+
+  .pagerank-bar {
+    display: inline-block;
+    vertical-align: middle;
+    margin-inline-end: 0.35rem;
+    inline-size: calc(var(--share) * 3rem);
+    block-size: 6px;
+    background: var(--dark);
+  }
+
+  .pagerank-status td {
+    font-family: var(--bodyFont);
+    white-space: normal;
+  }
+}
