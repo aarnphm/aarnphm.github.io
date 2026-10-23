@@ -509,47 +509,77 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
     submitComment({ opId: crypto.randomUUID(), type: 'resolve', comment: resolved })
   }
 
-  const buildThreadItem = (comment: MultiplayerComment) => {
-    const item = document.createElement('div')
-    item.className = 'reply-item'
-
-    const top = document.createElement('div')
-    top.className = 'reply-top'
-
-    const left = document.createElement('div')
-    left.className = 'reply-left'
-
+  const avatarImg = (author: string) => {
     const avatar = document.createElement('img')
     avatar.className = 'reply-avatar'
     avatar.dataset.ignorePopup = 'true'
-    getAvatarUrl(comment.author, 24).then(url => {
+    avatar.alt = author
+    getAvatarUrl(author).then(url => {
       avatar.src = url
     })
-    avatar.alt = comment.author
+    return avatar
+  }
 
-    const author = document.createElement('div')
-    author.className = 'reply-author'
-    author.textContent = comment.author
-
-    const time = document.createElement('div')
+  const timeElement = (timestamp: number) => {
+    const time = document.createElement('time')
     time.className = 'reply-time'
-    time.textContent = formatRelativeTime(comment.createdAt)
+    time.dateTime = new Date(timestamp).toISOString()
+    time.title = new Date(timestamp).toLocaleString()
+    time.textContent = formatRelativeTime(timestamp)
+    return time
+  }
 
-    left.appendChild(avatar)
-    left.appendChild(author)
-    left.appendChild(time)
+  // The thread's people as overlapping blobs, in the order they joined.
+  const peopleStack = (authors: string[], limit = 4) => {
+    const people = document.createElement('span')
+    people.className = 'thread-people'
+    const unique = [...new Set(authors)]
+    people.title = unique.join(', ')
+    for (const author of unique.slice(0, limit)) people.appendChild(avatarImg(author))
+    if (unique.length > limit) {
+      const more = document.createElement('span')
+      more.className = 'thread-people-more'
+      more.textContent = `+${unique.length - limit}`
+      people.appendChild(more)
+    }
+    return people
+  }
+
+  // Avatar column, then name and time once per run: a message that follows the same author
+  // within ten minutes drops its head and sits under the one before.
+  const sameRun = (prev: MultiplayerComment | undefined, next: MultiplayerComment) =>
+    prev !== undefined &&
+    prev.author === next.author &&
+    next.createdAt - prev.createdAt < 10 * 60 * 1000
+
+  const buildThreadItem = (comment: MultiplayerComment, continued: boolean) => {
+    const item = document.createElement('div')
+    item.className = continued ? 'reply-item reply-continued' : 'reply-item'
+
+    const body = document.createElement('div')
+    body.className = 'reply-body'
+
+    if (!continued) {
+      item.appendChild(avatarImg(comment.author))
+      const head = document.createElement('div')
+      head.className = 'reply-head'
+      const author = document.createElement('span')
+      author.className = 'reply-author'
+      author.textContent = comment.author
+      head.appendChild(author)
+      head.appendChild(timeElement(comment.createdAt))
+      body.appendChild(head)
+    }
 
     const text = document.createElement('div')
     text.className = 'reply-text markdown-content'
     const currentSlug = getFullSlug(window)
     text.innerHTML = renderMarkdown(comment.content, currentSlug)
-
-    const right = document.createElement('div')
-    right.className = 'reply-right'
+    body.appendChild(text)
 
     const actions = document.createElement('button')
     actions.className = 'reply-actions'
-    actions.setAttribute('aria-label', 'Comment actions')
+    actions.setAttribute('aria-label', `Actions for ${comment.author}'s comment`)
     actions.setAttribute('aria-expanded', 'false')
     actions.innerHTML = `<svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M7.5 12a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m6 0a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m4.5 1.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3" clip-rule="evenodd"></path></svg>`
 
@@ -568,13 +598,8 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
       )
     }
 
-    right.appendChild(actions)
-    top.appendChild(left)
-    top.appendChild(right)
-
-    item.appendChild(top)
-    item.appendChild(text)
-
+    item.appendChild(body)
+    item.appendChild(actions)
     return item
   }
 
@@ -591,10 +616,12 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
     for (const cleanup of editCleanups) cleanup()
     renderedThreads.set(content, items)
     content.replaceChildren()
-    content.appendChild(buildThreadItem(comment))
-    for (const reply of replies) {
-      content.appendChild(buildThreadItem(reply))
-    }
+    items.forEach((item, i) =>
+      content.appendChild(buildThreadItem(item, sameRun(items[i - 1], item))),
+    )
+    content.parentElement
+      ?.querySelector('.thread-people')
+      ?.replaceWith(peopleStack(items.map(c => c.author)))
   }
 
   const showCommentThread = (commentId: string, position?: { top: number; left: number }) => {
@@ -632,9 +659,12 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
     const header = document.createElement('div')
     header.className = 'modal-header'
 
+    // The thread is named by the passage it hangs on, the way a channel is named.
     const title = document.createElement('div')
     title.className = 'modal-title'
-    title.textContent = 'comment'
+    const excerpt = comment.anchorText.replace(/\s+/g, ' ').trim()
+    title.textContent = excerpt || 'comment'
+    title.title = excerpt
 
     const headerActions = document.createElement('div')
     headerActions.className = 'modal-actions'
@@ -714,6 +744,7 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
     headerActions.appendChild(closeButton)
 
     header.appendChild(title)
+    header.appendChild(peopleStack([comment, ...replies].map(c => c.author)))
     header.appendChild(headerActions)
 
     const content = document.createElement('div')
@@ -726,13 +757,8 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
     const replyAuthorElement = document.createElement('div')
     replyAuthorElement.className = 'reply-author-element'
 
-    const avatar = document.createElement('img')
+    const avatar = avatarImg(getAuthor())
     avatar.className = 'avatar'
-    avatar.dataset.ignorePopup = 'true'
-    getAvatarUrl(getAuthor(), 24).then(url => {
-      avatar.src = url
-    })
-    avatar.alt = getAuthor()
     replyAuthorElement.appendChild(avatar)
 
     const inputSectionWrapper = document.createElement('div')
@@ -890,12 +916,7 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
     activeComposer = composer
 
     const rects = Array.from(range.getClientRects()).filter(rect => rect.width && rect.height)
-    const rect = rects[0] ?? range.getBoundingClientRect()
-    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop
-
-    composer.style.left = `${rect.left + scrollLeft}px`
-    composer.style.top = `${rect.bottom + scrollTop + 8}px`
+    const rect = rects[rects.length - 1] ?? range.getBoundingClientRect()
 
     const inputWrapper = document.createElement('div')
     inputWrapper.className = 'composer-input-wrapper composer-empty'
@@ -963,6 +984,9 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
     inputWrapper.appendChild(submitButton)
     composer.appendChild(inputWrapper)
     document.body.appendChild(composer)
+    // Centered under the selection's last line, measured once mounted; the viewport clamp wins.
+    composer.style.left = `${rect.left + rect.width / 2 - composer.offsetWidth / 2 + window.scrollX}px`
+    composer.style.top = `${rect.bottom + window.scrollY + 8}px`
     keepModalInViewport(composer)
 
     editor = await createMarkdownEditor({
@@ -1030,10 +1054,13 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
     const topLevelComments = comments.filter(c => !c.parentId && !c.deletedAt && !c.resolvedAt)
     if (topLevelComments.length === 0) return
 
-    const replyCounts = new Map<string, number>()
+    const replyAuthors = new Map<string, string[]>()
     for (const comment of comments) {
       if (comment.parentId && !comment.deletedAt) {
-        replyCounts.set(comment.parentId, (replyCounts.get(comment.parentId) ?? 0) + 1)
+        replyAuthors.set(comment.parentId, [
+          ...(replyAuthors.get(comment.parentId) ?? []),
+          comment.author,
+        ])
       }
     }
 
@@ -1202,48 +1229,40 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
           bubble.style.top = `${initialTop}px`
           bubble.style.left = `${initialLeft}px`
 
-          const replyTop = document.createElement('div')
-          replyTop.className = 'reply-top'
+          const preview = document.createElement('div')
+          preview.className = 'reply-item'
+          preview.appendChild(avatarImg(comment.author))
 
-          const replyLeft = document.createElement('div')
-          replyLeft.className = 'reply-left'
-
-          const avatar = document.createElement('img')
-          avatar.className = 'reply-avatar'
-          avatar.dataset.ignorePopup = 'true'
-          getAvatarUrl(comment.author, 24).then(url => {
-            avatar.src = url
-          })
-          avatar.alt = comment.author
-
+          const previewBody = document.createElement('div')
+          previewBody.className = 'reply-body'
+          const head = document.createElement('div')
+          head.className = 'reply-head'
           const author = document.createElement('span')
           author.className = 'reply-author'
           author.textContent = comment.author
-
-          const time = document.createElement('span')
-          time.className = 'reply-time'
-          time.textContent = formatRelativeTime(comment.createdAt)
-
-          replyLeft.appendChild(avatar)
-          replyLeft.appendChild(author)
-          replyLeft.appendChild(time)
-          replyTop.appendChild(replyLeft)
+          head.appendChild(author)
+          head.appendChild(timeElement(comment.createdAt))
 
           const text = document.createElement('div')
           text.className = 'reply-text markdown-content'
           const currentSlug = getFullSlug(window)
           text.innerHTML = renderMarkdown(comment.content, currentSlug)
 
-          bubble.appendChild(replyTop)
-          bubble.appendChild(text)
+          previewBody.appendChild(head)
+          previewBody.appendChild(text)
 
-          const replyCount = replyCounts.get(comment.id) ?? 0
-          if (replyCount > 0) {
+          const repliers = replyAuthors.get(comment.id) ?? []
+          if (repliers.length > 0) {
             const replies = document.createElement('div')
             replies.className = 'preview-replies'
-            replies.textContent = `${replyCount} ${replyCount === 1 ? 'reply' : 'replies'}`
-            bubble.appendChild(replies)
+            replies.appendChild(peopleStack(repliers, 3))
+            const count = document.createElement('span')
+            count.textContent = `${repliers.length} ${repliers.length === 1 ? 'reply' : 'replies'}`
+            replies.appendChild(count)
+            previewBody.appendChild(replies)
           }
+          preview.appendChild(previewBody)
+          bubble.appendChild(preview)
 
           bubble.onmouseenter = () => {
             if (activeModal && activeModal.dataset.commentId === comment.id) {

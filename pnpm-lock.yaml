@@ -13,6 +13,9 @@ importers:
 
   .:
     dependencies:
+      '@blobatar/react':
+        specifier: ^2.7.0
+        version: 2.7.0(blobatar@2.7.0(react@19.2.7))(react@19.2.7)
       '@citation-js/core':
         specifier: ^0.7.21
         version: 0.7.21
@@ -121,6 +124,9 @@ importers:
       basedpyright-source:
         specifier: https://github.com/DetachHead/basedpyright/archive/refs/tags/v1.39.6.tar.gz
         version: pyright-root@https://github.com/DetachHead/basedpyright/archive/refs/tags/v1.39.6.tar.gz
+      blobatar:
+        specifier: ^2.7.0
+        version: 2.7.0(react@19.2.7)
       buffer:
         specifier: 6.0.3
         version: 6.0.3
@@ -719,6 +725,12 @@ packages:
   '@babel/types@7.29.8':
     resolution: {integrity: sha512-Vj1jF3cPfxg7OAfoI7QnVKLoILlm2JF9pnVHrX8qx7AHMiYWT+NDAA7jChlNgRS4WTLc/fD1lXLmPixluj+3Gg==}
     engines: {node: '>=6.9.0'}
+
+  '@blobatar/react@2.7.0':
+    resolution: {integrity: sha512-rysDM1+2qoeIwIezVw/em+ZxOMyqqjqJOGNEvtOOU1nFp0jmzyEjlXtJTDM6xPKamq59pq6wcG9+mHIUZV572A==}
+    peerDependencies:
+      blobatar: 2.x
+      react: '>=18'
 
   '@borewit/text-codec@0.2.2':
     resolution: {integrity: sha512-DDaRehssg1aNrH4+2hnj1B7vnUGEjU6OIlyRdkMd0aUdIUvKXrJfXsy8LVtXAy7DRvYVluWbMspsRhz2lcW0mQ==}
@@ -3223,6 +3235,17 @@ packages:
 
   blake3-wasm@2.1.5:
     resolution: {integrity: sha512-F1+K8EbfOZE49dtoPtmxUQrpXaBIl3ICvasLh+nJta0xkz+9kF/7uet9fLnwKqhDrmj6g+6K3Tw9yQPUg2ka5g==}
+
+  blobatar@2.7.0:
+    resolution: {integrity: sha512-tL1p2J3dXE/Z9U/ITwHqU7HBHmTH+Am+hif1J1hWAhvFT1VYC2HG+eXtN7081yuY+L2lrp9bs/VaF7dVH3S2jw==}
+    peerDependencies:
+      react: '>=18'
+      vue: '>=3'
+    peerDependenciesMeta:
+      react:
+        optional: true
+      vue:
+        optional: true
 
   body-parser@2.3.0:
     resolution: {integrity: sha512-2cGmJupaNgg+QUwVLAucDuWuoMZ6EX9iHDRswZ5lsNYEmwPaRknMPCLZz07yTzVq/83p4o/wzbDZbBrTvGGTIw==}
@@ -6796,6 +6819,11 @@ snapshots:
       '@babel/helper-string-parser': 7.29.7
       '@babel/helper-validator-identifier': 7.29.7
 
+  '@blobatar/react@2.7.0(blobatar@2.7.0(react@19.2.7))(react@19.2.7)':
+    dependencies:
+      blobatar: 2.7.0(react@19.2.7)
+      react: 19.2.7
+
   '@borewit/text-codec@0.2.2': {}
 
   '@bufbuild/protobuf@2.16.0': {}
@@ -8919,6 +8947,10 @@ snapshots:
     optional: true
 
   blake3-wasm@2.1.5: {}
+
+  blobatar@2.7.0(react@19.2.7):
+    optionalDependencies:
+      react: 19.2.7
 
   body-parser@2.3.0:
     dependencies:

@@ -31,7 +31,9 @@
     "artifacts:clean": "tsx quartz/scripts/clean-verification-artifacts.ts",
     "embed:prepare": "node --env-file=.env quartz/bootstrap-cli.mjs build --concurrency 10 --output quartz/.quartz-cache/embedding-inputs",
     "embed:bases": "pnpm exec tsx quartz/scripts/build-base-embeddings.ts --jsonl-dir quartz/.quartz-cache/embedding-inputs",
-    "embed": "USE_VLLM=1 VLLM_URL=\"http://127.0.0.1:8000/v1/embeddings\" uv run quartz/embed_build.py --jsonl quartz/.quartz-cache/embedding-inputs/embeddings-text.jsonl --model \"google/embeddinggemma-2\" --out content/embeddings --dtype fp32 --dims 768 --chunk-size 512 --chunk-overlap 128 --concurrency 1 --batch-size 64 --max-tokens 8192",
+    "embed:notes": "USE_VLLM=1 VLLM_URL=\"http://127.0.0.1:8000/v1/embeddings\" uv run quartz/embed_build.py --jsonl quartz/.quartz-cache/embedding-inputs/embeddings-text.jsonl --model \"google/embeddinggemma-2\" --out content/embeddings --dtype fp32 --dims 768 --chunk-size 512 --chunk-overlap 128 --concurrency 1 --batch-size 64 --max-tokens 8192",
+    "embed:images": "pnpm exec tsx quartz/scripts/build-image-embeddings.ts",
+    "embed": "pnpm embed:notes && pnpm embed:images --public-index quartz/.quartz-cache/embedding-inputs/static/contentIndex.json",
     "geo:gazetteer": "pnpm exec tsx quartz/scripts/build-base-gazetteer.ts",
     "swarm": "pnpm exec tsx quartz/scripts/dev.ts",
     "dev": "node quartz/scripts/dev-container.mjs",
@@ -95,6 +97,7 @@
     "profile": "0x -D prof quartz/bootstrap-cli.mjs build --concurrency=1"
   },
   "dependencies": {
+    "@blobatar/react": "^2.7.0",
     "@citation-js/core": "^0.7.21",
     "@citation-js/plugin-bibtex": "^0.7.21",
     "@citation-js/plugin-doi": "^0.7.21",
@@ -131,6 +134,7 @@
     "basedpyright": "1.39.7",
     "basedpyright-internal-source": "github:DetachHead/basedpyright#v1.39.6&path:packages/pyright-internal",
     "basedpyright-source": "https://github.com/DetachHead/basedpyright/archive/refs/tags/v1.39.6.tar.gz",
+    "blobatar": "^2.7.0",
     "buffer": "6.0.3",
     "chokidar": "^5.0.0",
     "codemirror-lang-zig": "^0.1.0",
