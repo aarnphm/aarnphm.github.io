@@ -167,12 +167,11 @@ export function watchTrail(
       queueTrail()
     }
     const leaveForClock = () => {
-      pausePageTrail()
       perchClock()
+      pausePageTrail()
     }
-    scene.addEventListener('trail:open', () => !scene.hidden && perchClock(), { signal })
+    scene.addEventListener('trail:before-toggle', leaveForClock, { signal })
     scene.addEventListener('trail:show', openTrail, { signal })
-    scene.addEventListener('trail:close', leaveForClock, { signal })
     scene.addEventListener('trail:hide', closeTrail, { signal })
     scene.addEventListener('trail:dispose', closeTrail, { signal })
     scene.addEventListener('trail:reflow', queueTrail, { signal })

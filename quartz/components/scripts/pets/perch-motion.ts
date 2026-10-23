@@ -1,6 +1,7 @@
 import { writePetSpot } from '../../../util/pet-spot'
 import {
   center,
+  capturePetTransform,
   clamp,
   edgeY,
   friendState,
@@ -28,7 +29,7 @@ import {
 } from './perch-placement'
 import { hopArc } from './trail-clearance'
 import { petTrail } from './trail-geometry'
-import { clearTrailActor, leaveTrail, pauseTrail } from './trail-pose'
+import { clearTrailActor, leaveTrail } from './trail-pose'
 
 export const savePosition = () => writePetSpot(center())
 
@@ -62,22 +63,23 @@ export function moveTo(next: Perch, how: 'chute' | 'stroll' | 'fade' | 'leap' | 
   const after = petState.afterMove
   petState.afterMove = null
   if (!petState.root) return
-  // Off the route the move starts where the twin stood, at the size it had there, and grows on
-  // the way; leaving first would put the full-size pet at the foot for the first frame.
+  const transform = capturePetTransform()
+  const scrollY = window.scrollY
+  const viewportHeight = window.innerHeight
+  const target = placeOn(next)
+  // Leaving returns the trail position and scale before restoring the full-size page pet.
   let from = petState.doc
   let fromScale = petState.perch?.scale ?? 1
   if (!petTrail(next.el)) {
-    if (petState.trailWalk) {
-      pauseTrail()
-      from = petState.doc
-      fromScale = petState.perch?.scale ?? 1
+    const left = leaveTrail()
+    if (left) {
+      from = left.position
+      fromScale = left.scale
     }
-    leaveTrail()
   } else clearTrailActor()
   petState.root.hidden = false
   stopGround()
   petState.gaze = ''
-  const target = placeOn(next)
   const same =
     !!from &&
     petState.perch?.el === next.el &&
@@ -88,7 +90,7 @@ export function moveTo(next: Perch, how: 'chute' | 'stroll' | 'fade' | 'leap' | 
   observePerch()
   petState.hop?.cancel()
   petState.hop = null
-  const end = transformFor(target)
+  const end = transform(target)
   if (!from || reducedMotion()) {
     petState.root.style.transform = end
     friendFollow(next, target, from ? 'place' : 'appear')
@@ -108,8 +110,8 @@ export function moveTo(next: Perch, how: 'chute' | 'stroll' | 'fade' | 'leap' | 
   // jetpack up or across to anything else.
   const chute = how === 'chute' && target.y - from.y > 40
   const jet = how === 'chute' && !chute
-  const fromView = from.y - window.scrollY
-  const offscreen = fromView + height() < 0 || fromView > window.innerHeight
+  const fromView = from.y - scrollY
+  const offscreen = fromView + height() < 0 || fromView > viewportHeight
   if (Math.abs(target.x - from.x) > 2) petState.face = target.x > from.x ? -1 : 1
   let frames: Keyframe[]
   let duration: number
@@ -127,7 +129,7 @@ export function moveTo(next: Perch, how: 'chute' | 'stroll' | 'fade' | 'leap' | 
       const u = k / 24
       const e = ease(u)
       return {
-        transform: transformFor({
+        transform: transform({
           x: from.x + (target.x - from.x) * e + Math.sin(u * Math.PI * 2.5) * drift * (1 - u),
           y: from.y + (target.y - from.y) * (0.15 * u + 0.85 * e),
         }),
@@ -141,23 +143,23 @@ export function moveTo(next: Perch, how: 'chute' | 'stroll' | 'fade' | 'leap' | 
       y: (from.y + target.y) / 2 + ((target.x - from.x) / d) * bulge,
     }
     frames = [
-      { transform: transformFor(from) },
-      { transform: transformFor(mid), offset: 0.5 },
+      { transform: transform(from) },
+      { transform: transform(mid), offset: 0.5 },
       { transform: end },
     ]
     duration = clamp((d / 380) * 1000, 320, 1400)
   } else if (offscreen || (d > 900 && how !== 'leap')) {
     frames = [
-      { transform: transformFor({ x: target.x, y: target.y - 160 }), opacity: 0 },
+      { transform: transform({ x: target.x, y: target.y - 160 }), opacity: 0 },
       { transform: end, opacity: 1 },
     ]
     duration = 420
   } else if (same && d < 360) {
-    frames = [{ transform: transformFor(from) }, { transform: end }]
+    frames = [{ transform: transform(from) }, { transform: end }]
     duration = clamp((d / (how === 'stroll' ? 60 : 160)) * 1000, 300, 4800)
   } else {
-    frames = hopArc(from, target, fromScale, next.scale ?? 1).map((point, index) => ({
-      transform: transformFor(point, point.scale),
+    frames = hopArc(from, target, fromScale, next.scale ?? 1, scrollY).map((point, index) => ({
+      transform: transform(point, point.scale),
       offset: index / 2,
       easing: index === 0 ? 'cubic-bezier(0.3, 0.6, 0.5, 1)' : 'cubic-bezier(0.5, 0, 0.7, 0.4)',
     }))
