@@ -1,18 +1,4 @@
-const onClickGenerator = (button: HTMLButtonElement, source: string) => {
-  return function onClick() {
-    navigator.clipboard.writeText(source).then(
-      () => {
-        if (!button.matches(':focus-visible')) button.blur()
-        button.classList.add('check')
-        setTimeout(() => {
-          button.style.borderColor = ''
-          button.classList.remove('check')
-        }, 2000)
-      },
-      error => console.error(error),
-    )
-  }
-}
+import { bindClipboardButton } from './clipboard-button'
 
 const renderer = {
   indentSize: '0.6em',
@@ -42,9 +28,7 @@ document.addEventListener('nav', () => {
     if (!mathML) continue
     const source = JSON.parse(mathML.querySelector('annotation')!.textContent ?? '')
 
-    const onClick = onClickGenerator(button, source)
-    button.addEventListener('click', onClick)
-    window.addCleanup(() => button.removeEventListener('click', onClick))
+    window.addCleanup(bindClipboardButton(button, () => source))
   }
 })
 
@@ -71,9 +55,7 @@ document.addEventListener('nav', () => {
       processing(blockContent) +
       '\n\\end{document}'
 
-    const onClick = onClickGenerator(button, source)
-    button.addEventListener('click', onClick)
-    window.addCleanup(() => button.removeEventListener('click', onClick))
+    window.addCleanup(bindClipboardButton(button, () => source))
   }
 })
 
