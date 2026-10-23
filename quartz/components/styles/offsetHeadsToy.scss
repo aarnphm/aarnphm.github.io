@@ -116,6 +116,9 @@
   @include figure-fo;
   color: var(--oht-note);
   font-size: calc(var(--oht-u, 0.0187) * var(--text-meta));
+  // At these sub-pixel font sizes a line height of 1 lifts the plain word in "key j" a line above
+  // its KaTeX symbol in the phone layout.
+  line-height: 1.2;
 
   &.oht-fo--center {
     justify-content: center;
@@ -126,9 +129,11 @@
   &.oht-fo--end {
     justify-content: flex-end;
   }
-  &.oht-fo--vert {
-    writing-mode: vertical-rl;
-    transform: rotate(180deg);
+  // Rotate the laid-out line: vertical writing mode stacks the KaTeX box over the word.
+  &.oht-fo--vert > * {
+    flex: none;
+    white-space: nowrap;
+    transform: rotate(-90deg);
   }
 }
 

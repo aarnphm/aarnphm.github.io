@@ -138,6 +138,7 @@
 
 .fsm-graph {
   margin-top: 0.6rem;
+  overflow-x: auto;
 }
 
 .fsm-svg {
@@ -447,7 +448,10 @@
     display: none;
   }
 
+  // Two-digit state labels hold 12px while the 16-unit node boxes shrink with the svg; below about
+  // 19rem a label is wider than its box, so phone frames scroll the graph sideways instead.
   .fsm-svg--narrow {
     display: block;
+    min-width: 19rem;
   }
 }

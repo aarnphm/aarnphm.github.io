@@ -17,40 +17,11 @@
 
   & > .clipboard-button {
     top: 2rem;
-    appearance: none;
-    border: 0;
-    padding: 0;
-    font: inherit;
+  }
 
-    &:focus-visible {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover > .clipboard-button {
       opacity: 1;
-      outline: 2px solid var(--dark);
-      outline-offset: 2px;
-    }
-  }
-
-  &:hover > .clipboard-button {
-    opacity: 1;
-    transition: 0.2s;
-  }
-
-  .ps-clipboard {
-    .copy-icon {
-      display: inline;
-    }
-
-    .check-icon {
-      display: none;
-    }
-
-    &.check {
-      .copy-icon {
-        display: none;
-      }
-
-      .check-icon {
-        display: inline;
-      }
     }
   }
 

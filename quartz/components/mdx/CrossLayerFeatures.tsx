@@ -28,11 +28,13 @@ const LC_X0 = 124
 const LC_P = 58
 const lcX = (l: number) => LC_X0 + l * LC_P
 const LC_W = lcX(STATIONS - 1) + 22
-const BLOCK_Y = 24
+// Stage names alternate between two lines: one meta-size name is wider than a block pitch.
+const STAGE_Y = [16, 31]
+const BLOCK_Y = 38
 const BLOCK_H = 22
 const BLOCK_W = 34
-const STREAM_Y = 66
-const BAR_Y = 86
+const STREAM_Y = BLOCK_Y + 42
+const BAR_Y = STREAM_Y + 20
 const BAR_UNIT = 13
 const BAR_W = 14
 const MAX_S = Math.max(...LC.strength)
@@ -86,7 +88,7 @@ const Lifecycle = ({ arrow }: { arrow: string }) => (
       <Arrow id={arrow} />
       <Arrow id={`${arrow}-soft`} soft />
     </defs>
-    <text class="clf-row" x={4} y={BLOCK_Y - 8}>
+    <text class="clf-row" x={4} y={STAGE_Y[1]}>
       stage
     </text>
     <text class="clf-row" x={4} y={BLOCK_Y + 15}>
@@ -107,7 +109,7 @@ const Lifecycle = ({ arrow }: { arrow: string }) => (
       const on = LC.writes[b] !== 0
       return (
         <g class="clf-block" data-clf-write={String(LC.writes[b])}>
-          <text class="clf-stage" x={c} y={BLOCK_Y - 8} text-anchor="middle">
+          <text class="clf-stage" x={c} y={STAGE_Y[b % 2]} text-anchor="middle">
             {stage}
           </text>
           <line

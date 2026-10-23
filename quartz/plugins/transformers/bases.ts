@@ -45,7 +45,6 @@ export const ObsidianBases: QuartzTransformerPlugin = () => {
             file.data.frontmatter = {
               title: file.path?.replace('.base', '').split('/').pop() || '',
               pageLayout: 'default' as const,
-              description: `bases renderer of ${file.data.slug}`,
               tags: ['bases'],
             }
           }

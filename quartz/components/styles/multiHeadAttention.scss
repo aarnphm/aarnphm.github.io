@@ -44,6 +44,17 @@
   align-items: stretch;
 }
 
+// Narrow frames scroll the drawing sideways rather than shrink its labels below reading size.
+.mha-scroll {
+  min-width: 0;
+  overflow-x: auto;
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
+}
+
 .mha-graph {
   width: 100%;
   height: auto;
@@ -554,7 +565,8 @@
 }
 
 // Before the script measures the graph, the frame width stands in for it: the graph spans the
-// frame less its padding, up to the 54rem cap of the expanded view.
+// frame less its padding, up to the 54rem cap of the expanded view. Phone frames scroll a 32rem
+// graph.
 @container mha-figure (min-width: 640px) {
   .mha-graph {
     --mha-u: 1.15;
@@ -569,13 +581,14 @@
 
 @container mha-figure (max-width: 460px) {
   .mha-graph {
-    --mha-u: 2.6;
+    min-width: 32rem;
+    --mha-u: 1.48;
   }
 }
 
 @container mha-figure (max-width: 820px) {
   .mha-stage {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 1.25rem;
   }
   .mha-controls {

@@ -224,7 +224,8 @@ const FlashAttentionTilesImpl: QuartzMdxComponent<Props> = ({ caption }) => {
               )
             })}
 
-            <foreignObject x={190} y={428} width={350} height={22}>
+            {/* Wide enough for the loop order on one line at the meta size. */}
+            <foreignObject x={110} y={428} width={510} height={22}>
               <div
                 class="fat-fo fat-fo--caption-line"
                 dangerouslySetInnerHTML={{
