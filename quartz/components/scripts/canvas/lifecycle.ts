@@ -3,11 +3,13 @@ export interface CanvasLifecycle {
   cleanups: Set<() => void>
 }
 
-export const canvasLifecycles = new WeakMap<HTMLElement, CanvasLifecycle>()
-export const activeCanvasContainers = new Set<HTMLElement>()
+const canvasLifecycles = new Map<HTMLElement, CanvasLifecycle>()
 
-export function createCanvasLifecycle(): CanvasLifecycle {
-  return { controller: new AbortController(), cleanups: new Set() }
+export function registerCanvas(container: HTMLElement): CanvasLifecycle | undefined {
+  if (canvasLifecycles.has(container)) return
+  const lifecycle = { controller: new AbortController(), cleanups: new Set<() => void>() }
+  canvasLifecycles.set(container, lifecycle)
+  return lifecycle
 }
 
 export function addCanvasCleanup(lifecycle: CanvasLifecycle, cleanup: () => void): void {
@@ -21,11 +23,11 @@ export function addCanvasCleanup(lifecycle: CanvasLifecycle, cleanup: () => void
 export function disposeCanvas(container: HTMLElement, lifecycle: CanvasLifecycle): void {
   if (canvasLifecycles.get(container) !== lifecycle) return
 
+  // Release this generation before abort handlers or cleanup callbacks can reenter disposal.
+  canvasLifecycles.delete(container)
   lifecycle.controller.abort()
   lifecycle.cleanups.forEach(cleanup => cleanup())
   lifecycle.cleanups.clear()
-  canvasLifecycles.delete(container)
-  activeCanvasContainers.delete(container)
 }
 
 export function isCanvasActive(container: HTMLElement, lifecycle: CanvasLifecycle): boolean {
@@ -37,9 +39,14 @@ export function isCanvasActive(container: HTMLElement, lifecycle: CanvasLifecycl
 }
 
 export function cleanupCanvases(root?: ParentNode): void {
-  for (const container of activeCanvasContainers) {
+  for (const [container, lifecycle] of canvasLifecycles) {
     if (root instanceof Node && !root.contains(container)) continue
-    const lifecycle = canvasLifecycles.get(container)
-    if (lifecycle) disposeCanvas(container, lifecycle)
+    disposeCanvas(container, lifecycle)
+  }
+}
+
+export function cleanupDetachedCanvases(): void {
+  for (const [container, lifecycle] of canvasLifecycles) {
+    if (!container.isConnected) disposeCanvas(container, lifecycle)
   }
 }
