@@ -9,7 +9,7 @@ tags:
 title: subjonctif
 ---
 
-Le subjonctif pour exprimer un doute, un désir ou une émotion (B1), avec les cas limites C1. Base verbale dans [[fr/verbs]].
+Le subjonctif pour exprimer un doute, un désir ou une émotion (B1), avec les cas limites C1. Base verbale dans [[fr/verbs|verbs]].
 
 ## Formation
 

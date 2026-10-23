@@ -279,14 +279,14 @@ the exercise is spoken, so the table has to come back out as sentences:
 
 saying them exposes what the table hides. the frame is `au` plus the ordinal plus `étage`, `au` being `à` plus `le` {{sidenotes[contracted]: `à + le → au`, `à + les → aux` ; même mécanisme que `du lundi au vendredi` ([[fr/episode-3#lhoraire|épisode 3]]).}}. a single numbered floor uses the masculine singular: {{`au troisième étage`}}. two numbered floors use the plural: {{`aux quatrième et cinquième étages`}}, with `aux` for `à les` and one shared `étages` carrying both ordinals. and the two floors that are named rather than numbered take no ordinal at all, {{`au sous-sol`}} et {{`au rez-de-chaussée`}}, because those are nouns in their own right. the last line also swaps the verb, `La réception et la sécurité sont…`, two subjects joined by `et` taking the plural.
 
-the Mémo builds les déterminants ordinaux by adding `-ième` to the number: `deuxième (2e)`, `troisième (3e)`, up to `douzième (12e)`. at five spots the spelling shifts, `le «e» final disparait ou la dernière lettre du nombre change`: `quatre → quatrième`, `onze → onzième`, `douze → douzième` (final `e` drops), `cinq → cinquième` (gains a `u`), `neuf → neuvième` (`f` becomes `v`). number 1 gets its own pair, `premier (1er)` / `première (1re)`, and the end gets {{`dernier`}} / {{`dernière`}}. the cardinal inventory lives in [[fr/les-nombres]].
+the Mémo builds les déterminants ordinaux by adding `-ième` to the number: `deuxième (2e)`, `troisième (3e)`, up to `douzième (12e)`. at five spots the spelling shifts, `le «e» final disparait ou la dernière lettre du nombre change`: `quatre → quatrième`, `onze → onzième`, `douze → douzième` (final `e` drops), `cinq → cinquième` (gains a `u`), `neuf → neuvième` (`f` becomes `v`). number 1 gets its own pair, `premier (1er)` / `première (1re)`, and the end gets {{`dernier`}} / {{`dernière`}}. the cardinal inventory lives in [[fr/les-nombres|les-nombres]].
 
 > [!note] faits d'ici
 > les différentes façons de nommer les étages au Québec. the same three-storey building gets numbered three ways: {{`rez-de-chaussée, deuxième, troisième`}}; {{`rez-de-chaussée, premier, deuxième`}}; or {{`premier, deuxième, troisième`}}. street level can be `le rez-de-chaussée` or {{`le premier étage`}} depending on the building, so `au 2e étage` is ambiguous by one flight of stairs.[^etage]
 
 ## les prépositions de localisation (2)
 
-set (1) in [[fr/episode-3]] (`sur, dans, devant, derrière, sous, entre`) parks the cat around the furniture. set (2) points and measures:
+set (1) in [[fr/episode-3|episode-3]] (`sur, dans, devant, derrière, sous, entre`) parks the cat around the furniture. set (2) points and measures:
 
 | préposition    | gloss               | rôle      | exemple du livre                                                  |
 | -------------- | ------------------- | --------- | ----------------------------------------------------------------- |
@@ -340,7 +340,7 @@ directions come in the impératif, which conjugates sans pronom personnel: the `
 | `prendre`   | {{`prends`}}   | {{`prenons`}}    | {{`prenez`}}    |
 | `tourner`   | {{`tourne`}}   | {{`tournons`}}   | {{`tournez`}}   |
 
-the book never states it as a rule, its table simply shows it: `-er` verbs and `aller` lose the `-s` of the tu form (`tourne`, `continue`, `monte`, `va`), while `descendre` and `prendre` keep theirs (`descends`, `prends`). the `-s` comes back the moment a pronoun returns, which is why [[fr/episode-5]] has {{`Parles-tu une autre langue ?`}} against {{`Parle plus fort !`}}
+the book never states it as a rule, its table simply shows it: `-er` verbs and `aller` lose the `-s` of the tu form (`tourne`, `continue`, `monte`, `va`), while `descendre` and `prendre` keep theirs (`descends`, `prends`). the `-s` comes back the moment a pronoun returns, which is why [[fr/episode-5|episode-5]] has {{`Parles-tu une autre langue ?`}} against {{`Parle plus fort !`}}
 
 the table is three rows deep and that is the whole tense: there is no `je`, no `il`, no `ils`. an order can only reach someone standing there, so the impératif keeps exactly the persons you can address, `tu` and `vous`, plus `nous` for the group you are inside of. most imperative forms match the present-indicative `tu`, `nous`, or `vous` form without the subject pronoun. the `tu` form of `-er` verbs and `aller` normally loses its final `-s`, while `être`, `avoir`, `savoir`, and `vouloir` use irregular forms.
 
@@ -412,8 +412,8 @@ related: [[fr/episode-5|épisode 5]], [[fr/episode-3|épisode 3]], [[fr/les-nomb
 
 [^etage]: the ambiguity is imported: France counts strictly `rez-de-chaussée, premier, deuxième`, anglo North America calls street level the 1st floor, and Québec buildings inherited both conventions. asking `c'est à quel étage ?` and hearing `au premier` still leaves you checking whether the ground floor already spent the number.
 
-[^plaisir]: `Ça me fait plaisir.` does double duty. here it answers `merci`, where France would say `de rien` or {{`je vous en prie`}}. in [[fr/episode-5]] the same phrase answers an introduction, the informal counterpart of `Enchanté(e) !`. one formula, two slots, both of them warm.
+[^plaisir]: `Ça me fait plaisir.` does double duty. here it answers `merci`, where France would say `de rien` or {{`je vous en prie`}}. in [[fr/episode-5|episode-5]] the same phrase answers an introduction, the informal counterpart of `Enchanté(e) !`. one formula, two slots, both of them warm.
 
-[^celui]: `celui`, `celle`, `ceux`, `celles` stand in for a noun already named, so `le vestiaire des hommes, puis celui des femmes` avoids saying `vestiaire` twice. the course has not taught them; the dialogue uses one the way [[fr/episode-8]]'s messages use `les siens`, for recognition only.
+[^celui]: `celui`, `celle`, `ceux`, `celles` stand in for a noun already named, so `le vestiaire des hommes, puis celui des femmes` avoids saying `vestiaire` twice. the course has not taught them; the dialogue uses one the way [[fr/episode-8|episode-8]]'s messages use `les siens`, for recognition only.
 
 [^interpeler]: `interpeler` is the Mémo's own verb for the move, `interpeler quelqu'un`, to hail someone and open the channel. rectified spelling gives it one `l` in the infinitive (classic `interpeller`), though the sounded forms keep two, {{`il interpelle`}}. the noun is {{`une interpellation`}}.

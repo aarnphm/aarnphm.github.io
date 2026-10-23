@@ -22,9 +22,9 @@ des mots pour se présenter :
 | {{`Je m'appelle Louis.`}}            | {{`Je suis canadien.`}}   |
 | {{`Moi, c'est Louis.`}}              |                           |
 
-three ways to give a name, ranked by formality: `Je me présente : …` opens a formal introduction (full name follows), `Je m'appelle …` is the neutral default, `Moi, c'est …` is the casual one you use responding in kind ({{`Bonjour, Judith ! Moi, c'est François.`}}). Québec also says `Mon nom est …` ([[fr/episode-1]]).
+three ways to give a name, ranked by formality: `Je me présente : …` opens a formal introduction (full name follows), `Je m'appelle …` is the neutral default, `Moi, c'est …` is the casual one you use responding in kind ({{`Bonjour, Judith ! Moi, c'est François.`}}). Québec also says `Mon nom est …` ([[fr/episode-1|episode-1]]).
 
-the nationality pair splits origin and identity: {{`Je viens du Canada.`}} (venir + pays, the `du/de/d'/des` contraction lives in [[fr/episode-1]]) against {{`Je suis canadien.`}} (être + adjectif, lowercase).
+the nationality pair splits origin and identity: {{`Je viens du Canada.`}} (venir + pays, the `du/de/d'/des` contraction lives in [[fr/episode-1|episode-1]]) against {{`Je suis canadien.`}} (être + adjectif, lowercase).
 
 ## dire son origine
 
@@ -105,4 +105,4 @@ the connector tells the listener how one idea supports the next. keep the observ
 
 in a conditional `si` clause, use {{`si la ville éteignait`}}, not `si la ville éteindrait`. The conditional belongs in the consequence: {{`je voudrais`}}. With `savoir si` (_to know whether_), `si` introduces an indirect question, so a future such as {{`éteindra`}} is possible.
 
-[^baragouine]: {{`baragouiner`}}, to jabber, to speak a language brokenly; the book stars it as familier, the same flag it puts on {{`Hein ?`}} in [[fr/episode-2]]. likely from Breton `bara` (bread) and `gwin` (wine), what Breton soldiers asking for rations sounded like to French ears.
+[^baragouine]: {{`baragouiner`}}, to jabber, to speak a language brokenly; the book stars it as familier, the same flag it puts on {{`Hein ?`}} in [[fr/episode-2|episode-2]]. likely from Breton `bara` (bread) and `gwin` (wine), what Breton soldiers asking for rations sounded like to French ears.

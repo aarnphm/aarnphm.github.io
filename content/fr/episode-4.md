@@ -18,7 +18,7 @@ the bilan closes the automne season with nothing new to watch: two review device
 
 ### saluer, entrer en contact et se présenter
 
-revoir l'épisode 1, p. 16 ([[fr/episode-1]]). a listening match over six salutation photos, then a fill-in with a word bank: Sandra, 28 ans, {{`infirmière`}}, {{`Je viens d'Haïti`}}, {{`J'habite à Montréal`}}, {{`célibataire`}}, {{`Je parle français, anglais et créole`}}, {{`J'ai un chat : Minou`}}; Steve, 37 ans, {{`comptable`}}, {{`marié et j'ai deux enfants`}}, {{`canadien`}}, {{`Je viens de Calgary. J'habite à Laval`}}, {{`Je parle anglais et un peu français`}}. the third exercise, {{`Présentez-vous.`}}, is the season's whole program in six consignes:
+revoir l'épisode 1, p. 16 ([[fr/episode-1|episode-1]]). a listening match over six salutation photos, then a fill-in with a word bank: Sandra, 28 ans, {{`infirmière`}}, {{`Je viens d'Haïti`}}, {{`J'habite à Montréal`}}, {{`célibataire`}}, {{`Je parle français, anglais et créole`}}, {{`J'ai un chat : Minou`}}; Steve, 37 ans, {{`comptable`}}, {{`marié et j'ai deux enfants`}}, {{`canadien`}}, {{`Je viens de Calgary. J'habite à Laval`}}, {{`Je parle anglais et un peu français`}}. the third exercise, {{`Présentez-vous.`}}, is the season's whole program in six consignes:
 
 - {{`Dites et épelez votre nom.`}}
 - {{`Dites votre état civil.`}}
@@ -35,7 +35,7 @@ revoir l'épisode 1, p. 16 ([[fr/episode-1]]). a listening match over six saluta
 
 ### donner des informations personnelles et remplir un formulaire
 
-revoir l'épisode 2, p. 24 ([[fr/episode-2]]). first an age-to-birthdate match: {{`J'ai 6 ans.`}}, {{`J'ai 16 ans.`}}, {{`J'ai 28 ans.`}}, {{`J'ai 52 ans.`}}, {{`J'ai 78 ans.`}} against `Ma date de naissance est le 13 mars 1960 / 1er novembre 1982 / 1er mai 1988 / 31 aout 1964 / 12 juin 1970.`[^annee] then a dictation match over form fields (`Simard` the nom, `Marc-Antoine` the prénom, `H3P 5V3` the code postal, `147, rue Bélanger, Québec` the adresse, `mat@editionsmd.com` the courriel, `819 555-5455` the téléphone, `le 9 avril 1972` the date de naissance), and finally filling the {{`Renseignements personnels`}} form below with Marie-Claude Légaré's data.
+revoir l'épisode 2, p. 24 ([[fr/episode-2|episode-2]]). first an age-to-birthdate match: {{`J'ai 6 ans.`}}, {{`J'ai 16 ans.`}}, {{`J'ai 28 ans.`}}, {{`J'ai 52 ans.`}}, {{`J'ai 78 ans.`}} against `Ma date de naissance est le 13 mars 1960 / 1er novembre 1982 / 1er mai 1988 / 31 aout 1964 / 12 juin 1970.`[^annee] then a dictation match over form fields (`Simard` the nom, `Marc-Antoine` the prénom, `H3P 5V3` the code postal, `147, rue Bélanger, Québec` the adresse, `mat@editionsmd.com` the courriel, `819 555-5455` the téléphone, `le 9 avril 1972` the date de naissance), and finally filling the {{`Renseignements personnels`}} form below with Marie-Claude Légaré's data.
 
 évaluez-vous:
 
@@ -45,7 +45,7 @@ revoir l'épisode 2, p. 24 ([[fr/episode-2]]). first an age-to-birthdate match: 
 
 ### comprendre le fonctionnement de la classe et une consigne
 
-revoir l'épisode 3, p. 28 et 35 ([[fr/episode-3]]). note the horaire of three courses on a `dimanche` to `samedi` grid ({{`cours de cuisine thaïlandaise`}}, {{`cours de salsa`}}, {{`cours d'histoire de l'art`}}), place four events on the septembre and octobre calendars ({{`le festival de cinéma`}}, {{`le carnaval francophone`}}, {{`la semaine des pays`}}, {{`les soirées musique du monde`}}), then match spoken consignes to drawings.
+revoir l'épisode 3, p. 28 et 35 ([[fr/episode-3|episode-3]]). note the horaire of three courses on a `dimanche` to `samedi` grid ({{`cours de cuisine thaïlandaise`}}, {{`cours de salsa`}}, {{`cours d'histoire de l'art`}}), place four events on the septembre and octobre calendars ({{`le festival de cinéma`}}, {{`le carnaval francophone`}}, {{`la semaine des pays`}}, {{`les soirées musique du monde`}}), then match spoken consignes to drawings.
 
 évaluez-vous:
 
@@ -55,7 +55,7 @@ revoir l'épisode 3, p. 28 et 35 ([[fr/episode-3]]). note the horaire of three c
 
 ### nommer et situer des objets
 
-revoir l'épisode 3, p. 32. say whose objects are whose on the model {{`Voici les livres de France.`}}: `Voici` presents, and possession runs through `de` (the owner here is a girl named `France`, the country reading is a decoy). then place the objects of France and Alexandre with `sous, sur, entre, devant, derrière, dans`, the six prepositions of [[fr/episode-3]].
+revoir l'épisode 3, p. 32. say whose objects are whose on the model {{`Voici les livres de France.`}}: `Voici` presents, and possession runs through `de` (the owner here is a girl named `France`, the country reading is a decoy). then place the objects of France and Alexandre with `sous, sur, entre, devant, derrière, dans`, the six prepositions of [[fr/episode-3|episode-3]].
 
 évaluez-vous:
 
@@ -70,7 +70,7 @@ the full form, worth transcribing because it is the administrative template the 
 | ------------------------------------------- | ------------------------------------------------------------------------------------------- |
 | {{`Nom de famille`}}                        | family name                                                                                 |
 | `Prénom(s)`                                 | plural: the form allows several given names                                                 |
-| {{`Date de naissance`}}                     | {{`Année`}}, {{`Mois`}}, {{`Jour`}}, the `AAAA-MM-JJ` order of [[fr/episode-2]]             |
+| {{`Date de naissance`}}                     | {{`Année`}}, {{`Mois`}}, {{`Jour`}}, the `AAAA-MM-JJ` order of [[fr/episode-2\|episode-2]]             |
 | {{`Sexe`}}                                  | {{`Féminin`}} ou {{`Masculin`}}                                                             |
 | {{`État civil`}}                            | marital status                                                                              |
 | {{`Adresse actuelle du lieu de résidence`}} | {{`Numéro`}}, {{`Rue`}}, `App.`, {{`Ville`}}, `Province/Territoire/État`, {{`Code postal`}} |
@@ -145,10 +145,10 @@ the ladders climb from cases 6 and 26; the snake heads sit on 28 and 44. the oth
 the bilan teaches almost nothing, and the exceptions cluster in the game:
 
 - `Qu'est-ce que c'est ?` asks what a thing is; the answer is `C'est un/une …` : {{`C'est un stylo.`}}, {{`C'est un bureau.`}}
-- `Que veut dire « X » ?` asks {{sidenotes[what X means]: à l'oral : `Qu'est-ce que ça veut dire ?`, `Ça veut dire quoi ?`. réponse : `« X » veut dire…`, `ça signifie…`.}} : {{`« M. » veut dire Monsieur.`}} the titles themselves live in [[fr/episode-2]].
+- `Que veut dire « X » ?` asks {{sidenotes[what X means]: à l'oral : `Qu'est-ce que ça veut dire ?`, `Ça veut dire quoi ?`. réponse : `« X » veut dire…`, `ça signifie…`.}} : {{`« M. » veut dire Monsieur.`}} the titles themselves live in [[fr/episode-2|episode-2]].
 - {{sidenotes[`Voici`]: `voici` (proche) et `voilà` (loin) en principe ; à l'oral, `voilà` sert partout.}} presents something to the listener, and `de` marks the owner: `Voici les livres de France.` French does not use the English possessive `'s`.
 - {{`se trouver`}} doubles {{`être situé`}} : `3 objets qui se trouvent dans votre sac` are just objects that are in your bag.
-- classroom action verbs in the vous-imperative, extending the consignes of [[fr/episode-3]]:
+- classroom action verbs in the vous-imperative, extending the consignes of [[fr/episode-3|episode-3]]:
 
 | consigne                               | gloss                    |
 | -------------------------------------- | ------------------------ |
@@ -161,7 +161,7 @@ the bilan teaches almost nothing, and the exceptions cluster in the game:
 
 - form vocabulary: `sexe` ({{`féminin`}}/{{`masculin`}}), `Prénom(s)` in the plural, `Téléphone (jour)` against `Téléphone cellulaire`, `facultatif` for an optional field.
 
-related: [[fr/episode-1]], [[fr/episode-2]], [[fr/episode-3]], [[fr/les-nombres]]
+related: [[fr/episode-1|episode-1]], [[fr/episode-2|episode-2]], [[fr/episode-3|episode-3]], [[fr/les-nombres|les-nombres]]
 
 ## comprendre les expressions
 

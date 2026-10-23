@@ -20,10 +20,10 @@ Le [[fr/par-ici-cahier-d-exercices-niveau-a1-1-2.pdf|cahier d'exercices]], p. 5,
 
 | page | compétence                                           | exercices | barème imprimé     | révision                       |
 | ---- | ---------------------------------------------------- | --------- | ------------------ | ------------------------------ |
-| 88   | décrire la journée et poser des questions fermées    | 1–3       | /4 + /12 + /4      | [[fr/episode-9]], p. 70 et 76  |
-| 89   | décrire les déplacements et situer les actions       | 1–4       | /4 + /5 + /6 + /12 | [[fr/episode-9]], p. 73–74     |
-| 90   | lire un plan, demander un trajet, comprendre un avis | 1–4       | /6 + /5 + /5 + /3  | [[fr/episode-10]], p. 78 et 82 |
-| 91   | identifier les cours et lire une annonce             | 1–2       | /4 + /5            | [[fr/episode-11]], p. 84       |
+| 88   | décrire la journée et poser des questions fermées    | 1–3       | /4 + /12 + /4      | [[fr/episode-9\|episode-9]], p. 70 et 76  |
+| 89   | décrire les déplacements et situer les actions       | 1–4       | /4 + /5 + /6 + /12 | [[fr/episode-9\|episode-9]], p. 73–74     |
+| 90   | lire un plan, demander un trajet, comprendre un avis | 1–4       | /6 + /5 + /5 + /3  | [[fr/episode-10\|episode-10]], p. 78 et 82 |
+| 91   | identifier les cours et lire une annonce             | 1–2       | /4 + /5            | [[fr/episode-11\|episode-11]], p. 84       |
 
 Les treize exercices totalisent **75 points** selon les barèmes du livre. Les questions et jeux de rôle se corrigent avec un collègue ou le personnel enseignant. Le jeu des p. 92–93 n'ajoute pas de barème.
 

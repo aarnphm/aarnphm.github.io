@@ -10,15 +10,15 @@ tags:
 title: 'épisode 8 : bilan'
 ---
 
-the hiver bilan runs on the same two devices as [[fr/episode-4]]: `Voyons voir !`, under `VÉRIFIEZ VOS PROGRÈS`, self-assesses the four skill blocks of épisodes 5 à 7, and `À vous de jouer !` swaps the automne snakes-and-ladders board for four paper games: kinship riddles, error hunts, preposition blanks, anagrams. the corrigé moved to p. 147, and every corrected exercise now prints its own score.
+the hiver bilan runs on the same two devices as [[fr/episode-4|episode-4]]: `Voyons voir !`, under `VÉRIFIEZ VOS PROGRÈS`, self-assesses the four skill blocks of épisodes 5 à 7, and `À vous de jouer !` swaps the automne snakes-and-ladders board for four paper games: kinship riddles, error hunts, preposition blanks, anagrams. the corrigé moved to p. 147, and every corrected exercise now prints its own score.
 
 ## voyons voir !
 
-`Évaluez vos compétences dans toutes les situations vues jusqu'ici.` four blocks, two of them pointing back into [[fr/episode-5]], each closed by an `Évaluez-vous (✓)` grid (☺ 😐 ☹, one row per can-do statement) and a `Corrigez vos réponses` pointer into the corrigé, p. 147; the production exercises are graded `avec l'aide de votre collègue ou du personnel enseignant` instead.
+`Évaluez vos compétences dans toutes les situations vues jusqu'ici.` four blocks, two of them pointing back into [[fr/episode-5|episode-5]], each closed by an `Évaluez-vous (✓)` grid (☺ 😐 ☹, one row per can-do statement) and a `Corrigez vos réponses` pointer into the corrigé, p. 147; the production exercises are graded `avec l'aide de votre collègue ou du personnel enseignant` instead.
 
 ### parler de soi et de sa famille
 
-revoir l'épisode 5, p. 44 ([[fr/episode-5]]). first a listening (CD1, piste 70): place `Maxime`, `André`, `Clara`, `Suzanne`, `Marie-Josée` et `Ovide` on the famille Bérubé sofa portrait, seven labels for six names because `Julien` comes pre-filled, /6 against the corrigé.
+revoir l'épisode 5, p. 44 ([[fr/episode-5|episode-5]]). first a listening (CD1, piste 70): place `Maxime`, `André`, `Clara`, `Suzanne`, `Marie-Josée` et `Ovide` on the famille Bérubé sofa portrait, seven labels for six names because `Julien` comes pre-filled, /6 against the corrigé.
 
 then production, `Parlez de votre famille. Utilisez mon, ma et mes. Indiquez par exemple :`, crossing three prompts against three family groups, but not the full grid:
 
@@ -59,7 +59,7 @@ then a listening match (piste 71, /3) over three greeting photos (two young frie
 
 ### demander et donner des indications dans un édifice
 
-revoir l'épisode 6, page 52 et 55 ([[fr/episode-6]]). a listening (piste 72, /8): `Écoutez et dites à quel étage se trouve chaque endroit.` for {{`la garderie`}}, {{`la cafétéria`}}, {{`la bibliothèque`}}, {{`le secrétariat`}}, {{`le concierge`}}, {{`l'infirmerie`}}, `le bureau de Micheline Côté` et `le bureau de Paul Lajeunesse`, against a cutaway building labelled {{`sous-sol`}}, `1er étage` up to `5e étage (dernier étage)`.[^etage] then trace a spoken trajet on a floor plan (piste 73, /5) whose rooms feed the jeu de rôle: `labo français`, `labo anglais`, {{`conférence`}}, two {{`informatique`}}, {{`environnement`}}, `bibliothèque`, `secrétariat`, `toilettes`, {{`photocopieurs`}}, {{`accueil`}} (the marked starting point), {{`association étudiante`}}, {{`théâtre`}}, `musique 105`, salles `106` et `107`. the third exercise (/6) is the jeu de rôle itself, `une personne demande des indications; une personne donne des indications`:
+revoir l'épisode 6, page 52 et 55 ([[fr/episode-6|episode-6]]). a listening (piste 72, /8): `Écoutez et dites à quel étage se trouve chaque endroit.` for {{`la garderie`}}, {{`la cafétéria`}}, {{`la bibliothèque`}}, {{`le secrétariat`}}, {{`le concierge`}}, {{`l'infirmerie`}}, `le bureau de Micheline Côté` et `le bureau de Paul Lajeunesse`, against a cutaway building labelled {{`sous-sol`}}, `1er étage` up to `5e étage (dernier étage)`.[^etage] then trace a spoken trajet on a floor plan (piste 73, /5) whose rooms feed the jeu de rôle: `labo français`, `labo anglais`, {{`conférence`}}, two {{`informatique`}}, {{`environnement`}}, `bibliothèque`, `secrétariat`, `toilettes`, {{`photocopieurs`}}, {{`accueil`}} (the marked starting point), {{`association étudiante`}}, {{`théâtre`}}, `musique 105`, salles `106` et `107`. the third exercise (/6) is the jeu de rôle itself, `une personne demande des indications; une personne donne des indications`:
 
 - a. {{`Vous êtes à l'accueil.`}} → {{`Vous devez aller à la bibliothèque.`}}
 - b. {{`Vous êtes dans la salle de conférence.`}} → `Vous devez aller dans la salle de musique 107.`[^musique]
@@ -72,7 +72,7 @@ revoir l'épisode 6, page 52 et 55 ([[fr/episode-6]]). a listening (piste 72, /8
 
 ### s'informer sur le fonctionnement d'un établissement et comprendre un message d'un établissement
 
-revoir l'épisode 7, p. 58 et 61 ([[fr/episode-7]]). a listening grid (piste 74, /5): five utterances a à e, one check each under `Permission`, `Interdiction` ou `Obligation`. then form requests with `pouvoir` from four picture pairs (/3), on the handwritten model {{`Est-ce que je peux texter pendant un cours ?`}}; the remaining pairs show a phone call over a library, eating over a classroom, a cigarette over a hallway. last, match three school notes to their objects (/3): a child who `a besoin d'une règle et de ciseaux` because {{`il ne trouve plus les siens`}} (image: school supplies), a child who `n'avait pas de collation aujourd'hui` and `doit en avoir une tous les jours` (image: a fruit cup), and a request that every child have `des bottes pour jouer dehors` now that `le temps plus froid est arrivé` (image: red winter boots).
+revoir l'épisode 7, p. 58 et 61 ([[fr/episode-7|episode-7]]). a listening grid (piste 74, /5): five utterances a à e, one check each under `Permission`, `Interdiction` ou `Obligation`. then form requests with `pouvoir` from four picture pairs (/3), on the handwritten model {{`Est-ce que je peux texter pendant un cours ?`}}; the remaining pairs show a phone call over a library, eating over a classroom, a cigarette over a hallway. last, match three school notes to their objects (/3): a child who `a besoin d'une règle et de ciseaux` because {{`il ne trouve plus les siens`}} (image: school supplies), a child who `n'avait pas de collation aujourd'hui` and `doit en avoir une tous les jours` (image: a fruit cup), and a request that every child have `des bottes pour jouer dehors` now that `le temps plus froid est arrivé` (image: red winter boots).
 
 évaluez-vous:
 
@@ -139,7 +139,7 @@ c et d read off the photos (the mother poses left of her daughter, the son right
 
 ### 4. les mots en désordre
 
-seven scrambled words, all places in an édifice, the vocabulary of [[fr/episode-6]]. A à D come with icons, E à G with French definitions:
+seven scrambled words, all places in an édifice, the vocabulary of [[fr/episode-6|episode-6]]. A à D come with icons, E à G with French definitions:
 
 |     | anagramme     | indice                                          | solution             |
 | --- | ------------- | ----------------------------------------------- | -------------------- |
@@ -162,7 +162,7 @@ the review exercises stay inside épisodes 5 à 7; the new language hides in the
 - `Merci de + infinitif` closes a written request, {{`Merci de nous envoyer le tout dès que possible.`}}, with {{`le tout`}} (the whole lot) and {{`dès que possible`}} (as soon as possible); {{`Merci de votre collaboration.`}} does the same with a noun.
 - `demander à quelqu'un de + infinitif` : {{`Nous demandons à chaque enfant d'avoir des bottes pour jouer dehors.`}}
 - the riddle frame {{`Qui est-ce ? C'est la sœur de ma mère.`}} composes kinship by chaining `de`: my mother's sister is `ma tante`, and one more hop (`la fille du frère de ma mère`) still lands on a single word, `ma cousine`.
-- consignes extending the [[fr/episode-3]] list: `Associez`, `Complétez`, `Formulez`, `Identifiez`, `Tracez`, `Trouvez l'erreur`.
+- consignes extending the [[fr/episode-3|episode-3]] list: `Associez`, `Complétez`, `Formulez`, `Identifiez`, `Tracez`, `Trouvez l'erreur`.
 
 ## comprendre les expressions
 
@@ -177,7 +177,7 @@ the review exercises stay inside épisodes 5 à 7; the new language hides in the
 | {{`dès que possible`}} | as soon as possible | Écrit comme oral ; synonyme : `au plus vite`.                     |
 | {{`gendre`}}           | son-in-law          | Synonyme : `beau-fils`, qui veut aussi dire stepson.              |
 
-related: [[fr/episode-5]], [[fr/episode-6]], [[fr/episode-7]], [[fr/les-nombres]]
+related: [[fr/episode-5|episode-5]], [[fr/episode-6|episode-6]], [[fr/episode-7|episode-7]], [[fr/les-nombres|les-nombres]]
 
 [^etage]: no `rez-de-chaussée` anywhere on the diagram: street level is already the `1er étage`, the `sous-sol` sits below it, and `5e étage (dernier étage)` caps a six-level building, basement included. that is the North-American count; the same tower in France would start at the rez-de-chaussée and put its `1er étage` one flight up, so every floor number here reads one higher than a hexagonal reader expects.
 

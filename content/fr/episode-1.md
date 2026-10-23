@@ -54,7 +54,7 @@ two frames: {{`Je m'appelle Marie.`}} and {{`Mon nom est Samuel.`}}; the second 
 - `Bonjour ! Je m'appelle Marie. M-A-R-I-E`
 - `Allo ! Mon nom est Samuel. S-A-M-U-E-L`
 
-the episode lists the alphabet and six accents et signes: l'accent grave (`Àà`, `Èè`, `Ùù`), l'accent aigu (`Éé`), l'accent circonflexe (`Ââ`, `Êê`, `Îî`, `Ôô`), le tréma (`Ïï`), la cédille (`Çç`), le trait d'union (`-`). the sounds and the full inventory live in [[fr/orthography-phonetics]].
+the episode lists the alphabet and six accents et signes: l'accent grave (`Àà`, `Èè`, `Ùù`), l'accent aigu (`Éé`), l'accent circonflexe (`Ââ`, `Êê`, `Îî`, `Ôô`), le tréma (`Ïï`), la cédille (`Çç`), le trait d'union (`-`). the sounds and the full inventory live in [[fr/orthography-phonetics|orthography-phonetics]].
 
 > [!note] faits d'ici
 > les 20 prénoms les plus populaires au Québec, 1980-2013 (source : Régie des rentes du Québec). féminins : Stéphanie, Catherine, Jessica, Émilie, Audrey, Julie, Valérie, Mélissa, Sarah, Mélanie. masculins : Alexandre, Maxime, Samuel, Mathieu, Jonathan, Gabriel, David, Olivier, Simon, Nicolas.
@@ -112,7 +112,7 @@ the exercises add `espagnol(e)`, `camerounais(e)`, `pakistanais(e)`, `iranien(ne
 
 four civil statuses: {{`célibataire`}}, `conjoint(e) de fait`, `marié(e)`, `divorcé(e)`. `conjoint(e) de fait` is the Québécois administrative term for a common-law partner, a very common status on QC forms.
 
-children go with `avoir`, the same verb as age in [[fr/episode-2]], and [[fr/les-nombres]] does the counting:
+children go with `avoir`, the same verb as age in [[fr/episode-2|episode-2]], and [[fr/les-nombres|les-nombres]] does the counting:
 
 - {{`J'ai 1 enfant, c'est une fille.`}}
 - {{`J'ai 2 enfants : 2 garçons.`}}
@@ -124,7 +124,7 @@ the negation squeezes the article: {{`des enfants`}} becomes {{`pas d'enfants`}}
 > [!note] faits d'ici
 > the `Ailleurs, autrement ?` box asks about le mariage dans le monde : dans votre pays d'origine, est-ce que tous les couples avec enfants sont mariés ? au Québec, souvent non, d'où le statut `conjoint(e) de fait`.
 
-the résumé folds all six slots into one dialogue: `Allo ! Je m'appelle Monica. Je suis colombienne. Je suis … Je viens de Colombie et j'habite à … Je parle … et français. Je suis … et j'ai 1 enfant, c'est un garçon.` vous pouvez maintenant saluer quelqu'un, entrer en contact et vous présenter : nom, profession, nationalité, lieu de résidence, langue(s) parlée(s), état civil, enfant(s). the personal details (âge, date de naissance, coordonnées) continue in [[fr/episode-2]].
+the résumé folds all six slots into one dialogue: `Allo ! Je m'appelle Monica. Je suis colombienne. Je suis … Je viens de Colombie et j'habite à … Je parle … et français. Je suis … et j'ai 1 enfant, c'est un garçon.` vous pouvez maintenant saluer quelqu'un, entrer en contact et vous présenter : nom, profession, nationalité, lieu de résidence, langue(s) parlée(s), état civil, enfant(s). the personal details (âge, date de naissance, coordonnées) continue in [[fr/episode-2|episode-2]].
 
 related: [[fr/episode-2|épisode 2]], [[fr/episode-3|épisode 3]], [[fr/orthography-phonetics|orthographe]], [[fr/les-nombres|les nombres]]
 

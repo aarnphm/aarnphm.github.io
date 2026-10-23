@@ -9,7 +9,7 @@ tags:
 title: discours rapporté
 ---
 
-Rapporter ce qui a été dit (B2). Les formules pour rapporter sont dans [[fr/phrases]] ; ici, la mécanique.
+Rapporter ce qui a été dit (B2). Les formules pour rapporter sont dans [[fr/phrases|phrases]] ; ici, la mécanique.
 
 ## Concordance des temps
 

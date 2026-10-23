@@ -59,7 +59,7 @@ la question:
 
 ### les nombres
 
-orientation rapide pour cet épisode. le détail complet (0–69, les dizaines irrégulières {{`soixante-dix`}}/{{`quatre-vingts`}}/{{`quatre-vingt-dix`}}, la prononciation) vit dans [[fr/les-nombres]].
+orientation rapide pour cet épisode. le détail complet (0–69, les dizaines irrégulières {{`soixante-dix`}}/{{`quatre-vingts`}}/{{`quatre-vingt-dix`}}, la prononciation) vit dans [[fr/les-nombres|les-nombres]].
 
 - `0–10` : {{`zéro, un, deux, trois, quatre, cinq, six, sept, huit, neuf, dix`}}.
 - dizaines : `dix (10)`, `vingt (20)`, `trente (30)`, `quarante (40)`, `cinquante (50)`, `soixante (60)`.
