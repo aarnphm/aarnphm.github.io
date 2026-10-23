@@ -2,7 +2,7 @@
 
 A framed box for a definition, theorem, lemma or proof, with an optional two-column proof.
 
-**Source:** `quartz/styles/custom.scss` (`blockquote.callout.callout-math`, `.math-proof*`) and `quartz/plugins/transformers/ofm.ts` (proof rows).
+**Source:** `quartz/styles/custom/callouts.scss` (`blockquote.callout.callout-math`, `.math-proof*`) and `quartz/plugins/transformers/ofm.ts` (proof rows).
 
 **Corrections:** the source draws proof reasons in `gray` (2.00:1 on paper). This rendition uses `darkgray`.
 
@@ -18,3 +18,4 @@ A framed box for a definition, theorem, lemma or proof, with an optional two-col
 - Display math inside gets `space-4` above and below.
 - Proof rows: step and reason on a grid, the reason column at least 12rem. Below 700px the reason stacks under its step.
 - Reasons at 0.95em in `darkgray`.
+- Display math and tables directly inside the callout scroll sideways within the frame (`overflow-x: auto`), so wide formulas never widen the page on a phone. The callout itself stays `overflow: visible`; a collapsed callout clips its zero-height content.

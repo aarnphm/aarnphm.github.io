@@ -2,7 +2,7 @@
 
 The note title above the byline, in `title` type at `article-title` size.
 
-**Source:** `quartz/components/ArticleTitle.tsx` · styles: `quartz/styles/custom.scss`
+**Source:** `quartz/components/ArticleTitle.tsx` · styles: `quartz/styles/custom/article-chrome.scss`
 
 ## Preview
 

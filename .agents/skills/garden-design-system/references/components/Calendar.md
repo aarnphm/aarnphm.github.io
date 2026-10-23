@@ -28,4 +28,5 @@ The binder renders the nav (previous, `today`, next), a month jump that is the s
 - The preview opens on pointer hover and on focus, sits under the chip (`bottom-start`, 6px gap) and flips when it would leave the viewport. It shows kind, date, duration and note. It closes 180 ms after the pointer leaves the chip and the preview, on blur, on a click on the chip, or on Escape (focus goes back to the chip). A dismissed preview stays closed until the pointer moves or focus moves to another chip.
 - Changing the month closes the preview.
 - The summary counts events and minutes in the shown month.
+- In the triathlon calendar overlay and page, the panel bar (`tri-ana-bar`) holds the source switch (races or training) in the title slot and the close button at the right. Icon buttons in the bar show their localized `aria-label` as a tooltip that opens below, so the bar never clips it.
 - Below 36rem of container width, chips drop the mark and the duration and show the title only.

@@ -10,4 +10,5 @@ A copy of the server-rendered markup from `/tags/drama` (selector `.page-listing
 
 ## Rules
 
+- Focus: the input removes its own outline and the field frame takes the 2px `focus` ring through `:has(> input:focus-visible)` (see `focus.md`, item 3).
 - Filters rows in place and keeps the list frame visible while any row matches.
