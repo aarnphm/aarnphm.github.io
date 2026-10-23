@@ -30,6 +30,18 @@ body[data-is-canvas='true'],
 body[data-slides='true'],
 body[data-layout='letter-poem'],
 body[data-layout='letter'] {
+  #quartz-root > .page-body-grid > .page-header {
+    padding-top: 1rem;
+  }
+
+  @media all and ($tablet), all and ($desktop) {
+    #quartz-root > .header {
+      height: 0;
+      min-height: 0;
+      overflow: hidden;
+    }
+  }
+
   .darkmode,
   .stacked-buttons:not(.popover *),
   .breadcrumb-container:not(.popover *),
