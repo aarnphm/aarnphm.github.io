@@ -45,7 +45,7 @@ export function createFrameLoop(
   const { resizeProgress } = transitions
   const { composite, overlay, overlayResize, advanceFade, endResize, resize, scheduleSurfaceTrim } =
     overlays
-  const { pauseAnimations, resumeAnimations, scan } = sampler
+  const { pauseAnimations, resumeAnimations, readAnimations, scan } = sampler
   const { readSelectors, record } = mutations
   let frame = 0
   let timer = 0
@@ -80,7 +80,10 @@ export function createFrameLoop(
         if (item.kind === 'surface')
           item.shown = item.style.display !== 'none' && item.style.visibility === 'visible'
     }
-    if (!owner.shown) return
+    if (!owner.shown || owner.opacity <= 0) {
+      owner.moved ||= moved
+      return
+    }
     moved ||= owner.moved
     if (moved) {
       owner.moved = false
@@ -169,7 +172,7 @@ export function createFrameLoop(
     resize()
     const animations =
       scene.dataset.trailOpening === 'complete'
-        ? svg.getAnimations({ subtree: true })
+        ? readAnimations()
         : (shared.initialAnimations ??= svg.getAnimations({ subtree: true }))
     if (scene.dataset.trailOpening !== 'complete' || host.hidden) pauseAnimations(animations)
     scan(animations)
@@ -189,17 +192,18 @@ export function createFrameLoop(
       const layer = target.kind === 'group' ? target.mask : target
       return layer?.palette !== shared.palette || layer.revision !== shared.revision
     }
-    // A scene switch already holds a complete frame. Keep its camp-first order even when
-    // winter clothing or crowns introduce new textures higher up the valley.
-    // Initial presentation waits for every texture, so only subsequent updates need a
-    // spatial repaint order. Avoid rescanning the forest's ancestors for each initial batch.
+    // Palette reveals uncover finished cells, so they need a spatial repaint order.
+    // Structural replacements retain the complete canvas until their holes are filled;
+    // repeatedly walking every pending texture's ancestors cannot improve that presentation.
     if (scene.dataset.trailOpening === 'complete') {
-      const priorities = new Map(pending.map(target => [target, paintPriority(target)]))
+      const priorities = shared.fade
+        ? new Map(pending.map(target => [target, paintPriority(target)]))
+        : null
       pending.sort(
         (a, b) =>
           Number(outdated(b)) - Number(outdated(a)) ||
           (shared.fade ? 0 : Number(unpainted(b)) - Number(unpainted(a))) ||
-          (priorities.get(a) ?? 0) - (priorities.get(b) ?? 0) ||
+          (priorities?.get(a) ?? 0) - (priorities?.get(b) ?? 0) ||
           (a.kind === 'group' ? (a.mask?.waiting ?? 0) : a.waiting) -
             (b.kind === 'group' ? (b.mask?.waiting ?? 0) : b.waiting),
       )

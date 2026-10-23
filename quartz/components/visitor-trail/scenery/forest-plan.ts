@@ -50,6 +50,22 @@ export function planTrailTrees(
   now = Date.now(),
   water: ReadonlyMap<string, readonly { count: number; at: number }[]> = new Map(),
 ): TreePlacement[] {
+  const steps = planTrailTreeSteps(landscape, seed, walks, clearings, now, water)
+  let step = steps.next()
+  while (!step.done) step = steps.next()
+  return step.value
+}
+
+// Each step keeps random draws and root insertion ordered. Callers can stop between slots without
+// exposing partial geometry or changing the next plan.
+export function* planTrailTreeSteps(
+  landscape: Landscape,
+  seed: number,
+  walks: Point[] = [],
+  clearings: (Point & { radius: number })[] = [],
+  now = Date.now(),
+  water: ReadonlyMap<string, readonly { count: number; at: number }[]> = new Map(),
+): Generator<void, TreePlacement[]> {
   const { width, meadowTop, camp, groves, pond, alpine } = landscape
   const clearing = camp.y - meadowTop
   const random = trailRandom(seed ^ 0x7f4a7c15)
@@ -63,7 +79,8 @@ export function planTrailTrees(
   const added = groves.filter(grove => grove.stand)
   const roots: Point[] = []
   const faces = contourFaces(landscape)
-  const placements = Array.from({ length: count + added.length * standSize }, (_, index) => {
+  const placements: (TreePlacement & { pool: readonly TreeKind[] | null })[] = []
+  for (let index = 0; index < count + added.length * standSize; index++) {
     const stand = index >= count ? added[Math.floor((index - count) / standSize)] : null
     // One tree in four stands alone; the rest fill the groves, so more trees thicken the stands.
     const standalone = !stand && index % 4 === 3
@@ -159,7 +176,7 @@ export function planTrailTrees(
           : standPool[Math.floor(pick * 4)]
     const treeSeed = Math.floor(identity() * 4294967296)
     const height = foothill ? 20 + identity() * 10 : 30 + identity() * 26
-    return {
+    placements.push({
       pool: foothill
         ? null
         : kind === 'willow'
@@ -179,8 +196,9 @@ export function planTrailTrees(
       growth: 1,
       generation: 0,
       log: null,
-    }
-  })
+    })
+    yield
+  }
   // Conifers stand at both ends of the meadow, where the groves leave open ground, thickest on the
   // far half below the range.
   const edge = trailRandom(seed ^ 0x2f6b1c3d)
@@ -224,8 +242,9 @@ export function planTrailTrees(
         })
         break
       }
+      yield
     }
-  return grow(placements, landscape, forestYear(now), water)
+  return yield* grow(placements, landscape, forestYear(now), water)
 }
 
 const waterside: readonly TreeKind[] = ['willow', 'willow', 'birch', 'aspen']
@@ -233,28 +252,34 @@ const edgeKinds: readonly TreeKind[] = ['pine', 'pine', 'spruce', 'fir']
 
 // Age every slot to the forest year, then let the canopy shade its understory: a sapling under a
 // taller crown grows slowly, the more so the less shade it tolerates.
-function grow(
+function* grow(
   planned: (TreePlacement & { pool: readonly TreeKind[] | null })[],
   landscape: Landscape,
   year: number,
   water: ReadonlyMap<string, readonly { count: number; at: number }[]>,
-) {
+): Generator<void, TreePlacement[]> {
   const storms = landscape.groves.map((_, grove) => groveStorms(grove, Math.floor(year)))
-  const placements = planned.map(({ pool, ...placement }, slot) => {
-    if (!pool || year < 0) return placement
-    const edge = placement.id.startsWith('tree-edge-')
-    const occupant = slotOccupant(
-      placement,
-      slot,
-      pool,
-      placement.standalone || edge ? [] : storms[placement.cluster],
-      year,
-      placement.standalone && !edge,
-      water.get(placement.id),
-    )
-    return { ...placement, ...occupant }
-  })
+  const placements: TreePlacement[] = []
+  for (const [slot, plannedPlacement] of planned.entries()) {
+    const { pool, ...placement } = plannedPlacement
+    if (!pool || year < 0) placements.push(placement)
+    else {
+      const edge = placement.id.startsWith('tree-edge-')
+      const occupant = slotOccupant(
+        placement,
+        slot,
+        pool,
+        placement.standalone || edge ? [] : storms[placement.cluster],
+        year,
+        placement.standalone && !edge,
+        water.get(placement.id),
+      )
+      placements.push({ ...placement, ...occupant })
+    }
+    yield
+  }
   for (const sapling of placements) {
+    yield
     if (sapling.foothill || sapling.growth >= 0.8) continue
     let shade = 0
     for (const canopy of placements) {

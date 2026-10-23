@@ -103,6 +103,7 @@ export function createMutations(
     }
     if (shared.generationPending) {
       shared.generationPending = false
+      shared.clipVersion += 1
       resetBoxes()
       discover(svg)
       for (const owner of groups.values()) {

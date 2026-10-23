@@ -1,5 +1,6 @@
 import type { TreePlacement } from './scenery'
 import { pixels } from './pixels'
+import { animateScene } from './scene-animation'
 
 type Point = { x: number; y: number }
 
@@ -150,7 +151,10 @@ export function mountJay(scene: HTMLElement, host: HTMLElement, signal: AbortSig
       return { transform: `translate(${x}px, ${y}px)` }
     })
     // About 300 px/s across the meadow; a long cache flight still lands within three seconds.
-    flight = jay.animate(frames, { duration: Math.min(3000, 600 + distance * 3), fill: 'forwards' })
+    flight = animateScene(jay, frames, {
+      duration: Math.min(3000, 600 + distance * 3),
+      fill: 'forwards',
+    })
     return flight.finished
   }
   const wait = (ms: number) => new Promise<void>(resolve => (timer = view.setTimeout(resolve, ms)))

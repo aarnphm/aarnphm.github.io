@@ -140,22 +140,23 @@ export function mountSeasonToggle(
     const above = anchor.top - bounds.height - 4
     panel.style.top = `${Math.max(8, Math.min(view.innerHeight - bounds.height - 8, above >= 8 ? above : anchor.bottom + 4))}px`
   }
-  // Prefer a low, central boulder. The hit area covers its painted bounds and stays usable on touch.
+  // Narrow worlds can have only small stones. Keep the control on a visible rock with a touch target.
   const place = () => {
     const width = scene.clientWidth
     const height = scene.clientHeight
     let best: { x: number; y: number; rock: SVGGElement } | null = null
     let score = -Infinity
     for (const rock of scene.querySelectorAll<SVGGElement>(
-      '.trail-understory[data-plant="boulder"]',
+      '.trail-understory:is([data-plant="boulder"], [data-plant="stone"])',
     )) {
       const x = Number(rock.dataset.groundX)
       const y = Number(rock.dataset.groundY)
       const r = Number(rock.dataset.solidRadius) || 6
       if (!Number.isFinite(x) || !Number.isFinite(y)) continue
       const edge = Math.min(120, width * 0.1)
-      if (x < edge || x > width - edge || y > height - 16 || y < height * 0.5) continue
-      const fit = y - Math.abs(x - width / 2) * 0.25 + r * 2
+      if (x < edge || x > width - edge || y > height - 16 || y < 44) continue
+      const preferred = rock.dataset.plant === 'boulder' && y >= height * 0.5
+      const fit = y - Math.abs(x - width / 2) * 0.25 + r * 2 + (preferred ? height : 0)
       if (fit <= score) continue
       score = fit
       best = { x, y, rock }

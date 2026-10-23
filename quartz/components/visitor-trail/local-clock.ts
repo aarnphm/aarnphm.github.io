@@ -11,6 +11,8 @@ export function mountTrailClock(clock: HTMLTimeElement, signal: AbortSignal) {
   const timezone = format.resolvedOptions().timeZone
   clock.dataset.timezone = timezone
   clock.title = `local time · ${timezone}`
+  const text = document.createTextNode('')
+  clock.replaceChildren(text)
   let timer: number | null = null
   const pause = () => {
     if (timer !== null) view.clearTimeout(timer)
@@ -20,7 +22,7 @@ export function mountTrailClock(clock: HTMLTimeElement, signal: AbortSignal) {
     pause()
     if (signal.aborted || document.hidden) return
     const now = new Date()
-    clock.textContent = format.format(now)
+    text.data = format.format(now)
     clock.dateTime = now.toISOString()
     timer = view.setTimeout(resume, 1000 - (now.getTime() % 1000))
   }

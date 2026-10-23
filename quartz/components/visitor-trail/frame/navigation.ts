@@ -121,7 +121,16 @@ export function createFrameNavigation(
         .join('|')
       if (navigationGeometry === geometries && navigationSignature === signature)
         return { routes: navigationRoutes, bodies: navigationBodies }
-      return { bodies, routes: await navigation.prepare(journeyInputs(), current, bodies, signal) }
+      return {
+        bodies,
+        routes: await navigation.prepare(
+          journeyInputs(),
+          current,
+          bodies,
+          signal,
+          scene.dataset.trailOpening === 'complete' ? 'active' : 'opening',
+        ),
+      }
     },
     commit: journeyRoutes,
     async sample(layout: Layout, renderSignal: AbortSignal, yieldRender: YieldRender) {

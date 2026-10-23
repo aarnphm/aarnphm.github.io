@@ -10,6 +10,32 @@ type GroundObject = {
   y: number
 }
 
+// Keep the longest sequence already in paint order. A moving actor should move itself,
+// rather than reinsert every tree between its old and new feet.
+function retainedOrder(paint: SVGGElement, ordered: Element[]) {
+  const positions = new Map(Array.from(paint.children, (element, index) => [element, index]))
+  const tails: number[] = []
+  const previous: number[] = []
+  for (let index = 0; index < ordered.length; index++) {
+    const position = positions.get(ordered[index])
+    if (position === undefined) continue
+    let low = 0
+    let high = tails.length
+    while (low < high) {
+      const middle = (low + high) >>> 1
+      const tail = positions.get(ordered[tails[middle]])!
+      if (tail < position) low = middle + 1
+      else high = middle
+    }
+    previous[index] = low ? tails[low - 1] : -1
+    tails[low] = index
+  }
+  const retained = new Set<Element>()
+  for (let index = tails.at(-1) ?? -1; index >= 0; index = previous[index])
+    retained.add(ordered[index])
+  return retained
+}
+
 export function mountGroundDepth(scene: HTMLElement, host: HTMLElement, signal: AbortSignal) {
   const document = scene.ownerDocument
   const layer = scene.querySelector<SVGGElement>('.trail-depth-objects')
@@ -30,12 +56,21 @@ export function mountGroundDepth(scene: HTMLElement, host: HTMLElement, signal: 
       paint.prepend(...ordered.map(({ element }) => element).filter(element => element.isConnected))
       return
     }
-    let next = paint.firstElementChild
-    for (const { element } of ordered) {
-      if (!element.isConnected) continue
-      if (element === next) next = next.nextElementSibling
-      else if (typeof paint.moveBefore === 'function') paint.moveBefore(element, next)
-      else paint.insertBefore(element, next)
+    const elements = ordered.map(({ element }) => element).filter(element => element.isConnected)
+    const population = new Set<Element>(elements)
+    const children: Element[] = [
+      ...elements,
+      ...Array.from(paint.children).filter(element => !population.has(element)),
+    ]
+    const retained = retainedOrder(paint, children)
+    let next: Element | null = null
+    for (let index = children.length - 1; index >= 0; index--) {
+      const element = children[index]
+      if (!retained.has(element)) {
+        if (typeof paint.moveBefore === 'function') paint.moveBefore(element, next)
+        else paint.insertBefore(element, next)
+      }
+      next = element
     }
   }
   const sort = (records?: MutationRecord[]) => {

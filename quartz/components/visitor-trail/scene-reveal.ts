@@ -60,11 +60,16 @@ export function mountSceneReveal(scene: HTMLElement, host: HTMLElement, signal: 
   let compositor = false
   let origin: Point = { x: 0, y: 0 }
   let radius = 1
+  let midpointRadius = 0
+  let midpointFrame = 0
+  let opensFromZero = true
   let requested = false
   let animation: Animation | null = null
   const reduced = view.matchMedia('(prefers-reduced-motion: reduce)')
   const finish = () => {
     const phase = scene.dataset.trailReveal
+    view.cancelAnimationFrame(midpointFrame)
+    midpointFrame = 0
     requested = false
     if (animation) {
       animation.onfinish = null
@@ -79,7 +84,22 @@ export function mountSceneReveal(scene: HTMLElement, host: HTMLElement, signal: 
   // Which way the running sweep goes. Read from here, not from `playbackRate`: a reversal is
   // pending until the animation is ready, and the getter reports the old rate until then.
   let forward = true
+  const checkMidpoint = () => {
+    midpointFrame = 0
+    if (!animation || scene.dataset.trailReveal !== 'closing') return
+    const progress = animation.effect?.getComputedTiming().progress
+    if (progress !== null && progress !== undefined) {
+      const reach = Math.ceil(radius) * (opensFromZero ? progress : 1 - progress)
+      if (reach <= midpointRadius) {
+        host.dispatchEvent(new Event('trail:close-midpoint'))
+        return
+      }
+    }
+    midpointFrame = view.requestAnimationFrame(checkMidpoint)
+  }
   const animate = (open: boolean) => {
+    view.cancelAnimationFrame(midpointFrame)
+    midpointFrame = open ? 0 : view.requestAnimationFrame(checkMidpoint)
     scene.dataset.trailReveal = open ? 'revealing' : 'closing'
     if (animation) {
       // An interrupted sweep turns round from where it is.
@@ -96,6 +116,7 @@ export function mountSceneReveal(scene: HTMLElement, host: HTMLElement, signal: 
     const shut = { clipPath: `circle(0px at ${center})` }
     const full = { clipPath: `circle(${Math.ceil(radius)}px at ${center})` }
     forward = open
+    opensFromZero = open
     animation = host.animate(open ? [shut, full] : [full, shut], {
       duration: trailThemeDuration,
       easing: open ? 'ease-out' : 'ease-in',
@@ -169,6 +190,7 @@ export function mountSceneReveal(scene: HTMLElement, host: HTMLElement, signal: 
       const bounds = svg.getBoundingClientRect()
       const clock = trailRevealOrigin(document)
       origin = { x: clock.x - bounds.left, y: clock.y - bounds.top }
+      midpointRadius = Math.hypot(view.innerWidth / 2 - clock.x, view.innerHeight / 2 - clock.y)
       radius = trailRevealRadius(next.width, next.height, origin)
       scene.dataset.trailOpeningOriginX = String(origin.x)
       scene.dataset.trailOpeningOriginY = String(origin.y)

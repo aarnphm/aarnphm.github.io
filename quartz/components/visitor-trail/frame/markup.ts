@@ -9,8 +9,7 @@ export function createFrameSurface(document: Document, host: HTMLElement, signal
   // Use the viewport before the first layout; the homepage header is a narrow containing block.
   if (typeof document.documentElement.moveBefore === 'function')
     document.documentElement.moveBefore(host, null)
-  const content = document.querySelector<HTMLElement>('#quartz-root > .page-body-grid')
-  if (content) host.style.height = `${trailSceneHeight(host, content)}px`
+  host.style.height = `${trailSceneHeight(host)}px`
   const scene = document.createElement('div')
   scene.className = 'trail-scene'
   scene.dataset.trailRendered = 'false'

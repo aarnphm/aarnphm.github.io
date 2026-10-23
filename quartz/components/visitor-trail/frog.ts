@@ -6,6 +6,7 @@ import {
   type Point,
 } from './landscape'
 import { pixels } from './pixels'
+import { animateScene } from './scene-animation'
 
 // One of the shore frogs lives: it hops along the near bank, croaks, takes dragonflies with its
 // tongue through the summer, swims out and comes back. The other frogs keep their stylesheet
@@ -134,7 +135,7 @@ export function mountFrog(scene: HTMLElement, host: HTMLElement, signal: AbortSi
       const y = Math.round((from.y + (to.y - from.y) * t - Math.sin(t * Math.PI) * lift) * 2) / 2
       return { transform: `translate(${x}px, ${y}px)` }
     })
-    hop = frog.animate(frames, { duration: 220 + distance * 9, fill: 'forwards' })
+    hop = animateScene(frog, frames, { duration: 220 + distance * 9, fill: 'forwards' })
     await hop.finished
     hop.cancel()
     hop = null
@@ -255,7 +256,8 @@ export function mountFrog(scene: HTMLElement, host: HTMLElement, signal: AbortSi
           delete frog.dataset.splash
           const drift = (Math.random() - 0.5) * 24
           face(drift < 0 ? -1 : 1)
-          const swimming = frog.animate(
+          const swimming = animateScene(
+            frog,
             [
               { transform: `translate(${at.x}px, ${at.y}px)` },
               { transform: `translate(${at.x + drift}px, ${at.y + drift * 0.15}px)` },

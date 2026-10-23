@@ -1,6 +1,7 @@
 import { creekDistance, pondDistance, type Landscape, type Point } from './landscape'
 import { pixels } from './pixels'
 import { riverArt } from './river-art'
+import { animateScene } from './scene-animation'
 
 // The fishing bear works the creek instead of swiping on a loop. It reads the fish's own jump
 // cycle and strikes as the fish breaks the surface, misses at first and lands more as it keeps
@@ -132,7 +133,8 @@ export function mountRiverBear(scene: HTMLElement, host: HTMLElement, signal: Ab
     pose('walking')
     const from = at
     const distance = Math.hypot(to.x - from.x, to.y - from.y)
-    walk = bear.animate(
+    walk = animateScene(
+      bear,
       [
         { transform: `translate(${from.x}px, ${from.y}px)` },
         { transform: `translate(${to.x}px, ${to.y}px)` },

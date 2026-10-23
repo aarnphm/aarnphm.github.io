@@ -35,7 +35,7 @@ type TuningContext = {
   settings: SceneSettings
   seed: number
   read: (refreshObstacles: boolean) => ForestState | null
-  replan: () => void
+  replan: () => Generator<void, void>
   refreshForest: readonly (() => void)[]
   routes: (signal: AbortSignal) => Promise<{ routes: NavigableTrail[]; solids: CollisionActor[] }>
   forestNodes: ReturnType<typeof createForestSprites>
@@ -127,6 +127,7 @@ export function mountSceneTuning(context: TuningContext) {
       current,
       signal,
       replan ? { seed, clearings: foregroundClearings } : undefined,
+      'active',
     )
     const foreground = await prepared.foreground
     if (signal.aborted) return
@@ -257,7 +258,20 @@ export function mountSceneTuning(context: TuningContext) {
       campStructureDirty ||=
         campGeometryDirty || (campsChanged && previousCamps.builders !== settings.camps.builders)
       const campGeometry = campGeometryDirty
-      if (campGeometry) context.replan()
+      if (campGeometry) {
+        const steps = context.replan()
+        let slice = view.performance.now()
+        let step = steps.next()
+        while (!step.done) {
+          if (view.performance.now() - slice >= 2) {
+            await yieldWork(current)
+            slice = view.performance.now()
+          }
+          if (current.aborted || !ready()) return
+          step = steps.next()
+        }
+      }
+      if (current.aborted || !ready()) return
       const state = context.read(groups.has('forest') && !campGeometry)
       if (!state) return
       if (groups.has('forest') || campGeometry) await forest(state, current, campGeometry)

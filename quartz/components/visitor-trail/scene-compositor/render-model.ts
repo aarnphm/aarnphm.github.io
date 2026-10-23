@@ -62,7 +62,6 @@ export const ambientLayers =
   '.trail-weather, .trail-hiker-tracks, .trail-reader-tracks, .trail-camp-tracks, .trail-visitor-tracks, .trail-ranger-tracks'
 export const motionProperties = new Set(['opacity', 'transform', 'translate', 'rotate', 'scale'])
 export const motionVariables = new Set([
-  '--trail-tree-wind-scale',
   '--trail-weather-delay',
   '--trail-wind-period',
   '--trail-rain-strength',
