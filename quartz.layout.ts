@@ -36,6 +36,7 @@ export const sharedPageComponents: SharedLayout = {
     links: {
       'CC BY-NC-SA': 'https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en',
       github: 'https://github.com/aarnphm',
+      colophon: '/colophon',
       privacy: '/privacy',
       'terms of service': '/terms-of-service',
     },

@@ -17,69 +17,33 @@ body[data-slug='index'] {
     position: relative;
     pointer-events: auto;
     container-type: inline-size;
-    margin-block: 1.5rem 2rem;
+    margin-block: 0;
+    inline-size: 100%;
   }
 
   .page-body-grid > .page-content {
     grid-column: 3 / -3;
     justify-self: center;
-    inline-size: min(100%, 54rem);
+    inline-size: min(100%, 34rem);
+    min-block-size: calc(100svh - 8rem);
+    display: grid;
+    align-items: center;
     min-inline-size: 0;
     padding: 0;
   }
 
   .homepage-board {
-    --board-line: color-mix(in srgb, var(--gray) 70%, var(--light));
     position: relative;
     display: grid;
-    grid-template-columns: minmax(16rem, 1fr) minmax(0, 3fr);
-    border: 1px solid var(--board-line);
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.5rem;
+    border: 0;
     background: transparent;
 
     a:focus-visible {
       outline: 2px solid var(--dark);
       outline-offset: 3px;
     }
-  }
-
-  .homepage-board-hangers {
-    position: absolute;
-    inset-inline: 2rem;
-    bottom: 100%;
-    block-size: 100vh;
-    background:
-      linear-gradient(var(--board-line), var(--board-line)) left / 1px 100% no-repeat,
-      linear-gradient(var(--board-line), var(--board-line)) right / 1px 100% no-repeat;
-    opacity: 0;
-    transition: opacity $panel-duration $panel-ease;
-    pointer-events: none;
-
-    &::before,
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: -3px;
-      inline-size: 5px;
-      block-size: 5px;
-      border: 1px solid var(--board-line);
-      background: var(--light);
-    }
-
-    &::before {
-      left: -3px;
-    }
-
-    &::after {
-      right: -3px;
-    }
-  }
-
-  &:has(.homepage-trail-toggle[aria-expanded='true']) .homepage-board-hangers {
-    opacity: 1;
-  }
-
-  &:has(.homepage-trail-toggle[aria-expanded='true']) #quartz-root > section.header {
-    background: transparent;
   }
 
   // Home links keep the tool-surface hover with or without the trail scene: ink and underline
@@ -103,68 +67,32 @@ body[data-slug='index'] {
 
   .homepage-board-links {
     min-inline-size: 0;
-    padding: 1.25rem 0;
-    border-inline-end: 1px solid var(--board-line);
     font-size: var(--text-ui);
 
     .hyperlinks {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 1.5rem;
-      block-size: 100%;
       margin: 0;
       border: 0;
-
-      & > * {
-        padding-left: 1.25rem !important;
-        padding-right: 1.25rem !important;
-      }
-    }
-
-    em {
-      margin: 0;
-      color: var(--darkgray);
     }
 
     .clickable-container {
       display: flex;
-      flex-wrap: nowrap;
+      flex-wrap: wrap;
       align-items: baseline;
-      gap: 0 0.5rem;
+      gap: 0.5rem 1rem;
       margin: 0;
-    }
-
-    .homepage-board-garden {
-      display: grid;
-      align-content: start;
-      align-items: baseline;
-      padding-block-end: 0.75rem;
-      border-block-end: 1px solid var(--board-line);
     }
 
     a {
-      display: block;
+      display: inline-flex;
+      align-items: center;
       min-block-size: 24px;
       padding: 0;
-      overflow-wrap: anywhere;
-    }
-
-    .boring-legal {
-      display: grid;
-      gap: 0.25rem;
-      margin: 0;
-      padding: 0;
-      border: 0;
-    }
-    .homepage-board-license a {
-      font-style: italic;
     }
   }
 
   .homepage-board-copy {
     min-inline-size: 0;
-    padding: 1.5rem;
+    padding: 0;
 
     article {
       padding: 0;
@@ -179,31 +107,12 @@ body[data-slug='index'] {
     }
   }
 
-  @container (max-width: 700px) {
-    .homepage-board {
-      grid-template-columns: minmax(0, 1fr);
-    }
+  &:has(.homepage-trail-toggle[aria-expanded='true']) {
+    overflow: hidden;
+    block-size: 100dvh;
 
-    .homepage-board-links {
-      padding: 1rem;
-      border-inline-end: 0;
-      border-block-end: 1px solid var(--board-line);
-
-      .hyperlinks {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr);
-        gap: 1.5rem;
-      }
-    }
-
-    .homepage-board-copy {
-      padding: 1.25rem 1rem;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .homepage-board-hangers {
-      transition: none;
+    .landing {
+      display: none;
     }
   }
 
