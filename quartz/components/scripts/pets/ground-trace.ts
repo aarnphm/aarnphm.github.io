@@ -14,8 +14,8 @@ const groundFadeMs = 2800
 
 export function layGround(from: Point, to: Point, duration: number) {
   if (!petState.root) return
-  // The pet's own ground line sits 1.44 units down; centres, not corners, walk the floor.
-  const y = to.y + (1.44 - viewTop) * petState.unit
+  // The pet's own ground line sits 1.08 units down; centres, not corners, walk the floor.
+  const y = to.y + (1.08 - viewTop) * petState.unit
   const x0 = from.x + petState.width / 2
   const x1 = to.x + petState.width / 2
   const span = Math.abs(x1 - x0)

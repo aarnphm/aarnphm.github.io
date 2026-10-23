@@ -1,6 +1,7 @@
 import {
   CRUST,
   curve,
+  EYE,
   EYES,
   filled,
   hand,
@@ -68,20 +69,21 @@ export function artist(w: number, paper = PAPER, ink = INK, paint = PINK, wood =
 // Cinema: the film nerd. Thick square specs, and a striped popcorn bucket held up, heaped over the
 // rim. `kernel` is one more piece apart from the heap, so the pet can pop it up to its mouth.
 export function cinephile(w: number, paper = PAPER, ink = INK, stripe = PINK, butter = CRUST) {
+  // Each frame boxes the eye (pen.ts EYE) with room for its happy and surprised poses.
   const frames = EYES.map((x, i) =>
-    hand(rounded(x + 0.02, -0.2, 0.52, 0.42, 0.09), 0.02, 0.006, 701 + i),
+    hand(rounded(x + 0.02, EYE.y, 0.56, 0.6, 0.1), 0.02, 0.006, 701 + i),
   )
   const bridge = hand(
     [
-      [EYES[0] + 0.28, -0.26],
-      [EYES[1] - 0.24, -0.26],
+      [EYES[0] + 0.3, -0.28],
+      [EYES[1] - 0.26, -0.28],
     ],
     0.02,
     0.006,
     703,
   )
   const temple = hand(
-    curve([EYES[1] + 0.28, -0.26], [0.7, -0.3], [0.96, -0.2], 10),
+    curve([EYES[1] + 0.3, -0.28], [0.7, -0.32], [0.96, -0.22], 10),
     0.02,
     0.006,
     704,

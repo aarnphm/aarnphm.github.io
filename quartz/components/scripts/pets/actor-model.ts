@@ -57,8 +57,9 @@ export type TrailWalk = {
   duration: number
 }
 
-// Where the held edge crosses the pet, in mascot units (the viewBox is 3.6 wide, top at -2).
-export const edgeY: Record<Kind, number> = { stand: 1.42, sit: 0.94, hang: -1.45, floor: 1.42 }
+// Where the held edge crosses the pet, in mascot units (the viewBox is 3.6 wide, top at -2). It has
+// no legs, so standing and sitting both rest its base on the edge; its own ground line lies at 1.08.
+export const edgeY: Record<Kind, number> = { stand: 1.03, sit: 0.98, hang: -1.45, floor: 1.08 }
 export const viewWidth = 3.6
 export const viewTop = -2
 export const viewBottom = 1.8

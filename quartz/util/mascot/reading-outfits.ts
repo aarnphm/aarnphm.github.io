@@ -2,6 +2,7 @@ import {
   CRUST,
   curve,
   densify,
+  EYE,
   EYES,
   filled,
   hand,
@@ -19,19 +20,25 @@ import {
 // Bases: the librarian. Round glasses round the eyes, a temple arm back over the ear, and a stack
 // of three books at its side in the site's colours.
 export function librarian(w: number, paper = PAPER, ink = INK, spines = [PINK, SAGE, CRUST]) {
-  const lenses = EYES.map((x, i) => ring(321 + i, x + 0.02, -0.2, 0.28))
+  // Each lens rings the eye's box (pen.ts EYE) with room for its happy and surprised poses.
+  const lenses = EYES.map((x, i) => ring(321 + i, x + 0.02, EYE.y, 0.31))
   const bridge = hand(
     curve(
-      [EYES[0] + 0.3, -0.24],
-      [(EYES[0] + EYES[1]) / 2 + 0.01, -0.34],
-      [EYES[1] - 0.26, -0.24],
+      [EYES[0] + 0.32, -0.26],
+      [(EYES[0] + EYES[1]) / 2 + 0.01, -0.36],
+      [EYES[1] - 0.28, -0.26],
       10,
     ),
     0.02,
     0.006,
     323,
   )
-  const arm = hand(curve([EYES[1] + 0.3, -0.24], [0.68, -0.3], [0.94, -0.2], 10), 0.02, 0.006, 324)
+  const arm = hand(
+    curve([EYES[1] + 0.32, -0.26], [0.68, -0.32], [0.94, -0.22], 10),
+    0.02,
+    0.006,
+    324,
+  )
   const glasses = `${lenses.map((l, i) => stroke(l, pressure(325 + i, w * 0.9, 0.2), ink)).join('')}${stroke(bridge, () => w * 0.8, ink)}${stroke(arm, () => w * 0.8, ink)}`
   const books = (
     [

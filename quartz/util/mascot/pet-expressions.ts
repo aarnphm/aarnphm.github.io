@@ -1,68 +1,40 @@
 import {
   densify,
   even,
+  EYE,
+  EYE_POSES,
   EYES,
-  happyEye,
-  pillEye,
   part,
+  pillEye,
   poly,
+  poseEye,
   pressure,
   ring,
   type PetPen,
   type Pt,
 } from './pen'
 
+// The pet's faces, all in its eyes as blobatar's are (pen.ts EYE_POSES): no mouth, no brows. Each
+// is a [data-part] the state map in pet/outfits.scss shows.
 export function petFace(s: PetPen) {
   const { L, paper, ink, pen } = s
+  const { y, h, w } = EYE
+  const look = (name: keyof typeof EYE_POSES) =>
+    part(
+      `eyes-${name}`,
+      EYES.map(
+        (x, i) =>
+          `<g class="pet-eye">${poseEye(x, y, h, w, EYE_POSES[name], i as 0 | 1, i, ink)}</g>`,
+      ).join(''),
+    )
   const dash = part(
     'eyes-dash',
-    EYES.map(
-      (x, i) => `<g class="pet-eye">${pillEye(x, -0.22, 0.48, L * 2.1, 0.2, i, ink)}</g>`,
-    ).join(''),
+    EYES.map((x, i) => `<g class="pet-eye">${pillEye(x, y, h, w, 0.2, i, ink)}</g>`).join(''),
   )
-  // Smiling with its eyes, as blobatar does: each pill squashed to a short bar 1.7 times as wide and
-  // 0.3 times as tall, lifted and pushed a little apart, both leaning the same way.
-  const happy = part(
-    'eyes-happy',
-    EYES.map(
-      (x, i) =>
-        `<g class="pet-eye">${happyEye(x + (i ? 0.045 : -0.045), -0.265, 0.29, 0.145, 0.14, i, ink)}</g>`,
-    ).join(''),
-  )
-  const wide = part(
-    'eyes-wide',
-    EYES.map((x, i) => pen(ring(21 + i, x + 0.02, -0.2, 0.13), pressure(23 + i, L, 0.25))).join(''),
-    'pet-blinkless',
-  )
-  const wince = part(
-    'eyes-wince',
-    pen(
-      densify(
-        [
-          [-0.72, -0.34],
-          [-0.52, -0.2],
-          [-0.72, -0.06],
-        ],
-        0.03,
-      ),
-      even(L * 1.3),
-    ) +
-      pen(
-        densify(
-          [
-            [0.38, -0.34],
-            [0.18, -0.2],
-            [0.38, -0.06],
-          ],
-          0.03,
-        ),
-        even(L * 1.3),
-      ),
-    'pet-blinkless',
-  )
-
-  const mx = (EYES[0] + EYES[1]) / 2
-  const mouthO = part('mouth-o', pen(ring(31, mx, 0.22, 0.09), pressure(33, L * 0.95, 0.25)))
+  const happy = look('happy')
+  const surprised = look('surprised')
+  const scared = look('scared')
+  const thinking = look('thinking')
 
   const sweat = part(
     'sweat',
@@ -116,5 +88,5 @@ export function petFace(s: PetPen) {
         .map(x => `<circle class="pet-dot" cx="${x}" cy="-2.2" r="0.08" style="fill:${ink}"/>`)
         .join(''),
   )
-  return { dash, happy, wide, wince, mouthO, sweat, dots, thought }
+  return { dash, happy, surprised, scared, thinking, sweat, dots, thought }
 }

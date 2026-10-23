@@ -135,23 +135,91 @@ export function pillEye(
   return stroke(pts, t => w * (1 + 0.06 * wave(t * 4)), ink)
 }
 
-// The same eye smiling, as blobatar's happy pose: a short bar `len` long and `w` thick with round
-// caps, its right end raised by `rise` of its length (both eyes lean the same way). Centred at (x, y).
-export function happyEye(
+// Where the idle eye sits and how big it is, for anything that frames the eyes (glasses, masks).
+export const EYE = { y: -0.22, h: 0.48, w: 0.17 } as const
+
+// A blobatar pose (node_modules/blobatar/src/expression.ts), in its units: a 100-unit box with the
+// body about 67 across, so one unit is 0.03 of the pet's radius. `esx`/`esy` scale the eye, `tilt`
+// turns it (the left eye the other way), `edx`/`edy` push the pair apart and down, the `*2` fields
+// land on the right eye only, and `lock` fades the idle lean out.
+export type EyePose = {
+  esx: number
+  esy: number
+  tilt: number
+  edx: number
+  edy: number
+  esx2?: number
+  esy2?: number
+  tilt2?: number
+  edy2?: number
+  lock?: number
+}
+
+// blobatar's roster, the numbers as it ships them except two: surprised is shortened a little so
+// it stays inside the pet's glasses, and happy's bars are thicker (0.42 of the eye, not 0.3), since
+// a pen bar thinner than the idle eye's stroke reads as a glare at the pet's size.
+export const EYE_POSES = {
+  happy: { esx: 1.6, esy: 0.42, tilt: 8, edy: -1.5, edx: 1.5, esx2: 0.08, esy2: 0.05, tilt2: -16 },
+  sad: { esx: 0.6, esy: 0.56, tilt: 26, edy: 3.6, edx: 1.9, esx2: -0.05, esy2: -0.07, tilt2: -7 },
+  mad: { esx: 1.85, esy: 0.26, tilt: -33, edy: 0.4, edx: 0.6, esy2: -0.03, tilt2: 5 },
+  surprised: { esx: 1.34, esy: 1.05, tilt: -6, edy: -1.05, edx: 0.5, esx2: 0.05, tilt2: 3 },
+  scared: {
+    esx: 0.78,
+    esy: 0.96,
+    tilt: -12,
+    edy: -1.5,
+    edx: -0.8,
+    esx2: -0.04,
+    esy2: 0.05,
+    tilt2: 4,
+  },
+  sleepy: { esx: 1.14, esy: 0.22, tilt: 0, edy: 2.4, edx: 0.3, esx2: -0.04, esy2: 0.03, tilt2: 4 },
+  thinking: {
+    esx: 1.15,
+    esy: 0.62,
+    tilt: 0,
+    edy: 4.2,
+    edx: 0.4,
+    esx2: 0.02,
+    esy2: 0.06,
+    edy2: -8.4,
+  },
+  shy: { esx: 0.62, esy: 0.5, tilt: 10, edy: 1.4, edx: -0.2, esx2: -0.05, esy2: -0.04, tilt2: -8 },
+  wink: { esx: 1.32, esy: 0.76, tilt: 5, edy: -0.6, edx: 0.8, esx2: 0.26, esy2: -0.56, tilt2: -11 },
+} as const satisfies Record<string, EyePose>
+
+const BLOB_UNIT = 0.03
+const IDLE_LEAN = -11
+
+// The pill eye `i` (0 left, 1 right) of a pair resting at (x, y), `h` tall and `w` wide, struck
+// into `pose`: a round-capped stroke along the eye's long side, `thick` across, turned about its
+// centre. Comment avatars share it, so the pet and an avatar smile the same way.
+export function poseEye(
   x: number,
   y: number,
-  len: number,
+  h: number,
   w: number,
-  rise = 0.14,
+  pose: EyePose,
+  i: 0 | 1,
   seed = 0,
   ink = INK,
 ): string {
+  const sign = i ? 1 : -1
+  const W = w * (pose.esx + (i ? (pose.esx2 ?? 0) : 0))
+  const H = h * (pose.esy + (i ? (pose.esy2 ?? 0) : 0))
+  const cx = x + pose.edx * BLOB_UNIT * sign
+  const cy = y + (pose.edy + (i ? (pose.edy2 ?? 0) : 0)) * BLOB_UNIT
+  const deg = (pose.tilt + (i ? (pose.tilt2 ?? 0) : 0)) * sign + IDLE_LEAN * (1 - (pose.lock ?? 1))
+  const r = (deg * Math.PI) / 180
+  const thick = Math.min(W, H)
+  const len = Math.max(W, H) - thick
+  const [dx, dy] = H >= W ? [-Math.sin(r), Math.cos(r)] : [Math.cos(r), Math.sin(r)]
   const wave = drift(seed + 80, [2, 5])
-  const pts: Pt[] = Array.from({ length: 9 }, (_, i) => {
-    const t = i / 8
-    return [x + len * (t - 0.5), y - rise * len * (t - 0.5)] as const
+  const pts: Pt[] = Array.from({ length: 9 }, (_, k) => {
+    const t = k / 8 - 0.5
+    return [cx + dx * len * t, cy + dy * len * t] as const
   })
-  return stroke(pts, t => w * (1 + 0.06 * wave(t * 4)), ink)
+  return stroke(pts, t => thick * (1 + 0.06 * wave(t * 4)), ink)
 }
 
 // A hand loop pulled toward a rounded square: `square` 0 is loop(), 1 a soft squircle. The pull is

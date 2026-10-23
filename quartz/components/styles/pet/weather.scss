@@ -210,11 +210,12 @@
       [data-pet-state='wave']
     ):not([data-pet-kind='hang']) {
     [data-part='eyes-dash'],
-    [data-part='eyes-happy'] {
+    [data-part='eyes-happy'],
+    [data-part='eyes-thinking'] {
       animation: pet-storm-open-eyes 11s step-end infinite;
     }
 
-    [data-part='eyes-wide'] {
+    [data-part='eyes-surprised'] {
       display: inline;
       opacity: 0;
       animation: pet-storm-out-eyes 11s step-end infinite;
@@ -497,10 +498,9 @@
 }
 
 // On a sunny hot day, when it would get its laptop out, it lies back on a sun lounger instead,
-// turned 30° into the backrest with its legs out along the cushion, and tans as it lies there.
+// turned 30° into the backrest, and tans as it lies there.
 .pet-svg[data-beach][data-pet-state='work']:is([data-pet-kind='stand'], [data-pet-kind='floor']) {
-  [data-part='laptop'],
-  [data-part='legs'] {
+  [data-part='laptop'] {
     display: none;
   }
 
