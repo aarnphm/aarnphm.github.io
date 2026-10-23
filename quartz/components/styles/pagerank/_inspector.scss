@@ -157,6 +157,8 @@
 .pagerank-hood-more {
   font: 400 var(--text-meta) var(--codeFont);
   color: var(--darkgray);
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .pagerank-hood-inbound :is(.pagerank-hood-empty, .pagerank-hood-more) {
@@ -245,6 +247,16 @@
     inline-size: 6.5rem;
   }
 
+  @container pagerank (max-width: 30rem) {
+    :is(th, td):nth-child(2) {
+      inline-size: 3rem;
+    }
+
+    :is(th, td):nth-child(3) {
+      inline-size: 4.75rem;
+    }
+  }
+
   thead th {
     font-weight: 400;
     color: var(--darkgray);
@@ -253,6 +265,10 @@
 
   tbody td:first-child {
     font-family: var(--bodyFont);
+
+    a.internal {
+      white-space: nowrap;
+    }
 
     .pagerank-hood-rank {
       display: inline-block;
