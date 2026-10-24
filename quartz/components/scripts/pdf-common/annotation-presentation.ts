@@ -455,6 +455,13 @@ export function renderPdfAnnotations(state: PdfState) {
 }
 
 export function rerenderVisiblePages(state: PdfState) {
+  const viewportTop = state.scroller.getBoundingClientRect().top
+  const anchor = [...state.slots.values()].find(
+    slot => slot.element.getBoundingClientRect().bottom > viewportTop,
+  )
+  const anchorRect = anchor?.element.getBoundingClientRect()
+  const anchorOffset =
+    anchorRect && anchorRect.height > 0 ? (viewportTop - anchorRect.top) / anchorRect.height : 0
   state.renderEpoch += 1
   state.scale = calculateFitScale(
     state.scroller,
@@ -481,6 +488,11 @@ export function rerenderVisiblePages(state: PdfState) {
   state.textRenderQueue.clear()
   state.preloadQueue.clear()
   invalidatePageMetrics(state)
+  if (anchor) {
+    const resized = anchor.element.getBoundingClientRect()
+    state.scroller.scrollTop += resized.top - viewportTop + anchorOffset * resized.height
+    state.currentPage = anchor.pageNumber
+  }
   updateControls(state)
   renderPdfAnnotations(state)
   enqueueVisiblePages(state)
