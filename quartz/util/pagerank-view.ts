@@ -66,11 +66,7 @@ export interface PageRankQuery {
   readonly desc: boolean
 }
 
-export const fold = (text: string) =>
-  text
-    .normalize('NFD')
-    .replace(/\p{M}/gu, '')
-    .toLowerCase()
+export const fold = (text: string) => text.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase()
 
 export const folderOf = (slug: string) => (slug.includes('/') ? slug.split('/', 1)[0] : 'root')
 
@@ -227,7 +223,11 @@ export function filterNodes(model: PageRankModel, query: PageRankQuery): PageRan
 export function logTicks(min: number, max: number): number[] {
   const steps = [1, 2, 5]
   const ticks: number[] = []
-  for (let exponent = Math.floor(Math.log10(min)); exponent <= Math.ceil(Math.log10(max)); exponent++)
+  for (
+    let exponent = Math.floor(Math.log10(min));
+    exponent <= Math.ceil(Math.log10(max));
+    exponent++
+  )
     for (const step of steps) {
       const value = step * 10 ** exponent
       if (value >= min && value <= max) ticks.push(value)

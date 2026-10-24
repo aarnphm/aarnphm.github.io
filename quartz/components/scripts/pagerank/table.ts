@@ -1,5 +1,5 @@
-import { resolveRelative, type FullSlug } from '../../../util/path'
 import type { PageRankNode } from '../../../util/pagerank-view'
+import { resolveRelative, type FullSlug } from '../../../util/path'
 
 export const pageSize = 100
 const oneSource = 0.6
@@ -14,7 +14,8 @@ const cell = (className: string, text?: string) => {
 export const formatTimes = (times: number) => times.toFixed(2)
 export const formatShare = (share: number) =>
   share >= 0.1 || share === 0 ? `${Math.round(share * 100)}%` : `${(share * 100).toFixed(1)}%`
-export const formatDelta = (delta: number) => (delta > 0 ? `+${delta}` : delta < 0 ? `−${-delta}` : '0')
+export const formatDelta = (delta: number) =>
+  delta > 0 ? `+${delta}` : delta < 0 ? `−${-delta}` : '0'
 
 export const noteHref = (slug: string) => resolveRelative('pagerank' as FullSlug, slug as FullSlug)
 

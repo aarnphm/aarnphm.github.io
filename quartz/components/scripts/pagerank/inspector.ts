@@ -38,7 +38,13 @@ function side(
   const list = el('ol', `pagerank-hood-side pagerank-hood-${kind}`)
   const drawn = links.length > slots ? links.slice(0, slots - 1) : links
   if (links.length === 0)
-    list.append(el('li', 'pagerank-hood-empty', kind === 'inbound' ? 'no inbound links' : 'no outbound links'))
+    list.append(
+      el(
+        'li',
+        'pagerank-hood-empty',
+        kind === 'inbound' ? 'no inbound links' : 'no outbound links',
+      ),
+    )
   for (const link of drawn) {
     const item = el('li')
     const button = el('button', 'pagerank-hood-node')
@@ -60,7 +66,9 @@ function side(
     list.append(item)
   }
   if (drawn.length < links.length)
-    list.append(el('li', 'pagerank-hood-more', `+${links.length - drawn.length} more in the ledger`))
+    list.append(
+      el('li', 'pagerank-hood-more', `+${links.length - drawn.length} more in the ledger`),
+    )
 
   const edges = document.createElementNS(SVG, 'svg')
   edges.setAttribute('class', 'pagerank-hood-edges')
