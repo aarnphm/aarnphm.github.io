@@ -1,0 +1,94 @@
+.search-container,
+#palette-container {
+  .code-search-status,
+  .code-search-detail {
+    color: var(--darkgray);
+    font-family: var(--codeFont);
+    font-size: var(--text-meta);
+    overflow-wrap: anywhere;
+  }
+  .code-search-result {
+    flex-wrap: wrap;
+    min-width: 0;
+  }
+  .code-search-detail {
+    white-space: pre-wrap;
+    max-height: 4.5rem;
+    overflow: auto;
+  }
+  .code-search-inline-preview {
+    width: 100%;
+    min-width: 0;
+    max-height: 16rem;
+    overflow: auto;
+  }
+  .code-match-preview {
+    min-width: 0;
+    figure {
+      margin: 0;
+    }
+    [data-line]::before {
+      color: var(--darkgray);
+    }
+    pre {
+      overflow: auto;
+      max-height: 60vh;
+    }
+    [data-code-match] {
+      background: color-mix(in srgb, var(--dark) 8%, var(--light));
+    }
+    // One row: every item takes the 1.75rem control line, so text and buttons share a centre.
+    figcaption {
+      flex-wrap: nowrap;
+      gap: 0.25rem;
+      line-height: 1.75rem;
+      font-variant-numeric: tabular-nums;
+
+      > a {
+        flex: 0 0 auto;
+        margin-left: 0.5rem;
+      }
+    }
+    .code-match-label {
+      flex: 1 1 auto;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .code-match-counter {
+      flex: 0 0 auto;
+      min-width: 5ch;
+      text-align: center;
+    }
+    mark {
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      color: var(--dark);
+      background: var(--highlight);
+    }
+  }
+}
+
+.search-container .code-search-mobile-location {
+  display: none;
+  @container search-results (max-width: 360px) {
+    display: block;
+    color: var(--darkgray);
+    font-family: var(--codeFont);
+    font-size: var(--text-meta);
+    font-variant-numeric: tabular-nums;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}
+
+.search-container .code-search-result-count,
+#palette-container .code-search-result-count {
+  margin: 0;
+  padding: 0.4rem 0.75rem;
+  color: var(--darkgray);
+  font-family: var(--codeFont);
+  font-size: var(--text-meta);
+  font-variant-numeric: tabular-nums;
+}
