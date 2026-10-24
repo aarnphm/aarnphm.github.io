@@ -2,7 +2,7 @@ import { globby } from 'globby'
 import { readFile, readdir, rm } from 'node:fs/promises'
 import path from 'node:path'
 import type { QuartzEmitterPlugin } from '../../types/plugin'
-import { readPdfIndex, validatePdfVectorShard } from '../../util/pdf-search'
+import { readPdfIndex, readPdfPassageShard, validatePdfVectorShard } from '../../util/pdf-search'
 import { removeWritten, write } from './helpers'
 
 async function publication(content: string) {
@@ -15,6 +15,11 @@ async function publication(content: string) {
   for (const shard of index.shards) {
     const bytes = await readFile(path.join(content, shard.path))
     await validatePdfVectorShard(Uint8Array.from(bytes).buffer, shard)
+    files.set(shard.path.slice(1), bytes)
+  }
+  for (const shard of index.passageShards) {
+    const bytes = await readFile(path.join(content, shard.path))
+    await readPdfPassageShard(Uint8Array.from(bytes).buffer, shard, index.documents)
     files.set(shard.path.slice(1), bytes)
   }
   files.set(`embeddings/pdf/${index.generation}/manifest.json`, payload)

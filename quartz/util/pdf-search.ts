@@ -50,35 +50,92 @@ export interface PdfVectorShard {
   byteStride: number
   sha256: string
 }
+/** JSON array of passages, aligned row for row with the vector shard of the same index. */
+export interface PdfPassageShard {
+  path: string
+  rows: number
+  rowOffset: number
+  byteLength: number
+  sha256: string
+}
 export interface PdfIndex {
   generation: string
-  passages: PdfPassage[]
+  rows: number
   documents: Record<string, PdfMetadata>
   coverage: { indexedDocuments: number; eligibleDocuments: number; indexedPages: number }
   shards: PdfVectorShard[]
+  /** Version 3 stores passage text beside the vectors; version 2 inlines it as `passages`. */
+  passageShards: PdfPassageShard[]
+  passages?: PdfPassage[]
 }
 
 const integer = (value: unknown): value is number =>
   typeof value === 'number' && Number.isSafeInteger(value) && value >= 0
 const strings = (value: unknown): value is string[] =>
   Array.isArray(value) && value.every(item => typeof item === 'string')
+const digest = /^[a-f\d]{64}$/
+const unsafePath = /(?:\.{2}|[\\?#%])/
+
+function readShardLayout(
+  value: unknown,
+  generation: string,
+  fileName: RegExp,
+  offset: number,
+): { path: string; rows: number; byteLength: number; sha256: string } {
+  if (
+    !isRecord(value) ||
+    typeof value.path !== 'string' ||
+    !value.path.startsWith(`/embeddings/pdf/${generation}/`) ||
+    !fileName.test(value.path.split('/').at(-1) ?? '') ||
+    unsafePath.test(value.path) ||
+    !integer(value.rows) ||
+    value.rows === 0 ||
+    value.rows > 1024 ||
+    value.rowOffset !== offset ||
+    !integer(value.byteLength) ||
+    typeof value.sha256 !== 'string' ||
+    !digest.test(value.sha256)
+  )
+    throw new Error('Invalid PDF shard')
+  return { path: value.path, rows: value.rows, byteLength: value.byteLength, sha256: value.sha256 }
+}
+
+function readPassage(value: unknown, documents: Record<string, PdfMetadata>): PdfPassage {
+  if (
+    !isRecord(value) ||
+    typeof value.slug !== 'string' ||
+    !documents[value.slug] ||
+    !integer(value.page) ||
+    value.page === 0 ||
+    typeof value.pageLabel !== 'string' ||
+    typeof value.text !== 'string' ||
+    !value.text.trim() ||
+    typeof value.title !== 'string' ||
+    !integer(value.chunk)
+  )
+    throw new Error('Invalid PDF passage reference')
+  return {
+    slug: value.slug,
+    page: value.page,
+    pageLabel: value.pageLabel,
+    text: value.text,
+    title: value.title,
+    chunk: value.chunk,
+  }
+}
 
 export function readPdfIndex(data: unknown): PdfIndex {
   if (
     !isRecord(data) ||
     data.kind !== 'quartz-pdf-search-v1' ||
-    data.version !== 2 ||
+    (data.version !== 2 && data.version !== 3) ||
     data.model !== 'google/embeddinggemma-2' ||
     data.dims !== 768 ||
     data.dtype !== 'fp32' ||
     data.normalized !== true ||
     typeof data.generation !== 'string' ||
-    !/^[a-f\d]{64}$/.test(data.generation) ||
-    !strings(data.ids) ||
-    !Array.isArray(data.passages) ||
-    data.rows !== data.passages.length ||
-    data.ids.length !== data.passages.length ||
-    new Set(data.ids).size !== data.ids.length ||
+    !digest.test(data.generation) ||
+    !integer(data.rows) ||
     !isRecord(data.documents) ||
     !isRecord(data.coverage) ||
     !integer(data.coverage.indexedDocuments) ||
@@ -94,34 +151,19 @@ export function readPdfIndex(data: unknown): PdfIndex {
     !Array.isArray(data.vectors.shards)
   )
     throw new Error('Invalid PDF vector inventory')
+  const { generation } = data
   const shards: PdfVectorShard[] = []
   let offset = 0
   for (const shard of data.vectors.shards) {
+    const layout = readShardLayout(shard, generation, /^vectors-\d+\.bin$/, offset)
     if (
       !isRecord(shard) ||
-      typeof shard.path !== 'string' ||
-      !shard.path.startsWith(`/embeddings/pdf/${data.generation}/`) ||
-      !/^vectors-\d+\.bin$/.test(shard.path.split('/').at(-1) ?? '') ||
-      /(?:\.{2}|[\\?#%])/.test(shard.path) ||
-      !integer(shard.rows) ||
-      shard.rows === 0 ||
-      shard.rows > 1024 ||
-      shard.rowOffset !== offset ||
       shard.byteStride !== 768 * 4 ||
-      shard.byteLength !== shard.rows * 768 * 4 ||
-      typeof shard.sha256 !== 'string' ||
-      !/^[a-f\d]{64}$/.test(shard.sha256)
+      layout.byteLength !== layout.rows * 768 * 4
     )
       throw new Error('Invalid PDF vector shard')
-    shards.push({
-      path: shard.path,
-      rows: shard.rows,
-      rowOffset: offset,
-      byteLength: shard.byteLength,
-      byteStride: shard.byteStride,
-      sha256: shard.sha256,
-    })
-    offset += shard.rows
+    shards.push({ ...layout, rowOffset: offset, byteStride: 768 * 4 })
+    offset += layout.rows
   }
   if (offset !== data.rows) throw new Error('PDF shards do not cover the passage inventory')
   const documents: Record<string, PdfMetadata> = {}
@@ -137,42 +179,56 @@ export function readPdfIndex(data: unknown): PdfIndex {
       throw new Error('Invalid PDF document metadata')
     documents[slug] = { title: value.title, aliases: value.aliases, acronyms: value.acronyms }
   }
-  const passages: PdfPassage[] = []
-  for (const [row, value] of data.passages.entries()) {
-    if (
-      !isRecord(value) ||
-      typeof value.slug !== 'string' ||
-      !documents[value.slug] ||
-      !integer(value.page) ||
-      value.page === 0 ||
-      typeof value.pageLabel !== 'string' ||
-      typeof value.text !== 'string' ||
-      !value.text.trim() ||
-      typeof value.title !== 'string' ||
-      !integer(value.chunk) ||
-      data.ids[row] !== `${value.slug}#page=${value.page}&chunk=${value.chunk}`
-    )
-      throw new Error('Invalid PDF passage reference')
-    passages.push({
-      slug: value.slug,
-      page: value.page,
-      pageLabel: value.pageLabel,
-      text: value.text,
-      title: value.title,
-      chunk: value.chunk,
-    })
-  }
-  return {
-    generation: data.generation,
-    passages,
+  const index: PdfIndex = {
+    generation,
+    rows: data.rows,
     documents,
     shards,
+    passageShards: [],
     coverage: {
       indexedDocuments: data.coverage.indexedDocuments,
       eligibleDocuments: data.coverage.eligibleDocuments,
       indexedPages: data.coverage.indexedPages,
     },
   }
+  if (data.version === 2) {
+    if (
+      !strings(data.ids) ||
+      !Array.isArray(data.passages) ||
+      data.rows !== data.passages.length ||
+      data.ids.length !== data.passages.length ||
+      new Set(data.ids).size !== data.ids.length
+    )
+      throw new Error('Invalid PDF passage inventory')
+    index.passages = data.passages.map((value, row) => {
+      const passage = readPassage(value, documents)
+      if ((data.ids as string[])[row] !== passageId(passage))
+        throw new Error('Invalid PDF passage reference')
+      return passage
+    })
+    return index
+  }
+  if (!isRecord(data.passages) || !Array.isArray(data.passages.shards))
+    throw new Error('Invalid PDF passage inventory')
+  offset = 0
+  for (const [position, shard] of data.passages.shards.entries()) {
+    const layout = readShardLayout(shard, generation, /^passages-\d+\.json$/, offset)
+    if (layout.rows !== shards[position]?.rows)
+      throw new Error('PDF passage shards do not align with the vector shards')
+    index.passageShards.push({ ...layout, rowOffset: offset })
+    offset += layout.rows
+  }
+  if (offset !== data.rows) throw new Error('PDF passage shards do not cover the inventory')
+  return index
+}
+
+export function passageId(passage: Pick<PdfPassage, 'slug' | 'page' | 'chunk'>): string {
+  return `${passage.slug}#page=${passage.page}&chunk=${passage.chunk}`
+}
+
+async function sha256Hex(bytes: ArrayBuffer): Promise<string> {
+  const hash = new Uint8Array(await crypto.subtle.digest('SHA-256', bytes))
+  return Array.from(hash, value => value.toString(16).padStart(2, '0')).join('')
 }
 
 export async function validatePdfVectorShard(
@@ -180,9 +236,7 @@ export async function validatePdfVectorShard(
   shard: PdfVectorShard,
 ): Promise<void> {
   if (bytes.byteLength !== shard.byteLength) throw new Error('PDF shard length mismatch')
-  const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', bytes))
-  if (Array.from(digest, value => value.toString(16).padStart(2, '0')).join('') !== shard.sha256)
-    throw new Error('PDF shard checksum mismatch')
+  if ((await sha256Hex(bytes)) !== shard.sha256) throw new Error('PDF shard checksum mismatch')
   const values = new Float32Array(bytes)
   for (let row = 0; row < shard.rows; row++) {
     let norm = 0
@@ -190,6 +244,21 @@ export async function validatePdfVectorShard(
     if (!Number.isFinite(norm) || Math.abs(norm - 1) > 0.01)
       throw new Error('PDF shard contains an invalid unit vector')
   }
+}
+
+/** Parse one passage shard after checking its bytes against the manifest. */
+export async function readPdfPassageShard(
+  bytes: ArrayBuffer,
+  shard: PdfPassageShard,
+  documents: Record<string, PdfMetadata>,
+): Promise<PdfPassage[]> {
+  if (bytes.byteLength !== shard.byteLength) throw new Error('PDF passage shard length mismatch')
+  if ((await sha256Hex(bytes)) !== shard.sha256)
+    throw new Error('PDF passage shard checksum mismatch')
+  const parsed: unknown = JSON.parse(new TextDecoder().decode(bytes))
+  if (!Array.isArray(parsed) || parsed.length !== shard.rows)
+    throw new Error('PDF passage shard row count mismatch')
+  return parsed.map(value => readPassage(value, documents))
 }
 
 export function pdfSearchResults(

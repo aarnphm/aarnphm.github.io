@@ -171,6 +171,26 @@ def read_passages(
   return passages, documents, spec
 
 
+def write_passage_shards(
+  passages: list[PdfPassage], shards: list[dict], target: Path, generation: str
+) -> list[dict]:
+  """Passage text travels beside the vectors, row for row, so the browser page never parses it."""
+  layout = []
+  for index, shard in enumerate(shards):
+    start, end = shard['rowOffset'], shard['rowOffset'] + shard['rows']
+    payload = canonical(passages[start:end])
+    name = f'passages-{index:03d}.json'
+    (target / name).write_bytes(payload)
+    layout.append({
+      'path': f'/embeddings/pdf/{generation}/{name}',
+      'rows': shard['rows'],
+      'rowOffset': shard['rowOffset'],
+      'byteLength': len(payload),
+      'sha256': hashlib.sha256(payload).hexdigest(),
+    })
+  return layout
+
+
 def build(args: argparse.Namespace) -> None:
   inventory = public_pdfs(args.public_index, args.content)
   passages, documents, spec = read_passages(args.cache, inventory)
@@ -249,9 +269,9 @@ def build(args: argparse.Namespace) -> None:
   shards = write_shards(matrix, 1024, 'fp32', target)
   for shard in shards:
     shard['path'] = f'/embeddings/pdf/{generation}/{Path(shard["path"]).name}'
-  ids = [f'{p["slug"]}#page={p["page"]}&chunk={p["chunk"]}' for p in passages]
+  passage_shards = write_passage_shards(passages, shards, target, generation)
   manifest = {
-    'version': 2,
+    'version': 3,
     'kind': 'quartz-pdf-search-v1',
     'modality': 'text',
     'generation': generation,
@@ -267,9 +287,8 @@ def build(args: argparse.Namespace) -> None:
       'dims': DIMS,
       'shards': shards,
     },
-    'ids': ids,
     'documents': documents,
-    'passages': passages,
+    'passages': {'shards': passage_shards},
     'extraction': asdict(spec),
     'coverage': {
       'eligibleDocuments': len(inventory),
@@ -278,7 +297,9 @@ def build(args: argparse.Namespace) -> None:
     },
   }
   payload = canonical(manifest)
-  removed = publish(args.out, generation, payload, shards, len(passages))
+  removed = publish(
+    args.out, generation, payload, shards, passage_shards, len(passages)
+  )
   retained = prune_vectors(args.cache / 'vectors', digest(contract), set(keys))
   report = {
     'generation': generation,

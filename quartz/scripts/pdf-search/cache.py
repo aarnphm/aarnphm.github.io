@@ -126,13 +126,17 @@ class PageCache:
       raise ValueError('Invalid page number')
     return self.directory / f'{page_number:06d}.json'
 
-  def write(self, page: ExtractedPage) -> None:
+  def write(
+    self, page: ExtractedPage, *, origin: Mapping[str, object] | None = None
+  ) -> None:
     payload = {
       'key': self.key,
       'sourceSha256': self.source_sha256,
       'recipe': asdict(self.spec),
       'page': asdict(page),
     }
+    if origin is not None:
+      payload['origin'] = dict(origin)
     document = {**payload, 'sha256': digest(payload)}
     self.directory.mkdir(parents=True, exist_ok=True)
     fd, temporary = tempfile.mkstemp(dir=self.directory, suffix='.tmp')
