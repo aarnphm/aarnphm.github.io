@@ -1,4 +1,3 @@
-import { buildSelect } from '../controls/select'
 import { createNoteRanker } from '../../util/note-pagerank'
 import {
   filterNodes,
@@ -8,6 +7,7 @@ import {
   type PageRankQuery,
   type PageRankSort,
 } from '../../util/pagerank-view'
+import { buildSelect } from '../controls/select'
 import { currentNavSignal } from './nav-lifecycle'
 import { rankSizeChart } from './pagerank/chart'
 import { renderInspector } from './pagerank/inspector'
@@ -135,10 +135,12 @@ document.addEventListener('nav', async () => {
       ` · mean in ${mean(node => node.inbound)} · mean out ${mean(node => node.outbound)}`
     for (const button of root.querySelectorAll<HTMLButtonElement>('[data-pr-sort]')) {
       const active = button.dataset.prSort === state.query.sort
-      button.closest('th')!.setAttribute(
-        'aria-sort',
-        active ? (state.query.desc ? 'descending' : 'ascending') : 'none',
-      )
+      button
+        .closest('th')!
+        .setAttribute(
+          'aria-sort',
+          active ? (state.query.desc ? 'descending' : 'ascending') : 'none',
+        )
     }
     if (resetScroll) scroll.scrollTop = 0
     writeState(model, state)
@@ -159,7 +161,12 @@ document.addEventListener('nav', async () => {
       writeState(model, state)
     }
     const tr = body.querySelector<HTMLElement>(`tr[data-id="${id}"]`)
-    if (reveal && tr && (tr.offsetTop < scroll.scrollTop || tr.offsetTop > scroll.scrollTop + scroll.clientHeight - tr.offsetHeight))
+    if (
+      reveal &&
+      tr &&
+      (tr.offsetTop < scroll.scrollTop ||
+        tr.offsetTop > scroll.scrollTop + scroll.clientHeight - tr.offsetHeight)
+    )
       scroll.scrollTop = tr.offsetTop - scroll.clientHeight / 2
     mark()
   }

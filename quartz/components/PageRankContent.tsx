@@ -1,6 +1,6 @@
 import katex from 'katex'
-import { customMacros, katexOptions } from '../cfg'
 import type { QuartzComponent, QuartzComponentConstructor } from '../types/component'
+import { customMacros, katexOptions } from '../cfg'
 // @ts-ignore
 import script from './scripts/pagerank.inline'
 import style from './styles/pagerank.scss'
@@ -43,8 +43,8 @@ export default (() => {
         <section class="pagerank-intro" aria-label="what the score means">
           <p>
             each note is scored by a random walk over the links i wrote. at each step the walker
-            follows one of the current note's links with probability <Tex source="d" />, or jumps
-            to any note. a note without links sends the walker to any note.
+            follows one of the current note's links with probability <Tex source="d" />, or jumps to
+            any note. a note without links sends the walker to any note.
           </p>
           <Tex
             display
@@ -76,8 +76,8 @@ export default (() => {
         <figure class="pagerank-figure">
           <div class="pagerank-chart" data-pr-chart />
           <figcaption>
-            every note's score against its rank, both on log scales. the dashed line is a power
-            law <Tex source="x \propto r^{-\alpha}" /> fitted to notes with an inbound link; the flat
+            every note's score against its rank, both on log scales. the dashed line is a power law{' '}
+            <Tex source="x \propto r^{-\alpha}" /> fitted to notes with an inbound link; the flat
             tail on the right is notes nobody links to.{' '}
             <span class="pagerank-chart-readout" data-pr-chart-readout aria-live="polite" />
           </figcaption>
@@ -148,8 +148,9 @@ export default (() => {
             </div>
             <p class="pagerank-legend">
               100 rows a page. # is the global position; filters never renumber it. the log axis
-              column puts every note on one scale, so its marks are the distribution. Δ in is rank by
-              inbound count minus rank by pagerank: positive when well-ranked sources lift a note.
+              column puts every note on one scale, so its marks are the distribution. Δ in is rank
+              by inbound count minus rank by pagerank: positive when well-ranked sources lift a
+              note.
             </p>
           </div>
 
