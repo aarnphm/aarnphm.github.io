@@ -136,6 +136,7 @@ const config: QuartzConfig = {
         Plugin.Codeblock(),
         // Convert code-file transcludes to code blocks before highlighting
         Plugin.CodeViewer({ indexUrls: { lean: '/api/lean/verify' } }),
+        Plugin.CodeSearchBlocks(),
         Plugin.Twitter(),
         Plugin.SyntaxHighlighting({ keepBackground: true }),
         Plugin.Citations({ bibliography: './content/References.bib' }),
@@ -257,6 +258,7 @@ const config: QuartzConfig = {
         Plugin.SemanticIndex(configuration.semanticSearch!),
         Plugin.ImageSearch(),
         Plugin.PdfSearch(),
+        Plugin.CodeSearch(),
         Plugin.Assets(),
         Plugin.Static(),
         Plugin.AgentSkills(),

@@ -34,5 +34,6 @@ export { Bibliography } from './citations'
 export { EmailEmitter } from './email'
 
 export { ImageSearch } from './image-search'
+export { CodeSearch } from './code-search'
 export { PdfSearch } from './pdf-search'
 export { PageRankPage } from './pagerank-page'
