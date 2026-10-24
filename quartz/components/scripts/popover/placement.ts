@@ -216,6 +216,7 @@ export async function setPosition(
   const isPdf = popoverElement.querySelector('.popover-inner[data-content-type*="pdf"]') !== null
   const point = { x: clientX, y: clientY }
   const reference = popoverReference(link, point)
+  const arrowPadding = (parseFloat(getComputedStyle(popoverElement).paddingLeft) || 16) + 8
   const middleware = [
     offset(2),
     placement
@@ -239,7 +240,8 @@ export async function setPosition(
           },
         })
       : null,
-    arrowElement ? floatingArrow({ element: arrowElement, padding: 12 }) : null,
+    // Clamp the arrow inside the inner panel, not the padded outer box.
+    arrowElement ? floatingArrow({ element: arrowElement, padding: arrowPadding }) : null,
   ]
   const {
     x,
@@ -258,6 +260,14 @@ export async function setPosition(
       middlewareData.arrow?.x,
       middlewareData.arrow?.y,
     )
+    // After shift() the anchor can sit beyond the panel's span; an arrow there would hang loose.
+    const vertical = finalPlacement.startsWith('left') || finalPlacement.startsWith('right')
+    const anchor = reference.getBoundingClientRect()
+    const box = popoverElement.getBoundingClientRect()
+    const center = vertical ? anchor.top + anchor.height / 2 : anchor.left + anchor.width / 2
+    const start = (vertical ? box.top : box.left) + arrowPadding
+    const end = (vertical ? box.bottom : box.right) - arrowPadding
+    arrowElement.style.visibility = center < start || center > end ? 'hidden' : ''
   }
 }
 
