@@ -256,6 +256,7 @@ const config: QuartzConfig = {
         Plugin.ContentIndex({ atomLimit: 50 }),
         Plugin.SemanticIndex(configuration.semanticSearch!),
         Plugin.ImageSearch(),
+        Plugin.PdfSearch(),
         Plugin.Assets(),
         Plugin.Static(),
         Plugin.AgentSkills(),
