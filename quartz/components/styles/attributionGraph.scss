@@ -22,7 +22,7 @@
 .ag-controls {
   display: grid;
   grid-template-columns: max-content minmax(0, 1fr);
-  gap: 0.3rem 0.8rem;
+  gap: 0.15rem 0.8rem;
   align-items: center;
 }
 
@@ -33,7 +33,7 @@
 .ag-prune-label {
   grid-column: 1 / 2;
   color: var(--fig-note);
-  font-size: 0.82rem;
+  font-size: var(--text-meta);
   white-space: nowrap;
 }
 
@@ -92,7 +92,7 @@
   grid-template-columns: minmax(0, 1fr);
   gap: 1rem 1.5rem;
   align-items: start;
-  margin-top: 0.9rem;
+  margin-top: 1.1rem;
 
   @container ag-figure (min-width: 44rem) {
     grid-template-columns: minmax(0, 1.9fr) minmax(13rem, 1fr);
@@ -112,7 +112,8 @@
 .ag-svg {
   display: block;
   width: 100%;
-  min-width: 36rem;
+  // fits the article column; only a phone-width figure scrolls
+  min-width: 25rem;
 
   text {
     font-family: var(--codeFont);
@@ -121,12 +122,12 @@
 
   .ag-axis {
     fill: var(--fig-note);
-    font-size: 9px;
+    font-size: 10px;
   }
 
   .ag-label {
     fill: var(--dark);
-    font-size: 10px;
+    font-size: 11px;
     pointer-events: none;
   }
 

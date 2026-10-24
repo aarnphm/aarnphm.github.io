@@ -100,6 +100,7 @@
 
 .mtp-stage {
   position: relative;
+  container-type: inline-size;
 }
 
 .mtp-links {
@@ -138,15 +139,48 @@
   font-size: 10px;
 }
 
+// One row of columns that always fits its container; the script reads the geometry to route links.
 .mtp-rail {
+  --mtp-n: 3;
   display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(10rem, 1fr);
-  gap: 1.35rem;
-  overflow-x: auto;
+  grid-template-columns: repeat(var(--mtp-n), minmax(0, 1fr));
+  gap: clamp(0.6rem, 3cqw, 1.35rem);
   padding: 0.35rem 0.55rem 0.45rem;
   position: relative;
   z-index: 1;
+}
+
+.mtp-modules[data-mtp-depth='1'] .mtp-rail {
+  --mtp-n: 2;
+}
+
+.mtp-modules[data-mtp-depth='3'] .mtp-rail {
+  --mtp-n: 4;
+}
+
+// Too narrow for the row: stack the columns. Links then run in side lanes (see the script).
+@container (max-width: 44rem) {
+  .mtp-modules[data-mtp-depth='3'] .mtp-rail {
+    --mtp-n: 1;
+    padding-inline: 1.8rem;
+    row-gap: 1.1rem;
+  }
+}
+
+@container (max-width: 32rem) {
+  .mtp-modules[data-mtp-depth='2'] .mtp-rail {
+    --mtp-n: 1;
+    padding-inline: 1.8rem;
+    row-gap: 1.1rem;
+  }
+}
+
+@container (max-width: 22rem) {
+  .mtp-modules[data-mtp-depth='1'] .mtp-rail {
+    --mtp-n: 1;
+    padding-inline: 1.8rem;
+    row-gap: 1.1rem;
+  }
 }
 
 .mtp-col {
@@ -154,7 +188,7 @@
   flex-direction: column;
   gap: 0.2rem;
   min-width: 0;
-  padding: 0.65rem;
+  padding: clamp(0.4rem, 1.6cqw, 0.65rem);
   border: 1px solid var(--fig-frame-border);
   background: var(--fig-surface);
 }
@@ -164,7 +198,12 @@
 }
 
 .mtp-head {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: baseline;
+  gap: 0.5rem;
   margin-bottom: 0.2rem;
+  white-space: nowrap;
 }
 
 .mtp-title {
@@ -178,7 +217,7 @@
 .mtp-sub {
   margin: 0.1rem 0 0;
   color: var(--fig-note);
-  font-size: 0.7rem;
+  font-size: 0.75rem;
 }
 
 .mtp-block {
@@ -190,10 +229,13 @@
   padding: 0.25rem 0.4rem;
   border: 1px solid var(--fig-stroke);
   background: var(--mtp-op);
+  min-width: 0;
   color: var(--dark);
   font-family: var(--codeFont);
-  font-size: 0.68rem;
+  font-size: 0.75rem;
+  line-height: 1.25;
   text-align: center;
+  overflow-wrap: anywhere;
 }
 
 .mtp-block--shared {
@@ -219,7 +261,7 @@
 
 .mtp-loss-tag {
   color: var(--fig-note);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
 }
 
 .mtp-row {
@@ -233,7 +275,7 @@
   border-color: var(--fig-stroke-soft);
   background: transparent;
   color: var(--fig-note);
-  font-size: 0.62rem;
+  font-size: 0.75rem;
 }
 
 // Vertical arrows overlap the column gap so the line touches both boxes.
@@ -314,8 +356,8 @@
 .mtp-targets,
 .mtp-inputs {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem;
+  flex-wrap: nowrap;
+  gap: 0.2rem;
   align-items: center;
 }
 
@@ -323,13 +365,14 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 1.4rem;
-  padding: 0.12rem 0.28rem;
+  flex: 0 1 auto;
+  min-width: 0;
+  padding: 0.12rem 0.3rem;
   border: 1px solid var(--fig-stroke-soft);
   background: var(--light);
   color: var(--dark);
   font-family: var(--codeFont);
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   font-variant-numeric: tabular-nums;
 
   &[data-kind='input'] {
@@ -354,8 +397,3 @@
   @include figure-caption;
 }
 
-@media (max-width: 640px) {
-  .mtp-rail {
-    gap: 1rem;
-  }
-}
