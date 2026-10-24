@@ -2,7 +2,7 @@
 # requires-python = ">=3.12"
 # dependencies = [
 #     "mlx>=0.32.3",
-#     "mlx-vlm @ git+https://github.com/Blaizzy/mlx-vlm@fec3f50379bb2cb0760ef3c8a68ebce9585e4d97",
+#     "mlx-vlm==0.7.10",
 #     "transformers>=5.14",
 #     "fastapi",
 #     "uvicorn",
@@ -28,6 +28,8 @@ from __future__ import annotations
 import argparse, asyncio, base64
 from contextlib import asynccontextmanager
 from concurrent.futures import ThreadPoolExecutor
+from importlib.metadata import version
+from pathlib import Path
 
 import numpy as np
 import uvicorn
@@ -57,8 +59,10 @@ class Embedder:
     max_batch_tokens: int,
     memory_limit_gb: float,
     cache_limit_mb: int,
+    revision: str | None = None,
   ):
     import mlx.core as mx
+    from huggingface_hub import snapshot_download
     from mlx_vlm import load
 
     # MLX defaults both limits to roughly all of RAM. Varied batch widths keep
@@ -66,7 +70,9 @@ class Embedder:
     # machine swaps.
     mx.set_memory_limit(int(memory_limit_gb * GIB))
     mx.set_cache_limit(cache_limit_mb * MIB)
-    self.model, processor = load(repo)
+    model_path = snapshot_download(repo, revision=revision)
+    self.revision = Path(model_path).name
+    self.model, processor = load(model_path)
     self.tokenizer = processor.tokenizer
     self.pad_id = self.tokenizer.pad_token_id or 0
     self.max_length = max_length
@@ -124,6 +130,7 @@ def create_app(args: argparse.Namespace) -> FastAPI:
         args.max_batch_tokens,
         args.memory_limit_gb,
         args.cache_limit_mb,
+        args.revision,
       ),
     )
     yield
@@ -138,6 +145,10 @@ def create_app(args: argparse.Namespace) -> FastAPI:
     return {
       'status': 'ok',
       'repo': args.repo,
+      'revision': state['embedder'].revision,
+      'runtime': {
+        name: version(name) for name in ('mlx', 'mlx-vlm', 'transformers')
+      },
       'mlx_active_mb': mx.get_active_memory() // MIB,
       'mlx_cache_mb': mx.get_cache_memory() // MIB,
       'mlx_peak_mb': mx.get_peak_memory() // MIB,
@@ -184,6 +195,7 @@ def create_app(args: argparse.Namespace) -> FastAPI:
 def main() -> None:
   parser = argparse.ArgumentParser(description=__doc__.split('\n')[0])
   parser.add_argument('--repo', default=DEFAULT_REPO)
+  parser.add_argument('--revision', help='pin a Hugging Face model revision')
   parser.add_argument('--host', default='127.0.0.1')
   parser.add_argument('--port', type=int, default=8000)
   parser.add_argument(
