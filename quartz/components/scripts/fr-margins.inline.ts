@@ -3,6 +3,7 @@
 // that carries the same number. The markup comes from renderPage/fr-margins.ts. Under the width
 // that leaves a margin, each group folds under its paragraph and the label toggles it.
 
+import { mountClamps } from './fr-margins-clamp'
 import { layout, mountNotes, mountReview } from './fr-margins-review'
 
 // Room for a 15.5rem column and its narrowest 3rem gutter left of the text (fr-margins.scss).
@@ -142,6 +143,7 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
     }
   }
 
+  const clamps = mountClamps(article, () => queue(), signal)
   const paint = () => {
     const box = article.getBoundingClientRect()
     const mode =
@@ -164,6 +166,8 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
     for (const entry of entries) settle(entry)
     leaders.replaceChildren()
     leaderOf.clear()
+    clamps.reset()
+    article.style.removeProperty('margin-block-end')
     if (mode === 'inline') {
       for (const group of groups) group.style.removeProperty('top')
       leaders.removeAttribute('viewBox')
@@ -192,6 +196,8 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
       /** the dash before a number that sits past the text column's edge, x0 to x1 */
       tick?: [number, number]
       move: (by: number) => void
+      /** a group cuts its bodies to the height it has before the next entry (fr-margins-clamp.ts) */
+      fit?: (room: number) => void
     }
     const items: Item[] = []
     const mid = (r: DOMRect) => r.top + r.height / 2
@@ -208,7 +214,19 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
       group.style.top = `${parseFloat(group.style.top) + mid(m) - mid(label.getBoundingClientRect())}px`
       // the leader stays in the gutter and stops at the text column's edge, short of a list item's
       // marker or a cell's rule; a number set in from the edge (past a section's rail) gets its dash
-      const markX = Math.round(m.left - box.left)
+      // an outside ::marker is painted left of the li box and can't be measured, so the dash ends
+      // before the parent list's edge, or 1.5em left of the li where ordinals overflow its padding
+      let markX = Math.round(m.left - box.left)
+      const li = anchor.closest<HTMLElement>('li')
+      if (li && getComputedStyle(li).listStylePosition === 'outside') {
+        const list = li.parentElement!.getBoundingClientRect()
+        markX = Math.round(
+          Math.min(
+            list.left,
+            li.getBoundingClientRect().left - 1.5 * parseFloat(getComputedStyle(li).fontSize),
+          ) - box.left,
+        )
+      }
       items.push({
         el: group,
         side: 'left',
@@ -220,6 +238,7 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
             : undefined,
         heads: () => labels.map(l => mid(l.getBoundingClientRect())),
         move: by => (group.style.top = `${parseFloat(group.style.top) + by}px`),
+        fit: room => clamps.fit(group, room),
       })
     }
     // a sidenote's first line sits level with its label, as an entry's does with its number; its
@@ -260,9 +279,12 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
       level: number
     }
     const targets = new Map<string, Target>()
-    for (const item of items) {
+    for (const [i, item] of items.entries()) {
       const shift = Math.max(0, floors[item.side] + GROUP_GAP - item.top)
       if (shift > 0) item.move(shift)
+      // a group ends before the next entry on its side would stand, or before the article ends
+      const next = items.slice(i + 1).find(other => other.side === item.side)
+      item.fit?.((next ? next.top - GROUP_GAP : box.bottom) - item.top - shift)
       const placed = item.el.getBoundingClientRect()
       floors[item.side] = placed.bottom
       const y1 = Math.round(item.end.y) + 0.5
@@ -286,6 +308,11 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
         target.hi = Math.max(target.hi, y0)
       }
     }
+    // a body the reader opened may run the column past the text; the article grows to hold it, so
+    // the column never reaches the footer
+    const overrun = Math.max(floors.left, floors.right) + GROUP_GAP - box.bottom
+    if (overrun > 0) article.style.setProperty('margin-block-end', `${Math.ceil(overrun)}px`)
+    clamps.refocus()
     // one unbroken hairline from the entry to what it points at: straight when the entry is
     // level with it, an elbow through the gutter when the stack pushed the entry down. A trunk
     // spans its target and its heads; a later trunk on the same side whose span overlaps takes the

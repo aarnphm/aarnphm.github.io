@@ -1,3 +1,5 @@
+@use '../../styles/variables.scss' as *;
+
 :root[reader-mode='on'] {
   .byline,
   .page-content > .left-col,
@@ -6,5 +8,43 @@
   .page-footer {
     display: none !important;
     transition: display 0.2s ease;
+  }
+
+  // an apparatus page (fr-margins.scss) reads as its text alone: the margin entries, the sidenotes
+  // and the figures leave, and the column moves to the centre of the page grid
+  .page-body-grid:has(.fr-group) {
+    > .sidenotes,
+    article .fr-group,
+    article .fr-fold,
+    article .fr-n,
+    article .fr-leaders,
+    article .sidenote-content,
+    article .sidenote-label[data-auto],
+    article .sidenote-arrow,
+    article section[data-footnotes],
+    article :is(figure:not([data-rehype-pretty-code-figure]), [class*='figure'], .svg-diagram),
+    article :is(img:not(.inline-icons), picture, video, audio, iframe, canvas) {
+      display: none !important;
+    }
+
+    // a named sidenote's label is a phrase of the sentence; it keeps the words without the link
+    article .sidenote-label {
+      border-bottom: 0;
+      color: inherit;
+      cursor: text;
+    }
+
+    article .sidenote {
+      cursor: text;
+    }
+  }
+
+  @media all and ($desktop) {
+    .page-body-grid:has(.fr-group) {
+      > .page-header,
+      > .page-content {
+        --layout-wide-column: 6 / span 3;
+      }
+    }
   }
 }
