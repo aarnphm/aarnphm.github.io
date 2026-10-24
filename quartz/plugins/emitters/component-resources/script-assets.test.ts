@@ -86,6 +86,7 @@ test('page script publication resolves runtime URLs to its emitted production as
     'collaborative-comments.client.js',
     'semantic.worker.js',
     'lexical.worker.js',
+    'code-search.worker.js',
   ]
   try {
     const files = await writePageScripts(ctx, {

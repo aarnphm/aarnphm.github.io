@@ -1,24 +1,9 @@
 import DOMPurify from 'dompurify'
-import hljs from 'highlight.js/lib/core'
-import bash from 'highlight.js/lib/languages/bash'
-import go from 'highlight.js/lib/languages/go'
-import javascript from 'highlight.js/lib/languages/javascript'
-import python from 'highlight.js/lib/languages/python'
-import rust from 'highlight.js/lib/languages/rust'
-import typescript from 'highlight.js/lib/languages/typescript'
 import katex from 'katex'
 import { marked } from 'marked'
 import { customMacros } from '../cfg'
-import { escapeHTML } from './escape'
 import { stripSlashes, splitAnchor, resolveRelative, type FullSlug } from './path'
 import { extractWikilinks, resolveWikilinkTarget } from './wikilinks'
-
-hljs.registerLanguage('javascript', javascript)
-hljs.registerLanguage('typescript', typescript)
-hljs.registerLanguage('python', python)
-hljs.registerLanguage('rust', rust)
-hljs.registerLanguage('go', go)
-hljs.registerLanguage('bash', bash)
 
 const renderer = new marked.Renderer()
 
@@ -115,7 +100,7 @@ function processWikilinks(text: string, currentSlug: FullSlug): string {
   return processed
 }
 
-export function renderMarkdown(markdown: string, currentSlug?: FullSlug): string {
+function renderMarkdown(markdown: string, currentSlug?: FullSlug): string {
   if (!markdown || !markdown.trim()) {
     return ''
   }
@@ -125,26 +110,31 @@ export function renderMarkdown(markdown: string, currentSlug?: FullSlug): string
     processedMarkdown = processWikilinks(markdown, currentSlug)
   }
 
-  let html = marked.parse(processedMarkdown, { async: false }) as string
-  html = html.replace(
-    /<pre><code class="language-(\w+)">([\s\S]*?)<\/code><\/pre>/g,
-    (_match, lang: string, code: string) => {
-      const decodedCode = code
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>')
-        .replace(/&quot;/g, '"')
-        .replace(/&amp;/g, '&')
-      const escapedCode = escapeHTML(decodedCode)
-      if (lang && hljs.getLanguage(lang)) {
-        try {
-          const highlighted = hljs.highlight(decodedCode, { language: lang }).value
-          return `<pre><code class="hljs language-${lang}">${highlighted}</code></pre>`
-        } catch {
-          return `<pre><code class="hljs">${escapedCode}</code></pre>`
-        }
-      }
-      return `<pre><code class="hljs">${escapedCode}</code></pre>`
-    },
-  )
+  const html = marked.parse(processedMarkdown, { async: false }) as string
   return DOMPurify.sanitize(html)
+}
+
+/** Writes sanitized comment markdown into `target`; code blocks gain syntax colour once the lazy highlighter loads. */
+export function renderMarkdownInto(target: HTMLElement, markdown: string, currentSlug?: FullSlug) {
+  target.innerHTML = renderMarkdown(markdown, currentSlug)
+  const blocks = Array.from(target.querySelectorAll<HTMLElement>('pre > code[class^="language-"]'))
+  if (blocks.length === 0) return
+  // Until the chunk loads, or if it fails, the blocks stay as sanitized plain text.
+  void import('./highlight-source').then(
+    ({ codeAttributes, highlightCode }) => {
+      for (const code of blocks) {
+        const highlighted = highlightCode(
+          (code.textContent ?? '').replace(/\n$/, ''),
+          code.className.slice('language-'.length),
+        )
+        for (const [name, value] of Object.entries(codeAttributes(highlighted))) {
+          code.setAttribute(name, value)
+        }
+        // Comment snippets are short; line numbers would crowd the bubble.
+        code.dataset.disableLineNumber = ''
+        code.innerHTML = highlighted.html
+      }
+    },
+    () => {},
+  )
 }
