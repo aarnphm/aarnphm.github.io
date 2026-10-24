@@ -34,11 +34,7 @@ Write the captured URLs or bundled file paths into this JSON shape. Positions ar
   "account": "account-name",
   "audio_status": "present",
   "items": [
-    {
-      "position": 1,
-      "kind": "image",
-      "path": "/absolute/path/downloaded-image.jpg"
-    },
+    { "position": 1, "kind": "image", "path": "/absolute/path/downloaded-image.jpg" },
     {
       "position": 2,
       "kind": "video",
