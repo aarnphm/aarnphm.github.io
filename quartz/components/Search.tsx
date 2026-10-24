@@ -6,6 +6,7 @@ import {
   QuartzComponentProps,
 } from '../types/component'
 import { classNames } from '../util/lang'
+import { SEARCH_QUERY_PLACEHOLDER } from '../util/search-completion'
 // @ts-ignore
 import script from './scripts/search.inline'
 import style from './styles/search.scss'
@@ -59,7 +60,7 @@ export default ((userOpts?: Partial<SearchOptions>) => {
                   name="search"
                   type="text"
                   aria-label={searchPlaceholder}
-                  placeholder="filter: images · pdf · code · py · all"
+                  placeholder={SEARCH_QUERY_PLACEHOLDER}
                 />
                 <span class="semantic-status" data-state="loading" aria-live="polite">
                   semantic not available yet

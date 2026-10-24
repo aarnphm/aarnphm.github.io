@@ -34,15 +34,12 @@ export async function renderFilePreview(
   }
   if (!CODE_FILE_EXTENSIONS.has(`.${extension}`)) return false
 
-  const loading = document.createElement('p')
-  loading.setAttribute('role', 'status')
-  loading.textContent = 'loading source…'
-  preview.replaceChildren(loading)
+  // The highlighter chunk loads while the source downloads.
+  const highlighter = import('../../../util/highlight-source')
   const response = await fetch(url, { signal, headers: { Accept: 'text/plain, */*;q=0.8' } })
   if (!response.ok) throw new Error(`Source unavailable: ${response.status}`)
   const source = await response.text()
-  if (signal.aborted) return true
-  const { highlightSourceCode } = await import('../../../util/highlight-source')
+  const { codeAttributes, highlightSourceCode } = await highlighter
   if (signal.aborted) return true
   const highlighted = highlightSourceCode(source, fileName)
   const inner = document.createElement('div')
@@ -63,7 +60,9 @@ export async function renderFilePreview(
   block.tabIndex = 0
   block.setAttribute('aria-label', `Source code: ${fileName}`)
   const code = document.createElement('code')
-  code.dataset.language = highlighted.language
+  for (const [name, value] of Object.entries(codeAttributes(highlighted))) {
+    code.setAttribute(name, value)
+  }
   code.innerHTML = highlighted.html
   block.append(code)
   caption.append(open, copy)

@@ -1,8 +1,8 @@
 import { highlight } from '../../../util/search-text'
+import { codeMatchLocation, codeMatchUrl } from '../code-search-controls'
 import { imageSearchRow, searchableImage } from '../image-search-controls'
 import { fitSearchPath } from '../search-path'
 import { mountResultPages } from '../search-result-pages'
-import { requireData } from './engine'
 import { clearPreview, displayPreview, resolveUrl } from './preview'
 import { shared, type SearchSession, type SimilarityResult } from './state'
 import { hideSearch } from './visibility'
@@ -99,7 +99,14 @@ const resultToHTML = (
     itemTile.dataset.pdfPage = String(item.passage.page)
   }
 
-  const fileData = requireData(s)[slug]
+  if (item.codeMatch) {
+    itemTile.href = codeMatchUrl(s.currentSlug, item.codeMatch).toString()
+    itemTile.id = `${slug}--code-${item.id}`
+    itemTile.dataset.codeOwner = slug
+    itemTile.dataset.codeUnit = item.codeMatch.unit.id
+    s.codeMatches.set(itemTile, item.codeMatch)
+  }
+  const fileData = s.data?.[slug]
   const resolvedFileName = (fileData?.fileName || fileName || slug || '').toLowerCase()
   const extension = fileExtension(resolvedFileName)
   const isCanvas = extension === '.canvas'
@@ -111,6 +118,18 @@ const resultToHTML = (
 
   if (isProtected) itemTile.dataset.protected = 'true'
   itemTile.innerHTML = `<hgroup><h3>${titleContent}${isProtected ? ' <span aria-label="protected content">🔒</span>' : ''}</h3></hgroup>`
+
+  if (item.codeMatch) {
+    const match = item.codeMatch
+    const location = document.createElement('span')
+    location.className = 'code-search-mobile-location'
+    const ordinal = match.ranges.length
+      ? ` · match ${match.selectedRange + 1}/${match.ranges.length}`
+      : ''
+    location.textContent = `${codeMatchLocation(match)}${ordinal}`
+    itemTile.querySelector('hgroup')?.append(location)
+    itemTile.setAttribute('aria-label', itemTile.textContent?.trim() ?? '')
+  }
 
   const accessibleName = itemTile.textContent?.trim() ?? ''
   for (const label of itemTile.querySelectorAll<HTMLElement>('h3')) {

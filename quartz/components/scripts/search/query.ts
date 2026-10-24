@@ -1,4 +1,5 @@
 import type { LexicalField, LexicalFieldResult } from '../lexical-search-types'
+import { parseCodeQuery } from '../../../util/code-query'
 import { escapeHTML } from '../../../util/escape'
 import { pdfMetadata } from '../../../util/pdf-search'
 import { isSearchExcluded } from '../../../util/search-exclude'
@@ -10,6 +11,7 @@ import { getLexicalSearchClient } from '../lexical-search'
 import { pdfCoverageStatus, pdfPageLabel } from '../pdf-search-controls'
 import { isSemanticCancellation } from '../semantic.inline'
 import { resetSiteSemantic } from '../site-semantic'
+import { searchCode } from './code'
 import {
   ensureImageSearch,
   ensureSearchData,
@@ -150,6 +152,11 @@ export async function runSearch(s: SearchSession, rawTerm: string, token: number
 }
 
 async function querySearch(s: SearchSession, rawTerm: string, token: number) {
+  const codeQuery = parseCodeQuery(rawTerm)
+  if (codeQuery) {
+    await searchCode(s, codeQuery, token)
+    return
+  }
   const { image, modeButtons, results } = s
   await ensureSearchData(s)
   if (token !== s.searchSeq) return

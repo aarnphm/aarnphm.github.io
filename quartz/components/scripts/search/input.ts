@@ -1,14 +1,17 @@
+import { parseCodeQuery } from '../../../util/code-query'
 import { parseSearchQuery } from '../../../util/search-scope'
 import { isSearchModeToggle, isSearchToggle } from '../../../util/search-shortcuts'
 import { ensureSemantic, persistSearchMode, updateModeUI } from './engine'
 import { isImageGridDirection } from './image-grid'
-import { displayPreview, setImageSearch, togglePreview } from './preview'
+import { clearPreview, displayPreview, setImageSearch, togglePreview } from './preview'
+import { resetProgressBar } from './progress'
 import { runSearch } from './query'
 import { flushSearchDisplay, openSearchResult } from './results'
 import { shared, type SearchMode, type SearchSession } from './state'
 import { hideSearch, showSearch } from './visibility'
 
 export function triggerSearchWithMode(s: SearchSession, mode: SearchMode) {
+  if (parseCodeQuery(s.searchBar.value)) return
   const { image, searchLayout } = s
   s.requestedMode = mode
   const request = ++s.modeRequest
@@ -31,6 +34,7 @@ export function triggerSearchWithMode(s: SearchSession, mode: SearchMode) {
   image.similarity.cancel()
   image.semantic?.cancel()
   s.pdf.cancel()
+  s.code.cancelPending()
   shared.semantic?.cancel()
   if (s.runSearchTimer !== null) {
     window.clearTimeout(s.runSearchTimer)
@@ -229,6 +233,7 @@ export function onType(s: SearchSession) {
   image.similarity.cancel()
   image.semantic?.cancel()
   s.pdf.cancel()
+  s.code.cancelPending()
   shared.semantic?.cancel()
   s.previewRequest?.abort()
   shared.rawSearchTerm = searchBar.value
@@ -243,6 +248,14 @@ export function onType(s: SearchSession) {
     s.runSearchTimer = null
   }
   if (s.composing) return
+  if (s.completions.update()) {
+    results.replaceChildren()
+    s.currentHover = null
+    searchLayout.setAttribute('aria-busy', 'false')
+    clearPreview(s)
+    resetProgressBar(s)
+    return
+  }
   if (!hasQuery || shared.searchMode === 'lexical') {
     void runSearch(s, term, token)
     return

@@ -1,0 +1,64 @@
+.search-completions {
+  flex: 0 1 auto;
+  max-height: min(18rem, 45dvh);
+  overflow: auto;
+  border-bottom: 1px solid var(--lightgray);
+  padding: 0.4rem;
+  font-family: var(--codeFont);
+  font-size: var(--text-meta);
+
+  &[hidden] {
+    display: none;
+  }
+
+  .search-completions-label {
+    padding: 0.25rem 0.5rem;
+    color: var(--darkgray);
+  }
+
+  .search-completion {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    width: 100%;
+    min-height: 2.125rem;
+    padding: 0.4rem 0.5rem;
+    border: 0;
+    background: transparent;
+    color: var(--dark);
+    text-align: left;
+    font: inherit;
+    cursor: var(--cursor-pointer, pointer);
+
+    &[aria-selected='true'] {
+      background: var(--selected, color-mix(in srgb, var(--secondary) 14%, transparent));
+    }
+    &:focus-visible {
+      outline: 2px solid var(--dark);
+      outline-offset: -2px;
+    }
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        background: color-mix(in srgb, var(--dark) 6%, var(--light));
+      }
+    }
+    @media (pointer: coarse) {
+      min-height: 44px;
+    }
+  }
+
+  .search-completion-title {
+    display: flex;
+    align-items: baseline;
+    gap: 0.3rem;
+  }
+  .search-completion-token {
+    padding: 0.1rem 0.3rem;
+    border: 1px solid var(--lightgray);
+    color: var(--darkgray);
+  }
+  .search-completion-description {
+    color: var(--darkgray);
+    overflow-wrap: anywhere;
+  }
+}

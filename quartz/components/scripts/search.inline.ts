@@ -1,10 +1,12 @@
 import { escapeHTML } from '../../util/escape'
 import { FullSlug, getFullSlug } from '../../util/path'
 import { searchModeShortcutLabel } from '../../util/search-shortcuts'
+import { CodeSearchClient } from './code-search'
 import { registerEscapeHandler } from './escape-handler'
 import { createImageSimilarity } from './image-similarity'
 import { getLexicalSearchClient } from './lexical-search'
 import { PdfSemantic } from './pdf-semantic'
+import { createSearchCompletions } from './search-completions'
 import {
   ensureSearchData,
   getSearchData,
@@ -39,6 +41,8 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   if (!containerElement) return
   const container = containerElement
   const pdf = new PdfSemantic()
+  const code = new CodeSearchClient()
+  window.addCleanup(() => code.dispose())
   window.addCleanup(() => pdf.dispose())
   const image: SearchImage = {
     similarity: createImageSimilarity(),
@@ -140,6 +144,9 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     searchSpace,
     image,
     pdf,
+    code,
+    completions: createSearchCompletions(searchBar, container),
+    codeMatches: new WeakMap(),
     progressBar,
     progressResetTimer: 0,
     progressReasons: new Set<'search' | 'preview'>(),
@@ -232,6 +239,7 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   searchSpace.addEventListener('submit', submitSearch)
   window.addCleanup(() => searchSpace.removeEventListener('submit', submitSearch))
 
+  window.addCleanup(() => s.completions.dispose())
   const typeHandler = () => onType(s)
   const startComposition = () => {
     s.composing = true

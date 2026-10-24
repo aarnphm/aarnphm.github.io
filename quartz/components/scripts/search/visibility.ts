@@ -15,6 +15,7 @@ export function hideSearch(s: SearchSession, focusButton = true) {
   image.similarity.cancel()
   image.semantic?.cancel()
   s.pdf.cancel()
+  s.code.cancel()
   shared.semantic?.cancel()
   s.searchSeq += 1
   s.pressedKeys.clear()

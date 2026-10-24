@@ -1,3 +1,5 @@
+@use './code-search.scss';
+@use './search-completions.scss';
 @use 'sass:map';
 @use '../../styles/variables.scss' as *;
 @use '../../styles/mixin.scss' as *;
@@ -13,10 +15,16 @@
 
 // Shared by the global search and the base search bar: the semantic icon turns while the
 // encoder loads, and holds still for people who asked for reduced motion.
+.search-mode-toggle .mode-option[data-mode='semantic'].is-loading svg {
+  // The turning nodes reach about 0.5 units past the viewBox edge.
+  overflow: visible;
+}
+
 .search-mode-toggle .mode-option[data-mode='semantic'].is-loading svg > g {
   animation: semantic-spin 1.2s linear infinite;
   transform-box: view-box;
-  transform-origin: center;
+  // Circumcentre of the three nodes, so each node stays on one circle and the glyph does not drift.
+  transform-origin: 11.4px 10px;
 
   @media (prefers-reduced-motion: reduce) {
     animation: none;
