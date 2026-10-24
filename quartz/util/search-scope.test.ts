@@ -88,10 +88,25 @@ test('code filters accept language names and file extensions with last-valid sem
 })
 
 test('code scope classifies source paths without admitting notes, media or unknown files', () => {
-  for (const filename of ['script.py', 'view.TSX', 'kernel.cu', 'proof.lean', 'config.toml']) {
+  for (const filename of [
+    'script.py',
+    'view.TSX',
+    'main.c',
+    'api.h',
+    'kernel.cu',
+    'proof.lean',
+    'config.toml',
+  ]) {
     assert.equal(searchScopeIncludes('code', { ...note, filePath: `content/${filename}` }), true)
   }
-  for (const filename of ['notes.md', 'notebook.ipynb', 'image.png', 'paper.pdf', 'mystery.xyz']) {
+  for (const filename of [
+    'notes.md',
+    'notebook.ipynb',
+    'image.png',
+    'paper.pdf',
+    'data.JSON',
+    'mystery.xyz',
+  ]) {
     assert.equal(searchScopeIncludes('code', { ...note, filePath: `content/${filename}` }), false)
   }
   assert.equal(searchScopeIncludes('code:python', { ...note, filePath: 'content/Script.PY' }), true)

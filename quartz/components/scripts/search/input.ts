@@ -1,6 +1,8 @@
+import { parseSearchQuery } from '../../../util/search-scope'
 import { isSearchModeToggle, isSearchToggle } from '../../../util/search-shortcuts'
 import { ensureSemantic, persistSearchMode, updateModeUI } from './engine'
-import { displayPreview, togglePreview } from './preview'
+import { isImageGridDirection } from './image-grid'
+import { displayPreview, setImageSearch, togglePreview } from './preview'
 import { runSearch } from './query'
 import { flushSearchDisplay, openSearchResult } from './results'
 import { shared, type SearchMode, type SearchSession } from './state'
@@ -28,6 +30,7 @@ export function triggerSearchWithMode(s: SearchSession, mode: SearchMode) {
   }
   image.similarity.cancel()
   image.semantic?.cancel()
+  s.pdf.cancel()
   shared.semantic?.cancel()
   if (s.runSearchTimer !== null) {
     window.clearTimeout(s.runSearchTimer)
@@ -107,14 +110,32 @@ export function shortcutHandler(s: SearchSession, e: HTMLElementEventMap['keydow
     return
   }
   if (preview?.contains(document.activeElement)) {
+    if (document.activeElement?.closest('.pdf-embed, .search-code-preview pre')) return
     if (e.key === 'ArrowLeft') {
       e.preventDefault()
       s.currentHover?.focus()
     }
     return
   }
+  if (
+    isImageGridDirection(e.key) &&
+    !e.altKey &&
+    !e.ctrlKey &&
+    !e.metaKey &&
+    !e.shiftKey &&
+    s.imageGrid.active &&
+    (results.contains(document.activeElement?.closest('.image-search-row') ?? null) ||
+      (document.activeElement === searchBar && (e.key === 'ArrowUp' || e.key === 'ArrowDown')))
+  ) {
+    e.preventDefault()
+    s.pressedKeys.add(e.code || e.key)
+    s.pendingNavigation = e.key
+    return
+  }
   if (e.key === 'ArrowRight' && results.contains(document.activeElement)) {
-    const link = preview?.querySelector<HTMLAnchorElement>('a[href]')
+    const link =
+      preview?.querySelector<HTMLElement>('.pdf-viewer-container, .search-code-preview pre') ??
+      preview?.querySelector<HTMLAnchorElement>('a[href]')
     if (link?.checkVisibility()) {
       e.preventDefault()
       link.focus()
@@ -123,7 +144,7 @@ export function shortcutHandler(s: SearchSession, e: HTMLElementEventMap['keydow
   }
   if (
     e.target instanceof HTMLButtonElement &&
-    e.target.classList.contains('image-similar-button') &&
+    results.contains(e.target) &&
     (e.key === 'Enter' || e.key === ' ')
   )
     return
@@ -160,9 +181,17 @@ export function releaseKey(s: SearchSession, e: HTMLElementEventMap['keyup']) {
   const direction = s.pendingNavigation
   s.pendingNavigation = null
   if (!container.classList.contains('active')) return
+  if (typeof direction === 'string') {
+    const target = s.imageGrid.target(document.activeElement, direction)
+    if (target) void focusResult(s, target)
+    else if (direction === 'ArrowUp') searchBar.focus()
+    return
+  }
   if (direction !== null) {
     const controls = [
-      ...results.querySelectorAll<HTMLElement>('a.result-card[href], button.image-similar-button'),
+      ...results.querySelectorAll<HTMLElement>(
+        'a.result-card[href], button.image-similar-button, button.search-load-more',
+      ),
     ]
     const active = document.activeElement
     const index = active instanceof HTMLElement ? controls.indexOf(active) : -1
@@ -194,8 +223,12 @@ async function focusResult(s: SearchSession, result: Element | null | undefined)
 export function onType(s: SearchSession) {
   const { image, results, searchBar, searchLayout } = s
   delete results.dataset.imageSeed
+  s.resultPages?.dispose()
+  s.resultPages = null
+  setImageSearch(s, parseSearchQuery(searchBar.value).scope === 'images')
   image.similarity.cancel()
   image.semantic?.cancel()
+  s.pdf.cancel()
   shared.semantic?.cancel()
   s.previewRequest?.abort()
   shared.rawSearchTerm = searchBar.value

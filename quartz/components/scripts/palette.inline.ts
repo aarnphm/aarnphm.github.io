@@ -14,12 +14,7 @@ import {
 } from './palette/actions'
 import { connectorActions } from './palette/connectors'
 import { fetchContent } from './palette/format'
-import {
-  displayNearbyNotes,
-  displayQuickOpenResults,
-  numSearchResults,
-  querySearch,
-} from './palette/search'
+import { displayNearbyNotes, displayQuickOpenResults, querySearch } from './palette/search'
 import {
   commandInputValue,
   commandSearchTerm,
@@ -33,6 +28,7 @@ import {
   type FallbackActionType,
   type PaletteState,
 } from './palette/shell'
+import { PdfSemantic } from './pdf-semantic'
 import { beginSidePanelRequest, disposeSidePanel, getOrCreateSidePanel } from './side-panel'
 
 let activePaletteSignal: AbortSignal | undefined
@@ -42,6 +38,8 @@ function showPalette(
   actionTypeNew: ActionType,
   fallbackActionTypeNew?: FallbackActionType,
 ) {
+  s.resultPages?.dispose()
+  s.resultPages = null
   s.queryGeneration += 1
   paletteMode.actionType = actionTypeNew
   paletteMode.fallbackActionType =
@@ -82,7 +80,7 @@ function eventTargetsCodeEditor(e: KeyboardEvent) {
 }
 
 function moveSelection(s: PaletteState, direction: -1 | 1) {
-  const items = [...s.output.querySelectorAll<HTMLDivElement>('.suggestion-item')]
+  const items = [...s.output.querySelectorAll<HTMLElement>('.suggestion-item, .search-load-more')]
   if (!items.length) return
   const currentIndex = s.currentHover ? items.indexOf(s.currentHover) : -1
   s.currentHover?.classList.remove('focus')
@@ -161,7 +159,7 @@ async function shortcutHandler(s: PaletteState, e: HTMLElementEventMap['keydown'
   if (!s.container?.classList.contains('active')) return
   if (
     e.target instanceof HTMLButtonElement &&
-    e.target.classList.contains('image-similar-button') &&
+    e.target.matches('.image-similar-button, .search-load-more') &&
     (e.key === 'Enter' || e.key === ' ')
   )
     return
@@ -253,9 +251,12 @@ async function shortcutHandler(s: PaletteState, e: HTMLElementEventMap['keydown'
 }
 
 async function onType(s: PaletteState, e: HTMLElementEventMap['input']) {
+  s.resultPages?.dispose()
+  s.resultPages = null
   delete s.output.dataset.imageSeed
   s.imageSimilarity.cancel()
   s.imageSemantic?.cancel()
+  s.pdfSearch.cancel()
   s.quickOpenSemantic?.cancel()
   s.queryGeneration += 1
   const value = (e.target as HTMLInputElement).value
@@ -283,8 +284,8 @@ async function onType(s: PaletteState, e: HTMLElementEventMap['input']) {
     const { term: query, scope } = parseSearchQuery(paletteMode.currentSearchTerm)
     const rawQuery = paletteMode.currentSearchTerm
     const generation = s.queryGeneration
-    const cached = s.quickOpenSemantic?.cached(query, numSearchResults * 8)
-    if (scope === 'notes' && cached !== undefined) {
+    const cached = s.quickOpenSemantic?.cached(query, s.quickOpenSemantic.index.ids.length)
+    if (query && scope === 'notes' && cached !== undefined) {
       displayQuickOpenResults(s, cached, query, scope)
       return
     }
@@ -318,6 +319,8 @@ document.addEventListener('nav', () => {
   if (!containerElement) return
   const container = containerElement
   const imageSimilarity = createImageSimilarity()
+  const pdfSearch = new PdfSemantic()
+  window.addCleanup(() => pdfSearch.dispose())
   window.addCleanup(() => imageSimilarity.dispose())
   window.addCleanup(() => {
     s.imageActive = false
@@ -346,8 +349,10 @@ document.addEventListener('nav', () => {
 
   window.addCleanup(() => {
     s.isActive = false
+    s.resultPages?.dispose()
     imageSimilarity.cancel()
     s.imageSemantic?.cancel()
+    s.pdfSearch.cancel()
     s.quickOpenSemantic?.cancel()
   })
 
@@ -366,6 +371,7 @@ document.addEventListener('nav', () => {
     rankButton,
     progress,
     imageSimilarity,
+    pdfSearch,
     actionCache: new WeakMap<Action, HTMLDivElement>(),
     connectorActs: connectorActions(currentSlug),
     commandActs: [],
@@ -374,6 +380,7 @@ document.addEventListener('nav', () => {
     imageReady: null,
     imageActive: true,
     currentHover: null,
+    resultPages: null,
     previousFocus: null,
     data: null,
     isActive: true,

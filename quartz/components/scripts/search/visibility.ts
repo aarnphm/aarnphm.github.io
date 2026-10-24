@@ -1,16 +1,20 @@
 import { ensureSearchData, updateModeUI } from './engine'
-import { clearPreview, setPreviewVisible } from './preview'
+import { clearPreview, setImageSearch, setPreviewVisible } from './preview'
 import { completeSearchProgress, resetProgressBar, startSearchProgress } from './progress'
 import { shared, type SearchSession, type SearchType } from './state'
 
 export function hideSearch(s: SearchSession, focusButton = true) {
   const { image, container, searchBar, searchLayout, results, searchButton } = s
   setPreviewVisible(s, false)
+  setImageSearch(s, false)
+  s.resultPages?.dispose()
+  s.resultPages = null
   s.modeRequest++
   s.requestedMode = shared.searchMode
   updateModeUI(s, shared.searchMode)
   image.similarity.cancel()
   image.semantic?.cancel()
+  s.pdf.cancel()
   shared.semantic?.cancel()
   s.searchSeq += 1
   s.pressedKeys.clear()

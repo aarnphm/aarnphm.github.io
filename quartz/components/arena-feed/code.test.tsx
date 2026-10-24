@@ -2,11 +2,12 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { renderToString } from 'preact-render-to-string'
 import type { ArenaReaderArtifact } from '../../util/arena-reader'
-import { CodeContent, highlightArenaSource } from './code'
+import { highlightSourceCode } from '../../util/highlight-source'
+import { CodeContent } from './code'
 
 test('source files receive syntax tokens without interpreting code as HTML', () => {
   const source = 'def greet():\n\t# café\n\treturn "<script>alert(1)</script> & text"\n\n'
-  const result = highlightArenaSource(source, 'model_runner.py')
+  const result = highlightSourceCode(source, 'model_runner.py')
   assert.equal(result.language, 'py')
   assert.match(result.html, /hljs-keyword/)
   assert.match(result.html, /hljs-string/)
@@ -24,7 +25,7 @@ test('unknown languages and large files remain complete escaped text', () => {
     ['constructor', '<plain text>'],
     ['__proto__', '<plain text>'],
   ]) {
-    const result = highlightArenaSource(source, fileName)
+    const result = highlightSourceCode(source, fileName)
     assert.doesNotMatch(result.html, /<img|hljs-/)
     assert.equal(
       result.html.replaceAll('&lt;', '<').replaceAll('&gt;', '>').replaceAll('&quot;', '"'),

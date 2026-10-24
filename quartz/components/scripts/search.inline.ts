@@ -4,6 +4,7 @@ import { searchModeShortcutLabel } from '../../util/search-shortcuts'
 import { registerEscapeHandler } from './escape-handler'
 import { createImageSimilarity } from './image-similarity'
 import { getLexicalSearchClient } from './lexical-search'
+import { PdfSemantic } from './pdf-semantic'
 import {
   ensureSearchData,
   getSearchData,
@@ -11,6 +12,7 @@ import {
   setSemanticState,
   updateModeUI,
 } from './search/engine'
+import { createImageGrid } from './search/image-grid'
 import {
   onType,
   releaseKey,
@@ -36,6 +38,8 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   const containerElement = searchElement.querySelector<HTMLElement>('.search-container')
   if (!containerElement) return
   const container = containerElement
+  const pdf = new PdfSemantic()
+  window.addCleanup(() => pdf.dispose())
   const image: SearchImage = {
     similarity: createImageSimilarity(),
     ids: undefined,
@@ -135,6 +139,7 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     searchLayout,
     searchSpace,
     image,
+    pdf,
     progressBar,
     progressResetTimer: 0,
     progressReasons: new Set<'search' | 'preview'>(),
@@ -147,6 +152,7 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     semanticStatus: searchSpace.querySelector<HTMLElement>('.semantic-status'),
     enablePreview,
     previewVisible: false,
+    imageSearch: false,
     semanticBooting: null,
     searchSeq: 0,
     runSearchTimer: null,
@@ -155,6 +161,8 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     preview,
     previewRequest: undefined,
     results,
+    imageGrid: createImageGrid(results),
+    resultPages: null,
     currentHover: null,
     previewToggle: searchSpace.querySelector<HTMLButtonElement>('.search-preview-toggle'),
     previousFocus: null,
@@ -165,6 +173,8 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     pendingDisplay: null,
     showSimilarImages: seed => showSimilarImages(s, seed),
   }
+  window.addCleanup(() => s.imageGrid.dispose())
+  window.addCleanup(() => s.resultPages?.dispose())
 
   const storedMode = loadStoredSearchMode()
   if (shared.semanticReady) {

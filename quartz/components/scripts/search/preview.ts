@@ -6,6 +6,7 @@ import { renderCoursePreview } from '../course-preview-card'
 import { renderDocumentPreview } from '../document-preview-card'
 import { imageSearchPreview, searchableImage } from '../image-search-controls'
 import { requireData } from './engine'
+import { renderFilePreview } from './file-preview'
 import { completeSearchProgress, startSearchProgress } from './progress'
 import { shared, type SearchSession } from './state'
 
@@ -56,17 +57,35 @@ function highlightHTML(searchTerm: string, el: HTMLElement) {
 export function clearPreview(s: SearchSession) {
   s.previewRequest?.abort()
   s.previewRequest = undefined
+  if (s.preview) window.quartzPdfEmbeds?.cleanup(s.preview)
   s.preview?.replaceChildren()
+  if (s.preview) delete s.preview.dataset.slug
+}
+
+export function setImageSearch(s: SearchSession, images: boolean) {
+  s.imageSearch = images
+  s.searchLayout.dataset.imageSearch = String(images)
+  if (s.previewToggle) s.previewToggle.disabled = images
+  if (images) setPreviewVisible(s, false)
+  else updatePreviewToggle(s)
+}
+
+function updatePreviewToggle(s: SearchSession) {
+  const label = s.imageSearch
+    ? 'preview unavailable for images'
+    : s.previewVisible
+      ? 'hide preview'
+      : 'show preview'
+  s.previewToggle?.setAttribute('aria-label', label)
+  s.previewToggle?.setAttribute('title', label)
+  s.previewToggle?.setAttribute('aria-expanded', String(s.previewVisible))
 }
 
 export function setPreviewVisible(s: SearchSession, visible: boolean) {
-  const { searchLayout, previewToggle, preview } = s
-  s.previewVisible = visible && s.enablePreview
+  const { searchLayout, preview } = s
+  s.previewVisible = visible && s.enablePreview && !s.imageSearch
   searchLayout.dataset.preview = String(s.previewVisible)
-  previewToggle?.setAttribute('aria-expanded', String(s.previewVisible))
-  const label = s.previewVisible ? 'hide preview' : 'show preview'
-  previewToggle?.setAttribute('aria-label', label)
-  previewToggle?.setAttribute('title', label)
+  updatePreviewToggle(s)
   if (preview) preview.inert = !s.previewVisible
   if (s.previewVisible) void displayPreview(s, s.currentHover)
   else clearPreview(s)
@@ -103,9 +122,11 @@ export async function displayPreview(s: SearchSession, el: HTMLElement | null) {
   if (!s.previewVisible || !el || !preview) return
   const slug = el.id
   if (!isFullSlug(slug)) return
+  if (s.previewRequest && !s.previewRequest.signal.aborted && preview.dataset.slug === slug) return
   clearPreview(s)
   const request = new AbortController()
   s.previewRequest = request
+  preview.dataset.slug = slug
   startSearchProgress(s, 'preview')
   request.signal.addEventListener('abort', () => completeSearchProgress(s, 'preview'), {
     once: true,
@@ -165,6 +186,17 @@ export async function displayPreview(s: SearchSession, el: HTMLElement | null) {
 
     if (documentType || el.dataset.directFile === 'true') {
       const fileData = requireData(s)[slug]
+      if (
+        await renderFilePreview(
+          resolveUrl(s, slug),
+          fileData?.fileName || slug,
+          preview,
+          request.signal,
+          Number(el.dataset.pdfPage) || undefined,
+        )
+      )
+        return
+      if (request.signal.aborted) return
       const previewInner = document.createElement('div')
       previewInner.classList.add('preview-inner')
 
@@ -229,6 +261,7 @@ export async function displayPreview(s: SearchSession, el: HTMLElement | null) {
   } catch (error) {
     if (request.signal.aborted) return
     console.warn('[Search] preview unavailable:', error)
+    window.quartzPdfEmbeds?.cleanup(preview)
     const message = document.createElement('p')
     message.setAttribute('role', 'status')
     message.textContent = 'preview unavailable. '

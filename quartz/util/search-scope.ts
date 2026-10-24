@@ -97,6 +97,7 @@ export function searchScopeIncludes(scope: SearchScope, source: SearchSource): b
   }
   if (scope === 'pdf') return extension === 'pdf'
   if (isCodeSearchScope(scope)) {
+    if (scope === 'code' && extension === 'json') return false
     if (!CODE_FILE_EXTENSIONS.has(`.${extension}`)) return false
     const language = languageFromExt(extension)
     return (
