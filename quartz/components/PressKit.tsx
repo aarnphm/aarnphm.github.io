@@ -375,6 +375,7 @@ function getPressKitInnerTemplate(site: string): string {
                   data
                 />
                 <Include name="runPace" label="d d’allure" data />
+                <Include name="runHeartRate" label="d de FC" data />
                 <Include name="runLaps" label="analyse des tours" shortLabel="tours" data />
               </div>
               <div class="press-kit-chart-setting press-kit-power-window" hidden>

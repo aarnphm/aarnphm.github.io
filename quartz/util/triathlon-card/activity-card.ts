@@ -100,7 +100,7 @@ export const buildActivity = <N>(
   const head = f.el('div', 'tri-act-head')
   f.add(head, buildActivityIcon(f, d))
   const headActions = f.el('div', 'tri-act-head-actions')
-  const share = buildActivityShareButton(f, d, fillMissingRunPower)
+  const share = buildActivityShareButton(f, d, fillMissingRunPower, ctx)
   if (d.commute === true)
     f.add(
       headActions,

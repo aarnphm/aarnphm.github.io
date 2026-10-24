@@ -35,6 +35,7 @@ export type ActivityCardChartKey =
   | 'powerCurve'
   | 'cyclingLaps'
   | 'runPace'
+  | 'runHeartRate'
   | 'runLaps'
 export type PowerWindow = 30 | 300
 export interface ActivityCardChartPoint {
@@ -119,6 +120,7 @@ export const isActivityCardChartKey = (value: string): value is ActivityCardChar
   value === 'powerCurve' ||
   value === 'cyclingLaps' ||
   value === 'runPace' ||
+  value === 'runHeartRate' ||
   value === 'runLaps'
 
 const isPowerWindow = (value: unknown): value is PowerWindow => value === 30 || value === 300

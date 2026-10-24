@@ -151,6 +151,10 @@
 .press-kit-chart-setting {
   margin-block-start: var(--space-3);
 
+  > .press-kit-hint {
+    margin-block-start: var(--space-1);
+  }
+
   > .press-kit-legend {
     display: block;
     margin-block-end: var(--space-1);

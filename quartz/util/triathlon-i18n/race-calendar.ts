@@ -142,6 +142,7 @@ export const fr: Record<string, string> = {
   lap: 'tour',
   'lap splits': 'tours',
   'pace distribution': 'd d’allure',
+  'heart rate distribution': 'd de FC',
   'marathon trend': 'projection marathon',
   laps: 'tours',
   'aid stations per lap': 'ravitaillements par tour',

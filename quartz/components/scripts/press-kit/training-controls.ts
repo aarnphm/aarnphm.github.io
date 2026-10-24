@@ -1,4 +1,5 @@
 import { ACTIVITY_CARD_STATS } from '../../../util/press-kit-activity'
+import { DAY_LAYOUTS } from '../press-kit-card/day-layout'
 import { blockDisplayKeys, type TrainingCardBlock } from '../press-kit-day'
 import { localizeActivity, shortMetricLabel } from '../press-kit-i18n'
 import { runsToPlain } from '../press-kit-text'
@@ -172,9 +173,42 @@ function displayControls(block: TrainingCardBlock): HTMLDetailsElement {
   return group
 }
 
+// Built here, beside the block list it arranges; syncControls shows it for three or more blocks.
+function dayLayoutControl(): HTMLElement {
+  const setting = document.createElement('div')
+  setting.className = 'press-kit-chart-setting press-kit-day-layout'
+  setting.hidden = true
+  const legend = document.createElement('span')
+  legend.className = 'press-kit-legend'
+  legend.id = 'press-kit-day-layout-label'
+  legend.textContent = 'disposition'
+  const segments = document.createElement('div')
+  segments.className = 'press-kit-segments'
+  segments.setAttribute('role', 'radiogroup')
+  segments.setAttribute('aria-labelledby', legend.id)
+  for (const [value, text] of DAY_LAYOUTS) {
+    const label = document.createElement('label')
+    label.className = 'press-kit-segment'
+    const input = document.createElement('input')
+    input.type = 'radio'
+    input.name = 'press-kit-day-layout'
+    input.value = value
+    const caption = document.createElement('span')
+    caption.textContent = text
+    label.append(input, caption)
+    segments.append(label)
+  }
+  const hint = document.createElement('p')
+  hint.className = 'press-kit-hint'
+  hint.hidden = true
+  setting.append(legend, segments, hint)
+  return setting
+}
+
 export function mountDayControls() {
   const host = $('.press-kit-day-blocks')
   if (!host) return
+  if (!$('.press-kit-day-layout')) host.after(dayLayoutControl())
   host.replaceChildren()
   selectedBlocks.clear()
   selectedActivities.clear()

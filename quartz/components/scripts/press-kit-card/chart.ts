@@ -63,7 +63,8 @@ export function paintTrainingChart(
   if (!valid.length || width <= 0 || height <= 0) return
   const { text, fitText, fitValue, measure } = createSvgText(fonts, scale)
   const bars = chart.kind === 'bars'
-  const zones = chart.key === 'runPace'
+  const heartRate = chart.key === 'runHeartRate'
+  const zones = chart.key === 'runPace' || heartRate
   const runLaps = chart.key === 'runLaps'
   const laps = chart.kind === 'intervals'
   const curve = chart.key === 'powerCurve'
@@ -81,7 +82,9 @@ export function paintTrainingChart(
     (runLaps || laps
       ? '#fc4c02'
       : getComputedStyle(appearance)
-          .getPropertyValue(zones ? '--tri-zone-pace' : '--tri-zone-power')
+          .getPropertyValue(
+            heartRate ? '--tri-zone-heart-rate' : zones ? '--tri-zone-pace' : '--tri-zone-power',
+          )
           .trim() || ink)
   const group = node('g', {
     'data-chart': chart.key,
@@ -259,7 +262,12 @@ export function paintTrainingChart(
     line(left, bottom, right, bottom)
     label(chart.axis, (left + right) / 2, bottom + size * 2, 'middle')
     if (zones) label(locale === 'fr' ? 'part' : 'share', x + width * 0.72, y + size, 'end')
-    label(triText(locale, 'pace'), x + width, y + size, 'end')
+    label(
+      heartRate ? (locale === 'fr' ? 'FC' : 'HR') : triText(locale, 'pace'),
+      x + width,
+      y + size,
+      'end',
+    )
     const total = valid.reduce((sum, point) => sum + (point.y ?? 0), 0)
     valid.forEach((point, index) => {
       const rowTop = top + index * rowHeight
@@ -397,7 +405,15 @@ export function paintTrainingChart(
     }
   }
   if (chart.note)
-    fitValue(group, chart.note, x, y + height - size * 0.15, referenceWidth, size * 0.6, ink)
+    fitValue(
+      group,
+      triLabel(locale, chart.note),
+      x,
+      y + height - size * 0.15,
+      referenceWidth,
+      size * 0.6,
+      ink,
+    )
   if (options?.renderers) {
     const id = parent.getAttribute('data-card-layer')
     if (!id) return
