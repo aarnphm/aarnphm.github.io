@@ -81,10 +81,9 @@ test('image generation publishes complete immutable shards before the identical 
     })
     assert.notEqual(changed.generation, manifest.generation)
     assert.deepEqual(changed.ids, ['images/dog.png'])
-    assert.equal(
-      await readFile(path.join(outDir, manifest.generation, 'manifest.json'), 'utf8'),
-      stable,
-    )
+    await assert.rejects(readFile(path.join(outDir, manifest.generation, 'manifest.json')), {
+      code: 'ENOENT',
+    })
   } finally {
     await rm(outDir, { recursive: true, force: true })
   }

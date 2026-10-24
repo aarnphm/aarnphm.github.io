@@ -62,7 +62,6 @@ export async function mlxImageEncoderContract(): Promise<ImageEncoderContract> {
       mlxVersion: metadata.mlxVersion,
       mlxVlmVersion: metadata.mlxVlmVersion,
       pillowVersion: metadata.pillowVersion,
-      mlxVlmRevision: 'fec3f50379bb2cb0760ef3c8a68ebce9585e4d97',
     },
   }
 }

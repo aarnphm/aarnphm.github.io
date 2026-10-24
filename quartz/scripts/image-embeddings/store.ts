@@ -1,11 +1,12 @@
 import { createHash, randomUUID } from 'node:crypto'
 import { readFileSync } from 'node:fs'
-import { mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises'
+import { mkdir, open, readFile, readdir, rename, rm, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import sharp from 'sharp'
 import {
   IMAGE_EMBEDDING_REVISION,
   readImageManifest,
+  validateImageVectorShard,
   type ImageSearchManifest,
   type ImageVectorShard,
 } from '../../util/image-search'
@@ -87,6 +88,19 @@ export async function atomicWrite(file: string, data: string | Uint8Array): Prom
   }
 }
 
+export async function withImageCacheLock<T>(cacheDir: string, run: () => Promise<T>): Promise<T> {
+  await mkdir(cacheDir, { recursive: true })
+  const lockPath = path.join(cacheDir, '.build.lock')
+  const lock = await open(lockPath, 'wx')
+  try {
+    await lock.writeFile(JSON.stringify({ pid: process.pid, startedAt: new Date().toISOString() }))
+    return await run()
+  } finally {
+    await lock.close()
+    await rm(lockPath, { force: true })
+  }
+}
+
 export function imageVectorCache(cacheDir: string, contract: ImageEncoderContract) {
   const fingerprint = sha256(JSON.stringify(contract))
   const pathFor = (contentId: string) => {
@@ -130,6 +144,30 @@ export function imageVectorCache(cacheDir: string, contract: ImageEncoderContrac
         pathFor(contentId),
         JSON.stringify({ version: 1, sha256: checksum, values: Array.from(vector) }),
       )
+    },
+    async retain(contentIds: ReadonlySet<string>): Promise<{ contracts: number; vectors: number }> {
+      let contracts = 0
+      let vectors = 0
+      for (const entry of await readdir(cacheDir, { withFileTypes: true })) {
+        if (!entry.isDirectory() || !/^[a-f\d]{64}$/.test(entry.name)) continue
+        const directory = path.join(cacheDir, entry.name)
+        if (entry.name !== fingerprint) {
+          await rm(directory, { recursive: true, force: true })
+          contracts++
+          continue
+        }
+        for (const file of await readdir(directory, { withFileTypes: true })) {
+          if (
+            file.isFile() &&
+            /^[a-f\d]{64}\.json$/.test(file.name) &&
+            !contentIds.has(file.name.slice(0, -5))
+          ) {
+            await rm(path.join(directory, file.name))
+            vectors++
+          }
+        }
+      }
+      return { contracts, vectors }
     },
   }
 }
@@ -189,9 +227,31 @@ export async function publishImageGeneration(options: {
     vectors: { dtype: 'fp32', rows: rows.length, dims: 768, shards },
   })
   const serialized = `${JSON.stringify(manifest)}\n`
-  for (const { file, payload } of payloads)
-    await atomicWrite(path.join(outDir, generation, file), payload)
-  await atomicWrite(path.join(outDir, generation, 'manifest.json'), serialized)
-  await atomicWrite(path.join(outDir, 'manifest.json'), serialized)
-  return manifest
+  await mkdir(outDir, { recursive: true })
+  const lockPath = path.join(outDir, '.publish.lock')
+  // Publication and pruning share one lock so another writer cannot lose its generation.
+  const lock = await open(lockPath, 'wx')
+  try {
+    await lock.writeFile(JSON.stringify({ pid: process.pid, startedAt: new Date().toISOString() }))
+    for (const { file, payload } of payloads)
+      await atomicWrite(path.join(outDir, generation, file), payload)
+    const generationManifest = path.join(outDir, generation, 'manifest.json')
+    await atomicWrite(generationManifest, serialized)
+    if ((await readFile(generationManifest, 'utf8')) !== serialized)
+      throw new Error('Image generation manifest changed before publication.')
+    for (const shard of manifest.vectors.shards) {
+      const file = path.join(outDir, shard.path.slice('/embeddings/images/'.length))
+      const bytes = Uint8Array.from(await readFile(file))
+      await validateImageVectorShard(bytes.buffer, shard, manifest.dims)
+    }
+    await atomicWrite(path.join(outDir, 'manifest.json'), serialized)
+    for (const entry of await readdir(outDir, { withFileTypes: true })) {
+      if (entry.isDirectory() && /^[a-f\d]{64}$/.test(entry.name) && entry.name !== generation)
+        await rm(path.join(outDir, entry.name), { recursive: true, force: true })
+    }
+    return manifest
+  } finally {
+    await lock.close()
+    await rm(lockPath, { force: true })
+  }
 }
