@@ -2,7 +2,7 @@
 # requires-python = ">=3.12"
 # dependencies = [
 #     "mlx>=0.32.3",
-#     "mlx-vlm @ git+https://github.com/Blaizzy/mlx-vlm@fec3f50379bb2cb0760ef3c8a68ebce9585e4d97",
+#     "mlx-vlm==0.7.10",
 #     "transformers>=5.14",
 #     "fastapi",
 #     "uvicorn",
@@ -85,7 +85,9 @@ def main() -> None:
             raise ValueError('Image request requires a path')
           with Image.open(path) as image:
             # The TypeScript owner already applies orientation and white alpha.
-            inputs = processor(images=[[image.convert('RGB')]], return_tensors='mlx')
+            inputs = processor(
+              images=[[image.convert('RGB')]], return_tensors='mlx'
+            )
         elif request.get('kind') == 'query':
           text = request.get('text')
           if not isinstance(text, str) or not text.strip():
@@ -99,7 +101,9 @@ def main() -> None:
         mx.eval(output)
         vector = np.array(output.astype(mx.float32))[0]
         if vector.shape != (768,) or not np.isfinite(vector).all():
-          raise ValueError('Encoder returned an invalid 768-dimensional vector')
+          raise ValueError(
+            'Encoder returned an invalid 768-dimensional vector'
+          )
         norm = float(np.linalg.norm(vector))
         if norm <= 0:
           raise ValueError('Encoder returned a zero vector')

@@ -8,6 +8,7 @@ import {
   atomicWrite,
   imageVectorCache,
   publishImageGeneration,
+  withImageCacheLock,
   sha256,
   type ImageEncoderContract,
 } from './image-embeddings/store'
@@ -32,6 +33,7 @@ interface ImageBuildReport {
   excluded: { sourcePath: string; reasons: string[] }[]
   inventoryIssues: { sourcePath: string; reference?: string; reason: string }[]
   generation?: string
+  cacheRetention?: { contracts: number; vectors: number }
   probes: Record<string, { id: string; score: number }[]>
   elapsedMs: number
 }
@@ -147,106 +149,110 @@ const writeReport = async () => {
   report.elapsedMs = Math.round(performance.now() - started)
   await atomicWrite(reportPath, `${JSON.stringify(report, null, 2)}\n`)
 }
-await writeReport()
 if (values['inventory-only']) {
+  await writeReport()
   console.log(
     `Image inventory: ${report.coverage.localAssets} local, ${report.coverage.publicAssets} public, ${report.coverage.excludedAssets} excluded. Report: ${reportPath}`,
   )
 } else {
-  const vectors = new Map<string, Float32Array>()
-  const unique = new Map(
-    assets.filter(asset => asset.contentId).map(asset => [asset.contentId, asset]),
-  )
-  let encoder: LocalImageEncoder | undefined
-  async function getEncoder(): Promise<LocalImageEncoder> {
-    encoder ??=
-      backend === 'mlx'
-        ? await (await import('./image-embeddings/mlx-encoder')).createMlxImageEncoder(contract)
-        : await (await import('./image-embeddings/encoder')).createImageEncoder(threads)
-    return encoder
-  }
-  try {
-    for (const [contentId, asset] of unique) {
-      const cached = await cache.read(contentId)
-      if (cached) {
-        vectors.set(contentId, cached)
-        report.cacheHits++
-        continue
-      }
-      if (report.encoded >= maxNew) {
-        report.pending++
-        continue
-      }
-      try {
-        // A changed source cannot be published under a stale inventory content identity.
-        const bytes = await readFile(asset.absolutePath)
-        if (sha256(bytes) !== contentId)
-          throw new Error('Image bytes changed during inventory; rerun to refresh.')
-        const vector = await (await getEncoder()).image(bytes)
-        await cache.write(contentId, vector)
-        vectors.set(contentId, vector)
-        report.encoded++
-        console.log(
-          `Image embeddings: ${report.encoded} new, ${report.cacheHits} cached (${asset.sourcePath})`,
-        )
-        await writeReport()
-      } catch (error) {
-        report.failures.push({
-          sourcePath: asset.sourcePath,
-          reason: error instanceof Error ? error.message : String(error),
-        })
-        break
-      }
-    }
-    if (report.failures.length || report.pending) {
-      report.status = report.failures.length ? 'failed' : 'cached-only'
-      console.log(
-        `Image generation preserved: ${report.pending} hashes pending, ${report.failures.length} failures. Rerun to resume.`,
-      )
-    } else {
-      const rows = assets
-        .filter(asset => asset.public)
-        .map(asset => {
-          const vector = vectors.get(asset.contentId)
-          if (!vector) throw new Error(`No vector for eligible image ${asset.sourcePath}.`)
-          return { id: asset.assetId, vector }
-        })
-      const current = await collectImageSearchInventory(inventoryOptions)
-      if (current.digest !== inventory.digest)
-        throw new Error(
-          'Vault image content or publication eligibility changed during indexing; rerun to resume safely.',
-        )
-      const manifest = await publishImageGeneration({
-        outDir,
-        rows,
-        contract,
-        shardSize,
-        sourceDigests: Object.fromEntries(
-          assets.filter(asset => asset.public).map(asset => [asset.assetId, asset.contentId]),
-        ),
-      })
-      report.generation = manifest.generation
-      report.status = 'published'
-      for (const query of values.probe ?? []) {
-        const queryVector = await (await getEncoder()).query(query)
-        report.probes[query] = rows
-          .map(row => ({
-            id: row.id,
-            score: row.vector.reduce(
-              (sum, value, dimension) => sum + value * queryVector[dimension],
-              0,
-            ),
-          }))
-          .sort((a, b) => b.score - a.score)
-          .slice(0, 10)
-      }
-      console.log(
-        `Published image embeddings: ${manifest.rows} rows, generation ${manifest.generation}.`,
-      )
-    }
-  } finally {
-    await encoder?.dispose()
+  await withImageCacheLock(values.cache, async () => {
     await writeReport()
-  }
-  if (report.failures.length) process.exitCode = 1
+    const vectors = new Map<string, Float32Array>()
+    const unique = new Map(
+      assets.filter(asset => asset.contentId).map(asset => [asset.contentId, asset]),
+    )
+    let encoder: LocalImageEncoder | undefined
+    async function getEncoder(): Promise<LocalImageEncoder> {
+      encoder ??=
+        backend === 'mlx'
+          ? await (await import('./image-embeddings/mlx-encoder')).createMlxImageEncoder(contract)
+          : await (await import('./image-embeddings/encoder')).createImageEncoder(threads)
+      return encoder
+    }
+    try {
+      for (const [contentId, asset] of unique) {
+        const cached = await cache.read(contentId)
+        if (cached) {
+          vectors.set(contentId, cached)
+          report.cacheHits++
+          continue
+        }
+        if (report.encoded >= maxNew) {
+          report.pending++
+          continue
+        }
+        try {
+          // A changed source cannot be published under a stale inventory content identity.
+          const bytes = await readFile(asset.absolutePath)
+          if (sha256(bytes) !== contentId)
+            throw new Error('Image bytes changed during inventory; rerun to refresh.')
+          const vector = await (await getEncoder()).image(bytes)
+          await cache.write(contentId, vector)
+          vectors.set(contentId, vector)
+          report.encoded++
+          console.log(
+            `Image embeddings: ${report.encoded} new, ${report.cacheHits} cached (${asset.sourcePath})`,
+          )
+          await writeReport()
+        } catch (error) {
+          report.failures.push({
+            sourcePath: asset.sourcePath,
+            reason: error instanceof Error ? error.message : String(error),
+          })
+          break
+        }
+      }
+      if (report.failures.length || report.pending) {
+        report.status = report.failures.length ? 'failed' : 'cached-only'
+        console.log(
+          `Image generation preserved: ${report.pending} hashes pending, ${report.failures.length} failures. Rerun to resume.`,
+        )
+      } else {
+        const rows = assets
+          .filter(asset => asset.public)
+          .map(asset => {
+            const vector = vectors.get(asset.contentId)
+            if (!vector) throw new Error(`No vector for eligible image ${asset.sourcePath}.`)
+            return { id: asset.assetId, vector }
+          })
+        const current = await collectImageSearchInventory(inventoryOptions)
+        if (current.digest !== inventory.digest)
+          throw new Error(
+            'Vault image content or publication eligibility changed during indexing; rerun to resume safely.',
+          )
+        const manifest = await publishImageGeneration({
+          outDir,
+          rows,
+          contract,
+          shardSize,
+          sourceDigests: Object.fromEntries(
+            assets.filter(asset => asset.public).map(asset => [asset.assetId, asset.contentId]),
+          ),
+        })
+        report.generation = manifest.generation
+        report.status = 'published'
+        if (!sample?.length) report.cacheRetention = await cache.retain(new Set(unique.keys()))
+        for (const query of values.probe ?? []) {
+          const queryVector = await (await getEncoder()).query(query)
+          report.probes[query] = rows
+            .map(row => ({
+              id: row.id,
+              score: row.vector.reduce(
+                (sum, value, dimension) => sum + value * queryVector[dimension],
+                0,
+              ),
+            }))
+            .sort((a, b) => b.score - a.score)
+            .slice(0, 10)
+        }
+        console.log(
+          `Published image embeddings: ${manifest.rows} rows, generation ${manifest.generation}.`,
+        )
+      }
+    } finally {
+      await encoder?.dispose()
+      await writeReport()
+    }
+    if (report.failures.length) process.exitCode = 1
+  })
 }

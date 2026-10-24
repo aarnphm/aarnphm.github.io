@@ -93,7 +93,10 @@ test('stored-image similarity verifies bytes, excludes its seed, caches vectors,
         { id: 'images/near.webp', vector: unit(0.6, 0.8) },
       ],
     })
-    await rm(path.join(root, 'embeddings/images', manifest.generation), { recursive: true })
+    await assert.rejects(
+      readFile(path.join(root, 'embeddings/images', manifest.generation, 'manifest.json')),
+      { code: 'ENOENT' },
+    )
     await assert.rejects(stale.search('images/seed.webp', 1), /unavailable: 404/)
     assert.equal((await stale.search('images/seed.webp', 1))[0].slug, 'images/near.webp')
     stale.dispose()
