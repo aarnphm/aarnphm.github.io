@@ -470,57 +470,13 @@ body[data-slug='arena/feed'] {
 }
 
 .arena-reader-code {
+  // The pre scrolls; a scrolling code would put its bar below the last line.
   pre > code {
-    display: block;
+    width: max-content;
+    min-width: 100%;
     overflow: visible;
-    white-space: pre;
     overflow-wrap: normal;
     tab-size: 4;
-  }
-
-  .hljs-keyword,
-  .hljs-selector-tag,
-  .hljs-literal,
-  .hljs-section,
-  .hljs-link {
-    color: var(--code-keyword);
-  }
-
-  .hljs-string,
-  .hljs-regexp,
-  .hljs-addition {
-    color: var(--code-string);
-  }
-
-  .hljs-title,
-  .hljs-name,
-  .hljs-function,
-  .hljs-attr {
-    color: var(--code-function);
-  }
-
-  .hljs-number,
-  .hljs-symbol,
-  .hljs-bullet {
-    color: var(--code-value);
-  }
-
-  .hljs-comment,
-  .hljs-quote {
-    color: var(--code-comment);
-    font-style: italic;
-  }
-
-  .hljs-built_in,
-  .hljs-type,
-  .hljs-class {
-    color: var(--code-tag);
-  }
-
-  .hljs-meta,
-  .hljs-doctag,
-  .hljs-deletion {
-    color: var(--code-important);
   }
 }
 

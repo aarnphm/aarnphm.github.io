@@ -1,26 +1,11 @@
 import type { Element, Root as HastRoot } from 'hast'
 import type { Code as MdastCode, Root as MdastRoot } from 'mdast'
 import { h, s } from 'hastscript'
-import rehypePrettyCode, { Options as CodeOptions, Theme as CodeTheme } from 'rehype-pretty-code'
 import { visit } from 'unist-util-visit'
 import { QuartzTransformerPlugin } from '../../types/plugin'
 import { svgOptions } from '../../util/svg-options'
 import { isRecord } from '../../util/type-guards'
-
-interface Theme extends Record<string, CodeTheme> {
-  light: CodeTheme
-  dark: CodeTheme
-}
-
-interface Options extends CodeOptions {
-  theme?: Theme
-  keepBackground?: boolean
-}
-
-const defaultOptions: Options = {
-  theme: { light: 'github-light', dark: 'github-dark' },
-  keepBackground: false,
-}
+import { rehypeHighlights, type HighlightsOptions } from './rehype-highlights'
 
 function isElement(node: unknown): node is Element {
   return isRecord(node) && node.type === 'element' && typeof node.tagName === 'string'
@@ -88,21 +73,7 @@ function addCopyButtons() {
   }
 }
 
-export const SyntaxHighlighting: QuartzTransformerPlugin<Partial<Options>> = userOpts => {
-  const opts: CodeOptions = {
-    ...defaultOptions,
-    ...userOpts,
-    transformers: [
-      ...(userOpts?.transformers ?? []),
-      {
-        // Build output must not depend on whether a loaded machine reaches Shiki's line deadline.
-        preprocess(_code, options) {
-          options.tokenizeTimeLimit = 0
-        },
-      },
-    ],
-  }
-
+export const SyntaxHighlighting: QuartzTransformerPlugin<HighlightsOptions> = (opts = {}) => {
   return {
     name: 'SyntaxHighlighting',
     markdownPlugins() {
@@ -128,7 +99,7 @@ export const SyntaxHighlighting: QuartzTransformerPlugin<Partial<Options>> = use
       ]
     },
     htmlPlugins() {
-      return [[rehypePrettyCode, opts], addCopyButtons]
+      return [[rehypeHighlights, opts], addCopyButtons]
     },
   }
 }

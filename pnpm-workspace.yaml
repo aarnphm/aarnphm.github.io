@@ -11,6 +11,9 @@ allowBuilds:
   onnxruntime-node: true
   protobufjs: true
   sharp: true
+  tree-sitter-javascript: false
+  tree-sitter-python: false
+  tree-sitter-typescript: false
   utf-8-validate: true
   workerd: true
 

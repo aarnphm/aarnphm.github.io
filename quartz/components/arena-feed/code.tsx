@@ -1,7 +1,8 @@
 import type { RefObject } from 'preact'
-import { useMemo } from 'preact/hooks'
+import { useEffect, useState } from 'preact/hooks'
 import type { ArenaReaderArtifact } from '../../util/arena-reader'
-import { highlightSourceCode } from '../../util/highlight-source'
+
+type Highlighted = { attributes: Record<string, string>; html: string }
 
 export function CodeContent({
   artifact,
@@ -10,19 +11,36 @@ export function CodeContent({
   artifact: Extract<ArenaReaderArtifact, { kind: 'code' }>
   contentRef: RefObject<HTMLDivElement>
 }) {
-  const highlighted = useMemo(
-    () => highlightSourceCode(artifact.code, artifact.fileName),
-    [artifact.code, artifact.fileName],
-  )
+  // content.tsx reaches the PDF reader and notes bundles too, so the Wasm highlighter loads on demand.
+  const [highlighted, setHighlighted] = useState<Highlighted | null>(null)
+  useEffect(() => {
+    let live = true
+    setHighlighted(null)
+    void import('../../util/highlight-source').then(
+      ({ codeAttributes, highlightSourceCode }) => {
+        if (!live) return
+        const result = highlightSourceCode(artifact.code, artifact.fileName)
+        setHighlighted({ attributes: codeAttributes(result), html: result.html })
+      },
+      () => {},
+    )
+    return () => {
+      live = false
+    }
+  }, [artifact.code, artifact.fileName])
   return (
     <div ref={contentRef} class="arena-reader-prose arena-reader-code">
       <figure>
         <figcaption>{artifact.fileName}</figcaption>
         <pre tabIndex={0} aria-label={`Source code: ${artifact.fileName}`}>
-          <code
-            data-language={highlighted.language}
-            dangerouslySetInnerHTML={{ __html: highlighted.html }}
-          />
+          {highlighted ? (
+            <code
+              {...highlighted.attributes}
+              dangerouslySetInnerHTML={{ __html: highlighted.html }}
+            />
+          ) : (
+            <code>{artifact.code}</code>
+          )}
         </pre>
       </figure>
     </div>
