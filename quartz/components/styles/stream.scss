@@ -298,7 +298,8 @@
 
   .stream-entry-tag {
     color: var(--darkgray);
-    background: color-mix(in srgb, var(--lightgray) 40%, transparent);
+    background: transparent;
+    border: 1px solid currentColor;
     width: fit-content;
 
     font-family: var(--codeFont);
@@ -311,10 +312,6 @@
     display: inline;
     cursor: pointer;
     font-size: 10px;
-
-    [saved-theme='dark'] & {
-      background-color: var(--highlight);
-    }
   }
 
   .stream-entry-socials {
