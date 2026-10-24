@@ -21,7 +21,8 @@ import pymupdf
 
 from build import public_pdfs
 from cache import canonical
-from extract import OCR_MODEL, OCR_REVISION
+from extract import server_identity
+from contract import OCR_MODELS
 
 EMBED_REVISION = '1a4ffddb7905d3f63486748deabe091a01fb6201'
 SCRIPTS = Path(__file__).resolve().parent
@@ -79,7 +80,7 @@ class Runner:
 
   def server(
     self, script: Path, port: int, identity: dict[str, str], *extra: str
-  ) -> None:
+  ) -> subprocess.Popen[bytes]:
     with socket.socket() as probe:
       if probe.connect_ex(('127.0.0.1', port)) == 0:
         raise RuntimeError(
@@ -98,10 +99,12 @@ class Runner:
       try:
         with urlopen(f'http://127.0.0.1:{port}/health', timeout=2) as response:
           health = json.load(response)
+        if script.name == 'mlx-server.py':
+          health = server_identity(port)
         if any(health.get(key) != value for key, value in identity.items()):
           raise ValueError(f'Unexpected model identity on port {port}')
         self.update(**{f'server{port}': {'pid': process.pid, **health}})
-        return
+        return process
       except (URLError, TimeoutError):
         time.sleep(2)
     raise TimeoutError(f'Model server on port {port} did not become ready')
@@ -173,6 +176,9 @@ class Runner:
       prefix=args.prefix,
       batchPages=args.batch_pages,
       firstPages=args.first_pages,
+      ocrConcurrency=args.ocr_concurrency,
+      pipelinePages=args.pipeline_pages,
+      ocrPrecision=args.ocr_precision,
       coverage=self.coverage(),
       error=None,
     )
@@ -183,17 +189,11 @@ class Runner:
     self.server(
       SCRIPTS / 'mlx-server.py',
       args.ocr_port,
-      {'model': OCR_MODEL, 'revision': OCR_REVISION},
-    )
-    self.server(
-      ROOT / 'quartz/embed_server.py',
-      args.embed_port,
-      {
-        'repo': 'mlx-community/embeddinggemma-2-bf16',
-        'revision': EMBED_REVISION,
-      },
-      '--revision',
-      EMBED_REVISION,
+      {},
+      '--max-num-seqs',
+      str(args.ocr_concurrency),
+      '--precision',
+      args.ocr_precision,
     )
     common = [
       '--cache',
@@ -222,11 +222,25 @@ class Runner:
           str(args.batch_pages),
           '--port',
           str(args.ocr_port),
+          '--concurrency',
+          str(args.ocr_concurrency),
+          '--pipeline-pages',
+          str(args.pipeline_pages),
         ],
       )
       if type(batch.get('completedPages')) is not int:
         raise ValueError('Extraction omitted its completed-page count')
       self.update(lastBatch=batch)
+      embedding = self.server(
+        ROOT / 'quartz/embed_server.py',
+        args.embed_port,
+        {
+          'repo': 'mlx-community/embeddinggemma-2-bf16',
+          'revision': EMBED_REVISION,
+        },
+        '--revision',
+        EMBED_REVISION,
+      )
       published = self.command(
         'publishing',
         [
@@ -239,6 +253,8 @@ class Runner:
           str(args.embed_port),
         ],
       )
+      stop(embedding)
+      self.children.remove(embedding)
       self.batches += 1
       coverage = self.coverage()
       self.update(
@@ -267,9 +283,12 @@ def interrupted(signum: int, _frame: object) -> None:
 def main() -> None:
   parser = argparse.ArgumentParser(description=__doc__)
   parser.add_argument('--prefix', default='thoughts/papers/')
-  parser.add_argument('--batch-pages', type=int, default=32)
+  parser.add_argument('--batch-pages', type=int, default=64)
   parser.add_argument('--first-pages', type=int, default=0)
   parser.add_argument('--ocr-port', type=int, default=8001)
+  parser.add_argument('--ocr-concurrency', type=int, default=8)
+  parser.add_argument('--pipeline-pages', type=int, default=8)
+  parser.add_argument('--ocr-precision', choices=OCR_MODELS, default='8bit')
   parser.add_argument('--embed-port', type=int, default=8003)
   parser.add_argument(
     '--public-index', type=Path, default=Path('public/static/searchIndex.json')
@@ -291,9 +310,11 @@ def main() -> None:
     args.batch_pages < 1
     or args.first_pages < 0
     or args.ocr_port == args.embed_port
+    or not 1 <= args.ocr_concurrency <= 16
+    or not 1 <= args.pipeline_pages <= 16
   ):
     parser.error(
-      'Use a positive batch size, nonnegative page limit and distinct ports'
+      'Use a positive batch size, nonnegative page limit, distinct ports, and concurrency/lookahead 1-16'
     )
   os.chdir(ROOT)
   args.run_dir.mkdir(parents=True, exist_ok=True)

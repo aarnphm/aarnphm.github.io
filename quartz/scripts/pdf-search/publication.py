@@ -27,11 +27,20 @@ def atomic_write(path: Path, payload: bytes) -> None:
   temporary.replace(path)
 
 
+class PassageShard(TypedDict):
+  path: str
+  rows: int
+  rowOffset: int
+  byteLength: int
+  sha256: str
+
+
 def publish(
   output: Path,
   generation: str,
   payload: bytes,
   shards: list[VectorShard],
+  passage_shards: list[PassageShard],
   rows: int,
 ) -> list[str]:
   target = output / generation
@@ -57,6 +66,18 @@ def publish(
     offset += shard['rows']
   if offset != rows:
     raise ValueError('Saved PDF shards do not cover the passage inventory')
+  if len(passage_shards) != len(shards):
+    raise ValueError('PDF passage shards do not align with the vector shards')
+  for vector_shard, shard in zip(shards, passage_shards, strict=True):
+    raw = (target / Path(shard['path']).name).read_bytes()
+    if (
+      shard['rows'] != vector_shard['rows']
+      or shard['rowOffset'] != vector_shard['rowOffset']
+      or len(raw) != shard['byteLength']
+      or hashlib.sha256(raw).hexdigest() != shard['sha256']
+      or len(json.loads(raw)) != shard['rows']
+    ):
+      raise ValueError(f'Invalid saved PDF passage shard: {shard["path"]}')
   atomic_write(output / 'manifest.json', payload)
   return prune_directories(output, generation)
 

@@ -6,160 +6,99 @@
 #   "transformers>=5.14", "fastapi", "uvicorn",
 # ]
 # ///
-"""Loopback GLM-OCR endpoint; model loading and inference share one MLX thread."""
+"""Launch upstream MLX-VLM with pinned GLM-OCR weights and bounded batching."""
 
 from __future__ import annotations
 
 import argparse
-import asyncio
-import base64
-from concurrent.futures import ThreadPoolExecutor
-from contextlib import asynccontextmanager
-from importlib.metadata import version
-from io import BytesIO
-from typing import Literal
+from importlib.metadata import distribution, version
+import json
+import os
+import sys
 
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, Field
-from PIL import Image
-import uvicorn
+from huggingface_hub import snapshot_download
+import mlx.core as mx
 
-MODEL = 'mlx-community/GLM-OCR-bf16'
-REVISION = '24f15402e83baa0a80eeeaecf5480e172abc6f2e'
+from contract import OCR_MODELS, SERVER_REVISION, MODEL_ADAPTER
 
 
-class ImageURL(BaseModel):
-  url: str
+def main() -> None:
+  parser = argparse.ArgumentParser(description=__doc__)
+  parser.add_argument('--port', type=int, default=8001)
+  parser.add_argument('--max-num-seqs', type=int, default=8)
+  parser.add_argument('--precision', choices=OCR_MODELS, default='8bit')
+  parser.add_argument('--prefill-step-size', type=int, default=2048)
+  parser.add_argument(
+    '--profile',
+    action='store_true',
+    help='Synchronize GPU phases for diagnostics; changes timing',
+  )
+  args = parser.parse_args()
+  if not 1 <= args.max_num_seqs <= 16:
+    parser.error('--max-num-seqs must be between 1 and 16')
+  if not 64 <= args.prefill_step_size <= 8192:
+    parser.error('--prefill-step-size must be between 64 and 8192')
+  installed = json.loads(
+    distribution('mlx-vlm').read_text('direct_url.json') or '{}'
+  )
+  if installed.get('vcs_info', {}).get('commit_id') != SERVER_REVISION:
+    raise ValueError('Use uv run with the pinned MLX-VLM server environment')
+  model_name, revision = OCR_MODELS[args.precision]
+  model = snapshot_download(model_name, revision=revision)
+  mx.set_memory_limit(6 << 30)
+  mx.set_cache_limit(256 << 20)
+  os.environ.update(
+    APC_ENABLED='1',
+    APC_DISK_ENABLED='0',
+    APC_MEMORY_MAX_GB='0.5',
+    APC_BLOCK_SIZE='16',
+    APC_NUM_BLOCKS='512',
+    APC_CHECKPOINT_ENTRIES='8',
+  )
+  sys.argv = [
+    'mlx_vlm.server',
+    '--host',
+    '127.0.0.1',
+    '--port',
+    str(args.port),
+    '--model',
+    model,
+    '--max-num-seqs',
+    str(args.max_num_seqs),
+    '--prefill-step-size',
+    str(args.prefill_step_size),
+    '--vision-cache-size',
+    '8',
+    '--max-tokens',
+    '8192',
+    '--log-progress-interval',
+    '256',
+  ]
+  from mlx_vlm.server.cli import main as serve
+  from mlx_vlm.server import app
+  from batching import install
+  from profiling import install as install_profiling
+  from importlib import import_module
 
-
-class Part(BaseModel):
-  type: Literal['text', 'image_url']
-  text: str | None = None
-  image_url: ImageURL | None = None
-
-
-class Message(BaseModel):
-  role: Literal['user']
-  content: list[Part]
-
-
-class Request(BaseModel):
-  model: str = MODEL
-  messages: list[Message] = Field(min_length=1, max_length=1)
-  max_tokens: int = Field(default=8192, ge=1, le=8192)
-  temperature: float = 0.0
-  top_p: float = 0.00001
-  top_k: int = 1
-  repetition_penalty: float = 1.1
-
-
-class Recognizer:
-  def __init__(self) -> None:
-    import mlx.core as mx
-    from huggingface_hub import snapshot_download
-    from mlx_vlm import load
-
-    mx.set_memory_limit(6 << 30)
-    mx.set_cache_limit(256 << 20)
-    self.model, self.processor = load(
-      snapshot_download(MODEL, revision=REVISION)
-    )
-
-  def recognize(self, request: Request) -> dict[str, object]:
-    from mlx_vlm import generate
-    from mlx_vlm.prompt_utils import apply_chat_template
-
-    parts = request.messages[0].content
-    images = [part.image_url.url for part in parts if part.image_url]
-    if len(images) > 1 or (images and not images[0].startswith('data:image/')):
-      raise ValueError('At most one inline image is accepted')
-    image = None
-    if images:
-      header, payload = images[0].split(',', 1)
-      if not header.endswith(';base64'):
-        raise ValueError('Expected a base64 image')
-      image = Image.open(
-        BytesIO(base64.b64decode(payload, validate=True))
-      ).convert('RGB')
-    prompt = '\n'.join(part.text for part in parts if part.text)
-    formatted = apply_chat_template(
-      self.processor, self.model.config, prompt, num_images=len(images)
-    )
-    result = generate(
-      self.model,
-      self.processor,
-      formatted,
-      image=[image] if image else None,
-      verbose=False,
-      max_tokens=request.max_tokens,
-      temperature=request.temperature,
-      top_p=request.top_p,
-      top_k=request.top_k,
-      repetition_penalty=request.repetition_penalty,
-    )
-    if images and result.generation_tokens >= request.max_tokens:
-      raise ValueError(
-        'OCR reached its token limit; refusing a truncated region'
-      )
-    return {
-      'model': MODEL,
-      'choices': [
-        {
-          'index': 0,
-          'finish_reason': 'stop',
-          'message': {'role': 'assistant', 'content': result.text},
-        }
-      ],
-      'usage': {
-        'prompt_tokens': result.prompt_tokens,
-        'completion_tokens': result.generation_tokens,
-      },
-    }
-
-
-def create_app() -> FastAPI:
-  executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix='glm-mlx')
-  state: list[Recognizer] = []
-
-  @asynccontextmanager
-  async def lifespan(_: FastAPI):
-    state.append(
-      await asyncio.get_running_loop().run_in_executor(executor, Recognizer)
-    )
-    yield
-    executor.shutdown(wait=False)
-
-  app = FastAPI(lifespan=lifespan)
-
-  @app.get('/health')
-  async def health() -> dict[str, object]:
-    return {
-      'model': MODEL,
-      'revision': REVISION,
-      'serverSchema': 1,
-      'runtime': {
-        name: version(name) for name in ('mlx', 'mlx-vlm', 'transformers')
-      },
-    }
-
-  @app.post('/v1/chat/completions')
-  async def complete(request: Request) -> dict[str, object]:
-    if request.model != MODEL:
-      raise HTTPException(
-        400, 'This endpoint serves the pinned GLM-OCR model only'
-      )
-    try:
-      return await asyncio.get_running_loop().run_in_executor(
-        executor, state[0].recognize, request
-      )
-    except ValueError as error:
-      raise HTTPException(422, str(error)) from error
-
-  return app
+  install()
+  import_module('ocr-output').install()
+  profile = install_profiling(args.profile)
+  identity = {
+    'model': model_name,
+    'revision': revision,
+    'serverRevision': SERVER_REVISION,
+    'modelAdapter': MODEL_ADAPTER,
+    'outputMode': 'literal-ocr',
+    'maxNumSeqs': args.max_num_seqs,
+    'prefillStepSize': args.prefill_step_size,
+    'runtime': {
+      name: version(name) for name in ('mlx', 'mlx-vlm', 'transformers')
+    },
+  }
+  app.add_api_route('/ocr/identity', lambda: identity, methods=['GET'])
+  app.add_api_route('/ocr/runtime', profile.snapshot, methods=['GET'])
+  serve()
 
 
 if __name__ == '__main__':
-  parser = argparse.ArgumentParser(description=__doc__)
-  parser.add_argument('--port', type=int, default=8001)
-  args = parser.parse_args()
-  uvicorn.run(create_app(), host='127.0.0.1', port=args.port)
+  main()

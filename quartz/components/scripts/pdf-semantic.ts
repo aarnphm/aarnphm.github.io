@@ -1,23 +1,23 @@
-import type { SemanticHit } from '../../util/semantic-search'
 import {
   PDF_MANIFEST_URL,
-  pdfSearchResults,
   rankPdfResults,
-  readPdfIndex,
   type PdfIndex,
   type PdfMetadata,
   type PdfSearchDocument,
 } from '../../util/pdf-search'
-import { createPdfLexical } from './pdf-lexical'
-import { SemanticClient } from './semantic.inline'
+import { isSemanticCancellation, SemanticClient } from './semantic.inline'
 
+/**
+ * Thin client over the semantic worker, which owns the PDF index: manifest, passage text,
+ * vectors and the lexical passage index. Rank fusion with site metadata stays here because
+ * only the page has the attachment inventory.
+ */
 export class PdfSemantic {
   private client: SemanticClient | null = null
-  private index: PdfIndex | null = null
-  private ready: Promise<PdfIndex> | null = null
-  private lexical: Awaited<ReturnType<typeof createPdfLexical>> | null = null
+  private documents: Record<string, PdfMetadata> = {}
   private disposed = false
   private generation = 0
+  coverage: PdfIndex['coverage'] | undefined
 
   cancel() {
     this.generation++
@@ -29,34 +29,11 @@ export class PdfSemantic {
     this.cancel()
     this.client?.dispose()
     this.client = null
-    this.lexical?.dispose()
-    this.lexical = null
   }
 
-  get coverage() {
-    return this.index?.coverage
-  }
-
-  private load() {
-    this.ready ??= fetch(PDF_MANIFEST_URL, { cache: 'no-cache' })
-      .then(async response => {
-        if (!response.ok) throw new Error(`PDF index unavailable: ${response.status}`)
-        const index = readPdfIndex(await response.json())
-        if (this.disposed) throw new DOMException('PDF search closed', 'AbortError')
-        this.index = index
-        const lexical = await createPdfLexical(index.passages)
-        if (this.disposed) {
-          lexical.dispose()
-          throw new DOMException('PDF search closed', 'AbortError')
-        }
-        this.lexical = lexical
-        return index
-      })
-      .catch(error => {
-        this.ready = null
-        throw error
-      })
-    return this.ready
+  private acquire() {
+    if (this.disposed) throw new DOMException('PDF search closed', 'AbortError')
+    return (this.client ??= new SemanticClient({ ...semanticCfg, manifestUrl: PDF_MANIFEST_URL }))
   }
 
   async search(
@@ -66,31 +43,30 @@ export class PdfSemantic {
     allowed: ReadonlySet<string>,
     semantic = true,
   ): Promise<PdfSearchDocument[]> {
-    if (this.disposed) throw new DOMException('PDF search closed', 'AbortError')
     const generation = this.generation
-    const index = await this.load()
-    if (generation !== this.generation || this.disposed)
-      throw new DOMException('PDF query superseded', 'AbortError')
-    const bodyMatches = (await this.lexical?.search(query)) ?? []
-    let hits: SemanticHit[] = []
-    if (semantic) {
-      this.client ??= new SemanticClient({
-        ...semanticCfg,
-        manifestUrl: `/embeddings/pdf/${index.generation}/manifest.json`,
-      })
-      hits = (await this.client.search(query, index.passages.length)).semantic
+    const superseded = () => generation !== this.generation || this.disposed
+    let result
+    try {
+      result = await this.acquire().pdfSearch(query, semantic)
+    } catch (error) {
+      if (superseded() || isSemanticCancellation(error)) throw error
+      // A generation may have been replaced under the worker; the retry resolves the new one.
+      this.client?.dispose()
+      this.client = null
+      result = await this.acquire().pdfSearch(query, semantic)
     }
-    if (generation !== this.generation) throw new DOMException('PDF query superseded', 'AbortError')
-    const documents = pdfSearchResults(hits, index.passages)
-    const scored = new Set(documents.map(document => document.slug))
-    const bodyOnly = bodyMatches
+    if (superseded()) throw new DOMException('PDF query superseded', 'AbortError')
+    this.coverage = result.coverage
+    Object.assign(this.documents, result.documents)
+    const scored = new Set(result.semantic.map(document => document.slug))
+    const bodyOnly = result.lexical
       .filter(passage => !scored.has(passage.slug))
       .map(passage => ({ slug: passage.slug, score: Number.NaN, passage }))
     return rankPdfResults(
       query,
-      [...bodyMatches.map(passage => passage.slug), ...lexical],
-      [...documents, ...bodyOnly],
-      { ...metadata, ...index.documents },
+      [...result.lexical.map(passage => passage.slug), ...lexical],
+      [...result.semantic, ...bodyOnly],
+      { ...metadata, ...result.documents },
       allowed,
     )
   }
@@ -104,7 +80,7 @@ export class PdfSemantic {
       query,
       lexical,
       [],
-      { ...metadata, ...this.index?.documents },
+      { ...metadata, ...this.documents },
       new Set(Object.keys(metadata)),
     )
   }
