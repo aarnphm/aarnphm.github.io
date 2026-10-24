@@ -186,13 +186,14 @@ export async function validateImageVectorShard(
   return view
 }
 
+/** Collapse worker hits to slugs. `ids` is aligned with `hits`; rows without one are dropped. */
 export function imageSearchResults(
   hits: readonly SemanticHit[],
-  index: Pick<ImageSearchManifest, 'ids'>,
+  ids: readonly (string | undefined)[],
 ): SemanticDocument[] {
   const scores = new Map<string, number>()
-  for (const hit of hits) {
-    const slug = index.ids[hit.id]
+  for (const [position, hit] of hits.entries()) {
+    const slug = ids[position]
     if (!slug || !Number.isFinite(hit.score)) continue
     scores.set(slug, Math.max(scores.get(slug) ?? -Infinity, hit.score))
   }

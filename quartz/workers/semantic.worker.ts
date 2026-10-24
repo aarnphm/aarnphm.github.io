@@ -1,458 +1,368 @@
-import { env, AutoConfig, AutoModel, AutoTokenizer } from '@huggingface/transformers'
-import {
-  IMAGE_EMBEDDING_REVISION,
-  imageManifestUrl,
-  readImageManifest,
-  validateImageVectorShard,
-  type ImageSearchManifest,
-} from '../util/image-search'
-import { SEMANTIC_ONNX_MODELS, type SemanticQueryDType } from '../util/semantic-search'
+import type {
+  PdfSearchRequest,
+  PdfSearchResult,
+  SemanticInitRequest,
+  SemanticSearchRequest,
+  SemanticSearchResult,
+  SemanticSimilarRequest,
+  SemanticWorkerConfig,
+  SemanticWorkerRequest,
+  SemanticWorkerResponse,
+} from '../util/semantic-protocol'
+import { imageManifestUrl, readImageManifest, validateImageVectorShard } from '../util/image-search'
+import { readPdfIndex, pdfSearchResults, validatePdfVectorShard } from '../util/pdf-search'
 import { isRecord } from '../util/type-guards'
+import { loadQueryEncoder, type QueryEncoder } from './semantic/encoder'
+import {
+  buildPdfSearchable,
+  loadPdfPassages,
+  pdfLexicalMatches,
+  type PdfSearchable,
+} from './semantic/pdf-index'
+import { reduceGroups, scanScores, topK } from './semantic/topk'
 
-type VectorShardMeta = {
-  path: string
-  rows: number
-  rowOffset: number
-  byteLength: number
-  sha256?: string
-  byteStride: number
-}
+type ShardLayout = { path: string; rows: number; rowOffset: number }
 
-type ChunkMetadata = { parentSlug: string; chunkId: number }
-
-type TextManifest = {
-  modality?: 'text'
-  version: number
+/** One loaded vector set. Row-major unit vectors; every query scans all of them. */
+type IndexEntry = {
   model: string
-  dims: number
-  dtype: string
-  normalized: boolean
   rows: number
-  shardSizeRows: number
-  vectors: { dtype: string; rows: number; dims: number; shards: VectorShardMeta[] }
-  ids: string[]
-  titles?: string[]
-  chunkMetadata?: Record<string, ChunkMetadata>
+  dims: number
+  vectors: Float32Array
+  groups?: Int32Array
+  groupCount?: number
+  /** Row identities, kept for image indexes so the page never reads the manifest. */
+  ids?: string[]
+  pdf?: PdfSearchable
 }
 
-type Manifest = TextManifest | ImageSearchManifest
-
-type InitMessage = { type: 'init'; cfg?: SemanticWorkerConfig }
-
-type SearchMessage = { type: 'search'; text: string; k: number; seq: number; manifestUrl?: string }
-type LoadMessage = { type: 'load'; manifestUrl: string; seq: number }
-
-type WorkerMessage = InitMessage | SearchMessage | LoadMessage
-
-type ReadyMessage = { type: 'ready' }
-
-type ProgressMessage = { type: 'progress'; loadedRows: number; totalRows: number }
-
-type SearchHit = { id: number; score: number }
-
-type SearchResultMessage = { type: 'search-result'; seq: number; semantic: SearchHit[] }
-
-type ErrorMessage = { type: 'error'; seq?: number; message: string }
-
-type WorkerState = 'idle' | 'loading' | 'ready' | 'error'
-
-type SemanticWorkerConfig = {
-  model?: string
-  queryDtype?: SemanticQueryDType
-  /** Same-origin manifest path; a base index lives under /embeddings/bases/<slug>/. */
-  manifestUrl?: string
-}
+type ParsedManifest = { key: string; model: string; materialize(): Promise<IndexEntry> }
 
 const MANIFEST_URL = '/embeddings/manifest.json'
+const ROOT_POINTER = /^\/embeddings\/(?:pdf|images)\/manifest\.json$/
+const MAX_INDEXES = 4
 
-let state: WorkerState = 'idle'
-let manifest: Manifest | null = null
+let state: 'idle' | 'loading' | 'ready' | 'error' = 'idle'
 let cfg: SemanticWorkerConfig | null = null
-let dims = 0
-let tokenizer: Awaited<ReturnType<typeof AutoTokenizer.from_pretrained>> | null = null
-let model: Awaited<ReturnType<typeof AutoModel.from_pretrained>> | null = null
-let encoderLoading: Promise<void> | null = null
-let envConfigured = false
+let encoder: QueryEncoder | null = null
+let encoderLoading: Promise<QueryEncoder> | null = null
 let abortController: AbortController | null = null
-// Row-major unit vectors, `rows * dims` floats. Every query scans all of them.
-let vectors: Float32Array | null = null
-const indexes = new Map<string, { manifest: Manifest; vectors: Float32Array }>()
-let manifestPath = ''
+// Insertion order is the LRU order; `current` is the index the last request used.
+const indexes = new Map<string, IndexEntry>()
+const resolved = new Map<string, string>()
+let current = ''
 const queryVectors = new Map<string, Float32Array>()
+let scores = new Float32Array(0)
+let similarScores = new Float64Array(0)
 
-function toAssetUrl(path: string): string {
+const post = (message: SemanticWorkerResponse) => self.postMessage(message)
+
+function toAssetUrl(path: string): URL {
   const url = new URL(path, self.location.origin)
   if (url.origin !== self.location.origin) {
     throw new Error(`refusing cross-origin semantic asset ${url.origin}`)
   }
-  return url.toString()
+  return url
 }
 
-async function fetchBinary(path: string): Promise<ArrayBuffer> {
-  const res = await fetchAsset(path)
-  return await res.arrayBuffer()
-}
-
-async function fetchAsset(path: string): Promise<Response> {
-  const res = await fetch(path, { signal: abortController?.signal ?? undefined })
+async function fetchAsset(path: string, cache: RequestCache = 'default'): Promise<Response> {
+  const res = await fetch(toAssetUrl(path), { cache, signal: abortController?.signal })
   if (!res.ok) {
     throw new Error(`failed to fetch ${path}: ${res.status} ${res.statusText}`)
   }
   return res
 }
 
-async function loadVectors(data: Manifest): Promise<Float32Array> {
-  const readShard = async (index: number): Promise<Float32Array> => {
-    const shard = data.vectors.shards[index]
-    const bytes = await fetchBinary(toAssetUrl(shard.path))
-    if (data.modality === 'image')
-      return validateImageVectorShard(bytes, data.vectors.shards[index], data.dims)
-    return new Float32Array(bytes)
-  }
-  if (data.vectors.shards.length === 1 && data.vectors.shards[0].rowOffset === 0) {
-    const shard = data.vectors.shards[0]
-    const view = await readShard(0)
-    if (view.length !== shard.rows * data.dims) {
-      throw new Error(
-        `shard ${shard.path} has mismatched length (expected ${shard.rows * data.dims}, got ${view.length})`,
-      )
-    }
-    if (shard.rows > data.rows) {
-      throw new Error(`shard ${shard.path} reaches past the ${data.rows} rows of the manifest`)
-    }
-    const progress: ProgressMessage = {
-      type: 'progress',
-      loadedRows: shard.rows,
-      totalRows: data.rows,
-    }
-    self.postMessage(progress)
-    return view
-  }
-  const all = new Float32Array(data.rows * data.dims)
+const fetchBinary = async (path: string) => (await fetchAsset(path)).arrayBuffer()
+
+async function loadVectors(
+  shards: readonly ShardLayout[],
+  rows: number,
+  dims: number,
+  read: (bytes: ArrayBuffer, index: number) => Promise<Float32Array>,
+): Promise<Float32Array> {
+  const all = new Float32Array(rows * dims)
   let loadedRows = 0
   await Promise.all(
-    data.vectors.shards.map(async (shard, index) => {
-      const view = await readShard(index)
-      if (view.length !== shard.rows * data.dims) {
-        throw new Error(
-          `shard ${shard.path} has mismatched length (expected ${shard.rows * data.dims}, got ${view.length})`,
-        )
+    shards.map(async (shard, index) => {
+      const view = await read(await fetchBinary(shard.path), index)
+      if (view.length !== shard.rows * dims) {
+        throw new Error(`shard ${shard.path} has mismatched length`)
       }
-      if (shard.rowOffset + shard.rows > data.rows) {
-        throw new Error(`shard ${shard.path} reaches past the ${data.rows} rows of the manifest`)
+      if (shard.rowOffset + shard.rows > rows) {
+        throw new Error(`shard ${shard.path} reaches past the ${rows} rows of the manifest`)
       }
-      all.set(view, shard.rowOffset * data.dims)
+      all.set(view, shard.rowOffset * dims)
       loadedRows += shard.rows
-      const progress: ProgressMessage = { type: 'progress', loadedRows, totalRows: data.rows }
-      self.postMessage(progress)
+      post({ type: 'progress', loadedRows, totalRows: rows })
     }),
   )
   return all
 }
 
-// Exact cosine search. The rows and the query are unit vectors, so the dot product is the cosine.
-// A scan costs rows * dims multiply-adds (about 25 million for 32k rows of 768), which is cheaper
-// than building an approximate index in the page on every cold visit.
-function topK(query: Float32Array, k: number): SearchHit[] {
-  if (!manifest || !vectors) throw new Error('semantic index is not loaded')
-  const hits: SearchHit[] = []
-  let floor = -Infinity
-  for (let row = 0, base = 0; row < manifest.rows; row++, base += dims) {
-    let score = 0
-    for (let d = 0; d < dims; d++) score += query[d] * vectors[base + d]
-    if (!Number.isFinite(score) || score <= floor) continue
-    let pos = hits.length
-    while (pos > 0 && hits[pos - 1].score < score) pos--
-    hits.splice(pos, 0, { id: row, score })
-    if (hits.length > k) hits.pop()
-    if (hits.length === k) floor = hits[k - 1].score
+function textGroups(ids: unknown, chunkMetadata: unknown, rows: number) {
+  if (!Array.isArray(ids) || ids.length !== rows) return {}
+  const groupOf = new Map<string, number>()
+  const groups = new Int32Array(rows)
+  for (let row = 0; row < rows; row++) {
+    const id = String(ids[row])
+    const chunk = isRecord(chunkMetadata) ? chunkMetadata[id] : undefined
+    const parent = isRecord(chunk) && typeof chunk.parentSlug === 'string' ? chunk.parentSlug : id
+    let group = groupOf.get(parent)
+    if (group === undefined) {
+      group = groupOf.size
+      groupOf.set(parent, group)
+    }
+    groups[row] = group
   }
-  return hits
+  return { groups, groupCount: groupOf.size }
 }
 
-function configureRuntimeEnv() {
-  if (envConfigured) return
-  env.allowLocalModels = false
-  env.allowRemoteModels = true
-  // WebGPU runs the query encoder; keep the ONNX WASM orchestrator single-threaded.
-  const onnxWasm = env.backends.onnx.wasm
-  if (onnxWasm) onnxWasm.numThreads = 1
-  envConfigured = true
-}
-
-function pruneTokenizerMemory(loadedTokenizer: NonNullable<typeof tokenizer>) {
-  loadedTokenizer._tokenizerJSON = null
-  const inner: unknown = loadedTokenizer._tokenizer
-  if (isRecord(inner)) {
-    inner.tokenizer = null
-    const innerModel = inner.model
-    if (isRecord(innerModel)) {
-      innerModel.config = null
-      innerModel.merges = null
-      innerModel.vocab = null
+async function parseManifest(path: string): Promise<ParsedManifest> {
+  const pathname = toAssetUrl(path).pathname
+  const isRoot = ROOT_POINTER.test(pathname)
+  // Root pointers move between generations; generation paths never change.
+  const raw: unknown = await (await fetchAsset(path, isRoot ? 'no-cache' : 'default')).json()
+  if (!isRecord(raw)) throw new Error(`invalid semantic manifest ${path}`)
+  if (raw.kind === 'quartz-pdf-search-v1') {
+    const index = readPdfIndex(raw)
+    const key = `/embeddings/pdf/${index.generation}/manifest.json`
+    if (!isRoot && pathname !== key)
+      throw new Error('PDF embedding manifest does not match its immutable generation URL.')
+    return {
+      key,
+      model: 'google/embeddinggemma-2',
+      async materialize() {
+        const [vectors, passages] = await Promise.all([
+          loadVectors(index.shards, index.rows, 768, async (bytes, i) => {
+            await validatePdfVectorShard(bytes, index.shards[i])
+            return new Float32Array(bytes)
+          }),
+          loadPdfPassages(index, fetchBinary),
+        ])
+        const pdf = buildPdfSearchable(index, passages)
+        return {
+          model: 'google/embeddinggemma-2',
+          rows: index.rows,
+          dims: 768,
+          vectors,
+          groups: pdf.groups,
+          groupCount: pdf.groupCount,
+          pdf,
+        }
+      },
     }
   }
+  if (raw.modality === 'image') {
+    const data = readImageManifest(raw)
+    const key = imageManifestUrl(data)
+    if (!isRoot && pathname !== key)
+      throw new Error('Image embedding manifest does not match its immutable generation URL.')
+    return {
+      key,
+      model: data.model,
+      async materialize() {
+        const vectors = await loadVectors(data.vectors.shards, data.rows, data.dims, (bytes, i) =>
+          validateImageVectorShard(bytes, data.vectors.shards[i], data.dims),
+        )
+        return { model: data.model, rows: data.rows, dims: data.dims, vectors, ids: data.ids }
+      },
+    }
+  }
+  const { model, rows, dims, vectors } = raw
+  if (
+    typeof model !== 'string' ||
+    typeof rows !== 'number' ||
+    typeof dims !== 'number' ||
+    !isRecord(vectors) ||
+    !Array.isArray(vectors.shards)
+  )
+    throw new Error(`invalid semantic manifest ${path}`)
+  if (vectors.dtype !== 'fp32') {
+    throw new Error(`unsupported embedding dtype '${String(vectors.dtype)}', regenerate with fp32`)
+  }
+  const shards = vectors.shards as ShardLayout[]
+  const grouping = textGroups(raw.ids, raw.chunkMetadata, rows)
+  return {
+    key: pathname,
+    model,
+    async materialize() {
+      const loaded = await loadVectors(shards, rows, dims, async bytes => new Float32Array(bytes))
+      return { model, rows, dims, vectors: loaded, ...grouping }
+    },
+  }
 }
 
-const QUERY_DTYPES: readonly SemanticQueryDType[] = ['q4', 'q8', 'fp32']
-
-function resolveQueryDType(value: unknown): SemanticQueryDType {
-  return QUERY_DTYPES.find(dtype => dtype === value) ?? 'q4'
-}
-
-function ensureEncoder(): Promise<void> {
-  encoderLoading ??= loadEncoder().catch((err: unknown) => {
-    encoderLoading = null
-    throw err
-  })
+function ensureEncoder(model: string): Promise<QueryEncoder> {
+  if (encoder) return Promise.resolve(encoder)
+  encoderLoading ??= loadQueryEncoder(model, cfg?.queryDtype)
+    .then(loaded => (encoder = loaded))
+    .catch((err: unknown) => {
+      encoderLoading = null
+      throw err
+    })
   return encoderLoading
 }
 
-async function loadEncoder() {
-  const modelId = manifest?.model ?? cfg?.model
-  if (!modelId) {
-    throw new Error('semantic model is not configured')
+async function selectIndex(path: string): Promise<IndexEntry> {
+  const key = resolved.get(path) ?? path
+  const known = indexes.get(key)
+  if (known) {
+    indexes.delete(key)
+    indexes.set(key, known)
+    current = key
+    return known
   }
-  const mappedModel = SEMANTIC_ONNX_MODELS[modelId] ?? modelId
-  const revision = modelId === 'google/embeddinggemma-2' ? IMAGE_EMBEDDING_REVISION : 'main'
-  configureRuntimeEnv()
-  // Every quantized embeddinggemma graph stores its token table with GatherBlockQuantized.
-  // The wasm backend has no kernel for it (session creation fails), and the fp32 graph is over 1 GB.
-  // Without WebGPU the search stays lexical.
-  if (!(await navigator.gpu?.requestAdapter().catch(() => null))) {
-    throw new Error('semantic query encoder needs WebGPU')
-  }
-  const dtype = resolveQueryDType(cfg?.queryDtype)
-  const config = await AutoConfig.from_pretrained(mappedModel, { revision })
-  // embeddinggemma-2 ships vision and audio encoders (1.8 GB at fp32); queries only need the text graph.
-  if (config.model_type === 'embedding_gemma2') {
-    Object.assign(config, { vision_config: null, audio_config: null })
-  }
-  const [loadedTokenizer, loadedModel] = await Promise.all([
-    AutoTokenizer.from_pretrained(mappedModel, { revision }).then(loaded => {
-      pruneTokenizerMemory(loaded)
-      return loaded
-    }),
-    AutoModel.from_pretrained(mappedModel, { config, dtype, device: 'webgpu', revision }),
-  ])
-  tokenizer = loadedTokenizer
-  model = loadedModel
-  const onnxWasm = env.backends.onnx.wasm
-  if (onnxWasm) onnxWasm.wasmBinary = undefined
-}
-
-async function embed(text: string, isQuery: boolean = false): Promise<Float32Array> {
-  await ensureEncoder()
-  if (!tokenizer || !model) throw new Error('semantic encoder unavailable')
-  let prefixedText = text
-  const modelId = manifest?.model ?? cfg?.model
-  if (modelId) {
-    const modelName = modelId.toLowerCase()
-    switch (true) {
-      case modelName.includes('e5'): {
-        prefixedText = isQuery ? `query: ${text}` : `passage: ${text}`
-        break
-      }
-      case modelName.includes('qwen') && modelName.includes('embedding'): {
-        if (isQuery) {
-          const task = 'Given a web search query, retrieve relevant passages that answer the query'
-          prefixedText = `Instruct: ${task}\nQuery: ${text}`
-        }
-        break
-      }
-      case modelName.includes('embeddinggemma'): {
-        prefixedText = isQuery
-          ? `task: search result | query: ${text}`
-          : `title: none | text: ${text}`
-        break
-      }
-      default:
-        break
-    }
-  }
-  const inputs = await tokenizer([prefixedText], { padding: true })
-  const outputs = await model(inputs)
   try {
-    let embedding
-    if (outputs.sentence_embedding) {
-      embedding = outputs.sentence_embedding
-    } else if (outputs.last_hidden_state) {
-      const lastHidden = outputs.last_hidden_state
-      const attentionMask = inputs.attention_mask
-      const [_, seqLen, hiddenSize] = lastHidden.dims
-      const pooled = new Float32Array(hiddenSize)
-
-      for (let i = 0; i < hiddenSize; i++) {
-        let sum = 0
-        let count = 0
-        for (let j = 0; j < seqLen; j++) {
-          if (attentionMask.data[j] > 0) {
-            sum += lastHidden.data[j * hiddenSize + i]
-            count++
-          }
-        }
-        pooled[i] = count > 0 ? sum / count : 0
-      }
-
-      embedding = { data: pooled }
-    } else {
-      throw new Error('unsupported model output format')
+    const parsed = await parseManifest(path)
+    if (encoder && parsed.model !== encoder.model)
+      throw new Error(
+        `index model ${parsed.model} differs from the loaded encoder ${encoder.model}`,
+      )
+    const entry = indexes.get(parsed.key) ?? (await parsed.materialize())
+    // Publish only after every shard loads. Failed swaps leave the old index intact.
+    resolved.set(path, parsed.key)
+    indexes.delete(parsed.key)
+    indexes.set(parsed.key, entry)
+    while (indexes.size > MAX_INDEXES) {
+      const oldest = indexes.keys().next().value
+      if (oldest === undefined) break
+      indexes.delete(oldest)
     }
-
-    const data = embedding.data
-    if (data.length < dims) {
-      throw new Error(`model emits ${data.length} dims but the index stores ${dims}`)
-    }
-    // Matryoshka models (embeddinggemma-2: 768/512/256/128) keep the leading dims, then renormalize below.
-    const vec = new Float32Array(dims)
-    for (let i = 0; i < dims; i++) vec[i] = data[i]
-    let norm = 0
-    for (let i = 0; i < dims; i++) norm += vec[i] * vec[i]
-    norm = Math.sqrt(norm)
-    if (norm > 0) {
-      for (let i = 0; i < dims; i++) vec[i] /= norm
-    }
-    return vec
-  } finally {
-    for (const map of [outputs, inputs]) {
-      if (map && typeof map === 'object') {
-        for (const key of Object.keys(map)) {
-          const val = map[key]
-          if (val && typeof val.dispose === 'function') {
-            try {
-              val.dispose()
-            } catch {}
-          }
-        }
-      }
-    }
+    current = parsed.key
+    return entry
+  } catch (error) {
+    resolved.delete(path)
+    throw error
   }
 }
 
-async function fetchManifest(path: string): Promise<Manifest> {
-  const manifestUrl = toAssetUrl(path)
-  const response = await fetch(manifestUrl, { signal: abortController?.signal ?? undefined })
-  if (!response.ok) {
-    throw new Error(
-      `failed to fetch manifest ${manifestUrl}: ${response.status} ${response.statusText}`,
-    )
-  }
-  const raw: Manifest = await response.json()
-  const data = raw.modality === 'image' ? readImageManifest(raw) : raw
-  if (data.modality === 'image' && new URL(manifestUrl).pathname !== imageManifestUrl(data))
-    throw new Error('Image embedding manifest does not match its immutable generation URL.')
-  if (data.vectors.dtype !== 'fp32') {
-    throw new Error(`unsupported embedding dtype '${data.vectors.dtype}', regenerate with fp32`)
-  }
-  if (manifest && data.model !== manifest.model) {
-    throw new Error(`index model ${data.model} differs from the loaded encoder ${manifest.model}`)
-  }
-  return data.modality === 'image'
-    ? { ...data, ids: [] }
-    : { ...data, ids: [], titles: undefined, chunkMetadata: undefined }
-}
-
-async function handleInit(msg: InitMessage) {
+async function handleInit(msg: SemanticInitRequest) {
   if (state === 'loading' || state === 'ready') {
     throw new Error('worker already initialized or loading')
   }
-
   state = 'loading'
   abortController?.abort()
   abortController = new AbortController()
-
   try {
     cfg = msg.cfg ?? {}
-
-    manifest = await fetchManifest(cfg.manifestUrl ?? MANIFEST_URL)
-    dims = manifest.dims
-
+    const path = cfg.manifestUrl ?? MANIFEST_URL
+    const parsed = await parseManifest(path)
     // The encoder loads beside the vectors, so "ready" means a query can run and a missing
-    // WebGPU adapter fails now, not after the vectors are downloaded.
-    const [loaded] = await Promise.all([loadVectors(manifest), ensureEncoder()])
-    vectors = loaded
-    manifestPath = cfg.manifestUrl ?? MANIFEST_URL
-    indexes.set(manifestPath, { manifest, vectors })
-
+    // WebGPU adapter fails now, not after the vectors are downloaded. An index-only request
+    // may have loaded the vectors before init.
+    const [entry] = await Promise.all([
+      indexes.get(parsed.key) ?? parsed.materialize(),
+      ensureEncoder(parsed.model),
+    ])
+    resolved.set(path, parsed.key)
+    indexes.delete(parsed.key)
+    indexes.set(parsed.key, entry)
+    current = parsed.key
     state = 'ready'
-    const ready: ReadyMessage = { type: 'ready' }
-    self.postMessage(ready)
+    post({ type: 'ready' })
   } catch (err) {
     state = 'error'
     throw err
   }
 }
 
-async function selectIndex(path: string) {
-  if (manifestPath === path) return
-  let next = indexes.get(path)
-  if (!next) {
-    const data = await fetchManifest(path)
-    next = { manifest: data, vectors: await loadVectors(data) }
+async function queryVector(entry: IndexEntry, text: string): Promise<Float32Array> {
+  const key = `${entry.dims}\u0000${text}`
+  const cached = queryVectors.get(key)
+  if (cached) return cached
+  const loaded = await ensureEncoder(entry.model)
+  const vec = await loaded.embed(text, entry.dims)
+  queryVectors.set(key, vec)
+  if (queryVectors.size > 32) {
+    const oldest = queryVectors.keys().next().value
+    if (oldest !== undefined) queryVectors.delete(oldest)
   }
-  // Publish the new inventory only after all shards load. Failed swaps leave the old index intact.
-  indexes.delete(path)
-  indexes.set(path, next)
-  if (indexes.size > 2) {
-    const oldest = indexes.keys().next().value
-    if (oldest !== undefined) indexes.delete(oldest)
-  }
-  manifest = next.manifest
-  dims = manifest.dims
-  vectors = next.vectors
-  manifestPath = path
+  return vec
 }
 
-async function handleSearch(msg: SearchMessage) {
-  if (state !== 'ready') {
-    throw new Error('worker not ready for search')
-  }
-  if (!manifest) {
-    throw new Error('semantic worker not configured')
-  }
+/** Best rows, one per document when the index groups rows. */
+async function scan(entry: IndexEntry, text: string, k: number) {
+  const query = await queryVector(entry, text)
+  if (scores.length < entry.rows) scores = new Float32Array(entry.rows)
+  const rowScores = scores.subarray(0, entry.rows)
+  scanScores(query, entry.vectors, entry.rows, entry.dims, rowScores)
+  if (!entry.groups || entry.groupCount === undefined) return topK(rowScores, k)
+  const { best, row } = reduceGroups(rowScores, entry.groups, entry.groupCount)
+  return topK(best, k, row)
+}
 
-  await selectIndex(msg.manifestUrl ?? manifestPath)
-  const key = `${dims}\u0000${msg.text}`
-  let queryVec = queryVectors.get(key)
-  if (!queryVec) {
-    queryVec = await embed(msg.text, true)
-    queryVectors.set(key, queryVec)
-    if (queryVectors.size > 32) {
-      const oldest = queryVectors.keys().next().value
-      if (oldest !== undefined) queryVectors.delete(oldest)
-    }
-  }
-  const message: SearchResultMessage = {
-    type: 'search-result',
+async function handleSearch(msg: SemanticSearchRequest) {
+  if (state !== 'ready') throw new Error('worker not ready for search')
+  const entry = await selectIndex(msg.manifestUrl ?? current)
+  const semantic = await scan(entry, msg.text, Math.max(1, msg.k))
+  const result: SemanticSearchResult = { type: 'search-result', seq: msg.seq, semantic }
+  const { ids } = entry
+  if (ids) result.ids = semantic.map(hit => ids[hit.id])
+  post(result)
+}
+
+/** Stored image rows nearest to a stored seed row, seed excluded. Runs before or without init. */
+async function handleSimilar(msg: SemanticSimilarRequest) {
+  const entry = await selectIndex(msg.manifestUrl)
+  const { ids } = entry
+  if (!ids) throw new Error(`${msg.manifestUrl} is not an image index`)
+  const seed = ids.indexOf(msg.seedId)
+  if (seed < 0) throw new Error('This image is not indexed for visual similarity.')
+  // Float64 scores reproduce the ordering of the former page-side scan, near ties included.
+  if (similarScores.length < entry.rows) similarScores = new Float64Array(entry.rows)
+  const rowScores = similarScores.subarray(0, entry.rows)
+  const query = entry.vectors.subarray(seed * entry.dims, (seed + 1) * entry.dims)
+  scanScores(query, entry.vectors, entry.rows, entry.dims, rowScores)
+  rowScores[seed] = -Infinity
+  const semantic = topK(rowScores, Math.max(1, msg.k))
+  post({ type: 'search-result', seq: msg.seq, semantic, ids: semantic.map(hit => ids[hit.id]) })
+}
+
+async function handlePdfSearch(msg: PdfSearchRequest) {
+  if (state !== 'ready') throw new Error('worker not ready for search')
+  const entry = await selectIndex(msg.manifestUrl)
+  const { pdf } = entry
+  if (!pdf) throw new Error(`${msg.manifestUrl} is not a PDF search index`)
+  const [hits, lexical] = await Promise.all([
+    msg.semantic ? scan(entry, msg.text, pdf.groupCount) : [],
+    pdfLexicalMatches(pdf, msg.text),
+  ])
+  const semantic = pdfSearchResults(hits, pdf.passages)
+  const documents: PdfSearchResult['documents'] = {}
+  for (const { slug } of [...semantic, ...lexical]) documents[slug] = pdf.documents[slug]
+  post({
+    type: 'pdf-result',
     seq: msg.seq,
-    semantic: topK(queryVec, Math.max(1, msg.k)),
-  }
-  self.postMessage(message)
+    generation: pdf.generation,
+    coverage: pdf.coverage,
+    documents,
+    semantic,
+    lexical,
+  })
 }
 
 let requests: Promise<void> = Promise.resolve()
 
-self.onmessage = (event: MessageEvent<WorkerMessage>) => {
+self.onmessage = (event: MessageEvent<SemanticWorkerRequest>) => {
   const origin = typeof event.origin === 'string' ? event.origin : ''
   if (origin && origin !== self.location.origin) return
-
   const data = event.data
-
-  // The worker URL is stable, so an already open page may still send the previous protocol.
   requests = requests
     .then(async () => {
       if (data.type === 'init') await handleInit(data)
       else if (data.type === 'load') {
-        await selectIndex(data.manifestUrl)
-        self.postMessage({ type: 'loaded', seq: data.seq, rows: manifest?.rows ?? 0 })
-      } else await handleSearch(data)
+        const entry = await selectIndex(data.manifestUrl)
+        post({ type: 'loaded', seq: data.seq, rows: entry.rows, ids: entry.ids })
+      } else if (data.type === 'similar') await handleSimilar(data)
+      else if (data.type === 'pdf-search') await handlePdfSearch(data)
+      else await handleSearch(data)
     })
     .catch((err: unknown) => {
-      const message: ErrorMessage = {
+      post({
         type: 'error',
         seq: data.type === 'init' ? undefined : data.seq,
         message: err instanceof Error ? err.message : String(err),
-      }
-      self.postMessage(message)
+      })
     })
 }
