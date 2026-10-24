@@ -2,6 +2,7 @@ import type { FormatKey, ThemeKey } from '../press-kit-card'
 import { isActivityCardStatKey } from '../../../util/press-kit-activity'
 import { currentNavSignal } from '../nav-lifecycle'
 import { calendarCardData } from '../press-kit-calendar'
+import { isDayLayout } from '../press-kit-card/day-layout'
 import { isBlockDisplayKey } from '../press-kit-day'
 import { runsFromText } from '../press-kit-text'
 import { isIncludeKey, mountAnchor, refreshLocale, setTab, syncControls } from './control-view'
@@ -349,8 +350,12 @@ export function bindDialog(signal: AbortSignal) {
         schedule()
         return
       } else if (input.name === 'press-kit-theme') session.theme = input.value as ThemeKey
+      else if (input.name === 'press-kit-day-layout' && isDayLayout(input.value))
+        session.dayLayout = input.value
       else return
       writePrefs()
+      // The day layout's offer depends on the format, so its radios follow a format change.
+      syncControls()
       schedule()
     },
     { signal },

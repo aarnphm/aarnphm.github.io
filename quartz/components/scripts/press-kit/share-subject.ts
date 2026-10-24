@@ -340,6 +340,7 @@ export function model(): CardModel {
       : undefined,
     day,
     calendar: s.calendar,
+    dayLayout: session.dayLayout,
     overlay: session.overlay,
     metricGap: session.editor?.metricGap ?? 0,
     railTextScale: session.editor?.railTextScale ?? 1,

@@ -14,6 +14,7 @@ import { cardLocale } from '../press-kit-i18n'
 import { svgLayer, type LayerRenderer } from '../press-kit-layers'
 import { cardDate, runsToPlain } from '../press-kit-text'
 import { paintTrainingChart, trainingCharts, trainingChartWeight } from './chart'
+import { stacks } from './day-layout'
 import { cardRoute, routeSvg } from './route'
 import { stickerCardSvg } from './sticker'
 import { node, createSvgText, graphic, sportIcon } from './svg'
@@ -90,7 +91,16 @@ export function trainingCardSvg(
     )
     return svg.outerHTML
   }
-  const columns = blocks.length > 1 ? (format === 'landscape' && blocks.length > 4 ? 3 : 2) : 1
+  // A stacked card gives each block a full-width band: the route or charts on the left, the
+  // numbers beside them, so the band needs about as much height as a grid cell's numbers alone.
+  const stacked = stacks(model.dayLayout, format, blocks.length)
+  const columns = stacked
+    ? 1
+    : blocks.length > 1
+      ? format === 'landscape' && blocks.length > 4
+        ? 3
+        : 2
+      : 1
   const rows = Math.ceil(blocks.length / columns)
   const gap = spec.gap * 0.65
   const cellWidth = (width - gap * (columns - 1)) / columns
@@ -247,8 +257,15 @@ export function trainingCardSvg(
           .join(' · '),
       )
       .filter(Boolean)
+    const route = model.show.map
+      ? cardRoute(block.activities.flatMap(item => item.route))
+      : undefined
+    const band = stacked && Boolean(route || block.graphic || charts.length)
+    const visualSpan = band ? cellWidth * 0.42 : cellWidth
+    const textX = band ? x + visualSpan + gap : x
+    const textWidth = band ? cellWidth - visualSpan - gap : cellWidth
     const statColumns = Math.min(3, stats.length)
-    const statWidth = statColumns ? cellWidth / statColumns - size * 0.3 : 0
+    const statWidth = statColumns ? textWidth / statColumns - size * 0.3 : 0
     const statLayouts = stats.map(stat => ({
       labels: lines(stat.label, statWidth, size * 0.75),
       values: lines(stat.value, statWidth, size * 1.2, 400, fonts.mono),
@@ -264,27 +281,24 @@ export function trainingCardSvg(
       block.kind === 'comparison'
         ? size * (comparisonNames.length * 1.4 + 0.5 + comparisonRows.length * 1.5)
         : statRowHeights.reduce((sum, height) => sum + height, 0)
-    const route = model.show.map
-      ? cardRoute(block.activities.flatMap(item => item.route))
-      : undefined
-    const available = y + cellHeight - cursor - statsHeight - size
+    const available = y + cellHeight - cursor - (band ? size * 0.6 : statsHeight + size)
     const chartWeight = charts.reduce((total, chart) => total + trainingChartWeight(chart), 0)
     const visualHeight = Math.max(
       0,
-      Math.min(((cellWidth * 9) / 16) * Math.max(1, chartWeight), available),
+      Math.min(((visualSpan * 9) / 16) * Math.max(1, chartWeight), available),
     )
     const visualWeights = [
       ...(route ? [1] : []),
       ...(block.graphic ? [1] : []),
       ...charts.map(trainingChartWeight),
     ]
-    const visualColumns = format === 'landscape' && visualWeights.length > 1 ? 2 : 1
+    const visualColumns = !band && format === 'landscape' && visualWeights.length > 1 ? 2 : 1
     const rowWeights = Array.from(
       { length: Math.ceil(visualWeights.length / visualColumns) },
       (_, row) => Math.max(...visualWeights.slice(row * visualColumns, (row + 1) * visualColumns)),
     )
     const totalWeight = rowWeights.reduce((total, weight) => total + weight, 0)
-    const visualWidth = (cellWidth - gap * (visualColumns - 1)) / visualColumns
+    const visualWidth = (visualSpan - gap * (visualColumns - 1)) / visualColumns
     const visualPart = totalWeight ? visualHeight / totalWeight : 0
     let visualIndex = 0
     const nextVisual = () => {
@@ -340,18 +354,23 @@ export function trainingCardSvg(
         { renderers, logScale: model.powerCurveScale !== 'linear' },
       )
     }
-    if (visualPart > size * 2) cursor += visualHeight + size * 0.6
+    const drawn = visualPart > size * 2 ? visualHeight : 0
+    if (drawn && !band) cursor += drawn + size * 0.6
     if (!model.show.map)
-      centered.push({ group, row: Math.floor(index / columns), height: cursor - y + statsHeight })
+      centered.push({
+        group,
+        row: Math.floor(index / columns),
+        height: cursor - y + (band ? Math.max(drawn, statsHeight) : statsHeight),
+      })
     if (block.kind === 'comparison') {
       const names = comparisonNames
       names.forEach((name, rowIndex) =>
         fitText(
           svgLayer(group, `name/${block.activities[rowIndex]?.url ?? rowIndex}`, name),
           name,
-          x,
+          textX,
           cursor + size * (1 + rowIndex * 1.4),
-          cellWidth,
+          textWidth,
           size * 0.8,
           palette.muted,
         ),
@@ -362,9 +381,9 @@ export function trainingCardSvg(
           svgLayer(group, `row/${row.key ?? rowIndex}`, triLabel(locale, row.label)),
           triLabel(locale, row.label),
           row.values.join(' / '),
-          x,
+          textX,
           cursor + size * (rowIndex + 1) * 1.5,
-          cellWidth,
+          textWidth,
           size,
           palette.ink,
         )
@@ -372,7 +391,7 @@ export function trainingCardSvg(
     } else {
       stats.forEach((stat, statIndex) => {
         const metric = svgLayer(group, `stat/${stat.key}`, stat.label)
-        const sx = x + ((statIndex % statColumns) * cellWidth) / statColumns
+        const sx = textX + ((statIndex % statColumns) * textWidth) / statColumns
         const sy =
           cursor +
           statRowHeights

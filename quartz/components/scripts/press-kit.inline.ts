@@ -54,6 +54,7 @@ document.addEventListener('nav', () => {
   session.powerWindow = 30
   session.powerCurveScale = 'log'
   show.runPace = false
+  show.runHeartRate = false
   show.runLaps = false
   session.anchorSelect = null
   session.unmountAnchor = null

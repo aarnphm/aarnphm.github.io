@@ -1,6 +1,6 @@
 import type { StravaActivityDetail } from '../../plugins/stores/strava'
 import type { TriathlonPresentation } from '../triathlon-presentation'
-import type { TriNodeFactory } from './construction-contracts'
+import type { DetailCtx, TriNodeFactory } from './construction-contracts'
 import { EXTERNAL_LINK_ICON_PATH } from '../external-link-icon'
 import {
   activityCardRoute,
@@ -22,7 +22,7 @@ import {
   validCyclingDynamicsValue,
   type CyclingDynamicsSeriesKey,
 } from './cycling-dynamics-data'
-import { clock, dur, formatAltitude, isImperial, zoneClock } from './metric-text'
+import { clock, dur, formatAltitude, isImperial, zoneClock, zoneRange } from './metric-text'
 import { normalizePowerCurvePoints, powerCurvePathPoints } from './power-curve-data'
 import {
   cyclingWorkoutLaps,
@@ -31,10 +31,53 @@ import {
   workoutLapTimeline,
 } from './workout-lap-data'
 
+// Zone bounds live on the payload, not on each activity, so callers pass them in.
+export type ActivityShareZones = Pick<DetailCtx, 'zones' | 'vt1'>
+
+// Garden computes time in zone from the HR stream against the payload bounds, so the card
+// marks it as calculated. The chart needs one bound fewer than zones, strictly increasing.
+const runHeartRateChart = (
+  presentation: TriathlonPresentation,
+  d: StravaActivityDetail,
+  zones: ActivityShareZones | null | undefined,
+): ActivityCardChart | null => {
+  const seconds = d.hrZones
+  const bounds = zones?.zones?.hr
+  if (
+    d.sport !== 'run' ||
+    !seconds ||
+    !bounds?.length ||
+    seconds.length !== bounds.length + 1 ||
+    seconds.some(value => !Number.isFinite(value) || value < 0) ||
+    !seconds.some(value => value > 0) ||
+    bounds.some(
+      (value, index) =>
+        !Number.isFinite(value) || value <= 0 || (index > 0 && value <= bounds[index - 1]),
+    )
+  )
+    return null
+  const calculated = triText(presentation.locale, 'calculated')
+  return {
+    key: 'runHeartRate',
+    kind: 'bars',
+    title: triText(presentation.locale, 'heart rate distribution'),
+    axis: 'min',
+    note: zones?.vt1 != null ? `vt1 ${zones.vt1} bpm · ${calculated}` : calculated,
+    points: seconds.map((value, index) => ({
+      x: index,
+      y: value / 60,
+      label: `Z${index + 1}`,
+      range: `${zoneRange(bounds, index)} bpm`,
+      value: zoneClock(value),
+    })),
+  }
+}
+
 export const activityShareData = (
   presentation: TriathlonPresentation,
   d: StravaActivityDetail,
   fillMissingRunPower = false,
+  zones?: ActivityShareZones | null,
 ): ActivityCardData | null => {
   const url = triathlonActivityHref(d.date, d.id)
   if (!url) return null
@@ -223,6 +266,8 @@ export const activityShareData = (
         value: zoneClock(seconds),
       })),
     })
+  const heartRate = runHeartRateChart(presentation, d, zones)
+  if (heartRate) charts.push(heartRate)
   if (d.sport === 'run') {
     const laps = runLapSplits(presentation, d)
     const imperial = isImperial(presentation)
@@ -272,8 +317,9 @@ export const buildActivityShareButton = <N>(
   f: TriNodeFactory<N>,
   d: StravaActivityDetail,
   fillMissingRunPower = false,
+  zones?: ActivityShareZones | null,
 ): N | null => {
-  const data = activityShareData(f.presentation, d, fillMissingRunPower)
+  const data = activityShareData(f.presentation, d, fillMissingRunPower, zones)
   if (!data) return null
   const button = f.el('button', 'tri-activity-share', undefined, {
     type: 'button',

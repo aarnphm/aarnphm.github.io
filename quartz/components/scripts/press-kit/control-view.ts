@@ -7,6 +7,8 @@ import {
 } from '../../../util/press-kit-activity'
 import { triLabel } from '../../../util/triathlon-i18n'
 import { buildSelect } from '../../controls/select'
+import { FORMATS } from '../press-kit-card'
+import { offersDayLayout, STACK_LIMIT, stacks } from '../press-kit-card/day-layout'
 import { blockDisplayKeys, isBlockDisplayKey } from '../press-kit-day'
 import { localizeActivity } from '../press-kit-i18n'
 import { cardDate, runsToPlain, runsToText } from '../press-kit-text'
@@ -243,6 +245,9 @@ export function syncControls() {
   })
   const entryDisplay = $('.press-kit-entry-display')
   if (entryDisplay) entryDisplay.hidden = !show.entry
+  syncDayLayout(
+    blocks.length + (show.entry && runsToPlain(session.subject?.excerpt ?? []).trim() ? 1 : 0),
+  )
   session.dialog.querySelectorAll<HTMLButtonElement>('[data-activity-metric]').forEach(button => {
     const url = button.dataset.metricActivity
     const key = button.dataset.activityMetric
@@ -270,6 +275,30 @@ export function syncControls() {
   }
   session.anchorSelect?.setSelected(session.anchor)
   setHelp()
+}
+
+// `blocks` counts what the card draws: the selected blocks and the entry when it is included.
+function syncDayLayout(blocks: number) {
+  const setting = $('.press-kit-day-layout')
+  if (!setting) return
+  setting.hidden = session.overlay !== 'card' || !offersDayLayout(blocks)
+  const limit = STACK_LIMIT[session.format]
+  const fits = limit >= blocks
+  setting
+    .querySelectorAll<HTMLInputElement>('input[name="press-kit-day-layout"]')
+    .forEach(input => {
+      input.checked =
+        input.value ===
+        (stacks(session.dayLayout, session.format, blocks) ? 'vertical' : 'horizontal')
+      input.disabled = input.value === 'vertical' && !fits
+    })
+  const hint = setting.querySelector<HTMLElement>('.press-kit-hint')
+  if (!hint) return
+  const format = FORMATS[session.format].label
+  hint.hidden = fits
+  hint.textContent = limit
+    ? `${format} empile ${limit} blocs au plus`
+    : `${format} garde les blocs côte à côte`
 }
 
 export function refreshLocale() {

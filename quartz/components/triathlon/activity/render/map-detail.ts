@@ -86,7 +86,7 @@ export const renderMapDetail = (
   const wrap = el('section', 'tri-act tri-act--expanded')
   const head = el('div', 'tri-act-head')
   head.appendChild(buildActivityIcon(domF, d))
-  const share = buildActivityShareButton(domF, d)
+  const share = buildActivityShareButton(domF, d, false, opts?.detailContext)
   if (share) {
     const actions = el('div', 'tri-act-head-actions')
     actions.append(share)

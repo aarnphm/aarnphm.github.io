@@ -8,6 +8,7 @@ import type { Run } from '../press-kit-text'
 import type { TractatusPassage } from './tractatus'
 import { PressKitEditor } from '../../PressKitEditor'
 import { FORMATS, type Fonts, type FormatKey, type ThemeKey } from '../press-kit-card'
+import { isDayLayout, type DayLayout } from '../press-kit-card/day-layout'
 import { cardLocale } from '../press-kit-i18n'
 
 export type PressKitTab = 'note' | 'quote' | 'links'
@@ -67,6 +68,7 @@ export const session: {
   format: FormatKey
   theme: ThemeKey
   overlay: OverlayKey
+  dayLayout: DayLayout
   language: Locale | null
   powerWindow: PowerWindow
   powerCurveScale: 'linear' | 'log'
@@ -96,6 +98,7 @@ export const session: {
   format: 'portrait',
   theme: 'papier',
   overlay: 'card',
+  dayLayout: 'horizontal',
   language: null,
   powerWindow: 30,
   powerCurveScale: 'log',
@@ -140,6 +143,7 @@ export const show = {
   powerCurve: false,
   cyclingLaps: false,
   runPace: false,
+  runHeartRate: false,
   runLaps: false,
 }
 // The base card by daylight, and its night twin for the encre ground.
@@ -162,9 +166,11 @@ export function readPrefs() {
     const saved = JSON.parse(localStorage.getItem(PREFS_KEY) ?? 'null') as {
       format?: FormatKey
       art?: boolean
+      dayLayout?: DayLayout
     } | null
     if (saved?.format && FORMAT_KEYS.includes(saved.format)) session.format = saved.format
     if (typeof saved?.art === 'boolean') show.art = saved.art
+    if (isDayLayout(saved?.dayLayout)) session.dayLayout = saved.dayLayout
   } catch {}
   session.theme =
     document.documentElement.getAttribute('saved-theme') === 'dark' ? 'encre' : 'papier'
@@ -172,6 +178,9 @@ export function readPrefs() {
 
 export function writePrefs() {
   try {
-    localStorage.setItem(PREFS_KEY, JSON.stringify({ format: session.format, art: show.art }))
+    localStorage.setItem(
+      PREFS_KEY,
+      JSON.stringify({ format: session.format, art: show.art, dayLayout: session.dayLayout }),
+    )
   } catch {}
 }

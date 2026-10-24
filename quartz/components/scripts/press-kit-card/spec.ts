@@ -3,6 +3,7 @@ import type { CalendarCardData } from '../press-kit-calendar'
 import type { DayCardData } from '../press-kit-day'
 import type { LayerRenderer } from '../press-kit-layers'
 import type { Run } from '../press-kit-text'
+import type { DayLayout } from './day-layout'
 import type { MathImage } from './math'
 import {
   isActivityCardStatKey,
@@ -190,6 +191,7 @@ export interface CardModel {
   activity?: ActivityCardData
   day?: DayCardData
   calendar?: CalendarCardData
+  dayLayout?: DayLayout
   training?: HTMLImageElement
   trainingSvg?: string
   trainingLayers?: Map<string, LayerRenderer>
@@ -224,6 +226,7 @@ export interface CardModel {
     powerCurve: boolean
     cyclingLaps: boolean
     runPace: boolean
+    runHeartRate: boolean
     runLaps: boolean
   }
 }

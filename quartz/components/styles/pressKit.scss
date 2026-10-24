@@ -267,7 +267,11 @@
   width: max-content;
   max-width: calc(100% - 1rem);
   min-height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 0.1rem 0.3rem;
+  line-height: 1;
   border: 1px solid var(--secondary);
   border-radius: var(--radius-none);
   background: var(--light);

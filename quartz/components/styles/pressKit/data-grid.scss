@@ -120,6 +120,11 @@
   margin-block: 0;
   font: var(--pk-meta) / 1.5 var(--codeFont);
 
+  // Stacked groups share one hairline.
+  & + & {
+    border-top: 0;
+  }
+
   summary {
     cursor: pointer;
     padding-block: 0.35rem;
@@ -311,17 +316,26 @@
 .press-kit .press-kit-data-toggle--wide {
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  // The value keeps priority; both sides truncate instead of overlapping.
+  grid-template-columns: minmax(4ch, 1fr) minmax(0, auto);
   align-items: center;
   gap: 0.5rem;
 
   small {
+    min-width: 0;
     padding-inline-start: 0;
+    overflow: hidden;
     text-align: end;
+    text-overflow: ellipsis;
     white-space: nowrap;
   }
 
   .press-kit-data-label {
     min-width: 0;
+    overflow: hidden;
+  }
+
+  .press-kit-metric-label {
+    display: block;
   }
 }

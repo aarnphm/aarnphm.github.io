@@ -145,7 +145,7 @@ export const buildActivityComparison = <N>(
     'data-press-kit-activities': encodeURIComponent(
       JSON.stringify(
         activities.flatMap(activity => {
-          const data = activityShareData(f.presentation, activity)
+          const data = activityShareData(f.presentation, activity, false, ctx)
           return data ? [data] : []
         }),
       ),
