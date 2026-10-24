@@ -13,27 +13,35 @@ interface Cut {
   hidden: number
 }
 
-/** Bottom of the last reference or line that ends above `keep`, relative to the body's top. */
-function snap(body: HTMLElement, keep: number): Cut {
+/** Measure cut boundaries once while the full bodies share a clean layout. */
+function measureCuts(body: HTMLElement): (keep: number) => Cut {
   const top = body.getBoundingClientRect().top
-  const items = [...body.querySelectorAll<HTMLElement>('.fr-gloss, .fr-note')]
-  const ends = items.map(el => el.getBoundingClientRect().bottom - top)
-  const fit = ends.filter(end => end <= keep)
-  if (fit.length > 0) return { cut: Math.max(...fit), hidden: ends.length - fit.length }
-  // no whole reference fits: cut above the first line the limit crosses
+  const ends = [...body.querySelectorAll<HTMLElement>('.fr-gloss, .fr-note')].map(
+    el => el.getBoundingClientRect().bottom - top,
+  )
   const range = document.createRange()
   range.selectNodeContents(body)
   const lines = [...range.getClientRects()].map(r => [r.top - top, r.bottom - top])
-  let cut = keep
-  for (let moved = true; moved; ) {
-    moved = false
-    for (const [t, b] of lines)
-      if (t < cut && b > cut && t > 0) {
-        cut = t
-        moved = true
-      }
+  return keep => {
+    const fit = ends.filter(end => end <= keep)
+    if (fit.length > 0) return { cut: Math.max(...fit), hidden: ends.length - fit.length }
+    let cut = keep
+    for (let moved = true; moved; ) {
+      moved = false
+      for (const [t, b] of lines)
+        if (t < cut && b > cut && t > 0) {
+          cut = t
+          moved = true
+        }
+    }
+    return { cut, hidden: 0 }
   }
-  return { cut, hidden: 0 }
+}
+
+export interface ClampFit {
+  height: number
+  /** Label centres relative to the group's top after fitting. */
+  heads: number[]
 }
 
 export function mountClamps(article: HTMLElement, relayout: () => void, signal: AbortSignal) {
@@ -102,54 +110,130 @@ export function mountClamps(article: HTMLElement, relayout: () => void, signal: 
       focused = null
     },
     /**
-     * Cuts the group's bodies until it is no taller than `room`: each keeps an even share of the
-     * height left, a short body keeps all of itself, and no body drops under its minimum.
+     * Measure all groups together. Fitting then uses flex-column height deltas, so the ordered
+     * collision pass can decide each following group's room without forcing layout per group.
      */
-    fit(group: HTMLElement, room: number) {
-      const entries = [...group.querySelectorAll<HTMLElement>(':scope > .fr-entry')]
-      // an opened body keeps its `less` control wherever it falls
-      for (const entry of entries) if (open.has(entry)) show(entry, 'less')
-      const height = () => group.getBoundingClientRect().height
-      if (height() <= room) return
-      const cuttable = entries
-        // the review deck and the reader's notes are worked in place, so they keep their height
-        .filter(entry => !open.has(entry) && !entry.querySelector('[data-fr-rev], [data-fr-notes]'))
-        .map(entry => {
+    measure(groups: HTMLElement[]) {
+      const candidates = new Map<HTMLElement, { line: number; full: number }>()
+      for (const group of groups) {
+        for (const entry of group.querySelectorAll<HTMLElement>(':scope > .fr-entry')) {
+          if (open.has(entry) || entry.querySelector('[data-fr-rev], [data-fr-notes]')) continue
           const body = bodyOf(entry)
           const line = parseFloat(getComputedStyle(body).lineHeight) || 18
-          return { entry, body, line, full: body.offsetHeight }
-        })
-        // a cut that saves less than the control's own line is no cut
-        .filter(c => c.full > (MIN_LINES + 2) * c.line)
-        .sort((p, q) => p.full - q.full)
-      // the controls take their lines before the shares are counted
-      for (const { entry } of cuttable) show(entry, 'more')
-      let left = cuttable.reduce((sum, c) => sum + c.full, 0) - (height() - room)
-      const cap = (entry: HTMLElement, body: HTMLElement, { cut, hidden }: Cut) => {
-        body.setAttribute('data-fr-cap', '')
-        body.style.setProperty('--fr-cap', `${Math.floor(cut)}px`)
-        entry.setAttribute('data-fr-clamp', '')
-        // a closed body counts what it holds; a cut one counts what is left past the cut
-        if (cut === 0) show(entry, hidden > 0 ? `show ${hidden}` : 'show')
-        else show(entry, hidden > 0 ? `+ ${hidden} more` : '… more')
-      }
-      for (const [i, { entry, body, line, full }] of cuttable.entries()) {
-        const keep = Math.max(MIN_LINES * line, Math.min(full, left / (cuttable.length - i)))
-        const cut = keep < full - 2 * line ? snap(body, keep) : { cut: 0, hidden: 0 }
-        if (cut.cut <= 0) {
-          controls.get(entry)!.hidden = true
-          left -= full
-          continue
+          const full = body.offsetHeight
+          if (full > (MIN_LINES + 2) * line) candidates.set(entry, { line, full })
         }
-        cap(entry, body, cut)
-        left -= cut.cut
       }
-      // blocks set close together leave no room even for the minimum: the cut bodies close to
-      // their label and control, which still name the kind and the number
-      if (height() <= room) return
-      for (const { entry, body } of cuttable)
-        if (entry.hasAttribute('data-fr-clamp'))
-          cap(entry, body, { cut: 0, hidden: body.querySelectorAll('.fr-gloss, .fr-note').length })
+      // Measure the controls in one write/read phase; hiding one removes its height and flex gap.
+      for (const [entry] of controls) {
+        if (open.has(entry)) show(entry, 'less')
+        else if (candidates.has(entry)) show(entry, 'more')
+      }
+      return new Map(
+        groups.map(group => {
+          const rect = group.getBoundingClientRect()
+          const entries = [...group.querySelectorAll<HTMLElement>(':scope > .fr-entry')].map(
+            entry => {
+              const body = bodyOf(entry)
+              const button = controls.get(entry)!
+              const label = entry.querySelector<HTMLElement>('.fr-entry-label')!
+              const labelBox = label.getBoundingClientRect()
+              const candidate = candidates.get(entry)
+              return {
+                entry,
+                body,
+                button,
+                candidate,
+                bodyHeight: body.getBoundingClientRect().height,
+                controlSpace: button.hidden
+                  ? 0
+                  : button.getBoundingClientRect().height +
+                    (parseFloat(getComputedStyle(entry).rowGap) || 0),
+                head: labelBox.top + labelBox.height / 2 - rect.top,
+                snap: candidate ? measureCuts(body) : null,
+                count: body.querySelectorAll('.fr-gloss, .fr-note').length,
+              }
+            },
+          )
+          return [
+            group,
+            (room: number): ClampFit => {
+              const states: {
+                metric: (typeof entries)[number]
+                shown: boolean
+                cut: Cut | undefined
+              }[] = entries.map(metric => ({
+                metric,
+                shown: open.has(metric.entry),
+                cut: undefined,
+              }))
+              const delta = (state: (typeof states)[number]) =>
+                (state.shown ? 0 : -state.metric.controlSpace) +
+                (state.cut
+                  ? Math.min(state.metric.bodyHeight, Math.floor(state.cut.cut)) -
+                    state.metric.bodyHeight
+                  : 0)
+              const height = () =>
+                rect.height + states.reduce((sum, state) => sum + delta(state), 0)
+              const cuttable = states
+                .filter(state => state.metric.candidate !== undefined)
+                .sort((a, b) => a.metric.candidate!.full - b.metric.candidate!.full)
+              if (height() > room) {
+                for (const state of cuttable) state.shown = true
+                let left =
+                  cuttable.reduce((sum, state) => sum + state.metric.candidate!.full, 0) -
+                  (height() - room)
+                for (const [i, state] of cuttable.entries()) {
+                  const { line, full } = state.metric.candidate!
+                  const keep = Math.max(
+                    MIN_LINES * line,
+                    Math.min(full, left / (cuttable.length - i)),
+                  )
+                  const cut =
+                    keep < full - 2 * line ? state.metric.snap!(keep) : { cut: 0, hidden: 0 }
+                  if (cut.cut <= 0) {
+                    state.shown = false
+                    left -= full
+                  } else {
+                    state.cut = cut
+                    left -= cut.cut
+                  }
+                }
+                if (height() > room) {
+                  for (const state of cuttable) {
+                    if (state.cut) state.cut = { cut: 0, hidden: state.metric.count }
+                  }
+                }
+              }
+              let offset = 0
+              const heads = states.map(state => {
+                const head = state.metric.head + offset
+                offset += delta(state)
+                const { entry, body, button } = state.metric
+                button.hidden = !state.shown
+                if (state.cut) {
+                  const { cut, hidden } = state.cut
+                  body.setAttribute('data-fr-cap', '')
+                  body.style.setProperty('--fr-cap', `${Math.floor(cut)}px`)
+                  entry.setAttribute('data-fr-clamp', '')
+                  show(
+                    entry,
+                    cut === 0
+                      ? hidden > 0
+                        ? `show ${hidden}`
+                        : 'show'
+                      : hidden > 0
+                        ? `+ ${hidden} more`
+                        : '… more',
+                  )
+                }
+                return head
+              })
+              return { height: rect.height + offset, heads }
+            },
+          ]
+        }),
+      )
     },
   }
 }

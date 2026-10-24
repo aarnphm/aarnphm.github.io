@@ -12,6 +12,7 @@ const emitterModules: Readonly<Record<string, readonly string[]>> = {
   'canvas.ts': ['CanvasPage'],
   'citations.ts': ['Bibliography'],
   'cname.ts': ['CNAME'],
+  'code-search.ts': ['CodeSearch'],
   'componentResources.tsx': ['ComponentResources'],
   'contentIndex.tsx': ['ContentIndex'],
   'contentPage.tsx': ['ContentPage'],

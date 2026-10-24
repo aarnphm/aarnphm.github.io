@@ -3,7 +3,7 @@
 // that carries the same number. The markup comes from renderPage/fr-margins.ts. Under the width
 // that leaves a margin, each group folds under its paragraph and the label toggles it.
 
-import { mountClamps } from './fr-margins-clamp'
+import { mountClamps, type ClampFit } from './fr-margins-clamp'
 import { layout, mountNotes, mountReview } from './fr-margins-review'
 
 // Room for a 15.5rem column and its narrowest 3rem gutter left of the text (fr-margins.scss).
@@ -177,45 +177,42 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
     leaders.setAttribute('width', String(box.width))
     leaders.setAttribute('height', String(box.height))
 
-    // groups hang left of their block, the label level with its number, pushed down where two
-    // overlap
+    // Apply the base positions together, then measure once for the placement calculation.
     const hoisted = (g: HTMLElement) => g.parentElement === article
-    for (const group of groups) {
-      const a = anchors.get(group)!.getBoundingClientRect()
-      group.style.top = hoisted(group) ? `${a.top - box.top}px` : '0px'
+    const mid = (r: DOMRect) => r.top + r.height / 2
+    const groupBases = groups.map(group => {
+      const anchor = anchors.get(group)!
+      const rect = anchor.getBoundingClientRect()
+      return { group, anchor, rect, top: hoisted(group) ? rect.top - box.top : 0 }
+    })
+    for (const { group, rect, top } of groupBases) {
+      group.style.top = `${top}px`
+      group.style.setProperty('--fr-dx', hoisted(group) ? '0px' : `${rect.left - box.left}px`)
     }
-    // sidenotes the page already hung in either margin stack with the groups, so nothing overlaps
+    for (const content of notes) content.style.removeProperty('translate')
+    const fits = clamps.measure(groups)
     interface Item {
       el: HTMLElement
       side: 'left' | 'right'
       top: number
-      /** where the leader ends, in the article's frame, and the y of what it points at */
+      height: number
+      left: number
+      right: number
       end: { x: number; y: number }
-      /** the y of each leader's head on the entry: its labels, or a sidenote's first line */
-      heads: () => number[]
-      /** the dash before a number that sits past the text column's edge, x0 to x1 */
+      /** Centres relative to the final top, updated by the clamp's flex-column model. */
+      heads: number[]
       tick?: [number, number]
       move: (by: number) => void
-      /** a group cuts its bodies to the height it has before the next entry (fr-margins-clamp.ts) */
-      fit?: (room: number) => void
+      fit?: (room: number) => ClampFit
     }
     const items: Item[] = []
-    const mid = (r: DOMRect) => r.top + r.height / 2
-    for (const group of groups) {
-      const anchor = anchors.get(group)!
+    for (const { group, anchor, top } of groupBases) {
       const mark = anchor.querySelector<HTMLElement>(':scope > .fr-n')
-      const labels = [...group.querySelectorAll<HTMLElement>('.fr-entry-label')]
-      const label = labels[0]
-      // a folded callout keeps its blocks, hidden and clipped; their groups take no leader
+      const label = group.querySelector<HTMLElement>('.fr-entry-label')
       if (!mark || !label || !anchor.checkVisibility({ visibilityProperty: true })) continue
-      const a = anchor.getBoundingClientRect()
-      group.style.setProperty('--fr-dx', hoisted(group) ? '0px' : `${a.left - box.left}px`)
       const m = mark.getBoundingClientRect()
-      group.style.top = `${parseFloat(group.style.top) + mid(m) - mid(label.getBoundingClientRect())}px`
-      // the leader stays in the gutter and stops at the text column's edge, short of a list item's
-      // marker or a cell's rule; a number set in from the edge (past a section's rail) gets its dash
-      // an outside ::marker is painted left of the li box and can't be measured, so the dash ends
-      // before the parent list's edge, or 1.5em left of the li where ordinals overflow its padding
+      const rect = group.getBoundingClientRect()
+      const align = mid(m) - mid(label.getBoundingClientRect())
       let markX = Math.round(m.left - box.left)
       const li = anchor.closest<HTMLElement>('li')
       if (li && getComputedStyle(li).listStylePosition === 'outside') {
@@ -230,35 +227,43 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
       items.push({
         el: group,
         side: 'left',
-        top: group.getBoundingClientRect().top,
+        top: rect.top + align,
+        height: rect.height,
+        left: rect.left,
+        right: rect.right,
+        heads: [],
         end: { x: -STOP, y: mid(m) - box.top },
         tick:
           markX > STOP + TICK + TICK_STOP
             ? [markX - TICK_STOP - TICK, markX - TICK_STOP]
             : undefined,
-        heads: () => labels.map(l => mid(l.getBoundingClientRect())),
-        move: by => (group.style.top = `${parseFloat(group.style.top) + by}px`),
-        fit: room => clamps.fit(group, room),
+        move: by => {
+          group.style.top = `${top + align + by}px`
+        },
+        fit: fits.get(group),
       })
     }
-    // a sidenote's first line sits level with its label, as an entry's does with its number; its
-    // leader points at the label's line from the text column's edge
     for (const content of notes) {
-      content.style.removeProperty('translate')
       const label = labelOf(content)
       const side = content.classList.contains('sidenote-right') ? 'right' : 'left'
       if (!label || !content.classList.contains(`sidenote-${side}`)) continue
       if (!label.checkVisibility({ visibilityProperty: true })) continue
       const l = mid(label.getBoundingClientRect())
-      let dy = l - firstLine(content)
-      content.style.translate = `0 ${dy}px`
+      const head = firstLine(content)
+      const dy = l - head
+      const rect = content.getBoundingClientRect()
       items.push({
         el: content,
         side,
-        top: content.getBoundingClientRect().top,
+        top: rect.top + dy,
+        height: rect.height,
+        left: rect.left,
+        right: rect.right,
+        heads: [head - rect.top],
         end: { x: side === 'left' ? -STOP : box.width + STOP, y: l - box.top },
-        heads: () => [firstLine(content)],
-        move: by => content.style.setProperty('translate', `0 ${(dy += by)}px`),
+        move: by => {
+          content.style.translate = `0 ${dy + by}px`
+        },
       })
     }
     items.sort((x, y) => x.top - y.top)
@@ -281,12 +286,16 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
     const targets = new Map<string, Target>()
     for (const [i, item] of items.entries()) {
       const shift = Math.max(0, floors[item.side] + GROUP_GAP - item.top)
-      if (shift > 0) item.move(shift)
+      item.move(shift)
       // a group ends before the next entry on its side would stand, or before the article ends
       const next = items.slice(i + 1).find(other => other.side === item.side)
-      item.fit?.((next ? next.top - GROUP_GAP : box.bottom) - item.top - shift)
-      const placed = item.el.getBoundingClientRect()
-      floors[item.side] = placed.bottom
+      const fit = item.fit?.((next ? next.top - GROUP_GAP : box.bottom) - item.top - shift)
+      if (fit) {
+        item.height = fit.height
+        item.heads = fit.heads
+      }
+      const placedTop = item.top + shift
+      floors[item.side] = placedTop + item.height
       const y1 = Math.round(item.end.y) + 0.5
       const key = `${item.side} ${y1}`
       let target = targets.get(key)
@@ -297,12 +306,12 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
       target.tick ??= item.tick
       // every entry of a group points at the same number: the first level with it, the rest as
       // elbows that meet its line
-      for (const head of item.heads()) {
-        const y0 = Math.round(head - box.top) + 0.5
+      for (const head of item.heads) {
+        const y0 = Math.round(placedTop + head - box.top) + 0.5
         target.heads.push({
           item,
           y0,
-          x0: (item.side === 'left' ? placed.right : placed.left) - box.left,
+          x0: (item.side === 'left' ? item.right : item.left) - box.left,
         })
         target.lo = Math.min(target.lo, y0)
         target.hi = Math.max(target.hi, y0)
@@ -327,6 +336,7 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
       depth[target.side] = Math.max(depth[target.side], target.level)
       trunks.push(target)
     }
+    const paths = document.createDocumentFragment()
     for (const target of targets.values()) {
       const { side, x1, y1, tick, heads, level } = target
       const dir = side === 'left' ? 1 : -1
@@ -353,10 +363,11 @@ function mountLayout(article: HTMLElement, signal: AbortSignal) {
         dash = ''
         const path = document.createElementNS(SVG, 'path')
         path.setAttribute('d', d)
-        leaders.append(path)
+        paths.append(path)
         leaderOf.set(item.el, [...(leaderOf.get(item.el) ?? []), path])
       }
     }
+    leaders.replaceChildren(paths)
   }
 
   let frame = 0

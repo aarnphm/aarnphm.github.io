@@ -10,9 +10,11 @@ const FIRST_PARTY_STYLESHEET_PATTERN =
 const FIRST_PARTY_SCRIPT_PATTERN =
   /^\/(?:pre|post)script\.js$|^\/static\/resource-after(?:-\d+)?\.js$|^\/static\/scripts\/.+\.(?:js|mjs)$/i
 const WORKER_SCRIPT_PATTERN = /^\/static\/scripts\/(?:.+[./-])?worker(?:-[^/]+)?\.(?:js|mjs)$/i
+// Embedding generations live under their content digest; only the root manifest moves.
+const EMBEDDING_GENERATION_PATTERN = /^\/embeddings\/(?:pdf|images)\/[0-9a-f]{64}\/[^/]+$/i
 
 function isHashNamedStaticAsset(pathname: string): boolean {
-  return HASHED_STATIC_ASSET_PATTERN.test(pathname)
+  return HASHED_STATIC_ASSET_PATTERN.test(pathname) || EMBEDDING_GENERATION_PATTERN.test(pathname)
 }
 
 function isVolatileGeneratedStaticAsset(pathname: string): boolean {

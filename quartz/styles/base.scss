@@ -129,7 +129,8 @@ iframe.external-embed.strava {
   border: none;
 }
 
-.navigation-progress {
+.navigation-progress,
+.trail-loading-progress {
   position: fixed;
   top: 0;
   left: 0;
@@ -149,6 +150,17 @@ iframe.external-embed.strava {
     opacity 0.3s ease;
   opacity: 0;
   z-index: 9999;
+}
+
+.trail-loading-progress {
+  width: 100%;
+  opacity: 1;
+  animation: navigation-progress-sweep 2.5s linear infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    background: var(--secondary);
+  }
 }
 
 @keyframes rough-notation-dash {
