@@ -6,6 +6,7 @@ import type { CoreBodyTemperatureCache } from '../core-body-temperature'
 import type { GarminCache } from '../garmin'
 import type { GarminHealthDay } from '../garmin-health'
 import type { ActivityKind, Sport, StravaActivityDetail, StravaZones } from '../strava'
+import type { WahooData } from '../wahoo'
 import type { WeatherCache } from '../weather'
 import type { BodyBlock, LabTests } from './body-and-labs'
 import type { CalibrationBlock, CalibrationProjection } from './calibration-and-lactate'
@@ -54,6 +55,7 @@ export interface AnalyticsInputs {
   oura?: OuraCache | null
   apple?: AppleCache | null
   core?: CoreBodyTemperatureCache | null
+  wahoo?: WahooData | null
   garmin?: GarminCache | null
   weather?: WeatherCache | null
   weights?: TrackEntry[]

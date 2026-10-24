@@ -4,6 +4,7 @@ import type {
   QuartzComponentProps,
 } from '../../types/component'
 import type { TimelineActivity } from '../../util/triathlon-timeline'
+import { RACE_DISTANCES, type RaceDistance } from '../../plugins/stores/analytics'
 import { emptyPayload, type ActivityKind } from '../../plugins/stores/strava'
 import { classNames } from '../../util/lang'
 import { joinSegments, pathToRoot, resolveRelative } from '../../util/path'
@@ -36,9 +37,9 @@ const KNEE_BAR = 200
 const MIN_SEG = 3
 const REST_SEG = 7
 const GAP_PX = 2
-const RACE_TABLE_ORDER = ['sprint', 'olympic', 't50', '70.3', 't100', 'ironman']
 const RACE_TABLE_DISTANCES = TRI_RACE_DISTANCES.toSorted(
-  ([left], [right]) => RACE_TABLE_ORDER.indexOf(left) - RACE_TABLE_ORDER.indexOf(right),
+  ([left], [right]) =>
+    RACE_DISTANCES.indexOf(left as RaceDistance) - RACE_DISTANCES.indexOf(right as RaceDistance),
 )
 
 const timelinePxPerMin = (sport: ActivityKind): number => {

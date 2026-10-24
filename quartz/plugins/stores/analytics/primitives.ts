@@ -17,7 +17,8 @@ export type AcwrState = 'building' | 'low' | 'ok' | 'caution' | 'high'
 export type TrendMethod = 'none' | 'kalman'
 /** pace: session average. The heart-rate signals are speed or power at the trend's reference heart rate. */
 export type TrendSignal = 'pace' | 'pace-at-heart-rate' | 'power-at-heart-rate'
-export type RaceDistance = 'sprint' | 'olympic' | '70.3' | 'ironman'
+export const RACE_DISTANCES = ['sprint', 'olympic', 't50', '70.3', 't100', 'ironman'] as const
+export type RaceDistance = (typeof RACE_DISTANCES)[number]
 
 export interface MethodConstants {
   ctlTau: number

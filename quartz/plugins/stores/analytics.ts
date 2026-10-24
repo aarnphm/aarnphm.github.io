@@ -70,8 +70,8 @@ import {
   type Sport,
   type StravaRawCache,
 } from './strava'
-export { ATHLETE } from './analytics/primitives'
-export type { Conf, DailyPoint, RecoveryStatus } from './analytics/primitives'
+export { ATHLETE, RACE_DISTANCES } from './analytics/primitives'
+export type { Conf, DailyPoint, RaceDistance, RecoveryStatus } from './analytics/primitives'
 export { POWER_TO_WEIGHT_DURATIONS } from './analytics/power-to-weight'
 export type {
   PowerCurveBlock,
@@ -121,6 +121,7 @@ export function buildAnalytics(
     inputs.core,
     inputs.garmin,
     inputs.weather,
+    inputs.wahoo,
   )
   const todayFromSync = generatedAt ? localIsoDay(generatedAt, inputs.timeZone) : null
   const dexaTests = parseDexa(inputs.dexa)
@@ -206,6 +207,7 @@ export function buildAnalytics(
     swimMetrics,
     inputs.core,
     inputs.garmin,
+    inputs.wahoo,
   )
 
   const runAnchor = {

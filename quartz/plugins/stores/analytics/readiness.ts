@@ -153,14 +153,24 @@ export function buildRisk(daily: DailyPoint[], weekly: WeeklyPoint[]): RiskBlock
   }
 }
 
+export { RACE_DISTANCES } from './primitives'
+
 const RACE_LEGS: Record<RaceDistance, Record<Sport, number>> = {
   sprint: { swim: 0.75, bike: 20, run: 5 },
   olympic: { swim: 1.5, bike: 40, run: 10 },
+  t50: { swim: 1, bike: 40, run: 9 },
   '70.3': { swim: 1.9, bike: 90, run: 21.1 },
+  t100: { swim: 2, bike: 80, run: 18 },
   ironman: { swim: 3.8, bike: 180, run: 42.2 },
 }
-export const RACE_DISTANCES = Object.keys(RACE_LEGS) as RaceDistance[]
-const RACE_REF: Record<RaceDistance, number> = { sprint: 35, olympic: 50, '70.3': 70, ironman: 90 }
+const RACE_REF: Record<RaceDistance, number> = {
+  sprint: 35,
+  olympic: 50,
+  t50: 48,
+  '70.3': 70,
+  t100: 65,
+  ironman: 90,
+}
 const T1_S = 300
 const T2_S = 300
 const T_REF_S = 3600
@@ -168,7 +178,9 @@ const RIEGEL_K: Record<Sport, number> = { swim: 1.03, bike: 1.05, run: 1.06 }
 const RUN_BRICK_FADE: Record<RaceDistance, number> = {
   sprint: 1.02,
   olympic: 1.04,
+  t50: 1.04,
   '70.3': 1.07,
+  t100: 1.06,
   ironman: 1.12,
 }
 const confRank: Record<Conf, number> = { firm: 0, stale: 1, low: 2, prior: 3 }
