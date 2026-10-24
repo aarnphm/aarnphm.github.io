@@ -1,0 +1,31 @@
+@mixin controls {
+  .search-load-more {
+    display: block;
+    width: 100%;
+    min-height: 1.75rem;
+    margin: 0;
+    padding: 0.5rem;
+    border: 0;
+    background: transparent;
+    color: var(--darkgray);
+    font-family: var(--codeFont);
+    font-size: var(--text-meta);
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: 2px solid var(--dark);
+      outline-offset: -2px;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        text-decoration: underline;
+        text-underline-offset: 0.15em;
+      }
+    }
+
+    @media (pointer: coarse) {
+      min-height: 44px;
+    }
+  }
+}

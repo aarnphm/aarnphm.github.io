@@ -1,5 +1,6 @@
 import { createNoteRanker, type NoteRanker } from '../../../util/note-pagerank'
 import { FullSlug, isFullSlug, resolveRelative } from '../../../util/path'
+import { pdfMetadata, type PdfPassage, type PdfSearchDocument } from '../../../util/pdf-search'
 import { isSearchExcluded } from '../../../util/search-exclude'
 import { parseSearchQuery, searchScopeIncludes, type SearchScope } from '../../../util/search-scope'
 import { fuseSearchRanks, type SemanticDocument } from '../../../util/semantic-search'
@@ -10,6 +11,8 @@ import {
 } from '../image-search-controls'
 import { getLexicalSearchClient } from '../lexical-search'
 import { noteRankDistribution } from '../note-rank-distribution'
+import { pdfCoverageStatus, pdfPageLabel } from '../pdf-search-controls'
+import { mountResultPages } from '../search-result-pages'
 import { isSemanticCancellation } from '../semantic.inline'
 import { getCommandItems } from './actions'
 import { appendHighlightedText } from './format'
@@ -30,9 +33,9 @@ interface Item {
   slug: FullSlug
   name: string
   similarity?: number
+  passage?: PdfPassage
 }
 
-export const numSearchResults = 13
 const noteRankers = new WeakMap<ContentIndex, NoteRanker>()
 
 export async function displayNearbyNotes(s: PaletteState, generation: number) {
@@ -46,7 +49,7 @@ export async function displayNearbyNotes(s: PaletteState, generation: number) {
       noteRankers.set(metadata, ranker)
     }
     const items = ranker
-      .related(s.currentSlug, numSearchResults)
+      .related(s.currentSlug, Object.keys(metadata).length)
       .map(slug => ({ slug, name: metadata[slug].title || metadata[slug].fileName }))
     s.output.removeAttribute('aria-busy')
     quickOpenProgress(s, false)
@@ -70,7 +73,7 @@ export async function querySearch(
   const queryActionType = paletteMode.actionType
   if (paletteMode.actionType === 'quick_open') {
     const { term: query, scope, explicit } = parseSearchQuery(currentSearchTerm)
-    if (!query && (!explicit || scope === 'notes')) {
+    if (!query && !explicit) {
       await displayNearbyNotes(s, generation)
       return
     }
@@ -88,6 +91,7 @@ export async function querySearch(
           !s.isActive
         )
           return
+        s.data = loaded
         if (scope === 'images') {
           const ids = await s.imageSimilarity.ids().catch(() => undefined)
           if (generation !== s.queryGeneration || !s.isActive) return
@@ -100,7 +104,7 @@ export async function querySearch(
           ? await getLexicalSearchClient().search(loaded, {
               query,
               scope,
-              limit: scope === 'images' ? slugs.length : numSearchResults,
+              limit: slugs.length,
               index: ['title', 'fileName', 'aliases'],
             })
           : [{ result: slugs.map((_, id) => id) }]
@@ -110,12 +114,44 @@ export async function querySearch(
           return slug ? [{ slug, score: Number.NaN }] : []
         })
         displayQuickOpenResults(s, scopedDocuments, query, scope)
+        if (scope === 'pdf' && query) {
+          quickOpenProgress(s, true)
+          s.output.setAttribute('aria-busy', 'true')
+          const metadata = pdfMetadata(loaded)
+          const lexical = scopedDocuments.map(document => document.slug)
+          try {
+            const documents = await s.pdfSearch.search(
+              query,
+              lexical,
+              metadata,
+              new Set(Object.keys(metadata)),
+            )
+            if (
+              generation !== s.queryGeneration ||
+              queryActionType !== paletteMode.actionType ||
+              !s.isActive
+            )
+              return
+            displayQuickOpenResults(s, documents, query, scope)
+            s.output.prepend(pdfCoverageStatus(s.pdfSearch.coverage))
+          } catch (error) {
+            if (isSemanticCancellation(error) || generation !== s.queryGeneration || !s.isActive)
+              return
+            console.warn('[QuickOpen] PDF search unavailable:', error)
+            displayQuickOpenResults(s, s.pdfSearch.fallback(query, lexical, metadata), query, scope)
+            const status = document.createElement('p')
+            status.setAttribute('role', 'status')
+            status.textContent = 'pdf text search unavailable; showing title and filename matches'
+            s.output.prepend(status)
+          }
+          return
+        }
         if (scope === 'images' && query) {
           quickOpenProgress(s, true)
           s.output.setAttribute('aria-busy', 'true')
           const service = await ensureImageSearch(s)
           if (generation !== s.queryGeneration || !s.isActive) return
-          const documents = await service.search(query, numSearchResults * 8)
+          const documents = await service.search(query, s.imageIds?.size ?? slugs.length)
           if (
             generation !== s.queryGeneration ||
             queryActionType !== paletteMode.actionType ||
@@ -148,7 +184,7 @@ export async function querySearch(
         !s.isActive
       )
         return
-      const documents = await service.search(query, numSearchResults * 8)
+      const documents = await service.search(query, service.index.ids.length)
       if (
         generation !== s.queryGeneration ||
         queryActionType !== paletteMode.actionType ||
@@ -233,9 +269,8 @@ function displayPendingTitles(
       const match = (item: Item) => Number(item.name.toLowerCase() === query.toLowerCase())
       return match(b) - match(a)
     })
-    .slice(0, numSearchResults)
   if (items.length) displayResults(s, items, query)
-  else s.output.replaceChildren()
+  else quickOpenStatus(s, '')
   if (message) {
     const status = document.createElement('p')
     status.setAttribute('role', 'status')
@@ -247,9 +282,12 @@ function displayPendingTitles(
 }
 
 async function showSimilarImages(s: PaletteState, seed: string) {
+  s.resultPages?.dispose()
+  s.resultPages = null
   const generation = ++s.queryGeneration
   s.imageSemantic?.cancel()
   s.quickOpenSemantic?.cancel()
+  s.pdfSearch.cancel()
   window.clearTimeout(s.quickOpenTimer)
   paletteMode.currentSearchTerm = 'filter: images'
   s.bar.value = paletteMode.currentSearchTerm
@@ -258,9 +296,10 @@ async function showSimilarImages(s: PaletteState, seed: string) {
   quickOpenProgress(s, true)
   s.output.setAttribute('aria-busy', 'true')
   try {
-    await ensureAttachmentData(s)
+    const data = await ensureAttachmentData(s)
     if (generation !== s.queryGeneration || !s.isActive) return
-    const documents = await s.imageSimilarity.search(seed, numSearchResults * 8)
+    s.data = data
+    const documents = await s.imageSimilarity.search(seed, Object.keys(data).length)
     if (generation !== s.queryGeneration || !s.isActive) return
     displayQuickOpenResults(s, documents, '', 'images')
     s.output.dataset.imageSeed = seed
@@ -279,7 +318,7 @@ async function showSimilarImages(s: PaletteState, seed: string) {
 
 export function displayQuickOpenResults(
   s: PaletteState,
-  documents: SemanticDocument[],
+  documents: PdfSearchDocument[],
   query: string,
   scope: SearchScope,
 ) {
@@ -301,10 +340,10 @@ export function displayQuickOpenResults(
       continue
     items.push({
       slug: document.slug,
-      name: fileData.title || fileData.fileName,
+      name: document.passage?.title || fileData.title || fileData.fileName,
       similarity: document.score,
+      passage: document.passage,
     })
-    if (items.length === numSearchResults) break
   }
   s.output.removeAttribute('aria-busy')
   quickOpenProgress(s, false)
@@ -315,6 +354,8 @@ function displayResults(s: PaletteState, finalResults: Item[], currentSearchTerm
   if (paletteMode.actionType !== 'quick_open') return
   if (!finalResults) return
 
+  s.resultPages?.dispose()
+  s.resultPages = null
   s.output.replaceChildren()
   s.currentHover = null
 
@@ -341,16 +382,20 @@ function displayResults(s: PaletteState, finalResults: Item[], currentSearchTerm
   }
 
   noMatchEl.addEventListener('click', onNoMatchClick)
-  window.addCleanup(() => noMatchEl.removeEventListener('click', onNoMatchClick))
   if (finalResults.length === 0) {
     s.output.appendChild(noMatchEl)
   } else {
-    s.output.append(...finalResults.map(result => toHtml(s, result)))
+    s.resultPages = mountResultPages(s.output, finalResults, (page, signal) => {
+      const items = page.map(result => toHtml(s, result, signal))
+      s.output.append(...items)
+      return items[0] ?? null
+    })
   }
+  s.output.scrollTop = 0
   setFocusFirstChild(s)
 }
 
-function toHtml(s: PaletteState, { name, slug, similarity }: Item) {
+function toHtml(s: PaletteState, { name, slug, similarity, passage }: Item, signal: AbortSignal) {
   const item = document.createElement('div')
   item.classList.add('suggestion-item')
   item.tabIndex = -1
@@ -358,6 +403,7 @@ function toHtml(s: PaletteState, { name, slug, similarity }: Item) {
 
   const content = document.createElement('a')
   content.href = new URL(resolveRelative(s.currentSlug, slug), location.toString()).toString()
+  if (passage) content.hash = `page=${passage.page}`
   content.classList.add('suggestion-content')
   const title = document.createElement('div')
   title.classList.add('suggestion-title')
@@ -366,6 +412,12 @@ function toHtml(s: PaletteState, { name, slug, similarity }: Item) {
 
   const aux = document.createElement('div')
   aux.classList.add('suggestion-aux')
+  if (passage) {
+    const page = document.createElement('span')
+    page.textContent = pdfPageLabel(passage)
+    aux.append(page)
+    item.dataset.pdfPage = String(passage.page)
+  }
   if (!searchableImage(slug) && similarity !== undefined && Number.isFinite(similarity)) {
     item.dataset.similarity = String(similarity)
     const score = document.createElement('span')
@@ -394,7 +446,7 @@ function toHtml(s: PaletteState, { name, slug, similarity }: Item) {
   const onClick = (event: MouseEvent) => {
     if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return
     event.preventDefault()
-    window.spaNavigate(new URL(resolveRelative(s.currentSlug, slug), location.toString()))
+    window.spaNavigate(new URL(content.href))
     hidePalette(s)
   }
 
@@ -408,12 +460,9 @@ function toHtml(s: PaletteState, { name, slug, similarity }: Item) {
     s.currentHover = item
   }
 
-  item.addEventListener('click', onClick)
-  item.addEventListener('mouseenter', onMouseEnter)
-  window.addCleanup(() => {
-    item.removeEventListener('click', onClick)
-    item.removeEventListener('mouseenter', onMouseEnter)
-  })
+  item.addEventListener('click', onClick, { signal })
+  item.addEventListener('mouseenter', onMouseEnter, { signal })
+  item.addEventListener('focus', onMouseEnter, { signal })
 
   return item
 }

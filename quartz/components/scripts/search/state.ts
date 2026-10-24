@@ -1,6 +1,10 @@
+import type { PdfPassage } from '../../../util/pdf-search'
 import type { ImageSemantic } from '../image-semantic'
 import type { ImageSimilarity } from '../image-similarity'
+import type { PdfSemantic } from '../pdf-semantic'
+import type { ResultPages } from '../search-result-pages'
 import type { SiteSemantic } from '../site-semantic'
+import type { ImageGrid, ImageGridDirection } from './image-grid'
 import { FullSlug } from '../../../util/path'
 
 export type Item = {
@@ -14,6 +18,7 @@ export type Item = {
   fileName: string
   protected?: boolean
   titleMatch?: boolean
+  passage?: PdfPassage
 }
 
 export type SearchType = 'basic' | 'tags'
@@ -57,6 +62,7 @@ export type SearchSession = {
   searchLayout: HTMLOutputElement
   searchSpace: HTMLFormElement
   image: SearchImage
+  pdf: PdfSemantic
   progressBar: HTMLDivElement
   progressResetTimer: number
   progressReasons: Set<'search' | 'preview'>
@@ -69,6 +75,7 @@ export type SearchSession = {
   semanticStatus: HTMLElement | null
   enablePreview: boolean
   previewVisible: boolean
+  imageSearch: boolean
   semanticBooting: Promise<boolean> | null
   searchSeq: number
   runSearchTimer: number | null
@@ -77,12 +84,14 @@ export type SearchSession = {
   preview: HTMLDivElement | undefined
   previewRequest: AbortController | undefined
   results: HTMLDivElement
+  imageGrid: ImageGrid
+  resultPages: ResultPages | null
   currentHover: HTMLElement | null
   previewToggle: HTMLButtonElement | null
   previousFocus: HTMLElement | null
   pressedKeys: Set<string>
   composing: boolean
-  pendingNavigation: -1 | 1 | null
+  pendingNavigation: -1 | 1 | ImageGridDirection | null
   pendingOpen: number | null
   pendingDisplay: { token: number; apply: () => void | Promise<void> } | null
   // Previews and result rows start an image similarity query through this callback.

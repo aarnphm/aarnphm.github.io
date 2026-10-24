@@ -3,6 +3,8 @@ import type {
   NotebookKernelStatus,
 } from '../../../util/notebook-kernel-events'
 import type { ImageSimilarity } from '../image-similarity'
+import type { PdfSemantic } from '../pdf-semantic'
+import type { ResultPages } from '../search-result-pages'
 import { FullSlug } from '../../../util/path'
 import { createImageSemantic, type ImageSemantic } from '../image-semantic'
 import { siteSemantic, type SiteSemantic } from '../site-semantic'
@@ -40,6 +42,7 @@ export interface PaletteState {
   readonly rankButton: HTMLAnchorElement
   readonly progress: HTMLDivElement
   readonly imageSimilarity: ImageSimilarity
+  readonly pdfSearch: PdfSemantic
   readonly actionCache: WeakMap<Action, HTMLDivElement>
   readonly connectorActs: Action[]
   commandActs: Action[]
@@ -47,7 +50,8 @@ export interface PaletteState {
   imageSemantic: ImageSemantic | null
   imageReady: Promise<ImageSemantic> | null
   imageActive: boolean
-  currentHover: HTMLDivElement | null
+  currentHover: HTMLElement | null
+  resultPages: ResultPages | null
   previousFocus: HTMLElement | null
   data: ContentIndex | null
   isActive: boolean
@@ -121,6 +125,8 @@ export function ensureQuickOpen(s: PaletteState) {
 }
 
 export function quickOpenStatus(s: PaletteState, message: string) {
+  s.resultPages?.dispose()
+  s.resultPages = null
   s.currentHover = null
   if (!message) {
     s.output.replaceChildren()
@@ -133,8 +139,11 @@ export function quickOpenStatus(s: PaletteState, message: string) {
 }
 
 export function hidePalette(s: PaletteState) {
+  s.resultPages?.dispose()
+  s.resultPages = null
   s.imageSimilarity.cancel()
   s.imageSemantic?.cancel()
+  s.pdfSearch.cancel()
   s.quickOpenSemantic?.cancel()
   s.queryGeneration += 1
   window.clearTimeout(s.quickOpenTimer)
@@ -166,6 +175,7 @@ export function commandSearchTerm(value: string) {
 }
 
 export function syncPaletteHelper(s: PaletteState) {
+  s.container.dataset.mode = paletteMode.actionType
   s.rankButton.hidden = paletteMode.actionType !== 'quick_open'
   s.bar.placeholder =
     paletteMode.actionType === 'quick_open'

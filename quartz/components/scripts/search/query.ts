@@ -1,10 +1,13 @@
 import type { LexicalField, LexicalFieldResult } from '../lexical-search-types'
+import { escapeHTML } from '../../../util/escape'
+import { pdfMetadata } from '../../../util/pdf-search'
 import { isSearchExcluded } from '../../../util/search-exclude'
 import { parseSearchQuery, searchScopeIncludes, type SearchScope } from '../../../util/search-scope'
 import { highlight, tokenizeTerm } from '../../../util/search-text'
 import { fuseSearchRanks } from '../../../util/semantic-search'
 import { imageSimilarityStatus, searchableImage } from '../image-search-controls'
 import { getLexicalSearchClient } from '../lexical-search'
+import { pdfCoverageStatus, pdfPageLabel } from '../pdf-search-controls'
 import { isSemanticCancellation } from '../semantic.inline'
 import { resetSiteSemantic } from '../site-semantic'
 import {
@@ -14,7 +17,7 @@ import {
   setSemanticState,
   updateModeUI,
 } from './engine'
-import { clearPreview } from './preview'
+import { clearPreview, setImageSearch } from './preview'
 import { completeSearchProgress, resetProgressBar, startSearchProgress } from './progress'
 import { commitSearchDisplay, displayResults } from './results'
 import {
@@ -26,13 +29,7 @@ import {
   type SimilarityResult,
 } from './state'
 
-const numSearchResultsLexical = 10
-const numSearchResultsSemantic = 60
 const numTagResults = 10
-
-function getNumSearchResults(mode: SearchMode): number {
-  return mode === 'semantic' ? numSearchResultsSemantic : numSearchResultsLexical
-}
 
 const formatForDisplay = (
   s: SearchSession,
@@ -95,8 +92,12 @@ function highlightTags(term: string, tags: string[], renderType: SearchType) {
 export async function showSimilarImages(s: SearchSession, seed: string) {
   const { image, results, searchBar, searchLayout } = s
   const token = ++s.searchSeq
+  s.resultPages?.dispose()
+  s.resultPages = null
+  setImageSearch(s, true)
   image.semantic?.cancel()
   shared.semantic?.cancel()
+  s.pdf.cancel()
   if (s.runSearchTimer !== null) window.clearTimeout(s.runSearchTimer)
   s.runSearchTimer = null
   shared.rawSearchTerm = 'filter: images'
@@ -110,7 +111,7 @@ export async function showSimilarImages(s: SearchSession, seed: string) {
   try {
     await ensureSearchData(s)
     if (token !== s.searchSeq || !image.active) return
-    const documents = await image.similarity.search(seed, numSearchResultsSemantic)
+    const documents = await image.similarity.search(seed, s.idDataMap.length)
     if (token !== s.searchSeq || !image.active) return
     const hits = documents.flatMap(document => {
       const id = s.idDataMap.findIndex(slug => slug === document.slug)
@@ -153,6 +154,7 @@ async function querySearch(s: SearchSession, rawTerm: string, token: number) {
   await ensureSearchData(s)
   if (token !== s.searchSeq) return
   const { scope, term: trimmed, explicit } = parseSearchQuery(rawTerm)
+  setImageSearch(s, scope === 'images')
   if (scope === 'images') {
     const ids = await image.similarity.ids().catch(() => undefined)
     if (token !== s.searchSeq) return
@@ -170,6 +172,7 @@ async function querySearch(s: SearchSession, rawTerm: string, token: number) {
   }
 
   const modeForRanking: SearchMode = shared.searchMode
+  const searchLimit = s.idDataMap.length
   const initialType: SearchType = trimmed.startsWith('#') ? 'tags' : 'basic'
   let workingType: SearchType = initialType
   let highlightTerm = trimmed
@@ -197,7 +200,7 @@ async function querySearch(s: SearchSession, rawTerm: string, token: number) {
       searchResults = await lexicalClient.search(loadedData, {
         query,
         scope,
-        limit: Math.max(getNumSearchResults(modeForRanking), 10000),
+        limit: searchLimit,
         index: ['title', 'fileName', 'content', 'aliases'],
         tag: { tags: tag },
       })
@@ -208,7 +211,7 @@ async function querySearch(s: SearchSession, rawTerm: string, token: number) {
       searchResults = await lexicalClient.search(loadedData, {
         query: tagTerm,
         scope,
-        limit: scope === 'images' ? idDataMap.length : getNumSearchResults(modeForRanking),
+        limit: searchLimit,
         index: ['tags'],
       })
       if (token !== s.searchSeq) return
@@ -218,7 +221,7 @@ async function querySearch(s: SearchSession, rawTerm: string, token: number) {
     searchResults = await lexicalClient.search(loadedData, {
       query: highlightTerm,
       scope,
-      limit: scope === 'images' ? idDataMap.length : getNumSearchResults(modeForRanking),
+      limit: searchLimit,
       index: ['title', 'fileName', 'content', 'aliases'],
     })
     if (token !== s.searchSeq) return
@@ -282,12 +285,10 @@ async function querySearch(s: SearchSession, rawTerm: string, token: number) {
         { ids: semanticIds, weight: useSemantic ? 1 : 0 },
       ],
       useSemantic ? 60 : 0,
-    )
-      .flatMap(({ id }) => {
-        const item = ensureItem(id)
-        return item ? [{ item, similarity: semanticSimilarity.get(id) ?? Number.NaN }] : []
-      })
-      .slice(0, getNumSearchResults(modeForRanking))
+    ).flatMap(({ id }) => {
+      const item = ensureItem(id)
+      return item ? [{ item, similarity: semanticSimilarity.get(id) ?? Number.NaN }] : []
+    })
 
     const displayEntries: SimilarityResult[] = []
     for (const entry of rankedEntries) {
@@ -302,12 +303,62 @@ async function querySearch(s: SearchSession, rawTerm: string, token: number) {
 
   await render()
 
+  if (scope === 'pdf' && initialType === 'basic' && highlightTerm) {
+    startSearchProgress(s)
+    const metadata = pdfMetadata(loadedData)
+    const lexical = baseIndices.map(id => idDataMap[id])
+    try {
+      const documents = await s.pdf.search(
+        highlightTerm,
+        lexical,
+        metadata,
+        new Set(Object.keys(metadata)),
+        modeForRanking === 'semantic',
+      )
+      if (token !== s.searchSeq) return
+      const entries = documents.flatMap(document => {
+        const id = slugToIndex.get(document.slug)
+        const item = id === undefined ? null : ensureItem(id)
+        if (!item) return []
+        if (document.passage) {
+          item.passage = document.passage
+          item.title = highlight(highlightTerm, escapeHTML(document.passage.title))
+          item.target = ''
+          item.content = `${escapeHTML(pdfPageLabel(document.passage))} · ${highlight(highlightTerm, escapeHTML(document.passage.text), true)}`
+        }
+        return [{ item, similarity: document.score }]
+      })
+      await commitSearchDisplay(s, token, () => {
+        displayResults(s, entries)
+        results.prepend(pdfCoverageStatus(s.pdf.coverage))
+      })
+    } catch (error) {
+      if (isSemanticCancellation(error) || token !== s.searchSeq) return
+      console.warn('[Search] PDF search unavailable:', error)
+      const entries = s.pdf.fallback(highlightTerm, lexical, metadata).flatMap(document => {
+        const id = slugToIndex.get(document.slug)
+        const item = id === undefined ? null : ensureItem(id)
+        return item ? [{ item, similarity: Number.NaN }] : []
+      })
+      await commitSearchDisplay(s, token, () => {
+        displayResults(s, entries)
+        const status = document.createElement('p')
+        status.setAttribute('role', 'status')
+        status.textContent = 'pdf text search unavailable; showing title and filename matches'
+        results.prepend(status)
+      })
+    } finally {
+      if (token === s.searchSeq) completeSearchProgress(s)
+    }
+    return
+  }
+
   if (scope === 'images' && initialType === 'basic' && highlightTerm) {
     startSearchProgress(s)
     try {
       const service = await ensureImageSearch(image)
       if (token !== s.searchSeq || !image.active) return
-      const documents = await service.search(highlightTerm, getNumSearchResults(modeForRanking) * 8)
+      const documents = await service.search(highlightTerm, image.ids?.size ?? searchLimit)
       if (token !== s.searchSeq || !image.active) return
       for (const { slug, score } of documents) {
         const id = slugToIndex.get(slug)
@@ -348,10 +399,7 @@ async function querySearch(s: SearchSession, rawTerm: string, token: number) {
   }
 
   try {
-    const documents = await orchestrator.search(
-      highlightTerm,
-      getNumSearchResults(modeForRanking) * 8,
-    )
+    const documents = await orchestrator.search(highlightTerm, orchestrator.index.ids.length)
     if (token !== s.searchSeq) {
       return
     }
@@ -363,7 +411,6 @@ async function querySearch(s: SearchSession, rawTerm: string, token: number) {
       if (id === undefined || !ensureItem(id)) continue
       semanticIds.push(id)
       semanticSimilarity.set(id, score)
-      if (semanticIds.length >= getNumSearchResults(modeForRanking)) break
     }
 
     semanticIds.forEach(docId => {

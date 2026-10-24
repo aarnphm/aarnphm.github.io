@@ -1,6 +1,7 @@
 import { highlight } from '../../../util/search-text'
 import { imageSearchRow, searchableImage } from '../image-search-controls'
 import { fitSearchPath } from '../search-path'
+import { mountResultPages } from '../search-result-pages'
 import { requireData } from './engine'
 import { clearPreview, displayPreview, resolveUrl } from './preview'
 import { shared, type SearchSession, type SimilarityResult } from './state'
@@ -76,7 +77,11 @@ export function openSearchResult(s: SearchSession) {
   if (anchor?.hasAttribute('href')) navigateSearchResult(s, anchor)
 }
 
-const resultToHTML = (s: SearchSession, { item, similarity }: SimilarityResult) => {
+const resultToHTML = (
+  s: SearchSession,
+  { item, similarity }: SimilarityResult,
+  signal: AbortSignal,
+) => {
   const { slug, title, target, fileName } = item
   const isProtected = item.protected === true
   const isImage = searchableImage(slug)
@@ -89,6 +94,10 @@ const resultToHTML = (s: SearchSession, { item, similarity }: SimilarityResult) 
   itemTile.classList.add('result-card')
   itemTile.id = slug
   itemTile.href = resolveUrl(s, slug).toString()
+  if (item.passage) {
+    itemTile.hash = `page=${item.passage.page}`
+    itemTile.dataset.pdfPage = String(item.passage.page)
+  }
 
   const fileData = requireData(s)[slug]
   const resolvedFileName = (fileData?.fileName || fileName || slug || '').toLowerCase()
@@ -128,28 +137,37 @@ const resultToHTML = (s: SearchSession, { item, similarity }: SimilarityResult) 
     await displayPreview(s, target)
   }
 
-  itemTile.addEventListener('mouseenter', onMouseEnter)
-  window.addCleanup(() => itemTile.removeEventListener('mouseenter', onMouseEnter))
-  itemTile.addEventListener('click', handler)
-  window.addCleanup(() => itemTile.removeEventListener('click', handler))
+  itemTile.addEventListener('mouseenter', onMouseEnter, { signal })
+  itemTile.addEventListener('click', handler, { signal })
 
   return isImage ? imageSearchRow(itemTile, slug, s.showSimilarImages, similarity) : itemTile
 }
 
 export function displayResults(s: SearchSession, finalResults: SimilarityResult[]) {
   const { results, preview } = s
+  const imagesOnly =
+    finalResults.length > 0 && finalResults.every(({ item }) => searchableImage(item.slug))
+  const navigationHint = s.searchSpace.querySelector('#helper li:first-child kbd')
+  if (navigationHint) navigationHint.textContent = imagesOnly ? '←↑↓→' : '↑↓'
+  s.resultPages?.dispose()
+  s.resultPages = null
   results.replaceChildren()
+  results.scrollTop = 0
   if (finalResults.length === 0) {
     results.innerHTML = `<a class="result-card no-match">
         <h3>No results.</h3>
         <p>Try another search term?</p>
     </a>`
     s.currentHover = null
-  } else if (finalResults.every(({ item }) => searchableImage(item.slug))) {
+  } else if (imagesOnly) {
     const gallery = document.createElement('div')
     gallery.className = 'image-search-grid'
-    gallery.append(...finalResults.map(result => resultToHTML(s, result)))
     results.append(gallery)
+    s.resultPages = mountResultPages(results, finalResults, (page, signal) => {
+      const cards = page.map(result => resultToHTML(s, result, signal))
+      gallery.append(...cards)
+      return cards[0]?.querySelector<HTMLElement>('a.result-card') ?? null
+    })
   } else {
     const scored = finalResults.some(result => Number.isFinite(result.similarity))
     const table = document.createElement('table')
@@ -168,33 +186,44 @@ export function displayResults(s: SearchSession, finalResults: SimilarityResult[
       head.append(heading)
     }
     const body = table.createTBody()
-    for (const result of finalResults) {
-      const row = body.insertRow()
-      const note = row.insertCell()
-      note.className = 'search-column-note'
-      note.append(resultToHTML(s, result))
-      const match = row.insertCell()
-      match.className = 'search-column-match'
-      const excerpt = document.createElement('span')
-      excerpt.innerHTML = result.item.protected ? 'protected content' : result.item.content
-      match.append(excerpt)
-      if (scored) {
-        const score = row.insertCell()
-        score.className = 'search-column-score'
-        score.textContent = Number.isFinite(result.similarity) ? result.similarity.toFixed(3) : '–'
-      }
-      const anchor = note.querySelector<HTMLAnchorElement>('a.result-card')
-      if (anchor) {
-        row.addEventListener('mouseenter', () => void displayPreview(s, anchor))
-        row.addEventListener('click', event => {
-          if (event.target instanceof Element && event.target.closest('a, button')) return
-          if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return
-          anchor.click()
-        })
-      }
-    }
     results.append(table)
-    fitResultPaths(s)
+    s.resultPages = mountResultPages(results, finalResults, (page, signal) => {
+      let first: HTMLElement | null = null
+      for (const result of page) {
+        const row = body.insertRow()
+        const note = row.insertCell()
+        note.className = 'search-column-note'
+        note.append(resultToHTML(s, result, signal))
+        const match = row.insertCell()
+        match.className = 'search-column-match'
+        const excerpt = document.createElement('span')
+        excerpt.innerHTML = result.item.protected ? 'protected content' : result.item.content
+        match.append(excerpt)
+        if (scored) {
+          const score = row.insertCell()
+          score.className = 'search-column-score'
+          score.textContent = Number.isFinite(result.similarity)
+            ? result.similarity.toFixed(3)
+            : '–'
+        }
+        const anchor = note.querySelector<HTMLAnchorElement>('a.result-card')
+        if (anchor) {
+          first ??= anchor
+          row.addEventListener('mouseenter', () => void displayPreview(s, anchor), { signal })
+          row.addEventListener(
+            'click',
+            event => {
+              if (event.target instanceof Element && event.target.closest('a, button')) return
+              if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return
+              anchor.click()
+            },
+            { signal },
+          )
+        }
+      }
+      fitResultPaths(s)
+      return first
+    })
   }
 
   if (finalResults.length === 0 && preview) {
