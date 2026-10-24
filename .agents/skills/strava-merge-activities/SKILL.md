@@ -101,17 +101,17 @@ Do not update Garmin, `content/triathlon.md`, or any other local tracking surfac
 
 ## Troubleshooting
 
-| Message                                                          | Cause                                                                                                   |
-| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `invalid --source`                                               | ID has fewer than 8 digits, or the URL did not match `activities/<id>`.                                 |
-| `source and destination must differ`                             | A and B resolved to the same activity.                                                                  |
-| `source activity <id> is missing from the cache`                 | Activity is outside the sync window. Refresh with `pnpm strava:sync`.                                   |
-| `source activity <id> has no usable stream in the cache`         | Preflight only. B has no `streams[id]` entry, so there is nothing to overlay.                           |
-| `source activity <id> has no standard telemetry`                 | Stream exists but every field is empty. Check the merge direction; the telemetry-bearing activity is A. |
-| `activity overlap 0.000 is below the 0.5 overlay threshold`      | Windows do not overlap. This is a concatenation, not an overlay. Stop.                                  |
-| `<path> already exists; choose a new path or pass --force`       | Output or backup collision from a previous run.                                                         |
-| `<field> length does not match time`                             | Cache corruption. Re-sync and retry once.                                                               |
-| `Unexpected token` / `Unexpected end of JSON input` on the cache | Inspect the active writer and the cache path. The standard writer is atomic; do not assume a routine mid-write parse failure. Preserve evidence before a bounded refresh.    |
+| Message                                                          | Cause                                                                                                                                                                     |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `invalid --source`                                               | ID has fewer than 8 digits, or the URL did not match `activities/<id>`.                                                                                                   |
+| `source and destination must differ`                             | A and B resolved to the same activity.                                                                                                                                    |
+| `source activity <id> is missing from the cache`                 | Activity is outside the sync window. Refresh with `pnpm strava:sync`.                                                                                                     |
+| `source activity <id> has no usable stream in the cache`         | Preflight only. B has no `streams[id]` entry, so there is nothing to overlay.                                                                                             |
+| `source activity <id> has no standard telemetry`                 | Stream exists but every field is empty. Check the merge direction; the telemetry-bearing activity is A.                                                                   |
+| `activity overlap 0.000 is below the 0.5 overlay threshold`      | Windows do not overlap. This is a concatenation, not an overlay. Stop.                                                                                                    |
+| `<path> already exists; choose a new path or pass --force`       | Output or backup collision from a previous run.                                                                                                                           |
+| `<field> length does not match time`                             | Cache corruption. Re-sync and retry once.                                                                                                                                 |
+| `Unexpected token` / `Unexpected end of JSON input` on the cache | Inspect the active writer and the cache path. The standard writer is atomic; do not assume a routine mid-write parse failure. Preserve evidence before a bounded refresh. |
 
 ## Completion report
 

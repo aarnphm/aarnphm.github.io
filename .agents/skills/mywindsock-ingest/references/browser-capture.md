@@ -21,7 +21,8 @@ Use one research tab sequentially so background animation and large maps do
 not accumulate. Start only after the analysis is populated.
 
 ```js
-const session = await import('file:///Users/aarnphm/workspace/garden/quartz/scripts/mywindsock-browser-session.mjs')
+const session =
+  await import('file:///Users/aarnphm/workspace/garden/quartz/scripts/mywindsock-browser-session.mjs')
 let bundle = await session.startGraphCapture(tab, cdp)
 nodeRepl.write({ id: bundle.stravaId, menu: bundle.menu })
 // Repeat bounded batches until every menu key is represented and none failed.

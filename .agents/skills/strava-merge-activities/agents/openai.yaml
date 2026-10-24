@@ -1,4 +1,4 @@
 interface:
-  display_name: "Strava Activity Merge"
-  short_description: "Merge overlapping Strava activity recordings safely"
-  default_prompt: "Use $strava-merge-activities to merge Strava activity A into activity B, upload the verified replacement, and remove both originals after confirmation."
+  display_name: 'Strava Activity Merge'
+  short_description: 'Merge overlapping Strava activity recordings safely'
+  default_prompt: 'Use $strava-merge-activities to merge Strava activity A into activity B, upload the verified replacement, and remove both originals after confirmation.'

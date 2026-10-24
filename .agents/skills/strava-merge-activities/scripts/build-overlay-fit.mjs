@@ -205,7 +205,11 @@ const spans = new Map(
 function measured(field, elapsedSeconds) {
   const span = spans.get(field)
   if (!span) return false
-  if (span.destination && elapsedSeconds >= span.destination[0] && elapsedSeconds <= span.destination[1])
+  if (
+    span.destination &&
+    elapsedSeconds >= span.destination[0] &&
+    elapsedSeconds <= span.destination[1]
+  )
     return true
   const offset = sourceTime(elapsedSeconds)
   return span.source != null && offset >= span.source[0] && offset <= span.source[1]
