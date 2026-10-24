@@ -55,7 +55,13 @@ const formatLegs = (event: TriathlonCalendarEvent): [PaceSport, number, number][
         ['bike', 20, 0.9],
         ['run', 5, 1],
       ]
-    if (event.series === 't100')
+    if (format === 't50' || event.series === 't50')
+      return [
+        ['swim', 1, 0.95],
+        ['bike', 40, 0.9],
+        ['run', 9, 0.95],
+      ]
+    if (format === 't100' || event.series === 't100')
       return [
         ['swim', 2, 0.9],
         ['bike', 80, 0.8],

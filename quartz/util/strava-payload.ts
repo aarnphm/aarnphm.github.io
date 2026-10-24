@@ -348,6 +348,7 @@ export function buildStravaData(
   const trackedCache = applyActivityTracking(strava, garmin, activityTracking, wahoo)
   const analytics = buildAnalytics(trackedCache, {
     ...analyticsInputs,
+    wahoo,
     oura,
     apple,
     core,

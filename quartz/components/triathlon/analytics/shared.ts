@@ -73,7 +73,9 @@ export const mountWeightSwitch = (root: HTMLElement, context: TriathlonContext):
 export const RACE_LABEL: Record<string, string> = {
   sprint: 'sprint',
   olympic: 'olympic',
+  t50: 't50',
   '70.3': '70.3',
+  t100: 't100',
   ironman: 'ironman',
 }
 

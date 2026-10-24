@@ -1,3 +1,4 @@
+import type { WahooData, WahooStreams } from '../wahoo'
 import { runGradeFactors } from '../../../util/run-grade'
 import { runPaceZoneReference } from '../../../util/run-pace-zones'
 import {
@@ -146,6 +147,14 @@ function coreFitHeatObservation(
 ): CoreHeatObservation | null {
   const match = matchGarminActivity(activity, sport, garmin ?? null)
   const stream: GarminStreams | undefined = match ? garmin?.streams?.[match.activity.id] : undefined
+  return fitHeatObservation(activity, stream)
+}
+
+function fitHeatObservation(
+  activity: RawStravaActivity,
+  stream: GarminStreams | WahooStreams | undefined,
+  startOffsetS = 0,
+): CoreHeatObservation | null {
   const time = stream?.time
   const heatStrain = stream?.heatStrainIndex
   const coreTemperature = stream?.coreTemperatureC
@@ -168,8 +177,12 @@ function coreFitHeatObservation(
   let skinObservedS = 0
   let skinTemperatureSeconds = 0
   for (let index = 0; index < time.length; index++) {
-    const start = clamp(time[index], 0, activityDurationS)
-    const end = clamp(time[index + 1] ?? activityDurationS, start, activityDurationS)
+    const start = clamp(time[index] + startOffsetS, 0, activityDurationS)
+    const end = clamp(
+      time[index + 1] == null ? activityDurationS : time[index + 1] + startOffsetS,
+      start,
+      activityDurationS,
+    )
     const durationS = end - start
     if (!(durationS > 0)) continue
 
@@ -240,6 +253,8 @@ function coreThermalObservation(
   sport: Sport,
   core: CoreBodyTemperatureCache | null | undefined,
   garmin: GarminCache | null | undefined,
+  wahoo: WahooData | null | undefined,
+  detail: StravaActivityDetail | undefined,
 ): {
   skinTemperatureC: number | null
   skinObservedS: number
@@ -250,7 +265,13 @@ function coreThermalObservation(
 } | null {
   const app = coreAppHeatObservation(activity, core)
   const fit = coreFitHeatObservation(activity, sport, garmin)
-  const observations = prefersActivityDeviceThermal(sport) ? [fit, app] : [app, fit]
+  const recording = detail?.wahoo
+  const wahooFit = recording
+    ? fitHeatObservation(activity, wahoo?.streams[recording.activityId], recording.startOffsetS)
+    : null
+  const observations = prefersActivityDeviceThermal(sport)
+    ? [wahooFit, fit, app]
+    : [app, wahooFit, fit]
   const skin = observations.find(observation => observation?.skinTemperatureC != null)
   const heatStrain = observations.find(observation => observation?.heatStrainIndex != null)
   if (skin?.skinTemperatureC == null && heatStrain?.heatStrainIndex == null) return null
@@ -329,6 +350,7 @@ export function buildDistributions(
   swimMetrics: ReadonlyMap<number, SwimActivityMetrics>,
   core: CoreBodyTemperatureCache | null | undefined,
   garmin: GarminCache | null | undefined,
+  wahoo?: WahooData | null,
 ): DistributionsBlock {
   const heartRateZoneBounds = [...(zones?.hr ?? [])]
   const powerZoneBounds = [...(zones?.power ?? [])]
@@ -355,7 +377,8 @@ export function buildDistributions(
         : rawCadence != null && Number.isFinite(rawCadence) && rawCadence > 0
           ? rawCadence * (sport === 'run' ? 2 : 1)
           : null
-    const thermal = sport === 'swim' ? null : coreThermalObservation(a, sport, core, garmin)
+    const thermal =
+      sport === 'swim' ? null : coreThermalObservation(a, sport, core, garmin, wahoo, detail)
     return {
       id: a.id,
       date: day,
