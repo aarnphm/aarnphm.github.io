@@ -1,20 +1,29 @@
-import type { SemanticQueryDType } from '../../util/semantic-search'
+import type {
+  PdfSearchRequest,
+  PdfSearchResult,
+  SemanticLoadedResult,
+  SemanticLoadRequest,
+  SemanticSearchRequest,
+  SemanticSearchResult,
+  SemanticSimilarRequest,
+  SemanticWorkerConfig,
+  SemanticWorkerResponse,
+} from '../../util/semantic-protocol'
 
 export type SemanticResult = { id: number; score: number }
-type SearchPayload = { semantic: SemanticResult[] }
-type WorkerResponse =
-  | { type: 'progress'; loadedRows: number; totalRows: number }
-  | { type: 'ready' }
-  | { type: 'search-result'; seq: number; semantic: SemanticResult[] }
-  | { type: 'error'; seq?: number; message: string }
-type SemanticConfig = {
-  enable?: boolean
-  model?: string
-  queryDtype?: SemanticQueryDType
-  manifestUrl?: string
-}
-type PendingResolver = { resolve: (payload: SearchPayload) => void; reject: (err: Error) => void }
-const SEMANTIC_IDLE_MS = 30_000
+type SearchPayload = { semantic: SemanticResult[]; ids?: string[] }
+type SemanticConfig = SemanticWorkerConfig
+type Request =
+  | Omit<SemanticSearchRequest, 'seq'>
+  | Omit<PdfSearchRequest, 'seq'>
+  | Omit<SemanticSimilarRequest, 'seq'>
+  | Omit<SemanticLoadRequest, 'seq'>
+type Reply = SemanticSearchResult | PdfSearchResult | SemanticLoadedResult
+type PendingResolver = { resolve: (payload: Reply) => void; reject: (err: Error) => void }
+// The encoder holds about 200 MB of GPU memory. A visible page keeps it for a while between
+// searches; a hidden page gives it up quickly. Clients keep their result caches either way.
+const IDLE_VISIBLE_MS = 5 * 60_000
+const IDLE_HIDDEN_MS = 30_000
 
 export function isSemanticCancellation(error: unknown): boolean {
   return error instanceof Error && error.name === 'AbortError'
@@ -25,7 +34,8 @@ function cancelled(): DOMException {
 }
 
 // Inline entry points are bundled separately. Keep the encoder on window so Base and site
-// search share its GPU session even when their copies of this module differ.
+// search share its GPU session even when their copies of this module differ. The encoder
+// loads on the first text query; stored-vector requests (`load`, `similar`) never start it.
 export class SemanticRuntime {
   readonly ready: Promise<void>
   private worker: Worker | null = null
@@ -36,8 +46,11 @@ export class SemanticRuntime {
   private clients = 0
   private queue: Promise<unknown> = Promise.resolve()
   private timer: ReturnType<typeof setTimeout> | undefined
+  private initTimer: ReturnType<typeof setTimeout> | undefined
+  private initialized = false
   private idleTimer: ReturnType<typeof setTimeout> | undefined
   private searches = 0
+  private readonly onVisibility = () => this.releaseWhenIdle()
 
   get alive() {
     return this.worker !== null && this.error === null
@@ -46,25 +59,29 @@ export class SemanticRuntime {
   private releaseWhenIdle() {
     clearTimeout(this.idleTimer)
     if (!this.alive || this.searches > 0) return
-    // Clients retain result caches across navigation; the model has a shorter lifetime.
-    this.idleTimer = setTimeout(() => this.fail(cancelled()), SEMANTIC_IDLE_MS)
+    const delay = document.visibilityState === 'hidden' ? IDLE_HIDDEN_MS : IDLE_VISIBLE_MS
+    this.idleTimer = setTimeout(() => this.fail(cancelled()), delay)
   }
 
   constructor(readonly cfg: SemanticConfig) {
     this.ready = new Promise(resolve => (this.resolveReady = resolve))
     try {
       this.worker = new Worker(new URL('semantic.worker.js', import.meta.url), { type: 'module' })
-      this.worker.onmessage = (event: MessageEvent<WorkerResponse>) => {
+      this.worker.onmessage = (event: MessageEvent<SemanticWorkerResponse>) => {
         const msg = event.data
         if (msg.type === 'progress') return
         if (msg.type === 'ready') {
-          clearTimeout(this.timer)
+          clearTimeout(this.initTimer)
           this.resolveReady()
           this.releaseWhenIdle()
-        } else if (msg.type === 'search-result') {
+        } else if (
+          msg.type === 'search-result' ||
+          msg.type === 'pdf-result' ||
+          msg.type === 'loaded'
+        ) {
           const pending = this.pending.get(msg.seq)
           this.pending.delete(msg.seq)
-          pending?.resolve({ semantic: msg.semantic })
+          pending?.resolve(msg)
         } else if (typeof msg.seq === 'number') {
           const pending = this.pending.get(msg.seq)
           this.pending.delete(msg.seq)
@@ -74,8 +91,7 @@ export class SemanticRuntime {
         }
       }
       this.worker.onerror = event => this.fail(new Error(event.message || 'semantic worker error'))
-      this.timer = setTimeout(() => this.fail(new Error('semantic model load timed out')), 120_000)
-      this.worker.postMessage({ type: 'init', cfg })
+      document.addEventListener('visibilitychange', this.onVisibility)
     } catch (error) {
       this.fail(error instanceof Error ? error : new Error(String(error)))
     }
@@ -89,10 +105,22 @@ export class SemanticRuntime {
     if (--this.clients === 0) this.fail(new Error('semantic encoder released'))
   }
 
+  private init() {
+    if (this.initialized || !this.worker) return
+    this.initialized = true
+    this.initTimer = setTimeout(
+      () => this.fail(new Error('semantic model load timed out')),
+      120_000,
+    )
+    this.worker.postMessage({ type: 'init', cfg: this.cfg })
+  }
+
   private fail(error: Error) {
     this.error = error
     clearTimeout(this.timer)
+    clearTimeout(this.initTimer)
     clearTimeout(this.idleTimer)
+    document.removeEventListener('visibilitychange', this.onVisibility)
     this.worker?.terminate()
     this.worker = null
     this.resolveReady()
@@ -102,6 +130,7 @@ export class SemanticRuntime {
   }
 
   async ensureReady() {
+    this.init()
     await this.ready
     if (this.error) {
       if (window.quartzSemanticRuntime === this) window.quartzSemanticRuntime = undefined
@@ -110,18 +139,21 @@ export class SemanticRuntime {
     this.releaseWhenIdle()
   }
 
-  search(text: string, k: number, manifestUrl: string, current: () => boolean) {
+  request(message: Request, current: () => boolean): Promise<Reply> {
     this.searches++
     clearTimeout(this.idleTimer)
     const result = this.queue.then(async () => {
       if (!current()) throw cancelled()
-      await this.ensureReady()
+      if (message.type === 'search' || message.type === 'pdf-search') await this.ensureReady()
+      // The worker answers in order, so a stored-vector request waits behind a started init.
+      else if (this.initialized) await this.ready
+      if (this.error) throw this.error
       if (!current()) throw cancelled()
-      const payload = await new Promise<SearchPayload>((resolve, reject) => {
+      const payload = await new Promise<Reply>((resolve, reject) => {
         const seq = ++this.seq
         this.pending.set(seq, { resolve, reject })
         this.timer = setTimeout(() => this.fail(new Error('semantic query timed out')), 15_000)
-        this.worker?.postMessage({ type: 'search', text, k, seq, manifestUrl })
+        this.worker?.postMessage({ ...message, seq })
       }).finally(() => clearTimeout(this.timer))
       if (!current()) throw cancelled()
       return payload
@@ -168,16 +200,51 @@ export class SemanticClient {
     if (this.disposed) throw new Error('semantic client has been disposed')
   }
 
-  search(text: string, k: number): Promise<SearchPayload> {
-    const generation = ++this.generation
+  /** `supersede: false` keeps earlier requests current; `cancel()` still drops it. */
+  private request(message: Request, supersede = true): Promise<Reply> {
+    const generation = supersede ? ++this.generation : this.generation
     if (this.disposed || this.cfg.enable === false)
       return Promise.reject(new Error('semantic client unavailable'))
-    return this.acquireRuntime().search(
-      text,
-      k,
-      this.cfg.manifestUrl ?? '/embeddings/manifest.json',
+    return this.acquireRuntime().request(
+      message,
       () => !this.disposed && generation === this.generation,
     )
+  }
+
+  private get manifestUrl() {
+    return this.cfg.manifestUrl ?? '/embeddings/manifest.json'
+  }
+
+  async search(text: string, k: number): Promise<SearchPayload> {
+    const reply = await this.request({ type: 'search', text, k, manifestUrl: this.manifestUrl })
+    if (reply.type !== 'search-result') throw new Error('unexpected semantic reply')
+    return { semantic: reply.semantic, ids: reply.ids }
+  }
+
+  /** Stored rows nearest to `seedId`, seed excluded. Loads no encoder. */
+  async similar(seedId: string, k: number): Promise<SearchPayload> {
+    const reply = await this.request({ type: 'similar', seedId, k, manifestUrl: this.manifestUrl })
+    if (reply.type !== 'search-result') throw new Error('unexpected semantic reply')
+    return { semantic: reply.semantic, ids: reply.ids }
+  }
+
+  /** Row identities of an image index. Loads no encoder. */
+  async ids(): Promise<string[]> {
+    const reply = await this.request({ type: 'load', manifestUrl: this.manifestUrl }, false)
+    if (reply.type !== 'loaded' || !reply.ids)
+      throw new Error(`${this.manifestUrl} has no row identities`)
+    return reply.ids
+  }
+
+  async pdfSearch(text: string, semantic: boolean): Promise<PdfSearchResult> {
+    const reply = await this.request({
+      type: 'pdf-search',
+      text,
+      semantic,
+      manifestUrl: this.manifestUrl,
+    })
+    if (reply.type !== 'pdf-result') throw new Error('unexpected semantic reply')
+    return reply
   }
 
   cancel() {

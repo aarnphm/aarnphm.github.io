@@ -80,7 +80,9 @@ export async function imageSearchOutput(
   })
   const files = new Map<string, Buffer>()
   if (ids.length) files.set(`${root}/vectors-000.f32`, payload)
-  const json = Buffer.from(JSON.stringify({ ...manifest, sourceDigests: retainedDigests }))
+  // Source digests stay in the content vault; the page only needs row identities and shards.
+  const { sourceDigests: _published, ...served } = manifest
+  const json = Buffer.from(JSON.stringify(served))
   files.set(`${root}/manifest.json`, json)
   files.set('embeddings/images/manifest.json', json)
   return { manifest, files }

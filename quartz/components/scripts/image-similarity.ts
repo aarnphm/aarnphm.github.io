@@ -1,11 +1,6 @@
 import type { SemanticDocument } from '../../util/semantic-search'
-import {
-  IMAGE_MANIFEST_URL,
-  imageSearchResults,
-  readImageManifest,
-  validateImageVectorShard,
-  type ImageSearchManifest,
-} from '../../util/image-search'
+import { IMAGE_MANIFEST_URL, imageSearchResults } from '../../util/image-search'
+import { isSemanticCancellation, SemanticClient } from './semantic.inline'
 
 export interface ImageSimilarity {
   ids(): Promise<ReadonlySet<string>>
@@ -14,90 +9,57 @@ export interface ImageSimilarity {
   dispose(): void
 }
 
-type ImageVectors = { index: ImageSearchManifest; vectors: Float32Array }
-
-/** Stored-image queries only load the static index; they never initialize an encoder. */
+/**
+ * The worker holds the image index and scans its stored vectors. Similarity never loads the
+ * query encoder, and the client opens on first use so a page load starts no worker.
+ */
 export function createImageSimilarity(manifestUrl = IMAGE_MANIFEST_URL): ImageSimilarity {
+  let client: SemanticClient | undefined
+  let indexed: Promise<ReadonlySet<string>> | undefined
   let disposed = false
   let generation = 0
-  let request: AbortController | undefined
-  let loading: Promise<ImageVectors> | undefined
-  let loaded: ImageVectors | undefined
-  let metadata: { index: ImageSearchManifest; url: string } | undefined
-  let metadataLoading: Promise<{ index: ImageSearchManifest; url: string }> | undefined
-  let metadataRequest: AbortController | undefined
-
-  async function readIndex() {
+  const open = () => {
     if (disposed) throw new Error('Image similarity has been disposed.')
-    if (metadata) return metadata
-    if (metadataLoading) return metadataLoading
-    const controller = new AbortController()
-    metadataRequest = controller
-    const pending = (async () => {
-      const response = await fetch(manifestUrl, { cache: 'no-cache', signal: controller.signal })
-      if (!response.ok) throw new Error(`Image similarity index unavailable: ${response.status}`)
-      const index = readImageManifest(await response.json())
-      controller.signal.throwIfAborted()
-      metadata = { index, url: response.url }
-      return metadata
-    })()
-    metadataLoading = pending
-    try {
-      return await pending
-    } finally {
-      if (metadataLoading === pending) metadataLoading = undefined
-      if (metadataRequest === controller) metadataRequest = undefined
-    }
+    return (client ??= new SemanticClient({ ...semanticCfg, manifestUrl }))
   }
-
-  async function load(): Promise<ImageVectors> {
-    if (loaded) return loaded
-    if (loading) return loading
-    const controller = new AbortController()
-    request = controller
-    const pending = (async () => {
-      const { index, url: manifestResponseUrl } = await readIndex()
-      controller.signal.throwIfAborted()
-      const vectors = new Float32Array(index.rows * index.dims)
-      for (const shard of index.vectors.shards) {
-        const url = new URL(shard.path, manifestResponseUrl)
-        if (url.origin !== new URL(manifestResponseUrl).origin)
-          throw new Error('Image vectors must have the same origin as their manifest.')
-        const result = await fetch(url, { signal: controller.signal })
-        if (!result.ok) throw new Error(`Image vectors unavailable: ${result.status}`)
-        const view = await validateImageVectorShard(await result.arrayBuffer(), shard, index.dims)
-        controller.signal.throwIfAborted()
-        vectors.set(view, shard.rowOffset * index.dims)
-      }
-      controller.signal.throwIfAborted()
-      loaded = { index, vectors }
-      return loaded
-    })()
-    loading = pending
-    try {
-      return await pending
-    } catch (error) {
-      if (loading === pending) metadata = undefined
-      throw error
-    } finally {
-      if (loading === pending) loading = undefined
-      if (request === controller) request = undefined
-    }
-  }
-
-  function cancel() {
+  const cancel = () => {
     generation++
-    request?.abort()
-    metadataRequest?.abort()
-    metadataLoading = undefined
-    metadataRequest = undefined
-    request = undefined
-    loading = undefined
+    client?.cancel()
+  }
+
+  async function similar(assetId: string, limit: number): Promise<SemanticDocument[]> {
+    const current = generation
+    const assertCurrent = () => {
+      if (disposed || current !== generation)
+        throw new DOMException('Image similarity superseded.', 'AbortError')
+    }
+    try {
+      const { semantic, ids } = await open().similar(assetId, limit)
+      assertCurrent()
+      return imageSearchResults(semantic, ids ?? [])
+    } catch (error) {
+      assertCurrent()
+      if (isSemanticCancellation(error)) throw error
+      // A generation may have been replaced under the worker; a fresh client resolves the new one.
+      client?.dispose()
+      client = undefined
+      indexed = undefined
+      const { semantic, ids } = await open().similar(assetId, limit)
+      assertCurrent()
+      return imageSearchResults(semantic, ids ?? [])
+    }
   }
 
   return {
-    async ids() {
-      return new Set((await readIndex()).index.ids)
+    ids() {
+      if (!indexed) {
+        const pending = (async () => new Set(await open().ids()))()
+        indexed = pending
+        void pending.catch(() => {
+          if (indexed === pending) indexed = undefined
+        })
+      }
+      return indexed
     },
     async search(assetId, limit, signal) {
       if (disposed) throw new Error('Image similarity has been disposed.')
@@ -110,33 +72,19 @@ export function createImageSimilarity(manifestUrl = IMAGE_MANIFEST_URL): ImageSi
       }
       signal?.addEventListener('abort', abort, { once: true })
       try {
-        const { index, vectors } = await load()
-        signal?.throwIfAborted()
-        if (disposed || current !== generation)
-          throw new DOMException('Image similarity superseded.', 'AbortError')
-        const seed = index.ids.indexOf(assetId)
-        if (seed < 0) throw new Error('This image is not indexed for visual similarity.')
-        const offset = seed * index.dims
-        const hits: { id: number; score: number }[] = []
-        for (let row = 0; row < index.rows; row++) {
-          if (row === seed) continue
-          let score = 0
-          const base = row * index.dims
-          for (let dimension = 0; dimension < index.dims; dimension++)
-            score += vectors[base + dimension] * vectors[offset + dimension]
-          hits.push({ id: row, score })
-        }
-        return imageSearchResults(hits, index).slice(0, limit)
+        return await similar(assetId, limit)
       } finally {
         signal?.removeEventListener('abort', abort)
       }
     },
     cancel,
     dispose() {
+      if (disposed) return
       disposed = true
       cancel()
-      loaded = undefined
-      metadata = undefined
+      indexed = undefined
+      client?.dispose()
+      client = undefined
     },
   }
 }

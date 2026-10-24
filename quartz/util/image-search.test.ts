@@ -60,7 +60,7 @@ test('an image generation preserves path identities and uses its immutable manif
         { id: 1, score: 0.8 },
         { id: 0, score: 0.5 },
       ],
-      parsed,
+      [parsed.ids[1], parsed.ids[0]],
     ),
     [
       { slug: 'photos/two.webp', score: 0.8 },
@@ -126,8 +126,7 @@ test('actual binary bytes must match the digest, length and finite unit-vector c
   }
 })
 
-test('invalid worker rows never become image search results', () => {
-  const index = readImageManifest(fixture().manifest)
+test('hits without a row identity or a finite score never become image search results', () => {
   assert.deepEqual(
     imageSearchResults(
       [
@@ -135,9 +134,8 @@ test('invalid worker rows never become image search results', () => {
         { id: 0, score: 0.4 },
         { id: 1, score: Number.NaN },
         { id: 9, score: 1 },
-        { id: -1, score: 1 },
       ],
-      index,
+      ['photos/one.webp', 'photos/one.webp', 'photos/two.webp', undefined],
     ),
     [{ slug: 'photos/one.webp', score: 0.8 }],
   )
