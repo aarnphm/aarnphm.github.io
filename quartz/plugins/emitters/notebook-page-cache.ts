@@ -60,6 +60,7 @@ export function compactNotebookPluginData(data: QuartzPluginData): QuartzPluginD
     description: data.description,
     links: data.links,
     dates: data.dates,
+    codeSearchBlocks: data.codeSearchBlocks,
   }
 }
 

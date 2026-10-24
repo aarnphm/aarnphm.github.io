@@ -262,53 +262,6 @@ article.notebook-runtime-page,
         margin: 0;
         border-radius: 0 var(--notebook-inner-radius) var(--notebook-inner-radius)
           var(--notebook-inner-radius);
-
-        > code {
-          .hljs-keyword,
-          .hljs-selector-tag,
-          .hljs-literal,
-          .hljs-section,
-          .hljs-link {
-            color: var(--code-keyword);
-          }
-
-          .hljs-string,
-          .hljs-regexp,
-          .hljs-addition {
-            color: var(--code-string);
-          }
-
-          .hljs-title,
-          .hljs-name,
-          .hljs-function,
-          .hljs-attr {
-            color: var(--code-function);
-          }
-
-          .hljs-number,
-          .hljs-symbol,
-          .hljs-bullet {
-            color: var(--code-value);
-          }
-
-          .hljs-comment,
-          .hljs-quote {
-            color: var(--code-comment);
-            font-style: italic;
-          }
-
-          .hljs-built_in,
-          .hljs-type,
-          .hljs-class {
-            color: var(--code-tag);
-          }
-
-          .hljs-meta,
-          .hljs-doctag,
-          .hljs-deletion {
-            color: var(--code-important);
-          }
-        }
       }
     }
 

@@ -29,6 +29,7 @@ import { allSettledOrThrow } from '../../../util/staged-output'
 import { write } from '../helpers'
 import {
   collaborativeCommentsClientPath,
+  codeSearchWorkerPath,
   lexicalWorkerPath,
   notebookNativeRuntimeManifestPath,
   notebookPyrightPackageStubsManifestPath,
@@ -45,6 +46,8 @@ import {
   staticScriptAssetReference,
   writeAssetBundleOutput,
 } from './asset-writer'
+import { writeCodeSearchAssets } from './code-search-assets'
+import { prepareClientHighlighter } from './highlighter-assets'
 import { writeNotebookRuntimeAssets } from './notebook-assets'
 import {
   writeCollaborativeCommentsAssets,
@@ -80,6 +83,7 @@ const componentScriptAssetReplacements: ScriptAssetReplacement[] = [
   { placeholder: 'collaborative-comments.client.js', logicalPath: collaborativeCommentsClientPath },
   { placeholder: 'semantic.worker.js', logicalPath: semanticWorkerPath },
   { placeholder: 'lexical.worker.js', logicalPath: lexicalWorkerPath },
+  { placeholder: 'code-search.worker.js', logicalPath: codeSearchWorkerPath },
 ]
 
 const inlineScriptNamespace = 'inline-script'
@@ -108,7 +112,8 @@ function inlineScriptModules(scripts: readonly string[]): Plugin {
   }
 }
 
-export async function joinScripts(scripts: string[]): Promise<string> {
+export async function joinScripts(scripts: string[], ctx?: BuildCtx): Promise<string> {
+  const highlighter = ctx ? await prepareClientHighlighter(ctx) : undefined
   const result = await bundle({
     stdin: {
       contents: scripts.map((_, index) => `import "${inlineScriptSpecifier(index)}"`).join('\n'),
@@ -119,7 +124,7 @@ export async function joinScripts(scripts: string[]): Promise<string> {
     platform: 'browser',
     format: 'iife',
     write: false,
-    plugins: [inlineScriptModules(scripts)],
+    plugins: [inlineScriptModules(scripts), ...(highlighter ? [highlighter.plugin] : [])],
   })
   return result.outputFiles[0].text
 }
@@ -144,6 +149,7 @@ export async function* writeStaticJsResourceBundles(
   ctx: BuildCtx,
   resources: StaticResources,
 ): AsyncGenerator<FilePath> {
+  yield (await prepareClientHighlighter(ctx)).file
   for (const loadTime of ['beforeDOMReady', 'afterDOMReady'] as const) {
     const leadingInline = await staticJsLeadingInline(loadTime)
     ctx.staticLeadingJs ??= {}
@@ -151,7 +157,7 @@ export async function* writeStaticJsResourceBundles(
     let index = 0
     for (const part of splitJsBundles(resources.js, loadTime, leadingInline)) {
       if (part.type !== 'bundle') continue
-      const content = await joinScripts(part.scripts)
+      const content = await joinScripts(part.scripts, ctx)
       const baseSlug = staticJsBundleSlug(part.loadTime)
       const devSlug = index === 0 ? baseSlug : `${baseSlug}-${index}`
       const slug = shouldHashAssets(ctx) ? contentHashSlug(baseSlug, content) : devSlug
@@ -181,6 +187,7 @@ async function writeAfterDomLoadedScripts(
 ): Promise<{ postscript: string; files: FilePath[] }> {
   // A repeated script used to hash to the same file, so only its first import evaluated it.
   const sources = [...new Set(scripts)]
+  const highlighter = await prepareClientHighlighter(ctx)
   const outdir = path.join(ctx.argv.output, staticScriptsDir)
   // Bundle all page scripts into one entry module so HTTP/1.1 does not queue 70+ module requests
   // behind 6 sockets while lazy `import()` chunks still split into `chunks/`.
@@ -195,7 +202,7 @@ async function writeAfterDomLoadedScripts(
     entryNames: '[name]',
     chunkNames: 'chunks/[name]-[hash]',
     write: false,
-    plugins: [inlineScriptModules(sources)],
+    plugins: [inlineScriptModules(sources), highlighter.plugin],
   })
 
   const entryOutput = result.outputFiles.find(
@@ -228,11 +235,12 @@ export async function writePageScripts(
     writeNotebookRuntimeAssets(ctx),
     writeCollaborativeCommentsAssets(ctx),
     writeSemanticWorkerAssets(ctx),
+    writeCodeSearchAssets(ctx),
     writeLexicalWorkerAsset(ctx).then(file => [file]),
   ])
   resolveComponentResourceAssets(ctx, componentResources)
   const [prescript, postscriptResult] = await Promise.all([
-    joinScripts(componentResources.beforeDOMLoaded),
+    joinScripts(componentResources.beforeDOMLoaded, ctx),
     writeAfterDomLoadedScripts(ctx, componentResources.afterDOMLoaded),
   ])
   const { postscript, files } = postscriptResult
@@ -248,5 +256,5 @@ export async function writePageScripts(
     ext: '.js',
     content: postscript,
   })
-  return [prescriptFile, postscriptFile, ...files, ...prerequisiteFiles.flat()]
+  return [prescriptFile, postscriptFile, ...files, ...new Set(prerequisiteFiles.flat())]
 }

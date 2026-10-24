@@ -25,6 +25,11 @@ import { isNotebookParseError } from '../../util/notebook/types'
 import { FilePath, FullSlug, joinSegments, pathToRoot, slugifyFilePath } from '../../util/path'
 import { logBuildSpan, PerfTimer } from '../../util/perf'
 import { StaticResources } from '../../util/resources'
+import {
+  annotateNotebookSource,
+  notebookCellRecords,
+  type PublishedCodeBlock,
+} from '../transformers/code-search-blocks'
 import { ProcessedContent, QuartzPluginData } from '../vfile'
 import { write } from './helpers'
 import { notebookCacheMiss, notebookCacheReceipt } from './notebook-cache-receipts'
@@ -74,8 +79,11 @@ type NotebookPageResult = { page: NotebookPage; cacheHit: boolean }
 const defaultOptions: ResolvedOptions = { executeTimeoutSeconds: 120, runtime: false }
 
 const notebookCacheSourcePaths: FilePath[] = [
+  'quartz/plugins/transformers/code-search-blocks.ts' as FilePath,
+  'quartz/plugins/transformers/code-search.ts' as FilePath,
   'quartz/util/notebook-preview.ts' as FilePath,
   'quartz/util/notebook/cell-html.ts' as FilePath,
+  'quartz/util/notebook/code-language.ts' as FilePath,
   'quartz/util/notebook/extract-assets.ts' as FilePath,
   'quartz/util/notebook/inline-svg.ts' as FilePath,
   'quartz/util/notebook/markdown.ts' as FilePath,
@@ -136,10 +144,14 @@ function applyTextTransforms(ctx: BuildCtx, markdown: string): string {
 function parseNotebookMarkdownChunks(
   mdProcessor: ReturnType<typeof createMdProcessor>,
   chunks: string[],
+  sourceRecords: ReadonlyMap<number, PublishedCodeBlock[]>,
 ): MdRoot {
   const children: MdRoot['children'] = []
-  for (const chunk of chunks) {
-    children.push(...mdProcessor.parse(chunk).children)
+  for (const [index, chunk] of chunks.entries()) {
+    const tree = mdProcessor.parse(chunk)
+    const records = sourceRecords.get(index)
+    if (records) annotateNotebookSource(tree, records)
+    children.push(...tree.children)
   }
   return { type: 'root', children }
 }
@@ -223,7 +235,15 @@ async function notebookProcessedContent(
   const notebook = parseNotebookDoc(raw, src)
   if (isNotebookParseError(notebook))
     throw new Error(`${src} is not a valid notebook: ${notebook.reason}`)
+  const { md: mdProcessor, html: htmlProcessor } = processors()
+  const sourceRecords = new Map<number, PublishedCodeBlock[]>()
   const rawChunks = notebookToMarkdownChunks(notebook, fp, {
+    onSourceChunk(index, cell) {
+      sourceRecords.set(
+        index,
+        notebookCellRecords(cell, source => mdProcessor.parse(source)),
+      )
+    },
     runtime:
       opts.runtime === false ? false : { ...opts.runtime, sourcePath: fp, importableModules },
   }).map(chunk => applyTextTransforms(ctx, chunk))
@@ -239,8 +259,7 @@ async function notebookProcessedContent(
   file.data.relativePath = fp
   file.data.slug = slug
 
-  const { md: mdProcessor, html: htmlProcessor } = processors()
-  const ast = parseNotebookMarkdownChunks(mdProcessor, markdownChunks)
+  const ast = parseNotebookMarkdownChunks(mdProcessor, markdownChunks, sourceRecords)
   const mdAst = await mdProcessor.run(ast, file)
   const htmlAst = await htmlProcessor.run(mdastToHastRoot(mdAst), file)
   themeNotebookSvgs(htmlAst)

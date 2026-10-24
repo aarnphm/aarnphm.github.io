@@ -9,12 +9,14 @@ import { workerEntryPattern } from '../../../util/workers'
 import { write } from '../helpers'
 import {
   collaborativeCommentsClientEntry,
+  codeSearchWorkerEntry,
   lexicalWorkerEntry,
   lexicalWorkerPath,
   semanticWorkerEntry,
   staticScriptsDir,
 } from './asset-paths'
 import { writeRawAsset, writeAssetBundleOutput } from './asset-writer'
+import { prepareClientHighlighter } from './highlighter-assets'
 
 const speechWorkerEntry = 'quartz/workers/speech.worker.ts'
 export async function writeSpeechRuntimeAssets(ctx: BuildCtx): Promise<FilePath[]> {
@@ -57,6 +59,7 @@ async function writePhononRuntimeAssets(
 }
 
 export async function writeCollaborativeCommentsAssets(ctx: BuildCtx): Promise<FilePath[]> {
+  const highlighter = await prepareClientHighlighter(ctx)
   const outdir = path.join(ctx.argv.output, staticScriptsDir)
   const client = await bundle({
     entryPoints: { 'collaborative-comments.client': collaborativeCommentsClientEntry },
@@ -69,8 +72,12 @@ export async function writeCollaborativeCommentsAssets(ctx: BuildCtx): Promise<F
     entryNames: '[name]',
     chunkNames: 'chunks/[name]-[hash]',
     write: false,
+    plugins: [highlighter.plugin],
   })
-  return await Promise.all(client.outputFiles.map(output => writeAssetBundleOutput(ctx, output)))
+  return [
+    highlighter.file,
+    ...(await Promise.all(client.outputFiles.map(output => writeAssetBundleOutput(ctx, output)))),
+  ]
 }
 
 export async function writeSemanticWorkerAssets(ctx: BuildCtx): Promise<FilePath[]> {
@@ -118,7 +125,11 @@ async function writeGenericWorkerAsset(ctx: BuildCtx, src: string): Promise<File
 
 export async function* writeGenericWorkerAssets(ctx: BuildCtx): AsyncGenerator<FilePath> {
   const workerFiles = (await globby([workerEntryPattern])).filter(
-    src => src !== semanticWorkerEntry && src !== speechWorkerEntry && src !== lexicalWorkerEntry,
+    src =>
+      src !== semanticWorkerEntry &&
+      src !== speechWorkerEntry &&
+      src !== lexicalWorkerEntry &&
+      src !== codeSearchWorkerEntry,
   )
   yield* await Promise.all(workerFiles.map(src => writeGenericWorkerAsset(ctx, src)))
 }

@@ -69,6 +69,7 @@ import {
   chunkedFileAssetManifestPath,
   writeChunkedFileAsset,
 } from './chunked-file-assets'
+import { prepareClientHighlighter } from './highlighter-assets'
 
 type NativeRuntimePackWrittenFile = {
   readonly filename: string
@@ -855,6 +856,7 @@ function replaceNotebookRuntimeWorkerReference(text: string, fromFile: string, w
 }
 
 export async function writeNotebookRuntimeAssets(ctx: BuildCtx): Promise<FilePath[]> {
+  const highlighter = await prepareClientHighlighter(ctx)
   const outdir = path.join(ctx.argv.output, staticScriptsDir)
   const [worker, javascriptWorker] = await Promise.all([
     bundle({
@@ -899,6 +901,7 @@ export async function writeNotebookRuntimeAssets(ctx: BuildCtx): Promise<FilePat
     entryNames: '[name]',
     chunkNames: 'chunks/[name]-[hash]',
     loader: { '.html': 'text' },
+    plugins: [highlighter.plugin],
     write: false,
   })
   const workerPath = path.join(outdir, staticScriptAssetReference(ctx, notebookRuntimeWorkerPath))
@@ -929,7 +932,13 @@ export async function writeNotebookRuntimeAssets(ctx: BuildCtx): Promise<FilePat
   const clientFiles = await Promise.all(
     clientOutputs.map(output => writeAssetBundleOutput(ctx, output)),
   )
-  const allFiles = [...workerFiles, ...nativeRuntimeFiles, ...pyrightFiles, ...clientFiles]
+  const allFiles = [
+    highlighter.file,
+    ...workerFiles,
+    ...nativeRuntimeFiles,
+    ...pyrightFiles,
+    ...clientFiles,
+  ]
   recordOutputAsset('notebook-runtime', allFiles)
   return allFiles
 }

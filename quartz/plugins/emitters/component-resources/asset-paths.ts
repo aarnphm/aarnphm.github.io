@@ -9,6 +9,7 @@ import {
 } from '../../../runtime/notebook/assets'
 
 export const staticScriptsDir = 'static/scripts'
+export const clientHighlighterPath = `${staticScriptsDir}/highlight-source.js`
 export const collaborativeCommentsClientEntry =
   'quartz/components/scripts/collaborative-comments.client.ts'
 export const notebookRuntimeInlineEntry = 'quartz/components/scripts/notebook-runtime.inline.ts'
@@ -32,6 +33,8 @@ export const basedpyrightInternalSourcePackageName = 'basedpyright-internal-sour
 export const notebookPyrightWorkerOutputName = 'notebook-pyright-worker'
 export const lexicalWorkerEntry = 'quartz/workers/lexical.worker.ts'
 export const lexicalWorkerPath = `${staticScriptsDir}/lexical.worker.js`
+export const codeSearchWorkerEntry = 'quartz/workers/code-search.worker.ts'
+export const codeSearchWorkerPath = `${staticScriptsDir}/code-search.worker.js`
 export const semanticWorkerEntry = 'quartz/workers/semantic.worker.ts'
 export const semanticWorkerPath = `${staticScriptsDir}/semantic.worker.js`
 export const xsltPolyfillPath = `${staticScriptsDir}/xslt-polyfill.js`
