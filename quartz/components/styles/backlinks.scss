@@ -91,6 +91,8 @@
       }
 
       .description {
+        // contain KaTeX's absolutely positioned MathML so the ellipsis clip also hides it
+        position: relative;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;

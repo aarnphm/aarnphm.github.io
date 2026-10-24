@@ -150,18 +150,16 @@ export function mountSeasonToggle(
     // under them would put the mark on their text. The waterings label fills in after the shared
     // grove answers, so its corner is reserved at full width even while it is empty.
     const origin = scene.getBoundingClientRect()
-    const reserved = [...document.querySelectorAll('.trail-almanac, .trail-local-time')].map(
-      el => {
-        const r = el.getBoundingClientRect()
-        const almanac = el.classList.contains('trail-almanac')
-        return {
-          left: r.left - origin.left - 8,
-          right: (almanac ? Math.max(r.right, r.left + 200) : r.right) - origin.left + 8,
-          top: (almanac ? Math.min(r.top, r.bottom - 32) : r.top) - origin.top - 8,
-          bottom: r.bottom - origin.top + 8,
-        }
-      },
-    )
+    const reserved = [...document.querySelectorAll('.trail-almanac, .trail-local-time')].map(el => {
+      const r = el.getBoundingClientRect()
+      const almanac = el.classList.contains('trail-almanac')
+      return {
+        left: r.left - origin.left - 8,
+        right: (almanac ? Math.max(r.right, r.left + 200) : r.right) - origin.left + 8,
+        top: (almanac ? Math.min(r.top, r.bottom - 32) : r.top) - origin.top - 8,
+        bottom: r.bottom - origin.top + 8,
+      }
+    })
     const clear = (left: number, top: number, w: number, h: number) =>
       reserved.every(
         r => left + w <= r.left || left >= r.right || top + h <= r.top || top >= r.bottom,
