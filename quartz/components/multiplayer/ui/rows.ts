@@ -1,7 +1,7 @@
 import type { MarkdownEditor } from '../../scripts/markdown-editor'
 import type { MultiplayerComment } from '../model'
 import type { UiContext } from './context'
-import { renderMarkdown } from '../../../util/markdown-renderer'
+import { renderMarkdownInto } from '../../../util/markdown-renderer'
 import { getFullSlug } from '../../../util/path'
 import { getAvatarUrl } from '../identity'
 import { createMarkdownEditor, formatRelativeTime } from './dom'
@@ -158,7 +158,7 @@ export const buildThreadItem = (
   const text = document.createElement('div')
   text.className = 'reply-text markdown-content'
   const currentSlug = getFullSlug(window)
-  text.innerHTML = renderMarkdown(comment.content, currentSlug)
+  renderMarkdownInto(text, comment.content, currentSlug)
   body.appendChild(text)
 
   const actions = document.createElement('button')

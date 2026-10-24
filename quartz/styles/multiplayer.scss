@@ -320,19 +320,6 @@ $selection-highlight: rgba(255, 220, 100, 0.5);
       background: var(--comment-selected);
       color: var(--dark);
     }
-
-    .hljs {
-      background: transparent;
-      color: var(--dark);
-    }
-
-    :is(.hljs-keyword, .hljs-function, .hljs-number) {
-      color: var(--dark);
-    }
-
-    :is(.hljs-string, .hljs-comment) {
-      color: var(--darkgray);
-    }
   }
 }
 

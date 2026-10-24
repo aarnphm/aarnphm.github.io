@@ -29,11 +29,18 @@ const paint = (root: HTMLElement) => {
   const stageBox = stage.getBoundingClientRect()
   const w = Math.max(1, stage.clientWidth)
   const h = Math.max(1, stage.clientHeight)
-  svg.setAttribute('viewBox', `0 0 ${w} ${h}`)
-  svg.setAttribute('width', String(w))
-  svg.setAttribute('height', String(h))
-
-  while (svg.firstChild) svg.removeChild(svg.firstChild)
+  // Finish geometry reads before changing the SVG, including endpoints used by later edges.
+  const cols = visibleCols(root)
+  const geometry = new Map<Element, ReturnType<typeof rel>>()
+  for (const col of cols) {
+    geometry.set(col, rel(stageBox, col))
+    for (const node of col.querySelectorAll(
+      '[data-mtp-out-h], [data-mtp-in-h], [data-mtp-shared]',
+    )) {
+      geometry.set(node, rel(stageBox, node))
+    }
+  }
+  const fragment = document.createDocumentFragment()
 
   const ns = 'http://www.w3.org/2000/svg'
   const defs = document.createElementNS(ns, 'defs')
@@ -53,10 +60,9 @@ const paint = (root: HTMLElement) => {
   tip.setAttribute('class', 'mtp-link-arrow')
   marker.appendChild(tip)
   defs.appendChild(marker)
-  svg.appendChild(defs)
+  fragment.appendChild(defs)
 
-  const cols = visibleCols(root)
-  const boxes = cols.map(col => rel(stageBox, col))
+  const boxes = cols.map(col => geometry.get(col)!)
   // Stacked when the second column sits below the first: links then run in side lanes.
   const stacked = boxes.length > 1 && boxes[1].top >= boxes[0].bottom - 1
   const pathEl = (d: string, cls: string, arrow = false) => {
@@ -65,7 +71,7 @@ const paint = (root: HTMLElement) => {
     path.setAttribute('class', cls)
     path.setAttribute('vector-effect', 'non-scaling-stroke')
     if (arrow) path.setAttribute('marker-end', `url(#${markerId})`)
-    svg.appendChild(path)
+    fragment.appendChild(path)
   }
   const labelEl = (x: number, y: number, rotate = false) => {
     const label = document.createElementNS(ns, 'text')
@@ -75,15 +81,15 @@ const paint = (root: HTMLElement) => {
     label.setAttribute('class', 'mtp-share-label')
     if (rotate) label.setAttribute('transform', `rotate(-90 ${x} ${y})`)
     label.textContent = 'shared'
-    svg.appendChild(label)
+    fragment.appendChild(label)
   }
 
   for (let i = 0; i < cols.length - 1; i += 1) {
     const from = cols[i].querySelector('[data-mtp-out-h]')
     const to = cols[i + 1].querySelector('[data-mtp-in-h]')
     if (!from || !to) continue
-    const a = rel(stageBox, from)
-    const b = rel(stageBox, to)
+    const a = geometry.get(from)!
+    const b = geometry.get(to)!
     if (stacked) {
       // Left lane: out of the transformer's left edge, down, into the RMSNorm's left edge.
       const lane = boxes[i].left - 9
@@ -100,8 +106,8 @@ const paint = (root: HTMLElement) => {
       .map(col => col.querySelector(`[data-mtp-shared="${key}"]`))
       .filter((el): el is Element => Boolean(el))
     for (let i = 0; i < nodes.length - 1; i += 1) {
-      const a = rel(stageBox, nodes[i])
-      const b = rel(stageBox, nodes[i + 1])
+      const a = geometry.get(nodes[i])!
+      const b = geometry.get(nodes[i + 1])!
       if (stacked) {
         const x = Math.max(a.right, b.right) + lane
         pathEl(`M ${a.right} ${a.midY} H ${x} V ${b.midY} H ${b.right}`, 'mtp-link-share')
@@ -121,6 +127,10 @@ const paint = (root: HTMLElement) => {
       labelEl(boxes[i].right + 25, (boxes[i].bottom + boxes[i + 1].top) / 2, true)
     }
   }
+  svg.setAttribute('viewBox', `0 0 ${w} ${h}`)
+  svg.setAttribute('width', String(w))
+  svg.setAttribute('height', String(h))
+  svg.replaceChildren(fragment)
 }
 
 const setup = (root: HTMLElement): (() => void) | null => {

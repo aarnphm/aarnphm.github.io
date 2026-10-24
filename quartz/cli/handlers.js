@@ -14,6 +14,7 @@ import serveHandler from 'serve-handler'
 import { WebSocket, WebSocketServer } from 'ws'
 import { emitterSourceInputs, mergeEmitterSourceInputs } from '../util/source-emission.ts'
 export { emitterSourceInputs } from '../util/source-emission.ts'
+import { bundleInlineScript } from '../util/inline-script-bundler.ts'
 import { handleLocalLeanVerifyNodeRequest } from '../util/lean-local-verify.ts'
 import { version, fp, cacheFile } from './constants.js'
 import { createSourceRebuildQueue } from './source-rebuild-queue.js'
@@ -62,7 +63,8 @@ const isIgnoredSourceWatchPath = (fp, stats) => {
     normalized === '.quartz-cache' ||
     normalized.startsWith('.quartz-cache/') ||
     normalized === 'quartz/.quartz-cache' ||
-    normalized.startsWith('quartz/.quartz-cache/')
+    normalized.startsWith('quartz/.quartz-cache/') ||
+    normalized.split('/').includes('__pycache__')
   ) {
     return true
   }
@@ -79,33 +81,6 @@ export function formatErrorReason(err) {
   }
 
   return inspect(err, { depth: 4, colors: false })
-}
-
-async function bundleInlineScript(scriptPath) {
-  let text = await promises.readFile(scriptPath, 'utf8')
-
-  text = text.replace('export default', '')
-  text = text.replace('export', '')
-
-  const sourcefile = path.relative(path.resolve('.'), scriptPath)
-  const resolveDir = path.dirname(sourcefile)
-  const transpiled = await esbuild.build({
-    stdin: {
-      contents: text,
-      loader: path.extname(scriptPath) === '.js' ? 'js' : 'ts',
-      resolveDir,
-      sourcefile,
-    },
-    write: false,
-    bundle: true,
-    minify: true,
-    platform: 'browser',
-    format: 'esm',
-    // npm imports stay bare; script-assets.ts bundles them so page chunks share one copy
-    packages: 'external',
-    loader: { '.py': 'text' },
-  })
-  return transpiled.outputFiles[0].text
 }
 
 export const createBuildConfig = () => ({

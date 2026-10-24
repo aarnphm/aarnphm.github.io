@@ -1,5 +1,5 @@
 import type { UiContext } from './context'
-import { renderMarkdown } from '../../../util/markdown-renderer'
+import { renderMarkdownInto } from '../../../util/markdown-renderer'
 import { getFullSlug } from '../../../util/path'
 import { computeStructuralAnchor, getArticleText, recoverFromStructuralAnchor } from '../anchor'
 import { isStructuralAnchor } from '../model'
@@ -223,7 +223,7 @@ export const renderComments = (ctx: UiContext) => {
         const text = document.createElement('div')
         text.className = 'reply-text markdown-content'
         const currentSlug = getFullSlug(window)
-        text.innerHTML = renderMarkdown(comment.content, currentSlug)
+        renderMarkdownInto(text, comment.content, currentSlug)
 
         previewBody.appendChild(head)
         previewBody.appendChild(text)

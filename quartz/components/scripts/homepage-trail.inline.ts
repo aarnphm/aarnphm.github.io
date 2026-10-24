@@ -53,6 +53,23 @@ document.addEventListener('nav', () => {
   toggle.hidden = !supported
   mountTrailGateNavigation(scene, signal)
   let isOpen = false
+  let loadingBar: HTMLDivElement | null = null
+  const stopLoading = () => {
+    loadingBar?.remove()
+    loadingBar = null
+    toggle.removeAttribute('aria-busy')
+  }
+  const startLoading = () => {
+    if (loadingBar || trailScene(document)?.dataset.trailOpening === 'complete') return
+    loadingBar = document.createElement('div')
+    loadingBar.className = 'trail-loading-progress'
+    loadingBar.setAttribute('role', 'progressbar')
+    loadingBar.setAttribute('aria-label', 'Loading walking trail')
+    document.body.append(loadingBar)
+    toggle.setAttribute('aria-busy', 'true')
+  }
+  scene.addEventListener('trail:prepared', stopLoading, { signal })
+  signal.addEventListener('abort', stopLoading, { once: true })
   const holidayMarker = toggle.querySelector<HTMLElement>('[data-holiday-marker]')
   const holidayIcons: Record<TrailHoliday, HolidaySpriteName> = {
     thanksgiving: 'turkey',
@@ -230,10 +247,12 @@ document.addEventListener('nav', () => {
     const label = open ? 'Hide walking trail' : 'Show walking trail'
     toggle.title = `${label}${shownHoliday ? ` · ${holidayLabels[shownHoliday]}` : ''}`
     if (open) {
+      startLoading()
       align()
       scene.dispatchEvent(new Event('trail:open'))
       resumeScene()
     } else {
+      stopLoading()
       // A ready surface keeps its pixels visible until the reverse reveal reaches the clock.
       if (scene.dispatchEvent(new Event('trail:close', { cancelable: true }))) finishClose()
     }
