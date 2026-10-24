@@ -4,9 +4,10 @@ import { isUnitMarkSrc, newPdfMarkId, PDF_BODY_LIMIT } from '../../util/pdf-mark
 import { renderBody } from '../pdf-reader/body'
 import { conflictMark, deleteMark, fetchMarks, MarkApiError, putMark } from '../pdf-reader/marks'
 import { kindMeta } from '../pdf-reader/parts'
+import { mountTranscriptPlayer } from '../scripts/transcript-player'
 import { lectureSelection, noteRange, showNoteRange, type LectureSelection } from './anchors'
 import { DraftEditor } from './editor'
-import { WorkspaceHeader, type WorkspaceTab } from './Header'
+import { initialWorkspaceTab, WorkspaceHeader, type WorkspaceTab } from './Header'
 import { noteKinds, SelectionActions, type SelectionAction } from './selection'
 import { WorkspaceSourceLinks } from './SourceLinks'
 import {
@@ -31,7 +32,8 @@ interface WorkspaceProps {
   title: string
   pdf?: string
   reader?: string
-  video?: string
+  /** The server-rendered video tab body: player slot and transcript. */
+  watch?: HTMLElement
   article: HTMLElement
   root: HTMLElement
   signal: AbortSignal
@@ -64,9 +66,9 @@ function storageMessage(error: unknown): string {
 }
 
 function Workspace(props: WorkspaceProps) {
-  const [tab, setTab] = useState<WorkspaceTab>(
-    props.reader || props.video ? 'source' : 'scratchpad',
-  )
+  const hasSource = Boolean(props.reader)
+  const hasVideo = Boolean(props.watch)
+  const [tab, setTab] = useState<WorkspaceTab>(initialWorkspaceTab(hasSource, hasVideo))
   const [scratchPreview, setScratchPreview] = useState(false)
   const [notePreview, setNotePreview] = useState(false)
   const [scratchIssue, setScratchIssue] = useState('')
@@ -76,6 +78,8 @@ function Workspace(props: WorkspaceProps) {
   const [activeId, setActiveId] = useState<string | null>(null)
   const [selection, setSelection] = useState<LectureSelection | null>(null)
   const [sourceFailed, setSourceFailed] = useState(false)
+  const videoRef = useRef<HTMLElement>(null)
+  const watchMounted = useRef(false)
   const scratchRef = useRef(scratch)
   const notesRef = useRef(notes)
   const activeRef = useRef(activeId)
@@ -163,6 +167,19 @@ function Workspace(props: WorkspaceProps) {
       observer.disconnect()
     }
   }, [props.root])
+
+  useLayoutEffect(() => {
+    if (props.watch) videoRef.current?.append(props.watch)
+  }, [props.watch])
+
+  // the player iframe loads when the tab first opens; it then stays for seeking and follow
+  useEffect(() => {
+    const watch = props.watch
+    if (tab !== 'video' || !watch || watchMounted.current) return
+    watchMounted.current = true
+    watch.dataset.courseWatch = watch.dataset.workspaceWatch
+    mountTranscriptPlayer(watch, props.signal)
+  }, [tab, props.watch, props.signal])
 
   const selectionRef = useRef(selection)
   selectionRef.current = selection
@@ -439,14 +456,15 @@ function Workspace(props: WorkspaceProps) {
     <div class="course-workspace-app">
       <div class="course-workspace-panel">
         <WorkspaceHeader
-          hasSource={Boolean(props.reader || props.video)}
+          hasSource={hasSource}
+          hasVideo={hasVideo}
           tab={tab}
           noteCount={visible.length}
           onSelect={setTab}
           onExport={exportDrafts}
           onLoadSaved={scratchIssue || notesIssue ? loadSaved : undefined}
         />
-        {(props.reader || props.video) && (
+        {props.reader && (
           <section
             role="tabpanel"
             id="course-workspace-source"
@@ -454,31 +472,27 @@ function Workspace(props: WorkspaceProps) {
             class="course-workspace-pane course-workspace-source"
             hidden={tab !== 'source'}
           >
-            <WorkspaceSourceLinks pdf={props.pdf} reader={props.reader} video={props.video} />
+            <WorkspaceSourceLinks pdf={props.pdf} reader={props.reader} />
             {sourceFailed && (
-              <p role="status">
-                The source could not load. Open the {props.reader ? 'reader' : 'video'} to retry.
-              </p>
+              <p role="status">The source could not load. Open the reader to retry.</p>
             )}
-            {props.reader ? (
-              <iframe
-                src={`${props.reader}?embed=course`}
-                title={`PDF source: ${props.title}`}
-                class="course-source-frame"
-                onError={() => setSourceFailed(true)}
-              />
-            ) : (
-              // a unit without a pdf plays its lecture video
-              <iframe
-                src={`https://www.youtube-nocookie.com/embed/${encodeURIComponent(props.video!)}?rel=0`}
-                title={`Video source: ${props.title}`}
-                class="course-source-frame course-source-video"
-                allow="encrypted-media; picture-in-picture; fullscreen"
-                allowFullScreen
-                onError={() => setSourceFailed(true)}
-              />
-            )}
+            <iframe
+              src={`${props.reader}?embed=course`}
+              title={`PDF source: ${props.title}`}
+              class="course-source-frame"
+              onError={() => setSourceFailed(true)}
+            />
           </section>
+        )}
+        {props.watch && (
+          <section
+            ref={videoRef}
+            role="tabpanel"
+            id="course-workspace-video"
+            aria-labelledby="course-workspace-tab-video"
+            class="course-workspace-pane course-workspace-video"
+            hidden={tab !== 'video'}
+          />
         )}
         <section
           role="tabpanel"
@@ -711,6 +725,7 @@ export function mountCourseWorkspace(root: HTMLElement, signal: AbortSignal): ()
   const container = root.closest<HTMLElement>('.course-reading-split')
   const article = container?.querySelector<HTMLElement>(':scope > article.course-lecture')
   if (!slug || !article) return () => undefined
+  const watch = root.querySelector<HTMLElement>('.course-workspace-watch') ?? undefined
   root.replaceChildren()
   render(
     <Workspace
@@ -718,7 +733,7 @@ export function mountCourseWorkspace(root: HTMLElement, signal: AbortSignal): ()
       title={root.dataset.courseWorkspaceTitle ?? 'lecture'}
       pdf={root.dataset.courseWorkspacePdf}
       reader={root.dataset.courseWorkspaceReader}
-      video={root.dataset.courseWorkspaceVideo}
+      watch={watch}
       article={article}
       root={root}
       signal={signal}

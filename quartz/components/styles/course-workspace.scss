@@ -1,5 +1,6 @@
 @use '../../styles/variables.scss' as *;
 @use './reader-loading';
+@use './transcript.scss';
 
 .course-reading-split {
   grid-column: var(--layout-wide-column);
@@ -195,11 +196,43 @@
   border: 0;
 }
 
-// a lecture video keeps its frame ratio at the top of the pane
-.course-source-video {
-  flex: 0 0 auto;
-  height: auto;
-  aspect-ratio: 16 / 9;
+// The player keeps its ratio at the top; the transcript takes the rest of the pane and scrolls.
+.course-workspace-video {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.course-workspace-watch {
+  --course-line: var(--course-workspace-line);
+  --course-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+  --course-selected: color-mix(in srgb, var(--secondary) 18%, var(--course-surface));
+  --course-control-height: 1.5rem;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.course-workspace-watch-body {
+  display: grid;
+  flex: 1 1 auto;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  min-height: 0;
+  padding: var(--space-3) var(--space-3) 0;
+
+  .course-player {
+    border-color: var(--course-workspace-line);
+  }
+
+  .course-player-line {
+    margin: 0;
+    font: var(--text-meta) / 1.5 var(--codeFont);
+  }
+
+  .course-transcript {
+    margin-top: var(--space-3);
+  }
 }
 
 // The scratchpad and the open note's editor take the rest of the pane height.

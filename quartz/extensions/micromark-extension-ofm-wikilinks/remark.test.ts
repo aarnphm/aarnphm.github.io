@@ -104,6 +104,16 @@ describe('remarkWikilink integration', () => {
   })
 
   describe('image embeds', () => {
+    test('preserves the transcript opt-in through Markdown to HTML', () => {
+      const html = processToHTML('![[https://www.youtube.com/watch?v=ebx7itIvobo#transcripts]]')
+      assert(html.includes('src="https://www.youtube.com/watch?v=ebx7itIvobo#transcripts"'))
+    })
+
+    test('preserves raw YouTube timestamp fragments', () => {
+      const html = processToHTML('![[https://youtu.be/ebx7itIvobo#t=35]]')
+      assert(html.includes('src="https://youtu.be/ebx7itIvobo#t=35"'))
+    })
+
     test('converts image embed to img tag', () => {
       const html = processToHTML('![[photo.jpg]]')
       assert(html.includes('<img src="photo.jpg"'))

@@ -1,0 +1,49 @@
+@use './transcript.scss';
+
+.youtube-transcript {
+  --course-line: color-mix(in srgb, var(--gray) 55%, transparent);
+  --course-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+  --course-selected: color-mix(in srgb, var(--secondary) 18%, var(--course-surface));
+  --course-control-height: 1.75rem;
+
+  display: block;
+  min-width: 0;
+  margin-block: var(--space-4);
+  color: var(--darkgray);
+
+  .course-player {
+    width: 100%;
+    min-height: 200px;
+  }
+  .course-transcript-pane {
+    max-height: 26rem;
+  }
+  .youtube-transcript-source,
+  .course-player-line,
+  .course-count {
+    font-family: var(--codeFont);
+    font-size: var(--text-meta);
+    overflow-wrap: anywhere;
+  }
+  .course-transcript-tools {
+    font-size: var(--text-meta);
+    button,
+    input {
+      border-color: var(--darkgray);
+    }
+    input[type='search'] {
+      font-size: max(16px, 1rem);
+    }
+    button:focus-visible,
+    input:focus-visible {
+      outline-color: var(--dark);
+    }
+  }
+  a:hover {
+    background: transparent;
+    color: inherit;
+  }
+  @media (pointer: coarse) {
+    --course-control-height: 44px;
+  }
+}

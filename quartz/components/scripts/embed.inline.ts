@@ -1,4 +1,12 @@
+import { currentNavSignal } from './nav-lifecycle'
+import { loadYouTubeTranscript } from './youtube-transcript'
+
 document.addEventListener('nav', () => {
+  const signal = currentNavSignal()
+  document.querySelectorAll<HTMLElement>('[data-youtube-transcript]').forEach((root, index) => {
+    root.dataset.transcriptInstance = `embed-${index}`
+    void loadYouTubeTranscript(root, signal)
+  })
   const onMessage = (event: MessageEvent) => {
     const data = event.data
     if (!Array.isArray(data) || data[1] !== 'BROADCAST_IFRAME_HEIGHT') return

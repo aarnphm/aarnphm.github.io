@@ -26,15 +26,17 @@ import {
   unitVideo,
 } from '../util/course'
 import { courseStudyEndpoint } from '../util/course-study'
+import { htmlToJsx } from '../util/jsx'
 import { classNames } from '../util/lang'
 import { FullSlug, resolveRelative } from '../util/path'
 import { pdfReaderPath } from '../util/pdf-marks'
 import { concatenateResources } from '../util/resources'
-import { WorkspaceHeader, workspaceTabs } from './course-workspace/Header'
+import { WorkspaceHeader, initialWorkspaceTab, workspaceTabs } from './course-workspace/Header'
 import { WorkspaceSourceLinks } from './course-workspace/SourceLinks'
+import { WorkspaceWatch } from './course-workspace/Watch'
 import { CourseDesk, solutionTerm } from './CourseDesk'
 import { psetNumber } from './CourseHome'
-import { CoursesCrumb } from './CourseResource'
+import { CoursesCrumb, ocwLink } from './CourseResource'
 import { StudyState } from './CourseStudy'
 // @ts-ignore
 import workspaceScript from './scripts/course-workspace.inline'
@@ -305,13 +307,17 @@ export const CourseUnitWorkspace = (() => {
         ? unitPdf(unit.record)
         : undefined
     const video = unit ? unitVideo(unit.record) : undefined
+    const watch = video?.youtube ? ctx.resources.get(video.id) : undefined
     const pdfPath = pdf?.file ? `courses/${view.dir}/${pdf.file}` : undefined
     const readerPath = pdfPath ? pdfReaderPath(pdfPath) : undefined
-    const hasSource = Boolean(pdfPath || video?.youtube)
-    const initialTab = hasSource ? 'source' : 'scratchpad'
+    const hasSource = Boolean(pdfPath)
+    const hasVideo = Boolean(video?.youtube)
+    const initialTab = initialWorkspaceTab(hasSource, hasVideo)
     const title = isPset
       ? `problem set ${pad(n)}`
       : `${view.record.unitKind} ${pad(n)}: ${unit?.record.title ?? props.fileData.frontmatter?.title ?? ''}`
+    const cues = watch?.record.cues ?? 0
+    const transcript = watch?.data.htmlAst
     return (
       <aside
         class="course-workspace"
@@ -323,12 +329,11 @@ export const CourseUnitWorkspace = (() => {
           data-course-workspace-title={title}
           data-course-workspace-pdf={pdfPath}
           data-course-workspace-reader={readerPath}
-          data-course-workspace-video={video?.youtube}
         >
           <div class="course-workspace-app">
             <div class="course-workspace-panel">
-              <WorkspaceHeader hasSource={hasSource} tab={initialTab} />
-              {workspaceTabs(hasSource).map(tab => (
+              <WorkspaceHeader hasSource={hasSource} hasVideo={hasVideo} tab={initialTab} />
+              {workspaceTabs(hasSource, hasVideo).map(tab => (
                 <section
                   role="tabpanel"
                   id={`course-workspace-${tab}`}
@@ -337,24 +342,32 @@ export const CourseUnitWorkspace = (() => {
                     undefined,
                     'course-workspace-pane',
                     tab === 'source' ? 'course-workspace-source' : '',
+                    tab === 'video' ? 'course-workspace-video' : '',
                   )}
                   hidden={tab !== initialTab}
                 >
-                  {tab === 'source' && (
-                    <WorkspaceSourceLinks
-                      pdf={pdfPath}
-                      reader={readerPath}
-                      video={video?.youtube}
-                    />
+                  {tab === 'source' && <WorkspaceSourceLinks pdf={pdfPath} reader={readerPath} />}
+                  {tab === 'video' && video?.youtube && (
+                    <WorkspaceWatch
+                      youtube={video.youtube}
+                      title={title}
+                      captions={
+                        cues > 0 && watch?.record.captions
+                          ? `/${courseFileSlug(view.dir, watch.record.captions)}`
+                          : undefined
+                      }
+                      source={(transcript && ocwLink(transcript)) || view.record.source}
+                      hasTranscript={cues > 0 && transcript !== undefined}
+                    >
+                      {transcript && watch?.data.filePath
+                        ? htmlToJsx(watch.data.filePath, transcript)
+                        : null}
+                    </WorkspaceWatch>
                   )}
-                  {tab === initialTab && (
+                  {tab === initialTab && tab !== 'video' && (
                     <div class="course-workspace-loading">
                       <p role="status">
-                        {pdfPath
-                          ? 'Loading the reader…'
-                          : hasSource
-                            ? 'Loading the source…'
-                            : 'Loading lecture workspace…'}
+                        {pdfPath ? 'Loading the reader…' : 'Loading lecture workspace…'}
                       </p>
                     </div>
                   )}
