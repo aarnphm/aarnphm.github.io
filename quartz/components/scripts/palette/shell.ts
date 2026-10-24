@@ -2,10 +2,13 @@ import type {
   NotebookKernelSnapshot,
   NotebookKernelStatus,
 } from '../../../util/notebook-kernel-events'
+import type { CodeSearchClient } from '../code-search'
 import type { ImageSimilarity } from '../image-similarity'
 import type { PdfSemantic } from '../pdf-semantic'
+import type { SearchCompletions } from '../search-completions'
 import type { ResultPages } from '../search-result-pages'
 import { FullSlug } from '../../../util/path'
+import { SEARCH_QUERY_PLACEHOLDER } from '../../../util/search-completion'
 import { createImageSemantic, type ImageSemantic } from '../image-semantic'
 import { siteSemantic, type SiteSemantic } from '../site-semantic'
 
@@ -42,6 +45,9 @@ export interface PaletteState {
   readonly rankButton: HTMLAnchorElement
   readonly progress: HTMLDivElement
   readonly imageSimilarity: ImageSimilarity
+  readonly codeSearch: CodeSearchClient
+  readonly completions: SearchCompletions
+  codePreview: AbortController | null
   readonly pdfSearch: PdfSemantic
   readonly actionCache: WeakMap<Action, HTMLDivElement>
   readonly connectorActs: Action[]
@@ -144,6 +150,8 @@ export function hidePalette(s: PaletteState) {
   s.imageSimilarity.cancel()
   s.imageSemantic?.cancel()
   s.pdfSearch.cancel()
+  s.codeSearch.cancel()
+  s.codePreview?.abort()
   s.quickOpenSemantic?.cancel()
   s.queryGeneration += 1
   window.clearTimeout(s.quickOpenTimer)
@@ -178,9 +186,7 @@ export function syncPaletteHelper(s: PaletteState) {
   s.container.dataset.mode = paletteMode.actionType
   s.rankButton.hidden = paletteMode.actionType !== 'quick_open'
   s.bar.placeholder =
-    paletteMode.actionType === 'quick_open'
-      ? 'filter: images · pdf · code · py · all'
-      : 'sélectionnez une option…'
+    paletteMode.actionType === 'quick_open' ? SEARCH_QUERY_PLACEHOLDER : 'sélectionnez une option…'
   s.bar.setAttribute('aria-label', s.bar.placeholder)
   s.helper.querySelectorAll<HTMLLIElement>('li[data-quick-open]').forEach(el => {
     el.style.display = paletteMode.actionType === 'quick_open' ? '' : 'none'

@@ -1,5 +1,7 @@
+import { parseCodeQuery } from '../../util/code-query'
 import { getFullSlug, isFullSlug, pathToRoot } from '../../util/path'
 import { parseSearchQuery } from '../../util/search-scope'
+import { CodeSearchClient } from './code-search'
 import { registerEscapeHandler } from './escape-handler'
 import { createImageSimilarity } from './image-similarity'
 import { currentNavSignal } from './nav-lifecycle'
@@ -29,6 +31,7 @@ import {
   type PaletteState,
 } from './palette/shell'
 import { PdfSemantic } from './pdf-semantic'
+import { createSearchCompletions } from './search-completions'
 import { beginSidePanelRequest, disposeSidePanel, getOrCreateSidePanel } from './side-panel'
 
 let activePaletteSignal: AbortSignal | undefined
@@ -233,6 +236,10 @@ async function shortcutHandler(s: PaletteState, e: HTMLElementEventMap['keydown'
     moveSelection(s, -1)
   } else if (e.key === 'Tab') {
     e.preventDefault()
+    if (paletteMode.actionType === 'quick_open' && parseCodeQuery(s.bar.value)) {
+      moveSelection(s, e.shiftKey ? -1 : 1)
+      return
+    }
     const focusedElement = s.currentHover
       ? s.currentHover
       : s.output.querySelector<HTMLDivElement>('.suggestion-item.focus')
@@ -257,6 +264,8 @@ async function onType(s: PaletteState, e: HTMLElementEventMap['input']) {
   s.imageSimilarity.cancel()
   s.imageSemantic?.cancel()
   s.pdfSearch.cancel()
+  s.codeSearch.cancelPending()
+  s.codePreview?.abort()
   s.quickOpenSemantic?.cancel()
   s.queryGeneration += 1
   const value = (e.target as HTMLInputElement).value
@@ -280,12 +289,19 @@ async function onType(s: PaletteState, e: HTMLElementEventMap['input']) {
   paletteMode.currentSearchTerm =
     paletteMode.actionType === 'command' ? commandSearchTerm(value) : value
   window.clearTimeout(s.quickOpenTimer)
+  if (s.completions.update()) {
+    s.output.replaceChildren()
+    s.output.removeAttribute('aria-busy')
+    s.currentHover = null
+    quickOpenProgress(s, false)
+    return
+  }
   if (paletteMode.actionType === 'quick_open' && paletteMode.currentSearchTerm.trim()) {
     const { term: query, scope } = parseSearchQuery(paletteMode.currentSearchTerm)
     const rawQuery = paletteMode.currentSearchTerm
     const generation = s.queryGeneration
     const cached = s.quickOpenSemantic?.cached(query, s.quickOpenSemantic.index.ids.length)
-    if (query && scope === 'notes' && cached !== undefined) {
+    if (!parseCodeQuery(rawQuery) && query && scope === 'notes' && cached !== undefined) {
       displayQuickOpenResults(s, cached, query, scope)
       return
     }
@@ -320,6 +336,8 @@ document.addEventListener('nav', () => {
   const container = containerElement
   const imageSimilarity = createImageSimilarity()
   const pdfSearch = new PdfSemantic()
+  const codeSearch = new CodeSearchClient()
+  window.addCleanup(() => codeSearch.dispose())
   window.addCleanup(() => pdfSearch.dispose())
   window.addCleanup(() => imageSimilarity.dispose())
   window.addCleanup(() => {
@@ -334,7 +352,6 @@ document.addEventListener('nav', () => {
   rankButton.href = `${pathToRoot(currentSlug)}/pagerank`
   rankButton.className = 'palette-rank-button'
   rankButton.setAttribute('aria-label', 'PageRank')
-  rankButton.dataset.tooltip = 'pagerank'
   rankButton.innerHTML =
     '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18M6 7l5 4 4 6 6 2"/><circle cx="6" cy="7" r="1"/><circle cx="11" cy="11" r="1"/><circle cx="15" cy="17" r="1"/></svg>'
   bar.parentElement?.append(rankButton)
@@ -353,6 +370,8 @@ document.addEventListener('nav', () => {
     imageSimilarity.cancel()
     s.imageSemantic?.cancel()
     s.pdfSearch.cancel()
+    s.codeSearch.cancel()
+    s.codePreview?.abort()
     s.quickOpenSemantic?.cancel()
   })
 
@@ -372,6 +391,13 @@ document.addEventListener('nav', () => {
     progress,
     imageSimilarity,
     pdfSearch,
+    codeSearch,
+    completions: createSearchCompletions(
+      bar,
+      container,
+      () => paletteMode.actionType === 'quick_open',
+    ),
+    codePreview: null,
     actionCache: new WeakMap<Action, HTMLDivElement>(),
     connectorActs: connectorActions(currentSlug),
     commandActs: [],
@@ -409,6 +435,7 @@ document.addEventListener('nav', () => {
   })
 
   const onKeydown = (e: HTMLElementEventMap['keydown']) => shortcutHandler(s, e)
+  window.addCleanup(() => s.completions.dispose())
   const onInput = (e: HTMLElementEventMap['input']) => onType(s, e)
   document.addEventListener('keydown', onKeydown)
   bar.addEventListener('input', onInput)

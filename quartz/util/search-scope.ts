@@ -46,6 +46,7 @@ for (const [alias, language] of [
   ['shell', 'bash'],
   ['objc', 'objective-c'],
   ['lean4', 'lean'],
+  ['webassembly', 'wasm'],
 ] satisfies [string, string][]) {
   codeScopes.set(alias, `code:${language}`)
 }

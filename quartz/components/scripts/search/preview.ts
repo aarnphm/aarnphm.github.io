@@ -2,6 +2,7 @@ import { documentPreviewUrl, readDocumentPreview } from '../../../util/document-
 import { fetchCanonical } from '../../../util/fetch-canonical'
 import { FullSlug, isFullSlug, normalizeRelativeURLs, resolveRelative } from '../../../util/path'
 import { tokenizeTerm } from '../../../util/search-text'
+import { renderCodeMatch } from '../code-search-preview'
 import { renderCoursePreview } from '../course-preview-card'
 import { renderDocumentPreview } from '../document-preview-card'
 import { imageSearchPreview, searchableImage } from '../image-search-controls'
@@ -120,18 +121,33 @@ async function fetchContent(
 export async function displayPreview(s: SearchSession, el: HTMLElement | null) {
   const { preview } = s
   if (!s.previewVisible || !el || !preview) return
-  const slug = el.id
+  const codeMatch = s.codeMatches.get(el)
+  const slug = el.dataset.codeOwner ?? el.id
   if (!isFullSlug(slug)) return
-  if (s.previewRequest && !s.previewRequest.signal.aborted && preview.dataset.slug === slug) return
+  if (
+    s.previewRequest &&
+    !s.previewRequest.signal.aborted &&
+    preview.dataset.slug ===
+      (codeMatch
+        ? `${slug}:${codeMatch.unit.id}:${codeMatch.ranges[codeMatch.selectedRange]?.start.offset}`
+        : slug)
+  )
+    return
   clearPreview(s)
   const request = new AbortController()
   s.previewRequest = request
-  preview.dataset.slug = slug
+  preview.dataset.slug = codeMatch
+    ? `${slug}:${codeMatch.unit.id}:${codeMatch.ranges[codeMatch.selectedRange]?.start.offset}`
+    : slug
   startSearchProgress(s, 'preview')
   request.signal.addEventListener('abort', () => completeSearchProgress(s, 'preview'), {
     once: true,
   })
   try {
+    if (codeMatch) {
+      await renderCodeMatch(s.currentSlug, codeMatch, preview, request.signal)
+      return
+    }
     const isProtected = el.dataset.protected === 'true' || requireData(s)[slug]?.protected === true
     if (isProtected) {
       const previewInner = document.createElement('div')

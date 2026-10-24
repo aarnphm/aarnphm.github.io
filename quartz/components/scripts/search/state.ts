@@ -1,7 +1,10 @@
 import type { PdfPassage } from '../../../util/pdf-search'
+import type { CodeSearchClient } from '../code-search'
+import type { CodeSearchRow } from '../code-search-controls'
 import type { ImageSemantic } from '../image-semantic'
 import type { ImageSimilarity } from '../image-similarity'
 import type { PdfSemantic } from '../pdf-semantic'
+import type { SearchCompletions } from '../search-completions'
 import type { ResultPages } from '../search-result-pages'
 import type { SiteSemantic } from '../site-semantic'
 import type { ImageGrid, ImageGridDirection } from './image-grid'
@@ -19,6 +22,7 @@ export type Item = {
   protected?: boolean
   titleMatch?: boolean
   passage?: PdfPassage
+  codeMatch?: CodeSearchRow
 }
 
 export type SearchType = 'basic' | 'tags'
@@ -63,6 +67,9 @@ export type SearchSession = {
   searchSpace: HTMLFormElement
   image: SearchImage
   pdf: PdfSemantic
+  code: CodeSearchClient
+  completions: SearchCompletions
+  codeMatches: WeakMap<HTMLElement, CodeSearchRow>
   progressBar: HTMLDivElement
   progressResetTimer: number
   progressReasons: Set<'search' | 'preview'>

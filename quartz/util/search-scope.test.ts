@@ -96,6 +96,14 @@ test('code scope classifies source paths without admitting notes, media or unkno
     'kernel.cu',
     'proof.lean',
     'config.toml',
+    'module.wat',
+    'proof.ml',
+    'flake.nix',
+    'module.zig',
+    'settings.lua',
+    'kernel.cuh',
+    'typing.pyi',
+    'legacy.cjs',
   ]) {
     assert.equal(searchScopeIncludes('code', { ...note, filePath: `content/${filename}` }), true)
   }
@@ -123,6 +131,22 @@ test('code scope classifies source paths without admitting notes, media or unkno
     searchScopeIncludes('code', { ...note, filePath: 'https://example.com/script.py' }),
     false,
   )
+})
+
+test('code scopes distinguish MATLAB from Objective-C and preserve language aliases', () => {
+  for (const alias of ['matlab', 'm']) {
+    assert.equal(parseSearchQuery(`filter:${alias}`).scope, 'code:matlab')
+  }
+  assert.equal(searchScopeIncludes('code:matlab', { ...note, filePath: 'content/solve.m' }), true)
+  assert.equal(
+    searchScopeIncludes('code:objective-c', { ...note, filePath: 'content/bridge.mm' }),
+    true,
+  )
+  for (const alias of ['wat', 'wast', 'webassembly']) {
+    assert.equal(parseSearchQuery(`filter:${alias}`).scope, 'code:wasm')
+  }
+  assert.equal(parseSearchQuery('filter:pyi').scope, 'code:python')
+  assert.equal(parseSearchQuery('filter:cjs').scope, 'code:javascript')
 })
 
 test('image scope excludes course paths in any source field while all preserves them', () => {

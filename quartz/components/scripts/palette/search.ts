@@ -1,3 +1,4 @@
+import { parseCodeQuery } from '../../../util/code-query'
 import { createNoteRanker, type NoteRanker } from '../../../util/note-pagerank'
 import { FullSlug, isFullSlug, resolveRelative } from '../../../util/path'
 import { pdfMetadata, type PdfPassage, type PdfSearchDocument } from '../../../util/pdf-search'
@@ -15,6 +16,7 @@ import { pdfCoverageStatus, pdfPageLabel } from '../pdf-search-controls'
 import { mountResultPages } from '../search-result-pages'
 import { isSemanticCancellation } from '../semantic.inline'
 import { getCommandItems } from './actions'
+import { searchPaletteCode } from './code'
 import { appendHighlightedText } from './format'
 import {
   ensureAttachmentData,
@@ -72,6 +74,11 @@ export async function querySearch(
 ) {
   const queryActionType = paletteMode.actionType
   if (paletteMode.actionType === 'quick_open') {
+    const codeQuery = parseCodeQuery(currentSearchTerm)
+    if (codeQuery) {
+      await searchPaletteCode(s, codeQuery, generation)
+      return
+    }
     const { term: query, scope, explicit } = parseSearchQuery(currentSearchTerm)
     if (!query && !explicit) {
       await displayNearbyNotes(s, generation)
