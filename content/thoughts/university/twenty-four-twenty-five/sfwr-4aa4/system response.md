@@ -239,9 +239,9 @@ The envelope time $T_{s,\mathrm{env}}$ is an upper bound for the actual $2\%$ se
 </Zoomable>
 ```
 
-| location of poles | pole motion                                            | examples                                                                                 |
-| ----------------- | ------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
-| Same envelope     | vertical line: $\sigma_d$ fixed, $\omega_d$ changes    | [[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/system response#same envelope\|same envelope]]  |
+| location of poles | pole motion                                            | examples                                                                                                 |
+| ----------------- | ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
+| Same envelope     | vertical line: $\sigma_d$ fixed, $\omega_d$ changes    | [[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/system response#same envelope\|same envelope]]   |
 | Same frequency    | horizontal line: $\omega_d$ fixed, $\sigma_d$ changes  | [[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/system response#same frequency\|same frequency]] |
 | Same overshoot    | ray from the origin: $\zeta$ fixed, $\omega_n$ changes | [[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/system response#same overshoot\|same overshoot]] |
 

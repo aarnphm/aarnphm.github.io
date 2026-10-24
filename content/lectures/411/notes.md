@@ -202,12 +202,12 @@ $$A^\top A\,x=A^\top b.$$
 
 ### properties
 
-| Property               | Statement/Formula                                                                | Notes                                                                                              |
-| ---------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| Dimension              | All bases of $W$ have exactly $d=\dim W$ elements                                | Uniqueness of coordinate length                                                                    |
-| Change of basis        | $[w]_C=(C^{-1}B)[w]_B$                                                           | $B=[b_1\,\cdots\,b_d]$, $C=[c_1\,\cdots\,c_d]$                                                     |
+| Property               | Statement/Formula                                                                | Notes                                                                                                                                |
+| ---------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Dimension              | All bases of $W$ have exactly $d=\dim W$ elements                                | Uniqueness of coordinate length                                                                                                      |
+| Change of basis        | $[w]_C=(C^{-1}B)[w]_B$                                                           | $B=[b_1\,\cdots\,b_d]$, $C=[c_1\,\cdots\,c_d]$                                                                                       |
 | Orthonormal bases      | Projection $P=QQ^\top$; coordinates $[w]_Q=Q^\top w$                             | $Q$ has orthonormal columns; see [[thoughts/Inner product space#Orthonormal bases & Gram–Schmidt\|Orthonormal bases & Gram–Schmidt]] |
-| Column/Row space bases | Col basis = pivot columns of original $A$; Row basis = nonzero rows of RREF($A$) | Obtained via elimination; pivot columns refer to original $A$                                      |
+| Column/Row space bases | Col basis = pivot columns of original $A$; Row basis = nonzero rows of RREF($A$) | Obtained via elimination; pivot columns refer to original $A$                                                                        |
 
 ```tikz
 \usepackage{tikz}

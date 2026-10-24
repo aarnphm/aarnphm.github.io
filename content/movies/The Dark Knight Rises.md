@@ -8,7 +8,7 @@ description: revolution and reckoning—batman broken in a pit, gotham burning a
 director: Christopher Nolan
 id: the-dark-knight-rises
 modified: 2026-06-05 15:08:12 GMT-04:00
-posters: "[[movies/posters/the-dark-knight-rises.jpg|the-dark-knight-rises.jpg]]"
+posters: '[[movies/posters/the-dark-knight-rises.jpg|the-dark-knight-rises.jpg]]'
 rating: 8.4
 status: recurring
 studio: syncopy

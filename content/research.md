@@ -2,7 +2,8 @@
 date: '2025-08-12'
 description: and my interests.
 id: research
-modified: 2026-09-28 09:07:08 GMT-04:00
+modified: 2026-10-23 19:01:45 GMT-04:00
+pageLayout: technical
 tags:
   - fruit
 title: research
@@ -11,6 +12,52 @@ transclude:
 ---
 
 I'm interested in [[thoughts/mechanistic interpretability|model behaviour]] and efficient #ml systems.
+
+## For ML folks
+
+> My research interests lie on emergent properties of speculative decoding on large language models.
+
+A lot of work recently focuses on disaggregated serving architectures of these models.
+
+- @qin2024mooncakekvcachecentricdisaggregatedarchitecture reports up to a 525% throughput increase for Mooncake against the paper's serving baselines.[^notes]
+- @li2025flowkvdisaggregatedinferenceframework reduces KV transfer latency by 96%.
+
+[^notes]: ==cross-stage communication under dynamic workloads== and how to allocate resources when both stages compete for the same hardware is a pretty cool system problems.
+
+I do think that, speculation should move beyond naive draft-verify paradigm:
+
+- Slice-level scheduling [@cheng2025slicelevelschedulinghighthroughput] reports up to a 315.8% improvement for its evaluated workloads and baselines.
+- SpecDec++ [@huang2025specdecboostingspeculativedecoding] reports speedups of up to $2.26\times$ with adaptive speculation that responds to rejection patterns.
+- Also SD for [Blockwise Sparse Attention](https://matx.com/research/sd_nsa) are relevant in working with long context tasks. See also @song2025prosparseintroducingenhancingintrinsic
+- Greedy verification algorithm is also suboptimal, especially with softmax instability.
+
+Especially for [[thoughts/MoE|mixture-of-experts]] models, SD remains largely unexplored.
+
+- Most work adapts general speculation to MoE: Speculative MoE [@li2025speculativemoecommunicationefficient], Exploiting inter-layer expert affinity [@yao2024exploitinginterlayerexpertaffinity].
+
+I suspect whether there are opportunity for self-speculation (i.e LayerSkip for MoE) using expert activation patterns:
+
+- Late-layer experts often mirror early-layer patterns — can we reuse them as draft models?
+- Training [[lectures/41/notes#MTP|MTP]] layers are expensive; routing-aware speculation that exploits expert sparsity might be cheaper.
+- The theoretical question is whether _expert routing provides enough signal to predict future tokens without additional parameters_
+
+<br />
+
+> Understanding how these systems work at extended context lengths requires interpretability tools that don't exist yet.
+
+We have some of the tools:
+
+- attribution patching [@syed2023attributionpatchingoutperformsautomated] for causality tracing
+- attention lens for visualization
+- [[thoughts/sparse autoencoder|sparse autoencoders]] for feature extraction
+- [[thoughts/Attribution parameter decomposition|APD]] for decomposing networks into mechanistic components.
+- Persona/thought vectors
+
+But there's no comprehensive mechanistic analysis of what happens at 128K+ token windows. Out-of-context representation learning [@shaki2025outofcontextreasoninglargelanguage] shows these models attend to things we didn't teach them, but we don't know how this scales with context.
+
+I'm interested in characterizing the search space these models explore during long-context processing, what emergent behaviors appear at extended windows, and whether we can build better systems by understanding these mechanisms rather than treating models as black boxes.
+
+---
 
 ## For non-ML folks
 
@@ -186,49 +233,3 @@ The field is moving fast enough that by the time you read this, half the systems
 - Jay Alammar's https://jalammar.github.io/illustrated-gpt2/
 - By yours truly [[/posts/structured decoding|structured decoding, a guide for the impatient]]
 - How to Read a Paper (Keshav): https://dl.acm.org/doi/10.1145/1273445.1273458
-
----
-
-## For ML folks
-
-> My research interests lie on emergent properties of speculative decoding on large language models.
-
-A lot of work recently focuses on disaggregated serving architectures of these models.
-
-- @qin2024mooncakekvcachecentricdisaggregatedarchitecture reports up to a 525% throughput increase for Mooncake against the paper's serving baselines.[^notes]
-- @li2025flowkvdisaggregatedinferenceframework reduces KV transfer latency by 96%.
-
-[^notes]: ==cross-stage communication under dynamic workloads== and how to allocate resources when both stages compete for the same hardware is a pretty cool system problems.
-
-I do think that, speculation should move beyond naive draft-verify paradigm:
-
-- Slice-level scheduling [@cheng2025slicelevelschedulinghighthroughput] reports up to a 315.8% improvement for its evaluated workloads and baselines.
-- SpecDec++ [@huang2025specdecboostingspeculativedecoding] reports speedups of up to $2.26\times$ with adaptive speculation that responds to rejection patterns.
-- Also SD for [Blockwise Sparse Attention](https://matx.com/research/sd_nsa) are relevant in working with long context tasks. See also @song2025prosparseintroducingenhancingintrinsic
-- Greedy verification algorithm is also suboptimal, especially with softmax instability.
-
-Especially for [[thoughts/MoE|mixture-of-experts]] models, SD remains largely unexplored.
-
-- Most work adapts general speculation to MoE: Speculative MoE [@li2025speculativemoecommunicationefficient], Exploiting inter-layer expert affinity [@yao2024exploitinginterlayerexpertaffinity].
-
-I suspect whether there are opportunity for self-speculation (i.e LayerSkip for MoE) using expert activation patterns:
-
-- Late-layer experts often mirror early-layer patterns — can we reuse them as draft models?
-- Training [[lectures/41/notes#MTP|MTP]] layers are expensive; routing-aware speculation that exploits expert sparsity might be cheaper.
-- The theoretical question is whether _expert routing provides enough signal to predict future tokens without additional parameters_
-
-<br />
-
-> Understanding how these systems work at extended context lengths requires interpretability tools that don't exist yet.
-
-We have some of the tools:
-
-- attribution patching [@syed2023attributionpatchingoutperformsautomated] for causality tracing
-- attention lens for visualization
-- [[thoughts/sparse autoencoder|sparse autoencoders]] for feature extraction
-- [[thoughts/Attribution parameter decomposition|APD]] for decomposing networks into mechanistic components.
-- Persona/thought vectors
-
-But there's no comprehensive mechanistic analysis of what happens at 128K+ token windows. Out-of-context representation learning [@shaki2025outofcontextreasoninglargelanguage] shows these models attend to things we didn't teach them, but we don't know how this scales with context.
-
-I'm interested in characterizing the search space these models explore during long-context processing, what emergent behaviors appear at extended windows, and whether we can build better systems by understanding these mechanisms rather than treating models as black boxes.

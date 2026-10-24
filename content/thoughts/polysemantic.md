@@ -91,10 +91,51 @@ An SAE coefficient is a continuous, contextual variable. Researchers can ablate 
 
 The practical comparison is therefore between intervention units. A neuron edit may move several unrelated directions. A sparse-feature edit can be narrower, provided the learned direction has passed reconstruction, interpretation, and intervention checks.
 
-```text
-polysemantic coordinate               basis-aligned coordinate
+```pele
+---
+config:
+  flowchart:
+    nodeSpacing: 20
+    rankSpacing: 28
+    curve: step
+---
+swimlane-beta LR
+  subgraph poly["polysemantic neuron"]
+    dn@{ shape: hex, label: "<b>edit</b><br/>$$x_7 \leftarrow 0$$" }
+    h7(["neuron $$h_7$$"])
+    fa["feature $$a$$"]
+    fb["feature $$b$$"]
+    fc["feature $$c$$"]
+    tn["<b>target</b><br/>$$\Delta m$$"]
+    on@{ shape: st-rect, label: "<b>off-target</b><br/>moved by $$b,\,c$$" }
+  end
 
-feature_a -----\                      feature_k ---> neuron_h12
-feature_b ------> neuron_h7
-feature_c -----/
+  subgraph aligned["basis-aligned neuron"]
+    dk@{ shape: hex, label: "<b>edit</b><br/>$$x_{12} \leftarrow 0$$" }
+    h12(["neuron $$h_{12}$$"])
+    fk["feature $$k$$"]
+    tk["<b>target</b><br/>$$\Delta m$$"]
+  end
+
+  subgraph sae["SAE feature"]
+    df@{ shape: hex, label: "<b>edit</b><br/>$$f_i \leftarrow f_i + \alpha$$" }
+    di["decoder column<br/>$$d_i$$"]
+    eps@{ shape: st-rect, label: "<b>error</b><br/>$$\varepsilon = x - \hat{x}$$<br/>held fixed" }
+    xs@{ shape: subproc, label: "<b>patched state</b><br/>$$x' = x + \alpha d_i$$" }
+    ts["<b>target</b><br/>$$\Delta m$$"]
+    os["<b>off-target</b><br/>measured"]
+  end
+
+  dn --> h7
+  h7 -.-> fa & fb & fc
+  fa ==> tn
+  fb --> on
+  fc --> on
+
+  dk --> h12 --> fk ==> tk
+
+  df --> di --> xs
+  eps -.-> xs
+  xs ==> ts
+  xs -.-> os
 ```
