@@ -20,21 +20,21 @@ the listening drill already runs the lexicon through the possessives: the people
 
 the model photo is three generations in silhouette: `Jean-Guy` et `Ginette`, leur fils `Martin` et sa conjointe `Édith`, leurs enfants `Maxime` et `Anaïs`. six bubbles describe the same six people from six seats. Anaïs: {{`Mon frère s'appelle Maxime. Mes parents s'appellent Martin et Édith. Ma grand-mère s'appelle Ginette.`}} Édith: {{`Mon beau-père s'appelle Jean-Guy. Ma belle-mère s'appelle Ginette. Mon conjoint s'appelle Martin.`}} Jean-Guy: {{`Ma belle-fille s'appelle Édith. Ma femme s'appelle Ginette. Mon fils s'appelle Martin. Mes petits-enfants s'appellent Anaïs et Maxime.`}} the `beau-`/`belle-` words run through the couple, married or not: Martin and Édith are `conjoints`, and Édith still has a `beau-père`, Jean-Guy still has a `belle-fille`.[^beau]
 
-| terme                                                  | gloss                                                                            |
-| ------------------------------------------------------ | -------------------------------------------------------------------------------- |
-| `le père / la mère / les parents`                      | father / mother / parents                                                        |
-| `le frère / la sœur`                                   | brother / sister                                                                 |
-| `le fils / la fille`                                   | son / daughter; {{`mon garçon`}} in family talk[^garcon]                         |
-| `le mari / la femme`                                   | husband / wife                                                                   |
+| terme                                                  | gloss                                                                                       |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------- |
+| `le père / la mère / les parents`                      | father / mother / parents                                                                   |
+| `le frère / la sœur`                                   | brother / sister                                                                            |
+| `le fils / la fille`                                   | son / daughter; {{`mon garçon`}} in family talk[^garcon]                                    |
+| `le mari / la femme`                                   | husband / wife                                                                              |
 | `le conjoint / la conjointe`                           | partner, married or not; the status is `conjoint(e) de fait` in [[fr/episode-1\|episode-1]] |
-| `le grand-père / la grand-mère / les grands-parents`   | grandfather / grandmother / grandparents                                         |
-| `le petit-fils / la petite-fille / les petits-enfants` | grandson / granddaughter / grandchildren                                         |
-| `l'oncle / la tante`                                   | uncle / aunt                                                                     |
-| `le cousin / la cousine`                               | cousin                                                                           |
-| `le neveu / la nièce`                                  | nephew / niece                                                                   |
-| `le beau-père / la belle-mère / les beaux-parents`     | father-in-law / mother-in-law / parents-in-law                                   |
-| `le beau-fils / la belle-fille`                        | son-in-law / daughter-in-law                                                     |
-| `le chum / la blonde`                                  | boyfriend / girlfriend, Québécois informal                                       |
+| `le grand-père / la grand-mère / les grands-parents`   | grandfather / grandmother / grandparents                                                    |
+| `le petit-fils / la petite-fille / les petits-enfants` | grandson / granddaughter / grandchildren                                                    |
+| `l'oncle / la tante`                                   | uncle / aunt                                                                                |
+| `le cousin / la cousine`                               | cousin                                                                                      |
+| `le neveu / la nièce`                                  | nephew / niece                                                                              |
+| `le beau-père / la belle-mère / les beaux-parents`     | father-in-law / mother-in-law / parents-in-law                                              |
+| `le beau-fils / la belle-fille`                        | son-in-law / daughter-in-law                                                                |
+| `le chum / la blonde`                                  | boyfriend / girlfriend, Québécois informal                                                  |
 
 la famille Dupuis makes you say all of it at once. `André` et `Claire Dupuis` have two sons: `Patrice`, conjoint de `Dominique Jadotte`, three kids (`Simon`, `Amélie`, `Arthur Dupuis`), and `Philippe`, conjoint d'`Isabelle Côté`, fille de `Diane` et `Réjean Côté`, three kids (`Anne`, `William`, `Victor Côté-Dupuis`).[^nom] the tree generates the sentences:
 

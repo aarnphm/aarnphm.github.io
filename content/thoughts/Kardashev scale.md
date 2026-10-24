@@ -12,11 +12,11 @@ The Kardashev scale sorts civilizations by the power they can use. Power is ener
 
 Sagan's later normalization gives the common benchmarks:
 
-| Type | Power benchmark      | Physical scale                                                            |
-| ---- | -------------------- | ------------------------------------------------------------------------- |
-| I    | $10^{16}\,\mathrm W$ | Planetary energy use                                                      |
+| Type | Power benchmark      | Physical scale                                                                          |
+| ---- | -------------------- | --------------------------------------------------------------------------------------- |
+| I    | $10^{16}\,\mathrm W$ | Planetary energy use                                                                    |
 | II   | $10^{26}\,\mathrm W$ | A star's luminosity, potentially collected by a [[thoughts/Dyson sphere\|Dyson sphere]] |
-| III  | $10^{36}\,\mathrm W$ | The combined luminosity of a galaxy's stars                               |
+| III  | $10^{36}\,\mathrm W$ | The combined luminosity of a galaxy's stars                                             |
 
 These are order-of-magnitude benchmarks. Stars and galaxies have different luminosities, and the planetary figure is a convention rather than the sum of every accessible energy source. Wright traces this normalization to Sagan [@wright2020dysonspheres].[^original]
 

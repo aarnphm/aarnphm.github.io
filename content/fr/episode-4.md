@@ -70,7 +70,7 @@ the full form, worth transcribing because it is the administrative template the 
 | ------------------------------------------- | ------------------------------------------------------------------------------------------- |
 | {{`Nom de famille`}}                        | family name                                                                                 |
 | `Prénom(s)`                                 | plural: the form allows several given names                                                 |
-| {{`Date de naissance`}}                     | {{`Année`}}, {{`Mois`}}, {{`Jour`}}, the `AAAA-MM-JJ` order of [[fr/episode-2\|episode-2]]             |
+| {{`Date de naissance`}}                     | {{`Année`}}, {{`Mois`}}, {{`Jour`}}, the `AAAA-MM-JJ` order of [[fr/episode-2\|episode-2]]  |
 | {{`Sexe`}}                                  | {{`Féminin`}} ou {{`Masculin`}}                                                             |
 | {{`État civil`}}                            | marital status                                                                              |
 | {{`Adresse actuelle du lieu de résidence`}} | {{`Numéro`}}, {{`Rue`}}, `App.`, {{`Ville`}}, `Province/Territoire/État`, {{`Code postal`}} |

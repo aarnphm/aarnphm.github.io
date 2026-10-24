@@ -81,9 +81,6 @@ Each query head keeps its own projection, so the model retains $n_q$ distinct qu
 
 ```jsx imports={Zoomable,KVHeadGrouping}
 <Zoomable label="KV head grouping">
-  <KVHeadGrouping
-    caption="Larger groups merge KV boxes and shrink decode cache reads."
-    heads={8}
-  />
+  <KVHeadGrouping caption="Larger groups merge KV boxes and shrink decode cache reads." heads={8} />
 </Zoomable>
 ```

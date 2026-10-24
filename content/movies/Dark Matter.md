@@ -9,7 +9,7 @@ director:
   - Blake Crouch
 id: Dark Matter
 modified: 2026-09-18
-posters: "[[movies/posters/dark-matter.jpg|dark-matter.jpg]]"
+posters: '[[movies/posters/dark-matter.jpg|dark-matter.jpg]]'
 status: to watch
 studio: sony pictures television
 tags:
