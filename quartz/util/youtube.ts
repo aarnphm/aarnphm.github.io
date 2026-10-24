@@ -2,6 +2,7 @@ export type YouTubeEmbedKind = 'video' | 'playlist' | 'video-with-playlist'
 
 export type YouTubeEmbedSpec = {
   src: string
+  transcripts: boolean
   kind: YouTubeEmbedKind
   videoId?: string
   playlistId?: string
@@ -167,6 +168,7 @@ export const buildYouTubeEmbed = (rawUrl: string): YouTubeEmbedSpec | undefined 
 
     return {
       src,
+      transcripts: Boolean(videoId) && url.hash === '#transcripts',
       kind,
       videoId,
       playlistId,

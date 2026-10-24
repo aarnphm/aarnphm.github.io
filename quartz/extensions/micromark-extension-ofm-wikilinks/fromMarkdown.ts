@@ -746,14 +746,16 @@ function exitWikilink(
 
         if (wikilink.embed) {
           // check for youtube URLs first (before file extension checks)
-          const youtubeEmbed = buildYouTubeEmbed(targetPath)
+          const youtubeUrl =
+            targetPath + (wikilink.anchorText ? `#${wikilink.anchorText}` : displayAnchor)
+          const youtubeEmbed = buildYouTubeEmbed(youtubeUrl)
           if (youtubeEmbed) {
             // create img tag with youtube URL as src
             // downstream ofm.ts handler will convert to iframe
             if (!node.data) node.data = { wikilink }
             node.data.hName = 'img'
             node.data.hProperties = {
-              src: targetPath,
+              src: youtubeUrl,
               ...(wikilink.metadataParsed
                 ? { 'data-metadata': JSON.stringify(wikilink.metadataParsed) }
                 : wikilink.metadata

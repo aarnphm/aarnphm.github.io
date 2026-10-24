@@ -33,6 +33,8 @@ import embedScript from '../../components/scripts/embed.inline'
 // @ts-ignore
 import peleScript from '../../components/scripts/pele.inline'
 import peleStyle from '../../components/styles/pele.inline.scss'
+import transcriptStyle from '../../components/styles/youtube-transcript.scss'
+import { youtubeTranscriptEmbed } from '../../components/YouTubeTranscript'
 import { remarkSidenote } from '../../extensions/micromark-extension-ofm-sidenotes'
 import {
   remarkWikilink,
@@ -1046,13 +1048,21 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
 
         plugins.push(() => {
           return tree => {
-            visit(tree, (node: Element) => {
+            visit(tree, 'element', (node, _index, parent) => {
               if (!checkEmbed(node)) return
 
               const src = (node.properties.src ?? '') as string
 
               const youtube = buildYouTubeEmbed(src)
               if (youtube) {
+                if (youtube.transcripts) {
+                  const transcript = youtubeTranscriptEmbed(youtube)
+                  if (transcript?.type === 'element') {
+                    Object.assign(node, transcript)
+                    if (parent?.type === 'element' && parent.tagName === 'p') parent.tagName = 'div'
+                  }
+                  return
+                }
                 node.tagName = 'iframe'
                 node.properties = {
                   class: 'external-embed youtube',
@@ -1286,6 +1296,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
 
       if (opts.enableYouTubeEmbed) {
         js.push({ script: embedScript, loadTime: 'afterDOMReady', contentType: 'inline' })
+        css.push({ content: transcriptStyle, inline: true })
       }
 
       if (opts.callouts) {

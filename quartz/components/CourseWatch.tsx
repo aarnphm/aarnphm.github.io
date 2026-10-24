@@ -6,6 +6,7 @@ import { courseStudyEndpoint } from '../util/course-study'
 import { renderDescriptionHtml } from '../util/description'
 import { htmlToJsx } from '../util/jsx'
 import { ResourceHead, ocwLink } from './CourseResource'
+import { TranscriptPanel } from './TranscriptPanel'
 
 const str = (value: unknown): string => (typeof value === 'string' ? value : '')
 
@@ -40,6 +41,7 @@ export function CourseWatch({
     <div
       class="course-watch"
       data-course-watch={youtube}
+      data-transcript-attribution="mit opencourseware, cc by-nc-sa 4.0"
       data-course-watch-title={title}
       data-course-watch-source={ocw}
       data-course-watch-captions={captions}
@@ -73,62 +75,9 @@ export function CourseWatch({
             <span class="course-player-status" role="status" aria-live="polite" />
           </p>
         </div>
-        <section id="transcript" class="course-transcript" aria-labelledby="course-transcript-h">
-          <div class="course-transcript-tools" role="toolbar" aria-label="transcript">
-            <h2 id="course-transcript-h">transcript</h2>
-            {hasTranscript ? (
-              <>
-                <label class="course-transcript-find">
-                  <span class="visually-hidden">search the transcript</span>
-                  <input
-                    type="search"
-                    class="course-transcript-search"
-                    placeholder="search"
-                    autocomplete="off"
-                    spellcheck={false}
-                  />
-                </label>
-                <output class="course-transcript-hits" aria-live="polite" />
-                <div class="course-segmented" role="group" aria-label="paragraphs">
-                  <button
-                    type="button"
-                    data-transcript-prev
-                    aria-label="previous paragraph"
-                    title="previous paragraph"
-                  >
-                    ‹ prev
-                  </button>
-                  <button
-                    type="button"
-                    data-transcript-next
-                    aria-label="next paragraph"
-                    title="next paragraph"
-                  >
-                    next ›
-                  </button>
-                </div>
-                <button
-                  type="button"
-                  data-transcript-follow
-                  aria-pressed="true"
-                  title="keep the current paragraph in view"
-                >
-                  follow
-                </button>
-                <button type="button" data-transcript-copy title="copy the transcript as text">
-                  copy
-                </button>
-              </>
-            ) : null}
-          </div>
-          {hasTranscript ? (
-            <div class="course-transcript-pane">
-              <div class="course-transcript-list">{content}</div>
-            </div>
-          ) : (
-            <p class="course-count">no transcript: the captions file was not vendored.</p>
-          )}
-        </section>
+        <TranscriptPanel id="transcript" hasTranscript={hasTranscript}>
+          {content}
+        </TranscriptPanel>
       </div>
     </div>
   )

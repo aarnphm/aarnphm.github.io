@@ -1,13 +1,28 @@
-export type WorkspaceTab = 'source' | 'scratchpad' | 'notes'
+export type WorkspaceTab = 'source' | 'video' | 'scratchpad' | 'notes'
 
-const shortcuts: Record<WorkspaceTab, string> = { source: 'S', scratchpad: 'P', notes: 'N' }
+const shortcuts: Record<WorkspaceTab, string> = {
+  source: 'S',
+  video: 'V',
+  scratchpad: 'P',
+  notes: 'N',
+}
 
-export function workspaceTabs(hasSource: boolean): WorkspaceTab[] {
-  return hasSource ? ['source', 'scratchpad', 'notes'] : ['scratchpad', 'notes']
+export function workspaceTabs(hasSource: boolean, hasVideo: boolean): WorkspaceTab[] {
+  return [
+    ...(hasSource ? (['source'] as const) : []),
+    ...(hasVideo ? (['video'] as const) : []),
+    'scratchpad',
+    'notes',
+  ]
+}
+
+export function initialWorkspaceTab(hasSource: boolean, hasVideo: boolean): WorkspaceTab {
+  return workspaceTabs(hasSource, hasVideo)[0]
 }
 
 interface HeaderProps {
   hasSource: boolean
+  hasVideo: boolean
   tab: WorkspaceTab
   noteCount?: number
   onSelect?(tab: WorkspaceTab): void
@@ -17,13 +32,14 @@ interface HeaderProps {
 
 export function WorkspaceHeader({
   hasSource,
+  hasVideo,
   tab,
   noteCount = 0,
   onSelect,
   onExport,
   onLoadSaved,
 }: HeaderProps) {
-  const tabs = workspaceTabs(hasSource)
+  const tabs = workspaceTabs(hasSource, hasVideo)
   return (
     <>
       <h2 id="course-workspace-heading" class="visually-hidden">
