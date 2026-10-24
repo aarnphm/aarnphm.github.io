@@ -1,17 +1,26 @@
 code[data-theme*=' '] {
-  color: var(--shiki-light);
-  background-color: var(--shiki-light-bg);
+  color: var(--syntax-light);
+  background-color: var(--syntax-light-bg);
 }
 
 code[data-theme*=' '] span {
-  color: var(--shiki-light);
+  color: var(--syntax-light);
+  font-style: var(--syntax-light-font-style, normal);
+  font-weight: var(--syntax-light-font-weight, normal);
 }
 
 [saved-theme='dark'] code[data-theme*=' '] {
-  color: var(--shiki-dark);
-  background-color: var(--shiki-dark-bg);
+  color: var(--syntax-dark);
+  background-color: var(--syntax-dark-bg);
 }
 
 [saved-theme='dark'] code[data-theme*=' '] span {
-  color: var(--shiki-dark);
+  color: var(--syntax-dark);
+  font-style: var(--syntax-dark-font-style, normal);
+  font-weight: var(--syntax-dark-font-weight, normal);
+}
+
+// Client renderers set --line-digits, so line numbers of any width fit.
+pre > code[data-theme][style*='--line-digits'] > [data-line]::before {
+  width: calc(var(--line-digits) * 1ch);
 }

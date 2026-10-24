@@ -2,19 +2,27 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { renderToString } from 'preact-render-to-string'
 import type { ArenaReaderArtifact } from '../../util/arena-reader'
+import { unescapeHTML } from '../../util/escape'
 import { highlightSourceCode } from '../../util/highlight-source'
 import { CodeContent } from './code'
 
-test('source files receive syntax tokens without interpreting code as HTML', () => {
+const lineText = (html: string) =>
+  html.split('\n').map(line => unescapeHTML(line.replace(/<[^>]*>/g, '')))
+
+test('source files receive syntax roles without interpreting code as HTML', () => {
   const source = 'def greet():\n\t# café\n\treturn "<script>alert(1)</script> & text"\n\n'
   const result = highlightSourceCode(source, 'model_runner.py')
-  assert.equal(result.language, 'py')
-  assert.match(result.html, /hljs-keyword/)
-  assert.match(result.html, /hljs-string/)
+  assert.equal(result.language, 'python')
+  assert.match(result.html, /data-syntax-role="keyword"/)
   assert.match(result.html, /&lt;script&gt;/)
   assert.doesNotMatch(result.html, /<script>/)
-  assert.equal((result.html.match(/\n/g) ?? []).length, 4)
-  assert.match(result.html, /\t/)
+  // The final newline ends the file; the blank line before it keeps a spacer.
+  assert.deepEqual(lineText(result.html), [
+    'def greet():',
+    '\t# café',
+    '\treturn "<script>alert(1)</script> & text"',
+    ' ',
+  ])
 })
 
 test('unknown languages and large files remain complete escaped text', () => {
@@ -26,15 +34,16 @@ test('unknown languages and large files remain complete escaped text', () => {
     ['__proto__', '<plain text>'],
   ]) {
     const result = highlightSourceCode(source, fileName)
-    assert.doesNotMatch(result.html, /<img|hljs-/)
-    assert.equal(
-      result.html.replaceAll('&lt;', '<').replaceAll('&gt;', '>').replaceAll('&quot;', '"'),
-      source,
+    assert.doesNotMatch(result.html, /<img|data-syntax-role="(?!normal)/)
+    const expected = source.replace(/\n$/, '').split('\n')
+    assert.deepEqual(
+      lineText(result.html),
+      expected.map(line => line || ' '),
     )
   }
 })
 
-test('the code view uses a focusable pre and preserves a source artifact as code', () => {
+test('the code view uses a focusable pre and shows the source before highlighting loads', () => {
   const artifact: Extract<ArenaReaderArtifact, { kind: 'code' }> = {
     schemaVersion: 1,
     articleId: 'article-v1-fixture',
@@ -48,12 +57,11 @@ test('the code view uses a focusable pre and preserves a source artifact as code
     resources: [],
     kind: 'code',
     fileName: 'file.py',
-    code: 'import torch\n\nclass ModelRunner:\n    pass\n',
+    code: 'import torch\n\nclass <ModelRunner>:\n    pass\n',
   }
   const html = renderToString(<CodeContent artifact={artifact} contentRef={{ current: null }} />)
   assert.match(html, /<pre tabindex="0" aria-label="Source code: file.py">/)
-  assert.match(html, /<code data-language="py">/)
-  assert.match(html, /hljs-keyword/)
-  assert.match(html, /ModelRunner/)
+  assert.match(html, /class &lt;ModelRunner/)
+  assert.doesNotMatch(html, /<ModelRunner>/)
   assert.match(html, /<figcaption>file.py<\/figcaption>/)
 })
