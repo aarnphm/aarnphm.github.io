@@ -19,14 +19,16 @@ import { registerMdxComponent, type QuartzMdxComponent } from './registry'
 
 type Props = { caption?: string }
 
-const X0 = 56
-const COL_W = 88
-const ROW_Y = [30, 98, 170, 242, 314, 390]
+// columns 0 and 1 hold only prompt tokens, so the row labels sit above them instead of in a gutter
+const PAD = 4
 const NODE_W = AG_NODE_W
+const X0 = PAD + NODE_W / 2
+const COL_W = 88
+const ROW_Y = [20, 88, 160, 232, 304, 380]
 const NODE_H = 30
 const TOKEN_H = 24
-const VIEW_W = X0 + 6 * COL_W + NODE_W / 2 + 18
-const VIEW_H = ROW_Y[5] + TOKEN_H / 2 + 14
+const VIEW_W = X0 + 6 * COL_W + NODE_W / 2 + PAD
+const VIEW_H = ROW_Y[5] + TOKEN_H / 2 + PAD
 // the horizontal run of an edge sits this far under its target row; incoming edges stagger by 3px
 const BUS_DROP = 18
 const BAR_H = 3
@@ -131,13 +133,13 @@ const AttributionGraphImpl: QuartzMdxComponent<Props> = ({ caption }) => {
               </marker>
             </defs>
 
-            <text class="ag-axis" x={8} y={ROW_Y[0] + 3}>
+            <text class="ag-axis" x={PAD} y={ROW_Y[0] + 3}>
               logit
             </text>
-            <text class="ag-axis" x={8} y={ROW_Y[2] + 3}>
+            <text class="ag-axis" x={PAD} y={ROW_Y[2] + 3}>
               features
             </text>
-            <text class="ag-axis" x={8} y={ROW_Y[3] + 3}>
+            <text class="ag-axis" x={PAD} y={ROW_Y[3] + 3}>
               depth ↑
             </text>
 
@@ -190,7 +192,7 @@ const AttributionGraphImpl: QuartzMdxComponent<Props> = ({ caption }) => {
                     <text
                       class="ag-label"
                       x={x(n)}
-                      y={y(n) + (n.kind === 'token' ? 3.5 : 1) + (i - (lines.length - 1) / 2) * 11}
+                      y={y(n) + (n.kind === 'token' ? 3.5 : 1) + (i - (lines.length - 1) / 2) * 12}
                       text-anchor="middle"
                     >
                       {line}

@@ -61,12 +61,14 @@ const MTPModulesImpl: QuartzMdxComponent<Props> = ({ caption, depth = 2 }) => {
         <div class="mtp-rail" data-mtp-rail>
           <section class="mtp-col" data-mtp-col="main">
             <header class="mtp-head">
-              <h3 class="mtp-title">main model</h3>
-              <p class="mtp-sub">next-token prediction</p>
+              <h3 class="mtp-title">main</h3>
+              <p class="mtp-sub">NTP</p>
             </header>
             <div class="mtp-targets" data-mtp-node="targets">
               {shift(2, 4).map(t => (
-                <span class="mtp-tok" data-kind="target">t{t}</span>
+                <span class="mtp-tok" data-kind="target">
+                  t{t}
+                </span>
               ))}
             </div>
             <Arrow />
@@ -91,7 +93,9 @@ const MTPModulesImpl: QuartzMdxComponent<Props> = ({ caption, depth = 2 }) => {
             <Arrow />
             <div class="mtp-inputs" data-mtp-node="inputs">
               {shift(1, 4).map(t => (
-                <span class="mtp-tok" data-kind="input">t{t}</span>
+                <span class="mtp-tok" data-kind="input">
+                  t{t}
+                </span>
               ))}
             </div>
           </section>
@@ -110,8 +114,10 @@ const MTPModulesImpl: QuartzMdxComponent<Props> = ({ caption, depth = 2 }) => {
                 </p>
               </header>
               <div class="mtp-targets" data-mtp-node="targets">
-                  {shift(2 + d, 4).map(t => (
-                  <span class="mtp-tok" data-kind="target">t{t}</span>
+                {shift(2 + d, 4).map(t => (
+                  <span class="mtp-tok" data-kind="target">
+                    t{t}
+                  </span>
                 ))}
               </div>
               <Arrow />
@@ -157,8 +163,10 @@ const MTPModulesImpl: QuartzMdxComponent<Props> = ({ caption, depth = 2 }) => {
               </div>
               <Arrow />
               <div class="mtp-inputs" data-mtp-node="inputs">
-                  {shift(1 + d, 4).map(t => (
-                  <span class="mtp-tok" data-kind="input">t{t}</span>
+                {shift(1 + d, 4).map(t => (
+                  <span class="mtp-tok" data-kind="input">
+                    t{t}
+                  </span>
                 ))}
               </div>
             </section>

@@ -56,6 +56,27 @@ const paint = (root: HTMLElement) => {
   svg.appendChild(defs)
 
   const cols = visibleCols(root)
+  const boxes = cols.map(col => rel(stageBox, col))
+  // Stacked when the second column sits below the first: links then run in side lanes.
+  const stacked = boxes.length > 1 && boxes[1].top >= boxes[0].bottom - 1
+  const pathEl = (d: string, cls: string, arrow = false) => {
+    const path = document.createElementNS(ns, 'path')
+    path.setAttribute('d', d)
+    path.setAttribute('class', cls)
+    path.setAttribute('vector-effect', 'non-scaling-stroke')
+    if (arrow) path.setAttribute('marker-end', `url(#${markerId})`)
+    svg.appendChild(path)
+  }
+  const labelEl = (x: number, y: number, rotate = false) => {
+    const label = document.createElementNS(ns, 'text')
+    label.setAttribute('x', String(x))
+    label.setAttribute('y', String(y))
+    label.setAttribute('text-anchor', 'middle')
+    label.setAttribute('class', 'mtp-share-label')
+    if (rotate) label.setAttribute('transform', `rotate(-90 ${x} ${y})`)
+    label.textContent = 'shared'
+    svg.appendChild(label)
+  }
 
   for (let i = 0; i < cols.length - 1; i += 1) {
     const from = cols[i].querySelector('[data-mtp-out-h]')
@@ -63,51 +84,43 @@ const paint = (root: HTMLElement) => {
     if (!from || !to) continue
     const a = rel(stageBox, from)
     const b = rel(stageBox, to)
-    // The elbow runs in the gutter between the two columns, so it never crosses a box or
-    // the "shared" links; it enters the left RMSNorm through its left edge.
-    const colA = rel(stageBox, cols[i])
-    const colB = rel(stageBox, cols[i + 1])
-    const gutterX = colA.right + (colB.left - colA.right) * 0.7
-    const y1 = a.midY
-    const y2 = b.midY
-    const path = document.createElementNS(ns, 'path')
-    path.setAttribute('d', `M ${a.right} ${y1} H ${gutterX} V ${y2} H ${b.left}`)
-    path.setAttribute('class', 'mtp-link-causal')
-    path.setAttribute('vector-effect', 'non-scaling-stroke')
-    path.setAttribute('marker-end', `url(#${markerId})`)
-    svg.appendChild(path)
-  }
-
-  const paintShared = (key: 'emb' | 'head') => {
-    const nodes = cols
-      .map(col => col.querySelector(`[data-mtp-shared="${key}"]`))
-      .filter((el): el is Element => Boolean(el))
-    if (nodes.length < 2) return
-    for (let i = 0; i < nodes.length - 1; i += 1) {
-      const a = rel(stageBox, nodes[i])
-      const b = rel(stageBox, nodes[i + 1])
-      const y = a.midY
-      const x1 = a.right
-      const x2 = b.left
-      const line = document.createElementNS(ns, 'line')
-      line.setAttribute('x1', String(x1))
-      line.setAttribute('y1', String(y))
-      line.setAttribute('x2', String(x2))
-      line.setAttribute('y2', String(y))
-      line.setAttribute('class', 'mtp-link-share')
-      svg.appendChild(line)
-      const label = document.createElementNS(ns, 'text')
-      label.setAttribute('x', String((x1 + x2) / 2))
-      label.setAttribute('y', String(y - 4))
-      label.setAttribute('text-anchor', 'middle')
-      label.setAttribute('class', 'mtp-share-label')
-      label.textContent = 'shared'
-      svg.appendChild(label)
+    if (stacked) {
+      // Left lane: out of the transformer's left edge, down, into the RMSNorm's left edge.
+      const lane = boxes[i].left - 9
+      pathEl(`M ${a.left} ${a.midY} H ${lane} V ${b.midY} H ${b.left}`, 'mtp-link-causal', true)
+    } else {
+      // The elbow runs in the gutter, clear of boxes and "shared" links.
+      const gutterX = boxes[i].right + (boxes[i + 1].left - boxes[i].right) * 0.7
+      pathEl(`M ${a.right} ${a.midY} H ${gutterX} V ${b.midY} H ${b.left}`, 'mtp-link-causal', true)
     }
   }
 
-  paintShared('emb')
-  paintShared('head')
+  const paintShared = (key: 'emb' | 'head', lane: number) => {
+    const nodes = cols
+      .map(col => col.querySelector(`[data-mtp-shared="${key}"]`))
+      .filter((el): el is Element => Boolean(el))
+    for (let i = 0; i < nodes.length - 1; i += 1) {
+      const a = rel(stageBox, nodes[i])
+      const b = rel(stageBox, nodes[i + 1])
+      if (stacked) {
+        const x = Math.max(a.right, b.right) + lane
+        pathEl(`M ${a.right} ${a.midY} H ${x} V ${b.midY} H ${b.right}`, 'mtp-link-share')
+      } else {
+        const y = a.midY
+        pathEl(`M ${a.right} ${y} H ${b.left}`, 'mtp-link-share')
+        labelEl((a.right + b.left) / 2, y - 4)
+      }
+    }
+  }
+
+  paintShared('head', 8)
+  paintShared('emb', 16)
+  if (stacked) {
+    // One label per column gap, outside the two lanes, centred in the gap.
+    for (let i = 0; i < cols.length - 1; i += 1) {
+      labelEl(boxes[i].right + 25, (boxes[i].bottom + boxes[i + 1].top) / 2, true)
+    }
+  }
 }
 
 const setup = (root: HTMLElement): (() => void) | null => {
@@ -147,17 +160,16 @@ const setup = (root: HTMLElement): (() => void) | null => {
   const ro = new ResizeObserver(onResize)
   const stage = root.querySelector('[data-mtp-stage]')
   if (stage) ro.observe(stage)
-
-  // The rail scrolls sideways on narrow screens; the link layer stays put and repaints.
+  ro.observe(root)
   const rail = root.querySelector('[data-mtp-rail]')
-  rail?.addEventListener('scroll', onResize, { passive: true })
+  if (rail) ro.observe(rail)
+
   root.addEventListener('change', onChange)
   window.addEventListener('resize', onResize)
   render(Number(root.getAttribute('data-mtp-depth') ?? '2'))
 
   return () => {
     cancelAnimationFrame(frame)
-    rail?.removeEventListener('scroll', onResize)
     root.removeEventListener('change', onChange)
     window.removeEventListener('resize', onResize)
     ro.disconnect()
