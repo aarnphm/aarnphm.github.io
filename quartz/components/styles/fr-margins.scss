@@ -135,7 +135,7 @@ $fr-gutter: 3rem;
 
 // margin: the entries hang left of the text, one column past the gutter (fr-margins.inline.ts
 // sets each group's top and --fr-dx, and draws the leaders)
-article[data-fr-mode='margin'] {
+@mixin fr-margin {
   .fr-leaders {
     display: block;
   }
@@ -158,9 +158,34 @@ article[data-fr-mode='margin'] {
   .fr-entry-label {
     cursor: default;
   }
+
+  // a body taller than the room before the next entry stops at a whole reference or line
+  // (fr-margins-clamp.ts sets --fr-cap); its `more` control opens it
+  .fr-entry-body[data-fr-cap] {
+    max-height: var(--fr-cap);
+    overflow: clip;
+  }
+
+  // an open callout clips its blocks for the fold (callouts.scss), which would clip the groups hung
+  // from them; the column stays capped so wide blocks scroll instead of widening it
+  .callout:not(.is-collapsed) {
+    overflow: visible;
+
+    > .callout-content {
+      grid-template-columns: minmax(0, 1fr);
+
+      > :not(.katex-display, .table-container) {
+        overflow: visible;
+      }
+    }
+  }
 }
 
-:is(article[data-fr-mode='inline'], .preview-container > .preview-inner) {
+article[data-fr-mode='margin'] {
+  @include fr-margin;
+}
+
+@mixin fr-inline {
   // the label carries the number; only a cell keeps its own, for the groups set after its table
   .fr-n {
     display: none;
@@ -237,6 +262,39 @@ article[data-fr-mode='margin'] {
       outline: 2px solid var(--dark);
       outline-offset: 2px;
     }
+  }
+}
+
+:is(article[data-fr-mode='inline'], .preview-container > .preview-inner) {
+  @include fr-inline;
+}
+
+// Before the script runs, the page's article already takes the mode its width will get: the script
+// hangs wherever the text starts past MARGIN_COLUMN, which the page grid gives exactly from the
+// desktop width (the text column opens at its 7th line, past four of its ninth-of-the-window
+// tracks), and the reading column below it never does. So the body paints once, at its final measure, and never reflows. In the margin
+// the groups wait unseen until the script has set each one's top and stacked them; that touches no
+// line of the text. The reveal is a fallback for a page whose script never runs
+@keyframes fr-reveal {
+  to {
+    visibility: visible;
+  }
+}
+
+@media all and ($desktop) {
+  .page-content article.main-col:not([data-fr-mode]) {
+    @include fr-margin;
+
+    .fr-group {
+      visibility: hidden;
+      animation: fr-reveal 0s 3s forwards;
+    }
+  }
+}
+
+@media not all and ($desktop) {
+  .page-content article.main-col:not([data-fr-mode]) {
+    @include fr-inline;
   }
 }
 

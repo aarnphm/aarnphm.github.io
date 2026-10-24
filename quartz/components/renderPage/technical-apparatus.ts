@@ -38,8 +38,11 @@ function takeBibliography(tree: Root, apparatus: Apparatus) {
       if (child.tagName === 'section' && child.properties?.dataReferences != null) {
         section = child
         list = child.children.find((c): c is Element => isElement(c) && c.tagName === 'ul')
-        for (const item of list?.children.filter(isElement) ?? [])
-          if (item.properties?.id) refs.set(String(item.properties.id), item)
+        // a transcluded note appends its own copy of a shared reference; the first copy is the entry
+        for (const item of list?.children.filter(isElement) ?? []) {
+          const id = item.properties?.id
+          if (id && !refs.has(String(id))) refs.set(String(id), item)
+        }
         continue
       }
       const href = child.tagName === 'a' ? String(child.properties?.href ?? '') : ''
@@ -80,6 +83,9 @@ function takeBibliography(tree: Root, apparatus: Apparatus) {
     if (items.length > 0)
       apparatus.put(block, { kind: 'bib', label: LABELS.bib, body: h('span.fr-margin', items) })
   }
+  list.children = list.children.filter(
+    child => !isElement(child) || !taken.has(String(child.properties?.id ?? '')),
+  )
   if (!list.children.some(isElement)) {
     const parent = (function find(node: Element | Root): Element | Root | undefined {
       for (const child of node.children) {
