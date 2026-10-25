@@ -2,6 +2,7 @@
 date: '2025-09-11'
 description: from scratch frfr
 id: index
+layout: L
 modified: 2026-06-05 15:08:32 GMT-04:00
 seealso:
   - '[[thoughts/tsfm/lecture-3-exercise/reports|reports]]'

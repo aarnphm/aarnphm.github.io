@@ -2,6 +2,7 @@
 date: '2025-09-19'
 description: local and Modal traces for naive attention and PyTorch SDPA
 id: index
+layout: L
 modified: 2026-06-05 15:08:32 GMT-04:00
 tags:
   - ml
