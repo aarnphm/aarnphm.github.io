@@ -71,17 +71,16 @@ export type SearchSession = {
   completions: SearchCompletions
   codeMatches: WeakMap<HTMLElement, CodeSearchRow>
   progressBar: HTMLDivElement
-  progressResetTimer: number
-  progressReasons: Set<'search' | 'preview'>
+  progressReasons: Set<'search' | 'preview' | 'index' | 'model'>
   data: ContentIndex | null
   idDataMap: FullSlug[]
   slugToIndex: Map<string, number>
   searchDataReady: Promise<ContentIndex> | null
   modeToggle: HTMLDivElement | null
   modeButtons: HTMLButtonElement[]
-  semanticStatus: HTMLElement | null
   enablePreview: boolean
   previewVisible: boolean
+  previewScope: string | null
   imageSearch: boolean
   semanticBooting: Promise<boolean> | null
   searchSeq: number

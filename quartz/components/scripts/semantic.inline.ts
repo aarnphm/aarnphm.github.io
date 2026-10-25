@@ -9,6 +9,7 @@ import type {
   SemanticWorkerConfig,
   SemanticWorkerResponse,
 } from '../../util/semantic-protocol'
+import { reportSemanticProgress } from './search-progress'
 
 export type SemanticResult = { id: number; score: number }
 type SearchPayload = { semantic: SemanticResult[]; ids?: string[] }
@@ -69,7 +70,14 @@ export class SemanticRuntime {
       this.worker = new Worker(new URL('semantic.worker.js', import.meta.url), { type: 'module' })
       this.worker.onmessage = (event: MessageEvent<SemanticWorkerResponse>) => {
         const msg = event.data
-        if (msg.type === 'progress') return
+        if (msg.type === 'progress') {
+          reportSemanticProgress(
+            `loading index · ${msg.loadedRows.toLocaleString()}/${msg.totalRows.toLocaleString()}`,
+            msg.loadedRows,
+            msg.totalRows,
+          )
+          return
+        }
         if (msg.type === 'ready') {
           clearTimeout(this.initTimer)
           this.resolveReady()
@@ -130,6 +138,7 @@ export class SemanticRuntime {
   }
 
   async ensureReady() {
+    reportSemanticProgress('preparing semantic model…')
     this.init()
     await this.ready
     if (this.error) {
@@ -149,6 +158,7 @@ export class SemanticRuntime {
       else if (this.initialized) await this.ready
       if (this.error) throw this.error
       if (!current()) throw cancelled()
+      reportSemanticProgress('encoding query and ranking matches…')
       const payload = await new Promise<Reply>((resolve, reject) => {
         const seq = ++this.seq
         this.pending.set(seq, { resolve, reject })

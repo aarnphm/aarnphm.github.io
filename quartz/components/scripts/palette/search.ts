@@ -12,7 +12,7 @@ import {
 } from '../image-search-controls'
 import { getLexicalSearchClient } from '../lexical-search'
 import { noteRankDistribution } from '../note-rank-distribution'
-import { pdfCoverageStatus, pdfPageLabel } from '../pdf-search-controls'
+import { pdfPageLabel } from '../pdf-search-controls'
 import { mountResultPages } from '../search-result-pages'
 import { isSemanticCancellation } from '../semantic.inline'
 import { getCommandItems } from './actions'
@@ -140,7 +140,6 @@ export async function querySearch(
             )
               return
             displayQuickOpenResults(s, documents, query, scope)
-            s.output.prepend(pdfCoverageStatus(s.pdfSearch.coverage))
           } catch (error) {
             if (isSemanticCancellation(error) || generation !== s.queryGeneration || !s.isActive)
               return
@@ -347,7 +346,7 @@ export function displayQuickOpenResults(
       continue
     items.push({
       slug: document.slug,
-      name: document.passage?.title || fileData.title || fileData.fileName,
+      name: fileData.title || fileData.fileName,
       similarity: document.score,
       passage: document.passage,
     })

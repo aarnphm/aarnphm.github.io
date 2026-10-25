@@ -1,19 +1,21 @@
+import type { ContentDetails } from '../../../plugins'
 import type { LexicalField, LexicalFieldResult } from '../lexical-search-types'
 import { parseCodeQuery } from '../../../util/code-query'
 import { escapeHTML } from '../../../util/escape'
 import { pdfMetadata } from '../../../util/pdf-search'
 import { isSearchExcluded } from '../../../util/search-exclude'
 import { parseSearchQuery, searchScopeIncludes, type SearchScope } from '../../../util/search-scope'
-import { highlight, tokenizeTerm } from '../../../util/search-text'
+import { highlight, matchesTerm, pathSearchText, tokenizeTerm } from '../../../util/search-text'
 import { fuseSearchRanks } from '../../../util/semantic-search'
 import { imageSimilarityStatus, searchableImage } from '../image-search-controls'
 import { getLexicalSearchClient } from '../lexical-search'
-import { pdfCoverageStatus, pdfPageLabel } from '../pdf-search-controls'
+import { pdfPageLabel } from '../pdf-search-controls'
 import { isSemanticCancellation } from '../semantic.inline'
 import { resetSiteSemantic } from '../site-semantic'
 import { searchCode } from './code'
 import {
   ensureImageSearch,
+  ensureSemantic,
   ensureSearchData,
   requireData,
   setSemanticState,
@@ -65,13 +67,26 @@ const formatForDisplay = (
     slug,
     title: renderType === 'tags' || target ? fileData.title : highlight(term, fileData.title ?? ''),
     target,
-    content: highlight(term, fileData.content ?? fileData.fileName ?? '', true),
+    content: matchExcerpt(term, fileData),
     tags: highlightTags(term, fileData.tags, renderType),
     aliases: aliases,
     titleMatch,
     fileName: fileData.fileName,
     protected: fileData.protected,
   }
+}
+
+// The index also matches aliases and path words, so a note can match with no hit in its body.
+// The match column names the field that holds the hit, and shows the description otherwise.
+function matchExcerpt(term: string, fileData: ContentDetails): string {
+  const content = fileData.content ?? ''
+  if (matchesTerm(term, content)) return highlight(term, content, true)
+  const alias = fileData.aliases?.find(alias => matchesTerm(term, alias))
+  if (alias) return `alias · ${highlight(term, escapeHTML(alias))}`
+  if (matchesTerm(term, pathSearchText(fileData.fileName))) {
+    return `path · ${highlight(term, escapeHTML(fileData.fileName))}`
+  }
+  return highlight(term, content || escapeHTML(fileData.description || fileData.fileName), true)
 }
 
 function highlightTags(term: string, tags: string[], renderType: SearchType) {
@@ -135,6 +150,7 @@ export async function showSimilarImages(s: SearchSession, seed: string) {
 }
 
 export async function runSearch(s: SearchSession, rawTerm: string, token: number) {
+  if (rawTerm.trim()) startSearchProgress(s)
   try {
     await querySearch(s, rawTerm, token)
   } catch (error) {
@@ -148,6 +164,8 @@ export async function runSearch(s: SearchSession, rawTerm: string, token: number
       message.textContent = 'Search could not load. Reload the page to retry.'
       s.results.replaceChildren(message)
     })
+  } finally {
+    if (token === s.searchSeq) completeSearchProgress(s)
   }
 }
 
@@ -178,6 +196,15 @@ async function querySearch(s: SearchSession, rawTerm: string, token: number) {
     return
   }
 
+  if (shared.searchMode === 'semantic' && (scope === 'notes' || scope === 'all')) {
+    const ready = await ensureSemantic(s)
+    if (token !== s.searchSeq) return
+    if (!ready) {
+      shared.searchMode = 'lexical'
+      s.requestedMode = 'lexical'
+      updateModeUI(s, 'lexical')
+    }
+  }
   const modeForRanking: SearchMode = shared.searchMode
   const searchLimit = s.idDataMap.length
   const initialType: SearchType = trimmed.startsWith('#') ? 'tags' : 'basic'
@@ -311,7 +338,6 @@ async function querySearch(s: SearchSession, rawTerm: string, token: number) {
   await render()
 
   if (scope === 'pdf' && initialType === 'basic' && highlightTerm) {
-    startSearchProgress(s)
     const metadata = pdfMetadata(loadedData)
     const lexical = baseIndices.map(id => idDataMap[id])
     try {
@@ -329,7 +355,6 @@ async function querySearch(s: SearchSession, rawTerm: string, token: number) {
         if (!item) return []
         if (document.passage) {
           item.passage = document.passage
-          item.title = highlight(highlightTerm, escapeHTML(document.passage.title))
           item.target = ''
           item.content = `${escapeHTML(pdfPageLabel(document.passage))} · ${highlight(highlightTerm, escapeHTML(document.passage.text), true)}`
         }
@@ -337,7 +362,6 @@ async function querySearch(s: SearchSession, rawTerm: string, token: number) {
       })
       await commitSearchDisplay(s, token, () => {
         displayResults(s, entries)
-        results.prepend(pdfCoverageStatus(s.pdf.coverage))
       })
     } catch (error) {
       if (isSemanticCancellation(error) || token !== s.searchSeq) return
@@ -354,14 +378,16 @@ async function querySearch(s: SearchSession, rawTerm: string, token: number) {
         status.textContent = 'pdf text search unavailable; showing title and filename matches'
         results.prepend(status)
       })
-    } finally {
-      if (token === s.searchSeq) completeSearchProgress(s)
     }
     return
   }
 
-  if (scope === 'images' && initialType === 'basic' && highlightTerm) {
-    startSearchProgress(s)
+  if (
+    scope === 'images' &&
+    modeForRanking === 'semantic' &&
+    initialType === 'basic' &&
+    highlightTerm
+  ) {
     try {
       const service = await ensureImageSearch(image)
       if (token !== s.searchSeq || !image.active) return
@@ -373,14 +399,12 @@ async function querySearch(s: SearchSession, rawTerm: string, token: number) {
         semanticIds.push(id)
         semanticSimilarity.set(id, score)
       }
-      completeSearchProgress(s)
       await render()
     } catch (error) {
       if (isSemanticCancellation(error) || token !== s.searchSeq || !image.active) return
       image.semantic?.dispose()
       image.semantic = null
       image.ready = null
-      completeSearchProgress(s)
       await commitSearchDisplay(s, token, () => {
         const status = document.createElement('p')
         status.setAttribute('role', 'status')
@@ -398,11 +422,6 @@ async function querySearch(s: SearchSession, rawTerm: string, token: number) {
     highlightTerm.length < 2
   ) {
     return
-  }
-
-  const showProgress = modeForRanking === 'semantic'
-  if (showProgress) {
-    startSearchProgress(s)
   }
 
   try {
@@ -423,11 +442,9 @@ async function querySearch(s: SearchSession, rawTerm: string, token: number) {
     semanticIds.forEach(docId => {
       ensureItem(docId)
     })
-    if (showProgress) completeSearchProgress(s)
   } catch (err) {
     if (isSemanticCancellation(err) || token !== s.searchSeq) return
     console.warn('[SemanticClient] search failed:', err)
-    if (showProgress) completeSearchProgress(s)
     resetSiteSemantic(orchestrator.client)
     shared.semantic = null
     shared.semanticReady = false

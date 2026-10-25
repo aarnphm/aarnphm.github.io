@@ -10,6 +10,7 @@ import type { ResultPages } from '../search-result-pages'
 import { FullSlug } from '../../../util/path'
 import { SEARCH_QUERY_PLACEHOLDER } from '../../../util/search-completion'
 import { createImageSemantic, type ImageSemantic } from '../image-semantic'
+import { showSearchProgress } from '../search-progress'
 import { siteSemantic, type SiteSemantic } from '../site-semantic'
 
 export type ActionType = 'quick_open' | 'connector' | 'command'
@@ -90,10 +91,7 @@ export function ensureImageSearch(s: PaletteState) {
 }
 
 export function quickOpenProgress(s: PaletteState, loading: boolean) {
-  s.progress.setAttribute('aria-hidden', String(!loading))
-  s.progress.style.opacity = loading ? '1' : '0'
-  s.progress.style.width = loading ? '100%' : '0'
-  s.progress.style.animation = loading ? 'semantic-progress-sweep 2.5s linear infinite' : 'none'
+  showSearchProgress(s.progress, loading)
 }
 
 export function ensureContentData(s: PaletteState) {

@@ -8,6 +8,7 @@ import {
   codeSearchError,
 } from '../code-search-controls'
 import { renderCodeMatch } from '../code-search-preview'
+import { showSearchProgress } from '../search-progress'
 import { mountResultPages } from '../search-result-pages'
 import { hidePalette, paletteMode, quickOpenProgress, type PaletteState } from './shell'
 
@@ -56,15 +57,22 @@ export async function searchPaletteCode(s: PaletteState, query: CodeQuery, gener
           s.output.querySelector('.code-search-inline-preview')?.remove()
           const request = new AbortController()
           s.codePreview = request
+          showSearchProgress(s.progress, true, 'preview')
+          const completePreview = () => {
+            if (s.codePreview === request && current()) quickOpenProgress(s, false)
+          }
+          request.signal.addEventListener('abort', completePreview, { once: true })
           signal.addEventListener('abort', () => request.abort(), { once: true })
           const preview = document.createElement('div')
           preview.className = 'code-search-inline-preview'
           // Focus stays on the result; Ctrl+K owns the interactive full preview.
           preview.inert = true
           item.append(preview)
-          void renderCodeMatch(s.currentSlug, match, preview, request.signal, true).catch(error => {
-            if (!request.signal.aborted) preview.replaceChildren(codeSearchError(error))
-          })
+          void renderCodeMatch(s.currentSlug, match, preview, request.signal, true)
+            .catch(error => {
+              if (!request.signal.aborted) preview.replaceChildren(codeSearchError(error))
+            })
+            .finally(completePreview)
         }
         item.addEventListener('focus', select, { signal })
         item.addEventListener('mouseenter', select, { signal })

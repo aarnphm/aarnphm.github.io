@@ -1,6 +1,6 @@
 import { CODE_FILE_EXTENSIONS } from '../../../util/code-languages'
 import { bindClipboardButton } from '../clipboard-button'
-import { createPdfEmbed, mountPdfPreview, setPdfEmbedSource } from '../popover/pdf-preview'
+import { renderPdfPreview } from './pdf-preview-cache'
 
 export async function renderFilePreview(
   url: URL,
@@ -8,44 +8,18 @@ export async function renderFilePreview(
   preview: HTMLElement,
   signal: AbortSignal,
   page?: number,
+  query = '',
 ): Promise<boolean> {
   const extension = fileName.split('.').at(-1)?.toLowerCase() ?? ''
   if (extension === 'pdf') {
-    const title = fileName.split('/').at(-1)
-    // Remounting the previous PDF's embed keeps its toolbar; only the pages reload.
-    let pdf = preview.querySelector<HTMLElement>(':scope > .search-pdf-preview > .pdf-embed')
-    if (pdf) {
-      window.quartzPdfEmbeds?.cleanup(pdf)
-      setPdfEmbedSource(pdf, url.toString(), title)
-    } else {
-      const inner = document.createElement('div')
-      inner.className = 'preview-inner search-pdf-preview'
-      pdf = createPdfEmbed(url.toString(), title, {
-        preload: false,
-        annotations: false,
-        rootMargin: '0px',
-        overscan: 1,
-        maxPixelRatio: 2,
-        textLayer: true,
-      })
-      inner.append(pdf)
-      preview.replaceChildren(inner)
-    }
-    if (page && Number.isSafeInteger(page) && page > 0) pdf.dataset.pdfPage = String(page)
-    else delete pdf.dataset.pdfPage
-    const embed = pdf
-    await new Promise<void>((resolve, reject) => {
-      mountPdfPreview(
-        embed,
-        signal,
-        resolve,
-        () => {
-          if (signal.aborted) resolve()
-          else reject(new Error('PDF preview could not load.'))
-        },
-        true,
-      )
-    })
+    await renderPdfPreview(
+      preview,
+      url,
+      fileName.split('/').at(-1) ?? fileName,
+      signal,
+      page,
+      query,
+    )
     return true
   }
   if (!CODE_FILE_EXTENSIONS.has(`.${extension}`)) return false

@@ -43,22 +43,20 @@ export function highlight(searchTerm: string, text: string, trim = false): strin
     endIndex = Math.min(startIndex + 2 * CONTEXT_WINDOW_WORDS, wordCount - 1)
   }
 
-  const highlighted = words
-    .slice(startIndex, endIndex + 1)
-    .map(word => {
-      let output = word
-      for (const term of terms) {
-        if (!word.toLowerCase().includes(term.toLowerCase())) continue
-        output = output.replace(
-          new RegExp(escapeRegex(term), 'gi'),
-          '<span class="highlight">$&</span>',
-        )
-      }
-      return output
-    })
-    .join(' ')
+  const excerpt = words.slice(startIndex, endIndex + 1).join(' ')
+  const pattern = terms.length ? new RegExp(terms.map(escapeRegex).join('|'), 'gi') : null
+  const highlighted = pattern
+    ? excerpt.replace(pattern, '<span class="highlight">$&</span>')
+    : excerpt
 
   return `${startIndex === 0 ? '' : '...'}${highlighted}${endIndex >= wordCount - 1 ? '' : '...'}`
+}
+
+/** Whether a word of `text` starts with a query term, as the forward-tokenized index matches. */
+export function matchesTerm(searchTerm: string, text: string): boolean {
+  const terms = tokenizeTerm(searchTerm)
+  if (terms.length === 0) return false
+  return new RegExp(`(?:^|\\s)(?:${terms.map(escapeRegex).join('|')})`, 'i').test(text)
 }
 
 export function encode(value: string): string[] {

@@ -1,3 +1,4 @@
+import { parseSearchQuery } from '../../../util/search-scope'
 import { highlight } from '../../../util/search-text'
 import { codeMatchLocation, codeMatchUrl } from '../code-search-controls'
 import { imageSearchRow, searchableImage } from '../image-search-controls'
@@ -196,7 +197,7 @@ export function displayResults(s: SearchSession, finalResults: SimilarityResult[
     table.setAttribute('aria-label', 'search results')
     const head = table.createTHead().insertRow()
     for (const [label, column] of [
-      ['note', 'note'],
+      [parseSearchQuery(s.searchBar.value).scope === 'notes' ? 'note' : 'file', 'note'],
       ['match', 'match'],
       ...(scored ? [['score', 'score']] : []),
     ]) {
