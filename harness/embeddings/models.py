@@ -14,7 +14,9 @@ class Models:
     self.samples: dict[tuple[str, int], deque[tuple[float, int]]] = {}
     self.saved: dict[tuple[str, int], tuple[float, dict[str, object]]] = {}
 
-  def observe(self, port: str, record: dict, alive: bool) -> dict[str, object]:
+  def observe(
+    self, port: str, record: dict[str, object], alive: bool
+  ) -> dict[str, object]:
     pid = number(record.get('pid'))
     result: dict[str, object] = {
       'port': port,
@@ -30,7 +32,7 @@ class Models:
     if previous and now - previous[0] < 3:
       return previous[1]
 
-    def read(endpoint: str) -> dict:
+    def read(endpoint: str) -> dict[str, object]:
       with urlopen(
         f'http://127.0.0.1:{port}/{endpoint}', timeout=0.75
       ) as response:
@@ -58,6 +60,8 @@ class Models:
         if samples and tokens < samples[-1][1]:
           samples.clear()
         samples.append((now, tokens))
+        while len(samples) > 1 and now - samples[0][0] > 30:
+          samples.popleft()
         elapsed = now - samples[0][0]
         result.update(
           inFlight=summary.get('in_flight'),

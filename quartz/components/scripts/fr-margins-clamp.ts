@@ -114,21 +114,18 @@ export function mountClamps(article: HTMLElement, relayout: () => void, signal: 
      * collision pass can decide each following group's room without forcing layout per group.
      */
     measure(groups: HTMLElement[]) {
-      const candidates = new Map<HTMLElement, { line: number; full: number }>()
+      const cuttable = new Set<HTMLElement>()
       for (const group of groups) {
         for (const entry of group.querySelectorAll<HTMLElement>(':scope > .fr-entry')) {
-          if (open.has(entry) || entry.querySelector('[data-fr-rev], [data-fr-notes]')) continue
-          const body = bodyOf(entry)
-          const line = parseFloat(getComputedStyle(body).lineHeight) || 18
-          const full = body.offsetHeight
-          if (full > (MIN_LINES + 2) * line) candidates.set(entry, { line, full })
+          if (open.has(entry)) show(entry, 'less')
+          else if (!entry.querySelector('[data-fr-rev], [data-fr-notes]')) {
+            cuttable.add(entry)
+            show(entry, 'more')
+          }
         }
       }
-      // Measure the controls in one write/read phase; hiding one removes its height and flex gap.
-      for (const [entry] of controls) {
-        if (open.has(entry)) show(entry, 'less')
-        else if (candidates.has(entry)) show(entry, 'more')
-      }
+      // Include every eligible control before reading geometry. The fit subtracts unused controls,
+      // so discovering a short body does not require another write/read layout phase.
       return new Map(
         groups.map(group => {
           const rect = group.getBoundingClientRect()
@@ -138,7 +135,10 @@ export function mountClamps(article: HTMLElement, relayout: () => void, signal: 
               const button = controls.get(entry)!
               const label = entry.querySelector<HTMLElement>('.fr-entry-label')!
               const labelBox = label.getBoundingClientRect()
-              const candidate = candidates.get(entry)
+              const line = parseFloat(getComputedStyle(body).lineHeight) || 18
+              const full = body.offsetHeight
+              const candidate =
+                cuttable.has(entry) && full > (MIN_LINES + 2) * line ? { line, full } : undefined
               return {
                 entry,
                 body,

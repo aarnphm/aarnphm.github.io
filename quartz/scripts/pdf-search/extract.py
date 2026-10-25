@@ -24,6 +24,7 @@ from contract import (
   PREVIOUS_RECIPE,
   PREVIOUS_MODEL_REVISION,
 )
+from rendering import RENDER_POLICY
 from migration import activate_recipe
 
 
@@ -86,6 +87,7 @@ def recipe(port: int, dpi: int) -> tuple[GlmOcrConfig, ExtractionSpec]:
       'outputMode': 'literal-ocr',
     },
     'client': 'rolling-sdk-pages-v3',
+    'renderPolicy': RENDER_POLICY,
     'modelAdapter': MODEL_ADAPTER,
     'serverRuntime': server['runtime'],
     'packages': {

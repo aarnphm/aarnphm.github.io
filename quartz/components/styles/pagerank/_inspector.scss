@@ -1,5 +1,4 @@
 .pagerank-inspector {
-  --hood-row: 1.75rem;
   display: flex;
   flex-direction: column;
   min-width: 0;
@@ -55,6 +54,8 @@
 
   dt {
     font-size: var(--text-meta);
+    line-height: 1.5;
+    color: var(--darkgray);
   }
 
   dd {
@@ -72,142 +73,9 @@
   }
 }
 
-// Inbound sources, the note, outbound targets; rows are fixed so every note gets one height.
-.pagerank-hood-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 1.5rem auto 1.5rem minmax(0, 1fr);
-  block-size: calc(8 * var(--hood-row));
-}
-
-.pagerank-hood-side {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  min-width: 0;
-
-  li {
-    display: flex;
-    align-items: center;
-    block-size: var(--hood-row);
-    min-width: 0;
-    margin: 0;
-  }
-}
-
-.pagerank-hood-inbound .pagerank-hood-node {
-  flex-direction: row-reverse;
-  justify-content: flex-start;
-  text-align: right;
-}
-
-// Packed toward the centre box, so the ↔ mark stays beside its title on a wide inspector.
-.pagerank-hood-outbound .pagerank-hood-node {
-  justify-content: flex-start;
-}
-
-.pagerank-hood-node {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  inline-size: 100%;
-  block-size: 100%;
-  min-width: 0;
-  padding: 0 0.25rem;
-  border: 0;
-  border-radius: var(--radius-none);
-  background: none;
-  color: var(--darkgray);
-  font: 400 var(--text-meta) var(--bodyFont);
-  cursor: pointer;
-
-  &:focus-visible {
-    outline-offset: -2px;
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      background: var(--pr-surface);
-      color: var(--dark);
-    }
-  }
-}
-
-.pagerank-hood-title {
-  flex: 0 1 auto;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.pagerank-hood-rank,
-.pagerank-hood-both {
-  flex: none;
-  font-family: var(--codeFont);
-  font-variant-numeric: tabular-nums;
-  color: var(--dark);
-}
-
-.pagerank-hood-rank::before {
-  content: '#';
-  color: var(--darkgray);
-}
-
-.pagerank-hood-empty,
-.pagerank-hood-more {
-  font: 400 var(--text-meta) var(--codeFont);
-  color: var(--darkgray);
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-.pagerank-hood-inbound :is(.pagerank-hood-empty, .pagerank-hood-more) {
-  justify-content: flex-end;
-}
-
-.pagerank-hood-edges {
-  inline-size: 100%;
-  block-size: 100%;
-  overflow: visible;
-
-  path {
-    fill: none;
-    stroke: var(--darkgray);
-    stroke-linecap: round;
-  }
-}
-
-.pagerank-hood-center {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.2rem;
-  padding: 0.35rem 0.4rem;
-  align-self: center;
-  border: 1px solid var(--dark);
-  background: var(--pr-selected);
-  font: 400 var(--text-meta) var(--codeFont);
-  font-variant-numeric: tabular-nums;
-  color: var(--dark);
-}
-
-.pagerank-square {
-  flex: none;
-  display: inline-block;
-  inline-size: calc(4px + var(--px) * 8px);
-  block-size: calc(4px + var(--px) * 8px);
-  background: var(--dark);
-}
-
-.pagerank-hood-caption {
-  margin: 0.5rem 0 0;
-  font-size: var(--text-meta);
-  line-height: 1.45;
-}
-
 .pagerank-ledger-scroll {
-  block-size: 15rem;
+  position: relative;
+  block-size: 24rem;
   overflow: auto;
   overscroll-behavior: contain;
 
@@ -215,9 +83,14 @@
     outline-offset: -2px;
   }
 
+  > .pagerank-kicker {
+    margin: 1rem 0 0.4rem;
+  }
+
+  // Tufte register: one rule under the head and one above the totals; no rules between rows.
   table {
     inline-size: 100%;
-    margin: 0 0 0.75rem;
+    margin: 0;
     table-layout: fixed;
     border-collapse: collapse;
     font: 400 var(--text-meta) / 1.4 var(--codeFont);
@@ -226,60 +99,46 @@
 
   th,
   td {
-    padding: 0.3rem 0.4rem;
-    border-block-end: 1px solid var(--pr-line);
+    padding: 0.25rem 0.4rem;
     text-align: right;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    vertical-align: baseline;
   }
 
   :is(th, td):first-child {
-    inline-size: auto;
+    padding-inline-start: 0;
     text-align: left;
   }
 
   :is(th, td):nth-child(2) {
-    inline-size: 3.75rem;
+    inline-size: 3.5rem;
   }
 
   :is(th, td):nth-child(3) {
-    inline-size: 6.5rem;
-  }
-
-  @container pagerank (max-width: 30rem) {
-    :is(th, td):nth-child(2) {
-      inline-size: 3rem;
-    }
-
-    :is(th, td):nth-child(3) {
-      inline-size: 4.75rem;
-    }
+    inline-size: 6.25rem;
+    padding-inline-end: 0;
   }
 
   thead th {
     font-weight: 400;
     color: var(--darkgray);
-    background: var(--pr-surface);
+    border-block-end: 1px solid var(--pr-line);
   }
 
   tbody td:first-child {
+    display: flex;
+    gap: 0.4rem;
+    align-items: baseline;
     font-family: var(--bodyFont);
+    color: var(--dark);
+  }
 
-    a.internal {
-      white-space: nowrap;
-    }
-
-    .pagerank-hood-rank {
-      display: inline-block;
-      min-inline-size: 2.75rem;
-      margin-inline-end: 0.35rem;
-    }
+  tfoot tr:first-child :is(th, td) {
+    border-block-start: 1px solid var(--pr-line);
   }
 
   tfoot th {
-    font-weight: 400;
-    white-space: normal;
+    font: 400 var(--text-meta) / 1.4 var(--bodyFont);
+    color: var(--darkgray);
   }
 
   tfoot tr:last-child :is(th, td) {
@@ -287,17 +146,47 @@
     font-weight: 500;
   }
 
+  .pagerank-link-rank {
+    flex: none;
+    min-inline-size: 2.5rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--darkgray);
+    font: inherit;
+    font-family: var(--codeFont);
+    font-variant-numeric: tabular-nums;
+    text-align: left;
+    cursor: pointer;
+
+    &::before {
+      content: '#';
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        color: var(--dark);
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .pagerank-share {
+    white-space: nowrap;
+  }
+
   .pagerank-bar {
     display: inline-block;
     vertical-align: middle;
     margin-inline-end: 0.35rem;
     inline-size: calc(var(--share) * 3rem);
-    block-size: 6px;
+    block-size: 3px;
     background: var(--dark);
   }
 
   .pagerank-status td {
+    display: table-cell;
     font-family: var(--bodyFont);
-    white-space: normal;
+    color: var(--darkgray);
   }
 }

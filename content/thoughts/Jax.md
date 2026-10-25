@@ -1,21 +1,19 @@
 ---
 date: '2022-11-07'
-description: numpy with autograd and xla compilation for accelerators, featuring jit compilation, automatic differentiation, and vectorization with immutable arrays.
+description: Numpy + [[thoughts/Autograd|Autograd]]. Use [[thoughts/XLA|XLA]] to compile and run NumPy code on accelerators. JIT compilation
 id: Jax
-modified: 2026-06-05 15:08:07 GMT-04:00
+modified: 2026-10-24 01:39:45 GMT-04:00
 tags:
-  - seed
   - ml
 title: Jax
 ---
-
-Numpy + [[thoughts/Autograd|Autograd]]. Use [[thoughts/XLA|XLA]] to compile and run NumPy code on accelerators.
 
 - notable function:
   - `jit()` for compilation of multiple computations
   - `grad()` for performing transformation (autodiff, [[thoughts/Vector calculus#Jacobian matrix|Jacobian]]-vector product)
   - `vmap()` for auto-vectorisation
 
+> [!important] immutability
 > Arrays are **immutable** in Jax
 
 - Treat functions as pure as to compiled with [[thoughts/XLA|XLA]]

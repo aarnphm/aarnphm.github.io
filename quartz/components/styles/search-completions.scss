@@ -1,8 +1,7 @@
 .search-completions {
-  flex: 0 1 auto;
-  max-height: min(18rem, 45dvh);
+  flex: 1;
+  min-height: 0;
   overflow: auto;
-  border-bottom: 1px solid var(--lightgray);
   padding: 0.4rem;
   font-family: var(--codeFont);
   font-size: var(--text-meta);
@@ -16,13 +15,20 @@
     color: var(--darkgray);
   }
 
+  .search-completions-list {
+    display: grid;
+    grid-template-columns: max-content minmax(0, max-content) minmax(0, 1fr);
+    column-gap: 0.75rem;
+  }
+
   .search-completion {
-    display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    align-items: baseline;
     width: 100%;
-    min-height: 2.125rem;
-    padding: 0.4rem 0.5rem;
+    min-height: 1.75rem;
+    padding: 0.2rem 0.5rem;
     border: 0;
     background: transparent;
     color: var(--dark);
@@ -30,16 +36,18 @@
     font: inherit;
     cursor: var(--cursor-pointer, pointer);
 
-    &[aria-selected='true'] {
-      background: var(--selected, color-mix(in srgb, var(--secondary) 14%, transparent));
+    &[aria-selected='true'] .search-completion-value {
+      text-decoration: underline;
+      text-underline-offset: 0.2em;
     }
     &:focus-visible {
       outline: 2px solid var(--dark);
       outline-offset: -2px;
     }
     @media (hover: hover) and (pointer: fine) {
-      &:hover {
-        background: color-mix(in srgb, var(--dark) 6%, var(--light));
+      &:hover .search-completion-value {
+        text-decoration: underline;
+        text-underline-offset: 0.2em;
       }
     }
     @media (pointer: coarse) {
@@ -47,17 +55,19 @@
     }
   }
 
-  .search-completion-title {
-    display: flex;
-    align-items: baseline;
-    gap: 0.3rem;
-  }
   .search-completion-token {
+    justify-self: start;
     padding: 0.1rem 0.3rem;
     border: 1px solid var(--lightgray);
     color: var(--darkgray);
+    white-space: nowrap;
+  }
+  .search-completion-value {
+    min-width: 0;
+    overflow-wrap: anywhere;
   }
   .search-completion-description {
+    min-width: 0;
     color: var(--darkgray);
     overflow-wrap: anywhere;
   }

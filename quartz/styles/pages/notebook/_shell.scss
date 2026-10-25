@@ -1,4 +1,4 @@
-body:has(article.notebook-page) [data-article-title] {
+.page-body-grid:has(article.notebook-page) [data-article-title] {
   grid-column: var(--layout-wide-column);
 }
 

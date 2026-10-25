@@ -96,7 +96,8 @@ class Logs:
         break
       try:
         started = (
-          datetime.strptime(path.name, '%Y%m%dT%H%M%S%f-extracting.log')
+          datetime
+          .strptime(path.name, '%Y%m%dT%H%M%S%f-extracting.log')
           .replace(tzinfo=timezone.utc)
           .timestamp()
         )

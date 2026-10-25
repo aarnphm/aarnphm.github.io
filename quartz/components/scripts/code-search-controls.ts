@@ -5,20 +5,12 @@ export interface CodeSearchRow extends CodeMatch {
   selectedRange: number
 }
 
-/** Keep owners together while retaining every occurrence and range. */
+/** Each source unit retains its ranges for navigation within one result. */
 export function codeSearchRows(matches: CodeMatch[]): CodeSearchRow[] {
   const owners = new Map<string, CodeSearchRow[]>()
   for (const match of matches) {
     const group = owners.get(match.unit.ownerSlug) ?? []
-    group.push(
-      ...(match.ranges.length
-        ? match.ranges.map((_, index) => ({
-            ...match,
-            selectedRange: index,
-            excerpt: index === 0 ? match.excerpt : 'select to preview this range',
-          }))
-        : [{ ...match, selectedRange: 0 }]),
-    )
+    group.push({ ...match, selectedRange: 0 })
     owners.set(match.unit.ownerSlug, group)
   }
   return [...owners.values()].flat()

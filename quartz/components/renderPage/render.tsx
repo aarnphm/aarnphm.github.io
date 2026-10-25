@@ -418,19 +418,22 @@ export function renderPageWithMetadata(
               <Headings {...componentData} />
               <PressKit {...componentData} />
             </section>
-            {!isCurius && !isPdfReader && (!isFolderTag || afterBody.length > 0) && (
-              <section class="page-footer popover-hint grid all-col">
-                {!isFolderTag &&
-                  retrievalNodes.length > 0 &&
-                  htmlToJsx(componentData.fileData.filePath!, {
-                    type: 'root',
-                    children: retrievalNodes,
-                  } as Node)}
-                {afterBody.length > 0 &&
-                  afterBody.map(BodyComponent => <BodyComponent {...componentData} />)}
-                {!isFolderTag && slug !== 'index' && <Footer {...componentData} />}
-              </section>
-            )}
+            {!isCurius &&
+              !isPdfReader &&
+              slug !== 'pagerank' &&
+              (!isFolderTag || afterBody.length > 0) && (
+                <section class="page-footer popover-hint grid all-col">
+                  {!isFolderTag &&
+                    retrievalNodes.length > 0 &&
+                    htmlToJsx(componentData.fileData.filePath!, {
+                      type: 'root',
+                      children: retrievalNodes,
+                    } as Node)}
+                  {afterBody.length > 0 &&
+                    afterBody.map(BodyComponent => <BodyComponent {...componentData} />)}
+                  {!isFolderTag && slug !== 'index' && <Footer {...componentData} />}
+                </section>
+              )}
           </div>
           <QuartzIcon filePath={componentData.fileData.filePath!} />
         </main>

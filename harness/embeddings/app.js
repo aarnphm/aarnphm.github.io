@@ -123,7 +123,7 @@ function documentRow(item) {
   saved.remaining.textContent = count(item.remainingPages)
   progress(saved.cachedBar, item.ocrPages, item.totalPages)
   progress(saved.indexedBar, item.indexedPages, item.totalPages)
-  saved.readout.textContent = `last cached page: ${count(item.lastPage)} · cache updated: ${time(item.lastProgressAt)}${item.invalidPages ? ` · ${item.invalidPages} invalid cache pages require extraction` : ''}`
+  saved.readout.textContent = `highest cached page: ${count(item.lastPage)} · cache updated: ${time(item.lastProgressAt)}${item.invalidPages ? ` · ${item.invalidPages} invalid cache pages require extraction` : ''}`
   saved.link.hash = `page=${item.lastPage ?? 1}`
   return saved.row
 }

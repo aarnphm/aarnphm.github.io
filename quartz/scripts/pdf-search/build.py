@@ -103,18 +103,34 @@ def read_passages(
 ) -> tuple[list[PdfPassage], dict[str, PdfMetadata], ExtractionSpec]:
   spec = ExtractionSpec(**json.loads((cache_root / 'recipe.json').read_text()))
   by_source = {}
+  by_hash = {}
   for path in cache_root.glob('*/document.json'):
     document = json.loads(path.read_text())
     if document['recipe'] == asdict(spec):
       by_source[document['source']] = document
+      by_hash[document['sourceSha256']] = document
   passages: list[PdfPassage] = []
   documents: dict[str, PdfMetadata] = {}
+  try:
+    cached_sizes = {Path(source).stat().st_size for source in by_source}
+  except FileNotFoundError:
+    cached_sizes = None
   for slug, entry in sorted(inventory.items()):
     source = entry.source
     document = by_source.get(str(source))
-    if document is None:
+    # Identical bytes require identical size. Avoid hashing the uncached PDF
+    # library on every incremental publication just to find duplicate paths.
+    if (
+      document is None
+      and cached_sizes is not None
+      and source.stat().st_size not in cached_sizes
+    ):
       continue
     source_sha = hashlib.sha256(source.read_bytes()).hexdigest()
+    if document is None:
+      document = by_hash.get(source_sha)
+    if document is None:
+      continue
     if source_sha != document['sourceSha256']:
       raise ValueError(f'Source changed after extraction: {source}')
     cache = PageCache(cache_root, source_sha, spec)

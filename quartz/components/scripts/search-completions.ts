@@ -20,6 +20,7 @@ export function createSearchCompletions(
   label.className = 'search-completions-label'
   label.textContent = 'suggestions'
   const list = document.createElement('div')
+  list.className = 'search-completions-list'
   list.id = `search-completions-${crypto.randomUUID()}`
   list.setAttribute('role', 'listbox')
   list.setAttribute('aria-label', 'search suggestions')
@@ -80,16 +81,19 @@ export function createSearchCompletions(
         item.id = `${list.id}-${index}`
         item.className = 'search-completion'
         item.setAttribute('role', 'option')
-        const title = document.createElement('span')
-        title.className = 'search-completion-title'
         const token = document.createElement('span')
         token.className = 'search-completion-token'
         token.textContent = choice.operator
-        title.append(token, document.createTextNode(choice.value))
-        const description = document.createElement('span')
-        description.className = 'search-completion-description'
-        description.textContent = choice.description
-        item.append(title, description)
+        const value = document.createElement('span')
+        value.className = 'search-completion-value'
+        value.textContent = choice.value
+        item.append(token, value)
+        if (choice.description) {
+          const description = document.createElement('span')
+          description.className = 'search-completion-description'
+          description.textContent = choice.description
+          item.append(description)
+        }
         item.addEventListener('pointerdown', event => event.preventDefault())
         item.addEventListener('click', () => apply(index))
         return item

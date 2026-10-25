@@ -178,14 +178,15 @@ body[data-is-canvas='true'] {
 
   .page-content {
     margin-bottom: 0;
-    padding-bottom: 2rem;
+    padding-bottom: 0;
   }
 
   .main-col {
-    grid-column: 3/-3;
+    grid-column: 1/-1;
   }
 
   .canvas-container {
+    border: 0;
     height: 100%;
     min-width: 0;
     min-height: 0;

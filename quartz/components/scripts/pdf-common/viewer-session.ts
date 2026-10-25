@@ -322,11 +322,9 @@ export function setupPdfEvents(state: PdfState) {
 export function cleanupPdfEmbed(root: HTMLElement) {
   pendingPdfMounts.get(root)?.abort()
   pendingPdfMounts.delete(root)
+  root.removeAttribute('data-pdf-status')
   const state = pdfStates.get(root)
-  if (!state) {
-    root.removeAttribute('data-pdf-status')
-    return
-  }
+  if (!state) return
   state.destroyed = true
   state.events.abort()
   if (selectedPdfState === state || selectedPdfRoot === state.root) {

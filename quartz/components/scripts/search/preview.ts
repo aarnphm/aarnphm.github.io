@@ -2,6 +2,7 @@ import { documentPreviewUrl, readDocumentPreview } from '../../../util/document-
 import { fetchCanonical } from '../../../util/fetch-canonical'
 import { FullSlug, isFullSlug, normalizeRelativeURLs, resolveRelative } from '../../../util/path'
 import { tokenizeTerm } from '../../../util/search-text'
+import { codeMatchLabel, codeMatchLocation } from '../code-search-controls'
 import { renderCodeMatch } from '../code-search-preview'
 import { renderCoursePreview } from '../course-preview-card'
 import { renderDocumentPreview } from '../document-preview-card'
@@ -18,6 +19,9 @@ function highlightHTML(searchTerm: string, el: HTMLElement) {
   const p = new DOMParser()
   const tokenizedTerms = tokenizeTerm(searchTerm)
   const html = p.parseFromString(el.innerHTML, 'text/html')
+  html
+    .querySelectorAll('script[data-notebook-runtime-data], [data-notebook-preview]')
+    .forEach(node => node.remove())
 
   const createHighlightSpan = (text: string) => {
     const span = document.createElement('span')
@@ -43,7 +47,15 @@ function highlightHTML(searchTerm: string, el: HTMLElement) {
       spanContainer.appendChild(document.createTextNode(nodeText.slice(lastIndex)))
       node.parentNode?.replaceChild(spanContainer, node)
     } else if (node.nodeType === Node.ELEMENT_NODE) {
-      if ((node as HTMLElement).classList.contains('highlight')) return
+      const element = node as Element
+      if (
+        element.classList.contains('highlight') ||
+        element instanceof SVGElement ||
+        element.tagName === 'SCRIPT' ||
+        element.tagName === 'STYLE' ||
+        element.hasAttribute('hidden')
+      )
+        return
       Array.from(node.childNodes).forEach(child => highlightTextNodes(child, term))
     }
   }
@@ -118,34 +130,55 @@ async function fetchContent(
   return page
 }
 
+function isPdfHit(s: SearchSession, el: HTMLElement, slug: FullSlug): boolean {
+  if (s.codeMatches.has(el) || el.dataset.directFile !== 'true') return false
+  if (el.dataset.canvas === 'true' || el.dataset.bases === 'true') return false
+  const file = s.data?.[slug]
+  if (el.dataset.protected === 'true' || file?.protected === true) return false
+  return (file?.fileName || slug).toLowerCase().endsWith('.pdf')
+}
+
 export async function displayPreview(s: SearchSession, el: HTMLElement | null) {
   const { preview } = s
   if (!s.previewVisible || !el || !preview) return
   const codeMatch = s.codeMatches.get(el)
   const slug = el.dataset.codeOwner ?? el.id
   if (!isFullSlug(slug)) return
-  if (
-    s.previewRequest &&
-    !s.previewRequest.signal.aborted &&
-    preview.dataset.slug ===
-      (codeMatch
-        ? `${slug}:${codeMatch.unit.id}:${codeMatch.ranges[codeMatch.selectedRange]?.start.offset}`
-        : slug)
-  )
+  const previewKey = codeMatch
+    ? `${slug}:${codeMatch.unit.id}:${codeMatch.ranges[codeMatch.selectedRange]?.start.offset}`
+    : el.dataset.pdfPage
+      ? `${slug}#${el.dataset.pdfPage}`
+      : slug
+  if (s.previewRequest && !s.previewRequest.signal.aborted && preview.dataset.slug === previewKey)
     return
-  clearPreview(s)
+  // Between PDF hits or code matches the mounted chrome stays; the renderer swaps its content.
+  if (
+    (codeMatch && preview.querySelector(':scope > .code-match-preview')) ||
+    (isPdfHit(s, el, slug) && preview.querySelector(':scope > .search-pdf-preview'))
+  ) {
+    s.previewRequest?.abort()
+  } else {
+    clearPreview(s)
+  }
   const request = new AbortController()
   s.previewRequest = request
-  preview.dataset.slug = codeMatch
-    ? `${slug}:${codeMatch.unit.id}:${codeMatch.ranges[codeMatch.selectedRange]?.start.offset}`
-    : slug
+  preview.dataset.slug = previewKey
   startSearchProgress(s, 'preview')
   request.signal.addEventListener('abort', () => completeSearchProgress(s, 'preview'), {
     once: true,
   })
   try {
     if (codeMatch) {
-      await renderCodeMatch(s.currentSlug, codeMatch, preview, request.signal)
+      await renderCodeMatch(s.currentSlug, codeMatch, preview, request.signal, false, () => {
+        const location = el.querySelector('.code-search-mobile-location')
+        if (location) {
+          location.textContent = `${codeMatchLocation(codeMatch)} · match ${codeMatch.selectedRange + 1}/${codeMatch.ranges.length}`
+        }
+        el.setAttribute('aria-label', el.textContent?.trim() ?? '')
+        const excerpt = el.closest('tr')?.querySelector('.search-column-match > span')
+        if (excerpt) excerpt.textContent = `${codeMatchLabel(codeMatch)} · ${codeMatch.excerpt}`
+        preview.dataset.slug = `${slug}:${codeMatch.unit.id}:${codeMatch.ranges[codeMatch.selectedRange]?.start.offset}`
+      })
       return
     }
     const isProtected = el.dataset.protected === 'true' || requireData(s)[slug]?.protected === true
@@ -255,9 +288,19 @@ export async function displayPreview(s: SearchSession, el: HTMLElement | null) {
       return
     }
 
-    const innerDiv = Array.from(page.querySelectorAll<HTMLElement>('.popover-hint')).flatMap(el => [
-      ...highlightHTML(shared.currentSearchTerm, el).children,
-    ])
+    const innerDiv = Array.from(page.querySelectorAll<HTMLElement>('.popover-hint')).flatMap(el => {
+      const highlighted = highlightHTML(shared.currentSearchTerm, el)
+      if (
+        !el.classList.contains('notebook-page') &&
+        !el.classList.contains('notebook-runtime-page')
+      )
+        return [...highlighted.children]
+      const article = document.createElement('article')
+      article.className = el.className
+      article.classList.remove('popover-hint')
+      article.append(...highlighted.children)
+      return [article]
+    })
     const previewInner = document.createElement('div')
     previewInner.classList.add('preview-inner')
     previewInner.append(...innerDiv)

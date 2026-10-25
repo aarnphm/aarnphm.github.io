@@ -36,7 +36,8 @@ const isContentPage = (fileData: QuartzPluginData): boolean => {
     fileData.streamData ||
     fileData.flashcards ||
     fileData.frontmatter?.layout === 'masonry' ||
-    fileData.frontmatter?.layout === 'triathlon'
+    fileData.frontmatter?.layout === 'triathlon' ||
+    fileData.frontmatter?.layout === 'pagerank'
   )
 }
 

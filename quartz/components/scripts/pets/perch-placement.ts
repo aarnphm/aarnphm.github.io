@@ -144,6 +144,25 @@ export const campSolids = (): CollisionActor[] => {
   }
   return obstacles
 }
+// Controls in view, so the pet never stands over a button. Prose links are already text boxes; an
+// icon-only link has no text of its own and joins the controls. The trail scene's own targets (a
+// watering button on every tree) stay walkable.
+const controls = 'button, [role="button"], input, select, textarea, summary, a[href]'
+const controlBoxes = () => {
+  const boxes: DOMRect[] = []
+  const scene = trailScene(document)
+  for (const el of document.querySelectorAll<HTMLElement>(controls)) {
+    if (petState.root?.contains(el) || scene?.contains(el)) continue
+    if (el.tagName === 'A' && el.textContent?.trim()) continue
+    const rect = el.getBoundingClientRect()
+    if (rect.width === 0 || rect.height === 0) continue
+    if (rect.bottom < 0 || rect.top > window.innerHeight) continue
+    if (rect.right < 0 || rect.left > window.innerWidth) continue
+    boxes.push(rect)
+  }
+  return boxes
+}
+
 export const petObstacles = () => ({
   text: visibleTextBoxes(document, petState.root),
   panels: [
@@ -151,6 +170,7 @@ export const petObstacles = () => ({
       panel.getBoundingClientRect(),
     ),
     ...[trailClockRegion(document)].flatMap(region => (region ? [region] : [])),
+    ...controlBoxes(),
   ],
   camps: campSolids(),
 })

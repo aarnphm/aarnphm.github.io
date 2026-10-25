@@ -287,6 +287,10 @@
         }
       }
 
+      & > .search-completions:not([hidden]) + .search-layout {
+        display: none;
+      }
+
       & > .search-layout {
         display: none;
         flex-direction: row;
@@ -509,6 +513,7 @@
             width: 100%;
             table-layout: fixed;
             border-collapse: collapse;
+            border-bottom: 1px solid var(--search-line);
             margin: 0;
             font-size: var(--text-ui);
             --search-line: color-mix(in srgb, var(--dark) 12%, var(--light));

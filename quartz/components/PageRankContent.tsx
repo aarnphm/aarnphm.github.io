@@ -28,39 +28,75 @@ const stats: [key: string, label: string][] = [
   ['noOutbound', 'no outbound link'],
 ]
 
-const sortHeader = (key: string, label: string, title: string) => (
-  <th scope="col" class={`pagerank-col-${key}`} aria-sort="none">
-    <button type="button" data-pr-sort={key} title={title}>
+// What each column measures; shown in the line above the table on hover or focus.
+const explain = {
+  position: 'place in the full ranking by score. filters keep this number.',
+  note: 'the note title, with its path under it.',
+  times: 'score divided by the average score. 1.00× is an average note.',
+  axis: 'score on one log scale for all notes. together the marks show how scores spread.',
+  inbound: 'how many other notes link to this note.',
+  outbound: 'how many notes this note links to.',
+  delta:
+    'rank by inbound link count minus rank by score. above zero, links from high-ranked notes lift it.',
+}
+
+const header = (key: keyof typeof explain, label: preact.ComponentChildren) => (
+  <th scope="col" class={`pagerank-col-${key}`} data-pr-explain={explain[key]} tabindex={0}>
+    {label}
+  </th>
+)
+
+const sortHeader = (key: keyof typeof explain, label: preact.ComponentChildren, name: string) => (
+  <th scope="col" class={`pagerank-col-${key}`} aria-sort="none" data-pr-explain={explain[key]}>
+    <button type="button" data-pr-sort={key} aria-label={`sort by ${name}`}>
       {label}
     </button>
   </th>
 )
 
+const defaultExplain = '100 notes a page. point at a column heading to see what it measures.'
+
+const facts: [key: string, label: string][] = [
+  ['rank', '\\#'],
+  ['times', '\\times\\,\\text{mean}'],
+  ['links', '\\text{in}\\cdot\\text{out}'],
+  ['delta', '\\Delta\\,\\text{in}'],
+  ['source', '\\text{top source}'],
+]
+
+const LinkIcon = () => (
+  <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false">
+    <path d="M6.5 9.5l3-3M7 4.5l1-1a2.5 2.5 0 013.5 3.5l-1 1M9 11.5l-1 1a2.5 2.5 0 01-3.5-3.5l1-1" />
+  </svg>
+)
+
 export default (() => {
-  const PageRankContent: QuartzComponent = () => (
-    <article class="popover-hint main-col pagerank-page">
+  const PageRankContent: QuartzComponent = ({ fileData }) => (
+    <article class="popover-hint pagerank-page">
       <div id="pagerank-root" class="pagerank" data-pagerank>
         <section class="pagerank-intro" aria-label="what the score means">
+          <h1 class="pagerank-title">{fileData.frontmatter?.title ?? 'pagerank'}</h1>
+          {fileData.frontmatter?.description && (
+            <p class="pagerank-description">{fileData.frontmatter.description}</p>
+          )}
           <p>
-            each note is scored by a random walk over the links i wrote. at each step the walker
-            follows one of the current note's links with probability <Tex source="d" />, or jumps to
-            any note. a note without links sends the walker to any note.
+            picture a reader who moves through the garden at random. at each step they follow one of
+            the links on the current note with probability <Tex source="d" />, or they jump to any
+            note. a note with no links always sends them to any note. a note's score is the part of
+            a long walk that the reader spends on it.
           </p>
           <Tex
             display
             source="\mathrm{PR}(p) = \frac{1-d}{N} + \frac{d}{N}\sum_{L(q)=0}\mathrm{PR}(q) + d\sum_{q \to p}\frac{\mathrm{PR}(q)}{L(q)}"
           />
           <p>
-            scores read as <Tex source="x_p = N\cdot\mathrm{PR}(p)" />, times the mean: 1.00× is an
-            average note. <Tex source="L(q)" /> counts the outbound links of <Tex source="q" />.
+            <Tex source="L(q)" /> is the number of links on note <Tex source="q" />, so each link
+            passes on an equal part of what <Tex source="q" /> holds. the table divides each score
+            by the average, <Tex source="x_p = N\cdot\mathrm{PR}(p)" />, so 1.00× is an average
+            note. select a note to see the links that make up its score.
           </p>
           <p class="pagerank-meta" data-pr-meta>
             reading the link graph…
-          </p>
-          <p class="pagerank-aside">
-            ctrl+o orders suggestions differently: it restarts the walk from the note you are
-            reading and follows links in both directions, so it ranks what is near that note. this
-            page ranks every note by one walk over the whole garden.
           </p>
         </section>
 
@@ -76,10 +112,12 @@ export default (() => {
         <figure class="pagerank-figure">
           <div class="pagerank-chart" data-pr-chart />
           <figcaption>
-            every note's score against its rank, both on log scales. the dashed line is a power law{' '}
-            <Tex source="x \propto r^{-\alpha}" /> fitted to notes with an inbound link; the flat
-            tail on the right is notes nobody links to.{' '}
-            <span class="pagerank-chart-readout" data-pr-chart-readout aria-live="polite" />
+            <p>
+              each mark is one note, placed by its rank and its score on log scales. a few notes
+              hold most of the score, and the dashed line <Tex source="x \propto r^{-\alpha}" />{' '}
+              follows them down. the flat run on the right is the notes that nothing links to.
+            </p>
+            <p class="pagerank-chart-readout" data-pr-chart-readout aria-live="polite" />
           </figcaption>
         </figure>
 
@@ -95,11 +133,17 @@ export default (() => {
           />
           <div class="pagerank-folder" data-pr-folder />
           <div class="pagerank-toggles" role="group" aria-label="filters">
-            <button type="button" data-pr-toggle="hideCourse" aria-pressed="false">
-              hide course indexes
+            <button type="button" data-pr-toggle="courses" aria-pressed="false">
+              courses
             </button>
-            <button type="button" data-pr-toggle="linked" aria-pressed="false">
-              linked only
+            <button
+              type="button"
+              class="pagerank-icon-toggle"
+              data-pr-toggle="linked"
+              aria-pressed="false"
+              aria-label="only notes with an inbound link"
+            >
+              <LinkIcon />
             </button>
           </div>
         </div>
@@ -107,23 +151,20 @@ export default (() => {
         <div class="pagerank-workspace">
           <div class="pagerank-list">
             <div class="pagerank-frame">
+              <p class="pagerank-explain" data-pr-explain-line>
+                {defaultExplain}
+              </p>
               <div class="pagerank-scroll" tabindex={0} role="region" aria-label="global ranking">
                 <table class="pagerank-table">
                   <thead>
                     <tr>
-                      {sortHeader('position', '#', 'global position')}
-                      <th scope="col" class="pagerank-col-note">
-                        note
-                      </th>
-                      <th scope="col" class="pagerank-col-times">
-                        ×mean
-                      </th>
-                      <th scope="col" class="pagerank-col-axis">
-                        log axis
-                      </th>
+                      {sortHeader('position', <Tex source="\#" />, 'global position')}
+                      {header('note', 'note')}
+                      {header('times', <Tex source="\times\,\text{mean}" />)}
+                      {header('axis', 'log axis')}
                       {sortHeader('inbound', 'in', 'inbound links')}
                       {sortHeader('outbound', 'out', 'outbound links')}
-                      {sortHeader('delta', 'Δ in', 'rank by inbound count minus rank by pagerank')}
+                      {sortHeader('delta', <Tex source="\Delta\,\text{in}" />, 'rank change')}
                     </tr>
                   </thead>
                   <tbody data-pr-rows>
@@ -146,12 +187,6 @@ export default (() => {
                 <span class="pagerank-filtered" data-pr-filtered aria-live="polite" />
               </div>
             </div>
-            <p class="pagerank-legend">
-              100 rows a page. # is the global position; filters never renumber it. the log axis
-              column puts every note on one scale, so its marks are the distribution. Δ in is rank
-              by inbound count minus rank by pagerank: positive when well-ranked sources lift a
-              note.
-            </p>
           </div>
 
           <aside class="pagerank-inspector" aria-label="selected note" data-pr-inspector>
@@ -159,48 +194,62 @@ export default (() => {
               <p class="pagerank-kicker">selected note</p>
               <h2 data-pr-title>–</h2>
               <p class="pagerank-slug" data-pr-slug />
-              <dl class="pagerank-facts" data-pr-facts />
+              <dl class="pagerank-facts">
+                {facts.map(([key, label]) => (
+                  <div key={key}>
+                    <dt>
+                      <Tex source={label} />
+                    </dt>
+                    <dd data-pr-fact={key}>–</dd>
+                  </div>
+                ))}
+              </dl>
             </header>
-            <section class="pagerank-hood" aria-label="authored links">
-              <p class="pagerank-kicker">links</p>
-              <div class="pagerank-hood-graph" data-pr-hood />
-              <p class="pagerank-hood-caption" data-pr-hood-caption />
-            </section>
-            <section class="pagerank-ledger" aria-label="where the score comes from">
+            <section class="pagerank-links" aria-label="links of the selected note">
               <p class="pagerank-kicker">
-                ledger: each inbound link gives <Tex source="d\,x_q / L(q)" />
+                links in, largest first. a link from <Tex source="q" /> gives{' '}
+                <Tex source="d\,x_q / L(q)" />
               </p>
-              <div class="pagerank-ledger-scroll" tabindex={0} role="region" aria-label="ledger">
+              <div class="pagerank-ledger-scroll" tabindex={0} role="region" aria-label="links">
                 <table>
                   <thead>
                     <tr>
-                      <th scope="col">inbound from</th>
-                      <th scope="col">gives</th>
-                      <th scope="col">share</th>
+                      <th scope="col">from</th>
+                      <th scope="col" title="the part of the score this link gives, times the mean">
+                        gives
+                      </th>
+                      <th scope="col" title="the part of this note's score">
+                        share
+                      </th>
                     </tr>
                   </thead>
                   <tbody data-pr-ledger-in />
                   <tfoot>
                     <tr>
                       <th scope="row">
-                        every note <Tex source="(1-d) + d\sum_{L(q)=0}\mathrm{PR}(q)" />
+                        every note gets <Tex source="(1-d) + d\sum_{L(q)=0}\mathrm{PR}(q)" />
                       </th>
                       <td data-pr-ledger-base>–</td>
                       <td data-pr-ledger-base-share>–</td>
                     </tr>
                     <tr>
-                      <th scope="row">total, the score</th>
+                      <th scope="row">score</th>
                       <td data-pr-ledger-total>–</td>
                       <td>100%</td>
                     </tr>
                   </tfoot>
                 </table>
+                <p class="pagerank-kicker">links out</p>
                 <table>
                   <thead>
                     <tr>
-                      <th scope="col">outbound to</th>
-                      <th scope="col">gives</th>
-                      <th scope="col">of its score</th>
+                      <th scope="col">to</th>
+                      <th scope="col" title="the part of the score this link gives, times the mean">
+                        gives
+                      </th>
+                      <th scope="col" title="the part of the target note's score">
+                        share
+                      </th>
                     </tr>
                   </thead>
                   <tbody data-pr-ledger-out />
