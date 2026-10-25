@@ -207,17 +207,6 @@ body[data-slug='pagerank'] {
     stroke-dasharray: 4 3;
   }
 
-  .pagerank-ticks text {
-    font: 400 11px var(--codeFont);
-    font-variant-numeric: tabular-nums;
-    fill: var(--darkgray);
-  }
-
-  .pagerank-axis-title {
-    font: 400 12px var(--bodyFont);
-    fill: var(--darkgray);
-  }
-
   :is(.pagerank-mark-selected, .pagerank-mark-pointer) {
     transition: transform 120ms ease-out;
 
@@ -245,6 +234,137 @@ body[data-slug='pagerank'] {
 
 .pagerank-figure figcaption p {
   margin: 0;
+}
+
+// Shared by the rank–size chart and the field overlay.
+:is(.pagerank-chart, .pagerank-field-plot) {
+  .pagerank-ticks text {
+    font: 400 11px var(--codeFont);
+    font-variant-numeric: tabular-nums;
+    fill: var(--darkgray);
+  }
+
+  .pagerank-axis-title {
+    font: 400 12px var(--bodyFont);
+    fill: var(--darkgray);
+  }
+}
+
+// One canvas for the dots, one SVG for the axis and leader, one layer for HTML notes.
+// Clipped, so a long title in a note never widens the page.
+.pagerank-field {
+  overflow: hidden;
+}
+
+.pagerank-field-plot {
+  position: relative;
+  block-size: var(--field-height, 430px);
+  min-width: 0;
+
+  // field.ts draws 380px under a 600px plot; the figure adds 2rem padding and its border.
+  @container pagerank (max-width: calc(600px + 2rem + 2px)) {
+    block-size: var(--field-height, 380px);
+  }
+
+  > :is(canvas, svg, .pagerank-field-notes) {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  > :is(svg, .pagerank-field-notes) {
+    pointer-events: none;
+  }
+
+  &:focus-visible {
+    outline-offset: -2px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &[data-hit] canvas {
+      cursor: pointer;
+    }
+  }
+
+  .pagerank-field-lines line {
+    stroke: var(--darkgray);
+    stroke-width: 1;
+  }
+
+  .pagerank-leader {
+    stroke-dasharray: 2 2;
+  }
+}
+
+.pagerank-field-note {
+  position: absolute;
+  margin: 0;
+  font: 400 var(--text-meta) / 1.35 var(--bodyFont);
+  color: var(--dark);
+  overflow-wrap: anywhere;
+}
+
+.pagerank-field-top {
+  text-align: right;
+}
+
+// The triathlon chart readout: mono, top right inside the plot, shown while a dot is hovered.
+.pagerank-field-hover {
+  position: absolute;
+  inset: 8px 16px auto auto;
+  max-inline-size: calc(100% - 32px);
+  margin: 0;
+  padding: 0.12rem 0.4rem;
+  font: 400 var(--text-meta) / 1.35 var(--codeFont);
+  font-variant-numeric: tabular-nums;
+  color: var(--dark);
+  background: color-mix(in srgb, var(--light) 90%, transparent);
+  text-align: right;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.pagerank-field-plot :is(.pagerank-field-hover, .pagerank-field-top, .pagerank-leader) {
+  transition: opacity 120ms ease-out;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.pagerank-field-plot[data-pointer] {
+  .pagerank-field-hover {
+    opacity: 1;
+  }
+
+  :is(.pagerank-field-top, .pagerank-leader) {
+    opacity: 0;
+  }
+}
+
+.pagerank-field-number {
+  font-family: var(--codeFont);
+  font-variant-numeric: tabular-nums;
+}
+
+.pagerank-field-readout {
+  margin: 0.5rem 0 0;
+  min-block-size: 1lh;
+  font: 400 var(--text-meta) / 1.5 var(--codeFont);
+  font-variant-numeric: tabular-nums;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  // Three fixed lines on a phone, so hovering never moves the caption.
+  @container pagerank (max-width: 40rem) {
+    display: -webkit-box;
+    block-size: 3lh;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    white-space: normal;
+  }
 }
 
 // Its own line under the caption; reserved so selecting a note never moves the page.
